@@ -1,5 +1,5 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree.thy,v 1.4 2004-09-22 22:40:14 lsf37 Exp $
+    ID:          $Id: BinaryTree.thy,v 1.5 2004-09-22 22:46:21 lsf37 Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson@cl.cam.ac.uk>
     License:     LGPL
@@ -72,8 +72,7 @@ primrec
 
 lemma tlookup_none: 
      "sortedTree h t & (tlookup h k t = None) --> (ALL x:setOf t. h x ~= k)"
-apply (induct t, auto)  --{*???for some crazy reason, "done" takes 10 secs*}
-done
+by (induct t, auto) 
 
 lemma tlookup_some:
      "sortedTree h t & (tlookup h k t = Some x) --> x:setOf t & h x = k"
