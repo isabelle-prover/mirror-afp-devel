@@ -4336,7 +4336,7 @@ apply (rule contrapos_pp) apply simp+
 apply (subgoal_tac "r \<le> Suc (l div s)") 
 apply (thin_tac "\<not> Suc (l div s) < r")
 apply (subgoal_tac "s * r \<le> Suc (l div s) * s") 
-apply (simp add:add:commute)
+apply (simp add: add_commute)
  apply (thin_tac "l div s * s + s < s * r")
  apply (insert mult_commute [of "s" "r"])
  apply (insert mult_le_mono [of "r" "Suc (l div s)" "s" "s"]) 
