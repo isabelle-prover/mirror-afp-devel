@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+#
+# $Id: testall,v 1.1 2004-02-25 02:25:05 lsf37 Exp $
+# Author: Gerwin Klein, NICTA
+# License: GPL (GNU GENERAL PUBLIC LICENSE)
+#
+# Tests all entries in Archive of Formal Proofs
+# 
+
+## settings
+
+function usage()
+{
+  echo
+  echo "Usage: $PRG OPTIONS [entries]"
+  echo
+  echo "  Runs isatool make on specified entries in the Archive of Formal Proofs"
+  echo 
+  echo "Options:"
+  echo "-t <path/to/isatool>   use isatool at specified path"     
+  echo "-c                     include target clean (rebuild session)"
+  echo "-d <path>              use specified path as base for archive entries"
+  echo "-r                     use env variable ISABELLE_RELEASE to find isatool"
+  echo 
+  echo "Examples:"
+  echo
+  echo "$PRG"
+  echo   "uses isatool in your normal path to run all tests (usually = devel version)"
+  echo
+  echo "$PRG Example-Submission"
+  echo   "same as above, but only test Example-Submission"
+  echo
+  echo "$PRG -t /usr/proj/isabelle/Isabelle2003/bin/isatool Example-Submission"
+  echo   "uses the Isabelle 2003 release version to run the test"
+  echo
+  echo "$PRG -r Example-Submission"
+  echo   "uses the distribution $ISABELLE_RELEASE to test Example-Submission"
+  exit 1
+}
+
+function fail()
+{
+  echo "$1" >&2
+  exit 2
+}
+
+function check_isatool()
+{
+  [ -x $ISATOOL ] || fail "No isatool found at [$ISATOOL]."
+  ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
+  ISABELLE_HOME=`$ISATOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
+  export ISABELLE_IMAGE_PATH="$ISABELLE_HOME/heaps/$ML_IDENTIFIER/"
+}
+
+## 
+
+PRG="$(basename "$0")"
+THYS="$(dirname "$0")/../thys"
+
+[ "$1" = "-?" ] && usage
+
+ISATOOL=isatool
+while getopts "t:crd:" OPT
+do
+    case "$OPT" in
+      r)
+        [ "$ISABELLE_RELEASE" == "" ] && fail "ISABELLE_RELEASE not set"
+        ISATOOL="$ISABELLE_RELEASE/bin/isatool"
+        check_isatool
+        ;;
+      c)
+        CLEAN="clean"
+        ;;
+      d)
+        THYS="$OPTARG"
+        ;;
+      t)
+        ISATOOL="$OPTARG"
+        check_isatool
+        ;;
+    esac
+done
+
+shift $(($OPTIND - 1))
+
+[ -d $THYS ] || fail "Could not find archive directory. Tried [$THYS]."
+cd $THYS
+
+DIRS=$@
+if [ "$DIRS" == "" ]; then DIRS=*; fi
+
+FAIL=0;
+
+for DIR in $DIRS; do
+    if [ -d $DIR -a "$DIR" != "CVS" ]; then
+        echo "Testing [$DIR]"
+        cd $DIR
+        $ISATOOL make $CLEAN all $@ || FAIL=1
+        cd ..
+        echo "Finished [$DIR]"
+    fi
+done
+
+if [ $FAIL == 1 ]; then 
+    echo "Some tests failed. Please check logs."
+else
+    echo "All tests successful."
+fi
+
+exit $EXIT

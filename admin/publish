@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+#
+# $Id: publish,v 1.1 2004-02-25 02:25:05 lsf37 Exp $
+# Author: Gerwin Klein, NICTA
+# License: GPL (GNU GENERAL PUBLIC LICENSE)
+#
+# publishes archive entry + main web pages on SF
+# 
+
+## settings
+
+REPOS=cvs.sf.net:/cvsroot/afp
+DEST=shell.sf.net:/home/groups/a/af/afp/htdocs/
+
+if [ -n "$SF_LOGIN" ]; then
+    REPOS=$SF_LOGIN@$REPOS
+    DEST=$SF_LOGIN@$DEST
+fi
+
+EXPORT_PRE=afp
+CVS=cvs
+DATE=`date '+%Y-%m-%d'`
+THYS=thys
+
+TAR=tar
+
+PRG="$(basename "$0")"
+
+## functions
+
+function usage()
+{
+  echo
+  echo "Usage: $PRG [options] <tag> [<entries>|-]"
+  echo 
+  echo "  Checks out web site and archive entries and publishes them on the SF web site"
+  echo
+  echo "Options:"
+  echo "  -f             do not ask before publishing"
+  echo "  -t <isatool>   use specified path to isatool"
+  echo "  -r             use env variable ISABELLE_RELEASE to find isatool"
+  echo
+  echo "Examples:"
+  echo "  $PRG -t /usr/proj/Isabelle2003/bin/isatool Isabelle2003 Example-Submission"  
+  echo
+  echo "  $PRG -r Isabelle2003 Example-Submission"  
+  exit 1
+}
+
+function fail()
+{
+  echo "$1" >&2
+  exit 2
+}
+
+function check_isatool()
+{
+  [ -x $ISATOOL ] || fail "No isatool found at [$ISATOOL]."
+  ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
+  ISABELLE_HOME=`$ISATOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
+  export ISABELLE_IMAGE_PATH="$ISABELLE_HOME/heaps/$ML_IDENTIFIER/"
+}
+
+## argument checking
+
+[ "$#" -lt "2" -o "$1" = "-?" ] && usage
+
+ISATOOL=isatool
+INTERACTIVE="yes"
+
+while getopts "t:rf" OPT
+do
+    case "$OPT" in
+      r)
+        [ "$ISABELLE_RELEASE" == "" ] && fail "ISABELLE_RELEASE not set"
+        ISATOOL="$ISABELLE_RELEASE/bin/isatool"
+        check_isatool
+        ;;
+      f)
+        INTERACTIVE="no"
+        ;;
+      t)
+        ISATOOL="$OPTARG"
+        check_isatool
+        ;;
+    esac
+done
+
+shift $(($OPTIND - 1))
+
+TAG="$1" 
+shift
+
+EXPORT=$EXPORT_PRE-$DATE
+
+###
+
+echo "Exporting from CVS"
+[ -e "afp-export-$DATE" ] && fail "Export directory [afp-export-$DATE] exists. Please remove before running this script."
+$CVS -q -d $REPOS export -r $TAG -d afp-export-$DATE thys web || fail "CVS export failed."
+cd afp-export-$DATE
+mv thys $EXPORT
+
+if [ "$1" != "-" ]; then
+    echo "Cleaning up browser_info directory"
+    BROWSER_INFO=`isatool getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
+    [ -e "$BROWSER_INFO" ] && rm -r $BROWSER_INFO
+
+    HTML_THYS=web/browser_info/$TAG
+    TARS=web/release/
+    mkdir -p $HTML_THYS
+    ln -s $TAG web/browser_info/current 
+    ln -s ../front.css web/entries/front.css
+    mkdir -p $TARS
+
+    echo "Tarring [$EXPORT]"
+    $TAR -cf $EXPORT.tar $EXPORT
+    gzip --best -f $EXPORT.tar
+    mv $EXPORT.tar.gz $TARS
+    ln -s $EXPORT.tar.gz $TARS/$EXPORT_PRE-current.tar.gz
+
+    cd $EXPORT
+    for DIR in $@; do
+        if [ -d $DIR -a "$DIR" != "CVS" ]; then
+            echo "Generating HTML for [$DIR]"
+            cd $DIR
+            $ISATOOL make clean all || fail "isatool make all failed on [$DIR]"
+            cd ..
+            echo "Tarring [$DIR]"
+            $TAR -cf $EXPORT_PRE-$DIR-$DATE.tar $DIR
+            gzip --best -f $EXPORT_PRE-$DIR-$DATE.tar
+            mv $EXPORT_PRE-$DIR-$DATE.tar.gz ../$TARS
+            ln -s $EXPORT_PRE-$DIR-$DATE.tar.gz ../$TARS/$EXPORT_PRE-$DIR-current.tar.gz
+            echo "Finished [$DIR]"
+        fi
+    done
+    cd ..
+
+    echo "Copying generated HTML"
+    for DIR in $BROWSER_INFO/*; do
+        if [ -d $DIR ]; then
+            cp -r $DIR $HTML_THYS        
+        fi
+    done
+
+    if [ "$INTERACTIVE" == "yes" ]; then
+        echo "Web pages are prepared for publication under"
+        echo "[`pwd`/web/]."
+        echo "Please check content."
+        read -n 1 -p "Type y if you want to publish. Any other key quits." RESPONSE
+    else
+        RESPONSE="y"
+    fi
+else
+    RESPONSE="y"    
+fi
+
+if [ "$RESPONSE" == "y" ]; then
+    echo
+    echo "Publishing to [$DEST]"
+    rsync -rvz --links --rsh=ssh web/ $DEST && echo "Finished."
+else
+    echo
+    echo "Aborted."
+    exit 1;
+fi
+
