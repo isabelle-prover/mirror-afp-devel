@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.5 2004-03-14 21:08:31 lsf37 Exp $
+# $Id: regression,v 1.6 2004-03-19 21:07:38 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 # License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
@@ -72,6 +72,7 @@ if [ "$1" == "-" ]; then
   ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
   LOG=$LOG-devel-$DATE.log
+  SNAPSHOT=1;
   REPORT=$REPORT-devel
 else
   TAG="-r $1"
@@ -91,7 +92,7 @@ echo "begin cvs update" >> $LOG
 
 # cvs update to newest version of archive 
 cd $WORKING_COPY || fail "could not cd to $WORKING_COPY"
-cvs -q up -d $TAG >> $LOG 2>&1 || fail "could not CVS update."
+cvs -q up -P -d $TAG >> $LOG 2>&1 || fail "could not CVS update."
 
 echo "end cvs update" >> $LOG
 echo >> $LOG
@@ -161,5 +162,21 @@ else
   echo "`date`, $AFP_VER: All tests successful. Elapsed time: $ELAPSED" >> $MASTERLOG
 fi
 
-# clean up
+# clean up tmp
 rm -f $TMP
+
+# make devel snapshot
+if [ "$SNAPSHOT" == "1" ]; then
+    EXPORT=afp-devel
+    STATUS=entry-status.txt
+    WEB=~/html-data/afp/
+    cp $REPORT $WEB/$STATUS
+    cvs -Q export -P -D now -d $EXPORT thys
+    cp $REPORT $EXPORT/$STATUS
+    echo >> $EXPORT/$STATUS
+    echo `date` >> $EXPORT/$STATUS
+    tar cf $EXPORT.tar $EXPORT
+    gzip --best -f $EXPORT.tar
+    mv $EXPORT.tar.gz $WEB
+    rm -rf $EXPORT
+fi

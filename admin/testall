@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.3 2004-03-09 21:09:27 lsf37 Exp $
+# $Id: testall,v 1.4 2004-03-19 21:07:38 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 # License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
@@ -20,7 +20,7 @@ function usage()
   echo "-t <path/to/isatool>   use isatool at specified path"     
   echo "-c                     include target clean (rebuild session)"
   echo "-d <path>              use specified path as base for archive entries"
-  echo "-r                     use env variable ISABELLE_RELEASE to find isatool"
+  echo "-r                     use env variable ISABELLE_RELEASES to find isatool"
   echo 
   echo "Examples:"
   echo
@@ -33,8 +33,8 @@ function usage()
   echo "$PRG -t /usr/proj/isabelle/Isabelle2003/bin/isatool Example-Submission"
   echo   "uses the Isabelle 2003 release version to run the test"
   echo
-  echo "$PRG -r Example-Submission"
-  echo   "uses the distribution $ISABELLE_RELEASE to test Example-Submission"
+  echo "$PRG -r Isabelle2003 Example-Submission"
+  echo   "uses the distribution $ISABELLE_RELEASES/Isabelle2003 to test Example-Submission"
   exit 1
 }
 
@@ -60,12 +60,12 @@ THYS="$(dirname "$0")/../thys"
 [ "$1" = "-?" ] && usage
 
 ISATOOL=isatool
-while getopts "t:crd:" OPT
+while getopts "t:cr:d:" OPT
 do
     case "$OPT" in
       r)
-        [ "$ISABELLE_RELEASE" == "" ] && fail "ISABELLE_RELEASE not set"
-        ISATOOL="$ISABELLE_RELEASE/bin/isatool"
+        [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
+        ISATOOL="$ISABELLE_RELEASES/$OPTARG/bin/isatool"
         check_isatool
         ;;
       c)
