@@ -1,6 +1,6 @@
 ## configurables
 
-SESSION-NAME = Completeness
+SESSION-NAME = Ramsey-Infinite
 BASE-IMAGE = HOL
 
 # turn image into absolute path when ISABELLE_IMAGE_PATH is set

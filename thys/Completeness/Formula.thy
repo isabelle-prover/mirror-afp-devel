@@ -15,7 +15,7 @@ consts deX     :: "vbl => nat"
 primrec "deX (X n) = n"
 
 lemma X_deX[simp]: "X (deX a) = a"
-  apply(cases a) apply(simp) done
+  apply(cases a) apply simp done
 
 constdefs
   zeroX   :: "vbl"
@@ -40,12 +40,10 @@ lemma inj_nextX: "inj nextX"
   by(auto simp add: inj_on_def)
 
 lemma ind': "P zeroX ==> (! v . P v --> P (nextX v)) ==> P v'"
-  apply(case_tac v')
-  apply(simp)
+  apply (case_tac v', simp)
   apply(induct_tac nat)
    apply(simp add: zeroX_def)
-  apply(drule_tac x="X n" in spec)
-  apply(simp)
+  apply (drule_tac x="X n" in spec, simp)
   done
 
 lemma ind: "\<lbrakk> P zeroX; \<And> v. P v \<Longrightarrow> P (nextX v) \<rbrakk> \<Longrightarrow> P v'"
@@ -59,7 +57,7 @@ lemma zeroX_nextX[iff]: "zeroX ~= nextX a" -- "FIXME iff?"
 lemmas nextX_zeroX[iff] = not_sym[OF zeroX_nextX]
 
 lemma nextX: "nextX (X n) = X (Suc n)"
-  apply(simp) done
+  apply simp done
 
 lemma vblcase_zeroX[simp]: "vblcase a b zeroX = a" 
   by(simp add: vblcase_def)
@@ -72,8 +70,7 @@ lemma vbl_cases: "x = zeroX | (? y . x = nextX y)"
   apply(case_tac m)
   apply(simp add: zeroX_def)
   apply(rule disjI2)
-  apply(rule_tac x="X nat" in exI)
-  apply(simp)
+  apply (rule_tac x="X nat" in exI, simp)
   done
 
 lemma vbl_casesE: "\<lbrakk> x = zeroX \<Longrightarrow> P; \<And> y. x = nextX y \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
@@ -88,24 +85,19 @@ lemma comp_vblcase: "f o vblcase a b = vblcase (f a) (f o b)"
 lemma equalOn_vblcaseI': "equalOn (preImage nextX A) f g ==> equalOn A (vblcase x f) (vblcase x g)"
   apply(simp add: equalOn_def) 
   apply(rule+)
-  apply(case_tac xa rule: vbl_casesE) 
-  apply(simp)
-  apply(simp)
+  apply (case_tac xa rule: vbl_casesE, simp, simp)
   apply(drule_tac x=y in bspec)
   apply(simp add: preImage_def) 
   by assumption
     
 lemma equalOn_vblcaseI: "(zeroX : A --> x=y) ==> equalOn (preImage nextX A) f g ==> equalOn A (vblcase x f) (vblcase y g)"
-  apply(rule equalOnI)
-  apply(rule)
-  apply(case_tac xa rule: vbl_casesE) 
-  apply(simp)
-  apply(simp)
+  apply (rule equalOnI, rule)
+  apply (case_tac xa rule: vbl_casesE, simp, simp)
   apply(simp add: preImage_def equalOn_def) 
   done
 
 lemma X_deX_connection: "X n : A = (n : (deX ` A))"
-  by(force)
+  by force
 
 lemma finiteFreshVar: "finite A ==> freshVar A ~: A"
   apply(simp add: freshVar_def)
@@ -137,8 +129,8 @@ lemma signsE: "\<lbrakk> signs = Neg \<Longrightarrow> P; signs = Pos \<Longrigh
 lemma expand_signs_case: "Q(signs_case vpos vneg F) = ( 
   (F = Pos --> Q (vpos)) & 
   (F = Neg --> Q (vneg)) 
-  )"
-  apply(induct F) by(simp_all)
+ )"
+  apply(induct F) by simp_all
 
 consts sign    :: "signs \<Rightarrow> bool \<Rightarrow> bool"
 primrec 
@@ -190,28 +182,23 @@ lemma formula_signs_cases: "!!P.
 
     -- "induction using nat induction, not wellfounded induction"
 lemma strong_formula_induct': "!A. (! B. size B < size A --> P B) --> P A ==> ! A. size A = n --> P (A::formula)"
-  apply(induct_tac n rule: nat_less_induct)
-  apply(rule) apply(rule) apply(drule_tac sym) apply(simp)
-  done
+  by (induct_tac n rule: nat_less_induct, blast) 
 
 lemma strong_formula_induct: "(! A. (! B. size B < size A --> P B) --> P A) ==> P (A::formula)"
-  apply(rule strong_formula_induct'[rule_format])
-  apply(force)
-  apply(force)
-  done
+ by (rule strong_formula_induct'[rule_format], blast+) 
 
 lemma sizelemmas: "size A < size (FConj z A B)"
   "size B < size (FConj z A B)"
   "size A < size (FAll  z A)"
-  by(auto)
+  by auto
 
 lemma expand_formula_case:
   "Q(formula_case fatom fconj fall F) = ( 
   (! z P vs  . F = FAtom z P vs  --> Q (fatom z P vs)) & 
   (! z A0 A1 . F = FConj z A0 A1 --> Q (fconj z A0 A1)) & 
   (! z A     . F = FAll  z A     --> Q (fall  z A)) 
-  )"
-  apply(cases F) apply(simp_all) done
+ )"
+  apply(cases F) apply simp_all done
 
 consts FNot    :: "formula => formula"
 primrec 
@@ -233,8 +220,7 @@ primrec
 
 lemma dualCompose: "dual p q r o dual P Q R = dual (p o P) (q o Q) (r o R)"
   apply(rule ext)
-  apply(induct_tac x)
-  apply(auto) 
+  apply (induct_tac x, auto) 
   done
 
 lemma dualFNot': "dual invSign invSign invSign = FNot"
@@ -370,10 +356,10 @@ primrec
 									      | nextX v => phi v)) body))"
 
 lemma evalF_FAll: "evalF M phi (FAll Pos A) = (!x: (objects M). (evalF M (vblcase x (%v .phi v)) A))"
-  apply(simp) done
+  apply simp done
   
 lemma evalF_FEx: "evalF M phi (FAll Neg A) = ( ? x:(objects M). (evalF M (vblcase x (%v. phi v)) A))"
-  apply(simp) done
+  apply simp done
 
 lemma evalF_arg2_cong: "x = y ==> evalF M p x = evalF M p y" by simp
 
@@ -384,9 +370,8 @@ lemma evalF_FNot[rule_format]: "!phi. evalF M phi (FNot A) = (\<not> evalF M phi
 
 lemma evalF_equiv[rule_format]: "! f g. (equalOn (freeVarsF A) f g) \<longrightarrow> (evalF M f A = evalF M g A)"
   apply(induct A)
-    apply(force simp:equalOn_def cong: map_cong)
-   apply(clarify) apply(simp) apply(drule_tac equalOn_UnD) apply(force)
-  apply(clarify) apply(simp) apply(rule_tac f = "sign signs" in arg_cong) apply(rule ball_cong) apply(rule) 
+    apply (force simp:equalOn_def cong: map_cong, clarify) apply simp apply(drule_tac equalOn_UnD) apply force
+  apply clarify apply simp apply(rule_tac f = "sign signs" in arg_cong) apply(rule ball_cong) apply rule 
   apply(rule_tac f = "sign signs" in arg_cong) apply(force intro: equalOn_vblcaseI')
   done
     -- "FIXME tricky to automate cong args convincingly?"
@@ -402,22 +387,18 @@ lemma evalF_subF_eq: "!phi theta. evalF M phi (subF theta A) = evalF M (phi o th
   apply(intro allI)
   apply(simp del: o_apply)
   apply(rule arg_cong) back
-  apply(rule ball_cong) apply(rule)
+  apply(rule ball_cong) apply rule
   apply(rule arg_cong) back
 (*  apply(rule arg_cong) back
   -- "higher order unif can't figure out unif for argcong?"*)
   apply(subgoal_tac "(vblcase x phi \<circ> vblcase zeroX (\<lambda>v. nextX (theta v))) = (vblcase x (phi \<circ> theta))")
   apply(simp del: o_apply)
   apply(rule ext)
-  apply(case_tac xa rule: vbl_casesE) 
-   apply(simp)
-  apply(simp)
+  apply (case_tac xa rule: vbl_casesE, simp, simp)
   done
 
 lemma o_id'[simp]: "f o (% x. x) = f"
-  apply(fold id_def)
-  apply(simp)
-  done
+by (fold id_def, simp)
 
 lemma evalF_instance: "evalF M phi (instanceF u A) = evalF M (vblcase (phi u) phi) A"
   apply(simp add: instanceF_def evalF_subF_eq vblsimps)
@@ -432,10 +413,10 @@ lemma s'[simp]:" FConj signs formula1 formula2 \<noteq> formula2"
   apply(induct formula2, auto) done
 
 lemma instanceF_E: "instanceF g formula \<noteq> FAll signs formula"
-  apply(clarify)
+  apply clarify
   apply(subgoal_tac "Suc (size (instanceF g formula)) = (size (FAll signs formula))")
-  apply(force)
+  apply force
   apply(simp (no_asm) only: size_instance[rule_format])
-  apply(simp) done
+  apply simp done
 
 end

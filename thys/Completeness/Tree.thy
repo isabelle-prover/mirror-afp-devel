@@ -1,6 +1,5 @@
-theory Tree = (*Arith +*) Hilbert_Choice + List + Set + Finite_Set + Wellfounded_Relations:
+theory Tree = Main:
 
-ML {* simp_depth_limit := 5; *}
 
 subsection "Tree"
 
@@ -19,20 +18,17 @@ inductive "tree subs gamma"
     tree1: "[| (n,delta) : tree subs gamma; sigma : subs(delta) |]
 	   ==> (Suc n,sigma) : tree subs gamma"
 
-lemmas [elim] = tree.elims
-lemmas [intro] = tree.intros
+declare tree.elims [elim] 
+declare tree.intros [intro] 
 
 lemma tree0Eq: "(0,y) : tree subs gamma = (y = gamma)"
   apply(rule iffI)
-  apply(erule tree.elims)
-  apply(auto) 
+  apply (erule tree.elims, auto) 
   done
 
-lemma tree1Eq [rule_format]:"!Y. (Suc n,Y) : tree subs gamma = (? sigma : subs gamma . (n,Y) : tree subs sigma)"
-  apply(induct n)
-  apply(blast)
-  apply(force)
-  done
+lemma tree1Eq [rule_format]:
+    "\<forall>Y. (Suc n,Y) \<in> tree subs gamma = (\<exists>sigma \<in> subs gamma . (n,Y) \<in> tree subs sigma)"
+  by (induct n, blast, force)
     --"moving down a tree"
 
 constdefs  
@@ -73,7 +69,7 @@ lemma terminalD: "terminal subs Gamma ==> x ~: subs Gamma"
   apply(simp add: terminal_def) done
   -- "not a good dest rule"
 
-lemma terminalI: "x : subs Gamma ==> ~ terminal subs Gamma" 
+lemma terminalI: "x \<in> subs Gamma ==> ~ terminal subs Gamma" 
   apply(simp add: terminal_def) 
   by blast
   -- "not a good intro rule"
@@ -111,9 +107,9 @@ lemma inheritedInsert[rule_format]:
   "inherited subs P --> ~(terminal subs Gamma) --> P A --> P (insert (n,Gamma) A)"
   by (auto simp add: inherited_def)
 
-lemma inheritedI[rule_format]: "[| ! A B . (P A & P B) = P (A Un B);
-  ! A . P A = P (incLevel ` A); 
-  ! n Gamma A . ~(terminal subs Gamma) --> P A = P (insert (n,Gamma) A);
+lemma inheritedI[rule_format]: "[| \<forall>A B . (P A & P B) = P (A Un B);
+  \<forall>A . P A = P (incLevel ` A); 
+  \<forall>n Gamma A . ~(terminal subs Gamma) --> P A = P (insert (n,Gamma) A);
   P {} |] ==> inherited subs P"
   by (simp add: inherited_def)
 
@@ -136,8 +132,8 @@ lemmas inheritedIncLevelD = inheritedIncLevelEq[THEN iffD1]
 lemma inheritedUNEq[rule_format]: 
   "finite A --> inherited subs P --> (!x:A. P (B x)) = P (UN a:A. B a)"
   apply(intro impI)
-  apply(rule finite_induct) back
-  apply(simp) 
+  apply(erule finite_induct) 
+  apply simp 
   apply(simp add: inheritedEmpty)
   apply(force dest: inheritedUnEq)
   done
@@ -155,19 +151,21 @@ lemma inheritedPropagateEq[rule_format]: assumes a: "inherited subs P"
   apply(simp! add: inheritedInsertEq inheritedUNEq[symmetric] inheritedIncLevelEq)
   done
 
-lemma inheritedPropagate: "[| ~P(tree subs delta); inherited subs P; fans subs; ~(terminal subs delta)|]
-  ==> ? sigma : subs delta . ~P(tree subs sigma)"
-  apply(simp add: inheritedPropagateEq)
-  done
+lemma inheritedPropagate:
+ "[| ~P(tree subs delta); inherited subs P; fans subs; ~(terminal subs delta)|]
+  ==> \<exists>sigma \<in> subs delta . ~P(tree subs sigma)"
+  by(simp add: inheritedPropagateEq)
 
-lemma inheritedViaSub: "[| inherited subs P; fans subs; P(tree subs delta); sigma : subs delta |]
+lemma inheritedViaSub: "[| inherited subs P; fans subs; P(tree subs delta); sigma \<in> subs delta |]
   ==> P(tree subs sigma)"
   apply(frule_tac terminalI)
   apply(simp add: inheritedPropagateEq)
   done
 
-lemma inheritedJoin[rule_format]: "(inherited subs P & inherited subs Q) --> inherited subs (%x. P x & Q x)";
-  apply(blast intro!: inheritedI dest: inheritedUnEq inheritedIncLevelEq inheritedInsertEq inheritedEmpty) done
+lemma inheritedJoin[rule_format]:
+    "(inherited subs P & inherited subs Q) --> inherited subs (%x. P x & Q x)"
+  by(blast intro!: inheritedI 
+     dest: inheritedUnEq inheritedIncLevelEq inheritedInsertEq inheritedEmpty)
 
 lemma inheritedJoinI[rule_format]: "[| inherited subs P; inherited subs Q; R = ( % x . P x & Q x) |] ==> inherited subs R"
   by(blast intro!:inheritedI dest: inheritedUnEq inheritedIncLevelEq inheritedInsertEq inheritedEmpty)
@@ -177,10 +175,10 @@ subsection "bounded, boundedBy"
 
 constdefs
   boundedBy   :: "nat => (nat * 'a) set => bool"
-  "boundedBy N A == (! (n,delta) : A. n < N)"
+  "boundedBy N A == (\<forall>(n,delta) \<in> A. n < N)"
 
   bounded     :: "(nat * 'a) set => bool"
-  "bounded A == ? N . boundedBy N A"
+  "bounded A == \<exists>N . boundedBy N A"
 
 lemma boundedByEmpty[simp]: "boundedBy N {}"
   apply(simp add: boundedBy_def) done
@@ -192,18 +190,16 @@ lemma boundedByUn: "boundedBy N (A Un B) = (boundedBy N A & boundedBy N B)"
   apply(auto simp add: boundedBy_def) done
 
 lemma boundedByIncLevel': "boundedBy (Suc N) (incLevel ` A) = boundedBy N A";    
-  apply(simp add: incLevel_def boundedBy_def)
-  apply(auto)
-  done
+by (simp add: incLevel_def boundedBy_def, auto)
 
 lemma boundedByAdd1[rule_format]: "boundedBy N B --> boundedBy (N+M) B"
-  apply(auto simp add: boundedBy_def) done
+  by(auto simp add: boundedBy_def) 
 
 lemma boundedByAdd2[rule_format]: "boundedBy M B --> boundedBy (N+M) B"
-  apply(auto simp add: boundedBy_def) done
+  by(auto simp add: boundedBy_def) 
 
 lemma boundedByMono[rule_format]: "boundedBy m B --> m < M --> boundedBy M B"
-  apply(auto simp: boundedBy_def) done
+  by(auto simp: boundedBy_def) 
 
 lemmas boundedByMonoD  = boundedByMono
     
@@ -212,9 +208,9 @@ lemma boundedBy0: "boundedBy 0 A = (A = {})"
   apply(auto simp add: boundedBy_def) done
 
 lemma boundedBySuc': "boundedBy N A \<Longrightarrow> boundedBy (Suc N) A"
-  apply(auto simp add: boundedBy_def) done
+  by (auto simp add: boundedBy_def) 
 
-lemma boundedByIncLevel: "boundedBy n (incLevel ` (tree subs gamma)) = ( ? m . n = Suc m & boundedBy m (tree subs gamma))";
+lemma boundedByIncLevel: "boundedBy n (incLevel ` (tree subs gamma)) = ( \<exists>m . n = Suc m & boundedBy m (tree subs gamma))";
   apply(cases n)
    apply(force simp add: boundedBy0 tree0) 
   apply(subst treeEquation) 
@@ -222,15 +218,14 @@ lemma boundedByIncLevel: "boundedBy n (incLevel ` (tree subs gamma)) = ( ? m . n
   done
 
 lemma boundedByUN: "boundedBy N (UN x:A. B x) = (!x:A. boundedBy N (B x))"
-  apply(simp add: boundedBy_def)
-  done
+  by(simp add: boundedBy_def)
 
 lemma boundedBySuc[rule_format]: "sigma \<in> subs Gamma \<Longrightarrow> boundedBy (Suc n) (tree subs Gamma) \<longrightarrow> boundedBy n (tree subs sigma)"
   apply(subst treeEquation)  back
-  apply(rule)
+  apply rule
   apply(simp add: boundedByInsert)
   apply(simp add: boundedByUN)
-  apply(drule_tac x=sigma in bspec) apply(assumption)
+  apply(drule_tac x=sigma in bspec) apply assumption
   apply(simp add: boundedByIncLevel)
   done
 
@@ -247,31 +242,26 @@ lemma boundedUn: "bounded (A Un B) = (bounded A & bounded B)"
   done
 
 lemma boundedIncLevel: "bounded (incLevel` A) = (bounded A)"
-  apply(simp add: bounded_def)
-  apply(rule)
+  apply (simp add: bounded_def, rule)
    apply(erule exE)
    apply(rule_tac x=N in exI)
-   apply(simp add: boundedBy_def incLevel_def)
-   apply(force)
+   apply (simp add: boundedBy_def incLevel_def, force)
   apply(erule exE)
   apply(rule_tac x="Suc N" in exI)
-  apply(simp add: boundedBy_def incLevel_def)
-  apply(force)
+  apply (simp add: boundedBy_def incLevel_def, force)
   done
 
 lemma boundedInsert: "bounded (insert a B) = (bounded B)"
   apply(case_tac a)
-  apply(simp add: bounded_def boundedByInsert)
-  apply(rule) apply(blast)
+  apply (simp add: bounded_def boundedByInsert, rule) apply blast
   apply(erule exE)
   apply(rule_tac x="Suc(aa+N)" in exI)
   apply(force intro:boundedByMono)
   done
 
 lemma inheritedBounded: "inherited subs bounded"
-  apply(blast intro!: inheritedI boundedUn[symmetric] boundedIncLevel[symmetric]
+  by(blast intro!: inheritedI boundedUn[symmetric] boundedIncLevel[symmetric]
     boundedInsert[symmetric] boundedEmpty)
-  done
 
 
 subsection "founded"
@@ -285,19 +275,16 @@ lemma foundedD[rule_format]: "founded subs P (tree subs delta) --> terminal subs
   apply(simp add: founded_def) 
   done
 
-lemma foundedMono: "[| founded subs P A; ! x. P x --> Q x |] ==> founded subs Q A";
+lemma foundedMono: "[| founded subs P A; \<forall>x. P x --> Q x |] ==> founded subs Q A";
   apply(auto simp: founded_def) done
 
 lemma foundedSubs: "founded subs P (tree subs Gamma) \<Longrightarrow> sigma \<in> subs Gamma \<Longrightarrow> founded subs P (tree subs sigma)"
   apply(simp add: founded_def)
   apply(intro ballI impI)
-  apply(case_tac x)
-  apply(simp)
-  apply(rule)
+  apply (case_tac x, simp, rule)
   apply(drule_tac x="(Suc a, b)" in bspec)
    apply(subst treeEquation)
-   apply(force simp: incLevel_def)
-  apply(simp)
+   apply (force simp: incLevel_def, simp)
   done
 
 
@@ -310,16 +297,15 @@ lemma foundedUn: "(founded subs P (A Un B)) = (founded subs P A & founded subs P
   apply(simp add: founded_def) by force
    
 lemma foundedIncLevel: "founded subs P (incLevel ` A) = (founded subs P A)";
-  apply(simp add: founded_def incLevel_def)
-  apply(auto) done
+  apply (simp add: founded_def incLevel_def, auto) done
 
 lemma foundedEmpty: "founded subs P {}"
-  apply(auto simp add: founded_def) done
+  by(auto simp add: founded_def) 
     
 lemma inheritedFounded: "inherited subs (founded subs P)"
-  apply(blast intro!: inheritedI foundedUn[symmetric] foundedIncLevel[symmetric]
+  by(blast intro!: inheritedI foundedUn[symmetric] foundedIncLevel[symmetric]
     foundedInsert[symmetric] foundedEmpty)
-  done
+
 
 
 subsection "Inherited Properties- finite"
@@ -327,14 +313,12 @@ subsection "Inherited Properties- finite"
 lemmas finiteInsert = finite_insert
 
 lemma finiteUn: "finite (A Un B) = (finite A & finite B)";
-  apply(simp) done
+  apply simp done
 
 lemma finiteIncLevel: "finite (incLevel ` A) = finite A";
-  apply(insert injIncLevel)
-  apply(rule)
+  apply (insert injIncLevel, rule)
    apply(frule finite_imageD) 
-    apply(blast intro: subset_inj_on)
-   apply(assumption)
+    apply (blast intro: subset_inj_on, assumption)
   apply(rule finite_imageI)
   by assumption
   -- "FIXME often have injOn f A, finite f ` A, to show A finite"
@@ -353,12 +337,11 @@ constdefs
   "failingSub subs P gamma == (SOME sigma. (sigma:subs gamma & ~P(tree subs sigma)))"
 
 lemma failingSubProps: "[| inherited subs P; ~P (tree subs gamma); ~(terminal subs gamma); fans subs |] 
-  ==> failingSub subs P gamma : subs gamma & ~(P (tree subs (failingSub subs P gamma)))"
+  ==> failingSub subs P gamma \<in> subs gamma & ~(P (tree subs (failingSub subs P gamma)))"
   apply(simp add: failingSub_def)
   apply(drule inheritedPropagate) apply(assumption+)
   apply(erule bexE)
-  apply(rule someI2)
-  apply(auto)
+  apply (rule someI2, auto)
   done
 
 lemma failingSubFailsI: "[| inherited subs P; ~P (tree subs gamma); ~(terminal subs gamma); fans subs |] 
@@ -368,7 +351,7 @@ lemma failingSubFailsI: "[| inherited subs P; ~P (tree subs gamma); ~(terminal s
 lemmas failingSubFailsE = failingSubFailsI[THEN notE]
 
 lemma failingSubSubs: "[| inherited subs P; ~P (tree subs gamma); ~(terminal subs gamma); fans subs |] 
-  ==> failingSub subs P gamma : subs gamma"
+  ==> failingSub subs P gamma \<in> subs gamma"
   apply(rule conjunct1[OF failingSubProps]) .
 
 consts
@@ -381,10 +364,8 @@ primrec
 
 lemma pathFailsP: "[| inherited subs P; fans subs; ~P(tree subs gamma) |]
   ==> ~(P (tree subs (path subs gamma P n)))"
-  apply(induct_tac n)
-   apply(simp)
-  apply(simp) 
-  apply(rule)
+  apply (induct_tac n, simp, simp) 
+  apply rule
   apply(rule failingSubFailsI) apply(assumption+)
   done
 
@@ -392,17 +373,15 @@ lemmas PpathE = pathFailsP[THEN notE]
 
 lemma pathTerminal[rule_format]: "[| inherited subs P; fans subs; terminal subs gamma |] 
   ==> terminal subs (path subs gamma P n)"
-  apply(induct_tac n)
-  apply(simp_all) done
+  apply (induct_tac n, simp_all) done
 
 lemma pathStarts:  "path subs gamma P 0 = gamma"
-  by(simp)
+  by simp
     
 lemma pathSubs: "[| inherited subs P; fans subs; ~P(tree subs gamma); ~ (terminal subs (path subs gamma P n)) |]
-  ==> path subs gamma P (Suc n) : subs (path subs gamma P n)"
-  apply(simp)
-  apply(rule failingSubSubs) 
-     apply(assumption)
+  ==> path subs gamma P (Suc n) \<in> subs (path subs gamma P n)"
+  apply simp
+  apply (rule failingSubSubs, assumption)
     apply(rule pathFailsP) 
       apply(assumption+) 
   done
@@ -417,7 +396,7 @@ constdefs
   branch      :: "['a => 'a set,'a,nat => 'a] => bool"
   "branch subs Gamma f == (f 0 = Gamma)
                                           & ( !n . terminal subs (f n) --> f (Suc n) = f n)
-                                          & ( !n . ~ terminal subs (f n) --> f (Suc n) : subs (f n))"
+                                          & ( !n . ~ terminal subs (f n) --> f (Suc n) \<in> subs (f n))"
 
 lemma branch0: "branch subs Gamma f ==> f 0 = Gamma" 
   by (simp add: branch_def)
@@ -425,36 +404,35 @@ lemma branch0: "branch subs Gamma f ==> f 0 = Gamma"
 lemma branchStops: "branch subs Gamma f ==> terminal subs (f n) ==> f (Suc n) = f n" 
   by (simp add: branch_def)
 
-lemma branchSubs: "branch subs Gamma f ==> ~ terminal subs (f n) ==> f (Suc n) : subs (f n)" 
+lemma branchSubs: "branch subs Gamma f ==> ~ terminal subs (f n) ==> f (Suc n) \<in> subs (f n)" 
   by (simp add: branch_def)
 
 lemma branchI: "[| (f 0 = Gamma); 
   !n . terminal subs (f n) --> f (Suc n) = f n;
-  !n . ~ terminal subs (f n) --> f (Suc n) : subs (f n) |] ==> branch subs Gamma f"
+  !n . ~ terminal subs (f n) --> f (Suc n) \<in> subs (f n) |] ==> branch subs Gamma f"
   by (simp add: branch_def)
 
 lemma branchTerminalPropagates: "branch subs Gamma f ==> terminal subs (f m) ==> terminal subs (f (m + n))"
-  apply(induct_tac n)
-  apply(simp)
+  apply (induct_tac n, simp)
   by(simp add: branchStops)
 
 lemma branchTerminalMono: "branch subs Gamma f ==> m < n ==> terminal subs (f m) ==> terminal subs (f n)"
-  apply(subgoal_tac "terminal subs (f (m+(n-m)))") apply(force)
+  apply(subgoal_tac "terminal subs (f (m+(n-m)))") apply force
   apply(rule branchTerminalPropagates) 
   .
 
-lemma branchPath : "!!subs.
-  [| inherited subs P; fans subs; ~P(tree subs gamma) |] 
-  ==> branch subs gamma (path subs gamma P)"
-  apply(auto intro!: branchI pathStarts pathSubs pathStops)
-  done
+lemma branchPath: 
+      "[| inherited subs P; fans subs; ~P(tree subs gamma) |] 
+       ==> branch subs gamma (path subs gamma P)"
+  by(auto intro!: branchI pathStarts pathSubs pathStops)
+
 
 
 subsection "failing branch property: abstracts path defn"
 
 lemma failingBranchExistence:  "!!subs.
   [| inherited subs P; fans subs; ~P(tree subs gamma) |] 
-  ==> ? f . branch subs gamma f & (! n . ~P(tree subs (f n)))"
+  ==> \<exists>f . branch subs gamma f & (\<forall>n . ~P(tree subs (f n)))"
   apply(rule_tac x="path subs gamma P" in exI)
   apply(rule conjI)
   apply(force intro!: branchPath)
@@ -464,9 +442,9 @@ lemma failingBranchExistence:  "!!subs.
 
 constdefs    
   infBranch   :: "['a => 'a set,'a,nat => 'a] => bool"
-  "infBranch subs Gamma f == (f 0 = Gamma) & (! n . f (Suc n) : subs (f n))"
+  "infBranch subs Gamma f == (f 0 = Gamma) & (\<forall>n . f (Suc n) \<in> subs (f n))"
 
-lemma infBranchI: "[| (f 0 = Gamma); !n . f (Suc n) : subs (f n) |] ==> infBranch subs Gamma f"
+lemma infBranchI: "[| (f 0 = Gamma); !n . f (Suc n) \<in> subs (f n) |] ==> infBranch subs Gamma f"
   by (simp add: infBranch_def)
 
 
@@ -474,69 +452,63 @@ subsection "Tree induction principles"
 
   -- "we work hard to use nothing fancier that induction over naturals"
 
-lemma boundedTreeInduction': "\<lbrakk> fans subs; 
-  !delta. ~ terminal subs delta --> (! sigma:subs delta. P sigma) --> P delta \<rbrakk>
-  \<Longrightarrow> ! Gamma. boundedBy m (tree subs Gamma) \<longrightarrow>  founded subs P (tree subs Gamma) \<longrightarrow> P Gamma"
+lemma boundedTreeInduction':
+ "\<lbrakk> fans subs; 
+    \<forall>delta. ~ terminal subs delta --> (\<forall>sigma \<in> subs delta. P sigma) --> P delta \<rbrakk>
+  \<Longrightarrow> \<forall>Gamma. boundedBy m (tree subs Gamma) \<longrightarrow>  founded subs P (tree subs Gamma) \<longrightarrow> P Gamma"
   apply(induct_tac m)
    apply(intro impI allI)
    apply(simp add: boundedBy0)
-   apply(subgoal_tac "(0,Gamma) : tree subs Gamma") apply(blast) apply(rule tree0)
+   apply(subgoal_tac "(0,Gamma) \<in> tree subs Gamma") apply blast apply(rule tree0)
   apply(intro impI allI)
   apply(drule_tac x=Gamma in spec)
-  apply(case_tac "terminal subs Gamma")
-   apply(simp)
-   apply(drule_tac foundedD) apply(assumption) apply(assumption)
-  apply(erule impE)
-   apply(assumption)
-  apply(erule impE)
-   apply(rule)
+  apply (case_tac "terminal subs Gamma", simp)
+   apply(drule_tac foundedD) apply assumption apply assumption
+  apply (erule impE, assumption)
+  apply (erule impE, rule)
    apply(drule_tac x=sigma in spec)
    apply(erule impE)
-    apply(rule boundedBySuc) apply(assumption) apply(assumption)
+    apply(rule boundedBySuc) apply assumption apply assumption
    apply(erule impE)
-    apply(rule foundedSubs) apply(assumption) apply(assumption)
-   apply(assumption)
-  apply(assumption)
+    apply(rule foundedSubs) apply assumption apply assumption
+   apply assumption
+  apply assumption
   done
   -- "tjr tidied and introduced new lemmas"
 
-lemma boundedTreeInduction: "\<lbrakk> fans subs; 
-  bounded (tree subs Gamma); founded subs P (tree subs Gamma);
-  !delta. ~ terminal subs delta --> (! sigma:subs delta. P sigma) --> P delta
-  \<rbrakk>
-  \<Longrightarrow> P Gamma"
+lemma boundedTreeInduction:
+   "\<lbrakk>fans subs; 
+     bounded (tree subs Gamma); founded subs P (tree subs Gamma);
+  \<forall>delta. ~ terminal subs delta --> (\<forall>sigma \<in> subs delta. P sigma) --> P delta
+  \<rbrakk> \<Longrightarrow> P Gamma"
   apply(unfold bounded_def)
   apply(erule exE)
-  apply(frule_tac boundedTreeInduction') apply(assumption)
-  apply(force)
+  apply(frule_tac boundedTreeInduction') apply assumption
+  apply force
   done
 
-lemma boundedTreeInduction2': "[| fans subs; 
-  !delta. (! sigma:subs delta. P sigma) --> P delta |] 
-  ==> ! Gamma. boundedBy m (tree subs Gamma) \<longrightarrow> P Gamma"
+lemma boundedTreeInduction2':
+ "[| fans subs; 
+    \<forall>delta. (\<forall>sigma \<in> subs delta. P sigma) --> P delta |] 
+  ==> \<forall>Gamma. boundedBy m (tree subs Gamma) \<longrightarrow> P Gamma"
   apply(induct_tac m)
    apply(intro impI allI)
-   apply(simp add: boundedBy0)
-   apply(subgoal_tac "(0,Gamma) : tree subs Gamma") apply(blast) apply(rule tree0)
+   apply(simp (no_asm_use) add: boundedBy0)
+   apply(subgoal_tac "(0,Gamma) \<in> tree subs Gamma") apply blast apply(rule tree0)
   apply(intro impI allI)
   apply(drule_tac x=Gamma in spec)
-  apply(erule impE)
-   apply(rule)
+  apply (erule impE, rule)
    apply(drule_tac x=sigma in spec)
    apply(erule impE)
-    apply(rule boundedBySuc) apply(assumption) apply(assumption) 
-   apply(assumption)
-  apply(assumption)
+    apply(rule boundedBySuc) apply assumption apply assumption 
+   apply assumption
+  apply assumption
   done
 
-lemma boundedTreeInduction2: "[| fans subs; 
-  boundedBy m (tree subs Gamma);
-  !delta. (! sigma:subs delta. P sigma) --> P delta
-  |] 
-  ==> P Gamma"
-  apply(frule_tac boundedTreeInduction2')
-  apply(assumption)
-  apply(force)
-  done
+lemma boundedTreeInduction2:
+     "[| fans subs; boundedBy m (tree subs Gamma);
+          \<forall>delta. (\<forall>sigma \<in> subs delta. P sigma) --> P delta |] 
+      ==> P Gamma"
+  by (frule_tac boundedTreeInduction2', assumption, blast)
 
 end

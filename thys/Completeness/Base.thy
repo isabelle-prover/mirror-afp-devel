@@ -2,8 +2,6 @@ header "Base"
 
 theory Base = Main + PermutationLemmas:
 
-ML {* simp_depth_limit := 5; *}
-
 subsection "Integrate with Isabelle libraries?"
 
     --  "Misc"
@@ -23,7 +21,7 @@ qed
 
     -- "not used"
 lemma not_finite_univ: "~ finite (UNIV::nat set)"
-  apply(rule)
+  apply rule
   apply(drule_tac natset_finite_max)
   by force
 
@@ -80,7 +78,7 @@ lemma equalOn_Un:  "equalOn (A \<union> B) f g = (equalOn A f g \<and> equalOn B
 lemma equalOnD: "equalOn A f g \<Longrightarrow> (\<forall> x \<in> A . f x = g x)"
   by(simp add: equalOn_def)
 
-lemma equalOnI:"(\<forall> x \<in> A . f x = g x ) \<Longrightarrow> equalOn A f g"
+lemma equalOnI:"(\<forall> x \<in> A . f x = g x) \<Longrightarrow> equalOn A f g"
   by(simp add: equalOn_def)
 
 lemma equalOn_UnD: "equalOn (A Un B) f g ==> equalOn A f g & equalOn B f g"
@@ -89,13 +87,12 @@ lemma equalOn_UnD: "equalOn (A Un B) f g ==> equalOn A f g & equalOn B f g"
 
     -- "FIXME move following elsewhere?"
 lemma inj_inv_singleton[simp]: "\<lbrakk> inj f; f z = y \<rbrakk> \<Longrightarrow> {x. f x = y} = {z}"
-  apply(rule)
+  apply rule
   apply(auto simp: inj_on_def) done
 
 lemma finite_pre[simp]: "inj f \<Longrightarrow> finite (pre f x)"
   apply(simp add: pre_def) 
-  apply(cases "\<exists> y. f y = x")
-  apply(auto) done
+  apply (cases "\<exists> y. f y = x", auto) done
 
 lemma finite_preImage[simp]: "\<lbrakk> finite A; inj f \<rbrakk> \<Longrightarrow> finite (preImage f A)"
   apply(induct A rule: finite_induct) 

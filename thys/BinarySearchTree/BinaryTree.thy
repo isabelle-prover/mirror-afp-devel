@@ -1,5 +1,5 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree.thy,v 1.3 2004-09-13 14:16:05 nipkow Exp $
+    ID:          $Id: BinaryTree.thy,v 1.4 2004-09-22 22:40:14 lsf37 Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson@cl.cam.ac.uk>
     License:     LGPL
@@ -71,19 +71,17 @@ primrec
   else Some x)"
 
 lemma tlookup_none: 
-"sortedTree h t & (tlookup h k t = None) -->
- (ALL x:setOf t. h x ~= k)"
-apply (induct t)
-apply auto (* takes some time *)
+     "sortedTree h t & (tlookup h k t = None) --> (ALL x:setOf t. h x ~= k)"
+apply (induct t, auto)  --{*???for some crazy reason, "done" takes 10 secs*}
 done
 
 lemma tlookup_some:
-"sortedTree h t & (tlookup h k t = Some x) -->
- x:setOf t & h x = k"
+     "sortedTree h t & (tlookup h k t = Some x) --> x:setOf t & h x = k"
 apply (induct t)
-ML"simp_depth_limit := 2"
-apply auto (* takes some time *)
-ML"simp_depth_limit := 1000"
+  --{*Just auto will do it, but very slowly*}
+apply (simp)
+apply (clarify, auto)
+apply (simp_all split: split_if_asm) 
 done
 
 constdefs

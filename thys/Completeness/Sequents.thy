@@ -17,14 +17,10 @@ lemma evalS_append: "evalS M phi (Gamma @ Delta) = (evalS M phi Gamma | evalS M 
   by(force simp add: evalS_def)
 
 lemma evalS_equiv[rule_format]: "(equalOn (freeVarsFL Gamma) f g) --> (evalS M f Gamma = evalS M g Gamma)"
-  apply(induct Gamma)
-   apply(simp)
-  apply(rule)
+  apply (induct Gamma, simp, rule)
   apply(simp add: freeVarsFL_cons)
   apply(drule_tac equalOn_UnD)
-  apply(erule impE)
-   apply(simp)
-  apply(simp)
+  apply (erule impE, simp, simp)
   apply(rule arg_cong) back
   apply(simp add: evalF_equiv)
   done
@@ -120,8 +116,7 @@ thm deductionSubsetI
 (*
 lemma map_deductions: "map f ` deductions rules <= deductions (mapRule f ` rules)"
   apply(rule subsetI)
-  apply(erule_tac imageE)
-  apply(simp)
+  apply (erule_tac imageE, simp)
   apply(erule deductions.induct)
   apply(blast intro: deductions.inferI mapRuleI)
   done
@@ -129,13 +124,12 @@ lemma map_deductions: "map f ` deductions rules <= deductions (mapRule f ` rules
 lemma deductionsCloseRules: "! (conc,prems) : S . prems <= deductions R --> conc : deductions R ==> deductions (R Un S) = deductions R"
   apply(rule equalityI)
   prefer 2
-  apply(rule mono_deductions) apply(blast)
+  apply(rule mono_deductions) apply blast
   apply(rule subsetI)
-  apply(erule_tac deductions.induct)
-  apply(simp) apply(erule conjE) apply(thin_tac "prems \<subseteq> deductions (R \<union> S)")
+  apply (erule_tac deductions.induct, simp) apply(erule conjE) apply(thin_tac "prems \<subseteq> deductions (R \<union> S)")
   apply(erule disjE)
-  apply(rule inferI) apply(assumption) apply(force)
-  apply(blast)
+  apply(rule inferI) apply assumption apply force
+  apply blast
   done
 *)
 
@@ -182,7 +176,7 @@ lemma DisjI: "[| A0#A1#Gamma : deductions(A); Disjs <= A |] ==> (FConj Neg A0 A1
 
 lemma ConjI: "[| (A0#Gamma) : deductions(A); (A1#Delta) : deductions(A); Conjs <= A |] ==> FConj Pos A0 A1#Gamma @ Delta : deductions(A)"
   apply(rule_tac prems="{A0#Gamma,A1#Delta}" in deductions.inferI)
-  apply(auto simp add: Conjs_def) apply(force) done
+  apply(auto simp add: Conjs_def) apply force done
 
 lemma AllI: "[| instanceF w A#Gamma : deductions(R); w ~: freeVarsFL (FAll Pos A#Gamma); Alls <= R |] ==> (FAll Pos A#Gamma) : deductions(R)"
   apply(rule_tac prems="{instanceF w A#Gamma}" in deductions.inferI)
@@ -208,8 +202,7 @@ lemma PermI: "[| Gamma' : deductions R; Gamma <~~> Gamma'; Perms <= R |] ==> Gam
 subsection "Derived Rules"
 
 lemma WeakI1: "[| Gamma : deductions(A); Weaks <= A |] ==> (Delta @ Gamma) : deductions(A)"
-  apply(induct Delta)
-  apply(simp)
+  apply (induct Delta, simp)
   apply(auto intro: WeakI) done
 
 lemma WeakI2: "[| Gamma : deductions(A); Perms <= A; Weaks <= A |] ==> (Gamma @ Delta) : deductions(A)"
@@ -233,22 +226,19 @@ lemma DisjI2: "!!A. [| (A0#Gamma) : deductions(A); Disjs <= A; Weaks <= A; Perms
     -- "FIXME the following 4 lemmas could all be proved for the standard rule sets using monotonicity as below"
     -- "we keep proofs as in original, but they are slightly ugly, and do not state what is intuitively happening"
 lemma perm_tmp4: "Perms \<subseteq> R \<Longrightarrow> A @ (a # list) @ (a # list) : deductions R \<Longrightarrow> (a # a # A) @ list @ list : deductions R"
-  apply(rule PermI)
-  apply(auto)
+  apply (rule PermI, auto)
   apply(simp add: perm_count_conv count_append) done
 
 lemma weaken_append[rule_format]: "Contrs <= R ==> Perms <= R ==> !A. A @ Gamma @ Gamma : deductions(R) -->  A @ Gamma : deductions(R)"
-  apply(induct_tac Gamma)
-   apply(simp)
-  apply(rule) apply(rule)
+  apply (induct_tac Gamma, simp, rule) apply rule
   apply(drule_tac x="a#a#A" in spec)
   apply(erule_tac impE)
   apply(rule perm_tmp4) apply(assumption, assumption)
   apply(thin_tac "A @ (a # list) @ a # list \<in> deductions R")
-  apply(simp)
-  apply(frule_tac ContrI) apply(assumption)
+  apply simp
+  apply(frule_tac ContrI) apply assumption
   apply(thin_tac "a # a # A @ list \<in> deductions R")
-  apply(rule PermI) apply(assumption) 
+  apply(rule PermI) apply assumption 
   apply(simp add: perm_count_conv count_append) 
   by assumption
   -- "FIXME horrible"
@@ -296,12 +286,10 @@ constdefs inDed :: "formula list => bool"
 
 lemma perm: "! xs ys. xs <~~> ys --> (inDed xs = inDed ys)"
   apply(subgoal_tac "! xs ys. xs <~~> ys --> inDed xs --> inDed ys")
-  apply(blast intro: perm_sym)
-  apply(clarify)
+  apply (blast intro: perm_sym, clarify)
   apply(simp add: inDed_def)
-  apply(rule PermI)
-  apply(assumption)
-  apply(rule perm_sym) apply(assumption)
+  apply (rule PermI, assumption)
+  apply(rule perm_sym) apply assumption
   by(blast intro!: rulesInPCs)
 
 lemma contr: "! x xs. inDed (x#x#xs) --> inDed (x#xs)"

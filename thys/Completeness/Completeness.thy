@@ -141,7 +141,7 @@ primrec
 subsection "subs: finite"
   
 lemma finite_subs: "finite (subs gamma)"
-  apply(simp add: subs_def subsFAtom_def subsFConj_def subsFAll_def Let_def split_beta split: if_splits list.split formula.split signs.split )
+  apply(simp add: subs_def subsFAtom_def subsFConj_def subsFAll_def Let_def split_beta split: if_splits list.split formula.split signs.split)
   done
 
 lemma fansSubs: "fans subs"
@@ -179,7 +179,7 @@ lemma proofTreeBounded: "proofTree A ==> bounded A"
   apply(simp add: proofTree_def) done
 
 lemma proofTreeTerminal: "proofTree A ==> (n,delta) : A ==> terminal subs delta ==> SATAxiom (sequent delta)"
-  apply(simp add: proofTree_def founded_def) apply(blast) done
+  apply(simp add: proofTree_def founded_def) apply blast done
 
 
 subsection "pseq: lemma"
@@ -230,8 +230,7 @@ lemma SAT_deduction: "SATAxiom x ==> x : deductions CutFreePC"
   apply(simp add: SATAxiom_def)
   apply(elim exE)
   apply(rule_tac x="[FAtom Pos n vs,FAtom Neg n vs]" in inDed_mono)
-   apply(blast intro!: SATAxiomI rulesInPCs)
-  apply(force)
+   apply (blast intro!: SATAxiomI rulesInPCs, force)
   done
   
 
@@ -242,20 +241,16 @@ lemma subsJustified':
   shows "\<not> SATAxiom (sequent (ats, (n, f) # list)) --> \<not> terminal subs (ats, (n, f) # list) 
   --> (\<forall>sigma\<in>subs (ats, (n, f) # list). sequent sigma \<in> deductions CutFreePC) 
   --> sequent (ats, (n, f) # list) \<in> deductions CutFreePC"
-  apply(rule_tac A=f in formula_signs_cases)
-       apply(clarify) apply(simp add: ss)
-       apply(rule PermI) apply(assumption) apply(rule perm_append_Cons) apply(rule rulesInPCs)
-      apply(clarify) apply(simp add: ss)
-      apply(rule PermI) apply(assumption) apply(rule perm_append_Cons) apply(rule rulesInPCs)
-     apply(clarify) apply(simp add: ss) apply(elim conjE)
-     apply(rule ConjI') apply(assumption) apply(assumption) apply(rule rulesInPCs)+
-    apply(clarify) apply(simp add: ss)
-    apply(rule DisjI) apply(assumption) apply(rule rulesInPCs)+
-   apply(clarify) apply(simp add: ss)
-   apply(rule AllI) apply(assumption) apply(rule finiteFreshVar) apply(rule finite_freeVarsFL) apply(rule rulesInPCs)
-  apply(clarify) apply(simp add: ss)
+  apply (rule_tac A=f in formula_signs_cases, clarify) apply(simp add: ss)
+       apply(rule PermI) apply assumption apply(rule perm_append_Cons) apply (rule rulesInPCs, clarify) apply(simp add: ss)
+      apply(rule PermI) apply assumption apply(rule perm_append_Cons) apply (rule rulesInPCs, clarify) apply(simp add: ss) apply(elim conjE)
+     apply(rule ConjI') apply assumption apply assumption apply(rule rulesInPCs)+
+    apply clarify apply(simp add: ss)
+    apply(rule DisjI) apply assumption apply(rule rulesInPCs)+
+   apply clarify apply(simp add: ss)
+   apply(rule AllI) apply assumption apply(rule finiteFreshVar) apply(rule finite_freeVarsFL) apply (rule rulesInPCs, clarify) apply(simp add: ss)
   apply(rule ContrI) -- "!"
-  apply(rule_tac w = "X n" in ExI) apply(rule inDed_mono) apply(assumption) apply(force) apply(rule rulesInPCs)+
+  apply(rule_tac w = "X n" in ExI) apply(rule inDed_mono) apply assumption apply force apply(rule rulesInPCs)+
   done
 
 lemma subsJustified: "!! gamma. ~ terminal subs gamma
@@ -279,8 +274,7 @@ lemma proofTreeDeductionD[rule_format]: "proofTree(tree subs gamma) \<Longrighta
   apply(rule boundedTreeInduction[OF fansSubs]) 
     apply(erule proofTreeBounded)
    apply(rule foundedMono) 
-    apply(force dest: proofTreeD) 
-   apply(simp) 
+    apply (force dest: proofTreeD, simp) 
    apply(blast intro: SAT_deduction foundedMono subsJustified) 
   apply(blast intro:  subsJustified)
   done
@@ -291,7 +285,7 @@ subsection "contains, considers:"
 lemma contains_def2: "contains f iA n = (iA : set (nforms (f n)))"
   apply(simp add: contains_def nforms_def) done
 
-lemma considers_def2: "considers f iA n = ( ? nAs . nforms (f n) = iA#nAs )"
+lemma considers_def2: "considers f iA n = ( ? nAs . nforms (f n) = iA#nAs)"
   apply(simp add: considers_def nforms_def split: list.split) done
 
 lemmas containsI = contains_def2[THEN iffD2]
@@ -312,20 +306,19 @@ lemma nformsStops: "!!f.\
  \    nforms (f n) = [] |] \
  \ ==> nforms (f (Suc n)) = [] & atoms (f (Suc n)) = atoms (f n)"
   apply(subgoal_tac "f (Suc n) = f n")
-  apply(simp)
-  apply(blast intro: branchStops nformsTerminal )
+  apply simp
+  apply(blast intro: branchStops nformsTerminal)
   done
 
 
 subsection "path: cases"
 
 lemma terminalNFormCases: "!!f. terminal subs (f n) | (? i A nAs . nforms (f n) = (i,A)#nAs)"
-  apply(rule disjCI)
-  apply(simp)
+  apply (rule disjCI, simp)
   apply(rule nformsTerminal)
   apply(case_tac "nforms (f n)")
-  apply(simp)
-  apply(force)
+  apply simp
+  apply force
   done
 
 lemma cases[elim_format]: "terminal subs (f n) | (\<not> (terminal subs (f n) \<and> (? i A nAs . nforms (f n) = (i,A)#nAs)))"
@@ -339,29 +332,26 @@ lemma containsNotTerminal: "[| branch subs gamma f; !n . ~proofTree (tree subs (
   apply(case_tac "SATAxiom (sequent (f n))")
   apply(blast dest: SATAxiomEq[THEN iffD2])
   apply(drule_tac x=n in spec)
-  apply(simp add:  subs_def subs_def subsFAtom_def subsFConj_def subsFAll_def Let_def contains_def terminal_def nforms_def split_beta branch_def split: list.split signs.split expand_formula_case)
-  apply(force)
+  apply (simp add:  subs_def subs_def subsFAtom_def subsFConj_def subsFAll_def Let_def contains_def terminal_def nforms_def split_beta branch_def split: list.split signs.split expand_formula_case, force)
   done
 
 lemma containsPropagates: "!!f.\
  \ [| branch subs gamma f; !n . ~proofTree (tree subs (f n)); \
  \    contains f iA n |] \
  \ ==> contains f iA (Suc n) | considers f iA n"
-  apply(frule_tac containsNotTerminal) apply(force) apply(force)
-  apply(frule_tac branchSubs) apply(assumption)
-  apply(case_tac "considers f iA n") apply(simp)
-  apply(simp)
-  apply(simp add: contains_def) apply(case_tac "f n") apply(simp) apply(frule_tac list_decomp) apply(elim exE conjE) apply(simp)
+  apply(frule_tac containsNotTerminal) apply force apply force
+  apply(frule_tac branchSubs) apply assumption
+  apply(case_tac "considers f iA n") apply simp
+  apply simp
+  apply(simp add: contains_def) apply(case_tac "f n") apply simp apply(frule_tac list_decomp) apply(elim exE conjE) apply simp
   apply(case_tac xs)
-   apply(simp add: considers_def)
-  apply(simp)
+   apply (simp add: considers_def, simp)
   apply(case_tac "SATAxiom (sequent (f n))") apply(blast dest: iffD2[OF SATAxiomEq])
   apply(simp add: subs_def2 nforms_def Let_def)
-  apply(case_tac aa)
-  apply(simp)
+  apply (case_tac aa, simp)
   apply(case_tac ba)
     apply(simp add: subsFAtom_def)
-   apply(case_tac signs) apply(simp add: subsFConj_def) apply(force) apply(simp add: subsFConj_def) 
+   apply(case_tac signs) apply(simp add: subsFConj_def) apply force apply(simp add: subsFConj_def) 
   apply(case_tac signs) apply(simp add: subsFAll_def Let_def) apply(simp add: subsFAll_def Let_def) 
   done
 
@@ -396,12 +386,11 @@ lemmas r' = r[simplified measure_def inv_image_def less_than_def less_def[symmet
 
 lemma r'': "(\<forall> x. (\<forall> y. ( ((msrFn::'a \<Rightarrow> nat) y) < ((msrFn :: 'a \<Rightarrow> nat) x)) \<longrightarrow> P y) \<longrightarrow> P x) \<Longrightarrow> P a"
   apply(rule r') back
-  apply(blast) done
+  apply blast done
 
 lemma terminationRule[rule_format]: "! n. P n --> (~(P (Suc n)) | (P (Suc n) & msrFn (Suc n) < (msrFn::nat => nat) n)) ==> P m --> (? n . P n & ~(P (Suc n)))"
   (concl is "?P m") 
-  apply(rule r''[of msrFn "?P" m])
-  apply(blast)
+  apply (rule r''[of msrFn "?P" m], blast)
   done
     -- "FIXME ugly"
 
@@ -411,29 +400,25 @@ subsection "costBarrier: lemmas"
 subsection "costBarrier: exp3 lemmas - bit specific..."
 
 lemma exp3Min: "0 < exp 3 a"
-  apply(induct a)
-  apply(simp)
-  apply(simp)
-  done
+by (induct a, simp, simp)
 
 lemma exp1: "exp 3 (A) + exp 3 (B) < 3 * ((exp 3 A) * (exp 3 B))" 
   using exp3Min[of A] exp3Min[of B] 
   apply(case_tac "exp 3 A") apply(simp add: exp3Min)
-  apply(case_tac "exp 3 B") apply(simp add: exp3Min)
-  apply(simp)
+  apply(case_tac "exp 3 B") apply (simp add: exp3Min, simp)
   done
 
 lemma exp1': "exp 3 (A) < 3 * ((exp 3 A) * (exp 3 B)) + C"
   apply(subgoal_tac "exp 3 (A) < 3 * ((exp 3 A) * (exp 3 B))")
-  apply(arith)
-  apply(case_tac "exp 3 A") using exp3Min[of A] apply(arith) 
-  apply(case_tac "exp 3 B") using exp3Min[of B] apply(arith) 
-  apply(simp)
+  apply arith
+  apply(case_tac "exp 3 A") using exp3Min[of A] apply arith 
+  apply(case_tac "exp 3 B") using exp3Min[of B] apply arith 
+  apply simp
   done
 
 lemma exp2: "Suc 0 < 3 * exp 3 (B)" 
   using exp3Min[of B] 
-  apply(arith)
+  apply arith
   done
 
 lemma expSum: "exp x (a+b) = (exp x a) * (exp x b)"
@@ -450,19 +435,19 @@ lemma costBarrierDecreases':
        apply(simp add: ss)
       apply(simp add: ss)
 	-- "conj"
-     apply(clarify)
+     apply clarify
      apply(simp add: ss)
      apply(erule disjE) 
       apply(simp add: ss exp2)
      apply(simp add: ss exp2)
     -- "disj"
-    apply(clarify)
+    apply clarify
     apply(simp add: ss exp1 exp1')
     -- "all"
-   apply(clarify)
+   apply clarify
    apply(simp add: ss size_instance)
   -- "ex"
-  apply(clarify)
+  apply clarify
   apply(simp add: ss size_instance)
   done
 
@@ -479,9 +464,9 @@ lemma costBarrierDecreases:
      apply(case_tac "f n", simp)
      apply(case_tac b, simp)
       apply(simp add: contains_def)
-     apply(case_tac aa) apply(rename_tac num fm) apply(simp) apply(simp add: contains_def considers_def)
-     apply(rule costBarrierDecreases'[rule_format]) apply(force)+
-    apply(rule branchSubs) apply(assumption) apply(assumption)
+     apply(case_tac aa) apply(rename_tac num fm) apply simp apply(simp add: contains_def considers_def)
+     apply(rule costBarrierDecreases'[rule_format]) apply force+
+    apply(rule branchSubs) apply assumption apply assumption
    apply(blast dest: SATAxiomTerminal)
   apply(blast dest: containsNotTerminal)
   done
@@ -499,17 +484,17 @@ lemma containsConsiders: "[| branch subs gamma f; !n . ~ proofTree (tree subs (f
  \ ==> EV (considers f iA)"
   apply(simp add: EV_def)
   apply(erule exE)
-  apply(case_tac "considers f iA n") apply(force)
+  apply(case_tac "considers f iA n") apply force
   apply(subgoal_tac "\<exists>n. (contains f iA n \<and> \<not> considers f iA n) \<and>
     \<not> (contains f iA (Suc n) \<and> \<not> considers f iA (Suc n))")
    apply(erule exE) 
    apply(simp, clarify)
    apply(case_tac "contains f iA (Suc na)")
-    apply(force) apply(force dest!: containsPropagates)
+    apply force apply(force dest!: containsPropagates)
   apply(rule_tac msrFn = "%n. costBarrier iA (f n)" and P = "%n. contains f iA n & ~ considers f iA n" in terminationRule)
-  prefer 2 apply(force)
+  prefer 2 apply force
   apply(case_tac "(contains f iA (Suc na) \<and> \<not> considers f iA (Suc na))")
-  apply(simp) apply(erule costBarrierDecreases) apply(simp_all)
+  apply simp apply(erule costBarrierDecreases) apply simp_all
   done
 
 
@@ -525,14 +510,13 @@ lemma lemmA:
   apply(frule considersContains)
   apply(unfold considers_def)
   apply(case_tac "snd (f n)") 
-  apply(force)
-  apply(simp)
+  apply force
+  apply simp
   apply(rule_tac x=n in exI)
-  apply(intro conjI)
-  apply(rule)
+  apply (intro conjI, rule)
   apply(blast dest!: SATAxiomEq[THEN iffD2])
   apply(rule_tac x=list in exI) apply(simp add: nforms_def)
-  apply(frule containsNotTerminal) apply(force) apply(assumption+)
+  apply(frule containsNotTerminal) apply force apply(assumption+)
   apply(blast dest!: branchSubs)
   done
 
@@ -540,8 +524,7 @@ lemma lemmA:
 subsection "EV contains: FConj,FDisj,FAll"
 
 lemma EV_disj: "(EV P | EV Q) = EV (\<lambda>n. P n | Q n)"
-  apply(unfold EV_def)
-  apply(force) done
+  apply (unfold EV_def, force) done
 
 lemma evContainsConj: "[| EV (contains f (i,FConj Pos A0 A1)); 
   branch subs gamma f; !n . ~ proofTree (tree subs (f n))
@@ -554,8 +537,7 @@ lemma evContainsConj: "[| EV (contains f (i,FConj Pos A0 A1));
   apply(rule_tac x="Suc n" in exI)
   apply(clarify, simp add: subs_def2 Let_def)
   apply(simp add: subsFConj_def)
-  apply(simp add: contains_def nforms_def)
-  apply(auto) done
+  apply (simp add: contains_def nforms_def, auto) done
 
 lemma evContainsDisj: "[| EV (contains f (i,FConj Neg A0 A1)); 
   branch subs gamma f; !n . ~ proofTree (tree subs (f n))
@@ -632,16 +614,13 @@ subsection "EV contains: lemmas (temporal related)"
 
 lemma lemma1: "[| P A n ; !A n. P A n --> P A (Suc n) |] \
   \ ==> P A (n + m)";
-  apply(induct m)
-  apply(simp)
-  apply(simp)
+  apply (induct m, simp, simp)
   done
 
 lemma lemma2: 
   "[| P A n ; P B m ; ! A n. P A n --> P A (Suc n) |] \
  \ ==> ? n . P A n & P B n"
-  apply(rule exI[of _ "n+m"])
-  apply(rule)
+  apply (rule exI[of _ "n+m"], rule)
   apply(blast intro!: lemma1)
   apply(rule subst[OF add_commute]) 
   apply(blast intro!: lemma1)
@@ -659,20 +638,20 @@ lemma notTerminalNforms: "\<not> terminal subs (f n) \<Longrightarrow> nforms (f
 lemma atomsPropagate: "[| branch subs gamma f |] \
   \ ==> x : set (atoms (f n)) --> x : set (atoms (f (Suc n)))"
   apply(cases "terminal subs (f n)")
-   apply(drule branchStops) apply(assumption) apply(simp)
-  apply(drule branchSubs) apply(assumption)
-  apply(rule) apply(frule notTerminalNotSATAxiom)
+   apply(drule branchStops) apply assumption apply simp
+  apply(drule branchSubs) apply assumption
+  apply rule apply(frule notTerminalNotSATAxiom)
   apply(frule notTerminalNforms)
   apply(simp add: subs_def2) 
-  apply(cases "nforms (f n)") apply(simp)
+  apply(cases "nforms (f n)") apply simp
   apply(simp add: Let_def)
   apply(case_tac a, auto)
   apply(case_tac ba, auto)
     apply(simp add: subsFAtom_def atoms_def)
    apply(simp add: subsFConj_def atoms_def)
-   apply(case_tac signs) apply(force) apply(force)
+   apply(case_tac signs) apply force apply force
   apply(simp add: subsFAll_def atoms_def)
-  apply(case_tac signs) apply(force simp: Let_def) apply(force)
+  apply(case_tac signs) apply(force simp: Let_def) apply force
   done
 
 
@@ -682,8 +661,7 @@ lemma evContainsEx0_allRepeats:
   "[| branch subs gamma f; !n . ~ proofTree (tree subs (f n)); \     
  \    EV (contains f (0,FAll Neg A)) |] \
  \ ==> EV (contains f (i,FAll Neg A))"
-  apply(induct i)
-  apply(simp)
+  apply (induct i, simp)
   apply(blast dest!: evContainsEx_repeat)
   done
 
@@ -698,8 +676,7 @@ subsection "pseq: creates initial pseq"
     
 lemma containsPSeq0D: "branch subs (pseq fs) f \<Longrightarrow> contains f (i,A) 0 \<Longrightarrow> i=0";
   apply(drule branch0)
-  apply(simp add: pseq_def contains_def)
-  apply(blast)
+  apply (simp add: pseq_def contains_def, blast)
   done
 
 
@@ -724,14 +701,13 @@ lemma claim: "(A | B | C) = (~C --> ~B --> A)" by auto
 
 lemma natPredCases: "(!n. P n) | (~P 0) | (? n . P n & ~ P (Suc n))";
   apply(rule claim[THEN iffD2])
-  apply(intro impI) apply(simp)
-  apply(rule) apply(induct_tac n) apply(auto)
+  apply(intro impI) apply simp
+  apply rule apply(induct_tac n) apply auto
   done
 
 lemma containsNotTerminal': 
   "\<lbrakk> branch subs gamma f; !n . ~proofTree (tree subs (f n)); contains f iA n \<rbrakk> \<Longrightarrow> ~ (terminal subs (f n))"
-  apply(rule containsNotTerminal)
-  apply(auto)
+  apply (rule containsNotTerminal, auto)
   done
 
 lemma notTerminalSucNotTerminal: "\<lbrakk> \<not> terminal subs (f (Suc n)); branch subs gamma f \<rbrakk> \<Longrightarrow> \<not> terminal subs (f n)"
@@ -745,7 +721,7 @@ lemma evContainsExSuc_containsEx:
  \    EV (contains f (Suc i,FAll Neg body)) |] \
  \ ==> EV (contains f (i,FAll Neg body))";
   apply(cut_tac P="%n. ~ contains f (Suc i,FAll Neg body) n" in natPredCases)
-  apply(simp) apply(erule disjE)
+  apply simp apply(erule disjE)
   apply(simp add: EV_def)
   apply(erule disjE)
   apply(blast dest!: containsPSeq0D)
@@ -755,19 +731,19 @@ lemma evContainsExSuc_containsEx:
   apply(unfold EV_def) apply(rule_tac x=n in exI)
   apply(rule considersContains)
   apply(frule containsNotTerminal') apply(assumption+)
-  apply(frule notTerminalSucNotTerminal) apply(assumption)
+  apply(frule notTerminalSucNotTerminal) apply assumption
   apply(thin_tac "\<not> terminal ?x ?y")
-  apply(frule branchSubs) apply(assumption)
+  apply(frule branchSubs) apply assumption
   apply(frule notTerminalNforms)
   apply(case_tac "SATAxiom (sequent (f n))")
-  apply(drule SATAxiomTerminal) apply(simp)
+  apply(drule SATAxiomTerminal) apply simp
   apply(subgoal_tac "(\<exists>i A nAs. nforms (f n) = (i, A) # nAs)")
-  prefer 2 apply(rule_tac f=f and n=n in cases) apply(simp)
-  apply(case_tac "nforms (f n)") apply(simp) apply(case_tac a, force)
+  prefer 2 apply(rule_tac f=f and n=n in cases) apply simp
+  apply(case_tac "nforms (f n)") apply simp apply(case_tac a, force)
   apply(erule exE)+
   apply(unfold considers_def) apply(simp add: nforms_def)
   -- "shift A into succedent"
-  apply(rule_tac P="snd (f n) = (ia, A) # nAs" in rev_mp) apply(assumption) apply(thin_tac "snd (f n) = (ia, A) # nAs")
+  apply(rule_tac P="snd (f n) = (ia, A) # nAs" in rev_mp) apply assumption apply(thin_tac "snd (f n) = (ia, A) # nAs")
   apply(rule_tac A=A in formula_signs_cases)
   apply(auto simp add: subs_def2 nforms_def Let_def subsFAtom_def subsFConj_def subsFAll_def contains_def2 Let_def)
   done
@@ -780,8 +756,7 @@ lemma evContainsEx_containsEx0:
   "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n)) |] \
  \ ==> EV (contains f (i,FAll Neg A)) --> \
  \     EV (contains f (0,FAll Neg A))"
-  apply(induct i)
-  apply(simp)
+  apply (induct i, simp)
   apply(blast dest!: evContainsExSuc_containsEx)
   done
 
@@ -789,7 +764,7 @@ lemma evContainsExval:
   "[| EV (contains f (i,FAll Neg body)); branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n))
   |] 
  \ ==> ! v . EV (contains f (0,instanceF v body))"
-  apply(rule) apply(induct_tac v) 
+  apply rule apply(induct_tac v) 
   apply(blast intro!: evContainsEx0_allInstances dest!: evContainsEx_containsEx0)
   done
 
@@ -808,7 +783,7 @@ lemma evContainsAtom1:
  \ ==> ? n . (z,P,vs) : set (fst (f n))";
   apply(drule lemmA) apply(assumption+)
   apply(erule exE) apply(rule_tac x="Suc n" in exI)
-  apply(simp add: subs_def2) apply(clarify) apply(simp add: subs_def2 Let_def)
+  apply(simp add: subs_def2) apply clarify apply(simp add: subs_def2 Let_def)
   apply(simp add: subsFAtom_def) done
     
 lemmas atomsPropagate'' = atomsPropagate[rule_format]
@@ -820,19 +795,16 @@ lemma evContainsAtom:
  \ ==> ? n . (! m . FAtom z P vs : set (sequent (f (n + m))))"
   apply(frule evContainsAtom1) apply(assumption+)
   apply(erule exE)
-  apply(rule_tac x=n in exI)
-  apply(rule)
+  apply (rule_tac x=n in exI, rule)
   apply(rule atomsInSequentI)
-  apply(induct_tac m)
-  apply(simp)
-  apply(simp)
+  apply (induct_tac m, simp, simp)
   apply(rule atomsPropagate') apply(assumption+) done
 
 lemma notEvContainsBothAtoms: 
   "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n)) |] \
  \ ==> ~ EV (contains f (i,FAtom Pos p vs)) | \
  \     ~ EV (contains f (j,FAtom Neg p vs))"
-  apply(clarify)
+  apply clarify
   apply(frule evContainsAtom) apply(assumption+) apply(thin_tac "EV (contains f (j, FAtom Neg p vs))")
   apply(frule evContainsAtom) apply(assumption+) apply(thin_tac "EV (contains f (i, FAtom Pos p vs))")
   apply(erule_tac exE)+
@@ -852,12 +824,12 @@ lemma counterModelInRepn: "(counterM f,counterEvalP f) : model"
 lemmas Abs_counterModel_inverse = counterModelInRepn[THEN Abs_model_inverse]
 
 lemma inv_obj_obj: "inv obj (obj n) = n"
-  using inj_obj apply(simp) done
+  using inj_obj apply simp done
 
 lemma map_X_map_counterAssign: "map X (map (inv obj) (map counterAssign xs)) = xs"
   apply(simp add: map_compose[symmetric])
   apply(subgoal_tac "(X \<circ> (inv obj \<circ> counterAssign)) = (% x . x)")
-  apply(simp)
+  apply simp
   apply(rule ext)
   apply(case_tac x)
   apply(simp add: inv_obj_obj)
@@ -889,8 +861,7 @@ lemma path_evalF':
   shows "[| branch subs (pseq fs) f; 
   !n . ~ proofTree (tree subs (f n))
   |] ==> (? i . EV (contains f (i,A))) \<longrightarrow> ~(evalF (counterModel f) counterAssign A)"
-  apply(rule_tac strong_formula_induct)
-  apply(rule) 
+  apply (rule_tac strong_formula_induct, rule) 
   apply(rule formula_signs_cases)
        -- "atom"
        apply(simp add: ss)
@@ -904,19 +875,19 @@ lemma path_evalF':
    -- "all"
    apply(rule, rule)
    apply(erule exE)
-   apply(drule_tac evContainsAll) apply(assumption) apply(assumption)
+   apply(drule_tac evContainsAll) apply assumption apply assumption
    apply(erule exE)
    apply(drule_tac x="(instanceF v f1)" in spec)
    apply(erule impE, force simp: size_instance)+
-   apply(simp)
+   apply simp
    apply(simp add: ss1)
-   apply(rule_tac x="counterAssign v" in bexI) apply(simp) apply(simp add: inCounterM) 
+   apply(rule_tac x="counterAssign v" in bexI) apply simp apply(simp add: inCounterM) 
   -- "ex"
   apply(rule, rule)
   apply(erule exE)
-  apply(drule_tac evContainsExval) apply(assumption) apply(assumption)
-  apply(simp)
-  apply(rule) 
+  apply(drule_tac evContainsExval) apply assumption apply assumption
+  apply simp
+  apply rule 
   apply(simp add: objectsCounterModel) apply(erule exE) 
   apply(drule_tac x="X i" in spec)
   apply(drule_tac x="(instanceF (X i) f1)" in spec)
@@ -930,10 +901,8 @@ lemmas path_evalF'' = mp[OF path_evalF']
 subsection "adequacy"
 
 lemma counterAssignModelAssign: "counterAssign : modelAssigns (counterModel gamma)"
-  apply(simp add: modelAssigns_def)
-  apply(rule)
-  apply(erule rangeE)
-  apply(simp)
+  apply (simp add: modelAssigns_def, rule)
+  apply (erule rangeE, simp)
   apply(rule inCounterM)
   done
 
@@ -946,9 +915,7 @@ lemma path_evalF:
   \<forall>n. \<not> proofTree (tree subs (f n)); 
   x \<in> set fs
   |] ==> \<not> evalF (counterModel f) counterAssign x"
-  apply(rule path_evalF'')
-  apply(assumption)
-  apply(assumption)
+  apply (rule path_evalF'', assumption, assumption)
   apply(rule_tac x=0 in exI) apply(simp add: EV_def) 
   apply(rule_tac x=0 in exI) apply(simp add: branch_contains_initially) 
   done
@@ -958,13 +925,12 @@ lemma validProofTree: "~proofTree (tree subs (pseq fs)) ==> ~(validS fs)"
   apply(subgoal_tac "\<exists>f. branch subs (pseq fs) f \<and> (\<forall>n. \<not> proofTree (tree subs (f n)))")
    apply(elim exE conjE)
    apply(rule_tac x="counterModel f" in exI)
-   apply(rule_tac x="counterAssign" in bexI)
+   apply(rule_tac x=counterAssign in bexI)
     apply(force dest!: path_evalF) 
    apply(rule counterAssignModelAssign)
   apply(rule failingBranchExistence)
     apply(rule inheritedProofTree)
-   apply(rule fansSubs)
-  apply(assumption)
+   apply (rule fansSubs, assumption)
   done
 
 lemma adequacy[simplified sequent_pseq]: "validS fs ==> (sequent (pseq fs)) : deductions CutFreePC"
