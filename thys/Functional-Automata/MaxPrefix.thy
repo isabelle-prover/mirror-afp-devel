@@ -1,4 +1,4 @@
-(*  ID:         $Id: MaxPrefix.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: MaxPrefix.thy,v 1.6 2004-10-14 07:59:07 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -41,14 +41,14 @@ apply (induct "qs")
 apply simp
 apply (erule thin_rl)
 apply clarify
-apply (case_tac "EX us. us <= list & P (ps @ a # us)")
- apply (subgoal_tac "EX us. us <= a # list & P (ps @ us)")
+apply (case_tac "EX us. us <= qs & P (ps @ a # us)")
+ apply (subgoal_tac "EX us. us <= a # qs & P (ps @ us)")
   apply simp
  apply (blast intro: prefix_Cons[THEN iffD2])
 apply (subgoal_tac "~P(ps@[a])")
  prefer 2 apply blast
 apply (simp (no_asm_simp))
-apply (case_tac "EX us. us <= a#list & P (ps @ us)")
+apply (case_tac "EX us. us <= a#qs & P (ps @ us)")
  apply simp
  apply clarify
  apply (case_tac "us")

@@ -67,7 +67,7 @@ lemma length_remdups_leq: "length (remdups x) <= length x"
 
 lemma length_remdups_eq[rule_format]: "(length (remdups x) = length x) --> remdups x = x"
   apply(induct x, auto) 
-  apply(subgoal_tac "length (remdups list) <= length list")
+  apply(subgoal_tac "length (remdups x) <= length x")
   apply arith
   by(rule length_remdups_leq)
 
@@ -248,7 +248,7 @@ lemma perm_weak_filter': assumes perm[rule_format]: "! xs ys. xs <~~> ys --> (P 
   apply simp
   apply(drule_tac x="ys@[a]" in spec) apply simp
   apply(erule impE)
-   apply(subgoal_tac "(ys @ a # filter Q list) <~~> a#ys@filter Q list")
+   apply(subgoal_tac "(ys @ a # filter Q xs) <~~> a#ys@filter Q xs")
     apply(simp add: perm)
     apply(rule weak) apply simp
    apply(rule perm_sym) apply(rule perm_append_Cons)
