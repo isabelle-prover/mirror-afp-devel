@@ -46,7 +46,12 @@ href="http://www-lti.informatik.rwth-aachen.de/~richter/">Stefan Richter</a>
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"> 
 <!-- Abstract: -->	
-The title says it all...
+Lebesgue-style integration plays a major role in advanced
+probability.  We formalize concepts of elementary measure theory,
+real-valued random variables as Borel-measurable functions, and a 
+stepwise inductive definition of the integral itself. All
+proofs are carried out in human readable style using the Isar
+language.
 
    </td></tr>
 </tbody>
@@ -84,6 +89,6 @@ The title says it all...
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2004-11-22 15:18:26 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2004-12-01 06:40:31 $, $Revision: 1.1 
 $</div></body>
 </html>

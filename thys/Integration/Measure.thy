@@ -1,7 +1,6 @@
 header {*Preliminaries*}
 
-
-theory Measure = Sigma_Algebra + MonConv + NthRoot:(*<*)
+theory Measure = Sigma_Algebra + MonConv + NthRoot:(*<*)  
 
 syntax
   "_suminf" :: "idt => real => real"    ("\<Sum>_. _" [0, 10] 10)
