@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Type.thy
-   ID:        $Id: Type.thy,v 1.2 2004-03-20 21:07:44 lsf37 Exp $
+   ID:        $Id: Type.thy,v 1.3 2004-03-23 06:29:37 lsf37 Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -251,7 +251,10 @@ apply (intro strip)
 apply (simp add: free_tv_subst dom_def cod_def)
 done
 
-declare new_tv_TVar [simp] new_tv_FVar [simp] new_tv_BVar [simp] new_tv_Fun [simp] new_tv_Fun2 [simp] new_tv_Nil [simp] new_tv_Cons [simp] new_tv_TVar_subst [simp]
+declare 
+  new_tv_TVar [simp] new_tv_FVar [simp] new_tv_BVar [simp] 
+  new_tv_Fun [simp] new_tv_Fun2 [simp] new_tv_Nil [simp] 
+  new_tv_Cons [simp] new_tv_TVar_subst [simp]
 
 lemma new_tv_id_subst: 
   "new_tv n id_subst"
@@ -693,7 +696,7 @@ apply (simp (no_asm))
 done
 
 
--- "composition of substitutions preserves new_tv proposition"
+-- "composition of substitutions preserves @{text new_tv} proposition"
 lemma new_tv_subst_comp_1: 
   "[| new_tv n (S::subst); new_tv n R |] ==> new_tv n (($ R) o S)"
 apply (simp add: new_tv_subst)
@@ -828,7 +831,7 @@ done
 
 declare subst_TVar_scheme_list [simp]
 
--- "application of id_subst does not change type expression"
+-- "application of @{text id_subst} does not change type expression"
 lemma app_subst_id_te: 
   "$ id_subst = (%t::typ. t)"
 apply (unfold id_subst_def)
@@ -847,7 +850,7 @@ apply (simp_all (no_asm_simp))
 done
 declare app_subst_id_type_scheme [simp]
 
--- "application of id_subst does not change list of type expressions"
+-- "application of @{text id_subst} does not change list of type expressions"
 lemma app_subst_id_tel: 
   "$ id_subst = (%A::type_scheme list. A)"
 apply (unfold app_subst_list)

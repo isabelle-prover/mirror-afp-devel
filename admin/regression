@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.6 2004-03-19 21:07:38 lsf37 Exp $
+# $Id: regression,v 1.7 2004-03-23 06:29:36 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 # License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
@@ -171,7 +171,7 @@ if [ "$SNAPSHOT" == "1" ]; then
     STATUS=entry-status.txt
     WEB=~/html-data/afp/
     cp $REPORT $WEB/$STATUS
-    cvs -Q export -P -D now -d $EXPORT thys
+    cvs -Q export -D now -d $EXPORT thys
     cp $REPORT $EXPORT/$STATUS
     echo >> $EXPORT/$STATUS
     echo `date` >> $EXPORT/$STATUS
