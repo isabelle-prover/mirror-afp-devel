@@ -23,20 +23,19 @@
 <p>&nbsp;</p>
 
 <!-- begin entry data: -->
-<h1><!-- Title: -->Completeness</h1>
+<h1><!-- Title: -->Ramsey-Infinite</h1>
 <p>&nbsp;</p>
 
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
     <td class="data" width="80%">
-<!-- Title: -->Completeness
+<!-- Title: -->Ramsey-Infinite
     </td></tr>
 		
     <tr><td class="datahead">Author:</td>
 <td class="data">
-<!-- Author: -->James Margetson;
-ported to Isar by <a
+<!-- Author: --><a
 href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
 </td></tr>		
     
@@ -47,13 +46,13 @@ href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"> 
 <!-- Abstract: -->	
-The completeness of first-order logic is proved, following the first five
-pages of Wainer and Wallen's chapter of the book <i>Proof Theory</i> by Aczel
-et al., CUP, 1992. Their presentation of formulas allows the proofs to use
-symmetry arguments.
-
-Margetson formalized this theorem by early 2000. The Isar conversion is thanks
-to Tom Ridge.
+This formalization of Ramsey's theorem (infinitary version) is taken from
+Boolos and Jeffrey, <i>Computability and Logic</i>, 3rd edition, Chapter 26.  
+It differs slightly from the text by assuming a slightly stronger
+hypothesis. In particular, the induction hypothesis is stronger, holding for
+any infinite subset of the naturals. This avoids the rather peculiar mapping
+argument between kj and aikj on p.263, which is unnecessary and slightly
+mars this really beautiful result.
    </td></tr>
 </tbody>
 </table>
@@ -61,7 +60,7 @@ to Tom Ridge.
 <p>&nbsp;</p>
 
 <!-- entry directory name: -->
-<!--#set var="name" value="Completeness" -->
+<!--#set var="name" value="Ramsey-Infinite" -->
 
 <!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
 <!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
