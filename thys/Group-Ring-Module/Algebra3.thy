@@ -5124,8 +5124,7 @@ apply (frule compser_nsubg [of "s" "G" "g" "i mod s"], assumption+)
  apply (frule  compseriesTr0 [of "G" "s" "g" "Suc (i mod s)"], assumption+)
  apply (frule Suc_mono [of "i mod s" "s - (Suc 0)"]) 
  apply (simp add:less_mem_of_Nset)
- apply simp
-apply (frule cmp_rfn0 [of "G" "r" "s" "f" "g" "i div s" "i mod s"], assumption+) apply (simp add:mem_of_Nset)+
+apply (frule cmp_rfn0 [of "G" "r" "s" "f" "g" "i div s" "i mod s"], assumption+) apply (simp_all add:mem_of_Nset)
 apply (frule  ZassenhausTr3 [of "G" "f (r - Suc 0)" "f r" "g (i mod s)" "g (Suc (i mod s))"], assumption+)
 apply (frule subggrp [of "G" "f r \<bullet>\<^sub>G (f (r - Suc 0) \<inter> g (i mod s))"], 
                                                               assumption+)
