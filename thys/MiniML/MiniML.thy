@@ -1,12 +1,14 @@
 (* Title:     HOL/MiniML/MiniML.thy
-   ID:        $Id: MiniML.thy,v 1.5 2004-05-25 14:18:34 lsf37 Exp $
+   ID:        $Id: MiniML.thy,v 1.6 2004-08-16 16:35:18 nipkow Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
 
 header "MiniML with type inference rules"
 
-theory MiniML = Generalize:
+theory MiniML
+import Generalize
+begin
 
 -- "expressions"
 datatype

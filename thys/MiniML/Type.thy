@@ -1,12 +1,14 @@
 (* Title:     HOL/MiniML/Type.thy
-   ID:        $Id: Type.thy,v 1.6 2004-08-04 18:42:34 nipkow Exp $
+   ID:        $Id: Type.thy,v 1.7 2004-08-16 16:35:18 nipkow Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
 
 header "MiniML-types and type substitutions"
 
-theory Type = Maybe:
+theory Type
+import Maybe
+begin
 
 -- "new class for structures containing type variables"
 axclass  type_struct < type

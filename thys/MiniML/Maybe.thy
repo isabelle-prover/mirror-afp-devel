@@ -1,12 +1,14 @@
 (* Title:     HOL/MiniML/Maybe.thy
-   ID:        $Id: Maybe.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
+   ID:        $Id: Maybe.thy,v 1.5 2004-08-16 16:35:18 nipkow Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
 
 header "Universal error monad"
 
-theory Maybe = Main:
+theory Maybe
+import Main
+begin
 
 constdefs
   option_bind :: "['a option, 'a => 'b option] => 'b option"

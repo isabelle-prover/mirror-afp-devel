@@ -1,12 +1,14 @@
 (* Title:     HOL/MiniML/Generalize.thy
-   ID:        $Id: Generalize.thy,v 1.6 2004-08-04 18:42:34 nipkow Exp $
+   ID:        $Id: Generalize.thy,v 1.7 2004-08-16 16:35:18 nipkow Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
 
 header "Generalizing type schemes with respect to a context"
 
-theory Generalize = Instance:
+theory Generalize
+import Instance
+begin
 
 -- "@{text gen}: binding (generalising) the variables which are not free in the context"
 

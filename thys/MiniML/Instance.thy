@@ -1,12 +1,14 @@
 (* Title:     HOL/MiniML/Instance.thy
-   ID:        $Id: Instance.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
+   ID:        $Id: Instance.thy,v 1.5 2004-08-16 16:35:18 nipkow Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
 
 header "Instances of type schemes"
 
-theory Instance = Type:
+theory Instance
+import Type
+begin
 
 consts
   bound_typ_inst :: "[subst, type_scheme] => typ"
