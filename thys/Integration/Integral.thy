@@ -4,7 +4,9 @@
 
 header {*The Lebesgue Integral*}
 
-theory Integral = RealRandVar:
+theory Integral
+imports RealRandVar
+begin
   (*simple function integral set*)
 text {*Having learnt from my failures, we take the safe and clean way
   of Heinz Bauer \cite{Bauer}. It proceeds as outlined in the
@@ -126,33 +128,30 @@ lemma assumes ms: "measure_space M" and dis: "\<forall>j1\<in>(R::nat set). \<fo
     by simp
 qed(*>*)
 
-lemma assumes fin: "finite R"
-  shows sumr_setsum: "sumr 0 k (\<lambda>x. if x \<in> R then f x else 0) = (\<Sum>i\<in>(R\<inter>{..k(}). f i)" 
+lemma sumr_setsum:
+ "(\<Sum>i=0..<k::nat. if i \<in> R then f i else (0::real)) = (\<Sum>i\<in>(R\<inter>{..<k}). f i)" 
 (*<*)proof (induct k)
-  case 0 
-  thus ?case 
+  case 0
+  thus ?case
     by simp
   case (Suc l)
-  hence "sumr 0 (Suc l) (\<lambda>x. if x \<in> R then f x else 0) =  
-    (if l \<in> R then f l else 0) + (\<Sum>i\<in>(R\<inter>{..l(}). f i)" 
+  hence "(\<Sum>i=0..<Suc l. if i \<in> R then f i else 0) =  
+    (if l \<in> R then f l else 0) + (\<Sum>i\<in>(R\<inter>{..l(}). f i)"
     by simp
   also have "\<dots> =  (\<Sum>i\<in>(R \<inter> {..Suc l(}). f i)"
   proof (cases "l \<in> R")
     case True
-    have "l \<notin> (R\<inter>{..l(})"
-      by simp
-    with fin have "f l + (\<Sum>i\<in>(R\<inter>{..l(}). f i) = (\<Sum>i\<in>(insert l (R\<inter>{..l(})). f i)"
+    have "l \<notin> (R\<inter>{..<l})" by simp
+    have "f l + (\<Sum>i\<in>(R\<inter>{..l(}). f i) = (\<Sum>i\<in>(insert l (R\<inter>{..l(})). f i)"
       by simp
     also from True have "insert l (R\<inter>{..l(}) = (R \<inter> {..Suc l(})"
       by (auto simp add: lessThan_Suc)
-    finally show ?thesis 
+    finally show ?thesis
       using True by simp
   next
     case False
-    hence "(R\<inter>{..l(}) = (R \<inter> {..Suc l(})"
-      by (auto simp add: lessThan_Suc)
-    thus ?thesis
-      by auto
+    hence "(R\<inter>{..l(}) = (R \<inter> {..Suc l(})" by (auto simp add: lessThan_Suc)
+    thus ?thesis by auto
   qed
   finally show ?case .
 qed(*>*)
@@ -170,39 +169,34 @@ lemma assumes ms: "measure_space M" and dis: "\<forall>j1\<in>(R::nat set). \<fo
     by (simp add: lessThan_Suc_atMost[THEN sym])
   finally have "(\<Sum>j\<in>R. measure M (B j)) = (\<Sum>j\<in>R\<inter> {..Suc (Max R)(} . measure M (B j))"
     by simp
-  also have "\<dots> = sumr 0 (Suc (Max R)) (\<lambda>x. if x \<in> R then measure M (B x) else 0)"
+  also have "\<dots> = (\<Sum>x=0..<Suc(Max R). if x \<in> R then measure M (B x) else 0)"
     by (rule sumr_setsum[THEN sym])
   also { 
     fix x 
     from ms have "(if x \<in> R then measure M (B x) else 0) = (measure M (if x\<in>R then B x else {}))"
       by (simp add: measure_space_def positive_def)
   }
-  hence "\<dots> = sumr 0 (Suc (Max R)) (\<lambda>x. measure M (if x\<in>R then B x else {}))"
-    by simp
+  hence "\<dots> = (\<Sum>x=0..<Suc(Max R). measure M (if x\<in>R then B x else {}))" by simp
   also {
     fix m
     assume "Suc (Max R) \<le> m"
-    hence "Max R < m"
-      by simp
-    with leR have "m\<notin>R"
-      by auto
+    hence "Max R < m" by simp
+    with leR have "m\<notin>R" by auto
     with ms have "measure M (if m\<in>R then B m else {}) = 0"
       by (simp add: measure_space_def positive_def)
   } 
   hence "\<forall>m. (Suc (Max R)) \<le> m \<longrightarrow> measure M (if m\<in>R then B m else {}) = 0"
     by simp
-  hence "(\<lambda>n. measure M (if n \<in> R then B n else {})) sums sumr 0 (Suc (Max R)) (\<lambda>x. measure M (if x\<in>R then B x else {}))"
+  hence "(\<lambda>n. measure M (if n \<in> R then B n else {})) sums (\<Sum>x=0..<Suc(Max R). measure M (if x\<in>R then B x else {}))"
     by (rule series_zero)
-  hence "sumr 0 (Suc (Max R)) (\<lambda>x. measure M (if x\<in>R then B x else {})) = suminf (\<lambda>n. measure M (if n \<in> R then B n else {}))"
+  hence "(\<Sum>x=0..<Suc(Max R). measure M (if x\<in>R then B x else {})) = suminf (\<lambda>n. measure M (if n \<in> R then B n else {}))"
     by (rule sums_unique)
   also from ms dis meas have "(\<lambda>n. measure M (if n \<in> R then B n else {})) sums measure M (\<Union>i\<in>R. B i)"
     by (rule measure_sums_UNION)
-  ultimately show ?thesis 
-    by (simp add: sums_unique)
+  ultimately show ?thesis  by (simp add: sums_unique)
 next
   case True
-  with ms show ?thesis 
-    by (simp add: measure_space_def positive_def)
+  with ms show ?thesis by (simp add: measure_space_def positive_def)
 qed(*>*)
 
 
@@ -382,8 +376,7 @@ txt{*\nopagebreak*}
                 setsum_reindex[OF subset_inj_on[OF n2_to_n_fst_inj]])
 	finally have eq: "y j * \<chi>(B j) t = (\<Sum>k\<in> H j. z2 k * \<chi>(C k) t)" .
 		
-	from R have H: "finite (H j)" 
-	  by (simp add: finite_imageI H_def)
+	from R have H: "finite (H j)"  by (simp add: H_def)
 	
 	{ fix k assume "k \<in> H j"
 	  then obtain i where kij: "k=n2_to_n (i,j)" 
@@ -766,7 +759,7 @@ proof (cases)
     }
     with prems have "(\<Sum>i\<in>S. 0) \<le> f t"
       by (simp del: setsum_constant add: setsum_mono)
-    hence "0 \<le> f t" by (simp add: setsum_0)
+    hence "0 \<le> f t" by (simp)
   }
   thus ?thesis by (simp add: nonnegative_def)
 qed(*>*)

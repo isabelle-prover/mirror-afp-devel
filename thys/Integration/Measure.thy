@@ -1,6 +1,9 @@
 header {*Preliminaries*}
 
-theory Measure = Sigma_Algebra + MonConv + NthRoot:(*<*)  
+theory Measure
+imports Sigma_Algebra MonConv NthRoot
+begin
+(*<*)
 
 syntax
   "_suminf" :: "idt => real => real"    ("\<Sum>_. _" [0, 10] 10)
@@ -292,15 +295,15 @@ proof -
   from sums have "summable (\<lambda>i. measure M (mkdisjoint A i))" 
     by (rule sums_summable)
 
-  hence "(\<lambda>n. sumr 0 n (\<lambda>i. measure M (mkdisjoint A i))) 
-    ----> (\<Sum>i. measure M (mkdisjoint A i))" 
+  hence "(\<lambda>n. \<Sum>i=0..<n. measure M (mkdisjoint A i))
+    ----> (\<Sum>i. measure M (mkdisjoint A i))"
     by (rule summable_sumr_LIMSEQ_suminf)
                                          
-  hence "(\<lambda>n. sumr 0 (Suc n) (\<lambda>i. measure M (mkdisjoint A i))) 
-    ----> (\<Sum>i. measure M (mkdisjoint A i))" 
+  hence "(\<lambda>n. \<Sum>i=0..<Suc n. measure M (mkdisjoint A i))
+    ----> (\<Sum>i. measure M (mkdisjoint A i))"
     by (rule LIMSEQ_Suc)
   
-  ultimately have "(\<lambda>n. sumr 0 (Suc n) (\<lambda>i. measure M (mkdisjoint A i))) 
+  ultimately have "(\<lambda>n. \<Sum>i=0..<Suc n. measure M (mkdisjoint A i))
     ----> (measure M (\<Union>i. mkdisjoint A i))" by simp
     
   also 
@@ -354,16 +357,16 @@ proof -
       "\<forall>i. (Suc n)\<le>i \<longrightarrow> measure M (if i \<le> n then mkdisjoint A i else {}) = 0"
       by (simp add: measure_space_def positive_def)
     hence "(\<lambda>i. measure M (if i \<le> n then mkdisjoint A i else {})) sums
-      sumr 0 (Suc n) (\<lambda>i. measure M (if i \<le> n then mkdisjoint A i else {}))"
+      (\<Sum>i=0..<Suc n. measure M (if i \<le> n then mkdisjoint A i else {}))"
       by (rule series_zero)
     hence "(\<Sum>i. measure M (if i \<le> n then mkdisjoint A i else {})) = 
-      sumr 0 (Suc n) (\<lambda>i. measure M (if i \<le> n then mkdisjoint A i else {}))"
+      (\<Sum>i=0..<Suc n. measure M (if i \<le> n then mkdisjoint A i else {}))"
       by (rule sums_unique[THEN sym])
     also
-    have "\<dots> = sumr 0 (Suc n) (\<lambda>i. measure M (mkdisjoint A i))" 
-      by (simp add: sumr_fun_eq)
+    have "\<dots> = (\<Sum>i=0..<Suc n. measure M (mkdisjoint A i))"
+      by (simp cong: setsum_ivl_cong)
     finally have 
-      "measure M (A n) = sumr 0 (Suc n) (\<lambda>i. measure M (mkdisjoint A i))" .
+      "measure M (A n) = (\<Sum>i=0..<Suc n. measure M (mkdisjoint A i))" .
   }
   
   ultimately have 
@@ -457,17 +460,18 @@ lemma measure_additive: assumes ms: "measure_space M"
       using ms
       by (cases m) (auto simp add: measure_space_def positive_def) 
   qed
-  hence "(\<lambda>n. measure M (trivial_series2 a b n)) sums sumr 0 (Suc(Suc 0))  (\<lambda>n. measure M (trivial_series2 a b n))"
+  hence "(\<lambda>n. measure M (trivial_series2 a b n)) sums (\<Sum>n=0..<Suc(Suc 0). measure M (trivial_series2 a b n))"
     by (rule series_zero)
   moreover
-  have "sumr 0 (Suc(Suc 0)) (\<lambda>n. measure M (trivial_series2 a b n)) =
+  have "(\<Sum>n=0..<Suc(Suc 0). measure M (trivial_series2 a b n)) =
     measure M a + measure M b"
     by simp
   ultimately
   have "measure M (a \<union> b) = suminf (\<lambda>n. measure M (trivial_series2 a b n))"
     and "Measure.measure M a + Measure.measure M b = suminf (\<lambda>n. measure M (trivial_series2 a b n))"
     by (simp_all add: sums_unique)
-  thus ?thesis 
-    by simp
-qed(*>*)(*>*)      
+  thus ?thesis by simp
+qed
+(*>*)
+(*>*)
 end
