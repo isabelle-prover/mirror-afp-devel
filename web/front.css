@@ -1,0 +1,198 @@
+h1 {
+ font: normal small-caps bold large sans-serif;
+ color: white;
+ background:  #2e2d4e;
+ padding-top: 10px;
+ padding-right: 10px;
+ padding-bottom: 10px;
+ padding-left: 10px;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+}
+
+h1 font.first {
+ font: normal normal bold x-large sans-serif;
+}
+
+table.nav {
+ font: normal normal bold medium sans-serif;
+ background-color: lightGray;
+ border-width: thin thin thin thin;
+ border-style: solid solid solid solid;
+ width: 80%;
+ display: block;
+;
+}
+
+
+table.nav a:link { font-weight:bold; color:#000000; text-decoration:none }
+table.nav a:visited { font-weight:bold; color:#000000; text-decoration:none }
+table.nav a:hover { font-weight:bold; color:#000080; text-decoration:underline }
+table.nav a:active { font-weight:bold; color:#000000; text-decoration:underline
+}
+table.nav a:focus { font-weight:bold; color:#000000; text-decoration:underline }
+
+
+td.nav {
+ background-color: white;
+ margin-top: 20px;
+ margin-right: 20px;
+ margin-bottom: 20px;
+ margin-left: 20px;
+ padding-top: 5px;
+ padding-right: 5px;
+ padding-bottom: 5px;
+ padding-left: 5px;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+;
+}
+
+table.descr {
+ font: normal normal normal medium sans-serif;
+ background-color: lightGray;
+ padding:  2ex 2ex 2ex 2ex;
+ border-width: thin thin thin thin;
+ border-style: solid solid solid solid;
+;
+}
+
+td.descr {
+ font: normal normal normal medium sans-serif;
+ background-color: lightGray;
+ padding:  2ex 2ex 2ex 2ex;
+;
+}
+
+table.entries {
+ font: normal normal normal medium sans-serif;
+ background-color: lightGray;
+ border-width: thin thin thin thin;
+ border-style: solid solid solid solid;
+;
+}
+
+td.head {
+ font: normal normal bold medium sans-serif;
+ color: #E2E2E2;
+ background-color: #2e2d4e;
+ word-spacing: normal;
+ letter-spacing: normal;
+ text-decoration: none;
+ word-spacing: normal;
+ vertical-alignment: baseline;
+ text-transformation: none;
+ text-alignment: left;
+ text-indentation: 2em;
+ line-height: normal;
+ margin:  1em 1em 1em 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+ width: 95%;
+ height: auto;
+ float: left;
+ clear: none;
+ display: block;
+ white-space: normal;
+ list-style-position: inside;
+;
+}
+
+td.entry {
+ font: normal normal normal medium sans-serif;
+ color: black;
+ background-color: #E2E2E2;
+ word-spacing: normal;
+ letter-spacing: normal;
+ text-decoration: none;
+ word-spacing: normal;
+ vertical-alignment: baseline;
+ text-transformation: none;
+ text-alignment: left;
+ text-indentation: 2em;
+ line-height: normal;
+ margin:  0em 1em 1em 5%;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+ width: 90%;
+ height: auto;
+ float: left;
+ clear: none;
+ display: block;
+ white-space: normal;
+ list-style-position: inside;
+;
+}
+
+table.data {
+ margin:  0em 0em 0em 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: solid solid solid solid;
+;
+}
+
+td.datahead {
+ font: normal normal bold medium sans-serif;
+ color: black;
+ background-color: #E2E2E2;
+ margin:  1em 1em auto 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+;
+}
+
+td.data {
+ font: normal normal normal medium sans-serif;
+ color: black;
+ background-color: #E2E2E2;
+ margin:  1em 1em auto 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+;
+}
+
+td.abstract {
+ font: normal normal normal medium sans-serif;
+ color: black;
+ background-color: #E2E2E2;
+ margin:  1em 1em auto 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+;
+}
+
+table.links {
+ margin:  0em 0em 0em 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: solid solid solid solid;
+;
+}
+
+td.links {
+ font: normal normal normal medium sans-serif;
+ color: black;
+ background-color: #E2E2E2;
+ margin:  1em 1em 0em 0em;
+ padding:  0.5ex 0.5ex 0.5ex 0.5ex;
+ border-width: thin thin thin thin;
+ border-style: none none none none;
+;
+}
+
+div.date {
+	font-family: sans-serif;
+	font-size: small;
+	color: black;
+	margin-top: 5ex;
+	padding-top: 1ex;
+    border-width: thin thin thin thin;
+ 	border-style: none none none none;
+	width: 100%;
+}
