@@ -1,0 +1,31 @@
+% $Id: root.tex,v 1.2 2004-06-24 14:17:52 lsf37 Exp $
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Depth-First Search}
+\author{Toshiaki Nishihara \and Yasuhiko Minamide}
+\maketitle
+
+\begin{abstract}
+  Depth-first search of a graph is formalized with \texttt{recdef}. 
+  It is shown that it visits all of the reachable nodes from a given list of 
+  nodes. Executable ML code of depth-first search is obtained with code 
+  generation feature of Isabelle/HOL.
+\end{abstract}
+
+\tableofcontents
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\end{document}
