@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.2 2004-03-05 21:10:14 lsf37 Exp $
+# $Id: testall,v 1.3 2004-03-09 21:09:27 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 # License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
@@ -49,7 +49,7 @@ function check_isatool()
   [ -x $ISATOOL ] || fail "No isatool found at [$ISATOOL]."
   ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   ISABELLE_HOME=`$ISATOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
-  export ISABELLE_IMAGE_PATH="$ISABELLE_HOME/heaps/$ML_IDENTIFIER/"
+  [ -n "$ISABELLE_IMAGE_PATH" ] || export ISABELLE_IMAGE_PATH="$ISABELLE_HOME/heaps/$ML_IDENTIFIER/"
 }
 
 ## 

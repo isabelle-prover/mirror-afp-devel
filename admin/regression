@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.2 2004-03-05 21:09:56 lsf37 Exp $
+# $Id: regression,v 1.3 2004-03-09 21:09:27 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 # License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
@@ -22,10 +22,13 @@ DATE=$(date "+%Y-%m-%d")
 LOG=~/afp-log/afp-test-$DATE.log
 MASTERLOG=~/afp-log/afp-test.log
 
-SETTINGS=~/settings/sun-poly
+SHORT=sun-poly
+SETTINGS=~/settings/$SHORT
 
 #
 MAIL=mail
+
+PRG="$(basename "$0")"
 
 ## functions
 
@@ -64,6 +67,8 @@ if [ "$1" == "-" ]; then
     exit 1
   fi
   cat $SETTINGS >> $ISABELLE_DEVEL/etc/settings
+  ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
+  export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
 else
   TAG="-r $1"
   AFP_VER="release ($1)"
