@@ -1,7 +1,8 @@
 (* Title:     HOL/MiniML/Type.thy
-   ID:        $Id: Type.thy,v 1.3 2004-03-23 06:29:37 lsf37 Exp $
+   ID:        $Id: Type.thy,v 1.4 2004-04-19 22:23:43 lsf37 Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
+   License:   LGPL
 *)
 
 header "MiniML-types and type substitutions"
