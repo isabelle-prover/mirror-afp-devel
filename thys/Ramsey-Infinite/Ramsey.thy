@@ -398,7 +398,8 @@ lemma (in l) infinite_pbi_on_infinite: "\<lbrakk>
   \<Longrightarrow> infinite (bi ` Z)"
   apply(frule_tac pbi_inj) apply(assumption) apply(assumption)
   apply(rule infinite_inj_infinite_image)
-  by (auto simp: inj_inj_on)
+  apply (auto intro: inj_inj_on); 
+  done
 
 
 subsection "ji lemmas"
@@ -455,9 +456,9 @@ proof -
   def X' == "bi ` J'"
 
   from inj_pbi finJ' cardJ' have cardX': "card X' = n"
-    apply(subgoal_tac "inj_on bi J'")
-    apply(simp add: X'_def card_image) 
-    by (force simp: inj_inj_on)
+    apply(subgoal_tac "inj_on bi J'", simp add: X'_def card_image) 
+    apply (force intro: inj_inj_on) 
+    done
 
   from XJ JJ' have XX': "X = insert minx X'" by(simp add: X'_def minx_def)
 
@@ -520,7 +521,7 @@ lemma ramsey':
   apply(erule exE)
   apply(rule skolem)
   apply(fold assum_def)
-  apply(rule)
+  apply(rule allI)
   apply(case_tac Yf, rename_tac Y f)
   
   apply(clarsimp)
@@ -528,27 +529,24 @@ lemma ramsey':
    apply(elim conjE)
    apply(frule_tac A="UNIV::nat set" in tinv_infinite_finite) apply(assumption)
    apply(erule bexE) apply(simp add: tinv_def)
-   apply(subgoal_tac "\<exists>I. I = {i. (pji Theta f o (Yis Theta f Y)) i = b}") prefer 2 apply(force)
+   apply(subgoal_tac "\<exists>I. I = {i. (pji Theta f o (Yis Theta f Y)) i = b}") 
+    prefer 2 apply(force)
    apply(erule exE)
 
    -- "the infinite set we have here is the set of i st pji = b"
-
-   apply(rule_tac x="(pbi \<circ> Yis Theta f Y) ` I" in exI)
-   apply(rule_tac x="b" in exI)
+   apply(rule_tac x="(pbi \<circ> Yis Theta f Y) ` I" in exI) 
    apply(simp add: Let_def)
    apply(intro conjI)
      apply(subgoal_tac "range (pbi \<circ> Yis Theta f Y) \<subseteq> Y") apply(force)
-     apply(rule l.range_pbi_subset_Y) apply(assumption) apply(assumption) apply(assumption) 
-    apply(rule l.infinite_pbi_on_infinite) apply(assumption) apply(assumption) apply(assumption) apply(assumption)
-   apply(rule) apply(rule) apply(elim conjE)
-   -- "this is the real goal"
+     apply(rule l.range_pbi_subset_Y) apply(assumption+) 
+    apply(rule l.infinite_pbi_on_infinite) apply(assumption+)
+   apply(rule exI) 
+   apply auto
+   -- "this is the real goal" 
 
-   apply(rule l.main) apply(assumption) apply(assumption) apply(assumption) apply(simp) apply(simp) apply(assumption) apply(force) apply(assumption)
-
-  apply(rule)
-   apply(force)
-  apply(rule l.range_ji)
-  .
+   apply(rule l.main)
+  apply(auto intro: l.range_ji)
+  done
 
   -- "standard form"
   
