@@ -39,7 +39,7 @@
 href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
 </td></tr>		
     
-	<tr><td class="datahead">Submisison date:</td>
+	<tr><td class="datahead">Submission date:</td>
 	
 <td class="data"><!-- Submission date: -->2004-09-28</td></tr>
 
@@ -55,6 +55,13 @@ href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
   Alternatively, the definitions can be exported to OCaml, yielding a
   directly executable program.
    </td></tr>
+
+<tr>
+<td class="datahead">&nbsp;</td>
+<td class="data">An updated version of this entry is available in the 
+    <a href="../download.shtml">development version</a> of AFP.</td>
+</tr> 
+
 </tbody>
 </table>
 
@@ -90,6 +97,6 @@ href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2004-09-29 16:19:35 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2004-12-10 17:19:00 $, $Revision: 1.1 
 $</div></body>
 </html>
