@@ -1,0 +1,28 @@
+#!/bin/bash
+
+. ~/.bashrc
+
+HEAD=~/afp/devel
+BRANCH_TAG=Isabelle2003
+SYNC_TAG=last_autosync
+SYNC_MSG="auto sync with $BRANCH_TAG"
+MODULES="thys web admin"
+
+function fail()
+{
+  echo "$1" >&2
+  exit 2
+}
+
+cd $HEAD || fail "Could not cd to $HEAD"
+# update
+cvs -Q up -d -A || fail "Error updating; aborting sync"
+# sync, no keyword expansion
+cvs -Q up -d -kk -j $SYNC_TAG -j $BRANCH_TAG || fail "Error merging; aborting sync"
+# check for conflicts
+cvs -Q up -d -A || fail "Conflicts found; aborting sync"
+# commit back changes on HEAD
+cvs -Q commit -m "$SYNC_MSG" || fail "Error commiting changes"
+# move SYNC_TAG
+cvs -Q rtag -r $BRANCH_TAG -F $SYNC_TAG $MODULES || fail "Could not move sync tag"
+
