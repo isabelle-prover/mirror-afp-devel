@@ -3398,15 +3398,15 @@ lemma TR_submodule:"\<lbrakk>ring R; R module M; R module N; FM\<^sub>R P M N\<r
 apply (simp add:tensor_relations_def)
  apply (rule submodule_Least_submodule[of "R" "P" _], assumption+)
  apply (simp add:fm_gen_by_prod_def)
- apply (simp add:TR_sub_carr)
+ apply (simp add:TR_sub_carr del:Un_subset_iff)
 done
 
 lemma TR_cont_TR1234:"\<lbrakk>ring R; R module M; R module N; FM\<^sub>R P M N\<rbrakk> \<Longrightarrow>
   TR1 R M N P \<union> TR2 R M N P \<union> TR3 R M N P \<union> TR4 R M N P \<subseteq> TR\<^sub>R M N P" 
-apply (simp add:tensor_relations_def)
+apply (simp add:tensor_relations_def del:Un_subset_iff)
  apply (frule LSM_sub_T [of "R" "P" "TR1 R M N P \<union> TR2 R M N P \<union> TR3 R M N P \<union> TR4 R M N P"])
  apply (simp add:fm_gen_by_prod_def)
- apply (simp add:TR_sub_carr) 
+ apply (simp add:TR_sub_carr del:Un_subset_iff) 
  apply assumption
 done
 
@@ -3417,7 +3417,7 @@ prefer 2
 apply (simp add:tensor_relations1_def)
 apply blast
 apply (frule TR_cont_TR1234 [of "R" "M" "N" "P"], assumption+)
-apply (simp add:subsetD)
+apply (simp add:subsetD del:Un_subset_iff)
 done
 
 lemma TR2_mem:"\<lbrakk>ring R; R module M; R module N; FM\<^sub>R P M N; m \<in> carrier M;
@@ -3427,7 +3427,7 @@ prefer 2
 apply (simp add:tensor_relations2_def)
 apply blast
 apply (frule TR_cont_TR1234 [of "R" "M" "N" "P"], assumption+)
-apply (simp add:subsetD)
+apply (simp add:subsetD del:Un_subset_iff)
 done
      
 lemma TR3_mem:"\<lbrakk>ring R; R module M; R module N; FM\<^sub>R P M N; m \<in> carrier M;
@@ -3437,7 +3437,7 @@ prefer 2
 apply (simp add:tensor_relations3_def)
 apply blast
 apply (frule TR_cont_TR1234 [of "R" "M" "N" "P"], assumption+)
-apply (simp add:subsetD)+
+apply (simp add:subsetD del:Un_subset_iff)+
 done
 
 lemma TR4_mem:"\<lbrakk>ring R; R module M; R module N; FM\<^sub>R P M N; m \<in> carrier M;
@@ -3447,7 +3447,7 @@ prefer 2
 apply (simp add:tensor_relations4_def)
 apply blast
 apply (frule TR_cont_TR1234 [of "R" "M" "N" "P"], assumption+)
-apply (simp add:subsetD)
+apply (simp add:subsetD del:Un_subset_iff)
 done
 
 
@@ -3793,7 +3793,7 @@ apply (subgoal_tac "compose (M \<times>\<^sub>c N) ga (compose (M \<times>\<^sub
  apply simp
 apply (simp add:tensor_relations_def)
  apply (frule_tac f = g in LSM_sub_ker [of "R" "P" "Z" "(TR1 R M N P \<union> TR2 R M N P \<union> TR3 R M N P \<union> TR4 R M N P)"], assumption+)
- apply (simp add:TR_sub_carr)
+ apply (simp add:TR_sub_carr del:Un_subset_iff)
  apply assumption
 apply (thin_tac " submodule R P (LSM\<^sub>R P (TR1 R M N P \<union> TR2 R M N P \<union> TR3 R M N P \<union> TR4 R M N P))")
 prefer 2 apply assumption

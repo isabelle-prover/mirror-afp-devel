@@ -2017,7 +2017,7 @@ apply (induct_tac n)
  apply (rule impI)
 apply (subgoal_tac "\<Inter>{X. \<exists>k\<in>Nset (Suc n). X = J k} = 
                            (\<Inter>{X. \<exists>k\<in>Nset n. X = J k}) \<inter> (J (Suc n))") 
- apply simp
+ apply (simp del:Int_subset_iff)
  apply (subgoal_tac "i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<diamondsuit>\<^sub>R (J (Suc n)) \<subseteq> i\<Pi>\<^sub>R\<^sub>,\<^sub>n J")
  apply (subgoal_tac "i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<diamondsuit>\<^sub>R (J (Suc n)) \<subseteq> J (Suc n)")
 apply (subgoal_tac "i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<diamondsuit>\<^sub>R (J (Suc n)) \<subseteq> (i\<Pi>\<^sub>R\<^sub>,\<^sub>n J) \<inter> (J (Suc n))")
@@ -2546,7 +2546,7 @@ apply (induct_tac n)
                               "{0, Suc 0}" "Suc 0"], assumption+)
   apply (simp add:CollectI)
   apply (case_tac "h (Suc 0) = Suc 0") apply simp apply simp
-  apply (simp add:inj_on_def) apply simp
+  apply (simp add:inj_on_def)
   apply (simp add:Nset_def) apply (simp add:Nset_1)
   apply (subgoal_tac "0 \<in> {0, Suc 0}") prefer 2 apply simp
   apply (frule_tac f = h in funcset_mem [of _ "{0, Suc 0}" "{0, Suc 0}" "0"], assumption+)
@@ -2556,8 +2556,8 @@ apply (induct_tac n)
   apply (rule funcset_mem, assumption+) apply simp
   apply (subgoal_tac "Suc 0 \<in> {0, Suc 0}")
   apply (frule_tac f = h in funcset_mem, assumption+) apply (simp add:CollectI)
-  apply (case_tac "h (Suc 0) = 0") apply simp apply simp
-  apply (simp add:inj_on_def) apply simp
+  apply (case_tac "h (Suc 0) = 0") apply simp apply fastsimp
+  apply simp
 (************* n *****************)
 apply (rule allI)+
 apply (rule impI) apply (erule conjE)+

@@ -4077,7 +4077,7 @@ apply (rule univar_func_test) apply (rule ballI)
  apply (rule univar_func_test) apply (rule ballI) 
  apply (subgoal_tac "Suc n \<in> Nset (Suc n)") apply (simp add:funcset_mem)
  apply (simp add:Nset_def)
- apply simp
+ apply (simp del:Un_subset_iff)
  apply (subgoal_tac "Nset n \<subseteq> Nset (Suc n)")
  apply (frule_tac f = f and A = "Nset (Suc n)" and B = H and ?A1.0 = "Nset n"  and ?A2.0 = "Nset (Suc n)" in im_set_mono, assumption+) apply simp
  apply (subgoal_tac "(\<lambda>x. f (Suc n)) ` Nset 0 \<subseteq> f ` Nset (Suc n)")

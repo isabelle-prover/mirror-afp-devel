@@ -5766,8 +5766,8 @@ apply (subgoal_tac "\<forall>a\<in>A. \<forall>b\<in>B.  a +\<^sub>R b = x \<lon
 apply (subgoal_tac "x = a +\<^sub>R b") apply (thin_tac "a +\<^sub>R b = x")
  apply simp
 apply (rule ideal_pOp_closed, assumption+)
- apply (simp add:UnI1 subsetD)
- apply (simp add:UnI2 subsetD)
+ apply (fast)
+ apply (fast)
 apply (rule sym, assumption)
  (* \<Inter>{J. ideal R J \<and> A \<union> B \<subseteq> J} \<subseteq> A \<^bold>+\<^sub>R B *)
 apply (rule subsetI)
@@ -5780,7 +5780,7 @@ apply (subgoal_tac "ideal R (A \<^bold>+\<^sub>R B) \<and> A \<union> B \<subset
 apply (rotate_tac 5) apply simp
 apply (rule conjI)
 apply (simp add:sum_ideals)
- apply (thin_tac "\<forall>xa. ideal R xa \<and> A \<union> B \<subseteq> xa \<longrightarrow> x \<in> xa")
+ apply (thin_tac "\<forall>xa. ideal R xa \<and> A \<subseteq> xa \<and> B \<subseteq> xa \<longrightarrow> x \<in> xa")
  apply (thin_tac "GroupType.tOp (b_ag R) = pOp R")
 apply (rule subsetI)
 apply (simp add:Un_def)
