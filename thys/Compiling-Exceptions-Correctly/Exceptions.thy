@@ -1,12 +1,14 @@
 (*  Title:      HOL/ex/Exceptions.thy
-    ID:         $Id: Exceptions.thy,v 1.2 2004-07-22 06:44:26 lsf37 Exp $
+    ID:         $Id: Exceptions.thy,v 1.3 2004-08-19 10:38:33 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   2004 TU Muenchen
 *)
 
 header {* Compiling exception handling *}
 
-theory Exceptions = Main:
+theory Exceptions
+imports Main
+begin
 
 subsection{*The source language*}
 
