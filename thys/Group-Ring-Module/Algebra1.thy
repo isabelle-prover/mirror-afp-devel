@@ -1493,8 +1493,7 @@ apply simp
 done
 
 lemma big_int_less:"a - int(nat(abs(a) + abs(N) + 1)) < N"
-apply (simp add:zabs_def)
-done
+by (simp add: abs_if)
 
 lemma lbs_ex_Zleast:"\<lbrakk>A \<noteq> {}; A \<subseteq> Zset; LB A n\<rbrakk> \<Longrightarrow> \<exists>!m. m\<in>A \<and> (\<forall>x\<in>A. m \<le> x)"
 apply (frule nonempty_ex[of "A"])
