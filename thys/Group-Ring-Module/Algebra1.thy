@@ -650,7 +650,7 @@ proof -
   apply (simp add:image_def) apply (rule subsetI) apply (simp add:CollectI)
   apply blast done
  from p1 and p2 have q2:"f `(A1) \<union> f `(A2) \<subseteq> f `(A1 \<union> A2)"
-  apply (simp add:image_def) apply (rule subsetI) apply (simp add:CollectI)
+  apply (simp add:image_def)
   apply blast done
  from q1 and q2 show ?thesis
  apply (rule equalityI)
@@ -1028,9 +1028,7 @@ proof -
   apply (rule subsetI) apply (simp add:CollectI)
   apply (case_tac "x \<le> n") apply simp apply simp done
  from q1 have q3:"Nset n \<union> nset (Suc n) (Suc (n + m)) \<subseteq> Nset (Suc (n + m))"
-  apply (simp add:Nset_def nset_def)
-  apply (rule subsetI) apply (simp add:CollectI)
-  apply (case_tac "x \<le> n") apply simp apply simp done
+  by (auto simp add:Nset_def nset_def)
 from q2 and q3 show ?thesis
  apply (rule equalityI)
  done

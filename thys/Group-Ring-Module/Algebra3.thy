@@ -202,9 +202,8 @@ apply (frule settOpTr5 [of "G" "H1" "H \<inter> K1" "H \<inter> K"], assumption+
  apply (simp add:inter_subgs)+
  apply (frule NinHNTr0_2 [of "G" "H \<inter> K1" "H \<inter> K"])
   apply (simp add:inter_subgs)+ 
-  apply (frule  ZassenhausTr2_3 [of "G" "K" "K1"], assumption+)
- apply (rule subsetI) apply (simp add:subsetD)
-apply simp
+  apply (frule  ZassenhausTr2_3 [of "G" "K" "K1"])
+    apply auto
 apply (simp add:ZassenhausTr2_1)
 done
 
@@ -284,64 +283,53 @@ done
 lemma ZassenhausTr3_5:"\<lbrakk>group G; H \<guillemotleft> G; H1 \<guillemotleft> G; K \<guillemotleft> G; K1 \<guillemotleft> G; 
 H1 \<lhd> (grp G H); K1 \<lhd> (grp G K)\<rbrakk> \<Longrightarrow> (H1 \<inter> K) \<bullet>\<^sub>G (H \<inter> K1) \<lhd> (grp G (H \<inter> K))"
 apply (frule ZassenhausTr3 [of "G" "H \<inter> K" "H1 \<inter> K" "K \<inter> H" "H \<inter> K1"])
- apply (simp add:inter_subgs)+
-prefer 3
- apply (frule ZassenhausTr2_3 [of "G" "K" "K1"], assumption+)
- apply (frule ZassenhausTr2_3 [of "G" "H" "H1"], assumption+) 
-apply (subgoal_tac "H \<inter> K \<inter> (H \<inter> K1) = H \<inter> K1")
- apply (subgoal_tac "H \<inter> K \<inter> (K \<inter> H) = H \<inter> K") apply simp
- apply (frule NinHNTr0_2 [of "G" "H1 \<inter> K" "H \<inter> K"])
-  apply (simp add:inter_subgs)+
-  apply (frule ZassenhausTr2_3 [of "G" "H" "H1"], assumption+)
-  apply (rule subsetI) apply (simp add:subsetD)
-apply simp
-apply (rule equalityI)
- apply (rule subsetI) apply simp
- apply (rule subsetI) apply simp
-apply (rule equalityI)
- apply (rule subsetI) apply simp
- apply (rule subsetI) apply simp
- apply (simp add:subsetD)
-apply (rule nmlSubg2)
- apply (rule subggrp, assumption+)
- apply (simp add:inter_subgs)
- apply (rule subg_in_subg, assumption+)
-  apply (simp add:inter_subgs)+
-  apply (frule ZassenhausTr2_3 [of "G" "H" "H1"], assumption+)
-  apply (rule subsetI) apply (simp add:subsetD)
-apply (rule ballI)+
- apply (simp add:grp_def) apply (fold grp_def)
- apply (erule conjE)+
- apply (rule conjI)
- apply (frule subggrp [of "G" "H"], assumption+)
- apply (frule_tac a = a and h = h in NSubgPr1_1 [of "grp G H" "H1"],
+      apply (simp add:inter_subgs)+
+  prefer 3
+  apply (frule ZassenhausTr2_3 [of "G" "K" "K1"], assumption+)
+  apply (frule ZassenhausTr2_3 [of "G" "H" "H1"], assumption+) 
+  apply (subgoal_tac "H \<inter> K \<inter> (H \<inter> K1) = H \<inter> K1")
+   apply (subgoal_tac "H \<inter> K \<inter> (K \<inter> H) = H \<inter> K") apply simp
+    apply (frule NinHNTr0_2 [of "G" "H1 \<inter> K" "H \<inter> K"])
+       apply (simp add:inter_subgs)+
+     apply (frule ZassenhausTr2_3 [of "G" "H" "H1"], auto)
+ apply (rule nmlSubg2)
+   apply (rule subggrp, assumption+)
+   apply (simp add:inter_subgs)
+  apply (rule subg_in_subg, assumption+)
+    apply (simp add:inter_subgs)+
+  apply (frule ZassenhausTr2_3 [of "G" "H" "H1"], auto)
+  apply (simp add:grp_def) apply (fold grp_def)
+  apply (frule subggrp [of "G" "H"], assumption+)
+  apply (frule_tac a = a and h = h in NSubgPr1_1 [of "grp G H" "H1"],
                                                            assumption+)
+    apply (simp add:grp_def)
+   apply assumption
   apply (simp add:grp_def)
-  apply assumption+
  apply (simp add:grp_def)
  apply (rule subg_tOp_closed, assumption+)+
-  apply (simp add:subg_iOp_closed)
- apply (frule subggrp [of "G" "K \<inter> H"])
- apply (simp add:inter_subgs)
+   apply (simp add:subg_iOp_closed)
+  apply (frule subggrp [of "G" "K \<inter> H"])
+   apply (simp add:inter_subgs)
+  apply (simp add:grp_def)
+ apply (clarsimp simp add:grp_def)
+ apply (fold grp_def)
+ apply (simp add:subg_iOp_closed)
 apply (rule nmlSubg2)
- apply (rule subggrp, assumption+)
- apply (simp add:inter_subgs)
+  apply (rule subggrp, assumption+)
+  apply (simp add:inter_subgs)
  apply (rule subg_in_subg, assumption+)
-  apply (simp add:inter_subgs)+
-  apply (frule ZassenhausTr2_3 [of "G" "K" "K1"], assumption+)
-  apply (rule subsetI) apply (simp add:subsetD)
-apply (rule ballI)+
+   apply (simp add:inter_subgs)+
+ apply (frule ZassenhausTr2_3 [of "G" "K" "K1"], auto)
  apply (simp add:grp_def) apply (fold grp_def)
  apply (erule conjE)+
- apply (rule conjI)
  apply (rule subg_tOp_closed, assumption+)+
  apply (simp add:subg_iOp_closed)
- apply (frule subggrp [of "G" "K"], assumption+)
- apply (frule_tac a = a and h = h in NSubgPr1_1 [of "grp G K" "K1"],
+apply (frule subggrp [of "G" "K"], assumption+)
+apply (frule_tac a = a and h = h in NSubgPr1_1 [of "grp G K" "K1"],
                                                            assumption+)
   apply (simp add:grp_def)
-  apply assumption+
- apply (simp add:grp_def)
+ apply assumption+
+apply (simp add:grp_def)
 done
 
 lemma ZassenhausTr4: "\<lbrakk>group G; H \<guillemotleft> G; H1 \<guillemotleft> G; K \<guillemotleft> G; K1 \<guillemotleft> G; H1 \<lhd> grp G H; 
@@ -1641,7 +1629,7 @@ apply (rule subsetI)
  apply (rule  r_cosUnit1_1 [of "grp G (H \<bullet>\<^sub>G N)" "N"], assumption+) 
  apply (simp add:nmlSubgTr0) apply assumption
 
-apply (simp add: Qgrp_one [of "grp G (H \<bullet>\<^sub>G N)" "N"])
+apply (simp add: Qgrp_one [of "grp G (H \<bullet>\<^sub>G N)" "N"] del:Int_subset_iff)
  apply (rule subsetI)
  apply (simp add:CollectI) apply (erule conjE)
  apply (simp add:cmpghom_def compose_def)
@@ -1821,7 +1809,7 @@ apply (thin_tac "H1 \<bullet>\<^sub>G H \<inter> K1 \<bullet>\<^sub>G H \<inter>
 apply (thin_tac "grp (grp G (H1 \<bullet>\<^sub>G H \<inter> K)) (H1 \<bullet>\<^sub>G H \<inter> K) 
                                          = grp G (H1 \<bullet>\<^sub>G H \<inter> K)")
 apply (frule settOpTr6_1 [of "G" "H1" "H \<inter> K1" "H \<inter> K"], assumption+) 
- apply (simp add:inter_subgs)+  
+ apply (simp add:inter_subgs del:Int_subset_iff)+
  apply (frule ZassenhausTr2_3 [of "G" "K" "K1"], assumption+)
  apply (rule subsetI) apply simp
  apply (simp add:subsetD)

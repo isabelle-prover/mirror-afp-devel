@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Generalize.thy
-   ID:        $Id: Generalize.thy,v 1.5 2004-05-25 14:18:34 lsf37 Exp $
+   ID:        $Id: Generalize.thy,v 1.6 2004-08-04 18:42:34 nipkow Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -119,10 +119,8 @@ done
 
 lemma bound_typ_inst_gen [rule_format (no_asm)]: 
   "free_tv(t::typ) <= free_tv(A) --> bound_typ_inst S (gen A t) = t"
-apply (induct_tac "t")
-apply (simp_all (no_asm_simp))
-apply fast
-done
+by (induct_tac "t") simp_all
+
 declare bound_typ_inst_gen [simp]
 
 lemma gen_bound_typ_instance: 

@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Type.thy
-   ID:        $Id: Type.thy,v 1.5 2004-05-25 14:18:34 lsf37 Exp $
+   ID:        $Id: Type.thy,v 1.6 2004-08-04 18:42:34 nipkow Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -477,13 +477,9 @@ done
 lemma free_tv_comp_subst: 
      "free_tv (%u::nat. $ s1 (s2 u) :: typ) <=    
       free_tv s1 Un free_tv s2"
-apply (unfold free_tv_subst dom_def) 
-apply (clarsimp simp add: cod_def dom_def)
-apply (drule free_tv_app_subst_te [THEN subsetD])
-apply clarsimp
-apply (auto simp add: cod_def dom_def)
-apply (drule free_tv_subst_var [THEN subsetD])
-apply (auto simp add: cod_def dom_def)
+apply (unfold free_tv_subst dom_def)
+apply (force simp add: cod_def dom_def
+             dest!:free_tv_app_subst_te [THEN subsetD])
 done
 
 lemma free_tv_o_subst: 
