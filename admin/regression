@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+#
+# $Id: regression,v 1.2 2004-03-05 21:09:56 lsf37 Exp $
+# Author: Gerwin Klein, NICTA
+# License: GPL (GNU GENERAL PUBLIC LICENSE)
+#
+# Automated regression test to be run from cron.
+# Sends email to maintainers if test fails.
+#
+# Relies on beind run in the isatest environment.
+# 
+
+. ~/.bashrc
+
+## settings
+
+ISABELLE_RELEASES=/usr/proj/isabelle
+ISABELLE_DEVEL=~/isadist/Isabelle
+WORKING_COPY=~/afp
+DATE=$(date "+%Y-%m-%d")
+
+LOG=~/afp-log/afp-test-$DATE.log
+MASTERLOG=~/afp-log/afp-test.log
+
+SETTINGS=~/settings/sun-poly
+
+#
+MAIL=mail
+
+## functions
+
+function usage()
+{
+  echo
+  echo "Usage: $PRG [-|release_tag]"
+  echo
+  echo "  Runs testall from cron and logs output"
+  echo 
+  exit 1
+}
+
+function fail()
+{
+  echo "$1" >&2
+  exit 2
+}
+
+## 
+
+[ "$#" != "1" -o "$1" = "-?" ] && usage
+
+if [ "$1" == "-" ]; then
+  TAG="-A"
+  AFP_VER="development"
+  WORKING_COPY=$WORKING_COPY/devel
+  ISATOOL=$ISABELLE_DEVEL/bin/isatool
+    
+  ERRORDIR=$HOME/var
+  ERRORLOG=$ERRORDIR/error.log
+  RUNNING=$HOME/var/running
+  shopt -s nullglob
+  if [ -n "$(ls $RUNNING)" -o -e $ERRORLOG ]; then
+    echo "`date`: Skipped test. Isabelle devel version broken." >> $MASTERLOG
+    exit 1
+  fi
+  cat $SETTINGS >> $ISABELLE_DEVEL/etc/settings
+else
+  TAG="-r $1"
+  AFP_VER="release ($1)"
+  WORKING_COPY=$WORKING_COPY/release
+  ISATOOL=$ISABELLE_RELEASES/$1/bin/isatool
+fi
+
+echo "Start test at `date`" >> $LOG
+echo >> $LOG
+echo "begin cvs update" >> $LOG
+
+# cvs update to newest version of archive 
+cd $WORKING_COPY || fail "could not cd to $WORKING_COPY"
+cvs -q up -d $TAG >> $LOG 2>&1 || fail "could not CVS update."
+
+echo "end cvs update" >> $LOG
+echo >> $LOG
+
+# run test
+$WORKING_COPY/admin/testall -t $ISATOOL -c >> $LOG 2>&1
+SUCCESS=$?
+
+ELAPSED=$("$HOME/bin/showtime" "$SECONDS")
+
+echo >> $LOG
+echo "End test on `date`, elapsed time: $ELAPSED" >> $LOG
+
+# send email to maintainer if there was a problem
+if [ "$SUCCESS" != "0" ]; then
+  FAIL=`tail -4 $LOG | head -1`
+  echo "`date`, $AFP_VER: test failed on [$FAIL]. Elapsed time: $ELAPSED" >> $MASTERLOG
+  for E in $FAIL; do
+    (
+      . $WORKING_COPY/thys/$E/config || fail "error reading config for $E"
+      if [ "$FREQUENT" == "yes" ]; then
+        for R in $NOTIFY; do
+          $MAIL $R <<EOF
+To: $NOTIFY
+Subject: test failed (Archive of Formal Proofs)
+
+Your session [$E] in the automated afp test failed. 
+Tested version: $AFP_VER
+Test ended on: $HOSTNAME, `date`.
+
+To reproduce the error, check out the $AFP_VER version of the
+archive from sourceforge and run isatool make on your session.
+
+This is an automatically generated email. To switch off these 
+notifications, edit thys/$E/config and cvs commit the changes.
+
+Have a nice day,
+  isatest
+
+EOF
+        done
+      fi
+    )
+  done
+else
+  echo "`date`, $AFP_VER: All tests successful. Elapsed time: $ELAPSED" >> $MASTERLOG
+fi

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.1 2004-02-25 02:25:05 lsf37 Exp $
+# $Id: testall,v 1.2 2004-03-05 21:10:14 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 # License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
@@ -89,22 +89,25 @@ cd $THYS
 DIRS=$@
 if [ "$DIRS" == "" ]; then DIRS=*; fi
 
-FAIL=0;
+FAIL="";
 
 for DIR in $DIRS; do
     if [ -d $DIR -a "$DIR" != "CVS" ]; then
         echo "Testing [$DIR]"
         cd $DIR
-        $ISATOOL make $CLEAN all $@ || FAIL=1
+        $ISATOOL make $CLEAN all $@ || FAIL="${FAIL}${DIR} "
         cd ..
         echo "Finished [$DIR]"
     fi
 done
 
-if [ $FAIL == 1 ]; then 
-    echo "Some tests failed. Please check logs."
+if [ "$FAIL" != "" ]; then 
+    echo "The following tests failed:"
+    echo "$FAIL"
+    echo "Please check logs."
+    exit 1
 else
     echo "All tests successful."
+    exit 0
 fi
 
-exit $EXIT

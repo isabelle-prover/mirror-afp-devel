@@ -46,7 +46,7 @@
 
     <p>There is a <a href="submit-template">submission template</a>
     available and an
-     <a href="entries/Example-Submission.html">example submission</a>
+     <a href="entries/Example-Submission.shtml">example submission</a>
     that contains further information.</p>
 
     <p>It is possible and encouraged to build on other archive entries
@@ -59,7 +59,7 @@
     resources to fully maintain the complete archive.</p>
 
     <p>If you have questions regarding your submission please contact the <a
-       href="about.html#editors">editors</a>.
+       href="about.shtml#editors">editors</a>.
       If you need help with Isabelle, please use the
 <a href="mailto:isabelle-users@cl.cam.ac.uk">isabelle-users@cl.cam.ac.uk</a>
       mailing list. It is always a good idea to <a

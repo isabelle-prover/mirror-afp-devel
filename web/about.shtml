@@ -35,7 +35,7 @@
 <p>The Archive of Formal Proofs is a collection of proof libraries, examples,
 and larger scientific developments, mechanically checked in the theorem prover
 <a href="http://isabelle.in.tum.de/">Isabelle</a>. It is organized in the way
-of a scientific journal. <a href="submitting.html">Submissions</a> are
+of a scientific journal. <a href="submitting.shtml">Submissions</a> are
 refereed.</p>
 
 <p>The archive is hosted by <a href="http://sourceforge.net">sourceforge</a> to
@@ -46,10 +46,10 @@ Isabelle. Older versions of archive entries will remain available.</p>
 <h2>Editors</h2>
 <p><a name="editors">The editors of the archive are</a></p>
 <ul>
-<li><a href="http://www4.in.tum.de/~nipkow/">Prof. Tobias Nipkow</a>,
-    <a href="http://www.tum.de/">Technische Universität München</a></li>
 <li><a href="http://www.cse.unsw.edu.au/~kleing/">Dr. Gerwin Klein</a>,
     <a href="http://www.nicta.com.au">National ICT Australia</a></li>
+<li><a href="http://www4.in.tum.de/~nipkow/">Prof. Tobias Nipkow</a>,
+    <a href="http://www.tum.de/">Technische Universität München</a></li>
 <li><a href="http://www.cl.cam.ac.uk/users/lcp/">Prof. Larry Paulson</a>,
     <a href="http://www.cam.ac.uk/">University of Cambridge</a></li>
 </ul>
