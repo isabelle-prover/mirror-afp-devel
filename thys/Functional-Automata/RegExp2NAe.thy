@@ -1,6 +1,5 @@
-(*  ID:         $Id: RegExp2NAe.thy,v 1.3 2004-04-19 22:30:44 lsf37 Exp $
+(*  ID:         $Id: RegExp2NAe.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
     Author:     Tobias Nipkow
-    License:    LGPL
     Copyright   1998 TUM
 *)
 

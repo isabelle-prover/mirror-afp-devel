@@ -1,6 +1,5 @@
-(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.4 2004-04-23 08:52:02 nipkow Exp $
+(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.5 2004-05-25 14:18:34 lsf37 Exp $
     Author:     Tobias Nipkow
-    License:    LGPL
     Copyright   1998 TUM
 
 To generate a regular expression, the alphabet must be finite.

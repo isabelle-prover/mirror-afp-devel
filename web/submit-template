@@ -13,7 +13,6 @@ Abstract:
 
 Maintainer:
 
-License:
-I view my submission to the Archive of Formal Proofs as a library in a high
-level programming language. If accepted, I license it under the terms of the
-GNU Lesser General Public License [http://www.gnu.org/copyleft/lesser.html].
+License: 
+If accepted, I publish my submission under the terms of the BSD-style
+license detailed at [http://afp.sf.net/LICENSE].

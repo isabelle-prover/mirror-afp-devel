@@ -1,6 +1,5 @@
-(*  ID:         $Id: MaxChop.thy,v 1.3 2004-04-19 22:30:43 lsf37 Exp $
+(*  ID:         $Id: MaxChop.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
     Author:     Tobias Nipkow
-    License:    LGPL
     Copyright   1998 TUM
 *)
 

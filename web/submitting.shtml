@@ -41,7 +41,8 @@
     <li>A tar file with the theory files, IsaMakefile, ROOT.ML and README or
         document directory. The theories should work with the current
         release of <a href="http://isabelle.in.tum.de/">Isabelle</a>.
-    <li>A notice that you license your submission under LGPL if accepted.</li>
+    <li>A notice wether you license your submission under BSD 
+        or LGPL if accepted.</li>
     </ul>
 
     <p>There is a <a href="submit-template">submission template</a>

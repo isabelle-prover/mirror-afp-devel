@@ -1,8 +1,7 @@
 (*  Title:       An example submission to the Archive of Formal Proof
-    ID:          $Id: Submission.thy,v 1.2 2004-02-25 06:22:34 lsf37 Exp $
+    ID:          $Id: Submission.thy,v 1.3 2004-05-25 14:18:34 lsf37 Exp $
     Author:      Gerwin Klein <kleing@cse.unsw.edu.au>, 2004
     Maintainer:  Gerwin Klein <kleing@cse.unsw.edu.au>
-    License:     LGPL
 *)
 
 header "An Example Submission"
@@ -31,7 +30,8 @@ text {*
   The theories should work with the current release of Isabelle. 
   Each theory file should include a header comment like the one 
   in this theory.
-  \item A statement that submission your is licenced under LGPL.
+  \item A statement whether you would like to release your submission
+  under the BSD or the LGPL license.
   \end{itemize}
 
   The submission of the example you are reading is at
@@ -84,7 +84,7 @@ The document directory contains the {\LaTeX} master file
 \texttt{root.tex} and the bibliography \texttt{root.bib}. Your
 submission should contain this {\LaTeX} setup or a \texttt{README.html}
 (or both) with title, abstract, author, and any further documentation
-you whish to provide. We encourage {\LaTeX} style documentation over
+you wish to provide. We encourage {\LaTeX} style documentation over
 \texttt{README.html}.
 
 The file \texttt{config} contains maintenance information. This is
@@ -100,7 +100,7 @@ us or ask on the \texttt{isabelle-users} mailing list.
 one main theory that depends on all the others, you only need to
 include this one. You can also use \texttt{ROOT.ML} to control the
 order in which theories are read. If you would like to build on other
-entries in the archive, which we enourage, you can use the
+entries in the archive, which we encourage, you can use the
 \texttt{add\_path} command in \texttt{ROOT.ML} to add the directory of
 the other entry to the theory search path. See the \texttt{ROOT.ML} of
 this submission for an example.

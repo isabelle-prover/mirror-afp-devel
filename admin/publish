@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 #
-# $Id: publish,v 1.5 2004-03-25 15:06:53 lsf37 Exp $
+# $Id: publish,v 1.6 2004-05-25 14:18:33 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
-# License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
 # publishes archive entry + main web pages on SF
 # 

@@ -1,8 +1,7 @@
 (* Title:     HOL/MiniML/Generalize.thy
-   ID:        $Id: Generalize.thy,v 1.4 2004-05-17 05:27:32 lsf37 Exp $
+   ID:        $Id: Generalize.thy,v 1.5 2004-05-25 14:18:34 lsf37 Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
-   License:   LGPL
 *)
 
 header "Generalizing type schemes with respect to a context"

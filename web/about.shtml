@@ -74,13 +74,11 @@ understand details of your development, and it makes it easier to use and
 build on your work.</p>
 
 <h2>License</h2>
-<p>All entries in the Archive of Formal Proof are licensed under the
-<a href="http://www.gnu.org/copyleft/lesser.html">GNU LGPL</a>.
+<p>All entries in the Archive of Formal Proof are licensed under 
+a <a href="LICENSE">BSD-style License</a> or
+the <a href="http://www.gnu.org/copyleft/lesser.html">GNU LGPL</a>.
 This means they are free to download, free to use, free to change, and
-free to redistribute with minimal restrictions. The LGPL requires redistributed
-derived work to be licensed under LGPL again. It does <em>not</em> require
-proofs and programs that use archive entries to be licensed under LGPL or 
-GPL.</p>
+free to redistribute with minimal restrictions.</p>
 
 <p>The authors retain their full copyright on their original work,
 including their right to make the development available under another, 

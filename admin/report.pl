@@ -1,8 +1,7 @@
 #!/usr/bin/perl
 #
-# $Id: report.pl,v 1.2 2004-03-12 21:08:47 lsf37 Exp $
+# $Id: report.pl,v 1.3 2004-05-25 14:18:33 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
-# License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
 # Parses log file and generates report of entry status.
 # Prints out diff to last report.

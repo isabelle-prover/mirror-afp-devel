@@ -1,6 +1,8 @@
 (*  Title:      LList_Topology.thy
-    ID:         $Id: LList_Topology.thy,v 1.1 2004-04-26 15:01:41 lp15 Exp $
+    ID:         $Id: LList_Topology.thy,v 1.2 2004-05-25 14:18:34 lsf37 Exp $
     Author:     Stefan Friedrich
+    Maintainer: Stefan Friedrich
+    License:    LGPL
 
 The topology of llists.
 

@@ -1,8 +1,7 @@
 (* Title:     HOL/MiniML/Instance.thy
-   ID:        $Id: Instance.thy,v 1.3 2004-04-19 22:23:42 lsf37 Exp $
+   ID:        $Id: Instance.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
-   License:   LGPL
 *)
 
 header "Instances of type schemes"

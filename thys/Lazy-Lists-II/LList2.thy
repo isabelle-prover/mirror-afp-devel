@@ -1,6 +1,8 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.1 2004-04-26 15:01:39 lp15 Exp $
+    ID:         $Id: LList2.thy,v 1.2 2004-05-25 14:18:34 lsf37 Exp $
     Author:     Stefan Friedrich
+    Maintainer: Stefan Friedrich
+    License:    LGPL
 
 More on llists.
 Llists over an alphabet.

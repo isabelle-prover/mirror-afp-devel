@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.4 2004-03-19 21:07:38 lsf37 Exp $
+# $Id: testall,v 1.5 2004-05-25 14:18:33 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
-# License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
 # Tests all entries in Archive of Formal Proofs
 # 
