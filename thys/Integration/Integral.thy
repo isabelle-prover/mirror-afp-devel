@@ -4,15 +4,13 @@
 
 header {*The Lebesgue Integral*}
 
-theory Integral = RealRandVar+SetsumThms:
+theory Integral = RealRandVar:
   (*simple function integral set*)
 text {*Having learnt from my failures, we take the safe and clean way
   of Heinz Bauer \cite{Bauer}. It proceeds as outlined in the
   introduction. In three steps, we fix the integral for elementary
   (``step-'')functions, for limits of these, and finally for
-  differences between such limits. This theory uses a collection of
-  lemmata on the previously mentioned @{text setsum} operator, put together in the
-  appendix \ref{sec:setsum}. 
+  differences between such limits. 
   
   \subsection{Simple functions}
   \label{sec:simple-fun}
@@ -85,7 +83,7 @@ lemma assumes un: "(\<Union>i\<in>R. B i) = UNIV" and fin: "finite R"
   with un obtain j where jR: "j\<in>R" and tj: "t \<in> A \<inter> B j" by fast
   from tj have "\<chi>(A \<inter> B j) t = 1" by (simp add: characteristic_function_def)
   with fin jR have "(\<Sum>i\<in>R-{j}. \<chi>(A \<inter> B i) t) = (\<Sum>i\<in>R. \<chi>(A \<inter> B i) t) - 1"
-    by (simp add: setsum_diff_real)
+    by (simp add: setsum_diff1)
   also 
   from dis jR tj have "R-{j} = R-{j}" and "\<And>x. x \<in> R-{j} \<Longrightarrow> \<chi>(A \<inter> B x) t = 0" 
     by (auto simp add: characteristic_function_def) 
@@ -278,7 +276,7 @@ txt{*\nopagebreak*}
 	from Bun S Bdis have "\<chi>(A i) t = (\<Sum>j\<in>S. \<chi>(A i \<inter> B j) t)" 
 	  by (rule char_split)
 	hence "x i * \<chi>(A i) t = (\<Sum>j\<in>S. x i * \<chi>(A i \<inter> B j) t)" 
-	  by (simp add: setsum_times_real)
+	  by (simp add: setsum_mult)
 	also 
 	{ fix j
 	  have "S=S" and 
@@ -333,7 +331,7 @@ txt{*\nopagebreak*}
 	  "measure M (A i) = (\<Sum>j\<in>S. measure M (A i \<inter> B j))" 
 	  by (simp add: measure_split)
 	hence "x i * measure M (A i) = (\<Sum>j\<in>S. x i * measure M (A i \<inter> B j))" 
-	  by (simp add: setsum_times_real)
+	  by (simp add: setsum_mult)
 	
 	also 
 	{ fix j 
@@ -370,7 +368,7 @@ txt{*\nopagebreak*}
 	from Aun R Adis have "\<chi>(B j) t = (\<Sum>i\<in>R. \<chi>(B j \<inter> A i) t)" 
 	  by (rule char_split) 
 	hence "y j * \<chi>(B j) t = (\<Sum>i\<in>R. y j * \<chi>(A i \<inter> B j) t)" 
-	  by (simp add: setsum_times_real Int_commute)
+	  by (simp add: setsum_mult Int_commute)
 	also 
 	{ fix i
 	  have "R=R" and 
@@ -421,7 +419,7 @@ txt{*\nopagebreak*}
 	  (\<Sum>i\<in>R. measure M (B j \<inter> A i))" 
 	  by (simp add: measure_split)
 	hence "y j * measure M (B j) = (\<Sum>i\<in>R. y j * measure M (A i \<inter> B j))"
-	  by (simp add: setsum_times_real Int_commute)
+	  by (simp add: setsum_mult Int_commute)
 	also 
 	{ fix i 
 	  have "R=R" and "y j * measure M (A i \<inter> B j) = 
@@ -594,7 +592,7 @@ proof - txt{*\nopagebreak*}
       hence "0 = (\<Sum>k\<in>K-{i}. z1 k * \<chi>(C k) t)" 
 	by (simp only: setsum_0 setsum_cong)
       with K iK have "z1 i * \<chi>(C i) t = (\<Sum>k\<in>K. z1 k * \<chi>(C k) t)" 
-	by (simp add: setsum_diff_real)
+	by (simp add: setsum_diff1)
       also  
       from fg f g have "(\<Sum>i\<in>K. z1 i * \<chi>(C i) t) \<le> (\<Sum>i\<in>K. z2 i * \<chi>(C i) t)" 
 	by (simp add: le_fun_def)
@@ -605,7 +603,7 @@ proof - txt{*\nopagebreak*}
       hence "0 = (\<Sum>k\<in>K-{i}. z2 k * \<chi>(C k) t)" 
 	by (simp only: setsum_0 setsum_cong)
       with K iK have "(\<Sum>k\<in>K. z2 k * \<chi>(C k) t) = z2 i * \<chi>(C i) t" 
-	by (simp add: setsum_diff_real)
+	by (simp add: setsum_diff1)
       also
       from ti have "\<dots> = z2 i" 
 	by (simp add: characteristic_function_def)
@@ -630,8 +628,7 @@ proof - txt{*\nopagebreak*}
 	by (simp add: mult_right_mono)
     qed
   }
-  with a2 b2 show ?thesis 
-    by (simp add: setsum_mono_real)
+  with a2 b2 show ?thesis by (simp add: setsum_mono)
 qed
 
 lemma sfis_unique: 
@@ -697,7 +694,8 @@ lemma sfis_times:
 proof (cases)
   case (base A S x)
   {fix t
-    from prems have "z*f t = (\<Sum>i\<in>S. z * (x i * \<chi>(A i) t))" by (simp add: setsum_times_real)
+    from prems have "z*f t = (\<Sum>i\<in>S. z * (x i * \<chi>(A i) t))"
+      by (simp add: setsum_mult)
     also { fix i 
       have "S=S" and "z * (x i * \<chi>(A i) t) = (z * x i) * \<chi>(A i) t" by auto }
     hence "\<dots> = (\<Sum>i\<in>S. (z * x i) * \<chi>(A i) t)" by (rule setsum_cong)
@@ -712,7 +710,7 @@ proof (cases)
   also { fix i 
     have "S=S" and "(z * x i) * measure M (A i) = z * (x i * measure M (A i))" by auto }
   hence "(\<Sum>i\<in>S. z * x i * measure M (A i)) = (\<Sum>i\<in>S. z * (x i * measure M (A i)))" by (rule setsum_cong)
-  also from prems have "\<dots> = z*a" by (simp add: setsum_times_real)
+  also from prems have "\<dots> = z*a" by (simp add: setsum_mult)
   finally show ?thesis .
 qed(*>*)
 
@@ -767,7 +765,7 @@ proof (cases)
       from prems have "0 \<le> x i * \<chi>(A i) t" by (simp add: nonnegative_def characteristic_function_def)
     }
     with prems have "(\<Sum>i\<in>S. 0) \<le> f t"
-      by (simp del: setsum_constant add: setsum_mono_real)
+      by (simp del: setsum_constant add: setsum_mono)
     hence "0 \<le> f t" by (simp add: setsum_0)
   }
   thus ?thesis by (simp add: nonnegative_def)
@@ -932,7 +930,7 @@ proof cases
 	    z*(\<Sum>i\<in>S. \<chi>(B n) t * (a i * \<chi>(A i) t))" 
 	    by simp
 	  also have "\<dots> = z * \<chi>(B n) t * (\<Sum>i\<in>S. a i * \<chi>(A i) t)" 
-	    by (simp add: setsum_times_real[THEN sym])
+	    by (simp add: setsum_mult[THEN sym])
 	  also 
 	  from prems have "nonnegative s" 
 	    by (simp add: sfis_nn)
@@ -2295,5 +2293,5 @@ proof -
   ultimately show ?thesis 
     by (simp add: pos_le_divide_eq real_mult_commute)
 qed
-    
+
 end
