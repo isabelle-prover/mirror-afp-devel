@@ -141,9 +141,9 @@ theorem sum_of_naturals: (*Stolen from Isar_examples/Summation.thy by Markus Wen
   "2 * (\<Sum>i < Suc n. i) = n * (n + 1)"
   (is "?P n" is "?S n = _")
 proof (induct n)
-  show "?P 0" by simp
+  show "?P 0" by (simp add: lessThan_Suc) 
 next
-  fix n have "?S (n + 1) = ?S n + 2 * (n + 1)" by simp
+  fix n have "?S (n + 1) = ?S n + 2 * (n + 1)" by (simp add: lessThan_Suc)
   also assume "?S n = n * (n + 1)"
   also have "... + 2 * (n + 1) = (n + 1) * (n + 2)" by simp
   finally show "?P (Suc n)" by simp
@@ -158,11 +158,11 @@ proof (unfold surj_def)
     def x \<equiv> "z - (\<Sum>i < Suc r. i)"
     
     have "\<forall>r. r \<le>  (\<Sum>i < Suc r. i)"
-      by simp
+      by (simp add: lessThan_Suc) 
     hence "finite  {r. (\<Sum>i < Suc r. i) \<le> z}"
       by (rule NSLIMSEQ_finite_set)
     also have "0 \<in> {r. (\<Sum>i < Suc r. i) \<le> z}"
-      by simp
+      by (simp add: lessThan_Suc) 
     hence "{r. (\<Sum>i < Suc r. i) \<le> z} \<noteq> {}"
       by fast
     ultimately have a: "r \<in> {r. (\<Sum>i < Suc r. i) \<le> z} \<and> (\<forall>s \<in> {r. (\<Sum>i < Suc r. i) \<le> z}. s \<le> r)"
@@ -174,7 +174,7 @@ proof (unfold surj_def)
       hence "(\<Sum>i < Suc r. i)+(r+1)\<le>z"
 	using x_def by arith
       hence "(r+1) \<in>  {r. (\<Sum>i < Suc r. i) \<le> z}"
-	by simp
+	by (simp add: lessThan_Suc) 
       with a have "(r+1)\<le>r"
 	by simp
     }
