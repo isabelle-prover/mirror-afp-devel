@@ -1,3 +1,10 @@
+(*  Title:       Binary Search Trees, Tactic-Style
+    ID:          $Id: BinaryTree_TacticStyle.thy,v 1.2 2004-04-19 22:18:42 lsf37 Exp $
+    Author:      Viktor Kuncak, MIT CSAIL, November 2003
+    Maintainer:  Larry Paulson <Larry.Paulson@cl.cam.ac.uk>
+    License:     LGPL
+*)
+
 header {* Tactic-Style Reasoning for Binary Tree Operations *}
 theory BinaryTree_TacticStyle = Main:
 

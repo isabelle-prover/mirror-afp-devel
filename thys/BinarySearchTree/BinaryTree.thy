@@ -1,10 +1,17 @@
+(*  Title:       Binary Search Trees, Isar-Style
+    ID:          $Id: BinaryTree.thy,v 1.2 2004-04-19 22:18:42 lsf37 Exp $
+    Author:      Viktor Kuncak, MIT CSAIL, November 2003
+    Maintainer:  Larry Paulson <Larry.Paulson@cl.cam.ac.uk>
+    License:     LGPL
+*)
+
 header {* Isar-style Reasoning for Binary Tree Operations *}
 theory BinaryTree = Main:
 
 text {* We prove correctness of operations on 
  binary search tree implementing a set.
 
- This document is GPL.
+ This document is LGPL.
 
  Author: Viktor Kuncak, MIT CSAIL, November 2003 *}
 
