@@ -1,7 +1,12 @@
+body {
+  color: #000000;
+  background: #FFFFFF;
+}
+
 h1 {
  font: normal small-caps bold large sans-serif;
- color: white;
- background:  #2e2d4e;
+ color: #FFFFFF;
+ background: #2E2D4E;
  padding-top: 10px;
  padding-right: 10px;
  padding-bottom: 10px;
@@ -16,10 +21,10 @@ h1 font.first {
 
 table.nav {
  font: normal normal bold medium sans-serif;
- background-color: lightGray;
+ background-color: #D0D0D0;
  border-width: thin thin thin thin;
  border-style: solid solid solid solid;
-;
+ margin-top: 8ex;
 }
 
 
@@ -32,7 +37,7 @@ table.nav a:focus { font-weight:bold; color:#000000; text-decoration:underline }
 
 
 td.nav {
- background-color: white;
+ background-color: #FFFFFF;
  margin-top: 20px;
  margin-right: 20px;
  margin-bottom: 20px;
@@ -48,7 +53,8 @@ td.nav {
 
 table.descr {
  font: normal normal normal medium sans-serif;
- background-color: lightGray;
+ background-color: #D0D0D0;
+ margin-top: 20px;
  padding:  2ex 2ex 2ex 2ex;
  border-width: thin thin thin thin;
  border-style: solid solid solid solid;
@@ -57,14 +63,14 @@ table.descr {
 
 td.descr {
  font: normal normal normal medium sans-serif;
- background-color: lightGray;
+ background-color: #D0D0D0;
  padding:  2ex 2ex 2ex 2ex;
 ;
 }
 
 table.entries {
  font: normal normal normal medium sans-serif;
- background-color: lightGray;
+ background-color: #D0D0D0;
  border-width: thin thin thin thin;
  border-style: solid solid solid solid;
 ;
@@ -99,7 +105,7 @@ td.head {
 
 td.entry {
  font: normal normal normal medium sans-serif;
- color: black;
+ color: #000000;
  background-color: #E2E2E2;
  word-spacing: normal;
  letter-spacing: normal;
@@ -134,7 +140,7 @@ table.data {
 
 td.datahead {
  font: normal normal bold medium sans-serif;
- color: black;
+ color: #000000;
  background-color: #E2E2E2;
  margin:  1em 1em auto 0em;
  padding:  0.5ex 0.5ex 0.5ex 0.5ex;
@@ -145,7 +151,7 @@ td.datahead {
 
 td.data {
  font: normal normal normal medium sans-serif;
- color: black;
+ color: #000000;
  background-color: #E2E2E2;
  margin:  1em 1em auto 0em;
  padding:  0.5ex 0.5ex 0.5ex 0.5ex;
@@ -156,7 +162,7 @@ td.data {
 
 td.abstract {
  font: normal normal normal medium sans-serif;
- color: black;
+ color: #000000;
  background-color: #E2E2E2;
  margin:  1em 1em auto 0em;
  padding:  0.5ex 0.5ex 0.5ex 0.5ex;
@@ -175,7 +181,7 @@ table.links {
 
 td.links {
  font: normal normal normal medium sans-serif;
- color: black;
+ color: #000000;
  background-color: #E2E2E2;
  margin:  1em 1em 0em 0em;
  padding:  0.5ex 0.5ex 0.5ex 0.5ex;
@@ -187,10 +193,10 @@ td.links {
 div.date {
 	font-family: sans-serif;
 	font-size: small;
-	color: black;
+	color: #000000;
 	margin-top: 5ex;
 	padding-top: 1ex;
-    border-width: thin thin thin thin;
+	border-width: thin thin thin thin;
  	border-style: none none none none;
 	width: 100%;
 }
