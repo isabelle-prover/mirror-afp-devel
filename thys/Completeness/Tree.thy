@@ -147,7 +147,7 @@ lemma inheritedPropagateEq[rule_format]: assumes a: "inherited subs P"
   and c: "~(terminal subs delta)"
   shows "P(tree subs delta) = (!sigma:subs delta. P(tree subs sigma))"
   apply(insert fansD[OF b])
-  apply(subst treeEquation)
+  apply(subst treeEquation [of _ delta])
   apply(simp! add: inheritedInsertEq inheritedUNEq[symmetric] inheritedIncLevelEq)
   done
 
@@ -213,15 +213,14 @@ lemma boundedBySuc': "boundedBy N A \<Longrightarrow> boundedBy (Suc N) A"
 lemma boundedByIncLevel: "boundedBy n (incLevel ` (tree subs gamma)) = ( \<exists>m . n = Suc m & boundedBy m (tree subs gamma))";
   apply(cases n)
    apply(force simp add: boundedBy0 tree0) 
-  apply(subst treeEquation) 
-  apply(force simp add: incLevel_def boundedBy_def)
+  apply(force simp add: treeEquation [of _ gamma] incLevel_def boundedBy_def)
   done
 
 lemma boundedByUN: "boundedBy N (UN x:A. B x) = (!x:A. boundedBy N (B x))"
   by(simp add: boundedBy_def)
 
 lemma boundedBySuc[rule_format]: "sigma \<in> subs Gamma \<Longrightarrow> boundedBy (Suc n) (tree subs Gamma) \<longrightarrow> boundedBy n (tree subs sigma)"
-  apply(subst treeEquation)  back
+  apply(subst treeEquation [of _ Gamma]) 
   apply rule
   apply(simp add: boundedByInsert)
   apply(simp add: boundedByUN)
@@ -270,13 +269,11 @@ constdefs
   founded     :: "['a => 'a set,'a => bool,(nat * 'a) set] => bool"
   "founded subs Pred == %A. !(n,delta):A. terminal subs delta --> Pred delta"
 
-lemma foundedD[rule_format]: "founded subs P (tree subs delta) --> terminal subs delta --> P delta"
-  apply(subst treeEquation)
-  apply(simp add: founded_def) 
-  done
+lemma foundedD: "founded subs P (tree subs delta) ==> terminal subs delta ==> P delta"
+  by(simp add: treeEquation [of _ delta] founded_def)
 
 lemma foundedMono: "[| founded subs P A; \<forall>x. P x --> Q x |] ==> founded subs Q A";
-  apply(auto simp: founded_def) done
+  by (auto simp: founded_def) 
 
 lemma foundedSubs: "founded subs P (tree subs Gamma) \<Longrightarrow> sigma \<in> subs Gamma \<Longrightarrow> founded subs P (tree subs sigma)"
   apply(simp add: founded_def)

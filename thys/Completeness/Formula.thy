@@ -381,16 +381,14 @@ lemma evalF_subF_eq: "!phi theta. evalF M phi (subF theta A) = evalF M (phi o th
   apply(induct_tac A)
     apply(simp del: o_apply)
     apply(intro allI)
-    apply(rule arg_cong) back
+    apply(rule_tac f="sign signs" in arg_cong) 
     apply(simp add: map_compose)
    apply(simp del: o_apply)
   apply(intro allI)
   apply(simp del: o_apply)
-  apply(rule arg_cong) back
+  apply(rule_tac f="sign signs" in arg_cong) 
   apply(rule ball_cong) apply rule
-  apply(rule arg_cong) back
-(*  apply(rule arg_cong) back
-  -- "higher order unif can't figure out unif for argcong?"*)
+  apply(rule_tac f="sign signs" in arg_cong)
   apply(subgoal_tac "(vblcase x phi \<circ> vblcase zeroX (\<lambda>v. nextX (theta v))) = (vblcase x (phi \<circ> theta))")
   apply(simp del: o_apply)
   apply(rule ext)

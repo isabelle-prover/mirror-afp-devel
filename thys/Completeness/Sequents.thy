@@ -20,9 +20,7 @@ lemma evalS_equiv[rule_format]: "(equalOn (freeVarsFL Gamma) f g) --> (evalS M f
   apply (induct Gamma, simp, rule)
   apply(simp add: freeVarsFL_cons)
   apply(drule_tac equalOn_UnD)
-  apply (erule impE, simp, simp)
-  apply(rule arg_cong) back
-  apply(simp add: evalF_equiv)
+  apply(blast dest: evalF_equiv)
   done
 
 

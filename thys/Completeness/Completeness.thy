@@ -385,8 +385,7 @@ lemmas r = wf_induct[of "measure msrFn", OF wf_measure]
 lemmas r' = r[simplified measure_def inv_image_def less_than_def less_def[symmetric] mem_Collect_eq split]
 
 lemma r'': "(\<forall> x. (\<forall> y. ( ((msrFn::'a \<Rightarrow> nat) y) < ((msrFn :: 'a \<Rightarrow> nat) x)) \<longrightarrow> P y) \<longrightarrow> P x) \<Longrightarrow> P a"
-  apply(rule r') back
-  apply blast done
+  by (blast intro: r' [of P]) 
 
 lemma terminationRule[rule_format]: "! n. P n --> (~(P (Suc n)) | (P (Suc n) & msrFn (Suc n) < (msrFn::nat => nat) n)) ==> P m --> (? n . P n & ~(P (Suc n)))"
   (concl is "?P m") 
@@ -506,8 +505,8 @@ lemma lemmA:
 \    EV (contains f (i,A)) |] \
 \ ==> ? n nAs. ~SATAxiom (sequent (f n)) & (nforms (f n) = (i,A) # nAs & f (Suc n) : subs (f n))"
   apply(frule containsConsiders) apply(assumption+)
-  apply(unfold EV_def) apply(erule exE) back
-  apply(frule considersContains)
+  apply(unfold EV_def)
+  apply(erule exE, frule considersContains)
   apply(unfold considers_def)
   apply(case_tac "snd (f n)") 
   apply force
@@ -533,11 +532,12 @@ lemma evContainsConj: "[| EV (contains f (i,FConj Pos A0 A1));
   apply(subgoal_tac "EV (\<lambda> n. contains f (0,A0) n | contains f (0,A1) n)")
   apply(simp add: EV_disj)
   apply(unfold EV_def)
-  apply(erule exE) back 
-  apply(rule_tac x="Suc n" in exI)
-  apply(clarify, simp add: subs_def2 Let_def)
+  apply clarify
+  apply(rename_tac n n' nAs, rule_tac x="Suc n'" in exI)
+  apply(simp add: subs_def2 Let_def)
   apply(simp add: subsFConj_def)
-  apply (simp add: contains_def nforms_def, auto) done
+  apply (simp add: contains_def nforms_def, auto) 
+  done
 
 lemma evContainsDisj: "[| EV (contains f (i,FConj Neg A0 A1)); 
   branch subs gamma f; !n . ~ proofTree (tree subs (f n))
