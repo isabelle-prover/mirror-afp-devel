@@ -459,8 +459,8 @@ lemma measure_additive: assumes ms: "measure_space M"
     measure M a + measure M b"
     by simp
   ultimately
-  have "measure M (a \<union> b) = suminf (\<lambda>n. measure M (trivial_series2 a b n))"
-    and "Measure.measure M a + Measure.measure M b = suminf (\<lambda>n. measure M (trivial_series2 a b n))"
+  have "measure M (a \<union> b) = (\<Sum>n. measure M (trivial_series2 a b n))"
+    and "Measure.measure M a + Measure.measure M b = (\<Sum>n. measure M (trivial_series2 a b n))"
     by (simp_all add: sums_unique)
   thus ?thesis by simp
 qed
