@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Generalize.thy
-   ID:        $Id: Generalize.thy,v 1.3 2004-04-19 22:23:42 lsf37 Exp $
+   ID:        $Id: Generalize.thy,v 1.4 2004-05-17 05:27:32 lsf37 Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
    License:   LGPL
@@ -60,7 +60,6 @@ apply (case_tac "nat : free_tv ($ S A) ")
 apply (simp (no_asm_simp))
 apply fast
 apply (simp (no_asm_simp))
-apply fast
 apply simp
 apply fast
 done
