@@ -19,12 +19,12 @@
       <!-- content -->
 
 <div align="center">
-<p> </p>
+<p>&nbsp;</p>
 <h1><font class="first">T</font>he
     <font class="first">A</font>rchive of
     <font class="first">F</font>ormal
     <font class="first">P</font>roofs</h1>
-<p> </p>
+<p>&nbsp;</p>
 
 <table width="80%" class="entries">
   <tbody>
@@ -36,7 +36,7 @@ of a scientific journal. Submissions are refereed.</td></tr>
 </tbody>
 </table>
 
-<p> </p>
+<p>&nbsp;</p>
 
 <table width="80%" class="entries">
   <tbody>
@@ -84,69 +84,69 @@ of a scientific journal. Submissions are refereed.</td></tr>
 <tr><td class="entry">
 2004-09-20:
 <a href="entries/Completeness.shtml">Completeness theorem</a>
-<br>Author:  
+<br>Author:&nbsp;&nbsp;
 James Margetson and 
 <a href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a></td></tr>
 
 <tr><td class="entry">
 2004-07-09:
 <a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling Exceptions Correctly</a>
-<br>Author:  
+<br>Author:&nbsp;&nbsp;
  <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
-2004-06-24:  
+2004-06-24:&nbsp;&nbsp;
 <a href="entries/Depth-First-Search.shtml">Depth First Search</a>
-<br>Author:  
+<br>Author:&nbsp;&nbsp;
 Toshiaki Nishihara and <a
 href="http://www.score.is.tsukuba.ac.jp/~minamide/">Yasuhiko Minamide</a>
 </td></tr>
 
 <tr><td class="entry">
-2004-05-18:  
+2004-05-18:&nbsp;&nbsp;
 <a href="entries/Group-Ring-Module.shtml">Groups, Rings and Modules</a>
 <br>Author: Hidetsune Kobayashi, L. Chen and H. Murao
 </td></tr>
 
-<tr><td class="entry">2004-04-26:   <a href="entries/Lazy-Lists-II.shtml">Lazy
+<tr><td class="entry">2004-04-26:&nbsp;&nbsp; <a href="entries/Lazy-Lists-II.shtml">Lazy
 Lists II</a><br>
-Author:  
+Author:&nbsp;&nbsp;
 <a href="http://www.informatik.uni-freiburg.de/~friedric/">Stefan Friedrich</a></td></tr>
 
-<tr><td class="entry">2004-04-26:   <a href="entries/Topology.shtml">Topology</a><br>
-Author:  
+<tr><td class="entry">2004-04-26:&nbsp;&nbsp; <a href="entries/Topology.shtml">Topology</a><br>
+Author:&nbsp;&nbsp;
 <a href="http://www.informatik.uni-freiburg.de/~friedric/">Stefan Friedrich</a></td></tr>
 
 <tr><td class="entry">
 2004-04-05:
 <a href="entries/BinarySearchTree.shtml">Binary Search Trees</a>
-<br>Author:  
+<br>Author:&nbsp;&nbsp;
 <a href="http://www.mit.edu/people/vkuncak/">Viktor Kuncak</a></td></tr>
 
 <tr><td class="entry">
-2004-03-30:  
+2004-03-30:&nbsp;&nbsp;
 <a href="entries/Functional-Automata.shtml">Functional Automata</a>
-<br>Author:  
+<br>Author:&nbsp;&nbsp;
 <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
-2003-03-19:  
+2003-03-19:&nbsp;&nbsp;
 <a href="entries/MiniML.shtml">Mini ML</a>
-<br>Author: Wolfgang Naraschewski and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+<br>Author:&nbsp;Wolfgang Naraschewski and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
-2004-03-19:  
+2004-03-19:&nbsp;&nbsp;
 <a href="entries/AVL-Trees.shtml">AVL Trees</a>
-<br>Author: Cornelia Pusch and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+<br>Author:&nbsp;Cornelia Pusch and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
-2004-02-25:  
+2004-02-25:&nbsp;&nbsp;
 <a href="entries/Example-Submission.shtml">Example Submission</a>
-<br>Author:  
+<br>Author:&nbsp;&nbsp;
 <a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>
 </td></tr>    
 
