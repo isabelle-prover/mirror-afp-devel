@@ -53,7 +53,7 @@ are defined.</td>
 							</table>
 							<p>&nbsp;</p>
 							<!-- entry directory name: -->
-<!--#set var="name" value="???" -->
+<!--#set var="name" value="Lazy-Lists-II" -->
 
 <!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
 <!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
@@ -63,17 +63,17 @@ are defined.</td>
   <tbody>
     <tr>
   <td class="links">
-	<a href="%3c!--#echo var="doc" -->">Proof document</a>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
 	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
-	<a href="%3c!--#echo var="browse" -->">Browse theories</a>
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
 	</td></tr>
     <tr>
   <td class="links"> 
-	<a href="%3c!--#echo var="tar" -->">Download this entry</a>
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
     <tr><td class="links">Older releases:	None</td></tr>
@@ -82,6 +82,6 @@ are defined.</td>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2004-04-26 14:54:53 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2004-06-22 01:34:35 $, $Revision: 1.1 
 $</div></body>
 </html>
