@@ -13,31 +13,8 @@
   <tbody>
     <tr>
       <td width="20%" align="center" valign="top">
-      <!-- navigation -->
-
-	  <p> </p>
-
-	  <a href="http://isabelle.in.tum.de"><img src="images/isabelle.png"
-width="100" height="86" border=0></a>
-	  <p> </p>
-	  <p> </p>
-
-	  <table class="nav">
-      <tr><td class="nav" width="100%"><a href="index.html">Home</a> </td></tr>
-      <tr><td class="nav"><a href="about.html">About</a> </td></tr>
-      <tr><td class="nav"><a href="submitting.html">Submission Guidelines</a>
-</td></tr>      <tr><td class="nav"><a href="search.html">Search</a> </td></tr>
-      <tr><td class="nav"><a href="download.html">Download</a> </td></tr>
-      </table>
-
-	  <p> </p>
-	  <p> </p>
-	<a
-    href="http://sourceforge.net"><img
-    src="http://sourceforge.net/sflogo.php?group_id=101909&amp;type=1"
-    width="88" height="31" border="0" alt="SourceForge.net Logo"
-    /></a>
-
+  <!-- navigation -->
+  <!--#include file="nav.html"-->
       </td>
       <td width="80%" valign="top">
       <!-- content -->

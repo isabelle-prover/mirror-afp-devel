@@ -13,31 +13,8 @@
 <tbody>
 	<tr>
 	<td width="20%" align="center" valign="top">
-	<!-- navigation -->
-
-	<p>&nbsp;</p>
-
-	<a href="http://isabelle.in.tum.de"><img src="images/isabelle.png"
-width="100" height="86" border=0></a>
-	<p>&nbsp;</p>
-	<p>&nbsp;</p>
-
-	<table class="nav">
-	<tr><td class="nav" width="100%"><a href="index.html">Home</a> </td></tr>
-	<tr><td class="nav"><a href="about.html">About</a> </td></tr>
-	<tr><td class="nav"><a href="submitting.html">Submission Guidelines</a>
-</td></tr>      <tr><td class="nav"><a href="search.html">Search</a> </td></tr>
-	<tr><td class="nav"><a href="download.html">Download</a> </td></tr>
-	</table>
-
-	<p>&nbsp;</p>
-	<p>&nbsp;</p>
-	<a
-	href="http://sourceforge.net"><img
-	src="http://sourceforge.net/sflogo.php?group_id=101909&amp;type=1"
-	width="88" height="31" border="0" alt="SourceForge.net Logo"
-	/></a>
-
+  <!-- navigation -->
+  <!--#include file="nav.html"-->
 	</td>
 	<td width="80%" valign="top">
 	<!-- content -->
@@ -49,15 +26,17 @@ width="100" height="86" border=0></a>
 <p>&nbsp;</p>
 
 <p>&nbsp;</p>
-
+<!--#config timefmt="%Y-%m-%d" -->
 <table width="80%" class="descr">
 <tbody>
 	<tr><td class="head"><b>Current stable version</b> (for current Isabelle
 	release):</td></tr>
-		<tr></tr><td class="entry">&nbsp;&nbsp;<a
+		<tr></tr><td class="entry">&nbsp;&nbsp;
+      <!--#flastmod file="release/afp-current.tar.gz" -->:&nbsp;&nbsp;
+      <a
 			href="release/afp-current.tar.gz"><tt>afp-current.tar.gz</tt></a>
-                        <!--#flastmod file="index.html" -->
-                        </td></tr>
+    &nbsp;&nbsp;[<!--#fsize file="release/afp-current.tar.gz" -->]
+    </td></tr>
 
 		<tr><td class="head">Older stable versions:</td></tr>
 		<tr><td class="entry">Please use the <a
@@ -67,8 +46,11 @@ width="100" height="86" border=0></a>
 	<tr><td class="head">Development snapshot (for development snapshot
 	of Isabelle):</td></tr>
 
-	<tr><td class="entry">&nbsp;&nbsp;<a
-			href="release/afp-devel.tar.gz"><tt>afp-devel.tar.gz</tt></a></td></tr></tr>
+	<tr><td class="entry">&nbsp;&nbsp;not available yet
+      <!-- <a
+			href="release/afp-devel.tar.gz"><tt>afp-devel.tar.gz</tt></a>
+      -->
+  </td></tr></tr>
 
 	<tr><td class="head">CVS access:</td></tr>	
 

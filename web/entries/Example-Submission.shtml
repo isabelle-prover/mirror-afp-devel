@@ -14,30 +14,7 @@
     <tr>
       <td width="20%" align="center" valign="top">
       <!-- navigation -->
-
-	  <p> </p>
-
-	  <a href="http://isabelle.in.tum.de"><img src="../images/isabelle.png" width="100" height="86" border=0></a>
-
-	  <p> </p>
-	  <p> </p>
-
-	  <table class="nav">
-      <tr><td class="nav" width="100%"><a href="../index.html">Home</a> </td></tr>
-      <tr><td class="nav"><a href="../about.html">About</a> </td></tr>
-      <tr><td class="nav"><a href="../submitting.html">Submission Guidelines</a> </td></tr>
-      <tr><td class="nav"><a href="../search.html">Search</a> </td></tr>
-      <tr><td class="nav"><a href="../download.html">Download</a> </td></tr>
-      </table>
-
-	  <p> </p>
-	  <p> </p>
-	<a
-    href="http://sourceforge.net"><img
-    src="http://sourceforge.net/sflogo.php?group_id=101909&amp;type=1"
-    width="88" height="31" border="0" alt="SourceForge.net Logo"
-    /></a>
-
+      <!--#include file="nav.html"-->
       </td>
       <td width="80%" valign="top">
       <!-- content -->
@@ -71,24 +48,35 @@ submission.
 
 <p> </p>
 
+<!--#set var="name" value="Example-Submission" -->
+
+<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
 <table class="links">
   <tbody>
-    <tr><td class="links">
-	<a href="../browser_info/current/HOL/Example-Submission/document.pdf">Proof document</a>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
 	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
 	</td></tr>
-    <tr><td class="links">
-	<a href="../browser_info/current/HOL/Example-Submission/index.html">Browse theories</a>
-	</td></tr>
-    <tr><td class="links"> 
-	<a href="../release/afp-Example-Submission-current.tar.gz">Download this entry</a>
-	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
     <tr><td class="links">Older releases:	None</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2004-02-25 02:37:14 $, $Revision: 1.1 $</div>
+<div align="right" class="date">$Date: 2004-03-01 23:42:01 $, $Revision: 1.2 $</div>
 </body>
 </html>
