@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.3 2004-03-09 21:09:27 lsf37 Exp $
+# $Id: regression,v 1.4 2004-03-12 21:08:47 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 # License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
@@ -19,15 +19,17 @@ ISABELLE_DEVEL=~/isadist/Isabelle
 WORKING_COPY=~/afp
 DATE=$(date "+%Y-%m-%d")
 
-LOG=~/afp-log/afp-test-$DATE.log
+LOG=~/afp-log/afp-test
 MASTERLOG=~/afp-log/afp-test.log
+REPORT=~/afp-log/report
 
 SHORT=sun-poly
 SETTINGS=~/settings/$SHORT
 
-#
-MAIL=mail
+TMP=/tmp/regression.mail.tmp
+while [ -e $TMP ]; do TMP=$TMP.x; done
 
+#
 PRG="$(basename "$0")"
 
 ## functions
@@ -69,14 +71,19 @@ if [ "$1" == "-" ]; then
   cat $SETTINGS >> $ISABELLE_DEVEL/etc/settings
   ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
+  LOG=$LOG-devel-$DATE.log
 else
   TAG="-r $1"
   AFP_VER="release ($1)"
   WORKING_COPY=$WORKING_COPY/release
   ISATOOL=$ISABELLE_RELEASES/$1/bin/isatool
+  LOG=$LOG-$1-$DATE.log
 fi
 
-echo "Start test at `date`" >> $LOG
+. $WORKING_COPY/admin/main-config || fail "could not read main-config."
+MAIL=$WORKING_COPY/admin/mail-attach
+
+echo "Start test at `date`" > $LOG
 echo >> $LOG
 echo "begin cvs update" >> $LOG
 
@@ -88,33 +95,52 @@ echo "end cvs update" >> $LOG
 echo >> $LOG
 
 # run test
-$WORKING_COPY/admin/testall -t $ISATOOL -c >> $LOG 2>&1
-SUCCESS=$?
+nice $WORKING_COPY/admin/testall -t $ISATOOL -c >> $LOG 2>&1
+FAILURE=$?
 
 ELAPSED=$("$HOME/bin/showtime" "$SECONDS")
 
 echo >> $LOG
 echo "End test on `date`, elapsed time: $ELAPSED" >> $LOG
 
+# generate report
+DIFF=`$WORKING_COPY/admin/report.pl $LOG $REPORT`
+
+# send mail on status changes
+if [ -n "$DIFF" ]; then
+  cat > $TMP <<EOF
+The status of the following AFP entries changed:
+$DIFF
+
+Tested version: $AFP_VER
+Test ended on: $HOSTNAME, `date`.
+
+Have a nice day,
+  isatest
+
+EOF
+  for R in $MAIN_NOTIFY; do
+    $MAIL 'status changed (AFP)' "$R" $TMP $REPORT $LOG
+  done  
+  # do not send duplicate mail
+  MAIN_NOTIFY=""
+fi
+
 # send email to maintainer if there was a problem
-if [ "$SUCCESS" != "0" ]; then
+if [ "$FAILURE" != "0" ]; then
   FAIL=`tail -4 $LOG | head -1`
   echo "`date`, $AFP_VER: test failed on [$FAIL]. Elapsed time: $ELAPSED" >> $MASTERLOG
   for E in $FAIL; do
     (
       . $WORKING_COPY/thys/$E/config || fail "error reading config for $E"
       if [ "$FREQUENT" == "yes" ]; then
-        for R in $NOTIFY; do
-          $MAIL $R <<EOF
-To: $NOTIFY
-Subject: test failed (Archive of Formal Proofs)
-
-Your session [$E] in the automated afp test failed. 
+        cat > $TMP <<EOF
+Session [$E] in the automated afp test failed. 
 Tested version: $AFP_VER
 Test ended on: $HOSTNAME, `date`.
 
 To reproduce the error, check out the $AFP_VER version of the
-archive from sourceforge and run isatool make on your session.
+archive from sourceforge and run "isatool make" on your session.
 
 This is an automatically generated email. To switch off these 
 notifications, edit thys/$E/config and cvs commit the changes.
@@ -123,6 +149,8 @@ Have a nice day,
   isatest
 
 EOF
+        for R in $NOTIFY $MAIN_NOTIFY; do
+          $MAIL 'test failed (Archive of Formal Proofs)' "$R" $TMP $LOG
         done
       fi
     )
@@ -130,3 +158,6 @@ EOF
 else
   echo "`date`, $AFP_VER: All tests successful. Elapsed time: $ELAPSED" >> $MASTERLOG
 fi
+
+# clean up
+rm -f $TMP
