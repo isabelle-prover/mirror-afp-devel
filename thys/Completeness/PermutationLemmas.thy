@@ -62,14 +62,6 @@ subsection "Properties closed under Perm and Contr hold for x iff hold for remdu
 
   -- "FIXME some stuff may be useful elsewhere, particularly connection between remdups, lists, set and permutations"
 
-lemma length_remdups_leq: "length (remdups x) <= length x"
-  apply(induct x, auto) done
-
-lemma length_remdups_eq[rule_format]: "(length (remdups x) = length x) --> remdups x = x"
-  apply(induct x, auto) 
-  apply(subgoal_tac "length (remdups x) <= length x")
-  apply arith
-  by(rule length_remdups_leq)
 
 lemma remdups_neq': "! ws. length ws = n --> remdups ws ~= ws --> (? xs ys zs y. ws = xs@[y]@ys@[y]@zs)"
   apply (induct n, simp, rule)
@@ -151,14 +143,6 @@ lemma rem_notin: "x ~: set xs ==> rem x xs = xs"
   apply(rule filter_True)
   by force
 
-lemma set_nil[iff]: "(set y = {}) = (y = [])"
-  apply(induct y)
-  by auto
-
-lemma set_nil'[iff]: "({} = set y) = (y = [])"
-  apply(induct y)
-  by auto
-
 lemma t: "y <= x ==> y < Suc x" by arith
 
 lemma distinct_remdups_id: "distinct xs ==> remdups xs = xs"
@@ -228,7 +212,7 @@ lemma set_remdups: "! y. (set x = set y) --> (remdups x <~~> remdups y)"
     apply(drule_tac sym) apply(drule_tac sym) back apply simp
    apply(subgoal_tac "length (a#list) <= length x")
     apply force
-   apply(drule_tac sym) apply simp apply(rule length_remdups_leq)
+   apply(drule_tac sym) apply simp
   apply(subgoal_tac "set x = set (remdups x)") 
    apply force
   apply(rule sym) apply(rule set_remdups)

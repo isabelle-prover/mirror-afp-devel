@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.7 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.8 2004-10-14 08:51:10 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 
@@ -167,12 +167,12 @@ apply (rule iffI)
  apply (erule exE conjE)+
  apply simp
  apply (subgoal_tac
-      "(!m:set(butlast(trace d n xsb)). m < Suc n) & deltas d xsb n = n")
+      "(!m:set(butlast(trace d k xsb)). m < Suc k) & deltas d xsb k = k")
   apply (simp add: set_trace_conv butlast_append ball_Un)
  apply (erule star.induct)
   apply (simp)
  apply (simp add: set_trace_conv butlast_append ball_Un)
-apply (case_tac "n : set(butlast(trace d i xs))")
+apply (case_tac "k : set(butlast(trace d i xs))")
  prefer 2 apply (rule disjI1)
  apply (blast intro:lem)
 apply (rule disjI2)
