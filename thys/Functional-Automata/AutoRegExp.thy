@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoRegExp.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: AutoRegExp.thy,v 1.6 2005-03-11 09:53:26 lp15 Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -26,7 +26,7 @@ consts_code
   "op :"   ("(_ mem _)")
   "op Un"  ("(_ union _)")
   "image"  ("map")
-  "UNION"  ("(fn A => fn f => flat(map f A))")
+  "UNION"  ("(fn A => fn f => List.concat(map f A))")
   "Bex"    ("(fn A => fn f => exists f A)")
 
 generate_code
