@@ -79,12 +79,16 @@ href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:
+    <ul>
+    <li>Isabelle 2003: <a href="../release/afp-AVL-Trees-2004-03-19.tar.gz">afp-AVL-Trees-2004-03-19.tar.gz</a>.
+    </ul>
+    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2004-03-21 21:07:36 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2004-04-15 04:48:30 $, $Revision: 1.1 
 $</div></body>
 </html>

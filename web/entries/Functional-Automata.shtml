@@ -84,12 +84,16 @@ finite deterministic ones) into regular sets.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:
+    <ul>
+    <li>Isabelle 2003: <a href="../release/afp-Functional-Automata-2004-03-30.tar.gz">afp-Functional-Automata-2004-03-30.tar.gz</a>
+    </ul>
+    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2004-03-31 14:06:04 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2004-04-15 04:48:30 $, $Revision: 1.1 
 $</div></body>
 </html>
