@@ -1,5 +1,5 @@
 (*  Title:       An example submission to the Archive of Formal Proof
-    ID:          $Id: Submission.thy,v 1.1 2004-02-25 02:49:35 lsf37 Exp $
+    ID:          $Id: Submission.thy,v 1.2 2004-02-25 06:22:34 lsf37 Exp $
     Author:      Gerwin Klein <kleing@cse.unsw.edu.au>, 2004
     Maintainer:  Gerwin Klein <kleing@cse.unsw.edu.au>
     License:     LGPL
@@ -35,7 +35,7 @@ text {*
   \end{itemize}
 
   The submission of the example you are reading is at
-  \url{insert-example-tar-gz-url}.  
+  \url{http://afp.sf.net/release/afp-Example-Submission-current.tar.gz}.  
 *}
 
 section "Proof styles"

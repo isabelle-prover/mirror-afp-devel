@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: publish,v 1.1 2004-02-25 02:25:05 lsf37 Exp $
+# $Id: publish,v 1.2 2004-02-25 06:22:34 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 # License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
@@ -158,7 +158,9 @@ fi
 if [ "$RESPONSE" == "y" ]; then
     echo
     echo "Publishing to [$DEST]"
-    rsync -rvz --links --rsh=ssh web/ $DEST && echo "Finished."
+    chmod -R g=u web
+    find web -type d | xargs chmod g+s
+    rsync -rpvz --links --rsh=ssh web/ $DEST && echo "Finished."
 else
     echo
     echo "Aborted."
