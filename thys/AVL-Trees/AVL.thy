@@ -1,11 +1,14 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL.thy,v 1.3 2004-05-25 14:18:34 lsf37 Exp $
+    ID:         $Id: AVL.thy,v 1.4 2004-06-22 01:46:25 lsf37 Exp $
     Author:     Cornelia Pusch and Tobias Nipkow, converted to Isar by Gerwin Klein
+    Author:     contributions by Achim Brucker, Burkhart Wolff and Jan Smaus
     Maintainer: Gerwin Klein <gerwin.klein@nicta.com.au>
     Copyright:  1998 TUM
+
+    see the file Changelog for a list of changes
 *)
 
-header "AVL Trees"
+header "Parameterized AVL Trees"
 
 theory AVL = Main:
 
@@ -16,19 +19,19 @@ text {*
   texts and for extensions (delete operation). 
 *}
 
-(*
+text {*
   This version works exclusively with nat. Balance check could be
   simplified by working with int: 
-  is_bal (MKT n l r) = (abs(int(height l) - int(height r)) <= 1 & is_bal l & is_bal r)
-*)
+  @{text "is_bal (MKT n l r) = (abs(int(height l) - int(height r)) <= 1 & is_bal l & is_bal r)"}
+*}
 
-datatype tree = ET | MKT nat tree tree
+datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree"
 
 consts
-  height :: "tree \<Rightarrow> nat"
-  is_in  :: "nat \<Rightarrow> tree \<Rightarrow> bool"
-  is_ord :: "tree \<Rightarrow> bool"
-  is_bal :: "tree \<Rightarrow> bool"
+  height :: "'a tree \<Rightarrow> nat"
+  is_in  :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool" 
+  is_ord :: "('a::order) tree \<Rightarrow> bool" 
+  is_bal :: "'a tree \<Rightarrow> bool" 
 
 primrec
   "height ET = 0"
@@ -50,21 +53,31 @@ primrec
                          height l = 1+height r \<or>
                          height r = 1+height l) \<and> 
                          is_bal l \<and> is_bal r)"
+text {* 
+  We also provide a more efficient variant of @{text is_in}: 
+*}
 
+consts
+  is_in_eff   :: "('a::order) \<Rightarrow> 'a tree \<Rightarrow> bool"
+primrec
+ "is_in_eff k ET = False"
+ "is_in_eff k (MKT n l r) = (if k = n then True
+                                      else (if k<n then (is_in_eff k l)
+                                      else (is_in_eff k r)))"
 
 datatype bal = Just | Left | Right
 
 constdefs
-  bal :: "tree \<Rightarrow> bal"
+  bal :: "'a tree \<Rightarrow> bal"
   "bal t \<equiv> case t of ET \<Rightarrow> Just
                    | (MKT n l r) \<Rightarrow> if height l = height r then Just
                                     else if height l < height r then Right else Left"
 
 consts
-  r_rot  :: "nat \<times> tree \<times> tree \<Rightarrow> tree"
-  l_rot  :: "nat \<times> tree \<times> tree \<Rightarrow> tree"
-  lr_rot :: "nat \<times> tree \<times> tree \<Rightarrow> tree"
-  rl_rot :: "nat \<times> tree \<times> tree \<Rightarrow> tree"
+  r_rot  :: "'a \<times> 'a tree \<times> 'a tree \<Rightarrow> 'a tree"
+  l_rot  :: "'a \<times> 'a tree \<times> 'a tree \<Rightarrow> 'a tree"
+  lr_rot :: "'a \<times> 'a tree \<times> 'a tree \<Rightarrow> 'a tree"
+  rl_rot :: "'a \<times> 'a tree \<times> 'a tree \<Rightarrow> 'a tree"
 
 recdef r_rot "{}"
   "r_rot (n, MKT ln ll lr, r) = MKT ln ll (MKT n lr r)"
@@ -80,18 +93,18 @@ recdef rl_rot "{}"
 
 
 constdefs 
-  l_bal :: "nat \<Rightarrow> tree \<Rightarrow> tree \<Rightarrow> tree"
+  l_bal :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
   "l_bal n l r \<equiv> if bal l = Right 
                   then lr_rot (n, l, r)
                   else r_rot (n, l, r)"
 
-  r_bal :: "nat \<Rightarrow> tree \<Rightarrow> tree \<Rightarrow> tree"
+  r_bal :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
   "r_bal n l r \<equiv> if bal r = Left
                   then rl_rot (n, l, r)
                   else l_rot (n, l, r)"
 
 consts
-  insert :: "nat \<Rightarrow> tree \<Rightarrow> tree"
+  insert :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
 primrec
 "insert x ET = MKT x ET ET"
 "insert x (MKT n l r) = 
@@ -106,8 +119,6 @@ primrec
               in if height r' = 2+height l
                  then r_bal n l r'
                  else MKT n l r')"
-
-
 
 subsection "is-bal"
 
@@ -341,7 +352,7 @@ done
 
 
 lemma is_in_l_rot:
-"\<lbrakk> height r = Suc(Suc(height l)); bal r ~= Left \<rbrakk>
+"\<lbrakk> height r = Suc(Suc(height l)); bal r \<noteq> Left \<rbrakk>
   \<Longrightarrow> is_in x (l_rot (n, l, r)) = is_in x (MKT n l r)"
 apply (unfold bal_def)
 apply (cases r)
@@ -359,6 +370,24 @@ apply (simp add: l_bal_def is_in_lr_rot is_in_r_rot r_bal_def
 apply blast
 done
 
+lemma is_in_ord_l [rule_format (no_asm)]: 
+"is_ord (MKT n l r) \<longrightarrow> x < n \<longrightarrow> is_in x (MKT n l r) \<longrightarrow> is_in x l"
+apply(auto)
+done
+
+lemma is_in_ord_r [rule_format (no_asm)]: 
+"is_ord (MKT n l r) \<longrightarrow> n < x \<longrightarrow> is_in x (MKT n l r) \<longrightarrow> is_in x r"
+apply (auto)
+done
+
+subsection "is-in-eff"
+
+lemma is_in_eff_correct [rule_format (no_asm)]: "is_ord t \<longrightarrow> (is_in k t = is_in_eff k t)"
+apply (induct_tac "t")
+apply (simp (no_asm))
+apply (case_tac "k = a")
+apply (auto);
+done
 
 subsection "is-ord"
 
@@ -372,7 +401,7 @@ apply (rename_tac t1 t2)
 apply (case_tac t2)
  apply simp
 apply simp
-apply (blast intro: less_trans)
+apply (blast intro: order_less_trans)
 done
 
 
@@ -381,7 +410,8 @@ lemma is_ord_r_rot:
   \<Longrightarrow> is_ord (r_rot (n, l, r))"
 apply (unfold bal_def)
 apply (cases l)
-apply (auto intro: less_trans)
+apply (simp (no_asm_simp))
+apply (auto intro: order_less_trans)
 done
 
 
@@ -395,7 +425,7 @@ apply (rename_tac t1 t2)
 apply (case_tac t1)
  apply (simp add: le_def)
 apply simp
-apply (blast intro: less_trans)
+apply (blast intro: order_less_trans)
 done
 
 
@@ -406,17 +436,74 @@ apply (unfold bal_def)
 apply (cases r)
  apply simp
 apply simp
-apply (blast intro: less_trans)
+apply (blast intro: order_less_trans)
+done
+
+(* insert operation presreves is_ord property *)
+
+lemma is_ord_insert: 
+"is_ord t \<Longrightarrow> is_ord(insert (x::'a::linorder) t)"
+apply (induct t)
+ apply simp
+apply (cut_tac x = "x" and y = "a" in linorder_less_linear)
+apply (fastsimp simp add: l_bal_def is_ord_lr_rot is_ord_r_rot r_bal_def 
+                           is_ord_l_rot is_ord_rl_rot is_in_insert)
 done
 
 
-lemma is_ord_insert: 
-"is_ord t \<Longrightarrow> is_ord(insert x t)"
+subsection "An extended tree datatype with labels for the balancing information"
+
+datatype 'a etree = EET |  EMKT bal 'a "'a etree" "'a etree"
+
+
+text {*
+Pruning, i.e. throwing away the balancing labels:
+*}
+consts
+  prune :: "'a etree \<Rightarrow> 'a tree"
+primrec
+  "prune EET = ET" 
+  "prune (EMKT b n l r) =
+		         MKT n (prune l) (prune r)"
+
+text {*
+Test if the balancing arguments are correct:
+*}
+consts
+  correct :: "'a etree \<Rightarrow> bool"
+primrec
+  "correct EET = True"
+  "correct (EMKT b n l r) =
+	         (b = bal (MKT n (prune l) (prune r))\<and> correct l\<and> correct r)" 
+
+text {*
+  Add correct balancing labels:
+*}
+consts
+ label :: "'a tree \<Rightarrow> 'a etree"
+primrec
+ "label ET = EET"
+ "label (MKT n l r) =
+	                 EMKT (bal (MKT n l r)) n (label l)
+	                                              (label r)"
+
+lemma correct_prune: "correct (EMKT b n l r) \<longrightarrow> (bal (prune (EMKT b n l r)) = b)"
+apply (simp (no_asm_simp) add: bal_def)
+done
+
+subsection "Reversing of prune and label"
+
+lemma prune_label: "prune (label t) = t"
+apply (induct_tac "t")
+apply (simp (no_asm))
+apply (simp (no_asm))
+apply (erule_tac conjI)
+apply assumption 
+done
+
+lemma label_prune: "correct t \<Longrightarrow> label (prune t) = t"
 apply (induct t)
- apply simp
-apply (cut_tac m = "x" and n = "nat" in less_linear)
-apply (fastsimp simp add: l_bal_def is_ord_lr_rot is_ord_r_rot r_bal_def
-                          is_ord_l_rot is_ord_rl_rot is_in_insert)
+apply auto
 done
 
 end
