@@ -950,7 +950,7 @@ done
 lemma BNTr8:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x)\<rbrakk> \<Longrightarrow> \<Union> (WWa D f a) \<in> (WWa D f a)"
 apply (simp add:WWa_def)
 apply (subgoal_tac "\<Union>{W. Wa D W f a} \<subseteq> carrier D")
- apply (subst Wa_def)
+ apply (simplesubst Wa_def)
 apply (rule conjI)
  apply assumption
  prefer 2

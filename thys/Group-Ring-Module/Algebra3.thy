@@ -125,16 +125,12 @@ done
 lemma ZassenhausTr2_7: "\<lbrakk>group G; H \<guillemotleft> G; H1 \<guillemotleft> G; K \<guillemotleft> G; K1 \<guillemotleft> G; H1 \<lhd> grp G H; 
 K1 \<lhd> grp G K; a \<in> carrier G; x \<in> carrier G;  y \<in> carrier G\<rbrakk> \<Longrightarrow> 
   a \<cdot>\<^sub>G ( x \<cdot>\<^sub>G y) \<cdot>\<^sub>G a\<inverse>\<^sup>G =    a \<cdot>\<^sub>G x \<cdot>\<^sub>G a\<inverse>\<^sup>G \<cdot>\<^sub>G (  a \<cdot>\<^sub>G y \<cdot>\<^sub>G a\<inverse>\<^sup>G)"
-apply (subst tOp_assocTr43 [of "G" " a \<cdot>\<^sub>G x" " a\<inverse>\<^sup>G" "a \<cdot>\<^sub>G y" "a\<inverse>\<^sup>G"], 
-        assumption+)
-apply simp+
-apply (subst tOp_assocTr42, assumption+) apply simp+
-apply (subst tOp_assoc [of "G" " a\<inverse>\<^sup>G" "a" "y", THEN sym], assumption+)
-apply simp+
-apply (simp add:iOp_l_inv)
-apply (rule tOp_assocTr42[THEN sym], assumption+)
-apply simp
+apply (simp add: tOp_assocTr43 [of "G" " a \<cdot>\<^sub>G x" " a\<inverse>\<^sup>G" "a \<cdot>\<^sub>G y" "a\<inverse>\<^sup>G"]) 
+apply (simp add: tOp_assocTr42 [of "G" " a \<cdot>\<^sub>G x"])
+apply (simp add: tOp_assoc [of "G" " a\<inverse>\<^sup>G" "a" "y", THEN sym]) 
+apply (simp add:iOp_l_inv tOp_assocTr42[THEN sym])
 done
+
 
 lemma ZassenhausTr3: "\<lbrakk>group G; H \<guillemotleft> G; H1 \<guillemotleft> G; K \<guillemotleft> G; K1 \<guillemotleft> G; H1 \<lhd> grp G H; 
 K1 \<lhd> grp G K\<rbrakk>

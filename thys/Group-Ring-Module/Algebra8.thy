@@ -1102,7 +1102,7 @@ done
 lemma s_a_p_1:"\<lbrakk>assoc_bop (aug_pm_set z i {a}) f; iop_cond1 {a} i; 
 iop_cond2 z {a} i f; iop_cond3 z i; inv_iop z i f {a}; commute_bop f (aug_pm_set z i {a}); zeroA z i f {a} z; m < 0; 0 < n\<rbrakk> \<Longrightarrow> (n\<Odot>a\<^sub>f\<^sub>,\<^sub>i\<^sub>,\<^sub>z) \<^sub>f+ (m\<Odot>a\<^sub>f\<^sub>,\<^sub>i\<^sub>,\<^sub>z) = (n + m)\<Odot>a\<^sub>f\<^sub>,\<^sub>i\<^sub>,\<^sub>z"
  apply (case_tac "- m < n")
- apply (subst zminus_zadd_cancel [THEN sym, of "n" "m"])
+ apply (simplesubst zminus_zadd_cancel [THEN sym, of "n" "m"])
  apply (subgoal_tac "0 < -m") apply (subgoal_tac "0 < m + n")
  apply (subst single_addition_pos[THEN sym, of "f" "z" "i" "a" "-m" "m + n"],
              assumption+)
@@ -1140,7 +1140,7 @@ apply (frule single_addition_pm_mem[of "z" "i" "a" "f" "-m"], assumption+)
    apply (simp add:add_set_single2) 
   apply simp 
  apply simp
-apply (subst zminus_zadd_cancel [THEN sym, of "m" "n"])
+apply (simplesubst zminus_zadd_cancel [THEN sym, of "m" "n"])
  apply (subst single_addition_neg[THEN sym, of "f" "z" "i" "a" "-n" "n + m"], assumption+) apply simp apply simp apply simp
  apply (frule single_addition_pm_mem[of "z" "i" "a" "f" "-n"], assumption+) 
  apply (frule single_addition_pm_mem[of "z" "i" "a" "f" "n + m"], assumption+)  apply (frule single_addition_pm_mem[of "z" "i" "a" "f" "n"], assumption+)   
@@ -1527,7 +1527,7 @@ apply (case_tac "n = -m")
  apply (subgoal_tac "0\<triangleright>a\<^sub>G = 0\<^sub>G") apply (simp add:agsum_add2m)
 apply (simp add:sprod_n_a_def) apply simp
 apply (case_tac "n < -m")
- apply (subst zminus_zadd_cancel[THEN sym, of "m" "n"])
+ apply (simplesubst zminus_zadd_cancel[THEN sym, of "m" "n"])
  apply (subgoal_tac "-n < 0") prefer 2 apply simp  (** atode shiraberu **)
  apply (subgoal_tac "n + m < 0") prefer 2 apply simp  (** atode shiraberu *)
  apply (subst agsum_add1m [of "G" "a" "-n" "n + m"], assumption+)
@@ -1972,8 +1972,7 @@ apply (subgoal_tac "add_set f (aug_pm_set z i (s_set R s A)) n \<subseteq> addit
 done
 
 lemma sop_closed:"\<lbrakk>ring R; iop_cond1 (s_set R s A) i; iop_cond2 z (s_set R s A) i f; iop_cond3 z i; inv_iop z i f (s_set R s A); zeroA z i f (s_set R s A) z; sop_distr2 R s f i (s_set R s A) z; sop_assoc R s (aug_pm_set z i (s_set R s A)); sop_inv R s i (s_set R s A); sop_one R s (aug_pm_set z i (s_set R s A)); sop_z R s z\<rbrakk> \<Longrightarrow> \<forall>r\<in>carrier R. \<forall>x\<in>addition_set f (aug_pm_set z i (s_set R s A)) . r \<^sub>s\<cdot> x \<in> addition_set f (aug_pm_set z i (s_set R s A))"
-apply (subst addition_set_def)
- apply simp
+apply (simp add: addition_set_def)
  apply (rule ballI) apply (rule allI) apply (rule impI)
  apply (subgoal_tac "\<forall>n. y = add_set f (aug_pm_set z i (s_set R s A)) n \<longrightarrow>
  (\<forall>x\<in>y. \<exists>xa. (\<exists>n. xa = add_set f (aug_pm_set z i (s_set R s A)) n) \<and>  r \<^sub>s\<cdot> x \<in> xa)") apply blast
@@ -2127,7 +2126,7 @@ prefer 2 apply (simp add:sop_closed)
 prefer 2 apply (simp add:sop_closed)
 apply (simp add:sop_distr1_def sop_distr2_def)
 apply (frule_tac x = "b \<^sub>s\<cdot> sa" and y = "b \<^sub>s\<cdot> t" in bop_closed [of "(aug_pm_set z i (s_set R s A))" "f"], assumption+)
-apply (subst addition_assoc, assumption+)
+apply (simp add: addition_assoc)
  apply (thin_tac "\<forall>a\<in>carrier R. \<forall>b\<in>carrier R. \<forall>x\<in>aug_pm_set z i (s_set R s A). ( a +\<^sub>R b) \<^sub>s\<cdot> x = a \<^sub>s\<cdot> x \<^sub>f+ (b \<^sub>s\<cdot> x)")
  apply (thin_tac "\<forall>a\<in>carrier R. \<forall>x\<in>addition_set f (aug_pm_set z i (s_set R s A)). \<forall>y\<in>addition_set f (aug_pm_set z i (s_set R s A)).
                    a \<^sub>s\<cdot> (x \<^sub>f+ y) = a \<^sub>s\<cdot> x \<^sub>f+ (a \<^sub>s\<cdot> y)")

@@ -56,11 +56,7 @@ apply (simp add:Suc_diff_le [THEN sym, of "Suc (Suc 0)" "n"])
 done
 
 lemma Suc_Suc_less:"Suc 0 < a \<Longrightarrow> Suc (a - Suc (Suc 0)) < a"
-apply (subst minus_SucSuc)
-apply (subgoal_tac "0 < a - Suc 0")
-apply (subst Suc_pred, assumption+) 
-apply simp+
-done
+by arith
 
 lemma non_zero_int:" (n::int) \<noteq> 0 \<Longrightarrow> 0 < n \<or> n < 0"
 apply (subgoal_tac "n < 0 \<or> n = 0 \<or> 0 < n") apply simp
@@ -4492,10 +4488,10 @@ apply (rule allI)+ apply (rule impI) apply (erule conjE)
  apply (simp add:Iod_def)
  apply (frule_tac f = g and A = "carrier E" and B = "segment F (k cf)" and x = "h ce" in funcset_mem, assumption+) apply (simp add:segment_def)
  apply assumption+
- apply (subst ord_equiv_def) apply blast
+ apply (simp add: ord_equiv_def) apply blast
 apply (rule equalityI)
  apply (rule subsetI)  apply (simp add:Iod_def segment_def ord_neq_def) 
- apply (rule subsetI) apply (subst Iod_def) apply (subst segment_def)
+ apply (rule subsetI) apply (subst Iod_def) apply (simplesubst segment_def)
  apply simp apply (simp add:ord_neq_def)
  apply (simp add:ord_isom_def)  apply (erule conjE)+
  apply (thin_tac " ord_equiv (Iod E (segment E (h ce))) (Iod (Iod F (segment F (k cf))) (segment (Iod F (segment F (k cf))) (g (h ce))))")
