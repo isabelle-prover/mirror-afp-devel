@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.3 2004-04-19 22:30:44 lsf37 Exp $
+(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.4 2004-04-23 08:52:02 nipkow Exp $
     Author:     Tobias Nipkow
     License:    LGPL
     Copyright   1998 TUM
@@ -42,7 +42,7 @@ constdefs
  regset_of_DA :: "('a,nat)da => nat => 'a list set"
 "regset_of_DA A k == UN j:{j. j<k & fin A j}. regset (next A) (start A) j k"
 
- bounded :: "'a => nat => bool"
+ bounded :: "'a nat_next => nat => bool"
 "bounded d k == !n. n < k --> (!x. d x n < k)"
 
 declare
