@@ -1,4 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# $Id: cvs-sync,v 1.3 2004-03-04 21:10:08 lsf37 Exp $
+# Author: Gerwin Klein, NICTA
+# License: GPL (GNU GENERAL PUBLIC LICENSE)
+#
+# Cron job that synchronizes HEAD with release branch.
+# Tested on sunbroy2 only.
+# 
 
 . ~/.bashrc
 
