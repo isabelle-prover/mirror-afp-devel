@@ -2994,7 +2994,7 @@ apply (thin_tac "jointfun (card (f ` Nset n) - Suc 0) t 0 (\<lambda>l\<in>Nset 0
  apply (thin_tac "jointfun (card (f ` Nset n) - Suc 0) g 0 (\<lambda>l\<in>Nset 0. f (Suc n)) \<in> Nset (card (f ` Nset (Suc n)) - Suc 0) \<rightarrow> f ` Nset (Suc n)")
  apply (thin_tac "jointfun (card (f ` Nset n) - Suc 0) g 0 (\<lambda>l\<in>Nset 0. 
  f (Suc n)) ` Nset (Suc (card (f ` Nset n) - Suc 0)) =
-          f ` Nset n \<union> (\<lambda>l\<in>Nset 0. f (Suc n)) ` Nset 0")
+          f ` Nset n \<union> (\<lambda>l. f (Suc n)) ` Nset 0")
  apply (subgoal_tac "Suc (card (f ` Nset n) - Suc 0) = card (f ` Nset (Suc n)) - Suc 0") apply simp
  apply (subst Nset_un) apply (subst im_set_un, assumption+)  
  apply (simp add:Nsetn_sub)  apply (rule subsetI) apply (simp add:Nset_def) 
