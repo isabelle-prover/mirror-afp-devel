@@ -166,7 +166,7 @@ proof (unfold surj_def)
     hence "{r. (\<Sum>i < Suc r. i) \<le> z} \<noteq> {}"
       by fast
     ultimately have a: "r \<in> {r. (\<Sum>i < Suc r. i) \<le> z} \<and> (\<forall>s \<in> {r. (\<Sum>i < Suc r. i) \<le> z}. s \<le> r)"
-      by (subst r_def) (rule Max)
+      by (simp add: r_def del:mem_Collect_eq)
     {
       assume "r<x"
       hence "r+1\<le>x"

@@ -288,7 +288,7 @@ txt{*\nopagebreak*}
 
 	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi>(C k) t)"
 	  by (simp add: G_def Let_def o_def
-                setsum_reindex[OF _ subset_inj_on[OF n2_to_n_snd_inj]])
+                setsum_reindex[OF subset_inj_on[OF n2_to_n_snd_inj]])
 
 	finally have eq: "x i * \<chi>(A i) t = (\<Sum>k\<in> G i. z1 k * \<chi>(C k) t)" .
 	  (*Repeat with measure instead of char*)
@@ -345,7 +345,7 @@ txt{*\nopagebreak*}
 	
 	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * measure M (C k))"
 	  by (simp add: G_def Let_def o_def
-                setsum_reindex[OF _ subset_inj_on[OF n2_to_n_snd_inj]])
+                setsum_reindex[OF subset_inj_on[OF n2_to_n_snd_inj]])
 	
 	finally have 
 	  "x i * measure M (A i) = (\<Sum>k\<in>(G i). z1 k * measure M (C k))" .
@@ -379,7 +379,7 @@ txt{*\nopagebreak*}
 	  by (rule setsum_cong)
 	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * \<chi>(C k) t)" 
 	  by (simp add: H_def Let_def o_def
-                setsum_reindex[OF _ subset_inj_on[OF n2_to_n_fst_inj]])
+                setsum_reindex[OF subset_inj_on[OF n2_to_n_fst_inj]])
 	finally have eq: "y j * \<chi>(B j) t = (\<Sum>k\<in> H j. z2 k * \<chi>(C k) t)" .
 		
 	from R have H: "finite (H j)" 
@@ -430,7 +430,7 @@ txt{*\nopagebreak*}
 	  by (rule setsum_cong)
 	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * measure M (C k))"
 	  by (simp add: H_def Let_def o_def
-                setsum_reindex[OF _ subset_inj_on[OF n2_to_n_fst_inj]])
+                setsum_reindex[OF subset_inj_on[OF n2_to_n_fst_inj]])
 	finally have eq2: 
 	  "y j * measure M (B j) = (\<Sum>k\<in>(H j). z2 k * measure M (C k))" .
       }
