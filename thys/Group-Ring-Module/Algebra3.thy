@@ -789,7 +789,7 @@ lemma imgTr5:"\<lbrakk> group F; group G; f \<in> gHom F G; u \<in> f`(carrier F
 v \<in> f`(carrier F) \<rbrakk> \<Longrightarrow> u \<cdot>\<^sub>G v \<in> f`(carrier F)" 
 apply (simp add:image_def)
 apply auto
-apply (subst gHom [of "F" "G" "f", THEN sym], assumption+)
+apply (simp add: gHom [of F G f, THEN sym]) 
 apply (frule_tac a = x and b = xa in tOp_closed [of "F"], assumption+)
 apply auto
 done
@@ -814,11 +814,10 @@ lemma imgTr8:"\<lbrakk> group F; group G; f \<in> gHom F G;  H \<guillemotleft> 
   v \<in> f` H \<rbrakk> \<Longrightarrow> tOp G u v \<in> f` H" 
 apply (simp add:image_def)
 apply auto
-apply (subst gHom [of "F" "G" "f" _, THEN sym], assumption+)
- apply (simp add:subg_subset1)+ (*thm subg_tOp_closed [of "F" "H"] *)
- apply (frule_tac ?h1.0 = x and ?h2.0 = xa in subg_tOp_closed [of "F" "H"],
-                        assumption+)
- apply auto
+apply (simp add: subg_subset1 gHom [of F G f, THEN sym]) 
+apply (frule_tac ?h1.0 = x and ?h2.0 = xa in subg_tOp_closed [of "F" "H"],
+                       assumption+)
+apply auto
 done
 
 lemma imgTr9:"\<lbrakk> group F; group G; f \<in> gHom F G;  H \<guillemotleft> F; u \<in> f` H\<rbrakk> 
@@ -1387,7 +1386,7 @@ apply (auto del:equalityI)
 apply (frule nmlSubgTr0 [of "G" "N"], assumption+)
 apply (frule_tac h = y in subg_subset1 [of "G" "N"], assumption+)
 apply (frule_tac h = h in subg_subset1 [of "G" "H"], assumption+)
-apply (subst tOp_assoc [THEN sym], assumption+)
+apply (simplesubst tOp_assoc [THEN sym], assumption+)
 apply (frule_tac c = h in subsetD [of "H" "N"], assumption+)
 apply (frule_tac ?h1.0 = y and ?h2.0 = h in subg_tOp_closed [of "G" "N"],
                  assumption+)
@@ -3610,7 +3609,7 @@ apply (simp add:Nset_def)
  apply (thin_tac "card {i. i \<le> n \<and> g i \<cong> E} = card {i. i \<le> n \<and> h i \<cong> E}")
  apply (frule sym) apply (thin_tac "f (Suc n) = Suc n")
  apply auto
-apply (subst card_insert_disjoint) 
+apply (simplesubst card_insert_disjoint) 
  apply (simp add:isom_tgch_unitsTr0_2 [of "E" "n" "h"])
  apply (simp add:Nset_def)
 apply (simp add:Gch_bridge_def) apply (frule conj_2)
@@ -3853,14 +3852,14 @@ apply (case_tac "h (Suc n) \<cong> E")
  apply (frule isom_gch_unitsTr1_7_3 [of "E" "n" "h" "k"], assumption+)
 apply (frule isom_gch_unitsTr1_7_0 [of "n" "h" "k" ], assumption+)
 apply (subst isom_gch_unitsTr1_7_6 [of "E" "n" "cmp h (transpos k (Suc n))" "k"], assumption+)
-apply (subst card_insert_disjoint) 
+apply (simplesubst card_insert_disjoint) 
 apply (subgoal_tac "(insert (Suc n) ({i. i \<in> Nset (Suc n) \<and> h i \<cong> E} - {k, Suc n})) \<subseteq> Nset (Suc n)")
 apply (insert finite_Nset[of "Suc n"])
 apply (rule finite_subset, assumption+)
 apply (rule subsetI) apply (simp add:CollectI)
 apply (simp add:Nset_def) apply blast
 apply simp
-apply (subst card_insert_disjoint)
+apply (simplesubst card_insert_disjoint)
  apply (subgoal_tac "({i. i \<in> Nset (Suc n) \<and> h i \<cong> E} - {k, Suc n}) \<subseteq> 
                                    Nset (Suc n)")
  apply (rule finite_subset, assumption+)
@@ -5056,11 +5055,11 @@ apply (frule compseriesTr0 [of "G" "r" "f" "Suc (Suc k)"], assumption+)
 apply (rule mem_of_Nset, assumption+)
 apply (frule compseriesTr0 [of "G" "s" "g" "s - Suc 0"], assumption+)
 apply (simp add:Nset_def less_imp_le)
-apply (subst compseriesTr2 [of "G" "s" "g"], assumption+)
-apply (subst compseriesTr3 [of "G" "s" "g"], assumption+)
-apply (subst Int_absorb2 [of "f (Suc k)" "carrier G"])
+apply (simplesubst compseriesTr2 [of "G" "s" "g"], assumption+)
+apply (simplesubst compseriesTr3 [of "G" "s" "g"], assumption+)
+apply (simplesubst Int_absorb2 [of "f (Suc k)" "carrier G"])
  apply (rule subg_subset, assumption+)
- apply (subst NinHNTr0_2 [of "G" "f (Suc (Suc k))" "f (Suc k)"], assumption+)
+ apply (simplesubst NinHNTr0_2 [of "G" "f (Suc (Suc k))" "f (Suc k)"], assumption+)
  apply (rule compseriesTr5 [of "r" "G" "f" "Suc k"], assumption+)
  apply (frule Suc_leI [of "k" "r - Suc 0"])
  apply (rule mem_of_Nset, assumption+)
@@ -5197,8 +5196,7 @@ apply (frule compseriesTr0 [of "G" "r" "f" "Suc (i div s)"], assumption+)
  apply (simp add:mem_of_Nset)
 apply (subst Suc_rtos_i_mod_r_3 [of "r" "s" "i"], assumption+)
  apply (simp add:mult_commute) apply assumption
- apply (subst Suc_rtos_div_r_3 [of "r" "s" "i" ], assumption+)
- apply (simp add:mult_commute)+ 
+apply (simp add: Suc_rtos_div_r_3 [of "r" "s" "i" ] mult_commute) 
 apply (rule Zassenhaus [of "G" "f (i div s)" "f (Suc (i div s))" "g (i mod s)"
  "g (Suc (i mod s))"], assumption+)
 done
@@ -5225,37 +5223,37 @@ apply (frule mod_less_divisor [of "s" "i"])
 apply (frule less_le_diff [of "i mod s" "s"]) apply (thin_tac "i mod s < s")
  apply (case_tac "i mod s = s - Suc 0")
  apply (frule_tac div_Tr2 [of "r" "s" "Suc i"], assumption+) apply simp
- apply (subst div_Tr3_1 [of "r" "s" "i"], assumption+) apply simp
- apply (subst rtos_hom3 [of "r" "s" "i"], assumption+) apply (rule mem_of_Nset)
+ apply (simplesubst div_Tr3_1 [of "r" "s" "i"], assumption+) apply simp
+ apply (simplesubst rtos_hom3 [of "r" "s" "i"], assumption+) apply (rule mem_of_Nset)
  apply (simp add:mult_commute)
- apply (subst rtos_hom3_1 [of "r" "s" "i"], assumption+) apply (rule mem_of_Nset) apply (simp add:mult_commute)
+ apply (simplesubst rtos_hom3_1 [of "r" "s" "i"], assumption+) apply (rule mem_of_Nset) apply (simp add:mult_commute)
 apply (frule div_Tr3_1 [of "r" "s" "i"], assumption+) apply simp
  apply simp apply (thin_tac "Suc i div s = Suc (i div s)")
  apply (insert n_less_Suc [of "i div s"])
  apply (frule less_le_trans [of "i div s" "Suc (i div s)" "r - Suc 0"], 
                                                              assumption+)
- apply (subst Suc_rtos_div_r_1 [of "r" "s" "i"], assumption+) 
+ apply (simplesubst Suc_rtos_div_r_1 [of "r" "s" "i"], assumption+) 
  apply (simp add:mult_commute) apply (simp add:mult_commute)+
- apply (subst Suc_rtos_mod_r_1 [of "r" "s" "i"], assumption+)
- apply (subst Suc_i_mod_s_0_1 [of "r" "s" "i"], assumption+) 
+ apply (simplesubst Suc_rtos_mod_r_1 [of "r" "s" "i"], assumption+)
+ apply (simplesubst Suc_i_mod_s_0_1 [of "r" "s" "i"], assumption+) 
  apply (rule JHS_Tr1_2 [of "G" "r" "s" "f" "g" "i div s"], assumption+)
 apply (frule noteq_le_less [of "i mod s" "s - Suc 0"], assumption+)
  apply (thin_tac "i mod s \<le> s - Suc 0")
  apply (thin_tac "i mod s \<noteq> s - Suc 0")
  apply (frule div_Tr2 [of "r" "s" "Suc i"], assumption+) apply simp
- apply (subst div_Tr3_2 [THEN sym, of "r" "s" "i"], assumption+)
+ apply (simplesubst div_Tr3_2 [THEN sym, of "r" "s" "i"], assumption+)
  apply simp
- apply (subst rfn_tool12_1 [THEN sym, of "s" "i"], assumption+)
+ apply (simplesubst rfn_tool12_1 [THEN sym, of "s" "i"], assumption+)
  apply simp
- apply (subst rtos_hom3 [of "r" "s" "i"], assumption+)
+ apply (simplesubst rtos_hom3 [of "r" "s" "i"], assumption+)
  apply (rule mem_of_Nset) apply (simp add:mult_commute)
- apply (subst rtos_hom3_1 [of "r" "s" "i"], assumption+)
+ apply (simplesubst rtos_hom3_1 [of "r" "s" "i"], assumption+)
  apply (rule mem_of_Nset) apply (simp add:mult_commute)
 apply (case_tac "i div s = r - Suc 0")
-apply (subst rtos_hom5 [of "r" "s" "i"], assumption+)
+apply (simplesubst rtos_hom5 [of "r" "s" "i"], assumption+)
  apply (rule mem_of_Nset) apply (simp add:mult_commute)
  apply assumption
- apply (subst rtos_hom7 [of "r" "s" "i"], assumption+)
+ apply (simplesubst rtos_hom7 [of "r" "s" "i"], assumption+)
  apply (rule mem_of_Nset) apply (simp add:mult_commute)
  apply assumption apply simp
 apply (frule JHS_Tr1_3 [of "G" "r" "s" "f" "g" "i"], assumption+)
@@ -5858,11 +5856,11 @@ done
 
 lemma ag_add4_rel:"\<lbrakk>agroup G; a \<in> carrier G; b \<in> carrier G; c \<in> carrier G;
  d \<in> carrier G \<rbrakk> \<Longrightarrow> a +\<^sub>G b +\<^sub>G (c +\<^sub>G d) =  a +\<^sub>G c +\<^sub>G (b +\<^sub>G d)"
-apply (subst ag_pOp_assoc) apply assumption+ apply (simp add:ag_pOp_closed)
+apply (simp add: ag_pOp_closed ag_pOp_assoc [of G a c]) 
 apply (subgoal_tac "c +\<^sub>G (b +\<^sub>G d) = c +\<^sub>G b +\<^sub>G d") apply simp
 apply (subgoal_tac "c +\<^sub>G b = b +\<^sub>G c") apply simp
 apply (subgoal_tac "b +\<^sub>G c +\<^sub>G d = b +\<^sub>G (c +\<^sub>G d)")  apply simp
-apply (subst ag_pOp_assoc [THEN sym]) apply assumption+ 
+apply (simplesubst ag_pOp_assoc [THEN sym]) apply assumption+ 
 apply (simp add:ag_pOp_closed) apply simp
 apply (simp add: ag_pOp_assoc) apply (simp add:ag_pOp_commute)
 apply (simp add:ag_pOp_assoc [THEN sym])

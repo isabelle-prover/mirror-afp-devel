@@ -1594,7 +1594,7 @@ apply simp
  apply (frule_tac R = R and M = "mdl M (fgs R M H1)" and N = N and f = g and m = m1 in mHom_mem, assumption+)
  apply (frule_tac R = R and M = "mdl M (fgs R M H1)" and N = N and f = g and m = n1 in mHom_mem, assumption+) 
  apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (subst pOp_assocTr41 [THEN sym], assumption+)
+ apply (simplesubst pOp_assocTr41 [THEN sym], assumption+)
  apply (subst pOp_assocTr42, assumption+)
  apply (frule_tac G = N and x = "monofun R M N f H h m2" and y = "g n1" in ag_pOp_commute, assumption+) apply simp
  apply (subst pOp_assocTr43 [THEN sym], assumption+) apply simp
@@ -3171,11 +3171,11 @@ apply (rule subsetI)
 apply (simp add:surjec_def) apply (simp add:mHom_def) apply (fold mHom_def)
  apply (subst HOM_carrier [of "R" "M" "Zm R e"], assumption+)
  apply (simp add:Zm_Module)
- apply (subst mHom_to_zero, assumption+)
+ apply (simplesubst mHom_to_zero, assumption+)
  apply (simp add:surj_to_def)
  apply (simp add:image_def)
  apply (simp add:Zm_def)
-apply (subst mHom_to_zero, assumption+)
+apply (simplesubst mHom_to_zero, assumption+)
  apply (rule HOM_is_module, assumption+)
  apply (simp add:Zm_Module) apply simp
  apply (frule Zm_Module [of "R" "e"])
@@ -3452,7 +3452,7 @@ apply (frule exact4_exact3 [of "R" "M" "N" "z" "e" "f" "z1"], assumption+)
 done
 
 lemma exact_im_sub_ker:"\<lbrakk>ring R; R module L; R module M; R module N; f \<in> mHom R L M; g \<in> mHom R M N; z1 \<in> mHom R N (Zm R e); R module Z; exact4 R L M N (Zm R e) f g z1; x \<in> mHom R M Z; compos L x f = mzeromap L Z \<rbrakk> \<Longrightarrow> (\<lambda>z\<in>(carrier N). x (SOME y. y \<in> carrier M \<and> g y = z)) \<in> mHom R N Z"
-apply (subst mHom_def) apply simp
+apply (simplesubst mHom_def) apply simp
 apply (rule conjI)
  apply (simp add:aHom_def)
  apply (rule conjI)

@@ -1141,7 +1141,7 @@ done
 lemma ring_inv1_3:"\<lbrakk> ring R; a \<in> carrier R; b \<in> carrier R \<rbrakk> \<Longrightarrow>
                            a \<cdot>\<^sub>R b = (-\<^sub>R a) \<cdot>\<^sub>R (-\<^sub>R b)"
 apply (frule ring_is_ag)
-apply (subst  ag_inv_inv[THEN sym], assumption)
+apply (simplesubst  ag_inv_inv[THEN sym], assumption)
 apply (simp add:ag_mOp_closed ring_tOp_closed)
 apply (subst ring_inv1_1, assumption+)
 apply (simp add:ag_mOp_closed)+
@@ -1176,10 +1176,9 @@ done
 lemma rMulLC:
   "\<lbrakk> ring R; x \<in> carrier R; y \<in> carrier R; z \<in> carrier R \<rbrakk>
 	\<Longrightarrow> x \<cdot>\<^sub>R (y \<cdot>\<^sub>R z) = y \<cdot>\<^sub>R (x \<cdot>\<^sub>R z)"
-  apply (subst ring_tOp_assoc [THEN sym], assumption+)
+  apply (simplesubst ring_tOp_assoc [THEN sym], assumption+)
   apply (subst ring_tOp_commute [of "R" "y" "x"], assumption+)
-  apply (subst ring_tOp_assoc, assumption+)
-  apply (rule refl)
+  apply (blast intro: ring_tOp_assoc [symmetric])
   done 
 
 lemma Zero_ring:"\<lbrakk> ring R; 1\<^sub>R = 0\<^sub>R \<rbrakk> \<Longrightarrow> zeroring R"
@@ -1956,7 +1955,7 @@ apply (rule conjI)
   apply (thin_tac "\<exists>x\<in>carrier A. b = f x")
  apply (rule ballI)+ apply (rule impI) apply (erule conjE)
  apply simp 
- apply (subst aHom_add [THEN sym, of "A" "R" "f"], assumption+)
+ apply (simplesubst aHom_add [THEN sym, of "A" "R" "f"], assumption+)
  apply (frule_tac x = x and y = y in ag_pOp_closed, assumption+)
  apply blast
 apply (rule conjI)
@@ -1966,7 +1965,7 @@ apply (rule conjI)
  apply (subgoal_tac "\<forall>xa\<in>carrier A. x = f xa \<longrightarrow> (\<exists>xa\<in>carrier A. -\<^sub>R x = f xa)")
  apply blast apply (thin_tac "\<exists>xa\<in>carrier A. x = f xa")
  apply (rule ballI) apply (rule impI) apply simp
- apply (subst aHom_inv_inv [THEN sym, of "A" "R" "f"], assumption+)
+ apply (simplesubst aHom_inv_inv [THEN sym, of "A" "R" "f"], assumption+)
  apply (frule ag_mOp_closed [of "A"], assumption+)
  apply blast
 apply (rule conjI)
@@ -2315,7 +2314,7 @@ apply (rule ballI)+
  apply blast
 apply (rule ballI)+
 apply (simp add:Rxa_def) apply auto
-apply (subst ring_tOp_assoc [THEN sym], assumption+)
+apply (simplesubst ring_tOp_assoc [THEN sym], assumption+)
 apply (frule_tac x = r and y = ra in ring_tOp_closed [of "R"], assumption+)
 apply blast
 done
@@ -3037,12 +3036,7 @@ apply (frule_tac x = aa and y = ab in ag_pOp_closed, assumption+)
  apply (subst rcostOp, assumption+)
  apply (simp add:ring_distrib1) apply (simp add:ideal_def)
 apply (subgoal_tac "ideal R I")
- apply (subst rcostOp, assumption+)+
- apply (simp add:ring_tOp_closed)
- apply (subst rcostOp, assumption+)+
- apply (simp add:ring_tOp_closed)
- apply assumption
- apply (simp add:ring_tOp_assoc)
+ apply (simp add: rcostOp ring_tOp_closed ring_tOp_assoc) 
 apply (simp add:ideal_def)
 done
 
@@ -3584,7 +3578,7 @@ apply (simp add:qring_def)
  apply (rule impI)
  apply (frule_tac x = xa in pj_mem [of "R" "I"], assumption+) 
  apply (simp add:ideal_subset) apply simp
- apply (subst rcostOp, assumption+)
+ apply (simplesubst rcostOp, assumption+)
  apply (simp add:ideal_subset)  
  apply (frule_tac x = xa and r = a in ideal_ring_multiple [of "R" "J"],
                                                   assumption+)
@@ -4670,9 +4664,9 @@ apply (simp add:qring_def) apply (fold qring_def)
 apply (rule aInR_cos) apply (rule b_ag_group) apply (simp add:ring_def)
  apply (simp add:ideal_def asubgroup_def)
  apply (simp add:b_ag_def ring_def)  
- apply (subst pj_mem, assumption+) apply (simp add:primary_ideal_def)
+ apply (simplesubst pj_mem, assumption+) apply (simp add:primary_ideal_def)
  apply (simp add:ring_def)
-apply (subst npQring, assumption+) apply (simp add:primary_ideal_def)
+apply (simplesubst npQring, assumption+) apply (simp add:primary_ideal_def)
  apply (simp add:ring_def)
  apply (simp add:npOne) apply (simp add:ring_def)
 

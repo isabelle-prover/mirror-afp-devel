@@ -171,7 +171,7 @@ apply (subgoal_tac "pj R B a = pj R B (a +\<^sub>R b)")
 apply simp
 apply (rule rHom_one[of "R" "qring R B" "pj R B"], assumption+)
  apply (thin_tac "a +\<^sub>R b = 1\<^sub>R")
- apply (subst ringhom1 [of "R" "qring R B" _], assumption+)
+ apply (simplesubst ringhom1 [of "R" "qring R B" _], assumption+)
  apply (simp add:ideal_subset)+
  apply (simp add:pj_Hom)
 apply (subgoal_tac "pj R B b = 0\<^sub>(qring R B)")
@@ -1515,7 +1515,7 @@ prefer 2  apply (simp add:Nset_def)
  apply (simp add:ideal_subset) apply (rule ideal_subset, assumption+)
  apply simp
  apply (simp add:A_to_prodag_def)
-apply (subst prodrg_def) apply simp
+apply (simplesubst prodrg_def) apply simp
  apply (simp add:carr_prodag_def)
  apply (simp add:extensional_def)
  apply (simp add:prodrg_def) apply (fold prodrg_def)
@@ -2376,11 +2376,11 @@ apply (case_tac "n \<le> 1")
 apply (simp add:le_def)
 apply (frule_tac Suc_leI [of "Suc 0" "n"])
 apply (subgoal_tac "0 < n")
-apply (subst jointgd_tool2 [of "n"], assumption+)
+apply (simplesubst jointgd_tool2 [of "n"], assumption+)
 apply (simp del:Suc_pred) apply simp
 prefer 2 apply simp
 apply (subgoal_tac "0 < n - Suc 0")
-apply (subst jointgd_tool2 [of "n - Suc 0"], assumption+)
+apply (simplesubst jointgd_tool2 [of "n - Suc 0"], assumption+)
 apply (simp del:Suc_pred)
 prefer 2 apply simp
 apply (subgoal_tac "eSum R (cmp f (transpos (Suc (n - Suc (Suc 0))) n))
@@ -2419,7 +2419,7 @@ apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
  apply (subgoal_tac "n \<in> Nset n")
  apply (frule_tac l = x in transpos_mem [of "n - Suc 0" "n" "n"], assumption+)
  apply (frule Suc_pos [of "Suc 0" "n"])
- apply (subst Suc_pred [THEN sym, of "n"], assumption)
+ apply (simplesubst Suc_pred [THEN sym, of "n"], assumption)
  apply (simp del:Suc_pred) apply assumption+
  apply simp apply (simp add:Nset_def) apply (simp add:Nset_def)
  apply assumption apply (simp add:Nset_def) apply simp
@@ -2428,7 +2428,7 @@ apply (rule ballI)
  apply (subst transpos_id [of "n - Suc 0" "n" "n"])
  apply (simp add:Nset_def) apply (simp add:Nset_def)
  apply (frule Suc_pos [of "Suc 0" "n"])
- apply (subst Suc_pred [THEN sym, of "n"], assumption)
+ apply (simplesubst Suc_pred [THEN sym, of "n"], assumption)
  apply (simp del:Suc_pred)
  apply (simp add:Nset_Suc_Suc) apply simp
 done
@@ -4379,7 +4379,7 @@ apply (rule ballI)+
  apply (subst mHom_inv [THEN sym, of "R" "M" "N" _ "f"], assumption+)
  apply (frule module_is_ag [of "R" "M"], assumption+)
  apply (frule_tac x = xa in ag_mOp_closed [of "M"], assumption+)
- apply (subst  mHom_add [THEN sym, of "R" "M" "N" "f"], assumption+)
+ apply (simp add: mHom_add [THEN sym, of "R" "M" "N" "f"])
  apply (frule_tac x = x and y = "-\<^sub>M xa" in ag_pOp_closed [of "M"], 
                                                          assumption+)
  apply blast 
@@ -4448,7 +4448,7 @@ apply (frule_tac f = g and m = m and n = n in mHom_add [of "R" "M" "N"],
                                                    assumption+)
 apply simp
 apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (subst pOp_assocTr43[of "N"], assumption+) 
+apply (simplesubst pOp_assocTr43[of "N"], assumption+) 
 apply (frule_tac x = "g m" and y = "f n" in ag_pOp_commute [of "N"],
                                                               assumption+)
 apply simp
@@ -5414,16 +5414,7 @@ apply (subgoal_tac "\<forall>m\<in>carrier M. \<forall>n\<in>carrier M. X = m \<
 apply blast
  apply (thin_tac "\<exists>m\<in>carrier M. X = m \<uplus>\<^sub>M H")
  apply (thin_tac "\<exists>n\<in>carrier M. Y = n \<uplus>\<^sub>M H")
-apply (rule ballI)+ apply (rule impI)+
- apply simp
-apply (subst mr_cos_sprodTr [of "R" "M" "H"], assumption+)+
-apply (subst mr_cospOpTr, assumption+)
- apply (simp add:sprod_mem)+
-apply (subst mr_cospOpTr, assumption+)
-apply (subst mr_cos_sprodTr [of "R" "M" "H"], assumption+)
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (simp add:ag_pOp_closed)
-apply (simp add:sprod_distrib2)
+apply (simp add: mr_cospOpTr sprod_mem mr_cos_sprodTr module_is_ag ag_pOp_closed sprod_distrib2) 
 done
 
 lemma mr_cosmOpTr:"\<lbrakk>ring R; R module M; submodule R M H; m \<in> carrier M\<rbrakk> \<Longrightarrow> 
@@ -5481,7 +5472,7 @@ apply (rule conjI)
  apply (rule ballI)+ apply (rule impI) apply (erule conjE)+
  apply (frule module_is_ag [of "R" "M"], assumption+)
  apply (frule_tac x = a and y = b in ag_pOp_closed [of "M"], assumption+)
- apply simp apply (subst mr_cospOpTr, assumption+)
+ apply (simp add: mr_cospOpTr) 
  apply blast
 apply (rule conjI)
  apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
@@ -5490,8 +5481,8 @@ apply (rule conjI)
                         (\<exists>a\<in>carrier M. mr_cosmOp M H x = a \<uplus>\<^sub>M H)")
  apply blast
  apply (thin_tac "\<exists>a\<in>carrier M. x = a \<uplus>\<^sub>M H") 
- apply (rule ballI) apply (rule impI) apply simp 
- apply (subst mr_cosmOpTr, assumption+)
+ apply (rule ballI) apply (rule impI)
+ apply (simp add: mr_cosmOpTr) 
  apply (frule module_is_ag [of "R" "M"], assumption+)
  apply (frule_tac x = a in ag_mOp_closed [of "M"], assumption+)
  apply blast

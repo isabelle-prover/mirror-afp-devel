@@ -1844,9 +1844,10 @@ done
 lemma BNTr9:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D;
 \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x)\<rbrakk> \<Longrightarrow> (\<Union>WWa D f a) \<union> {Sup D (\<Union>WWa D f a)} \<in> WWa D f a"
 apply (frule S_inductive_ordered [of "D"])
-apply (frule_tac D = D and f = f and a = a in BNTr8_1, assumption+) 
-apply (subst WWa_def) apply simp
- apply (subst Wa_def)
+apply (frule_tac D = D and f = f and a = a in BNTr8_1, assumption+)
+apply (simplesubst WWa_def)  
+apply simp
+apply (simplesubst Wa_def) 
 apply (rule conjI)
 (*** insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}) \<subseteq> carrier D ***)
  apply (frule_tac D = D and f = f and a = a in BNTr8, assumption+)
@@ -2275,7 +2276,7 @@ apply (subgoal_tac "(\<Union>WWa D f a) \<union> {f (Sup D (\<Union>WWa D f a))}
 apply (frule_tac D = D and f = f and a = a and X = "\<Union>WWa D f a \<union> {f (Sup D (\<Union>WWa D f a))}" in BNTr8_9, assumption+) 
  (** step 1, done **)
 (**-- step 2, show \<Union>WWa D f a \<union> {f (Sup D (\<Union>WWa D f a))} \<in> WWa D f a --**)
-apply (subst WWa_def) apply simp
+apply (simplesubst WWa_def) apply simp
 apply (subgoal_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a") apply simp
  apply (thin_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a")
  prefer 2 apply (simp add:WWa_def)
@@ -3302,15 +3303,11 @@ apply (frule l_invTr1, assumption)
 apply simp apply (thin_tac "1\<^sub>G =  a\<inverse>\<^sup>G\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G")
 apply (simp add:tOp_assocTr43)
  apply (frule sym) apply (thin_tac "a\<inverse>\<^sup>G\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G \<cdot>\<^sub>G a \<cdot>\<^sub>G a\<inverse>\<^sup>G =  a \<cdot>\<^sub>G a\<inverse>\<^sup>G")
-apply simp
-apply (subst tOp_assocTr42, assumption+) apply simp+
-apply (subst iOp_l_inv, assumption+) apply simp
-apply (subst iOp_l_inv, assumption+) 
-apply (subst tOp_assoc, assumption+) apply simp+
-apply (simp add:ex_one) apply simp+
-apply (subst iOp_l_inv, assumption+)
-apply simp+
+apply simp 
+apply (subst tOp_assocTr42, simp+) 
+apply (simp add: tOp_assoc ex_one iOp_l_inv) 
 done
+
 
 
 lemma tOp_assocTr44: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; 
@@ -3394,9 +3391,8 @@ done
 
 lemma iOp_invinv: "\<lbrakk> group G; a \<in> carrier G \<rbrakk> \<Longrightarrow> (a\<inverse>\<^sup>G)\<inverse>\<^sup>G = a"
 apply (subgoal_tac "(a\<inverse>\<^sup>G)\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G \<cdot>\<^sub>G a = a")
-apply (simp add:tOp_assoc) apply (simp add:iOp_l_inv) 
-apply (simp add:r_one)
-apply (subst iOp_l_inv, assumption+, simp+)+
+ apply (simp add:tOp_assoc) apply (simp add:iOp_l_inv r_one)
+apply (simp add:iOp_l_inv) 
 done
 
 lemma invofab: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G \<rbrakk> \<Longrightarrow>
@@ -4194,20 +4190,14 @@ lemma NSubgTr2:"\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G;
  \<Longrightarrow> tOp G (tOp G a b) (iOp G (tOp G a1 b1)) = 
  tOp G a (tOp G (tOp G  (tOp G b (iOp G b1)) (tOp G (iOp G a1) a)) (iOp G a))"
 apply (simp add: invofab)
-apply (subst tOp_assoc, assumption+)
+apply (simplesubst tOp_assoc, assumption+)
  apply (rule tOp_closed, assumption+)
  apply simp
  apply (rule tOp_closed, assumption+)
  apply simp+
-apply (subgoal_tac "a1\<inverse>\<^sup>G \<cdot>\<^sub>G a \<cdot>\<^sub>G a\<inverse>\<^sup>G = a1\<inverse>\<^sup>G") apply simp
-apply (subst tOp_assoc, assumption+)
- apply simp+
-apply (subgoal_tac "a \<cdot>\<^sub>G ( b \<cdot>\<^sub>G ( b1\<inverse>\<^sup>G \<cdot>\<^sub>G a1\<inverse>\<^sup>G)) = a \<cdot>\<^sub>G  b \<cdot>\<^sub>G ( b1\<inverse>\<^sup>G \<cdot>\<^sub>G a1\<inverse>\<^sup>G)")
-apply simp
-apply (simp add:tOp_assoc[THEN sym])
-apply (simp add:tOp_assoc)
-apply (simp add:iOp_r_inv)
-apply (simp add:r_one)
+apply (subgoal_tac "a1\<inverse>\<^sup>G \<cdot>\<^sub>G a \<cdot>\<^sub>G a\<inverse>\<^sup>G = a1\<inverse>\<^sup>G")
+ apply (simp add: tOp_assoc) 
+apply (simp add:tOp_assoc iOp_r_inv r_one)
 done
 
 lemma NSubgPr1: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G ; h \<in> H \<rbrakk> \<Longrightarrow>

@@ -321,8 +321,7 @@ apply auto
 done
 
 lemma nonempty_some:"A \<noteq> {} \<Longrightarrow> (SOME x. x \<in> A) \<in> A" 
-apply (frule nonempty_ex[of "A"])
-apply (subst someI2_ex, simp+)
+apply (fast intro: someI)
 done
 
 subsection "a short notes for proof steps" 
@@ -1810,17 +1809,15 @@ lemma sliden_surj:"i < j \<Longrightarrow>  surj_to (sliden i) (nset i j) (Nset 
 proof -
  assume p1:"i < j"
  from p1 have q1:"sliden i \<in> (nset i j) \<rightarrow> Nset (j - i)"
-  apply (simp add:sliden_hom) done
+   by (simp add:sliden_hom) 
  from p1 and q1  have q2:"\<forall>b\<in>Nset (j - i). \<exists>a\<in>(nset i j). 
- sliden i a = b" 
+ sliden i a = (sliden i) (slide i b)" 
  apply auto
- apply (subst slide_sliden [of "i", THEN sym])
  apply (insert slide_mem [of "i" "j"]) apply simp
  apply auto
  done
  from p1 and q1 and q2 show ?thesis 
- apply (simp add: surj_to_test [of "sliden i" "nset i j" "Nset (j - i)"])
- done
+ by (simp add: slide_sliden surj_to_test [of "sliden i" "nset i j" "Nset (j - i)"])
 qed
  
 lemma sliden_inj: "i < j \<Longrightarrow>  inj_on (sliden i) (nset i j)"
@@ -3131,18 +3128,18 @@ done
 
 lemma subset_well_ordered:"\<lbrakk>well_ordered_set S; T \<subseteq> carrier S \<rbrakk> \<Longrightarrow>
   well_ordered_set (Iod S T)"
-apply (subst well_ordered_set_def)
+apply (unfold well_ordered_set_def)
  apply (rule conjI)
  apply (simp add:tordered_set_def)
  apply (rule conjI)
- apply (simp add:well_ordered_set_def tordered_set_def)
+ apply (unfold tordered_set_def)
  apply (erule conjE)+
  apply (rule ordered_set_Iod [of "S" "T"], assumption+)
 apply (rule ballI)+
  apply (simp add:Iod_def)
  apply (frule_tac c = a in subsetD [of "T" "carrier S"], assumption+)
  apply (frule_tac c = b in subsetD [of "T" "carrier S"], assumption+)
- apply (simp add:well_ordered_set_def tordered_set_def)
+ apply simp 
 apply (simp add:Iod_def minimum_elem_def)
  apply (subgoal_tac "\<forall>Y. Y \<subseteq> T \<longrightarrow> Y \<subseteq> carrier S")
  apply (simp add:well_ordered_set_def minimum_elem_def)
@@ -3638,7 +3635,7 @@ apply (frule Twell_equiv [of "S" "T" "a"], assumption+)
  apply blast
  apply (thin_tac "\<exists>f. ord_isom (Iod S (segment S a)) (Iod T (segment T (Twell S T a))) f")
  apply (rule allI) apply (rule impI)
-apply (subst ord_isom_def)
+apply (simplesubst ord_isom_def)
  apply (rule conjI)
  apply (simp add:Iod_def extensional_def)
 apply (rule conjI)
@@ -4992,7 +4989,7 @@ apply (simp add:Iod_def) apply (fold Iod_def) apply (erule conjE)
  apply (subst ordinal_number_def) apply simp
  apply (frule_tac S = "Iod D (segment D b)" in well_ordered_set_is_ordered_set)
  apply (simp add:ord_equiv_reflex)
- apply (subst ordinal_number_def) apply (simp add:Iod_def) apply (fold Iod_def)
+ apply (simp add: ordinal_number_def [of D] Iod_def) apply (fold Iod_def)
  apply (rule conjI) apply (simp add:ODnums_def)
  apply (simp add:ordinal_number_def) apply blast
  apply (subst ODord_def)
@@ -5448,8 +5445,7 @@ apply simp apply (frule not_sym) apply (thin_tac "z \<noteq> a1")
 done
 
 lemma Pre_element:"\<lbrakk>well_ordered_set S; a \<in> carrier S; ExPre S a\<rbrakk> \<Longrightarrow> Pre S a \<in> carrier S \<and> (Pre S a) <\<^sub>S a \<and> \<not> (\<exists>y\<in>carrier S. ((Pre S a) <\<^sub>S y \<and> y <\<^sub>S a))"
-apply (simp add:ExPre_def)
-apply (subst Pre_def)
+apply (simp add: ExPre_def Pre_def) 
 apply (rule someI2_ex)
 apply simp+
 done

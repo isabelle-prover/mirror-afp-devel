@@ -549,10 +549,9 @@ prefer 2 apply (simp only:ar_coset_def [of "m" "M" "N"])
  apply (frule m_in_mr_coset [of "R" "M" "H" "m"], assumption+)
  apply auto
  apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (subst ag_pOp_commute [of "M"], assumption+)
- apply (simp add:submodule_def [of _ _ "N"]) apply (erule conjE)+
- apply (simp add:subsetD)
-apply blast
+ apply (subst ag_pOp_commute [of M m], assumption+)
+ apply (simp add:submodule_def [of _ _ "N"])
+ apply auto
 done
 
   (* show mQmp M H N is a welldefined map from M/H to M/N. step2 *)
@@ -808,7 +807,7 @@ apply blast
   apply (frule finitesumbase_sub_carrier [of "R" "M" "f" "I"], assumption+)
   apply (frule_tac f = g and A = "Nset n" and B = "finitesum_base M I f"
           and ?B1.0 = "carrier M" in extend_fun, assumption+)
-apply (subst eSum_minus [of "M"], assumption+)
+apply (simp add: eSum_minus [of M]) 
  apply (subgoal_tac "(\<lambda>x\<in>Nset n. -\<^sub>M (g x)) \<in> Nset n \<rightarrow> finitesum_base M I f")
  apply blast
 apply (rule univar_func_test)
@@ -937,8 +936,7 @@ apply (simp add:finitesum_def)
  apply (thin_tac "\<exists>n g. g \<in> Nset n \<rightarrow> finitesum_base M I f \<and> m = e\<Sigma> M g n")
  apply (rule allI)+
  apply (rule impI) apply (erule conjE)
- apply simp
- apply (subst finitesum_sprod, assumption+)
+apply (simp add: finitesum_sprod) 
  apply (subgoal_tac "(\<lambda>x.  a \<star>\<^sub>M (g x)) \<in> Nset n \<rightarrow> finitesum_base M I f")
  apply blast
 apply (rule univar_func_test)
@@ -992,13 +990,13 @@ apply (rule subsetI) apply (simp add:sSum_def)
 apply auto
 apply (frule_tac h = h1 in submodule_subset1 [of "R" "M" "H"], assumption+)
 apply (frule_tac h = h2 in submodule_subset1 [of "R" "M" "K"], assumption+)
-apply (subst ag_pOp_commute, assumption+)
+apply (simplesubst ag_pOp_commute, assumption+)
 apply blast
 apply (simp add:sSum_def)
 apply auto
 apply (frule_tac h = h1 in submodule_subset1 [of "R" "M" "K"], assumption+)
 apply (frule_tac h = h2 in submodule_subset1 [of "R" "M" "H"], assumption+)
-apply (subst ag_pOp_commute, assumption+)
+apply (simplesubst ag_pOp_commute, assumption+)
 apply blast
 done
 
@@ -1034,11 +1032,10 @@ apply (rule impI)
  apply (frule_tac c = "g (Suc n)" in subsetD [of "H1" "carrier M"], 
                                                            assumption+)
  apply (frule_tac c = h2 in subsetD [of "H2" "carrier M"], assumption+)
- apply (subst ag_pOp_assoc, assumption+)
+ apply (simp add: ag_pOp_assoc) 
  apply (frule_tac x = h2 and y = "g (Suc n)" in ag_pOp_commute [of "M"],
                                                            assumption+)
- apply simp
- apply (subst ag_pOp_assoc[THEN sym], assumption+)
+ apply (simp add: ag_pOp_assoc [symmetric]) 
  apply (frule_tac x = h1 and y = "g (Suc n)" in asubg_pOp_closed [of "M" "H1"], assumption+)
  apply blast apply simp
  apply (simp add:submodule_def) apply (erule conjE)+
@@ -1046,7 +1043,7 @@ apply (rule impI)
  apply (frule_tac c = h2 in subsetD [of "H2" "carrier M"], assumption+)
  apply (frule_tac c = "g (Suc n)" in subsetD [of "H2" "carrier M"], 
                                                            assumption+)
- apply (subst ag_pOp_assoc, assumption+)
+ apply (simp add: ag_pOp_assoc) 
  apply (frule_tac x = h2 and y = "g (Suc n)" in asubg_pOp_closed [of "M" "H2"], assumption+)
  apply blast
 done
@@ -1287,7 +1284,7 @@ apply (rule subsetI)
  apply (erule conjE)+
 apply (simp add:iotam_def mpj_def)
  apply (frule sSum_two_Submodules[of "R" "M" "H" "K"], assumption+)
- apply (subst mdl_carrier, assumption+)
+ apply (simp add: mdl_carrier)
  apply (subgoal_tac "x +\<^sub>M 0\<^sub>M \<in> H \<plusminus>\<^sub>M K") apply simp
  apply (frule mdl_is_module [of "R" "M" "H \<plusminus>\<^sub>M K"], assumption+)
  apply (subgoal_tac "x +\<^sub>M 0\<^sub>M = x") apply simp 
@@ -1684,7 +1681,7 @@ apply (simp add:linear_span_def)
  apply (rule ballI)+ apply (rule impI) apply simp
  apply (thin_tac "x = linear_combination R M n s f")
  apply (simp add:linear_combination_def) 
- apply (subst linear_span_sprod, assumption+)
+ apply (simp add: linear_span_sprod) 
  apply (subgoal_tac "e\<Sigma> M (\<lambda>k.  r \<star>\<^sub>M ( s k \<star>\<^sub>M (f k))) n = 
                         e\<Sigma> M (\<lambda>k. (r \<cdot>\<^sub>R  (s k)) \<star>\<^sub>M (f k)) n")
  apply simp
@@ -1956,7 +1953,7 @@ apply (rule univar_func_test) apply (rule ballI)
  apply (thin_tac "s \<in> Nset n \<rightarrow> R \<diamondsuit> ( r \<cdot>\<^sub>R x)")
  apply (simp add:Rxa_def) 
  apply auto 
- apply (subst ring_tOp_assoc [THEN sym], assumption+)
+apply (simp add: ring_tOp_assoc [THEN sym]) 
  apply (frule_tac x = ra and y = r in ring_tOp_closed [of "R"], assumption+)
  apply blast
 done
@@ -2019,7 +2016,7 @@ lemma linmap_im_linspan:"\<lbrakk>ring R; ideal R A; R module M; R module N; f \
 apply simp
  apply (thin_tac "\<exists>na. \<exists>f\<in>Nset na \<rightarrow> H. \<exists>sa\<in>Nset na \<rightarrow> A.
    linear_combination R M n s g = linear_combination R M na sa f")
- apply (subst linmap_im_lincomb [of "R" "A" "M" "N" "f" "H" "s" "n" "g"], assumption+)
+ apply (simp add: linmap_im_lincomb [of "R" "A" "M" "N" "f" "H" "s" "n" "g"])
  apply (subgoal_tac "(cmp f g) \<in> Nset n \<rightarrow> f ` H")
  apply blast
 apply (rule univar_func_test) apply (rule ballI) apply (simp add:cmp_def)
@@ -2487,9 +2484,7 @@ apply (simp add:linear_span_def [of "R" "M" "carrier R"])
  apply (rule allI) apply (rule ballI)+ apply (rule impI)
  apply (simp add:linear_combination_def linear_span_def)
  apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
- apply (subst linear_span_sprod [of "R" "M" "carrier R" "H"], assumption+)
- apply (simp add:whole_ideal) apply assumption+
- apply (simp add:funcset_mem ideal_subset) apply assumption+
+ apply (simp add: linear_span_sprod [of "R" "M" "carrier R" "H"] whole_ideal funcset_mem ideal_subset) 
  apply (subgoal_tac "(\<lambda>l\<in>Nset na. (s (Suc n)) \<cdot>\<^sub>R (t l)) \<in> Nset na \<rightarrow> A")
  apply (subgoal_tac " e\<Sigma> M (\<lambda>k. s (Suc n) \<star>\<^sub>M ( t k \<star>\<^sub>M (fa k))) na =
   e\<Sigma> M (\<lambda>j. (\<lambda>l\<in>Nset na. (s (Suc n)) \<cdot>\<^sub>R (t l)) j  \<star>\<^sub>M (fa j)) na")
@@ -4425,7 +4420,7 @@ apply (frule_tac R = R and M = M and A = "carrier R" and H = "f ` (Nset n)" and
  apply (subgoal_tac "0 \<in> Nset n")
  apply (frule_tac f = f and A = "Nset n" and B = H in mem_in_image, assumption+)
  apply (simp add:nonempty) apply (simp add:Nset_def)
- apply (subst linear_span_def) apply (subgoal_tac "f ` Nset n \<noteq> {}") apply simp
+ apply (simplesubst linear_span_def) apply (subgoal_tac "f ` Nset n \<noteq> {}") apply simp
  apply (subgoal_tac "f \<in> Nset n \<rightarrow> f ` (Nset n)") 
  apply (subgoal_tac "(\<lambda>u. if u \<in> Nset (Suc n) then (-\<^sub>R (t u)) else arbitrary) \<in> 
  Nset n \<rightarrow> carrier R") apply blast
@@ -4460,7 +4455,7 @@ linear_combination R M n s f +\<^sub>M (linear_combination R M n (\<lambda>x\<in
  apply (thin_tac "linear_combination R M na sa fa +\<^sub>M ((s (Suc n) +\<^sub>R (-\<^sub>R (t (Suc n)))) \<star>\<^sub>M (f (Suc n))) = 0\<^sub>M") 
  apply (frule_tac R = R and M = M and H = H and f = "jointfun na fa 0 (\<lambda>l. (f (Suc n)))" and s = "jointfun na sa 0 (\<lambda>l. (s (Suc n) +\<^sub>R (-\<^sub>R (t (Suc n)))))" and j = "Suc na" in unique_expression3_1, assumption+)
  apply (simp add:Nset_def)
- apply (subst jointfun_def) apply simp
+ apply (simp (no_asm) add: jointfun_def) 
  apply (subgoal_tac "(Nset (Suc na) - {Suc na}) \<inter> {x. x \<le> na} = {x. x \<le> na}")
  prefer 2  apply (rule equalityI) apply (rule subsetI)
  apply (simp add:Nset_def) apply (rule subsetI) apply (simp add:Nset_def)
