@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.4 2004-03-12 21:08:47 lsf37 Exp $
+# $Id: regression,v 1.5 2004-03-14 21:08:31 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 # License: GPL (GNU GENERAL PUBLIC LICENSE)
 #
@@ -72,12 +72,14 @@ if [ "$1" == "-" ]; then
   ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
   LOG=$LOG-devel-$DATE.log
+  REPORT=$REPORT-devel
 else
   TAG="-r $1"
   AFP_VER="release ($1)"
   WORKING_COPY=$WORKING_COPY/release
   ISATOOL=$ISABELLE_RELEASES/$1/bin/isatool
   LOG=$LOG-$1-$DATE.log
+  REPORT=$REPORT-$1
 fi
 
 . $WORKING_COPY/admin/main-config || fail "could not read main-config."
