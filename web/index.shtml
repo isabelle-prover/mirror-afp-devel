@@ -55,8 +55,16 @@ of a scientific journal. Submissions are refereed.</td></tr>
 -- entry template end (delete this line) -->
     
 <tr><td class="entry">
+2004-09-28:
+<a href="entries/Verified-Prover.shtml">A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</a>
+<br>Author:
+<a href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
+</td></tr>
+
+<tr><td class="entry">
 2004-09-20:
 <a href="entries/Ramsey-Infinite.shtml">Ramsey's theorem, infinitary version</a>
+<br>Author:
 <br><a href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a></td></tr>
 
 <tr><td class="entry">
@@ -74,18 +82,19 @@ James Margetson and
 
 <tr><td class="entry">
 2004-06-24:  
-<a href="entries/Depth-First-Search.shtml">Depth-First-Search</a>
+<a href="entries/Depth-First-Search.shtml">Depth First Search</a>
 <br>Toshiaki Nishihara and <a
 href="http://www.score.is.tsukuba.ac.jp/~minamide/">Yasuhiko Minamide</a>
 </td></tr>
 
 <tr><td class="entry">
 2004-05-18:  
-<a href="entries/Group-Ring-Module.shtml">Group-Ring-Module</a>
+<a href="entries/Group-Ring-Module.shtml">Groups, Rings and Modules</a>
 <br>Author: Hidetsune Kobayashi, L. Chen and H. Murao
 </td></tr>
 
-<tr><td class="entry">2004-04-26:   <a href="entries/Lazy-Lists-II.shtml">Lazy-Lists-II</a><br>
+<tr><td class="entry">2004-04-26:   <a href="entries/Lazy-Lists-II.shtml">Lazy
+Lists II</a><br>
 Author:  
 <a href="http://www.informatik.uni-freiburg.de/~friedric/">Stefan Friedrich</a></td></tr>
 

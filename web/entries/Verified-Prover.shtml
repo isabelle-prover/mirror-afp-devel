@@ -23,33 +23,37 @@
 <p>&nbsp;</p>
 
 <!-- begin entry data: -->
-<h1><!-- Title: -->Groups, Rings and Modules</h1>
+<h1><!-- Title: -->A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</h1>
 <p>&nbsp;</p>
 
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
     <td class="data" width="80%">
-<!-- Title: -->Groups, Rings and Modules
+<!-- Title: -->A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
     </td></tr>
 		
     <tr><td class="datahead">Author:</td>
 <td class="data">
-<!-- Author: -->Hidetsune Kobayashi, L. Chen and H. Murao
+<!-- Author: --><a
+href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
 </td></tr>		
     
 	<tr><td class="datahead">Submisison date:</td>
 	
-<td class="data"><!-- Submission date: -->2004-05-18</td></tr>
+<td class="data"><!-- Submission date: -->2004-09-28</td></tr>
 
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"> 
-<!-- Abstract: -->
-The theory of groups, rings and modules is developed to a great depth. Group
-theory results include Zassenhaus's theorem and the Jordan-Hoelder
-theorem. The ring theory development includes ideals, quotient rings and the
-Chinese remainder theorem. The module development includes the Nakayama lemma,
-exact sequences and Tensor products.
+<!-- Abstract: -->	
+  Soundness and completeness for a system of first order logic are formally
+  proved, building on James Margetson's formalization of work by Wainer and
+  Wallen. The completeness proofs naturally suggest an
+  algorithm to derive proofs. This algorithm, which can be implemented 
+  tail recursively, is formalized in Isabelle/HOL.
+  The algorithm can be executed via the rewriting tactics of Isabelle.
+  Alternatively, the definitions can be exported to OCaml, yielding a
+  directly executable program.
    </td></tr>
 </tbody>
 </table>
@@ -57,7 +61,7 @@ exact sequences and Tensor products.
 <p>&nbsp;</p>
 
 <!-- entry directory name: -->
-<!--#set var="name" value="Group-Ring-Module" -->
+<!--#set var="name" value="Verified-Prover" -->
 
 <!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
 <!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
@@ -67,8 +71,9 @@ exact sequences and Tensor products.
   <tbody>
     <tr>
   <td class="links">
-	[ No proof document ]
+	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
+	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
