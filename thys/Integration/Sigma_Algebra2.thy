@@ -1,0 +1,282 @@
+(*  Title:      HOL/Induct/Sigma_Algebra.thy
+    ID:         $Id: Sigma_Algebra2.thy,v 1.2 2004-11-22 15:18:26 lsf37 Exp $
+    Author:     Markus Wenzel, TU Muenchen
+    License:    GPL (GNU GENERAL PUBLIC LICENSE)
+
+Changes for Accordance to Joe Hurd's conventions
+and additions by Stefan Richter 2002
+*)
+
+header {* Sigma algebras *}
+
+theory Sigma_Algebra2 = Main:
+
+text {* The $\isacommand {theory}$ command commences a formal document and enumerates the
+  theories it depends on. With the @{text Main} theory, a standard
+  selection of useful HOL theories excluding the real 
+  numbers is loaded. @{text Sigma_Algebra2} is built upon @{text
+  Sigma_Algebra}, 
+  a tiny example demonstrating the use of inductive
+  definitions by Markus Wenzel. This theory as well as @{text Measure}
+  in \ref{sec:measure-spaces} is heavily
+  influenced by Joe Hurd's thesis \cite{hurd2002} and has been designed to keep the terminology as
+  consistent as possible with that work.
+
+  Sigma algebras are an elementary concept in measure
+  theory. To measure --- that is to integrate --- functions, we first have
+  to measure sets. Unfortunately, when dealing with a large universe,
+  it is often not possible to consistently assign a measure to every
+  subset. Therefore it is necessary to define the set of measurable
+  subsets of the universe. A sigma algebra is such a set that has
+  three very natural and desirable properties. *}
+  
+constdefs
+  sigma_algebra:: "'a set set \<Rightarrow> bool"
+  "sigma_algebra A \<equiv>
+  {} \<in> A \<and> (\<forall>a. a \<in> A \<longrightarrow> -a \<in> A) \<and>
+  (\<forall>a. (\<forall> i::nat. a i \<in> A) \<longrightarrow> (\<Union>i. a i) \<in> A)"
+
+text {*The $\isacommand {constdefs}$ command declares and defines at the same
+  time new constants, which are just named functions in HOL. Mind that the third condition expresses the
+  fact that the union of countably many sets in $A$ is again a set in
+  $A$ without explicitly defining the notion of countability. 
+
+  Sigma algebras can naturally be created as the closure of any set of
+  sets with regard to the properties just postulated. Markus Wenzel
+  wrote the following
+  inductive definition of the $\isa {sigma}$ operator.  *}
+
+
+consts
+  sigma :: "'a set set \<Rightarrow> 'a set set"    
+
+inductive "sigma A"
+  intros
+    basic: "a \<in> A \<Longrightarrow> a \<in> sigma A"
+    empty: "{} \<in> sigma A"
+    complement: "a \<in> sigma A \<Longrightarrow> -a \<in> sigma A"
+    Union: "(\<And>i::nat. a i \<in> sigma A) \<Longrightarrow> (\<Union>i. a i) \<in> sigma A"
+
+
+text {* He also proved the following basic facts. The easy proofs are omitted.
+*}
+
+theorem sigma_UNIV: "UNIV \<in> sigma A"
+(*<*)proof -
+  have "{} \<in> sigma A" by (rule sigma.empty)
+  hence "-{} \<in> sigma A" by (rule sigma.complement)
+  also have "-{} = UNIV" by simp
+  finally show ?thesis .
+qed(*>*)
+
+
+theorem sigma_Inter:
+  "(\<And>i::nat. a i \<in> sigma A) \<Longrightarrow> (\<Inter>i. a i) \<in> sigma A"
+(*<*) proof -
+  assume "\<And>i::nat. a i \<in> sigma A"
+  hence "\<And>i::nat. -(a i) \<in> sigma A" by (rule sigma.complement)
+  hence "(\<Union>i. -(a i)) \<in> sigma A" by (rule sigma.Union)
+  hence "-(\<Union>i. -(a i)) \<in> sigma A" by (rule sigma.complement)
+  also have "-(\<Union>i. -(a i)) = (\<Inter>i. a i)" by simp
+  finally show ?thesis .
+qed(*>*)
+
+text {*It is trivial to show the connection between our first
+  definitions. We use the opportunity to introduce the proof syntax.*}
+
+
+theorem assumes sa: "sigma_algebra A" 
+  -- "Named premises are introduced like this." 
+
+  shows sigma_sigma_algebra: "sigma A = A" 
+proof
+  
+  txt {*The $\isacommand {proof}$ command alone invokes a single standard rule to
+    simplify the goal. Here the following two subgoals emerge.*}
+
+  show "A \<subseteq> sigma A" 
+    -- {*The $\isacommand {show}$ command starts the proof of a subgoal.*}
+    
+    by (auto simp add: sigma.basic) 
+  
+  txt {* This is easy enough to be solved by an automatic step,
+    indicated by the keyword $\isacommand {by}$. The method $\isacommand {auto}$ is stated in parentheses, with attributes to it following.  In
+    this case, the first introduction rule for the $\isacommand {sigma}$
+    operator is given as an extra simplification rule. *}
+  
+  show "sigma A \<subseteq> A"    
+  proof
+    
+    txt {*Because this goal is not quite as trivial, another proof is
+      invoked, delimiting a block as in a programming language.*}
+    
+    fix x 
+    -- "A new named variable is introduced."
+
+    assume "x \<in> sigma A"
+    
+    txt {*An assumption is made that must be justified by the current proof
+      context. In this case the corresponding fact had been generated
+      by a rule automatically invoked by the inner $\isacommand {proof}$
+      command.*}
+
+    from this sa show "x \<in> A" 
+      
+      txt {* Named facts can explicitly be given to the proof methods using
+	$\isacommand {from}$. A special name is @{text this}, which denotes
+	current facts generated by the last command. Usually $\isacommand
+	{from}$ @{text "this sa"} --- remember that @{text sa} is an assumption from above
+	--- is abbreviated to $\isacommand {with}$ @{text "sa"}, but in this case the order of
+	facts is relevant for the following method and $\isacommand
+	{with}$
+	would have put the current facts last. *}
+
+      by (induct rule: sigma.induct) (auto simp add: sigma_algebra_def)
+    
+    txt {*Two methods may be carried out at $\isacommand {by}$. The first
+      one applies induction here via the canonical rule generated by the
+      inductive definition above, while the latter solves the
+      resulting subgoals by an automatic step involving
+      simplification.*}
+    
+  qed 
+qed
+
+text "These two steps finish their respective proofs, checking
+  that all subgoals have been proven."
+
+text {* To end this theory we prove a special case of the @{text
+  sigma_Inter} theorem above. It seems trivial that
+  the fact holds for two sets as well as for countably many. 
+  We get a first taste of the cost of formal reasoning here, however. The
+  idea must be made precise by exhibiting a concrete sequence of
+  sets. *}
+
+consts
+trivial_series:: "'a set \<Rightarrow> 'a set \<Rightarrow> (nat \<Rightarrow> 'a set)"
+
+text "The new constant is only declared but not yet defined."
+
+primrec
+  "trivial_series a b 0 = a"
+  "trivial_series a b (Suc n) = b"
+
+text {*Using $\isacommand {primrec}$, primitive recursive functions over
+  inductively defined data types --- the natural numbers in this case ---
+  may be constructed.*}
+
+
+theorem assumes s: "sigma_algebra A" and a: "a \<in> A" and b: "b \<in> A"
+  shows sigma_algebra_inter: "a \<inter> b \<in> A"
+proof -  
+    -- {*This form of $\isacommand {proof}$ foregoes the application of a rule.*}
+  
+  have "a \<inter> b = (\<Inter>i::nat. trivial_series a b i)"
+
+    txt {*Intermediate facts that do not solve any subgoals yet are established this way.*}
+
+  proof (rule set_ext)
+    
+    txt {*The  $\isacommand {proof}$ command may also take one explicit method
+      as an argument like the single rule application in this instance.*}
+
+    fix x
+    
+    { 
+      fix i
+      assume "x \<in> a \<inter> b"
+      hence "x \<in> trivial_series a b i" by (cases i) auto
+        -- {*This is just an abbreviation for $\isacommand {"from this have"}$.*}
+    }
+    
+    txt {*Curly braces can be used to explicitly delimit
+      blocks. In conjunction with $\isacommand {fix}$, universal
+      quantification over the fixed variable $i$ is achieved
+      for the last statement in the block, which is exported to the
+      enclosing block.*}
+	
+    hence "x \<in> a \<inter> b \<Longrightarrow> \<forall>i. x \<in> trivial_series a b i" 
+      by fast                                             
+    also
+    
+    txt {*The statement $\isacommand {also}$ introduces calculational
+      reasoning. This basically amounts to collecting facts. With
+      $\isacommand {also}$, the current fact is added to a special list of
+      theorems called the calculation and
+      an automatically selected transitivity rule
+      is additionally applied from the second collected fact on.*}
+    
+    { assume "\<And>i. x \<in> trivial_series a b i"
+      hence "x \<in> trivial_series a b 0" and "x \<in> trivial_series a b 1" 
+	by blast                                                        
+      hence "x \<in> a \<inter> b" 
+	by simp           
+    }
+    hence "\<forall>i. x \<in> trivial_series a b i \<Longrightarrow> x \<in> a \<inter> b" 
+      by blast                                            
+
+    ultimately have "x \<in> a \<inter> b = (\<forall>i::nat. x \<in> trivial_series a b i)" ..
+    
+    txt {*The accumulated calculational facts including the current one
+      are exposed to the next statement by  $\isacommand {ultimately}$ and
+      the calculation list is then erased. The two dots after the
+      statement here indicate proof by a single automatically
+      selected rule.*}
+    
+    also have "\<dots> =  (x \<in> (\<Inter>i::nat. trivial_series a b i))" 
+      by simp                                                 
+    finally show "x \<in> a \<inter> b = (x \<in> (\<Inter>i::nat. trivial_series a b i))" .
+
+    txt {*The $\isacommand {finally}$ directive behaves like $\isacommand {ultimately}$
+      with the addition of a further transitivity rule application. A
+      single dot stands for proof by assumption.*}
+    
+  qed
+
+  also have "(\<Inter>i::nat. trivial_series a b i) \<in> A"
+  proof -
+    { fix i
+      from a b have "trivial_series a b i \<in> A" 
+	by (cases i) auto 
+    }                     
+    hence "\<And>i. trivial_series a b i \<in> sigma A" 
+      by (simp only: sigma.basic)                
+    hence "(\<Inter>i::nat. trivial_series a b i) \<in> sigma A" 
+      by (simp only: sigma_Inter)                       
+    with s show ?thesis 
+      by (simp only: sigma_sigma_algebra)
+  qed
+  
+  finally show ?thesis .
+qed
+
+text {* Of course, a like theorem holds for union instead of
+  intersection.  But as we will not need it in what follows, the
+  theory is finished with the following easy properties instead.
+  Note that the former is a kind of generalization of the last result and
+  could be used to  shorten its proof. Unfortunately, this one was needed ---
+  and therefore found --- only late in the development.
+  *}
+
+theorem sigma_INTER: 
+  assumes a:"(\<And>i::nat. i \<in> S \<Longrightarrow> a i \<in> sigma A)"
+  shows "(\<Inter>i\<in>S. a i) \<in> sigma A"(*<*)
+proof -
+  from a have "\<And>i. (if i\<in>S then {} else UNIV) \<union> a i \<in> sigma A"
+    by (simp add: sigma.intros sigma_UNIV)
+  hence "(\<Inter>i. (if i\<in>S then {} else UNIV) \<union> a i) \<in> sigma A"
+    by (rule sigma_Inter)
+  also have "(\<Inter>i. (if i\<in>S then {} else UNIV) \<union> a i) = (\<Inter>i\<in>S. a i)" 
+    by force
+  finally show ?thesis .
+qed(*>*)
+
+
+lemma assumes s: "sigma_algebra a" shows sigma_algebra_UNIV: "UNIV \<in> a"(*<*)
+proof -
+  from s have "{}\<in>a" by (unfold sigma_algebra_def) blast
+  with s show ?thesis by (unfold sigma_algebra_def) auto
+qed(*>*)
+
+
+end
