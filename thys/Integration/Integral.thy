@@ -4,11 +4,7 @@
 
 header {*The Lebesgue Integral*}
 
-<<<<<<< Integral.thy
 theory Integral = RealRandVar:
-=======
-theory Integral = RealRandVar+SetsumThms:
->>>>>>> 1.1.2.2
   (*simple function integral set*)
 text {*Having learnt from my failures, we take the safe and clean way
   of Heinz Bauer \cite{Bauer}. It proceeds as outlined in the
@@ -290,15 +286,9 @@ txt{*\nopagebreak*}
 	hence "\<dots> = (\<Sum>j\<in>S. let k=n2_to_n (i,j) in z1 k * \<chi>(C k) t)"
 	  by (rule setsum_cong)
 
-<<<<<<< Integral.thy
 	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi>(C k) t)"
 	  by (simp add: G_def Let_def o_def
                 setsum_reindex[OF _ subset_inj_on[OF n2_to_n_snd_inj]])
-=======
-	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi>(C k) t)"
-	  by (simp add: G_def Let_def o_def
-                setsum_reindex[OF _ subset_inj_on[OF _ n2_to_n_snd_inj]])
->>>>>>> 1.1.2.2
 
 	finally have eq: "x i * \<chi>(A i) t = (\<Sum>k\<in> G i. z1 k * \<chi>(C k) t)" .
 	  (*Repeat with measure instead of char*)
@@ -354,13 +344,8 @@ txt{*\nopagebreak*}
 	  by (rule setsum_cong)
 	
 	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * measure M (C k))"
-<<<<<<< Integral.thy
 	  by (simp add: G_def Let_def o_def
                 setsum_reindex[OF _ subset_inj_on[OF n2_to_n_snd_inj]])
-=======
-	  by (simp add: G_def Let_def o_def
-                setsum_reindex[OF _ subset_inj_on[OF _ n2_to_n_snd_inj]])
->>>>>>> 1.1.2.2
 	
 	finally have 
 	  "x i * measure M (A i) = (\<Sum>k\<in>(G i). z1 k * measure M (C k))" .
@@ -393,13 +378,8 @@ txt{*\nopagebreak*}
 	hence "\<dots> = (\<Sum>i\<in>R. let k=n2_to_n (i,j) in z2 k * \<chi>(C k) t)"
 	  by (rule setsum_cong)
 	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * \<chi>(C k) t)" 
-<<<<<<< Integral.thy
 	  by (simp add: H_def Let_def o_def
                 setsum_reindex[OF _ subset_inj_on[OF n2_to_n_fst_inj]])
-=======
-	  by (simp add: H_def Let_def o_def
-                setsum_reindex[OF _ subset_inj_on[OF _ n2_to_n_fst_inj]])
->>>>>>> 1.1.2.2
 	finally have eq: "y j * \<chi>(B j) t = (\<Sum>k\<in> H j. z2 k * \<chi>(C k) t)" .
 		
 	from R have H: "finite (H j)" 
@@ -449,13 +429,8 @@ txt{*\nopagebreak*}
 	hence "\<dots> = (\<Sum>i\<in>R. let k=n2_to_n(i,j) in z2 k * measure M (C k))"
 	  by (rule setsum_cong)
 	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * measure M (C k))"
-<<<<<<< Integral.thy
 	  by (simp add: H_def Let_def o_def
                 setsum_reindex[OF _ subset_inj_on[OF n2_to_n_fst_inj]])
-=======
-	  by (simp add: H_def Let_def o_def
-                setsum_reindex[OF _ subset_inj_on[OF _ n2_to_n_fst_inj]])
->>>>>>> 1.1.2.2
 	finally have eq2: 
 	  "y j * measure M (B j) = (\<Sum>k\<in>(H j). z2 k * measure M (C k))" .
       }
