@@ -913,9 +913,9 @@ constdefs
 
  ring :: "('a, 'more) RingType_scheme  \<Rightarrow> bool"
   "ring R  ==  agroup R \<and>(tOp R): carrier R \<rightarrow> carrier R \<rightarrow> carrier R \<and> 
-  (one R) \<in>  carrier R  \<and> (\<forall> x \<in> carrier R. \<forall> y \<in> carrier R. \ 
-  \<forall> z \<in> carrier R. (tOp R (one R) x = x) \<and> \
-  (tOp R x (pOp R y z) = pOp R (tOp R x y) (tOp R x z)) \<and> \ 
+  (one R) \<in>  carrier R  \<and> (\<forall> x \<in> carrier R. \<forall> y \<in> carrier R.
+  \<forall> z \<in> carrier R. (tOp R (one R) x = x) \<and>
+  (tOp R x (pOp R y z) = pOp R (tOp R x y) (tOp R x z)) \<and>
  (tOp R (tOp R x y) z = tOp R x (tOp R y z)) \<and> (tOp R x y = tOp R y x))"   
 
  unit ::"[('a, 'more) RingType_scheme, 'a] \<Rightarrow> bool"

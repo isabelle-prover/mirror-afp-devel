@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.5 2004-05-25 14:18:34 lsf37 Exp $
+(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.6 2004-06-21 14:40:34 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 
@@ -225,8 +225,8 @@ apply (induct "w")
 done
 
 lemma regset_DA_equiv:
- "[| bounded (next A) k; start A < k; j < k |] ==> \
-\ w : regset_of_DA A k = accepts A w"
+ "[| bounded (next A) k; start A < k; j < k |] ==>
+  w : regset_of_DA A k = accepts A w"
 apply(unfold regset_of_DA_def)
 apply (simp cong: conj_cong
             add: regset_below deltas_below accepts_def delta_def)
