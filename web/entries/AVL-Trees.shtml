@@ -36,7 +36,10 @@
     <tr><td class="datahead">Author:</td>
 <td class="data">
 <!-- Author: -->Cornelia Pusch and <a
-href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>, Contributions by 
+<a href="http://www.brucker.ch/">Achim Brucker</a>, 
+<a href="http://www.infsec.ethz.ch/people/wolffb">Burkhart Wolff</a> and 
+<a href="http://www.informatik.uni-freiburg.de/~smaus/">Jan Smaus</a>
 </td></tr>		
     
 	<tr><td class="datahead">Submisison date:</td>
@@ -47,7 +50,8 @@ href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
   <td class="abstract"> 
 <!-- Abstract: -->	
   A small demo formalization of AVL trees with room for improvement.
-  If you are interested in working on this, please contact 
+  Contributions by Achim Brucker, Burkhart Wolff, and Jan Smaus.
+  If you are interested in developing this further, please contact 
   <tt>gerwin.klein@nicta.com.au</tt>.
    </td></tr>
 </tbody>
@@ -89,6 +93,6 @@ href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2004-04-15 04:48:30 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2004-06-22 02:14:50 $, $Revision: 1.1 
 $</div></body>
 </html>
