@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/MiniML.thy
-   ID:        $Id: MiniML.thy,v 1.2 2004-03-20 21:07:44 lsf37 Exp $
+   ID:        $Id: MiniML.thy,v 1.3 2004-03-23 06:40:59 lsf37 Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -237,7 +237,7 @@ apply (rule replace_s_by_s')
 apply (cut_tac A = "$ S A" and A' = "A" and t = "t" and t' = "$ S t" in ex_fresh_variable)
 apply (erule exE)
 apply (erule conjE)+ 
-apply (rule_tac "t1.0" = "$ ((%x. if x : free_tv A Un free_tv t then S x else TVar x) o (%x. if x : free_tv A then x else n + x)) t1" in has_type.LETI)
+apply (rule_tac ?t1.0 = "$ ((%x. if x : free_tv A Un free_tv t then S x else TVar x) o (%x. if x : free_tv A then x else n + x)) t1" in has_type.LETI)
  apply (drule_tac x = " (%x. if x : free_tv A Un free_tv t then S x else TVar x) o (%x. if x : free_tv A then x else n + x) " in spec)
  apply (subst S'_A_eq_S'_alpha_A)
  apply assumption

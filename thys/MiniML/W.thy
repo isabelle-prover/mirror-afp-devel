@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/W.thy
-   ID:        $Id: W.thy,v 1.2 2004-03-20 21:07:44 lsf37 Exp $
+   ID:        $Id: W.thy,v 1.3 2004-03-23 06:40:59 lsf37 Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -311,7 +311,7 @@ apply assumption
 apply (simp (no_asm) split add: split_option_bind)
 apply (intro strip)
 apply (rename_tac S1 t1 n1 S2 t2 n2 S3)
-apply (rule_tac "t2.0" = "$ S3 t2" in has_type.AppI)
+apply (rule_tac ?t2.0 = "$ S3 t2" in has_type.AppI)
 apply (rule_tac S1 = "S3" in app_subst_TVar [THEN subst])
 apply (rule app_subst_Fun [THEN subst])
 apply (rule_tac t = "$S3 (t2 -> (TVar n2))" and s = "$S3 ($S2 t1) " in subst)
@@ -343,7 +343,7 @@ apply (simp (no_asm) split add: split_option_bind)
 apply (intro strip)
 (*by (rename_tac "w q m1 S1 t1 m2 S2 t n2" 1); *)
 apply (rename_tac S1 t1 m1 S2)
-apply (rule_tac "t1.0" = "$ S2 t1" in has_type.LETI)
+apply (rule_tac ?t1.0 = "$ S2 t1" in has_type.LETI)
  apply (simp (no_asm) add: o_def)
  apply (simp only: subst_comp_scheme_list [symmetric])
  apply (rule has_type_cl_sub [THEN spec])
