@@ -723,7 +723,7 @@ proof (induct)
   with ms have "measure M {} \<in> sfis \<chi>{} M" by (simp add: measure_space_def sigma_algebra_def sfis_char)
   with ms show ?case by (simp add: setsum_empty measure_space_def positive_def char_empty)
 next
-  case (insert S s)
+  case (insert s S)
   { fix t
     from prems have "(\<Sum>i \<in> insert s S. f i t) = f s t + (\<Sum>i\<in>S. f i t)"
       by simp }
@@ -790,7 +790,7 @@ next
     with ms show ?case
       by (simp add: const_rv)
   next
-    case (insert F x)
+    case (insert x F)
     hence "(\<lambda>t. \<Sum>k\<in>insert x F. f k t) = (\<lambda>t. f x t + (\<Sum>k\<in>F. f k t))"
       by simp
     also
