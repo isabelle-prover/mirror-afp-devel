@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/W.thy
-   ID:        $Id: W.thy,v 1.6 2004-08-16 16:35:18 nipkow Exp $
+   ID:        $Id: W.thy,v 1.7 2004-08-18 07:24:54 nipkow Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -7,7 +7,7 @@
 header "Correctness and completeness of type inference algorithm W"
 
 theory W
-import MiniML
+imports MiniML
 begin
 
 types result_W = "(subst * typ * nat)option"

@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Maybe.thy
-   ID:        $Id: Maybe.thy,v 1.5 2004-08-16 16:35:18 nipkow Exp $
+   ID:        $Id: Maybe.thy,v 1.6 2004-08-18 07:24:54 nipkow Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -7,7 +7,7 @@
 header "Universal error monad"
 
 theory Maybe
-import Main
+imports Main
 begin
 
 constdefs
