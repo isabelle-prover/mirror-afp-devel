@@ -258,13 +258,14 @@ by(blast intro: subset_inj_on)
 
 lemma collect_disj: "{x. P x | Q x} = {x. P x} Un {x. Q x}" by(force)
 
-lemma t: "finite {w. P w} ==> finite {w. Q w & P w}" apply(rule finite_subset) by auto
+lemma t: "finite {w. P w} ==> finite {w. Q w & P w}" 
+  by (rule finite_subset, auto)
 
 lemma finite_subs: "finite {w. ~is_axiom (s_of_ns y) & w : set (subs y)}"
   apply(case_tac y) apply(simp add: s_of_ns_def)
   apply(case_tac a) apply(case_tac b)
   apply(simp_all only: subs.simps)
-  apply(auto intro: t)
+  apply(auto intro: t simp add: collect_disj) 
   done
 
 lemma (in loc1) fSuc:
