@@ -1,0 +1,95 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<!-- begin entry data: -->
+<h1><!-- Title: -->Functional Automata</h1>
+<p>&nbsp;</p>
+
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+    <td class="data" width="80%">
+<!-- Title: -->Functional Automata
+    </td></tr>
+		
+    <tr><td class="datahead">Author:</td>
+<td class="data">
+<!-- Author: --><a
+href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>		
+    
+	<tr><td class="datahead">Submisison date:</td>
+	
+<td class="data"><!-- Submission date: -->2004-03-30</td></tr>
+
+	<tr><td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract"> 
+<!-- Abstract: -->	
+This theory defines deterministic and nondeterministic automata in a
+functional representation: the transition function/relation and the finality
+predicate are just functions. Hence the state space may be infinite.  It is
+shown how to convert regular expressions into such automata. A scanner
+(generator) is implemented with the help of functional automata: the scanner
+chops the input up into longest recognized substrings. Finally we also show
+how to convert a certain subclass of functional automata (essentially the
+finite deterministic ones) into regular sets.
+   </td></tr>
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<!-- entry directory name: -->
+<!--#set var="name" value="Functional-Automata" -->
+
+<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:	None</td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+<div align="right" class="date">$Date: 2004-03-31 14:06:04 $, $Revision: 1.1 
+$</div></body>
+</html>

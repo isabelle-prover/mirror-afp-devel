@@ -47,9 +47,9 @@
 	of Isabelle):</td></tr>
 
 	<tr><td class="entry">
-      <!--#flastmod file="release/afp-current.tar.gz" -->:
+      <!--#flastmod file="release/afp-devel.tar.gz" -->:
       <a href="release/afp-devel.tar.gz"><tt>afp-devel.tar.gz</tt></a>     
-      [<!--#fsize file="release/afp-current.tar.gz" -->]
+      [<!--#fsize file="release/afp-devel.tar.gz" -->]
 
       [<a href="release/entry-status.txt">entry status</a>]
   </td></tr></tr>
