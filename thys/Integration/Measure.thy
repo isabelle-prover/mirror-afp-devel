@@ -1,11 +1,10 @@
 header {*Preliminaries*}
 
 
-theory Measure=Sigma_Algebra2+MonConv+NthRoot:(*<*)  
-ML_setup "quick_and_dirty:=true;"
+theory Measure = Sigma_Algebra + MonConv + NthRoot:(*<*)
 
 syntax
-  "_suminf" :: "idt => 'b => 'b::plus_ac0"    ("\<Sum>_. _" [0, 10] 10)
+  "_suminf" :: "idt => real => real"    ("\<Sum>_. _" [0, 10] 10)
 
 translations
   "\<Sum>i. b" == "suminf (%i. b)" (*>*)

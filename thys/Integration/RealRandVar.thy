@@ -231,7 +231,7 @@ proof
 	by (rule LIMSEQ_inverse_real_of_nat)
 
       also assume "f w < a"
-      hence "0 < a - f w" ..
+      hence "0 < a - f w" by simp
      
       ultimately have 
 	"\<exists>n0. \<forall>n. n0 \<le> n \<longrightarrow> abs (inverse (real (Suc n))) < a - f w" 
@@ -279,7 +279,7 @@ lemma assumes sigma: "sigma_algebra A" and ge: "\<forall>a. {w. a \<le> f w} \<i
       have "(\<lambda>n. inverse (real (Suc n))) ----> 0" by (rule LIMSEQ_inverse_real_of_nat)
       
       also assume "a < f w"
-      hence "0 < f w - a" ..
+      hence "0 < f w - a" by simp
 
       ultimately have "\<exists>n0. \<forall>n. n0 \<le> n \<longrightarrow> abs (inverse (real (Suc n))) < f w - a" 
 	by (auto simp add: LIMSEQ_def) 
@@ -566,7 +566,6 @@ lemma pow2_le_abs: "(a\<twosuperior> \<le> b\<twosuperior>) = (\<bar>a\<bar> \<l
   finally show ?thesis .
 qed(*>*)
 
-
 lemma assumes f: "f \<in> rv M" 
   shows rv_square: "(\<lambda>w. (f w)\<twosuperior>) \<in> rv M"
 (*<*)proof -
@@ -616,7 +615,8 @@ lemma assumes f: "f \<in> rv M"
 	{ fix w
 	  from prems have "0<a" by (simp add: order_less_le)
 	  then have "\<exists> sqra. 0<sqra \<and> sqra\<twosuperior> = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
-	  hence "\<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}" by (auto simp only: pow2_le_abs abs_eqI2 abs_le_interval_iff)
+	  hence "\<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}"
+	    by (auto simp only: pow2_le_abs abs_eq abs_le_interval_iff)
         }
 	then obtain sqra where "?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}" by fast
 	also have "\<dots> \<in> ?M" 
@@ -761,7 +761,7 @@ lemma f_plus_minus2: "(f::'a \<Rightarrow> real) = (\<lambda>t. pp f t - np f t)
   by (rule ext)
 
 lemma f_abs_plus_minus: "(\<bar>f x\<bar>::real) = pp f x + np f x"
-  by  (auto simp add:positive_part_def negative_part_def abs_minus_eqI2 abs_eqI1)
+  by  (auto simp add:positive_part_def negative_part_def abs_minus_eq abs_eq)
 
 lemma nn_pp_np: assumes "nonnegative f"
   shows "pp f = f" and "np f = (\<lambda>t. 0)" using prems

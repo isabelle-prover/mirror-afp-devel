@@ -138,7 +138,7 @@ qed
 
 (*<*)
 theorem sum_of_naturals: (*Stolen from Isar_examples/Summation.thy by Markus Wenzel*)
-  "2 * (\<Sum>i < n + 1. i) = n * (n + 1)"
+  "2 * (\<Sum>i < Suc n. i) = n * (n + 1)"
   (is "?P n" is "?S n = _")
 proof (induct n)
   show "?P 0" by simp
@@ -154,26 +154,26 @@ lemma n2_to_n_surj: "surj n2_to_n"(*<*)
 proof (unfold surj_def)
   {
     fix z::nat 
-    def r \<equiv> "Max {r. (\<Sum>i < r + 1. i) \<le> z}" 
-    def x \<equiv> "z - (\<Sum>i < r + 1. i)"
+    def r \<equiv> "Max {r. (\<Sum>i < Suc r. i) \<le> z}" 
+    def x \<equiv> "z - (\<Sum>i < Suc r. i)"
     
-    have "\<forall>r. r \<le>  (\<Sum>i < r + 1. i)"
+    have "\<forall>r. r \<le>  (\<Sum>i < Suc r. i)"
       by simp
-    hence "finite  {r. (\<Sum>i < r + 1. i) \<le> z}"
+    hence "finite  {r. (\<Sum>i < Suc r. i) \<le> z}"
       by (rule NSLIMSEQ_finite_set)
-    also have "0 \<in> {r. (\<Sum>i < r + 1. i) \<le> z}"
+    also have "0 \<in> {r. (\<Sum>i < Suc r. i) \<le> z}"
       by simp
-    hence "{r. (\<Sum>i < r + 1. i) \<le> z} \<noteq> {}"
+    hence "{r. (\<Sum>i < Suc r. i) \<le> z} \<noteq> {}"
       by fast
-    ultimately have a: "r \<in> {r. (\<Sum>i < r + 1. i) \<le> z} \<and> (\<forall>s \<in> {r. (\<Sum>i < r + 1. i) \<le> z}. s \<le> r)"
+    ultimately have a: "r \<in> {r. (\<Sum>i < Suc r. i) \<le> z} \<and> (\<forall>s \<in> {r. (\<Sum>i < Suc r. i) \<le> z}. s \<le> r)"
       by (subst r_def) (rule Max)
     {
       assume "r<x"
       hence "r+1\<le>x"
 	by simp
-      hence "(\<Sum>i < r + 1. i)+(r+1)\<le>z"
+      hence "(\<Sum>i < Suc r. i)+(r+1)\<le>z"
 	using x_def by arith
-      hence "(r+1) \<in>  {r. (\<Sum>i < r + 1. i) \<le> z}"
+      hence "(r+1) \<in>  {r. (\<Sum>i < Suc r. i) \<le> z}"
 	by simp
       with a have "(r+1)\<le>r"
 	by simp
@@ -363,14 +363,14 @@ text {*The density proof was first to be adapted from a Mizar document
 lemma assumes nn: "0\<le>x" and ord: "x<y"
   shows rats_dense_in_nn_real: "\<exists>r \<in> \<rat>.  x<r \<and> r<y"
 proof -
-  from ord have "0 < y-x" ..
+  from ord have "0 < y-x" by simp
   with reals_Archimedean obtain q::nat 
     where q: "inverse (real q) < y-x" and qpos: "0 < real q"
     by auto
   
   def p \<equiv> "LEAST n.  y \<le> real (Suc n)/real q"
   
-  from reals_Archimedean2 obtain n::nat where "y * real q < real n" 
+  from reals_Archimedean2 obtain n::nat where "y * real q < real n"
     by auto
   with qpos have ex: "y \<le> real n/real q" (is "?P n")
     by (simp add: pos_less_divide_eq[THEN sym])

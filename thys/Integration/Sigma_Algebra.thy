@@ -1,7 +1,7 @@
-(*  Title:      HOL/Induct/Sigma_Algebra.thy
-    ID:         $Id: Sigma_Algebra2.thy,v 1.2 2004-11-22 15:18:26 lsf37 Exp $
-    Author:     Markus Wenzel, TU Muenchen
-    License:    GPL (GNU GENERAL PUBLIC LICENSE)
+(*  Title:      Sigma_Algebra.thy
+    ID:         $Id: Sigma_Algebra.thy,v 1.2 2004-11-23 10:20:39 nipkow Exp $
+    Author:     Stefan Richter, Markus Wenzel, TU Muenchen
+    License:    LGPL
 
 Changes for Accordance to Joe Hurd's conventions
 and additions by Stefan Richter 2002
@@ -9,15 +9,13 @@ and additions by Stefan Richter 2002
 
 header {* Sigma algebras *}
 
-theory Sigma_Algebra2 = Main:
+theory Sigma_Algebra = Main:
 
 text {* The $\isacommand {theory}$ command commences a formal document and enumerates the
   theories it depends on. With the @{text Main} theory, a standard
   selection of useful HOL theories excluding the real 
-  numbers is loaded. @{text Sigma_Algebra2} is built upon @{text
-  Sigma_Algebra}, 
-  a tiny example demonstrating the use of inductive
-  definitions by Markus Wenzel. This theory as well as @{text Measure}
+  numbers is loaded. This theory includes and builds upon a tiny theory of the
+  same name by Markus Wenzel. This theory as well as @{text Measure}
   in \ref{sec:measure-spaces} is heavily
   influenced by Joe Hurd's thesis \cite{hurd2002} and has been designed to keep the terminology as
   consistent as possible with that work.

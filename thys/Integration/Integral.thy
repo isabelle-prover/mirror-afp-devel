@@ -5,10 +5,6 @@
 header {*The Lebesgue Integral*}
 
 theory Integral = RealRandVar+SetsumThms:
-(*<*)    
-ML_setup "quick_and_dirty:=true;"
-ML {* ProofContext.thms_containing_limit := 1000;*}
-(*>*)
   (*simple function integral set*)
 text {*Having learnt from my failures, we take the safe and clean way
   of Heinz Bauer \cite{Bauer}. It proceeds as outlined in the
@@ -292,8 +288,9 @@ txt{*\nopagebreak*}
 	hence "\<dots> = (\<Sum>j\<in>S. let k=n2_to_n (i,j) in z1 k * \<chi>(C k) t)"
 	  by (rule setsum_cong)
 
-	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi>(C k) t)" 
-	  by (simp add: G_def Let_def setsum_image o_def n2_to_n_snd_inj)
+	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi>(C k) t)"
+	  by (simp add: G_def Let_def o_def
+                setsum_reindex[OF _ subset_inj_on[OF n2_to_n_snd_inj]])
 
 	finally have eq: "x i * \<chi>(A i) t = (\<Sum>k\<in> G i. z1 k * \<chi>(C k) t)" .
 	  (*Repeat with measure instead of char*)
@@ -349,7 +346,8 @@ txt{*\nopagebreak*}
 	  by (rule setsum_cong)
 	
 	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * measure M (C k))"
-	  by (simp add: G_def Let_def setsum_image o_def n2_to_n_snd_inj)
+	  by (simp add: G_def Let_def o_def
+                setsum_reindex[OF _ subset_inj_on[OF n2_to_n_snd_inj]])
 	
 	finally have 
 	  "x i * measure M (A i) = (\<Sum>k\<in>(G i). z1 k * measure M (C k))" .
@@ -382,7 +380,8 @@ txt{*\nopagebreak*}
 	hence "\<dots> = (\<Sum>i\<in>R. let k=n2_to_n (i,j) in z2 k * \<chi>(C k) t)"
 	  by (rule setsum_cong)
 	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * \<chi>(C k) t)" 
-	  by (simp add: H_def Let_def setsum_image o_def n2_to_n_fst_inj)
+	  by (simp add: H_def Let_def o_def
+                setsum_reindex[OF _ subset_inj_on[OF n2_to_n_fst_inj]])
 	finally have eq: "y j * \<chi>(B j) t = (\<Sum>k\<in> H j. z2 k * \<chi>(C k) t)" .
 		
 	from R have H: "finite (H j)" 
@@ -432,7 +431,8 @@ txt{*\nopagebreak*}
 	hence "\<dots> = (\<Sum>i\<in>R. let k=n2_to_n(i,j) in z2 k * measure M (C k))"
 	  by (rule setsum_cong)
 	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * measure M (C k))"
-	  by (simp add: H_def Let_def setsum_image o_def n2_to_n_fst_inj)
+	  by (simp add: H_def Let_def o_def
+                setsum_reindex[OF _ subset_inj_on[OF n2_to_n_fst_inj]])
 	finally have eq2: 
 	  "y j * measure M (B j) = (\<Sum>k\<in>(H j). z2 k * measure M (C k))" .
       }
@@ -766,7 +766,8 @@ proof (cases)
     { fix i
       from prems have "0 \<le> x i * \<chi>(A i) t" by (simp add: nonnegative_def characteristic_function_def)
     }
-    with prems have "(\<Sum>i\<in>S. 0) \<le> f t" by (simp add: setsum_mono_real) 
+    with prems have "(\<Sum>i\<in>S. 0) \<le> f t"
+      by (simp del: setsum_constant add: setsum_mono_real)
     hence "0 \<le> f t" by (simp add: setsum_0)
   }
   thus ?thesis by (simp add: nonnegative_def)
@@ -1036,7 +1037,7 @@ proof cases
     }
     hence "(\<lambda>n. \<Sum>j\<in>S. a j * measure M (A j \<inter> B n)) 
       ----> (\<Sum>j\<in>S. a j * measure M (A j))" 
-      by (rule limseq_setsum)
+      by (rule LIMSEQ_setsum)
     hence "(\<lambda>n. z* (\<Sum>j\<in>S. a j * measure M (A j \<inter> B n)))
       ----> z*(\<Sum>j\<in>S. a j * measure M (A j))" 
       by (simp add: LIMSEQ_const LIMSEQ_mult)
@@ -2296,4 +2297,3 @@ proof -
 qed
     
 end
-
