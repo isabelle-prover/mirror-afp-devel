@@ -1,5 +1,5 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL.thy,v 1.4 2004-06-22 01:46:25 lsf37 Exp $
+    ID:         $Id: AVL.thy,v 1.5 2004-06-22 02:03:23 lsf37 Exp $
     Author:     Cornelia Pusch and Tobias Nipkow, converted to Isar by Gerwin Klein
     Author:     contributions by Achim Brucker, Burkhart Wolff and Jan Smaus
     Maintainer: Gerwin Klein <gerwin.klein@nicta.com.au>
@@ -13,16 +13,10 @@ header "Parameterized AVL Trees"
 theory AVL = Main:
 
 text {* 
-  At the moment only insertion is formalized.
-
   This theory would be a nice candidate for structured Isar proof
   texts and for extensions (delete operation). 
-*}
 
-text {*
-  This version works exclusively with nat. Balance check could be
-  simplified by working with int: 
-  @{text "is_bal (MKT n l r) = (abs(int(height l) - int(height r)) <= 1 & is_bal l & is_bal r)"}
+  At the moment only insertion is formalized.
 *}
 
 datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree"
