@@ -1,0 +1,39 @@
+## configurables
+
+SESSION-NAME = FileRefinement
+BASE-IMAGE = HOL
+
+# turn image into absolute path when ISABELLE_IMAGE_PATH is set
+IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
+
+## targets
+
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images:  
+
+all: images test
+
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+USEDIR = $(ISATOOL) usedir -v true -i true -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
+
+
+## dependencies
+
+$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: ROOT.ML *.thy document/*.tex document/*.bib
+	cd ..; $(USEDIR) $(IMAGE) $(SESSION-NAME)
+
+
+## clean
+
+clean:
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
