@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+# $Id: devel-copy,v 1.2 2004-12-01 15:18:52 lsf37 Exp $
+# Author: Gerwin Klein, NICTA
+#
+# Cron job that copies development snapshot to SF.
+# Tested on sunbroy2 only.
+# 
+
+SOURCE=~isatest/html-data/afp
+FILES="afp-devel.tar.gz entry-status.txt"
+TARGET=lsf37@shell.sf.net:afp-web/htdocs/release
+
+cd $SOURCE
+scp -q $FILES $TARGET
