@@ -1,4 +1,3 @@
-(*
-  no_document use_thy "ThisTheory";
-  use_thy "ThatTheory";
-*)
+use_thy "BinaryTree";
+use_thy "BinaryTree_Map";
+use_thy "BinaryTree_TacticStyle";

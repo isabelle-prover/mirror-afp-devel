@@ -1,9 +1,17 @@
+## configurables
+
+SESSION-NAME = BinarySearchTree
+BASE-IMAGE = HOL
+
+# turn image into absolute path when ISABELLE_IMAGE_PATH is set
+IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 
 ## targets
 
-default: BinarySearchTree
-images: 
-test: BinarySearchTree
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images:  
 
 all: images test
 
@@ -14,18 +22,18 @@ SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
-USEDIR = $(ISATOOL) usedir -v true -i true -d pdf  ## -D generated
+USEDIR = $(ISATOOL) usedir -v true -i true -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
 
-## BinarySearchTree
+## dependencies
 
-BinarySearchTree: $(LOG)/HOL-BinarySearchTree.gz
+$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
-$(LOG)/HOL-BinarySearchTree.gz: ## BinarySearchTree/ROOT.ML BinarySearchTree/document/root.tex BinarySearchTree/*.thy
-	@$(USEDIR) HOL BinarySearchTree
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: ROOT.ML *.thy document/*.tex 
+	cd ..; $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/HOL-BinarySearchTree.gz
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
