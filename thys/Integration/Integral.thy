@@ -90,12 +90,12 @@ lemma assumes un: "(\<Union>i\<in>R. B i) = UNIV" and fin: "finite R"
   from dis jR tj have "R-{j} = R-{j}" and "\<And>x. x \<in> R-{j} \<Longrightarrow> \<chi>(A \<inter> B x) t = 0" 
     by (auto simp add: characteristic_function_def) 
   hence "(\<Sum>i\<in>R-{j}. \<chi>(A \<inter> B i) t) = (\<Sum>i\<in>R-{j}. 0)" by (rule setsum_cong) 
-  finally have "1 = (\<Sum>i\<in>R. \<chi>(A \<inter> B i) t)" by (simp add: setsum_0)
+  finally have "1 = (\<Sum>i\<in>R. \<chi>(A \<inter> B i) t)" by (simp)
   with True show ?thesis by (simp add: characteristic_function_def)
 next
   case False
   hence "\<And>i. \<chi>(A \<inter> B i) t = 0" by (simp add: characteristic_function_def)
-  hence "0 = (\<Sum>i\<in>R. \<chi>(A \<inter> B i) t)" by (simp add: setsum_0)
+  hence "0 = (\<Sum>i\<in>R. \<chi>(A \<inter> B i) t)" by (simp)
   with False show ?thesis by (simp add: characteristic_function_def)
 qed
 
@@ -758,7 +758,7 @@ proof (cases)
       from prems have "0 \<le> x i * \<chi>(A i) t" by (simp add: nonnegative_def characteristic_function_def)
     }
     with prems have "(\<Sum>i\<in>S. 0) \<le> f t"
-      by (simp del: setsum_constant add: setsum_mono)
+      by (simp del: setsum_0 setsum_constant add: setsum_mono)
     hence "0 \<le> f t" by (simp)
   }
   thus ?thesis by (simp add: nonnegative_def)
@@ -1179,11 +1179,9 @@ lemma sf_norm_help:
   assumes fin: "finite K" and jK: "j \<in> K" and tj: "t \<in> C j" and iK: "\<forall>i\<in>K-{j}. t \<notin> C i"
   shows "(\<Sum>i\<in>K. (z i) * \<chi>(C i) t) = z j"
 (*<*)proof -
-  from jK have "K = insert j (K-{j})"
-    by blast
+  from jK have "K = insert j (K-{j})"  by blast
   also
-  from fin have fin2: "finite (K-{j})" and "j \<notin> (K-{j})"
-    by simp_all
+  from fin have fin2: "finite (K-{j})" and "j \<notin> (K-{j})"  by simp_all
   hence "(\<Sum>i\<in>insert j (K-{j}). (z i) * \<chi>(C i) t) = (z j * \<chi>(C j) t) + (\<Sum>i\<in>K-{j}. (z i) * \<chi>(C i) t)"
     by (rule setsum_insert)
   also from tj have "\<dots> = z j + (\<Sum>i\<in>K-{j}. (z i) * \<chi>(C i) t)"
@@ -1192,8 +1190,7 @@ lemma sf_norm_help:
   { from iK have "\<forall>i\<in>K-{j}. (z i) * \<chi>(C i) t = 0"
       by (auto simp add: characteristic_function_def)
   }
-  hence "\<dots> = z j"
-    by (simp add: setsum_0')
+  hence "\<dots> = z j"  by (simp add:setsum_0')
   finally show ?thesis .
 qed(*>*)
 
@@ -1768,8 +1765,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	  with refl have "(\<Sum>i\<in>{..n * 2 ^ n(} - {0}. real i / (2::real)^n * \<chi>(A n i) t)
 	    = (\<Sum>i\<in>{..n * 2 ^ n(} - {0}. 0)"
 	    by (rule setsum_cong)
-	  hence "u n t = 0" 
-	    by (simp add: u_def setsum_0)
+	  hence "u n t = 0"  by (simp add: u_def)
 	    
 	  also 
 	  { fix m
@@ -1778,8 +1774,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 		by (simp add: characteristic_function_def real_0_le_divide_iff)
 	    } hence "\<forall>i\<in>{..(m*2^m)(}-{0}. 0 \<le> real i / (2::real)^m * \<chi>(A m i) t"
 	      by fast
-	    hence "0 \<le> u m t" 
-	      by (simp add: u_def setsum_nonneg)
+	    hence "0 \<le> u m t"  by (simp add: u_def setsum_nonneg)
 	  }
 	  hence "0 \<le> u (Suc n) t" .
 
@@ -1787,8 +1782,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	  
 	next
 	  case False
-	  with uSuc show ?thesis
-	    by simp
+	  with uSuc show ?thesis  by simp
 	qed
 	note this lef fless
       }
@@ -1797,28 +1791,23 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	and fless:"\<And>n. f t < real n \<Longrightarrow> f t < u n t + 1 / (2::real)^n" 
 	by auto
 
-      have "\<exists>n0::nat. f t < real n0" 
-	by (rule reals_Archimedean2)
-      then obtain n0::nat where "f t < real n0" 
-	by fast
-      also have "\<And>n. real n0 \<le> real (n+n0)"
-	by simp 
+      have "\<exists>n0::nat. f t < real n0"  by (rule reals_Archimedean2)
+      then obtain n0::nat where "f t < real n0" ..
+      also have "\<And>n. real n0 \<le> real (n+n0)"  by simp 
       finally
       have pro: "\<And>n. f t < real (n + n0)" .
-      hence 2: "\<And>n. u (n+n0) t \<le> f t" using lef
-	by simp
-      from uSuc have 1: "\<And>n. u (n+n0) t \<le> u (Suc n + n0) t" 
-	by simp
+      hence 2: "\<And>n. u (n+n0) t \<le> f t" using lef by simp
+      from uSuc have 1: "\<And>n. u (n+n0) t \<le> u (Suc n + n0) t" by simp
       from 1 2 have "\<exists>c. (\<lambda>n. u (n+n0) t)\<up>c \<and> c \<le> f t"
 	by (rule real_mon_conv_bound)
       with uSuc obtain c where n0mc: "(\<lambda>n. u (n+n0) t)\<up>c" and cle: "c \<le> f t"
 	by fast
-      
+
       from n0mc have "(\<lambda>n. u (n+n0) t) ----> c"
 	by (simp add: real_mon_conv)
       hence lim: "(\<lambda>n. u n t) ----> c"
 	by (subst limseq_shift_iff[THEN sym])
-      
+
       have "\<forall>y. \<exists>N. \<forall>n. N \<le> n \<longrightarrow> y < (2::real)^n"
       proof
 	fix y::real
