@@ -1,0 +1,87 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<!-- begin entry data: -->
+<h1><!-- Title: -->Lazy-Lists-II</h1>
+							<p>&nbsp;</p>
+							<table width="80%" class="data">
+								<tbody>
+									<tr>
+										<td class="datahead" width="20%">Title:</td>
+										<td class="data" width="80%"><!-- Title: -->Lazy-Lists-II</td>
+									</tr>
+									<tr>
+										<td class="datahead">Author:</td>
+										<td class="data"><!-- Author: --><a href="http://www.informatik.uni-freiburg.de/%7efriedric/">Stefan Friedrich</a></td>
+									</tr>
+									<tr>
+										<td class="datahead">Submisison date:</td>
+										<td class="data"><!-- Submission date: -->2004-04-26</td>
+									</tr>
+									<tr>
+										<td class="datahead" valign="top">Abstract:</td>
+<td class="abstract"><!-- Abstract: -->This theory contains some useful
+extensions to the LList (lazy list) theory by <a
+href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including
+finite, infinite, and positive llists over an alphabet, as well as the new
+constants take and drop and the prefix order of llists. Finally, the
+notions of safety and liveness in the sense of Alpern and Schneider (1985)
+are defined.</td>
+									</tr>
+								</tbody>
+							</table>
+							<p>&nbsp;</p>
+							<!-- entry directory name: -->
+<!--#set var="name" value="???" -->
+
+<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="%3c!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="%3c!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="%3c!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:	None</td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+<div align="right" class="date">$Date: 2004-04-26 14:54:53 $, $Revision: 1.1 
+$</div></body>
+</html>
