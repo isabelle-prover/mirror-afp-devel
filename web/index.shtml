@@ -44,6 +44,15 @@ of a scientific journal. Submissions are refereed.</td></tr>
     <tr>
       <td class="head">2004</td>
     </tr>
+
+<!-- entry template begin (delete this line) --
+<tr><td class="entry">
+????-??-??:
+<a href="entries/???.shtml">???</a>
+<br>Author:
+<a href="???">???</a>
+</td></tr>
+-- entry template end (delete this line) -->
     
 <tr><td class="entry">
 2004-07-09:
