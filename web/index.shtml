@@ -55,6 +55,12 @@ of a scientific journal. Submissions are refereed.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2004-03-19:  
+<a href="entries/AVL-Trees.shtml">AVL Trees</a>
+<br>Author: Cornelia Pusch and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
 2004-04-05:
 <a href="entries/BinarySearchTree.shtml">Binary Search Trees</a>
 <br>Author:  
@@ -67,17 +73,19 @@ of a scientific journal. Submissions are refereed.</td></tr>
 <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
+<tr><td class="entry">2004-04-26:&nbsp;&nbsp; <a href="entries/Lazy-Lists-II.shtml">Lazy-Lists-II</a><br>
+Author:  
+<a href="http://www.informatik.uni-freiburg.de/%7efriedric/">Stefan Friedrich</a></td></tr>
+
 <tr><td class="entry">
 2003-03-19:  
 <a href="entries/MiniML.shtml">Mini ML</a>
 <br>Author: Wolfgang Naraschewski and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
-<tr><td class="entry">
-2004-03-19:  
-<a href="entries/AVL-Trees.shtml">AVL Trees</a>
-<br>Author: Cornelia Pusch and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
-</td></tr>
+<tr><td class="entry">2004-04-26:&nbsp;&nbsp; <a href="entries/Topology.shtml">Topology</a><br>
+Author:  
+<a href="http://www.informatik.uni-freiburg.de/%7efriedric/">Stefan Friedrich</a></td></tr>
 
 <tr><td class="entry">
 2004-02-25:  
