@@ -5,14 +5,6 @@ imports Sigma_Algebra MonConv NthRoot
 begin
 (*<*)
 
-syntax
-  "_suminf" :: "idt => real => real"    ("\<Sum>_. _" [0, 10] 10)
-
-translations
-  "\<Sum>i. b" == "suminf (%i. b)" (*>*)
-(*Usually, we would need the extended Reals with \<plusminus> \<infinity>,
-however by modeling Integrals with Relations, we can 
-do without.*)
 (*We use a modified version of the simple Sigma_Algebra Theory by
 Markus Wenzel here,
   which does not need an explicit definition of countable,
