@@ -2462,18 +2462,15 @@ apply (simp add:jointfun_def)
  apply simp
 apply (rule conjI)
  apply (rule impI)
- apply (frule_tac m = l and n = n in le_anti_sym, assumption+)
  apply (simp add:sliden_def)
 apply (rule impI)
- apply (simp add:le_def [of _ "n"])
- apply (frule_tac m = n and n = l in Suc_leI) 
- apply (frule_tac m = l and n = "n + m" and l = "Suc n" in diff_le_mono) 
+ apply (frule_tac m = l and n = "n + m" and l = "Suc n" in diff_le_mono)
  apply (simp add:sliden_def d_gchain_def [of _ "m" _] Nset_def)
  apply (subgoal_tac "g (Suc (l - Suc n)) \<subseteq> g (l - Suc n)")
  apply (simp add:jointgd_tool4)
  apply blast
 done
- 
+
 lemma joint_D_gchains:"\<lbrakk> group G; D_gchain G n f; D_gchain G m g; 
   g 0 \<subset> f n \<rbrakk> \<Longrightarrow>  D_gchain G (Suc (n + m)) (jointfun n f m g)" 
 apply (simp add:D_gchain_def [of "G" "Suc (n + m)" _])
@@ -4077,11 +4074,7 @@ apply (frule Suc_leI [of "r - Suc 0" "l div s"])
 apply simp
 apply (frule less_imp_le [of "l" "s * r"])
 apply (frule div_le_mono [of "l" "s * r" "s"]) apply simp
-apply (frule le_anti_sym, assumption+)
- apply (thin_tac "r \<le> l div s")
- apply (thin_tac "l div s \<le> r")
 apply (insert mod_div_equality [THEN sym, of "l" "s"])
-apply (frule sym) apply (thin_tac "r = l div s")
 apply simp apply (simp add:mult_commute [of "r" "s"])
 done
 
@@ -4361,8 +4354,8 @@ apply (subgoal_tac "H = carrier G") apply simp
 prefer 2 apply simp apply (subgoal_tac "H = K") apply simp
 apply (thin_tac "{1\<^sub>(G / K)} \<noteq> Pj G K ` carrier G")
 apply (rule equalityI)
+ apply (rule subsetI)
  apply (simp add:qgrp_def) apply (fold qgrp_def)
- apply (rule subsetI) 
  apply (frule_tac  x = x in Pj_mem [of "G" "K"], assumption+)
  apply (simp add:subg_subset1)
  apply (frule_tac x = x in  elem_in_image2 [of "Pj G K" "carrier G" 
@@ -4830,9 +4823,7 @@ apply (frule_tac i = i and j = "Suc i" in d_gchainTr2 [of "G" "r" "f"], assumpti
  apply (simp add:mem_of_Nset) apply simp
  apply (rule_tac K = "f i" and H = "f (Suc i)" in NinHNTr0_2 [of "G"], assumption+)
 apply simp apply (frule compseries_is_td_gchain, assumption+)
-apply (simp add:td_gchain_def) apply (erule conjE)+
-apply (subgoal_tac "i = r") apply simp
-apply simp
+apply (simp add:td_gchain_def)
 done
 
 lemma JHS_Tr0:"\<lbrakk>(0::nat) < r; 0 < s;  group G; compseries G r f; compseries G s g\<rbrakk> \<Longrightarrow> cmp_rfn G r f s g \<in> wcsr_rfns G r f s"
@@ -4890,17 +4881,18 @@ done
 
 lemma i_div_s_less:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; Suc (rtos r s i) < r * s;
 i mod s = s - Suc 0; Suc i < s * r \<rbrakk>  \<Longrightarrow> i div s < r - Suc 0"
-apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"]) apply simp
+apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"])
+ apply simp
 apply (frule_tac  r = r and s = s and l = i in div_Tr2, assumption+)
- apply (simp add:mult_commute) 
-apply (rule contrapos_pp) apply simp+ apply (subgoal_tac "i div s = r - Suc 0")
-apply (thin_tac "i div s \<le> r - Suc 0") 
-apply (thin_tac "\<not> i div s < r - Suc 0")
+ apply (simp add:mult_commute)
+apply (rule contrapos_pp)
+ apply simp
 apply (simp add:rtos_def)
-apply (subgoal_tac "(s - Suc 0) * r + r = r * s") apply simp
- apply (thin_tac "(s - Suc 0) * r + r < r * s")
- apply (simp add:mult_commute) apply (simp add:diff_mult_distrib2)
-apply simp
+apply (subgoal_tac "(s - Suc 0) * r + r = r * s")
+ apply simp
+apply (thin_tac "(s - Suc 0) * r + r < r * s")
+apply (simp add:mult_commute)
+apply (simp add:diff_mult_distrib2)
 done
 
 lemma rtos_mod_r_1:"\<lbrakk> 0 < r; 0 < s; i \<le> r * s - Suc 0; rtos r s i < r * s;
@@ -5224,18 +5216,16 @@ apply (simp add:cmp_rfn_def)
  apply (simp add:mult_commute [of "r" "s"])
  apply (frule Suc_leI [of "i" "s * r"]) apply (thin_tac "i < s * r")
 apply (case_tac "\<not> Suc i < s * r") apply simp
- apply (frule eq_le_not[of "Suc i" "s * r"], assumption+)
- apply (thin_tac "Suc i \<le> s * r") apply (thin_tac "\<not> Suc i < s * r")
  apply (frule rfn_tool17 [of "Suc i" "s * r" "Suc 0"])
  apply (thin_tac " Suc i = s * r")
  apply simp
- apply (frule rtos_r_s [of "r" "s"], assumption+) 
- apply (simp add:mult_commute [of "r" "s"])  (* !! ??? *) 
+ apply (frule rtos_r_s [of "r" "s"], assumption+)
+ apply (simp add:mult_commute [of "r" "s"])  (* !! ??? *)
 apply simp
 apply (frule mod_less_divisor [of "s" "i"])
 apply (frule less_le_diff [of "i mod s" "s"]) apply (thin_tac "i mod s < s")
- apply (case_tac "i mod s = s - Suc 0") apply simp
- apply (frule_tac div_Tr2 [of "r" "s" "Suc i"], assumption+)
+ apply (case_tac "i mod s = s - Suc 0")
+ apply (frule_tac div_Tr2 [of "r" "s" "Suc i"], assumption+) apply simp
  apply (subst div_Tr3_1 [of "r" "s" "i"], assumption+) apply simp
  apply (subst rtos_hom3 [of "r" "s" "i"], assumption+) apply (rule mem_of_Nset)
  apply (simp add:mult_commute)
@@ -5253,7 +5243,7 @@ apply (frule div_Tr3_1 [of "r" "s" "i"], assumption+) apply simp
 apply (frule noteq_le_less [of "i mod s" "s - Suc 0"], assumption+)
  apply (thin_tac "i mod s \<le> s - Suc 0")
  apply (thin_tac "i mod s \<noteq> s - Suc 0")
- apply (frule div_Tr2 [of "r" "s" "Suc i"], assumption+)
+ apply (frule div_Tr2 [of "r" "s" "Suc i"], assumption+) apply simp
  apply (subst div_Tr3_2 [THEN sym, of "r" "s" "i"], assumption+)
  apply simp
  apply (subst rfn_tool12_1 [THEN sym, of "s" "i"], assumption+)
@@ -5270,7 +5260,9 @@ apply (subst rtos_hom5 [of "r" "s" "i"], assumption+)
  apply (rule mem_of_Nset) apply (simp add:mult_commute)
  apply assumption apply simp
 apply (frule JHS_Tr1_3 [of "G" "r" "s" "f" "g" "i"], assumption+)
+ apply simp apply assumption+
 apply (frule JHS_Tr1_4 [of "G" "r" "s" "f" "g" "i"], assumption+)
+ apply simp apply assumption+
 apply (rule isomTr1, assumption+)
 apply (rule JHS_Tr1_2 [of "G" "s" "r" "g" "f" "i mod s"], assumption+)
 apply (frule div_Tr2 [of "r" "s" "i"], assumption+)
@@ -5278,6 +5270,7 @@ apply (frule div_Tr2 [of "r" "s" "i"], assumption+)
  apply simp
 apply (frule noteq_le_less [of "i div s" "r - Suc 0"], assumption+) 
 apply (rule JHS_Tr1_5, assumption+)
+apply simp apply assumption+
 done
 
 lemma JHS_Tr1:"\<lbrakk> group G; 0 < r; 0 < s; compseries G r f; compseries G s g\<rbrakk>

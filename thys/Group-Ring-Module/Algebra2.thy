@@ -1152,7 +1152,7 @@ apply simp
  apply (frule_tac A = Y and B = Z and c = x in subsetD, assumption+)
  apply (simp add:Iod_def) apply simp
  apply (subgoal_tac "Z \<subset> Y") prefer 2 apply (simp add:subset_def)
- apply blast apply (thin_tac "Z \<subseteq> Y") apply (thin_tac "\<not> Y \<subseteq> Z")
+ apply blast apply (thin_tac "Z \<subseteq> Y")
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = Z and ?W2.0 = Y in BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
  apply assumption
  apply (subgoal_tac "\<forall>b\<in>carrier (Iod D Y). ord_equiv (Iod D Z) (Iod D (segment (Iod D Y) b)) \<longrightarrow>  x \<in> carrier (Iod D Z)")
@@ -1265,7 +1265,7 @@ apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in BNTr7,
  apply (frule_tac A = Z and B = X and c = z in subsetD, assumption+)
   apply (simp add:Iod_def) apply simp
   apply (subgoal_tac "X \<subset> Z") prefer 2 apply blast
-  apply (thin_tac "X \<subseteq> Z") apply (thin_tac "\<not> Z \<subseteq> X")
+  apply (thin_tac "X \<subseteq> Z")
  apply (subgoal_tac "ordered_set D") prefer 2 apply (simp add:S_inductive_set_def) 
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def) 
   apply assumption
@@ -1334,7 +1334,7 @@ apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in BNTr7,
   apply (subgoal_tac "Iod (Iod D Z) (segment (Iod D Z) b) = Iod D (segment (Iod D Z) b)") apply simp
  apply (rule Iod_sub_sub, assumption+) apply (rule subsetI) apply (simp add:segment_def Iod_def) apply (simp add:Wa_def) apply (simp add:Wa_def)
  apply (simp add:well_ordered_set_is_ordered_set) apply (simp add:S_inductive_set_def) 
-(**------ ExPre --------**)  
+(**------ ExPre --------**)
 apply (unfold ExPre_def)
 apply (subgoal_tac "\<forall>xa. xa \<in> carrier (Iod D (\<Union>{W. Wa D W f a})) \<and>
  xa <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x \<and> \<not> (\<exists>y\<in>carrier (Iod D (\<Union>{W. Wa D W f a})). xa <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) y \<and> y <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x) \<longrightarrow>
@@ -1375,7 +1375,7 @@ apply (subgoal_tac "\<exists>Z\<in>{W. Wa D W f a}. xa \<in> Z")
   apply (simp add:Iod_def CollectI) apply blast
   apply (simp add:Iod_def ord_neq_def) apply simp
   apply (subgoal_tac "X \<subset> Z") prefer 2 apply blast
-   apply (thin_tac "X \<subseteq> Z") apply (thin_tac "\<not> Z \<subseteq> X")
+   apply (thin_tac "X \<subseteq> Z")
   apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in
   BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
    apply assumption
@@ -1499,7 +1499,7 @@ apply (rule conjI)
   apply (subgoal_tac "xa <\<^sub>(Iod D X) y") apply simp
   apply (simp add:Iod_def ord_neq_def) apply (simp add:Iod_def ord_neq_def)
  (*-- overup -- X \<subseteq> Y \<or> Y \<subseteq> X; \<not> Y \<subseteq> X -- *)
-apply simp apply (subgoal_tac "X \<subset> Y") apply (thin_tac "X \<subseteq> Y") apply (thin_tac "\<not> Y \<subseteq> X")
+apply simp apply (subgoal_tac "X \<subset> Y") apply (thin_tac "X \<subseteq> Y")
  apply (subgoal_tac "ordered_set D")
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Y in BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
  apply assumption+
@@ -1587,7 +1587,7 @@ apply (rule equalityI)
  apply (case_tac "Y \<subseteq> X")
  apply (rule_tac A = Y and B = X and c = xa in subsetD, assumption+)
  (**-- overup X \<subseteq> Y \<or> Y \<subseteq> X; \<not> Y \<subseteq> X ---*)
-apply simp apply (subgoal_tac "X \<subset> Y") apply (thin_tac "X \<subseteq> Y") apply (thin_tac "\<not> Y \<subseteq> X") prefer 2 apply blast
+apply simp apply (subgoal_tac "X \<subset> Y") apply (thin_tac "X \<subseteq> Y") prefer 2 apply blast
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Y in BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
  apply assumption+
  apply (subgoal_tac "\<forall>b\<in>carrier (Iod D Y). ord_equiv (Iod D X) (Iod D (segment (Iod D Y) b)) \<longrightarrow> xa \<in> X")

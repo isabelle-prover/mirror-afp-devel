@@ -1659,8 +1659,6 @@ apply (frule zmult_zle_mono1_neg [of "0" "m" "n"])
  apply simp apply simp
  apply (simp add:sprod_n_a_def)
  apply (case_tac "0 \<le> m * n") apply simp
- apply (frule zle_imp_zless_or_eq [of "0" "m * n"]) 
- apply (thin_tac "0 \<le> m * n") apply (simp add:le_def)
  apply simp apply (simp add:asum_multTr_pm)
 done
 
@@ -1685,7 +1683,7 @@ apply (simp add:sprod_n_a_def)
  apply (subgoal_tac "m \<le> 0") 
  apply (frule int_mult_le [of "m" "0" "n"]) apply simp
  apply (case_tac "0 \<le> m * n") apply simp
- apply (frule zle_imp_zless_or_eq [of "0" "m * n"])  
+ apply (frule zle_imp_zless_or_eq [of "0" "m * n"])
  apply (thin_tac "0 \<le> m * n") apply (simp add:zle zmult_commute)
  apply (simp add:ag_inv_zero) apply (simp add:aSum_zero)
 apply simp

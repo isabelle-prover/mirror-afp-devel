@@ -297,9 +297,7 @@ apply (rule subsetI)
 done
 
 lemma subset_contr:"\<lbrakk> A \<subset> B; B \<subseteq> A \<rbrakk> \<Longrightarrow> False"
-apply (simp add:psubset_def)
- apply blast
-done
+by (simp add:psubset_def)
 
 lemma psubset_contr:"\<lbrakk> A \<subset> B; B \<subset> A \<rbrakk> \<Longrightarrow> False"
 apply (simp add:psubset_def)
