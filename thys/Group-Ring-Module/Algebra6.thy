@@ -4277,8 +4277,8 @@ done
 lemma unique_expression7_1:"\<lbrakk>ring R; R module M; free_generator R M H; f\<in>Nset n \<rightarrow> H; inj_on f (Nset n); s \<in> Nset n \<rightarrow> carrier R; g \<in> Nset m \<rightarrow> H; inj_on g (Nset m); t \<in> Nset m \<rightarrow> carrier R; linear_combination R M n s f = linear_combination R M m t g; \<forall>j\<in>Nset n. s j \<noteq> 0\<^sub>R; \<forall>k\<in>Nset m. t k \<noteq> 0\<^sub>R\<rbrakk> \<Longrightarrow> n = m"
 apply (insert finite_Nset [of "n"])
 apply (insert finite_Nset [of "m"])
-apply (frule_tac A = "Nset n" and f = f in card_image, assumption+)
-apply (frule_tac A = "Nset m" and f = g in card_image, assumption+)
+apply (frule_tac A = "Nset n" and f = f in card_image)
+apply (frule_tac A = "Nset m" and f = g in card_image)
 apply (frule_tac R = R and M = M and H = H and f = f and n = n and s = s and g = g and t = t and m = m in unique_expression6, assumption+)
 apply (rotate_tac -3) apply (frule sym) apply (thin_tac "card (f ` Nset n) = card (Nset n)")
 apply simp

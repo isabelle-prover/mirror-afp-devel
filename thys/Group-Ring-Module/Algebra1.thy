@@ -1413,7 +1413,7 @@ lemma finite_Nset:"finite (Nset n)"
 apply (induct_tac n)
  apply (simp add:Nset_def) 
  apply (subst Nset_Suc) 
- apply (simp add:InsertI)
+ apply (simp)
 done
 
 section "3'. Lower bounded set of integers"
@@ -1788,7 +1788,7 @@ lemma card_nset:"i < (j :: nat) \<Longrightarrow> card (nset i j) = Suc (j - i)"
 
 apply (insert finite_Nset [of "j - i"])
 apply (frule slide_inj [of "i" "j"])
-apply (frule card_image [of "Nset (j - i)" "slide i"], assumption+)
+apply (frule card_image [of "slide i" "Nset (j - i)"])
 apply (simp add:card_Nset) 
 apply (frule slide_surj [of "i" "j"]) 
 apply (simp add:surj_to_def)
@@ -1969,7 +1969,7 @@ proof -
  apply (frule image_sub [of "transpos i j" "Nset n" "Nset n" "Nset n"])
  apply simp
  apply (frule transpos_inj [of "i" "n" "j"], assumption+)
- apply (frule card_image [of "Nset n" "transpos i j"], assumption+)
+ apply (frule card_image [of "transpos i j" "Nset n"])
  apply (simp add:card_seteq)
  done
 qed
@@ -2058,7 +2058,7 @@ proof -
  apply (frule image_sub [of "f" "Nset n" "Nset n" "Nset n"])
  apply simp+
  apply (insert finite_Nset [of "n"])
- apply (frule card_image [of "Nset n" "f"], assumption+)
+ apply (frule card_image [of "f" "Nset n"])
  apply (simp add:card_seteq)
  done
 qed
@@ -2146,16 +2146,14 @@ lemma enumeration:"\<lbrakk> f \<in> Nset n \<rightarrow> Nset m; inj_on f (Nset
 proof -
  assume p1:"f \<in> Nset n \<rightarrow> Nset m" and p2:"inj_on f (Nset n)" 
   from p1 have q1:"f ` (Nset n) \<subseteq> Nset m"
-   apply (simp add:image_sub) done
-  have q2:"finite (Nset n)" apply (simp add:finite_Nset) done
-  have q3:"finite (Nset m)" apply (simp add:finite_Nset) done
+   by (simp add:image_sub)
+  have q2:"finite (Nset n)" by (simp add:finite_Nset)
+  have q3:"finite (Nset m)" by (simp add:finite_Nset)
   from p2 and q2 have q4: "card (f ` (Nset n)) = Suc n"
-   apply (simp add: card_image [of "Nset n" "f"] card_Nset) done
+   by (simp add: card_image [of f "Nset n"] card_Nset)
   from q1 and q3 have q5:"card (f ` (Nset n)) \<le> card (Nset m)"
-   apply (simp add:card_mono) done
- from q4 and q5 show ?thesis
-  apply (simp add:card_Nset)
- done
+   by (simp add:card_mono)
+ from q4 and q5 show ?thesis by (simp add:card_Nset)
 qed
  
 lemma enumerate_1:"\<lbrakk> f \<in> Nset n \<rightarrow> A; g \<in> Nset m \<rightarrow> A; inj_on f (Nset n); 
@@ -2164,21 +2162,17 @@ proof -
  assume p1:"f \<in> Nset n \<rightarrow> A" and p2:"g \<in> Nset m \<rightarrow> A" and 
  p3:"inj_on f (Nset n)" and p4:"inj_on g (Nset m)" and p5:" f `(Nset n) = A" 
  and p6:"g ` (Nset m) = A"
- from p5 have q1:"card (f ` (Nset n)) = card A" apply (rule card_eq) done
- have q2:"finite (Nset n)" apply (simp add:finite_Nset) done
+ from p5 have q1:"card (f ` (Nset n)) = card A" by (rule card_eq)
+ have q2:"finite (Nset n)" by (simp add:finite_Nset)
  from p3 and q2 have q3: "card (f ` (Nset n)) = card (Nset n)"
-  apply (simp add:card_image) done
- from q1 and q3 have q4:"card A = card (Nset n)" apply auto done
- 
- from p6 have q5:"card (g ` (Nset m)) = card A" apply (rule card_eq) done
- have q6:"finite (Nset m)" apply (simp add:finite_Nset) done
+  by (simp add:card_image)
+ from q1 and q3 have q4:"card A = card (Nset n)" by auto
+ from p6 have q5:"card (g ` (Nset m)) = card A" by (rule card_eq)
+ have q6:"finite (Nset m)" by (simp add:finite_Nset)
  from p4 and q6 have q7: "card (g ` (Nset m)) = card (Nset m)"
-  apply (simp add:card_image) done
- from q5 and q7 have q8:"card A = card (Nset m)" apply auto done 
-
- from q4 and q8 show ?thesis
- apply (simp add:card_Nset)
- done
+  by (simp add:card_image)
+ from q5 and q7 have q8:"card A = card (Nset m)" by auto
+ from q4 and q8 show ?thesis by (simp add:card_Nset)
 qed
 
 constdefs

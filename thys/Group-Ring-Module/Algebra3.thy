@@ -4510,7 +4510,7 @@ apply (frule compseries_is_D_gchain, assumption+)
 apply (frule D_gchain1, assumption+)
 apply (subgoal_tac "h ` Nset (s * r) = f ` (Nset r)") apply simp
 apply (subst card_image) 
- apply (simp add:finite_Nset) apply assumption
+  apply assumption
  apply (simp add:card_Nset)
 apply (rule equalityI)
 prefer 2 apply (rule rfn_compseries_iMTr1, assumption+)
