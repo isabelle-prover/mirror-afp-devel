@@ -958,7 +958,7 @@ done
 constdefs
  ind_hom :: "[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme, 
                 ('a  \<Rightarrow> 'b)] \<Rightarrow> ('a set  \<Rightarrow> 'b )"
-     "ind_hom F G f == \<lambda>X\<in> (set_r_cos F (gker\<^sub>F\<^sub>,\<^sub>G f)). f ( \<epsilon> x. x \<in> X)"
+     "ind_hom F G f == \<lambda>X\<in> (set_r_cos F (gker\<^sub>F\<^sub>,\<^sub>G f)). f ( \<some> x. x \<in> X)"
 
 syntax 
  "@IND_HOM"::"['a \<Rightarrow> 'b, ('a, 'm) GroupType_scheme, ('b, 'm1) GroupType_scheme]

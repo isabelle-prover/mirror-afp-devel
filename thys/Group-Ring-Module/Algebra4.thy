@@ -333,7 +333,7 @@ done
 constdefs
  rind_hom :: "[('a, 'more) AgroupType_scheme, ('b, 'more1) AgroupType_scheme, 
                 ('a  \<Rightarrow> 'b)] \<Rightarrow> ('a set  \<Rightarrow> 'b )"
-   "rind_hom A B f == \<lambda>X\<in>(set_ar_cos A (ker\<^sub>A\<^sub>,\<^sub>B f)). f ( \<epsilon> x. x \<in> X)"
+   "rind_hom A B f == \<lambda>X\<in>(set_ar_cos A (ker\<^sub>A\<^sub>,\<^sub>B f)). f ( \<some> x. x \<in> X)"
 
 syntax 
  "@RIND_HOM"::"['a \<Rightarrow> 'b, ('a, 'm) AgroupType_scheme, ('b, 'm1) AgroupType_scheme]

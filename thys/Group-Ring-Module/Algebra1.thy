@@ -350,7 +350,7 @@ constdefs
    "constmap A B == \<lambda>x\<in>A. SOME y. y \<in> B" 
 
    invfun :: "['a set, 'b set, 'a \<Rightarrow> 'b] \<Rightarrow> ('b \<Rightarrow> 'a)"     
-    "invfun A B (f :: 'a \<Rightarrow> 'b) == \<lambda>y\<in>B. \<epsilon> x. (x \<in> A \<and> f x = y)"
+    "invfun A B (f :: 'a \<Rightarrow> 'b) == \<lambda>y\<in>B. \<some> x. (x \<in> A \<and> f x = y)"
 
 lemma eq_fun:"\<lbrakk> f \<in> A \<rightarrow> B; f = g \<rbrakk> \<Longrightarrow> g \<in> A \<rightarrow> B"
  apply simp
@@ -2187,7 +2187,7 @@ qed
 
 constdefs
   ninv::"[nat, (nat \<Rightarrow> nat)] \<Rightarrow> (nat \<Rightarrow> nat)"
-   "ninv n f == \<lambda>y\<in>Nset n. \<epsilon> x. (x \<in> (Nset n) \<and>  y = f x)"
+   "ninv n f == \<lambda>y\<in>Nset n. \<some> x. (x \<in> (Nset n) \<and>  y = f x)"
 
 
 lemma ninv_hom:"\<lbrakk>f \<in> (Nset n) \<rightarrow> (Nset n); inj_on f (Nset n)\<rbrakk> \<Longrightarrow>

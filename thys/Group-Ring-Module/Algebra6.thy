@@ -20,7 +20,7 @@ constdefs
  indmhom :: "[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme, 
    ('c, 'b, 'm2) ModuleType_scheme, 'a \<Rightarrow> 'c] \<Rightarrow>  'a set \<Rightarrow> 'c"
        
- "indmhom R M N f == \<lambda>X\<in> (set_mr_cos M (ker\<^sub>M\<^sub>,\<^sub>N f)). f ( \<epsilon> x. x \<in> X)"
+ "indmhom R M N f == \<lambda>X\<in> (set_mr_cos M (ker\<^sub>M\<^sub>,\<^sub>N f)). f ( \<some> x. x \<in> X)"
 
 syntax 
  "@INDMHOM"::"['a \<Rightarrow> 'b, ('r, 'm) RingType_scheme, ('a, 'r, 'm1) ModuleType_scheme, ('b, 'r, 'm2) ModuleType_scheme]  \<Rightarrow>  ('a set  \<Rightarrow> 'b )" 

@@ -4717,7 +4717,7 @@ constdefs
  invmfun :: "[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme, 
               ('c, 'b, 'm2) ModuleType_scheme, 'a \<Rightarrow> 'c] \<Rightarrow> 'c \<Rightarrow> 'a"
  "invmfun R M N (f :: 'a \<Rightarrow> 'c) == 
-                    \<lambda>y\<in>(carrier N). \<epsilon> x. (x \<in> (carrier M) \<and> f x = y)"
+                    \<lambda>y\<in>(carrier N). \<some> x. (x \<in> (carrier M) \<and> f x = y)"
 
  misomorphic :: "[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme, 
               ('c, 'b, 'm2) ModuleType_scheme] \<Rightarrow> bool"
