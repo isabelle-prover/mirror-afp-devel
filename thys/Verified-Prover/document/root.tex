@@ -1,4 +1,4 @@
-% $Id: root.tex,v 1.2 2004-11-29 21:18:36 lsf37 Exp $
+% $Id: root.tex,v 1.3 2004-12-09 11:02:27 lp15 Exp $
 
 \documentclass[11pt,a4paper]{article}
 \usepackage{isabelle,isabellesym}
@@ -90,6 +90,8 @@ are function terms and equality.
 \section{OCaml Implementation}
 
 \begin{verbatim}
+open List;;
+
 type pred = int;;
 
 type var = int;;
@@ -117,33 +119,21 @@ let rec fv t = match t with
 
 let suc x = x+1;;
 
-let bump phi n y = match y with 0 -> n | sucn -> suc (phi (sucn-1));;
-
-let map = List.map;;
+let bump phi y = match y with 0 -> 0 | sucn -> suc (phi (sucn-1));;
 
 let rec subst r f = match f with
     PAtom (p,vs) -> PAtom (p,map r vs)
   | NAtom (p,vs) -> NAtom (p,map r vs)
   | FConj (f,g) -> FConj (subst r f, subst r g)
   | FDisj (f,g) -> FDisj (subst r f, subst r g)
-  | FAll f -> FAll (subst (bump r 0) f)
-  | FEx f -> FEx (subst (bump r 0) f);;
+  | FAll f -> FAll (subst (bump r) f)
+  | FEx f -> FEx (subst (bump r) f);;
 
 let finst body w = subst (fun v -> match v with 0 -> w | sucn -> (sucn-1)) body;;
 
-type seq = form list;;
-
-type nform = int * form;;
-
-type nseq = nform list;;
-
 let s_of_ns ns = map snd ns;;
 
-let ns_of_s s = map (fun x -> (0,x)) s;;
-
-let flat = List.flatten;;
-
-let sfv s = flat (map fv s);;
+let sfv s = flatten (map fv s);;
 
 let rec maxvar t = match t with
     [] -> 0
@@ -151,43 +141,18 @@ let rec maxvar t = match t with
 
 let newvar vs = suc (maxvar vs);;
 
-let mem = List.mem;;
-
-let rec is_axiom t = match t with
-    [] -> false
-  | (a::list) -> match a with
-        PAtom (p,vs) -> (mem (NAtom (p,vs)) list or is_axiom list)
-      | NAtom (p,vs) -> (mem (PAtom (p,vs)) list or is_axiom list)
-      | FConj (f,g) -> is_axiom list 
-      | FDisj (f,g) -> is_axiom list 
-      | FAll f -> is_axiom list
-      | FEx f -> is_axiom list;;
-
-
-let subsf t = match t with 
-    [] -> []
+let subs t = match t with 
+    [] -> [[]]
   | (x::xs) -> let (m,f) = x in
       match f with 
-          PAtom (p,vs) -> [xs@[(0,PAtom (p,vs))]]
-        | NAtom (p,vs) -> [xs@[(0,NAtom (p,vs))]]
+          PAtom (p,vs) -> if mem (NAtom (p,vs)) (map snd xs) then [] else [xs@[(0,PAtom (p,vs))]]
+        | NAtom (p,vs) -> if mem (PAtom (p,vs)) (map snd xs) then [] else [xs@[(0,NAtom (p,vs))]]
         | FConj (f,g)  -> [xs@[(0,f)];xs@[(0,g)]]
         | FDisj (f,g) -> [xs@[(0,f);(0,g)]]
         | FAll f -> [xs@[(0,finst f (newvar (sfv (s_of_ns (x::xs)))))]]
         | FEx f -> [xs@[(0,finst f m);(suc m,FEx f)]];;
 
-let rec iter g a t = match t with
-    0 -> a
-  | sucn -> g (iter g a (sucn-1));;
-
-let filter = List.filter;;
-
-let fSucn fn = 
-  (let fn1 = filter (fun x -> not (is_axiom (s_of_ns x))) fn in
-   let fn2 = map subsf fn1 in
-   let fn3 = flat fn2 in
-     fn3);;
-
-let rec prove' l = (if l = [] then true else (prove' (fSucn l)));;
+let rec prove' l = (if l = [] then true else prove' ((fun x -> flatten (map subs x)) l));;
 
 let prove s = prove' [s];;
 
