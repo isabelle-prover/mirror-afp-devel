@@ -1,0 +1,95 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<!-- begin entry data: -->
+<h1><!-- Title: -->Completeness</h1>
+<p>&nbsp;</p>
+
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+    <td class="data" width="80%">
+<!-- Title: -->Completeness
+    </td></tr>
+		
+    <tr><td class="datahead">Author:</td>
+<td class="data">
+<!-- Author: -->James Margetson;
+ported to Isar by <a
+href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
+</td></tr>		
+    
+	<tr><td class="datahead">Submisison date:</td>
+	
+<td class="data"><!-- Submission date: -->2004-09-20</td></tr>
+
+	<tr><td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract"> 
+<!-- Abstract: -->	
+The completeness of first-order logic is proved, following the first five
+pages of Wainer and Wallen's chapter of the book "Proof Theory" by Aczel
+et al., CUP, 1992. Their presentation of formulas allows the proofs to use
+symmetry arguments.
+
+Margetson formalized this theorem by early 2000. The Isar conversion is thanks
+to Tom Ridge.
+   </td></tr>
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<!-- entry directory name: -->
+<!--#set var="name" value="Completeness" -->
+
+<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:	None</td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+<div align="right" class="date">$Date: 2004-09-20 14:18:45 $, $Revision: 1.1 
+$</div></body>
+</html>
