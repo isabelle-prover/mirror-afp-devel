@@ -1,11 +1,13 @@
-(*  ID:         $Id: MaxPrefix.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
+(*  ID:         $Id: MaxPrefix.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
 header "Maximal prefix"
 
-theory MaxPrefix = List_Prefix:
+theory MaxPrefix
+imports List_Prefix
+begin
 
 constdefs
  is_maxpref :: "('a list => bool) => 'a list => 'a list => bool"

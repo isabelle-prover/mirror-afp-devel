@@ -1,11 +1,13 @@
-(*  ID:         $Id: RegExp.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
+(*  ID:         $Id: RegExp.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
 header "Regular expressions"
 
-theory RegExp = RegSet:
+theory RegExp
+imports RegSet
+begin
 
 datatype 'a rexp = Empty
                  | Atom 'a

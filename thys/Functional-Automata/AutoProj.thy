@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoProj.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
+(*  ID:         $Id: AutoProj.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 
@@ -10,7 +10,9 @@ and use foldl instead of foldl2.
 
 header "Projection functions for automata"
 
-theory AutoProj = Main:
+theory AutoProj
+imports Main
+begin
 
 constdefs
  start :: "'a * 'b * 'c => 'a"

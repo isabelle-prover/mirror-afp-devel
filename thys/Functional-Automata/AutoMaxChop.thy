@@ -1,11 +1,13 @@
-(*  ID:         $Id: AutoMaxChop.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
+(*  ID:         $Id: AutoMaxChop.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
 header "Automata based scanner"
 
-theory AutoMaxChop = DA + MaxChop:
+theory AutoMaxChop
+imports DA MaxChop
+begin
 
 consts
  auto_split :: "('a,'s)da => 's  => 'a list * 'a list => 'a list => 'a splitter"

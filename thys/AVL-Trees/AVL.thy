@@ -1,5 +1,5 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL.thy,v 1.5 2004-06-22 02:03:23 lsf37 Exp $
+    ID:         $Id: AVL.thy,v 1.6 2004-08-19 10:54:04 nipkow Exp $
     Author:     Cornelia Pusch and Tobias Nipkow, converted to Isar by Gerwin Klein
     Author:     contributions by Achim Brucker, Burkhart Wolff and Jan Smaus
     Maintainer: Gerwin Klein <gerwin.klein@nicta.com.au>
@@ -10,7 +10,9 @@
 
 header "Parameterized AVL Trees"
 
-theory AVL = Main:
+theory AVL
+imports Main
+begin
 
 text {* 
   This theory would be a nice candidate for structured Isar proof

@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.6 2004-06-21 14:40:34 makarius Exp $
+(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.7 2004-08-19 10:54:14 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 
@@ -14,7 +14,9 @@ regexp as d i j 0 = (if i=j then Union (Star Empty) (atoms d i j as)
 
 header "From deterministic automata to regular sets"
 
-theory RegSet_of_nat_DA = RegSet + DA:
+theory RegSet_of_nat_DA
+imports RegSet DA
+begin
 
 types 'a nat_next = "'a => nat => nat"
 

@@ -1,11 +1,13 @@
-(*  ID:         $Id: AutoRegExp.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
+(*  ID:         $Id: AutoRegExp.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
 header "Combining automata and regular expressions, including code generation"
 
-theory AutoRegExp = Automata + RegExp2NA + RegExp2NAe:
+theory AutoRegExp
+imports Automata RegExp2NA RegExp2NAe
+begin
 
 theorem "DA.accepts (na2da(rexp2na r)) w = (w : lang r)"
 by (simp add: NA_DA_equiv[THEN sym] accepts_rexp2na)

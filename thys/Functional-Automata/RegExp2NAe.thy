@@ -1,11 +1,13 @@
-(*  ID:         $Id: RegExp2NAe.thy,v 1.4 2004-05-25 14:18:34 lsf37 Exp $
+(*  ID:         $Id: RegExp2NAe.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
 header "From regular expressions to nondeterministic automata with epsilon"
 
-theory RegExp2NAe = RegExp + NAe:
+theory RegExp2NAe
+imports RegExp NAe
+begin
 
 types 'a bitsNAe = "('a,bool list)nae"
 
