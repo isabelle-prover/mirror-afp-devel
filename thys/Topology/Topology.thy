@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.2 2004-05-25 14:18:35 lsf37 Exp $
+    ID:         $Id: Topology.thy,v 1.3 2004-11-25 09:34:22 nipkow Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -1690,7 +1690,7 @@ lemma (in T1) finite_closed:
 proof induct
   case empty show ?case ..
 next
-  case (insert F x)
+  case (insert x F)
   hence "{x} \<union> F closed" by blast
   thus ?case by simp
 qed
