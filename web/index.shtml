@@ -20,12 +20,12 @@
       <!-- content -->
 
 <div align="center">
-<p>&nbsp;</p>
+<p> </p>
 <h1><font class="first">T</font>he
     <font class="first">A</font>rchive of
     <font class="first">F</font>ormal
     <font class="first">P</font>roofs</h1>
-<p>&nbsp;</p>
+<p> </p>
 
 <table width="80%" class="entries">
   <tbody>
@@ -37,7 +37,7 @@ of a scientific journal. Submissions are refereed.</td></tr>
 </tbody>
 </table>
 
-<p>&nbsp;</p>
+<p> </p>
 
 <table width="80%" class="entries">
   <tbody>
@@ -47,18 +47,34 @@ of a scientific journal. Submissions are refereed.</td></tr>
     
 <!-- entry begin --
 <tr><td class="entry">
-????-??-??:&nbsp;&nbsp;
+????-??-??:  
 <a href="entries/???.shtml">???</a>
-<br>Author:&nbsp;&nbsp;
+<br>Author:  
 <a href="???">???</a>
+</td></tr>
+-- entry end -->
+
+<!-- entry begin --
+<tr><td class="entry">
+2003-03-19:  
+<a href="entries/MiniML.shtml">Mini ML</a>
+<br>Author: Wolfgang Naraschewski and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 -- entry end -->
 
 <!-- entry begin -->
 <tr><td class="entry">
-2004-02-25:&nbsp;&nbsp;
+2004-03-19:  
+<a href="entries/AVL-Trees.shtml">AVL Trees</a>
+<br>Author: Cornelia Pusch and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
+<!-- entry end -->
+
+<!-- entry begin -->
+<tr><td class="entry">
+2004-02-25:  
 <a href="entries/Example-Submission.shtml">Example Submission</a>
-<br>Author:&nbsp;&nbsp;
+<br>Author:  
 <a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>
 </td></tr>    
 <!-- entry end -->
