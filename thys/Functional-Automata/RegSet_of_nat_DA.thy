@@ -1,8 +1,9 @@
-(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.2 2004-03-31 14:06:03 lsf37 Exp $
+(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.3 2004-04-19 22:30:44 lsf37 Exp $
     Author:     Tobias Nipkow
+    License:    LGPL
     Copyright   1998 TUM
 
-To generate a regual expression, the alphabet must be finite.
+To generate a regular expression, the alphabet must be finite.
 regexp needs to be supplied with an 'a list for a unique order
 
 add_Atom d i j r a = (if d a i = j then Union r (Atom a) else r)
