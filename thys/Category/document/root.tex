@@ -1,0 +1,56 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also isabellesym.sty)
+% use only when needed
+%\usepackage{amssymb}                  % for \<leadsto>, \<box>, \<diamond>,
+                                       % \<sqsupset>, \<mho>, \<Join>, 
+                                       % \<lhd>, \<lesssim>, \<greatersim>,
+                                       % \<lessapprox>, \<greaterapprox>,
+                                       % \<triangleq>, \<yen>, \<lozenge>
+%\usepackage[greek,english]{babel}     % greek for \<euro>,
+                                       % english for \<guillemotleft>, 
+                                       %             \<guillemotright>
+                                       % default language = last
+%\usepackage[latin1]{inputenc}         % for \<onesuperior>, \<onequarter>,
+                                       % \<twosuperior>, \<onehalf>,
+                                       % \<threesuperior>, \<threequarters>,
+                                       % \<degree>
+%\usepackage[only,bigsqcap]{stmaryrd}  % for \<Sqinter>
+%\usepackage{eufrak}                   % for \<AA> ... \<ZZ>, \<aa> ... \<zz>
+                                       % (only needed if amssymb not used)
+%\usepackage{textcomp}                 % for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{{\bf Category Theory to Yoneda's Lemma}}
+\author{Greg O'Keefe}
+\maketitle
+
+This development proves Yoneda's lemma and aims to be 
+readable by humans.  It only defines what is needed for 
+the lemma: categories, functors and natural transformations.
+Limits, adjunctions and other important concepts are not 
+included.
+
+There is no explanation or discussion in this document.  See
+\cite{fcat4cats} for this and a survey of category theory
+formalisations.
+\tableofcontents
+\vspace{1cm}
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{alpha}
+\bibliography{root}
+
+\end{document}
