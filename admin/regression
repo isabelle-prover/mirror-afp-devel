@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.9 2004-05-25 14:18:33 lsf37 Exp $
+# $Id: regression,v 1.10 2005-04-30 01:58:23 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -14,7 +14,7 @@
 ## settings
 
 ISABELLE_RELEASES=/usr/proj/isabelle
-ISABELLE_DEVEL=~/isadist/Isabelle
+ISABELLE_DEVEL=~/tmp/isadist/Isabelle
 WORKING_COPY=~/afp
 DATE=$(date "+%Y-%m-%d")
 
