@@ -1,6 +1,9 @@
-(* Category theory using Isar and Locales
-   Greg O'Keefe June, July, August 2003
+(*  Title:       Category theory using Isar and Locales
+    ID:          $Id: Functors.thy,v 1.3 2005-04-30 14:18:27 lsf37 Exp $
+    Author:      Greg O'Keefe, June, July, August 2003
+*)
 
+(* 
   Functors: Define functors and prove a trivial example.
 *)
 

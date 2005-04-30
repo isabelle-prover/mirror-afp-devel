@@ -1,3 +1,8 @@
+(*  Title:       Category theory using Isar and Locales
+    ID:          $Id: NatTrans.thy,v 1.3 2005-04-30 14:18:27 lsf37 Exp $
+    Author:      Greg O'Keefe, June, July, August 2003
+*)
+
 (* define natural transformation, prove that the identity arrow function is one *)
 theory NatTrans = Functors:
 section{* Natural Transformations *}

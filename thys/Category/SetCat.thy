@@ -1,3 +1,8 @@
+(*  Title:       Category theory using Isar and Locales
+    ID:          $Id: SetCat.thy,v 1.3 2005-04-30 14:18:27 lsf37 Exp $
+    Author:      Greg O'Keefe, June, July, August 2003
+*)
+
 theory SetCat = Cat:
 section {* {{\sf Set}} is a Category *}
 subsection{* Definitions *}

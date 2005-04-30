@@ -1,3 +1,8 @@
+(*  Title:       Category theory using Isar and Locales
+    ID:          $Id: HomFunctors.thy,v 1.3 2005-04-30 14:18:27 lsf37 Exp $
+    Author:      Greg O'Keefe, June, July, August 2003
+*)
+
 (* Define homfunctors, prove that they are functors *)
 theory HomFunctors = SetCat + Functors:
 
