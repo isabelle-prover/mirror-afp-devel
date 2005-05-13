@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: HomFunctors.thy,v 1.3 2005-04-30 14:18:27 lsf37 Exp $
+    ID:          $Id: HomFunctors.thy,v 1.4 2005-05-13 00:35:44 lsf37 Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -13,8 +13,7 @@ locale into_set = two_cats +
   defines "U \<equiv> (UNIV::'a set)"
   defines "Set \<equiv> set_cat U"
   assumes BB_Set: "BB = Set"
-(*  assumes "A \<in> Ob"*)
-  fixes homf :: "'o \<Rightarrow> \<lparr>om::'o\<Rightarrow>('a set), am::'a\<Rightarrow>('a set_arrow)\<rparr>" ("Hom'(_,'_')")
+  fixes homf ("Hom'(_,'_')")
   defines "homf A \<equiv> \<lparr>
   om = (\<lambda>B\<in>Ob. Hom A B),
   am = (\<lambda>f\<in>Ar. \<lparr>set_dom=Hom A (Dom f),set_func=(\<lambda>g\<in>Hom A (Dom f). f \<bullet> g),set_cod=Hom A (Cod f)\<rparr>)
