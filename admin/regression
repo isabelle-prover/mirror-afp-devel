@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.10 2005-04-30 01:58:23 lsf37 Exp $
+# $Id: regression,v 1.11 2005-05-17 14:19:05 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -62,8 +62,7 @@ if [ "$1" == "-" ]; then
   ERRORDIR=$HOME/var
   ERRORLOG=$ERRORDIR/error.log
   RUNNING=$HOME/var/running
-  shopt -s nullglob
-  if [ -n "$(ls $RUNNING)" -o -e $ERRORLOG ]; then
+  if [ -f "$RUNNING/$SHORT.running" -o -e $ERRORLOG ]; then
     echo "`date`: Skipped test. Isabelle devel version broken." >> $MASTERLOG
     exit 1
   fi
