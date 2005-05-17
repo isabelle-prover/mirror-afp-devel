@@ -1496,17 +1496,11 @@ done
 lemma npMulElmR: "\<And> n. \<lbrakk> ring R; x \<in> carrier R \<rbrakk>
 	\<Longrightarrow> (npow R x n) \<cdot>\<^sub>R x =  npow R x (Suc n)"
   apply (induct_tac "n")
-  apply (subst npow_suc)
-    apply (rule ring_tOp_commute, assumption+)
-      apply (rule npClose, assumption+)
-
-  apply simp apply (subst ring_tOp_assoc, assumption+)
-    apply (simp add:npClose) apply assumption
-    apply (simp add: ring_tOp_commute)
+   apply (simp add: ring_one ring_tOp_commute)
+  apply (simp add: ring_tOp_assoc npClose ring_tOp_commute) 
   done
 
 lemma np_1:"\<lbrakk>ring R; a \<in> carrier R\<rbrakk> \<Longrightarrow> npow R a (Suc 0) = a"  (* Y. Santo*)
-apply simp
  apply (simp add:ring_r_one)
 done
  
