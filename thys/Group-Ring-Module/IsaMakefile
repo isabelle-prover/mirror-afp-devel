@@ -25,7 +25,7 @@ LOG = $(OUT)/log
 USEDIR = $(ISATOOL) usedir -v true -i true -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
 # time limit (in sec)
-MAXTIME = 3600
+MAXTIME = 5400
 
 
 ## dependencies
