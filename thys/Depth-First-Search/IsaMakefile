@@ -3,9 +3,6 @@
 SESSION-NAME = Depth-First-Search
 BASE-IMAGE = HOL
 
-# turn image into absolute path when ISABELLE_IMAGE_PATH is set
-IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
-
 ## targets
 
 default: $(SESSION-NAME)
@@ -22,6 +19,14 @@ SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
+# turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
+ifeq ($(ISABELLE_IMAGE_PATH),)
+IMAGE=$(OUT)/$(BASE-IMAGE)
+else
+IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
+endif
+
+
 USEDIR = $(ISATOOL) usedir -v true -i true -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
 # time limit (in sec)
@@ -32,7 +37,7 @@ MAXTIME = 3600
 
 $(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: ROOT.ML *.thy document/*.tex 
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex 
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 
