@@ -29,7 +29,7 @@
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-	    <td class="data" width="80%">Java is not Jinja</td></tr>
+	    <td class="data" width="80%">Jinja is not Java</td></tr>
 		
     <tr><td class="datahead">Author:</td>
 	    <td class="data"><a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a> and 
@@ -92,6 +92,6 @@ in the theorem prover Isabelle/HOL.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2005-05-31 23:30:25 $, $Revision: 1.1 $</div>
+<div align="right" class="date">$Date: 2005-05-31 23:31:49 $, $Revision: 1.2 $</div>
 </body>
 </html>
