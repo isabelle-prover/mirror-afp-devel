@@ -30,7 +30,7 @@ endif
 USEDIR = $(ISATOOL) usedir -v true -i true -g true -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
 # time limit (in sec)
-MAXTIME = 5400
+MAXTIME = 15400
 
 
 ## dependencies
