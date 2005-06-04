@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMDefensive.thy
-    ID:         $Id: JVMDefensive.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: JVMDefensive.thy,v 1.2 2005-06-04 16:22:47 makarius Exp $
     Author:     Gerwin Klein
     Copyright   GPL
 *)
@@ -7,7 +7,8 @@
 header {* \isaheader{A Defensive JVM} *}
 
 theory JVMDefensive
-imports JVMExec "../Common/Conform":
+imports JVMExec "../Common/Conform"
+begin
 
 text {*
   Extend the state space by one element indicating a type error (or

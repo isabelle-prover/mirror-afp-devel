@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Progress.thy,v 1.2 2005-06-04 16:22:47 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -7,7 +7,8 @@
 header {* \isaheader{Progress of Small Step Semantics} *}
 
 theory Progress
-imports Equivalence WellTypeRT DefAss "../Common/Conform":
+imports Equivalence WellTypeRT DefAss "../Common/Conform"
+begin
 
 lemma final_addrE:
   "\<lbrakk> P,E,h \<turnstile> e : Class C; final e;
