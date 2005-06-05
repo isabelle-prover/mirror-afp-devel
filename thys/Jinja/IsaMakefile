@@ -5,8 +5,8 @@ BASE-IMAGE = HOL
 
 ## targets
 
-default: $(SESSION-NAME)
-test: $(SESSION-NAME)
+default: test
+test: $(SESSION-NAME)-test
 # usually empty:
 images: $(SESSION-NAME) 
 
@@ -26,22 +26,39 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-
-USEDIR = $(ISATOOL) usedir -v true -i true -g true -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
+USEDIR = $(ISATOOL) usedir -v true -i true -g true -d pdf -P "http://isabelle.in.tum.de/library/" 
+BUILD = $(ISATOOL) usedir -b -v true -i false -g false -d false
 
 # time limit (in sec)
-MAXTIME = 15400
+MAXTIME = 5400
 
 
 ## dependencies
 
-$(SESSION-NAME): $(OUT)/$(SESSION-NAME)
 
-$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML \
+# test run and proof document
+
+$(SESSION-NAME)-test: $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML \
   Common/*.thy J/*.thy JVM/*.thy DFA/*.thy BV/*.thy \
   Compiler/*.thy document/root.bib document/root.tex \
   document/introduction.tex
-	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+
+
+# build image
+
+Jinja: $(OUT)/Jinja
+
+$(OUT)/Jinja: $(OUT)/Jinja-BV ROOT-Jinja.ML Compiler/*.thy
+	ulimit -t $(MAXTIME); $(BUILD) -f ROOT-Comp.ML Jinja-BV Jinja
+
+$(OUT)/Jinja-BV: $(OUT)/Jinja-J ROOT-BV.ML DFA/*.thy BV/*.thy 
+	ulimit -t $(MAXTIME); $(BUILD) -f ROOT-BV.ML Jinja-J Jinja-BV
+
+$(OUT)/Jinja-J: $(IMAGE) ROOT-J.ML Common/*.thy J/*.thy JVM/*.thy
+	ulimit -t $(MAXTIME); $(BUILD) -f ROOT-J.ML $(IMAGE) Jinja-J
 
 
 ## clean

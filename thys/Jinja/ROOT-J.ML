@@ -16,13 +16,3 @@ use_thy "JVM/JVMDefensive";
 (*
 use_thy "JVMListExample";
 *)
-
-use_thy "BV/BVExec";
-use_thy "BV/LBVJVM";
-use_thy "BV/BVNoTypeError";
-
-(*
-use_thy "BVExample";
-*)
-
-use_thy "Compiler/TypeComp";
