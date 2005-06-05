@@ -51,7 +51,7 @@ $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML \
 
 Jinja: $(OUT)/Jinja
 
-$(OUT)/Jinja: $(OUT)/Jinja-BV ROOT-Jinja.ML Compiler/*.thy
+$(OUT)/Jinja: $(OUT)/Jinja-BV ROOT-Comp.ML Compiler/*.thy
 	ulimit -t $(MAXTIME); $(BUILD) -f ROOT-Comp.ML Jinja-BV Jinja
 
 $(OUT)/Jinja-BV: $(OUT)/Jinja-J ROOT-BV.ML DFA/*.thy BV/*.thy 
