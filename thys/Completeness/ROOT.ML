@@ -1,4 +1,7 @@
 
+no_document use_thy "Permutation";
+no_document use_thy "Multiset";
+
 use_thy "Base";
 
 (* NOTES omitted permutations and try to reuse library stuff *)
