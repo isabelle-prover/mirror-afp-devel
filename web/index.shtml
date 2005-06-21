@@ -52,7 +52,15 @@ of a scientific journal. Submissions are refereed.</td></tr>
 <a href="???">???</a>
 </td></tr>
 -- entry template end (delete this line) -->
-    
+
+<tr><td class="entry">
+2005-06-22:
+<a href="entries/DiskPaxos.shtml">Proving the Correctness of Disk Paxos</a>
+<br>Author:
+<a href="http://www.fceia.unr.edu.ar/~mauro/">Mauro Jaskelioff</a> and
+<a href="http://www.loria.fr/~merz/">Stephan Merz</a>
+</td></tr>
+
 <tr><td class="entry">
 2005-06-01:
 <a href="entries/Jinja.shtml">Jinja is not Java</a>
