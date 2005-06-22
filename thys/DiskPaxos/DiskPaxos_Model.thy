@@ -1,5 +1,5 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Model.thy,v 1.2 2005-06-21 22:51:28 lsf37 Exp $
+    ID:          $Id: DiskPaxos_Model.thy,v 1.3 2005-06-22 00:25:40 lsf37 Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro@fceia.unr.edu.ar>
 *)
@@ -164,7 +164,7 @@ constdefs
 
   maxBlk :: "state \<Rightarrow> Proc \<Rightarrow> DiskBlock"
   "maxBlk s p \<equiv>
-     \<epsilon> b. b \<in> nonInitBlks s p \<and> (\<forall>c \<in> nonInitBlks s p. bal c \<le> bal b)"
+     SOME b. b \<in> nonInitBlks s p \<and> (\<forall>c \<in> nonInitBlks s p. bal c \<le> bal b)"
 
   EndPhase1 :: "state \<Rightarrow> state \<Rightarrow> Proc \<Rightarrow> bool"
   "EndPhase1 s s' p \<equiv>
@@ -224,8 +224,8 @@ constdefs
    \<and> (\<exists>b \<in> Ballot p.   
        (\<forall>r \<in> allBlocksRead s p. mbal r < b)
      \<and> dblock s' = (dblock s) ( p:= 
-                    (\<epsilon> r.   r \<in> allBlocksRead s p 
-                          \<and> (\<forall>s \<in> allBlocksRead s p. bal s \<le>  bal r)) \<lparr> mbal := b \<rparr> ))
+                    (SOME r.   r \<in> allBlocksRead s p 
+                            \<and> (\<forall>s \<in> allBlocksRead s p. bal s \<le>  bal r)) \<lparr> mbal := b \<rparr> ))
    \<and> InitializePhase s s' p
    \<and> phase s' = (phase s) (p:= 1)
    \<and> inpt s' = inpt s \<and> outpt s' = outpt s \<and> disk s' = disk s"
@@ -265,7 +265,7 @@ constdefs
      chosen s' = 
        (if chosen s \<noteq> NotAnInput \<or> (\<forall>p. outpt s' p = NotAnInput )
             then chosen s
-            else outpt s' (\<epsilon> p. outpt s' p \<noteq> NotAnInput))
+            else outpt s' (SOME p. outpt s' p \<noteq> NotAnInput))
    \<and> allInput s' = allInput s \<union> (range (inpt s'))"
 
 constdefs

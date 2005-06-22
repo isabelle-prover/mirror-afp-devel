@@ -1,5 +1,5 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Inv2.thy,v 1.2 2005-06-21 22:51:28 lsf37 Exp $
+    ID:          $Id: DiskPaxos_Inv2.thy,v 1.3 2005-06-22 00:25:24 lsf37 Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro@fceia.unr.edu.ar>
 *)
@@ -372,8 +372,9 @@ proof -
   from HEndPhase0_blocksRead[OF act] 
   have "?S \<noteq> {}"
     by(auto simp add: allBlocksRead_def allRdBlks_def)
-  ultimately have "\<exists>r \<in> ?S. \<forall>t \<in> ?S. t \<le> r"
-    by(rule ex_Max)
+  ultimately 
+  have "Max ?S \<in> ?S" and "\<forall>t \<in> ?S. t \<le> Max ?S" by auto
+  hence "\<exists>r \<in> ?S. \<forall>t \<in> ?S. t \<le> r" ..
   then obtain mblk
     where "   mblk \<in> allBlocksRead s p 
            \<and> (\<forall>t \<in> allBlocksRead s p. bal t \<le> bal mblk)" (is "?P mblk")
@@ -554,14 +555,14 @@ proof -
   from b have "bal ` nonInitBlks s p \<noteq> {}"
     by auto
   with nibals_finite
-  have "\<exists>mb \<in> ?S. \<forall>bb \<in> ?S. bb \<le> mb"
-    by (rule ex_Max)
+  have "Max ?S \<in> ?S" and "\<forall>bb \<in> ?S. bb \<le> Max ?S" by auto
+  hence "\<exists>mb \<in> ?S. \<forall>bb \<in> ?S. bb \<le> mb" ..
   then obtain mblk
     where "   mblk \<in> nonInitBlks s p 
            \<and> (\<forall>c \<in> nonInitBlks s p. bal c \<le> bal mblk)"
           (is "?P mblk")
     by auto
-  hence "?P (\<epsilon> b. ?P b)"
+  hence "?P (SOME b. ?P b)"
     by (rule someI)
   thus ?thesis
     by (simp add: maxBlk_def)
