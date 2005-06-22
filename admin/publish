@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: publish,v 1.6 2004-05-25 14:18:33 lsf37 Exp $
+# $Id: publish,v 1.7 2005-06-22 14:20:55 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # publishes archive entry + main web pages on SF
@@ -165,8 +165,10 @@ if [ "$RESPONSE" == "y" ]; then
     echo
     echo "Publishing to [$DEST]"
     chmod -R g=u web
+    chmod -R a+r web
     find web -type d | xargs chmod g+s
-    rsync -rpvz --links --rsh=ssh web/ $DEST && echo "Finished."
+    find web -type d | xargs chmod a+x
+    rsync -rplvz --links --rsh=ssh web/ $DEST && echo "Finished."
 else
     echo
     echo "Aborted."
