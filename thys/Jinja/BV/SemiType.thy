@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/SemiType.thy
-    ID:         $Id: SemiType.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: SemiType.thy,v 1.2 2005-06-24 10:05:01 nipkow Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -269,7 +269,7 @@ proof -
     x \<sqsubseteq>\<^bsub>Err.le (subtype P)\<^esub> z \<and> y \<sqsubseteq>\<^bsub>Err.le (subtype P)\<^esub> z \<longrightarrow> x \<squnion>\<^bsub>lift2 (sup P)\<^esub> y \<sqsubseteq>\<^bsub>Err.le (subtype P)\<^esub> z"
     by (unfold lift2_def plussub_def lesub_def Err.le_def)
        (auto intro: sup_subtype_smallest dest:sup_exists split: err.split)
-  ultimately show ?thesis by (unfold esl_def semilat_def sl_def) auto
+  ultimately show ?thesis by (simp add: esl_def semilat_def sl_def Err.sl_def)
 qed
 (*>*)
 
