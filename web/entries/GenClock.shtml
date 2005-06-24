@@ -1,0 +1,105 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<!-- begin entry data: -->
+<h1><!-- Title: -->Formalization of a Generalized Protocol for Clock Synchronization</h1>
+<p>&nbsp;</p>
+
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+    <td class="data" width="80%">
+<!-- Title: -->Formalization of a Generalized Protocol for Clock Synchronization
+    </td></tr>
+		
+    <tr><td class="datahead">Author:</td>
+<td class="data">
+<!-- Author: -->
+<a href="http://www.loria.fr/~tiu/">Alwen Tiu</a>
+</td></tr>		
+    
+	<tr><td class="datahead">Submission date:</td>
+	
+<td class="data"><!-- Submission date: -->2005-06-24</td></tr>
+
+	<tr><td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract"> 
+<!-- Abstract: -->	
+We formalize the generalized Byzantine fault-tolerant clock synchronization 
+protocol of Schneider. This protocol abstracts from particular algorithms 
+or implementations for clock synchronization. This abstraction includes several
+assumptions on the behaviors of physical clocks and on general properties of 
+concrete algorithms/implementations. Based on these assumptions the correctness 
+of the protocol is proved by Schneider. His proof was later verified by Shankar 
+using the theorem prover EHDM (precursor to PVS). Our formalization in 
+Isabelle/HOL is based on Shankar's formalization.
+
+   </td></tr>
+
+<!-- uncomment for entries significantly updated in devel version:
+<tr>
+<td class="datahead">&nbsp;</td>
+<td class="data">An updated version of this entry is available in the 
+    <a href="../download.shtml">development version</a> of AFP.</td>
+</tr> 
+-->
+
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<!-- entry directory name: -->
+<!--#set var="name" value="GenClock" -->
+
+<!--#set var="doc" value="../browser_info/current/HOL/HOL-Complex/${name}/document.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL/HOL-Complex/${name}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:	None</td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+<div align="right" class="date">$Date: 2005-06-24 00:07:05 $, $Revision: 1.1 
+$</div></body>
+</html>
