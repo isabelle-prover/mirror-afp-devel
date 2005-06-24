@@ -1,5 +1,5 @@
 (*  Title:       Formalization of Schneider's generalized clock synchronization protocol.
-    ID:          $Id: GenClock.thy,v 1.2 2005-06-24 00:07:04 lsf37 Exp $
+    ID:          $Id: GenClock.thy,v 1.3 2005-06-24 10:56:00 lsf37 Exp $
     Author:      Alwen Tiu, LORIA, June 11, 2005
     Maintainer:  Alwen Tiu <Alwen.Tiu@loria.fr>
 *)
@@ -550,7 +550,8 @@ proof-
   let ?X = "PC q (te p (i+1)) - PC q (te q (i+1))"
 
 
-  from corr_q ie1 PC_monotone have posX: "0 \<le> ?X" by simp
+  from corr_q ie1 PC_monotone have posX: "0 \<le> ?X"
+    by (simp add: le_diff_eq)
   from IClock corr_q have "?T1 = cfn q (\<theta> q (i+1)) + ?X"
     by(simp add: Adj_def)
 
@@ -569,8 +570,8 @@ proof-
 
   from ie have posD: "0 \<le> ?D" by simp
 
-  from ie PC_monotone corr_l have posX: "0 \<le> ?X"
-    by simp
+  from ie PC_monotone corr_l have posX: "0 \<le> ?X" 
+    by (simp add: le_diff_eq)
   from ie corr_l rate_1 have bound1: "?X \<le> ?D * (1 + \<rho>)" by simp
   from ie corr_l correct_closed have corr_l_tq: "correct l (te q (i+1))"
     by(blast)
@@ -714,7 +715,7 @@ proof-
   have Eq2: "?E2 \<le> \<bar>?D1 - ?D2\<bar> + \<bar>?ICS\<bar>" by (simp add: real_abs_def)
 
   from corr_l_tk corr_k beta_bound1 have ie_lk: "te l i \<le> te k (i+1)" 
-    by simp
+    by (simp add: le_diff_eq)
   
   from this corr_l_tk correct_closed have corr_l: "correct l (te l i)"
     by blast
@@ -754,9 +755,9 @@ shows "\<bar>\<theta> p (i+1) l - \<theta> p (i+1) m\<bar>
        \<le>  2*\<Lambda> + \<delta>S + 2*\<rho>*(rmax + \<beta>)"
 proof-
   from corr_p corr_l beta_bound1 have tli_le_tp: "te l i \<le> te p (i+1)"
-    by simp
+    by (simp add: le_diff_eq)
   from corr_p corr_m beta_bound1 have tmi_le_tp: "te m i \<le> te p (i+1)"
-    by simp
+    by (simp add: le_diff_eq)
   
   let ?tml = "max (te l i) (te m i)"
   from tli_le_tp tmi_le_tp have tml_le_tp: "?tml \<le> te p (i+1)"
@@ -849,9 +850,9 @@ proof-
       assume corr_m: "?ppred m"
 
       from corr_p corr_l beta_bound1 have tli_le_tp: "te l i \<le> te p (i+1)"
-        by simp
+        by (simp add: le_diff_eq)
       from corr_p corr_m beta_bound1 have tmi_le_tp: "te m i \<le> te p (i+1)"
-        by simp
+        by (simp add: le_diff_eq)
 
       let ?tlm = "max (te l i) (te m i)"
 
@@ -892,9 +893,9 @@ proof-
       assume corr_m: "?ppred m"
 
       from corr_p corr_l beta_bound1 have tli_le_tp: "te l i \<le> te p (i+1)"
-        by simp
+        by (simp add: le_diff_eq)
       from corr_p corr_m beta_bound1 have tmi_le_tp: "te m i \<le> te p (i+1)"
-        by simp
+        by (simp add: le_diff_eq)
 
       let ?tlm = "max (te l i) (te m i)"
       from tli_le_tp tmi_le_tp have tlm_le_tp: "?tlm \<le> te p (i+1)"
@@ -1149,7 +1150,7 @@ next
 
   from corr_p_tq1 corr_q_tq1 beta_bound1 
   have tq_bound4: "te p i \<le> te q (i+1)" 
-    by(simp)
+    by(simp add: le_diff_eq)
 
   from tq_bound1 VClock B corr_q 
   have Eq1: "VC q t = IC q (i+1) t" by simp
@@ -1197,10 +1198,10 @@ next
       have tlm_bound: "?tlm \<le> te q (i+1)"
       proof-
         from corr_l corr_q_tq1 beta_bound1 have "te l i \<le> te q (i+1)"
-          by simp
+          by (simp add: le_diff_eq)
         moreover
         from corr_m corr_q_tq1 beta_bound1 have "te m i \<le> te q (i+1)"
-          by simp
+          by (simp add: le_diff_eq)
         ultimately show ?thesis by simp
       qed
         
