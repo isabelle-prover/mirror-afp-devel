@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/EffMono.thy
-    ID:         $Id: EffectMono.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: EffectMono.thy,v 1.2 2005-07-02 10:05:24 lsf37 Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -131,7 +131,7 @@ next
   with succs
   have "\<forall>(pc',s')\<in>set (eff i P pc xt (Some \<tau>\<^isub>1)). pc' < mpc"
     by (cases \<tau>\<^isub>1, cases \<tau>\<^isub>2)
-       (auto simp add: eff_def norm_eff_def xcpt_eff_def dest: bspec, blast)
+       (auto simp add: eff_def norm_eff_def xcpt_eff_def dest: bspec)
   ultimately
   show ?thesis using Some by (simp add: app_def)
 qed
