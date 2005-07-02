@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Wordarith.thy
-    ID:         $Id: Wordarith.thy,v 1.1 2005-05-10 16:13:46 nipkow Exp $
+    ID:         $Id: Wordarith.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)
@@ -223,12 +223,12 @@ proof (induct_tac rule: nat_to_bv_helper.induct)
   qed
 qed
 
-lemma prime_hd_non_zero: assumes a: "p \<in> prime" and b: "q \<in> prime" shows "hd (nat_to_bv (p*q)) ~= \<zero>"
+lemma prime_hd_non_zero: assumes a: "prime p" and b: "prime q" shows "hd (nat_to_bv (p*q)) ~= \<zero>"
 proof -
-  have c: "\<And> p. p \<in> prime \<Longrightarrow> (1::nat) < p"
+  have c: "\<And> p. prime p \<Longrightarrow> (1::nat) < p"
   proof -
     fix p
-    assume d: "p \<in> prime" 
+    assume d: "prime p" 
     thus "1 < p" by (simp add: prime_def)
   qed
   have "1 < p" using c and a by simp
@@ -237,7 +237,7 @@ proof -
   thus ?thesis using hd_one[of "p*q"] and nat_to_bv_def by auto
 qed
 
-lemma primerew: "\<lbrakk>m dvd p; m~=1; m~=p\<rbrakk> \<Longrightarrow> ~(p \<in> prime)"
+lemma primerew: "\<lbrakk>m dvd p; m~=1; m~=p\<rbrakk> \<Longrightarrow> ~ prime p"
 by (auto simp add: prime_def)
 
 
@@ -283,9 +283,9 @@ lemma odd_mul_odd: "\<lbrakk>~(2::nat) dvd p; ~2 dvd q\<rbrakk> \<Longrightarrow
 apply (simp add: dvd_eq_mod_eq_0)
 by (simp add: mod_mult1_eq)
 
-lemma prime_equal: "\<lbrakk>p \<in> prime; q \<in> prime; 2^x=p*q\<rbrakk> \<Longrightarrow> (p=q)"
+lemma prime_equal: "\<lbrakk>prime p; prime q; 2^x=p*q\<rbrakk> \<Longrightarrow> (p=q)"
 proof -
-  assume a: "p \<in> prime" and b: "q \<in> prime" and c: "2^x=p*q"
+  assume a: "prime p" and b: "prime q" and c: "2^x=p*q"
   from a have d: "1 < p" by (simp add: prime_def)
   moreover from b have e: "1<q" by (simp add: prime_def)
   show "p=q"

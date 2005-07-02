@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/RSAPSS.thy
-    ID:         $Id: RSAPSS.thy,v 1.1 2005-05-10 16:13:46 nipkow Exp $
+    ID:         $Id: RSAPSS.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -113,7 +113,7 @@ next
   thus ?thesis by simp
 qed
 
-lemma length_helper2: assumes p: "p \<in> prime" and q: "q \<in> prime" 
+lemma length_helper2: assumes p: "prime p" and q: "prime q" 
                       and mgf: "(MGF (sha1 (generate_M' (sha1 m) salt))
   (length
   (generate_DB
@@ -245,7 +245,7 @@ proof -
   thus ?thesis using length_bvxor_bound by simp
 qed
 
-lemma length_helper: assumes p: "p \<in> prime" and q: "q \<in> prime" and x: "(length (nat_to_bv (p * q)) - Suc 0) mod 8 ~= 0" and mgf: "(MGF (sha1 (generate_M' (sha1 m) salt))
+lemma length_helper: assumes p: "prime p" and q: "prime q" and x: "(length (nat_to_bv (p * q)) - Suc 0) mod 8 ~= 0" and mgf: "(MGF (sha1 (generate_M' (sha1 m) salt))
   (length
   (generate_DB
   (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
@@ -346,10 +346,10 @@ proof -
   ultimately show ?thesis by arith
 qed
 
-lemma length_emsapss_smaller_pq: "\<lbrakk>p \<in> prime; q \<in> prime; emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0) \<noteq> []; (length (nat_to_bv (p * q)) - Suc 0) mod 8 ~= 0\<rbrakk> \<Longrightarrow>  length (remzero (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p*q))"
+lemma length_emsapss_smaller_pq: "\<lbrakk>prime p; prime q; emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0) \<noteq> []; (length (nat_to_bv (p * q)) - Suc 0) mod 8 ~= 0\<rbrakk> \<Longrightarrow>  length (remzero (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p*q))"
 proof -
   assume a: "emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0) \<noteq> []"
-  assume p: "p \<in> prime" and q: "q \<in> prime"
+  assume p: "prime p" and q: "prime q"
   assume x: "(length (nat_to_bv (p * q)) - Suc 0) mod 8 ~= 0"
   have b: " emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)= emsapss_encode_help1 (sha1 m)
     (length (nat_to_bv (p * q)) - Suc 0)"
@@ -501,7 +501,7 @@ proof -
   from b and c show ?thesis by simp
 qed
 
-lemma bv_to_nat_emsapss_smaller_pq: assumes a: "p \<in> prime" and b: "q \<in> prime" and pneq: "p ~= q" and c: "emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0) \<noteq> []" shows "bv_to_nat (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)) < p*q"
+lemma bv_to_nat_emsapss_smaller_pq: assumes a: "prime p" and b: "prime q" and pneq: "p ~= q" and c: "emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0) \<noteq> []" shows "bv_to_nat (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)) < p*q"
 proof -
   from a and b and c show ?thesis
   proof (case_tac "8 dvd ((length (nat_to_bv (p * q))) - Suc 0)")
@@ -546,7 +546,7 @@ proof -
   qed
 qed
 
-lemma rsa_pss_verify: "\<lbrakk> p \<in> prime; q \<in> prime; p \<noteq> q; n = p*q; e*d mod ((pred p)*(pred q)) = 1; rsapss_sign m e n \<noteq> []; s = rsapss_sign m e n \<rbrakk> \<Longrightarrow> rsapss_verify m s d n = True" 
+lemma rsa_pss_verify: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; e*d mod ((pred p)*(pred q)) = 1; rsapss_sign m e n \<noteq> []; s = rsapss_sign m e n \<rbrakk> \<Longrightarrow> rsapss_verify m s d n = True" 
   apply (simp only: rsapss_sign rsapss_verify)
   apply (simp only: rsapss_sign_help1)
   apply (auto)

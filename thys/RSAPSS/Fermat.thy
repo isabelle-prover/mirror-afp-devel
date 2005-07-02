@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Fermat.thy
-    ID:         $Id: Fermat.thy,v 1.1 2005-05-10 16:13:45 nipkow Exp $
+    ID:         $Id: Fermat.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -62,7 +62,7 @@ lemma sucleI: "Suc x \<le> 0 \<Longrightarrow> False"
 lemma diffI: "\<And>b. (0::nat) = b - b"
   by (auto)
 
-lemma alldistincts[rule_format]: "(p: prime) \<longrightarrow> (m mod p \<noteq> 0) \<longrightarrow> (n2 < n1) \<longrightarrow> (n1 < p) --> \<not>(((m*n1) mod p) mem (S (n2,m,p)))"
+lemma alldistincts[rule_format]: "prime p \<longrightarrow> (m mod p \<noteq> 0) \<longrightarrow> (n2 < n1) \<longrightarrow> (n1 < p) --> \<not>(((m*n1) mod p) mem (S (n2,m,p)))"
   apply (induct_tac rule: S.induct)
   apply (auto)
   apply (drule equalmodstrick2)
@@ -80,7 +80,7 @@ lemma alldistincts[rule_format]: "(p: prime) \<longrightarrow> (m mod p \<noteq>
   apply (rule delmulmod)
   by (auto)
 
-lemma alldistincts2[rule_format]: "(p: prime) \<longrightarrow> (m mod p \<noteq> 0) \<longrightarrow> (n < p) \<longrightarrow> alldistinct (S (n,m,p))"
+lemma alldistincts2[rule_format]: "prime p \<longrightarrow> (m mod p \<noteq> 0) \<longrightarrow> (n < p) \<longrightarrow> alldistinct (S (n,m,p))"
   apply (induct_tac rule: S.induct)
   apply (simp)+
   apply (subst sucassoc)
@@ -92,7 +92,7 @@ lemma notdvdless: "\<not> a dvd b \<Longrightarrow> 0 < (b::nat) mod a"
   apply (rule contrapos_np, simp)
   by (simp add: dvd_eq_mod_eq_0)
 
-lemma allnonzerop[rule_format]: "(p: prime) \<longrightarrow> (m mod p \<noteq> 0) \<longrightarrow> (n < p) \<longrightarrow> allnonzero (S (n,m,p))"
+lemma allnonzerop[rule_format]: "prime p \<longrightarrow> (m mod p \<noteq> 0) \<longrightarrow> (n < p) \<longrightarrow> allnonzero (S (n,m,p))"
   apply (induct_tac rule: S.induct)
   apply (simp)+
   apply (auto)
@@ -122,18 +122,18 @@ lemma lengths: "length (S (n,m,p)) = n"
   apply (induct_tac n m p rule: S.induct)
   by (auto)
 
-lemma suconeless[rule_format]: "p: prime \<longrightarrow> p - 1 < p"
+lemma suconeless[rule_format]: "prime p \<longrightarrow> p - 1 < p"
   apply (induct_tac p)
   by (auto simp add:prime_def)
 
-lemma primenotzero: "p: prime \<Longrightarrow> p\<noteq>0"
+lemma primenotzero: "prime p \<Longrightarrow> p\<noteq>0"
   by (auto simp add:prime_def)
 
-lemma onemodprime[rule_format]: "p:prime \<longrightarrow> 1 mod p = (1::nat)"
+lemma onemodprime[rule_format]: "prime p \<longrightarrow> 1 mod p = (1::nat)"
   apply (induct_tac p)
   by (auto simp add:prime_def)
 
-lemma fermat:"\<lbrakk>p \<in> prime;m mod p \<noteq> 0\<rbrakk> \<Longrightarrow> m^(p-(1::nat)) mod p = 1"
+lemma fermat:"\<lbrakk>prime p; m mod p \<noteq> 0\<rbrakk> \<Longrightarrow> m^(p-(1::nat)) mod p = 1"
   apply (frule onemodprime[THEN sym], simp)
   apply (frule_tac n ="p- Suc 0" in primefact)
   apply (drule suconeless, simp)

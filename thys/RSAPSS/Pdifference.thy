@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pdifference.thy
-    ID:         $Id: Pdifference.thy,v 1.1 2005-05-10 16:13:45 nipkow Exp $
+    ID:         $Id: Pdifference.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -70,14 +70,14 @@ lemma equalmodstrick2: "a mod p = b mod p \<Longrightarrow>  pdifference (a,b) m
   apply (subst diff_mult_distrib [THEN sym])
   by (simp add: mod_mult_self_is_0)
 
-lemma primekeyrewrite: "\<lbrakk>p:prime;p dvd (a*b);~(p dvd a)\<rbrakk> \<Longrightarrow> p dvd b"
+lemma primekeyrewrite: "\<lbrakk>prime p; p dvd (a*b);~(p dvd a)\<rbrakk> \<Longrightarrow> p dvd b"
   apply (drule prime_dvd_mult)
   by (auto)
 
 lemma multzero: "\<lbrakk>0 < m mod p; m*a = 0\<rbrakk> \<Longrightarrow> (a::nat) = 0"
   by (auto)
 
-lemma primekeytrick: "\<lbrakk>(M*A) mod P = (M*B) mod P;M mod P \<noteq> 0;P:prime\<rbrakk> \<Longrightarrow> A mod P = (B::nat) mod P"
+lemma primekeytrick: "\<lbrakk>(M*A) mod P = (M*B) mod P;M mod P \<noteq> 0; prime P\<rbrakk> \<Longrightarrow> A mod P = (B::nat) mod P"
   apply (drule equalmodstrick2);
   apply (rule equalmodstrick1);
   apply (rule multzero, simp);

@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pigeonholeprinciple.thy
-    ID:         $Id: Pigeonholeprinciple.thy,v 1.1 2005-05-10 16:13:46 nipkow Exp $
+    ID:         $Id: Pigeonholeprinciple.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -302,7 +302,7 @@ lemma timeslistpositives: "timeslist (positives n) = fac n"
   apply (induct_tac n)
   by (auto)
 
-lemma pdvdnot: "\<lbrakk>p \<in> prime; \<not> p dvd x; \<not> p dvd y\<rbrakk> \<Longrightarrow> \<not> p dvd x*y"
+lemma pdvdnot: "\<lbrakk>prime p; \<not> p dvd x; \<not> p dvd y\<rbrakk> \<Longrightarrow> \<not> p dvd x*y"
   apply (auto)
   apply (insert prime_dvd_mult [of p x y])
   by (simp)
@@ -313,12 +313,12 @@ lemma lessdvdnot: "\<lbrakk>Suc (x::nat) < p\<rbrakk> \<Longrightarrow> \<not> p
   apply (frule dvd_imp_le)
 by (auto)
 
-lemma pnotdvdall:"\<lbrakk>p \<in> prime; p dvd (Suc n)*(fac n); \<not> p dvd fac n; Suc n < p\<rbrakk> \<Longrightarrow> False"
+lemma pnotdvdall:"\<lbrakk>prime p; p dvd (Suc n)*(fac n); \<not> p dvd fac n; Suc n < p\<rbrakk> \<Longrightarrow> False"
   apply (insert lessdvdnot [of n p])
   apply (insert pdvdnot [of p "Suc n" "fac n"])
   by (auto)
 
-lemma primefact[rule_format]: "p \<in> prime \<longrightarrow>  (n::nat) < p \<longrightarrow> (fac n mod p \<noteq> 0)"
+lemma primefact[rule_format]: "prime p \<longrightarrow>  (n::nat) < p \<longrightarrow> (fac n mod p \<noteq> 0)"
   apply (induct_tac n rule:fac.induct)
   apply (simp add:prime_def)
   apply (simp only: fac.simps dvd_eq_mod_eq_0 [THEN sym] )
