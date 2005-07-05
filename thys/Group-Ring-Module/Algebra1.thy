@@ -2369,23 +2369,7 @@ constdefs
  "po A == \<lparr>carrier = Pow A, ord_rel = {Z. Z \<in> (Pow A) \<times> (Pow A) \<and> (fst Z) \<subseteq> (snd Z)}, ordering = \<lambda>a\<in>(Pow A). \<lambda>b\<in>(Pow A). a \<subseteq> b\<rparr>"
 
 lemma ordered_Pow:"ordered_set (po A )"
-apply (simp add:ordered_set_Pow_def)
-apply (simp add:ordered_set_def) 
-apply (rule conjI)
- apply (rule subsetI)
- apply simp
-apply (rule conjI)
- apply (rule ballI) apply (simp add:Pow_def)
- apply (rule conjI)
- apply (rule ballI)+ apply (rule impI) 
- apply (erule conjE)+ apply (rule equalityI, assumption+)
-apply (rule conjI)
- apply (rule ballI)+ apply (rule impI)
- apply (erule conjE)+ 
- apply (rule_tac A = a and B = b and C = c in subset_trans, assumption+)
-apply (rule ballI)
- apply (simp add:Pow_def)
-done
+  by (auto simp add: ordered_set_Pow_def ordered_set_def)
 
 constdefs
 ordered_set_fs::"['a set, 'b set] \<Rightarrow> ('a set * ('a \<Rightarrow> 'b)) OrderedSet"

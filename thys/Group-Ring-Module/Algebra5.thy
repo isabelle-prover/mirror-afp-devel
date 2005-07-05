@@ -1792,12 +1792,6 @@ lemma prod_prime:"\<lbrakk>ring R; ideal R A; \<forall>k\<in>Nset (Suc n). prime
 \<forall>l\<in>Nset (Suc n). \<not> (A \<subseteq> P l); \<forall>k\<in>Nset (Suc n). \<forall>l\<in>Nset (Suc n). k = l \<or> \<not> (P k) \<subseteq> (P l)\<rbrakk> \<Longrightarrow> \<forall>i\<in> Nset (Suc n). (nprod0 R (ppa R P A i) n \<in> A \<and> (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and> (nprod0 R (ppa R P A i) n \<notin> P i))"
 apply (frule  prod_primeTr2 [of "R" "A" "n" "P"], assumption+)
 apply simp
-apply (rule ballI)
-apply (subgoal_tac "nprod0 R (ppa R P A i) n \<in> A \<and> (\<forall>l\<in>Nset (Suc n) - {i}. 
-nprod0 R (ppa R P A i) n \<in> P l) \<and> nprod0 R  (ppa R P A i) n \<notin> P i")
-apply (erule conjE)+
-apply assumption
-apply blast
 done
 
 lemma skip_im1:"\<lbrakk>i \<in> Nset (Suc n); P \<in> Nset (Suc n) \<rightarrow> {X. prime_ideal R X}\<rbrakk> \<Longrightarrow> compose (Nset n) P (skip i) ` Nset n = P ` (Nset (Suc n) - {i})"

@@ -2087,7 +2087,7 @@ apply simp
              \<in> carrier (Iod D (insert z (\<Union>WWa D f a)))")
    apply (thin_tac "\<forall>y\<in>WWa D f a. \<forall>x\<in>y.  x \<le>\<^sub>D z")
    apply (thin_tac " \<not>  z <\<^sub>(Iod D (insert z (\<Union>WWa D f a))) z")
-  apply (simp add:WWa_def) apply blast
+  apply (simp add:WWa_def)
 apply (simp add:well_ordered_set_def) 
 (**-- pre is upper_bound ---*)
 apply simp  
