@@ -1746,8 +1746,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	proof (cases "real n \<le> f t")
 	  case True
 	  { fix i assume "i \<in> {..(n*2^n)(}-{0}"
-	    hence "Suc i \<le> n*2^n" 
-	      by simp_all arith
+	    hence "Suc i \<le> n*2^n" by simp
 	    hence mult: "real (Suc i) \<le> real n * (2::real)^n"
 	      by (simp add: real_of_nat_le_iff[THEN sym] realpow_real_of_nat[THEN sym])
 	    have "0 < (2::real)^n"

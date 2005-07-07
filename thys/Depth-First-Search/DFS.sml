@@ -24,8 +24,6 @@ fun dfs x =
                       else dfs (x, (op_64 (Next x xa) xc, (xa :: xb))))))))
     x;
 
-val dfs = dfs;
+val dfs = (fn x => dfs x);
 
 end;
-
-open Generated;

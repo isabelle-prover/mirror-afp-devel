@@ -2635,8 +2635,7 @@ apply (rule impI)
            linear_span R M (carrier R) {f 0} = carrier M")
  apply (rule ballI)
  apply (subgoal_tac "i \<in> nset (Suc 0) (Suc n)") apply simp
- apply (simp add:nset_def) apply (erule conjE)+
- apply (rule le_trans, assumption+) apply simp
+ apply (simp add:nset_def)
  apply (frule_tac H = "f ` (Nset (Suc n))" and ?H1.0 = "f ` (Nset n)"in generator_generator [of "R" "M"], assumption+)
  apply (rule_tac f = f and A = "Nset n" and B = "carrier M" and ?A1.0 = "Nset n" in image_sub, assumption+) apply simp
  apply (subst Nset_un) apply (subst im_set_un, assumption+)
@@ -3780,8 +3779,7 @@ apply (rule univar_func_test)
                                   assumption+)
   apply simp
  apply (rule equalityI)
-  apply (rule subsetI) apply (simp add:Nset_def) apply (erule conjE)
-  apply simp
+  apply (rule subsetI) apply (simp add:Nset_def)
   apply (rule subsetI) apply (simp add:Nset_def)
   apply (simp add:Nset_def) apply (simp add:Nset_def)
  apply (case_tac "y \<in> Nset m")
@@ -3794,8 +3792,7 @@ apply (rule univar_func_test)
                                   assumption+)
   apply (simp add:surj_to_def)
  apply (rule equalityI)
-  apply (rule subsetI) apply (simp add:Nset_def) apply (erule conjE)
-  apply simp
+  apply (rule subsetI) apply (simp add:Nset_def)
   apply (rule subsetI) apply (simp add:Nset_def)
   apply (simp add:Nset_def) apply (simp add:Nset_def)
  apply (subgoal_tac "x = Suc m") apply (subgoal_tac "y = Suc m")

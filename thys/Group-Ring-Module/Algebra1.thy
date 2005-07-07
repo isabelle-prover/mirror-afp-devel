@@ -127,19 +127,9 @@ lemma zle:"((z::int) \<le> w) = (\<not> (w < z))"
 apply auto
 done
 
-lemma zmult_pos_mono:"\<lbrakk> (0::int) < w; w * z \<le> w * z'\<rbrakk> \<Longrightarrow> z \<le> z'"
-apply (rule contrapos_pp, simp+) 
-apply (subgoal_tac "\<not> (z < z' \<or> z = z')") prefer 2 apply simp
- apply (thin_tac "\<not> z \<le> z'") apply simp
-apply (subgoal_tac "z < z' \<or> z = z' \<or> z' < z") apply simp
-prefer 2 apply (thin_tac "\<not> z < z' \<and> z \<noteq> z'") apply (simp add:zless_linear)
-apply (frule int_mult_mono[of "z'" "z" "w"], assumption+)
-apply (simp add:zle)
-done
-
 lemma zmult_pos_mono_r:"\<lbrakk> (0::int) < w; z * w \<le> z' * w\<rbrakk> \<Longrightarrow> z \<le> z'"
 apply (simp add:zmult_commute)
-apply (rule zmult_pos_mono, assumption+)
+apply(erule (1) mult_left_le_imp_le)
 done
 
 lemma zadd_zle_mono:"\<lbrakk>w' \<le> w; z' \<le> (z::int)\<rbrakk> \<Longrightarrow> w' + z' \<le> w + z" 
@@ -155,58 +145,29 @@ apply (insert zmult_zle_mono1_neg[of "i" "0" "j"])
  apply simp
 done
 
-lemma mult_pos_iff:"\<lbrakk>(0::int) < i; 0 \<le> i * j \<rbrakk> \<Longrightarrow> 0 \<le> j" 
-apply (rule contrapos_pp, simp+)
- apply (subgoal_tac "j < 0 \<or> j = 0 \<or> 0 < j")
- apply (simp add:order_le_less)
- apply (frule int_mult_mono[of "j" "0" "i"], assumption+)  apply simp
- apply (simp add:zless_linear)
-done
-
 lemma zmult_eq:"\<lbrakk>(0::int) < w; z = z'\<rbrakk> \<Longrightarrow> w * z = w * z'"
 apply simp
 done
 
 lemma int_nat_minus:"0 < (n::int) \<Longrightarrow> nat (n - 1) = (nat n) - 1"
-apply (subgoal_tac "0 \<le> (1::int)")
-apply (subgoal_tac "1 \<le> n") 
-apply (frule_tac z' = 1 and z = n in nat_diff_distrib)
- apply (frule_tac w1 = 0 and z1 = n in add1_zle_eq [THEN sym])
- apply (subgoal_tac "nat (1::int) = (1::nat)") apply simp
- apply simp 
- apply (subgoal_tac "0 + 1 \<le> n") apply simp 
- apply (simp add:add1_zle_eq[THEN sym, of "0" "n"])
- apply simp
-done
+by arith
 
 lemma int_nat_add:"\<lbrakk>0 < (n::int); 0 < (m::int)\<rbrakk> \<Longrightarrow> (nat (n - 1)) + (nat (m - 1)) + (Suc 0) = nat (n + m - 1)"
-apply (subgoal_tac "nat (n - 1) + (nat (m - 1)) = (nat n - 1) + (nat m - 1)")
-prefer 2 apply (simp add:int_nat_minus)
-apply (simp del:add_Suc_right)
- apply (subst add_assoc)
- apply simp
- apply (thin_tac "nat (n - (1\<Colon>int)) + nat (m - (1\<Colon>int)) =
-       nat n - Suc (0\<Colon>nat) + (nat m - Suc (0\<Colon>nat))")
- apply (simp add:int_nat_minus)
- apply (simp add:nat_add_distrib)
- apply (subgoal_tac "Suc 0 \<le> nat n")
- apply (simp add:diff_add_assoc2[THEN sym, of "0" "nat n" "nat m"])
- apply (subgoal_tac "0 < nat n") apply (thin_tac "0 < n") 
- prefer 2 apply simp apply (thin_tac "0 < m")
- apply (simp add:Suc_leI)
-done
+by arith
 
 lemma int_equation:"(x::int) = y + z \<Longrightarrow> x - y = z"
 apply simp
 done
 
-lemma int_pos_mult_monor:"\<lbrakk> 0 < (n::int); 0 \<le> n * m \<rbrakk> \<Longrightarrow> 0 \<le> m" 
- apply (rule mult_pos_iff, assumption+)
+lemma int_pos_mult_monor: "\<lbrakk>0 \<le> i * j; (0::int) < i \<rbrakk> \<Longrightarrow> 0 \<le> j"
+apply (erule contrapos_pp)
+apply(simp add:not_zle mult_less_0_iff)
 done
 
 lemma int_pos_mult_monol:"\<lbrakk> 0 < (m::int); 0 \<le> n * m \<rbrakk> \<Longrightarrow> 0 \<le> n" 
- apply (rule int_pos_mult_monor, assumption+)
+ apply (rule int_pos_mult_monor)
  apply (simp add:zmult_commute)
+ apply assumption
 done
 
 lemma zmult_eq:"\<lbrakk>(0::int) < w; z = z'\<rbrakk> \<Longrightarrow> w * z = w * z'"
@@ -222,15 +183,6 @@ apply (frule_tac a = 0 and a' = a and b = b in zdiv_mono1, assumption+)
 apply simp
 done 
 
-lemma zmult_pos_mono:"\<lbrakk> (0::int) < w; w * z \<le> w * z'\<rbrakk> \<Longrightarrow> z \<le> z'"
-apply (rule contrapos_pp, simp+) 
-apply (subgoal_tac "\<not> (z < z' \<or> z = z')") prefer 2 apply simp
- apply (thin_tac "\<not> z \<le> z'") apply simp
-apply (subgoal_tac "z < z' \<or> z = z' \<or> z' < z") apply simp
-prefer 2 apply (thin_tac "\<not> z < z' \<and> z \<noteq> z'") apply (simp add:zless_linear)
-apply (frule int_mult_mono[of "z'" "z" "w"], assumption+)
-apply (simp add:zle)
-done 
 
 section "2. Sets"
 

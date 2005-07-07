@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/RSAPSS.thy
-    ID:         $Id: RSAPSS.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
+    ID:         $Id: RSAPSS.thy,v 1.3 2005-07-07 10:44:41 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -514,8 +514,8 @@ proof -
       proof -
 	have "0<p*q"
 	proof -
-	  have "0<p" using a by (simp add: prime_def, arith)
-	  moreover have "0<q" using b by (simp add: prime_def, arith)
+	  have "0<p" using a by (simp add: prime_def)
+	  moreover have "0<q" using b by (simp add: prime_def)
 	  ultimately show ?thesis by simp
 	qed
 	moreover have "2^(length (nat_to_bv (p*q)) - Suc 0) ~= p*q" 

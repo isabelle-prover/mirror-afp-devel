@@ -2918,10 +2918,7 @@ apply (rotate_tac -1) apply (frule sym)
  apply (simp add:Nset_def nset_def)
  apply assumption
  apply (rotate_tac -1) apply (frule sym) apply (thin_tac "k = ka")
- apply (simp add:nset_def) apply (erule conjE)
- apply (insert  n_less_Suc [of "(LEAST i. f i \<noteq> g i)"])
-apply (rule_tac less_le_trans [of "(LEAST i. f i \<noteq> g i)" 
-      "Suc (LEAST i. f i \<noteq> g i)" "k"], assumption+)
+ apply (simp add:nset_def)(* apply (erule conjE)*)
  apply simp+
 done
 
@@ -5451,7 +5448,6 @@ apply (rule equalityI)
  apply (thin_tac "f ` Nset (Suc (Suc n)) = f ` Nset (Suc n)")
  apply (simp add:Nset_def)
  apply (case_tac "x = Suc n") apply simp apply simp
- apply (erule conjE) apply simp 
 done
 
 

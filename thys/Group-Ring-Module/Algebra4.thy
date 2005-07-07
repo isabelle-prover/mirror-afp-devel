@@ -2643,8 +2643,7 @@ apply (thin_tac "ideal Zr I")
             x mod Zleast {n. n \<in> I \<and> 0 < n}") prefer 2 
  apply (rule_tac a = x in zmod_zdiv_equality [of _ "Zleast {n. n \<in> I \<and> 0 < n}"]) 
  apply (rule_tac x = x and y = "Zleast {n. n \<in> I \<and> 0 < n} * (x div Zleast {n. n \<in> I \<and> 0 < n})" and z = "x mod Zleast {n. n \<in> I \<and> 0 < n}" in int_equation, assumption+)
- apply (simp add:LB_def) apply (rule allI) apply (rule impI)
- apply (erule conjE) apply simp
+ apply (simp add:LB_def)
  apply (rule subsetI) apply (simp add:ideal_def) apply (erule conjE)+
  apply (simp add:asubgroup_def b_ag_def subgroup_def Zr_def)
  apply (erule conjE)+ apply (simp add:subsetD)
@@ -4337,8 +4336,6 @@ apply (case_tac "j = Suc n")
   apply (simp add:Nset_def)
   apply (rule equalityI)
    apply (rule subsetI) apply (simp add:CollectI)
-   apply (erule conjE) apply (frule le_imp_less_or_eq)
-    apply (thin_tac "x \<le> Suc n") apply simp
    apply (rule subsetI) apply (simp add:CollectI)
  apply (simp add:Nset_def)
  apply (subgoal_tac "j \<in> Nset n")

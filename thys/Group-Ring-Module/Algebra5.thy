@@ -1574,9 +1574,6 @@ apply (case_tac "i = 0")
  apply simp apply (simp add:Nset_def) apply (simp add:skip_def)
  apply (erule conjE)+
  apply (simp add:NSet_def) apply (simp add:Nset_def) apply (erule conjE)
- apply (erule conjE)+
- apply (frule_tac n = l in Suc_leI [of "0"]) apply (thin_tac "0 < l")
- apply simp
  apply simp
  apply (frule_tac n = i in Suc_leI [of "0"]) apply (thin_tac "0 < i")
  apply (frule_tac x = i and n = "Suc 0" in Nset_le)
@@ -1584,9 +1581,8 @@ apply (case_tac "i = 0")
  apply (thin_tac "Suc 0 \<le> i") apply (thin_tac "i \<le> Suc 0")
  apply simp
 apply (frule skip_im_Tr3 [of "0" "0"])
- apply (simp add:Nset_def Nset_1) apply (erule conjE)
- apply (subgoal_tac "l = 0") apply (erule conjE)+ apply simp
- apply (erule conjE)+ apply simp apply (simp add:Nset_def)
+ apply (simp add:Nset_def Nset_1)
+ apply simp apply (simp add:Nset_def)
  apply (simp add:Nset_def)
 (** n **)
   apply (rule impI)  (** show induction assumption is OK. **)
@@ -2797,8 +2793,6 @@ apply (rule allI)
  apply (rule univar_func_test) apply (rule ballI)
  apply (subgoal_tac "Nset (Suc n) - {Suc n} = Nset n") apply simp
  apply (rule equalityI) apply (rule subsetI) apply (simp add:Nset_def)
- apply (subgoal_tac "xa < (Suc n)") apply simp apply (erule conjE)
-apply (rule contrapos_pp, simp+)
  apply (rule subsetI) apply (simp add:Nset_def)
  apply (subgoal_tac "l \<in> Nset n") apply (subgoal_tac " \<forall>j\<in>Nset n - {l}. f j = 0\<^sub>G")
  apply simp
@@ -2808,7 +2802,7 @@ apply (rule contrapos_pp, simp+)
  apply (simp add:ag_r_zero) apply (simp add:Nset_def)
 apply (rule ballI)
  apply (subgoal_tac "j \<in> Nset (Suc n) - {l}") prefer 2 apply simp
- apply (simp add:Nset_def) apply (erule conjE)+ apply simp
+ apply (simp add:Nset_def)
  apply simp
 apply (thin_tac "\<forall>f. f \<in> Nset n \<rightarrow> carrier G \<and> l \<in> Nset n \<and> (\<forall>j\<in>Nset n - {l}. f j = 0\<^sub>G) \<longrightarrow>  e\<Sigma> G f n = f l")
  apply (thin_tac "\<forall>j\<in>Nset (Suc n) - {l}. f j = 0\<^sub>G")
