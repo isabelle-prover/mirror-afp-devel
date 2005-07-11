@@ -1,6 +1,6 @@
 ## configurables
 
-SESSION-NAME = GenClock 
+SESSION-NAME = GenClock
 BASE-IMAGE = HOL-Complex
 
 ## targets
