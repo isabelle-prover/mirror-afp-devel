@@ -8,8 +8,9 @@ Real/Rational.thy. Any volunteers? (TN) *)
 
 header {*The Rational Numbers*}
 
-theory Rats = Complex:
-
+theory Rats
+imports Complex
+begin
 
 text{*A dense and countable subset of the @{text real} type was needed for
   some measurability proofs. That is why I developed this
@@ -221,42 +222,11 @@ text{*The following lemmata do not seem to exist in the @{text
   but I think they should. The proof is of unexpected complexity, since there are a
   number of theorems on @{text abs}, conversion from @{text int} to @{text real}, etc.~missing. *}(*<*)
 
-lemma real_of_nat_real_of_int: "~neg z ==> real (nat z) = real z"
-  by  (simp add: not_neg_eq_ge_0 real_of_int_real_of_nat[THEN sym])
-(*This was actually in RealOrd, but seems to have vanished now*)
-(*>*) 
 lemma  real_of_int_abs: "\<bar>real (x::int)\<bar> = real \<bar>x\<bar>"
- (*<*)
-proof (cases "neg x")
-  case False 
-  hence "\<bar>real x\<bar> = \<bar>real (nat x)\<bar>"
-    by (simp add: real_of_nat_real_of_int[THEN sym])
-  also have "\<dots> = real (nat x)" by simp
-  also from prems have "\<dots> = real x" by (simp add: real_of_nat_real_of_int)
-  also from prems have "\<not> x < 0" by (simp add: neg_eq_less_0)
-  hence "real x = real \<bar>x\<bar>" by (auto simp add: zabs_def)
-  finally show ?thesis .
-next
-  have "\<bar>real x\<bar> = \<bar>real (-x)\<bar>" by simp
-  also
-  case True
-  hence notneg: "\<not> neg (-x)" by (simp add: not_neg_eq_ge_0 neg_eq_less_0)
-  hence "real (-x) = real (nat (-x))" by (rule real_of_nat_real_of_int[THEN sym]) 
-  hence "\<bar>real (-x)\<bar> = \<bar>real (nat (-x))\<bar>" by simp
-  also have "\<dots> = real (nat (-x))" by simp
-  also from notneg have "\<dots> = real (-x)" by (simp add: real_of_nat_real_of_int)
-  also from prems have "x < 0" by (simp add: neg_eq_less_0)
-  hence "real (-x) = real \<bar>x\<bar>" by (auto simp add: zabs_def)
-  finally show ?thesis .
-qed(*>*)
+(*<*)
+by arith
+(*>*)
   
-
-lemma not_neg_abs: "\<not> neg \<bar>a\<bar>"
-(*<*)proof -
-  have "0 \<le> \<bar>a\<bar>" by simp 
-  thus ?thesis by (simp only: not_neg_eq_ge_0)
-qed(*>*)
-
 
 theorem int_int_rats: "real (a::int)/real (b::int) \<in> \<rat>"
 proof (cases "real a/real b < 0")
@@ -264,9 +234,8 @@ proof (cases "real a/real b < 0")
   hence "(real a/real b) = \<bar>real a/real b\<bar>" 
     by arith
   also have "\<dots> = real \<bar>a\<bar>/real \<bar>b\<bar>" 
-    by (simp only: abs_divide real_of_int_abs)
-  also have "\<dots> = real (nat \<bar>a\<bar>)/real (nat \<bar>b\<bar>)" 
-    by (simp add: not_neg_abs real_of_nat_real_of_int)
+    by (simp add: real_of_int_abs)
+  also have "\<dots> = real (nat \<bar>a\<bar>)/real (nat \<bar>b\<bar>)" by simp
   finally show ?thesis 
     by (simp only: nat_nat_rats)
 next
@@ -274,9 +243,9 @@ next
   hence "(real a/real b) = -\<bar>real a/real b\<bar>" 
     by arith
   also have "\<dots> = - real (nat \<bar>a\<bar>)/real (nat \<bar>b\<bar>)" 
-    by (simp add: abs_divide real_of_int_abs not_neg_abs real_of_nat_real_of_int)
+    by (simp add: real_of_int_abs)
   finally show ?thesis txt{*\nopagebreak*}
-    by (simp only: minus_nat_nat_rats) 
+    by (simp only: minus_nat_nat_rats)
 qed
 
 theorem assumes a: "z \<in> \<rat>"

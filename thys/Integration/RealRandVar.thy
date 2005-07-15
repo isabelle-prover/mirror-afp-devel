@@ -1,6 +1,8 @@
 header {*Real-Valued Random Variables*}
 
-theory RealRandVar = Measure + Rats:
+theory RealRandVar
+imports Measure Rats
+begin
 
 text {*While most of the above material was modeled after Hurd's work
   (but still proved independently),
@@ -616,7 +618,7 @@ lemma assumes f: "f \<in> rv M"
 	  from prems have "0<a" by (simp add: order_less_le)
 	  then have "\<exists> sqra. 0<sqra \<and> sqra\<twosuperior> = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
 	  hence "\<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}"
-	    by (auto simp only: pow2_le_abs abs_eq abs_le_interval_iff)
+	    by (auto simp only: pow2_le_abs abs_le_interval_iff)
         }
 	then obtain sqra where "?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}" by fast
 	also have "\<dots> \<in> ?M" 
@@ -761,7 +763,7 @@ lemma f_plus_minus2: "(f::'a \<Rightarrow> real) = (\<lambda>t. pp f t - np f t)
   by (rule ext)
 
 lemma f_abs_plus_minus: "(\<bar>f x\<bar>::real) = pp f x + np f x"
-  by  (auto simp add:positive_part_def negative_part_def abs_minus_eq abs_eq)
+  by  (auto simp add:positive_part_def negative_part_def)
 
 lemma nn_pp_np: assumes "nonnegative f"
   shows "pp f = f" and "np f = (\<lambda>t. 0)" using prems
