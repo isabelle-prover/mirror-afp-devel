@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/W.thy
-   ID:        $Id: W.thy,v 1.7 2004-08-18 07:24:54 nipkow Exp $
+   ID:        $Id: W.thy,v 1.8 2005-07-16 12:20:59 nipkow Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -398,7 +398,7 @@ apply (drule conjunct2)
 apply (rule new_tv_not_free_tv)
 apply (rule new_tv_le)
  prefer 2 apply (assumption)
-apply (simp add: not_less_iff_le)
+apply (simp add: linorder_not_less)
 done
 
 -- "Completeness of W w.r.t. @{text has_type}"
