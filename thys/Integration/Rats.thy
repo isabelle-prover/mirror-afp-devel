@@ -222,19 +222,13 @@ text{*The following lemmata do not seem to exist in the @{text
   but I think they should. The proof is of unexpected complexity, since there are a
   number of theorems on @{text abs}, conversion from @{text int} to @{text real}, etc.~missing. *}(*<*)
 
-lemma  real_of_int_abs: "\<bar>real (x::int)\<bar> = real \<bar>x\<bar>"
-(*<*)
-by arith
-(*>*)
-  
-
 theorem int_int_rats: "real (a::int)/real (b::int) \<in> \<rat>"
 proof (cases "real a/real b < 0")
   case False
   hence "(real a/real b) = \<bar>real a/real b\<bar>" 
     by arith
-  also have "\<dots> = real \<bar>a\<bar>/real \<bar>b\<bar>" 
-    by (simp add: real_of_int_abs)
+  also have "\<dots> = real \<bar>a\<bar>/real \<bar>b\<bar>"
+    by simp
   also have "\<dots> = real (nat \<bar>a\<bar>)/real (nat \<bar>b\<bar>)" by simp
   finally show ?thesis 
     by (simp only: nat_nat_rats)
