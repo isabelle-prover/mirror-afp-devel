@@ -54,6 +54,14 @@ of a scientific journal. Submissions are refereed.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2005-06-20:
+<a href="entries/JiveDataStoreModel.shtml">Jive Data and Store Model</a>
+<br>Author:
+<a href="mailto:rauch@informatik.uni-kl.de">Nicole Rauch</a> and 
+<a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a> and 
+</td></tr>
+
+<tr><td class="entry">
 2005-06-24:
 <a href="entries/GenClock.shtml">Formalization of a Generalized Protocol for Clock Synchronization</a>
 <br>Author: 
