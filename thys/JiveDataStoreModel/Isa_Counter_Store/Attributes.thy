@@ -1,5 +1,8 @@
-(*  Title:      Attributes.thy
-    Author:     Norbert Schirmer, TU Muenchen (2003)
+(*  Title:       Jive Data and Store Model
+    ID:          $Id: Attributes.thy,v 1.2 2005-07-20 05:09:05 lsf37 Exp $
+    Author:      Norbert Schirmer <schirmer@informatik.tu-muenchen.de>, 2003
+    Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
+    License:     LGPL
 *)
 
 header {* Attributes *}

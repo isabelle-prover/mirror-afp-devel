@@ -1,3 +1,5 @@
+(* $Id: ROOT.ML,v 1.2 2005-07-20 05:09:05 lsf37 Exp $ *)
+(* License: LGPL *)
 
 add_path "Isabelle";
 add_path "Isabelle_Store";
