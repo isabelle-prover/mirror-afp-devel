@@ -1,0 +1,47 @@
+(*  Title:      TypeIds.thy
+    Author:     Nicole Rauch
+*)
+
+header {* TypeIds *}
+
+theory TypeIds = Main:
+
+text {* \label{java_typeid_definitions}
+This theory contains the program specific names of abstract and concrete classes and 
+interfaces. It has to 
+be generated for each program we want to verify. 
+The following classes are an example taken from the program given in Sect. 
+\ref{example-program}.
+They are complemented by the classes that are known to exist in each Java program 
+implicitly,
+namely \texttt{Object}, \texttt{Exception}, \texttt{ClassCastException} and 
+\texttt{NullPointerException}.
+The example program does not contain any abstract classes, but since we cannot 
+formalize datatypes without
+constructors, we have to insert a dummy class which we call \texttt{Dummy}.
+
+The datatype CTypeId must contain a constructor called \texttt{Object} because subsequent
+proofs in the Subtype theory rely on it.
+*}
+
+datatype CTypeId = CounterImpl | UndoCounter 
+                 | Object | Exception | ClassCastException | NullPointerException
+  -- {* The last line contains the classes that exist in every program by default. *}
+datatype ITypeId = Counter
+datatype ATypeId = Dummy
+  -- {* we cannot have an empty type. *}
+
+text {* 
+Why do we need different datatypes for the different type identifiers?
+Because we want to be able to distinguish the different identifier kinds.
+This has a practical reason: If we formalize objects as "ObjectId $\times$ TypeId"
+and if we quantify over all objects, we get a lot of objects that do not
+exist, namely all objects that bear an interface type identifier or 
+abstract class identifier. This is not very helpful. Therefore, we separate
+the three identifier kinds from each other.
+*}
+
+
+
+
+end
