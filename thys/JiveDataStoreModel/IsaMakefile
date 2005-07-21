@@ -27,7 +27,7 @@ IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
 
-USEDIR = $(ISATOOL) usedir -v true -i true -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
+USEDIR = $(ISATOOL) usedir -v true -i true -g true -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
 # time limit (in sec)
 MAXTIME = 3600
@@ -38,7 +38,7 @@ MAXTIME = 3600
 $(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML document/root.tex \
-           document/Counter.java document/my_logic.sty document/root.bbl \
+           document/Counter.java document/my_logic.sty document/root.bib \
            document/TypeHierarchy.* \
            Isa_Counter/*.thy Isa_Counter_Store/*.thy Isabelle/*.thy \
            Isabelle_Store/*.thy
