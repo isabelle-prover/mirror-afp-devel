@@ -1,6 +1,8 @@
 structure Generated =
 struct
 
+fun wf_rec f x = f (wf_rec f) x;
+
 fun op_64 [] ys = ys
   | op_64 (x :: xs) ys = (x :: op_64 xs ys);
 
