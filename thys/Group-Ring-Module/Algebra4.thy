@@ -3728,7 +3728,8 @@ apply (simp add:Rxa_def)
  apply (thin_tac "\<exists>r\<in>carrier R. ya =  r \<cdot>\<^sub>R x")
  apply (thin_tac "\<exists>r\<in>carrier R. yb =  r \<cdot>\<^sub>R y")
 apply (rule ballI)+ apply (rule impI) apply (erule conjE) 
- apply simp
+apply simp
+apply (subgoal_tac "(r \<cdot>\<^sub>R s) \<cdot>\<^sub>R (x \<cdot>\<^sub>R y) \<in> mx")
  apply (simp add:ring_tOp_rel)
 apply (rule_tac x = "x \<cdot>\<^sub>R y" and r = "r \<cdot>\<^sub>R s" in ideal_ring_multiple [of "R" "mx"], assumption+)
  apply (simp add:ring_tOp_closed)
