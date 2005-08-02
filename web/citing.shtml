@@ -1,0 +1,68 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>The Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+  <!-- navigation -->
+  <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+<h1><font class="first">C</font>iting
+    <font class="first">E</font>ntries</h1>
+<p>&nbsp;</p>
+
+<table width="80%" class="descr">
+  <tbody>
+<tr><td> 
+
+<p>The following gives an example of the preferred way for citing
+entries in the AFP:</p>
+
+<div class="cite">
+M. Jaskelioff and S. Merz, <em>Proving the Correctness of Disk
+Paxos</em>. In: G. Klein, T. Nipkow, and L. Paulson (ed), The Archive
+of Formal Proofs, <a
+href="http://afp.sf.net/entries/DiskPaxos.shtml"><tt>http://afp.sf.net/entries/DiskPaxos.shtml</tt></a>,
+June 2005, Formal proof development.
+</div>
+
+<p>
+The bibtext entry for this would be:
+</p>
+
+<pre class="bibtext">
+@incollection{Jaskelioff-Merz-AFP05,
+  author =       {Mauro Jaskelioff and Stephan Merz},
+  title =        {Proving the Correctness of Disk Paxos},
+  booktitle =    {The Archive of Formal Proofs},
+  editor =       {Gerwin Klein and Tobias Nipkow and Lawrence Paulson},
+  publisher =    {\url{http://afp.sf.net/entries/DiskPaxos.shtml}},
+  month =        Jun,
+  year =         2005,
+  note =         {Formal proof development},
+}
+</pre>
+
+
+</td></tr>
+
+</tbody>
+</table>
+
+</td> </tr> </table>
+</body>
+</html>

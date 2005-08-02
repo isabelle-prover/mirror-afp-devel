@@ -198,3 +198,14 @@ div.date {
  	border-style: none none none none;
 	width: 100%;
 }
+
+div.cite { 
+  font-size: small;
+}
+
+pre.bibtex { 
+  white-space: pre;
+	border-width: thin thin thin thin;
+ 	border-style: solid;   
+}
+
