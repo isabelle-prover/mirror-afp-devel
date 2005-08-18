@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/LBVComplete.thy
-    ID:         $Id: LBVComplete.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: LBVComplete.thy,v 1.2 2005-08-18 09:50:14 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -31,7 +31,7 @@ lemma [code]:
   "is_target step \<tau>s pc' =
   list_ex (\<lambda>pc. pc' \<noteq> pc+1 \<and> pc' mem (map fst (step pc (\<tau>s!pc)))) [0..<size \<tau>s]"
 (*<*)
-  apply (simp add: list_ex_def is_target_def set_mem_eq)
+  apply (simp add: list_ex_def is_target_def mem_iff)
   apply force
   done
 (*>*)

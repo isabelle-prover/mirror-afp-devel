@@ -75,14 +75,14 @@ lemma dfs_tc_lem: "x \<notin> set ys \<longrightarrow>
   by (cases  "x \<in> nodes_of g", auto)
 
 recdef_tc dfs_tc: dfs
-  by (simp add: dfs_tc_lem set_mem_eq)
+  by (simp add: dfs_tc_lem mem_iff)
 
 lemmas dfs_induct = dfs.induct[OF dfs_tc]
 lemmas dfs_inductive[simp] = dfs_inductive[OF dfs_tc]
 
 subsection "Basic Properties"
 
-declare set_mem_eq[simp]
+declare mem_iff[simp]
 
 lemma visit_subset_dfs: "set ys \<subseteq> set (dfs (g, xs, ys))"
   by (induct g xs ys rule: dfs_induct, auto)

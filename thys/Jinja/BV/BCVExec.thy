@@ -237,13 +237,13 @@ done
 
 lemmas MLookup_intros[unfolded Method_def fun_of_def, OF exI, OF conjI, code ind ] = MLookup.intros
 
-lemmas [THEN meta_eq_to_obj_eq, simplified list_all_conv [symmetric], code] = wf_mdecl_def
+lemmas [THEN meta_eq_to_obj_eq, simplified list_all_iff [symmetric], code] = wf_mdecl_def
 
 
 lemma wf_syscls_code [code]:
 "wf_syscls P  =  (list_all (\<lambda> x. x \<in> (set (map fst P))) [Object, NullPointer, ClassCast, OutOfMemory])"
 (*<*)
-apply (simp add: wf_syscls_def list_all_conv sys_xcpts_def)
+apply (simp add: wf_syscls_def list_all_iff sys_xcpts_def)
 apply blast
 done
 (*>*)
@@ -286,7 +286,7 @@ lemma wf_cdecl_code:
      \<not> (P,D,M,Ts,T) \<in> MLookup2))"
 sorry
 
-lemmas wf_cdecl_code_s [THEN meta_eq_to_obj_eq, simplified list_all_conv [symmetric], code] = wf_cdecl_code
+lemmas wf_cdecl_code_s [THEN meta_eq_to_obj_eq, simplified list_all_iff [symmetric], code] = wf_cdecl_code
 
 thm wf_cdecl_code_s
 (*
@@ -464,7 +464,7 @@ lemma [code]:
   check_types P mxs (1+size Ts+mxl\<^isub>0) (map OK \<tau>s) \<and>
   wt_start P C Ts mxl\<^isub>0 \<tau>s \<and>
   (list_all (\<lambda> pc. P,T\<^isub>r,mxs,size is,xt \<turnstile> is!pc,pc :: \<tau>s) (upt 0 (size is))))"
-by (simp add: wt_method_def list_all_conv)
+by (simp add: wt_method_def list_all_iff)
 
 lemma [code]:
 "wf_jvm_prog_phi \<Phi> (P::jvm_prog) = wf_prog ((\<lambda>(P::jvm_prog) C (M,Ts,T\<^isub>r,(mxs,mxl\<^isub>0,is,xt)). 
