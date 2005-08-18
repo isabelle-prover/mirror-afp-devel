@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/LBVComplete.thy
-    ID:         $Id: LBVComplete.thy,v 1.2 2005-08-18 09:50:14 makarius Exp $
+    ID:         $Id: LBVComplete.thy,v 1.3 2005-08-18 11:05:26 nipkow Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -17,21 +17,11 @@ constdefs
   "make_cert step \<tau>s B \<equiv> 
      map (\<lambda>pc. if is_target step \<tau>s pc then \<tau>s!pc else B) [0..<size \<tau>s] @ [B]"
 
-text {*
-  For the code generator:
-*}
-constdefs
-  list_ex :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool"
-  "list_ex P xs \<equiv> \<exists>x \<in> set xs. P x"
-
-lemma [code]: "list_ex P [] = False" by (simp add: list_ex_def)
-lemma [code]: "list_ex P (x#xs) = (P x \<or> list_ex P xs)" by (simp add: list_ex_def)
-
 lemma [code]:
   "is_target step \<tau>s pc' =
   list_ex (\<lambda>pc. pc' \<noteq> pc+1 \<and> pc' mem (map fst (step pc (\<tau>s!pc)))) [0..<size \<tau>s]"
 (*<*)
-  apply (simp add: list_ex_def is_target_def mem_iff)
+  apply (simp add: list_ex_iff is_target_def mem_iff)
   apply force
   done
 (*>*)

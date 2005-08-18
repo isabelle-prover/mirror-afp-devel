@@ -1,12 +1,14 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: BVExec.thy,v 1.1 2005-05-31 23:21:03 lsf37 Exp $
+    ID:         $Id: BVExec.thy,v 1.2 2005-08-18 11:05:54 nipkow Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
 
 header {* \isaheader{Kildall for the JVM}\label{sec:JVM} *}
 
-theory BVExec = "../DFA/Abstract_BV" + TF_JVM:
+theory BVExec
+imports "../DFA/Abstract_BV" TF_JVM
+begin
 
 constdefs
   kiljvm :: "jvm_prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> 
