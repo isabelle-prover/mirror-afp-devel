@@ -28,7 +28,7 @@ lemma list_decomp[rule_format]: "v \<in> set p --> (\<exists> xs ys. p = xs@(v#y
   apply (rule_tac x="a#xs" in exI, auto)
   done
 
-(*lemmas list_decomp' = list_decomp[simplified set_mem_eq[symmetric]]*)
+(*lemmas list_decomp' = list_decomp[simplified mem_iff[symmetric]]*)
 
 lemma count_append: "count a (xs@ys) = count a xs + count a ys"
   apply(induct xs, auto) done
@@ -185,7 +185,7 @@ lemma remdups_set: "! y. (remdups x <~~> remdups y) --> (set x = set y)"
      apply simp
     apply(rule length_remdups_leq)
    apply(rule perm_length) apply simp apply(rule perm_sym) apply simp
-  apply(frule_tac x = a and xs = "a#list" in perm_mem) apply simp apply(simp add: set_mem_eq)
+  apply(frule_tac x = a and xs = "a#list" in perm_mem) apply simp apply(simp add: mem_iff)
   done
 
 lemma insert_ident: "a ~: X ==> a ~: Y ==> (insert a X = insert a Y) = (X = Y)"
