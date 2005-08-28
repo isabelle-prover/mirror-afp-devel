@@ -723,7 +723,7 @@ lemma soundness: "finite (deriv (ns_of_s s)) ==> Svalid s"
 
 subsection "Contains, Considers"
 
-constdefs contains :: "(nat => (nat*nseq)) => nat => nform => bool"
+constdefs "contains" :: "(nat => (nat*nseq)) => nat => nform => bool"
   "contains f n nf == nf \<in> set (snd (f n))"
 
 constdefs considers :: "(nat => (nat*nseq)) => nat => nform => bool"

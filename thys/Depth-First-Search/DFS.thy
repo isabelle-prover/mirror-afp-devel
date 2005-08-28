@@ -182,7 +182,9 @@ subsection "Executable Code"
 types_code 
   node ("int") 
 
-generate_code ("DFS.sml")
-dfs = "dfs"
+code_module DFS
+file "DFS.sml"
+contains
+  dfs = "dfs"
 
 end

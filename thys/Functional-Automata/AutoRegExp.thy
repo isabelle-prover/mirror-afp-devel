@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoRegExp.thy,v 1.6 2005-03-11 09:53:26 lp15 Exp $
+(*  ID:         $Id: AutoRegExp.thy,v 1.7 2005-08-28 19:42:46 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -29,14 +29,14 @@ consts_code
   "UNION"  ("(fn A => fn f => List.concat(map f A))")
   "Bex"    ("(fn A => fn f => exists f A)")
 
-generate_code
-  test = "let r0 = Atom(0::nat);
-              r1 = Atom(1::nat);
-              re = Conc (Star(Or(Conc r1 r1)r0))
-                        (Star(Or(Conc r0 r0)r1));
-              N = rexp2na re;
-              D = na2da N
-          in (NA.accepts N [0,1,1,0,0,1], DA.accepts D [0,1,1,0,0,1])"
-ML test
+code_module Generated
+contains
+  "let r0 = Atom(0::nat);
+       r1 = Atom(1::nat);
+       re = Conc (Star(Or(Conc r1 r1)r0))
+              (Star(Or(Conc r0 r0)r1));
+       N = rexp2na re;
+       D = na2da N
+  in (NA.accepts N [0,1,1,0,0,1], DA.accepts D [0,1,1,0,0,1])"
 
 end

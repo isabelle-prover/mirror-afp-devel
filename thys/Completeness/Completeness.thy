@@ -86,7 +86,7 @@ subsection "path: considers, contains, costBarrier"
 
 consts
     considers   :: "[nat => pseq,nat * formula,nat] => bool"
-    contains    :: "[nat => pseq,nat * formula,nat] => bool"
+    "contains"    :: "[nat => pseq,nat * formula,nat] => bool"
 
     costBarrier :: "[nat * formula,pseq] => nat"
   

@@ -1,4 +1,4 @@
-structure Generated =
+structure DFS =
 struct
 
 fun wf_rec f x = f (wf_rec f) x;
