@@ -24,7 +24,7 @@
    section 6.  operation of ideals
  **)
 
-theory Algebra4 = Algebra3 + Zorn:
+theory Algebra4 imports Algebra3 Zorn begin
 
 section "20. continued "
 

@@ -5,7 +5,7 @@
 *)
 
 header "Data refinement of representation of a file"
-theory FileRefinement = Main + CArrays + ResizableArrays:
+theory FileRefinement imports Main CArrays ResizableArrays begin
 
 text {*
   We describe a file at

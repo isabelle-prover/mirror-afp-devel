@@ -18,7 +18,7 @@
    section 6.    preliminary lemmas for Zassenhaus
 **)
 
-theory Algebra2 = Algebra1:
+theory Algebra2 imports Algebra1 begin
 
 section "4. ordered_set2. Lemmas to prove Zorn's lemma "
  

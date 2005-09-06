@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/J/State.thy
-    ID:         $Id: Objects.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Objects.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Objects and the Heap} *}
 
-theory Objects = TypeRel + Value:
+theory Objects imports TypeRel Value begin
 
 subsection{* Objects *}
 

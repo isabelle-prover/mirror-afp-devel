@@ -1,6 +1,6 @@
 header "Completeness"
 
-theory Completeness = Tree + Sequents + Main:
+theory Completeness imports Tree Sequents Main begin
 
 
 subsection "pseq: type represents a processed sequent"

@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/J/SystemClasses.thy
-    ID:         $Id: SystemClasses.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: SystemClasses.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{System Classes} *}
 
-theory SystemClasses = Decl + Exceptions:
+theory SystemClasses imports Decl Exceptions begin
 
 text {*
   This theory provides definitions for the @{text Object} class,

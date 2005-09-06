@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Kildall.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
@@ -8,7 +8,7 @@ Kildall's algorithm
 
 header {* \isaheader{Kildall's Algorithm}\label{sec:Kildall} *}
 
-theory Kildall = SemilatAlg:
+theory Kildall imports SemilatAlg begin
 
 
 consts

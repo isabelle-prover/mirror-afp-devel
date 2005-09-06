@@ -1,12 +1,12 @@
 (*  Title:      Jinja/J/WellForm.thy
-    ID:         $Id: WellForm.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: WellForm.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Generic Well-formedness of programs} *}
 
-theory WellForm = TypeRel + SystemClasses:
+theory WellForm imports TypeRel SystemClasses begin
 
 text {*\noindent This theory defines global well-formedness conditions
 for programs but does not look inside method bodies.  Hence it works

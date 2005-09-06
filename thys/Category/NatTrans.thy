@@ -1,10 +1,10 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: NatTrans.thy,v 1.3 2005-04-30 14:18:27 lsf37 Exp $
+    ID:          $Id: NatTrans.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
 (* define natural transformation, prove that the identity arrow function is one *)
-theory NatTrans = Functors:
+theory NatTrans imports Functors begin
 section{* Natural Transformations *}
 
 (* guess the third axiom is implied by the fifth *)

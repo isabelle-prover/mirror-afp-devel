@@ -1,5 +1,5 @@
 header "Resizable arrays"
-theory ResizableArrays = Main:
+theory ResizableArrays imports Main begin
 
 text {* These arrays resize themselves, padding with fillValue. *}
 

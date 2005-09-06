@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Semilat.thy
-    ID:         $Id: Semilat.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Semilat.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -11,7 +11,7 @@ header {*
   \isaheader{Semilattices} 
 *}
 
-theory Semilat = While_Combinator:
+theory Semilat imports While_Combinator begin
 
 types 
   'a ord    = "'a \<Rightarrow> 'a \<Rightarrow> bool"

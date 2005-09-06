@@ -1,5 +1,5 @@
 header "Arrays without bounds"
-theory CArrays = Main:
+theory CArrays imports Main begin
 
 text {* For these arrays there is no
         built-in protection against reading or writing out-of-bounds. *}

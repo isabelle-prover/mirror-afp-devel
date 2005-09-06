@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Value.thy,v 1.2 2005-07-20 05:09:17 lsf37 Exp $
+    ID:          $Id: Value.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
     Author:      Norbert Schirmer <schirmer@informatik.tu-muenchen.de>  and  
                  Nicole Rauch <rauch@informatik.uni-kl.de>, 2003
     Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
@@ -8,7 +8,7 @@
  
 header {* Value *}
 
-theory Value = Subtype:
+theory Value imports Subtype begin
 
 text {* This theory contains our model of the values in the store. The store is untyped, therefore all
   types that exist in Java are wrapped into one type @{text Value}.

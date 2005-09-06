@@ -1,12 +1,12 @@
 (*  Title:      Jinja/Compiler/Index.thy
-    ID:         $Id: Index.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Index.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
 
 header {* \isaheader{Indexing variables in variable lists} *}
 
-theory Index =  Main:
+theory Index imports  Main begin
 
 text{* In order to support local variables and arbitrarily nested
 blocks, the local variables are arranged as an indexed list. The

@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExecInstr.thy
-    ID:         $Id: JVMExecInstr.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: JVMExecInstr.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{JVM Instruction Semantics} *}
 
-theory JVMExecInstr = JVMInstructions + JVMState + Exceptions:
+theory JVMExecInstr imports JVMInstructions JVMState Exceptions begin
 
 consts
   exec_instr :: "[instr, jvm_prog, heap, val list, val list,

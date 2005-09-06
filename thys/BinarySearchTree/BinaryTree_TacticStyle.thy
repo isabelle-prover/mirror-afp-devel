@@ -1,12 +1,12 @@
 (*  Title:       Binary Search Trees, Tactic-Style
-    ID:          $Id: BinaryTree_TacticStyle.thy,v 1.3 2005-08-28 19:42:46 makarius Exp $
+    ID:          $Id: BinaryTree_TacticStyle.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson@cl.cam.ac.uk>
     License:     LGPL
 *)
 
 header {* Tactic-Style Reasoning for Binary Tree Operations *}
-theory BinaryTree_TacticStyle = Main:
+theory BinaryTree_TacticStyle imports Main begin
 
 text {* This example theory illustrates automated proofs of correctness
    for binary tree operations using tactic-style reasoning.

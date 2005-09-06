@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/BV/SemilatAlg.thy
-    ID:         $Id: SemilatAlg.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: SemilatAlg.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{More on Semilattices} *}
 
-theory SemilatAlg = Typing_Framework:
+theory SemilatAlg imports Typing_Framework begin
 
 consts 
   lesubstep_type :: "(nat \<times> 's) set \<Rightarrow> 's ord \<Rightarrow> (nat \<times> 's) set \<Rightarrow> bool"

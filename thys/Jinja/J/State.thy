@@ -1,12 +1,12 @@
 (*  Title:      Jinja/J/State.thy
-    ID:         $Id: State.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: State.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Program State} *}
 
-theory State = "../Common/Exceptions":
+theory State imports "../Common/Exceptions" begin
 
 types
   locals = "vname \<rightharpoonup> val"      -- "local vars, incl. params and ``this''"

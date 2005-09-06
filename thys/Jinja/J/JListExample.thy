@@ -1,11 +1,11 @@
 (*  Title:      Jinja/J/JListExample.thy
-    ID:         $Id: JListExample.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: JListExample.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Stefan Berghofer
 *)
 
 header {* \isaheader{Example for generating executable code from Jinja semantics} *}
 
-theory JListExample = Eval + SystemClasses:
+theory JListExample imports Eval SystemClasses begin
 
 ML {* Syntax.ambiguity_level := 100000 *}
 

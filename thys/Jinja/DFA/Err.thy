@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Err.thy
-    ID:         $Id: Err.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Err.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -8,7 +8,7 @@ The error type
 
 header {* \isaheader{The Error Type} *}
 
-theory Err = Semilat:
+theory Err imports Semilat begin
 
 datatype 'a err = Err | OK 'a
 

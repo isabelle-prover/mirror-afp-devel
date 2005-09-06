@@ -1,12 +1,12 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree.thy,v 1.6 2005-08-28 19:42:46 makarius Exp $
+    ID:          $Id: BinaryTree.thy,v 1.7 2005-09-06 15:06:08 makarius Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson@cl.cam.ac.uk>
     License:     LGPL
 *)
 
 header {* Isar-style Reasoning for Binary Tree Operations *}
-theory BinaryTree = Main:
+theory BinaryTree imports Main begin
 
 text {* We prove correctness of operations on 
  binary search tree implementing a set.

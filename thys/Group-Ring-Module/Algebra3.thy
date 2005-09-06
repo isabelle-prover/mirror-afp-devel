@@ -23,7 +23,7 @@
    section 20. abelian groups
   **)
 
-theory Algebra3 = Algebra2:
+theory Algebra3 imports Algebra2 begin
 
 section "6. (continued)"
 

@@ -1,6 +1,6 @@
 header "Ramsey's Theorem"
 
-theory Ramsey = Main:
+theory Ramsey imports Main begin
 
 text {* The following is taken from Boolos and Jeffrey "Computability
 and Logic", 3rd edition, Ch. 26 on Ramsey's theorem. This is the

@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: TypeIds.thy,v 1.2 2005-07-20 05:09:05 lsf37 Exp $
+    ID:          $Id: TypeIds.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
     Author:      Nicole Rauch <rauch@informatik.uni-kl.de>, 2005
     Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
     License:     LGPL
@@ -7,7 +7,7 @@
 
 header {* TypeIds *}
 
-theory TypeIds = Main:
+theory TypeIds imports Main begin
 
 text {* \label{java_typeid_definitions}
 This theory contains the program specific names of abstract and concrete classes and 

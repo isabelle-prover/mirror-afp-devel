@@ -1,5 +1,5 @@
 (*  Title:      Sigma_Algebra.thy
-    ID:         $Id: Sigma_Algebra.thy,v 1.2 2004-11-23 10:20:39 nipkow Exp $
+    ID:         $Id: Sigma_Algebra.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
     Author:     Stefan Richter, Markus Wenzel, TU Muenchen
     License:    LGPL
 
@@ -9,7 +9,7 @@ and additions by Stefan Richter 2002
 
 header {* Sigma algebras *}
 
-theory Sigma_Algebra = Main:
+theory Sigma_Algebra imports Main begin
 
 text {* The $\isacommand {theory}$ command commences a formal document and enumerates the
   theories it depends on. With the @{text Main} theory, a standard

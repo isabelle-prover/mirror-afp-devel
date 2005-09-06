@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.3 2004-11-25 09:34:22 nipkow Exp $
+    ID:         $Id: Topology.thy,v 1.4 2005-09-06 15:06:10 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -10,7 +10,7 @@ A bit of general topology.
 header {*\isaheader{Topology}*}
 
 
-theory Topology = FuncSet + Zorn:
+theory Topology imports FuncSet Zorn begin
 
 text{*
   This theory gives a formal account of basic notions of general

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/J1.thy
-    ID:         $Id: J1.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: J1.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -7,7 +7,7 @@
 header {* \chapter{Compilation}\label{cha:comp}
           \isaheader{An Intermediate Language} *}
 
-theory J1 = BigStep:
+theory J1 imports BigStep begin
 
 types
   expr\<^isub>1 = "nat exp"

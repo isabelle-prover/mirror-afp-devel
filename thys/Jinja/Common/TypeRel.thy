@@ -1,12 +1,12 @@
 (*  Title:      Jinja/Common/TypeRel.thy
-    ID:         $Id: TypeRel.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: TypeRel.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Relations between Jinja Types} *}
 
-theory TypeRel = Decl:
+theory TypeRel imports Decl begin
 
 subsection{* The subclass relations *}
 

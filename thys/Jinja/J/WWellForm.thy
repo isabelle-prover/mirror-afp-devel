@@ -1,12 +1,12 @@
 (*  Title:      Jinja/J/WWellForm.thy
-    ID:         $Id: WWellForm.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: WWellForm.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Weak well-formedness of Jinja programs} *}
 
-theory WWellForm = "../Common/WellForm" + Expr:
+theory WWellForm imports "../Common/WellForm" Expr begin
 
 constdefs
   wwf_J_mdecl :: "J_prog \<Rightarrow> cname \<Rightarrow> J_mb mdecl \<Rightarrow> bool"

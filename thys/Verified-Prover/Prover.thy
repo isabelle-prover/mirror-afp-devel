@@ -1,4 +1,4 @@
-theory Prover = Main:
+theory Prover imports Main begin
 
 subsection "Formulas"
 

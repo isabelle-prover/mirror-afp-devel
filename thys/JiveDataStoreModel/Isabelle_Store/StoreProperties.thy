@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: StoreProperties.thy,v 1.2 2005-07-20 05:09:17 lsf37 Exp $
+    ID:          $Id: StoreProperties.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
     Author:      Norbert Schirmer <schirmer@informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
     License:     LGPL
@@ -7,7 +7,7 @@
 
 header {* Store Properties *}
 
-theory StoreProperties = Store:
+theory StoreProperties imports Store begin
 
 text {* This theory formalizes advanced concepts and properties of stores. *}
 

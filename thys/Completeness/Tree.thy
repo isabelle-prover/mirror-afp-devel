@@ -1,4 +1,4 @@
-theory Tree = Main:
+theory Tree imports Main begin
 
 
 subsection "Tree"

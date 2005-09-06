@@ -13,7 +13,7 @@
      subsection 4-2. free generators 
    **)
 
-theory Algebra6 = Algebra5:
+theory Algebra6 imports Algebra5 begin
 
 
 constdefs

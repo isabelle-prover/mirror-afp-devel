@@ -18,7 +18,7 @@
     section 2.   injective hom, surjective hom, bijective hom and iverse hom
    **)
 
-theory Algebra5 = Algebra4:
+theory Algebra5 imports Algebra4 begin
 
 constdefs
  coprime_ideals::"[('a, 'm) RingType_scheme, 'a set, 'a set] \<Rightarrow> bool"

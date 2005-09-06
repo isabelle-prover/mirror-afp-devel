@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: JML.thy,v 1.2 2005-07-20 05:09:06 lsf37 Exp $
+    ID:          $Id: JML.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
     Author:      Norbert Schirmer <schirmer@informatik.tu-muenchen.de>  and  
                  Nicole Rauch <rauch@informatik.uni-kl.de>, 2005
     Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
@@ -8,7 +8,7 @@
 
 header {* The Formalization of JML Operators *}
 
-theory JML = StoreProperties :
+theory JML imports StoreProperties  begin
 
 text {* JML operators that are to be used in Hoare formulae can be formalized here.
 *}

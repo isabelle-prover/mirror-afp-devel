@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/Basis.thy
-    ID:         $Id: Aux.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Aux.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 TU Muenchen
 *)
@@ -9,7 +9,7 @@ header {*
   \isaheader{Auxiliary Definitions}
 *}
 
-theory Aux = Main:
+theory Aux imports Main begin
 (* FIXME move and possibly turn into a general simproc *)
 lemma nat_add_max_le[simp]:
   "((n::nat) + max i j \<le> m) = (n + i \<le> m \<and> n + j \<le> m)"

@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/BV/LBVSpec.thy
-    ID:         $Id: LBVSpec.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: LBVSpec.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{The Lightweight Bytecode Verifier} *}
 
-theory LBVSpec = SemilatAlg + Opt:
+theory LBVSpec imports SemilatAlg Opt begin
 
 types
   's certificate = "'s list"   

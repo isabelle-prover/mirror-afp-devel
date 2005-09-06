@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: JVM_SemiType.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: JVM_SemiType.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 TUM
 
@@ -7,7 +7,7 @@
 
 header {* \isaheader{The JVM Type System as Semilattice} *}
 
-theory JVM_SemiType = SemiType:
+theory JVM_SemiType imports SemiType begin
 
 types ty\<^isub>l = "ty err list"
 types ty\<^isub>s = "ty list"

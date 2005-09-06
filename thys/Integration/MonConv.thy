@@ -1,6 +1,6 @@
 header {*Monotone Convergence*}
 
-theory MonConv = Lim:
+theory MonConv imports Lim begin
 
 text {* A sensible requirement for an integral operator is that it be
   ``well-behaved'' with respect to limit functions. To become just a

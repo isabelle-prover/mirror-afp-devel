@@ -1,4 +1,4 @@
-theory BCVExec = BVExec + BVNoTypeError + Exceptions:
+theory BCVExec imports BVExec BVNoTypeError Exceptions begin
 
 section {* Preliminaries *}
 

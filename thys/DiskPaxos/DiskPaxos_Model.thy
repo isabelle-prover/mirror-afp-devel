@@ -1,12 +1,12 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Model.thy,v 1.3 2005-06-22 00:25:40 lsf37 Exp $
+    ID:          $Id: DiskPaxos_Model.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro@fceia.unr.edu.ar>
 *)
 
 header "Disk Paxos Algorithm Specification"
 
-theory DiskPaxos_Model = Main:
+theory DiskPaxos_Model imports Main begin
 
 text{* This is the specification of the Disk Synod algorithm. *}
 

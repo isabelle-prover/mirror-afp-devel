@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: LBVJVM.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: LBVJVM.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
 
 header {* \isaheader{LBV for the JVM}\label{sec:JVM} *}
 
-theory LBVJVM = Abstract_BV + TF_JVM:
+theory LBVJVM imports Abstract_BV TF_JVM begin
 
 types prog_cert = "cname \<Rightarrow> mname \<Rightarrow> ty\<^isub>i' err list"
 

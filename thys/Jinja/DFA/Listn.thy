@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Listn.thy
-    ID:         $Id: Listn.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Listn.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -8,7 +8,7 @@ Lists of a fixed length
 
 header {* \isaheader{Fixed Length Lists} *}
 
-theory Listn = Err:
+theory Listn imports Err begin
 
 constdefs
   list :: "nat \<Rightarrow> 'a set \<Rightarrow> 'a list set"

@@ -1,12 +1,12 @@
 (*
-    ID:         $Id: LBVCorrect.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: LBVCorrect.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Correctness of the LBV} *}
 
-theory LBVCorrect = LBVSpec + Typing_Framework:
+theory LBVCorrect imports LBVSpec Typing_Framework begin
 
 locale (open) lbvs = lbv +
   fixes s\<^isub>0  :: 'a

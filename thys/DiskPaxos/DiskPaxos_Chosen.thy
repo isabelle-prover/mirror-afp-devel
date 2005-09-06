@@ -1,10 +1,10 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Chosen.thy,v 1.2 2005-06-21 22:51:28 lsf37 Exp $
+    ID:          $Id: DiskPaxos_Chosen.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro@fceia.unr.edu.ar>
 *)
 
-theory DiskPaxos_Chosen = DiskPaxos_Inv5:
+theory DiskPaxos_Chosen imports DiskPaxos_Inv5 begin
 
 subsection {* Lemma I2f *}
 

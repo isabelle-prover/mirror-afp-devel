@@ -1,12 +1,12 @@
 (*  Title:      Jinja/J/Examples.thy
-    ID:         $Id: Examples.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Examples.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Christoph Petzinger
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Example Expressions - for use in execute_ theories} *}
 
-theory Examples = Expr:
+theory Examples imports Expr begin
 
 types_code
   set ("_ list")

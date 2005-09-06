@@ -1,9 +1,9 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: SetCat.thy,v 1.3 2005-04-30 14:18:27 lsf37 Exp $
+    ID:          $Id: SetCat.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
-theory SetCat = Cat:
+theory SetCat imports Cat begin
 section {* {{\sf Set}} is a Category *}
 subsection{* Definitions *}
 record 'c set_arrow =

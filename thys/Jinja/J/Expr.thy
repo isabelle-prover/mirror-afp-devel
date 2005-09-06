@@ -1,12 +1,12 @@
 (*  Title:      Jinja/J/Expr.thy
-    ID:         $Id: Expr.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Expr.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Expressions} *}
 
-theory Expr = "../Common/Exceptions":
+theory Expr imports "../Common/Exceptions" begin
 
 datatype bop = Eq | Add     -- "names of binary operations"
 

@@ -1,12 +1,12 @@
 (*  Title:      Jinja/J/Example.thy
-    ID:         $Id: Example.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Example.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Example Jinja Program} *}
 
-theory Example = SystemClasses + JWellForm:
+theory Example imports SystemClasses JWellForm begin
 
 text {* 
 The following example Jinja program includes:

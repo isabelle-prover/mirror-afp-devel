@@ -1,6 +1,6 @@
 header "Depth-First Search"
 
-theory DFS = Main:
+theory DFS imports Main begin
 
 subsection "Definition of Graphs"
 

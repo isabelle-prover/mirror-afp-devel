@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Typing_Framework_err.thy
-    ID:         $Id: Typing_Framework_err.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Typing_Framework_err.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 TUM
 
@@ -7,7 +7,7 @@
 
 header {* \isaheader{Lifting the Typing Framework to err, app, and eff} *}
 
-theory Typing_Framework_err = Typing_Framework + SemilatAlg:
+theory Typing_Framework_err imports Typing_Framework SemilatAlg begin
 
 constdefs
   wt_err_step :: "'s ord \<Rightarrow> 's err step_type \<Rightarrow> 's err list \<Rightarrow> bool"

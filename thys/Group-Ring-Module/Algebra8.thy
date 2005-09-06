@@ -16,7 +16,7 @@
       subsection 5-1. existence of the tensor product
    **)
 
-theory Algebra8 = Algebra7:
+theory Algebra8 imports Algebra7 begin
 
 section "10. free generated abelian group, direct sum and direct product 2"
 

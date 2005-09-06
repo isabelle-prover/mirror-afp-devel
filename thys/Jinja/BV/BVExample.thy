@@ -1,11 +1,11 @@
 (*  Title:      HOL/MicroJava/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.1 2005-05-31 23:21:03 lsf37 Exp $
+    ID:         $Id: BVExample.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
 *)
 
 header {* \isaheader{Example Welltypings}\label{sec:BVExample} *}
 
-theory BVExample = JVMListExample + BVSpecTypeSafe + BVExec:
+theory BVExample imports JVMListExample BVSpecTypeSafe BVExec begin
 
 text {*
   This theory shows type correctness of the example program in section 

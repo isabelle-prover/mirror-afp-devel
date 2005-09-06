@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExceptions.thy
-    ID:         $Id: JVMExceptions.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: JVMExceptions.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein, Martin Strecker
     Copyright   2001 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Exception handling in the JVM} *}
 
-theory JVMExceptions = JVMInstructions + Exceptions:
+theory JVMExceptions imports JVMInstructions Exceptions begin
 
 constdefs
   matches_ex_entry :: "'m prog \<Rightarrow> cname \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool"

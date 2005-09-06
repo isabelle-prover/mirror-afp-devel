@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Functors.thy,v 1.3 2005-04-30 14:18:27 lsf37 Exp $
+    ID:          $Id: Functors.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -7,7 +7,7 @@
   Functors: Define functors and prove a trivial example.
 *)
 
-theory Functors = Cat:
+theory Functors imports Cat begin
 section{* Functors *}
 subsection{* Definitions *}
 

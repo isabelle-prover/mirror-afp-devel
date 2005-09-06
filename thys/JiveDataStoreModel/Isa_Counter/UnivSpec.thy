@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: UnivSpec.thy,v 1.2 2005-07-20 05:09:05 lsf37 Exp $
+    ID:          $Id: UnivSpec.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
     Author:      Nicole Rauch <rauch@informatik.uni-kl.de>, 2005
     Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
     License:     LGPL
@@ -7,7 +7,7 @@
 
 header {* The Universal Specification *}
 
-theory UnivSpec = JML :
+theory UnivSpec imports JML  begin
 
 text {* This theory contains the Isabelle formalization of the
 program-dependent specification. This theory has to be provided by the user.

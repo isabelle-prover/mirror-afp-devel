@@ -1,12 +1,12 @@
 (*  Title:       An example submission to the Archive of Formal Proof
-    ID:          $Id: Submission.thy,v 1.3 2004-05-25 14:18:34 lsf37 Exp $
+    ID:          $Id: Submission.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
     Author:      Gerwin Klein <kleing@cse.unsw.edu.au>, 2004
     Maintainer:  Gerwin Klein <kleing@cse.unsw.edu.au>
 *)
 
 header "An Example Submission"
 
-theory Submission = Main:
+theory Submission imports Main begin
 
 text {*
   This is an example submission to the Archive of Formal Proof.

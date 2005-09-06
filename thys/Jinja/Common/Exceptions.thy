@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/J/Exceptions.thy
-    ID:         $Id: Exceptions.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Exceptions.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein, Martin Strecker
     Copyright   2002 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Exceptions} *}
 
-theory Exceptions = Objects:
+theory Exceptions imports Objects begin
 
 constdefs
   NullPointer :: cname

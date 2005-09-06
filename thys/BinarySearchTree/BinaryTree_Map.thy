@@ -1,12 +1,12 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree_Map.thy,v 1.2 2004-04-19 22:18:42 lsf37 Exp $
+    ID:          $Id: BinaryTree_Map.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson@cl.cam.ac.uk>
     License:     LGPL
 *)
 
 header {* Mostly Isar-style Reasoning for Binary Tree Operations *}
-theory BinaryTree_Map = BinaryTree:
+theory BinaryTree_Map imports BinaryTree begin
 
 text {* We prove correctness of map operations
  implemented using binary search trees from BinaryTree.

@@ -15,7 +15,7 @@
     section 9. Tensor products   
    **)
 
-theory Algebra7 = Algebra6:
+theory Algebra7 imports Algebra6 begin
 
 
 lemma unique_expression7_2:"\<lbrakk>ring R; R module M; free_generator R M H; f\<in>Nset n \<rightarrow> H; inj_on f (Nset n); s \<in> Nset n \<rightarrow> carrier R; t \<in> Nset n\<rightarrow> carrier R; linear_combination R M n s f = linear_combination R M n t f\<rbrakk> \<Longrightarrow> (\<forall>l\<in>Nset n. s l = t l)" 

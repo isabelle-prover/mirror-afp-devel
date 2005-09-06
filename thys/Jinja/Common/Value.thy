@@ -1,12 +1,12 @@
 (*  Title:      Jinja/Common/Value.thy
-    ID:         $Id: Value.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Value.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Jinja Values} *}
 
-theory Value = TypeRel:
+theory Value imports TypeRel begin
 
 types addr = nat
 

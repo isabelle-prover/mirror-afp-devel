@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/BV/EffMono.thy
-    ID:         $Id: EffectMono.thy,v 1.2 2005-07-02 10:05:24 lsf37 Exp $
+    ID:         $Id: EffectMono.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Monotonicity of eff and app} *}
 
-theory EffectMono = Effect:
+theory EffectMono imports Effect begin
 
 declare not_Err_eq [iff]
 

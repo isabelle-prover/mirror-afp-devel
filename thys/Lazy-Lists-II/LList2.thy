@@ -1,5 +1,5 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.2 2004-05-25 14:18:34 lsf37 Exp $
+    ID:         $Id: LList2.thy,v 1.3 2005-09-06 15:06:10 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -14,7 +14,7 @@ Safety and liveness.
 
 header{*\isaheader{LList2}*}
 
-theory LList2 = LList:
+theory LList2 imports LList begin
 
 section{*Preliminaries*}
 

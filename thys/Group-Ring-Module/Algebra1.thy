@@ -17,7 +17,7 @@
    section 2.   Pre, (predecessors)
    section 3.   transfinite induction  **)
   
-theory Algebra1 = Main + FuncSet:
+theory Algebra1 imports Main FuncSet begin
 
 chapter "0. Preliminaries"
 

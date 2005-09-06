@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Product.thy
-    ID:         $Id: Product.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Product.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -8,7 +8,7 @@ Products as semilattices
 
 header {* \isaheader{Products as Semilattices} *}
 
-theory Product = Err:
+theory Product imports Err begin
 
 constdefs
   le :: "'a ord \<Rightarrow> 'b ord \<Rightarrow> ('a \<times> 'b) ord"

@@ -1,10 +1,10 @@
 (*  Title:       Formalization of Schneider's generalized clock synchronization protocol.
-    ID:          $Id: GenClock.thy,v 1.3 2005-06-24 10:56:00 lsf37 Exp $
+    ID:          $Id: GenClock.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
     Author:      Alwen Tiu, LORIA, June 11, 2005
     Maintainer:  Alwen Tiu <Alwen.Tiu@loria.fr>
 *)
 
-theory GenClock = Complex_Main:
+theory GenClock imports Complex_Main begin
 
 subsection {* Preliminary lemmas *}
 

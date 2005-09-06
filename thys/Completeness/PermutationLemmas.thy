@@ -1,6 +1,6 @@
 header "Permutation Lemmas"
 
-theory PermutationLemmas = Permutation + Multiset:
+theory PermutationLemmas imports Permutation Multiset begin
 
 
   -- "following function is very close to that in multisets- now we can make the connection that x <~~> y iff the multiset of x is the same as that of y"

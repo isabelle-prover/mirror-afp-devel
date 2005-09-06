@@ -1,6 +1,6 @@
 header "Formula"
 
-theory Formula = Base:
+theory Formula imports Base begin
 
 
 subsection "Variables"

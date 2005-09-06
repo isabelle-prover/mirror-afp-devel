@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Opt.thy
-    ID:         $Id: Opt.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Opt.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -8,7 +8,7 @@ More about options
 
 header {* \isaheader{More about Options} *}
 
-theory Opt = Err:
+theory Opt imports Err begin
 
 constdefs
   le :: "'a ord \<Rightarrow> 'a option ord"

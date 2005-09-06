@@ -1,12 +1,12 @@
 (*  Title:      Jinja/J/execute_Bigstep.thy
-    ID:         $Id: execute_Bigstep.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: execute_Bigstep.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Code Generation For BigStep} *}
 
-theory execute_BigStep = BigStep + Examples:
+theory execute_BigStep imports BigStep Examples begin
 
 consts map_val :: "(expr list \<times> val list) set"
 

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMInstructions.thy
-    ID:         $Id: JVMInstructions.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: JVMInstructions.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -7,7 +7,7 @@
 header {* \isaheader{Instructions of the JVM} *}
 
 
-theory JVMInstructions = JVMState:
+theory JVMInstructions imports JVMState begin
 
 
 datatype 

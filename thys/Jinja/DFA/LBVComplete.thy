@@ -1,12 +1,12 @@
 (*  Title:      HOL/MicroJava/BV/LBVComplete.thy
-    ID:         $Id: LBVComplete.thy,v 1.3 2005-08-18 11:05:26 nipkow Exp $
+    ID:         $Id: LBVComplete.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Completeness of the LBV} *}
 
-theory LBVComplete = LBVSpec + Typing_Framework:
+theory LBVComplete imports LBVSpec Typing_Framework begin
 
 constdefs
   is_target :: "['s step_type, 's list, nat] \<Rightarrow> bool" 
