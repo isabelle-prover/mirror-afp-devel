@@ -51,6 +51,7 @@ submission.
 <!--#set var="name" value="Example-Submission" -->
 
 <!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
+<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
 <!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
@@ -58,6 +59,7 @@ submission.
   <tbody>
     <tr>
   <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
 	<!-- link to README.hmtl if no document exists -->	
@@ -81,6 +83,6 @@ submission.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2004-12-10 17:19:00 $, $Revision: 1.5 $</div>
+<div align="right" class="date">$Date: 2005-09-07 10:01:47 $, $Revision: 1.6 $</div>
 </body>
 </html>

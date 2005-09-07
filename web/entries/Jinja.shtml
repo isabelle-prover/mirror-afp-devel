@@ -66,6 +66,7 @@ in the theorem prover Isabelle/HOL.
 <!--#set var="name" value="Jinja" -->
 
 <!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
+<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
 <!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
@@ -73,6 +74,7 @@ in the theorem prover Isabelle/HOL.
   <tbody>
     <tr>
   <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
 	<!-- link to README.hmtl if no document exists -->	
@@ -92,6 +94,6 @@ in the theorem prover Isabelle/HOL.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2005-05-31 23:31:49 $, $Revision: 1.2 $</div>
+<div align="right" class="date">$Date: 2005-09-07 10:01:47 $, $Revision: 1.3 $</div>
 </body>
 </html>
