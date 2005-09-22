@@ -457,7 +457,7 @@ lemma writeExtendCorrect:
       ~ index < fileSize cfile1;
       Some cfile2 = cfWrite cfile1 index value
    |] ==> Some (abstFn cfile2) = afWrite (abstFn cfile1) index value"
-apply (insert nextFreeBlockIncreases [of cfile1 index value cfile2])
+apply (insert nextFreeBlockIncreases [of cfile1 index "value" cfile2])
 apply (simp add: abstFn_def afWrite_def raWrite_def Let_def)
 apply (case_tac "~ index div blockSize < numBlocks",
   simp_all add: cfWrite_def cfWriteNoExtend_def cfExtendFile_def Let_def)
