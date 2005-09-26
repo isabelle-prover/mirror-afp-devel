@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness2.thy
-    ID:         $Id: Correctness2.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Correctness2.thy,v 1.2 2005-09-26 16:05:08 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -432,9 +432,9 @@ next
       have 3: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
 	using 2 BinOpThrow\<^isub>2\<^isub>1.prems pc\<^isub>2 by(auto simp:handle_Cons)
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 3] by auto
-      hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     }
-    thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by rules
+    thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by iprover
   qed
 next
   case (FAcc\<^isub>1 Ca D F a e fs h\<^isub>1 ls\<^isub>1 h\<^isub>0 ls\<^isub>0 w)
@@ -522,9 +522,9 @@ next
       have 3: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
 	using 2 FAssThrow\<^isub>2\<^isub>1.prems pc\<^isub>2 by(auto simp:handle_Cons)
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 3]	by auto
-      hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     }
-    thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by rules
+    thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by iprover
   qed
 next
   case FAssThrow\<^isub>1\<^isub>1 thus ?case by fastsimp
@@ -584,7 +584,7 @@ next
       also have "\<dots> = handle P C M xa h\<^isub>3 vs ls\<^isub>2 ?pc\<^isub>2 frs"
 	using Call\<^isub>1.prems by(auto simp add:handle_append handle_Cons)
       finally have "?H ?pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 2] by auto
-      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
 next
@@ -607,12 +607,12 @@ next
 	P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 (w#vs) ls\<^isub>2 pc\<^isub>2 frs"
 	(is "\<exists>pc\<^isub>2. ?PC pc\<^isub>2 \<and> ?Exec pc\<^isub>2")
 	using CallParamsThrow\<^isub>1 by force
-      then obtain pc\<^isub>2 where pc\<^isub>2: "?PC pc\<^isub>2" and 2: "?Exec pc\<^isub>2" by rules
+      then obtain pc\<^isub>2 where pc\<^isub>2: "?PC pc\<^isub>2" and 2: "?Exec pc\<^isub>2" by iprover
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 2] CallParamsThrow\<^isub>1
 	by(auto simp:handle_Cons)
-      hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     }
-    thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by rules
+    thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by iprover
   qed
 next
   case (CallNull\<^isub>1 M' e es h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 pvs)
@@ -670,7 +670,7 @@ next
 	eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
 	using IH\<^isub>2 Seq\<^isub>1.prems by fastsimp
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2]	by auto
-      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
 next
@@ -712,7 +712,7 @@ next
 	eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
 	using CondT\<^isub>1.prems by (fastsimp simp:Int_Un_distrib)
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2]	by auto
-      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
 next
@@ -750,7 +750,7 @@ next
 	eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
 	using CondF\<^isub>1.prems by(fastsimp simp:Int_Un_distrib)
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2]	by auto
-      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
 next
@@ -811,7 +811,7 @@ next
 	2: "P \<turnstile> ?\<sigma>\<^isub>2 -jvm\<rightarrow> handle P C M xa h\<^isub>3 vs ls\<^isub>3 pc\<^isub>2 frs"
 	using WhileT\<^isub>1.prems by (auto simp:add_assoc nat_number)
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 2] by auto
-      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
 next
@@ -842,7 +842,7 @@ next
 	eval\<^isub>2: "P \<turnstile> ?\<sigma>\<^isub>1 -jvm\<rightarrow> handle P C M xa h\<^isub>2 vs ls\<^isub>2 pc\<^isub>2 frs"
 	using WhileBodyThrow\<^isub>1.prems by (fastsimp simp:Int_Un_distrib)
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF eval\<^isub>1 eval\<^isub>2]	by auto
-      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
 next
@@ -864,7 +864,7 @@ next
                  handle P C M xa h\<^isub>1 vs ls\<^isub>1 ?pc frs"
 	using Throw\<^isub>1.prems by(auto simp add:handle_Cons)
       finally have "?H ?pc" by simp
-      thus "\<exists>pc\<^isub>1. ?H pc\<^isub>1" by rules
+      thus "\<exists>pc\<^isub>1. ?H pc\<^isub>1" by iprover
     qed
   qed
 next
@@ -887,7 +887,7 @@ next
                  handle P C M ?xa h\<^isub>1 vs ls\<^isub>1 ?pc frs"
 	using ThrowNull\<^isub>1.prems by(auto simp add:handle_Cons)
       finally have "?H ?pc" using throw by simp
-      thus "\<exists>pc\<^isub>1. ?H pc\<^isub>1" by rules
+      thus "\<exists>pc\<^isub>1. ?H pc\<^isub>1" by iprover
     qed
   qed
 next
@@ -929,7 +929,7 @@ next
     then obtain pc\<^isub>1 where
       pc\<^isub>1_in_e\<^isub>1: "pc \<le> pc\<^isub>1" "pc\<^isub>1 < ?pc\<^isub>1" and
       pc\<^isub>1_not_caught: "\<not> caught P pc\<^isub>1 h\<^isub>1 a (compxE\<^isub>2 e\<^isub>1 pc (size vs))" and
-      0: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> handle P C M a h\<^isub>1 vs ls\<^isub>1 pc\<^isub>1 frs" by rules
+      0: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> handle P C M a h\<^isub>1 vs ls\<^isub>1 pc\<^isub>1 frs" by iprover
     from beforex obtain xt\<^isub>0 xt\<^isub>1
       where ex_tab: "ex_table_of P C M = xt\<^isub>0 @ ?xt @ xt\<^isub>1"
       and disj: "pcs xt\<^isub>0 \<inter> I = {}" by(auto simp:beforex_def)
@@ -966,7 +966,7 @@ next
 	using IH\<^isub>2 beforex\<^isub>2 TryCatch\<^isub>1.prems by auto
       have "?H pc\<^isub>2" using pc\<^isub>2 jvm_trans[OF 1 2]
 	by (simp add:match_ex_entry) (fastsimp)
-      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
 next
@@ -988,7 +988,7 @@ next
     then obtain pc\<^isub>1 where
       pc\<^isub>1_in_e\<^isub>1: "pc \<le> pc\<^isub>1" "pc\<^isub>1 < ?pc\<^isub>1" and
       pc\<^isub>1_not_caught: "\<not> caught P pc\<^isub>1 h\<^isub>1 a (compxE\<^isub>2 e\<^isub>1 pc (size vs))" and
-      0: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> handle P C M a h\<^isub>1 vs ls\<^isub>1 pc\<^isub>1 frs" by rules
+      0: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> handle P C M a h\<^isub>1 vs ls\<^isub>1 pc\<^isub>1 frs" by iprover
   show ?case (is "?N \<and> (?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2))")
   proof
     show ?N by simp
@@ -996,9 +996,9 @@ next
     { assume ?eq
       with TryThrow\<^isub>1 pc\<^isub>1_in_e\<^isub>1 pc\<^isub>1_not_caught 0
       have "?H pc\<^isub>1" by (simp add:match_ex_entry) auto
-      hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      hence "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     }
-    thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by rules
+    thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by iprover
   qed
 next
   case Nil\<^isub>1 thus ?case by simp
@@ -1032,7 +1032,7 @@ next
 	by(fastsimp simp:Cons_eq_append_conv neq_Nil_conv)
       have "?H pc\<^isub>2" using Cons\<^isub>1.prems pc\<^isub>2 jvm_trans[OF 1 2]
 	by (auto simp add: handle_Cons)
-      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by rules
+      thus "\<exists>pc\<^isub>2. ?H pc\<^isub>2" by iprover
     qed
   qed
 next

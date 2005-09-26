@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/BigStep.thy
-    ID:         $Id: BigStep.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: BigStep.thy,v 1.3 2005-09-26 16:05:08 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -338,7 +338,7 @@ text{* Only used later, in the small to big translation, but is already a
 good sanity check: *}
 
 lemma eval_finalId:  "final e \<Longrightarrow> P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e,s\<rangle>"
-(*<*)by (erule finalE) (rules intro: eval_evals.intros)+(*>*)
+(*<*)by (erule finalE) (iprover intro: eval_evals.intros)+(*>*)
 
 
 lemma eval_finalsId:

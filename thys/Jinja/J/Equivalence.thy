@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Equivalence.thy
-    ID:         $Id: Equivalence.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Equivalence.thy,v 1.3 2005-09-26 16:05:08 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -964,7 +964,7 @@ next
       fix a
       assume "P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw a,s'\<rangle>" "e' = throw a"
       with eval_true show "P \<turnstile> \<langle>while(b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"	
-	by (rules intro: WhileBodyThrow)
+	by (iprover intro: WhileBodyThrow)
     qed
   qed
 qed
@@ -1219,7 +1219,7 @@ proof -
 	with e_es obtain "e=throw x" "es=es'" by simp
 	moreover from eval_e e'
 	have "P \<turnstile> \<langle>throw x # es,s\<rangle> [\<Rightarrow>] \<langle>Throw a # es,s'\<rangle>"
-	  by (rules intro: ConsThrow)
+	  by (iprover intro: ConsThrow)
 	ultimately show ?thesis using Nil e' by simp
       next
 	case (Cons v vs')
@@ -1229,7 +1229,7 @@ proof -
 	  by simp
 	from e 
 	have "P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>Val v,s\<rangle>"
-	  by (rules intro: eval_evals.Val)
+	  by (iprover intro: eval_evals.Val)
 	moreover from es 
 	have "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs' @ e' # es',s'\<rangle>"
 	  by (rule Cons.hyps)
@@ -1276,7 +1276,7 @@ proof (induct rule: red_reds.induct)
   have finals: "finals(map Val vs)" by simp
   obtain h\<^isub>2 l\<^isub>2 where s: "s = (h\<^isub>2,l\<^isub>2)" by (cases s) simp
   with finals have "P \<turnstile> \<langle>map Val vs,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>"
-    by (rules intro: eval_finalsId)
+    by (iprover intro: eval_finalsId)
   moreover from s have "h\<^isub>2 a = Some (C, fs)" using RedCall by simp
   moreover have method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D".
   moreover have same_len\<^isub>1: "length Ts = length pns"
@@ -1314,7 +1314,7 @@ proof (induct rule: red_reds.induct)
 next
  case RedNew
   thus ?case
-     by (rules elim: eval_cases intro: eval_evals.intros)
+     by (iprover elim: eval_cases intro: eval_evals.intros)
 next
   case RedNewFail
   thus ?case
@@ -1326,7 +1326,7 @@ next
 next
   case RedCastNull
   thus ?case
-    by (rules elim: eval_cases intro: eval_evals.intros)
+    by (iprover elim: eval_cases intro: eval_evals.intros)
 next
   case (RedCast C D a fs s s'' e'')
   thus ?case
@@ -1346,7 +1346,7 @@ next
 next
   case RedBinOp
   thus ?case
-    by (rules elim: eval_cases intro: eval_evals.intros)
+    by (iprover elim: eval_cases intro: eval_evals.intros)
 next
   case (RedVar V s v s' e')
   thus ?case

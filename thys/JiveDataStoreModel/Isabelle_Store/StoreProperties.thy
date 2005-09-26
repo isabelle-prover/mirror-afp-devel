@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: StoreProperties.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
+    ID:          $Id: StoreProperties.thy,v 1.4 2005-09-26 16:05:08 nipkow Exp $
     Author:      Norbert Schirmer <schirmer@informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
     License:     LGPL
@@ -57,7 +57,7 @@ lemma unreachable_Null:
 
 corollary unreachable_Null_simp [simp]:
   "\<not> s\<turnstile> l reachable_from nullV"
-  by (rules dest: unreachable_Null)
+  by (iprover dest: unreachable_Null)
 
 corollary unreachable_NullE [elim]:
   "s\<turnstile> l reachable_from nullV \<Longrightarrow> P"
@@ -65,7 +65,7 @@ corollary unreachable_NullE [elim]:
 
 lemma reachObjLoc [simp,intro]: 
   "C=cls cf \<Longrightarrow> s\<turnstile> objLoc cf a reachable_from objV C a"
-  by (rules intro: reachS.Immediate [of "objLoc cf a",simplified])
+  by (iprover intro: reachS.Immediate [of "objLoc cf a",simplified])
 
 lemma reachArrLoc [simp,intro]: "s\<turnstile> arrLoc T a i reachable_from arrV T a"
   by (rule reachS.Immediate [of "arrLoc T a i",simplified])
@@ -290,7 +290,7 @@ proof
     case (Immediate l)
     have "\<not> s\<turnstile> l reachable_from ref l" and "ref l \<noteq> nullV".
     thus False
-      by (rules intro: reachS.intros)
+      by (iprover intro: reachS.intros)
   next
     case (Indirect k m)
     have k_not_Null: "ref k \<noteq> nullV".
@@ -305,7 +305,7 @@ proof
       then have "s\<langle>l := y\<rangle>@@k = s@@k" by simp
       moreover 
       from not_m_k k_not_Null have "\<not> s\<turnstile> m reachable_from (s@@k)"
-	by (rules intro: reachS.intros)
+	by (iprover intro: reachS.intros)
       ultimately show False
 	using not_m_y hyp by simp
     next
@@ -322,7 +322,7 @@ proof
 	  by auto
 	moreover 
 	from not_m_k k_not_Null have "\<not> s\<turnstile> m reachable_from (s@@k)"
-	  by (rules intro: reachS.intros)
+	  by (iprover intro: reachS.intros)
 	ultimately show False
 	  using not_m_y hyp by simp
       qed
@@ -367,7 +367,7 @@ proof induct
   thus "ref l = new s t".
 next
   case (Indirect k l)
-  hence "s@@k = new s t" by rules
+  hence "s@@k = new s t" by iprover
   moreover 
   have "\<not> alive (new s t) s"
     by simp
@@ -394,7 +394,7 @@ next
   moreover have "alive (s@@k) s" by simp
   ultimately
   show "alive (ref l) s"
-    by rules
+    by iprover
 qed
  
 text {* Lemma 3.2 (ix) *}
@@ -419,10 +419,10 @@ proof
     have "s1\<turnstile> l reachable_from (s1@@k)" .
     with k_not_Null
     have "s1@@k = s2@@k"
-      by (rules intro: reach_impl_access_eq [rule_format] reachS.intros)
+      by (iprover intro: reach_impl_access_eq [rule_format] reachS.intros)
     moreover from reach_impl_access_eq k_not_Null
     have "\<forall>l. s1\<turnstile> l reachable_from (s1@@k) \<longrightarrow> s1@@l = s2@@l"
-      by (rules intro: reachS.intros)
+      by (iprover intro: reachS.intros)
     then have "s2\<turnstile> l reachable_from (s1@@k)"
       by (rule hyp)
     ultimately have "s2\<turnstile> l reachable_from (s2@@k)"
@@ -452,7 +452,7 @@ next
       by simp
     from reach_impl_access_eq k_not_Null
     have "\<forall>l. s1\<turnstile> l reachable_from (s1@@k) \<longrightarrow> s1@@l = s2@@l"
-      by (rules intro: reachS.intros)
+      by (iprover intro: reachS.intros)
     then 
     have "\<forall>l. s1\<turnstile> l reachable_from (s2@@k) \<longrightarrow> s1@@l = s2@@l"
       by (simp add: eq_k)
@@ -1056,7 +1056,7 @@ next
   hence "treach (typeof (ref k)) (typeof (s@@k))"
     by simp
   ultimately show "treach (typeof (ref k)) (ltype l)"
-    by (rules intro: treachS.Trans)
+    by (iprover intro: treachS.Trans)
 qed
 
 lemma not_treach_ref_impl_not_reach: 
@@ -1069,7 +1069,7 @@ proof
   proof (induct)
     case (Immediate l)
     have "\<not> treach (typeof (ref l)) (typeof (ref l))".
-    thus False by (rules intro: treachS.intros order_refl)
+    thus False by (iprover intro: treachS.intros order_refl)
   next
     case (Indirect k l)
     have hyp: "\<not> treach (typeof (s@@k)) (typeof (ref l)) \<Longrightarrow> False".

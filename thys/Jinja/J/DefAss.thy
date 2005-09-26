@@ -1,5 +1,5 @@
 (*  Title:      Jinja/DefAss.thy
-    ID:         $Id: DefAss.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: DefAss.thy,v 1.3 2005-09-26 16:05:08 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -133,20 +133,20 @@ apply(induct e and es)
 apply simp
 apply simp
 apply simp
-apply simp apply (rules dest:sqUn_lem)
+apply simp apply (iprover dest:sqUn_lem)
 apply (fastsimp simp add:hyperset_defs)
 apply simp
 apply simp
-apply simp apply (rules dest:sqUn_lem)
-apply simp apply (rules dest:sqUn_lem)
-apply simp apply (rules dest:diff_lem)
-apply simp apply (rules dest:sqUn_lem)
-apply simp apply (rules dest:sqUn_lem)
-apply simp apply (rules dest:sqUn_lem)
+apply simp apply (iprover dest:sqUn_lem)
+apply simp apply (iprover dest:sqUn_lem)
+apply simp apply (iprover dest:diff_lem)
+apply simp apply (iprover dest:sqUn_lem)
+apply simp apply (iprover dest:sqUn_lem)
+apply simp apply (iprover dest:sqUn_lem)
 apply simp
-apply simp apply (rules dest:sqUn_lem)
+apply simp apply (iprover dest:sqUn_lem)
 apply simp
-apply simp apply (rules dest:sqUn_lem)
+apply simp apply (iprover dest:sqUn_lem)
 done
 (*>*)
 
