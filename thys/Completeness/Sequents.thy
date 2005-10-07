@@ -1,6 +1,8 @@
 header "Sequents"
 
-theory Sequents imports Formula begin 
+theory Sequents
+imports Formula
+begin 
 
 types sequent = "formula list"
 

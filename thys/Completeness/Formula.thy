@@ -1,7 +1,8 @@
 header "Formula"
 
-theory Formula imports Base begin
-
+theory Formula
+imports Base
+begin
 
 subsection "Variables"
 

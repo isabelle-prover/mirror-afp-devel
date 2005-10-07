@@ -1,6 +1,8 @@
 header "Completeness"
 
-theory Completeness imports Tree Sequents Main begin
+theory Completeness
+imports Tree Sequents
+begin
 
 
 subsection "pseq: type represents a processed sequent"
@@ -359,11 +361,10 @@ lemma containsPropagates: "!!f.\
 subsection "path: no consider lemmas"
 
 lemma noConsidersD: "!!f. ~considers f iA n ==> nforms (f n) = x#xs ==> iA ~= x"
-  apply(simp add: considers_def2)
-  apply(blast dest: not_sym) done
+  by(simp add: considers_def2)
 
 lemma considersD: "!!f. considers f iA n ==> ? xs . nforms (f n) = iA#xs"
-  apply(simp add: considers_def2) done
+  by(simp add: considers_def2)
 
 
 subsection "path: contains initially"

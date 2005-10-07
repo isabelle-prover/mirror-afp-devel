@@ -1,5 +1,5 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Inv2.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
+    ID:          $Id: DiskPaxos_Inv2.thy,v 1.5 2005-10-07 20:18:48 nipkow Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro@fceia.unr.edu.ar>
 *)
@@ -170,7 +170,7 @@ next
   with act inv2a
   show ?thesis
     by(clarsimp simp add: StartBallot_def HNextPart_def 
-      InitializePhase_def Inv2a_innermost_def, blast)
+      InitializePhase_def Inv2a_innermost_def)
 qed
 
 theorem HStartBallot_Inv2a:
@@ -493,8 +493,7 @@ next
   with False act
   show ?thesis
     by(clarsimp simp add: EndPhase0_def HNextPart_def 
-      InitializePhase_def Inv2a_innermost_def,
-      blast) 
+      InitializePhase_def Inv2a_innermost_def) 
 qed
 
 theorem HEndPhase0_Inv2a:
@@ -667,8 +666,7 @@ next
   with False act
   show ?thesis
     by(clarsimp simp add: EndPhase1_def HNextPart_def 
-      InitializePhase_def Inv2a_innermost_def,
-      blast) 
+      InitializePhase_def Inv2a_innermost_def) 
 qed
 
 theorem HEndPhase1_Inv2a:

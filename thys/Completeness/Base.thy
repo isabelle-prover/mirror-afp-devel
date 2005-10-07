@@ -1,6 +1,8 @@
 header "Base"
 
-theory Base imports Main PermutationLemmas begin
+theory Base
+imports PermutationLemmas
+begin
 
 subsection "Integrate with Isabelle libraries?"
 
