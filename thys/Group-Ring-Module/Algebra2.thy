@@ -1,4 +1,4 @@
-(**                Algebra2  
+(**                Algebra2
                                   author Hidetsune Kobayashi
                                   Department of Mathematics
                                   Nihon University
@@ -6,11 +6,11 @@
                                   May 3, 2004.
 
  chapter 2.  ordered set (continued)
-   section 4.   ordered_set2.  preliminary lemmas for Zorn's lemma 
+   section 4.   ordered_set2.  preliminary lemmas for Zorn's lemma
    section 5.   Zorn's lemma
 
  chapter 3.  Group Theory. Focused on Jordan Hoelder theorem
-   section 1.    definition of a group 
+   section 1.    definition of a group
    section 2.    non_commutative groups
    section 3.    properties of cosets
    section 4.    normal subgroups and quotient groups
@@ -18,11 +18,13 @@
    section 6.    preliminary lemmas for Zassenhaus
 **)
 
-theory Algebra2 imports Algebra1 begin
+theory Algebra2
+imports Algebra1
+begin
 
 section "4. ordered_set2. Lemmas to prove Zorn's lemma "
- 
-lemma ord_adjunction:"\<lbrakk>ordered_set D; X \<subseteq> carrier D; a \<in> carrier D; 
+
+lemma ord_adjunction:"\<lbrakk>ordered_set D; X \<subseteq> carrier D; a \<in> carrier D;
 \<forall>x\<in>X. x \<le>\<^sub>D a\<rbrakk> \<Longrightarrow> ordered_set (Iod D (X \<union> {a}))"
 apply (subst ordered_set_def)
 apply (rule conjI)
@@ -31,18 +33,18 @@ apply (rule conjI)
 apply (unfold Iod_def)
  apply auto
  apply (simp add:ordered_set_def)
- apply (frule_tac A = X and B = "carrier D" and c = aa in subsetD, assumption+)apply (simp add:ordered_set_def) 
+ apply (frule_tac A = X and B = "carrier D" and c = aa in subsetD, assumption+)apply (simp add:ordered_set_def)
  apply (simp add:ordered_set_def) apply (erule conjE)+
  apply blast
  apply (simp add:ordered_set_def) apply (erule conjE)+
  apply blast
  apply (simp add:ordered_set_def) apply (erule conjE)+
  apply blast
- apply (simp add:ordered_set_def) 
+ apply (simp add:ordered_set_def)
  apply (frule_tac A = X and B = "carrier D" and c = b in subsetD, assumption+)
  apply (frule_tac A = X and B = "carrier D" and c = c in subsetD, assumption+)
  apply (unfold ordered_set_def) apply (erule conjE)+
- apply blast apply (erule conjE)+ 
+ apply blast apply (erule conjE)+
  apply (frule_tac A = X and B = "carrier D" and c = aa in subsetD, assumption+)
  apply (frule_tac A = X and B = "carrier D" and c = c in subsetD, assumption+)
  apply blast
@@ -58,10 +60,10 @@ apply (unfold Iod_def)
  apply (frule_tac A = X and B = "carrier D" and c = b in subsetD, assumption+)
  apply (erule conjE)+ apply blast
  apply (frule_tac A = X and B = "carrier D" and c = aa in subsetD, assumption+) apply (erule conjE)+ apply blast
- apply (frule_tac A = X and B = "carrier D" and c = aa in subsetD, assumption+) 
+ apply (frule_tac A = X and B = "carrier D" and c = aa in subsetD, assumption+)
  apply (frule_tac A = X and B = "carrier D" and c = b in subsetD, assumption+)
 apply (erule conjE)+ apply blast
- apply (frule_tac A = X and B = "carrier D" and c = aa in subsetD, assumption+) 
+ apply (frule_tac A = X and B = "carrier D" and c = aa in subsetD, assumption+)
  apply (frule_tac A = X and B = "carrier D" and c = b in subsetD, assumption+)
 apply (erule conjE)+ apply blast
 done
@@ -69,7 +71,7 @@ done
 lemma well_ord_adjunction:"\<lbrakk>ordered_set D; X \<subseteq> carrier D; a \<in> carrier D; \<forall>x\<in>X. x \<le>\<^sub>D a; well_ordered_set (Iod D X)\<rbrakk> \<Longrightarrow> well_ordered_set (Iod D (X \<union> {a}))"
 apply (subst well_ordered_set_def)
 apply (rule conjI)
- apply (simp add:tordered_set_def) 
+ apply (simp add:tordered_set_def)
  apply (frule_tac D = D and X = X and a = a in ord_adjunction, assumption+)
  apply simp
 apply (rule ballI)+
@@ -101,13 +103,13 @@ prefer 3
  apply (simp add:well_ordered_set_def)
  apply (subgoal_tac "Xa \<inter> X \<subseteq> carrier (Iod D X)")
  apply (subgoal_tac "\<exists>x. minimum_elem (Iod D X) (Xa \<inter> X) x")
- prefer 2 apply simp 
+ prefer 2 apply simp
   apply (thin_tac "tordered_set (Iod D X) \<and> (\<forall>Xa. Xa \<subseteq> carrier (Iod D X) \<and> Xa \<noteq> {} \<longrightarrow> (\<exists>x. minimum_elem (Iod D X) Xa x))")
   apply (subgoal_tac "\<forall>x. minimum_elem (Iod D X) (Xa \<inter> X) x \<longrightarrow> ( \<exists>x. minimum_elem (Iod D (insert a X)) Xa x)") apply blast
   apply (thin_tac "\<exists>x. minimum_elem (Iod D X) (Xa \<inter> X) x")
  apply (rule allI) apply (rule impI)
  apply (subgoal_tac "minimum_elem (Iod D (insert a X)) Xa x")
- apply blast 
+ apply blast
  apply (simp add:minimum_elem_def) apply (rule ballI)
  apply (erule conjE)+
 apply (case_tac "xa \<in> X") apply (subgoal_tac "xa \<in> Xa \<inter> X")
@@ -122,15 +124,15 @@ apply (frule_tac A = Xa and B = "insert a X" and c = x in subsetD, assumption+) 
 apply simp apply (rule contrapos_pp, simp+)
  apply blast
 done
- 
+
 section "5. Zorn's lemma"
 
 constdefs
  Chain :: "['a OrderedSet, 'a set] \<Rightarrow> bool"
- "Chain D C == C \<subseteq> carrier D \<and> tordered_set (Iod D C)" 
+ "Chain D C == C \<subseteq> carrier D \<and> tordered_set (Iod D C)"
  upper_bound :: "['a OrderedSet, 'a set, 'a] \<Rightarrow> bool"
    ("(3ub/ _/ _/ _)" [100,100,101]100)
- "ub D S b == b \<in> (carrier D) \<and> (\<forall>s\<in>S.  s \<le>\<^sub>D b)" 
+ "ub D S b == b \<in> (carrier D) \<and> (\<forall>s\<in>S.  s \<le>\<^sub>D b)"
 
  inductive_set:: "'a OrderedSet \<Rightarrow> bool"
  "inductive_set D == ordered_set D \<and> (\<forall>C. Chain D C \<longrightarrow> (\<exists>b. ub D C b))"
@@ -150,7 +152,7 @@ constdefs
 
 lemma tordered_Chain:"\<lbrakk>ordered_set D; X \<subseteq> carrier D; tordered_set (Iod D X)\<rbrakk>
  \<Longrightarrow> Chain D X"
-apply (simp add:Chain_def tordered_set_def) 
+apply (simp add:Chain_def tordered_set_def)
 done
 
 lemma Sup:"\<lbrakk>ordered_set D; X \<subseteq> carrier D; minimum_elem D (upper_bounds D X) a\<rbrakk> \<Longrightarrow> Sup D X = a"
@@ -159,7 +161,7 @@ apply (subgoal_tac "\<forall>y. y \<in> upper_bounds D X \<and> (\<forall>x\<in>
 apply (rule the_equality, assumption+)
  apply (simp add:minimum_elem_def)
  apply (rule allI) apply (rule impI)
- apply (erule conjE)+ 
+ apply (erule conjE)+
  apply (simp add:minimum_elem_def) apply (erule conjE)+
  apply (subgoal_tac "a \<le>\<^sub>D y") prefer 2 apply (thin_tac "\<forall>x\<in>upper_bounds D X.  y \<le>\<^sub>D x") apply simp
  apply (subgoal_tac "y \<le>\<^sub>D a") prefer 2 apply simp
@@ -167,7 +169,7 @@ apply (rule the_equality, assumption+)
  apply (simp add:upper_bounds_def upper_bound_def)
  apply (simp add:upper_bounds_def upper_bound_def)
  apply assumption+
-done 
+done
 
 lemma S_inductive_sup:"\<lbrakk>S_inductive_set D; Chain D X\<rbrakk> \<Longrightarrow>
                              minimum_elem D (upper_bounds D X) (Sup D X)"
@@ -200,11 +202,11 @@ done
 
 lemma S_inductive_sup_bound:"\<lbrakk>S_inductive_set D; Chain D X\<rbrakk> \<Longrightarrow>
                                         \<forall>x\<in>X. x \<le>\<^sub>D (Sup D X)"
-apply (frule_tac D = D and X = X in S_inductive_sup, assumption+) 
+apply (frule_tac D = D and X = X in S_inductive_sup, assumption+)
 apply (rule ballI)
 apply (simp add:minimum_elem_def) apply (erule conjE)
  apply (thin_tac "\<forall>x\<in>upper_bounds D X.  Sup D X \<le>\<^sub>D x")
- apply (simp add:upper_bounds_def upper_bound_def) 
+ apply (simp add:upper_bounds_def upper_bound_def)
 done
 
 lemma S_inductive_ordered:"S_inductive_set D \<Longrightarrow> ordered_set D"
@@ -214,12 +216,12 @@ done
 constdefs
  Wa :: "['a OrderedSet, 'a set, 'a \<Rightarrow> 'a, 'a] \<Rightarrow> bool"
  "Wa S W g a == W \<subseteq> carrier S \<and> well_ordered_set (Iod S W) \<and> a \<in> W \<and> (\<forall>x\<in>W. a \<le>\<^sub>S x) \<and> (\<forall>x\<in>W. (if (ExPre (Iod S W) x) then  g (Pre (Iod S W) x) = x else
- (if a \<noteq> x then Sup S (segment (Iod S W) x) = x else a = a)))" 
+ (if a \<noteq> x then Sup S (segment (Iod S W) x) = x else a = a)))"
 
 constdefs
  WWa :: "['a OrderedSet, 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a set set"
  "WWa S g a == {W. Wa S W g a}"
- 
+
 lemma BNTr1:"\<lbrakk>ordered_set D; a \<in> carrier D\<rbrakk> \<Longrightarrow> well_ordered_set (Iod D {a})"
 apply (simp add:well_ordered_set_def tordered_set_def)
 apply (rule conjI)
@@ -248,7 +250,7 @@ apply (rule equalityI, assumption+)
  apply (rule subsetI)
  apply simp
 done
- 
+
 lemma BNTr2:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier D;  a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x)\<rbrakk> \<Longrightarrow> {a} \<in> WWa D f a"
 apply (simp add:WWa_def Wa_def)
 apply (subgoal_tac "\<not> ExPre (Iod D {a}) a") apply simp
@@ -256,13 +258,13 @@ apply (subgoal_tac "\<not> ExPre (Iod D {a}) a") apply simp
  apply (simp add:BNTr1)
  apply (thin_tac "\<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)")
 apply (rule contrapos_pp, simp+)
- apply (frule_tac D = D and a = a in BNTr1, assumption+) 
+ apply (frule_tac D = D and a = a in BNTr1, assumption+)
  apply (frule_tac S = "Iod D {a}" and a = a in Pre_element)
  apply (simp add:Iod_def) apply assumption
 apply (erule conjE)+
  apply (simp add:Iod_def ord_neq_def)
 done
-     
+
 lemma BNTr3:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier D;  a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); W \<in> WWa D f a\<rbrakk> \<Longrightarrow> minimum_elem (Iod D W) W a"
 apply (thin_tac "\<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)")
 apply (subst minimum_elem_def)
@@ -272,18 +274,18 @@ done
 
 constdefs
  eqisom :: "['a OrderedSet, 'a OrderedSet, 'a \<Rightarrow> 'a, 'a] \<Rightarrow> bool"
-  "eqisom S T f a == a = f a" 
+  "eqisom S T f a == a = f a"
 
-lemma BNTr4_1:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier D;  a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); W1 \<in> WWa D f a; W2 \<in> WWa D f a; b \<in> W2;  ord_isom (Iod D W1) (Iod D (segment (Iod D W2) b)) g\<rbrakk> \<Longrightarrow> \<forall>x\<in>W1. g x = x" 
- apply (subgoal_tac "well_ordered_set (Iod D W1)") 
+lemma BNTr4_1:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier D;  a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); W1 \<in> WWa D f a; W2 \<in> WWa D f a; b \<in> W2;  ord_isom (Iod D W1) (Iod D (segment (Iod D W2) b)) g\<rbrakk> \<Longrightarrow> \<forall>x\<in>W1. g x = x"
+ apply (subgoal_tac "well_ordered_set (Iod D W1)")
   prefer 2 apply (simp add:WWa_def Wa_def)
   apply (subgoal_tac "minimum_elem (Iod D W1) (carrier (Iod D W1)) a")
-  prefer 2 
+  prefer 2
   apply (frule_tac D = D and f = f and a = a and W = W1 in BNTr3, assumption+)
   apply (simp add:Iod_def)
  apply (subgoal_tac "g a = a")
- prefer 2 
-(**---- g a = a ---**) 
+ prefer 2
+(**---- g a = a ---**)
  apply (subgoal_tac "well_ordered_set (Iod D W2)")
   prefer 2 apply (simp add:WWa_def Wa_def)
   apply (frule_tac S = "Iod D W2" and a = b in segment_well_ordered_set)
@@ -293,7 +295,7 @@ lemma BNTr4_1:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier 
              Iod D (segment (Iod D W2) b)")
   apply (frule_tac S = "Iod D W1" in well_ordered_set_is_ordered_set)
   apply (frule_tac S = "Iod D (segment (Iod D W2) b)" in well_ordered_set_is_ordered_set)
- apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = a in ord_isom_mem, assumption+) 
+ apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = a in ord_isom_mem, assumption+)
  apply (simp add:Iod_def WWa_def Wa_def)
  apply (simp add:WWa_def Wa_def) apply (erule conjE)+
  apply (thin_tac "\<forall>x\<in>W1.
@@ -305,15 +307,15 @@ lemma BNTr4_1:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier 
                 else if a \<noteq> x then Sup D (segment (Iod D W2) x) = x
                      else a = a")
  apply (subgoal_tac "g a \<in> W2") prefer 2 apply (simp add:Iod_def segment_def)
- apply (subgoal_tac "a \<le>\<^sub>D (g a)") prefer 2 apply simp 
+ apply (subgoal_tac "a \<le>\<^sub>D (g a)") prefer 2 apply simp
   apply (thin_tac "\<forall>x\<in>W2.  a \<le>\<^sub>D x")
-  apply (subgoal_tac "a \<in> carrier (Iod D (segment (Iod D W2) b))") 
+  apply (subgoal_tac "a \<in> carrier (Iod D (segment (Iod D W2) b))")
   apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and b = a in ord_isom_surj, assumption+)
  apply (subgoal_tac "\<forall>aa\<in>carrier (Iod D W1). a = g aa \<longrightarrow> g a = a")
  apply blast apply (thin_tac "\<exists>aa\<in>carrier (Iod D W1). a = g aa")
  apply (rule ballI) apply (rule impI)
   apply (subgoal_tac "aa \<in> W1") prefer 2 apply (simp add:Iod_def)
-  apply (subgoal_tac " a \<le>\<^sub>D aa") prefer 2 apply (thin_tac "a = g aa") 
+  apply (subgoal_tac " a \<le>\<^sub>D aa") prefer 2 apply (thin_tac "a = g aa")
   apply simp
   apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = a and b = aa in ord_isom1_2, assumption+)
   apply (simp add:Iod_def) apply assumption apply (simp add:Iod_def)
@@ -336,7 +338,7 @@ lemma BNTr4_1:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier 
   apply (rule contrapos_pp, simp+)
   apply (frule_tac a = "g b" and b = b in ordering_axiom2, assumption+)
   apply simp  (*** --- g a = a --- done ***)
- apply (rule Iod_sub_sub, assumption+) apply (rule subsetI) 
+ apply (rule Iod_sub_sub, assumption+) apply (rule subsetI)
   apply (simp add:Iod_def segment_def) apply (simp add:WWa_def Wa_def)
 apply (rule ballI)
  apply (frule_tac S = "Iod D W1" and ?s0.0 = a and P = "eqisom (Iod D W1) (Iod D (segment (Iod D W2) b)) g" in transfinite_induction)
@@ -346,7 +348,7 @@ apply (rule ballI)
   apply (subgoal_tac "x \<in> carrier (Iod D W1)")
   apply (subgoal_tac "eqisom (Iod D W1) (Iod D (segment (Iod D W2) b)) g x")
   prefer 2 apply simp apply (simp add:eqisom_def)
-  apply (subgoal_tac "x = g x") 
+  apply (subgoal_tac "x = g x")
   apply (thin_tac "\<forall>x\<in>carrier (Iod D W1). eqisom (Iod D W1) (Iod D (segment (Iod D W2) b)) g x")
   apply (simp add:WWa_def Wa_def) apply (erule conjE)+
   apply (thin_tac "\<forall>x\<in>W1.
@@ -355,12 +357,12 @@ apply (rule ballI)
   apply (thin_tac "\<forall>x\<in>W2.
              if ExPre (Iod D W2) x then f (Pre (Iod D W2) x) = x
              else if a \<noteq> x then Sup D (segment (Iod D W2) x) = x else a = a")
-  apply (frule_tac S = "Iod D W2" and a = b in segment_well_ordered_set)  
+  apply (frule_tac S = "Iod D W2" and a = b in segment_well_ordered_set)
    apply (simp add:Iod_def)
-  apply (subgoal_tac "Iod (Iod D W2) (segment (Iod D W2) b) = Iod D (segment (Iod D W2) b)") apply simp  
+  apply (subgoal_tac "Iod (Iod D W2) (segment (Iod D W2) b) = Iod D (segment (Iod D W2) b)") apply simp
   apply (frule_tac S = "Iod D W1" in well_ordered_set_is_ordered_set)
-  apply (frule_tac S = "Iod D (segment (Iod D W2) b)" in well_ordered_set_is_ordered_set)   
-  apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = x in ord_isom_mem, assumption+) 
+  apply (frule_tac S = "Iod D (segment (Iod D W2) b)" in well_ordered_set_is_ordered_set)
+  apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = x in ord_isom_mem, assumption+)
   apply (simp add:Iod_def segment_def)
    apply (simp add:Iod_def)
   apply (rule Iod_sub_sub, assumption+)
@@ -383,15 +385,15 @@ apply (simp add:WWa_def Wa_def)
 apply (case_tac "ExPre (Iod D W1) t")
  apply simp
  apply (frule_tac S = "Iod D W2" and a = b in segment_well_ordered_set)
-  apply (simp add:Iod_def) 
+  apply (simp add:Iod_def)
   apply (subgoal_tac "Iod (Iod D W2) (segment (Iod D W2) b) = Iod D (segment (Iod D W2) b)") apply simp prefer 2 apply (rule Iod_sub_sub, assumption+)
   apply (rule subsetI) apply (simp add:segment_def) apply (erule conjE)+
   apply (simp add:Iod_def) apply (simp add:WWa_def Wa_def)
- apply (frule_tac S = "Iod D W1" and T = "Iod D (segment (Iod D W2) b)" and a = t and f = g in ord_isom_Pre1, assumption+)  
+ apply (frule_tac S = "Iod D W1" and T = "Iod D (segment (Iod D W2) b)" and a = t and f = g in ord_isom_Pre1, assumption+)
  apply (frule_tac S = "Iod D W2" and a = b and b = "g t" in Pre_segment)
   apply (simp add:Iod_def)
   apply (frule_tac S = "Iod D W1" in well_ordered_set_is_ordered_set)
-  apply (frule_tac S = "Iod D (segment (Iod D W2) b)" in well_ordered_set_is_ordered_set)  
+  apply (frule_tac S = "Iod D (segment (Iod D W2) b)" in well_ordered_set_is_ordered_set)
   apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = t in ord_isom_mem, assumption+)
   apply (simp add:Iod_def) apply simp
   apply (erule conjE)+
@@ -401,8 +403,8 @@ apply (case_tac "ExPre (Iod D W1) t")
   prefer 2 apply (simp add:Iod_def segment_def ord_neq_def)
  apply (subgoal_tac "eqisom (Iod D W1) (Iod D (segment (Iod D W2) b)) g (Pre (Iod D W1) t)") prefer 2 apply simp
  apply (simp add:eqisom_def)
- apply (subgoal_tac "g t \<in> W2") 
-  apply (rotate_tac -6) apply (frule sym) 
+ apply (subgoal_tac "g t \<in> W2")
+  apply (rotate_tac -6) apply (frule sym)
   apply (thin_tac "Pre (Iod D W2) (g t) = Pre (Iod D (segment (Iod D W2) b)) (g t)")
  apply (subgoal_tac "if ExPre (Iod D W2) (g t) then f (Pre (Iod D W2) (g t)) = (g t) else if a \<noteq> (g t) then Sup D (segment (Iod D W2) (g t)) = (g t) else a = a") prefer 2 apply simp
  apply (thin_tac "\<forall>x\<in>W2.
@@ -437,14 +439,14 @@ apply (case_tac "ExPre (Iod D W1) t")
  apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g in ord_isom_mem, assumption+)
  apply (simp add:Iod_def segment_def) (*** case "ExPre (Iod D W1) t" done ---*)
 (** --- case " \<not> ExPre (Iod D W1) t " --- **)
-apply (case_tac "a = t") 
+apply (case_tac "a = t")
  apply (simp add:eqisom_def)
 apply (subgoal_tac "Sup D (segment (Iod D W1) t ) = t") prefer 2 apply simp
  apply (thin_tac "if ExPre (Iod D W1) t then f (Pre (Iod D W1) t) = t
           else if a \<noteq> t then Sup D (segment (Iod D W1) t) = t else a = a")
  apply (simp add:eqisom_def)
  apply (frule_tac S = "Iod D W2" and a = b in segment_well_ordered_set)
- apply (simp add:Iod_def) 
+ apply (simp add:Iod_def)
  apply (subgoal_tac "Iod (Iod D W2) (segment (Iod D W2) b) = Iod D (segment (Iod D W2) b)") apply simp prefer 2 apply (rule Iod_sub_sub, assumption+)
  apply (rule subsetI) apply (simp add:Iod_def segment_def)
  apply assumption+
@@ -497,7 +499,7 @@ apply (rule equalityI)
   apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and b = xa in ord_isom_surj, assumption+)
   apply (subgoal_tac "\<forall>w\<in>carrier (Iod D W1). xa = g w \<longrightarrow> xa \<in> segment (Iod D W1) t") apply blast apply (thin_tac "\<exists>a\<in>carrier (Iod D W1). xa = g a")
   apply (rule ballI) apply (rule impI)
-  apply (subgoal_tac "g w <\<^sub>D (g t)") 
+  apply (subgoal_tac "g w <\<^sub>D (g t)")
   apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = w and b = t in ord_isom2_1, assumption+)
   apply (simp add:Iod_def segment_def ord_neq_def)
   apply (subgoal_tac "w \<in> segment (Iod D W1) t")
@@ -544,7 +546,7 @@ apply (rule subsetI)
   apply (thin_tac "Sup D (segment (Iod D W2) (g t)) = g t")
   apply (thin_tac "g t \<in> carrier (Iod D (segment (Iod D W2) b))")
   apply (subgoal_tac "xa \<in> carrier (Iod D W1)")
-  apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = xa in ord_isom_mem, assumption+) 
+  apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = xa in ord_isom_mem, assumption+)
   apply (thin_tac " ord_isom (Iod D W1) (Iod D (segment (Iod D W2) b)) g")
   apply (thin_tac "t \<in> carrier (Iod D W1)")
   apply (thin_tac "xa <\<^sub>(Iod D W1) t")
@@ -570,9 +572,9 @@ apply (thin_tac "\<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)")
  apply (frule_tac S = "Iod D W1" in well_ordered_set_is_ordered_set)
  apply (frule_tac S = "Iod D (segment (Iod D W2) b)" in well_ordered_set_is_ordered_set)
  apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g in ord_isom_sym, assumption+)
- apply (rule contrapos_pp, simp+) 
+ apply (rule contrapos_pp, simp+)
  apply (frule_tac S = "Iod D (segment (Iod D W2) b)" and T = "Iod D W1" and a = "g t" and f = "(invfun (carrier (Iod D W1)) (carrier (Iod D (segment (Iod D W2) b))) g)" in ord_isom_Pre1, assumption+)
- apply (simp add:ord_isom_mem)  
+ apply (simp add:ord_isom_mem)
  apply (subgoal_tac "b \<in> carrier (Iod D W2)")
  apply (frule_tac S = "Iod D W2" and a = b and b = "g t" in Pre2segment, assumption+)
  apply (frule_tac D = "Iod D W1" and E = "Iod D (segment (Iod D W2) b)" and f = g and a = t in ord_isom_mem, assumption+)
@@ -595,14 +597,14 @@ apply (subgoal_tac "invfun (carrier (Iod D W1))
  apply assumption
 done
 
-lemma BNTr4:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier D;  a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); W1 \<in> WWa D f a; W2 \<in> WWa D f a; \<exists>b\<in>W2. ord_equiv (Iod D W1) (Iod D (segment (Iod D W2) b))\<rbrakk> \<Longrightarrow> W1 \<subseteq> W2 " 
+lemma BNTr4:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier D;  a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); W1 \<in> WWa D f a; W2 \<in> WWa D f a; \<exists>b\<in>W2. ord_equiv (Iod D W1) (Iod D (segment (Iod D W2) b))\<rbrakk> \<Longrightarrow> W1 \<subseteq> W2 "
 apply (rule subsetI)
  apply auto
  apply (simp add:ord_equiv_def)
  apply auto
  apply (subgoal_tac "ordered_set (Iod D W1)")
  apply (subgoal_tac "ordered_set (Iod D (segment (Iod D W2) b))")
- apply (subgoal_tac "x \<in> carrier (Iod D W1)") 
+ apply (subgoal_tac "x \<in> carrier (Iod D W1)")
 apply (frule_tac D = "Iod D W1" and E = "(Iod D (segment (Iod D W2) b))" and f = fa and a = x in ord_isom_mem, assumption+)
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = W1 and ?W2.0 = W2 and b = b and g = fa in BNTr4_1, assumption+)
  apply simp apply (thin_tac "\<forall>x\<in>W1. fa x = x")
@@ -610,7 +612,7 @@ apply (frule_tac D = "Iod D W1" and E = "(Iod D (segment (Iod D W2) b))" and f =
  apply (subgoal_tac "well_ordered_set (Iod D W2)")
  apply (frule_tac S = "Iod D W2" and a = b in segment_well_ordered_set)
   apply (simp add:Iod_def)
-  apply (subgoal_tac "Iod (Iod D W2) (segment (Iod D W2) b) = Iod D (segment (Iod D W2) b)") apply simp 
+  apply (subgoal_tac "Iod (Iod D W2) (segment (Iod D W2) b) = Iod D (segment (Iod D W2) b)") apply simp
   apply (thin_tac "Iod (Iod D W2) (segment (Iod D W2) b) = Iod D (segment (Iod D W2) b)")
   apply (simp add:well_ordered_set_is_ordered_set)
   apply (rule Iod_sub_sub, assumption+)
@@ -621,25 +623,25 @@ apply (simp add:WWa_def Wa_def) apply (erule conjE)+
  apply (simp add:well_ordered_set_is_ordered_set)
 done
 
-lemma BNTr5:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier D;  a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); W1 \<in> WWa D f a; W2 \<in> WWa D f a; ord_equiv (Iod D W1) (Iod D W2)\<rbrakk> \<Longrightarrow> W1 \<subseteq> W2 " 
+lemma BNTr5:"\<lbrakk>ordered_set D;  f \<in> carrier D \<rightarrow> carrier D;  a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); W1 \<in> WWa D f a; W2 \<in> WWa D f a; ord_equiv (Iod D W1) (Iod D W2)\<rbrakk> \<Longrightarrow> W1 \<subseteq> W2 "
 apply (simp add:ord_equiv_def)
  apply (subgoal_tac "\<forall>g. ord_isom (Iod D W1) (Iod D W2) g \<longrightarrow> W1 \<subseteq> W2")  apply blast
  apply (thin_tac "\<exists>f. ord_isom (Iod D W1) (Iod D W2) f")
- apply (rule allI) apply (rule impI) 
- apply (subgoal_tac "well_ordered_set (Iod D W1)") 
+ apply (rule allI) apply (rule impI)
+ apply (subgoal_tac "well_ordered_set (Iod D W1)")
   prefer 2 apply (simp add:WWa_def Wa_def)
   apply (subgoal_tac "minimum_elem (Iod D W1) (carrier (Iod D W1)) a")
-  prefer 2 
+  prefer 2
   apply (frule_tac D = D and f = f and a = a and W = W1 in BNTr3, assumption+)
   apply (simp add:Iod_def)
  apply (subgoal_tac "g a = a")
- prefer 2 
-(**---- g a = a ---**) 
+ prefer 2
+(**---- g a = a ---**)
  apply (subgoal_tac "well_ordered_set (Iod D W2)")
   prefer 2 apply (simp add:WWa_def Wa_def)
   apply (frule_tac S = "Iod D W1" in well_ordered_set_is_ordered_set)
   apply (frule_tac S = "Iod D W2" in well_ordered_set_is_ordered_set)
- apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and a = a in ord_isom_mem, assumption+) 
+ apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and a = a in ord_isom_mem, assumption+)
  apply (simp add:Iod_def WWa_def Wa_def)
  apply (simp add:WWa_def Wa_def) apply (erule conjE)+
  apply (thin_tac "\<forall>x\<in>W1.
@@ -651,15 +653,15 @@ apply (simp add:ord_equiv_def)
                 else if a \<noteq> x then Sup D (segment (Iod D W2) x) = x
                      else a = a")
  apply (subgoal_tac "g a \<in> W2") prefer 2 apply (simp add:Iod_def segment_def)
- apply (subgoal_tac "a \<le>\<^sub>D (g a)") prefer 2 apply simp 
+ apply (subgoal_tac "a \<le>\<^sub>D (g a)") prefer 2 apply simp
   apply (thin_tac "\<forall>x\<in>W2.  a \<le>\<^sub>D x")
-  apply (subgoal_tac "a \<in> carrier (Iod D W2)") 
+  apply (subgoal_tac "a \<in> carrier (Iod D W2)")
   apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and b = a in ord_isom_surj, assumption+)
  apply (subgoal_tac "\<forall>aa\<in>carrier (Iod D W1). a = g aa \<longrightarrow> g a = a")
  apply blast apply (thin_tac "\<exists>aa\<in>carrier (Iod D W1). a = g aa")
  apply (rule ballI) apply (rule impI)
   apply (subgoal_tac "aa \<in> W1") prefer 2 apply (simp add:Iod_def)
-  apply (subgoal_tac " a \<le>\<^sub>D aa") prefer 2 apply (thin_tac "a = g aa") 
+  apply (subgoal_tac " a \<le>\<^sub>D aa") prefer 2 apply (thin_tac "a = g aa")
   apply simp
   apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and a = a and b = aa in ord_isom1_2, assumption+)
   apply (simp add:Iod_def) apply assumption apply (simp add:Iod_def)
@@ -677,9 +679,9 @@ apply (rule subsetI)
   apply (subgoal_tac "eqisom (Iod D W1) (Iod D W2) g x")
   prefer 2 apply simp apply (simp add:eqisom_def)
   apply (subgoal_tac "x = g x") apply (thin_tac "\<forall>x\<in>carrier (Iod D W1). x = g x")
- apply (subgoal_tac "well_ordered_set (Iod D W2)") 
+ apply (subgoal_tac "well_ordered_set (Iod D W2)")
  prefer 2 apply (simp add:WWa_def Wa_def)
- apply (frule_tac S = "Iod D W1" in well_ordered_set_is_ordered_set) 
+ apply (frule_tac S = "Iod D W1" in well_ordered_set_is_ordered_set)
  apply (frule_tac S = "Iod D W2" in well_ordered_set_is_ordered_set)
  apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and a = x in ord_isom_mem, assumption+)
  apply (simp add:Iod_def) apply simp apply (simp add:Iod_def)
@@ -697,14 +699,14 @@ apply (simp add:WWa_def Wa_def)
              else if a \<noteq> x then Sup D (segment (Iod D W1) x) = x else a = a")
  (** case --- " ExPre (Iod D W1) t " --- **)
 apply (case_tac "ExPre (Iod D W1) t")
- apply (frule_tac S = "Iod D W1" and T = "Iod D W2" and a = t and f = g in ord_isom_Pre1, assumption+)  
+ apply (frule_tac S = "Iod D W1" and T = "Iod D W2" and a = t and f = g in ord_isom_Pre1, assumption+)
  apply (frule_tac S = "Iod D W1" and a = t in Pre_element, assumption+)
  apply (erule conjE)+
  apply (subgoal_tac " Pre (Iod D W1) t \<in> segment (Iod D W1) t")
   prefer 2 apply (simp add:Iod_def segment_def ord_neq_def)
  apply (subgoal_tac "eqisom (Iod D W1) (Iod D W2) g (Pre (Iod D W1) t)") prefer 2 apply simp
  apply (simp add:eqisom_def)
- apply (subgoal_tac "g t \<in> W2") 
+ apply (subgoal_tac "g t \<in> W2")
  apply (subgoal_tac "if ExPre (Iod D W2) (g t) then f (Pre (Iod D W2) (g t)) = (g t) else if a \<noteq> (g t) then Sup D (segment (Iod D W2) (g t)) = (g t) else a = a") prefer 2 apply simp
  apply (thin_tac "\<forall>x\<in>W2.
              if ExPre (Iod D W2) x then f (Pre (Iod D W2) x) = x
@@ -733,7 +735,7 @@ apply (case_tac "ExPre (Iod D W1) t")
  apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g in ord_isom_mem, assumption+)
  apply (simp add:Iod_def segment_def) (*** case "ExPre (Iod D W1) t" done ---*)
 (** --- case " \<not> ExPre (Iod D W1) t " --- **)
-apply (case_tac "a = t") 
+apply (case_tac "a = t")
  apply (simp add:eqisom_def)
 apply (subgoal_tac "Sup D (segment (Iod D W1) t ) = t") prefer 2 apply simp
  apply (thin_tac "if ExPre (Iod D W1) t then f (Pre (Iod D W1) t) = t
@@ -786,7 +788,7 @@ apply (rule equalityI)
   apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and b = xa in ord_isom_surj, assumption+)
   apply (subgoal_tac "\<forall>w\<in>carrier (Iod D W1). xa = g w \<longrightarrow> xa \<in> segment (Iod D W1) t") apply blast apply (thin_tac "\<exists>a\<in>carrier (Iod D W1). xa = g a")
   apply (rule ballI) apply (rule impI)
-  apply (subgoal_tac "g w <\<^sub>D (g t)") 
+  apply (subgoal_tac "g w <\<^sub>D (g t)")
   apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and a = w and b = t in ord_isom2_1, assumption+)
   apply (simp add:Iod_def segment_def ord_neq_def)
   apply (subgoal_tac "w \<in> segment (Iod D W1) t")
@@ -822,7 +824,7 @@ apply (rule subsetI)
   apply (thin_tac "Sup D (segment (Iod D W2) (g t)) = g t")
   apply (thin_tac "g t \<in> carrier (Iod D W2)")
   apply (subgoal_tac "xa \<in> carrier (Iod D W1)")
-  apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and a = xa in ord_isom_mem, assumption+) 
+  apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and a = xa in ord_isom_mem, assumption+)
   apply (thin_tac " ord_isom (Iod D W1) (Iod D W2) g")
   apply (thin_tac "t \<in> carrier (Iod D W1)")
   apply (thin_tac "xa <\<^sub>(Iod D W1) t")
@@ -846,7 +848,7 @@ apply (thin_tac "\<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)")
  apply (frule_tac S = "Iod D W1" in well_ordered_set_is_ordered_set)
  apply (frule_tac S = "Iod D W2" in well_ordered_set_is_ordered_set)
  apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g in ord_isom_sym, assumption+)
- apply (rule contrapos_pp, simp+) 
+ apply (rule contrapos_pp, simp+)
  apply (frule_tac S = "Iod D W2" and T = "Iod D W1" and a = "g t" and f = "(invfun (carrier (Iod D W1)) (carrier (Iod D W2)) g)" in ord_isom_Pre1, assumption+)
  apply (simp add:ord_isom_mem) apply assumption apply assumption
  apply (frule_tac D = "Iod D W1" and E = "Iod D W2" and f = g and a = t in ord_isom_mem, assumption+)
@@ -863,7 +865,7 @@ done
 
 lemma BNTr6:"\<lbrakk>ordered_set D; f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D;
 \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); W1 \<in> WWa D f a; W2 \<in> WWa D f a; W1 \<subset> W2\<rbrakk> \<Longrightarrow> (\<exists>b\<in>carrier (Iod D W2). ord_equiv (Iod D W1) (Iod D (segment (Iod D W2) b)))"
-apply (subgoal_tac "well_ordered_set (Iod D W1)") 
+apply (subgoal_tac "well_ordered_set (Iod D W1)")
  apply (subgoal_tac "well_ordered_set (Iod D W2)")
  apply (frule_tac S = "Iod D W1" and T = "Iod D W2" in well_ord_compare, assumption+)
 prefer 2 apply (simp add:WWa_def Wa_def)
@@ -876,9 +878,9 @@ prefer 2 apply (simp add:WWa_def Wa_def)
  apply (case_tac "ord_equiv (Iod D W1) (Iod D W2)")
  apply (frule_tac S = "Iod D W1" in well_ordered_set_is_ordered_set)
  apply (frule_tac S = "Iod D W2" in well_ordered_set_is_ordered_set)
- apply (frule_tac D = "Iod D W1" and E = "Iod D W2" in ord_equiv_sym, assumption+) 
+ apply (frule_tac D = "Iod D W1" and E = "Iod D W2" in ord_equiv_sym, assumption+)
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = W2 and ?W2.0 = W1 in  BNTr5, assumption+)
- apply (rule_tac A = W1 and B = W2 in subset_contr, assumption+) 
+ apply (rule_tac A = W1 and B = W2 in subset_contr, assumption+)
 apply simp
  apply (subgoal_tac "\<forall>a\<in>carrier (Iod D W1). ord_equiv (Iod (Iod D W1) (segment (Iod D W1) a)) (Iod D W2) \<longrightarrow> False") apply blast
  apply (thin_tac "\<exists>a\<in>carrier (Iod D W1).
@@ -890,7 +892,7 @@ apply simp
  apply (thin_tac "Iod (Iod D W1) (segment (Iod D W1) aa) =
             Iod D (segment (Iod D W1) aa)")
  apply (frule_tac S = "Iod D W2" in well_ordered_set_is_ordered_set)
- apply (frule_tac S = "Iod D (segment (Iod D W1) aa)" in well_ordered_set_is_ordered_set) 
+ apply (frule_tac S = "Iod D (segment (Iod D W1) aa)" in well_ordered_set_is_ordered_set)
  apply (frule_tac D = "Iod D (segment (Iod D W1) aa)" and E = "Iod D W2" in ord_equiv_sym, assumption+)
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = W2 and ?W2.0 = W1 in  BNTr4, assumption+) apply (subgoal_tac "aa \<in> W1") apply blast
   apply (simp add:Iod_def)
@@ -906,7 +908,7 @@ done
 
 lemma BNTr7:"\<lbrakk>ordered_set D; f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D;
 \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); W1 \<in> WWa D f a; W2 \<in> WWa D f a\<rbrakk> \<Longrightarrow> W1 \<subseteq> W2 \<or> W2 \<subseteq> W1"
-apply (subgoal_tac "well_ordered_set (Iod D W1)") 
+apply (subgoal_tac "well_ordered_set (Iod D W1)")
  apply (subgoal_tac "well_ordered_set (Iod D W2)")
  apply (frule_tac S = "Iod D W1" and T = "Iod D W2" in well_ord_compare, assumption+)
 prefer 2 apply (simp add:WWa_def Wa_def)
@@ -930,23 +932,23 @@ apply (frule_tac D = D and f = f and a = a and ?W1.0 = W2 and ?W2.0 = W1 in BNTr
  apply (frule_tac S = "Iod D (segment (Iod D W1) c)" in well_ordered_set_is_ordered_set)
  apply (frule_tac D = "Iod D (segment (Iod D W1) c)" and E = "Iod D W2" in ord_equiv_sym, assumption+) apply (subgoal_tac "c \<in> W1") apply blast
  apply (simp add:Iod_def)
- apply (rule Iod_sub_sub, assumption+) apply (rule subsetI) 
+ apply (rule Iod_sub_sub, assumption+) apply (rule subsetI)
   apply (simp add:segment_def) apply (erule conjE)+ apply (simp add:Iod_def)
  apply (simp add:WWa_def Wa_def) apply simp
 apply simp
 apply (case_tac "ord_equiv (Iod D W1) (Iod D W2)")
- apply (simp add:BNTr5) apply simp 
+ apply (simp add:BNTr5) apply simp
  apply (frule BNTr4 [of "D" "f" "a" "W1" "W2"], assumption+)
  apply auto
  apply (subgoal_tac "b \<in> W2")
  apply (subgoal_tac "Iod (Iod D W2) (segment (Iod D W2) b) = Iod D (segment (Iod D W2) b)") apply simp
  apply blast
- apply (rule Iod_sub_sub, assumption+) apply (rule subsetI) 
+ apply (rule Iod_sub_sub, assumption+) apply (rule subsetI)
   apply (simp add:segment_def) apply (simp add:Iod_def)
 apply (simp add:WWa_def Wa_def)
 apply (simp add:Iod_def)
 done
- 
+
 lemma BNTr8:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x)\<rbrakk> \<Longrightarrow> \<Union> (WWa D f a) \<in> (WWa D f a)"
 apply (simp add:WWa_def)
 apply (subgoal_tac "\<Union>{W. Wa D W f a} \<subseteq> carrier D")
@@ -959,7 +961,7 @@ apply (rule conjI)
  apply (thin_tac "\<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)")
  apply (subgoal_tac "\<forall>xa. Wa D xa f a \<and> x \<in> xa \<longrightarrow> x \<in> carrier D")
  apply blast apply (thin_tac "\<exists>xa. Wa D xa f a \<and> x \<in> xa")
- apply (rule allI) apply (rule impI) apply (simp add:Wa_def) 
+ apply (rule allI) apply (rule impI) apply (simp add:Wa_def)
  apply (erule conjE)+  apply (simp add:subsetD)
 apply (subgoal_tac "well_ordered_set (Iod D (\<Union>{W. Wa D W f a}))")
  apply (rule conjI)
@@ -975,7 +977,7 @@ apply (subgoal_tac "well_ordered_set (Iod D (\<Union>{W. Wa D W f a}))")
   apply (simp add:Iod_def CollectI)
  apply (subgoal_tac "\<forall>X Y. Wa D X f a \<and> aa \<in> X \<and> Wa D Y f a \<and> b \<in> Y \<longrightarrow>
              aa \<le>\<^sub>D b \<or>  b \<le>\<^sub>D aa")
- apply blast apply (thin_tac "\<exists>x. Wa D x f a \<and> aa \<in> x") 
+ apply blast apply (thin_tac "\<exists>x. Wa D x f a \<and> aa \<in> x")
   apply (thin_tac "\<exists>x. Wa D x f a \<and> b \<in> x") apply (rule allI)+
   apply (rule impI) apply (erule conjE)+
   apply (subgoal_tac "ordered_set D") prefer 2 apply (simp add:S_inductive_set_def)
@@ -1056,25 +1058,25 @@ apply (simp add: minimum_elem_def) apply (erule conjE)+
  apply blast apply simp
  apply (frule_tac A = X and B = "\<Union>{W. Wa D W f a}" and C = "carrier D" in subset_trans, assumption+) apply (simp add:subsetD) apply assumption+
  apply (simp add:S_inductive_set_def)
- apply (frule_tac A = X and B = "carrier (Iod D (\<Union>{W. Wa D W f a}))" and 
+ apply (frule_tac A = X and B = "carrier (Iod D (\<Union>{W. Wa D W f a}))" and
   c = xa in subsetD, assumption+)
- apply (subgoal_tac "\<exists>Y\<in>{W. Wa D W f a}. xa \<in> Y") 
+ apply (subgoal_tac "\<exists>Y\<in>{W. Wa D W f a}. xa \<in> Y")
  prefer 2 apply (simp add:Iod_def) apply simp
   apply (subgoal_tac "\<forall>Y. Wa D Y f a \<and> xa \<in> Y \<longrightarrow> z \<le>\<^sub>D xa")
   apply blast apply (thin_tac "\<exists>x. Wa D x f a \<and> xa \<in> x")
   apply (rule allI) apply (rule impI) apply (erule conjE)
- apply (subgoal_tac "ordered_set D") 
+ apply (subgoal_tac "ordered_set D")
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = Z and ?W2.0 = Y in BNTr7, assumption+)
- apply (simp add:WWa_def) apply (simp add:WWa_def) 
+ apply (simp add:WWa_def) apply (simp add:WWa_def)
  apply (case_tac "Z \<subseteq> Y")
   apply (frule_tac A = Z and B = Y and c = z in subsetD, assumption+)
   apply (subgoal_tac "\<not> xa <\<^sub>(Iod D Y) z")
- apply (subgoal_tac "tordered_set (Iod D Y)") 
+ apply (subgoal_tac "tordered_set (Iod D Y)")
   apply (subgoal_tac "z \<in> carrier (Iod D Y)")
   apply (subgoal_tac "xa \<in> carrier (Iod D Y)")
  apply (frule_tac D = "Iod D Y" and a = xa and b = z in tordering_not2, assumption+)
  apply (simp add:Iod_def)
- apply (simp add:Iod_def) apply (simp add:Iod_def) 
+ apply (simp add:Iod_def) apply (simp add:Iod_def)
   apply (subgoal_tac "well_ordered_set (Iod D Y)")
    apply (simp add:well_ordered_set_def)
   apply (simp add:Wa_def)
@@ -1082,16 +1084,16 @@ apply (simp add: minimum_elem_def) apply (erule conjE)+
 apply simp
  apply (frule_tac A = Y and B = Z and c = xa in subsetD, assumption+)
   apply (subgoal_tac "\<not> xa <\<^sub>(Iod D Z) z")
- apply (subgoal_tac "tordered_set (Iod D Z)") 
+ apply (subgoal_tac "tordered_set (Iod D Z)")
   apply (subgoal_tac "z \<in> carrier (Iod D Z)")
   apply (subgoal_tac "xa \<in> carrier (Iod D Z)")
  apply (frule_tac D = "Iod D Z" and a = xa and b = z in tordering_not2, assumption+)
  apply (simp add:Iod_def)
- apply (simp add:Iod_def) apply (simp add:Iod_def) 
+ apply (simp add:Iod_def) apply (simp add:Iod_def)
   apply (subgoal_tac "well_ordered_set (Iod D Z)")
    apply (simp add:well_ordered_set_def)
   apply (simp add:Wa_def)
- apply (simp add:Iod_def ord_neq_def) 
+ apply (simp add:Iod_def ord_neq_def)
  apply (simp add:S_inductive_set_def)
  apply (simp add:minimum_elem_def)
  apply (subgoal_tac "\<forall>x\<in>X. \<not>  z \<le>\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x \<longrightarrow> segment (Iod D X) z \<noteq> {}") apply blast apply (thin_tac "\<exists>x\<in>X. \<not>  z \<le>\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x")
@@ -1102,7 +1104,7 @@ apply simp
  apply (subgoal_tac "\<forall>Y\<in>{W. Wa D W f a}. x \<in> Y \<longrightarrow> segment (Iod D X) z \<noteq> {}")
  apply blast apply (thin_tac "\<exists>Y\<in>{W. Wa D W f a}. x \<in> Y")
  apply (rule ballI) apply (rule impI) apply simp
- apply (subgoal_tac "ordered_set D") 
+ apply (subgoal_tac "ordered_set D")
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = Z and ?W2.0 = Y in BNTr7, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
  apply (case_tac "Z \<subseteq> Y")
  apply (frule_tac A = Z and B = Y and c = z in subsetD, assumption+)
@@ -1120,7 +1122,7 @@ apply simp
   apply (subgoal_tac "well_ordered_set (Iod D Y)") apply (simp add:well_ordered_set_def)
  apply (simp add:Wa_def)
  apply (simp add:Iod_def) apply simp
- 
+
  apply (frule_tac A = Y and B = Z and c = x in subsetD, assumption+)
  apply (subgoal_tac "\<not> z \<le>\<^sub>(Iod D Z) x")
  apply (subgoal_tac "tordered_set (Iod D Z)")
@@ -1145,8 +1147,8 @@ apply simp
   apply blast apply (thin_tac "\<exists>Y\<in>{W. Wa D W f a}. x \<in> Y")
  apply (rule ballI) apply (rule impI) apply simp
  apply (subgoal_tac "ordered_set D") prefer 2 apply (simp add:S_inductive_set_def)
- apply (frule_tac D = D and f = f and a = a and ?W1.0 = Y and ?W2.0 = Z in  
-  BNTr7, assumption+)    
+ apply (frule_tac D = D and f = f and a = a and ?W1.0 = Y and ?W2.0 = Z in
+  BNTr7, assumption+)
  apply (simp add:WWa_def Wa_def) apply (simp add:WWa_def Wa_def)
  apply (case_tac "Y \<subseteq> Z")
  apply (frule_tac A = Y and B = Z and c = x in subsetD, assumption+)
@@ -1164,13 +1166,13 @@ apply simp
  apply (rule allI) apply (rule impI)
  apply (subgoal_tac "well_ordered_set (Iod D Z)")
  apply (subgoal_tac "well_ordered_set (Iod D (segment (Iod D Y) b))")
- apply (subgoal_tac "z \<in> carrier (Iod D Z)") 
+ apply (subgoal_tac "z \<in> carrier (Iod D Z)")
  apply (frule_tac S = "Iod D Z" in well_ordered_set_is_ordered_set)
  apply (frule_tac S = "Iod D (segment (Iod D Y) b)" in well_ordered_set_is_ordered_set)
  apply (frule_tac D = "Iod D Z" and E = "Iod D (segment (Iod D Y) b)" and f = fa and a = z in ord_isom_mem, assumption+)
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = Z and ?W2.0 = Y and b = b and g = fa in BNTr4_1, assumption+)
- apply (simp add:WWa_def Wa_def) apply (simp add:WWa_def Wa_def) 
- apply (simp add:Iod_def) apply assumption apply simp 
+ apply (simp add:WWa_def Wa_def) apply (simp add:WWa_def Wa_def)
+ apply (simp add:Iod_def) apply assumption apply simp
  apply (subgoal_tac "z <\<^sub>(Iod D Y) b") prefer 2 apply (simp add:Iod_def segment_def ord_neq_def)
  apply (subgoal_tac "x \<in> carrier (Iod D (segment (Iod D Y) b))")
  apply (frule_tac D = "Iod D Z" and E = "Iod D (segment (Iod D Y) b)" and f = fa and b = x in ord_isom_surj, assumption+)
@@ -1181,7 +1183,7 @@ apply simp
  apply (subgoal_tac "Z \<subseteq> carrier D") apply (frule_tac A = Z and B = "carrier D" and c = z in subsetD, assumption+)
  apply (subgoal_tac "b \<in> Y") prefer 2 apply (simp add:Iod_def)
  apply (subgoal_tac "x <\<^sub>(Iod D Y) z") prefer 2 apply (simp add:Iod_def ord_neq_def)
- apply (subgoal_tac "ordered_set (Iod D Y)") 
+ apply (subgoal_tac "ordered_set (Iod D Y)")
  apply (frule_tac D = "Iod D Y" and a = x and b = z and c = b in ord_neq_trans)
  apply (simp add:Iod_def)
  apply (frule_tac A = Z and B = Y in psubset_imp_subset)
@@ -1205,7 +1207,7 @@ apply simp
  apply (simp add:Iod_def) apply (simp add:Iod_def)
 apply (rule conjI)
  apply (subgoal_tac "ordered_set D")
- apply (frule_tac D = D and f = f and a = a in BNTr2, assumption+) 
+ apply (frule_tac D = D and f = f and a = a in BNTr2, assumption+)
  apply simp apply (simp add:WWa_def)
  apply blast apply (simp add:S_inductive_set_def)
 apply (rule conjI)
@@ -1245,7 +1247,7 @@ apply (rule contrapos_pp, simp+)
  apply (thin_tac "\<exists>y\<in>carrier (Iod D (\<Union>{W. Wa D W f a})).
  Pre (Iod D X) x <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) y \<and> y <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x")
  apply (rule ballI) apply (rule impI)
- apply (subgoal_tac "\<exists>Z\<in>{W. Wa D W f a}. z \<in> Z") prefer 2 
+ apply (subgoal_tac "\<exists>Z\<in>{W. Wa D W f a}. z \<in> Z") prefer 2
  apply (simp add:Iod_def) apply simp
  apply (subgoal_tac "\<forall>Z. Wa D Z f a \<and> z \<in> Z \<longrightarrow> False") apply blast
   apply (thin_tac "\<exists>x. Wa D x f a \<and> z \<in> x") apply (rule allI) apply (rule impI)apply (erule conjE)+
@@ -1266,8 +1268,8 @@ apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in BNTr7,
   apply (simp add:Iod_def) apply simp
   apply (subgoal_tac "X \<subset> Z") prefer 2 apply blast
   apply (thin_tac "X \<subseteq> Z")
- apply (subgoal_tac "ordered_set D") prefer 2 apply (simp add:S_inductive_set_def) 
- apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def) 
+ apply (subgoal_tac "ordered_set D") prefer 2 apply (simp add:S_inductive_set_def)
+ apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
   apply assumption
  apply (subgoal_tac "\<forall>b\<in>carrier (Iod D Z). ord_equiv (Iod D X) (Iod D (segment (Iod D Z) b)) \<longrightarrow> False") apply blast
  apply (thin_tac "\<exists>b\<in>carrier (Iod D Z).
@@ -1313,7 +1315,7 @@ apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in BNTr7,
   apply (thin_tac "ExPre (Iod D X) x")
   apply (thin_tac "\<forall>y\<in>carrier (Iod D X). Pre (Iod D X) x <\<^sub>(Iod D X) y \<longrightarrow> \<not>  y <\<^sub>(Iod D X) x")
  apply (subgoal_tac "z <\<^sub>D b")
- apply (simp add:Iod_def segment_def ord_neq_def) 
+ apply (simp add:Iod_def segment_def ord_neq_def)
   apply (subgoal_tac "z \<in> carrier D")
   apply (subgoal_tac "x \<in> carrier D")
   apply (subgoal_tac "b \<in> carrier D")
@@ -1323,7 +1325,7 @@ apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in BNTr7,
  apply (rule_tac A = Z and B = "carrier D" and c = b in subsetD, assumption+)
   apply (simp add:Iod_def) apply (simp add:Wa_def)
  apply (frule_tac A = X and B = Z and c = x in subsetD, assumption+)
- apply (subgoal_tac "Z \<subseteq> carrier D") apply (simp add:subsetD) 
+ apply (subgoal_tac "Z \<subseteq> carrier D") apply (simp add:subsetD)
  apply (simp add:Wa_def)
  apply (subgoal_tac "Z \<subseteq> carrier D") apply (rule_tac A = Z and B = "carrier D" and c = z in subsetD) apply (simp add:Wa_def) apply assumption
  apply (simp add:Wa_def)
@@ -1333,7 +1335,7 @@ apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in BNTr7,
   apply (frule_tac S = "Iod (Iod D Z) (segment (Iod D Z) b)" in well_ordered_set_is_ordered_set)
   apply (subgoal_tac "Iod (Iod D Z) (segment (Iod D Z) b) = Iod D (segment (Iod D Z) b)") apply simp
  apply (rule Iod_sub_sub, assumption+) apply (rule subsetI) apply (simp add:segment_def Iod_def) apply (simp add:Wa_def) apply (simp add:Wa_def)
- apply (simp add:well_ordered_set_is_ordered_set) apply (simp add:S_inductive_set_def) 
+ apply (simp add:well_ordered_set_is_ordered_set) apply (simp add:S_inductive_set_def)
 (**------ ExPre --------**)
 apply (unfold ExPre_def)
 apply (subgoal_tac "\<forall>xa. xa \<in> carrier (Iod D (\<Union>{W. Wa D W f a})) \<and>
@@ -1342,7 +1344,7 @@ apply (subgoal_tac "\<forall>xa. xa \<in> carrier (Iod D (\<Union>{W. Wa D W f a
 apply (thin_tac "\<exists>xa. xa \<in> carrier (Iod D (\<Union>{W. Wa D W f a})) \<and>
  xa <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x \<and> \<not> (\<exists>y\<in>carrier (Iod D (\<Union>{W. Wa D W f a})). xa <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) y \<and> y <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x)")
 apply (rule allI) apply (rule impI) apply (erule conjE)+
-apply (subgoal_tac "\<exists>Z\<in>{W. Wa D W f a}. xa \<in> Z") 
+apply (subgoal_tac "\<exists>Z\<in>{W. Wa D W f a}. xa \<in> Z")
  prefer 2 apply (simp add:Iod_def) apply simp
  apply (subgoal_tac "\<forall>Z. Wa D Z f a \<and> xa \<in> Z \<longrightarrow> (\<exists>xa. xa \<in> carrier (Iod D X) \<and> xa <\<^sub>(Iod D X) x \<and> (\<forall>y\<in>carrier (Iod D X). xa <\<^sub>(Iod D X) y \<longrightarrow> \<not>  y <\<^sub>(Iod D X) x))") apply blast apply (thin_tac "\<exists>x. Wa D x f a \<and> xa \<in> x")
  apply (rule allI) apply (rule impI) apply (erule conjE)
@@ -1379,7 +1381,7 @@ apply (subgoal_tac "\<exists>Z\<in>{W. Wa D W f a}. xa \<in> Z")
   apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Z in
   BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
    apply assumption
-  apply (subgoal_tac "\<forall>b\<in>carrier (Iod D Z). ord_equiv (Iod D X) 
+  apply (subgoal_tac "\<forall>b\<in>carrier (Iod D Z). ord_equiv (Iod D X)
   (Iod D (segment (Iod D Z) b)) \<longrightarrow> (\<exists>xa. xa \<in> carrier (Iod D X) \<and>
   xa <\<^sub>(Iod D X) x \<and> (\<forall>y\<in>carrier (Iod D X).  xa <\<^sub>(Iod D X) y \<longrightarrow> \<not> y <\<^sub>(Iod D X) x))") apply blast
   apply (thin_tac " \<exists>b\<in>carrier (Iod D Z).
@@ -1427,10 +1429,10 @@ apply (thin_tac " well_ordered_set (Iod D (\<Union>{W. Wa D W f a}))")
  apply (thin_tac "xa \<in> carrier (Iod D (\<Union>{W. Wa D W f a}))")
  apply (thin_tac "\<forall>y\<in>carrier (Iod D (\<Union>{W. Wa D W f a})).
   xa <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) y \<longrightarrow> \<not> y <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x")
- apply (subgoal_tac "xa \<in> carrier (Iod D (segment (Iod D Z) b))")  
+ apply (subgoal_tac "xa \<in> carrier (Iod D (segment (Iod D Z) b))")
  apply (frule_tac D = "Iod D X" and E = "Iod D (segment (Iod D Z) b)" and f = h and b = xa in ord_isom_surj, assumption+)
  apply (subgoal_tac "\<forall>aa\<in>carrier (Iod D X). xa = h aa \<longrightarrow> xa \<in> carrier (Iod D X)") apply blast apply (thin_tac "\<exists>a\<in>carrier (Iod D X). xa = h a")
- apply (rule ballI) apply (rule impI) apply (subgoal_tac "aa \<in> X") 
+ apply (rule ballI) apply (rule impI) apply (subgoal_tac "aa \<in> X")
  apply simp apply (simp add:Iod_def)
  apply (subgoal_tac "xa <\<^sub>(Iod D Z) b")
   apply (simp add:Iod_def segment_def ord_neq_def)
@@ -1476,7 +1478,7 @@ apply (rule contrapos_pp, simp+)
  apply (rule allI) apply (rule impI) apply (erule conjE)+
  apply (subgoal_tac "xa \<in> carrier (Iod D (\<Union>{W. Wa D W f a})) \<and>  xa <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x \<and> (\<forall>y\<in>carrier (Iod D (\<Union>{W. Wa D W f a})). xa <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) y \<longrightarrow> \<not> y <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x)")
  apply blast
-apply (rule conjI)  
+apply (rule conjI)
  apply (subgoal_tac "X \<subseteq> \<Union>{W. Wa D W f a}")
  apply (subgoal_tac "xa \<in> X") prefer 2  apply (simp add:Iod_def)
  apply (frule_tac A = X and B = "\<Union>{W. Wa D W f a}" and c = xa in subsetD, assumption+)
@@ -1494,7 +1496,7 @@ apply (rule conjI)
  apply (case_tac "Y \<subseteq> X")
  apply (frule_tac A = Y and B = X and c = y in subsetD, assumption+)
  apply (subgoal_tac "y \<in> carrier (Iod D X)") prefer 2 apply (simp add:Iod_def)
-  apply (subgoal_tac "xa <\<^sub>(Iod D X) y \<longrightarrow> \<not>  y <\<^sub>(Iod D X) x") 
+  apply (subgoal_tac "xa <\<^sub>(Iod D X) y \<longrightarrow> \<not>  y <\<^sub>(Iod D X) x")
   prefer 2 apply simp apply (thin_tac "\<forall>y\<in>carrier (Iod D X).  xa <\<^sub>(Iod D X) y \<longrightarrow> \<not>  y <\<^sub>(Iod D X) x")
   apply (subgoal_tac "xa <\<^sub>(Iod D X) y") apply simp
   apply (simp add:Iod_def ord_neq_def) apply (simp add:Iod_def ord_neq_def)
@@ -1504,7 +1506,7 @@ apply simp apply (subgoal_tac "X \<subset> Y") apply (thin_tac "X \<subseteq> Y"
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Y in BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
  apply assumption+
  apply (subgoal_tac "\<forall>b\<in>carrier (Iod D Y). ord_equiv (Iod D X) (Iod D (segment (Iod D Y) b)) \<longrightarrow> (\<not>  y <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x)")
- apply blast 
+ apply blast
   apply (thin_tac "\<exists>b\<in>carrier (Iod D Y). ord_equiv (Iod D X) (Iod D (segment (Iod D Y) b))")
  apply (rule ballI) apply (rule impI) apply (simp add:ord_equiv_def)
  apply (subgoal_tac "\<forall>h. ord_isom (Iod D X) (Iod D (segment (Iod D Y) b)) h \<longrightarrow> (\<not> y <\<^sub>(Iod D (\<Union>{W. Wa D W f a})) x)") apply blast
@@ -1546,7 +1548,7 @@ apply simp apply (subgoal_tac "X \<subset> Y") apply (thin_tac "X \<subseteq> Y"
  apply (subgoal_tac "b \<in> carrier (Iod D Y)")
  apply (frule_tac D = "Iod D Y" and a = y and b = b in tordering_not2, assumption+)
  apply (subgoal_tac "x \<in> carrier (Iod D X)") prefer 2 apply (simp add:Iod_def)
-  prefer 2 apply (simp add:Iod_def) 
+  prefer 2 apply (simp add:Iod_def)
  apply (subgoal_tac "ordered_set (Iod D X)")
  apply (subgoal_tac "ordered_set (Iod D (segment (Iod D Y) b))")
  apply (frule_tac D = "Iod D X" and E = "Iod D (segment (Iod D Y) b)" and f = h and a = x in ord_isom_mem, assumption+) apply simp
@@ -1554,11 +1556,11 @@ apply simp apply (subgoal_tac "X \<subset> Y") apply (thin_tac "X \<subseteq> Y"
  apply (subgoal_tac "b \<le>\<^sub>(Iod D (\<Union>{W. Wa D W f a})) y")
  apply (frule_tac S = "Iod D (\<Union>{W. Wa D W f a})" in well_ordered_set_is_ordered_set)
  apply (subgoal_tac "x \<in> carrier (Iod D (\<Union>{W. Wa D W f a}))")
- apply (subgoal_tac "b \<in> carrier (Iod D (\<Union>{W. Wa D W f a}))") 
+ apply (subgoal_tac "b \<in> carrier (Iod D (\<Union>{W. Wa D W f a}))")
  apply (subgoal_tac "y \<in> carrier (Iod D (\<Union>{W. Wa D W f a}))")
  apply (frule_tac a = x and b = b and c = y in ordering_axiom3 [of "Iod D (\<Union>{W. Wa D W f a})"], assumption+)
  apply (rule contrapos_pp, simp+)
- apply (subgoal_tac "tordered_set (Iod D (\<Union>{W. Wa D W f a}))") 
+ apply (subgoal_tac "tordered_set (Iod D (\<Union>{W. Wa D W f a}))")
  prefer 2 apply (simp add:well_ordered_set_def)
  apply (frule_tac D = "Iod D (\<Union>{W. Wa D W f a})" and a = y and b = x in tordering_not1, assumption+) apply simp
  apply (simp add:Iod_def) apply blast
@@ -1581,7 +1583,7 @@ apply (rule equalityI)
  apply (subgoal_tac "\<forall>Y. Wa D Y f a \<and> xa \<in> Y \<longrightarrow> xa \<in> X")
  apply blast apply (thin_tac "\<exists>x. Wa D x f a \<and> xa \<in> x")
  apply (rule allI) apply (rule impI) apply (erule conjE)
- (**--- overup again ---**) 
+ (**--- overup again ---**)
  apply (subgoal_tac "ordered_set D") prefer 2 apply (simp add:S_inductive_set_def)
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Y in BNTr7, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
  apply (case_tac "Y \<subseteq> X")
@@ -1591,7 +1593,7 @@ apply simp apply (subgoal_tac "X \<subset> Y") apply (thin_tac "X \<subseteq> Y"
  apply (frule_tac D = D and f = f and a = a and ?W1.0 = X and ?W2.0 = Y in BNTr6, assumption+) apply (simp add:WWa_def) apply (simp add:WWa_def)
  apply assumption+
  apply (subgoal_tac "\<forall>b\<in>carrier (Iod D Y). ord_equiv (Iod D X) (Iod D (segment (Iod D Y) b)) \<longrightarrow> xa \<in> X")
- apply blast 
+ apply blast
   apply (thin_tac "\<exists>b\<in>carrier (Iod D Y). ord_equiv (Iod D X) (Iod D (segment (Iod D Y) b))")
  apply (rule ballI) apply (rule impI) apply (simp add:ord_equiv_def)
  apply (subgoal_tac "\<forall>h. ord_isom (Iod D X) (Iod D (segment (Iod D Y) b)) h \<longrightarrow> xa \<in> X") apply blast
@@ -1605,10 +1607,10 @@ apply simp apply (subgoal_tac "X \<subset> Y") apply (thin_tac "X \<subseteq> Y"
   apply (subgoal_tac "ordered_set (Iod D (segment (Iod D Y) b))")
   apply (subgoal_tac "x \<in> carrier (Iod D X)")
   apply (frule_tac D = "Iod D X" and E = "Iod D (segment (Iod D Y) b)" and f = h and a = x in ord_isom_mem, assumption+) apply simp
-  apply (subgoal_tac "x <\<^sub>D b") prefer 2 apply (simp add:Iod_def segment_def ord_neq_def) 
+  apply (subgoal_tac "x <\<^sub>D b") prefer 2 apply (simp add:Iod_def segment_def ord_neq_def)
   apply (frule_tac A = X and B = Y in psubset_imp_subset)
   apply (frule_tac A = X and B = Y and c = x in subsetD, assumption+)
-  apply (subgoal_tac "xa \<in> carrier D") 
+  apply (subgoal_tac "xa \<in> carrier D")
   apply (subgoal_tac "x \<in> carrier D")
   apply (subgoal_tac "b \<in> carrier D")
   apply (subgoal_tac "xa <\<^sub>D x") prefer 2 apply (simp add:ord_neq_def)
@@ -1637,8 +1639,8 @@ apply (simp add:WWa_def)
  apply (subgoal_tac "well_ordered_set (Iod D (\<Union>{W. Wa D W f a}))")
  prefer 2 apply (simp add:Wa_def)
  apply (subgoal_tac "tordered_set (Iod D (\<Union>{W. Wa D W f a}))")
- apply (subgoal_tac "(\<Union>{W. Wa D W f a}) \<subseteq> carrier D") 
- prefer 2 apply (simp add:Wa_def) 
+ apply (subgoal_tac "(\<Union>{W. Wa D W f a}) \<subseteq> carrier D")
+ prefer 2 apply (simp add:Wa_def)
 apply (frule S_inductive_ordered [of "D"])
 apply (rule_tac D = D and X = "\<Union>{W. Wa D W f a}" in tordered_Chain, assumption+)
 apply (simp add:well_ordered_set_def)
@@ -1654,7 +1656,7 @@ apply (simp add:WWa_def)
 done
 
 lemma BNTr8_3:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); \<exists>xa. Wa D xa f a \<and> x \<in> xa\<rbrakk> \<Longrightarrow> x \<in> \<Union>WWa D f a"
-apply (subgoal_tac "\<forall>xa. Wa D xa f a \<and> x \<in> xa \<longrightarrow> x \<in> \<Union>WWa D f a")  
+apply (subgoal_tac "\<forall>xa. Wa D xa f a \<and> x \<in> xa \<longrightarrow> x \<in> \<Union>WWa D f a")
 apply blast apply (thin_tac "\<exists>xa. Wa D xa f a \<and> x \<in> xa")
 apply (rule allI) apply (rule impI) apply (simp add:WWa_def) apply blast
 done
@@ -1664,7 +1666,7 @@ apply auto
  apply (simp add:Wa_def) apply (erule conjE) apply (simp add:subsetD)
 done
 
-lemma BNTr8_4_1:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); x \<in> \<Union>WWa D f a \<rbrakk> \<Longrightarrow> x \<in> carrier D" 
+lemma BNTr8_4_1:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x); x \<in> \<Union>WWa D f a \<rbrakk> \<Longrightarrow> x \<in> carrier D"
 apply (simp add:WWa_def)
 apply (rule BNTr8_4, assumption+)
 done
@@ -1682,7 +1684,7 @@ apply (rule conjI)
  apply (thin_tac "\<forall>y\<in>WWa D f a. \<forall>z\<in>y.  z \<le>\<^sub>D b")
  apply (thin_tac "\<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)")
  apply (thin_tac "\<forall>y\<in>carrier (Iod D (insert b (\<Union>WWa D f a))).   xa <\<^sub>(Iod D (insert b (\<Union>WWa D f a))) y \<longrightarrow>  \<not>  y <\<^sub>(Iod D (insert b (\<Union>WWa D f a))) x")
- apply (simp add:Iod_def ord_neq_def) 
+ apply (simp add:Iod_def ord_neq_def)
  apply (case_tac "xa = b") apply (erule conjE)+ apply simp
  apply (frule S_inductive_ordered [of "D"])
  apply (frule_tac a = x and b = b in ordering_axiom2[of "D"])
@@ -1714,7 +1716,7 @@ apply (rule allI)
  apply (rule conjI) apply (simp add:Iod_def)
  apply (rule conjI) apply (simp add:Iod_def ord_neq_def)
 apply (rule ballI) apply (rule impI)
- apply (subgoal_tac "y \<in> (insert b (\<Union>WWa D f a))") 
+ apply (subgoal_tac "y \<in> (insert b (\<Union>WWa D f a))")
  prefer 2 apply (simp add:Iod_def)
  apply simp
  apply (case_tac "y = b")
@@ -1730,8 +1732,8 @@ apply (rule ballI) apply (rule impI)
  apply (subgoal_tac "tordered_set (Iod D (insert b (\<Union>WWa D f a)))")
  prefer 2 apply (simp add:well_ordered_set_def)
  apply (subgoal_tac "x \<le>\<^sub>(Iod D (insert b (\<Union>WWa D f a))) b")
- apply (frule_tac D = "Iod D (insert b (\<Union>WWa D f a))" and a = x and b = b in 
- tordering_not3, assumption+) 
+ apply (frule_tac D = "Iod D (insert b (\<Union>WWa D f a))" and a = x and b = b in
+ tordering_not3, assumption+)
  apply (thin_tac "xa \<in> carrier (Iod D (\<Union>WWa D f a))")
  apply (thin_tac "xa <\<^sub>(Iod D (\<Union>WWa D f a)) x")
  apply (thin_tac "\<forall>y\<in>carrier (Iod D (\<Union>WWa D f a)).
@@ -1742,7 +1744,7 @@ apply (rule ballI) apply (rule impI)
  apply blast apply (thin_tac "\<exists>X\<in>WWa D f a. x \<in> X")
  apply (rule ballI) apply (rule impI)
  apply (subgoal_tac "x \<le>\<^sub>D b") prefer 2 apply blast apply (simp add:Iod_def)
- apply (simp add:Iod_def) 
+ apply (simp add:Iod_def)
  apply (rule subsetI) apply simp apply (subgoal_tac "\<forall>x\<in>WWa D f a. xb \<in> x \<longrightarrow>
  xb \<in> carrier D") apply blast apply (thin_tac "\<exists>x\<in>WWa D f a. xb \<in> x")
  apply (rule ballI) apply (rule impI)
@@ -1757,7 +1759,7 @@ apply (thin_tac "\<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)")
  apply (thin_tac "xa <\<^sub>(Iod D (insert b (\<Union>WWa D f a))) y")
 apply (simp add:WWa_def) apply (simp add:Wa_def)
 apply simp
- apply (subgoal_tac "y \<in> insert b (\<Union>WWa D f a)") 
+ apply (subgoal_tac "y \<in> insert b (\<Union>WWa D f a)")
  prefer 2 apply (simp add:Iod_def) apply simp
  apply (subgoal_tac "y \<in> carrier (Iod D (\<Union>WWa D f a))")
  apply (subgoal_tac "xa <\<^sub>(Iod D (\<Union>WWa D f a)) y \<longrightarrow> \<not>  y <\<^sub>(Iod D (\<Union>WWa D f a)) x") prefer 2 apply simp
@@ -1785,8 +1787,8 @@ apply simp
  prefer 2 apply (simp add:WWa_def Wa_def)
  apply (frule S_inductive_ordered [of "D"])
  apply (frule_tac D = D and X = "(\<Union>WWa D f a)" and a = b in well_ord_adjunction)
- apply (rule subsetI) apply (simp add:WWa_def) 
- apply (rule BNTr8_4, assumption+) apply blast apply assumption 
+ apply (rule subsetI) apply (simp add:WWa_def)
+ apply (rule BNTr8_4, assumption+) apply blast apply assumption
 (** well_ordered ---- done **)
 apply simp
 apply (subgoal_tac "x \<in> carrier (Iod D (insert b (\<Union>WWa D f a)))")
@@ -1799,7 +1801,7 @@ apply (frule_tac S = "Iod D (insert b (\<Union>WWa D f a))" and a = x and ?a1.0 
  apply simp
  apply (rule ballI) apply (rule impI)
  apply (case_tac "y = b") apply simp
- apply (subgoal_tac "x \<le>\<^sub>D b") 
+ apply (subgoal_tac "x \<le>\<^sub>D b")
  apply (subgoal_tac "tordered_set (Iod D (insert b (\<Union>WWa D f a)))")
  prefer 2 apply (simp add:well_ordered_set_def)
  apply (rule_tac D = "Iod D (insert b (\<Union>WWa D f a))" and a = x and b = b in tordering_not3, assumption+) apply (simp add:Iod_def)
@@ -1817,7 +1819,7 @@ apply (frule_tac S = "Iod D (insert b (\<Union>WWa D f a))" and a = x and ?a1.0 
  apply (subgoal_tac "\<forall>X\<in>WWa D f a. x \<in> X \<longrightarrow> x \<le>\<^sub>D b") apply blast
  apply (thin_tac "\<exists>X\<in>WWa D f a. x \<in> X") apply (rule ballI) apply (rule impI)
  apply blast
- apply (subgoal_tac "y \<in> carrier (Iod D (\<Union>WWa D f a))") 
+ apply (subgoal_tac "y \<in> carrier (Iod D (\<Union>WWa D f a))")
  prefer 2 apply (simp add:Iod_def) apply (erule conjE)+
  apply (subgoal_tac "Pre (Iod D (\<Union>WWa D f a)) x <\<^sub>(Iod D (\<Union>WWa D f a)) y \<longrightarrow>
               \<not>  y <\<^sub>(Iod D (\<Union>WWa D f a)) x")
@@ -1845,14 +1847,14 @@ lemma BNTr9:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier
 \<forall>x\<in>carrier D. x \<le>\<^sub>D (f x)\<rbrakk> \<Longrightarrow> (\<Union>WWa D f a) \<union> {Sup D (\<Union>WWa D f a)} \<in> WWa D f a"
 apply (frule S_inductive_ordered [of "D"])
 apply (frule_tac D = D and f = f and a = a in BNTr8_1, assumption+)
-apply (simplesubst WWa_def)  
+apply (simplesubst WWa_def)
 apply simp
-apply (simplesubst Wa_def) 
+apply (simplesubst Wa_def)
 apply (rule conjI)
 (*** insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}) \<subseteq> carrier D ***)
  apply (frule_tac D = D and f = f and a = a in BNTr8, assumption+)
  apply (unfold WWa_def)  apply simp
- apply (rule conjI) 
+ apply (rule conjI)
  apply (simp add:S_inductive_sup_mem)
  apply (rule subsetI) apply simp
  apply (rule_tac D = D and f = f and a = a and x = x in BNTr8_4, assumption+)
@@ -1875,8 +1877,8 @@ apply (rule conjI)
  apply (simp add:WWa_def)
 apply (rule conjI)
  apply (rule ballI)
- apply (case_tac "x = (Sup D (\<Union>{W. Wa D W f a}))") 
- apply (frule_tac D = D and X = "(\<Union>{W. Wa D W f a})" in S_inductive_sup_bound, assumption+) 
+ apply (case_tac "x = (Sup D (\<Union>{W. Wa D W f a}))")
+ apply (frule_tac D = D and X = "(\<Union>{W. Wa D W f a})" in S_inductive_sup_bound, assumption+)
 apply (frule_tac D = D and f = f and a = a in BNTr8_2, assumption+)
  apply (unfold WWa_def) apply blast
 apply simp
@@ -1884,20 +1886,20 @@ apply simp
  apply (thin_tac " \<exists>xa. Wa D xa f a \<and> x \<in> xa") apply (rule allI)
  apply (rule impI) apply (erule conjE) apply (simp add:Wa_def)
 apply (rule ballI)
- apply (case_tac "ExPre (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}))) x") apply simp 
+ apply (case_tac "ExPre (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}))) x") apply simp
 prefer 2 apply simp
 (** \<not> ExPre (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}))) x *)
- apply (rule impI) 
+ apply (rule impI)
  apply (case_tac "x = Sup D (\<Union>{W. Wa D W f a})")
  apply (case_tac "x \<in> \<Union>{W. Wa D W f a}")
  apply (frule sym) apply (thin_tac "x = Sup D (\<Union>{W. Wa D W f a})")
  apply simp apply (thin_tac "Sup D (\<Union>{W. Wa D W f a}) = x")
- apply (subgoal_tac "insert x (\<Union>{W. Wa D W f a}) =\<Union>{W. Wa D W f a}")  
+ apply (subgoal_tac "insert x (\<Union>{W. Wa D W f a}) =\<Union>{W. Wa D W f a}")
  prefer 2  apply (subgoal_tac "\<forall>X. Wa D X f a \<and> x \<in> X \<longrightarrow> insert x (\<Union>{W. Wa D W f a}) = \<Union>{W. Wa D W f a}") apply blast apply (thin_tac "\<exists>xa. Wa D xa f a \<and> x \<in> xa") apply (rule allI) apply (rule impI)
  apply (thin_tac " \<not> ExPre (Iod D (insert x (\<Union>{W. Wa D W f a}))) x")
  apply (rule equalityI)
   apply (rule subsetI) apply simp apply blast
-  apply (rule subsetI) apply simp 
+  apply (rule subsetI) apply simp
 apply simp apply (thin_tac "insert x (\<Union>{W. Wa D W f a}) = \<Union>{W. Wa D W f a}")
  apply (frule_tac D = D and f = f and a = a in BNTr8, assumption+)
  apply (simp add:WWa_def)
@@ -1932,7 +1934,7 @@ apply (subgoal_tac "segment (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<
  apply (simp add:Iod_def segment_def ord_neq_def)
  apply (subgoal_tac "\<forall>Y. Wa D Y f a \<and> xa \<in> Y \<longrightarrow> (xa \<le>\<^sub>D (Sup D (\<Union>{W. Wa D W f a})) \<and> xa \<noteq> (Sup D (\<Union>{W. Wa D W f a})))") apply blast
  apply (thin_tac "\<exists>x. Wa D x f a \<and> xa \<in> x")
- apply (rule allI) apply (rule impI) 
+ apply (rule allI) apply (rule impI)
  apply (frule_tac D = D and X = "\<Union>{W. Wa D W f a}" in S_inductive_sup_bound,
                                    assumption+)
  apply (subgoal_tac "xa \<in> \<Union>{W. Wa D W f a}")
@@ -1940,20 +1942,20 @@ apply (subgoal_tac "segment (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<
  prefer 2 apply blast
   apply (thin_tac "\<forall>x\<in>\<Union>{W. Wa D W f a}.  x \<le>\<^sub>D (Sup D (\<Union>{W. Wa D W f a}))")
   apply simp
-  apply (rule contrapos_pp, simp+) apply blast 
+  apply (rule contrapos_pp, simp+) apply blast
  apply (thin_tac "\<forall>x\<in>\<Union>{W. Wa D W f a}.  x \<le>\<^sub>D (Sup D (\<Union>{W. Wa D W f a}))")
  apply simp apply blast
 apply simp
- apply (subgoal_tac "segment (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}))) x = segment (Iod D (\<Union>{W. Wa D W f a})) x") 
+ apply (subgoal_tac "segment (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}))) x = segment (Iod D (\<Union>{W. Wa D W f a})) x")
  apply simp
  apply (subgoal_tac "\<not> ExPre (Iod D (\<Union>{W. Wa D W f a})) x")
  apply (frule_tac D = D and f = f and a = a in BNTr8, assumption+)
  apply (simp add:WWa_def)
- apply (subgoal_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a") apply simp 
+ apply (subgoal_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a") apply simp
  apply (frule_tac D = D and f = f and a = a and x = x in BNTr8_3, assumption+)
  apply (thin_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a")
  apply (thin_tac "\<exists>xa. Wa D xa f a \<and> x \<in> xa")
-apply (simp only:Wa_def) apply (erule conjE)+ 
+apply (simp only:Wa_def) apply (erule conjE)+
  apply (subgoal_tac "if ExPre (Iod D (\<Union>WWa D f a)) x then f (Pre (Iod D (\<Union>WWa D f a)) x) = x  else if a \<noteq> x then Sup D (segment (Iod D (\<Union>WWa D f a)) x) = x
   else a = a") prefer 2 apply blast
  apply (thin_tac "\<forall>x\<in>\<Union>WWa D f a. if ExPre (Iod D (\<Union>WWa D f a)) x  then f (Pre (Iod D (\<Union>WWa D f a)) x) = x else if a \<noteq> x then Sup D (segment (Iod D (\<Union>WWa D f a)) x) = x else a = a")
@@ -1966,7 +1968,7 @@ apply (rule contrapos_pp, simp+)
  apply (subgoal_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a") apply simp
  apply (frule_tac D = D and f = f and a = a and b = "Sup D (\<Union>WWa D f a)" and x = x in BNTr8_6, assumption+)
  apply (frule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_mem, assumption+)
- apply (rule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_bound, assumption+) apply (thin_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a") 
+ apply (rule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_bound, assumption+) apply (thin_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a")
  apply (simp add:WWa_def) apply simp apply (simp add:WWa_def)
  (** done **)
 (*** segment (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a})))
@@ -1996,11 +1998,11 @@ apply (rule equalityI)
  = f (Pre (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}))) x) =  x --**)
 apply (case_tac "x = Sup D (\<Union>{W. Wa D W f a})")
  apply (case_tac "x \<notin> \<Union>{W. Wa D W f a}")
- prefer 2 apply simp 
+ prefer 2 apply simp
  apply (subgoal_tac "\<forall>X. Wa D X f a \<and>  Sup D (\<Union>{W. Wa D W f a}) \<in> X \<longrightarrow>
   f (Pre (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a})))
     (Sup D (\<Union>{W. Wa D W f a}))) =  Sup D (\<Union>{W. Wa D W f a})")
- apply blast apply (thin_tac "\<exists>x. Wa D x f a \<and> Sup D (\<Union>{W. Wa D W f a}) \<in> x") apply (rule allI) apply (rule impI) 
+ apply blast apply (thin_tac "\<exists>x. Wa D x f a \<and> Sup D (\<Union>{W. Wa D W f a}) \<in> x") apply (rule allI) apply (rule impI)
  apply (frule sym) apply (thin_tac "x = Sup D (\<Union>{W. Wa D W f a})") apply simp
  apply (thin_tac "Sup D (\<Union>{W. Wa D W f a}) = x")
  apply (subgoal_tac "insert x (\<Union>{W. Wa D W f a}) = \<Union>{W. Wa D W f a}")
@@ -2013,7 +2015,7 @@ apply (case_tac "x = Sup D (\<Union>{W. Wa D W f a})")
   apply (subgoal_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a") apply simp
   apply (thin_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a")
  apply (subgoal_tac "x \<in> (\<Union>WWa D f a)")
- apply (simp only:Wa_def) 
+ apply (simp only:Wa_def)
  apply simp apply (subst WWa_def) apply blast apply (simp add:WWa_def)
 (*** case  x = Sup D (\<Union>{W. Wa D W f a}); x \<notin> \<Union>{W. Wa D W f a} ***)
    (** if ExPre the Pre is the Sup **)
@@ -2022,7 +2024,7 @@ apply (case_tac "x = Sup D (\<Union>{W. Wa D W f a})")
  prefer 2  apply (frule_tac D = D and f = f and a = a in BNTr8, assumption+)
   apply (thin_tac "x = Sup D (\<Union>{W. Wa D W f a}) \<or> (\<exists>xa. Wa D xa f a \<and> x \<in> xa)")
   apply (thin_tac "ExPre (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}))) x")
- apply (simp add:WWa_def) apply (simp add:Wa_def) 
+ apply (simp add:WWa_def) apply (simp add:Wa_def)
  (*************)
  apply (frule_tac D = D and X = "(\<Union>WWa D f a)" and a = "Sup D (\<Union>{W. Wa D W f a})" in well_ord_adjunction)
   apply (frule_tac D = D and f = f and a = a in BNTr8, assumption+)
@@ -2030,20 +2032,20 @@ apply (case_tac "x = Sup D (\<Union>{W. Wa D W f a})")
  apply (frule_tac D = D and X = "\<Union>{W. Wa D W f a}" in S_inductive_sup_mem, assumption+)
  apply (frule_tac D = D and X = "\<Union>{W. Wa D W f a}" in S_inductive_sup_bound, assumption+) apply (simp add:WWa_def) apply simp (*preparation done*)
  apply (frule sym) apply (thin_tac "x = Sup D (\<Union>{W. Wa D W f a})") apply simp
- apply (subgoal_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a")  prefer 2 apply (simp add:WWa_def) 
+ apply (subgoal_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a")  prefer 2 apply (simp add:WWa_def)
 apply simp
  apply (subgoal_tac "x \<in> carrier (Iod D (insert (Sup D (\<Union>WWa D f a)) (\<Union>WWa D f a)))") prefer 2 apply (simp add:Iod_def)
  apply (frule_tac S = "Iod D (insert x (\<Union>WWa D f a))" and a = x in Pre_element) apply simp apply assumption  (**  ============o----------o
                                               Pre        Sup   ***)
   apply (erule conjE)+
-  apply simp 
+  apply simp
  apply (frule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_bound)
-  apply assumption 
+  apply assumption
   apply (subgoal_tac "\<forall>z\<in>\<Union>WWa D f a. z \<le>\<^sub>D (Pre (Iod D (insert x (\<Union>WWa D f a))) x)") prefer 2
   apply (rule ballI)
   apply (subgoal_tac "Pre (Iod D (insert x (\<Union>WWa D f a))) x <\<^sub>(Iod D (insert x (\<Union>WWa D f a))) z \<longrightarrow>  \<not>  z <\<^sub>(Iod D (insert x (\<Union>WWa D f a))) x")
-   prefer 2 
-   apply (subgoal_tac "z \<in> carrier (Iod D (insert x (\<Union>WWa D f a)))") 
+   prefer 2
+   apply (subgoal_tac "z \<in> carrier (Iod D (insert x (\<Union>WWa D f a)))")
    apply blast
    apply (thin_tac "\<forall>x\<in>\<Union>WWa D f a.  x \<le>\<^sub>D (Sup D (\<Union>WWa D f a))")
    apply (thin_tac "\<forall>y\<in>carrier (Iod D (insert x (\<Union>WWa D f a))). Pre (Iod D (insert x (\<Union>WWa D f a))) x <\<^sub>(Iod D (insert x (\<Union>WWa D f a))) y \<longrightarrow>  \<not>  y <\<^sub>(Iod D (insert x (\<Union>WWa D f a))) x")
@@ -2055,13 +2057,13 @@ apply simp
   apply (frule_tac D = "Iod D (insert x (\<Union>WWa D f a))" and a = z and b = "Pre (Iod D (insert x (\<Union>WWa D f a))) x" in  tordering_not, assumption+)
    apply (simp add:Iod_def)
    apply (thin_tac "\<forall>y\<in>carrier (Iod D (insert x (\<Union>WWa D f a))).  Pre (Iod D (insert x (\<Union>WWa D f a))) x <\<^sub>(Iod D (insert x (\<Union>WWa D f a))) y \<longrightarrow> \<not>  y <\<^sub>(Iod D (insert x (\<Union>WWa D f a))) x") apply simp
-   apply (subgoal_tac "x \<in> carrier (Iod D (insert x (\<Union>WWa D f a)))") 
+   apply (subgoal_tac "x \<in> carrier (Iod D (insert x (\<Union>WWa D f a)))")
     prefer 2 apply (simp add:Iod_def)
    apply (frule_tac D = "Iod D (insert x (\<Union>WWa D f a))" and a = z and b = x in  tordering_not2, assumption+)
    apply (subgoal_tac "x \<le>\<^sub>D  z") prefer 2 apply (simp add:Iod_def)
  apply simp
  apply (frule_tac a = x and b = z in ordering_axiom2 [of "D"])
- apply (frule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_mem, assumption+) apply simp 
+ apply (frule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_mem, assumption+) apply simp
    apply (thin_tac "ExPre (Iod D (insert x (\<Union>WWa D f a))) x")
    apply (thin_tac "well_ordered_set (Iod D (\<Union>WWa D f a))")
    apply (thin_tac "Chain D (\<Union>WWa D f a)")
@@ -2079,7 +2081,7 @@ apply simp
    apply (thin_tac "\<forall>x\<in>\<Union>WWa D f a.  x \<le>\<^sub>D (Sup D (\<Union>WWa D f a))") apply simp
   apply blast
   apply (thin_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a") apply simp
-   apply (thin_tac "\<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)") 
+   apply (thin_tac "\<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)")
    apply (thin_tac "ExPre (Iod D (insert z (\<Union>WWa D f a))) z")
    apply (thin_tac "well_ordered_set (Iod D (\<Union>WWa D f a))")
    apply (thin_tac "well_ordered_set (Iod D (insert z (\<Union>WWa D f a)))")
@@ -2088,10 +2090,10 @@ apply simp
    apply (thin_tac "\<forall>y\<in>WWa D f a. \<forall>x\<in>y.  x \<le>\<^sub>D z")
    apply (thin_tac " \<not>  z <\<^sub>(Iod D (insert z (\<Union>WWa D f a))) z")
   apply (simp add:WWa_def)
-apply (simp add:well_ordered_set_def) 
+apply (simp add:well_ordered_set_def)
 (**-- pre is upper_bound ---*)
-apply simp  
-apply (subgoal_tac "Pre (Iod D (insert x (\<Union>WWa D f a))) x \<in> upper_bounds D (\<Union>WWa D f a)") 
+apply simp
+apply (subgoal_tac "Pre (Iod D (insert x (\<Union>WWa D f a))) x \<in> upper_bounds D (\<Union>WWa D f a)")
  prefer 2 apply (simp add:upper_bounds_def upper_bound_def)
   apply (subgoal_tac "carrier (Iod D (insert x (\<Union>WWa D f a))) \<subseteq> carrier D")
   apply (simp add:subsetD)
@@ -2138,7 +2140,7 @@ apply (subgoal_tac "tordered_set (Iod D (insert x0 (\<Union>WWa D f a)))")
  apply (frule_tac D = "Iod D (insert x0 (\<Union>WWa D f a))" and a = "Pre (Iod D (insert x0 (\<Union>WWa D f a))) x0" and b = x0 in tordering_not1, assumption+)
  apply (simp add:Iod_def)
  apply (simp add:Iod_def)
-(** ExPre (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}))) x 
+(** ExPre (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a}))) x
   \<Longrightarrow>  f (Pre (Iod D (insert (Sup D (\<Union>{W. Wa D W f a})) (\<Union>{W. Wa D W f a})))
    x) =  x **)
 apply simp
@@ -2157,17 +2159,17 @@ apply (frule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_bound, ass
 apply (subgoal_tac "ExPre (Iod D (\<Union>{W. Wa D W f a})) x")
  apply (subgoal_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a") apply simp
  apply (frule_tac D = D and f = f and a = a and b = "Sup D (\<Union>WWa D f a)" and x = x in BNTr8_7, assumption+)
- apply (rule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_mem, assumption+) 
+ apply (rule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_mem, assumption+)
  apply (rule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_bound, assumption+)  apply simp
  apply assumption apply simp
  apply (frule_tac D = D and f = f and a = a in BNTr8, assumption+)
  apply (thin_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a")
  apply (simp add:WWa_def)
  apply (subgoal_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a") apply simp
-  prefer 2 apply (simp add:WWa_def) 
+  prefer 2 apply (simp add:WWa_def)
   apply (thin_tac "\<Union>{W. Wa D W f a} = \<Union>WWa D f a")
   apply (thin_tac "Pre (Iod D (insert (Sup D (\<Union>WWa D f a)) (\<Union>WWa D f a))) x =
-           Pre (Iod D (\<Union>WWa D f a)) x") 
+           Pre (Iod D (\<Union>WWa D f a)) x")
  apply (frule_tac D = D and f = f and a = a and x = x in BNTr8_3, assumption+)
   apply (thin_tac "\<exists>xa. Wa D xa f a \<and> x \<in> xa")
   apply (unfold Wa_def) apply (erule conjE)+ apply (fold Wa_def)
@@ -2177,11 +2179,11 @@ apply (case_tac "a \<noteq> x")
  apply (thin_tac "\<forall>x\<in>\<Union>WWa D f a. if ExPre (Iod D (\<Union>WWa D f a)) x
   then f (Pre (Iod D (\<Union>WWa D f a)) x) = x  else if a \<noteq> x then Sup D (segment (Iod D (\<Union>WWa D f a)) x) = x else a = a")
  prefer 2 apply blast apply simp
- apply simp 
+ apply simp
  apply (rotate_tac -1) apply (frule sym) apply (thin_tac "a = x")
  apply simp
  apply (thin_tac "\<forall>y\<in>WWa D f a. \<forall>x\<in>y. if ExPre (Iod D (\<Union>WWa D f a)) x
-  then f (Pre (Iod D (\<Union>WWa D f a)) x) = x  else if a \<noteq> x  then 
+  then f (Pre (Iod D (\<Union>WWa D f a)) x) = x  else if a \<noteq> x  then
   Sup D (segment (Iod D (\<Union>WWa D f a)) x) = x  else a = a")
  apply (subgoal_tac "a \<in> carrier (Iod D (\<Union>WWa D f a))")
  apply (frule_tac S = "Iod D (\<Union>WWa D f a)" and a = a in  Pre_element, assumption+)
@@ -2201,13 +2203,13 @@ apply (case_tac "a \<noteq> x")
    apply (thin_tac "ExPre (Iod D (\<Union>WWa D f a)) a")
    apply (thin_tac "well_ordered_set (Iod D (\<Union>WWa D f a))")
    apply (thin_tac "\<forall>y\<in>WWa D f a. \<forall>x\<in>y.  a \<le>\<^sub>D x")
-   apply (thin_tac "Chain D (\<Union>WWa D f a)") apply (thin_tac "a \<noteq> Sup D (\<Union>WWa D f a)") 
+   apply (thin_tac "Chain D (\<Union>WWa D f a)") apply (thin_tac "a \<noteq> Sup D (\<Union>WWa D f a)")
   apply (simp add:WWa_def Iod_def) apply (simp add:WWa_def) apply assumption
  apply (simp add:WWa_def)
 done
 
 lemma BNTr10:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D;  \<forall>x\<in>carrier D.  x \<le>\<^sub>D (f x)\<rbrakk> \<Longrightarrow> (Sup D (\<Union>WWa D f a)) \<in> (\<Union>WWa D f a)"
-apply (frule_tac D = D and f = f and a = a in BNTr9, assumption+) 
+apply (frule_tac D = D and f = f and a = a in BNTr9, assumption+)
 apply (subgoal_tac "\<Union>WWa D f a \<union> {Sup D (\<Union>WWa D f a)} \<subseteq> \<Union>WWa D f a")
 apply (subgoal_tac "(Sup D (\<Union>WWa D f a)) \<in> \<Union>WWa D f a \<union> {Sup D (\<Union>WWa D f a)}")
 apply (simp add:subsetD)
@@ -2226,10 +2228,10 @@ apply (subgoal_tac "Sup D (\<Union>WWa D f a) \<le>\<^sub>D (f (Sup D (\<Union>W
  prefer 2 apply simp
 apply (case_tac "Sup D (\<Union>WWa D f a) = (f (Sup D (\<Union>WWa D f a)))")
  apply (rule sym, assumption+)
-prefer 2 
-(**-- Chain D (\<Union>WWa D f a) --**) 
+prefer 2
+(**-- Chain D (\<Union>WWa D f a) --**)
  apply (subgoal_tac "tordered_set (Iod D (\<Union>WWa D f a))")
- prefer 2 apply (simp add:well_ordered_set_def) 
+ prefer 2 apply (simp add:well_ordered_set_def)
  apply (subgoal_tac "(\<Union>WWa D f a) \<subseteq> carrier D")
  apply (frule S_inductive_ordered [of "D"])
 apply (rule tordered_Chain, assumption+)
@@ -2246,7 +2248,7 @@ apply (subgoal_tac "well_ordered_set (Iod D (insert (f (Sup D (\<Union>WWa D f a
  apply (rule_tac a = x and b = "Sup D (\<Union>WWa D f a)" and c = "f (Sup D (\<Union>WWa D f a))" in ordering_axiom3[of "D"], assumption+)
  apply (rule BNTr8_4_1, assumption+) apply (simp add:funcset_mem)
  apply (simp add:S_inductive_sup_bound, assumption+) apply simp
-(** well_ordered_set (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) 
+(** well_ordered_set (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a)))
      done **)
 (**-- starting step 1 --**)
 apply (subgoal_tac "(\<Union>WWa D f a) \<union> {f (Sup D (\<Union>WWa D f a))} \<in> WWa D f a")
@@ -2259,21 +2261,21 @@ apply (subgoal_tac "(\<Union>WWa D f a) \<union> {f (Sup D (\<Union>WWa D f a))}
  apply (frule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_bound, assumption+)
  apply (subgoal_tac " f (Sup D (\<Union>WWa D f a)) \<le>\<^sub>D (Sup D (\<Union>WWa D f a))")
  prefer 2 apply blast
- apply (frule S_inductive_ordered [of "D"]) 
+ apply (frule S_inductive_ordered [of "D"])
 (**-- well_ordered (Iod D (\<Union>WWa D f a)), again --**)
  apply (frule_tac D = D and f = f and a = a in BNTr8, assumption+)
  apply (subgoal_tac "well_ordered_set (Iod D (\<Union>WWa D f a))")
  prefer 2 apply (simp add:WWa_def Wa_def)
- (* well_ordered done *) 
+ (* well_ordered done *)
 (**-- f (Sup D (\<Union>WWa D f a)) \<le>\<^sub>D Sup D (\<Union>WWa D f a contradicts  Sup D (\<Union>WWa D f a) <\<^sub>D f (Sup D (\<Union>WWa D f a)) --**)
  apply (subgoal_tac "\<Union>WWa D f a \<subseteq> carrier D")
  prefer 2 apply (rule subsetI)
- apply (rule_tac x = x in BNTr8_4_1, assumption+) 
+ apply (rule_tac x = x in BNTr8_4_1, assumption+)
  apply (subgoal_tac "f (Sup D (\<Union>WWa D f a)) \<le>\<^sub>D (Sup D (\<Union>WWa D f a))")
  prefer 2 apply simp apply (thin_tac "\<forall>x\<in>\<Union>WWa D f a.  x \<le>\<^sub>D (Sup D (\<Union>WWa D f a))")
  apply (frule_tac D = D and f = f and a = a and x = "f (Sup D (\<Union>WWa D f a))" in BNTr8_4_1, assumption+)
  apply (frule_tac a = "Sup D (\<Union>WWa D f a)" and b = "f (Sup D (\<Union>WWa D f a))" in ordering_axiom2 [of "D"], assumption+) apply simp
-apply (frule_tac D = D and f = f and a = a and X = "\<Union>WWa D f a \<union> {f (Sup D (\<Union>WWa D f a))}" in BNTr8_9, assumption+) 
+apply (frule_tac D = D and f = f and a = a and X = "\<Union>WWa D f a \<union> {f (Sup D (\<Union>WWa D f a))}" in BNTr8_9, assumption+)
  (** step 1, done **)
 (**-- step 2, show \<Union>WWa D f a \<union> {f (Sup D (\<Union>WWa D f a))} \<in> WWa D f a --**)
 apply (simplesubst WWa_def) apply simp
@@ -2295,7 +2297,7 @@ apply (subst Wa_def)
   apply (rule ballI) apply (rule impI) apply (subgoal_tac "X \<subseteq> carrier D")
   apply (simp add:subsetD) apply (simp add:WWa_def Wa_def)
  apply (rule conjI) apply simp
- apply (rule conjI) apply simp apply (frule S_inductive_ordered [of "D"]) 
+ apply (rule conjI) apply simp apply (frule S_inductive_ordered [of "D"])
  apply (frule_tac D = D and f = f and a = a in BNTr2, assumption+)
  apply (subgoal_tac "a \<in> {a}") apply blast apply simp
 apply (rule conjI)
@@ -2319,10 +2321,10 @@ apply (rule conjI)
   apply (thin_tac "\<forall>y\<in>WWa D f a.  \<forall>x\<in>y. if ExPre (Iod D (\<Union>WWa D f a)) x
   then f (Pre (Iod D (\<Union>WWa D f a)) x) = x  else if a \<noteq> x  then Sup D (segment (Iod D (\<Union>WWa D f a)) x) = x  else a = a")
  apply (subgoal_tac "\<forall>X. Wa D X f a \<and> x \<in> X \<longrightarrow>  a \<le>\<^sub>D x") apply blast
- apply (thin_tac "\<exists>xa. Wa D xa f a \<and> x \<in> xa") apply (rule allI) 
- apply (rule impI) apply (erule conjE) apply (unfold Wa_def) 
+ apply (thin_tac "\<exists>xa. Wa D xa f a \<and> x \<in> xa") apply (rule allI)
+ apply (rule impI) apply (erule conjE) apply (unfold Wa_def)
  apply (erule conjE)+ apply simp
-apply (rule ballI) 
+apply (rule ballI)
 (** \<forall>z\<in>(\<Union>WWa D f a). z \<le>\<^sub>D f (Sup D (\<Union>WWa D f a)) **)
  apply (subgoal_tac "\<forall>z\<in>(\<Union>WWa D f a). z \<le>\<^sub>D (f (Sup D (\<Union>WWa D f a)))")
  prefer 2  apply (rule ballI)
@@ -2339,7 +2341,7 @@ apply (rule ballI)
  prefer 2 apply simp
 apply (rule impI)
  apply (unfold ExPre_def)
- apply (case_tac "x = f (Sup D (\<Union>WWa D f a))") apply simp 
+ apply (case_tac "x = f (Sup D (\<Union>WWa D f a))") apply simp
  apply (subgoal_tac "Sup D (\<Union>WWa D f a)  \<le>\<^sub>D (f (Sup D (\<Union>WWa D f a)))")
  prefer 2 apply blast
  apply (subgoal_tac "Sup D (\<Union>WWa D f a) <\<^sub>(Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) (f (Sup D (\<Union>WWa D f a)))")
@@ -2361,7 +2363,7 @@ apply (subgoal_tac "\<forall>y\<in>carrier (Iod D (insert x (\<Union>WWa D f a))
  apply (thin_tac "\<exists>y\<in>carrier (Iod D (insert x (\<Union>WWa D f a))).  Sup D (\<Union>WWa D f a) <\<^sub>(Iod D (insert x (\<Union>WWa D f a))) y \<and> y <\<^sub>(Iod D (insert x (\<Union>WWa D f a))) x")
  apply (rule ballI) apply (rule impI)
  apply (subgoal_tac "y \<noteq> x") prefer 2 apply (simp add:Iod_def ord_neq_def)
- apply (subgoal_tac "y \<in> insert x (\<Union>WWa D f a)") 
+ apply (subgoal_tac "y \<in> insert x (\<Union>WWa D f a)")
   prefer 2 apply (simp add:Iod_def) apply simp
   apply (erule conjE)
   apply (subgoal_tac "\<forall>X\<in>WWa D f a. y \<in> X \<longrightarrow> Sup D (segment (Iod D (insert x (\<Union>WWa D f a))) x) = x") apply blast apply (thin_tac "Bex (WWa D f a) (op \<in> y)") apply (rule ballI) apply (rule impI)
@@ -2383,16 +2385,16 @@ apply (fold ExPre_def) apply simp
  prefer 2 apply (rule contrapos_pp, simp+)
  apply (subgoal_tac "\<forall>z\<in>\<Union>WWa D f a. z \<le>\<^sub>D (f (Sup D (\<Union>WWa D f a)))")
  prefer 2 apply blast apply (thin_tac "\<forall>y\<in>WWa D f a. \<forall>z\<in>y.  z \<le>\<^sub>D (f (Sup D (\<Union>WWa D f a)))")
- apply (frule_tac D = D and f = f and a = a and x = x in BNTr8_3, assumption+) 
+ apply (frule_tac D = D and f = f and a = a and x = x in BNTr8_3, assumption+)
  apply (simp add:WWa_def)
  apply (subgoal_tac "\<not> ExPre (Iod D (\<Union>WWa D f a)) x")
-  prefer 2 
-  apply (subgoal_tac "ExPre (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x") 
+  prefer 2
+  apply (subgoal_tac "ExPre (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x")
   apply (thin_tac "\<exists>xa\<in>WWa D f a. x \<in> xa") apply simp
  apply (thin_tac "\<not> ExPre (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x")
  apply (frule_tac D = D and f = f and a = a and b = "f (Sup D (\<Union>WWa D f a))" and x = x in BNTr8_6, assumption+) apply (simp add:funcset_mem)
  apply assumption+ apply simp apply simp
-(**-- segment (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x 
+(**-- segment (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x
                                    = segment (Iod D (\<Union>WWa D f a)) x --**)
 apply (subgoal_tac "segment (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x = segment (Iod D (\<Union>WWa D f a)) x") apply simp
  apply (thin_tac "segment (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x = segment (Iod D (\<Union>WWa D f a)) x")
@@ -2424,12 +2426,12 @@ apply (simp add:WWa_def)
  apply (case_tac "xa = f (Sup D (\<Union>WWa D f a))")
  apply (subgoal_tac "\<forall>X\<in>WWa D f a. x \<in> X \<longrightarrow> Bex (WWa D f a) (op \<in> xa)")
  apply blast apply (thin_tac "\<exists>xa\<in>WWa D f a. x \<in> xa")
- apply (rule ballI) apply (rule impI) 
+ apply (rule ballI) apply (rule impI)
  apply (subgoal_tac "x \<le>\<^sub>D (f (Sup D (\<Union>WWa D f a)))") prefer 2 apply blast
  apply (subgoal_tac "xa \<in> carrier D")
  apply (subgoal_tac "x \<in> carrier D")
  apply (frule S_inductive_ordered [of "D"])
- apply (frule_tac a = xa and b = x and c = "f (Sup D (\<Union>WWa D f a))" in 
+ apply (frule_tac a = xa and b = x and c = "f (Sup D (\<Union>WWa D f a))" in
  ordering_axiom3 [of "D"], assumption+) apply (simp add:funcset_mem)
  apply assumption+
  apply (subgoal_tac "xa \<noteq> f (Sup D (\<Union>WWa D f a))") apply simp
@@ -2443,7 +2445,7 @@ apply (simp add:WWa_def)
 apply (rule subsetI)
  apply (simp add:Iod_def segment_def ord_neq_def)
 (**-- ExPre (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x \<longrightarrow>
-  f (Pre (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x) =  x --**)apply (case_tac "x = f (Sup D (\<Union>WWa D f a))")        
+  f (Pre (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x) =  x --**)apply (case_tac "x = f (Sup D (\<Union>WWa D f a))")
  apply (subgoal_tac "Pre (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x = Sup D (\<Union>WWa D f a)") apply simp
  apply (rule_tac S = "Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))" and a = x and ?a1.0 = "Sup D (\<Union>WWa D f a)" in UniquePre, assumption+)
  apply (simp add:Iod_def) apply assumption
@@ -2456,28 +2458,28 @@ apply (rule conjI)
  apply (rule ballI) apply (rule impI)
  apply (subgoal_tac "y \<in> insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a)")
  prefer 2 apply (simp add:Iod_def) apply simp
- apply (case_tac "y = f (Sup D (\<Union>WWa D f a))") 
- apply (simp add:Iod_def ord_neq_def) apply simp 
+ apply (case_tac "y = f (Sup D (\<Union>WWa D f a))")
+ apply (simp add:Iod_def ord_neq_def) apply simp
  apply (thin_tac "y \<in> carrier
                   (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a)))")
- apply (thin_tac "ExPre (Iod D (insert (f (Sup D (\<Union>WWa D f a))) 
+ apply (thin_tac "ExPre (Iod D (insert (f (Sup D (\<Union>WWa D f a)))
  (\<Union>WWa D f a))) (f (Sup D (\<Union>WWa D f a)))")
  apply (subgoal_tac "y \<le>\<^sub>D (Sup D (\<Union>WWa D f a))")
  apply (subgoal_tac "y \<in> carrier (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a)))")
  apply (subgoal_tac "(Sup D (\<Union>WWa D f a)) \<in> carrier (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a)))")
- apply (subgoal_tac "tordered_set (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a)))") 
+ apply (subgoal_tac "tordered_set (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a)))")
  apply (frule_tac D = "Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))"  and a = "Sup D (\<Union>WWa D f a)" and b = y in tordering_not1, assumption+)
  apply (simp add:Iod_def) apply (simp add:well_ordered_set_def)
  apply (frule_tac D = D and f = f and a = a in BNTr10, assumption+)
- apply (simp add:Iod_def) apply (simp add:Iod_def) 
+ apply (simp add:Iod_def) apply (simp add:Iod_def)
  apply (subgoal_tac "\<exists>Y\<in>WWa D f a. y \<in> Y") prefer 2 apply blast
- apply (thin_tac "Bex (WWa D f a) (op \<in> y)") 
+ apply (thin_tac "Bex (WWa D f a) (op \<in> y)")
  apply (thin_tac "\<forall>y\<in>WWa D f a. \<forall>z\<in>y.  z \<le>\<^sub>D (f (Sup D (\<Union>WWa D f a)))")
- apply (frule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_bound, 
-            assumption+) 
+ apply (frule_tac D = D and X = "\<Union>WWa D f a" in S_inductive_sup_bound,
+            assumption+)
  apply (frule_tac D = D and f = f and a = a and x = y in BNTr8_3, assumption+)
  apply (simp add:WWa_def) apply blast
-apply simp 
+apply simp
  apply (frule_tac D = D and f = f and a = a and b = "f (Sup D (\<Union>WWa D f a))" and x = x in BNTr8_7, assumption+)
  apply (simp add:funcset_mem)
  apply simp
@@ -2490,7 +2492,7 @@ apply simp
  apply simp
  apply (subgoal_tac "\<exists>X\<in>WWa D f a. x \<in> X") prefer 2 apply simp
  apply (rule_tac D = D and f = f and a = a and x = x in BNTr8_3, assumption+)
- apply (simp add:WWa_def) 
+ apply (simp add:WWa_def)
  apply simp
   apply (thin_tac "well_ordered_set
             (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a)))")
@@ -2498,7 +2500,7 @@ apply simp
   apply (thin_tac "ExPre (Iod D (insert (f (Sup D (\<Union>WWa D f a))) (\<Union>WWa D f a))) x")
  apply (frule_tac D = D and f = f and a = a in BNTr8, assumption+)
  apply (unfold WWa_def) apply simp apply (fold WWa_def)
- apply (frule_tac D = D and f = f and a = a and x = x in BNTr8_3, assumption+) 
+ apply (frule_tac D = D and f = f and a = a and x = x in BNTr8_3, assumption+)
  apply (thin_tac "\<exists>xa. Wa D xa f a \<and> x \<in> xa")
  apply (unfold Wa_def) apply (erule conjE)+
  apply (subgoal_tac "if ExPre (Iod D (\<Union>WWa D f a)) x then f (Pre (Iod D (\<Union>WWa D f a)) x) = x  else if a \<noteq> x then Sup D (segment (Iod D (\<Union>WWa D f a)) x) = x
@@ -2538,8 +2540,8 @@ lemma maxl_fun_func:"ordered_set D \<Longrightarrow> maxl_fun D \<in> carrier D 
 apply (rule univar_func_test)
 apply (rule ballI)
  apply (simp add:maxl_fun_def) apply (rule impI)
- apply (subgoal_tac "(SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<in> upper_bounds D {x} \<and> (SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<noteq> x") 
- prefer 2 apply (rule someI2_ex, assumption+) 
+ apply (subgoal_tac "(SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<in> upper_bounds D {x} \<and> (SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<noteq> x")
+ prefer 2 apply (rule someI2_ex, assumption+)
 apply (erule conjE)+
 apply (simp add:upper_bounds_def upper_bound_def)
 done
@@ -2552,10 +2554,10 @@ apply (simp add:maxl_fun_def)
 apply (rule contrapos_pp, simp+)
 apply (subgoal_tac "\<exists>y. y \<in> upper_bounds D {x} \<and> y \<noteq> x") apply simp
 apply (subgoal_tac "(SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<in> upper_bounds D {x} \<and> (SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<noteq> x")
-prefer 2 apply (rule someI2_ex, assumption+) 
+prefer 2 apply (rule someI2_ex, assumption+)
 apply (erule conjE) apply simp
 apply (thin_tac "(if \<exists>y. y \<in> upper_bounds D {x} \<and> y \<noteq> x then SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x else x) =  x")
-apply (subgoal_tac "b \<in> upper_bounds D {x}") prefer 2 
+apply (subgoal_tac "b \<in> upper_bounds D {x}") prefer 2
  apply (simp add:upper_bounds_def upper_bound_def)
 apply (frule not_sym) apply (thin_tac "x \<noteq> b")
 apply blast
@@ -2565,14 +2567,14 @@ lemma maxl_fun_asc:"ordered_set D \<Longrightarrow> \<forall>x\<in>carrier D. x 
 apply (rule ballI)
 apply (simp add:maxl_fun_def)
  apply (rule conjI)
- apply (rule impI)  
- apply (subgoal_tac "(SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<in> upper_bounds D {x} \<and> (SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<noteq> x") 
+ apply (rule impI)
+ apply (subgoal_tac "(SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<in> upper_bounds D {x} \<and> (SOME z. z \<in> upper_bounds D {x} \<and> z \<noteq> x) \<noteq> x")
  prefer 2 apply (rule someI2_ex, assumption+) apply (erule conjE)
  apply (simp add:upper_bounds_def upper_bound_def)
 apply (rule impI)
 apply (simp add:ordering_axiom1 [of "D"])
 done
-   
+
 lemma S_inductive_maxl:"\<lbrakk>S_inductive_set D; carrier D \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>m. m \<in>carrier D \<and> maximal\<^sub>D m"
 apply (frule nonempty_ex [of "carrier D"])
  apply (subgoal_tac "\<forall>a. a \<in> carrier D \<longrightarrow> (\<exists>m. m \<in> carrier D \<and> maximal\<^sub>D m)")
@@ -2580,7 +2582,7 @@ apply (frule nonempty_ex [of "carrier D"])
 apply (rule allI) apply (rule impI)
 apply (frule S_inductive_ordered [of "D"])
 apply (frule maxl_fun_asc [of "D"])
-apply (frule maxl_fun_func [of "D"]) 
+apply (frule maxl_fun_func [of "D"])
 apply (frule_tac D = D and f = "maxl_fun D" and a = a in BNTr11, assumption+)
  apply (subgoal_tac "Chain D  (\<Union>WWa D (maxl_fun D) a)")
  apply (frule_tac D = D and X = "\<Union>WWa D (maxl_fun D) a" in S_inductive_sup_mem,  assumption+)
@@ -2605,14 +2607,14 @@ apply (subst ordered_set_def)
 done
 
 lemma fto_Chains:"\<lbrakk>ordered_set D; Chain (fto D) CC\<rbrakk> \<Longrightarrow> Chain D (\<Union> CC)"
-apply (subgoal_tac "\<Union>CC \<subseteq> carrier D")  
+apply (subgoal_tac "\<Union>CC \<subseteq> carrier D")
 apply (subst Chain_def) apply simp
 prefer 2
  apply (rule subsetI)
  apply (simp add:Chain_def) apply (erule conjE) apply (thin_tac "tordered_set (Iod (fto D) CC)")
  apply (subgoal_tac "\<forall>X\<in>CC. x \<in> X \<longrightarrow> x \<in> carrier D")
   apply blast apply (thin_tac "\<exists>X\<in>CC. x \<in> X")
- apply (rule ballI) apply (rule impI) 
+ apply (rule ballI) apply (rule impI)
  apply (frule_tac A = CC and B = "carrier (fto D)" and c = X in subsetD, assumption+) apply (thin_tac "CC \<subseteq> carrier fto D")
  apply (simp add:family_tordered_def Chains_def Chain_def) apply (erule conjE)
  apply (simp add:subsetD)
@@ -2627,7 +2629,7 @@ apply (rule ballI)+
  apply (simp add:Chain_def) apply (erule conjE)
  apply (simp add:tordered_set_def) apply (erule conjE)+
   apply (subgoal_tac "X1 \<in> carrier (Iod (fto D) CC)")
-  apply (subgoal_tac "X2 \<in> carrier (Iod (fto D) CC)")  
+  apply (subgoal_tac "X2 \<in> carrier (Iod (fto D) CC)")
   apply (subgoal_tac "X1 \<le>\<^sub>(Iod (fto D) CC) X2 \<or>  X2 \<le>\<^sub>(Iod (fto D) CC) X1")
   prefer 2 apply simp
   apply (thin_tac "\<forall>a\<in>carrier (Iod (fto D) CC). \<forall>b\<in>carrier (Iod (fto D) CC).
@@ -2659,13 +2661,13 @@ lemma fto_S_inductive:"ordered_set D \<Longrightarrow> S_inductive_set (fto D)"
 apply (simp add:S_inductive_set_def)
  apply (simp add:fto_ordered)
  apply (rule allI) apply (rule impI)
- apply (subgoal_tac "minimum_elem (fto D) (upper_bounds (fto D) C) (\<Union>C)")  
+ apply (subgoal_tac "minimum_elem (fto D) (upper_bounds (fto D) C) (\<Union>C)")
  apply (subgoal_tac "(\<Union>C) \<in> carrier (fto D)") apply blast
  apply (thin_tac "minimum_elem (fto D) (upper_bounds (fto D) C) (\<Union>C)")
  apply (frule_tac D = D and CC = C in fto_Chains, assumption+)
  apply (subst family_tordered_def) apply simp apply (simp add:Chains_def)
 (** \<Union>C is minimum_elem of the upper_bounds **)
-apply (simp add:minimum_elem_def) 
+apply (simp add:minimum_elem_def)
  apply (rule conjI)
  apply (simp add:upper_bounds_def upper_bound_def)
  apply (rule conjI)
@@ -2686,8 +2688,8 @@ apply (rule ballI)
  apply (subgoal_tac "\<forall>z. z\<in>C \<longrightarrow> z \<in>  Chains D")
  apply (subgoal_tac "\<Union>C \<in> Chains D")
  apply (simp add:family_tordered_def Iod_def)
-prefer 2 apply (simp add:Chains_def) 
- apply (rule_tac D = D and CC = C in fto_Chains, assumption+) 
+prefer 2 apply (simp add:Chains_def)
+ apply (rule_tac D = D and CC = C in fto_Chains, assumption+)
  apply (thin_tac "Chain \<lparr>carrier = Chains D, ord_rel = {Z. Z \<in> Chains D \<times> Chains D \<and> fst Z \<subseteq> snd Z},  ordering = \<lambda>a\<in>Chains D. restrict (op \<subseteq> a) (Chains D)\<rparr>
               C")
  apply (thin_tac "\<forall>z. z \<in> C \<longrightarrow> z \<in> Chains D")
@@ -2703,30 +2705,30 @@ apply (rule allI) apply (rule impI)
  apply (frule_tac A = C and B = "carrier (fto D)" and c = z in subsetD, assumption+)
   apply (thin_tac "tordered_set (Iod (fto D) C)")
  apply (simp add:family_tordered_def Iod_def)
-done 
+done
 
 lemma Hausdorff_ac:"\<lbrakk>ordered_set D; C \<in> carrier (fto D)\<rbrakk> \<Longrightarrow> \<exists>M\<in>carrier (fto D). C \<subseteq> M \<and> maximal\<^sub>(fto D) M"
 apply (subgoal_tac "S_inductive_set (Iod (fto D) {S. S \<in> (carrier (fto D)) \<and>
  C \<subseteq> S})")
-prefer 2 
+prefer 2
   apply (simp add:S_inductive_set_def)
   apply (rule conjI)
   apply (frule fto_ordered [of "D"])
   apply (rule ordered_set_Iod, assumption+)
-  apply (rule subsetI) apply simp  
+  apply (rule subsetI) apply simp
  apply (rule allI) apply (rule impI)
  apply (subgoal_tac "Chain (fto D) Ca")
- prefer 2 
+ prefer 2
   apply (subst Chain_def)
   apply (rule conjI)
   apply (simp add:Chain_def) apply (erule conjE)
-  apply (thin_tac "tordered_set (Iod (Iod (fto D) {S. S \<in> carrier (fto D) \<and> 
+  apply (thin_tac "tordered_set (Iod (Iod (fto D) {S. S \<in> carrier (fto D) \<and>
                                                               C \<subseteq> S}) Ca)")
   apply (simp add:Iod_def)
   apply (rule subsetI) apply (frule_tac A = Ca and B = "{S. S \<in> carrier fto D \<and> C \<subseteq> S}" and c = x in subsetD, assumption+) apply simp
   apply (simp add:Chain_def) apply (erule conjE)
  apply (subgoal_tac "Iod (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S}) Ca =
-    Iod (fto D) Ca") apply simp 
+    Iod (fto D) Ca") apply simp
   apply (rule Iod_sub_sub)
    apply (simp add:fto_ordered) apply (simp add:Iod_def)
    apply (rule subsetI) apply simp
@@ -2736,7 +2738,7 @@ prefer 2
   apply (subgoal_tac "minimum_elem (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S}) (upper_bounds (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S})  Ca) C")
   apply blast
   apply (simp add:minimum_elem_def)
-  apply (simp add:upper_bounds_def upper_bound_def) 
+  apply (simp add:upper_bounds_def upper_bound_def)
   apply (rule ballI)
    apply (thin_tac "Chain (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S}) {}")
   apply (simp add:Iod_def) apply (erule conjE)
@@ -2745,7 +2747,7 @@ prefer 2
   apply (simp add:family_tordered_def)
   apply (thin_tac "Chain (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S}) Ca")
  apply (simp add:Iod_def)
-(** case Ca \<noteq> {} ***) 
+(** case Ca \<noteq> {} ***)
   apply (frule fto_S_inductive[of "D"])
    apply (simp add:S_inductive_set_def) apply (erule conjE)
    apply (subgoal_tac "\<exists>x\<in>carrier fto D. minimum_elem (fto D) (upper_bounds (fto D) Ca) x") prefer 2 apply simp
@@ -2766,7 +2768,7 @@ prefer 2
   apply (simp add:Iod_def)
   apply (simp add:minimum_elem_def) apply (erule conjE)
    apply (thin_tac "\<forall>x\<in>upper_bounds (fto D) Ca.  x0 \<le>\<^sub>(fto D)  x")
-   apply (simp add:upper_bounds_def upper_bound_def)  
+   apply (simp add:upper_bounds_def upper_bound_def)
   apply (frule_tac A = Ca in nonempty_ex) apply (thin_tac "Ca \<noteq> {}")
    apply (subgoal_tac "\<forall>Z. Z \<in> Ca \<longrightarrow> x0 \<in> carrier (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S})") apply blast apply (thin_tac "\<exists>x. x \<in> Ca")
    apply (rule allI) apply (rule impI)
@@ -2781,14 +2783,14 @@ prefer 2
   apply (simp add:Iod_def) apply (erule conjE)
   apply (subgoal_tac "C \<in> Chains D") apply (subgoal_tac "x0 \<in> Chains D")
   apply (thin_tac "ordered_set (fto D)")
-  apply (simp add:family_tordered_def) 
+  apply (simp add:family_tordered_def)
   apply (thin_tac "ordered_set (fto D)") apply (thin_tac "Z \<le>\<^sub>(fto D) x0")
   apply (simp add:family_tordered_def)  apply (simp add:family_tordered_def)
 apply (subgoal_tac "C \<in> carrier (Iod (fto D) {S. S \<in> carrier fto D  \<and> C \<subseteq> S})")
  apply (subgoal_tac "carrier (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S}) \<noteq> {}") prefer 2 apply blast
  apply (frule_tac D = "Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S}" in S_inductive_maxl, assumption+)
  apply (subgoal_tac "\<forall>m. m \<in> carrier (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S}) \<and> maximal\<^sub>(Iod (fto D) {S. S \<in> carrier fto D  \<and> C \<subseteq> S}) m \<longrightarrow> (\<exists>M\<in>carrier (fto D). C \<subseteq> M \<and> maximal\<^sub>(fto D) M)")  apply blast
- apply (thin_tac "\<exists>m. m \<in> carrier (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S}) \<and> maximal\<^sub>(Iod (fto D) {S. S \<in> carrier fto D  \<and> C \<subseteq> S}) m") 
+ apply (thin_tac "\<exists>m. m \<in> carrier (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S}) \<and> maximal\<^sub>(Iod (fto D) {S. S \<in> carrier fto D  \<and> C \<subseteq> S}) m")
  apply (rule allI) apply (rule impI)
  apply (subgoal_tac "m \<in> carrier (fto D)")
  apply (subgoal_tac "C \<subseteq> m \<and> maximal\<^sub>(fto D) m") apply blast
@@ -2800,8 +2802,8 @@ apply (erule conjE)+
  apply (subgoal_tac "m \<in> Chains D") apply (subgoal_tac "b \<in> Chains D")
  apply (simp add:family_tordered_def)
  apply (frule_tac A = C and B = m and C = b in subset_trans, assumption+)
- apply blast apply (simp add:family_tordered_def) 
- apply (simp add:family_tordered_def) 
+ apply blast apply (simp add:family_tordered_def)
+ apply (simp add:family_tordered_def)
 apply (erule conjE)+
  apply (simp add:Iod_def)
 apply (thin_tac "S_inductive_set (Iod (fto D) {S. S \<in> carrier (fto D) \<and> C \<subseteq> S})")
@@ -2809,10 +2811,10 @@ apply (simp add:Iod_def)
 done
 
 lemma g_Zorn_lemma1:"\<lbrakk>inductive_set D; Chain D C \<rbrakk> \<Longrightarrow> \<exists>m. maximal\<^sub>D m \<and> m \<in> upper_bounds D C"
-apply (subgoal_tac "C \<in> carrier (fto D)")  
- prefer 2 apply (simp add:family_tordered_def Chains_def) 
+apply (subgoal_tac "C \<in> carrier (fto D)")
+ prefer 2 apply (simp add:family_tordered_def Chains_def)
 apply (subgoal_tac "ordered_set D") prefer 2 apply (simp add:inductive_set_def)
-apply (frule_tac D = D and C = C in Hausdorff_ac, assumption+) 
+apply (frule_tac D = D and C = C in Hausdorff_ac, assumption+)
 apply (subgoal_tac "\<forall>M\<in>carrier (fto D). C \<subseteq> M \<and> maximal\<^sub>(fto D) M \<longrightarrow>
        (\<exists>m. maximal\<^sub>D m \<and> m \<in> upper_bounds D C)") apply blast
  apply (thin_tac "\<exists>M\<in>carrier (fto D). C \<subseteq> M \<and> maximal\<^sub>(fto D) M")
@@ -2821,7 +2823,7 @@ apply (subgoal_tac "\<forall>M\<in>carrier (fto D). C \<subseteq> M \<and> maxim
  apply (subgoal_tac "Chain D M") prefer 2 apply (simp add:family_tordered_def Chains_def)
  apply (subgoal_tac "upper_bounds D M \<noteq> {}")
  prefer 2 apply (simp add:inductive_set_def)
- apply (subgoal_tac "Ex (upper_bound D M)") prefer 2 apply simp 
+ apply (subgoal_tac "Ex (upper_bound D M)") prefer 2 apply simp
   apply (thin_tac "\<forall>C. Chain D C \<longrightarrow> Ex (upper_bound D C)")
   apply (subgoal_tac "\<forall>t. upper_bound D M t \<longrightarrow> upper_bounds D M \<noteq> {}")
   apply blast apply (thin_tac "Ex (upper_bound D M)")
@@ -2837,7 +2839,7 @@ apply (rule conjI)
 (** adjunct Chain **)
 apply (subgoal_tac "Chain D (M \<union> {b})")
  apply (simp add:maximal_element_def)
- apply (subgoal_tac "(insert b M) \<in> carrier (fto D)") 
+ apply (subgoal_tac "(insert b M) \<in> carrier (fto D)")
   prefer 2 apply (simp add:family_tordered_def) apply (simp add:Chains_def)
  apply (subgoal_tac "M \<le>\<^sub>(fto D) (insert b M) \<longrightarrow> M = (insert b M)")
   prefer 2 apply simp apply (thin_tac "\<forall>b\<in>carrier (fto D).  M \<le>\<^sub>(fto D) b \<longrightarrow> M = b")
@@ -2856,12 +2858,12 @@ apply (subgoal_tac "Chain D (M \<union> {b})")
  apply (simp add:Chain_def) apply (erule conjE)+
  apply (subst tordered_set_def) apply (rule conjI)
  apply (rule ordered_set_Iod, assumption+)
- apply (rule subsetI) apply simp 
+ apply (rule subsetI) apply simp
   apply (case_tac "xa = b") apply simp apply simp apply (simp add:subsetD)
  apply (rule ballI)+
  apply (case_tac "a = b")
   apply (case_tac "ba = b") apply simp
-  apply (simp add:Iod_def ordering_axiom1[of "D"]) 
+  apply (simp add:Iod_def ordering_axiom1[of "D"])
   apply (subgoal_tac "ba \<in> M") prefer 2 apply (simp add:Iod_def)
   apply (subgoal_tac "ba \<le>\<^sub>D b") apply (simp add:Iod_def)
   apply (simp add:upper_bounds_def upper_bound_def) apply (erule conjE)+
@@ -2876,12 +2878,12 @@ apply (subgoal_tac "Chain D (M \<union> {b})")
   apply (rule_tac a = a and b = x and c = b in ordering_axiom3 [of "D"], assumption+)
   apply (simp add:subsetD) apply assumption+
   apply (subgoal_tac "a \<in> carrier (Iod D M)")
-  apply (subgoal_tac "ba \<in> carrier (Iod D M)")  
+  apply (subgoal_tac "ba \<in> carrier (Iod D M)")
   apply (thin_tac "tordered_set (Iod D C)") apply (simp add:tordered_set_def)
   apply (erule conjE)
   apply (subgoal_tac "a \<le>\<^sub>(Iod D M) ba \<or>  ba \<le>\<^sub>(Iod D M) a")
    prefer 2 apply simp
-   apply (thin_tac "\<forall>a\<in>carrier (Iod D M). \<forall>b\<in>carrier (Iod D M).  
+   apply (thin_tac "\<forall>a\<in>carrier (Iod D M). \<forall>b\<in>carrier (Iod D M).
                         a \<le>\<^sub>(Iod D M) b \<or>  b \<le>\<^sub>(Iod D M) a")
    apply (simp add:Iod_def)
    apply (simp add:Iod_def) apply (simp add:Iod_def)
@@ -2913,36 +2915,36 @@ apply (subgoal_tac "Chain D {}")
  apply (rule conjI)
  apply (simp add:ordered_set_def)
  apply auto apply (simp add:Iod_def)+
-apply (frule_tac D = D and C = "{}" in g_Zorn_lemma1, assumption+) 
+apply (frule_tac D = D and C = "{}" in g_Zorn_lemma1, assumption+)
  apply (subgoal_tac "\<forall>m. maximal\<^sub>D m \<and> m \<in> upper_bounds D {} \<longrightarrow>
   (\<exists>m\<in>carrier D. maximal\<^sub>D m)") apply blast
  apply (thin_tac "\<exists>m. maximal\<^sub>D m \<and> m \<in> upper_bounds D {}")
  apply (rule allI)
  apply (rule impI) apply (erule conjE)
- apply (simp add:upper_bounds_def upper_bound_def) 
+ apply (simp add:upper_bounds_def upper_bound_def)
  apply blast
 done
 
 chapter "3. Group Theory. Focused on Jordan Hoelder theorem"
-    
+
 
 section "1. Definition of a Group"
 
-record 'a GroupType = "'a Base" + 
-  tOp      :: "['a, 'a ] \<Rightarrow> 'a" 
+record 'a GroupType = "'a Base" +
+  tOp      :: "['a, 'a ] \<Rightarrow> 'a"
   iOp      :: "'a  \<Rightarrow>  'a"
-  one     :: "'a"  
+  one     :: "'a"
 
 constdefs
  group :: "('a, 'more) GroupType_scheme  \<Rightarrow> bool"
-     "group G  == (tOp G): carrier G \<rightarrow> carrier G \<rightarrow> carrier G \<and> 
-	          (iOp G) \<in> carrier G \<rightarrow> carrier G \<and>  
-                  (one G) \<in>  carrier G  \<and> 
+     "group G  == (tOp G): carrier G \<rightarrow> carrier G \<rightarrow> carrier G \<and>
+	          (iOp G) \<in> carrier G \<rightarrow> carrier G \<and>
+                  (one G) \<in>  carrier G  \<and>
                 (\<forall> x \<in> carrier G. \<forall> y \<in> carrier G. \<forall> z \<in> carrier G.
-                       (tOp G (one G) x = x)  \<and>  
-                       (tOp G (iOp G x) x  = one G)  \<and>  
+                       (tOp G (one G) x = x)  \<and>
+                       (tOp G (iOp G x) x  = one G)  \<and>
                        (tOp G (tOp G x y) z =
-			tOp G (x) (tOp G y z)))"  
+			tOp G (x) (tOp G y z)))"
 
  subgroup :: "[('a, 'more) GroupType_scheme, 'a set] \<Rightarrow> bool"
   "subgroup G H == (H \<subseteq> carrier G) \<and> (\<forall>x \<in> H. \<forall>y \<in> H. (tOp G x y \<in> H)) \<and>
@@ -2960,7 +2962,7 @@ constdefs
       "r_coset G H a == {b. \<exists> h \<in> H. (tOp G) h a = b}"
 
    l_coset  ::  "[('a, 'more) GroupType_scheme, 'a, 'a set] \<Rightarrow> 'a set"
-      "l_coset G a H  == {b. \<exists> h \<in> H. tOp G a h = b}" 
+      "l_coset G a H  == {b. \<exists> h \<in> H. tOp G a h = b}"
 
 syntax
   "@R_COS" :: "['a set, ('a, 'more) GroupType_scheme, 'a] \<Rightarrow> 'a set"
@@ -2973,8 +2975,8 @@ translations
 
 constdefs
    nsubgroup  :: "('a, 'more) GroupType_scheme \<Rightarrow> 'a set \<Rightarrow> bool"
-      "nsubgroup G H  == (group G) \<and> (subgroup G H) \<and>   
-          (\<forall>x \<in> carrier G. r_coset G H x = l_coset G x H)" 
+      "nsubgroup G H  == (group G) \<and> (subgroup G H) \<and>
+          (\<forall>x \<in> carrier G. r_coset G H x = l_coset G x H)"
 
 syntax (xsymbols)
   "@NS"  :: "['a set, ('a, 'more) GroupType_scheme] => bool"
@@ -2983,36 +2985,36 @@ syntax (xsymbols)
 translations
   "N \<lhd> G" == " nsubgroup G N"
 constdefs
-   set_r_cos :: "[('a, 'more) GroupType_scheme, 'a set] 
+   set_r_cos :: "[('a, 'more) GroupType_scheme, 'a set]
                                   \<Rightarrow> 'a set set"
       "set_r_cos G H == { C. \<exists> a \<in> carrier G. C = r_coset G H a}"
 
    cosiOp :: "[('a, 'more) GroupType_scheme, 'a set]  \<Rightarrow> 'a set \<Rightarrow> 'a set"
-   "cosiOp G H ==\<lambda>X\<in>set_r_cos G H. {z. \<exists> x \<in> X . \<exists> h \<in> H. (tOp G h (iOp G  x) = z)}"      
- 
-   costOp :: "[('a, 'more) GroupType_scheme, 'a set] 
-                            \<Rightarrow> (['a set, 'a set] \<Rightarrow> 'a set)" 
-    
-    "costOp G H == \<lambda>X\<in>set_r_cos G H. \<lambda>Y\<in>set_r_cos G H. 
-                          {z. \<exists> x \<in> X. \<exists> y \<in> Y. tOp G x y = z}" 
+   "cosiOp G H ==\<lambda>X\<in>set_r_cos G H. {z. \<exists> x \<in> X . \<exists> h \<in> H. (tOp G h (iOp G  x) = z)}"
+
+   costOp :: "[('a, 'more) GroupType_scheme, 'a set]
+                            \<Rightarrow> (['a set, 'a set] \<Rightarrow> 'a set)"
+
+    "costOp G H == \<lambda>X\<in>set_r_cos G H. \<lambda>Y\<in>set_r_cos G H.
+                          {z. \<exists> x \<in> X. \<exists> y \<in> Y. tOp G x y = z}"
 constdefs
 
- qgrp :: "[('a, 'more) GroupType_scheme, 'a set] \<Rightarrow> 
+ qgrp :: "[('a, 'more) GroupType_scheme, 'a set] \<Rightarrow>
          \<lparr> carrier :: 'a set set, tOp :: ['a set, 'a set] \<Rightarrow> 'a set,
            iOp :: 'a set \<Rightarrow> 'a set, one :: 'a set \<rparr>"
- 
-   "qgrp G H  ==  \<lparr> carrier = set_r_cos G H, 
-       tOp = \<lambda>X. \<lambda>Y. (costOp G H X Y), 
-	  iOp = \<lambda>X. (cosiOp G H X), one = H \<rparr>" 
+
+   "qgrp G H  ==  \<lparr> carrier = set_r_cos G H,
+       tOp = \<lambda>X. \<lambda>Y. (costOp G H X Y),
+	  iOp = \<lambda>X. (cosiOp G H X), one = H \<rparr>"
 
 constdefs
-   Pj :: "[('a, 'more) GroupType_scheme, 'a set] \<Rightarrow>  ( 'a => 'a set)" 
-      "Pj G H == \<lambda>x \<in> carrier G. r_coset G H x"        
+   Pj :: "[('a, 'more) GroupType_scheme, 'a set] \<Rightarrow>  ( 'a => 'a set)"
+      "Pj G H == \<lambda>x \<in> carrier G. r_coset G H x"
 
- syntax 
+ syntax
   "@QGRP" :: "([('a, 'more) GroupType_scheme, 'a set] => ('a set) GroupType)"
-              (infixl "'/'" 200)  
-  "@BOP1" :: "['a, ('a, 'more) GroupType_scheme, 'a] \<Rightarrow> 'a" 
+              (infixl "'/'" 200)
+  "@BOP1" :: "['a, ('a, 'more) GroupType_scheme, 'a] \<Rightarrow> 'a"
                                  ("(3_/ \<cdot>\<^sub>_/ _)" [70,70,71]70)
   "@IOP1" :: "['a, ('a, 'more) GroupType_scheme] \<Rightarrow> 'a" ("(_\<inverse>\<^sup>_)" [72,73]72)
   "@ONE"  :: "('a, 'more) GroupType_scheme \<Rightarrow> 'a"
@@ -3026,19 +3028,19 @@ translations
 constdefs
   gHom ::"[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme]
                                    \<Rightarrow> ('a  \<Rightarrow> 'b) set"
-  "gHom F G =={f. (f \<in> extensional (carrier F) \<and> f \<in> carrier F \<rightarrow> carrier G) \<and>   
-            (\<forall>x \<in> carrier F. \<forall>y \<in> carrier F.  
+  "gHom F G =={f. (f \<in> extensional (carrier F) \<and> f \<in> carrier F \<rightarrow> carrier G) \<and>
+            (\<forall>x \<in> carrier F. \<forall>y \<in> carrier F.
                 f (tOp F x y) = tOp G (f x) (f y))}"
- 
-  gkernel :: "[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme, 
-                      'a \<Rightarrow> 'b]  \<Rightarrow> 'a set"  
+
+  gkernel :: "[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme,
+                      'a \<Rightarrow> 'b]  \<Rightarrow> 'a set"
      "gkernel F G f == {x. (x \<in> carrier F) \<and> (f x = one G)}"
 
-  Invim::"[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme, 
-     'a \<Rightarrow> 'b, 'b set]  \<Rightarrow> 'a set"  
+  Invim::"[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme,
+     'a \<Rightarrow> 'b, 'b set]  \<Rightarrow> 'a set"
      "Invim F G f K == {x. (x \<in> carrier F) \<and> (f x \<in> K)}"
 
-syntax 
+syntax
  "@GKER"::"[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme,
     'a \<Rightarrow> 'b ] \<Rightarrow> 'a set" ("(3gker\<^sub>_\<^sub>,\<^sub>_/_ )" [88,88,89]88)
 
@@ -3046,13 +3048,13 @@ translations
      "gker\<^sub>F\<^sub>,\<^sub>G f" == "gkernel F G f"
 
 constdefs
-  gsurjec :: "[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme, 
+  gsurjec :: "[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme,
              'a \<Rightarrow> 'b] \<Rightarrow> bool"  ("(3gsurjec\<^sub>_\<^sub>,\<^sub>_/ _)" [88,88,89]88)
-  "gsurjec\<^sub>F\<^sub>,\<^sub>G f  == (f \<in> gHom F G) \<and> (surj_to f (carrier F) (carrier G))" 
+  "gsurjec\<^sub>F\<^sub>,\<^sub>G f  == (f \<in> gHom F G) \<and> (surj_to f (carrier F) (carrier G))"
 
 
-  ginjec ::  "[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme, 
-             'a \<Rightarrow> 'b]  \<Rightarrow> bool"    ("(3ginjec\<^sub>_\<^sub>,\<^sub>_/ _)" [88,88,89]88) 
+  ginjec ::  "[('a, 'more) GroupType_scheme, ('b, 'more1) GroupType_scheme,
+             'a \<Rightarrow> 'b]  \<Rightarrow> bool"    ("(3ginjec\<^sub>_\<^sub>,\<^sub>_/ _)" [88,88,89]88)
      "ginjec\<^sub>F\<^sub>,\<^sub>G f == (f \<in> gHom F G) \<and>  (inj_on f (carrier F))"
 
   gbijec :: "[('a, 'm) GroupType_scheme, ('b, 'm1) GroupType_scheme, 'a \<Rightarrow> 'b]
@@ -3070,13 +3072,13 @@ constdefs
                          \<Rightarrow> bool"   (infixr "\<cong>" 100)
    "F \<cong> G == \<exists>f. (gbijec\<^sub>F\<^sub>,\<^sub>G f)"
 constdefs
-  consthom::"[('a, 'm) GroupType_scheme, ('b, 'm1) GroupType_scheme] 
+  consthom::"[('a, 'm) GroupType_scheme, ('b, 'm1) GroupType_scheme]
                            \<Rightarrow> ('a \<Rightarrow> 'b)"
-   "consthom F G == \<lambda>x\<in>carrier F. (1\<^sub>G)" 
+   "consthom F G == \<lambda>x\<in>carrier F. (1\<^sub>G)"
 
 constdefs
  cmpghom:: "[('a, 'm) GroupType_scheme, 'b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c"
- "cmpghom F g f == compose (carrier F) g f"  
+ "cmpghom F g f == compose (carrier F) g f"
 
 syntax
    "@GCOMP" :: "['b \<Rightarrow> 'c, ('a, 'm) GroupType_scheme, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c"
@@ -3084,22 +3086,22 @@ syntax
 translations
 "g \<circ>\<^sub>F f"=="cmpghom F g f"
 
-lemma ex_one: " group G \<Longrightarrow> 1\<^sub>G \<in> carrier G" 
+lemma ex_one: " group G \<Longrightarrow> 1\<^sub>G \<in> carrier G"
 apply (simp only: group_def)
 done
 
-lemma tOp_closed [simp]: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G \<rbrakk> 
+lemma tOp_closed [simp]: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G \<rbrakk>
        \<Longrightarrow> a \<cdot>\<^sub>G b \<in> carrier G "
 proof -
  assume p1:"group G" and p2:"a \<in> carrier G" and p3:"b \<in> carrier G"
  from p1 have q1:"tOp G \<in> carrier G \<rightarrow> carrier G \<rightarrow> carrier G"
-  by  (simp add:group_def)  
+  by  (simp add:group_def)
  from p1 and p2 and p3 and q1 show ?thesis
   apply (simp add:bivar_fun_mem)
- done 
+ done
 qed
 
-lemma iOp_closed [simp] : "\<lbrakk> group G ; a \<in> carrier G \<rbrakk> 
+lemma iOp_closed [simp] : "\<lbrakk> group G ; a \<in> carrier G \<rbrakk>
         \<Longrightarrow> a\<inverse>\<^sup>G \<in> carrier G"
 proof -
  assume p1:"group G" and p2:"a \<in> carrier G"
@@ -3131,13 +3133,13 @@ apply (frule subg_subset1 [of "G" "H" "h"], assumption+)
 apply simp
 done
 
-lemma subg_tOp_closed: "\<lbrakk> group G; H \<guillemotleft> G ; h1 \<in> H; h2 \<in> H \<rbrakk> 
-     \<Longrightarrow> h1 \<cdot>\<^sub>G h2 \<in> H" 
+lemma subg_tOp_closed: "\<lbrakk> group G; H \<guillemotleft> G ; h1 \<in> H; h2 \<in> H \<rbrakk>
+     \<Longrightarrow> h1 \<cdot>\<^sub>G h2 \<in> H"
 apply (simp add:subgroup_def)
 done
 
-lemma subg_one_closed: "\<lbrakk> group G; H \<guillemotleft> G \<rbrakk> 
-     \<Longrightarrow> 1\<^sub>G  \<in> H" 
+lemma subg_one_closed: "\<lbrakk> group G; H \<guillemotleft> G \<rbrakk>
+     \<Longrightarrow> 1\<^sub>G  \<in> H"
 apply (simp add: subgroup_def)
 done
 
@@ -3172,7 +3174,7 @@ done
 
 constdefs
   subg_gen :: "[('a, 'more) GroupType_scheme, 'a set] \<Rightarrow> 'a set"
-    "subg_gen G A == \<Inter> {H. ((H \<guillemotleft> G) \<and> (A \<subseteq> H))}" 
+    "subg_gen G A == \<Inter> {H. ((H \<guillemotleft> G) \<and> (A \<subseteq> H))}"
 
 lemma smallest_subg_gen: "\<lbrakk> group G; A \<subseteq> carrier G; H \<guillemotleft> G; A \<subseteq> H \<rbrakk> \<Longrightarrow>
        subg_gen G A \<subseteq> H"
@@ -3210,9 +3212,9 @@ apply (simp add:subgroup_def)
 apply auto
 done
 
-section "2. non_commutative Groups" 
-  
-lemma tOp_tr0: "group G \<Longrightarrow> iOp G \<in> carrier G \<rightarrow> carrier G \<and> 
+section "2. non_commutative Groups"
+
+lemma tOp_tr0: "group G \<Longrightarrow> iOp G \<in> carrier G \<rightarrow> carrier G \<and>
   tOp G \<in> carrier G \<rightarrow> carrier G \<rightarrow> carrier G"
 apply (simp add:group_def)
 done
@@ -3221,9 +3223,9 @@ lemma iOptOp_closed: "\<lbrakk>group G; a \<in> carrier G ; b \<in> carrier G\<r
        a\<inverse>\<^sup>G \<cdot>\<^sub>G b \<in> carrier G "
 apply (rule tOp_closed, assumption)
 apply simp+
-done  
+done
 
-lemma l_one [simp]: "\<lbrakk> group G; a \<in> carrier G \<rbrakk> 
+lemma l_one [simp]: "\<lbrakk> group G; a \<in> carrier G \<rbrakk>
                                \<Longrightarrow> (1\<^sub>G) \<cdot>\<^sub>G a = a"
 apply  (simp only:group_def)
 done
@@ -3231,7 +3233,7 @@ done
 lemma l_onei: "\<lbrakk>group G; a \<in> carrier G\<rbrakk> \<Longrightarrow> (1\<^sub>G) \<cdot>\<^sub>G a\<inverse>\<^sup>G = a\<inverse>\<^sup>G"
 apply (rule l_one)
 apply (assumption)
-apply simp 
+apply simp
 done
 
 (* left inverse *)
@@ -3245,7 +3247,7 @@ apply (assumption) apply simp
 done
 
 lemma tOp_assoc: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; c \<in> carrier G\<rbrakk>
-   \<Longrightarrow> (a \<cdot>\<^sub>G b) \<cdot>\<^sub>G c = a \<cdot>\<^sub>G (b \<cdot>\<^sub>G c)"  
+   \<Longrightarrow> (a \<cdot>\<^sub>G b) \<cdot>\<^sub>G c = a \<cdot>\<^sub>G (b \<cdot>\<^sub>G c)"
 apply (simp only:group_def)
 done
 
@@ -3268,28 +3270,28 @@ apply (simp add:iOp_l_inv) apply (thin_tac " a \<cdot>\<^sub>G x =  a \<cdot>\<^
 apply (simp add:tOp_assoc [THEN sym] iOp_l_inv)
 done
 
-lemma invboth1_eq: "\<lbrakk> group G; a \<in> carrier G; x \<in> carrier G; 
+lemma invboth1_eq: "\<lbrakk> group G; a \<in> carrier G; x \<in> carrier G;
   y \<in> carrier G; a\<inverse>\<^sup>G \<cdot>\<^sub>G x = a\<inverse>\<^sup>G \<cdot>\<^sub>G y \<rbrakk>
    \<Longrightarrow> x = y "
 apply (rule bothl_eq [of "G" "iOp G a" "x" "y"], assumption+)
 apply simp+
 done
-                                        
-lemma tOp_assocTr41: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; c \<in> 
+
+lemma tOp_assocTr41: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; c \<in>
  carrier G; d \<in> carrier G\<rbrakk> \<Longrightarrow> a \<cdot>\<^sub>G b \<cdot>\<^sub>G c \<cdot>\<^sub>G d = a \<cdot>\<^sub>G b \<cdot>\<^sub>G (c \<cdot>\<^sub>G d)"
 apply (rule trans)
 apply (rule tOp_assoc, assumption+)
 apply simp+
 done
 
-lemma tOp_assocTr42: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; c \<in> 
+lemma tOp_assocTr42: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; c \<in>
  carrier G; d \<in> carrier G\<rbrakk> \<Longrightarrow> a \<cdot>\<^sub>G b \<cdot>\<^sub>G c \<cdot>\<^sub>G d = a \<cdot>\<^sub>G (b \<cdot>\<^sub>G c) \<cdot>\<^sub>G d"
 apply (rule tOp_bothr, assumption+)
 apply simp+
 apply (simp add:tOp_assoc)
 done
 
-lemma tOp_assocTr43: "\<lbrakk>group G; a\<in>carrier G; b\<in>carrier G; c\<in>carrier G; 
+lemma tOp_assocTr43: "\<lbrakk>group G; a\<in>carrier G; b\<in>carrier G; c\<in>carrier G;
  d \<in> carrier G\<rbrakk> \<Longrightarrow> a \<cdot>\<^sub>G b \<cdot>\<^sub>G (c \<cdot>\<^sub>G d) = a \<cdot>\<^sub>G b \<cdot>\<^sub>G c \<cdot>\<^sub>G d"
 apply (simp add:tOp_assocTr41 [THEN sym] tOp_assocTr42)
 done
@@ -3303,16 +3305,16 @@ apply (frule l_invTr1, assumption)
 apply simp apply (thin_tac "1\<^sub>G =  a\<inverse>\<^sup>G\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G")
 apply (simp add:tOp_assocTr43)
  apply (frule sym) apply (thin_tac "a\<inverse>\<^sup>G\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G \<cdot>\<^sub>G a \<cdot>\<^sub>G a\<inverse>\<^sup>G =  a \<cdot>\<^sub>G a\<inverse>\<^sup>G")
-apply simp 
-apply (subst tOp_assocTr42, simp+) 
-apply (simp add: tOp_assoc ex_one iOp_l_inv) 
+apply simp
+apply (subst tOp_assocTr42, simp+)
+apply (simp add: tOp_assoc ex_one iOp_l_inv)
 done
 
 
 
-lemma tOp_assocTr44: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; 
-c \<in> carrier G; d \<in> carrier G \<rbrakk> \<Longrightarrow> (a\<inverse>\<^sup>G) \<cdot>\<^sub>G b \<cdot>\<^sub>G ((c\<inverse>\<^sup>G) \<cdot>\<^sub>G d) = 
-       a\<inverse>\<^sup>G \<cdot>\<^sub>G ((b \<cdot>\<^sub>G (c\<inverse>\<^sup>G)) \<cdot>\<^sub>G d)"  
+lemma tOp_assocTr44: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G;
+c \<in> carrier G; d \<in> carrier G \<rbrakk> \<Longrightarrow> (a\<inverse>\<^sup>G) \<cdot>\<^sub>G b \<cdot>\<^sub>G ((c\<inverse>\<^sup>G) \<cdot>\<^sub>G d) =
+       a\<inverse>\<^sup>G \<cdot>\<^sub>G ((b \<cdot>\<^sub>G (c\<inverse>\<^sup>G)) \<cdot>\<^sub>G d)"
  apply (subst tOp_assoc [of "G" "a\<inverse>\<^sup>G" "b" "c\<inverse>\<^sup>G \<cdot>\<^sub>G d"], assumption+)
   apply simp apply assumption
   apply (rule tOp_closed, assumption+)
@@ -3320,13 +3322,13 @@ c \<in> carrier G; d \<in> carrier G \<rbrakk> \<Longrightarrow> (a\<inverse>\<^
  apply (simp add:tOp_assoc [THEN sym])
 done
 
-lemma tOp_assocTr45:  "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; c \<in> carrier G; 
+lemma tOp_assocTr45:  "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; c \<in> carrier G;
 d \<in> carrier G\<rbrakk> \<Longrightarrow> a \<cdot>\<^sub>G b \<cdot>\<^sub>G c \<cdot>\<^sub>G d = a \<cdot>\<^sub>G (b \<cdot>\<^sub>G (c \<cdot>\<^sub>G d))"
 apply (subst tOp_assoc, assumption+)+
  apply simp+
  apply (simp add:tOp_assoc)
 done
- 
+
 lemma r_one: "\<lbrakk> group G; a \<in> carrier G \<rbrakk> \<Longrightarrow> a \<cdot>\<^sub>G (1\<^sub>G) = a"
 apply (subst iOp_l_inv [THEN sym])
 apply (assumption)+
@@ -3371,11 +3373,11 @@ done
 
 lemma inv1_unique: "\<lbrakk> group G; a \<in> carrier G; x \<in> carrier G;
  x \<cdot>\<^sub>G a = 1\<^sub>G \<rbrakk> \<Longrightarrow> x = a\<inverse>\<^sup>G"
-apply (rule iOp_invTr2, assumption+) 
+apply (rule iOp_invTr2, assumption+)
 apply (simp only: iOp_r_inv)
 done
- 
-lemma r_oneUnique: "\<lbrakk> group G; a \<in> carrier G; x \<in> carrier G; 
+
+lemma r_oneUnique: "\<lbrakk> group G; a \<in> carrier G; x \<in> carrier G;
               a \<cdot>\<^sub>G x = a \<rbrakk>  \<Longrightarrow> x = 1\<^sub>G"
 apply (rule bothl_eq, assumption+)
 apply (simp only:group_def)
@@ -3392,13 +3394,13 @@ done
 lemma iOp_invinv: "\<lbrakk> group G; a \<in> carrier G \<rbrakk> \<Longrightarrow> (a\<inverse>\<^sup>G)\<inverse>\<^sup>G = a"
 apply (subgoal_tac "(a\<inverse>\<^sup>G)\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G \<cdot>\<^sub>G a = a")
  apply (simp add:tOp_assoc) apply (simp add:iOp_l_inv r_one)
-apply (simp add:iOp_l_inv) 
+apply (simp add:iOp_l_inv)
 done
 
 lemma invofab: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G \<rbrakk> \<Longrightarrow>
    (a \<cdot>\<^sub>G b)\<inverse>\<^sup>G = b\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G "
 
-apply (rule bothl_eq [of "G" "tOp G a b" "iOp G (tOp G a b)" 
+apply (rule bothl_eq [of "G" "tOp G a b" "iOp G (tOp G a b)"
  "tOp G (iOp G b) (iOp G a)"], assumption+, simp+)
 apply (subst iOp_r_inv [of "G" "tOp G a b"], assumption+, simp)
 apply (subst tOp_assocTr43, assumption+, simp+)
@@ -3422,11 +3424,11 @@ apply (simp add:iOp_r_inv r_one)
 done
 
 lemma tOp_in_subg:"\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; x \<in> carrier G;
-  x \<cdot>\<^sub>G a \<in> H \<rbrakk> \<Longrightarrow> \<exists> h \<in> H. (h \<cdot>\<^sub>G a\<inverse>\<^sup>G = x)" 
-apply (subgoal_tac "tOp G (tOp G x a) (iOp G a) = x") 
+  x \<cdot>\<^sub>G a \<in> H \<rbrakk> \<Longrightarrow> \<exists> h \<in> H. (h \<cdot>\<^sub>G a\<inverse>\<^sup>G = x)"
+apply (subgoal_tac "tOp G (tOp G x a) (iOp G a) = x")
 apply auto
 apply (simp add:tOp_assoc iOp_r_inv r_one)
-done  
+done
 
 lemma rone_in_subg: "\<lbrakk>group G; H \<guillemotleft> G; h \<in> H\<rbrakk> \<Longrightarrow> h \<cdot>\<^sub>G (1\<^sub>G) = h"
 apply (frule subg_subset [of "G" "H"], assumption)
@@ -3443,12 +3445,12 @@ done
 lemma both_invr: "\<lbrakk> group G; a \<in> carrier G; x \<in> carrier G; y \<in> carrier G;
    x \<cdot>\<^sub>G a = y \<cdot>\<^sub>G a \<rbrakk> \<Longrightarrow> x = y "
 apply (subgoal_tac  "x \<cdot>\<^sub>G a \<cdot>\<^sub>G a\<inverse>\<^sup>G =  y \<cdot>\<^sub>G a \<cdot>\<^sub>G a\<inverse>\<^sup>G")
- apply (thin_tac "x \<cdot>\<^sub>G a =  y \<cdot>\<^sub>G a") 
+ apply (thin_tac "x \<cdot>\<^sub>G a =  y \<cdot>\<^sub>G a")
  apply (simp add:tOp_assoc iOp_r_inv r_one)
 apply simp
 done
 
-lemma eqTr1: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; 
+lemma eqTr1: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G;
                   a \<cdot>\<^sub>G b\<inverse>\<^sup>G = 1\<^sub>G \<rbrakk> \<Longrightarrow> a = b"
 apply (subgoal_tac "tOp G (tOp G a (iOp G b)) b = a")
 apply (rotate_tac 4) apply simp apply (thin_tac "a \<cdot>\<^sub>G b\<inverse>\<^sup>G = 1\<^sub>G")
@@ -3456,10 +3458,10 @@ apply (rotate_tac 3)
 apply (frule l_one, assumption+) apply simp
 apply (subst tOp_assoc, assumption+)
 apply simp+
-apply (simp add:iOp_l_inv r_one)  
+apply (simp add:iOp_l_inv r_one)
 done
 
-lemma eqTr2: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; 
+lemma eqTr2: "\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G;
                   a\<inverse>\<^sup>G \<cdot>\<^sub>G b = 1\<^sub>G \<rbrakk> \<Longrightarrow> a = b"
 apply (subgoal_tac "tOp G a (tOp G (iOp G a) b) = b")
 apply (simp add:tOp_assoc [THEN sym])
@@ -3484,7 +3486,7 @@ apply simp
 done
 
 lemma subg_tOp_assoc: "\<lbrakk> group G; H \<guillemotleft> G; x \<in> H; y \<in> H; z \<in> H\<rbrakk> \<Longrightarrow>
-  x \<cdot>\<^sub>G (y \<cdot>\<^sub>G z) = (x \<cdot>\<^sub>G y) \<cdot>\<^sub>G z" 
+  x \<cdot>\<^sub>G (y \<cdot>\<^sub>G z) = (x \<cdot>\<^sub>G y) \<cdot>\<^sub>G z"
 apply (frule subg_subset1 [of "G" "H" "x"], assumption+)
 apply (frule subg_subset1 [of "G" "H" "y"], assumption+)
 apply (frule subg_subset1 [of "G" "H" "z"], assumption+)
@@ -3539,21 +3541,21 @@ constdefs
   (* grp G H is a group ismorpic to the subgroup H *)
 
 constdefs
-   img_hom :: "[('a, 'm) GroupType_scheme, ('b, 'm1) GroupType_scheme, 
+   img_hom :: "[('a, 'm) GroupType_scheme, ('b, 'm1) GroupType_scheme,
      'a  \<Rightarrow> 'b] \<Rightarrow> 'b GroupType"
    "img_hom F G f == grp G (f`(carrier F))"
-  
+
 syntax
-   "@IMGHOM" :: "[('a, 'm) GroupType_scheme, ('b, 'm1) GroupType_scheme, 
+   "@IMGHOM" :: "[('a, 'm) GroupType_scheme, ('b, 'm1) GroupType_scheme,
         'a \<Rightarrow> 'b ] \<Rightarrow> 'b GroupType"    ("(3img\<^sub>_\<^sub>,\<^sub>_/ _)" [88,88,89]88)
 translations
      "img\<^sub>F\<^sub>,\<^sub>G f" == "img_hom F G f"
 
-lemma subggrp: "\<lbrakk> group G; H \<guillemotleft> G \<rbrakk> \<Longrightarrow> group (grp G H)" 
+lemma subggrp: "\<lbrakk> group G; H \<guillemotleft> G \<rbrakk> \<Longrightarrow> group (grp G H)"
 apply (unfold  group_def [of "grp G H"])
  apply (simp add:grp_def)
- apply (simp add:subg_tOp_closed bivar_func_test) 
- apply (simp add:subg_iOp_closed univar_func_test)  
+ apply (simp add:subg_tOp_closed bivar_func_test)
+ apply (simp add:subg_iOp_closed univar_func_test)
 apply (unfold subgroup_def) apply simp
 apply (fold subgroup_def)
 apply (rule ballI)+
@@ -3565,7 +3567,7 @@ apply (simp add:tOp_assoc)
 apply (simp add:iOp_l_inv)
 done
 
-lemma grp_carrier:"\<lbrakk>group G; H \<guillemotleft> G \<rbrakk> \<Longrightarrow> carrier (grp G H) = H" 
+lemma grp_carrier:"\<lbrakk>group G; H \<guillemotleft> G \<rbrakk> \<Longrightarrow> carrier (grp G H) = H"
 apply (simp add:grp_def)
 done
 
@@ -3603,7 +3605,7 @@ apply (rule conjI)
  apply (simp add:ginjec_def inj_on_def consthom_def)
 done
 
-lemma subg_tOp_inherited:"\<lbrakk>group G; L \<guillemotleft> G; a \<in> L; b \<in> L\<rbrakk>  \<Longrightarrow>  
+lemma subg_tOp_inherited:"\<lbrakk>group G; L \<guillemotleft> G; a \<in> L; b \<in> L\<rbrakk>  \<Longrightarrow>
   tOp (grp G L) a b = tOp G a b"
 apply (simp add:grp_def)
 done
@@ -3619,7 +3621,7 @@ apply (rule conjI)
  apply (rule ballI)+
  apply (subgoal_tac "x \<cdot>\<^sub>(grp G H) y \<in> K")
  apply (simp add:grp_def)
- apply (rule subg_tOp_closed) 
+ apply (rule subg_tOp_closed)
   apply (simp add:subggrp) apply assumption+
  apply (frule subggrp [of "G" "H"], assumption+)
 apply (rule conjI)
@@ -3631,7 +3633,7 @@ apply (rule conjI)
 done
 
 lemma grp_inherited: "\<lbrakk> group G; K \<guillemotleft> G; L \<guillemotleft> G; K \<subseteq> L \<rbrakk> \<Longrightarrow>
-         grp (grp G L) K = grp G K" 
+         grp (grp G L) K = grp G K"
 apply (simp add:grp_def)
 done
 
@@ -3665,17 +3667,17 @@ apply (rule l_cosTr1, assumption+)
  apply (thin_tac "a H\<^sub>G = b H\<^sub>G")
 apply (simp add:a_in_l_cos)
 apply assumption
-done   
+done
 
 
-lemma l_cosTr2: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G; 
+lemma l_cosTr2: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
   a \<in> l_coset G b H \<rbrakk>  \<Longrightarrow> b\<inverse>\<^sup>G \<cdot>\<^sub>G a \<in> H "
 apply (simp only: l_coset_def)
 apply (simp add: bexI)
-apply auto 
+apply auto
 apply (subst tOp_assoc [THEN sym], assumption+)
 apply simp
-apply assumption+                  
+apply assumption+
 apply (rule subg_subset1, assumption+)
 apply (simp add:iOp_l_inv subg_l_one)
 done
@@ -3712,13 +3714,13 @@ apply (simp add:r_one)
 done
 
 lemma  l_cosTr5: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
-  tOp G (iOp G a) b \<in> H ; x \<in> l_coset G a H \<rbrakk> \<Longrightarrow> 
+  tOp G (iOp G a) b \<in> H ; x \<in> l_coset G a H \<rbrakk> \<Longrightarrow>
    (b\<inverse>\<^sup>G \<cdot>\<^sub>G x) \<in> H"
 apply (frule l_cosTr0, assumption+)
 apply (frule l_cosTr2 [of "G" "H" "x" "a" ], assumption+)
 apply (frule subg_iOp_closed [of "G" "H" " a\<inverse>\<^sup>G \<cdot>\<^sub>G b"], assumption+)
 apply (frule invofab [of "G" "a\<inverse>\<^sup>G" "b"]) apply simp+
-apply (frule subg_tOp_closed [of "G" "H" "b\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G\<inverse>\<^sup>G" "a\<inverse>\<^sup>G \<cdot>\<^sub>G x"], 
+apply (frule subg_tOp_closed [of "G" "H" "b\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G\<inverse>\<^sup>G" "a\<inverse>\<^sup>G \<cdot>\<^sub>G x"],
                assumption+)
  apply (thin_tac "a\<inverse>\<^sup>G \<cdot>\<^sub>G b \<in> H")  apply (thin_tac "a\<inverse>\<^sup>G \<cdot>\<^sub>G x \<in> H")
  apply (thin_tac "b\<inverse>\<^sup>G \<cdot>\<^sub>G a\<inverse>\<^sup>G\<inverse>\<^sup>G \<in> H")
@@ -3734,7 +3736,7 @@ apply (simp add:r_one)
 done
 
 lemma l_cosTr6: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
-   a\<inverse>\<^sup>G \<cdot>\<^sub>G b \<in> H ; x \<in> l_coset G a H \<rbrakk> \<Longrightarrow> 
+   a\<inverse>\<^sup>G \<cdot>\<^sub>G b \<in> H ; x \<in> l_coset G a H \<rbrakk> \<Longrightarrow>
    x \<in> l_coset G b H"
 apply (frule l_cosTr5 [of "G" "H" "a" "b" "x"], assumption+)
 apply (frule l_cos_belong [of "G" "H" "b" "x"], assumption+)
@@ -3790,7 +3792,7 @@ apply (rule l_cosTr7 [of "G" "H" "b" "a"], assumption+)
 done
 
 lemma l_cosEqVar1: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
- l_coset G a H = l_coset G b H \<rbrakk> \<Longrightarrow>  tOp G (iOp G a) b \<in> H" 
+ l_coset G a H = l_coset G b H \<rbrakk> \<Longrightarrow>  tOp G (iOp G a) b \<in> H"
 apply (frule l_cosEqTr [of "G" "H" "b" "a"], assumption+)
 apply (rule sym, simp)
 apply (rule l_cosTr2 [of "G" "H" "b" "a"], assumption+)
@@ -3831,9 +3833,9 @@ lemma r_cosEqTr:"\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \
  r_coset G H a = r_coset G H b \<rbrakk> \<Longrightarrow> a \<in> r_coset G H b "
 apply (rule r_cosTr1, assumption+)
 apply (rule aInR_cos, assumption+)
-done 
+done
 
-lemma r_cosTr2: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G; 
+lemma r_cosTr2: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
   a \<in> r_coset G H b \<rbrakk>  \<Longrightarrow> tOp G a (iOp G b) \<in> H "
 apply (simp only: r_coset_def) apply (simp add:CollectI)
 apply auto
@@ -3872,7 +3874,7 @@ done
 
 lemma r_cosTr4: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
  x \<in> carrier G\<rbrakk> \<Longrightarrow>
- tOp G (tOp G x (iOp G a)) (iOp G (tOp G b (iOp G a))) 
+ tOp G (tOp G x (iOp G a)) (iOp G (tOp G b (iOp G a)))
  = tOp G x (iOp G b) "
 apply (subst invofab [of "G" "b" "iOp G a"])
 apply assumption+
@@ -3882,12 +3884,12 @@ apply (subst tOp_assocTr43, assumption+)
  apply (frule iOp_closed [of "G" "a"], assumption+)
  apply (subst tOp_assocTr42, assumption+) apply simp+
 apply (simp add:iOp_r_inv r_one)
-done  
+done
 
 lemma  r_cosTr5: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
-  tOp G b (iOp G a) \<in> H ; x \<in> r_coset G H a \<rbrakk> \<Longrightarrow> 
+  tOp G b (iOp G a) \<in> H ; x \<in> r_coset G H a \<rbrakk> \<Longrightarrow>
    (tOp G x (iOp G b)) \<in> H"
-apply (simp add:r_coset_def) 
+apply (simp add:r_coset_def)
 apply auto
 apply (frule_tac h = h in subg_subset1 [of "G" "H"], assumption+)
 apply (subst tOp_assoc, assumption+)
@@ -3898,10 +3900,10 @@ apply (simp add:subg_tOp_closed)
 done
 
 lemma r_cosTr6: "\<lbrakk>group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
-   tOp G b (iOp G a) \<in> H ; x \<in> r_coset G H a\<rbrakk> \<Longrightarrow> 
+   tOp G b (iOp G a) \<in> H ; x \<in> r_coset G H a\<rbrakk> \<Longrightarrow>
    x \<in> r_coset G H b"
 apply (frule  r_cosTr5 [of "G" "H" "a" "b" "x"], assumption+)
-apply (rule r_cos_belong [of "G" "H" "b" "x"], assumption+) 
+apply (rule r_cos_belong [of "G" "H" "b" "x"], assumption+)
 apply (rule r_cosTr0, assumption+)
 done
 
@@ -3927,7 +3929,7 @@ apply (simp add:r_coset_def)
 apply (subgoal_tac "(xa \<cdot>\<^sub>G x\<inverse>\<^sup>G) \<cdot>\<^sub>G x = xa")
 apply (subgoal_tac "xa \<cdot>\<^sub>G x\<inverse>\<^sup>G \<in> H")
 apply blast
-apply (rule subg_tOp_closed, assumption+) 
+apply (rule subg_tOp_closed, assumption+)
 apply (simp add:subg_iOp_closed)
 apply (frule_tac h = x in subg_subset1 [of "G" "H"], assumption+)
 apply (frule_tac h = xa in subg_subset1 [of "G" "H"], assumption+)
@@ -3940,7 +3942,7 @@ lemma r_cosTr7: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \
    tOp G b (iOp G a) \<in> H \<rbrakk> \<Longrightarrow> r_coset G H a  \<subseteq>  r_coset G H b "
 apply (rule subsetI)
 apply (simp add:r_cosTr6[of "G" "H" "a" "b"])
-done 
+done
 
 lemma r_cosTool1: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
    tOp G b (iOp G a) \<in> H \<rbrakk> \<Longrightarrow> tOp G a (iOp G b)  \<in> H "
@@ -3948,7 +3950,7 @@ apply (frule subg_iOp_closed [of "G" "H" "b \<cdot>\<^sub>G a\<inverse>\<^sup>G"
  apply (simp add:invofab iOp_invinv)
 done
 
-lemma r_cosTool2: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; 
+lemma r_cosTool2: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G;
    x \<in> r_coset G H a \<rbrakk> \<Longrightarrow> \<exists> h \<in> H. (tOp G h a = x)"
 apply (simp add:r_coset_def)
 done
@@ -3966,11 +3968,11 @@ apply (simp add:subsetD)
 done
 
 lemma r_cosEqVar1:"\<lbrakk>group G; H \<guillemotleft> G; a \<in> carrier G; b \<in> carrier G;
- r_coset G H a = r_coset G H b\<rbrakk> \<Longrightarrow>  tOp G b (iOp G a) \<in> H" 
+ r_coset G H a = r_coset G H b\<rbrakk> \<Longrightarrow>  tOp G b (iOp G a) \<in> H"
 apply (frule r_cosEqTr [of "G" "H" "b" "a"], assumption+)
 apply (rule sym, assumption+)
 apply (frule r_cosTr2 [of "G" "H" "b" "a"], assumption+)
-done  
+done
 
 lemma r_cosEqVar2:"\<lbrakk>group G; H \<guillemotleft> G; a \<in> carrier G; x \<in> r_coset G H a\<rbrakk>
           \<Longrightarrow>  r_coset G H a = r_coset G H x"
@@ -3981,7 +3983,7 @@ apply (rule r_cosTr0, assumption+)
 done
 
 lemma r_cosEqVar3: "\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G;
- b \<in> carrier G; (r_coset G H a) \<inter> (r_coset G H b) \<noteq> {} \<rbrakk> \<Longrightarrow> 
+ b \<in> carrier G; (r_coset G H a) \<inter> (r_coset G H b) \<noteq> {} \<rbrakk> \<Longrightarrow>
          r_coset G H a = r_coset G H b "
 apply (frule nonempty_int [of "r_coset G H a" "r_coset G H b"])
 apply (erule exE)
@@ -4010,7 +4012,7 @@ apply simp
 done
 
 lemma r_cosTr10:"\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G; x \<in> r_coset G H a;
-y \<in> r_coset G H a \<rbrakk> \<Longrightarrow> tOp G x (iOp G y) \<in> H" 
+y \<in> r_coset G H a \<rbrakk> \<Longrightarrow> tOp G x (iOp G y) \<in> H"
 apply (simp add:r_coset_def)
 apply auto
 apply (subst invofab, assumption+)
@@ -4027,7 +4029,7 @@ done
 
 
 lemma PrSubg4_2:"\<lbrakk> group G; H \<guillemotleft> G; a \<in> carrier G;
-   x \<in> r_coset G H (iOp G a) \<rbrakk> \<Longrightarrow> 
+   x \<in> r_coset G H (iOp G a) \<rbrakk> \<Longrightarrow>
        x \<in> {z. \<exists> v \<in> r_coset G H a. \<exists> h \<in> H. (tOp G h (iOp G v) = z)}"
 
 apply (simp add:CollectI)
@@ -4073,12 +4075,12 @@ apply (simp add:nsubgroup_def)
 done
 
 lemma nmlSubgTr1: "\<lbrakk> group G; H \<guillemotleft> G; b \<in> carrier G; h \<in> H;
-  \<forall> a \<in> carrier G. \<forall> h \<in> H. ((a \<cdot>\<^sub>G h) \<cdot>\<^sub>G a\<inverse>\<^sup>G) \<in> H\<rbrakk> \<Longrightarrow>  
+  \<forall> a \<in> carrier G. \<forall> h \<in> H. ((a \<cdot>\<^sub>G h) \<cdot>\<^sub>G a\<inverse>\<^sup>G) \<in> H\<rbrakk> \<Longrightarrow>
                                  b \<cdot>\<^sub>G h \<cdot>\<^sub>G b\<inverse>\<^sup>G  \<in> H"
 apply auto
 done
 
-lemma nmlSubgTr2: "\<lbrakk> group G; H \<guillemotleft> G; b \<in> carrier G; h \<in> H;  
+lemma nmlSubgTr2: "\<lbrakk> group G; H \<guillemotleft> G; b \<in> carrier G; h \<in> H;
  \<forall>a\<in>carrier G. \<forall> h \<in> H. (a \<cdot>\<^sub>G h) \<cdot>\<^sub>G a\<inverse>\<^sup>G  \<in> H\<rbrakk> \<Longrightarrow>  b\<inverse>\<^sup>G \<cdot>\<^sub>G h \<cdot>\<^sub>G b \<in> H"
 apply (insert nmlSubgTr1 [of "G" "H" "b\<inverse>\<^sup>G"])
 apply (simp add:iOp_invinv)
@@ -4102,9 +4104,9 @@ done
 
 lemma nmlSubg1: "\<lbrakk>group G; H \<guillemotleft> G; \<forall>a\<in> carrier G. \<forall>h\<in>H. (a \<cdot>\<^sub>G h) \<cdot>\<^sub>G a\<inverse>\<^sup>G  \<in> H;
 b \<in> carrier G \<rbrakk> \<Longrightarrow> r_coset G H b =  l_coset G b H"
-apply auto 
+apply auto
  (* x \<in> r_coset G H b \<Longrightarrow> x \<in> l_coset G b H  *)
-  apply (frule_tac x = x in r_cosTr0 [of "G" "H" "b" _], assumption+) 
+  apply (frule_tac x = x in r_cosTr0 [of "G" "H" "b" _], assumption+)
 
   (* from x \<in> r_coset G H b we get x \<cdot>\<^sub>G b\<inverse>\<^sup>G \<in> H *)
 
@@ -4118,14 +4120,14 @@ apply auto
 
 (* We prove l_coset G b H \<subseteq> r_coset G H b *)
   apply (frule_tac x = x in l_cosTr0 [of "G" "H" "b"], assumption+)
-  apply (simp add:l_coset_def) 
+  apply (simp add:l_coset_def)
   apply auto
   apply (rule_tac x = "b \<cdot>\<^sub>G h" in r_cos_belong [of "G" "H" "b" _], assumption+)
   apply simp
 done
 
-lemma nmlSubg2: "\<lbrakk> group G; H \<guillemotleft> G; \<forall> a \<in> carrier G. 
-\<forall> h \<in> H. (a \<cdot>\<^sub>G h) \<cdot>\<^sub>G a\<inverse>\<^sup>G  \<in> H \<rbrakk> \<Longrightarrow> H \<lhd> G" 
+lemma nmlSubg2: "\<lbrakk> group G; H \<guillemotleft> G; \<forall> a \<in> carrier G.
+\<forall> h \<in> H. (a \<cdot>\<^sub>G h) \<cdot>\<^sub>G a\<inverse>\<^sup>G  \<in> H \<rbrakk> \<Longrightarrow> H \<lhd> G"
 
 apply (simp add:nsubgroup_def)
 apply (simp add:nmlSubg1 [of "G" "H"])
@@ -4146,7 +4148,7 @@ apply (frule subg_subset1, assumption+)
 apply (simp add:r_one)
 done
 
-lemma special_nsubg_G:"\<lbrakk> group G; H \<guillemotleft> G \<rbrakk> \<Longrightarrow> H \<lhd> grp G H" 
+lemma special_nsubg_G:"\<lbrakk> group G; H \<guillemotleft> G \<rbrakk> \<Longrightarrow> H \<lhd> grp G H"
 apply (frule subggrp, assumption+)
 apply (simp add:nsubgroup_def)
 apply (rule conjI)
@@ -4183,11 +4185,11 @@ apply (simp add: NSubgLREq [of "G" "H" "a", THEN sym])
 apply (frule l_cosTr2 [of "G" "H" "b" "a"], assumption+)
 apply (frule subg_iOp_closed[of "G" "H" "a\<inverse>\<^sup>G \<cdot>\<^sub>G b"], assumption+)
 apply (simp add:invofab iOp_invinv)
-done      
+done
 
-lemma NSubgTr2:"\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G; 
+lemma NSubgTr2:"\<lbrakk> group G; a \<in> carrier G; b \<in> carrier G;
                             a1 \<in> carrier G; b1 \<in> carrier G \<rbrakk>
- \<Longrightarrow> tOp G (tOp G a b) (iOp G (tOp G a1 b1)) = 
+ \<Longrightarrow> tOp G (tOp G a b) (iOp G (tOp G a1 b1)) =
  tOp G a (tOp G (tOp G  (tOp G b (iOp G b1)) (tOp G (iOp G a1) a)) (iOp G a))"
 apply (simp add: invofab)
 apply (simplesubst tOp_assoc, assumption+)
@@ -4196,7 +4198,7 @@ apply (simplesubst tOp_assoc, assumption+)
  apply (rule tOp_closed, assumption+)
  apply simp+
 apply (subgoal_tac "a1\<inverse>\<^sup>G \<cdot>\<^sub>G a \<cdot>\<^sub>G a\<inverse>\<^sup>G = a1\<inverse>\<^sup>G")
- apply (simp add: tOp_assoc) 
+ apply (simp add: tOp_assoc)
 apply (simp add:tOp_assoc iOp_r_inv r_one)
 done
 
@@ -4208,11 +4210,11 @@ apply (simp add:NSubgLREq [of "G" "H" "a"])
 apply (subst tOp_assoc [THEN sym], assumption+)
  apply (simp add:subg_subset1) apply simp
  apply (rule r_cosTr2 [of "G" "H" "a \<cdot>\<^sub>G h" "a"], assumption+)
- apply (rule tOp_closed, assumption+) 
+ apply (rule tOp_closed, assumption+)
  apply (simp add:subg_subset1) apply assumption+
 done
-    
-lemma NSubgPr1_1: "\<lbrakk>group G; H \<lhd> G; a \<in> carrier G ; h \<in> H\<rbrakk> \<Longrightarrow> 
+
+lemma NSubgPr1_1: "\<lbrakk>group G; H \<lhd> G; a \<in> carrier G ; h \<in> H\<rbrakk> \<Longrightarrow>
           (a \<cdot>\<^sub>G h) \<cdot>\<^sub>G a\<inverse>\<^sup>G \<in> H"
 apply (frule NSubgPr1 [of "G" "H" "a" "h"], assumption+)
 apply (subst tOp_assoc, assumption+)
@@ -4238,9 +4240,9 @@ apply (frule nmlSubgTr0, assumption+)
 apply (rule subg_subset1, assumption+)
 done
 
-lemma NSubgTr3: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G; b \<in> carrier G; 
-a1 \<in> carrier G; b1 \<in> carrier G; tOp G a (iOp G a1) \<in> H; 
- tOp G b (iOp G b1) \<in> H \<rbrakk> 
+lemma NSubgTr3: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G; b \<in> carrier G;
+a1 \<in> carrier G; b1 \<in> carrier G; tOp G a (iOp G a1) \<in> H;
+ tOp G b (iOp G b1) \<in> H \<rbrakk>
        \<Longrightarrow> tOp G (tOp G a b) (iOp G (tOp G a1 b1)) \<in> H"
 
 apply (frule  NSubgTr2 [of "G" "a" "b" "a1" "b1"], assumption+)
@@ -4251,7 +4253,7 @@ apply (frule subg_iOp_closed [of "G" "H" "tOp G (iOp G a) a1"])
  apply assumption+
 apply (simp add: invofab iOp_invinv)
 apply (frule nmlSubgTr0 [of "G" "H"], assumption+)
-apply (frule subg_tOp_closed [of "G" "H" "tOp G b (iOp G b1)" 
+apply (frule subg_tOp_closed [of "G" "H" "tOp G b (iOp G b1)"
                                         "tOp G (iOp G a1) a"], assumption+)
 apply (frule  NSubgPr1 [of "G" "H" "a" "tOp G (tOp G b (iOp G b1)) (tOp G (iOp G a1) a)"], assumption+)
 done
@@ -4264,10 +4266,10 @@ apply (rule nmlSubg2, assumption+)
 apply (rule ballI)+
 apply (simp add:grp_def) apply (fold grp_def)
 apply (frule_tac h = a in subg_subset1 [of "G" "N"], assumption+)
-apply (simp add: NSubgPr1_1 [of "G" "H"]) 
+apply (simp add: NSubgPr1_1 [of "G" "H"])
 done
 
-lemma NSubgTr4: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G; 
+lemma NSubgTr4: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G;
  x \<in> r_coset G H a \<rbrakk> \<Longrightarrow> iOp G x \<in> r_coset G H (iOp G a)"
 
 apply (frule nmlSubgTr0 [of "G" "H"], assumption+)
@@ -4284,9 +4286,9 @@ apply (frule r_cos_belong [of "G" "H" "iOp G a" "iOp G x"], assumption+)
 apply assumption
 done
 
-lemma ctOpTr1:"\<lbrakk> group G; H \<lhd> G; a \<in> carrier G; b \<in> carrier G; 
+lemma ctOpTr1:"\<lbrakk> group G; H \<lhd> G; a \<in> carrier G; b \<in> carrier G;
 a1 \<in> carrier G; b1 \<in> carrier G; r_coset G H a = r_coset G H a1;
-r_coset G H b = r_coset G H b1 \<rbrakk> \<Longrightarrow> 
+r_coset G H b = r_coset G H b1 \<rbrakk> \<Longrightarrow>
  r_coset G H (tOp G a b) = r_coset G H (tOp G a1 b1)"
 apply (frule nmlSubgTr0 [of "G" "H"], assumption+)
 apply (frule r_cosEqVar1 [of "G" "H" "a1" "a"], assumption+)
@@ -4305,11 +4307,11 @@ prefer 2
 apply simp
 apply (insert  r_cosEq [of "G" "H" "tOp G a1 b1" "tOp G a b" ])
 apply simp
-done 
+done
 
 lemma ctOpTr2:" \<lbrakk> group G; H \<lhd> G; a \<in> carrier G; a1 \<in> carrier G;
-  r_coset G H a = r_coset G H a1 \<rbrakk> \<Longrightarrow> 
-             r_coset G H (iOp G a) = r_coset G H (iOp G a1) " 
+  r_coset G H a = r_coset G H a1 \<rbrakk> \<Longrightarrow>
+             r_coset G H (iOp G a) = r_coset G H (iOp G a1) "
 apply (frule nmlSubgTr0, assumption+)
 apply (frule r_cosEqVar1 [of "G" "H" "a" "a1"], assumption+)
 
@@ -4326,21 +4328,21 @@ done
 
 
 lemma cosiOpwelldefTr1: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G \<rbrakk> \<Longrightarrow>
-   cosiOp G H (r_coset G H a) \<subseteq>  r_coset G H (iOp G a)"  
+   cosiOp G H (r_coset G H a) \<subseteq>  r_coset G H (iOp G a)"
 
-apply (frule  nmlSubgTr0 [of "G" "H"], assumption+)  
+apply (frule  nmlSubgTr0 [of "G" "H"], assumption+)
 apply (rule subsetI)
 apply (frule iOp_closed [of "G" "a"], assumption+)
 apply (subst NSubgLREq[THEN sym], assumption+)
-apply (simp only:cosiOp_def) 
+apply (simp only:cosiOp_def)
  apply (simp add:CollectI)
  apply (frule r_cosTr0_1 [of "G" "H" "a"], assumption+)
- apply simp 
+ apply simp
 apply auto
  apply (thin_tac "H\<^sub>G a \<in> set_r_cos G H")
  apply (simp add:r_coset_def [of "G" "H" "a"])
  apply auto
-apply (frule_tac h = h in subg_subset1 [of "G" "H"], assumption+) 
+apply (frule_tac h = h in subg_subset1 [of "G" "H"], assumption+)
 apply (frule_tac h = ha in subg_subset1 [of "G" "H"], assumption+)
 apply (simp add:invofab)
 apply (rule l_cos_belong, assumption+)
@@ -4360,7 +4362,7 @@ lemma cosiOpwelldefTr2: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G \<rbra
 apply (rule subsetI)
  apply (frule nmlSubgTr0 [of "G" "H"], assumption+)
  apply (frule r_cosTr0_1 [of "G" "H" "a"], assumption+)
-apply (simp add: cosiOp_def) 
+apply (simp add: cosiOp_def)
  apply (thin_tac "H\<^sub>G a \<in> set_r_cos G H")
  apply (frule iOp_closed [of "G" "a"], assumption+)
  apply (simp add:r_coset_def [of "G" "H" "a\<inverse>\<^sup>G"]) apply auto
@@ -4368,15 +4370,15 @@ apply (simp add: cosiOp_def)
  apply (simp add:nmlSubgTr0) apply assumption
 apply auto
 done
- 
+
 lemma cosiOpwelldef: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G \<rbrakk> \<Longrightarrow>
-    cosiOp G H (r_coset G H a) = r_coset G H (iOp G a)"  
+    cosiOp G H (r_coset G H a) = r_coset G H (iOp G a)"
  apply (rule equalityI)
  apply (simp add: cosiOpwelldefTr1 [of "G" "H" "a"])
  apply (simp add: cosiOpwelldefTr2 [of "G" "H" "a"])
 done
 
-lemma costOpwelldefTr1: "\<lbrakk>group G; H \<lhd> G; a \<in> carrier G; 
+lemma costOpwelldefTr1: "\<lbrakk>group G; H \<lhd> G; a \<in> carrier G;
 b \<in> carrier G; x \<in> r_coset G H a; y \<in> r_coset G H b\<rbrakk>
            \<Longrightarrow> tOp G x y \<in> r_coset G H (tOp G a b)"
 apply (frule nmlSubgTr0 [of "G" "H"], assumption+)
@@ -4393,7 +4395,7 @@ apply auto
 done
 
 lemma costOpwelldefTr2: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G;
-b \<in> carrier G \<rbrakk> 
+b \<in> carrier G \<rbrakk>
  \<Longrightarrow> costOp G H (r_coset G H a) (r_coset G H b) \<subseteq>  r_coset G H (tOp G a b)"
 apply (insert nmlSubgTr0 [of "G" "H"])
 apply (simp add: costOp_def)
@@ -4405,13 +4407,13 @@ done
 
 lemma costOpwelldefTr4:"\<lbrakk> group G; H \<lhd> G; a \<in> carrier G;
 b \<in> carrier G; x \<in> r_coset G H (tOp G a b) \<rbrakk> \<Longrightarrow>
-   x \<in> costOp G H (r_coset G H a) (r_coset G H b) " 
+   x \<in> costOp G H (r_coset G H a) (r_coset G H b) "
 (*
 thm r_cosTool2 [of "G" "H" "tOp G a b" "x"]
 *)
 apply (frule nmlSubgTr0 [of "G" "H"], assumption+)
 apply (frule r_cosTr0 [of "G" "H" "tOp G a b" "x"], assumption+)
-apply auto 
+apply auto
 apply (frule r_cosTool2 [of "G" "H" "a \<cdot>\<^sub>G b" "x"], assumption+)
 apply auto
  apply (thin_tac "h \<cdot>\<^sub>G ( a \<cdot>\<^sub>G b) \<in> H\<^sub>G ( a \<cdot>\<^sub>G b)")
@@ -4424,31 +4426,31 @@ apply (frule r_cosTr0_1 [of "G" "H" "a"], assumption+)
  apply (frule_tac h = h in r_cosTr8 [of "G" "H" "a" _ "a"], assumption+)
  apply (frule aInR_cos [of "G" "H" "b"], assumption+)
  apply (frule subg_subset1, assumption+)
- apply (frule_tac a1 = h in tOp_assoc [of "G" _ "a" "b", THEN sym], 
+ apply (frule_tac a1 = h in tOp_assoc [of "G" _ "a" "b", THEN sym],
                                        assumption+)
 apply auto
 done
 
 lemma costOpwelldefTr5: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G;
-b \<in> carrier G \<rbrakk> 
+b \<in> carrier G \<rbrakk>
  \<Longrightarrow> r_coset G H (tOp G a b) \<subseteq> costOp G H (r_coset G H a) (r_coset G H b)"
-apply (rule subsetI) 
+apply (rule subsetI)
 apply (frule costOpwelldefTr4 [of "G" "H" "a" "b" _], assumption+)
 done
 
 lemma costOpwelldef: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G;
-b \<in> carrier G \<rbrakk> 
+b \<in> carrier G \<rbrakk>
  \<Longrightarrow> r_coset G H (tOp G a b) = costOp G H (r_coset G H a) (r_coset G H b)"
 apply (rule equalityI)
 apply (simp add:costOpwelldefTr5)
 apply (simp add:costOpwelldefTr2)
-done           
+done
 
 lemma qgrpUnit: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G\<rbrakk> \<Longrightarrow>
-    costOp G H H (r_coset G H a) = r_coset G H a" 
+    costOp G H H (r_coset G H a) = r_coset G H a"
 
 apply (frule nmlSubgTr0 [of "G" "H"], assumption+)
-apply (subgoal_tac "costOp G H H (r_coset G H a) = 
+apply (subgoal_tac "costOp G H H (r_coset G H a) =
        costOp G H (r_coset G H (1\<^sub>G)) (r_coset G H a)" )
 apply simp
 apply (subst costOpwelldef [THEN sym, of "G" "H" "1\<^sub>G" "a"], assumption+)
@@ -4458,7 +4460,7 @@ apply simp
 done
 
 lemma qgrpUnitTr:"\<lbrakk>group G; H \<lhd> G\<rbrakk>
-  \<Longrightarrow> \<forall>x \<in> set_r_cos G H. costOp G H H x = x" 
+  \<Longrightarrow> \<forall>x \<in> set_r_cos G H. costOp G H H x = x"
 apply (simp only: set_r_cos_def)
 apply (simp add:qgrpUnit)+
 apply (insert qgrpUnit [of "G" "H" _])
@@ -4477,18 +4479,18 @@ apply (simp add:iOp_l_inv r_one)
 apply (insert nmlSubgTr0 [of "G" "H"])
 apply simp
 apply (simp add:r_cosUnit1)
-done  
+done
 
 lemma qgrpInvTr:"\<lbrakk> group G; H \<lhd> G \<rbrakk>
   \<Longrightarrow> \<forall> x \<in> set_r_cos G H. costOp G H (cosiOp G H x) x = H "
-apply (simp only:set_r_cos_def)   
+apply (simp only:set_r_cos_def)
 apply (insert qgrpInv [of "G" "H" _])
 apply auto
 done
 
 lemma qgrpAssBop: "\<lbrakk> group G; H \<lhd> G; a \<in> carrier G; b \<in> carrier G;
-c \<in> carrier G \<rbrakk> \<Longrightarrow> costOp G H (r_coset G H a) 
-     (costOp G H (r_coset G H b) (r_coset G H c)) = 
+c \<in> carrier G \<rbrakk> \<Longrightarrow> costOp G H (r_coset G H a)
+     (costOp G H (r_coset G H b) (r_coset G H c)) =
 costOp G H (costOp G H (r_coset G H a) (r_coset G H b)) (r_coset G H c)"
 
 apply (simp add:costOpwelldef [THEN sym])
@@ -4496,14 +4498,14 @@ apply (simp add:tOp_assoc)
 done
 
 lemma qgrpAssBopTr: "\<lbrakk> group G; H \<lhd> G \<rbrakk> \<Longrightarrow>
-\<forall>X\<in>set_r_cos G H. \<forall>Y\<in>set_r_cos G H. \<forall>Z\<in>set_r_cos G H. costOp G H X 
+\<forall>X\<in>set_r_cos G H. \<forall>Y\<in>set_r_cos G H. \<forall>Z\<in>set_r_cos G H. costOp G H X
    (costOp G H Y Z) = costOp G H (costOp G H X Y) Z"
 apply (simp only:set_r_cos_def)
 apply (insert qgrpAssBop [of "G" "H" _])
 apply  auto
 done
 
-lemma Qgrp_bOp: "\<lbrakk> group G; H \<lhd> G \<rbrakk> \<Longrightarrow> 
+lemma Qgrp_bOp: "\<lbrakk> group G; H \<lhd> G \<rbrakk> \<Longrightarrow>
   costOp G H : set_r_cos G H \<rightarrow> set_r_cos G H \<rightarrow> set_r_cos G H"
 (* later we have to clean up the following proof *)
 apply (rule bivar_func_test)
@@ -4555,7 +4557,7 @@ lemma Qgrp_one:"\<lbrakk>group G; H \<lhd> G \<rbrakk> \<Longrightarrow> one (G 
 apply (simp add:qgrp_def)
 done
 
-lemma Qgrp_carrierTr:"group G \<Longrightarrow> carrier (G / (N::'a set)) = set_r_cos G N" 
+lemma Qgrp_carrierTr:"group G \<Longrightarrow> carrier (G / (N::'a set)) = set_r_cos G N"
 apply (simp add:qgrp_def)
 done    (** only a trick *)
 
@@ -4582,7 +4584,7 @@ apply (rule ballI)+
 apply (simp add:Pjhom0)
 done
 
-lemma Pj_mem:"\<lbrakk> group G; N \<lhd> G; x \<in> carrier G \<rbrakk> \<Longrightarrow> 
+lemma Pj_mem:"\<lbrakk> group G; N \<lhd> G; x \<in> carrier G \<rbrakk> \<Longrightarrow>
                               (Pj G N) x = r_coset G N x"
 apply (simp add:Pj_def)
 done
@@ -4594,13 +4596,13 @@ apply (simp add:surj_to_def)
 apply (rule equalityI)
 apply (frule Pjhom1, assumption+) apply (simp add:gHom_def)
  apply (erule conjE)+
- apply (rule image_sub [of "Pj G N" "carrier G" "carrier (G / N)" 
+ apply (rule image_sub [of "Pj G N" "carrier G" "carrier (G / N)"
   "carrier G"], assumption+) apply simp
 apply (rule subsetI) apply (simp add:qgrp_def set_r_cos_def)
 apply (simp add:Pj_def image_def)
 done
 
-lemma l_coset_in_subg:"\<lbrakk>group G; H \<guillemotleft> G; K \<guillemotleft> G; K \<subseteq> H; a \<in> H \<rbrakk>  \<Longrightarrow> 
+lemma l_coset_in_subg:"\<lbrakk>group G; H \<guillemotleft> G; K \<guillemotleft> G; K \<subseteq> H; a \<in> H \<rbrakk>  \<Longrightarrow>
             l_coset G a K = l_coset (grp G H) a K"
 apply (simp add:l_coset_def)
 apply (simp add:grp_def)
@@ -4613,28 +4615,28 @@ done
 
 
 section "5. Setproducts"
-       
+
 constdefs
   commutators:: "('a, 'more) GroupType_scheme \<Rightarrow> 'a set"
-     "commutators G == {z. \<exists> a\<in> (carrier G). \<exists>b \<in> (carrier G). 
-       ((a \<cdot>\<^sub>G b) \<cdot>\<^sub>G a\<inverse>\<^sup>G) \<cdot>\<^sub>G b\<inverse>\<^sup>G  = z}" 
+     "commutators G == {z. \<exists> a\<in> (carrier G). \<exists>b \<in> (carrier G).
+       ((a \<cdot>\<^sub>G b) \<cdot>\<^sub>G a\<inverse>\<^sup>G) \<cdot>\<^sub>G b\<inverse>\<^sup>G  = z}"
 
-lemma commutator: "\<lbrakk> group G; H \<guillemotleft> G; (commutators G) \<subseteq> H  \<rbrakk> \<Longrightarrow> 
+lemma commutator: "\<lbrakk> group G; H \<guillemotleft> G; (commutators G) \<subseteq> H  \<rbrakk> \<Longrightarrow>
          H \<lhd> G "
 apply (rule nmlSubg2 [of "G" "H" ], assumption+)
 apply (rule ballI)+
  apply (frule subg_subset1, assumption+)
-apply (subgoal_tac "a \<cdot>\<^sub>G h \<cdot>\<^sub>G a\<inverse>\<^sup>G \<cdot>\<^sub>G h\<inverse>\<^sup>G \<in> H") prefer 2 
+apply (subgoal_tac "a \<cdot>\<^sub>G h \<cdot>\<^sub>G a\<inverse>\<^sup>G \<cdot>\<^sub>G h\<inverse>\<^sup>G \<in> H") prefer 2
  apply (simp add:commutators_def)
  apply (rule subsetD, assumption+) apply (simp add:CollectI)
- apply blast 
-apply (frule_tac ?h1.0 ="a \<cdot>\<^sub>G h \<cdot>\<^sub>G a\<inverse>\<^sup>G \<cdot>\<^sub>G h\<inverse>\<^sup>G" and ?h2.0 = h in 
+ apply blast
+apply (frule_tac ?h1.0 ="a \<cdot>\<^sub>G h \<cdot>\<^sub>G a\<inverse>\<^sup>G \<cdot>\<^sub>G h\<inverse>\<^sup>G" and ?h2.0 = h in
          subg_tOp_closed [of "G" "H"], assumption+)
 apply (frule_tac a = a in  iOp_closed [of "G"], assumption+)
 apply (frule_tac a = h in  iOp_closed [of "G"], assumption+)
 (* thm tOp_assoc [of "G", THEN sym] *)
-apply (frule_tac a1 = "a \<cdot>\<^sub>G h \<cdot>\<^sub>G a\<inverse>\<^sup>G" and b1 = "h\<inverse>\<^sup>G" and c1 = h in 
-       tOp_assoc [of "G", THEN sym]) 
+apply (frule_tac a1 = "a \<cdot>\<^sub>G h \<cdot>\<^sub>G a\<inverse>\<^sup>G" and b1 = "h\<inverse>\<^sup>G" and c1 = h in
+       tOp_assoc [of "G", THEN sym])
  apply (rule tOp_closed, assumption+)+
  apply (simp add:iOp_l_inv r_one)
 done
@@ -4643,15 +4645,15 @@ constdefs
  settOp :: "[('a, 'more) GroupType_scheme, 'a set, 'a set] \<Rightarrow> 'a set "
   "settOp G H K == {z. \<exists>x \<in> H. \<exists>y \<in> K. (x \<cdot>\<^sub>G y = z)}"
 
-syntax 
+syntax
   "@SBOP1" :: "['a set, ('a, 'more) GroupType_scheme, 'a set] \<Rightarrow> 'a set"
             ("(3_/ \<bullet>\<^sub>_/ _)" [66,66,67]66)
 translations
   "H \<bullet>\<^sub>G K" == "settOp G H K"
 
-lemma settOpinherited:"\<lbrakk> group G; L \<guillemotleft> G; H \<subseteq> L; K \<subseteq> L \<rbrakk> 
+lemma settOpinherited:"\<lbrakk> group G; L \<guillemotleft> G; H \<subseteq> L; K \<subseteq> L \<rbrakk>
         \<Longrightarrow> settOp (grp G L) H K =  H \<bullet>\<^sub>G K "
-apply (simp add:settOp_def) 
+apply (simp add:settOp_def)
 apply (simp add:grp_def)
 done
 
@@ -4659,7 +4661,7 @@ lemma settOp_one_l:"\<lbrakk> group G; K \<guillemotleft> G \<rbrakk> \<Longrigh
 apply (simp add:settOp_def)
 apply auto
  apply (frule subg_subset1, assumption+) apply simp
- apply (subgoal_tac "\<forall>y\<in>K. 1\<^sub>G \<cdot>\<^sub>G y = y") 
+ apply (subgoal_tac "\<forall>y\<in>K. 1\<^sub>G \<cdot>\<^sub>G y = y")
 apply auto
  apply (frule_tac h = y in subg_subset1 [of "G" "K"], assumption+)
  apply simp
@@ -4668,7 +4670,7 @@ done
 lemma settOp_one_r:"\<lbrakk>group G; K \<guillemotleft> G\<rbrakk> \<Longrightarrow> K \<bullet>\<^sub>G {1\<^sub>G} = K"
 apply (simp add:settOp_def)
 apply auto
- apply (frule subg_subset1, assumption+) apply (simp add:r_one) 
+ apply (frule subg_subset1, assumption+) apply (simp add:r_one)
 apply (subgoal_tac "\<forall>k\<in>K. k \<cdot>\<^sub>G (1\<^sub>G) = k") apply auto
 apply (frule_tac h = k in subg_subset1 [of "G" "K"], assumption+)
 apply (simp add:r_one)
@@ -4692,7 +4694,7 @@ apply (frule_tac c = y in subsetD [of "K" "L"], assumption+)
 apply (simp add:subg_tOp_closed)
 done
 
-lemma settOpTr0_s:"\<lbrakk> group G; H \<subseteq> (carrier G); K \<subseteq> (carrier G)\<rbrakk> 
+lemma settOpTr0_s:"\<lbrakk> group G; H \<subseteq> (carrier G); K \<subseteq> (carrier G)\<rbrakk>
                          \<Longrightarrow>  H \<bullet>\<^sub>G K \<subseteq> carrier G "
 apply (rule subsetI)
 apply (simp add:settOp_def CollectI)
@@ -4703,24 +4705,24 @@ apply simp
 apply (simp add:subsetD)+
 done
 
-lemma settOpTr1:"\<lbrakk> group G; H \<guillemotleft> G; K \<guillemotleft> G; a \<in> H; b \<in> K \<rbrakk> \<Longrightarrow> 
+lemma settOpTr1:"\<lbrakk> group G; H \<guillemotleft> G; K \<guillemotleft> G; a \<in> H; b \<in> K \<rbrakk> \<Longrightarrow>
     a \<cdot>\<^sub>G b \<in> H \<bullet>\<^sub>G K "
 apply (simp add:settOp_def)
 apply auto
 done
 
-lemma settOpTr1_s:"\<lbrakk> group G; H \<subseteq> carrier G; K \<subseteq> carrier G; 
+lemma settOpTr1_s:"\<lbrakk> group G; H \<subseteq> carrier G; K \<subseteq> carrier G;
 a \<in> H; b \<in> K \<rbrakk> \<Longrightarrow> a \<cdot>\<^sub>G b \<in> H \<bullet>\<^sub>G K "
 apply (simp add:settOp_def)
 apply auto
 done
 
-lemma  settOpTr1_1:"\<lbrakk> group G; H \<subseteq> carrier G; K \<subseteq> carrier G; 
+lemma  settOpTr1_1:"\<lbrakk> group G; H \<subseteq> carrier G; K \<subseteq> carrier G;
                       u \<in> H \<bullet>\<^sub>G K \<rbrakk> \<Longrightarrow>  \<exists>a \<in> H. \<exists>b \<in> K. (a \<cdot>\<^sub>G b = u)"
 apply (simp add:settOp_def)
 done
 
-lemma settOpTr1_2:"\<lbrakk> group G; H \<subseteq> carrier G; K \<subseteq> carrier G; 
+lemma settOpTr1_2:"\<lbrakk> group G; H \<subseteq> carrier G; K \<subseteq> carrier G;
          H1 \<subseteq> H; K1 \<subseteq> K \<rbrakk> \<Longrightarrow>  H1 \<bullet>\<^sub>G K1 \<subseteq> H \<bullet>\<^sub>G K "
 apply (rule subsetI)
 apply (simp add:settOp_def) apply blast
@@ -4741,7 +4743,7 @@ apply (frule subg_subset [of "G" "H"], assumption+)
 apply (frule subg_subset [of "G" "K"], assumption+)
 apply (subgoal_tac "u \<in>  K \<bullet>\<^sub>G H")
 apply (frule settOpTr1_1 [of "G" "K" "H" "u"], assumption+)
-apply auto apply (thin_tac " a \<cdot>\<^sub>G b \<in> H \<bullet>\<^sub>G K") 
+apply auto apply (thin_tac " a \<cdot>\<^sub>G b \<in> H \<bullet>\<^sub>G K")
 apply (subgoal_tac "\<exists>h\<in>H. \<exists>k\<in>K. h \<cdot>\<^sub>G k = v")
 prefer 2 apply (simp add:settOp_def) apply auto
  apply (frule_tac h = a in subg_subset1 [of "G" "K"], assumption+)
@@ -4753,7 +4755,7 @@ apply (subst tOp_assocTr42, assumption+)
 apply (subgoal_tac "a \<cdot>\<^sub>G ( b \<cdot>\<^sub>G h) \<in>  K \<bullet>\<^sub>G H") apply simp
 apply (subgoal_tac "\<exists>h1\<in>H. \<exists>k1\<in>K. h1 \<cdot>\<^sub>G k1 = a \<cdot>\<^sub>G ( b \<cdot>\<^sub>G h)")
  prefer 2 apply (simp add:settOp_def)
-apply (subgoal_tac "\<forall>h1\<in>H. \<forall>k1\<in>K.  h1 \<cdot>\<^sub>G k1 =  a \<cdot>\<^sub>G ( b \<cdot>\<^sub>G h) \<longrightarrow> 
+apply (subgoal_tac "\<forall>h1\<in>H. \<forall>k1\<in>K.  h1 \<cdot>\<^sub>G k1 =  a \<cdot>\<^sub>G ( b \<cdot>\<^sub>G h) \<longrightarrow>
           (a \<cdot>\<^sub>G ( b \<cdot>\<^sub>G h) \<cdot>\<^sub>G k \<in> H \<bullet>\<^sub>G K)") apply blast
 apply (thin_tac "\<exists>h1\<in>H. \<exists>k1\<in>K.  h1 \<cdot>\<^sub>G k1 =  a \<cdot>\<^sub>G ( b \<cdot>\<^sub>G h)")
 apply (rule ballI)+ apply (rule impI) apply (rotate_tac -1)
@@ -4779,7 +4781,7 @@ lemma settOpTr4:"\<lbrakk> group G; H \<guillemotleft> G; K \<guillemotleft> G; 
  u \<in>  H \<bullet>\<^sub>G K\<rbrakk> \<Longrightarrow>  u\<inverse>\<^sup>G \<in> H \<bullet>\<^sub>G K "
 apply (subgoal_tac "\<exists>h\<in>H. \<exists>k\<in>K. h \<cdot>\<^sub>G k = u") prefer 2
  apply (thin_tac "H \<bullet>\<^sub>G K = K \<bullet>\<^sub>G H")
- apply (simp add:settOp_def) (** apply auto is too slow. From here **) 
+ apply (simp add:settOp_def) (** apply auto is too slow. From here **)
 apply (subgoal_tac "\<forall>h\<in>H. \<forall>k\<in>K.  h \<cdot>\<^sub>G k = u \<longrightarrow> u\<inverse>\<^sup>G \<in> H \<bullet>\<^sub>G K")
 apply blast apply (thin_tac "\<exists>h\<in>H. \<exists>k\<in>K.  h \<cdot>\<^sub>G k = u")
 apply (rule ballI)+ apply (rule impI) (** to here.  **)
@@ -4803,20 +4805,20 @@ apply (simp add:settOp_def [of "G" "H" "K \<bullet>\<^sub>G L"])
 apply auto
 apply (simp add:settOp_def [of "G" "H" "K"])
 apply auto
-apply (frule_tac h = x in subg_subset1 [of "G" "H"], assumption+) 
-apply (frule_tac h = ya in subg_subset1 [of "G" "K"], assumption+) 
-apply (frule_tac h = y in subg_subset1 [of "G" "L"], assumption+) 
-apply (frule_tac  a = x and b = ya and c = y in tOp_assoc [of "G"], 
+apply (frule_tac h = x in subg_subset1 [of "G" "H"], assumption+)
+apply (frule_tac h = ya in subg_subset1 [of "G" "K"], assumption+)
+apply (frule_tac h = y in subg_subset1 [of "G" "L"], assumption+)
+apply (frule_tac  a = x and b = ya and c = y in tOp_assoc [of "G"],
                     assumption+) apply simp
 apply (subgoal_tac "ya \<cdot>\<^sub>G y \<in> K \<bullet>\<^sub>G L")  apply blast
  apply (thin_tac "x \<cdot>\<^sub>G ya \<cdot>\<^sub>G y =  x \<cdot>\<^sub>G ( ya \<cdot>\<^sub>G y)")
  apply (simp add:settOp_def) apply blast
 apply (simp add:settOp_def [of "G" "K" "L"])
  apply auto
-apply (frule_tac h = xa in subg_subset1 [of "G" "H"], assumption+) 
-apply (frule_tac h = x in subg_subset1 [of "G" "K"], assumption+) 
+apply (frule_tac h = xa in subg_subset1 [of "G" "H"], assumption+)
+apply (frule_tac h = x in subg_subset1 [of "G" "K"], assumption+)
 apply (frule_tac h = ya in subg_subset1 [of "G" "L"], assumption+)
-apply (frule_tac  a1 = xa and b1 = x and c1 = ya in 
+apply (frule_tac  a1 = xa and b1 = x and c1 = ya in
                             tOp_assoc [of "G", THEN sym], assumption+)
 apply simp
  apply (thin_tac "xa \<cdot>\<^sub>G ( x \<cdot>\<^sub>G ya) =   xa \<cdot>\<^sub>G x \<cdot>\<^sub>G ya")
@@ -4826,15 +4828,15 @@ apply (simp  add:settOp_def) apply blast
 done
 
 lemma settOpTr6: "\<lbrakk> group G; H1 \<guillemotleft> G; H2 \<guillemotleft> G; K \<guillemotleft> G; H1 \<subseteq> K \<rbrakk> \<Longrightarrow>
-      ( H1 \<bullet>\<^sub>G H2) \<inter> K = H1 \<bullet>\<^sub>G (H2 \<inter> K) " 
+      ( H1 \<bullet>\<^sub>G H2) \<inter> K = H1 \<bullet>\<^sub>G (H2 \<inter> K) "
 apply auto
 apply (simp add:settOp_def [of "G" "H1" "H2"]) apply auto
 apply (frule_tac  c = xa in subsetD [of "H1" "K"], assumption+)
 apply (frule_tac x = xa in subg_iOp_closed [of "G" "K"], assumption+)
-apply (frule_tac  ?h1.0 = "xa\<inverse>\<^sup>G" and ?h2.0 = "xa \<cdot>\<^sub>G y" in 
+apply (frule_tac  ?h1.0 = "xa\<inverse>\<^sup>G" and ?h2.0 = "xa \<cdot>\<^sub>G y" in
               subg_tOp_closed [of "G" "K"], assumption+)
-apply (frule_tac h = xa in subg_subset1 [of "G" "K"], assumption+) 
-apply (frule_tac h = "xa\<inverse>\<^sup>G" in subg_subset1 [of "G" "K"], assumption+) 
+apply (frule_tac h = xa in subg_subset1 [of "G" "K"], assumption+)
+apply (frule_tac h = "xa\<inverse>\<^sup>G" in subg_subset1 [of "G" "K"], assumption+)
 apply (frule_tac h = y in subg_subset1 [of "G" "H2"], assumption+)
 apply (simp add:tOp_assoc [THEN sym])
 apply (simp add:iOp_l_inv)
@@ -4847,17 +4849,17 @@ apply (simp add:subg_tOp_closed)
 done
 
 lemma settOpTr6_1: "\<lbrakk> group G; H1 \<guillemotleft> G; H2 \<guillemotleft> G; K \<guillemotleft> G; H2 \<subseteq> K \<rbrakk> \<Longrightarrow>
-      ( H1 \<bullet>\<^sub>G H2) \<inter> K = (H1 \<inter> K) \<bullet>\<^sub>G H2 " 
+      ( H1 \<bullet>\<^sub>G H2) \<inter> K = (H1 \<inter> K) \<bullet>\<^sub>G H2 "
 apply auto
 apply (simp add:settOp_def [of "G" "H1" "H2"])
 apply auto
 apply (frule_tac  c = y in subsetD [of "H2" "K"], assumption+)
 apply (frule_tac x = y in subg_iOp_closed [of "G" "K"], assumption+)
-apply (frule_tac  ?h1.0 = "xa \<cdot>\<^sub>G y" and ?h2.0 = "y\<inverse>\<^sup>G" in 
+apply (frule_tac  ?h1.0 = "xa \<cdot>\<^sub>G y" and ?h2.0 = "y\<inverse>\<^sup>G" in
               subg_tOp_closed [of "G" "K"], assumption+)
-apply (frule_tac h = xa in subg_subset1 [of "G" "H1"], assumption+) 
-apply (frule_tac h = y in subg_subset1 [of "G" "K"], assumption+) 
-apply (frule_tac h = "y\<inverse>\<^sup>G" in subg_subset1 [of "G" "K"], assumption+) 
+apply (frule_tac h = xa in subg_subset1 [of "G" "H1"], assumption+)
+apply (frule_tac h = y in subg_subset1 [of "G" "K"], assumption+)
+apply (frule_tac h = "y\<inverse>\<^sup>G" in subg_subset1 [of "G" "K"], assumption+)
 apply (simp add:tOp_assoc iOp_r_inv r_one)
 apply (simp add:settOp_def) apply auto
 apply (simp add:settOp_def) apply auto
@@ -4871,7 +4873,7 @@ apply (simp add:settOp_def)
 apply (rule subsetI)
 apply (frule subg_one_closed [of "G" "K"], assumption+)
 apply (simp add:CollectI)
-apply (frule_tac h = x in subg_subset1 [of "G" "H"], assumption+) 
+apply (frule_tac h = x in subg_subset1 [of "G" "H"], assumption+)
  apply (frule_tac a = x in r_one [of "G"], assumption+)
  apply blast
 done
@@ -4902,16 +4904,16 @@ apply (frule inter_subgs [of "G" "H" "K1"], assumption+)
 apply (subgoal_tac "H \<inter> K1 \<subseteq> H \<inter> K")
 apply (frule subg_in_subg [of "G" "H \<inter> K1" "H \<inter> K"], assumption+)
 apply (rule nmlSubg2 [of "grp G (H \<inter> K)" "H \<inter> K1"])
- apply (simp add:subggrp)+ 
+ apply (simp add:subggrp)+
  apply (rule ballI)+
  apply (simp add:grp_def) apply (fold grp_def)
 apply (rule conjI)
  apply (erule conjE)+
  apply (rule subg_tOp_closed, assumption+)+
  apply (simp add:subg_iOp_closed)
- apply (erule conjE)+ 
+ apply (erule conjE)+
 apply (frule subggrp [of "G" "K"], assumption+)
- apply (frule_tac a = a and h = h in NSubgPr1_1 [of "grp G K" "K1"], 
+ apply (frule_tac a = a and h = h in NSubgPr1_1 [of "grp G K" "K1"],
                                        assumption+)
  apply (simp add:grp_def) apply assumption apply (simp add:grp_def)
 apply (frule subggrp [of "G" "K"], assumption+)
@@ -4920,11 +4922,11 @@ apply (frule subggrp [of "G" "K"], assumption+)
 apply (rule subsetI)
  apply (simp add:grp_def subsetD)
 done
- 
-    
+
+
 lemma subgsubg:"\<lbrakk> group G; H \<guillemotleft> G; K \<guillemotleft> G; H \<bullet>\<^sub>G K =  K \<bullet>\<^sub>G H \<rbrakk> \<Longrightarrow> H \<bullet>\<^sub>G K \<guillemotleft> G"
 apply (frule settOpTr0 [of "G" "H" "K"], assumption+)
-apply (frule settOpTr2 [of "G" "H" "K"], assumption+) 
+apply (frule settOpTr2 [of "G" "H" "K"], assumption+)
 apply (unfold subgroup_def [of "G" "H \<bullet>\<^sub>G K"]) apply simp
 apply (rule conjI)
 apply (rule ballI)+
@@ -4958,11 +4960,11 @@ apply auto
  apply (simp add:r_coset_def) apply auto apply (frule sym)
  apply (thin_tac "h \<cdot>\<^sub>G xa =  xa \<cdot>\<^sub>G y") apply simp
  apply (thin_tac "xa \<cdot>\<^sub>G y =  h \<cdot>\<^sub>G xa")
-apply (simp add:settOp_def) 
+apply (simp add:settOp_def)
  apply auto
  apply (simp add:l_coset_def) apply auto
 
-apply (simp add:settOp_def [of "G" "N" "H"]) 
+apply (simp add:settOp_def [of "G" "N" "H"])
 apply auto
  apply (subgoal_tac "xa \<cdot>\<^sub>G y \<in> r_coset G N y")
  apply (frule_tac h = y in subg_subset1 [of "G" "H"], assumption+)
@@ -4970,10 +4972,10 @@ apply auto
  apply simp
  apply (thin_tac "N\<^sub>G y = y N\<^sub>G")
 apply (simp add:l_coset_def) apply auto
-apply (frule sym) apply (thin_tac "y \<cdot>\<^sub>G h =  xa \<cdot>\<^sub>G y") 
+apply (frule sym) apply (thin_tac "y \<cdot>\<^sub>G h =  xa \<cdot>\<^sub>G y")
 apply simp apply (thin_tac "xa \<cdot>\<^sub>G y =  y \<cdot>\<^sub>G h")
  apply (simp add:settOp_def) apply auto
-apply (simp add:r_coset_def) apply auto 
+apply (simp add:r_coset_def) apply auto
 done
 
 lemma subgns:"\<lbrakk> group G; H \<guillemotleft> G; N \<lhd> G \<rbrakk> \<Longrightarrow> H \<bullet>\<^sub>G N  \<guillemotleft> G "
@@ -5001,8 +5003,8 @@ apply simp
 apply (simp add:subggrp)
 done
 
-lemma NinHNTr0:"\<lbrakk>group G; H \<guillemotleft> G; N \<guillemotleft> G \<rbrakk> \<Longrightarrow> N \<subseteq>  H \<bullet>\<^sub>G N" 
-apply (simp add:settOp_def) 
+lemma NinHNTr0:"\<lbrakk>group G; H \<guillemotleft> G; N \<guillemotleft> G \<rbrakk> \<Longrightarrow> N \<subseteq>  H \<bullet>\<^sub>G N"
+apply (simp add:settOp_def)
 apply (rule subsetI)
 apply (frule subg_one_closed, assumption+)
 apply (simp add:CollectI)
@@ -5011,24 +5013,24 @@ apply (frule_tac a = x in l_one [of "G"], assumption+)
 apply blast
 done
 
-lemma HinHK:"\<lbrakk>group G; H \<guillemotleft> G; K \<guillemotleft> G \<rbrakk> \<Longrightarrow> H \<subseteq>  H \<bullet>\<^sub>G K" 
+lemma HinHK:"\<lbrakk>group G; H \<guillemotleft> G; K \<guillemotleft> G \<rbrakk> \<Longrightarrow> H \<subseteq>  H \<bullet>\<^sub>G K"
 apply (rule subsetI)
 apply (frule subg_one_closed [of "G" "K"], assumption+)
-apply (simp add:settOp_def) 
+apply (simp add:settOp_def)
 apply (frule_tac h = x in subg_subset1 [of "G" "H"], assumption+)
-apply (frule_tac a = x in r_one, assumption+) 
+apply (frule_tac a = x in r_one, assumption+)
 apply auto
 done
 
 lemma NinHNTr2:"\<lbrakk>group G; H \<guillemotleft> G; N \<lhd> G\<rbrakk> \<Longrightarrow> N \<guillemotleft>  grp G (H \<bullet>\<^sub>G N)"
-apply (frule nmlSubgTr0, assumption+) 
+apply (frule nmlSubgTr0, assumption+)
 apply (frule NinHNTr0 [of "G" "H" "N"], assumption+)
-apply (frule subgns, assumption+)  
+apply (frule subgns, assumption+)
 apply (simp add:subg_in_subg)
 done
 
 lemma NinHNTr0_1:"\<lbrakk>group G; H \<guillemotleft> G; N \<lhd>  G \<rbrakk> \<Longrightarrow> N \<subseteq>  H \<bullet>\<^sub>G N"
-apply (frule NinHNTr2 [of "G" "H" "N"], assumption+) 
+apply (frule NinHNTr2 [of "G" "H" "N"], assumption+)
 apply (simp add:grp_def)
 apply (simp add:subgroup_def)
 done
@@ -5043,7 +5045,7 @@ apply (frule_tac h = x in subg_subset1 [of "G" "K"], assumption+)
 apply (frule_tac a = x in l_one [of "G"], assumption+)
 apply blast
 done
-  
+
 lemma nnsubg1:"\<lbrakk>group G; H \<guillemotleft> G; N \<lhd> G; N \<subseteq> H\<rbrakk> \<Longrightarrow> N \<lhd> grp G H"
 apply (frule nmlSubgTr0, assumption+)
 apply (simp add:nsubgroup_def [of "grp G H" "N"])
@@ -5066,7 +5068,7 @@ apply (frule subgns [of "G" "H" "N"], assumption+)
 apply (rule nnsubg1 [of "G" "H \<bullet>\<^sub>G N" "N"], assumption+)
 apply (frule subg_subset[of "grp G (H \<bullet>\<^sub>G N)" "N"], assumption+)
 apply (simp add:grp_def)
-done 
+done
 
 lemma nnsubg_1: "\<lbrakk> group G; H \<guillemotleft> G; N \<lhd> G \<rbrakk> \<Longrightarrow> N \<lhd> grp G (N \<bullet>\<^sub>G H)"
 apply (frule nnsubg, assumption+)
@@ -5087,24 +5089,24 @@ apply auto
  apply (frule subg_subset [of "grp G H" "H1"])
   apply (simp add:nmlSubgTr0)
   apply (frule_tac a1 = y in l_coset_in_subg [THEN sym, of "G" "H" "H1"],
-                                    assumption+) 
+                                    assumption+)
   apply (simp add:grp_def) apply assumption
   apply simp
  apply (frule_tac a1 = y in r_coset_in_subg [THEN sym, of "G" "H" "H1"],
-                                    assumption+) 
+                                    assumption+)
   apply (simp add:grp_def) apply assumption
-  apply simp      
+  apply simp
 apply (frule_tac a = y and h = xa and x = y in r_cosTr8 [of "G" "H1"], assumption+)
  apply (simp add:subg_subset1) apply assumption+
  apply (thin_tac "l_coset G y H1 = r_coset G H1 y")
- apply (subst r_coset_def) apply (simp add:CollectI) 
+ apply (subst r_coset_def) apply (simp add:CollectI)
  apply (frule subg_one_closed [of "G" "H1"], assumption+)
  apply (frule_tac h = y in subg_subset1 [of "G" "H"], assumption+)
  apply (frule_tac a = y in l_one [of "G"], assumption+) apply blast
  apply (frule sym) apply (thin_tac "y H1\<^sub>G = H1\<^sub>G y") apply simp
- apply (frule_tac a = y in l_coset_sub [of "G" "H \<inter> K1" "H1"]) 
+ apply (frule_tac a = y in l_coset_sub [of "G" "H \<inter> K1" "H1"])
  apply (simp add:inter_subgs) apply simp+
- apply (rule subsetD, assumption+) 
+ apply (rule subsetD, assumption+)
 
  apply (simp add:settOp_def [of "G" "H \<inter> K1" "H1"])
  apply auto
@@ -5115,29 +5117,29 @@ apply (frule_tac a = y and h = xa and x = y in r_cosTr8 [of "G" "H1"], assumptio
  apply (simp add:grp_def)
  apply (frule subg_subset [of "grp G H" "H1"])
   apply (simp add:nmlSubgTr0)
-  apply (frule_tac a = xa in l_coset_in_subg [of "G" "H" "H1"], assumption+) 
+  apply (frule_tac a = xa in l_coset_in_subg [of "G" "H" "H1"], assumption+)
   apply (simp add:grp_def) apply assumption
   apply simp
  apply (frule_tac a1 = xa in l_coset_in_subg [THEN sym, of "G" "H" "H1"],
-                                    assumption+) 
+                                    assumption+)
   apply (simp add:grp_def) apply assumption
-  apply simp      
+  apply simp
 apply (frule_tac a = xa and h = y in l_cosTr8 [of "G" "H1"], assumption+)
  apply (simp add:subg_subset1) apply assumption+
  apply (thin_tac "l_coset G xa H1 = r_coset (grp G H) H1 xa")
- apply (frule_tac a = xa in l_coset_sub [of "G" "H \<inter> K1" "H1"]) 
+ apply (frule_tac a = xa in l_coset_sub [of "G" "H \<inter> K1" "H1"])
  apply (simp add:inter_subgs) apply assumption+ apply simp
   apply (frule_tac a1 = xa in l_coset_in_subg [THEN sym, of "G" "H" "H1"],
-                                    assumption+) 
+                                    assumption+)
   apply (simp add:grp_def) apply assumption
   apply simp
  apply (frule_tac a1 = xa in r_coset_in_subg [THEN sym, of "G" "H" "H1"],
-                                    assumption+) 
+                                    assumption+)
   apply (simp add:grp_def) apply assumption
   apply simp
- apply (frule_tac a = xa in r_coset_sub [of "G" "H \<inter> K1" "H1"]) 
+ apply (frule_tac a = xa in r_coset_sub [of "G" "H \<inter> K1" "H1"])
  apply (simp add:inter_subgs) apply simp+
- apply (rule subsetD, assumption+) 
+ apply (rule subsetD, assumption+)
 done
 
 lemma ZassenhausTr1_1: "\<lbrakk> group G; H \<guillemotleft> G; H1 \<guillemotleft> G; K \<guillemotleft> G; K1 \<guillemotleft> G;

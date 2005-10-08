@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/SemiType.thy
-    ID:         $Id: SemiType.thy,v 1.2 2005-06-24 10:05:01 nipkow Exp $
+    ID:         $Id: SemiType.thy,v 1.3 2005-10-08 04:54:30 nipkow Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -110,9 +110,6 @@ apply (case_tac "EX C. Class C : M")
    apply (rule allI)
    apply (rule impI, erule conjE) 
    apply (clarsimp simp add: NT_widen)
-   apply (erule disjE)
-    apply clarsimp
-   apply clarsimp
   apply simp
  apply clarsimp
 apply (erule_tac x = "{C. Class C : M}" in allE)
@@ -121,7 +118,7 @@ apply (rename_tac D)
 apply (rule_tac x = "Class D" in bexI)
  prefer 2
  apply assumption
-apply clarify 
+apply clarify
 apply (clarsimp simp: Class_widen2)
 apply (insert rtrancl_r_diff_Id [symmetric, standard, of "subcls1 P"])
 apply simp
@@ -131,7 +128,7 @@ apply (drule rtrancl_converseI)
 apply (subgoal_tac "((subcls1 P)-Id)^-1 = ((subcls1 P)^-1 - Id)")
  prefer 2
  apply blast
-apply simp 
+apply simp
 apply (blast intro: rtrancl_into_trancl2)
 done
 (*>*)

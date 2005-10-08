@@ -1,12 +1,14 @@
 (*  Title:      Jinja/Compiler/Compiler.thy
-    ID:         $Id: Compiler.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Compiler.thy,v 1.3 2005-10-08 04:54:30 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
 
 header {* \isaheader{Combining Stages 1 and 2} *}
 
-theory Compiler imports  Correctness1 Correctness2 begin
+theory Compiler
+imports Correctness1 Correctness2
+begin
 
 constdefs
   J2JVM :: "J_prog \<Rightarrow> jvm_prog"
