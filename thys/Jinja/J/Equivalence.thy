@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Equivalence.thy
-    ID:         $Id: Equivalence.thy,v 1.3 2005-09-26 16:05:08 nipkow Exp $
+    ID:         $Id: Equivalence.thy,v 1.4 2005-10-20 16:09:59 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -1247,10 +1247,6 @@ qed
 abschalten. Wieder anschalten siehe nach dem Beweis. *)
 (*<*)
 declare split_paired_All [simp del] split_paired_Ex [simp del]
-ML_setup {*
-simpset_ref() := simpset() delloop "split_all_tac";
-claset_ref () := claset () delSWrapper "split_all_tac"
-*}
 (*>*)
 (* FIXME
  exercise 1: define a big step semantics where the body of a procedure can
@@ -1322,7 +1318,7 @@ next
 next
   case (CastRed C e e'' s s'' s' e')
   thus ?case
-    by -(erule eval_cases,auto intro: eval_evals.intros)
+    by(cases s, cases s') (erule eval_cases, auto intro: eval_evals.intros)
 next
   case RedCastNull
   thus ?case
@@ -1336,9 +1332,9 @@ next
   thus ?case
     by (cases s) (auto elim!: eval_cases intro: eval_evals.intros)
 next
-  case BinOpRed1
+  case (BinOpRed1 op e e' e'' s s' s'')
   thus ?case
-    by -(erule eval_cases,auto intro: eval_evals.intros)
+    by (cases s'')(erule eval_cases,auto intro: eval_evals.intros)
 next
   case (BinOpRed2 bop e\<^isub>2 e\<^isub>2' s s'' v\<^isub>1 s' e')
   thus ?case
@@ -1352,17 +1348,17 @@ next
   thus ?case
     by (cases s)(fastsimp elim: eval_cases intro: eval_evals.intros)
 next
-  case LAssRed
+  case (LAssRed V e e' s s' s'')
   thus ?case
-    by -(erule eval_cases,auto intro: eval_evals.intros)
+    by (cases s'')(erule eval_cases,auto intro: eval_evals.intros)
 next
   case (RedLAss V h l v s' e')
   thus ?case
     by (cases s)(fastsimp elim: eval_cases intro: eval_evals.intros)
 next
-  case FAccRed
+  case (FAccRed C F e e' s s' s'')
   thus ?case
-    by -(erule eval_cases,auto intro: eval_evals.intros)
+    by (cases s'')(erule eval_cases,auto intro: eval_evals.intros)
 next
   case (RedFAcc C D F a fs s v s' e')
   thus ?case
@@ -1374,7 +1370,7 @@ next
 next
   case (FAssRed1 D F e\<^isub>1 e\<^isub>1' e\<^isub>2 s s'' s' e')
   thus ?case
-    by (cases s)(erule eval_cases, auto intro: eval_evals.intros)
+    by (cases s')(erule eval_cases, auto intro: eval_evals.intros)
 next
   case (FAssRed2 D F a e\<^isub>2 e\<^isub>2' s s'' s' e')
   thus ?case
@@ -1470,9 +1466,9 @@ next
   thus ?case
     by (fastsimp elim: eval_cases intro: eval_evals.intros)
 next
-  case TryRed
+  case (TryRed C V e e' e'' s s' s'' X)
   thus ?case
-    by (auto elim!: eval_cases intro: eval_evals.intros)
+    by (cases s, cases s'', auto elim!: eval_cases intro: eval_evals.intros)
 next
   case RedTry
   thus ?case
@@ -1575,10 +1571,6 @@ qed
 (*<*)
 (* ... und wieder anschalten: *)
 declare split_paired_All [simp] split_paired_Ex [simp]
-ML_setup {*
-claset_ref()  := claset() addSbefore ("split_all_tac", split_all_tac);
-simpset_ref() := simpset() addloop ("split_all_tac", split_all_tac)
-*}
 (*>*)
 
 text {* Its extension to @{text"\<rightarrow>*"}: *} 
