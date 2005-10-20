@@ -1,4 +1,4 @@
-(*<*) theory Failure= RealRandVar: (*>*)
+(*<*) theory Failure imports RealRandVar begin (*>*)
 
 text{*
 Defining Lebesgue integration can be quite involved, judging by the
