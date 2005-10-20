@@ -1,10 +1,12 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: HomFunctors.thy,v 1.5 2005-09-06 15:06:08 makarius Exp $
+    ID:          $Id: HomFunctors.thy,v 1.6 2005-10-20 18:43:32 nipkow Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
 (* Define homfunctors, prove that they are functors *)
-theory HomFunctors imports SetCat Functors begin
+theory HomFunctors
+imports SetCat Functors
+begin
 
 
 locale into_set = two_cats +

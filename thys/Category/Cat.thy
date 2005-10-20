@@ -1,9 +1,12 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Cat.thy,v 1.3 2005-04-30 14:18:27 lsf37 Exp $
+    ID:          $Id: Cat.thy,v 1.4 2005-10-20 18:43:32 nipkow Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
-theory Cat=FuncSet:
+theory Cat
+imports FuncSet
+begin
+
 section {* Categories *}
 subsection {* Definitions *}
 

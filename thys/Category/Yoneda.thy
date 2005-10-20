@@ -1,9 +1,12 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Yoneda.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
+    ID:          $Id: Yoneda.thy,v 1.5 2005-10-20 18:43:32 nipkow Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
-theory Yoneda imports  HomFunctors NatTrans begin
+theory Yoneda
+imports  HomFunctors NatTrans
+begin
+
 section{* Yonedas Lemma *}
 subsection{* The Sandwich Natural Transformation *}
 
