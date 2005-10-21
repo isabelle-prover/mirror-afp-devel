@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: TypeComp.thy,v 1.2 2005-10-21 14:19:07 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -613,11 +613,6 @@ done
 (*>*)
 
 
-(*<*)
-ML_setup {* simpset_ref() := simpset() delloop "split_all_tac" *}
-(*>*)
-
-
 corollary (in TC2) wt_instrs_app2:
   "\<lbrakk> \<turnstile> is\<^isub>2,xt\<^isub>2 [::] \<tau>'#\<tau>s\<^isub>2;  \<turnstile> is\<^isub>1,xt\<^isub>1 [::] \<tau>#\<tau>s\<^isub>1@[\<tau>'];
      xt' = xt\<^isub>1 @ shift (size is\<^isub>1) xt\<^isub>2;  size \<tau>s\<^isub>1+1 = size is\<^isub>1 \<rbrakk>
@@ -638,10 +633,6 @@ corollary (in TC2) wt_instrs_Cons[simp]:
 using wt_instrs_app2[where ?is\<^isub>1.0 = "[i]" and ?\<tau>s\<^isub>1.0 = "[]" and ?is\<^isub>2.0 = "is"
                       and ?xt\<^isub>1.0 = "[]"]
 by simp
-
-ML_setup
-  {*simpset_ref() := simpset() addloop ("split_all_tac", split_all_tac)*}
-(*>*)
 
 
 corollary (in TC2) wt_instrs_Cons2[trans]:
@@ -778,10 +769,6 @@ lemma (in TC2) wt_Invoke:
   \<Longrightarrow> \<turnstile> [Invoke M (size es)],[] [::] [ty\<^isub>i' (rev Ts' @ Class C # ST) E A, ty\<^isub>i' (T#ST) E A]"
 (*<*)by(fastsimp simp add: ty\<^isub>i'_def wt_defs)(*>*)
 
-(*<*)
-ML_setup {* simpset_ref() := simpset() delloop "split_all_tac"*}
-(*>*)
-
 
 corollary (in TC2) wt_instrs_app3[simp]:
   "\<lbrakk> \<turnstile> is\<^isub>2,[] [::] (\<tau>' # \<tau>s\<^isub>2);  \<turnstile> is\<^isub>1,xt\<^isub>1 [::] \<tau> # \<tau>s\<^isub>1 @ [\<tau>']; size \<tau>s\<^isub>1+1 = size is\<^isub>1\<rbrakk>
@@ -795,10 +782,6 @@ corollary (in TC2) wt_instrs_Cons3[simp]:
 (*<*)
 using wt_instrs_Cons[where ?xt = "[]"]
 by (simp add:shift_def)
-
-ML_setup
-  {* simpset_ref() := simpset() addloop ("split_all_tac", split_all_tac) *}
-(*>*)
 
 (*<*)
 declare nth_append[simp del]
