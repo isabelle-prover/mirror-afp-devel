@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Subtype.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
+    ID:          $Id: Subtype.thy,v 1.4 2005-10-23 22:53:08 lsf37 Exp $
     Author:      Norbert Schirmer <schirmer@informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
     License:     LGPL
@@ -254,7 +254,7 @@ relations and call the simplifier.
 *}
 
 ML {*
-  simpset_ref () := simpset () addSolver (mk_solver "widenSolver" widenSolver)
+  change_simpset (fn ss => ss addSolver (mk_solver "widenSolver" widenSolver));
 *}
 
 subsection {* Properties of the Subtype Relation *}
