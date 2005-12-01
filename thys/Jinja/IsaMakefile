@@ -10,7 +10,7 @@ test: $(SESSION-NAME)-test
 # usually empty:
 images: $(SESSION-NAME) 
 
-all: images test
+all: test
 
 
 ## global settings
