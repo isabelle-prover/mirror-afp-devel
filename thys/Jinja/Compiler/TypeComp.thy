@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.2 2005-10-21 14:19:07 nipkow Exp $
+    ID:         $Id: TypeComp.thy,v 1.3 2005-12-02 13:24:25 lsf37 Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -552,7 +552,8 @@ apply clarsimp
 apply(rule conjI, fastsimp simp:wt_instr_appRx)
 apply clarsimp
 apply(erule_tac x = "pc - size is\<^isub>1" in allE)+
-apply(erule impE,arith)
+apply(thin_tac "?P \<longrightarrow> ?Q")
+apply(erule impE, arith) 
 apply(drule_tac \<tau>s' = "\<tau>s\<^isub>1" in wt_instr_appL)
   apply arith
  apply simp
