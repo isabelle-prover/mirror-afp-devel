@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Equivalence.thy
-    ID:         $Id: Equivalence.thy,v 1.4 2005-10-20 16:09:59 nipkow Exp $
+    ID:         $Id: Equivalence.thy,v 1.5 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -613,7 +613,7 @@ lemma assumes wf: "wwf_J_prog P"
 shows Red_fv: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> fv e' \<subseteq> fv e"
   and  "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> fvs es' \<subseteq> fvs es"
 (*<*)
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case (RedCall C D M T Ts a body fs pns h l vs)
   hence "fv body \<subseteq> {this} \<union> set pns"
     using prems by(fastsimp dest!:sees_wf_mdecl simp:wf_mdecl_def)
@@ -626,7 +626,7 @@ lemma Red_dom_lcl:
   "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> dom l' \<subseteq> dom l \<union> fv e" and
   "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> dom l' \<subseteq> dom l \<union> fvs es"
 (*<*)
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case RedLAss thus ?case by(force split:if_splits)
 next
   case CallParams thus ?case by(force split:if_splits)
@@ -635,10 +635,9 @@ next
 next
   case BlockRedSome thus ?case by clarsimp (fastsimp split:if_splits)
 next
-  case InitBlockRed thus ?case by clarsimp (fastsimp  split:if_splits)
-qed (simp_all, blast+)
+  case InitBlockRed thus ?case by clarsimp (fastsimp split:if_splits)
+qed auto
 (*>*)
-
 
 lemma Reds_dom_lcl:
   "\<lbrakk> wwf_J_prog P; P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow>* \<langle>e',(h',l')\<rangle> \<rbrakk> \<Longrightarrow> dom l' \<subseteq> dom l \<union> fv e"
@@ -817,7 +816,7 @@ lemma assumes wwf: "wwf_J_prog P"
 shows big_by_small: "P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>"
 and bigs_by_smalls: "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
 (*<*)
-proof (induct rule: eval_evals.induct)
+proof (induct rule: eval_evals.inducts)
   case New thus ?case by (auto simp:RedNew)
 next
   case NewFail thus ?case by (auto simp:RedNewFail)
@@ -1044,7 +1043,7 @@ shows eval_restrict_lcl:
   "P \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> (\<And>W. fv e \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e,(h,l|`W)\<rangle> \<Rightarrow> \<langle>e',(h',l'|`W)\<rangle>)"
 and "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>W. fvs es \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>es,(h,l|`W)\<rangle> [\<Rightarrow>] \<langle>es',(h',l'|`W)\<rangle>)"
 (*<*)
-proof(induct rule:eval_evals_induct)
+proof(induct rule:eval_evals_inducts)
   case (Block T V e\<^isub>0 e\<^isub>1 h\<^isub>0 h\<^isub>1 l\<^isub>0 l\<^isub>1)
   have IH: "\<And>W. fv e\<^isub>0 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None)|`W)\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1|`W)\<rangle>".
   have "fv({V:T; e\<^isub>0}) \<subseteq> W".
@@ -1179,7 +1178,7 @@ lemma eval_notfree_unchanged:
   "P \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> (\<And>V. V \<notin> fv e \<Longrightarrow> l' V = l V)"
 and "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>V. V \<notin> fvs es \<Longrightarrow> l' V = l V)"
 (*<*)
-proof(induct rule:eval_evals_induct)
+proof(induct rule:eval_evals_inducts)
   case LAss thus ?case by(simp add:fun_upd_apply)
 next
   case Block thus ?case
@@ -1265,7 +1264,7 @@ shows extend_1_eval:
 and extend_1_evals:
   "P \<turnstile> \<langle>es,t\<rangle> [\<rightarrow>] \<langle>es'',t''\<rangle> \<Longrightarrow> (\<And>t' es'. P \<turnstile> \<langle>es'',t''\<rangle> [\<Rightarrow>] \<langle>es',t'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>es,t\<rangle> [\<Rightarrow>] \<langle>es',t'\<rangle>)"
 (*<*)
-proof (induct rule: red_reds.induct)
+proof (induct rule: red_reds.inducts)
   case (RedCall C D M T Ts a body fs pns s vs s' e')
   have "P \<turnstile> \<langle>addr a,s\<rangle> \<Rightarrow> \<langle>addr a,s\<rangle>" by (rule eval_evals.intros)
   moreover

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallTypeSafe.thy
-    ID:         $Id: TypeSafe.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: TypeSafe.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -19,7 +19,7 @@ theorem red_preserves_hconf:
 and reds_preserves_hconf:
   "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>Ts E. \<lbrakk> P,E,h \<turnstile> es [:] Ts; P \<turnstile> h \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> h' \<surd>)"
 (*<*)
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case (RedNew C FDTs a h h' l)
   have new: "new_Addr h = Some a" and fields: "P \<turnstile> C has_fields FDTs"
    and h': "h' = h(a\<mapsto>(C, init_fields FDTs))"
@@ -53,7 +53,7 @@ and reds_preserves_lconf:
   "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow>
   (\<And>Ts E. \<lbrakk> P,E,h \<turnstile> es[:]Ts; P,h \<turnstile> l (:\<le>) E \<rbrakk> \<Longrightarrow> P,h' \<turnstile> l' (:\<le>) E)"
 (*<*)
-proof(induct rule:red_reds_induct)
+proof(induct rule:red_reds_inducts)
   case RedNew thus ?case
     by(fast intro:lconf_hext red_hext_incr[OF red_reds.RedNew])
 next
@@ -117,7 +117,7 @@ done
 lemma red_lA_incr: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> \<lfloor>dom l\<rfloor> \<squnion> \<A> e \<sqsubseteq>  \<lfloor>dom l'\<rfloor> \<squnion> \<A> e'"
 and reds_lA_incr: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> \<lfloor>dom l\<rfloor> \<squnion> \<A>s es \<sqsubseteq>  \<lfloor>dom l'\<rfloor> \<squnion> \<A>s es'"
 (*<*)
-apply(induct rule:red_reds_induct)
+apply(induct rule:red_reds_inducts)
 apply(simp_all del:fun_upd_apply add:hyperset_defs)
 apply blast
 apply blast
@@ -152,7 +152,7 @@ shows red_preserves_defass:
   "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> \<D> e \<lfloor>dom l\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom l'\<rfloor>"
 and "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> \<D>s es \<lfloor>dom l\<rfloor> \<Longrightarrow> \<D>s es' \<lfloor>dom l'\<rfloor>"
 (*<*)
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case BinOpRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
 next
   case FAssRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
@@ -229,7 +229,7 @@ and subjects_reduction2: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarro
   (\<And>E Ts. \<lbrakk> P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> es [:] Ts \<rbrakk>
             \<Longrightarrow> \<exists>Ts'. P,E,h' \<turnstile> es' [:] Ts' \<and> P \<turnstile> Ts' [\<le>] Ts)"
 (*<*)
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case (RedCall C D M T Ts a body fs pns h l vs E T')
   have hp: "hp(h,l) a = Some(C,fs)"
    and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns,body) in D"

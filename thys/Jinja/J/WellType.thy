@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellType.thy
-    ID:         $Id: WellType.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: WellType.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -121,6 +121,9 @@ lemmas [intro]  = WTCond1 WTCond2
 declare WT_WTs.intros[intro!] (* WTNil[iff] *)
 
 lemmas WT_WTs_induct = WT_WTs.induct[split_format (complete)]
+ML_setup {*
+  store_thms ("WT_WTs_inducts", ProjectRule.projections (thm "WT_WTs_induct"))
+*}
 (*>*)
 
 lemma [iff]: "(P,E \<turnstile> [] [::] Ts) = (Ts = [])"
@@ -210,7 +213,7 @@ lemma wt_env_mono:
   "P,E \<turnstile> e :: T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E' \<turnstile> e :: T)" and 
   "P,E \<turnstile> es [::] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E' \<turnstile> es [::] Ts)"
 (*<*)
-apply(induct rule: WT_WTs_induct)
+apply(induct rule: WT_WTs_inducts)
 apply(simp add: WTNew)
 apply(fastsimp simp: WTCast)
 apply(fastsimp simp: WTVal)
@@ -236,7 +239,7 @@ done
 lemma WT_fv: "P,E \<turnstile> e :: T \<Longrightarrow> fv e \<subseteq> dom E"
 and "P,E \<turnstile> es [::] Ts \<Longrightarrow> fvs es \<subseteq> dom E"
 (*<*)
-apply(induct rule:WT_WTs.induct)
+apply(induct rule:WT_WTs.inducts)
 apply(simp_all del: fun_upd_apply)
 apply fast+
 done

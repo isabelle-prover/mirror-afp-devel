@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/J1.thy
-    ID:         $Id: J1.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: J1.thy,v 1.3 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -220,13 +220,16 @@ ConsThrow\<^isub>1:
 
 (*<*)
 lemmas eval\<^isub>1_evals\<^isub>1_induct = eval\<^isub>1_evals\<^isub>1.induct [split_format (complete)]
+ML_setup {*
+  store_thms ("eval\<^isub>1_evals\<^isub>1_inducts", ProjectRule.projections (thm "eval\<^isub>1_evals\<^isub>1_induct"))
+*}
 (*>*)
 
 lemma eval\<^isub>1_preserves_len:
   "P \<turnstile>\<^sub>1 \<langle>e\<^isub>0,(h\<^isub>0,ls\<^isub>0)\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,ls\<^isub>1)\<rangle> \<Longrightarrow> length ls\<^isub>0 = length ls\<^isub>1"
 and evals\<^isub>1_preserves_len:
   "P \<turnstile>\<^sub>1 \<langle>es\<^isub>0,(h\<^isub>0,ls\<^isub>0)\<rangle> [\<Rightarrow>] \<langle>es\<^isub>1,(h\<^isub>1,ls\<^isub>1)\<rangle> \<Longrightarrow> length ls\<^isub>0 = length ls\<^isub>1"
-(*<*)by (induct rule:eval\<^isub>1_evals\<^isub>1_induct, simp_all)(*>*)
+(*<*)by (induct rule:eval\<^isub>1_evals\<^isub>1_inducts, simp_all)(*>*)
 
 
 lemma evals\<^isub>1_preserves_elen:
@@ -240,7 +243,7 @@ done
 
 lemma eval\<^isub>1_final: "P \<turnstile>\<^sub>1 \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> final e'"
  and evals\<^isub>1_final: "P \<turnstile>\<^sub>1 \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> finals es'"
-(*<*)by(induct rule:eval\<^isub>1_evals\<^isub>1.induct, simp_all)(*>*)
+(*<*)by(induct rule:eval\<^isub>1_evals\<^isub>1.inducts, simp_all)(*>*)
 
 
 end

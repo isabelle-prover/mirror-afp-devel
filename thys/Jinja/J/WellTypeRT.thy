@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellTypeRT.thy
-    ID:         $Id: WellTypeRT.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: WellTypeRT.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -130,6 +130,9 @@ declare
   WTrtCall[rule del] WTrtCallNT[rule del]
 
 lemmas WTrt_induct = WTrt_WTrts.induct[split_format (complete)]
+ML_setup {*
+  store_thms ("WTrt_inducts", ProjectRule.projections (thm "WTrt_induct"))
+*}
 (*>*)
 
 subsection{*Easy consequences*}
@@ -237,7 +240,7 @@ lemma WTrt_env_mono:
   "P,E,h \<turnstile> e : T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> e : T)" and
   "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> es [:] Ts)"
 (*<*)
-apply(induct rule: WTrt_induct)
+apply(induct rule: WTrt_inducts)
 apply(simp add: WTrtNew)
 apply(fastsimp simp: WTrtCast)
 apply(fastsimp simp: WTrtVal)
@@ -266,7 +269,7 @@ done
 lemma WTrt_hext_mono: "P,E,h \<turnstile> e : T \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> e : T"
 and WTrts_hext_mono: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> es [:] Ts"
 (*<*)
-apply(induct rule: WTrt_induct)
+apply(induct rule: WTrt_inducts)
 apply(simp add: WTrtNew)
 apply(fastsimp simp: WTrtCast)
 apply(fastsimp simp: WTrtVal dest:hext_typeof_mono)
@@ -295,7 +298,7 @@ done
 lemma WT_implies_WTrt: "P,E \<turnstile> e :: T \<Longrightarrow> P,E,h \<turnstile> e : T"
 and WTs_implies_WTrts: "P,E \<turnstile> es [::] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
 (*<*)
-apply(induct rule: WT_WTs_induct)
+apply(induct rule: WT_WTs_inducts)
 apply fast
 apply (fast)
 apply(fastsimp dest:typeof_lit_typeof)

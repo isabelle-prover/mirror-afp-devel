@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/BigStep.thy
-    ID:         $Id: BigStep.thy,v 1.3 2005-09-26 16:05:08 nipkow Exp $
+    ID:         $Id: BigStep.thy,v 1.4 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -214,6 +214,10 @@ ConsThrow:
 (*<*)
 lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
 
+ML_setup {*
+  store_thms ("eval_evals_inducts", ProjectRule.projections (thm "eval_evals_induct"))
+*}
+
 inductive_cases eval_cases [cases set]:
  "P \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -257,7 +261,7 @@ lemma [iff]: "finals []"
 
 lemma [iff]: "finals (Val v # es) = finals es"
 (*<*)
-apply(clarsimp simp add:finals_def)
+apply(clarsimp simp add: finals_def)
 apply(rule iffI)
  apply(erule disjE)
   apply simp
@@ -306,13 +310,13 @@ done
 
 lemma eval_final: "P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> final e'"
  and evals_final: "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> finals es'"
-(*<*)by(induct rule:eval_evals.induct, simp_all)(*>*)
+(*<*)by(induct rule:eval_evals.inducts, simp_all)(*>*)
 
 
 lemma eval_lcl_incr: "P \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
  and evals_lcl_incr: "P \<turnstile> \<langle>es,(h\<^isub>0,l\<^isub>0)\<rangle> [\<Rightarrow>] \<langle>es',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
 (*<*)
-proof (induct rule: eval_evals_induct)
+proof (induct rule: eval_evals_inducts)
   case BinOp show ?case by(rule subset_trans)
 next
   case Call thus ?case
@@ -380,7 +384,7 @@ qed
 theorem eval_hext: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> h \<unlhd> h'"
 and evals_hext:  "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> h \<unlhd> h'"
 (*<*)
-proof (induct rule:eval_evals_induct)
+proof (induct rule: eval_evals_inducts)
   case New thus ?case
     by(fastsimp intro!: hext_new intro:someI simp:new_Addr_def
                 split:split_if_asm simp del:fun_upd_apply)

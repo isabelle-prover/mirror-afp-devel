@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallStep.thy
-    ID:         $Id: SmallStep.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: SmallStep.thy,v 1.3 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -230,6 +230,10 @@ ThrowThrow: "P \<turnstile> \<langle>throw(throw e), s\<rangle> \<rightarrow> \<
 (*<*)
 lemmas red_reds_induct = red_reds.induct [split_format (complete)]
 
+ML_setup {*
+  store_thms ("red_reds_inducts", ProjectRule.projections (thm "red_reds_induct"))
+*}
+
 inductive_cases [elim!]:
  "P \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>e1;;e2,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
@@ -296,7 +300,7 @@ lemma [iff]: "\<not> P \<turnstile> \<langle>Throw a,s\<rangle> \<rightarrow> \<
 lemma red_hext_incr: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>  \<Longrightarrow> h \<unlhd> h'"
   and reds_hext_incr: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>  \<Longrightarrow> h \<unlhd> h'"
 (*<*)
-proof(induct rule:red_reds_induct)
+proof(induct rule:red_reds_inducts)
   case RedNew thus ?case
     by(fastsimp dest:new_Addr_SomeD simp:hext_def split:if_splits)
 next
@@ -307,13 +311,13 @@ qed simp_all
 
 lemma red_lcl_incr: "P \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>e',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
 and "P \<turnstile> \<langle>es,(h\<^isub>0,l\<^isub>0)\<rangle> [\<rightarrow>] \<langle>es',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
-(*<*)by(induct rule: red_reds_induct)(auto simp del:fun_upd_apply)(*>*)
+(*<*)by(induct rule: red_reds_inducts)(auto simp del:fun_upd_apply)(*>*)
 
 
 lemma red_lcl_add: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> (\<And>l\<^isub>0. P \<turnstile> \<langle>e,(h,l\<^isub>0++l)\<rangle> \<rightarrow> \<langle>e',(h',l\<^isub>0++l')\<rangle>)"
 and "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>l\<^isub>0. P \<turnstile> \<langle>es,(h,l\<^isub>0++l)\<rangle> [\<rightarrow>] \<langle>es',(h',l\<^isub>0++l')\<rangle>)"
 (*<*)
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case RedCast thus ?case by(fastsimp intro:red_reds.intros)
 next
   case RedCastFail thus ?case by(force intro:red_reds.intros)

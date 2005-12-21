@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness1.thy
-    ID:         $Id: Correctness1.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Correctness1.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -51,7 +51,7 @@ lemma eval\<^isub>1_preserves_unmod:
 and "\<lbrakk> P \<turnstile>\<^sub>1 \<langle>es,(h,ls)\<rangle> [\<Rightarrow>] \<langle>es',(h',ls')\<rangle>; unmods es i; i < size ls \<rbrakk>
       \<Longrightarrow> ls ! i = ls' ! i"
 (*<*)
-apply(induct rule:eval\<^isub>1_evals\<^isub>1_induct)
+apply(induct rule:eval\<^isub>1_evals\<^isub>1_inducts)
 apply(auto dest!:eval\<^isub>1_preserves_len split:split_if_asm)
 done
 (*>*)
@@ -119,7 +119,7 @@ and evals\<^isub>1_evals: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarr
 (*<*)
   (is "_ \<Longrightarrow> (\<And>Vs ls. PROP ?Ps es h l es' h' l' Vs ls)"
    is "_ \<Longrightarrow> (\<And>Vs ls. \<lbrakk> _; _; _\<rbrakk> \<Longrightarrow> \<exists>ls'. ?Posts es h l es' h' l' Vs ls ls')")
-proof (induct rule:eval_evals_induct)
+proof (induct rule:eval_evals_inducts)
   case Nil thus ?case by(fastsimp intro!:Nil\<^isub>1)
 next
   case (Cons e es es' h l h' l' h\<^isub>2 l\<^isub>2 v)

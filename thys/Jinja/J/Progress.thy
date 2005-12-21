@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.2 2005-06-04 16:22:47 makarius Exp $
+    ID:         $Id: Progress.thy,v 1.3 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -90,6 +90,9 @@ intros
 
 (*<*)
 lemmas WTrt'_induct = WTrt'_WTrts'.induct[split_format (complete)]
+ML_setup {*
+  store_thms ("WTrt'_inducts", ProjectRule.projections (thm "WTrt'_induct"))
+*}
 
 inductive_cases WTrt'_elim_cases[elim!]:
   "P,E,h \<turnstile> V :=e :' T"
@@ -120,7 +123,7 @@ done
 lemma wt_wt': "P,E,h \<turnstile> e : T \<Longrightarrow> P,E,h \<turnstile> e :' T"
 and wts_wts': "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> P,E,h \<turnstile> es [:'] Ts"
 (*<*)
-apply (induct rule:WTrt_induct)
+apply (induct rule:WTrt_inducts)
 prefer 14
 apply(case_tac "assigned V e")
 apply(clarsimp simp add:fun_upd_same assigned_def simp del:fun_upd_apply)
@@ -134,7 +137,7 @@ done
 lemma wt'_wt: "P,E,h \<turnstile> e :' T \<Longrightarrow> P,E,h \<turnstile> e : T"
 and wts'_wts: "P,E,h \<turnstile> es [:'] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
 (*<*)
-apply (induct rule:WTrt'_induct)
+apply (induct rule:WTrt'_inducts)
 prefer 16
 apply(rule WTrt_WTrts.intros)
 apply(rule WTrt_WTrts.intros)
@@ -158,6 +161,9 @@ lemmas WTrt_induct2 = WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts,
  case_names WTrtNew WTrtCast WTrtVal WTrtVar WTrtBinOpEq WTrtBinOpAdd WTrtLAss WTrtFAcc WTrtFAccNT WTrtFAss
  WTrtFAssNT WTrtCall WTrtCallNT WTrtNil WTrtCons WTrtInitBlock WTrtBlock WTrtSeq WTrtCond
  WTrtWhile WTrtThrow WTrtTry]
+ML_setup {*
+  store_thms ("WTrt_inducts2", ProjectRule.projections (thm "WTrt_induct2"))
+*}
 (*>*)
 
 
@@ -167,7 +173,7 @@ shows progress: "P,E,h \<turnstile> e : T \<Longrightarrow>
 and "P,E,h \<turnstile> es [:] Ts \<Longrightarrow>
  (\<And>l. \<lbrakk> \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es \<rbrakk> \<Longrightarrow> \<exists>es' s'. P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>)"
 (*<*)
-proof (induct rule:WTrt_induct2)
+proof (induct rule:WTrt_inducts2)
   case WTrtNew
   show ?case
   proof cases

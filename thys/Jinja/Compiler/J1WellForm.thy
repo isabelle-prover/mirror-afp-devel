@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/WellType1.thy
-    ID:         $Id: J1WellForm.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: J1WellForm.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -110,6 +110,9 @@ declare  WT\<^isub>1_WTs\<^isub>1.intros[intro!]
 declare WTNil\<^isub>1[iff]
 
 lemmas WT\<^isub>1_WTs\<^isub>1_induct = WT\<^isub>1_WTs\<^isub>1.induct[split_format (complete)]
+ML_setup {*
+  store_thms ("WT\<^isub>1_WTs\<^isub>1_inducts", ProjectRule.projections (thm "WT\<^isub>1_WTs\<^isub>1_induct"))
+*}
 
 inductive_cases eee[elim!]:
   "P,E \<turnstile>\<^sub>1 Val v :: T"
@@ -139,7 +142,7 @@ lemma WT\<^isub>1_unique:
   "P,E \<turnstile>\<^sub>1 e :: T\<^isub>1 \<Longrightarrow> (\<And>T\<^isub>2. P,E \<turnstile>\<^sub>1 e :: T\<^isub>2 \<Longrightarrow> T\<^isub>1 = T\<^isub>2)" and
   "P,E \<turnstile>\<^sub>1 es [::] Ts\<^isub>1 \<Longrightarrow> (\<And>Ts\<^isub>2. P,E \<turnstile>\<^sub>1 es [::] Ts\<^isub>2 \<Longrightarrow> Ts\<^isub>1 = Ts\<^isub>2)"
 (*<*)
-apply(induct rule:WT\<^isub>1_WTs\<^isub>1.induct)
+apply(induct rule:WT\<^isub>1_WTs\<^isub>1.inducts)
 apply blast
 apply blast
 apply clarsimp
@@ -168,7 +171,7 @@ lemma assumes wf: "wf_prog p P"
 shows WT\<^isub>1_is_type: "P,E \<turnstile>\<^sub>1 e :: T \<Longrightarrow> set E \<subseteq> types P \<Longrightarrow> is_type P T"
 and "P,E \<turnstile>\<^sub>1 es [::] Ts \<Longrightarrow> True"
 (*<*)
-apply(induct rule:WT\<^isub>1_WTs\<^isub>1.induct)
+apply(induct rule:WT\<^isub>1_WTs\<^isub>1.inducts)
 apply simp
 apply simp
 apply (simp add:typeof_lit_is_type)
