@@ -1,5 +1,5 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.3 2005-09-06 15:06:10 makarius Exp $
+    ID:         $Id: LList2.thy,v 1.4 2005-12-21 23:33:53 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -658,7 +658,7 @@ proof -
   have  "\<exists> y. t !! j = Some y" (is "?R")
   proof (rule ccontr)
     assume "\<not> ?R"
-    hence "t !! j = None" by simp 
+    hence "t !! j = None" by auto
     with tisome jlei show False
       by (auto dest:  ll2f_None_le)
   qed
