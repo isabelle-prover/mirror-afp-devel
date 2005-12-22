@@ -3851,7 +3851,7 @@ apply (simplesubst card_insert_disjoint)
 apply (subgoal_tac "(insert (Suc n) ({i. i \<in> Nset (Suc n) \<and> h i \<cong> E} - {k, Suc n})) \<subseteq> Nset (Suc n)")
 apply (insert finite_Nset[of "Suc n"])
 apply (rule finite_subset, assumption+)
-apply (rule subsetI) apply (simp add:CollectI)
+apply (rule subsetI)
 apply (simp add:Nset_def) apply blast
 apply simp
 apply (simplesubst card_insert_disjoint)
@@ -3862,16 +3862,11 @@ apply (simplesubst card_insert_disjoint)
 apply (subst card_insert_disjoint)
  apply (subgoal_tac "(insert (Suc n) ({i. i \<in> Nset (Suc n) \<and> cmp h (transpos k (Suc n)) i \<cong> E} - {k, Suc n})) \<subseteq> Nset (Suc n)")
  apply (rule finite_subset, assumption+)
- apply (rule subsetI) apply (simp add:CollectI)
+ apply (rule subsetI)  apply (simp add:CollectI) 
  apply (case_tac "x = Suc n") apply (simp add:Nset_def)
   apply (simp add:Nset_def)
 apply simp
 apply simp
-apply (subst card_insert_disjoint)
- apply (subgoal_tac "({i. i \<in> Nset (Suc n) \<and> h i \<cong> E} - {k, Suc n}) \<subseteq>
-                                                            Nset (Suc n)")
- apply (rule finite_subset, assumption+)
- apply (rule subsetI) apply (simp add:CollectI) apply simp apply simp
 apply (subst isom_gch_unitsTr1_7_7 [of "E" "n" "h" "k"], assumption+)
 apply (frule isom_gch_unitsTr1_7_5 [of "E" "n" "h" "k"], assumption+)
 apply (frule isom_gch_unitsTr1_7_2 [of "E" "n" "h" "k"], assumption+)
