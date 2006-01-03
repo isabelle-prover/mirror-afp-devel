@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/Decl.thy
-    ID:         $Id: Decl.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Decl.thy,v 1.3 2006-01-03 10:56:06 fhaftmann Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -13,7 +13,7 @@ types
 
   'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg.\ types, return type, body"
 
-  'm class = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
+  'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
 
   'm cdecl = "cname \<times> 'm class"  -- "class declaration"
 
@@ -29,7 +29,7 @@ translations
 (*>*)
 
 constdefs
-  class :: "'m prog \<Rightarrow> cname \<rightharpoonup> 'm class"
+  "class" :: "'m prog \<Rightarrow> cname \<rightharpoonup> 'm class"
   "class  \<equiv>  map_of"
 
   is_class :: "'m prog \<Rightarrow> cname \<Rightarrow> bool"

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/TypeRel.thy
-    ID:         $Id: TypeRel.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: TypeRel.thy,v 1.3 2006-01-03 10:56:06 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -195,12 +195,12 @@ shows "\<And>Mm'. P \<turnstile> C sees_methods Mm' \<Longrightarrow> Mm' = Mm"
 using 1
 proof induct
   case (sees_methods_rec C D Dres Cres fs ms Cres')
-  have class: "class P C = Some (D, fs, ms)"
+  have "class": "class P C = Some (D, fs, ms)"
    and notObj: "C \<noteq> Object" and Dmethods: "P \<turnstile> D sees_methods Dres"
    and IH: "\<And>Dres'. P \<turnstile> D sees_methods Dres' \<Longrightarrow> Dres' = Dres"
    and Cres: "Cres = Dres ++ (option_map (\<lambda>m. (m,C)) \<circ> map_of ms)"
    and Cmethods': "P \<turnstile> C sees_methods Cres'" .
-  from Cmethods' notObj class obtain Dres'
+  from Cmethods' notObj "class" obtain Dres'
     where Dmethods': "P \<turnstile> D sees_methods Dres'"
      and Cres': "Cres' = Dres' ++ (option_map (\<lambda>m. (m,C)) \<circ> map_of ms)"
     by(auto elim: Methods.elims)
@@ -269,11 +269,11 @@ next
   from IH[OF Csees] obtain Mm' Mm2 where C'sees: "P \<turnstile> C' sees_methods Mm'"
     and Mm': "Mm' = Mm ++ Mm2"
     and subC:"\<forall>M m D. Mm2 M = Some(m,D) \<longrightarrow> P \<turnstile> D \<preceq>\<^sup>* C" by blast
-  obtain fs ms where class: "class P C'' = Some(C',fs,ms)" "C'' \<noteq> Object"
+  obtain fs ms where "class": "class P C'' = Some(C',fs,ms)" "C'' \<noteq> Object"
     using subcls1D[OF sub1] by blast
   let ?Mm3 = "option_map (\<lambda>m. (m,C'')) \<circ> map_of ms"
   have "P \<turnstile> C'' sees_methods (Mm ++ Mm2) ++ ?Mm3"
-    using sees_methods_rec[OF class C'sees refl] Mm' by simp
+    using sees_methods_rec[OF "class" C'sees refl] Mm' by simp
   hence "?Q C'' C ((Mm ++ Mm2) ++ ?Mm3) (Mm2++?Mm3)"
     using converse_rtrancl_into_rtrancl[OF sub1 sub]
     by simp (simp add:map_add_def subC split:option.split)
@@ -361,12 +361,12 @@ shows "\<And>FDTs'. P \<turnstile> C has_fields FDTs' \<Longrightarrow> FDTs' = 
 using 1
 proof induct
   case (has_fields_rec C D Dres Cres fs ms Cres')
-  have class: "class P C = Some (D, fs, ms)"
+  have "class": "class P C = Some (D, fs, ms)"
    and notObj: "C \<noteq> Object" and DFields: "P \<turnstile> D has_fields Dres"
    and IH: "\<And>Dres'. P \<turnstile> D has_fields Dres' \<Longrightarrow> Dres' = Dres"
    and Cres: "Cres = map (\<lambda>(F,T). ((F,C),T)) fs @ Dres"
    and CFields': "P \<turnstile> C has_fields Cres'" .
-  from CFields' notObj class obtain Dres'
+  from CFields' notObj "class" obtain Dres'
     where DFields': "P \<turnstile> D has_fields Dres'"
      and Cres': "Cres' = map (\<lambda>(F,T). ((F,C),T)) fs @ Dres'"
     by(auto elim: Fields.elims)

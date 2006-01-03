@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellForm.thy
-    ID:         $Id: WellForm.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: WellForm.thy,v 1.3 2006-01-03 10:56:06 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -310,11 +310,11 @@ lemma sees_method_mono2:
 
 
 lemma mdecls_visible:
-assumes wf: "wf_prog wf_md P" and class: "is_class P C"
+assumes wf: "wf_prog wf_md P" and "class": "is_class P C"
 shows "\<And>D fs ms. class P C = Some(D,fs,ms)
          \<Longrightarrow> \<exists>Mm. P \<turnstile> C sees_methods Mm \<and> (\<forall>(M,Ts,T,m) \<in> set ms. Mm M = Some((Ts,T,m),C))"
 (*<*)
-using wf class
+using wf "class"
 proof (induct rule:subcls1_induct)
   case Object
   with wf have "distinct_fst ms"
@@ -336,10 +336,10 @@ assumes wf: "wf_prog wf_md P" and C: "(C,S,fs,ms) \<in> set P" and  m: "(M,Ts,T,
 shows "P \<turnstile> C sees M:Ts\<rightarrow>T = m in C"
 (*<*)
 proof -
-  from wf C have class: "class P C = Some (S,fs,ms)"
+  from wf C have "class": "class P C = Some (S,fs,ms)"
     by (auto simp add: wf_prog_def class_def is_class_def intro: map_of_SomeI)
-  from class have "is_class P C" by(auto simp:is_class_def)                   
-  with prems class show ?thesis
+  from "class" have "is_class P C" by(auto simp:is_class_def)                   
+  with prems "class" show ?thesis
     by(bestsimp simp:Method_def dest:mdecls_visible)
 qed
 (*>*)

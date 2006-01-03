@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.3 2005-12-02 13:24:25 lsf37 Exp $
+    ID:         $Id: TypeComp.thy,v 1.4 2006-01-03 10:56:06 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -955,7 +955,7 @@ proof(induct e and es)
   case (TryCatch e\<^isub>1 C i e\<^isub>2)
   hence [simp]: "i = size E" by simp
   have wt\<^isub>1: "P,E \<turnstile>\<^sub>1 e\<^isub>1 :: T" and wt\<^isub>2: "P,E@[Class C] \<turnstile>\<^sub>1 e\<^isub>2 :: T"
-    and class: "is_class P C" using TryCatch by auto
+    and "class": "is_class P C" using TryCatch by auto
   let ?A\<^isub>1 = "A \<squnion> \<A> e\<^isub>1" let ?A\<^isub>i = "A \<squnion> \<lfloor>{i}\<rfloor>" let ?E\<^isub>i = "E @ [Class C]"
   let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s\<^isub>1 = "compT E A ST e\<^isub>1"
   let ?\<tau>\<^isub>1 = "ty\<^isub>i' (T#ST) E ?A\<^isub>1" let ?\<tau>\<^isub>2 = "ty\<^isub>i' (Class C#ST) E A"
@@ -1002,7 +1002,7 @@ proof(induct e and es)
       by auto
   }
   also from TryCatch.prems max_stack1[of e\<^isub>1] have "size ST + 1 \<le> mxs" by auto
-  ultimately show ?case using wt\<^isub>1 wt\<^isub>2 TryCatch.prems class
+  ultimately show ?case using wt\<^isub>1 wt\<^isub>2 TryCatch.prems "class"
     by (simp add:after_def)
 next
   case new thus ?case by(auto simp add:after_def wt_New)
