@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/Basis.thy
-    ID:         $Id: Aux.thy,v 1.3 2005-12-21 23:33:38 makarius Exp $
+    ID:         $Id: Aux.thy,v 1.4 2006-01-04 17:48:04 nipkow Exp $
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 TU Muenchen
 *)
@@ -31,8 +31,6 @@ declare
  Let_def[simp]
  subset_insertI2 [simp]
  Un_subset_iff[simp]
- not_None_eq [iff]
- not_Some_eq [iff]
  Cons_eq_map_conv [iff]
 (*>*)
 
