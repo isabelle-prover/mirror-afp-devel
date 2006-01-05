@@ -1,5 +1,5 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Inv5.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
+    ID:          $Id: DiskPaxos_Inv5.thy,v 1.4 2006-01-05 11:25:48 lp15 Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro@fceia.unr.edu.ar>
 *)
@@ -71,7 +71,7 @@ lemma HStartBallot_allBlocks:
   assumes act: "HStartBallot s s' p"
   shows "allBlocks s' \<subseteq> allBlocks s \<union> {dblock s' p}"
 proof(auto simp del: HStartBallot_def simp add: allBlocks_def
-           dest: HStartBallot_blocksOf_q[OF act] HStartBallot_blocksOf[OF act])
+           dest: HStartBallot_blocksOf_q[OF act])
   fix x pa
   assume x_pa: "x \<in> blocksOf s' pa" and
          x_nblks: "\<forall>xa. x \<notin> blocksOf s xa"
@@ -642,7 +642,7 @@ lemma HEndPhase1_allBlocks:
   assumes act: "HEndPhase1 s s' p"
   shows "allBlocks s' \<subseteq> allBlocks s \<union> {dblock s' p}"
 proof(auto simp del: HEndPhase1_def simp add: allBlocks_def
-           dest: HEndPhase1_blocksOf_q[OF act] HEndPhase1_blocksOf[OF act])
+           dest: HEndPhase1_blocksOf_q[OF act])
   fix x pa
   assume x_pa: "x \<in> blocksOf s' pa" and
          x_nblks: "\<forall>xa. x \<notin> blocksOf s xa"
@@ -860,7 +860,7 @@ lemma HFail_allBlocks:
   assumes act: "HFail s s' p"
   shows "allBlocks s' \<subseteq> allBlocks s \<union> {dblock s' p}"
 proof(auto simp del: HFail_def simp add: allBlocks_def
-           dest: HFail_blocksOf_q[OF act] HFail_blocksOf[OF act])
+           dest: HFail_blocksOf_q[OF act])
   fix x pa
   assume x_pa: "x \<in> blocksOf s' pa" and
          x_nblks: "\<forall>xa. x \<notin> blocksOf s xa"
@@ -1057,7 +1057,7 @@ lemma HEndPhase0_allBlocks:
   assumes act: "HEndPhase0 s s' p"
   shows "allBlocks s' \<subseteq> allBlocks s \<union> {dblock s' p}"
 proof(auto simp del: HEndPhase0_def simp add: allBlocks_def
-           dest: HEndPhase0_blocksOf_q[OF act] HEndPhase0_blocksOf[OF act])
+           dest: HEndPhase0_blocksOf_q[OF act])
   fix x pa
   assume x_pa: "x \<in> blocksOf s' pa" and
          x_nblks: "\<forall>xa. x \<notin> blocksOf s xa"

@@ -1,5 +1,5 @@
 (*  Title:      LList_Topology.thy
-    ID:         $Id: LList_Topology.thy,v 1.3 2005-09-06 15:06:10 makarius Exp $
+    ID:         $Id: LList_Topology.thy,v 1.4 2006-01-05 11:25:48 lp15 Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -10,7 +10,7 @@ The topology of llists.
 
 header {*\isaheader{LList\_Topology}*}
 
-theory LList_Topology imports Topology LList2 begin
+theory LList_Topology imports Topology "../Lazy-Lists-II/LList2" begin
 
 section{*The topology of all llists*}
 

@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.4 2005-09-06 15:06:10 makarius Exp $
+    ID:         $Id: Topology.thy,v 1.5 2006-01-05 11:25:48 lp15 Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -696,7 +696,7 @@ lemma (in topology) closure_carrier [simp]:
 
 lemma (in topology) closure_subset:
   "A \<subseteq> carrier \<Longrightarrow> closure A \<subseteq> carrier"
-  by (auto dest!: carrier_closed)
+  by auto
 
 lemma (in topology) closure_closed [iff]:
   "closure a closed"
@@ -840,7 +840,7 @@ lemma (in topology) closed_adh:
 proof
   assume "A closed"
   hence AA: "closure A = A"
-    by (auto dest: closure_iff)
+    by auto 
   thus "(\<forall> x \<in> carrier. x adh A \<longrightarrow> x \<in> A)"
     by (fast dest!: adh_imp_closure)
 next assume adhA: "\<forall> x \<in> carrier. x adh A \<longrightarrow> x \<in> A"
