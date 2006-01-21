@@ -7,7 +7,7 @@ begin
 
 subsection "pseq: type represents a processed sequent"
 
-types atom  = "(signs * predicate * vbl list)"
+types "atom"  = "(signs * predicate * vbl list)"
       nform = "(nat * formula)"
       pseq  = "(atom list * nform list)"
 

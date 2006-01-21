@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegExp2NA.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: RegExp2NA.thy,v 1.6 2006-01-21 20:59:41 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -15,7 +15,7 @@ syntax "##" :: "'a => 'a list set => 'a list set" (infixr 65)
 translations "x ## S" == "Cons x ` S"
 
 constdefs
- atom  :: "'a => 'a bitsNA"
+"atom"  :: "'a => 'a bitsNA"
 "atom a == ([True],
             %b s. if s=[True] & b=a then {[False]} else {},
             %s. s=[False])"
