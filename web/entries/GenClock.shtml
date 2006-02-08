@@ -74,7 +74,7 @@ Isabelle/HOL is based on Shankar's formalization.
 <!--#set var="name" value="GenClock" -->
 
 <!--#set var="doc" value="../browser_info/current/HOL/HOL-Complex/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
+<!--#set var="outline" value="../browser_info/current/HOL/HOL-Complex/${name}/outline.pdf" -->
 <!--#set var="browse" value="../browser_info/current/HOL/HOL-Complex/${name}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
@@ -102,6 +102,6 @@ Isabelle/HOL is based on Shankar's formalization.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2005-09-07 10:01:47 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2006-02-08 15:19:42 $, $Revision: 1.1 
 $</div></body>
 </html>
