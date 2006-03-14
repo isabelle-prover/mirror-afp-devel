@@ -1,5 +1,5 @@
 (*  Title:       Cauchy's Mean Theorem
-    ID:          $Id: CauchysMeanTheorem.thy,v 1.2 2006-03-14 20:51:52 lsf37 Exp $
+    ID:          $Id: CauchysMeanTheorem.thy,v 1.3 2006-03-14 21:11:48 lsf37 Exp $
     Author:      Benjamin Porter <Benjamin.Porter@gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter@gmail.com>
 *)
@@ -75,20 +75,7 @@ lemma remove1_exist [rule_format]:
   "(a mem lst \<and> b mem lst \<and> a\<noteq> b) \<longrightarrow> a mem (remove1 b lst)"
 apply clarsimp
 apply (induct lst)
-apply simp
-apply clarsimp
-apply (case_tac "a=aa")
-apply clarsimp
-apply (case_tac "b=aa")
-apply clarsimp
-apply clarsimp
-apply (rule conjI)
-apply clarsimp
-apply clarsimp
-apply (subst(asm) split_if [where P="\<lambda>x. x" and Q="aa=b"])
-apply clarsimp
-apply (subst(asm) neq_commute)
-apply simp
+apply auto
 done
 
 lemma remove1_len [rule_format]:
@@ -742,10 +729,7 @@ next
         assume "a=x" with a_ne_m show ?thesis by simp
       next
         assume a_ne_x: "a\<noteq>x"
-        with a_mem_x_xs have a_mem_xs: "a mem xs"
-          apply simp
-          apply (drule not_sym)
-          by simp
+        with a_mem_x_xs have a_mem_xs: "a mem xs" by simp
         with xs_ne a_ne_m Cons x_xs_ne have
           rel: "length (list_neq (remove1 a xs) m) < length (list_neq xs m)"
           by simp
