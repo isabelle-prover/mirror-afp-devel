@@ -85,12 +85,16 @@ mars this really beautiful result.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:	
+    <ul>
+    <li>Isabelle 2004: <a href="../release/afp-Ramsey-Infinite-2004-09-21.tar.gz">afp-Ramsey-Infinite-2004-09-21.tar.gz</a>.</li>
+    </ul>
+    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2005-09-07 10:01:47 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2006-03-14 20:51:52 $, $Revision: 1.1 
 $</div></body>
 </html>

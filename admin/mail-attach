@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# $Id: mail-attach,v 1.3 2004-05-25 14:18:33 lsf37 Exp $
+# $Id: mail-attach,v 1.4 2006-03-14 20:51:52 lsf37 Exp $
 # Author: Gerwin Klein, TU Muenchen
 #
 # DESCRIPTION: send email with text attachments.
-# (works for "mail" command of SunOS 5.8)
+# (works for "mail" command of SunOS 5.8, and sendmail on SuSE)
 #
 
 PRG="$(basename "$0")"
@@ -94,4 +94,11 @@ shift 3
 
 [ -r "$BODY" ] || fail "could not read $BODY"
 
-print_body "$SUBJECT" "$BODY" $@ | mail -t "$TO"
+case `uname -s` in
+    SunOs)
+        print_body "$SUBJECT" "$BODY" $@ | mail -t "$TO"
+        ;;
+    Linux)
+        print_body "$SUBJECT" "$BODY" $@ | /usr/sbin/sendmail "$TO"
+        ;;
+esac
