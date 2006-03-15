@@ -1,0 +1,124 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<!-- begin entry data: -->
+<h1><!-- Title: -->Instances of Schneider's generalized protocol of clock synchronization</h1>
+<p>&nbsp;</p>
+
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+    <td class="data" width="80%">
+<!-- Title: -->Instances of Schneider's generalized protocol of clock 
+synchronization
+    </td></tr>
+		
+    <tr><td class="datahead">Author:</td>
+<td class="data">
+<!-- Author: --><a
+href="http://www.cs.famaf.unc.edu.ar/~damian/">Dami&aacute;n Barsotti</a>
+</td></tr>		
+    
+	<tr><td class="datahead">Submission date:</td>
+	
+<td class="data"><!-- Submission date: -->2006-03-15</td></tr>
+
+	<tr><td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract"> 
+<!-- Abstract: -->	
+ F. B. Schneider ("Understanding protocols for Byzantine clock
+ synchronization") generalizes a number of protocols for Byzantine
+ fault-tolerant clock synchronization and presents a uniform proof
+ for their correctness. In Schneider's schema, each processor
+ maintains a local clock by periodically adjusting each value to one
+ computed by a convergence function applied to the readings of all
+ the clocks. Then, correctness of an algorithm, i.e. that the
+ readings of two clocks at any time are within a fixed bound of each
+ other, is based upon some conditions on the convergence function. To
+ prove that a particular clock synchronization algorithm is correct
+ it suffices to show that the convergence function used by the
+ algorithm meets Schneider's conditions.
+ Using the theorem prover Isabelle, we formalize the proofs that the
+ convergence functions of two algorithms, namely, the Interactive
+ Convergence Algorithm (ICA) of Lamport and Melliar-Smith and the
+ Fault-tolerant Midpoint algorithm of Lundelius-Lynch, meet
+ Schneider's conditions.  Furthermore, we experiment on handling some
+ parts of the proofs with fully automatic tools like ICS and
+ CVC-lite.
+ These theories are part of a joint work with Alwen Tiu and Leonor
+  P. Nieto <a href="http://users.rsise.anu.edu.au/~tiu/clocksync.pdf">"Verification of Clock Synchronization Algorithms:
+  Experiments on a combination of deductive tools"</a> in proceedings of
+  AVOCS 2005. In this
+  work the correctness of  Schneider schema was also verified using
+  Isabelle (entry <a href="http://afp.sourceforge.net/entries/GenClock.shtml">GenClock</a> in AFP).
+   </td></tr>
+
+<!-- uncomment for entries significantly updated in devel version:
+<tr>
+<td class="datahead">&nbsp;</td>
+<td class="data">An updated version of this entry is available in the 
+    <a href="../download.shtml">development version</a> of AFP.</td>
+</tr> 
+-->
+
+</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<!-- entry directory name: -->
+<!--#set var="name" value="ClockSynchInst" -->
+
+<!--#set var="doc" value="../browser_info/current/HOL/HOL-Complex/${name}/document.pdf" -->
+<!--#set var="outline" value="../browser_info/current/HOL/HOL-Complex/${name}/outline.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL/HOL-Complex/${name}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:	None</td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+<div align="right" class="date">$Date: 2006-03-15 15:20:03 $, $Revision: 1.1 
+$</div></body>
+</html>
