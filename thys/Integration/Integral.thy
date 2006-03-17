@@ -270,7 +270,7 @@ txt{*\nopagebreak*}
 	from Bun S Bdis have "\<chi>(A i) t = (\<Sum>j\<in>S. \<chi>(A i \<inter> B j) t)" 
 	  by (rule char_split)
 	hence "x i * \<chi>(A i) t = (\<Sum>j\<in>S. x i * \<chi>(A i \<inter> B j) t)" 
-	  by (simp add: setsum_mult)
+	  by (simp add: setsum_right_distrib)
 	also 
 	{ fix j
 	  have "S=S" and 
@@ -325,7 +325,7 @@ txt{*\nopagebreak*}
 	  "measure M (A i) = (\<Sum>j\<in>S. measure M (A i \<inter> B j))" 
 	  by (simp add: measure_split)
 	hence "x i * measure M (A i) = (\<Sum>j\<in>S. x i * measure M (A i \<inter> B j))" 
-	  by (simp add: setsum_mult)
+	  by (simp add: setsum_right_distrib)
 	
 	also 
 	{ fix j 
@@ -362,7 +362,7 @@ txt{*\nopagebreak*}
 	from Aun R Adis have "\<chi>(B j) t = (\<Sum>i\<in>R. \<chi>(B j \<inter> A i) t)" 
 	  by (rule char_split) 
 	hence "y j * \<chi>(B j) t = (\<Sum>i\<in>R. y j * \<chi>(A i \<inter> B j) t)" 
-	  by (simp add: setsum_mult Int_commute)
+	  by (simp add: setsum_right_distrib Int_commute)
 	also 
 	{ fix i
 	  have "R=R" and 
@@ -412,7 +412,7 @@ txt{*\nopagebreak*}
 	  (\<Sum>i\<in>R. measure M (B j \<inter> A i))" 
 	  by (simp add: measure_split)
 	hence "y j * measure M (B j) = (\<Sum>i\<in>R. y j * measure M (A i \<inter> B j))"
-	  by (simp add: setsum_mult Int_commute)
+	  by (simp add: setsum_right_distrib Int_commute)
 	also 
 	{ fix i 
 	  have "R=R" and "y j * measure M (A i \<inter> B j) = 
@@ -688,7 +688,7 @@ proof (cases)
   case (base A S x)
   {fix t
     from prems have "z*f t = (\<Sum>i\<in>S. z * (x i * \<chi>(A i) t))"
-      by (simp add: setsum_mult)
+      by (simp add: setsum_right_distrib)
     also { fix i 
       have "S=S" and "z * (x i * \<chi>(A i) t) = (z * x i) * \<chi>(A i) t" by auto }
     hence "\<dots> = (\<Sum>i\<in>S. (z * x i) * \<chi>(A i) t)" by (rule setsum_cong)
@@ -703,7 +703,7 @@ proof (cases)
   also { fix i 
     have "S=S" and "(z * x i) * measure M (A i) = z * (x i * measure M (A i))" by auto }
   hence "(\<Sum>i\<in>S. z * x i * measure M (A i)) = (\<Sum>i\<in>S. z * (x i * measure M (A i)))" by (rule setsum_cong)
-  also from prems have "\<dots> = z*a" by (simp add: setsum_mult)
+  also from prems have "\<dots> = z*a" by (simp add: setsum_right_distrib)
   finally show ?thesis .
 qed(*>*)
 
@@ -923,7 +923,7 @@ proof cases
 	    z*(\<Sum>i\<in>S. \<chi>(B n) t * (a i * \<chi>(A i) t))" 
 	    by simp
 	  also have "\<dots> = z * \<chi>(B n) t * (\<Sum>i\<in>S. a i * \<chi>(A i) t)" 
-	    by (simp add: setsum_mult[THEN sym])
+	    by (simp add: setsum_right_distrib[THEN sym])
 	  also 
 	  from prems have "nonnegative s" 
 	    by (simp add: sfis_nn)

@@ -3,6 +3,10 @@ struct
 
 fun wfrec f x = f (wfrec f) x;
 
+fun snd (a, b) = b;
+
+fun fst (a, b) = a;
+
 fun nexts [] n = []
   | nexts (e :: es) n =
     (if (fst e = n) then (snd e :: nexts es n) else nexts es n);

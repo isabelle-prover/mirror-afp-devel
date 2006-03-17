@@ -1,5 +1,5 @@
 (*  Title:       The Cauchy-Schwarz Inequality
-    ID:          $Id: CauchySchwarz.thy,v 1.2 2006-03-14 20:51:52 lsf37 Exp $
+    ID:          $Id: CauchySchwarz.thy,v 1.3 2006-03-17 09:13:45 ballarin Exp $
     Author:      Benjamin Porter <Benjamin.Porter@gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter@gmail.com>
 *)
@@ -14,79 +14,9 @@ begin
 
 (* Some basic results that don't need to be in the final doc ..*)
 
-lemma real_sq:
-  "(a::real)*a = a^2"
-proof -
-  have "2 = Suc 1" by simp
-  hence "a^2 = a^(Suc 1)"
-    apply -
-    apply (erule subst)
-    by simp
-  also have "\<dots> = a*(a^1)" by simp
-  also have "\<dots> = a*a" by simp
-  finally have "a^2 = a*a" by auto
-  thus ?thesis by simp
-qed
 
-lemma real_mult_wkorder:
-  fixes x::real
-  assumes xge0: "0 \<le> x" and yge0: "0 \<le> y"
-  shows "0 \<le> x * y"
-proof cases
-  assume "x = 0"
-  thus ?thesis by simp
-next
-  assume "x\<noteq>0"
-  with xge0 have xgt0: "x > 0" by simp
-  show ?thesis
-  proof cases
-    assume "y = 0"
-    thus ?thesis by simp
-  next
-    assume "y \<noteq> 0"
-    with yge0 have "y > 0" by simp
-    with xgt0 have "x*y > 0" by (rule real_mult_order)
-    thus ?thesis by simp
-  qed
-qed
-
-lemma real_mult_order2:
-  fixes c::real
-  assumes c0: "0 \<le> c"
-  and xy: "x \<le> y"
-  shows "c*x \<le> c*y"
-proof cases
-  assume "0 = c"
-  thus ?thesis by auto
-next
-  assume "0 \<noteq> c"
-  with c0 have "0 < c" by simp
-  with xy show ?thesis by simp
-qed
-
-lemma real_sq_order:
-  fixes x::real
-  assumes xgt0: "0 \<le> x" and ygt0: "0 \<le> y" and sq: "x^2 \<le> y^2"
-  shows "x \<le> y"
-proof (rule ccontr)
-  assume "\<not>(x \<le> y)"
-  then have ylx: "y < x" by simp
-  hence "y \<le> x" by simp
-  with xgt0 have "x*y \<le> x*x" by (rule real_mult_order2)
-  moreover
-  have "\<not> (y = 0)"
-  proof
-    assume "y = 0"
-    with ylx have xg0: "0 < x" by simp
-    from xg0 xg0 have "0 < x*x" by (rule real_mult_order)
-    moreover have "y*y = 0" by simp
-    ultimately show False using sq by auto
-  qed
-  with ygt0 have "0 < y" by simp
-  with ylx have "y*y < x*y" by auto
-  ultimately have "y*y < x*x" by simp
-  with sq show False by (auto simp add: real_sq)
-qed
+lemmas real_sq = power2_eq_square [where 'a = real, symmetric]
+lemmas real_mult_wkorder = mult_nonneg_nonneg [where 'a = real]
 
 lemma real_add_mult_distrib2:
   fixes x::real
@@ -122,75 +52,12 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma double_sum_expand:
+lemma setsum_product_expand:
   fixes f::"nat \<Rightarrow> real"
   shows "(\<Sum>j\<in>{1..n}. f j)*(\<Sum>j\<in>{1..n}. g j) = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j))"
-proof (induct n)
-  case 0 show ?case by simp
-next
-  case (Suc n)
-  {
-    assume nz: "n = 0"
-    then have
-      "(\<Sum>j\<in>{1..Suc n}. f j)*(\<Sum>j\<in>{1..Suc n}. g j) = f 1 * g 1" by simp
-    moreover from nz have
-      "(\<Sum>k\<in>{1..Suc n}. (\<Sum>j\<in>{1..Suc n}. (f k)*(g j))) = f 1 * g 1" by auto
-    ultimately have ?case by simp
-  }
-  moreover
-  {
-    assume "\<not>(n=0)"
-    then have nge1: "n \<ge> 1" by simp
-    hence sn: "Suc n > 1" by simp
+  by (simp add: setsum_right_distrib setsum_left_distrib) (rule setsum_commute)
 
-    let ?f = "\<Sum>j\<in>{1..n}. f j" and ?g = "\<Sum>j\<in>{1..n}. g j"
-
-    from sn setsum_cl_ivl_Suc have "(\<Sum>j\<in>{1..Suc n}. f j) = ?f + f (Suc n)" by auto
-    moreover
-    from sn setsum_cl_ivl_Suc have "(\<Sum>j\<in>{1..Suc n}. g j) = ?g + g (Suc n)" by auto
-    ultimately have
-      "(\<Sum>j\<in>{1..Suc n}. f j)*(\<Sum>j\<in>{1..Suc n}. g j) = (?f + f (Suc n))*(?g + g (Suc n))" by simp
-    also have
-      "\<dots> = ?f * ?g + ?f*(g (Suc n)) + (f (Suc n))*?g + (f (Suc n))*(g (Suc n))"
-      by (auto simp add: real_add_mult_distrib_ex)
-    also have
-      "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (f k)*(g j))) +
-      ?f*(g (Suc n)) + (f (Suc n))*?g + (f (Suc n))*(g (Suc n))" using Suc by simp
-    also have
-      "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (f k)*(g j))) +
-      (\<Sum>j\<in>{1..n}. f j * g (Suc n)) + ?g * (f (Suc n)) + (f (Suc n))*(g (Suc n))"
-      by (auto simp add: setsum_mult real_mult_commute)
-    also have
-      "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (f k)*(g j)) +
-      (f k * g (Suc n))) + (?g * f (Suc n)) + (f (Suc n))*(g (Suc n))"
-      by (auto simp add: setsum_addf [symmetric])
-    also have
-      "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..(Suc n)}. (f k)*(g j))) +
-      (\<Sum>j\<in>{1..n}. g j)*(f (Suc n)) + g(Suc n)*(f (Suc n))" by simp
-    also have
-      "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..(Suc n)}. (f k)*(g j))) +
-      (\<Sum>j\<in>{1..n}. g j * f (Suc n)) + g(Suc n)*(f (Suc n))"
-      by (auto simp add: setsum_mult real_mult_commute)
-    also from sn setsum_cl_ivl_Suc have
-      "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..(Suc n)}. (f k)*(g j))) +
-      (\<Sum>j\<in>{1..Suc n}. (g j)*(f (Suc n)))" by auto
-    also from sn setsum_cl_ivl_Suc have
-      "\<dots> = (\<Sum>k\<in>{1..Suc n}. (\<Sum>j\<in>{1..(Suc n)}. (f k)*(g j)))"
-      by (auto simp add: real_mult_commute)
-    finally have ?case .
-  }
-  ultimately show ?case by (rule case_split_thm)
-qed
-
-lemma real_sq_exp:
-  fixes x::real
-  shows "(x*y)^2 = x^2 * y^2"
-proof -
-  have "(x*y)^2 = (x*y)*(x*y)" by (simp add:real_sq)
-  also have "\<dots> = (x*x)*(y*y)" by simp
-  also have "\<dots> = x^2 * y^2" by (simp add: real_sq)
-  finally show ?thesis .
-qed
+lemmas real_sq_exp = power_mult_distrib [where 'a = real and ?n = 2]
 
 lemma real_diff_exp:
   fixes x::real
@@ -206,15 +73,7 @@ lemma double_sum_equiv:
   shows
   "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j)) =
    (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f j * g k))"
-proof -
-  have "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (f k) * (g j))) = (\<Sum>j\<in>{1..n}. f j)*(\<Sum>j\<in>{1..n}. g j)"
-    by (simp only: double_sum_expand)
-  also have "\<dots> = (\<Sum>j\<in>{1..n}. g j)*(\<Sum>j\<in>{1..n}. f j)"
-    by simp
-  also have "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. g k * f j))"
-    by (simp only: double_sum_expand)
-  finally show ?thesis by (simp add: real_mult_commute)
-qed
+  by (rule setsum_commute)
 
 (*>*)
 
@@ -324,7 +183,7 @@ proof -
   also have
     "\<dots> =
      (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (f k * g j + f j * g k)*(1/2)))"
-    by (simp add: setsum_mult real_mult_commute)
+    by (simp add: setsum_right_distrib real_mult_commute)
   finally show ?thesis by (auto simp add: inverse_eq_divide)
 qed
 
@@ -370,7 +229,7 @@ proof -
         also from xp yp have
           "\<dots> = (\<Sum>j\<in>{1..n}. x\<^sub>j^2)*(\<Sum>j\<in>{1..n}. y\<^sub>j^2)"
           by simp
-        also from double_sum_expand have
+        also from setsum_product_expand have
           "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k^2)*(y\<^sub>j^2)))" .
         finally have
           "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k^2)*(y\<^sub>j^2)))" .
@@ -387,7 +246,7 @@ proof -
         also from real_sq have
           "\<dots> = (\<Sum>j\<in>{1..n}. x\<^sub>j*y\<^sub>j)*(\<Sum>j\<in>{1..n}. x\<^sub>j*y\<^sub>j)"
           by simp
-        also from double_sum_expand have
+        also from setsum_product_expand have
           "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k*y\<^sub>k)*(x\<^sub>j*y\<^sub>j)))"
           by simp
         finally have
@@ -433,7 +292,7 @@ proof -
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}.
          (((x\<^sub>k^2*y\<^sub>j^2) + (x\<^sub>j^2*y\<^sub>k^2)) - 2*(x\<^sub>k*y\<^sub>k)*(x\<^sub>j*y\<^sub>j))))"
-        by (simp only: setsum_mult)
+        by (simp only: setsum_right_distrib)
       also have
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k*y\<^sub>j - x\<^sub>j*y\<^sub>k)^2))"

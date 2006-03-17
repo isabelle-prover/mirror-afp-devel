@@ -1,5 +1,5 @@
 (*  Title:       Fast Fourier Transform
-    ID:          $Id: FFT.thy,v 1.2 2005-10-14 14:20:33 lsf37 Exp $
+    ID:          $Id: FFT.thy,v 1.3 2006-03-17 09:13:45 ballarin Exp $
     Author:      Clemens Ballarin <ballarin@in.tum.de>, started 12 April 2005
     Maintainer:  Clemens Ballarin <ballarin@in.tum.de>
 *)
@@ -293,7 +293,7 @@ proof (unfold DFT_def)
     txt {* First pair of sums *}
     apply (simp add: root_cancel1)
     txt {* Second pair of sums *}
-    apply (simp add: setsum_mult)
+    apply (simp add: setsum_right_distrib)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: mult_ac)
@@ -322,7 +322,7 @@ proof (unfold DFT_def)
     apply (simp add: root_unity ibound root_nonzero power_diff power_mult)
     txt {* Second pair of sums *}
     apply (simp add: mbound root_cancel2)
-    apply (simp add: setsum_mult)
+    apply (simp add: setsum_right_distrib)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: power_mult)
@@ -348,7 +348,7 @@ proof (unfold IDFT_def)
     txt {* First pair of sums *}
     apply (simp add: root_cancel1)
     txt {* Second pair of sums *}
-    apply (simp add: setsum_mult)
+    apply (simp add: setsum_right_distrib)
     apply (simp add: power_add)
     apply (simp add: nonzero_power_divide root_nonzero)
     apply (simp add: root_cancel1)
