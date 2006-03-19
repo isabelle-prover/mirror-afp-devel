@@ -1,12 +1,12 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: LynchInstance.thy,v 1.2 2006-03-15 15:20:02 lsf37 Exp $
+    ID:          $Id: LynchInstance.thy,v 1.3 2006-03-19 08:47:34 lsf37 Exp $
     Author:      Damián Barsotti <damian@hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian@hal.famaf.unc.edu.ar>
 *)
 
 header {* Fault-tolerant Midpoint algorithm *}
 
-theory LynchInstance = Complex_Main:
+theory LynchInstance imports Complex_Main begin
 
 text {* This algorithm is presented in \cite{lynch_cs}. *}
 
