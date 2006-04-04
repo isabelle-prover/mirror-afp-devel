@@ -1,0 +1,18 @@
+This folder contains a formalization of the type system, operational
+semantics, and a proof of type soundness for Featherweight Java in
+Isabelle/HOL. The development closely follows the proof originally
+published in ACM TOPLAS.
+
+Compile with Isabelle 2005: isatool make
+
+Here is the description for each file:
+
+- FJDefs.thy: definition of Featherweight Java syntax, type system,
+  and evaluation relation.
+
+- FJAux.thy: auxiliary lemmas.
+
+- FJSound.thy: type soundness theorems.
+  
+
+
