@@ -1,9 +1,10 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJAux.thy,v 1.2 2006-04-04 22:27:51 lsf37 Exp $
+    ID:          $Id: FJAux.thy,v 1.3 2006-04-06 14:20:14 lsf37 Exp $
     Author:      Nate Foster <jnfoster@cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv@cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster@cis.upenn.edu>,
                  Dimitrios Vytiniotis <dimitriv@cis.upenn.edu>
+    License:     LGPL
 
   Auxiliary lemmas
 *)
