@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness1.thy
-    ID:         $Id: Correctness1.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: Correctness1.thy,v 1.3 2006-04-30 09:25:21 lsf37 Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -738,12 +738,12 @@ qed (simp_all add:hyperset_defs)
 (*>*)
 
 
-lemma index_image_set: "distinct xs \<Longrightarrow> index xs ` set xs = {..size xs(}"
+lemma index_image_set: "distinct xs \<Longrightarrow> index xs ` set xs = {..<size xs}"
 (*<*)by(induct xs rule:rev_induct) (auto simp add: image_index)(*>*)
 
 
 lemma D_compE\<^isub>1:
-  "\<lbrakk> \<D> e \<lfloor>set Vs\<rfloor>; fv e \<subseteq> set Vs; distinct Vs \<rbrakk> \<Longrightarrow> \<D> (compE\<^isub>1 Vs e) \<lfloor>{..length Vs(}\<rfloor>"
+  "\<lbrakk> \<D> e \<lfloor>set Vs\<rfloor>; fv e \<subseteq> set Vs; distinct Vs \<rbrakk> \<Longrightarrow> \<D> (compE\<^isub>1 Vs e) \<lfloor>{..<length Vs}\<rfloor>"
 (*<*)by(fastsimp dest!: D_index_compE\<^isub>1[OF subset_refl] simp add:index_image_set)(*>*)
 
 
@@ -752,7 +752,7 @@ assumes "\<D> e \<lfloor>set(V#Vs)\<rfloor>" and "fv e \<subseteq> set(V#Vs)" an
 shows "\<D> (compE\<^isub>1 (V#Vs) e) \<lfloor>{..length Vs}\<rfloor>"
 (*<*)
 proof -
-  have "{..size Vs} = {..size(V#Vs)(}" by auto
+  have "{..size Vs} = {..<size(V#Vs)}" by auto
   thus ?thesis using prems by (simp only:)(rule D_compE\<^isub>1)
 qed
 (*>*)

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVSpecTypeSafe.thy
-    ID:         $Id: BVSpecTypeSafe.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: BVSpecTypeSafe.thy,v 1.2 2006-04-30 09:25:20 lsf37 Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -35,7 +35,7 @@ text {*
 lemma Invoke_handlers:
   "match_ex_table P C pc xt = Some (pc',d') \<Longrightarrow> 
   \<exists>(f,t,D,h,d) \<in> set (relevant_entries P (Invoke n M) pc xt). 
-   P \<turnstile> C \<preceq>\<^sup>* D \<and> pc \<in> {f..t(} \<and> pc' = h \<and> d' = d"
+   P \<turnstile> C \<preceq>\<^sup>* D \<and> pc \<in> {f..<t} \<and> pc' = h \<and> d' = d"
   by (induct xt) (auto simp add: relevant_entries_def matches_ex_entry_def 
                                  is_relevant_entry_def split: split_if_asm)
 
@@ -251,7 +251,7 @@ proof -
       "matches_ex_entry P (cname_of h xcp) pc (f,t,D,pc',d')"
       by (auto dest: match_ex_table_SomeD)
 
-    hence match: "P \<turnstile> cname_of h xcp \<preceq>\<^sup>* D"  "pc \<in> {f..t(}"
+    hence match: "P \<turnstile> cname_of h xcp \<preceq>\<^sup>* D"  "pc \<in> {f..<t}"
       by (auto simp: matches_ex_entry_def)
 
     from xp obtain

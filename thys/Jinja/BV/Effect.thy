@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Effect.thy
-    ID:         $Id: Effect.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Effect.thy,v 1.2 2006-04-30 09:25:21 lsf37 Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -110,7 +110,7 @@ rel_default:
 
 constdefs
   is_relevant_entry :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool" 
-  "is_relevant_entry P i pc e \<equiv> let (f,t,C,h,d) = e in is_relevant_class i P C \<and> pc \<in> {f..t(}"
+  "is_relevant_entry P i pc e \<equiv> let (f,t,C,h,d) = e in is_relevant_class i P C \<and> pc \<in> {f..<t}"
 
   relevant_entries :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ex_table" 
   "relevant_entries P i pc \<equiv> filter (is_relevant_entry P i pc)"

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness2.thy
-    ID:         $Id: Correctness2.thy,v 1.3 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: Correctness2.thy,v 1.4 2006-04-30 09:25:21 lsf37 Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -82,11 +82,11 @@ section{* Exception tables *}
 
 constdefs
   pcs :: "ex_table \<Rightarrow> nat set"
-  "pcs xt  \<equiv>  \<Union>(f,t,C,h,d) \<in> set xt. {f .. t(}"
+  "pcs xt  \<equiv>  \<Union>(f,t,C,h,d) \<in> set xt. {f ..< t}"
 
 lemma pcs_subset:
-shows "\<And>pc d. pcs(compxE\<^isub>2 e pc d) \<subseteq> {pc..pc+size(compE\<^isub>2 e)(}"
-and "\<And>pc d. pcs(compxEs\<^isub>2 es pc d) \<subseteq> {pc..pc+size(compEs\<^isub>2 es)(}"
+shows "\<And>pc d. pcs(compxE\<^isub>2 e pc d) \<subseteq> {pc..<pc+size(compE\<^isub>2 e)}"
+and "\<And>pc d. pcs(compxEs\<^isub>2 es pc d) \<subseteq> {pc..<pc+size(compEs\<^isub>2 es)}"
 (*<*)
 apply(induct e and es)
 apply (simp_all add:pcs_def)
@@ -99,7 +99,7 @@ lemma [simp]: "pcs [] = {}"
 (*<*)by(simp add:pcs_def)(*>*)
 
 
-lemma [simp]: "pcs (x#xt) = {fst x .. fst(snd x)(} \<union> pcs xt"
+lemma [simp]: "pcs (x#xt) = {fst x ..< fst(snd x)} \<union> pcs xt"
 (*<*)by(auto simp add: pcs_def)(*>*)
 
 
@@ -249,7 +249,7 @@ done
 
 lemma beforexM:
   "P \<turnstile> C sees M: Ts\<rightarrow>T = body in D \<Longrightarrow>
-  compP\<^isub>2 P,D,M \<rhd> compxE\<^isub>2 body 0 0/{..size(compE\<^isub>2 body)(},0"
+  compP\<^isub>2 P,D,M \<rhd> compxE\<^isub>2 body 0 0/{..<size(compE\<^isub>2 body)},0"
 (*<*)
 apply(drule sees_method_idemp)
 apply(drule sees_method_compP[where f = compMb\<^isub>2])
@@ -319,7 +319,7 @@ shows Jcc:
   "P\<^isub>1 \<turnstile>\<^sub>1 \<langle>e,(h\<^isub>0,ls\<^isub>0)\<rangle> \<Rightarrow> \<langle>ef,(h\<^isub>1,ls\<^isub>1)\<rangle> \<Longrightarrow>
   (\<And>C M pc v xa vs frs I.
      \<lbrakk> P,C,M,pc \<rhd> compE\<^isub>2 e; P,C,M \<rhd> compxE\<^isub>2 e pc (size vs)/I,size vs;
-       {pc..pc+size(compE\<^isub>2 e)(} \<subseteq> I \<rbrakk> \<Longrightarrow>
+       {pc..<pc+size(compE\<^isub>2 e)} \<subseteq> I \<rbrakk> \<Longrightarrow>
      (ef = Val v \<longrightarrow>
       P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
             (None,h\<^isub>1,(v#vs,ls\<^isub>1,C,M,pc+size(compE\<^isub>2 e))#frs))
@@ -336,7 +336,7 @@ shows Jcc:
 and "P\<^isub>1 \<turnstile>\<^sub>1 \<langle>es,(h\<^isub>0,ls\<^isub>0)\<rangle> [\<Rightarrow>] \<langle>fs,(h\<^isub>1,ls\<^isub>1)\<rangle> \<Longrightarrow>
     (\<And>C M pc ws xa es' vs frs I.
       \<lbrakk> P,C,M,pc \<rhd> compEs\<^isub>2 es; P,C,M \<rhd> compxEs\<^isub>2 es pc (size vs)/I,size vs;
-       {pc..pc+size(compEs\<^isub>2 es)(} \<subseteq> I \<rbrakk> \<Longrightarrow>
+       {pc..<pc+size(compEs\<^isub>2 es)} \<subseteq> I \<rbrakk> \<Longrightarrow>
       (fs = map Val ws \<longrightarrow>
        P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^isub>1,(rev ws @ vs,ls\<^isub>1,C,M,pc+size(compEs\<^isub>2 es))#frs))
@@ -551,9 +551,9 @@ next
   have M'_in_D: "P\<^isub>1 \<turnstile> D sees M': Ts\<rightarrow>T = body in D"
     by(rule sees_method_idemp)
   hence M'_code: "compP\<^isub>2 P\<^isub>1,D,M',0 \<rhd> compE\<^isub>2 body @ [Return]"
-    and M'_xtab: "compP\<^isub>2 P\<^isub>1,D,M' \<rhd> compxE\<^isub>2 body 0 0/{..size(compE\<^isub>2 body)(},0"
+    and M'_xtab: "compP\<^isub>2 P\<^isub>1,D,M' \<rhd> compxE\<^isub>2 body 0 0/{..<size(compE\<^isub>2 body)},0"
     by(rule beforeM, rule beforexM)
-  have IH_body: "PROP ?P body h\<^isub>2 ls\<^isub>2' f h\<^isub>3 ls\<^isub>3 D M' 0 v xa [] ?frs\<^isub>2 ({..size(compE\<^isub>2 body)(})".
+  have IH_body: "PROP ?P body h\<^isub>2 ls\<^isub>2' f h\<^isub>3 ls\<^isub>3 D M' 0 v xa [] ?frs\<^isub>2 ({..<size(compE\<^isub>2 body)})".
   show ?case (is "?Norm \<and> ?Err")
   proof
     show ?Norm (is "?val \<longrightarrow> ?trans")
@@ -898,7 +898,7 @@ next
   let ?pc\<^isub>1' = "?pc\<^isub>1 + 2 + length(compE\<^isub>2 e\<^isub>2)"
   have "P,C,M \<rhd> compxE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2) pc (size vs) / I,size vs".
   hence "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>1 pc (size vs) /
-                 {pc..pc + length (compE\<^isub>2 e\<^isub>1)(},size vs"
+                 {pc..<pc + length (compE\<^isub>2 e\<^isub>1)},size vs"
     using Try\<^isub>1.prems by (fastsimp simp:beforex_def split:split_if_asm)
   hence "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^isub>1,(v\<^isub>1#vs,ls\<^isub>1,C,M,?pc\<^isub>1)#frs)" using Try\<^isub>1 by auto
@@ -918,8 +918,8 @@ next
    and beforex: "P,C,M \<rhd> ?xt/I,size vs" .
   have "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> (None,h\<^isub>1,((Addr a)#vs,ls\<^isub>1,C,M, ?pc\<^isub>1+1) # frs)"
   proof -
-    have "PROP ?P e\<^isub>1 h\<^isub>0 ls\<^isub>0 (Throw a) h\<^isub>1 ls\<^isub>1 C M pc w a vs frs {pc..pc + length (compE\<^isub>2 e\<^isub>1)(}".
-    moreover have "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>1 pc (size vs)/{pc..?pc\<^isub>1(},size vs"
+    have "PROP ?P e\<^isub>1 h\<^isub>0 ls\<^isub>0 (Throw a) h\<^isub>1 ls\<^isub>1 C M pc w a vs frs {pc..<pc + length (compE\<^isub>2 e\<^isub>1)}".
+    moreover have "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>1 pc (size vs)/{pc..<?pc\<^isub>1},size vs"
       using beforex I pcs_subset by(force elim!: beforex_appendD1)
     ultimately have
       "\<exists>pc\<^isub>1. pc \<le> pc\<^isub>1 \<and> pc\<^isub>1 < ?pc\<^isub>1 \<and>
@@ -975,10 +975,10 @@ next
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?e = "try e\<^isub>1 catch(Ci i) e\<^isub>2"
   let ?xt = "compxE\<^isub>2 ?e pc (size vs)"
-  have I: "{pc..pc + length (compE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2))(} \<subseteq> I"
+  have I: "{pc..<pc + length (compE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2))} \<subseteq> I"
    and beforex: "P,C,M \<rhd> ?xt/I,size vs" .
-  have "PROP ?P e\<^isub>1 h\<^isub>0 ls\<^isub>0 (Throw a) h\<^isub>1 ls\<^isub>1 C M pc w a vs frs {pc..pc + length (compE\<^isub>2 e\<^isub>1)(}".
-  moreover have "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>1 pc (size vs)/{pc..?pc\<^isub>1(},size vs"
+  have "PROP ?P e\<^isub>1 h\<^isub>0 ls\<^isub>0 (Throw a) h\<^isub>1 ls\<^isub>1 C M pc w a vs frs {pc..<pc + length (compE\<^isub>2 e\<^isub>1)}".
+  moreover have "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>1 pc (size vs)/{pc..<?pc\<^isub>1},size vs"
     using beforex I pcs_subset by(force elim!: beforex_appendD1)
     ultimately have
       "\<exists>pc\<^isub>1. pc \<le> pc\<^isub>1 \<and> pc\<^isub>1 < ?pc\<^isub>1 \<and>
@@ -1063,7 +1063,7 @@ shows "compP\<^isub>2 P\<^isub>1 \<turnstile> (None,h,[([],ls,C,M,0)]) -jvm\<rig
 proof -
   let ?P = "compP\<^isub>2 P\<^isub>1"
   have code: "?P,C,M,0 \<rhd> compE\<^isub>2 body" using beforeM[OF method] by auto
-  have xtab: "?P,C,M \<rhd> compxE\<^isub>2 body 0 (size[])/{..size(compE\<^isub>2 body)(},size[]"
+  have xtab: "?P,C,M \<rhd> compxE\<^isub>2 body 0 (size[])/{..<size(compE\<^isub>2 body)},size[]"
     using beforexM[OF method] by auto
   -- "Distinguish if e' is a value or an exception"
   { fix v assume [simp]: "e' = Val v"
