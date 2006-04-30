@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.4 2006-01-03 10:56:06 fhaftmann Exp $
+    ID:         $Id: TypeComp.thy,v 1.5 2006-04-30 10:42:35 lsf37 Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -390,7 +390,7 @@ constdefs
   wt_instrs :: "'m prog \<Rightarrow> ty \<Rightarrow> pc \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' list \<Rightarrow> bool"
   ("(_,_,_ \<turnstile>/ _, _ /[::]/ _)" [50,50,50,50,50,51] 50)
   "P,T,mxs \<turnstile> is,xt [::] \<tau>s \<equiv>
-  size is < size \<tau>s \<and> pcs xt \<subseteq> {0..size is(} \<and>
+  size is < size \<tau>s \<and> pcs xt \<subseteq> {0..<size is} \<and>
   (\<forall>pc< size is. P,T,mxs,size \<tau>s,xt \<turnstile> is!pc,pc :: \<tau>s)"
 
 locale (open) TC2 = TC1 +
