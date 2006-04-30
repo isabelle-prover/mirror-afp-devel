@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness2.thy
-    ID:         $Id: Correctness2.thy,v 1.4 2006-04-30 09:25:21 lsf37 Exp $
+    ID:         $Id: Correctness2.thy,v 1.5 2006-04-30 09:46:34 lsf37 Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -914,7 +914,7 @@ next
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?pc\<^isub>1' = "?pc\<^isub>1 + 2"
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(vs,?ls\<^isub>1,C,M, ?pc\<^isub>1') # frs)"
-  have I: "{pc..pc + length (compE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2))(} \<subseteq> I"
+  have I: "{pc..<pc + length (compE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2))} \<subseteq> I"
    and beforex: "P,C,M \<rhd> ?xt/I,size vs" .
   have "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> (None,h\<^isub>1,((Addr a)#vs,ls\<^isub>1,C,M, ?pc\<^isub>1+1) # frs)"
   proof -
@@ -941,7 +941,7 @@ next
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> ?\<sigma>\<^isub>1" using TryCatch\<^isub>1 by auto
   finally have 1: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> ?\<sigma>\<^isub>1".
   let ?pc\<^isub>2 = "?pc\<^isub>1' + length(compE\<^isub>2 e\<^isub>2)"
-  let ?I\<^isub>2 = "{?pc\<^isub>1' .. ?pc\<^isub>2(}"
+  let ?I\<^isub>2 = "{?pc\<^isub>1' ..< ?pc\<^isub>2}"
   have "P,C,M \<rhd> compxE\<^isub>2 ?e pc (size vs) / I,size vs".
   hence beforex\<^isub>2: "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>2 ?pc\<^isub>1' (size vs) / ?I\<^isub>2, size vs"
     using I pcs_subset[of _ ?pc\<^isub>1'] by(auto elim!:beforex_appendD2)
@@ -1045,7 +1045,7 @@ qed
 lemma atLeast0AtMost[simp]: "{0::nat..n} = {..n}"
 by auto
 
-lemma atLeast0LessThan[simp]: "{0::nat..n(} = {..n(}"
+lemma atLeast0LessThan[simp]: "{0::nat..<n} = {..<n}"
 by auto
 
 consts exception :: "'a exp \<Rightarrow> addr option"
