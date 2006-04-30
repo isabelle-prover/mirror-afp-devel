@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: LynchInstance.thy,v 1.3 2006-03-19 08:47:34 lsf37 Exp $
+    ID:          $Id: LynchInstance.thy,v 1.4 2006-04-30 09:05:59 lsf37 Exp $
     Author:      Damián Barsotti <damian@hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian@hal.famaf.unc.edu.ar>
 *)
@@ -49,7 +49,7 @@ manage. This definition exist only for readability matters. *}
 
 constdefs
 PR :: "process set"
-"PR \<equiv>  {..np(}"
+"PR \<equiv>  {..<np}"
 declare PR_def[simp]
 
 

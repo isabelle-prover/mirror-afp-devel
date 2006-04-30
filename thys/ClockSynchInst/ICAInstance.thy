@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: ICAInstance.thy,v 1.3 2006-03-19 08:47:33 lsf37 Exp $
+    ID:          $Id: ICAInstance.thy,v 1.4 2006-04-30 09:05:59 lsf37 Exp $
     Author:      Damián Barsotti <damian@hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian@hal.famaf.unc.edu.ar>
 *)
@@ -52,7 +52,7 @@ manage. This definition exist only for readability matters. *}
 
 constdefs
 PR :: "process set"
-"PR \<equiv>  {..np(}"
+"PR \<equiv>  {..<np}"
 declare PR_def[simp]
 
 subsubsection {* Convergence function *}
@@ -82,15 +82,15 @@ number @{term np}. *}
 constdefs
   (* The averaging function to calculate clock adjustment *)
   cfni :: "[process, (process \<Rightarrow> Clocktime)] \<Rightarrow> Clocktime"
-  "cfni p f \<equiv> (\<Sum> l\<in>{..np(}. fiX f p l) / (real np)"
+  "cfni p f \<equiv> (\<Sum> l\<in>{..<np}. fiX f p l) / (real np)"
 
 subsection {* Translation Invariance property.*}
 
 text {*We first need to prove this auxiliary lemma.*}
 
 lemma trans_inv': 
-"(\<Sum> l\<in>{..np'(}. fiX (\<lambda> y. f y + x) p l) = 
-        (\<Sum> l\<in>{..np'(}. fiX f p l) + real np' * x"
+"(\<Sum> l\<in>{..<np'}. fiX (\<lambda> y. f y + x) p l) = 
+        (\<Sum> l\<in>{..<np'}. fiX f p l) + real np' * x"
 apply (induct_tac np')
 apply (auto simp add: cfni_def  fiX_def real_of_nat_Suc 
        left_distrib real_diff_def lessThan_Suc)
@@ -181,18 +181,18 @@ lemma sum_np_eq:
 assumes 
   hC: "C \<subseteq> PR"
 shows 
-  "(\<Sum>l\<in>{..np(}. f l) = (\<Sum>l\<in>C. f l) + (\<Sum>l\<in>({..np(}-C). f l)"
+  "(\<Sum>l\<in>{..<np}. f l) = (\<Sum>l\<in>C. f l) + (\<Sum>l\<in>({..<np}-C). f l)"
 proof-
   note finitC[where C=C]
   moreover
   note finitnpC[where C=C]
   moreover
-  have "C \<inter> ({..np(}-C) = {}" by auto
+  have "C \<inter> ({..<np}-C) = {}" by auto
   moreover
-  from hC have "C \<union> ({..np(}-C) = {..np(}" by auto
+  from hC have "C \<union> ({..<np}-C) = {..<np}" by auto
   ultimately
   show ?thesis
-    using setsum_Un_disjoint[where A=C and B="{..np(} - C"]
+    using setsum_Un_disjoint[where A=C and B="{..<np} - C"]
     by auto
 qed
  
@@ -200,12 +200,12 @@ lemma abs_sum_np_ineq:
 assumes 
   hC: "C \<subseteq> PR"
 shows 
-  "\<bar>(\<Sum>l\<in>{..np(}. (f::nat \<Rightarrow> real) l)\<bar> <=  
-     (\<Sum>l\<in>C. \<bar>f l\<bar>) + (\<Sum>l\<in>({..np(}-C). \<bar>f l\<bar>)"
+  "\<bar>(\<Sum>l\<in>{..<np}. (f::nat \<Rightarrow> real) l)\<bar> <=  
+     (\<Sum>l\<in>C. \<bar>f l\<bar>) + (\<Sum>l\<in>({..<np}-C). \<bar>f l\<bar>)"
     (is "?abs_sum <= ?sumC + ?sumnpC")
 proof-
   from hC and sum_np_eq[where f=f] 
-  have "?abs_sum = \<bar>(\<Sum>l\<in>C. f l) + (\<Sum>l\<in>({..np(}-C). f l)\<bar>" 
+  have "?abs_sum = \<bar>(\<Sum>l\<in>C. f l) + (\<Sum>l\<in>({..<np}-C). f l)\<bar>" 
     (is "?abs_sum = \<bar>?sumC' + ?sumnpC'\<bar>")
     by simp
   also
@@ -475,25 +475,25 @@ assumes
   hqC: "q\<in>C" 
 shows "\<bar> cfni p f - cfni q g \<bar> <= 
   (real (card C) * (x + (if (y <= \<Delta>) then 0 else y)) +
-    real (card ({..np(} - C)) * (2 * \<Delta> + x + y)) / real np"
+    real (card ({..<np} - C)) * (2 * \<Delta> + x + y)) / real np"
        (is "\<bar> ?dif_div_np \<bar> <= ?B")  
 proof-
-  have "\<bar>(\<Sum>l\<in>{..np(}. fiX f p l ) - 
-                    (\<Sum>l\<in>{..np(}. fiX g q l)\<bar> = 
-    \<bar>(\<Sum>l\<in>{..np(}. fiX f p l -fiX g q l)\<bar>"
+  have "\<bar>(\<Sum>l\<in>{..<np}. fiX f p l ) - 
+                    (\<Sum>l\<in>{..<np}. fiX g q l)\<bar> = 
+    \<bar>(\<Sum>l\<in>{..<np}. fiX f p l -fiX g q l)\<bar>"
     (is "\<bar>?dif\<bar> = \<bar>?dif'\<bar>" )
     by (simp add:  real_diff_def setsum_addf setsum_negf)
   also
   from abs_sum_np_ineq hC
   have " ... <=
       (\<Sum>l\<in>C. \<bar>fiX f p l - fiX g q l\<bar>) + 
-      (\<Sum>l\<in>({..np(}-C). \<bar>fiX f p l - fiX g q l\<bar>)"
+      (\<Sum>l\<in>({..<np}-C). \<bar>fiX f p l - fiX g q l\<bar>)"
     (is " \<bar>?dif'\<bar> <= ?boundC' + ?boundnpC'" )
     by simp
   also
   have "... <= 
     real (card C) * (x + (if (y <= \<Delta>) then 0 else y))+
-    real (card ({..np(}-C)) * (2 * \<Delta> + x + y)"
+    real (card ({..<np}-C)) * (2 * \<Delta> + x + y)"
     (is " ... <= ?boundC + ?boundnpC" )
   proof-
     have " ?boundC' <= ?boundC"
@@ -512,7 +512,7 @@ proof-
     proof -
       from abs_dif_fiX_bound and 
 	hbx and hby1 and  hpC and hqC  
-      have "\<forall>r\<in>({..np(}-C). \<bar>fiX f p r - fiX g q r\<bar> <= 2 * \<Delta> + x + y"
+      have "\<forall>r\<in>({..<np}-C). \<bar>fiX f p r - fiX g q r\<bar> <= 2 * \<Delta> + x + y"
 	by blast
       with finitnpC
       show ?thesis
@@ -541,8 +541,8 @@ text {* First, a simple lemma about an arithmetic propertie of the
 generalized summation over a set constructor. *}
 
 lemma sum_div_card:
-"(\<Sum>l\<in>{..n::nat(}. f l) + q * real n= 
-  (\<Sum>l\<in>{..n(}. f l + q )"
+"(\<Sum>l\<in>{..<n::nat}. f l) + q * real n= 
+  (\<Sum>l\<in>{..<n}. f l + q )"
   (is "?Sl n = ?Sr n")
 proof (induct n)
 case 0 thus ?case by simp
@@ -627,19 +627,19 @@ assumes
   hpC: "p\<in>C" and
   hqC: "q\<in>C" 
 shows "\<bar> cfni p f - f q \<bar> <= 
-  (real (card C) * x + real (card ({..np(} - C)) * (x + \<Delta>))/
+  (real (card C) * x + real (card ({..<np} - C)) * (x + \<Delta>))/
                   real np"
   (is "?abs1 <= (?bC + ?bnpC)/real np")
 proof-
 from abs_sum_np_ineq and hC have 
-  "\<bar>\<Sum>l\<in>{..np(}. fiX f p l  - f q \<bar> <= 
+  "\<bar>\<Sum>l\<in>{..<np}. fiX f p l  - f q \<bar> <= 
     (\<Sum>l\<in>C. \<bar> fiX f p l  - f q \<bar>) + 
-            (\<Sum>l\<in>({..np(}-C). \<bar> fiX f p l  - f q \<bar>)" 
+            (\<Sum>l\<in>({..<np}-C). \<bar> fiX f p l  - f q \<bar>)" 
   by simp
 also 
 have 
   "... <= real (card C) * x + 
-            real (card ({..np(} - C)) * (x + \<Delta>)"
+            real (card ({..<np} - C)) * (x + \<Delta>)"
   proof-
     have "(\<Sum>l\<in>C. \<bar> fiX f p l  - f q \<bar>) <= 
                     real (card C) * x"
@@ -653,15 +653,15 @@ have
 	by force
     qed
     moreover
-    have " (\<Sum>l\<in>({..np(}-C). \<bar> fiX f p l  - f q \<bar>) <= 
-                real (card ({..np(} - C)) * (x + \<Delta>)"
+    have " (\<Sum>l\<in>({..<np}-C). \<bar> fiX f p l  - f q \<bar>) <= 
+                real (card ({..<np} - C)) * (x + \<Delta>)"
     proof -
       from bound_aux and 
 	hby and  hpC and hqC  
-      have "\<forall>r\<in>({..np(}-C). 
+      have "\<forall>r\<in>({..<np}-C). 
 	\<bar>fiX f p r - f q\<bar> <= x + \<Delta>"
 	by blast
-      thus ?thesis using sum_le[where S="{..np(}-C"] 
+      thus ?thesis using sum_le[where S="{..<np}-C"] 
 	and finitnpC 
 	by force
     qed
@@ -669,8 +669,8 @@ have
     show ?thesis by arith
   qed
   finally 
-  have bound: "\<bar>\<Sum>l\<in>{..np(}. fiX f p l - f q\<bar>
-  \<le> real (card C) * x + real (card ({..np(} - C)) * (x + \<Delta>)"
+  have bound: "\<bar>\<Sum>l\<in>{..<np}. fiX f p l - f q\<bar>
+  \<le> real (card C) * x + real (card ({..<np} - C)) * (x + \<Delta>)"
     .
   thus 
     ?thesis
@@ -680,37 +680,37 @@ have
       by auto
     have
       "(cfni p f - f q) * real np = 
-      (\<Sum>l\<in>{..np(}. fiX f p l) * real np / real np - f q * real np"
+      (\<Sum>l\<in>{..<np}. fiX f p l) * real np / real np - f q * real np"
       by (auto simp add:  cfni_def  real_diff_def left_distrib)
     also 
     have "... = 
-      (\<Sum>l\<in>{..np(}. fiX f p l) - f q * real np"
+      (\<Sum>l\<in>{..<np}. fiX f p l) - f q * real np"
       by simp
     also
     from sum_div_card[where f="fiX f p" and n=np and q="- f q"]
-    have "... = (\<Sum>l\<in>{..np(}. fiX f p l - f q)"
+    have "... = (\<Sum>l\<in>{..<np}. fiX f p l - f q)"
       by (auto simp add:  real_diff_def)
     finally
     have 
-      "(cfni p f - f q) * real np = (\<Sum>l\<in>{..np(}. fiX f p l - f q)"
+      "(cfni p f - f q) * real np = (\<Sum>l\<in>{..<np}. fiX f p l - f q)"
       .
 -- cambia
     hence
       "(cfni p f - f q) * real np / real np = 
-      (\<Sum>l\<in>{..np(}. fiX f p l - f q)/ real np"
+      (\<Sum>l\<in>{..<np}. fiX f p l - f q)/ real np"
       by auto
     with constants_ax have  
       "(cfni p f - f q) = 
-      (\<Sum>l\<in>{..np(}. fiX f p l - f q) / real np"
+      (\<Sum>l\<in>{..<np}. fiX f p l - f q) / real np"
     by simp
     hence "\<bar> cfni p f - f q \<bar> = 
-      \<bar>(\<Sum>l\<in>{..np(}. fiX f p l - f q) / real np \<bar>"
+      \<bar>(\<Sum>l\<in>{..<np}. fiX f p l - f q) / real np \<bar>"
       by simp
     also have
-      "... = \<bar>(\<Sum>l\<in>{..np(}. fiX f p l - f q)\<bar> / real np "
+      "... = \<bar>(\<Sum>l\<in>{..<np}. fiX f p l - f q)\<bar> / real np "
       by auto
     finally have "\<bar> cfni p f - f q \<bar> = 
-      \<bar>(\<Sum>l\<in>{..np(}. fiX f p l - f q)\<bar> / real np "
+      \<bar>(\<Sum>l\<in>{..<np}. fiX f p l - f q)\<bar> / real np "
       .
     with bound show "?thesis" 
       by (auto simp add: cfni_def divide_inverse constants_ax)
