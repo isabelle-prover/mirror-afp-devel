@@ -308,13 +308,13 @@ proof -
     also have 
       "(\<Union>i\<in>{..n}. mkdisjoint A i) = (\<Union>i. if i\<le>n then mkdisjoint A i else {})"
     proof -
-      have "UNIV = {..n} \<union> {)n..}" by auto
+      have "UNIV = {..n} \<union> {n<..}" by auto
       hence "(\<Union>i. if i\<le>n then mkdisjoint A i else {}) = 
 	(\<Union>i\<in>{..n}. if i\<le>n then mkdisjoint A i else {}) 
-	\<union>  (\<Union>i\<in>{)n..}. if i\<le>n then mkdisjoint A i else {})" 
+	\<union>  (\<Union>i\<in>{n<..}. if i\<le>n then mkdisjoint A i else {})" 
 	by (auto simp add: UN_Un)
       also 
-      { have "(\<Union>i\<in>{)n..}. if i\<le>n then mkdisjoint A i else {}) = {}"
+      { have "(\<Union>i\<in>{n<..}. if i\<le>n then mkdisjoint A i else {}) = {}"
 	  by force }
       hence "\<dots> = (\<Union>i\<in>{..n}. mkdisjoint A i)" 
 	by auto

@@ -136,21 +136,21 @@ lemma sumr_setsum:
     by simp
   case (Suc l)
   hence "(\<Sum>i=0..<Suc l. if i \<in> R then f i else 0) =  
-    (if l \<in> R then f l else 0) + (\<Sum>i\<in>(R\<inter>{..l(}). f i)"
+    (if l \<in> R then f l else 0) + (\<Sum>i\<in>(R\<inter>{..<l}). f i)"
     by simp
-  also have "\<dots> =  (\<Sum>i\<in>(R \<inter> {..Suc l(}). f i)"
+  also have "\<dots> =  (\<Sum>i\<in>(R \<inter> {..<Suc l}). f i)"
   proof (cases "l \<in> R")
     case True
     have "l \<notin> (R\<inter>{..<l})" by simp
-    have "f l + (\<Sum>i\<in>(R\<inter>{..l(}). f i) = (\<Sum>i\<in>(insert l (R\<inter>{..l(})). f i)"
+    have "f l + (\<Sum>i\<in>(R\<inter>{..<l}). f i) = (\<Sum>i\<in>(insert l (R\<inter>{..<l})). f i)"
       by simp
-    also from True have "insert l (R\<inter>{..l(}) = (R \<inter> {..Suc l(})"
+    also from True have "insert l (R\<inter>{..<l}) = (R \<inter> {..<Suc l})"
       by (auto simp add: lessThan_Suc)
     finally show ?thesis
       using True by simp
   next
     case False
-    hence "(R\<inter>{..l(}) = (R \<inter> {..Suc l(})" by (auto simp add: lessThan_Suc)
+    hence "(R\<inter>{..<l}) = (R \<inter> {..<Suc l})" by (auto simp add: lessThan_Suc)
     thus ?thesis by auto
   qed
   finally show ?case .
@@ -165,9 +165,9 @@ lemma assumes ms: "measure_space M" and dis: "\<forall>j1\<in>(R::nat set). \<fo
     by simp
   hence "R = R \<inter> {..Max R}"
     by auto
-  also have "\<dots> = R \<inter> {..Suc (Max R)(}"
+  also have "\<dots> = R \<inter> {..<Suc (Max R)}"
     by (simp add: lessThan_Suc_atMost[THEN sym])
-  finally have "(\<Sum>j\<in>R. measure M (B j)) = (\<Sum>j\<in>R\<inter> {..Suc (Max R)(} . measure M (B j))"
+  finally have "(\<Sum>j\<in>R. measure M (B j)) = (\<Sum>j\<in>R\<inter> {..<Suc (Max R)} . measure M (B j))"
     by simp
   also have "\<dots> = (\<Sum>x=0..<Suc(Max R). if x \<in> R then measure M (B x) else 0)"
     by (rule sumr_setsum[THEN sym])
@@ -1521,8 +1521,8 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 (*<*)proof (rule+)
     (*We don't need the greater case in the book, since our functions are real*)
   def A \<equiv> "(\<lambda>n i. {w. real i/(2::real)^n \<le> f w} \<inter> {w. f w < real (Suc i)/(2::real)^n})"
-  def u \<equiv> "(\<lambda>n t. \<Sum>i\<in>{..(n*2^n)(}-{0}. (real i/(2::real)^n)*\<chi>(A n i) t)" 
-  def x \<equiv> "(\<lambda>n. \<Sum>i\<in>{..(n*2^n)(}-{0}. (real i/(2::real)^n)*measure M (A n i))" 
+  def u \<equiv> "(\<lambda>n t. \<Sum>i\<in>{..<(n*2^n)}-{0}. (real i/(2::real)^n)*\<chi>(A n i) t)" 
+  def x \<equiv> "(\<lambda>n. \<Sum>i\<in>{..<(n*2^n)}-{0}. (real i/(2::real)^n)*measure M (A n i))" 
   
   { fix n 
     note ms
@@ -1535,7 +1535,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
       moreover note  ms
       ultimately have "A n i \<in> measurable_sets M" 
 	by (simp add: A_def measure_space_def sigma_algebra_inter)
-    } hence "\<forall>i\<in>{..(n*2^n)(}-{0}. A n i \<in> measurable_sets M" by fast
+    } hence "\<forall>i\<in>{..<(n*2^n)}-{0}. A n i \<in> measurable_sets M" by fast
       moreover
     { fix i::nat
       have "0 \<le> real i" 
@@ -1548,7 +1548,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
       by (simp add: nonnegative_def)
    (*	This is a little stronger than it has to be, btw.. x i must only be nn for i in S *)
       
-    moreover have "finite ({..(n*2^n)(}-{0})"
+    moreover have "finite ({..<(n*2^n)}-{0})"
       by simp
     ultimately have "x n \<in> sfis (u n) M" 
       by (simp only: u_def x_def sfis_intro)
@@ -1559,9 +1559,9 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
   proof -
     { fix t
 
-      { fix m i assume tai: "t \<in> A m i" and iS: "i \<in> {..(m*2^m)(}"
+      { fix m i assume tai: "t \<in> A m i" and iS: "i \<in> {..<(m*2^m)}"
 	    
-	have usum: "u m t = (\<Sum>j\<in>{..(m*2^m)(}-{0}. real j / (2::real)^m * \<chi>(A m j) t)"
+	have usum: "u m t = (\<Sum>j\<in>{..<(m*2^m)}-{0}. real j / (2::real)^m * \<chi>(A m j) t)"
 	  by (simp add: u_def)
 	    
 	{ fix j assume ne: "i \<noteq> j" 
@@ -1593,21 +1593,21 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	}
 	hence "\<And>j. i \<noteq> j \<Longrightarrow> \<chi>(A m j) t = 0"
 	  by (simp add: characteristic_function_def)
-	hence "\<And>j. j\<in>{..(m*2^m)(}-{0}-{i} \<Longrightarrow>  real j / (2::real)^m * \<chi>(A m j) t = 0"
+	hence "\<And>j. j\<in>{..<(m*2^m)}-{0}-{i} \<Longrightarrow>  real j / (2::real)^m * \<chi>(A m j) t = 0"
 	  by force
-	with refl have "(\<Sum>j\<in>{..(m*2^m)(}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t) = 
-	  (\<Sum>j\<in>{..(m*2^m)(}-{0}-{i}. 0)" 
+	with refl have "(\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t) = 
+	  (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. 0)" 
 	  by (rule setsum_cong)
 	also have "\<dots> = 0"
 	  by (rule setsum_0)
-	finally have sum0: "(\<Sum>j\<in>{..(m*2^m)(}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t) = 0" .
+	finally have sum0: "(\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t) = 0" .
 	
 	have "u m t = real i / (2::real)^m"
 	proof (cases "i=0")
 	  case True
-	  hence "i \<notin> {..(m*2^m)(}-{0}"
+	  hence "i \<notin> {..<(m*2^m)}-{0}"
 	    by simp
-	  hence "{..(m*2^m)(}-{0} = {..(m*2^m)(}-{0}-{i}"
+	  hence "{..<(m*2^m)}-{0} = {..<(m*2^m)}-{0}-{i}"
 	    by simp
 	  with usum sum0 have "u m t = 0" 
 	    by simp
@@ -1617,25 +1617,25 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	    by (simp add: characteristic_function_def)
 	next
 	  case False
-	  with iS have iS: "i \<in> {..(m*2^m)(}-{0}"
+	  with iS have iS: "i \<in> {..<(m*2^m)}-{0}"
 	    by simp
           note usum  
 	  also 
-	  have fin: "finite ({..(m*2^m)(}-{0}-{i})" 
+	  have fin: "finite ({..<(m*2^m)}-{0}-{i})" 
 	    by simp
-	  from iS have ins: "{..(m*2^m)(}-{0} = insert i
-	    ({..(m*2^m)(}-{0}-{i})"
+	  from iS have ins: "{..<(m*2^m)}-{0} = insert i
+	    ({..<(m*2^m)}-{0}-{i})"
 	    by auto
-	  have "i \<notin> ({..(m*2^m)(}-{0}-{i})" 
+	  have "i \<notin> ({..<(m*2^m)}-{0}-{i})" 
 	    by simp
 	  
- 	  with fin have "(\<Sum>j\<in>insert i ({..(m*2^m)(}-{0}-{i}). real j / (2::real)^m * \<chi>(A m j) t)
+ 	  with fin have "(\<Sum>j\<in>insert i ({..<(m*2^m)}-{0}-{i}). real j / (2::real)^m * \<chi>(A m j) t)
 	    = real i / (2::real)^m * \<chi>(A m i) t +
-	    (\<Sum>j\<in>{..(m*2^m)(}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t)"
+	    (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t)"
 	    by (rule setsum_insert)
- 	  with ins tai have "(\<Sum>j\<in>{..(m*2^m)(}-{0}. real j / (2::real)^m * \<chi>(A m j) t)
+ 	  with ins tai have "(\<Sum>j\<in>{..<(m*2^m)}-{0}. real j / (2::real)^m * \<chi>(A m j) t)
 	    = real i / (2::real)^m +
-	    (\<Sum>j\<in>{..(m*2^m)(}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t)"
+	    (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t)"
 	    by (simp add: characteristic_function_def)
 	  
 	  also note sum0
@@ -1643,7 +1643,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	    by simp
 	qed
       }
-      hence disj: "\<And>m i. \<lbrakk>t \<in> A m i; i \<in> {..m * 2 ^ m(}\<rbrakk> 
+      hence disj: "\<And>m i. \<lbrakk>t \<in> A m i; i \<in> {..<m * 2 ^ m}\<rbrakk> 
 	\<Longrightarrow> u m t = real i / (2::real)^m" .
 
       { fix n
@@ -1745,7 +1745,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	have "u n t \<le> u (Suc n) t"
 	proof (cases "real n \<le> f t")
 	  case True
-	  { fix i assume "i \<in> {..(n*2^n)(}-{0}"
+	  { fix i assume "i \<in> {..<(n*2^n)}-{0}"
 	    hence "Suc i \<le> n*2^n" by simp
 	    hence mult: "real (Suc i) \<le> real n * (2::real)^n"
 	      by (simp add: real_of_nat_le_iff[THEN sym] realpow_real_of_nat[THEN sym])
@@ -1761,17 +1761,17 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	    hence "(real i/(2::real)^n)*\<chi>(A n i) t = 0"
 	      by (simp add: characteristic_function_def)
 	  }
-	  with refl have "(\<Sum>i\<in>{..n * 2 ^ n(} - {0}. real i / (2::real)^n * \<chi>(A n i) t)
-	    = (\<Sum>i\<in>{..n * 2 ^ n(} - {0}. 0)"
+	  with refl have "(\<Sum>i\<in>{..<n * 2 ^ n} - {0}. real i / (2::real)^n * \<chi>(A n i) t)
+	    = (\<Sum>i\<in>{..<n * 2 ^ n} - {0}. 0)"
 	    by (rule setsum_cong)
 	  hence "u n t = 0"  by (simp add: u_def)
 	    
 	  also 
 	  { fix m
-	    { fix i assume "i \<in> {..(m*2^m)(}-{0}"
+	    { fix i assume "i \<in> {..<(m*2^m)}-{0}"
 	      hence  "0 \<le> real i / (2::real)^m * \<chi>(A m i) t"
 		by (simp add: characteristic_function_def real_0_le_divide_iff)
-	    } hence "\<forall>i\<in>{..(m*2^m)(}-{0}. 0 \<le> real i / (2::real)^m * \<chi>(A m i) t"
+	    } hence "\<forall>i\<in>{..<(m*2^m)}-{0}. 0 \<le> real i / (2::real)^m * \<chi>(A m i) t"
 	      by fast
 	    hence "0 \<le> u m t"  by (simp add: u_def setsum_nonneg)
 	  }
