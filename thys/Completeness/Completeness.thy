@@ -388,8 +388,9 @@ lemmas r' = r[simplified measure_def inv_image_def less_than_def less_def[symmet
 lemma r'': "(\<forall> x. (\<forall> y. ( ((msrFn::'a \<Rightarrow> nat) y) < ((msrFn :: 'a \<Rightarrow> nat) x)) \<longrightarrow> P y) \<longrightarrow> P x) \<Longrightarrow> P a"
   by (blast intro: r' [of P]) 
 
-lemma terminationRule[rule_format]: "! n. P n --> (~(P (Suc n)) | (P (Suc n) & msrFn (Suc n) < (msrFn::nat => nat) n)) ==> P m --> (? n . P n & ~(P (Suc n)))"
-  (concl is "?P m") 
+lemma terminationRule [rule_format]:
+  "! n. P n --> (~(P (Suc n)) | (P (Suc n) & msrFn (Suc n) < (msrFn::nat => nat) n)) ==> P m --> (? n . P n & ~(P (Suc n)))"
+  (is "_ \<Longrightarrow> ?P m") 
   apply (rule r''[of msrFn "?P" m], blast)
   done
     -- "FIXME ugly"
