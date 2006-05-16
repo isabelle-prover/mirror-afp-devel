@@ -1,0 +1,37 @@
+(* Author: Tobias Nipkow, Daniel Wasserrab 
+   Extracted from the Jinja theory J/Expr.thy by Tobias Nipkow *)
+
+header {* Syntax *}
+
+theory Syntax imports Exceptions begin
+
+
+text{*Syntactic sugar*}
+
+syntax
+  InitBlock:: "vname \<Rightarrow> ty \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> expr"   ("(1'{_:_ := _;/ _})")
+translations
+  "InitBlock V T e1 e2" => "{V:T; V := e1;; e2}"
+
+syntax
+ unit  :: expr
+ null  :: expr
+ ref   :: "reference \<Rightarrow> expr"
+ true  :: expr
+ false :: expr
+translations
+ "unit" == "Val Unit"
+ "null" == "Val Null"
+ "ref r" == "Val(Ref r)"
+ "true" == "Val(Bool True)"
+ "false" == "Val(Bool False)"
+
+syntax
+  Throw :: "reference \<Rightarrow> expr"
+  THROW :: "cname \<Rightarrow> expr"
+translations
+  "Throw r" == "throw(ref r)"
+  "THROW xc" => "Throw(addr_of_sys_xcpt xc,[xc])"
+
+
+end

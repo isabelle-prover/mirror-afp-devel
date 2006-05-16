@@ -1,0 +1,284 @@
+(* Author: Daniel Wasserrab
+   Based on the Jinja theory Common/Conform.thy by David von Oheimb and Tobias Nipkow *)
+
+header {* Conformance Relations for Type Soundness Proofs *}
+
+theory Conform imports Exceptions WellTypeRT begin
+
+consts
+  conf :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50)
+
+primrec
+  "P,h \<turnstile> v :\<le> Void      = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Void)"
+  "P,h \<turnstile> v :\<le> Boolean   = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Boolean)"
+  "P,h \<turnstile> v :\<le> Integer   = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Integer)"
+  "P,h \<turnstile> v :\<le> NT        = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT)"
+  "P,h \<turnstile> v :\<le> (Class C) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C) \<or> P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT)"
+
+
+constdefs
+  fconf :: "prog \<Rightarrow> heap \<Rightarrow> ('a \<rightharpoonup> val) \<Rightarrow> ('a \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50)
+  "P,h \<turnstile> v\<^isub>m (:\<le>) T\<^isub>m  \<equiv>
+  \<forall>FD T. T\<^isub>m FD = Some T \<longrightarrow> (\<exists>v. v\<^isub>m FD = Some v \<and> P,h \<turnstile> v :\<le> T)"
+
+  oconf :: "prog \<Rightarrow> heap \<Rightarrow> obj \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>" [51,51,51] 50)
+  "P,h \<turnstile> obj \<surd>  \<equiv> let (C,S) = obj in 
+      (\<forall>Cs. (C,Cs) \<in> Subobjs P \<longrightarrow> (\<exists> fs'. (Cs,fs') \<in> S)) \<and> 
+      (\<forall>Cs fs'. (Cs,fs') \<in> S \<longrightarrow> (C,Cs) \<in> Subobjs P \<and> 
+	            (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
+                                P,h \<turnstile> fs' (:\<le>) map_of fs))"  
+
+  hconf :: "prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile> _ \<surd>" [51,51] 50)
+  "P \<turnstile> h \<surd>  \<equiv>
+  (\<forall>a obj. h a = Some obj \<longrightarrow> P,h \<turnstile> obj \<surd>) \<and> preallocated h"
+
+  lconf :: "prog \<Rightarrow> heap \<Rightarrow> ('a \<rightharpoonup> val) \<Rightarrow> ('a \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>')\<^sub>w _" [51,51,51,51] 50)
+  "P,h \<turnstile> v\<^isub>m (:\<le>)\<^sub>w T\<^isub>m  \<equiv>
+  \<forall>V v. v\<^isub>m V = Some v \<longrightarrow> (\<exists>T. T\<^isub>m V = Some T \<and> P,h \<turnstile> v :\<le> T)"
+
+
+
+syntax
+  confs :: "prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty list \<Rightarrow> bool" 
+           ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
+
+
+translations
+  "P,h \<turnstile> vs [:\<le>] Ts"  ==  "list_all2 (conf P h) vs Ts"
+
+
+subsection{* Value conformance @{text":\<le>"} *}
+
+lemma conf_Null [simp]: "P,h \<turnstile> Null :\<le> T  =  P \<turnstile> NT \<le> T"
+by(cases T) simp_all
+
+lemma typeof_conf[simp]: "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow> P,h \<turnstile> v :\<le> T"
+by (cases T) auto
+
+lemma typeof_lit_conf[simp]: "typeof v = Some T \<Longrightarrow> P,h \<turnstile> v :\<le> T"
+by (rule typeof_conf[OF type_eq_type])
+
+lemma defval_conf[simp]: "is_type P T \<Longrightarrow> P,h \<turnstile> default_val T :\<le> T"
+by(cases T) auto
+
+
+lemma typeof_notclass_heap:
+  "\<forall>C. T \<noteq> Class C \<Longrightarrow> (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T) = (P \<turnstile> typeof\<^bsub>h'\<^esub> v = Some T)"
+by(cases T)(auto dest:typeof_Void typeof_NT typeof_Boolean typeof_Integer)
+
+lemma assumes h:"h a = Some(C,S)" 
+  shows conf_upd_obj: "(P,h(a\<mapsto>(C,S')) \<turnstile> v :\<le> T) = (P,h \<turnstile> v :\<le> T)"
+
+proof(cases T)
+  case Void
+  hence "(P \<turnstile> typeof\<^bsub>h(a\<mapsto>(C,S'))\<^esub> v = Some T) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
+    by(fastsimp intro!:typeof_notclass_heap)
+  with Void show ?thesis by simp
+next
+  case Boolean
+  hence "(P \<turnstile> typeof\<^bsub>h(a\<mapsto>(C,S'))\<^esub> v = Some T) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
+    by(fastsimp intro!:typeof_notclass_heap)
+  with Boolean show ?thesis by simp
+next
+  case Integer
+  hence "(P \<turnstile> typeof\<^bsub>h(a\<mapsto>(C,S'))\<^esub> v = Some T) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
+    by(fastsimp intro!:typeof_notclass_heap)
+  with Integer show ?thesis by simp
+next
+  case NT
+  hence "(P \<turnstile> typeof\<^bsub>h(a\<mapsto>(C,S'))\<^esub> v = Some T) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
+    by(fastsimp intro!:typeof_notclass_heap)
+  with NT show ?thesis by simp
+next
+  case (Class C')
+  { assume "P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')"
+    with h have "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')"
+      by (cases v) (auto split:split_if_asm)  }
+  hence 1:"P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C') \<Longrightarrow> 
+           P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')" by simp
+  { assume type:"P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some NT"
+    and typenot:"P \<turnstile> typeof\<^bsub>h\<^esub> v \<noteq> Some NT"
+    have "\<forall>C. NT \<noteq> Class C" by simp
+    with type have "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT" by(fastsimp dest:typeof_notclass_heap)
+    with typenot have "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')" by simp }
+  hence 2:"\<lbrakk>P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some NT; P \<turnstile> typeof\<^bsub>h\<^esub> v \<noteq> Some NT\<rbrakk> \<Longrightarrow>
+    P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')" by simp
+  { assume "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')"
+    with h have "P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')"
+      by (cases v) (auto split:split_if_asm) }
+  hence 3:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C') \<Longrightarrow> 
+           P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')" by simp
+  { assume typenot:"P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v \<noteq> Some NT"
+    and type:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT"
+    have "\<forall>C. NT \<noteq> Class C" by simp
+    with type have "P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some NT" 
+      by(fastsimp dest:typeof_notclass_heap)
+    with typenot have "P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')" by simp }
+  hence 4:"\<lbrakk>P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v \<noteq> Some NT; P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT\<rbrakk> \<Longrightarrow>
+    P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')" by simp
+  from Class show ?thesis by (auto intro:1 2 3 4)
+qed
+
+
+lemma conf_NT [iff]: "P,h \<turnstile> v :\<le> NT = (v = Null)"
+by fastsimp
+
+
+subsection{* Value list conformance @{text"[:\<le>]"} *}
+
+lemma confs_rev: "P,h \<turnstile> rev s [:\<le>] t = (P,h \<turnstile> s [:\<le>] rev t)"
+
+  apply rule
+  apply (rule subst [OF list_all2_rev])
+  apply simp
+  apply (rule subst [OF list_all2_rev])
+  apply simp
+  done
+
+
+
+lemma confs_Cons2: "P,h \<turnstile> xs [:\<le>] y#ys = (\<exists>z zs. xs = z#zs \<and> P,h \<turnstile> z :\<le> y \<and> P,h \<turnstile> zs [:\<le>] ys)"
+by (rule list_all2_Cons2)
+
+
+section{* Field conformance @{text"(:\<le>)"} *}
+
+
+lemma fconf_init_fields: 
+"class P C = Some(Bs,fs,ms) \<Longrightarrow> P,h \<turnstile> init_class_fieldmap P C (:\<le>) map_of fs"
+
+apply(unfold fconf_def init_class_fieldmap_def)
+apply clarsimp
+apply (rule exI)
+apply (rule conjI)
+apply (simp add:map_of_map)
+apply(case_tac T)
+apply simp_all
+done
+
+
+
+subsection{* Heap conformance *}
+
+lemma hconfD: "\<lbrakk> P \<turnstile> h \<surd>; h a = Some obj \<rbrakk> \<Longrightarrow> P,h \<turnstile> obj \<surd>"
+
+apply (unfold hconf_def)
+apply (fast)
+done
+
+
+lemma hconf_Subobjs: 
+"\<lbrakk>h a = Some(C,S); (Cs, fs) \<in> S; P \<turnstile> h \<surd>\<rbrakk> \<Longrightarrow> (C,Cs) \<in> Subobjs P"
+
+apply (unfold hconf_def)
+apply clarsimp
+apply (erule_tac x="a" in allE)
+apply (erule_tac x="C" in allE)
+apply (erule_tac x="S" in allE)
+apply clarsimp
+apply (unfold oconf_def)
+apply fastsimp
+done
+
+
+
+subsection "Local variable conformance"
+
+lemma lconf_upd:
+  "\<lbrakk> P,h \<turnstile> l (:\<le>)\<^sub>w E; P,h \<turnstile> v :\<le> T; E V = Some T \<rbrakk> \<Longrightarrow> P,h \<turnstile> l(V\<mapsto>v) (:\<le>)\<^sub>w E"
+
+apply (unfold lconf_def)
+apply auto
+done
+
+
+lemma lconf_empty[iff]: "P,h \<turnstile> empty (:\<le>)\<^sub>w E"
+by(simp add:lconf_def)
+
+lemma lconf_upd2: "\<lbrakk>P,h \<turnstile> l (:\<le>)\<^sub>w E; P,h \<turnstile> v :\<le> T\<rbrakk> \<Longrightarrow> P,h \<turnstile> l(V\<mapsto>v) (:\<le>)\<^sub>w E(V\<mapsto>T)"
+by(simp add:lconf_def)
+
+
+subsection{* Environment conformance *}
+
+constdefs
+  envconf :: "prog \<Rightarrow> env \<Rightarrow> bool"
+  "envconf P E \<equiv> \<forall>V T. E V = Some T \<longrightarrow> is_type P T"
+
+subsection{* Type conformance *}
+
+consts
+  type_conf  :: "prog \<Rightarrow> env \<Rightarrow> ty \<Rightarrow> heap \<Rightarrow> expr \<Rightarrow> bool"
+  types_conf :: "prog \<times> env \<times> ty list \<times> heap \<times> expr list \<Rightarrow> bool" 
+
+
+primrec
+  type_conf_Void:    "type_conf P E Void      h e = (P,E,h \<turnstile> e : Void)"
+  type_conf_Boolean: "type_conf P E Boolean   h e = (P,E,h \<turnstile> e : Boolean)"
+  type_conf_Integer: "type_conf P E Integer   h e = (P,E,h \<turnstile> e : Integer)"
+  type_conf_NT:      "type_conf P E NT        h e = (P,E,h \<turnstile> e : NT)"
+  type_conf_Class:
+    "type_conf P E (Class C) h e = (P,E,h \<turnstile> e : Class C \<or> P,E,h \<turnstile> e : NT)"
+
+recdef types_conf "measure(\<lambda>(P,E,Ts,h,es). size Ts)"
+  "types_conf (P,E,[],h,[])     = True"
+  "types_conf (P,E,T#Ts,h,e#es) = (type_conf P E T h e \<and> types_conf (P,E,Ts,h,es))"
+
+
+lemma wt_same_type_typeconf:
+"P,E,h \<turnstile> e : T \<Longrightarrow> type_conf P E T h e"
+by(cases T) auto
+
+lemma wts_same_types_typesconf:
+"\<And>es. \<lbrakk>length es = length Ts; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> types_conf(P,E,Ts,h,es)"
+
+proof(induct Ts)
+  case Nil thus ?case by simp
+next
+  case (Cons T' Ts')
+  have length:"length es = length(T'#Ts')"
+    and wtes:"P,E,h \<turnstile> es [:] T'#Ts'"
+    and IH:"\<And>es. \<lbrakk>length es = length Ts'; P,E,h \<turnstile> es [:] Ts'\<rbrakk> 
+             \<Longrightarrow> types_conf (P, E, Ts', h, es)" .
+  from wtes obtain e' es' where es:"es = e'#es'" by(cases es) auto
+  with wtes have wte':"P,E,h \<turnstile> e' : T'" and wtes':"P,E,h \<turnstile> es' [:] Ts'"
+    by simp_all
+  from length es have "length es' = length Ts'" by simp
+  from IH[OF this wtes'] wte' es show ?case by (fastsimp intro:wt_same_type_typeconf)
+qed
+
+
+
+lemma types_conf_smaller_types:
+"\<And>es Ts. \<lbrakk>length es = length Ts'; types_conf (P,E,Ts',h,es); P \<turnstile> Ts' [\<le>] Ts \<rbrakk> 
+  \<Longrightarrow> \<exists>Ts''. P,E,h \<turnstile> es [:] Ts'' \<and> P \<turnstile> Ts'' [\<le>] Ts"
+
+proof(induct Ts')
+  case Nil thus ?case by simp
+next
+  case (Cons S Ss)
+  have length:"length es = length(S#Ss)"
+    and types_conf:"types_conf(P, E, S # Ss, h, es)"
+    and subs:"P \<turnstile> (S#Ss) [\<le>] Ts"
+    and IH:"\<And>es Ts. \<lbrakk>length es = length Ss; types_conf(P,E,Ss,h,es); P \<turnstile> Ss [\<le>] Ts\<rbrakk>
+    \<Longrightarrow> \<exists>Ts''. P,E,h \<turnstile> es [:] Ts'' \<and> P \<turnstile> Ts'' [\<le>] Ts" .
+  from subs obtain U Us where Ts:"Ts = U#Us" by(cases Ts) auto
+  from length obtain e' es' where es:"es = e'#es'" by(cases es) auto
+  with types_conf have type:"type_conf P E S h e'"
+    and type':"types_conf (P,E,Ss,h,es')" by simp_all
+  from subs Ts have subs':"P \<turnstile> Ss [\<le>] Us" and sub:"P \<turnstile> S \<le> U" 
+    by (simp_all add:fun_of_def)
+  from sub type obtain T'' where step:"P,E,h \<turnstile> e' : T'' \<and> P \<turnstile> T'' \<le> U"
+    by(cases S,auto,cases U,auto)
+  from length es have "length es' = length Ss" by simp
+  from IH[OF this type' subs'] obtain Ts'' 
+    where "P,E,h \<turnstile> es' [:] Ts'' \<and> P \<turnstile> Ts'' [\<le>] Us"
+    by auto
+  with step have "P,E,h \<turnstile> (e'#es') [:] (T''#Ts'') \<and> P \<turnstile> (T''#Ts'') [\<le>] (U#Us)"
+    by (auto simp:fun_of_def)
+  with es Ts show ?case by blast
+qed
+
+
+
+end
