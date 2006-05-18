@@ -1,6 +1,6 @@
 (*  Title:       Data refinement of representation of a file
-    Authors:     Karen Zee <kkz@mit.edu> and Viktor Kuncak <vkuncak@mit.edu>
-    Maintainer:  Karen Zee <kkz@mit.edu>
+    Authors:     Karen Zee <kkz at mit.edu> and Viktor Kuncak <vkuncak at mit.edu>
+    Maintainer:  Karen Zee <kkz at mit.edu>
     License:     LGPL
 *)
 

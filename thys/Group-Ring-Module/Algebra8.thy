@@ -3,7 +3,7 @@
                             Group You Santo
                             Department of Mathematics
                             Nihon University
-                            hikoba@math.cst.nihon-u.ac.jp
+                            hikoba at math.cst.nihon-u.ac.jp
                             May 3, 2004.
 
 

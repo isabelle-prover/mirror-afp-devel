@@ -1,7 +1,7 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Subtype.thy,v 1.4 2005-10-23 22:53:08 lsf37 Exp $
-    Author:      Norbert Schirmer <schirmer@informatik.tu-muenchen.de>, 2003
-    Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
+    ID:          $Id: Subtype.thy,v 1.5 2006-05-18 14:19:23 lsf37 Exp $
+    Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
+    Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
 *)
 

@@ -1,6 +1,6 @@
 (*  Title:       Depth-First Search
     Author:      Toshiaki Nishihara and Yasuhiko Minamide
-    Maintainer:  Yasuhiko Minamide <minamide@cs.tsukuba.ac.jp>
+    Maintainer:  Yasuhiko Minamide <minamide at cs.tsukuba.ac.jp>
 *)
 
 header "Depth-First Search"

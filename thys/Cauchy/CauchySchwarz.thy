@@ -1,7 +1,7 @@
 (*  Title:       The Cauchy-Schwarz Inequality
-    ID:          $Id: CauchySchwarz.thy,v 1.3 2006-03-17 09:13:45 ballarin Exp $
-    Author:      Benjamin Porter <Benjamin.Porter@gmail.com>, 2006
-    Maintainer:  Benjamin Porter <Benjamin.Porter@gmail.com>
+    ID:          $Id: CauchySchwarz.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
+    Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
 
 header {*The Cauchy-Schwarz Inequality*}

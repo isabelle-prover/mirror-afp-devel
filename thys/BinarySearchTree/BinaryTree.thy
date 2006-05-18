@@ -1,7 +1,7 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree.thy,v 1.7 2005-09-06 15:06:08 makarius Exp $
+    ID:          $Id: BinaryTree.thy,v 1.8 2006-05-18 14:19:22 lsf37 Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
-    Maintainer:  Larry Paulson <Larry.Paulson@cl.cam.ac.uk>
+    Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL
 *)
 

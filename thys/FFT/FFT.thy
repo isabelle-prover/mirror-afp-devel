@@ -1,7 +1,7 @@
 (*  Title:       Fast Fourier Transform
-    ID:          $Id: FFT.thy,v 1.3 2006-03-17 09:13:45 ballarin Exp $
-    Author:      Clemens Ballarin <ballarin@in.tum.de>, started 12 April 2005
-    Maintainer:  Clemens Ballarin <ballarin@in.tum.de>
+    ID:          $Id: FFT.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    Author:      Clemens Ballarin <ballarin at in.tum.de>, started 12 April 2005
+    Maintainer:  Clemens Ballarin <ballarin at in.tum.de>
 *)
 
 theory FFT

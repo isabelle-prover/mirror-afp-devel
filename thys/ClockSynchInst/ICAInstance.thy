@@ -1,7 +1,7 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: ICAInstance.thy,v 1.4 2006-04-30 09:05:59 lsf37 Exp $
-    Author:      Damián Barsotti <damian@hal.famaf.unc.edu.ar>, 2006
-    Maintainer:  Damián Barsotti <damian@hal.famaf.unc.edu.ar>
+    ID:          $Id: ICAInstance.thy,v 1.5 2006-05-18 14:19:22 lsf37 Exp $
+    Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
+    Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
 
 header {* Interactive Convergence Algorithms (ICA) *}

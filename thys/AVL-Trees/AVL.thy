@@ -1,8 +1,8 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL.thy,v 1.6 2004-08-19 10:54:04 nipkow Exp $
+    ID:         $Id: AVL.thy,v 1.7 2006-05-18 14:19:22 lsf37 Exp $
     Author:     Cornelia Pusch and Tobias Nipkow, converted to Isar by Gerwin Klein
     Author:     contributions by Achim Brucker, Burkhart Wolff and Jan Smaus
-    Maintainer: Gerwin Klein <gerwin.klein@nicta.com.au>
+    Maintainer: Gerwin Klein <gerwin.klein at nicta.com.au>
     Copyright:  1998 TUM
 
     see the file Changelog for a list of changes

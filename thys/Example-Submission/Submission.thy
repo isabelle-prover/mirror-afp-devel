@@ -1,7 +1,7 @@
 (*  Title:       An example submission to the Archive of Formal Proof
-    ID:          $Id: Submission.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
-    Author:      Gerwin Klein <kleing@cse.unsw.edu.au>, 2004
-    Maintainer:  Gerwin Klein <kleing@cse.unsw.edu.au>
+    ID:          $Id: Submission.thy,v 1.5 2006-05-18 14:19:22 lsf37 Exp $
+    Author:      Gerwin Klein <kleing at cse.unsw.edu.au>, 2004
+    Maintainer:  Gerwin Klein <kleing at cse.unsw.edu.au>
 *)
 
 header "An Example Submission"
@@ -18,7 +18,7 @@ text {*
 section "Format of a submission"
 
 text {*
-  Submission should be by email to \url{afp-submit@in.tum.de} and contain
+  Submission should be by email to \url{afp-submit at in.tum.de} and contain
   the following:
   \begin{itemize}
   \item Title, authors, and abstract.

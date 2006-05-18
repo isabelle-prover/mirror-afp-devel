@@ -1,9 +1,9 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJAux.thy,v 1.3 2006-04-06 14:20:14 lsf37 Exp $
-    Author:      Nate Foster <jnfoster@cis.upenn.edu>, 
-                 Dimitrios Vytiniotis <dimitriv@cis.upenn.edu>, 2006
-    Maintainer:  Nate Foster <jnfoster@cis.upenn.edu>,
-                 Dimitrios Vytiniotis <dimitriv@cis.upenn.edu>
+    ID:          $Id: FJAux.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
+                 Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
+    Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
+                 Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>
     License:     LGPL
 
   Auxiliary lemmas

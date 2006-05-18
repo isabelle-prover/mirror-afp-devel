@@ -1,7 +1,7 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: UnivSpec.thy,v 1.3 2005-09-06 15:06:08 makarius Exp $
-    Author:      Nicole Rauch <rauch@informatik.uni-kl.de>, 2005
-    Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
+    ID:          $Id: UnivSpec.thy,v 1.4 2006-05-18 14:19:23 lsf37 Exp $
+    Author:      Nicole Rauch <rauch at informatik.uni-kl.de>, 2005
+    Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
 *)
 

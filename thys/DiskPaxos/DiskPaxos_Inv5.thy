@@ -1,7 +1,7 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Inv5.thy,v 1.4 2006-01-05 11:25:48 lp15 Exp $
+    ID:          $Id: DiskPaxos_Inv5.thy,v 1.5 2006-05-18 14:19:22 lsf37 Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
-    Maintainer:  Mauro J. Jaskelioff <mauro@fceia.unr.edu.ar>
+    Maintainer:  Mauro J. Jaskelioff <mauro at fceia.unr.edu.ar>
 *)
 
 theory DiskPaxos_Inv5 imports DiskPaxos_Inv3 DiskPaxos_Inv4 begin

@@ -1,7 +1,7 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: StoreProperties.thy,v 1.4 2005-09-26 16:05:08 nipkow Exp $
-    Author:      Norbert Schirmer <schirmer@informatik.tu-muenchen.de>, 2003
-    Maintainer:  Nicole Rauch <rauch@informatik.uni-kl.de>
+    ID:          $Id: StoreProperties.thy,v 1.5 2006-05-18 14:19:24 lsf37 Exp $
+    Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
+    Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
 *)
 
