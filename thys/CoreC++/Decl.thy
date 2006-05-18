@@ -9,7 +9,7 @@ types
   fdecl    = "vname \<times> ty"                        -- "field declaration"
   method = "ty list \<times> ty \<times> (vname list \<times> expr)"    -- "arg.\ types, return type, params, body"
   mdecl = "mname \<times> method"                         -- "method declaration"
-  class = "base list \<times> fdecl list \<times> mdecl list"  -- "class = superclasses, fields, methods"
+  "class" = "base list \<times> fdecl list \<times> mdecl list"  -- "class = superclasses, fields, methods"
   cdecl = "cname \<times> class"                        -- "classa declaration"
   prog  = "cdecl list"                           -- "program"
 
