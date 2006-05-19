@@ -23,7 +23,7 @@ translations
 
 
 constdefs
-  class :: "prog \<Rightarrow> cname \<rightharpoonup> class"
+  "class" :: "prog \<Rightarrow> cname \<rightharpoonup> class"
   "class \<equiv> map_of"
 
   is_class :: "prog \<Rightarrow> cname \<Rightarrow> bool"
