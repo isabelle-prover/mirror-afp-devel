@@ -237,7 +237,7 @@ ConsThrow:
   P,E \<turnstile> \<langle>e#es, s\<^isub>0\<rangle> [\<Rightarrow>] \<langle>throw e' # es, s\<^isub>1\<rangle>"
 
 
-lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
+lemmas eval_evals_inducts = eval_evals.inducts [split_format (complete)]
 
 inductive_cases eval_cases [cases set]:
  "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -285,14 +285,17 @@ lemma [iff]: "finals (Val v # es) = finals es"
 apply(clarsimp simp add:finals_def)
 apply(rule iffI)
  apply(erule disjE)
-  apply simp
+  apply blast
  apply(rule disjI2)
  apply clarsimp
  apply(case_tac vs)
   apply simp
  apply fastsimp
 apply(erule disjE)
+ apply (rule disjI1)
  apply clarsimp
+ apply(rule_tac x="v#vs" in exI)
+ apply simp
 apply(rule disjI2)
 apply clarsimp
 apply(rule_tac x = "v#vs" in exI)
@@ -310,33 +313,37 @@ lemma [iff]: "finals (throw e # es) = (\<exists>r. e = ref r)"
 
 apply(simp add:finals_def)
 apply(rule iffI)
+ apply(erule disjE)
+  apply clarsimp
  apply clarsimp
  apply(case_tac vs)
   apply simp
  apply fastsimp
-apply clarsimp
-apply(rule_tac x = "[]" in exI)
-apply simp
+apply fastsimp
 done
 
 
 lemma not_finals_ConsI: "\<not> final e \<Longrightarrow> \<not> finals(e#es)"
  
-apply(clarsimp simp add:finals_def final_def)
+apply(auto simp add:finals_def final_def)
 apply(case_tac vs)
 apply auto
 done
 
 
-
 lemma eval_final: "P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> final e'"
  and evals_final: "P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> finals es'"
-by(induct rule:eval_evals.induct, simp_all)
+by(induct rule:eval_evals.inducts, simp_all)
 
 
 lemma eval_lcl_incr: "P,E \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
  and evals_lcl_incr: "P,E \<turnstile> \<langle>es,(h\<^isub>0,l\<^isub>0)\<rangle> [\<Rightarrow>] \<langle>es',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
-by(induct rule: eval_evals_induct,auto simp del:fun_upd_apply)
+apply(induct rule:eval_evals.inducts) 
+ (* verliert anscheinend Induktionshypothesen, auf jeden Fall kann es auto nicht mehr l"osen*)
+apply(induct rule:eval_evals_inducts)
+(* Fehlermeldung: *** Failed to join given rules into one mutual rule *)
+
+by(induct rule:eval_evals.inducts,auto simp del:fun_upd_apply)
 
 
 text{* Only used later, in the small to big translation, but is already a
