@@ -236,8 +236,11 @@ ConsThrow:
   "P,E \<turnstile> \<langle>e, s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e', s\<^isub>1\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>e#es, s\<^isub>0\<rangle> [\<Rightarrow>] \<langle>throw e' # es, s\<^isub>1\<rangle>"
 
+lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
 
-lemmas eval_evals_inducts = eval_evals.inducts [split_format (complete)]
+ML_setup {*
+  store_thms ("eval_evals_inducts", ProjectRule.projections (thm "eval_evals_induct"))
+*}
 
 inductive_cases eval_cases [cases set]:
  "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -338,12 +341,7 @@ by(induct rule:eval_evals.inducts, simp_all)
 
 lemma eval_lcl_incr: "P,E \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
  and evals_lcl_incr: "P,E \<turnstile> \<langle>es,(h\<^isub>0,l\<^isub>0)\<rangle> [\<Rightarrow>] \<langle>es',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
-apply(induct rule:eval_evals.inducts) 
- (* verliert anscheinend Induktionshypothesen, auf jeden Fall kann es auto nicht mehr l"osen*)
-apply(induct rule:eval_evals_inducts)
-(* Fehlermeldung: *** Failed to join given rules into one mutual rule *)
-
-by(induct rule:eval_evals.inducts,auto simp del:fun_upd_apply)
+by (induct rule:eval_evals_inducts) (auto simp del:fun_upd_apply)
 
 
 text{* Only used later, in the small to big translation, but is already a
@@ -393,9 +391,6 @@ eval_preserves_obj:"P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<l
   \<Longrightarrow> \<exists>S'. h' a = Some(D,S'))"
 and evals_preserves_obj:"P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',l')\<rangle> 
 \<Longrightarrow> (\<And>S. h a = Some(D,S) \<Longrightarrow> \<exists>S'. h' a = Some(D,S'))"
-by(induct rule:eval_evals_induct)(fastsimp dest:new_Addr_SomeD)+
-
-
-
+by(induct rule:eval_evals_inducts)(fastsimp dest:new_Addr_SomeD)+
 
 end

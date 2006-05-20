@@ -140,6 +140,9 @@ intros
 
 
 lemmas WTrt'_induct = WTrt'_WTrts'.induct[split_format (complete)]
+ML_setup {*
+  store_thms ("WTrt'_inducts", ProjectRule.projections (thm "WTrt'_induct"))
+*}
 
 inductive_cases WTrt'_elim_cases[elim!]:
   "P,E,h \<turnstile> V :=e :' T"
@@ -172,7 +175,7 @@ done
 lemma wt_wt': "P,E,h \<turnstile> e : T \<Longrightarrow> P,E,h \<turnstile> e :' T"
 and wts_wts': "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> P,E,h \<turnstile> es [:'] Ts"
 
-proof (induct rule:WTrt_induct)
+proof (induct rule:WTrt_inducts)
   case (WTrtBlock E T T' V e)
   thus ?case
     apply(case_tac "assigned V e")
@@ -185,7 +188,7 @@ qed(auto intro:WTrt'_WTrts'.intros simp del:fun_upd_apply)
 lemma wt'_wt: "P,E,h \<turnstile> e :' T \<Longrightarrow> P,E,h \<turnstile> e : T"
 and wts'_wts: "P,E,h \<turnstile> es [:'] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
 
-apply (induct rule:WTrt'_induct)
+apply (induct rule:WTrt'_inducts)
 apply (fastsimp intro: WTrt_WTrts.intros)+
 done
 
@@ -201,12 +204,15 @@ by(blast intro:wts_wts' wts'_wts)
 thm WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts]
 
 
-
 lemmas WTrt_induct2 = WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts,
   case_names WTrtNew WTrtDynCast WTrtStaticCast WTrtVal WTrtVar WTrtBinOp 
   WTrtLAss WTrtFAcc WTrtFAccNT WTrtFAss WTrtFAssNT WTrtCall WTrtCallNT 
   WTrtInitBlock WTrtBlock WTrtSeq WTrtCond WTrtWhile WTrtThrow 
   WTrtNil WTrtCons]
+
+ML_setup {*
+  store_thms ("WTrt_inducts2", ProjectRule.projections (thm "WTrt_induct2"))
+*}
 
 
 
@@ -221,7 +227,7 @@ and "P,E,h \<turnstile> es [:] Ts \<Longrightarrow>
                            T = Class C \<and> e = ref(a,Cs) \<and> h a = Some(D,S)
       \<longrightarrow> P \<turnstile> D \<preceq>\<^sup>* C"
 
-proof (induct rule:WTrt_induct2)
+proof (induct rule:WTrt_inducts2)
   case (WTrtVal E T h v)
   have type:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T" .
   { fix C a Cs D S
@@ -264,7 +270,7 @@ shows progress: "P,E,h \<turnstile> e : T \<Longrightarrow>
 and "P,E,h \<turnstile> es [:] Ts \<Longrightarrow>
  (\<And>l. \<lbrakk> P \<turnstile> h \<surd>; envconf P E; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es \<rbrakk> \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>)"
 
-proof (induct rule:WTrt_induct2)
+proof (induct rule:WTrt_inducts2)
   case (WTrtNew C E h)
   show ?case
   proof cases
@@ -278,7 +284,7 @@ proof (induct rule:WTrt_induct2)
   qed
 next
   case (WTrtDynCast C E T e h)
-  have wte: "P,E,h \<turnstile> e : T" and refT: "is_refT T" and class:"is_class P C"
+  have wte: "P,E,h \<turnstile> e : T" and refT: "is_refT T" and "class": "is_class P C"
     and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
     and D: "\<D> (Cast C e) \<lfloor>dom l\<rfloor>" 
@@ -318,7 +324,7 @@ next
 	    case False
 	    then obtain Ds Ds' where "Cs = Ds@[C]@Ds'" and "C \<notin> set Ds'"
 	      by (auto simp:in_set_conv_decomp)
-	    with ref class show ?thesis by(fastsimp intro:RedStaticDownDynCast)
+	    with ref "class" show ?thesis by(fastsimp intro:RedStaticDownDynCast)
 	  next
 	    case True
 	    with path_not_unique path_not_unique' h ref
@@ -336,7 +342,7 @@ next
   qed
 next
   case (WTrtStaticCast C E T e h)
-  have wte: "P,E,h \<turnstile> e : T" and refT: "is_refT T" and class:"is_class P C"
+  have wte: "P,E,h \<turnstile> e : T" and refT: "is_refT T" and "class": "is_class P C"
    and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and D: "\<D> (\<lparr>C\<rparr>e) \<lfloor>dom l\<rfloor>" 
@@ -347,7 +353,7 @@ next
     assume "final e"
     with wte refT show ?thesis
     proof (rule finalRefE)
-      assume "e = null" with class show ?case by(fastsimp intro:RedStaticCastNull)
+      assume "e = null" with "class" show ?case by(fastsimp intro:RedStaticCastNull)
     next
       fix r assume "e = ref r"
       then obtain a Cs where ref:"e = ref(a,Cs)" by (cases r) auto
@@ -365,7 +371,7 @@ next
 	  case False
 	  then obtain Ds Ds' where "Cs = Ds@[C]@Ds'" and "C \<notin> set Ds'"
 	    by (auto simp:in_set_conv_decomp)
-	  with ref class show ?thesis
+	  with ref "class" show ?thesis
 	    by(fastsimp intro:RedStaticDownCast)
 	next
 	  case True
@@ -497,11 +503,11 @@ next
 	and last:"last Cs' = C"
 	by (fastsimp split:split_if_asm)
       from field obtain Bs fs ms
-	where class:"class P (last Cs) = Some(Bs,fs,ms)"
+	where "class": "class P (last Cs) = Some(Bs,fs,ms)"
 	and fs:"map_of fs F = Some T"
 	by (fastsimp simp:LeastFieldDecl_def FieldDecls_def)
       obtain Ds where Ds:"Ds = Cs'@\<^sub>pCs" by simp
-      with notemptyCs class have class':"class P (last Ds) = Some(Bs,fs,ms)"
+      with notemptyCs "class" have class':"class P (last Ds) = Some(Bs,fs,ms)"
 	by (drule_tac Cs'="Cs'" in appendPath_last) simp
       from field suboD last Ds wf have subo:"(D,Ds) \<in> Subobjs P"
 	by(fastsimp intro:Subobjs_appendPath simp:LeastFieldDecl_def FieldDecls_def)
@@ -567,11 +573,11 @@ next
 	    and suboD:"(D,Cs') \<in> Subobjs P" and last:"last Cs' = C"
 	    by (fastsimp split:split_if_asm)
 	  from field obtain Bs fs ms
-	    where class:"class P (last Cs) = Some(Bs,fs,ms)"
+	    where "class": "class P (last Cs) = Some(Bs,fs,ms)"
 	    and fs:"map_of fs F = Some T"
 	    by (fastsimp simp:LeastFieldDecl_def FieldDecls_def)
 	  obtain Ds where Ds:"Ds = Cs'@\<^sub>pCs" by simp
-	  with notemptyCs class have class':"class P (last Ds) = Some(Bs,fs,ms)"
+	  with notemptyCs "class" have class':"class P (last Ds) = Some(Bs,fs,ms)"
 	    by (drule_tac Cs'="Cs'" in appendPath_last) simp
 	  from field suboD last Ds wf have subo:"(D,Ds) \<in> Subobjs P"
 	    by(fastsimp intro:Subobjs_appendPath 
@@ -711,12 +717,12 @@ next
 	  from method have notempty:"Cs \<noteq> []" 
 	    by(fastsimp intro!:Subobjs_nonempty 
 	                simp:LeastMethodDef_def MethodDefs_def)
-	  from suboD have class:"is_class P D" by(rule Subobjs_isClass)
+	  from suboD have "class": "is_class P D" by(rule Subobjs_isClass)
 	  from suboD last have path:"P \<turnstile> Path D to C via Cs'"
 	    by(simp add:path_via_def)
 	  with method wf have "P \<turnstile> D has M = (Ts,T,pns,body) via Cs'@\<^sub>pCs"
 	    by(auto intro:has_path_has has_least_method_has_method)
-	  with class wf obtain Cs'' Ts'' T' pns' body' where overrider:
+	  with "class" wf obtain Cs'' Ts'' T' pns' body' where overrider:
 	    "P \<turnstile> (D,Cs'@\<^sub>pCs) has overrider M = (Ts'',T',pns',body') via Cs''"
 	    by(auto dest!:class_wf simp:is_class_def wf_cdecl_def,blast)
 	  with non_dyn

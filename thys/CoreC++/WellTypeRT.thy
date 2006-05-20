@@ -154,7 +154,9 @@ declare
   WTrtCall[rule del] WTrtCallNT[rule del]
 
 lemmas WTrt_induct = WTrt_WTrts.induct[split_format (complete)]
-
+ML_setup {*
+  store_thms ("WTrt_inducts", ProjectRule.projections (thm "WTrt_induct"))
+*}
 
 subsection{*Easy consequences*}
 
@@ -263,7 +265,7 @@ lemma WTrt_env_mono:
   "P,E,h \<turnstile> e : T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> e : T)" and
   "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> es [:] Ts)"
 
-apply(induct rule: WTrt_induct)
+apply(induct rule: WTrt_inducts)
 apply(simp add: WTrtNew)
 apply(fastsimp simp: WTrtDynCast)
 apply(fastsimp simp: WTrtStaticCast)
@@ -290,7 +292,7 @@ done
 lemma WT_implies_WTrt: "P,E \<turnstile> e :: T \<Longrightarrow> P,E,h \<turnstile> e : T"
 and WTs_implies_WTrts: "P,E \<turnstile> es [::] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
 
-proof(induct rule: WT_WTs_induct)
+proof(induct rule: WT_WTs_inducts)
   case WTVal thus ?case by (fastsimp dest:type_eq_type)
 next
   case WTBinOp thus ?case by (fastsimp split:bop.splits)
@@ -308,4 +310,3 @@ qed (auto simp del:fun_upd_apply)
 
 
 end
-

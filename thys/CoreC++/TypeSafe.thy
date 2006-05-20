@@ -41,7 +41,7 @@ shows red_preserves_hconf:
 and reds_preserves_hconf:
   "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>Ts. \<lbrakk> P,E,h \<turnstile> es [:] Ts; P \<turnstile> h \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> h' \<surd>)"
 
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case (RedNew C E a h h' l)
   have new: "new_Addr h = Some a" and h':"h' = h(a \<mapsto> (C, init_obj P C))"
     and hconf:"P \<turnstile> h \<surd>" and wt_New:"P,E,h \<turnstile> new C : T" .
@@ -69,12 +69,12 @@ next
   with S have suboD:"(D,Ds) \<in> Subobjs P" by (fastsimp simp:oconf_def)
   from field obtain Bs fs ms
     where subo:"(last Cs',Cs) \<in> Subobjs P"
-    and class:"class P (last Cs) = Some(Bs,fs,ms)"
+    and "class": "class P (last Cs) = Some(Bs,fs,ms)"
     and map:"map_of fs F = Some T"
     by (auto simp:LeastFieldDecl_def FieldDecls_def)
   from Ds subo have last:"last Cs = last Ds"
     by(fastsimp dest:Subobjs_nonempty intro:appendPath_last simp:appendPath_last)
-  with class have classDs:"class P (last Ds) = Some(Bs,fs,ms)" by simp
+  with "class" have classDs:"class P (last Ds) = Some(Bs,fs,ms)" by simp
   with S suboD oconf have "P,h \<turnstile> fs' (:\<le>) map_of fs"
     apply (auto simp:oconf_def)
     apply (erule allE)
@@ -112,7 +112,7 @@ and reds_preserves_lconf:
   "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow>
   (\<And>Ts. \<lbrakk> P,E,h \<turnstile> es[:]Ts; P,h \<turnstile> l (:\<le>)\<^sub>w E; envconf P E \<rbrakk> \<Longrightarrow> P,h' \<turnstile> l' (:\<le>)\<^sub>w E)"
 
-proof(induct rule:red_reds_induct)
+proof(induct rule:red_reds_inducts)
   case RedNew thus ?case
     by(fast intro:lconf_hext red_hext_incr[OF red_reds.RedNew])
 next
@@ -211,7 +211,7 @@ done
 lemma red_lA_incr: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> \<lfloor>dom l\<rfloor> \<squnion> \<A> e \<sqsubseteq>  \<lfloor>dom l'\<rfloor> \<squnion> \<A> e'"
 and reds_lA_incr: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> \<lfloor>dom l\<rfloor> \<squnion> \<A>s es \<sqsubseteq>  \<lfloor>dom l'\<rfloor> \<squnion> \<A>s es'"
 
-apply(induct rule:red_reds_induct)
+apply(induct rule:red_reds_inducts)
 apply(simp_all del:fun_upd_apply add:hyperset_defs)
 apply blast
 apply blast
@@ -234,7 +234,7 @@ shows red_preserves_defass:
   "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> \<D> e \<lfloor>dom l\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom l'\<rfloor>"
 and "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> \<D>s es \<lfloor>dom l\<rfloor> \<Longrightarrow> \<D>s es' \<lfloor>dom l'\<rfloor>"
 
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case BinOpRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
 next
   case FAssRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
@@ -362,12 +362,12 @@ shows subject_reduction2: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarr
 and subjects_reduction2: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow>
   (\<And>Ts.\<lbrakk> P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> es [:] Ts \<rbrakk> \<Longrightarrow> types_conf (P,E,Ts,h',es'))"
 
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case (RedNew C E a h h' l)
   have new:"new_Addr h = Some a" and h':"h' = h(a \<mapsto> (C, init_obj P C))" 
     and wt:"P,E,h \<turnstile> new C : T" .
-  from wt have eq:"T = Class C" and class:"is_class P C" by auto
-  from class have subo:"(C,[C]) \<in> Subobjs P" by(rule Subobjs_Base)
+  from wt have eq:"T = Class C" and "class": "is_class P C" by auto
+  from "class" have subo:"(C,[C]) \<in> Subobjs P" by(rule Subobjs_Base)
   from h' have "h' a = Some(C, init_obj P C)" by(simp add:map_upd_Some_unfold)
   with subo have "P,E,h' \<turnstile> ref(a,[C]) : Class C" by auto
   with eq show ?case by auto
@@ -387,15 +387,15 @@ next
             \<Longrightarrow> type_conf P E T' h' e'"
     and sconf:"P,E \<turnstile> (h, l) \<surd>" .
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and isref:"is_refT T'" 
-    and class:"is_class P C" and T:"T = Class C"
+    and "class": "is_class P C" and T:"T = Class C"
     by auto
   from isref have "P,E,h' \<turnstile> \<lparr>C\<rparr>e' : Class C"
   proof(rule refTE)
     assume "T' = NT"
-    with IH[OF sconf wte] isref class show ?thesis by auto
+    with IH[OF sconf wte] isref "class" show ?thesis by auto
   next
     fix D assume "T' = Class D"
-    with IH[OF sconf wte] isref class show ?thesis by auto
+    with IH[OF sconf wte] isref "class" show ?thesis by auto
   qed
   with T show ?case by (fastsimp intro:wt_same_type_typeconf)
 next
@@ -407,7 +407,7 @@ next
     and path_via:"P \<turnstile> Path last Cs to C via Cs'"
     and Ds:"Ds = Cs @\<^sub>p Cs'" .
   from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs)) = Some(Class(last Cs))"
-    and class:"is_class P C" and T:"T = Class C"
+    and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" and subo:"(D,Cs) \<in> Subobjs P"
     by (auto dest:typeof_Class_Subo split:split_if_asm)
@@ -422,7 +422,7 @@ next
     and notin:"C \<notin> set Cs'" .
   from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs@[C]@Cs')) = 
                        Some(Class(last(Cs@[C]@Cs')))"
-    and class:"is_class P C" and T:"T = Class C"
+    and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" 
     and subo:"(D,Cs@[C]@Cs') \<in> Subobjs P"
@@ -446,15 +446,15 @@ next
             \<Longrightarrow> type_conf P E T' h' e'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" .
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and isref:"is_refT T'" 
-    and class:"is_class P C" and T:"T = Class C"
+    and "class": "is_class P C" and T:"T = Class C"
     by auto
   from isref have "P,E,h' \<turnstile> Cast C e' : Class C"
   proof(rule refTE)
     assume "T' = NT"
-    with IH[OF sconf wte] isref class show ?thesis by auto
+    with IH[OF sconf wte] isref "class" show ?thesis by auto
   next
     fix D assume "T' = Class D"
-    with IH[OF sconf wte] isref class show ?thesis by auto
+    with IH[OF sconf wte] isref "class" show ?thesis by auto
   qed
   with T show ?case by (fastsimp intro:wt_same_type_typeconf)
 next
@@ -466,7 +466,7 @@ next
     and path_via:"P \<turnstile> Path D to C via Cs'"
     and hp:"hp (h,l) a = Some(D,S)" .
   from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs)) = Some(Class(last Cs))"
-    and class:"is_class P C" and T:"T = Class C"
+    and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof hp have subo:"(D,Cs) \<in> Subobjs P"
     by (auto dest:typeof_Class_Subo split:split_if_asm)
@@ -480,7 +480,7 @@ next
     and path_via:"P \<turnstile> Path last Cs to C via Cs'"
     and Ds:"Ds = Cs @\<^sub>p Cs'" .
   from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs)) = Some(Class(last Cs))"
-    and class:"is_class P C" and T:"T = Class C"
+    and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" and subo:"(D,Cs) \<in> Subobjs P"
     by (auto dest:typeof_Class_Subo split:split_if_asm)
@@ -495,7 +495,7 @@ next
     and notin:"C \<notin> set Cs'" .
   from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs@[C]@Cs')) = 
                        Some(Class(last(Cs@[C]@Cs')))"
-    and class:"is_class P C" and T:"T = Class C"
+    and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" 
     and subo:"(D,Cs@[C]@Cs') \<in> Subobjs P"
@@ -644,7 +644,7 @@ next
     fix C assume wte: "P,E,h \<turnstile> e : Class C"
       and field:"P \<turnstile> C has least F:T via Cs"
       and notemptyCs:"Cs \<noteq> []"
-    from field have class:"is_class P C"
+    from field have "class": "is_class P C"
       by (fastsimp intro:Subobjs_isClass simp add:LeastFieldDecl_def FieldDecls_def)
     from IH[OF sconf wte] have "P,E,h' \<turnstile> e' : NT \<or> P,E,h' \<turnstile> e' : Class C" by auto
     thus ?thesis
@@ -1010,10 +1010,10 @@ next
   next
     case False
     then obtain D where T':"T' = Class D" by auto
-    with method sub wf have class:"is_class P D"
+    with method sub wf have "class": "is_class P D"
       by (auto elim!:widen.elims dest:least_method_is_type 
                intro:Subobj_last_isClass simp:path_unique_def)
-    with blocks T' body_case class sub show ?thesis
+    with blocks T' body_case "class" sub show ?thesis
       by(cases T',auto,cases T,auto)
   qed
   with eq show ?case by(fastsimp intro:wt_same_type_typeconf)

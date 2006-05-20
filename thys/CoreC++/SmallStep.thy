@@ -257,18 +257,21 @@ CondThrow: "P,E \<turnstile> \<langle>if (Throw r) e\<^isub>1 else e\<^isub>2, s
 ThrowThrow: "P,E \<turnstile> \<langle>throw(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
 
 
-
-
 lemmas red_reds_induct = red_reds.induct [split_format (complete)]
+
+ML_setup {*
+  store_thms ("red_reds_inducts", ProjectRule.projections (thm "red_reds_induct"))
+*}
 
 inductive_cases [elim!]:
  "P,E \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e1;;e2,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
 
+declare Cons_eq_map_conv [iff]
 
 lemma "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> True"
 and reds_length:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> length es = length es'"
-by(induct rule:red_reds.induct)auto
+by (induct rule: red_reds.inducts) auto
 
 
 subsection{* The reflexive transitive closure *}
@@ -354,13 +357,13 @@ by(fastsimp elim: red_reds.elims)
 
 lemma red_lcl_incr: "P,E \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>e',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
 and "P,E \<turnstile> \<langle>es,(h\<^isub>0,l\<^isub>0)\<rangle> [\<rightarrow>] \<langle>es',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
-by(induct rule: red_reds_induct)(auto simp del:fun_upd_apply)
+by (induct rule: red_reds_inducts) (auto simp del:fun_upd_apply)
 
 
 lemma red_lcl_add: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> (\<And>l\<^isub>0. P,E \<turnstile> \<langle>e,(h,l\<^isub>0++l)\<rangle> \<rightarrow> \<langle>e',(h',l\<^isub>0++l')\<rangle>)"
 and "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>l\<^isub>0. P,E \<turnstile> \<langle>es,(h,l\<^isub>0++l)\<rangle> [\<rightarrow>] \<langle>es',(h',l\<^isub>0++l')\<rangle>)"
  
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case RedLAss thus ?case by(auto intro:red_reds.intros simp del:fun_upd_apply)
 next
   case RedStaticDownCast thus ?case by(fastsimp intro:red_reds.intros)
@@ -437,8 +440,6 @@ red_preserves_obj:"\<lbrakk>P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightar
   \<Longrightarrow> \<exists>S'. h' a = Some(D,S')"
 and reds_preserves_obj:"\<lbrakk>P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>; h a = Some(D,S)\<rbrakk> 
   \<Longrightarrow> \<exists>S'. h' a = Some(D,S')"
-by (induct rule:red_reds_induct,auto dest:new_Addr_SomeD)
-
-
+by (induct rule:red_reds_inducts) (auto dest:new_Addr_SomeD)
 
 end

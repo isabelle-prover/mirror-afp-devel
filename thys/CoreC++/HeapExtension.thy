@@ -79,7 +79,7 @@ subsection {* @{text"\<unlhd>"} in Small- and BigStep *}
 lemma red_hext_incr: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>  \<Longrightarrow> h \<unlhd> h'"
   and reds_hext_incr: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>  \<Longrightarrow> h \<unlhd> h'"
 
-proof(induct rule:red_reds_induct)
+proof(induct rule:red_reds_inducts)
   case RedNew thus ?case
     by(fastsimp dest:new_Addr_SomeD simp:hext_def split:if_splits)
 next
@@ -121,7 +121,7 @@ qed
 lemma eval_hext: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> h \<unlhd> h'"
 and evals_hext:  "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> h \<unlhd> h'"
 
-proof (induct rule:eval_evals_induct)
+proof (induct rule:eval_evals_inducts)
   case New thus ?case
     by(fastsimp intro!: hext_new intro:someI simp:new_Addr_def
                 split:split_if_asm simp del:fun_upd_apply)
@@ -234,7 +234,7 @@ done
 lemma WTrt_hext_mono: "P,E,h \<turnstile> e : T \<Longrightarrow> (\<And>h'. h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> e : T)"
 and WTrts_hext_mono: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> (\<And>h'. h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> es [:] Ts)"
 
-apply(induct rule: WTrt_induct)
+apply(induct rule: WTrt_inducts)
 apply(simp add: WTrtNew)
 apply(fastsimp intro: WTrtDynCast)
 apply(fastsimp intro: WTrtStaticCast)

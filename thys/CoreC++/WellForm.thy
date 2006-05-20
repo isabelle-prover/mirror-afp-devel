@@ -588,9 +588,9 @@ next
   fix C C' D assume leq':"P \<turnstile> C \<preceq>\<^sup>* C'" and IH:"\<exists>Cs. P,C \<turnstile> [C] \<sqsubseteq> Cs@[C']"
     and sub:"P \<turnstile> C' \<prec>\<^sup>1 D"
   from sub have "is_class P C'" by (rule subcls1_class)
-  with leq' have class:"is_class P C" by (rule subcls_is_class)
+  with leq' have "class": "is_class P C" by (rule subcls_is_class)
   from IH obtain Cs where steps:"P,C \<turnstile> [C] \<sqsubseteq> Cs@[C']" by auto
-  hence subo:"(C,Cs@[C']) \<in> Subobjs P" using class wf 
+  hence subo:"(C,Cs@[C']) \<in> Subobjs P" using "class" wf 
     by (fastsimp intro:leq_path_Subobjs)
   { assume "P \<turnstile> C' \<prec>\<^sub>R D"
     with subo wf have "(C,Cs@[C',D]) \<in> Subobjs P"
@@ -620,7 +620,7 @@ next
   case (Cons C' Cs')
   have subo':"(C,rev (C'#Cs')) \<in> Subobjs P"
     and IH:"(C,rev Cs') \<in> Subobjs P \<Longrightarrow> P,C \<turnstile> [C] \<sqsubseteq> rev Cs'" .
-  from subo' have class:"is_class P C" by(rule Subobjs_isClass)
+  from subo' have "class": "is_class P C" by(rule Subobjs_isClass)
   show ?case
   proof (cases "Cs' = []")
     case True hence empty:"Cs' = []" .
@@ -637,7 +637,7 @@ next
       from suboR have C':"C' = D'" by (fastsimp dest:hd_SubobjsR)
       from leq wf obtain Ds where steps:"P,C \<turnstile> [C] \<sqsubseteq> Ds@[D]"
 	by (auto dest:subcls_leq_path)
-      hence suboSteps:"(C,Ds@[D]) \<in> Subobjs P" using class wf
+      hence suboSteps:"(C,Ds@[D]) \<in> Subobjs P" using "class" wf
 	apply (induct rule:rtrancl_induct)
 	 apply (erule Subobjs_Base)
 	apply (auto elim!:leq_path1.elims)
@@ -873,7 +873,7 @@ proof -
     by (simp add:is_class_def class_def,auto simp:distinct_fst_def,
       auto dest:map_of_eq_Some_iff intro!:image_eqI)
   from dist_fst have "card(fst ` (set P)) = card (set P)"
-    by(auto intro:card_image inj_on_setI simp:distinct_fst_def)
+    by(auto intro:card_image simp:distinct_map distinct_fst_def)
   with card_set set show ?thesis by simp
 qed
 
@@ -1043,11 +1043,11 @@ qed
 
 
 lemma leq_implies_path:
-  assumes leq:"P \<turnstile> C \<preceq>\<^sup>* D" and class:"is_class P C"
+  assumes leq:"P \<turnstile> C \<preceq>\<^sup>* D" and "class": "is_class P C"
   and wf:"wf_prog wf_md P"
 shows "\<exists>Cs. P \<turnstile> Path C to D via Cs"
 
-using leq class
+using leq "class"
 proof(induct rule:rtrancl.induct)
   fix C assume "is_class P C"
   thus "\<exists>Cs. P \<turnstile> Path C to C via Cs"
@@ -1103,12 +1103,12 @@ next
                  map_of ms M = Some(Ts,T,m)) \<longrightarrow> P,C \<turnstile> Cs \<sqsubseteq> Ds"
     by (auto simp:LeastMethodDef_def MethodDefs_def)
   from least obtain Bs fs ms T Ts m where 
-    class:" class P (last Cs) = Some(Bs, fs, ms)" and map:"map_of ms M = Some(Ts,T,m)"
+    "class": "class P (last Cs) = Some(Bs, fs, ms)" and map:"map_of ms M = Some(Ts,T,m)"
     by (auto simp:LeastMethodDef_def MethodDefs_def)
-  from suboCs' lastCs' class map all have pathCs':"P,C \<turnstile> Cs \<sqsubseteq> Cs'"
+  from suboCs' lastCs' "class" map all have pathCs':"P,C \<turnstile> Cs \<sqsubseteq> Cs'"
     by simp
   with wf lastCs' have eq:"Cs = Cs'" by(fastsimp intro:leq_path_last)
-  from suboCs'' lastCs'' class map all have pathCs'':"P,C \<turnstile> Cs \<sqsubseteq> Cs''"
+  from suboCs'' lastCs'' "class" map all have pathCs'':"P,C \<turnstile> Cs \<sqsubseteq> Cs''"
     by simp
   with wf lastCs'' have "Cs = Cs''" by(fastsimp intro:leq_path_last)
   with eq show "Cs' = Cs''" by simp
@@ -1143,7 +1143,7 @@ next
                  map_of fs F = Some T) \<longrightarrow> P,C \<turnstile> Cs \<sqsubseteq> Ds"
     by (auto simp:LeastFieldDecl_def FieldDecls_def)
   from least obtain Bs fs ms T where 
-    class:" class P (last Cs) = Some(Bs, fs, ms)" and map:"map_of fs F = Some T"
+    "class": "class P (last Cs) = Some(Bs, fs, ms)" and map:"map_of fs F = Some T"
     by (auto simp:LeastFieldDecl_def FieldDecls_def)
   from suboCs have notemptyCs:"Cs \<noteq> []" by (rule Subobjs_nonempty)
   from suboCs notemptyCs have suboHd:"(hd Cs,hd Cs#tl Cs) \<in> Subobjs P"
@@ -1153,9 +1153,9 @@ next
   from suboHd suboCs'' notemptyCs lastCs'' wf 
   have suboCs''App:"(C,Cs''@\<^sub>pCs) \<in> Subobjs P"
     by -(rule Subobjs_appendPath,simp_all)
-  from suboCs'App all class map notemptyCs have pathCs':"P,C \<turnstile> Cs \<sqsubseteq> Cs'@\<^sub>pCs"
+  from suboCs'App all "class" map notemptyCs have pathCs':"P,C \<turnstile> Cs \<sqsubseteq> Cs'@\<^sub>pCs"
     by -(erule_tac x="Cs'@\<^sub>pCs" in allE,drule_tac Cs'="Cs'" in appendPath_last,simp)
-  from suboCs''App all class map notemptyCs have pathCs'':"P,C \<turnstile> Cs \<sqsubseteq> Cs''@\<^sub>pCs"
+  from suboCs''App all "class" map notemptyCs have pathCs'':"P,C \<turnstile> Cs \<sqsubseteq> Cs''@\<^sub>pCs"
     by -(erule_tac x="Cs''@\<^sub>pCs" in allE,drule_tac Cs'="Cs''" in appendPath_last,simp)
   from pathCs' lastCs' notemptyCs notemptyCs' wf have Cs':"Cs' = [hd Cs]"
     by (rule path_hd_appendPath)
@@ -1332,10 +1332,10 @@ proof -
     by (simp add:LeastFieldDecl_def)
   from this obtain Bs fs ms 
     where "map_of fs F = Some T" 
-    and class:"class P (last Cs) = Some (Bs,fs,ms)"
+    and "class": "class P (last Cs) = Some (Bs,fs,ms)"
     by (auto simp add:FieldDecls_def)
   hence "(F,T) \<in> set fs" by (simp add:map_of_SomeD)
-  with class wf show ?thesis
+  with "class" wf show ?thesis
     by(fastsimp dest!: class_wf simp: wf_cdecl_def wf_fdecl_def)
 qed 
 
@@ -1350,10 +1350,10 @@ proof -
     by (simp add:LeastMethodDef_def)
   from this obtain Bs fs ms 
     where "map_of ms M = Some(Ts,T,m)" 
-    and class:"class P (last Cs) = Some (Bs,fs,ms)"
+    and "class": "class P (last Cs) = Some (Bs,fs,ms)"
     by (auto simp add:MethodDefs_def)
   hence "(M,Ts,T,m) \<in> set ms" by (simp add:map_of_SomeD)
-  with class wf show ?thesis
+  with "class" wf show ?thesis
     by(fastsimp dest!: class_wf simp: wf_cdecl_def wf_mdecl_def)
 qed 
 
@@ -1370,10 +1370,10 @@ proof -
                      MinimalMethodDefs_def)
   from this obtain Bs fs ms 
     where "map_of ms M = Some(Ts,T,m)" 
-    and class:"class P (last Cs') = Some (Bs,fs,ms)"
+    and "class": "class P (last Cs') = Some (Bs,fs,ms)"
     by (auto simp add:MethodDefs_def)
   hence "(M,Ts,T,m) \<in> set ms" by (simp add:map_of_SomeD)
-  with class wf show ?thesis
+  with "class" wf show ?thesis
     by(fastsimp dest!: class_wf simp: wf_cdecl_def wf_mdecl_def)
 qed 
 
@@ -1686,7 +1686,7 @@ lemma assumes wf:"wf_prog wf_md P"
 shows WT_determ: "P,E \<turnstile> e :: T \<Longrightarrow> (\<And>T'. P,E \<turnstile> e :: T' \<Longrightarrow> T = T')"
 and WTs_determ: "P,E \<turnstile> es [::] Ts \<Longrightarrow> (\<And>Ts'. P,E \<turnstile> es [::] Ts' \<Longrightarrow> Ts = Ts')"
 
-proof(induct rule:WT_WTs_induct)
+proof(induct rule:WT_WTs_inducts)
   case (WTDynCast C D E e)
   have "P,E \<turnstile> Cast C e :: T'" .
   thus ?case by (fastsimp elim:WT_WTs.elims)
@@ -1777,8 +1777,5 @@ next
     from IHe[OF wte'] IHes[OF wtes'] Cons show ?thesis by simp
   qed
 qed clarsimp+
-
-
-
 
 end
