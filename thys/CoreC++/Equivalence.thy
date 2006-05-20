@@ -18,12 +18,12 @@ next
 next
   case (casts_ref C Cs Cs' Ds a)
   have path_via:"P \<turnstile> Path last Cs to C via Cs'" and Ds:"Ds = Cs @\<^sub>p Cs'" .
-  with wf have "last Cs' = C" and "Cs' \<noteq> []" and class:"is_class P C"
+  with wf have "last Cs' = C" and "Cs' \<noteq> []" and "class": "is_class P C"
     by(auto intro!:Subobjs_nonempty Subobj_last_isClass simp:path_via_def)
   with Ds have last:"last Ds = C"
     by -(drule_tac Cs' = "Cs" in appendPath_last,simp)
   hence Ds':"Ds = Ds @\<^sub>p [C]" by(simp add:appendPath_def)
-  from last class have "P \<turnstile> Path last Ds to C via [C]"
+  from last "class" have "P \<turnstile> Path last Ds to C via [C]"
     by(fastsimp intro:Subobjs_Base simp:path_via_def)
   with Ds' show ?case by(fastsimp intro:casts_to.casts_ref)
 qed
@@ -91,7 +91,7 @@ and "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h
   (\<And>V. \<lbrakk>l V = None; E V = Some T; l' V = Some v'\<rbrakk>
   \<Longrightarrow> P \<turnstile> T casts v' to v')"
 
-proof(induct rule:red_reds_induct)
+proof(induct rule:red_reds_inducts)
   case (RedLAss E T' V h l w w' V')
   have env:"E V = Some T'" and env':"E V' = Some T"
     and l:"l V' = None" and lupd:"(l(V \<mapsto> w')) V' = Some v'"
@@ -165,7 +165,6 @@ qed (auto intro:casts_casts wf)
 
 
 
-
 lemma assumes wf:"wf_prog wf_md P"
 shows Some_lcl_casts_values:
 "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow>
@@ -177,7 +176,7 @@ and "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h
       P \<turnstile> T casts v'' to v; l' V = Some v'\<rbrakk>
   \<Longrightarrow> P \<turnstile> T casts v' to v')"
 
-proof(induct rule:red_reds_induct)
+proof(induct rule:red_reds_inducts)
   case (RedNew C' E a h h' l V)
   have l1:"l V = Some v" and l2:"l V = Some v'"
     and casts:"P \<turnstile> T casts v'' to v " .
@@ -1006,7 +1005,7 @@ lemma assumes wf: "wwf_prog P"
 shows Red_fv: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> fv e' \<subseteq> fv e"
   and  "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> fvs es' \<subseteq> fvs es"
 
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case (RedCall C Cs Cs' Ds E M S T T' Ts Ts' a body body' new_body pns)
   hence "fv body \<subseteq> {this} \<union> set pns"
     using prems by(fastsimp dest!:select_method_wf_mdecl simp:wf_mdecl_def)
@@ -1020,7 +1019,7 @@ lemma Red_dom_lcl:
   "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> dom l' \<subseteq> dom l \<union> fv e" and
   "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> dom l' \<subseteq> dom l \<union> fvs es"
 
-proof (induct rule:red_reds_induct)
+proof (induct rule:red_reds_inducts)
   case RedLAss thus ?case by(force split:if_splits)
 next
   case CallParams thus ?case by(force split:if_splits)
@@ -1030,7 +1029,7 @@ next
   case BlockRedSome thus ?case by clarsimp (fastsimp split:if_splits)
 next
   case InitBlockRed thus ?case by clarsimp (fastsimp split:if_splits)
-qed (simp_all, blast+)
+qed auto
 
 
 
@@ -1468,7 +1467,7 @@ lemma assumes wwf: "wwf_prog P"
 shows big_by_small: "P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>"
 and bigs_by_smalls: "P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
 
-proof (induct rule: eval_evals.induct)
+proof (induct rule: eval_evals.inducts)
   case New thus ?case by (auto simp:RedNew)
 next
   case NewFail thus ?case by (auto simp:RedNewFail)
@@ -1714,7 +1713,7 @@ next
   { fix a Cs Cs'
     assume blocks:"P,E \<turnstile> \<langle>blocks(p#ps',Ts,vs,e),(h,l)\<rangle> \<Rightarrow> 
                          \<langle>ref (a,Cs@C'# Cs'),(h',l')\<rangle>"
-      and class:"is_class P C'" and notin:"C' \<notin> set Cs'"
+      and "class": "is_class P C'" and notin:"C' \<notin> set Cs'"
     and e':"e' = ref (a,Cs@[C'])"
     from blocks length_eqs obtain l'' vs''
       where eval:"P,E(p#ps' [\<mapsto>] Ts) \<turnstile> \<langle>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
@@ -1722,7 +1721,7 @@ next
       and casts:"P \<turnstile> Ts Casts vs to vs''"
       and length:"length vs'' = length vs"
       by -(drule blocksEval,auto)
-    from eval class notin have "P,E(p#ps'[\<mapsto>]Ts) \<turnstile> \<langle>\<lparr>C'\<rparr>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
+    from eval "class" notin have "P,E(p#ps'[\<mapsto>]Ts) \<turnstile> \<langle>\<lparr>C'\<rparr>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
                                              \<langle>ref(a,Cs@[C']),(h',l'')\<rangle>"
       by(auto intro:StaticDownCast)
     with e' casts length have ?case by simp blast }
@@ -1782,7 +1781,7 @@ shows eval_restrict_lcl:
   "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> (\<And>W. fv e \<subseteq> W \<Longrightarrow> P,E \<turnstile> \<langle>e,(h,l|`W)\<rangle> \<Rightarrow> \<langle>e',(h',l'|`W)\<rangle>)"
 and "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>W. fvs es \<subseteq> W \<Longrightarrow> P,E \<turnstile> \<langle>es,(h,l|`W)\<rangle> [\<Rightarrow>] \<langle>es',(h',l'|`W)\<rangle>)"
 
-proof(induct rule:eval_evals_induct)
+proof(induct rule:eval_evals_inducts)
   case (Block E T V e\<^isub>0 e\<^isub>1 h\<^isub>0 h\<^isub>1 l\<^isub>0 l\<^isub>1)
   have IH: "\<And>W. fv e\<^isub>0 \<subseteq> W \<Longrightarrow> 
                  P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None)|`W)\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1|`W)\<rangle>".
@@ -1949,7 +1948,7 @@ assumes wf:"wwf_prog P"
 shows "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> (\<And>V. V \<notin> fv e \<Longrightarrow> l' V = l V)"
 and "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>V. V \<notin> fvs es \<Longrightarrow> l' V = l V)"
 
-proof(induct rule:eval_evals_induct)
+proof(induct rule:eval_evals_inducts)
   case LAss thus ?case by(simp add:fun_upd_apply)
 next
   case Block thus ?case
@@ -1977,8 +1976,8 @@ abschalten. Wieder anschalten siehe nach dem Beweis. *)
 
 declare split_paired_All [simp del] split_paired_Ex [simp del]
 ML_setup {*
-simpset_ref() := simpset() delloop "split_all_tac";
-claset_ref () := claset () delSWrapper "split_all_tac"
+change_simpset (fn ss => ss delloop "split_all_tac");
+change_claset (fn cs => cs delSWrapper "split_all_tac");
 *}
 
 
@@ -2041,7 +2040,7 @@ shows extend_1_eval:
 and extend_1_evals:
   "P,E \<turnstile> \<langle>es,t\<rangle> [\<rightarrow>] \<langle>es'',t''\<rangle> \<Longrightarrow> (\<And>t' es'. P,E \<turnstile> \<langle>es'',t''\<rangle> [\<Rightarrow>] \<langle>es',t'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>es,t\<rangle> [\<Rightarrow>] \<langle>es',t'\<rangle>)"
 
-proof (induct rule: red_reds.induct)
+proof (induct rule: red_reds.inducts)
  case RedNew thus ?case by (iprover elim: eval_cases intro: eval_evals.intros)
 next
   case RedNewFail thus ?case by (fastsimp elim: eval_cases intro: eval_evals.intros)
@@ -2579,8 +2578,8 @@ qed
 (* ... und wieder anschalten: *)
 declare split_paired_All [simp] split_paired_Ex [simp]
 ML_setup {*
-claset_ref()  := claset() addSbefore ("split_all_tac", split_all_tac);
-simpset_ref() := simpset() addloop ("split_all_tac", split_all_tac)
+change_claset (fn cs => cs addSbefore ("split_all_tac", split_all_tac));
+change_simpset (fn ss => ss addloop ("split_all_tac", split_all_tac));
 *}
 
 
