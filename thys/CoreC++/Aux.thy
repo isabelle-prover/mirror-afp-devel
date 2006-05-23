@@ -4,6 +4,13 @@ header {* Auxiliary Definitions *}
 
 theory Aux imports Main While_Combinator begin
 
+declare
+ option.splits[split]
+ Let_def[simp]
+ subset_insertI2 [simp]
+ Un_subset_iff[simp]
+ Cons_eq_map_conv [iff]
+
 (* FIXME move and possibly turn into a general simproc *)
 lemma nat_add_max_le[simp]:
   "((n::nat) + max i j \<le> m) = (n + i \<le> m \<and> n + j \<le> m)"
@@ -15,8 +22,6 @@ by arith
 
 
 syntax "_Some" :: "'a \<Rightarrow> 'a option" ("(\<lfloor>_\<rfloor>)")
-
-
 
 translations "\<lfloor>x\<rfloor>" == "Some x"
 

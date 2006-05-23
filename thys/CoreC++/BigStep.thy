@@ -288,7 +288,7 @@ lemma [iff]: "finals (Val v # es) = finals es"
 apply(clarsimp simp add:finals_def)
 apply(rule iffI)
  apply(erule disjE)
-  apply blast
+  apply simp
  apply(rule disjI2)
  apply clarsimp
  apply(case_tac vs)
@@ -297,8 +297,6 @@ apply(rule iffI)
 apply(erule disjE)
  apply (rule disjI1)
  apply clarsimp
- apply(rule_tac x="v#vs" in exI)
- apply simp
 apply(rule disjI2)
 apply clarsimp
 apply(rule_tac x = "v#vs" in exI)
@@ -316,8 +314,6 @@ lemma [iff]: "finals (throw e # es) = (\<exists>r. e = ref r)"
 
 apply(simp add:finals_def)
 apply(rule iffI)
- apply(erule disjE)
-  apply clarsimp
  apply clarsimp
  apply(case_tac vs)
   apply simp
