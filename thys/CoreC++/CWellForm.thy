@@ -1,4 +1,8 @@
-(* Author: Tobias Nipkow, Daniel Wasserrab *)
+(*  Title:       CoreC++
+    ID:          $Id: CWellForm.thy,v 1.3 2006-05-24 01:09:41 lsf37 Exp $
+    Author:      Tobias Nipkow, Daniel Wasserrab
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+*)
 
 header {* Well-formedness Constraints *}
 

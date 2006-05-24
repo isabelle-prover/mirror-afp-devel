@@ -1,5 +1,11 @@
-(* Author: Daniel Wasserrab
-   Based on the Jinja theory Common/Objects.thy by Tobias Nipkow *)
+(*  Title:       CoreC++
+    ID:          $Id: Objects.thy,v 1.3 2006-05-24 01:09:42 lsf37 Exp $
+    Author:      Daniel Wasserrab
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+
+   Based on the Jinja theory Common/Objects.thy by Tobias Nipkow 
+*)
+
 
 header {* Objects and the Heap *}
 

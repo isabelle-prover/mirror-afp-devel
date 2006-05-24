@@ -1,4 +1,8 @@
-(* Author:     David von Oheimb, Tobias Nipkow, Daniel Wasserrab *)
+(*  Title:       CoreC++
+    ID:          $Id: Aux.thy,v 1.4 2006-05-24 01:09:41 lsf37 Exp $
+    Author:      David von Oheimb, Tobias Nipkow, Daniel Wasserrab  
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+*)
 
 header {* Auxiliary Definitions *}
 

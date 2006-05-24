@@ -1,4 +1,9 @@
-(* Author: Daniel Wasserrab, Stefan Berghofer *)
+(*  Title:       CoreC++
+    ID:          $Id: Execute.thy,v 1.3 2006-05-24 01:09:41 lsf37 Exp $
+    Author:      Daniel Wasserrab, Stefan Berghofer
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+*)
+
 
 header {* \isaheader{Code generation for Semantics and Type Sysytem} *}
 

@@ -1,4 +1,9 @@
-(* Author: Tobias Nipkow *)
+(*  Title:       CoreC++
+    ID:          $Id: WWellForm.thy,v 1.3 2006-05-24 01:09:42 lsf37 Exp $
+    Author:      Tobias Nipkow
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+*)
+
 
 header {* Weak well-formedness of CoreC++ programs *}
 

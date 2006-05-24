@@ -1,4 +1,9 @@
-(* Author: Gerwin Klein, Martin Strecker, Daniel Wasserrab *)
+(*  Title:       CoreC++
+    ID:          $Id: Exceptions.thy,v 1.3 2006-05-24 01:09:41 lsf37 Exp $
+    Author:      Gerwin Klein, Martin Strecker, Daniel Wasserrab
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+*)
+
 
 header {* Exceptions *}
 

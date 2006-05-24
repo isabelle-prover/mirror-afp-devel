@@ -1,12 +1,17 @@
-(* Author: Daniel Wasserrab
+(*  Title:       CoreC++
+    ID:          $Id: HeapExtension.thy,v 1.4 2006-05-24 01:09:41 lsf37 Exp $
+    Author:      Daniel Wasserrab
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+
    Based on extracts from the Jinja theories:
       Common/Objects.thy by David von Oheimb
       Common/Conform.thy by David von Oheimb and Tobias Nipkow
       Common/Exceptions.thy by Gerwin Klein and Martin Strecker
       J/BigStep.thy by Tobias Nipkow
       J/SmallStep.thy by Tobias Nipkow
-      J/WellTypeRT.thy by Tobias Nipkow *)
-      
+      J/WellTypeRT.thy by Tobias Nipkow 
+*)
+
 
 header {* Heap Extension *}
 

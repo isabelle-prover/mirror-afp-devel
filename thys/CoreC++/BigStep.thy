@@ -1,5 +1,11 @@
-(* Author: Daniel Wasserrab
-   Based on the Jinja theory J/BigStep.thy by Tobias Nipkow *)
+(*  Title:       CoreC++
+    ID:          $Id: BigStep.thy,v 1.6 2006-05-24 01:09:41 lsf37 Exp $
+    Author:      Daniel Wasserrab
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+
+    Based on the Jinja theory J/BigStep.thy by Tobias Nipkow
+*)
+
 
 header {* Big Step Semantics *}
 

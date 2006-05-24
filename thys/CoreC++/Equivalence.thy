@@ -1,5 +1,11 @@
-(* Author: Daniel Wasserrab
-   Based on the Jinja theory J/Equivalence.thy by Tobias Nipkow *)
+(*  Title:       CoreC++
+    ID:          $Id: Equivalence.thy,v 1.4 2006-05-24 01:09:41 lsf37 Exp $
+    Author:      Daniel Wasserrab
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+
+    Based on the Jinja theory J/Equivalence.thy by Tobias Nipkow
+*)
+
 
 header {* Equivalence of Big Step and Small Step Semantics *}
 

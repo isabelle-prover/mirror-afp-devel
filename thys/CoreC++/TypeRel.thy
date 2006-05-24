@@ -1,5 +1,11 @@
-(* Author: Tobias Nipkow, Daniel Wasserrab 
-   Extracted from the Jinja theory Common/TypeRel.thy by Tobias Nipkow *)
+(*  Title:       CoreC++
+    ID:          $Id: TypeRel.thy,v 1.3 2006-05-24 01:09:42 lsf37 Exp $
+    Author:      Tobias Nipkow, Daniel Wasserrab 
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+
+    Extracted from the Jinja theory Common/TypeRel.thy by Tobias Nipkow 
+*)
+
 
 header {* Relations between CoreC++ types *}
 

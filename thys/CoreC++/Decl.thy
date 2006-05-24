@@ -1,5 +1,10 @@
-(* Author: Daniel Wasserrab
-   Based on the Jinja theory Common/Decl.thy by David von Oheimb *)
+(*  Title:       CoreC++
+    ID:          $Id: Decl.thy,v 1.5 2006-05-24 01:09:41 lsf37 Exp $
+    Author:      Daniel Wasserrab
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+
+    Based on the Jinja theory Common/Decl.thy by David von Oheimb
+*)
 
 header {* Class Declarations and Programs *}
 

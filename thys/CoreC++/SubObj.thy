@@ -1,4 +1,9 @@
-(* Author: Daniel Wasserrab *)
+(*  Title:       CoreC++
+    ID:          $Id: SubObj.thy,v 1.3 2006-05-24 01:09:42 lsf37 Exp $
+    Author:      Daniel Wasserrab
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+*)
+
 
 header {* Definition of Subobjects *}
 

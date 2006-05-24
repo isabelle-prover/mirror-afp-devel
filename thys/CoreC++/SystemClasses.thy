@@ -1,4 +1,8 @@
-(* Author: Gerwin Klein *)
+(*  Title:       CoreC++
+    ID:          $Id: SystemClasses.thy,v 1.3 2006-05-24 01:09:42 lsf37 Exp $
+    Author:      Gerwin Klein
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+*)
 
 header {* System Classes *}
 

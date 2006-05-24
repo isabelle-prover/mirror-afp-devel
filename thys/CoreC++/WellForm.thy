@@ -1,5 +1,11 @@
-(* Author: Daniel Wasserrab
-   Based on the Jinja theory Common/WellForm.thy by Tobias Nipkow *)
+(*  Title:       CoreC++
+    ID:          $Id: WellForm.thy,v 1.4 2006-05-24 01:09:42 lsf37 Exp $
+    Author:      Daniel Wasserrab
+    Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
+
+    Based on the Jinja theory Common/WellForm.thy by Tobias Nipkow 
+*)
+
 
 header {* Generic Well-formedness of programs *}
 
