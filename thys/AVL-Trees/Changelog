@@ -1,3 +1,10 @@
+2006-05-25: Update by Tobias Nipkow
+  - Did AVL trees properly, with height information in each node.
+  - Two developments, a monolithic and an incremental one.
+  - Got rid of the "extended tree type" by Brucker et al
+    because it stored the wrong information (bal!) and nothing useful
+    was proved about it.
+
 2004-06-09: Update by Achim Brucker, Burkhart Wolff and Jan Smaus
   - parameterized the tree definitions
   - added a "efficient" variant of is-in (is_in_eff)
