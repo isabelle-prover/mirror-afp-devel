@@ -4,6 +4,7 @@
 <head>
   <title>Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="GENERATOR" content="Quanta Plus">
 </head>
@@ -20,11 +21,11 @@
       <!-- content -->
 
 <div align="center">
-<p>&nbsp;</p>
+<p> </p>
 
 <!-- begin entry data: -->
 <h1><!-- Title: -->???</h1>
-<p>&nbsp;</p>
+<p> </p>
 
 <table width="80%" class="data">
   <tbody>
@@ -52,7 +53,7 @@ href="???">???</a>
 
 <!-- uncomment for entries significantly updated in devel version:
 <tr>
-<td class="datahead">&nbsp;</td>
+<td class="datahead"> </td>
 <td class="data">An updated version of this entry is available in the 
     <a href="../download.shtml">development version</a> of AFP.</td>
 </tr> 
@@ -61,7 +62,7 @@ href="???">???</a>
 </tbody>
 </table>
 
-<p>&nbsp;</p>
+<p> </p>
 
 <!-- entry directory name: -->
 <!--#set var="name" value="???" -->
@@ -95,6 +96,6 @@ href="???">???</a>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2005-09-07 10:01:47 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
 $</div></body>
 </html>

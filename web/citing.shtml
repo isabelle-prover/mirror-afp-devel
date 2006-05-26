@@ -4,6 +4,7 @@
 <head>
   <title>The Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="GENERATOR" content="Quanta Plus">
 </head>
@@ -20,10 +21,10 @@
       <!-- content -->
 
 <div align="center">
-<p>&nbsp;</p>
+<p> </p>
 <h1><font class="first">C</font>iting
     <font class="first">E</font>ntries</h1>
-<p>&nbsp;</p>
+<p> </p>
 
 <table width="80%" class="descr">
   <tbody>

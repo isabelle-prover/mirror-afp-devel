@@ -4,6 +4,7 @@
 <head>
   <title>Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="GENERATOR" content="Quanta Plus">
 </head>
@@ -77,6 +78,6 @@
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2005-09-07 10:01:47 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
 $</div></body>
 </html>

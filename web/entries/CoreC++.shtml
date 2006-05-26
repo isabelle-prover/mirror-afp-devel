@@ -4,6 +4,7 @@
 <head>
   <title>Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="GENERATOR" content="Quanta Plus">
 </head>
@@ -99,6 +100,6 @@ explanations see the OOPSLA 2006 paper by Wasserrab, Nipkow, Snelting and Tip.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-16 14:18:41 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
 $</div></body>
 </html>

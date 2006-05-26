@@ -4,6 +4,7 @@
 <head>
   <title>Search the Archive of Formal Proofs</title>
   <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="GENERATOR" content="Quanta Plus">
 </head>
