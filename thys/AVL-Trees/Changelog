@@ -1,5 +1,6 @@
 2006-05-25: Update by Tobias Nipkow
   - Did AVL trees properly, with height information in each node.
+  - Completely revised code and proofs
   - Two developments, a monolithic and an incremental one.
   - Got rid of the "extended tree type" by Brucker et al
     because it stored the wrong information (bal!) and nothing useful
