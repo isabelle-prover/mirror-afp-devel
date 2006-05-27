@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/BigStep.thy
-    ID:         $Id: BigStep.thy,v 1.4 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: BigStep.thy,v 1.5 2006-05-27 15:32:27 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -213,10 +213,7 @@ ConsThrow:
 
 (*<*)
 lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
-
-ML_setup {*
-  store_thms ("eval_evals_inducts", ProjectRule.projections (thm "eval_evals_induct"))
-*}
+  and eval_evals_inducts = eval_evals.inducts [split_format (complete)]
 
 inductive_cases eval_cases [cases set]:
  "P \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"

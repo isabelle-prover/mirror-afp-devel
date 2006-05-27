@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.4 2006-05-24 01:09:42 lsf37 Exp $
+    ID:          $Id: Progress.thy,v 1.5 2006-05-27 15:32:27 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -145,10 +145,8 @@ intros
 
 
 
-lemmas WTrt'_induct = WTrt'_WTrts'.induct[split_format (complete)]
-ML_setup {*
-  store_thms ("WTrt'_inducts", ProjectRule.projections (thm "WTrt'_induct"))
-*}
+lemmas WTrt'_induct = WTrt'_WTrts'.induct [split_format (complete)]
+  and WTrt'_inducts = WTrt'_WTrts'.inducts [split_format (complete)]
 
 inductive_cases WTrt'_elim_cases[elim!]:
   "P,E,h \<turnstile> V :=e :' T"
@@ -207,9 +205,6 @@ by(blast intro:wt_wt' wt'_wt)
 corollary wts'_iff_wts: "(P,E,h \<turnstile> es [:'] Ts) = (P,E,h \<turnstile> es [:] Ts)"
 by(blast intro:wts_wts' wts'_wts)
 
-thm WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts]
-
-
 lemmas WTrt_induct2 = WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts,
   case_names WTrtNew WTrtDynCast WTrtStaticCast WTrtVal WTrtVar WTrtBinOp 
   WTrtLAss WTrtFAcc WTrtFAccNT WTrtFAss WTrtFAssNT WTrtCall WTrtCallNT 
@@ -219,7 +214,6 @@ lemmas WTrt_induct2 = WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts,
 ML_setup {*
   store_thms ("WTrt_inducts2", ProjectRule.projections (thm "WTrt_induct2"))
 *}
-
 
 
 subsection{* The theorem @{text"progress"} *}

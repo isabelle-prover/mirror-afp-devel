@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/WellType1.thy
-    ID:         $Id: J1WellForm.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: J1WellForm.thy,v 1.3 2006-05-27 15:32:27 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -109,10 +109,8 @@ WTCons\<^isub>1:
 declare  WT\<^isub>1_WTs\<^isub>1.intros[intro!]
 declare WTNil\<^isub>1[iff]
 
-lemmas WT\<^isub>1_WTs\<^isub>1_induct = WT\<^isub>1_WTs\<^isub>1.induct[split_format (complete)]
-ML_setup {*
-  store_thms ("WT\<^isub>1_WTs\<^isub>1_inducts", ProjectRule.projections (thm "WT\<^isub>1_WTs\<^isub>1_induct"))
-*}
+lemmas WT\<^isub>1_WTs\<^isub>1_induct = WT\<^isub>1_WTs\<^isub>1.induct [split_format (complete)]
+  and WT\<^isub>1_WTs\<^isub>1_inducts = WT\<^isub>1_WTs\<^isub>1.inducts [split_format (complete)]
 
 inductive_cases eee[elim!]:
   "P,E \<turnstile>\<^sub>1 Val v :: T"

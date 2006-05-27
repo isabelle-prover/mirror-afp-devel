@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.3 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: Progress.thy,v 1.4 2006-05-27 15:32:27 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -89,10 +89,8 @@ intros
   \<Longrightarrow> P,E,h \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :' T\<^isub>2"
 
 (*<*)
-lemmas WTrt'_induct = WTrt'_WTrts'.induct[split_format (complete)]
-ML_setup {*
-  store_thms ("WTrt'_inducts", ProjectRule.projections (thm "WTrt'_induct"))
-*}
+lemmas WTrt'_induct = WTrt'_WTrts'.induct [split_format (complete)]
+  and WTrt'_inducts = WTrt'_WTrts'.inducts [split_format (complete)]
 
 inductive_cases WTrt'_elim_cases[elim!]:
   "P,E,h \<turnstile> V :=e :' T"
@@ -165,7 +163,6 @@ ML_setup {*
   store_thms ("WTrt_inducts2", ProjectRule.projections (thm "WTrt_induct2"))
 *}
 (*>*)
-
 
 theorem assumes wf: "wwf_J_prog P" and hconf: "P \<turnstile> h \<surd>"
 shows progress: "P,E,h \<turnstile> e : T \<Longrightarrow>

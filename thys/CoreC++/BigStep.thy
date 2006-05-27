@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.6 2006-05-24 01:09:41 lsf37 Exp $
+    ID:          $Id: BigStep.thy,v 1.7 2006-05-27 15:32:27 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -243,10 +243,7 @@ ConsThrow:
   P,E \<turnstile> \<langle>e#es, s\<^isub>0\<rangle> [\<Rightarrow>] \<langle>throw e' # es, s\<^isub>1\<rangle>"
 
 lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
-
-ML_setup {*
-  store_thms ("eval_evals_inducts", ProjectRule.projections (thm "eval_evals_induct"))
-*}
+  and eval_evals_inducts = eval_evals.inducts [split_format (complete)]
 
 inductive_cases eval_cases [cases set]:
  "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"

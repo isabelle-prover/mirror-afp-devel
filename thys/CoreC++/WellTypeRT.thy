@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellTypeRT.thy,v 1.4 2006-05-24 01:09:42 lsf37 Exp $
+    ID:          $Id: WellTypeRT.thy,v 1.5 2006-05-27 15:32:27 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -159,10 +159,9 @@ declare
   WTrtFAss[rule del] WTrtFAssNT[rule del]
   WTrtCall[rule del] WTrtCallNT[rule del]
 
-lemmas WTrt_induct = WTrt_WTrts.induct[split_format (complete)]
-ML_setup {*
-  store_thms ("WTrt_inducts", ProjectRule.projections (thm "WTrt_induct"))
-*}
+lemmas WTrt_induct = WTrt_WTrts.induct [split_format (complete)]
+  and WTrt_inducts = WTrt_WTrts.inducts [split_format (complete)]
+
 
 subsection{*Easy consequences*}
 

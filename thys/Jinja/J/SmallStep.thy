@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallStep.thy
-    ID:         $Id: SmallStep.thy,v 1.3 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: SmallStep.thy,v 1.4 2006-05-27 15:32:27 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -229,10 +229,7 @@ CondThrow: "P \<turnstile> \<langle>if (throw e) e\<^isub>1 else e\<^isub>2, s\<
 ThrowThrow: "P \<turnstile> \<langle>throw(throw e), s\<rangle> \<rightarrow> \<langle>throw e, s\<rangle>"
 (*<*)
 lemmas red_reds_induct = red_reds.induct [split_format (complete)]
-
-ML_setup {*
-  store_thms ("red_reds_inducts", ProjectRule.projections (thm "red_reds_induct"))
-*}
+  and red_reds_inducts = red_reds.inducts [split_format (complete)]
 
 inductive_cases [elim!]:
  "P \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"

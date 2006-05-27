@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.4 2006-05-24 01:09:42 lsf37 Exp $
+    ID:          $Id: SmallStep.thy,v 1.5 2006-05-27 15:32:27 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -264,10 +264,7 @@ ThrowThrow: "P,E \<turnstile> \<langle>throw(Throw r), s\<rangle> \<rightarrow> 
 
 
 lemmas red_reds_induct = red_reds.induct [split_format (complete)]
-
-ML_setup {*
-  store_thms ("red_reds_inducts", ProjectRule.projections (thm "red_reds_induct"))
-*}
+  and red_reds_inducts = red_reds.inducts [split_format (complete)]
 
 inductive_cases [elim!]:
  "P,E \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"

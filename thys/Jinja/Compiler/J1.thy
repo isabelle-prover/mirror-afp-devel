@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/J1.thy
-    ID:         $Id: J1.thy,v 1.3 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: J1.thy,v 1.4 2006-05-27 15:32:27 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -220,9 +220,7 @@ ConsThrow\<^isub>1:
 
 (*<*)
 lemmas eval\<^isub>1_evals\<^isub>1_induct = eval\<^isub>1_evals\<^isub>1.induct [split_format (complete)]
-ML_setup {*
-  store_thms ("eval\<^isub>1_evals\<^isub>1_inducts", ProjectRule.projections (thm "eval\<^isub>1_evals\<^isub>1_induct"))
-*}
+  and eval\<^isub>1_evals\<^isub>1_inducts = eval\<^isub>1_evals\<^isub>1.inducts [split_format (complete)]
 (*>*)
 
 lemma eval\<^isub>1_preserves_len:

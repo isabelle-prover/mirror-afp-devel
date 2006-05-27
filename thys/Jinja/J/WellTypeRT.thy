@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellTypeRT.thy
-    ID:         $Id: WellTypeRT.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: WellTypeRT.thy,v 1.3 2006-05-27 15:32:27 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -129,11 +129,10 @@ declare
   WTrtFAss[rule del] WTrtFAssNT[rule del]
   WTrtCall[rule del] WTrtCallNT[rule del]
 
-lemmas WTrt_induct = WTrt_WTrts.induct[split_format (complete)]
-ML_setup {*
-  store_thms ("WTrt_inducts", ProjectRule.projections (thm "WTrt_induct"))
-*}
+lemmas WTrt_induct = WTrt_WTrts.induct [split_format (complete)]
+  and WTrt_inducts = WTrt_WTrts.inducts [split_format (complete)]
 (*>*)
+
 
 subsection{*Easy consequences*}
 

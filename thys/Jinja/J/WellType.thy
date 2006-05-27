@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellType.thy
-    ID:         $Id: WellType.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: WellType.thy,v 1.3 2006-05-27 15:32:27 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -120,10 +120,8 @@ lemmas [intro]  = WTCond1 WTCond2
 *)
 declare WT_WTs.intros[intro!] (* WTNil[iff] *)
 
-lemmas WT_WTs_induct = WT_WTs.induct[split_format (complete)]
-ML_setup {*
-  store_thms ("WT_WTs_inducts", ProjectRule.projections (thm "WT_WTs_induct"))
-*}
+lemmas WT_WTs_induct = WT_WTs.induct [split_format (complete)]
+  and WT_WTs_inducts = WT_WTs.inducts [split_format (complete)]
 (*>*)
 
 lemma [iff]: "(P,E \<turnstile> [] [::] Ts) = (Ts = [])"

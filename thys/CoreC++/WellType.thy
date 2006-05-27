@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellType.thy,v 1.4 2006-05-24 01:09:42 lsf37 Exp $
+    ID:          $Id: WellType.thy,v 1.5 2006-05-27 15:32:27 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -111,10 +111,8 @@ WTCons:
 
 declare WT_WTs.intros[intro!] WTNil[iff]
 
-lemmas WT_WTs_induct = WT_WTs.induct[split_format (complete)]
-ML_setup {*
-  store_thms ("WT_WTs_inducts", ProjectRule.projections (thm "WT_WTs_induct"))
-*}
+lemmas WT_WTs_induct = WT_WTs.induct [split_format (complete)]
+  and WT_WTs_inducts = WT_WTs.inducts [split_format (complete)]
 
 
 subsection{* Easy consequences *}
