@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.3 2006-05-24 01:09:41 lsf37 Exp $
+    ID:          $Id: Execute.thy,v 1.4 2006-05-29 06:15:43 wasserra Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -7,7 +7,7 @@
 
 header {* \isaheader{Code generation for Semantics and Type Sysytem} *}
 
-theory Execute imports BigStep WellType DefAss ExecutableSet EfficientNat begin
+theory Execute imports BigStep WellType ExecutableSet EfficientNat begin
 
 subsection{* General redefinitions *}
 
@@ -583,8 +583,8 @@ lemmas [code ind] = rtrancl_refl converse_rtrancl_into_rtrancl
 
 consts_code
   "insert" :: "('a \<times> ('b \<Rightarrow> 'c)) \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
-    ("(gen'_ins (op = o pairself fst)/ (_,/ _))")
-  "op -" :: "('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
+    ("insert (op = o pairself fst)")
+  "minus" :: "('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("(gen'_rems (op = o pairself fst)/ (_,/ _))")
   "op Un" :: "('a * ('b => 'c)) set => ('a * ('b => 'c)) set => ('a * ('b => 'c)) set"
     ("(gen'_union (op = o pairself fst)/ (_,/ _))")
@@ -592,7 +592,7 @@ consts_code
 consts_code
   "card"   ("\<module>card")
 attach {*
-fun card S = length (distinct S);
+fun card S = length (distinct op = S);
 *}
 
 ML {*
@@ -606,7 +606,7 @@ consts_code
    ("new'_addr {* 0::nat *} {* Suc *}
                {* %x. case x of None => True | Some y => False *} {* Some *}")
 
-  "arbitrary" ("(raise ERROR)")
+  "arbitrary" ("(raise ERROR \"arbitrary\")")
 
 
 text{* Definition of program examples *}
