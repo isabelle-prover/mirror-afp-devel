@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.4 2006-05-24 01:09:42 lsf37 Exp $
+    ID:          $Id: TypeSafe.thy,v 1.5 2006-06-01 10:14:20 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -113,10 +113,10 @@ qed auto
 theorem assumes wf:"wwf_prog P"
 shows red_preserves_lconf:
   "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow>
-  (\<And>T. \<lbrakk> P,E,h \<turnstile> e:T; P,h \<turnstile> l (:\<le>)\<^sub>w E; envconf P E \<rbrakk> \<Longrightarrow> P,h' \<turnstile> l' (:\<le>)\<^sub>w E)"
+  (\<And>T. \<lbrakk> P,E,h \<turnstile> e:T; P,h \<turnstile> l (:\<le>)\<^sub>w E; P \<turnstile> E \<surd> \<rbrakk> \<Longrightarrow> P,h' \<turnstile> l' (:\<le>)\<^sub>w E)"
 and reds_preserves_lconf:
   "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow>
-  (\<And>Ts. \<lbrakk> P,E,h \<turnstile> es[:]Ts; P,h \<turnstile> l (:\<le>)\<^sub>w E; envconf P E \<rbrakk> \<Longrightarrow> P,h' \<turnstile> l' (:\<le>)\<^sub>w E)"
+  (\<And>Ts. \<lbrakk> P,E,h \<turnstile> es[:]Ts; P,h \<turnstile> l (:\<le>)\<^sub>w E; P \<turnstile> E \<surd> \<rbrakk> \<Longrightarrow> P,h' \<turnstile> l' (:\<le>)\<^sub>w E)"
 
 proof(induct rule:red_reds_inducts)
   case RedNew thus ?case
@@ -247,7 +247,8 @@ next
 next
   case CallObj thus ?case by (auto elim!: Ds_mono[OF red_lA_incr])
 next
-  case (RedCall C Cs Cs' Ds E M S T T' Ts Ts' a body body' new_body pns pns' h l vs )
+  case (RedCall C Cs Cs' Ds E M S T T' Ts Ts' a body body' bs new_body 
+                pns pns' h l vs )
   thus ?case
     apply (auto dest!:select_method_wf_mdecl[OF wf] simp:wf_mdecl_def elim!:D_mono')
     apply(cases T') apply auto
@@ -913,15 +914,14 @@ next
   qed
   thus ?case by (rule wt_same_type_typeconf)
 next
-  case (RedCall C Cs Cs' Ds E M S T T' Ts Ts' a body body' new_body 
+  case (RedCall C Cs Cs' Ds E M S T T' Ts Ts' a body body' bs new_body 
                 pns pns' h l vs T'')
   have hp:"hp (h,l) a = Some(C,S)"
     and method:"P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
     and select:"P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'"
     and length1:"length vs = length pns" and length2:"length Ts = length pns"
-    and body_case:"new_body = 
-   (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body)
-                   | _ \<Rightarrow> blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body))"
+    and bs:"bs = blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body)"
+    and body_case:"new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>bs | _ \<Rightarrow> bs)"
     and wt:"P,E,h \<turnstile> ref (a,Cs)\<bullet>M(map Val vs) : T''" .
   from wt hp method wf obtain Ts''
     where wtref:"P,E,h \<turnstile> ref (a,Cs) : Class (last Cs)" and eq:"T'' = T'"
@@ -1012,14 +1012,14 @@ next
   proof(cases "\<forall>C. T' \<noteq> Class C")
     case True
     with sub notNT have "T = T'" by (cases T') auto
-    with blocks True body_case show ?thesis by(cases T') auto
+    with blocks True body_case bs show ?thesis by(cases T') auto
   next
     case False
     then obtain D where T':"T' = Class D" by auto
     with method sub wf have "class": "is_class P D"
       by (auto elim!:widen.elims dest:least_method_is_type 
                intro:Subobj_last_isClass simp:path_unique_def)
-    with blocks T' body_case "class" sub show ?thesis
+    with blocks T' body_case bs "class" sub show ?thesis
       by(cases T',auto,cases T,auto)
   qed
   with eq show ?case by(fastsimp intro:wt_same_type_typeconf)

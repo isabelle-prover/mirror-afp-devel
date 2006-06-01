@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.5 2006-05-27 15:32:27 makarius Exp $
+    ID:          $Id: Progress.thy,v 1.6 2006-06-01 10:14:20 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -266,9 +266,9 @@ qed
 
 theorem assumes wf: "wwf_prog P"
 shows progress: "P,E,h \<turnstile> e : T \<Longrightarrow>
- (\<And>l. \<lbrakk> P \<turnstile> h \<surd>; envconf P E; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk> \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>)"
+ (\<And>l. \<lbrakk> P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk> \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>)"
 and "P,E,h \<turnstile> es [:] Ts \<Longrightarrow>
- (\<And>l. \<lbrakk> P \<turnstile> h \<surd>; envconf P E; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es \<rbrakk> \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>)"
+ (\<And>l. \<lbrakk> P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es \<rbrakk> \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>)"
 
 proof (induct rule:WTrt_inducts2)
   case (WTrtNew C E h)
@@ -285,10 +285,10 @@ proof (induct rule:WTrt_inducts2)
 next
   case (WTrtDynCast C E T e h)
   have wte: "P,E,h \<turnstile> e : T" and refT: "is_refT T" and "class": "is_class P C"
-    and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
+    and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
     and D: "\<D> (Cast C e) \<lfloor>dom l\<rfloor>" 
-    and hconf: "P \<turnstile> h \<surd>" and envconf:"envconf P E" .
+    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" .
   from D have De: "\<D> e \<lfloor>dom l\<rfloor>" by auto
   show ?case
   proof cases
@@ -343,10 +343,10 @@ next
 next
   case (WTrtStaticCast C E T e h)
   have wte: "P,E,h \<turnstile> e : T" and refT: "is_refT T" and "class": "is_class P C"
-   and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
+   and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and D: "\<D> (\<lparr>C\<rparr>e) \<lfloor>dom l\<rfloor>" 
-    and hconf: "P \<turnstile> h \<surd>" and envconf:"envconf P E" .
+    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" .
   from D have De: "\<D> e \<lfloor>dom l\<rfloor>" by auto
   show ?case
   proof cases
@@ -441,7 +441,7 @@ next
   have wte:"P,E,h \<turnstile> e : T'"
     and wtvar:"P,E,h \<turnstile> Var V : T"
     and sub:"P \<turnstile> T' \<le> T"
-    and envconf:"envconf P E" .
+    and envconf:"P \<turnstile> E \<surd>" .
   from envconf wtvar have type:"is_type P T" by(auto simp:envconf_def)
   show ?case
   proof cases
@@ -667,9 +667,9 @@ next
   have wte: "P,E,h \<turnstile> e : Class C"
     and method:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
     and wtes: "P,E,h \<turnstile> es [:] Ts'"and sub: "P \<turnstile> Ts' [\<le>] Ts"
-    and IHes: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
+    and IHes: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
              \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
-    and hconf: "P \<turnstile> h \<surd>" and envconf:"envconf P E" 
+    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" 
     and D: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" .
   show ?case
   proof cases
@@ -833,11 +833,11 @@ next
   qed
 next
   case (WTrtInitBlock E T T' T\<^isub>2 V e\<^isub>2 h v)
-  have IH2: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; envconf P (E(V \<mapsto> T)); \<D> e\<^isub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^isub>2\<rbrakk>
+  have IH2: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E(V \<mapsto> T) \<surd>; \<D> e\<^isub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^isub>2\<rbrakk>
                   \<Longrightarrow> \<exists>e' s'. P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
     and typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'"
     and type:"is_type P T" and sub:"P \<turnstile> T' \<le> T"
-    and hconf: "P \<turnstile> h \<surd>" and envconf:"envconf P E"
+    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>"
     and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" .
   from wf typeof type sub obtain v' where casts:"P \<turnstile> T casts v to v'"
     by(auto dest:sub_casts)
@@ -849,7 +849,7 @@ next
   next
     assume not_fin2: "\<not> final e\<^isub>2"
     from D have D2: "\<D> e\<^isub>2 \<lfloor>dom(l(V\<mapsto>v'))\<rfloor>" by (auto simp:hyperset_defs)
-    from envconf type have "envconf P (E(V \<mapsto> T))" by(auto simp:envconf_def)
+    from envconf type have "P \<turnstile> E(V \<mapsto> T) \<surd>" by(auto simp:envconf_def)
     from IH2[OF hconf this D2 not_fin2]
     obtain h' l' e' where red2: "P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>2,(h, l(V\<mapsto>v'))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
       by auto
@@ -858,10 +858,10 @@ next
   qed
 next
   case (WTrtBlock E T T' V e h)
-  have IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; envconf P (E(V \<mapsto> T)); \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
+  have IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E(V \<mapsto> T) \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                  \<Longrightarrow> \<exists>e' s'. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and unass: "\<not> assigned V e" and type:"is_type P T"
-   and hconf: "P \<turnstile> h \<surd>" and envconf:"envconf P E" 
+   and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" 
     and D: "\<D> {V:T; e} \<lfloor>dom l\<rfloor>" .
   show ?case
   proof cases
@@ -876,7 +876,7 @@ next
   next
     assume not_fin: "\<not> final e"
     from D have De: "\<D> e \<lfloor>dom(l(V:=None))\<rfloor>" by(simp add:hyperset_defs)
-    from envconf type have "envconf P (E(V \<mapsto> T))" by(auto simp:envconf_def)
+    from envconf type have "P \<turnstile> E(V \<mapsto> T) \<surd>" by(auto simp:envconf_def)
     from IH[OF hconf this De not_fin]
     obtain h' l' e' where red: "P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h,l(V:=None))\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
       by auto
@@ -943,11 +943,11 @@ next
   case WTrtNil thus ?case by simp
 next
   case (WTrtCons E T Ts e es h)
-  have IHe: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
+  have IHe: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-   and IHes: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
+   and IHes: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
              \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
-   and hconf: "P \<turnstile> h \<surd>" and envconf:"envconf P E"
+   and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>"
     and D: "\<D>s (e#es) \<lfloor>dom l\<rfloor>"
    and not_fins: "\<not> finals(e # es)" .
   have De: "\<D> e \<lfloor>dom l\<rfloor>" and Des: "\<D>s es (\<lfloor>dom l\<rfloor> \<squnion> \<A> e)"

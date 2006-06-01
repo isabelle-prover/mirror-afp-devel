@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Conform.thy,v 1.3 2006-05-24 01:09:41 lsf37 Exp $
+    ID:          $Id: Conform.thy,v 1.4 2006-06-01 10:14:20 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -207,8 +207,8 @@ by(simp add:lconf_def)
 subsection{* Environment conformance *}
 
 constdefs
-  envconf :: "prog \<Rightarrow> env \<Rightarrow> bool"
-  "envconf P E \<equiv> \<forall>V T. E V = Some T \<longrightarrow> is_type P T"
+  envconf :: "prog \<Rightarrow> env \<Rightarrow> bool"  ("_ \<turnstile> _ \<surd>" [51,51] 50)
+  "P \<turnstile> E \<surd> \<equiv> \<forall>V T. E V = Some T \<longrightarrow> is_type P T"
 
 subsection{* Type conformance *}
 

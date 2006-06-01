@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.4 2006-05-24 01:09:41 lsf37 Exp $
+    ID:          $Id: Equivalence.thy,v 1.5 2006-06-01 10:14:20 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -1012,7 +1012,7 @@ shows Red_fv: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle
   and  "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> fvs es' \<subseteq> fvs es"
 
 proof (induct rule:red_reds_inducts)
-  case (RedCall C Cs Cs' Ds E M S T T' Ts Ts' a body body' new_body pns)
+  case (RedCall C Cs Cs' Ds E M S T T' Ts Ts' a body body' bs new_body pns)
   hence "fv body \<subseteq> {this} \<union> set pns"
     using prems by(fastsimp dest!:select_method_wf_mdecl simp:wf_mdecl_def)
   with prems show ?case
@@ -2285,7 +2285,7 @@ next
     show "P,E \<turnstile> \<langle>Val v\<bullet>M(es),s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fastsimp
   qed
 next
-  case (RedCall C Cs Cs' Ds E M S T T' Ts Ts' a body body' new_body 
+  case (RedCall C Cs Cs' Ds E M S T T' Ts Ts' a body body' bs new_body 
                 pns pns' s vs s' e')
   obtain h l where "s' = (h,l)" by(cases s') auto
   have "P,E \<turnstile> \<langle>ref(a,Cs),s\<rangle> \<Rightarrow> \<langle>ref(a,Cs),s\<rangle>" by (rule eval_evals.intros)
@@ -2297,9 +2297,8 @@ next
   moreover from s have h\<^isub>2a:"h\<^isub>2 a = Some (C,S)" using RedCall by simp
   moreover have method: "P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds" .
   moreover have select:"P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'" .
-  moreover have body_case:"new_body = 
-    (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body)
-                    | _ \<Rightarrow> blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body))" .
+  moreover have blocks:"bs = blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body)" .
+  moreover have body_case:"new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>bs | _ \<Rightarrow> bs)" .
   moreover have same_len\<^isub>1: "length Ts = length pns"
    and this_distinct: "this \<notin> set pns" and fv: "fv body \<subseteq> {this} \<union> set pns"
     using select wf by (fastsimp dest!:select_method_wf_mdecl simp:wf_mdecl_def)+
@@ -2307,7 +2306,7 @@ next
   moreover
   obtain h\<^isub>3 l\<^isub>3 where s': "s' = (h\<^isub>3,l\<^isub>3)" by (cases s') simp
   have eval_blocks:"P,E \<turnstile> \<langle>new_body,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>".
-  hence id: "l\<^isub>3 = l\<^isub>2" using fv s s' same_len\<^isub>1 same_len wf body_case
+  hence id: "l\<^isub>3 = l\<^isub>2" using fv s s' same_len\<^isub>1 same_len wf blocks body_case
     by(cases T')(auto elim!: eval_closed_lcl_unchanged)
   from same_len\<^isub>1 have same_len':"length(this#pns) = length(Class (last Cs')#Ts)" 
     by simp
@@ -2327,7 +2326,7 @@ next
      new_body' = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>body  | _  \<Rightarrow> body)"
   proof(cases "\<forall>C. T' \<noteq> Class C")
     case True
-    with same_len' same_len\<^isub>2 eval_blocks' casts_unique body_case
+    with same_len' same_len\<^isub>2 eval_blocks' casts_unique body_case blocks
     obtain l'' vs'
       where body:"P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> 
                     \<langle>body,(h\<^isub>2,l\<^isub>2(this # pns[\<mapsto>]Ref(a,Cs')#vs'))\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3, l'')\<rangle>"
@@ -2339,7 +2338,7 @@ next
   next
     case False
     then obtain D where T':"T' = Class D" by auto
-    with same_len' same_len\<^isub>2 eval_blocks' casts_unique body_case
+    with same_len' same_len\<^isub>2 eval_blocks' casts_unique body_case blocks
     obtain l'' vs'
       where body:"P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> 
                     \<langle>\<lparr>D\<rparr>body,(h\<^isub>2,l\<^isub>2(this # pns[\<mapsto>]Ref(a,Cs')#vs'))\<rangle> \<Rightarrow> 

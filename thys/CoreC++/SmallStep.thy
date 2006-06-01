@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.5 2006-05-27 15:32:27 makarius Exp $
+    ID:          $Id: SmallStep.thy,v 1.6 2006-06-01 10:14:20 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -15,8 +15,8 @@ subsection {* Some pre-definitions *}
 
 consts blocks :: "vname list \<times> ty list \<times> val list \<times> expr \<Rightarrow> expr"
 recdef blocks "measure(\<lambda>(Vs,Ts,vs,e). size Vs)"
- "blocks(V#Vs, T#Ts, v#vs, e) = {V:T := Val v; blocks(Vs,Ts,vs,e)}"
- "blocks([],[],[],e) = e"
+ blocks_Cons:"blocks(V#Vs, T#Ts, v#vs, e) = {V:T := Val v; blocks(Vs,Ts,vs,e)}"
+ blocks_Nil: "blocks([],[],[],e) = e"
 
 
 lemma [simp]:
@@ -178,10 +178,9 @@ CallParams:
 RedCall:
   "\<lbrakk> hp s a = Some(C,S); P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds;
     P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs';
-    size vs = size pns; size Ts = size pns;
-    new_body = 
-     (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body)
-                     | _ \<Rightarrow> blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body))\<rbrakk>
+    size vs = size pns; size Ts = size pns; 
+    bs = blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body);
+    new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>bs | _ \<Rightarrow> bs)\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>(ref (a,Cs))\<bullet>M(map Val vs), s\<rangle> \<rightarrow> \<langle>new_body, s\<rangle>"
 
 RedCallNull:
