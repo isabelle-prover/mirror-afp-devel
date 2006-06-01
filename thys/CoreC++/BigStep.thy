@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.7 2006-05-27 15:32:27 makarius Exp $
+    ID:          $Id: BigStep.thy,v 1.8 2006-06-01 10:42:01 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -179,7 +179,7 @@ CallNull:
   \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
 
 Block:
-  "\<lbrakk>P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None))\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1)\<rangle>(*; is_type P T*) \<rbrakk> \<Longrightarrow>
+  "\<lbrakk>P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None))\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1)\<rangle> \<rbrakk> \<Longrightarrow>
   P,E \<turnstile> \<langle>{V:T; e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1(V:=l\<^isub>0 V))\<rangle>"
 
 Seq:
