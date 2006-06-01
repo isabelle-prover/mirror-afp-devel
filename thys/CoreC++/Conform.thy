@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Conform.thy,v 1.4 2006-06-01 10:14:20 wasserra Exp $
+    ID:          $Id: Conform.thy,v 1.5 2006-06-01 12:22:33 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -213,29 +213,34 @@ constdefs
 subsection{* Type conformance *}
 
 consts
-  type_conf  :: "prog \<Rightarrow> env \<Rightarrow> ty \<Rightarrow> heap \<Rightarrow> expr \<Rightarrow> bool"
-  types_conf :: "prog \<times> env \<times> ty list \<times> heap \<times> expr list \<Rightarrow> bool" 
+  type_conf  :: "prog \<Rightarrow> env \<Rightarrow> heap \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"  
+  types_conf :: "prog \<times> env \<times> heap \<times> expr list \<times> ty list \<Rightarrow> bool" 
 
+syntax (xsymbols)
+  type_conf :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
+    ("_,_,_ \<turnstile> _ :\<^bsub>NT\<^esub> _"   [51,51,51]50)
+  type_conf :: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
+    ("_,_,_ \<turnstile> _ [:]\<^bsub>NT\<^esub> _"   [51,51,51]50)
 
 primrec
-  type_conf_Void:    "type_conf P E Void      h e = (P,E,h \<turnstile> e : Void)"
-  type_conf_Boolean: "type_conf P E Boolean   h e = (P,E,h \<turnstile> e : Boolean)"
-  type_conf_Integer: "type_conf P E Integer   h e = (P,E,h \<turnstile> e : Integer)"
-  type_conf_NT:      "type_conf P E NT        h e = (P,E,h \<turnstile> e : NT)"
-  type_conf_Class:
-    "type_conf P E (Class C) h e = (P,E,h \<turnstile> e : Class C \<or> P,E,h \<turnstile> e : NT)"
+  type_conf_Void:    "P,E,h \<turnstile> e :\<^bsub>NT\<^esub> Void    = (P,E,h \<turnstile> e : Void)"
+  type_conf_Boolean: "P,E,h \<turnstile> e :\<^bsub>NT\<^esub> Boolean = (P,E,h \<turnstile> e : Boolean)"
+  type_conf_Integer: "P,E,h \<turnstile> e :\<^bsub>NT\<^esub> Integer = (P,E,h \<turnstile> e : Integer)"
+  type_conf_NT:      "P,E,h \<turnstile> e :\<^bsub>NT\<^esub> NT      = (P,E,h \<turnstile> e : NT)"
+  type_conf_Class:   "P,E,h \<turnstile> e :\<^bsub>NT\<^esub> Class C = 
+                             (P,E,h \<turnstile> e : Class C \<or> P,E,h \<turnstile> e : NT)"
 
-recdef types_conf "measure(\<lambda>(P,E,Ts,h,es). size Ts)"
-  "types_conf (P,E,[],h,[])     = True"
-  "types_conf (P,E,T#Ts,h,e#es) = (type_conf P E T h e \<and> types_conf (P,E,Ts,h,es))"
+recdef types_conf "measure(\<lambda>(P,E,h,es,Ts). size Ts)"
+  "types_conf (P,E,h,[],[])     = True"
+  "types_conf (P,E,h,e#es,T#Ts) = (P,E,h \<turnstile> e :\<^bsub>NT\<^esub> T \<and> types_conf (P,E,h,es,Ts))"
 
 
 lemma wt_same_type_typeconf:
-"P,E,h \<turnstile> e : T \<Longrightarrow> type_conf P E T h e"
+"P,E,h \<turnstile> e : T \<Longrightarrow> P,E,h \<turnstile> e :\<^bsub>NT\<^esub> T"
 by(cases T) auto
 
 lemma wts_same_types_typesconf:
-"\<And>es. \<lbrakk>length es = length Ts; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> types_conf(P,E,Ts,h,es)"
+"\<And>es. \<lbrakk>length es = length Ts; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> types_conf(P,E,h,es,Ts)"
 
 proof(induct Ts)
   case Nil thus ?case by simp
@@ -244,7 +249,7 @@ next
   have length:"length es = length(T'#Ts')"
     and wtes:"P,E,h \<turnstile> es [:] T'#Ts'"
     and IH:"\<And>es. \<lbrakk>length es = length Ts'; P,E,h \<turnstile> es [:] Ts'\<rbrakk> 
-             \<Longrightarrow> types_conf (P, E, Ts', h, es)" .
+             \<Longrightarrow> types_conf (P, E, h, es, Ts')" .
   from wtes obtain e' es' where es:"es = e'#es'" by(cases es) auto
   with wtes have wte':"P,E,h \<turnstile> e' : T'" and wtes':"P,E,h \<turnstile> es' [:] Ts'"
     by simp_all
@@ -255,7 +260,7 @@ qed
 
 
 lemma types_conf_smaller_types:
-"\<And>es Ts. \<lbrakk>length es = length Ts'; types_conf (P,E,Ts',h,es); P \<turnstile> Ts' [\<le>] Ts \<rbrakk> 
+"\<And>es Ts. \<lbrakk>length es = length Ts'; types_conf (P,E,h,es,Ts'); P \<turnstile> Ts' [\<le>] Ts \<rbrakk> 
   \<Longrightarrow> \<exists>Ts''. P,E,h \<turnstile> es [:] Ts'' \<and> P \<turnstile> Ts'' [\<le>] Ts"
 
 proof(induct Ts')
@@ -263,14 +268,14 @@ proof(induct Ts')
 next
   case (Cons S Ss)
   have length:"length es = length(S#Ss)"
-    and types_conf:"types_conf(P, E, S # Ss, h, es)"
+    and types_conf:"types_conf(P,E,h,es,S#Ss)"
     and subs:"P \<turnstile> (S#Ss) [\<le>] Ts"
-    and IH:"\<And>es Ts. \<lbrakk>length es = length Ss; types_conf(P,E,Ss,h,es); P \<turnstile> Ss [\<le>] Ts\<rbrakk>
+    and IH:"\<And>es Ts. \<lbrakk>length es = length Ss; types_conf(P,E,h,es,Ss); P \<turnstile> Ss [\<le>] Ts\<rbrakk>
     \<Longrightarrow> \<exists>Ts''. P,E,h \<turnstile> es [:] Ts'' \<and> P \<turnstile> Ts'' [\<le>] Ts" .
   from subs obtain U Us where Ts:"Ts = U#Us" by(cases Ts) auto
   from length obtain e' es' where es:"es = e'#es'" by(cases es) auto
-  with types_conf have type:"type_conf P E S h e'"
-    and type':"types_conf (P,E,Ss,h,es')" by simp_all
+  with types_conf have type:"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> S"
+    and type':"types_conf (P,E,h,es',Ss)" by simp_all
   from subs Ts have subs':"P \<turnstile> Ss [\<le>] Us" and sub:"P \<turnstile> S \<le> U" 
     by (simp_all add:fun_of_def)
   from sub type obtain T'' where step:"P,E,h \<turnstile> e' : T'' \<and> P \<turnstile> T'' \<le> U"
