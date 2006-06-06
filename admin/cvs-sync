@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: cvs-sync,v 1.9 2006-06-06 17:02:59 lsf37 Exp $
+# $Id: cvs-sync,v 1.10 2006-06-06 17:07:06 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Cron job that synchronizes HEAD with release branch.
@@ -27,7 +27,7 @@ cvs -Q up -d -A || fail "Error updating; aborting sync"
 # sync, no keyword expansion
 cvs -Q up -d -kk -j $SYNC_TAG -j $BRANCH_TAG || fail "Error merging; aborting sync"
 # check for conflicts
-cvs -q up -d -A || fail "Conflicts found; aborting sync"
+cvs -Q up -d -A || fail "Conflicts found; aborting sync"
 # commit back changes on HEAD
 cvs -Q commit -m "$SYNC_MSG" || fail "Error committing changes"
 # move SYNC_TAG
