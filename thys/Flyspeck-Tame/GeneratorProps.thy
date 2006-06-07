@@ -1,4 +1,4 @@
-(*  ID:         $Id: GeneratorProps.thy,v 1.1 2006-05-22 09:53:59 nipkow Exp $
+(*  ID:         $Id: GeneratorProps.thy,v 1.2 2006-06-07 09:18:53 makarius Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -105,14 +105,14 @@ lemma close_sym: assumes mgp: "minGraphProps g" and cl: "close g u v"
 shows "close g v u"
 proof -
   obtain f where f: "f \<in> set(facesAt g u)" and
-    if: "if |vertices f| = 4 then v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u) else v = f \<bullet> u"
+    "if": "if |vertices f| = 4 then v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u) else v = f \<bullet> u"
     using cl by (unfold close_def) blast
   note uf = minGraphProps6[OF mgp f]
   note distf = minGraphProps3[OF mgp minGraphProps5[OF mgp f]]
   show ?thesis
   proof cases
     assume 4: "|vertices f| = 4"
-    hence "v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u)" using if by simp
+    hence "v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u)" using "if" by simp
     thus ?thesis
     proof
       assume "v = f \<bullet> u"
@@ -128,7 +128,7 @@ proof -
     qed
   next
     assume "|vertices f| \<noteq> 4"
-    hence "v = f \<bullet> u" using if by simp
+    hence "v = f \<bullet> u" using "if" by simp
     then obtain f' where "f' \<in> set(facesAt g v)" "f' \<bullet> v = u"
       using mgp_nextVertex_face_ex2[OF mgp f] by blast
     thus ?thesis by(auto simp:close_def)
@@ -145,14 +145,14 @@ proof
   proof(clarify)
     fix u v assume uv: "u \<in> V" "v \<in> V" "u \<noteq> v" and cl: "close g u v"
     from cl obtain f where f: "f \<in> set(facesAt g u)" and
-      if: "if |vertices f| = 4 then (v = f \<bullet> u) \<or> (v = f \<bullet> (f \<bullet> u))
+      "if": "if |vertices f| = 4 then (v = f \<bullet> u) \<or> (v = f \<bullet> (f \<bullet> u))
                                else (v = f \<bullet> u)"
       by (unfold close_def) blast
     note uf = minGraphProps6[OF mgp f]
     show False
     proof cases
       assume 4: "|vertices f| = 4"
-      hence "v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u)" using if by simp
+      hence "v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u)" using "if" by simp
       thus False
       proof
 	assume "v = f \<bullet> u"
@@ -171,7 +171,7 @@ proof
       qed
     next
       assume 4: "|vertices f| \<noteq> 4"
-      hence "v = f \<bullet> u" using if by simp
+      hence "v = f \<bullet> u" using "if" by simp
       thus False using preSep f uv
 	by(simp add:preSeparated_def separated\<^isub>2_def separated\<^isub>3_def)
     qed
