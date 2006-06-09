@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.4 2006-05-29 06:15:43 wasserra Exp $
+    ID:          $Id: Execute.thy,v 1.5 2006-06-09 08:28:51 wasserra Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -639,15 +639,19 @@ contains
 V = "''V''"
 mult = "''mult''"
 
+ML {* if fst (Seq.hd NoProg.test1) = NoProg.Val (NoProg.Intg 5) then () 
+      else error "" *}
+ML {* if fst (Seq.hd NoProg.test2) = NoProg.Val (NoProg.Intg 11) then ()  
+      else error "" *}
+ML {* if fst (Seq.hd NoProg.test3) = NoProg.Val (NoProg.Intg 83) then () 
+      else error "" *}
+ML {* if let val (_,(h,l)) = Seq.hd NoProg.test4 in l NoProg.V end = 
+      NoProg.Some (NoProg.Intg 6) then () else error "" *}
+ML {* if let val (_,(h,l)) = Seq.hd NoProg.testWhile in l NoProg.mult end =
+      NoProg.Some (NoProg.Intg 12) then () else error "" *}
+ML {* if fst (Seq.hd NoProg.testIf) = NoProg.Val (NoProg.Intg 30) then () 
+      else error "" *} 
 
-ML "fst (Seq.hd NoProg.test1)" (* result Val (Intg 5) *)
-ML "fst (Seq.hd NoProg.test2)" (* result Val (Intg 11) *)
-ML "fst (Seq.hd NoProg.test3)" (* result Val (Intg 83) *)
-ML "let val (_,(h,l)) = Seq.hd NoProg.test4 in l NoProg.V end" 
-    (* result Some (Intg 6) *)
-ML "let val (_,(h,l)) = Seq.hd NoProg.testWhile in l NoProg.mult end"
-    (* result Some (Intg 12) *)
-ML "fst (Seq.hd NoProg.testIf)" (* result Val (Intg 30) *)
 
 
   (* progOverrider examples *)
@@ -719,30 +723,53 @@ contains
   typeBig = "progOverrider,[''V''\<mapsto>Class ''Right2'',''W''\<mapsto>Class ''Left''] \<turnstile> 
   ''V'' := new ''Right'' ;; ''W'' := new ''Left'' ;; (Var ''V''\<bullet>''f''([Var ''W'', Val(Intg 7)])) \<guillemotleft>Add\<guillemotright> (Var ''W''\<bullet>''f''([Var ''V'', Val(Intg 13)])) :: _"
 
+Bottom = "''Bottom''"
+Left = "''Left''"
+Right = "''Right''"
+Top = "''Top''"
 
 
-ML "fst (Seq.hd ProgOverrider.dynCastSide)" (* result Val(Ref(0,[Bottom.Left])) *)
-ML "fst (Seq.hd ProgOverrider.dynCastViaSh)"(* result Val(Ref(0,[Right])) *)
-ML "fst (Seq.hd ProgOverrider.block)" (* result Val(Intg 42) *)
-ML "fst (Seq.hd ProgOverrider.call)" (* result Val(Intg 12) *)
-ML "fst (Seq.hd ProgOverrider.callClass)" (* result Val(Ref(1,[Left,Top])) *)
-ML "fst (Seq.hd ProgOverrider.fieldAss)" (* result Val(Intg 42) *)
+ML {* if fst (Seq.hd ProgOverrider.dynCastSide) = ProgOverrider.Val(
+      ProgOverrider.Ref(0,[ProgOverrider.Bottom,ProgOverrider.Left])) then () 
+      else error "" *}
+ML {* if fst (Seq.hd ProgOverrider.dynCastViaSh) = ProgOverrider.Val(
+      ProgOverrider.Ref(0,[ProgOverrider.Right])) then () else error "" *}
+ML {* if fst (Seq.hd ProgOverrider.block) = ProgOverrider.Val(ProgOverrider.Intg 42)  
+      then () else error "" *}
+ML {* if fst (Seq.hd ProgOverrider.call) = ProgOverrider.Val(ProgOverrider.Intg 12) 
+      then () else error "" *}
+ML {* if fst (Seq.hd ProgOverrider.callClass) = ProgOverrider.Val(
+      ProgOverrider.Ref(1,[ProgOverrider.Left,ProgOverrider.Top])) then () 
+      else error "" *}
+ML {* if fst (Seq.hd ProgOverrider.fieldAss) = ProgOverrider.Val(
+      ProgOverrider.Intg 42) then () else error "" *}
 
 (* Typing rules *)
-ML "Seq.hd ProgOverrider.typeNew" (* result Class Bottom *)
-ML "Seq.hd ProgOverrider.typeDynCast" (* result Class Left *)
-ML "Seq.hd ProgOverrider.typeStaticCast" (* result Class Left *)
-ML "Seq.hd ProgOverrider.typeVal" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeVar" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeBinOp" (* result Boolean *)
-ML "Seq.hd ProgOverrider.typeLAss" (* result Class Top *)
-ML "Seq.hd ProgOverrider.typeFAcc" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeFAss" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeCall" (* result Class Top *)
-ML "Seq.hd ProgOverrider.typeBlock" (* result Class Top *)
-ML "Seq.hd ProgOverrider.typeCond" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeThrow" (* result Void *)
-ML "Seq.hd ProgOverrider.typeBig" (* result Integer *)
+ML {* if Seq.hd ProgOverrider.typeNew = ProgOverrider.Class ProgOverrider.Bottom 
+      then () else error "" *}
+ML {* if Seq.hd ProgOverrider.typeDynCast = ProgOverrider.Class ProgOverrider.Left
+      then () else error "" *}
+ML {* if Seq.hd ProgOverrider.typeStaticCast = ProgOverrider.Class ProgOverrider.Left
+      then () else error "" *}
+ML {* if Seq.hd ProgOverrider.typeVal = ProgOverrider.Integer then () else error "" *}
+ML {* if Seq.hd ProgOverrider.typeVar = ProgOverrider.Integer then () else error "" *}
+ML {* if Seq.hd ProgOverrider.typeBinOp = ProgOverrider.Boolean then () 
+      else error "" *}
+ML {* if Seq.hd ProgOverrider.typeLAss = ProgOverrider.Class ProgOverrider.Top
+      then () else error "" *}
+ML {* if Seq.hd ProgOverrider.typeFAcc = ProgOverrider.Integer then () 
+      else error "" *}
+ML {* if Seq.hd ProgOverrider.typeFAss = ProgOverrider.Integer then () 
+      else error "" *}
+ML {* if Seq.hd ProgOverrider.typeCall = ProgOverrider.Class ProgOverrider.Top
+      then () else error "" *}
+ML {* if Seq.hd ProgOverrider.typeBlock = ProgOverrider.Class ProgOverrider.Top
+      then () else error "" *}
+ML {* if Seq.hd ProgOverrider.typeCond = ProgOverrider.Integer then () 
+      else error "" *}
+ML {* if Seq.hd ProgOverrider.typeThrow = ProgOverrider.Void then () 
+      else error "" *}
+ML {* if Seq.hd ProgOverrider.typeBig = ProgOverrider.Integer then () else error "" *}
 
 
 
@@ -802,19 +829,34 @@ contains
   dynCastSide = "progDiamond,[''V''\<mapsto>Class ''Right''] \<turnstile>
     \<langle>''V'' := new ''Bottom'' ;; Cast ''Left'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 
-ML "fst (Seq.hd ProgDiamond.cast1)" (* result Val(Ref(0,[Bottom,Left])) *)
-ML "fst (Seq.hd ProgDiamond.cast2)" (* result Val(Ref(0,[TopSh])) *)
-ML "fst (Seq.hd ProgDiamond.cast3)" (* result Val(Ref(0,[Bottom,Left,TopRep]))??? \<dots>*)
-(* ML "Seq.hd ProgDiamond.typeCast3)"  
-         \<dots>but this program is rejected by the type checker :) *)
-ML "fst (Seq.hd ProgDiamond.fieldAss)" (* result Val(Intg 17) *)
-ML "fst (Seq.hd ProgDiamond.dynCastNull)" (* result Val Null *)
-ML "fst (Seq.hd ProgDiamond.dynCastFail)" (* result Val Null *)
-ML "fst (Seq.hd ProgDiamond.dynCastSide)" (* result Val(Ref(0,[Bottom,Left])) *)
+Bottom = "''Bottom''"
+Left = "''Left''"
+TopSh = "''TopSh''"
+TopRep = "''TopRep''"
+
+ML {* if fst (Seq.hd ProgDiamond.cast1) = ProgDiamond.Val(
+      ProgDiamond.Ref(0,[ProgDiamond.Bottom,ProgDiamond.Left])) then () 
+      else error "" *}
+ML {* if fst (Seq.hd ProgDiamond.cast2) = ProgDiamond.Val(
+      ProgDiamond.Ref(0,[ProgDiamond.TopSh])) then () else error "" *}
+(*ML {* if Seq.hd ProgDiamond.typeCast3 = ProgDiamond.Class ProgDiamond.TopRep
+      then (if fst (Seq.hd ProgDiamond.cast3) =  ProgDiamond.Val(
+            ProgDiamond.Ref(0,
+              [ProgDiamond.Bottom,ProgDiamond.Left,ProgDiamond.TopRep])) then ()
+            else error "") else error "" *} *)
+ML {* if fst (Seq.hd ProgDiamond.fieldAss) = ProgDiamond.Val(ProgDiamond.Intg 17) 
+      then () else error "" *}
+ML {* if fst (Seq.hd ProgDiamond.dynCastNull) = ProgDiamond.Val ProgDiamond.Null
+      then () else error "" *}
+ML {* if fst (Seq.hd ProgDiamond.dynCastFail) = ProgDiamond.Val ProgDiamond.Null
+      then () else error "" *}
+ML {* if fst (Seq.hd ProgDiamond.dynCastSide) = ProgDiamond.Val(
+      ProgDiamond.Ref(0,[ProgDiamond.Bottom,ProgDiamond.Left])) then () 
+      else error "" *}
 
 
 
-  (* failing g++ and icc example *)
+  (* failing g++ example *)
 
 constdefs
   -- "failing example"
@@ -844,7 +886,8 @@ contains
     \<langle>{''V'':Class ''D''; ''V'' := new ''D'';; Var ''V''\<bullet>''f''([])},(empty,empty)\<rangle> 
                                                                        \<Rightarrow> \<langle>_,_\<rangle>"
 
-ML "fst (Seq.hd Fail.callFailGplusplus)" (* result Val(Intg 42) *)
+ML {* if fst (Seq.hd Fail.callFailGplusplus) = Fail.Val(Fail.Intg 42) then () 
+      else error "" *}
 
 
 

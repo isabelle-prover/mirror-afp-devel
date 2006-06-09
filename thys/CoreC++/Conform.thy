@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Conform.thy,v 1.5 2006-06-01 12:22:33 wasserra Exp $
+    ID:          $Id: Conform.thy,v 1.6 2006-06-09 08:28:51 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -219,7 +219,7 @@ consts
 syntax (xsymbols)
   type_conf :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
     ("_,_,_ \<turnstile> _ :\<^bsub>NT\<^esub> _"   [51,51,51]50)
-  type_conf :: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
+  types_conf :: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
     ("_,_,_ \<turnstile> _ [:]\<^bsub>NT\<^esub> _"   [51,51,51]50)
 
 primrec
@@ -231,8 +231,8 @@ primrec
                              (P,E,h \<turnstile> e : Class C \<or> P,E,h \<turnstile> e : NT)"
 
 recdef types_conf "measure(\<lambda>(P,E,h,es,Ts). size Ts)"
-  "types_conf (P,E,h,[],[])     = True"
-  "types_conf (P,E,h,e#es,T#Ts) = (P,E,h \<turnstile> e :\<^bsub>NT\<^esub> T \<and> types_conf (P,E,h,es,Ts))"
+  "types_conf(P,E,h,[],[]) = True"
+  "types_conf(P,E,h,e#es,T#Ts) = (P,E,h \<turnstile> e :\<^bsub>NT\<^esub> T \<and> types_conf(P,E,h,es,Ts))"
 
 
 lemma wt_same_type_typeconf:

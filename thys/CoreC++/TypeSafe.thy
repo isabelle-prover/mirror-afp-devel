@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.6 2006-06-01 12:22:33 wasserra Exp $
+    ID:          $Id: TypeSafe.thy,v 1.7 2006-06-09 08:28:51 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -391,7 +391,7 @@ next
   case (StaticCastRed C E e e' h l h' l')
   have wt:"P,E,h \<turnstile> \<lparr>C\<rparr>e : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
-            \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+            \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h, l) \<surd>" .
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and isref:"is_refT T'" 
     and "class": "is_class P C" and T:"T = Class C"
@@ -450,7 +450,7 @@ next
   case (DynCastRed C E e e' h l h' l')
   have wt:"P,E,h \<turnstile> Cast C e : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
-            \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+            \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" .
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and isref:"is_refT T'" 
     and "class": "is_class P C" and T:"T = Class C"
@@ -517,7 +517,7 @@ next
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
     and wt:"P,E,h \<turnstile> e \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
-            \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+            \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" .
   from wt obtain T\<^isub>1 T\<^isub>2 where wte:"P,E,h \<turnstile> e : T\<^isub>1" and wte2:"P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2"
     and binop:"case bop of Eq \<Rightarrow> T = Boolean
@@ -542,7 +542,7 @@ next
   have red:"P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
     and wt:"P,E,h \<turnstile> Val v\<^isub>1 \<guillemotleft>bop\<guillemotright> e : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
-            \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+            \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" .
   from wt obtain T\<^isub>1 T\<^isub>2 where wtval:"P,E,h \<turnstile> Val v\<^isub>1 : T\<^isub>1" and wte:"P,E,h \<turnstile> e : T\<^isub>2"
     and binop:"case bop of Eq \<Rightarrow> T = Boolean
@@ -591,7 +591,7 @@ next
 next
   case (LAssRed E V e e' h l h' l')
   have wt:"P,E,h \<turnstile> V:=e : T" and sconf:"P,E \<turnstile> (h, l) \<surd>"
-    and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'" .
+    and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'" .
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and env:"E V = Some T" 
     and sub:"P \<turnstile> T' \<le> T" by auto
   from sconf env have "is_type P T" by(auto simp:sconf_def envconf_def)
@@ -644,7 +644,7 @@ next
   have red:"P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
     and wt:"P,E,h \<turnstile> e\<bullet>F{Cs} : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
-            \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+            \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" .
   from wt have "P,E,h' \<turnstile> e'\<bullet>F{Cs} : T"
   proof(rule WTrt_elim_cases)
@@ -702,7 +702,7 @@ next
   have red:"P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
     and wt:"P,E,h \<turnstile> e\<bullet>F{Cs} := e\<^isub>2 : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
-            \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+            \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" .
   from wt have "P,E,h' \<turnstile> e'\<bullet>F{Cs} := e\<^isub>2 : T"
   proof (rule WTrt_elim_cases)
@@ -736,7 +736,7 @@ next
   have red:"P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
     and wt:"P,E,h \<turnstile> Val v\<bullet>F{Cs} := e : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
-            \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+            \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" .
   from wt have "P,E,h' \<turnstile> Val v\<bullet>F{Cs}:=e' : T"
   proof (rule WTrt_elim_cases)
@@ -848,7 +848,7 @@ next
   case (CallObj E M e e' es h l h' l')
   have red: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
    and IH: "\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk>
-                 \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+                 \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
    and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>M(es) : T" .
   from wt have "P,E,h' \<turnstile> e'\<bullet>M(es) : T"
   proof(rule WTrt_elim_cases)
@@ -1035,7 +1035,7 @@ next
 next
   case (BlockRedNone E T V e e' h h' l l' T')
   have IH:"\<And>T'. \<lbrakk>P,E(V \<mapsto> T) \<turnstile> (h, l(V := None)) \<surd>; P,E(V \<mapsto> T),h \<turnstile> e : T'\<rbrakk>
-                 \<Longrightarrow> P,E(V \<mapsto> T),h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+                 \<Longrightarrow> P,E(V \<mapsto> T),h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> {V:T; e} : T'" .
   from wt have type:"is_type P T" and wte:"P,E(V\<mapsto>T),h \<turnstile> e : T'" by auto
   from sconf type have "P,E(V \<mapsto> T) \<turnstile> (h, l(V := None)) \<surd>"
@@ -1045,7 +1045,7 @@ next
   case (BlockRedSome E T V e e' h h' l l' v T')
   have red:"P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
     and IH:"\<And>T'. \<lbrakk>P,E(V \<mapsto> T) \<turnstile> (h, l(V := None)) \<surd>; P,E(V \<mapsto> T),h \<turnstile> e : T'\<rbrakk>
-                  \<Longrightarrow> P,E(V \<mapsto> T),h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+                  \<Longrightarrow> P,E(V \<mapsto> T),h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and Some:"l' V = Some v"
     and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> {V:T; e} : T'" .
   from wt have wte:"P,E(V\<mapsto>T),h \<turnstile> e : T'"  and type:"is_type P T" by auto
@@ -1076,7 +1076,7 @@ next
   case (InitBlockRed E T V e e' h h' l l' v v' v'' T')
   have red:"P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l(V \<mapsto> v'))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
     and IH:"\<And>T'. \<lbrakk>P,E(V \<mapsto> T) \<turnstile> (h, l(V \<mapsto> v')) \<surd>; P,E(V \<mapsto> T),h \<turnstile> e : T'\<rbrakk>
-              \<Longrightarrow> P,E(V \<mapsto> T),h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+              \<Longrightarrow> P,E(V \<mapsto> T),h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and Some:"l' V = Some v''" and casts:"P \<turnstile> T casts v to v'"
     and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> {V:T := Val v; e} : T'" .
   from wt have wte:"P,E(V \<mapsto> T),h \<turnstile> e : T'" and wtval:"P,E(V \<mapsto> T),h \<turnstile> V:=Val v : T"
@@ -1103,7 +1103,7 @@ next
 next
   case (SeqRed E e e' e\<^isub>2 h l h' l' T)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
-    and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T'"
+    and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> e;; e\<^isub>2 : T" .
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and wte2:"P,E,h \<turnstile> e\<^isub>2 : T" by auto
   from WTrt_hext_mono[OF wte2 red_hext_incr[OF red]] have wte2':"P,E,h' \<turnstile> e\<^isub>2 : T" .
@@ -1116,7 +1116,7 @@ next
   case (CondRed E e e' e\<^isub>1 e\<^isub>2 h l h' l')
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
     and IH: "\<And>T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
-                     \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T"
+                     \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T"
     and wt:"P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
     and sconf:"P,E \<turnstile> (h,l) \<surd>" .
   from wt have wte:"P,E,h \<turnstile> e : Boolean"
@@ -1135,7 +1135,7 @@ next
   case RedWhile thus ?case by (fastsimp intro: wt_same_type_typeconf)
 next
   case (ThrowRed E e e' h l h' l' T)
-  have IH:"\<And>T. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T"
+  have IH:"\<And>T. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T"
     and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> throw e : T" .
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and ref:"is_refT T'"
     by auto
@@ -1174,7 +1174,7 @@ next
 next
   case (ListRed1 E e e' es h l h' l' Ts)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
-    and IH:"\<And>T. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' [:]\<^bsub>NT\<^esub> T"
+    and IH:"\<And>T. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T"
     and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> e # es [:] Ts" .
   from wt obtain U Us where Ts:"Ts = U#Us" by(cases Ts) auto
   with wt have wte:"P,E,h \<turnstile> e : U" and wtes:"P,E,h \<turnstile> es [:] Us" by simp_all
