@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.5 2006-06-09 08:28:51 wasserra Exp $
+    ID:          $Id: Execute.thy,v 1.6 2006-06-12 11:01:43 wasserra Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -639,19 +639,14 @@ contains
 V = "''V''"
 mult = "''mult''"
 
-ML {* if fst (Seq.hd NoProg.test1) = NoProg.Val (NoProg.Intg 5) then () 
-      else error "" *}
-ML {* if fst (Seq.hd NoProg.test2) = NoProg.Val (NoProg.Intg 11) then ()  
-      else error "" *}
-ML {* if fst (Seq.hd NoProg.test3) = NoProg.Val (NoProg.Intg 83) then () 
-      else error "" *}
-ML {* if let val (_,(h,l)) = Seq.hd NoProg.test4 in l NoProg.V end = 
-      NoProg.Some (NoProg.Intg 6) then () else error "" *}
-ML {* if let val (_,(h,l)) = Seq.hd NoProg.testWhile in l NoProg.mult end =
-      NoProg.Some (NoProg.Intg 12) then () else error "" *}
-ML {* if fst (Seq.hd NoProg.testIf) = NoProg.Val (NoProg.Intg 30) then () 
-      else error "" *} 
-
+ML {* local open NoProg in val Val (Intg 5) = fst (Seq.hd test1) end *}
+ML {* local open NoProg in val Val (Intg 11) = fst (Seq.hd test2) end *}
+ML {* local open NoProg in val Val (Intg 83) = fst (Seq.hd test3) end *}
+ML {* local open NoProg in val Some (Intg 6) = 
+      let val (_,(h,l)) = Seq.hd test4 in l V end end *}
+ML {* local open NoProg in val Some (Intg 12) = 
+      let val (_,(h,l)) = Seq.hd testWhile in l mult end end *}
+ML {* local open NoProg in val Val (Intg 30) = fst (Seq.hd testIf) end *}
 
 
   (* progOverrider examples *)
@@ -729,47 +724,32 @@ Right = "''Right''"
 Top = "''Top''"
 
 
-ML {* if fst (Seq.hd ProgOverrider.dynCastSide) = ProgOverrider.Val(
-      ProgOverrider.Ref(0,[ProgOverrider.Bottom,ProgOverrider.Left])) then () 
-      else error "" *}
-ML {* if fst (Seq.hd ProgOverrider.dynCastViaSh) = ProgOverrider.Val(
-      ProgOverrider.Ref(0,[ProgOverrider.Right])) then () else error "" *}
-ML {* if fst (Seq.hd ProgOverrider.block) = ProgOverrider.Val(ProgOverrider.Intg 42)  
-      then () else error "" *}
-ML {* if fst (Seq.hd ProgOverrider.call) = ProgOverrider.Val(ProgOverrider.Intg 12) 
-      then () else error "" *}
-ML {* if fst (Seq.hd ProgOverrider.callClass) = ProgOverrider.Val(
-      ProgOverrider.Ref(1,[ProgOverrider.Left,ProgOverrider.Top])) then () 
-      else error "" *}
-ML {* if fst (Seq.hd ProgOverrider.fieldAss) = ProgOverrider.Val(
-      ProgOverrider.Intg 42) then () else error "" *}
+ML {* local open ProgOverrider in val Val(Ref(0,[Bottom,Left])) = 
+      fst (Seq.hd dynCastSide) end *}
+ML {* local open ProgOverrider in val Val(Ref(0,[Right])) = 
+      fst (Seq.hd dynCastViaSh) end *}
+ML {* local open ProgOverrider in val Val(Intg 42) = fst (Seq.hd block) end *}
+ML {* local open ProgOverrider in val Val(Intg 12) = fst (Seq.hd call) end *}
+ML {* local open ProgOverrider in val Val(Ref(1,[Left,Top])) = 
+      fst (Seq.hd callClass) end *}
+ML {* local open ProgOverrider in val Val(Intg 42) = fst (Seq.hd fieldAss) end *}
+
 
 (* Typing rules *)
-ML {* if Seq.hd ProgOverrider.typeNew = ProgOverrider.Class ProgOverrider.Bottom 
-      then () else error "" *}
-ML {* if Seq.hd ProgOverrider.typeDynCast = ProgOverrider.Class ProgOverrider.Left
-      then () else error "" *}
-ML {* if Seq.hd ProgOverrider.typeStaticCast = ProgOverrider.Class ProgOverrider.Left
-      then () else error "" *}
-ML {* if Seq.hd ProgOverrider.typeVal = ProgOverrider.Integer then () else error "" *}
-ML {* if Seq.hd ProgOverrider.typeVar = ProgOverrider.Integer then () else error "" *}
-ML {* if Seq.hd ProgOverrider.typeBinOp = ProgOverrider.Boolean then () 
-      else error "" *}
-ML {* if Seq.hd ProgOverrider.typeLAss = ProgOverrider.Class ProgOverrider.Top
-      then () else error "" *}
-ML {* if Seq.hd ProgOverrider.typeFAcc = ProgOverrider.Integer then () 
-      else error "" *}
-ML {* if Seq.hd ProgOverrider.typeFAss = ProgOverrider.Integer then () 
-      else error "" *}
-ML {* if Seq.hd ProgOverrider.typeCall = ProgOverrider.Class ProgOverrider.Top
-      then () else error "" *}
-ML {* if Seq.hd ProgOverrider.typeBlock = ProgOverrider.Class ProgOverrider.Top
-      then () else error "" *}
-ML {* if Seq.hd ProgOverrider.typeCond = ProgOverrider.Integer then () 
-      else error "" *}
-ML {* if Seq.hd ProgOverrider.typeThrow = ProgOverrider.Void then () 
-      else error "" *}
-ML {* if Seq.hd ProgOverrider.typeBig = ProgOverrider.Integer then () else error "" *}
+ML {* local open ProgOverrider in val Class Bottom = Seq.hd typeNew end *}
+ML {* local open ProgOverrider in val Class Left   = Seq.hd typeDynCast end *}
+ML {* local open ProgOverrider in val Class Left   = Seq.hd typeStaticCast end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeVal end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeVar end *}
+ML {* local open ProgOverrider in val Boolean      = Seq.hd typeBinOp end *}
+ML {* local open ProgOverrider in val Class Top    = Seq.hd typeLAss end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeFAcc end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeFAss end *}
+ML {* local open ProgOverrider in val Class Top    = Seq.hd typeCall end *}
+ML {* local open ProgOverrider in val Class Top    = Seq.hd typeBlock end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeCond end *}
+ML {* local open ProgOverrider in val Void         = Seq.hd typeThrow end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeBig end *}
 
 
 
@@ -834,25 +814,19 @@ Left = "''Left''"
 TopSh = "''TopSh''"
 TopRep = "''TopRep''"
 
-ML {* if fst (Seq.hd ProgDiamond.cast1) = ProgDiamond.Val(
-      ProgDiamond.Ref(0,[ProgDiamond.Bottom,ProgDiamond.Left])) then () 
-      else error "" *}
-ML {* if fst (Seq.hd ProgDiamond.cast2) = ProgDiamond.Val(
-      ProgDiamond.Ref(0,[ProgDiamond.TopSh])) then () else error "" *}
-(*ML {* if Seq.hd ProgDiamond.typeCast3 = ProgDiamond.Class ProgDiamond.TopRep
-      then (if fst (Seq.hd ProgDiamond.cast3) =  ProgDiamond.Val(
-            ProgDiamond.Ref(0,
-              [ProgDiamond.Bottom,ProgDiamond.Left,ProgDiamond.TopRep])) then ()
-            else error "") else error "" *} *)
-ML {* if fst (Seq.hd ProgDiamond.fieldAss) = ProgDiamond.Val(ProgDiamond.Intg 17) 
-      then () else error "" *}
-ML {* if fst (Seq.hd ProgDiamond.dynCastNull) = ProgDiamond.Val ProgDiamond.Null
-      then () else error "" *}
-ML {* if fst (Seq.hd ProgDiamond.dynCastFail) = ProgDiamond.Val ProgDiamond.Null
-      then () else error "" *}
-ML {* if fst (Seq.hd ProgDiamond.dynCastSide) = ProgDiamond.Val(
-      ProgDiamond.Ref(0,[ProgDiamond.Bottom,ProgDiamond.Left])) then () 
-      else error "" *}
+
+
+ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left])) = 
+      fst (Seq.hd cast1) end *}
+ML {* local open ProgDiamond in val Val(Ref(0,[TopSh])) = fst (Seq.hd cast2) end *}
+(* ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left,TopRep])) =
+       if Seq.hd typeCast3 = Class TopRep then fst (Seq.hd cast3) else error "" end *}
+ error! cast3 not typeable! *)
+ML {* local open ProgDiamond in val Val(Intg 17) = fst (Seq.hd fieldAss) end *}
+ML {* local open ProgDiamond in val Val Null = fst (Seq.hd dynCastNull) end *}
+ML {* local open ProgDiamond in val Val Null = fst (Seq.hd dynCastFail) end *}
+ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left])) = 
+      fst (Seq.hd dynCastSide) end *}
 
 
 
@@ -876,18 +850,18 @@ constdefs
   "classA == (''A'', [],[],
               [(''f'',[],Integer,[],Val(Intg 13))])"
 
-  progFailing :: "cdecl list"
-  "progFailing == [classA,classB,classC,classD]"
+  ProgFailing :: "cdecl list"
+  "ProgFailing == [classA,classB,classC,classD]"
 
 code_module Fail
 contains
 
-  callFailGplusplus = "progFailing,empty \<turnstile>
+  callFailGplusplus = "ProgFailing,empty \<turnstile>
     \<langle>{''V'':Class ''D''; ''V'' := new ''D'';; Var ''V''\<bullet>''f''([])},(empty,empty)\<rangle> 
                                                                        \<Rightarrow> \<langle>_,_\<rangle>"
 
-ML {* if fst (Seq.hd Fail.callFailGplusplus) = Fail.Val(Fail.Intg 42) then () 
-      else error "" *}
+ML {* local open Fail in val Val(Intg 42) = 
+      fst (Seq.hd callFailGplusplus) end *}
 
 
 
