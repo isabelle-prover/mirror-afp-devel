@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.4 2006-05-27 15:32:27 makarius Exp $
+    ID:         $Id: Progress.thy,v 1.5 2006-06-14 13:53:53 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -160,7 +160,8 @@ lemmas WTrt_induct2 = WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts,
  WTrtFAssNT WTrtCall WTrtCallNT WTrtNil WTrtCons WTrtInitBlock WTrtBlock WTrtSeq WTrtCond
  WTrtWhile WTrtThrow WTrtTry]
 ML_setup {*
-  store_thms ("WTrt_inducts2", ProjectRule.projections (thm "WTrt_induct2"))
+  store_thms ("WTrt_inducts2",
+    ProjectRule.projections (ProofContext.init (the_context ())) (thm "WTrt_induct2"))
 *}
 (*>*)
 

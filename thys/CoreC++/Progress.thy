@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.6 2006-06-01 10:14:20 wasserra Exp $
+    ID:          $Id: Progress.thy,v 1.7 2006-06-14 13:53:53 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -212,7 +212,8 @@ lemmas WTrt_induct2 = WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts,
   WTrtNil WTrtCons]
 
 ML_setup {*
-  store_thms ("WTrt_inducts2", ProjectRule.projections (thm "WTrt_induct2"))
+  store_thms ("WTrt_inducts2",
+    ProjectRule.projections (ProofContext.init (the_context ())) (thm "WTrt_induct2"))
 *}
 
 
