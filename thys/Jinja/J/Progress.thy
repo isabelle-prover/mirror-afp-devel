@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.5 2006-06-14 13:53:53 makarius Exp $
+    ID:         $Id: Progress.thy,v 1.6 2006-06-14 17:08:25 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -155,14 +155,10 @@ corollary wts'_iff_wts: "(P,E,h \<turnstile> es [:'] Ts) = (P,E,h \<turnstile> e
 (*<*)by(blast intro:wts_wts' wts'_wts)(*>*)
 
 (*<*)
-lemmas WTrt_induct2 = WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts,
+lemmas WTrt_inducts2 = WTrt'_inducts [unfolded wt'_iff_wt wts'_iff_wts,
  case_names WTrtNew WTrtCast WTrtVal WTrtVar WTrtBinOpEq WTrtBinOpAdd WTrtLAss WTrtFAcc WTrtFAccNT WTrtFAss
  WTrtFAssNT WTrtCall WTrtCallNT WTrtNil WTrtCons WTrtInitBlock WTrtBlock WTrtSeq WTrtCond
- WTrtWhile WTrtThrow WTrtTry]
-ML_setup {*
-  store_thms ("WTrt_inducts2",
-    ProjectRule.projections (ProofContext.init (the_context ())) (thm "WTrt_induct2"))
-*}
+ WTrtWhile WTrtThrow WTrtTry, consumes 1]
 (*>*)
 
 theorem assumes wf: "wwf_J_prog P" and hconf: "P \<turnstile> h \<surd>"
@@ -560,7 +556,7 @@ next
   proof cases
     assume "final e1"
     thus ?thesis
-      by(fast elim:finalE intro:intro:RedSeq red_reds.SeqThrow)
+      by(fast elim:finalE intro:RedSeq red_reds.SeqThrow)
   next
     assume "\<not> final e1" from prems show ?thesis
       by simp (blast intro:SeqRed)

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.7 2006-06-14 13:53:53 makarius Exp $
+    ID:          $Id: Progress.thy,v 1.8 2006-06-14 17:08:24 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -205,16 +205,11 @@ by(blast intro:wt_wt' wt'_wt)
 corollary wts'_iff_wts: "(P,E,h \<turnstile> es [:'] Ts) = (P,E,h \<turnstile> es [:] Ts)"
 by(blast intro:wts_wts' wts'_wts)
 
-lemmas WTrt_induct2 = WTrt'_induct[simplified wt'_iff_wt wts'_iff_wts,
+lemmas WTrt_inducts2 = WTrt'_inducts [unfolded wt'_iff_wt wts'_iff_wts,
   case_names WTrtNew WTrtDynCast WTrtStaticCast WTrtVal WTrtVar WTrtBinOp 
   WTrtLAss WTrtFAcc WTrtFAccNT WTrtFAss WTrtFAssNT WTrtCall WTrtCallNT 
   WTrtInitBlock WTrtBlock WTrtSeq WTrtCond WTrtWhile WTrtThrow 
-  WTrtNil WTrtCons]
-
-ML_setup {*
-  store_thms ("WTrt_inducts2",
-    ProjectRule.projections (ProofContext.init (the_context ())) (thm "WTrt_induct2"))
-*}
+  WTrtNil WTrtCons, consumes 1]
 
 
 subsection{* The theorem @{text"progress"} *}
@@ -973,7 +968,6 @@ next
     from IHe[OF hconf envconf De this] show ?thesis by(fast intro!:ListRed1)
   qed
 qed
-
 
 
 end
