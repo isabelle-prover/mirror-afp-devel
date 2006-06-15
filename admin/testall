@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.5 2004-05-25 14:18:33 lsf37 Exp $
+# $Id: testall,v 1.6 2006-06-15 14:19:05 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Tests all entries in Archive of Formal Proofs
@@ -20,6 +20,7 @@ function usage()
   echo "-c                     include target clean (rebuild session)"
   echo "-d <path>              use specified path as base for archive entries"
   echo "-r                     use env variable ISABELLE_RELEASES to find isatool"
+  echo "-f                     only test entries marked as frequent"
   echo 
   echo "Examples:"
   echo
@@ -59,7 +60,9 @@ THYS="$(dirname "$0")/../thys"
 [ "$1" = "-?" ] && usage
 
 ISATOOL=isatool
-while getopts "t:cr:d:" OPT
+FRQONLY="no"
+
+while getopts "t:cfr:d:" OPT
 do
     case "$OPT" in
       r)
@@ -77,6 +80,9 @@ do
         ISATOOL="$OPTARG"
         check_isatool
         ;;
+      f) 
+        FRQONLY="yes"
+        ;;
     esac
 done
 
@@ -92,11 +98,13 @@ FAIL="";
 
 for DIR in $DIRS; do
     if [ -d $DIR -a "$DIR" != "CVS" ]; then
-        echo "Testing [$DIR]"
         cd $DIR
-        $ISATOOL make $CLEAN all $@ || FAIL="${FAIL}${DIR} "
+        if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
+          echo "Testing [$DIR]"
+#          $ISATOOL make $CLEAN all $@ || FAIL="${FAIL}${DIR} "
+          echo "Finished [$DIR]"
+        fi
         cd ..
-        echo "Finished [$DIR]"
     fi
 done
 
