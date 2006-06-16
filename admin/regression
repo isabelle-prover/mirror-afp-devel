@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.12 2006-03-14 20:51:52 lsf37 Exp $
+# $Id: regression,v 1.13 2006-06-16 14:19:03 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -36,9 +36,11 @@ PRG="$(basename "$0")"
 function usage()
 {
   echo
-  echo "Usage: $PRG [-|release_tag]"
+  echo "Usage: $PRG [-f] [-|release_tag]"
   echo
   echo "  Runs testall from cron and logs output"
+  echo
+  echo "Options: -f   only run test that are marked as frequent"
   echo 
   exit 1
 }
@@ -50,6 +52,11 @@ function fail()
 }
 
 ## 
+
+if [ "$1" == "-f" ]; then
+	FRQ="-f"
+	shift
+fi
 
 [ "$#" != "1" -o "$1" = "-?" ] && usage
 
@@ -96,7 +103,7 @@ echo "end cvs update" >> $LOG
 echo >> $LOG
 
 # run test
-nice $WORKING_COPY/admin/testall -t $ISATOOL -c >> $LOG 2>&1
+nice $WORKING_COPY/admin/testall $FRQ -t $ISATOOL -c >> $LOG 2>&1
 FAILURE=$?
 
 ELAPSED=$("$HOME/bin/showtime" "$SECONDS")
