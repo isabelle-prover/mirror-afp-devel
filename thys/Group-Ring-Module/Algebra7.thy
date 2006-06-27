@@ -762,7 +762,7 @@ apply (subgoal_tac "\<forall>a1 b1. (a1, b1) \<in> C \<and> m \<in> fgs R M a1 \
  apply (thin_tac "(THE y. y \<in> carrier N \<and> (\<exists>a b. (a, b) \<in> C \<and> m \<in> fgs R M a \<and> y = b m)) \<in> carrier N")
  apply (rule allI)+ apply (rule impI) apply (erule conjE)+ apply simp
  apply (thin_tac "(THE y. y \<in> carrier N \<and> (\<exists>a b. (a, b) \<in> C \<and> m \<in> fgs R M a \<and> y = b m)) = b1 m")
- apply (subst mdl_def)+ apply simp
+ apply (simp (no_asm) add:mdl_def) (*lcp: replaced call to subst*)
  apply (subgoal_tac "R module (mdl M (fgs R M a1))")
  apply (frule_tac R = R and M = "mdl M (fgs R M a1)" and a = a and m = m in sprod_mem, assumption+)
  apply (simp add:mdl_def)
