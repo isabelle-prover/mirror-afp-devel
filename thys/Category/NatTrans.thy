@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: NatTrans.thy,v 1.5 2005-10-20 18:43:32 nipkow Exp $
+    ID:          $Id: NatTrans.thy,v 1.6 2006-06-27 07:20:50 ballarin Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -34,7 +34,7 @@ locale endoNT = natural_transformation + one_cat
 theorem (in endoNT) id_restrict_natural:
   "(\<lambda>A\<in>Ob. Id A) : (id_func AA) \<Rightarrow> (id_func AA) in Func(AA,AA)"
 proof (intro natural_transformation.intro natural_transformation_axioms.intro 
-    two_cats_axioms.intro ballI)
+    two_cats.intro two_cats_axioms.intro ballI)
   show "(\<lambda>A\<in>Ob. Id A) : Ob \<rightarrow> Ar"
     by (rule funcsetI) auto
   show "(\<lambda>A\<in>Ob. Id A) \<in> extensional (Ob)"
@@ -53,6 +53,6 @@ proof (intro natural_transformation.intro natural_transformation_axioms.intro
   thus "(id_func AA)\<^sub>\<a> f \<bullet> (\<lambda>A\<in>Ob. Id A) A
     = (\<lambda>A\<in>Ob. Id A) B \<bullet> (id_func AA)\<^sub>\<a> f"
     by (simp add:  id_func_def)
-qed (simp_all, assumption, assumption, rule id_func_functor, rule id_func_functor)
+qed (auto intro: id_func_functor, intro_locales, intro_locales)
 
 end

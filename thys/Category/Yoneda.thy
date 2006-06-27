@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Yoneda.thy,v 1.5 2005-10-20 18:43:32 nipkow Exp $
+    ID:          $Id: Yoneda.thy,v 1.6 2006-06-27 07:20:50 ballarin Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -14,7 +14,7 @@ locale Yoneda = functor + into_set +
   assumes "AA = (AA::('o,'a,'m)category_scheme)"
   fixes sandwich :: "['o,'a,'o] \<Rightarrow> 'a set_arrow"  ("\<sigma>'(_,_')")
   defines "sandwich A a \<equiv> (\<lambda>B\<in>Ob. \<lparr>
-  set_dom=Hom A B, 
+  set_dom=Hom A B,
   set_func=(\<lambda>f\<in>Hom A B. set_func (F\<^sub>\<a> f) a),
   set_cod=F\<^sub>\<o> B
   \<rparr>)"
@@ -25,8 +25,7 @@ lemma (in Yoneda) F_into_set:
   "Functor F : AA \<longrightarrow> Set"
 proof-
   from F_axioms have "Functor F : AA \<longrightarrow> BB" 
-    by (intro functor.intro functor_axioms.intro two_cats_axioms.intro, 
-      simp_all add: func_pred_defs)
+    by intro_locales
   thus ?thesis
     by (simp only: BB_Set)
 qed
@@ -171,8 +170,8 @@ lemma (in Yoneda) sandwich_natural:
   assumes "A \<in> Ob"
   and "a \<in> F\<^sub>\<o> A"
   shows  "\<sigma>(A,a) : Hom(A,_) \<Rightarrow> F in Func(AA,Set)"
-proof (intro natural_transformation.intro natural_transformation_axioms.intro)
-  show "category AA" .
+proof (intro natural_transformation.intro natural_transformation_axioms.intro two_cats.intro)
+  show "category AA" by intro_locales
   show "category Set" 
     by (simp only: Set_def)(rule set_cat_cat)
   show "Functor Hom(A,_) : AA \<longrightarrow> Set"
