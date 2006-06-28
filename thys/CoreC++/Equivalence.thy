@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.5 2006-06-01 10:14:20 wasserra Exp $
+    ID:          $Id: Equivalence.thy,v 1.6 2006-06-28 09:09:18 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -315,7 +315,7 @@ done
 
 
 lemma StaticDownCastReds:
-  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs@[C]@Cs'),s'\<rangle>; is_class P C; C \<notin> set Cs' \<rbrakk>
+  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs@[C]@Cs'),s'\<rangle>
   \<Longrightarrow>  P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs@[C]),s'\<rangle>"
 
 apply(rule rtrancl_into_rtrancl)
@@ -324,13 +324,11 @@ apply simp
 apply(subgoal_tac "P,E \<turnstile> \<langle>\<lparr>C\<rparr>ref(a,Cs@[C]@Cs'),s'\<rangle> \<rightarrow> \<langle>ref(a,Cs@[C]),s'\<rangle>")
  apply simp
 apply(rule RedStaticDownCast)
-apply assumption+
 done
 
 
 lemma StaticCastRedsFail:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s'\<rangle>; \<not> P \<turnstile> Path last Cs to C unique; 
-     C \<notin> set Cs \<or> \<not> distinct Cs \<rbrakk>
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s'\<rangle>; C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<rangle> \<rightarrow>* \<langle>THROW ClassCast,s'\<rangle>"
 
 apply(rule rtrancl_into_rtrancl)
@@ -368,7 +366,8 @@ done
 
 
 lemma DynCastRedsRef:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s'\<rangle>; hp s' a = Some (D,S); P \<turnstile> Path D to C via Cs'\<rbrakk> 
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s'\<rangle>; hp s' a = Some (D,S); P \<turnstile> Path D to C via Cs';
+     P \<turnstile> Path D to C unique \<rbrakk> 
  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs'),s'\<rangle>"
 
 apply(rule rtrancl_into_rtrancl)
@@ -388,7 +387,7 @@ done
 
 
 lemma StaticDownDynCastReds:
-  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs@[C]@Cs'),s'\<rangle>; is_class P C; C \<notin> set Cs' \<rbrakk>
+  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs@[C]@Cs'),s'\<rangle>
   \<Longrightarrow>  P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs@[C]),s'\<rangle>"
 
 apply(rule rtrancl_into_rtrancl)
@@ -397,13 +396,12 @@ apply simp
 apply(subgoal_tac "P,E \<turnstile> \<langle>Cast C (ref(a,Cs@[C]@Cs')),s'\<rangle> \<rightarrow> \<langle>ref(a,Cs@[C]),s'\<rangle>")
  apply simp
 apply(rule RedStaticDownDynCast)
-apply assumption+
 done
 
 
 lemma DynCastRedsFail:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s'\<rangle>; hp s' a = Some (D,S); \<not> P \<turnstile> Path D to C unique;
-    \<not> P \<turnstile> Path last Cs to C unique; C \<notin> set Cs \<or> \<not> distinct Cs \<rbrakk>
+    C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>null,s'\<rangle>"
 
 apply(rule rtrancl_into_rtrancl)
@@ -1213,7 +1211,6 @@ apply(auto intro:red_reds.intros)
 apply(subgoal_tac "P,E \<turnstile> \<langle>\<lparr>C\<rparr>ref (a,Cs@[C]@Cs'),(h,l')\<rangle> \<rightarrow> \<langle>ref (a,Cs@[C]),(h,l')\<rangle>")
  apply simp
 apply(rule RedStaticDownCast)
-apply assumption+
 done
 
 
@@ -1226,7 +1223,6 @@ apply(auto intro:red_reds.intros)
 apply(subgoal_tac "P,E' \<turnstile> \<langle>\<lparr>C\<rparr>ref (a,Cs@[C]@Cs'),(h,l)\<rangle> \<rightarrow> \<langle>ref (a,Cs@[C]),(h,l)\<rangle>")
  apply simp
 apply(rule RedStaticDownCast)
-apply assumption+
 done
 
 
@@ -1719,15 +1715,14 @@ next
   { fix a Cs Cs'
     assume blocks:"P,E \<turnstile> \<langle>blocks(p#ps',Ts,vs,e),(h,l)\<rangle> \<Rightarrow> 
                          \<langle>ref (a,Cs@C'# Cs'),(h',l')\<rangle>"
-      and "class": "is_class P C'" and notin:"C' \<notin> set Cs'"
-    and e':"e' = ref (a,Cs@[C'])"
+      and e':"e' = ref (a,Cs@[C'])"
     from blocks length_eqs obtain l'' vs''
       where eval:"P,E(p#ps' [\<mapsto>] Ts) \<turnstile> \<langle>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
                                  \<langle>ref (a,Cs@C'# Cs'),(h',l'')\<rangle>"
       and casts:"P \<turnstile> Ts Casts vs to vs''"
       and length:"length vs'' = length vs"
       by -(drule blocksEval,auto)
-    from eval "class" notin have "P,E(p#ps'[\<mapsto>]Ts) \<turnstile> \<langle>\<lparr>C'\<rparr>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
+    from eval have "P,E(p#ps'[\<mapsto>]Ts) \<turnstile> \<langle>\<lparr>C'\<rparr>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
                                              \<langle>ref(a,Cs@[C']),(h',l'')\<rangle>"
       by(auto intro:StaticDownCast)
     with e' casts length have ?case by simp blast }
@@ -1747,8 +1742,7 @@ next
   moreover
   { fix a Cs
     assume blocks:"P,E \<turnstile> \<langle>blocks(p#ps',Ts,vs,e),(h,l)\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h',l')\<rangle>"
-      and path_not_unique:"\<not> P \<turnstile> Path last Cs to C' unique"
-      and notin:"C' \<notin> set Cs \<or> \<not> distinct Cs"
+      and notin:"C' \<notin> set Cs"
       and  e':"e' = THROW ClassCast"
     from blocks length_eqs obtain l'' vs''
       where eval:"P,E(p#ps' [\<mapsto>] Ts) \<turnstile> \<langle>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
@@ -1756,7 +1750,7 @@ next
       and casts:"P \<turnstile> Ts Casts vs to vs''"
       and length:"length vs'' = length vs"
       by -(drule blocksEval,auto)
-    from eval path_not_unique notin have 
+    from eval notin have 
       "P,E(p#ps'[\<mapsto>]Ts) \<turnstile> \<langle>\<lparr>C'\<rparr>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
                           \<langle>THROW ClassCast,(h',l'')\<rangle>"
       by(auto intro:StaticCastFail)
@@ -2077,33 +2071,11 @@ next
   case (DynCastRed C E e e'' s s'' s' e')
   have eval:"P,E \<turnstile> \<langle>Cast C e'',s''\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
     and IH:"\<And>ex sx. P,E \<turnstile> \<langle>e'',s''\<rangle> \<Rightarrow> \<langle>ex,sx\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>ex,sx\<rangle>" .
-  moreover
+  moreover 
   { fix Cs Cs' a
-    assume eval':"P,E \<turnstile> \<langle>e'',s''\<rangle> \<Rightarrow> \<langle>ref (a, Cs),s'\<rangle>"
-      and "P \<turnstile> Path last Cs to C via Cs'"
-      and "P \<turnstile> Path last Cs to C unique"
-    with IH[OF eval'] have "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>ref (a, Cs @\<^sub>p Cs'),s'\<rangle>"
-      by(fastsimp intro:StaticUpDynCast) }
-  moreover
-  { fix Cs Cs' a
-    assume eval':"P,E \<turnstile> \<langle>e'',s''\<rangle> \<Rightarrow> \<langle>ref (a, Cs @ C # Cs'),s'\<rangle>"
-      and "is_class P C" and "C \<notin> set Cs'"
-    with IH[OF eval'] have "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>ref (a, Cs @ [C]),s'\<rangle>"
-      by(fastsimp intro:StaticDownDynCast) }
-  moreover
-  { fix Cs Cs' D S a h l
-    assume eval':"P,E \<turnstile> \<langle>e'',s''\<rangle> \<Rightarrow> \<langle>ref (a, Cs),(h, l)\<rangle>"
-      and "h a = Some(D, S)" and "P \<turnstile> Path D to C via Cs'"
-      and "P \<turnstile> Path D to C unique"
-    with IH[OF eval'] have "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>ref (a, Cs'),(h, l)\<rangle>"
-      by(fastsimp intro:DynCast) }
-  moreover
-  { fix Cs D S a h l
-    assume eval':"P,E \<turnstile> \<langle>e'',s''\<rangle> \<Rightarrow> \<langle>ref (a, Cs),(h, l)\<rangle>"
-      and "h a = Some(D, S)" and "\<not> P \<turnstile> Path D to C unique"
-      and "\<not> P \<turnstile> Path last Cs to C unique" and "C \<notin> set Cs \<or> \<not> distinct Cs"
-    with IH[OF eval'] have "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>null,(h, l)\<rangle>"
-      by(fastsimp intro:DynCastFail) }
+    assume "P,E \<turnstile> \<langle>e'',s''\<rangle> \<Rightarrow> \<langle>ref (a, Cs @ C # Cs'),s'\<rangle>"
+    from IH[OF this] have "P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>ref (a, Cs@[C]@Cs'),s'\<rangle>" by simp
+    hence "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>ref (a, Cs@[C]),s'\<rangle>" by(rule StaticDownDynCast) }
   ultimately show ?case by -(erule eval_cases,auto intro: eval_evals.intros)
 next
   case RedDynCastNull thus ?case by (iprover elim:eval_cases intro:eval_evals.intros)

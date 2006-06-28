@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.7 2006-06-09 08:28:51 wasserra Exp $
+    ID:          $Id: TypeSafe.thy,v 1.8 2006-06-28 09:09:19 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -425,10 +425,8 @@ next
   with T show ?case by (fastsimp intro:wt_same_type_typeconf)
 next
   case (RedStaticDownCast C Cs Cs' E a h l)
-  have wt:"P,E,h \<turnstile> \<lparr>C\<rparr>ref (a,Cs@[C]@Cs') : T"
-    and notin:"C \<notin> set Cs'" .
-  from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs@[C]@Cs')) = 
-                       Some(Class(last(Cs@[C]@Cs')))"
+  have "P,E,h \<turnstile> \<lparr>C\<rparr>ref (a,Cs@[C]@Cs') : T" .
+  hence typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs@[C]@Cs')) = Some(Class(last(Cs@[C]@Cs')))"
     and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" 
@@ -498,10 +496,8 @@ next
   with T show ?case by (fastsimp intro:wt_same_type_typeconf)
 next
   case (RedStaticDownDynCast C Cs Cs' E a h l)
-  have wt:"P,E,h \<turnstile> Cast C (ref (a,Cs@[C]@Cs')) : T"
-    and notin:"C \<notin> set Cs'" .
-  from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs@[C]@Cs')) = 
-                       Some(Class(last(Cs@[C]@Cs')))"
+  have "P,E,h \<turnstile> Cast C (ref (a,Cs@[C]@Cs')) : T" .
+  hence typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs@[C]@Cs')) = Some(Class(last(Cs@[C]@Cs')))"
     and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" 

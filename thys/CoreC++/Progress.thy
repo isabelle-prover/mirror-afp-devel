@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.8 2006-06-14 17:08:24 makarius Exp $
+    ID:          $Id: Progress.thy,v 1.9 2006-06-28 09:09:18 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -314,16 +314,15 @@ next
 	  with True ref show ?thesis by(fastsimp intro:RedStaticUpDynCast)
 	next
 	  case False
-	  hence path_not_unique':"\<not> P \<turnstile> Path last Cs to C unique" .
 	  thus ?thesis
-	  proof(cases "C \<notin> set Cs \<or> \<not> distinct Cs")
+	  proof(cases "C \<notin> set Cs")
 	    case False
-	    then obtain Ds Ds' where "Cs = Ds@[C]@Ds'" and "C \<notin> set Ds'"
+	    then obtain Ds Ds' where "Cs = Ds@[C]@Ds'"
 	      by (auto simp:in_set_conv_decomp)
-	    with ref "class" show ?thesis by(fastsimp intro:RedStaticDownDynCast)
+	    with ref show ?thesis by(fastsimp intro:RedStaticDownDynCast)
 	  next
 	    case True
-	    with path_not_unique path_not_unique' h ref
+	    with path_not_unique h ref
 	    show ?thesis by (fastsimp intro:RedDynCastFail)
 	  qed
 	qed
@@ -361,18 +360,16 @@ next
 	with True ref show ?thesis by(fastsimp intro:RedStaticUpCast)
       next
 	case False
-	hence path_not_unique:"\<not> P \<turnstile> Path last Cs to C unique" .
 	thus ?thesis
-	proof(cases "C \<notin> set Cs \<or> \<not> distinct Cs")
+	proof(cases "C \<notin> set Cs")
 	  case False
-	  then obtain Ds Ds' where "Cs = Ds@[C]@Ds'" and "C \<notin> set Ds'"
+	  then obtain Ds Ds' where "Cs = Ds@[C]@Ds'"
 	    by (auto simp:in_set_conv_decomp)
-	  with ref "class" show ?thesis
+	  with ref show ?thesis
 	    by(fastsimp intro:RedStaticDownCast)
 	next
 	  case True
-	  with path_not_unique ref
-	  show ?thesis by (fastsimp intro:RedStaticCastFail)
+	  with ref show ?thesis by (fastsimp intro:RedStaticCastFail)
 	qed
       qed
     next

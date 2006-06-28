@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.8 2006-06-01 10:42:01 wasserra Exp $
+    ID:          $Id: BigStep.thy,v 1.9 2006-06-28 09:09:18 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -54,7 +54,7 @@ StaticUpCast:
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),s\<^isub>1\<rangle>"
 
 StaticDownCast:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs@[C]@Cs'),s\<^isub>1\<rangle>; is_class P C; C \<notin> set Cs' \<rbrakk>
+  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs@[C]@Cs'),s\<^isub>1\<rangle>
    \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs@[C]),s\<^isub>1\<rangle>"
 
 StaticCastNull:
@@ -62,8 +62,7 @@ StaticCastNull:
   P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>"
 
 StaticCastFail:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>; \<not> P \<turnstile> Path last Cs to C unique; 
-     C \<notin> set Cs \<or> \<not> distinct Cs \<rbrakk>
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>; C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW ClassCast,s\<^isub>1\<rangle>"
 
 StaticCastThrow:
@@ -75,12 +74,12 @@ StaticUpDynCast:
 \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Ds),s\<^isub>1\<rangle>"
 
 StaticDownDynCast:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs@[C]@Cs'),s\<^isub>1\<rangle>; is_class P C; C \<notin> set Cs' \<rbrakk>
+  "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs@[C]@Cs'),s\<^isub>1\<rangle>
    \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs@[C]),s\<^isub>1\<rangle>"
 
-DynCast:
+DynCast: (* path uniqueness not necessary for type proof but for determinism *)
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S);
-    P \<turnstile> Path D to C via Cs'(*; P \<turnstile> Path D to C unique*) \<rbrakk>
+    P \<turnstile> Path D to C via Cs'; P \<turnstile> Path D to C unique \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),(h,l)\<rangle>"
 
 DynCastNull:
@@ -89,7 +88,7 @@ DynCastNull:
 
 DynCastFail:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S); \<not> P \<turnstile> Path D to C unique;
-    \<not> P \<turnstile> Path last Cs to C unique; C \<notin> set Cs \<or> \<not> distinct Cs \<rbrakk>
+    C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,(h,l)\<rangle>"
 
 DynCastThrow:

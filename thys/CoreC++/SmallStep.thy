@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.6 2006-06-01 10:14:20 wasserra Exp $
+    ID:          $Id: SmallStep.thy,v 1.7 2006-06-28 09:09:18 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -84,11 +84,10 @@ RedStaticUpCast:
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>(ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>ref (a,Ds), s\<rangle>"
 
 RedStaticDownCast:
-  "\<lbrakk> is_class P C; C \<notin> set Cs' \<rbrakk> 
-  \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>(ref (a,Cs@[C]@Cs')), s\<rangle> \<rightarrow> \<langle>ref (a,Cs@[C]), s\<rangle>"
+  "P,E \<turnstile> \<langle>\<lparr>C\<rparr>(ref (a,Cs@[C]@Cs')), s\<rangle> \<rightarrow> \<langle>ref (a,Cs@[C]), s\<rangle>"
 
 RedStaticCastFail:
-  "\<lbrakk> \<not> P \<turnstile> Path last Cs to C unique; C \<notin> set Cs \<or> \<not> distinct Cs \<rbrakk>
+  "C \<notin> set Cs
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>(ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>THROW ClassCast, s\<rangle>"
 
 DynCastRed:
@@ -103,17 +102,16 @@ RedStaticUpDynCast:
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C(ref(a,Cs)),s\<rangle> \<rightarrow> \<langle>ref(a,Ds),s\<rangle>"
 
 RedStaticDownDynCast:
-  "\<lbrakk> is_class P C; C \<notin> set Cs' \<rbrakk> 
-  \<Longrightarrow> P,E \<turnstile> \<langle>Cast C (ref (a,Cs@[C]@Cs')), s\<rangle> \<rightarrow> \<langle>ref (a,Cs@[C]), s\<rangle>"
+  "P,E \<turnstile> \<langle>Cast C (ref (a,Cs@[C]@Cs')), s\<rangle> \<rightarrow> \<langle>ref (a,Cs@[C]), s\<rangle>"
 
-RedDynCast:
- "\<lbrakk> hp s a = Some(D,S); P \<turnstile> Path D to C via Cs'\<rbrakk> 
-   (*P \<turnstile> Path D to C unique \<rbrakk>*)
+RedDynCast:(* path uniqueness not necessary for type proof but for determinism *)
+ "\<lbrakk> hp s a = Some(D,S); P \<turnstile> Path D to C via Cs';
+    P \<turnstile> Path D to C unique \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C (ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>ref (a,Cs'), s\<rangle>"
 
 RedDynCastFail:
   "\<lbrakk>hp s a = Some(D,S); \<not> P \<turnstile> Path D to C unique;
-    \<not> P \<turnstile> Path last Cs to C unique; C \<notin> set Cs \<or> \<not> distinct Cs \<rbrakk>
+    C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C (ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>null, s\<rangle>"
 
 BinOpRed1:

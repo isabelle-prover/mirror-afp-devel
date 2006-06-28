@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellTypeRT.thy,v 1.5 2006-05-27 15:32:27 makarius Exp $
+    ID:          $Id: WellTypeRT.thy,v 1.6 2006-06-28 09:09:19 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
