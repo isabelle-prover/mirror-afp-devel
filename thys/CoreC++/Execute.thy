@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.7 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: Execute.thy,v 1.8 2006-06-28 11:12:23 wasserra Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -220,21 +220,16 @@ apply(simp add:appendPath_def)
 done
 
 lemma StaticDownCast_new: 
-  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),s\<^isub>1\<rangle>; (Cs, [C], Ds') \<in> app; (Ds',Cs',Ds) \<in> app; 
-    is_class P C; C \<notin> set Cs'\<rbrakk>
+  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),s\<^isub>1\<rangle>; (Cs, [C], Ds') \<in> app; (Ds',Cs',Ds) \<in> app\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs@[C]),s\<^isub>1\<rangle>"
 apply (rule StaticDownCast)
 apply (simp add: app_eq)
-apply assumption+
 done
 
 lemma StaticCastFail_new:
-"\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; 
-  \<forall>Cs'\<in>Subobjs_aux P (last Cs). last Cs' = C \<longrightarrow> 
-       (\<exists>Cs''\<in>Subobjs_aux P (last Cs). last Cs'' = C \<and> Cs' \<noteq> Cs'');
-  C \<notin> set Cs \<or> \<not> distinct Cs \<rbrakk>
+"\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; C \<notin> set Cs\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW ClassCast,(h,l)\<rangle>"
-by (fastsimp intro:StaticCastFail simp:path_unique_def Subobjs_aux [symmetric])
+by (fastsimp intro:StaticCastFail)
 
 lemma StaticUpDynCast_new1:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;
@@ -259,12 +254,10 @@ apply(simp add:appendPath_def)
 done
 
 lemma StaticDownDynCast_new: 
-  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),s\<^isub>1\<rangle>; (Cs, [C], Ds') \<in> app; (Ds',Cs',Ds) \<in> app; 
-    is_class P C; C \<notin> set Cs'\<rbrakk>
+  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),s\<^isub>1\<rangle>; (Cs, [C], Ds') \<in> app; (Ds',Cs',Ds) \<in> app\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs@[C]),s\<^isub>1\<rangle>"
 apply (rule StaticDownDynCast)
 apply (simp add: app_eq)
-apply assumption+
 done
 
 lemma DynCast_new:
@@ -274,24 +267,27 @@ lemma DynCast_new:
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),(h,l)\<rangle>"
 apply(rule DynCast)
 apply(auto simp add:path_via_def path_unique_def)
+apply(subgoal_tac "Cs' = Csa")
+ prefer 2 apply(erule_tac x="Csa" in ballE) apply fastsimp
+apply(simp add:Subobjs_aux [symmetric])
+apply(subgoal_tac "Cs' = y")
+ prefer 2 apply(erule_tac x="y" in ballE) apply fastsimp
+apply(simp add:Subobjs_aux [symmetric])
+apply clarify
 done
 
 lemma DynCastFail_new:
 "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S);
   \<forall>Cs'\<in>Subobjs_aux P D. last Cs' = C \<longrightarrow> 
        (\<exists>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<and> Cs' \<noteq> Cs'');
-  \<forall>Ds\<in>Subobjs_aux P (last Cs). last Ds = C \<longrightarrow> 
-       (\<exists>Cs''\<in>Subobjs_aux P (last Cs). last Cs'' = C \<and> Ds \<noteq> Cs'');
-  C \<notin> set Cs \<or> \<not> distinct Cs \<rbrakk>
+  C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,(h,l)\<rangle>"
 apply(rule DynCastFail)
-    apply assumption
    apply assumption
-  apply (fastsimp simp:path_unique_def Subobjs_aux [symmetric])
+  apply assumption
  apply (fastsimp simp:path_unique_def Subobjs_aux [symmetric])
 apply assumption
 done
-
 
 text {* Assignment *}
 
@@ -639,15 +635,14 @@ contains
 V = "''V''"
 mult = "''mult''"
 
-
-ML "fst (Seq.hd NoProg.test1)" (* result Val (Intg 5) *)
-ML "fst (Seq.hd NoProg.test2)" (* result Val (Intg 11) *)
-ML "fst (Seq.hd NoProg.test3)" (* result Val (Intg 83) *)
-ML "let val (_,(h,l)) = Seq.hd NoProg.test4 in l NoProg.V end" 
-    (* result Some (Intg 6) *)
-ML "let val (_,(h,l)) = Seq.hd NoProg.testWhile in l NoProg.mult end"
-    (* result Some (Intg 12) *)
-ML "fst (Seq.hd NoProg.testIf)" (* result Val (Intg 30) *)
+ML {* local open NoProg in val Val (Intg 5) = fst (Seq.hd test1) end *}
+ML {* local open NoProg in val Val (Intg 11) = fst (Seq.hd test2) end *}
+ML {* local open NoProg in val Val (Intg 83) = fst (Seq.hd test3) end *}
+ML {* local open NoProg in val Some (Intg 6) = 
+      let val (_,(h,l)) = Seq.hd test4 in l V end end *}
+ML {* local open NoProg in val Some (Intg 12) = 
+      let val (_,(h,l)) = Seq.hd testWhile in l mult end end *}
+ML {* local open NoProg in val Val (Intg 30) = fst (Seq.hd testIf) end *}
 
 
   (* progOverrider examples *)
@@ -719,30 +714,38 @@ contains
   typeBig = "progOverrider,[''V''\<mapsto>Class ''Right2'',''W''\<mapsto>Class ''Left''] \<turnstile> 
   ''V'' := new ''Right'' ;; ''W'' := new ''Left'' ;; (Var ''V''\<bullet>''f''([Var ''W'', Val(Intg 7)])) \<guillemotleft>Add\<guillemotright> (Var ''W''\<bullet>''f''([Var ''V'', Val(Intg 13)])) :: _"
 
+Bottom = "''Bottom''"
+Left = "''Left''"
+Right = "''Right''"
+Top = "''Top''"
 
 
-ML "fst (Seq.hd ProgOverrider.dynCastSide)" (* result Val(Ref(0,[Bottom.Left])) *)
-ML "fst (Seq.hd ProgOverrider.dynCastViaSh)"(* result Val(Ref(0,[Right])) *)
-ML "fst (Seq.hd ProgOverrider.block)" (* result Val(Intg 42) *)
-ML "fst (Seq.hd ProgOverrider.call)" (* result Val(Intg 12) *)
-ML "fst (Seq.hd ProgOverrider.callClass)" (* result Val(Ref(1,[Left,Top])) *)
-ML "fst (Seq.hd ProgOverrider.fieldAss)" (* result Val(Intg 42) *)
+ML {* local open ProgOverrider in val Val(Ref(0,[Bottom,Left])) = 
+      fst (Seq.hd dynCastSide) end *}
+ML {* local open ProgOverrider in val Val(Ref(0,[Right])) = 
+      fst (Seq.hd dynCastViaSh) end *}
+ML {* local open ProgOverrider in val Val(Intg 42) = fst (Seq.hd block) end *}
+ML {* local open ProgOverrider in val Val(Intg 12) = fst (Seq.hd call) end *}
+ML {* local open ProgOverrider in val Val(Ref(1,[Left,Top])) = 
+      fst (Seq.hd callClass) end *}
+ML {* local open ProgOverrider in val Val(Intg 42) = fst (Seq.hd fieldAss) end *}
+
 
 (* Typing rules *)
-ML "Seq.hd ProgOverrider.typeNew" (* result Class Bottom *)
-ML "Seq.hd ProgOverrider.typeDynCast" (* result Class Left *)
-ML "Seq.hd ProgOverrider.typeStaticCast" (* result Class Left *)
-ML "Seq.hd ProgOverrider.typeVal" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeVar" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeBinOp" (* result Boolean *)
-ML "Seq.hd ProgOverrider.typeLAss" (* result Class Top *)
-ML "Seq.hd ProgOverrider.typeFAcc" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeFAss" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeCall" (* result Class Top *)
-ML "Seq.hd ProgOverrider.typeBlock" (* result Class Top *)
-ML "Seq.hd ProgOverrider.typeCond" (* result Integer *)
-ML "Seq.hd ProgOverrider.typeThrow" (* result Void *)
-ML "Seq.hd ProgOverrider.typeBig" (* result Integer *)
+ML {* local open ProgOverrider in val Class Bottom = Seq.hd typeNew end *}
+ML {* local open ProgOverrider in val Class Left   = Seq.hd typeDynCast end *}
+ML {* local open ProgOverrider in val Class Left   = Seq.hd typeStaticCast end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeVal end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeVar end *}
+ML {* local open ProgOverrider in val Boolean      = Seq.hd typeBinOp end *}
+ML {* local open ProgOverrider in val Class Top    = Seq.hd typeLAss end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeFAcc end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeFAss end *}
+ML {* local open ProgOverrider in val Class Top    = Seq.hd typeCall end *}
+ML {* local open ProgOverrider in val Class Top    = Seq.hd typeBlock end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeCond end *}
+ML {* local open ProgOverrider in val Void         = Seq.hd typeThrow end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeBig end *}
 
 
 
@@ -802,19 +805,28 @@ contains
   dynCastSide = "progDiamond,[''V''\<mapsto>Class ''Right''] \<turnstile>
     \<langle>''V'' := new ''Bottom'' ;; Cast ''Left'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 
-ML "fst (Seq.hd ProgDiamond.cast1)" (* result Val(Ref(0,[Bottom,Left])) *)
-ML "fst (Seq.hd ProgDiamond.cast2)" (* result Val(Ref(0,[TopSh])) *)
-ML "fst (Seq.hd ProgDiamond.cast3)" (* result Val(Ref(0,[Bottom,Left,TopRep]))??? \<dots>*)
-(* ML "Seq.hd ProgDiamond.typeCast3)"  
-         \<dots>but this program is rejected by the type checker :) *)
-ML "fst (Seq.hd ProgDiamond.fieldAss)" (* result Val(Intg 17) *)
-ML "fst (Seq.hd ProgDiamond.dynCastNull)" (* result Val Null *)
-ML "fst (Seq.hd ProgDiamond.dynCastFail)" (* result Val Null *)
-ML "fst (Seq.hd ProgDiamond.dynCastSide)" (* result Val(Ref(0,[Bottom,Left])) *)
+Bottom = "''Bottom''"
+Left = "''Left''"
+TopSh = "''TopSh''"
+TopRep = "''TopRep''"
 
 
 
-  (* failing g++ and icc example *)
+ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left])) = 
+      fst (Seq.hd cast1) end *}
+ML {* local open ProgDiamond in val Val(Ref(0,[TopSh])) = fst (Seq.hd cast2) end *}
+(* ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left,TopRep])) =
+       if Seq.hd typeCast3 = Class TopRep then fst (Seq.hd cast3) else error "" end *}
+ error! cast3 not typeable! *)
+ML {* local open ProgDiamond in val Val(Intg 17) = fst (Seq.hd fieldAss) end *}
+ML {* local open ProgDiamond in val Val Null = fst (Seq.hd dynCastNull) end *}
+ML {* local open ProgDiamond in val Val Null = fst (Seq.hd dynCastFail) end *}
+ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left])) = 
+      fst (Seq.hd dynCastSide) end *}
+
+
+
+  (* failing g++ example *)
 
 constdefs
   -- "failing example"
@@ -834,18 +846,17 @@ constdefs
   "classA == (''A'', [],[],
               [(''f'',[],Integer,[],Val(Intg 13))])"
 
-  progFailing :: "cdecl list"
-  "progFailing == [classA,classB,classC,classD]"
+  ProgFailing :: "cdecl list"
+  "ProgFailing == [classA,classB,classC,classD]"
 
 code_module Fail
 contains
 
-  callFailGplusplus = "progFailing,empty \<turnstile>
+  callFailGplusplus = "ProgFailing,empty \<turnstile>
     \<langle>{''V'':Class ''D''; ''V'' := new ''D'';; Var ''V''\<bullet>''f''([])},(empty,empty)\<rangle> 
                                                                        \<Rightarrow> \<langle>_,_\<rangle>"
 
-ML "fst (Seq.hd Fail.callFailGplusplus)" (* result Val(Intg 42) *)
-
-
+ML {* local open Fail in val Val(Intg 42) = 
+      fst (Seq.hd callFailGplusplus) end *}
 
 end
