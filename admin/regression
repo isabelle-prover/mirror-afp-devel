@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.13 2006-06-16 14:19:03 lsf37 Exp $
+# $Id: regression,v 1.14 2006-06-28 14:19:02 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
 # Sends email to maintainers if test fails.
 #
-# Relies on beind run in the isatest environment.
+# Relies on being run in the isatest environment.
 # 
 
 . ~/.bashrc
 
 ## settings
 
-ISABELLE_RELEASES=/usr/proj/isabelle
+ISABELLE_RELEASES=/home/isabelle
 ISABELLE_DEVEL=~/tmp/isadist/Isabelle
 WORKING_COPY=~/afp
 DATE=$(date "+%Y-%m-%d")
@@ -130,8 +130,6 @@ EOF
   for R in $MAIN_NOTIFY; do
     $MAIL 'status changed (AFP)' "$R" $TMP $REPORT $LOG
   done  
-  # do not send duplicate mail
-  MAIN_NOTIFY=""
 fi
 
 # send email to maintainer if there was a problem
@@ -157,7 +155,7 @@ Have a nice day,
   isatest
 
 EOF
-        for R in $NOTIFY $MAIN_NOTIFY; do
+        for R in $NOTIFY; do
           $MAIL 'test failed (Archive of Formal Proofs)' "$R" $TMP $LOG
         done
       fi
