@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.7 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: SmallStep.thy,v 1.8 2006-06-29 11:00:57 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -109,9 +109,9 @@ RedDynCast:(* path uniqueness not necessary for type proof but for determinism *
     P \<turnstile> Path D to C unique \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C (ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>ref (a,Cs'), s\<rangle>"
 
-RedDynCastFail:
+RedDynCastFail:(* third premise not necessary for type proof but for determinism *)
   "\<lbrakk>hp s a = Some(D,S); \<not> P \<turnstile> Path D to C unique;
-    C \<notin> set Cs \<rbrakk>
+    \<not> P \<turnstile> Path last Cs to C unique; C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C (ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>null, s\<rangle>"
 
 BinOpRed1:

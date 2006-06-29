@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.9 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: Progress.thy,v 1.10 2006-06-29 11:00:57 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -314,6 +314,7 @@ next
 	  with True ref show ?thesis by(fastsimp intro:RedStaticUpDynCast)
 	next
 	  case False
+	  hence path_not_unique':"\<not> P \<turnstile> Path last Cs to C unique" .
 	  thus ?thesis
 	  proof(cases "C \<notin> set Cs")
 	    case False
@@ -322,7 +323,7 @@ next
 	    with ref show ?thesis by(fastsimp intro:RedStaticDownDynCast)
 	  next
 	    case True
-	    with path_not_unique h ref
+	    with path_not_unique path_not_unique' h ref 
 	    show ?thesis by (fastsimp intro:RedDynCastFail)
 	  qed
 	qed

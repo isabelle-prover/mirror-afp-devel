@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.9 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: BigStep.thy,v 1.10 2006-06-29 11:00:57 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -86,9 +86,9 @@ DynCastNull:
   "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>"
 
-DynCastFail:
+DynCastFail: (* forth premise not necessary for type proof but for determinism *)
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S); \<not> P \<turnstile> Path D to C unique;
-    C \<notin> set Cs \<rbrakk>
+    \<not> P \<turnstile> Path last Cs to C unique; C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,(h,l)\<rangle>"
 
 DynCastThrow:
