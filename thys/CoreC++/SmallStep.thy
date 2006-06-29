@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.8 2006-06-29 11:00:57 wasserra Exp $
+    ID:          $Id: SmallStep.thy,v 1.9 2006-06-29 14:56:20 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -97,8 +97,8 @@ DynCastRed:
 RedDynCastNull:
   "P,E \<turnstile> \<langle>Cast C null, s\<rangle> \<rightarrow> \<langle>null,s\<rangle>"
 
-RedStaticUpDynCast:
-  "\<lbrakk> P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk>
+RedStaticUpDynCast: (* path uniqueness not necessary for type proof but for determinism *)
+  "\<lbrakk> P \<turnstile> Path last Cs to C unique; P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C(ref(a,Cs)),s\<rangle> \<rightarrow> \<langle>ref(a,Ds),s\<rangle>"
 
 RedStaticDownDynCast:

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.9 2006-06-29 11:29:01 wasserra Exp $
+    ID:          $Id: Execute.thy,v 1.10 2006-06-29 14:56:20 wasserra Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -234,10 +234,14 @@ by (fastsimp intro:StaticCastFail)
 lemma StaticUpDynCast_new1:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;
     (last Cs, Cs') \<in> Subobjs P; last Cs' = C;
+    \<forall>Cs''\<in>Subobjs_aux P (last Cs). last Cs'' = C \<longrightarrow> Cs' = Cs'';
     last Cs = hd Cs'; Cs @ tl Cs' = Ds\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),(h,l)\<rangle>"
 apply(rule StaticUpDynCast)
-  apply assumption
+   apply assumption
+  apply(simp add:path_unique_def)
+  apply(rule_tac a="Cs'" in ex1I) apply simp
+  apply(fastsimp simp:Subobjs_aux [symmetric])
  apply(fastsimp simp:path_via_def)
 apply(simp add:appendPath_def)
 done
@@ -245,10 +249,14 @@ done
 lemma StaticUpDynCast_new2:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;
     (last Cs, Cs') \<in> Subobjs P; last Cs' = C;
+    \<forall>Cs''\<in>Subobjs_aux P (last Cs). last Cs'' = C \<longrightarrow> Cs' = Cs'';
     last Cs \<noteq> hd Cs'\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),(h,l)\<rangle>"
 apply(rule StaticUpDynCast)
-  apply assumption
+   apply assumption
+  apply(simp add:path_unique_def)
+  apply(rule_tac a="Cs'" in ex1I) apply simp
+  apply(fastsimp simp:Subobjs_aux [symmetric])
  apply(fastsimp simp:path_via_def)
 apply(simp add:appendPath_def)
 done

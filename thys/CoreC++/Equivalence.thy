@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.7 2006-06-29 11:00:57 wasserra Exp $
+    ID:          $Id: Equivalence.thy,v 1.8 2006-06-29 14:56:20 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -377,7 +377,8 @@ done
 
 
 lemma StaticUpDynCastReds:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s'\<rangle>; P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk> 
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s'\<rangle>; P \<turnstile> Path last Cs to C unique;
+  P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk> 
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>ref(a,Ds),s'\<rangle>"
 
 apply(rule rtrancl_into_rtrancl)
