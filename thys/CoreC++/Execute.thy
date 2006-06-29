@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.8 2006-06-28 11:12:23 wasserra Exp $
+    ID:          $Id: Execute.thy,v 1.9 2006-06-29 11:29:01 wasserra Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -280,11 +280,14 @@ lemma DynCastFail_new:
 "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S);
   \<forall>Cs'\<in>Subobjs_aux P D. last Cs' = C \<longrightarrow> 
        (\<exists>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<and> Cs' \<noteq> Cs'');
+  \<forall>Cs'\<in>Subobjs_aux P (last Cs). last Cs' = C \<longrightarrow> 
+       (\<exists>Cs''\<in>Subobjs_aux P (last Cs). last Cs'' = C \<and> Cs' \<noteq> Cs'');
   C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,(h,l)\<rangle>"
 apply(rule DynCastFail)
+    apply assumption
    apply assumption
-  apply assumption
+  apply (fastsimp simp:path_unique_def Subobjs_aux [symmetric])
  apply (fastsimp simp:path_unique_def Subobjs_aux [symmetric])
 apply assumption
 done
