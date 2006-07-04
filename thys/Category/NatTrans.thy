@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: NatTrans.thy,v 1.6 2006-06-27 07:20:50 ballarin Exp $
+    ID:          $Id: NatTrans.thy,v 1.7 2006-07-04 12:48:19 ballarin Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -53,6 +53,6 @@ proof (intro natural_transformation.intro natural_transformation_axioms.intro
   thus "(id_func AA)\<^sub>\<a> f \<bullet> (\<lambda>A\<in>Ob. Id A) A
     = (\<lambda>A\<in>Ob. Id A) B \<bullet> (id_func AA)\<^sub>\<a> f"
     by (simp add:  id_func_def)
-qed (auto intro: id_func_functor, intro_locales, intro_locales)
+qed (auto intro: id_func_functor, unfold_locales, unfold_locales)
 
 end

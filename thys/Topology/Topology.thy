@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.6 2006-06-27 07:20:21 ballarin Exp $
+    ID:         $Id: Topology.thy,v 1.7 2006-07-04 12:48:20 ballarin Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -1780,12 +1780,12 @@ lemma T2I:
   assumes I: "\<And>x y. \<lbrakk> x \<in> carrier; y \<in> carrier; x \<noteq> y \<rbrakk> \<Longrightarrow> 
            \<exists> u \<in> nhds x. \<exists> v \<in> nhds y. u \<inter> v = {}"
   shows "T2 T"
-  apply (intro_locales!)
+  apply intro_locales
   apply (rule T2_axiom_implies_T0_axiom)
   using I apply simp
   apply (rule T2_axiom_implies_T1_axiom)
   using I apply simp
-  apply intro_locales
+  apply unfold_locales
   using I apply simp
   done
 
@@ -1909,7 +1909,7 @@ lemma regular_implies_T2:
   includes regular T
   shows "T2 T"
 proof (rule T2I)
-  show "topology T" by intro_locales
+  show "topology T" by unfold_locales
 next
   fix x y assume "x \<in> carrier" "y \<in> carrier" "x \<noteq> y"
   hence "{y} \<subseteq> carrier" "{y} closed" "x \<in> carrier" "x \<notin> {y}" by auto
@@ -1945,7 +1945,7 @@ locale normal = T1 + T4
 lemma normal_implies_regular:
   includes normal T
   shows  "regular T"
-proof (intro_locales!)
+proof intro_locales
   show "T3_axioms T"
   proof (rule T3_axioms.intro, clarify)
     fix A x assume x: "x \<in> carrier" "x \<notin> A" and A: "A closed" "A \<subseteq> carrier"

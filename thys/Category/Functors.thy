@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Functors.thy,v 1.6 2006-06-27 07:20:50 ballarin Exp $
+    ID:          $Id: Functors.thy,v 1.7 2006-07-04 12:48:19 ballarin Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -65,7 +65,7 @@ subsection {* Simple Lemmas *}
 text {* For example: *}
 
 lemma (in functor) "Functor F : AA \<longrightarrow> BB"
-  by intro_locales
+  by unfold_locales
 
 
 lemma functors_preserve_arrows [intro]:
@@ -222,7 +222,7 @@ proof-
     and id_func_preserves_id
     and id_func_preserves_comp
   show ?thesis
-    by (intro_locales) (simp_all! add: endo)
+    by unfold_locales (simp_all! add: endo)
 qed
 
 

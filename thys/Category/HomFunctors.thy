@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: HomFunctors.thy,v 1.7 2006-06-27 07:20:50 ballarin Exp $
+    ID:          $Id: HomFunctors.thy,v 1.8 2006-07-04 12:48:19 ballarin Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -185,11 +185,11 @@ proof (intro functor.intro functor_axioms.intro)
     Hom(A,_)\<^sub>\<a> (g \<bullet> f) = comp Set (Hom(A,_)\<^sub>\<a> g) (Hom(A,_)\<^sub>\<a> f)"
     by (intro ballI impI, simp add: Set_def set_cat_def) (rule homf_preserves_comp)
   show "two_cats AA Set"
-  proof (intro_locales!)
+  proof intro_locales
     show "category Set" 
       by (unfold Set_def, rule set_cat_cat)
     show "two_cats_axioms AA Set"
-      by intro_locales rule+
+      by unfold_locales rule+
   qed
 qed
 
