@@ -639,7 +639,7 @@ lemma soundness': "init s ==> finite (deriv s) ==> m \<in> (fst ` (deriv s)) ==>
     apply(rule_tac n=na and u=t and A="FAll f" in index0[rule_format])
     apply(assumption) apply(simp) apply(simp) apply(simp)
    apply(frule_tac deriv.step) apply(simp add: Let_def)  -- "nice use of simp to instantiate"
-   apply(drule_tac x="Suc na" in spec, drule_tac x="list @ [(0, finst f (newvar (sfv (s_of_ns t))))]" in spec) apply(erule impE, simp) apply(arith)
+   apply(drule_tac x="Suc na" in spec, drule_tac x="list @ [(0, finst f (newvar (sfv (s_of_ns t))))]" in spec) apply(erule impE, simp)
    apply(subgoal_tac "newvar (sfv (s_of_ns t)) \<notin> set (sfv (s_of_ns t))") 
     prefer 2 apply(rule newvar)
    apply(simp)

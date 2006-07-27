@@ -1,4 +1,4 @@
-(*  ID:         $Id: Rotation.thy,v 1.1 2006-05-22 09:54:04 nipkow Exp $
+(*  ID:         $Id: Rotation.thy,v 1.2 2006-07-27 13:24:37 webertj Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -25,7 +25,7 @@ proof -
   hence "i < length((fst(splitAt x xs)) @ [x] @ snd(splitAt x xs))" by auto
   with ls1 have i_len: "i < length xs" by auto
   hence ls2: "xs = take i xs @ xs!i # drop (Suc i) xs" by (auto intro: id_take_nth_drop)
-  from i_len have "length (take i xs) = i" by auto arith
+  from i_len have "length (take i xs) = i" by auto
   with i_def have len_eq: "length(take i xs) = length(fst(splitAt x xs))" by auto
   moreover
   from ls1 ls2 have eq: "take i xs @ xs!i # drop (Suc i) xs = fst(splitAt x xs) @ x # snd(splitAt x xs)" by simp

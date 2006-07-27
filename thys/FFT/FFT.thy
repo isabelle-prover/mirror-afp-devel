@@ -1,5 +1,5 @@
 (*  Title:       Fast Fourier Transform
-    ID:          $Id: FFT.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: FFT.thy,v 1.5 2006-07-27 13:24:37 webertj Exp $
     Author:      Clemens Ballarin <ballarin at in.tum.de>, started 12 April 2005
     Maintainer:  Clemens Ballarin <ballarin at in.tum.de>
 *)
@@ -419,6 +419,8 @@ lemma power_divides_special:
   a ^ (i * j) / a ^ (k * i) = (a ^ j / a ^ k) ^ i"
   by (simp add: nonzero_power_divide power_mult [THEN sym] mult_ac)
 
+ML {* fast_arith_split_limit := 0; *}  (*FIXME*)
+
 theorem DFT_inverse:
   assumes i_less: "i < n"
   shows  "IDFT n (DFT n a) i = of_nat n * a i"
@@ -460,6 +462,7 @@ theorem DFT_inverse:
     finally show "?s = ?t" .
   qed
 
+ML {* fast_arith_split_limit := 9; *}  (*FIXME*)
 
 section {* Discrete, Fast Fourier Transformation *}
 
@@ -503,7 +506,7 @@ next
       apply (simp add: Suc) done
   next
     case False
-    from i have "i - 2 ^ k < 2 ^ k" by simp arith
+    from i have "i - 2 ^ k < 2 ^ k" by simp
     with False i show ?thesis apply simp apply (simp add: DFT_upper)
       apply (simp add: Suc) done
   qed
@@ -523,7 +526,7 @@ next
       apply (simp add: Suc) done
   next
     case False
-    from i have "i - 2 ^ k < 2 ^ k" by simp arith
+    from i have "i - 2 ^ k < 2 ^ k" by simp
     with False i show ?thesis apply simp apply (simp add: IDFT_upper)
       apply (simp add: Suc) done
   qed

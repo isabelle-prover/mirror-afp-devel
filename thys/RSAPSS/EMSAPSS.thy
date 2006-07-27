@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/EMSAPSS.thy
-    ID:         $Id: EMSAPSS.thy,v 1.1 2005-05-10 16:13:45 nipkow Exp $
+    ID:         $Id: EMSAPSS.thy,v 1.2 2006-07-27 13:24:39 webertj Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -228,8 +228,7 @@ lemma roundup_help1_new: "\<lbrakk> 0 < l\<rbrakk> \<Longrightarrow> (roundup l 
   by (arith)
 
 lemma roundup_help2: "\<lbrakk>176 + sLen \<le> emBits\<rbrakk> \<Longrightarrow> roundup emBits 8 * 8 - emBits <=  roundup emBits 8 * 8 - 160 - sLen - 16"
-  apply (simp add: sLen)
-  by (arith)
+  by (simp add: sLen)
 
 lemma bv_prepend_equal: "bv_prepend (Suc n) b l = b#bv_prepend n b l" 
   by (simp add: bv_prepend)

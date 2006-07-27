@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.1 2006-05-22 09:53:59 nipkow Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.2 2006-07-27 13:24:37 webertj Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -4250,12 +4250,11 @@ proof -
   with incr last_ntvl last_es have rule1: "last (natToVertexList v f es) = Some f\<^bsup>((length (vertices f)) - (Suc 0))\<^esup> \<bullet> v" by auto
 
   from incr have lvf: "1 < length (vertices f)" by auto
-  with vors have rule2: "verticesFrom f v ! ((length (vertices f)) - (Suc 0)) = f\<^bsup>((length (vertices f)) - (Suc 0))\<^esup> \<bullet> v" apply (auto intro!: verticesFrom_nth) by arith
+  with vors have rule2: "verticesFrom f v ! ((length (vertices f)) - (Suc 0)) = f\<^bsup>((length (vertices f)) - (Suc 0))\<^esup> \<bullet> v" by (auto intro!: verticesFrom_nth)
 
   from vors lvf have "verticesFrom f v ! ((length (vertices f)) - (Suc 0)) = last (verticesFrom f v)"
     apply (rule_tac nth_last)
-    apply (auto simp: verticesFrom_length)
-    by arith
+    by (auto simp: verticesFrom_length)
   with rule1 rule2 show ?thesis by auto
 qed
 
@@ -4312,7 +4311,7 @@ next
 	with small_n have "take n es @ [es!n] = es" by (simp add: take_Suc_conv_app_nth)
 	then have esn_simps: "take n es = butlast es \<and>  es!n = last es" by (cases es rule: rev_exhaust) auto
 
-	from True Suc have n'l: "Suc n' = length (butlast es)" apply auto by arith
+	from True Suc have n'l: "Suc n' = length (butlast es)" by auto
 	then have small_n': "n' < length (butlast es)" by auto
 
 	from Suc small_n have take_n': "take (Suc n') (butlast es @ [last es]) = take (Suc n') (butlast es)" by auto
@@ -4383,7 +4382,7 @@ next
       then have sub1: "sublist ([((verticesFrom f v)!(es!n))])
           {j. j + (es!n) : (insert (es ! n) (set (take n es)))} = [v']" by auto
 
-      from suc1 smaller lvs have len: "length (take (es ! n) (verticesFrom f v)) = es!n" apply auto by arith
+      from suc1 smaller lvs have len: "length (take (es ! n) (verticesFrom f v)) = es!n" by auto
 
       have "\<And>x. x \<in> (set (take n es)) \<Longrightarrow> x < (es ! n)"
       proof -
@@ -4452,7 +4451,7 @@ next
         "sublist (take (Suc (es ! n)) (verticesFrom f v)) (insert (es ! n) (set (take n es))) =
          sublist (take (es ! n) (verticesFrom f v)) (insert (es ! n) (set (take n es)))
          @ sublist ([((verticesFrom f v)!(es!n))])  {j. j + (es!n) : (insert (es ! n) (set (take n es)))}"
-	apply (auto simp: sublist_append) by arith
+	by (auto simp: sublist_append)
       with sub1 sub3 have "sublist (take (Suc (es ! n)) (verticesFrom f v)) (insert (es ! n) (set (take n es)))
        = sublist (take (Suc (es ! n')) (verticesFrom f v)) (set (take n es)) @ [v']" by auto
       with Some suc1 lvs n' show ?thesis by (simp add: take_Suc_conv_app_nth)

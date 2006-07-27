@@ -35,8 +35,7 @@ apply simp
 done
 
 lemma diff_Suc:"(n::nat) \<le> m \<Longrightarrow> m - n + Suc 0 = Suc m - n"
- apply auto
- apply (rule Suc_diff_le [THEN sym], assumption+)
+ apply arith
 done
 
 lemma less_convert:"\<lbrakk> a = b; c < b \<rbrakk> \<Longrightarrow> c < a"
@@ -1046,9 +1045,7 @@ proof -
  apply (case_tac "xa \<le> i - Suc 0")
  apply simp
  apply (frule diff_Suc_less [of "i" "0"])
- apply (simp add:le_def)
- apply (rotate_tac -1) apply simp
- apply auto done
+ apply (simp add:le_def) done
  have q2:"Nset (Suc n) - {i} \<subseteq>  skip i ` Nset n"
  proof -
   from p1 show ?thesis
@@ -1155,8 +1152,6 @@ apply (rule allI) apply (rule impI)
    apply (simp add:Nset_def)
    apply (simp add:slide_def)
 apply (simp add:nset_def)
-   apply (frule add_le_mono1 [of  _ "j - i" "i"])
-apply simp
 done
 
 lemma slide_mem:"\<lbrakk> i \<le> j; l \<in> Nset (j - i)\<rbrakk> \<Longrightarrow> slide i l \<in> nset i j"
@@ -1306,9 +1301,6 @@ done
 lemma Nset_pre_sub:"(0::nat) < k \<Longrightarrow> Nset (k - Suc 0) \<subseteq> Nset k"
 apply (rule subsetI)
 apply (simp add:Nset_def)
-apply (frule_tac i = x and j = "k - Suc 0" and k = k in le_less_trans)
- apply simp
- apply (simp add:less_imp_le)
 done
 
 lemma Nset_pre_un:"(0::nat) < k \<Longrightarrow> Nset k = Nset (k - Suc 0) \<union> {k}"
@@ -1342,18 +1334,7 @@ apply simp
        insert (Suc (n - Suc (Suc 0))) (Nset (n - Suc (Suc 0)))")
 apply (simp add:Suc_Suc_Tr)
 prefer 2 apply (simp add:Suc_Suc_Tr)
-apply (rule equalityI)
-prefer 2 apply (rule subsetI) apply simp
-apply (rule subsetI)
  apply (simp add:Nset_def)
- apply (rule conjI)
- apply (frule_tac i = x in add_le_mono [of _ "n - Suc (Suc 0)" "Suc 0" "Suc 0"]) apply simp
- apply (thin_tac "x \<le> n - Suc (Suc 0)")
- apply (simp del:add_Suc_right)
- apply (frule_tac i = x in add_le_mono [of _ "n - Suc (Suc 0)" "Suc (Suc 0)"
- "Suc (Suc 0)"]) apply simp
- apply (thin_tac "x \<le> n - Suc (Suc 0)")
- apply (simp del:add_Suc_right)
 done
 
 lemma finite_Nset:"finite (Nset n)"
@@ -1711,10 +1692,6 @@ proof -
   apply auto
   apply (simp add:slide_def nset_def)
   apply (simp add:Nset_def)
-  apply (frule_tac m = i and n = j in less_imp_le)
-  apply (thin_tac "i < j")
-  apply (frule add_le_mono [of _ "j - i" "i" "i"])
-  apply simp+
  apply (simp add:nset_def Nset_def slide_def)
   apply (erule conjE)
   apply (frule_tac m = x and n = j and l = i in diff_le_mono)

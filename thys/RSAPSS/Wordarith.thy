@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Wordarith.thy
-    ID:         $Id: Wordarith.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
+    ID:         $Id: Wordarith.thy,v 1.3 2006-07-27 13:24:39 webertj Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)
@@ -185,7 +185,7 @@ proof -
     thus "bitval (hd b) = 1" by simp
   qed
   ultimately have hb: "2^length (tl b) <= bv_to_nat b" by simp
-  have "2^(length a) <= (2::nat)^length (tl b)" using a by (auto,arith)
+  have "2^(length a) <= (2::nat)^length (tl b)" using a by auto
   thus ?thesis using hb and ha by arith
 qed
 

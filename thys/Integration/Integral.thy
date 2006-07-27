@@ -1306,7 +1306,7 @@ proof -
   { fix t
     { fix m n 
       have "muh n u m t \<le> muh (Suc n) u m t"
-	by (simp add: upclose_def) arith 
+	by (simp add: upclose_def)
     }
     hence pos1: "\<And>m n. muh n u m t \<le> muh (Suc n) u m t" .
 

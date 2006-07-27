@@ -3450,9 +3450,6 @@ prefer 2
  apply (frule_tac f = g and A = "Nset l" and B = "h ` Nset (Suc n)" and x = xa
          in funcset_mem, assumption+)
  apply (simp add:Nset_un) apply (simp add:Nset_def)
- apply (frule_tac i = xa and j = "l - Suc 0" and k = l in le_less_trans)
- apply simp
- apply (simp add:less_imp_le)
  prefer 2  apply (simp del:eSum_Suc)
 apply (subgoal_tac "jointfun n w 0 (\<lambda>k\<in>Nset 0. (sa l)) \<in> Nset (Suc n) \<rightarrow> A")
  apply (subgoal_tac "e\<Sigma> M (\<lambda>j. w j \<star>\<^sub>M (h j)) n +\<^sub>M  (sa l \<star>\<^sub>M (h (Suc n))) =
@@ -3626,8 +3623,6 @@ apply (subgoal_tac "xa \<noteq> l")
  apply (frule_tac A = "g ` Nset l" and B = " h ` Nset (Suc n)" and c = "ga xa"  in subsetD, assumption+)
  apply (simp add:Nset_un)
  apply (simp add:Nset_def)
-apply (frule_tac i = xa and j = "l - Suc 0" and k = l in le_less_trans)
-apply simp apply (simp add:less_imp_le)
 done
 
 lemma finite_lin_span:"\<lbrakk>ring R; R module M; ideal R A;  h \<in> Nset n \<rightarrow> carrier M; s \<in> Nset na \<rightarrow> A; f\<in>Nset na \<rightarrow> h ` Nset n\<rbrakk> \<Longrightarrow> \<exists>t\<in>Nset n \<rightarrow> A.
@@ -4198,10 +4193,7 @@ apply (simp del:eSum_Suc)
  apply (frule ring_is_ag [of "R"])
  apply (rule ag_mOp_closed, assumption+) apply (simp add:funcset_mem)
  apply (simp add:funcset_mem subsetD) apply assumption
- apply (simp add:Nset_def) apply (subgoal_tac "n < xa") prefer 2 apply simp
- apply (thin_tac "\<not> xa \<le> n") apply (subgoal_tac "Suc n \<le> xa")
- prefer 2 apply simp  apply (thin_tac "n < xa")
- apply (frule_tac m = xa and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
+ apply (simp add:Nset_def)
  apply simp apply (simp add:Nset_def)
 apply (rule ballI)
  apply (case_tac "l \<le> n")

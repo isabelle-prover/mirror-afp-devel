@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: LynchInstance.thy,v 1.5 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: LynchInstance.thy,v 1.6 2006-07-27 13:24:37 webertj Exp $
     Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
@@ -343,7 +343,7 @@ proof-
   }
   hence 
     "... <= card PR - card (kmax f PR \<union> kmin f PR)"
-    by (simp)(arith)
+    by simp
   also
   {
     from kmax_prop and kmin_prop have
@@ -763,7 +763,7 @@ proof-
 	from kmin_prop have
 	  "card (kmin f PR) <= card PR"
 	  by (intro card_mono, auto)
-	thus ?thesis by (simp)(arith)
+	thus ?thesis by (simp)
       qed
       also
       from kmin_prop 
@@ -881,7 +881,7 @@ proof-
   from abs_distrib_div
   have "\<bar>cfnl p f - cfnl q g\<bar> = 
     \<bar>?maxf + ?minf  +  - ?maxg + - ?ming\<bar> / 2"
-    by (unfold cfnl_def, auto simp add: real_diff_def, arith)
+    by (unfold cfnl_def, auto simp add: real_diff_def)
   moreover
   have "\<bar>?maxf + ?minf  +  - ?maxg + - ?ming\<bar> <= y + 2 * x"
     -- {* The rest of the property can be proved by CVC-lite

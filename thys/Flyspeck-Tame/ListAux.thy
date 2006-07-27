@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.1 2006-05-22 09:54:00 nipkow Exp $
+(*  ID:         $Id: ListAux.thy,v 1.2 2006-07-27 13:24:37 webertj Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -1151,15 +1151,13 @@ qed
 lemma fst_splitAt_upt:
  "j <= i \<Longrightarrow> i < k \<Longrightarrow> fst(splitAt i [j..<k]) = [j..<i]"
 using splitAt_take[where ls = "[j..<k]" and i="i-j"]
-apply (simp del:splitAt_take) apply arith
+apply (simp del:splitAt_take)
 done
 
 lemma snd_splitAt_upt:
  "j <= i \<Longrightarrow> i < k \<Longrightarrow> snd(splitAt i [j..<k]) = [i+1..<k]"
 using splitAt_drop[where ls = "[j..<k]" and i="i-j"]
-apply (simp del:splitAt_drop) apply arith
-done
-
+by simp
 
 lemma local_help1: "\<And> a vs. vs = c @ r # d \<Longrightarrow> vs = a @ r # b \<Longrightarrow> r \<notin> set a \<Longrightarrow> r \<notin> set b \<Longrightarrow> a = c"
 proof (induct c)

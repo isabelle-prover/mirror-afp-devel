@@ -1,4 +1,4 @@
-(*  ID:         $Id: EnumeratorProps.thy,v 1.1 2006-05-22 09:53:59 nipkow Exp $
+(*  ID:         $Id: EnumeratorProps.thy,v 1.2 2006-07-27 13:24:37 webertj Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -245,7 +245,7 @@ lemma enumerator_increase: "\<And> as bs. ls \<in> set (enumerator m nmax) \<Lon
 apply (auto simp: enumerator_def del: Nat.diff_is_0_eq' split: split_if_asm intro: enumAppend_increase_rec)
 apply (case_tac as) apply simp apply simp
 apply (case_tac bs rule: rev_exhaust)  apply simp apply simp apply auto
-apply (drule_tac enumAppend_bound_rec) apply (auto simp:enumBase_simps) apply arith
+apply (drule_tac enumAppend_bound_rec) apply (auto simp:enumBase_simps)
 by (auto dest!: enumAppend_increase_rec)
 
 lemma enumerator_increasing: "ls \<in> set (enumerator m nmax) \<Longrightarrow> increasing ls"

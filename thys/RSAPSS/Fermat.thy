@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Fermat.thy
-    ID:         $Id: Fermat.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
+    ID:         $Id: Fermat.thy,v 1.3 2006-07-27 13:24:39 webertj Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -47,11 +47,7 @@ lemma delmulmod: "\<lbrakk>0 < x mod p;a < (b::nat)\<rbrakk> \<Longrightarrow> x
   by (simp, rule modI, simp)
 
 lemma swaple[rule_format]: "(c < b) \<longrightarrow> ((a::nat) \<le>  b - c) \<longrightarrow> c \<le> b - a"
-  apply (induct_tac a, auto)
-  apply (subgoal_tac "c~= b - n", auto)
-  apply (drule le_neq_implies_less[of c])
-  apply (simp)+
-  by (arith)+
+  by arith
 
 lemma exchgmin: "\<lbrakk>(a::nat) < b;c \<le> a-b\<rbrakk> \<Longrightarrow> c \<le> a - a"
   by (auto)

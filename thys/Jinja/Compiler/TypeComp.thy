@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.5 2006-04-30 10:42:35 lsf37 Exp $
+    ID:         $Id: TypeComp.thy,v 1.6 2006-07-27 13:24:39 webertj Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -454,8 +454,6 @@ lemma  [simp]:
 (*<*)
 apply(simp add:eff_def norm_eff_def)
 apply(cases "i",auto)
-apply arith
-apply arith
 done
 (*>*)
 
@@ -752,7 +750,6 @@ lemma (in TC2) wt_IfFalse:
 (*<*)
 apply(clarsimp simp add: ty\<^isub>i'_def wt_defs)
 apply(auto simp add: nth_Cons split:nat.split)
-apply arith
 apply(simp add:nat_diff_distrib)
 done
 (*>*)
@@ -810,7 +807,6 @@ apply(rule conjI)
   apply (drule_tac x="\<tau>s\<^isub>1!pc" in bspec)
    apply (blast intro: nth_mem) 
   apply fastsimp   
- apply arith
 apply (rule conjI)
  apply clarsimp
  apply (erule disjE, blast)
@@ -824,7 +820,6 @@ apply (simp add: nth_append is_relevant_entry_def split: split_if_asm)
  apply (drule_tac x = "\<tau>s\<^isub>1!pc" in bspec)
   apply (blast intro: nth_mem) 
  apply (fastsimp simp add: ty\<^isub>i'_def)
-apply arith
 done
 
 declare nth_append[simp]
@@ -1137,7 +1132,7 @@ next
   also have "\<turnstile> [Push Unit],[] [::] [?\<tau>\<^isub>1,?\<tau>']"
     using While.prems max_stack1[of c] by(auto simp add:wt_Push)
   finally show ?case using wtc wte
-    by(simp add:after_def) (simp add:nat_number)
+    by (simp add:after_def)
 next
   case (Cond e e\<^isub>1 e\<^isub>2)
   obtain T\<^isub>1 T\<^isub>2 where wte: "P,E \<turnstile>\<^sub>1 e :: Boolean"

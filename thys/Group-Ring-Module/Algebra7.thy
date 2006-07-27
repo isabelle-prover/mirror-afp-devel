@@ -1955,6 +1955,8 @@ apply (rule_tac R = M and f = "\<lambda>j. s j \<star>\<^sub>M (h j)" and n = k 
 apply (simp add:funcset_mem)
 done
 
+ML {* fast_arith_split_limit := 0; *}  (* FIXME: rewrite proof *)
+
 lemma NAKTr5:"\<lbrakk>ring R; \<not> zeroring R; R module M; ideal R A; A \<subseteq> J_rad R; A \<odot>\<^sub>R M = carrier M; finite_generator R M H; card H = Suc k; 0 < k\<rbrakk> \<Longrightarrow> \<exists>h \<in> Nset k \<rightarrow> carrier M. H = h ` (Nset k) \<and>  h k \<in> linear_span R M A (h ` Nset (k - Suc 0))"
 apply (insert Nset2_finiteTr [of "k"])
  apply (subgoal_tac "\<exists>h. h \<in> Nset k \<rightarrow> H \<and> surj_to h (Nset k) H")
@@ -2327,6 +2329,8 @@ apply (rule linear_span_inc_0 [of "R" "M" "carrier R"], assumption+)
  apply (rule subsetI) apply simp
 apply (thin_tac "{x} = H") apply simp
 done
+
+ML {* fast_arith_split_limit := 0; *}  (* FIXME *)
 
 lemma fg_qmodule:"\<lbrakk>ring R; R module M; M fgover R; submodule R M N \<rbrakk> \<Longrightarrow>
                           (M /\<^sub>m N) fgover R"

@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.1 2006-05-22 09:54:00 nipkow Exp $
+(*  ID:         $Id: Invariants.thy,v 1.2 2006-07-27 13:24:37 webertj Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -1319,7 +1319,7 @@ proof -
 		  apply (subgoal_tac "(x - |faceListAt g | ) < n") apply simp
 		   apply (rule splitFace_f12_f21_neq_norm) apply (rule pre) apply simp
  		   apply (simp add: f12_def [symmetric] f21_def [symmetric]  ws_def [symmetric]) apply (simp add: ws_def) apply (rule fdg)
-		apply (simp add: minGraphProps4) by arith
+		by (simp add: minGraphProps4)
 	      qed
 	    qed
 	  qed
@@ -1481,7 +1481,7 @@ apply (rule equalityI)
      apply (subgoal_tac "va \<in> set ws")
       apply (case_tac "x = f12") apply (simp add: vert_f12) apply (simp add: vert_f21)
      apply (simp add: ws_def fla)
-    apply (simp add: ws_def fla) apply arith
+    apply (simp add: ws_def fla)
    apply (rule minGraphProps11') apply simp
   apply (subgoal_tac "v \<in> \<V> g' \<and> a \<in> \<V> g'")
    apply (simp only: fla in_vertices_graph)
@@ -1570,7 +1570,7 @@ apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
    apply (case_tac "x = f'") apply simp apply simp
    apply (subgoal_tac "va \<in> \<V> g'") apply (simp add: fla vertices_graph)
    apply (rule minGraphProps9) apply simp apply force apply simp
-  apply (simp add: ws_def fla) apply arith
+  apply (simp add: ws_def fla)
  apply (rule minGraphProps11') apply simp
 apply (subgoal_tac "v \<in> \<V> g' \<and> a \<in> \<V> g'")
 apply (simp only: fla in_vertices_graph)

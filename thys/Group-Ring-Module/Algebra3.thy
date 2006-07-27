@@ -2016,10 +2016,6 @@ apply (erule conjE) apply simp
  apply simp
 apply (rule allI) apply (rule impI)
  apply (simp add:Nset_def)
- apply (subgoal_tac "n - Suc 0 < n")
- apply (frule_tac i = l in le_less_trans [of _ "n - Suc 0" "n"], assumption+)
- apply (simp add:less_imp_le)
- apply simp
  apply (simp add:Nset_def)
 done
 
@@ -2152,9 +2148,8 @@ apply (rule  im_d_gchainsTr1_3, assumption+)
  apply blast
  apply simp
  apply (simp add:Nset_def)
- apply (rule le_less_trans, assumption+) apply simp
 apply (subgoal_tac "0 \<in> Nset ((LEAST j. f j \<in> f ` Nset n \<and> f j \<noteq> f 0) - Suc 0)")
-apply (auto del:equalityI)
+ apply (auto del:equalityI)
 apply (simp add:Nset_def)
 done
 
@@ -2162,11 +2157,7 @@ lemma im_d_gchains1:"\<lbrakk>group G; 0 < n; d_gchain G n f; i \<in> Nset n; f 
 apply (frule im_d_gchainTr1_0 [of "G" "n" "f" "i"], assumption+)
 apply (frule im_d_gchainsTr1_2 [of "G" "n" "f" "i"], assumption+)
 apply (frule Nset_nset_1 [of "n" "j - Suc 0"])
- apply simp
  apply (simp add:Nset_def)
- apply (frule le_trans [of "j" "i" "n"], assumption+)
- apply (frule less_pre_n [of "j"])
- apply (rule less_le_trans, assumption+)
 apply (subgoal_tac "\<forall>l\<in>Nset n. f l \<in> {H. H \<guillemotleft> G}")
 prefer 2
  apply (thin_tac "Nset n = Nset (j - Suc 0) \<union> nset (Suc (j - Suc 0)) n")
@@ -2236,11 +2227,6 @@ apply (case_tac "n = 0") apply (rotate_tac -1)
  apply (simp add:d_gchain_def) apply (simp add:Nset_def)
 apply (simp add:Nset_def)
  apply (frule d_gchain_pre [of "G" "n"], assumption+)
- apply simp
-apply (rule allI) apply (rule impI)
- apply (frule less_pre_n [of "n"])
- apply (frule_tac i = i in le_less_trans [of _ "n - (Suc 0)" "n"], assumption+)
- apply (simp add:less_imp_le)
 done
 
 lemma D_gchain0:"\<lbrakk>group G; D_gchain G n f; i \<in> Nset n; j \<in> Nset n; i < j\<rbrakk> \<Longrightarrow> f j \<subset> f i"
@@ -2256,8 +2242,6 @@ apply (case_tac "j = Suc i")
  apply (simp add:Nset_def)
  apply simp
  apply (simp add:Nset_def)
- apply (frule less_le_diff [of "i" "n"])
- apply blast
 apply (frule_tac i = i and j = j and k = n in less_le_trans)
  apply (thin_tac "\<forall>i\<in>Nset (n - Suc 0). f (Suc i) \<subset> f i")
  apply (simp add:Nset_def)
@@ -2324,9 +2308,6 @@ apply simp
 apply (subgoal_tac "\<forall>l. l \<in> Nset (n - Suc 0) \<longrightarrow> l \<in> Nset n")
  apply simp
 apply (rule allI) apply (rule impI) apply (simp add:Nset_def)
- apply (frule_tac i = l in le_less_trans [of _ "n - Suc 0" "n"])
- apply simp
- apply (simp add:less_imp_le)
 done
 
 lemma W_cmpser_pre:"\<lbrakk>group G; W_cmpser G (Suc n) f\<rbrakk> \<Longrightarrow> W_cmpser G n f"
@@ -2339,9 +2320,6 @@ apply (frule D_gchain_pre, assumption+) apply simp
  apply (subgoal_tac "\<forall>l. l\<in>Nset (n - 1) \<longrightarrow> l \<in> Nset n")
  apply simp
 apply (rule allI) apply (rule impI) apply (simp add:Nset_def)
- apply (frule_tac i = l in le_less_trans [of _ "n - Suc 0" "n"])
- apply simp
- apply (simp add:less_imp_le)
 done
 
 lemma td_gchain_n:"\<lbrakk>group G; td_gchain G n f; carrier G \<noteq> {one G}\<rbrakk> \<Longrightarrow>
@@ -2364,7 +2342,6 @@ done
 
 lemma jointgd_tool3:"\<lbrakk>0 < i;  i \<in> Nset m \<rbrakk> \<Longrightarrow> i - Suc 0 \<in> Nset (m - Suc 0)"
 apply (simp add:Nset_def)
-  apply (rule  diff_le_mono [of _ "m" "Suc 0"], assumption+)
 done
 
 lemma jointgd_tool4:"n < i \<Longrightarrow> i - n = Suc( i - Suc n)"
@@ -2400,9 +2377,6 @@ apply simp
 apply (subgoal_tac "l - Suc 0 \<in> Nset m") apply (rotate_tac -1)
  apply simp
  apply (simp add:Nset_def)
- apply (thin_tac "0 < m")
- apply (frule_tac m = 0 and n = l in Suc_leI)
- apply (frule diff_le_mono [of _ "Suc m" "Suc 0"]) apply simp+
 apply (rule ballI)
  apply (simp add:jointfun_def)
  apply (case_tac "l = 0")
@@ -4207,8 +4181,7 @@ apply (rule ballI)
  apply (thin_tac "l \<le> r * s") apply simp
  apply (subgoal_tac "0 < r * s")
  apply (frule_tac  r = r and s = s and l = l in rtos_hom2, assumption+)
- apply (simp add:Nset_def) apply (rule less_le_diff)
- apply simp
+ apply (simp add:Nset_def)
 apply (frule Nset_le)
  apply (frule_tac i = "rtos r s l" in le_less_trans [of _ "r * s - Suc 0" "r * s"]) apply simp
  apply (simp add:less_imp_le)
@@ -4390,8 +4363,6 @@ lemma compseriesTr5:"\<lbrakk>0 < n; group G; compseries G n f; i \<in> Nset (n 
 apply (frule compser_nsubg, assumption+) apply simp+
 apply (frule compseriesTr0 [of "G" "n" "f" "i"], assumption+)
 apply (simp add:Nset_def)
-apply (frule le_less_trans [of "i" "n - Suc 0" "n"]) apply simp
-apply (simp add:less_imp_le)
 apply (frule subggrp [of "G" "f i"], assumption+)
 apply (frule nsubg_subset [of "grp G (f i)" "f (Suc i)"], assumption+)
 apply (simp add:grp_carrier)
@@ -4401,8 +4372,6 @@ lemma refine_cmpserTr0:"\<lbrakk>0 < n; group G; compseries G n f; i \<in> Nset 
  H \<guillemotleft> G;  f (Suc i) \<subseteq> H \<and> H \<subseteq> f i\<rbrakk> \<Longrightarrow> H = f (Suc i) \<or> H = f i"
 apply (frule compseriesTr0 [of "G" "n" "f" "i"], assumption+)
  apply (simp add:Nset_def)
- apply (frule le_less_trans [of "i" "n - Suc 0" "n"]) apply simp
- apply (simp add:less_imp_le)
  apply (frule subggrp [of "G" "f i"], assumption+)
  apply (erule conjE)
  apply (frule compser_nsubg [of "n" "G" "f" "i"], assumption+)
@@ -4557,9 +4526,6 @@ apply (frule_tac i = xa and j = "Suc (xa div s) * s" in
  apply (subgoal_tac "0 < r")
  apply (frule_tac i = "xa div s" and H = "h xa" in refine_cmpserTr0 [of "r" "G" "f"], assumption+)
  apply (simp add:Nset_def)
- apply (subgoal_tac "0 < r")
- apply (rule div_Tr2 [of "r" "s"], assumption+)
- apply simp
  apply (simp add:d_gchain_def Nset_def)
  apply simp
 prefer 2 apply simp
@@ -4583,12 +4549,8 @@ lemma cmp_rfn0:"\<lbrakk>group G; 0 < r; 0 < s; compseries G r f; compseries G s
 apply (frule compser_nsubg, assumption+)
 apply (frule compseriesTr0 [of "G" "r" "f" "i"], assumption+)
 apply (simp add:Nset_def)
-apply (frule le_less_trans [of "i" "r - Suc 0" "r"]) apply simp
-apply (simp add:less_imp_le)
 apply (frule compseriesTr0 [of "G" "s" "g" "j"], assumption+)
 apply (simp add:Nset_def)
-apply (frule le_less_trans [of "j" "s - Suc 0" "s"]) apply simp
-apply (simp add:less_imp_le)
 apply (frule compser_nsubg [of "s" "G" "g" "j"], assumption+)
 apply (rule_tac G = G and H = "f i" and ?H1.0 = "f (Suc i)" and K = "g j" and ?K1.0 = "g j" in ZassenhausTr1_1, assumption+)
 apply (simp add:Nset_def)
@@ -4662,6 +4624,8 @@ lemma inter_subgs_Tr1:"\<lbrakk>group G; 0 < r; 0 < s; compseries G r f; compser
  apply (simp add:mult_commute) apply (simp add:Nset_def)
  apply (rule compseriesTr0, assumption+) apply (simp add:Nset_def)
 done
+
+ML {* val old_split_limit = !fast_arith_split_limit; fast_arith_split_limit := 0; *}
 
 lemma JHS_Tr0_2:"\<lbrakk>0 < r; 0 < s; group G; compseries G r f; compseries G s g\<rbrakk>
 \<Longrightarrow> \<forall>i\<in>Nset (s * r - Suc 0). cmp_rfn G r f s g (Suc i) \<lhd> grp G (cmp_rfn G r f s g i)"
@@ -4773,6 +4737,8 @@ apply simp
  apply (rule special_nsubg_e, assumption+)
 done
 
+ML {* fast_arith_split_limit := old_split_limit; *}
+
 lemma cmp_rfn4:"\<lbrakk>group G; 0 < r; 0 < s; compseries G r f;
 compseries G s g; l \<in> Nset (s * r - Suc 0)\<rbrakk>
   \<Longrightarrow> cmp_rfn G r f s g (Suc l) \<subseteq> cmp_rfn G r f s g l"
@@ -4783,8 +4749,6 @@ apply (thin_tac " \<forall>i\<in>Nset (s * r - Suc 0).
           cmp_rfn G r f s g (Suc i) \<lhd> grp G (cmp_rfn G r f s g i)")
 apply (frule cmp_rfn2 [of "r" "s" "G" "f" "g" "l"], assumption+)
 apply (simp add:Nset_def)
-apply (frule le_less_trans [of "l" "s * r - Suc 0" "s* r"]) apply simp
-apply (simp add:less_imp_le)
 apply (frule subggrp [of "G" "cmp_rfn G r f s g l"], assumption+)
 apply (frule nsubg_subset [of "grp G (cmp_rfn G r f s g l)"  ], assumption+)
 apply (simp add: grp_carrier)
@@ -5305,7 +5269,7 @@ done
 lemma abc_SucTr0:"\<lbrakk>(0::nat) < a; c \<le> b; a - Suc 0 = b - c\<rbrakk> \<Longrightarrow> a = (Suc b) - c"
 apply (subgoal_tac "Suc 0 \<le> a")
 apply (frule le_add_diff_inverse2 [of "Suc 0" "a", THEN sym])
-apply auto apply (rule Suc_diff_le[THEN sym], assumption+)
+apply auto
 done
 
 lemma length_wcmpser0_0:"\<lbrakk>group G; Ugp E; w_cmpser G (Suc 0) f\<rbrakk>
