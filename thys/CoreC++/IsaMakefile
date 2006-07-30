@@ -31,9 +31,9 @@ MAXTIME = 2000
 
 ## dependencies
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): $(LOG)/$(SESSION-NAME).gz
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/root.tex 
+$(LOG)/$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/root.tex 
 	ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 
