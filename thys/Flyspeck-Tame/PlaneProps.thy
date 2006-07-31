@@ -1,8 +1,8 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.1 2006-05-22 09:54:04 nipkow Exp $
+(*  ID:         $Id: PlaneProps.thy,v 1.2 2006-07-31 00:57:29 webertj Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-header "Further Plane Graph Poroperties"
+header "Further Plane Graph Properties"
 
 theory PlaneProps
 imports Invariants
@@ -537,7 +537,7 @@ proof (induct ovs)
           del:is_nextElem_edges_eq)
       show  "?B"
 	using Nil mgp_vertices3[OF Nil(1,3)]
-	by(simp add:  setFinal_def between_last pre_subdivFace'_def) arith
+	by(simp add:  setFinal_def between_last pre_subdivFace'_def)
     qed
   next
     show "setFinal f \<in> ?F" using Nil

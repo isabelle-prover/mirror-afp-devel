@@ -4201,8 +4201,6 @@ apply (rule ballI)
  apply (simp add:jointfun_def sliden_def slide_def)
  apply (simp add:le_def) apply (subgoal_tac "Suc n \<le> l") prefer 2 apply simp
  apply (simp add:Nset_def)
- apply (frule_tac m = l and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
- apply simp
  apply (frule_tac R = R and M = M and H = H and f = "jointfun n f m g" and n = "n + m" and s = "jointfun n s m (\<lambda>l. -\<^sub>R (t l))" and l = x in unique_expression3, assumption+)  apply (simp add:Nset_def)
  apply (thin_tac "e\<Sigma> M (\<lambda>j. jointfun n s m (\<lambda>l. -\<^sub>R (t l)) j \<star>\<^sub>M (jointfun n f m g j)) (Suc (n + m)) = 0\<^sub>M")
  apply (thin_tac "e\<Sigma> M (jointfun n (\<lambda>j.  s j \<star>\<^sub>M (f j)) m (\<lambda>j. (if j \<in> Nset m then -\<^sub>R (t j) else arbitrary) \<star>\<^sub>M (g j))) (Suc (n + m)) =  0\<^sub>M")

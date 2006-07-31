@@ -2256,7 +2256,7 @@ apply (simp add:Nset_def)
  apply (simp add:Nset_def) apply (simp add:Nset_def)
  apply assumption
 apply (rule subset_psubset_trans [of "f j" "f (Suc i)" "f i"], assumption+)
- apply blast
+apply simp
 done
 
 lemma D_gchain1:"\<lbrakk>group G; D_gchain G n f\<rbrakk> \<Longrightarrow> inj_on f (Nset n)"
@@ -2439,7 +2439,7 @@ apply (rule impI)
  apply (simp add:sliden_def d_gchain_def [of _ "m" _] Nset_def)
  apply (subgoal_tac "g (Suc (l - Suc n)) \<subseteq> g (l - Suc n)")
  apply (simp add:jointgd_tool4)
- apply blast
+ apply simp
 done
 
 lemma joint_D_gchains:"\<lbrakk> group G; D_gchain G n f; D_gchain G m g;
@@ -2503,7 +2503,7 @@ apply (frule not_sym) apply (thin_tac "i \<noteq> n")
  apply (subgoal_tac "n < Suc n")
  apply (frule_tac k = i in less_le_trans [of "n" "Suc n" _], assumption+)
  apply (simp add:jointgd_tool4) apply simp
-apply blast
+apply simp
 done
 
 lemma w_cmpser_is_d_gchain:"\<lbrakk>group G; w_cmpser G n f\<rbrakk> \<Longrightarrow> d_gchain G n f"
@@ -4014,7 +4014,9 @@ lemma  rfn_tool12_2:"\<lbrakk>0 < (s::nat); (i::nat) mod s = s - Suc 0\<rbrakk> 
                                                (Suc i) mod s = 0"
 apply (insert mod_div_equality [THEN sym, of "i" "s"])
 apply (insert add_Suc_right [THEN sym, of "i div s * s" "i mod s"])
+ML {* fast_arith_split_limit := 0; *}  (* FIXME: rewrite proof *)
 apply auto
+ML {* fast_arith_split_limit := 9; *}
 done
 
 lemma rfn_tool13:"\<lbrakk> (0::nat) < r; a = b \<rbrakk> \<Longrightarrow> a mod r = b mod r"
@@ -4805,6 +4807,8 @@ apply (rule isomTr1)
 apply (rule homom4Tr1, assumption+)
 done
 
+ML {* fast_arith_split_limit := 0; *}  (* FIXME: rewrite proof *)
+
 lemma Suc_rtos_div_r_1:"\<lbrakk> 0 < r; 0 < s; i \<le> r * s - Suc 0;
 Suc (rtos r s i) < r * s; i mod s = s - Suc 0; i div s < r - Suc 0\<rbrakk> \<Longrightarrow>
          Suc (rtos r s i) div r = i mod s"
@@ -4873,6 +4877,8 @@ apply (subgoal_tac "Suc i mod s = Suc (i div s * s + s - Suc 0) mod s")
 apply (rule Suc_pred [of "i div s * s + s"]) apply simp
 done
 
+ML {* fast_arith_split_limit := 9; *}  (* FIXME *)
+
 (* same as div_Tr3_2 *)
 lemma Suci_div_s_2:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; i mod s < s - Suc 0\<rbrakk>
          \<Longrightarrow> Suc i div s = i div s"
@@ -4896,6 +4902,8 @@ lemma Suc_rtos_i_mod_r_2:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; i div s 
 apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"]) apply simp
 apply (simp add:rtos_def)
 done
+
+ML {* fast_arith_split_limit := 0; *}  (* FIXME *)
 
 lemma Suc_rtos_i_mod_r_3:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; i div s < r - Suc 0\<rbrakk> \<Longrightarrow> Suc (rtos r s i) mod r = Suc (i div s)"
 apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"]) apply simp
@@ -4926,6 +4934,8 @@ apply (simp del:add_Suc add_Suc_right)
  apply (rule rfn_tool1_1, assumption+) apply simp
  apply (simp del:Suc_pred) apply simp
 done
+
+ML {* fast_arith_split_limit := 9; *}  (* FIXME *)
 
 lemma r_s_div_s:"\<lbrakk>0 < r; 0 < s \<rbrakk> \<Longrightarrow> (r * s - Suc 0) div s = r - Suc 0"
 apply (frule rfn_tool1_1 [of "s" "s - Suc 0" "r - Suc 0"])
@@ -5083,6 +5093,8 @@ apply (frule subggrp [of "G" "f r \<bullet>\<^sub>G (f (r - Suc 0) \<inter> g (i
                                                               assumption+)
 apply (rule Qgrp, assumption+)
 done
+
+ML {* fast_arith_split_limit := 0; *}  (* FIXME *)
 
 lemma JHS_Tr1_4:"\<lbrakk>group G; 0 < r; 0 < s; compseries G r f; compseries G s g;
        i \<le> s * r - Suc 0; Suc (rtos r s i) < s * r; Suc i < s * r;
@@ -5265,6 +5277,8 @@ apply (frule Qgrp [of "grp G (f (r - Suc 0) \<inter> g (s - Suc 0))" "{1\<^sub>G
  apply simp
 apply (rule JHS_Tr1_6, assumption+)
 done
+
+ML {* fast_arith_split_limit := 9; *}  (* FIXME *)
 
 lemma abc_SucTr0:"\<lbrakk>(0::nat) < a; c \<le> b; a - Suc 0 = b - c\<rbrakk> \<Longrightarrow> a = (Suc b) - c"
 apply (subgoal_tac "Suc 0 \<le> a")

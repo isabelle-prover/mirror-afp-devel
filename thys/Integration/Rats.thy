@@ -184,7 +184,7 @@ proof (unfold surj_def)
     
     def y \<equiv> "r-x"
     have "2*z=2*(\<Sum>i < r + 1. i)+2*x"
-      using x_def a by simp arith
+      using x_def a by simp
     also have "\<dots> = r * (r+1) + 2*x"
       using sum_of_naturals by simp
     also have "\<dots> = (x+y)*(x+y+1)+2*x"

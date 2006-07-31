@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.2 2006-07-27 13:24:37 webertj Exp $
+(*  ID:         $Id: Invariants.thy,v 1.3 2006-07-31 00:57:28 webertj Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2650,6 +2650,7 @@ lemma inv_Seed: "inv (Seed p)"
     Seed_holds_faces_distinct Seed_holds_faceListAt_len
     one_final_Seed two_face_Seed)
 
+ML {* fast_arith_split_limit := 0; *}  (* FIXME: rewrite proof *)
 
 lemma pre_subdivFace_indexToVertexList:
 assumes mgp: "minGraphProps g" and f: "f \<in> set (nonFinals g)"
@@ -2727,6 +2728,7 @@ proof -
     apply (rule natToVertexList_nth_Suc) apply simp by arith
 qed
 
+ML {* fast_arith_split_limit := 9; *}  (* FIXME *)
 
 (* Interlude: increasing properties *)
 

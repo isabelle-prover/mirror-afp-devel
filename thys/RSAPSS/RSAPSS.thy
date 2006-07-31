@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/RSAPSS.thy
-    ID:         $Id: RSAPSS.thy,v 1.3 2005-07-07 10:44:41 nipkow Exp $
+    ID:         $Id: RSAPSS.thy,v 1.4 2006-07-31 00:57:30 webertj Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -245,6 +245,8 @@ proof -
   thus ?thesis using length_bvxor_bound by simp
 qed
 
+ML {* fast_arith_split_limit := 0; *}  (* FIXME: rewrite proof *)
+
 lemma length_helper: assumes p: "prime p" and q: "prime q" and x: "(length (nat_to_bv (p * q)) - Suc 0) mod 8 ~= 0" and mgf: "(MGF (sha1 (generate_M' (sha1 m) salt))
   (length
   (generate_DB
@@ -345,6 +347,8 @@ proof -
   qed
   ultimately show ?thesis by arith
 qed
+
+ML {* fast_arith_split_limit := 9; *}  (* FIXME *)
 
 lemma length_emsapss_smaller_pq: "\<lbrakk>prime p; prime q; emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0) \<noteq> []; (length (nat_to_bv (p * q)) - Suc 0) mod 8 ~= 0\<rbrakk> \<Longrightarrow>  length (remzero (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p*q))"
 proof -

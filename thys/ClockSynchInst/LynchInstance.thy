@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: LynchInstance.thy,v 1.6 2006-07-27 13:24:37 webertj Exp $
+    ID:          $Id: LynchInstance.thy,v 1.7 2006-07-31 00:57:28 webertj Exp $
     Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
@@ -986,7 +986,9 @@ proof-
   qed
   ultimately
   show ?thesis
+ML {* fast_arith_split_limit := 0; *}  (* FIXME: rewrite proof *)
     by simp
+ML {* fast_arith_split_limit := 9; *}  (* FIXME *)
 qed
 
 subsection {* Accuracy Preservation property *}

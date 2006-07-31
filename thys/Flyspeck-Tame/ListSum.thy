@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListSum.thy,v 1.1 2006-05-22 09:54:00 nipkow Exp $
+(*  ID:         $Id: ListSum.thy,v 1.2 2006-07-31 00:57:28 webertj Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -145,7 +145,7 @@ proof (induct V)
 next
   case (Cons v V) then have "\<Sum>\<^bsub>v \<in> V\<^esub> f v \<le> \<Sum>\<^bsub>v \<in> V\<^esub> g v" by simp
   moreover from Cons have "f v \<le> g v" by simp
-  ultimately show ?case by simp arith
+  ultimately show ?case by simp
 qed
 
 lemma ListSum1_bound:
@@ -172,7 +172,7 @@ next
   next
     assume "a \<in> set F" "b \<in> set F"
     with Cons have "d a + d b \<le> \<Sum>\<^bsub>f \<in> F\<^esub> d f" by simp
-    then show ?thesis by simp arith
+    then show ?thesis by simp
   qed
 qed
 

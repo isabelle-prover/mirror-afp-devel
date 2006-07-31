@@ -1061,6 +1061,7 @@ proof -
   apply (case_tac "x \<le> i - Suc 0")
   apply (frule_tac i1 = i and n1 = n and t = x in skip_im_Tr1[THEN sym],
    assumption+)
+ML {* fast_arith_split_limit := 0; *}  (* FIXME: rewrite proof *)
   apply (case_tac "i = Suc n")
   apply (simp add:Nset_def)
   apply (frule le_imp_less_or_eq) apply (thin_tac "x \<le> Suc n") apply simp
@@ -1095,6 +1096,7 @@ proof -
 done
 qed
 
+ML {* fast_arith_split_limit := 9; *}  (* FIXME *)
 
 lemma skip_id:"l < i \<Longrightarrow> skip i l = l"
 proof -
@@ -1332,7 +1334,6 @@ apply simp
        insert (Suc (n - Suc (Suc 0))) (Nset (n - Suc (Suc 0)))")
  apply (thin_tac "Nset (Suc (n - Suc (Suc 0))) =
        insert (Suc (n - Suc (Suc 0))) (Nset (n - Suc (Suc 0)))")
-apply (simp add:Suc_Suc_Tr)
 prefer 2 apply (simp add:Suc_Suc_Tr)
  apply (simp add:Nset_def)
 done
@@ -1722,8 +1723,6 @@ apply (simp add:Pi_def)
 apply (rule allI) apply (rule impI)
 apply (simp add:sliden_def Nset_def)
 apply (simp add:nset_def)
- apply (erule conjE)
- apply (simp add:diff_le_mono)
 done
 
 lemma slide_sliden:"(sliden i) (slide i k) = k"
@@ -1754,10 +1753,6 @@ proof -
  apply (rule impI)
  apply (simp add:sliden_def)
  apply (simp add:nset_def)
- apply (erule conjE)+
- apply (subgoal_tac "(x - i = y - i) = (x = y)")
- apply blast
- apply (rule eq_diff_iff, assumption+)
  done
 qed
 
