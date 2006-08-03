@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.8 2006-06-29 14:56:20 wasserra Exp $
+    ID:          $Id: Equivalence.thy,v 1.9 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -32,34 +32,6 @@ next
   from last "class" have "P \<turnstile> Path last Ds to C via [C]"
     by(fastsimp intro:Subobjs_Base simp:path_via_def)
   with Ds' show ?case by(fastsimp intro:casts_to.casts_ref)
-qed
-
-
-lemma assumes wf:"wf_prog wf_md P"
-  and path_via:"P \<turnstile> Path last Cs to C via Cs'"
-  and path_via':"P \<turnstile> Path last Cs to C via Cs''"
-  and appendPath:"Cs = Cs@\<^sub>pCs'"
-shows appendPath_path_via:"Cs = Cs@\<^sub>pCs''"
-
-proof -
-  from path_via have notempty:"Cs' \<noteq> []"
-    by(fastsimp intro!:Subobjs_nonempty simp:path_via_def)
-  { assume eq:"last Cs = hd Cs'"
-    and Cs:"Cs = Cs@tl Cs'"
-    from Cs have "tl Cs' = []" by simp
-    with eq notempty have "Cs' = [last Cs]"
-      by -(drule hd_Cons_tl,simp) }
-  moreover
-  { assume "Cs = Cs'"
-    with wf path_via have "Cs' = [last Cs]"
-      by(fastsimp intro:mdc_eq_last simp:path_via_def) }
-  ultimately have eq:"Cs' = [last Cs]" using appendPath
-    by(simp add:appendPath_def,split split_if_asm,simp_all)
-  with path_via have "C = last Cs"
-    by(simp add:path_via_def)
-  with wf path_via' have "Cs'' = [last Cs]"
-    by simp(rule path_via_C)
-  thus ?thesis by (simp add:appendPath_def)
 qed
 
 
@@ -328,7 +300,7 @@ done
 
 
 lemma StaticCastRedsFail:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s'\<rangle>; C \<notin> set Cs \<rbrakk>
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>ref(a,Cs),s'\<rangle>; C \<notin> set Cs; \<not> P \<turnstile> (last Cs) \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<rangle> \<rightarrow>* \<langle>THROW ClassCast,s'\<rangle>"
 
 apply(rule rtrancl_into_rtrancl)
@@ -1743,7 +1715,7 @@ next
   moreover
   { fix a Cs
     assume blocks:"P,E \<turnstile> \<langle>blocks(p#ps',Ts,vs,e),(h,l)\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h',l')\<rangle>"
-      and notin:"C' \<notin> set Cs"
+      and notin:"C' \<notin> set Cs" and leq:"\<not> P \<turnstile> (last Cs) \<preceq>\<^sup>* C'"
       and  e':"e' = THROW ClassCast"
     from blocks length_eqs obtain l'' vs''
       where eval:"P,E(p#ps' [\<mapsto>] Ts) \<turnstile> \<langle>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
@@ -1751,7 +1723,7 @@ next
       and casts:"P \<turnstile> Ts Casts vs to vs''"
       and length:"length vs'' = length vs"
       by -(drule blocksEval,auto)
-    from eval notin have 
+    from eval notin leq have 
       "P,E(p#ps'[\<mapsto>]Ts) \<turnstile> \<langle>\<lparr>C'\<rparr>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
                           \<langle>THROW ClassCast,(h',l'')\<rangle>"
       by(auto intro:StaticCastFail)

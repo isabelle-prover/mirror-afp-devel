@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellForm.thy,v 1.5 2006-06-28 09:09:19 wasserra Exp $
+    ID:          $Id: WellForm.thy,v 1.6 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -132,7 +132,7 @@ apply (drule rtrancl_into_trancl1)
 apply simp
 apply (drule subcls_asym)
 apply simp
-apply (drule_tac a="c" and b="a" in rtrancl_is_eq_or_trancl)
+apply(drule_tac a="c" and b="a" in  rtranclD)
 apply simp
 done
 
@@ -262,7 +262,7 @@ apply (drule rtrancl_into_trancl1)
  apply simp
 apply (drule leq_path_asym)
  apply simp
-apply (drule_tac a="c" and b="a" in rtrancl_is_eq_or_trancl)
+apply (drule_tac a="c" and b="a" in rtranclD)
 apply simp
 done
 
@@ -275,37 +275,6 @@ by (induct rule:rtrancl_induct,auto intro:Subobjs_Base elim!:leq_path1.elims,
               intro:wf_cdecl_supD class_wf ShBaseclass_isBaseclass subclsSI)
 
 
-lemma path_hd_appendPath:
-  assumes path:"P,C \<turnstile> Cs \<sqsubseteq> Cs'@\<^sub>pCs" and last:"last Cs' = hd Cs"
-  and notemptyCs:"Cs \<noteq> []" and notemptyCs':"Cs' \<noteq> []" and wf:"wf_prog wf_md P"
-  shows "Cs' = [hd Cs]"
-
-using path
-proof -
-  from path notemptyCs last have path2:"P,C \<turnstile> Cs \<sqsubseteq> Cs'@ tl Cs"
-    by (simp add:appendPath_def)
-  thus ?thesis
-  proof (auto dest!:rtrancl_is_eq_or_trancl)
-    assume "Cs = Cs'@ tl Cs"
-    with notemptyCs show "Cs' = [hd Cs]" by (rule app_hd_tl)
-  next
-    assume trancl:"(Cs,Cs'@ tl Cs) \<in> (leq_path1 P C)\<^sup>+"
-    from notemptyCs' last have butlastLast:"Cs' = butlast Cs' @ [hd Cs]"
-      by -(drule append_butlast_last_id,simp)
-    with trancl have trancl':"(Cs, (butlast Cs' @ [hd Cs]) @ tl Cs) \<in> (leq_path1 P C)\<^sup>+"
-      by simp
-    from notemptyCs have "(butlast Cs' @ [hd Cs]) @ tl Cs = butlast Cs' @ Cs"
-      by simp
-    with trancl' have "(Cs, butlast Cs' @ Cs) \<in> (leq_path1 P C)\<^sup>+" by simp
-    hence "(last Cs, last (butlast Cs' @ Cs)) \<in> (subcls1 P)\<^sup>+" using wf
-      by (rule last_leq_paths)
-    with notemptyCs have "(last Cs, last Cs) \<in> (subcls1 P)\<^sup>+"
-      by -(drule_tac xs="butlast Cs'" in last_appendR,simp)
-    with wf show ?thesis by (auto dest:subcls_irrefl)
-  qed
-qed
-
-
 
 
 subsection{* Lemmas concerning Subobjs *}
@@ -314,11 +283,10 @@ lemma Subobj_last_isClass:"\<lbrakk>wf_prog wf_md P; (C,Cs) \<in> Subobjs P\<rbr
 
 apply (frule Subobjs_isClass)
 apply (drule Subobjs_subclass)
-apply (drule rtrancl_is_eq_or_trancl)
+apply (drule rtranclD)
 apply (erule disjE)
  apply simp
-apply (subgoal_tac "is_class P (last Cs)")
- apply simp
+apply clarsimp
 apply (erule trancl_induct)
  apply (fastsimp dest:subcls1D class_wf elim:wf_cdecl_supD)
 apply (fastsimp dest:subcls1D class_wf elim:wf_cdecl_supD)
@@ -703,7 +671,7 @@ next
     with sup1 last have "(last Cs'',last Cs'') \<in> (subcls1 P)\<^sup>+" by simp
     with wf have "Cs = Cs''" by(fastsimp dest:subcls_irrefl) }
   ultimately show "Cs = Cs''" using leqs
-    by(fastsimp dest:rtrancl_is_eq_or_trancl)
+    by(fastsimp dest:rtranclD)
 qed
  
 
@@ -937,6 +905,88 @@ by (subgoal_tac "{Cs. (C,Cs) \<in> Subobjs P} =
 
 
 subsection{* Well-formedness and Path *}
+
+lemma path_via_reverse:
+  assumes path_via:"P \<turnstile> Path C to D via Cs" and wf:"wf_prog wf_md P"
+  shows "\<forall>Cs'. P \<turnstile> Path D to C via Cs' \<longrightarrow> Cs = [C] \<and> Cs' = [C] \<and> C = D"
+proof -
+  from path_via have subo:"(C,Cs)\<in> Subobjs P" and last:"last Cs = D"
+    by(simp add:path_via_def)+
+  hence leq:"P \<turnstile> C \<preceq>\<^sup>* D" by(fastsimp dest:Subobjs_subclass)
+  { fix Cs' assume "P \<turnstile> Path D to C via Cs'"
+    hence subo':"(D,Cs')\<in> Subobjs P" and last':"last Cs' = C"
+      by(simp add:path_via_def)+
+    hence leq':"P \<turnstile> D \<preceq>\<^sup>* C" by(fastsimp dest:Subobjs_subclass)
+    with leq wf have CeqD:"C = D" by(rule subcls_asym2)
+    moreover have Cs:"Cs = [C]" using CeqD subo last wf by(fastsimp intro:mdc_eq_last)
+    moreover have "Cs' = [C]" using CeqD subo' last' wf by(fastsimp intro:mdc_eq_last)
+    ultimately have "Cs = [C] \<and> Cs' = [C] \<and> C = D" by simp }
+  thus ?thesis by blast
+qed
+
+
+lemma path_hd_appendPath:
+  assumes path:"P,C \<turnstile> Cs \<sqsubseteq> Cs'@\<^sub>pCs" and last:"last Cs' = hd Cs"
+  and notemptyCs:"Cs \<noteq> []" and notemptyCs':"Cs' \<noteq> []" and wf:"wf_prog wf_md P"
+  shows "Cs' = [hd Cs]"
+
+using path
+proof -
+  from path notemptyCs last have path2:"P,C \<turnstile> Cs \<sqsubseteq> Cs'@ tl Cs"
+    by (simp add:appendPath_def)
+  thus ?thesis
+  proof (auto dest!:rtranclD)
+    assume "Cs = Cs'@ tl Cs"
+    with notemptyCs show "Cs' = [hd Cs]" by (rule app_hd_tl)
+  next
+    assume trancl:"(Cs,Cs'@ tl Cs) \<in> (leq_path1 P C)\<^sup>+"
+    from notemptyCs' last have butlastLast:"Cs' = butlast Cs' @ [hd Cs]"
+      by -(drule append_butlast_last_id,simp)
+    with trancl have trancl':"(Cs, (butlast Cs' @ [hd Cs]) @ tl Cs) \<in> (leq_path1 P C)\<^sup>+"
+      by simp
+    from notemptyCs have "(butlast Cs' @ [hd Cs]) @ tl Cs = butlast Cs' @ Cs"
+      by simp
+    with trancl' have "(Cs, butlast Cs' @ Cs) \<in> (leq_path1 P C)\<^sup>+" by simp
+    hence "(last Cs, last (butlast Cs' @ Cs)) \<in> (subcls1 P)\<^sup>+" using wf
+      by (rule last_leq_paths)
+    with notemptyCs have "(last Cs, last Cs) \<in> (subcls1 P)\<^sup>+"
+      by -(drule_tac xs="butlast Cs'" in last_appendR,simp)
+    with wf show ?thesis by (auto dest:subcls_irrefl)
+  qed
+qed
+
+
+lemma path_via_C: "\<lbrakk>P \<turnstile> Path C to C via Cs; wf_prog wf_md P\<rbrakk> \<Longrightarrow> Cs = [C]"
+by (fastsimp intro:mdc_eq_last simp:path_via_def)
+
+
+lemma assumes wf:"wf_prog wf_md P"
+  and path_via:"P \<turnstile> Path last Cs to C via Cs'"
+  and path_via':"P \<turnstile> Path last Cs to C via Cs''"
+  and appendPath:"Cs = Cs@\<^sub>pCs'"
+shows appendPath_path_via:"Cs = Cs@\<^sub>pCs''"
+
+proof -
+  from path_via have notempty:"Cs' \<noteq> []"
+    by(fastsimp intro!:Subobjs_nonempty simp:path_via_def)
+  { assume eq:"last Cs = hd Cs'"
+    and Cs:"Cs = Cs@tl Cs'"
+    from Cs have "tl Cs' = []" by simp
+    with eq notempty have "Cs' = [last Cs]"
+      by -(drule hd_Cons_tl,simp) }
+  moreover
+  { assume "Cs = Cs'"
+    with wf path_via have "Cs' = [last Cs]"
+      by(fastsimp intro:mdc_eq_last simp:path_via_def) }
+  ultimately have eq:"Cs' = [last Cs]" using appendPath
+    by(simp add:appendPath_def,split split_if_asm,simp_all)
+  with path_via have "C = last Cs"
+    by(simp add:path_via_def)
+  with wf path_via' have "Cs'' = [last Cs]"
+    by simp(rule path_via_C)
+  thus ?thesis by (simp add:appendPath_def)
+qed
+
 
 
 lemma subo_no_path:
@@ -1185,11 +1235,6 @@ apply auto
 done
 
 
-
-lemma path_via_C: "\<lbrakk>P \<turnstile> Path C to C via Cs; wf_prog wf_md P\<rbrakk> \<Longrightarrow> Cs = [C]"
-by (fastsimp intro:mdc_eq_last simp:path_via_def)
-
-
 lemma path_C_to_C_unique:
 "\<lbrakk>wf_prog wf_md P; is_class P C\<rbrakk> \<Longrightarrow> P \<turnstile> Path C to C unique"
 
@@ -1326,6 +1371,48 @@ apply (erule_tac x="(Cs', mthd')" in ballE)
 apply (erule_tac x="(Cs, mthd)" in ballE)
 apply (auto intro:leq_path_asym2)
 done
+
+
+lemma wf_select_method_fun: 
+  assumes wf:"wf_prog wf_md P"
+  shows "\<lbrakk>P \<turnstile> (C,Cs) selects M = mthd via Cs'; P \<turnstile> (C,Cs) selects M = mthd' via Cs''\<rbrakk>
+  \<Longrightarrow> mthd = mthd' \<and> Cs' = Cs''"
+proof(induct rule:SelectMethodDef.induct)
+  case (dyn_unique C Cs Cs' M mthd)
+  have "P \<turnstile> (C, Cs) selects M = mthd' via Cs''"
+    and "P \<turnstile> C has least M = mthd via Cs'" .
+  thus ?case
+  proof(induct rule:SelectMethodDef.induct)
+    case (dyn_unique D Ds Ds' M' mthd')
+    have "P \<turnstile> D has least M' = mthd' via Ds'" 
+      and "P \<turnstile> D has least M' = mthd via Cs'" .
+    with wf show ?case
+      by -(rule wf_sees_method_fun,simp_all)
+  next
+    case (dyn_ambiguous D Ds Ds' M' mthd')
+    have "\<forall>mthd Cs'. \<not> P \<turnstile> D has least M' = mthd via Cs'"
+      and "P \<turnstile> D has least M' = mthd via Cs'" .
+    thus ?case by blast
+  qed
+next
+  case (dyn_ambiguous C Cs Cs' M mthd)
+  have "P \<turnstile> (C, Cs) selects M = mthd' via Cs''"
+    and "P \<turnstile> (C, Cs) has overrider M = mthd via Cs'"
+    and "\<forall>mthd Cs'. \<not> P \<turnstile> C has least M = mthd via Cs'" .
+  thus ?case
+  proof(induct rule:SelectMethodDef.induct)
+    case (dyn_unique D Ds Ds' M' mthd')
+    have "P \<turnstile> D has least M' = mthd' via Ds'"
+      and "\<forall>mthd Cs'. \<not> P \<turnstile> D has least M' = mthd via Cs'" .
+    thus ?case by blast
+  next
+    case (dyn_ambiguous D Ds Ds' M' mthd')
+    have "P \<turnstile> (D, Ds) has overrider M' = mthd' via Ds'"
+      and "P \<turnstile> (D, Ds) has overrider M' = mthd via Cs'" .
+    thus ?case by(fastsimp dest:overrider_method_fun)
+  qed
+qed
+
 
 
 
@@ -1510,7 +1597,7 @@ proof (induct rule:rtrancl.induct)
 	by (auto simp:LeastMethodDef_def MethodDefs_def)
       with ex have "Ts = Ts'" and "P \<turnstile> T' \<le> T" by auto }
       ultimately have "Ts = Ts'" and "P \<turnstile> T' \<le> T" using path
-	by (auto dest!:rtrancl_is_eq_or_trancl) }
+	by (auto dest!:rtranclD) }
   thus "\<forall>Ts T m Cs. P \<turnstile> C has M = (Ts, T, m) via Cs \<longrightarrow> 
                       Ts = Ts' \<and> P \<turnstile> T' \<le> T"
     by (simp add:HasMethodDef_def MethodDefs_def)
@@ -1553,7 +1640,7 @@ next
 	by (auto simp:LeastMethodDef_def MethodDefs_def)
       with ex have "Ts = Ts'" and "P \<turnstile> T' \<le> T" by auto }
     ultimately have "Ts = Ts'" and "P \<turnstile> T' \<le> T" using path
-      by (auto dest!:rtrancl_is_eq_or_trancl) }
+      by (auto dest!:rtranclD) }
   thus "\<forall>Ts T m Cs. P \<turnstile> C has M = (Ts, T, m) via Cs \<longrightarrow> 
             Ts = Ts' \<and> P \<turnstile> T' \<le> T"
     by simp
@@ -1599,7 +1686,7 @@ proof (induct rule:rtrancl.induct)
 	by (auto simp:MinimalMethodDefs_def MethodDefs_def)
       with ex have "Ts = Ts'" and "P \<turnstile> T' \<le> T" by auto }
       ultimately have "Ts = Ts'" and "P \<turnstile> T' \<le> T" using leq'
-	by (auto dest!:rtrancl_is_eq_or_trancl) }
+	by (auto dest!:rtranclD) }
   thus "\<forall>Ts T m Cs Cs'. P \<turnstile> Path C to C via Cs' \<and> P,C \<turnstile> Ds \<sqsubseteq> Cs' @\<^sub>p Cs \<and> Cs \<noteq> [] \<and> 
                         P \<turnstile> C has M = (Ts, T, m) via Cs \<longrightarrow> 
                             Ts = Ts' \<and> P \<turnstile> T' \<le> T" by blast
@@ -1641,13 +1728,73 @@ next
 	by (auto simp:MinimalMethodDefs_def MethodDefs_def)
       with ex have "Ts = Ts'" and "P \<turnstile> T' \<le> T" by auto }
     ultimately have "Ts = Ts'" and "P \<turnstile> T' \<le> T" using leq_path
-      by (auto dest!:rtrancl_is_eq_or_trancl) }
+      by (auto dest!:rtranclD) }
   thus "\<forall>Ts T m Cs Cs'. P \<turnstile> Path D to C via Cs' \<and> P,D \<turnstile> Ds \<sqsubseteq> Cs' @\<^sub>p Cs \<and> Cs \<noteq> [] \<and> 
                     P \<turnstile> C has M = (Ts, T, m) via Cs \<longrightarrow> 
                            Ts = Ts' \<and> P \<turnstile> T' \<le> T"
     by blast
 qed
 
+
+lemma select_least_methods_subtypes: 
+  assumes select_method:"P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'"
+  and least_method:"P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
+  and path:"P \<turnstile> Path C to (last Cs) via Cs"
+  and wf:"wf_prog wf_md P"
+  shows "Ts' = Ts \<and> P \<turnstile> T \<le> T'"
+using select_method
+proof -
+  from path have sub:"P \<turnstile> C \<preceq>\<^sup>* last Cs"
+    by(fastsimp intro:Subobjs_subclass simp:path_via_def)
+  from least_method have has:"P \<turnstile> last Cs has M = (Ts',T',pns',body') via Ds"
+    by(rule has_least_method_has_method)
+  show ?thesis
+  proof(rule SelectMethodDef.elims)
+    fix X Xs Xs' M' mthd'
+    assume "((C,Cs@\<^sub>pDs),M,(Ts,T,pns,body),Cs') = ((X,Xs),M',mthd',Xs')"
+      and "P \<turnstile> X has least M' = mthd' via Xs'"
+    hence dyn:"P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'" by simp
+    with sub has wf show ?thesis
+      by -(drule leq_method_subtypes,assumption,simp,blast)+
+  next
+    fix X Xs Xs' M' mthd'
+    assume "((C,Cs@\<^sub>pDs),M,(Ts,T,pns,body),Cs') = ((X,Xs),M',mthd',Xs')"
+      and "P \<turnstile> (X,Xs) has overrider M' = mthd' via Xs'"
+    hence overrider:"P \<turnstile> (C,Cs@\<^sub>pDs) has overrider M = (Ts,T,pns,body) via Cs'" 
+      by simp
+    from least_method have notempty:"Ds \<noteq> []"
+      by(auto intro!:Subobjs_nonempty simp:LeastMethodDef_def MethodDefs_def)
+    have "last Cs = hd Ds \<Longrightarrow> last (Cs @ tl Ds) = last Ds"
+    proof(cases "tl Ds = []")
+      case True
+      assume last:"last Cs = hd Ds"
+      with True notempty have "Ds = [last Cs]" by (fastsimp dest:hd_Cons_tl)
+      hence "last Ds = last Cs" by simp
+      with True show ?thesis by simp
+    next
+      case False
+      assume last:"last Cs = hd Ds"
+      from notempty False have "last (tl Ds) = last Ds"
+	by -(drule hd_Cons_tl,drule_tac x="hd Ds" in last_ConsR,simp)
+      with False show ?thesis by simp
+    qed
+    hence eq:"(Cs @\<^sub>p Ds) @\<^sub>p [last Ds] = (Cs @\<^sub>p Ds)"
+      by(simp add:appendPath_def)
+    from least_method wf
+    have "P \<turnstile> last Ds has least M = (Ts',T',pns',body') via [last Ds]"
+      by(auto dest:Subobj_last_isClass intro:Subobjs_Base subobjs_rel
+	simp:LeastMethodDef_def MethodDefs_def)
+    with notempty
+    have "P \<turnstile> last (Cs@\<^sub>pDs) has least M = (Ts',T',pns',body') via [last Ds]"
+      by -(drule_tac Cs'="Cs" in appendPath_last,simp)
+    with overrider wf eq have "(Cs',Ts,T,pns,body) \<in> MinimalMethodDefs P C M"
+      and "P,C \<turnstile> Cs' \<sqsubseteq> Cs @\<^sub>p Ds"
+      by -(auto simp:FinalOverriderMethodDef_def OverriderMethodDefs_def,
+	drule wf_sees_method_fun,auto)
+    with sub wf path notempty has show ?thesis
+      by -(drule leq_methods_subtypes,simp_all,blast)+
+  qed
+qed
 
 
 

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.11 2006-06-29 14:56:19 wasserra Exp $
+    ID:          $Id: BigStep.thy,v 1.12 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -62,7 +62,7 @@ StaticCastNull:
   P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>"
 
 StaticCastFail:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>; C \<notin> set Cs \<rbrakk>
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>; \<not> P \<turnstile> (last Cs) \<preceq>\<^sup>* C; C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW ClassCast,s\<^isub>1\<rangle>"
 
 StaticCastThrow:
@@ -246,10 +246,12 @@ lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
   and eval_evals_inducts = eval_evals.inducts [split_format (complete)]
 
 inductive_cases eval_cases [cases set]:
+ "P,E \<turnstile> \<langle>new C,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+ "P,E \<turnstile> \<langle>Var V,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>V:=e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"

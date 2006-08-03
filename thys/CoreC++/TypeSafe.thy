@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.8 2006-06-28 09:09:19 wasserra Exp $
+    ID:          $Id: TypeSafe.thy,v 1.9 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -99,9 +99,9 @@ next
 	            (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
                                 P,h \<turnstile> fs' (:\<le>) map_of fs)"
     by auto
-  from oconf have all:"\<forall>Cs. (D,Cs) \<in> Subobjs P \<longrightarrow> (\<exists> fs'. (Cs,fs') \<in> S)"
+  from oconf have all:"\<forall>Cs. (D,Cs) \<in> Subobjs P \<longrightarrow> (\<exists>!fs'. (Cs,fs') \<in> S)"
     by(simp add:oconf_def)
-  hence "\<forall>Cs. (D,Cs) \<in> Subobjs P \<longrightarrow> (\<exists> fs'. (Cs,fs') \<in> ?S')" by blast
+  with S have "\<forall>Cs. (D,Cs) \<in> Subobjs P \<longrightarrow> (\<exists>!fs'. (Cs,fs') \<in> ?S')" by blast
   with oconf' have oconf':"P,h \<turnstile> (D,?S') \<surd>"
     by (simp add:oconf_def)
   with hconf ha show ?case by (rule hconf_upd_obj)
@@ -284,7 +284,7 @@ text{* Combining conformance of heap and local variables: *}
 
 constdefs
   sconf :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>"   [51,51,51]50)
-  "P,E \<turnstile> s \<surd>  \<equiv>  let (h,l) = s in P \<turnstile> h \<surd> \<and> P,h \<turnstile> l (:\<le>)\<^sub>w E \<and> envconf P E"
+  "P,E \<turnstile> s \<surd>  \<equiv>  let (h,l) = s in P \<turnstile> h \<surd> \<and> P,h \<turnstile> l (:\<le>)\<^sub>w E \<and> P \<turnstile> E \<surd>"
 
 lemma red_preserves_sconf:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd>; wwf_prog P\<rbrakk> 
@@ -923,10 +923,6 @@ next
     where wtref:"P,E,h \<turnstile> ref (a,Cs) : Class (last Cs)" and eq:"T'' = T'"
     and wtes:"P,E,h \<turnstile> map Val vs [:] Ts''" and subs: "P \<turnstile> Ts'' [\<le>] Ts'"
     by(auto dest:wf_sees_method_fun split:split_if_asm)
-  from wtref hp have subcls:"P \<turnstile> C \<preceq>\<^sup>* last Cs"
-    by (auto intro:Subobjs_subclass split:split_if_asm)
-  from method have has:"P \<turnstile> last Cs has M = (Ts',T',pns',body') via Ds"
-    by(rule has_least_method_has_method)
   from select wf have "is_class P (last Cs')"
     by(induct rule:SelectMethodDef.induct,
        auto intro:Subobj_last_isClass simp:FinalOverriderMethodDef_def 
@@ -941,54 +937,10 @@ next
     by(auto elim:SelectMethodDef.elims split:split_if_asm 
             simp:FinalOverriderMethodDef_def OverriderMethodDefs_def 
                  MinimalMethodDefs_def LeastMethodDef_def MethodDefs_def)
-  from select have "Ts' = Ts \<and> P \<turnstile> T \<le> T'"
-  proof(rule SelectMethodDef.elims)
-    fix X Xs Xs' M' mthd'
-    assume "((C,Cs@\<^sub>pDs),M,(Ts,T,pns,body),Cs') = ((X,Xs),M',mthd',Xs')"
-      and "P \<turnstile> X has least M' = mthd' via Xs'"
-    hence dyn:"P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'" by simp
-    with subcls has wf show ?thesis
-      by -(drule leq_method_subtypes,assumption,simp,blast)+
-  next
-    fix X Xs Xs' M' mthd'
-    assume "((C,Cs@\<^sub>pDs),M,(Ts,T,pns,body),Cs') = ((X,Xs),M',mthd',Xs')"
-      and "P \<turnstile> (X,Xs) has overrider M' = mthd' via Xs'"
-    hence overrider:"P \<turnstile> (C,Cs@\<^sub>pDs) has overrider M = (Ts,T,pns,body) via Cs'" 
-      by simp
-    from method have notempty:"Ds \<noteq> []"
-      by(auto intro!:Subobjs_nonempty simp:LeastMethodDef_def MethodDefs_def)
-    from notempty have "last Cs = hd Ds \<Longrightarrow> last (Cs @ tl Ds) = last Ds"
-    proof(cases "tl Ds = []")
-      case True
-      assume last:"last Cs = hd Ds" and notempty:"Ds \<noteq> []"
-      with True have "Ds = [last Cs]" by (fastsimp dest:hd_Cons_tl)
-      hence "last Ds = last Cs" by simp
-      with True show ?thesis by simp
-    next
-      case False
-      assume last:"last Cs = hd Ds" and notempty:"Ds \<noteq> []"
-      from notempty False have "last (tl Ds) = last Ds"
-	by -(drule hd_Cons_tl,drule_tac x="hd Ds" in last_ConsR,simp)
-      with False show ?thesis by simp
-    qed
-    hence eq:"(Cs @\<^sub>p Ds) @\<^sub>p [last Ds] = (Cs @\<^sub>p Ds)"
-      by(simp add:appendPath_def)
-    from wtref hp have path:"P \<turnstile> Path C to (last Cs) via Cs"
-      by (auto simp:path_via_def split:split_if_asm)
-    from method wf
-    have "P \<turnstile> last Ds has least M = (Ts',T',pns',body') via [last Ds]"
-      by(auto dest:Subobj_last_isClass intro:Subobjs_Base subobjs_rel
-	      simp:LeastMethodDef_def MethodDefs_def)
-    with notempty
-    have "P \<turnstile> last (Cs@\<^sub>pDs) has least M = (Ts',T',pns',body') via [last Ds]"
-      by -(drule_tac Cs'="Cs" in appendPath_last,simp)
-    with overrider wf eq have "(Cs',Ts,T,pns,body) \<in> MinimalMethodDefs P C M"
-      and "P,C \<turnstile> Cs' \<sqsubseteq> Cs @\<^sub>p Ds"
-      by -(auto simp:FinalOverriderMethodDef_def OverriderMethodDefs_def,
-           drule wf_sees_method_fun,auto)
-    with subcls wf path notempty has show ?thesis
-      by -(drule leq_methods_subtypes,simp_all,blast)+
-  qed
+  from wtref hp have "P \<turnstile> Path C to (last Cs) via Cs"
+    by (auto simp:path_via_def split:split_if_asm)
+  with select method wf have "Ts' = Ts \<and> P \<turnstile> T \<le> T'"
+    by -(rule select_least_methods_subtypes,simp_all)
   hence eqs:"Ts' = Ts" and sub:"P \<turnstile> T \<le> T'" by auto
   from wf wtabody have "P,empty(this\<mapsto>Class(last Cs'),pns[\<mapsto>]Ts),h \<turnstile> body : T"
     by -(rule WT_implies_WTrt,simp_all)
@@ -1225,6 +1177,59 @@ next
             auto dest:red_preserves_sconf intro:wf_prog_wwf_prog)
 qed
 
+lemma steps_preserves_sconf:
+assumes wf: "wf_C_prog P" and step: "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
+shows "\<And>Ts. \<lbrakk> P,E,hp s \<turnstile> es [:] Ts; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
+
+using step
+proof (induct rule:converse_rtrancl_induct2)
+  case refl show ?case .
+next
+  case (step es s es'' s'' Ts)
+  have Reds:"((es, s), es'', s'') \<in> Reds P E"
+    and reds:"P,E \<turnstile> \<langle>es'',s''\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
+    and wtes:"P,E,hp s \<turnstile> es [:] Ts"
+    and sconf:"P,E \<turnstile> s \<surd>"
+    and IH:"\<And>Ts. \<lbrakk>P,E,hp s'' \<turnstile> es'' [:] Ts; P,E \<turnstile> s'' \<surd>\<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>" .
+  from Reds have reds1:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
+  from subjects_reduction[OF wf this sconf wtes] 
+  have type:"types_conf (P,E,hp s'',es'',Ts)" .
+  from reds1 wtes sconf wf have sconf':"P,E \<turnstile> s'' \<surd>" 
+    by(fastsimp intro:wf_prog_wwf_prog reds_preserves_sconf)
+  from type have "\<exists>Ts'. P,E,hp s'' \<turnstile> es'' [:] Ts'"
+  proof(induct Ts fixing:es'')
+    fix esi
+    assume "types_conf(P,E,hp s'',esi,[])"
+    thus "\<exists>Ts'. P,E,hp s'' \<turnstile> esi [:] Ts'"
+    proof(induct esi)
+      case Nil thus "\<exists>Ts'. P,E,hp s'' \<turnstile> [] [:] Ts'" by simp
+    next
+      fix ex esx
+      assume "types_conf(P,E,hp s'',ex#esx,[])"
+      thus "\<exists>Ts'. P,E,hp s'' \<turnstile> ex#esx [:] Ts'" by simp
+    qed
+  next
+    fix T' Ts' esi
+    assume type':"types_conf(P,E,hp s'',esi,T'#Ts')"
+      and IH:"\<And>es''. types_conf(P,E,hp s'',es'',Ts') \<Longrightarrow>
+                      \<exists>Ts''. P,E,hp s'' \<turnstile> es'' [:] Ts''"
+    from type' show "\<exists>Ts'. P,E,hp s'' \<turnstile> esi [:] Ts'"
+    proof(induct esi)
+      case Nil thus "\<exists>Ts'. P,E,hp s'' \<turnstile> [] [:] Ts'" by simp
+    next
+      fix ex esx
+      assume "types_conf(P,E,hp s'',ex#esx,T'#Ts')"
+      hence type':"P,E,hp s'' \<turnstile> ex :\<^bsub>NT\<^esub> T'" 
+	and types':"types_conf(P,E,hp s'',esx,Ts')" by simp_all
+      from type' obtain Tx where type'':"P,E,hp s'' \<turnstile> ex : Tx"
+	by(cases T') auto
+      from IH[OF types'] obtain Tsx where "P,E,hp s'' \<turnstile> esx [:] Tsx" by auto
+      with type'' show "\<exists>Ts'. P,E,hp s'' \<turnstile> ex#esx [:] Ts'" by auto
+    qed
+  qed
+  then obtain Ts' where "P,E,hp s'' \<turnstile> es'' [:] Ts'" by blast
+  from IH[OF this sconf'] show ?case .
+qed
 
 
 lemma step_preserves_defass:
@@ -1250,15 +1255,96 @@ using step
 proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case by -(rule wt_same_type_typeconf)
 next
-  case step thus ?case using wf
+  case (step e s e'' s'' T) thus ?case using wf
     apply simp
     apply (frule subject_reduction[OF wf])
     apply (auto dest!:red_preserves_sconf intro:wf_prog_wwf_prog)
-    apply(cases T) apply fastsimp+
+    apply(cases T)
+    apply fastsimp+
     done
 qed
 
 
+text{* predicate to show the same lemma for lists *}
+
+consts
+  conformable :: "(ty list \<times> ty list) \<Rightarrow> bool"
+
+recdef conformable "measure(\<lambda>(Ts,Ts'). size Ts)"
+  "conformable([],Ts')       = (if Ts' = [] then True else False)"
+  "conformable(T''#Ts'',Ts') = (if Ts' \<noteq> [] then
+      (T'' = hd Ts' \<or> (\<exists>C. T'' = NT \<and> hd Ts' = Class C)) \<and> conformable(Ts'',tl Ts')
+                                else False)"
+
+lemma types_conf_conf_types_conf:
+  "\<lbrakk>types_conf (P,E,h,es,Ts); conformable(Ts,Ts')\<rbrakk> \<Longrightarrow> types_conf (P,E,h,es,Ts')"
+proof(induct Ts fixing:Ts' es)
+  case Nil thus ?case by(auto split:split_if_asm)
+next
+  case (Cons T'' Ts'')
+  have type:"types_conf(P,E,h,es,T''#Ts'')"
+    and conf:"conformable (T''#Ts'',Ts')"
+    and IH:"\<And>Ts' es. \<lbrakk>types_conf(P,E,h,es,Ts''); conformable(Ts'',Ts')\<rbrakk>
+                   \<Longrightarrow> types_conf(P,E,h,es,Ts')" .
+  from type obtain e' es' where es:"es = e'#es'" by (cases es) auto
+  with type have type':"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> T''" and types':"types_conf(P,E,h,es',Ts'')"
+    by simp_all
+  from conf obtain U Us where Ts':"Ts' = U#Us" by (cases Ts') auto
+  with conf have disj:"T'' = U \<or> (\<exists>C. T'' = NT \<and> U = Class C)"
+    and conf':"conformable(Ts'',Us)"
+    by simp_all
+  from type' disj have "P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> U" by auto
+  with IH[OF types' conf'] Ts' es show ?case by simp
+qed
+
+
+lemma types_conf_Wtrt_conf:
+  "types_conf (P,E,h,es,Ts) \<Longrightarrow> \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable(Ts',Ts)"
+proof(induct Ts fixing:es)
+  case Nil thus ?case by(auto split:split_if_asm)
+next
+  case (Cons T'' Ts'')
+  have type:"types_conf(P,E,h,es,T''#Ts'')"
+    and IH:"\<And>es. types_conf(P,E,h,es,Ts'') \<Longrightarrow>
+                  \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable (Ts',Ts'')" .
+  from type obtain e' es' where es:"es = e'#es'" by (cases es) auto
+  with type have type':"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> T''" and types':"types_conf(P,E,h,es',Ts'')"
+    by simp_all
+  from type' obtain T' where "P,E,h \<turnstile> e' : T'" and 
+    "T' = T'' \<or> (\<exists>C. T' = NT \<and> T'' = Class C)" by(cases T'') auto
+  with IH[OF types'] es show ?case 
+    by(auto,rule_tac x="T''#Ts'" in exI,simp,rule_tac x="NT#Ts'" in exI,simp)
+qed
+
+
+
+lemma steps_preserves_types:
+assumes wf: "wf_C_prog P" and steps: "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
+shows "\<And>Ts. \<lbrakk> P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> es [:] Ts\<rbrakk>
+  \<Longrightarrow> types_conf(P,E,hp s',es',Ts)"
+  
+using steps
+proof (induct rule:converse_rtrancl_induct2)
+  case refl thus ?case by -(rule wts_same_types_typesconf)
+next
+  case (step es s es'' s'' Ts)
+  have Reds:"((es, s), es'', s'') \<in> Reds P E"
+    and steps:"P,E \<turnstile> \<langle>es'',s''\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
+    and sconf:"P,E \<turnstile> s \<surd>" and wtes:"P,E,hp s \<turnstile> es [:] Ts"
+    and IH:"\<And>Ts. \<lbrakk>P,E \<turnstile> s'' \<surd>; P,E,hp s'' \<turnstile> es'' [:] Ts \<rbrakk> 
+               \<Longrightarrow> types_conf (P, E, hp s', es', Ts)" .
+  from Reds have step:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
+  with wtes sconf wf have sconf':"P,E \<turnstile> s'' \<surd>"
+    by(auto intro:reds_preserves_sconf wf_prog_wwf_prog)
+  from wtes have "length es = length Ts" by(fastsimp dest:WTrts_same_length)
+  from step sconf wtes have type':"types_conf(P,E,hp s'',es'',Ts)"
+    by(rule subjects_reduction[OF wf])
+  then obtain Ts' where wtes'':"P,E,hp s'' \<turnstile> es'' [:] Ts'" 
+    and conf:"conformable(Ts',Ts)" by(auto dest:types_conf_Wtrt_conf)
+  from IH[OF sconf' wtes''] have "types_conf(P,E,hp s',es',Ts')" .
+  with conf show ?case by(fastsimp intro:types_conf_conf_types_conf)
+qed
+  
 
 subsection {* Lifting to @{text"\<Rightarrow>"} *}
 
@@ -1268,6 +1354,12 @@ lemma eval_preserves_sconf:
   "\<lbrakk> wf_C_prog P; P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>; P,E \<turnstile> e::T; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
 
 by(blast intro:step_preserves_sconf big_by_small WT_implies_WTrt wf_prog_wwf_prog)
+
+lemma evals_preserves_sconf:
+  "\<lbrakk> wf_C_prog P; P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle>; P,E \<turnstile> es [::] Ts; P,E \<turnstile> s \<surd> \<rbrakk> 
+  \<Longrightarrow> P,E \<turnstile> s' \<surd>"
+  by(blast intro:steps_preserves_sconf bigs_by_smalls WTs_implies_WTrts 
+                 wf_prog_wwf_prog)
 
 
 
@@ -1280,6 +1372,14 @@ shows "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e
            intro:wf_prog_wwf_prog
            dest!:step_preserves_type[OF wf])
 
+
+lemma evals_preserves_types: assumes wf: "wf_C_prog P"
+shows "\<lbrakk> P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E \<turnstile> es [::] Ts \<rbrakk>
+  \<Longrightarrow> types_conf(P,E,hp s',es',Ts)"
+using wf
+  by (auto dest!:bigs_by_smalls[OF wf_prog_wwf_prog[OF wf]] WTs_implies_WTrts
+           intro:wf_prog_wwf_prog
+           dest!:steps_preserves_types[OF wf])
 
 
 subsection "The final polish"

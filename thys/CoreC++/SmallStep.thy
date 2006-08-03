@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.9 2006-06-29 14:56:20 wasserra Exp $
+    ID:          $Id: SmallStep.thy,v 1.10 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -87,7 +87,7 @@ RedStaticDownCast:
   "P,E \<turnstile> \<langle>\<lparr>C\<rparr>(ref (a,Cs@[C]@Cs')), s\<rangle> \<rightarrow> \<langle>ref (a,Cs@[C]), s\<rangle>"
 
 RedStaticCastFail:
-  "C \<notin> set Cs
+  "\<lbrakk>C \<notin> set Cs; \<not> P \<turnstile> (last Cs) \<preceq>\<^sup>* C\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>(ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>THROW ClassCast, s\<rangle>"
 
 DynCastRed:

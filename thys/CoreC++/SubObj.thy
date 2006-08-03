@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SubObj.thy,v 1.4 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: SubObj.thy,v 1.5 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -819,6 +819,22 @@ lemma sees_method_fun:
   "\<lbrakk>P \<turnstile> C has least M = mthd via Cs; P \<turnstile> C has least M = mthd' via Cs\<rbrakk>
   \<Longrightarrow> mthd = mthd'"
 by (fastsimp simp:LeastMethodDef_def dest:sees_methods_fun)
+
+
+lemma overrider_method_fun:
+assumes overrider:"P \<turnstile> (C,Cs) has overrider M = mthd via Cs'"
+  and overrider':"P \<turnstile> (C,Cs) has overrider M = mthd' via Cs''"
+shows "mthd = mthd' \<and> Cs' = Cs''"
+proof -
+  from overrider' have omd:"(Cs'',mthd') \<in> OverriderMethodDefs P (C,Cs) M"
+    by(simp_all add:FinalOverriderMethodDef_def)
+  from overrider have "(Cs',mthd) \<in> OverriderMethodDefs P (C,Cs) M"
+    and "card(OverriderMethodDefs P (C,Cs) M) = 1" 
+    by(simp_all add:FinalOverriderMethodDef_def)
+  hence "\<forall>(Ds,mthd'') \<in> OverriderMethodDefs P (C,Cs) M. (Cs',mthd) = (Ds,mthd'')"
+    by(fastsimp dest:Singleton_card)
+  with omd show ?thesis by fastsimp
+qed
 
 
 end

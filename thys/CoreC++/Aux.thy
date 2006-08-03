@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Aux.thy,v 1.5 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: Aux.thy,v 1.6 2006-08-03 14:54:46 wasserra Exp $
     Author:      David von Oheimb, Tobias Nipkow, Daniel Wasserrab  
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -34,32 +34,6 @@ declare
  Let_def[simp]
  subset_insertI2 [simp]
  Un_subset_iff[simp]
-
-
-
-lemma rtrancl_is_eq_or_trancl:
-  "(a,b) : r^* \<Longrightarrow> a=b \<or> (a,b) : r^+"
-
-apply (induct rule:rtrancl.induct)
-apply simp
-apply (erule disjE)
-apply simp
-apply (drule r_into_trancl)
-apply simp
-apply (drule trancl_into_trancl)
-apply simp+
-done
-
-
-
-lemma last_in_path_help:"xs@[x] = ys \<Longrightarrow> x \<in> set ys" 
- by fastsimp
-
-lemma last_in_path:"xs \<noteq> [] \<Longrightarrow> last xs \<in> set xs"
-  by(fastsimp dest:append_butlast_last_id intro:last_in_path_help)
-
-lemma hd_notin_path_empty:"hd xs \<notin> set xs \<Longrightarrow> xs = []" 
-by (induct xs) auto
 
 
 
@@ -113,6 +87,23 @@ lemma only_one_append:"\<lbrakk>C' \<notin> set Cs; C' \<notin> set Cs'; Ds@ C'#
   apply (simp (no_asm))
   done
 
+
+lemma assumes elem:"a \<in> A" shows Singleton_card:"(card A = 1) = (\<forall>a' \<in> A. a = a')"
+proof -
+  { assume elem:"a \<in> A" "\<forall>a'\<in>A. a = a'"
+    hence "A \<subseteq> {a}" by -(rule subsetI,erule_tac x="x" in ballE,simp+)
+    with elem have "A = {a}" by fastsimp
+    hence "card A = Suc 0" by simp }
+  hence 1:"\<lbrakk>a \<in> A; \<forall>a'\<in>A. a = a'\<rbrakk> \<Longrightarrow> card A = Suc 0" .
+  { fix b assume elem:"a \<in> A" and cardSuc:"card A = Suc 0" and elem':"b \<in> A"
+    from cardSuc have "~(card A = 0)" by simp
+    from contrapos_nn[OF this card_infinite[of A]] have "finite A" by fastsimp
+    with elem cardSuc have "A - {a} = {}"
+      by -(frule card_Diff_singleton,simp+)
+    with elem' have "a = b" by auto }
+  hence 2:"\<And>b. \<lbrakk>a \<in> A; card A = Suc 0; b \<in> A\<rbrakk> \<Longrightarrow> a = b" by simp
+  from elem show ?thesis by (auto intro:1 2)
+qed
 
 
 

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.10 2006-06-29 11:00:57 wasserra Exp $
+    ID:          $Id: Progress.thy,v 1.11 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -353,14 +353,17 @@ next
     next
       fix r assume "e = ref r"
       then obtain a Cs where ref:"e = ref(a,Cs)" by (cases r) auto
+      with wte wf have "class":"is_class P (last Cs)" 
+	by (auto intro:Subobj_last_isClass split:split_if_asm)
       show ?thesis
-      proof(cases "P \<turnstile> Path last Cs to C unique")
+      proof(cases "P \<turnstile> (last Cs) \<preceq>\<^sup>* C")
 	case True
-	then obtain Cs' where "P \<turnstile> Path last Cs to C via Cs'" 
-	  by(auto simp:path_via_def path_unique_def)
+	with "class" wf obtain Cs'  where "P \<turnstile> Path last Cs to C via Cs'"
+	  by(fastsimp dest:leq_implies_path)
 	with True ref show ?thesis by(fastsimp intro:RedStaticUpCast)
       next
 	case False
+	have notleq:"\<not> P \<turnstile> last Cs \<preceq>\<^sup>* C" .
 	thus ?thesis
 	proof(cases "C \<notin> set Cs")
 	  case False
@@ -370,7 +373,7 @@ next
 	    by(fastsimp intro:RedStaticDownCast)
 	next
 	  case True
-	  with ref show ?thesis by (fastsimp intro:RedStaticCastFail)
+	  with ref notleq show ?thesis by (fastsimp intro:RedStaticCastFail)
 	qed
       qed
     next

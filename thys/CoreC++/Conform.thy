@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Conform.thy,v 1.7 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: Conform.thy,v 1.8 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -28,7 +28,7 @@ constdefs
 
   oconf :: "prog \<Rightarrow> heap \<Rightarrow> obj \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>" [51,51,51] 50)
   "P,h \<turnstile> obj \<surd>  \<equiv> let (C,S) = obj in 
-      (\<forall>Cs. (C,Cs) \<in> Subobjs P \<longrightarrow> (\<exists> fs'. (Cs,fs') \<in> S)) \<and> 
+      (\<forall>Cs. (C,Cs) \<in> Subobjs P \<longrightarrow> (\<exists>!fs'. (Cs,fs') \<in> S)) \<and> 
       (\<forall>Cs fs'. (Cs,fs') \<in> S \<longrightarrow> (C,Cs) \<in> Subobjs P \<and> 
 	            (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
                                 P,h \<turnstile> fs' (:\<le>) map_of fs))"  
@@ -231,8 +231,10 @@ primrec
                              (P,E,h \<turnstile> e : Class C \<or> P,E,h \<turnstile> e : NT)"
 
 recdef types_conf "measure(\<lambda>(P,E,h,es,Ts). size Ts)"
-  "types_conf(P,E,h,[],[]) = True"
-  "types_conf(P,E,h,e#es,T#Ts) = (P,E,h \<turnstile> e :\<^bsub>NT\<^esub> T \<and> types_conf(P,E,h,es,Ts))"
+   "types_conf(P,E,h,es,[]) = (if es = [] then True else False)"
+   "types_conf(P,E,h,es,T#Ts) = (if es \<noteq> [] then 
+                               (P,E,h \<turnstile> (hd es) :\<^bsub>NT\<^esub> T \<and> types_conf(P,E,h,tl es,Ts)) 
+                                 else False)"
 
 
 lemma wt_same_type_typeconf:
@@ -240,21 +242,17 @@ lemma wt_same_type_typeconf:
 by(cases T) auto
 
 lemma wts_same_types_typesconf:
-"\<And>es. \<lbrakk>length es = length Ts; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> types_conf(P,E,h,es,Ts)"
-
+"\<And>es. P,E,h \<turnstile> es [:] Ts \<Longrightarrow> types_conf(P,E,h,es,Ts)"
 proof(induct Ts)
-  case Nil thus ?case by simp
+  case Nil thus ?case by (auto elim:WTrt_WTrts.elims)
 next
   case (Cons T' Ts')
-  have length:"length es = length(T'#Ts')"
-    and wtes:"P,E,h \<turnstile> es [:] T'#Ts'"
-    and IH:"\<And>es. \<lbrakk>length es = length Ts'; P,E,h \<turnstile> es [:] Ts'\<rbrakk> 
-             \<Longrightarrow> types_conf (P, E, h, es, Ts')" .
+  have wtes:"P,E,h \<turnstile> es [:] T'#Ts'"
+    and IH:"\<And>es. P,E,h \<turnstile> es [:] Ts' \<Longrightarrow> types_conf (P, E, h, es, Ts')" .
   from wtes obtain e' es' where es:"es = e'#es'" by(cases es) auto
   with wtes have wte':"P,E,h \<turnstile> e' : T'" and wtes':"P,E,h \<turnstile> es' [:] Ts'"
     by simp_all
-  from length es have "length es' = length Ts'" by simp
-  from IH[OF this wtes'] wte' es show ?case by (fastsimp intro:wt_same_type_typeconf)
+  from IH[OF wtes'] wte' es show ?case by (fastsimp intro:wt_same_type_typeconf)
 qed
 
 

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: HeapExtension.thy,v 1.5 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: HeapExtension.thy,v 1.6 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -180,9 +180,13 @@ lemma "\<lbrakk>P \<turnstile> h \<surd>; h' = h(a \<mapsto> (C, init_obj P C));
   \<Longrightarrow> P \<turnstile> h' \<surd>"
 apply (simp add:hconf_def oconf_def)
 apply auto
-    apply (rule_tac x="init_class_fieldmap P (last Cs)" in exI)
-    apply (rule init_obj.intros)
-    apply assumption
+     apply (rule_tac x="init_class_fieldmap P (last Cs)" in exI)
+     apply (rule init_obj.intros)
+     apply assumption
+    apply (erule init_obj.elims)
+    apply clarsimp
+    apply (erule init_obj.elims)
+    apply clarsimp
    apply (erule_tac x="a" in allE)
    apply clarsimp
    apply (erule init_obj.elims)
@@ -206,7 +210,9 @@ apply auto
  apply clarsimp thm fconf_new
  apply (erule fconf_new)
  apply simp
-apply (rule preallocated_new) apply simp_all done
+apply (rule preallocated_new)
+apply simp_all
+done
 
 
 

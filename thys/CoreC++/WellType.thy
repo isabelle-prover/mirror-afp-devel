@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellType.thy,v 1.6 2006-06-28 09:09:19 wasserra Exp $
+    ID:          $Id: WellType.thy,v 1.7 2006-08-03 14:54:46 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -43,7 +43,8 @@ WTDynCast:
 
 WTStaticCast:
   "\<lbrakk>P,E \<turnstile> e :: Class D; is_class P C;
-   P \<turnstile> Path D to C unique \<or> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> (C,Cs) \<in> Subobjs\<^isub>R P) \<rbrakk> 
+    P \<turnstile> Path D to C unique \<or> 
+   (P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> (C,Cs) \<in> Subobjs\<^isub>R P)) \<rbrakk> 
   \<Longrightarrow> P,E \<turnstile> \<lparr>C\<rparr>e :: Class C"
 
 WTVal:
