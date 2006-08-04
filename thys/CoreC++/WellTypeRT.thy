@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellTypeRT.thy,v 1.6 2006-06-28 09:09:19 wasserra Exp $
+    ID:          $Id: WellTypeRT.thy,v 1.7 2006-08-04 10:56:50 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,11 +7,12 @@
 *)
 
 
-header {* Runtime Well-typedness *}
+header {* \isaheader{Runtime Well-typedness} *}
 
 theory WellTypeRT imports WellType begin
 
-subsection {* Run time types *}
+
+section {* Run time types *}
 
 consts
   typeof_h :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty option" ("_ \<turnstile> typeof\<^bsub>_\<^esub>")
@@ -47,7 +48,7 @@ lemma typeof_Class_Subo:
 \<exists>a Cs D S. v = Ref(a,Cs) \<and> h a = Some(D,S) \<and> (D,Cs) \<in> Subobjs P \<and> last Cs = C"
 by(induct v,auto split:split_if_asm)
 
-subsection {* The rules *}
+section {* The rules *}
 
 consts
   WTrt :: "prog \<Rightarrow> (env \<times> heap \<times> expr      \<times> ty     )set"
@@ -163,7 +164,7 @@ lemmas WTrt_induct = WTrt_WTrts.induct [split_format (complete)]
   and WTrt_inducts = WTrt_WTrts.inducts [split_format (complete)]
 
 
-subsection{*Easy consequences*}
+section{*Easy consequences*}
 
 lemma [iff]: "(P,E,h \<turnstile> [] [:] Ts) = (Ts = [])"
 
@@ -247,7 +248,7 @@ inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> throw e : T"
 
 
-subsection{*Some interesting lemmas*}
+section{*Some interesting lemmas*}
 
 
 lemma WTrts_Val[simp]:

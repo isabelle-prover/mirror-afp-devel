@@ -1,14 +1,17 @@
 (*  Title:       CoreC++
-    ID:          $Id: Expr.thy,v 1.4 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: Expr.thy,v 1.5 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
     Based on the Jinja theory J/Expr.thy by Tobias Nipkow 
 *)
 
 
-header {* Expressions *}
+header {* \isaheader{Expressions} *}
 
 theory Expr imports Value begin
+
+section {* The expressions *}
+
 
 datatype bop = Eq | Add     -- "names of binary operations"
 
@@ -61,7 +64,7 @@ lemma binop_not_ref[simp]:
 by(cases bop)auto
 
 
-subsection{*Free Variables*} 
+section{*Free Variables*} 
 
 consts
   fv  :: "expr      \<Rightarrow> vname set"

@@ -1,14 +1,15 @@
 (*  Title:       CoreC++
-    ID:          $Id: Decl.thy,v 1.6 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: Decl.thy,v 1.7 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
     Based on the Jinja theory Common/Decl.thy by David von Oheimb
 *)
 
-header {* Class Declarations and Programs *}
+header {* \isaheader{Class Declarations and Programs} *}
 
 theory Decl imports Expr begin
+
 
 types
   fdecl    = "vname \<times> ty"                        -- "field declaration"

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellType.thy,v 1.7 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: WellType.thy,v 1.8 2006-08-04 10:56:50 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,12 +7,12 @@
 *)
 
 
-header {* Well-typedness of CoreC++ expressions *}
+header {* \isaheader{Well-typedness of CoreC++ expressions} *}
 
 theory WellType imports Syntax TypeRel begin
 
-subsection {* The rules *}
 
+section {* The rules *}
 
 consts
   WT :: "prog \<Rightarrow> (env \<times> expr      \<times> ty     ) set"
@@ -116,7 +116,7 @@ lemmas WT_WTs_induct = WT_WTs.induct [split_format (complete)]
   and WT_WTs_inducts = WT_WTs.inducts [split_format (complete)]
 
 
-subsection{* Easy consequences *}
+section{* Easy consequences *}
 
 lemma [iff]: "(P,E \<turnstile> [] [::] Ts) = (Ts = [])"
 

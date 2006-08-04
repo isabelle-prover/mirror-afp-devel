@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Objects.thy,v 1.4 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: Objects.thy,v 1.5 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,11 +7,12 @@
 *)
 
 
-header {* Objects and the Heap *}
+header {* \isaheader{Objects and the Heap} *}
 
 theory Objects imports SubObj begin
 
-subsection{* Objects *}
+
+section{* Objects *}
 
 types
   subo = "(path \<times> (vname \<rightharpoonup> val))"     -- "subobjects realized on the heap"
@@ -57,7 +58,7 @@ constdefs
 lemma [simp]: "obj_ty (C,S) = Class C"
   by (simp add: obj_ty_def)
 
-subsection{* Heap *}
+section{* Heap *}
 
 types heap  = "addr \<rightharpoonup> obj"
 

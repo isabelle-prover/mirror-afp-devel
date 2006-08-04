@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.10 2006-06-29 14:56:20 wasserra Exp $
+    ID:          $Id: Execute.thy,v 1.11 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -9,7 +9,7 @@ header {* \isaheader{Code generation for Semantics and Type Sysytem} *}
 
 theory Execute imports BigStep WellType ExecutableSet EfficientNat begin
 
-subsection{* General redefinitions *}
+section{* General redefinitions *}
 
 consts
   Subobjs_aux :: "prog \<Rightarrow> cname \<Rightarrow> path set"
@@ -193,7 +193,7 @@ lemma [code ind]:
 
 
 
-subsection {* Rewriting lemmas for Semantic rules *}
+section {* Rewriting lemmas for Semantic rules *}
 
 text {* Cast *}
 
@@ -227,7 +227,7 @@ apply (simp add: app_eq)
 done
 
 lemma StaticCastFail_new:
-"\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; C \<notin> set Cs\<rbrakk>
+"\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;  \<not> P \<turnstile> (last Cs) \<preceq>\<^sup>* C; C \<notin> set Cs\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW ClassCast,(h,l)\<rangle>"
 by (fastsimp intro:StaticCastFail)
 
@@ -500,7 +500,7 @@ apply assumption+
 done
 
 
-subsection{* Rewriting lemmas for Type rules *}
+section{* Rewriting lemmas for Type rules *}
 
 
 lemma WTStaticCast_new1:
@@ -512,7 +512,7 @@ lemma WTStaticCast_new1:
 
 
 lemma WTStaticCast_new2:
-"\<lbrakk>P,E \<turnstile> e :: Class D; is_class P C;
+"\<lbrakk>P,E \<turnstile> e :: Class D; is_class P C; P \<turnstile> C \<preceq>\<^sup>* D;
   \<forall>Cs \<in> Subobjs_aux P C. last Cs = D \<longrightarrow> (C,Cs) \<in> Subobjs\<^isub>R P \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<lparr>C\<rparr>e :: Class C"
   by (rule WTStaticCast,auto simp:path_via_def Subobjs_aux [symmetric])
@@ -541,7 +541,7 @@ lemmas [code ind] = widen_refl widen_null
 
 
 
-subsection{* Code generation *}
+section{* Code generation *}
 
 lemmas [code ind] = 
  Overrider1[simplified LeastMethodDef_def, OF conjI]

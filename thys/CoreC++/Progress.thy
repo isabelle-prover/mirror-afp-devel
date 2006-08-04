@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.11 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: Progress.thy,v 1.12 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,11 +7,12 @@
 *)
 
 
-header {* Progress of Small Step Semantics *}
+header {* \isaheader{Progress of Small Step Semantics} *}
 
 theory Progress imports Equivalence DefAss Conform begin
 
-subsection {* Some pre-definitions *}
+
+section {* Some pre-definitions *}
 
 lemma final_refE:
   "\<lbrakk> P,E,h \<turnstile> e : Class C; final e;
@@ -212,7 +213,7 @@ lemmas WTrt_inducts2 = WTrt'_inducts [unfolded wt'_iff_wt wts'_iff_wts,
   WTrtNil WTrtCons, consumes 1]
 
 
-subsection{* The theorem @{text"progress"} *}
+section{* The theorem @{text"progress"} *}
 
 
 lemma mdc_leq_dyn_type:

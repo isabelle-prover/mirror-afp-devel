@@ -1,12 +1,13 @@
 (*  Title:       CoreC++
-    ID:          $Id: CWellForm.thy,v 1.4 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: CWellForm.thy,v 1.5 2006-08-04 10:56:49 wasserra Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-header {* Well-formedness Constraints *}
+header {* \isaheader{Well-formedness Constraints} *}
 
 theory CWellForm imports WellForm WWellForm WellTypeRT DefAss begin
+
 
 constdefs
   wf_C_mdecl :: "prog \<Rightarrow> cname \<Rightarrow> mdecl \<Rightarrow> bool"

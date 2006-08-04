@@ -1,12 +1,13 @@
 (*  Title:       CoreC++
-    ID:          $Id: Aux.thy,v 1.6 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: Aux.thy,v 1.7 2006-08-04 10:56:49 wasserra Exp $
     Author:      David von Oheimb, Tobias Nipkow, Daniel Wasserrab  
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-header {* Auxiliary Definitions *}
+header {* \isaheader{Auxiliary Definitions} *}
 
 theory Aux imports Main While_Combinator begin
+
 
 declare
  option.splits[split]
@@ -143,7 +144,7 @@ by (auto dest:set2list_prop simp:set2list_def)
 
 
 
-subsection {*@{text distinct_fst}*}
+section {*@{text distinct_fst}*}
  
 constdefs
   distinct_fst  :: "('a \<times> 'b) list \<Rightarrow> bool"
@@ -170,7 +171,7 @@ lemma map_of_SomeI:
 by (induct kxs) (auto simp:fun_upd_apply)
 
 
-subsection {* Using @{term list_all2} for relations *}
+section {* Using @{term list_all2} for relations *}
 
 constdefs
   fun_of :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Value.thy,v 1.4 2006-06-28 09:09:19 wasserra Exp $
+    ID:          $Id: Value.thy,v 1.5 2006-08-04 10:56:50 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,9 +7,10 @@
 *)
 
 
-header {* CoreC++ values *}
+header {* \isaheader{CoreC++ values} *}
 
 theory Value imports Type begin
+
 
 types 
   addr = nat

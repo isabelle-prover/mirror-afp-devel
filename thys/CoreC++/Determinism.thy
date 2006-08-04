@@ -1,15 +1,15 @@
 (*  Title:       CoreC++
-    ID:          $Id: Determinism.thy,v 1.1 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: Determinism.thy,v 1.2 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-header {* Determinism Proof *}
+header {* \isaheader{Determinism Proof} *}
 
 theory Determinism imports TypeSafe begin
 
 
-subsection{* Some lemmas *}
+section{* Some lemmas *}
 
 lemma maps_nth:
   "\<lbrakk>(E(xs [\<mapsto>] ys)) x = Some y; length xs = length ys; distinct xs\<rbrakk> 
@@ -250,7 +250,7 @@ lemma map_Val_throw_eq:"map Val vs @ throw ex # es = map Val ws @ throw ex' # es
   done
 
 
-subsection {* The proof *}
+section {* The proof *}
 
 lemma deterministic_big_step:
 assumes wf:"wf_C_prog P"

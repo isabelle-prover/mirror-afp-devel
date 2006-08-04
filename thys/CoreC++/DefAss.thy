@@ -1,15 +1,16 @@
 (*  Title:       CoreC++
-    ID:          $Id: DefAss.thy,v 1.4 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: DefAss.thy,v 1.5 2006-08-04 10:56:49 wasserra Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
 
-header {* Definite assignment *}
+header {* \isaheader{Definite assignment} *}
 
 theory DefAss imports BigStep begin
 
-subsection "Hypersets"
+
+section {*Hypersets*}
 
 types hyperset = "vname set option"
 
@@ -54,7 +55,7 @@ lemma hyper_insert_comm: "A \<squnion> \<lfloor>{a}\<rfloor> = \<lfloor>{a}\<rfl
 by(simp add:hyperset_defs)
 
 
-subsection "Definite assignment"
+section {*Definite assignment*}
 
 consts
  \<A>  :: "expr \<Rightarrow> hyperset"
@@ -78,7 +79,6 @@ primrec
 "\<A> (if (e) e\<^isub>1 else e\<^isub>2) =  \<A> e \<squnion> (\<A> e\<^isub>1 \<sqinter> \<A> e\<^isub>2)"
 "\<A> (while (b) e) = \<A> b"
 "\<A> (throw e) = None"
-(*"\<A> (try e\<^isub>1 catch(C V) e\<^isub>2) = \<A> e\<^isub>1 \<sqinter> (\<A> e\<^isub>2 \<ominus> V)"*)
 
 "\<A>s ([]) = \<lfloor>{}\<rfloor>"
 "\<A>s (e#es) = \<A> e \<squnion> \<A>s es"
@@ -100,7 +100,6 @@ primrec
   (\<D> e A \<and> \<D> e\<^isub>1 (A \<squnion> \<A> e) \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e))"
 "\<D> (while (e) c) A = (\<D> e A \<and> \<D> c (A \<squnion> \<A> e))"
 "\<D> (throw e) A = \<D> e A"
-(*"\<D> (try e\<^isub>1 catch(C V) e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<lfloor>{V}\<rfloor>))"*)
 
 "\<D>s ([]) A = True"
 "\<D>s (e#es) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"

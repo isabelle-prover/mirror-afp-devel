@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.12 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: BigStep.thy,v 1.13 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,11 +7,12 @@
 *)
 
 
-header {* Big Step Semantics *}
+header {* \isaheader{Big Step Semantics} *}
 
 theory BigStep imports Syntax State begin
 
-subsection {* The rules *}
+
+section {* The rules *}
 
 consts
   eval  :: "prog \<Rightarrow> (env \<times> (expr \<times> state) \<times> (expr \<times> state)) set"
@@ -268,7 +269,7 @@ inductive_cases evals_cases [cases set]:
 
 
 
-subsection"Final expressions"
+section {*Final expressions*}
 
 constdefs
   final :: "expr \<Rightarrow> bool"

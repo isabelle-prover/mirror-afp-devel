@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.10 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: SmallStep.thy,v 1.11 2006-08-04 10:56:50 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,11 +7,12 @@
 *)
 
 
-header {* Small Step Semantics *}
+header {* \isaheader{Small Step Semantics} *}
 
 theory SmallStep imports Syntax State begin
 
-subsection {* Some pre-definitions *}
+
+section {* Some pre-definitions *}
 
 consts blocks :: "vname list \<times> ty list \<times> val list \<times> expr \<Rightarrow> expr"
 recdef blocks "measure(\<lambda>(Vs,Ts,vs,e). size Vs)"
@@ -34,7 +35,7 @@ constdefs
   "assigned V e  \<equiv>  \<exists>v e'. e = (V:= Val v;; e')"
 
 
-subsection {* The rules *}
+section {* The rules *}
 
 consts
   red  :: "prog \<Rightarrow> (env \<times> (expr \<times> state) \<times> (expr \<times> state)) set"
@@ -274,7 +275,7 @@ and reds_length:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langl
 by (induct rule: red_reds.inducts) auto
 
 
-subsection{* The reflexive transitive closure *}
+section{* The reflexive transitive closure *}
 
 consts
   Red ::  "prog \<Rightarrow> env \<Rightarrow> ((expr      \<times> state) \<times> (expr      \<times> state)) set"
@@ -343,7 +344,7 @@ lemma steps_length:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<l
 by(induct rule:rtrancl_induct2,auto intro:reds_length)
 
 
-subsection{*Some easy lemmas*}
+section{*Some easy lemmas*}
 
 lemma [iff]: "\<not> P,E \<turnstile> \<langle>[],s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
 by(blast elim: red_reds.elims)

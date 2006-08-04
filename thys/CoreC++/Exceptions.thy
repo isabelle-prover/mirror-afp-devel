@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Exceptions.thy,v 1.4 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: Exceptions.thy,v 1.5 2006-08-04 10:56:49 wasserra Exp $
     Author:      Gerwin Klein, Martin Strecker, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -8,6 +8,9 @@
 header {* Exceptions *}
 
 theory Exceptions imports Objects begin
+
+section {* Exceptions *}
+
 
 constdefs
   NullPointer :: cname

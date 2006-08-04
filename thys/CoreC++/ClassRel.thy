@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: ClassRel.thy,v 1.4 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: ClassRel.thy,v 1.5 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,11 +7,10 @@
 *)
 
 
-header {* Relations between CoreC++ classes *}
+header {* \isaheader{The subclass relation} *}
 
 theory ClassRel imports Decl begin
 
-subsection {* The subclass relation *}
 
 consts
   subclsR :: "prog \<Rightarrow> (cname \<times> cname) set"  -- "reapeated subclass"

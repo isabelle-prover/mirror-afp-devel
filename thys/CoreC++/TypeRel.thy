@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeRel.thy,v 1.4 2006-06-28 09:09:19 wasserra Exp $
+    ID:          $Id: TypeRel.thy,v 1.5 2006-08-04 10:56:50 wasserra Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab 
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,11 +7,9 @@
 *)
 
 
-header {* Relations between CoreC++ types *}
+header {* \isaheader{The subtype relation} *}
 
 theory TypeRel imports SubObj begin
-
-subsection {* The subtype relation *}
 
 
 consts

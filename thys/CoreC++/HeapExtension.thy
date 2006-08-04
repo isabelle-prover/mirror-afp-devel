@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: HeapExtension.thy,v 1.6 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: HeapExtension.thy,v 1.7 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -13,12 +13,12 @@
 *)
 
 
-header {* Heap Extension *}
+header {* \isaheader{Heap Extension} *}
 
 theory HeapExtension imports Progress begin
 
 
-subsection {* The Heap Extension *}
+section {* The Heap Extension *}
 
 constdefs
   hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50)
@@ -67,7 +67,7 @@ done
 
 
 
-subsection {* @{text"\<unlhd>"} and preallocated *}
+section {* @{text"\<unlhd>"} and preallocated *}
 
 lemma preallocated_hext:
   "\<lbrakk> preallocated h; h \<unlhd> h' \<rbrakk> \<Longrightarrow> preallocated h'"
@@ -79,7 +79,7 @@ lemmas preallocated_new  = preallocated_hext [OF _ hext_new]
 
 
 
-subsection {* @{text"\<unlhd>"} in Small- and BigStep *}
+section {* @{text"\<unlhd>"} in Small- and BigStep *}
 
 lemma red_hext_incr: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>  \<Longrightarrow> h \<unlhd> h'"
   and reds_hext_incr: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>  \<Longrightarrow> h \<unlhd> h'"
@@ -138,7 +138,7 @@ qed (auto elim!: hext_trans)
 
 
 
-subsection {* @{text"\<unlhd>"} and conformance *}
+section {* @{text"\<unlhd>"} and conformance *}
 
 lemma conf_hext: "h \<unlhd> h' \<Longrightarrow> P,h \<turnstile> v :\<le> T \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
 by(cases T)(induct v,auto dest: hext_objD split:split_if_asm)+
@@ -228,7 +228,7 @@ done
 
 
 
-subsection {* @{text"\<unlhd>"} in the runtime type system *}
+section {* @{text"\<unlhd>"} in the runtime type system *}
 
 lemma hext_typeof_mono: "\<lbrakk> h \<unlhd> h'; P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T \<rbrakk> \<Longrightarrow> P \<turnstile> typeof\<^bsub>h'\<^esub> v = Some T"
 

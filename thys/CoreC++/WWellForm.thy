@@ -1,13 +1,14 @@
 (*  Title:       CoreC++
-    ID:          $Id: WWellForm.thy,v 1.4 2006-06-28 09:09:19 wasserra Exp $
+    ID:          $Id: WWellForm.thy,v 1.5 2006-08-04 10:56:50 wasserra Exp $
     Author:      Tobias Nipkow
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
 
-header {* Weak well-formedness of CoreC++ programs *}
+header {* \isaheader{Weak well-formedness of CoreC++ programs} *}
 
 theory WWellForm imports WellForm Expr begin
+
 
 constdefs
   wwf_mdecl :: "prog \<Rightarrow> cname \<Rightarrow> mdecl \<Rightarrow> bool"

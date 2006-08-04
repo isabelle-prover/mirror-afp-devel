@@ -1,15 +1,16 @@
 (*  Title:       CoreC++
-    ID:          $Id: SubObj.thy,v 1.5 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: SubObj.thy,v 1.6 2006-08-04 10:56:50 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
 
-header {* Definition of Subobjects *}
+header {* \isaheader{Definition of Subobjects} *}
 
 theory SubObj imports ClassRel begin
 
-subsection {* General definitions *}
+
+section {* General definitions *}
 
 types
   subobj = "cname  \<times> path"
@@ -30,7 +31,7 @@ lemma ldc_tuple [simp]: "ldc (C,Cs) = last Cs"
 by(simp add:ldc_def)
 
 
-subsection {* Subobjects according to Rossie-Friedman *}
+section {* Subobjects according to Rossie-Friedman *}
 
 consts
   is_subobj :: "prog \<times> subobj \<Rightarrow> bool" -- "legal subobject to class hierarchie"
@@ -334,7 +335,7 @@ qed
 
 
 
-subsection {* Subobject handling and lemmas *}
+section {* Subobject handling and lemmas *}
 
 consts
   Subobjs\<^isub>R :: "prog \<Rightarrow> subobj set"
@@ -603,10 +604,10 @@ by (auto elim:Subobjs.induct SubobjsR_isSubobj
 
 
 
-subsection {* Paths *}
+section {* Paths *}
 
 
-subsubsection {* Appending paths *}
+subsection {* Appending paths *}
 
 text{* Avoided name clash by calling one path Path. *}
 
@@ -681,7 +682,7 @@ by (induct rule:Casts_to.induct,simp_all)
 
 
 
-subsubsection {* The relation on paths *}
+subsection {* The relation on paths *}
 
 consts 
   leq_path1 :: "prog \<Rightarrow> cname \<Rightarrow> (path \<times> path) set" 
@@ -716,7 +717,7 @@ by(erule leq_pathSh)simp
 
 
 
-subsection{* Member lookups *}
+section{* Member lookups *}
 
 constdefs
   FieldDecls      :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> (path \<times> ty) set"

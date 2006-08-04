@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.9 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: Equivalence.thy,v 1.10 2006-08-04 10:56:49 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,11 +7,12 @@
 *)
 
 
-header {* Equivalence of Big Step and Small Step Semantics *}
+header {* \isaheader{Equivalence of Big Step and Small Step Semantics} *}
 
 theory Equivalence imports BigStep SmallStep WWellForm begin
 
-text{* Some casts-lemmas *}
+
+section{* Some casts-lemmas *}
 
 lemma assumes wf:"wf_prog wf_md P"
 shows casts_casts:
@@ -253,9 +254,9 @@ qed (auto intro:casts_casts wf)
   
 
 
-subsection{*Small steps simulate big step*}
+section{*Small steps simulate big step*}
 
-subsubsection "Cast"
+subsection {*Cast*}
 
 lemma StaticCastReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<rangle> \<rightarrow>* \<langle>\<lparr>C\<rparr>e',s'\<rangle>"
@@ -392,7 +393,7 @@ apply(simp add:red_reds.DynCastThrow)
 done
 
 
-subsubsection "LAss"
+subsection {*LAss*}
 
 lemma LAssReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow>* \<langle>V:=e',s'\<rangle>"
@@ -423,7 +424,7 @@ apply(simp add:red_reds.LAssThrow)
 done
 
 
-subsubsection "BinOp"
+subsection {*BinOp*}
 
 lemma BinOp1Reds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle> e \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>e' \<guillemotleft>bop\<guillemotright> e\<^isub>2, s'\<rangle>"
@@ -479,7 +480,7 @@ apply(simp add:red_reds.BinOpThrow2)
 done
 
 
-subsubsection "FAcc"
+subsection {*FAcc*}
 
 lemma FAccReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>F{Cs}, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{Cs}, s'\<rangle>"
@@ -520,7 +521,7 @@ apply(simp add:red_reds.FAccThrow)
 done
 
 
-subsubsection "FAss"
+subsection {*FAss*}
 
 lemma FAssReds1:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>F{Cs}:=e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{Cs}:=e\<^isub>2, s'\<rangle>"
@@ -590,7 +591,7 @@ apply(simp add:red_reds.FAssThrow2)
 done
 
 
-subsubsection";;"
+subsection {*;;*}
 
 lemma  SeqReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e;;e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>e';;e\<^isub>2, s'\<rangle>"
@@ -623,7 +624,7 @@ done
 
 
 
-subsubsection"If"
+subsection {*If*}
 
 lemma CondReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<rangle> \<rightarrow>* \<langle>if (e') e\<^isub>1 else e\<^isub>2,s'\<rangle>"
@@ -667,7 +668,7 @@ done
 
 
 
-subsubsection "While"
+subsection {*While*}
 
 lemma WhileFReds:
   "P,E \<turnstile> \<langle>b,s\<rangle> \<rightarrow>* \<langle>false,s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>while (b) c,s\<rangle> \<rightarrow>* \<langle>unit,s'\<rangle>"
@@ -727,7 +728,7 @@ apply simp
 done
 
 
-subsubsection"Throw"
+subsection {*Throw*}
 
 lemma ThrowReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>throw e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle>"
@@ -757,7 +758,7 @@ apply(simp add:red_reds.ThrowThrow)
 done
 
 
-subsubsection "InitBlock"
+subsection {*InitBlock*}
 
 lemma assumes wf:"wf_prog wf_md P"
 shows InitBlockReds_aux:
@@ -870,7 +871,7 @@ qed
 
 
 
-subsubsection "Block"
+subsection {*Block*}
 
 lemma BlockRedsFinal:
 assumes reds: "P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2)\<rangle>" and fin: "final e\<^isub>2"
@@ -941,7 +942,7 @@ qed
 
 
 
-subsubsection "List"
+subsection {*List*}
 
 lemma ListReds1:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e#es,s\<rangle> [\<rightarrow>]* \<langle>e' # es,s'\<rangle>"
@@ -973,7 +974,7 @@ apply(erule ListReds2)
 done
 
 
-subsubsection"Call"
+subsection {*Call*}
 
 text{* First a few lemmas on what happens to free variables during redction. *}
 
@@ -1436,7 +1437,7 @@ done
 
 
 
-subsubsection "The main Theorem"
+subsection {*The main Theorem*}
 
 lemma assumes wwf: "wwf_prog P"
 shows big_by_small: "P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>"
@@ -1562,7 +1563,7 @@ qed
 
 
 
-subsection{*Big steps simulates small step*}
+section{*Big steps simulates small step*}
 
 
 text {* The big step equivalent of @{text RedWhile}: *} 
@@ -2591,7 +2592,7 @@ next
 qed
 
 
-subsection "Equivalence"
+section {*Equivalence*}
 
 text{* And now, the crowning achievement: *}
 

@@ -1,12 +1,13 @@
 (*  Title:       CoreC++
-    ID:          $Id: SystemClasses.thy,v 1.4 2006-06-28 09:09:18 wasserra Exp $
+    ID:          $Id: SystemClasses.thy,v 1.5 2006-08-04 10:56:50 wasserra Exp $
     Author:      Gerwin Klein
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-header {* System Classes *}
+header {* \isaheader{System Classes} *}
 
 theory SystemClasses imports Exceptions begin
+
 
 text {*
   This theory provides definitions for the system exceptions.

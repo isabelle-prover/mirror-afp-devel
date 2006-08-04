@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.9 2006-08-03 14:54:46 wasserra Exp $
+    ID:          $Id: TypeSafe.thy,v 1.10 2006-08-04 10:56:50 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -7,11 +7,12 @@
 *)
 
 
-header {* Type Safety Proof *}
+header {* \isaheader{Type Safety Proof} *}
 
 theory TypeSafe imports HeapExtension CWellForm begin
 
-subsection{*Basic preservation lemmas*}
+
+section{*Basic preservation lemmas*}
 
 lemma assumes wf:"wwf_prog P" and casts:"P \<turnstile> T casts v to v'"
   and typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'" and leq:"P \<turnstile> T' \<le> T"
@@ -305,7 +306,7 @@ by(fastsimp intro:reds_preserves_hconf reds_preserves_lconf
 
 
 
-subsection "Subject reduction"
+section "Subject reduction"
 
 lemma wt_blocks:
  "\<And>E. \<lbrakk> length Vs = length Ts; length vs = length Ts;
@@ -1158,7 +1159,7 @@ corollary subjects_reduction:
 by(cases s, cases s', fastsimp dest:subjects_reduction2)
 
 
-subsection {* Lifting to @{text"\<rightarrow>*"} *}
+section {* Lifting to @{text"\<rightarrow>*"} *}
 
 text{* Now all these preservation lemmas are first lifted to the transitive
 closure \dots *}
@@ -1346,7 +1347,7 @@ next
 qed
   
 
-subsection {* Lifting to @{text"\<Rightarrow>"} *}
+section {* Lifting to @{text"\<Rightarrow>"} *}
 
 text{* \dots and now to the big step semantics, just for fun. *}
 
@@ -1382,7 +1383,7 @@ using wf
            dest!:steps_preserves_types[OF wf])
 
 
-subsection "The final polish"
+section {*The final polish*}
 
 text{* The above preservation lemmas are now combined and packed nicely. *}
 
