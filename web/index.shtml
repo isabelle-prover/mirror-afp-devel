@@ -1,3 +1,4 @@
+
 <!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
 		"http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -54,6 +55,13 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 <a href="???">???</a>
 </td></tr>
 -- entry template end (delete this line) -->
+
+<tr><td class="entry">
+2006-08-08:
+<a href="entries/Abstract-Hoare-Logics.shtml">Abstract Hoare Logics</a>
+<br>Author:
+<a href="www.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
 
 <tr><td class="entry">
 2006-05-22:
@@ -260,7 +268,8 @@ Author:  
 <tr><td class="entry">
 2004-03-19:  
 <a href="entries/AVL-Trees.shtml">AVL Trees</a>
-<br>Author: Cornelia Pusch and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+<br>Author: <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+and Cornelia Pusch
 </td></tr>
 
 <tr><td class="entry">

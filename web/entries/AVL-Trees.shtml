@@ -36,11 +36,13 @@
 		
     <tr><td class="datahead">Author:</td>
 <td class="data">
-<!-- Author: -->Cornelia Pusch and <a
-href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>, Contributions by 
+<!-- Author: --> <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+and Cornelia Pusch
+<!-- Very minor contributions by
 <a href="http://www.brucker.ch/">Achim Brucker</a>, 
-<a href="http://www.infsec.ethz.ch/people/wolffb">Burkhart Wolff</a> and 
+<a href="http://www.infsec.ethz.ch/people/wolffb">Burkhart Wolff</a> and
 <a href="http://www.informatik.uni-freiburg.de/~smaus/">Jan Smaus</a>
+-->
 </td></tr>		
     
 	<tr><td class="datahead">Submission date:</td>
@@ -50,8 +52,9 @@ href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>, Contributions by
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"> 
 <!-- Abstract: -->	
-  A small demo formalization of AVL trees with room for improvement.
-  Contributions by Achim Brucker, Burkhart Wolff, and Jan Smaus.
+  Two formalizations of AVL trees with room for extensions.  The first
+  formalization is monolithic and shorter, the second one in two
+  stages, longer and a bit simpler. The final implementation is the same.
   If you are interested in developing this further, please contact 
   <tt>gerwin.klein@nicta.com.au</tt>.
    </td></tr>
@@ -96,6 +99,6 @@ href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>, Contributions by
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2006-08-07 13:08:10 $, $Revision: 1.1 
 $</div></body>
 </html>
