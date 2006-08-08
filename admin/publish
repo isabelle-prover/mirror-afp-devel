@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: publish,v 1.8 2006-05-16 14:18:40 lsf37 Exp $
+# $Id: publish,v 1.9 2006-08-08 14:19:16 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # publishes archive entry + main web pages on SF
@@ -110,7 +110,7 @@ mv thys $EXPORT
 if [ "$1" != "-" ]; then
     echo "Cleaning up browser_info directory"
     BROWSER_INFO=`isatool getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
-    [ -e "$BROWSER_INFO" ] && rm -r $BROWSER_INFO
+    [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
 
     HTML_THYS=web/browser_info/$TAG
     TARS=web/release/
