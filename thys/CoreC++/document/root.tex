@@ -18,6 +18,11 @@
 
 \hyphenation{Isabelle}
 
+\newcommand{\isaheader}[1]
+{\newpage\markright{\isabellecontext}\section{#1}}
+\renewcommand{\isamarkupheader}[1]{#1}
+\renewcommand{\isamarkupsection}[1]{\subsection{#1}}
+
 \begin{document}
 
 
