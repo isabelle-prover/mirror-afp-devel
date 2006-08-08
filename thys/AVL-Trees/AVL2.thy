@@ -1,5 +1,5 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL2.thy,v 1.2 2006-05-26 19:45:30 nipkow Exp $
+    ID:         $Id: AVL2.thy,v 1.3 2006-08-08 13:56:37 nipkow Exp $
     Author:     Tobias Nipkow and Cornelia Pusch,
                 converted to Isar by Gerwin Klein
                 contributions by Achim Brucker, Burkhart Wolff and Jan Smaus
@@ -14,7 +14,8 @@ theory AVL2
 imports Main
 begin
 
-text {* This development of AVL trees leads to the same implementation
+text {*
+This development of AVL trees leads to the same implementation
 as the monolithic one (in theorey AVL) but via an intermediate
 abstraction: AVL trees where the height is recomputed rather than
 stored in the tree. This two-stage devlopment is longer than the
