@@ -2341,7 +2341,8 @@ done
 lemma transpos_Tr_n1:"Suc (Suc 0) \<le> n \<Longrightarrow>
                            transpos (n - Suc 0) n n = n - Suc 0"
 apply (simp add:transpos_def)
-apply (rule impI) apply (simp add:NSet_def)
+apply (rule conjI) apply (rule impI) apply (simp add:NSet_def)
+apply (rule impI) apply (rule impI) apply (simp add:NSet_def)
 done
 
 lemma transpos_Tr_n2:"Suc (Suc 0) \<le> n \<Longrightarrow>
@@ -2349,8 +2350,6 @@ lemma transpos_Tr_n2:"Suc (Suc 0) \<le> n \<Longrightarrow>
 apply (simp add:transpos_def)
 apply (simp add:NSet_def)
 done
-
-ML {* fast_arith_split_limit := 0; *}  (* FIXME: rewrite proof *)
 
 lemma additionTr0:"\<lbrakk>agroup R; 0 < n; f \<in> Nset n \<rightarrow> carrier R\<rbrakk>
  \<Longrightarrow> eSum R (cmp f (transpos (n - 1) n)) n = eSum R f n"
@@ -2425,8 +2424,6 @@ apply (rule ballI)
  apply (simp del:Suc_pred)
  apply (simp add:Nset_Suc_Suc) apply simp
 done
-
-ML {* fast_arith_split_limit := 9; *}  (* FIXME *)
 
 lemma additionTr1:"\<lbrakk>agroup R; \<forall>f. \<forall>h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
  h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow>

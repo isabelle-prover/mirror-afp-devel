@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: TF_JVM.thy,v 1.4 2006-07-31 00:57:30 webertj Exp $
+    ID:         $Id: TF_JVM.thy,v 1.5 2006-08-31 12:11:46 webertj Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -155,8 +155,10 @@ theorem (in start_context) exec_pres_type:
    prefer 2
    apply fastsimp
   apply clarsimp
-  apply (drule (1) sees_wf_mdecl)
-  apply (clarsimp simp add: wf_mdecl_def)
+  apply (rule conjI)
+   apply (drule (1) sees_wf_mdecl)
+   apply (clarsimp simp add: wf_mdecl_def)
+  apply arith
   done
 (*>*)
 

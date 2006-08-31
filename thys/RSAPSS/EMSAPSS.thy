@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/EMSAPSS.thy
-    ID:         $Id: EMSAPSS.thy,v 1.3 2006-07-31 00:57:30 webertj Exp $
+    ID:         $Id: EMSAPSS.thy,v 1.4 2006-08-31 12:11:46 webertj Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -202,14 +202,17 @@ lemma roundup_nat_ge_8_help [rule_format]: "length (sha1 M) + sLen + 16 \<le> em
   apply (insert roundup_ge_emBits [of emBits 8])
   apply (simp add: roundup sha1len sLen)
   apply (safe)
-  by (simp)
+  by (simp, arith)+
 
 lemma roundup_nat_ge_8 [rule_format]: "length (sha1 M) + sLen + 16 \<le> emBits \<longrightarrow>  8 \<le> ( roundup emBits 8 ) * 8 - (length (sha1 M) + 8)"
   apply (insert roundup_nat_ge_8_help [of M emBits])
   by (arith)
 
 lemma roundup_le_ub: "\<lbrakk> 176 + sLen \<le> emBits; emBits \<le> 2^32 * 160\<rbrakk> \<Longrightarrow> (roundup emBits 8) * 8 - 168 \<le> 2^32 * 160"
-  by (simp add: roundup)
+  apply (simp add: roundup)
+  apply (safe)
+  apply (simp)
+  by (arith)+
  
 lemma modify_roundup_ge1: "\<lbrakk>8 \<le> roundup emBits 8 * 8 - 168\<rbrakk> \<Longrightarrow> 176 \<le>  roundup emBits 8 * 8"
   by (arith)
@@ -287,7 +290,8 @@ lemma length_MGF2 [rule_format]: "length (MGF2 Z m) = (Suc m) * length (sha1 (Z@
   by (induct_tac m, simp+, simp add: sha1len)
 
 lemma length_MGF1 [rule_format]: "l <= (Suc n) * 160 \<longrightarrow> length (MGF1 Z n l) = l"
-  by (simp add: MGF1 length_MGF2 sha1len)
+  apply (simp add: MGF1 length_MGF2 sha1len)
+  by (arith)
 
 lemma length_MGF: "\<lbrakk> 0 < l; l \<le>  2^32 * length (sha1 x) \<rbrakk> \<Longrightarrow> length (MGF x l) = l"
   apply (simp add: MGF sha1len)

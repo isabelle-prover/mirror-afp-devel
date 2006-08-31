@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.7 2006-07-31 00:57:30 webertj Exp $
+    ID:         $Id: TypeComp.thy,v 1.8 2006-08-31 12:11:46 webertj Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -785,8 +785,6 @@ by (simp add:shift_def)
 declare nth_append[simp del]
 (*>*)
 
-ML {* fast_arith_split_limit := 0; *}  (* FIXME: rewrite proof *)
-
 lemma (in TC2) wt_instrs_xapp[trans]:
   "\<lbrakk> \<turnstile> is\<^isub>1 @ is\<^isub>2, xt [::] \<tau>s\<^isub>1 @ ty\<^isub>i' (Class C # ST) E A # \<tau>s\<^isub>2;
      \<forall>\<tau> \<in> set \<tau>s\<^isub>1. \<forall>ST' LT'. \<tau> = Some(ST',LT') \<longrightarrow> 
@@ -795,8 +793,8 @@ lemma (in TC2) wt_instrs_xapp[trans]:
   \<turnstile> is\<^isub>1 @ is\<^isub>2, xt @ [(0,size is\<^isub>1 - 1,C,size is\<^isub>1,size ST)] [::] \<tau>s\<^isub>1 @ ty\<^isub>i' (Class C # ST) E A # \<tau>s\<^isub>2"
 (*<*)
 apply(simp add:wt_instrs_def)
-apply (rule conjI)
- apply clarsimp
+apply(rule conjI)
+ apply(clarsimp)
  apply arith
 apply clarsimp
 apply(erule allE, erule (1) impE)
@@ -808,8 +806,7 @@ apply(rule conjI)
  apply (simp add: nth_append is_relevant_entry_def split: split_if_asm)
   apply (drule_tac x="\<tau>s\<^isub>1!pc" in bspec)
    apply (blast intro: nth_mem) 
-  apply fastsimp
-  apply arith
+  apply fastsimp   
 apply (rule conjI)
  apply clarsimp
  apply (erule disjE, blast)
@@ -821,12 +818,9 @@ apply (erule disjE, blast)
 apply (clarsimp simp add: xcpt_eff_def relevant_entries_def split: split_if_asm)
 apply (simp add: nth_append is_relevant_entry_def split: split_if_asm)
  apply (drule_tac x = "\<tau>s\<^isub>1!pc" in bspec)
-  apply (blast intro: nth_mem)
+  apply (blast intro: nth_mem) 
  apply (fastsimp simp add: ty\<^isub>i'_def)
-apply arith
 done
-
-ML {* fast_arith_split_limit := 9; *}  (* FIXME *)
 
 declare nth_append[simp]
 (*>*)
