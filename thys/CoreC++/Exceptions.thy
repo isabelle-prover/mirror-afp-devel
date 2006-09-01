@@ -1,11 +1,11 @@
 (*  Title:       CoreC++
-    ID:          $Id: Exceptions.thy,v 1.5 2006-08-04 10:56:49 wasserra Exp $
+    ID:          $Id: Exceptions.thy,v 1.6 2006-09-01 10:29:14 wasserra Exp $
     Author:      Gerwin Klein, Martin Strecker, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
 
-header {* Exceptions *}
+header {* \isaheader{Exceptions} *}
 
 theory Exceptions imports Objects begin
 
