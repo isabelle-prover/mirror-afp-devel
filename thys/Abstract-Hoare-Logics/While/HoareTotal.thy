@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic for total correctness
-    ID:          $Id: HoareTotal.thy,v 1.1 2006-08-08 23:22:32 nipkow Exp $
+    ID:          $Id: HoareTotal.thy,v 1.2 2006-09-12 11:21:48 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -153,7 +153,7 @@ done
 inductive_cases [elim!]: "WHILE b DO c \<down> s"
 
 lemma wp_is_pre[rule_format]: "\<turnstile>\<^sub>t {wp\<^sub>t c Q} c {Q}"
-apply (induct c fixing: Q)
+apply (induct c arbitrary: Q)
      apply simp_all
      apply(blast intro:thoare.Do thoare.Conseq)
     apply(blast intro:thoare.Semi thoare.Conseq)

@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: Hoare.thy,v 1.1 2006-08-08 23:22:32 nipkow Exp $
+    ID:          $Id: Hoare.thy,v 1.2 2006-09-12 11:21:48 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -56,7 +56,7 @@ text{* Soundness is proved by induction on the derivation of @{prop"\<turnstile>
 
 theorem hoare_sound: "\<turnstile> {P}c{Q}  \<Longrightarrow>  \<Turnstile> {P}c{Q}"
 apply(unfold hoare_valid_def)
-apply(erule hoare.induct);
+apply(erule hoare.induct)
       apply blast
      apply blast
     apply clarsimp
@@ -100,7 +100,7 @@ apply(rule ext)
 apply blast
 done
 
-lemma [simp]: "wp (c\<^isub>1;c\<^isub>2) R = wp c\<^isub>1 (wp c\<^isub>2 R)";
+lemma [simp]: "wp (c\<^isub>1;c\<^isub>2) R = wp c\<^isub>1 (wp c\<^isub>2 R)"
 apply(unfold wp_def)
 apply(rule ext)
 apply blast
@@ -132,18 +132,18 @@ apply(rule ext)
 apply auto
 done
 
-lemma strengthen_pre: "\<lbrakk> \<forall>s. P' s \<longrightarrow> P s; \<turnstile> {P}c{Q}  \<rbrakk> \<Longrightarrow> \<turnstile> {P'}c{Q}";
+lemma strengthen_pre: "\<lbrakk> \<forall>s. P' s \<longrightarrow> P s; \<turnstile> {P}c{Q}  \<rbrakk> \<Longrightarrow> \<turnstile> {P'}c{Q}"
 by(erule hoare.Conseq, assumption, blast)
 
-lemma weaken_post: "\<lbrakk> \<turnstile> {P}c{Q}; \<forall>s. Q s \<longrightarrow> Q' s  \<rbrakk> \<Longrightarrow> \<turnstile> {P}c{Q'}";
-apply(rule hoare.Conseq);
+lemma weaken_post: "\<lbrakk> \<turnstile> {P}c{Q}; \<forall>s. Q s \<longrightarrow> Q' s  \<rbrakk> \<Longrightarrow> \<turnstile> {P}c{Q'}"
+apply(rule hoare.Conseq)
 apply(fast, assumption, assumption)
 done
 
 text{* By induction on @{term c} one can easily prove*}
 
 lemma wp_is_pre[rule_format]: "\<turnstile> {wp c Q} c {Q}"
-apply (induct c fixing: Q);
+apply (induct c arbitrary: Q)
 apply simp_all
 
 apply(blast intro:hoare.Do hoare.Conseq)

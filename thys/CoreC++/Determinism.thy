@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Determinism.thy,v 1.2 2006-08-04 10:56:49 wasserra Exp $
+    ID:          $Id: Determinism.thy,v 1.3 2006-09-12 11:21:48 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -14,7 +14,7 @@ section{* Some lemmas *}
 lemma maps_nth:
   "\<lbrakk>(E(xs [\<mapsto>] ys)) x = Some y; length xs = length ys; distinct xs\<rbrakk> 
   \<Longrightarrow> \<forall>i. x = xs!i \<and> i < length xs \<longrightarrow> y = ys!i"
-proof(induct xs fixing:ys E)
+proof (induct xs arbitrary: ys E)
   case Nil thus ?case by simp
 next
   case (Cons x' xs')
@@ -46,7 +46,7 @@ qed
 
 lemma nth_maps:"\<lbrakk>length pns = length Ts; distinct pns; i < length Ts\<rbrakk> 
   \<Longrightarrow> (E(pns [\<mapsto>] Ts)) (pns!i) = Some (Ts!i)"
-proof(induct i fixing:E pns Ts)
+proof (induct i arbitrary: E pns Ts)
   case 0
   have dist:"distinct pns" and length:"length pns = length Ts"
     and i_length:"0 < length Ts" .
@@ -124,7 +124,7 @@ lemma Casts_Casts_eq_result:
           P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts; P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h,l)\<rangle>;
           P,E \<turnstile> s \<surd>\<rbrakk>
       \<Longrightarrow> vs' = ws'"
-proof(induct vs fixing:vs' ws ws' Ts Ts' es s)
+proof (induct vs arbitrary: vs' ws ws' Ts Ts' es s)
   case Nil thus ?case by (auto elim!:Casts_to.elims)
 next
   case (Cons x xs)
@@ -224,7 +224,7 @@ qed
 
 
 lemma map_Val_throw_False:"map Val vs = map Val ws @ throw ex # es \<Longrightarrow> False"
-proof(induct vs fixing:ws)
+proof (induct vs arbitrary: ws)
   case Nil thus ?case by simp
 next
   case (Cons v' vs')

@@ -1,4 +1,4 @@
-(*  ID:         $Id: ArchCompProps.thy,v 1.1 2006-05-22 09:53:58 nipkow Exp $
+(*  ID:         $Id: ArchCompProps.thy,v 1.2 2006-09-12 11:21:48 makarius Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -41,7 +41,7 @@ qed
 lemma enum_finals_tree:
  "\<forall>g. final g \<longrightarrow> next g = [] \<Longrightarrow> enum_finals next n todo Fs\<^isub>0 = Some Fs \<Longrightarrow>
   set Fs = set Fs\<^isub>0 \<union> fgraph ` {h. \<exists>g \<in> set todo. g [next]\<rightarrow>* h \<and> final h}"
-apply(induct n fixing: todo Fs\<^isub>0) apply simp
+apply(induct n arbitrary: todo Fs\<^isub>0) apply simp
 apply (clarsimp simp:image_def neq_Nil_conv split:split_if_asm)
  apply(rule equalityI)
   apply (blast intro:RTranCl.refl)

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.10 2006-08-04 10:56:50 wasserra Exp $
+    ID:          $Id: TypeSafe.thy,v 1.11 2006-09-12 11:21:48 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -1198,7 +1198,7 @@ next
   from reds1 wtes sconf wf have sconf':"P,E \<turnstile> s'' \<surd>" 
     by(fastsimp intro:wf_prog_wwf_prog reds_preserves_sconf)
   from type have "\<exists>Ts'. P,E,hp s'' \<turnstile> es'' [:] Ts'"
-  proof(induct Ts fixing:es'')
+  proof (induct Ts arbitrary: es'')
     fix esi
     assume "types_conf(P,E,hp s'',esi,[])"
     thus "\<exists>Ts'. P,E,hp s'' \<turnstile> esi [:] Ts'"
@@ -1279,7 +1279,7 @@ recdef conformable "measure(\<lambda>(Ts,Ts'). size Ts)"
 
 lemma types_conf_conf_types_conf:
   "\<lbrakk>types_conf (P,E,h,es,Ts); conformable(Ts,Ts')\<rbrakk> \<Longrightarrow> types_conf (P,E,h,es,Ts')"
-proof(induct Ts fixing:Ts' es)
+proof (induct Ts arbitrary: Ts' es)
   case Nil thus ?case by(auto split:split_if_asm)
 next
   case (Cons T'' Ts'')
@@ -1301,7 +1301,7 @@ qed
 
 lemma types_conf_Wtrt_conf:
   "types_conf (P,E,h,es,Ts) \<Longrightarrow> \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable(Ts',Ts)"
-proof(induct Ts fixing:es)
+proof (induct Ts arbitrary: es)
   case Nil thus ?case by(auto split:split_if_asm)
 next
   case (Cons T'' Ts'')
