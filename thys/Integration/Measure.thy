@@ -1,7 +1,7 @@
 header {*Preliminaries*}
 
 theory Measure
-imports Sigma_Algebra MonConv NthRoot
+imports Sigma_Algebra MonConv NthRoot Series
 begin
 (*<*)
 
@@ -45,8 +45,10 @@ text {*The other component is the measure itself. It is a function that
   (*Remark: This definition of measure space is not minimal,
   in the sense that the containment of the UNION in the measurable sets 
   is implied by the measurable sets being a sigma algebra*)
-  countably_additive:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> bool"
-  "countably_additive M \<equiv> (\<forall>f::(nat \<Rightarrow> 'a set). range f \<subseteq> measurable_sets M
+
+constdefs
+  countably_additive:: "('a set set * ('a set => real)) => bool"
+  "countably_additive M \<equiv> (\<forall>f::(nat => 'a set). range f \<subseteq> measurable_sets M
   \<and> (\<forall>m n. m \<noteq> n \<longrightarrow> f m \<inter> f n = {}) \<and>  (\<Union>i. f i) \<in> measurable_sets M
   \<longrightarrow> (\<lambda>n. measure M (f n)) sums  measure M (\<Union>i. f i))" 
 
