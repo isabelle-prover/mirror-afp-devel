@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Type.thy
-   ID:        $Id: Type.thy,v 1.8 2004-08-18 07:24:54 nipkow Exp $
+   ID:        $Id: Type.thy,v 1.9 2006-09-14 06:41:08 alexkrauss Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -30,7 +30,7 @@ primrec
 instance  "typ"::type_struct ..
 instance  type_scheme::type_struct ..  
 instance  list::(type_struct)type_struct ..
-instance  fun::(type,type_struct)type_struct ..
+instance  "fun"::(type,type_struct)type_struct ..
 
 
 -- {* @{text "free_tv s"}: the type variables occuring freely in the type structure s *}

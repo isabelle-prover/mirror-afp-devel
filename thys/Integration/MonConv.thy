@@ -31,7 +31,7 @@ text {* A sensible requirement for an integral operator is that it be
   *}
 
 
-instance fun :: (type,ord)ord ..
+instance "fun" :: (type,ord)ord ..
 
 defs
 le_fun_def: "f \<le> g  \<equiv> \<forall>x. f x \<le> g x"
