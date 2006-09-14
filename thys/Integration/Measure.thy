@@ -1,7 +1,7 @@
 header {*Preliminaries*}
 
 theory Measure
-imports Sigma_Algebra MonConv NthRoot Series
+imports Sigma_Algebra MonConv
 begin
 (*<*)
 
