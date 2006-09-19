@@ -132,10 +132,15 @@ lemma assumes mon_conv: "x\<up>(y::real)"
   and less: "z < y"
   shows real_mon_conv_outgrow: "\<exists>n. \<forall>m. n \<le> m \<longrightarrow> z < x m"
 proof -
-  from less have "0 < y-z" 
+  from less have less': "0 < y-z" 
     by simp                
-  with mon_conv have "\<exists>n.\<forall>m. n \<le> m \<longrightarrow> \<bar>x m + - y\<bar> < y-z" 
-    by (simp add: real_mon_conv LIMSEQ_def)
+  have "\<exists>n.\<forall>m. n \<le> m \<longrightarrow> \<bar>x m + - y\<bar> < y-z"
+  unfolding diff_minus [symmetric]
+  proof -
+    from mon_conv have aux: "\<And>r. r > 0 \<Longrightarrow> \<exists>n. \<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < r"
+    unfolding real_mon_conv LIMSEQ_def by auto
+    with less' show "\<exists>n. \<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < y - z" by auto
+  qed
   also
   { fix m 
     from mon_conv have "x m \<le> y" 
