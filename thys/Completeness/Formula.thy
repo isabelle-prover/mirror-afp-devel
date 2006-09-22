@@ -305,9 +305,6 @@ subsection "Models"
 typedecl
   object
 
-arities
-   object :: type (* FIXME TJR used to be term *)
-
 consts
   obj :: "nat => object"
 
