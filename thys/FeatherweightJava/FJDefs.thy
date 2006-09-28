@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJDefs.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: FJDefs.thy,v 1.5 2006-09-28 21:20:39 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -145,12 +145,13 @@ consts
   substs ::      "(varName \<rightharpoonup> exp) \<Rightarrow> exp \<Rightarrow> exp"
   subst_list1 :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp list \<Rightarrow> exp list"
   subst_list2 :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp list \<Rightarrow> exp list"
+
 syntax 
   "_substs" :: "[varName list] \<Rightarrow> [exp list] \<Rightarrow> [exp] \<Rightarrow> exp"  ("'(_/_')_" [80,80,80] 80)
   "_subst_list" :: "[varName list] \<Rightarrow> [exp list] \<Rightarrow> [exp list] \<Rightarrow> exp list"  ("'[_/_']_" [80,80,80] 80)
 translations
-  "[ds/xs]es" \<rightleftharpoons> "map (substs (map_upds empty xs ds)) es"
-  "(ds/xs)e" \<rightleftharpoons> "substs (map_upds empty xs ds) e"
+  "(ds/xs)e" \<rightleftharpoons> "substs (map_upds (CONST empty) xs ds) e"
+  "[ds/xs]es" \<rightleftharpoons> "map (substs (map_upds (CONST empty) xs ds)) es"
 
 primrec 
   "substs \<sigma> (Var x) =             (case (\<sigma>(x)) of None \<Rightarrow> (Var x) | Some p \<Rightarrow> p)"
