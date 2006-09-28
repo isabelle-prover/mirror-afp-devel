@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/State.thy
-    ID:         $Id: Objects.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Objects.thy,v 1.3 2006-09-28 21:41:54 makarius Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -32,10 +32,9 @@ subsection{* Heap *}
 
 types heap  = "addr \<rightharpoonup> obj"
 
-syntax
+abbreviation
   cname_of :: "heap \<Rightarrow> addr \<Rightarrow> cname"
-translations
-  "cname_of hp a" == "fst (the (hp a))"
+  "cname_of hp a == fst (the (hp a))"
 
 constdefs
   new_Addr  :: "heap \<Rightarrow> addr option"
@@ -78,11 +77,9 @@ lemma [simp]: "h a = Some(C,fs) \<Longrightarrow> typeof\<^bsub>(h(a\<mapsto>(C,
 text{* For literal values the first parameter of @{term typeof} can be
 set to @{term empty} because they do not contain addresses: *}
 
-consts
+abbreviation
   typeof :: "val \<Rightarrow> ty option"
-
-translations
-  "typeof v" == "typeof_h empty v"
+  "typeof v == typeof_h empty v"
 
 lemma typeof_lit_typeof:
   "typeof v = Some T \<Longrightarrow> typeof\<^bsub>h\<^esub> v = Some T"
