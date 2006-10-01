@@ -1,4 +1,7 @@
-theory Prover imports Main begin
+
+(* $Id: Prover.thy,v 1.10 2006-10-01 17:04:14 makarius Exp $ *)
+
+theory Prover imports Main Infinite_Set begin
 
 subsection "Formulas"
 

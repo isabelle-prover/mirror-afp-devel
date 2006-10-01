@@ -1,6 +1,9 @@
+
+(* $Id: Ramsey.thy,v 1.6 2006-10-01 17:04:14 makarius Exp $ *)
+
 header "Ramsey's Theorem"
 
-theory Ramsey imports Main begin
+theory Ramsey imports Main Infinite_Set begin
 
 
 ML {* simp_depth_limit := 5 *}
@@ -244,6 +247,3 @@ lemma ramsey: "
   done
   
 end
-
-
-
