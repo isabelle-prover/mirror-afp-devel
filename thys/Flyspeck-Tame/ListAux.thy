@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.2 2006-07-27 13:24:37 webertj Exp $
+(*  ID:         $Id: ListAux.thy,v 1.3 2006-10-01 17:13:41 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -36,9 +36,7 @@ declare mem_iff[simp] list_all_iff[simp] list_ex_iff[simp]
 
 subsubsection{* @{text length} *}
 
-syntax "_length" :: "'a list \<Rightarrow> nat"  ("|_|")
-translations 
- "|xs|" == "length xs"
+const_syntax length  ("|_|")
 
 lemma length3D: "|xs| = 3 \<Longrightarrow> \<exists>x y z. xs = [x, y, z]"
 apply (cases xs) apply simp
