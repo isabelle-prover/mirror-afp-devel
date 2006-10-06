@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoRegExp.thy,v 1.7 2005-08-28 19:42:46 makarius Exp $
+(*  ID:         $Id: AutoRegExp.thy,v 1.8 2006-10-06 08:37:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -6,7 +6,7 @@
 header "Combining automata and regular expressions, including code generation"
 
 theory AutoRegExp
-imports Automata RegExp2NA RegExp2NAe
+imports Automata RegExp2NA RegExp2NAe ExecutableSet
 begin
 
 theorem "DA.accepts (na2da(rexp2na r)) w = (w : lang r)"
@@ -17,20 +17,9 @@ by (simp add: NAe_DA_equiv accepts_rexp2nae)
 
 (* Testing code generation: *)
 
-types_code
-  set ("_ list")
-
-consts_code
-  "{}"     ("[]")
-  "insert" ("(_ ins _)")
-  "op :"   ("(_ mem _)")
-  "op Un"  ("(_ union _)")
-  "image"  ("map")
-  "UNION"  ("(fn A => fn f => List.concat(map f A))")
-  "Bex"    ("(fn A => fn f => exists f A)")
-
 code_module Generated
 contains
+  test =
   "let r0 = Atom(0::nat);
        r1 = Atom(1::nat);
        re = Conc (Star(Or(Conc r1 r1)r0))
