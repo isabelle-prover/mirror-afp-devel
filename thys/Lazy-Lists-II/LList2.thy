@@ -1,5 +1,5 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.4 2005-12-21 23:33:53 makarius Exp $
+    ID:         $Id: LList2.thy,v 1.5 2006-10-10 17:24:00 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -489,19 +489,19 @@ constdefs
 
 lemmas llength_LNil  = llength_def [THEN finlsts_rec_LNil_def, standard]
   and  llength_LCons = llength_def [THEN finlsts_rec_LCons_def, standard]
-  and  llength_simps [simp] = llength_LNil llength_LCons
+lemmas llength_simps [simp] = llength_LNil llength_LCons
 
 lemmas llast_LNil  = llast_def [THEN finlsts_rec_LNil_def, standard]
   and  llast_LCons = llast_def [THEN finlsts_rec_LCons_def, standard]
-  and llast_simps [simp] = llast_LNil llast_LCons
+lemmas llast_simps [simp] = llast_LNil llast_LCons
 
 lemmas lbutlast_LNil = lbutlast_def [THEN finlsts_rec_LNil_def, standard]
   and lbutlast_LCons = lbutlast_def [THEN finlsts_rec_LCons_def, standard]
-  and lbutlast_simps [simp] = lbutlast_LNil lbutlast_LCons
+lemmas lbutlast_simps [simp] = lbutlast_LNil lbutlast_LCons
 
 lemmas lrev_LNil = lrev_def [THEN finlsts_rec_LNil_def, standard]
   and lrev_LCons = lrev_def [THEN finlsts_rec_LCons_def, standard]
-  and lrev_simps [simp] = lrev_LNil lrev_LCons
+lemmas lrev_simps [simp] = lrev_LNil lrev_LCons
 
 lemma lrevT [simp, intro!]:
   "xs \<in> A\<^sup>\<star> \<Longrightarrow> lrev xs \<in> A\<^sup>\<star>"
