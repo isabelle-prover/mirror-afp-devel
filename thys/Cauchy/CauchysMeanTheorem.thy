@@ -1,5 +1,5 @@
 (*  Title:       Cauchy's Mean Theorem
-    ID:          $Id: CauchysMeanTheorem.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: CauchysMeanTheorem.thy,v 1.5 2006-10-10 17:23:48 makarius Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
@@ -587,7 +587,7 @@ proof
     "\<dots> = (len + 1)*\<Sum>:lst / (len * (1+len))"
     apply -
     apply (drule mult_divide_cancel_left
-      [symmetric, where c1="len" and a1="(1 + 1 / len) * \<Sum>:lst" and b1="1+len"])
+      [symmetric, where c="len" and a="(1 + 1 / len) * \<Sum>:lst" and b="1+len"])
     apply clarsimp
     done
   also from l1nez have "\<dots> = \<Sum>:lst / len"

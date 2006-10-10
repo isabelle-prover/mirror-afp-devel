@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/W.thy
-   ID:        $Id: W.thy,v 1.8 2005-07-16 12:20:59 nipkow Exp $
+   ID:        $Id: W.thy,v 1.9 2006-10-10 17:23:52 makarius Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -510,7 +510,7 @@ apply (drule_tac [2] x = "ma" in fun_cong)
  prefer 2 apply (simp add: eq_sym_conv)
 apply (simp (no_asm) add: subst_comp_scheme_list)
 apply (simp (no_asm) add: subst_comp_scheme_list [symmetric])
-apply (rule_tac A2 = "($ Sa ($ S A))" in trans [OF _ subst_comp_scheme_list [symmetric]])
+apply (rule_tac A1 = "($ Sa ($ S A))" in trans [OF _ subst_comp_scheme_list [symmetric]])
 apply (simp add: o_def eq_sym_conv)
 apply (drule_tac s = "Some ?X" in sym)
 apply (rule eq_free_eq_subst_scheme_list)
