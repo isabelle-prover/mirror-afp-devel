@@ -24,31 +24,11 @@ text {* A sensible requirement for an integral operator is that it be
   However, this employs the general concept of a least upper bound.
   For the special types we have in mind, the more specific
   limit --- respective union --- operators are available, combined with many theorems
-  about their properties. It still seems worthwhile to add the type of
-  real- (or rather
-  ordered-) valued functions to the ordered types by defining the
-  less-or-equal relation pointwise.
+  about their properties. For the type of real- (or rather ordered-) valued functions,
+  the less-or-equal relation is defined pointwise.
+
+  @{thm le_fun_def [no_vars]}
   *}
-
-
-instance "fun" :: (type,ord)ord ..
-
-defs
-le_fun_def: "f \<le> g  \<equiv> \<forall>x. f x \<le> g x"
-
-text {*The following theorem is often used in this context and
-  therefore even added to the calculational transitivity rules. For reasons of brevity, the proof is
-omitted here, as will be the case with several of the subsequent facts.*}
-
-theorem assumes "f \<le> (k::'a \<Rightarrow> real)" and "k \<le> g"
-  shows realfun_le_trans[trans]: "f \<le> g" 
-(*<*)proof -
-  { fix w
-    from prems have "f w \<le> k w" and "k w \<le> g w" by (auto simp add: le_fun_def)
-    hence "f w \<le> g w" by (rule real_le_trans)
-  } 
-  thus ?thesis by (simp add: le_fun_def)
-qed (*>*)
 
 (*monotone convergence*)
  
