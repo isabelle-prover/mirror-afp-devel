@@ -1,5 +1,5 @@
 (*  Title:       Cauchy's Mean Theorem
-    ID:          $Id: CauchysMeanTheorem.thy,v 1.5 2006-10-10 17:23:48 makarius Exp $
+    ID:          $Id: CauchysMeanTheorem.thy,v 1.6 2006-10-23 14:58:20 fhaftmann Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
@@ -137,13 +137,7 @@ next
     {
       assume nay: "\<not>(a=y)"
       with ym have "q mem (y#(remove1 a ys))" by simp
-      then have "q=y \<or> q mem (remove1 a ys)"
-        apply -
-        apply simp
-        apply (cases "y=q")
-          apply simp
-        apply simp
-        done
+      then have "q=y \<or> q mem (remove1 a ys)" by simp
       moreover
       {
         assume "q=y"
