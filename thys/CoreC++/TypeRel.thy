@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeRel.thy,v 1.5 2006-08-04 10:56:50 wasserra Exp $
+    ID:          $Id: TypeRel.thy,v 1.6 2006-10-23 14:58:31 fhaftmann Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab 
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -15,15 +15,15 @@ theory TypeRel imports SubObj begin
 consts
   widen   :: "prog \<Rightarrow> (ty \<times> ty) set"  -- "widening"
 
-
 syntax (xsymbols)
   widen   :: "prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ \<le> _"   [71,71,71] 70)
-  widens  :: "prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool" ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70)
-
 
 translations
   "P \<turnstile> T \<le> T'"  ==  "(T,T') \<in> widen P"
-  "P \<turnstile> Ts [\<le>] Ts'"  ==  "list_all2 (fun_of (widen P)) Ts Ts'"
+
+abbreviation (xsymbols)
+  widens :: "prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool" ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70)
+  "widens P Ts Ts' \<equiv> list_all2 (fun_of (widen P)) Ts Ts'"
 
 inductive "widen P"
 intros
@@ -60,8 +60,5 @@ done
 
 lemmas widens_refl [iff] = rel_list_all2_refl [OF widen_refl]
 lemmas widens_Cons [iff] = rel_list_all2_Cons1 [of "widen P", standard]
-
-
-
 
 end

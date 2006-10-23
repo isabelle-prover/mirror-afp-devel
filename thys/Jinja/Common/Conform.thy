@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Conform.thy
-    ID:         $Id: Conform.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: Conform.thy,v 1.2 2006-10-23 14:58:31 fhaftmann Exp $
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -28,14 +28,10 @@ constdefs
   "P,h \<turnstile> l (:\<le>) E  \<equiv>
   \<forall>V v. l V = Some v \<longrightarrow> (\<exists>T. E V = Some T \<and> P,h \<turnstile> v :\<le> T)"
 
-(*<*)
-syntax
+abbreviation
   confs :: "'m prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty list \<Rightarrow> bool" 
-           ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
-(*>*)
-
-translations
-  "P,h \<turnstile> vs [:\<le>] Ts"  ==  "list_all2 (conf P h) vs Ts"
+             ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
+  "P,h \<turnstile> vs [:\<le>] Ts \<equiv> list_all2 (conf P h) vs Ts"
 
 
 section{* Value conformance @{text":\<le>"} *}

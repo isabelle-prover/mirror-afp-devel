@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: JVM_SemiType.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: JVM_SemiType.thy,v 1.3 2006-10-23 14:58:31 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   2000 TUM
 
@@ -61,15 +61,15 @@ syntax
 syntax (xsymbols)
   sup_ty_opt    :: "['c prog, ty err, ty err] \<Rightarrow> bool" 
                    ("_ \<turnstile> _ \<le>\<^sub>\<top> _" [71,71,71] 70)
-  sup_loc       :: "['c prog, ty\<^isub>l, ty\<^isub>l] \<Rightarrow> bool"
-                   ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70)
   sup_state     :: "['c prog, ty\<^isub>i, ty\<^isub>i] \<Rightarrow> bool" 
                    ("_ \<turnstile> _ \<le>\<^sub>i _" [71,71,71] 70)
   sup_state_opt :: "['c prog, ty\<^isub>i', ty\<^isub>i'] \<Rightarrow> bool"
                    ("_ \<turnstile> _ \<le>' _" [71,71,71] 70)
 
-translations
-  "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'" == "list_all2 (sup_ty_opt P) LT LT'"
+abbreviation (xsymbols)
+  sup_loc       :: "['c prog, ty\<^isub>l, ty\<^isub>l] \<Rightarrow> bool"
+                   ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70)
+  "P \<turnstile> LT [\<le>\<^sub>\<top>] LT' \<equiv> list_all2 (sup_ty_opt P) LT LT'"
 
 
 section "Unfolding"
