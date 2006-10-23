@@ -11,8 +11,8 @@ fun nexts [] n = []
   | nexts (e :: es) n =
     (if (fst e = n) then (snd e :: nexts es n) else nexts es n);
 
-fun op_mem x [] = false
-  | op_mem x (y :: ys) = (if (y = x) then true else op_mem x ys);
+fun memberl x [] = false
+  | memberl x (y :: ys) = ((x = y) orelse memberl x ys);
 
 fun dfs2 x =
   wfrec (fn dfs2 => fn a =>
@@ -22,7 +22,7 @@ fun dfs2 x =
                 (xa, xb) =>
                   (case xa of [] => xb
                     | (xa :: xc) =>
-                        (if op_mem xa xb then dfs2 (x, (xc, xb))
+                        (if memberl xa xb then dfs2 (x, (xc, xb))
                           else dfs2 (x, (xc,
   dfs2 (x, (nexts x xa, (xa :: xb))))))))))
     x;
@@ -38,7 +38,7 @@ fun dfs x =
                 (xa, xb) =>
                   (case xa of [] => xb
                     | (xa :: xc) =>
-                        (if op_mem xa xb then dfs (x, (xc, xb))
+                        (if memberl xa xb then dfs (x, (xc, xb))
                           else dfs (x, (op_64 (nexts x xa) xc, (xa :: xb))))))))
     x;
 
