@@ -1,5 +1,5 @@
 
-(* $Id: Prover.thy,v 1.10 2006-10-01 17:04:14 makarius Exp $ *)
+(* $Id: Prover.thy,v 1.11 2006-10-23 14:58:37 fhaftmann Exp $ *)
 
 theory Prover imports Main Infinite_Set begin
 
@@ -1217,7 +1217,7 @@ constdefs my_f :: "form"
 
   -- "we compute by rewriting"
 
-lemmas ss = list.simps if_True if_False flatten.simps map.simps bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def Let_def newvar_def subs.simps split_beta append_Nil append_Cons subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms mem_iff[symmetric] "List.op mem.simps"
+lemmas ss = list.simps if_True if_False flatten.simps map.simps bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def Let_def newvar_def subs.simps split_beta append_Nil append_Cons subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms mem_iff[symmetric] List.memberl.simps
 
 
 lemmas prove'_Nil = prove' [of "[]", simplified, standard]
