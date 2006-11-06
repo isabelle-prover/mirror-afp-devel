@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.11 2006-08-04 10:56:49 wasserra Exp $
+    ID:          $Id: Execute.thy,v 1.12 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -371,14 +371,14 @@ text {* Call *}
 lemma CallParamsThrow_new:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,s\<^isub>2\<rangle>;
      (evs, vs, throw ex # es') : map_val2 \<rbrakk>
-   \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>"
+   \<Longrightarrow> P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>"
 apply(rule eval_evals.CallParamsThrow, assumption+)
 apply(simp add: map_val2_conv[symmetric])
 done
 
 lemma CallNull_new:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,s\<^isub>2\<rangle>; (evs,vs) : map_val \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,s\<^isub>2\<rangle>; (evs,vs) : map_val \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
 apply(rule CallNull, assumption+)
 apply(simp add: map_val_conv[symmetric])
 done
@@ -465,7 +465,7 @@ lemma CallOverrider_new1:
      new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>body   | _  \<Rightarrow> body);
      P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
-apply(rule Call,assumption+)
+apply(rule Call,assumption)
 apply(simp add: map_val_conv[symmetric])
 apply assumption+
 apply(rule dyn_ambiguous)
@@ -488,7 +488,7 @@ lemma CallOverrider_new2:
      new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>body   | _  \<Rightarrow> body);
      P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
-apply(rule Call,assumption+)
+apply(rule Call,assumption)
 apply(simp add: map_val_conv[symmetric])
 apply assumption+
 apply(rule dyn_ambiguous)
@@ -499,6 +499,131 @@ apply(simp add:Casts_aux_eq)
 apply assumption+
 done
 
+lemma StaticCall_new1:
+  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"(evs,vs) : map_val"
+  and path:"(last Cs,Cs'') \<in> Subobjs P" "last Cs'' = C"
+  and unique:"\<forall>Xs\<in>Subobjs_aux P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
+  and eq1:"last Cs = hd Cs''" and eq2:"last Cs'' = hd Cs'"
+  and append:"Ds = (Cs@tl Cs'')@tl Cs'" and casts:"(Ts,vs,vs') \<in> Casts_aux P"
+  and rest:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>"  "length vs = length pns"
+    "l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs']"
+    "P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'"
+    "P,E(this\<mapsto>Class(last Ds), pns[\<mapsto>]Ts) \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>"
+  shows "P,E \<turnstile> \<langle>e\<bullet>(C::)M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
+proof -
+  from evals map have evalsVals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>"
+    by(simp add: map_val_conv[symmetric])
+  from path have path_via:"P \<turnstile> Path (last Cs) to C via Cs''"
+    by(simp add:path_via_def)
+  from path unique have path_unique:"P \<turnstile> Path (last Cs) to C unique"
+    by(auto simp:path_unique_def Subobjs_aux [symmetric])
+  from path have notempty:"Cs'' \<noteq> []" by -(rule Subobjs_nonempty)
+  have "last(Cs@tl Cs'') = hd Cs'"
+  proof(cases "tl Cs'' = []")
+    case True 
+    with notempty have Cs'':"Cs'' = [hd Cs'']" by(fastsimp dest:hd_Cons_tl)
+    hence "last Cs'' = hd Cs''" by(cases Cs'') auto
+    with eq1 eq2 True show ?thesis by simp
+  next
+    case False
+    from notempty eq2 have "last(hd Cs''#tl Cs'') = hd Cs'"
+      by(fastsimp dest:hd_Cons_tl)
+    with False show ?thesis by(simp add:last_append)
+  qed
+  with eq1 eq2 append have Ds:"Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs'"
+    by(simp add:appendPath_def)
+  from casts have "P \<turnstile> Ts Casts vs to vs'" by(simp add:Casts_aux_eq)
+  with evalsVals path_via path_unique Ds rest show ?thesis
+    by -(rule StaticCall)
+qed
+
+lemma StaticCall_new2:
+  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"(evs,vs) : map_val"
+  and path:"(last Cs,Cs'') \<in> Subobjs P" "last Cs'' = C"
+  and unique:"\<forall>Xs\<in>Subobjs_aux P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
+  and eq1:"last Cs = hd Cs''" and eq2:"last Cs'' \<noteq> hd Cs'"
+  and append:"Ds = Cs'" and casts:"(Ts,vs,vs') \<in> Casts_aux P"
+  and rest:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>"  "length vs = length pns"
+    "l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs']"
+    "P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'"
+    "P,E(this\<mapsto>Class(last Ds), pns[\<mapsto>]Ts) \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>"
+  shows "P,E \<turnstile> \<langle>e\<bullet>(C::)M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
+proof -
+  from evals map have evalsVals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>"
+    by(simp add: map_val_conv[symmetric])
+  from path have path_via:"P \<turnstile> Path (last Cs) to C via Cs''"
+    by(simp add:path_via_def)
+  from path unique have path_unique:"P \<turnstile> Path (last Cs) to C unique"
+    by(auto simp:path_unique_def Subobjs_aux [symmetric])
+  from path have notempty:"Cs'' \<noteq> []" by -(rule Subobjs_nonempty)
+  have "last(Cs@tl Cs'') \<noteq> hd Cs'"
+  proof(cases "tl Cs'' = []")
+    case True 
+    with notempty have Cs'':"Cs'' = [hd Cs'']" by(fastsimp dest:hd_Cons_tl)
+    hence "last Cs'' = hd Cs''" by(cases Cs'') auto
+    with eq1 eq2 True show ?thesis by simp
+  next
+    case False
+    from notempty eq2 have "last(hd Cs''#tl Cs'') \<noteq> hd Cs'"
+      by(fastsimp dest:hd_Cons_tl)
+    with False show ?thesis by(simp add:last_append)
+  qed
+  with eq1 eq2 append have Ds:"Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs'"
+    by(simp add:appendPath_def)
+  from casts have "P \<turnstile> Ts Casts vs to vs'" by(simp add:Casts_aux_eq)
+  with evalsVals path_via path_unique Ds rest show ?thesis
+    by -(rule StaticCall)
+qed
+
+lemma StaticCall_new3:
+  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"(evs,vs) : map_val"
+  and path:"(last Cs,Cs'') \<in> Subobjs P" "last Cs'' = C"
+  and unique:"\<forall>Xs\<in>Subobjs_aux P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
+  and eq1:"last Cs \<noteq> hd Cs''" and eq2:"last Cs'' = hd Cs'"
+  and append:"Ds = Cs''@tl Cs'" and casts:"(Ts,vs,vs') \<in> Casts_aux P"
+  and rest:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>"  "length vs = length pns"
+    "l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs']"
+    "P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'"
+    "P,E(this\<mapsto>Class(last Ds), pns[\<mapsto>]Ts) \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>"
+  shows "P,E \<turnstile> \<langle>e\<bullet>(C::)M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
+proof -
+  from evals map have evalsVals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>"
+    by(simp add: map_val_conv[symmetric])
+  from path have path_via:"P \<turnstile> Path (last Cs) to C via Cs''"
+    by(simp add:path_via_def)
+  from path unique have path_unique:"P \<turnstile> Path (last Cs) to C unique"
+    by(auto simp:path_unique_def Subobjs_aux [symmetric])
+  from eq1 eq2 append have Ds:"Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs'"
+    by(simp add:appendPath_def)
+  from casts have "P \<turnstile> Ts Casts vs to vs'" by(simp add:Casts_aux_eq)
+  with evalsVals path_via path_unique Ds rest show ?thesis
+    by -(rule StaticCall)
+qed
+
+lemma StaticCall_new4:
+  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"(evs,vs) : map_val"
+  and path:"(last Cs,Cs'') \<in> Subobjs P" "last Cs'' = C"
+  and unique:"\<forall>Xs\<in>Subobjs_aux P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
+  and eq1:"last Cs \<noteq> hd Cs''" and eq2:"last Cs'' \<noteq> hd Cs'"
+  and append:"Ds = Cs'" and casts:"(Ts,vs,vs') \<in> Casts_aux P"
+  and rest:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>"  "length vs = length pns"
+    "l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs']"
+    "P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'"
+    "P,E(this\<mapsto>Class(last Ds), pns[\<mapsto>]Ts) \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>"
+  shows "P,E \<turnstile> \<langle>e\<bullet>(C::)M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
+proof -
+  from evals map have evalsVals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>"
+    by(simp add: map_val_conv[symmetric])
+  from path have path_via:"P \<turnstile> Path (last Cs) to C via Cs''"
+    by(simp add:path_via_def)
+  from path unique have path_unique:"P \<turnstile> Path (last Cs) to C unique"
+    by(auto simp:path_unique_def Subobjs_aux [symmetric])
+  from eq1 eq2 append have Ds:"Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs'"
+    by(simp add:appendPath_def)
+  from casts have "P \<turnstile> Ts Casts vs to vs'" by(simp add:Casts_aux_eq)
+  with evalsVals path_via path_unique Ds rest show ?thesis
+    by -(rule StaticCall)
+qed
 
 section{* Rewriting lemmas for Type rules *}
 
@@ -529,6 +654,16 @@ lemma WTBinOp2: "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Integer;  P,E \<turnst
   apply (rule WTBinOp)
   apply assumption+
   apply simp
+  done
+
+lemma WTStaticCall_new:
+  "\<lbrakk> P,E \<turnstile> e :: Class C'; (C',Cs') \<in> Subobjs P; last Cs' = C;
+    \<forall>Cs''\<in>Subobjs_aux P C'. last Cs'' = C \<longrightarrow> Cs' = Cs'';
+     P \<turnstile> C has least M = (Ts,T,m) via Cs; P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<bullet>(C::)M(es) :: T"
+  apply(rule WTStaticCall)
+  apply assumption
+  apply(auto simp:path_unique_def Subobjs_aux [symmetric])
   done
 
 lemma [code ind]:
@@ -566,6 +701,14 @@ lemmas [code ind] =
                     OF _ _ _ _ conjI _ _ _ conjI]
  CallOverrider_new2[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
                     OF _ _ _ _ conjI _ _ _ conjI]
+ StaticCall_new1[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+                 OF _ _ _ _ _ _ _ _ _ _ _ _ conjI]
+ StaticCall_new2[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+                 OF _ _ _ _ _ _ _ _ _ _ _ _ conjI]
+ StaticCall_new3[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+                 OF _ _ _ _ _ _ _ _ _ _ _ _ conjI]
+ StaticCall_new4[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+                 OF _ _ _ _ _ _ _ _ _ _ _ _ conjI]
  eval_evals.Block eval_evals.Seq eval_evals.SeqThrow
  eval_evals.CondT eval_evals.CondF eval_evals.CondThrow
  eval_evals.WhileF eval_evals.WhileT 
@@ -579,6 +722,7 @@ lemmas [code ind] =
  WT_WTs.WTFAcc[unfolded LeastFieldDecl_def, OF _ conjI]
  WT_WTs.WTFAss[unfolded LeastFieldDecl_def, OF _ conjI]
  WT_WTs.WTCall[unfolded LeastMethodDef_def, OF _ conjI,simplified fun_of_def]
+ WTStaticCall_new[unfolded LeastMethodDef_def, OF _ _ _ _ conjI,simplified fun_of_def]
  WT_WTs.WTBlock WT_WTs.WTSeq WT_WTs.WTCond WT_WTs.WTWhile WT_WTs.WTThrow
  WT_WTs.WTNil WT_WTs.WTCons
 
@@ -627,7 +771,9 @@ text{* \<dots>and off we go *}
 
   (* Examples with no prog needed *)
 code_module NoProg
+(*file "code.ML"*)
 contains
+  test0 = "[],empty \<turnstile> \<langle>{''V'':Integer; ''V'' :=  Val(Intg 5);; Var ''V''},(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
   test1 = "[],empty \<turnstile> \<langle>Val(Intg 5),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
   test2 = "[],empty \<turnstile> \<langle>(Val(Intg 5)) \<guillemotleft>Add\<guillemotright> (Val(Intg 6)),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
   test3 = "[],[''V''\<mapsto>Integer] \<turnstile> \<langle>(Var ''V'') \<guillemotleft>Add\<guillemotright> (Val(Intg 6)),
@@ -684,6 +830,7 @@ constdefs
 
 
 code_module ProgOverrider
+file "code.ML"
 contains
   dynCastSide = "progOverrider,[''V''\<mapsto>Class ''Right''] \<turnstile>
     \<langle>''V'' := new ''Bottom'' ;; Cast ''Left'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
@@ -692,6 +839,11 @@ contains
     \<langle>''V'' := new ''Right'' ;; Cast ''Right'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 
   block = "progOverrider,[''V''\<mapsto>Integer] \<turnstile> \<langle>''V'' := Val(Intg 42) ;; {''V'':Class ''Left''; ''V'' := new ''Bottom''} ;; Var ''V'',(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
+
+  staticCall = "progOverrider,[''V''\<mapsto>Class ''Right'',''W''\<mapsto>Class ''Bottom''] \<turnstile>
+   \<langle>''V'' := new ''Bottom'' ;; ''W'' := new ''Bottom'' ;; 
+    ((Cast ''Left'' (Var ''W''))\<bullet>''x''{[''Left'',''Top'']} := Val(Intg 3));;
+    (Var ''W''\<bullet>(''Left''::)''f''([Var ''V'',Val(Intg 2)])),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 
   call = "progOverrider,[''V''\<mapsto>Class ''Right2'',''W''\<mapsto>Class ''Left''] \<turnstile> 
   \<langle>''V'' := new ''Right'' ;; ''W'' := new ''Left'' ;; (Var ''V''\<bullet>''f''([Var ''W'',Val(Intg 42)])) \<guillemotleft>Add\<guillemotright> (Var ''W''\<bullet>''f''([Var ''V'',Val(Intg 13)])),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
@@ -716,6 +868,7 @@ contains
   typeFAcc = "progOverrider,empty \<turnstile> (new ''Right'')\<bullet>''x''{[''Right2'',''Top'']} :: _"
   typeFAss = "progOverrider,empty \<turnstile> 
                   (new ''Right'')\<bullet>''x''{[''Right2'',''Top'']} := (Val(Intg 17)) :: _"
+  typeStaticCall = "progOverrider,[''V''\<mapsto>Class ''Left''] \<turnstile> ''V'' := new ''Left'' ;; Var ''V''\<bullet>(''Left''::)''f''([new ''Top'', Val(Intg 13)]) :: _"
   typeCall = "progOverrider,[''V''\<mapsto>Class ''Right2''] \<turnstile> ''V'' := new ''Right'' ;; Var ''V''\<bullet>''g''([]) :: _"
   typeBlock = "progOverrider,empty \<turnstile> {''V'':Class ''Top''; ''V'' := new ''Left''} :: _"
   typeCond = "[],empty \<turnstile> if (true) Val(Intg 6) else Val(Intg 9) :: _"
@@ -736,6 +889,7 @@ ML {* local open ProgOverrider in val Val(Ref(0,[Bottom,Left])) =
 ML {* local open ProgOverrider in val Val(Ref(0,[Right])) = 
       fst (Seq.hd dynCastViaSh) end *}
 ML {* local open ProgOverrider in val Val(Intg 42) = fst (Seq.hd block) end *}
+ML {* local open ProgOverrider in val Val(Intg 8)  = fst (Seq.hd staticCall) end *}
 ML {* local open ProgOverrider in val Val(Intg 12) = fst (Seq.hd call) end *}
 ML {* local open ProgOverrider in val Val(Ref(1,[Left,Top])) = 
       fst (Seq.hd callClass) end *}
@@ -752,6 +906,7 @@ ML {* local open ProgOverrider in val Boolean      = Seq.hd typeBinOp end *}
 ML {* local open ProgOverrider in val Class Top    = Seq.hd typeLAss end *}
 ML {* local open ProgOverrider in val Integer      = Seq.hd typeFAcc end *}
 ML {* local open ProgOverrider in val Integer      = Seq.hd typeFAss end *}
+ML {* local open ProgOverrider in val Integer      = Seq.hd typeStaticCall end *}
 ML {* local open ProgOverrider in val Class Top    = Seq.hd typeCall end *}
 ML {* local open ProgOverrider in val Class Top    = Seq.hd typeBlock end *}
 ML {* local open ProgOverrider in val Integer      = Seq.hd typeCond end *}

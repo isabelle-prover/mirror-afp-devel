@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellTypeRT.thy,v 1.7 2006-08-04 10:56:50 wasserra Exp $
+    ID:          $Id: WellTypeRT.thy,v 1.8 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -120,8 +120,14 @@ WTrtCall:
      P,E,h \<turnstile> es [:] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) : T" 
 
+WTrtStaticCall:
+  "\<lbrakk> P,E,h \<turnstile> e : Class C'; P \<turnstile> Path C' to C unique;
+     P \<turnstile> C has least M = (Ts,T,m) via Cs; 
+     P,E,h \<turnstile> es [:] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+  \<Longrightarrow> P,E,h \<turnstile> e\<bullet>(C::)M(es) : T"
+
 WTrtCallNT:
-  "\<lbrakk>P,E,h \<turnstile> e : NT; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) : T"
+  "\<lbrakk>P,E,h \<turnstile> e : NT; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> P,E,h \<turnstile> Call e Copt M es : T"
 
 WTrtBlock:
   "\<lbrakk>P,E(V\<mapsto>T),h \<turnstile> e : T'; is_type P T\<rbrakk> \<Longrightarrow> 
@@ -243,6 +249,7 @@ inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> e\<bullet>F{Cs} : T"
   "P,E,h \<turnstile> e\<bullet>F{Cs} := v : T"
   "P,E,h \<turnstile> e\<bullet>M(es) : T"
+  "P,E,h \<turnstile> e\<bullet>(C::)M(es) : T"
   "P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
   "P,E,h \<turnstile> while(e) c : T"
   "P,E,h \<turnstile> throw e : T"
@@ -284,6 +291,7 @@ apply(simp add: WTrtFAccNT)
 apply(fastsimp simp: WTrtFAss)
 apply(fastsimp simp: WTrtFAssNT)
 apply(fastsimp simp: WTrtCall)
+apply(fastsimp simp: WTrtStaticCall)
 apply(fastsimp simp: WTrtCallNT)
 apply(fastsimp simp: map_le_def)
 apply(fastsimp)

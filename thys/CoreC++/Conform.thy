@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Conform.thy,v 1.10 2006-10-23 14:58:31 fhaftmann Exp $
+    ID:          $Id: Conform.thy,v 1.11 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 

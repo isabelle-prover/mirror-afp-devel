@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Exceptions.thy,v 1.6 2006-09-01 10:29:14 wasserra Exp $
+    ID:          $Id: Exceptions.thy,v 1.7 2006-11-06 11:54:13 wasserra Exp $
     Author:      Gerwin Klein, Martin Strecker, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)

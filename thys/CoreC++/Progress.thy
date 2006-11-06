@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.12 2006-08-04 10:56:49 wasserra Exp $
+    ID:          $Id: Progress.thy,v 1.13 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -129,7 +129,11 @@ intros
 "\<lbrakk> P,E,h \<turnstile> e :' Class C;  P \<turnstile> C has least M = (Ts,T,m) via Cs;
   P,E,h \<turnstile> es [:'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) :' T" 
-"\<lbrakk>P,E,h \<turnstile> e :' NT; P,E,h \<turnstile> es [:'] Ts\<rbrakk> \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) :' T"
+"\<lbrakk> P,E,h \<turnstile> e :' Class C'; P \<turnstile> Path C' to C unique;
+  P \<turnstile> C has least M = (Ts,T,m) via Cs; 
+  P,E,h \<turnstile> es [:'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+  \<Longrightarrow> P,E,h \<turnstile> e\<bullet>(C::)M(es) :' T"
+"\<lbrakk>P,E,h \<turnstile> e :' NT; P,E,h \<turnstile> es [:'] Ts\<rbrakk> \<Longrightarrow> P,E,h \<turnstile> Call e Copt M es :' T"
 "\<lbrakk> P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'; P,E(V\<mapsto>T),h \<turnstile> e\<^isub>2 :' T\<^isub>2; P \<turnstile> T' \<le> T; is_type P T \<rbrakk>
  \<Longrightarrow>  P,E,h \<turnstile> {V:T := Val v; e\<^isub>2} :' T\<^isub>2"
 "\<lbrakk> P,E(V\<mapsto>T),h \<turnstile> e :' T'; \<not> assigned V e; is_type P T \<rbrakk>
@@ -208,7 +212,7 @@ by(blast intro:wts_wts' wts'_wts)
 
 lemmas WTrt_inducts2 = WTrt'_inducts [unfolded wt'_iff_wt wts'_iff_wts,
   case_names WTrtNew WTrtDynCast WTrtStaticCast WTrtVal WTrtVar WTrtBinOp 
-  WTrtLAss WTrtFAcc WTrtFAccNT WTrtFAss WTrtFAssNT WTrtCall WTrtCallNT 
+  WTrtLAss WTrtFAcc WTrtFAccNT WTrtFAss WTrtFAssNT WTrtCall WTrtStaticCall WTrtCallNT 
   WTrtInitBlock WTrtBlock WTrtSeq WTrtCond WTrtWhile WTrtThrow 
   WTrtNil WTrtCons, consumes 1]
 
@@ -799,7 +803,83 @@ next
     with prems show ?thesis by simp (blast intro!:CallObj)
   qed
 next
-  case (WTrtCallNT E M T Ts e es)
+  case (WTrtStaticCall C C' Cs E M T Ts Ts' e es h pns body)
+  have wte: "P,E,h \<turnstile> e : Class C'"
+    and path_unique:"P \<turnstile> Path C' to C unique"
+    and method:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
+    and wtes: "P,E,h \<turnstile> es [:] Ts'"and sub: "P \<turnstile> Ts' [\<le>] Ts"
+    and IHes: "\<And>l.
+              \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
+              \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
+    and hconf: "P \<turnstile> h \<surd>" and envconf:"envconf P E"
+    and D: "\<D> (e\<bullet>(C::)M(es)) \<lfloor>dom l\<rfloor>" .
+  show ?case
+  proof cases
+    assume final:"final e"
+    with wte show ?thesis
+    proof (rule final_refE)
+      fix r assume ref: "e = ref r"
+      show ?thesis
+      proof cases
+	assume es: "\<exists>vs. es = map Val vs"
+	from ref obtain a Cs' where ref:"e = ref(a,Cs')" by (cases r) auto
+	with wte have last:"last Cs' = C'"
+	  by (fastsimp split:split_if_asm)
+	with path_unique obtain Cs''
+	  where path_via:"P \<turnstile> Path (last Cs') to C via Cs''"
+	  by (auto simp add:path_via_def path_unique_def)
+	obtain Ds where Ds:"Ds = (Cs'@\<^sub>pCs'')@\<^sub>pCs" by simp
+	from es obtain vs where vs:"es = map Val vs" by auto
+	from sub have "length Ts' = length Ts" by (simp add:list_all2_def)
+	with WTrts_same_length[OF wtes] vs have length:"length vs = length Ts"
+	  by simp
+	from has_least_wf_mdecl[OF wf method]
+	have lengthParams:"length Ts = length pns" by (simp add:wf_mdecl_def)
+	with method last path_unique path_via Ds length ref vs show ?thesis
+	  by (auto intro!:exI RedStaticCall)
+      next
+	assume "\<not>(\<exists>vs. es = map Val vs)"
+	hence not_all_Val: "\<not>(\<forall>e \<in> set es. \<exists>v. e = Val v)"
+	  by(simp add:ex_map_conv)
+	let ?ves = "takeWhile (\<lambda>e. \<exists>v. e = Val v) es"
+        let ?rest = "dropWhile (\<lambda>e. \<exists>v. e = Val v) es"
+	let ?ex = "hd ?rest" let ?rst = "tl ?rest"
+	from not_all_Val have nonempty: "?rest \<noteq> []" by auto
+	hence es: "es = ?ves @ ?ex # ?rst" by simp
+	have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastsimp dest:set_take_whileD)
+	then obtain vs where ves: "?ves = map Val vs"
+	  using ex_map_conv by blast
+	show ?thesis
+	proof cases
+	  assume "final ?ex"
+	  moreover from nonempty have "\<not>(\<exists>v. ?ex = Val v)"
+	    by(auto simp:neq_Nil_conv simp del:dropWhile_eq_Nil_conv)
+              (simp add:dropWhile_eq_Cons_conv)
+	  ultimately obtain r' where ex_Throw: "?ex = Throw r'"
+	    by(fast elim!:finalE)
+	  show ?thesis using ref es ex_Throw ves
+	    by(fastsimp intro:red_reds.CallThrowParams)
+	next
+	  assume not_fin: "\<not> final ?ex"
+	  have "finals es = finals(?ves @ ?ex # ?rst)" using es
+	    by(rule arg_cong)
+	  also have "\<dots> = finals(?ex # ?rst)" using ves by simp
+	  finally have "finals es = finals(?ex # ?rst)" .
+	  hence "\<not> finals es" using not_finals_ConsI[OF not_fin] by blast
+	  thus ?thesis using ref D IHes[OF hconf envconf]
+	    by(fastsimp intro!:CallParams)
+	qed
+      qed
+    next
+      fix r assume "e = Throw r"
+      with WTrtStaticCall.prems show ?thesis by(fast intro!:red_reds.CallThrowObj)
+    qed
+  next
+    assume "\<not> final e"
+    with prems show ?thesis by simp (blast intro!:CallObj)
+  qed
+next
+  case (WTrtCallNT Copt E M T Ts e es)
   show ?case
   proof cases
     assume "final e"

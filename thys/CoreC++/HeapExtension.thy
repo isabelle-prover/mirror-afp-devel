@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: HeapExtension.thy,v 1.7 2006-08-04 10:56:49 wasserra Exp $
+    ID:          $Id: HeapExtension.thy,v 1.8 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -258,6 +258,7 @@ apply(simp add: WTrtFAccNT)
 apply(fastsimp simp: WTrtFAss del:WTrt_WTrts.intros WTrt_elim_cases)
 apply(fastsimp simp: WTrtFAssNT del:WTrt_WTrts.intros WTrt_elim_cases)
 apply(fastsimp simp: WTrtCall del:WTrt_WTrts.intros WTrt_elim_cases)
+apply(fastsimp simp: WTrtStaticCall del:WTrt_WTrts.intros WTrt_elim_cases)
 apply(fastsimp simp: WTrtCallNT del:WTrt_WTrts.intros WTrt_elim_cases)
 apply(fastsimp)
 apply(fastsimp simp add: WTrtSeq)

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Determinism.thy,v 1.3 2006-09-12 11:21:48 makarius Exp $
+    ID:          $Id: Determinism.thy,v 1.4 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -1171,81 +1171,158 @@ next
     show "throw e' = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" by simp
   qed
 next
-  case (CallObjThrow E M e e' ps s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
-  have eval:"P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
-    and wt:"P,E \<turnstile> e\<bullet>M(ps) :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
+  case (CallObjThrow Copt E M e e' es s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  have eval:"P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
+    and wt:"P,E \<turnstile> Call e Copt M es :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
                     \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
-  from wt obtain C where wte:"P,E \<turnstile> e :: Class C" by auto
-  from eval show ?case
-  proof(rule eval_cases)
-    fix ex 
-    assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>" and e2:"e\<^isub>2 = throw ex"
-    from IH[OF eval_throw wte sconf] e2 show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+  from wt obtain C where wte:"P,E \<turnstile> e :: Class C" by(cases Copt)auto
+  show ?case
+  proof(cases Copt)
+    assume "Copt = None"
+    with eval have "P,E \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>" by simp
+    thus ?thesis
+    proof(rule eval_cases)
+      fix ex
+      assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>" and e2:"e\<^isub>2 = throw ex"
+      from IH[OF eval_throw wte sconf] e2 show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+    next
+      fix es' ex' s w ws assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>"
+      from IH[OF eval_val wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+    next
+      fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
+	  s ws ws'
+      assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
+      from IH[OF eval_ref wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+    next
+      fix s ws
+      assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
+      from IH[OF eval_null wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+    qed
   next
-    fix es' ex' s w ws assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>"
-    from IH[OF eval_val wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
-  next
-    fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' s ws ws'
-    assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
-    from IH[OF eval_ref wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
-  next
-    fix s ws
-    assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
-    from IH[OF eval_null wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+    fix C' assume "Copt = Some C'"
+    with eval have "P,E \<turnstile> \<langle>e\<bullet>(C'::)M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>" by simp
+    thus ?thesis
+    proof(rule eval_cases)
+      fix ex
+      assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>" and e2:"e\<^isub>2 = throw ex"
+      from IH[OF eval_throw wte sconf] e2 show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+    next
+      fix es' ex' s w ws assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>"
+      from IH[OF eval_val wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+    next
+      fix C'' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
+	  s ws ws'
+      assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
+      from IH[OF eval_ref wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+    next
+      fix s ws
+      assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
+      from IH[OF eval_null wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
+    qed
   qed
 next
-  case (CallParamsThrow E M e es es' ex s\<^isub>0 s\<^isub>1 s\<^isub>2 v vs e\<^isub>2 s\<^isub>2' T)
-  have eval:"P,E \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>"
-    and wt:"P,E \<turnstile> e\<bullet>M(es) :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
+  case (CallParamsThrow Copt E M e es es' ex s\<^isub>0 s\<^isub>1 s\<^isub>2 v vs e\<^isub>2 s\<^isub>2' T)
+  have eval:"P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>"
+    and wt:"P,E \<turnstile> Call e Copt M es :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
                     \<Longrightarrow> Val v = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>esi si Ts. \<lbrakk>P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>esi,si\<rangle>; P,E \<turnstile> es [::] Ts; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
                       \<Longrightarrow> map Val vs @ throw ex # es' = esi \<and> s\<^isub>2 = si" .
   from wt obtain C Ts where wte:"P,E \<turnstile> e :: Class C" and wtes:"P,E \<turnstile> es [::] Ts" 
-    by auto
-  from eval show ?case
-  proof(rule eval_cases)
-    fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2'\<rangle>"
-    from IH1[OF eval_throw wte sconf] show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
+    by(cases Copt)auto
+  show ?case
+  proof(cases Copt)
+    assume "Copt = None"
+    with eval have "P,E \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>" by simp
+    thus ?thesis
+    proof(rule eval_cases)
+      fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2'\<rangle>"
+      from IH1[OF eval_throw wte sconf] show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
+    next
+      fix es'' ex' s w ws
+      assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>" 
+	and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2'\<rangle>"
+	and e2:"e\<^isub>2 = throw ex'"
+      from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_throw[simplified eq] wtes this] e2
+      have "vs = ws \<and> ex = ex' \<and> es' = es'' \<and> s\<^isub>2 = s\<^isub>2'"
+	by(fastsimp dest:map_Val_throw_eq)
+      with e2 show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
+    next
+      fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
+	  s ws ws'
+      assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
+	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
+      from IH1[OF eval_ref wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_vals[simplified eq] wtes this]
+      show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
+	by(fastsimp dest:sym[THEN map_Val_throw_False])
+    next
+      fix s ws
+      assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
+	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
+	and e2:"e\<^isub>2 = THROW NullPointer"
+      from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_vals[simplified eq] wtes this] 
+      show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
+	by(fastsimp dest:sym[THEN map_Val_throw_False])
+    qed
   next
-    fix es'' ex' s w ws
-    assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>" 
-      and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2'\<rangle>"
-      and e2:"e\<^isub>2 = throw ex'"
-    from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
-    with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
-    from IH2[OF evals_throw[simplified eq] wtes this] e2
-    have "vs = ws \<and> ex = ex' \<and> es' = es'' \<and> s\<^isub>2 = s\<^isub>2'"
-      by(fastsimp dest:map_Val_throw_eq)
-    with e2 show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
-  next
-    fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' s ws ws'
-    assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
-      and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
-    from IH1[OF eval_ref wte sconf] have eq:"s = s\<^isub>1" by simp
-    with wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
-    from IH2[OF evals_vals[simplified eq] wtes this] show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-      by(fastsimp dest:sym[THEN map_Val_throw_False])
-  next
-    fix s ws
-    assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
-      and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
-      and e2:"e\<^isub>2 = THROW NullPointer"
-     from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
-     with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
-    from IH2[OF evals_vals[simplified eq] wtes this] show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
-      by(fastsimp dest:sym[THEN map_Val_throw_False])
+    fix C' assume "Copt = Some C'"
+    with eval have "P,E \<turnstile> \<langle>e\<bullet>(C'::)M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>" by simp
+    thus ?thesis
+    proof(rule eval_cases)
+      fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2'\<rangle>"
+      from IH1[OF eval_throw wte sconf] show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
+    next
+      fix es'' ex' s w ws
+      assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>" 
+	and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2'\<rangle>"
+	and e2:"e\<^isub>2 = throw ex'"
+      from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_throw[simplified eq] wtes this] e2
+      have "vs = ws \<and> ex = ex' \<and> es' = es'' \<and> s\<^isub>2 = s\<^isub>2'"
+	by(fastsimp dest:map_Val_throw_eq)
+      with e2 show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
+    next
+      fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
+	  s ws ws'
+      assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
+	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
+      from IH1[OF eval_ref wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_vals[simplified eq] wtes this]
+      show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
+	by(fastsimp dest:sym[THEN map_Val_throw_False])
+    next
+      fix s ws
+      assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
+	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
+	and e2:"e\<^isub>2 = THROW NullPointer"
+      from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_vals[simplified eq] wtes this] 
+      show "throw ex = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'"
+	by(fastsimp dest:sym[THEN map_Val_throw_False])
+    qed
   qed
 next
   case (Call C Cs Cs' Ds E M S T T' Ts Ts' a body body' e e' h\<^isub>2 h\<^isub>3 l\<^isub>2 l\<^isub>2' l\<^isub>3 
-             new_body pns pns' ps s\<^isub>0 s\<^isub>1 vs vs' e\<^isub>2 s\<^isub>2 T'')
-  have eval:"P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
+             new_body pns pns' es s\<^isub>0 s\<^isub>1 vs vs' e\<^isub>2 s\<^isub>2 T'')
+  have eval:"P,E \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and eval':"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs),s\<^isub>1\<rangle>"
-    and eval'':"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>" and h2:"h\<^isub>2 a = Some(C,S)"
+    and eval'':"P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>" and h2:"h\<^isub>2 a = Some(C,S)"
     and has_least:"P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds"
     and selects:"P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs'"
     and length:"length vs = length pns" and Casts:"P \<turnstile> Ts Casts vs to vs'"
@@ -1253,10 +1330,10 @@ next
     and new_body:"new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>body | _ \<Rightarrow> body)"
     and eval_body:"P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> 
                                             \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>"
-    and wt:"P,E \<turnstile> e\<bullet>M(ps) :: T''" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
+    and wt:"P,E \<turnstile> e\<bullet>M(es) :: T''" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
                      \<Longrightarrow> ref (a,Cs) = ei \<and> s\<^isub>1 = si"
-    and IH2:"\<And>esi si Ts. \<lbrakk>P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>esi,si\<rangle>; P,E \<turnstile> ps [::] Ts; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
+    and IH2:"\<And>esi si Ts. \<lbrakk>P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>esi,si\<rangle>; P,E \<turnstile> es [::] Ts; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
                       \<Longrightarrow> map Val vs = esi \<and> (h\<^isub>2,l\<^isub>2) = si"
     and IH3:"\<And>ei si T. 
     \<lbrakk>P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>;
@@ -1265,7 +1342,7 @@ next
   \<Longrightarrow> e' = ei \<and> (h\<^isub>3, l\<^isub>3) = si" .
   from wt obtain D Ss Ss' m Cs'' where wte:"P,E \<turnstile> e :: Class D" 
     and has_least':"P \<turnstile> D has least M = (Ss,T'',m) via Cs''"
-    and wtes:"P,E \<turnstile> ps [::] Ss'" and subs:"P \<turnstile> Ss' [\<le>] Ss" by auto
+    and wtes:"P,E \<turnstile> es [::] Ss'" and subs:"P \<turnstile> Ss' [\<le>] Ss" by auto
   from eval_preserves_type[OF wf eval' sconf wte]
   have last:"last Cs = D" by (auto split:split_if_asm)
   with has_least has_least' wf
@@ -1316,7 +1393,7 @@ next
   next
     fix es'' ex' s w ws
     assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>" 
-      and evals_throw:"P,E \<turnstile> \<langle>ps,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2\<rangle>"
+      and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2\<rangle>"
     from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
       by(fastsimp intro:eval_preserves_sconf)
@@ -1325,7 +1402,7 @@ next
   next
     fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' s ws ws'
     assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
-      and evals_vals:"P,E \<turnstile> \<langle>ps,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
+      and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
       and h:"h a' = Some(C',S')" 
       and has_least'':"P \<turnstile> last Xs has least M = (Us',U',pns''',body''') via Ds'"
       and selects':"P \<turnstile> (C',Xs@\<^sub>pDs') selects M = (Us,U,pns'',body'') via Xs'"
@@ -1431,43 +1508,261 @@ next
     from IH1[OF eval_null wte sconf] show "e' = e\<^isub>2 \<and> (h\<^isub>3,l\<^isub>2) = s\<^isub>2" by simp
   qed
 next
-  case (CallNull E M e ps s\<^isub>0 s\<^isub>1 s\<^isub>2 vs e\<^isub>2 s\<^isub>2' T)
-  have eval:"P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>"
-    and wt:"P,E \<turnstile> e\<bullet>M(ps) :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
-    and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-    \<Longrightarrow> null = ei \<and> s\<^isub>1 = si"
-    and IH2:"\<And>esi si Ts. \<lbrakk>P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>esi,si\<rangle>; P,E \<turnstile> ps [::] Ts; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-    \<Longrightarrow> map Val vs = esi \<and> s\<^isub>2 = si" .
-  from wt obtain C Ts where wte:"P,E \<turnstile> e :: Class C" and wtes:"P,E \<turnstile> ps [::] Ts" 
-    by auto
+  case (StaticCall C Cs Cs' Cs'' Ds E M T Ts a body e e' h\<^isub>2 h\<^isub>3 l\<^isub>2 l\<^isub>2' l\<^isub>3 
+                   pns es s\<^isub>0 s\<^isub>1 vs vs' e\<^isub>2 s\<^isub>2 T')
+  have eval:"P,E \<turnstile> \<langle>e\<bullet>(C::)M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
+    and eval':"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs),s\<^isub>1\<rangle>"
+    and eval'':"P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2, l\<^isub>2)\<rangle>"
+    and path_unique:"P \<turnstile> Path last Cs to C unique" 
+    and path_via:"P \<turnstile> Path last Cs to C via Cs''"
+    and has_least:"P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'"
+    and Ds:"Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs'" and length:"length vs = length pns"
+    and Casts:"P \<turnstile> Ts Casts vs to vs'"
+    and l2':"l\<^isub>2' = [this \<mapsto> Ref (a, Ds), pns [\<mapsto>] vs']"
+    and eval_body:"P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> 
+                                             \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>"
+    and wt:"P,E \<turnstile> e\<bullet>(C::)M(es) :: T'" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
+    and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
+                    \<Longrightarrow> ref (a,Cs) = ei \<and> s\<^isub>1 = si"
+    and IH2:"\<And>esi si Ts. 
+             \<lbrakk>P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>esi,si\<rangle>; P,E \<turnstile> es [::] Ts; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
+                    \<Longrightarrow> map Val vs = esi \<and> (h\<^isub>2,l\<^isub>2) = si"
+    and IH3:"\<And>ei si T.
+   \<lbrakk>P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>;
+    P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> body :: T;
+    P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> (h\<^isub>2,l\<^isub>2') \<surd>\<rbrakk>
+                    \<Longrightarrow> e' = ei \<and> (h\<^isub>3, l\<^isub>3) = si" .
+  from wt has_least wf obtain C' Ts' where wte:"P,E \<turnstile> e :: Class C'"
+      and wtes:"P,E \<turnstile> es [::] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
+    by(auto dest:wf_sees_method_fun)
+  from eval_preserves_type[OF wf eval' sconf wte]
+  have last:"last Cs = C'" by (auto split:split_if_asm)
+  from wf has_least have param_type:"\<forall>T \<in> set Ts. is_type P T" 
+    and return_type:"is_type P T" and TnotNT:"T \<noteq> NT"
+    by(auto dest:has_least_wf_mdecl simp:wf_mdecl_def)
+  from path_via have last':"last Cs'' = last(Cs@\<^sub>pCs'')"
+    by(fastsimp intro!:appendPath_last Subobjs_nonempty simp:path_via_def)
+  from eval'' have hext:"hp s\<^isub>1 \<unlhd> h\<^isub>2" by (cases s\<^isub>1,auto intro: evals_hext)
+  from wf eval' sconf wte last have "P,E,(hp s\<^isub>1) \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
+    by -(rule eval_preserves_type,simp_all)
+  with hext have "P,E,h\<^isub>2 \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
+    by(auto intro:WTrt_hext_mono dest:hext_objD split:split_if_asm)
+  then obtain D S where h2:"h\<^isub>2 a = Some(D,S)" and "(D,Cs) \<in> Subobjs P"
+    by (auto split:split_if_asm)
+  with path_via wf have "(D,Cs@\<^sub>pCs'') \<in> Subobjs P" and "last Cs'' = C"
+    by(auto intro:Subobjs_appendPath simp:path_via_def)
+  with has_least wf last' Ds have subo:"(D,Ds) \<in> Subobjs P"
+    by(fastsimp intro:Subobjs_appendPath simp:LeastMethodDef_def MethodDefs_def)
+  hence "class":"is_class P (last Ds)" by(auto intro!:Subobj_last_isClass)
+  from has_least wf obtain D' where "(D',Cs') \<in> Subobjs P"
+    by(auto simp:LeastMethodDef_def MethodDefs_def)
+  with Ds have last_Ds:"last Cs' = last Ds"
+    by(fastsimp intro!:appendPath_last Subobjs_nonempty)
+  with wf has_least have "P,[this\<mapsto>Class(last Ds),pns[\<mapsto>]Ts] \<turnstile> body :: T"
+    and this_not_pns:"this \<notin> set pns" and length:"length pns = length Ts"
+    and dist:"distinct pns"
+    by(auto dest!:has_least_wf_mdecl simp:wf_mdecl_def)
+  hence wt_body:"P,E(this\<mapsto>Class(last Ds),pns[\<mapsto>]Ts) \<turnstile> body :: T"
+    by(fastsimp intro:wt_env_mono)
   from eval show ?case
   proof(rule eval_cases)
-    fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2'\<rangle>"
-    from IH1[OF eval_throw wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" 
-      by simp
+    fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2\<rangle>"
+    from IH1[OF eval_throw wte sconf] show "e' = e\<^isub>2 \<and> (h\<^isub>3, l\<^isub>2) = s\<^isub>2" by simp
   next
-    fix es' ex' s w ws
-    assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>"
-      and evals_throw:"P,E \<turnstile> \<langle>ps,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es',s\<^isub>2'\<rangle>"
+    fix es'' ex' s w ws
+    assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>" 
+      and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es'',s\<^isub>2\<rangle>"
     from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
     with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
       by(fastsimp intro:eval_preserves_sconf)
-    from IH2[OF evals_throw[simplified eq] wtes this] 
-    show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by(fastsimp dest:map_Val_throw_False)
+    from IH2[OF evals_throw[simplified eq] wtes this] show "e' = e\<^isub>2 \<and> (h\<^isub>3, l\<^isub>2) = s\<^isub>2"
+      by(fastsimp dest:map_Val_throw_False)
   next
-    fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' s ws ws'
+    fix Xs Xs' Xs'' U Us a' body' h h' l l' pns' s ws ws'
     assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
-    from IH1[OF eval_ref wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
+      and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,(h,l)\<rangle>"
+      and path_unique':"P \<turnstile> Path last Xs to C unique"
+      and path_via':"P \<turnstile> Path last Xs to C via Xs''"
+      and has_least':"P \<turnstile> C has least M = (Us,U,pns',body') via Xs'"
+      and length':"length ws = length pns'"
+      and Casts':"P \<turnstile> Us Casts ws to ws'"
+      and eval_body':"P,E(this \<mapsto> Class(last((Xs@\<^sub>pXs'')@\<^sub>pXs')),pns' [\<mapsto>] Us) \<turnstile> 
+      \<langle>body',(h,[this \<mapsto> Ref(a',(Xs@\<^sub>pXs'')@\<^sub>pXs'),pns' [\<mapsto>] ws'])\<rangle> \<Rightarrow> \<langle>e\<^isub>2,(h',l')\<rangle>"
+      and s2:"s\<^isub>2 = (h',l)"
+    from IH1[OF eval_ref wte sconf] have eq1:"a = a' \<and> Cs = Xs" and s:"s = s\<^isub>1" 
+      by simp_all
+    from has_least has_least' wf 
+    have eq2:"T = U \<and> Ts = Us \<and> Cs' = Xs' \<and> pns = pns' \<and> body = body'"
+      by(fastsimp dest:wf_sees_method_fun)
+    from s wf eval_ref wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+      by(fastsimp intro:eval_preserves_sconf)
+    from IH2[OF evals_vals[simplified s] wtes this]
+    have eq3:"vs = ws \<and> h\<^isub>2 = h \<and> l\<^isub>2 = l"
+      by(fastsimp elim:map_injective simp:inj_on_def)
+    from path_unique path_via path_via' eq1 have "Cs'' = Xs''" 
+      by(fastsimp simp:path_unique_def path_via_def)
+    with Ds eq1 eq2 have Ds':"Ds = (Xs@\<^sub>pXs'')@\<^sub>pXs'" by simp
+    from wf Casts Casts' param_type wtes subs evals_vals sconf' s eq2 eq3
+    have eq4:"vs' = ws'"
+      by(fastsimp intro:Casts_Casts_eq_result)
+    with eval_body' Ds' l2' eq1 eq2 eq3
+    have eval_body'':"P,E(this \<mapsto> Class(last Ds),pns [\<mapsto>] Ts) \<turnstile> 
+                            \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e\<^isub>2,(h',l')\<rangle>"
+      by simp
+    from wf evals_vals wtes sconf' s eq3 have sconf'':"P,E \<turnstile> (h\<^isub>2,l\<^isub>2) \<surd>"
+      by(fastsimp intro:evals_preserves_sconf)
+    have "P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> (h\<^isub>2,l\<^isub>2') \<surd>"
+    proof(auto simp:sconf_def)
+      from sconf'' show "P \<turnstile> h\<^isub>2 \<surd>" by(simp add:sconf_def)
+    next
+      { fix V v assume map:"[this \<mapsto> Ref (a,Ds), pns [\<mapsto>] vs'] V = Some v"
+	have "\<exists>T. (E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts)) V = Some T \<and> 
+                   P,h\<^isub>2 \<turnstile> v :\<le> T"
+	proof(cases "V \<in> set (this#pns)")
+	  case False with map show ?thesis by simp
+	next
+	  case True
+	  hence "V = this \<or> V \<in> set pns" by simp
+	  thus ?thesis
+	  proof(rule disjE)
+	    assume V:"V = this"
+	    with map this_not_pns have "v = Ref(a,Ds)" by simp
+	    with V h2 subo this_not_pns have
+	      "(E(this \<mapsto> Class (last Ds),pns [\<mapsto>] Ts)) V = Some(Class (last Ds))"
+	      and "P,h\<^isub>2 \<turnstile> v :\<le> Class (last Ds)" by simp_all
+	    thus ?thesis by simp
+	  next
+	    assume "V \<in> set pns"
+	    then obtain i where V:"V = pns!i" and length_i:"i < length pns"
+	      by(auto simp:in_set_conv_nth)
+	    from Casts have "length Ts = length vs'"
+	      by(induct rule:Casts_to.induct,auto)
+	    with length have "length pns = length vs'" by simp
+	    with map dist V length_i have v:"v = vs'!i" by(fastsimp dest:maps_nth)
+	    from length dist length_i
+	    have env:"(E(this \<mapsto> Class (last Ds))(pns [\<mapsto>] Ts)) (pns!i) = Some(Ts!i)"
+	      by(rule_tac E="E(this \<mapsto> Class (last Ds))" in nth_maps,simp_all)
+	    from wf Casts wtes subs eval'' sconf'
+	    have "\<forall>i < length Ts. P,h\<^isub>2 \<turnstile> vs'!i :\<le> Ts!i"
+	      by -(rule Casts_conf,auto)
+	    with length_i length env V v show ?thesis by simp
+	  qed
+	qed }
+      thus "P,h\<^isub>2 \<turnstile> l\<^isub>2' (:\<le>)\<^sub>w E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts)"
+	using l2' by(simp add:lconf_def)
+    next
+      { fix V Tx assume env:"(E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts)) V = Some Tx"
+	have "is_type P Tx"
+	proof(cases "V \<in> set (this#pns)")
+	  case False
+	  with env sconf'' show ?thesis
+	    by(clarsimp simp:sconf_def envconf_def)
+	next
+	  case True
+	  hence "V = this \<or> V \<in> set pns" by simp
+	  thus ?thesis
+	  proof(rule disjE)
+	    assume "V = this"
+	    with env this_not_pns have "Tx = Class(last Ds)" by simp
+	    with "class" show ?thesis by simp
+	  next
+	    assume "V \<in> set pns"
+	    then obtain i where V:"V = pns!i" and length_i:"i < length pns"
+	      by(auto simp:in_set_conv_nth)
+	    with dist length env have "Tx = Ts!i" by(fastsimp dest:maps_nth)
+	    with length_i length have "Tx \<in> set Ts"
+	      by(fastsimp simp:in_set_conv_nth)
+	    with param_type show ?thesis by simp
+	  qed
+	qed }
+      thus "P \<turnstile> E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<surd>" by (simp add:envconf_def)
+    qed
+    from IH3[OF eval_body'' wt_body this] have "e' = e\<^isub>2 \<and> (h\<^isub>3, l\<^isub>3) = (h',l')" .
+    with eq3 s2 show "e' = e\<^isub>2 \<and> (h\<^isub>3, l\<^isub>2) = s\<^isub>2" by simp
   next
     fix s ws
     assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
-      and evals_vals:"P,E \<turnstile> \<langle>ps,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
-      and e2:"e\<^isub>2 = THROW NullPointer"
-    from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
-    with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
-      by(fastsimp intro:eval_preserves_sconf)
-    from IH2[OF evals_vals[simplified eq] wtes this] e2
-    show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
+    from IH1[OF eval_null wte sconf] show "e' = e\<^isub>2 \<and> (h\<^isub>3,l\<^isub>2) = s\<^isub>2" by simp
+  qed
+next
+  case (CallNull Copt E M e es s\<^isub>0 s\<^isub>1 s\<^isub>2 vs e\<^isub>2 s\<^isub>2' T)
+  have eval:"P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>"
+    and wt:"P,E \<turnstile> Call e Copt M es :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
+    and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
+    \<Longrightarrow> null = ei \<and> s\<^isub>1 = si"
+    and IH2:"\<And>esi si Ts. \<lbrakk>P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>esi,si\<rangle>; P,E \<turnstile> es [::] Ts; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
+    \<Longrightarrow> map Val vs = esi \<and> s\<^isub>2 = si" .
+  from wt obtain C Ts where wte:"P,E \<turnstile> e :: Class C" and wtes:"P,E \<turnstile> es [::] Ts" 
+    by(cases Copt)auto
+  show ?case
+  proof(cases Copt)
+    assume "Copt = None"
+    with eval have "P,E \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>" by simp
+    thus ?thesis
+    proof(rule eval_cases)
+      fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2'\<rangle>"
+      from IH1[OF eval_throw wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" 
+	by simp
+    next
+      fix es' ex' s w ws
+      assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>"
+	and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es',s\<^isub>2'\<rangle>"
+      from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_throw[simplified eq] wtes this] 
+      show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by(fastsimp dest:map_Val_throw_False)
+    next
+      fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
+          s ws ws'
+      assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
+      from IH1[OF eval_ref wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" 
+	by simp
+    next
+      fix s ws
+      assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
+	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
+	and e2:"e\<^isub>2 = THROW NullPointer"
+      from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_vals[simplified eq] wtes this] e2
+      show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
+    qed
+  next
+    fix C' assume "Copt = Some C'"
+    with eval have "P,E \<turnstile> \<langle>e\<bullet>(C'::)M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>" by simp
+    thus ?thesis
+    proof(rule eval_cases)
+      fix ex' assume eval_throw:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex',s\<^isub>2'\<rangle>"
+      from IH1[OF eval_throw wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" 
+	by simp
+    next
+      fix es' ex' s w ws
+      assume eval_val:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val w,s\<rangle>"
+	and evals_throw:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws@throw ex'#es',s\<^isub>2'\<rangle>"
+      from IH1[OF eval_val wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_val wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_throw[simplified eq] wtes this] 
+      show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by(fastsimp dest:map_Val_throw_False)
+    next
+      fix C' Xs Xs' Ds' S' U U' Us Us' a' body'' body''' h h' l l' pns'' pns''' 
+          s ws ws'
+      assume eval_ref:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a',Xs),s\<rangle>"
+      from IH1[OF eval_ref wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" 
+	by simp
+    next
+      fix s ws
+      assume eval_null:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<rangle>"
+	and evals_vals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val ws,s\<^isub>2'\<rangle>"
+	and e2:"e\<^isub>2 = THROW NullPointer"
+      from IH1[OF eval_null wte sconf] have eq:"s = s\<^isub>1" by simp
+      with wf eval_null wte sconf have sconf':"P,E \<turnstile> s\<^isub>1 \<surd>"
+	by(fastsimp intro:eval_preserves_sconf)
+      from IH2[OF evals_vals[simplified eq] wtes this] e2
+      show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
+    qed
   qed
 next
   case (Block E T V e\<^isub>0 e\<^isub>1 h\<^isub>0 h\<^isub>1 l\<^isub>0 l\<^isub>1 e\<^isub>2 s\<^isub>2 T')

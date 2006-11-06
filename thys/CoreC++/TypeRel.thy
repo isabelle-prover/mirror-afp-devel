@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeRel.thy,v 1.6 2006-10-23 14:58:31 fhaftmann Exp $
+    ID:          $Id: TypeRel.thy,v 1.7 2006-11-06 11:54:13 wasserra Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab 
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 

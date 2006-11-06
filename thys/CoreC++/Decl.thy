@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Decl.thy,v 1.7 2006-08-04 10:56:49 wasserra Exp $
+    ID:          $Id: Decl.thy,v 1.8 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 

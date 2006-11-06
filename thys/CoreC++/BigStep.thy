@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.13 2006-08-04 10:56:49 wasserra Exp $
+    ID:          $Id: BigStep.thy,v 1.14 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -88,7 +88,7 @@ DynCastNull:
   "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>"
 
-DynCastFail: (* forth premise not necessary for type proof but for determinism *)
+DynCastFail: (* fourth premise not necessary for type proof but for determinism *)
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S); \<not> P \<turnstile> Path D to C unique;
     \<not> P \<turnstile> Path last Cs to C unique; C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,(h,l)\<rangle>"
@@ -160,11 +160,11 @@ FAssThrow2:
 
 CallObjThrow:
   "P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
+  P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
 
 CallParamsThrow:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs @ throw ex # es',s\<^isub>2\<rangle> \<rbrakk>
-   \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>"
+   \<Longrightarrow> P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>"
 
 Call:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>;
@@ -175,9 +175,18 @@ Call:
      P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
 
+StaticCall:
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>;
+     P \<turnstile> Path (last Cs) to C unique; P \<turnstile> Path (last Cs) to C via Cs'';
+     P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'; Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs';
+     length vs = length pns; P \<turnstile> Ts Casts vs to vs'; 
+     l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs'];
+     P,E(this\<mapsto>Class(last Ds), pns[\<mapsto>]Ts) \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>(C::)M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
+
 CallNull:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,s\<^isub>2\<rangle> \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,s\<^isub>2\<rangle> \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
 
 Block:
   "\<lbrakk>P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None))\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1)\<rangle> \<rbrakk> \<Longrightarrow>
@@ -257,6 +266,7 @@ inductive_cases eval_cases [cases set]:
  "P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e\<bullet>M(es),s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
+ "P,E \<turnstile> \<langle>e\<bullet>(C::)M(es),s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>{V:T;e\<^isub>1},s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e\<^isub>1;;e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"

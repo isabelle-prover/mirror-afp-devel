@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.11 2006-08-04 10:56:50 wasserra Exp $
+    ID:          $Id: SmallStep.thy,v 1.12 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -168,11 +168,11 @@ RedFAssNull:
 
 CallObj:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
-  P,E \<turnstile> \<langle>e\<bullet>M(es),s\<rangle> \<rightarrow> \<langle>e'\<bullet>M(es),s'\<rangle>"
+  P,E \<turnstile> \<langle>Call e Copt M es,s\<rangle> \<rightarrow> \<langle>Call e' Copt M es,s'\<rangle>"
 
 CallParams:
   "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow>
-   P,E \<turnstile> \<langle>(Val v)\<bullet>M(es),s\<rangle> \<rightarrow> \<langle>(Val v)\<bullet>M(es'),s'\<rangle>"
+   P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<rightarrow> \<langle>Call (Val v) Copt M es',s'\<rangle>"
 
 RedCall:
   "\<lbrakk> hp s a = Some(C,S); P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds;
@@ -182,8 +182,15 @@ RedCall:
     new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>bs | _ \<Rightarrow> bs)\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>(ref (a,Cs))\<bullet>M(map Val vs), s\<rangle> \<rightarrow> \<langle>new_body, s\<rangle>"
 
+RedStaticCall:
+  "\<lbrakk> P \<turnstile> Path (last Cs) to C unique; P \<turnstile> Path (last Cs) to C via Cs'';
+    P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'; Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs';
+    size vs = size pns; size Ts = size pns \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> \<langle>(ref (a,Cs))\<bullet>(C::)M(map Val vs), s\<rangle> \<rightarrow> 
+            \<langle>blocks(this#pns,Class(last Ds)#Ts,Ref(a,Ds)#vs,body), s\<rangle>"
+
 RedCallNull:
-  "P,E \<turnstile> \<langle>null\<bullet>M(map Val vs),s\<rangle> \<rightarrow> \<langle>THROW NullPointer,s\<rangle>"
+  "P,E \<turnstile> \<langle>Call null Copt M (map Val vs),s\<rangle> \<rightarrow> \<langle>THROW NullPointer,s\<rangle>"
 
 BlockRedNone:
   "\<lbrakk> P,E(V \<mapsto> T) \<turnstile> \<langle>e, (h,l(V:=None))\<rangle> \<rightarrow> \<langle>e', (h',l')\<rangle>; l' V = None; \<not> assigned V e \<rbrakk>
@@ -250,9 +257,9 @@ LAssThrow: "P,E \<turnstile> \<langle>V:=(Throw r), s\<rangle> \<rightarrow> \<l
 FAccThrow: "P,E \<turnstile> \<langle>(Throw r)\<bullet>F{Cs}, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
 FAssThrow1: "P,E \<turnstile> \<langle>(Throw r)\<bullet>F{Cs}:=e\<^isub>2, s\<rangle> \<rightarrow> \<langle>Throw r,s\<rangle>"
 FAssThrow2: "P,E \<turnstile> \<langle>Val v\<bullet>F{Cs}:=(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-CallThrowObj: "P,E \<turnstile> \<langle>(Throw r)\<bullet>M(es), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+CallThrowObj: "P,E \<turnstile> \<langle>Call (Throw r) Copt M es, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
 CallThrowParams: "\<lbrakk> es = map Val vs @ Throw r # es' \<rbrakk> 
-  \<Longrightarrow> P,E \<turnstile> \<langle>(Val v)\<bullet>M(es), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+  \<Longrightarrow> P,E \<turnstile> \<langle>Call (Val v) Copt M es, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
 BlockThrow: "P,E \<turnstile> \<langle>{V:T; Throw r}, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
 InitBlockThrow: "P \<turnstile> T casts v to v' 
   \<Longrightarrow> P,E \<turnstile> \<langle>{V:T := Val v; Throw r}, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
@@ -383,8 +390,8 @@ next
 next
   case RedCall thus ?case by (fastsimp intro!:red_reds.RedCall)
 next
-  (*case RedCallClass thus ?case by(fastsimp intro!:red_reds.intros)
-next*)
+  case RedStaticCall thus ?case by(fastsimp intro:red_reds.intros)
+next
   case (InitBlockRed E T V e e' h h' l l' v v' v'' l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V \<mapsto> v'))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
     and l'V: "l' V = Some v''" and casts:"P \<turnstile> T casts v to v'" .

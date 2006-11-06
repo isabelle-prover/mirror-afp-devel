@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellType.thy,v 1.8 2006-08-04 10:56:50 wasserra Exp $
+    ID:          $Id: WellType.thy,v 1.9 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -37,8 +37,9 @@ WTNew:
   "is_class P C \<Longrightarrow>
   P,E \<turnstile> new C :: Class C"
 
-WTDynCast:
-  "\<lbrakk>P,E \<turnstile> e :: Class D; is_class P C \<rbrakk> 
+WTDynCast: (* not more than one path between classes *)
+  "\<lbrakk>P,E \<turnstile> e :: Class D; is_class P C;
+    P \<turnstile> Path D to C unique \<or> (\<forall>Cs. \<not> P \<turnstile> Path D to C via Cs)\<rbrakk> 
   \<Longrightarrow> P,E \<turnstile> Cast C e :: Class C"
 
 WTStaticCast:
@@ -73,6 +74,11 @@ WTFAss:
   "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Class C;  P \<turnstile> C has least F:T via Cs; 
      P,E \<turnstile> e\<^isub>2 :: T'; P \<turnstile> T' \<le> T\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 :: T"
+
+WTStaticCall:
+  "\<lbrakk> P,E \<turnstile> e :: Class C'; P \<turnstile> Path C' to C unique;
+     P \<turnstile> C has least M = (Ts,T,m) via Cs; P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<bullet>(C::)M(es) :: T"
 
 WTCall:
   "\<lbrakk> P,E \<turnstile> e :: Class C;  P \<turnstile> C has least M = (Ts,T,m) via Cs;
@@ -195,6 +201,7 @@ inductive_cases WT_elim_cases[elim!]:
   "P,E \<turnstile> e\<bullet>F{Cs} :: T"
   "P,E \<turnstile> e\<bullet>F{Cs} := v :: T"
   "P,E \<turnstile> e\<bullet>M(ps) :: T"
+  "P,E \<turnstile> e\<bullet>(C::)M(ps) :: T"
   "P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
   "P,E \<turnstile> while (e) c :: T"
   "P,E \<turnstile> throw e :: T"
@@ -216,6 +223,7 @@ apply(force simp:map_le_def)
 apply(fastsimp simp: WTFAcc)
 apply(fastsimp simp: WTFAss)
 apply(fastsimp simp: WTCall)
+apply(fastsimp simp: WTStaticCall)
 apply(fastsimp simp: map_le_def WTBlock)
 apply(fastsimp simp: WTSeq)
 apply(fastsimp simp: WTCond)

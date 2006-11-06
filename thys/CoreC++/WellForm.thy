@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellForm.thy,v 1.7 2006-08-04 10:56:50 wasserra Exp $
+    ID:          $Id: WellForm.thy,v 1.8 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -1902,6 +1902,15 @@ next
     and least':"P \<turnstile> C' has least M = (Ts',T',pns',body') via Cs'" by auto
   from IH[OF wte'] have "C = C'" by simp
   with least least' wf show ?case by (auto dest:wf_sees_method_fun)
+next
+  case (WTStaticCall C C' Cs E M T Ts Ts' e es pns body T')
+  have IH:"\<And>T'. P,E \<turnstile> e :: T' \<Longrightarrow> Class C' = T'" 
+    and unique:"P \<turnstile> Path C' to C unique"
+    and least:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
+    and wt:"P,E \<turnstile> e\<bullet>(C::)M(es) :: T'" .
+  from wt obtain Ts' pns' body' Cs' 
+    where "P \<turnstile> C has least M = (Ts',T',pns',body') via Cs'" by auto
+  with least wf show ?case by (auto dest:wf_sees_method_fun)
 next
   case WTBlock thus ?case by (clarsimp simp del:fun_upd_apply)
 next

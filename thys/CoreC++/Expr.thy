@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Expr.thy,v 1.5 2006-08-04 10:56:49 wasserra Exp $
+    ID:          $Id: Expr.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
     Based on the Jinja theory J/Expr.thy by Tobias Nipkow 
@@ -30,7 +30,7 @@ datatype expr
      -- "field access"
   | FAss expr vname path expr    ("_\<bullet>_{_} := _" [10,70,99,70] 70)      
      -- "field assignment"
-  | Call expr mname "expr list"  ("_\<bullet>_'(_')" [90,99,0] 90)            
+  | Call expr "cname option" mname "expr list"
      -- "method call"
   | Block vname ty expr          ("'{_:_; _}")
   | Seq expr expr                ("_;;/ _" [61,60] 60)
@@ -38,8 +38,17 @@ datatype expr
   | While expr expr              ("while '(_') _" [80,79] 70)
   | throw expr
 
+syntax
+  DynCall :: "expr \<Rightarrow> mname \<Rightarrow> expr list \<Rightarrow> expr" ("_\<bullet>_'(_')" [90,99,0] 90)
+  StaticCall :: "expr \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> expr list \<Rightarrow> expr" 
+     ("_\<bullet>'(_::')_'(_')" [90,99,99,0] 90)
 
-text{*The semantics of binary operators: *}
+translations
+  "e\<bullet>M(es)" =>"Call e None M es"
+  "e\<bullet>(C::)M(es)" => "Call e (Some C) M es"
+
+
+text{* The semantics of binary operators: *}
 
 consts
   binop :: "bop \<times> val \<times> val \<Rightarrow> val option"
@@ -79,7 +88,7 @@ primrec
   "fv(V := e) = {V} \<union> fv e"
   "fv(e\<bullet>F{Cs}) = fv e"
   "fv(e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
-  "fv(e\<bullet>M(es)) = fv e \<union> fvs es"
+  "fv(Call e Copt M es) = fv e \<union> fvs es"
   "fv({V:T; e}) = fv e - {V}"
   "fv(e\<^isub>1;;e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
   "fv(if (b) e\<^isub>1 else e\<^isub>2) = fv b \<union> fv e\<^isub>1 \<union> fv e\<^isub>2"

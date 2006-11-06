@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.11 2006-09-12 11:21:48 makarius Exp $
+    ID:          $Id: TypeSafe.thy,v 1.12 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -106,6 +106,12 @@ next
   with oconf' have oconf':"P,h \<turnstile> (D,?S') \<surd>"
     by (simp add:oconf_def)
   with hconf ha show ?case by (rule hconf_upd_obj)
+next
+  case (CallObj Copt) thus ?case by (cases Copt) auto
+next
+  case (CallParams Copt) thus ?case by (cases Copt) auto
+next
+  case (RedCallNull Copt) thus ?case by (cases Copt) auto
 qed auto
 
 
@@ -198,6 +204,12 @@ next
   from IH[OF wte' this envconf'] have "P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V \<mapsto> T)" .
   with lconf' show ?case
     by (fastsimp simp:lconf_def fun_upd_apply split:split_if_asm)
+next
+  case (CallObj Copt) thus ?case by (cases Copt) auto
+next
+  case (CallParams Copt) thus ?case by (cases Copt) auto
+next
+  case (RedCallNull Copt) thus ?case by (cases Copt) auto
 qed auto
 
 
@@ -220,6 +232,7 @@ and reds_lA_incr: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \
 
 apply(induct rule:red_reds_inducts)
 apply(simp_all del:fun_upd_apply add:hyperset_defs)
+apply blast
 apply blast
 apply blast
 apply blast
@@ -255,10 +268,10 @@ next
     apply(cases T') apply auto
     by(rule_tac A="\<lfloor>insert this (set pns)\<rfloor>" in D_mono,clarsimp simp:hyperset_defs,
           assumption)+
-(*next
-  case RedCallClass thus ?case
-    apply (auto dest!:select_method_wf_mdecl[OF wf] simp:wf_mdecl_def elim!:D_mono')
-    by(auto simp:hyperset_defs)*)
+next
+  case RedStaticCall thus ?case
+    apply (auto dest!:has_least_wf_mdecl[OF wf] simp:wf_mdecl_def elim!:D_mono')
+    by(auto simp:hyperset_defs)
 next
   case InitBlockRed thus ?case
     by(auto simp:hyperset_defs elim!:D_mono' simp del:fun_upd_apply)
@@ -842,72 +855,147 @@ next
   with sconf have "P,E,h \<turnstile> THROW NullPointer : T" by(auto simp:sconf_def hconf_def)
   thus ?case by (fastsimp intro:wt_same_type_typeconf wf_prog_wwf_prog)
 next
-  case (CallObj E M e e' es h l h' l')
+  case (CallObj Copt E M e e' es h l h' l')
   have red: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
    and IH: "\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk>
                  \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-   and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>M(es) : T" .
-  from wt have "P,E,h' \<turnstile> e'\<bullet>M(es) : T"
-  proof(rule WTrt_elim_cases)
-    fix C Cs Ts Ts' m
-    assume wte:"P,E,h \<turnstile> e : Class C"
-      and method:"P \<turnstile> C has least M = (Ts, T, m) via Cs"
-      and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
-    from IH[OF sconf wte] have "P,E,h' \<turnstile> e' : NT \<or> P,E,h' \<turnstile> e' : Class C" by auto
-    thus ?thesis
-    proof(rule disjE)
-      assume wte':"P,E,h' \<turnstile> e' : NT"
-      have "P,E,h' \<turnstile> es [:] Ts'"
+   and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Call e Copt M es : T" .
+  from wt have "P,E,h' \<turnstile> Call e' Copt M es : T"
+  proof(cases Copt)
+    case None
+    with wt have "P,E,h \<turnstile> e\<bullet>M(es) : T" by simp
+    hence "P,E,h' \<turnstile> e'\<bullet>M(es) : T"
+    proof(rule WTrt_elim_cases)
+      fix C Cs Ts Ts' m
+      assume wte:"P,E,h \<turnstile> e : Class C"
+	and method:"P \<turnstile> C has least M = (Ts, T, m) via Cs"
+	and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
+      from IH[OF sconf wte] have "P,E,h' \<turnstile> e' : NT \<or> P,E,h' \<turnstile> e' : Class C" by auto
+      thus ?thesis
+      proof(rule disjE)
+	assume wte':"P,E,h' \<turnstile> e' : NT"
+	have "P,E,h' \<turnstile> es [:] Ts'"
+	  by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+	with wte' show ?thesis by(rule WTrtCallNT)
+      next
+	assume wte':"P,E,h' \<turnstile> e' : Class C"
+	have wtes':"P,E,h' \<turnstile> es [:] Ts'"
+	  by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+	from wte' method wtes' subs show ?thesis by(rule WTrtCall)
+      qed
+    next
+      fix Ts 
+      assume wte:"P,E,h \<turnstile> e : NT" and wtes:"P,E,h \<turnstile> es [:] Ts"
+      from IH[OF sconf wte] have wte':"P,E,h' \<turnstile> e' : NT" by simp
+      have "P,E,h' \<turnstile> es [:] Ts"
 	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
       with wte' show ?thesis by(rule WTrtCallNT)
-    next
-      assume wte':"P,E,h' \<turnstile> e' : Class C"
-      have wtes':"P,E,h' \<turnstile> es [:] Ts'"
-	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
-      from wte' method wtes' subs show ?thesis by(rule WTrtCall)
     qed
+    with None show ?thesis by simp
   next
-    fix Ts 
-    assume wte:"P,E,h \<turnstile> e : NT" and wtes:"P,E,h \<turnstile> es [:] Ts"
-    from IH[OF sconf wte] have wte':"P,E,h' \<turnstile> e' : NT" by simp
-    have "P,E,h' \<turnstile> es [:] Ts"
-      by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
-    with wte' show ?thesis by(rule WTrtCallNT)
+    case (Some C)
+    with wt have "P,E,h \<turnstile> e\<bullet>(C::)M(es) : T" by simp
+    hence "P,E,h' \<turnstile> e'\<bullet>(C::)M(es) : T"
+    proof(rule WTrt_elim_cases)
+      fix C' Cs Ts Ts' m
+      assume wte:"P,E,h \<turnstile> e : Class C'" and path_unique:"P \<turnstile> Path C' to C unique"
+	and method:"P \<turnstile> C has least M = (Ts, T, m) via Cs"
+	and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
+      from IH[OF sconf wte] have "P,E,h' \<turnstile> e' : NT \<or> P,E,h' \<turnstile> e' : Class C'" by auto
+      thus ?thesis
+      proof(rule disjE)
+	assume wte':"P,E,h' \<turnstile> e' : NT"
+	have "P,E,h' \<turnstile> es [:] Ts'"
+	  by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+	with wte' show ?thesis by(rule WTrtCallNT)
+      next
+	assume wte':"P,E,h' \<turnstile> e' : Class C'"
+	have wtes':"P,E,h' \<turnstile> es [:] Ts'"
+	  by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+	from wte' path_unique method wtes' subs show ?thesis by(rule WTrtStaticCall)
+      qed
+    next
+      fix Ts 
+      assume wte:"P,E,h \<turnstile> e : NT" and wtes:"P,E,h \<turnstile> es [:] Ts"
+      from IH[OF sconf wte] have wte':"P,E,h' \<turnstile> e' : NT" by simp
+      have "P,E,h' \<turnstile> es [:] Ts"
+	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+      with wte' show ?thesis by(rule WTrtCallNT)
+    qed
+    with Some show ?thesis by simp
   qed
   thus ?case by (rule wt_same_type_typeconf)
 next
-  case (CallParams E M es es' h l h' l' v)
+  case (CallParams Copt E M es es' h l h' l' v)
   have reds: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>"
    and IH: "\<And>Ts. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> es [:] Ts\<rbrakk>
                  \<Longrightarrow> types_conf (P,E,h',es',Ts)"
-   and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Val v\<bullet>M(es) : T" .
-  from wt have "P,E,h' \<turnstile> Val v\<bullet>M(es') : T"
-  proof (rule WTrt_elim_cases)
-    fix C Cs Ts Ts' m
-    assume wte: "P,E,h \<turnstile> Val v : Class C"
-      and method:"P \<turnstile> C has least M = (Ts,T,m) via Cs"
-      and wtes: "P,E,h \<turnstile> es [:] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
-    from wtes have "length es = length Ts'" by(rule WTrts_same_length)
-    with reds have "length es' = length Ts'"
-      by -(drule reds_length,simp)
-    with IH[OF sconf wtes] subs obtain Ts'' where wtes':"P,E,h' \<turnstile> es' [:] Ts''"
-      and subs':"P \<turnstile> Ts'' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
-    have wte':"P,E,h' \<turnstile> Val v : Class C"
-      by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
-    from wte' method wtes' subs' show ?thesis
-      by(rule WTrtCall)
+   and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Call (Val v) Copt M es : T" .
+  from wt have "P,E,h' \<turnstile> Call (Val v) Copt M es' : T"
+  proof(cases Copt)
+    case None
+    with wt have "P,E,h \<turnstile> (Val v)\<bullet>M(es) : T" by simp
+    hence "P,E,h' \<turnstile> Val v\<bullet>M(es') : T"
+    proof (rule WTrt_elim_cases)
+      fix C Cs Ts Ts' m
+      assume wte: "P,E,h \<turnstile> Val v : Class C"
+	and method:"P \<turnstile> C has least M = (Ts,T,m) via Cs"
+	and wtes: "P,E,h \<turnstile> es [:] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
+      from wtes have "length es = length Ts'" by(rule WTrts_same_length)
+      with reds have "length es' = length Ts'"
+	by -(drule reds_length,simp)
+      with IH[OF sconf wtes] subs obtain Ts'' where wtes':"P,E,h' \<turnstile> es' [:] Ts''"
+	and subs':"P \<turnstile> Ts'' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
+      have wte':"P,E,h' \<turnstile> Val v : Class C"
+	by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
+      from wte' method wtes' subs' show ?thesis
+	by(rule WTrtCall)
+    next
+      fix Ts
+      assume wte:"P,E,h \<turnstile> Val v : NT" 
+	and wtes:"P,E,h \<turnstile> es [:] Ts"
+      from wtes have "length es = length Ts" by(rule WTrts_same_length)
+      with reds have "length es' = length Ts"
+	by -(drule reds_length,simp)
+      with IH[OF sconf wtes] obtain Ts' where wtes':"P,E,h' \<turnstile> es' [:] Ts'"
+	and "P \<turnstile> Ts' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
+      have wte':"P,E,h' \<turnstile> Val v : NT"
+	by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
+      from wte' wtes' show ?thesis by(rule WTrtCallNT)
+    qed
+    with None show ?thesis by simp
   next
-    fix Ts
-    assume wte:"P,E,h \<turnstile> Val v : NT" 
-      and wtes:"P,E,h \<turnstile> es [:] Ts"
-    from wtes have "length es = length Ts" by(rule WTrts_same_length)
-    with reds have "length es' = length Ts"
-      by -(drule reds_length,simp)
-    with IH[OF sconf wtes] obtain Ts' where wtes':"P,E,h' \<turnstile> es' [:] Ts'"
-      and "P \<turnstile> Ts' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
-    have wte':"P,E,h' \<turnstile> Val v : NT"
-      by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
-    from wte' wtes' show ?thesis by(rule WTrtCallNT)
+    case (Some C)
+    with wt have "P,E,h \<turnstile> (Val v)\<bullet>(C::)M(es) : T" by simp
+    hence "P,E,h' \<turnstile> (Val v)\<bullet>(C::)M(es') : T"
+    proof(rule WTrt_elim_cases)
+      fix C' Cs Ts Ts' m
+      assume wte:"P,E,h \<turnstile> Val v : Class C'" and path_unique:"P \<turnstile> Path C' to C unique"
+	and method:"P \<turnstile> C has least M = (Ts,T,m) via Cs"
+	and wtes:"P,E,h \<turnstile> es [:] Ts'" and subs: "P \<turnstile> Ts' [\<le>] Ts"
+      from wtes have "length es = length Ts'" by(rule WTrts_same_length)
+      with reds have "length es' = length Ts'"
+	by -(drule reds_length,simp)
+      with IH[OF sconf wtes] subs obtain Ts'' where wtes':"P,E,h' \<turnstile> es' [:] Ts''"
+	and subs':"P \<turnstile> Ts'' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
+      have wte':"P,E,h' \<turnstile> Val v : Class C'"
+	by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
+      from wte' path_unique method wtes' subs' show ?thesis
+	by(rule WTrtStaticCall)
+    next
+      fix Ts
+      assume wte:"P,E,h \<turnstile> Val v : NT" 
+	and wtes:"P,E,h \<turnstile> es [:] Ts"
+      from wtes have "length es = length Ts" by(rule WTrts_same_length)
+      with reds have "length es' = length Ts"
+	by -(drule reds_length,simp)
+      with IH[OF sconf wtes] obtain Ts' where wtes':"P,E,h' \<turnstile> es' [:] Ts'"
+	and "P \<turnstile> Ts' [\<le>] Ts" by(auto dest:types_conf_smaller_types)
+      have wte':"P,E,h' \<turnstile> Val v : NT"
+	by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
+      from wte' wtes' show ?thesis by(rule WTrtCallNT)
+    qed
+    with Some show ?thesis by simp
   qed
   thus ?case by (rule wt_same_type_typeconf)
 next
@@ -973,7 +1061,57 @@ next
   qed
   with eq show ?case by(fastsimp intro:wt_same_type_typeconf)
 next
-  case (RedCallNull E M h l)
+  case(RedStaticCall C Cs Cs' Cs'' Ds E M T Ts a body pns h l vs T')
+  have method:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs'"
+    and length1:"length vs = length pns"
+    and length2:"length Ts = length pns"
+    and path_unique:"P \<turnstile> Path last Cs to C unique"
+    and path_via:"P \<turnstile> Path last Cs to C via Cs''"
+    and Ds:"Ds = (Cs @\<^sub>p Cs'') @\<^sub>p Cs'"
+    and wt:"P,E,h \<turnstile> ref (a,Cs)\<bullet>(C::)M(map Val vs) : T'" .
+  from wt method wf obtain Ts'
+    where wtref:"P,E,h \<turnstile> ref (a,Cs) : Class (last Cs)"
+    and wtes:"P,E,h \<turnstile> map Val vs [:] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
+    and TeqT':"T = T'"
+    by(auto dest:wf_sees_method_fun split:split_if_asm)
+  from wtref obtain D S where hp:"h a = Some(D,S)" and subo:"(D,Cs) \<in> Subobjs P"
+    by (auto split:split_if_asm)
+  from length1 length2
+  have length_vs: "length (Ref(a,Ds)#vs) = length (Class (last Ds)#Ts)" by simp
+  from length2 have length_pns:"length (this#pns) = length (Class (last Ds)#Ts)"
+    by simp
+  from method have "Cs' \<noteq> []" 
+    by (fastsimp intro!:Subobjs_nonempty simp add:LeastMethodDef_def MethodDefs_def)
+  with Ds have last:"last Cs' = last Ds"
+    by (fastsimp dest:appendPath_last)
+  with method have "is_class P (last Ds)"
+    by(auto simp:LeastMethodDef_def MethodDefs_def is_class_def)
+  with last has_least_wf_mdecl[OF wf method]
+  have wtabody: "P,[this#pns [\<mapsto>] Class (last Ds)#Ts] \<turnstile> body :: T"
+    and type:"\<forall>T\<in>set (Class(last Ds)#Ts). is_type P T"
+    by(auto simp:wf_mdecl_def)
+  from path_via have suboCs'':"(last Cs,Cs'') \<in> Subobjs P" 
+    and lastCs'':"last Cs'' = C" 
+    by (auto simp add:path_via_def)
+  with subo wf have subo':"(D,Cs@\<^sub>pCs'') \<in> Subobjs P"
+     by(fastsimp intro: Subobjs_appendPath)
+   from lastCs'' suboCs'' have lastC:"C = last(Cs@\<^sub>pCs'')"
+     by (fastsimp dest:Subobjs_nonempty intro:appendPath_last)
+  from method have "(C,Cs') \<in> Subobjs P"
+    by (auto simp:LeastMethodDef_def MethodDefs_def)
+  with subo' wf lastC have "(D,(Cs @\<^sub>p Cs'') @\<^sub>p Cs') \<in> Subobjs P"
+    by (fastsimp intro:Subobjs_appendPath)
+  with Ds have suboDs:"(D,Ds) \<in> Subobjs P" by simp
+  from wtabody have "P,empty(this#pns [\<mapsto>] Class (last Ds)#Ts),h \<turnstile> body : T"
+    by(rule WT_implies_WTrt)
+  hence "P,E(this#pns [\<mapsto>] Class (last Ds)#Ts),h \<turnstile> body : T"
+    by(rule WTrt_env_mono) simp
+  hence "P,E,h \<turnstile> blocks(this#pns, Class (last Ds)#Ts, Ref(a,Ds)#vs, body) : T"
+    using wtes subs wt_blocks[OF length_pns length_vs type] hp suboDs
+    by(auto simp add:rel_list_all2_Cons2)
+  with TeqT' show ?case by(fastsimp intro:wt_same_type_typeconf)
+next
+  case (RedCallNull Copt E M h l)
   have sconf:"P,E \<turnstile> (h, l) \<surd>" .
   from wf have "is_class P NullPointer" 
     by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
@@ -1144,6 +1282,12 @@ next
   have "P,E,h' \<turnstile> Val v : U" .
   hence "P,E,h' \<turnstile> (Val v) :\<^bsub>NT\<^esub> U" by(rule wt_same_type_typeconf)
   with IH[OF sconf wtes] Ts show ?case by simp
+next
+  case (CallThrowObj Copt)
+  thus ?case by(cases Copt)(auto intro:wt_same_type_typeconf)
+next
+  case (CallThrowParams Copt)
+  thus ?case by(cases Copt)(auto intro:wt_same_type_typeconf)
 qed (fastsimp intro:wt_same_type_typeconf)+
 
 

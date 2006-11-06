@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: DefAss.thy,v 1.5 2006-08-04 10:56:49 wasserra Exp $
+    ID:          $Id: DefAss.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -73,7 +73,7 @@ primrec
 "\<A> (LAss V e) = \<lfloor>{V}\<rfloor> \<squnion> \<A> e"
 "\<A> (e\<bullet>F{Cs}) = \<A> e"
 "\<A> (e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
-"\<A> (e\<bullet>M(es)) = \<A> e \<squnion> \<A>s es"
+"\<A> (Call e Copt M es) = \<A> e \<squnion> \<A>s es"
 "\<A> ({V:T; e}) = \<A> e \<ominus> V"
 "\<A> (e\<^isub>1;;e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
 "\<A> (if (e) e\<^isub>1 else e\<^isub>2) =  \<A> e \<squnion> (\<A> e\<^isub>1 \<sqinter> \<A> e\<^isub>2)"
@@ -93,7 +93,7 @@ primrec
 "\<D> (LAss V e) A = \<D> e A"
 "\<D> (e\<bullet>F{Cs}) A = \<D> e A"
 "\<D> (e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
-"\<D> (e\<bullet>M(es)) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
+"\<D> (Call e Copt M es) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
 "\<D> ({V:T; e}) A = \<D> e (A \<ominus> V)"
 "\<D> (e\<^isub>1;;e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
 "\<D> (if (e) e\<^isub>1 else e\<^isub>2) A =
