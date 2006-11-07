@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.3 2006-10-01 17:13:41 makarius Exp $
+(*  ID:         $Id: ListAux.thy,v 1.4 2006-11-07 19:14:31 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -36,7 +36,7 @@ declare mem_iff[simp] list_all_iff[simp] list_ex_iff[simp]
 
 subsubsection{* @{text length} *}
 
-const_syntax length  ("|_|")
+notation length  ("|_|")
 
 lemma length3D: "|xs| = 3 \<Longrightarrow> \<exists>x y z. xs = [x, y, z]"
 apply (cases xs) apply simp
