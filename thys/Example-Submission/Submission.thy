@@ -1,12 +1,14 @@
 (*  Title:       An example submission to the Archive of Formal Proof
-    ID:          $Id: Submission.thy,v 1.5 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: Submission.thy,v 1.6 2006-11-09 22:26:13 lsf37 Exp $
     Author:      Gerwin Klein <kleing at cse.unsw.edu.au>, 2004
     Maintainer:  Gerwin Klein <kleing at cse.unsw.edu.au>
 *)
 
 header "An Example Submission"
 
-theory Submission imports Main begin
+theory Submission 
+  imports Main 
+begin
 
 text {*
   This is an example submission to the Archive of Formal Proof.
@@ -18,7 +20,7 @@ text {*
 section "Format of a submission"
 
 text {*
-  Submission should be by email to \url{afp-submit at in.tum.de} and contain
+  Submission should be by email to \texttt{afp-submit at in.tum.de} and contain
   the following:
   \begin{itemize}
   \item Title, authors, and abstract.
@@ -108,7 +110,16 @@ this submission for an example.
 The file \texttt{Submission.thy} is the Isabelle theory containing
 this text. A usual submission has more than one theory file. You can
 devise your own subdirectory structure if you have more theories and
-one directory becomes too crowded. 
+one directory becomes too crowded. You can also build on existing articles
+in the AFP by importing them. For example, if you build on theory W in 
+the article MiniML, the way to import it is:
+
+\begin{verbatim}
+theory MyTheory
+  import "../MiniML/W"
+begin
+\end{verbatim}
 *}
 
 end
+
