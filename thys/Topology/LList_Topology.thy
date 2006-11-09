@@ -1,5 +1,5 @@
 (*  Title:      LList_Topology.thy
-    ID:         $Id: LList_Topology.thy,v 1.4 2006-01-05 11:25:48 lp15 Exp $
+    ID:         $Id: LList_Topology.thy,v 1.5 2006-11-09 10:29:24 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -158,7 +158,7 @@ by (simp add: T_def)
 
 lemma (in trace_top) safety_closed_iff:
   "P \<subseteq> A\<^sup>\<infinity> \<Longrightarrow>  safety A P = (P closed)"
-by (auto simp: safety_def Topology.closed_adh adh_lemma ttop_carrier)
+by (auto simp: safety_def topology.closed_adh adh_lemma ttop_carrier)
 
 lemma (in trace_top) liveness_dense_iff:
   assumes P: "P \<subseteq> A\<^sup>\<infinity>"
@@ -410,7 +410,7 @@ qed
 
 lemma (in itrace_top) infsafety_closed_iff:
   "P \<subseteq> A\<^sup>\<omega> \<Longrightarrow>  infsafety A P = (P closed)"
-  by (auto simp: infsafety_def Topology.closed_adh adh_lemma itop_carrier)
+  by (auto simp: infsafety_def topology.closed_adh adh_lemma itop_carrier)
 
 lemma (in itrace_top) empty:
   "A = {} \<Longrightarrow> T = {{}}"
@@ -683,7 +683,7 @@ qed
 
 lemma (in ptrace_top) possafety_closed_iff:
   "P \<subseteq> A\<^sup>\<spadesuit> \<Longrightarrow>  possafety A P = (P closed)"
-  by (auto simp: possafety_def Topology.closed_adh ptop_carrier adh_lemma)
+  by (auto simp: possafety_def topology.closed_adh ptop_carrier adh_lemma)
 (*
 lemma ptop_empty: "ptop {} = {{}}"
 proof (auto simp: ptop_def intro!: topobase.basic)
