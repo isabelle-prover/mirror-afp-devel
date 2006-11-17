@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: JVM_SemiType.thy,v 1.3 2006-10-23 14:58:31 fhaftmann Exp $
+    ID:         $Id: JVM_SemiType.thy,v 1.4 2006-11-17 01:28:44 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 TUM
 
@@ -68,7 +68,7 @@ syntax (xsymbols)
 
 abbreviation (xsymbols)
   sup_loc       :: "['c prog, ty\<^isub>l, ty\<^isub>l] \<Rightarrow> bool"
-                   ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70)
+                   ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70) where
   "P \<turnstile> LT [\<le>\<^sub>\<top>] LT' \<equiv> list_all2 (sup_ty_opt P) LT LT'"
 
 

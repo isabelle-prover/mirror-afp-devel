@@ -1,5 +1,5 @@
 (*  Title:      State based hotel key card system with "new card"
-    ID:         $Id: NewCard.thy,v 1.1 2006-09-06 20:41:24 nipkow Exp $
+    ID:         $Id: NewCard.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
     Author:     Tobias Nipkow, TU Muenchen
 
 Like State.thy but with additional features: cards can be lost and new
@@ -14,8 +14,7 @@ imports Main
 begin
 
 abbreviation
- "SomeFloor" ("(\<lfloor>_\<rfloor>)")
-"\<lfloor>x\<rfloor> \<equiv> Some x"
+ "SomeFloor" ("(\<lfloor>_\<rfloor>)") where "\<lfloor>x\<rfloor> \<equiv> Some x"
 
 declare split_if_asm[split]
 

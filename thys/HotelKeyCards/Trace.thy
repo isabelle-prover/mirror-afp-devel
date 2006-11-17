@@ -108,7 +108,7 @@ The principal advantage of the trace model is the intuitive
 specification of safety. Using the auxiliary predicate @{text no_Check_in}
 *}
 
-(*<*)abbreviation no_Check_in :: "event list \<Rightarrow> room \<Rightarrow> bool"(*>*)
+(*<*)abbreviation no_Check_in :: "event list \<Rightarrow> room \<Rightarrow> bool" where(*>*)
 "no_Check_in s r \<equiv> \<not>(\<exists>g c. Check_in g r c \<in> set s)"
 
 text{*\medskip\noindent we define a trace to be @{text safe\<^isub>0} for a

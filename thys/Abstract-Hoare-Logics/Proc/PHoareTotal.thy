@@ -1,5 +1,5 @@
 (*  Title:      Inductive definition of Hoare logic for total correctness
-    ID:         $Id: PHoareTotal.thy,v 1.1 2006-08-08 23:22:32 nipkow Exp $
+    ID:         $Id: PHoareTotal.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -19,11 +19,11 @@ constdefs
  "C \<Turnstile>\<^sub>t {P}c{Q}  \<equiv>  (\<forall>(P',c',Q') \<in> C. \<Turnstile>\<^sub>t {P'}c'{Q'}) \<longrightarrow> \<Turnstile>\<^sub>t {P}c{Q}"
 
 consts thoare :: "('a cntxt \<times> 'a assn \<times> com \<times> 'a assn) set"
-abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a assn \<Rightarrow> bool" ("_ \<turnstile>\<^sub>t _")
+abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a assn \<Rightarrow> bool" ("_ \<turnstile>\<^sub>t _") where
   "C \<turnstile>\<^sub>t x \<equiv> (C,x) \<in> thoare"
 abbreviation
  thoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool"
-                   ("(_ \<turnstile>\<^sub>t/ ({(1_)}/ (_)/ {(1_)}))" [50,0,0,0] 50)
+                   ("(_ \<turnstile>\<^sub>t/ ({(1_)}/ (_)/ {(1_)}))" [50,0,0,0] 50) where
  "C \<turnstile>\<^sub>t {P}c{Q}  \<equiv> (C,P,c,Q) : thoare"
 
 
@@ -262,7 +262,7 @@ done
 
 consts execs :: "(state \<times> com list \<times> state) set"
 abbreviation
-  execs' :: "state \<Rightarrow> com list \<Rightarrow> state \<Rightarrow> bool"   ("_/ =_\<Rightarrow>/ _" [50,0,50] 50)
+  execs' :: "state \<Rightarrow> com list \<Rightarrow> state \<Rightarrow> bool"   ("_/ =_\<Rightarrow>/ _" [50,0,50] 50) where
  "s =cs\<Rightarrow> t  \<equiv>  (s,cs,t) \<in> execs"
 
 inductive execs

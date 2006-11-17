@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Conform.thy
-    ID:         $Id: Conform.thy,v 1.2 2006-10-23 14:58:31 fhaftmann Exp $
+    ID:         $Id: Conform.thy,v 1.3 2006-11-17 01:28:44 makarius Exp $
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -30,7 +30,7 @@ constdefs
 
 abbreviation
   confs :: "'m prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty list \<Rightarrow> bool" 
-             ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
+             ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50) where
   "P,h \<turnstile> vs [:\<le>] Ts \<equiv> list_all2 (conf P h) vs Ts"
 
 

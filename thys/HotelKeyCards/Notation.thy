@@ -1,5 +1,5 @@
 (*  Title:      Notation for hotel key card system
-    ID:         $Id: Notation.thy,v 1.1 2006-09-06 20:41:24 nipkow Exp $
+    ID:         $Id: Notation.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
     Author:     Tobias Nipkow, TU Muenchen
 *)
 
@@ -9,8 +9,7 @@ imports LaTeXsugar
 begin
 
 abbreviation
- "SomeFloor" ("(\<lfloor>_\<rfloor>)")
-"\<lfloor>x\<rfloor> \<equiv> Some x"
+ "SomeFloor" ("(\<lfloor>_\<rfloor>)") where "\<lfloor>x\<rfloor> \<equiv> Some x"
 (*>*)
 
 subsection{*Notation*}

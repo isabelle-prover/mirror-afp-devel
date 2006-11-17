@@ -1,5 +1,5 @@
 (*  Title:       A while language
-    ID:          $Id: Lang.thy,v 1.1 2006-08-08 23:22:32 nipkow Exp $
+    ID:          $Id: Lang.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -61,7 +61,7 @@ executes @{term c}, and then combines initial and final state via function
 
 consts  exec :: "(state \<times> com \<times> state)set"
 abbreviation
- exec' :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool" ("_/ -_\<rightarrow>/ _" [50,0,50] 50)
+ exec' :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool" ("_/ -_\<rightarrow>/ _" [50,0,50] 50) where
  "s\<^isub>0 -c\<rightarrow> s\<^isub>1 \<equiv> (s\<^isub>0,c,s\<^isub>1) \<in> exec"
 
 

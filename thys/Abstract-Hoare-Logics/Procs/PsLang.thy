@@ -1,5 +1,5 @@
 (*  Title:       Mutually recursive procedures
-    ID:          $Id: PsLang.thy,v 1.1 2006-08-08 23:22:32 nipkow Exp $
+    ID:          $Id: PsLang.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -39,7 +39,7 @@ the name of the procedure that is to be called.
 
 consts  exec    :: "(state \<times> com \<times> state)set"
 abbreviation
- exec' :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool"   ("_/ -_\<rightarrow>/ _" [50,0,50] 50)
+ exec' :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool"   ("_/ -_\<rightarrow>/ _" [50,0,50] 50) where
  "s0 -c\<rightarrow> s1  \<equiv>  (s0,c,s1) \<in> exec"
 
 inductive exec
@@ -80,7 +80,7 @@ by(fastsimp elim: exec.elims intro:exec.intros)
 
 consts  execn    :: "(state \<times> com \<times> nat \<times> state)set"
 abbreviation
- execn' :: "state \<Rightarrow> com \<Rightarrow> nat \<Rightarrow> state \<Rightarrow> bool"   ("_/ -_-_\<rightarrow>/ _" [50,0,0,50] 50)
+ execn' :: "state \<Rightarrow> com \<Rightarrow> nat \<Rightarrow> state \<Rightarrow> bool"   ("_/ -_-_\<rightarrow>/ _" [50,0,0,50] 50) where
  "s\<^isub>0 -c-n\<rightarrow> s\<^isub>1  \<equiv>  (s\<^isub>0,c,n,s\<^isub>1) \<in> execn"
 
 inductive execn

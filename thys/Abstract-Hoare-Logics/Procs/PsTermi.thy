@@ -1,5 +1,5 @@
 (*  Title:      Inductive definition of termination
-    ID:         $Id: PsTermi.thy,v 1.1 2006-08-08 23:22:32 nipkow Exp $
+    ID:         $Id: PsTermi.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -9,7 +9,7 @@ subsection{*Termination*}
 
 consts  termi :: "(com \<times> state)set"
 abbreviation
- termi' :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl "\<down>" 50)
+ termi' :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl "\<down>" 50) where
  "c\<down>s  \<equiv>  (c,s) \<in> termi"
 
 inductive termi

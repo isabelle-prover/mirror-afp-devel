@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: Hoare.thy,v 1.2 2006-09-12 11:21:48 makarius Exp $
+    ID:          $Id: Hoare.thy,v 1.3 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -32,7 +32,7 @@ inductively:*}
 
 consts hoare :: "(assn \<times> com \<times> assn) set"
 abbreviation
- hoare' :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile> ({(1_)}/ (_)/ {(1_)})" 50)
+ hoare' :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile> ({(1_)}/ (_)/ {(1_)})" 50) where
 "\<turnstile> {P}c{Q}  \<equiv>  (P,c,Q) \<in> hoare"
 
 inductive hoare

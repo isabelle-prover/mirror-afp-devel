@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/TypeRel.thy
-    ID:         $Id: TypeRel.thy,v 1.4 2006-10-23 14:58:31 fhaftmann Exp $
+    ID:         $Id: TypeRel.thy,v 1.5 2006-11-17 01:28:44 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -85,7 +85,8 @@ translations
   "P \<turnstile> S \<le> T"  ==  "(S,T) \<in> widen P"
 
 abbreviation (xsymbols)
-  widens :: "'m prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool" ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70)
+  widens :: "'m prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool"
+    ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70) where
   "widens P Ts Ts' \<equiv> list_all2 (fun_of (widen P)) Ts Ts'"
 
 inductive "widen P"

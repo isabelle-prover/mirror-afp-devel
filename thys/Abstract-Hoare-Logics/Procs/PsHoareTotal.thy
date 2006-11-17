@@ -1,5 +1,5 @@
 (*  Title:      Inductive definition of Hoare logic for total correctness
-    ID:         $Id: PsHoareTotal.thy,v 1.1 2006-08-08 23:22:32 nipkow Exp $
+    ID:         $Id: PsHoareTotal.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -25,10 +25,10 @@ constdefs
 consts thoare :: "('a cntxt \<times> 'a cntxt) set"
 abbreviation
  thoare' :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool"
-                   ("(_ \<turnstile>\<^sub>t/ ({(1_)}/ (_)/ {(1_)}))" [50,0,0,0] 50)
+                   ("(_ \<turnstile>\<^sub>t/ ({(1_)}/ (_)/ {(1_)}))" [50,0,0,0] 50) where
  "C \<turnstile>\<^sub>t {P}c{Q}  \<equiv> (C,{(P,c,Q)}) : thoare"
 abbreviation
- thoare'' :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("(_ |\<turnstile>\<^sub>t/ _)" 50)
+ thoare'' :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("(_ |\<turnstile>\<^sub>t/ _)" 50) where
  "C |\<turnstile>\<^sub>t D  \<equiv> (C,D) : thoare"
 
 inductive thoare
@@ -279,7 +279,7 @@ apply(blast intro: rtrancl_trans)
 done
 
 consts execs :: "(state \<times> com list \<times> state) set"
-abbreviation execs' :: "state \<Rightarrow> com list \<Rightarrow> state \<Rightarrow> bool"   ("_/ =_\<Rightarrow>/ _" [50,0,50] 50)
+abbreviation execs' :: "state \<Rightarrow> com list \<Rightarrow> state \<Rightarrow> bool"   ("_/ =_\<Rightarrow>/ _" [50,0,50] 50) where
 "s =cs\<Rightarrow> t  \<equiv>  (s,cs,t) \<in> execs"
 
 inductive execs

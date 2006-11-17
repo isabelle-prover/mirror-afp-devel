@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Correct.thy
-    ID:         $Id: BVConform.thy,v 1.2 2006-10-23 14:58:31 fhaftmann Exp $
+    ID:         $Id: BVConform.thy,v 1.3 2006-11-17 01:28:44 makarius Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 
@@ -30,7 +30,7 @@ syntax
 
 abbreviation (xsymbols)
   confTs :: "'c prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty\<^isub>l \<Rightarrow> bool"
-           ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
+           ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50) where
   "P,h \<turnstile> vs [:\<le>\<^sub>\<top>] Ts \<equiv> list_all2 (confT P h) vs Ts"
 
 constdefs

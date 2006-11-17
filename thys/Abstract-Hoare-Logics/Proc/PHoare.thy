@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: PHoare.thy,v 1.1 2006-08-08 23:22:32 nipkow Exp $
+    ID:          $Id: PHoare.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -69,10 +69,10 @@ constdefs
   "C \<Turnstile>n {P}c{Q}  \<equiv>  |\<Turnstile>_n C \<longrightarrow> \<Turnstile>n {P}c{Q}"
 
 consts hoare :: "('a cntxt \<times> 'a assn \<times> com \<times> 'a assn) set"
-abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a assn \<Rightarrow> bool" ("_ \<turnstile> _")
+abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a assn \<Rightarrow> bool" ("_ \<turnstile> _") where
   "C \<turnstile> x \<equiv> (C,x) \<in> hoare"
 abbreviation
-  hoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50)
+  hoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50) where
   "C \<turnstile> {P}c{Q}  \<equiv>  (C,P,c,Q) \<in> hoare"
 
 text{*Finally we come to the proof system for deriving triples in a context:*}

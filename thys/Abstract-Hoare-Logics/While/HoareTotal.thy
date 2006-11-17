@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic for total correctness
-    ID:          $Id: HoareTotal.thy,v 1.2 2006-09-12 11:21:48 makarius Exp $
+    ID:          $Id: HoareTotal.thy,v 1.3 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -18,7 +18,7 @@ constdefs
 
 consts thoare :: "(assn \<times> com \<times> assn) set"
 abbreviation
- thoare' :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile>\<^sub>t ({(1_)}/ (_)/ {(1_)})" 50)
+ thoare' :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile>\<^sub>t ({(1_)}/ (_)/ {(1_)})" 50) where
 "\<turnstile>\<^sub>t {P}c{Q}  \<equiv> (P,c,Q) \<in> thoare"
 
 

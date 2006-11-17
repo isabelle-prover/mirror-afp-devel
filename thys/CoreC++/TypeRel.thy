@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeRel.thy,v 1.7 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: TypeRel.thy,v 1.8 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab 
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -22,7 +22,8 @@ translations
   "P \<turnstile> T \<le> T'"  ==  "(T,T') \<in> widen P"
 
 abbreviation (xsymbols)
-  widens :: "prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool" ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70)
+  widens :: "prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool"
+    ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70) where
   "widens P Ts Ts' \<equiv> list_all2 (fun_of (widen P)) Ts Ts'"
 
 inductive "widen P"

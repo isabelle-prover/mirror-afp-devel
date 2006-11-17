@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: PsHoare.thy,v 1.1 2006-08-08 23:22:32 nipkow Exp $
+    ID:          $Id: PsHoare.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -40,10 +40,10 @@ constdefs
 
 consts hoare :: "('a cntxt \<times> 'a cntxt) set"
 abbreviation
-  hoare1 :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ \<tturnstile>/ _" 50)
+  hoare1 :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ \<tturnstile>/ _" 50) where
   "C \<tturnstile> D  \<equiv>  (C,D) \<in> hoare"
 abbreviation
-  hoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50)
+  hoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50) where
   "C \<turnstile> {P}c{Q}  \<equiv>  (C,{(P,c,Q)}) \<in> hoare"
 
 text{*Our Hoare logic now defines judgements of the form @{prop"C \<tturnstile>

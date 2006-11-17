@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Conform.thy,v 1.11 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Conform.thy,v 1.12 2006-11-17 01:28:44 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -46,7 +46,7 @@ constdefs
 
 abbreviation
   confs :: "prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty list \<Rightarrow> bool" 
-           ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
+           ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50) where
   "P,h \<turnstile> vs [:\<le>] Ts \<equiv> list_all2 (conf P h) vs Ts"
 
 
