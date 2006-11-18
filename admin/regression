@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.14 2006-06-28 14:19:02 lsf37 Exp $
+# $Id: regression,v 1.15 2006-11-18 05:58:37 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -70,7 +70,7 @@ if [ "$1" == "-" ]; then
   ERRORLOG=$ERRORDIR/error.log
   RUNNING=$HOME/var/running
   if [ -f "$RUNNING/$SHORT.running" -o -e $ERRORLOG ]; then
-    echo "`date`: Skipped test. Isabelle devel version broken." >> $MASTERLOG
+    echo "`date` $HOSTNAME: Skipped test. Isabelle devel version broken." >> $MASTERLOG
     exit 1
   fi
   cat $SETTINGS >> $ISABELLE_DEVEL/etc/settings
@@ -91,7 +91,7 @@ fi
 . $WORKING_COPY/admin/main-config || fail "could not read main-config."
 MAIL=$WORKING_COPY/admin/mail-attach
 
-echo "Start test at `date`" > $LOG
+echo "Start test at `date`, $HOSTNAME" > $LOG
 echo >> $LOG
 echo "begin cvs update" >> $LOG
 
@@ -109,7 +109,7 @@ FAILURE=$?
 ELAPSED=$("$HOME/bin/showtime" "$SECONDS")
 
 echo >> $LOG
-echo "End test on `date`, elapsed time: $ELAPSED" >> $LOG
+echo "End test on `date`, $HOSTNAME, elapsed time: $ELAPSED" >> $LOG
 
 # generate report
 DIFF=`$WORKING_COPY/admin/report.pl $LOG $REPORT`
@@ -162,7 +162,7 @@ EOF
     )
   done
 else
-  echo "`date`, $AFP_VER: All tests successful. Elapsed time: $ELAPSED" >> $MASTERLOG
+  echo "`date`, $HOSTNAME, $AFP_VER: All tests successful. Elapsed time: $ELAPSED" >> $MASTERLOG
 fi
 
 # clean up tmp
