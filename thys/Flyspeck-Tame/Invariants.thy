@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.4 2006-08-31 12:11:45 webertj Exp $
+(*  ID:         $Id: Invariants.thy,v 1.5 2006-12-09 19:21:28 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -1741,7 +1741,7 @@ proof -
 qed
 
 
-lemma help:
+lemma "help":
 shows "xs \<noteq> [] \<Longrightarrow> x \<notin> set xs \<Longrightarrow>  x \<noteq> hd xs" and
       "xs \<noteq> [] \<Longrightarrow> x \<notin> set xs \<Longrightarrow>  x \<noteq> last xs" and
       "xs \<noteq> [] \<Longrightarrow> x \<notin> set xs \<Longrightarrow>  hd xs \<noteq> x" and
@@ -1784,7 +1784,7 @@ apply(subgoal_tac "!!u v. between (vertices f) u v \<noteq> [] \<Longrightarrow>
  prefer 2 apply(drule last_in_set) apply(drule inbetween_inset) apply blast
 apply(simp add:split_face_def edges_conv_Edges Edges_append Edges_Cons
  last_rev notinset_notinEdge1 notinset_notinEdge2 notinset_notinbetween
- between_not_r1 between_not_r2 help Edges_rev_disj disj_sets_disj_Edges
+ between_not_r1 between_not_r2 "help" Edges_rev_disj disj_sets_disj_Edges
  Int_Un_distrib Int_Un_distrib2)
 apply clarify
 apply(rule conjI)

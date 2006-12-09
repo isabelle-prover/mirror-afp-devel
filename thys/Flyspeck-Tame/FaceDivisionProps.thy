@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.2 2006-07-27 13:24:37 webertj Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.3 2006-12-09 19:21:28 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -1280,7 +1280,7 @@ proof -
     qed
   qed
 
-  ultimately have help: "\<And> us. pre_between us ram1 ram2 \<Longrightarrow> between us ram1 ram2 = between (rotate1 us) ram1 ram2"
+  ultimately have "help": "\<And> us. pre_between us ram1 ram2 \<Longrightarrow> between us ram1 ram2 = between (rotate1 us) ram1 ram2"
     apply (subgoal_tac "before us ram1 ram2 \<or> before us ram2 ram1") by auto
 
   assume "vs \<cong> vs'" and pre_b: "pre_between vs ram1 ram2"
@@ -1291,7 +1291,7 @@ proof -
   next
     case (Suc m) then show ?case apply simp
       apply (subgoal_tac " between (rotate1 (rotate m vs)) ram1 ram2 = between (rotate m vs) ram1 ram2")
-      by (auto intro: help [symmetric] pre_b)
+      by (auto intro: "help" [symmetric] pre_b)
   qed
   with vs' show ?thesis by auto
 qed
@@ -1899,7 +1899,7 @@ proof
     apply (case_tac newVertexList) apply simp apply (elim conjE) apply simp
     apply (drule split_face_distinct2) by auto
 
-  have help: "\<And> A B C. C \<inter> (A \<union> B) = {} \<Longrightarrow> B \<inter> C = {}" by auto
+  have "help": "\<And> A B C. C \<inter> (A \<union> B) = {} \<Longrightarrow> B \<inter> C = {}" by auto
 
   from pre_fdg have "before (vertices oldF) ram1 ram2 \<or> before (vertices oldF) ram2 ram1"
     apply (rule_tac before_or) by (auto simp: pre_split_face_def)
@@ -1919,7 +1919,7 @@ proof
     apply (subgoal_tac "distinct (fst (splitAt ram1 (vertices oldF)) @ ram1 # fst (splitAt ram2 (snd (splitAt ram1 (vertices oldF)))) @ ram2 # a # list)")
     apply (thin_tac "vertices oldF =
       fst (splitAt ram1 (vertices oldF)) @ ram1 # fst (splitAt ram2 (snd (splitAt ram1 (vertices oldF)))) @ ram2 # a # list")
-    apply simp apply (elim conjE) apply (rule help) apply simp
+    apply simp apply (elim conjE) apply (rule "help") apply simp
     apply (simp add: pre_split_face_def)
     apply force
 
@@ -1957,7 +1957,7 @@ proof
     apply (subgoal_tac "distinct (fst (splitAt ram2 (vertices oldF)) @ ram2 # fst (splitAt ram1 (snd (splitAt ram2 (vertices oldF)))) @ ram1 # a # list)")
     apply (thin_tac "vertices oldF =
       fst (splitAt ram2 (vertices oldF)) @ ram2 # fst (splitAt ram1 (snd (splitAt ram2 (vertices oldF)))) @ ram1 # a # list")
-    apply simp apply (elim conjE) apply (rule help) apply simp
+    apply simp apply (elim conjE) apply (rule "help") apply simp
     apply (simp add: pre_split_face_def) apply (simp add: pre_split_face_def pre_between_def)
 
     apply (frule between_vs) apply force
@@ -5009,11 +5009,11 @@ next
     from split_u have "v' # tl (verticesFrom f v')
        =  fst (splitAt u (verticesFrom f v')) @ u # snd (splitAt u (verticesFrom f v'))"
       by (simp add: verticesFrom_split)
-    have help: "set [] \<inter> set (verticesFrom f v') \<subseteq> {u} \<union> set (fst (splitAt u (verticesFrom f v')))" by auto
+    have "help": "set [] \<inter> set (verticesFrom f v') \<subseteq> {u} \<union> set (fst (splitAt u (verticesFrom f v')))" by auto
     from split_u  dist_vf_v'  pre_add
     have "[v\<in> [] @ snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)] = removeNones vol"
       apply (rule_tac filter_distinct_at5) apply assumption+
-      apply (simp add: pre_subdivFace'_def) by (rule help)
+      apply (simp add: pre_subdivFace'_def) by (rule "help")
     then show ?thesis by auto
   qed
   then have inSnd_u: "\<And> x. x \<in> set (removeNones vol) \<Longrightarrow> x \<in> set (snd (splitAt u (verticesFrom f v')))"
@@ -5115,14 +5115,14 @@ next
     from pre_fdg have "set (v' # ws @ [u]) \<inter> set (verticesFrom f v') \<subseteq>  {v', u}"
       apply (simp add: set_eq)
       by (unfold pre_splitFace_def) auto
-    ultimately have help: "set (v' # ws @ [u]) \<inter> set (verticesFrom f v')
+    ultimately have "help": "set (v' # ws @ [u]) \<inter> set (verticesFrom f v')
       \<subseteq> {u} \<union> set (fst (splitAt u (verticesFrom f v')))" apply (rule_tac subset_trans)
       apply assumption apply (cases "u = v'") by simp_all
     from split_u dist_vf_v' pre_add pre_fdg removeNones_split have
       "[v\<in> (v' # ws @ [u]) @ snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)]
       = removeNones vol \<and> hd (removeNones vol) \<in> set (snd (splitAt u (verticesFrom f v')))"
       apply (rule_tac filter_distinct_at_special) apply assumption+
-      apply (simp add: pre_subdivFace'_def) apply (rule help) .
+      apply (simp add: pre_subdivFace'_def) apply (rule "help") .
     with True m2 show ?thesis by auto
   next
     case False
@@ -5156,7 +5156,7 @@ next
     ultimately have "set ((v' # tl (fst (splitAt v (verticesFrom f v')))) @ v # ws @ [u]) \<inter> set (verticesFrom f v')
       \<subseteq> {u} \<union> set (fst (splitAt u (verticesFrom f v')))"
      by (simp only:)
-    then have help: "set (v' # tl (fst (splitAt v (verticesFrom f v'))) @ v # ws @ [u]) \<inter> set (verticesFrom f v')
+    then have "help": "set (v' # tl (fst (splitAt v (verticesFrom f v'))) @ v # ws @ [u]) \<inter> set (verticesFrom f v')
       \<subseteq> {u} \<union> set (fst (splitAt u (verticesFrom f v')))" by auto
 
 
@@ -5165,7 +5165,7 @@ next
           @ snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)]
        = removeNones vol \<and> hd (removeNones vol) \<in> set (snd (splitAt u (verticesFrom f v')))"
       apply (rule_tac filter_distinct_at_special) apply assumption+
-      apply (simp add: pre_subdivFace'_def) apply (rule help) .
+      apply (simp add: pre_subdivFace'_def) apply (rule "help") .
     with False m1 show ?thesis by auto
   qed
 
@@ -5577,13 +5577,13 @@ proof -
   moreover
   from pre_add have "\<V> f = set (verticesFrom f v')" apply (intro congs_pres_nodes verticesFrom_congs)
     by (simp add: pre_subdivFace'_def)
-  with pre_add have help: "v \<in> \<V> f \<and> u \<in> \<V> f \<and> v \<noteq> u"
+  with pre_add have "help": "v \<in> \<V> f \<and> u \<in> \<V> f \<and> v \<noteq> u"
     apply (simp add: pre_subdivFace'_def before_def)
     apply (elim conjE exE)
     apply (subgoal_tac "distinct (verticesFrom f v')") apply force
     apply (rule verticesFrom_distinct) by simp_all
   moreover
-  from help pre_add nextVert have help1: "is_nextElem (vertices f) v u \<Longrightarrow> 0 < n" apply auto
+  from "help" pre_add nextVert have help1: "is_nextElem (vertices f) v u \<Longrightarrow> 0 < n" apply auto
     apply (simp add: nextVertex_def)
     by (simp add: nextElem_is_nextElem pre_subdivFace'_def)
   moreover
@@ -5599,7 +5599,7 @@ proof -
   have "\<And> m. {k. k < m} \<inter> {k. m \<le> k \<and> k < (m + n)} = {}" by auto
   moreover
 
-  from pre_add f help2 help1 help have "[countVertices g..<countVertices g + n] = [] \<Longrightarrow> (v, u) \<notin> edges f \<and> (u, v) \<notin> edges f"
+  from pre_add f help2 help1 "help" have "[countVertices g..<countVertices g + n] = [] \<Longrightarrow> (v, u) \<notin> edges f \<and> (u, v) \<notin> edges f"
     apply (cases "0 < n") apply (induct g) apply simp+
     apply (simp add: pre_subdivFace'_def)
     apply (rule conjI) apply force

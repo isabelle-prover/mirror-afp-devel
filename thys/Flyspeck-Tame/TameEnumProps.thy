@@ -1,4 +1,4 @@
-(*  ID:         $Id: TameEnumProps.thy,v 1.1 2006-05-22 09:54:04 nipkow Exp $
+(*  ID:         $Id: TameEnumProps.thy,v 1.2 2006-12-09 19:21:28 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -19,7 +19,7 @@ apply(fastsimp simp:nat_number length_Suc_conv
 done
 *)
 
-lemma help: "(EX x. (EX y:A. x = f y) & P x) = (EX y:A. P(f y))"
+lemma "help": "(EX x. (EX y:A. x = f y) & P x) = (EX y:A. P(f y))"
 by blast
 
 lemma tame\<^isub>3_is_tame\<^isub>3: "tame\<^isub>3 g \<Longrightarrow> is_tame\<^isub>3 g"
@@ -27,7 +27,7 @@ apply(clarsimp simp: tame\<^isub>3_def is_tame\<^isub>3_def nat_number length_Su
 apply((erule allE)+, erule impE, blast)
 apply(simp add: ok4_def ok42_def tame_quad_def norm_subset_def
   pr_iso_subseteq_def pr_iso_in_def image_def
-  ex_disj_distrib bex_disj_distrib help conj_disj_distribL)
+  ex_disj_distrib bex_disj_distrib "help" conj_disj_distribL)
 apply(erule disjE, rule disjI1)
 apply(fastsimp intro!:norm_eq_if_face_cong simp:tameConf\<^isub>1_def)
 apply(rule disjI2, erule disjE, rule disjI1)
