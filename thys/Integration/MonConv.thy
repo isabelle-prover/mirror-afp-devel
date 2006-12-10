@@ -132,7 +132,7 @@ proof -
       by arith                
   }
   ultimately show ?thesis 
-    by fast               
+    by blast
 qed
 
 

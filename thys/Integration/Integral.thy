@@ -1369,8 +1369,8 @@ proof -
 	  finally show "u m n t \<le> muh m u m t" .
 	qed
       } 
-      hence "\<exists>N. \<forall>m. N \<le> m \<longrightarrow> u m n t \<le> mu u m t" 
-	by fast
+      hence "\<exists>N. \<forall>m. N \<le> m \<longrightarrow> u m n t \<le> mu u m t"
+	by blast
       also from uf have "(\<lambda>m. u m n t) ----> f n t" 
 	by (simp add: realfun_mon_conv_iff real_mon_conv)
       moreover 
@@ -1824,7 +1824,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	    by simp
 	}
 	thus "\<exists>N. \<forall>n. N \<le> n \<longrightarrow> y < (2::real)^n"
-	  by fast
+	  by blast
       qed
       hence "(\<lambda>n. inverse ((2::real)^n)) ----> 0"
 	by (rule LIMSEQ_inverse_zero)
