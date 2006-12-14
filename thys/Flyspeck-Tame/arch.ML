@@ -4,7 +4,7 @@ fun add_archconstdefs thy =
     val termof =
       mk_list
         (mk_list
-          (mk_list (fn t => HOLogic.number_of_const HOLogic.natT $ HOLogic.mk_binum t)
+          (mk_list (fn t => HOLogic.number_of_const HOLogic.natT $ HOLogic.mk_numeral t)
              HOLogic.natT)
           (HOLogic.listT(HOLogic.natT)))
         (HOLogic.listT(HOLogic.listT(HOLogic.natT)));
