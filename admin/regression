@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.15 2006-11-18 05:58:37 lsf37 Exp $
+# $Id: regression,v 1.16 2006-12-19 15:19:31 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -135,7 +135,7 @@ fi
 # send email to maintainer if there was a problem
 if [ "$FAILURE" != "0" ]; then
   FAIL=`tail -4 $LOG | head -1`
-  echo "`date`, $AFP_VER: test failed on [$FAIL]. Elapsed time: $ELAPSED" >> $MASTERLOG
+  echo "`date`, $HOSTNAME, $AFP_VER: test failed on [$FAIL]. Elapsed time: $ELAPSED" >> $MASTERLOG
   for E in $FAIL; do
     (
       . $WORKING_COPY/thys/$E/config || fail "error reading config for $E"
