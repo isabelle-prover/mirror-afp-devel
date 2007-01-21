@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.3 2006-12-09 19:21:28 makarius Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.4 2007-01-21 18:47:50 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -1525,16 +1525,7 @@ lemma is_nextElem_between_empty[simp]:
  "distinct vs \<Longrightarrow> is_nextElem vs a b \<Longrightarrow> between vs a b = []"
 apply (simp add: is_nextElem_def between_def split_def)
 apply (cases "vs") apply simp+
- apply (case_tac "list")
- apply (simp add: is_sublist_def)
- apply (erule disjE)
-  apply (elim exE) apply (case_tac "as") apply simp+
 apply (simp split: split_if_asm)
- apply (case_tac "a=aaa")
-  apply simp
- apply (rule conjI)
-  apply (rule impI) apply simp
- apply simp
 apply (case_tac "b = aa")
  apply (simp add: is_sublist_def)
  apply (erule disjE)
@@ -1542,16 +1533,13 @@ apply (case_tac "b = aa")
   apply (case_tac "as")
    apply simp
   apply simp
-  apply (case_tac "listb")
-   apply simp
-  apply simp
  apply simp
- apply (case_tac "lista" rule: rev_exhaust)
+ apply (case_tac "list" rule: rev_exhaust)
   apply simp
  apply simp
 apply simp
-apply (subgoal_tac "aa # aaa # lista = vs")
- apply (thin_tac "vs = aa # aaa # lista")
+apply (subgoal_tac "aa # list = vs")
+ apply (thin_tac "vs = aa # list")
  apply simp
  apply (subgoal_tac "distinct vs")
   apply (simp add: is_sublist_def)
@@ -1847,9 +1835,11 @@ qed
 
 
 lemma is_nextElem_hd_last: "distinct vs \<Longrightarrow> is_nextElem vs x y \<Longrightarrow> y = hd vs \<Longrightarrow> x = last vs"
-apply (cases vs) apply (simp add: is_nextElem_def is_sublist_def) apply simp apply auto apply (auto simp: is_nextElem_def is_sublist_def)
-apply (case_tac as) apply simp+ apply (case_tac as) by simp+
-
+apply (cases vs) apply (simp add: is_nextElem_def is_sublist_def)
+apply auto
+ apply (auto simp: is_nextElem_def is_sublist_def)
+apply (case_tac as) apply simp+
+done
 
 lemma split_face_xor: "(f12, f21) = split_face oldF ram1 ram2 newVertexList \<Longrightarrow>
   pre_split_face oldF ram1 ram2 newVertexList \<Longrightarrow>
