@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/SemiType.thy
-    ID:         $Id: SemiType.thy,v 1.3 2005-10-08 04:54:30 nipkow Exp $
+    ID:         $Id: SemiType.thy,v 1.4 2007-01-21 14:07:26 nipkow Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -74,7 +74,7 @@ done
 lemma order_widen [intro,simp]: 
   "wf_prog m P \<Longrightarrow> order (subtype P)"
 (*<*)
-  apply (unfold order_def lesub_def fun_of_def)
+  apply (unfold Semilat.order_def lesub_def fun_of_def)
   apply (auto intro: widen_trans widen_antisym)
   done
 (*>*)
