@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.12 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Execute.thy,v 1.13 2007-01-25 10:16:41 wasserra Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -628,13 +628,25 @@ qed
 section{* Rewriting lemmas for Type rules *}
 
 
+lemma WTDynCast_new1:
+  "\<lbrakk> P,E \<turnstile> e :: Class D; is_class P C;
+   (D, Cs') \<in> Subobjs P; last Cs' = C;
+    \<forall>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<longrightarrow> Cs' = Cs''\<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> Cast C e :: Class C"
+  by (rule WTDynCast,auto simp add: path_unique_def Subobjs_aux [symmetric])
+
+lemma WTDynCast_new2:
+  "\<lbrakk> P,E \<turnstile> e :: Class D; is_class P C;
+     \<forall>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<longrightarrow> False\<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> Cast C e :: Class C"
+  by (rule WTDynCast,auto simp add: path_via_def Subobjs_aux [symmetric])
+
 lemma WTStaticCast_new1:
   "\<lbrakk> P,E \<turnstile> e :: Class D; is_class P C;
    (D, Cs') \<in> Subobjs P; last Cs' = C;
     \<forall>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<longrightarrow> Cs' = Cs''\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<lparr>C\<rparr>e :: Class C"
   by (rule WTStaticCast,auto simp add: path_unique_def Subobjs_aux [symmetric])
-
 
 lemma WTStaticCast_new2:
 "\<lbrakk>P,E \<turnstile> e :: Class D; is_class P C; P \<turnstile> C \<preceq>\<^sup>* D;
@@ -717,7 +729,8 @@ lemmas [code ind] =
  eval_evals.Nil eval_evals.Cons eval_evals.ConsThrow
 
  (* Type rules *)
- WT_WTs.WTNew WT_WTs.WTDynCast WTStaticCast_new1 WTStaticCast_new2
+ WT_WTs.WTNew WTDynCast_new1 WTDynCast_new2
+ WTStaticCast_new1 WTStaticCast_new2
  WT_WTs.WTVal WT_WTs.WTVar WTBinOp1 WTBinOp2 WT_WTs.WTLAss
  WT_WTs.WTFAcc[unfolded LeastFieldDecl_def, OF _ conjI]
  WT_WTs.WTFAss[unfolded LeastFieldDecl_def, OF _ conjI]
@@ -771,7 +784,6 @@ text{* \<dots>and off we go *}
 
   (* Examples with no prog needed *)
 code_module NoProg
-(*file "code.ML"*)
 contains
   test0 = "[],empty \<turnstile> \<langle>{''V'':Integer; ''V'' :=  Val(Intg 5);; Var ''V''},(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
   test1 = "[],empty \<turnstile> \<langle>Val(Intg 5),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
@@ -830,7 +842,6 @@ constdefs
 
 
 code_module ProgOverrider
-file "code.ML"
 contains
   dynCastSide = "progOverrider,[''V''\<mapsto>Class ''Right''] \<turnstile>
     \<langle>''V'' := new ''Bottom'' ;; Cast ''Left'' (Var ''V''),(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
