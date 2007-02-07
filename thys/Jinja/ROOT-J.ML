@@ -8,11 +8,12 @@ use_thy "J/Annotate";
 
 (*
 use_thy "Example";
-use_thy "JListExample"; 
 *)
+
+no_document use_thy "EfficientNat";
+use_thy "J/execute_Bigstep";
+use_thy "J/execute_WellType";
 
 use_thy "JVM/JVMDefensive";
 
-(*
-use_thy "JVMListExample";
-*)
+use_thy "JVM/JVMListExample";
