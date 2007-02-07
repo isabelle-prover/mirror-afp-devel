@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.13 2007-01-25 10:16:41 wasserra Exp $
+    ID:          $Id: Execute.thy,v 1.14 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -11,52 +11,12 @@ theory Execute imports BigStep WellType ExecutableSet EfficientNat begin
 
 section{* General redefinitions *}
 
-consts
-  Subobjs_aux :: "prog \<Rightarrow> cname \<Rightarrow> path set"
+inductive2 app :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
+where
+  "app [] ys ys"
+| "app xs ys zs \<Longrightarrow> app (x # xs) ys (x # zs)"
 
-inductive "Subobjs_aux P C"
-intros
-  "(C, Cs) \<in> Subobjs P \<Longrightarrow> Cs \<in> Subobjs_aux P C"
-
-theorem Subobjs_aux: "{Cs. (C, Cs) \<in> Subobjs P} = Subobjs_aux P C"
-  apply (rule subset_antisym)
-   apply (rule subsetI)
-   apply (simp add: split_paired_all)
-   apply (erule Subobjs_aux.intros)
-  apply (rule subsetI)
-  apply (simp add: split_paired_all)
-  apply (erule Subobjs_aux.elims)
-  apply simp
-  done
-
-consts
-  SubobjsR_aux :: "prog \<Rightarrow> cname \<Rightarrow> path set"
-
-inductive "SubobjsR_aux P C"
-intros
-  "(C, Cs) \<in> Subobjs\<^isub>R P \<Longrightarrow> Cs \<in> SubobjsR_aux P C"
-
-theorem SubobjsR_aux: "{Cs. (C, Cs) \<in> Subobjs\<^isub>R P} = SubobjsR_aux P C"
-  apply (rule subset_antisym)
-   apply (rule subsetI)
-   apply (simp add: split_paired_all)
-   apply (erule SubobjsR_aux.intros)
-  apply (rule subsetI)
-  apply (simp add: split_paired_all)
-  apply (erule SubobjsR_aux.elims)
-  apply simp
-  done
-
-
-
-consts app :: "('a list \<times> 'a list \<times> 'a list) set"
-
-inductive app
-intros
-  "([], ys, ys) \<in> app"
-  "(xs, ys, zs) \<in> app \<Longrightarrow> (x # xs, ys, x # zs) \<in> app"
-
-theorem app_eq1: "\<And>ys zs. zs = xs @ ys \<Longrightarrow> (xs, ys, zs) \<in> app"
+theorem app_eq1: "\<And>ys zs. zs = xs @ ys \<Longrightarrow> app xs ys zs"
   apply (induct xs)
    apply simp
    apply (rule app.intros)
@@ -64,30 +24,38 @@ theorem app_eq1: "\<And>ys zs. zs = xs @ ys \<Longrightarrow> (xs, ys, zs) \<in>
   apply (iprover intro: app.intros)
   done
 
-theorem app_eq2: "(xs, ys, zs) \<in> app \<Longrightarrow> zs = xs @ ys"
+theorem app_eq2: "app xs ys zs \<Longrightarrow> zs = xs @ ys"
   by (erule app.induct) simp_all
 
-theorem app_eq: "((xs, ys, zs) \<in> app) = (zs = xs @ ys)"
+theorem app_eq: "app xs ys zs = (zs = xs @ ys)"
   apply (rule iffI)
    apply (erule app_eq2)
   apply (erule app_eq1)
   done
 
 
-consts casts_aux :: "prog \<Rightarrow> (ty \<times> val \<times> val) set"
+inductive2 fstP :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool"
+  for r :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+where
+  fstPI [intro]: "r a b \<Longrightarrow> fstP r a"
 
-inductive "casts_aux P"
-intros
-"(case T of Class C \<Rightarrow> False | _ \<Rightarrow> True) \<Longrightarrow> (T,v,v) \<in> casts_aux P"
-"(Class C,Null,Null) \<in> casts_aux P"
-"\<lbrakk>(last Cs, Cs') \<in> Subobjs P; last Cs' = C;
-  last Cs = hd Cs'; Cs @ tl Cs' = Ds\<rbrakk> 
-\<Longrightarrow> (Class C,Ref(a,Cs),Ref(a,Ds)) \<in> casts_aux P"
-"\<lbrakk>(last Cs, Cs') \<in> Subobjs P; last Cs' = C; last Cs \<noteq> hd Cs'\<rbrakk>
-\<Longrightarrow> (Class C,Ref(a,Cs),Ref(a,Cs')) \<in> casts_aux P"
+declare fstP.cases [elim!]
+
+
+inductive2
+  casts_aux :: "prog \<Rightarrow> ty \<Rightarrow> val \<Rightarrow> val \<Rightarrow> bool"
+  for P :: prog
+where
+  "(case T of Class C \<Rightarrow> False | _ \<Rightarrow> True) \<Longrightarrow> casts_aux P T v v"
+| "casts_aux P (Class C) Null Null"
+| "\<lbrakk>Subobjs P (last Cs) Cs'; last Cs' = C;
+    last Cs = hd Cs'; Cs @ tl Cs' = Ds\<rbrakk> 
+  \<Longrightarrow> casts_aux P (Class C) (Ref(a,Cs)) (Ref(a,Ds))"
+| "\<lbrakk>Subobjs P (last Cs) Cs'; last Cs' = C; last Cs \<noteq> hd Cs'\<rbrakk>
+  \<Longrightarrow> casts_aux P (Class C) (Ref(a,Cs)) (Ref(a,Cs'))"
 
 lemma casts_aux_eq:
-"(P \<turnstile> T casts v to v') = ((T,v,v') \<in> casts_aux P)"
+"(P \<turnstile> T casts v to v') = casts_aux P T v v'"
 apply (rule iffI)
  apply(induct rule:casts_to.induct)
  apply(case_tac T) apply (auto intro:casts_aux.intros)
@@ -96,16 +64,16 @@ apply(induct rule:casts_aux.induct)
 apply(auto intro!:casts_to.intros simp:path_via_def appendPath_def)
 done
 
-consts Casts_aux :: "prog \<Rightarrow> (ty list \<times> val list \<times> val list) set"
-
-inductive "Casts_aux P"
-intros
-"([],[],[]) \<in> Casts_aux P"
-"\<lbrakk>(T,v,v') \<in> casts_aux P; (Ts,vs,vs') \<in> Casts_aux P\<rbrakk>
-\<Longrightarrow> (T#Ts,v#vs,v'#vs') \<in> Casts_aux P"
+inductive2
+  Casts_aux :: "prog \<Rightarrow> ty list \<Rightarrow> val list \<Rightarrow> val list \<Rightarrow> bool"
+  for P :: prog
+where
+  "Casts_aux P [] [] []"
+| "\<lbrakk>casts_aux P T v v'; Casts_aux P Ts vs vs'\<rbrakk>
+  \<Longrightarrow> Casts_aux P (T#Ts) (v#vs) (v'#vs')"
 
 lemma Casts_aux_eq:
-"(P \<turnstile> Ts Casts vs to vs') = ((Ts,vs,vs') \<in> Casts_aux P)"
+"(P \<turnstile> Ts Casts vs to vs') = Casts_aux P Ts vs vs'"
 apply(rule iffI)
  apply(induct rule:Casts_to.induct)
   apply(rule Casts_aux.intros)
@@ -119,25 +87,21 @@ done
 
 text{* Redefine map Val vs *}
 
-consts map_val :: "(expr list \<times> val list) set"
+inductive2 map_val :: "expr list \<Rightarrow> val list \<Rightarrow> bool"
+where
+  Nil: "map_val [] []"
+| Cons: "map_val xs ys \<Longrightarrow> map_val (Val y # xs) (y # ys)"
 
-inductive map_val
-intros
-  Nil: "([], []) \<in> map_val"
-  Cons: "(xs, ys) \<in> map_val \<Longrightarrow> (Val y # xs, y # ys) \<in> map_val"
+inductive2 map_val2 :: "expr list \<Rightarrow> val list \<Rightarrow> expr list \<Rightarrow> bool"
+where
+  Nil: "map_val2 [] [] []"
+| Cons: "map_val2 xs ys zs \<Longrightarrow> map_val2 (Val y # xs) (y # ys) zs"
+| Throw: "map_val2 (throw e # xs) [] (throw e # xs)"
 
-consts map_val2 :: "(expr list \<times> val list \<times> expr list) set"
-
-inductive map_val2
-intros
-  Nil: "([], [], []) \<in> map_val2"
-  Cons: "(xs, ys, zs) \<in> map_val2 \<Longrightarrow> (Val y # xs, y # ys, zs) \<in> map_val2"
-  Throw: "(throw e # xs, [], throw e # xs) \<in> map_val2"
-
-theorem map_val_conv: "(xs = map Val ys) = ((xs, ys) \<in> map_val)"
+theorem map_val_conv: "(xs = map Val ys) = map_val xs ys"
 (*<*)
 proof -
-  have "\<And>ys. xs = map Val ys \<Longrightarrow> (xs, ys) \<in> map_val"
+  have "\<And>ys. xs = map Val ys \<Longrightarrow> map_val xs ys"
     apply (induct xs type:list)
      apply (case_tac ys)
       apply simp
@@ -150,17 +114,17 @@ proof -
     apply (rule map_val.Cons)
     apply simp
     done
-  moreover have "(xs, ys) \<in> map_val \<Longrightarrow> xs = map Val ys"
+  moreover have "map_val xs ys \<Longrightarrow> xs = map Val ys"
     by (erule map_val.induct) simp+
   ultimately show ?thesis ..
 qed
 (*>*)
 
 theorem map_val2_conv:
- "(xs = map Val ys @ throw e # zs) = ((xs, ys, throw e # zs) \<in> map_val2)"
+ "(xs = map Val ys @ throw e # zs) = map_val2 xs ys (throw e # zs)"
 (*<*)
 proof -
-  have "\<And>ys. xs = map Val ys @ throw e # zs \<Longrightarrow> (xs, ys, throw e # zs) \<in> map_val2"
+  have "\<And>ys. xs = map Val ys @ throw e # zs \<Longrightarrow> map_val2 xs ys (throw e # zs)"
     apply (induct xs type:list)
      apply (case_tac ys)
       apply simp
@@ -173,7 +137,7 @@ proof -
     apply (rule map_val2.Cons)
     apply simp
     done
-  moreover have "(xs, ys, throw e # zs) \<in> map_val2 \<Longrightarrow> xs = map Val ys @ throw e # zs"
+  moreover have "map_val2 xs ys (throw e # zs) \<Longrightarrow> xs = map Val ys @ throw e # zs"
     by (erule map_val2.induct) simp+
   ultimately show ?thesis ..
 qed
@@ -181,16 +145,74 @@ qed
 
 text {* Redefine MethodDefs and FieldDecls *}
 
-lemma [code ind]:
-  "(C,Cs) \<in> Subobjs P \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of ms M =  \<lfloor>mthd\<rfloor> \<Longrightarrow>
-   (Cs, mthd) \<in> MethodDefs P C M"
- by (simp add: MethodDefs_def)
+(* FIXME: These predicates should be defined inductively in the first place! *)
 
-lemma [code ind]:
-  "(C,Cs) \<in> Subobjs P \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of fs F =  \<lfloor>T\<rfloor> \<Longrightarrow>
-   (Cs, T) \<in> FieldDecls P C F"
- by (simp add: FieldDecls_def)
+constdefs
+  MethodDefs' :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool"
+  "MethodDefs' P C M \<equiv> member2 (MethodDefs P C M)"
 
+  FieldDecls' :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> path \<Rightarrow> ty \<Rightarrow> bool"
+  "FieldDecls' P C F \<equiv> member2 (FieldDecls P C F)"
+
+  MinimalMethodDefs' :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool"
+  "MinimalMethodDefs' P C M \<equiv> member2 (MinimalMethodDefs P C M)"
+
+lemma [code ind params: 3]:
+  "Subobjs P C Cs \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of ms M =  \<lfloor>mthd\<rfloor> \<Longrightarrow>
+   MethodDefs' P C M Cs mthd"
+ by (simp add: MethodDefs_def MethodDefs'_def)
+
+lemma [code ind params: 3]:
+  "Subobjs P C Cs \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of fs F =  \<lfloor>T\<rfloor> \<Longrightarrow>
+   FieldDecls' P C F Cs T"
+ by (simp add: FieldDecls_def FieldDecls'_def)
+
+lemma [code ind params: 3]:
+  "MethodDefs' P C M Cs mthd \<Longrightarrow> 
+   \<forall>Cs'\<triangleright>fstP (MethodDefs' P C M). P,C \<turnstile> Cs' \<sqsubseteq> Cs \<longrightarrow> Cs' = Cs \<Longrightarrow>
+   MinimalMethodDefs' P C M Cs mthd"
+  apply (simp add:MinimalMethodDefs_def MinimalMethodDefs'_def MethodDefs'_def)
+  apply (rule ballI)
+  apply (simp add: split_paired_all)
+  apply (drule_tac x=a in bspecp)
+  apply auto
+  done
+
+lemma MethodDefs_eq: "(Cs, mthd) \<in> MethodDefs P C M = MethodDefs' P C M Cs mthd"
+  by (simp add: MethodDefs'_def)
+
+lemma ForallMethodDefs_eq:
+  "(\<forall>(Cs, mthd)\<in>MethodDefs P C M. Q Cs) = (\<forall>Cs\<triangleright>fstP (MethodDefs' P C M). Q Cs)"
+  by (auto simp add: MethodDefs'_def)
+
+lemma FieldDecls_eq: "(Cs, T) \<in> FieldDecls P C F = FieldDecls' P C F Cs T"
+  by (simp add: FieldDecls'_def)
+
+lemma ForallFieldDecls_eq:
+  "(\<forall>(Cs, T)\<in>FieldDecls P C F. Q Cs) = (\<forall>Cs\<triangleright>fstP (FieldDecls' P C F). Q Cs)"
+  by (auto simp add: FieldDecls'_def)
+
+inductive2 tupleP :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool"
+  for r :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+where
+  tuplePI: "r x y \<Longrightarrow> tupleP r (x, y)"
+
+constdefs
+  OverriderMethodDefs' :: "prog \<Rightarrow> subobj \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool"
+  "OverriderMethodDefs' P R M \<equiv> member2 (OverriderMethodDefs P R M)"
+
+lemma OverriderMethodDefs_eq:
+  "(Cs, mthd) \<in> OverriderMethodDefs P R M = OverriderMethodDefs' P R M Cs mthd"
+  by (simp add: OverriderMethodDefs'_def)
+
+lemma OverriderMethodDefs_card_eq:
+  "card (OverriderMethodDefs P R M) = card (Collect (tupleP (OverriderMethodDefs' P R M)))"
+  apply (subgoal_tac "OverriderMethodDefs P R M = Collect (tupleP (OverriderMethodDefs' P R M))")
+  apply (auto elim!: tupleP.cases intro!: tuplePI simp add: OverriderMethodDefs'_def)
+  done
+
+lemmas codegen_simps = MethodDefs_eq ForallMethodDefs_eq
+  FieldDecls_eq ForallFieldDecls_eq OverriderMethodDefs_eq OverriderMethodDefs_card_eq
 
 
 section {* Rewriting lemmas for Semantic rules *}
@@ -199,7 +221,7 @@ text {* Cast *}
 
 lemma StaticUpCast_new1:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;
-    (last Cs, Cs') \<in> Subobjs P; last Cs' = C;
+    Subobjs P (last Cs) Cs'; last Cs' = C;
     last Cs = hd Cs'; Cs @ tl Cs' = Ds\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),(h,l)\<rangle>"
 apply(rule StaticUpCast)
@@ -210,7 +232,7 @@ done
 
 lemma StaticUpCast_new2:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;
-    (last Cs, Cs') \<in> Subobjs P; last Cs' = C;
+    Subobjs P (last Cs) Cs'; last Cs' = C;
     last Cs \<noteq> hd Cs'\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),(h,l)\<rangle>"
 apply(rule StaticUpCast)
@@ -220,7 +242,7 @@ apply(simp add:appendPath_def)
 done
 
 lemma StaticDownCast_new: 
-  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),s\<^isub>1\<rangle>; (Cs, [C], Ds') \<in> app; (Ds',Cs',Ds) \<in> app\<rbrakk>
+  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),s\<^isub>1\<rangle>; app Cs [C] Ds'; app Ds' Cs' Ds\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs@[C]),s\<^isub>1\<rangle>"
 apply (rule StaticDownCast)
 apply (simp add: app_eq)
@@ -233,36 +255,36 @@ by (fastsimp intro:StaticCastFail)
 
 lemma StaticUpDynCast_new1:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;
-    (last Cs, Cs') \<in> Subobjs P; last Cs' = C;
-    \<forall>Cs''\<in>Subobjs_aux P (last Cs). last Cs'' = C \<longrightarrow> Cs' = Cs'';
+    Subobjs P (last Cs) Cs'; last Cs' = C;
+    \<forall>Cs''\<triangleright>Subobjs P (last Cs). last Cs'' = C \<longrightarrow> Cs' = Cs'';
     last Cs = hd Cs'; Cs @ tl Cs' = Ds\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),(h,l)\<rangle>"
 apply(rule StaticUpDynCast)
    apply assumption
   apply(simp add:path_unique_def)
   apply(rule_tac a="Cs'" in ex1I) apply simp
-  apply(fastsimp simp:Subobjs_aux [symmetric])
+  apply fastsimp
  apply(fastsimp simp:path_via_def)
 apply(simp add:appendPath_def)
 done
 
 lemma StaticUpDynCast_new2:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>;
-    (last Cs, Cs') \<in> Subobjs P; last Cs' = C;
-    \<forall>Cs''\<in>Subobjs_aux P (last Cs). last Cs'' = C \<longrightarrow> Cs' = Cs'';
+    Subobjs P (last Cs) Cs'; last Cs' = C;
+    \<forall>Cs''\<triangleright>Subobjs P (last Cs). last Cs'' = C \<longrightarrow> Cs' = Cs'';
     last Cs \<noteq> hd Cs'\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),(h,l)\<rangle>"
 apply(rule StaticUpDynCast)
    apply assumption
   apply(simp add:path_unique_def)
   apply(rule_tac a="Cs'" in ex1I) apply simp
-  apply(fastsimp simp:Subobjs_aux [symmetric])
+  apply fastsimp
  apply(fastsimp simp:path_via_def)
 apply(simp add:appendPath_def)
 done
 
 lemma StaticDownDynCast_new: 
-  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),s\<^isub>1\<rangle>; (Cs, [C], Ds') \<in> app; (Ds',Cs',Ds) \<in> app\<rbrakk>
+  "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Ds),s\<^isub>1\<rangle>; app Cs [C] Ds'; app Ds' Cs' Ds\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs@[C]),s\<^isub>1\<rangle>"
 apply (rule StaticDownDynCast)
 apply (simp add: app_eq)
@@ -270,33 +292,26 @@ done
 
 lemma DynCast_new:
 "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S);
-   (D, Cs') \<in> Subobjs P; last Cs' = C;
-    \<forall>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<longrightarrow> Cs' = Cs''\<rbrakk>
+   Subobjs P D Cs'; last Cs' = C;
+    \<forall>Cs''\<triangleright>Subobjs P D. last Cs'' = C \<longrightarrow> Cs' = Cs''\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),(h,l)\<rangle>"
 apply(rule DynCast)
 apply(auto simp add:path_via_def path_unique_def)
-apply(subgoal_tac "Cs' = Csa")
- prefer 2 apply(erule_tac x="Csa" in ballE) apply fastsimp
-apply(simp add:Subobjs_aux [symmetric])
-apply(subgoal_tac "Cs' = y")
- prefer 2 apply(erule_tac x="y" in ballE) apply fastsimp
-apply(simp add:Subobjs_aux [symmetric])
-apply clarify
 done
 
 lemma DynCastFail_new:
 "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle>\<Rightarrow> \<langle>ref (a,Cs),(h,l)\<rangle>; h a = Some(D,S);
-  \<forall>Cs'\<in>Subobjs_aux P D. last Cs' = C \<longrightarrow> 
-       (\<exists>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<and> Cs' \<noteq> Cs'');
-  \<forall>Cs'\<in>Subobjs_aux P (last Cs). last Cs' = C \<longrightarrow> 
-       (\<exists>Cs''\<in>Subobjs_aux P (last Cs). last Cs'' = C \<and> Cs' \<noteq> Cs'');
+  \<forall>Cs'\<triangleright>Subobjs P D. last Cs' = C \<longrightarrow> 
+       (\<exists>Cs''\<triangleright>Subobjs P D. last Cs'' = C \<and> Cs' \<noteq> Cs'');
+  \<forall>Cs'\<triangleright>Subobjs P (last Cs). last Cs' = C \<longrightarrow> 
+       (\<exists>Cs''\<triangleright>Subobjs P (last Cs). last Cs'' = C \<and> Cs' \<noteq> Cs'');
   C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,(h,l)\<rangle>"
 apply(rule DynCastFail)
     apply assumption
    apply assumption
-  apply (fastsimp simp:path_unique_def Subobjs_aux [symmetric])
- apply (fastsimp simp:path_unique_def Subobjs_aux [symmetric])
+  apply (fastsimp simp:path_unique_def)
+ apply (fastsimp simp:path_unique_def)
 apply assumption
 done
 
@@ -304,7 +319,7 @@ text {* Assignment *}
 
 lemma LAss_new:
   "\<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,(h, l)\<rangle>; E V = \<lfloor>T\<rfloor>;
-    (T,v,v') \<in> casts_aux P; l' = l(V \<mapsto> v')\<rbrakk>
+    casts_aux P T v v'; l' = l(V \<mapsto> v')\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>V:=e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v',(h, l')\<rangle>"
   apply (rule LAss)
   apply assumption+
@@ -334,15 +349,10 @@ apply(simp add:appendPath_def)
 apply assumption+
 done
 
-lemma [code ind]:
-  "(C,Cs) \<in> Subobjs P \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of fs F =  \<lfloor>T\<rfloor> \<Longrightarrow>
-   (Cs, T) \<in> FieldDecls P C F"
- by (simp add: FieldDecls_def)
-
 lemma FAss_new1:
   "\<lbrakk> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>Val v,(h\<^isub>2,l\<^isub>2)\<rangle>;
      h\<^isub>2 a = Some(D,S); P \<turnstile> (last Cs') has least F:T via Cs; 
-     (T,v,v') \<in> casts_aux P; last Cs' = hd Cs; Cs' @ tl Cs = Ds; 
+     casts_aux P T v v'; last Cs' = hd Cs; Cs' @ tl Cs = Ds; 
      (Ds,fs) \<in> S; fs' = fs(F\<mapsto>v'); 
      S' = S - {(Ds,fs)} \<union> {(Ds,fs')}; h\<^isub>2' = h\<^isub>2(a\<mapsto>(D,S'))\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v',(h\<^isub>2',l\<^isub>2)\<rangle>"
@@ -356,7 +366,7 @@ done
 lemma FAss_new2:
   "\<lbrakk> P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs'),s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>Val v,(h\<^isub>2,l\<^isub>2)\<rangle>;
      h\<^isub>2 a = Some(D,S); P \<turnstile> (last Cs') has least F:T via Cs; 
-     (T,v,v') \<in> casts_aux P; last Cs' \<noteq> hd Cs; (Cs,fs) \<in> S; fs' = fs(F\<mapsto>v'); 
+     casts_aux P T v v'; last Cs' \<noteq> hd Cs; (Cs,fs) \<in> S; fs' = fs(F\<mapsto>v'); 
      S' = S - {(Cs,fs)} \<union> {(Cs,fs')}; h\<^isub>2' = h\<^isub>2(a\<mapsto>(D,S'))\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v',(h\<^isub>2',l\<^isub>2)\<rangle>"
 apply(rule FAss)
@@ -370,30 +380,25 @@ text {* Call *}
 
 lemma CallParamsThrow_new:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,s\<^isub>2\<rangle>;
-     (evs, vs, throw ex # es') : map_val2 \<rbrakk>
+     map_val2 evs vs (throw ex # es') \<rbrakk>
    \<Longrightarrow> P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>"
 apply(rule eval_evals.CallParamsThrow, assumption+)
 apply(simp add: map_val2_conv[symmetric])
 done
 
 lemma CallNull_new:
-  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,s\<^isub>2\<rangle>; (evs,vs) : map_val \<rbrakk>
+  "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,s\<^isub>2\<rangle>; map_val evs vs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
 apply(rule CallNull, assumption+)
 apply(simp add: map_val_conv[symmetric])
 done
 
-lemma [code ind]:
-  "(C,Cs) \<in> Subobjs P \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of ms M =  \<lfloor>mthd\<rfloor> \<Longrightarrow>
-   (Cs, mthd) \<in> MethodDefs P C M"
- by (simp add: MethodDefs_def)
-
 lemma Call_new:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>;
-     (evs,vs) : map_val; h\<^isub>2 a = Some(C,S); 
+     map_val evs vs; h\<^isub>2 a = Some(C,S); 
      P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds;
      P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'; length vs = length pns; 
-     (Ts,vs,vs') \<in> Casts_aux P; l\<^isub>2' = [this\<mapsto>Ref (a,Cs'), pns[\<mapsto>]vs'];
+     Casts_aux P Ts vs vs'; l\<^isub>2' = [this\<mapsto>Ref (a,Cs'), pns[\<mapsto>]vs'];
      new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>body   | _  \<Rightarrow> body);
      P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>2)\<rangle>"
@@ -407,18 +412,12 @@ apply assumption+
 done
 
 
-lemma [code ind]:
-  "(Cs,mthd) \<in> MethodDefs P C M \<Longrightarrow> 
-   \<forall>(Cs',mthd')\<in> MethodDefs P C M. P,C \<turnstile> Cs' \<sqsubseteq> Cs \<longrightarrow> Cs' = Cs \<Longrightarrow>
-   (Cs,mthd) \<in> MinimalMethodDefs P C M"
-by(simp add:MinimalMethodDefs_def)
-
 lemma Overrider1:
   "P \<turnstile> (ldc R) has least M = mthd' via Cs' \<Longrightarrow> 
-   (Cs,mthd) \<in> MinimalMethodDefs P (mdc R) M \<Longrightarrow>
+   MinimalMethodDefs' P (mdc R) M Cs mthd \<Longrightarrow>
    last (snd R) = hd Cs' \<Longrightarrow> P,mdc R \<turnstile> Cs \<sqsubseteq> (snd R)@tl Cs' \<Longrightarrow>
-   (Cs,mthd) \<in> OverriderMethodDefs P R M"
-apply(simp add:OverriderMethodDefs_def appendPath_def)
+   OverriderMethodDefs' P R M Cs mthd"
+apply(simp add:OverriderMethodDefs_def OverriderMethodDefs'_def MinimalMethodDefs'_def appendPath_def)
 apply(rule_tac x="Cs'" in exI)
 apply clarsimp
 apply(cases mthd')
@@ -427,10 +426,10 @@ done
 
 lemma Overrider2:
   "P \<turnstile> (ldc R) has least M = mthd' via Cs' \<Longrightarrow> 
-   (Cs,mthd) \<in> MinimalMethodDefs P (mdc R) M \<Longrightarrow>
+   MinimalMethodDefs' P (mdc R) M Cs mthd \<Longrightarrow>
    last (snd R) \<noteq> hd Cs' \<Longrightarrow> P,mdc R \<turnstile> Cs \<sqsubseteq> Cs' \<Longrightarrow>
-   (Cs,mthd) \<in> OverriderMethodDefs P R M"
-apply(simp add:OverriderMethodDefs_def appendPath_def)
+   OverriderMethodDefs' P R M Cs mthd"
+apply(simp add:OverriderMethodDefs_def OverriderMethodDefs'_def MinimalMethodDefs'_def appendPath_def)
 apply(rule_tac x="Cs'" in exI) 
 apply clarsimp
 apply(cases mthd')
@@ -438,29 +437,18 @@ apply blast
 done
 
 
-consts ambiguous_aux :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> Product_Type.unit set"
-inductive "ambiguous_aux P C M Cs'"
-intros
-  "(Cs'',mdecl) \<in> MethodDefs P C M \<Longrightarrow> \<not> P,C \<turnstile> Cs' \<sqsubseteq> Cs'' 
-  \<Longrightarrow> () \<in> ambiguous_aux P C M Cs'"
-
 lemma ambiguous: "(\<not> P \<turnstile> C has least M = mthd via Cs') = 
-  ((Cs',mthd) \<in> MethodDefs P C M \<longrightarrow> () \<in> ambiguous_aux P C M Cs')"
-apply (auto simp:LeastMethodDef_def)
- apply (rule ambiguous_aux.intros) 
-  apply (rotate_tac 1) apply simp_all
-apply (erule ambiguous_aux.elims)
-apply auto
-done
+  (MethodDefs' P C M Cs' mthd \<longrightarrow> (\<exists>Cs''\<triangleright>fstP (MethodDefs' P C M). \<not> P,C \<turnstile> Cs' \<sqsubseteq> Cs''))"
+  by (auto simp:LeastMethodDef_def MethodDefs'_def)
 
 lemma CallOverrider_new1:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>;
-     (evs,vs) : map_val; h\<^isub>2 a = Some(C,S);
+     map_val evs vs; h\<^isub>2 a = Some(C,S);
      P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds;
-     \<forall>(Cs', mthd')\<in>MethodDefs P (last Cs) M. P,last Cs \<turnstile> Ds \<sqsubseteq> Cs';
-     \<forall>(Cs', mthd)\<in>MethodDefs P C M. () \<in> ambiguous_aux P C M Cs';
+     \<forall>Cs'\<triangleright>fstP (MethodDefs' P (last Cs) M). P,last Cs \<turnstile> Ds \<sqsubseteq> Cs';
+     \<forall>Cs'\<triangleright>fstP (MethodDefs' P C M). \<exists>Cs''\<triangleright>fstP (MethodDefs' P C M). \<not> P,C \<turnstile> Cs' \<sqsubseteq> Cs'';
      last Cs = hd Ds; P \<turnstile> (C,Cs@tl Ds) has overrider M = (Ts,T,pns,body) via Cs';
-     length vs = length pns; (Ts,vs,vs') \<in> Casts_aux P; 
+     length vs = length pns; Casts_aux P Ts vs vs'; 
      l\<^isub>2' = [this\<mapsto>Ref (a,Cs'), pns[\<mapsto>]vs']; 
      new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>body   | _  \<Rightarrow> body);
      P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
@@ -478,12 +466,12 @@ done
 
 lemma CallOverrider_new2:
   "\<lbrakk> P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>;  P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>;
-     (evs,vs) : map_val; h\<^isub>2 a = Some(C,S);
+     map_val evs vs; h\<^isub>2 a = Some(C,S);
      P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds;
-     \<forall>(Cs', mthd')\<in>MethodDefs P (last Cs) M. P,last Cs \<turnstile> Ds \<sqsubseteq> Cs';
-     \<forall>(Cs', mthd)\<in>MethodDefs P C M. () \<in> ambiguous_aux P C M Cs';
+     \<forall>Cs'\<triangleright>fstP (MethodDefs' P (last Cs) M). P,last Cs \<turnstile> Ds \<sqsubseteq> Cs';
+     \<forall>Cs'\<triangleright>fstP (MethodDefs' P C M). \<exists>Cs''\<triangleright>fstP (MethodDefs' P C M). \<not> P,C \<turnstile> Cs' \<sqsubseteq> Cs'';
      last Cs \<noteq> hd Ds; P \<turnstile> (C,Ds) has overrider M = (Ts,T,pns,body) via Cs';
-     length vs = length pns; (Ts,vs,vs') \<in> Casts_aux P;
+     length vs = length pns; Casts_aux P Ts vs vs';
      l\<^isub>2' = [this\<mapsto>Ref (a,Cs'), pns[\<mapsto>]vs']; 
      new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>body   | _  \<Rightarrow> body);
      P,E(this\<mapsto>Class(last Cs'), pns[\<mapsto>]Ts) \<turnstile> \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
@@ -500,11 +488,11 @@ apply assumption+
 done
 
 lemma StaticCall_new1:
-  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"(evs,vs) : map_val"
-  and path:"(last Cs,Cs'') \<in> Subobjs P" "last Cs'' = C"
-  and unique:"\<forall>Xs\<in>Subobjs_aux P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
+  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"map_val evs vs"
+  and path:"Subobjs P (last Cs) Cs''" "last Cs'' = C"
+  and unique:"\<forall>Xs\<triangleright>Subobjs P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
   and eq1:"last Cs = hd Cs''" and eq2:"last Cs'' = hd Cs'"
-  and append:"Ds = (Cs@tl Cs'')@tl Cs'" and casts:"(Ts,vs,vs') \<in> Casts_aux P"
+  and append:"Ds = (Cs@tl Cs'')@tl Cs'" and casts:"Casts_aux P Ts vs vs'"
   and rest:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>"  "length vs = length pns"
     "l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs']"
     "P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'"
@@ -516,7 +504,7 @@ proof -
   from path have path_via:"P \<turnstile> Path (last Cs) to C via Cs''"
     by(simp add:path_via_def)
   from path unique have path_unique:"P \<turnstile> Path (last Cs) to C unique"
-    by(auto simp:path_unique_def Subobjs_aux [symmetric])
+    by(auto simp:path_unique_def)
   from path have notempty:"Cs'' \<noteq> []" by -(rule Subobjs_nonempty)
   have "last(Cs@tl Cs'') = hd Cs'"
   proof(cases "tl Cs'' = []")
@@ -538,11 +526,11 @@ proof -
 qed
 
 lemma StaticCall_new2:
-  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"(evs,vs) : map_val"
-  and path:"(last Cs,Cs'') \<in> Subobjs P" "last Cs'' = C"
-  and unique:"\<forall>Xs\<in>Subobjs_aux P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
+  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"map_val evs vs"
+  and path:"Subobjs P (last Cs) Cs''" "last Cs'' = C"
+  and unique:"\<forall>Xs\<triangleright>Subobjs P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
   and eq1:"last Cs = hd Cs''" and eq2:"last Cs'' \<noteq> hd Cs'"
-  and append:"Ds = Cs'" and casts:"(Ts,vs,vs') \<in> Casts_aux P"
+  and append:"Ds = Cs'" and casts:"Casts_aux P Ts vs vs'"
   and rest:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>"  "length vs = length pns"
     "l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs']"
     "P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'"
@@ -554,7 +542,7 @@ proof -
   from path have path_via:"P \<turnstile> Path (last Cs) to C via Cs''"
     by(simp add:path_via_def)
   from path unique have path_unique:"P \<turnstile> Path (last Cs) to C unique"
-    by(auto simp:path_unique_def Subobjs_aux [symmetric])
+    by(auto simp:path_unique_def)
   from path have notempty:"Cs'' \<noteq> []" by -(rule Subobjs_nonempty)
   have "last(Cs@tl Cs'') \<noteq> hd Cs'"
   proof(cases "tl Cs'' = []")
@@ -576,11 +564,11 @@ proof -
 qed
 
 lemma StaticCall_new3:
-  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"(evs,vs) : map_val"
-  and path:"(last Cs,Cs'') \<in> Subobjs P" "last Cs'' = C"
-  and unique:"\<forall>Xs\<in>Subobjs_aux P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
+  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"map_val evs vs"
+  and path:"Subobjs P (last Cs) Cs''" "last Cs'' = C"
+  and unique:"\<forall>Xs\<triangleright>Subobjs P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
   and eq1:"last Cs \<noteq> hd Cs''" and eq2:"last Cs'' = hd Cs'"
-  and append:"Ds = Cs''@tl Cs'" and casts:"(Ts,vs,vs') \<in> Casts_aux P"
+  and append:"Ds = Cs''@tl Cs'" and casts:"Casts_aux P Ts vs vs'"
   and rest:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>"  "length vs = length pns"
     "l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs']"
     "P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'"
@@ -592,7 +580,7 @@ proof -
   from path have path_via:"P \<turnstile> Path (last Cs) to C via Cs''"
     by(simp add:path_via_def)
   from path unique have path_unique:"P \<turnstile> Path (last Cs) to C unique"
-    by(auto simp:path_unique_def Subobjs_aux [symmetric])
+    by(auto simp:path_unique_def)
   from eq1 eq2 append have Ds:"Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs'"
     by(simp add:appendPath_def)
   from casts have "P \<turnstile> Ts Casts vs to vs'" by(simp add:Casts_aux_eq)
@@ -601,11 +589,11 @@ proof -
 qed
 
 lemma StaticCall_new4:
-  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"(evs,vs) : map_val"
-  and path:"(last Cs,Cs'') \<in> Subobjs P" "last Cs'' = C"
-  and unique:"\<forall>Xs\<in>Subobjs_aux P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
+  assumes evals:"P,E \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>" and map:"map_val evs vs"
+  and path:"Subobjs P (last Cs) Cs''" "last Cs'' = C"
+  and unique:"\<forall>Xs\<triangleright>Subobjs P (last Cs). last Xs = C \<longrightarrow> Cs'' = Xs"
   and eq1:"last Cs \<noteq> hd Cs''" and eq2:"last Cs'' \<noteq> hd Cs'"
-  and append:"Ds = Cs'" and casts:"(Ts,vs,vs') \<in> Casts_aux P"
+  and append:"Ds = Cs'" and casts:"Casts_aux P Ts vs vs'"
   and rest:"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a,Cs),s\<^isub>1\<rangle>"  "length vs = length pns"
     "l\<^isub>2' = [this\<mapsto>Ref (a,Ds), pns[\<mapsto>]vs']"
     "P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'"
@@ -617,7 +605,7 @@ proof -
   from path have path_via:"P \<turnstile> Path (last Cs) to C via Cs''"
     by(simp add:path_via_def)
   from path unique have path_unique:"P \<turnstile> Path (last Cs) to C unique"
-    by(auto simp:path_unique_def Subobjs_aux [symmetric])
+    by(auto simp:path_unique_def)
   from eq1 eq2 append have Ds:"Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs'"
     by(simp add:appendPath_def)
   from casts have "P \<turnstile> Ts Casts vs to vs'" by(simp add:Casts_aux_eq)
@@ -630,29 +618,29 @@ section{* Rewriting lemmas for Type rules *}
 
 lemma WTDynCast_new1:
   "\<lbrakk> P,E \<turnstile> e :: Class D; is_class P C;
-   (D, Cs') \<in> Subobjs P; last Cs' = C;
-    \<forall>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<longrightarrow> Cs' = Cs''\<rbrakk>
+    Subobjs P D Cs'; last Cs' = C;
+    \<forall>Cs''\<triangleright>Subobjs P D. last Cs'' = C \<longrightarrow> Cs' = Cs''\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> Cast C e :: Class C"
-  by (rule WTDynCast,auto simp add: path_unique_def Subobjs_aux [symmetric])
+  by (rule WTDynCast,auto simp add: path_unique_def)
 
 lemma WTDynCast_new2:
   "\<lbrakk> P,E \<turnstile> e :: Class D; is_class P C;
-     \<forall>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<longrightarrow> False\<rbrakk>
+     \<forall>Cs''\<triangleright>Subobjs P D. last Cs'' = C \<longrightarrow> False\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> Cast C e :: Class C"
-  by (rule WTDynCast,auto simp add: path_via_def Subobjs_aux [symmetric])
+  by (rule WTDynCast,auto simp add: path_via_def)
 
 lemma WTStaticCast_new1:
   "\<lbrakk> P,E \<turnstile> e :: Class D; is_class P C;
-   (D, Cs') \<in> Subobjs P; last Cs' = C;
-    \<forall>Cs''\<in>Subobjs_aux P D. last Cs'' = C \<longrightarrow> Cs' = Cs''\<rbrakk>
+    Subobjs P D Cs'; last Cs' = C;
+    \<forall>Cs''\<triangleright>Subobjs P D. last Cs'' = C \<longrightarrow> Cs' = Cs''\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<lparr>C\<rparr>e :: Class C"
-  by (rule WTStaticCast,auto simp add: path_unique_def Subobjs_aux [symmetric])
+  by (rule WTStaticCast,auto simp add: path_unique_def)
 
 lemma WTStaticCast_new2:
 "\<lbrakk>P,E \<turnstile> e :: Class D; is_class P C; P \<turnstile> C \<preceq>\<^sup>* D;
-  \<forall>Cs \<in> Subobjs_aux P C. last Cs = D \<longrightarrow> (C,Cs) \<in> Subobjs\<^isub>R P \<rbrakk>
+  \<forall>Cs \<triangleright> Subobjs P C. last Cs = D \<longrightarrow> Subobjs\<^isub>R P C Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<lparr>C\<rparr>e :: Class C"
-  by (rule WTStaticCast,auto simp:path_via_def Subobjs_aux [symmetric])
+  by (rule WTStaticCast,auto simp:path_via_def)
 
 lemma WTBinOp1: "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: T;  P,E \<turnstile> e\<^isub>2 :: T\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>Eq\<guillemotright> e\<^isub>2 :: Boolean"
@@ -669,20 +657,20 @@ lemma WTBinOp2: "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Integer;  P,E \<turnst
   done
 
 lemma WTStaticCall_new:
-  "\<lbrakk> P,E \<turnstile> e :: Class C'; (C',Cs') \<in> Subobjs P; last Cs' = C;
-    \<forall>Cs''\<in>Subobjs_aux P C'. last Cs'' = C \<longrightarrow> Cs' = Cs'';
+  "\<lbrakk> P,E \<turnstile> e :: Class C'; Subobjs P C' Cs'; last Cs' = C;
+    \<forall>Cs''\<triangleright>Subobjs P C'. last Cs'' = C \<longrightarrow> Cs' = Cs'';
      P \<turnstile> C has least M = (Ts,T,m) via Cs; P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<bullet>(C::)M(es) :: T"
   apply(rule WTStaticCall)
   apply assumption
-  apply(auto simp:path_unique_def Subobjs_aux [symmetric])
+  apply(auto simp:path_unique_def)
   done
 
 lemma [code ind]:
-  "\<lbrakk>(C,Cs') \<in> Subobjs P; last Cs' = D;
-    \<forall>Cs''\<in>Subobjs_aux P C. last Cs'' = D \<longrightarrow> Cs' = Cs'' \<rbrakk> 
+  "\<lbrakk>Subobjs P C Cs'; last Cs' = D;
+    \<forall>Cs''\<triangleright>Subobjs P C. last Cs'' = D \<longrightarrow> Cs' = Cs'' \<rbrakk> 
 \<Longrightarrow> P \<turnstile> Class C \<le> Class D"
-by(rule widen_subcls,auto simp:path_unique_def Subobjs_aux [symmetric])
+by(rule widen_subcls,auto simp:path_unique_def)
 
 lemmas [code ind] = widen_refl widen_null
 
@@ -691,8 +679,8 @@ lemmas [code ind] = widen_refl widen_null
 section{* Code generation *}
 
 lemmas [code ind] = 
- Overrider1[simplified LeastMethodDef_def, OF conjI]
- Overrider2[simplified LeastMethodDef_def, OF conjI]
+ Overrider1[simplified LeastMethodDef_def codegen_simps, OF conjI]
+ Overrider2[simplified LeastMethodDef_def codegen_simps, OF conjI]
 
  (* Semantic rules *)
  eval_evals.New eval_evals.NewFail
@@ -704,22 +692,22 @@ lemmas [code ind] =
  eval_evals.Val eval_evals.Var
  eval_evals.BinOp eval_evals.BinOpThrow1 eval_evals.BinOpThrow2
  LAss_new eval_evals.LAssThrow FAcc_new1 FAcc_new2 
- FAss_new1[simplified LeastFieldDecl_def, OF _ _ _ conjI]
- FAss_new2[simplified LeastFieldDecl_def, OF _ _ _ conjI]
+ FAss_new1[simplified LeastFieldDecl_def codegen_simps, OF _ _ _ conjI]
+ FAss_new2[simplified LeastFieldDecl_def codegen_simps, OF _ _ _ conjI]
  eval_evals.FAssNull eval_evals.FAssThrow1 eval_evals.FAssThrow2
  eval_evals.CallObjThrow CallNull_new CallParamsThrow_new 
- Call_new[simplified LeastMethodDef_def, OF _ _ _ _ conjI conjI]
- CallOverrider_new1[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+ Call_new[simplified LeastMethodDef_def codegen_simps, OF _ _ _ _ conjI conjI]
+ CallOverrider_new1[simplified FinalOverriderMethodDef_def LeastMethodDef_def codegen_simps,
                     OF _ _ _ _ conjI _ _ _ conjI]
- CallOverrider_new2[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+ CallOverrider_new2[simplified FinalOverriderMethodDef_def LeastMethodDef_def codegen_simps,
                     OF _ _ _ _ conjI _ _ _ conjI]
- StaticCall_new1[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+ StaticCall_new1[simplified FinalOverriderMethodDef_def LeastMethodDef_def codegen_simps,
                  OF _ _ _ _ _ _ _ _ _ _ _ _ conjI]
- StaticCall_new2[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+ StaticCall_new2[simplified FinalOverriderMethodDef_def LeastMethodDef_def codegen_simps,
                  OF _ _ _ _ _ _ _ _ _ _ _ _ conjI]
- StaticCall_new3[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+ StaticCall_new3[simplified FinalOverriderMethodDef_def LeastMethodDef_def codegen_simps,
                  OF _ _ _ _ _ _ _ _ _ _ _ _ conjI]
- StaticCall_new4[simplified FinalOverriderMethodDef_def LeastMethodDef_def,
+ StaticCall_new4[simplified FinalOverriderMethodDef_def LeastMethodDef_def codegen_simps,
                  OF _ _ _ _ _ _ _ _ _ _ _ _ conjI]
  eval_evals.Block eval_evals.Seq eval_evals.SeqThrow
  eval_evals.CondT eval_evals.CondF eval_evals.CondThrow
@@ -732,16 +720,16 @@ lemmas [code ind] =
  WT_WTs.WTNew WTDynCast_new1 WTDynCast_new2
  WTStaticCast_new1 WTStaticCast_new2
  WT_WTs.WTVal WT_WTs.WTVar WTBinOp1 WTBinOp2 WT_WTs.WTLAss
- WT_WTs.WTFAcc[unfolded LeastFieldDecl_def, OF _ conjI]
- WT_WTs.WTFAss[unfolded LeastFieldDecl_def, OF _ conjI]
- WT_WTs.WTCall[unfolded LeastMethodDef_def, OF _ conjI,simplified fun_of_def]
- WTStaticCall_new[unfolded LeastMethodDef_def, OF _ _ _ _ conjI,simplified fun_of_def]
+ WT_WTs.WTFAcc[unfolded LeastFieldDecl_def codegen_simps, OF _ conjI]
+ WT_WTs.WTFAss[unfolded LeastFieldDecl_def codegen_simps, OF _ conjI]
+ WT_WTs.WTCall[unfolded LeastMethodDef_def codegen_simps, OF _ conjI]
+ WTStaticCall_new[unfolded LeastMethodDef_def codegen_simps, OF _ _ _ _ conjI]
  WT_WTs.WTBlock WT_WTs.WTSeq WT_WTs.WTCond WT_WTs.WTWhile WT_WTs.WTThrow
  WT_WTs.WTNil WT_WTs.WTCons
 
 
 
-lemmas [code ind] = rtrancl_refl converse_rtrancl_into_rtrancl
+lemmas [code ind] = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl'
 
 (* A hack to make set operations work on sets with function types *)
 
@@ -749,7 +737,7 @@ consts_code
   "insert" :: "('a \<times> ('b \<Rightarrow> 'c)) \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("insert (op = o pairself fst)")
   "minus" :: "('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
-    ("(gen'_rems (op = o pairself fst)/ (_,/ _))")
+    ("(subtract (op = o pairself fst)/ (_)/ (_))")
   "op Un" :: "('a * ('b => 'c)) set => ('a * ('b => 'c)) set => ('a * ('b => 'c)) set"
     ("(gen'_union (op = o pairself fst)/ (_,/ _))")
 
@@ -759,16 +747,15 @@ attach {*
 fun card S = length (distinct op = S);
 *}
 
-ML {*
+consts_code
+  "new_Addr"
+   ("\<module>new'_addr {* 0::nat *} {* Suc *}
+               {* %x. case x of None => True | Some y => False *} {* Some *}")
+attach {*
 fun new_addr z s alloc some hp =
   let fun nr i = if alloc (hp i) then some i else nr (s i);
   in nr z end;
 *}
-
-consts_code
-  "new_Addr"
-   ("new'_addr {* 0::nat *} {* Suc *}
-               {* %x. case x of None => True | Some y => False *} {* Some *}")
 
   "arbitrary" ("(raise ERROR \"arbitrary\")")
 
@@ -780,7 +767,7 @@ text{* Definition of program examples *}
 declare ListMem_iff [symmetric, THEN eq_reflection, code unfold]
 
 
-text{* \<dots>and off we go *}
+text{* {\ldots}and off we go *}
 
   (* Examples with no prog needed *)
 code_module NoProg

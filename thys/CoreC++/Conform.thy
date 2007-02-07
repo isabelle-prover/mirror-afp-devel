@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Conform.thy,v 1.12 2006-11-17 01:28:44 makarius Exp $
+    ID:          $Id: Conform.thy,v 1.13 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -29,8 +29,8 @@ constdefs
 
   oconf :: "prog \<Rightarrow> heap \<Rightarrow> obj \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>" [51,51,51] 50)
   "P,h \<turnstile> obj \<surd>  \<equiv> let (C,S) = obj in 
-      (\<forall>Cs. (C,Cs) \<in> Subobjs P \<longrightarrow> (\<exists>!fs'. (Cs,fs') \<in> S)) \<and> 
-      (\<forall>Cs fs'. (Cs,fs') \<in> S \<longrightarrow> (C,Cs) \<in> Subobjs P \<and> 
+      (\<forall>Cs. Subobjs P C Cs \<longrightarrow> (\<exists>!fs'. (Cs,fs') \<in> S)) \<and> 
+      (\<forall>Cs fs'. (Cs,fs') \<in> S \<longrightarrow> Subobjs P C Cs \<and> 
 	            (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
                                 P,h \<turnstile> fs' (:\<le>) map_of fs))"  
 
@@ -171,7 +171,7 @@ done
 
 
 lemma hconf_Subobjs: 
-"\<lbrakk>h a = Some(C,S); (Cs, fs) \<in> S; P \<turnstile> h \<surd>\<rbrakk> \<Longrightarrow> (C,Cs) \<in> Subobjs P"
+"\<lbrakk>h a = Some(C,S); (Cs, fs) \<in> S; P \<turnstile> h \<surd>\<rbrakk> \<Longrightarrow> Subobjs P C Cs"
 
 apply (unfold hconf_def)
 apply clarsimp
@@ -242,7 +242,7 @@ by(cases T) auto
 lemma wts_same_types_typesconf:
 "\<And>es. P,E,h \<turnstile> es [:] Ts \<Longrightarrow> types_conf(P,E,h,es,Ts)"
 proof(induct Ts)
-  case Nil thus ?case by (auto elim:WTrt_WTrts.elims)
+  case Nil thus ?case by (auto elim:WTrts.cases)
 next
   case (Cons T' Ts')
   have wtes:"P,E,h \<turnstile> es [:] T'#Ts'"

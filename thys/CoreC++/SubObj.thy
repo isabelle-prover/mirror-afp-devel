@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SubObj.thy,v 1.7 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: SubObj.thy,v 1.8 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -85,7 +85,7 @@ proof -
   with 1 R C''Cs'' have subo1:"is_subobj(P,(C',C''#rev Ds))" by simp
   with R show ?thesis
     by (induct Ds,auto simp:mdc_def split:split_if_asm dest:subobj_aux,
-      auto elim:converse_rtranclE dest!:subclsS_subcls1 elim:subcls1_class)
+      auto elim:converse_rtranclE' dest!:subclsS_subcls1 elim:subcls1_class)
 qed
 
 
@@ -171,7 +171,7 @@ proof (induct Cs')
     from DDs have "D = last (C' # rev Cs'')" by simp
     with rel1 have lastrel1:"P \<turnstile> last (C' # rev Cs'') \<prec>\<^sup>1 C''" by simp
     with rel have "P \<turnstile> C \<preceq>\<^sup>* C''"
-      by(rule_tac b="last (C' # rev Cs'')" in rtrancl_into_rtrancl) simp
+      by(rule_tac b="last (C' # rev Cs'')" in rtrancl.rtrancl_into_rtrancl) simp
     thus ?case by simp
 qed
 
@@ -337,43 +337,39 @@ qed
 
 section {* Subobject handling and lemmas *}
 
-consts
-  Subobjs\<^isub>R :: "prog \<Rightarrow> subobj set"
-  Subobjs :: "prog \<Rightarrow> subobj set"
-
 text{* Subobjects consisting of repeated inheritance relations only: *}
 
-inductive "Subobjs\<^isub>R P"
-intros
-SubobjsR_Base: "is_class P C \<Longrightarrow> (C,[C]) \<in> Subobjs\<^isub>R P"
-SubobjsR_Rep: "\<lbrakk>P \<turnstile> C \<prec>\<^sub>R D; (D, Cs) \<in> Subobjs\<^isub>R P\<rbrakk> \<Longrightarrow> (C, C # Cs) \<in> Subobjs\<^isub>R P"
+inductive2 Subobjs\<^isub>R :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" for P :: prog
+where
+  SubobjsR_Base: "is_class P C \<Longrightarrow> Subobjs\<^isub>R P C [C]"
+| SubobjsR_Rep: "\<lbrakk>P \<turnstile> C \<prec>\<^sub>R D; Subobjs\<^isub>R P D Cs\<rbrakk> \<Longrightarrow> Subobjs\<^isub>R P C (C # Cs)"
 
 text{* All subobjects: *}
 
-inductive "Subobjs P"
-intros
-Subobjs_Rep: "(C, Cs) \<in> Subobjs\<^isub>R P \<Longrightarrow> (C, Cs) \<in> Subobjs P"
-Subobjs_Sh: "\<lbrakk>P \<turnstile> C \<preceq>\<^sup>* C'; P \<turnstile> C' \<prec>\<^sub>S D; (D, Cs) \<in> Subobjs\<^isub>R P\<rbrakk>
-             \<Longrightarrow> (C, Cs) \<in> Subobjs P"
+inductive2 Subobjs :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" for P :: prog
+where
+  Subobjs_Rep: "Subobjs\<^isub>R P C Cs \<Longrightarrow> Subobjs P C Cs"
+| Subobjs_Sh: "\<lbrakk>P \<turnstile> C \<preceq>\<^sup>* C'; P \<turnstile> C' \<prec>\<^sub>S D; Subobjs\<^isub>R P D Cs\<rbrakk>
+             \<Longrightarrow> Subobjs P C Cs"
 
 
-lemma Subobjs_Base:"is_class P C \<Longrightarrow> (C,[C]) \<in> Subobjs P"
+lemma Subobjs_Base:"is_class P C \<Longrightarrow> Subobjs P C [C]"
 by (fastsimp intro:Subobjs_Rep SubobjsR_Base)
 
-lemma SubobjsR_nonempty: "(C,Cs) \<in> Subobjs\<^isub>R P \<Longrightarrow> Cs \<noteq> []"
+lemma SubobjsR_nonempty: "Subobjs\<^isub>R P C Cs \<Longrightarrow> Cs \<noteq> []"
 by (induct rule: Subobjs\<^isub>R.induct, simp_all)
 
-lemma Subobjs_nonempty: "(C,Cs) \<in> Subobjs P \<Longrightarrow> Cs \<noteq> []"
+lemma Subobjs_nonempty: "Subobjs P C Cs \<Longrightarrow> Cs \<noteq> []"
 by (erule Subobjs.induct)(erule SubobjsR_nonempty)+
 
 
 lemma hd_SubobjsR:
-  "(C,Cs) \<in> Subobjs\<^isub>R P \<Longrightarrow> \<exists>Cs'. Cs = C#Cs'"
+  "Subobjs\<^isub>R P C Cs \<Longrightarrow> \<exists>Cs'. Cs = C#Cs'"
 by(erule Subobjs\<^isub>R.induct,simp+)
 
 
 lemma SubobjsR_subclassRep: 
-  "(C,Cs) \<in> Subobjs\<^isub>R P \<Longrightarrow> (C,last Cs) \<in> (subclsR P)\<^sup>*"
+  "Subobjs\<^isub>R P C Cs \<Longrightarrow> (subclsR P)\<^sup>*\<^sup>* C (last Cs)"
 
 apply(erule Subobjs\<^isub>R.induct)
  apply simp
@@ -381,29 +377,29 @@ apply(simp add: SubobjsR_nonempty)
 done
 
 
-lemma SubobjsR_subclass: "(C,Cs) \<in> Subobjs\<^isub>R P \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* last Cs"
+lemma SubobjsR_subclass: "Subobjs\<^isub>R P C Cs \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* last Cs"
 
 apply(erule Subobjs\<^isub>R.induct)
  apply simp
 apply(simp add: SubobjsR_nonempty)
-apply(blast intro:subclsR_subcls1 rtrancl_trans)
+apply(blast intro:subclsR_subcls1 rtrancl_trans')
 done
 
 
-lemma Subobjs_subclass: "(C,Cs) \<in> Subobjs P \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* last Cs"
+lemma Subobjs_subclass: "Subobjs P C Cs \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* last Cs"
 
 apply(erule Subobjs.induct)
  apply(erule SubobjsR_subclass)
-apply(erule rtrancl_trans)
-apply(blast intro:subclsS_subcls1 SubobjsR_subclass rtrancl_trans)
+apply(erule rtrancl_trans')
+apply(blast intro:subclsS_subcls1 SubobjsR_subclass rtrancl_trans')
 done
 
 
 
 
 lemma Subobjs_notSubobjsR:
-  "\<lbrakk>(C,Cs) \<in> Subobjs P; (C,Cs) \<notin> Subobjs\<^isub>R P\<rbrakk>
-\<Longrightarrow> \<exists>C' D. P \<turnstile> C \<preceq>\<^sup>* C' \<and> P \<turnstile> C' \<prec>\<^sub>S D \<and> (D, Cs) \<in> Subobjs\<^isub>R P"
+  "\<lbrakk>Subobjs P C Cs; \<not> Subobjs\<^isub>R P C Cs\<rbrakk>
+\<Longrightarrow> \<exists>C' D. P \<turnstile> C \<preceq>\<^sup>* C' \<and> P \<turnstile> C' \<prec>\<^sub>S D \<and> Subobjs\<^isub>R P D Cs"
 apply (induct rule: Subobjs.induct)
  apply clarsimp
 apply fastsimp
@@ -411,19 +407,19 @@ done
 
 
 
-lemma assumes subo:"(hd (Cs@ C'#Cs'),Cs@ C'#Cs') \<in> Subobjs\<^isub>R P"
-  shows SubobjsR_Subobjs:"(C',C'#Cs') \<in> Subobjs P"
+lemma assumes subo:"Subobjs\<^isub>R P (hd (Cs@ C'#Cs')) (Cs@ C'#Cs')"
+  shows SubobjsR_Subobjs:"Subobjs P C' (C'#Cs')"
   using subo
 proof (induct Cs)
   case Nil
   thus ?case by -(frule hd_SubobjsR,fastsimp intro:Subobjs_Rep)
 next
   case (Cons D Ds)
-  have subo':"(hd ((D#Ds) @ C'#Cs'), (D#Ds) @ C'#Cs') \<in> Subobjs\<^isub>R P"
-    and IH:"(hd (Ds @ C'#Cs'), Ds @ C'#Cs') \<in> Subobjs\<^isub>R P \<Longrightarrow> (C', C'#Cs') \<in> Subobjs P" .
-  from subo' have "(hd (Ds @ C' # Cs'),Ds @ C' # Cs') \<in> Subobjs\<^isub>R P"
+  have subo':"Subobjs\<^isub>R P (hd ((D#Ds) @ C'#Cs')) ((D#Ds) @ C'#Cs')"
+    and IH:"Subobjs\<^isub>R P (hd (Ds @ C'#Cs')) (Ds @ C'#Cs') \<Longrightarrow> Subobjs P C' (C'#Cs')" .
+  from subo' have "Subobjs\<^isub>R P (hd (Ds @ C' # Cs')) (Ds @ C' # Cs')"
     apply -
-    apply (drule Subobjs\<^isub>R.elims)
+    apply (drule Subobjs\<^isub>R.cases)
     apply auto
     apply (rename_tac D')
     apply (subgoal_tac "D' = hd (Ds @ C' # Cs')")
@@ -432,10 +428,10 @@ next
   with IH show ?case by simp
 qed
 
-lemma Subobjs_Subobjs:"(C,Cs@ C'#Cs') \<in> Subobjs P \<Longrightarrow> (C',C'#Cs') \<in> Subobjs P"
+lemma Subobjs_Subobjs:"Subobjs P C (Cs@ C'#Cs') \<Longrightarrow> Subobjs P C' (C'#Cs')"
   
   apply -
-  apply (drule Subobjs.elims)
+  apply (drule Subobjs.cases)
   apply auto
    apply (subgoal_tac "C = hd(Cs @ C' # Cs')")
     apply (fastsimp intro:SubobjsR_Subobjs)
@@ -448,7 +444,7 @@ lemma Subobjs_Subobjs:"(C,Cs@ C'#Cs') \<in> Subobjs P \<Longrightarrow> (C',C'#C
 
 
 lemma SubobjsR_isClass:
-assumes subo:"(C,Cs) \<in> Subobjs\<^isub>R P"
+assumes subo:"Subobjs\<^isub>R P C Cs"
 shows "is_class P C"
 
 using subo
@@ -460,104 +456,104 @@ qed
 
 
 lemma Subobjs_isClass:
-assumes subo:"(C,Cs) \<in> Subobjs P"
+assumes subo:"Subobjs P C Cs"
 shows "is_class P C"
 
 using subo
 proof (induct rule:Subobjs.induct)
   case Subobjs_Rep thus ?case by (rule SubobjsR_isClass)
 next
-  case (Subobjs_Sh C C' Cs D)
+  case (Subobjs_Sh C C' D Cs)
   have leq:"P \<turnstile> C \<preceq>\<^sup>* C'" and leqS:"P \<turnstile> C' \<prec>\<^sub>S D" .
-  hence "(C,D) \<in> (subcls1 P)\<^sup>+" by (fastsimp intro:rtrancl_into_trancl1 subclsS_subcls1)
-  thus ?case by (induct rule:trancl.induct, fastsimp intro:subcls1_class)
+  hence "(subcls1 P)\<^sup>+\<^sup>+ C D" by (fastsimp intro:rtrancl_into_trancl1' subclsS_subcls1)
+  thus ?case by (induct rule:trancl_induct', fastsimp intro:subcls1_class)
 qed
 
 
 lemma Subobjs_subclsR:
-assumes subo:"(C,Cs@[D,D']@Cs') \<in> Subobjs P"
+assumes subo:"Subobjs P C (Cs@[D,D']@Cs')"
 shows "P \<turnstile> D \<prec>\<^sub>R D'"
 
 using subo
 proof -
-  from subo have "(D,D#D'#Cs') \<in> Subobjs P" by -(rule Subobjs_Subobjs,simp)
-  then obtain C' where subo':"(C',D#D'#Cs') \<in> Subobjs\<^isub>R P"
+  from subo have "Subobjs P D (D#D'#Cs')" by -(rule Subobjs_Subobjs,simp)
+  then obtain C' where subo':"Subobjs\<^isub>R P C' (D#D'#Cs')"
     by (induct rule:Subobjs.induct,blast+)
   hence "C' = D" by -(drule hd_SubobjsR,simp)
-  with subo' have "(D,D#D'#Cs') \<in> Subobjs\<^isub>R P" by simp
-  thus ?thesis by (fastsimp elim:Subobjs\<^isub>R.elims dest:hd_SubobjsR)
+  with subo' have "Subobjs\<^isub>R P D (D#D'#Cs')" by simp
+  thus ?thesis by (fastsimp elim:Subobjs\<^isub>R.cases dest:hd_SubobjsR)
 qed
 
 
 
 
-lemma assumes subo:"(hd Cs,Cs@[D]) \<in> Subobjs\<^isub>R P" and notempty:"Cs \<noteq> []"
-  shows butlast_Subobjs_Rep:"(hd Cs,Cs) \<in> Subobjs\<^isub>R P"
+lemma assumes subo:"Subobjs\<^isub>R P (hd Cs) (Cs@[D])" and notempty:"Cs \<noteq> []"
+  shows butlast_Subobjs_Rep:"Subobjs\<^isub>R P (hd Cs) Cs"
 using subo notempty
 proof (induct Cs)
   case Nil thus ?case by simp
 next
   case (Cons C' Cs')
-  have subo:"(hd(C'#Cs'), (C'#Cs')@[D]) \<in> Subobjs\<^isub>R P"
-    and IH:"\<lbrakk>(hd Cs',Cs'@[D]) \<in> Subobjs\<^isub>R P; Cs' \<noteq> []\<rbrakk> \<Longrightarrow> (hd Cs',Cs') \<in> Subobjs\<^isub>R P" .
-  from subo have subo':"(C',C'#Cs'@[D]) \<in> Subobjs\<^isub>R P" by simp
+  have subo:"Subobjs\<^isub>R P (hd(C'#Cs')) ((C'#Cs')@[D])"
+    and IH:"\<lbrakk>Subobjs\<^isub>R P (hd Cs') (Cs'@[D]); Cs' \<noteq> []\<rbrakk> \<Longrightarrow> Subobjs\<^isub>R P (hd Cs') Cs'" .
+  from subo have subo':"Subobjs\<^isub>R P C' (C'#Cs'@[D])" by simp
   show ?case
   proof (cases "Cs' = []")
     case True
-    with subo' have "(C',[C',D]) \<in> Subobjs\<^isub>R P" by simp
+    with subo' have "Subobjs\<^isub>R P C' [C',D]" by simp
     hence "is_class P C'" by(rule SubobjsR_isClass)
-    hence "(C',[C']) \<in> Subobjs\<^isub>R P" by (rule SubobjsR_Base)
+    hence "Subobjs\<^isub>R P C' [C']" by (rule SubobjsR_Base)
     with True show ?thesis by simp
   next
     case False
-    with subo' obtain D' where subo'':"(D',Cs'@[D]) \<in> Subobjs\<^isub>R P"
+    with subo' obtain D' where subo'':"Subobjs\<^isub>R P D' (Cs'@[D])"
       and subR:"P \<turnstile> C' \<prec>\<^sub>R D'"
-      by (auto elim:Subobjs\<^isub>R.elims)
+      by (auto elim:Subobjs\<^isub>R.cases)
     from False subo'' have hd:"D' = hd Cs'"
       by (induct Cs',auto dest:hd_SubobjsR)
-    with subo'' False IH have "(hd Cs',Cs') \<in> Subobjs\<^isub>R P" by simp 
-    with subR hd have "(C',C'#Cs') \<in> Subobjs\<^isub>R P" by (fastsimp intro:SubobjsR_Rep)
+    with subo'' False IH have "Subobjs\<^isub>R P (hd Cs') Cs'" by simp 
+    with subR hd have "Subobjs\<^isub>R P C' (C'#Cs')" by (fastsimp intro:SubobjsR_Rep)
     thus ?thesis by simp
   qed
 qed
 
 
 
-lemma assumes subo:"(C,Cs@[D]) \<in> Subobjs P" and notempty:"Cs \<noteq> []"
-  shows butlast_Subobjs:"(C,Cs) \<in> Subobjs P"
+lemma assumes subo:"Subobjs P C (Cs@[D])" and notempty:"Cs \<noteq> []"
+  shows butlast_Subobjs:"Subobjs P C Cs"
 
 using subo
-proof (rule Subobjs.elims,auto)
-  assume suboR:"(C,Cs@[D]) \<in> Subobjs\<^isub>R P" and "(C,Cs@[D]) \<in> Subobjs P"
+proof (rule Subobjs.cases,auto)
+  assume suboR:"Subobjs\<^isub>R P C (Cs@[D])" and "Subobjs P C (Cs@[D])"
   from suboR notempty have hd:"C = hd Cs"
     by (induct Cs,auto dest:hd_SubobjsR)
-  with suboR notempty have "(hd Cs,Cs) \<in> Subobjs\<^isub>R P"
+  with suboR notempty have "Subobjs\<^isub>R P (hd Cs) Cs"
     by(fastsimp intro:butlast_Subobjs_Rep)
-  with hd show "(C,Cs) \<in> Subobjs P" by (fastsimp intro:Subobjs_Rep)
+  with hd show "Subobjs P C Cs" by (fastsimp intro:Subobjs_Rep)
 next
   fix C' D' assume leq:"P \<turnstile> C \<preceq>\<^sup>* C'" and subS:"P \<turnstile> C' \<prec>\<^sub>S D'"
-  and suboR:"(D',Cs@[D]) \<in> Subobjs\<^isub>R P" and "(C,Cs@[D]) \<in> Subobjs P"
+  and suboR:"Subobjs\<^isub>R P D' (Cs@[D])" and "Subobjs P C (Cs@[D])"
   from suboR notempty have hd:"D' = hd Cs"
     by (induct Cs,auto dest:hd_SubobjsR)
-  with suboR notempty have "(hd Cs,Cs) \<in> Subobjs\<^isub>R P"
+  with suboR notempty have "Subobjs\<^isub>R P (hd Cs) Cs"
     by(fastsimp intro:butlast_Subobjs_Rep)
-  with hd leq subS show "(C,Cs) \<in> Subobjs P"
+  with hd leq subS show "Subobjs P C Cs"
     by(fastsimp intro:Subobjs_Sh)
 qed
 
 
 
 
-lemma assumes subo:"(C,Cs@(rev Cs')) \<in> Subobjs P" and notempty:"Cs \<noteq> []"
-  shows rev_appendSubobj:"(C,Cs) \<in> Subobjs P"
+lemma assumes subo:"Subobjs P C (Cs@(rev Cs'))" and notempty:"Cs \<noteq> []"
+  shows rev_appendSubobj:"Subobjs P C Cs"
 using subo
 proof(induct Cs')
   case Nil thus ?case by simp
 next
   case (Cons D Ds)
-  have subo':"(C,Cs@rev(D#Ds)) \<in> Subobjs P"
-    and IH:"(C,Cs@rev Ds) \<in> Subobjs P \<Longrightarrow> (C,Cs) \<in> Subobjs P" .
-  from notempty subo' have "(C,Cs@rev Ds) \<in> Subobjs P"
+  have subo':"Subobjs P C (Cs@rev(D#Ds))"
+    and IH:"Subobjs P C (Cs@rev Ds) \<Longrightarrow> Subobjs P C Cs" .
+  from notempty subo' have "Subobjs P C (Cs@rev Ds)"
     by (fastsimp intro:butlast_Subobjs)
   with IH show ?case by simp
 qed
@@ -565,12 +561,12 @@ qed
 
 
 lemma appendSubobj:
-assumes subo:"(C,Cs@Cs') \<in> Subobjs P" and notempty:"Cs \<noteq> []"
-shows "(C,Cs) \<in> Subobjs P"
+assumes subo:"Subobjs P C (Cs@Cs')" and notempty:"Cs \<noteq> []"
+shows "Subobjs P C Cs"
 
 proof -
   obtain Cs'' where Cs'':"Cs'' = rev Cs'" by simp
-  with subo have "(C,Cs@(rev Cs'')) \<in> Subobjs P" by simp
+  with subo have "Subobjs P C (Cs@(rev Cs''))" by simp
   with notempty show ?thesis by - (rule rev_appendSubobj)
 qed
 
@@ -578,12 +574,12 @@ qed
 
 
 lemma SubobjsR_isSubobj:
-  "(C,Cs) \<in> Subobjs\<^isub>R P \<Longrightarrow> is_subobj(P,(C,Cs))"
+  "Subobjs\<^isub>R P C Cs \<Longrightarrow> is_subobj(P,(C,Cs))"
 by(erule Subobjs\<^isub>R.induct,simp,
   auto dest:hd_SubobjsR intro:build_rec_isSubobj)
 
 lemma leq_SubobjsR_isSubobj:
-  "\<lbrakk>P \<turnstile> C \<preceq>\<^sup>* C'; P \<turnstile> C' \<prec>\<^sub>S D; (D,Cs) \<in> Subobjs\<^isub>R P\<rbrakk> 
+  "\<lbrakk>P \<turnstile> C \<preceq>\<^sup>* C'; P \<turnstile> C' \<prec>\<^sub>S D; Subobjs\<^isub>R P D Cs\<rbrakk> 
 \<Longrightarrow> is_subobj (P,(C,Cs))"
 
 apply (subgoal_tac "is_subobj(P,(C,[D]))")
@@ -598,7 +594,7 @@ done
 
 
 lemma Subobjs_isSubobj:
-  "(C,Cs) \<in> Subobjs P \<Longrightarrow> is_subobj(P,(C,Cs))"
+  "Subobjs P C Cs \<Longrightarrow> is_subobj(P,(C,Cs))"
 by (auto elim:Subobjs.induct SubobjsR_isSubobj 
   simp add:leq_SubobjsR_isSubobj)
 
@@ -614,11 +610,11 @@ text{* Avoided name clash by calling one path Path. *}
 constdefs
   path_via    :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool"
       ("_ \<turnstile> Path _ to _ via _ " [51,51,51,51] 50)
-  "P \<turnstile> Path C to D via Cs \<equiv> (C,Cs) \<in> Subobjs P \<and> last Cs = D"
+  "P \<turnstile> Path C to D via Cs \<equiv> Subobjs P C Cs \<and> last Cs = D"
 
   path_unique :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool"
       ("_ \<turnstile> Path _ to _ unique" [51,51,51] 50)
-  "P \<turnstile> Path C to D unique \<equiv> \<exists>!Cs. (C,Cs) \<in> Subobjs P \<and> last Cs = D"
+  "P \<turnstile> Path C to D unique \<equiv> \<exists>!Cs. Subobjs P C Cs \<and> last Cs = D"
 
   appendPath :: "path \<Rightarrow> path \<Rightarrow> path"  (infixr "@\<^sub>p" 65)
 	"Cs @\<^sub>p Cs' \<equiv> if (last Cs = hd Cs') then Cs @ (tl Cs') else Cs'"
@@ -629,46 +625,30 @@ by(auto simp:appendPath_def last_append)(cases Cs, simp_all)+
 
 
 
-consts
-  casts_to :: "prog \<Rightarrow> (ty \<times> val \<times> val) set"
-
-syntax
+inductive2
   casts_to :: "prog \<Rightarrow> ty \<Rightarrow> val \<Rightarrow> val \<Rightarrow> bool"
     ("_ \<turnstile> _ casts _ to _ " [51,51,51,51] 50)
+  for P :: prog
+where
 
-translations
-  "P \<turnstile> T casts v to v'" == "(T,v,v') \<in> casts_to P"
+  casts_prim: "\<forall>C. T \<noteq> Class C \<Longrightarrow> P \<turnstile> T casts v to v"
 
+| casts_null: "P \<turnstile> Class C casts Null to Null"
 
-inductive "casts_to P"
-intros
-
-casts_prim: "\<forall>C. T \<noteq> Class C \<Longrightarrow> P \<turnstile> T casts v to v"
-
-casts_null: "P \<turnstile> Class C casts Null to Null"
-
-casts_ref: "\<lbrakk> P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk>
-\<Longrightarrow> P \<turnstile> Class C casts Ref(a,Cs) to Ref(a,Ds)"
+| casts_ref: "\<lbrakk> P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk>
+  \<Longrightarrow> P \<turnstile> Class C casts Ref(a,Cs) to Ref(a,Ds)"
 
 
-consts
-  Casts_to :: "prog \<Rightarrow> (ty list \<times> val list \<times> val list) set"
-
-syntax
+inductive2
   Casts_to :: "prog \<Rightarrow> ty list \<Rightarrow> val list \<Rightarrow> val list \<Rightarrow> bool"
     ("_ \<turnstile> _ Casts _ to _ " [51,51,51,51] 50)
+  for P :: prog
+where
 
-translations
-  "P \<turnstile> Ts Casts vs to vs'" == "(Ts,vs,vs') \<in> Casts_to P"
+  Casts_Nil: "P \<turnstile> [] Casts [] to []"
 
-
-inductive "Casts_to P"
-intros
-
-Casts_Nil: "P \<turnstile> [] Casts [] to []"
-
-Casts_Cons: "\<lbrakk> P \<turnstile> T casts v to v'; P \<turnstile> Ts Casts vs to vs' \<rbrakk>
-\<Longrightarrow> P \<turnstile> (T#Ts) Casts (v#vs) to (v'#vs')"
+| Casts_Cons: "\<lbrakk> P \<turnstile> T casts v to v'; P \<turnstile> Ts Casts vs to vs' \<rbrakk>
+  \<Longrightarrow> P \<turnstile> (T#Ts) Casts (v#vs) to (v'#vs')"
 
 
 
@@ -684,33 +664,27 @@ by (induct rule:Casts_to.induct,simp_all)
 
 subsection {* The relation on paths *}
 
-consts 
-  leq_path1 :: "prog \<Rightarrow> cname \<Rightarrow> (path \<times> path) set" 
+inductive2
+  leq_path1 :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" ("_,_ \<turnstile> _ \<sqsubset>\<^sup>1 _" [71,71,71] 70)
+  for P :: prog and C :: cname
+where
+  leq_pathRep: "\<lbrakk> Subobjs P C Cs; Subobjs P C Ds; Cs = butlast Ds\<rbrakk>
+  \<Longrightarrow> P,C \<turnstile> Cs \<sqsubset>\<^sup>1 Ds"
+| leq_pathSh:  "\<lbrakk> Subobjs P C Cs; P \<turnstile> last Cs \<prec>\<^sub>S D \<rbrakk>
+  \<Longrightarrow> P,C \<turnstile> Cs \<sqsubset>\<^sup>1 [D]"
 
-syntax (xsymbols)
-  "_leq_path1" :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" ("_,_ \<turnstile> _ \<sqsubset>\<^sup>1 _" [71,71,71] 70)
-  "_leq_path"  :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" ("_,_ \<turnstile> _ \<sqsubseteq> _"  [71,71,71] 70)
-
-translations
-  "P,C \<turnstile> Cs \<sqsubset>\<^sup>1 Ds" == "(Cs,Ds) \<in> leq_path1 P C"
-  "P,C \<turnstile> Cs \<sqsubseteq> Ds" == "(Cs,Ds) \<in> (leq_path1 P C)\<^sup>*"
-  "\<not> P,C \<turnstile> Cs \<sqsubseteq> Ds" <= "(Cs,Ds) \<notin> (leq_path1 P C)\<^sup>*"
-
-inductive "leq_path1 P C"
-intros
-leq_pathRep: "\<lbrakk> (C,Cs) \<in> Subobjs P; (C,Ds) \<in> Subobjs P; Cs = butlast Ds\<rbrakk> 
-\<Longrightarrow> P,C \<turnstile> Cs \<sqsubset>\<^sup>1 Ds"
-leq_pathSh:  "\<lbrakk> (C,Cs) \<in> Subobjs P; P \<turnstile> last Cs \<prec>\<^sub>S D \<rbrakk> 
-\<Longrightarrow> P,C \<turnstile> Cs \<sqsubset>\<^sup>1 [D]"
+abbreviation
+  leq_path :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" ("_,_ \<turnstile> _ \<sqsubseteq> _"  [71,71,71] 70) where
+  "P,C \<turnstile> Cs \<sqsubseteq> Ds \<equiv> (leq_path1 P C)\<^sup>*\<^sup>* Cs Ds"
 
 
 lemma leq_path_rep:
-  "\<lbrakk> (C,Cs@[C']) \<in> Subobjs P; (C,Cs@[C',C'']) \<in> Subobjs P\<rbrakk> 
+  "\<lbrakk> Subobjs P C (Cs@[C']); Subobjs P C (Cs@[C',C''])\<rbrakk> 
 \<Longrightarrow> P,C \<turnstile> (Cs@[C']) \<sqsubset>\<^sup>1 (Cs@[C',C''])"
 by(rule leq_pathRep,simp_all add:butlast_tail)
 
 lemma leq_path_sh:
-  "\<lbrakk> (C,Cs@[C']) \<in> Subobjs P; P \<turnstile> C' \<prec>\<^sub>S C''\<rbrakk> 
+  "\<lbrakk> Subobjs P C (Cs@[C']); P \<turnstile> C' \<prec>\<^sub>S C''\<rbrakk> 
 \<Longrightarrow> P,C \<turnstile> (Cs@[C']) \<sqsubset>\<^sup>1 [C'']"
 by(erule leq_pathSh)simp
 
@@ -722,7 +696,7 @@ section{* Member lookups *}
 constdefs
   FieldDecls      :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> (path \<times> ty) set"
   "FieldDecls P C F \<equiv> 
-   {(Cs,T). (C,Cs) \<in> Subobjs P \<and> (\<exists>Bs fs ms. class P (last Cs) = Some(Bs,fs,ms)
+   {(Cs,T). Subobjs P C Cs \<and> (\<exists>Bs fs ms. class P (last Cs) = Some(Bs,fs,ms)
                                     \<and> map_of fs F = Some T)}"
 
   LeastFieldDecl  :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> path \<Rightarrow> bool"
@@ -735,7 +709,7 @@ constdefs
 
   MethodDefs     :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> (path \<times> method)set"
   "MethodDefs P C M \<equiv>
-   {(Cs,mthd). (C,Cs) \<in> Subobjs P \<and> (\<exists>Bs fs ms. class P (last Cs) = Some(Bs,fs,ms)
+   {(Cs,mthd). Subobjs P C Cs \<and> (\<exists>Bs fs ms. class P (last Cs) = Some(Bs,fs,ms)
                                     \<and> map_of ms M = Some mthd)}"
 
   -- "needed for well formed criterion"
@@ -768,26 +742,19 @@ constdefs
       (*(\<forall>(Cs',mthd') \<in> OverriderMethodDefs P R M. Cs = Cs' \<and> mthd = mthd')"*)
 
 
-consts
-  SelectMethodDef :: "prog \<Rightarrow> (subobj \<times> mname \<times> method \<times> path) set" 
+inductive2
+  SelectMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
+     ("_ \<turnstile> '(_,_') selects _ = _ via _" [51,0,0,0,0,51] 50)
+  for P :: prog
+where
 
-syntax
-  SelectMethodDef :: "prog \<Rightarrow> subobj \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
-     ("_ \<turnstile> _ selects _ = _ via _" [51,0,0,0,51] 50)
+  dyn_unique:
+    "P \<turnstile> C has least M = mthd via Cs' \<Longrightarrow> P \<turnstile> (C,Cs) selects M = mthd via Cs'"
 
-translations
-  "P \<turnstile> (C,Cs) selects M = mthd via Cs'" == "((C,Cs),M,mthd,Cs') \<in> SelectMethodDef P"
-
-inductive "SelectMethodDef P"
-intros
-
-dyn_unique:
-  "P \<turnstile> C has least M = mthd via Cs' \<Longrightarrow> P \<turnstile> (C,Cs) selects M = mthd via Cs'"
-
-dyn_ambiguous:
-  "\<lbrakk>\<forall>mthd Cs'. \<not> P \<turnstile> C has least M = mthd via Cs'; 
-    P \<turnstile> (C,Cs) has overrider M = mthd via Cs'\<rbrakk>
-\<Longrightarrow> P \<turnstile> (C,Cs) selects M = mthd via Cs'"
+| dyn_ambiguous:
+    "\<lbrakk>\<forall>mthd Cs'. \<not> P \<turnstile> C has least M = mthd via Cs'; 
+      P \<turnstile> (C,Cs) has overrider M = mthd via Cs'\<rbrakk>
+  \<Longrightarrow> P \<turnstile> (C,Cs) selects M = mthd via Cs'"
 
 
 

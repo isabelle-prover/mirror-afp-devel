@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Determinism.thy,v 1.4 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Determinism.thy,v 1.5 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -78,7 +78,7 @@ lemma casts_casts_eq_result:
 proof(cases "\<forall>C. T \<noteq> Class C")
   case True
   with casts casts' show ?thesis
-    by(auto elim:casts_to.elims)
+    by(auto elim:casts_to.cases)
 next
   case False
   then obtain C where T:"T = Class C" by auto
@@ -90,7 +90,7 @@ next
     assume "T' = NT"
     with wf eval sconf wte have "v = Null"
       by(fastsimp dest:eval_preserves_type)
-    with casts casts' show ?thesis by(fastsimp elim:casts_to.elims)
+    with casts casts' show ?thesis by(fastsimp elim:casts_to.cases)
   next
     assume "\<exists>D. T' = Class D \<and> P \<turnstile> Path D to C unique"
     then obtain D where T':"T' = Class D" 
@@ -106,14 +106,14 @@ next
 	by(fastsimp dest:typeof_Class_Subo)
       from casts' v last T obtain Cs' Ds where "P \<turnstile> Path D to C via Cs'"
 	and "Ds = Cs@\<^sub>pCs'" and "w' = Ref(a,Ds)"
-	by(auto elim:casts_to.elims)
+	by(auto elim:casts_to.cases)
       with casts T v last path_unique show ?thesis
-	by auto(erule casts_to.elims,auto simp:path_via_def path_unique_def)
+	by auto(erule casts_to.cases,auto simp:path_via_def path_unique_def)
     next
       assume "P,E,h \<turnstile> Val v : NT"
       with wf eval sconf wte have "v = Null"
 	by(fastsimp dest:eval_preserves_type)
-      with casts casts' show ?thesis by(fastsimp elim:casts_to.elims)
+      with casts casts' show ?thesis by(fastsimp elim:casts_to.cases)
     qed
   qed
 qed
@@ -125,7 +125,7 @@ lemma Casts_Casts_eq_result:
           P,E \<turnstile> s \<surd>\<rbrakk>
       \<Longrightarrow> vs' = ws'"
 proof (induct vs arbitrary: vs' ws ws' Ts Ts' es s)
-  case Nil thus ?case by (auto elim!:Casts_to.elims)
+  case Nil thus ?case by (auto elim!:Casts_to.cases)
 next
   case (Cons x xs)
   have CastsCons:"P \<turnstile> Ts Casts x # xs to vs'" 
@@ -145,21 +145,21 @@ next
     apply(frule length_Casts_vs',cases vs',auto)
     done
   with CastsCons have casts:"P \<turnstile> S casts x to y" and Casts:"P \<turnstile> Ss Casts xs to ys"
-    by(auto elim:Casts_to.elims)
+    by(auto elim:Casts_to.cases)
   from Ts type have type':"is_type P S" and types':"\<forall>T \<in> set Ss. is_type P T"
     by auto
   from Ts CastsCons' obtain z zs where ws':"ws' = z#zs"
     by simp(frule length_Casts_vs',cases ws',auto)
   with Ts CastsCons' have casts':"P \<turnstile> S casts x to z" 
     and Casts':"P \<turnstile> Ss Casts xs to zs"
-    by(auto elim:Casts_to.elims)
+    by(auto elim:Casts_to.cases)
   from Ts subs obtain U Us where Ts':"Ts' = U#Us" and subs':"P \<turnstile> Us [\<le>] Ss"
     and sub:"P \<turnstile> U \<le> S" by(cases Ts',auto simp:fun_of_def)
   from wtes Ts' obtain e' es' where es:"es = e'#es'" and wte':"P,E \<turnstile> e' :: U"
     and wtes':"P,E \<turnstile> es' [::] Us" by(cases es) auto
   with evals obtain h' l' where eval:"P,E \<turnstile> \<langle>e',s\<rangle> \<Rightarrow> \<langle>Val x,(h',l')\<rangle>"
     and evals':"P,E \<turnstile> \<langle>es',(h',l')\<rangle> [\<Rightarrow>] \<langle>map Val xs,(h,l)\<rangle>"
-    by (auto elim:eval_evals.elims)
+    by (auto elim:evals.cases)
   from wf eval wte' sconf have "P,E \<turnstile> (h',l') \<surd>" by(rule eval_preserves_sconf)
   from IH[OF Casts Casts' types' wtes' subs' evals' this] have eq:"ys = zs" .
   from casts casts' type' wte' sub eval sconf wf have "y = z"
@@ -177,7 +177,7 @@ lemma Casts_conf: assumes wf: "wf_C_prog P"
 proof(induct rule:Casts_to.induct)
   case Casts_Nil thus ?case by simp
 next
-  case (Casts_Cons T Ts v v' vs vs')
+  case (Casts_Cons T v v' Ts vs vs')
   have casts:"P \<turnstile> T casts v to v'" and wtes:"P,E \<turnstile> es [::] Ts'" 
     and evals:"P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val (v#vs),(h,l)\<rangle>"
     and subs:"P \<turnstile> Ts' [\<le>] (T#Ts)" and sconf:"P,E \<turnstile> s \<surd>"
@@ -191,7 +191,7 @@ next
   with Ts' wtes have wte':"P,E \<turnstile> e' :: U" and wtes':"P,E \<turnstile> es' [::] Us" by auto
   from es evals obtain s' where eval':"P,E \<turnstile> \<langle>e',s\<rangle> \<Rightarrow> \<langle>Val v,s'\<rangle>"
     and evals':"P,E \<turnstile> \<langle>es',s'\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h,l)\<rangle>" 
-    by(auto elim:eval_evals.elims)
+    by(auto elim:evals.cases)
   from wf eval' wte' sconf have sconf':"P,E \<turnstile> s' \<surd>" by(rule eval_preserves_sconf)
   from evals' have hext:"hp s' \<unlhd> h" by(cases s',auto intro:evals_hext)
   from wf eval' sconf wte' have "P,E,(hp s') \<turnstile> Val v :\<^bsub>NT\<^esub> U"
@@ -206,15 +206,15 @@ next
   next
     case (casts_null C) thus ?case by simp
   next
-    case (casts_ref C Cs Cs' Ds a)
+    case (casts_ref Cs C Cs' Ds a)
     have path:"P \<turnstile> Path last Cs to C via Cs'"
       and Ds:"Ds = Cs @\<^sub>p Cs'"
       and wtref:"P,E,h \<turnstile> ref (a, Cs) :\<^bsub>NT\<^esub> U" .
-    from wtref obtain D S where subo:"(D,Cs) \<in> Subobjs P" and h:"h a = Some(D,S)"
+    from wtref obtain D S where subo:"Subobjs P D Cs" and h:"h a = Some(D,S)"
       by(cases U,auto split:split_if_asm)
     from path Ds have last:"C = last Ds"  
       by(fastsimp intro!:appendPath_last Subobjs_nonempty simp:path_via_def)
-    from subo path Ds wf have "(D,Ds) \<in> Subobjs P"
+    from subo path Ds wf have "Subobjs P D Ds"
       by(fastsimp intro:Subobjs_appendPath simp:path_via_def)
     with last h show ?case by simp
   qed
@@ -265,7 +265,7 @@ proof (induct rule:eval_evals.inducts)
 next
   case NewFail thus ?case by(auto elim: eval_cases)
 next
-  case (StaticUpCast C Cs Cs' Ds E a e s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2)
+  case (StaticUpCast E e s\<^isub>0 a Cs s\<^isub>1 C Cs' Ds e\<^isub>2 s\<^isub>2)
   have eval:"P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and path_via:"P \<turnstile> Path last Cs to C via Cs'" and Ds:"Ds = Cs @\<^sub>p Cs'" 
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
@@ -273,7 +273,7 @@ next
             \<Longrightarrow> ref (a,Cs) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
   from wt obtain D where "class":"is_class P C" and wte:"P,E \<turnstile> e :: Class D"
     and disj:"P \<turnstile> Path D to C unique \<or> 
-              (P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> (C,Cs) \<in> Subobjs\<^isub>R P))"
+              (P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> Subobjs\<^isub>R P C Cs))"
     by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -291,7 +291,7 @@ next
 	by(fastsimp simp add:path_via_def path_unique_def)
       with eq ref Ds show ?thesis by simp
     next
-      assume "P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs  \<longrightarrow> (C, Cs) \<in> Subobjs\<^isub>R P)"
+      assume "P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs  \<longrightarrow> Subobjs\<^isub>R P C Cs)"
       with "class" wf obtain Cs'' where "P \<turnstile> Path C to D via Cs''"
 	by(auto dest:leq_implies_path)
       with path_via path_via' wf eq last have "Cs' = Xs'"
@@ -304,9 +304,9 @@ next
       and ref:"e\<^isub>2 = ref (a',Xs@[C])"
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs@C#Xs' \<and> s\<^isub>1 = s\<^isub>2" by simp
     with wf eval_ref sconf wte obtain C' where 
-      last:"last Cs = D" and "(C',Xs@C#Xs') \<in> Subobjs P"
+      last:"last Cs = D" and "Subobjs P C' (Xs@C#Xs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
-    hence subo:"(C,C#Xs') \<in> Subobjs P" by(fastsimp intro:Subobjs_Subobjs)
+    hence subo:"Subobjs P C (C#Xs')" by(fastsimp intro:Subobjs_Subobjs)
     with eq last have leq:"P \<turnstile> C \<preceq>\<^sup>* D" by(fastsimp dest:Subobjs_subclass)
     from path_via last have "P \<turnstile> D \<preceq>\<^sup>* C"
       by(auto dest:Subobjs_subclass simp:path_via_def)
@@ -333,12 +333,12 @@ next
       with notleq last eq show ?thesis by simp
     next
       assume ass:"P \<turnstile> C \<preceq>\<^sup>* D \<and> 
-	          (\<forall>Cs. P \<turnstile> Path C to D via Cs  \<longrightarrow> (C, Cs) \<in> Subobjs\<^isub>R P)"
+	          (\<forall>Cs. P \<turnstile> Path C to D via Cs  \<longrightarrow> Subobjs\<^isub>R P C Cs)"
       with "class" wf obtain Cs'' where path_via':"P \<turnstile> Path C to D via Cs''"
 	by(auto dest:leq_implies_path)
       with path_via wf eq last have "Cs'' = [D]"
 	by(fastsimp dest:path_via_reverse)
-      with ass path_via' have "(C,[D]) \<in> Subobjs\<^isub>R P" by simp
+      with ass path_via' have "Subobjs\<^isub>R P C [D]" by simp
       thus ?thesis by(fastsimp dest:hd_SubobjsR)
     qed
     with last notin eq notempty show "ref (a,Ds) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2"
@@ -348,7 +348,7 @@ next
     from IH[OF eval_throw wte sconf] show "ref (a,Ds) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (StaticDownCast C Cs Cs' E a e s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (StaticDownCast E e s\<^isub>0 a Cs C Cs' s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>" 
     and eval':"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs@[C]@Cs'),s\<^isub>1\<rangle>"
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
@@ -356,7 +356,7 @@ next
                       \<Longrightarrow> ref(a,Cs@[C]@Cs') = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
   from wt obtain D where wte:"P,E \<turnstile> e :: Class D"
     and disj:"P \<turnstile> Path D to C unique \<or> 
-              (P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> (C,Cs) \<in> Subobjs\<^isub>R P))"
+              (P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> Subobjs\<^isub>R P C Cs))"
     by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -367,7 +367,7 @@ next
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs@[C]@Cs' = Xs \<and> s\<^isub>1 = s\<^isub>2"
       by simp
     with wf eval_ref sconf wte obtain C' where 
-      last:"last(C#Cs') = D" and "(C',Cs@[C]@Cs') \<in> Subobjs P"
+      last:"last(C#Cs') = D" and "Subobjs P C' (Cs@[C]@Cs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
     hence "P \<turnstile> Path C to D via C#Cs'" 
       by(fastsimp intro:Subobjs_Subobjs simp:path_via_def)
@@ -383,7 +383,7 @@ next
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs@[C]@Cs' = Xs@C#Xs' \<and> s\<^isub>1 = s\<^isub>2"
       by simp
     with wf eval_ref sconf wte obtain C' where 
-      last:"last(C#Xs') = D" and subo:"(C',Cs@[C]@Cs') \<in> Subobjs P"
+      last:"last(C#Xs') = D" and subo:"Subobjs P C' (Cs@[C]@Cs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
     from subo wf have notin:"C \<notin> set Cs" by -(rule unique2,simp)
     from subo wf have "C \<notin> set Cs'"  by -(rule unique1,simp,simp)
@@ -404,7 +404,7 @@ next
     from IH[OF eval_throw wte sconf] show "ref (a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (StaticCastNull C E e s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (StaticCastNull E e s\<^isub>0 s\<^isub>1 C e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -431,7 +431,7 @@ next
     from IH[OF eval_throw wte sconf] show "null = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (StaticCastFail C Cs E a e s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (StaticCastFail E e s\<^isub>0 a Cs s\<^isub>1 C e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and notleq:"\<not> P \<turnstile> last Cs \<preceq>\<^sup>* C" and notin:"C \<notin> set Cs"
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
@@ -467,7 +467,7 @@ next
     from IH[OF eval_throw wte sconf] show "THROW ClassCast = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed 
 next
-  case (StaticCastThrow C E e e' s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (StaticCastThrow E e s\<^isub>0 e' s\<^isub>1 C e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -495,7 +495,7 @@ next
     from IH[OF eval_throw wte sconf] throw show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (StaticUpDynCast C Cs Cs' Ds E a e s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (StaticUpDynCast E e s\<^isub>0 a Cs s\<^isub>1 C Cs' Ds e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and path_via:"P \<turnstile> Path last Cs to C via Cs'" 
     and path_unique:"P \<turnstile> Path last Cs to C unique"
@@ -521,9 +521,9 @@ next
       and ref:"e\<^isub>2 = ref (a',Xs@[C])"
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs@C#Xs' \<and> s\<^isub>1 = s\<^isub>2" by simp
     with wf eval_ref sconf wte obtain C' where 
-      last:"last Cs = D" and "(C',Xs@C#Xs') \<in> Subobjs P"
+      last:"last Cs = D" and "Subobjs P C' (Xs@C#Xs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
-    hence "(C,C#Xs') \<in> Subobjs P" by(fastsimp intro:Subobjs_Subobjs)
+    hence "Subobjs P C (C#Xs')" by(fastsimp intro:Subobjs_Subobjs)
     with last eq have "P \<turnstile> Path C to D via C#Xs'" 
       by(simp add:path_via_def)
     with path_via wf last have "Xs' = [] \<and> Cs' = [C] \<and> C = D" 
@@ -537,7 +537,7 @@ next
       and ref:"e\<^isub>2 = ref(a',Xs')"
     from IH[OF eval_ref wte sconf] s2 have eq:"a = a' \<and> Cs = Xs \<and> s\<^isub>1 = s\<^isub>2" by simp
     with wf eval_ref sconf wte h have "last Cs = D"
-      and "(D',Cs) \<in> Subobjs P"
+      and "Subobjs P D' Cs"
       by(auto dest:eval_preserves_type split:split_if_asm)
     with path_via wf have "P \<turnstile> Path D' to C via Cs@\<^sub>pCs'"
       by(fastsimp intro:Subobjs_appendPath appendPath_last[THEN sym] 
@@ -559,7 +559,7 @@ next
     from IH[OF eval_throw wte sconf] show "ref (a, Ds) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (StaticDownDynCast C Cs Cs' E a e s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (StaticDownDynCast E e s\<^isub>0 a Cs C Cs' s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -574,7 +574,7 @@ next
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs@[C]@Cs' = Xs \<and> s\<^isub>1 = s\<^isub>2"
       by simp
     with wf eval_ref sconf wte obtain C' where 
-      last:"last(C#Cs') = D" and "(C',Cs@[C]@Cs') \<in> Subobjs P"
+      last:"last(C#Cs') = D" and "Subobjs P C' (Cs@[C]@Cs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
     hence "P \<turnstile> Path C to D via C#Cs'" 
       by(fastsimp intro:Subobjs_Subobjs simp:path_via_def)
@@ -590,7 +590,7 @@ next
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs@[C]@Cs' = Xs@C#Xs' \<and> s\<^isub>1 = s\<^isub>2"
       by simp
     with wf eval_ref sconf wte obtain C' where 
-      last:"last(C#Xs') = D" and subo:"(C',Cs@[C]@Cs') \<in> Subobjs P"
+      last:"last(C#Xs') = D" and subo:"Subobjs P C' (Cs@[C]@Cs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
     from subo wf have notin:"C \<notin> set Cs" by -(rule unique2,simp)
     from subo wf have "C \<notin> set Cs'"  by -(rule unique1,simp,simp)
@@ -605,9 +605,9 @@ next
       and ref:"e\<^isub>2 = ref(a',Xs')"
     from IH[OF eval_ref wte sconf] s2 have eq:"a = a' \<and> Cs@[C]@Cs' = Xs \<and> s\<^isub>1 = s\<^isub>2"
       by simp
-    with wf eval_ref sconf wte h have "(D',Cs@[C]@Cs') \<in> Subobjs P"
+    with wf eval_ref sconf wte h have "Subobjs P D' (Cs@[C]@Cs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
-    hence "(D',Cs@[C]) \<in> Subobjs P" by(fastsimp intro:appendSubobj)
+    hence "Subobjs P D' (Cs@[C])" by(fastsimp intro:appendSubobj)
     with path_via path_unique have "Xs' = Cs@[C]" 
       by(fastsimp simp:path_via_def path_unique_def)
     with eq ref show "ref(a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
@@ -626,7 +626,7 @@ next
     from IH[OF eval_throw wte sconf] show "ref (a,Cs@[C]) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (DynCast C Cs Cs' D E S a e h l s\<^isub>0 e\<^isub>2 s\<^isub>2 T)
+  case (DynCast E e s\<^isub>0 a Cs h l D S C Cs' e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and path_via:"P \<turnstile> Path D to C via Cs'" and path_unique:"P \<turnstile> Path D to C unique"
     and h:"h a = Some(D,S)" and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
@@ -641,7 +641,7 @@ next
       and ref:"e\<^isub>2 = ref (a',Xs@\<^sub>pXs')"
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs \<and> (h,l) = s\<^isub>2" by simp
     with wf eval_ref sconf wte h have "last Cs = D'"
-      and "(D,Cs) \<in> Subobjs P"
+      and "Subobjs P D Cs"
       by(auto dest:eval_preserves_type split:split_if_asm)
     with path_via' wf eq have "P \<turnstile> Path D to C via Xs@\<^sub>pXs'"
       by(fastsimp intro:Subobjs_appendPath appendPath_last[THEN sym] 
@@ -655,9 +655,9 @@ next
       and ref:"e\<^isub>2 = ref (a',Xs@[C])"
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs@C#Xs' \<and> (h,l) = s\<^isub>2"
       by simp
-    with wf eval_ref sconf wte h have "(D,Xs@[C]@Xs') \<in> Subobjs P"
+    with wf eval_ref sconf wte h have "Subobjs P D (Xs@[C]@Xs')"
       by(auto dest:eval_preserves_type split:split_if_asm)
-    hence "(D,Xs@[C]) \<in> Subobjs P" by(fastsimp intro:appendSubobj)
+    hence "Subobjs P D (Xs@[C])" by(fastsimp intro:appendSubobj)
     with path_via path_unique have "Cs' = Xs@[C]" 
       by(fastsimp simp:path_via_def path_unique_def)
     with eq ref show "ref(a,Cs') = e\<^isub>2 \<and> (h, l) = s\<^isub>2" by simp
@@ -686,7 +686,7 @@ next
     from IH[OF eval_throw wte sconf] show "ref (a,Cs') = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by simp
   qed
 next
-  case (DynCastNull C E e s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (DynCastNull E e s\<^isub>0 s\<^isub>1 C e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -717,7 +717,7 @@ next
     from IH[OF eval_throw wte sconf] show "null = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (DynCastFail C Cs D E S a e h l s\<^isub>0 e\<^isub>2 s\<^isub>2 T)
+  case (DynCastFail E e s\<^isub>0 a Cs h l D S C e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and h:"h a = Some(D,S)" and not_unique1:"\<not> P \<turnstile> Path D to C unique"
     and not_unique2:"\<not> P \<turnstile> Path last Cs to C unique" and notin:"C \<notin> set Cs"
@@ -758,7 +758,7 @@ next
     from IH[OF eval_throw wte sconf] show "null = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by simp
   qed
 next
-  case (DynCastThrow C E e e' s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (DynCastThrow E e s\<^isub>0 e' s\<^isub>1 C e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -792,7 +792,7 @@ next
 next
   case Val thus ?case by(auto elim: eval_cases)
 next
-  case (BinOp E bop e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 s\<^isub>2 v v\<^isub>1 v\<^isub>2 e\<^isub>2' s\<^isub>2' T)
+  case (BinOp E e\<^isub>1 s\<^isub>0 v\<^isub>1 s\<^isub>1 e\<^isub>2 v\<^isub>2 s\<^isub>2 bop v e\<^isub>2' s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>"
     and binop:"binop (bop, v\<^isub>1, v\<^isub>2) = Some v"
     and wt:"P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
@@ -829,7 +829,7 @@ next
       by simp
   qed
 next
-  case (BinOpThrow1 E bop e e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 e\<^isub>2' s\<^isub>2 T)
+  case (BinOpThrow1 E e\<^isub>1 s\<^isub>0 e s\<^isub>1 bop e\<^isub>2 e\<^isub>2' s\<^isub>2 T)
    have eval:"P,E \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2\<rangle>"
      and wt:"P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
      and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -850,7 +850,7 @@ next
     from IH[OF eval_val wte1 sconf] show "throw e = e\<^isub>2' \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (BinOpThrow2 E bop e e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 s\<^isub>2 v\<^isub>1 e\<^isub>2' s\<^isub>2' T)
+  case (BinOpThrow2 E e\<^isub>1 s\<^isub>0 v\<^isub>1 s\<^isub>1 e\<^isub>2 e s\<^isub>2 bop e\<^isub>2' s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -888,7 +888,7 @@ next
 next
   case Var thus ?case by(auto elim: eval_cases)    
 next
-  case (LAss E T V e h l l' s\<^isub>0 v v' e\<^isub>2 s\<^isub>2 T')
+  case (LAss E e s\<^isub>0 v h l V T v' l' e\<^isub>2 s\<^isub>2 T')
   have eval:"P,E \<turnstile> \<langle>V:=e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and env:"E V = Some T" and casts:"P \<turnstile> T casts v to v'" and l':"l' = l(V \<mapsto> v')"
     and wt:"P,E \<turnstile> V:=e :: T'" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
@@ -913,7 +913,7 @@ next
     from IH[OF eval_throw wte sconf] show "Val v' = e\<^isub>2 \<and> (h, l') = s\<^isub>2" by simp
   qed
 next
-  case (LAssThrow E V e e' s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (LAssThrow E e s\<^isub>0 e' s\<^isub>1 V e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>V:=e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> V:=e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -930,7 +930,7 @@ next
     from IH[OF eval_throw wte sconf] e2 show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (FAcc Cs Cs' D Ds E F S a e fs h l s\<^isub>0 v e\<^isub>2 s\<^isub>2 T)
+  case (FAcc E e s\<^isub>0 a Cs' h l D S Ds Cs fs F v e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and eval':"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref (a, Cs'),(h,l)\<rangle>"
     and h:"h a = Some(D,S)" and Ds:"Ds = Cs'@\<^sub>pCs"
@@ -960,7 +960,7 @@ next
     from IH[OF eval_throw wte sconf] show "Val v = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by simp
   qed
 next
-  case (FAccNull Cs E F e s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (FAccNull E e s\<^isub>0 s\<^isub>1 F Cs e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> e\<bullet>F{Cs} :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -980,7 +980,7 @@ next
     from IH[OF eval_throw wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (FAccThrow Cs E F e e' s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (FAccThrow E e s\<^isub>0 e' s\<^isub>1 F Cs e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> e\<bullet>F{Cs} :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -1000,7 +1000,7 @@ next
     from IH[OF eval_throw wte sconf] e2 show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (FAss Cs Cs' D Ds E F S S' T a e\<^isub>1 e\<^isub>2 fs fs' h\<^isub>2 h\<^isub>2' l\<^isub>2 s\<^isub>0 s\<^isub>1 v v' e\<^isub>2' s\<^isub>2 T')
+  case (FAss E e\<^isub>1 s\<^isub>0 a Cs' s\<^isub>1 e\<^isub>2 v h\<^isub>2 l\<^isub>2 D S F T Cs v' Ds fs fs' S' h\<^isub>2' e\<^isub>2' s\<^isub>2 T')
   have eval:"P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs} := e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2\<rangle>"
     and eval':"P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs'),s\<^isub>1\<rangle>"
     and eval'':"P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>Val v,(h\<^isub>2,l\<^isub>2)\<rangle>"
@@ -1065,7 +1065,7 @@ next
     show "Val v' = e\<^isub>2' \<and> (h\<^isub>2',l\<^isub>2) = s\<^isub>2" by simp
   qed
 next
-  case (FAssNull Cs E F e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 s\<^isub>2 v e\<^isub>2' s\<^isub>2' T)
+  case (FAssNull E e\<^isub>1 s\<^isub>0 s\<^isub>1 e\<^isub>2 v s\<^isub>2 F Cs e\<^isub>2' s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs} := e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -1105,7 +1105,7 @@ next
     show "THROW NullPointer = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" by simp
   qed
 next
-  case (FAssThrow1 Cs E F e' e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 e\<^isub>2' s\<^isub>2 T)
+  case (FAssThrow1 E e\<^isub>1 s\<^isub>0 e' s\<^isub>1 F Cs e\<^isub>2 e\<^isub>2' s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs} := e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2\<rangle>" 
     and wt:"P,E \<turnstile> e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -1129,7 +1129,7 @@ next
     from IH[OF eval_val wte1 sconf] show "throw e' = e\<^isub>2' \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (FAssThrow2 Cs E F e' e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 s\<^isub>2 v e\<^isub>2' s\<^isub>2' T)
+  case (FAssThrow2 E e\<^isub>1 s\<^isub>0 v s\<^isub>1 e\<^isub>2 e' s\<^isub>2 F Cs e\<^isub>2' s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs} := e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>" 
     and wt:"P,E \<turnstile> e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -1171,7 +1171,7 @@ next
     show "throw e' = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" by simp
   qed
 next
-  case (CallObjThrow Copt E M e e' es s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (CallObjThrow E e s\<^isub>0 e' s\<^isub>1 Copt M es e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> Call e Copt M es :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -1222,7 +1222,7 @@ next
     qed
   qed
 next
-  case (CallParamsThrow Copt E M e es es' ex s\<^isub>0 s\<^isub>1 s\<^isub>2 v vs e\<^isub>2 s\<^isub>2' T)
+  case (CallParamsThrow E e s\<^isub>0 v s\<^isub>1 es vs ex es' s\<^isub>2 Copt M e\<^isub>2 s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> Call e Copt M es :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -1318,8 +1318,8 @@ next
     qed
   qed
 next
-  case (Call C Cs Cs' Ds E M S T T' Ts Ts' a body body' e e' h\<^isub>2 h\<^isub>3 l\<^isub>2 l\<^isub>2' l\<^isub>3 
-             new_body pns pns' es s\<^isub>0 s\<^isub>1 vs vs' e\<^isub>2 s\<^isub>2 T'')
+  case (Call E e s\<^isub>0 a Cs s\<^isub>1 es vs h\<^isub>2 l\<^isub>2 C S M Ts' T' pns' body' Ds Ts T pns
+             body Cs' vs' l\<^isub>2' new_body e' h\<^isub>3 l\<^isub>3 e\<^isub>2 s\<^isub>2 T'')
   have eval:"P,E \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and eval':"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs),s\<^isub>1\<rangle>"
     and eval'':"P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>" and h2:"h\<^isub>2 a = Some(C,S)"
@@ -1351,7 +1351,7 @@ next
   from wf selects have param_type:"\<forall>T \<in> set Ts. is_type P T" 
     and return_type:"is_type P T" and TnotNT:"T \<noteq> NT"
     by(auto dest:select_method_wf_mdecl simp:wf_mdecl_def)
-  from selects wf have subo:"(C,Cs') \<in> Subobjs P"
+  from selects wf have subo:"Subobjs P C Cs'"
     by(induct rule:SelectMethodDef.induct,
        auto simp:FinalOverriderMethodDef_def OverriderMethodDefs_def 
                  MinimalMethodDefs_def LeastMethodDef_def MethodDefs_def)
@@ -1361,7 +1361,7 @@ next
     by -(rule eval_preserves_type,simp_all)
   with hext have "P,E,h\<^isub>2 \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
     by(auto intro:WTrt_hext_mono dest:hext_objD split:split_if_asm)
-  with h2 have "(C,Cs) \<in> Subobjs P" by (auto split:split_if_asm)
+  with h2 have "Subobjs P C Cs" by (auto split:split_if_asm)
   hence "P \<turnstile> Path C to (last Cs) via Cs"
     by (auto simp:path_via_def split:split_if_asm)
   with selects has_least wf have param_types:"Ts' = Ts \<and> P \<turnstile> T \<le> T'"
@@ -1508,8 +1508,8 @@ next
     from IH1[OF eval_null wte sconf] show "e' = e\<^isub>2 \<and> (h\<^isub>3,l\<^isub>2) = s\<^isub>2" by simp
   qed
 next
-  case (StaticCall C Cs Cs' Cs'' Ds E M T Ts a body e e' h\<^isub>2 h\<^isub>3 l\<^isub>2 l\<^isub>2' l\<^isub>3 
-                   pns es s\<^isub>0 s\<^isub>1 vs vs' e\<^isub>2 s\<^isub>2 T')
+  case (StaticCall E e s\<^isub>0 a Cs s\<^isub>1 es vs h\<^isub>2 l\<^isub>2 C Cs'' M Ts T pns body  Cs'
+                   Ds vs' l\<^isub>2' e' h\<^isub>3 l\<^isub>3 e\<^isub>2 s\<^isub>2 T')
   have eval:"P,E \<turnstile> \<langle>e\<bullet>(C::)M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and eval':"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs),s\<^isub>1\<rangle>"
     and eval'':"P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2, l\<^isub>2)\<rangle>"
@@ -1547,14 +1547,14 @@ next
     by -(rule eval_preserves_type,simp_all)
   with hext have "P,E,h\<^isub>2 \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
     by(auto intro:WTrt_hext_mono dest:hext_objD split:split_if_asm)
-  then obtain D S where h2:"h\<^isub>2 a = Some(D,S)" and "(D,Cs) \<in> Subobjs P"
+  then obtain D S where h2:"h\<^isub>2 a = Some(D,S)" and "Subobjs P D Cs"
     by (auto split:split_if_asm)
-  with path_via wf have "(D,Cs@\<^sub>pCs'') \<in> Subobjs P" and "last Cs'' = C"
+  with path_via wf have "Subobjs P D (Cs@\<^sub>pCs'')" and "last Cs'' = C"
     by(auto intro:Subobjs_appendPath simp:path_via_def)
-  with has_least wf last' Ds have subo:"(D,Ds) \<in> Subobjs P"
+  with has_least wf last' Ds have subo:"Subobjs P D Ds"
     by(fastsimp intro:Subobjs_appendPath simp:LeastMethodDef_def MethodDefs_def)
   hence "class":"is_class P (last Ds)" by(auto intro!:Subobj_last_isClass)
-  from has_least wf obtain D' where "(D',Cs') \<in> Subobjs P"
+  from has_least wf obtain D' where "Subobjs P D' Cs'"
     by(auto simp:LeastMethodDef_def MethodDefs_def)
   with Ds have last_Ds:"last Cs' = last Ds"
     by(fastsimp intro!:appendPath_last Subobjs_nonempty)
@@ -1685,7 +1685,7 @@ next
     from IH1[OF eval_null wte sconf] show "e' = e\<^isub>2 \<and> (h\<^isub>3,l\<^isub>2) = s\<^isub>2" by simp
   qed
 next
-  case (CallNull Copt E M e es s\<^isub>0 s\<^isub>1 s\<^isub>2 vs e\<^isub>2 s\<^isub>2' T)
+  case (CallNull E e s\<^isub>0 s\<^isub>1 es vs s\<^isub>2 Copt M e\<^isub>2 s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> Call e Copt M es :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -1765,7 +1765,7 @@ next
     qed
   qed
 next
-  case (Block E T V e\<^isub>0 e\<^isub>1 h\<^isub>0 h\<^isub>1 l\<^isub>0 l\<^isub>1 e\<^isub>2 s\<^isub>2 T')
+  case (Block E V T e\<^isub>0 h\<^isub>0 l\<^isub>0 e\<^isub>1 h\<^isub>1 l\<^isub>1 e\<^isub>2 s\<^isub>2 T')
   have eval:"P,E \<turnstile> \<langle>{V:T; e\<^isub>0},(h\<^isub>0, l\<^isub>0)\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> {V:T; e\<^isub>0} :: T'" and sconf:"P,E \<turnstile> (h\<^isub>0, l\<^isub>0) \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T'. \<lbrakk>P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0, l\<^isub>0(V := None))\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; 
@@ -1779,7 +1779,7 @@ next
     and s2:"s\<^isub>2 = (h,l(V:=l\<^isub>0 V))" by (auto elim:eval_cases)
   from IH[OF eval' wte sconf'] s2 show ?case by simp
 next
-  case (Seq E e\<^isub>0 e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 s\<^isub>2 v e\<^isub>2' s\<^isub>2' T)
+  case (Seq E e\<^isub>0 s\<^isub>0 v s\<^isub>1 e\<^isub>1 e\<^isub>2 s\<^isub>2 e\<^isub>2' s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>e\<^isub>0;; e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> e\<^isub>0;; e\<^isub>1 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>0 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -1801,7 +1801,7 @@ next
     from IH1[OF eval_throw wte0 sconf] show "e\<^isub>2 = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" by simp
   qed
 next
-  case (SeqThrow E e e\<^isub>0 e\<^isub>1 s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (SeqThrow E e\<^isub>0 s\<^isub>0 e s\<^isub>1 e\<^isub>1 e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>e\<^isub>0;; e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> e\<^isub>0;; e\<^isub>1 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>0 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -1818,7 +1818,7 @@ next
     from IH[OF eval_throw wte0 sconf] e2 show "throw e = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (CondT E e e' e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 s\<^isub>2 e\<^isub>2' s\<^isub>2' T)
+  case (CondT E e s\<^isub>0 s\<^isub>1 e\<^isub>1 e' s\<^isub>2 e\<^isub>2 e\<^isub>2' s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -1842,7 +1842,7 @@ next
     from IH1[OF eval_throw wte sconf] show "e' = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" by simp
   qed
 next
-  case (CondF E e e' e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 s\<^isub>2 e\<^isub>2' s\<^isub>2' T)
+  case (CondF E e s\<^isub>0 s\<^isub>1 e\<^isub>2 e' s\<^isub>2 e\<^isub>1 e\<^isub>2' s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -1868,7 +1868,7 @@ next
     from IH1[OF eval_throw wte sconf] show "e' = e\<^isub>2' \<and> s\<^isub>2 = s\<^isub>2'" by simp
   qed
 next
-  case (CondThrow E e e' e\<^isub>1 e\<^isub>2 s\<^isub>0 s\<^isub>1 e\<^isub>2' s\<^isub>2 T)
+  case (CondThrow E e s\<^isub>0 e' s\<^isub>1 e\<^isub>1 e\<^isub>2 e\<^isub>2' s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -1888,7 +1888,7 @@ next
     from IH[OF eval_throw wte sconf] e2' show "throw e' = e\<^isub>2' \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (WhileF E c e s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (WhileF E e s\<^isub>0 s\<^isub>1 c e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> while (e) c :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -1911,7 +1911,7 @@ next
     from IH[OF eval_true wte sconf] show "unit = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (WhileT E c e e\<^isub>3 s\<^isub>0 s\<^isub>1 s\<^isub>2 s\<^isub>3 v\<^isub>1 e\<^isub>2 s\<^isub>2' T)
+  case (WhileT E e s\<^isub>0 s\<^isub>1 c v\<^isub>1 s\<^isub>2 e\<^isub>3 s\<^isub>3 e\<^isub>2 s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> while (e) c :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -1951,7 +1951,7 @@ next
    from IH2[OF eval_throw[simplified eq] wtc this] show "e\<^isub>3 = e\<^isub>2 \<and> s\<^isub>3 = s\<^isub>2'" by simp
  qed
 next
-  case (WhileCondThrow E c e e' s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (WhileCondThrow E e s\<^isub>0 e' s\<^isub>1 c e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> while (e) c :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
@@ -1975,7 +1975,7 @@ next
     from IH[OF eval_true wte sconf] show "throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (WhileBodyThrow E c e e' s\<^isub>0 s\<^isub>1 s\<^isub>2 e\<^isub>2 s\<^isub>2' T)
+  case (WhileBodyThrow E e s\<^isub>0 s\<^isub>1 c e' s\<^isub>2 e\<^isub>2 s\<^isub>2' T)
   have eval:"P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> while (e) c :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -2010,7 +2010,7 @@ next
      by simp
  qed
 next
-  case (Throw E e r s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (Throw E e s\<^isub>0 r s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> throw e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -2048,7 +2048,7 @@ next
     from IH[OF eval_throw wte sconf] show "THROW NullPointer = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by simp
   qed
 next
-  case (ThrowThrow E e e' s\<^isub>0 s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
+  case (ThrowThrow E e s\<^isub>0 e' s\<^isub>1 e\<^isub>2 s\<^isub>2 T)
   have eval:"P,E \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> throw e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -2069,7 +2069,7 @@ next
 next
   case Nil thus ?case by (auto elim:evals_cases)
 next
-  case (Cons E e es es' s\<^isub>0 s\<^isub>1 s\<^isub>2 v es\<^isub>2 s\<^isub>2' Ts)
+  case (Cons E e s\<^isub>0 v s\<^isub>1 es es' s\<^isub>2 es\<^isub>2 s\<^isub>2' Ts)
   have evals:"P,E \<turnstile> \<langle>e#es,s\<^isub>0\<rangle> [\<Rightarrow>] \<langle>es\<^isub>2,s\<^isub>2'\<rangle>"
     and wt:"P,E \<turnstile> e#es [::] Ts" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
@@ -2093,7 +2093,7 @@ next
     from IH1[OF eval_throw wte sconf] show "Val v # es' = es\<^isub>2 \<and> s\<^isub>2 = s\<^isub>2'" by simp
   qed
 next
-  case (ConsThrow E e e' es s\<^isub>0 s\<^isub>1 es\<^isub>2 s\<^isub>2 Ts)
+  case (ConsThrow E e s\<^isub>0 e' s\<^isub>1 es es\<^isub>2 s\<^isub>2 Ts)
   have evals:"P,E \<turnstile> \<langle>e#es,s\<^isub>0\<rangle> [\<Rightarrow>] \<langle>es\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> e#es [::] Ts" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 

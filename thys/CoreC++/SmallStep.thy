@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.12 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: SmallStep.thy,v 1.13 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -37,144 +37,124 @@ constdefs
 
 section {* The rules *}
 
-consts
-  red  :: "prog \<Rightarrow> (env \<times> (expr \<times> state) \<times> (expr \<times> state)) set"
-  reds  :: "prog \<Rightarrow> (env \<times> (expr list \<times> state) \<times> (expr list \<times> state)) set"
-
-
-syntax (xsymbols)
+inductive2
   red :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
           ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
-  reds :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
+  and reds :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
           ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
-
-
-translations
-  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"  ==  "(E,(e,s), e',s') \<in> red P"
-  "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>" == "(E,(es,s), es',s') \<in> reds P"
-
-  "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>" <= "(E,(e,h,l), e',h',l') \<in> red P"
-  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>" <= "(E,(e,s), e',h',l') \<in> red P"
-  "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>" <= "(E,(e,h,l), e',s') \<in> red P"
-  "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>" <= "(E,(es,h,l), es',h',l') \<in> reds P"
-  "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>" <= "(E,(es,s), es',h',l') \<in> reds P"
-  "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>" <= "(E,(es,h,l), es',s') \<in> reds P"
-
-
-
-inductive "red P" "reds P"
-intros
+  for P :: prog
+where
 
 RedNew:
-  "\<lbrakk> new_Addr h = Some a; h' = h(a\<mapsto>(C,init_obj P C)) \<rbrakk>
+  "\<lbrakk> new_Addr h = Some a; h' = h(a\<mapsto>(C,Collect (init_obj P C))) \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>new C, (h,l)\<rangle> \<rightarrow> \<langle>ref (a,[C]), (h',l)\<rangle>"
 
-RedNewFail:
+| RedNewFail:
   "new_Addr h = None \<Longrightarrow>
   P,E \<turnstile> \<langle>new C, (h,l)\<rangle> \<rightarrow> \<langle>THROW OutOfMemory, (h,l)\<rangle>"
 
-StaticCastRed:
+| StaticCastRed:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>\<lparr>C\<rparr>e, s\<rangle> \<rightarrow> \<langle>\<lparr>C\<rparr>e', s'\<rangle>"
 
-RedStaticCastNull:
+| RedStaticCastNull:
   "P,E \<turnstile> \<langle>\<lparr>C\<rparr>null, s\<rangle> \<rightarrow> \<langle>null,s\<rangle>"
 
-RedStaticUpCast:
+| RedStaticUpCast:
   "\<lbrakk> P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>(ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>ref (a,Ds), s\<rangle>"
 
-RedStaticDownCast:
+| RedStaticDownCast:
   "P,E \<turnstile> \<langle>\<lparr>C\<rparr>(ref (a,Cs@[C]@Cs')), s\<rangle> \<rightarrow> \<langle>ref (a,Cs@[C]), s\<rangle>"
 
-RedStaticCastFail:
+| RedStaticCastFail:
   "\<lbrakk>C \<notin> set Cs; \<not> P \<turnstile> (last Cs) \<preceq>\<^sup>* C\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>(ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>THROW ClassCast, s\<rangle>"
 
-DynCastRed:
+| DynCastRed:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>Cast C e, s\<rangle> \<rightarrow> \<langle>Cast C e', s'\<rangle>"
 
-RedDynCastNull:
+| RedDynCastNull:
   "P,E \<turnstile> \<langle>Cast C null, s\<rangle> \<rightarrow> \<langle>null,s\<rangle>"
 
-RedStaticUpDynCast: (* path uniqueness not necessary for type proof but for determinism *)
+| RedStaticUpDynCast: (* path uniqueness not necessary for type proof but for determinism *)
   "\<lbrakk> P \<turnstile> Path last Cs to C unique; P \<turnstile> Path last Cs to C via Cs'; Ds = Cs@\<^sub>pCs' \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C(ref(a,Cs)),s\<rangle> \<rightarrow> \<langle>ref(a,Ds),s\<rangle>"
 
-RedStaticDownDynCast:
+| RedStaticDownDynCast:
   "P,E \<turnstile> \<langle>Cast C (ref (a,Cs@[C]@Cs')), s\<rangle> \<rightarrow> \<langle>ref (a,Cs@[C]), s\<rangle>"
 
-RedDynCast:(* path uniqueness not necessary for type proof but for determinism *)
+| RedDynCast:(* path uniqueness not necessary for type proof but for determinism *)
  "\<lbrakk> hp s a = Some(D,S); P \<turnstile> Path D to C via Cs';
     P \<turnstile> Path D to C unique \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C (ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>ref (a,Cs'), s\<rangle>"
 
-RedDynCastFail:(* third premise not necessary for type proof but for determinism *)
+| RedDynCastFail:(* third premise not necessary for type proof but for determinism *)
   "\<lbrakk>hp s a = Some(D,S); \<not> P \<turnstile> Path D to C unique;
     \<not> P \<turnstile> Path last Cs to C unique; C \<notin> set Cs \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>Cast C (ref (a,Cs)), s\<rangle> \<rightarrow> \<langle>null, s\<rangle>"
 
-BinOpRed1:
+| BinOpRed1:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> \<rightarrow> \<langle>e' \<guillemotleft>bop\<guillemotright> e\<^isub>2, s'\<rangle>"
 
-BinOpRed2:
+| BinOpRed2:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>(Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> e, s\<rangle> \<rightarrow> \<langle>(Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> e', s'\<rangle>"
 
-RedBinOp:
+| RedBinOp:
   "binop(bop,v\<^isub>1,v\<^isub>2) = Some v \<Longrightarrow>
   P,E \<turnstile> \<langle>(Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> (Val v\<^isub>2), s\<rangle> \<rightarrow> \<langle>Val v,s\<rangle>"
 
-RedVar:
+| RedVar:
   "lcl s V = Some v \<Longrightarrow>
   P,E \<turnstile> \<langle>Var V,s\<rangle> \<rightarrow> \<langle>Val v,s\<rangle>"
 
-LAssRed:
+| LAssRed:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow> \<langle>V:=e',s'\<rangle>"
 
-RedLAss:
+| RedLAss:
   "\<lbrakk>E V = Some T; P \<turnstile> T casts v to v'\<rbrakk> \<Longrightarrow> 
   P,E \<turnstile> \<langle>V:=(Val v),(h,l)\<rangle> \<rightarrow> \<langle>Val v',(h,l(V\<mapsto>v'))\<rangle>"
 
-FAccRed:
+| FAccRed:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>e\<bullet>F{Cs}, s\<rangle> \<rightarrow> \<langle>e'\<bullet>F{Cs}, s'\<rangle>"
 
-RedFAcc:
+| RedFAcc:
   "\<lbrakk> hp s a = Some(D,S); Ds = Cs'@\<^sub>pCs; (Ds,fs) \<in> S; fs F = Some v \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>(ref (a,Cs'))\<bullet>F{Cs}, s\<rangle> \<rightarrow> \<langle>Val v,s\<rangle>"
 
-RedFAccNull:
+| RedFAccNull:
   "P,E \<turnstile> \<langle>null\<bullet>F{Cs}, s\<rangle> \<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
-FAssRed1:
+| FAssRed1:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>e\<bullet>F{Cs}:=e\<^isub>2, s\<rangle> \<rightarrow> \<langle>e'\<bullet>F{Cs}:=e\<^isub>2, s'\<rangle>"
 
-FAssRed2:
+| FAssRed2:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
    P,E \<turnstile> \<langle>Val v\<bullet>F{Cs}:=e, s\<rangle> \<rightarrow> \<langle>Val v\<bullet>F{Cs}:=e', s'\<rangle>"
 
-RedFAss:
+| RedFAss:
 "\<lbrakk>h a = Some(D,S); P \<turnstile> (last Cs') has least F:T via Cs;
   P \<turnstile> T casts v to v'; Ds = Cs'@\<^sub>pCs; (Ds,fs) \<in> S\<rbrakk> \<Longrightarrow>
   P,E \<turnstile> \<langle>(ref (a,Cs'))\<bullet>F{Cs}:=(Val v), (h,l)\<rangle> \<rightarrow> \<langle>Val v', (h(a \<mapsto> (D,insert (Ds,fs(F\<mapsto>v')) (S - {(Ds,fs)}))),l)\<rangle>"
 
-RedFAssNull:
+| RedFAssNull:
   "P,E \<turnstile> \<langle>null\<bullet>F{Cs}:=Val v, s\<rangle> \<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
-CallObj:
+| CallObj:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>Call e Copt M es,s\<rangle> \<rightarrow> \<langle>Call e' Copt M es,s'\<rangle>"
 
-CallParams:
+| CallParams:
   "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow>
    P,E \<turnstile> \<langle>Call (Val v) Copt M es,s\<rangle> \<rightarrow> \<langle>Call (Val v) Copt M es',s'\<rangle>"
 
-RedCall:
+| RedCall:
   "\<lbrakk> hp s a = Some(C,S); P \<turnstile> last Cs has least M = (Ts',T',pns',body') via Ds;
     P \<turnstile> (C,Cs@\<^sub>pDs) selects M = (Ts,T,pns,body) via Cs';
     size vs = size pns; size Ts = size pns; 
@@ -182,96 +162,96 @@ RedCall:
     new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>bs | _ \<Rightarrow> bs)\<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>(ref (a,Cs))\<bullet>M(map Val vs), s\<rangle> \<rightarrow> \<langle>new_body, s\<rangle>"
 
-RedStaticCall:
+| RedStaticCall:
   "\<lbrakk> P \<turnstile> Path (last Cs) to C unique; P \<turnstile> Path (last Cs) to C via Cs'';
     P \<turnstile> C has least M = (Ts,T,pns,body) via Cs'; Ds = (Cs@\<^sub>pCs'')@\<^sub>pCs';
     size vs = size pns; size Ts = size pns \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>(ref (a,Cs))\<bullet>(C::)M(map Val vs), s\<rangle> \<rightarrow> 
             \<langle>blocks(this#pns,Class(last Ds)#Ts,Ref(a,Ds)#vs,body), s\<rangle>"
 
-RedCallNull:
+| RedCallNull:
   "P,E \<turnstile> \<langle>Call null Copt M (map Val vs),s\<rangle> \<rightarrow> \<langle>THROW NullPointer,s\<rangle>"
 
-BlockRedNone:
+| BlockRedNone:
   "\<lbrakk> P,E(V \<mapsto> T) \<turnstile> \<langle>e, (h,l(V:=None))\<rangle> \<rightarrow> \<langle>e', (h',l')\<rangle>; l' V = None; \<not> assigned V e \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>{V:T; e}, (h,l)\<rangle> \<rightarrow> \<langle>{V:T; e'}, (h',l'(V := l V))\<rangle>"
 
-BlockRedSome:
+| BlockRedSome:
   "\<lbrakk> P,E(V \<mapsto> T) \<turnstile> \<langle>e, (h,l(V:=None))\<rangle> \<rightarrow> \<langle>e', (h',l')\<rangle>; l' V = Some v;
      \<not> assigned V e \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>{V:T; e}, (h,l)\<rangle> \<rightarrow> \<langle>{V:T := Val v; e'}, (h',l'(V := l V))\<rangle>"
 
-InitBlockRed:
+| InitBlockRed:
   "\<lbrakk> P,E(V \<mapsto> T) \<turnstile> \<langle>e, (h,l(V\<mapsto>v'))\<rangle> \<rightarrow> \<langle>e', (h',l')\<rangle>; l' V = Some v''; 
      P \<turnstile> T casts v to v' \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>{V:T := Val v; e}, (h,l)\<rangle> \<rightarrow> \<langle>{V:T := Val v''; e'}, (h',l'(V := l V))\<rangle>"
 
-RedBlock:
+| RedBlock:
   "P,E \<turnstile> \<langle>{V:T; Val u}, s\<rangle> \<rightarrow> \<langle>Val u, s\<rangle>"
 
-RedInitBlock:
+| RedInitBlock:
   "P \<turnstile> T casts v to v' \<Longrightarrow> P,E \<turnstile> \<langle>{V:T := Val v; Val u}, s\<rangle> \<rightarrow> \<langle>Val u, s\<rangle>"
 
-SeqRed:
+| SeqRed:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>e;;e\<^isub>2, s\<rangle> \<rightarrow> \<langle>e';;e\<^isub>2, s'\<rangle>"
 
-RedSeq:
+| RedSeq:
   "P,E \<turnstile> \<langle>(Val v);;e\<^isub>2, s\<rangle> \<rightarrow> \<langle>e\<^isub>2, s\<rangle>"
 
-CondRed:
+| CondRed:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2, s\<rangle> \<rightarrow> \<langle>if (e') e\<^isub>1 else e\<^isub>2, s'\<rangle>"
 
-RedCondT:
+| RedCondT:
   "P,E \<turnstile> \<langle>if (true) e\<^isub>1 else e\<^isub>2, s\<rangle> \<rightarrow> \<langle>e\<^isub>1, s\<rangle>"
 
-RedCondF:
+| RedCondF:
   "P,E \<turnstile> \<langle>if (false) e\<^isub>1 else e\<^isub>2, s\<rangle> \<rightarrow> \<langle>e\<^isub>2, s\<rangle>"
 
-RedWhile:
+| RedWhile:
   "P,E \<turnstile> \<langle>while(b) c, s\<rangle> \<rightarrow> \<langle>if(b) (c;;while(b) c) else unit, s\<rangle>"
 
-ThrowRed:
+| ThrowRed:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>throw e, s\<rangle> \<rightarrow> \<langle>throw e', s'\<rangle>"
 
-RedThrowNull:
+| RedThrowNull:
   "P,E \<turnstile> \<langle>throw null, s\<rangle> \<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
-ListRed1:
+| ListRed1:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>e#es,s\<rangle> [\<rightarrow>] \<langle>e'#es,s'\<rangle>"
 
-ListRed2:
+| ListRed2:
   "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow>
   P,E \<turnstile> \<langle>Val v # es,s\<rangle> [\<rightarrow>] \<langle>Val v # es',s'\<rangle>"
 
 -- "Exception propagation"
 
-DynCastThrow: "P,E \<turnstile> \<langle>Cast C (Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-StaticCastThrow: "P,E \<turnstile> \<langle>\<lparr>C\<rparr>(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-BinOpThrow1: "P,E \<turnstile> \<langle>(Throw r) \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-BinOpThrow2: "P,E \<turnstile> \<langle>(Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> (Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-LAssThrow: "P,E \<turnstile> \<langle>V:=(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-FAccThrow: "P,E \<turnstile> \<langle>(Throw r)\<bullet>F{Cs}, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-FAssThrow1: "P,E \<turnstile> \<langle>(Throw r)\<bullet>F{Cs}:=e\<^isub>2, s\<rangle> \<rightarrow> \<langle>Throw r,s\<rangle>"
-FAssThrow2: "P,E \<turnstile> \<langle>Val v\<bullet>F{Cs}:=(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-CallThrowObj: "P,E \<turnstile> \<langle>Call (Throw r) Copt M es, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-CallThrowParams: "\<lbrakk> es = map Val vs @ Throw r # es' \<rbrakk> 
+| DynCastThrow: "P,E \<turnstile> \<langle>Cast C (Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| StaticCastThrow: "P,E \<turnstile> \<langle>\<lparr>C\<rparr>(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| BinOpThrow1: "P,E \<turnstile> \<langle>(Throw r) \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| BinOpThrow2: "P,E \<turnstile> \<langle>(Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> (Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| LAssThrow: "P,E \<turnstile> \<langle>V:=(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| FAccThrow: "P,E \<turnstile> \<langle>(Throw r)\<bullet>F{Cs}, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| FAssThrow1: "P,E \<turnstile> \<langle>(Throw r)\<bullet>F{Cs}:=e\<^isub>2, s\<rangle> \<rightarrow> \<langle>Throw r,s\<rangle>"
+| FAssThrow2: "P,E \<turnstile> \<langle>Val v\<bullet>F{Cs}:=(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| CallThrowObj: "P,E \<turnstile> \<langle>Call (Throw r) Copt M es, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| CallThrowParams: "\<lbrakk> es = map Val vs @ Throw r # es' \<rbrakk> 
   \<Longrightarrow> P,E \<turnstile> \<langle>Call (Val v) Copt M es, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-BlockThrow: "P,E \<turnstile> \<langle>{V:T; Throw r}, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-InitBlockThrow: "P \<turnstile> T casts v to v' 
+| BlockThrow: "P,E \<turnstile> \<langle>{V:T; Throw r}, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| InitBlockThrow: "P \<turnstile> T casts v to v' 
   \<Longrightarrow> P,E \<turnstile> \<langle>{V:T := Val v; Throw r}, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-SeqThrow: "P,E \<turnstile> \<langle>(Throw r);;e\<^isub>2, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-CondThrow: "P,E \<turnstile> \<langle>if (Throw r) e\<^isub>1 else e\<^isub>2, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
-ThrowThrow: "P,E \<turnstile> \<langle>throw(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| SeqThrow: "P,E \<turnstile> \<langle>(Throw r);;e\<^isub>2, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| CondThrow: "P,E \<turnstile> \<langle>if (Throw r) e\<^isub>1 else e\<^isub>2, s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
+| ThrowThrow: "P,E \<turnstile> \<langle>throw(Throw r), s\<rangle> \<rightarrow> \<langle>Throw r, s\<rangle>"
 
 
 lemmas red_reds_induct = red_reds.induct [split_format (complete)]
   and red_reds_inducts = red_reds.inducts [split_format (complete)]
 
-inductive_cases [elim!]:
+inductive_cases2 [elim!]:
  "P,E \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e1;;e2,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
 
@@ -285,37 +265,30 @@ by (induct rule: red_reds.inducts) auto
 section{* The reflexive transitive closure *}
 
 consts
-  Red ::  "prog \<Rightarrow> env \<Rightarrow> ((expr      \<times> state) \<times> (expr      \<times> state)) set"
-  Reds :: "prog \<Rightarrow> env \<Rightarrow> ((expr list \<times> state) \<times> (expr list \<times> state)) set"
+  Red ::  "prog \<Rightarrow> env \<Rightarrow> (expr      \<times> state) \<Rightarrow> (expr      \<times> state) \<Rightarrow> bool"
+  Reds :: "prog \<Rightarrow> env \<Rightarrow> (expr list \<times> state) \<Rightarrow> (expr list \<times> state) \<Rightarrow> bool"
 
 defs
-  Red_def: "Red P E \<equiv>  {((e,s),e',s'). P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>}"
-  Reds_def:"Reds P E \<equiv> {((es,s),es',s'). P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>}"
+  Red_def: "Red P E \<equiv>  \<lambda>(e,s) (e',s'). P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
+  Reds_def:"Reds P E \<equiv> \<lambda>(es,s) (es',s'). P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
 
-lemma[simp]: "((e,s),e',s') \<in> Red P E = P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
+lemma[simp]: "Red P E (e,s) (e',s') = P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
 by (simp add:Red_def)
 
-lemma[simp]: "((es,s),es',s') \<in> Reds P E = P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
+lemma[simp]: "Reds P E (es,s) (es',s') = P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
 by (simp add:Reds_def)
 
 
 
-syntax (xsymbols)
+abbreviation
   Step :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
-          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
+          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81) where
+  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<equiv> (Red P E)\<^sup>*\<^sup>* (e,s) (e',s')"
+
+abbreviation
   Steps :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
-          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
-
-translations
-  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>"  ==  "((e,s), e',s') \<in> (Red P E)\<^sup>*"
-  "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"  ==  "((es,s), es',s') \<in> (Reds P E)\<^sup>*"
-
-  "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow>* \<langle>e',(h',l')\<rangle>" <= "((e,h,l), e',h',l') \<in> (Red P E)\<^sup>*"
-  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',(h',l')\<rangle>" <= "((e,s), e',h',l') \<in> (Red P E)\<^sup>*"
-  "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>" <= "((e,h,l), e',s') \<in> (Red P E)\<^sup>*"
-  "P,E \<turnstile> \<langle>e,(h,l)\<rangle> [\<rightarrow>]* \<langle>e',(h',l')\<rangle>" <= "((e,h,l), e',h',l') \<in> (Reds P E)\<^sup>*"
-  "P,E \<turnstile> \<langle>e,s\<rangle> [\<rightarrow>]* \<langle>e',(h',l')\<rangle>" <= "((e,s), e',h',l') \<in> (Reds P E)\<^sup>*"
-  "P,E \<turnstile> \<langle>e,(h,l)\<rangle> [\<rightarrow>]* \<langle>e',s'\<rangle>" <= "((e,h,l), e',s') \<in> (Reds P E)\<^sup>*"
+          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81) where
+  "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<equiv> (Reds P E)\<^sup>*\<^sup>* (es,s) (es',s')"
 
 
 lemma converse_rtrancl_induct_red[consumes 1]:
@@ -333,11 +306,11 @@ proof -
            \<lbrakk> P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<rightarrow> \<langle>e\<^isub>1,s\<^isub>1\<rangle>; R e\<^isub>1 (hp s\<^isub>1) (lcl s\<^isub>1) e' (hp s') (lcl s') \<rbrakk>
            \<Longrightarrow> R e\<^isub>0 (hp s\<^isub>0) (lcl s\<^isub>0) e' (hp s') (lcl s')"
     from reds have "R e (hp s) (lcl s) e' (hp s') (lcl s')"
-    proof (induct rule:converse_rtrancl_induct2)
+    proof (induct rule:converse_rtrancl_induct2')
       case refl show ?case by(rule base)
     next
       case (step e\<^isub>0 s\<^isub>0 e s)
-      have Red:"((e\<^isub>0,s\<^isub>0),e,s) \<in> Red P E"
+      have Red:"Red P E (e\<^isub>0,s\<^isub>0) (e,s)"
 	and R:"R e (hp s) (lcl s) e' (hp s') (lcl s')" .
       from IH[OF Red[simplified] R] show ?case .
     qed
@@ -348,19 +321,19 @@ qed
 
 
 lemma steps_length:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<Longrightarrow> length es = length es'"
-by(induct rule:rtrancl_induct2,auto intro:reds_length)
+by(induct rule:rtrancl_induct2',auto intro:reds_length)
 
 
 section{*Some easy lemmas*}
 
 lemma [iff]: "\<not> P,E \<turnstile> \<langle>[],s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
-by(blast elim: red_reds.elims)
+by(blast elim: reds.cases)
 
 lemma [iff]: "\<not> P,E \<turnstile> \<langle>Val v,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-by(fastsimp elim: red_reds.elims)
+by(fastsimp elim: red.cases)
 
 lemma [iff]: "\<not> P,E \<turnstile> \<langle>Throw r,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-by(fastsimp elim: red_reds.elims)
+by(fastsimp elim: red.cases)
 
 
 lemma red_lcl_incr: "P,E \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>e',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
@@ -392,7 +365,7 @@ next
 next
   case RedStaticCall thus ?case by(fastsimp intro:red_reds.intros)
 next
-  case (InitBlockRed E T V e e' h h' l l' v v' v'' l\<^isub>0)
+  case (InitBlockRed E V T e h l v' e' h' l' v'' v l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V \<mapsto> v'))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
     and l'V: "l' V = Some v''" and casts:"P \<turnstile> T casts v to v'" .
   from IH have IH': "P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, (l\<^isub>0 ++ l)(V \<mapsto> v'))\<rangle> \<rightarrow> \<langle>e',(h',l\<^isub>0 ++ l')\<rangle>"
@@ -402,7 +375,7 @@ next
   with red_reds.InitBlockRed[OF IH' _ casts] l'V show ?case
     by(simp del:fun_upd_apply)
 next
-  case (BlockRedNone E T V e e' h h' l l' l\<^isub>0)
+  case (BlockRedNone E V T e h l e' h' l' l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
     and l'V: "l' V = None" and unass: "\<not> assigned V e" .
   have "l\<^isub>0(V := None) ++ l(V := None) = (l\<^isub>0 ++ l)(V := None)"
@@ -414,7 +387,7 @@ next
   with red_reds.BlockRedNone[OF IH' _ unass] l'V show ?case
     by(simp add: map_add_def)
 next
-  case (BlockRedSome E T V e e' h h' l l' v l\<^isub>0)
+  case (BlockRedSome E V T e h l e' h' l' v l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
     and l'V: "l' V = Some v" and unass: "\<not> assigned V e" .
   have "l\<^isub>0(V := None) ++ l(V := None) = (l\<^isub>0 ++ l)(V := None)"
@@ -438,7 +411,7 @@ proof(induct rule:converse_rtrancl_induct_red)
   case 1 thus ?case by simp
 next
   case 2 thus ?case
-    by(auto dest: red_lcl_add intro: converse_rtrancl_into_rtrancl simp:Red_def)
+    by(auto dest: red_lcl_add intro: converse_rtrancl_into_rtrancl' simp:Red_def)
 qed
 
 

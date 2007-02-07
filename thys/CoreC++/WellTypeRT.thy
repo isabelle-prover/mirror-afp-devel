@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellTypeRT.thy,v 1.8 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: WellTypeRT.thy,v 1.9 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -23,7 +23,7 @@ primrec
   "P \<turnstile> typeof\<^bsub>h\<^esub> (Bool b) = Some Boolean"
   "P \<turnstile> typeof\<^bsub>h\<^esub> (Intg i) = Some Integer"
   "P \<turnstile> typeof\<^bsub>h\<^esub> (Ref r)  = (case h (the_addr (Ref r)) of None \<Rightarrow> None 
-                            | Some(C,S) \<Rightarrow> (if (C,the_path(Ref r)) \<in> Subobjs P then
+                            | Some(C,S) \<Rightarrow> (if Subobjs P C (the_path(Ref r)) then
                                    Some(Class(last(the_path(Ref r))))
                                             else None))"
 
@@ -45,114 +45,103 @@ by(induct v,auto split:split_if_asm)
 
 lemma typeof_Class_Subo: 
 "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some (Class C) \<Longrightarrow> 
-\<exists>a Cs D S. v = Ref(a,Cs) \<and> h a = Some(D,S) \<and> (D,Cs) \<in> Subobjs P \<and> last Cs = C"
+\<exists>a Cs D S. v = Ref(a,Cs) \<and> h a = Some(D,S) \<and> Subobjs P D Cs \<and> last Cs = C"
 by(induct v,auto split:split_if_asm)
 
 section {* The rules *}
 
-consts
-  WTrt :: "prog \<Rightarrow> (env \<times> heap \<times> expr      \<times> ty     )set"
-  WTrts:: "prog \<Rightarrow> (env \<times> heap \<times> expr list \<times> ty list)set"
-
-
-syntax (xsymbols)
+inductive2
   WTrt :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ : _"   [51,51,51]50)
-  WTrts:: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
+  and WTrts :: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ [:] _" [51,51,51]50)
-
-
-translations
-  "P,E,h \<turnstile> e : T"  ==  "(E,h,e,T) \<in> WTrt P"
-  "P,E,h \<turnstile> es [:] Ts"  ==  "(E,h,es,Ts) \<in> WTrts P"
-
-inductive "WTrt P" "WTrts P"
-intros
+  for P :: prog
+where
   
-WTrtNew:
+  WTrtNew:
   "is_class P C  \<Longrightarrow> 
   P,E,h \<turnstile> new C : Class C"
 
-WTrtDynCast:
+| WTrtDynCast:
   "\<lbrakk> P,E,h \<turnstile> e : T; is_refT T; is_class P C \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> Cast C e : Class C"
 
-WTrtStaticCast:
+| WTrtStaticCast:
   "\<lbrakk> P,E,h \<turnstile> e : T; is_refT T; is_class P C \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> \<lparr>C\<rparr>e : Class C"
 
-WTrtVal:
+| WTrtVal:
   "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow>
   P,E,h \<turnstile> Val v : T"
 
-WTrtVar:
+| WTrtVar:
   "E V = Some T \<Longrightarrow>
   P,E,h \<turnstile> Var V : T"
 
-WTrtBinOp:
+| WTrtBinOp:
   "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2;
      case bop of Eq \<Rightarrow> T = Boolean
                | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
 
-WTrtLAss:
+| WTrtLAss:
   "\<lbrakk> E V = Some T;  P,E,h \<turnstile> e : T'; P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> V:=e : T"
 
-WTrtFAcc:
+| WTrtFAcc:
 "\<lbrakk>P,E,h \<turnstile> e : Class C; Cs \<noteq> []; P \<turnstile> C has least F:T via Cs \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} : T"
 
-WTrtFAccNT:
+| WTrtFAccNT:
   "P,E,h \<turnstile> e : NT \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} : T"
 
-WTrtFAss:
+| WTrtFAss:
 "\<lbrakk>P,E,h \<turnstile> e\<^isub>1 : Class C; Cs \<noteq> [];
   P \<turnstile> C has least F:T via Cs; P,E,h \<turnstile> e\<^isub>2 : T'; P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 : T"
 
-WTrtFAssNT:
+| WTrtFAssNT:
   "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : NT; P,E,h \<turnstile> e\<^isub>2 : T'; P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 : T"
 
-WTrtCall:
+| WTrtCall:
   "\<lbrakk> P,E,h \<turnstile> e : Class C;  P \<turnstile> C has least M = (Ts,T,m) via Cs;
      P,E,h \<turnstile> es [:] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) : T" 
 
-WTrtStaticCall:
+| WTrtStaticCall:
   "\<lbrakk> P,E,h \<turnstile> e : Class C'; P \<turnstile> Path C' to C unique;
      P \<turnstile> C has least M = (Ts,T,m) via Cs; 
      P,E,h \<turnstile> es [:] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>(C::)M(es) : T"
 
-WTrtCallNT:
+| WTrtCallNT:
   "\<lbrakk>P,E,h \<turnstile> e : NT; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> P,E,h \<turnstile> Call e Copt M es : T"
 
-WTrtBlock:
+| WTrtBlock:
   "\<lbrakk>P,E(V\<mapsto>T),h \<turnstile> e : T'; is_type P T\<rbrakk> \<Longrightarrow> 
   P,E,h \<turnstile> {V:T; e} : T'"
 
-WTrtSeq:
+| WTrtSeq:
   "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2 \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2"
 
-WTrtCond:
+| WTrtCond:
   "\<lbrakk> P,E,h \<turnstile> e : Boolean;  P,E,h \<turnstile> e\<^isub>1 : T;  P,E,h \<turnstile> e\<^isub>2 : T \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
 
-WTrtWhile:
+| WTrtWhile:
   "\<lbrakk> P,E,h \<turnstile> e : Boolean;  P,E,h \<turnstile> c : T \<rbrakk>
   \<Longrightarrow>  P,E,h \<turnstile> while(e) c : Void"
 
-WTrtThrow:
+| WTrtThrow:
   "\<lbrakk>P,E,h \<turnstile> e : T'; is_refT T'\<rbrakk>  
  \<Longrightarrow>  P,E,h \<turnstile> throw e : T"
 
 
-WTrtNil:
+| WTrtNil:
 "P,E,h \<turnstile> [] [:] []"
 
-WTrtCons:
+| WTrtCons:
  "\<lbrakk> P,E,h \<turnstile> e : T;  P,E,h \<turnstile> es [:] Ts \<rbrakk> \<Longrightarrow>  P,E,h \<turnstile> e#es [:] T#Ts"
 
 
@@ -175,14 +164,14 @@ section{*Easy consequences*}
 lemma [iff]: "(P,E,h \<turnstile> [] [:] Ts) = (Ts = [])"
 
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrts.cases)
 done
 
 
 lemma [iff]: "(P,E,h \<turnstile> e#es [:] T#Ts) = (P,E,h \<turnstile> e : T \<and> P,E,h \<turnstile> es [:] Ts)"
 
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrts.cases)
 done
 
 
@@ -190,7 +179,7 @@ lemma [iff]: "(P,E,h \<turnstile> (e#es) [:] Ts) =
   (\<exists>U Us. Ts = U#Us \<and> P,E,h \<turnstile> e : U \<and> P,E,h \<turnstile> es [:] Us)"
 
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrts.cases)
 done
 
 
@@ -214,33 +203,33 @@ done
 lemma [iff]: "P,E,h \<turnstile> Val v : T = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
 
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrt.cases)
 done
 
 
 lemma [iff]: "P,E,h \<turnstile> Var V : T = (E V = Some T)"
 
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrt.cases)
 done
 
 
 lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:T\<^isub>2)"
 
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrt.cases)
 done
 
 
 lemma [iff]: "P,E,h \<turnstile> {V:T; e} : T'  =  (P,E(V\<mapsto>T),h \<turnstile> e : T' \<and> is_type P T)"
 
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrt.cases)
 done
 
 
 
-inductive_cases WTrt_elim_cases[elim!]:
+inductive_cases2 WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> new C : T"
   "P,E,h \<turnstile> Cast C e : T"
   "P,E,h \<turnstile> \<lparr>C\<rparr>e : T"

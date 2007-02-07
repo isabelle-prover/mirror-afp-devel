@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Annotate.thy,v 1.7 2007-02-07 08:13:59 wasserra Exp $
+    ID:          $Id: Annotate.thy,v 1.8 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -19,58 +19,47 @@ translations
   "unanFAss e F e'" == "FAss e F [] e'"
 
 
-consts
-  Anno :: "prog \<Rightarrow> (env \<times> expr      \<times> expr) set"
-  Annos:: "prog \<Rightarrow> (env \<times> expr list \<times> expr list) set"
-
-
-syntax (xsymbols)
+inductive2
   Anno :: "[prog,env, expr     , expr] \<Rightarrow> bool"
          ("_,_ \<turnstile> _ \<leadsto> _"   [51,0,0,51]50)
-  Annos:: "[prog,env, expr list, expr list] \<Rightarrow> bool"
+  and Annos :: "[prog,env, expr list, expr list] \<Rightarrow> bool"
          ("_,_ \<turnstile> _ [\<leadsto>] _" [51,0,0,51]50)
-
-
-translations
-  "P,E \<turnstile> e \<leadsto> e'" == "(E,e,e') \<in> Anno P"
-  "P,E \<turnstile> es [\<leadsto>] es'" == "(E,es,es') \<in> Annos P"
-
-inductive "Anno P" "Annos P"
-intros
+  for P :: prog
+where
   
-AnnoNew: "is_class P C  \<Longrightarrow>  P,E \<turnstile> new C \<leadsto> new C"
-AnnoCast: "P,E \<turnstile> e \<leadsto> e' \<Longrightarrow> P,E \<turnstile> Cast C e \<leadsto> Cast C e'"
-AnnoStatCast: "P,E \<turnstile> e \<leadsto> e' \<Longrightarrow> P,E \<turnstile> StatCast C e \<leadsto> StatCast C e'"
-AnnoVal: "P,E \<turnstile> Val v \<leadsto> Val v"
-AnnoVarVar: "E V = \<lfloor>T\<rfloor> \<Longrightarrow> P,E \<turnstile> Var V \<leadsto> Var V"
-AnnoVarField: "\<lbrakk> E V = None; E this = \<lfloor>Class C\<rfloor>; P \<turnstile> C has least V:T via Cs \<rbrakk>
+  AnnoNew: "is_class P C  \<Longrightarrow>  P,E \<turnstile> new C \<leadsto> new C"
+| AnnoCast: "P,E \<turnstile> e \<leadsto> e' \<Longrightarrow> P,E \<turnstile> Cast C e \<leadsto> Cast C e'"
+| AnnoStatCast: "P,E \<turnstile> e \<leadsto> e' \<Longrightarrow> P,E \<turnstile> StatCast C e \<leadsto> StatCast C e'"
+| AnnoVal: "P,E \<turnstile> Val v \<leadsto> Val v"
+| AnnoVarVar: "E V = \<lfloor>T\<rfloor> \<Longrightarrow> P,E \<turnstile> Var V \<leadsto> Var V"
+| AnnoVarField: "\<lbrakk> E V = None; E this = \<lfloor>Class C\<rfloor>; P \<turnstile> C has least V:T via Cs \<rbrakk>
                \<Longrightarrow> P,E \<turnstile> Var V \<leadsto> Var this\<bullet>V{Cs}"
-AnnoBinOp:
+| AnnoBinOp:
   "\<lbrakk> P,E \<turnstile> e1 \<leadsto> e1';  P,E \<turnstile> e2 \<leadsto> e2' \<rbrakk>
    \<Longrightarrow> P,E \<turnstile> e1 \<guillemotleft>bop\<guillemotright> e2 \<leadsto> e1' \<guillemotleft>bop\<guillemotright> e2'"
-AnnoLAss:
+| AnnoLAss:
   "P,E \<turnstile> e \<leadsto> e' \<Longrightarrow> P,E \<turnstile> V:=e \<leadsto> V:=e'"
-AnnoFAcc:
+| AnnoFAcc:
   "\<lbrakk> P,E \<turnstile> e \<leadsto> e';  P,E \<turnstile> e' :: Class C;  P \<turnstile> C has least F:T via Cs \<rbrakk>
    \<Longrightarrow> P,E \<turnstile> e\<bullet>F{[]} \<leadsto> e'\<bullet>F{Cs}"
-AnnoFAss: "\<lbrakk> P,E \<turnstile> e1 \<leadsto> e1';  P,E \<turnstile> e2 \<leadsto> e2';
+| AnnoFAss: "\<lbrakk> P,E \<turnstile> e1 \<leadsto> e1';  P,E \<turnstile> e2 \<leadsto> e2';
              P,E \<turnstile> e1' :: Class C; P \<turnstile> C has least F:T via Cs \<rbrakk>
           \<Longrightarrow> P,E \<turnstile> e1\<bullet>F{[]} := e2 \<leadsto> e1'\<bullet>F{Cs} := e2'"
-AnnoCall:
+| AnnoCall:
   "\<lbrakk> P,E \<turnstile> e \<leadsto> e';  P,E \<turnstile> es [\<leadsto>] es' \<rbrakk>
    \<Longrightarrow> P,E \<turnstile> Call e Copt M es \<leadsto> Call e' Copt M es'"
-AnnoBlock:
+| AnnoBlock:
   "P,E(V \<mapsto> T) \<turnstile> e \<leadsto> e'  \<Longrightarrow>  P,E \<turnstile> {V:T; e} \<leadsto> {V:T; e'}"
-AnnoComp: "\<lbrakk> P,E \<turnstile> e1 \<leadsto> e1';  P,E \<turnstile> e2 \<leadsto> e2' \<rbrakk>
+| AnnoComp: "\<lbrakk> P,E \<turnstile> e1 \<leadsto> e1';  P,E \<turnstile> e2 \<leadsto> e2' \<rbrakk>
            \<Longrightarrow>  P,E \<turnstile> e1;;e2 \<leadsto> e1';;e2'"
-AnnoCond: "\<lbrakk> P,E \<turnstile> e \<leadsto> e'; P,E \<turnstile> e1 \<leadsto> e1';  P,E \<turnstile> e2 \<leadsto> e2' \<rbrakk>
+| AnnoCond: "\<lbrakk> P,E \<turnstile> e \<leadsto> e'; P,E \<turnstile> e1 \<leadsto> e1';  P,E \<turnstile> e2 \<leadsto> e2' \<rbrakk>
           \<Longrightarrow> P,E \<turnstile> if (e) e1 else e2 \<leadsto> if (e') e1' else e2'"
-AnnoLoop: "\<lbrakk> P,E \<turnstile> e \<leadsto> e';  P,E \<turnstile> c \<leadsto> c' \<rbrakk>
+| AnnoLoop: "\<lbrakk> P,E \<turnstile> e \<leadsto> e';  P,E \<turnstile> c \<leadsto> c' \<rbrakk>
           \<Longrightarrow> P,E \<turnstile> while (e) c \<leadsto> while (e') c'"
-AnnoThrow: "P,E \<turnstile> e \<leadsto> e'  \<Longrightarrow>  P,E \<turnstile> throw e \<leadsto> throw e'"
+| AnnoThrow: "P,E \<turnstile> e \<leadsto> e'  \<Longrightarrow>  P,E \<turnstile> throw e \<leadsto> throw e'"
 
-AnnoNil: "P,E \<turnstile> [] [\<leadsto>] []"
-AnnoCons: "\<lbrakk> P,E \<turnstile> e \<leadsto> e';  P,E \<turnstile> es [\<leadsto>] es' \<rbrakk>
+| AnnoNil: "P,E \<turnstile> [] [\<leadsto>] []"
+| AnnoCons: "\<lbrakk> P,E \<turnstile> e \<leadsto> e';  P,E \<turnstile> es [\<leadsto>] es' \<rbrakk>
            \<Longrightarrow>  P,E \<turnstile> e#es [\<leadsto>] e'#es'"
 
 end

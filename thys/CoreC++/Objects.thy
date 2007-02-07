@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Objects.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Objects.thy,v 1.7 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -24,25 +24,24 @@ constdefs
   "init_class_fieldmap P C \<equiv> 
      map_of (map (\<lambda>(F,T).(F,default_val T)) (fst(snd(the(class P C)))) )"
 
-consts
-  init_obj :: "prog \<Rightarrow> cname \<Rightarrow>  (path \<times> (vname \<rightharpoonup> val))set"
+inductive2
+  init_obj :: "prog \<Rightarrow> cname \<Rightarrow> (path \<times> (vname \<rightharpoonup> val)) \<Rightarrow> bool"
+  for P :: prog and C :: cname
+where
+  "Subobjs P C Cs \<Longrightarrow> init_obj P C (Cs,init_class_fieldmap P (last Cs))"
 
-inductive "init_obj P C"
-intros
-  "(C,Cs) \<in> Subobjs P \<Longrightarrow> (Cs,init_class_fieldmap P (last Cs)) \<in> init_obj P C"
 
-
-lemma init_obj_nonempty: "(Cs,fs) \<in> init_obj P C \<Longrightarrow> Cs \<noteq> []"
-by (fastsimp elim:init_obj.elims dest:Subobjs_nonempty)
+lemma init_obj_nonempty: "init_obj P C (Cs,fs) \<Longrightarrow> Cs \<noteq> []"
+by (fastsimp elim:init_obj.cases dest:Subobjs_nonempty)
 
 lemma init_obj_no_Ref: 
-"\<lbrakk>(Cs,fs) \<in> init_obj P C;  fs F = Some(Ref(a',Cs'))\<rbrakk> \<Longrightarrow> False"
-by (fastsimp elim:init_obj.elims default_val_no_Ref 
+"\<lbrakk>init_obj P C (Cs,fs);  fs F = Some(Ref(a',Cs'))\<rbrakk> \<Longrightarrow> False"
+by (fastsimp elim:init_obj.cases default_val_no_Ref 
                   simp:init_class_fieldmap_def map_of_map)
 
 lemma SubobjsSet_init_objSet:
-  "{Cs. (C,Cs) \<in> Subobjs P} = {Cs. \<exists>vmap. (Cs,vmap) \<in> init_obj P C}"
-by ( fastsimp intro:init_obj.intros elim:init_obj.elims)
+  "{Cs. Subobjs P C Cs} = {Cs. \<exists>vmap. init_obj P C (Cs,vmap)}"
+by ( fastsimp intro:init_obj.intros elim:init_obj.cases)
 
 
 constdefs
@@ -52,7 +51,7 @@ constdefs
 
  -- "a new, blank object with default values in all fields:"
   blank :: "prog \<Rightarrow> cname \<Rightarrow> obj"
-  "blank P C  \<equiv> (C, init_obj P C)"
+  "blank P C  \<equiv> (C, Collect (init_obj P C))"
 
 
 lemma [simp]: "obj_ty (C,S) = Class C"

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: HeapExtension.thy,v 1.8 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: HeapExtension.thy,v 1.9 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -94,11 +94,11 @@ qed simp_all
 
 lemma step_hext_incr: "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>  \<Longrightarrow> hp s \<unlhd> hp s'"
 
-proof(induct rule:converse_rtrancl_induct2)
+proof(induct rule:converse_rtrancl_induct2')
   case refl thus ?case by(rule hext_refl)
 next
   case (step e s e'' s'')
-  have Red:"((e, s), e'', s'') \<in> Red P E"
+  have Red:"Red P E (e, s) (e'', s'')"
     and hext:"hp s'' \<unlhd> hp s'" .
   from Red have "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e'',s''\<rangle>" by simp
   hence "hp s \<unlhd> hp s''"
@@ -109,11 +109,11 @@ qed
 
 lemma steps_hext_incr: "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>  \<Longrightarrow> hp s \<unlhd> hp s'"
 
-proof(induct rule:converse_rtrancl_induct2)
+proof(induct rule:converse_rtrancl_induct2')
   case refl thus ?case by(rule hext_refl)
 next
   case (step es s es'' s'')
-  have Reds:"((es, s), es'', s'') \<in> Reds P E"
+  have Reds:"Reds P E (es, s) (es'', s'')"
     and hext:"hp s'' \<unlhd> hp s'" .
   from Reds have "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
   hence "hp s \<unlhd> hp s''"
@@ -176,24 +176,24 @@ lemmas oconf_upd_obj = oconf_hext [OF _ hext_upd_obj]
 lemma hconf_new: "\<lbrakk> P \<turnstile> h \<surd>; h a = None; P,h \<turnstile> obj \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> h(a\<mapsto>obj) \<surd>"
 by (unfold hconf_def) (auto intro: oconf_new preallocated_new)
 
-lemma "\<lbrakk>P \<turnstile> h \<surd>; h' = h(a \<mapsto> (C, init_obj P C)); h a = None; wf_prog wf_md P\<rbrakk>
+lemma "\<lbrakk>P \<turnstile> h \<surd>; h' = h(a \<mapsto> (C, Collect (init_obj P C))); h a = None; wf_prog wf_md P\<rbrakk>
   \<Longrightarrow> P \<turnstile> h' \<surd>"
 apply (simp add:hconf_def oconf_def)
 apply auto
      apply (rule_tac x="init_class_fieldmap P (last Cs)" in exI)
      apply (rule init_obj.intros)
      apply assumption
-    apply (erule init_obj.elims)
+    apply (erule init_obj.cases)
     apply clarsimp
-    apply (erule init_obj.elims)
+    apply (erule init_obj.cases)
     apply clarsimp
    apply (erule_tac x="a" in allE)
    apply clarsimp
-   apply (erule init_obj.elims)
+   apply (erule init_obj.cases)
    apply simp
   apply (erule_tac x="a" in allE)
   apply clarsimp
-  apply (erule init_obj.elims)
+  apply (erule init_obj.cases)
   apply clarsimp
   apply (drule Subobj_last_isClass)
    apply simp

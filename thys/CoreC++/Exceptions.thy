@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Exceptions.thy,v 1.7 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Exceptions.thy,v 1.8 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Gerwin Klein, Martin Strecker, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -84,21 +84,21 @@ by (auto simp add: start_heap_def blank_def sys_xcpts_def fun_upd_apply
 subsection "@{term start_heap}"
 
 lemma start_Subobj:
-"\<lbrakk>start_heap P a = Some(C, S); (Cs,fs) \<in> S\<rbrakk> \<Longrightarrow> (C,Cs) \<in> Subobjs P"
-by (fastsimp elim:init_obj.elims simp:start_heap_def blank_def 
+"\<lbrakk>start_heap P a = Some(C, S); (Cs,fs) \<in> S\<rbrakk> \<Longrightarrow> Subobjs P C Cs"
+by (fastsimp elim:init_obj.cases simp:start_heap_def blank_def 
                                     fun_upd_apply split:split_if_asm)
 
 lemma start_SuboSet:
-"\<lbrakk>start_heap P a = Some(C, S); (C,Cs) \<in> Subobjs P\<rbrakk> \<Longrightarrow> \<exists>fs. (Cs,fs) \<in> S"
+"\<lbrakk>start_heap P a = Some(C, S); Subobjs P C Cs\<rbrakk> \<Longrightarrow> \<exists>fs. (Cs,fs) \<in> S"
 by (fastsimp intro:init_obj.intros simp:start_heap_def blank_def
                 split:split_if_asm)
 
-lemma start_init_obj: "start_heap P a = Some(C,S) \<Longrightarrow> S = init_obj P C"
+lemma start_init_obj: "start_heap P a = Some(C,S) \<Longrightarrow> S = Collect (init_obj P C)"
 by (auto simp:start_heap_def blank_def split:split_if_asm)
 
 lemma start_subobj:
-  "\<lbrakk>start_heap P a = Some(C, S); \<exists>fs. (Cs, fs) \<in> S\<rbrakk> \<Longrightarrow> (C, Cs) \<in> Subobjs P"
-by (fastsimp elim:init_obj.elims simp:start_heap_def blank_def
+  "\<lbrakk>start_heap P a = Some(C, S); \<exists>fs. (Cs, fs) \<in> S\<rbrakk> \<Longrightarrow> Subobjs P C Cs"
+by (fastsimp elim:init_obj.cases simp:start_heap_def blank_def
                   split:split_if_asm)
 
 end

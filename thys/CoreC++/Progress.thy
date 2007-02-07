@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.13 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Progress.thy,v 1.14 2007-02-07 17:24:54 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -87,73 +87,62 @@ qed
 
 text{* Derivation of new induction scheme for well typing: *}
 
-consts
-  WTrt' :: "prog \<Rightarrow> (env \<times> heap \<times> expr      \<times> ty     )set"
-  WTrts':: "prog \<Rightarrow> (env \<times> heap \<times> expr list \<times> ty list)set"
-
-
-syntax (xsymbols)
+inductive2
   WTrt' :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ :' _"   [51,51,51]50)
-  WTrts':: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
+  and WTrts':: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ [:''] _" [51,51,51]50)
+  for P :: prog
+where
+  "is_class P C \<Longrightarrow>  P,E,h \<turnstile> new C :' Class C"
+| "\<lbrakk>is_class P C; P,E,h \<turnstile> e :' T; is_refT T\<rbrakk> 
+   \<Longrightarrow> P,E,h \<turnstile> Cast C e :' Class C"
+| "\<lbrakk>is_class P C; P,E,h \<turnstile> e :' T; is_refT T\<rbrakk> 
+   \<Longrightarrow> P,E,h \<turnstile> \<lparr>C\<rparr>e :' Class C"
+| "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow> P,E,h \<turnstile> Val v :' T"
+| "E V = Some T  \<Longrightarrow>  P,E,h \<turnstile> Var V :' T"
+| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2;
+    case bop of Eq \<Rightarrow> T = Boolean
+    | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer \<rbrakk>
+   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :' T"
+| "\<lbrakk> P,E,h \<turnstile> Var V :' T; P,E,h \<turnstile> e :' T' (* V \<noteq> This*); P \<turnstile> T' \<le> T \<rbrakk>
+   \<Longrightarrow> P,E,h \<turnstile> V:=e :' T"
+| "\<lbrakk>P,E,h \<turnstile> e :' Class C; Cs \<noteq> []; P \<turnstile> C has least F:T via Cs\<rbrakk> 
+  \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} :' T"
+| "P,E,h \<turnstile> e :' NT \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} :' T"
+| "\<lbrakk>P,E,h \<turnstile> e\<^isub>1 :' Class C; Cs \<noteq> []; P \<turnstile> C has least F:T via Cs;
+    P,E,h \<turnstile> e\<^isub>2 :' T'; P \<turnstile> T' \<le> T \<rbrakk> 
+  \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 :' T"
+| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1:'NT; P,E,h \<turnstile> e\<^isub>2 :' T'; P \<turnstile> T' \<le> T \<rbrakk> 
+   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 :' T"
+| "\<lbrakk> P,E,h \<turnstile> e :' Class C;  P \<turnstile> C has least M = (Ts,T,m) via Cs;
+    P,E,h \<turnstile> es [:'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+    \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) :' T" 
+| "\<lbrakk> P,E,h \<turnstile> e :' Class C'; P \<turnstile> Path C' to C unique;
+    P \<turnstile> C has least M = (Ts,T,m) via Cs; 
+    P,E,h \<turnstile> es [:'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+    \<Longrightarrow> P,E,h \<turnstile> e\<bullet>(C::)M(es) :' T"
+| "\<lbrakk>P,E,h \<turnstile> e :' NT; P,E,h \<turnstile> es [:'] Ts\<rbrakk> \<Longrightarrow> P,E,h \<turnstile> Call e Copt M es :' T"
+| "\<lbrakk> P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'; P,E(V\<mapsto>T),h \<turnstile> e\<^isub>2 :' T\<^isub>2; P \<turnstile> T' \<le> T; is_type P T \<rbrakk>
+   \<Longrightarrow>  P,E,h \<turnstile> {V:T := Val v; e\<^isub>2} :' T\<^isub>2"
+| "\<lbrakk> P,E(V\<mapsto>T),h \<turnstile> e :' T'; \<not> assigned V e; is_type P T \<rbrakk>
+   \<Longrightarrow>  P,E,h \<turnstile> {V:T; e} :' T'"
+| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1; P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2 \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 :' T\<^isub>2"
+| "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> e\<^isub>1:' T;  P,E,h \<turnstile> e\<^isub>2:' T \<rbrakk>
+   \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :' T"
+| "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> c:' T \<rbrakk>
+   \<Longrightarrow>  P,E,h \<turnstile> while(e) c :' Void"
+| "\<lbrakk> P,E,h \<turnstile> e :' T'; is_refT T'\<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> throw e :' T"
 
-
-translations
-  "P,E,h \<turnstile> e :' T"  ==  "(E,h,e,T) \<in> WTrt' P"
-  "P,E,h \<turnstile> es [:'] Ts"  ==  "(E,h,es,Ts) \<in> WTrts' P"
-
-inductive "WTrt' P" "WTrts' P"
-intros
-"is_class P C \<Longrightarrow>  P,E,h \<turnstile> new C :' Class C"
-"\<lbrakk>is_class P C; P,E,h \<turnstile> e :' T; is_refT T\<rbrakk> 
- \<Longrightarrow> P,E,h \<turnstile> Cast C e :' Class C"
-"\<lbrakk>is_class P C; P,E,h \<turnstile> e :' T; is_refT T\<rbrakk> 
- \<Longrightarrow> P,E,h \<turnstile> \<lparr>C\<rparr>e :' Class C"
-"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow> P,E,h \<turnstile> Val v :' T"
-"E V = Some T  \<Longrightarrow>  P,E,h \<turnstile> Var V :' T"
-"\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2;
-  case bop of Eq \<Rightarrow> T = Boolean
-  | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer \<rbrakk>
- \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :' T"
-"\<lbrakk> P,E,h \<turnstile> Var V :' T; P,E,h \<turnstile> e :' T' (* V \<noteq> This*); P \<turnstile> T' \<le> T \<rbrakk>
- \<Longrightarrow> P,E,h \<turnstile> V:=e :' T"
-"\<lbrakk>P,E,h \<turnstile> e :' Class C; Cs \<noteq> []; P \<turnstile> C has least F:T via Cs\<rbrakk> 
-\<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} :' T"
-"P,E,h \<turnstile> e :' NT \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{Cs} :' T"
-"\<lbrakk>P,E,h \<turnstile> e\<^isub>1 :' Class C; Cs \<noteq> []; P \<turnstile> C has least F:T via Cs;
-  P,E,h \<turnstile> e\<^isub>2 :' T'; P \<turnstile> T' \<le> T \<rbrakk> 
-\<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 :' T"
-"\<lbrakk> P,E,h \<turnstile> e\<^isub>1:'NT; P,E,h \<turnstile> e\<^isub>2 :' T'; P \<turnstile> T' \<le> T \<rbrakk> 
- \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{Cs}:=e\<^isub>2 :' T"
-"\<lbrakk> P,E,h \<turnstile> e :' Class C;  P \<turnstile> C has least M = (Ts,T,m) via Cs;
-  P,E,h \<turnstile> es [:'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) :' T" 
-"\<lbrakk> P,E,h \<turnstile> e :' Class C'; P \<turnstile> Path C' to C unique;
-  P \<turnstile> C has least M = (Ts,T,m) via Cs; 
-  P,E,h \<turnstile> es [:'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile> e\<bullet>(C::)M(es) :' T"
-"\<lbrakk>P,E,h \<turnstile> e :' NT; P,E,h \<turnstile> es [:'] Ts\<rbrakk> \<Longrightarrow> P,E,h \<turnstile> Call e Copt M es :' T"
-"\<lbrakk> P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'; P,E(V\<mapsto>T),h \<turnstile> e\<^isub>2 :' T\<^isub>2; P \<turnstile> T' \<le> T; is_type P T \<rbrakk>
- \<Longrightarrow>  P,E,h \<turnstile> {V:T := Val v; e\<^isub>2} :' T\<^isub>2"
-"\<lbrakk> P,E(V\<mapsto>T),h \<turnstile> e :' T'; \<not> assigned V e; is_type P T \<rbrakk>
- \<Longrightarrow>  P,E,h \<turnstile> {V:T; e} :' T'"
-"\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1; P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2 \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 :' T\<^isub>2"
-"\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> e\<^isub>1:' T;  P,E,h \<turnstile> e\<^isub>2:' T \<rbrakk>
- \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :' T"
-"\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> c:' T \<rbrakk>
- \<Longrightarrow>  P,E,h \<turnstile> while(e) c :' Void"
-"\<lbrakk> P,E,h \<turnstile> e :' T'; is_refT T'\<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> throw e :' T"
-
-"P,E,h \<turnstile> [] [:'] []"
-"\<lbrakk> P,E,h \<turnstile> e :' T;  P,E,h \<turnstile> es [:'] Ts \<rbrakk> \<Longrightarrow>  P,E,h \<turnstile> e#es [:'] T#Ts"
+| "P,E,h \<turnstile> [] [:'] []"
+| "\<lbrakk> P,E,h \<turnstile> e :' T;  P,E,h \<turnstile> es [:'] Ts \<rbrakk> \<Longrightarrow>  P,E,h \<turnstile> e#es [:'] T#Ts"
 
 
 
 lemmas WTrt'_induct = WTrt'_WTrts'.induct [split_format (complete)]
   and WTrt'_inducts = WTrt'_WTrts'.inducts [split_format (complete)]
 
-inductive_cases WTrt'_elim_cases[elim!]:
+inductive_cases2 WTrt'_elim_cases[elim!]:
   "P,E,h \<turnstile> V :=e :' T"
 
 
@@ -162,21 +151,21 @@ text{* ... and some easy consequences: *}
 lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 :' T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:' T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:' T\<^isub>2)"
 
 apply(rule iffI)
-apply (auto elim: WTrt'_WTrts'.elims intro!:WTrt'_WTrts'.intros)
+apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
 done
 
 
 lemma [iff]: "P,E,h \<turnstile> Val v :' T = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T)"
 
 apply(rule iffI)
-apply (auto elim: WTrt'_WTrts'.elims intro!:WTrt'_WTrts'.intros)
+apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
 done
 
 
 lemma [iff]: "P,E,h \<turnstile> Var V :' T = (E V = Some T)"
 
 apply(rule iffI)
-apply (auto elim: WTrt'_WTrts'.elims intro!:WTrt'_WTrts'.intros)
+apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
 done
 
 
@@ -185,7 +174,7 @@ lemma wt_wt': "P,E,h \<turnstile> e : T \<Longrightarrow> P,E,h \<turnstile> e :
 and wts_wts': "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> P,E,h \<turnstile> es [:'] Ts"
 
 proof (induct rule:WTrt_inducts)
-  case (WTrtBlock E T T' V e)
+  case (WTrtBlock E V T h e T')
   thus ?case
     apply(case_tac "assigned V e")
     apply(auto intro:WTrt'_WTrts'.intros 
@@ -229,11 +218,11 @@ and "P,E,h \<turnstile> es [:] Ts \<Longrightarrow>
       \<longrightarrow> P \<turnstile> D \<preceq>\<^sup>* C"
 
 proof (induct rule:WTrt_inducts2)
-  case (WTrtVal E T h v)
+  case (WTrtVal h v T E)
   have type:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T" .
   { fix C a Cs D S
     assume "T = Class C" and "Val v = ref(a,Cs)" and "h a = Some(D,S)"
-    with type have "(D,Cs) \<in> Subobjs P" and "C = last Cs" by (auto split:split_if_asm)
+    with type have "Subobjs P D Cs" and "C = last Cs" by (auto split:split_if_asm)
     hence "P \<turnstile> D \<preceq>\<^sup>* C" by simp (rule Subobjs_subclass) }
   thus ?case by blast
 qed auto
@@ -284,7 +273,7 @@ proof (induct rule:WTrt_inducts2)
       by(fastsimp intro:RedNewFail simp add:new_Addr_def)
   qed
 next
-  case (WTrtDynCast C E T e h)
+  case (WTrtDynCast C E h e T)
   have wte: "P,E,h \<turnstile> e : T" and refT: "is_refT T" and "class": "is_class P C"
     and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
@@ -342,7 +331,7 @@ next
     from IH[OF hconf envconf De nf] show ?thesis by (blast intro:DynCastRed)
   qed
 next
-  case (WTrtStaticCast C E T e h)
+  case (WTrtStaticCast C E h e T)
   have wte: "P,E,h \<turnstile> e : T" and refT: "is_refT T" and "class": "is_class P C"
    and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
@@ -394,7 +383,7 @@ next
 next
   case WTrtVar thus ?case by(fastsimp intro:RedVar simp:hyper_isin_def)
 next
-  case (WTrtBinOp E T' T1 T2 bop e1 e2 h)
+  case (WTrtBinOp E h e1 T1 e2 T2 T' bop)
   have bop:"case bop of Eq \<Rightarrow> T' = Boolean
                       | Add \<Rightarrow> T1 = Integer \<and> T2 = Integer \<and> T' = Integer"
     and wte1:"P,E,h \<turnstile> e1 : T1" and wte2:"P,E,h \<turnstile> e2 : T2" .
@@ -439,7 +428,7 @@ next
       by simp (fast intro:BinOpRed1)
   qed
 next
-  case (WTrtLAss E T T' V e h)
+  case (WTrtLAss E h V T e T')
   have wte:"P,E,h \<turnstile> e : T'"
     and wtvar:"P,E,h \<turnstile> Var V : T"
     and sub:"P \<turnstile> T' \<le> T"
@@ -489,7 +478,7 @@ next
       by simp (fast intro:LAssRed)
   qed
 next
-  case (WTrtFAcc C Cs E F T e h)
+  case (WTrtFAcc E h e C Cs F T)
   have wte: "P,E,h \<turnstile> e : Class C" 
     and field: "P \<turnstile> C has least F:T via Cs"
     and notemptyCs:"Cs \<noteq> []"
@@ -501,7 +490,7 @@ next
     proof (rule final_refE)
       fix r assume e: "e = ref r"
       then obtain a Cs' where ref:"e = ref(a,Cs')" by (cases r) auto
-      with wte obtain D S where h:"h a = Some(D,S)" and suboD:"(D,Cs') \<in> Subobjs P"
+      with wte obtain D S where h:"h a = Some(D,S)" and suboD:"Subobjs P D Cs'"
 	and last:"last Cs' = C"
 	by (fastsimp split:split_if_asm)
       from field obtain Bs fs ms
@@ -511,7 +500,7 @@ next
       obtain Ds where Ds:"Ds = Cs'@\<^sub>pCs" by simp
       with notemptyCs "class" have class':"class P (last Ds) = Some(Bs,fs,ms)"
 	by (drule_tac Cs'="Cs'" in appendPath_last) simp
-      from field suboD last Ds wf have subo:"(D,Ds) \<in> Subobjs P"
+      from field suboD last Ds wf have subo:"Subobjs P D Ds"
 	by(fastsimp intro:Subobjs_appendPath simp:LeastFieldDecl_def FieldDecls_def)
       with hconf h have "P,h \<turnstile> (D,S) \<surd>" by (auto simp:hconf_def)
       with class' subo obtain fs' where S:"(Ds,fs') \<in> S"
@@ -538,7 +527,7 @@ next
       by(fastsimp intro!:FAccRed)
   qed
 next
-  case (WTrtFAccNT Cs E F T e h)
+  case (WTrtFAccNT E h e F Cs T)
   show ?case
   proof cases
     assume "final e"  --"@{term e} is @{term null} or @{term throw}"
@@ -550,7 +539,7 @@ next
     from prems show ?thesis by simp (fast intro:FAccRed)
   qed
 next
-  case (WTrtFAss C Cs E F T T' e\<^isub>1 e\<^isub>2 h)
+  case (WTrtFAss E h e\<^isub>1 C Cs F T e\<^isub>2 T')
   have wte1:"P,E,h \<turnstile> e\<^isub>1 : Class C"
     and wte2:"P,E,h \<turnstile> e\<^isub>2 : T'"
     and field:"P \<turnstile> C has least F:T via Cs" 
@@ -572,7 +561,7 @@ next
 	  fix v assume e2:"e\<^isub>2 = Val v"
 	  from e1 obtain a Cs' where ref:"e\<^isub>1 = ref(a,Cs')" by (cases r) auto
 	  with wte1 obtain D S where h:"h a = Some(D,S)" 
-	    and suboD:"(D,Cs') \<in> Subobjs P" and last:"last Cs' = C"
+	    and suboD:"Subobjs P D Cs'" and last:"last Cs' = C"
 	    by (fastsimp split:split_if_asm)
 	  from field obtain Bs fs ms
 	    where "class": "class P (last Cs) = Some(Bs,fs,ms)"
@@ -581,7 +570,7 @@ next
 	  obtain Ds where Ds:"Ds = Cs'@\<^sub>pCs" by simp
 	  with notemptyCs "class" have class':"class P (last Ds) = Some(Bs,fs,ms)"
 	    by (drule_tac Cs'="Cs'" in appendPath_last) simp
-	  from field suboD last Ds wf have subo:"(D,Ds) \<in> Subobjs P"
+	  from field suboD last Ds wf have subo:"Subobjs P D Ds"
 	    by(fastsimp intro:Subobjs_appendPath 
 	      simp:LeastFieldDecl_def FieldDecls_def)
 	  with hconf h have "P,h \<turnstile> (D,S) \<surd>" by (auto simp:hconf_def)
@@ -645,7 +634,7 @@ next
       by simp (blast intro!:FAssRed1)
   qed
 next
-  case (WTrtFAssNT Cs E F T T' e\<^isub>1 e\<^isub>2 h)
+  case (WTrtFAssNT E h e\<^isub>1 e\<^isub>2 T' T F Cs)
   show ?case
   proof cases
     assume "final e\<^isub>1"  --"@{term e\<^isub>1} is @{term null} or @{term throw}"
@@ -665,7 +654,7 @@ next
     from prems show ?thesis by (fastsimp intro:FAssRed1)
   qed
 next
-  case (WTrtCall C Cs E M T Ts Ts' e es h pns body)
+  case (WTrtCall E h e C M Ts T pns body Cs es Ts')
   have wte: "P,E,h \<turnstile> e : Class C"
     and method:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
     and wtes: "P,E,h \<turnstile> es [:] Ts'"and sub: "P \<turnstile> Ts' [\<le>] Ts"
@@ -683,7 +672,7 @@ next
       proof cases
 	assume es: "\<exists>vs. es = map Val vs"
 	from ref obtain a Cs' where ref:"e = ref(a,Cs')" by (cases r) auto
-	with wte obtain D S where h:"h a = Some(D,S)" and suboD:"(D,Cs') \<in> Subobjs P"
+	with wte obtain D S where h:"h a = Some(D,S)" and suboD:"Subobjs P D Cs'"
 	  and last:"last Cs' = C"
 	  by (fastsimp split:split_if_asm)
 	from wte ref h have subcls:"P \<turnstile> D \<preceq>\<^sup>* C" by -(drule mdc_leq_dyn_type,auto)
@@ -803,7 +792,7 @@ next
     with prems show ?thesis by simp (blast intro!:CallObj)
   qed
 next
-  case (WTrtStaticCall C C' Cs E M T Ts Ts' e es h pns body)
+  case (WTrtStaticCall E h e C' C M Ts T pns body Cs es Ts')
   have wte: "P,E,h \<turnstile> e : Class C'"
     and path_unique:"P \<turnstile> Path C' to C unique"
     and method:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
@@ -879,7 +868,7 @@ next
     with prems show ?thesis by simp (blast intro!:CallObj)
   qed
 next
-  case (WTrtCallNT Copt E M T Ts e es)
+  case (WTrtCallNT E h e es Ts Copt M T)
   show ?case
   proof cases
     assume "final e"
@@ -910,7 +899,7 @@ next
     from prems show ?thesis by (fastsimp intro:CallObj)
   qed
 next
-  case (WTrtInitBlock E T T' T\<^isub>2 V e\<^isub>2 h v)
+  case (WTrtInitBlock h v T' E V T e\<^isub>2 T\<^isub>2)
   have IH2: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E(V \<mapsto> T) \<surd>; \<D> e\<^isub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^isub>2\<rbrakk>
                   \<Longrightarrow> \<exists>e' s'. P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
     and typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'"
@@ -935,7 +924,7 @@ next
     with red2 casts show ?thesis by(fastsimp intro:InitBlockRed)
   qed
 next
-  case (WTrtBlock E T T' V e h)
+  case (WTrtBlock E V T h e T')
   have IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E(V \<mapsto> T) \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                  \<Longrightarrow> \<exists>e' s'. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and unass: "\<not> assigned V e" and type:"is_type P T"
@@ -968,7 +957,7 @@ next
     qed
   qed
 next
-  case (WTrtSeq E T\<^isub>1 T\<^isub>2 e\<^isub>1 e\<^isub>2)
+  case (WTrtSeq E h e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2)
   show ?case
   proof cases
     assume "final e\<^isub>1"
@@ -979,7 +968,7 @@ next
       by simp (blast intro:SeqRed)
   qed
 next
-  case (WTrtCond E T e e\<^isub>1 e\<^isub>2 h)
+  case (WTrtCond E h e e\<^isub>1 T e\<^isub>2)
   have wt: "P,E,h \<turnstile> e : Boolean" .
   show ?case
   proof cases
@@ -1005,7 +994,7 @@ next
 next
   case WTrtWhile show ?case by(fast intro:RedWhile)
 next
-  case (WTrtThrow E T T' e)
+  case (WTrtThrow E h e T' T)
   show ?case
   proof cases
     assume "final e" -- {*Then @{term e} must be @{term throw} or @{term null}*}
@@ -1020,7 +1009,7 @@ next
 next
   case WTrtNil thus ?case by simp
 next
-  case (WTrtCons E T Ts e es h)
+  case (WTrtCons E h e T es Ts)
   have IHe: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and IHes: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
