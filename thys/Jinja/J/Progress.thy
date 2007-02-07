@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.6 2006-06-14 17:08:25 makarius Exp $
+    ID:         $Id: Progress.thy,v 1.7 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -27,52 +27,46 @@ lemma finalRefE:
 
 text{* Derivation of new induction scheme for well typing: *}
 
-consts
-  WTrt' :: "J_prog \<Rightarrow> heap \<Rightarrow> (env \<times> expr      \<times> ty     )set"
-  WTrts':: "J_prog \<Rightarrow> heap \<Rightarrow> (env \<times> expr list \<times> ty list)set"
-
-(*<*)
-syntax (xsymbols)
-  WTrt' :: "[J_prog,env,heap,expr,ty] \<Rightarrow> bool"
+inductive2
+  WTrt' :: "[J_prog,heap,env,expr,ty] \<Rightarrow> bool"
+  and WTrts' :: "[J_prog,heap,env,expr list, ty list] \<Rightarrow> bool"
+  and WTrt2' :: "[J_prog,env,heap,expr,ty] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ :' _"   [51,51,51]50)
-  WTrts':: "[J_prog,env,heap,expr list, ty list] \<Rightarrow> bool"
+  and WTrts2' :: "[J_prog,env,heap,expr list, ty list] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ [:''] _" [51,51,51]50)
-(*>*)
+  for P :: J_prog and h :: heap
+where
+  "P,E,h \<turnstile> e :' T \<equiv> WTrt' P h E e T"
+| "P,E,h \<turnstile> es [:'] Ts \<equiv> WTrts' P h E es Ts"
 
-translations
-  "P,E,h \<turnstile> e :' T"  ==  "(E,e,T) \<in> WTrt' P h"
-  "P,E,h \<turnstile> es [:'] Ts"  ==  "(E,es,Ts) \<in> WTrts' P h"
-
-inductive "WTrt' P h" "WTrts' P h"
-intros
- "is_class P C  \<Longrightarrow>  P,E,h \<turnstile> new C :' Class C"
- "\<lbrakk> P,E,h \<turnstile> e :' T; is_refT T; is_class P C \<rbrakk>
+| "is_class P C  \<Longrightarrow>  P,E,h \<turnstile> new C :' Class C"
+| "\<lbrakk> P,E,h \<turnstile> e :' T; is_refT T; is_class P C \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> Cast C e :' Class C"
- "typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow> P,E,h \<turnstile> Val v :' T"
- "E v = Some T  \<Longrightarrow>  P,E,h \<turnstile> Var v :' T"
- "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2 \<rbrakk>
+| "typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow> P,E,h \<turnstile> Val v :' T"
+| "E v = Some T  \<Longrightarrow>  P,E,h \<turnstile> Var v :' T"
+| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>Eq\<guillemotright> e\<^isub>2 :' Boolean"
- "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' Integer;  P,E,h \<turnstile> e\<^isub>2 :' Integer \<rbrakk>
+| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' Integer;  P,E,h \<turnstile> e\<^isub>2 :' Integer \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>Add\<guillemotright> e\<^isub>2 :' Integer"
- "\<lbrakk> P,E,h \<turnstile> Var V :' T;  P,E,h \<turnstile> e :' T';  P \<turnstile> T' \<le> T (* V \<noteq> This*) \<rbrakk>
+| "\<lbrakk> P,E,h \<turnstile> Var V :' T;  P,E,h \<turnstile> e :' T';  P \<turnstile> T' \<le> T (* V \<noteq> This*) \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> V:=e :' Void"
- "\<lbrakk> P,E,h \<turnstile> e :' Class C; P \<turnstile> C has F:T in D \<rbrakk> \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{D} :' T"
- "P,E,h \<turnstile> e :' NT \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{D} :' T"
- "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' Class C;  P \<turnstile> C has F:T in D;
+| "\<lbrakk> P,E,h \<turnstile> e :' Class C; P \<turnstile> C has F:T in D \<rbrakk> \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{D} :' T"
+| "P,E,h \<turnstile> e :' NT \<Longrightarrow> P,E,h \<turnstile> e\<bullet>F{D} :' T"
+| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' Class C;  P \<turnstile> C has F:T in D;
     P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2;  P \<turnstile> T\<^isub>2 \<le> T \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :' Void"
- "\<lbrakk> P,E,h \<turnstile> e\<^isub>1:'NT; P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2 \<rbrakk> \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :' Void"
- "\<lbrakk> P,E,h \<turnstile> e :' Class C; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
+| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1:'NT; P,E,h \<turnstile> e\<^isub>2 :' T\<^isub>2 \<rbrakk> \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :' Void"
+| "\<lbrakk> P,E,h \<turnstile> e :' Class C; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
     P,E,h \<turnstile> es [:'] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) :' T"
- "\<lbrakk> P,E,h \<turnstile> e :' NT; P,E,h \<turnstile> es [:'] Ts \<rbrakk> \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) :' T"
- "P,E,h \<turnstile> [] [:'] []"
- "\<lbrakk> P,E,h \<turnstile> e :' T;  P,E,h \<turnstile> es [:'] Ts \<rbrakk> \<Longrightarrow>  P,E,h \<turnstile> e#es [:'] T#Ts"
- "\<lbrakk> typeof\<^bsub>h\<^esub> v = Some T\<^isub>1; P \<turnstile> T\<^isub>1 \<le> T; P,E(V\<mapsto>T),h \<turnstile> e\<^isub>2 :' T\<^isub>2 \<rbrakk>
+| "\<lbrakk> P,E,h \<turnstile> e :' NT; P,E,h \<turnstile> es [:'] Ts \<rbrakk> \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) :' T"
+| "P,E,h \<turnstile> [] [:'] []"
+| "\<lbrakk> P,E,h \<turnstile> e :' T;  P,E,h \<turnstile> es [:'] Ts \<rbrakk> \<Longrightarrow>  P,E,h \<turnstile> e#es [:'] T#Ts"
+| "\<lbrakk> typeof\<^bsub>h\<^esub> v = Some T\<^isub>1; P \<turnstile> T\<^isub>1 \<le> T; P,E(V\<mapsto>T),h \<turnstile> e\<^isub>2 :' T\<^isub>2 \<rbrakk>
   \<Longrightarrow>  P,E,h \<turnstile> {V:T := Val v; e\<^isub>2} :' T\<^isub>2"
- "\<lbrakk> P,E(V\<mapsto>T),h \<turnstile> e :' T'; \<not> assigned V e \<rbrakk> \<Longrightarrow>  P,E,h \<turnstile> {V:T; e} :' T'"
- "\<lbrakk> P,E,h \<turnstile> e\<^isub>1:' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2:'T\<^isub>2 \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 :' T\<^isub>2"
- "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> e\<^isub>1:' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2:' T\<^isub>2;
+| "\<lbrakk> P,E(V\<mapsto>T),h \<turnstile> e :' T'; \<not> assigned V e \<rbrakk> \<Longrightarrow>  P,E,h \<turnstile> {V:T; e} :' T'"
+| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1:' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2:'T\<^isub>2 \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 :' T\<^isub>2"
+| "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> e\<^isub>1:' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2:' T\<^isub>2;
     P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1;
     P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<longrightarrow> T = T\<^isub>2; P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<longrightarrow> T = T\<^isub>1 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :' T"
@@ -82,38 +76,38 @@ intros
  "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> e\<^isub>1:' T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2:' T\<^isub>2; P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :' T\<^isub>1"
 *)
- "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> c:' T \<rbrakk>
+| "\<lbrakk> P,E,h \<turnstile> e :' Boolean;  P,E,h \<turnstile> c:' T \<rbrakk>
   \<Longrightarrow>  P,E,h \<turnstile> while(e) c :' Void"
- "\<lbrakk> P,E,h \<turnstile> e :' T\<^isub>r; is_refT T\<^isub>r \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> throw e :' T"
- "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1;  P,E(V \<mapsto> Class C),h \<turnstile> e\<^isub>2 :' T\<^isub>2; P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<rbrakk>
+| "\<lbrakk> P,E,h \<turnstile> e :' T\<^isub>r; is_refT T\<^isub>r \<rbrakk>  \<Longrightarrow>  P,E,h \<turnstile> throw e :' T"
+| "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 :' T\<^isub>1;  P,E(V \<mapsto> Class C),h \<turnstile> e\<^isub>2 :' T\<^isub>2; P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :' T\<^isub>2"
 
 (*<*)
 lemmas WTrt'_induct = WTrt'_WTrts'.induct [split_format (complete)]
   and WTrt'_inducts = WTrt'_WTrts'.inducts [split_format (complete)]
 
-inductive_cases WTrt'_elim_cases[elim!]:
+inductive_cases2 WTrt'_elim_cases[elim!]:
   "P,E,h \<turnstile> V :=e :' T"
 (*>*)
 
 lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 :' T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:' T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:' T\<^isub>2)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt'_WTrts'.elims intro!:WTrt'_WTrts'.intros)
+apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
 done
 (*>*)
 
 lemma [iff]: "P,E,h \<turnstile> Val v :' T = (typeof\<^bsub>h\<^esub> v = Some T)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt'_WTrts'.elims intro!:WTrt'_WTrts'.intros)
+apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
 done
 (*>*)
 
 lemma [iff]: "P,E,h \<turnstile> Var v :' T = (E v = Some T)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt'_WTrts'.elims intro!:WTrt'_WTrts'.intros)
+apply (auto elim: WTrt'.cases intro!:WTrt'_WTrts'.intros)
 done
 (*>*)
 
@@ -181,7 +175,7 @@ proof (induct rule:WTrt_inducts2)
       by(fastsimp intro:RedNewFail simp add:new_Addr_def)
   qed
 next
-  case (WTrtCast C E T e)
+  case (WTrtCast E e T C)
   have wte: "P,E,h \<turnstile> e : T" and ref: "is_refT T"
    and IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
@@ -216,7 +210,7 @@ next
 next
   case WTrtVar thus ?case by(fastsimp intro:RedVar simp:hyper_isin_def)
 next
-  case (WTrtBinOpEq E T1 T2 e1 e2)
+  case (WTrtBinOpEq E e1 T1 e2 T2)
   show ?case
   proof cases
     assume "final e1"
@@ -278,7 +272,7 @@ next
       by simp (fast intro:BinOpRed1)
   qed
 next
-  case (WTrtLAss E T T' V e)
+  case (WTrtLAss E V T e T')
   show ?case
   proof cases
     assume "final e" from prems show ?thesis
@@ -288,7 +282,7 @@ next
       by simp (fast intro:LAssRed)
   qed
 next
-  case (WTrtFAcc C D E F T e)
+  case (WTrtFAcc E e C F T D)
   have wte: "P,E,h \<turnstile> e : Class C"
    and field: "P \<turnstile> C has F:T in D".
   show ?case
@@ -311,7 +305,7 @@ next
       by(fastsimp intro!:FAccRed)
   qed
 next
-  case (WTrtFAccNT D E F T e)
+  case (WTrtFAccNT E e F D T)
   show ?case
   proof cases
     assume "final e"  --"@{term e} is @{term null} or @{term throw}"
@@ -322,7 +316,7 @@ next
     from prems show ?thesis by simp (fast intro:FAccRed)
   qed
 next
-  case (WTrtFAss C D E F T T2 e1 e2)
+  case (WTrtFAss E e1 C F T D e2 T2)
   have wte1: "P,E,h \<turnstile> e1 : Class C" .
   show ?case
   proof cases
@@ -354,7 +348,7 @@ next
       by simp (blast intro!:FAssRed1)
   qed
 next
-  case (WTrtFAssNT D E F T\<^isub>2 e\<^isub>1 e\<^isub>2)
+  case (WTrtFAssNT E e\<^isub>1 e\<^isub>2 T\<^isub>2 F D)
   show ?case
   proof cases
     assume "final e\<^isub>1"  --"@{term e\<^isub>1} is @{term null} or @{term throw}"
@@ -373,7 +367,7 @@ next
     from prems show ?thesis by (fastsimp intro:FAssRed1)
   qed
 next
-  case (WTrtCall C D E M T Ts Ts' body e es pns)
+  case (WTrtCall E e C M Ts T pns body D es Ts')
   have wte: "P,E,h \<turnstile> e : Class C"
    and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
    and wtes: "P,E,h \<turnstile> es [:] Ts'"and sub: "P \<turnstile> Ts' [\<le>] Ts"
@@ -393,7 +387,7 @@ next
 	from wte e_addr obtain fs where ha: "h a = Some(C,fs)" by auto
 	show ?thesis
 	  using e_addr ha method WTrts_same_length[OF wtes] sub es sees_wf_mdecl[OF wf method]
-	  by(fastsimp intro: RedCall simp:list_all2_def wf_mdecl_def)
+	  by (fastsimp intro!: RedCall simp:list_all2_def wf_mdecl_def)
       next
 	assume "\<not>(\<exists>vs. es = map Val vs)"
 	hence not_all_Val: "\<not>(\<forall>e \<in> set es. \<exists>v. e = Val v)"
@@ -435,7 +429,7 @@ next
     with prems show ?thesis by simp (blast intro!:CallObj)
   qed
 next
-  case (WTrtCallNT E M T Ts e es)
+  case (WTrtCallNT E e es Ts M T)
   show ?case
   proof cases
     assume "final e"
@@ -468,7 +462,7 @@ next
 next
   case WTrtNil thus ?case by simp
 next
-  case (WTrtCons E T Ts e es)
+  case (WTrtCons E e T es Ts)
   have IHe: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and IHes: "\<And>l. \<lbrakk>\<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
@@ -496,7 +490,7 @@ next
     with IHe[OF De] show ?thesis by(fast intro!:ListRed1)
   qed
 next
-  case (WTrtInitBlock E T T\<^isub>1 T\<^isub>2 V e\<^isub>2 v)
+  case (WTrtInitBlock v T\<^isub>1 T E V e\<^isub>2 T\<^isub>2)
   have IH2: "\<And>l. \<lbrakk>\<D> e\<^isub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^isub>2\<rbrakk>
                   \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" .
@@ -521,7 +515,7 @@ next
     with red2 show ?thesis by(fastsimp intro:InitBlockRed)
   qed
 next
-  case (WTrtBlock E T T' V e)
+  case (WTrtBlock E V T e T')
   have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                  \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and unass: "\<not> assigned V e" and D: "\<D> {V:T; e} \<lfloor>dom l\<rfloor>" .
@@ -551,7 +545,7 @@ next
     qed
   qed
 next
-  case (WTrtSeq E T1 T2 e1 e2)
+  case (WTrtSeq E e1 T1 e2 T2)
   show ?case
   proof cases
     assume "final e1"
@@ -562,7 +556,7 @@ next
       by simp (blast intro:SeqRed)
   qed
 next
-  case (WTrtCond E T T\<^isub>1 T\<^isub>2 e)
+  case (WTrtCond E e e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2 T)
   have wt: "P,E,h \<turnstile> e : Boolean" .
   show ?case
   proof cases
@@ -588,7 +582,7 @@ next
 next
   case WTrtWhile show ?case by(fast intro:RedWhile)
 next
-  case (WTrtThrow C E T e)
+  case (WTrtThrow E e T\<^isub>r T)
   show ?case
   proof cases
     assume "final e" -- {*Then @{term e} must be @{term throw} or @{term null}*}
@@ -600,7 +594,7 @@ next
     from prems show ?thesis by simp (blast intro:ThrowRed)
   qed
 next
-  case (WTrtTry C E T1 T2 V e1 e2)
+  case (WTrtTry E e1 T1 V C e2 T2)
   have wt1: "P,E,h \<turnstile> e1 : T1" .
   show ?case
   proof cases

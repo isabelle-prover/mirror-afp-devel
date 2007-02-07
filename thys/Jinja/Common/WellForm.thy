@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellForm.thy
-    ID:         $Id: WellForm.thy,v 1.3 2006-01-03 10:56:06 fhaftmann Exp $
+    ID:         $Id: WellForm.thy,v 1.4 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -95,14 +95,14 @@ lemma is_class_xcpt:
 
 
 lemma subcls1_wfD:
-  "\<lbrakk> P \<turnstile> C \<prec>\<^sup>1 D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> D \<noteq> C \<and> (D,C) \<notin> (subcls1 P)\<^sup>+"
+  "\<lbrakk> P \<turnstile> C \<prec>\<^sup>1 D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> D \<noteq> C \<and> \<not> (subcls1 P)\<^sup>+\<^sup>+ D C"
 (*<*)
-apply( frule r_into_trancl)
+apply( frule trancl.r_into_trancl [where r="subcls1 P"])
 apply( drule subcls1D)
 apply(clarify)
 apply( drule (1) class_wf)
 apply( unfold wf_cdecl_def)
-apply(force simp add: reflcl_trancl [THEN sym] simp del: reflcl_trancl)
+apply(force simp add: reflcl_trancl' [THEN sym] simp del: reflcl_trancl')
 done
 (*>*)
 
@@ -113,63 +113,63 @@ lemma wf_cdecl_supD:
 
 
 lemma subcls_asym:
-  "\<lbrakk> wf_prog wf_md P; (C,D) \<in> (subcls1 P)\<^sup>+ \<rbrakk> \<Longrightarrow> (D,C) \<notin> (subcls1 P)\<^sup>+"
+  "\<lbrakk> wf_prog wf_md P; (subcls1 P)\<^sup>+\<^sup>+ C D \<rbrakk> \<Longrightarrow> \<not> (subcls1 P)\<^sup>+\<^sup>+ D C"
 (*<*)
-apply(erule tranclE)
+apply(erule trancl.cases)
 apply(fast dest!: subcls1_wfD )
-apply(fast dest!: subcls1_wfD intro: trancl_trans)
+apply(fast dest!: subcls1_wfD intro: trancl_trans')
 done
 (*>*)
 
 
 lemma subcls_irrefl:
-  "\<lbrakk> wf_prog wf_md P; (C,D) \<in> (subcls1 P)\<^sup>+ \<rbrakk> \<Longrightarrow> C \<noteq> D"
+  "\<lbrakk> wf_prog wf_md P; (subcls1 P)\<^sup>+\<^sup>+ C D \<rbrakk> \<Longrightarrow> C \<noteq> D"
 (*<*)
-apply (erule trancl_trans_induct)
+apply (erule trancl_trans_induct')
 apply  (auto dest: subcls1_wfD subcls_asym)
 done
 (*>*)
 
 
 lemma acyclic_subcls1:
-  "wf_prog wf_md P \<Longrightarrow> acyclic (subcls1 P)"
+  "wf_prog wf_md P \<Longrightarrow> acyclicP (subcls1 P)"
 (*<*)
-apply (unfold acyclic_def)
+apply (unfold acyclic_def [to_pred])
 apply (fast dest: subcls_irrefl)
 done
 (*>*)
 
 
 lemma wf_subcls1:
-  "wf_prog wf_md P \<Longrightarrow> wf ((subcls1 P)\<inverse>)"
+  "wf_prog wf_md P \<Longrightarrow> wfP ((subcls1 P)\<inverse>\<inverse>)"
 (*<*)
-apply (rule finite_acyclic_wf)
-apply ( subst finite_converse)
+apply (rule finite_acyclic_wf [to_pred])
+apply ( subst finite_converse [to_pred])
 apply ( rule finite_subcls1)
-apply (subst acyclic_converse)
+apply (subst acyclic_converse [to_pred])
 apply (erule acyclic_subcls1)
 done
 (*>*)
 
 
 lemma single_valued_subcls1:
-  "wf_prog wf_md G \<Longrightarrow> single_valued (subcls1 G)"
+  "wf_prog wf_md G \<Longrightarrow> single_valuedP (subcls1 G)"
 (*<*)
 by(auto simp:wf_prog_def distinct_fst_def single_valued_def dest!:subcls1D)
 (*>*)
 
 
 lemma subcls_induct: 
-  "\<lbrakk> wf_prog wf_md P; \<And>C. \<forall>D. (C,D) \<in> (subcls1 P)\<^sup>+ \<longrightarrow> Q D \<Longrightarrow> Q C \<rbrakk> \<Longrightarrow> Q C"
+  "\<lbrakk> wf_prog wf_md P; \<And>C. \<forall>D. (subcls1 P)\<^sup>+\<^sup>+ C D \<longrightarrow> Q D \<Longrightarrow> Q C \<rbrakk> \<Longrightarrow> Q C"
 (*<*)
   (is "?A \<Longrightarrow> PROP ?P \<Longrightarrow> _")
 proof -
   assume p: "PROP ?P"
   assume ?A thus ?thesis apply -
 apply(drule wf_subcls1)
-apply(drule wf_trancl)
-apply(simp only: trancl_converse)
-apply(erule_tac a = C in wf_induct)
+apply(drule wfP_trancl)
+apply(simp only: trancl_converse')
+apply(erule_tac a = C in wfP_induct)
 apply(rule p)
 apply(auto)
 done
@@ -230,7 +230,7 @@ lemma subcls_C_Object:
 (*<*)
 apply(erule (1) subcls1_induct)
  apply( fast)
-apply(erule (1) converse_rtrancl_into_rtrancl)
+apply(erule (1) converse_rtrancl_into_rtrancl')
 done
 (*>*)
 
@@ -266,11 +266,11 @@ lemma sees_method_mono [rule_format (no_asm)]:
   \<forall>D Ts T m. P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<longrightarrow>
      (\<exists>D' Ts' T' m'. P \<turnstile> C' sees M:Ts'\<rightarrow>T' = m' in D' \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T' \<le> T)"
 (*<*)
-apply( drule rtranclD)
+apply( drule rtranclD')
 apply( erule disjE)
 apply(  fastsimp)
 apply( erule conjE)
-apply( erule trancl_trans_induct)
+apply( erule trancl_trans_induct')
 prefer 2
 apply(  clarify)
 apply(  drule spec, drule spec, drule spec, drule spec, erule (1) impE)
@@ -418,15 +418,13 @@ by(fastsimp simp: sees_field_def
             elim: has_fields_types map_of_SomeD[OF map_of_remap_SomeD])
 (*>*)
 
-(*
 lemma wf_syscls:
   "set SystemClasses \<subseteq> set P \<Longrightarrow> wf_syscls P"
+(*<*)
 apply (simp add: image_def SystemClasses_def wf_syscls_def sys_xcpts_def
                  ObjectC_def NullPointerC_def ClassCastC_def OutOfMemoryC_def)
-apply(rule conjI)
  apply force
-apply (rule allI, case_tac x)
-  apply (force)+
 done
-*)
+(*>*)
+
 end

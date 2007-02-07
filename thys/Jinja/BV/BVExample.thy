@@ -1,11 +1,11 @@
-(*  Title:      HOL/MicroJava/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+(*  Title:      Jinja/BV/BVExample.thy
+    ID:         $Id: BVExample.thy,v 1.3 2007-02-07 17:19:07 stefanberghofer Exp $
     Author:     Gerwin Klein
 *)
 
 header {* \isaheader{Example Welltypings}\label{sec:BVExample} *}
 
-theory BVExample imports JVMListExample BVSpecTypeSafe BVExec begin
+theory BVExample imports JVMListExample BVSpecTypeSafe BVExec ExecutableSet begin
 
 text {*
   This theory shows type correctness of the example program in section 
@@ -16,17 +16,35 @@ text {*
 *}
 
 section "Setup"
-text {*
-  Since the types @{typ cnam}, @{text vnam}, and @{text mname} are 
-  anonymous, we describe distinctness of names in the example by axioms:
-*}
-axioms 
-  distinct_classes: "list_nam \<noteq> test_nam"
-  distinct_fields:  "val_nam \<noteq> next_nam"
+
+lemma distinct_classes':
+  "list_name \<noteq> test_name"
+  "list_name \<noteq> Object"
+  "list_name \<noteq> ClassCast"
+  "list_name \<noteq> OutOfMemory"
+  "list_name \<noteq> NullPointer"
+  "test_name \<noteq> Object"
+  "test_name \<noteq> OutOfMemory"
+  "test_name \<noteq> ClassCast"
+  "test_name \<noteq> NullPointer"
+  "ClassCast \<noteq> NullPointer"
+  "ClassCast \<noteq> Object"
+  "NullPointer \<noteq> Object"
+  "OutOfMemory \<noteq> ClassCast"
+  "OutOfMemory \<noteq> NullPointer"
+  "OutOfMemory \<noteq> Object"
+  by (simp_all add: list_name_def test_name_def Object_def NullPointer_def
+    OutOfMemory_def ClassCast_def)
+
+lemmas distinct_classes = distinct_classes' distinct_classes' [symmetric]
+
+lemma distinct_fields:
+  "val_name \<noteq> next_name"
+  "next_name \<noteq> val_name"
+  by (simp_all add: val_name_def next_name_def)
 
 text {* Abbreviations for definitions we will have to use often in the
 proofs below: *}
-lemmas name_defs   = list_name_def test_name_def val_name_def next_name_def 
 lemmas system_defs = SystemClasses_def ObjectC_def NullPointerC_def 
                      OutOfMemoryC_def ClassCastC_def
 lemmas class_defs  = list_class_def test_class_def
@@ -39,130 +57,122 @@ lemma class_Object [simp]:
   by (simp add: class_def system_defs E_def)
 
 lemma class_NullPointer [simp]:
-  "class E (Xcpt NullPointer) = Some (Object, [], [])"
-  by (simp add: class_def system_defs E_def)
+  "class E NullPointer = Some (Object, [], [])"
+  by (simp add: class_def system_defs E_def distinct_classes)
 
 lemma class_OutOfMemory [simp]:
-  "class E (Xcpt OutOfMemory) = Some (Object, [], [])"
-  by (simp add: class_def system_defs E_def)
+  "class E OutOfMemory = Some (Object, [], [])"
+  by (simp add: class_def system_defs E_def distinct_classes)
 
 lemma class_ClassCast [simp]:
-  "class E (Xcpt ClassCast) = Some (Object, [], [])"
-  by (simp add: class_def system_defs E_def)
+  "class E ClassCast = Some (Object, [], [])"
+  by (simp add: class_def system_defs E_def distinct_classes)
 
 lemma class_list [simp]:
   "class E list_name = Some list_class"
-  by (simp add: class_def system_defs E_def name_defs distinct_classes [symmetric])
+  by (simp add: class_def system_defs E_def distinct_classes)
  
 lemma class_test [simp]:
   "class E test_name = Some test_class"
-  by (simp add: class_def system_defs E_def name_defs distinct_classes [symmetric])
+  by (simp add: class_def system_defs E_def distinct_classes)
 
 lemma E_classes [simp]:
-  "{C. is_class E C} = {list_name, test_name, Xcpt NullPointer, 
-                        Xcpt ClassCast, Xcpt OutOfMemory, Object}"
-  by (auto simp add: is_class_def class_def system_defs E_def name_defs class_defs)
+  "{C. is_class E C} = {list_name, test_name, NullPointer, 
+                        ClassCast, OutOfMemory, Object}"
+  by (auto simp add: is_class_def class_def system_defs E_def class_defs)
 
 text {* The subclass releation spelled out: *}
 lemma subcls1:
-  "subcls1 E = {(list_name,Object), (test_name,Object), (Xcpt NullPointer, Object),
-                (Xcpt ClassCast, Object), (Xcpt OutOfMemory, Object)}"
+  "subcls1 E = member2 {(list_name,Object), (test_name,Object), (NullPointer, Object),
+                (ClassCast, Object), (OutOfMemory, Object)}"
 (*<*)
   apply (simp add: subcls1_def2)
-  apply (simp add: name_defs class_defs system_defs E_def class_def)
-  apply (auto split: split_if_asm)
+  apply (simp add: class_defs system_defs E_def class_def)
+  (* FIXME: cannot simply expand class names, since
+     inequality proofs on strings are too inefficient *)
+  apply (auto simp: member2_inject distinct_classes split: split_if_asm)
   done
 (*>*)
 
 text {* The subclass relation is acyclic; hence its converse is well founded: *}
 lemma notin_rtrancl:
-  "(a,b) \<in> r\<^sup>* \<Longrightarrow> a \<noteq> b \<Longrightarrow> (\<And>y. (a,y) \<notin> r) \<Longrightarrow> False"
-  by (auto elim: converse_rtranclE)  
+  "r\<^sup>*\<^sup>* a b \<Longrightarrow> a \<noteq> b \<Longrightarrow> (\<And>y. \<not> r a y) \<Longrightarrow> False"
+  by (auto elim: converse_rtranclE')
 
-lemma acyclic_subcls1_E: "acyclic (subcls1 E)"
+lemma acyclic_subcls1_E: "acyclicP (subcls1 E)"
 (*<*)
-  apply (rule acyclicI)
+  apply (rule acyclicI [to_pred])
   apply (simp add: subcls1)
-  apply (auto dest!: tranclD)
-  apply (auto elim!: notin_rtrancl simp add: name_defs distinct_classes)
+  apply (auto dest!: tranclD')
+  apply (auto elim!: notin_rtrancl simp add: distinct_classes)
   done
 (*>*)
 
-lemma wf_subcls1_E: "wf ((subcls1 E)\<inverse>)"
+lemma wf_subcls1_E: "wfP ((subcls1 E)\<inverse>\<inverse>)"
 (*<*)
-  apply (rule finite_acyclic_wf_converse)
+  apply (rule finite_acyclic_wf_converse [to_pred])
   apply (simp add: subcls1)
   apply (rule acyclic_subcls1_E)
   done  
 (*>*)
 
 text {* Method and field lookup: *}
-lemma method_Object [simp]:
-  "method E Object = empty"
-  by (simp add: method_rec_lemma [OF class_Object wf_subcls1_E])
 
 lemma method_append [simp]:
   "method E list_name append_name =
-  Some (list_name, [Class list_name], PrimT Void, 3, 0, append_ins, [(1, 2, 8, Xcpt NullPointer)])"
+  (list_name, [Class list_name], Void, 3, 0, append_ins, [(1, 2, NullPointer, 7, 0)])"
 (*<*)
   apply (insert class_list)
   apply (unfold list_class_def)
-  apply (drule method_rec_lemma [OF _ wf_subcls1_E])
-  apply simp
+  apply (fastsimp simp add: Method_def distinct_classes intro: method_def2 Methods.intros)
   done
 (*>*)
 
 lemma method_makelist [simp]:
   "method E test_name makelist_name = 
-  Some (test_name, [], PrimT Void, 3, 2, make_list_ins, [])"
+  (test_name, [], Void, 3, 2, make_list_ins, [])"
 (*<*)
   apply (insert class_test)
   apply (unfold test_class_def)
-  apply (drule method_rec_lemma [OF _ wf_subcls1_E])
-  apply simp
+  apply (fastsimp simp add: Method_def distinct_classes intro: method_def2 Methods.intros)
   done
 (*>*)
 
 lemma field_val [simp]:
-  "field (E, list_name) val_name = Some (list_name, PrimT Integer)"
+  "field E list_name val_name = (list_name, Integer)"
 (*<*)
-  apply (unfold field_def)
   apply (insert class_list)
   apply (unfold list_class_def)
-  apply (drule fields_rec_lemma [OF _ wf_subcls1_E])
-  apply simp
+  apply (fastsimp simp add: sees_field_def distinct_classes intro: field_def2 Fields.intros)
   done
 (*>*)
 
 lemma field_next [simp]:
-  "field (E, list_name) next_name = Some (list_name, Class list_name)"
+  "field E list_name next_name = (list_name, Class list_name)"
 (*<*)
-  apply (unfold field_def)
   apply (insert class_list)
   apply (unfold list_class_def)
-  apply (drule fields_rec_lemma [OF _ wf_subcls1_E])
-  apply (simp add: name_defs distinct_fields [symmetric])
+  apply (fastsimp simp add: distinct_fields sees_field_def distinct_classes intro: field_def2 Fields.intros)
   done
 (*>*)
 
-lemma [simp]: "fields (E, Object) = []"
-   by (simp add: fields_rec_lemma [OF class_Object wf_subcls1_E])
+lemma [simp]: "fields E Object = []"
+  by (fastsimp intro: fields_def2 Fields.intros)
  
-lemma [simp]: "fields (E, Xcpt NullPointer) = []"
-  by (simp add: fields_rec_lemma [OF class_NullPointer wf_subcls1_E])
+lemma [simp]: "fields E NullPointer = []"
+  by (fastsimp simp add: distinct_classes intro: fields_def2 Fields.intros)
 
-lemma [simp]: "fields (E, Xcpt ClassCast) = []"
-  by (simp add: fields_rec_lemma [OF class_ClassCast wf_subcls1_E])
+lemma [simp]: "fields E ClassCast = []"
+  by (fastsimp simp add: distinct_classes intro: fields_def2 Fields.intros)
 
-lemma [simp]: "fields (E, Xcpt OutOfMemory) = []"
-  by (simp add: fields_rec_lemma [OF class_OutOfMemory wf_subcls1_E])
+lemma [simp]: "fields E OutOfMemory = []"
+  by (fastsimp simp add: distinct_classes intro: fields_def2 Fields.intros)
 
-lemma [simp]: "fields (E, test_name) = []"
+lemma [simp]: "fields E test_name = []"
 (*<*)
   apply (insert class_test)
   apply (unfold test_class_def)
-  apply (drule fields_rec_lemma [OF _ wf_subcls1_E])
-  apply simp
+  apply (fastsimp simp add: distinct_classes intro: fields_def2 Fields.intros)
   done
 (*>*)
 
@@ -179,7 +189,7 @@ lemma wf_struct:
 (*<*)
 proof -
   have "distinct_fst E" 
-    by (simp add: system_defs E_def class_defs name_defs distinct_classes)
+    by (simp add: system_defs E_def class_defs distinct_classes)
   moreover
   have "set SystemClasses \<subseteq> set E" by (simp add: system_defs E_def)
   hence "wf_syscls E" by (rule wf_syscls)
@@ -188,28 +198,28 @@ proof -
   moreover
   have "wf_cdecl ?mb E NullPointerC" 
     by (auto elim: notin_rtrancl 
-            simp add: wf_cdecl_def name_defs NullPointerC_def subcls1)
+            simp add: wf_cdecl_def distinct_classes NullPointerC_def subcls1)
   moreover
   have "wf_cdecl ?mb E ClassCastC" 
     by (auto elim: notin_rtrancl 
-            simp add: wf_cdecl_def name_defs ClassCastC_def subcls1)
+            simp add: wf_cdecl_def distinct_classes ClassCastC_def subcls1)
   moreover
   have "wf_cdecl ?mb E OutOfMemoryC" 
     by (auto elim: notin_rtrancl 
-            simp add: wf_cdecl_def name_defs OutOfMemoryC_def subcls1)
+            simp add: wf_cdecl_def distinct_classes OutOfMemoryC_def subcls1)
   moreover
   have "wf_cdecl ?mb E (list_name, list_class)"
     apply (auto elim!: notin_rtrancl 
             simp add: wf_cdecl_def wf_fdecl_def list_class_def 
-                      wf_mdecl_def wf_mhead_def subcls1)
-    apply (auto simp add: name_defs distinct_classes distinct_fields)
+                      wf_mdecl_def subcls1)
+    apply (auto simp add: distinct_classes distinct_fields Method_def elim: Methods.cases)
     done    
   moreover
   have "wf_cdecl ?mb E (test_name, test_class)" 
     apply (auto elim!: notin_rtrancl 
             simp add: wf_cdecl_def wf_fdecl_def test_class_def 
-                      wf_mdecl_def wf_mhead_def subcls1)
-    apply (auto simp add: name_defs distinct_classes distinct_fields)
+                      wf_mdecl_def subcls1)
+    apply (auto simp add: distinct_classes distinct_fields Method_def elim: Methods.cases)
     done       
   ultimately
   show ?thesis by (simp add: wf_prog_def E_def SystemClasses_def)
@@ -222,25 +232,29 @@ text {*
   and @{term makelist_name} in class @{term test_name}:
 *}
 lemmas eff_simps [simp] = eff_def norm_eff_def xcpt_eff_def
-declare app'Invoke [simp del]
+(*declare app'Invoke [simp del]*)
 
 constdefs
-  phi_append :: method_type ("\<phi>\<^sub>a")
+  phi_append :: ty\<^isub>m ("\<phi>\<^sub>a")
   "\<phi>\<^sub>a \<equiv> map (\<lambda>(x,y). Some (x, map OK y)) [ 
    (                                    [], [Class list_name, Class list_name]),
    (                     [Class list_name], [Class list_name, Class list_name]),
    (                     [Class list_name], [Class list_name, Class list_name]),
    (    [Class list_name, Class list_name], [Class list_name, Class list_name]),
-   ([NT, Class list_name, Class list_name], [Class list_name, Class list_name]),
-   (                     [Class list_name], [Class list_name, Class list_name]),
    (    [Class list_name, Class list_name], [Class list_name, Class list_name]),
-   (                          [PrimT Void], [Class list_name, Class list_name]),
+   ([NT, Class list_name, Class list_name], [Class list_name, Class list_name]),
+   (            [Boolean, Class list_name], [Class list_name, Class list_name]),
+
    (                        [Class Object], [Class list_name, Class list_name]),
    (                                    [], [Class list_name, Class list_name]),
    (                     [Class list_name], [Class list_name, Class list_name]),
    (    [Class list_name, Class list_name], [Class list_name, Class list_name]),
    (                                    [], [Class list_name, Class list_name]),
-   (                          [PrimT Void], [Class list_name, Class list_name])]"
+   (                                [Void], [Class list_name, Class list_name]),
+
+   (                     [Class list_name], [Class list_name, Class list_name]),
+   (    [Class list_name, Class list_name], [Class list_name, Class list_name]),
+   (                                [Void], [Class list_name, Class list_name])]"
 
 text {*
   The next definition and three proof rules implement an algorithm to
@@ -275,37 +289,43 @@ lemma pc_end: "x \<in> [n,n) \<Longrightarrow> P x"
 
 lemma types_append [simp]: "check_types E 3 (Suc (Suc 0)) (map OK \<phi>\<^sub>a)"
 (*<*)
-  apply (auto simp add: check_types_def phi_append_def JVM_states_unfold)
-  apply (unfold list_def)
-  apply auto
-  done
+  by (auto simp add: check_types_def phi_append_def JVM_states_unfold)
 (*>*)
-  
-declare fun_of_def [simp]
 
 lemma wt_append [simp]:
-  "wt_method E list_name [Class list_name] (PrimT Void) 3 0 append_ins
-             [(Suc 0, 2, 8, Xcpt NullPointer)] \<phi>\<^sub>a"
+  "wt_method E list_name [Class list_name] Void 3 0 append_ins
+             [(Suc 0, 2, NullPointer, 7, 0)] \<phi>\<^sub>a"
 (*<*)
   apply (simp add: wt_method_def wt_start_def wt_instr_def)
-  apply (unfold append_ins_def phi_append_def)
-  apply simp
+  apply (simp add: append_ins_def phi_append_def)
   apply clarify
+  apply (drule sym)
+  apply (erule_tac P="?x = ?y" in rev_mp)
   apply (elim pc_end pc_next pc_0)
-  apply simp
-  apply (fastsimp simp add: match_ex_entry_def subcls1)
-  apply simp
-  apply simp
-  apply (fastsimp simp add: subcls1)
-  apply simp
-  apply simp
-  apply simp
-  apply simp
-  apply simp
-  apply (simp add: match_ex_entry_def)
-  apply (simp add: match_ex_entry_def)
-  apply simp
-  apply simp
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add: matches_ex_entry_def subcls1
+    relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
+    distinct_classes distinct_fields intro: Fields.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add:
+    relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
+    distinct_classes distinct_fields intro: Fields.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add: relevant_entries_def is_relevant_entry_def subcls1)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add:
+    relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
+    distinct_classes distinct_fields intro: Fields.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add:
+    relevant_entries_def is_relevant_entry_def list_class_def
+    distinct_classes Method_def intro: Methods.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
   done
 (*>*)
 
@@ -318,72 +338,84 @@ translations
   "Ctest" == "Class test_name"
 
 constdefs
-  phi_makelist :: method_type ("\<phi>\<^sub>m")
+  phi_makelist :: ty\<^isub>m ("\<phi>\<^sub>m")
   "\<phi>\<^sub>m \<equiv> map (\<lambda>(x,y). Some (x, y)) [ 
     (                                   [], [OK Ctest, Err     , Err     ]),
     (                              [Clist], [OK Ctest, Err     , Err     ]),
-    (                       [Clist, Clist], [OK Ctest, Err     , Err     ]),
-    (                              [Clist], [OK Clist, Err     , Err     ]),
-    (               [PrimT Integer, Clist], [OK Clist, Err     , Err     ]),
     (                                   [], [OK Clist, Err     , Err     ]),
     (                              [Clist], [OK Clist, Err     , Err     ]),
-    (                       [Clist, Clist], [OK Clist, Err     , Err     ]),
-    (                              [Clist], [OK Clist, OK Clist, Err     ]),
-    (               [PrimT Integer, Clist], [OK Clist, OK Clist, Err     ]),
+    (                     [Integer, Clist], [OK Clist, Err     , Err     ]),
+
+    (                                   [], [OK Clist, Err     , Err     ]),
+    (                              [Clist], [OK Clist, Err     , Err     ]),
     (                                   [], [OK Clist, OK Clist, Err     ]),
     (                              [Clist], [OK Clist, OK Clist, Err     ]),
-    (                       [Clist, Clist], [OK Clist, OK Clist, Err     ]),
+    (                     [Integer, Clist], [OK Clist, OK Clist, Err     ]),
+
+    (                                   [], [OK Clist, OK Clist, Err     ]),
+    (                              [Clist], [OK Clist, OK Clist, Err     ]),
+    (                                   [], [OK Clist, OK Clist, OK Clist]),
     (                              [Clist], [OK Clist, OK Clist, OK Clist]),
-    (               [PrimT Integer, Clist], [OK Clist, OK Clist, OK Clist]),
+    (                     [Integer, Clist], [OK Clist, OK Clist, OK Clist]),
+
     (                                   [], [OK Clist, OK Clist, OK Clist]),
     (                              [Clist], [OK Clist, OK Clist, OK Clist]),
     (                       [Clist, Clist], [OK Clist, OK Clist, OK Clist]),
-    (                         [PrimT Void], [OK Clist, OK Clist, OK Clist]),
+    (                               [Void], [OK Clist, OK Clist, OK Clist]),
     (                                   [], [OK Clist, OK Clist, OK Clist]),
     (                              [Clist], [OK Clist, OK Clist, OK Clist]),
     (                       [Clist, Clist], [OK Clist, OK Clist, OK Clist]),
-    (                         [PrimT Void], [OK Clist, OK Clist, OK Clist])]"
+    (                               [Void], [OK Clist, OK Clist, OK Clist])]"
 
 lemma types_makelist [simp]: "check_types E 3 (Suc (Suc (Suc 0))) (map OK \<phi>\<^sub>m)"
 (*<*)
-  apply (auto simp add: check_types_def phi_makelist_def JVM_states_unfold)
-  apply (unfold list_def)
-  apply auto
-  done
+  by (auto simp add: check_types_def phi_makelist_def JVM_states_unfold)
 (*>*)
 
 lemma wt_makelist [simp]:
-  "wt_method E test_name [] (PrimT Void) 3 2 make_list_ins [] \<phi>\<^sub>m"
+  "wt_method E test_name [] Void 3 2 make_list_ins [] \<phi>\<^sub>m"
 (*<*)
   apply (simp add: wt_method_def)
   apply (unfold make_list_ins_def phi_makelist_def)
   apply (simp add: wt_start_def nat_number)
   apply (simp add: wt_instr_def)
   apply clarify
+  apply (drule sym)
+  apply (erule_tac P="?x = ?y" in rev_mp)
   apply (elim pc_end pc_next pc_0)
-  apply (simp add: match_ex_entry_def)
-  apply simp
-  apply simp
-  apply simp
-  apply (simp add: match_ex_entry_def)
-  apply (simp add: match_ex_entry_def) 
-  apply simp
-  apply simp
-  apply simp
-  apply (simp add: match_ex_entry_def)
-  apply (simp add: match_ex_entry_def) 
-  apply simp
-  apply simp
-  apply simp
-  apply (simp add: match_ex_entry_def)
-  apply (simp add: match_ex_entry_def) 
-  apply simp
-  apply (simp add: app_def xcpt_app_def)
-  apply simp 
-  apply simp
-  apply simp
-  apply (simp add: app_def xcpt_app_def) 
-  apply simp
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add:
+    relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
+    distinct_classes intro: Fields.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add:
+    relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
+    distinct_classes intro: Fields.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add:
+    relevant_entries_def is_relevant_entry_def sees_field_def list_class_def
+    distinct_classes intro: Fields.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add:
+    relevant_entries_def is_relevant_entry_def list_class_def
+    distinct_classes Method_def intro: Methods.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
+  apply (fastsimp simp add:
+    relevant_entries_def is_relevant_entry_def list_class_def
+    distinct_classes Method_def intro: Methods.intros)
+  apply (simp add: relevant_entries_def is_relevant_entry_def)
   done
 (*>*)
 
@@ -401,21 +433,21 @@ lemma wf_md'E:
 
 text {* The whole program is welltyped: *}
 constdefs 
-  Phi :: prog_type ("\<Phi>")
+  Phi :: ty\<^isub>P ("\<Phi>")
   "\<Phi> C mn \<equiv> if C = test_name \<and> mn = makelist_name then \<phi>\<^sub>m else 
              if C = list_name \<and> mn = append_name then \<phi>\<^sub>a else []"
 
 lemma wf_prog:
-  "wt_jvm_prog E \<Phi>" 
+  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> E" 
 (*<*)
-  apply (unfold wt_jvm_prog_def)
+  apply (unfold wf_jvm_prog_phi_def)
   apply (rule wf_md'E [OF wf_struct])
   apply (simp add: E_def)
   apply clarify
   apply (fold E_def)
   apply (simp add: system_defs class_defs Phi_def)
   apply auto
-  apply (simp add: name_defs distinct_classes)
+  apply (simp add: distinct_classes)
   done 
 (*>*)
 
@@ -428,8 +460,7 @@ lemma "E,\<Phi> \<turnstile> start_state E test_name makelist_name \<surd>"
 (*<*)
   apply (rule BV_correct_initial)
     apply (rule wf_prog)
-   apply simp
-  apply simp
+  apply (fastsimp simp add: test_class_def distinct_classes Method_def intro: Methods.intros)
   done
 (*>*)
 
@@ -438,14 +469,14 @@ section "Example for code generation: inferring method types"
 
 constdefs
   test_kil :: "jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
-             ex_table \<Rightarrow> instr list \<Rightarrow> JVM_SemiType.state list"
+             ex_table \<Rightarrow> instr list \<Rightarrow> ty\<^isub>i' err list"
   "test_kil G C pTs rT mxs mxl et instr \<equiv>
    (let first  = Some ([],(OK (Class C))#(map OK pTs)@(replicate mxl Err));
         start  = OK first#(replicate (size instr - 1) (OK None))
-    in  kiljvm G mxs (1+size pTs+mxl) rT et instr start)"
+    in  kiljvm G mxs (1+size pTs+mxl) rT instr et start)"
 
 lemma [code]:
-  "unstables r step ss = (UN p:{..size ss(}. if \<not>stable r step ss p then {p} else {})"
+  "unstables r step ss = (UN p:{..<size ss}. if \<not>stable r step ss p then {p} else {})"
 (*<*)
   apply (unfold unstables_def)
   apply (rule equalityI)
@@ -462,8 +493,6 @@ lemma [code]:
   done
 (*>*)
 
-lemmas [code] = lessThan_0 lessThan_Suc
-
 constdefs
   some_elem :: "'a set \<Rightarrow> 'a"
   "some_elem == (%S. SOME x. x : S)"
@@ -476,20 +505,8 @@ lemma [code]:
        (ss,w)"
   by (unfold iter_def some_elem_def, rule refl)
 
-types_code
-  set ("_ list")
-
 consts_code
-  "{}"     ("[]")
-  "insert" ("(_ ins _)")
-  "op :"   ("(_ mem _)")
-  "op Un"  ("(_ union _)")
-  "image"  ("map")
-  "UNION"  ("(fn A => fn f => flat (map f A))")
-  "Bex"    ("(fn A => fn f => exists f A)")
-  "Ball"   ("(fn A => fn f => forall f A)")
   "some_elem" ("hd")
-  "op -" :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"  ("(_ \\\\ _)")
 
 lemma JVM_sup_unfold [code]:
  "JVM_SemiType.sup S m n = lift2 (Opt.sup
@@ -497,48 +514,71 @@ lemma JVM_sup_unfold [code]:
          (\<lambda>x y. OK (map2 (lift2 (SemiType.sup S)) x y))))" 
 (*<*)
   apply (unfold JVM_SemiType.sup_def JVM_SemiType.sl_def Opt.esl_def Err.sl_def
-         stk_esl_def reg_sl_def Product.esl_def  
+         stk_esl_def loc_sl_def Product.esl_def  
          Listn.sl_def upto_esl_def SemiType.esl_def Err.esl_def) 
   by simp
 
 lemmas [code] =
   meta_eq_to_obj_eq [OF SemiType.sup_def [unfolded exec_lub_def]]
-
-lemma [code]:
-  "JVM_SemiType.le G m n = 
-  Err.le (Opt.le (Product.le (Listn.le (\<lambda>x y. G \<turnstile> x \<preceq> y)) 
-                             (Listn.le (Err.le (\<lambda>x y. G \<turnstile> x \<preceq> y)))))"
-  apply (unfold JVM_le_unfold)
-  apply (fold fun_of_def)
-  apply (rule refl)
-  done
+  meta_eq_to_obj_eq [OF JVM_le_unfold]
 (*>*)
 
-lemmas [code ind] = rtrancl_refl converse_rtrancl_into_rtrancl
+lemmas [code ind] = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl'
 
 lemma [code]:
-"app' (Invoke C mn, G, pc, maxs, rT, (ST,LT)) = 
-  (method G C mn \<noteq> None \<and> 
-  (let (D,fpTs,rest) = the (method G C mn);
-       n             = length fpTs
-  in n < length ST \<and>   
-     (let apTs = rev (take n ST); 
-          X    = ST!n
-     in is_class G C \<and> G \<turnstile> X \<preceq> Class C \<and> list_all2 (\<lambda>x y. G \<turnstile> x \<preceq> y) apTs fpTs)))"
-(*<*)
-  apply simp
-  apply (fold fun_of_def)
-  apply (rule refl)
-  done
-(*>*)
+  "is_refT T = (case T of NT \<Rightarrow> True | Class C \<Rightarrow> True | _ \<Rightarrow> False)"
+  by (simp add: is_refT_def split add: ty.split)
 
+lemma [code ind params: 1]: "P \<turnstile> C has_fields FDTs  \<Longrightarrow>
+  map_of (map (\<lambda>((F, D), T). (F, D, T)) FDTs) F = \<lfloor>(D, T)\<rfloor> \<Longrightarrow> P \<turnstile> C sees F:T in D"
+  by (auto simp add: sees_field_def)
 
-generate_code
-  test1 = "test_kil E list_name [Class list_name] (PrimT Void) 3 0
-    [(Suc 0, 2, 8, Xcpt NullPointer)] append_ins"
-  test2 = "test_kil E test_name [] (PrimT Void) 3 2 [] make_list_ins"
+lemma [code ind params: 1]: "P \<turnstile> C sees_methods Mm \<Longrightarrow>
+  Mm M = \<lfloor>((Ts, T, m), D)\<rfloor> \<Longrightarrow> P \<turnstile> C sees M: Ts\<rightarrow>T = m in D"
+  by (auto simp add: Method_def)
 
-ML test1
-ML test2
+inductive2
+  swap_args :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
+  for r :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+where
+  "r a b \<Longrightarrow> swap_args r b a"
+
+inductive2
+  swap_args' :: "('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool"
+  for r :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
+where
+  "r a b c d \<Longrightarrow> swap_args' r a"
+
+lemma [code]:
+  "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
+    (\<exists>T\<^isub>f\<triangleright>swap_args (sees_field P C F) C. P \<turnstile> T \<le> Class C)"
+  by (auto intro: swap_args.intros elim: swap_args.cases)
+
+lemma [code]:
+  "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) = 
+    (\<exists>T\<^isub>f\<triangleright>swap_args (sees_field P C F) C. P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f)" 
+  by (auto intro: swap_args.intros elim: swap_args.cases)
+
+lemma [code]:
+  "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
+    (n < length ST \<and> 
+    (ST!n \<noteq> NT \<longrightarrow>
+      (case ST!n of
+         Class C \<Rightarrow> (\<exists>Ts\<triangleright>swap_args' (Method P C M). P \<turnstile> rev (take n ST) [\<le>] Ts)
+       | _ \<Rightarrow> False)))"
+  by (fastsimp intro: swap_args'.intros elim: swap_args'.cases split add: ty.split_asm)
+
+declare field_def2 [code ind]
+
+code_module BV
+contains
+  test1 = "test_kil E list_name [Class list_name] Void 3 0
+    [(Suc 0, 2, NullPointer, 7, 0)] append_ins"
+  test2 = "test_kil E test_name [] Void 3 2 [] make_list_ins"
+  test3 = "\<phi>\<^sub>a"
+  test4 = "\<phi>\<^sub>m"
+
+ML {* if BV.test1 = map BV.OK BV.test3 then () else error "wrong result" *}
+ML {* if BV.test2 = map BV.OK BV.test4 then () else error "wrong result" *}
 
 end

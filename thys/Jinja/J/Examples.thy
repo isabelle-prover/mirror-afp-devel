@@ -1,35 +1,12 @@
 (*  Title:      Jinja/J/Examples.thy
-    ID:         $Id: Examples.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Examples.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Christoph Petzinger
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Example Expressions - for use in execute_ theories} *}
+header {* \isaheader{Example Expressions} *}
 
 theory Examples imports Expr begin
-
-types_code
-  set ("_ list")
-
-consts_code
-  "{}"     ("[]")
-  "insert" ("(_ ins _)")
-  "op :"   ("(_ mem _)")
-  "op Un"  ("(_ union _)")
-
-ML {*
-fun new_addr z s alloc some hp =
-  let fun nr i = if alloc (hp i) then some i else nr (s i);
-  in nr z end;
-*}
-
-consts_code
-  "new_Addr"
-   ("new'_addr {* 0::nat *} {* Suc *}
-               {* %x. case x of None => True | Some y => False *} {* Some *}")
-
-  "arbitrary" ("(raise ERROR)")
-
 
 constdefs
   classObject::"J_mb cdecl"
@@ -117,6 +94,5 @@ constdefs
    (Var ''A2''\<bullet> ''int''{''A''} := (Var ''A1''\<bullet> ''add''([Var ''testint''])));;
    (Var ''A2''\<bullet> ''int''{''A''} := (Var ''A1''\<bullet> ''add''([Var ''testint''])));;
    Var ''A2''\<bullet> ''mult''([Var ''A2''\<bullet> ''int''{''A''}, Var ''testint'']) }}}"
-
 
 end

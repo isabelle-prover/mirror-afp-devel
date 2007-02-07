@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMDefensive.thy
-    ID:         $Id: JVMDefensive.thy,v 1.2 2005-06-04 16:22:47 makarius Exp $
+    ID:         $Id: JVMDefensive.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Gerwin Klein
     Copyright   GPL
 *)
@@ -133,16 +133,13 @@ constdefs
   "exec_d P \<sigma> \<equiv> if check P \<sigma> then Normal (exec (P, \<sigma>)) else TypeError"
 
 
-consts
-  "exec_1_d" :: "jvm_prog \<Rightarrow> (jvm_state type_error \<times> jvm_state type_error) set" 
-syntax (xsymbols)
-  "@exec_1_d" :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
-                   ("_ \<turnstile> _ -jvmd\<rightarrow>\<^isub>1 _" [61,61,61]60)  
-translations
-  "P \<turnstile> \<sigma> -jvmd\<rightarrow>\<^isub>1 \<sigma>'" == "(\<sigma>,\<sigma>') \<in> exec_1_d P"
-inductive "exec_1_d P" intros
+inductive2
+  "exec_1_d" :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
+                   ("_ \<turnstile> _ -jvmd\<rightarrow>\<^isub>1 _" [61,61,61]60)
+  for P :: jvm_prog
+where
   exec_1_d_ErrorI: "exec_d P \<sigma> = TypeError \<Longrightarrow> P \<turnstile> Normal \<sigma> -jvmd\<rightarrow>\<^isub>1 TypeError"
-  exec_1_d_NormalI: "exec_d P \<sigma> = Normal (Some \<sigma>') \<Longrightarrow> P \<turnstile> Normal \<sigma> -jvmd\<rightarrow>\<^isub>1 Normal \<sigma>'"
+| exec_1_d_NormalI: "exec_d P \<sigma> = Normal (Some \<sigma>') \<Longrightarrow> P \<turnstile> Normal \<sigma> -jvmd\<rightarrow>\<^isub>1 Normal \<sigma>'"
 
 -- "reflexive transitive closure:"
 consts
@@ -152,12 +149,12 @@ syntax (xsymbols)
   "exec_all_d" :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
                    ("_ \<turnstile> _ -jvmd\<rightarrow> _" [61,61,61]60)  
 defs
-  exec_all_d_def1: "P \<turnstile> \<sigma> -jvmd\<rightarrow> \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> (exec_1_d P)\<^sup>*"
+  exec_all_d_def1: "P \<turnstile> \<sigma> -jvmd\<rightarrow> \<sigma>' \<equiv> (exec_1_d P)\<^sup>*\<^sup>* \<sigma> \<sigma>'"
 
 lemma exec_1_d_def:
-  "exec_1_d P = {(s,t). \<exists>\<sigma>. s = Normal \<sigma> \<and> t = TypeError \<and> exec_d P \<sigma> = TypeError} \<union> 
-                {(s,t). \<exists>\<sigma> \<sigma>'. s = Normal \<sigma> \<and> t = Normal \<sigma>' \<and> exec_d P \<sigma> = Normal (Some \<sigma>')}"
-by (auto elim!: exec_1_d.elims intro!: exec_1_d.intros)
+  "exec_1_d P s t = ((\<exists>\<sigma>. s = Normal \<sigma> \<and> t = TypeError \<and> exec_d P \<sigma> = TypeError) \<or>
+                     (\<exists>\<sigma> \<sigma>'. s = Normal \<sigma> \<and> t = Normal \<sigma>' \<and> exec_d P \<sigma> = Normal (Some \<sigma>')))"
+by (auto elim!: exec_1_d.cases intro!: exec_1_d.intros)
 
 
 declare split_paired_All [simp del]
@@ -182,12 +179,12 @@ lemma defensive_imp_aggressive:
 proof -
   have "\<And>x y. P \<turnstile> x -jvmd\<rightarrow> y \<Longrightarrow> \<forall>\<sigma> \<sigma>'. x = Normal \<sigma> \<longrightarrow> y = Normal \<sigma>' \<longrightarrow>  P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
     apply (unfold exec_all_d_def1)
-    apply (erule rtrancl_induct)
+    apply (erule rtrancl_induct')
      apply (simp add: exec_all_def)
     apply (fold exec_all_d_def1)
     apply simp
     apply (intro allI impI)
-    apply (erule exec_1_d.elims, simp)
+    apply (erule exec_1_d.cases, simp)
     apply (simp add: exec_all_def exec_d_def split: type_error.splits split_if_asm)
     apply (rule rtrancl_trans, assumption)
     apply blast

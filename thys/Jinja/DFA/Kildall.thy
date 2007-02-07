@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Kildall.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
@@ -417,7 +417,7 @@ apply(clarsimp simp add: stables_def split_paired_all)
 -- "Well-foundedness of the termination relation:"
 apply (rule wf_lex_prod)
  apply (insert orderI [THEN acc_le_listI])
- apply (simp only: acc_def lesssub_def)
+ apply (simp add: acc_def lesssub_def wfP_wf_eq [symmetric])
 apply (rule wf_finite_psubset) 
 
 -- "Loop decreases along termination relation:"

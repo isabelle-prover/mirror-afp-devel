@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellTypeRT.thy
-    ID:         $Id: WellTypeRT.thy,v 1.3 2006-05-27 15:32:27 makarius Exp $
+    ID:         $Id: WellTypeRT.thy,v 1.4 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -10,38 +10,32 @@ theory WellTypeRT
 imports WellType
 begin
 
-consts
-  WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> (env \<times> expr      \<times> ty     )set"
-  WTrts:: "J_prog \<Rightarrow> heap \<Rightarrow> (env \<times> expr list \<times> ty list)set"
-
-(*<*)
-syntax (xsymbols)
-  WTrt :: "[J_prog,env,heap,expr,ty] \<Rightarrow> bool"
+inductive2
+  WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"
+  and WTrts :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool"
+  and WTrt2 :: "[J_prog,env,heap,expr,ty] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ : _"   [51,51,51]50)
-  WTrts:: "[J_prog,env,heap,expr list, ty list] \<Rightarrow> bool"
+  and WTrts2 :: "[J_prog,env,heap,expr list, ty list] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ [:] _" [51,51,51]50)
-(*>*)
-
-translations
-  "P,E,h \<turnstile> e : T"  ==  "(E,e,T) \<in> WTrt P h"
-  "P,E,h \<turnstile> es[:]Ts"  ==  "(E,es,Ts) \<in> WTrts P h"
-
-inductive "WTrt P h" "WTrts P h"
-intros
+  for P :: J_prog and h :: heap
+where
   
-WTrtNew:
+  "P,E,h \<turnstile> e : T \<equiv> WTrt P h E e T"
+| "P,E,h \<turnstile> es[:]Ts \<equiv> WTrts P h E es Ts"
+
+| WTrtNew:
   "is_class P C  \<Longrightarrow>
   P,E,h \<turnstile> new C : Class C"
 
-WTrtCast:
+| WTrtCast:
   "\<lbrakk> P,E,h \<turnstile> e : T; is_refT T; is_class P C \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> Cast C e : Class C"
 
-WTrtVal:
+| WTrtVal:
   "typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow>
   P,E,h \<turnstile> Val v : T"
 
-WTrtVar:
+| WTrtVar:
   "E V = Some T  \<Longrightarrow>
   P,E,h \<turnstile> Var V : T"
 (*
@@ -51,74 +45,74 @@ WTrtBinOp:
               | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer \<rbrakk>
    \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
 *)
-WTrtBinOpEq:
+| WTrtBinOpEq:
   "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>Eq\<guillemotright> e\<^isub>2 : Boolean"
 
-WTrtBinOpAdd:
+| WTrtBinOpAdd:
   "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : Integer;  P,E,h \<turnstile> e\<^isub>2 : Integer \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>Add\<guillemotright> e\<^isub>2 : Integer"
 
-WTrtLAss:
+| WTrtLAss:
   "\<lbrakk> E V = Some T;  P,E,h \<turnstile> e : T';  P \<turnstile> T' \<le> T \<rbrakk>
    \<Longrightarrow> P,E,h \<turnstile> V:=e : Void"
 
-WTrtFAcc:
+| WTrtFAcc:
   "\<lbrakk> P,E,h \<turnstile> e : Class C; P \<turnstile> C has F:T in D \<rbrakk> \<Longrightarrow>
   P,E,h \<turnstile> e\<bullet>F{D} : T"
 
-WTrtFAccNT:
+| WTrtFAccNT:
   "P,E,h \<turnstile> e : NT \<Longrightarrow>
   P,E,h \<turnstile> e\<bullet>F{D} : T"
 
-WTrtFAss:
+| WTrtFAss:
   "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : Class C;  P \<turnstile> C has F:T in D; P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2;  P \<turnstile> T\<^isub>2 \<le> T \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 : Void"
 
-WTrtFAssNT:
+| WTrtFAssNT:
   "\<lbrakk> P,E,h \<turnstile> e\<^isub>1:NT; P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 : Void"
 
-WTrtCall:
+| WTrtCall:
   "\<lbrakk> P,E,h \<turnstile> e : Class C; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
      P,E,h \<turnstile> es [:] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) : T"
 
-WTrtCallNT:
+| WTrtCallNT:
   "\<lbrakk> P,E,h \<turnstile> e : NT; P,E,h \<turnstile> es [:] Ts \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<bullet>M(es) : T"
 
-WTrtBlock:
+| WTrtBlock:
   "P,E(V\<mapsto>T),h \<turnstile> e : T'  \<Longrightarrow>
   P,E,h \<turnstile> {V:T; e} : T'"
 
-WTrtSeq:
+| WTrtSeq:
   "\<lbrakk> P,E,h \<turnstile> e\<^isub>1:T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2:T\<^isub>2 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2"
 
-WTrtCond:
+| WTrtCond:
   "\<lbrakk> P,E,h \<turnstile> e : Boolean;  P,E,h \<turnstile> e\<^isub>1:T\<^isub>1;  P,E,h \<turnstile> e\<^isub>2:T\<^isub>2;
      P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1; P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<longrightarrow> T = T\<^isub>2; P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<longrightarrow> T = T\<^isub>1 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
 
-WTrtWhile:
+| WTrtWhile:
   "\<lbrakk> P,E,h \<turnstile> e : Boolean;  P,E,h \<turnstile> c:T \<rbrakk>
   \<Longrightarrow>  P,E,h \<turnstile> while(e) c : Void"
 
-WTrtThrow:
+| WTrtThrow:
   "\<lbrakk> P,E,h \<turnstile> e : T\<^isub>r; is_refT T\<^isub>r \<rbrakk> \<Longrightarrow>
   P,E,h \<turnstile> throw e : T"
 
-WTrtTry:
+| WTrtTry:
   "\<lbrakk> P,E,h \<turnstile> e\<^isub>1 : T\<^isub>1;  P,E(V \<mapsto> Class C),h \<turnstile> e\<^isub>2 : T\<^isub>2; P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<rbrakk>
   \<Longrightarrow> P,E,h \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 : T\<^isub>2"
 
 -- "well-typed expression lists"
 
-WTrtNil:
+| WTrtNil:
   "P,E,h \<turnstile> [] [:] []"
 
-WTrtCons:
+| WTrtCons:
   "\<lbrakk> P,E,h \<turnstile> e : T;  P,E,h \<turnstile> es [:] Ts \<rbrakk>
   \<Longrightarrow>  P,E,h \<turnstile> e#es [:] T#Ts"
 
@@ -139,14 +133,14 @@ subsection{*Easy consequences*}
 lemma [iff]: "(P,E,h \<turnstile> [] [:] Ts) = (Ts = [])"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrts.cases)
 done
 (*>*)
 
 lemma [iff]: "(P,E,h \<turnstile> e#es [:] T#Ts) = (P,E,h \<turnstile> e : T \<and> P,E,h \<turnstile> es [:] Ts)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrts.cases)
 done
 (*>*)
 
@@ -154,7 +148,7 @@ lemma [iff]: "(P,E,h \<turnstile> (e#es) [:] Ts) =
   (\<exists>U Us. Ts = U#Us \<and> P,E,h \<turnstile> e : U \<and> P,E,h \<turnstile> es [:] Us)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrts.cases)
 done
 (*>*)
 
@@ -178,32 +172,32 @@ done
 lemma [iff]: "P,E,h \<turnstile> Val v : T = (typeof\<^bsub>h\<^esub> v = Some T)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrt.cases)
 done
 (*>*)
 
 lemma [iff]: "P,E,h \<turnstile> Var v : T = (E v = Some T)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrt.cases)
 done
 (*>*)
 
 lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:T\<^isub>2)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrt.cases)
 done
 (*>*)
 
 lemma [iff]: "P,E,h \<turnstile> {V:T; e} : T'  =  (P,E(V\<mapsto>T),h \<turnstile> e : T')"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WTrt_WTrts.elims)
+apply (auto elim: WTrt.cases)
 done
 (*>*)
 (*<*)
-inductive_cases WTrt_elim_cases[elim!]:
+inductive_cases2 WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> v :=e : T"
   "P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
   "P,E,h \<turnstile> while(e) c : T"

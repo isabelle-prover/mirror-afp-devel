@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness2.thy
-    ID:         $Id: Correctness2.thy,v 1.5 2006-04-30 09:46:34 lsf37 Exp $
+    ID:         $Id: Correctness2.thy,v 1.6 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -353,7 +353,7 @@ proof (induct rule:eval\<^isub>1_evals\<^isub>1_inducts)
 next
   case NewFail\<^isub>1 thus ?case by(auto simp: handle_def pcs_def)
 next
-  case (Cast\<^isub>1 C' D a e fs h\<^isub>1 ls\<^isub>1 h\<^isub>0 ls\<^isub>0)
+  case (Cast\<^isub>1 e h\<^isub>0 ls\<^isub>0 a h\<^isub>1 ls\<^isub>1 D fs C')
   let ?pc = "pc + length(compE\<^isub>2 e)"
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^isub>1,(Addr a#vs,ls\<^isub>1,C,M,?pc)#frs)" using Cast\<^isub>1 by fastsimp
@@ -361,7 +361,7 @@ next
     using Cast\<^isub>1 by (auto simp add:cast_ok_def)
   finally show ?case by auto
 next
-  case (CastNull\<^isub>1 C' e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1)
+  case (CastNull\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 C')
   let ?pc = "pc + length(compE\<^isub>2 e)"
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
             (None,h\<^isub>1,(Null#vs,ls\<^isub>1,C,M,?pc)#frs)"
@@ -370,7 +370,7 @@ next
     using CastNull\<^isub>1 by (auto simp add:cast_ok_def)
   finally show ?case by auto
 next
-  case (CastFail\<^isub>1 C' D a e fs h\<^isub>1 ls\<^isub>1 h\<^isub>0 ls\<^isub>0)
+  case (CastFail\<^isub>1 e h\<^isub>0 ls\<^isub>0 a h\<^isub>1 ls\<^isub>1 D fs C')
   let ?pc = "pc + length(compE\<^isub>2 e)"
   let ?xa = "addr_of_sys_xcpt ClassCast"
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
@@ -396,7 +396,7 @@ next
 next
   case Var\<^isub>1 thus ?case by auto
 next
-  case (BinOp\<^isub>1 bop e\<^isub>1 e\<^isub>2 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 w v\<^isub>1 v\<^isub>2)
+  case (BinOp\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 v\<^isub>1 h\<^isub>1 ls\<^isub>1 e\<^isub>2 v\<^isub>2 h\<^isub>2 ls\<^isub>2 bop w)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?pc\<^isub>2 = "?pc\<^isub>1 + length(compE\<^isub>2 e\<^isub>2)"
   have IH\<^isub>2: "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 (Val v\<^isub>2) h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 v\<^isub>2 xa (v\<^isub>1#vs) frs
@@ -411,7 +411,7 @@ next
 next
   case BinOpThrow\<^isub>1\<^isub>1 thus ?case by(fastsimp)
 next
-  case (BinOpThrow\<^isub>2\<^isub>1 bop e e\<^isub>1 e\<^isub>2 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 v\<^isub>1)
+  case (BinOpThrow\<^isub>2\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 v\<^isub>1 h\<^isub>1 ls\<^isub>1 e\<^isub>2 e h\<^isub>2 ls\<^isub>2 bop)
   let ?pc = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(v\<^isub>1#vs,ls\<^isub>1,C,M,?pc)#frs)"
   have 1: "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow> ?\<sigma>\<^isub>1"
@@ -437,7 +437,7 @@ next
     thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by iprover
   qed
 next
-  case (FAcc\<^isub>1 Ca D F a e fs h\<^isub>1 ls\<^isub>1 h\<^isub>0 ls\<^isub>0 w)
+  case (FAcc\<^isub>1 e h\<^isub>0 ls\<^isub>0 a h\<^isub>1 ls\<^isub>1 C fs F D w)
   let ?pc = "pc + length(compE\<^isub>2 e)"
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^isub>1,(Addr a#vs,ls\<^isub>1,C,M,?pc)#frs)" using FAcc\<^isub>1 by fastsimp
@@ -445,7 +445,7 @@ next
     using FAcc\<^isub>1 by auto
   finally show ?case by auto
 next
-  case (FAccNull\<^isub>1 D F e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1)
+  case (FAccNull\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 F D)
   let ?pc = "pc + length(compE\<^isub>2 e)"
   let ?xa = "addr_of_sys_xcpt NullPointer"
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
@@ -460,7 +460,7 @@ next
 next
   case FAccThrow\<^isub>1 thus ?case by fastsimp
 next
-  case (LAss\<^isub>1 e h\<^isub>1 i ls\<^isub>1 ls\<^isub>2 h\<^isub>0 ls\<^isub>0 w)
+  case (LAss\<^isub>1 e h\<^isub>0 ls\<^isub>0 w h\<^isub>1 ls\<^isub>1 i ls\<^isub>2)
   let ?pc = "pc + length(compE\<^isub>2 e)"
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^isub>1,(w#vs,ls\<^isub>1,C,M,?pc)#frs)" using LAss\<^isub>1 by fastsimp
@@ -470,7 +470,7 @@ next
 next
   case LAssThrow\<^isub>1 thus ?case by fastsimp
 next
-  case (FAss\<^isub>1 Ca D F a e\<^isub>1 e\<^isub>2 fs fs' h\<^isub>2 h\<^isub>2' ls\<^isub>2 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 w)
+  case (FAss\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 a h\<^isub>1 ls\<^isub>1 e\<^isub>2 w h\<^isub>2 ls\<^isub>2 C fs fs' F D h\<^isub>2')
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?pc\<^isub>2 = "?pc\<^isub>1 + length(compE\<^isub>2 e\<^isub>2)"
   have IH\<^isub>2: "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 (Val w) h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 w xa (Addr a#vs) frs
@@ -483,7 +483,7 @@ next
     using FAss\<^isub>1 by auto
   finally show ?case using FAss\<^isub>1 by (auto simp:add_assoc)
 next
-  case (FAssNull\<^isub>1 D F e\<^isub>1 e\<^isub>2 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 w)
+  case (FAssNull\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 e\<^isub>2 w h\<^isub>2 ls\<^isub>2 F D)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?pc\<^isub>2 = "?pc\<^isub>1 + length(compE\<^isub>2 e\<^isub>2)"
   let ?xa = "addr_of_sys_xcpt NullPointer"
@@ -501,7 +501,7 @@ next
     using FAssNull\<^isub>1.prems by(auto simp add:handle_Cons)
   finally show ?case by (auto intro: exI[where x = ?pc\<^isub>2])
 next
-  case (FAssThrow\<^isub>2\<^isub>1 D F e' e\<^isub>1 e\<^isub>2 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 w)
+  case (FAssThrow\<^isub>2\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 w h\<^isub>1 ls\<^isub>1 e\<^isub>2 e' h\<^isub>2 ls\<^isub>2 F D)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(w#vs,ls\<^isub>1,C,M,?pc\<^isub>1)#frs)"
   have 1: "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow> ?\<sigma>\<^isub>1"
@@ -529,7 +529,7 @@ next
 next
   case FAssThrow\<^isub>1\<^isub>1 thus ?case by fastsimp
 next
-  case (Call\<^isub>1 Ca D M' T Ts a body e f es fs h\<^isub>2 h\<^isub>3 ls\<^isub>2 ls\<^isub>2' ls\<^isub>3 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 pvs)
+  case (Call\<^isub>1 e h\<^isub>0 ls\<^isub>0 a h\<^isub>1 ls\<^isub>1 es pvs h\<^isub>2 ls\<^isub>2 Ca fs M' Ts T body D ls\<^isub>2' f h\<^isub>3 ls\<^isub>3)
   have "P\<^isub>1 \<turnstile>\<^sub>1 \<langle>es,(h\<^isub>1, ls\<^isub>1)\<rangle> [\<Rightarrow>] \<langle>map Val pvs,(h\<^isub>2, ls\<^isub>2)\<rangle>".
   hence [simp]: "length es = length pvs" by(auto dest:evals\<^isub>1_preserves_elen)
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs, ls\<^isub>0, C,M,pc)#frs)"
@@ -588,7 +588,7 @@ next
     qed
   qed
 next
-  case (CallParamsThrow\<^isub>1 M' e es es' es'' ex h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 w pvs)
+  case (CallParamsThrow\<^isub>1 e h\<^isub>0 ls\<^isub>0 w h\<^isub>1 ls\<^isub>1 es es' h\<^isub>2 ls\<^isub>2 pvs ex es'' M')
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs, ls\<^isub>0, C,M,pc)#frs)"
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e)"
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(w # vs, ls\<^isub>1, C,M,?pc\<^isub>1)#frs)"
@@ -615,7 +615,7 @@ next
     thus "?eq \<longrightarrow> (\<exists>pc\<^isub>2. ?H pc\<^isub>2)" by iprover
   qed
 next
-  case (CallNull\<^isub>1 M' e es h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 pvs)
+  case (CallNull\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 es pvs h\<^isub>2 ls\<^isub>2 M')
   have "P\<^isub>1 \<turnstile>\<^sub>1 \<langle>es,(h\<^isub>1, ls\<^isub>1)\<rangle> [\<Rightarrow>] \<langle>map Val pvs,(h\<^isub>2, ls\<^isub>2)\<rangle>".
   hence [simp]: "length es = length pvs" by(auto dest:evals\<^isub>1_preserves_elen)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e)"
@@ -639,7 +639,7 @@ next
 next
   case Block\<^isub>1 thus ?case by auto
 next
-  case (Seq\<^isub>1 e\<^isub>1 e\<^isub>2 e\<^isub>2' h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 w)
+  case (Seq\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 w h\<^isub>1 ls\<^isub>1 e\<^isub>2 e\<^isub>2' h\<^isub>2 ls\<^isub>2)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs)"
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(vs,ls\<^isub>1,C,M,?pc\<^isub>1+1)#frs)"
@@ -676,7 +676,7 @@ next
 next
   case SeqThrow\<^isub>1 thus ?case by fastsimp
 next
-  case (CondT\<^isub>1 e e' e\<^isub>1 e\<^isub>2 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2)
+  case (CondT\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 e\<^isub>1 e' h\<^isub>2 ls\<^isub>2 e\<^isub>2)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e)"
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs)"
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(vs,ls\<^isub>1,C,M,?pc\<^isub>1+1)#frs)"
@@ -716,7 +716,7 @@ next
     qed
   qed
 next
-  case (CondF\<^isub>1 e e' e\<^isub>1 e\<^isub>2 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2)
+  case (CondF\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 e\<^isub>2 e' h\<^isub>2 ls\<^isub>2 e\<^isub>1)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e)"
   let ?pc\<^isub>2 = "?pc\<^isub>1 + 1 + length(compE\<^isub>2 e\<^isub>1)+ 1"
   let ?pc\<^isub>2' = "?pc\<^isub>2 + length(compE\<^isub>2 e\<^isub>2)"
@@ -754,7 +754,7 @@ next
     qed
   qed
 next
-  case (CondThrow\<^isub>1 e f e\<^isub>1 e\<^isub>2 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1)
+  case (CondThrow\<^isub>1 e h\<^isub>0 ls\<^isub>0 f h\<^isub>1 ls\<^isub>1 e\<^isub>1 e\<^isub>2)
   let ?d = "size vs"
   let ?xt\<^isub>1 = "compxE\<^isub>2 e\<^isub>1 (pc+size(compE\<^isub>2 e)+1) ?d"
   let ?xt\<^isub>2 = "compxE\<^isub>2 e\<^isub>2 (pc+size(compE\<^isub>2 e)+size(compE\<^isub>2 e\<^isub>1)+2) ?d"
@@ -764,7 +764,7 @@ next
   moreover have "PROP ?P e h\<^isub>0 ls\<^isub>0 (throw f) h\<^isub>1 ls\<^isub>1 C M pc v xa vs frs ?I".
   ultimately show ?case using CondThrow\<^isub>1.prems by fastsimp
 next
-  case (WhileF\<^isub>1 c e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1)
+  case (WhileF\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 c)
   let ?pc = "pc + length(compE\<^isub>2 e)"
   let ?pc' = "?pc + length(compE\<^isub>2 c) + 3"
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
@@ -776,7 +776,7 @@ next
     using WhileF\<^isub>1.prems by (auto simp:nat_number)
   finally show ?case by (simp add:add_assoc nat_number)
 next
-  case (WhileT\<^isub>1 c e e\<^isub>3 h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 h\<^isub>3 ls\<^isub>3 v\<^isub>1)
+  case (WhileT\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 c v\<^isub>1 h\<^isub>2 ls\<^isub>2 e\<^isub>3 h\<^isub>3 ls\<^isub>3)
   let ?pc = "pc + length(compE\<^isub>2 e)"
   let ?pc' = "?pc + length(compE\<^isub>2 c) + 1"
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs)"
@@ -817,7 +817,7 @@ next
 next
   case WhileCondThrow\<^isub>1 thus ?case by fastsimp
 next
-  case (WhileBodyThrow\<^isub>1 c e e' h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2)
+  case (WhileBodyThrow\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 c e' h\<^isub>2 ls\<^isub>2)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e)"
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs)"
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(vs,ls\<^isub>1,C,M,?pc\<^isub>1+1)#frs)"
@@ -846,7 +846,7 @@ next
     qed
   qed
 next
-  case (Throw\<^isub>1 a e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1)
+  case (Throw\<^isub>1 e h\<^isub>0 ls\<^isub>0 a h\<^isub>1 ls\<^isub>1)
   let ?pc = "pc + size(compE\<^isub>2 e)"
   show ?case (is "?Norm \<and> ?Err")
   proof
@@ -893,7 +893,7 @@ next
 next
   case ThrowThrow\<^isub>1 thus ?case by fastsimp
 next
-  case (Try\<^isub>1 Ci e\<^isub>1 e\<^isub>2 i h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 v\<^isub>1)
+  case (Try\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 v\<^isub>1 h\<^isub>1 ls\<^isub>1 Ci i e\<^isub>2)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?pc\<^isub>1' = "?pc\<^isub>1 + 2 + length(compE\<^isub>2 e\<^isub>2)"
   have "P,C,M \<rhd> compxE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2) pc (size vs) / I,size vs".
@@ -906,7 +906,7 @@ next
     using Try\<^isub>1.prems by auto
   finally show ?case by (auto simp:add_assoc)
 next
-  case (TryCatch\<^isub>1 Ci D a e\<^isub>1 e\<^isub>2 e\<^isub>2' fs h\<^isub>1 h\<^isub>2 i ls\<^isub>1 ls\<^isub>2 h\<^isub>0 ls\<^isub>0)
+  case (TryCatch\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 a h\<^isub>1 ls\<^isub>1 D fs Ci i e\<^isub>2 e\<^isub>2' h\<^isub>2 ls\<^isub>2)
   let ?e = "try e\<^isub>1 catch(Ci i) e\<^isub>2"
   let ?xt = "compxE\<^isub>2 ?e pc (size vs)"
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs)"
@@ -970,7 +970,7 @@ next
     qed
   qed
 next
-  case (TryThrow\<^isub>1 Ci D a e\<^isub>1 e\<^isub>2 fs h\<^isub>1 i ls\<^isub>1 h\<^isub>0 ls\<^isub>0)
+  case (TryThrow\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 a h\<^isub>1 ls\<^isub>1 D fs Ci i e\<^isub>2)
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs)"
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?e = "try e\<^isub>1 catch(Ci i) e\<^isub>2"
@@ -1003,7 +1003,7 @@ next
 next
   case Nil\<^isub>1 thus ?case by simp
 next
-  case (Cons\<^isub>1 e es fs h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 h\<^isub>2 ls\<^isub>2 v)
+  case (Cons\<^isub>1 e h\<^isub>0 ls\<^isub>0 v h\<^isub>1 ls\<^isub>1 es fs h\<^isub>2 ls\<^isub>2)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e)"
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs)"
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(v#vs,ls\<^isub>1,C,M,?pc\<^isub>1)#frs)"

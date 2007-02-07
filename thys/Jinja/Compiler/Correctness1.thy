@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness1.thy
-    ID:         $Id: Correctness1.thy,v 1.3 2006-04-30 09:25:21 lsf37 Exp $
+    ID:         $Id: Correctness1.thy,v 1.4 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -122,7 +122,7 @@ and evals\<^isub>1_evals: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarr
 proof (induct rule:eval_evals_inducts)
   case Nil thus ?case by(fastsimp intro!:Nil\<^isub>1)
 next
-  case (Cons e es es' h l h' l' h\<^isub>2 l\<^isub>2 v)
+  case (Cons e h l v h' l' es es' h\<^isub>2 l\<^isub>2)
   have "PROP ?P e h l (Val v) h' l' Vs ls".
   with Cons.prems
   obtain ls' where 1: "?Post e h l (Val v) h' l' Vs ls ls'"
@@ -132,10 +132,10 @@ next
   obtain ls\<^isub>2 where 2: "?Posts es h' l' es' h\<^isub>2 l\<^isub>2 Vs ls' ls\<^isub>2" by(auto)
   from 1 2 Cons show ?case by(auto intro!:Cons\<^isub>1)
 next
-  case (ConsThrow e e' es h l h' l') thus ?case
+  case ConsThrow thus ?case
     by(fastsimp intro!:ConsThrow\<^isub>1 dest: eval_final)
 next
-  case (Block T V e e' h h' l l')
+  case (Block e h l V e' h' l' T)
   let ?Vs = "Vs @ [V]"
   have IH:
   "\<lbrakk>fv e \<subseteq> set ?Vs; l(V := None) \<subseteq>\<^sub>m [?Vs [\<mapsto>] ls];
@@ -179,13 +179,13 @@ next
     qed
   qed
 next
-  case (TryThrow C D V a e' e\<^isub>2 fs h' l' h l)
+  case (TryThrow e' h l a h' l' D fs C V e\<^isub>2)
   have "PROP ?P e' h l (Throw a) h' l' Vs ls".
   with TryThrow.prems
   obtain ls' where 1: "?Post e' h l (Throw a) h' l' Vs ls ls'"  by(auto)
   show ?case using 1 TryThrow.hyps by(auto intro!:eval\<^isub>1_evals\<^isub>1.TryThrow\<^isub>1)
 next
-  case (TryCatch C D V a e\<^isub>1 e\<^isub>2 e' fs h\<^isub>1 h\<^isub>2 l\<^isub>1 l\<^isub>2 h l)
+  case (TryCatch e\<^isub>1 h l a h\<^isub>1 l\<^isub>1 D fs C e\<^isub>2 V e' h\<^isub>2 l\<^isub>2)
   let ?e = "try e\<^isub>1 catch(C V) e\<^isub>2"
   have IH\<^isub>1: "\<lbrakk>fv e\<^isub>1 \<subseteq> set Vs; l \<subseteq>\<^sub>m [Vs [\<mapsto>] ls];
               size Vs + max_vars e\<^isub>1 \<le> length ls\<rbrakk>
@@ -255,7 +255,7 @@ next
 next
   case ThrowThrow thus ?case  by(fastsimp intro!:ThrowThrow\<^isub>1)
 next
-  case (CondT e e' e\<^isub>1 e\<^isub>2 h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2)
+  case (CondT e h l h\<^isub>1 l\<^isub>1 e\<^isub>1 e' h\<^isub>2 l\<^isub>2 e\<^isub>2)
   have "PROP ?P e h l true h\<^isub>1 l\<^isub>1 Vs ls".
   with CondT.prems
   obtain ls\<^isub>1 where 1: "?Post e h l true h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -265,7 +265,7 @@ next
   obtain ls\<^isub>2 where 2: "?Post e\<^isub>1 h\<^isub>1 l\<^isub>1 e' h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2"  by(auto)
   from 1 2 show ?case by(auto intro!:CondT\<^isub>1)
 next
-  case (CondF e e' e\<^isub>1 e\<^isub>2 h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2 Vs ls)
+  case (CondF e h l h\<^isub>1 l\<^isub>1 e\<^isub>2 e' h\<^isub>2 l\<^isub>2 e\<^isub>1 Vs ls)
   have "PROP ?P e h l false h\<^isub>1 l\<^isub>1 Vs ls".
   with CondF.prems
   obtain ls\<^isub>1 where 1: "?Post e h l false h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -277,7 +277,7 @@ next
 next
   case CondThrow thus ?case by(fastsimp intro!:CondThrow\<^isub>1)
 next
-  case (Seq e e\<^isub>1 e' h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2 v)
+  case (Seq e h l v h\<^isub>1 l\<^isub>1 e\<^isub>1 e' h\<^isub>2 l\<^isub>2)
   have "PROP ?P e h l (Val v) h\<^isub>1 l\<^isub>1 Vs ls".
   with Seq.prems
   obtain ls\<^isub>1 where 1: "?Post e h l (Val v) h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -291,7 +291,7 @@ next
 next
   case WhileF thus ?case by(fastsimp intro!:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case (WhileT c e e' h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2 h\<^isub>3 l\<^isub>3 v)
+  case (WhileT e h l h\<^isub>1 l\<^isub>1 c v h\<^isub>2 l\<^isub>2 e' h\<^isub>3 l\<^isub>3)
   have "PROP ?P e h l true h\<^isub>1 l\<^isub>1 Vs ls".
   with WhileT.prems
   obtain ls\<^isub>1 where 1: "?Post e h l true h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -305,7 +305,7 @@ next
   obtain ls\<^isub>3 where 3: "?Post (While (e) c) h\<^isub>2 l\<^isub>2 e' h\<^isub>3 l\<^isub>3 Vs ls\<^isub>2 ls\<^isub>3" by(auto)
   from 1 2 3 show ?case by(auto intro!:WhileT\<^isub>1)
 next
-  case (WhileBodyThrow c e e' h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2)
+  case (WhileBodyThrow e h l h\<^isub>1 l\<^isub>1 c e' h\<^isub>2 l\<^isub>2)
   have "PROP ?P e h l true h\<^isub>1 l\<^isub>1 Vs ls".
   with WhileBodyThrow.prems
   obtain ls\<^isub>1 where 1: "?Post e h l true h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -327,7 +327,7 @@ next
 next
   case CastThrow thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case (CastFail C D a e fs h\<^isub>1 l\<^isub>1 h l)
+  case (CastFail e h l a h\<^isub>1 l\<^isub>1 D fs C)
   have "PROP ?P e h l (addr a) h\<^isub>1 l\<^isub>1 Vs ls".
   with CastFail.prems
   obtain ls\<^isub>1 where 1: "?Post e h l (addr a) h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1" by auto
@@ -336,7 +336,7 @@ next
 next
   case Val thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case (BinOp bop e e\<^isub>1 h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2 v v\<^isub>1 v\<^isub>2)
+  case (BinOp e h l v\<^isub>1 h\<^isub>1 l\<^isub>1 e\<^isub>1 v\<^isub>2 h\<^isub>2 l\<^isub>2 bop v)
   have "PROP ?P e h l (Val v\<^isub>1) h\<^isub>1 l\<^isub>1 Vs ls".
   with BinOp.prems
   obtain ls\<^isub>1 where 1: "?Post e h l (Val v\<^isub>1) h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -346,7 +346,7 @@ next
   obtain ls\<^isub>2 where 2: "?Post e\<^isub>1 h\<^isub>1 l\<^isub>1 (Val v\<^isub>2) h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2"  by(auto)
   from 1 2 BinOp show ?case by(auto intro!:BinOp\<^isub>1)
 next
-  case (BinOpThrow2 bop e e\<^isub>0 e\<^isub>1 h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2 v\<^isub>1)
+  case (BinOpThrow2 e\<^isub>0 h l v\<^isub>1 h\<^isub>1 l\<^isub>1 e\<^isub>1 e h\<^isub>2 l\<^isub>2 bop)
   have "PROP ?P e\<^isub>0 h l (Val v\<^isub>1) h\<^isub>1 l\<^isub>1 Vs ls".
   with BinOpThrow2.prems
   obtain ls\<^isub>1 where 1: "?Post e\<^isub>0 h l (Val v\<^isub>1) h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -373,7 +373,7 @@ next
 next
   case FAccThrow thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case (FAss C D F a e\<^isub>1 e\<^isub>2 fs fs' h\<^isub>2 h\<^isub>2' l\<^isub>2 h l h\<^isub>1 l\<^isub>1 v)
+  case (FAss e\<^isub>1 h l a h\<^isub>1 l\<^isub>1 e\<^isub>2 v h\<^isub>2 l\<^isub>2 C fs fs' F D h\<^isub>2')
   have "PROP ?P e\<^isub>1 h l (addr a) h\<^isub>1 l\<^isub>1 Vs ls".
   with FAss.prems
   obtain ls\<^isub>1 where 1: "?Post e\<^isub>1 h l (addr a) h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -383,7 +383,7 @@ next
   obtain ls\<^isub>2 where 2: "?Post e\<^isub>2 h\<^isub>1 l\<^isub>1 (Val v) h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2"  by(auto)
   from 1 2 FAss show ?case by(auto intro!:FAss\<^isub>1)
 next
-  case (FAssNull D F e\<^isub>1 e\<^isub>2 h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2 v)
+  case (FAssNull e\<^isub>1 h l h\<^isub>1 l\<^isub>1 e\<^isub>2 v h\<^isub>2 l\<^isub>2 F D)
   have "PROP ?P e\<^isub>1 h l null h\<^isub>1 l\<^isub>1 Vs ls".
   with FAssNull.prems
   obtain ls\<^isub>1 where 1: "?Post e\<^isub>1 h l null h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -395,7 +395,7 @@ next
 next
   case FAssThrow1 thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case (FAssThrow2 D F e e\<^isub>1 e\<^isub>2 h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2 v)
+  case (FAssThrow2 e\<^isub>1 h l v h\<^isub>1 l\<^isub>1 e\<^isub>2 e h\<^isub>2 l\<^isub>2 F D)
   have "PROP ?P e\<^isub>1 h l (Val v) h\<^isub>1 l\<^isub>1 Vs ls".
   with FAssThrow2.prems
   obtain ls\<^isub>1 where 1: "?Post e\<^isub>1 h l (Val v) h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -405,7 +405,7 @@ next
   obtain ls\<^isub>2 where 2: "?Post e\<^isub>2 h\<^isub>1 l\<^isub>1 (throw e) h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2"  by(auto)
   from 1 2 FAssThrow2 show ?case by(auto intro!:FAssThrow\<^isub>2\<^isub>1)
 next
-  case (CallNull M e es h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2 vs)
+  case (CallNull e h l h\<^isub>1 l\<^isub>1 es vs h\<^isub>2 l\<^isub>2 M)
   have "PROP ?P e h l null h\<^isub>1 l\<^isub>1 Vs ls".
   with CallNull.prems
   obtain ls\<^isub>1 where 1: "?Post e h l null h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -418,7 +418,7 @@ next
 next
   case CallObjThrow thus ?case  by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
-  case (CallParamsThrow M e es es' ex h l h\<^isub>1 l\<^isub>1 h\<^isub>2 l\<^isub>2 v vs)
+  case (CallParamsThrow e h l v h\<^isub>1 l\<^isub>1 es vs ex es' h\<^isub>2 l\<^isub>2 M)
   have "PROP ?P e h l (Val v) h\<^isub>1 l\<^isub>1 Vs ls".
   with CallParamsThrow.prems
   obtain ls\<^isub>1 where 1: "?Post e h l (Val v) h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"
@@ -430,7 +430,7 @@ next
     by (auto simp add: map_compose[symmetric] comp_def
              elim!: CallParamsThrow\<^isub>1 dest!:evals_final)
 next
-  case (Call C D M T Ts a body e b' fs h\<^isub>2 h\<^isub>3 l\<^isub>2 l\<^isub>2' l\<^isub>3 pns es h l h\<^isub>1 l\<^isub>1 vs)
+  case (Call e h l a h\<^isub>1 l\<^isub>1 es vs h\<^isub>2 l\<^isub>2 C fs M Ts T pns body D l\<^isub>2' b' h\<^isub>3 l\<^isub>3)
   have "PROP ?P e h l (addr a) h\<^isub>1 l\<^isub>1 Vs ls".
   with Call.prems
   obtain ls\<^isub>1 where 1: "?Post e h l (addr a) h\<^isub>1 l\<^isub>1 Vs ls ls\<^isub>1"

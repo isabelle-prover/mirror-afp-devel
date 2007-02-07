@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/SemiType.thy
-    ID:         $Id: SemiType.thy,v 1.4 2007-01-21 14:07:26 nipkow Exp $
+    ID:         $Id: SemiType.thy,v 1.5 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -15,7 +15,7 @@ constdefs
   "super P C \<equiv> fst (the (class P C))"
 
 lemma superI:
-  "(C,D) \<in> subcls1 P \<Longrightarrow> super P C = D"
+  "subcls1 P C D \<Longrightarrow> super P C = D"
   by (unfold super_def) (auto dest: subcls1D)
 
 consts
@@ -35,10 +35,9 @@ constdefs
 
 
 
-syntax 
+abbreviation
   subtype :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool"
-translations
-  "subtype P" == "fun_of (widen P)"
+  where "subtype P \<equiv> widen P"
 
 constdefs
   esl :: "'c prog \<Rightarrow> ty esl"
@@ -49,7 +48,7 @@ constdefs
 lemma is_class_is_subcls:
   "wf_prog m P \<Longrightarrow> is_class P C = P \<turnstile> C \<preceq>\<^sup>* Object"
 (*<*)by (fastsimp simp:is_class_def
-                  elim: subcls_C_Object converse_rtranclE subcls1I
+                  elim: subcls_C_Object converse_rtranclE' subcls1I
                   dest: subcls1D)
 (*>*)
 
@@ -57,7 +56,7 @@ lemma is_class_is_subcls:
 (* FIXME: move to wellform *)
 lemma subcls_antisym:
   "\<lbrakk>wf_prog m P; P \<turnstile> C \<preceq>\<^sup>* D; P \<turnstile> D \<preceq>\<^sup>* C\<rbrakk> \<Longrightarrow> C = D"
-  (*<*) by (auto dest: acyclic_subcls1 acyclic_impl_antisym_rtrancl antisymD) (*>*)
+  (*<*) by (auto dest: acyclic_subcls1 acyclic_impl_antisym_rtrancl [to_pred] antisymD) (*>*)
 
 (* FIXME: move to wellform *)
 lemma widen_antisym:
@@ -89,13 +88,13 @@ lemma Class_widen2: "P \<turnstile> Class C \<le> T = (\<exists>D. T = Class D \
 (*<*) by (cases T) auto (*>*)
  
 lemma wf_converse_subcls1_impl_acc_subtype:
-  "wf ((subcls1 P)^-1) \<Longrightarrow> acc (subtype P)"
+  "wfP ((subcls1 P)^--1) \<Longrightarrow> acc (subtype P)"
 (*<*)
-apply (unfold acc_def lesssub_def)
-apply (drule_tac p = "(subcls1 P)^-1 - Id" in wf_subset)
+apply (unfold Semilat.acc_def lesssub_def)
+apply (drule_tac p = "meet ((subcls1 P)^--1) op \<noteq>" in wfP_subset)
  apply blast
-apply (drule wf_trancl)
-apply (simp add: wf_eq_minimal)
+apply (drule wfP_trancl)
+apply (simp add: wfP_eq_minimal)
 apply clarify
 apply (unfold lesub_def fun_of_def)
 apply (rename_tac M T) 
@@ -120,16 +119,16 @@ apply (rule_tac x = "Class D" in bexI)
  apply assumption
 apply clarify
 apply (clarsimp simp: Class_widen2)
-apply (insert rtrancl_r_diff_Id [symmetric, standard, of "subcls1 P"])
+apply (insert rtrancl_r_diff_Id' [symmetric, standard, of "subcls1 P"])
 apply simp
-apply (erule rtranclE)
+apply (erule rtrancl.cases)
  apply blast
-apply (drule rtrancl_converseI)
-apply (subgoal_tac "((subcls1 P)-Id)^-1 = ((subcls1 P)^-1 - Id)")
+apply (drule rtrancl_converseI')
+apply (subgoal_tac "(meet (subcls1 P) op \<noteq>)^--1 = (meet ((subcls1 P)^--1) op \<noteq>)")
  prefer 2
- apply blast
+ apply (simp add: converse_meet)
 apply simp
-apply (blast intro: rtrancl_into_trancl2)
+apply (blast intro: rtrancl_into_trancl2')
 done
 (*>*)
 
@@ -168,12 +167,12 @@ proof -
       by (blast intro: subcls_C_Object)
     with single_valued_subcls1[OF wf_prog]
     obtain u where
-      "is_lub ((subcls1 P)^* ) c1 c2 u"      
+      "is_lub ((subcls1 P)^** ) c1 c2 u"      
       by (blast dest: single_valued_has_lubs)
     moreover
     note acyclic_subcls1[OF wf_prog]
     moreover
-    have "\<forall>x y. (x, y) \<in> subcls1 P \<longrightarrow> super P x = y"
+    have "\<forall>x y. subcls1 P x y \<longrightarrow> super P x = y"
       by (blast intro: superI)
     ultimately
     have "P \<turnstile> c1 \<preceq>\<^sup>* exec_lub (subcls1 P) (super P) c1 c2 \<and>
@@ -208,7 +207,7 @@ proof -
       by (blast intro: subcls_C_Object)
     with single_valued_subcls1[OF wf_prog]
     obtain u where
-      lub: "is_lub ((subcls1 P)^* ) c1 c2 u"
+      lub: "is_lub ((subcls1 P)^** ) c1 c2 u"
       by (blast dest: single_valued_has_lubs)   
     with acyclic_subcls1[OF wf_prog]
     have "exec_lub (subcls1 P) (super P) c1 c2 = u"

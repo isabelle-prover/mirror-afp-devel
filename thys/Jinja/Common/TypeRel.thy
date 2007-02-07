@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/TypeRel.thy
-    ID:         $Id: TypeRel.thy,v 1.5 2006-11-17 01:28:44 makarius Exp $
+    ID:         $Id: TypeRel.thy,v 1.6 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -10,24 +10,14 @@ theory TypeRel imports Decl begin
 
 subsection{* The subclass relations *}
 
-consts
-  subcls1 :: "'m prog \<Rightarrow> (cname \<times> cname) set"  -- "subclass"
-
-(*<*)
-syntax (xsymbols)
+inductive2
   subcls1 :: "'m prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sup>1 _" [71,71,71] 70)
+  for P :: "'m prog"
+where subcls1I: "\<lbrakk>class P C = Some (D,rest); C \<noteq> Object\<rbrakk> \<Longrightarrow> P \<turnstile> C \<prec>\<^sup>1 D"
+
+abbreviation
   subcls  :: "'m prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<preceq>\<^sup>* _"  [71,71,71] 70)
-(*>*)
-
-translations
-  "P \<turnstile> C  \<prec>\<^sup>1 D"  ==  "(C,D) \<in> subcls1 P"
-  "P \<turnstile> C  \<preceq>\<^sup>*  D"  ==  "(C,D) \<in> (subcls1 P)\<^sup>*"
- (*<*)
-  "\<not> P \<turnstile> C  \<preceq>\<^sup>*  D" <= "(C,D) \<notin> (subcls1 P)\<^sup>*"
-(*>*)
-
-inductive "subcls1 P"
-intros subcls1I: "\<lbrakk>class P C = Some (D,rest); C \<noteq> Object\<rbrakk> \<Longrightarrow> P \<turnstile> C \<prec>\<^sup>1 D"
+  where "P \<turnstile> C  \<preceq>\<^sup>*  D \<equiv> (subcls1 P)\<^sup>*\<^sup>* C D"
 
 lemma subcls1D: "P \<turnstile> C \<prec>\<^sup>1 D \<Longrightarrow> C \<noteq> Object \<and> (\<exists>fs ms. class P C = Some (D,fs,ms))"
 (*<*)by(erule subcls1.induct)(fastsimp simp add:is_class_def)(*>*)
@@ -38,18 +28,21 @@ lemma [iff]: "\<not> P \<turnstile> Object \<prec>\<^sup>1 C"
 lemma [iff]: "(P \<turnstile> Object \<preceq>\<^sup>* C) = (C = Object)"
 (*<*)
 apply(rule iffI)
- apply(erule converse_rtranclE)
+ apply(erule converse_rtranclE')
   apply simp_all
 done
 (*>*)
 
-lemma finite_subcls1: "finite (subcls1 P)"
+lemma subcls1_def2:
+  "subcls1 P = member2
+     (SIGMA C:{C. is_class P C}. {D. C\<noteq>Object \<and> fst (the (class P C))=D})"
 (*<*)
-apply(subgoal_tac "subcls1 P =
- (SIGMA C:{C. is_class P C}. {D. C\<noteq>Object \<and> fst (the (class P C))=D})")
- prefer 2
- apply(fastsimp simp:is_class_def dest: subcls1D elim: subcls1I)
-apply simp
+  by (fastsimp simp:is_class_def expand_fun_eq dest: subcls1D elim: subcls1I)
+(*>*)
+
+lemma finite_subcls1: "finite (Collect2 (subcls1 P))"
+(*<*)
+apply (simp add: subcls1_def2)
 apply(rule finite_SigmaI [OF finite_is_class])
 apply(rule_tac B = "{fst (the (class P C))}" in finite_subset)
 apply  auto
@@ -73,50 +66,41 @@ done
 
 subsection{* The subtype relations *}
 
-consts
-  widen   :: "'m prog \<Rightarrow> (ty \<times> ty) set"  -- "widening"
-
-(*<*)
-syntax (xsymbols)
+inductive2
   widen   :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ \<le> _"   [71,71,71] 70)
-(*>*)
-
-translations
-  "P \<turnstile> S \<le> T"  ==  "(S,T) \<in> widen P"
+  for P :: "'m prog"
+where
+  widen_refl[iff]: "P \<turnstile> T \<le> T"
+| widen_subcls: "P \<turnstile> C \<preceq>\<^sup>* D  \<Longrightarrow>  P \<turnstile> Class C \<le> Class D"
+| widen_null[iff]: "P \<turnstile> NT \<le> Class C"
 
 abbreviation (xsymbols)
   widens :: "'m prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool"
     ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70) where
-  "widens P Ts Ts' \<equiv> list_all2 (fun_of (widen P)) Ts Ts'"
-
-inductive "widen P"
-intros
-  widen_refl[iff]: "P \<turnstile> T \<le> T"
-  widen_subcls: "P \<turnstile> C \<preceq>\<^sup>* D  \<Longrightarrow>  P \<turnstile> Class C \<le> Class D"
-  widen_null[iff]: "P \<turnstile> NT \<le> Class C"
+  "widens P Ts Ts' \<equiv> list_all2 (widen P) Ts Ts'"
 
 lemma [iff]: "(P \<turnstile> T \<le> Void) = (T = Void)"
-(*<*)by (auto elim: widen.elims)(*>*)
+(*<*)by (auto elim: widen.cases)(*>*)
 
 lemma [iff]: "(P \<turnstile> T \<le> Boolean) = (T = Boolean)"
-(*<*)by (auto elim: widen.elims)(*>*)
+(*<*)by (auto elim: widen.cases)(*>*)
 
 lemma [iff]: "(P \<turnstile> T \<le> Integer) = (T = Integer)"
-(*<*)by (auto elim: widen.elims)(*>*)
+(*<*)by (auto elim: widen.cases)(*>*)
 
 lemma [iff]: "(P \<turnstile> Void \<le> T) = (T = Void)"
-(*<*)by (auto elim: widen.elims)(*>*)
+(*<*)by (auto elim: widen.cases)(*>*)
 
 lemma [iff]: "(P \<turnstile> Boolean \<le> T) = (T = Boolean)"
-(*<*)by (auto elim: widen.elims)(*>*)
+(*<*)by (auto elim: widen.cases)(*>*)
 
 lemma [iff]: "(P \<turnstile> Integer \<le> T) = (T = Integer)"
-(*<*)by (auto elim: widen.elims)(*>*)
+(*<*)by (auto elim: widen.cases)(*>*)
 
 
 lemma Class_widen: "P \<turnstile> Class C \<le> T  \<Longrightarrow>  \<exists>D. T = Class D"
 (*<*)
-apply (ind_cases "P\<turnstile>S\<le>T")
+apply (ind_cases2 "P \<turnstile> Class C \<le> T")
 apply auto
 done
 (*>*)
@@ -131,7 +115,7 @@ done
 lemma Class_widen_Class [iff]: "(P \<turnstile> Class C \<le> Class D) = (P \<turnstile> C \<preceq>\<^sup>* D)"
 (*<*)
 apply (rule iffI)
-apply (ind_cases " P \<turnstile> S \<le> T")
+apply (ind_cases2 "P \<turnstile> Class C \<le> Class D")
 apply (auto elim: widen_subcls)
 done
 (*>*)
@@ -159,34 +143,26 @@ qed
 (*>*)
 
 lemma widens_trans [trans]: "\<lbrakk>P \<turnstile> Ss [\<le>] Ts; P \<turnstile> Ts [\<le>] Us\<rbrakk> \<Longrightarrow> P \<turnstile> Ss [\<le>] Us"
-(*<*)by (rule rel_list_all2_trans, rule widen_trans)(*>*)
+(*<*)by (rule list_all2_trans, rule widen_trans)(*>*)
 
 
 (*<*)
-lemmas widens_refl [iff] = rel_list_all2_refl [OF widen_refl]
-lemmas widens_Cons [iff] = rel_list_all2_Cons1 [of "widen P", standard]
+lemmas widens_refl [iff] = list_all2_refl [of "widen P", OF widen_refl, standard]
+lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
 (*>*)
 
 
 subsection{* Method lookup *}
 
-consts
-  Methods :: "'m prog \<Rightarrow> (cname \<times> (mname \<rightharpoonup> (ty list \<times> ty \<times> 'm) \<times> cname))set"
-
-(*<*)
-syntax
-  "_sees_methods" :: "['m prog, cname, mname \<rightharpoonup> (ty list \<times> ty \<times> 'm) \<times> cname] \<Rightarrow> bool"
+inductive2
+  Methods :: "['m prog, cname, mname \<rightharpoonup> (ty list \<times> ty \<times> 'm) \<times> cname] \<Rightarrow> bool"
                     ("_ \<turnstile> _ sees'_methods _" [51,51,51] 50)
-(*>*)
-
-translations "P \<turnstile> C sees_methods Mm"  ==  "(C,Mm) \<in> Methods P"
-
-inductive "Methods P"
-intros
-sees_methods_Object:
+  for P :: "'m prog"
+where
+  sees_methods_Object:
  "\<lbrakk> class P Object = Some(D,fs,ms); Mm = option_map (\<lambda>m. (m,Object)) \<circ> map_of ms \<rbrakk>
   \<Longrightarrow> P \<turnstile> Object sees_methods Mm"
-sees_methods_rec:
+| sees_methods_rec:
  "\<lbrakk> class P C = Some(D,fs,ms); C \<noteq> Object; P \<turnstile> D sees_methods Mm;
     Mm' = Mm ++ (option_map (\<lambda>m. (m,C)) \<circ> map_of ms) \<rbrakk>
   \<Longrightarrow> P \<turnstile> C sees_methods Mm'";
@@ -197,7 +173,7 @@ shows "\<And>Mm'. P \<turnstile> C sees_methods Mm' \<Longrightarrow> Mm' = Mm"
  (*<*)
 using 1
 proof induct
-  case (sees_methods_rec C D Dres Cres fs ms Cres')
+  case (sees_methods_rec C D fs ms Dres Cres Cres')
   have "class": "class P C = Some (D, fs, ms)"
    and notObj: "C \<noteq> Object" and Dmethods: "P \<turnstile> D sees_methods Dres"
    and IH: "\<And>Dres'. P \<turnstile> D sees_methods Dres' \<Longrightarrow> Dres' = Dres"
@@ -206,10 +182,10 @@ proof induct
   from Cmethods' notObj "class" obtain Dres'
     where Dmethods': "P \<turnstile> D sees_methods Dres'"
      and Cres': "Cres' = Dres' ++ (option_map (\<lambda>m. (m,C)) \<circ> map_of ms)"
-    by(auto elim: Methods.elims)
+    by(auto elim: Methods.cases)
   from Cres Cres' IH[OF Dmethods'] show "Cres' = Cres" by simp
 next
-  case sees_methods_Object thus ?case by(auto elim: Methods.elims)
+  case sees_methods_Object thus ?case by(auto elim: Methods.cases)
 qed
 (*>*)
 
@@ -228,7 +204,7 @@ proof induct
 next
   case sees_methods_rec thus ?case
     by(fastsimp simp:option_map_def split:option.splits
-                elim:converse_rtrancl_into_rtrancl[OF subcls1I])
+                elim:converse_rtrancl_into_rtrancl'[of "subcls1 P", OF subcls1I])
 qed
 (*>*)
 
@@ -258,7 +234,7 @@ shows "P \<turnstile> C sees_methods Mm \<Longrightarrow>
 (*<*)
       (is "_ \<Longrightarrow> \<exists>Mm' Mm2. ?Q C' C Mm' Mm2")
 using sub
-proof (induct rule:converse_rtrancl_induct)
+proof (induct rule:converse_rtrancl_induct')
   assume "P \<turnstile> C sees_methods Mm"
   hence "?Q C C Mm empty" by simp
   thus "\<exists>Mm' Mm2. ?Q C C Mm' Mm2" by blast
@@ -278,7 +254,7 @@ next
   have "P \<turnstile> C'' sees_methods (Mm ++ Mm2) ++ ?Mm3"
     using sees_methods_rec[OF "class" C'sees refl] Mm' by simp
   hence "?Q C'' C ((Mm ++ Mm2) ++ ?Mm3) (Mm2++?Mm3)"
-    using converse_rtrancl_into_rtrancl[OF sub1 sub]
+    using converse_rtrancl_into_rtrancl'[OF sub1 sub]
     by simp (simp add:map_add_def subC split:option.split)
   thus "\<exists>Mm' Mm2. ?Q C'' C Mm' Mm2" by blast
 qed
@@ -324,7 +300,7 @@ apply(drule (1) sees_methods_decl_mono)
 apply clarsimp
 apply(drule (1) sees_methods_fun)
 apply clarsimp
-apply(blast intro:rtrancl_trans)
+apply(blast intro:rtrancl_trans')
 done
 (*>*)
 
@@ -335,27 +311,18 @@ lemma sees_method_is_class:
 
 subsection{* Field lookup *}
 
-consts
-  Fields :: "'m prog \<Rightarrow> (cname \<times> ((vname \<times> cname) \<times> ty) list)set"
-
-(*<*)
-syntax
-  "_has_fields" :: "['m prog, cname, ((vname \<times> cname) \<times> ty) list] \<Rightarrow> bool"
+inductive2
+  Fields :: "['m prog, cname, ((vname \<times> cname) \<times> ty) list] \<Rightarrow> bool"
                   ("_ \<turnstile> _ has'_fields _" [51,51,51] 50)
-(*>*)
-
-translations
-  "P \<turnstile> C has_fields FDTs"  ==  "(C,FDTs) \<in> Fields P"
-
-inductive "Fields P"
-intros
-has_fields_rec:
-"\<lbrakk> class P C = Some(D,fs,ms); C \<noteq> Object; P \<turnstile> D has_fields FDTs;
-   FDTs' = map (\<lambda>(F,T). ((F,C),T)) fs @ FDTs \<rbrakk>
- \<Longrightarrow> P \<turnstile> C has_fields FDTs'"
-has_fields_Object:
-"\<lbrakk> class P Object = Some(D,fs,ms); FDTs = map (\<lambda>(F,T). ((F,Object),T)) fs \<rbrakk>
- \<Longrightarrow> P \<turnstile> Object has_fields FDTs"
+  for P :: "'m prog"
+where
+  has_fields_rec:
+  "\<lbrakk> class P C = Some(D,fs,ms); C \<noteq> Object; P \<turnstile> D has_fields FDTs;
+     FDTs' = map (\<lambda>(F,T). ((F,C),T)) fs @ FDTs \<rbrakk>
+   \<Longrightarrow> P \<turnstile> C has_fields FDTs'"
+| has_fields_Object:
+  "\<lbrakk> class P Object = Some(D,fs,ms); FDTs = map (\<lambda>(F,T). ((F,Object),T)) fs \<rbrakk>
+   \<Longrightarrow> P \<turnstile> Object has_fields FDTs"
 
 lemma has_fields_fun:
 assumes 1: "P \<turnstile> C has_fields FDTs"
@@ -363,7 +330,7 @@ shows "\<And>FDTs'. P \<turnstile> C has_fields FDTs' \<Longrightarrow> FDTs' = 
  (*<*)
 using 1
 proof induct
-  case (has_fields_rec C D Dres Cres fs ms Cres')
+  case (has_fields_rec C D fs ms Dres Cres Cres')
   have "class": "class P C = Some (D, fs, ms)"
    and notObj: "C \<noteq> Object" and DFields: "P \<turnstile> D has_fields Dres"
    and IH: "\<And>Dres'. P \<turnstile> D has_fields Dres' \<Longrightarrow> Dres' = Dres"
@@ -372,10 +339,10 @@ proof induct
   from CFields' notObj "class" obtain Dres'
     where DFields': "P \<turnstile> D has_fields Dres'"
      and Cres': "Cres' = map (\<lambda>(F,T). ((F,C),T)) fs @ Dres'"
-    by(auto elim: Fields.elims)
+    by(auto elim: Fields.cases)
   from Cres Cres' IH[OF DFields'] show "Cres' = Cres" by simp
 next
-  case has_fields_Object thus ?case by(auto elim: Fields.elims)
+  case has_fields_Object thus ?case by(auto elim: Fields.cases)
 qed
 (*>*)
 
@@ -386,7 +353,7 @@ shows "\<lbrakk> P \<turnstile> C \<preceq>\<^sup>* D; class P D = Some(D',fs,ms
 (*<*)
 using sub apply(induct)
  apply(simp add:image_def)
- apply(erule converse_rtranclE)
+ apply(erule converse_rtranclE')
   apply(force)
  apply(drule subcls1D)
  apply fastsimp
@@ -400,31 +367,31 @@ assumes fields: "P \<turnstile> C has_fields FDTs"
 shows "((F,D),T) \<in> set FDTs \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
 (*<*)
 using fields apply(induct)
- prefer 2 apply(fastsimp dest: tranclD)
+ prefer 2 apply fastsimp
 apply clarsimp
 apply(erule disjE)
  apply(clarsimp simp add:image_def)
 apply simp
-apply(blast dest:subcls1I converse_rtrancl_into_rtrancl)
+apply(blast dest:subcls1I converse_rtrancl_into_rtrancl')
 done
 (*>*)
 
 
 lemma subcls_notin_has_fields:
 assumes fields: "P \<turnstile> C has_fields FDTs"
-shows "((F,D),T) \<in> set FDTs \<Longrightarrow> (D,C) \<notin> (subcls1 P)\<^sup>+"
+shows "((F,D),T) \<in> set FDTs \<Longrightarrow> \<not> (subcls1 P)\<^sup>+\<^sup>+ D C"
 (*<*)
 using fields apply(induct)
- prefer 2 apply(fastsimp dest: tranclD)
+ prefer 2 apply(fastsimp dest: tranclD')
 apply clarsimp
 apply(erule disjE)
  apply(clarsimp simp add:image_def)
- apply(drule tranclD)
+ apply(drule tranclD')
  apply clarify
  apply(frule subcls1D)
- apply(fastsimp dest:tranclD all_fields_in_has_fields)
+ apply(fastsimp dest:all_fields_in_has_fields)
 apply simp
-apply(blast dest:subcls1I trancl_into_trancl)
+apply(blast dest:subcls1I trancl.trancl_into_trancl)
 done
 (*>*)
 
@@ -434,13 +401,13 @@ assumes sub: "P \<turnstile> D \<preceq>\<^sup>* C"
 shows "P \<turnstile> C has_fields FDTs
          \<Longrightarrow> \<exists>pre. P \<turnstile> D has_fields pre@FDTs \<and> dom(map_of pre) \<inter> dom(map_of FDTs) = {}"
 (*<*)
-using sub apply(induct rule:converse_rtrancl_induct)
+using sub apply(induct rule:converse_rtrancl_induct')
  apply(rule_tac x = "[]" in exI)
  apply simp
 apply clarsimp
 apply(rename_tac D' D pre)
-apply(subgoal_tac "(D',C) : (subcls1 P)^+")
- prefer 2 apply(erule (1) rtrancl_into_trancl2)
+apply(subgoal_tac "(subcls1 P)^++ D' C")
+ prefer 2 apply(erule (1) rtrancl_into_trancl2')
 apply(drule subcls1D)
 apply clarsimp
 apply(rename_tac fs ms)
@@ -535,7 +502,7 @@ constdefs
   fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> ty) list" 
   "fields P C  \<equiv>  THE FDTs. P \<turnstile> C has_fields FDTs"                
 
-lemma [simp]: "P \<turnstile> C has_fields FDTs \<Longrightarrow> fields P C = FDTs"
+lemma fields_def2 [simp]: "P \<turnstile> C has_fields FDTs \<Longrightarrow> fields P C = FDTs"
 (*<*)by (unfold fields_def) (auto dest: has_fields_fun)(*>*)
 
 lemma field_def2 [simp]: "P \<turnstile> C sees F:T in D \<Longrightarrow> field P C F = (D,T)"

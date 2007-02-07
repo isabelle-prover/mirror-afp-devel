@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVNoTypeErrors.thy
-    ID:         $Id: BVNoTypeError.thy,v 1.1 2005-05-31 23:21:03 lsf37 Exp $
+    ID:         $Id: BVNoTypeError.thy,v 1.2 2007-02-07 17:19:07 stefanberghofer Exp $
     Author:     Gerwin Klein
     Copyright   GPL
 *)
@@ -233,7 +233,7 @@ theorem welltyped_aggressive_imp_defensive:
   apply (frule BV_correct, assumption+) 
   apply (drule no_type_error, assumption, drule no_type_error_commutes, simp)
   apply (simp add: exec_all_d_def1)
-  apply (rule rtrancl_trans, assumption)
+  apply (rule rtrancl_trans', assumption)
   apply (drule exec_1_d_NormalI)
   apply auto
   done
@@ -275,7 +275,7 @@ locale cnf =
 theorem (in cnf) no_type_errors:
   "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> \<sigma>' \<Longrightarrow> \<sigma>' \<noteq> TypeError"
   apply (unfold exec_all_d_def1)   
-  apply (erule rtrancl_induct)
+  apply (erule rtrancl_induct')
    apply simp
   apply (fold exec_all_d_def1)
   apply (insert cnf wf)

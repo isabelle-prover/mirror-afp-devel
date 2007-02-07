@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallTypeSafe.thy
-    ID:         $Id: TypeSafe.thy,v 1.2 2005-12-21 23:33:45 makarius Exp $
+    ID:         $Id: TypeSafe.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -20,7 +20,7 @@ and reds_preserves_hconf:
   "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> (\<And>Ts E. \<lbrakk> P,E,h \<turnstile> es [:] Ts; P \<turnstile> h \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> h' \<surd>)"
 (*<*)
 proof (induct rule:red_reds_inducts)
-  case (RedNew C FDTs a h h' l)
+  case (RedNew h a C FDTs h' l)
   have new: "new_Addr h = Some a" and fields: "P \<turnstile> C has_fields FDTs"
    and h': "h' = h(a\<mapsto>(C, init_fields FDTs))"
    and hconf: "P \<turnstile> h \<surd>" .
@@ -29,7 +29,7 @@ proof (induct rule:red_reds_inducts)
     using fields by(rule oconf_init_fields)
   ultimately show "P \<turnstile> h' \<surd>" using h' by(fast intro: hconf_new[OF hconf])
 next
-  case (RedFAss C D F a fs h l v)
+  case (RedFAss h a C fs F D v l)
   let ?fs' = "fs((F,D)\<mapsto>v)"
   have hconf: "P \<turnstile> h \<surd>" and ha: "h a = Some(C,fs)"
    and wt: "P,E,h \<turnstile> addr a\<bullet>F{D}:=Val v : T" .
@@ -62,7 +62,7 @@ next
   case RedFAss thus ?case
     by(fast intro:lconf_hext red_hext_incr[OF red_reds.RedFAss])
 next
-  case (InitBlockRed T V e e' h h' l l' v v' T')
+  case (InitBlockRed e h l V v e' h' l' v' T T')
   have red: "P \<turnstile> \<langle>e, (h, l(V\<mapsto>v))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
    and IH: "\<And>T E . \<lbrakk> P,E,h \<turnstile> e:T; P,h \<turnstile> l(V\<mapsto>v) (:\<le>) E \<rbrakk>
                      \<Longrightarrow> P,h' \<turnstile> l' (:\<le>) E"
@@ -75,7 +75,7 @@ next
   ultimately show "P,h' \<turnstile> l'(V := l V) (:\<le>) E"
     by (fastsimp simp:lconf_def split:split_if_asm)
 next
-  case (BlockRedNone T V e e' h h' l l' T')
+  case (BlockRedNone e h l V e' h' l' T T')
   have red: "P \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk> P,E,h \<turnstile> e : T; P,h \<turnstile> l(V:=None) (:\<le>) E \<rbrakk>
                    \<Longrightarrow> P,h' \<turnstile> l' (:\<le>) E"
@@ -87,7 +87,7 @@ next
   ultimately show "P,h' \<turnstile> l'(V := l V) (:\<le>) E"
     by (fastsimp simp:lconf_def split:split_if_asm)
 next
-  case (BlockRedSome T V e e' h h' l l' v T')
+  case (BlockRedSome e h l V e' h' l' v T T')
   have red: "P \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E,h \<turnstile> e : T; P,h \<turnstile> l(V:=None) (:\<le>) E\<rbrakk>
                    \<Longrightarrow> P,h' \<turnstile> l' (:\<le>) E"
@@ -230,7 +230,7 @@ and subjects_reduction2: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarro
             \<Longrightarrow> \<exists>Ts'. P,E,h' \<turnstile> es' [:] Ts' \<and> P \<turnstile> Ts' [\<le>] Ts)"
 (*<*)
 proof (induct rule:red_reds_inducts)
-  case (RedCall C D M T Ts a body fs pns h l vs E T')
+  case (RedCall h l a C fs M Ts T pns body D vs E T')
   have hp: "hp(h,l) a = Some(C,fs)"
    and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns,body) in D"
    and wt: "P,E,h \<turnstile> addr a\<bullet>M(map Val vs) : T'" .
@@ -262,7 +262,7 @@ next
   case RedCastFail thus ?case
     by (unfold sconf_def hconf_def)  (fastsimp elim!:typeof_ClassCast)
 next
-  case (BinOpRed1 bop e\<^isub>1 e\<^isub>1' e\<^isub>2 h l h' l')
+  case (BinOpRed1 e\<^isub>1 h l e\<^isub>1' h' l' bop e\<^isub>2)
   have red: "P \<turnstile> \<langle>e\<^isub>1,(h,l)\<rangle> \<rightarrow> \<langle>e\<^isub>1',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e\<^isub>1:T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e\<^isub>1' : U \<and> P \<turnstile> U \<le> T"
@@ -286,7 +286,7 @@ next
   qed
   thus ?case by auto
 next
-  case (BinOpRed2 bop e\<^isub>2 e\<^isub>2' h l h' l' v\<^isub>1)
+  case (BinOpRed2 e\<^isub>2 h l e\<^isub>2' h' l' v\<^isub>1 bop)
   have red: "P \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> \<rightarrow> \<langle>e\<^isub>2',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e\<^isub>2:T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e\<^isub>2' : U \<and> P \<turnstile> U \<le> T"
@@ -321,7 +321,7 @@ next
 next
   case LAssRed thus ?case by(blast intro:widen_trans)
 next
-  case (FAccRed D F e e' h l h' l')
+  case (FAccRed e h l e' h' l' F D)
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>F{D} : T" .
@@ -354,7 +354,7 @@ next
     by(fastsimp intro: widen_refl WTThrow[OF WTVal] elim!: typeof_NullPointer
                 simp: sconf_def hconf_def)
 next
-  case (FAssRed1 D F e e' e\<^isub>2 h l h' l')
+  case (FAssRed1 e h l e' h' l' F D e\<^isub>2)
   have red: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
@@ -388,7 +388,7 @@ next
     ultimately have ?case using UsubC by(auto simp add:widen_Class) }
   ultimately show ?case using wt by blast
 next
-  case (FAssRed2 D F e\<^isub>2 e\<^isub>2' h l h' l' v)
+  case (FAssRed2 e\<^isub>2 h l e\<^isub>2' h' l' v F D)
   have red: "P \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> \<rightarrow> \<langle>e\<^isub>2',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e\<^isub>2 : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e\<^isub>2' : U \<and> P \<turnstile> U \<le> T"
@@ -421,7 +421,7 @@ next
   case RedFAssNull thus ?case
     by(fastsimp intro: WTThrow[OF WTVal] elim!:typeof_NullPointer simp:sconf_def hconf_def)
 next
-  case (CallObj M e e' es h l h' l')
+  case (CallObj e h l e' h' l' M es)
   have red: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
@@ -461,7 +461,7 @@ next
     ultimately have ?case using UsubC by(auto simp add:widen_Class) }
   ultimately show ?case using wt by auto
 next
-  case (CallParams M es es' h l h' l' v)
+  case (CallParams es h l es' h' l' v M)
   have reds: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>"
    and IH: "\<And>E Ts. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> es [:] Ts\<rbrakk>
                  \<Longrightarrow> \<exists>Us. P,E,h' \<turnstile> es' [:] Us \<and> P \<turnstile> Us [\<le>] Ts"
@@ -491,7 +491,7 @@ next
   case RedCallNull thus ?case
     by(fastsimp intro: WTThrow[OF WTVal] elim!:typeof_NullPointer simp: sconf_def hconf_def)
 next
-  case (InitBlockRed T V e e' h h' l l' v v' E T')
+  case (InitBlockRed e h l V v e' h' l' v' T E T')
   have red: "P \<turnstile> \<langle>e, (h,l(V\<mapsto>v))\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l(V\<mapsto>v)) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                     \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
@@ -509,7 +509,7 @@ next
   case BlockRedNone thus ?case
     by(auto simp del:fun_upd_apply)(fastsimp simp:sconf_def lconf_def)
 next
-  case (BlockRedSome T V e e' h h' l l' v E Te)
+  case (BlockRedSome e h l V e' h' l' v T E Te)
   have red: "P \<turnstile> \<langle>e,(h,l(V:=None))\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l(V:=None)) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                    \<Longrightarrow> \<exists>T'. P,E,h' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T"
@@ -571,7 +571,7 @@ assumes wf: "wf_J_prog P" and Red: "P \<turnstile> \<langle>e,s\<rangle> \<right
 shows "\<And>T. \<lbrakk> P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
 (*<*)
 using Red
-proof (induct rule:converse_rtrancl_induct2)
+proof (induct rule:converse_rtrancl_induct2')
   case refl show ?case .
 next
   case step thus ?case
@@ -584,7 +584,7 @@ lemma Red_preserves_defass:
 assumes wf: "wf_J_prog P" and reds: "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>"
 shows "\<D> e \<lfloor>dom(lcl s)\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom(lcl s')\<rfloor>"
 using reds
-proof (induct rule:converse_rtrancl_induct2)
+proof (induct rule:converse_rtrancl_induct2')
   case refl thus ?case .
 next
   case (step e s e' s') thus ?case
@@ -598,7 +598,7 @@ shows "!!T. \<lbrakk> P,E \<turnstile> s\<surd>; P,E,hp s \<turnstile> e:T \<rbr
     \<Longrightarrow> \<exists>T'. P \<turnstile> T' \<le> T \<and> P,E,hp s' \<turnstile> e':T'"
 (*<*)
 using Red
-proof (induct rule:converse_rtrancl_induct2)
+proof (induct rule:converse_rtrancl_induct2')
   case refl thus ?case by blast
 next
   case step thus ?case
@@ -650,7 +650,7 @@ assumes wf: "wf_J_prog P" and reds: "P \<turnstile> \<langle>e,s\<rangle> \<righ
 shows "\<And>T. P,E,s \<turnstile> e:T \<surd> \<Longrightarrow> \<exists>T'. P,E,s' \<turnstile> e':T' \<surd> \<and> P \<turnstile> T' \<le> T"
 (*<*)
 using reds
-proof (induct rule:converse_rtrancl_induct2)
+proof (induct rule:converse_rtrancl_induct2')
   case refl thus ?case by blast
 next
   case step thus ?case

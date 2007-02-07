@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: TF_JVM.thy,v 1.5 2006-08-31 12:11:46 webertj Exp $
+    ID:         $Id: TF_JVM.thy,v 1.6 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -218,8 +218,6 @@ lemma (in JVM_sl) eff_mono:
      prefer 2
      apply (clarsimp simp add: list_all2_lengthD)
    apply simp
-   apply (rule list_all2_dropI)
-   apply (simp add: fun_of_def)
   apply (clarsimp simp add: norm_eff_def lesubstep_type_def lesub_def iff del: sup_state_conv)
   apply (rule exI)
   apply (rule conjI2)

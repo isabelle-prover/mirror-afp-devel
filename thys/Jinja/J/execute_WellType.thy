@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/execute_WellType.thy
-    ID:         $Id: execute_WellType.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: execute_WellType.thy,v 1.2 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Christoph Petzinger
     Copyright   2004 Technische Universitaet Muenchen
 *)
@@ -9,37 +9,6 @@ header {* \isaheader{Code Generation For WellType} *}
 theory execute_WellType
 imports WellType Examples
 begin
-
-(* --- widens --- *)
-consts widens :: "'m prog \<Rightarrow> (ty list \<times> ty list) set"
-inductive "widens P"
-intros
-  widensNil:  "([], []) \<in> widens P"
-  widensCons: "P \<turnstile> T \<le> U \<Longrightarrow> (Ts, Us) \<in> widens P \<Longrightarrow> (T # Ts, U # Us) \<in> widens P"
-
-lemma widens_eq:
-  "(P \<turnstile> Ts [\<le>] Us) = ((Ts, Us) \<in> widens P)"
-proof
-  show "\<And> Us. P \<turnstile> Ts [\<le>] Us \<Longrightarrow> (Ts, Us) \<in> widens P"
-  proof (induct Ts)
-    case Nil
-    note NilT=Nil
-    thus ?case
-    proof (cases Us)
-      case Nil
-      with NilT show ?thesis by (simp add: widens.intros)
-    next
-      case (Cons u us)
-      with NilT show ?thesis by simp
-    qed
-  next
-    case (Cons t ts)
-    thus ?case by (auto simp add: widens.intros)
-  qed
-next
-  assume "(Ts, Us) \<in> widens P"
-  thus "P \<turnstile> Ts [\<le>] Us" by (induct Ts Us, auto simp add: fun_of_def)
-qed
 
 (* --- WTBinOp --- *)
 lemma WTBinOpEq:
@@ -126,7 +95,7 @@ lemmas [code ind] =
   WT_WTs.WTLAss
   WT_WTs.WTFAcc[unfolded sees_field_def, OF _ exI, OF _ conjI]
   WT_WTs.WTFAss[unfolded sees_field_def, OF _ exI, OF _ conjI]
-  WT_WTs.WTCall[unfolded Method_def, OF _ exI, OF _ conjI, simplified widens_eq]
+  WT_WTs.WTCall[unfolded Method_def, OF _ exI, OF _ conjI]
   WT_WTs.WTBlock
   WT_WTs.WTSeq
   WTCond1
@@ -138,7 +107,8 @@ lemmas [code ind] =
   WT_WTs.WTCons
 
 
-generate_code
+code_module WellType1
+contains
   test1 = "[], empty  \<turnstile> testExpr1 :: _"
   test2 = "[], empty  \<turnstile> testExpr2 :: _"
   test3 = "[], empty(''V'' \<mapsto> Integer)  \<turnstile> testExpr3 :: _"
@@ -146,30 +116,34 @@ generate_code
   test5 = "[classObject, (''C'',(''Object'',[(''F'',Integer)],[]))], empty  \<turnstile> testExpr5 :: _"
   test6 = "[classObject, classI], empty  \<turnstile> testExpr6 :: _"
 
-ML {* if Seq.hd test1 = Integer then () else error "" *}
-ML {* if Seq.hd test2 = Integer then () else error "" *}
-ML {* if Seq.hd test3 = Integer then () else error "" *}
-ML {* if Seq.hd test4 = Void then () else error "" *}
-ML {* if Seq.hd test5 = Void then () else error "" *}
-ML {* if Seq.hd test6 = Integer then () else error "" *}
+ML {* let open WellType1 in if Seq.hd test1 = Integer then () else error "" end *}
+ML {* let open WellType1 in if Seq.hd test2 = Integer then () else error "" end *}
+ML {* let open WellType1 in if Seq.hd test3 = Integer then () else error "" end *}
+ML {* let open WellType1 in if Seq.hd test4 = Void then () else error "" end *}
+ML {* let open WellType1 in if Seq.hd test5 = Void then () else error "" end *}
+ML {* let open WellType1 in if Seq.hd test6 = Integer then () else error "" end *}
 
-generate_code 
+code_module WellType2
+imports WellType1
+contains
   testmb_isNull     = "[classObject, classA], empty([this] [\<mapsto>] [Class ''A'']) \<turnstile> mb_isNull :: _"
   testmb_add        = "[classObject, classA], empty([this,''i''] [\<mapsto>] [Class ''A'',Integer]) \<turnstile> mb_add :: _"
   testmb_mult_cond  = "[classObject, classA], empty([this,''j''] [\<mapsto>] [Class ''A'',Integer]) \<turnstile> mb_mult_cond :: _"
   testmb_mult_block = "[classObject, classA], empty([this,''i'',''j'',''temp''] [\<mapsto>] [Class ''A'',Integer,Integer,Integer]) \<turnstile> mb_mult_block :: _"
   testmb_mult       = "[classObject, classA], empty([this,''i'',''j''] [\<mapsto>] [Class ''A'',Integer,Integer]) \<turnstile> mb_mult :: _"
 
-ML {* if Seq.hd testmb_isNull = Boolean then () else error "" *}
-ML {* if Seq.hd testmb_add = Integer then () else error "" *}
-ML {* if Seq.hd testmb_mult_cond = Boolean then () else error "" *}
-ML {* if Seq.hd testmb_mult_block = Void then () else error "" *}
-ML {* if Seq.hd testmb_mult = Integer then () else error "" *}
+ML {* let open WellType1 WellType2 in if Seq.hd testmb_isNull = Boolean then () else error "" end *}
+ML {* let open WellType1 WellType2 in if Seq.hd testmb_add = Integer then () else error "" end *}
+ML {* let open WellType1 WellType2 in if Seq.hd testmb_mult_cond = Boolean then () else error "" end *}
+ML {* let open WellType1 WellType2 in if Seq.hd testmb_mult_block = Void then () else error "" end *}
+ML {* let open WellType1 WellType2 in if Seq.hd testmb_mult = Integer then () else error "" end *}
 
-generate_code
+code_module WellType3
+imports WellType1
+contains
   test = "[classObject, classA], empty \<turnstile> testExpr_ClassA :: _"
 
-ML {* if Seq.hd test = Integer then () else error "" *}
+ML {* let open WellType1 WellType3 in if Seq.hd test = Integer then () else error "" end *}
 
 
 end

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Err.thy
-    ID:         $Id: Err.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Err.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -165,7 +165,7 @@ lemma err_semilat_eslI [intro, simp]:
 lemma acc_err [simp, intro!]:  "acc r \<Longrightarrow> acc(le r)"
 (*<*)
 apply (unfold acc_def lesub_def le_def lesssub_def)
-apply (simp add: wf_eq_minimal split: err.split)
+apply (simp add: wfP_eq_minimal split: err.split)
 apply clarify
 apply (case_tac "Err : Q")
  apply blast

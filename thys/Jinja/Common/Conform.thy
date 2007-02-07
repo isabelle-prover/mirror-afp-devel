@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Conform.thy
-    ID:         $Id: Conform.thy,v 1.3 2006-11-17 01:28:44 makarius Exp $
+    ID:         $Id: Conform.thy,v 1.4 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -114,7 +114,7 @@ lemma confs_widens [trans]: "\<lbrakk>P,h \<turnstile> vs [:\<le>] Ts; P \<turns
   apply (rule list_all2_trans)
     apply (rule conf_widen, assumption, assumption)
    apply assumption
-  apply (fold fun_of_def, assumption)
+  apply assumption
   done
 (*>*)
 

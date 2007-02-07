@@ -1,32 +1,41 @@
 (*  Title:      Jinja/J/execute_Bigstep.thy
-    ID:         $Id: execute_Bigstep.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: execute_Bigstep.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Code Generation For BigStep} *}
 
-theory execute_BigStep imports BigStep Examples begin
+theory execute_Bigstep imports BigStep Examples EfficientNat begin
 
-consts map_val :: "(expr list \<times> val list) set"
+consts_code
+  "new_Addr"
+   ("\<module>new'_addr {* 0::nat *} {* Suc *}
+               {* %x. case x of None => True | Some y => False *} {* Some *}")
+attach {*
+fun new_addr z s alloc some hp =
+  let fun nr i = if alloc (hp i) then some i else nr (s i);
+  in nr z end;
+*}
 
-inductive map_val
-intros
-  Nil: "([], []) \<in> map_val"
-  Cons: "(xs, ys) \<in> map_val \<Longrightarrow> (Val y # xs, y # ys) \<in> map_val"
+  "arbitrary" ("(error \"arbitrary\")")
 
-consts map_val2 :: "(expr list \<times> val list \<times> expr list) set"
 
-inductive map_val2
-intros
-  Nil: "([], [], []) \<in> map_val2"
-  Cons: "(xs, ys, zs) \<in> map_val2 \<Longrightarrow> (Val y # xs, y # ys, zs) \<in> map_val2"
-  Throw: "(throw e # xs, [], throw e # xs) \<in> map_val2"
+inductive2 map_val :: "expr list \<Rightarrow> val list \<Rightarrow> bool"
+where
+  Nil: "map_val [] []"
+| Cons: "map_val xs ys \<Longrightarrow> map_val (Val y # xs) (y # ys)"
 
-theorem map_val_conv: "(xs = map Val ys) = ((xs, ys) \<in> map_val)"
+inductive2 map_val2 :: "expr list \<Rightarrow> val list \<Rightarrow> expr list \<Rightarrow> bool"
+where
+  Nil: "map_val2 [] [] []"
+| Cons: "map_val2 xs ys zs \<Longrightarrow> map_val2 (Val y # xs) (y # ys) zs"
+| Throw: "map_val2 (throw e # xs) [] (throw e # xs)"
+
+theorem map_val_conv: "(xs = map Val ys) = map_val xs ys"
 (*<*)
 proof -
-  have "\<And>ys. xs = map Val ys \<Longrightarrow> (xs, ys) \<in> map_val"
+  have "\<And>ys. xs = map Val ys \<Longrightarrow> map_val xs ys"
     apply (induct xs type:list)
     apply (case_tac ys)
     apply simp
@@ -39,17 +48,17 @@ proof -
     apply (rule map_val.Cons)
     apply simp
     done
-  moreover have "(xs, ys) \<in> map_val \<Longrightarrow> xs = map Val ys"
+  moreover have "map_val xs ys \<Longrightarrow> xs = map Val ys"
     by (erule map_val.induct) simp+
   ultimately show ?thesis ..
 qed
 (*>*)
 
 theorem map_val2_conv:
- "(xs = map Val ys @ throw e # zs) = ((xs, ys, throw e # zs) \<in> map_val2)"
+ "(xs = map Val ys @ throw e # zs) = map_val2 xs ys (throw e # zs)"
 (*<*)
 proof -
-  have "\<And>ys. xs = map Val ys @ throw e # zs \<Longrightarrow> (xs, ys, throw e # zs) \<in> map_val2"
+  have "\<And>ys. xs = map Val ys @ throw e # zs \<Longrightarrow> map_val2 xs ys (throw e # zs)"
     apply (induct xs type:list)
     apply (case_tac ys)
     apply simp
@@ -62,14 +71,14 @@ proof -
     apply (rule map_val2.Cons)
     apply simp
     done
-  moreover have "(xs, ys, throw e # zs) \<in> map_val2 \<Longrightarrow> xs = map Val ys @ throw e # zs"
+  moreover have "map_val2 xs ys (throw e # zs) \<Longrightarrow> xs = map Val ys @ throw e # zs"
     by (erule map_val2.induct) simp+
   ultimately show ?thesis ..
 qed
 (*>*)
 
 lemma CallNull2:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,s\<^isub>2\<rangle>; (evs,vs) : map_val \<rbrakk>
+  "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>null,s\<^isub>1\<rangle>;  P \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,s\<^isub>2\<rangle>; map_val evs vs \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<Rightarrow> \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
 apply(rule CallNull, assumption+)
 apply(simp add: map_val_conv[symmetric])
@@ -78,7 +87,7 @@ done
 
 lemma CallParamsThrow2:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,s\<^isub>2\<rangle>;
-     (evs, vs, throw ex # es') : map_val2 \<rbrakk>
+     map_val2 evs vs (throw ex # es') \<rbrakk>
    \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw ex,s\<^isub>2\<rangle>"
 apply(rule eval_evals.CallParamsThrow, assumption+)
 apply(simp add: map_val2_conv[symmetric])
@@ -87,7 +96,7 @@ done
 
 lemma Call2:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>addr a,s\<^isub>1\<rangle>;  P \<turnstile> \<langle>ps,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>evs,(h\<^isub>2,l\<^isub>2)\<rangle>;
-     (evs,vs) : map_val;
+     map_val evs vs;
      h\<^isub>2 a = Some(C,fs);  P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D;
      length vs = length pns;  l\<^isub>2' = [this\<mapsto>Addr a, pns[\<mapsto>]vs];
      P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle> \<rbrakk>
@@ -108,7 +117,7 @@ lemmas [code ind] =
  eval_evals.FAss eval_evals.FAssNull
  eval_evals.FAssThrow1 eval_evals.FAssThrow2
  eval_evals.CallObjThrow CallNull2 CallParamsThrow2
- Call2[simplified Method_def, OF _ _ _ _ exI,OF _ _ _ _ conjI,no_vars]
+ Call2[simplified Method_def, OF _ _ _ _ exI,OF _ _ _ _ conjI]
  eval_evals.Block
  eval_evals.Seq eval_evals.SeqThrow
  eval_evals.CondT eval_evals.CondF eval_evals.CondThrow
@@ -120,7 +129,8 @@ lemmas [code ind] =
  eval_evals.Nil eval_evals.Cons eval_evals.ConsThrow
 
 
-generate_code
+code_module Bigstep1
+contains
  test1 = "[] \<turnstile> \<langle>testExpr1,(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
  test2 = "[] \<turnstile> \<langle>testExpr2,(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
  test3 = "[] \<turnstile> \<langle>testExpr3,(empty,empty(''V''\<mapsto>Intg 77))\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
@@ -134,43 +144,63 @@ generate_code
  N = "''N''"
  L = "''L''"
 
-ML {* if fst (Seq.hd test1) = Val (Intg 5) then () else error "" *}
-ML {* if fst (Seq.hd test2) = Val (Intg 11) then () else error "" *}
-ML {* if fst (Seq.hd test3) = Val (Intg 83) then () else error "" *}
-ML {* if (let val (_,(h,l)) = Seq.hd test4 in l V end) = Some (Intg 6) then () else error "" *}
-ML {* if (let val (_,(h,l)) = Seq.hd test5
-              val Some(c,fs) = h(Suc id_0)
-              val Some(obj,_) = h(id_0)
+ML {* let open Bigstep1 in if fst (Seq.hd test1) = Val (Intg 5) then () else error "" end *}
+ML {* let open Bigstep1 in if fst (Seq.hd test2) = Val (Intg 11) then () else error "" end *}
+ML {* let open Bigstep1 in if fst (Seq.hd test3) = Val (Intg 83) then () else error "" end *}
+ML {*
+let open Bigstep1 in
+  if (let val (_,(h,l)) = Seq.hd test4 in l V end) = Some (Intg 6) then () else error ""
+end
+*}
+ML {*
+let open Bigstep1 in
+  if (let val (_,(h,l)) = Seq.hd test5
+              val Some(c,fs) = h 1
+              val Some(obj,_) = h 0
           in (C=c,fs(F,C),[obj ,c])end)=
     (true, Some (Intg 42), [["O","b","j","e","c","t"], ["C"]])
-    then () else error "" *}
-ML {* if fst (Seq.hd test6) = Val (Intg 160) then () else error "" *}
+    then () else error ""
+end
+*}
+ML {* let open Bigstep1 in if fst (Seq.hd test6) = Val (Intg 160) then () else error "" end *}
 
-generate_code
+code_module Bigstep2
+imports Bigstep1
+contains
  test7 = "[classObject, classL] \<turnstile> \<langle>testExpr_BuildList, (empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>";
 
-ML {* if (let val (_,(h,_)) = Seq.hd test7
-              val Some(_,fs1) = h(id_0)
-              val Some(_,fs2) = h(Suc id_0)
-              val Some(_,fs3) = h(Suc(Suc id_0))
-              val Some(_,fs4) = h(Suc(Suc(Suc id_0)))
+ML {*
+let open Bigstep1 Bigstep2 in
+  if (let val (_,(h,_)) = Seq.hd test7
+              val Some(_,fs1) = h 0
+              val Some(_,fs2) = h 1
+              val Some(_,fs3) = h 2
+              val Some(_,fs4) = h 3
           in [(fs1(F,L), fs1(N,L)), (fs2(F,L), fs2(N,L)),
               (fs3(F,L), fs3(N,L)), (fs4(F,L), fs4(N,L))] end)=
-      [(Some (Intg 1), Some (Addr (Suc id_0))),
-       (Some (Intg 2), Some (Addr (Suc (Suc id_0)))),
-       (Some (Intg 3), Some (Addr (Suc (Suc (Suc id_0))))),
-       (Some (Intg 4), Some Null)] then () else error "" *}
+      [(Some (Intg 1), Some (Addr 1)),
+       (Some (Intg 2), Some (Addr 2)),
+       (Some (Intg 3), Some (Addr 3)),
+       (Some (Intg 4), Some Null)] then () else error ""
+end
+*}
 
-generate_code
+code_module Bigstep3
+imports Bigstep1
+contains
  test8 = "[classObject, classA] \<turnstile> \<langle>testExpr_ClassA, (empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
  i="''int''"
  t= "''test''"
  A="''A''"
 
-ML {* if (let val (_,(h,l)) = Seq.hd test8
-              val Some(_,fs1) = h(id_0)
-              val Some(_,fs2) = h(Suc id_0)
+ML {*
+let open Bigstep1 Bigstep3 in
+  if (let val (_,(h,l)) = Seq.hd test8
+              val Some(_,fs1) = h 0
+              val Some(_,fs2) = h 1
           in [(fs1(i,A),fs1(t,A)), (fs2(i,A),fs2(t,A))] end)=
-      [(Some (Intg 10), Some Null), (Some (Intg 50), Some Null)] then () else error "" *}
+      [(Some (Intg 10), Some Null), (Some (Intg 50), Some Null)] then () else error ""
+end
+*}
 
 end

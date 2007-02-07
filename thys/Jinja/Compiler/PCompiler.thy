@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/PCompiler.thy
-    ID:         $Id: PCompiler.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: PCompiler.thy,v 1.2 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -141,7 +141,7 @@ done
 
 lemma [simp]: "subcls1(compP f P) = subcls1 P"
 (*<*)
-by(fastsimp simp add: is_class_def compC_def intro:subcls1I dest:subcls1D)
+by(fastsimp simp add: is_class_def compC_def intro:subcls1I order_antisym dest:subcls1D)
 (*>*)
 
 

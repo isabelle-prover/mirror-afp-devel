@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellType.thy
-    ID:         $Id: WellType.thy,v 1.3 2006-05-27 15:32:27 makarius Exp $
+    ID:         $Id: WellType.thy,v 1.4 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -13,38 +13,27 @@ begin
 types 
   env  = "vname \<rightharpoonup> ty"
 
-consts
-  WT :: "J_prog \<Rightarrow> (env \<times> expr      \<times> ty     ) set"
-  WTs:: "J_prog \<Rightarrow> (env \<times> expr list \<times> ty list) set"
-
-(*<*)
-syntax (xsymbols)
+inductive2
   WT :: "[J_prog,env, expr     , ty     ] \<Rightarrow> bool"
          ("_,_ \<turnstile> _ :: _"   [51,51,51]50)
-  WTs:: "[J_prog,env, expr list, ty list] \<Rightarrow> bool"
+  and WTs :: "[J_prog,env, expr list, ty list] \<Rightarrow> bool"
          ("_,_ \<turnstile> _ [::] _" [51,51,51]50)
-(*>*)
-
-translations
-  "P,E \<turnstile> e :: T"  ==  "(E,e,T) \<in> WT P"
-  "P,E \<turnstile> es [::] Ts"  ==  "(E,es,Ts) \<in> WTs P"
+  for P :: J_prog
+where
   
-inductive "WT P" "WTs P"
-intros
-  
-WTNew:
+  WTNew:
   "is_class P C  \<Longrightarrow>
   P,E \<turnstile> new C :: Class C"
 
-WTCast:
+| WTCast:
   "\<lbrakk> P,E \<turnstile> e :: Class D;  is_class P C;  P \<turnstile> C \<preceq>\<^sup>* D \<or> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> Cast C e :: Class C"
 
-WTVal:
+| WTVal:
   "typeof v = Some T \<Longrightarrow>
   P,E \<turnstile> Val v :: T"
 
-WTVar:
+| WTVar:
   "E V = Some T \<Longrightarrow>
   P,E \<turnstile> Var V :: T"
 (*
@@ -54,61 +43,61 @@ WTBinOp:
                | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T"
 *)
-WTBinOpEq:
+| WTBinOpEq:
   "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: T\<^isub>1;  P,E \<turnstile> e\<^isub>2 :: T\<^isub>2; P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>Eq\<guillemotright> e\<^isub>2 :: Boolean"
 
-WTBinOpAdd:
+| WTBinOpAdd:
   "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Integer;  P,E \<turnstile> e\<^isub>2 :: Integer \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>Add\<guillemotright> e\<^isub>2 :: Integer"
 
-WTLAss:
+| WTLAss:
   "\<lbrakk> E V = Some T;  P,E \<turnstile> e :: T';  P \<turnstile> T' \<le> T;  V \<noteq> this \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> V:=e :: Void"
 
-WTFAcc:
+| WTFAcc:
   "\<lbrakk> P,E \<turnstile> e :: Class C;  P \<turnstile> C sees F:T in D \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<bullet>F{D} :: T"
 
-WTFAss:
+| WTFAss:
   "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Class C;  P \<turnstile> C sees F:T in D;  P,E \<turnstile> e\<^isub>2 :: T';  P \<turnstile> T' \<le> T \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :: Void"
 
-WTCall:
+| WTCall:
   "\<lbrakk> P,E \<turnstile> e :: Class C;  P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
      P,E \<turnstile> es [::] Ts';  P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<bullet>M(es) :: T"
 
-WTBlock:
+| WTBlock:
   "\<lbrakk> is_type P T;  P,E(V \<mapsto> T) \<turnstile> e :: T' \<rbrakk>
   \<Longrightarrow>  P,E \<turnstile> {V:T; e} :: T'"
 
-WTSeq:
+| WTSeq:
   "\<lbrakk> P,E \<turnstile> e\<^isub>1::T\<^isub>1;  P,E \<turnstile> e\<^isub>2::T\<^isub>2 \<rbrakk>
   \<Longrightarrow>  P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
-WTCond:
+| WTCond:
   "\<lbrakk> P,E \<turnstile> e :: Boolean;  P,E \<turnstile> e\<^isub>1::T\<^isub>1;  P,E \<turnstile> e\<^isub>2::T\<^isub>2;
      P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1;  P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<longrightarrow> T = T\<^isub>2;  P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<longrightarrow> T = T\<^isub>1 \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
 
-WTWhile:
+| WTWhile:
   "\<lbrakk> P,E \<turnstile> e :: Boolean;  P,E \<turnstile> c::T \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> while (e) c :: Void"
 
-WTThrow:
+| WTThrow:
   "P,E \<turnstile> e :: Class C  \<Longrightarrow> 
   P,E \<turnstile> throw e :: Void"
 
-WTTry:
+| WTTry:
   "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: T;  P,E(V \<mapsto> Class C) \<turnstile> e\<^isub>2 :: T; is_class P C \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> try e\<^isub>1 catch(C V) e\<^isub>2 :: T"
 
 -- "well-typed expression lists"
 
-WTNil:
+| WTNil:
   "P,E \<turnstile> [] [::] []"
 
-WTCons:
+| WTCons:
   "\<lbrakk> P,E \<turnstile> e :: T;  P,E \<turnstile> es [::] Ts \<rbrakk>
   \<Longrightarrow>  P,E \<turnstile> e#es [::] T#Ts"
 
@@ -127,14 +116,14 @@ lemmas WT_WTs_induct = WT_WTs.induct [split_format (complete)]
 lemma [iff]: "(P,E \<turnstile> [] [::] Ts) = (Ts = [])"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WT_WTs.elims)
+apply (auto elim: WTs.cases)
 done
 (*>*)
 
 lemma [iff]: "(P,E \<turnstile> e#es [::] T#Ts) = (P,E \<turnstile> e :: T \<and> P,E \<turnstile> es [::] Ts)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WT_WTs.elims)
+apply (auto elim: WTs.cases)
 done
 (*>*)
 
@@ -142,7 +131,7 @@ lemma [iff]: "(P,E \<turnstile> (e#es) [::] Ts) =
   (\<exists>U Us. Ts = U#Us \<and> P,E \<turnstile> e :: U \<and> P,E \<turnstile> es [::] Us)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WT_WTs.elims)
+apply (auto elim: WTs.cases)
 done
 (*>*)
 
@@ -166,33 +155,33 @@ done
 lemma [iff]: "P,E \<turnstile> Val v :: T = (typeof v = Some T)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WT_WTs.elims)
+apply (auto elim: WT.cases)
 done
 (*>*)
 
 lemma [iff]: "P,E \<turnstile> Var V :: T = (E V = Some T)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WT_WTs.elims)
+apply (auto elim: WT.cases)
 done
 (*>*)
 
 lemma [iff]: "P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2 = (\<exists>T\<^isub>1. P,E \<turnstile> e\<^isub>1::T\<^isub>1 \<and> P,E \<turnstile> e\<^isub>2::T\<^isub>2)"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WT_WTs.elims)
+apply (auto elim: WT.cases)
 done
 (*>*)
 
 lemma [iff]: "(P,E \<turnstile> {V:T; e} :: T') = (is_type P T \<and> P,E(V\<mapsto>T) \<turnstile> e :: T')"
 (*<*)
 apply(rule iffI)
-apply (auto elim: WT_WTs.elims)
+apply (auto elim: WT.cases)
 done
 (*>*)
 
 (*<*)
-inductive_cases WT_elim_cases[elim!]:
+inductive_cases2 WT_elim_cases[elim!]:
   "P,E \<turnstile> V :=e :: T"
   "P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
   "P,E \<turnstile> while (e) c :: T"

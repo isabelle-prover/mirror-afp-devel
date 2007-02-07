@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: JVM_SemiType.thy,v 1.4 2006-11-17 01:28:44 makarius Exp $
+    ID:         $Id: JVM_SemiType.thy,v 1.5 2007-02-07 17:19:08 stefanberghofer Exp $
     Author:     Gerwin Klein
     Copyright   2000 TUM
 
@@ -164,7 +164,6 @@ lemma any_OK_conv [iff]:
   "P \<turnstile> X \<le>\<^sub>\<top> OK T' = (\<exists>T. X = OK T \<and> P \<turnstile> T \<le> T')"
 (*<*)
   apply (unfold sup_ty_opt_def) 
-  apply (unfold fun_of_def)
   apply (rule le_OK_conv [simplified lesub_def])
   done  
 (*>*)
@@ -173,7 +172,6 @@ lemma OK_any_conv:
  "P \<turnstile> OK T \<le>\<^sub>\<top> X = (X = Err \<or> (\<exists>T'. X = OK T' \<and> P \<turnstile> T \<le> T'))"
 (*<*)
   apply (unfold sup_ty_opt_def) 
-  apply (unfold fun_of_def)
   apply (rule OK_le_conv [simplified lesub_def])
   done
 (*>*)
@@ -203,10 +201,7 @@ lemma sup_loc_def:
 lemma sup_loc_widens_conv [iff]:
   "P \<turnstile> map OK Ts [\<le>\<^sub>\<top>] map OK Ts' = P \<turnstile> Ts [\<le>] Ts'"
 (*<*)
-  apply (simp add: list_all2_map1 list_all2_map2)
-  apply (fold fun_of_def)
-  apply (rule refl)
-  done 
+  by (simp add: list_all2_map1 list_all2_map2)
 (*>*)
 
 
