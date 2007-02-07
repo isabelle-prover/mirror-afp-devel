@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Subtype.thy,v 1.5 2006-05-18 14:19:23 lsf37 Exp $
+    ID:          $Id: Subtype.thy,v 1.6 2007-02-07 17:21:11 stefanberghofer Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -133,7 +133,7 @@ This way, these lemmas will be automatically used in subsequent proofs.
 lemma acyclic_direct_subtype: "acyclic direct_subtype"
 proof (clarsimp simp add: acyclic_def)
   fix x show "x \<prec> x \<Longrightarrow> False"
-  by (cases x) (fastsimp elim: trancl.elims simp add: direct_subtype_def)+
+  by (cases x) (fastsimp elim: tranclE simp add: direct_subtype_def)+
      (* takes a very long time to calculate *)
 qed
 
@@ -223,7 +223,7 @@ lemmas subtype_defs = le_Javatype_def less_Javatype_def
                       direct_subtype[THEN r_into_rtrancl]
 *)
 lemmas subtype_ok_simps = subtype_defs 
-lemmas subtype_wrong_elims = rtrancl.elims
+lemmas subtype_wrong_elims = rtranclE
 
 text {* During verification we will often have to solve the goal that one type
 widens to the other. So we equip the simplifier with a special solver-tactic.

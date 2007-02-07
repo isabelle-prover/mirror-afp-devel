@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJAux.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: FJAux.thy,v 1.5 2007-02-07 17:26:12 stefanberghofer Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -463,7 +463,7 @@ lemma subexpr_typing:
   assumes "e1 \<in> subexprs(e0)"
   shows "\<And>C. \<lbrakk> CT;empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;empty \<turnstile> e1 : D"
   using prems 
-by(induct rule:rtrancl.induct,auto,force simp add:isubexpr_typing)
+by(induct rule:rtrancl_induct,auto,force simp add:isubexpr_typing)
 
 lemma isubexpr_reduct: 
   assumes "d1 \<in> isubexprs(e1)"
@@ -479,7 +479,7 @@ lemma subexpr_reduct:
   assumes "d1 \<in> subexprs(e1)"
   shows "\<And>d2. \<lbrakk> CT \<turnstile> d1 \<rightarrow> d2 \<rbrakk> \<Longrightarrow> \<exists>e2. CT \<turnstile> e1 \<rightarrow> e2"
 using prems 
-proof(induct rule:rtrancl.induct, 
+proof(induct rule:rtrancl_induct, 
       auto, force simp add: isubexpr_reduct)
 qed
 

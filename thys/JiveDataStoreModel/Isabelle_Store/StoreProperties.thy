@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: StoreProperties.thy,v 1.5 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: StoreProperties.thy,v 1.6 2007-02-07 17:22:18 stefanberghofer Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -183,7 +183,7 @@ proof -
   also from isArrLen have I: "ltype l = IntgT"
     by (cases l) simp_all
   finally show ?thesis
-    by (auto elim: rtrancl.elims simp add: le_Javatype_def subtype_defs)
+    by (auto elim: rtranclE simp add: le_Javatype_def subtype_defs)
 qed
 
 lemma access_alloc' [simp]:
