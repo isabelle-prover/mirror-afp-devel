@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Annotate.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Annotate.thy,v 1.7 2007-02-07 08:13:59 wasserra Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -58,7 +58,7 @@ AnnoFAss: "\<lbrakk> P,E \<turnstile> e1 \<leadsto> e1';  P,E \<turnstile> e2 \<
           \<Longrightarrow> P,E \<turnstile> e1\<bullet>F{[]} := e2 \<leadsto> e1'\<bullet>F{Cs} := e2'"
 AnnoCall:
   "\<lbrakk> P,E \<turnstile> e \<leadsto> e';  P,E \<turnstile> es [\<leadsto>] es' \<rbrakk>
-   \<Longrightarrow> P,E \<turnstile> Call e M es \<leadsto> Call e' M es'"
+   \<Longrightarrow> P,E \<turnstile> Call e Copt M es \<leadsto> Call e' Copt M es'"
 AnnoBlock:
   "P,E(V \<mapsto> T) \<turnstile> e \<leadsto> e'  \<Longrightarrow>  P,E \<turnstile> {V:T; e} \<leadsto> {V:T; e'}"
 AnnoComp: "\<lbrakk> P,E \<turnstile> e1 \<leadsto> e1';  P,E \<turnstile> e2 \<leadsto> e2' \<rbrakk>
