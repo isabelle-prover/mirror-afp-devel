@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalDef.thy,v 1.3 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: OrdinalDef.thy,v 1.4 2007-02-14 09:08:57 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -249,10 +249,10 @@ done
 
 instance ordinal :: wellorder
  apply (intro_classes)
+       apply (rule ordinal_order_less_le)
       apply (rule ordinal_order_refl)
      apply (rule ordinal_order_trans, assumption+)
     apply (rule ordinal_order_antisym, assumption+)
-   apply (rule ordinal_order_less_le)
   apply (rule ordinal_linear)
  apply (rule ordinal_wf)
 done
