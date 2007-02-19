@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.17 2007-02-17 15:20:16 lsf37 Exp $
+# $Id: regression,v 1.18 2007-02-19 15:20:20 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -22,7 +22,8 @@ LOG=~/afp-log/afp-test
 MASTERLOG=~/afp-log/afp-test.log
 REPORT=~/afp-log/report
 
-SETTINGSDIR=~/settings
+SHORT=at-poly
+SETTINGS=~/settings/$SHORT
 
 TMP=/tmp/regression.mail.tmp
 while [ -e $TMP ]; do TMP=$TMP.x; done
@@ -64,8 +65,6 @@ if [ "$1" == "-" ]; then
   AFP_VER="development"
   WORKING_COPY=$WORKING_COPY/devel
   ISATOOL=$ISABELLE_DEVEL/bin/isatool
-  SHORT=at-poly
-  SETTINGS=$SETTINGSDIR/$SHORT
     
   ERRORDIR=$HOME/var
   ERRORLOG=$ERRORDIR/error.log
@@ -87,8 +86,6 @@ else
   ISATOOL=$ISABELLE_RELEASES/$1/bin/isatool
   LOG=$LOG-$1-$DATE.log
   REPORT=$REPORT-$1
-  SHORT=at-poly-e 
-  SETTINGS=$SETTINGSDIR/$SHORT
 fi
 
 . $WORKING_COPY/admin/main-config || fail "could not read main-config."
