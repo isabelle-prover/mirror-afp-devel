@@ -9,7 +9,7 @@ Real/Rational.thy. Any volunteers? (TN) *)
 header {*The Rational Numbers*}
 
 theory Rats
-imports Complex
+imports Complex_Main
 begin
 
 text{*A dense and countable subset of the @{text real} type was needed for

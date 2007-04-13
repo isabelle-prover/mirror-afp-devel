@@ -92,8 +92,8 @@ theorem assumes mon_conv: "x\<up>(y::real)"
 proof -
   from mon_conv have "(\<lambda>m. x (m+i)) ----> y" 
     by (simp add: real_mon_conv limseq_shift_iff)
-  also from mon_conv have "\<forall>m. x i \<le> x (m+i)" by (simp add: mon_conv_mon) 
-  ultimately show ?thesis by (rule LIMSEQ_le_const)
+  also from mon_conv have "\<forall>m\<ge>0. x i \<le> x (m+i)" by (simp add: mon_conv_mon)
+  ultimately show ?thesis by (rule LIMSEQ_le_const[OF _ exI[where x=0]])
 qed
 
 theorem assumes mon_conv: "x\<up>(y::('a \<Rightarrow> real))"
