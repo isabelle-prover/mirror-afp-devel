@@ -11,6 +11,7 @@ use_thy "ThatTheory";
 *)
 
 no_document use_thy "FuncSet";
+no_document use_thy "Binomial";
 no_document use_thy "Zorn";
 use_thy "Algebra9";
 

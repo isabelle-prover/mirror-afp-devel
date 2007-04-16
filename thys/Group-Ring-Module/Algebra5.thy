@@ -1,729 +1,607 @@
-(**       Algebra5
+
+(**       Algebra5  
                             author Hidetsune Kobayashi
                             Group You Santo
                             Department of Mathematics
                             Nihon University
-                            hikoba at math.cst.nihon-u.ac.jp
+                            h_coba@math.cst.nihon-u.ac.jp
                             May 3, 2004.
+                            April 6, 2007 (revised).
 
   chapter 4.  Ring theory (continued)
-    section 6.   operation of ideals (continued)
+    section 6.   operation of ideals
     section 7.   direct product1, general case
     section 8.   Chinese remainder theorem
     section 9.   addition of finite elements of a ring and ideal_multiplication
     section 10.  extension and contraction
-
-  chapter 5. Modules
-    section 1.   Basic properties of Modules
-    section 2.   injective hom, surjective hom, bijective hom and iverse hom
+    section 11.  complete system of representatives
+    section 12.  Polynomial ring 
+    section 13.  addition and multiplication of polyn_exprs
+    section 14.  the degree of a polynomial
    **)
 
-theory Algebra5
-imports Algebra4
-begin
+theory Algebra5 imports Algebra4 begin
 
-constdefs
- coprime_ideals::"[('a, 'm) RingType_scheme, 'a set, 'a set] \<Rightarrow> bool"
-  "coprime_ideals R A B == A \<^bold>+\<^sub>R B = carrier R"
+section "6. Operation of ideals"
 
-lemma coprime_int_prod:"\<lbrakk> ring R; ideal R A; ideal R B; coprime_ideals R A B\<rbrakk>
-       \<Longrightarrow>   A \<inter> B = A \<diamondsuit>\<^sub>R B"
-apply (simp add:coprime_ideals_def)
+lemma (in Ring) ideal_sumTr1:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrightarrow> 
+          A \<minusplus> B = \<Inter> {J. ideal R J \<and> (A \<union> B) \<subseteq> J}"
+apply (frule sum_ideals[of "A" "B"], assumption,
+       frule sum_ideals_la1[of "A" "B"], assumption,
+       frule sum_ideals_la2[of "A" "B"], assumption)
 apply (rule equalityI)
- prefer 2
- (**  A \<diamondsuit>\<^sub>R B \<subseteq> A \<inter> B **)
-apply (rule subsetI)
- apply (simp add:ideal_prod_def)
- apply (subgoal_tac "{x. \<exists>i\<in>A. \<exists>j\<in>B. x =  i \<cdot>\<^sub>R j} \<subseteq> A") apply simp
- apply (subgoal_tac "{x. \<exists>i\<in>A. \<exists>j\<in>B. x =  i \<cdot>\<^sub>R j} \<subseteq> B") apply simp
- apply (rule subsetI) apply (simp add:CollectI)
- apply (subgoal_tac "\<forall>i\<in>A. \<forall>j\<in>B. xa =  i \<cdot>\<^sub>R j \<longrightarrow> xa \<in> B")
- apply blast apply (thin_tac "\<exists>i\<in>A. \<exists>j\<in>B. xa =  i \<cdot>\<^sub>R j")
- apply (rule ballI) apply (rule ballI) apply (rule impI)
-apply (frule ideal_subset, assumption+)
-apply (simp add:ideal_ring_multiple)
- apply (thin_tac"\<forall>xa. ideal R xa \<and>{x. \<exists>i\<in>A. \<exists>j\<in>B. x = i \<cdot>\<^sub>R j}\<subseteq>xa \<longrightarrow> x \<in> xa")
- apply (rule subsetI) apply (simp add:CollectI)
- apply (subgoal_tac "\<forall>i\<in>A. \<forall>j\<in>B. xa =  i \<cdot>\<^sub>R j \<longrightarrow> xa \<in> A")
- apply blast apply (thin_tac " \<exists>i\<in>A. \<exists>j\<in>B. xa =  i \<cdot>\<^sub>R j")
- apply (rule ballI) apply (rule ballI) apply (rule impI) apply (rotate_tac 2)
-apply (frule ideal_subset, assumption+)
- apply (simp add:ideal_ring_multiple1)
- (**  A \<inter> B \<subseteq> A \<diamondsuit>\<^sub>R B **)
-apply (subgoal_tac "carrier R \<diamondsuit>\<^sub>R (A \<inter> B) = A \<inter> B")
-apply (subgoal_tac "carrier R =  A \<^bold>+\<^sub>R B")
- apply (thin_tac "A \<^bold>+\<^sub>R B = carrier R")
-apply (subgoal_tac "carrier R \<diamondsuit>\<^sub>R (A \<inter> B) = (A \<inter> B) \<diamondsuit>\<^sub>R A \<^bold>+\<^sub>R (A \<inter> B) \<diamondsuit>\<^sub>R B")
-apply (subgoal_tac " (A \<inter> B) \<diamondsuit>\<^sub>R A \<^bold>+\<^sub>R (A \<inter> B) \<diamondsuit>\<^sub>R B \<subseteq> A \<diamondsuit>\<^sub>R B")
-apply simp
-apply (subgoal_tac "(A \<inter> B) \<diamondsuit>\<^sub>R A \<subseteq> A \<diamondsuit>\<^sub>R B")
-apply (subgoal_tac "(A \<inter> B) \<diamondsuit>\<^sub>R B \<subseteq> A \<diamondsuit>\<^sub>R B")
-apply (rule sum_ideals_cont, assumption+)
- apply (rule ideal_prod_ideal, assumption+)
- apply (rule int_ideal, assumption)
- apply assumption+
-apply (rule ideal_prod_ideal, assumption+)
- apply (simp add:int_ideal) apply assumption
- apply (simp add:ideal_prod_ideal)
- apply (rule subsetI)
- apply (thin_tac " carrier R \<diamondsuit>\<^sub>R (A \<inter> B) = A \<inter> B")
- apply (thin_tac "carrier R = A \<^bold>+\<^sub>R B")
- apply (thin_tac "carrier R \<diamondsuit>\<^sub>R (A \<inter> B) = (A \<inter> B) \<diamondsuit>\<^sub>R A \<^bold>+\<^sub>R (A \<inter> B) \<diamondsuit>\<^sub>R B")
- apply (simp add:subsetD)
- apply (thin_tac " carrier R \<diamondsuit>\<^sub>R (A \<inter> B) = A \<inter> B")
- apply (thin_tac "carrier R = A \<^bold>+\<^sub>R B")
- apply (thin_tac "carrier R \<diamondsuit>\<^sub>R (A \<inter> B) = (A \<inter> B) \<diamondsuit>\<^sub>R A \<^bold>+\<^sub>R (A \<inter> B) \<diamondsuit>\<^sub>R B")
- apply assumption
- apply (thin_tac " carrier R \<diamondsuit>\<^sub>R (A \<inter> B) = A \<inter> B")
- apply (thin_tac "carrier R = A \<^bold>+\<^sub>R B")
- apply (thin_tac "carrier R \<diamondsuit>\<^sub>R (A \<inter> B)=(A \<inter> B) \<diamondsuit>\<^sub>R A \<^bold>+\<^sub>R (A \<inter> B) \<diamondsuit>\<^sub>R B")
+  (* A \<minusplus>\<^sub>R B \<subseteq> \<Inter>{J. ideal R J \<and> A \<union> B \<subseteq> J} *)
 
-(** (A \<inter> B) \<diamondsuit>\<^sub>R B \<subseteq> A \<diamondsuit>\<^sub>R B **)
-apply (rule subsetI)  apply (thin_tac "(A \<inter> B) \<diamondsuit>\<^sub>R A \<subseteq> A \<diamondsuit>\<^sub>R B")
- apply (simp add:ideal_prod_def)
- apply (rule allI) apply (rule impI) apply blast
-
- apply (thin_tac " carrier R \<diamondsuit>\<^sub>R (A \<inter> B) = A \<inter> B")
- apply (thin_tac "carrier R = A \<^bold>+\<^sub>R B")
- apply (thin_tac "carrier R \<diamondsuit>\<^sub>R (A \<inter> B)=(A \<inter> B) \<diamondsuit>\<^sub>R A \<^bold>+\<^sub>R (A \<inter> B) \<diamondsuit>\<^sub>R B")
- apply (simp add:ideal_prod_def) apply (rule subsetI)
-prefer 2
+apply (rule_tac A = "{J. ideal R J \<and> (A \<union> B) \<subseteq> J}" and C = "A \<minusplus> B" in
+                Inter_greatest)
+ apply (simp, (erule conjE)+)
+ apply (rule_tac A = A and B = B and I = X in sum_ideals_cont,
+        simp add:ideal_subset1, simp add:ideal_subset1, assumption+)
+apply (rule_tac B = "A \<minusplus> B" and A = "{J. ideal R J \<and> (A \<union> B) \<subseteq> J}" in
+         Inter_lower)
  apply simp
- apply (subgoal_tac " A \<inter> B =  (A \<inter> B) \<diamondsuit>\<^sub>R (A \<^bold>+\<^sub>R B)")
- apply (subgoal_tac "ideal R (A \<inter> B)")
-  apply (frule ideal_distrib [of "R" "A \<inter> B"  "A" "B"], assumption+)
- apply simp apply (simp add:int_ideal)
- apply (subgoal_tac "ideal R  (A \<^bold>+\<^sub>R B)")
- apply (subgoal_tac "ideal R (A \<inter> B)")
- apply (subgoal_tac " (A \<^bold>+\<^sub>R B) \<diamondsuit>\<^sub>R (A \<inter> B) =  (A \<inter> B) \<diamondsuit>\<^sub>R (A \<^bold>+\<^sub>R B)")
- apply blast
- apply (rule prod_commute, assumption+)
- apply (simp add:int_ideal)
- apply (simp add:sum_ideals)
-
-prefer 2
- apply (rule sym, assumption+)
-
-prefer 2
- apply (rule id_coprimeTr0, assumption+)
- apply (simp add:int_ideal)
-
-apply auto
- apply (rename_tac X)
- apply (subgoal_tac "{x. \<exists>i\<in>A \<inter> B. \<exists>j\<in>A. x =  i \<cdot>\<^sub>R j} \<subseteq> X")
- apply blast
- apply (thin_tac "\<forall>xa. ideal R xa \<and> {x. \<exists>i\<in>A \<inter> B. \<exists>j\<in>A. x =  i \<cdot>\<^sub>R j} \<subseteq>
-  xa \<longrightarrow> x \<in> xa")
-apply (rule subsetI) apply (simp add:CollectI)
- apply (subgoal_tac "\<forall>i\<in>A \<inter> B. \<forall>j\<in>A. xa =  i \<cdot>\<^sub>R j \<longrightarrow> xa \<in> X")
- apply blast apply (thin_tac "\<exists>i\<in>A \<inter> B. \<exists>j\<in>A. xa =  i \<cdot>\<^sub>R j")
- apply (rule ballI) apply (rule ballI) apply (rule impI)
- apply (subgoal_tac "i \<in> B")
- apply (frule ideal_subset, assumption+) apply (rotate_tac 2)
- apply (frule ideal_subset, assumption+)
- apply (subgoal_tac "xa = j \<cdot>\<^sub>R i") apply (thin_tac "xa =  i \<cdot>\<^sub>R j")
- apply (subgoal_tac "xa \<in> {x. \<exists>i\<in>A. \<exists>j\<in>B. x =  i \<cdot>\<^sub>R j}")
- apply (rule subsetD, assumption+)
- apply simp apply blast
- apply (simp add:ring_tOp_commute)
- apply blast
 done
 
-lemma coprime_elems:"\<lbrakk>ring R; ideal R A; ideal R B; coprime_ideals R A B\<rbrakk> \<Longrightarrow>
- \<exists>a\<in>A. \<exists>b\<in>B. a +\<^sub>R b = 1\<^sub>R"
-apply (simp add:coprime_ideals_def asettOp_def settOp_def)
-apply (subgoal_tac "1\<^sub>R \<in> {z. \<exists>x\<in>A. \<exists>y\<in>B.  GroupType.tOp (b_ag R) x y = z}")
- apply (thin_tac "{z. \<exists>x\<in>A. \<exists>y\<in>B. GroupType.tOp (b_ag R) x y = z} = carrier R")
- apply (simp add:CollectI)
- apply (frule ring_is_ag [of "R"])
- apply (frule agop_gop[of "R"])
-apply simp
-apply (simp add:b_ag_def)
-apply (simp add:ring_one)
+lemma (in Ring) sum_ideals_commute:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrightarrow>   
+                       A \<minusplus> B = B \<minusplus> A"
+apply (frule ideal_sumTr1 [of "B"], assumption+,
+       frule ideal_sumTr1 [of "A" "B"], assumption+)
+apply (simp add:Un_commute[of "B" "A"])
 done
 
-
-lemma coprime_elemsTr:"\<lbrakk>ring R; ideal R A; ideal R B; a\<in>A; b\<in>B; a +\<^sub>R b = 1\<^sub>R\<rbrakk>
-               \<Longrightarrow> pj R A b = 1\<^sub>(qring R A) \<and> pj R B a = 1\<^sub>(qring R B)"
-apply (frule pj_Hom [of "R" "A"], assumption+)
-apply (subgoal_tac "ring (qring R A)")
-apply (subgoal_tac "ring (qring R B)")
-apply (rule conjI)
-apply (subgoal_tac "pj R A b = pj R A (a +\<^sub>R b)")
-apply simp
-apply (rule rHom_one[of "R" "qring R A" "pj R A"], assumption+)
-apply (subst ringhom1 [of "R" "qring R A" _ _ "pj R A"] , assumption+)
- apply (simp add:ideal_subset)+
-apply (subgoal_tac "pj R A a = 0\<^sub>(qring R A)")
-apply simp
-apply (subst ag_l_zero)
- apply (simp add:ring_def)
- apply (rule rHom_mem, assumption+)
- apply (simp add:ideal_subset)
- apply simp
-apply (subst pj_mem, assumption+)
- apply (simp add: ideal_subset)
- apply (subst ar_coset_same4, assumption+)
- apply (simp add:ideal_subset)
- apply assumption
- apply (simp add:qring_def)
-
-apply (frule pj_Hom [of "R" "B"], assumption+)
-apply (subgoal_tac "pj R B a = pj R B (a +\<^sub>R b)")
-apply simp
-apply (rule rHom_one[of "R" "qring R B" "pj R B"], assumption+)
- apply (thin_tac "a +\<^sub>R b = 1\<^sub>R")
- apply (simplesubst ringhom1 [of "R" "qring R B" _], assumption+)
- apply (simp add:ideal_subset)+
- apply (simp add:pj_Hom)
-apply (subgoal_tac "pj R B b = 0\<^sub>(qring R B)")
-apply simp
-apply (subst ag_r_zero)
- apply (simp add:ring_def)
- apply (frule pj_Hom [of "R" "B"], assumption+)
- apply (rule rHom_mem, assumption+)
- apply (simp add:ideal_subset)
- apply simp
-apply (subst pj_mem, assumption+)
- apply (simp add: ideal_subset)
- apply (subst ar_coset_same4, assumption+)
- apply (simp add:ideal_subset)
- apply assumption
- apply (simp add:qring_def)
-apply (simp add:qring_ring)+
+lemma (in Ring) ideal_prod_mono1:"\<lbrakk>ideal R A; ideal R B; ideal R C;
+                A \<subseteq> B \<rbrakk> \<Longrightarrow> A \<diamondsuit>\<^sub>r C \<subseteq> B \<diamondsuit>\<^sub>r C"
+apply (frule ideal_prod_ideal[of "B" "C"], assumption+)
+apply (rule ideal_prod_subTr[of "A" "C" "B \<diamondsuit>\<^sub>r C"], assumption+)
+ apply (rule ballI)+
+ apply (frule_tac c = i in subsetD[of "A" "B"], assumption+)
+ apply (rule_tac i = i and j = j in prod_mem_prod_ideals[of "B" "C"],
+                 assumption+)
 done
 
-lemma partition_of_unity:"\<lbrakk>ring R; ideal R A; a\<in>A; b\<in> carrier R; a +\<^sub>R b = 1\<^sub>R;
- u \<in> carrier R; v \<in> carrier R\<rbrakk> \<Longrightarrow> pj R A (a \<cdot>\<^sub>R v +\<^sub>R b \<cdot>\<^sub>R u ) = pj R A u"
-apply (frule pj_Hom [of "R" "A"], assumption+)
-apply (frule ideal_subset [of "R" "A" "a"], assumption+)
-apply (frule ring_is_ag)
-apply (subgoal_tac "ring (qring R A)")
-apply (subgoal_tac "a \<cdot>\<^sub>R v \<in> carrier R")
-apply (subgoal_tac "b \<cdot>\<^sub>R u \<in> carrier R")
-apply (simp add: ringhom1 [of "R" "qring R A" _ _ "pj R A"])
-apply (subgoal_tac "pj R A (a \<cdot>\<^sub>R v) = 0\<^sub>(qring R A)")
-apply simp
-apply (subst ag_l_zero)
- apply (simp add:ring_def)
- apply (simp add:rHom_mem)
- apply (subgoal_tac "pj R A ( b \<cdot>\<^sub>R u) = (pj R A b) \<cdot>\<^sub>(qring R A) (pj R A u)")
+lemma (in Ring) ideal_prod_mono2:"\<lbrakk>ideal R A; ideal R B; ideal R C;
+                A \<subseteq> B \<rbrakk> \<Longrightarrow> C \<diamondsuit>\<^sub>r A \<subseteq> C \<diamondsuit>\<^sub>r B"
+apply (frule ideal_prod_mono1[of "A" "B" "C"], assumption+)
+apply (simp add:ideal_prod_commute)
+done
+
+lemma (in Ring) cont_ideal_prod:"\<lbrakk>ideal R A; ideal R B; ideal R C;
+        A \<subseteq> C; B \<subseteq> C \<rbrakk> \<Longrightarrow> A \<diamondsuit>\<^sub>r B \<subseteq> C"
+apply (simp add:ideal_prod_def)
+apply (rule subsetI, simp)
+ apply (frule ideal_prod_ideal[of "A" "B"], assumption,
+        frule_tac a = "A \<diamondsuit>\<^sub>r B" in forall_spec,
+   thin_tac "\<forall>xa. ideal R xa \<and> {x. \<exists>i\<in>A. \<exists>j\<in>B. x = i \<cdot>\<^sub>r j} \<subseteq> xa \<longrightarrow> x \<in> xa",
+   simp)
+ apply (rule subsetI, simp, (erule bexE)+, simp add:prod_mem_prod_ideals)
+ apply (frule ideal_prod_la1[of "A" "B"], assumption,
+        frule_tac c = x in subsetD[of "A \<diamondsuit>\<^sub>r B" "A"], assumption+,
+        simp add:subsetD)
+done
+
+lemma (in Ring) ideal_distrib:"\<lbrakk>ideal R A; ideal R B; ideal R C\<rbrakk> \<Longrightarrow>
+             A \<diamondsuit>\<^sub>r (B \<minusplus> C) =  A \<diamondsuit>\<^sub>r B \<minusplus>  A \<diamondsuit>\<^sub>r C"
+apply (frule sum_ideals[of "B" "C"], assumption,
+       frule ideal_prod_ideal[of "A" "B \<minusplus> C"], assumption+,
+       frule ideal_prod_ideal[of "A" "B"], assumption+,
+       frule ideal_prod_ideal[of "A" "C"], assumption+,
+       frule sum_ideals[of "A \<diamondsuit>\<^sub>r B" "A \<diamondsuit>\<^sub>r C"], assumption)
+apply (rule equalityI)
+ apply (rule ideal_prod_subTr[of "A" "B \<minusplus> C" "A \<diamondsuit>\<^sub>r B \<minusplus> A \<diamondsuit>\<^sub>r C"], assumption+)
+ apply (rule ballI)+
+ apply (frule_tac x = j in ideals_set_sum[of B C], assumption+,
+        (erule bexE)+, simp) apply (
+        thin_tac "j = h \<plusminus> k",
+        frule_tac h = i in ideal_subset[of "A"], assumption+,
+        frule_tac h = h in ideal_subset[of "B"], assumption+,
+        frule_tac h = k in ideal_subset[of "C"], assumption+)
+ apply (simp add:ring_distrib1)
+ apply (frule_tac i = i and j = h in prod_mem_prod_ideals[of "A" "B"],
+         assumption+,
+        frule_tac i = i and j = k in prod_mem_prod_ideals[of "A" "C"],
+         assumption+)
+ apply (frule sum_ideals_la1[of "A \<diamondsuit>\<^sub>r B" "A \<diamondsuit>\<^sub>r C"], assumption+,
+        frule sum_ideals_la2[of "A \<diamondsuit>\<^sub>r B" "A \<diamondsuit>\<^sub>r C"], assumption+)
+ apply (frule_tac c = "i \<cdot>\<^sub>r h" in subsetD[of "A \<diamondsuit>\<^sub>r B" "A \<diamondsuit>\<^sub>r B \<minusplus> A \<diamondsuit>\<^sub>r C"], 
+                                assumption+,
+        frule_tac c = "i \<cdot>\<^sub>r k" in subsetD[of "A \<diamondsuit>\<^sub>r C" "A \<diamondsuit>\<^sub>r B \<minusplus> A \<diamondsuit>\<^sub>r C"], 
+                                assumption+)
+ apply (simp add:ideal_pOp_closed) 
+ apply (rule sum_ideals_cont[of "A \<diamondsuit>\<^sub>r (B \<minusplus> C)" "A \<diamondsuit>\<^sub>r B" "A \<diamondsuit>\<^sub>r C" ],
+          assumption+) 
+ apply (rule ideal_prod_subTr[of "A" "B" "A \<diamondsuit>\<^sub>r (B \<minusplus> C)"], assumption+)
+  apply (rule ballI)+
+  apply (frule sum_ideals_la1[of "B" "C"], assumption+,
+         frule_tac c = j in subsetD[of "B" "B \<minusplus> C"], assumption+,
+         rule_tac i = i and j = j in prod_mem_prod_ideals[of "A" "B \<minusplus> C"],
+         assumption+)
+
+  apply (rule ideal_prod_subTr[of "A" "C" "A \<diamondsuit>\<^sub>r (B \<minusplus> C)"], assumption+)
+  apply (rule ballI)+
+  apply (frule sum_ideals_la2[of "B" "C"], assumption+,
+         frule_tac c = j in subsetD[of "C" "B \<minusplus> C"], assumption+,
+         rule_tac i = i and j = j in prod_mem_prod_ideals[of "A" "B \<minusplus> C"],
+         assumption+)
+done
+
+constdefs (structure R)
+ coprime_ideals::"[_, 'a set, 'a set] \<Rightarrow> bool"
+  "coprime_ideals R A B == A \<minusplus> B = carrier R"
+
+lemma (in Ring) coprimeTr:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrightarrow>
+                coprime_ideals R A B = (\<exists>a \<in> A. \<exists>b \<in> B. a \<plusminus> b = 1\<^sub>r)"
+apply (rule iffI)
+ apply (simp add:coprime_ideals_def) 
+ apply (cut_tac ring_one, frule sym, thin_tac "A \<minusplus> B = carrier R", simp,
+        thin_tac "carrier R = A \<minusplus> B", frule ideals_set_sum[of A B],
+        assumption+, (erule bexE)+, frule sym, blast)
+
+apply (erule bexE)+
+ apply (frule ideal_subset1[of A], frule ideal_subset1[of B]) 
+ apply (frule_tac a = a and b = b in set_sum_mem[of _ A _ B], assumption+)
+ apply (simp add:coprime_ideals_def)
+ apply (frule sum_ideals[of "A" "B"], assumption+,
+        frule ideal_inc_one[of "A \<minusplus> B"], assumption)
+ apply (simp add:coprime_ideals_def)
+done
+
+lemma (in Ring) coprime_int_prod:"\<lbrakk>ideal R A; ideal R B; coprime_ideals R A B\<rbrakk>
+       \<Longrightarrow>   A \<inter> B = A \<diamondsuit>\<^sub>r B"
+apply (frule ideal_prod_la1[of "A" "B"], assumption+,
+       frule ideal_prod_la2[of "A" "B"], assumption+) 
+apply (rule equalityI) 
+defer
+ (**  A \<diamondsuit>\<^bsub>R\<^esub> B \<subseteq> A \<inter> B **)
  apply simp
- apply (subgoal_tac "pj R A b = 1\<^sub>(qring R A)")
+ apply (simp add:coprime_ideals_def)
+ apply (frule int_ideal[of "A" "B"], assumption)
+ apply (frule idealprod_whole_r[of "A \<inter> B"])
+ apply (frule sym, thin_tac "A \<minusplus> B = carrier R", simp)
+ apply (simp add:ideal_distrib)
+ apply (simp add:ideal_prod_commute[of "A \<inter> B" "A"])
+ apply (cut_tac Int_lower1[of "A" "B"], cut_tac Int_lower2[of "A" "B"])
+ apply (frule ideal_prod_mono2[of "A \<inter> B" "B" "A"], assumption+,  
+        frule ideal_prod_mono1[of "A \<inter> B" "A" "B"], assumption+)
+ apply (frule ideal_prod_ideal[of "A \<inter> B" "B"], assumption+,
+        frule ideal_prod_ideal[of "A" "A \<inter> B"], assumption+,
+        frule ideal_subset1[of "A \<diamondsuit>\<^sub>r (A \<inter> B)"],
+        frule ideal_subset1[of "(A \<inter> B) \<diamondsuit>\<^sub>r B"])
+ apply (frule ideal_prod_ideal[of A B], assumption+,
+        frule sum_ideals_cont[of "A \<diamondsuit>\<^sub>r B" "A \<diamondsuit>\<^sub>r (A \<inter> B)" "(A \<inter> B) \<diamondsuit>\<^sub>r B"],
+        assumption+) 
  apply simp
- apply (rule ring_l_one, assumption+)
- apply (simp add:rHom_mem)
-apply (subgoal_tac "pj R A b = pj R A (a +\<^sub>R b)")
- apply simp
- apply (simp add:rHom_one) apply (thin_tac "a +\<^sub>R b = 1\<^sub>R")
- apply (simp add:ringhom1)
- apply (subgoal_tac "pj R A a = 0\<^sub>(qring R A)")
- apply simp
- apply (rule ag_l_zero [of "qring R A" "pj R A b", THEN sym])
-  apply (simp add:ring_def)
+done
+
+lemma (in Ring) coprime_elems:"\<lbrakk>ideal R A; ideal R B; coprime_ideals R A B\<rbrakk> \<Longrightarrow>
+                    \<exists>a\<in>A. \<exists>b\<in>B. a \<plusminus> b = 1\<^sub>r"
+by (simp add:coprimeTr)
+
+lemma (in Ring) coprime_elemsTr:"\<lbrakk>ideal R A; ideal R B; a\<in>A; b\<in>B; a \<plusminus> b = 1\<^sub>r\<rbrakk> 
+               \<Longrightarrow> pj R A b = 1\<^sub>r\<^bsub>(qring R A)\<^esub> \<and> pj R B a = 1\<^sub>r\<^bsub>(qring R B)\<^esub>"
+apply (frule pj_Hom [OF Ring, of "A"],
+       frule pj_Hom [OF Ring, of "B"])
+ apply (frule qring_ring[of "A"], frule qring_ring[of "B"])
+ apply (cut_tac ring_is_ag,
+        frule Ring.ring_is_ag[of "R /\<^sub>r A"],
+         frule Ring.ring_is_ag[of "R /\<^sub>r B"])
+ apply (frule_tac a = a and b = b in aHom_add[of "R" "R /\<^sub>r A" "pj R A"],
+         assumption+,
+       simp add:rHom_def, simp add:ideal_subset,
+       simp add:ideal_subset, simp)
+ apply (frule ideal_subset[of "A" "a"], assumption,
+        frule ideal_subset[of "B" "b"], assumption+)
+ apply (simp only:pj_zero[OF Ring, THEN sym, of "A" "a"],
+        frule rHom_mem[of "pj R A" "R" "qring R A" "b"], assumption+,
+        simp add:aGroup.l_zero[of "R /\<^sub>r A"])
+  apply (simp add:rHom_one[OF Ring, of "qring R A"])
+  
+  apply (frule_tac a = a and b = b in aHom_add[of "R" "R /\<^sub>r B" "pj R B"],
+         assumption+,
+       simp add:rHom_def, simp add:ideal_subset,
+       simp add:ideal_subset, simp)
+  apply (simp only:pj_zero[OF Ring, THEN sym, of "B" "b"],
+        frule rHom_mem[of "pj R B" "R" "qring R B" "a"], assumption+,
+        simp add:aGroup.ag_r_zero[of "R /\<^sub>r B"])
+  apply (simp add:rHom_one[OF Ring, of "qring R B"])
+done
+
+lemma (in Ring) partition_of_unity:"\<lbrakk>ideal R A; a \<in> A; b \<in> carrier R; 
+       a \<plusminus> b = 1\<^sub>r; u \<in> carrier R; v \<in> carrier R\<rbrakk> \<Longrightarrow> 
+                                 pj R A (a \<cdot>\<^sub>r v \<plusminus> b \<cdot>\<^sub>r u ) = pj R A u"
+apply (frule pj_Hom [OF Ring, of "A"],
+       frule ideal_subset [of "A" "a"], assumption+,
+       frule ring_tOp_closed[of "a" "v"], assumption+,
+       frule ring_tOp_closed[of "b" "u"], assumption+,
+       frule qring_ring[of "A"])
+ apply (simp add:ringhom1[OF Ring, of "qring R A" "a \<cdot>\<^sub>r v" "b \<cdot>\<^sub>r u" "pj R A"])
+ apply (frule ideal_ring_multiple1[of "A" "a" "v"], assumption+,
+        simp add:pj_zero[OF Ring, THEN sym, of "A" "a \<cdot>\<^sub>r v"],
+        frule rHom_mem[of "pj R A" "R" "qring R A" "b \<cdot>\<^sub>r u"], assumption+,
+        simp add:Ring.l_zero, simp add:rHom_tOp[OF Ring])
+ apply (frule ringhom1[OF Ring, of "qring R A" "a" "b" "pj R A"], assumption+,
+        simp,
+        simp add:pj_zero[OF Ring, THEN sym, of "A" "a"],
+        frule rHom_mem[of "pj R A" "R" "qring R A" "b"], assumption+,
+        simp add:Ring.l_zero)
+   apply (simp add:rHom_one[OF Ring, of "qring R A" "pj R A"],
+          rotate_tac -2, frule sym, thin_tac "1\<^sub>r\<^bsub>R /\<^sub>r A\<^esub> = pj R A b",
+          simp,
+          rule Ring.ring_l_one[of "qring R A" "pj R A u"], assumption)
   apply (simp add:rHom_mem)
-  apply (subst pj_mem, assumption+)
-  apply (simp add:ar_coset_same4)
-  apply (simp add:qring_def)
- apply (simp add:rHom_tOp)
- apply (subgoal_tac "pj R A (a \<cdot>\<^sub>R v) = (a \<cdot>\<^sub>R v) \<uplus>\<^sub>R A")
- apply simp
- apply (subgoal_tac "a \<cdot>\<^sub>R v \<in> A")
- apply (simp add:ar_coset_same4)
- apply (simp add:qring_def)
- apply (simp add:ideal_ring_multiple1)
- apply (simp add:pj_mem)
-apply (simp add:ring_tOp_closed)
-apply (simp add:ring_tOp_closed)
-apply (simp add:qring_ring)
 done
 
-lemma coprimes_commute:"\<lbrakk> ring R; ideal R A; ideal R B; coprime_ideals R A B \<rbrakk>
+lemma (in Ring) coprimes_commute:"\<lbrakk>ideal R A; ideal R B; coprime_ideals R A B \<rbrakk>
  \<Longrightarrow> coprime_ideals R B A"
 apply (simp add:coprime_ideals_def)
 apply (simp add:sum_ideals_commute)
 done
 
-
-lemma coprime_surjTr:"\<lbrakk>ring R; ideal R A; ideal R B; coprime_ideals R A B; X \<in> carrier (qring R A); Y \<in> carrier (qring R B) \<rbrakk> \<Longrightarrow> \<exists>r\<in>carrier R. pj R A r = X \<and> pj R B r = Y"
-apply (frule qring_ring [of "R" "A"], assumption+)
-apply (frule qring_ring [of "R" "B"], assumption+)
-apply (frule coprime_elems [of "R" "A" "B"], assumption+)
-apply (subgoal_tac "\<forall>a\<in>A. \<forall>b\<in>B.  a +\<^sub>R b = 1\<^sub>R \<longrightarrow> (\<exists>r\<in>carrier R. pj R A r = X \<and> pj R B r = Y )")
-apply blast
- apply (thin_tac "\<exists>a\<in>A. \<exists>b\<in>B.  a +\<^sub>R b = 1\<^sub>R")
- apply (rule ballI)+
- apply (rule impI)
-apply (simp add:qring_carrier [of "R" "A"])
-apply (simp add:qring_carrier [of "R" "B"])
-apply (subgoal_tac "\<forall>u\<in>carrier R. \<forall>v\<in>carrier R. u \<uplus>\<^sub>R A = X \<and> v \<uplus>\<^sub>R B = Y  \<longrightarrow> (\<exists>r\<in>carrier R. pj R A r = X \<and> pj R B r = Y)")
-apply blast
- apply (thin_tac "\<exists>a\<in>carrier R. a \<uplus>\<^sub>R A = X")
- apply (thin_tac "\<exists>a\<in>carrier R. a \<uplus>\<^sub>R B = Y")
-apply (rule ballI)+ apply (rule impI) apply (erule conjE)
-apply (subgoal_tac "pj R A (b \<cdot>\<^sub>R u +\<^sub>R (a \<cdot>\<^sub>R v)) = X \<and> pj R B (b \<cdot>\<^sub>R u +\<^sub>R (a \<cdot>\<^sub>R v)) = Y")
-apply (subgoal_tac "b \<cdot>\<^sub>R u +\<^sub>R  a \<cdot>\<^sub>R v \<in> carrier R")
-apply blast
- apply (frule ring_is_ag)
- apply (rule ag_pOp_closed, assumption+)
- apply (rule ring_tOp_closed, assumption+)
- apply (simp add:ideal_subset)
- apply assumption
- apply (rule ring_tOp_closed, assumption+)
- apply (simp add:ideal_subset)
- apply assumption
-apply (rule conjI)
-apply (frule pj_Hom [of "R" "A"], assumption+)
- apply (frule_tac h = a in ideal_subset [of "R" "A"], assumption+)
- apply (frule_tac h = b in ideal_subset [of "R" "B"], assumption+)
- apply (frule_tac x = b and y = u in ring_tOp_closed, assumption+)
- apply (frule_tac x = a and y = v in ring_tOp_closed, assumption+)
-apply (subgoal_tac "pj R A \<in> aHom R (R /\<^sub>r A)")
- apply (subst aHom_add [of "R" "R /\<^sub>r A" "pj R A"])
-  apply (simp add:ring_is_ag [of "R"])
-  apply (simp add:qring_ring ring_is_ag) apply assumption+
- apply (subst rHom_tOp [of "R" "R /\<^sub>r A" _ _ "pj R A"], assumption+)
- apply (subst rHom_tOp [of "R" "R /\<^sub>r A" _ _ "pj R A"], assumption+)
- apply (subgoal_tac "pj R A (a +\<^sub>R b) = pj R A (1\<^sub>R)")
- apply (frule ring_is_ag [of "R"])
- apply (frule ring_is_ag [of "R /\<^sub>r A"])
- apply (frule_tac a = a and b = b in aHom_add [of "R" "R /\<^sub>r A" "pj R A"],
-                                                      assumption+)
- apply simp
- apply (subgoal_tac "pj R A a = 0\<^sub>(R /\<^sub>r A)")
- apply simp
- apply (subst ring_times_0_x, assumption+) apply (simp add:pj_mem)
- apply (subst qring_carrier, assumption+) apply (simp add:CollectI)
- apply blast
- apply (subst ag_r_zero, assumption+)
- apply (rule ring_tOp_closed, assumption+)
-  apply (simp add:rHom_mem)+
- apply (frule_tac x = "pj R A b" in ag_l_zero [of"R /\<^sub>r A"])
- apply (simp add:rHom_mem)
- apply simp apply (rotate_tac -3) apply (frule sym)
- apply (thin_tac "pj R A (1\<^sub>R) = pj R A b") apply simp
- apply (subst rHom_one [of "R" "R /\<^sub>r A" "pj R A"], assumption+)
- apply (subst ring_l_one, assumption+) apply (simp add:pj_mem)
- apply (rotate_tac 13) apply (frule sym) apply (thin_tac "u \<uplus>\<^sub>R A = X")
- apply simp apply (subst qring_carrier, assumption+)  apply (simp add:CollectI)
- apply blast
- apply (simp add:pj_mem)
- apply (frule_tac x = a in pj_mem[of "R" "A"], assumption+)
- apply simp
- apply (frule_tac a = a in ar_coset_same4 [of "R" "A"], assumption+)
- apply (simp add:qring_def) apply simp apply (simp add:rHom_def)
-apply (frule pj_Hom [of "R" "B"], assumption+)
- apply (frule_tac h = a in ideal_subset [of "R" "A"], assumption+)
- apply (frule_tac h = b in ideal_subset [of "R" "B"], assumption+)
- apply (frule_tac x = b and y = u in ring_tOp_closed, assumption+)
- apply (frule_tac x = a and y = v in ring_tOp_closed, assumption+)
-apply (subgoal_tac "pj R B \<in> aHom R (R /\<^sub>r B)")
- apply (subst aHom_add [of "R" "R /\<^sub>r B" "pj R B"])
-  apply (simp add:ring_is_ag [of "R"])
-  apply (simp add:qring_ring ring_is_ag) apply assumption+
- apply (subst rHom_tOp [of "R" "R /\<^sub>r B" _ _ "pj R B"], assumption+)
- apply (subst rHom_tOp [of "R" "R /\<^sub>r B" _ _ "pj R B"], assumption+)
- apply (subgoal_tac "pj R B (a +\<^sub>R b) = pj R B (1\<^sub>R)")
- apply (frule ring_is_ag [of "R"])
- apply (frule ring_is_ag [of "R /\<^sub>r B"])
- apply (frule_tac a = a and b = b in aHom_add [of "R" "R /\<^sub>r B" "pj R B"],
-                                                      assumption+)
- apply simp
- apply (subgoal_tac "pj R B b = 0\<^sub>(R /\<^sub>r B)")
- apply simp
- apply (subst ring_times_0_x, assumption+) apply (simp add:pj_mem)
- apply (subst qring_carrier, assumption+) apply (simp add:CollectI)
- apply blast
- apply (subst ag_l_zero, assumption+)
- apply (rule ring_tOp_closed, assumption+)
-  apply (simp add:rHom_mem)+
- apply (frule_tac x = "pj R B a" in ag_r_zero [of"R /\<^sub>r B"])
- apply (simp add:rHom_mem)
- apply simp apply (rotate_tac -3) apply (frule sym)
- apply (thin_tac "pj R B (1\<^sub>R) = pj R B a") apply simp
- apply (subst rHom_one [of "R" "R /\<^sub>r B" "pj R B"], assumption+)
- apply (subst ring_l_one, assumption+) apply (simp add:pj_mem)
- apply (rotate_tac 14) apply (frule sym) apply (thin_tac "v \<uplus>\<^sub>R B = Y")
- apply simp apply (subst qring_carrier, assumption+)  apply (simp add:CollectI)
- apply blast
- apply (simp add:pj_mem)
- apply (frule_tac x = b in pj_mem[of "R" "B"], assumption+)
- apply simp
- apply (frule_tac a = b in ar_coset_same4 [of "R" "B"], assumption+)
- apply (simp add:qring_def) apply simp apply (simp add:rHom_def)
+lemma (in Ring) coprime_surjTr:"\<lbrakk>ideal R A; ideal R B; coprime_ideals R A B; 
+                 X \<in> carrier (qring R A); Y \<in> carrier (qring R B) \<rbrakk> \<Longrightarrow> 
+                         \<exists>r\<in>carrier R. pj R A r = X \<and> pj R B r = Y"
+apply (frule qring_ring [of "A"], 
+       frule qring_ring [of "B"], 
+       frule coprime_elems [of "A" "B"], assumption+,
+       frule pj_Hom [OF Ring, of "A"],
+       frule pj_Hom [OF Ring, of "B"])
+apply (erule bexE)+
+ apply (simp add:qring_carrier[of "A"],
+        simp add:qring_carrier[of "B"], (erule bexE)+,
+        rename_tac a b u v)
+ apply (rotate_tac -1, frule sym, thin_tac "v \<uplus>\<^bsub>R\<^esub> B = Y",
+        rotate_tac -3, frule sym, thin_tac "u \<uplus>\<^bsub>R\<^esub> A = X", simp)
+ apply (frule_tac h = a in ideal_subset[of "A"], assumption+,
+       frule_tac h = b in ideal_subset[of "B"], assumption+,
+       frule_tac x = a and y = v in ring_tOp_closed, assumption+,
+       frule_tac x = b and y = u in ring_tOp_closed, assumption+,
+       cut_tac ring_is_ag,
+       frule_tac x = "a \<cdot>\<^sub>r v" and y = "b \<cdot>\<^sub>r u" in aGroup.ag_pOp_closed[of "R"], 
+       assumption+) 
+ apply (frule_tac a = a and b = b and u = u and v = v in 
+                  partition_of_unity[of "A"], assumption+,
+        simp add:pj_mem[OF Ring, of "A"])
+ apply (frule_tac a = b and b = a and u = v and v = u in 
+           partition_of_unity[of "B"], assumption+,
+        subst aGroup.ag_pOp_commute[of "R"], assumption+,
+        simp add:pj_mem[OF Ring, of "B"])      
+ apply (frule_tac x = "b \<cdot>\<^sub>r u" and y = "a \<cdot>\<^sub>r v" in 
+             aGroup.ag_pOp_commute[of "R"], assumption+, simp)
+ apply (simp add:pj_mem[OF Ring], blast)
 done
 
-lemma coprime_n_idealsTr0:"\<lbrakk> ring R; ideal R A; ideal R B; ideal R C;
-coprime_ideals R A C; coprime_ideals R B C \<rbrakk> \<Longrightarrow> coprime_ideals R (A \<diamondsuit>\<^sub>R B) C"
-apply (simp add: coprime_ideals_def [of "R" "A" "C"])
-apply (simp add: coprime_ideals_def [of "R" "B" "C"])
-apply (subgoal_tac "\<exists>a\<in>A. \<exists>c1\<in>C. a +\<^sub>R c1 = 1\<^sub>R")
-apply (subgoal_tac "\<exists>b\<in>B. \<exists>c2\<in>C. b +\<^sub>R c2 = 1\<^sub>R")
- apply (subgoal_tac "\<forall>a\<in>A. \<forall>c1\<in>C.\<forall>b\<in>B. \<forall>c2\<in>C. a +\<^sub>R c1 = 1\<^sub>R \<and> b +\<^sub>R c2 = 1\<^sub>R
-   \<longrightarrow>coprime_ideals R (A \<diamondsuit>\<^sub>R B) C")
- apply blast
-  apply (thin_tac "\<exists>a\<in>A. \<exists>c1\<in>C.  a +\<^sub>R c1 = 1\<^sub>R")
-  apply (thin_tac "\<exists>b\<in>B. \<exists>c2\<in>C.  b +\<^sub>R c2 = 1\<^sub>R")
-apply (rule ballI)+
- apply (rule impI)
- apply (erule conjE)
- apply (simp add:coprime_ideals_def)
-apply (rule ideal_inc_one, assumption+)
- apply (rule sum_ideals, assumption+)
- apply (rule ideal_prod_ideal, assumption+)
- apply (subgoal_tac "( a +\<^sub>R c1) \<cdot>\<^sub>R ( b +\<^sub>R c2) = 1\<^sub>R")
- apply (subgoal_tac "( a +\<^sub>R c1) \<cdot>\<^sub>R ( b +\<^sub>R c2) \<in>  A \<diamondsuit>\<^sub>R B \<^bold>+\<^sub>R C")
- apply simp
-apply (subst  ring_distrib3, assumption+)
- apply (simp add:ideal_subset)+
- apply (subgoal_tac "ideal R (A \<diamondsuit>\<^sub>R B \<^bold>+\<^sub>R C)")
- apply (rule ideal_pOp_closed, assumption+)
- apply (rule ideal_pOp_closed, assumption+)
- apply (rule ideal_pOp_closed, assumption+)
-apply (frule sum_ideals_la1 [of "R" "A \<diamondsuit>\<^sub>R B" "C"])
- apply (simp add:ideal_prod_ideal)
- apply assumption
- apply (subgoal_tac "a \<cdot>\<^sub>R b \<in> A \<diamondsuit>\<^sub>R B")
- apply (rule subsetD, assumption+)
- apply (simp add:ideal_prod_def)
-apply blast
-apply (frule sum_ideals_la2 [of "R" "A \<diamondsuit>\<^sub>R B" "C"])
- apply (simp add:ideal_prod_ideal)
- apply assumption
-apply (subgoal_tac "a \<in> carrier R") apply (thin_tac "c1 \<in> C")
-apply (frule ideal_ring_multiple [of "R" "C" _], assumption+)
- apply (rule subsetD, assumption+)
- apply (simp add:ideal_subset)
-apply (subgoal_tac "b \<in> carrier R")
-apply (frule ideal_ring_multiple1 [of "R" "C" _], assumption+)
-apply (frule sum_ideals_la2 [of "R" "A \<diamondsuit>\<^sub>R B" "C"])
- apply (simp add:ideal_prod_ideal)
- apply assumption
-apply (rule subsetD, assumption+)
- apply (simp add:ideal_subset)
-apply (frule sum_ideals_la2 [of "R" "A \<diamondsuit>\<^sub>R B" "C"])
- apply (simp add:ideal_prod_ideal)
- apply assumption
-apply (subgoal_tac "c2 \<in> carrier R")
-apply (frule ideal_ring_multiple1 [of "R" "C" _], assumption+)
- apply (rule subsetD, assumption+)
- apply (simp add:ideal_subset)
-apply (rule sum_ideals, assumption+)
- apply (simp add:ideal_prod_ideal)
- apply assumption
-apply simp
-apply (rule ring_r_one, assumption+)
-apply (simp add:ring_def)
- apply (simp add:asettOp_def)
- apply (simp add:settOp_def)
-apply (subgoal_tac "1\<^sub>R \<in> {z. \<exists>x\<in>B. \<exists>y\<in>C.  GroupType.tOp (b_ag R) x y = z}")
- apply (thin_tac "{z. \<exists>x\<in>A. \<exists>y\<in>C. GroupType.tOp (b_ag R) x y = z} = carrier R")
- apply (thin_tac "{z. \<exists>x\<in>B. \<exists>y\<in>C. GroupType.tOp (b_ag R) x y = z} = carrier R")
- apply (simp add:CollectI) apply (simp add:b_ag_def)
-apply simp
- apply (simp add:ring_def)
- apply (thin_tac "B \<^bold>+\<^sub>R C = carrier R")
-apply (simp add:asettOp_def settOp_def)
-apply (subgoal_tac "1\<^sub>R \<in> {z. \<exists>x\<in>A. \<exists>y\<in>C.  GroupType.tOp (b_ag R) x y = z}")
- apply (thin_tac " {z. \<exists>x\<in>A. \<exists>y\<in>C. GroupType.tOp (b_ag R) x y = z} = carrier R")
- apply (simp add:CollectI b_ag_def)
-apply simp
- apply (simp add:ring_def)
+lemma (in Ring) coprime_n_idealsTr0:"\<lbrakk>ideal R A; ideal R B; ideal R C; 
+         coprime_ideals R A C; coprime_ideals R B C \<rbrakk> \<Longrightarrow> 
+             coprime_ideals R (A \<diamondsuit>\<^sub>r B) C" 
+apply (simp add:coprimeTr[of "A" "C"],
+       simp add:coprimeTr[of "B" "C"], (erule bexE)+)
+apply (cut_tac ring_is_ag,
+       frule_tac h = a in ideal_subset[of "A"], assumption+,
+       frule_tac h = aa in ideal_subset[of "B"], assumption+,
+       frule_tac h = b in ideal_subset[of "C"], assumption+,
+       frule_tac h = ba in ideal_subset[of "C"], assumption+,
+       frule_tac x = a and y = b in aGroup.ag_pOp_closed, assumption+)
+apply (frule_tac x = "a \<plusminus> b" and y = aa and z = ba in ring_distrib1,
+        assumption+) apply (
+       rotate_tac 6, frule sym, thin_tac "a \<plusminus> b = 1\<^sub>r",
+       frule sym, thin_tac "aa \<plusminus> ba = 1\<^sub>r")
+      apply (simp only:ring_distrib2)
+apply (rotate_tac -1, frule sym, thin_tac "1\<^sub>r = a \<plusminus> b", simp,
+       thin_tac "aa \<plusminus> ba = 1\<^sub>r")
+       apply (simp add:ring_r_one,
+       thin_tac "a \<cdot>\<^sub>r aa \<plusminus> b \<cdot>\<^sub>r aa \<plusminus> (a \<cdot>\<^sub>r ba \<plusminus> b \<cdot>\<^sub>r ba) \<in> carrier R",
+       thin_tac "a \<plusminus> b = a \<cdot>\<^sub>r aa \<plusminus> b \<cdot>\<^sub>r aa \<plusminus> (a \<cdot>\<^sub>r ba \<plusminus> b \<cdot>\<^sub>r ba)")
+ apply (frule_tac x = a and y = aa in ring_tOp_closed, assumption+,
+        frule_tac x = b and y = aa in ring_tOp_closed, assumption+,
+        frule_tac x = a and y = ba in ring_tOp_closed, assumption+,
+        frule_tac x = b and y = ba in ring_tOp_closed, assumption+, 
+        frule_tac x = "a \<cdot>\<^sub>r ba" and y = "b \<cdot>\<^sub>r ba" in aGroup.ag_pOp_closed, 
+        assumption+)
+  apply (simp add:aGroup.ag_pOp_assoc,
+         frule sym, thin_tac "1\<^sub>r = a \<cdot>\<^sub>r aa \<plusminus> (b \<cdot>\<^sub>r aa \<plusminus> (a \<cdot>\<^sub>r ba \<plusminus> b \<cdot>\<^sub>r ba))")
+  apply (frule_tac i = a and j = aa in prod_mem_prod_ideals[of "A" "B"],
+           assumption+)
+  apply (frule_tac x = ba and r = a in ideal_ring_multiple[of "C"],
+           assumption+,
+         frule_tac x = ba and r = b in ideal_ring_multiple[of "C"],
+           assumption+,
+         frule_tac x = b and r = aa in ideal_ring_multiple1[of "C"],
+           assumption+)
+  apply (frule_tac I = C and x = "a \<cdot>\<^sub>r ba" and y = "b \<cdot>\<^sub>r ba" in 
+         ideal_pOp_closed, assumption+,
+         frule_tac I = C and x = "b \<cdot>\<^sub>r aa" and y = "a \<cdot>\<^sub>r ba \<plusminus> b \<cdot>\<^sub>r ba" in 
+         ideal_pOp_closed, assumption+)
+  apply (frule ideal_prod_ideal[of "A" "B"], assumption)
+  apply (subst coprimeTr, assumption+, blast)
 done
 
-lemma coprime_n_idealsTr1:"\<lbrakk>ring R; ideal R C \<rbrakk> \<Longrightarrow>
- (\<forall>k\<in>Nset n. ideal R (J k)) \<and> (\<forall>i\<in>Nset n.  coprime_ideals R (J i) C) \<longrightarrow>  coprime_ideals R (i\<Pi>\<^sub>R\<^sub>,\<^sub>n J) C"
+lemma (in Ring) coprime_n_idealsTr1:"ideal R C \<Longrightarrow>
+    (\<forall>k \<le> n. ideal R (J k)) \<and> (\<forall>i \<le> n.  coprime_ideals R (J i) C) \<longrightarrow> 
+    coprime_ideals R (i\<Pi>\<^bsub>R,n\<^esub> J) C"
 apply (induct_tac n)
 apply (rule impI)
 apply (erule conjE)
- apply (simp add:Nset_def)
+ apply simp 
 
 apply (rule impI)
 apply (erule conjE)
-apply (subgoal_tac "coprime_ideals R (i\<Pi>\<^sub>R\<^sub>,\<^sub>n J) C")
-apply simp
-apply (subgoal_tac "coprime_ideals R (J (Suc n)) C")
-apply (rule coprime_n_idealsTr0, assumption+)
-apply (subgoal_tac "\<forall>k\<in>Nset n. ideal R (J k)")
-apply (simp add: n_prod_ideal)
- apply (rule ballI) apply (subgoal_tac "k \<in> Nset (Suc n)")
- apply simp apply (simp add:Nset_def)
- apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
- apply simp apply (simp add:Nset_def)
- apply assumption+
-apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
- apply simp apply (simp add:Nset_def)
-apply (subgoal_tac "\<forall>k\<in>Nset n. k \<in> Nset (Suc n)")
-apply blast
-apply (rule ballI)
-apply (simp add:Nset_def)
+apply (cut_tac n = "Suc n" in n_in_Nsetn)
+apply (cut_tac n = n in Nset_Suc) apply simp
+ apply (cut_tac n = n and J = J in n_prod_ideal,
+        rule allI, simp)
+ apply (rule_tac A = "i\<Pi>\<^bsub>R,n\<^esub> J" and B = "J (Suc n)" in 
+                coprime_n_idealsTr0[of _ _ "C"], simp+)
 done
 
-lemma coprime_n_idealsTr2:"\<lbrakk>ring R; ideal R C; (\<forall>k\<in>Nset n. ideal R (J k)); (\<forall>i\<in>Nset n. coprime_ideals R (J i) C) \<rbrakk> \<Longrightarrow> coprime_ideals R (i\<Pi>\<^sub>R\<^sub>,\<^sub>n J) C"
-apply (simp add:coprime_n_idealsTr1)
+lemma (in Ring) coprime_n_idealsTr2:"\<lbrakk>ideal R C; (\<forall>k \<le> n. ideal R (J k)); 
+       (\<forall>i \<le> n. coprime_ideals R (J i) C) \<rbrakk> \<Longrightarrow> 
+                                     coprime_ideals R (i\<Pi>\<^bsub>R,n\<^esub> J) C"
+by (simp add:coprime_n_idealsTr1)
+
+lemma (in Ring) coprime_n_idealsTr3:"(\<forall>k \<le> (Suc n). ideal R (J k)) \<and> 
+    (\<forall>i \<le> (Suc n). \<forall>j \<le> (Suc n). i \<noteq> j \<longrightarrow> 
+    coprime_ideals R (J i) (J j)) \<longrightarrow>  coprime_ideals R (i\<Pi>\<^bsub>R,n\<^esub> J) (J (Suc n))"
+apply (rule impI, erule conjE)
+apply (case_tac "n = 0", simp)
+ apply (simp add:Nset_1)
+ apply (cut_tac nat_eq_le[of "Suc n" "Suc n"],
+        frule_tac a = "Suc n" in forall_spec, assumption) 
+ apply (rotate_tac 1, frule_tac a = "Suc n" in forall_spec, assumption,
+        thin_tac "\<forall>j\<le>Suc n. Suc n \<noteq> j \<longrightarrow> coprime_ideals R (J (Suc n)) (J j)")
+ apply (rule_tac C = "J (Suc n)" and n = n and J = J in coprime_n_idealsTr2,
+        assumption, rule allI, simp)
+ apply (rule allI, rule impI)
+ apply (frule_tac a = i in forall_spec, simp,
+       thin_tac "\<forall>i\<le>Suc n. \<forall>j\<le>Suc n. i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j)",
+       rotate_tac -1,
+       frule_tac a = "Suc n" in forall_spec, assumption+)
+ apply simp+
 done
 
-lemma coprime_n_idealsTr3:"ring R \<Longrightarrow> (\<forall>k\<in>Nset (Suc n). ideal R (J k)) \<and> (\<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j)) \<longrightarrow>  coprime_ideals R (i\<Pi>\<^sub>R\<^sub>,\<^sub>n J) (J (Suc n))"
-apply (induct_tac n)
-apply (rule impI)
-apply (erule conjE)
- apply (subgoal_tac " (i\<Pi>\<^sub>R\<^sub>,\<^sub>0 J) = (J 0)")
- apply simp
-apply (subgoal_tac "0 \<in> Nset (Suc 0)")
-apply (subgoal_tac "Suc 0 \<in> Nset (Suc 0)") apply (rotate_tac -2)
-apply simp apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply simp
-
-apply (rule impI)
-apply (erule conjE)+
- apply (subgoal_tac "\<forall>k\<in>Nset (Suc n). ideal R (J k)")
- apply (subgoal_tac "\<forall>i\<in>Nset (Suc n).
-                     coprime_ideals R (J i) (J (Suc (Suc n)))")
- apply (subgoal_tac "ideal R (J (Suc (Suc n)))")
- apply (rule coprime_n_idealsTr2, assumption+)
- apply (simp add:Nset_def)
- apply (rule ballI)
- apply (subgoal_tac "i \<in> Nset (Suc (Suc n))")
- apply (subgoal_tac "Suc (Suc n) \<in> Nset (Suc (Suc n))")
- apply (rotate_tac -2)
-  apply (thin_tac "(\<forall>k\<in>Nset (Suc n). ideal R (J k)) \<and> (\<forall>i\<in>Nset (Suc n).
-  \<forall>j\<in>Nset (Suc n). i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j)) \<longrightarrow>
-             coprime_ideals R (i\<Pi>\<^sub>R\<^sub>,\<^sub>n J) (J (Suc n))")
-  apply (thin_tac "\<forall>k\<in>Nset (Suc (Suc n)). ideal R (J k)")
-  apply (thin_tac "\<forall>k\<in>Nset (Suc n). ideal R (J k)")
- apply (subgoal_tac "i \<noteq> Suc (Suc n)")
- apply simp
- apply (simp add:Nset_def)+
-done
-
-lemma coprime_n_idealsTr4:"\<lbrakk>ring R; (\<forall>k\<in>Nset (Suc n). ideal R (J k)) \<and> (\<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j))\<rbrakk> \<Longrightarrow>
-   coprime_ideals R (i\<Pi>\<^sub>R\<^sub>,\<^sub>n J) (J (Suc n))"
+lemma (in Ring) coprime_n_idealsTr4:"\<lbrakk>(\<forall>k \<le> (Suc n). ideal R (J k)) \<and> 
+   (\<forall>i \<le> (Suc n). \<forall>j \<le> (Suc n). i \<noteq> j \<longrightarrow> 
+    coprime_ideals R (J i) (J j))\<rbrakk> \<Longrightarrow> coprime_ideals R (i\<Pi>\<^bsub>R,n\<^esub> J) (J (Suc n))"
 apply (simp add:coprime_n_idealsTr3)
 done
 
-
 section "7. direct product1, general case"
 
-
-constdefs
-  prod_tOp::"['i set,  'i \<Rightarrow> ('a, 'more) RingType_scheme] \<Rightarrow>
+constdefs 
+  prod_tOp::"['i set,  'i \<Rightarrow> ('a, 'm) Ring_scheme] \<Rightarrow> 
     ('i \<Rightarrow> 'a) \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow>  ('i \<Rightarrow> 'a)"
   "prod_tOp I A  == \<lambda>f\<in>carr_prodag I A. \<lambda>g\<in>carr_prodag I A.
-                           \<lambda>x\<in>I. (f x) \<cdot>\<^sub>(A x) (g x)"
+                           \<lambda>x\<in>I. (f x) \<cdot>\<^sub>r\<^bsub>(A x)\<^esub> (g x)"
   (** Let x \<in> I, then A x is a ring, {A x | x \<in> I} is a set of rings. **)
 
-  prod_one::"['i set,  'i  \<Rightarrow> ('a, 'more) RingType_scheme] \<Rightarrow> ('i \<Rightarrow> 'a)"
-  "prod_one I A == \<lambda>x\<in>I. 1\<^sub>(A x)"
+ prod_one::"['i set,  'i  \<Rightarrow> ('a, 'm) Ring_scheme] \<Rightarrow> ('i \<Rightarrow> 'a)"
+  "prod_one I A == \<lambda>x\<in>I. 1\<^sub>r\<^bsub>(A x)\<^esub>"
   (** 1\<^sub>(A x) is the unit of a ring A x. **)
 
 constdefs
- prodrg :: "['i set, 'i \<Rightarrow> ('a, 'more) RingType_scheme] \<Rightarrow> ('i \<Rightarrow> 'a) RingType"
- "prodrg I A == \<lparr>carrier = carr_prodag I A, pOp = prod_pOp I A, mOp =
-  prod_mOp I A, zero = prod_zero I A, tOp = prod_tOp I A,
-  one = prod_one I A \<rparr>"
+ prodrg :: "['i set, 'i \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> ('i \<Rightarrow> 'a) Ring"
+ "prodrg I A == \<lparr>carrier = carr_prodag I A, pop = prod_pOp I A, mop = 
+  prod_mOp I A, zero = prod_zero I A, tp = prod_tOp I A, 
+  un = prod_one I A \<rparr>"
  (** I is the index set **)
-syntax
-  "@PRODRING" :: "['i set, 'i \<Rightarrow> ('a, 'more) RingType_scheme] \<Rightarrow>
-               ('i \<Rightarrow> 'a ) RingType"  ("(r\<Pi>\<^sub>_/ _)" [72,73]72)
+syntax 
+  "@PRODRING" :: "['i set, 'i \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> 
+               ('i \<Rightarrow> 'a ) Ring"  ("(r\<Pi>\<^bsub>_\<^esub>/ _)" [72,73]72)
 translations
-  "r\<Pi>\<^sub>I A" == "prodrg I A"
+  "r\<Pi>\<^bsub>I\<^esub> A" == "prodrg I A"
 
 constdefs
  augm_func::"[nat, nat \<Rightarrow> 'a,'a set, nat, nat \<Rightarrow> 'a, 'a set] \<Rightarrow> nat \<Rightarrow> 'a"
-  "augm_func n f A m g B == \<lambda>i\<in>Nset (n + m). if i \<le> n then f i else
+  "augm_func n f A m g B == \<lambda>i\<in>{j. j \<le> (n + m)}. if i \<le> n then f i else
     if (Suc n) \<le> i \<and> i \<le> n + m then g ((sliden (Suc n)) i) else arbitrary"
- (* Remark. g is a function of Nset (m - 1) \<rightarrow> B *)
-
- ag_setfunc::"[nat, nat \<Rightarrow> ('a, 'more) RingType_scheme, nat,
-nat \<Rightarrow> ('a, 'more)  RingType_scheme] \<Rightarrow> (nat \<Rightarrow> 'a) set \<Rightarrow> (nat \<Rightarrow> 'a) set
- \<Rightarrow> (nat  \<Rightarrow> 'a) set"
+ (* Remark. g is a function of Nset (m - 1) \<rightarrow> B *)  
+    
+ ag_setfunc::"[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme, nat, 
+nat \<Rightarrow> ('a, 'more)  Ring_scheme] \<Rightarrow> (nat \<Rightarrow> 'a) set \<Rightarrow> (nat \<Rightarrow> 'a) set
+ \<Rightarrow> (nat  \<Rightarrow> 'a) set" 
 "ag_setfunc n B1 m B2 X Y
- == {f. \<exists>g. \<exists>h. (g\<in>X) \<and> (h\<in>Y) \<and> (f = (augm_func n g (Un_carrier (Nset n) B1)
-    m h (Un_carrier (Nset (m - 1)) B2)))}"
- (* Later we consider X = ac_Prod_Rg (Nset n) B1 and Y = ac_Prod_Rg (Nset (m - 1)) B2 *)
-
-
+ == {f. \<exists>g. \<exists>h. (g\<in>X) \<and>(h\<in>Y) \<and>(f = (augm_func n g (Un_carrier {j. j \<le> n} B1) 
+    m h (Un_carrier {j. j \<le> (m - 1)} B2)))}"
+ (* Later we consider X = ac_Prod_Rg (Nset n) B1 and Y = ac_Prod_Rg (Nset (m - 1)) B2 *)  
+ 
 consts
- ac_fProd_Rg::"[nat, nat \<Rightarrow> ('a, 'more) RingType_scheme] \<Rightarrow>
+ ac_fProd_Rg::"[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow>
                  (nat \<Rightarrow> 'a) set"
 
 primrec
- fprod_0: "ac_fProd_Rg 0 B = carr_prodag (Nset 0) B"
- frpod_n: "ac_fProd_Rg (Suc n) B = ag_setfunc n B (Suc 0) (compose (Nset 0)
- B (slide (Suc n))) (carr_prodag (Nset n) B) (carr_prodag (Nset 0) (compose (Nset 0) B (slide (Suc n))))"
+ fprod_0: "ac_fProd_Rg 0 B = carr_prodag {0::nat} B"
+ frpod_n: "ac_fProd_Rg (Suc n) B = ag_setfunc n B (Suc 0) (compose {0::nat} 
+ B (slide (Suc n))) (carr_prodag {j. j \<le> n} B) (carr_prodag {0} (compose {0} B (slide (Suc n))))"
 
 constdefs
- prodB1 :: "[('a, 'm) RingType_scheme, ('a, 'm) RingType_scheme] \<Rightarrow>
-                 (nat \<Rightarrow> ('a, 'm) RingType_scheme)"
+ prodB1 :: "[('a, 'm) Ring_scheme, ('a, 'm) Ring_scheme] \<Rightarrow>
+                 (nat \<Rightarrow> ('a, 'm) Ring_scheme)" 
   "prodB1 R S == \<lambda>k. if k=0 then R else if k=Suc 0 then S else
                  arbitrary"
 
- Prod2Rg :: "[('a, 'm) RingType_scheme, ('a, 'm) RingType_scheme]
-              \<Rightarrow> (nat \<Rightarrow> 'a) RingType" (infixl "\<Oplus>~" 80)
-  "A1 \<Oplus>~ A2 == prodrg (Nset (Suc 0)) (prodB1 A1 A2)"
+ Prod2Rg :: "[('a, 'm) Ring_scheme, ('a, 'm) Ring_scheme]
+              \<Rightarrow> (nat \<Rightarrow> 'a) Ring" (infixl "\<Oplus>\<^sub>r" 80)
+  "A1 \<Oplus>\<^sub>r A2 == prodrg {0, Suc 0} (prodB1 A1 A2)"
 
-text {* Don't try (Prod_ring (Nset n) B) \<Oplus>~ (B (Suc n)) *}
+text {* Don't try (Prod_ring (Nset n) B) \<Oplus>\<^sub>r (B (Suc n)) *}
 
-lemma prod_tOp_func:"\<forall>k\<in>I. ring (A k) \<Longrightarrow>
-    prod_tOp I A \<in> carr_prodag I A \<rightarrow> carr_prodag I A \<rightarrow> carr_prodag I A"
-apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (subst carr_prodag_def) apply (simp add:CollectI)
+lemma carr_prodrg_mem_eq:"\<lbrakk>f \<in> carrier (r\<Pi>\<^bsub>I\<^esub> A); g \<in> carrier (r\<Pi>\<^bsub>I\<^esub> A);
+       \<forall>i\<in>I. f i = g i \<rbrakk> \<Longrightarrow> f = g" 
+by (simp add:prodrg_def carr_prodag_def, (erule conjE)+,
+    rule funcset_eq[of _ I], assumption+)
+
+lemma prod_tOp_mem:"\<lbrakk>\<forall>k\<in>I. Ring (A k); X \<in> carr_prodag I A;
+ Y \<in> carr_prodag I A\<rbrakk> \<Longrightarrow> prod_tOp I A X Y \<in> carr_prodag I A"
+apply (subst carr_prodag_def, simp)
 apply (rule conjI)
  apply (simp add:prod_tOp_def restrict_def extensional_def)
 apply (rule conjI)
- apply (rule univar_func_test)
+ apply (rule univar_func_test, rule ballI)
+ apply (simp add:Un_carrier_def prod_tOp_def)
+ apply (simp add:carr_prodag_def, (erule conjE)+)
+ apply (frule_tac b = x in forball_spec1, assumption,
+        thin_tac "\<forall>k\<in>I. Ring (A k)",
+        frule_tac b = x in forball_spec1, assumption,
+        thin_tac "\<forall>i\<in>I. X i \<in> carrier (A i)",
+        frule_tac b = x in forball_spec1, assumption,
+        thin_tac "\<forall>i\<in>I. Y i \<in> carrier (A i)")
+ apply (frule_tac R = "A x" and x = "X x" and y = "Y x" in 
+        Ring.ring_tOp_closed, assumption+, blast)
+ 
  apply (rule ballI)
- apply (simp add:Un_carrier_def)
-apply (subgoal_tac "prod_tOp I A a b x \<in> carrier (A x)")
- apply blast
  apply (simp add:prod_tOp_def)
- apply (rule ring_tOp_closed)
-  apply simp
-  apply (simp add:carr_prodag_def)
-  apply (simp add:carr_prodag_def)
- apply (rule ballI)
- apply (simp add:prod_tOp_def)
- apply (rule ring_tOp_closed)
- apply simp apply (simp add:carr_prodag_def)+
+ apply (simp add:carr_prodag_def, (erule conjE)+)
+ apply (simp add:Ring.ring_tOp_closed)
+done
+ 
+ 
+lemma prod_tOp_func:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow>
+    prod_tOp I A \<in> carr_prodag I A \<rightarrow> carr_prodag I A \<rightarrow> carr_prodag I A"
+apply (rule bivar_func_test)
+ apply (rule ballI)+
+ apply (simp add:prod_tOp_mem)
 done
 
-lemma prod_tOp_mem:"\<lbrakk>\<forall>k\<in>I. ring (A k); X \<in> carr_prodag I A;
- Y \<in> carr_prodag I A\<rbrakk> \<Longrightarrow> prod_tOp I A X Y \<in> carr_prodag I A"
-apply (frule prod_tOp_func)
-apply (subgoal_tac "prod_tOp I A X \<in> carr_prodag I A \<rightarrow> carr_prodag I A")
-apply (thin_tac "prod_tOp I A \<in> carr_prodag I A \<rightarrow> carr_prodag I A
-                                 \<rightarrow> carr_prodag I A")
-apply (simp add: funcset_mem)
-apply (simp add: funcset_mem)
-done
-
-lemma prod_one_func:"\<forall>k\<in>I. ring (A k) \<Longrightarrow>
+lemma prod_one_func:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow>
                            prod_one I A \<in> carr_prodag I A"
 apply (simp add:prod_one_def carr_prodag_def)
 apply (rule conjI)
-apply (rule univar_func_test) apply (rule ballI)
+apply (rule univar_func_test) apply (rule ballI) 
  apply (simp add:Un_carrier_def)
- apply (subgoal_tac "1\<^sub>(A x) \<in> carrier (A x)")
+ apply (frule_tac b = x in forball_spec1, assumption,
+        thin_tac "\<forall>k\<in>I. Ring (A k)",
+        frule_tac R = "A x" in Ring.ring_one)
  apply blast
- apply (rule ring_one) apply simp
 apply (rule ballI)
- apply (rule ring_one) apply simp
+ apply (rule Ring.ring_one, simp)
 done
 
+lemma prodrg_carrier:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow>
+                  carrier (prodrg I A) = carrier (prodag I A)"
+by (simp add:prodrg_def prodag_def)
 
-lemma prodrg_ring:"\<forall>k\<in>I. ring (A k) \<Longrightarrow> ring (prodrg I A)"
-apply (subst ring_def)
- apply (rule conjI)
- apply (subgoal_tac "\<forall>k\<in>I. agroup (A k)")
- apply (frule prodag_agroup [of "I" "A"])
- apply (subst agroup_def)
- apply (subgoal_tac "carrier (r\<Pi>\<^sub>I A) = carrier (a\<Pi>\<^sub>I A)") apply simp
- apply (subgoal_tac "pOp (r\<Pi>\<^sub>I A) =  pOp (a\<Pi>\<^sub>I A)")  apply simp
- apply (subgoal_tac "mOp (r\<Pi>\<^sub>I A) =  mOp (a\<Pi>\<^sub>I A)")  apply simp
- apply (subgoal_tac "zero (r\<Pi>\<^sub>I A) = zero (a\<Pi>\<^sub>I A)") apply simp
- apply (simp add:agroup_def) apply (fold agroup_def)
-apply (rule impI) apply (rule ballI) apply (simp add:ag_r_zero)
- apply (simp add:prodag_def prodrg_def)
- apply (simp add:prodag_def prodrg_def)
- apply (simp add:prodag_def prodrg_def)
- apply (simp add:prodag_def prodrg_def)
-apply (rule ballI)
- apply (rule ring_is_ag) apply simp
- apply (rule conjI)
-  apply (simp add:prodrg_def)
-  apply (simp add:prod_tOp_func)
- apply (rule conjI)
-  apply (simp add:prodrg_def prod_one_func)
-apply (rule ballI)+
+lemma prodrg_ring:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow> Ring (prodrg I A)"
+apply (rule Ring.intro)
  apply (simp add:prodrg_def)
-apply (subgoal_tac "\<forall>k\<in>I. agroup (A k)") prefer 2 apply (rule ballI)
- apply (rule ring_is_ag) apply simp
-apply (rule conjI)
- apply (frule prod_one_func[of "I" "A"])
- apply (frule_tac X = "prod_one I A" and Y = x in prod_tOp_mem, assumption+)
- apply (rule carr_prodag_mem_eq [of "I" "A"], assumption+)
- apply (rule ballI) apply (simp add:prod_one_def)
- apply (simp add:prod_tOp_def)
- apply (rule ring_l_one) apply simp apply (simp add:carr_prodag_def)
-apply (rule conjI)
- apply (frule_tac X = y and Y = z in prod_pOp_mem, assumption+)
- apply (frule_tac X = x and Y = "prod_pOp I A y z" in prod_tOp_mem,
-                                                        assumption+)
- apply (frule_tac X = x and Y = y in prod_tOp_mem, assumption+)
- apply (frule_tac X = x and Y = z in prod_tOp_mem, assumption+)
- apply (frule_tac X = "(prod_tOp I A x y)" and Y = "(prod_tOp I A x z)" in prod_pOp_mem, assumption+)
- apply (rule carr_prodag_mem_eq [of "I" "A"], assumption+)
- apply (rule ballI)
- apply (simp add:prod_pOp_def prod_tOp_def)
- apply (rule ring_distrib1) apply simp apply (simp add:carr_prodag_def)
- apply (simp add:carr_prodag_def) apply (simp add:carr_prodag_def)
-apply (rule conjI)
- apply (frule_tac X = x and Y = y in prod_tOp_mem, assumption+)
- apply (frule_tac X = "prod_tOp I A x y" and Y = z in prod_tOp_mem,
-                                                              assumption+)
- apply (frule_tac X = y and Y = z in prod_tOp_mem, assumption+)
- apply (frule_tac X = x and Y = "prod_tOp I A y z" in prod_tOp_mem,
-                                                            assumption+)
- apply (rule carr_prodag_mem_eq [of "I" "A"], assumption+)
- apply (rule ballI) apply (simp add:prod_tOp_def)
- apply (rule ring_tOp_assoc) apply simp
-  apply (simp add:carr_prodag_def)
-  apply (simp add:carr_prodag_def)
-  apply (simp add:carr_prodag_def)
-apply (frule_tac X = x and Y = y in prod_tOp_mem, assumption+)
- apply (frule_tac X = y and Y = x in prod_tOp_mem, assumption+)
- apply (rule carr_prodag_mem_eq [of "I" "A"], assumption+)
- apply (rule ballI) apply (simp add:prod_tOp_def)
- apply (rule ring_tOp_commute) apply simp
- apply (simp add:carr_prodag_def)+
+ apply (rule prod_pOp_func,
+        rule ballI, simp add:Ring.ring_is_ag)
+ 
+ apply (simp add:prodrg_def, rule prod_pOp_assoc,
+        simp add:Ring.ring_is_ag, assumption+)
+ 
+ apply (simp add:prodrg_def, rule prod_pOp_commute,
+          simp add:Ring.ring_is_ag, assumption+)
+
+ apply (simp add:prodrg_def, rule prod_mOp_func,
+           simp add:Ring.ring_is_ag) 
+ 
+ apply (simp add:prodrg_def)
+ apply (cut_tac X = a in prod_mOp_mem[of "I" "A"])
+        apply (simp add:Ring.ring_is_ag, assumption)
+ apply (cut_tac X = "prod_mOp I A a" and Y = a in prod_pOp_mem[of "I" "A"],
+        simp add:Ring.ring_is_ag, assumption+,
+        cut_tac prod_zero_func[of "I" "A"])
+ apply (rule carr_prodag_mem_eq[of "I" "A"],
+        simp add:Ring.ring_is_ag, assumption+,
+        rule ballI, simp add:prod_pOp_def,
+        subst prod_mOp_mem_i, simp add:Ring.ring_is_ag, assumption+,
+        subst prod_zero_i, simp add:Ring.ring_is_ag, assumption+,
+        rule aGroup.l_m, simp add:Ring.ring_is_ag,
+        simp add:prodag_comp_i, simp add:Ring.ring_is_ag)
+ apply (simp add:prodrg_def,
+        rule prod_zero_func, simp add:Ring.ring_is_ag)
+ apply (simp add:prodrg_def,
+        cut_tac prod_zero_func[of "I" "A"],
+        cut_tac X = "prod_zero I A" and Y = a in prod_pOp_mem[of "I" "A"],
+        simp add:Ring.ring_is_ag, assumption+,
+        rule carr_prodag_mem_eq[of "I" "A"],
+        simp add:Ring.ring_is_ag, assumption+)
+        apply (rule ballI)
+      apply (simp add:prod_pOp_def prod_zero_def)
+      apply (rule aGroup.ag_l_zero, simp add:Ring.ring_is_ag)
+      apply (simp add:prodag_comp_i, simp add:Ring.ring_is_ag)
+ apply (simp add:prodrg_def,
+        rule prod_tOp_func, simp add:Ring.ring_is_ag)
+ apply (simp add:prodrg_def)
+  apply (frule_tac X = a and Y = b in prod_tOp_mem[of "I" "A"], assumption+,
+         frule_tac X = "prod_tOp I A a b" and Y = c in 
+                                      prod_tOp_mem[of "I" "A"], assumption+,
+         frule_tac X = b and Y = c in prod_tOp_mem[of "I" "A"], assumption+,
+         frule_tac X = a and Y = "prod_tOp I A b c" in 
+                                      prod_tOp_mem[of "I" "A"], assumption+)
+  apply (rule carr_prodag_mem_eq[of "I" "A"],
+         simp add:Ring.ring_is_ag, assumption+, rule ballI)
+  apply (simp add:prod_tOp_def)
+  apply (rule Ring.ring_tOp_assoc, simp, (simp add:prodag_comp_i)+)
+ apply (simp add:prodrg_def)
+  apply (frule_tac X = a and Y = b in prod_tOp_mem[of "I" "A"], assumption+,
+         frule_tac X = b and Y = a in prod_tOp_mem[of "I" "A"], assumption+,
+         rule carr_prodag_mem_eq[of "I" "A"],
+         simp add:Ring.ring_is_ag, assumption+)
+  apply (rule ballI, simp add:prod_tOp_def)
+  apply (rule Ring.ring_tOp_commute, (simp add:prodag_comp_i)+)
+ apply (simp add:prodrg_def, rule prod_one_func, assumption)
+
+ apply (simp add:prodrg_def)
+  apply (cut_tac X = b and Y = c in prod_pOp_mem[of "I" "A"],
+         simp add:Ring.ring_is_ag, assumption+,
+         cut_tac X = a and Y = b in prod_tOp_mem[of "I" "A"], assumption+,
+         cut_tac X = a and Y = c in prod_tOp_mem[of "I" "A"], assumption+,
+         cut_tac X = "prod_tOp I A a b" and Y = "prod_tOp I A a c" in 
+         prod_pOp_mem[of "I" "A"], simp add:Ring.ring_is_ag, assumption+)
+  apply (rule carr_prodag_mem_eq[of "I" "A"],
+         simp add:Ring.ring_is_ag, rule prod_tOp_mem[of "I" "A"], assumption+)
+  apply (rule ballI, simp add:prod_tOp_def prod_pOp_def)
+  apply (rule Ring.ring_distrib1, (simp add:prodag_comp_i)+)
+
+ apply (simp add:prodrg_def,
+        cut_tac prod_one_func[of "I" "A"],
+        cut_tac X = "prod_one I A" and Y = a in prod_tOp_mem[of "I" "A"], 
+        assumption+) 
+ apply (rule carr_prodag_mem_eq[of "I" "A"],
+        simp add:Ring.ring_is_ag, assumption+,
+        rule ballI, simp add:prod_tOp_def prod_one_def,
+        rule Ring.ring_l_one, simp, simp add:prodag_comp_i)
+ apply simp
 done
 
-lemma prodrg_carrier:"\<forall>k\<in>I. ring (A k) \<Longrightarrow>
-         carrier (prodrg I A) = carr_prodag I A"
-apply (simp add:prodrg_def)
-done
-
-lemma prodrg_elem_extensional:"\<lbrakk>\<forall>k\<in>I. ring (A k); f \<in> carrier (prodrg I A)\<rbrakk> \<Longrightarrow>
-         f \<in> extensional I"
+lemma prodrg_elem_extensional:"\<lbrakk>\<forall>k\<in>I. Ring (A k); f \<in> carrier (prodrg I A)\<rbrakk>
+      \<Longrightarrow>  f \<in> extensional I"
 apply (simp add:prodrg_carrier)
-apply (simp add:carr_prodag_def)
+apply (simp add:prodag_def carr_prodag_def)
 done
 
-lemma prodrg_pOp:"\<forall>k\<in>I. ring (A k) \<Longrightarrow>
-                  pOp (prodrg I A) = prod_pOp I A"
+lemma prodrg_pOp:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow> 
+                  pop (prodrg I A) = prod_pOp I A"
 apply (simp add:prodrg_def)
 done
 
-lemma prodrg_mOp:"\<forall>k\<in>I. ring (A k) \<Longrightarrow>
-                  mOp (prodrg I A) = prod_mOp I A"
+lemma prodrg_mOp:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow> 
+                  mop (prodrg I A) = prod_mOp I A"
 apply (simp add:prodrg_def)
-done
+done 
 
-lemma prodrg_zero:"\<forall>k\<in>I. ring (A k) \<Longrightarrow>
+lemma prodrg_zero:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow> 
                   zero (prodrg I A) = prod_zero I A"
 apply (simp add:prodrg_def)
 done
 
-lemma prodrg_tOp:"\<forall>k\<in>I. ring (A k) \<Longrightarrow>
-                  tOp (prodrg I A) = prod_tOp I A"
+lemma prodrg_tOp:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow> 
+                  tp (prodrg I A) = prod_tOp I A"
 apply (simp add:prodrg_def)
 done
 
-lemma prodrg_one:"\<forall>k\<in>I. ring (A k) \<Longrightarrow>
-                  one (prodrg I A) = prod_one I A"
+lemma prodrg_one:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow> 
+                  un (prodrg I A) = prod_one I A"
 apply (simp add:prodrg_def)
 done
 
-
-lemma prodrg_sameTr5:"\<lbrakk>\<forall>k\<in>I. ring (A k); \<forall>k\<in>I. A k = B k\<rbrakk>
+lemma prodrg_sameTr5:"\<lbrakk>\<forall>k\<in>I. Ring (A k); \<forall>k\<in>I. A k = B k\<rbrakk>
                                \<Longrightarrow> prod_tOp I A = prod_tOp I B"
 apply (frule prod_tOp_func)
-apply (subgoal_tac "carr_prodag I A = carr_prodag I B") apply simp
+apply (subgoal_tac "carr_prodag I A = carr_prodag I B", simp)
 apply (frule prod_tOp_func [of "I" "B"])
  apply (rule funcset_eq [of _ "carr_prodag I B" _])
- apply (simp add:prod_tOp_def extensional_def)
- apply (simp add:prod_tOp_def extensional_def)
+ apply (simp add:prod_tOp_def extensional_def) 
+ apply (simp add:prod_tOp_def extensional_def) 
 apply (rule ballI)
  apply (frule_tac x = x in funcset_mem [of "prod_tOp I A" "carr_prodag I B"
  "carr_prodag I B \<rightarrow> carr_prodag I B"], assumption+)
@@ -734,312 +612,338 @@ apply (rule ballI)
  apply (thin_tac "prod_tOp I B
            \<in> carr_prodag I B \<rightarrow> carr_prodag I B \<rightarrow> carr_prodag I B")
  apply (rule funcset_eq [of _ "carr_prodag I B"])
- apply (simp add:prod_tOp_def extensional_def)
- apply (simp add:prod_tOp_def extensional_def)
+ apply (simp add:prod_tOp_def extensional_def) 
+ apply (simp add:prod_tOp_def extensional_def) 
 apply (rule ballI)
  apply (frule_tac f = "prod_tOp I A x" and A = "carr_prodag I B" and
          x = xa in funcset_mem, assumption+)
  apply (frule_tac f = "prod_tOp I B x" and A = "carr_prodag I B" and
          x = xa in funcset_mem, assumption+)
- apply (subgoal_tac "\<forall>k\<in>I. agroup (B k)")
+ apply (subgoal_tac "\<forall>k\<in>I. aGroup (B k)") 
  apply (rule carr_prodag_mem_eq, assumption+)
- apply (rule ballI) apply (simp add:prod_tOp_def) apply (rule ballI)
- apply (rule ring_is_ag) apply simp
-apply (subgoal_tac "\<forall>k\<in>I. agroup (A k)")
+ apply (rule ballI, simp add:prod_tOp_def) 
+ apply (rule ballI, rule Ring.ring_is_ag, simp)
+apply (subgoal_tac "\<forall>k\<in>I. aGroup (A k)")
  apply (simp add:prodag_sameTr1)
- apply (rule ballI)  apply (rule ring_is_ag) apply simp
+ apply (rule ballI, rule Ring.ring_is_ag, simp)
 done
 
-lemma prodrg_sameTr6:"\<lbrakk>\<forall>k\<in>I. ring (A k); \<forall>k\<in>I. A k = B k\<rbrakk>
+lemma prodrg_sameTr6:"\<lbrakk>\<forall>k\<in>I. Ring (A k); \<forall>k\<in>I. A k = B k\<rbrakk>
                                \<Longrightarrow> prod_one I A = prod_one I B"
 apply (frule prod_one_func [of "I" "A"])
-apply simp
-apply (subgoal_tac "\<forall>k\<in>I. agroup (A k)")
-apply (frule prod_one_func [of "I" "B"])
-apply (frule prodag_sameTr1[of "I" "A" "B"], assumption+) apply simp
-apply (rule carr_prodag_mem_eq, assumption+)
-apply (rule ballI)
-apply (simp add:prod_one_def)
-apply (rule ballI) apply (rule ring_is_ag) apply simp
+apply (cut_tac prodag_sameTr1[of "I" "A" "B"])
+apply (rule carr_prodag_mem_eq[of I A "prod_one I A" "prod_one I B"])
+apply (simp add:Ring.ring_is_ag, assumption)
+ apply (cut_tac prod_one_func [of "I" "B"], simp)
+ apply simp
+ apply (rule ballI, simp add:prod_one_def)
+ apply (simp add:Ring.ring_is_ag, simp)
 done
 
-lemma prodrg_same:"\<lbrakk>\<forall>k\<in>I. ring (A k); \<forall>k\<in>I. A k = B k\<rbrakk>
+lemma prodrg_same:"\<lbrakk>\<forall>k\<in>I. Ring (A k); \<forall>k\<in>I. A k = B k\<rbrakk>
                                \<Longrightarrow> prodrg I A = prodrg I B"
-apply (subgoal_tac "\<forall>k\<in>I. agroup (A k)")
-apply (frule prodag_sameTr1, assumption+)
-apply (frule prodag_sameTr2, assumption+)
+apply (subgoal_tac "\<forall>k\<in>I. aGroup (A k)")
+apply (frule prodag_sameTr1, assumption+) 
+apply (frule prodag_sameTr2, assumption+) 
 apply (frule prodag_sameTr3, assumption+)
 apply (frule prodag_sameTr4, assumption+)
 apply (frule prodrg_sameTr5, assumption+)
 apply (frule prodrg_sameTr6, assumption+)
 apply (simp add:prodrg_def)
-apply (rule ballI) apply (rule ring_is_ag) apply simp
+apply (rule ballI, rule Ring.ring_is_ag, simp)
 done
 
-lemma project_rhom:"\<lbrakk>\<forall>k\<in>I. ring (A k); j \<in> I\<rbrakk> \<Longrightarrow>
+lemma prodrg_component:"\<lbrakk>f \<in> carrier (prodrg I A); i \<in> I\<rbrakk> \<Longrightarrow>
+                                 f i \<in> carrier (A i)"
+by (simp add:prodrg_def carr_prodag_def)
+
+lemma project_rhom:"\<lbrakk>\<forall>k\<in>I. Ring (A k); j \<in> I\<rbrakk> \<Longrightarrow>
                          PRoject I A j \<in> rHom ( prodrg I A) (A j)"
 apply (simp add:rHom_def)
- apply (subgoal_tac "\<forall>k\<in>I. agroup (A k)")
- apply (frule project_aHom [of "I" "A" "j"], assumption+)
- apply (rule conjI)
- apply (subst aHom_def)
- apply (simp add:prodrg_def)
- apply (simp add:aHom_def) apply (simp add:prodag_def)
 apply (rule conjI)
- apply (rule ballI)+
- apply (frule prodrg_ring [of "I" "A"])
- apply (frule_tac x = x and y = y in ring_tOp_closed [of "r\<Pi>\<^sub>I A"],
-                                                         assumption+)
+ apply (simp add:aHom_def)
+ apply (rule conjI)
+ apply (rule univar_func_test, rule ballI)
  apply (simp add:prodrg_carrier)
+ apply (cut_tac prodag_carrier[of I A], simp)
+
  apply (simp add:PRoject_def)
- apply (simp add:prodrg_def) apply (fold prodrg_def)
- apply (simp add:prod_tOp_def)
-apply (frule prodrg_ring [of "I" "A"])
-apply (frule ring_one[of "r\<Pi>\<^sub>I A"])
+ apply (cut_tac prodag_carrier[of I A], simp,
+        thin_tac "carrier (a\<Pi>\<^bsub>I\<^esub> A) = carr_prodag I A")
+ apply (simp add:prodag_comp_i) 
+ apply (rule ballI, simp add:Ring.ring_is_ag) 
+ apply (rule ballI, simp add:Ring.ring_is_ag) 
+
+
+ apply (subgoal_tac "\<forall>k\<in>I. aGroup (A k)") 
+ apply (frule project_aHom [of "I" "A" "j"], assumption+) 
+ apply (rule conjI)
+ apply (simp add:prodrg_carrier aHom_def)
  apply (simp add:prodrg_carrier)
+ apply (simp add:prodrg_pOp)
+ apply (simp add:prodag_pOp[THEN sym])
+ apply (simp add:aHom_def)
+
+ apply (rule ballI, simp add:Ring.ring_is_ag)
+
+ apply (rule conjI)
+ apply (rule ballI)+
+ apply (simp add:prodrg_carrier)
+ apply (cut_tac prodag_carrier[of I A], simp) 
+ apply (frule_tac X = x and Y = y in prod_tOp_mem[of I A], assumption+)
+ apply (simp add:prodrg_tOp)
+ apply (simp add:PRoject_def)
+ apply (simp add:prod_tOp_def)
+ 
+ apply (rule ballI)
+ apply (simp add:Ring.ring_is_ag)
+
+apply (frule prodrg_ring [of "I" "A"])
+apply (frule Ring.ring_one[of "r\<Pi>\<^bsub>I\<^esub> A"])
+ apply (simp add:prodrg_carrier)
+ apply (cut_tac prodag_carrier[of I A], simp)
  apply (simp add:PRoject_def) apply (simp add:prodrg_def)
- apply (fold prodrg_def) apply (simp add:prod_one_def)
+ apply (fold prodrg_def) apply (simp add:prod_one_def) 
+
 apply (rule ballI)
- apply (rule ring_is_ag) apply simp
+ apply (simp add:Ring.ring_is_ag) 
 done
 
-lemma augm_funcTr:"\<lbrakk>\<forall>k\<in>Nset (Suc n). ring (B k); f \<in> carr_prodag (Nset (Suc n)) B\<rbrakk> \<Longrightarrow> f = augm_func n (restrict f (Nset n)) (Un_carrier (Nset n) B) (Suc 0)  (\<lambda>x\<in>Nset 0. f (x + Suc n)) (Un_carrier (Nset 0) (compose (Nset 0) B (slide (Suc n))))"
-apply (subgoal_tac "\<forall>k\<in>Nset (Suc n). agroup (B k)")
-apply (rule carr_prodag_mem_eq [of "Nset (Suc n)" "B" "f" "augm_func n (restrict f (Nset n)) (Un_carrier (Nset n) B) (Suc 0) (\<lambda>x\<in>Nset 0. f (x + Suc n)) (Un_carrier (Nset 0) (compose (Nset 0) B (slide (Suc n))))"], assumption+)
-apply (simp add:augm_func_def)
+lemma augm_funcTr:"\<lbrakk>\<forall>k \<le>(Suc n). Ring (B k); 
+                       f \<in> carr_prodag {i. i \<le> (Suc n)} B\<rbrakk> \<Longrightarrow> 
+ f = augm_func n (restrict f {i. i \<le> n}) (Un_carrier {i. i \<le> n} B) (Suc 0)  
+     (\<lambda>x\<in>{0::nat}. f (x + Suc n)) 
+             (Un_carrier {0} (compose {0} B (slide (Suc n))))"
+apply (rule carr_prodag_mem_eq [of "{i. i \<le> (Suc n)}" "B" "f"
+ "augm_func n (restrict f {i. i \<le> n}) (Un_carrier {i. i \<le> n} B) (Suc 0)
+ (\<lambda>x\<in>{0}. f (x + Suc n)) (Un_carrier {0} (compose {0} B (slide (Suc n))))"])
+ apply (rule ballI, simp add:Ring.ring_is_ag)
+ apply (simp add:augm_func_def)
  apply (simp add:carr_prodag_def)
- apply (rule conjI) apply (simp add:Pi_def[of "Nset (Suc n)"])
- apply (rule allI) apply (rule conjI) apply (rule impI)
- apply (simp add:Nset_def)
- apply (rule impI) apply (rule conjI) apply (rule impI)
- apply (simp add:sliden_def) apply (simp add:Nset_def)
- apply (rule impI) apply (simp add:Nset_def sliden_def)
-apply (rule ballI) apply (simp add:Nset_def) apply (rule impI)
- apply (subgoal_tac "i = Suc n") apply (simp add:sliden_def) apply simp
-apply (rule ballI)
- apply (simp add:augm_func_def) apply (simp add:Nset_def sliden_def)
+ apply (rule conjI)
+ apply (simp add:augm_func_def)
+ apply (rule conjI)
+ apply (rule univar_func_test)
+ apply (rule ballI)
+ apply (simp add:augm_func_def sliden_def) 
+ apply (erule conjE)+
+ apply (frule_tac x = x in funcset_mem[of f "{i. i \<le> Suc n}" 
+                           "Un_carrier {i. i \<le> Suc n} B"]) apply simp
+ apply simp 
  apply (rule impI)
- apply (subgoal_tac "l = Suc n") apply simp apply simp
- apply (rule ballI) apply (rule ring_is_ag) apply simp
+  apply (rule_tac x = "Suc n" in funcset_mem[of f "{i. i \<le> Suc n}" 
+                  "Un_carrier {i. i \<le> Suc n} B"], assumption) apply simp
+ apply (rule allI, (erule conjE)+) 
+ apply (simp add:augm_func_def)
+ apply (case_tac "i \<le> n", simp add:sliden_def)
+ apply (simp add:sliden_def, rule impI) 
+ apply (simp add:nat_not_le_less,
+        frule_tac m = n and n = i in Suc_leI,
+        frule_tac m = i and n = "Suc n" in Nat.le_anti_sym, assumption+,
+        simp)
+ 
+ apply (rule ballI, simp) 
+ apply (simp add:augm_func_def sliden_def)
+ apply (rule impI, simp add:nat_not_le_less)
+  apply (frule_tac n = l in Suc_leI[of n _])
+  apply (frule_tac m = l and n = "Suc n" in Nat.le_anti_sym, assumption+,
+         simp)
 done
 
-lemma A_to_prodag_mem:"\<lbrakk>ring A; \<forall>k\<in>I. ring (B k);  \<forall>k\<in>I. (S k) \<in>
+lemma A_to_prodag_mem:"\<lbrakk>Ring A; \<forall>k\<in>I. Ring (B k);  \<forall>k\<in>I. (S k) \<in> 
  rHom A (B k); x \<in> carrier A \<rbrakk> \<Longrightarrow> A_to_prodag A I S B x \<in> carr_prodag I B"
 apply (simp add:carr_prodag_def)
 apply (rule conjI)
-apply (simp add:A_to_prodag_def extensional_def)
+apply (simp add:A_to_prodag_def extensional_def) 
 apply (rule conjI)
  apply (rule univar_func_test) apply (rule ballI)
  apply (simp add: A_to_prodag_def)
  apply (subgoal_tac "(S xa) \<in> rHom A (B xa)") prefer 2 apply simp
- apply (thin_tac "\<forall>k\<in>I. S k \<in> rHom A (B k)")
+ apply (thin_tac "\<forall>k\<in>I. S k \<in> rHom A (B k)") 
  apply (frule_tac f = "S xa" and A = A and R = "B xa" in rHom_mem, assumption+)
  apply (simp add:Un_carrier_def) apply blast
 apply (rule ballI)
-apply (subgoal_tac "(S i) \<in> rHom A (B i)") prefer 2 apply simp
-apply (frule_tac f = "S i" and A = A and R = "B i" in rHom_mem, assumption+)
+
 apply (simp add:A_to_prodag_def)
+ apply (rule_tac f = "S i" and A = A and R = "B i" and a = x in rHom_mem)
+   apply simp 
+   apply assumption
 done
 
-lemma A_to_prodag_rHom:"\<lbrakk>ring A; \<forall>k\<in>I. ring (B k); \<forall>k\<in>I. (S k) \<in>
- rHom A (B k) \<rbrakk>  \<Longrightarrow> A_to_prodag A I S B \<in> rHom A (r\<Pi>\<^sub>I B)"
-apply (simp add:rHom_def [of "A" "r\<Pi>\<^sub>I B"])
+lemma A_to_prodag_rHom:"\<lbrakk>Ring A; \<forall>k\<in>I. Ring (B k); \<forall>k\<in>I. (S k) \<in> 
+      rHom A (B k) \<rbrakk>  \<Longrightarrow> A_to_prodag A I S B \<in> rHom A (r\<Pi>\<^bsub>I\<^esub> B)"
+apply (simp add:rHom_def [of "A" "r\<Pi>\<^bsub>I\<^esub> B"])
 apply (rule conjI)
- apply (subst aHom_def)
- apply (simp add:CollectI)
+ apply (cut_tac A_to_prodag_aHom[of A I B S])
+ apply (subst aHom_def, simp)
  apply (simp add:prodrg_carrier)
- apply (subgoal_tac "\<forall>k\<in>I. agroup (B k)")
- apply (subgoal_tac "\<forall>k\<in>I. S k \<in> aHom A (B k)")
- apply (frule ring_is_ag)
- apply (frule A_to_prodag_aHom [of "A" "I" "B" "S"], assumption+)
- apply (rule conjI)
- apply (simp add:aHom_def prodag_def)
- apply (rule conjI)
  apply (simp add:aHom_def)
- apply (rule ballI)+
- apply (subst aHom_add [of "A" "a\<Pi>\<^sub>I B" "A_to_prodag A I S B"], assumption+)
- apply (simp add:prodag_agroup) apply assumption+
- apply (simp add:prodag_pOp prodrg_pOp)
-apply (rule ballI) apply (subgoal_tac "S k \<in> rHom A (B k)")
- prefer 2 apply simp apply (simp add:rHom_def)
- apply (rule ballI) apply (rule ring_is_ag) apply simp
+ apply (simp add:prodrg_def)
+ apply (cut_tac prodag_pOp[of I B], simp)
+
+ apply (rule ballI, simp add:Ring.ring_is_ag,
+        simp add:Ring.ring_is_ag,
+        rule ballI, simp add:Ring.ring_is_ag)
+
+ apply (rule ballI) 
+ apply (simp add:rHom_def)
+
 apply (rule conjI)
  apply (rule ballI)+
- apply (frule_tac x = x and y = y in ring_tOp_closed [of "A"], assumption+)
- apply (frule_tac x = "x \<cdot>\<^sub>A y" in A_to_prodag_mem [of "A" "I" "B" "S"],
-                                                    assumption+)
- apply (frule_tac x = x in A_to_prodag_mem [of "A" "I" "B" "S"],
-                                                    assumption+)
- apply (frule_tac x = y in A_to_prodag_mem [of "A" "I" "B" "S"],
-                                                    assumption+)
- apply (frule prodrg_ring [of "I" "B"])
- apply (frule_tac x = "A_to_prodag A I S B x" and
-  y = "A_to_prodag A I S B y" in ring_tOp_closed [of "r\<Pi>\<^sub>I B"])
- apply (simp add:prodrg_carrier)+
- apply (subgoal_tac "\<forall>k\<in>I. agroup (B k)")
- apply (rule carr_prodag_mem_eq [of "I" "B"], assumption+)
- apply (rule ballI)
- apply (simp add:A_to_prodag_def)
- apply (simp add:prodrg_def) apply (fold prodrg_def)
- apply (simp add:prod_tOp_def)
- apply (subgoal_tac "ring (B l)") prefer 2 apply simp
- apply (subgoal_tac "S l \<in> rHom A (B l)")
+ apply (frule_tac x = x and y = y in Ring.ring_tOp_closed[of A], assumption+)
+ apply (frule_tac x = "x \<cdot>\<^sub>r\<^bsub>A\<^esub> y" in A_to_prodag_mem[of A I B S], assumption+,
+        frule_tac x = x in A_to_prodag_mem[of A I B S], assumption+,
+        frule_tac x = y in A_to_prodag_mem[of A I B S], assumption+)
+ apply (simp add:prodrg_tOp[of I B])
+ apply (frule_tac X = "A_to_prodag A I S B x " and Y = "A_to_prodag A I S B y"         in prod_tOp_mem[of I B], assumption+)
+apply (cut_tac X = "A_to_prodag A I S B (x \<cdot>\<^sub>r\<^bsub>A\<^esub> y)" and Y = "prod_tOp I B (A_to_prodag A I S B x) (A_to_prodag A I S B y)" in carr_prodag_mem_eq[of I B])
+ apply (rule ballI, simp add:Ring.ring_is_ag) apply assumption+
+ apply (rule ballI, simp add:prod_tOp_def A_to_prodag_def)
+ apply (frule_tac b = l in forball_spec1, assumption,
+        thin_tac "\<forall>k\<in>I. Ring (B k)",
+        frule_tac b = l in forball_spec1, assumption,
+        thin_tac "\<forall>k\<in>I. S k \<in> rHom A (B k)")
  apply (simp add:rHom_tOp) apply simp
-apply (rule ballI)
- apply (rule ring_is_ag) apply simp
-apply (frule ring_one)
- apply (frule A_to_prodag_mem [of "A" "I" "B" "S" "1\<^sub>A"], assumption+)
- apply (frule prodrg_ring [of "I" "B"])
- apply (frule ring_one [of "r\<Pi>\<^sub>I B"])
- apply (simp add:prodrg_carrier)
- apply (rule carr_prodag_mem_eq [of "I" "B"])
- apply (rule ballI) apply (rule ring_is_ag) apply simp
- apply (simp add:A_to_prodag_mem) apply assumption
-apply (rule ballI)
- apply (simp add:A_to_prodag_def)
- apply (simp add:prodrg_def) apply (fold prodrg_def)
- apply (simp add:prod_one_def)
- apply (subgoal_tac "S l \<in> rHom A (B l)")
- apply (rule rHom_one, assumption+) apply simp
- apply simp apply simp
-done
 
-lemma ac_fProd_ProdTr1:"\<lbrakk>\<forall>k\<in>Nset (Suc n). ring (B k)\<rbrakk> \<Longrightarrow>
- ag_setfunc n B (Suc 0) (compose (Nset 0) B (slide (Suc n))) (carr_prodag (Nset n) B) (carr_prodag (Nset 0) (compose (Nset 0) B (slide (Suc n)))) \<subseteq>  carr_prodag (Nset (Suc n)) B"
+ apply (simp add:prodrg_one[of I B])
+ apply (frule prod_one_func[of I B])
+ apply (frule Ring.ring_one[of A],
+        frule_tac x = "1\<^sub>r\<^bsub>A\<^esub>" in A_to_prodag_mem[of A I B S], assumption+)
+ apply (cut_tac X = "A_to_prodag A I S B 1\<^sub>r\<^bsub>A\<^esub>" and Y = "prod_one I B" in 
+        carr_prodag_mem_eq[of I B])
+ apply (rule ballI, simp add:Ring.ring_is_ag)
+ apply assumption+
+ apply (rule ballI)
+ apply (subst A_to_prodag_def, simp add:prod_one_def)
+ apply (frule_tac b = l in forball_spec1, assumption,
+        thin_tac "\<forall>k\<in>I. Ring (B k)",
+        frule_tac b = l in forball_spec1, assumption,
+        thin_tac "\<forall>k\<in>I. S k \<in> rHom A (B k)")
+ apply (simp add:rHom_one)
+ apply assumption
+done 
+
+lemma ac_fProd_ProdTr1:"\<forall>k \<le> (Suc n). Ring (B k) \<Longrightarrow> 
+ ag_setfunc n B (Suc 0) (compose {0::nat} B (slide (Suc n))) 
+   (carr_prodag {i. i \<le> n} B) (carr_prodag {0} 
+     (compose {0} B (slide (Suc n)))) \<subseteq>  carr_prodag {i. i \<le> (Suc n)} B" 
 apply (rule subsetI)
-apply (simp add:ag_setfunc_def)
-apply (subgoal_tac " \<forall>g. g \<in> carr_prodag (Nset n) B \<and>
- (\<exists>h. h \<in> carr_prodag (Nset 0) (compose (Nset 0) B (slide (Suc n))) \<and>
- x = augm_func n g (Un_carrier (Nset n) B) (Suc 0) h (Un_carrier (Nset 0)
- (compose (Nset 0) B (slide (Suc n))))) \<longrightarrow>  x \<in> carr_prodag (Nset (Suc n)) B")
-apply blast
-apply (thin_tac "\<exists>g. g \<in> carr_prodag (Nset n) B \<and>
- (\<exists>h. h \<in> carr_prodag (Nset 0) (compose (Nset 0) B (slide (Suc n))) \<and>
- x = augm_func n g (Un_carrier (Nset n) B) (Suc 0) h (Un_carrier (Nset 0)
- (compose (Nset 0) B (slide (Suc n)))))")
-apply (rule allI) apply (rule impI) apply (erule conjE)
-apply (subgoal_tac "\<forall>h. h \<in> carr_prodag (Nset 0) (compose (Nset 0) B (slide (Suc n))) \<and> x =  augm_func n g (Un_carrier (Nset n) B) (Suc 0) h (Un_carrier (Nset 0) (compose (Nset 0) B (slide (Suc n)))) \<longrightarrow>  x \<in> carr_prodag (Nset (Suc n)) B") apply blast
-apply (thin_tac  "\<exists>h. h \<in> carr_prodag (Nset 0) (compose (Nset 0) B (slide (Suc n))) \<and> x =  augm_func n g (Un_carrier (Nset n) B) (Suc 0) h (Un_carrier (Nset 0) (compose (Nset 0) B (slide (Suc n))))")
-apply (rule allI) apply (rule impI)
-apply (simp add:carr_prodag_def [of "Nset (Suc n)" "B"])
-apply (rule conjI) apply (erule conjE)
- apply (thin_tac "x =
-          augm_func n g (Un_carrier (Nset n) B) (Suc 0) h
-           (Un_carrier (Nset 0) (compose (Nset 0) B (slide (Suc n))))")
+apply (simp add:ag_setfunc_def) 
+apply (erule exE, erule conjE, erule exE, erule conjE)
+apply (simp,
+       thin_tac "x =
+        augm_func n g (Un_carrier {j. j \<le> n} B) (Suc 0) h
+         (Un_carrier {0} (compose {0} B (slide (Suc n))))")
+apply (simp add:carr_prodag_def [of "{j. j \<le> (Suc n)}" "B"])
+apply (rule conjI)
  apply (simp add:augm_func_def)
-apply (rule conjI) apply (erule conjE)
- apply (thin_tac "x =
-          augm_func n g (Un_carrier (Nset n) B) (Suc 0) h
-           (Un_carrier (Nset 0) (compose (Nset 0) B (slide (Suc n))))")
+apply (rule conjI) 
  apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
  apply (simp add:augm_func_def)
- apply (simp add:Nset_def)
  apply (case_tac "x \<le> n")
- apply simp apply (fold Nset_def) apply (simp add:carr_prodag_def)
+ apply simp apply (simp add:carr_prodag_def)
  apply (erule conjE)+ apply (frule_tac x = x in mem_of_Nset [of _ "n"])
- apply (frule_tac f = g and x = x in funcset_mem[of _ "Nset n" "Un_carrier (Nset n) B"], assumption+)
- apply (thin_tac "g \<in> Nset n \<rightarrow> Un_carrier (Nset n) B")
- apply (thin_tac "h \<in> {0} \<rightarrow> Un_carrier {0} (compose {0} B (slide (Suc n)))")
- apply (simp add:Un_carrier_def)
- apply (subgoal_tac "\<forall>l. l \<in> Nset n \<longrightarrow> l \<in> Nset (Suc n)")
- apply blast apply (simp add:Nset_def)
- apply simp
- apply (subgoal_tac "x = Suc n") apply (thin_tac "x \<le> Suc n")
- apply (thin_tac "\<not> x \<le> n") apply simp
- apply (thin_tac "\<forall>k. k \<le> Suc n \<longrightarrow> ring (B k)")
- apply (thin_tac "g \<in> carr_prodag (Nset n) B")
+ apply (frule_tac f = g and x = x in funcset_mem[of _ "{j. j \<le> n}" 
+                      "Un_carrier {j. j \<le> n} B"], assumption+)
+ apply (thin_tac "g \<in> {j. j \<le> n} \<rightarrow> Un_carrier {j. j \<le> n} B",
+        thin_tac "h \<in> {0} \<rightarrow> Un_carrier {0} (compose {0} B (slide (Suc n)))")
+ apply (simp add:Un_carrier_def,
+        erule exE, erule conjE, erule exE, simp, erule conjE,
+        frule_tac i = i and j = n and k = "Suc n" in Nat.le_less_trans,
+        simp, 
+        frule_tac m = i and n = "Suc n" in less_imp_le, blast)
  apply (simp add:sliden_def)
- apply (simp add:carr_prodag_def Un_carrier_def) apply (erule conjE)+
+ apply (simp add:carr_prodag_def Un_carrier_def, (erule conjE)+)
  apply (simp add:compose_def slide_def)
- apply (subgoal_tac "Suc n \<in> Nset (Suc n)") apply blast
- apply (simp add:Nset_def) apply simp
-apply (erule conjE)+
- apply (thin_tac "x =
-          augm_func n g (Un_carrier (Nset n) B) (Suc 0) h
-           (Un_carrier (Nset 0) (compose (Nset 0) B (slide (Suc n))))")
- apply (rule ballI)
- apply (simp add:augm_func_def) apply (simp add:Nset_def)
- apply (case_tac "i \<le> n") apply simp
+ apply (cut_tac n_in_Nsetn[of "Suc n"], blast)
+ apply (rule allI, rule impI)
+ apply (simp add:augm_func_def) 
+ apply (case_tac "i \<le> n", simp)
  apply (simp add:carr_prodag_def [of "{i. i \<le> n}" _])
  apply simp apply (thin_tac "g \<in> carr_prodag {i. i \<le> n} B")
- apply (subgoal_tac "i = Suc n") apply simp prefer 2 apply simp
+ apply (simp add:Nat.le_def[of _ n],
+        frule_tac n = i in Suc_leI[of n],
+        frule_tac m = i and n = "Suc n" in Nat.le_anti_sym, assumption+, simp)
  apply (simp add:carr_prodag_def compose_def slide_def sliden_def)
 done
 
-lemma ac_fProd_Prod:"\<forall>k\<in>Nset n. ring (B k) \<Longrightarrow>
-                      ac_fProd_Rg n B = carr_prodag (Nset n) B"
-apply (case_tac "n = 0")
+lemma ac_fProd_Prod:"\<forall>k \<le> n. Ring (B k) \<Longrightarrow> 
+                      ac_fProd_Rg n B = carr_prodag {j. j \<le> n} B"
+apply (case_tac "n = 0") 
  apply simp
  apply (subgoal_tac "\<exists>m. n = Suc m")
- apply (subgoal_tac "\<forall>m. n = Suc m \<longrightarrow> ac_fProd_Rg n B = carr_prodag (Nset n) B")
+ apply (subgoal_tac "\<forall>m. n = Suc m \<longrightarrow> 
+                     ac_fProd_Rg n B = carr_prodag {j. j \<le> n} B")
  apply blast apply (thin_tac "\<exists>m. n = Suc m")
- apply (rule allI) apply (rule impI) apply simp apply (thin_tac "n = Suc m")
+ apply (rule allI, rule impI) apply (simp, thin_tac "n = Suc m")
  apply (rule equalityI)
  apply (simp add:ac_fProd_ProdTr1)
  apply (rule subsetI)
- apply (rename_tac m f)
+ apply (rename_tac m f)  
 apply (frule augm_funcTr, assumption+)
  apply (simp add:ag_setfunc_def)
- apply (subgoal_tac "(restrict f (Nset m)) \<in> carr_prodag (Nset m) B")
- apply (subgoal_tac "(\<lambda>x\<in>Nset 0. f (Suc (x + m))) \<in>  carr_prodag (Nset 0)
-                           (compose (Nset 0) B (slide (Suc m)))")
-
+ apply (subgoal_tac "(restrict f {j. j \<le> m}) \<in> carr_prodag {j. j \<le> m} B")
+ apply (subgoal_tac "(\<lambda>x\<in>{0::nat}. f (Suc (x + m))) \<in>  carr_prodag {0}
+                           (compose {0} B (slide (Suc m)))")
+ 
  apply blast
- apply (thin_tac "f =  augm_func m (restrict f (Nset m)) (Un_carrier (Nset m) B) (Suc 0) (\<lambda>x\<in>Nset 0. f (Suc (x + m))) (Un_carrier (Nset 0) (compose (Nset 0) B (slide (Suc m))))")
- apply (simp add:Nset_def carr_prodag_def)
+ apply (thin_tac "f =
+           augm_func m (restrict f {i. i \<le> m}) (Un_carrier {i. i \<le> m} B)
+            (Suc 0) (\<lambda>x\<in>{0}. f (Suc (x + m)))
+            (Un_carrier {0} (compose {0} B (slide (Suc m))))")
+ apply (simp add:carr_prodag_def)
  apply (rule conjI)
  apply (simp add:Pi_def restrict_def)
  apply (simp add:Un_carrier_def compose_def slide_def)
  apply (simp add:compose_def slide_def)
 
- apply (thin_tac "f = augm_func m (restrict f (Nset m)) (Un_carrier (Nset m) B)
-              (Suc 0) (\<lambda>x\<in>Nset 0. f (Suc (x + m)))
-              (Un_carrier (Nset 0) (compose (Nset 0) B (slide (Suc m))))")
-apply (subgoal_tac "Nset m \<subseteq> Nset (Suc m)")
+ apply (thin_tac "f =
+           augm_func m (restrict f {i. i \<le> m}) (Un_carrier {i. i \<le> m} B)
+            (Suc 0) (\<lambda>x\<in>{0}. f (Suc (x + m)))
+            (Un_carrier {0} (compose {0} B (slide (Suc m))))")
  apply (simp add:carr_prodag_def)
- apply (rule conjI)
- apply (simp add:Un_carrier_def subsetD)
+ apply (simp add:Un_carrier_def)
  apply (simp add:Pi_def)
  apply (rule allI) apply (rule impI)
- apply (subgoal_tac "x \<in> Nset (Suc m)")
- apply (rotate_tac -1) apply blast apply (simp add:Nset_def)
- apply (rule ballI) apply (subgoal_tac "i \<in> Nset (Suc m)")
- apply (rotate_tac -1)
- apply (simp add:subsetD) apply (simp add:subsetD)
-apply (rule subsetI) apply (simp add:Nset_def CollectI)
-apply (subgoal_tac "n = Suc (n - Suc 0)")
+apply (erule conjE)+
+ apply (rotate_tac 1) 
+ apply (frule_tac a = x in forall_spec, simp)
+ apply (erule exE,
+        thin_tac "\<forall>x\<le>Suc m. \<exists>xa. (\<exists>i\<le>Suc m. xa = carrier (B i)) \<and> f x \<in> xa")
+ apply (frule_tac a = x in forall_spec, simp)
 apply blast
-apply simp
+apply (cut_tac t = n in Suc_pred[THEN sym], simp)
+apply blast
 done
 
 text{* A direct product of a finite number of rings defined with
  ac_fProd_Rg is equal to that defined by using carr_prodag. *}
 
 constdefs
- fprodrg::"[nat, nat \<Rightarrow> ('a, 'more) RingType_scheme] \<Rightarrow>
-  \<lparr>carrier:: (nat \<Rightarrow> 'a) set, pOp::[(nat \<Rightarrow> 'a), (nat \<Rightarrow> 'a)]
-   \<Rightarrow> (nat \<Rightarrow> 'a), mOp:: (nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a), zero::(nat \<Rightarrow> 'a),
-   tOp :: [(nat \<Rightarrow> 'a), (nat \<Rightarrow> 'a)] \<Rightarrow> (nat \<Rightarrow> 'a), one :: (nat \<Rightarrow> 'a) \<rparr>"
+ fprodrg::"[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> 
+  \<lparr>carrier:: (nat \<Rightarrow> 'a) set, pop::[(nat \<Rightarrow> 'a), (nat \<Rightarrow> 'a)]
+   \<Rightarrow> (nat \<Rightarrow> 'a), mop:: (nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a), zero::(nat \<Rightarrow> 'a), 
+   tp :: [(nat \<Rightarrow> 'a), (nat \<Rightarrow> 'a)] \<Rightarrow> (nat \<Rightarrow> 'a), un :: (nat \<Rightarrow> 'a) \<rparr>" 
+  
+  "fprodrg n B == \<lparr> carrier = ac_fProd_Rg n B, 
+ pop = \<lambda>f. \<lambda>g. prod_pOp {i. i \<le> n} B f g, mop = \<lambda>f. prod_mOp {i. i \<le> n} B f,
+ zero = prod_zero {i. i \<le> n} B, tp =  \<lambda>f. \<lambda>g. prod_tOp {i. i \<le> n} B f g, 
+ un = prod_one {i. i \<le> n} B \<rparr>"  
 
-  "fprodrg n B == \<lparr> carrier = ac_fProd_Rg n B,
- pOp = \<lambda>f. \<lambda>g. prod_pOp (Nset n) B f g, mOp = \<lambda>f. prod_mOp (Nset n) B f,
- zero = prod_zero (Nset n) B, tOp =  \<lambda>f. \<lambda>g. prod_tOp (Nset n) B f g,
- one = prod_one (Nset n) B \<rparr>"
-
- fPRoject::"[nat, nat \<Rightarrow> ('a, 'more) RingType_scheme, nat]
+ fPRoject::"[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme, nat]
                    \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a"
   "fPRoject n B x == \<lambda>f\<in>ac_fProd_Rg n B. f x"
 
-syntax
-  "@FPRODRING" :: "[nat, nat \<Rightarrow> ('a, 'more) RingType_scheme] \<Rightarrow>
+syntax 
+  "@FPRODRING" :: "[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> 
                (nat \<Rightarrow> 'a) set"  ("(fr\<Pi>\<^sub>_/ _)" [72,73]72)
 translations
   "fr\<Pi>\<^sub>n B" == "fprodrg n B"
 
-lemma fprodrg_ring:"\<forall>k\<in>Nset n. ring (B k) \<Longrightarrow> ring (fprodrg n B)"
+lemma fprodrg_ring:"\<forall>k \<le> n. Ring (B k) \<Longrightarrow> Ring (fprodrg n B)"
 apply (simp add:fprodrg_def)
 apply (frule ac_fProd_Prod)
-apply simp
+apply simp 
  apply (fold prodrg_def)
 apply (simp add:prodrg_ring)
 done
@@ -1047,2311 +951,1736 @@ done
 
 section "8. Chinese remainder theorem"
 
-lemma Chinese_remTr1:"\<lbrakk>ring A; \<forall>k\<in>Nset n. ideal A (J k);
- \<forall>k\<in>Nset n. B k = qring A (J k); \<forall>k\<in>Nset n. S k = pj A (J k) \<rbrakk> \<Longrightarrow>
-   ker\<^sub>A\<^sub>,\<^sub>(r\<Pi>\<^sub>(Nset n) B) (A_to_prodag A (Nset n) S B) = \<Inter> {I. \<exists>k\<in>Nset n. I = (J k)}"
+lemma Chinese_remTr1:"\<lbrakk>Ring A; \<forall>k \<le> (n::nat). ideal A (J k); 
+ \<forall>k \<le> n. B k = qring A (J k); \<forall>k \<le> n. S k = pj A (J k) \<rbrakk> \<Longrightarrow>
+   ker\<^bsub>A,(r\<Pi>\<^bsub>{j. j \<le> n}\<^esub> B)\<^esub> (A_to_prodag A {j. j \<le> n} S B) = 
+                                        \<Inter> {I. \<exists>k\<in>{j. j \<le> n}. I = (J k)}" 
 apply (rule equalityI)
  apply (rule subsetI)
  apply (simp add:ker_def)
- apply (rule allI) apply (rule impI)
- apply (rename_tac a K)  apply (erule conjE)
- apply (simp add:prodrg_def) apply (simp add:A_to_prodag_def prod_one_def)
- apply (subgoal_tac "\<forall>k\<in>Nset n. K = J k \<longrightarrow> a \<in> K") apply blast
- apply (thin_tac "\<exists>k\<in>Nset n. K = J k") apply (rule ballI) apply (rule impI)
- apply (subgoal_tac "(\<lambda>k\<in>Nset n. S k a) k = (\<lambda>x\<in>Nset n. 0\<^sub>B x) k")
- apply (thin_tac "(\<lambda>k\<in>Nset n. S k a) = prod_zero (Nset n) B")
- apply simp  apply (frule_tac I = "J k" in qring_zero [of "A"])
+ apply (rule allI, rule impI)
+ apply (rename_tac a K, erule conjE)
+ apply (simp add:prodrg_def, simp add:A_to_prodag_def prod_one_def)
+ apply (erule exE, erule conjE) 
+ 
+ apply (subgoal_tac "(\<lambda>k\<in>{j. j \<le> n}. S k a) k = (\<lambda>x\<in>{j. j \<le> n}. \<zero>\<^bsub>B x\<^esub>) k")
+ apply (thin_tac "(\<lambda>k\<in>{j. j \<le> n}. S k a) = prod_zero {j. j \<le> n} B")
+ apply simp  apply (frule_tac I = "J k" in Ring.qring_zero [of "A"])
  apply simp
  apply (frule_tac I = "J k" and x = a in pj_mem [of "A"]) apply simp
  apply assumption apply simp
- apply (frule_tac I = "J k" and a = a in a_in_ar_coset [of "A"])
+ apply (frule_tac I = "J k" and a = a in Ring.a_in_ar_coset [of "A"])
  apply simp apply assumption apply simp
  apply (simp add:prod_zero_def)
 apply (rule subsetI)
  apply (simp add:CollectI ker_def)
- apply (subgoal_tac "0 \<in> Nset n") prefer 2 apply (simp add:Nset_def)
- apply (subgoal_tac "x \<in> J 0")  prefer 2 apply blast
- apply (subgoal_tac "ideal A (J 0)") prefer 2 apply simp
- apply (frule_tac h = x in ideal_subset [of "A" "J 0"], assumption+)
- apply simp
- apply (thin_tac "0 \<in> Nset n") apply (thin_tac "x \<in> J 0")
+
+ apply (cut_tac Nset_inc_0[of n]) 
+ apply (frule_tac a = "J 0" in forall_spec, blast)
+ apply (frule_tac a = 0 in forall_spec1, simp)
+ apply (frule_tac h = x in Ring.ideal_subset [of "A" "J 0"], simp+)
+ apply (thin_tac "x \<in> J 0")
  apply (simp add:A_to_prodag_def prodrg_def)
  apply (simp add:prod_zero_def)
-apply (rule funcset_eq [of _ "Nset n"])
+ apply (rule funcset_eq [of _ "{j. j \<le> n}"])
  apply (simp add:extensional_def restrict_def)+
- apply (rule ballI) apply (simp add:qring_zero)
- apply (subgoal_tac "ideal A (J xa)")
+ apply (rule allI, rule impI) 
+ apply (simp add:Ring.qring_zero)
+ apply (frule_tac a = xa in forall_spec, assumption,
+        thin_tac "\<forall>k \<le> n. ideal A (J k)")
  apply (subst pj_mem [of "A"], assumption+)
- apply (frule_tac I = "J xa" and a = x in a_in_ar_coset [of "A"]) apply simp
- apply assumption
- apply (rule_tac a = x and I = "J xa" in Qring_fix1 [of "A"], assumption+)
- apply blast apply simp
+ apply (frule_tac I = "J xa" and a = x in Ring.a_in_ar_coset [of "A"], 
+        assumption+) 
+ apply (rule_tac a = x and I = "J xa" in Ring.Qring_fix1 [of "A"], assumption+)
+ apply blast 
 done
 
-lemma coprime_prod_int2Tr:"ring R \<Longrightarrow> ((\<forall>k\<in>Nset (Suc n). ideal R (J k)) \<and> (\<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). (i \<noteq>j \<longrightarrow> coprime_ideals R (J i) (J j)))) \<longrightarrow> (\<Inter> {I. \<exists>k\<in>Nset (Suc n). I = (J k)} = ideal_n_prod R (Suc n) J)"
+lemma (in Ring) coprime_prod_int2Tr:
+"((\<forall>k \<le> (Suc n). ideal R (J k)) \<and> 
+ (\<forall>i \<le> (Suc n). \<forall>j \<le> (Suc n). (i \<noteq>j \<longrightarrow> coprime_ideals R (J i) (J j))))
+  \<longrightarrow> (\<Inter> {I. \<exists>k \<le> (Suc n). I = (J k)} = ideal_n_prod R (Suc n) J)"
 apply (induct_tac n)
 apply (rule impI)
- apply (erule conjE) apply (unfold Nset_def)
- apply (simp add:Nset_1) apply (erule conjE)+
- apply (subst coprime_int_prod [THEN sym, of "R" "J 0" "J (Suc 0)"],
-                                                           assumption+)
- apply blast
+ apply (erule conjE) 
+ apply (simp add:Nset_1) 
+ apply (subst coprime_int_prod [THEN sym, of "J 0" "J (Suc 0)"], simp+)
+ apply (rule equalityI, rule subsetI)
+ apply (simp, blast)
+ apply (rule subsetI, simp, rule allI, rule impI, erule exE, (erule conjE)+)
+ apply simp
+ apply (simp add:Nset_1_1, erule disjE, (simp del:ideal_n_prodSn)+)
+
 (** n **)
 apply (rule impI)
- apply (subgoal_tac "\<Inter>{I. \<exists>k\<in>Nset (Suc (Suc n)). I = J k} =
-              (\<Inter>{I. \<exists>k\<in>Nset (Suc n). I = J k}) \<inter> (J (Suc (Suc n)))")
- apply (subgoal_tac "\<Inter>{I. \<exists>k\<in>Nset (Suc n). I = J k} = (i\<Pi>\<^sub>R\<^sub>,\<^sub>(Suc n) J)")
-(* apply (simp del:ideal_n_prodSn)*)
- apply (fold Nset_def)
- apply (frule_tac n = "Suc n" and J = J in coprime_n_idealsTr4 [of "R"],
-                                                      assumption+)
+ apply (subgoal_tac "\<Inter>{I. \<exists>k \<le> (Suc (Suc n)). I = J k} =
+              (\<Inter>{I. \<exists>k \<le> (Suc n). I = J k}) \<inter> (J (Suc (Suc n)))")
+ apply (subgoal_tac "\<Inter>{I. \<exists>k \<le> (Suc n). I = J k} = (i\<Pi>\<^bsub>R,(Suc n)\<^esub> J)")
+(* apply (simp del:ideal_n_prodSn)*) 
+ apply (frule_tac n = "Suc n" and J = J in coprime_n_idealsTr4)
   apply (simp del:ideal_n_prodSn)
- apply (subst coprime_int_prod, assumption+)
- apply (rule n_prod_ideal, assumption+)
- apply (rule ballI)
- apply (simp add:Nset_def)
-apply (erule conjE)
- apply (thin_tac "(\<forall>i\<in>Nset (Suc (Suc n)).  \<forall>j\<in>Nset (Suc (Suc n)).
-                  i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j))")
- apply (simp add:Nset_def)
- apply assumption
+ apply (subst coprime_int_prod)
+ apply (rule n_prod_ideal)
+ apply (rule allI, simp, simp, assumption) 
+ apply simp apply (cut_tac n = "Suc n" in Nsetn_sub_mem1)
  apply simp
-
- apply (thin_tac "\<Inter>{I. \<exists>k\<in>Nset (Suc (Suc n)). I = J k} =
-           \<Inter>{I. \<exists>k\<in>Nset (Suc n). I = J k} \<inter> J (Suc (Suc n))")
- apply (subgoal_tac "(\<forall>k\<in>Nset (Suc n). ideal R (J k)) \<and>
-  (\<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j))")
- apply (rotate_tac -1)
- apply (simp del:ideal_n_prodSn)
-apply (subgoal_tac "\<forall>k\<in>Nset (Suc n). k \<in> Nset (Suc (Suc n))")
- apply blast
-apply (simp add:Nset_def)
- apply (thin_tac " (\<forall>k\<in>Nset (Suc n). ideal R (J k)) \<and> (\<forall>i\<in>Nset (Suc n).
-         \<forall>j\<in>Nset (Suc n). i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j)) \<longrightarrow>
-           \<Inter>{I. \<exists>k\<in>Nset (Suc n). I = J k} = i\<Pi>\<^sub>R\<^sub>,\<^sub>(Suc n) J")
- apply (thin_tac "(\<forall>k\<in>Nset (Suc (Suc n)). ideal R (J k)) \<and>
-   (\<forall>i\<in>Nset (Suc (Suc n)). \<forall>j\<in>Nset (Suc (Suc n)).
-        i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j))")
-apply (subgoal_tac "Nset (Suc (Suc n)) = Nset (Suc n) \<union> {(Suc (Suc n))}")
-apply blast
-apply (simp add:Nset_Suc)
+ apply (thin_tac "(\<forall>k\<le>Suc n. ideal R (J k)) \<and>
+         (\<forall>i\<le>Suc n. \<forall>j\<le>Suc n. i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j)) \<longrightarrow>
+         \<Inter>{I. \<exists>k\<le>Suc n. I = J k} = i\<Pi>\<^bsub>R,Suc n\<^esub> J",
+        thin_tac "(\<forall>k\<le>Suc (Suc n). ideal R (J k)) \<and>
+         (\<forall>i\<le>Suc (Suc n).
+             \<forall>j\<le>Suc (Suc n). i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j))")
+ apply (rule equalityI, rule subsetI, simp)
+ apply (rule conjI,
+        rule allI, rule impI, erule exE, erule conjE, simp,
+        frule_tac a = xa in forall_spec,
+        frule_tac i = k and j = "Suc n" and k = "Suc (Suc n)" in 
+        Nat.le_less_trans, simp,
+        frule_tac m = k and n = "Suc (Suc n)" in less_imp_le, blast)
+ apply simp 
+ apply (frule_tac a = "J (Suc (Suc n))" in forall_spec,
+        cut_tac n = "Suc (Suc n)" in Nat.le_refl, blast, simp)
+ 
+ apply (rule subsetI, simp, rule allI, rule impI)
+ apply (erule exE, erule conjE)
+ apply (erule conjE, 
+        case_tac "k = Suc (Suc n)", simp)
+ apply (frule_tac m = k and n = "Suc (Suc n)" in noteq_le_less, assumption,
+        thin_tac "k \<le> Suc (Suc n)")
+ apply (frule_tac x = k and n = "Suc n" in Suc_less_le)
+ apply (frule_tac a = xa in forall_spec, 
+        blast,
+        thin_tac "\<forall>xa. (\<exists>k\<le>Suc n. xa = J k) \<longrightarrow> x \<in> xa",
+        simp)
 done
 
-lemma coprime_prod_int2:"\<lbrakk>ring R; \<forall>k\<in>Nset (Suc n). ideal R (J k);
- \<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). (i \<noteq>j \<longrightarrow> coprime_ideals R (J i) (J j))\<rbrakk>
- \<Longrightarrow> (\<Inter> {I. \<exists>k\<in>Nset (Suc n). I = (J k)} = ideal_n_prod R (Suc n) J)"
+lemma (in Ring) coprime_prod_int2:"\<lbrakk> \<forall>k \<le> (Suc n). ideal R (J k); 
+ \<forall>i \<le> (Suc n). \<forall>j \<le> (Suc n). (i \<noteq>j \<longrightarrow> coprime_ideals R (J i) (J j))\<rbrakk>
+ \<Longrightarrow> (\<Inter> {I. \<exists>k \<le> (Suc n). I = (J k)} = ideal_n_prod R (Suc n) J)"
 apply (simp add:coprime_prod_int2Tr)
 done
 
-lemma coprime_2_n:"\<lbrakk>ring R; ideal R A; ideal R B\<rbrakk> \<Longrightarrow>
- (qring R A) \<Oplus>~ (qring R B) = r\<Pi>\<^sub>(Nset (Suc 0)) (prodB1 (qring R A) (qring R B))"
-apply (simp add: Prod2Rg_def)
+lemma (in Ring) coprime_2_n:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrightarrow>
+ (qring R A) \<Oplus>\<^sub>r (qring R B) = r\<Pi>\<^bsub>{j. j \<le> (Suc 0)}\<^esub> (prodB1 (qring R A) (qring R B))"
+apply (simp add:Prod2Rg_def Nset_1)
 done
 
-text{* In this and following lemmata, ideals A and B are of type ('a, 'more) RingType_scheme. Don't try (r\<Pi>\<^sub>(Nset n) B) \<Oplus>~ B (Suc n) *}
+text{* In this and following lemmata, ideals A and B are of type ('a, 'more) RingType_scheme. Don't try (r\<Pi>\<^sub>(Nset n) B) \<Oplus>\<^sub>r B (Suc n) *}
 
-lemma A_to_prodag2_hom:" \<lbrakk>ring R; ideal R A; ideal R B; S 0 = pj R A; S (Suc 0) = pj R B\<rbrakk>  \<Longrightarrow> A_to_prodag R (Nset (Suc 0))  S (prodB1 (qring R A) (qring R B)) \<in> rHom R (qring R A \<Oplus>~ qring R B)"
-apply (frule coprime_2_n [of "R" "A" "B"], assumption+)
-apply simp
+lemma (in Ring) A_to_prodag2_hom:"\<lbrakk>ideal R A; ideal R B; S 0 = pj R A; 
+      S (Suc 0) = pj R B\<rbrakk>  \<Longrightarrow> 
+      A_to_prodag R {j. j \<le> (Suc 0)} S (prodB1 (qring R A) (qring R B)) \<in> 
+      rHom R (qring R A \<Oplus>\<^sub>r qring R B)"
+apply (subst coprime_2_n [of "A" "B"], assumption+)
 apply (rule A_to_prodag_rHom, assumption+)
 apply (rule ballI)
 apply (case_tac "k = 0")
 apply (simp add:prodB1_def)
 apply (simp add:qring_ring)
-apply (simp add:Nset_def)
-apply (subgoal_tac "Suc 0 \<le> k") apply (thin_tac "0 < k")
-apply (subgoal_tac "k = Suc 0") apply (thin_tac "k \<le> Suc 0")
- apply (thin_tac "Suc 0 \<le> k")
-apply simp apply (simp add:prodB1_def)
-apply (simp add:qring_ring) apply simp apply simp
+apply simp 
+ apply (frule_tac n = k in Suc_leI[of 0], thin_tac "0 < k")
+ apply (frule_tac m = k and n = "Suc 0" in Nat.le_anti_sym, assumption)
+ apply (simp, simp add:prodB1_def, simp add:qring_ring)
+
 apply (rule ballI)
-apply (case_tac "k = Suc 0")
- apply (simp add:prodB1_def)
- apply (simp add:pj_Hom)
- apply (simp add:Nset_def)
- apply (subgoal_tac "k = 0")
- apply simp apply (simp add:prodB1_def)
- apply (simp add:pj_Hom)
- apply (frule le_imp_less_or_eq)
- apply simp
+ apply (simp add:Nset_1)
+ apply (erule disjE) 
+ apply (simp add:prodB1_def, rule pj_Hom, assumption+)
+ apply (simp, simp add:prodB1_def)
+ apply (rule pj_Hom, assumption+)
 done
 
-lemma A2coprime_rsurjecTr:"\<lbrakk>ring R; ideal R A; ideal R B; S 0 = pj R A; S (Suc 0) = pj R B\<rbrakk> \<Longrightarrow> (carrier (qring R A \<Oplus>~ qring R B)) = carr_prodag (Nset (Suc 0)) (prodB1 (qring R A) (qring R B))"
-apply (simp add:Prod2Rg_def prodrg_def)
+lemma (in Ring) A2coprime_rsurjecTr:"\<lbrakk>ideal R A; ideal R B; S 0 = pj R A; 
+      S (Suc 0) = pj R B\<rbrakk> \<Longrightarrow> 
+      (carrier (qring R A \<Oplus>\<^sub>r qring R B)) = 
+        carr_prodag {j. j \<le> (Suc 0)} (prodB1 (qring R A) (qring R B))"
+apply (simp add:Prod2Rg_def prodrg_def Nset_1)
 done
 
-lemma A2coprime_rsurjec:"\<lbrakk>ring R; ideal R A; ideal R B; S 0 = pj R A; S (Suc 0) = pj R B; coprime_ideals R A B\<rbrakk> \<Longrightarrow> surjec\<^sub>R\<^sub>,\<^sub>((qring R A) \<Oplus>~ (qring R B)) (A_to_prodag R (Nset (Suc 0)) S (prodB1 (qring R A) (qring R B)))"
+lemma (in Ring) A2coprime_rsurjec:"\<lbrakk>ideal R A; ideal R B; S 0 = pj R A; 
+      S (Suc 0) = pj R B; coprime_ideals R A B\<rbrakk> \<Longrightarrow> 
+      surjec\<^bsub>R,((qring R A) \<Oplus>\<^sub>r (qring R B))\<^esub> 
+           (A_to_prodag R {j. j\<le>(Suc 0)} S (prodB1 (qring R A) (qring R B)))"
+apply (frule A_to_prodag2_hom [of "A" "B" "S"], assumption+)
 apply (simp add:surjec_def)
-apply (rule conjI)
-apply (frule A_to_prodag2_hom [of "R" "A" "B" "S"], assumption+)
-apply (simp add:rHom_def)
+apply (rule conjI, 
+       simp add:rHom_def)
+apply (rule surj_to_test[of "A_to_prodag R {j. j \<le> (Suc 0)} S 
+       (prodB1 (qring R A) (qring R B))" "carrier R" 
+        "carrier (qring R A \<Oplus>\<^sub>r qring R B)"])
+ apply (simp add:rHom_def aHom_def)
 
-apply (subgoal_tac "(A_to_prodag R (Nset (Suc 0)) S (prodB1 (qring R A) (qring R B))) \<in> (carrier R) \<rightarrow> (carrier (qring R A \<Oplus>~ qring R B))")
-apply (simp add:A2coprime_rsurjecTr)
-apply (simp add:surj_to_def image_def)
-apply (rule equalityI)
-apply (rule subsetI)
- apply (simp add:CollectI)
- apply (subgoal_tac "\<forall>xa\<in>carrier R. x = A_to_prodag R (Nset (Suc 0)) S (prodB1 (qring R A) (qring R B)) xa \<longrightarrow> x \<in> carr_prodag (Nset (Suc 0)) (prodB1 (qring R A) (qring R B))")
+ apply (rule ballI)
+ apply (frule rHom_func[of "A_to_prodag R {j. j \<le> (Suc 0)} S 
+                                   (prodB1 (R /\<^sub>r A) (R /\<^sub>r B))" R],
+        thin_tac "A_to_prodag R {j. j \<le> (Suc 0)} S (prodB1 (R /\<^sub>r A) (R /\<^sub>r B))
+         \<in> rHom R (R /\<^sub>r A \<Oplus>\<^sub>r R /\<^sub>r B)")
+ apply (simp add:A2coprime_rsurjecTr[of A B S])
+ apply (simp add:Nset_1)
+ apply (frule_tac X = "b 0" and Y = "b (Suc 0)" in 
+                  coprime_surjTr[of A B], assumption+)
+ apply (simp add:carr_prodag_def prodB1_def,
+        simp add:carr_prodag_def prodB1_def) 
+
+ apply (erule bexE)
+ apply (frule_tac x = r in funcset_mem[of "A_to_prodag R {0, Suc 0} S 
+        (prodB1 (R /\<^sub>r A) (R /\<^sub>r B))"
+         "carrier R" "carr_prodag {0, Suc 0} (prodB1 (R /\<^sub>r A) (R /\<^sub>r B))"],
+         assumption+)
+ apply (cut_tac X = "A_to_prodag R {0, Suc 0} S (prodB1 (R /\<^sub>r A) (R /\<^sub>r B)) r" 
+        and Y = b in 
+        carr_prodag_mem_eq[of "{0, Suc 0}" "prodB1 (R /\<^sub>r A) (R /\<^sub>r B)"])
+  apply (rule ballI)
+  apply (simp, erule disjE)
+  apply (simp add:prodB1_def, fold prodB1_def, 
+                                simp add:qring_ring Ring.ring_is_ag)
+  apply (simp add:prodB1_def, fold prodB1_def, 
+                               simp add:qring_ring Ring.ring_is_ag)
+  apply assumption+
+  apply (rule ballI, simp, erule disjE, simp)
+  apply (subst A_to_prodag_def, simp)
+  apply (subst A_to_prodag_def, simp)
  apply blast
- apply (thin_tac "\<exists>xa\<in>carrier R.
-    x = A_to_prodag R (Nset (Suc 0)) S (prodB1 (qring R A) (qring R B)) xa")
- apply (rule ballI)
- apply (rule impI)
- apply simp
- apply (simp add:funcset_mem)
-
-apply (rule subsetI)
-apply (simp add:CollectI)
-apply (subgoal_tac "x 0 \<in> carrier (qring R A)")
-apply (subgoal_tac "x (Suc 0) \<in> carrier (qring R B)")
-apply (subgoal_tac "\<exists>r\<in>carrier R. pj R A r = x 0 \<and> pj R B r = x (Suc 0)")
-apply (subgoal_tac "\<forall>r\<in>carrier R. pj R A r = x 0 \<and> pj R B r = x (Suc 0) \<longrightarrow>
-      x = A_to_prodag R (Nset (Suc 0)) S (prodB1 (qring R A) (qring R B)) r")
-apply blast
- apply (thin_tac "\<exists>r\<in>carrier R. pj R A r = x 0 \<and> pj R B r = x (Suc 0)")
- apply (rule ballI)
- apply (rule impI)
- apply (erule conjE)
-apply (rule carr_prodag_mem_eq [of "Nset (Suc 0)" "prodB1 (qring R A) (qring R B)" _ _])
-apply (rule ballI)
- apply (case_tac "k = 0")
- apply (simp add:prodB1_def)
- apply (frule qring_ring[of "R" "A"], assumption+) apply (simp add:ring_is_ag)
- apply (subgoal_tac "k = Suc 0")
- apply (simp add:prodB1_def)
- apply (frule qring_ring[of "R" "B"], assumption+) apply (simp add:ring_is_ag)
- apply (simp add:Nset_def)
- apply assumption
- apply (simp add:funcset_mem)
-apply (rule ballI)
-apply (case_tac "l = 0")
- apply (simp add:A_to_prodag_def prodB1_def)
- apply (subgoal_tac "l = Suc 0")
- apply (simp add:A_to_prodag_def prodB1_def)
- apply (simp add:Nset_def)
-apply (simp add:coprime_surjTr)
- apply (thin_tac " A_to_prodag R (Nset (Suc 0)) S (prodB1 (R /\<^sub>r A) (R /\<^sub>r B))
-           \<in> carrier R \<rightarrow>
-             carr_prodag (Nset (Suc 0)) (prodB1 (R /\<^sub>r A) (R /\<^sub>r B))")
- apply (simp add:carr_prodag_def) apply (erule conjE)+
- apply (subgoal_tac "Suc 0 \<in> Nset (Suc 0)") prefer 2 apply (simp add:Nset_def)
- apply (subgoal_tac "x (Suc 0) \<in> carrier (prodB1 (qring R A) (qring R B) ( Suc 0))")  prefer 2 apply simp
- apply (simp add:prodB1_def)
- apply (simp add:carr_prodag_def) apply (erule conjE)+
-apply (subgoal_tac "x 0 \<in> carrier (prodB1 (qring R A) (qring R B) 0)")
- prefer 2 apply (subgoal_tac "0 \<in> Nset (Suc 0)") apply simp
- apply (simp add:Nset_def)
- apply (simp add:prodB1_def)
-apply (frule A_to_prodag2_hom [of "R" "A" "B" "S" ], assumption+)
-apply (simp add:rHom_def aHom_def b_ag_def)
 done
 
-lemma prod2_n_Tr1:"\<lbrakk>ring R; \<forall>k\<in>Nset (Suc 0). ideal R (J k); \<forall>k\<in>Nset (Suc 0). B k = qring R (J k); \<forall>k\<in>Nset (Suc 0). S k = pj R (J k) \<rbrakk>  \<Longrightarrow> A_to_prodag R (Nset (Suc 0)) S (prodB1 (qring R (J 0)) (qring R (J (Suc 0)))) = A_to_prodag R (Nset (Suc 0)) S B"
-apply (subgoal_tac "\<forall>k\<in>Nset (Suc 0). (prodB1 (qring R (J 0)) (qring R (J (Suc 0)))) k = B k")
+lemma (in Ring) prod2_n_Tr1:"\<lbrakk>\<forall>k \<le> (Suc 0). ideal R (J k); 
+      \<forall>k \<le> (Suc 0). B k = qring R (J k); 
+      \<forall>k \<le> (Suc 0). S k = pj R (J k) \<rbrakk>  \<Longrightarrow> 
+    A_to_prodag R {j. j \<le> (Suc 0)} S 
+            (prodB1 (qring R (J 0)) (qring R (J (Suc 0)))) = 
+                               A_to_prodag R {j. j \<le> (Suc 0)} S B"
+apply (subgoal_tac "\<forall>k \<le> (Suc 0). (prodB1 (qring R (J 0)) (qring R (J (Suc 0)))) k = B k") 
 apply (simp add:A_to_prodag_def)
-apply (rule ballI)
- apply (case_tac "k = 0")
+apply (rule allI, rule impI)
+ apply (case_tac "k = 0", simp add:Nset_1_1)
+ apply (simp add:prodB1_def)
+ apply (simp add:Nset_1_1)
+ apply (simp add:prodB1_def)
+done  
+
+lemma (in aGroup) restrict_prod_Suc:"\<lbrakk>\<forall>k \<le> (Suc (Suc n)). ideal R (J k);
+        \<forall>k \<le> (Suc (Suc n)). B k = R /\<^sub>r J k;
+        \<forall>k \<le> (Suc (Suc n)). S k = pj R (J k);
+        f \<in> carrier (r\<Pi>\<^bsub>{j. j \<le> (Suc (Suc n))}\<^esub> B)\<rbrakk> \<Longrightarrow> 
+        restrict f {j. j \<le> (Suc n)} \<in> carrier (r\<Pi>\<^bsub>{j. j \<le> (Suc n)}\<^esub> B)"
+apply (cut_tac Nsetn_sub_mem1[of "Suc n"])
+ apply (simp add:prodrg_def) 
+ apply (simp add:carr_prodag_def, (erule conjE)+)
+ apply (simp add:Un_carrier_def)
+ apply (rule univar_func_test, rule ballI)
  apply simp
- apply (simp add:prodB1_def)
- apply (subgoal_tac "k = Suc 0")
-apply simp
- apply (simp add:prodB1_def)
-apply (simp add:Nset_def)
+ apply (frule_tac x = x in funcset_mem[of f "{j. j \<le> (Suc (Suc n))}"
+        "\<Union>{X. \<exists>i \<le> (Suc (Suc n)). X = carrier (R /\<^sub>r J i)}"],
+        simp)
+ apply simp
+ apply (erule exE, erule conjE, erule exE, erule conjE, simp) 
+ 
+ apply (rotate_tac -5) 
+ apply (frule_tac a = x in forall_spec) apply simp
+ apply blast
 done
 
-lemma Chinese_remTr2:"ring R \<Longrightarrow>  (\<forall>k\<in>Nset (Suc n). ideal R (J k)) \<and> (\<forall>k\<in>Nset (Suc n). B k = qring R (J k)) \<and> (\<forall>k\<in>Nset (Suc n). S k = pj R (J k)) \<and> (\<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). (i \<noteq>j \<longrightarrow> coprime_ideals R (J i) (J j))) \<longrightarrow> surjec\<^sub>R\<^sub>,\<^sub>(r\<Pi>\<^sub>(Nset (Suc n)) B) (A_to_prodag R (Nset (Suc n)) S B)"
+lemma (in Ring) Chinese_remTr2:"(\<forall>k \<le> (Suc n). ideal R (J k)) \<and> 
+     (\<forall>k\<le>(Suc n). B k = qring R (J k)) \<and> 
+     (\<forall>k\<le>(Suc n). S k = pj R (J k)) \<and> 
+     (\<forall>i\<le>(Suc n). \<forall>j\<le> (Suc n). (i \<noteq>j \<longrightarrow> 
+     coprime_ideals R (J i) (J j))) \<longrightarrow> 
+     surjec\<^bsub>R,(r\<Pi>\<^bsub>{j. j\<le> (Suc n)}\<^esub> B)\<^esub> 
+                   (A_to_prodag R {j. j\<le>(Suc n)} S B)"
+apply (cut_tac Ring)
 apply (induct_tac n)
 (* case n = 0, i.e. two coprime_ideals *)  (** use coprime_surjTr **)
 apply (rule impI) apply (erule conjE)+
- apply (frule  A_to_prodag_rHom [of "R" "Nset (Suc 0)" "B" "S"])
- apply (rule ballI)
- apply (simp add:qring_ring)
- apply (simp add:pj_Hom)
- apply (simp add:surjec_def)
- apply (subgoal_tac "A_to_prodag R (Nset (Suc 0)) S B
-                 \<in> carrier R \<rightarrow> carrier (r\<Pi>\<^sub>(Nset (Suc 0)) B)")
- prefer 2 apply (simp add:rHom_def aHom_def)
- apply (rule conjI)
- apply (simp add:rHom_def)
+ apply (frule  A_to_prodag_rHom [of R "{j. j \<le> Suc 0}" "B" "S"])
+ apply (rule ballI, simp add:Ring.qring_ring)
+ apply (rule ballI, simp add:pj_Hom) 
+ apply (frule rHom_func[of "A_to_prodag R {j. j \<le> (Suc 0)} S B" R 
+                           "r\<Pi>\<^bsub>{j. j \<le> (Suc 0)}\<^esub> B"])
+ apply (simp add:surjec_def)  
+  apply (rule conjI)
+  apply (simp add:rHom_def)
  apply (rule surj_to_test, assumption+)
- apply (rule ballI) apply (unfold Nset_def)
- apply (simp add:Nset_1) apply (erule conjE)+
- apply (frule coprime_elems [of "R" "J 0" "J (Suc 0)"], assumption+)
+ apply (rule ballI) apply (simp add:Nset_1) 
+ apply (cut_tac coprime_elems [of "J 0" "J (Suc 0)"])
  apply (rename_tac f)
-apply (subgoal_tac "\<forall>a\<in>J 0. \<forall>b\<in>J (Suc 0).  a +\<^sub>R b = 1\<^sub>R \<longrightarrow> (\<exists>a\<in>carrier R. A_to_prodag R {0, Suc 0} S B a = f)")
- apply blast
-  apply (thin_tac "\<exists>a\<in>J 0. \<exists>b\<in>J (Suc 0).  a +\<^sub>R b = 1\<^sub>R")
- apply (rule ballI)+ apply (rule impI)
- apply (subgoal_tac "carrier (r\<Pi>\<^sub>{0, Suc 0} B) = carr_prodag {0, Suc 0} B")
- apply simp prefer 2 apply (rule prodrg_carrier) apply (rule ballI)
- apply simp apply (case_tac "k = 0") apply simp apply (simp add:qring_ring)
- apply (simp add:qring_ring)
- apply (subgoal_tac "f 0 \<in> carrier (qring R (J 0))")
- apply (subgoal_tac "f (Suc 0) \<in> carrier (qring R (J (Suc 0)))")
- apply (frule coprime_surjTr [of "R" "J 0" "J (Suc 0)" _], assumption+)
-  apply (thin_tac "coprime_ideals R (J 0) (J (Suc 0))")
-  apply (thin_tac "coprime_ideals R (J (Suc 0)) (J 0)")
-  apply (thin_tac "carrier (r\<Pi>\<^sub>{0, Suc 0} B) = carr_prodag {0, Suc 0} B")
-  apply (thin_tac " A_to_prodag R {0, Suc 0} S B \<in> carrier R \<rightarrow> carr_prodag {0, Suc 0} B")
-  apply (thin_tac "a \<in> J 0") apply (thin_tac "b \<in> J (Suc 0)")
-  apply (thin_tac " a +\<^sub>R b = 1\<^sub>R")
- apply (subgoal_tac "\<forall>r\<in>carrier R. pj R (J 0) r = f 0 \<and> pj R (J (Suc 0)) r = f (Suc 0) \<longrightarrow> (\<exists>a\<in>carrier R. A_to_prodag R {0, Suc 0} S B a = f)")
- apply blast
-  apply (thin_tac "\<exists>r\<in>carrier R. pj R (J 0) r = f 0 \<and> pj R (J (Suc 0)) r = f (Suc 0)")
-  apply (rule ballI)
-  apply (rule impI)
-  apply (erule conjE)
- apply (subgoal_tac "A_to_prodag R {0, Suc 0} S B r = f")
- apply blast
- apply (rule carr_prodag_mem_eq [of "{0, Suc 0}" "B"])
- apply (rule ballI) apply (case_tac "k = 0") apply simp
- apply (simp add:qring_ring ring_is_ag)
- apply (simp add:CollectI) apply (simp add:qring_ring ring_is_ag)
- apply (frule_tac a = r in rHom_mem [of "A_to_prodag R {0, Suc 0} S B" "R" "r\<Pi>\<^sub>{0, Suc 0} B"], assumption+) apply (simp add:prodrg_def)
- apply assumption
- apply (rule ballI)
- apply (case_tac "l = 0") apply simp apply (simp add:A_to_prodag_def)
- apply (simp add:CollectI) apply (simp add:A_to_prodag_def)
- apply (simp add:carr_prodag_def)
- apply (simp add:carr_prodag_def)
-(**** n ****)
-apply (fold Nset_def)
-apply (rule impI)
- apply (erule conjE)+
- apply (subgoal_tac "\<forall>l. l\<in>Nset (Suc n) \<longrightarrow> l\<in>Nset (Suc (Suc n))")
- prefer 2 apply (simp add:Nset_def)
-apply (subgoal_tac "\<forall>k\<in>{i. i \<le> Suc (Suc n)}. ring (B k)")
-apply (frule_tac I = "{i. i \<le> Suc (Suc n)}"  in A_to_prodag_rHom [of "R" _ "B" "S"])
- apply assumption
- apply (rule ballI)
-  apply (subgoal_tac "S k = pj R (J k)") prefer 2 apply (simp add:Nset_def)
-  apply (subgoal_tac "B k = R /\<^sub>r J k") prefer 2 apply (simp add:Nset_def)
-  apply simp
-  apply (rule pj_Hom, assumption+) apply (simp add:Nset_def)
- apply (subgoal_tac "ideal R (i\<Pi>\<^sub>R\<^sub>,\<^sub>(Suc n) J)")
- apply (subgoal_tac "ideal R (J (Suc (Suc n)))")
- apply (subgoal_tac "coprime_ideals R  (i\<Pi>\<^sub>R\<^sub>,\<^sub>(Suc n) J) (J (Suc (Suc n)))")
- apply (subgoal_tac "surjec\<^sub>R\<^sub>,\<^sub>(r\<Pi>\<^sub>(Nset (Suc n)) B) (A_to_prodag R (Nset (Suc n)) S B)") prefer 2 apply blast
-  apply (thin_tac "\<forall>i\<in>Nset (Suc (Suc n)).  \<forall>j\<in>Nset (Suc (Suc n)).
-                   i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j)")
-   apply (thin_tac "(\<forall>k\<in>Nset (Suc n). ideal R (J k)) \<and>
-           (\<forall>k\<in>Nset (Suc n). B k = R /\<^sub>r J k) \<and>
-           (\<forall>k\<in>Nset (Suc n). S k = pj R (J k)) \<and>
-           (\<forall>i\<in>Nset (Suc n).
-               \<forall>j\<in>Nset (Suc n). i \<noteq> j \<longrightarrow> coprime_ideals R (J i) (J j)) \<longrightarrow>
-           surjec\<^sub>R\<^sub>,\<^sub>(r\<Pi>\<^sub>(Nset (Suc n)) B) (A_to_prodag R (Nset (Suc n)) S B)")
- prefer 2  apply (rule coprime_n_idealsTr4, assumption+)
-   apply simp
- prefer 2 apply (simp add:Nset_def)
- prefer 2 apply (rule n_prod_ideal, assumption+) apply (rule ballI)
-  apply (simp add:Nset_def)
- prefer 2 apply (rule ballI) apply (subgoal_tac "B k =  R /\<^sub>r J k")
- prefer 2 apply (simp add:Nset_def) apply simp
- apply (rule qring_ring, assumption+) apply (simp add:Nset_def)
- apply (frule_tac A = "i\<Pi>\<^sub>R\<^sub>,\<^sub>(Suc n) J" and B = "J (Suc (Suc n))" in
-        coprime_elems [of "R"], assumption+)
-apply (subgoal_tac "\<forall>a\<in>i\<Pi>\<^sub>R\<^sub>,\<^sub>(Suc n) J. \<forall>b\<in>J (Suc (Suc n)).  a +\<^sub>R b = 1\<^sub>R  \<longrightarrow>
-surjec\<^sub>R\<^sub>,\<^sub>(r\<Pi>\<^sub>(Nset (Suc (Suc n))) B) (A_to_prodag R (Nset (Suc (Suc n))) S B)")
-apply blast
- apply (thin_tac "\<exists>a\<in>i\<Pi>\<^sub>R\<^sub>,\<^sub>(Suc n) J. \<exists>b\<in>J (Suc (Suc n)).  a +\<^sub>R b = 1\<^sub>R")
-apply (rule ballI)+ apply (rule impI)
- apply (thin_tac " coprime_ideals R (i\<Pi>\<^sub>R\<^sub>,\<^sub>(Suc n) J) (J (Suc (Suc n)))")
-apply (subgoal_tac "\<forall>l\<in>Nset (Suc n). a \<in> (J l)")
-prefer 2 apply (rule ele_n_prod, assumption+) apply (simp add:Nset_def)
- apply simp
- apply (simp add:surjec_def)
- apply (rule conjI) apply (simp add:Nset_def)
- apply (simp add:rHom_def)
- apply (rule surj_to_test) apply (erule conjE)
- apply (thin_tac "A_to_prodag R (Nset (Suc n)) S B \<in> aHom R (r\<Pi>\<^sub>(Nset (Suc n)) B)")
- apply (simp add:Nset_def) apply (simp add:rHom_def aHom_def)
- apply (rule ballI)
-apply (rename_tac n a b f) apply (erule conjE)
- apply (subgoal_tac "A_to_prodag R (Nset (Suc n)) S B \<in> carrier R \<rightarrow>
-                                   (carrier (r\<Pi>\<^sub>(Nset (Suc n)) B))")
- prefer 2 apply (simp add:Nset_def) apply (simp add:rHom_def aHom_def)
- apply (subgoal_tac "restrict f (Nset (Suc n)) \<in> carrier (r\<Pi>\<^sub>(Nset (Suc n)) B)")
- apply (subgoal_tac "\<exists>u\<in>carrier R. A_to_prodag R (Nset (Suc n)) S B u =
-                            restrict f (Nset (Suc n))")
- prefer 2 apply (simp add:surj_to_def) apply (simp add:image_def)
- apply (frule sym)
- apply (subgoal_tac "restrict f (Nset (Suc n)) \<in> {y. \<exists>x\<in>carrier R. y = A_to_prodag R (Nset (Suc n)) S B x}") prefer 2 apply simp
- apply (thin_tac "{y. \<exists>x\<in>carrier R. y = A_to_prodag R (Nset (Suc n)) S B x} =
-          carrier (r\<Pi>\<^sub>(Nset (Suc n)) B)")
- apply (simp add:CollectI)
- apply (subgoal_tac "\<forall>x\<in>carrier R.
-             restrict f (Nset (Suc n)) = A_to_prodag R (Nset (Suc n)) S B x
- \<longrightarrow>(\<exists>u\<in>carrier R.
-             A_to_prodag R (Nset (Suc n)) S B u = restrict f (Nset (Suc n)))")
- apply blast
- apply (thin_tac "\<exists>x\<in>carrier R.
-             restrict f (Nset (Suc n)) = A_to_prodag R (Nset (Suc n)) S B x")
- apply (rule ballI) apply (rule impI)
- apply (rotate_tac -1) apply (frule sym)
- apply (thin_tac "restrict f (Nset (Suc n)) = A_to_prodag R (Nset (Suc n)) S B x")
- apply blast
- apply (subgoal_tac "\<exists>v\<in>carrier R. pj R (J (Suc (Suc n))) v = f (Suc (Suc n))")
- apply (thin_tac "surj_to (A_to_prodag R (Nset (Suc n)) S B) (carrier R)
-           (carrier (r\<Pi>\<^sub>(Nset (Suc n)) B))")
-apply (subgoal_tac "\<forall>u\<in>carrier R. \<forall>v\<in>carrier R.  A_to_prodag R (Nset (Suc n)) S B u = restrict f (Nset (Suc n)) \<and> pj R (J (Suc (Suc n))) v = f (Suc (Suc n)) \<longrightarrow> (\<exists>a\<in>carrier R. A_to_prodag R (Nset (Suc (Suc n))) S B a = f)")
-apply blast
- apply (thin_tac "\<exists>u\<in>carrier R.
-             A_to_prodag R (Nset (Suc n)) S B u = restrict f (Nset (Suc n))")
- apply (thin_tac "\<exists>v\<in>carrier R. pj R (J (Suc (Suc n))) v = f (Suc (Suc n))")
-apply (rule ballI)+ apply (rule impI)
- apply (erule conjE)
- prefer 2 apply (simp add:Nset_def)
- apply (simp add:prodrg_carrier carr_prodag_def)
- apply (subgoal_tac "f (Suc (Suc n)) \<in> carrier (R /\<^sub>r J (Suc (Suc n)))")
- apply (simp add:qring_carrier)
-  apply (thin_tac "\<forall>k. k \<le> Suc (Suc n) \<longrightarrow> B k = R /\<^sub>r J k")
-  apply (thin_tac "\<forall>k. k \<le> Suc (Suc n) \<longrightarrow> S k = pj R (J k)")
-  apply (thin_tac "\<forall>k. k \<le> Suc (Suc n) \<longrightarrow> ring (R /\<^sub>r J k)")
-  apply (thin_tac "A_to_prodag R {i. i \<le> Suc (Suc n)} S B
-          \<in> rHom R (r\<Pi>\<^sub>{i. i \<le> Suc (Suc n)} B)")
- apply (subgoal_tac "\<exists>a\<in>carrier R. a \<uplus>\<^sub>R (J (Suc (Suc n))) = f (Suc (Suc n))")
- prefer 2 apply simp
- apply (thin_tac "f \<in> extensional {i. i \<le> Suc (Suc n)} \<and>
-          f \<in> {i. i \<le> Suc (Suc n)} \<rightarrow> Un_carrier {i. i \<le> Suc (Suc n)} B \<and>
-          (\<forall>i. i \<le> Suc (Suc n) \<longrightarrow> (\<exists>a\<in>carrier R. a \<uplus>\<^sub>R (J i) = f i))")
-  apply (thin_tac " A_to_prodag R {i. i \<le> Suc n} S B
-          \<in> carrier R \<rightarrow>
-            {f. f \<in> extensional {i. i \<le> Suc n} \<and>
-                f \<in> {i. i \<le> Suc n} \<rightarrow> Un_carrier {i. i \<le> Suc n} B \<and>
-                (\<forall>i. i \<le> Suc n \<longrightarrow> (\<exists>a\<in>carrier R. a \<uplus>\<^sub>R (J i) = f i))}")
-  apply (thin_tac "\<exists>u\<in>carrier R.
-             A_to_prodag R {i. i \<le> Suc n} S B u = restrict f {i. i \<le> Suc n}")
-  apply (subgoal_tac "\<forall>a\<in>carrier R. a \<uplus>\<^sub>R (J (Suc (Suc n))) = f (Suc (Suc n))
-   \<longrightarrow> (\<exists>v\<in>carrier R. pj R (J (Suc (Suc n))) v = f (Suc (Suc n)))")
-  apply blast
-  apply (thin_tac "\<exists>a\<in>carrier R. a \<uplus>\<^sub>R (J (Suc (Suc n))) = f (Suc (Suc n))")
-  apply (rule ballI) apply (rule impI)
-  apply (frule_tac x = aa and I = "J (Suc (Suc n))" in pj_mem [of "R"])
-  apply simp apply assumption+ apply simp
-  apply blast apply simp
-apply (subgoal_tac "A_to_prodag R (Nset (Suc (Suc n))) S B (b \<cdot>\<^sub>R u +\<^sub>R a \<cdot>\<^sub>R v)
-                               = f")
-apply (subgoal_tac " b \<cdot>\<^sub>R u +\<^sub>R  a \<cdot>\<^sub>R v \<in> carrier R")
-apply (simp add:Nset_def)
- apply blast
- apply (frule ring_is_ag [of "R"])
- apply (rule ag_pOp_closed, assumption+)
- apply (rule ring_tOp_closed, assumption+)
- apply (rule_tac I ="J (Suc (Suc n))" in ideal_subset [of "R" ], assumption+)
- apply (rule ring_tOp_closed, assumption+)
- apply (rule ideal_subset [of "R" ], assumption+)
- apply (rule_tac I = "Nset (Suc (Suc n))" and A = B in carr_prodag_mem_eq )
- apply (rule ballI) apply (rule ring_is_ag)
- apply (simp add:Nset_def)
- apply (subgoal_tac "b \<cdot>\<^sub>R u +\<^sub>R  a \<cdot>\<^sub>R v \<in> carrier R")
- apply (simp add:Nset_def)
- apply (frule_tac f = "A_to_prodag R {i. i \<le> Suc (Suc n)} S B" and
- a = " b \<cdot>\<^sub>R u +\<^sub>R  a \<cdot>\<^sub>R v" in rHom_mem [of  _ "R"], assumption+)
- apply (simp add:prodrg_def)
-  apply (frule ring_is_ag [of "R"])
- apply (rule ag_pOp_closed, assumption+)
- apply (rule ring_tOp_closed, assumption+)
- apply (rule_tac I ="J (Suc (Suc n))" in ideal_subset [of "R" ], assumption+)
- apply (rule ring_tOp_closed, assumption+)
- apply (rule ideal_subset [of "R" ], assumption+)
- apply (simp add:prodrg_carrier Nset_def)
-apply (subgoal_tac "b \<cdot>\<^sub>R u +\<^sub>R  a \<cdot>\<^sub>R v \<in> carrier R")
-prefer 2
- apply (frule ring_is_ag)
- apply (rule ag_pOp_closed, assumption+)
- apply (rule ring_tOp_closed, assumption+)
- apply (rotate_tac 8)
-apply (rule ideal_subset, assumption+)
- apply (rule ring_tOp_closed, assumption+)
- apply (rule ideal_subset, assumption+)
-apply (rule ballI)
-apply (case_tac "l \<in> Nset (Suc n)")
- apply (subgoal_tac "a \<in> J l")
- apply (subgoal_tac "ideal R (J l)")
- apply (fold Nset_def)
- apply (thin_tac "\<forall>k\<in>Nset (Suc (Suc n)). B k = R /\<^sub>r J k")
- apply (thin_tac "\<forall>l\<in>Nset (Suc n). a \<in> J l")
- apply (thin_tac "A_to_prodag R (Nset (Suc (Suc n))) S B
-          \<in> rHom R (r\<Pi>\<^sub>(Nset (Suc (Suc n))) B)")
- apply (thin_tac "A_to_prodag R (Nset (Suc n)) S B \<in> aHom R (r\<Pi>\<^sub>(Nset (Suc n)) B)")
- apply (thin_tac "A_to_prodag R (Nset (Suc n)) S B
-          \<in> carrier R \<rightarrow> carrier (r\<Pi>\<^sub>(Nset (Suc n)) B)")
-prefer 2  apply (simp add:Nset_def)
-prefer 2  apply (simp add:Nset_def)
- apply (simp add:A_to_prodag_def)
- apply (subgoal_tac "S l = pj R (J l)") prefer 2 apply (simp add:Nset_def)
- apply simp
- apply (subgoal_tac "ideal R (J l)") prefer 2 apply (simp add:Nset_def)
- apply (subgoal_tac "ideal R (J (Suc (Suc n)))") prefer 2
-  apply (simp add:Nset_def)
- apply (frule_tac A = "J l" and a = a and b = b and u = u and v = v in
-  partition_of_unity [of "R"],  assumption+)
- apply (simp add:ideal_subset) apply assumption+
- apply (subgoal_tac "a \<cdot>\<^sub>R v \<in> carrier R")
- apply (subgoal_tac "b \<cdot>\<^sub>R u \<in> carrier R") apply (frule ring_is_ag)
- apply (subst ag_pOp_commute, assumption+) apply simp
- prefer 2 apply (rule ring_tOp_closed, assumption+)
- apply (simp add:ideal_subset) apply assumption
- prefer 2 apply (rule ring_tOp_closed, assumption+)
- apply (simp add:ideal_subset) apply assumption
- apply (subgoal_tac "(\<lambda>k\<in>Nset (Suc n). S k u) l = restrict f (Nset (Suc n)) l")  prefer 2 apply simp
- apply (thin_tac "ideal R (i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<diamondsuit>\<^sub>R (J (Suc n)))")
- apply (thin_tac "f \<in> carrier (r\<Pi>\<^sub>(Nset (Suc (Suc n))) B)")
- apply (thin_tac "restrict f (Nset (Suc n)) \<in> carrier (r\<Pi>\<^sub>(Nset (Suc n)) B)")
- apply (thin_tac "(\<lambda>k\<in>Nset (Suc n). S k u) = restrict f (Nset (Suc n))")
- apply (thin_tac "b \<cdot>\<^sub>R u +\<^sub>R  a \<cdot>\<^sub>R v \<in> carrier R")
- apply (thin_tac "pj R (J l) (  a \<cdot>\<^sub>R v +\<^sub>R  b \<cdot>\<^sub>R u) = pj R (J l) u")
- apply simp
- apply (subgoal_tac "l = Suc (Suc n)") prefer 2 apply (simp add:Nset_def)
- apply simp
- apply (thin_tac "A_to_prodag R (Nset (Suc n)) S B u = restrict f (Nset (Suc n))")
-  apply (frule_tac A = "J (Suc (Suc n))" and a = b and b = a and u = v and v = u in  partition_of_unity [of "R"]) apply simp apply assumption
- apply (rule ideal_subset, assumption+)
- apply (subgoal_tac "a \<in> carrier R") apply (subgoal_tac "b \<in> carrier R")
- apply (frule ring_is_ag)
- apply (simp add:ag_pOp_commute)
- apply (subgoal_tac "ideal R (J (Suc (Suc n)))")
- prefer 2 apply (simp add:Nset_def)
- apply (thin_tac "\<forall>k\<in>Nset (Suc (Suc n)). ideal R (J k)")
- apply (simp add:ideal_subset) apply (rule ideal_subset, assumption+)
- apply simp
- apply (simp add:A_to_prodag_def)
-apply (simplesubst prodrg_def) apply simp
- apply (simp add:carr_prodag_def)
- apply (simp add:extensional_def)
+ apply (erule bexE, erule bexE)
  apply (simp add:prodrg_def) apply (fold prodrg_def)
- apply (simp add:carr_prodag_def) apply (erule conjE)
- apply (rule univar_func_test)
- apply (rule ballI) apply simp
- apply (subst Un_carrier_def) apply (simp add:CollectI)
- apply (subgoal_tac "f x \<in> carrier (R /\<^sub>r J x)")
- apply blast apply (simp add:Nset_def)
+ apply (cut_tac X = "f 0" and Y = "f (Suc 0)" in 
+                  coprime_surjTr[of "J 0" "J (Suc 0)"], simp+)
+ apply (simp add:carr_prodag_def, simp add:carr_prodag_def)
+ apply (erule bexE, (erule conjE)+)
+ apply (frule_tac x = r in funcset_mem[of "A_to_prodag R {0, Suc 0} S B"
+        "carrier R" "carr_prodag {0, Suc 0} B"], assumption+)
+ apply (cut_tac X = "A_to_prodag R {0, Suc 0} S B r" and Y = f in 
+         carr_prodag_mem_eq[of "{0, Suc 0}" B])
+  apply (rule ballI, simp, erule disjE, simp add:qring_ring 
+                           Ring.ring_is_ag,
+         simp add:Ring.qring_ring Ring.ring_is_ag)
+  apply assumption+
+  apply (rule ballI, simp, erule disjE, simp)
+  apply (simp add:A_to_prodag_def, simp add:A_to_prodag_def)
+  apply blast apply simp+
+ 
+ apply (rule impI, (erule conjE)+)
+ 
+(**** n ****)
+ apply (cut_tac n = "Suc n" in Nsetn_sub_mem1)
+apply (subgoal_tac "\<forall>k\<in>{i. i \<le> Suc (Suc n)}. Ring (B k)")
+apply (frule_tac I = "{i. i \<le> Suc (Suc n)}"  in A_to_prodag_rHom [of "R" _ "B" "S"])
+ apply assumption 
+ apply (rule ballI)
+ apply (simp add:pj_Hom)
+ apply simp
+ apply (subst surjec_def, rule conjI,
+        simp add:rHom_def)
+ apply (cut_tac n = "Suc n" in coprime_n_idealsTr4[of  _ J])
+ apply blast
+ apply (frule_tac f = "A_to_prodag R {j. j \<le> (Suc (Suc n))} S B" and 
+        A = R in rHom_func)
+ apply (rule_tac f = "A_to_prodag R {j. j \<le> (Suc (Suc n))} S B" and
+        A = "carrier R" and B = "carrier (r\<Pi>\<^bsub>{j. j \<le> (Suc (Suc n))}\<^esub> B)" in
+        surj_to_test, assumption+)
+ apply (rule ballI)
+ apply (cut_tac n = "Suc n" in n_prod_ideal[of  _ J])
+ apply (rule allI, simp)
+ apply (frule_tac A = "i\<Pi>\<^bsub>R,(Suc n)\<^esub> J" and B = "J (Suc (Suc n))" in 
+        coprime_elems,
+        cut_tac n = "Suc (Suc n)" in n_in_Nsetn,
+        blast, assumption)
+ apply (erule bexE, erule bexE) apply (rename_tac n f a b)
+ apply (thin_tac " coprime_ideals R (i\<Pi>\<^bsub>R,(Suc n)\<^esub> J) (J (Suc (Suc n)))")
+ apply (cut_tac n = "Suc n" and a = a and J = J in ele_n_prod,
+        rule allI, simp, assumption)
+
+ apply (cut_tac ring_is_ag)
+ apply (frule_tac n = n and f = f in aGroup.restrict_prod_Suc[of R _ R J B S],
+          assumption+)
+ apply (frule_tac S = "r\<Pi>\<^bsub>{j. j \<le> (Suc n)}\<^esub> B" and 
+        f = "A_to_prodag R {j. j \<le> (Suc n)} S B" in surjec_surj_to[of R]) 
+ apply (frule_tac f = "A_to_prodag R {j. j \<le> (Suc n)} S B" and A = "carrier R"
+        and B = "carrier (r\<Pi>\<^bsub>{j. j \<le>  (Suc n)}\<^esub> B)" and 
+        b = "restrict f {j. j \<le> (Suc n)}" in surj_to_el2, assumption)
+ apply (erule bexE, rename_tac n f a b u)
+ apply (cut_tac n = "Suc (Suc n)" in n_in_Nsetn,
+        frule_tac f = f and I = "{j. j \<le> (Suc (Suc n))}" and A = B and 
+         i = "Suc (Suc n)" in prodrg_component, assumption)  
+ apply simp
+ apply (frule_tac J = "J (Suc (Suc n))" and X = "f (Suc (Suc n))" in 
+                pj_surj_to[of R], simp, assumption)
+ apply (erule bexE, rename_tac n f a b u v)
+ apply (frule_tac a = "Suc (Suc n)" in forall_spec, simp,
+        frule_tac I = "J (Suc (Suc n))" and h = b in Ring.ideal_subset[of R],
+        assumption+,
+        cut_tac I = "i\<Pi>\<^bsub>R,n\<^esub> J \<diamondsuit>\<^sub>r\<^bsub>R\<^esub> J (Suc n)" and h = a in 
+                       Ring.ideal_subset[of R], assumption+)
+ apply (frule_tac x = b and y = u in  Ring.ring_tOp_closed[of R], assumption+,
+        frule_tac x = a and y = v in  Ring.ring_tOp_closed[of R], assumption+,
+       frule Ring.ring_is_ag[of R],
+       frule_tac x = "b \<cdot>\<^sub>r\<^bsub>R\<^esub> u" and y = "a \<cdot>\<^sub>r\<^bsub>R\<^esub> v" in aGroup.ag_pOp_closed[of R],
+       assumption+)
+ apply (frule_tac f = "A_to_prodag R {j. j \<le> (Suc (Suc n))} S B" and 
+        A = "carrier R" and B = "carrier (r\<Pi>\<^bsub>{j. j \<le> (Suc (Suc n))}\<^esub> B)" and
+        x = "b \<cdot>\<^sub>r\<^bsub>R\<^esub> u \<plusminus>\<^bsub>R\<^esub> a \<cdot>\<^sub>r\<^bsub>R\<^esub> v" in funcset_mem, assumption+)
+apply (frule_tac f = "A_to_prodag R {j. j \<le> (Suc (Suc n))} S B 
+                       (b \<cdot>\<^sub>r\<^bsub>R\<^esub> u \<plusminus>\<^bsub>R\<^esub> a \<cdot>\<^sub>r\<^bsub>R\<^esub> v)" and I = "{j. j \<le> (Suc (Suc n))}"
+           and  g = f in carr_prodrg_mem_eq, simp)    
+ apply (rule ballI)
+ apply (subst A_to_prodag_def, simp)
+ apply (frule_tac I = "J i" in pj_Hom[of R], simp)
+ apply (simp add: rHom_add)
+ apply (frule_tac a = i in forall_spec, assumption,
+        thin_tac "\<forall>k \<le> (Suc (Suc n)). ideal R (J k)",
+        frule_tac I = "J i" in Ring.qring_ring[of R], assumption,
+        thin_tac "\<forall>k \<le> (Suc (Suc n)). Ring (R /\<^sub>r J k)",
+        frule_tac R = "R /\<^sub>r (J i)" and x = b and y = u and f = "pj R (J i)" in
+         rHom_tOp[of R], assumption+, simp,
+     thin_tac "pj R (J i) (b \<cdot>\<^sub>r\<^bsub>R\<^esub> u) = pj R (J i) b \<cdot>\<^sub>r\<^bsub>R /\<^sub>r J i\<^esub> pj R (J i) u",
+     frule_tac R = "R /\<^sub>r (J i)" and x = a and y = v and f = "pj R (J i)" in
+     rHom_tOp[of R], simp add:Ring.qring_ring, assumption+)
+  apply (frule_tac f = "pj R (J i)" and R = "R /\<^sub>r J i" and a = v in
+                    rHom_mem[of _ R], assumption+,
+         frule_tac f = "pj R (J i)" and R = "R /\<^sub>r J i" and a = u in
+                    rHom_mem[of _ R], assumption+,
+         frule_tac f = "pj R (J i)" and R = "R /\<^sub>r J i" and a = b in
+                    rHom_mem[of _ R], assumption+,
+         frule_tac f = "pj R (J i)" and R = "R /\<^sub>r J i" and a = a in
+                    rHom_mem[of _ R], assumption+)
+      apply (frule_tac R = "R /\<^sub>r J i" in Ring.ring_is_ag)
+  apply (case_tac "i \<le> (Suc n)")
+  apply (frule_tac I1 = "J i" and x1 = a in pj_zero[THEN sym, of R ],
+            assumption+, simp,
+    thin_tac "pj R (J i) (a \<cdot>\<^sub>r\<^bsub>R\<^esub> v) = \<zero>\<^bsub>R /\<^sub>r J i\<^esub> \<cdot>\<^sub>r\<^bsub>R /\<^sub>r J i\<^esub> pj R (J i) v")
+         apply (simp add:Ring.ring_times_0_x) 
+  apply (frule_tac f = "pj R (J i)" and A = R and R = "R /\<^sub>r J i" and
+                 x = a and y = b in rHom_add, assumption+, simp,
+         thin_tac "A_to_prodag R {j. j \<le> Suc (Suc n)} S B
+         (b \<cdot>\<^sub>r u) \<plusminus>\<^bsub>r\<Pi>\<^bsub>{i. i \<le> Suc (Suc n)}\<^esub> B\<^esub>
+        A_to_prodag R {j. j \<le> Suc (Suc n)} S B (a \<cdot>\<^sub>r v)
+        \<in> carrier (r\<Pi>\<^bsub>{j. j \<le> Suc (Suc n)}\<^esub> B)")
+
+  apply (simp add:aGroup.ag_l_zero)
+  apply (rotate_tac -1, frule sym, thin_tac " pj R (J i) 1\<^sub>r\<^bsub>R\<^esub> = pj R (J i) b",
+         simp add:rHom_one) apply (simp add:Ring.ring_l_one)
+         apply (simp add:aGroup.ag_r_zero)
+  apply (frule_tac f = "A_to_prodag R {j. j \<le> (Suc n)} S B u" and 
+          g = "restrict f {j. j \<le> (Suc n)}" and x = i in eq_fun_eq_val,
+    thin_tac "A_to_prodag R {j. j\<le>(Suc n)} S B u = restrict f {j. j\<le>(Suc n)}")
+  apply (simp add:A_to_prodag_def) 
+  apply simp 
+  apply (frule_tac m = i and n = "Suc n" in nat_not_le, 
+         frule_tac m = "Suc n" and n = i in Suc_leI,
+         frule_tac m = i and n = "Suc (Suc n)" in Nat.le_anti_sym, assumption+,
+         simp)
+  apply (frule_tac I1 = "J (Suc (Suc n))" and x1 = b in pj_zero[THEN sym, of
+          R ],  assumption+, simp add:Ring.ring_times_0_x) 
+   apply (frule_tac f = "pj R (J (Suc (Suc n)))" and A = R and 
+          R = "R /\<^sub>r J (Suc (Suc n))" and
+                 x = a and y = b in rHom_add, assumption+, simp)      
+   apply (simp add:aGroup.ag_r_zero)
+   apply (rotate_tac -1, frule sym, 
+          thin_tac "pj R (J (Suc (Suc n))) 1\<^sub>r\<^bsub>R\<^esub> = pj R (J (Suc (Suc n))) a",
+          simp add:rHom_one,
+          simp add:Ring.ring_l_one)
+   apply (simp add:aGroup.ag_l_zero)
+
+   apply blast
+   apply (rule ballI, simp add:Ring.qring_ring)
 done
 
-
-lemma Chinese_remTr3:"\<lbrakk>ring R; (\<forall>k\<in>Nset (Suc n). ideal R (J k)); \<forall>k\<in>Nset (Suc n). B k = qring R (J k); \<forall>k\<in>Nset (Suc n). S k = pj R (J k); \<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). (i \<noteq>j \<longrightarrow> coprime_ideals R (J i) (J j))\<rbrakk> \<Longrightarrow> surjec\<^sub>R\<^sub>,\<^sub>(r\<Pi>\<^sub>(Nset (Suc n)) B) (A_to_prodag R (Nset (Suc n)) S B)"
-apply (simp add:Chinese_remTr2 [of "R" "n" "J" "B" "S"])
+lemma (in Ring) Chinese_remTr3:"\<lbrakk>\<forall>k \<le> (Suc n). ideal R (J k); 
+      \<forall>k \<le> (Suc n). B k = qring R (J k); \<forall>k\<le> (Suc n). S k = pj R (J k); 
+  \<forall>i \<le> (Suc n). \<forall>j \<le> (Suc n). (i \<noteq>j \<longrightarrow> coprime_ideals R (J i) (J j))\<rbrakk> \<Longrightarrow>
+    surjec\<^bsub>R,(r\<Pi>\<^bsub>{j. j \<le> (Suc n)}\<^esub> B)\<^esub> 
+                   (A_to_prodag R {j. j \<le> (Suc n)} S B)"
+apply (simp add:Chinese_remTr2 [of  "n" "J" "B" "S"])
 done
 
-lemma imset:"\<lbrakk>ring R; \<forall>k\<in>Nset (Suc n). ideal R (J k)\<rbrakk>
-\<Longrightarrow> {I. \<exists>k\<in>Nset (Suc n). I = J k} = {J k| k. k \<in> Nset (Suc n)}"
+lemma (in Ring) imset:"\<lbrakk>\<forall>k\<le> (Suc n). ideal R (J k)\<rbrakk>
+\<Longrightarrow> {I. \<exists>k\<le> (Suc n). I = J k} = {J k| k. k \<in> {j. j \<le> (Suc n)}}"
 apply blast
 done
 
-theorem Chinese_remThm:"\<lbrakk>ring R; (\<forall>k\<in>Nset (Suc n). ideal R (J k)); \<forall>k\<in>Nset (Suc n). B k = qring R (J k); \<forall>k\<in>Nset (Suc n). S k = pj R (J k); \<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). (i \<noteq>j \<longrightarrow> coprime_ideals R (J i) (J j))\<rbrakk> \<Longrightarrow> bijec\<^sub>(qring R (\<Inter> {J k | k. k\<in>Nset (Suc n)}))\<^sub>,\<^sub>(r\<Pi>\<^sub>(Nset (Suc n)) B) ((A_to_prodag R (Nset (Suc n)) S B)\<degree>\<^sub>R\<^sub>,\<^sub>(r\<Pi>\<^sub>(Nset (Suc n)) B))"
+theorem (in Ring) Chinese_remThm:"\<lbrakk>(\<forall>k \<le> (Suc n). ideal R (J k)); 
+ \<forall>k\<le>(Suc n). B k = qring R (J k); \<forall>k \<le> (Suc n). S k = pj R (J k); 
+ \<forall>i \<le> (Suc n). \<forall>j \<le> (Suc n). (i \<noteq>j \<longrightarrow> coprime_ideals R (J i) (J j))\<rbrakk> 
+\<Longrightarrow> bijec\<^bsub>(qring R (\<Inter> {J k | k. k\<in>{j. j \<le> (Suc n)}})),(r\<Pi>\<^bsub>{j. j \<le> (Suc n)}\<^esub> B)\<^esub> 
+     ((A_to_prodag R {j. j \<le> (Suc n)} S B)\<degree>\<^bsub>R,(prodrg {j. j \<le> (Suc n)} B)\<^esub>)"
 apply (frule Chinese_remTr3, assumption+)
-apply (subgoal_tac "ring (r\<Pi>\<^sub>(Nset (Suc n)) B)")
-apply (frule surjec_ind_bijec [of "R" "(r\<Pi>\<^sub>(Nset (Suc n)) B)"
-                   "A_to_prodag R (Nset (Suc n)) S B"], assumption+)
+apply (cut_tac I = "{j. j \<le> (Suc n)}" and A = B in prodrg_ring)
+  apply (rule ballI, simp add:qring_ring)
+apply (cut_tac surjec_ind_bijec [of "R" "r\<Pi>\<^bsub>{j. j \<le> (Suc n)}\<^esub> B" 
+                   "A_to_prodag R {j. j \<le> (Suc n)} S B"])
+apply (cut_tac Ring,
+       simp add:Chinese_remTr1 [of "R" "Suc n" "J" "B" "S"])
+apply (simp add:imset, assumption+)
 apply (rule A_to_prodag_rHom, assumption+)
  apply (rule ballI)
- apply (subgoal_tac "B k = R /\<^sub>r J k") prefer 2 apply (simp add:Nset_def)
- apply simp apply (rule qring_ring, assumption+) apply (simp add:Nset_def)
- apply (rule ballI) apply (subgoal_tac "S k = pj R (J k)")
- apply (subgoal_tac "B k = R /\<^sub>r J k") apply simp
- apply (rule pj_Hom, assumption+) apply (simp add:Nset_def) apply simp
- apply simp apply simp
-apply (simp add:Chinese_remTr1 [of "R" "Suc n" "J" "B" "S"])
-apply (simp add:imset)
-apply (rule prodrg_ring [of "Nset (Suc n)"])
-apply (simp add:qring_ring)
+ apply (simp add:qring_ring)
+ apply (rule ballI, simp, rule pj_Hom, assumption, simp)
+ apply assumption
 done
 
-lemma prod_primeTr2:"\<lbrakk>ring R; ideal R A \<rbrakk> \<Longrightarrow> (\<forall>k\<in>Nset (Suc n). prime_ideal R (P k)) \<and> (\<forall>l\<in>Nset (Suc n). \<not> (A \<subseteq> P l)) \<and> (\<forall>k\<in>Nset (Suc n). \<forall>l\<in>Nset (Suc n). k = l \<or> \<not> (P k) \<subseteq> (P l)) \<longrightarrow> (\<forall>i\<in> Nset (Suc n). (nprod0 R (ppa R P A i) n \<in> A \<and> (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and> (nprod0 R (ppa R P A i) n \<notin> P i)))"
+lemma (in Ring) prod_prime:"\<lbrakk>ideal R A; \<forall>k\<le>(Suc n). prime_ideal R (P k);
+      \<forall>l\<le>(Suc n). \<not> (A \<subseteq> P l); 
+      \<forall>k\<le> (Suc n). \<forall>l\<le> (Suc n). k = l \<or> \<not> (P k) \<subseteq> (P l)\<rbrakk> \<Longrightarrow> 
+     \<forall>i \<le> (Suc n). (nprod R (ppa R P A i) n \<in> A \<and> 
+        (\<forall>l \<in> {j. j\<le>(Suc n)} - {i}. nprod R (ppa R P A i) n \<in> P l) \<and> 
+        (nprod R (ppa R P A i) n \<notin> P i))"
+apply (rule allI, rule impI)
+apply (rule conjI)
+apply (frule_tac i = i in prod_primeTr1[of n P A], assumption+)
+apply (frule_tac n = n and f = "ppa R P A i" in ideal_nprod_inc[of  A])
+  apply (rule allI, rule impI)
+  apply (rotate_tac -2, 
+         frule_tac a = ia in forall_spec, assumption,
+         thin_tac "\<forall>l \<le> n.
+           ppa R P A i l \<in> A \<and>
+           ppa R P A i l \<in> P (skip i l) \<and> ppa R P A i l \<notin> P i",
+         simp add:ideal_subset)
+  apply (rotate_tac -1, 
+         frule_tac a = n in forall_spec, simp,
+         thin_tac "\<forall>l\<le> n.
+            ppa R P A i l \<in> A \<and>
+            ppa R P A i l \<in> P (skip i l) \<and> ppa R P A i l \<notin> P i",
+         (erule conjE)+, 
+         blast, assumption)
+apply (frule_tac i = i in prod_primeTr1[of n P A], assumption+)
+apply (rule conjI)
+ apply (rule ballI)
+ apply (frule_tac a = l in forall_spec, simp,
+        frule_tac I = "P l" in prime_ideal_ideal) 
+apply (frule_tac n = n and f = "ppa R P A i" and A = "P l" in ideal_nprod_inc)
+ apply (rule allI) apply (simp add:ppa_mem, simp)
+ apply (case_tac "l < i",
+        thin_tac "\<forall>l\<le> (Suc n). \<not> A \<subseteq> P l",
+        thin_tac "\<forall>k\<le> (Suc n). \<forall>l \<le> (Suc n). k = l \<or> \<not> P k \<subseteq> P l")
+  apply (erule conjE,
+         frule_tac i = l and j = i and k = "Suc n" in Nat.less_le_trans,
+         assumption,
+         frule_tac x = l and n = n in Suc_less_le)
+  apply (rotate_tac 2, 
+         frule_tac a = l in forall_spec, assumption,
+         thin_tac "\<forall>l\<le>n. ppa R P A i l \<in> A \<and>
+                 ppa R P A i l \<in> P (skip i l) \<and> ppa R P A i l \<notin> P i",
+         thin_tac "l < Suc n")
+  apply (simp only:skip_im_Tr1_2, blast)
+  apply (frule_tac m = l and n = i in nat_not_less,
+         thin_tac "\<not> l < i",
+         cut_tac x = l and A = "{j. j \<le> (Suc n)}" and a = i in in_diff1)
+         apply simp
+         apply (erule conjE,
+         frule not_sym, thin_tac "l \<noteq> i",
+         frule_tac m = i and n = l in le_imp_less_or_eq,
+         erule disjE, thin_tac "i \<le> l",
+         frule_tac x = i and n = l in less_le_diff) 
+  apply (cut_tac i = i and n = n and x = "l - Suc 0" in skip_im_Tr2_1,
+         simp, assumption+, simp,
+         frule_tac x = l and n = n in le_Suc_diff_le) 
+  apply (rotate_tac -7,
+         frule_tac a = "l - Suc 0" in forall_spec, assumption,
+         thin_tac "\<forall>l\<le>n. ppa R P A i l \<in> A \<and>
+                 ppa R P A i l \<in> P (skip i l) \<and> ppa R P A i l \<notin> P i",
+         simp, (erule conjE)+)
+  apply blast
+  apply simp
+  apply assumption
+    apply (frule_tac a = i in forall_spec, assumption,
+           thin_tac "\<forall>k\<le> (Suc n). prime_ideal R (P k)") 
+    apply (rule_tac P = "P i" and n = n and f = "ppa R P A i" in
+             prime_nprod_exc, assumption+)
+    apply (rule allI, rule impI)
+    apply (rotate_tac -3, 
+           frule_tac a = ia in forall_spec, assumption,
+           thin_tac "\<forall>l \<le> n.
+           ppa R P A i l \<in> A \<and>
+           ppa R P A i l \<in> P (skip i l) \<and> ppa R P A i l \<notin> P i",
+           simp add:ideal_subset)
+    apply (rule allI, rule impI) apply (
+           rotate_tac 4,
+           frule_tac a = l in forall_spec, assumption,
+           thin_tac "\<forall>l\<le> n.
+            ppa R P A i l \<in> A \<and>
+            ppa R P A i l \<in> P (skip i l) \<and> ppa R P A i l \<notin> P i",
+           simp)
+done
+
+lemma skip_im1:"\<lbrakk>i \<le> (Suc n); P \<in> {j. j \<le> (Suc n)} \<rightarrow> Collect (prime_ideal R)\<rbrakk>
+    \<Longrightarrow>
+   compose {j. j \<le> n} P (skip i) ` {j. j \<le> n} = P ` ({j. j \<le> (Suc n)} - {i})"
+apply (cut_tac skip_fun[of i n])
+apply (subst setim_cmpfn[of _ _ _ _ "{X. prime_ideal R X}"], assumption+)
+apply  simp
+apply (simp add:skip_fun_im)
+done
+
+lemma (in Ring) mutch_aux1:"\<lbrakk>ideal R A; i \<le> (Suc n);
+        P \<in> {j. j \<le> (Suc n)} \<rightarrow> Collect (prime_ideal R)\<rbrakk> \<Longrightarrow> 
+        compose {j. j \<le> n} P (skip i) \<in> {j. j \<le> n} \<rightarrow> Collect (prime_ideal R)"
+apply (cut_tac skip_fun[of i n])
+apply (simp add:composition[of "skip i" "{j. j \<le> n}" "{j. j \<le> (Suc n)}" P 
+            "Collect (prime_ideal R)"])
+done
+
+lemma (in Ring) prime_ideal_cont1Tr:"ideal R A  \<Longrightarrow> 
+      \<forall>P. ((P \<in> {j. j \<le> (n::nat)} \<rightarrow> {X. prime_ideal R X}) \<and> 
+                   (A \<subseteq> \<Union> P ` {j. j \<le> n})) \<longrightarrow> (\<exists>i\<le> n. A \<subseteq> (P i))"
 apply (induct_tac n)
- apply (rule impI)
- apply (rule ballI)
- apply simp
- apply (erule conjE)+
- apply (frule prod_primeTr1 [of "R" "0" "P" "A" _], assumption+)
- apply (rule conjI) apply (subgoal_tac "0 \<in> Nset 0")
-  apply (simp add:Nset_def) apply (simp add:Nset_def)
- apply (rule conjI)
- apply (rule ballI)
- apply (subgoal_tac "0 \<in> Nset 0")
-apply (simp add:Nset_1)
-apply (case_tac "i = 0")
- apply (subgoal_tac "l = Suc 0")
- apply simp apply (simp add:Nset_def) apply (simp add:skip_def)
- apply (erule conjE)+
- apply (simp add:NSet_def) apply (simp add:Nset_def) apply (erule conjE)
- apply simp
- apply (frule_tac n = i in Suc_leI [of "0"]) apply (thin_tac "0 < i")
- apply (frule_tac x = i and n = "Suc 0" in Nset_le)
- apply (frule_tac m = i and n = "Suc 0" in le_anti_sym, assumption+)
- apply (thin_tac "Suc 0 \<le> i") apply (thin_tac "i \<le> Suc 0")
- apply simp
-apply (frule skip_im_Tr3 [of "0" "0"])
- apply (simp add:Nset_def Nset_1)
- apply simp apply (simp add:Nset_def)
- apply (simp add:Nset_def)
+ apply (rule allI, rule impI)
+ apply (erule conjE)
+ apply simp 
 (** n **)
-  apply (rule impI)  (** show induction assumption is OK. **)
-  apply (subgoal_tac "(\<forall>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n \<in> A \<and>
-  (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and> nprod0 R (ppa R P A i) n \<notin> P i)")
-  prefer 2
-  apply (subgoal_tac "\<forall>l. l\<in>Nset (Suc n) \<longrightarrow> l\<in>Nset (Suc (Suc n))")
-  apply blast
-  apply (simp add:Nset_def)
-  apply (thin_tac "(\<forall>k\<in>Nset (Suc n). prime_ideal R (P k)) \<and>
-  (\<forall>l\<in>Nset (Suc n). \<not> A \<subseteq> P l) \<and> (\<forall>k\<in>Nset (Suc n). \<forall>l\<in>Nset (Suc n). k = l \<or>
-   \<not> P k \<subseteq> P l) \<longrightarrow> (\<forall>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n \<in> A \<and>
-  (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and> nprod0 R
-  (ppa R P A i) n \<notin> P i)")
-                    (* induction assumption OK *)
-apply (rule ballI)
- apply (erule conjE)+
- apply (case_tac "i \<in> Nset (Suc n)")   (** case i \<in> Nset (Suc n) **)
- apply (subgoal_tac "nprod0 R (ppa R P A i) n \<in> A \<and>
- (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and> nprod0 R
- (ppa R P A i) n \<notin> P i")
- prefer 2 apply (rotate_tac -1) apply blast
-  apply (thin_tac "\<forall>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n \<in> A \<and>
-                (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and>
-                nprod0 R (ppa R P A i) n \<notin> P i")
- apply (rule conjI)
- apply simp
- apply (rule ideal_ring_multiple, assumption+)
-  apply simp
- apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
-  apply (thin_tac "nprod0 R (ppa R P A i) n \<in> A \<and>
-             (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and>
-             nprod0 R (ppa R P A i) n \<notin> P i")
-  apply (thin_tac "i \<in> Nset (Suc n)")
-  apply (simp add: ppa_mem) apply (simp add:Nset_def)
-apply (erule conjE)
- apply (rule conjI)
- apply (rule ballI)
- apply (frule skip_fun_im)
-  apply (subgoal_tac "l \<in>  skip i ` Nset (Suc n)")
-   prefer 2  apply (simp add:skip_fun_im)
-  apply (thin_tac "skip i ` Nset (Suc n) = Nset (Suc (Suc n)) - {i}")
- apply (subgoal_tac "prime_ideal R (P l)")
-  prefer 2 apply (simp add:Nset_def)
-  apply (thin_tac "l \<in> Nset (Suc (Suc n)) - {i}")
- apply (simp add:image_def)
- apply (subgoal_tac "\<forall>x\<in>Nset (Suc n). l = skip i x \<longrightarrow> ppa R P A i (Suc n) \<cdot>\<^sub>R (nprod0 R (ppa R P A i) n) \<in> P l")
- apply blast apply (thin_tac "\<exists>x\<in>Nset (Suc n). l = skip i x")
- apply (rule ballI) apply (rule impI) apply simp
- apply (thin_tac "l = skip i x") apply simp
- apply (rename_tac n i h)
- apply (frule prod_primeTr1, assumption+)
-apply (case_tac "h = Suc n")
- apply simp
- apply (subgoal_tac "ideal R (P (skip i (Suc n)))")
- prefer 2  apply (simp add:prime_ideal_def)
- apply (rule ideal_ring_multiple1, assumption+)
- apply (simp add:Nset_def)
-  apply (subgoal_tac "\<forall>l\<in>Nset n. ppa R P A i l \<in> carrier R")
- apply (simp add:nprod_mem)
-  apply (rule ballI) apply (subgoal_tac "l \<in> Nset (Suc n)")
-  apply (simp add:ideal_subset) apply (simp add:Nset_def)
- apply (subgoal_tac "h \<in> Nset n")  (** case_tac ** h \<noteq> Suc n **)
-  apply (thin_tac "h \<noteq> Suc n")
-  apply (subgoal_tac "(skip i h) \<in> Nset (Suc n) - {i}")
-  prefer 2
-   apply (subgoal_tac "skip i \<in> NSet \<rightarrow> NSet")
-   apply (subgoal_tac "Nset n \<subseteq> NSet")
-   apply (subgoal_tac "skip i h \<in> skip i ` (Nset n)")
-   prefer 2 apply (simp add:mem_in_image) apply (simp add:skip_fun_im)
-   apply (simp add:Nset_def NSet_def) apply (simp add:Pi_def)
-   apply (rule allI) apply (rule impI) apply (simp add:NSet_def)
- apply (subgoal_tac "ideal R (P (skip i h))")
- apply (rule ideal_ring_multiple, assumption+)
-  apply blast
-  apply (simp add:Nset_def ideal_subset)
-  apply (subgoal_tac "prime_ideal R (P (skip i h))")
-  apply (simp add:prime_ideal_def)
-  apply (simp add:Nset_def)
-   apply (simp add:Nset_def)
- apply (erule conjE)
-  apply (thin_tac "\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l")
- apply simp
-  apply (thin_tac " nprod0 R (ppa R P A i) n \<in> A")
-  apply (frule  prod_primeTr1, assumption+)
-  apply (subgoal_tac "ppa R P A i (Suc n) \<notin> P i")
-  apply (subgoal_tac "ppa R P A i (Suc n) \<in> carrier R")
-  apply (subgoal_tac "nprod0 R (ppa R P A i) n \<in> carrier R")
-   apply (thin_tac "\<forall>l\<in>Nset (Suc (Suc n)). \<not> A \<subseteq> P l")
-   apply (thin_tac "\<forall>k\<in>Nset (Suc (Suc n)).
-                \<forall>l\<in>Nset (Suc (Suc n)). k = l \<or> \<not> P k \<subseteq> P l")
-   apply (thin_tac "\<forall>l\<in>Nset (Suc n).
-                ppa R P A i l \<in> A \<and>
-                ppa R P A i l \<in> P (skip i l) \<and> ppa R P A i l \<notin> P i")
-   apply (subgoal_tac "prime_ideal R (P i)")
-    apply (thin_tac "\<forall>k\<in>Nset (Suc (Suc n)). prime_ideal R (P k)")
-    apply (thin_tac "ideal R A")
- apply (rule contrapos_pp) apply simp+
- apply (simp add:prime_ideal_def)
-  apply (erule conjE)+
-  apply (subgoal_tac "ppa R P A i (Suc n) \<in> P i \<or>
-                             nprod0 R (ppa R P A i) n \<in> P i")
-  apply blast
-   apply (thin_tac "nprod0 R (ppa R P A i) n \<notin> P i")
-   apply (thin_tac "ppa R P A i (Suc n) \<notin> P i")
-  apply simp apply simp
-  apply (subgoal_tac "\<forall>l\<in>Nset (Suc n). ppa R P A i l \<in> carrier R")
-  apply (simp add:nprod_mem)
-  apply (simp add:ideal_subset)
-  apply (simp add:Nset_def ideal_subset)
-  apply (simp add:Nset_def)
-apply (subgoal_tac "i = Suc (Suc n)")
-(*** case i \<notin> Nset (Suc n), i.e. i = Suc (Suc n) **)
-prefer 2
- apply (thin_tac "\<forall>i\<in>Nset (Suc n).
-                nprod0 R (ppa R P A i) n \<in> A \<and>
-                (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and>
-                nprod0 R (ppa R P A i) n \<notin> P i")
- apply (thin_tac "\<forall>k\<in>Nset (Suc (Suc n)). prime_ideal R (P k)")
- apply (thin_tac "\<forall>l\<in>Nset (Suc (Suc n)). \<not> A \<subseteq> P l")
- apply (thin_tac " \<forall>k\<in>Nset (Suc (Suc n)).
-                \<forall>l\<in>Nset (Suc (Suc n)). k = l \<or> \<not> P k \<subseteq> P l")
- apply (simp add:Nset_def)
-  apply (thin_tac "i \<in> Nset (Suc (Suc n))")
-  apply (thin_tac "i \<notin> Nset (Suc n)")
-  apply (thin_tac "\<forall>i\<in>Nset (Suc n).
-                nprod0 R (ppa R P A i) n \<in> A \<and>
-                (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and>
-                nprod0 R (ppa R P A i) n \<notin> P i")
-
- apply (subgoal_tac "Suc (Suc n) \<in> Nset (Suc (Suc n))")
- apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
- apply (frule prod_primeTr1, assumption+)
- prefer 2 apply (simp add:Nset_def)
- prefer 2 apply (simp add:Nset_def)
-apply (rule conjI)
- apply simp
- apply (rule ideal_ring_multiple1, assumption+)
- apply (subgoal_tac "Suc (Suc n) \<in> Nset (Suc (Suc n))")
- apply simp apply (simp add:Nset_def)
- apply (frule ppa_mem, assumption+)
- apply (subgoal_tac "\<forall>l\<in>Nset (Suc n). ppa R P A (Suc (Suc n)) l \<in> carrier R")
- apply (simp add:nprod_mem)
- apply (rule ballI)
- apply (subgoal_tac "Suc (Suc n) \<in> Nset (Suc (Suc n))")
- apply (simp add:ppa_mem) apply (simp add:Nset_def)
-apply (rule conjI)
- apply (rule ballI)
- apply simp
- (** case induction above is not available **)
-apply (subgoal_tac "l \<in> Nset (Suc n)")
- apply (case_tac "l = Suc n")
- apply simp
- apply (subgoal_tac "ideal R (P (Suc n))")
- apply (rule ideal_ring_multiple1, assumption+)
- apply (subgoal_tac "ppa R P A (Suc (Suc n)) (Suc n) \<in> P (skip (Suc (Suc n)) (Suc n))")
- apply (simp add:skip_id)
- apply (simp add:Nset_def)
- apply (subgoal_tac "\<forall>l\<in>Nset (Suc n). ppa R P A (Suc (Suc n)) l \<in> carrier R")
- apply (rule nprod_mem, assumption+)
-  apply simp
- apply (subgoal_tac "\<forall>l\<in>Nset (Suc n). ppa R P A (Suc (Suc n)) l \<in> A")
-  apply (simp add:ideal_subset) apply simp
-  apply (subgoal_tac "prime_ideal R (P (Suc n))")
-  apply (simp add:prime_ideal_def)
-  apply (simp add:Nset_def)
-(* show l \<le> n *)
-apply (thin_tac "l \<in> Nset (Suc (Suc n)) \<and> l \<noteq> Suc (Suc n)")
-apply (subgoal_tac "l \<in> Nset n")
- apply (subgoal_tac "ideal R (P l)")
- apply (rule ideal_ring_multiple, assumption+)
- apply (rule ideal_nprod_inc, assumption+)
- apply (rule ballI)
-  apply (subgoal_tac "ppa R P A (Suc (Suc n)) ia \<in> A")
-  apply (simp add:ideal_subset)
-  apply (simp add:Nset_def)
-  apply (subgoal_tac "ppa R P A (Suc (Suc n)) l \<in> P (skip (Suc (Suc n)) l)")
-  apply (subgoal_tac "skip (Suc (Suc n)) l = l") apply (rotate_tac -1)
- apply simp
+apply (rule allI, rule impI)
+ apply (erule conjE)+ 
+ apply (case_tac "\<exists>i \<le> (Suc n). \<exists>j\<le> (Suc n). (i \<noteq> j \<and> P i \<subseteq> P j)")
+ apply ((erule exE, erule conjE)+, erule conjE)
+ apply (frule_tac f = P and n = n and X = "{X. prime_ideal R X}" and
+         A = A and i = i and j = j in Un_less_Un, assumption+, simp+)
+ apply (frule mutch_aux1, assumption+)
+ apply (frule_tac a = "compose {j. j \<le> n} P (skip i)" in forall_spec,
+        simp, erule exE)
+ apply (cut_tac i = i and n = n and x = ia in skip_fun_im1,
+               simp+, erule conjE, simp add:compose_def,blast)
+ (** last_step induction assumption is of no use **)
+apply (thin_tac "\<forall>P. P \<in> {j. j \<le> n} \<rightarrow> {X. prime_ideal R X} \<and>
+               A \<subseteq> \<Union>P ` {j. j \<le> n} \<longrightarrow>
+               (\<exists>i\<le>n. A \<subseteq> P i)",
+       rule contrapos_pp, simp+)
+ apply (cut_tac n = n and P = P in prod_prime [of A], assumption)
+ apply (rule allI, rule impI,
+     frule_tac f = P and A = "{j. j \<le> (Suc n)}" and B = "{X. prime_ideal R X}"
+     and x = k in funcset_mem, simp, simp, assumption+) 
+ apply (frule_tac n = "Suc n" and 
+        f = "\<lambda>i\<in>{j. j \<le> (Suc n)}. (nprod R (ppa R P A i) n)" in 
+        nsum_ideal_inc[of A], rule allI, rule impI, simp)
+ apply (subgoal_tac "(nsum R (\<lambda>i\<in>{j. j \<le> (Suc n)}. nprod R (ppa R P A i) n) 
+        (Suc n)) \<notin> (\<Union>x\<in>{j. j \<le> (Suc n)}. P x)")
  apply blast
- apply (simp add:Nset_def skip_id) apply simp
- apply (simp add:ideal_subset)
- apply (simp add:Nset_def prime_ideal_def)
-  apply (thin_tac "\<forall>l\<in>Nset (Suc n).
-             ppa R P A (Suc (Suc n)) l \<in> A \<and>
-             ppa R P A (Suc (Suc n)) l \<in> P (skip (Suc (Suc n)) l) \<and>
-             ppa R P A (Suc (Suc n)) l \<notin> P (Suc (Suc n))")
-  apply (thin_tac "Suc n \<in> Nset (Suc n)")
- apply (rule Nset_pre, assumption+)
-  apply (erule conjE)
-  apply (rule Nset_pre, assumption+)
-
-apply (simp del:nprod0_suc)
- apply (rule prime_nprod_exc, assumption+)
- apply (simp add:Nset_def)
- apply (subgoal_tac "\<forall>l\<in>Nset (Suc n). ppa R P A (Suc (Suc n)) l \<in> A")
- apply (simp add:ideal_subset)
- apply simp
-apply simp
+ apply (simp del:nsum_suc)
+ apply (rule allI, rule impI) apply (rename_tac n P l)
+  apply (frule_tac f = P and A = "{j. j \<le> (Suc n)}" and 
+         B = "{X. prime_ideal R X}"
+         and x = l in funcset_mem, simp, simp del:nsum_suc,
+         frule_tac I = "P l" in prime_ideal_ideal)
+  apply (rule_tac A = "P l" and n = "Suc n" and 
+         f = "\<lambda>i\<in>{j. j \<le> (Suc n)}. (nprod R (ppa R P A i) n)" in 
+         nsum_ideal_exc, simp+, rule allI, simp add:ideal_subset)
+  apply (rule contrapos_pp, simp+)
+  apply (rotate_tac -1,
+         frule_tac a = l in forall_spec, simp,
+         thin_tac "\<forall>j\<le>Suc n.
+           (\<exists>la\<in>{i. i \<le> Suc n} - {j}. e\<Pi>\<^bsub>R,n\<^esub> ppa R P A la \<notin> P l) \<or>
+           e\<Pi>\<^bsub>R,n\<^esub> ppa R P A j \<in> P l",
+         thin_tac "\<forall>i\<le>Suc n. \<forall>j\<le>Suc n. i = j \<or> \<not> P i \<subseteq> P j",
+         thin_tac "\<forall>i\<le>Suc n. \<not> A \<subseteq> P i")
+  apply (erule disjE, erule bexE) 
+  apply (frule_tac a = la in forall_spec, simp,
+         thin_tac "\<forall>i\<le>Suc n.
+           e\<Pi>\<^bsub>R,n\<^esub> ppa R P A i \<in> A \<and>
+           (\<forall>l\<in>{j. j \<le> Suc n} - {i}. e\<Pi>\<^bsub>R,n\<^esub> ppa R P A i \<in> P l) \<and>
+           e\<Pi>\<^bsub>R,n\<^esub> ppa R P A i \<notin> P i",
+           (erule conjE)+)
+  apply blast
+  apply blast
+done
+ 
+lemma (in Ring) prime_ideal_cont1:"\<lbrakk>ideal R A; \<forall>i \<le> (n::nat). 
+     prime_ideal R (P i); A \<subseteq> \<Union> {X. (\<exists>i \<le> n. X = (P i))} \<rbrakk> \<Longrightarrow> 
+     \<exists>i\<le> n. A\<subseteq>(P i)"
+apply (frule prime_ideal_cont1Tr[of A n])
+apply (frule_tac a = P in forall_spec,
+       thin_tac "\<forall>P. P \<in> {j. j \<le> n} \<rightarrow> {X. prime_ideal R X} \<and> 
+       A \<subseteq> \<Union>P ` {j. j \<le> n} \<longrightarrow> (\<exists>i\<le>n. A \<subseteq> P i)")
+apply (rule conjI,
+       rule univar_func_test, rule ballI, simp,
+       rule subsetI, simp,
+       frule_tac c = x in subsetD[of A "\<Union>{X. \<exists>i\<le>n. X = P i}"], assumption+,
+       simp, blast)
+apply assumption
 done
 
-lemma prod_prime:"\<lbrakk>ring R; ideal R A; \<forall>k\<in>Nset (Suc n). prime_ideal R (P k);
-\<forall>l\<in>Nset (Suc n). \<not> (A \<subseteq> P l); \<forall>k\<in>Nset (Suc n). \<forall>l\<in>Nset (Suc n). k = l \<or> \<not> (P k) \<subseteq> (P l)\<rbrakk> \<Longrightarrow> \<forall>i\<in> Nset (Suc n). (nprod0 R (ppa R P A i) n \<in> A \<and> (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and> (nprod0 R (ppa R P A i) n \<notin> P i))"
-apply (frule  prod_primeTr2 [of "R" "A" "n" "P"], assumption+)
-apply simp
-done
-
-lemma skip_im1:"\<lbrakk>i \<in> Nset (Suc n); P \<in> Nset (Suc n) \<rightarrow> {X. prime_ideal R X}\<rbrakk> \<Longrightarrow> compose (Nset n) P (skip i) ` Nset n = P ` (Nset (Suc n) - {i})"
- apply (subgoal_tac "compose (Nset n) P (skip i) =
-                              compose (Nset n) P (restrict (skip i) (Nset n))")
- apply simp
- apply (subgoal_tac "restrict (skip i) (Nset n) \<in> Nset n \<rightarrow> Nset (Suc n)")
- apply (simp add:setim_cmpfn)
- apply (subgoal_tac "restrict (skip i) (Nset n) ` Nset n = Nset (Suc n) - {i}")
-  apply simp
- apply (subgoal_tac "restrict (skip i) (Nset n) ` Nset n = (skip i) ` Nset n")
- apply simp
- apply (simp add:skip_fun_im)
-  apply (rule equalityI)
-  apply (rule subsetI)
-   apply (simp add:image_def CollectI)
-  apply (rule subsetI)
-   apply (simp add:image_def CollectI)
- apply (simp add:Pi_def restrict_def)
- apply (simp add:skip_mem)
-  apply (simp add:expand_fun_eq)
- apply (rule allI)
- apply (simp add:compose_def)
-done
-
-lemma mutch_aux1:"\<lbrakk>ring R; ideal R A; P \<in> Nset (Suc n) \<rightarrow> Collect (prime_ideal R); i \<in> Nset (Suc n)\<rbrakk> \<Longrightarrow> compose (Nset n) P (skip i) \<in> Nset n \<rightarrow> Collect (prime_ideal R)"
-apply (subgoal_tac "compose (Nset n) P (restrict (skip i) (Nset n)) \<in>
-  Nset n \<rightarrow> Collect (prime_ideal R)")
-apply (subgoal_tac "compose (Nset n) P (restrict (skip i) (Nset n)) =
-                          compose (Nset n) P (skip i)")
- apply simp
-apply (simp add: expand_fun_eq)
- apply (rule allI)
- apply (simp add:compose_def)
- apply (subgoal_tac "restrict (skip i) (Nset n) \<in> Nset n \<rightarrow> Nset (Suc n)")
- apply (simp add:composition)
-apply (thin_tac "P \<in> Nset (Suc n) \<rightarrow> Collect (prime_ideal R)")
-apply (simp add:Pi_def restrict_def)
- apply (rule allI) apply (rule impI)
- apply (simp add:skip_mem)
-done
-
-lemma prime_ideal_cont1Tr:"\<lbrakk>ring R; ideal R A\<rbrakk>  \<Longrightarrow> \<forall>P. ((P \<in> Nset n \<rightarrow> {X. prime_ideal R X}) \<and> (A \<subseteq> \<Union> P ` (Nset n))) \<longrightarrow> (\<exists>i\<in>Nset n. A \<subseteq> (P i))"
+lemma (in Ring) prod_n_ideal_contTr0:"(\<forall>l\<le> n. ideal R (J l)) \<longrightarrow>
+                               i\<Pi>\<^bsub>R,n\<^esub> J  \<subseteq>  \<Inter>{X. (\<exists>k\<le>n. X = (J k))}"
 apply (induct_tac n)
- apply (rule allI) apply (rule impI)
- apply (erule conjE)
- apply (simp add:Nset_def)
-(** n **)
-apply (rule allI) apply (rule impI)
- apply (erule conjE)+
-apply (case_tac "\<exists>i\<in>Nset (Suc n). \<exists>j\<in>Nset (Suc n). (i \<noteq> j \<and> P i \<subseteq> P j)")
-apply auto
-apply (subgoal_tac "A \<subseteq> \<Union> (compose (Nset n) P (skip i)) ` (Nset n)")
-apply (frule mutch_aux1, assumption+)
- apply (subgoal_tac "\<exists>k\<in> Nset n. A \<subseteq> (compose (Nset n) P (skip i)) k")
- apply (subgoal_tac "\<forall>k\<in>Nset n. A \<subseteq> compose (Nset n) P (skip i) k \<longrightarrow>
-                                     (\<exists>i\<in>Nset (Suc n). A \<subseteq> P i)")
-  apply (thin_tac " \<forall>P. P \<in> Nset n \<rightarrow> Collect (prime_ideal R) \<and> A \<subseteq> UNION (Nset n) P \<longrightarrow> (\<exists>i\<in>Nset n. A \<subseteq> P i)")
-  apply (thin_tac " P \<in> Nset (Suc n) \<rightarrow> Collect (prime_ideal R)")
-  apply (thin_tac " A \<subseteq> \<Union>compose (Nset n) P (skip i) ` Nset n")
-  apply (thin_tac "compose (Nset n) P (skip i) \<in> Nset n \<rightarrow> Collect (prime_ideal R)")
- apply blast apply (thin_tac "\<exists>k\<in>Nset n. A \<subseteq> compose (Nset n) P (skip i) k")
- apply (rule ballI) apply (rule impI)
- apply (simp add:compose_def)
- apply (subgoal_tac "skip i k \<in> Nset (Suc n)")
- apply blast
-apply (simp add:skip_mem)
- apply (thin_tac "P \<in> Nset (Suc n) \<rightarrow> Collect (prime_ideal R)")
- apply (thin_tac "A \<subseteq> UNION (Nset (Suc n)) P")
- apply (thin_tac "i \<in> Nset (Suc n)") apply (thin_tac "j \<in> Nset (Suc n)")
- apply (thin_tac " i \<noteq> j") apply (thin_tac " P i \<subseteq> P j") apply (rotate_tac -1)
- apply blast
-apply (simp add:Pi_def compose_def)
+ apply simp 
 
-apply (subgoal_tac "UNION (Nset (Suc n)) P \<subseteq> (\<Union>x\<in>Nset n. P (skip i x))")
- apply (rule subset_trans [of "A" _ _], assumption+)
- apply (rule subsetI)
- apply (simp add:CollectI)
- apply (thin_tac "\<forall>P. (\<forall>x. x \<in> Nset n \<longrightarrow> prime_ideal R (P x)) \<and>
-              A \<subseteq> (\<Union>x\<in>Nset n. P x) \<longrightarrow>
-              (\<exists>i\<in>Nset n. A \<subseteq> P i)")
- apply (thin_tac "\<forall>x. x \<in> Nset (Suc n) \<longrightarrow> prime_ideal R (P x)")
- apply (thin_tac "A \<subseteq> UNION (Nset (Suc n)) P")
- apply (subgoal_tac "\<forall>xa\<in>Nset (Suc n). x \<in> P xa \<longrightarrow> (\<exists>xa\<in>Nset n. x \<in> P (skip i xa))")
- apply blast apply (thin_tac "\<exists>xa\<in>Nset (Suc n). x \<in> P xa")
- apply (rule ballI)
  apply (rule impI)
- apply (subgoal_tac "skip i ` (Nset n) = Nset (Suc n) - {i}")
-apply (case_tac "xa = i")
- apply (subgoal_tac "x \<in> P j")
- apply (subgoal_tac "j \<in> skip i ` Nset n")
- apply (thin_tac "skip i ` Nset n = Nset (Suc n) - {i}")
- apply (simp add:image_def)
- apply (rename_tac n P i j a l)
- apply (subgoal_tac "\<forall>x\<in>Nset n. j = skip i x \<longrightarrow> (\<exists>xa\<in>Nset n. a \<in> P (skip i xa))")
- apply blast apply (thin_tac "\<exists>x\<in>Nset n. j = skip i x")
- apply (rule ballI) apply (rule impI)
-  apply simp
-  apply blast
- apply simp apply simp
- apply (simp add:subsetD)
-apply (rename_tac n P i j a l)
- apply (subgoal_tac "l \<in> skip i ` (Nset n)")
-  apply (thin_tac "skip i ` Nset n = Nset (Suc n) - {i}")
- apply (simp add:image_def)
- apply (subgoal_tac "\<forall>x\<in>Nset n. l = skip i x \<longrightarrow> ( \<exists>xa\<in>Nset n. a \<in> P (skip i xa))")
- apply blast apply (thin_tac "\<exists>x\<in>Nset n. l = skip i x")
- apply (rule ballI) apply (rule impI)
- apply simp
- apply blast
-apply simp
- apply (simp add:skip_fun_im)
-(** last_step induction assumption is not abailable **)
-apply (rule contrapos_pp)
- apply simp+
- apply (thin_tac "\<forall>P. P \<in> Nset n \<rightarrow> Collect (prime_ideal R) \<and>
-                 A \<subseteq> UNION (Nset n) P \<longrightarrow> (\<exists>i\<in>Nset n. A \<subseteq> P i)")
- apply (subgoal_tac "\<forall>k\<in>Nset (Suc n). prime_ideal R (P k)")
- apply (thin_tac " P \<in> Nset (Suc n) \<rightarrow> Collect (prime_ideal R)")
- apply (frule prod_prime [of "R" "A" _ _], assumption+)
- prefer 2  apply (rule ballI)
- apply (frule funcset_mem, assumption+)
- apply simp
-apply (subgoal_tac "nsum0 R (\<lambda>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n) (Suc n) \<in> A \<and>  nsum0 R (\<lambda>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n) (Suc n) \<notin>  UNION (Nset (Suc n)) P")
- apply (erule conjE)
- apply (subgoal_tac "nsum0 R (\<lambda>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n) (Suc n)
-  \<in> UNION (Nset (Suc n)) P") apply simp
- apply (thin_tac " nsum0 R (\<lambda>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n) (Suc n)
-             \<notin> UNION (Nset (Suc n)) P")
- apply (rule subsetD, assumption+)
-apply (rule conjI)
- apply (thin_tac "A \<subseteq> UNION (Nset (Suc n)) P")
- apply (thin_tac "\<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). i = j \<or> \<not> P i \<subseteq> P j")
- apply (thin_tac "\<forall>i\<in>Nset (Suc n). \<not> A \<subseteq> P i")
- apply (thin_tac "\<forall>k\<in>Nset (Suc n). prime_ideal R (P k)")
- apply (subgoal_tac "\<forall>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n \<in> A")
- prefer 2 apply blast
-  apply (thin_tac "\<forall>i\<in>Nset (Suc n).
-                nprod0 R (ppa R P A i) n \<in> A \<and>
-                (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and>
-                nprod0 R (ppa R P A i) n \<notin> P i")
-  apply (rule nsum_ideal_inc, assumption+)
- apply simp
- apply (simp del:nsum0_suc)  (** final step **)
- apply (rule ballI)
- apply (subgoal_tac "ideal R (P x)")
- prefer 2 apply (subgoal_tac "prime_ideal R (P x)")
-  apply (simp add:prime_ideal_def) apply simp
- apply (subgoal_tac "\<forall>i\<in>Nset (Suc n). (nprod0 R (ppa R P A i) n) \<in> carrier R")
- apply (subgoal_tac "\<forall>i\<in>Nset (Suc n)-{x}. (nprod0 R (ppa R P A i) n \<in> (P x))")
- apply (subgoal_tac "nprod0 R (ppa R P A x) n \<notin> (P x)")
- apply (rule nsum_ideal_exc, assumption+)
-  apply simp
-  apply (subgoal_tac "(\<forall>l\<in>Nset (Suc n) - {x}.
-                 (\<lambda>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n) l \<in> P x) \<and>
-             (\<lambda>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n) x \<notin> P x")
-  apply (thin_tac "\<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). i = j \<or> \<not> P i \<subseteq> P j")
-  apply (thin_tac "\<forall>i\<in>Nset (Suc n). \<not> A \<subseteq> P i")
-  apply (thin_tac "\<forall>k\<in>Nset (Suc n). prime_ideal R (P k)")
-  apply (thin_tac "\<forall>i\<in>Nset (Suc n).
-             nprod0 R (ppa R P A i) n \<in> A \<and>
-             (\<forall>l\<in>Nset (Suc n) - {i}. nprod0 R (ppa R P A i) n \<in> P l) \<and>
-             nprod0 R (ppa R P A i) n \<notin> P i")
-  apply (thin_tac "\<forall>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n \<in> carrier R")
-  apply (thin_tac "\<forall>i\<in>Nset (Suc n) - {x}. nprod0 R (ppa R P A i) n \<in> P x")
-  apply (thin_tac "nprod0 R (ppa R P A x) n \<notin> P x")
-  apply blast
-apply (rule conjI)
-  apply (rule ballI)
-  apply simp
-apply simp
- apply simp
- apply (thin_tac " A \<subseteq> UNION (Nset (Suc n)) P")
- apply (thin_tac "\<forall>i\<in>Nset (Suc n). \<forall>j\<in>Nset (Suc n). i = j \<or> \<not> P i \<subseteq> P j")
- apply (thin_tac "\<forall>i\<in>Nset (Suc n). \<not> A \<subseteq> P i")
- apply (thin_tac "\<forall>k\<in>Nset (Suc n). prime_ideal R (P k)")
- apply (thin_tac "\<forall>i\<in>Nset (Suc n). nprod0 R (ppa R P A i) n \<in> carrier R")
-apply (rotate_tac -2)
- apply blast
-apply (rule ballI)
- apply (simp add:ideal_subset)
+ apply (cut_tac n = n in Nsetn_sub_mem1,
+         simp)
+ apply (cut_tac n = n in n_prod_ideal[of _ J], simp)
+ apply (cut_tac I = "i\<Pi>\<^bsub>R,n\<^esub> J" and J = "J (Suc n)" in 
+             ideal_prod_sub_Int) apply assumption apply simp
+ apply (frule_tac A = "i\<Pi>\<^bsub>R,n\<^esub> J \<diamondsuit>\<^sub>r\<^bsub>R\<^esub> J (Suc n)" and 
+        B = "i\<Pi>\<^bsub>R,n\<^esub> J \<inter> J (Suc n)" and
+        C = "\<Inter>{X. \<exists>k\<le> n. X = J k} \<inter> J (Suc n)" in subset_trans)
+ apply (rule_tac A = "i\<Pi>\<^bsub>R,n\<^esub> J" and B = "\<Inter>{X. \<exists>k\<le>n. X = J k}" and 
+        C = "J (Suc n)" in inter_mono, assumption)
+ apply (rule_tac A = "i\<Pi>\<^bsub>R,n\<^esub> J \<diamondsuit>\<^sub>r J (Suc n)" and
+                 B = "\<Inter>{X. \<exists>k\<le> n. X = J k} \<inter> J (Suc n)" and
+                 C = "\<Inter>{X. \<exists>k\<le> (Suc n). X = J k}" in subset_trans,
+         assumption)
+ apply (rule subsetI)
+  apply simp 
+  apply (rule allI, rule impI) 
+  apply (erule exE, (erule conjE)+)
+  apply (case_tac "k = Suc n", simp)
+  apply (frule_tac m = k and n = "Suc n" in noteq_le_less, assumption)
+  apply (thin_tac " k \<le> Suc n")
+  apply (frule_tac x = k and n = "Suc n" in less_le_diff,
+         thin_tac "k < Suc n", simp, thin_tac "\<forall>l\<le>Suc n. ideal R (J l)")
+  apply (frule_tac a = xa in forall_spec, blast,
+         thin_tac "\<forall>xa. (\<exists>k\<le>n. xa = J k) \<longrightarrow> x \<in> xa",
+         simp)
 done
 
-lemma prime_ideal_cont1:"\<lbrakk>ring R; ideal R A; \<forall>i\<in>Nset n. prime_ideal R (P i);
-A \<subseteq> \<Union> {X. (\<exists>i \<in> Nset n. X = (P i))} \<rbrakk> \<Longrightarrow> \<exists>i\<in>Nset n. A \<subseteq> (P i)"
-apply (subgoal_tac "(\<lambda>i\<in>Nset n. (P i)) \<in> (Nset n) \<rightarrow> {X. prime_ideal R X}")
-apply (subgoal_tac "A \<subseteq> \<Union> (\<lambda>i\<in>Nset n. (P i)) ` (Nset n)")
-apply (subgoal_tac "\<exists>i\<in>Nset n. A \<subseteq> (restrict P (Nset n)) i")
-apply (subgoal_tac "\<forall>i\<in>Nset n. A \<subseteq> restrict P (Nset n) i \<longrightarrow> (\<exists>i\<in>Nset n. A \<subseteq> P i)") apply blast
-apply (thin_tac "\<exists>i\<in>Nset n. A \<subseteq> restrict P (Nset n) i")
- apply (rule ballI)
- apply (rule impI)
- apply (subgoal_tac "restrict P (Nset n) i = P i")
- apply blast
-apply (simp add:restrict_def)
- apply (thin_tac "\<forall>i\<in>Nset n. prime_ideal R (P i)")
- apply (thin_tac "A \<subseteq> \<Union>{X. \<exists>i\<in>Nset n. X = P i}")
-apply (subgoal_tac "\<forall>P. P \<in> Nset n \<rightarrow> Collect (prime_ideal R) \<and> A \<subseteq> \<Union>P ` Nset n \<longrightarrow> (\<exists>i\<in>Nset n. A \<subseteq> P i)")
-apply blast
- apply (simp add:prime_ideal_cont1Tr [of "R" "A"])
-apply (subgoal_tac "{X. \<exists>i\<in>Nset n. X = P i} = restrict P (Nset n) ` Nset n")
- apply simp
-apply (rule equalityI)
- apply (rule subsetI)
- apply (rename_tac Y)
- apply (simp add:CollectI)
- apply (simp add:image_def)
- apply (rule subsetI) apply (rename_tac Y)
- apply (simp add:image_def CollectI)
-apply (simp add:Pi_def)
-done
-
-lemma prod_n_ideal_contTr0:"ring R \<Longrightarrow> (\<forall>l\<in>Nset n. ideal R (J l)) \<longrightarrow>
- i\<Pi>\<^sub>R\<^sub>,\<^sub>n J  \<subseteq>  \<Inter>{X. (\<exists>k\<in>Nset n. X = (J k))}"
-apply (induct_tac n)
- apply (simp add:Nset_def)
- apply (rule impI)
-apply (subgoal_tac "\<Inter>{X. \<exists>k\<in>Nset (Suc n). X = J k} =
-                           (\<Inter>{X. \<exists>k\<in>Nset n. X = J k}) \<inter> (J (Suc n))")
- apply (simp del:Int_subset_iff)
- apply (subgoal_tac "i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<diamondsuit>\<^sub>R (J (Suc n)) \<subseteq> i\<Pi>\<^sub>R\<^sub>,\<^sub>n J")
- apply (subgoal_tac "i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<diamondsuit>\<^sub>R (J (Suc n)) \<subseteq> J (Suc n)")
-apply (subgoal_tac "i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<diamondsuit>\<^sub>R (J (Suc n)) \<subseteq> (i\<Pi>\<^sub>R\<^sub>,\<^sub>n J) \<inter> (J (Suc n))")
-apply (rule subsetI)
- apply (subgoal_tac "i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<subseteq> \<Inter>{X. \<exists>k\<in>Nset n. X = J k}")
- apply (subgoal_tac "x \<in> i\<Pi>\<^sub>R\<^sub>,\<^sub>n J")
- apply (subgoal_tac "x \<in> J (Suc n)")
- apply (subgoal_tac "x \<in>  \<Inter>{X. \<exists>k\<in>Nset n. X = J k}")
- apply simp
- apply (rule subsetD, assumption+)
- apply (rule subsetD, assumption+)
- apply (rule subsetD, assumption+)
- apply (simp add:Nset_def)
- apply (rule subsetI)
-  apply (subgoal_tac "x \<in> i\<Pi>\<^sub>R\<^sub>,\<^sub>n J")
-  apply (subgoal_tac "x \<in> J (Suc n)")
- apply simp
- apply (rule subsetD, assumption+)
- apply (rule subsetD, assumption+)
- apply (rule ideal_prod_la2, assumption+)
- apply (simp add:Nset_def n_prod_ideal)
- apply (simp add:Nset_def)
- apply (rule ideal_prod_la1, assumption+)
- apply (simp add:Nset_def n_prod_ideal)
- apply (simp add:Nset_def)
-  apply (thin_tac "(\<forall>l\<in>Nset n. ideal R (J l)) \<longrightarrow>
-                         i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<subseteq> \<Inter>{X. \<exists>k\<in>Nset n. X = J k}")
-apply (rule equalityI)
- apply (rule subsetI)
-  apply (simp add:Nset_def)
- apply (rule conjI)
- apply (rule allI) apply (rule impI)
- apply (subgoal_tac "\<forall>k. k \<le> n \<and> xa = (J k) \<longrightarrow> x \<in> xa")
- apply blast apply (thin_tac "\<exists>k. k \<le> n \<and> xa = J k")
-apply (rule allI) apply (rule impI) apply (erule conjE)
- apply simp
- apply (subgoal_tac "k \<le> Suc n")
-apply blast apply simp
-apply blast
- apply (rule subsetI)
- apply (simp add:Nset_def)
-apply (rule allI) apply (rule impI)
- apply (subgoal_tac "\<forall>k. k \<le> Suc n \<and> xa = (J k) \<longrightarrow> x \<in> xa")
- apply blast apply (thin_tac "\<exists>k. k \<le> Suc n \<and> xa = J k")
- apply (rule allI) apply (rule impI) apply (erule conjE)
- apply (erule conjE)
- apply simp
- apply (case_tac "k = Suc n") apply simp
-apply (subgoal_tac "k \<le> n") apply (thin_tac "k \<noteq> Suc n")
- apply (thin_tac " k \<le> Suc n")
- apply (thin_tac "x \<in> J (Suc n)")
- apply blast
-apply (thin_tac "\<forall>l. l \<le> Suc n \<longrightarrow> ideal R (J l)")
-apply (thin_tac "\<forall>xa. (\<exists>k. k \<le> n \<and> xa = J k) \<longrightarrow> x \<in> xa")
-apply (frule le_imp_less_or_eq) apply (thin_tac " k \<le> Suc n")
-apply simp
-done
-
-lemma prod_n_ideal_contTr:"\<lbrakk>ring R; \<forall>l\<in>Nset n. ideal R (J l)\<rbrakk> \<Longrightarrow>
- i\<Pi>\<^sub>R\<^sub>,\<^sub>n J  \<subseteq>  \<Inter>{X. (\<exists>k\<in>Nset n. X = (J k))}"
+lemma (in Ring) prod_n_ideal_contTr:"\<lbrakk>\<forall>l\<le> n. ideal R (J l)\<rbrakk> \<Longrightarrow>
+             i\<Pi>\<^bsub>R,n\<^esub> J  \<subseteq>  \<Inter>{X. (\<exists>k \<le> n. X = (J k))}"
 apply (simp add:prod_n_ideal_contTr0)
 done
 
-lemma prod_n_ideal_cont2:"\<lbrakk>ring R; \<forall>l\<in>Nset n. ideal R (J l); prime_ideal R P;
- \<Inter>{X. (\<exists>k\<in>Nset n. X = (J k))} \<subseteq> P \<rbrakk> \<Longrightarrow> \<exists>l\<in>Nset n. (J l) \<subseteq> P"
-apply (subgoal_tac "i\<Pi>\<^sub>R\<^sub>,\<^sub>n J \<subseteq> P")
+lemma (in Ring) prod_n_ideal_cont2:"\<lbrakk>\<forall>l\<le> (n::nat). ideal R (J l); 
+     prime_ideal R P; \<Inter>{X. (\<exists>k\<le> n. X = (J k))} \<subseteq> P\<rbrakk> \<Longrightarrow> 
+     \<exists>l\<le> n. (J l) \<subseteq> P"
+apply (frule prod_n_ideal_contTr[of n J])
+apply (frule_tac A = "i\<Pi>\<^bsub>R,n\<^esub> J" and B = "\<Inter>{X. \<exists>k\<le> n. X = J k}" and C = P 
+       in subset_trans, assumption+)
+apply (thin_tac "\<Inter>{X. \<exists>k\<le> n. X = J k} \<subseteq> P",
+       thin_tac "i\<Pi>\<^bsub>R,n\<^esub> J \<subseteq> \<Inter>{X. \<exists>k\<le> n. X = J k}")
  apply (simp add:ideal_n_prod_prime)
- apply (rule subsetI)
- apply (frule prod_n_ideal_contTr, assumption+)
- apply (subgoal_tac "x \<in> \<Inter>{X. \<exists>k\<in>Nset n. X = J k}")
- apply (rule subsetD, assumption+)
- apply (rule subsetD, assumption+)
 done
 
-lemma prod_n_ideal_cont3:"\<lbrakk>ring R; \<forall>l\<in>Nset n. ideal R (J l); prime_ideal R P;
- \<Inter>{X. (\<exists>k\<in>Nset n. X = (J k))} = P \<rbrakk> \<Longrightarrow> \<exists>l\<in>Nset n. (J l) = P"
-apply (subgoal_tac "\<exists>l\<in>Nset n. (J l) \<subseteq> P")
- apply (subgoal_tac "\<forall>l\<in>Nset n. J l \<subseteq> P \<longrightarrow> (\<exists>l\<in>Nset n. J l = P)")
- apply blast apply (thin_tac "\<exists>l\<in>Nset n. J l \<subseteq> P")
- apply (rule ballI)
- apply (rule impI)
+lemma (in Ring) prod_n_ideal_cont3:"\<lbrakk>\<forall>l\<le> (n::nat). ideal R (J l); 
+      prime_ideal R P; \<Inter>{X. (\<exists>k\<le> n. X = (J k))} = P\<rbrakk> \<Longrightarrow> 
+      \<exists>l\<le> n. (J l) = P"
+apply (frule prod_n_ideal_cont2[of n J P], assumption+)
+ apply simp
+ apply (erule exE)
  apply (subgoal_tac "J l = P")
  apply blast
-apply (rule equalityI, assumption+)
+apply (rule equalityI, simp)
  apply (rule subsetI)
- apply (subgoal_tac "P = \<Inter>{X. \<exists>k\<in>Nset n. X = J k}")
- apply (thin_tac "\<Inter>{X. \<exists>k\<in>Nset n. X = J k} = P")
+ apply (rotate_tac -4, frule sym, thin_tac "\<Inter>{X. \<exists>k\<le> n. X = J k} = P") 
  apply simp
  apply blast
-apply (rule sym, assumption)
-apply (rule prod_n_ideal_cont2, assumption+)
-apply simp
 done
 
-constdefs
- ideal_quotient::"[('a, 'b) RingType_scheme, 'a set, 'a set] \<Rightarrow> 'a set"
- "ideal_quotient R A B == {x| x. x \<in> carrier R \<and> (\<forall>b\<in>B. x \<cdot>\<^sub>R b \<in> A)}"
+constdefs (structure R)
+ ideal_quotient::"[_ , 'a set, 'a set] \<Rightarrow> 'a set"
+ "ideal_quotient R A B == {x| x. x \<in> carrier R \<and> (\<forall>b\<in>B. x \<cdot>\<^sub>r b \<in> A)}"
 
 syntax
- "@IDEALQT"::"['a set, ('a, 'b) RingType_scheme, 'a set] \<Rightarrow> 'a set"
+ "@IDEALQT"::"['a set, _ , 'a set] \<Rightarrow> 'a set"
     ("(3_/ \<dagger>\<^sub>_/ _)" [82,82,83]82)
 
 translations
  "A \<dagger>\<^sub>R B" =="ideal_quotient R A B"
 
 
-lemma ideal_quotient_is_ideal:
-  "\<lbrakk>ring R; ideal R A; ideal R B\<rbrakk> \<Longrightarrow> ideal R (ideal_quotient R A B)"
-apply (rule ideal_condition, assumption+)
- apply (rule subsetI)
+lemma (in Ring) ideal_quotient_is_ideal:
+  "\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrightarrow> ideal R (ideal_quotient R A B)"
+apply (rule ideal_condition)
+ apply (rule subsetI) 
  apply (simp add:ideal_quotient_def CollectI)
  apply (simp add:ideal_quotient_def)
- apply (frule ring_zero [of "R"])
- apply (subgoal_tac "\<forall>b\<in>B. 0\<^sub>R \<cdot>\<^sub>R b \<in> A")
+ apply (cut_tac ring_zero)
+ apply (subgoal_tac "\<forall>b\<in>B. \<zero> \<cdot>\<^sub>r b \<in> A")
  apply blast
  apply (rule ballI)
- apply (frule_tac x = b in ring_times_0_x [of "R"])
- apply (simp add:ideal_subset) apply simp
+ apply (frule_tac h = b in ideal_subset[of B], assumption)
+ apply (frule_tac x = b in ring_times_0_x )
  apply (simp add:ideal_zero)
 apply (rule ballI)+
- apply (simp add:ideal_quotient_def) apply (erule conjE)+
- apply (rule conjI)
- apply (rule ideal_pOp_closed, assumption+)
- apply (simp add:whole_ideal) apply assumption+
- apply (frule ring_is_ag)
- apply (simp add:ag_mOp_closed)
+ apply (simp add:ideal_quotient_def, (erule conjE)+,
+        rule conjI)
+ apply (rule ideal_pOp_closed)
+ apply (simp add:whole_ideal, assumption+)
+ apply (cut_tac ring_is_ag)
+ apply (simp add:aGroup.ag_mOp_closed)
 apply (rule ballI)
-apply (subst ring_distrib2, assumption+)
- apply (simp add:ideal_subset) apply assumption
- apply (frule ring_is_ag) apply (simp add: ag_mOp_closed)
- apply (frule_tac a1 = y and b1 = b in ring_inv1_1 [THEN sym, of "R"],
-                                                             assumption+)
- apply (simp add:ideal_subset) apply simp
- apply (rule ideal_pOp_closed, assumption+) apply simp
- apply (rule ideal_inv1_closed, assumption+) apply simp
+apply (subst ring_distrib2) 
+ apply (simp add:ideal_subset, assumption)
+ apply (cut_tac ring_is_ag, simp add: aGroup.ag_mOp_closed)
+ apply (frule_tac a1 = y and b1 = b in ring_inv1_1 [THEN sym])
+ apply (simp add:ideal_subset, simp)
+ apply (rule ideal_pOp_closed, assumption+, simp)
+ apply (rule ideal_inv1_closed, assumption+, simp) 
 apply (rule ballI)+
  apply (simp add:ideal_quotient_def)
- apply (rule conjI)
-  apply (erule conjE)
+ apply (rule conjI) 
+  apply (erule conjE) 
   apply (simp add:ring_tOp_closed)
  apply (erule conjE)
 apply (rule ballI)
- apply (subst ring_tOp_assoc, assumption+) apply (simp add:ideal_subset)
- apply (simp add:ideal_ring_multiple [of "R" "A"])
+ apply (subst ring_tOp_assoc, assumption+, simp add:ideal_subset)
+ apply (simp add:ideal_ring_multiple [of "A"])
 done
 
 section "9. Addition of finite elements of a ring and ideal_multiplication"
 text{* We consider sum in an abelian group *}
 
-lemma func_pre:"f \<in> Nset (Suc n) \<rightarrow> A \<Longrightarrow> f \<in> Nset n \<rightarrow> A"
-apply (simp add:Pi_def)
-apply (rule allI) apply (rule impI) apply (simp add:Nset_def)
-done
-
-lemma cmp_inj:"\<lbrakk>f \<in> A \<rightarrow> B; g \<in> B \<rightarrow> C; inj_on f A; inj_on g B \<rbrakk> \<Longrightarrow>
-         inj_on (cmp g f) A"
-apply (simp add:inj_on_def [of "cmp g f"])
-apply (rule ballI)+
-apply (simp add:cmp_def) apply (rule impI)
-apply (subgoal_tac "f x = f y")
-apply (simp add:inj_on_def [of "f"])
-apply (frule_tac x = x in funcset_mem [of "f" "A" "B"], assumption+)
-apply (frule_tac x = y in funcset_mem [of "f" "A" "B"], assumption+)
-apply (simp add:inj_on_def [of "g"])
-done
-
-lemma cmp_assoc:"\<lbrakk>f \<in> A \<rightarrow> B; g \<in> B \<rightarrow> C; h \<in> C \<rightarrow> D; x \<in> A\<rbrakk> \<Longrightarrow>
-                          (cmp h (cmp g f)) x  = (cmp (cmp h g) f) x"
-apply (simp add:cmp_def)
-done
-
-lemma cmp_transpos:"\<lbrakk> i \<in> Nset n; i \<noteq> n; a \<in> Nset (Suc n)\<rbrakk> \<Longrightarrow>
-  (cmp (transpos i n) (cmp (transpos n (Suc n)) (transpos i n))) a =
-               transpos i (Suc n) a"
-apply (case_tac "a = Suc n") apply simp
-apply (subgoal_tac "transpos i n (Suc n) = Suc n")
-apply (simp add:cmp_def)
-apply (subgoal_tac "transpos n (Suc n) (Suc n) = n")
-apply simp
-apply (subgoal_tac "transpos i n n = i")
-apply (subgoal_tac "transpos i (Suc n) (Suc n) = i")
-apply simp
-apply (simp add:transpos_def) apply (simp add:NSet_def)
-apply (simp add:transpos_def) apply (simp add:NSet_def)
-apply (simp add:transpos_def) apply (simp add:NSet_def)
-apply (simp add:transpos_def) apply (simp add:NSet_def)
-apply (frule Nset_le [of "i" "n"])
-apply (frule le_less_trans [of "i" "n" "Suc n"]) apply simp
-apply simp
-apply (case_tac "a = n") apply (simp add:cmp_def)
-apply (subgoal_tac "transpos i n n = i") apply simp
-apply (subgoal_tac "transpos n (Suc n) i = i") apply simp
-apply (subgoal_tac "transpos i n i = n") apply simp
-apply (subgoal_tac "transpos i (Suc n) n = n") apply simp
-apply (simp add:transpos_def NSet_def)+
- apply (simp add:Nset_def)
-apply (simp add:transpos_def NSet_def)
-apply (case_tac "a = i") apply (simp add:cmp_def)
-apply (subgoal_tac "transpos i n i = n") apply simp
-apply (subgoal_tac "transpos i (Suc n) i = Suc n") apply simp
-apply (subgoal_tac "transpos n (Suc n) n = Suc n") apply simp
-apply (subgoal_tac "transpos i n (Suc n) = Suc n") apply simp
-apply (simp add:transpos_def NSet_def)
-apply (simp add:transpos_def NSet_def)
-apply (simp add:transpos_def NSet_def)
-apply (simp add:transpos_def NSet_def)
-apply (simp add:cmp_def)
-apply (simp add:transpos_def NSet_def)
-done
-
-lemma eSum_memTr:"agroup R \<Longrightarrow>  f \<in> Nset n \<rightarrow> carrier R  \<longrightarrow>
-                          (\<forall>i\<in>Nset n. eSum R f i \<in> carrier R)"
+lemma (in aGroup) nsum_mem1Tr:" A +> J  \<Longrightarrow>  
+                     (\<forall>j \<le> n. f j \<in> J)  \<longrightarrow> nsum A f n \<in> J"
 apply (induct_tac n)
- apply (rule impI)
- apply (rule ballI) apply (simp add:Nset_def)
- apply (rule funcset_mem, assumption+) apply (simp add:Nset_def)
-apply (rule impI) apply (rule ballI)
- apply (case_tac "i \<le> n") apply (subgoal_tac "f \<in> Nset n \<rightarrow> carrier R")
- apply simp apply (frule_tac x = i and n = n in mem_of_Nset)
+ apply (rule impI) 
  apply simp
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (subgoal_tac "x \<in> Nset (Suc n)") apply simp apply (simp add:Nset_def)
-apply (simp add:le_def)
-apply (frule_tac m = n and n = i in Suc_leI)
-apply (frule Nset_le)
-apply (frule_tac m = i and n = "Suc n" in le_anti_sym, assumption+)
+apply (rule impI) 
  apply simp
- apply (subgoal_tac "f \<in> Nset n \<rightarrow> carrier R")
- apply (rule ag_pOp_closed, assumption+)
- apply (subgoal_tac "n \<in> Nset n")
- apply simp apply (simp add:Nset_def) apply (simp add:funcset_mem)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:Nset_def)
-done
-
-lemma eSum_mem1Tr:"\<lbrakk>agroup R; J <+ R \<rbrakk> \<Longrightarrow>
-                     f \<in> Nset n \<rightarrow> J  \<longrightarrow> eSum R f n \<in> J"
-apply (induct_tac n)
- apply (rule impI)
- apply (simp add:Nset_def)
- apply (rule funcset_mem, assumption+) apply simp
-apply (rule impI)
- apply (frule func_pre) apply simp
  apply (rule asubg_pOp_closed, assumption+)
- apply (thin_tac "f \<in> Nset n \<rightarrow> J")
- apply (simp add:Nset_def funcset_mem)
-done
-
-lemma eSum_mem:"\<lbrakk>agroup R; f \<in> Nset n \<rightarrow> carrier R; i \<in> Nset n\<rbrakk> \<Longrightarrow>
-                eSum R f i \<in> carrier R"
-apply (simp add:eSum_memTr)
-done
-
-lemma eSum_mem1:"\<lbrakk>agroup R; J <+ R ; f \<in> Nset n \<rightarrow> J\<rbrakk> \<Longrightarrow> eSum R f n \<in> J"
-apply (simp add:eSum_mem1Tr)
-done
-
-lemma eSum_eqTr:"agroup R \<Longrightarrow> f \<in> Nset n \<rightarrow> carrier R \<and> g \<in> Nset n \<rightarrow> carrier R \<and> ( \<forall>l\<in>Nset n. f l = g l) \<longrightarrow> eSum R f n = eSum R g n"
-apply (induct_tac n)
- apply (rule impI) apply (erule conjE)+ apply (simp add:Nset_def)
-apply (rule impI) apply (erule conjE)+
-apply (subgoal_tac "\<forall>l. l \<in> Nset n \<longrightarrow> l \<in> Nset (Suc n)")
-prefer 2 apply (simp add:Nset_def) apply simp
-apply (subgoal_tac "eSum R f n = eSum R g n")
-apply (subgoal_tac "f (Suc n) = g (Suc n)") apply simp
- apply (simp add:Nset_def)
- apply (subgoal_tac "f \<in> Nset n \<rightarrow> carrier R \<and> g \<in> Nset n \<rightarrow> carrier R")
  apply simp
-apply (thin_tac "f \<in> Nset n \<rightarrow> carrier R \<and> g \<in> Nset n \<rightarrow> carrier R \<longrightarrow>
-           eSum R f n = eSum R g n")
-apply (thin_tac "\<forall>l\<in>Nset (Suc n). f l = g l")
-apply (rule conjI)
-apply (simp add:Pi_def)+
 done
 
-lemma eSum_eq:"\<lbrakk>agroup R; f \<in> Nset n \<rightarrow> carrier R; g \<in> Nset n \<rightarrow> carrier R;
- \<forall>l\<in>Nset n. f l = g l\<rbrakk> \<Longrightarrow> eSum R f n = eSum R g n"
-apply (simp add:eSum_eqTr)
+lemma (in aGroup) fSum_mem:"\<lbrakk>\<forall>j \<in> nset (Suc n) m. f j \<in> carrier A; n < m\<rbrakk> \<Longrightarrow>
+                   fSum A f (Suc n) m \<in> carrier A" 
+apply (simp add:fSum_def)
+apply (rule nsum_mem)
+apply (rule allI, simp add:cmp_def slide_def)
+apply (rule impI)
+apply (frule_tac b = "Suc (n + j)" in forball_spec1)
+ apply (simp add:nset_def, arith)
 done
 
-lemma eSum_eq_i:"\<lbrakk>agroup R; f \<in> Nset n \<rightarrow> carrier R; g \<in> Nset n \<rightarrow> carrier R;
- i \<in> Nset n;  \<forall>l\<in>Nset i. f l = g l\<rbrakk> \<Longrightarrow> eSum R f i = eSum R g i"
-apply (subgoal_tac "\<forall>l. l \<in> Nset i \<longrightarrow> l \<in> Nset n")
-apply (subgoal_tac "f \<in> Nset i \<rightarrow> carrier R")
-apply (subgoal_tac "g \<in> Nset i \<rightarrow> carrier R")
-apply (rule eSum_eq, assumption+)
-apply (simp add:Pi_def)+
-apply (rule allI) apply (rule impI) apply (simp add:Nset_def)
+lemma (in aGroup) nsum_mem1:"\<lbrakk>A +> J; \<forall>j \<le> n. f j \<in> J\<rbrakk> \<Longrightarrow> nsum A f n \<in> J"
+apply (simp add:nsum_mem1Tr)
+done 
+   
+lemma (in aGroup) nsum_eq_i:"\<lbrakk>\<forall>j\<le>n. f j \<in> carrier A; \<forall>j\<le>n. g j \<in> carrier A;
+ i \<le> n; \<forall>l \<le> i. f l = g l\<rbrakk> \<Longrightarrow> nsum A f i = nsum A g i"
+apply (rule nsum_eq)
+apply (rule allI, rule impI, simp)+
 done
 
-lemma eSum_cmp_eq:"\<lbrakk>agroup R; f \<in> Nset n \<rightarrow> carrier R; h1 \<in> Nset n \<rightarrow> Nset n;
- h2 \<in> Nset n \<rightarrow> Nset n; i \<in> Nset n\<rbrakk> \<Longrightarrow>
- eSum R (cmp f (cmp h2 h1)) i = eSum R (cmp (cmp f h2) h1) i"
-apply (rule eSum_eq_i [of "R" "cmp f (cmp h2 h1)" "n" "cmp (cmp f h2) h1" "i"],
-                                                           assumption+)
-apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
+lemma (in aGroup) nsum_cmp_eq:"\<lbrakk>f \<in> {j. j\<le>(n::nat)} \<rightarrow> carrier A; 
+ h1 \<in> {j. j \<le> n} \<rightarrow> {j. j \<le> n};  h2 \<in> {j. j \<le> n} \<rightarrow> {j. j \<le> n}; i \<le> n\<rbrakk> \<Longrightarrow>
+ nsum A (cmp f (cmp h2 h1)) i = nsum A (cmp (cmp f h2) h1) i"
+apply (rule nsum_eq_i [of n "cmp f (cmp h2 h1)" "cmp (cmp f h2) h1" i])
+apply (rule allI, rule impI, simp add:cmp_def)
+apply ((rule funcset_mem, assumption)+, simp) 
+apply (rule allI, rule impI, simp add:cmp_def,
+        (rule funcset_mem, assumption)+, simp+)
+apply (rule allI, rule impI, simp add:cmp_def)
+done
+
+lemma (in aGroup) nsum_cmp_eq_transpos:"\<lbrakk> \<forall>j\<le>(Suc n). f j \<in> carrier A; 
+       i \<le> n;i \<noteq> n \<rbrakk> \<Longrightarrow>
+ nsum A (cmp f (cmp (transpos i n) (cmp (transpos n (Suc n)) (transpos i n))))
+ (Suc n) = nsum A (cmp f (transpos i (Suc n))) (Suc n)" 
+apply (rule nsum_eq [of "Suc n" "cmp f (cmp (transpos i n) 
+                            (cmp (transpos n (Suc n)) (transpos i n)))" 
+       "cmp f (transpos i (Suc n))"])
+apply (rule allI, rule impI)
 apply (simp add:cmp_def)
-apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
-apply (simp add:cmp_def) apply assumption
-apply (rule ballI)
-apply (simp add:cmp_def)
+apply (cut_tac i = i and n = "Suc n" and j = n and l = j in transpos_mem,
+       simp+) 
+apply (cut_tac i = n and n = "Suc n" and j = "Suc n" and l = "transpos i n j"
+        in transpos_mem, simp+)
+apply (cut_tac i = i and n = "Suc n" and j = n and
+        l = "transpos n (Suc n) (transpos i n j)" in transpos_mem,
+       simp+) 
+apply (rule allI, rule impI, simp add:cmp_def)
+apply (cut_tac i = i and n = "Suc n" and j = "Suc n" and l = j in transpos_mem,
+       simp+)
+apply (rule allI, rule impI)
+ apply (simp add:cmp_def)
+ apply (thin_tac "\<forall>j\<le>Suc n. f j \<in> carrier A",
+        rule eq_elems_eq_val[of _ _ f])
+ apply (simp add:transpos_def)
 done
 
-lemma eSum_cmp_eq_transpos:"\<lbrakk>agroup R; f \<in> Nset (Suc n) \<rightarrow> carrier R; i \<in> Nset n;i \<noteq> n \<rbrakk> \<Longrightarrow>
- eSum R (cmp f (cmp (transpos i n) (cmp (transpos n (Suc n)) (transpos i n))))
- (Suc n) = eSum R (cmp f (transpos i (Suc n))) (Suc n)"
-apply (rule eSum_eq [of "R" "cmp f (cmp (transpos i n) (cmp (transpos n (Suc n)) (transpos i n)))" "Suc n" "cmp f (transpos i (Suc n))"], assumption+)
-apply (rule cmp_fun [of _ "Nset (Suc n)" "Nset (Suc n)" _ "carrier R"])
-apply (rule cmp_fun [of _ "Nset (Suc n)" "Nset (Suc n)" _ "Nset (Suc n)"])+
-apply (rule transpos_hom)
- apply (simp add:Nset_def) apply (simp add:Nset_def) apply simp
-apply (rule transpos_hom)
- apply (simp add:Nset_def) apply (simp add:Nset_def) apply simp
-apply (rule transpos_hom)
- apply (simp add:Nset_def) apply (simp add:Nset_def) apply simp
-apply assumption
-apply (rule cmp_fun [of _ "Nset (Suc n)" "Nset (Suc n)" _ "carrier R"])
-apply (rule transpos_hom)
- apply (simp add:Nset_def) apply (simp add:Nset_def)
- apply (frule Nset_le [of "i" "n"])
- apply (frule le_less_trans [of "i" "n" "Suc n"]) apply simp apply simp
- apply assumption
-apply (rule ballI)
- apply (simp add:cmp_def)
- apply (frule_tac a = l in cmp_transpos [of "i" "n"], assumption+)
- apply (simp add:cmp_def)
-done
-
-lemma transpos_Tr_n1:"Suc (Suc 0) \<le> n \<Longrightarrow>
+lemma transpos_Tr_n1:"Suc (Suc 0) \<le> n \<Longrightarrow> 
                            transpos (n - Suc 0) n n = n - Suc 0"
 apply (simp add:transpos_def)
-apply (rule conjI) apply (rule impI) apply (simp add:NSet_def)
-apply (rule impI) apply (rule impI) apply (simp add:NSet_def)
 done
 
-lemma transpos_Tr_n2:"Suc (Suc 0) \<le> n \<Longrightarrow>
+lemma transpos_Tr_n2:"Suc (Suc 0) \<le> n \<Longrightarrow> 
                transpos (n - (Suc 0)) n (n - (Suc 0)) = n"
-apply (simp add:transpos_def)
-apply (simp add:NSet_def)
+apply (simp add:transpos_def) 
 done
 
-lemma additionTr0:"\<lbrakk>agroup R; 0 < n; f \<in> Nset n \<rightarrow> carrier R\<rbrakk>
- \<Longrightarrow> eSum R (cmp f (transpos (n - 1) n)) n = eSum R f n"
+lemma (in aGroup) additionTr0:"\<lbrakk>0 < n; \<forall>j \<le> n. f j \<in> carrier A\<rbrakk>
+ \<Longrightarrow> nsum A (cmp f (transpos (n - 1) n)) n = nsum A f n" 
 apply (case_tac "n \<le> 1")
  apply simp
  apply (frule Suc_leI [of "0" "n"])
- apply (frule le_anti_sym [of "n" "Suc 0"], assumption+) apply simp
+ apply (frule le_anti_sym [of "n" "Suc 0"], assumption+, simp)
  apply (simp add:cmp_def)
- apply (subgoal_tac "0 \<in> Nset (Suc 0)")
- apply (subgoal_tac "Suc 0 \<in> Nset (Suc 0)")
- apply (subst transpos_ij_1, assumption+) apply simp
- apply (subst transpos_ij_2, assumption+) apply simp
- apply (rule ag_pOp_commute, assumption+)
- apply (simp add:funcset_mem)+ apply (simp add:Nset_def)
-  apply (simp add:Nset_def)
-apply (simp add:le_def)
-apply (frule_tac Suc_leI [of "Suc 0" "n"])
-apply (subgoal_tac "0 < n")
-apply (simplesubst jointgd_tool2 [of "n"], assumption+)
-apply (simp del:Suc_pred) apply simp
-prefer 2 apply simp
-apply (subgoal_tac "0 < n - Suc 0")
-apply (simplesubst jointgd_tool2 [of "n - Suc 0"], assumption+)
-apply (simp del:Suc_pred)
-prefer 2 apply simp
-apply (subgoal_tac "eSum R (cmp f (transpos (Suc (n - Suc (Suc 0))) n))
-          (n - Suc (Suc 0)) = eSum R f (n - Suc (Suc 0))")
-apply simp
- apply (thin_tac " eSum R (cmp f (transpos (Suc (n - Suc (Suc 0))) n))
-        (n - Suc (Suc 0)) = eSum R f (n - Suc (Suc 0))")
+ apply (subst transpos_ij_1[of 0 "Suc 0"], simp+)
+ apply (subst transpos_ij_2[of 0 "Suc 0"], simp+)
+ apply (rule ag_pOp_commute, simp+)
+ apply (frule nat_not_le[of n "Suc 0"])
+apply (frule_tac Suc_leI [of "Suc 0" "n"],
+       thin_tac "\<not> n \<le> Suc 0")
+ apply (cut_tac nsum_suc[of A f "n - Suc 0"], simp)
+ apply (cut_tac nsum_suc[of A "cmp f (transpos (n - Suc 0) n)" "n - Suc 0"], 
+        simp,
+        thin_tac "\<Sigma>\<^sub>e A f n = \<Sigma>\<^sub>e A f (n - Suc 0) \<plusminus> f n",
+        thin_tac "\<Sigma>\<^sub>e A (cmp f (transpos (n - Suc 0) n)) n =
+     \<Sigma>\<^sub>e A (cmp f (transpos (n - Suc 0) n)) (n - Suc 0) \<plusminus>
+     (cmp f (transpos (n - Suc 0) n) n)")
+apply (case_tac "n = Suc (Suc 0)", simp)
+ apply (cut_tac transpos_id_1[of "Suc 0" "Suc (Suc 0)" "Suc (Suc 0)" 0],
+        cut_tac transpos_ij_1[of "Suc 0" "Suc (Suc 0)" "Suc (Suc 0)"],
+        cut_tac transpos_ij_2[of "Suc 0" "Suc (Suc 0)" "Suc (Suc 0)"],
+        simp add:cmp_def,
+        thin_tac "n = Suc (Suc 0)",
+        thin_tac "transpos (Suc 0) (Suc (Suc 0)) 0 = 0",
+        thin_tac "transpos (Suc 0) (Suc (Suc 0)) (Suc 0) = Suc (Suc 0)",
+        thin_tac "transpos (Suc 0) (Suc (Suc 0)) (Suc (Suc 0)) = Suc 0")
+ apply (subst ag_pOp_assoc, simp+)
+ apply (subst ag_pOp_commute[of "f (Suc (Suc 0))" "f (Suc 0)"], simp+)
+  apply (subst ag_pOp_assoc[THEN sym], simp+)
+
+ apply (frule not_sym)
+ apply (frule noteq_le_less[of "Suc (Suc 0)" n], assumption,
+        thin_tac "Suc (Suc 0) \<le> n")
+ apply (cut_tac nsum_suc[of A f "n - Suc 0 - Suc 0"])
+ apply (cut_tac Suc_pred[of "n - Suc 0"], simp del:nsum_suc)
+ apply (cut_tac nsum_suc[of A "cmp f (transpos (n - Suc 0) n)"  
+                "n - Suc (Suc 0)"], simp del:nsum_suc,
+     thin_tac "\<Sigma>\<^sub>e A f (n - Suc 0) = \<Sigma>\<^sub>e A f (n - Suc (Suc 0)) \<plusminus> f (n - Suc 0)",
+     thin_tac "Suc (n - Suc (Suc 0)) = n - Suc 0",
+     thin_tac "\<Sigma>\<^sub>e A (cmp f (transpos (n - Suc 0) n)) (n - Suc 0) =
+     \<Sigma>\<^sub>e A (cmp f (transpos (n - Suc 0) n)) (n - Suc (Suc 0)) \<plusminus>
+     (cmp f (transpos (n - Suc 0) n)) (n - Suc 0)")
+ apply (cut_tac nsum_eq_i[of n "cmp f (transpos (n - Suc 0) n)" f 
+                 "n - Suc (Suc 0)"], simp,   
+        thin_tac "\<Sigma>\<^sub>e A (cmp f (transpos (n - Suc 0) n)) (n - Suc (Suc 0)) =
+     \<Sigma>\<^sub>e A f (n - Suc (Suc 0))")
  apply (simp add:cmp_def)
- apply (subgoal_tac "transpos (Suc (n - Suc (Suc 0))) n (Suc (n - Suc (Suc 0)))
-                        = n") apply simp
- apply (thin_tac "transpos (Suc (n - Suc (Suc 0))) n (Suc (n - Suc (Suc 0))) = n")
- apply (subgoal_tac "transpos (Suc (n - Suc (Suc 0))) n n = Suc (n - Suc (Suc 0))") apply simp
- apply (thin_tac "transpos (Suc (n - Suc (Suc 0))) n n = Suc (n - Suc (Suc 0))")
- apply (subgoal_tac "Suc (n - Suc(Suc 0)) = n - Suc 0")
+ apply (cut_tac transpos_ij_1[of "n - Suc 0" n n], simp)
+ apply (cut_tac transpos_ij_2[of "n - Suc 0" n n], simp) 
+ apply (subst ag_pOp_assoc,
+        rule nsum_mem, rule allI, rule impI)
+ apply (frule_tac i = j and j = "n - Suc (Suc 0)" and k = n in 
+        Nat.le_less_trans, simp, frule_tac m = j and n = n in less_imp_le)
+        apply simp+
+ apply (subst ag_pOp_commute[of "f n"], simp, simp)
+ apply (subst ag_pOp_assoc[THEN sym],
+         rule nsum_mem, rule allI, rule impI,
+         frule_tac i = j and j = "n - Suc (Suc 0)" and k = n in 
+         Nat.le_less_trans, simp, frule_tac m = j and n = n in less_imp_le)
+        apply simp+ 
+
+ apply (rule allI, rule impI, simp add:cmp_def)
+ apply (cut_tac i = "n - Suc 0" and n = n and j = n and l = j in transpos_mem,
+        simp+) 
+ 
+ apply (rule allI, rule impI)
+ apply (simp add:cmp_def)
+ apply (cut_tac i = "n - Suc 0" and n = n and j = n and x = l in transpos_id,
+        simp+) 
+
+ apply (cut_tac i = l and j = "n - Suc (Suc 0)" and k = n in Nat.le_less_trans,
+        assumption) apply simp
+ apply arith
  apply simp
-apply (subgoal_tac "eSum R f (n - Suc (Suc 0)) \<in> carrier R")
-apply (subgoal_tac "f (n - Suc 0) \<in> carrier R")
-apply (subgoal_tac "f n \<in> carrier R")
-apply (subst ag_pOp_assoc, assumption+)
-apply (subst ag_pOp_assoc, assumption+)
-apply (simp add:ag_pOp_commute)
-apply (rule funcset_mem, assumption+) apply (simp add:Nset_def)
-apply (rule funcset_mem, assumption+) apply (simp add:Nset_def)
-apply (rule  eSum_mem, assumption+) apply (simp add:Nset_def)
- apply (simp add:Suc_Suc_Tr)+
- apply (simp add:transpos_Tr_n1)
- apply (simp add:Suc_Suc_Tr)
- apply (simp add:transpos_Tr_n2)
-apply (simp add:Suc_Suc_Tr)
-apply (subgoal_tac "\<forall>l\<in>Nset (n - (Suc (Suc 0))).  (cmp f (transpos (n - Suc 0) n)) l = f l")
-apply (rule eSum_eq_i [of "R" "cmp f (transpos (n - Suc 0) n)"
-                                      "n" "f" "n - Suc (Suc 0)"], assumption+)
-apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:cmp_def)
- apply (subgoal_tac "n - Suc 0 \<in> Nset n")
- apply (subgoal_tac "n \<in> Nset n")
- apply (frule_tac l = x in transpos_mem [of "n - Suc 0" "n" "n"], assumption+)
- apply (frule Suc_pos [of "Suc 0" "n"])
- apply (simplesubst Suc_pred [THEN sym, of "n"], assumption)
- apply (simp del:Suc_pred) apply assumption+
- apply simp apply (simp add:Nset_def) apply (simp add:Nset_def)
- apply assumption apply (simp add:Nset_def) apply simp
-apply (rule ballI)
- apply (simp add:cmp_def)
- apply (subst transpos_id [of "n - Suc 0" "n" "n"])
- apply (simp add:Nset_def) apply (simp add:Nset_def)
- apply (frule Suc_pos [of "Suc 0" "n"])
- apply (simplesubst Suc_pred [THEN sym, of "n"], assumption)
- apply (simp del:Suc_pred)
- apply (simp add:Nset_Suc_Suc) apply simp
+ apply arith
 done
 
-lemma additionTr1:"\<lbrakk>agroup R; \<forall>f. \<forall>h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
- h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow>
- eSum R (cmp f h) (Suc n) = eSum R f (Suc n); f \<in> Nset (Suc (Suc n)) \<rightarrow> carrier R; h \<in> Nset (Suc (Suc n)) \<rightarrow> Nset (Suc (Suc n)); inj_on h (Nset (Suc (Suc n))); h (Suc (Suc n)) = Suc (Suc n)\<rbrakk>
-        \<Longrightarrow> eSum R (cmp f h) (Suc (Suc n)) = eSum R f (Suc (Suc n))"
-apply (subgoal_tac "f \<in> Nset (Suc n) \<rightarrow> carrier R")
-apply (subgoal_tac "h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n)")
-apply (subgoal_tac "inj_on h (Nset (Suc n))")
-apply (subgoal_tac "eSum R (cmp f h) (Suc n) = eSum R f (Suc n)")
-apply (thin_tac "\<forall>f. \<forall>h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
-       h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow>
-       eSum R (cmp f h) (Suc n) = eSum R f (Suc n)")
+lemma (in aGroup) additionTr1:"\<lbrakk> \<forall>f. \<forall>h. f \<in> {j. j\<le>(Suc n)} \<rightarrow> carrier A \<and>
+       h \<in> {j. j\<le>(Suc n)} \<rightarrow> {j. j\<le>(Suc n)} \<and> inj_on h {j. j\<le>(Suc n)} \<longrightarrow>
+       nsum A (cmp f h) (Suc n) = nsum A f (Suc n); 
+       f \<in> {j. j\<le>(Suc (Suc n))} \<rightarrow> carrier A; 
+       h \<in> {j. j\<le>(Suc (Suc n))} \<rightarrow> {j. j\<le>(Suc (Suc n))}; 
+       inj_on h {j. j\<le>(Suc (Suc n))}; h (Suc (Suc n)) = Suc (Suc n)\<rbrakk>
+        \<Longrightarrow> nsum A (cmp f h) (Suc (Suc n)) = nsum A f (Suc (Suc n))"
+apply (subgoal_tac "f \<in> {j. j\<le>(Suc n)} \<rightarrow> carrier A")
+apply (subgoal_tac "h \<in> {j. j\<le>(Suc n)} \<rightarrow> {j. j\<le>(Suc n)}")
+apply (subgoal_tac "inj_on h {j. j\<le>(Suc n)}")
+apply (subgoal_tac "nsum A (cmp f h) (Suc n) = nsum A f (Suc n)")
+apply (thin_tac "\<forall>f. \<forall>h. f \<in> {j. j\<le>(Suc n)} \<rightarrow> carrier A \<and>
+       h \<in> {j. j\<le>(Suc n)} \<rightarrow> {j. j\<le>(Suc n)} \<and> inj_on h {j. j\<le>(Suc n)} \<longrightarrow>
+       nsum A (cmp f h) (Suc n) = nsum A f (Suc n)")
 prefer 2 apply simp
 apply simp
- apply (thin_tac "eSum R (cmp f h) n +\<^sub>R (cmp f h (Suc n)) =  eSum R f n +\<^sub>R (f (Suc n))")
+ apply (thin_tac "nsum A (cmp f h) n \<plusminus> (cmp f h (Suc n)) =  nsum A f n \<plusminus> (f (Suc n))")
  apply (simp add:cmp_def)
- apply (thin_tac "\<forall>f. \<forall>h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
-       h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow>
-       eSum R (cmp f h) (Suc n) = eSum R f (Suc n)")
- apply (frule Nset_injTr0 [of "h" "Suc n"], assumption+) apply simp
- apply (frule Nset_injTr0 [of "h" "Suc n"], assumption+) apply simp
-apply (thin_tac "\<forall>f. \<forall>h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
-       h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow>
-       eSum R (cmp f h) (Suc n) = eSum R f (Suc n)")
-apply (thin_tac "h \<in> Nset (Suc (Suc n)) \<rightarrow> Nset (Suc (Suc n))")
-apply (simp add:Pi_def [of "Nset (Suc n)"])
-apply (rule allI) apply (rule impI)
-apply (subgoal_tac "x \<in> Nset (Suc (Suc n))") apply (simp add:funcset_mem)
-apply (simp add:Nset_def)
+ apply (thin_tac "\<forall>f h. (f \<in> {j. j \<le> Suc n} \<rightarrow> carrier A) \<and>
+           (h \<in> {j. j\<le>Suc n} \<rightarrow> {j. j\<le>Suc n}) \<and> (inj_on h {j. j\<le>Suc n}) \<longrightarrow>
+           \<Sigma>\<^sub>e A (cmp f h) (Suc n) = \<Sigma>\<^sub>e A f (Suc n)")
+ apply (frule Nset_injTr0 [of "h" "Suc n"], assumption+, simp) 
+ apply (frule Nset_injTr0 [of "h" "Suc n"], assumption+, simp)
+apply (thin_tac "\<forall>f h. f \<in> {j. j \<le> Suc n} \<rightarrow> carrier A \<and>
+           h \<in> {j. j \<le> Suc n} \<rightarrow> {j. j \<le> Suc n} \<and> inj_on h {j. j \<le> Suc n} \<longrightarrow>
+           \<Sigma>\<^sub>e A (cmp f h) (Suc n) = \<Sigma>\<^sub>e A f (Suc n)")
+apply (thin_tac "h \<in> {j. j \<le> Suc (Suc n)} \<rightarrow> {j. j \<le> Suc (Suc n)}")
+apply (simp add:Pi_def [of "{j. j \<le> (Suc n)}"])
+apply (rule allI, rule impI)
+apply (subgoal_tac "x \<in> {j. j \<le> (Suc (Suc n))}", simp add:funcset_mem)
+apply simp
 done
 
-lemma additionTr1_1:"\<lbrakk>agroup R; \<forall>f. \<forall>h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
- h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow>
- eSum R (cmp f h) (Suc n) = eSum R f (Suc n); f \<in> Nset (Suc (Suc n)) \<rightarrow> carrier R; i \<in> Nset n\<rbrakk> \<Longrightarrow> eSum R (cmp f (transpos i (Suc n))) (Suc (Suc n)) = eSum R f (Suc (Suc n))"
-apply (rule additionTr1 [of "R" "n" "f" "transpos i (Suc n)"], assumption+)
+lemma (in aGroup) additionTr1_1:"\<lbrakk>\<forall>f. \<forall>h. f \<in> {j. j\<le>Suc n} \<rightarrow> carrier A \<and>
+      h \<in> {j. j\<le>Suc n} \<rightarrow> {j. j\<le>Suc n} \<and> inj_on h {j. j\<le>Suc n} \<longrightarrow>
+      nsum A (cmp f h) (Suc n) = nsum A f (Suc n); 
+      f \<in> {j. j\<le>Suc (Suc n)} \<rightarrow> carrier A; i \<le> n\<rbrakk> \<Longrightarrow> 
+    nsum A (cmp f (transpos i (Suc n))) (Suc (Suc n)) = nsum A f (Suc (Suc n))"
+apply (rule additionTr1 [of "n" "f" "transpos i (Suc n)"], assumption+)
 apply (rule transpos_hom [of "i" "Suc (Suc n)" "Suc n"])
- apply (simp add:Nset_def) apply (simp add:Nset_def)
- apply (frule Nset_le [of "i" "n"])
- apply (frule le_less_trans [of "i" "n" "Suc n"]) apply simp apply simp
+ apply simp+
  apply (rule transpos_inj [of "i" "Suc (Suc n)" "Suc n"])
-  apply (simp add:Nset_def) apply (simp add:Nset_def)
- apply (frule Nset_le [of "i" "n"])
- apply (frule le_less_trans [of "i" "n" "Suc n"]) apply simp apply simp
-apply (simp add:transpos_def NSet_def)
- apply (frule Nset_le [of "i" "n"])
- apply (frule le_less_trans [of "i" "n" "Suc (Suc n)"]) apply simp apply simp
+  apply simp+ 
+  apply (subst transpos_id[of i "Suc (Suc n)" "Suc n" "Suc (Suc n)"])
+  apply simp+
 done
 
-lemma additionTr1_2:"\<lbrakk>agroup R; \<forall>f. \<forall>h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
- h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow>
- eSum R (cmp f h) (Suc n) = eSum R f (Suc n); f \<in> Nset (Suc (Suc n)) \<rightarrow> carrier R; i \<in> Nset (Suc n)\<rbrakk> \<Longrightarrow> eSum R (cmp f (transpos i (Suc (Suc n)))) (Suc (Suc n)) = eSum R f (Suc (Suc n))"
+lemma (in aGroup) additionTr1_2:"\<lbrakk>\<forall>f. \<forall>h. f \<in> {j. j\<le>Suc n} \<rightarrow> carrier A \<and>
+          h \<in> {j. j\<le>Suc n} \<rightarrow> {j. j\<le>Suc n} \<and> 
+          inj_on h {j. j\<le>Suc n} \<longrightarrow>
+          nsum A (cmp f h) (Suc n) = nsum A f (Suc n); 
+         f \<in> {j. j\<le> Suc (Suc n)} \<rightarrow> carrier A; i \<le> (Suc n)\<rbrakk> \<Longrightarrow> 
+       nsum A (cmp f (transpos i (Suc (Suc n)))) (Suc (Suc n)) = 
+                                             nsum A f (Suc (Suc n))"
 apply (case_tac "i = Suc n")
- apply (simp del:eSum_Suc)
-apply (subgoal_tac "0 < Suc (Suc n)")
-apply (frule additionTr0 [of "R" "Suc (Suc n)" "f"], assumption+)
-apply simp apply simp
-apply (frule Nset_pre [of "i" "n"], assumption+)
-apply (subst eSum_cmp_eq_transpos [THEN sym, of "R" "f"
-                                         "Suc n" "i"], assumption+)
-apply (subst eSum_cmp_eq [of "R" "f" "Suc (Suc n)"  "cmp (transpos (Suc n) (Suc(Suc n))) (transpos i (Suc n))" "transpos i (Suc n)" "Suc (Suc n)"], assumption+)
-apply (rule cmp_fun [of _ "Nset (Suc (Suc n))" "Nset (Suc (Suc n))" _ "Nset (Suc (Suc n))"])
-apply (rule transpos_hom) apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply assumption
-apply (rule transpos_hom) apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply simp
-apply (rule transpos_hom) apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply assumption apply (simp add:Nset_def)
-apply (subst eSum_cmp_eq [of "R" "cmp f (transpos i (Suc n))" "Suc (Suc n)"  "(transpos i (Suc n))" "transpos (Suc n) (Suc (Suc n))" "Suc (Suc n)"], assumption+)
-apply (rule cmp_fun [of _ "Nset (Suc (Suc n))"
-                       "Nset (Suc (Suc n))" "f" "carrier R"])
-apply (rule transpos_hom) apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply assumption+
-apply (rule transpos_hom) apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply assumption
-apply (rule transpos_hom) apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply simp apply (simp add:Nset_def)
-apply (subst additionTr1_1 [of "R" "n" "cmp (cmp f (transpos i (Suc n)))
-               (transpos (Suc n) (Suc (Suc n)))" "i"], assumption+)
-apply (rule  cmp_fun [of _ "Nset (Suc (Suc n))"
-                       "Nset (Suc (Suc n))" _ "carrier R"])
-apply (rule transpos_hom) apply (simp add:Nset_def) apply (simp add:Nset_def)
- apply simp
-apply (rule cmp_fun [of _ "Nset (Suc (Suc n))"
-                       "Nset (Suc (Suc n))" "f" "carrier R"])
-apply (rule transpos_hom) apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply assumption+
-apply (subgoal_tac "0 < Suc (Suc n)")
-apply (frule additionTr0 [of "R" "Suc (Suc n)" "cmp f (transpos i (Suc n))"],
-                                                     assumption+)
-apply (rule cmp_fun [of _ "Nset (Suc (Suc n))"
-                       "Nset (Suc (Suc n))" "f" "carrier R"])
-apply (rule transpos_hom) apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply assumption+
-apply (simp del:eSum_Suc)
-apply (thin_tac "eSum R (cmp (cmp f (transpos i (Suc n))) (transpos (Suc n) (Suc (Suc n)))) (Suc (Suc n)) = eSum R (cmp f (transpos i (Suc n))) (Suc (Suc n))")
-apply (rule additionTr1_1, assumption+)
-apply simp
+ apply (simp del:nsum_suc) 
+ apply (cut_tac additionTr0 [of "Suc (Suc n)" "f"], simp, simp,
+         rule allI, rule impI, rule funcset_mem[of f "{j. j \<le> Suc (Suc n)}"
+         "carrier A"], (simp del:nsum_suc)+)
+ apply (subst nsum_cmp_eq_transpos [THEN sym, of "Suc n" f i],
+        rule allI, rule impI, rule funcset_mem[of f "{j. j \<le> Suc (Suc n)}" 
+        "carrier A"], assumption+,
+        simp, assumption+)
+ apply (subst nsum_cmp_eq [of "f" "Suc (Suc n)"  
+        "cmp (transpos (Suc n) (Suc(Suc n))) (transpos i (Suc n))" 
+        "transpos i (Suc n)" "Suc (Suc n)"], assumption+,
+        rule univar_func_test, rule ballI, simp add:cmp_def,
+        rule transpos_mem, (simp del:nsum_suc)+,
+        rule transpos_mem, (simp del:nsum_suc)+,
+        rule univar_func_test, rule ballI, simp,
+        rule transpos_mem, (simp del:nsum_suc)+)
+apply (subst nsum_cmp_eq [of "cmp f (transpos i (Suc n))" "Suc (Suc n)"  
+       "(transpos i (Suc n))" "transpos (Suc n) (Suc (Suc n))" "Suc (Suc n)"],
+       rule univar_func_test, rule ballI, simp add:cmp_def,
+       rule funcset_mem[of f "{j. j \<le> Suc (Suc n)}" "carrier A"], assumption,
+       simp,
+       rule transpos_mem, (simp del:nsum_suc)+,
+       (rule univar_func_test, rule ballI, simp,
+        rule transpos_mem, (simp del:nsum_suc)+)+)
+
+apply (subst additionTr1_1 [of "n" "cmp (cmp f (transpos i (Suc n)))
+               (transpos (Suc n) (Suc (Suc n)))" "i"], assumption+,
+       rule  cmp_fun [of _ "{j. j \<le> (Suc (Suc n))}" 
+                       "{j. j \<le> (Suc (Suc n))}" _ "carrier A"],
+       rule transpos_hom, simp, simp, simp,
+       rule cmp_fun [of _ "{j. j \<le> (Suc (Suc n))}" 
+                       "{j. j \<le> (Suc (Suc n))}" "f" "carrier A"],
+       rule transpos_hom, simp, simp, assumption+, arith)
+apply (cut_tac additionTr0 [of  "Suc (Suc n)" "cmp f (transpos i (Suc n))"],
+       simp del:nsum_suc,
+       thin_tac "nsum A (cmp 
+  (cmp f (transpos i (Suc n))) (transpos (Suc n) (Suc (Suc n)))) (Suc (Suc n))
+  = nsum A (cmp f (transpos i (Suc n))) (Suc (Suc n))")
+apply (rule additionTr1_1, assumption+, arith, simp,
+       rule allI, rule impI, simp add:cmp_def,
+       rule funcset_mem[of f "{j. j \<le> Suc (Suc n)}" "carrier A"],
+       assumption)
+apply (simp add:transpos_mem)
 done
 
-lemma additionTr2:"agroup R \<Longrightarrow> \<forall>f. \<forall>h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
- h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow> eSum R (cmp f h) (Suc n) = eSum R f (Suc n)"
-apply (induct_tac n)
+lemma (in aGroup) additionTr2:" \<forall>f. \<forall>h. f \<in> {j. j \<le> (Suc n)} \<rightarrow> carrier A \<and> 
+        h \<in> {j. j \<le> (Suc n)} \<rightarrow> {j. j \<le> (Suc n)} \<and> 
+        inj_on h {j. j \<le> (Suc n)} \<longrightarrow> 
+          nsum A (cmp f h) (Suc n) = nsum A f (Suc n)" 
+apply (induct_tac n) 
  apply (rule allI)+
- apply (rule impI) apply (erule conjE)+
- apply (simp add:cmp_def)
+ apply (rule impI, (erule conjE)+)
+ apply (simp add:cmp_def) 
  apply (case_tac "h 0 = 0")
-  apply (subgoal_tac "h (Suc 0) = Suc 0") apply simp
-  apply (thin_tac "f \<in> Nset (Suc 0) \<rightarrow> carrier R")
-  apply (simp add:Nset_def) apply (simp add:Nset_1)
-  apply (subgoal_tac "Suc 0 \<in> {0, Suc 0}")
-  apply (frule_tac f = h in funcset_mem [of _ "{0, Suc 0}"
-                              "{0, Suc 0}" "Suc 0"], assumption+)
-  apply (simp add:CollectI)
-  apply (case_tac "h (Suc 0) = Suc 0") apply simp apply simp
-  apply (simp add:inj_on_def)
-  apply (simp add:Nset_def) apply (simp add:Nset_1)
-  apply (subgoal_tac "0 \<in> {0, Suc 0}") prefer 2 apply simp
-  apply (frule_tac f = h in funcset_mem [of _ "{0, Suc 0}" "{0, Suc 0}" "0"], assumption+)
-  apply simp apply (subgoal_tac "h (Suc 0) = 0") apply simp
-  apply (rule ag_pOp_commute, assumption+)
-  apply (rule funcset_mem, assumption+) apply simp
-  apply (rule funcset_mem, assumption+) apply simp
-  apply (subgoal_tac "Suc 0 \<in> {0, Suc 0}")
-  apply (frule_tac f = h in funcset_mem, assumption+) apply (simp add:CollectI)
-  apply (case_tac "h (Suc 0) = 0") apply simp apply fastsimp
-  apply simp
+  apply (simp add:Nset_1)
+  apply (frule_tac f = h in funcset_mem [of _ "{0, Suc 0}" 
+                              "{0, Suc 0}" "Suc 0"], simp)
+  apply (simp add:inj_on_def, simp add:Nset_1)
+  apply (frule_tac f = h in funcset_mem [of _ "{0, Suc 0}" "{0, Suc 0}" "0"],
+         simp, frule not_sym, simp)
+   apply (frule_tac f = h in funcset_mem [of _ "{0, Suc 0}" "{0, Suc 0}" 
+                    "Suc 0"], simp, simp)
+    apply (rule ag_pOp_commute)
+  apply (rule funcset_mem, assumption+, simp,
+         rule funcset_mem, assumption+, simp)
+
 (************* n *****************)
 apply (rule allI)+
-apply (rule impI) apply (erule conjE)+
-apply (case_tac "h (Suc (Suc n)) = Suc (Suc n)")
+apply (rule impI, (erule conjE)+)
+apply (case_tac "h (Suc (Suc n)) = Suc (Suc n)") 
 apply (rule additionTr1, assumption+)
 apply (frule_tac f = h and n = "Suc (Suc n)" in inj_surj, assumption+)
- apply (subgoal_tac "Suc (Suc n) \<in> h ` Nset (Suc (Suc n))")
- apply (thin_tac "h ` Nset (Suc (Suc n)) = Nset (Suc (Suc n))")
- apply (simp del:eSum_Suc add:image_def)
- apply (subgoal_tac "\<forall>x\<in>Nset (Suc (Suc n)). Suc (Suc n) = h x \<longrightarrow>
-               eSum R (cmp f h) (Suc (Suc n)) = eSum R f (Suc (Suc n))")
- apply blast apply (thin_tac "\<exists>x\<in>Nset (Suc (Suc n)). Suc (Suc n) = h x")
- apply (rule ballI) apply (rule impI)
- apply (subgoal_tac "(cmp h (transpos x (Suc (Suc n)))) (Suc (Suc n)) =
-              Suc (Suc n)")
- prefer 2 apply (subgoal_tac "transpos x (Suc (Suc n)) (Suc (Suc n)) = x")
- apply simp apply (simp add:cmp_def)
-  apply (thin_tac "\<forall>f h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
-                h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow>
-                eSum R (cmp f h) (Suc n) = eSum R f (Suc n)")
-  apply (rotate_tac -1) apply (frule sym) apply (thin_tac "Suc (Suc n) = h x")
-  apply (subgoal_tac "h x \<noteq> h (Suc (Suc n))")
- apply (frule_tac f = h and A = "Nset (Suc (Suc n))" and x = x and y = "Suc (Suc n)" in inj_onTr2, assumption+)
-  apply (simp add:Nset_def) apply assumption+
-  apply (simp add:transpos_def) apply (simp add:NSet_def)
-  apply simp
-prefer 2 apply simp apply (simp add:Nset_def)
- apply (subgoal_tac "cmp h (transpos x (Suc (Suc n))) \<in> Nset (Suc (Suc n)) \<rightarrow>
-                       Nset (Suc (Suc n))")
- apply (subgoal_tac "inj_on (cmp h (transpos x (Suc (Suc n)))) (Nset (Suc (Suc n)))")
- apply (subgoal_tac "eSum R (cmp f (cmp h (transpos x (Suc (Suc n))))) (Suc (Suc n)) = eSum R f (Suc (Suc n))")
-prefer 2
-  apply (rule additionTr1, assumption+)
-  apply (frule_tac s = "Suc (Suc n)" and t = "h x" in sym)
-  apply (thin_tac "Suc (Suc n) = h x") apply (rotate_tac -2)
-  apply (frule sym)
-  apply (thin_tac "eSum R (cmp f (cmp h (transpos x (Suc (Suc n)))))
-  (Suc (Suc n)) = eSum R f (Suc (Suc n))") apply (simp del:eSum_Suc)
-  apply (thin_tac "eSum R f (Suc (Suc n)) =
-          eSum R (cmp f (cmp h (transpos x (Suc (Suc n))))) (Suc (Suc n))")
-  apply (frule_tac f = f and n = "Suc (Suc n)" and ?h1.0 = "transpos x (Suc (Suc n))" and ?h2.0 = h and i = "Suc (Suc n)" in eSum_cmp_eq [of "R"], assumption+)
-  apply (rule transpos_hom, assumption+) apply (simp add:Nset_def)
-  apply (thin_tac "\<forall>f h. f \<in> Nset (Suc n) \<rightarrow> carrier R \<and>
-                h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n) \<and> inj_on h (Nset (Suc n)) \<longrightarrow>
-                eSum R (cmp f h) (Suc n) = eSum R f (Suc n)")
-  apply (rule contrapos_pp, simp+) apply (simp add:Nset_def)
-apply (simp del:eSum_Suc)
- apply (thin_tac "eSum R (cmp f (cmp h (transpos x (Suc (Suc n))))) (Suc
- (Suc n)) = eSum R (cmp (cmp f h) (transpos x (Suc (Suc n)))) (Suc (Suc n))")
-  apply (rule_tac n1 = n and f1 = "cmp f h" and i1 = x in additionTr1_2 [THEN sym, of "R"], assumption+)
-  apply (rule_tac f = h and A = "Nset (Suc (Suc n))" and
-  B = "Nset (Suc (Suc n))" and g = f in  cmp_fun, assumption+)
-  apply (subgoal_tac "x \<noteq> Suc (Suc n)") apply (rule Nset_pre, assumption+)
-  apply (rule contrapos_pp, simp) apply simp
-  apply (frule_tac s = "Suc (Suc n)" and t = "h x" in sym)
-  apply (thin_tac "Suc (Suc n) = h x")
-  apply (frule_tac i = x and n = "Suc (Suc n)" and j = "Suc (Suc n)" in transpos_inj) apply (simp add:Nset_def) apply (rule contrapos_pp)
-  apply simp apply simp
-  apply (subgoal_tac "transpos x (Suc (Suc n)) \<in> Nset (Suc (Suc n)) \<rightarrow>
-                                                   Nset (Suc (Suc n))")
-  apply (rule_tac f = "transpos x (Suc (Suc n))" and A = "Nset (Suc (Suc n))"
-  and B = "Nset (Suc (Suc n))" and g = h and C = "Nset (Suc (Suc n))" in cmp_inj, assumption+)
-  apply (rule transpos_hom) apply simp apply (simp add:Nset_def)
-  apply (rule contrapos_pp) apply simp apply simp
-  apply (subgoal_tac "transpos x (Suc (Suc n)) \<in> Nset (Suc (Suc n)) \<rightarrow>
-                                                   Nset (Suc (Suc n))")
-  apply (rule cmp_fun, assumption+)
-  apply (rule transpos_hom) apply simp apply (simp add:Nset_def)
-  apply (rule contrapos_pp, simp+)
+ apply (frule sym, thin_tac "h ` {i. i \<le> Suc (Suc n)} = {i. i \<le> Suc (Suc n)}")
+ apply (cut_tac n = "Suc (Suc n)" in n_in_Nsetn)
+ apply (frule_tac a = "Suc (Suc n)" and A = "{i. i \<le> Suc (Suc n)}" and 
+        B = "h ` {i. i \<le> Suc (Suc n)}" in eq_set_inc, assumption+)
+ apply (thin_tac "{i. i \<le> Suc (Suc n)} = h ` {i. i \<le> Suc (Suc n)}")
+ apply (simp del:nsum_suc add:image_def) 
+ apply (erule exE, erule conjE)
+ apply (frule sym, thin_tac "Suc (Suc n) = h x")
+ apply (frule_tac i = x and n = "Suc (Suc n)" and j = "Suc (Suc n)" in 
+                  transpos_ij_2, simp del:nsum_suc add:n_in_Nsetn)
+        apply (rule contrapos_pp, (simp del:nsum_suc)+)
+ apply (frule_tac x = "transpos x (Suc (Suc n)) (Suc (Suc n))" and y = x and 
+        f = h in eq_elems_eq_val,
+        thin_tac "transpos x (Suc (Suc n)) (Suc (Suc n)) = x",           
+        simp del:nsum_suc)
+ apply (frule_tac f = h and A = "{i. i \<le> Suc (Suc n)}" and x = x and 
+                  y = "Suc (Suc n)" in inj_onTr2, simp, simp,
+        frule not_sym, simp)
+ apply (cut_tac f1 = "cmp f h" and n1 = n and i1 = x in 
+        additionTr1_2[THEN sym], assumption)
+ apply (rule cmp_fun, simp, assumption, arith)
+ apply (simp del:nsum_suc,
+        thin_tac "\<Sigma>\<^sub>e A (cmp f h) (Suc (Suc n)) =
+        \<Sigma>\<^sub>e A (cmp (cmp f h) (transpos x (Suc (Suc n)))) (Suc (Suc n))")
+ apply (frule_tac f = f and n = "Suc n" and A = "carrier A" in func_pre)
+ apply (cut_tac f = "cmp h (transpos x (Suc (Suc n)))" and A = "{j. j \<le> (Suc (        Suc n))}" and ?A1.0 = "{j. j \<le> (Suc n)}" in restrict_inj)
+ apply (rule_tac f = "transpos x (Suc (Suc n))" and A = "{j. j \<le> Suc (Suc n)}"
+ and B = "{j. j \<le> Suc (Suc n)}" and g = h and C = "{j. j \<le> Suc (Suc n)}" in
+  cmp_inj, simp,
+  rule transpos_hom, simp, simp, assumption+,
+  rule transpos_inj, simp, simp, assumption+,
+  rule subsetI, simp)
+apply (subst nsum_cmp_assoc,
+       rule allI, rule impI, simp add:funcset_mem,
+       rule transpos_hom, assumption, simp, assumption+)
+ apply (cut_tac f = "cmp f (cmp h (transpos x (Suc (Suc n))))" and n = "Suc n"
+        in nsum_suc[of A ], simp del:nsum_suc,
+   thin_tac "\<Sigma>\<^sub>e A (cmp f (cmp h (transpos x (Suc (Suc n))))) (Suc (Suc n)) =
+        \<Sigma>\<^sub>e A (cmp f (cmp h (transpos x (Suc (Suc n))))) (Suc n) \<plusminus>
+        cmp f (cmp h (transpos x (Suc (Suc n)))) (Suc (Suc n))")
+ apply (frule_tac a = f in forall_spec1,
+        thin_tac "\<forall>f h. f \<in> {j. j \<le> Suc n} \<rightarrow> carrier A \<and>
+              h \<in> {j. j \<le> Suc n} \<rightarrow> {j. j \<le> Suc n} \<and>
+              inj_on h {j. j \<le> Suc n} \<longrightarrow>
+              \<Sigma>\<^sub>e A (cmp f h) (Suc n) = \<Sigma>\<^sub>e A f (Suc n)")
+ apply (frule_tac a = "cmp h (transpos x (Suc (Suc n)))" in forall_spec,
+        thin_tac "\<forall>h. f \<in> {j. j \<le> Suc n} \<rightarrow> carrier A \<and>
+         h \<in> {j. j \<le> Suc n} \<rightarrow> {j. j \<le> Suc n} \<and> inj_on h {j. j \<le> Suc n} \<longrightarrow>
+         \<Sigma>\<^sub>e A (cmp f h) (Suc n) = \<Sigma>\<^sub>e A f (Suc n)")
+ apply simp
+ apply (rule univar_func_test, rule ballI)
+ apply (simp add:cmp_def)
+ apply (case_tac "xa = x", simp)
+ apply (cut_tac i = x and n = "Suc (Suc n)" and j = "Suc (Suc n)" in 
+         transpos_ij_1, simp, simp, simp, simp,
+        frule_tac x = "Suc (Suc n)" and f = h and A = "{j. j \<le> Suc (Suc n)}"
+         and B = "{j. j \<le> Suc (Suc n)}" in funcset_mem, simp,
+        thin_tac "h \<in> {j. j \<le> Suc (Suc n)} \<rightarrow> {j. j \<le> Suc (Suc n)}")
+ apply (cut_tac m = "h (Suc (Suc n))" and n = "Suc (Suc n)" in noteq_le_less,
+        simp, simp,
+        rule_tac x = "h (Suc (Suc n))" and n = "Suc n" in Suc_less_le,
+        assumption)
+ apply (subst transpos_id, simp, simp, simp, simp,
+        frule_tac x = xa and f = h and A = "{j. j \<le> Suc (Suc n)}" and 
+        B = "{j. j \<le> Suc (Suc n)}" in funcset_mem, simp)
+ apply (frule_tac f = h and A = "{j. j \<le> Suc (Suc n)}" and x = xa and y = x 
+        in injective, simp, simp, assumption)
+ apply (cut_tac m = "h xa" and n = "Suc (Suc n)" in noteq_le_less, simp,
+        simp)
+ apply (rule Suc_less_le, assumption,
+        thin_tac "\<forall>h. f \<in> {j. j \<le> Suc n} \<rightarrow> carrier A \<and>
+        h \<in> {j. j \<le> Suc n} \<rightarrow> {j. j \<le> Suc n} \<and> inj_on h {j. j \<le> Suc n} \<longrightarrow>
+        \<Sigma>\<^sub>e A (cmp f h) (Suc n) = \<Sigma>\<^sub>e A f (Suc n)")
+ apply (simp del:nsum_suc add:cmp_def)
+ apply simp
 done
 
-lemma addition2:"\<lbrakk>agroup R; f \<in> Nset (Suc n) \<rightarrow> carrier R;
- h \<in> Nset (Suc n) \<rightarrow> Nset (Suc n); inj_on h (Nset (Suc n))\<rbrakk> \<Longrightarrow>
-  eSum R (cmp f h) (Suc n) = eSum R f (Suc n)"
-apply (simp del:eSum_Suc add:additionTr2)
+lemma (in aGroup) addition2:"\<lbrakk>f \<in> {j. j \<le> (Suc n)} \<rightarrow> carrier A; 
+  h \<in> {j. j \<le> (Suc n)} \<rightarrow> {j. j \<le> (Suc n)}; inj_on h {j. j \<le> (Suc n)}\<rbrakk> \<Longrightarrow>
+  nsum A (cmp f h) (Suc n) = nsum A f (Suc n)"
+apply (simp del:nsum_suc add:additionTr2)
 done
 
-lemma addition21:"\<lbrakk>agroup R; f \<in> Nset n \<rightarrow> carrier R;
- h \<in> Nset n \<rightarrow> Nset n; inj_on h (Nset n)\<rbrakk> \<Longrightarrow>
-  eSum R (cmp f h) n = eSum R f n"
+lemma (in aGroup) addition21:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow> carrier A; 
+       h \<in> {j. j \<le> n} \<rightarrow> {j. j \<le> n}; inj_on h {j. j \<le> n}\<rbrakk> \<Longrightarrow>
+       nsum A (cmp f h) n = nsum A f n"
 apply (case_tac "n = 0")
  apply simp
- apply (subgoal_tac "h 0 = 0") apply (simp add:cmp_def)
- apply (subgoal_tac "0 \<in> Nset 0")
- apply (frule_tac f = h and A = "Nset 0" and B = "Nset 0" in funcset_mem, assumption+) apply (simp add:Nset_def) apply (simp add:Nset_def)
-apply simp
- apply (frule_tac R = R and f = f and n = "n - Suc 0" and h = h in addition2)
+ apply (subgoal_tac "h 0 = 0", simp add:cmp_def)
+ apply (cut_tac Nset_inc_0[of 0])
+ apply (frule_tac f = h and A = "{0}" and B = "{0}" in funcset_mem, simp,
+        simp) 
+ apply (cut_tac f = f and n = "n - Suc 0" and h = h in addition2)
  apply simp+
 done
 
-
-lemma addition3:"\<lbrakk>agroup R; f \<in> Nset (Suc n) \<rightarrow> carrier R; j \<in> Nset (Suc n);
-j \<noteq> Suc n\<rbrakk> \<Longrightarrow> eSum R f (Suc n) = eSum R (cmp f (transpos j (Suc n))) (Suc n)"
-apply (rule addition2 [THEN sym,of "R" "f" "n" "transpos j (Suc n)"], assumption+)
-apply (simp add:transpos_hom n_in_Nsetn)
-apply (simp add:transpos_inj n_in_Nsetn)
+lemma (in aGroup) addition3:"\<lbrakk>\<forall>j \<le> (Suc n). f j \<in> carrier A; j \<le> (Suc n);
+j \<noteq> Suc n\<rbrakk> \<Longrightarrow> nsum A f (Suc n) = nsum A (cmp f (transpos j (Suc n))) (Suc n)"
+apply (rule addition2 [THEN sym,of "f" "n" "transpos j (Suc n)"])
+apply (rule univar_func_test, rule ballI, simp)
+apply (rule transpos_hom, assumption+, simp, assumption)
+apply (rule transpos_inj, simp+)
 done
 
-
-lemma eSum_splitTr:"agroup R \<Longrightarrow> f \<in> Nset (Suc (n + m)) \<rightarrow> carrier R \<longrightarrow>
-   eSum R f (Suc (n + m)) = eSum R f n +\<^sub>R (eSum R (cmp f (slide (Suc n))) m)"
+lemma (in aGroup) nsum_splitTr:"(\<forall>j \<le> (Suc (n + m)). f j \<in> carrier A) \<longrightarrow>
+   nsum A f (Suc (n + m)) = nsum A f n \<plusminus> (nsum A (cmp f (slide (Suc n))) m)" 
 apply (induct_tac m)
 apply (rule impI) apply (simp add:slide_def cmp_def)
-apply (rule impI)
-apply (subgoal_tac "f \<in> Nset (Suc (n + na)) \<rightarrow> carrier R")
-apply (simp del:eSum_Suc) apply simp
-apply (subgoal_tac "f (Suc (Suc (n + na))) = (cmp f (slide (Suc n))) (Suc na)")
+apply (rule impI, simp del:nsum_suc)
+
+apply (cut_tac n = "Suc (n + na)" in nsum_suc[of A f],
+       simp del:nsum_suc,
+       thin_tac "\<Sigma>\<^sub>e A f (Suc (Suc (n + na))) =
+       \<Sigma>\<^sub>e A f n \<plusminus> \<Sigma>\<^sub>e A (cmp f (slide (Suc n))) na \<plusminus> f (Suc (Suc (n + na)))")
+apply (cut_tac f = "cmp f (slide (Suc n))" and n = na in nsum_suc[of A],
+       simp del:nsum_suc)
+apply (subst ag_pOp_assoc)
+apply (rule nsum_mem, rule allI, simp) 
+ apply (rule_tac n = na in nsum_mem, 
+        thin_tac "\<Sigma>\<^sub>e A (cmp f (slide (Suc n))) (Suc na) =
+          \<Sigma>\<^sub>e A (cmp f (slide (Suc n))) na \<plusminus> (cmp f (slide (Suc n)) (Suc na))")
+ apply (rule allI, rule impI,
+        simp add:cmp_def slide_def, simp)
+ apply (simp add:cmp_def slide_def)
+done
+
+lemma (in aGroup) nsum_split:"\<forall>j \<le> (Suc (n + m)). f j \<in> carrier A \<Longrightarrow>
+   nsum A f (Suc (n + m)) = nsum A f n \<plusminus> (nsum A (cmp f (slide (Suc n))) m)"  
+by (simp del:nsum_suc add:nsum_splitTr)                                     
+
+lemma (in aGroup) nsum_split1:"\<lbrakk>\<forall>j \<le> m. f j \<in> carrier A; n < m\<rbrakk> \<Longrightarrow>
+                   nsum A f m = nsum A f n \<plusminus> (fSum A f (Suc n) m)"
+apply (cut_tac nsum_split[of n "m - n - Suc 0" f])
 apply simp
-apply (rule ag_pOp_assoc, assumption+)
-apply (rule eSum_mem, assumption+)
- apply (simp add:Nset_def)
- apply (subgoal_tac "(cmp f (slide (Suc n))) \<in> Nset na \<rightarrow> carrier R")
- apply (rule eSum_mem, assumption+) apply (simp add:Nset_def)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:cmp_def slide_def)
- apply (frule Nset_le)
- apply (subgoal_tac "n \<le> n")
- apply (frule_tac i = n and j = n and k = x and l = na in add_le_mono)
- apply assumption
- apply (frule_tac i = "n + x" and j = "n + na" and k = "Suc (n + na)" in
-                                                 le_less_trans)
- apply simp
- apply (frule_tac m = "n + x" and n = "Suc (n + na)" in Suc_leI)
- apply (frule_tac x = "Suc (n + x)" and n = "Suc (n + na)" in mem_of_Nset)
- apply simp apply simp
- apply (subgoal_tac "Suc (Suc (n + na)) \<in> Nset (Suc (Suc (n + na)))")
- apply (frule_tac A = "Nset (Suc (Suc (n + na)))" and B = "carrier R" and
- x = "Suc (Suc (n + na))" in funcset_mem [of "f"], assumption+)
- apply (frule_tac s = "f (Suc (Suc (n + na)))" and t = " cmp f (slide (Suc n)) (Suc na)" in sym) apply simp apply (simp add:Nset_def)
- apply (thin_tac "eSum R f (n + na) +\<^sub>R (f (Suc (n + na))) =
-             eSum R f n +\<^sub>R (eSum R (cmp f (slide (Suc n))) na)")
- apply (simp add:cmp_def slide_def)
- apply (thin_tac "f \<in> Nset (Suc (n + na)) \<rightarrow> carrier R \<longrightarrow>
- eSum R f (Suc (n + na)) = eSum R f n +\<^sub>R (eSum R (cmp f (slide (Suc n))) na)")
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:Nset_def)
+apply (simp add:fSum_def)
+apply simp
 done
 
-lemma eSum_split:"\<lbrakk>agroup R; f \<in> Nset (Suc (n + m)) \<rightarrow> carrier R \<rbrakk> \<Longrightarrow>
-   eSum R f (Suc (n + m)) = eSum R f n +\<^sub>R (eSum R (cmp f (slide (Suc n))) m)"  apply (simp del:eSum_Suc add:eSum_splitTr)
-done
-
-lemma ag_minus_apb:"\<lbrakk>agroup G; a \<in>carrier G; b \<in> carrier G \<rbrakk> \<Longrightarrow>
-                         -\<^sub>G (a +\<^sub>G b) = -\<^sub>G a +\<^sub>G (-\<^sub>G b)"
-apply (frule ag_l_inv1 [of "G" "a +\<^sub>G b"])
- apply (simp add:ag_pOp_closed)
-apply (subgoal_tac "-\<^sub>G ( a +\<^sub>G b) +\<^sub>G ( a +\<^sub>G b) +\<^sub>G (-\<^sub>G b) = 0\<^sub>G +\<^sub>G (-\<^sub>G b)")
- prefer 2 apply simp
- apply (thin_tac "-\<^sub>G ( a +\<^sub>G b) +\<^sub>G ( a +\<^sub>G b) = 0\<^sub>G")
- apply (frule ag_mOp_closed [of "G" "b"], assumption+)
- apply (simp add:ag_l_zero)
- apply (frule ag_pOp_closed [of "G" "a" "b"], assumption+)
- apply (frule ag_mOp_closed [of "G" "a +\<^sub>G b"], assumption+)
- apply (simp add:ag_pOp_assoc)
- apply (simp add:ag_r_inv1)
- apply (simp add:ag_r_zero)
- apply (frule ag_mOp_closed [of "G" "a"], assumption+)
-apply (subgoal_tac "-\<^sub>G ( a +\<^sub>G b) +\<^sub>G a +\<^sub>G (-\<^sub>G a) = -\<^sub>G b +\<^sub>G (-\<^sub>G a)")
- prefer 2 apply simp
- apply (thin_tac "-\<^sub>G ( a +\<^sub>G b) +\<^sub>G a = -\<^sub>G b")
- apply (simp add:ag_pOp_assoc [of "G" "-\<^sub>G ( a +\<^sub>G b)" "a" "-\<^sub>G a"])
- apply (simp add:ag_r_inv1)
- apply (simp add:ag_r_zero)
-apply (simp add:ag_pOp_commute)
-done
-
-lemma eSum_minusTr:"agroup G \<Longrightarrow> f \<in> Nset n \<rightarrow> carrier G \<longrightarrow>
-                    -\<^sub>G (eSum G f n) = eSum G (\<lambda>x\<in>Nset n. -\<^sub>G (f x)) n"
+lemma (in aGroup) nsum_minusTr:" (\<forall>j \<le> n. f j \<in> carrier A) \<longrightarrow>
+                    -\<^sub>a (nsum A f n) = nsum A (\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a (f x)) n"
 apply (induct_tac n)
- apply (rule impI)
- apply (simp add:Nset_def)
+ apply (rule impI, simp)
 apply (rule impI)
- apply (frule func_pre)
- apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
- apply simp
- apply (subst ag_minus_apb, assumption+)
- apply (frule_tac n = n and i = n in eSum_mem [of "G" "f"], assumption+)
- apply (simp add:Nset_def) apply assumption
- apply (simp add:funcset_mem)
- apply (subgoal_tac "e\<Sigma> G (\<lambda>u. if u \<in> Nset (Suc n) then -\<^sub>G (f u) else arbitrary) n = e\<Sigma> G (\<lambda>u. if u \<in> Nset n then -\<^sub>G (f u) else arbitrary) n")
- apply simp
- apply (rule_tac n = n and f = "\<lambda>u. if u \<in> Nset (Suc n) then -\<^sub>G (f u) else arbitrary" and g = "\<lambda>u. if u \<in> Nset n then -\<^sub>G (f u) else arbitrary" in eSum_eq_i [of "G"], assumption+)
- apply (thin_tac "-\<^sub>G e\<Sigma> G f n =
-           e\<Sigma> G (\<lambda>u. if u \<in> Nset n then -\<^sub>G (f u) else arbitrary) n")
- apply (thin_tac "f \<in> Nset (Suc n) \<rightarrow> carrier G")
- apply (simp add:Pi_def) apply (rule allI)
- apply (rule conjI) apply (rule impI) apply (rule impI)
- apply (rule ag_mOp_closed, assumption+) apply simp
- apply (rule impI)+
- apply (subgoal_tac "x \<in> Nset (Suc n)") apply simp
- apply (thin_tac "x \<notin> Nset (Suc n)") apply (simp add:Nset_def)
- apply (thin_tac "-\<^sub>G e\<Sigma> G f n =
-           e\<Sigma> G (\<lambda>u. if u \<in> Nset n then -\<^sub>G (f u) else arbitrary) n")
- apply (thin_tac "f \<in> Nset (Suc n) \<rightarrow> carrier G")
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (rule ag_mOp_closed, assumption+)
- apply simp apply (simp add:Nset_def)
-apply (rule ballI)
- apply (subgoal_tac "l \<in> Nset (Suc n)")
- apply simp apply (simp add:Nset_def)+
+ apply (subst nsum_suc, subst nsum_suc)
+ apply (subst ag_p_inv) 
+ apply (rule_tac n = n in nsum_mem [of _ f],
+        rule allI, simp, simp)
+ apply (subgoal_tac "\<forall>j\<le>n. f j \<in> carrier A", simp)
+ apply (rule_tac a = "\<Sigma>\<^sub>e A (\<lambda>u. if u \<le> n then  -\<^sub>a (f u) else arbitrary) n"
+     and b = "\<Sigma>\<^sub>e A (\<lambda>x\<in>{j. j \<le> (Suc n)}. -\<^sub>a (f x)) n" and c = "-\<^sub>a (f (Suc n))"
+     in ag_pOp_add_r,
+     rule_tac n = n in nsum_mem,
+     rule allI, rule impI, simp,
+     rule ag_mOp_closed, simp)
+ apply (rule_tac n = n in nsum_mem,
+        rule allI, rule impI, simp,
+        rule ag_mOp_closed, simp,
+        rule ag_mOp_closed, simp) 
+ apply (rule_tac f = "\<lambda>u. if u \<le> n then -\<^sub>a (f u) else arbitrary" and 
+        n = n and g = "\<lambda>x\<in>{j. j \<le> (Suc n)}. -\<^sub>a (f x)" in nsum_eq,
+        rule allI, rule impI,
+        simp, rule ag_mOp_closed, simp,
+        rule allI, simp, rule impI, rule ag_mOp_closed, simp) 
+ apply (rule allI, simp)
+ apply (rule allI, simp)
 done
 
-lemma eSum_minus:"\<lbrakk>agroup G; f \<in> Nset n \<rightarrow> carrier G \<rbrakk> \<Longrightarrow>
-                    -\<^sub>G (eSum G f n) = eSum G (\<lambda>x\<in>Nset n. -\<^sub>G (f x)) n"
-apply (simp add:eSum_minusTr)
+lemma (in aGroup) nsum_minus:"\<forall>j \<le> n. f j \<in> carrier A \<Longrightarrow> 
+                    -\<^sub>a (nsum A f n) = nsum A (\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a (f x)) n"
+apply (simp add:nsum_minusTr)
 done
 
-lemma ring_eSum_zeroTr:"agroup G \<Longrightarrow>  f \<in> Nset n \<rightarrow> carrier G \<and> (\<forall>j\<in>Nset n. f j = 0\<^sub>G) \<longrightarrow> eSum G f n = 0\<^sub>G"
+lemma (in aGroup) ring_nsum_zeroTr:"(\<forall>j \<le> (n::nat). f j \<in> carrier A) \<and> 
+                    (\<forall>j \<le> n. f j = \<zero>) \<longrightarrow> nsum A f n = \<zero>"
 apply (induct_tac n)
 apply (rule impI) apply (erule conjE)+ apply simp
- apply (simp add:Nset_def)
-apply (rule impI) apply (erule conjE)+
- apply (subgoal_tac "e\<Sigma> G f n = 0\<^sub>G") prefer 2
- apply (frule func_pre [of "f"])
- apply (subgoal_tac "\<forall>j. j \<in> Nset n \<longrightarrow> j \<in> Nset (Suc n)")
-apply simp apply (simp add:Nset_def)
- apply simp apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
- apply simp
- apply (frule ag_inc_zero [of "G"])
-apply (simp add:ag_l_zero) apply (simp add:Nset_def)
+
+apply (rule impI, (erule conjE)+)
+ apply (cut_tac n = n in Nsetn_sub_mem1, simp)
+ apply (simp add:ag_inc_zero)
+ apply (cut_tac ag_inc_zero,
+        simp add:ag_r_zero)
 done
 
-lemma ring_eSum_zero:"\<lbrakk>agroup G; f \<in> Nset n \<rightarrow> carrier G; \<forall>j\<in>Nset n. f j = 0\<^sub>G \<rbrakk> \<Longrightarrow>  e\<Sigma> G f n = 0\<^sub>G"
-apply (simp add:ring_eSum_zeroTr)
+lemma (in aGroup) ring_nsum_zero:"\<forall>j \<le> (n::nat). f j = \<zero>  \<Longrightarrow> \<Sigma>\<^sub>e A f n = \<zero>"
+apply (cut_tac ring_nsum_zeroTr[of n f])
+apply (simp add:ag_inc_zero)
 done
 
-lemma ag_eSum_1_nonzeroTr:"agroup G \<Longrightarrow> \<forall>f. (f \<in> Nset n \<rightarrow> carrier G \<and> l \<in> Nset n \<and> (\<forall>j\<in>(Nset n - {l}). f j = 0\<^sub>G)) \<longrightarrow> eSum G f n = f l"
+lemma (in aGroup) ag_nsum_1_nonzeroTr:
+"\<forall>f. (\<forall>j \<le> n. f j \<in> carrier A) \<and> 
+       (l \<le> n \<and> (\<forall>j \<in> {j. j \<le> n} - {l}. f j = \<zero>))
+      \<longrightarrow> nsum A f n = f l" 
 apply (induct_tac n)
- apply (rule allI) apply (rule impI) apply (erule conjE)+
- apply (simp add:Nset_def)
-apply (rule allI)
- apply (rule impI) apply (erule conjE)+
- apply (frule_tac f = f and n = n and A = "carrier G" in func_pre)
- apply (case_tac "l = Suc n")
- apply simp apply (thin_tac "l = Suc n")
- apply (thin_tac "\<forall>f. f \<in> Nset n \<rightarrow> carrier G \<and> Suc n \<in> Nset n \<and> (\<forall>j\<in>Nset n - {Suc n}. f j = 0\<^sub>G) \<longrightarrow>  e\<Sigma> G f n = f (Suc n)")
- apply (subgoal_tac "f \<in> Nset n \<rightarrow> {0\<^sub>G}")
- apply (frule_tac  G = G and f = f and n = n in ring_eSum_zero, assumption+)
- apply (rule ballI)
- apply (frule_tac f = f and A = "Nset n" and B = "{0\<^sub>G}" in funcset_mem, assumption+) apply simp
- apply (frule_tac f = f and A = "Nset (Suc n)" and B = "carrier G" and x = "Suc n" in funcset_mem, assumption+)
- apply (simp add:ag_l_zero)
- apply (rule univar_func_test) apply (rule ballI)
- apply (subgoal_tac "Nset (Suc n) - {Suc n} = Nset n") apply simp
- apply (rule equalityI) apply (rule subsetI) apply (simp add:Nset_def)
- apply (rule subsetI) apply (simp add:Nset_def)
- apply (subgoal_tac "l \<in> Nset n") apply (subgoal_tac " \<forall>j\<in>Nset n - {l}. f j = 0\<^sub>G")
+      apply simp 
+apply (rule allI,
+       rule impI, (erule conjE)+)
+ apply (case_tac "l = Suc n") 
  apply simp
- apply (subgoal_tac "f (Suc n) = 0\<^sub>G")
- apply simp
- apply (frule_tac f = f and A = "Nset (Suc n)" and B = "carrier G" and x = l in funcset_mem, assumption+)
- apply (simp add:ag_r_zero) apply (simp add:Nset_def)
-apply (rule ballI)
- apply (subgoal_tac "j \<in> Nset (Suc n) - {l}") prefer 2 apply simp
- apply (simp add:Nset_def)
- apply simp
-apply (thin_tac "\<forall>f. f \<in> Nset n \<rightarrow> carrier G \<and> l \<in> Nset n \<and> (\<forall>j\<in>Nset n - {l}. f j = 0\<^sub>G) \<longrightarrow>  e\<Sigma> G f n = f l")
- apply (thin_tac "\<forall>j\<in>Nset (Suc n) - {l}. f j = 0\<^sub>G")
- apply (simp add:Nset_def)
+ apply (subgoal_tac "{j. j \<le> Suc n} - {Suc n} = {j. j \<le> n}", simp,
+        frule ring_nsum_zero, simp)
+ apply (rule ag_l_zero, simp)
+ apply (rule equalityI, rule subsetI, simp,
+        rule subsetI, simp)
+ apply (frule_tac m = l and n = "Suc n" in noteq_le_less, assumption,
+        thin_tac "l \<le> Suc n",
+        frule_tac x = l and n = n in Suc_less_le)
+ apply (cut_tac n = n in Nsetn_sub_mem1, simp)
+ apply (thin_tac "\<forall>f. (\<forall>j\<le>n. f j \<in> carrier A) \<and>
+               (\<forall>j\<in>{j. j \<le> n} - {l}. f j = \<zero>) \<longrightarrow>
+               \<Sigma>\<^sub>e A f n = f l",
+        frule_tac a = l in forall_spec, simp)
+ apply (simp add:ag_r_zero)
+done
+            
+lemma (in aGroup) ag_nsum_1_nonzero:"\<lbrakk>\<forall>j \<le> n. f j \<in> carrier A; l \<le> n; 
+       \<forall>j\<in>({j. j \<le> n} - {l}). f j = \<zero> \<rbrakk> \<Longrightarrow> nsum A f n = f l"  
+apply (simp add:ag_nsum_1_nonzeroTr[of n l])
 done
 
-lemma ag_eSum_1_nonzero:"\<lbrakk>agroup G; f \<in> Nset n \<rightarrow> carrier G; l \<in> Nset n; \<forall>j\<in>(Nset n - {l}). f j = 0\<^sub>G\<rbrakk> \<Longrightarrow> eSum G f n = f l"
-apply (simp add:ag_eSum_1_nonzeroTr)
+constdefs (structure R)
+ set_mult::"[_ , 'a set, 'a set] \<Rightarrow> 'a set"
+ "set_mult R A B == {z. \<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>r y = z}"
+
+ sum_mult::"[_ , 'a set, 'a set] \<Rightarrow> 'a set"
+  "sum_mult R A B == {x. \<exists>n. \<exists>f \<in> {j. j \<le> (n::nat)}
+                           \<rightarrow> set_mult R A B. nsum R f n = x}"  
+(*
+ zero_fini::"[_ , 'a set, 'a set] \<Rightarrow> (nat \<Rightarrow> 'a)"
+     "zero_fini R A B i == \<zero> \<cdot>\<^sub>r \<zero>" *)
+
+lemma (in Ring) set_mult_sub:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R\<rbrakk> \<Longrightarrow>
+                                    set_mult R A B \<subseteq> carrier R"
+apply (rule subsetI, simp add:set_mult_def, (erule bexE)+,
+       frule sym, thin_tac "xa \<cdot>\<^sub>r y = x", simp)
+apply (rule ring_tOp_closed, (simp add:subsetD)+)
 done
 
-constdefs
- set_mult::"[('a, 'c) RingType_scheme, 'a set, 'a set] \<Rightarrow> 'a set"
- "set_mult R A B == {z. \<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = z}"
-
- sum_mult::"[('a, 'c) RingType_scheme, 'a set, 'a set] \<Rightarrow> 'a set"
-  "sum_mult R A B == {x. \<exists>n. \<exists>f \<in> Nset n \<rightarrow> set_mult R A B. eSum R f n = x}"
-
- zero_fini::"[('a, 'c) RingType_scheme, 'a set, 'a set] \<Rightarrow> (nat \<Rightarrow> 'a)"
-     "zero_fini R A B i == 0\<^sub>R \<cdot>\<^sub>R (0\<^sub>R)"
-
-lemma sum_mult_Tr1:"\<lbrakk>ring R; A \<subseteq> carrier R; B \<subseteq> carrier R\<rbrakk> \<Longrightarrow>
-               f \<in> Nset n \<rightarrow> set_mult R A B \<longrightarrow> eSum R f n \<in> carrier R"
-apply (frule ring_is_ag)
+lemma (in Ring) set_mult_mono:"\<lbrakk>A1 \<subseteq> carrier R; A2 \<subseteq> carrier R; A1 \<subseteq> A2; 
+       B \<subseteq> carrier R\<rbrakk> \<Longrightarrow> set_mult R A1 B \<subseteq> set_mult R A2 B"
+apply (rule subsetI)
+ apply (simp add:set_mult_def, (erule bexE)+)
+ apply (frule_tac c = xa in subsetD[of A1 A2], assumption+)
+ apply blast
+done
+ 
+lemma (in Ring) sum_mult_Tr1:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R\<rbrakk> \<Longrightarrow>
+               (\<forall>j \<le> n. f j \<in> set_mult R A B) \<longrightarrow> nsum R f n \<in> carrier R"
+apply (cut_tac ring_is_ag)
 apply (induct_tac n)
- apply (rule impI) apply (simp add:Nset_def)
- apply (subgoal_tac "(0::nat) \<in> {0}")
- apply (frule funcset_mem [of "f" "{0}" "set_mult R A B" "0"], assumption+)
- apply (simp add:set_mult_def)
- apply (thin_tac "f \<in> {0} \<rightarrow> {z. \<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = z}")
- apply (subgoal_tac "\<forall>x\<in>A. \<forall>y\<in>B.  x \<cdot>\<^sub>R y = f 0 \<longrightarrow> f 0 \<in> carrier R")
- apply blast apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = f 0")
- apply (rule ballI)+ apply (rule impI)
- apply (frule sym) apply (thin_tac "x \<cdot>\<^sub>R y = f 0") apply simp
- apply (frule  subsetD [of "A" "carrier R"], assumption+)
- apply (frule  subsetD [of "B" "carrier R"], assumption+)
- apply (simp add:ring_tOp_closed) apply simp
+ apply (rule impI, simp)
+ apply (frule set_mult_sub[of A B], assumption, simp add:subsetD)
 apply (rule impI)
- apply (subgoal_tac "Suc n \<in> Nset (Suc n)") prefer 2 apply (simp add:Nset_def)
- apply (frule_tac A = "Nset (Suc n)" and x = "Suc n" in
-             funcset_mem [of "f" _ "set_mult R A B"], assumption+)
- apply (subgoal_tac "f \<in> Nset n \<rightarrow> set_mult R A B")
- apply simp
- apply (rule ag_pOp_closed, assumption+)
- apply (thin_tac "eSum R f n \<in> carrier R")
- apply (thin_tac "f \<in> Nset (Suc n) \<rightarrow> set_mult R A B")
- apply (thin_tac "Suc n \<in> Nset (Suc n)")
- apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R A B")
- apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>x\<in>A. \<forall>y\<in>B.  x \<cdot>\<^sub>R y = f (Suc n) \<longrightarrow>
-                                      f (Suc n) \<in> carrier R")
- apply blast apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = f (Suc n)")
- apply (rule ballI)+ apply (rule impI) apply (frule sym)
- apply (thin_tac "x \<cdot>\<^sub>R y = f (Suc n)") apply simp
- apply (frule subsetD [of "A" "carrier R"], assumption+)
- apply (frule subsetD [of "B" "carrier R"], assumption+)
- apply (simp add:ring_tOp_closed)
-apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:Nset_def)
+ apply (cut_tac n = n in Nsetn_sub_mem1, simp)
+ apply (frule set_mult_sub[of A B], assumption) 
+ apply (frule_tac a = "Suc n" in forall_spec, simp,
+        frule_tac c = "f (Suc n)" in subsetD[of "set_mult R A B" "carrier R"],
+        assumption)
+ apply (rule aGroup.ag_pOp_closed, assumption+)
 done
 
-lemma sum_mult_mem:"\<lbrakk>ring R; A \<subseteq> carrier R; B \<subseteq> carrier R;
-   f \<in> Nset n \<rightarrow> set_mult R A B\<rbrakk>  \<Longrightarrow> eSum R f n \<in> carrier R"
-apply (frule ring_is_ag)
+lemma (in Ring) sum_mult_mem:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R; 
+   \<forall>j \<le> n. f j \<in> set_mult R A B\<rbrakk>  \<Longrightarrow> nsum R f n \<in> carrier R"
+apply (cut_tac ring_is_ag)
 apply (simp add:sum_mult_Tr1)
 done
 
-lemma times_mem_sum_mult:"\<lbrakk>ring R; A \<subseteq> carrier R; B \<subseteq> carrier R; a \<in> A; b \<in> B \<rbrakk>
-                       \<Longrightarrow>  a \<cdot>\<^sub>R b \<in> sum_mult R A B"
-apply (simp add:sum_mult_def)
-apply (subgoal_tac "(\<lambda>i\<in>Nset 0. a \<cdot>\<^sub>R b) \<in> Nset 0 \<rightarrow> set_mult R A B")
-apply (subgoal_tac "eSum R (\<lambda>i\<in>Nset 0. a \<cdot>\<^sub>R b) 0 = a \<cdot>\<^sub>R b")
-apply blast
- apply (simp add:Nset_def)
- apply (simp add:Pi_def) apply (rule impI)
- apply (simp add:set_mult_def) apply blast
-done
+lemma (in Ring) sum_mult_mem1:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R; 
+        x \<in> sum_mult R A B\<rbrakk>  \<Longrightarrow>
+        \<exists>n. \<exists>f\<in>{j. j \<le> (n::nat)} \<rightarrow> set_mult R A B. nsum R f n = x"
+by (simp add:sum_mult_def)
 
-lemma minus_mem_sum_multTr1:"\<lbrakk>agroup R; a \<in> carrier R; b \<in> carrier R\<rbrakk> \<Longrightarrow>
-  -\<^sub>R (a +\<^sub>R b) = -\<^sub>R a +\<^sub>R (-\<^sub>R b)"
-apply (simp add:ag_minus_apb)
-done
-
-lemma mem_minus_sum_multTr2:"\<lbrakk>ring R; A \<subseteq> carrier R; B \<subseteq> carrier R;
-     f \<in> Nset n \<rightarrow> set_mult R A B; i \<in> Nset n\<rbrakk> \<Longrightarrow> f i \<in> carrier R"
-apply (frule funcset_mem, assumption+)
-apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R A B")
-apply (simp add:set_mult_def)
-apply (subgoal_tac "\<forall>x\<in>A. \<forall>y\<in>B.  x \<cdot>\<^sub>R y = f i \<longrightarrow> f i \<in> carrier R")
-apply blast
-apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = f i")
-apply (rule ballI)+
-apply (rule impI) apply (frule sym) apply simp
-apply (frule subsetD [of "A" "carrier R"], assumption+)
-apply (frule subsetD [of "B" "carrier R"], assumption+)
-apply (simp add:ring_tOp_closed)
-done
-
-lemma carrier_inc_set_mult:"\<lbrakk>ring R; A \<subseteq> carrier R; B \<subseteq> carrier R\<rbrakk> \<Longrightarrow>
-                                    set_mult R A B \<subseteq> carrier R"
-apply (frule ring_is_ag)
+lemma (in Ring) sum_mult_subR:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R\<rbrakk> \<Longrightarrow>
+                         sum_mult R A B \<subseteq> carrier R"
 apply (rule subsetI)
- apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>xa\<in>A. \<forall>y\<in>B.  xa \<cdot>\<^sub>R y = x \<longrightarrow> x \<in> carrier R")
- apply blast apply (thin_tac "\<exists>xa\<in>A. \<exists>y\<in>B.  xa \<cdot>\<^sub>R y = x")
- apply (rule ballI)+ apply (rule impI)
- apply (frule subsetD [of "A"], assumption+)
- apply (frule subsetD [of "B"], assumption+)
- apply (frule sym) apply simp
- apply (simp add:ring_tOp_closed)
+apply (frule_tac x = x in sum_mult_mem1[of A B], assumption+)
+apply (erule exE, erule bexE, frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x", simp)
+apply (cut_tac ring_is_ag)
+apply (rule aGroup.nsum_mem[of R], assumption) 
+apply (rule allI, rule impI)
+apply (frule_tac f = f and A = "{j. j \<le> n}" and B = "set_mult R A B" and
+       x = j in funcset_mem, simp) 
+apply (frule set_mult_sub[of A B], assumption)
+apply (simp add:subsetD)
 done
 
-lemma eSum_jointfun:"\<lbrakk>agroup G; f \<in> Nset n \<rightarrow> carrier G; g \<in> Nset m \<rightarrow> carrier G\<rbrakk>  \<Longrightarrow> e\<Sigma> G (jointfun n f m g) (Suc (n + m)) =  e\<Sigma> G f n +\<^sub>G (e\<Sigma> G g m)"
- apply (subst eSum_split, assumption+)
- apply (frule_tac f = f and n = n and A = "carrier G" and g = g and m = m
- and B = "carrier G" in jointfun_hom, assumption+)
- apply simp
- apply (subgoal_tac "eSum G (jointfun n f m g) n = eSum G f n")
-apply (subgoal_tac "eSum G (cmp (jointfun n f m g) (slide (Suc n))) m =
-                               eSum G g m")
-apply simp
- apply (thin_tac "eSum G (jointfun n f m g) n = eSum G f n")
- apply (rule eSum_eq, assumption+)
- apply (rule univar_func_test) apply (rule ballI)
- apply (simp add:cmp_def jointfun_def slide_def sliden_def)
- apply (simp add:funcset_mem) apply assumption
- apply (rule ballI) apply (simp add:cmp_def jointfun_def slide_def sliden_def)
- apply (rule eSum_eq, assumption+)
- apply (rule univar_func_test) apply (rule ballI)
- apply (subgoal_tac "x \<le> n")
- apply (simp add:jointfun_def)  apply (simp add:funcset_mem)
- apply (simp add:Nset_def) apply assumption
- apply (rule ballI) apply (subgoal_tac "l \<le> n")
- apply (simp add:jointfun_def) apply (simp add:Nset_def)
-done
-
-lemma sum_mult_pOp_closed:"\<lbrakk>ring R; A \<subseteq> carrier R; B \<subseteq> carrier R;
-  a \<in> sum_mult R A B;  b \<in> sum_mult R A B \<rbrakk> \<Longrightarrow> a +\<^sub>R b \<in> sum_mult R A B"
-apply (frule ring_is_ag)
+lemma (in Ring) times_mem_sum_mult:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R; 
+       a \<in> A; b \<in> B \<rbrakk>  \<Longrightarrow>  a \<cdot>\<^sub>r b \<in> sum_mult R A B"
 apply (simp add:sum_mult_def)
- apply auto
- apply (rename_tac n f m g)
- apply (frule_tac f = f and n = n and A = "set_mult R A B" and g = g and m = m
- and B = "set_mult R A B" in jointfun_hom, assumption+)
- apply simp
- apply (subgoal_tac "eSum R (jointfun n f m g) (Suc (n + m)) = eSum R f n +\<^sub>R (eSum R g m)")
- apply blast
- apply (thin_tac "jointfun n f m g \<in> Nset (Suc (n + m)) \<rightarrow> set_mult R A B")
- apply (subst eSum_split, assumption+)
- apply (frule_tac f = f and n = n and A = "set_mult R A B" and g = g and m = m
- and B = "set_mult R A B" in jointfun_hom, assumption+)
- apply simp
- apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R A B")
- apply (thin_tac "g \<in> Nset m \<rightarrow> set_mult R A B")
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (subgoal_tac "jointfun n f m g x \<in> set_mult R A B")
- apply (frule carrier_inc_set_mult[of "R" "A" "B"], assumption+)
- apply (simp add:subsetD) apply simp
-apply (subgoal_tac "eSum R (jointfun n f m g) n = eSum R f n")
-apply (subgoal_tac "eSum R (cmp (jointfun n f m g) (slide (Suc n))) m =
-                               eSum R g m")
-apply simp
- apply (thin_tac "eSum R (jointfun n f m g) n = eSum R f n")
- apply (rule eSum_eq, assumption+)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:cmp_def jointfun_def slide_def sliden_def)
- apply (frule carrier_inc_set_mult[of "R" "A" "B"], assumption+)
- apply (simp add:subsetD)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (frule carrier_inc_set_mult[of "R" "A" "B"], assumption+)
- apply (simp add:subsetD)
- apply (rule ballI)
- apply (simp add:jointfun_def cmp_def slide_def sliden_def)
-apply (rule eSum_eq, assumption+)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:jointfun_def Nset_def)
- apply (frule carrier_inc_set_mult[of "R" "A" "B"], assumption+)
- apply (simp add:subsetD)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (frule carrier_inc_set_mult[of "R" "A" "B"], assumption+)
- apply (simp add:subsetD)
-apply (rule ballI)
- apply (simp add:jointfun_def Nset_def)
+apply (subgoal_tac "(\<lambda>i\<in>{j. j \<le> (0::nat)}. a \<cdot>\<^sub>r b) \<in> {j. j \<le> 0} \<rightarrow> set_mult R A B") 
+apply (subgoal_tac "nsum R (\<lambda>i\<in>{j. j \<le> (0::nat)}. a \<cdot>\<^sub>r b) 0 = a \<cdot>\<^sub>r b") 
+apply blast
+ apply simp 
+ apply (rule univar_func_test, rule ballI,
+        simp add:set_mult_def, blast)
 done
 
-lemma mem_minus_sum_multTr4:"\<lbrakk>ring R; A \<subseteq> carrier R; ideal R B\<rbrakk> \<Longrightarrow>
-    f \<in> Nset n \<rightarrow> set_mult R A B \<longrightarrow> -\<^sub>R (eSum R f n) \<in> sum_mult R A B "
-apply (frule ring_is_ag)
+lemma (in Ring) mem_minus_sum_multTr2:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R; 
+       \<forall>j \<le> n. f j \<in> set_mult R A B; i \<le> n\<rbrakk> \<Longrightarrow> f i \<in> carrier R"
+apply (frule_tac a = i in forall_spec, simp)
+apply (frule set_mult_sub[of A B], assumption, simp add:subsetD)
+done
+
+lemma (in aGroup) nsum_jointfun:"\<lbrakk>\<forall>j \<le> n. f j \<in> carrier A; 
+      \<forall>j \<le> m. g j \<in> carrier A\<rbrakk>  \<Longrightarrow> 
+      \<Sigma>\<^sub>e A (jointfun n f m g) (Suc (n + m)) =  \<Sigma>\<^sub>e A f n \<plusminus> (\<Sigma>\<^sub>e A g m)"
+ apply (subst nsum_split)
+ apply (rule allI, rule impI)
+ apply (frule_tac f = f and n = n and A = "carrier A" and g = g and m = m
+        and B = "carrier A" in jointfun_mem, assumption+, simp)
+ apply (subgoal_tac "nsum A (jointfun n f m g) n = nsum A f n")
+ apply (subgoal_tac "nsum A (cmp (jointfun n f m g) (slide (Suc n))) m =
+                               nsum A g m")
+apply simp
+ apply (thin_tac "nsum A (jointfun n f m g) n = nsum A f n") 
+ apply (rule nsum_eq)
+ apply (rule allI, rule impI,
+        simp add:cmp_def jointfun_def slide_def sliden_def,
+        assumption)
+ apply (rule allI, simp add:cmp_def jointfun_def slide_def sliden_def)
+
+ apply (rule nsum_eq)
+ apply (rule allI, rule impI,
+             simp add:jointfun_def, assumption)
+ apply (rule allI, rule impI)
+ apply (simp add:jointfun_def) 
+done
+
+lemma (in Ring) sum_mult_pOp_closed:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R;
+       a \<in> sum_mult R A B;  b \<in> sum_mult R A B \<rbrakk> \<Longrightarrow> a \<plusminus>\<^bsub>R\<^esub> b \<in> sum_mult R A B" 
+apply (cut_tac ring_is_ag)
+apply (simp add:sum_mult_def)
+ apply ((erule exE)+, (erule bexE)+)
+ apply (rename_tac n m f g) 
+ apply (frule sym, thin_tac "\<Sigma>\<^sub>e R f n = a", frule sym, 
+        thin_tac "\<Sigma>\<^sub>e R g m = b", simp)
+ apply (frule set_mult_sub[of A B], assumption)
+ apply (subst aGroup.nsum_jointfun[THEN sym, of R], assumption)
+ apply (rule allI, rule impI, 
+        frule_tac f = f and A = "{j. j \<le> n}" and B = "set_mult R A B" and
+        x = j in funcset_mem, simp, simp add:subsetD)
+ apply (rule allI, rule impI, 
+        frule_tac f = g and A = "{j. j \<le> m}" and B = "set_mult R A B" and
+        x = j in funcset_mem, simp, simp add:subsetD)
+  apply (frule_tac f = f and n = n and A = "set_mult R A B" and g = g and m = m
+        and B = "set_mult R A B" in jointfun_hom, assumption+)
+ apply (simp del:nsum_suc)
+ apply blast
+done
+
+lemma (in Ring) set_mult_mOp_closed:"\<lbrakk>A \<subseteq> carrier R; ideal R B;
+       x \<in> set_mult R A B\<rbrakk> \<Longrightarrow> -\<^sub>a x \<in> set_mult R A B" 
+apply (cut_tac ring_is_ag,
+       simp add:set_mult_def,
+       (erule bexE)+, frule sym, thin_tac "xa \<cdot>\<^sub>r y = x", simp,
+       frule_tac c = xa in subsetD[of A "carrier R"], assumption+,
+       frule ideal_subset1[of B],
+       frule_tac c = y in subsetD[of B "carrier R"], assumption+,
+       simp add:ring_inv1_2,
+       frule_tac I = B and x = y in ideal_inv1_closed,
+           assumption+) 
+apply blast
+done
+
+lemma (in Ring) set_mult_ring_times_closed:"\<lbrakk>A \<subseteq> carrier R; ideal R B;
+       x \<in> set_mult R A B; r \<in> carrier R\<rbrakk> \<Longrightarrow> r \<cdot>\<^sub>r  x \<in> set_mult R A B" 
+apply (cut_tac ring_is_ag,   
+       simp add:set_mult_def,
+       (erule bexE)+, frule sym, thin_tac "xa \<cdot>\<^sub>r y = x", simp,
+       frule_tac c = xa in subsetD[of A "carrier R"], assumption+,
+       frule ideal_subset1[of B],
+       frule_tac c = y in subsetD[of B "carrier R"], assumption,
+       frule_tac x = r and y = "xa \<cdot>\<^sub>r y" in ring_tOp_commute,
+       simp add:ring_tOp_closed, simp,
+       subst ring_tOp_assoc, assumption+) 
+ apply (frule_tac x = y and y = r in ring_tOp_commute, assumption+,
+        simp,
+        frule_tac x = y and r = r in ideal_ring_multiple [of B], assumption+)
+ apply blast
+done
+ 
+lemma (in Ring) set_mult_sub_sum_mult:"\<lbrakk>A \<subseteq> carrier R; ideal R B\<rbrakk> \<Longrightarrow>
+                   set_mult R A B \<subseteq> sum_mult R A B" 
+apply (rule subsetI)
+ apply (simp add:sum_mult_def)
+ apply (cut_tac f = "(\<lambda>i\<in>{j. j \<le> (0::nat)}. x)" in nsum_0[of R]) 
+ apply (cut_tac n_in_Nsetn[of 0],
+        simp del:nsum_0)
+ apply (cut_tac f = "\<lambda>i\<in>{j. j \<le> (0::nat)}. x" and B = "set_mult R A B" in 
+                univar_func_test[of "{j. j \<le> 0}"],
+       rule ballI, simp)
+ apply (subgoal_tac "\<Sigma>\<^sub>e R (\<lambda>i\<in>{j. j \<le> 0}. x) 0 = x")
+ apply blast
+ apply simp
+done
+
+lemma (in Ring) sum_mult_pOp_closedn:"\<lbrakk>A \<subseteq> carrier R; ideal R B\<rbrakk>  \<Longrightarrow> 
+               (\<forall>j \<le> n. f j \<in> set_mult R A B) \<longrightarrow> \<Sigma>\<^sub>e R f n \<in> sum_mult R A B"
+apply (induct_tac n)
+ apply (rule impI, simp) 
+ apply (frule set_mult_sub_sum_mult[of A B], assumption+, simp add:subsetD)
+
+apply (rule impI)
+ apply simp
+ apply (frule_tac a = "Suc n" in forall_spec, simp)
+ apply (frule set_mult_sub_sum_mult[of A B], assumption+, 
+        frule_tac c= "f (Suc n)" in 
+                  subsetD[of "set_mult R A B" "sum_mult R A B"], assumption+)
+ apply (rule sum_mult_pOp_closed, assumption,
+        simp add:ideal_subset1, assumption+)
+done
+
+lemma (in Ring) mem_minus_sum_multTr4:"\<lbrakk>A \<subseteq> carrier R; ideal R B\<rbrakk> \<Longrightarrow>
+        (\<forall>j \<le> n. f j \<in> set_mult R A B) \<longrightarrow> -\<^sub>a (nsum R f n) \<in> sum_mult R A B"
+apply (cut_tac ring_is_ag)
 apply (induct_tac n)
  apply (rule impI)
- apply (subgoal_tac "0 \<in> Nset 0")
- apply (frule funcset_mem, assumption+)
- apply (thin_tac "f \<in> Nset 0 \<rightarrow> set_mult R A B")
- apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>x\<in>A. \<forall>y\<in>B.  x \<cdot>\<^sub>R y = f 0 \<longrightarrow>
-                                         (-\<^sub>R (f 0) \<in> sum_mult R A B)")
- apply blast apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = f 0")
- apply (rule ballI)+ apply (rule impI) apply (frule sym) apply simp
- apply (subst ring_inv1_2, assumption+)
- apply (simp add:subsetD)
- apply (simp add:ideal_subset)
- apply (frule_tac x = y in ideal_inv1_closed [of "R" "B"], assumption+)
- apply (subgoal_tac "(\<lambda>i\<in>Nset 0. x \<cdot>\<^sub>R (-\<^sub>R y)) \<in> Nset 0 \<rightarrow> set_mult R A B")
- apply (subgoal_tac "eSum R (\<lambda>i\<in>Nset 0.   x \<cdot>\<^sub>R (-\<^sub>R y)) 0 =  x \<cdot>\<^sub>R (-\<^sub>R y)")
- apply (simp del:eSum_0 add:sum_mult_def)
- apply blast
- apply simp apply (simp add:Pi_def) apply (rule impI)
- apply (simp add:set_mult_def) apply blast apply (simp add:Nset_def)
+ apply (cut_tac n_in_Nsetn[of 0])
+ apply (frule_tac x = "f 0" in set_mult_mOp_closed[of A B], assumption+)
+ apply simp
+ apply (frule set_mult_sub_sum_mult[of A B], assumption+, 
+        simp add:subsetD)
 apply (rule impI)
- apply (frule func_pre) apply simp
- apply (frule_tac n = n in sum_mult_mem [of "R" "A" "B" "f"], assumption+)
- apply (rule subsetI) apply (simp add:ideal_subset) apply assumption
- apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
-  apply (frule_tac n = "Suc n" and i = "Suc n" in
-          mem_minus_sum_multTr2 [of "R" "A" "B"], assumption+)
-  apply (rule subsetI) apply (rule ideal_subset, assumption+)
- apply (subst minus_mem_sum_multTr1, assumption+)
- apply (rule sum_mult_pOp_closed, assumption+)
- apply (rule subsetI) apply (rule ideal_subset, assumption+)
- apply (frule_tac f = f and A = "Nset (Suc n)" and B = "set_mult R A B"
-   and x = "Suc n" in funcset_mem, assumption+)
- apply (thin_tac "f \<in> Nset (Suc n) \<rightarrow> set_mult R A B")
- apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R A B")
- apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>x\<in>A. \<forall>y\<in>B.  x \<cdot>\<^sub>R y = f (Suc n) \<longrightarrow>
-                             -\<^sub>R (f (Suc n)) \<in> sum_mult R A B")
- apply blast apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = f (Suc n)")
- apply (rule ballI)+ apply (rule impI) apply (frule sym)
- apply (thin_tac "x \<cdot>\<^sub>R y = f (Suc n)") apply simp
- apply (subst ring_inv1_2, assumption+)
+ apply (cut_tac n = n in Nsetn_sub_mem1, simp)
+ apply (frule sum_mult_subR[of A B], simp add:ideal_subset1)
+ apply (frule_tac n = n and f = f in sum_mult_pOp_closedn[of A B], assumption,
+        cut_tac n = n in Nsetn_sub_mem1, simp)
+ apply (frule_tac c = "\<Sigma>\<^sub>e R f n" in subsetD[of "sum_mult R A B" "carrier R"],
+        assumption+,
+        frule_tac a = "Suc n" in forall_spec, simp,
+        thin_tac "\<forall>j\<le>Suc n. f j \<in> set_mult R A B",
+        frule set_mult_sub[of A B], simp add:ideal_subset1,
+        frule_tac c = "f (Suc n)" in subsetD[of "set_mult R A B" "carrier R"],
+        assumption+ )       
+ apply (frule_tac x = "\<Sigma>\<^sub>e R f n" and y = "f (Suc n)" in aGroup.ag_p_inv[of R],
+        assumption+, simp) 
+ apply (rule_tac a = "-\<^sub>a (\<Sigma>\<^sub>e R f n)" and b = "-\<^sub>a (f (Suc n))" in 
+        sum_mult_pOp_closed[of A B], assumption+,
+        simp add:ideal_subset1, assumption)
+ apply (frule_tac x = "f (Suc n)" in set_mult_mOp_closed[of A B], assumption+,
+        frule set_mult_sub_sum_mult[of A B], assumption+)
  apply (simp add:subsetD)
- apply (simp add:ideal_subset)
-apply (rule times_mem_sum_mult, assumption+)
- apply (rule subsetI) apply (rule ideal_subset, assumption+)
- apply (simp add:ideal_inv1_closed)
- apply (simp add:Nset_def)
+done
+ 
+lemma (in Ring) sum_mult_iOp_closed:"\<lbrakk>A \<subseteq> carrier R; ideal R B; 
+       x \<in> sum_mult R A B \<rbrakk> \<Longrightarrow> -\<^sub>a x \<in> sum_mult R A B"
+apply (frule sum_mult_mem1 [of A B x],
+       simp add:ideal_subset1, assumption)
+apply (erule exE, erule bexE, frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x")
+apply simp
+apply (frule_tac n = n and f = f in mem_minus_sum_multTr4[of A B], 
+        assumption+) 
+apply (subgoal_tac "\<forall>j\<le>n. f j \<in> set_mult R A B", simp)
+apply (rule allI, simp add:funcset_mem)
 done
 
-lemma sum_mult_iOp_closed:"\<lbrakk>ring R; A \<subseteq> carrier R; ideal R B;
- a \<in> sum_mult R A B \<rbrakk> \<Longrightarrow> -\<^sub>R a \<in> sum_mult R A B"
-apply (subgoal_tac "\<exists>n. \<exists>f\<in>Nset n \<rightarrow> set_mult R A B. eSum R f n = a")
-prefer 2 apply (simp add:sum_mult_def)
-apply auto
-apply (simp add:mem_minus_sum_multTr4)
-done
-
-lemma sum_mult_ring_multiplicationTr:
- "\<lbrakk>ring R; A \<subseteq> carrier R; ideal R B; r \<in> carrier R\<rbrakk> \<Longrightarrow>
-    f \<in> Nset n \<rightarrow> set_mult R A B \<longrightarrow> r \<cdot>\<^sub>R (eSum R f n) \<in> sum_mult R A B "
-apply (frule ring_is_ag)
+lemma (in Ring) sum_mult_ring_multiplicationTr:
+      "\<lbrakk>A \<subseteq> carrier R; ideal R B; r \<in> carrier R\<rbrakk> \<Longrightarrow>
+       (\<forall>j \<le> n. f j \<in> set_mult R A B) \<longrightarrow> r \<cdot>\<^sub>r (nsum R f n) \<in> sum_mult R A B"
+apply (cut_tac ring_is_ag)
 apply (induct_tac n)
- apply (rule impI) apply simp
- apply (subgoal_tac "0 \<in> Nset 0") apply (frule funcset_mem, assumption+)
- apply (thin_tac "f \<in> Nset 0 \<rightarrow> set_mult R A B")
- apply(simp add:set_mult_def)
- apply (subgoal_tac "\<forall>x\<in>A. \<forall>y\<in>B. x \<cdot>\<^sub>R y = f 0 \<longrightarrow> r \<cdot>\<^sub>R (f 0) \<in> sum_mult R A B") apply blast apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = f 0")
- apply (rule ballI)+ apply (rule impI) apply (frule sym)
- apply (thin_tac "x \<cdot>\<^sub>R y = f 0") apply simp
- apply (frule subsetD [of "A"], assumption+)
- apply (frule ideal_subset [of _ "B"], assumption+)
- apply (frule_tac x = r and y = "x \<cdot>\<^sub>R y" in ring_tOp_commute [of "R"], assumption+)
- apply (simp add:ring_tOp_closed) apply simp
- apply (subst ring_tOp_assoc, assumption+)
- apply (thin_tac "r \<cdot>\<^sub>R ( x \<cdot>\<^sub>R y) =   x \<cdot>\<^sub>R y \<cdot>\<^sub>R r")
- apply (frule_tac x = y and y = r in ring_tOp_commute, assumption+)
- apply simp
- apply (frule_tac x = y and r = r in ideal_ring_multiple [of "R" "B"], assumption+)
+ apply (rule impI, simp)
+ apply (simp add:set_mult_def)
+ apply ((erule bexE)+, frule sym, thin_tac "x \<cdot>\<^sub>r y = f 0", simp)
+ apply (frule_tac c = x in subsetD[of A "carrier R"], assumption+) 
+ apply (frule ideal_subset1[of B],
+        frule_tac c = y in subsetD[of B "carrier R"], assumption,
+        frule_tac x = r and y = "x \<cdot>\<^sub>r y" in ring_tOp_commute,
+        simp add:ring_tOp_closed, simp,
+        subst ring_tOp_assoc, assumption+) 
+ apply (frule_tac x = y and y = r in ring_tOp_commute, assumption+,
+        simp,
+        frule_tac x = y and r = r in ideal_ring_multiple [of B], assumption+)
  apply (rule times_mem_sum_mult, assumption+)
- apply (rule subsetI) apply (simp add:ideal_subset) apply assumption+
-apply (simp add:Nset_def)
+ 
 apply (rule impI)
- apply (frule_tac f = f and n = n and A = "set_mult R A B" in func_pre)
- apply simp
- apply (frule_tac R = R and f = f and n = n and i = n in eSum_mem)
- apply (frule carrier_inc_set_mult [of "R" "A" "B"], assumption+)
- apply (rule subsetI) apply (simp add:ideal_subset)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:subsetD) apply (simp add:Nset_def)
- apply (frule_tac A = "Nset (Suc n)" and B = "set_mult R A B" and x = "Suc n"
-  in funcset_mem [of "f"]) apply (simp add:Nset_def)
- apply (frule carrier_inc_set_mult [of "R" "A" "B"], assumption+)
- apply (rule subsetI) apply (rule ideal_subset, assumption+)
- apply (frule_tac c = "f (Suc n)" in subsetD [of "set_mult R A B" "carrier R"],
-                                       assumption+)
- apply (subst  ring_distrib1, assumption+)
- apply (rule sum_mult_pOp_closed, assumption+)
-  apply (thin_tac "r \<cdot>\<^sub>R (eSum R f n) \<in> sum_mult R A B")
-  apply (thin_tac "f \<in> Nset (Suc n) \<rightarrow> set_mult R A B")
-  apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R A B")
-  apply (thin_tac "set_mult R A B \<subseteq> carrier R")
-  apply (thin_tac "f (Suc n) \<in> carrier R")
- apply (rule subsetI) apply (rule ideal_subset, assumption+)
-apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>x\<in>A. \<forall>y\<in>B.  x \<cdot>\<^sub>R y = f (Suc n) \<longrightarrow>
-                             r \<cdot>\<^sub>R (f (Suc n)) \<in> sum_mult R A B")
- apply blast
- apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = f (Suc n)")
- apply (rule ballI)+ apply (rule impI) apply (frule sym)
- apply (thin_tac "x \<cdot>\<^sub>R y = f (Suc n)") apply simp
- apply (frule subsetD [of "A"], assumption+)
- apply (frule ideal_subset [of _ "B"], assumption+)
- apply (frule_tac x = r and y = "x \<cdot>\<^sub>R y" in ring_tOp_commute [of "R"], assumption+) apply simp
- apply (subst ring_tOp_assoc, assumption+)
- apply (thin_tac "r \<cdot>\<^sub>R ( x \<cdot>\<^sub>R y) =   x \<cdot>\<^sub>R y \<cdot>\<^sub>R r")
- apply (frule_tac x = y and y = r in ring_tOp_commute, assumption+)
- apply simp
- apply (frule_tac x = y and r = r in ideal_ring_multiple [of "R" "B"], assumption+)
- apply (rule times_mem_sum_mult, assumption+)
- apply (rule subsetI) apply (rule ideal_subset, assumption+)
+ apply (cut_tac n = n in Nsetn_sub_mem1, simp)
+ apply (frule_tac f = f and n = n in aGroup.nsum_mem,
+        frule set_mult_sub [of "A" "B"], simp add:ideal_subset1,
+        rule allI, rule impI, cut_tac n = n in Nsetn_sub_mem1,
+         simp add: subsetD,
+        frule_tac a = "Suc n" in forall_spec, simp) 
+ apply (frule set_mult_sub[of A B], simp add:ideal_subset1,
+        frule_tac c = "f (Suc n)" in subsetD[of "set_mult R A B" "carrier R"],
+        assumption)
+ apply (simp add: ring_distrib1) 
+ apply (rule sum_mult_pOp_closed[of A B], assumption+,
+        simp add:ideal_subset1, assumption)
+ apply (frule_tac x = "f (Suc n)" in set_mult_ring_times_closed [of A B _ r],
+        assumption+, simp, assumption,
+        frule set_mult_sub_sum_mult[of A B], assumption+,
+        simp add:subsetD)
 done
 
-lemma sum_mult_ring_multiplication:"\<lbrakk>ring R; A \<subseteq> carrier R; ideal R B;
- r \<in> carrier R; a \<in> sum_mult R A B\<rbrakk>  \<Longrightarrow> r \<cdot>\<^sub>R a \<in> sum_mult R A B"
-apply (frule ring_is_ag)
-apply (subgoal_tac "\<exists>n. \<exists>f\<in>Nset n \<rightarrow> set_mult R A B. eSum R f n = a")
-prefer 2 apply (simp add:sum_mult_def)
-apply auto
-apply (simp add:sum_mult_ring_multiplicationTr)
-done
+lemma (in Ring) sum_mult_ring_multiplication:"\<lbrakk>A \<subseteq> carrier R; ideal R B; 
+ r \<in> carrier R; a \<in> sum_mult R A B\<rbrakk>  \<Longrightarrow> r \<cdot>\<^sub>r a \<in> sum_mult R A B"
+apply (cut_tac ring_is_ag)
+apply (frule sum_mult_mem1[of A B a],
+       simp add:ideal_subset1, assumption)
+apply (erule exE, erule bexE, frule sym, thin_tac "\<Sigma>\<^sub>e R f n = a", simp)
+apply (subgoal_tac "\<forall>j \<le> n. f j \<in> set_mult R A B")
+apply (simp add:sum_mult_ring_multiplicationTr)       
+apply (rule allI, rule impI, simp add:funcset_mem)
+done 
 
-lemma ideal_sum_mult:"\<lbrakk>ring R; A \<subseteq> carrier R; A \<noteq> {}; ideal R B \<rbrakk> \<Longrightarrow>
-    ideal R (sum_mult R A B)"
+lemma (in Ring) ideal_sum_mult:"\<lbrakk>A \<subseteq> carrier R; A \<noteq> {}; ideal R B\<rbrakk> \<Longrightarrow>
+                ideal R (sum_mult R A B)"
 apply (simp add:ideal_def [of _ "sum_mult R A B"])
-apply (frule ring_is_ag)
-apply (rule conjI)
-apply (rule asubg_test, assumption+)
+apply (cut_tac ring_is_ag)
+apply (rule conjI) 
+apply (rule aGroup.asubg_test, assumption+)
 apply (rule subsetI)
-apply (simp add:sum_mult_def)
- apply (subgoal_tac "\<forall>n. \<forall>f\<in>Nset n \<rightarrow> set_mult R A B. eSum R f n = x
-  \<longrightarrow> x \<in> carrier R") apply blast
- apply (thin_tac "\<exists>n. \<exists>f\<in>Nset n \<rightarrow> set_mult R A B. eSum R f n = x")
- apply (rule allI) apply (rule ballI) apply (rule impI)
- apply (frule sym) apply simp
- apply (subgoal_tac "B \<subseteq> carrier R")
- prefer 2 apply (rule subsetI) apply (rule ideal_subset, assumption+)
- apply (simp add:sum_mult_mem)
- apply (subgoal_tac "\<exists>a. a \<in> A") prefer 2 apply blast
- apply (subgoal_tac "\<forall>a. a \<in> A \<longrightarrow> sum_mult R A B \<noteq> {}")
- apply blast apply (thin_tac "\<exists>a. a \<in> A") apply (rule allI) apply (rule impI)
- apply (subgoal_tac "(\<lambda>i\<in>Nset 0. a \<cdot>\<^sub>R (0\<^sub>R)) \<in> Nset 0 \<rightarrow> set_mult R A B")
- apply (subgoal_tac "eSum R (\<lambda>i\<in>Nset 0. a \<cdot>\<^sub>R (0\<^sub>R)) 0 = a \<cdot>\<^sub>R (0\<^sub>R)")
- apply (simp add:sum_mult_def) apply blast
- apply (simp add:Nset_def)
- apply (simp add:Pi_def) apply (rule impI)
- apply (frule ideal_zero [of "R" "B"], assumption+)
- apply (simp add:set_mult_def)
- apply blast
-apply (rule ballI)+
- apply (frule_tac a = b in sum_mult_iOp_closed [of "R" "A" "B"],
-                                                                assumption+)
- apply (subgoal_tac "B \<subseteq> carrier R")
- apply (simp add:sum_mult_pOp_closed)
- apply (rule subsetI) apply (rule ideal_subset, assumption+)
-apply (rule ballI)+
- apply (subgoal_tac "B \<subseteq> carrier R")
- apply (simp add:sum_mult_ring_multiplication)
- apply (rule subsetI) apply (rule ideal_subset, assumption+)
+ apply (frule_tac x = x in sum_mult_mem1[of A B],
+        simp add:ideal_subset1, assumption,
+        erule exE, erule bexE, frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x", simp)
+ apply (rule_tac f = f and n = n in sum_mult_mem[of A B _ _], assumption+)
+ apply (simp add:ideal_subset1)
+ apply (rule allI, simp add:funcset_mem)
+ apply (frule nonempty_ex[of A], erule exE)
+ apply (frule ideal_zero[of B])
+ apply (frule_tac a = x and b = \<zero> in times_mem_sum_mult[of A B],
+        simp add:ideal_subset1, assumption+) apply blast
+
+ apply (rule ballI)+
+ apply (rule_tac a = a and b = "-\<^sub>a b" in sum_mult_pOp_closed[of A B],
+        assumption, simp add:ideal_subset1, assumption+,
+        rule_tac x = b in sum_mult_iOp_closed[of A B], assumption+)
+ apply (rule ballI)+
+ apply (rule sum_mult_ring_multiplication, assumption+)
 done
 
-lemma ideal_inc_set_multTr:"\<lbrakk>ring R; A \<subseteq> carrier R; ideal R B; ideal R C;
- set_mult R A B \<subseteq> C \<rbrakk> \<Longrightarrow> f \<in> Nset n \<rightarrow> set_mult R A B \<longrightarrow> eSum R f n \<in> C"
+lemma (in Ring) ideal_inc_set_multTr:"\<lbrakk>A \<subseteq> carrier R; ideal R B; ideal R C; 
+       set_mult R A B \<subseteq> C \<rbrakk> \<Longrightarrow>
+         \<forall>f \<in> {j. j \<le> (n::nat)} \<rightarrow> set_mult R A B. \<Sigma>\<^sub>e R f n \<in> C"
 apply (induct_tac n)
- apply (rule impI) apply (subgoal_tac "0 \<in> Nset 0")
- apply (frule funcset_mem, assumption+)
- apply (thin_tac "f \<in> Nset 0 \<rightarrow> set_mult R A B") apply (thin_tac "0 \<in> Nset 0")
- apply (simp add:set_mult_def) apply (fold set_mult_def)
- apply (subgoal_tac "\<forall>x\<in>A. \<forall>y\<in>B.  x \<cdot>\<^sub>R y = f 0 \<longrightarrow> f 0 \<in> C")
- apply blast apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>R y = f 0")
- apply (rule ballI)+ apply (rule impI) apply (frule sym) apply simp
- apply (subgoal_tac "x \<cdot>\<^sub>R y \<in> set_mult R A B") apply (simp add:subsetD)
- apply (simp add:set_mult_def) apply blast apply (simp add:Nset_def)
-apply (rule impI)
- apply (frule_tac n = n in func_pre [of "f" _ "set_mult R A B"])
- apply simp
- apply (rule ideal_pOp_closed, assumption+)
- apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R A B")
- apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
- apply (frule funcset_mem, assumption+)
- apply (simp add:subsetD) apply (simp add:Nset_def)
+ apply (rule ballI, simp,
+    frule_tac x = 0 and f = f in funcset_mem[of _ "{0}" "set_mult R A B"],
+    simp, simp add:subsetD)
+
+apply (rule ballI)
+  apply (
+       frule_tac f = f and A = "{j. j \<le> Suc n}" and x = "Suc n" and 
+                 B = "set_mult R A B"in funcset_mem, simp,
+       frule_tac c = "f (Suc n)" in subsetD[of "set_mult R A B" "C"], 
+       assumption+, simp)
+ apply (rule ideal_pOp_closed[of C], assumption+,
+        cut_tac n = n in Nsetn_sub_mem1, 
+        frule_tac b = f in forball_spec1, simp)
+ apply (rule univar_func_test, rule ballI, simp add:funcset_mem, assumption+)
 done
 
-lemma ideal_inc_set_mult:"\<lbrakk>ring R; A \<subseteq> carrier R; ideal R B; ideal R C;
+lemma (in Ring) ideal_inc_set_mult:"\<lbrakk>A \<subseteq> carrier R; ideal R B; ideal R C; 
                            set_mult R A B \<subseteq> C \<rbrakk> \<Longrightarrow> sum_mult R A B \<subseteq> C"
 apply (rule subsetI)
-apply (subgoal_tac "\<exists>n. \<exists>f\<in>Nset n \<rightarrow> set_mult R A B. eSum R f n = x")
-prefer 2 apply (simp add:sum_mult_def)
-apply auto
+ apply (frule_tac x = x in sum_mult_mem1[of A B],
+        simp add:ideal_subset1, assumption+)
+ apply (erule exE, erule bexE, frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x", simp,
+        thin_tac "x = \<Sigma>\<^sub>e R f n", simp add:subsetD)
 apply (simp add:ideal_inc_set_multTr)
 done
 
-lemma sum_mult_inc_set_mult:"\<lbrakk>ring R; A \<subseteq> carrier R; ideal R B\<rbrakk> \<Longrightarrow>
-                           set_mult R A B \<subseteq>  sum_mult R A B"
-apply (rule subsetI)
- apply (simp add:set_mult_def)
- apply auto
-apply (rule times_mem_sum_mult, assumption+)
- apply (rule subsetI) apply (rule ideal_subset, assumption+)
-done
-
-lemma AB_inc_sum_mult:"\<lbrakk>ring R; ideal R A; ideal R B\<rbrakk> \<Longrightarrow>
+lemma (in Ring) AB_inc_sum_mult:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrightarrow> 
                                      sum_mult R A B \<subseteq> A \<inter> B"
-apply (subgoal_tac "A \<subseteq> carrier R")
-apply (subgoal_tac "B \<subseteq> carrier R")
-apply (frule ideal_inc_set_mult [of "R" "A" "B" "A"], assumption+)
-apply (rule subsetI)
-prefer 2
-apply (frule ideal_inc_set_mult [of "R" "A" "B" "B"], assumption+)
-prefer 2 apply (rule subsetI) apply (simp add:subsetD)
-apply (rule subsetI)
-apply (simp add:set_mult_def)
-apply auto
-apply (frule ideal_subset [of _ "A"], assumption+)
-apply (simp add:ideal_ring_multiple)
-apply (simp add:set_mult_def)
-apply auto
-apply (frule ideal_subset [of _ "B"], assumption+)
-apply (subst ring_tOp_commute, assumption+)
-apply (simp add:ideal_subset) apply assumption
-apply (simp add:ideal_ring_multiple)
-apply (simp add:ideal_subset)+
+apply (frule ideal_subset1[of A], frule ideal_subset1[of B])
+apply (frule ideal_inc_set_mult [of "A" "B" "A"], assumption+)
+apply (rule subsetI, 
+       simp add:set_mult_def, (erule bexE)+, frule sym, thin_tac "xa \<cdot>\<^sub>r y = x",
+       simp,
+       frule_tac c = xa in subsetD[of A "carrier R"], assumption+,
+       frule_tac c = y in subsetD[of B "carrier R"], assumption+,
+       subst ring_tOp_commute, assumption+,
+       simp add:ideal_ring_multiple)
+apply (frule ideal_inc_set_mult [of "A" "B" "B"], assumption+)
+apply (rule subsetI, 
+       simp add:set_mult_def, (erule bexE)+, frule sym, thin_tac "xa \<cdot>\<^sub>r y = x",
+       simp,
+       frule_tac c = xa in subsetD[of A "carrier R"], assumption+,
+       simp add:ideal_ring_multiple)
+apply simp
 done
 
-lemma sum_mult_is_ideal_prod:"\<lbrakk>ring R; ideal R A; ideal R B\<rbrakk> \<Longrightarrow>
-                                  sum_mult R A B =  A \<diamondsuit>\<^sub>R B"
+lemma (in Ring) sum_mult_is_ideal_prod:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrightarrow>
+                                  sum_mult R A B =  A \<diamondsuit>\<^sub>r B"
 apply (rule equalityI)
- apply (frule ideal_prod_ideal [of "R" "A" "B"], assumption+)
- apply (rule ideal_inc_set_mult, assumption+)
+ apply (frule ideal_prod_ideal [of "A" "B"], assumption+)
+ apply (rule ideal_inc_set_mult)
+  apply (simp add:ideal_subset1)+
  apply (rule subsetI)
  apply (simp add:set_mult_def ideal_prod_def)
- apply (auto del:subsetI) apply (simp add:ideal_subset)
+ apply (auto del:subsetI) 
  apply (rule subsetI)
- apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>xa\<in>A. \<forall>y\<in>B.  xa \<cdot>\<^sub>R y = x \<longrightarrow> x \<in> A \<diamondsuit>\<^sub>R B")
- apply blast apply (thin_tac "\<exists>xa\<in>A. \<exists>y\<in>B.  xa \<cdot>\<^sub>R y = x")
- apply (rule ballI)+ apply (rule impI) apply (frule sym) apply simp
- apply (thin_tac "x =  xa \<cdot>\<^sub>R y")
-apply (simp add:ideal_prod_def)
- apply (rule allI)
- apply (rename_tac xa y X) apply (rule impI) apply (erule conjE)
- apply blast
-apply (subgoal_tac "A \<subseteq> carrier R")
-apply (subgoal_tac "A \<noteq> {}")
-apply (frule ideal_sum_mult [of "R" "A" "B"], assumption+)
  apply (simp add:ideal_prod_def)
- apply (subgoal_tac "sum_mult R A B \<in>
-              {K. ideal R K \<and> {x. \<exists>i\<in>A. \<exists>j\<in>B. x =  i \<cdot>\<^sub>R j} \<subseteq> K}")
- apply (rule subsetI) apply (simp add:Int_def)
- apply (simp add:CollectI)
- apply (rule subsetI) apply (simp add:CollectI)
- apply (subgoal_tac "\<forall>i\<in>A. \<forall>j\<in>B. x =  i \<cdot>\<^sub>R j \<longrightarrow> x \<in> sum_mult R A B")
- apply blast apply (thin_tac "\<exists>i\<in>A. \<exists>j\<in>B. x =  i \<cdot>\<^sub>R j")
- apply (rule ballI)+ apply (rule impI) apply (frule sym)
- apply (thin_tac "i \<cdot>\<^sub>R j = x") apply simp
- apply (rule times_mem_sum_mult, assumption+)
- apply (rule subsetI) apply (rule ideal_subset[of _ "B"], assumption+)
- apply (frule ideal_zero [of _ "A"], assumption+) apply blast
- apply (rule subsetI) apply (rule ideal_subset, assumption+)
+ apply (frule ideal_subset1[of A],
+        frule ideal_sum_mult[of A B],
+        frule ideal_zero[of A], blast, assumption)
+ apply (frule_tac a = "sum_mult R A B" in forall_spec, simp)
+ apply (rule subsetI, simp,
+        thin_tac "\<forall>xa. ideal R xa \<and> {x. \<exists>i\<in>A. \<exists>j\<in>B. x = i \<cdot>\<^sub>r j} \<subseteq> xa \<longrightarrow> x \<in> xa",
+        (erule bexE)+, simp)
+ apply (rule times_mem_sum_mult, assumption,
+        simp add:ideal_subset1, assumption+)
 done
 
-lemma ideal_quotient_idealTr:"\<lbrakk>ring R; ideal R A; ideal R B; ideal R C; x \<in> carrier R;\<forall>c\<in>C. x \<cdot>\<^sub>R c \<in> ideal_quotient R A B\<rbrakk> \<Longrightarrow> f\<in>Nset n \<rightarrow> set_mult R B C \<longrightarrow>
- x \<cdot>\<^sub>R (eSum R f n) \<in> A"
-apply (frule ideal_subset1 [of "R" "A"], assumption+)
-apply (frule ideal_subset1 [of "R" "B"], assumption+)
+lemma (in Ring) ideal_prod_assocTr0:"\<lbrakk>ideal R A; ideal R B; ideal R C; y \<in> C; 
+                 z \<in> set_mult R A B\<rbrakk> \<Longrightarrow> z \<cdot>\<^sub>r y \<in> sum_mult R A (B \<diamondsuit>\<^sub>r C)"
+apply (simp add:set_mult_def, (erule bexE)+,
+        frule sym, thin_tac "x \<cdot>\<^sub>r ya = z", simp)
+ apply (frule_tac h = x in ideal_subset[of A], assumption,
+        frule_tac h = ya in ideal_subset[of B], assumption,
+        frule_tac h = y in ideal_subset[of C], assumption,
+        subst ring_tOp_assoc, assumption+) 
+ apply (frule ideal_subset1[of A],
+        frule ideal_subset1[of B], 
+        frule ideal_subset1[of C],
+        frule ideal_prod_ideal[of B C], assumption,
+        frule ideal_subset1[of "B \<diamondsuit>\<^sub>r C"])
+  apply (rule times_mem_sum_mult[of A "B \<diamondsuit>\<^sub>r C"], assumption+,
+         subst sum_mult_is_ideal_prod[of B C, THEN sym], assumption+,
+         rule times_mem_sum_mult[of B C], assumption+)
+done
+
+lemma (in Ring) ideal_prod_assocTr1:"\<lbrakk>ideal R A; ideal R B; ideal R C; y \<in> C\<rbrakk>
+ \<Longrightarrow> \<forall>f \<in> {j. j\<le>(n::nat)} \<rightarrow> set_mult R A B. (\<Sigma>\<^sub>e R f n) \<cdot>\<^sub>r y \<in> A \<diamondsuit>\<^sub>r (B \<diamondsuit>\<^sub>r C)"
+apply (cut_tac ring_is_ag)
+apply (frule ideal_prod_ideal[of "B" "C"], assumption+,
+       subst sum_mult_is_ideal_prod[of A "B \<diamondsuit>\<^sub>r C", THEN sym], assumption+)     
 apply (induct_tac n)
- apply (rule impI) apply (subgoal_tac "0 \<in> Nset 0")
- apply (frule funcset_mem, assumption+)
- apply (thin_tac "f \<in> Nset 0 \<rightarrow> set_mult R B C")
- apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>u\<in>B. \<forall>v\<in>C.  u \<cdot>\<^sub>R v = f 0 \<longrightarrow> x \<cdot>\<^sub>R (f 0) \<in> A")
- apply blast apply (thin_tac "\<exists>x\<in>B. \<exists>y\<in>C.  x \<cdot>\<^sub>R y = f 0")
- apply (rule ballI)+ apply (rule impI) apply (frule sym) apply simp
- apply (thin_tac "f 0 = u \<cdot>\<^sub>R v")
- apply (frule ideal_subset [of _ "B"], assumption+)
- apply (frule ideal_subset [of _ "C"], assumption+)
- apply (frule_tac y = "u \<cdot>\<^sub>R v" in  ring_tOp_commute [of "R" "x"], assumption+)
- apply (rule ring_tOp_closed, assumption+) apply simp
- apply (thin_tac "x \<cdot>\<^sub>R ( u \<cdot>\<^sub>R v) =   u \<cdot>\<^sub>R v \<cdot>\<^sub>R x")
- apply (subst ring_tOp_assoc, assumption+)
- apply (frule_tac x = v in ring_tOp_commute [of "R" _ "x"], assumption+)
+ apply (rule ballI, simp,
+       frule_tac x = 0 and f = f in funcset_mem[of _ "{0}" "set_mult R A B"],
+        simp)
+ apply (simp add:ideal_prod_assocTr0)
+ apply (rule ballI,
+       frule_tac b = f in forball_spec1,
+       thin_tac "\<forall>f\<in>{j. j \<le> n} \<rightarrow> set_mult R A B.
+            \<Sigma>\<^sub>e R f n \<cdot>\<^sub>r y \<in> sum_mult R A (B \<diamondsuit>\<^sub>r C)",
+       rule univar_func_test, rule ballI, simp,
+       frule_tac f = f and A = "{j. j \<le> Suc n}" and B = "set_mult R A B" and
+                 x = x in funcset_mem, simp, assumption)
  apply simp
- apply (frule_tac x = u and y = "x \<cdot>\<^sub>R v" in ring_tOp_commute, assumption)
- apply (rule ring_tOp_closed, assumption+) apply simp
- apply (subgoal_tac "x \<cdot>\<^sub>R v \<in> ideal_quotient R A B")
- apply (thin_tac "\<forall>c\<in>C.  x \<cdot>\<^sub>R c \<in> ideal_quotient R A B")
+
+ apply (frule ideal_subset1[of A], frule ideal_subset1[of B],
+        frule set_mult_sub[of A B], assumption,
+        frule_tac f = f and A = "{j. j \<le> (Suc n)}" in extend_fun[of _ _ 
+                 "set_mult R A B"
+         "carrier R"], assumption,
+        subst ring_distrib2,
+        simp add:ideal_subset)
+ apply (rule aGroup.nsum_mem, assumption) apply (rule allI, 
+        simp add:funcset_mem) apply (simp add:funcset_mem,
+        frule_tac f = f and A = "{j. j \<le> Suc n}" and B = "set_mult R A B" and
+        x =  "Suc n" in funcset_mem, simp)
+apply (frule ideal_subset1[of A],
+       frule ideal_zero[of A],
+       frule ideal_sum_mult[of A "B \<diamondsuit>\<^sub>r C"], blast, assumption)
+apply (rule ideal_pOp_closed, assumption+)
+apply (simp add:ideal_prod_assocTr0)
+done
+
+lemma (in Ring) ideal_quotient_idealTr:"\<lbrakk>ideal R A; ideal R B; ideal R C; 
+       x \<in> carrier R;\<forall>c\<in>C. x \<cdot>\<^sub>r c \<in> ideal_quotient R A B\<rbrakk> \<Longrightarrow> 
+       f\<in>{j. j \<le> n} \<rightarrow> set_mult R B C \<longrightarrow>  x \<cdot>\<^sub>r (nsum R f n) \<in> A"
+
+apply (frule ideal_subset1 [of "A"],
+       frule ideal_subset1 [of "B"])
+apply (induct_tac n)
+ apply (rule impI) 
+ apply (cut_tac n_in_Nsetn[of 0])
+ apply (frule funcset_mem, assumption+) 
+ apply (thin_tac "f \<in> {j. j \<le> 0} \<rightarrow> set_mult R B C")
+ apply (simp add:set_mult_def)
+ apply (erule bexE)+
+ apply (frule sym, thin_tac "xa \<cdot>\<^sub>r y = f 0", simp)
+ apply (frule_tac h = xa in ideal_subset[of B], assumption,
+        frule_tac h = y in ideal_subset[of C], assumption)
+ apply (frule_tac x = xa and y = y in ring_tOp_commute, assumption+,
+        simp)
+ apply (subst ring_tOp_assoc[THEN sym], assumption+)
+ apply (frule_tac b = y in forball_spec1, assumption,
+        thin_tac "\<forall>c\<in>C. x \<cdot>\<^sub>r c \<in> A \<dagger>\<^sub>R B")
  apply (simp add:ideal_quotient_def)
- apply simp apply (simp add:Nset_def)
 (****** n ********)
 apply (rule impI)
  apply (frule func_pre) apply simp
- apply (frule ring_is_ag)
- apply (frule_tac  n = n and i = n in eSum_mem [of "R" "f"])
- apply (frule carrier_inc_set_mult [of "R" "B" "C"], assumption+)
- apply (simp add:Pi_def) apply (rule ideal_subset1, assumption+)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:subsetD) apply (simp add:Nset_def)
- apply (subgoal_tac "Suc n \<in> Nset (Suc n)")
- apply (frule funcset_mem, assumption+)
- apply (frule carrier_inc_set_mult [of "R" "B" "C"], assumption+)
- apply (simp add:ideal_subset1)
- apply (frule_tac A = "set_mult R B C" and B = "carrier R" and c = "f (Suc n)"
-             in subsetD, assumption+)
+ apply (cut_tac ring_is_ag) 
+ apply (frule ideal_subset1[of B], frule ideal_subset1[of C],
+        frule set_mult_sub[of B C], assumption+)
+ apply (cut_tac  n = n in nsum_memr [of _ "f"],
+        rule allI, rule impI,
+        frule_tac x = i in funcset_mem, simp, simp add:subsetD) 
+ apply (frule_tac a = n in forall_spec, simp) 
+ apply (thin_tac "\<forall>l\<le>n. \<Sigma>\<^sub>e R f l \<in> carrier R",
+        frule_tac f = f and A = "{j. j \<le> Suc n}" and B = "set_mult R B C" 
+                  and x = "Suc n" in funcset_mem, simp,
+        frule_tac c = "f (Suc n)" in subsetD[of "set_mult R B C" " carrier R"],
+         assumption+)
  apply (subst ring_distrib1, assumption+)
-apply (rule ideal_pOp_closed, assumption+)
- apply (thin_tac "f \<in> Nset (Suc n) \<rightarrow> set_mult R B C")
- apply (thin_tac "x \<cdot>\<^sub>R (eSum R f n) \<in> A")
- apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R B C")
- apply (thin_tac "eSum R f n \<in> carrier R")
- apply (thin_tac "set_mult R B C \<subseteq> carrier R")
- apply (thin_tac "f (Suc n) \<in> carrier R")
-apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>u\<in>B. \<forall>v\<in>C. u \<cdot>\<^sub>R v = f (Suc n) \<longrightarrow> x \<cdot>\<^sub>R (f (Suc n)) \<in> A")
- apply blast apply (thin_tac "\<exists>x\<in>B. \<exists>y\<in>C.  x \<cdot>\<^sub>R y = f (Suc n)")
- apply (rule ballI)+ apply (rule impI) apply (frule sym) apply simp
- apply (frule ideal_subset [of _ "B"], assumption+)
- apply (frule ideal_subset [of _ "C"], assumption+)
- apply (thin_tac "f (Suc n) = u \<cdot>\<^sub>R v")
- apply (frule_tac y = "u \<cdot>\<^sub>R v" in  ring_tOp_commute [of "R" "x"], assumption+)
- apply (rule ring_tOp_closed, assumption+) apply simp
- apply (thin_tac "x \<cdot>\<^sub>R ( u \<cdot>\<^sub>R v) =   u \<cdot>\<^sub>R v \<cdot>\<^sub>R x")
- apply (subst ring_tOp_assoc, assumption+)
- apply (frule_tac x = v in ring_tOp_commute [of "R" _ "x"], assumption+)
- apply simp
- apply (frule_tac x = u and y = "x \<cdot>\<^sub>R v" in ring_tOp_commute, assumption)
- apply (rule ring_tOp_closed, assumption+) apply simp
- apply (subgoal_tac "x \<cdot>\<^sub>R v \<in> ideal_quotient R A B")
- apply (thin_tac "\<forall>c\<in>C.  x \<cdot>\<^sub>R c \<in> ideal_quotient R A B")
+ apply (rule ideal_pOp_closed[of A], assumption+)
+ apply (simp add: set_mult_def, (erule bexE)+,
+        fold set_mult_def,
+        frule sym, thin_tac "xa \<cdot>\<^sub>r y = f (Suc n)", simp)
+ apply (frule_tac c = xa in subsetD[of B "carrier R"], assumption+,
+        frule_tac c = y in subsetD[of C "carrier R"], assumption+,
+        frule_tac x = xa and y = y in ring_tOp_commute, assumption, simp,
+        subst ring_tOp_assoc[THEN sym], assumption+)
  apply (simp add:ideal_quotient_def)
- apply simp apply (simp add:Nset_def)
 done
 
-
-lemma ideal_quotient_ideal:"\<lbrakk>ring R; ideal R A; ideal R B; ideal R C\<rbrakk> \<Longrightarrow>
-    ideal_quotient R (ideal_quotient R A B) C = ideal_quotient R A (B \<diamondsuit>\<^sub>R C)"
+lemma (in Ring) ideal_quotient_ideal:"\<lbrakk>ideal R A; ideal R B; ideal R C\<rbrakk> \<Longrightarrow> 
+                         A \<dagger>\<^sub>R B \<dagger>\<^sub>R C = A \<dagger>\<^sub>R B \<diamondsuit>\<^sub>r C"
 apply (rule equalityI)
  apply (rule subsetI)
  apply (simp add:ideal_quotient_def [of _ _ "C"])
  apply (erule conjE)
- apply (simp add:ideal_quotient_def [of _ _ "B \<diamondsuit>\<^sub>R C"])
+ apply (simp add:ideal_quotient_def [of _ _ "B \<diamondsuit>\<^sub>r C"])
  apply (rule ballI)
 apply (simp add:sum_mult_is_ideal_prod [THEN sym])
  apply (simp add:sum_mult_def)
- apply (subgoal_tac "\<forall>n. \<forall>f\<in>Nset n \<rightarrow> set_mult R B C. eSum R f n = b \<longrightarrow>
-                                       x \<cdot>\<^sub>R b \<in> A")
- apply blast
- apply (thin_tac "\<exists>n. \<exists>f\<in>Nset n \<rightarrow> set_mult R B C. eSum R f n = b")
- apply (rule allI) apply (rule ballI) apply (rule impI)
+ apply (erule exE, erule bexE)
  apply (rename_tac x c n f)
- apply (frule sym) apply simp
+ apply (frule sym) apply simp 
 apply (simp add:ideal_quotient_idealTr)
 apply (rule subsetI)
  apply (simp add:sum_mult_is_ideal_prod [THEN sym])
@@ -3359,2180 +2688,2441 @@ apply (rule subsetI)
  apply (erule conjE)
  apply (rule ballI)
  apply (rename_tac x c)
- apply (frule ideal_subset [of _ "C"], assumption+)
+ apply (frule ideal_subset [of "C"], assumption+)
  apply (simp add:ring_tOp_closed)
 apply (rule ballI)
 apply (rename_tac x v u)
- apply (frule ideal_subset [of _ "B"], assumption+)
+ apply (frule ideal_subset [of "B"], assumption+)
  apply (subst ring_tOp_assoc, assumption+)
- apply (frule_tac x = v and y = u in ring_tOp_commute, assumption+)
- apply simp apply (thin_tac "v \<cdot>\<^sub>R u =  u \<cdot>\<^sub>R v")
- apply (subgoal_tac "u \<cdot>\<^sub>R v \<in> sum_mult R B C") apply simp
- apply (frule ideal_subset1 [of "R" "B"], assumption+)
- apply (frule ideal_subset1 [of "R" "C"], assumption+)
- apply (simp add:times_mem_sum_mult)
+ apply (frule ideal_subset1[of B],
+        frule ideal_subset1[of C],
+        frule_tac a = u and b = v in times_mem_sum_mult[of B C], assumption+)
+ apply (frule_tac x = u and y = v in ring_tOp_commute, assumption,
+        simp)
 done
 
-lemma ideal_prod_assocTr:"\<lbrakk>ring R; ideal R A; ideal R B; ideal R C\<rbrakk> \<Longrightarrow>
-  \<forall>f. f \<in> Nset n \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>R B) C \<longrightarrow>  (e\<Sigma> R f n) \<in> A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C)"
-apply (subgoal_tac "\<forall>x\<in>(A \<diamondsuit>\<^sub>R B). \<forall>y\<in>C. x \<cdot>\<^sub>R y \<in> A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C)")
+lemma (in Ring) ideal_prod_assocTr:"\<lbrakk>ideal R A; ideal R B; ideal R C\<rbrakk> \<Longrightarrow>
+  \<forall>f. (f \<in> {j. j \<le> (n::nat)} \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>r B) C \<longrightarrow> 
+                                          (\<Sigma>\<^sub>e R f n) \<in> A \<diamondsuit>\<^sub>r (B \<diamondsuit>\<^sub>r C))"
+apply (subgoal_tac "\<forall>x\<in>(A \<diamondsuit>\<^sub>r B). \<forall>y\<in>C. x \<cdot>\<^sub>r y \<in> A \<diamondsuit>\<^sub>r (B \<diamondsuit>\<^sub>r C)")
 apply (induct_tac n)
   apply (rule allI) apply (rule impI)
-  apply (frule_tac f = f and A = "Nset 0" and B = "set_mult R (A \<diamondsuit>\<^sub>R B) C" and
-   x = 0 in funcset_mem) apply (simp add:Nset_def)
-  apply (thin_tac "f \<in> Nset 0 \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>R B) C")
+  apply (frule_tac f = f and A = "{j. j \<le> 0}" and B = "set_mult R (A \<diamondsuit>\<^sub>r B) C"
+        and x = 0 in funcset_mem, simp, simp) 
+  apply (thin_tac "f \<in> {0} \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>r B) C")
   apply (simp add:set_mult_def)
-  apply (subgoal_tac "\<forall>x\<in>A \<diamondsuit>\<^sub>R B. \<forall>y\<in>C. RingType.tOp R x y = f 0 \<longrightarrow>
-                                              f 0 \<in> A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C)")
-  apply blast apply (thin_tac "\<exists>x\<in>A \<diamondsuit>\<^sub>R B. \<exists>y\<in>C. RingType.tOp R x y = f 0")
-  apply (rule ballI)+ apply (rule impI) apply (frule sym)
-  apply (thin_tac "RingType.tOp R x y = f 0")
-  apply simp
-apply (rule allI) apply (rule impI)
- apply (frule_tac f = f and n = n and A = "set_mult R (A \<diamondsuit>\<^sub>R B) C" in func_pre)
- apply (subgoal_tac "e\<Sigma> R f n \<in> A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C)") prefer 2 apply simp
- apply (thin_tac "\<forall>f. f \<in> Nset n \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>R B) C \<longrightarrow>
-                 e\<Sigma> R f n \<in> A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C)")
- apply simp
-  apply (frule ideal_prod_ideal[of "R" "B" "C"], assumption+)
-  apply (frule ideal_prod_ideal[of "R" "A" "B \<diamondsuit>\<^sub>R C"], assumption+)
-  apply (rule ideal_pOp_closed[of "R" "A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C)"], assumption+)
- apply (frule_tac f = f and A = "Nset (Suc n)" and B = "set_mult R (A \<diamondsuit>\<^sub>R B) C" and x = "Suc n" in funcset_mem) apply (simp add:Nset_def)
- apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>R B) C")
- apply (thin_tac "f \<in> Nset (Suc n) \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>R B) C")
+  apply ((erule bexE)+, frule sym, thin_tac "x \<cdot>\<^sub>r y = f 0", simp)
+apply (rule allI, rule impI)
+  apply (frule func_pre)
+  apply (frule_tac a = f in forall_spec, simp,
+         thin_tac "\<forall>f. f \<in> {j. j \<le> n} \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>r B) C \<longrightarrow>
+               \<Sigma>\<^sub>e R f n \<in> A \<diamondsuit>\<^sub>r (B \<diamondsuit>\<^sub>r C)",
+         frule ideal_prod_ideal[of "B" "C"], assumption+,
+         frule ideal_prod_ideal[of "A" "B \<diamondsuit>\<^sub>r C"], assumption+, simp)
+  apply (rule ideal_pOp_closed[of "A \<diamondsuit>\<^sub>r (B \<diamondsuit>\<^sub>r C)"], assumption+)
+  apply (cut_tac n = "Suc n" in n_in_Nsetn,
+       frule_tac f = f and A = "{j. j \<le> Suc n}" and 
+       B = "set_mult R (A \<diamondsuit>\<^sub>r B) C" and x = "Suc n" in funcset_mem, assumption) 
+ apply (thin_tac "f \<in> {j. j \<le> n} \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>r B) C",
+        thin_tac "f \<in> {j. j \<le> Suc n} \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>r B) C")
  apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>x\<in>A \<diamondsuit>\<^sub>R B. \<forall>y\<in>C. RingType.tOp R x y = f (Suc n) \<longrightarrow>
-            f (Suc n) \<in> A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C)") apply blast
-  apply (thin_tac "\<exists>x\<in>A \<diamondsuit>\<^sub>R B. \<exists>y\<in>C. RingType.tOp R x y = f (Suc n)")
-  apply (rule ballI)+ apply (rule impI) apply (frule sym)
-  apply (thin_tac "RingType.tOp R x y = f (Suc n)") apply simp
-apply (rule ballI)+
-  apply (frule ideal_prod_ideal[of "R" "B" "C"], assumption+)
-  apply (frule ideal_prod_ideal[of "R" "A" "B \<diamondsuit>\<^sub>R C"], assumption+)
- apply (subst sum_mult_is_ideal_prod[THEN sym, of "R" "A" "B \<diamondsuit>\<^sub>R C"], assumption+)
- apply (simp add: sum_mult_is_ideal_prod[THEN sym, of "R" "A" "B"])
- apply (thin_tac "ideal R (A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C))")
- apply (simp add:sum_mult_def[of "R" "A" "B"])
- apply (subgoal_tac "\<forall>n. \<forall>f\<in>Nset n \<rightarrow> set_mult R A B. e\<Sigma> R f n = x \<longrightarrow>
-           RingType.tOp R x y \<in> sum_mult R A (B \<diamondsuit>\<^sub>R C)")
- apply blast apply (thin_tac "\<exists>n. \<exists>f\<in>Nset n \<rightarrow> set_mult R A B. e\<Sigma> R f n = x")
- apply (rule allI) apply (rule ballI) apply (rule impI)
- apply (frule sym) apply (thin_tac "e\<Sigma> R f n = x") apply simp
- apply (thin_tac "x = e\<Sigma> R f n")
-apply (subgoal_tac "\<forall>g. g\<in>Nset n \<rightarrow> set_mult R A B \<longrightarrow> RingType.tOp R (e\<Sigma> R g n) y \<in> sum_mult R A (B \<diamondsuit>\<^sub>R C)") apply blast
- apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R A B")
- apply (induct_tac n)
-  apply (rule allI)  apply (rule impI)
- apply (frule_tac f = g and A = "Nset 0" and B = "set_mult R A B" and x = "0" in funcset_mem) apply (simp add:Nset_def)
- apply (thin_tac "g \<in> Nset 0 \<rightarrow> set_mult R A B")
- apply (simp add:set_mult_def[of "R" "A" "B"])
- apply (subgoal_tac "\<forall>x1\<in>A. \<forall>y1\<in>B. RingType.tOp R x1 y1 = g 0 \<longrightarrow> RingType.tOp R (g 0) y \<in> sum_mult R A (B \<diamondsuit>\<^sub>R C)") apply blast
-  apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B. RingType.tOp R x y = g 0")
- apply (rule ballI)+ apply (rule impI) apply (frule sym)
- apply (thin_tac "RingType.tOp R x1 y1 = g 0") apply simp
- apply (frule_tac h = x1 in ideal_subset[of "R" "A"], assumption+)
- apply (frule_tac h = y1 in ideal_subset[of "R" "B"], assumption+)
- apply (frule_tac h = y in ideal_subset[of "R" "C"], assumption+)
- apply (simp add:ring_tOp_assoc)
- apply (subgoal_tac "x1 \<cdot>\<^sub>R (y1 \<cdot>\<^sub>R y) \<in> set_mult R A (B \<diamondsuit>\<^sub>R C)")
- apply (frule ideal_subset1[of "R" "A"], assumption+)
- apply (frule sum_mult_inc_set_mult[of "R" "A" "(B \<diamondsuit>\<^sub>R C)"], assumption+)
- apply (rule subsetD, assumption+)
- apply (subgoal_tac "(RingType.tOp R y1 y) \<in> (B \<diamondsuit>\<^sub>R C)")
- apply (simp add:set_mult_def) apply blast
- apply (subgoal_tac " RingType.tOp R y1 y \<in> set_mult R B C")
- apply (frule sum_mult_inc_set_mult[of "R" "B" "C"])
-  apply (simp add:ideal_subset1) apply assumption+
-  apply (subgoal_tac "RingType.tOp R y1 y \<in> set_mult R B C")
-   apply (subst sum_mult_is_ideal_prod[THEN sym, of "R" "B" "C"], assumption+)
-   apply (simp add:subsetD)
-  apply assumption apply (simp add:set_mult_def) apply blast
-apply (rule allI) apply (rule impI)
-  apply (frule_tac f = g and n = na and A = "set_mult R A B" in func_pre)
-  apply (subgoal_tac "RingType.tOp R (e\<Sigma> R g na) y \<in> sum_mult R A (B \<diamondsuit>\<^sub>R C)")
-  prefer 2 apply simp
-  apply (thin_tac "\<forall>g. g \<in> Nset na \<rightarrow> set_mult R A B \<longrightarrow>
-              RingType.tOp R (e\<Sigma> R g na) y \<in> sum_mult R A (B \<diamondsuit>\<^sub>R C)")
- apply simp
-apply (frule ideal_subset1[of "R" "A"], assumption+)
- apply (frule ideal_subset1[of "R" "B"], assumption+)
- apply (frule carrier_inc_set_mult [of "R" "A" "B"], assumption+)
- apply (subgoal_tac "g \<in> Nset (Suc na) \<rightarrow> carrier R")
- apply (frule_tac f = g and n = na and A = "carrier R" in func_pre)
- apply (frule ring_is_ag[of "R"])
- apply (frule_tac f = g and n = na and i = na in eSum_mem[of "R"], assumption+) apply (simp add:Nset_def)
-apply (frule_tac f = g and A = "Nset (Suc na)" and B = "carrier R" and x = "Suc na" in funcset_mem) apply (simp add:Nset_def)
- apply (frule_tac h = y in ideal_subset[of "R" "C"], assumption+)
- apply (simp add:ring_distrib2)
- apply (rule sum_mult_pOp_closed, assumption+)
- apply (simp add:ideal_subset1)
- apply simp
- apply (frule_tac f = g and A = "Nset (Suc na)" and B = "set_mult R A B" and x = "Suc na" in funcset_mem) apply (simp add:Nset_def)
- apply (thin_tac "g \<in> Nset na \<rightarrow> set_mult R A B")
- apply (thin_tac "set_mult R A B \<subseteq> carrier R")
- apply (thin_tac "g (Suc na) \<in> carrier R")
- apply (thin_tac "RingType.tOp R (e\<Sigma> R g na) y \<in> sum_mult R A (B \<diamondsuit>\<^sub>R C)")
- apply (thin_tac "e\<Sigma> R g na \<in> carrier R")
- apply (thin_tac "g \<in> Nset (Suc na) \<rightarrow> set_mult R A B")
- apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>x1\<in>A. \<forall>y1\<in>B. RingType.tOp R x1 y1 = g (Suc na) \<longrightarrow>
-                      RingType.tOp R (g (Suc na)) y \<in> sum_mult R A (B \<diamondsuit>\<^sub>R C)")  apply blast apply (thin_tac "\<exists>x\<in>A. \<exists>y\<in>B. RingType.tOp R x y = g (Suc na)")
- apply (rule ballI)+ apply (rule impI) apply (frule sym)
- apply (thin_tac "RingType.tOp R x1 y1 = g (Suc na)") apply simp
- apply (frule_tac h = x1 in ideal_subset[of "R" "A"], assumption+)
- apply (frule_tac h = y1 in ideal_subset[of "R" "B"], assumption+)
- apply (frule_tac h = y in ideal_subset[of "R" "C"], assumption+)
- apply (simp add:ring_tOp_assoc)
- apply (frule sum_mult_inc_set_mult[of "R" "A" "B \<diamondsuit>\<^sub>R C"], assumption+)
- apply (rule subsetD, assumption+)
- apply (thin_tac "set_mult R A (B \<diamondsuit>\<^sub>R C) \<subseteq> sum_mult R A (B \<diamondsuit>\<^sub>R C)")
- apply (subgoal_tac "RingType.tOp R y1 y \<in> (B \<diamondsuit>\<^sub>R C)")
- apply (simp add:set_mult_def) apply blast
- apply (subst sum_mult_is_ideal_prod[THEN sym, of "R" "B" "C"], assumption+)
- apply (frule sum_mult_inc_set_mult[of "R" "B" "C"], assumption+)
- apply (subgoal_tac " RingType.tOp R y1 y \<in> set_mult R B C ")
- apply (rule subsetD, assumption+) apply (simp add:set_mult_def)
- apply blast
-apply (rule univar_func_test) apply (rule ballI)
- apply (simp add:funcset_mem subsetD)
-done
+ apply ((erule bexE)+,
+        frule sym, thin_tac "x \<cdot>\<^sub>r y = f (Suc n)", simp)
 
-lemma ideal_prod_assoc:"\<lbrakk>ring R; ideal R A; ideal R B; ideal R C\<rbrakk> \<Longrightarrow>
-            A \<diamondsuit>\<^sub>R B \<diamondsuit>\<^sub>R C = A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C)"
+ apply (rule ballI)+
+ apply (simp add:sum_mult_is_ideal_prod[of A B, THEN sym])
+ apply (frule ideal_subset1[of A], frule ideal_subset1[of B],
+        frule_tac x = x in sum_mult_mem1[of A B], assumption+)
+       apply (erule exE, erule bexE, frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x",
+               simp)
+  apply (simp add:ideal_prod_assocTr1)
+done
+ 
+lemma (in Ring) ideal_prod_assoc:"\<lbrakk>ideal R A; ideal R B; ideal R C\<rbrakk> \<Longrightarrow>
+            (A \<diamondsuit>\<^sub>r B) \<diamondsuit>\<^sub>r C = A \<diamondsuit>\<^sub>r (B \<diamondsuit>\<^sub>r C)" 
 apply (rule equalityI)
  apply (rule subsetI)
- apply (frule ideal_prod_ideal[of "R" "A" "B"], assumption+)
- apply (frule sum_mult_is_ideal_prod[of "R" "A \<diamondsuit>\<^sub>R B" "C"], assumption+)
- apply (frule sym) apply (thin_tac "sum_mult R (A \<diamondsuit>\<^sub>R B) C = A \<diamondsuit>\<^sub>R B \<diamondsuit>\<^sub>R C")
- apply simp apply (thin_tac "A \<diamondsuit>\<^sub>R B \<diamondsuit>\<^sub>R C = sum_mult R (A \<diamondsuit>\<^sub>R B) C")
- apply (thin_tac "ideal R (A \<diamondsuit>\<^sub>R B)")
- apply (frule ideal_prod_ideal[of "R" "B" "C"], assumption+)
+ apply (frule ideal_prod_ideal[of "A" "B"], assumption+)
+ apply (frule sum_mult_is_ideal_prod[of "A \<diamondsuit>\<^sub>r B" "C"], assumption+)
+ apply (frule sym) apply (thin_tac "sum_mult R (A \<diamondsuit>\<^sub>r B) C = (A \<diamondsuit>\<^sub>r B) \<diamondsuit>\<^sub>r C")
+ apply simp apply (thin_tac "(A \<diamondsuit>\<^sub>r B) \<diamondsuit>\<^sub>r C = sum_mult R (A \<diamondsuit>\<^sub>r B) C")
+ apply (thin_tac "ideal R (A \<diamondsuit>\<^sub>r B)")
+ apply (frule ideal_prod_ideal[of "B" "C"], assumption+)
   apply (simp add:sum_mult_def)
-  apply (subgoal_tac "\<forall>n. \<forall>f\<in>Nset n \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>R B) C. e\<Sigma> R f n = x
-  \<longrightarrow> x \<in> A \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R C)")
-  apply blast apply (thin_tac " \<exists>n. \<exists>f\<in>Nset n \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>R B) C. e\<Sigma> R f n = x")
- apply (rule allI) apply (rule ballI) apply (rule impI)
- apply (frule sym) apply (thin_tac "e\<Sigma> R f n = x") apply simp
- apply (simp add:ideal_prod_assocTr)
+  apply (erule exE, erule bexE)  
+ apply (frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x", simp) 
+ apply (simp add:ideal_prod_assocTr) 
 apply (rule subsetI)
- apply (frule ideal_prod_ideal[of "R" "B" "C"], assumption+)
- apply (simp add:prod_commute [of "R" "A" "B \<diamondsuit>\<^sub>R C"])
- apply (frule ideal_prod_ideal[of "R" "A" "B"], assumption+)
- apply (simp add:prod_commute[of "R" "A \<diamondsuit>\<^sub>R B" "C"])
- apply (simp add:prod_commute[of "R" "A" "B"])
- apply (simp add:prod_commute[of "R" "B" "C"])
- apply (frule ideal_prod_ideal[of "R" "C" "B"], assumption+)
- apply (frule sum_mult_is_ideal_prod[of "R" "C \<diamondsuit>\<^sub>R B" "A"], assumption+)
- apply (frule sym) apply (thin_tac "sum_mult R (C \<diamondsuit>\<^sub>R B) A = C \<diamondsuit>\<^sub>R B \<diamondsuit>\<^sub>R A")
- apply simp apply (thin_tac "C \<diamondsuit>\<^sub>R B \<diamondsuit>\<^sub>R A = sum_mult R (C \<diamondsuit>\<^sub>R B) A")
- apply (thin_tac "ideal R (C \<diamondsuit>\<^sub>R B)")
- apply (frule ideal_prod_ideal[of "R" "B" "A"], assumption+)
+ apply (frule ideal_prod_ideal[of "B" "C"], assumption+)
+ apply (simp add:ideal_prod_commute [of "A" "B \<diamondsuit>\<^sub>r C"])
+ apply (frule ideal_prod_ideal[of "A" "B"], assumption+)
+ apply (simp add:ideal_prod_commute[of "A \<diamondsuit>\<^sub>r B" "C"])
+ apply (simp add:ideal_prod_commute[of "A" "B"])
+ apply (simp add:ideal_prod_commute[of "B" "C"])
+ apply (frule ideal_prod_ideal[of "C" "B"], assumption+)
+ apply (frule sum_mult_is_ideal_prod[of "C \<diamondsuit>\<^sub>r B" "A"], assumption+)
+ apply (frule sym) apply (thin_tac "sum_mult R (C \<diamondsuit>\<^sub>r B) A = (C \<diamondsuit>\<^sub>r B) \<diamondsuit>\<^sub>r A")
+ apply simp apply (thin_tac "(C \<diamondsuit>\<^sub>r B) \<diamondsuit>\<^sub>r A = sum_mult R (C \<diamondsuit>\<^sub>r B) A")
+ apply (thin_tac "ideal R (C \<diamondsuit>\<^sub>r B)")
+ apply (frule ideal_prod_ideal[of "B" "A"], assumption+)
   apply (simp add:sum_mult_def)
-  apply (subgoal_tac "\<forall>n. \<forall>f\<in>Nset n \<rightarrow> set_mult R (C \<diamondsuit>\<^sub>R B) A. e\<Sigma> R f n = x
-  \<longrightarrow> x \<in> C \<diamondsuit>\<^sub>R (B \<diamondsuit>\<^sub>R A)")
-  apply blast apply (thin_tac " \<exists>n. \<exists>f\<in>Nset n \<rightarrow> set_mult R (C \<diamondsuit>\<^sub>R B) A. e\<Sigma> R f n = x")
- apply (rule allI) apply (rule ballI) apply (rule impI)
- apply (frule sym) apply (thin_tac "e\<Sigma> R f n = x") apply simp
- apply (simp add:ideal_prod_assocTr)
+  apply (erule exE, erule bexE)
+ apply (frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x", simp) 
+ apply (simp add:ideal_prod_assocTr) 
 done
 
-lemma prod_principal_ideal:"\<lbrakk>ring R; a \<in> carrier R; b \<in> carrier R\<rbrakk> \<Longrightarrow>
- (Rxa R a) \<diamondsuit>\<^sub>R (Rxa R b) = Rxa R (a \<cdot>\<^sub>R b)"
-apply (frule principal_ideal[of "R" "a"], assumption+)
-apply (frule principal_ideal[of "R" "b"], assumption+)
-apply (subst sum_mult_is_ideal_prod[THEN sym, of "R" "Rxa R a" "Rxa R b"], assumption+)
+lemma (in Ring) prod_principal_idealTr0:"  \<lbrakk>a \<in> carrier R; b \<in> carrier R;
+         z \<in> set_mult R (R \<diamondsuit>\<^sub>p a) (R \<diamondsuit>\<^sub>p b)\<rbrakk> \<Longrightarrow>  z \<in> R \<diamondsuit>\<^sub>p (a \<cdot>\<^sub>r b)"
+apply (simp add:set_mult_def, (erule bexE)+,
+       simp add:Rxa_def, (erule bexE)+, simp)
+apply (frule_tac x = r and y = a and z = "ra \<cdot>\<^sub>r b" in ring_tOp_assoc,
+           assumption+, simp add:ring_tOp_closed, simp)
+apply (simp add:ring_tOp_assoc[THEN sym, of a _ b])
+apply (frule_tac x = a and y = ra in ring_tOp_commute, assumption+, simp)
+apply (simp add:ring_tOp_assoc[of _ a b],
+       frule_tac x = a and y = b in ring_tOp_closed, assumption)
+apply (simp add:ring_tOp_assoc[THEN sym, of _ _ "a \<cdot>\<^sub>r b"],
+       frule sym, thin_tac "r \<cdot>\<^sub>r ra \<cdot>\<^sub>r (a \<cdot>\<^sub>r b) = z", simp,
+       frule_tac x = r and y = ra in ring_tOp_closed, assumption+)
+apply blast
+done
+ 
+
+lemma (in Ring) prod_principal_idealTr1:"  \<lbrakk>a \<in> carrier R; b \<in> carrier R\<rbrakk> \<Longrightarrow>
+      \<forall>f \<in> {j. j \<le> (n::nat)} \<rightarrow> set_mult R (R \<diamondsuit>\<^sub>p a) (R \<diamondsuit>\<^sub>p b). 
+                                         \<Sigma>\<^sub>e R f n \<in> R \<diamondsuit>\<^sub>p (a \<cdot>\<^sub>r b)"
+apply (induct_tac n)
+ apply (rule ballI, 
+        frule_tac f = f in funcset_mem[of _ "{j. j \<le> 0}" 
+         "set_mult R (R \<diamondsuit>\<^sub>p a) (R \<diamondsuit>\<^sub>p b)"], simp)
+ apply (simp add:prod_principal_idealTr0)
+apply (rule ballI,
+       frule func_pre,
+       frule_tac b = f in forball_spec1, assumption,
+       thin_tac "\<forall>f\<in>{j. j \<le> n} \<rightarrow> set_mult R (R \<diamondsuit>\<^sub>p a) (R \<diamondsuit>\<^sub>p b).
+                                       \<Sigma>\<^sub>e R f n \<in> R \<diamondsuit>\<^sub>p (a \<cdot>\<^sub>r b)")
+ apply (frule ring_tOp_closed[of a b], assumption)
+ apply (frule principal_ideal[of "a \<cdot>\<^sub>r b"], simp,
+        rule ideal_pOp_closed, assumption+)
+ apply (cut_tac n = "Suc n" in n_in_Nsetn,
+        frule_tac f = f and A = "{j. j \<le> Suc n}" and 
+        B = "set_mult R (R \<diamondsuit>\<^sub>p a) (R \<diamondsuit>\<^sub>p b)" in funcset_mem, assumption)
+ apply (simp add:prod_principal_idealTr0)
+done
+
+lemma (in Ring) prod_principal_ideal:"\<lbrakk>a \<in> carrier R; b \<in> carrier R\<rbrakk> \<Longrightarrow> 
+                     (Rxa R a) \<diamondsuit>\<^sub>r (Rxa R b) = Rxa R (a \<cdot>\<^sub>r b)" 
+apply (frule principal_ideal[of "a"], 
+       frule principal_ideal[of "b"])
+apply (subst sum_mult_is_ideal_prod[THEN sym, of "Rxa R a" "Rxa R b"], 
+       assumption+) 
  apply (rule equalityI)
  apply (rule subsetI)
  apply (simp add:sum_mult_def)
- apply (subgoal_tac "\<forall>n. \<forall>f\<in>Nset n \<rightarrow> set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b). e\<Sigma> R f n = x \<longrightarrow> x \<in> R \<diamondsuit> RingType.tOp R a b") apply blast
- apply (thin_tac "\<exists>n. \<exists>f\<in>Nset n \<rightarrow> set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b). e\<Sigma> R f n = x")
- apply (rule allI) apply (rule ballI) apply (rule impI)
- apply (rotate_tac -1) apply (frule sym) apply (thin_tac "e\<Sigma> R f n = x")
- apply simp apply (thin_tac "x = e\<Sigma> R f n")
- apply (subgoal_tac "\<forall>f. f \<in> Nset n \<rightarrow> set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b) \<longrightarrow> e\<Sigma> R f n \<in> R \<diamondsuit> RingType.tOp R a b") apply blast
- apply (thin_tac "f \<in> Nset n \<rightarrow> set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b)")
- apply (induct_tac n)
- apply (rule allI) apply (rule impI)
- apply (frule_tac f = fa and A = "Nset 0" and B = "set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b) " and x = 0 in funcset_mem) apply (simp add:Nset_def)
- apply (thin_tac "fa \<in> Nset 0 \<rightarrow> set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b)")
- apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>x\<in>R \<diamondsuit> a. \<forall>y\<in>R \<diamondsuit> b. RingType.tOp R x y = fa 0 \<longrightarrow>
-                          fa 0 \<in> R \<diamondsuit> RingType.tOp R a b")
- apply blast apply (thin_tac "\<exists>x\<in>R \<diamondsuit> a. \<exists>y\<in>R \<diamondsuit> b. RingType.tOp R x y = fa 0")
- apply (rule ballI)+ apply (rule impI) apply (rotate_tac -1)
- apply (frule sym) apply (thin_tac "RingType.tOp R x y = fa 0")
- apply simp apply (thin_tac "fa 0 = RingType.tOp R x y")
- apply (thin_tac "ideal R (R \<diamondsuit> a)") apply (thin_tac "ideal R (R \<diamondsuit> b)")
- apply (simp add:Rxa_def)
- apply (subgoal_tac "\<forall>r1\<in>carrier R. \<forall>r2 \<in> carrier R. x = r1 \<cdot>\<^sub>R a \<and> y = r2 \<cdot>\<^sub>R b  \<longrightarrow> (\<exists>r\<in>carrier R.
-                RingType.tOp R x y = RingType.tOp R r (RingType.tOp R a b))")
- apply blast
- apply (thin_tac "\<exists>r\<in>carrier R. x = RingType.tOp R r a")
- apply (thin_tac "\<exists>r\<in>carrier R. y = RingType.tOp R r b")
- apply (rule ballI)+ apply (rule impI) apply (erule conjE)
- apply simp
- apply (frule_tac x = r2 and y = b in ring_tOp_closed, assumption+)
- apply (frule_tac x = r1 and y = a and z = "r2 \<cdot>\<^sub>R b" in ring_tOp_assoc,
-                                     assumption+)
- apply simp
- apply (thin_tac "RingType.tOp R (RingType.tOp R r1 a) (RingType.tOp R r2 b) =
-          RingType.tOp R r1 (RingType.tOp R a (RingType.tOp R r2 b))")
- apply (frule_tac x1 = a and y1 = r2 and z1 = b in ring_tOp_assoc[THEN sym],
-            assumption+) apply simp
- apply (thin_tac " RingType.tOp R a (RingType.tOp R r2 b) =
-          RingType.tOp R (RingType.tOp R a r2) b")
- apply (frule_tac x = a and y = r2 in ring_tOp_commute, assumption+)
- apply simp apply (thin_tac "RingType.tOp R a r2 = RingType.tOp R r2 a")
- apply (frule_tac x = r2 and y = a and z = b in ring_tOp_assoc, assumption+)
- apply simp
- apply (thin_tac "RingType.tOp R (RingType.tOp R r2 a) b =
-          RingType.tOp R r2 (RingType.tOp R a b)")
- apply (frule ring_tOp_closed[of "R" "a" "b"], assumption+)
- apply (frule_tac x1 = r1 and y1 = r2 and z1 = "a \<cdot>\<^sub>R b" in ring_tOp_assoc[THEN sym], assumption+) apply simp
- apply (thin_tac " RingType.tOp R r1 (RingType.tOp R r2 (RingType.tOp R a b)) =
-          RingType.tOp R (RingType.tOp R r1 r2) (RingType.tOp R a b)")
- apply (frule_tac x = r1 and y = r2 in ring_tOp_closed[of "R"], assumption+)
- apply blast
- apply (rule allI) apply (rule impI)
-apply (frule_tac f = fa and n = na and A = "set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b)" in func_pre)
- apply (subgoal_tac "e\<Sigma> R fa na \<in> R \<diamondsuit> RingType.tOp R a b")
- prefer 2 apply simp
- apply (thin_tac "\<forall>f. f \<in> Nset na \<rightarrow> set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b) \<longrightarrow>
-              e\<Sigma> R f na \<in> R \<diamondsuit> RingType.tOp R a b")
- apply simp
- apply (frule ring_tOp_closed[of "R" "a" "b"], assumption+)
- apply (frule principal_ideal[of "R" "a \<cdot>\<^sub>R b"], assumption+)
- apply (rule ideal_pOp_closed, assumption+)
- apply (frule_tac f = fa and A = "Nset (Suc na)" and B = "set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b) " and x = "Suc na" in funcset_mem) apply (simp add:Nset_def)
- apply (thin_tac "ideal R (R \<diamondsuit> a)")
- apply (thin_tac "ideal R (R \<diamondsuit> b)")
- apply (thin_tac "fa \<in> Nset (Suc na) \<rightarrow> set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b)")
- apply (thin_tac "fa \<in> Nset na \<rightarrow> set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b)")
- apply (thin_tac "e\<Sigma> R fa na \<in> R \<diamondsuit> RingType.tOp R a b")
- apply (thin_tac "ideal R (R \<diamondsuit> RingType.tOp R a b)")
- apply (simp add:set_mult_def)
- apply (subgoal_tac "\<forall>x\<in>R \<diamondsuit> a. \<forall>y\<in>R \<diamondsuit> b. RingType.tOp R x y = fa (Suc na)
-    \<longrightarrow> fa (Suc na) \<in> R \<diamondsuit> RingType.tOp R a b") apply blast
- apply (thin_tac "\<exists>x\<in>R \<diamondsuit> a. \<exists>y\<in>R \<diamondsuit> b. RingType.tOp R x y = fa (Suc na)")
- apply (rule ballI)+ apply (rule impI) apply (frule sym)
- apply (thin_tac "RingType.tOp R x y = fa (Suc na)") apply simp
- apply (thin_tac "fa (Suc na) = RingType.tOp R x y")
- apply (simp add:Rxa_def)
- apply (subgoal_tac "\<forall>r1\<in>carrier R. \<forall>r2 \<in> carrier R. x = r1 \<cdot>\<^sub>R a \<and> y = r2 \<cdot>\<^sub>R b  \<longrightarrow> (\<exists>r\<in>carrier R.
-                RingType.tOp R x y = RingType.tOp R r (RingType.tOp R a b))")
- apply blast
- apply (thin_tac "\<exists>r\<in>carrier R. x = RingType.tOp R r a")
- apply (thin_tac "\<exists>r\<in>carrier R. y = RingType.tOp R r b")
- apply (rule ballI)+ apply (rule impI) apply (erule conjE)
- apply simp
- apply (frule_tac x = r2 and y = b in ring_tOp_closed, assumption+)
- apply (frule_tac x = r1 and y = a and z = "r2 \<cdot>\<^sub>R b" in ring_tOp_assoc,
-                                     assumption+)
- apply simp
- apply (thin_tac "RingType.tOp R (RingType.tOp R r1 a) (RingType.tOp R r2 b) =
-          RingType.tOp R r1 (RingType.tOp R a (RingType.tOp R r2 b))")
- apply (frule_tac x1 = a and y1 = r2 and z1 = b in ring_tOp_assoc[THEN sym],
-            assumption+) apply simp
- apply (thin_tac " RingType.tOp R a (RingType.tOp R r2 b) =
-          RingType.tOp R (RingType.tOp R a r2) b")
- apply (frule_tac x = a and y = r2 in ring_tOp_commute, assumption+)
- apply simp apply (thin_tac "RingType.tOp R a r2 = RingType.tOp R r2 a")
- apply (frule_tac x = r2 and y = a and z = b in ring_tOp_assoc, assumption+)
- apply simp
- apply (thin_tac "RingType.tOp R (RingType.tOp R r2 a) b =
-          RingType.tOp R r2 (RingType.tOp R a b)")
- apply (frule ring_tOp_closed[of "R" "a" "b"], assumption+)
- apply (frule_tac x1 = r1 and y1 = r2 and z1 = "a \<cdot>\<^sub>R b" in ring_tOp_assoc[THEN sym], assumption+) apply simp
- apply (thin_tac " RingType.tOp R r1 (RingType.tOp R r2 (RingType.tOp R a b)) =
-          RingType.tOp R (RingType.tOp R r1 r2) (RingType.tOp R a b)")
- apply (frule_tac x = r1 and y = r2 in ring_tOp_closed[of "R"], assumption+)
- apply blast
- apply (rule subsetI)
- apply (simp add:Rxa_def [of "R" "a \<cdot>\<^sub>R b"])
- apply (subgoal_tac "\<forall>r\<in>carrier R. x = RingType.tOp R r (RingType.tOp R a b)
-        \<longrightarrow> x \<in> sum_mult R (R \<diamondsuit> a) (R \<diamondsuit> b)") apply blast
- apply (thin_tac "\<exists>r\<in>carrier R. x = RingType.tOp R r (RingType.tOp R a b)")
- apply (rule ballI) apply (rule impI)
- apply (frule ideal_subset1[of "R" "R \<diamondsuit> a"], assumption+)
- apply (frule sum_mult_inc_set_mult[of "R" "R \<diamondsuit> a" "R \<diamondsuit> b"], assumption+)
- apply (subgoal_tac "x \<in> set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b)")
- apply (rule subsetD, assumption+)
- apply (thin_tac "set_mult R (R \<diamondsuit> a) (R \<diamondsuit> b) \<subseteq> sum_mult R (R \<diamondsuit> a) (R \<diamondsuit> b)")
- apply simp apply (thin_tac "x = RingType.tOp R r (RingType.tOp R a b)")
- apply (simp add:set_mult_def) apply (simp add:ring_tOp_assoc[THEN sym])
- apply (subgoal_tac "RingType.tOp R r a \<in> R \<diamondsuit> a")
- apply (subgoal_tac "b \<in> R \<diamondsuit> b") apply blast
+ apply (erule exE, erule bexE)
+ apply (frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x", simp, thin_tac "x = \<Sigma>\<^sub>e R f n")
+ apply (simp add:prod_principal_idealTr1)
+
+apply (rule subsetI)
+ apply (simp add:Rxa_def, fold Rxa_def)
+ apply (erule bexE)
+ apply (simp add:ring_tOp_assoc[THEN sym])
+ apply (frule ideal_subset1[of "R \<diamondsuit>\<^sub>p a"],
+        frule ideal_subset1[of "R \<diamondsuit>\<^sub>p b"])
+ apply (rule_tac a = "r \<cdot>\<^sub>r a" and b = b in times_mem_sum_mult[of "R \<diamondsuit>\<^sub>p a" 
+         "R \<diamondsuit>\<^sub>p b"], assumption+)
+ apply (simp add:Rxa_def, blast)
  apply (simp add:a_in_principal)
- apply (simp add:Rxa_def) apply blast
 done
 
-lemma principal_ideal_n_pow: "\<lbrakk>ring R; a \<in> carrier R; I = Rxa R a\<rbrakk> \<Longrightarrow>
-                                  I \<^sup>\<diamondsuit>\<^sup>R \<^sup>n  = Rxa R (a^\<^sup>R\<^sup> \<^sup>n)"
+lemma (in Ring) principal_ideal_n_pow1:"a \<in> carrier R \<Longrightarrow>  
+                                  (Rxa R a)\<^bsup>\<diamondsuit>R n\<^esup>  = Rxa R (a^\<^bsup>R n \<^esup>)"
+ apply (cut_tac ring_one)
 apply (induct_tac n)
- apply simp
- apply (frule a_in_principal[of "R" "1\<^sub>R"])
+ apply simp 
+ apply (cut_tac a_in_principal[of "1\<^sub>r"])
+ apply (frule principal_ideal[of "1\<^sub>r"])
+ apply (frule ideal_inc_one, assumption, simp)
  apply (simp add:ring_one)
- apply (rule ideal_inc_one[THEN sym, of "R" "R \<diamondsuit> RingType.one R"], assumption+)
- apply (rule principal_ideal[of "R" "1\<^sub>R"], assumption+)
- apply (simp add:ring_one) apply assumption
-apply simp apply (rotate_tac -1) apply (frule sym)
- apply (thin_tac "R \<diamondsuit> a \<^sup>\<diamondsuit>\<^sup>R \<^sup>n = R \<diamondsuit> (a^\<^sup>R\<^sup> \<^sup>n)")
- apply (frule_tac b = "a^\<^sup>R\<^sup> \<^sup>n" in prod_principal_ideal[of "R" "a"], assumption+)
- apply (simp add:npClose) apply simp
+ apply simp
+ apply (frule_tac n = n in npClose[of a],
+        subst prod_principal_ideal, assumption+)
+ apply (simp add:ring_tOp_commute)
 done
 
-lemma integral_domain_ring:"integral_domain R \<Longrightarrow> ring R"
-apply (simp add:integral_domain_def)
+lemma (in Ring) principal_ideal_n_pow:"\<lbrakk>a \<in> carrier R; I = Rxa R a\<rbrakk> \<Longrightarrow>  
+                                  I \<^bsup>\<diamondsuit>R n\<^esup>  = Rxa R (a^\<^bsup>R n\<^esup>)"
+apply simp 
+apply (rule principal_ideal_n_pow1[of "a" "n"], assumption+)
 done
 
-lemma a_notin_n_pow1: "\<lbrakk>integral_domain R; a \<in> carrier R; \<not> unit R a; a \<noteq> 0\<^sub>R;
- 0 < n\<rbrakk> \<Longrightarrow> a \<notin> (Rxa R a) \<^sup>\<diamondsuit>\<^sup>R \<^sup>(Suc n)"
+text{* more about ideal_n_prod *}
+
+lemma (in Ring) nprod_eqTr:" f \<in> {j. j \<le> (n::nat)} \<rightarrow> carrier R \<and>
+       g \<in> {j. j \<le> n} \<rightarrow> carrier R \<and> (\<forall>j \<le> n. f j = g j) \<longrightarrow>
+       nprod R f n = nprod R g n" 
+apply (induct_tac n)
+  apply simp
+apply (rule impI, (erule conjE)+)
+  apply (frule func_pre[of f], frule func_pre[of g],
+         cut_tac n = n in Nsetn_sub_mem1, simp)
+done
+
+lemma (in Ring) nprod_eq:"\<lbrakk>\<forall>j \<le> n. f j \<in> carrier R; \<forall>j \<le> n. g j \<in> carrier R;
+(\<forall>j \<le> (n::nat). f j = g j)\<rbrakk> \<Longrightarrow> nprod R f n = nprod R g n"
+apply (cut_tac nprod_eqTr[of f n g])
+apply simp
+apply (cut_tac univar_func_test[of "{j. j \<le> n}" f "carrier R"],
+       cut_tac univar_func_test[of "{j. j \<le> n}" g "carrier R"])
+apply simp
+apply (rule ballI, simp)
+apply (rule ballI) apply simp
+done
+
+constdefs
+ mprod_expR::"[('b, 'm) Ring_scheme, nat \<Rightarrow> nat, nat \<Rightarrow> 'b, nat] 
+              \<Rightarrow> 'b"                 
+  "mprod_expR R e f n == nprod R (\<lambda>j. ((f j)^\<^bsup>R (e j)\<^esup>)) n"
+
+ (** Note that e j is a natural number for all j in Nset n **)
+
+lemma (in Ring) mprodR_Suc:"\<lbrakk>e \<in> {j. j \<le> (Suc n)} \<rightarrow> {j. (0::nat) \<le> j};
+                 f \<in> {j. j \<le> (Suc n)} \<rightarrow> carrier R\<rbrakk> \<Longrightarrow> 
+       mprod_expR R e f (Suc n) = 
+            (mprod_expR R e f n) \<cdot>\<^sub>r ((f (Suc n))^\<^bsup>R (e (Suc n))\<^esup>)"
+apply (simp add:mprod_expR_def)
+done  
+
+lemma (in Ring) mprod_expR_memTr:"e \<in> {j. j \<le> n} \<rightarrow> {j. (0::nat) \<le> j} \<and> 
+       f \<in> {j. j \<le> n} \<rightarrow> carrier R  \<longrightarrow>  mprod_expR R e f n \<in> carrier R"
+apply (induct_tac n)
+ apply (rule impI, (erule conjE)+)
+ apply (cut_tac n_in_Nsetn[of 0], 
+        simp add: mprod_expR_def)
+ apply (rule npClose,
+        simp add:funcset_mem)
+
+apply (rule impI, (erule conjE)+)
+ apply (frule func_pre[of "e"], frule func_pre[of "f"])
+ apply simp
+ apply (simp add:mprodR_Suc)
+ apply (rule ring_tOp_closed, assumption+)
+ apply (rule npClose, cut_tac n = "Suc n" in n_in_Nsetn)
+ apply (simp add:funcset_mem) 
+done
+
+lemma (in Ring) mprod_expR_mem:"\<lbrakk> e \<in> {j. j \<le> n} \<rightarrow> {j. (0::nat) \<le> j};
+       f \<in> {j. j \<le> n} \<rightarrow> carrier R\<rbrakk>   \<Longrightarrow>  mprod_expR R e f n \<in> carrier R"
+apply (simp add:mprod_expR_memTr)
+done  
+
+lemma (in Ring) prod_n_principal_idealTr:"e \<in> {j. j\<le>n} \<rightarrow> {j. (0::nat)\<le>j} \<and> 
+f \<in> {j. j\<le>n} \<rightarrow> carrier R \<and> (\<forall>k \<le> n. J k = (Rxa R (f k))\<^bsup>\<diamondsuit>R (e k)\<^esup>) \<longrightarrow>
+                 ideal_n_prod R n J = Rxa R (mprod_expR R e f n)"
+apply (induct_tac n)
+ apply (rule impI) apply (erule conjE)+
+ apply (simp add:mprod_expR_def)
+ apply (subgoal_tac "J 0 = R \<diamondsuit>\<^sub>p (f 0) \<^bsup>\<diamondsuit>R (e 0)\<^esup>")
+ apply simp
+ apply (rule principal_ideal_n_pow[of "f 0" "R \<diamondsuit>\<^sub>p (f 0)"])
+ apply (cut_tac n_in_Nsetn[of 0], simp add:funcset_mem) apply simp
+ apply (cut_tac n_in_Nsetn[of 0], simp)
+
+apply (rule impI, (erule conjE)+)
+ apply (frule func_pre[of "e"], frule func_pre[of "f"])
+ apply (cut_tac n = n in Nsetn_sub_mem1,
+        simp add:mprodR_Suc)
+ apply (cut_tac n = "Suc n" in n_in_Nsetn, simp)
+ apply (frule_tac A = "{j. j \<le> Suc n}" and x = "Suc n" in funcset_mem[of "f" _ "carrier R"], simp)
+ apply (frule_tac a = "f (Suc n)" and I = "R \<diamondsuit>\<^sub>p (f (Suc n))" and n = "e (Suc n)" in  principal_ideal_n_pow) apply simp
+ apply (subst prod_principal_ideal[THEN sym])
+ apply (simp add:mprod_expR_mem)
+ apply (rule npClose, assumption+) apply simp 
+done
+
+(************* used in Valuation2.thy *****************)
+lemma (in Ring) prod_n_principal_ideal:"\<lbrakk>e \<in> {j. j\<le>n} \<rightarrow> {j. (0::nat)\<le>j};  
+f \<in> {j. j\<le>n} \<rightarrow> carrier R; \<forall>k\<le> n. J k = (Rxa R (f k))\<^bsup>\<diamondsuit>R (e k)\<^esup>\<rbrakk> \<Longrightarrow>
+                 ideal_n_prod R n J = Rxa R (mprod_expR R e f n)"
+apply (simp add:prod_n_principal_idealTr[of e n f J])
+done  
+(*******************************************************)
+
+lemma (in Idomain) a_notin_n_pow1:"\<lbrakk>a \<in> carrier R; \<not> Unit R a; a \<noteq> \<zero>; 0 < n\<rbrakk>
+  \<Longrightarrow>  a \<notin> (Rxa R a) \<^bsup>\<diamondsuit>R  (Suc n)\<^esup>" 
 apply (rule contrapos_pp)
  apply (simp del:ipSuc) apply (simp del:ipSuc)
- apply (frule integral_domain_ring[of "R"])
- apply (frule principal_ideal[of "R" "a"], assumption+)
- apply (frule principal_ideal_n_pow[of "R" "a" "R \<diamondsuit> a" "Suc n"], assumption+)
+ apply (frule principal_ideal[of "a"])
+ apply (frule principal_ideal_n_pow[of "a" "R \<diamondsuit>\<^sub>p a" "Suc n"]) 
  apply simp apply (simp del:ipSuc)
- apply (thin_tac "R \<diamondsuit> a \<^sup>\<diamondsuit>\<^sup>R \<^sup>Suc n = R \<diamondsuit> RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n)")
- apply (thin_tac "ideal R (R \<diamondsuit> a)")
+ apply (thin_tac "R \<diamondsuit>\<^sub>p a \<^bsup>\<diamondsuit>R (Suc n)\<^esup> = R \<diamondsuit>\<^sub>p (a^\<^bsup>R n\<^esup> \<cdot>\<^sub>r a)")
+ apply (thin_tac "ideal R (R \<diamondsuit>\<^sub>p a)")
  apply (simp add:Rxa_def)
- apply (subgoal_tac "\<forall>r\<in>carrier R. a = RingType.tOp R r (RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n)) \<longrightarrow> False") apply blast
- apply (thin_tac "\<exists>r\<in>carrier R. a = RingType.tOp R r (RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n))")
- apply (rule ballI) apply (rule impI)
-apply (frule npClose[of "R" "a" "n"], assumption+)
+ apply (erule bexE)
+apply (frule npClose[of "a" "n"])
  apply (simp add:ring_tOp_assoc[THEN sym])
- apply (simp add:ring_tOp_commute[of "R" _ "a"])
- apply (simp add:ring_tOp_assoc)
- apply (frule ring_r_one[THEN sym, of "R" "a"], assumption+)
- apply (subgoal_tac "a \<cdot>\<^sub>R (1\<^sub>R) = a \<cdot>\<^sub>R (r \<cdot>\<^sub>R (a^\<^sup>R\<^sup> \<^sup>n))") prefer 2 apply simp
- apply (thin_tac "a = RingType.tOp R a (RingType.tOp R r (a^\<^sup>R\<^sup> \<^sup>n))")
- apply (frule_tac b = "r \<cdot>\<^sub>R (a^\<^sup>R\<^sup> \<^sup>n)" in idom_mult_cancel_l[of "R" "1\<^sub>R" _ "a"])
+ apply (frule ring_l_one[THEN sym, of "a"])
+ apply (subgoal_tac "1\<^sub>r \<cdot>\<^sub>r a = r \<cdot>\<^sub>r a^\<^bsup>R n\<^esup> \<cdot>\<^sub>r a") 
+ apply (cut_tac b = "r \<cdot>\<^sub>r (a^\<^bsup>R n\<^esup>)" in idom_mult_cancel_r[of "1\<^sub>r" _ "a"])
  apply (simp add:ring_one) apply (simp add:ring_tOp_closed)
  apply assumption+
- apply (thin_tac "RingType.tOp R a (RingType.one R) =
-         RingType.tOp R a (RingType.tOp R r (a^\<^sup>R\<^sup> \<^sup>n))")
- apply (thin_tac "a = RingType.tOp R a (RingType.one R)")
- apply (subgoal_tac "1\<^sub>R = r \<cdot>\<^sub>R (a^\<^sup>R\<^sup> \<^sup>(Suc (n - Suc 0)))") prefer 2
- apply (simp del:ipSuc)
- apply (thin_tac "RingType.one R = RingType.tOp R r (a^\<^sup>R\<^sup> \<^sup>n)")
+ apply (thin_tac "1\<^sub>r \<cdot>\<^sub>r a = r \<cdot>\<^sub>r a^\<^bsup>R n\<^esup> \<cdot>\<^sub>r a",
+        thin_tac "a = 1\<^sub>r \<cdot>\<^sub>r a",
+        thin_tac "a = r \<cdot>\<^sub>r a^\<^bsup>R n\<^esup> \<cdot>\<^sub>r a")
+ apply (subgoal_tac "1\<^sub>r = r \<cdot>\<^sub>r (a^\<^bsup>R (Suc (n - Suc 0))\<^esup>)") prefer 2
+ apply (simp del:ipSuc) 
+ apply (thin_tac "1\<^sub>r = r \<cdot>\<^sub>r a^\<^bsup>R n\<^esup>")
  apply (simp del:Suc_pred)
- apply (frule npClose[of "R" "a" "n - Suc 0"], assumption+)
+ apply (frule npClose[of "a" "n - Suc 0"])
  apply (simp add:ring_tOp_assoc[THEN sym])
- apply (simp add:ring_tOp_commute[of "R" _ "a"])
- apply (simp add:ring_tOp_assoc)
- apply (frule_tac x = r in ring_tOp_closed[of "R" _ "a^\<^sup>R\<^sup> \<^sup>(n - Suc 0)"],
-                                                 assumption+)
- apply (simp add:unit_def)
- apply blast
+ apply (frule_tac x = r and y = "a^\<^bsup>R (n - Suc 0)\<^esup>" in ring_tOp_closed, assumption)
+ apply (simp add:ring_tOp_commute[of _ a])
+ apply (simp add:Unit_def) apply blast
+ apply simp
 done
 
-lemma a_notin_n_pow2: "\<lbrakk>integral_domain R; a \<in> carrier R; \<not> unit R a; a \<noteq> 0\<^sub>R;
- 0 < n\<rbrakk> \<Longrightarrow> a^\<^sup>R\<^sup> \<^sup>n \<notin> (Rxa R a) \<^sup>\<diamondsuit>\<^sup>R \<^sup>(Suc n)"
+lemma (in Idomain) a_notin_n_pow2:"\<lbrakk>a \<in> carrier R; \<not> Unit R a; a \<noteq> \<zero>; 
+ 0 < n\<rbrakk> \<Longrightarrow> a^\<^bsup>R n\<^esup> \<notin> (Rxa R a) \<^bsup>\<diamondsuit>R (Suc n)\<^esup>"
 apply (rule contrapos_pp)
- apply (simp del:ipSuc) apply (simp del:ipSuc)
- apply (frule integral_domain_ring[of "R"])
- apply (frule principal_ideal[of "R" "a"], assumption+)
- apply (frule principal_ideal_n_pow[of "R" "a" "R \<diamondsuit> a" "Suc n"], assumption+)
- apply simp apply (simp del:ipSuc)
- apply (thin_tac "R \<diamondsuit> a \<^sup>\<diamondsuit>\<^sup>R \<^sup>Suc n = R \<diamondsuit> RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n)")
- apply (thin_tac "ideal R (R \<diamondsuit> a)")
-apply (simp add:Rxa_def)
- apply (subgoal_tac "\<forall>r\<in>carrier R. a^\<^sup>R\<^sup> \<^sup>n = RingType.tOp R r (RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n)) \<longrightarrow> False") apply blast
- apply (thin_tac "\<exists>r\<in>carrier R. a^\<^sup>R\<^sup> \<^sup>n = RingType.tOp R r (RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n))")
- apply (rule ballI) apply (rule impI)
- apply (frule idom_potent_nonzero[of "R" "a" "n"], assumption+)
- apply (frule npClose[of "R" "a" "n"], assumption+)
- apply (frule ring_l_one[THEN sym, of "R" "a^\<^sup>R\<^sup> \<^sup>n "], assumption+)
- apply (subgoal_tac "RingType.tOp R (RingType.one R) (a^\<^sup>R\<^sup> \<^sup>n) =
-                          RingType.tOp R r (RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n))")
- prefer 2 apply simp
- apply (thin_tac "a^\<^sup>R\<^sup> \<^sup>n = RingType.tOp R (RingType.one R) (a^\<^sup>R\<^sup> \<^sup>n)")
- apply (thin_tac "a^\<^sup>R\<^sup> \<^sup>n = RingType.tOp R r (RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n))")
+ apply (simp del:ipSuc, simp del:ipSuc)
+ apply (frule principal_ideal[of "a"])
+ apply (frule principal_ideal_n_pow[of "a" "R \<diamondsuit>\<^sub>p a" "Suc n"])
+ apply (simp, simp del:ipSuc)
+ apply (thin_tac "R \<diamondsuit>\<^sub>p a \<^bsup>\<diamondsuit>R (Suc n)\<^esup> = R \<diamondsuit>\<^sub>p (a^\<^bsup>R n\<^esup> \<cdot>\<^sub>r a)")
+ apply (thin_tac "ideal R (R \<diamondsuit>\<^sub>p a)")
+apply (simp add:Rxa_def) 
+ apply (erule bexE)
+ apply (frule idom_potent_nonzero[of "a" "n"], assumption+)
+ apply (frule npClose[of "a" "n"])
+ apply (frule ring_l_one[THEN sym, of "a^\<^bsup>R n\<^esup> "])
+ apply (subgoal_tac "1\<^sub>r \<cdot>\<^sub>r (a^\<^bsup>R n\<^esup>) =  r \<cdot>\<^sub>r ((a^\<^bsup>R n\<^esup>) \<cdot>\<^sub>r a)")
+ prefer 2 apply simp 
+ apply (thin_tac "a^\<^bsup>R n\<^esup> = 1\<^sub>r \<cdot>\<^sub>r a^\<^bsup>R n\<^esup>",
+        thin_tac "a^\<^bsup>R n\<^esup> = r \<cdot>\<^sub>r (a^\<^bsup>R n\<^esup> \<cdot>\<^sub>r a)")
+ apply (simp add:ring_tOp_commute[of "a^\<^bsup>R n\<^esup>" a])
  apply (simp add:ring_tOp_assoc[THEN sym])
- apply (frule_tac b = "r \<cdot>\<^sub>R a" in idom_mult_cancel_r[of "R" "1\<^sub>R" _ "a^\<^sup>R\<^sup> \<^sup>n"])
- apply (simp add:ring_one) apply (simp add:ring_tOp_closed)
- apply assumption+
- apply (thin_tac "RingType.tOp R (RingType.one R) (a^\<^sup>R\<^sup> \<^sup>n) =
-         RingType.tOp R (RingType.tOp R r a) (a^\<^sup>R\<^sup> \<^sup>n)")
- apply (frule sym) apply (thin_tac "RingType.one R = RingType.tOp R r a")
- apply (frule_tac x = r in ring_tOp_commute[of "R" _ "a"], assumption+)
- apply simp apply (thin_tac "RingType.tOp R r a = RingType.one R")
- apply (simp add:unit_def)
+ apply (cut_tac ring_one,
+        frule_tac b = "r \<cdot>\<^sub>r a" in idom_mult_cancel_r[of "1\<^sub>r" _ "a^\<^bsup>R n\<^esup>"],
+        simp add:ring_tOp_closed,
+        assumption+)
+ apply (simp add:ring_tOp_commute[of _ a])
+ apply (simp add:Unit_def, blast)
 done
 
-lemma n_pow_not_prime: "\<lbrakk>integral_domain R; a \<in> carrier R; a \<noteq> 0\<^sub>R;  0 < n\<rbrakk>
-            \<Longrightarrow>   \<not> prime_ideal R ((Rxa R a) \<^sup>\<diamondsuit>\<^sup>R \<^sup>(Suc n))"
+lemma (in Idomain) n_pow_not_prime:"\<lbrakk>a \<in> carrier R; a \<noteq> \<zero>;  0 < n\<rbrakk>
+            \<Longrightarrow>   \<not> prime_ideal R ((Rxa R a) \<^bsup>\<diamondsuit>R (Suc n)\<^esup>)"
+apply (case_tac "n = 0") 
+ apply simp 
+apply (case_tac "Unit R a")
+ apply (simp del:ipSuc add:prime_ideal_def, rule impI)
+ apply (frule principal_ideal[of "a"])
+ apply (frule principal_ideal_n_pow[of "a" "R \<diamondsuit>\<^sub>p a" "Suc n"]) 
+ apply simp apply (simp del:npow_suc)
+ apply (simp del:npow_suc add:idom_potent_unit [of "a" "Suc n"])
+ apply (thin_tac "R \<diamondsuit>\<^sub>p a \<diamondsuit>\<^sub>r R \<diamondsuit>\<^sub>p a \<^bsup>\<diamondsuit>R n\<^esup> = R \<diamondsuit>\<^sub>p (a^\<^bsup>R (Suc n)\<^esup>)")
+ apply (frule npClose[of "a" "Suc n"])
+ apply (frule a_in_principal[of "a^\<^bsup>R (Suc n)\<^esup>"])
+ apply (simp add: ideal_inc_unit)
+ apply (frule a_notin_n_pow1[of "a" "n"], assumption+)
+ apply (frule a_notin_n_pow2[of "a" "n"], assumption+)
+
+ apply (frule npClose[of "a" "n"])
+ apply (frule principal_ideal[of "a"])
+ apply (frule principal_ideal_n_pow[of "a" "R \<diamondsuit>\<^sub>p a" "Suc n"])
+ apply simp apply (simp del:ipSuc npow_suc)
+ apply (thin_tac "R \<diamondsuit>\<^sub>p a \<^bsup>\<diamondsuit>R (Suc n)\<^esup> = R \<diamondsuit>\<^sub>p (a^\<^bsup>R (Suc n)\<^esup>)")
+ apply (subst prime_ideal_def) 
+ apply (simp del:npow_suc) apply (rule impI)
+ apply (subgoal_tac "(a^\<^bsup>R n\<^esup>) \<cdot>\<^sub>r a \<in> R \<diamondsuit>\<^sub>p (a^\<^bsup>R (Suc n)\<^esup>)")
+ apply blast
+
+ apply (simp add:Rxa_def)
+  apply (frule ring_tOp_closed[of "a" "a^\<^bsup>R n\<^esup>"], assumption+)
+ apply (frule ring_l_one[THEN sym, of "a \<cdot>\<^sub>r (a^\<^bsup>R n\<^esup>)"])
+ apply (cut_tac ring_one)
+ apply (simp add:ring_tOp_commute[of _ a], blast)
+done
+
+lemma (in Idomain) principal_pow_prime_condTr:
+  "\<lbrakk>a \<in> carrier R; a \<noteq> \<zero>; prime_ideal R ((Rxa R a) \<^bsup>\<diamondsuit>R (Suc n)\<^esup>)\<rbrakk> \<Longrightarrow> n = 0"
+apply (rule contrapos_pp, (simp del:ipSuc)+) 
+apply (frule n_pow_not_prime[of  "a" "n"], assumption+)
+apply (simp del:ipSuc)
+done
+
+lemma (in Idomain) principal_pow_prime_cond:
+  "\<lbrakk>a \<in> carrier R; a \<noteq> \<zero>;  prime_ideal R ((Rxa R a) \<^bsup>\<diamondsuit>R n\<^esup>)\<rbrakk> \<Longrightarrow> n = Suc 0"
 apply (case_tac "n = 0")
  apply simp
-apply (case_tac "unit R a")
- apply (simp del:ipSuc add:prime_ideal_def) apply (rule impI)
- apply (frule idom_is_ring[of "R"])
- apply (frule principal_ideal[of "R" "a"], assumption+)
- apply (frule principal_ideal_n_pow[of "R" "a" "R \<diamondsuit> a" "Suc n"], assumption+)
- apply simp apply (simp del:npow_suc)
- apply (simp del:npow_suc add:idom_potent_unit [of "R" "a" "Suc n"])
- apply (thin_tac "R \<diamondsuit> a \<diamondsuit>\<^sub>R R \<diamondsuit> a \<^sup>\<diamondsuit>\<^sup>R \<^sup>n = R \<diamondsuit> (a^\<^sup>R\<^sup> \<^sup>Suc n)")
- apply (frule npClose[of "R" "a" "Suc n"], assumption+)
- apply (frule a_in_principal[of "R" "a^\<^sup>R\<^sup> \<^sup>(Suc n)"], assumption+)
- apply (simp add: ideal_inc_unit)
- apply (frule a_notin_n_pow1[of "R" "a" "n"], assumption+)
- apply (frule a_notin_n_pow2[of "R" "a" "n"], assumption+)
-apply (frule idom_is_ring[of "R"])
- apply (frule npClose[of "R" "a" "n"], assumption+)
- apply (frule principal_ideal[of "R" "a"], assumption+)
- apply (frule principal_ideal_n_pow[of "R" "a" "R \<diamondsuit> a" "Suc n"], assumption+)
- apply simp apply (simp del:ipSuc npow_suc)
- apply (thin_tac "R \<diamondsuit> a \<^sup>\<diamondsuit>\<^sup>R \<^sup>Suc n = R \<diamondsuit> (a^\<^sup>R\<^sup> \<^sup>Suc n)")
- apply (subst prime_ideal_def)
- apply (simp del:npow_suc) apply (rule impI)
- apply (subgoal_tac "a \<cdot>\<^sub>R (a^\<^sup>R\<^sup> \<^sup>n) \<in> R \<diamondsuit> (a^\<^sup>R\<^sup> \<^sup>Suc n)")
- apply blast
-apply simp
- apply (simp add:Rxa_def)
- apply (thin_tac "ideal R {x. \<exists>r\<in>carrier R. x = RingType.tOp R r a}")
- apply (thin_tac "ideal R
-      {x. \<exists>r\<in>carrier R. x = RingType.tOp R r (RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n))}")
- apply (thin_tac "\<forall>r\<in>carrier R. a^\<^sup>R\<^sup> \<^sup>n \<noteq> RingType.tOp R r (RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n))")
- apply (thin_tac "\<forall>r\<in>carrier R. a \<noteq> RingType.tOp R r (RingType.tOp R a (a^\<^sup>R\<^sup> \<^sup>n))")
- apply (frule ring_one[of "R"])
- apply (frule ring_tOp_closed[of "R" "a" "a^\<^sup>R\<^sup> \<^sup>n"], assumption+)
- apply (frule ring_l_one[THEN sym, of "R" "a \<cdot>\<^sub>R (a^\<^sup>R\<^sup> \<^sup>n)"], assumption+)
- apply blast
+ apply (simp add:prime_ideal_def) apply (erule conjE)
+ apply (cut_tac ring_one, simp)
+apply (subgoal_tac "prime_ideal R (R \<diamondsuit>\<^sub>p a \<^bsup>\<diamondsuit>R (Suc (n - Suc 0))\<^esup>)")
+apply (frule principal_pow_prime_condTr[of "a" "n - Suc 0"], assumption+)
+apply simp apply simp
 done
 
 section "10. extension and contraction"
 
-constdefs
- i_contract::"['a \<Rightarrow> 'b, ('a, 'm1) RingType_scheme, ('b, 'm2) RingType_scheme,
+
+locale TwoRings = Ring +
+       fixes R' (structure)
+       assumes secondR: "Ring R'"
+
+
+constdefs 
+ i_contract::"['a \<Rightarrow> 'b, ('a, 'm1) Ring_scheme, ('b, 'm2) Ring_scheme,
   'b set]  \<Rightarrow> 'a set"
-   "i_contract f A R J == invim f (carrier A) J"
+   "i_contract f R R' J == invim f (carrier R) J"
 
- i_extension::"['a \<Rightarrow> 'b, ('a, 'm1) RingType_scheme, ('b, 'm2) RingType_scheme,
+ i_extension::"['a \<Rightarrow> 'b, ('a, 'm1) Ring_scheme, ('b, 'm2) Ring_scheme,
            'a set] \<Rightarrow> 'b set"
- "i_extension f A R I == sum_mult R (f ` I) (carrier R)"
+ "i_extension f R R' I == sum_mult R' (f ` I) (carrier R')"
 
-lemma i_contract_ideal:"\<lbrakk>ring A; ring R; f \<in> rHom A R; ideal R J \<rbrakk> \<Longrightarrow>
-                                          ideal A (i_contract f A R J)"
-apply (simp add:i_contract_def)
-apply (rule ideal_condition, assumption+)
- apply (simp add:invim_def) apply (rule subsetI)
- apply (simp add:CollectI)
-apply (simp add:invim_def)
- apply (frule rHom_0_0 [of "A" "R" "f"], assumption+)
- apply (frule ring_zero [of "A"])
- apply (frule ring_zero [of "R"])
- apply (frule ideal_zero [of "R" "J"], assumption+)
- apply (subgoal_tac "f (0\<^sub>A) \<in> J") apply blast apply simp
-apply (rule ballI)+
- apply (simp add:invim_def)
- apply (erule conjE)+
- apply (frule ring_is_ag)
- apply (frule_tac x = y in ag_mOp_closed [of "A"], assumption+)
- apply (frule_tac x = x and y = "-\<^sub>A y" in ag_pOp_closed, assumption+)
- apply simp
- apply (subst ringhom1[of "A" "R"], assumption+)
- apply (frule_tac x = y and f = f in  rHom_inv_inv [of "A" "R"],
-                                                           assumption+)
- apply simp
- apply (rule ideal_pOp_closed, assumption+)
- apply (simp add:ideal_inv1_closed)
-apply (rule ballI)+
- apply (simp add:invim_def)
- apply (erule conjE)+
- apply (simp add:ring_tOp_closed)
- apply (subst rHom_tOp [of "A" "R"], assumption+)
- apply (frule_tac a = r in rHom_mem [of "f" "A" "R"], assumption+)
- apply (simp add:ideal_ring_multiple)
+lemma (in TwoRings) i_contract_sub:"\<lbrakk>f \<in> rHom R R'; ideal R' J \<rbrakk> \<Longrightarrow>
+                       (i_contract f R R' J) \<subseteq> carrier R"
+apply (simp add:i_contract_def invim_def)
+apply blast
 done
 
-lemma i_contract_mono:"\<lbrakk>ring A; ring R; f \<in> rHom A R; ideal R J1; ideal R J2;
- J1 \<subseteq> J2 \<rbrakk> \<Longrightarrow> i_contract f A R J1 \<subseteq> i_contract f A R J2"
+lemma (in TwoRings) i_contract_ideal:"\<lbrakk>f \<in> rHom R R'; ideal R' J \<rbrakk> \<Longrightarrow>
+                                          ideal R (i_contract f R R' J)"
+ apply (cut_tac Ring,
+        cut_tac secondR)
+apply (rule ideal_condition)
+apply (simp add:i_contract_sub)
+apply (simp add:i_contract_def invim_def)
+ apply (cut_tac ring_zero)
+ apply (cut_tac Ring)
+ apply (frule rHom_0_0[of R R' f], assumption+,
+        cut_tac Ring.ideal_zero[of R' J])
+ apply (frule sym, thin_tac "f \<zero> = \<zero>\<^bsub>R'\<^esub>", simp, blast,
+        assumption+)
+apply (rule ballI)+
+ apply (simp add:i_contract_def invim_def, (erule conjE)+)
+ apply (cut_tac ring_is_ag,
+        frule_tac x = y in aGroup.ag_mOp_closed[of R], assumption)
+ apply (simp add:aGroup.ag_pOp_closed)
+ apply (simp add:rHom_add) 
+ apply (frule_tac x = y in rHom_inv_inv[of R R' _ f], assumption+, simp,
+        thin_tac "f (-\<^sub>a y) = -\<^sub>a\<^bsub>R'\<^esub> (f y)",
+        frule_tac x = "f y" in Ring.ideal_inv1_closed[of R' J], assumption+,
+        rule Ring.ideal_pOp_closed[of R'], assumption+)
+ apply ((rule ballI)+,
+        simp add:i_contract_def invim_def, erule conjE,
+        simp add:ring_tOp_closed,
+        simp add:rHom_tOp)
+ apply (frule_tac a = r in rHom_mem[of f R R'], assumption,
+        simp add:Ring.ideal_ring_multiple[of R' J])
+done
+
+lemma (in TwoRings) i_contract_mono:"\<lbrakk>f \<in> rHom R R'; ideal R' J1; ideal R' J2;
+ J1 \<subseteq> J2 \<rbrakk> \<Longrightarrow> i_contract f R R' J1 \<subseteq> i_contract f R R' J2"
 apply (rule subsetI)
 apply (simp add:i_contract_def invim_def) apply (erule conjE)
 apply (rule subsetD, assumption+)
 done
 
-lemma i_contract_prime:"\<lbrakk>ring A; ring R; f \<in> rHom A R; prime_ideal R P\<rbrakk> \<Longrightarrow>
-                            prime_ideal A (i_contract f A R P)"
-apply (simp add:prime_ideal_def) apply (erule conjE)+
+lemma (in TwoRings) i_contract_prime:"\<lbrakk>f \<in> rHom R R'; prime_ideal R' P\<rbrakk> \<Longrightarrow> 
+                            prime_ideal R (i_contract f R R' P)"
+apply (cut_tac Ring,
+        cut_tac secondR)
+apply (simp add:prime_ideal_def, (erule conjE)+)
  apply (simp add:i_contract_ideal)
  apply (rule conjI)
  apply (rule contrapos_pp, simp+)
- apply (simp add:i_contract_def invim_def) apply (erule conjE)
+ apply (simp add:i_contract_def invim_def, erule conjE)
  apply (simp add:rHom_one)
 apply (rule ballI)+
- apply (frule_tac a = x in rHom_mem[of "f" "A" "R"], assumption+)
- apply (frule_tac a = y in rHom_mem[of "f" "A" "R"], assumption+)
+ apply (frule_tac a = x in rHom_mem[of "f" "R" "R'"], assumption+,
+        frule_tac a = y in rHom_mem[of "f" "R" "R'"], assumption+)
  apply (rule impI)
- apply (simp add:i_contract_def invim_def) apply (erule conjE)
+ apply (simp add:i_contract_def invim_def, erule conjE)
  apply (simp add:rHom_tOp)
-done
+done   
 
-lemma i_extension_ideal:"\<lbrakk>ring A; ring R; f \<in> rHom A R; ideal A I \<rbrakk> \<Longrightarrow>
-                            ideal R (i_extension f A R I)"
+lemma (in TwoRings) i_extension_ideal:"\<lbrakk>f \<in> rHom R R'; ideal R I \<rbrakk> \<Longrightarrow>
+                            ideal R' (i_extension f R R' I)"
+apply (cut_tac Ring, cut_tac secondR)
 apply (simp add:i_extension_def)
-apply (rule ideal_sum_mult [of "R" "f ` I" "carrier R"], assumption+)
+apply (rule Ring.ideal_sum_mult [of "R'" "f ` I" "carrier R'"], assumption+)
 apply (rule subsetI)
 apply (simp add:image_def)
-apply (subgoal_tac "\<forall>xa\<in>I. x = f xa \<longrightarrow> x \<in> carrier R")
- apply blast apply (thin_tac "\<exists>xa\<in>I. x = f xa")
- apply (rule ballI) apply (rule impI) apply simp
- apply (frule ideal_subset, assumption+)
- apply (simp add:rHom_mem)
-apply (frule ideal_zero, assumption+) apply simp
- apply blast
- apply (simp add:whole_ideal)
+   apply (erule bexE, frule_tac a = xa in rHom_mem[of f R R'],
+          rule ideal_subset, assumption+, simp)
+ apply (frule ideal_zero, simp, blast)
+ apply (simp add:Ring.whole_ideal[of R'])
 done
 
-lemma i_extension_mono:"\<lbrakk>ring A; ring R; f \<in> rHom A R; ideal A I1; ideal A I2;
- I1 \<subseteq> I2 \<rbrakk> \<Longrightarrow> (i_extension f A R I1) \<subseteq> (i_extension f A R I2)"
-apply (frule i_extension_ideal [of "A" "R" "f" "I2"], assumption+)
-apply (subgoal_tac "(i_extension f A R I2) <+ R")
-prefer 2 apply (simp add:ideal_def)
-apply (simp add:i_extension_def)
-apply (rule subsetI)
-apply (simp add:sum_mult_def [of "R" "f ` I1" "carrier R"])
-apply auto
-apply (subgoal_tac "set_mult R (f ` I1) (carrier R) \<subseteq>
-                                   set_mult R (f ` I2) (carrier R)")
-apply (frule extend_fun [of _ _ "set_mult R (f ` I1) (carrier R)"
-                            "set_mult R (f ` I2) (carrier R)"], assumption+)
-apply (frule ring_is_ag [of "R"])
-apply (rule eSum_mem1, assumption+)
-apply (frule sum_mult_inc_set_mult [of "R" "f ` I2" "carrier R"])
- apply (thin_tac "fa \<in> Nset n \<rightarrow> set_mult R (f ` I1) (carrier R)")
- apply (thin_tac "set_mult R (f ` I1) (carrier R) \<subseteq> set_mult R (f ` I2) (carrier R)")
- apply (thin_tac "fa \<in> Nset n \<rightarrow> set_mult R (f ` I2) (carrier R)")
- apply (thin_tac "ideal R (sum_mult R (f ` I2) (carrier R))")
- apply (rule subsetI) apply (simp add:image_def)
-prefer 2 apply (simp add:whole_ideal)
- apply (subgoal_tac "\<forall>xa\<in>I2. x = f xa \<longrightarrow> x \<in> carrier R")
- apply blast apply (thin_tac "\<exists>xa\<in>I2. x = f xa") apply (rule ballI)
- apply (rule impI) apply simp
- apply (frule ideal_subset [of _ "I2"], assumption+)
- apply (simp add:rHom_mem)
- apply (rule extend_fun [of _ _ "set_mult R (f ` I2) (carrier R)"
-                 "sum_mult R (f ` I2) (carrier R)"], assumption+)
-apply (rule subsetI)
- apply (simp add:set_mult_def)
- apply auto
-done
-
-lemma e_c_inc_self:"\<lbrakk>ring A; ring R; f \<in> rHom A R; ideal A I \<rbrakk> \<Longrightarrow>
-              I \<subseteq> i_contract f A R (i_extension f A R I)"
-apply (rule subsetI)
- apply (simp add:i_contract_def i_extension_def)
- apply (simp add:invim_def)
- apply (simp add:ideal_subset)
- apply (frule ring_one [of "R"])
- apply (frule ideal_subset, assumption+)
- apply (subgoal_tac "f x \<in> f ` I")
- apply (frule_tac a = x in rHom_mem [of "f" "A" "R"], assumption+)
- apply (subst ring_r_one [of "R", THEN sym], assumption+)
- apply (rule_tac a = "f x" in times_mem_sum_mult [of "R" "f ` I" "carrier R" _ "1\<^sub>R"], assumption+)
- apply (rule subsetI)
- apply (thin_tac " f x \<in> f ` I")
- apply (simp add:image_def)
- apply (subgoal_tac "\<forall>x\<in>I. xa = f x \<longrightarrow> xa \<in> carrier R")
- apply blast apply (thin_tac "\<exists>x\<in>I. xa = f x")
- apply (rule ballI) apply (rule impI) apply simp
- apply (thin_tac "x \<in> I") apply (frule ideal_subset, assumption+)
- apply (thin_tac "x \<in> carrier A") apply (rule rHom_mem, assumption+)
- apply simp apply assumption+
- apply (simp add:image_def)
- apply blast
-done
-
-lemma c_e_incd_self:"\<lbrakk>ring A; ring R; f \<in> rHom A R; ideal R J \<rbrakk> \<Longrightarrow>
-                           i_extension f A R (i_contract f A R J) \<subseteq> J"
+lemma (in TwoRings) i_extension_mono:"\<lbrakk>f \<in> rHom R R'; ideal R I1; ideal R I2;
+ I1 \<subseteq> I2 \<rbrakk> \<Longrightarrow> (i_extension f R R' I1) \<subseteq> (i_extension f R R' I2)"
 apply (rule subsetI)
  apply (simp add:i_extension_def)
  apply (simp add:sum_mult_def)
- apply auto
- apply (frule ring_is_ag [of "R"])
- apply (subgoal_tac "J <+ R") prefer 2 apply (simp add:ideal_def)
- apply (rule eSum_mem1, assumption+)
- apply (subgoal_tac "set_mult R (f ` i_contract f A R J) (carrier R) \<subseteq> J")
- apply (rule extend_fun, assumption+)
- apply (thin_tac "fa \<in> Nset n \<rightarrow> set_mult R (f ` i_contract f A R J) (carrier R)")
- apply (simp add:set_mult_def)
- apply (rule subsetI) apply (simp add:CollectI)
- apply auto
- apply (simp add:i_contract_def invim_def)
- apply (erule conjE)
- apply (frule rHom_mem, assumption+)
- apply (subst ring_tOp_commute, assumption+)
-apply (simp add:ideal_ring_multiple)
+ apply (erule exE, erule bexE)
+ apply (cut_tac Ring.set_mult_mono[of R' "f ` I1" "f ` I2" "carrier R'"])
+ apply (frule_tac f = fa and A = "{j. j \<le> n}" in extend_fun[of _ _ 
+     "set_mult R' (f ` I1) (carrier R')" "set_mult R' (f ` I2) (carrier R')"],
+     assumption+) apply blast
+ apply (simp add:secondR)
+ apply (simp add:image_def, rule subsetI, simp, erule bexE,
+       frule_tac h = xb in ideal_subset[of I1], assumption, simp add:rHom_mem) 
+ apply (simp add:image_def, rule subsetI, simp, erule bexE,
+       frule_tac h = xb in ideal_subset[of I2], assumption, simp add:rHom_mem)
+ apply (rule subsetI,
+        simp add:image_def, erule bexE,
+        frule_tac c = xb in subsetD[of I1 I2], assumption+, blast)
+ apply simp
+done 
+
+lemma (in TwoRings) e_c_inc_self:"\<lbrakk>f \<in> rHom R R'; ideal R I\<rbrakk> \<Longrightarrow>
+              I \<subseteq> i_contract f R R' (i_extension f R R' I)"
+apply (rule subsetI)
+ apply (simp add:i_contract_def i_extension_def invim_def)
+ apply (simp add:ideal_subset)
+ apply (cut_tac secondR,
+        frule Ring.ring_one [of "R'"])
+ apply (frule_tac h = x in ideal_subset[of I], assumption,
+        frule_tac f = f and A = R and R = R' and a = x in rHom_mem, assumption)
+ apply (frule_tac t = "f x" in Ring.ring_r_one[THEN sym, of R'], assumption)
+ apply (frule_tac a = "f x" and b = "1\<^sub>r\<^bsub>R'\<^esub>" in Ring.times_mem_sum_mult[of R'
+                 "f ` I" "carrier R'"],
+       rule subsetI,
+       simp add:image_def, erule bexE,
+       frule_tac h = xb in ideal_subset[of I], assumption,
+       simp add:rHom_mem, simp,
+       simp add:image_def, blast, assumption+)
+ apply simp
+done
+       
+lemma (in TwoRings) c_e_incd_self:"\<lbrakk>f \<in> rHom R R'; ideal R' J \<rbrakk> \<Longrightarrow>
+                          i_extension f R R' (i_contract f R R' J) \<subseteq> J"
+apply (rule subsetI)
+ apply (simp add:i_extension_def)
+ apply (simp add:sum_mult_def)
+ apply (erule exE, erule bexE)
+ apply (cut_tac secondR,
+        frule_tac n = n and f = fa in Ring.ideal_nsum_closed[of R' J ],
+        assumption)
+ apply (rule allI, rule impI) apply (
+        frule_tac f = fa and A = "{j. j \<le> n}" and 
+        B = "set_mult R' (f ` i_contract f R R' J) (carrier R')" and x = j in
+        funcset_mem, simp) apply (
+  thin_tac "fa \<in> {j. j \<le> n} \<rightarrow> set_mult R' (f ` i_contract f R R' J) (carrier R')")
+  apply (simp add:set_mult_def, (erule bexE)+,
+         simp add:i_contract_def invim_def, erule conjE)
+  apply (frule_tac x = "f xa" and r = y in Ring.ideal_ring_multiple1[of R' J],
+         assumption+, simp)
+       
+  apply simp
 done
 
-lemma c_e_c_eq_c:"\<lbrakk>ring A; ring R; f \<in> rHom A R; ideal R J \<rbrakk> \<Longrightarrow>
-  i_contract f A R (i_extension f A R (i_contract f A R J))
-                                          = i_contract f A R J"
-apply (frule i_contract_ideal [of "A" "R" "f" "J"], assumption+)
-apply (frule e_c_inc_self [of "A" "R" "f" "i_contract f A R J"], assumption+)
-apply (frule c_e_incd_self [of "A" "R" "f" "J"], assumption+)
-apply (frule i_contract_mono [of "A" "R" "f"
-         "i_extension f A R (i_contract f A R J)" "J"], assumption+)
+lemma (in TwoRings) c_e_c_eq_c:"\<lbrakk>f \<in> rHom R R'; ideal R' J \<rbrakk> \<Longrightarrow>
+  i_contract f R R' (i_extension f R R' (i_contract f R R' J)) 
+                                          = i_contract f R R' J"
+apply (frule i_contract_ideal [of "f" "J"], assumption)
+apply (frule e_c_inc_self [of "f" "i_contract f R R' J"], assumption+)
+apply (frule c_e_incd_self [of "f" "J"], assumption+)
+apply (frule i_contract_mono [of "f" 
+         "i_extension f R R' (i_contract f R R' J)" "J"])
 apply (rule i_extension_ideal, assumption+)
 apply (rule equalityI, assumption+)
 done
 
-lemma e_c_e_eq_e:"\<lbrakk>ring A; ring R; f \<in> rHom A R; ideal A I \<rbrakk> \<Longrightarrow>
-  i_extension f A R (i_contract f A R (i_extension f A R I))
-                                          = i_extension f A R I"
-apply (frule i_extension_ideal [of "A" "R" "f" "I"], assumption+)
-apply (frule c_e_incd_self [of "A" "R" "f" "i_extension f A R I"], assumption+)
+lemma (in TwoRings) e_c_e_eq_e:"\<lbrakk>f \<in> rHom R R'; ideal R I \<rbrakk> \<Longrightarrow>
+  i_extension f R R' (i_contract f R R' (i_extension f R R' I)) 
+                                          = i_extension f R R' I"
+apply (frule i_extension_ideal [of "f" "I"], assumption+)
+apply (frule c_e_incd_self [of "f" "i_extension f R R' I"], assumption+)
 apply (rule equalityI, assumption+)
- apply (thin_tac "i_extension f A R (i_contract f A R (i_extension f A R I))
-       \<subseteq> i_extension f A R I")
-apply (frule e_c_inc_self [of "A" "R" "f" "I"], assumption+)
-apply (rule i_extension_mono [of "A" "R" "f" "I"
-               "i_contract f A R (i_extension f A R I)"], assumption+)
+ apply (thin_tac "i_extension f R R' (i_contract f R R' (i_extension f R R' I))
+       \<subseteq> i_extension f R R' I")
+apply (frule e_c_inc_self [of "f" "I"], assumption+)
+apply (rule i_extension_mono [of "f" "I" 
+               "i_contract f R R' (i_extension f R R' I)"], assumption+)
 apply (rule i_contract_ideal, assumption+)
 done
 
-chapter "5. Modules"
+section "11. complete system of representatives"
 
-section "1. Basic properties of Modules"
+constdefs (structure R)
+ csrp_fn :: "[_, 'a set] \<Rightarrow> 'a set \<Rightarrow> 'a"
+  "csrp_fn R I == \<lambda>x\<in>carrier (R /\<^sub>r I). (if x = I then \<zero> else SOME y. y \<in> x)"
+ 
+ csrp :: "[_ , 'a set] \<Rightarrow> 'a set"
+  "csrp R I == (csrp_fn R I) ` (carrier (R /\<^sub>r I))"
 
-record ('a, 'b) ModuleType = "'a AgroupType" +
-  sprod  :: "'b \<Rightarrow> 'a \<Rightarrow> 'a"
+(** complete system of representatives having 1-1 correspondence with
+    carrier  (R /\<^sub>r I) **)
 
-constdefs
- Module ::"[('b, 'more) RingType_scheme, ('a, 'b, 'more1) ModuleType_scheme] \<Rightarrow> bool" (infixl "module" 100)
- "Module R M  == ring R \<and> agroup M \<and>
-     sprod M \<in> carrier R \<rightarrow> carrier M \<rightarrow> carrier M \<and>
-  (\<forall>a \<in> carrier R. \<forall>b\<in> carrier R. \<forall>m\<in>carrier M. \<forall>n\<in>carrier M.
-   sprod M (tOp R a b) m = sprod M a (sprod M b m) \<and>
-   sprod M (pOp R a b) m = pOp M (sprod M a m) (sprod M b m) \<and>
-   sprod M a (pOp M m n) = pOp M (sprod M a m) (sprod M a n) \<and>
-   sprod M (1\<^sub>R) m = m)"
-
-submodule :: "[('b, 'more) RingType_scheme, ('a, 'b, 'more1) ModuleType_scheme,
- 'a set] \<Rightarrow> bool"
- "submodule R M H == H \<subseteq> carrier M \<and> H <+ M \<and> (\<forall>a\<in>carrier R. \<forall>m\<in>H.
-  sprod M a m \<in> H)"
-
-constdefs
-mdl :: "[('a, 'b, 'more1) ModuleType_scheme, 'a set] \<Rightarrow> ('a, 'b) ModuleType"
- "mdl M H == \<lparr>carrier = H, pOp = pOp M, mOp = mOp M, zero = zero M,
-    sprod = sprod M\<rparr>"
-
-syntax
-  "@SPROD" :: "['b, ('a, 'b, 'more1) ModuleType_scheme] \<Rightarrow> 'a \<Rightarrow> 'a"
-              ("(3 _/ \<star>\<^sub>_/ _)" [68,68,69]68 )
-
-translations
-  "a \<star>\<^sub>M m" == "sprod M a m"
-
-lemma module_is_ag:"\<lbrakk>ring R; R module M\<rbrakk> \<Longrightarrow> agroup M"
-apply (simp add:Module_def)
-done
-
-lemma module_inc_zero:"\<lbrakk>ring R; R module M\<rbrakk> \<Longrightarrow> 0\<^sub>M \<in> carrier M"
-apply (frule module_is_ag, assumption+)
-apply (simp add:ag_inc_zero)
-done
-
-lemma submodule_subset1:"\<lbrakk>ring R; R module M; submodule R M H; h \<in> H \<rbrakk> \<Longrightarrow>
-                            h \<in> carrier M"
-apply (simp add:submodule_def)
-apply (erule conjE)+
-apply (simp add:subsetD)
-done
-
-lemma submodule_inc_0:"\<lbrakk>ring R; R module M; submodule R M H\<rbrakk> \<Longrightarrow>
-                                           0\<^sub>M \<in> H"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (simp add:submodule_def) apply (erule conjE)+
-apply (rule asubg_inc_zero, assumption+)
-done
-
-lemma sprod_one:"\<lbrakk>ring R; R module M; m \<in> carrier M\<rbrakk> \<Longrightarrow>
-           (1\<^sub>R) \<star>\<^sub>M m = m"
-apply (frule ring_one)
-apply (simp add:Module_def)
-done
-
-lemma sprod_mem:"\<lbrakk>ring R; R module M; a \<in> carrier R; m \<in> carrier M\<rbrakk> \<Longrightarrow>
-           a \<star>\<^sub>M m \<in> carrier M"
-apply (simp add:Module_def)
-apply (erule conjE)+
-apply (simp add:bivar_fun_mem)
-done
-
-lemma submodule_sprod_closed:"\<lbrakk>ring R; R module M; submodule R M H;
- a \<in> carrier R; h \<in> H\<rbrakk> \<Longrightarrow>  a \<star>\<^sub>M h \<in> H"
-apply (simp add:submodule_def)
-done
-
-lemma sprod_assoc:"\<lbrakk>ring R; R module  M; a \<in> carrier R; b \<in> carrier R;
- m \<in> carrier M\<rbrakk> \<Longrightarrow> a \<cdot>\<^sub>R b \<star>\<^sub>M m =  a \<star>\<^sub>M ( b \<star>\<^sub>M m)"
-apply (simp add:Module_def)
-done
-
-lemma one_module_id:"\<lbrakk> ring R; R module M; m \<in> carrier M \<rbrakk> \<Longrightarrow>
-            sprod M (1\<^sub>R) m = m"
-apply (frule ring_one)
-apply (simp add:Module_def)
-done
-
-lemma sprod_distrib1:"\<lbrakk>ring R; R module M; a \<in> carrier R; b \<in> carrier R;
- m \<in> carrier M\<rbrakk> \<Longrightarrow> ( a +\<^sub>R b) \<star>\<^sub>M m =   a \<star>\<^sub>M m +\<^sub>M  b \<star>\<^sub>M m"
-apply (simp add:Module_def)
-done
-
-lemma sprod_distrib2:"\<lbrakk>ring R; R module M; a \<in> carrier R; m \<in> carrier M;
- n \<in> carrier M\<rbrakk> \<Longrightarrow> a \<star>\<^sub>M ( m +\<^sub>M n) = a \<star>\<^sub>M m +\<^sub>M  a \<star>\<^sub>M n"
-apply (simp add:Module_def)
-done
-
-lemma sprod_0_m:"\<lbrakk>ring R; R module M; m \<in> carrier M\<rbrakk> \<Longrightarrow> 0\<^sub>R \<star>\<^sub>M m = 0\<^sub>M"
-apply (frule ring_is_ag)
-apply (frule ag_inc_zero [of "R"])
-apply (frule sprod_distrib1 [of "R" "M" "0\<^sub>R" "0\<^sub>R" "m"], assumption+)
-apply (frule sprod_mem [of "R" "M" "0\<^sub>R" "m"], assumption+)
-apply (simp add:ag_l_zero) apply (frule sym)
-apply (thin_tac "0\<^sub>R \<star>\<^sub>M m = 0\<^sub>R \<star>\<^sub>M m +\<^sub>M  0\<^sub>R \<star>\<^sub>M m")
-apply (frule module_is_ag [of "R" "M"], assumption)
-apply (thin_tac "agroup R") apply (frule ag_eq_sol1 [of "M" "0\<^sub>R \<star>\<^sub>M m" "0\<^sub>R \<star>\<^sub>M m" "0\<^sub>R \<star>\<^sub>M m"], assumption+)
-apply (simp add:ag_l_inv1)
-done
-
-lemma sprod_a_0:"\<lbrakk>ring R; R module M; a \<in> carrier R\<rbrakk> \<Longrightarrow> a \<star>\<^sub>M (0\<^sub>M) = 0\<^sub>M"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule ag_inc_zero [of "M"])
-apply (frule sprod_distrib2 [of "R" "M" "a" "0\<^sub>M" "0\<^sub>M"], assumption+)
-apply (frule sprod_mem [of "R" "M" "a" "0\<^sub>M"], assumption+)
-apply (simp add:ag_l_zero) apply (frule sym)
-apply (thin_tac "a \<star>\<^sub>M 0\<^sub>M = a \<star>\<^sub>M 0\<^sub>M +\<^sub>M  (a \<star>\<^sub>M 0\<^sub>M)")
-apply (frule ag_eq_sol1 [of "M" "a \<star>\<^sub>M (0\<^sub>M)" "a \<star>\<^sub>M (0\<^sub>M)" "a \<star>\<^sub>M (0\<^sub>M)"], assumption+)
-apply (simp add:ag_l_inv1)
-done
-
-lemma sprod_minus_am:"\<lbrakk>ring R; R module M; a \<in> carrier R; m \<in> carrier M\<rbrakk>
-   \<Longrightarrow> -\<^sub>M (a \<star>\<^sub>M m) = a \<star>\<^sub>M (-\<^sub>M m)"
-apply (frule module_is_ag, assumption+)
-apply (frule ag_mOp_closed [of "M" "m"], assumption+)
-apply (frule sprod_distrib2 [of "R" "M" "a" "m" "-\<^sub>M m"], assumption+)
-apply (simp add:ag_r_inv1)
-apply (simp add:sprod_a_0) apply (frule sym)
- apply (thin_tac "0\<^sub>M =   a \<star>\<^sub>M m +\<^sub>M  a \<star>\<^sub>M (-\<^sub>M m)")
- apply (frule sprod_mem [of "R" "M" "a" "m"], assumption+)
- apply (frule sprod_mem [of "R" "M" "a" "-\<^sub>M m"], assumption+)
- apply (frule ag_eq_sol1 [of "M" "a \<star>\<^sub>M m" "a \<star>\<^sub>M (-\<^sub>M m)" "0\<^sub>M"], assumption+)
- apply (simp add:ag_inc_zero) apply assumption
- apply (frule ag_mOp_closed [of "M" "a \<star>\<^sub>M m"], assumption+)
- apply (thin_tac "a \<star>\<^sub>M m +\<^sub>M  a \<star>\<^sub>M (-\<^sub>M m) = 0\<^sub>M")
- apply (simp add:ag_r_zero)
-done
-
-lemma sprod_minus_am1:"\<lbrakk>ring R; R module M; a \<in> carrier R; m \<in> carrier M\<rbrakk>
-   \<Longrightarrow> -\<^sub>M (a \<star>\<^sub>M m) = (-\<^sub>R a) \<star>\<^sub>M m"
-apply (frule ring_is_ag)
-apply (frule ag_mOp_closed [of "R" "a"], assumption+)
-apply (frule module_is_ag, assumption+)
-apply (frule sprod_distrib1 [of "R" "M" "a" "-\<^sub>R a" "m"], assumption+)
-apply (simp add:ag_r_inv1 [of "R"])
-apply (simp add:sprod_0_m) apply (frule sym)
- apply (thin_tac "0\<^sub>M =   a \<star>\<^sub>M m +\<^sub>M  (-\<^sub>R a) \<star>\<^sub>M m")
- apply (frule sprod_mem [of "R" "M" "a" "m"], assumption+)
- apply (frule sprod_mem [of "R" "M" "-\<^sub>R a" "m"], assumption+)
- apply (frule ag_eq_sol1 [of "M" "a \<star>\<^sub>M m" "(-\<^sub>R a) \<star>\<^sub>M m" "0\<^sub>M"], assumption+)
- apply (simp add:ag_inc_zero [of "M"]) apply assumption
- apply (frule ag_mOp_closed [of "M" "a \<star>\<^sub>M m"], assumption+)
- apply (thin_tac "a \<star>\<^sub>M m +\<^sub>M (-\<^sub>R a) \<star>\<^sub>M m = 0\<^sub>M")
- apply (simp add:ag_r_zero)
-done
-
-lemma submodule_0:"\<lbrakk>ring R; R module M \<rbrakk> \<Longrightarrow> submodule R M {0\<^sub>M}"
-apply (simp add:submodule_def)
-apply (frule module_is_ag, assumption+)
-apply (simp add:ag_inc_zero)
-apply (rule conjI)
- apply (simp add:asubgroup_def)
- apply (subgoal_tac "0\<^sub>M = GroupType.one (b_ag M)")
- apply (frule b_ag_group)
- apply (simp add:special_subg_e)
-apply (simp add:b_ag_def)
-apply (rule ballI)
-apply (simp add:sprod_a_0)
-done
-
-lemma submodule_whole:"\<lbrakk>ring R; R module M \<rbrakk> \<Longrightarrow> submodule R M (carrier M)"
-apply (simp add:submodule_def)
-apply (frule module_is_ag, assumption+)
-apply (rule conjI)
- apply (simp add:asubgroup_def)
- apply (frule b_ag_group)
- apply (simp add:ag_carrier_carrier [THEN sym])
- apply (simp add:special_subg_G)
-apply (rule ballI)
-apply (simp add:sprod_mem)
-done
-
-lemma submodule_pOp_closed:"\<lbrakk>ring R; R module M; submodule R M H; h \<in> H;
- k \<in> H \<rbrakk> \<Longrightarrow> h +\<^sub>M k \<in> H"
-apply (simp add:submodule_def)
-apply (erule conjE)+
-apply (thin_tac "\<forall>a\<in>carrier R. \<forall>m\<in>H.  a \<star>\<^sub>M m \<in> H")
-apply (simp add:asubgroup_def)
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (simp add:agop_gop [THEN sym])
-apply (frule b_ag_group)
-apply (simp add:subg_tOp_closed)
-done
-
-lemma submodule_mOp_closed:"\<lbrakk>ring R; R module M; submodule R M H; h \<in> H \<rbrakk>
- \<Longrightarrow> -\<^sub>M h \<in> H"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (simp add:submodule_def) apply (erule conjE)+
-apply (rule asubg_mOp_closed, assumption+)
-done
-
-constdefs
- mHom :: "[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme,
-                    ('c, 'b, 'm2) ModuleType_scheme] \<Rightarrow>  ('a \<Rightarrow> 'c) set"
-        (*  ("(3HOM\<^sub>_/ _/ _)" [90, 90, 91]90 ) *)
-
- "mHom R M N == {f. f \<in> aHom M N \<and>
-             (\<forall>a\<in>carrier R. \<forall>m\<in>carrier M. f (a \<star>\<^sub>M m) = a \<star>\<^sub>N (f m))}"
-
- mimg ::"[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme,
-  ('c, 'b, 'm2) ModuleType_scheme, 'a \<Rightarrow> 'c] \<Rightarrow>  ('c, 'b) ModuleType"
-                 ("(4mimg\<^sub>_ \<^sub>_\<^sub>,\<^sub>_/ _)" [88,88,88,89]88)
- "mimg\<^sub>R \<^sub>M\<^sub>,\<^sub>N f == mdl N (f ` (carrier M))"
-
- mzeromap::"[('a, 'b, 'm1) ModuleType_scheme, ('c, 'b, 'm2) ModuleType_scheme]
-                              \<Rightarrow> ('a \<Rightarrow> 'c)"
-  "mzeromap M N == \<lambda>x\<in>carrier M. 0\<^sub>N"
-
-lemma mHom_test:"\<lbrakk>ring R;R module M; R module N; f \<in> carrier M \<rightarrow> carrier N \<and> f \<in> extensional (carrier M) \<and> (\<forall>m\<in>carrier M. \<forall>n\<in>carrier M. f (m +\<^sub>M n) = f m +\<^sub>N (f n)) \<and> (\<forall>a\<in>carrier R. \<forall>m\<in>carrier M. f (a \<star>\<^sub>M m) = a \<star>\<^sub>N (f m))\<rbrakk> \<Longrightarrow>
-  f \<in> mHom R M N"
-apply (simp add:mHom_def)
-apply (simp add:aHom_def)
-done
-
-lemma mHom_mem:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N; m \<in> carrier M\<rbrakk>
- \<Longrightarrow> f m \<in> carrier N"
-apply (simp add:mHom_def aHom_def) apply (erule conjE)+
-apply (simp add:funcset_mem)
-done
-
-lemma mHom_add:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N; m \<in> carrier M;n \<in> carrier M\<rbrakk> \<Longrightarrow> f (m +\<^sub>M n) = f m +\<^sub>N (f n)"
-apply (simp add:mHom_def) apply (erule conjE)+
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (simp add:aHom_add)
-done
-
-lemma mHom_0:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N\<rbrakk> \<Longrightarrow>
-                   f (0\<^sub>M) = 0\<^sub>N"
-apply (simp add:mHom_def) apply (erule conjE)+
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (simp add:aHom_0_0)
-done
-
-lemma mHom_inv:"\<lbrakk>ring R; R module M; R module N; m \<in> carrier M; f \<in> mHom R M N\<rbrakk> \<Longrightarrow> f (-\<^sub>M m) = -\<^sub>N (f m)"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (simp add:mHom_def) apply (erule conjE)+
-apply (rule aHom_inv_inv, assumption+)
-done
-
-lemma mHom_lin:"\<lbrakk>ring R; R module M; R module N; m \<in> carrier M; f \<in> mHom R M N;
- a \<in> carrier R\<rbrakk> \<Longrightarrow> f (a \<star>\<^sub>M m) = a \<star>\<^sub>N (f m)"
-apply (simp add:mHom_def)
-done
-
-lemma mker_inc_one:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N \<rbrakk> \<Longrightarrow>
-                           0\<^sub>M \<in> (ker\<^sub>M\<^sub>,\<^sub>N f)"
-apply (simp add:ker_def)
-apply (simp add:module_inc_zero)
-apply (simp add:mHom_0)
-done
-
-lemma mHom_eq_ker:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N; a\<in>carrier M; b\<in> carrier M; a +\<^sub>M (-\<^sub>M b) \<in> ker\<^sub>M\<^sub>,\<^sub>N f\<rbrakk> \<Longrightarrow> f a = f b"
-apply (simp add:ker_def) apply (erule conjE)
-apply (frule module_is_ag[of "R" "M"], assumption+)
- apply (frule ag_mOp_closed [of "M" "b"], assumption+)
-apply (simp add:mHom_add)
-apply (simp add:mHom_inv) apply (thin_tac "agroup M")
-apply (frule mHom_mem [of "R" "M" "N" "f" "a"], assumption+)
-apply (frule mHom_mem [of "R" "M" "N" "f" "b"], assumption+)
-apply (frule module_is_ag[of "R" "N"], assumption+)
- apply (frule ag_mOp_closed [of "N" "f b"], assumption+)
- apply (subgoal_tac "f a +\<^sub>N (-\<^sub>N (f b)) +\<^sub>N (f b) = 0\<^sub>N +\<^sub>N (f b)")
- prefer 2 apply simp
- apply (thin_tac "f a +\<^sub>N (-\<^sub>N (f b)) = 0\<^sub>N")
- apply (simp add:ag_pOp_assoc)
- apply (simp add:ag_l_inv1) apply (simp add:ag_r_zero)
- apply (simp add:ag_l_zero)
-done
-
-lemma mker_submodule:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N\<rbrakk> \<Longrightarrow>
-         submodule R M (ker\<^sub>M\<^sub>,\<^sub>N f  )"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (simp add:submodule_def)
+lemma (in Ring) csrp_mem:"\<lbrakk>ideal R I; a \<in> carrier R\<rbrakk> \<Longrightarrow>
+                           csrp_fn R I (a \<uplus>\<^bsub>R\<^esub> I) \<in> a \<uplus>\<^bsub>R\<^esub> I"
+apply (simp add:csrp_fn_def qring_carrier) 
+apply (case_tac "a \<uplus>\<^bsub>R\<^esub> I = I") apply simp
+ apply (rule conjI, rule impI)
+ apply (simp add:ideal_zero)
+ apply (rule impI)
+ apply (cut_tac ring_zero)
+ apply (frule_tac b = \<zero>  in forball_spec1, assumption+)
+ apply (thin_tac "\<forall>a\<in>carrier R. a \<uplus>\<^bsub>R\<^esub> I \<noteq> I")
+ apply (frule ideal_zero[of "I"])
+ apply (frule ar_coset_same4[of "I" "\<zero>"], assumption+, simp)
+apply simp
  apply (rule conjI)
- apply (rule subsetI) apply (simp add:ker_def)
- apply (rule conjI)
- apply (simp add:mHom_def) apply (erule conjE)+
- apply (simp add:ker_subg)
-apply (rule ballI)+
- apply (simp add:ker_def) apply (erule conjE)
- apply (simp add:sprod_mem)
- apply (subst mHom_lin [of "R" "M" "N" _ "f"], assumption+)
+ apply (rule impI, rule someI2_ex)
+ apply (frule a_in_ar_coset[of "I" "a"], assumption+, blast, assumption+)
+apply (rule impI)
+ apply (frule_tac b = a in forball_spec1, assumption+,
+        thin_tac "\<forall>aa\<in>carrier R. aa \<uplus>\<^bsub>R\<^esub> I \<noteq> a \<uplus>\<^bsub>R\<^esub> I", simp)
+done
+
+lemma (in Ring) csrp_same:"\<lbrakk>ideal R I; a \<in> carrier R\<rbrakk> \<Longrightarrow>
+                           csrp_fn R I (a \<uplus>\<^bsub>R\<^esub> I) \<uplus>\<^bsub>R\<^esub> I = a \<uplus>\<^bsub>R\<^esub> I"
+apply (frule csrp_mem[of "I" "a"], assumption+)
+apply (rule ar_cos_same[of "a" "I" "csrp_fn R I (a \<uplus>\<^bsub>R\<^esub> I)"], assumption+)
+done
+
+lemma (in Ring) csrp_mem1:"\<lbrakk>ideal R I; x \<in> carrier (R /\<^sub>r I)\<rbrakk> \<Longrightarrow>
+                           csrp_fn R I x \<in> x"
+apply (simp add:qring_carrier, erule bexE, frule sym,
+       thin_tac "a \<uplus>\<^bsub>R\<^esub> I = x", simp)
+apply (simp add:csrp_mem)
+done
+
+lemma (in Ring) csrp_fn_mem:"\<lbrakk>ideal R I; x \<in> carrier (R /\<^sub>r I)\<rbrakk> \<Longrightarrow>
+                              (csrp_fn R I x) \<in> carrier R"
+apply (simp add:qring_carrier, erule bexE, frule sym,
+       thin_tac "a \<uplus>\<^bsub>R\<^esub> I = x", simp,
+       frule_tac a = a in csrp_mem[of "I"], assumption+) 
+apply (rule_tac a = a and x = "csrp_fn R I (a \<uplus>\<^bsub>R\<^esub> I)" in 
+       ar_coset_subsetD[of  "I"], assumption+)
+done
+
+lemma (in Ring) csrp_eq_coset:"\<lbrakk>ideal R I; x \<in> carrier (R /\<^sub>r I)\<rbrakk> \<Longrightarrow>
+                           (csrp_fn R I x) \<uplus>\<^bsub>R\<^esub> I = x"
+apply (simp add:qring_carrier, erule bexE)
+apply (frule sym, thin_tac "a \<uplus>\<^bsub>R\<^esub> I = x", simp)
+ apply (frule_tac a = a in csrp_mem[of  "I"], assumption+)
+apply (rule ar_cos_same, assumption+)
+done 
+
+lemma (in Ring) csrp_nz_nz:"\<lbrakk>ideal R I; x \<in> carrier (R /\<^sub>r I);
+        x \<noteq> \<zero>\<^bsub>(R /\<^sub>r I)\<^esub>\<rbrakk> \<Longrightarrow> (csrp_fn R I x) \<noteq> \<zero>"
+apply (rule contrapos_pp, simp+)
+apply (frule csrp_eq_coset[of "I" "x"], assumption+, simp)
+apply (simp add:qring_zero[of "I"])
+apply (frule ideal_zero[of  "I"]) apply (
+       cut_tac ring_zero)
+       apply (simp add:Qring_fix1 [of "\<zero>" "I"])
+done
+
+
+lemma (in Ring) csrp_diff_in_vpr:"\<lbrakk>ideal R I; x \<in> carrier R\<rbrakk> \<Longrightarrow>
+              x \<plusminus> (-\<^sub>a (csrp_fn R I (pj R I x))) \<in> I"
+apply (frule csrp_mem[of "I" "x"], 
+       frule csrp_same[of "I" "x"], 
+       simp add:pj_mem, assumption,
+       frule  ar_coset_subsetD[of I x "csrp_fn R I (x \<uplus>\<^bsub>R\<^esub> I)"],
+       assumption+)  
+apply (frule belong_ar_coset2[of I x "csrp_fn R I (x \<uplus>\<^bsub>R\<^esub> I)"], assumption+,
+     frule ideal_inv1_closed[of I "csrp_fn R I (x \<uplus>\<^bsub>R\<^esub> I) \<plusminus> -\<^sub>a x"], assumption+,
+     cut_tac ring_is_ag,
+     frule aGroup.ag_mOp_closed[of R x], assumption,
+     simp add:aGroup.ag_pOp_commute[of R "csrp_fn R I (x \<uplus>\<^bsub>R\<^esub> I)" "-\<^sub>a x"]) 
+apply (simp add:aGroup.ag_p_inv[of R "-\<^sub>a x" "csrp_fn R I (x \<uplus>\<^bsub>R\<^esub> I)"],
+       simp add:aGroup.ag_inv_inv,
+       cut_tac Ring, simp add:pj_mem[of R I x])
+done
+
+lemma (in Ring) csrp_pj:"\<lbrakk>ideal R I; x \<in> carrier (R /\<^sub>r I)\<rbrakk> \<Longrightarrow>
+                 (pj R I) (csrp_fn R I x) = x"
+apply(cut_tac Ring,
+      frule csrp_fn_mem[of "I" "x"], assumption+,
+      simp add:pj_mem[of "R" "I" "csrp_fn R I x"],
+      simp add:csrp_eq_coset)
+done
+
+section "12. polynomial ring" 
+
+text{* In this section, we treat a ring of polynomials over a ring S.
+       Numbers are of type ant *}
+
+constdefs
+  pol_coeff::"[('a, 'more) Ring_scheme, (nat \<times> (nat \<Rightarrow> 'a))] \<Rightarrow> bool"
+   "pol_coeff S c ==  (\<forall>j \<le> (fst c). (snd c) j \<in> carrier S)"
+
+  c_max::"[('a, 'more) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat"
+  "c_max S c == if {j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>} = {} then 0 else
+                   n_max {j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>}"
+
+ polyn_expr::"[('a, 'more) Ring_scheme, 'a, nat, nat \<times> (nat \<Rightarrow> 'a)]  \<Rightarrow> 'a"
+ "polyn_expr R X k c == nsum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R j\<^esup>)) k"
+
+  algfree_cond::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 
+                                                'a] \<Rightarrow> bool"
+  "algfree_cond R S X == \<forall>c. pol_coeff S c \<and> (\<forall>k \<le> (fst c).  
+             (nsum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R j\<^esup>)) k = \<zero>\<^bsub>R\<^esub> \<longrightarrow> 
+             (\<forall>j \<le> k. (snd c) j = \<zero>\<^bsub>S\<^esub>)))"
+
+locale PolynRg = Ring +
+       fixes S (structure)
+       fixes X (structure)
+       assumes X_mem_R:"X \<in> carrier R"
+       and not_zeroring:"\<not> Zero_ring S"
+       and subring:  "Subring R S"
+       and algfree: "algfree_cond R S X"
+       and S_X_generate:"x \<in> carrier R \<Longrightarrow>
+           \<exists>f. pol_coeff S f \<and> x = polyn_expr R X (fst f) f"
+
+(** a polynomial is an element of a polynomial ring **)
+section "13. addition and multiplication of polyn_exprs"
+
+subsection "simple properties of a polyn_ring"
+
+lemma Subring_subset:"Subring R S \<Longrightarrow> carrier S \<subseteq> carrier R"
+by (simp add:Subring_def)
+
+lemma (in Ring) subring_Ring:"Subring R S \<Longrightarrow> Ring S"
+by (simp add:Subring_def)
+
+lemma (in Ring) mem_subring_mem_ring:"\<lbrakk>Subring R S; x \<in> carrier S\<rbrakk> \<Longrightarrow>
+                      x \<in> carrier R"
+by (simp add:Subring_def, (erule conjE)+, simp add: subsetD)
+
+lemma (in Ring) Subring_pOp_ring_pOp:"\<lbrakk>Subring R S; a \<in> carrier S;
+ b \<in> carrier S \<rbrakk> \<Longrightarrow> a \<plusminus>\<^bsub>S\<^esub> b = a \<plusminus> b"
+apply (simp add:Subring_def, (erule conjE)+)
+apply (frule rHom_add[of "ridmap S" S R a b], assumption+)
+apply (cut_tac Ring.ring_is_ag[of S],
+       frule aGroup.ag_pOp_closed[of S a b], assumption+,
+       simp add:ridmap_def, assumption)
+done
+
+lemma (in Ring) Subring_tOp_ring_tOp:"\<lbrakk>Subring R S; a \<in> carrier S;
+              b \<in> carrier S \<rbrakk> \<Longrightarrow> a \<cdot>\<^sub>r\<^bsub>S\<^esub> b = a \<cdot>\<^sub>r b"
+apply (simp add:Subring_def, (erule conjE)+)
+apply (frule rHom_tOp[of "S" "R" "a" "b" "ridmap S"], assumption+)
+apply (frule Ring.ring_tOp_closed[of "S" "a" "b"], assumption+,
+       simp add:ridmap_def)
+done
+
+lemma (in Ring) Subring_one_ring_one:"Subring R S \<Longrightarrow> 1\<^sub>r\<^bsub>S\<^esub> = 1\<^sub>r"
+apply (simp add:Subring_def, (erule conjE)+)
+apply (frule rHom_one[of "S" "R" "ridmap S"], assumption+)
+apply (simp add:ridmap_def, simp add:Ring.ring_one[of S])
+done
+
+lemma (in Ring) Subring_zero_ring_zero:"Subring R S \<Longrightarrow> \<zero>\<^bsub>S\<^esub> = \<zero>"
+apply (simp add:Subring_def, (erule conjE)+,
+       frule rHom_0_0[of "S" "R" "ridmap S"], assumption+,
+       simp add:ridmap_def, simp add:Ring.ring_zero[of "S"])
+done
+
+lemma (in Ring) Subring_minus_ring_minus:"\<lbrakk>Subring R S; x \<in> carrier S\<rbrakk>
+      \<Longrightarrow> -\<^sub>a\<^bsub>S\<^esub> x = -\<^sub>a x"
+apply (simp add:Subring_def, (erule conjE)+, simp add:rHom_def, (erule conjE)+)
+apply (cut_tac ring_is_ag, frule Ring.ring_is_ag[of "S"])
+apply (frule aHom_inv_inv[of "S" "R" "ridmap S" "x"], assumption+,
+       frule aGroup.ag_mOp_closed[of "S" "x"], assumption+)
+apply (simp add:ridmap_def)
+done 
+
+lemma (in PolynRg) Subring_pow_ring_pow:"x \<in> carrier S \<Longrightarrow>
+                   x^\<^bsup>S n\<^esup> = x^\<^bsup>R n\<^esup>"
+apply (cut_tac subring, frule subring_Ring)          
+apply (induct_tac n)
+ apply (simp, simp add:Subring_one_ring_one)
+apply (frule_tac n = n in Ring.npClose[of S x], assumption+)
+apply (simp add:Subring_tOp_ring_tOp)
+done
+
+lemma (in PolynRg) is_Ring:"Ring R"
+by unfold_locales
+
+lemma (in PolynRg) polyn_ring_nonzero:"1\<^sub>r \<noteq> \<zero>"
+apply (cut_tac Ring, cut_tac subring)
+apply (simp add:Subring_zero_ring_zero[THEN sym])
+apply (simp add:Subring_one_ring_one[THEN sym])
+apply (simp add:not_zeroring)
+done
+
+lemma (in PolynRg) polyn_ring_S_nonzero:"1\<^sub>r\<^bsub>S\<^esub> \<noteq> \<zero>\<^bsub>S\<^esub>"
+apply (cut_tac subring)
+apply (simp add:Subring_zero_ring_zero)
+apply (simp add:Subring_one_ring_one)
+apply (simp add:polyn_ring_nonzero)
+done
+
+lemma (in PolynRg) polyn_ring_X_nonzero:"X \<noteq> \<zero>"
+apply (cut_tac algfree,
+       cut_tac subring)
+apply (simp add:algfree_cond_def)
+apply (rule contrapos_pp, simp+)
+apply (drule_tac m = "Suc 0" in nat_forall_spec)
+ apply (subgoal_tac "pol_coeff S ((Suc 0), 
+          (\<lambda>j\<in>{l. l \<le> (Suc 0)}. if j = 0 then \<zero>\<^bsub>S\<^esub> else 1\<^sub>r\<^bsub>S\<^esub>))")
+ apply (drule_tac a = "\<lambda>j\<in>{l. l \<le> (Suc 0)}. if j = 0 then \<zero>\<^bsub>S\<^esub> else 1\<^sub>r\<^bsub>S\<^esub>" in 
+        forall_spec1) 
+ apply (erule conjE, simp)
+ apply (simp only:Nset_1)
+ apply (drule_tac a = "Suc 0" in forall_spec, simp)
  apply simp
- apply (simp add:sprod_a_0)
+ apply (cut_tac subring, simp add:Subring_zero_ring_zero,
+        simp add:Subring_one_ring_one, cut_tac ring_zero, cut_tac ring_one,
+        simp add:ring_r_one, simp add:ring_times_x_0, cut_tac ring_is_ag,
+          simp add:aGroup.ag_r_zero,
+        drule_tac a = "Suc 0" in forall_spec, simp, simp)
+ apply (cut_tac polyn_ring_S_nonzero, simp add:Subring_zero_ring_zero)
+
+ apply (thin_tac "\<forall>b. pol_coeff S (Suc 0, b) \<and>
+         (\<forall>k\<le>Suc 0. \<Sigma>\<^sub>e R (\<lambda>j. b j \<cdot>\<^sub>r \<zero>^\<^bsup>R j\<^esup>) k = \<zero> \<longrightarrow> (\<forall>j\<le>k. b j = \<zero>\<^bsub>S\<^esub>))",
+        simp add:pol_coeff_def,
+        rule allI,
+        simp add:Subring_def, simp add:Ring.ring_zero,
+        (rule impI)+,
+        simp add:Ring.ring_one)
 done
 
-lemma mker_mzeromap:"\<lbrakk>ring R; R module M; R module N\<rbrakk> \<Longrightarrow>
-                         ker\<^sub>M\<^sub>,\<^sub>N (mzeromap M N) = carrier M"
-apply (simp add:ker_def mzeromap_def)
+subsection "coefficients of a polynomial" 
+
+lemma (in PolynRg) pol_coeff_split:"pol_coeff S f = pol_coeff S (fst f, snd f)"
+apply (cut_tac p = f in PairE_lemma, (erule exE)+, simp)
 done
 
-lemma mdl_carrier:"\<lbrakk>ring R; R module M;submodule R M H\<rbrakk> \<Longrightarrow>
-                                            carrier (mdl M H) = H"
-apply (simp add:mdl_def)
+lemma (in PolynRg) pol_coeff_cartesian:"pol_coeff S c \<Longrightarrow>
+                   (fst c, snd c) = c"
+by simp
+
+lemma (in PolynRg) split_pol_coeff:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow>
+                                               pol_coeff S (k, snd c)"
+by (simp add:pol_coeff_def)
+
+lemma (in PolynRg) pol_coeff_pre:"pol_coeff S ((Suc n), f) \<Longrightarrow> 
+                   pol_coeff S (n, f)"
+apply (simp add:pol_coeff_def)
 done
 
-lemma mdl_is_ag:"\<lbrakk>ring R; R module M; submodule R M H\<rbrakk> \<Longrightarrow>
-                                             agroup (mdl M H)"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (simp add:agroup_def [of "mdl M H"])
-apply (simp add:mdl_def)
-apply (rule conjI)
- apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:submodule_def)
- apply (erule conjE)+
- apply (simp add:asubg_pOp_closed)
-apply (rule conjI)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:submodule_def) apply (erule conjE)+
- apply (simp add:asubg_mOp_closed)
-apply (rule conjI)
- apply (simp add:submodule_def) apply (erule conjE)+
- apply (simp add:asubg_inc_zero)
-apply (rule ballI)+
- apply (subgoal_tac "\<forall>y. y \<in> H \<longrightarrow> y \<in> carrier M")
- apply (simp add:agroup_def) apply (erule conjE)+
- apply blast
-apply (rule allI) apply (rule impI) apply (simp add:submodule_def)
- apply (erule conjE)+ apply (simp add:subsetD)
+lemma (in PolynRg) pol_coeff_le:"\<lbrakk>pol_coeff S c; n \<le> (fst c)\<rbrakk> \<Longrightarrow>
+                               pol_coeff S (n, (snd c))"
+apply (simp add:pol_coeff_def) 
 done
 
-lemma mdl_is_module:"\<lbrakk>ring R; R module M; submodule R M H\<rbrakk> \<Longrightarrow> R module (mdl M H)"
-apply (simp add:Module_def [of "R" "mdl M H"])
-apply (simp add:mdl_is_ag [of "R" "M" "H"])
- apply (simp add:mdl_def)
-apply (rule conjI)
-apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:submodule_def)
-apply (subgoal_tac "\<forall>h. h \<in> H \<longrightarrow> h \<in> carrier M")
-apply (simp add:Module_def) apply (erule conjE)+
- apply (rule impI) apply blast
-apply (rule allI) apply (rule impI)
- apply (simp add:submodule_def)
- apply (erule conjE)+
- apply (simp add:subsetD)
+lemma (in PolynRg) pol_coeff_mem:"\<lbrakk>pol_coeff S c; j \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+                                                   ((snd c) j) \<in> carrier S"
+by (simp add:pol_coeff_def) 
+
+lemma (in PolynRg) pol_coeff_mem_R:"\<lbrakk>pol_coeff S c; j \<le> (fst c)\<rbrakk>
+                  \<Longrightarrow>  ((snd c) j) \<in> carrier R"
+apply (cut_tac subring, frule subring_Ring)
+apply (frule pol_coeff_mem[of c "j"], assumption+,
+       simp add:mem_subring_mem_ring)
 done
 
-lemma img_set_submodule:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N\<rbrakk> \<Longrightarrow>
-         submodule R N (f ` (carrier M))"
-apply (simp add:submodule_def)
-apply (rule conjI)
- apply (rule subsetI)
- apply (simp add:image_def)
- apply (subgoal_tac "\<forall>xa\<in>carrier M. x = f xa \<longrightarrow> x \<in> carrier N") apply blast
- apply (thin_tac "\<exists>xa\<in>carrier M. x = f xa")
- apply (rule ballI) apply (rule impI) apply simp
- apply (simp add:mHom_mem)
-apply (rule conjI)
- apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (rule asubg_test, assumption+)
- apply (rule subsetI) apply (simp add:image_def)
- apply (subgoal_tac "\<forall>xa\<in>carrier M. x = f xa \<longrightarrow> x \<in> carrier N")
- apply blast apply (thin_tac "\<exists>xa\<in>carrier M. x = f xa")
- apply (rule ballI) apply (rule impI) apply simp apply (simp add:mHom_mem)
-apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule ag_inc_zero [of "M"])
- apply (subgoal_tac "f (0\<^sub>M) \<in> f ` (carrier M)") apply blast
- apply (simp add:image_def) apply blast
-apply (rule ballI)+
- apply (simp add:image_def)
- apply auto
- apply (subst mHom_inv [THEN sym, of "R" "M" "N" _ "f"], assumption+)
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule_tac x = xa in ag_mOp_closed [of "M"], assumption+)
- apply (simp add: mHom_add [THEN sym, of "R" "M" "N" "f"])
- apply (frule_tac x = x and y = "-\<^sub>M xa" in ag_pOp_closed [of "M"],
-                                                         assumption+)
- apply blast
- apply (frule_tac m1 = m and a1 = a in mHom_lin [THEN sym,
-                             of "R" "M" "N" _ "f"], assumption+)
+lemma (in PolynRg) Slide_pol_coeff:"\<lbrakk>pol_coeff S c; n < (fst c)\<rbrakk> \<Longrightarrow>
+        pol_coeff S (((fst c) - Suc n), (\<lambda>x. (snd c) (Suc (n + x))))"   
+apply (simp add: pol_coeff_def)
+done
+
+subsection "addition of polyn_exprs"
+
+lemma (in PolynRg) monomial_mem:"pol_coeff S c \<Longrightarrow> 
+                        \<forall>j \<le> (fst c). (snd c) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup> \<in> carrier R"
+apply (rule allI, rule impI)
+apply (rule ring_tOp_closed) 
+apply (simp add:pol_coeff_mem_R[of c],
+       cut_tac X_mem_R, simp add:npClose)
+done
+
+lemma (in PolynRg) polyn_mem:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+                                        polyn_expr R X k c \<in> carrier R"
+apply (simp add:polyn_expr_def,
+       cut_tac ring_is_ag)
+apply (rule aGroup.nsum_mem[of R k "\<lambda>j. (snd c) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>"], assumption+)
+apply (simp add:monomial_mem)
+done
+
+lemma (in PolynRg) polyn_exprs_eq:"\<lbrakk>pol_coeff S c; pol_coeff S d; 
+         k \<le> (min (fst c) (fst d)); \<forall>j \<le> k. (snd c) j = (snd d) j\<rbrakk> \<Longrightarrow> 
+                     polyn_expr R X k c = polyn_expr R X k d" 
+apply (cut_tac ring_is_ag,
+       simp add:polyn_expr_def,
+       cut_tac subring,
+       cut_tac X_mem_R)
+apply (rule aGroup.nsum_eq[of R k "\<lambda>j. (snd c) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>"
+                                   "\<lambda>j. (snd d) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>"], assumption)
+apply (simp add:monomial_mem)+
+done
+
+lemma (in PolynRg) polyn_expr_restrict:"pol_coeff S (Suc n, f) \<Longrightarrow>
+              polyn_expr R X n (Suc n, f) = polyn_expr R X n (n, f)" 
+apply (cut_tac subring, frule subring_Ring,
+       cut_tac pol_coeff_le[of "(Suc n, f)" n]) 
+apply (cut_tac polyn_exprs_eq[of "(Suc n, f)" "(n, f)" n],
+       (simp add:pol_coeff_split[THEN sym])+) 
+done
+
+lemma (in PolynRg) polyn_expr_short:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow>
+         polyn_expr R X k c = polyn_expr R X k (k, snd c)"
+apply (rule polyn_exprs_eq[of c "(k, snd c)" k], assumption+)
+ apply (simp add:pol_coeff_def)
+ apply (simp add:min_def)
  apply simp
- apply (thin_tac "a \<star>\<^sub>N (f m) = f ( a \<star>\<^sub>M m)")
- apply (frule_tac a = a and m = m in sprod_mem [of "R" "M"], assumption+)
- apply (simp add:image_def)
+done
+
+lemma (in PolynRg) polyn_expr0:"pol_coeff S c \<Longrightarrow> 
+                                   polyn_expr R X 0 c = (snd c) 0"
+apply (simp add:polyn_expr_def)
+apply (cut_tac subring,
+       cut_tac subring_Ring[of S])
+apply (frule pol_coeff_mem[of c 0], simp)
+ apply (frule mem_subring_mem_ring [of S "(snd c) 0"], assumption)
+apply (simp add:ring_r_one, assumption)
+done 
+
+lemma (in PolynRg) polyn_expr_split:"
+          polyn_expr R X k f = polyn_expr R X k (fst f, snd f)"
+by (cut_tac p = f in PairE_lemma, (erule exE)+, simp)
+
+lemma (in PolynRg) polyn_Suc:"Suc n \<le> (fst c) \<Longrightarrow> 
+       polyn_expr R X (Suc n) ((Suc n), (snd c)) = 
+               polyn_expr R X n c \<plusminus> ((snd c) (Suc n)) \<cdot>\<^sub>r (X^\<^bsup>R (Suc n)\<^esup>)"
+apply (simp add:polyn_expr_def)
+done
+
+lemma (in PolynRg) polyn_Suc_split:"pol_coeff S (Suc n, f) \<Longrightarrow> 
+       polyn_expr R X (Suc n) ((Suc n), f) = 
+          polyn_expr R X n (n, f) \<plusminus> (f (Suc n)) \<cdot>\<^sub>r (X^\<^bsup>R (Suc n)\<^esup>)"
+apply (cut_tac polyn_Suc[of n "(Suc n, f)"])
+apply (simp del:npow_suc)
+ apply (subst polyn_expr_short[of "(Suc n, f)" n], assumption+, simp)
+ apply (simp del:npow_suc)
+ apply simp
+done
+
+lemma (in PolynRg) polyn_n_m:"\<lbrakk>pol_coeff S c; n < m; m \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+      polyn_expr R X m (m, (snd c)) = polyn_expr R X n (n, (snd c)) \<plusminus>  
+                        (fSum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) (Suc n) m)"
+apply (simp add:polyn_expr_def, cut_tac ring_is_ag)
+apply (rule aGroup.nsum_split1[of "R" m "\<lambda>j. ((snd c) j) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)" n], 
+         assumption+)
+apply (rule allI, rule impI)
+apply (frule_tac monomial_mem[of c],
+       frule_tac i = j and j = m and k = "(fst c)" in le_trans, assumption+,
+       simp+)
+done
+
+lemma (in PolynRg) polyn_n_m1:"\<lbrakk>pol_coeff S c; n < m; m \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+      polyn_expr R X m c = polyn_expr R X n c \<plusminus>  
+                        (fSum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) (Suc n) m)"
+apply (subst polyn_expr_short[of c n], assumption)
+ apply (frule_tac i = n and j = m and k = "fst c" in less_le_trans, assumption,
+        simp add:less_imp_le)
+ apply (subst polyn_expr_short[of c m], assumption+)
+ apply (simp add:polyn_n_m)
+done
+
+lemma (in PolynRg) polyn_n_m_mem:"\<lbrakk>pol_coeff S c; n < m; m \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+            (fSum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) (Suc n) m) \<in> carrier R"
+apply (simp add:fSum_def)
+apply (cut_tac ring_is_ag,
+       rule_tac n = "m - Suc n" in aGroup.nsum_mem, assumption+)
+apply (rule allI, rule impI,
+        simp del:npow_suc add:cmp_def slide_def)
+apply (rule ring_tOp_closed)
+ apply (simp add:pol_coeff_def)
+ apply (frule_tac a = "Suc (n + j)" in forall_spec, arith)
+ apply (cut_tac subring)
+ apply (simp add:mem_subring_mem_ring)
+ apply (rule npClose)
+ apply (cut_tac X_mem_R,
+        simp del:npow_suc add:npClose)
+done 
+
+lemma (in PolynRg) polyn_n_ms_eq:"\<lbrakk>pol_coeff S c; pol_coeff S d;
+        m \<le> min (fst c) (fst d); n < m; 
+       \<forall>j\<in>nset (Suc n) m. (snd c) j = (snd d) j\<rbrakk> \<Longrightarrow> 
+            (fSum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) (Suc n) m) =
+                    (fSum R (\<lambda>j. ((snd d) j) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) (Suc n) m)" 
+apply (cut_tac ring_is_ag)
+apply (cut_tac aGroup.fSum_eq1[of R "Suc n" m "\<lambda>j. (snd c) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>"
+                                             "\<lambda>j. (snd d) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>"],
+       assumption+)
+   apply (rule Suc_leI, assumption,
+          simp add:nset_def, simp add:monomial_mem)
+   apply (frule Suc_leI,
+              rule ballI, simp add:nset_def)
+
+   apply (simp add:monomial_mem)
+ apply simp
+done
+
+
+lemma (in PolynRg) polyn_addTr:
+ "(pol_coeff S (n, f)) \<and> (pol_coeff S (n, g)) \<longrightarrow>
+    (polyn_expr R X n (n, f)) \<plusminus> (polyn_expr R X n (n, g)) =
+                 nsum R (\<lambda>j. ((f j) \<plusminus>\<^bsub>S\<^esub> (g j)) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) n"
+apply (cut_tac subring,
+        frule subring_Ring[of S])
+apply (induct_tac n)
+ apply (rule impI, simp, erule conjE)
+ apply (simp add:polyn_expr0)
+ apply (cut_tac pol_coeff_mem[of "(0, f)" 0], simp,
+        cut_tac pol_coeff_mem[of "(0, g)" 0], simp,
+       frule  mem_subring_mem_ring[of S "f 0"], assumption+,
+       frule  mem_subring_mem_ring[of S "g 0"], assumption+,
+       frule Ring.ring_is_ag[of S],
+       frule aGroup.ag_pOp_closed[of S "f 0" "g 0"], assumption+,
+       frule mem_subring_mem_ring[of S "f 0 \<plusminus>\<^bsub>S\<^esub> g 0"], assumption+)
+apply (simp add:ring_r_one)
+ apply (simp add:Subring_pOp_ring_pOp[of S "f 0" "g 0"])
+ apply (simp del:npow_suc)+
+apply (rule impI, erule conjE)
+ apply (frule_tac n = n in  pol_coeff_pre[of _ f],
+        frule_tac n = n in  pol_coeff_pre[of _ g], simp del:npow_suc)
+ apply (cut_tac n = n and c = "(Suc n, f)" in polyn_Suc, simp del:npow_suc,
+        simp del:npow_suc,
+        thin_tac "polyn_expr R X (Suc n) (Suc n, f) =
+         polyn_expr R X n (Suc n, f) \<plusminus> f (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc n)\<^esup>")
+ apply (cut_tac n = n and c = "(Suc n, g)" in polyn_Suc, simp del:npow_suc,
+        simp del:npow_suc,
+        thin_tac "polyn_expr R X (Suc n) (Suc n, g) =
+         polyn_expr R X n (Suc n, g) \<plusminus> g (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc n)\<^esup>")
+ apply (cut_tac c = "(Suc n, f)" and k = n in polyn_mem, assumption, 
+                simp del:npow_suc,
+        cut_tac k = n and c = "(Suc n, g)" in polyn_mem, assumption, 
+                simp del:npow_suc)
+ apply (frule_tac j = "Suc n" and c = "(Suc n, f)" in pol_coeff_mem_R, simp,
+        frule_tac j = "Suc n" and c = "(Suc n, g)" in pol_coeff_mem_R, simp,
+        cut_tac  X_mem_R,
+        frule_tac n = "Suc n" in npClose[of "X"], simp del:npow_suc)
+ apply (frule_tac x = "f (Suc n)" and y = "X^\<^bsup>R (Suc n)\<^esup>" in ring_tOp_closed,
+         assumption+,
+        frule_tac x = "g (Suc n)" and y = "X^\<^bsup>R (Suc n)\<^esup>" in ring_tOp_closed,
+         assumption+)
+ apply (cut_tac ring_is_ag, 
+        subst aGroup.pOp_assocTr43, assumption+)
+ apply (frule_tac x = "f (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc n)\<^esup>" and 
+        y = "polyn_expr R X n (Suc n, g)" in aGroup.ag_pOp_commute[of R],
+        assumption+, simp del:npow_suc,
+        thin_tac "f (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc n)\<^esup> \<plusminus> polyn_expr R X n (Suc n, g) =
+         polyn_expr R X n (Suc n, g) \<plusminus> f (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc n)\<^esup>")
+ apply (subst  aGroup.pOp_assocTr43[THEN sym], assumption+,
+        simp del:npow_suc add:polyn_expr_restrict) 
+
+ apply (frule_tac c = "(Suc n, f)" and j = "Suc n" in pol_coeff_mem, simp,
+        frule_tac c = "(Suc n, g)" and j = "Suc n" in pol_coeff_mem, simp)
+ apply (subst ring_distrib2[THEN sym], assumption+) 
+apply (frule_tac c = "(Suc n, f)" and j = "Suc n" in  pol_coeff_mem, simp,
+       frule_tac c = "(Suc n, g)" and j = "Suc n" in  pol_coeff_mem, simp)
+ apply (frule_tac a = "f (Suc n)" and b = "g (Suc n)" in 
+                      Subring_pOp_ring_pOp[of S], simp, simp)
+apply simp
+done
+
+lemma (in PolynRg) polyn_add_n:"\<lbrakk>pol_coeff S (n, f); pol_coeff S (n, g)\<rbrakk> \<Longrightarrow> 
+      (polyn_expr R X n (n, f)) \<plusminus> (polyn_expr R X n (n, g)) =  
+           nsum R (\<lambda>j. ((f j) \<plusminus>\<^bsub>S\<^esub> (g j)) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) n"
+by (simp add:polyn_addTr)
+
+
+constdefs
+  add_cf::"[('a, 'm) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a), nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow>
+                     nat \<times> (nat \<Rightarrow> 'a)"
+"add_cf S c d == 
+  if (fst c) < (fst d) then ((fst d),  \<lambda>j. (if j \<le> (fst c)
+                  then (((snd c) j) \<plusminus>\<^bsub>S\<^esub> ((snd d) j)) else ((snd d) j)))
+   else if (fst c) = (fst d) then ((fst c), \<lambda>j. ((snd c) j \<plusminus>\<^bsub>S\<^esub> (snd d) j))
+   else ((fst c), \<lambda>j. (if j \<le> (fst d) then 
+                        ((snd c) j \<plusminus>\<^bsub>S\<^esub> (snd d) j) else ((snd c) j)))" 
+
+lemma (in PolynRg) add_cf_pol_coeff:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
+      \<Longrightarrow>  pol_coeff S (add_cf S c d)"
+apply (cut_tac subring,
+       frule subring_Ring[of S], frule Ring.ring_is_ag[of S])
+ apply (simp add:pol_coeff_def)
+ apply (rule allI, rule impI) 
+ 
+apply (case_tac "(fst c) < (fst d)", simp add:add_cf_def)
+ apply (rule impI, rule aGroup.ag_pOp_closed, assumption+, simp+)
+ apply (drule nat_not_less[of "fst c" "fst d"],
+              drule le_imp_less_or_eq[of "fst d" "fst c"])
+apply (erule disjE)
+ apply (simp add:add_cf_def, rule impI)
+ apply (frule Ring.ring_is_ag[of S], rule aGroup.ag_pOp_closed, assumption,
+       simp+)
+
+apply (simp add:add_cf_def)
+apply (frule Ring.ring_is_ag[of S], rule aGroup.ag_pOp_closed, assumption,
+       simp+)
+done  
+
+lemma (in PolynRg) add_cf_len:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
+      \<Longrightarrow> fst (add_cf S c d) = (max (fst c) (fst d))" 
+by (simp add:max_def add_cf_def)
+
+lemma (in PolynRg) polyn_expr_restrict1:"\<lbrakk>pol_coeff S (n, f);
+    pol_coeff S (Suc (m + n), g)\<rbrakk> \<Longrightarrow> 
+    polyn_expr R X (m + n) (add_cf S (n, f) (m + n, g)) = 
+    polyn_expr R X (m + n) (m + n, snd (add_cf S (n, f) (Suc (m + n), g)))"
+apply (frule pol_coeff_pre[of "m+n" g])
+apply (frule add_cf_pol_coeff[of "(n, f)" "(Suc (m + n), g)"], assumption+,
+       frule add_cf_pol_coeff[of "(n, f)" "(m + n, g)"], assumption+)
+apply (rule polyn_exprs_eq[of "add_cf S (n, f) (m + n, g)" 
+       "(m + n, snd (add_cf S (n, f) (Suc (m + n), g)))" "m + n"], assumption+)
+ apply (rule split_pol_coeff[of "add_cf S (n, f) (Suc (m + n), g)" "m + n"],
+         assumption, simp add:add_cf_len max_def)
+ apply (simp add:add_cf_len max_def)
+
+apply (rule allI, rule impI)
+ apply (simp add:add_cf_def)
+done
+
+lemma (in PolynRg) polyn_add_n1:"\<lbrakk>pol_coeff S (n, f); pol_coeff S (n, g)\<rbrakk> \<Longrightarrow> 
+      (polyn_expr R X n (n, f)) \<plusminus> (polyn_expr R X n (n, g)) =  
+                                polyn_expr R X n (add_cf S (n, f) (n, g))"
+apply (subst polyn_add_n, assumption+)
+ apply (simp add:polyn_expr_def add_cf_def)
+done
+
+lemma (in PolynRg) add_cf_val_hi:"(fst c) < (fst d) \<Longrightarrow>
+                       snd (add_cf S c d) (fst d) = (snd d) (fst d)"
+by (simp add:add_cf_def)
+
+lemma (in PolynRg) add_cf_commute:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
+  \<Longrightarrow> \<forall>j \<le> (max (fst c) (fst d)). snd (add_cf S c d) j = 
+                           snd (add_cf S d c) j"
+apply (cut_tac subring, frule subring_Ring,
+       frule Ring.ring_is_ag[of S])
+apply (simp add:add_cf_def)
+apply (case_tac "(fst c) = (fst d)", simp add:pol_coeff_def)
+ apply (rule allI, rule impI,
+        rule aGroup.ag_pOp_commute[of S], simp+)
+
+apply (case_tac "(fst d) < (fst c)", simp,
+       rule allI, rule impI, rule impI,
+       rule aGroup.ag_pOp_commute, assumption+) 
+apply (frule_tac i = j and j = "fst d" and k = "fst c" in le_less_trans, 
+          assumption+, frule_tac m = j and n = "fst c" in less_imp_le,
+          thin_tac "j < fst c", simp add:pol_coeff_mem, simp add:pol_coeff_mem)
+
+apply simp
+apply (frule nat_not_less[of "fst d" "fst c"],
+       frule noteq_le_less[of "fst c" "fst d"], assumption,
+       rule allI, rule impI, rule impI,
+       simp add:max_def)
+
+apply (rule aGroup.ag_pOp_commute, assumption+,
+       simp add:pol_coeff_mem,
+       frule_tac i = j and j = "fst c" and k = "fst d" in le_less_trans, 
+          assumption+, frule_tac m = j and n = "fst d" in less_imp_le,
+           thin_tac "j < fst d", simp add:pol_coeff_mem)
+done
+
+lemma (in PolynRg) polyn_addTr1:"pol_coeff S (n, f) \<Longrightarrow>
+  \<forall>g. pol_coeff S (n + m, g) \<longrightarrow> 
+        (polyn_expr R X n (n, f) \<plusminus> (polyn_expr R X (n + m) ((n + m), g))
+                   = polyn_expr R X (n + m) (add_cf S (n, f) ((n + m), g)))"
+apply (cut_tac subring, frule subring_Ring)
+apply (induct_tac m)
+ apply (rule allI, rule impI, simp) 
+ apply (simp add:polyn_add_n1)
+
+apply (simp add:add_commute[of n])
+ apply (rule allI, rule impI)
+  apply (frule_tac n = "na + n" and f = g in pol_coeff_pre)
+  apply (drule_tac a = g in forall_spec, assumption)
+  apply (cut_tac n = "na + n" and c = "(Suc (na + n), g)" in  polyn_Suc,
+         simp, simp del:npow_suc,
+         thin_tac "polyn_expr R X (Suc (na + n)) (Suc (na + n), g) =
+        polyn_expr R X (na + n) (Suc (na + n), g) \<plusminus>
+        g (Suc (na + n)) \<cdot>\<^sub>r X^\<^bsup>R (Suc (na + n))\<^esup>")
+  apply (frule_tac c = "(n, f)" and k = n in polyn_mem, simp,
+         frule_tac c = "(Suc (na + n), g)" and k = "na + n" in polyn_mem, simp,
+         frule_tac c = "(Suc (na + n), g)" in monomial_mem)
+  apply (drule_tac a = "Suc (na + n)" in forall_spec, simp del:npow_suc,
+         cut_tac ring_is_ag, 
+         subst aGroup.ag_pOp_assoc[THEN sym], assumption+, simp del:npow_suc)
+  apply (simp del:npow_suc add:polyn_expr_restrict) 
+  apply (frule_tac c = "(n, f)" and d = "(Suc (na + n), g)" in 
+         add_cf_pol_coeff, assumption+,
+         frule_tac c = "(n, f)" and d = "(na + n, g)" in 
+         add_cf_pol_coeff, assumption+) 
+  apply (frule_tac c = "add_cf S (n, f) (Suc (na + n), g)" and 
+           n = "na + n" and m = "Suc (na + n)" in polyn_n_m, simp,
+         subst add_cf_len, assumption+, simp add:max_def) 
+  apply (cut_tac k = "Suc (na + n)" and f = "add_cf S (n, f) (Suc (na + n), g)"
+          in polyn_expr_split)
+  apply (frule_tac c = "(n, f)" and d = "(Suc (na + n), g)" in 
+          add_cf_len, assumption+, simp del:npow_suc add:max_def)
+  apply (thin_tac "polyn_expr R X (Suc (na + n))
+         (Suc (na + n), snd (add_cf S (n, f) (Suc (na + n), g))) =
+        polyn_expr R X (na + n)
+         (na + n, snd (add_cf S (n, f) (Suc (na + n), g))) \<plusminus>
+        \<Sigma>\<^sub>f R (\<lambda>j. snd (add_cf S (n, f) (Suc (na + n), g)) j \<cdot>\<^sub>r
+                  X^\<^bsup>R j\<^esup>) (Suc (na + n)) (Suc (na + n))",
+       thin_tac "polyn_expr R X (Suc (na + n)) (add_cf S (n, f) (Suc (na + n),
+        g)) =
+        polyn_expr R X (na + n)
+         (na + n, snd (add_cf S (n, f) (Suc (na + n), g))) \<plusminus>
+         \<Sigma>\<^sub>f R (\<lambda>j. snd (add_cf S (n, f) (Suc (na + n), g)) j \<cdot>\<^sub>r
+                  X^\<^bsup>R j\<^esup>) (Suc (na + n)) (Suc (na + n))")
+  apply (simp del:npow_suc add:fSum_def cmp_def slide_def) 
+  apply (cut_tac d = "(Suc (na + n), g)" in add_cf_val_hi[of "(n, f)"],
+         simp, simp del:npow_suc,
+         thin_tac "snd (add_cf S (n, f) (Suc (na + n), g)) (Suc (na + n)) =
+        g (Suc (na + n))")
+  apply (frule_tac c = "add_cf S (n, f) (Suc (na + n), g)" and k = "na + n" in
+         polyn_mem, simp,
+         frule_tac c = "add_cf S (n, f) (na + n, g)" and k = "na + n" in
+         polyn_mem, simp )
+  apply (subst add_cf_len, assumption+, simp del:npow_suc 
+          add:max_def)
+ apply (frule_tac a = "polyn_expr R X (na + n) (add_cf S (n, f) (na + n, g))" 
+        and b = "polyn_expr R X (na + n) (add_cf S (n, f) (Suc (na + n), g))"
+        and c = "g (Suc (na + n)) \<cdot>\<^sub>r  X^\<^bsup>R (Suc (na + n))\<^esup>" in 
+        aGroup.ag_pOp_add_r[of R], assumption+) 
+ apply (rule_tac c = "add_cf S (n, f) (na + n, g)" and 
+        d = "add_cf S (n, f) (Suc (na + n), g)" and k = "na + n" in 
+        polyn_exprs_eq, assumption+, simp,
+        subst add_cf_len, assumption+) 
+  apply (simp add:max_def)
+
+apply (rule allI, rule impI,
+        (subst add_cf_def)+, simp,
+        frule_tac m = na and g = g in polyn_expr_restrict1[of n f], assumption,
+        simp del:npow_suc)
+done
+
+lemma (in PolynRg) polyn_add:"\<lbrakk>pol_coeff S (n, f); pol_coeff S (m, g)\<rbrakk>
+       \<Longrightarrow> polyn_expr R X n (n, f) \<plusminus> (polyn_expr R X m (m, g))
+                   = polyn_expr R X (max n m) (add_cf S (n, f) (m, g))"  
+apply (cut_tac Nat.less_linear[of n m])
+ apply (erule disjE,
+        frule polyn_addTr1[of n f "m - n"],
+        drule_tac a = g in forall_spec, simp, simp add:max_def)
+
+ apply (erule disjE,
+        simp add:polyn_add_n1) 
+apply (frule polyn_mem[of "(n, f)" n], simp,
+       frule polyn_mem[of "(m, g)" m], simp)
+ apply (cut_tac ring_is_ag, simp add:aGroup.ag_pOp_commute)
+
+ apply (frule polyn_addTr1[of m g "n - m"],
+        drule_tac a = f in forall_spec, simp, simp add:max_def,
+        frule add_cf_commute[of "(m, g)" "(n, f)"], assumption+, 
+        simp add:max_def,
+        frule add_cf_pol_coeff[of "(n, f)" "(m, g)"], assumption+,
+        frule add_cf_pol_coeff[of "(m, g)" "(n, f)"], assumption+)
+ apply (rule polyn_exprs_eq[of "add_cf S (m, g) (n, f)" 
+                 "add_cf S (n, f) (m, g)" n], assumption+)
+  apply (simp add:add_cf_len, simp add:max_def)
+done
+
+lemma (in PolynRg) polyn_add1:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
+       \<Longrightarrow> polyn_expr R X (fst c) c \<plusminus> (polyn_expr R X (fst d) d)
+                   = polyn_expr R X (max (fst c) (fst d)) (add_cf S c d)"  
+apply (cut_tac p = c in PairE_lemma, (erule exE)+,
+       cut_tac p = d in PairE_lemma, (erule exE)+, simp)
+apply (simp add:polyn_add)
+done
+
+lemma (in PolynRg) polyn_minus:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+       -\<^sub>a (polyn_expr R X k c) = nsum R (\<lambda>j. ((-\<^sub>a\<^bsub>S\<^esub> ((snd c) j)) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>))) k"
+apply (cut_tac subring,
+       frule subring_Ring[of S],
+       frule Ring.ring_is_ag[of S],
+       cut_tac ring_is_ag,
+       cut_tac X_mem_R)
+apply (simp add:polyn_expr_def,
+       subst aGroup.nsum_minus[of R], assumption)
+ apply (frule monomial_mem[of c], rule allI, rule impI,
+        frule_tac i = j and j = k and k = "fst c" in le_trans, assumption+,
+        simp)
+apply (rule aGroup.nsum_eq, assumption,
+       rule allI, rule impI, simp,
+       rule aGroup.ag_mOp_closed, assumption) 
+ apply (frule monomial_mem[of c],
+        frule_tac i = j and j = k and k = "fst c" in le_trans, assumption+,
+        simp)
+apply (rule allI, rule impI,
+       rule ring_tOp_closed)
+apply (frule_tac j = j  in pol_coeff_mem[of c]) 
+apply (frule_tac i = j and j = k and k = "fst c" in le_trans, assumption+,
+       simp add:Subring_minus_ring_minus,
+       frule_tac x = "(snd c) j" in mem_subring_mem_ring[of S], assumption,
+       simp add:aGroup.ag_mOp_closed,
+       simp add:npClose)
+apply (rule allI, rule impI, simp,
+       cut_tac j = j in pol_coeff_mem[of c], assumption,
+       rule_tac i = j and j = k and k = "fst c" in le_trans, assumption+) 
+apply (simp add:Subring_minus_ring_minus,
+       frule_tac x = "(snd c) j" in mem_subring_mem_ring[of S], assumption)
+apply (subst ring_inv1_1, assumption+)
+apply (simp add:npClose, simp) 
+done
+
+lemma (in PolynRg) minus_pol_coeff:"pol_coeff S c \<Longrightarrow> 
+                         pol_coeff S ((fst c), (\<lambda>j. (-\<^sub>a\<^bsub>S\<^esub> ((snd c) j))))"
+apply (simp add:pol_coeff_def)
+apply (rule allI, rule impI)
+apply (cut_tac subring, frule subring_Ring)
+apply (frule Ring.ring_is_ag[of "S"])
+apply (rule aGroup.ag_mOp_closed, assumption)
+apply simp 
+done
+
+lemma (in PolynRg) polyn_minus:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+       -\<^sub>a (polyn_expr R X k c) = 
+                    polyn_expr R X k (fst c, (\<lambda>j. (-\<^sub>a\<^bsub>S\<^esub> ((snd c) j))))"
+apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp)
+ apply (subst polyn_minus, assumption+, simp, simp add:polyn_expr_def)
+done
+
+constdefs
+ m_cf ::"[('a, 'm) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)"
+ "m_cf S c == (fst c, (\<lambda>j. (-\<^sub>a\<^bsub>S\<^esub> ((snd c) j))))"  
+
+lemma (in PolynRg) m_cf_pol_coeff:"pol_coeff S c \<Longrightarrow>
+                              pol_coeff S (m_cf S c)"
+by (simp add:m_cf_def, simp add:minus_pol_coeff)
+
+lemma (in PolynRg) m_cf_len:"pol_coeff S c \<Longrightarrow>
+                                         fst (m_cf S c) = fst c"
+by (simp add:m_cf_def)
+
+lemma (in PolynRg) polyn_minus_m_cf:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+        -\<^sub>a (polyn_expr R X k c) =  
+                     polyn_expr R X k (m_cf S c)"
+by (simp add:m_cf_def polyn_minus) 
+
+lemma (in PolynRg) polyn_zero_minus_zero:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+       (polyn_expr R X k c = \<zero>) = (polyn_expr R X k (m_cf S c) = \<zero>)"
+apply (cut_tac ring_is_ag)
+apply (simp add:polyn_minus_m_cf[THEN sym])
+apply (rule iffI, simp)
+apply (simp add:aGroup.ag_inv_zero)
+apply (frule polyn_mem[of c k], assumption)
+apply (frule aGroup.ag_inv_inv[of "R" "polyn_expr R X k c"], assumption)
+apply (simp add:aGroup.ag_inv_zero)
+done
+
+lemma (in PolynRg) coeff_0_pol_0:"\<lbrakk>pol_coeff S c; k \<le> fst c\<rbrakk> \<Longrightarrow>
+       (\<forall>j\<le> k. (snd c) j = \<zero>\<^bsub>S\<^esub>) = (polyn_expr R X k c = \<zero>)"
+apply (rule iffI)
+apply (cut_tac ring_is_ag, cut_tac subring,
+       frule subring_Ring)
+apply (simp add:Subring_zero_ring_zero)
+apply (simp add:polyn_expr_def,
+       rule aGroup.nsum_zeroA[of R], assumption)
+apply (rule allI, rule impI,
+       cut_tac X_mem_R)
+ apply (drule_tac a = j in forall_spec, simp,
+        frule_tac n = j in npClose[of X], simp)
+ apply (simp add:ring_times_0_x)
+
+apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp,
+       thin_tac "c = (x, y)", rename_tac n f)
+apply (cut_tac algfree, simp add:algfree_cond_def)
+ apply (drule_tac a = n in forall_spec1,
+        drule_tac a = f in forall_spec1, erule conjE,
+        drule_tac a = k in forall_spec, assumption)
+ apply (simp add:polyn_expr_def)
+done
+
+subsection "multiplication of pol_exprs"
+
+subsection "multiplication"
+
+constdefs 
+  ext_cf ::"[('a, 'm) Ring_scheme, nat, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> 
+                                                  nat \<times> (nat \<Rightarrow> 'a)"
+ "ext_cf S n c == (n + fst c, \<lambda>i. if n \<le> i then (snd c) (sliden n i) else \<zero>\<^bsub>S\<^esub>)"
+
+  (* 0         0 g(0)         g(m) 
+     0            n           m+n  , where (m, g) is a pol_coeff  **)
+
+  sp_cf::"[('a, 'm) Ring_scheme, 'a, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)"
+  "sp_cf S a c == (fst c, \<lambda>j. a \<cdot>\<^sub>r\<^bsub>S\<^esub> ((snd c) j))" (* scalar times cf *)
+
+  special_cf ::"('a, 'm) Ring_scheme \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" ("C\<^sub>0")
+  "C\<^sub>0 S == (0, \<lambda>j. 1\<^sub>r\<^bsub>S\<^esub>)"
+
+lemma (in PolynRg) special_cf_pol_coeff:"pol_coeff S (C\<^sub>0 S)"  
+apply (cut_tac subring, frule subring_Ring)
+apply (simp add:pol_coeff_def special_cf_def)
+apply (simp add:Ring.ring_one)
+done
+
+lemma (in PolynRg) special_cf_len:"fst (C\<^sub>0 S) = 0"
+apply (simp add:special_cf_def)
+done
+
+lemma (in PolynRg) ext_cf_pol_coeff:"pol_coeff S c \<Longrightarrow> 
+                           pol_coeff S (ext_cf S n c)"
+apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp,
+       thin_tac "c = (x, y)", rename_tac m g)
+apply (simp add:pol_coeff_def, rule allI,
+       simp add:ext_cf_def,
+       case_tac "n \<le> j", simp add:sliden_def, rule conjI, (rule impI)+) 
+       apply (simp add:sliden_def)
+apply (cut_tac subring, frule subring_Ring,
+       simp add:Ring.ring_zero)
+done
+
+lemma (in PolynRg) ext_cf_len:"pol_coeff S c \<Longrightarrow>
+                   fst (ext_cf S m c) = m + fst c"
+by (simp add:ext_cf_def)
+
+lemma (in PolynRg) ext_special_cf_len:"fst (ext_cf S m (C\<^sub>0 S)) = m"
+apply (cut_tac special_cf_pol_coeff)
+apply (simp add:ext_cf_len special_cf_def)
+done
+
+lemma (in PolynRg) ext_cf_self:"pol_coeff S c \<Longrightarrow> 
+                   \<forall>j \<le> (fst c). snd (ext_cf S 0 c) j = (snd c) j" 
+apply (rule allI, rule impI, simp add:ext_cf_def sliden_def)
+done
+
+lemma (in PolynRg) ext_cf_hi:"pol_coeff S c \<Longrightarrow> 
+                   (snd c) (fst c)  =
+                      snd (ext_cf S n c) (n + (fst c))"
+apply (subst ext_cf_def)
+apply (simp add:sliden_def)
+done
+
+lemma (in PolynRg) ext_special_cf_hi:"snd (ext_cf S n (C\<^sub>0 S)) n = 1\<^sub>r\<^bsub>S\<^esub>"
+apply (cut_tac special_cf_pol_coeff)
+apply (cut_tac ext_cf_hi[of "C\<^sub>0 S" n, THEN sym])
+apply (simp add:special_cf_def, assumption)
+done
+ 
+
+lemma (in PolynRg) ext_cf_lo_zero:"\<lbrakk>pol_coeff S c; 0 < n; x \<le> (n - Suc 0)\<rbrakk>
+              \<Longrightarrow> snd (ext_cf S n c) x = \<zero>\<^bsub>S\<^esub>"
+apply (cut_tac Suc_le_mono[THEN sym, of x "n - Suc 0"], simp,
+       cut_tac i = x and j = "Suc x" and k = n in less_le_trans,
+       simp, assumption,
+       simp add:nat_not_le_less[THEN sym, of x n],
+              thin_tac "x \<le> n - Suc 0")
+apply (simp add:ext_cf_def)
+done
+
+lemma (in PolynRg) ext_special_cf_lo_zero:"\<lbrakk>0 < n; x \<le> (n - Suc 0)\<rbrakk>
+              \<Longrightarrow> snd (ext_cf S n (C\<^sub>0 S)) x = \<zero>\<^bsub>S\<^esub>"
+by (cut_tac special_cf_pol_coeff,
+       frule ext_cf_lo_zero[of "C\<^sub>0 S" n], assumption+)
+
+lemma (in PolynRg) sp_cf_pol_coeff:"\<lbrakk>pol_coeff S c; a \<in> carrier S\<rbrakk> \<Longrightarrow> 
+                   pol_coeff S (sp_cf S a c)"
+apply (cut_tac subring, frule subring_Ring)
+apply (simp add:pol_coeff_def sp_cf_def,
+       rule allI, rule impI,
+      rule Ring.ring_tOp_closed, assumption+)
+apply simp
+done
+
+lemma (in PolynRg) sp_cf_len:"\<lbrakk>pol_coeff S c; a \<in> carrier S\<rbrakk> \<Longrightarrow> 
+                    fst (sp_cf S a c) = fst c"
+by (simp add:sp_cf_def)
+
+lemma (in PolynRg) sp_cf_val:"\<lbrakk>pol_coeff S c; j \<le> (fst c); a \<in> carrier S\<rbrakk> \<Longrightarrow> 
+                    snd (sp_cf S a c) j =  a \<cdot>\<^sub>r\<^bsub>S\<^esub> ((snd c) j)"  
+by (simp add:sp_cf_def)
+
+lemma (in PolynRg) polyn_ext_cf_lo_zero:"\<lbrakk>pol_coeff S c; 0 < j\<rbrakk> \<Longrightarrow>  
+                     polyn_expr R X (j - Suc 0) (ext_cf S j c) = \<zero>"
+apply (simp add:polyn_expr_def, cut_tac ring_is_ag,
+       rule aGroup.nsum_zeroA, assumption) 
+apply (rule allI, rule impI)
+ apply (frule_tac x = ja in ext_cf_lo_zero [of c j], assumption+)
+ apply (cut_tac X_mem_R, frule_tac n = ja in npClose[of X])
+ apply (cut_tac subring,
+        simp add:Subring_zero_ring_zero,
+        simp add:ring_times_0_x)
+done
+        
+lemma (in PolynRg) monomial_d:"pol_coeff S c \<Longrightarrow>
+                  polyn_expr R X d (ext_cf S d c) = ((snd c) 0) \<cdot>\<^sub>r X^\<^bsup>R d\<^esup>"
+apply (cut_tac ring_is_ag,
+       cut_tac subring,
+       cut_tac  X_mem_R,
+       frule subring_Ring[of S])
+apply (frule pol_coeff_mem [of c 0], simp)
+apply (case_tac "d = 0")
+ apply simp
+ apply (simp add:polyn_expr_def ext_cf_def sliden_def)
+apply (frule ext_cf_pol_coeff[of c d]) 
+apply (cut_tac polyn_Suc[of "d - Suc 0" "ext_cf S d c"])
+apply simp
+apply (cut_tac polyn_ext_cf_lo_zero[of c d], simp,
+       thin_tac "polyn_expr R X (d - Suc 0) (ext_cf S d c) = \<zero>")
+ apply (frule monomial_mem[of "ext_cf S d c"], simp add:ext_cf_len,
+        drule_tac a = d in forall_spec, simp, simp add:aGroup.ag_l_zero) 
+ apply (subst polyn_expr_short[of "ext_cf S d c" d], assumption,
+        simp add:ext_cf_len)
+ apply (simp,
+        subst ext_cf_def, simp add:sliden_def, assumption+,
+        simp add:ext_cf_len)
+done
+
+lemma (in PolynRg) X_to_d:" X^\<^bsup>R d\<^esup> =  polyn_expr R X d (ext_cf S d (C\<^sub>0 S))"
+apply (cut_tac special_cf_pol_coeff)
+apply (subst monomial_d[of "C\<^sub>0 S" d], assumption+)
+apply (subst special_cf_def, simp)
+apply (cut_tac subring, frule subring_Ring)
+apply (simp add:Subring_one_ring_one)
+apply (cut_tac X_mem_R, frule_tac n = d in npClose[of X])
+apply (simp add:ring_l_one)
+done
+
+lemma (in PolynRg) c_max_ext_special_cf:"c_max S (ext_cf S n (C\<^sub>0 S)) = n"
+apply (cut_tac polyn_ring_S_nonzero,
+       cut_tac subring, frule subring_Ring)
+apply (simp add:c_max_def special_cf_def ext_cf_def)
+ apply (cut_tac n_max[of "{j. (n \<le> j \<longrightarrow> j = n) \<and> n \<le> j}" n])
+ apply (erule conjE)+ apply simp
+ apply (rule subsetI, simp, erule conjE, simp)
+ apply (cut_tac le_refl[of n], blast)
+done  
+
+lemma (in PolynRg) scalar_times_polynTr:"a \<in> carrier S \<Longrightarrow> 
+       \<forall>f. pol_coeff S (n, f) \<longrightarrow> 
+        a \<cdot>\<^sub>r (polyn_expr R X n (n, f)) = polyn_expr R X n (sp_cf S a (n, f))"
+apply (cut_tac subring,
+       cut_tac X_mem_R,
+       frule_tac x = a in mem_subring_mem_ring, assumption)
+apply (induct_tac n,
+       rule allI, rule impI, simp add:polyn_expr_def sp_cf_def,
+       cut_tac n_in_Nsetn[of "0"])
+apply (cut_tac subring_Ring,
+        frule_tac c = "(0, f)" in pol_coeff_mem[of _ "0"], simp) 
+apply (simp,
+       frule_tac x = "f 0" in mem_subring_mem_ring, assumption) 
+apply (       simp add:Subring_tOp_ring_tOp,
+       frule_tac y = "f 0" in ring_tOp_closed[of a], assumption+,
+       cut_tac ring_one, simp add:ring_tOp_assoc, assumption)
+
+apply (rule allI, rule impI,
+       frule subring_Ring,
+       frule_tac n = n and f = f in pol_coeff_pre,
+       drule_tac a = f in forall_spec1, simp) 
+ apply (cut_tac n = n and c = "(Suc n, f)" in polyn_Suc, simp,
+         simp del:npow_suc,
+        thin_tac "polyn_expr R X (Suc n) (Suc n, f) =
+           polyn_expr R X n (Suc n, f) \<plusminus> f (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc n)\<^esup>")
+ apply (cut_tac n = n and c = "sp_cf S a (Suc n, f)" in polyn_Suc,
+        simp add:sp_cf_len)
+ apply (frule_tac c = "(Suc n, f)" and a = a in sp_cf_len, assumption+,
+        simp only:fst_conv)
+ apply (cut_tac k = "Suc n" and f = "sp_cf S a (Suc n, f)" in 
+        polyn_expr_split, simp del:npow_suc,
+        thin_tac "polyn_expr R X (Suc n) (Suc n, snd (sp_cf S a (Suc n, f))) =
+           polyn_expr R X n (sp_cf S a (Suc n, f)) \<plusminus>
+           snd (sp_cf S a (Suc n, f)) (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc n)\<^esup>",
+        thin_tac "polyn_expr R X (Suc n) (sp_cf S a (Suc n, f)) =
+           polyn_expr R X n (sp_cf S a (Suc n, f)) \<plusminus>
+           snd (sp_cf S a (Suc n, f)) (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc n)\<^esup>")
+ apply (frule_tac c = "(Suc n, f)" and a = a in sp_cf_pol_coeff, assumption)
+ apply (frule_tac c = "(Suc n, f)" and k = n in polyn_mem,
+        simp,  
+        frule_tac c = "(Suc n, f)" in monomial_mem,
+        drule_tac a = "Suc n" in forall_spec, simp,
+        simp only:snd_conv)
+ apply (subst ring_distrib1, assumption+,
+        subst polyn_expr_restrict, assumption+, simp del:npow_suc,
+        subst sp_cf_val, assumption, simp, assumption,
+              simp only:snd_conv,
+        frule_tac c = "(Suc n, f)" and j = "Suc n" in pol_coeff_mem,
+              simp, simp only:snd_conv,
+        simp del:npow_suc add:Subring_tOp_ring_tOp,
+        subst ring_tOp_assoc[THEN sym, of a], assumption+,
+        simp add:mem_subring_mem_ring, rule npClose, assumption)
+ apply (cut_tac ring_is_ag,
+        rule aGroup.ag_pOp_add_r, assumption+,
+        rule polyn_mem, rule sp_cf_pol_coeff, assumption+,
+        simp add:sp_cf_len,
+        rule polyn_mem, assumption, simp add:sp_cf_len,
+        frule_tac c = "(Suc n, f)" and j = "Suc n" in pol_coeff_mem_R,
+                simp, simp only:snd_conv,
+        (rule ring_tOp_closed)+, assumption+, rule npClose, assumption)
+ apply (rule_tac c = "sp_cf S a (n, f)" and d = "sp_cf S a (Suc n, f)" and 
+        k = n in polyn_exprs_eq, rule sp_cf_pol_coeff, assumption+,
+        simp add:sp_cf_len)
+
+ apply (rule allI, rule impI,
+        (subst sp_cf_def)+, simp)
+done
+ 
+lemma (in PolynRg) scalar_times_pol_expr:"\<lbrakk>a \<in> carrier S; pol_coeff S c; 
+       n \<le> fst c\<rbrakk> \<Longrightarrow> 
+           a \<cdot>\<^sub>r (polyn_expr R X n c) = polyn_expr R X n (sp_cf S a c)"
+apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp,
+       thin_tac "c = (x, y)", rename_tac m g)
+apply (frule_tac c = "(m, g)" and k = n in polyn_expr_short, simp,
+       simp)
+apply (frule scalar_times_polynTr[of a n],
+       drule_tac a = g in forall_spec1)
+ apply (frule_tac c = "(m, g)" and n = n in pol_coeff_le, simp, simp,
+        thin_tac "polyn_expr R X n (m, g) = polyn_expr R X n (n, g)",
+        thin_tac "a \<cdot>\<^sub>r polyn_expr R X n (n, g) =
+           polyn_expr R X n (sp_cf S a (n, g))")
+ apply (frule_tac c = "(m, g)" and n = n in pol_coeff_le, simp, simp,
+        frule_tac c = "(n, g)" and a = a in sp_cf_pol_coeff, assumption,
+        frule_tac c = "(m, g)" and a = a in sp_cf_pol_coeff, assumption)    
+ apply (rule_tac c = "sp_cf S a (n, g)" and d = "sp_cf S a (m, g)" and 
+        k = n in polyn_exprs_eq, assumption+)
+        apply (simp add:sp_cf_len)
+ apply (rule allI, (subst sp_cf_def)+, simp)
+done
+
+lemma (in PolynRg) sp_coeff_nonzero:"\<lbrakk>Idomain S; a \<in> carrier S; a \<noteq> \<zero>\<^bsub>S\<^esub>; 
+       pol_coeff S c; (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>; j \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+       snd (sp_cf S a c) j \<noteq>  \<zero>\<^bsub>S\<^esub>"
+apply (simp add:sp_cf_def)
+apply (frule_tac y = "(snd c) j" in Idomain.idom_tOp_nonzeros[of S a], 
+       assumption+,
+       simp add:pol_coeff_def, simp add:funcset_mem, assumption+)
+done
+
+lemma (in PolynRg) ext_cf_inductTl:"pol_coeff S (Suc n, f) \<Longrightarrow>
+        polyn_expr R X (n + j) (ext_cf S j (Suc n, f)) = 
+                      polyn_expr R X (n + j) (ext_cf S j (n, f))"
+apply (frule pol_coeff_pre[of n f],
+       frule ext_cf_pol_coeff[of "(Suc n, f)" j],
+       frule ext_cf_pol_coeff[of "(n, f)" j],
+       rule polyn_exprs_eq[of "ext_cf S j (Suc n, f)" "ext_cf S j (n, f)" 
+         "n + j"], assumption+)
+ apply (simp add:ext_cf_len)
+ apply (rule allI, (subst ext_cf_def)+, simp add:sliden_def)
+done
+
+lemma (in PolynRg) low_deg_terms_zeroTr:" 
+     pol_coeff S (n, f) \<longrightarrow>
+     polyn_expr R X (n + j) (ext_cf S j (n, f)) = 
+                     (X^\<^bsup>R j\<^esup>) \<cdot>\<^sub>r (polyn_expr R X n (n, f))"
+apply (cut_tac ring_is_ag,
+       cut_tac X_mem_R, frule npClose[of "X" "j"])
+apply (induct_tac n)
+ apply (rule impI, simp)
+ apply (case_tac "j = 0", simp add:ext_cf_def sliden_def polyn_expr_def) 
+ apply (frule_tac c = "(0, f)" and j = 0 in pol_coeff_mem_R, simp, simp)
+ apply (simp add:ring_r_one ring_l_one)
+ apply (cut_tac polyn_Suc[of "j - Suc 0" "ext_cf S j (0, f)"],
+        simp del:npow_suc)
+ apply (frule ext_cf_len[of "(0, f)" j],
+        cut_tac polyn_expr_split[of j "ext_cf S j (0, f)"], simp,
+        thin_tac "polyn_expr R X j (ext_cf S j (0, f)) =
+        polyn_expr R X (j - Suc 0) (ext_cf S j (0, f)) \<plusminus>
+        snd (ext_cf S j (0, f)) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>")
+ apply (simp add:polyn_ext_cf_lo_zero[of "(0, f)" j],
+        thin_tac "polyn_expr R X j (j, snd (ext_cf S j (0, f))) =
+        \<zero> \<plusminus> snd (ext_cf S j (0, f)) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>",
+        frule ext_cf_hi[THEN sym, of "(0, f)" j], simp add:polyn_expr_def)
+  apply (frule_tac c = "(0, f)" and j = 0 in pol_coeff_mem_R, simp, simp)
+  apply (subst aGroup.ag_l_zero, assumption, simp add:ring_tOp_closed,
+         simp add:ring_r_one, subst ring_tOp_commute, assumption+, simp)
+
+ apply (simp add:ext_cf_len)
+apply (rule impI,
+       cut_tac subring,
+       cut_tac subring_Ring[of S],
+       frule_tac n = n in pol_coeff_pre[of _ "f"]) 
+       apply simp
+ apply (subst polyn_expr_split)
+ apply (cut_tac n = "n + j" and c = "ext_cf S j (Suc n, f)" in polyn_Suc,
+        simp add:ext_cf_len) 
+ apply (subst ext_cf_len, assumption+, simp del:npow_suc add:add_commute[of j],
+       thin_tac "polyn_expr R X (Suc (n + j))
+          (Suc (n + j), snd (ext_cf S j (Suc n, f))) =
+         polyn_expr R X (n + j) (ext_cf S j (Suc n, f)) \<plusminus>
+         snd (ext_cf S j (Suc n, f)) (Suc (n + j)) \<cdot>\<^sub>r X^\<^bsup>R (Suc (n + j))\<^esup>",
+        subst ext_cf_inductTl, assumption+, simp del:npow_suc,
+        thin_tac "polyn_expr R X (n + j) (ext_cf S j (n, f)) =
+         X^\<^bsup>R j\<^esup> \<cdot>\<^sub>r polyn_expr R X n (n, f)")
+ apply (cut_tac c1 = "(Suc n, f)" and n1 = j in ext_cf_hi[THEN sym], 
+        assumption+, 
+        simp del:npow_suc add:add_commute[of j])
+ apply (cut_tac n = n and c = "(Suc n, f)" in polyn_Suc, simp,
+        simp del:npow_suc)
+ apply (frule_tac c = "(Suc n, f)" and k = n in polyn_mem, simp,
+        frule_tac c = "(Suc n, f)" and j = "Suc n" in pol_coeff_mem_R, simp,
+        simp del:npow_suc,
+        frule_tac x = "f (Suc n)" and y = "X^\<^bsup>R (Suc n)\<^esup>" in ring_tOp_closed,
+        rule npClose, assumption,
+        subst ring_distrib1, assumption+)
+ apply (subst polyn_expr_restrict, assumption+)
+ apply (rule_tac a = "f (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc (n + j))\<^esup> " and 
+             b = "X^\<^bsup>R j\<^esup> \<cdot>\<^sub>r (f (Suc n) \<cdot>\<^sub>r X^\<^bsup>R (Suc n)\<^esup>)" and 
+             c = "X^\<^bsup>R j\<^esup> \<cdot>\<^sub>r polyn_expr R X n (n, f)" in aGroup.ag_pOp_add_l,
+        assumption+,
+        rule ring_tOp_closed, assumption+, rule npClose, assumption,
+        (rule ring_tOp_closed, assumption+)+,
+        simp add:polyn_mem,
+        frule_tac n = "Suc n" in npClose[of X],
+        subst ring_tOp_assoc[THEN sym], assumption+,
+        subst ring_tOp_commute[of "X^\<^bsup>R j\<^esup>"], assumption,
+               simp add:pol_coeff_mem,
+        subst ring_tOp_assoc, assumption+,
+        subst npMulDistr[of X], assumption, simp add:add_commute[of j])
+apply simp
+done
+       
+lemma (in PolynRg) low_deg_terms_zero:"pol_coeff S (n, f) \<Longrightarrow> 
+  polyn_expr R X (n + j) (ext_cf S j (n, f)) = 
+                            (X^\<^bsup>R j\<^esup>) \<cdot>\<^sub>r (polyn_expr R X n (n, f))"
+by (simp add:low_deg_terms_zeroTr)
+
+lemma (in PolynRg) low_deg_terms_zero1:"pol_coeff S c \<Longrightarrow> 
+  polyn_expr R X ((fst c) + j) (ext_cf S j c) = 
+                            (X^\<^bsup>R j\<^esup>) \<cdot>\<^sub>r (polyn_expr R X (fst c) c)"
+by (cut_tac p = c in PairE_lemma, (erule exE)+,
+    simp add:low_deg_terms_zeroTr)
+
+lemma (in PolynRg) polyn_expr_tOpTr:"pol_coeff S (n, f) \<Longrightarrow> 
+      \<forall>g. (pol_coeff S (m, g) \<longrightarrow> (\<exists>h. pol_coeff S ((n + m), h) \<and>
+           h (n + m) = (f n) \<cdot>\<^sub>r\<^bsub>S\<^esub> (g m) \<and>
+  (polyn_expr R X (n + m) (n + m, h) = 
+          (polyn_expr R X n (n, f)) \<cdot>\<^sub>r (polyn_expr R X m (m, g)))))"
+apply (cut_tac subring,
+       cut_tac X_mem_R,
+       frule subring_Ring[of S])
+apply (induct_tac m)
+ apply (rule allI, rule impI, simp)
+ apply (simp add:polyn_expr_def [of R X 0]) 
+ apply (frule_tac c = "(0,g)" in pol_coeff_mem[of _ 0], simp, simp,
+        frule_tac c = "(0,g)" in pol_coeff_mem_R[of _ 0], simp, simp)
+ apply (simp add:ring_r_one,
+        frule_tac c = "(n, f)" and k = n in polyn_mem, simp,
+        simp only:ring_tOp_commute[of "polyn_expr R X n (n, f)"],
+        subst scalar_times_pol_expr, assumption+, simp) 
+ apply (cut_tac f = "sp_cf S (g 0) (n, f)" in pol_coeff_split)
+        apply (simp add:sp_cf_len)
+ apply (cut_tac f = "sp_cf S (g 0) (n, f)" in polyn_expr_split[of n],
+        simp only:sp_cf_len, simp only:fst_conv,
+        frule_tac a = "g 0" in sp_cf_pol_coeff[of "(n, f)"], assumption+,
+        simp,
+        subgoal_tac "snd (sp_cf S (g 0) (n, f)) n = (f n) \<cdot>\<^sub>r\<^bsub>S\<^esub> (g 0)", blast) 
+ apply (thin_tac "pol_coeff S (n, snd (sp_cf S (g 0) (n, f)))",
+        thin_tac "polyn_expr R X n (sp_cf S (g 0) (n, f)) =
+         polyn_expr R X n (n, snd (sp_cf S (g 0) (n, f)))",
+        thin_tac "pol_coeff S (sp_cf S (g 0) (n, f))")
+ apply (subst sp_cf_val[of "(n, f)" n], assumption+, simp, assumption, simp,
+        frule_tac c = "(n,f)" in pol_coeff_mem[of _ n], simp, simp,
+        simp add:Ring.ring_tOp_commute)  
+
+apply (rule allI, rule impI)
+apply (frule_tac n = na and f = g in pol_coeff_pre, 
+       drule_tac a = g in forall_spec, assumption+)
+apply (erule exE, (erule conjE)+) 
+apply (cut_tac n = na and c = "(Suc na, g)" in polyn_Suc, (simp del:npow_suc)+,
+       thin_tac "polyn_expr R X (Suc na) (Suc na, g) =
+        polyn_expr R X na (Suc na, g) \<plusminus> g (Suc na) \<cdot>\<^sub>r X^\<^bsup>R (Suc na)\<^esup>",
+       subst polyn_expr_restrict, assumption)
+apply (frule_tac c = "(n, f)" and k = n in polyn_mem,simp del:npow_suc,
+       frule_tac c = "(na, g)" and k = na in polyn_mem, simp del:npow_suc,
+       frule_tac c = "(Suc na, g)" in monomial_mem, simp del:npow_suc,
+       drule_tac a = "Suc na" in forall_spec, simp del:npow_suc)
+apply (subst ring_distrib1, assumption+)
+apply (rotate_tac 8, drule sym,
+       simp del:npow_suc)
+apply (thin_tac "polyn_expr R X n (n, f) \<cdot>\<^sub>r polyn_expr R X na (na, g) =
+        polyn_expr R X (n + na) (n + na, h)")
+apply (frule_tac c = "(Suc na, g)" and j ="Suc na" in pol_coeff_mem_R, simp,
+       simp del:npow_suc,
+       frule_tac c = "(Suc na, g)" and j ="Suc na" in pol_coeff_mem, simp,
+       simp del:npow_suc)
+apply (subst ring_tOp_commute, assumption+,
+       subst ring_tOp_assoc, assumption+, rule npClose, assumption+,
+       subst low_deg_terms_zero[THEN sym], assumption+)
+apply (frule_tac c = "(n, f)" and n = "Suc na" in ext_cf_pol_coeff)
+apply (frule_tac c = "ext_cf S (Suc na) (n, f)" and a = "g (Suc na)" in 
+       sp_cf_pol_coeff, assumption)
+apply (subst scalar_times_pol_expr, assumption+,
+       simp add:ext_cf_len,
+       cut_tac k = "n + Suc na" and 
+        f = "sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))" in 
+        polyn_expr_split,
+       simp only:sp_cf_len,
+       thin_tac "polyn_expr R X (n + Suc na)
+         (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))) =
+        polyn_expr R X (n + Suc na)
+         (fst (ext_cf S (Suc na) (n, f)),
+          snd (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))))",
+       simp only:ext_cf_len, simp only:fst_conv,
+       simp add:add_commute[of _ n])
+apply (subst polyn_add, assumption+,
+       cut_tac f = "sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))" in 
+       pol_coeff_split, simp only:sp_cf_len, simp only:ext_cf_len,
+       simp add:add_commute[of _ n], simp add: max_def,
+       frule_tac c = "sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))"
+              in pol_coeff_cartesian,
+       simp only:sp_cf_len, simp only:ext_cf_len, 
+               simp add:add_commute[of _ n],
+       thin_tac "(Suc (n + na),
+         snd (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))) =
+        sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))",
+       frule_tac c = "(n + na, h)" and 
+               d = "sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))" in 
+               add_cf_pol_coeff, assumption)
+apply (cut_tac k = "Suc (n + na)" and f = "add_cf S (n + na, h)
+       (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))" in polyn_expr_split,
+       simp only:mp,
+       thin_tac "polyn_expr R X (Suc (n + na))
+         (add_cf S (n + na, h)
+           (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))) =
+        polyn_expr R X (Suc (n + na))
+         (fst (add_cf S (n + na, h)
+                (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))),
+          snd (add_cf S (n + na, h)
+                (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))))",
+       subst add_cf_len, assumption+,
+       simp add:sp_cf_len, simp add:ext_cf_len max_def,
+       cut_tac f = "add_cf S (n + na, h)
+           (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f)))" in 
+            pol_coeff_split,
+       simp only:add_cf_len,
+             simp only:sp_cf_len, simp add:ext_cf_len, simp add:max_def,
+       thin_tac "pol_coeff S
+         (add_cf S (n + na, h)
+           (sp_cf S (g (Suc na)) (ext_cf S (Suc na) (n, f))))",
+       subgoal_tac "snd (add_cf S (n + na, h) (sp_cf S (g (Suc na)) 
+       (ext_cf S (Suc na) (n, f)))) (Suc (n + na)) = f n \<cdot>\<^sub>r\<^bsub>S\<^esub> g (Suc na)",
+       simp add:add_commute[of _ n], blast)
+ apply (subst add_cf_def, simp add:sp_cf_len ext_cf_len,
+        subst sp_cf_def, simp add:ext_cf_len,
+        subst ext_cf_def, simp add:sliden_def,
+        frule pol_coeff_mem[of "(n, f)" n], simp, 
+        simp add:Ring.ring_tOp_commute)
+done
+
+lemma (in PolynRg) polyn_expr_tOp:"\<lbrakk>
+  pol_coeff S (n, f); pol_coeff S (m, g)\<rbrakk> \<Longrightarrow> \<exists>e. pol_coeff S ((n + m), e) \<and>
+  e (n + m) = (f n) \<cdot>\<^sub>r\<^bsub>S\<^esub> (g m) \<and>
+  polyn_expr R X (n + m)(n + m, e) = 
+           (polyn_expr R X n (n, f)) \<cdot>\<^sub>r (polyn_expr R X m (m, g))"
+by (simp add:polyn_expr_tOpTr) 
+
+
+lemma (in PolynRg) polyn_expr_tOp_c:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk> \<Longrightarrow>
+      \<exists>e. pol_coeff S e \<and> (fst e = fst c + fst d) \<and>
+          (snd e) (fst e) = (snd c (fst c)) \<cdot>\<^sub>r\<^bsub>S\<^esub> (snd d) (fst d) \<and>
+          polyn_expr R X (fst e) e =
+                  (polyn_expr R X (fst c) c) \<cdot>\<^sub>r (polyn_expr R X (fst d) d)"  
+apply (cut_tac p = c in PairE_lemma, (erule exE)+,
+       cut_tac p = d in PairE_lemma, (erule exE)+, simp,
+       thin_tac "c = (x, y)", thin_tac "d = (xa, ya)",
+       rename_tac n f m g)
+apply (simp add:polyn_expr_tOpTr) 
+done
+
+section "14. the degree of a polynomial"
+
+lemma (in PolynRg) polyn_degreeTr:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow>
+       (polyn_expr R X k c = \<zero> ) = ({j. j \<le> k \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>} = {})"
+apply (subst coeff_0_pol_0[THEN sym, of c k], assumption+)
 apply blast
 done
 
-lemma mimg_module:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N\<rbrakk> \<Longrightarrow>
-        R module (mimg R M N f)"
-apply (simp add:mimg_def)
-apply (rule mdl_is_module [of "R" "N" "f ` (carrier M)"], assumption+)
-apply (simp add:img_set_submodule)
+lemma (in PolynRg) higher_part_zero:"\<lbrakk>pol_coeff S c; k < fst c;
+      \<forall>j\<in>nset (Suc k) (fst c). snd c j = \<zero>\<^bsub>S\<^esub>\<rbrakk> \<Longrightarrow>   
+             \<Sigma>\<^sub>f R (\<lambda>j. snd c j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>) (Suc k) (fst c) = \<zero>" 
+apply (cut_tac ring_is_ag,
+       rule aGroup.fSum_zero1[of R k "fst c" "\<lambda>j. snd c j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>"],
+       assumption+) 
+apply (rule ballI, 
+       drule_tac b = j in forball_spec1, assumption, simp)
+apply (cut_tac subring, 
+       simp add:Subring_zero_ring_zero,
+       cut_tac X_mem_R,
+       frule_tac n = j in npClose[of X],
+       simp add:ring_times_0_x)
 done
 
-constdefs
- tOp_mHom :: "[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme,
-  ('c, 'b, 'm2) ModuleType_scheme] \<Rightarrow>  ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c)"
- "tOp_mHom R M N f g == \<lambda>x \<in> carrier M. (f x +\<^sub>N (g x))"
+lemma (in PolynRg) coeff_nonzero_polyn_nonzero:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk>
+    \<Longrightarrow> (polyn_expr R X k c \<noteq> \<zero>) = (\<exists>j\<le>k. (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub> )" 
+by (simp add:coeff_0_pol_0[THEN sym, of c k])
 
- iOp_mHom :: "[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme,
-  ('c, 'b, 'm2) ModuleType_scheme] \<Rightarrow>  ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c)"
- "iOp_mHom R M N f  == \<lambda>x \<in> carrier M. (-\<^sub>N (f x))"
 
- sprod_mHom ::"[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme,
-  ('c, 'b, 'm2) ModuleType_scheme] \<Rightarrow> 'b \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c)"
- "sprod_mHom R M N a f  == \<lambda>x \<in> carrier M. a \<star>\<^sub>N (f x)"
+lemma (in PolynRg) pol_expr_unique:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>; 
+      pol_coeff S c; p = polyn_expr R X (fst c) c; (snd c) (fst c) \<noteq> \<zero>\<^bsub>S\<^esub>; 
+      pol_coeff S d; p = polyn_expr R X (fst d) d; (snd d) (fst d) \<noteq> \<zero>\<^bsub>S\<^esub>\<rbrakk> \<Longrightarrow>
+      (fst c) = (fst d) \<and> (\<forall>j \<le> (fst c). (snd c) j = (snd d) j)"
+apply (cut_tac ring_is_ag, 
+       cut_tac subring, frule subring_Ring,
+       frule Ring.ring_is_ag[of S])
+apply (frule m_cf_pol_coeff[of d])
+apply (frule polyn_minus_m_cf[of d "fst d"], simp)
+ apply (drule sym, drule sym, simp)
+ apply (rotate_tac -2, drule sym, drule sym)
+ apply (frule_tac x = p in aGroup.ag_r_inv1[of R], assumption, simp,
+        thin_tac "p = polyn_expr R X (fst c) c",
+        thin_tac "polyn_expr R X (fst d) d = polyn_expr R X (fst c) c",
+        thin_tac "-\<^sub>a (polyn_expr R X (fst c) c) = 
+                                    polyn_expr R X (fst d) (m_cf S d)")
+ apply (frule polyn_add1[of c "m_cf S d"], assumption+, simp add:m_cf_len,
+        thin_tac "polyn_expr R X (fst c) c \<plusminus> polyn_expr R X (fst d) (m_cf S d)
+           = polyn_expr R X (max (fst c) (fst d)) (add_cf S c (m_cf S d))",
+        thin_tac "polyn_expr R X (fst c) c \<noteq>
+           polyn_expr R X (max (fst c) (fst d)) (add_cf S c (m_cf S d))")
+ apply (frule_tac add_cf_pol_coeff[of c "m_cf S d"], simp add:m_cf_len)
+ apply (cut_tac coeff_0_pol_0[THEN sym, of "add_cf S c (m_cf S d)" 
+                  "max (fst c) (fst d)"],
+        drule sym, simp,
+        thin_tac "polyn_expr R X (max (fst c) (fst d)) 
+                                         (add_cf S c (m_cf S d)) = \<zero>",
+        thin_tac "pol_coeff S (add_cf S c (m_cf S d))",
+        thin_tac "pol_coeff S (m_cf S d)") 
 
- HOM :: "[('b, 'more) RingType_scheme, ('a, 'b, 'more1) ModuleType_scheme,
-   ('c, 'b, 'more2) ModuleType_scheme] \<Rightarrow> ('a \<Rightarrow> 'c, 'b) ModuleType"
-                                       ("(3HOM\<^sub>_/ _/ _)" [90, 90, 91]90 )
+apply (case_tac "fst c = fst d", simp)
+    apply (rule allI, rule impI, 
+           drule_tac a = j in forall_spec, assumption)
+          apply (simp add:add_cf_def m_cf_def m_cf_len)
+     apply (frule_tac j = j in pol_coeff_mem[of c], simp,
+            frule_tac j = j in  pol_coeff_mem[of d], simp)
+   apply (subst aGroup.ag_eq_diffzero[of S], assumption+)
 
- "HOM\<^sub>R M N == \<lparr>carrier = mHom R M N, pOp = tOp_mHom R M N,
-  mOp = iOp_mHom R M N, zero = mzeromap M N,  sprod =sprod_mHom R M N \<rparr>"
+ apply (simp add:add_cf_def max_def)
+ apply (case_tac "\<not> (fst c) \<le> (fst d)", simp)
+   apply (simp add:m_cf_len)
+  apply (drule_tac a = "fst c" in forall_spec, simp, simp)
 
-lemma tOp_mHom_closed:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N;
- g \<in> mHom R M N\<rbrakk> \<Longrightarrow> tOp_mHom R M N f g \<in> mHom R M N"
- apply (rule mHom_test, assumption+)
+ apply simp
+ apply (drule_tac a = "fst d" in forall_spec, simp, simp add:m_cf_len)
+ apply (case_tac "fst c \<noteq> fst d", 
+        frule noteq_le_less[of "fst c" "fst d"], assumption, simp)
+        apply (simp add:m_cf_def)
+        apply (frule pol_coeff_mem[of d "fst d"], simp)
+        apply (frule Ring.ring_is_ag[of S], 
+               frule aGroup.ag_inv_inv[of S "snd d (fst d)"], assumption)
+               apply (simp add:aGroup.ag_inv_zero)
+ apply simp
+ apply simp
+ apply (simp add:add_cf_len m_cf_len)
+done
+
+lemma (in PolynRg) pol_expr_unique2:"\<lbrakk>pol_coeff S c; pol_coeff S d; 
+      fst c = fst d\<rbrakk> \<Longrightarrow>
+  (polyn_expr R X (fst c) c = polyn_expr R X (fst d) d ) =
+      (\<forall>j \<le> (fst c). (snd c) j = (snd d) j)"
+apply (cut_tac ring_is_ag, 
+       cut_tac subring, frule subring_Ring,
+       frule Ring.ring_is_ag[of S])
+apply (rule iffI)
+apply (frule m_cf_pol_coeff[of d])
+ apply (frule polyn_mem[of c "fst c"], simp,
+        frule polyn_mem[of d "fst d"], simp)
+ apply (frule aGroup.ag_eq_diffzero[of R "polyn_expr R X (fst c) c" 
+                   "polyn_expr R X (fst d) d"], assumption+,
+        simp,
+        simp only:polyn_minus_m_cf[of d "fst d"],
+        drule sym, simp)
+ apply (frule polyn_add1[of c "m_cf S d"], assumption+, simp add:m_cf_len)
+ apply (thin_tac "polyn_expr R X (fst c) d \<plusminus> polyn_expr R X (fst c) 
+         (m_cf S d) =
+         polyn_expr R X (fst c) (add_cf S c (m_cf S d))",
+        thin_tac "polyn_expr R X (fst c) c = polyn_expr R X (fst c) d",
+        thin_tac "polyn_expr R X (fst c) d \<in> carrier R",
+        drule sym)
+ apply (frule_tac add_cf_pol_coeff[of c "m_cf S d"], simp add:m_cf_len)
+ apply (frule coeff_0_pol_0[THEN sym, of "add_cf S c (m_cf S d)" 
+                "fst c"],
+        simp add:add_cf_len, simp add:m_cf_len,
+        thin_tac "\<zero> = polyn_expr R X (fst d) (add_cf S c (m_cf S d))",
+        thin_tac "pol_coeff S (add_cf S c (m_cf S d))")
+ apply (simp add:add_cf_def m_cf_def)
+  apply (rule allI, rule impI)
+  apply (drule_tac a = j in forall_spec, assumption)
+  apply (frule_tac j = j in pol_coeff_mem[of c], simp,
+         frule_tac j = j in pol_coeff_mem[of d], simp)
+  apply (simp add:aGroup.ag_eq_diffzero[THEN sym])
+
+ apply simp
+ apply (rule polyn_exprs_eq[of c d "fst d"], assumption+)
+        apply (simp add:min_def, assumption+)
+done
+
+lemma (in PolynRg) pol_expr_unique3:"\<lbrakk>pol_coeff S c; pol_coeff S d; 
+      fst c < fst d\<rbrakk> \<Longrightarrow>
+  (polyn_expr R X (fst c) c = polyn_expr R X (fst d) d ) =
+      ((\<forall>j \<le> (fst c). (snd c) j = (snd d) j) \<and>
+                        (\<forall>j\<in>nset (Suc (fst c)) (fst d). (snd d) j = \<zero>\<^bsub>S\<^esub>))"
+apply (rule iffI)
+apply (cut_tac ring_is_ag, 
+       cut_tac subring, frule subring_Ring,
+       frule Ring.ring_is_ag[of S])
+apply (frule m_cf_pol_coeff[of d])
+ apply (frule polyn_mem[of c "fst c"], simp,
+        frule polyn_mem[of d "fst d"], simp)
+ apply (frule aGroup.ag_eq_diffzero[of R "polyn_expr R X (fst c) c" 
+                   "polyn_expr R X (fst d) d"], assumption+,
+        simp,
+        simp only:polyn_minus_m_cf[of d "fst d"],
+        drule sym, simp)
+ apply (frule polyn_add1[of c "m_cf S d"], assumption+, simp add:m_cf_len,
+        thin_tac "polyn_expr R X (fst c) c \<plusminus> polyn_expr R X (fst d) 
+         (m_cf S d) =
+         polyn_expr R X (max (fst c) (fst d)) (add_cf S c (m_cf S d))",
+        thin_tac "polyn_expr R X (fst d) d = polyn_expr R X (fst c) c",
+        thin_tac "polyn_expr R X (fst c) c \<in> carrier R", drule sym)
+ apply (frule_tac add_cf_pol_coeff[of c "m_cf S d"], simp add:m_cf_len)
+ apply (frule coeff_0_pol_0[THEN sym, of "add_cf S c (m_cf S d)" 
+                "max (fst c) (fst d)"],
+        simp add:add_cf_len m_cf_len, simp,
+        thin_tac "polyn_expr R X (max (fst c) (fst d)) 
+                                          (add_cf S c (m_cf S d)) = \<zero>",
+        thin_tac "pol_coeff S (add_cf S c (m_cf S d))")
+ apply (simp add:add_cf_def m_cf_def max_def)
  apply (rule conjI)
- apply (simp add:Pi_def)
- apply (rule allI) apply (rule impI)
- apply (simp add:tOp_mHom_def)
- apply (frule_tac f = f and m = x in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule_tac f = g and m = x in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (simp add:ag_pOp_closed)
-apply (rule conjI)
- apply (simp add:tOp_mHom_def restrict_def extensional_def)
-apply (rule conjI)
- apply (rule ballI)+
- apply (simp add:tOp_mHom_def)
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule_tac x = m and y = n in ag_pOp_closed [of "M"], assumption+)
- apply simp
-apply (frule_tac f = f and m = m in mHom_mem [of "R" "M" "N"], assumption+)
-apply (frule_tac f = f and m = n in mHom_mem [of "R" "M" "N"], assumption+)
-apply (frule_tac f = g and m = m in mHom_mem [of "R" "M" "N"], assumption+)
-apply (frule_tac f = g and m = n in mHom_mem [of "R" "M" "N"], assumption+)
-apply (frule_tac f = f and m = m and n = n in mHom_add [of "R" "M" "N"],
-                                                   assumption+)
-apply (frule_tac f = g and m = m and n = n in mHom_add [of "R" "M" "N"],
-                                                   assumption+)
-apply simp
-apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (simplesubst pOp_assocTr43[of "N"], assumption+)
-apply (frule_tac x = "g m" and y = "f n" in ag_pOp_commute [of "N"],
-                                                              assumption+)
-apply simp
-apply (subst pOp_assocTr43[of "N"], assumption+) apply simp
-apply (rule ballI)+
-apply (simp add:tOp_mHom_def)
-apply (frule_tac a = a and m = m in sprod_mem [of "R" "M"], assumption+)
-apply simp
-apply (frule_tac f = f and m = m in mHom_mem [of "R" "M" "N"],
-                                                             assumption+)
-apply (frule_tac f = g and m = m in mHom_mem [of "R" "M" "N"],
-                                                             assumption+)
-apply (frule_tac a = a and m = "f m" and n = "g m" in
-                                  sprod_distrib2 [of "R" "N"], assumption+)
-apply simp
-apply (simp add:mHom_lin)
+  apply (rule allI, rule impI,
+         frule_tac i = j and j = "fst c" and k = "fst d" in le_less_trans, 
+         assumption+,
+         frule_tac m = j and n = "fst d" in less_imp_le)
+  apply (drule_tac a = j in forall_spec, simp, simp)
+  apply (frule_tac j = j in pol_coeff_mem[of c], simp,
+         frule_tac j = j in pol_coeff_mem[of d], simp)
+  apply (simp add:aGroup.ag_eq_diffzero[THEN sym])
+
+  apply (rule ballI, simp add:nset_def, erule conjE)
+  apply (cut_tac i = "fst c" and j = "Suc (fst c)" and k = j in 
+         less_le_trans, simp, assumption)
+  apply (cut_tac m1 = "fst c" and n1 = j in nat_not_le_less[THEN sym], simp)
+  apply (drule_tac a = j in forall_spec, assumption, simp,
+         frule_tac j = j in pol_coeff_mem[of d], simp)
+  apply (frule_tac x = "snd d j" in aGroup.ag_inv_inv[of S], assumption,
+         simp add:aGroup.ag_inv_inv aGroup.ag_inv_zero)
+ apply (cut_tac polyn_n_m[of d "fst c" "fst d"])
+ apply (subst polyn_expr_split[of "fst d" d], simp,
+        thin_tac "polyn_expr R X (fst d) d =
+     polyn_expr R X (fst c) (fst c, snd d) \<plusminus>
+     \<Sigma>\<^sub>f R (\<lambda>j. snd d j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>) (Suc (fst c)) (fst d)", erule conjE) 
+ apply (subst higher_part_zero[of d "fst c"], assumption+)
+ apply (frule pol_coeff_le[of d "fst c"], simp add:less_imp_le,
+        frule polyn_mem[of "(fst c, snd d)" "fst c"], simp,
+        cut_tac ring_is_ag,
+        simp add:aGroup.ag_r_zero,
+        subst polyn_expr_short[THEN sym, of d "fst c"], assumption+,
+        simp add:less_imp_le)
+ apply (rule polyn_exprs_eq[of c d "fst c"], assumption+)
+        apply (simp add:min_def, assumption+)
+ apply (simp add:less_imp_le)
 done
 
-lemma iOp_mHom_closed:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N\<rbrakk>
-        \<Longrightarrow> iOp_mHom R M N f \<in> mHom R M N"
-apply (rule mHom_test, assumption+)
- apply (rule conjI) apply (simp add:Pi_def)
- apply (rule allI) apply (rule impI) apply (simp add:iOp_mHom_def)
- apply (frule_tac f = f and m = x in mHom_mem [of "R" "M" "N"],
-                                                             assumption+)
- apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (simp add:ag_mOp_closed)
- apply (rule conjI)
-apply (simp add:iOp_mHom_def restrict_def extensional_def)
-apply (rule conjI) apply (rule ballI)+
- apply (simp add:iOp_mHom_def)
- apply (frule module_is_ag[of "R" "M"], assumption+)
- apply (frule_tac x = m and y = n in ag_pOp_closed [of "M"], assumption+)
- apply simp
- apply (frule_tac f = f and m = m and n = n in mHom_add [of "R" "M" "N"],
-                                                              assumption+)
- apply simp
- apply (frule_tac f = f and m = m in mHom_mem [of "R" "M" "N"],
-                                                             assumption+)
- apply (frule_tac f = f and m = n in mHom_mem [of "R" "M" "N"],
-                                                             assumption+)
-apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (simp add:ag_minus_apb)
-apply (rule ballI)+
-apply (simp add:iOp_mHom_def)
-apply (simp add:sprod_mem)
- apply (frule_tac m = m and f = f and a = a in mHom_lin [of "R" "M" "N"],
-                                                   assumption+)
- apply simp
- apply (frule_tac f = f and m = m in mHom_mem [of "R" "M" "N"],
-                                                             assumption+)
- apply (simp add:sprod_minus_am)
-done
+lemma (in PolynRg) polyn_degree_unique:"\<lbrakk>pol_coeff S c; pol_coeff S d;
+      polyn_expr R X (fst c) c = polyn_expr R X (fst d) d\<rbrakk> \<Longrightarrow> 
+      c_max S c = c_max S d" 
+apply (cut_tac ring_is_ag,
+       cut_tac subring,
+       frule subring_Ring,
+       frule Ring.ring_is_ag[of S])
 
-lemma mHom_ex_one:"\<lbrakk>ring R; R module M; R module N\<rbrakk> \<Longrightarrow>
-                                     mzeromap M N \<in> mHom R M N "
-apply (simp add:mHom_def)
-apply (rule conjI)
- apply (simp add:aHom_def)
- apply (rule conjI) apply (rule univar_func_test) apply (rule ballI)
- apply (simp add:mzeromap_def) apply (simp add:module_inc_zero)
- apply (simp add:mzeromap_def extensional_def)
- apply (rule ballI)+
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (frule_tac x = a and y = b in ag_pOp_closed [of "M"], assumption+)
- apply simp
- apply (frule ag_inc_zero [of "N"])
- apply (simp add:ag_l_zero)
-apply (rule ballI)+
- apply (simp add:mzeromap_def)
- apply (simp add:sprod_mem)
- apply (simp add:sprod_a_0)
-done
+apply (case_tac "polyn_expr R X (fst d) d = \<zero>\<^bsub>R\<^esub>")
+ apply (cut_tac coeff_0_pol_0[THEN sym, of d "fst d"], simp,
+        cut_tac coeff_0_pol_0[THEN sym, of c "fst c"], simp)
+ apply (simp add:c_max_def, assumption, simp, assumption, simp)
 
-lemma mHom_eq:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N;
-  g \<in> mHom R M N; \<forall>m\<in>carrier M. f m = g m \<rbrakk> \<Longrightarrow> f = g"
-apply (simp add:mHom_def aHom_def)
- apply (erule conjE)+
- apply (rule funcset_eq, assumption+)
-done
-
-lemma mHom_l_one:"\<lbrakk>ring R; R module M; R module N; x \<in> mHom R M N\<rbrakk>
-       \<Longrightarrow> tOp_mHom R M N (mzeromap M N) x = x"
-apply (frule mHom_ex_one [of "R" "M" "N"], assumption+)
-apply (frule tOp_mHom_closed [of "R" "M" "N" "mzeromap M N" "x"], assumption+)
-apply (rule mHom_eq, assumption+)
- apply (rule ballI)
- apply (simp add:tOp_mHom_def) apply (simp add:mzeromap_def)
- apply (frule_tac f = x and m = m in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (simp add:ag_l_zero)
-done
-
-lemma mHom_l_inv:" \<lbrakk>ring R; R module M; R module N; x \<in> mHom R M N\<rbrakk>
-       \<Longrightarrow> tOp_mHom R M N (iOp_mHom R M N x) x = mzeromap M N"
-apply (frule mHom_ex_one [of "R" "M" "N"], assumption+)
-apply (frule_tac f = x in iOp_mHom_closed [of "R" "M" "N"], assumption+)
-apply (frule_tac f = "iOp_mHom R M N x" and g = x in tOp_mHom_closed [of "R" "M" "N"], assumption+)
-apply (frule mHom_ex_one [of "R" "M" "N"], assumption+)
-apply (rule mHom_eq, assumption+) apply (rule ballI)
- apply (simp add:tOp_mHom_def)
- apply (simp add:iOp_mHom_def) apply (simp add:mzeromap_def)
- apply (frule_tac f = x and m = m in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (simp add:ag_l_inv1)
-done
-
-lemma mHom_tOp_assoc:" \<lbrakk>ring R; R module M; R module N; x \<in> mHom R M N;
- y \<in> mHom R M N; z \<in> mHom R M N\<rbrakk> \<Longrightarrow> tOp_mHom R M N (tOp_mHom R M N x y) z =
-          tOp_mHom R M N x (tOp_mHom R M N y z)"
-apply (frule_tac f = x and g = y in tOp_mHom_closed [of "R" "M" "N"],
-                                              assumption+)
- apply (frule_tac f = "tOp_mHom R M N x y" and g = z in
-                      tOp_mHom_closed [of "R" "M" "N"], assumption+)
- apply (frule_tac f = y and g = z in tOp_mHom_closed [of "R" "M" "N"],
-                                              assumption+)
- apply (frule_tac f = x and g = "tOp_mHom R M N y z" in
-                      tOp_mHom_closed [of "R" "M" "N"], assumption+)
- apply (rule mHom_eq, assumption+) apply (rule ballI)
- apply (thin_tac "tOp_mHom R M N x y \<in> mHom R M N")
- apply (thin_tac "tOp_mHom R M N (tOp_mHom R M N x y) z \<in> mHom R M N")
- apply (thin_tac "tOp_mHom R M N y z \<in> mHom R M N")
- apply (thin_tac "tOp_mHom R M N x (tOp_mHom R M N y z) \<in> mHom R M N")
- apply (simp add:tOp_mHom_def)
- apply (frule_tac f = x and m = m in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule_tac f = y and m = m in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule_tac f = z and m = m in mHom_mem [of "R" "M" "N"], assumption+)
-apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (simp add:ag_pOp_assoc)
-done
-
-lemma mHom_tOp_commute:"\<lbrakk>ring R; R module M; R module N; x \<in> mHom R M N;
- y \<in> mHom R M N\<rbrakk> \<Longrightarrow> tOp_mHom R M N x y = tOp_mHom R M N y x"
-apply (frule_tac f = x and g = y in tOp_mHom_closed [of "R" "M" "N"],
-                                              assumption+)
-apply (frule_tac f = y and g = x in tOp_mHom_closed [of "R" "M" "N"],
-                                              assumption+)
-apply (rule mHom_eq, assumption+)
- apply (rule ballI)
- apply (thin_tac "tOp_mHom R M N x y \<in> mHom R M N")
- apply (thin_tac "tOp_mHom R M N y x \<in> mHom R M N")
- apply (simp add:tOp_mHom_def)
- apply (frule_tac f = x and m = m in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule_tac f = y and m = m in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (simp add:ag_pOp_commute)
-done
-
-lemma HOM_is_ag:"\<lbrakk>ring R; R module M; R module N\<rbrakk> \<Longrightarrow> agroup (HOM\<^sub>R M N)"
-apply (simp add:agroup_def)
-apply (rule conjI)
- apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:HOM_def)
- apply (simp add:tOp_mHom_closed)
-apply (rule conjI)
- apply (simp add:HOM_def)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:iOp_mHom_closed)
-apply (rule conjI)
- apply (simp add:HOM_def)
-apply (simp add:mHom_ex_one)
-apply (rule ballI)+
- apply (simp add:HOM_def)
-apply (frule mHom_ex_one [of "R" "M" "N"], assumption+)
-apply (simp add:mHom_l_one)
-apply (simp add:mHom_l_inv)
-apply (simp add:mHom_tOp_assoc)
-apply (simp add:mHom_tOp_commute)
-done
-
-lemma sprod_mHom_closed:"\<lbrakk>ring R; R module M; R module N; a \<in> carrier R;
- f \<in> mHom R M N\<rbrakk> \<Longrightarrow> sprod_mHom R M N a f \<in> mHom R M N"
-apply (rule mHom_test, assumption+)
-apply (rule conjI)
- apply (simp add:Pi_def)
- apply (rule allI) apply (rule impI) apply (simp add:sprod_mHom_def)
- apply (frule_tac f = f and m = x in mHom_mem [of "R" "M" "N"], assumption+)
- apply (simp add:sprod_mem [of "R" "N" "a"])
-apply (rule conjI)
-apply (simp add:sprod_mHom_def restrict_def extensional_def)
-apply (rule conjI)
- apply (rule ballI)+
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule_tac x = m and y = n in ag_pOp_closed [of "M"], assumption+)
- apply (simp add:sprod_mHom_def)
-apply (subst mHom_add [of "R" "M" "N" "f"], assumption+)
- apply (frule_tac f = f and m = m in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule_tac f = f and m = n in mHom_mem [of "R" "M" "N"], assumption+)
- apply (simp add:sprod_distrib2)
-apply (rule ballI)+
- apply (simp add:sprod_mHom_def)
- apply (frule_tac a = aa and m = m in sprod_mem [of "R" "M"], assumption+)
- apply simp
- apply (frule_tac m = m and f = f and a = aa in  mHom_lin [of "R" "M" "N"],
-                                                                assumption+)
- apply simp
-apply (frule_tac f = f and m = m in mHom_mem [of "R" "M" "N"], assumption+)
-apply (subst sprod_assoc [THEN sym, of "R" "N"], assumption+)
-apply (subst sprod_assoc [THEN sym, of "R" "N"], assumption+)
-apply (simp add:ring_tOp_commute)
-done
-
-lemma HOM_is_module:"\<lbrakk>ring R; R module M; R module N\<rbrakk> \<Longrightarrow> R module (HOM\<^sub>R M N)"
-apply (simp add:Module_def [of "R" "HOM\<^sub>R M N"])
-apply (simp add:HOM_is_ag)
-apply (rule conjI)
- apply (simp add:HOM_def)
- apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:sprod_mHom_closed)
-apply (rule ballI)+ apply (simp add:HOM_def)
-apply (frule_tac x = a and y = b in ring_tOp_closed [of "R"], assumption+)
-apply (frule_tac a = "a \<cdot>\<^sub>R b" and f = m in sprod_mHom_closed [of "R" "M" "N"],
-                                                  assumption+)
-apply (frule_tac a = b and f = m in sprod_mHom_closed [of "R" "M" "N"],
-                                                  assumption+)
-apply (frule_tac a = a and f = "sprod_mHom R M N b m" in
-                        sprod_mHom_closed [of "R" "M" "N"], assumption+)
-apply (rule conjI)
- apply (rule mHom_eq, assumption+) apply (rule ballI)
- apply (simp add:sprod_mHom_def)
- apply (frule_tac f = m and m = ma in mHom_mem [of "R" "M" "N"], assumption+)
- apply (simp add:sprod_assoc)
- apply (thin_tac "a \<cdot>\<^sub>R b \<in> carrier R")
- apply (thin_tac "sprod_mHom R M N ( a \<cdot>\<^sub>R b) m \<in> mHom R M N")
- apply (thin_tac "sprod_mHom R M N a (sprod_mHom R M N b m) \<in> mHom R M N")
-apply (frule ring_is_ag)
- apply (frule_tac x = a and y = b in ag_pOp_closed, assumption+)
-
- apply (frule_tac a = "a +\<^sub>R b" and f = m in sprod_mHom_closed [of "R" "M" "N"],
-                                                  assumption+)
- apply (frule_tac a = a and f = m in sprod_mHom_closed [of "R" "M" "N"],
-                                                   assumption+)
- apply (rule conjI)
- apply (rule mHom_eq, assumption+)
- apply (simp add:tOp_mHom_closed)
- apply (rule ballI)
- apply (simp add:sprod_mHom_def tOp_mHom_def)
-apply (frule_tac f = m and m = ma in mHom_mem [of "R" "M" "N"], assumption+)
- apply (simp add:sprod_distrib1)
-apply (rule conjI)
- apply (rule mHom_eq, assumption+)
- apply (rule sprod_mHom_closed, assumption+)
- apply (rule tOp_mHom_closed, assumption+)
- apply (rule tOp_mHom_closed, assumption+)
- apply (rule sprod_mHom_closed, assumption+)
- apply (rule ballI)
- apply (simp add:sprod_mHom_def tOp_mHom_def)
- apply (frule_tac f = m and m = ma in mHom_mem [of "R" "M" "N"], assumption+)
- apply (frule_tac f = n and m = ma in mHom_mem [of "R" "M" "N"], assumption+)
- apply (simp add:sprod_distrib2)
-apply (rule mHom_eq, assumption+)
- apply (rule sprod_mHom_closed, assumption+)
- apply (simp add:ring_one) apply assumption+
- apply (rule ballI)
- apply (simp add:sprod_mHom_def)
- apply (frule_tac f = m and m = ma in mHom_mem [of "R" "M" "N"], assumption+)
-apply (simp add:one_module_id)
-done
-
-section "2. injective hom, surjective hom, bijective hom and iverse hom"
-
-constdefs
- invmfun :: "[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme,
-              ('c, 'b, 'm2) ModuleType_scheme, 'a \<Rightarrow> 'c] \<Rightarrow> 'c \<Rightarrow> 'a"
- "invmfun R M N (f :: 'a \<Rightarrow> 'c) ==
-                    \<lambda>y\<in>(carrier N). \<some> x. (x \<in> (carrier M) \<and> f x = y)"
-
- misomorphic :: "[('b, 'm) RingType_scheme, ('a, 'b, 'm1) ModuleType_scheme,
-              ('c, 'b, 'm2) ModuleType_scheme] \<Rightarrow> bool"
- "misomorphic R M N == \<exists>f. f \<in> mHom R M N \<and> bijec\<^sub>M\<^sub>,\<^sub>N f"
-
- mId :: "('a, 'b, 'm1) ModuleType_scheme \<Rightarrow> 'a \<Rightarrow> 'a"   ("(mId\<^sub>_/ )" [89]88)
- "mId\<^sub>M  == \<lambda>m\<in>carrier M. m"
-
- mcompose::"[('a, 'r, 'm1) ModuleType_scheme, 'b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow>
-                                                                 'a \<Rightarrow> 'c"
- "mcompose M g f == compose (carrier M) g f"
-
-syntax
- "@MISOM" ::"[('a, 'b, 'm1) ModuleType_scheme, ('b, 'm) RingType_scheme,
-              ('c, 'b, 'm2) ModuleType_scheme] \<Rightarrow> bool"
-             ("(3_ \<cong>\<^sub>_ _)" [82,82,83]82)
-translations
- "M \<cong>\<^sub>R N" == "misomorphic R M N"
-
-lemma minjec_inj:"\<lbrakk>ring R; R module M; R module N; injec\<^sub>M\<^sub>,\<^sub>N f\<rbrakk> \<Longrightarrow>
-                            inj_on f (carrier M)"
-apply (simp add:inj_on_def) apply (rule ballI)+ apply (rule impI)
-apply (subgoal_tac "f (x +\<^sub>M (-\<^sub>M y)) = 0\<^sub>N")
-apply (simp add:injec_def) apply (erule conjE)
-apply (subgoal_tac "x +\<^sub>M (-\<^sub>M y) \<in> ker\<^sub>M\<^sub>,\<^sub>N f") apply simp
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule_tac x = y in ag_mOp_closed [of "M"], assumption+)
- apply (subgoal_tac "x +\<^sub>M -\<^sub>M y +\<^sub>M y = 0\<^sub>M +\<^sub>M y") prefer 2 apply simp
- apply (frule_tac x = x and y = "-\<^sub>M y" and z = y in ag_pOp_assoc [of "M"],
-                                                         assumption+)
- apply (simp add:ag_l_inv1) apply (simp add:ag_r_zero ag_l_zero)
-apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (simp add:ker_def)
- apply (frule_tac x = y in ag_mOp_closed [of "M"], assumption+)
- apply (frule_tac x = x and y = "-\<^sub>M y" in ag_pOp_closed [of "M"],
-                                                         assumption+)
- apply blast
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule_tac x = y in ag_mOp_closed [of "M"], assumption+)
- apply (simp add:injec_def) apply (erule conjE)
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule module_is_ag [of "R" "N"], assumption+)
- apply (simp add:aHom_add)
- apply (subst aHom_inv_inv [of "M" "N" "f"], assumption+)
- apply (rule ag_r_inv1, assumption+)
- apply (simp add:aHom_def) apply (erule conjE)+
- apply (simp add:funcset_mem)
-done
-
-lemma invmfun_l_inv:"\<lbrakk>ring R; R module M; R module N; bijec\<^sub>M\<^sub>,\<^sub>N f;
-      m \<in> carrier M\<rbrakk> \<Longrightarrow> (invmfun R M N f) (f m) = m"
-apply (simp add:bijec_def) apply (erule conjE)
-apply (frule minjec_inj [of "R" "M" "N" "f"], assumption+)
-apply (simp add:surjec_def) apply (erule conjE) apply (simp add:aHom_def)
-apply (frule conj_1)
-apply (thin_tac "f \<in> carrier M \<rightarrow> carrier N \<and>
-       f \<in> extensional (carrier M) \<and>
-       (\<forall>a\<in>carrier M. \<forall>b\<in>carrier M. f ( a +\<^sub>M b) =  f a +\<^sub>N (f b))")
-apply (frule invfun_l [of "f" "carrier M" "carrier N" "m"], assumption+)
- apply (simp add:surj_to_def)
-apply (simp add:invfun_def invmfun_def)
-done
-
-lemma invmfun_mHom:"\<lbrakk>ring R; R module M; R module N; bijec\<^sub>M\<^sub>,\<^sub>N f;
-                 f \<in> mHom R M N \<rbrakk> \<Longrightarrow> invmfun R M N f \<in> mHom R N M"
-apply (frule minjec_inj [of "R" "M" "N" "f"], assumption+)
-apply (simp add:bijec_def)
-apply (subgoal_tac "surjec\<^sub>M\<^sub>,\<^sub>N f") prefer 2 apply (simp add:bijec_def)
-apply (rule mHom_test, assumption+)
-apply (rule conjI)
- apply (simp add:surjec_def) apply (erule conjE)
- apply (simp add:aHom_def) apply (frule conj_1)
- apply (thin_tac "f \<in> carrier M \<rightarrow> carrier N \<and> f \<in> extensional (carrier M) \<and>
-       (\<forall>a\<in>carrier M. \<forall>b\<in>carrier M. f ( a +\<^sub>M b) =  f a +\<^sub>N (f b))")
- apply (frule inv_func [of "f" "carrier M" "carrier N"], assumption+)
- apply (simp add:invmfun_def invfun_def)
-apply (rule conjI)
- apply (simp add:invmfun_def restrict_def extensional_def)
-apply (rule conjI)
- apply (rule ballI)+
- apply (simp add:surjec_def)
- apply (erule conjE) apply (simp add:surj_to_def)
- apply (subgoal_tac "m \<in> f ` carrier M")
- apply (subgoal_tac "n \<in> f ` carrier M")
- prefer 2 apply simp prefer 2 apply simp
- apply (thin_tac "f ` carrier M = carrier N") apply (simp add:image_def)
- apply (subgoal_tac "\<forall>x\<in>carrier M. \<forall>y\<in>carrier M. m = f x \<and> n = f y \<longrightarrow>
- invmfun R M N f ( m +\<^sub>N n) = invmfun R M N f m +\<^sub>M (invmfun R M N f n)")
- apply blast apply (thin_tac "\<exists>x\<in>carrier M. m = f x")
- apply (thin_tac "\<exists>x\<in>carrier M. n = f x")
- apply (rule ballI)+ apply (rule impI) apply (erule conjE)
- apply simp
- apply (frule_tac m1 = x and n1 = y in mHom_add [THEN sym, of "R" "M" "N" "f"],
-                                                             assumption+)
- apply simp
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule_tac x = x and y = y in ag_pOp_closed [of "M"], assumption+)
- apply (simp add:invmfun_l_inv)
-apply (rule ballI)+
- apply (simp add:surjec_def)
- apply (erule conjE)
- apply (subgoal_tac "m \<in> f ` (carrier M)") prefer 2
- apply (simp add:surj_to_def)
- apply (simp add:image_def)
- apply (subgoal_tac "\<forall>x\<in>carrier M. m = f x \<longrightarrow>
-                     invmfun R M N f ( a \<star>\<^sub>N m) =  a \<star>\<^sub>M (invmfun R M N f m)")
- apply blast apply (thin_tac "\<exists>x\<in>carrier M. m = f x")
-apply (rule ballI) apply (rule impI) apply simp
-apply (frule_tac m1 = x and a1 = a in mHom_lin [THEN sym, of "R" "M" "N" _ "f"], assumption+) apply simp
- apply (frule_tac a = a and m = x in sprod_mem [of "R" "M"], assumption+)
- apply (simp add:invmfun_l_inv)
-done
-
-lemma mHom_compos:"\<lbrakk>ring R; R module L; R module M; R module N;
- f \<in> mHom R L M; g \<in> mHom R M N \<rbrakk> \<Longrightarrow> compos L g f \<in> mHom R L N"
-apply (simp add:mHom_def [of "R" "L" "N"])
-apply (frule module_is_ag [of "R" "L"], assumption+)
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (rule conjI) apply (simp add:mHom_def) apply (erule conjE)+
- apply (simp add:aHom_compos)
-apply (rule ballI)+
-apply (simp add:compos_def compose_def)
- apply (simp add:sprod_mem)
- apply (subst mHom_lin[of "R" "L" "M" _ "f"], assumption+)
- apply (subst mHom_lin [of "R" "M" "N" _ "g"], assumption+)
- apply (simp add:mHom_def) apply (erule conjE)+
- apply (simp add:aHom_mem) apply assumption+
- apply simp
-done
-
-lemma mcompos_inj_inj:"\<lbrakk>ring R; R module L; R module M; R module N;
-f \<in> mHom R L M; g \<in> mHom R M N; injec\<^sub>L\<^sub>,\<^sub>M f; injec\<^sub>M\<^sub>,\<^sub>N g \<rbrakk> \<Longrightarrow> injec\<^sub>L\<^sub>,\<^sub>N (compos L g f)"
-apply (frule module_is_ag [of "R" "L"], assumption+)
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (simp add:injec_def [of "L" "N"])
-apply (rule conjI)
- apply (simp add:injec_def) apply (erule conjE)+
- apply (simp add:aHom_compos)
-apply (simp add:ker_def)
- apply (simp add:compos_def compose_def)
- apply (rule equalityI)
- apply (rule subsetI) apply (simp add:CollectI)
- apply (erule conjE) apply simp
- apply (simp add:injec_def [of _ _ "g"])
- apply (erule conjE) apply (simp add:ker_def)
- apply (subgoal_tac "f x \<in> {a. a \<in> carrier M \<and> g a = 0\<^sub>N}")
- apply simp
- apply (simp add:injec_def [of _ _ "f"])
- apply (erule conjE) apply (subgoal_tac "x \<in> ker\<^sub>L\<^sub>,\<^sub>M f")
- apply simp apply (thin_tac "ker\<^sub>L\<^sub>,\<^sub>M f = {0\<^sub>L}")
- apply (simp add:ker_def)
- apply (thin_tac "{a. a \<in> carrier M \<and> g a = 0\<^sub>N} = {0\<^sub>M}")
- apply (simp add:CollectI) apply (simp add:mHom_mem)
-apply (rule subsetI) apply (simp add:CollectI)
- apply (frule module_inc_zero [of "R" "L"], assumption+) apply simp
- apply (simp add:mHom_0)
-done
-
-lemma mcompos_surj_surj:"\<lbrakk>ring R; R module L; R module M; R module N;
-surjec\<^sub>L\<^sub>,\<^sub>M f; surjec\<^sub>M\<^sub>,\<^sub>N g; f \<in> mHom R L M; g \<in> mHom R M N \<rbrakk> \<Longrightarrow>
-                                        surjec\<^sub>L\<^sub>,\<^sub>N (compos L g f)"
-apply (frule module_is_ag [of "R" "L"], assumption+)
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule module_is_ag [of "R" "N"], assumption+)
-apply (simp add:surjec_def [of "L" "N"])
-apply (rule conjI)
- apply (simp add:mHom_def) apply (erule conjE)+
- apply (rule aHom_compos, assumption+)
-apply (rule surj_to_test)
- apply (frule mHom_compos [of "R" "L" "M" "N" "f" "g"], assumption+)
- apply (simp add:mHom_def aHom_def)
-apply (rule ballI)
- apply (simp add: compos_def compose_def)
- apply (simp add:surjec_def [of _ _ "g"])
- apply (erule conjE) apply (simp add:surj_to_def)
- apply (subgoal_tac "b \<in> g ` carrier M")
- apply (thin_tac "g ` carrier M = carrier N") apply (thin_tac "b \<in> carrier N")
- apply (simp add:image_def)
- apply auto
-  apply (simp add:surjec_def [of _ _ "f"])
- apply (erule conjE) apply (simp add:surj_to_def)
- apply (subgoal_tac "x \<in> f ` carrier L")
- apply (thin_tac "f ` carrier L = carrier M") apply (simp add:image_def)
-apply auto
-done
-
-lemma mId_mHom:"\<lbrakk>ring R; R module M \<rbrakk> \<Longrightarrow> mId\<^sub>M \<in> mHom R M M"
-apply (simp add:mHom_def)
-apply (rule conjI)
- apply (simp add:aHom_def)
- apply (rule conjI)
- apply (rule univar_func_test) apply (rule ballI)
- apply (simp add:mId_def)
-apply (simp add:mId_def extensional_def)
-apply (rule ballI)+
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (simp add:ag_pOp_closed)
-apply (rule ballI)+
- apply (simp add:mId_def)
- apply (simp add:sprod_mem)
-done
-
-lemma mHom_mId_bijec:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N; g \<in> mHom R N M; compose (carrier M) g f = mId\<^sub>M; compose (carrier N) f g = mId\<^sub>N\<rbrakk> \<Longrightarrow>
- bijec\<^sub>M\<^sub>,\<^sub>N f"
-apply (simp add:bijec_def)
-apply (rule conjI)
-apply (simp add:injec_def)
- apply (rule conjI)
- apply (simp add:mHom_def)
- apply (simp add:ker_def)
- apply (rule equalityI)
- apply (rule subsetI) apply simp
- apply (subgoal_tac "(compose (carrier M) g f) x = (mId\<^sub>M) x")
- prefer 2 apply simp
- apply (thin_tac "compose (carrier M) g f = mId\<^sub>M")
- apply (erule conjE)
- apply (simp add:compose_def mId_def)
- apply (simp add:mHom_0)
- apply (rule subsetI) apply (simp add:ker_def)
- apply (simp add:module_inc_zero) apply (simp add:mHom_0)
-apply (thin_tac "compose (carrier M) g f = mId\<^sub>M")
- apply (simp add:surjec_def)
- apply (rule conjI) apply (simp add:mHom_def)
- apply (rule surj_to_test)
- apply (simp add:mHom_def aHom_def)
- apply (rule ballI)
- apply (subgoal_tac "(compose (carrier N) f g) b = (mId\<^sub>N) b")
- prefer 2 apply simp
- apply (thin_tac "compose (carrier N) f g = mId\<^sub>N")
- apply (simp add:compose_def mId_def)
- apply (frule_tac m = b in mHom_mem [of "R" "N" "M" "g"], assumption+)
- apply blast
-done
-
-constdefs
- sup_sharp::"[('r, 'n) RingType_scheme, ('b, 'r, 'm1) ModuleType_scheme,
- ('c, 'r, 'm2) ModuleType_scheme, ('a, 'r, 'm) ModuleType_scheme, 'b \<Rightarrow> 'c]
- \<Rightarrow> ('c \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'a)"
- "sup_sharp R M N L u == \<lambda>f\<in>mHom R N L. compos M f u"
-
- sub_sharp::"[('r, 'n) RingType_scheme, ('a, 'r, 'm) ModuleType_scheme,
- ('b, 'r, 'm1) ModuleType_scheme, ('c, 'r, 'm2) ModuleType_scheme, 'b \<Rightarrow> 'c]
- \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c)"
- "sub_sharp R L M N u == \<lambda>f\<in>mHom R L M. compos L u f"
-
-       (*  L
-          f| u
-           M \<rightarrow> N,  f \<rightarrow> u o f   *)
-
-lemma sup_sharp_homTr:"\<lbrakk>ring R; R module M; R module N; R module L;
- u \<in> mHom R M N; f \<in> mHom R N L \<rbrakk> \<Longrightarrow> sup_sharp R M N L u f \<in> mHom R M L"
-apply (simp add:sup_sharp_def)
-apply (simp add:mHom_compos)
-done
-
-lemma sup_sharp_hom:"\<lbrakk>ring R; R module M; R module N; R module L;
- u \<in> mHom R M N \<rbrakk> \<Longrightarrow> sup_sharp R M N L u \<in> mHom R (HOM\<^sub>R N L) (HOM\<^sub>R M L)"
-apply (simp add:mHom_def [of "R" "HOM\<^sub>R N L"])
-apply (rule conjI)
- apply (simp add:aHom_def)
- apply (rule conjI)
- apply (rule univar_func_test) apply (rule ballI)
- apply (simp add:HOM_def)
- apply (simp add:sup_sharp_def)
- apply (simp add:mHom_compos)
-apply (rule conjI)
- apply (simp add:sup_sharp_def extensional_def)
- apply (rule allI) apply (rule impI) apply (simp add:HOM_def)
-apply (rule ballI)+
- apply (simp add:HOM_def)
- apply (frule_tac f = a and g = b in tOp_mHom_closed [of "R" "N" "L"],
-                                                              assumption+)
- apply (frule_tac f = a in sup_sharp_homTr [of "R" "M" "N" "L" "u"],
-                                                              assumption+)
- apply (frule_tac f = b in sup_sharp_homTr [of "R" "M" "N" "L" "u"],
-                                                              assumption+)
-  apply (frule_tac f = "sup_sharp R M N L u a" and
-  g = "sup_sharp R M N L u b" in tOp_mHom_closed [of "R" "M" "L"],
-                                                              assumption+)
- apply (frule_tac f = "tOp_mHom R N L a b" in sup_sharp_homTr [of "R" "M" "N" "L" "u"], assumption+)
- apply (rule mHom_eq, assumption+)
- apply (rule ballI)
- apply (simp add:sup_sharp_def tOp_mHom_def compose_def compos_def)
- apply (simp add:mHom_mem)
-apply (rule ballI)+
- apply (simp add:HOM_def)
- apply (frule_tac a = a and f = m in sprod_mHom_closed [of "R" "N" "L"],
-                                                                assumption+)
- apply (frule_tac f = "sprod_mHom R N L a m" in
-                        sup_sharp_homTr [of "R" "M" "N" "L" "u"], assumption+)
- apply (frule_tac f = m in
-                        sup_sharp_homTr [of "R" "M" "N" "L" "u"], assumption+)
- apply (frule_tac a = a and f = "sup_sharp R M N L u m" in sprod_mHom_closed [of "R" "M" "L"], assumption+)
- apply (rule mHom_eq, assumption+)
- apply (rule ballI)
- apply (simp add:sprod_mHom_def sup_sharp_def compose_def compos_def)
-apply (simp add:mHom_mem)
-done
-
-lemma sub_sharp_homTr:"\<lbrakk>ring R; R module M; R module N; R module L;
- u \<in> mHom R M N; f \<in> mHom R L M\<rbrakk> \<Longrightarrow> sub_sharp R L M N u f \<in> mHom R L N"
-apply (simp add:sub_sharp_def)
-apply (simp add:mHom_compos)
-done
-
-lemma sub_sharp_hom:"\<lbrakk>ring R; R module M; R module N; R module L;
- u \<in> mHom R M N\<rbrakk> \<Longrightarrow> sub_sharp R L M N u \<in> mHom R (HOM\<^sub>R L M) (HOM\<^sub>R L N)"
-apply (simp add:mHom_def [of _ "HOM\<^sub>R L M"])
-apply (rule conjI)
- apply (simp add:aHom_def)
- apply (rule conjI)
- apply (simp add:HOM_def)
- apply (rule univar_func_test) apply (rule ballI)
- apply (simp add:sub_sharp_def) apply (simp add:mHom_compos)
-apply (rule conjI)
- apply (simp add:sub_sharp_def extensional_def)
- apply (simp add:HOM_def)
-apply (rule ballI)+
- apply (simp add:HOM_def)
- apply (frule_tac f = a and g = b in tOp_mHom_closed [of "R" "L" "M"],
-                                                              assumption+)
- apply (frule_tac f = "tOp_mHom R L M a b" in sub_sharp_homTr
-                                 [of "R" "M" "N" "L" "u"], assumption+)
- apply (frule_tac f = b in sub_sharp_homTr
-                                 [of "R" "M" "N" "L" "u"], assumption+)
- apply (frule_tac f = a in sub_sharp_homTr
-                                 [of "R" "M" "N" "L" "u"], assumption+)
- apply (frule_tac f = "sub_sharp R L M N u a" and
-  g = "sub_sharp R L M N u b" in tOp_mHom_closed [of "R" "L" "N"],
-                                                              assumption+)
-apply (rule mHom_eq, assumption+)
- apply (rule ballI)
- apply (simp add:tOp_mHom_def sub_sharp_def mcompose_def compose_def)
- apply (simp add:compos_def compose_def)
- apply (rule mHom_add [of "R" "M"], assumption+)
- apply (simp add:mHom_mem)
- apply (simp add:mHom_mem)
-apply (rule ballI)+
- apply (simp add:HOM_def)
- apply (frule_tac a = a and f = m in sprod_mHom_closed [of "R" "L" "M"],
-                                                         assumption+)
- apply (frule_tac f = "sprod_mHom R L M a m" in sub_sharp_homTr
-                                 [of "R" "M" "N" "L" "u"], assumption+)
- apply (frule_tac f = m in sub_sharp_homTr
-                                 [of "R" "M" "N" "L" "u"], assumption+)
- apply (frule_tac a = a and f = "sub_sharp R L M N u m" in
-                       sprod_mHom_closed [of "R" "L" "N"], assumption+)
-apply (rule mHom_eq, assumption+)
- apply (rule ballI)
- apply (simp add:sprod_mHom_def sub_sharp_def mcompose_def compose_def)
- apply (frule_tac  f = m and m = ma in mHom_mem [of "R" "L" "M"], assumption+)
-apply (simp add:compos_def compose_def)
-apply (simp add:mHom_lin)
-done
-
-lemma mId_bijec:"\<lbrakk>ring R; R module M \<rbrakk> \<Longrightarrow> bijec\<^sub>M\<^sub>,\<^sub>M (mId\<^sub>M)"
-apply (simp add:bijec_def)
-apply (frule mId_mHom [of "R" "M"], assumption+)
-apply (rule conjI)
- apply (simp add:injec_def)
- apply (rule conjI) apply (simp add:mHom_def)
- apply (simp add:ker_def) apply (simp add:mId_def)
- apply (rule equalityI) apply (rule subsetI) apply (simp add:CollectI)
- apply (rule subsetI) apply (simp add:CollectI)
-  apply (simp add:module_inc_zero)
-apply (simp add:surjec_def)
- apply (simp add:mHom_def)
- apply (thin_tac "mId\<^sub>M  \<in> aHom M M \<and>
-       (\<forall>a\<in>carrier R. \<forall>m\<in>carrier M. (mId\<^sub>M ) ( a \<star>\<^sub>M m) =  a \<star>\<^sub>M ((mId\<^sub>M ) m))")
- apply (rule surj_to_test)
- apply (rule univar_func_test) apply (rule ballI)
- apply (simp add:mId_def)
- apply (rule ballI)
- apply (simp add:mId_def)
-done
-
-lemma invmfun_bijec:"\<lbrakk>ring R; R module M; R module N; f \<in> mHom R M N;
-  bijec\<^sub>M\<^sub>,\<^sub>N f\<rbrakk> \<Longrightarrow>  bijec\<^sub>N\<^sub>,\<^sub>M (invmfun R M N f)"
-apply (frule invmfun_mHom [of "R" "M" "N" "f"], assumption+)
-apply (simp add:bijec_def [of "N" "M"])
-apply (rule conjI)
-apply (simp add:injec_def)
- apply (simp add:mHom_def [of "R" "N" "M"]) apply (erule conjE)+
- apply (thin_tac "\<forall>a\<in>carrier R.
-       \<forall>m\<in>carrier N. invmfun R M N f ( a \<star>\<^sub>N m) = a \<star>\<^sub>M (invmfun R M N f m)")
- apply (rule equalityI) apply (rule subsetI) apply (simp add:ker_def CollectI)
- apply (erule conjE)
- apply (subgoal_tac "surjec\<^sub>M\<^sub>,\<^sub>N f") prefer 2 apply (simp add:bijec_def)
- apply (simp add:surjec_def) apply (erule conjE)+ apply (simp add:surj_to_def)
- apply (subgoal_tac "x \<in> f ` carrier M") prefer 2 apply simp
- apply (thin_tac "f ` carrier M = carrier N") apply (simp add:image_def)
- apply (subgoal_tac "\<forall>xa\<in>carrier M. x = f xa \<longrightarrow> x = 0\<^sub>N")
- apply blast apply (thin_tac "\<exists>xa\<in>carrier M. x = f xa")
- apply (rule ballI) apply (rule impI)
- apply simp
- apply (simp add:invmfun_l_inv) apply (simp add:mHom_0)
- apply (rule subsetI) apply simp
- apply (simp add:ker_def) apply (simp add:module_inc_zero)
- apply (subst mHom_0 [THEN sym, of "R" "M" "N" "f"], assumption+)
- apply (subst invmfun_l_inv, assumption+) apply (simp add:module_inc_zero)
- apply simp
-apply (simp add:surjec_def)
- apply (rule conjI) apply (simp add:mHom_def)
- apply (rule surj_to_test)
- apply (simp add:mHom_def [of "R" "N" "M"] aHom_def)
- apply (rule ballI)
- apply (frule_tac m = b in mHom_mem [of "R" "M" "N" "f"], assumption+)
- apply (frule_tac m = b in invmfun_l_inv [of "R" "M" "N" "f"], assumption+)
- apply blast
-done
-
-lemma misom_self:"\<lbrakk>ring R; R module M \<rbrakk> \<Longrightarrow> M \<cong>\<^sub>R M"
-apply (frule_tac mId_bijec [of "R" "M"], assumption+)
-apply (frule mId_mHom [of "R" "M"], assumption+)
-apply (simp add:misomorphic_def)
-apply auto
-done
-
-lemma misom_sym:"\<lbrakk>ring R; R module M; R module N; M \<cong>\<^sub>R N \<rbrakk> \<Longrightarrow> N \<cong>\<^sub>R M"
-apply (simp add:misomorphic_def [of "R" "M" "N"])
-apply auto
-apply (frule_tac f = f in invmfun_mHom [of "R" "M" "N"], assumption+)
-apply (frule_tac f = f in invmfun_bijec [of "R" "M" "N"], assumption+)
-apply (simp add:misomorphic_def)
-apply auto
-done
-
-lemma misom_trans:"\<lbrakk>ring R; R module L; R module M; R module N; L \<cong>\<^sub>R M;
-M \<cong>\<^sub>R N\<rbrakk> \<Longrightarrow> L \<cong>\<^sub>R N"
-apply (simp add:misomorphic_def)
-apply (subgoal_tac "\<forall>f. \<forall>g. f \<in> mHom R L M \<and> bijec\<^sub>L\<^sub>,\<^sub>M f \<and> g \<in> mHom R M N \<and>
- bijec\<^sub>M\<^sub>,\<^sub>N g \<longrightarrow> (\<exists>f. f \<in> mHom R L N \<and> bijec\<^sub>L\<^sub>,\<^sub>N f)")
-apply blast
- apply (thin_tac "\<exists>f. f \<in> mHom R L M \<and> bijec\<^sub>L\<^sub>,\<^sub>M f")
- apply (thin_tac "\<exists>f. f \<in> mHom R M N \<and> bijec\<^sub>M\<^sub>,\<^sub>N f")
- apply (rule allI)+
- apply (rule impI) apply (erule conjE)+
-apply (subgoal_tac  "bijec\<^sub>L\<^sub>,\<^sub>N (compos L g f)")
-apply (subgoal_tac "(compos L g f) \<in> mHom R L N")
- apply blast
- apply (simp add:bijec_def ) apply (erule conjE)+
-apply (simp add:mHom_compos)
-apply (simp add:bijec_def) apply (erule conjE)+
-apply (simp add:mcompos_inj_inj)
-apply (simp add:mcompos_surj_surj)
-done
-
-constdefs
- mr_coset :: "['a, ('a, 'b, 'more) ModuleType_scheme, 'a set] \<Rightarrow> 'a set"
-     "mr_coset a M H == a \<uplus>\<^sub>M H"
-
-constdefs
- set_mr_cos:: "[('a, 'b, 'more) ModuleType_scheme, 'a set] \<Rightarrow> 'a set set"
-  "set_mr_cos M H == {X. \<exists>a\<in>carrier M. X = a \<uplus>\<^sub>M H}"
-
-constdefs
- mr_cos_sprod ::"[('a, 'b, 'more) ModuleType_scheme, 'a set] \<Rightarrow>
-                                              'b \<Rightarrow> 'a set \<Rightarrow> 'a set"
- "mr_cos_sprod M H a X == {z. \<exists>x\<in>X. \<exists>h\<in>H. z = h +\<^sub>M (a \<star>\<^sub>M x)}"
-
-constdefs
- mr_cospOp ::"[('a, 'b, 'more) ModuleType_scheme, 'a set] \<Rightarrow>
-                                               'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"
- "mr_cospOp M H ==  \<lambda>X. \<lambda>Y. costOp (b_ag M) H X Y"
-
- mr_cosmOp ::"[('a, 'b, 'more) ModuleType_scheme, 'a set] \<Rightarrow>
-                                                  'a set \<Rightarrow> 'a set"
- "mr_cosmOp M H == \<lambda>X. cosiOp (b_ag M) H X"
-
-constdefs
- qmodule :: "[('a, 'r, 'more) ModuleType_scheme, 'a set] \<Rightarrow>
-                 ('a set, 'r) ModuleType"
- "qmodule M H == \<lparr> carrier = set_mr_cos M H, pOp = mr_cospOp M H,
-  mOp = mr_cosmOp M H, zero = H, sprod = mr_cos_sprod M H\<rparr>"
-
- sub_mr_set_cos:: "[('a, 'r, 'more) ModuleType_scheme, 'a set, 'a set] \<Rightarrow>
-                            'a set set"
- "sub_mr_set_cos M H N == {X. \<exists>n\<in>N. X = n \<uplus>\<^sub>M H}"
- (* N/H, where N is a submodule *)
-
-syntax
-  "@QMODULE" :: "[('a, 'r, 'more) ModuleType_scheme, 'a set] \<Rightarrow>
-                 ('a set, 'r) ModuleType"
-              (infixl "'/'\<^sub>m" 200)
-syntax
-  "@SUBMRSET" ::"['a set, ('a, 'r, 'more) ModuleType_scheme, 'a set] \<Rightarrow>
-                            'a set set"
-             ("(3_/ \<^sub>s'/'\<^sub>_/ _)" [82,82,83]82)
-translations
-  "M /\<^sub>m H" == "qmodule M H"
-  "N \<^sub>s/\<^sub>M H" == "sub_mr_set_cos M H N"
-
-lemma qmodule_carr:"\<lbrakk>ring R; R module M; submodule R M H\<rbrakk> \<Longrightarrow>
-            carrier (qmodule M H) = set_mr_cos M H"
-apply (simp add:qmodule_def)
-done
-
-lemma set_mr_cos_mem:"\<lbrakk>ring R; R module M; submodule R M H; m \<in> carrier M\<rbrakk> \<Longrightarrow>
-                        m \<uplus>\<^sub>M H \<in> set_mr_cos M H"
-apply (simp add:set_mr_cos_def)
-apply blast
-done
-
-
-lemma m_in_mr_coset:"\<lbrakk>ring R; R module M; submodule R M H; m \<in> carrier M\<rbrakk> \<Longrightarrow>
-             m \<in> m \<uplus>\<^sub>M H"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule b_ag_group)
-apply (simp add:ar_coset_def)
-apply (simp add:ag_carrier_carrier [THEN sym])
-apply (simp add:submodule_def) apply (erule conjE)+
-apply (simp add:asubgroup_def)
-apply (rule aInR_cos [of "b_ag M" "H" "m"], assumption+)
-done
-
-lemma mr_cos_h_stable:"\<lbrakk>ring R; R module M; submodule R M H; h \<in> H\<rbrakk> \<Longrightarrow>
-                                                           H = h \<uplus>\<^sub>M H"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule b_ag_group [of "M"])
-apply (simp add:ar_coset_def)
-apply (rule r_cosUnit1_1 [THEN sym], assumption+)
-apply (simp add:submodule_def) apply (erule conjE)+
-apply (simp add:asubgroup_def) apply assumption
-done
-
-lemma mr_cos_h_stable1:"\<lbrakk>ring R; R module M; submodule R M H; m \<in> carrier M;
-h \<in> H\<rbrakk> \<Longrightarrow> (m +\<^sub>M h) \<uplus>\<^sub>M H = m \<uplus>\<^sub>M H"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (subst ag_pOp_commute [of "M"], assumption+)
- apply (simp add:submodule_def) apply (erule conjE)+
- apply (simp add:subsetD)
-apply (frule b_ag_group [of "M"])
-apply (simp add:ar_coset_def)
-apply (simp add:agop_gop [THEN sym])
-apply (simp add:ag_carrier_carrier [THEN sym])
-apply (simp add:submodule_def) apply (erule conjE)+
-apply (simp add:asubgroup_def)
-apply (rule r_coset_fixed1 [THEN sym, of "b_ag M" "H" "m" "h"], assumption+)
-done
-
-lemma x_in_mr_coset:"\<lbrakk>ring R; R module M; submodule R M H; m \<in> carrier M;
-           x \<in> m \<uplus>\<^sub>M H\<rbrakk> \<Longrightarrow> \<exists>h\<in>H. m +\<^sub>M h = x"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (subgoal_tac "\<exists>h\<in>H. h +\<^sub>M m = x")
- apply (subgoal_tac "\<forall>h\<in>H. h +\<^sub>M m = x \<longrightarrow> (\<exists>h\<in>H.  m +\<^sub>M h = x)")
- apply blast apply (thin_tac "\<exists>h\<in>H.  h +\<^sub>M m = x")
- apply (rule ballI) apply (rule impI)
- apply (frule submodule_subset1 [of "R" "M" "H"], assumption+)
- apply (simp add:ag_pOp_commute [of "M" _ "m"])
-apply blast
-apply (simp add:ar_coset_def)
-apply (frule b_ag_group)
-apply (simp add:agop_gop [THEN sym])
-apply (simp add:submodule_def) apply (erule conjE)+
-apply (simp add:asubgroup_def)
-apply (simp add:ag_carrier_carrier [THEN sym])
-apply (simp add:r_cosTool2)
-done
-
-lemma mr_cos_sprodTr:"\<lbrakk>ring R; R module M; submodule R M H; a \<in> carrier R;
- m \<in> carrier M\<rbrakk> \<Longrightarrow>
- mr_cos_sprod M H a (m \<uplus>\<^sub>M H) = (a \<star>\<^sub>M m) \<uplus>\<^sub>M H"
-apply (simp add:mr_cos_sprod_def)
-apply (simp add:ar_coset_def)
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule b_ag_group)
-apply (simp add:submodule_def) apply (erule conjE)+
+apply (frule polyn_mem[of c "fst c"], simp, frule polyn_mem[of d "fst d"], 
+       simp)
+apply (frule aGroup.ag_eq_diffzero[of "R" "polyn_expr R X (fst c) c" 
+               "polyn_expr R X (fst d) d"], assumption+)
+apply (simp only:polyn_minus_m_cf[of d "fst d"],
+       frule m_cf_pol_coeff [of d])
+apply (frule polyn_add1[of c "m_cf S d"], assumption+,
+       simp only:m_cf_len) 
+apply (rotate_tac -1, drule sym, simp,
+       thin_tac "polyn_expr R X (fst d) d \<plusminus>
+                         polyn_expr R X (fst d) (m_cf S d) = \<zero>",
+       frule add_cf_pol_coeff[of c "m_cf S d"], assumption+)
+apply (cut_tac coeff_0_pol_0[THEN sym, of "add_cf S c (m_cf S d)" 
+                "fst (add_cf S c (m_cf S d))"],
+       simp add:add_cf_len m_cf_len,
+       thin_tac "polyn_expr R X (max (fst c) (fst d)) 
+                            (add_cf S c (m_cf S d)) = \<zero>",
+       thin_tac "pol_coeff S (add_cf S c (m_cf S d))",
+       thin_tac "pol_coeff S (m_cf S d)")
+ apply (frule coeff_nonzero_polyn_nonzero[of d "fst d"], simp, simp)
+ apply (drule sym, simp)
+ apply (frule coeff_nonzero_polyn_nonzero[of c "fst c"], simp, simp)
+apply (simp add:c_max_def, rule conjI, rule impI, blast,
+       rule conjI, rule impI, blast)
+apply (rule n_max_eq_sets)
 apply (rule equalityI)
- apply (rule subsetI) apply (simp add:CollectI)
- apply (subgoal_tac "\<forall>xa\<in>H\<^sub>(b_ag M) m. \<forall>h\<in>H. x = h +\<^sub>M  a \<star>\<^sub>M xa \<longrightarrow>
-                            x \<in> H\<^sub>(b_ag M) ( a \<star>\<^sub>M m)")
+apply (rule subsetI, simp)
+ apply (erule conjE)
+
+ apply (case_tac "fst c \<le> fst d")
+ apply (frule_tac i = x in le_trans[of _ "fst c" "fst d"], assumption+, simp,
+        rule contrapos_pp, simp+, simp add:max_def,
+        frule_tac i = x in le_trans[of _ "fst c" "fst d"], assumption+,
+        drule_tac a = x in forall_spec, assumption,
+        drule le_imp_less_or_eq[of "fst c" "fst d"],
+        erule disjE, simp add:add_cf_def m_cf_len m_cf_def,
+        frule_tac j = x in pol_coeff_mem[of c], assumption+,
+        simp add:aGroup.ag_inv_zero aGroup.ag_r_zero[of S])
+ 
+        apply (simp add:add_cf_def m_cf_len m_cf_def,
+               rotate_tac -1, drule sym, simp,
+               frule_tac j = x in pol_coeff_mem[of c], simp,
+               simp add:aGroup.ag_inv_zero aGroup.ag_r_zero[of S])
+
+        apply (simp add:nat_not_le_less) (* \<not> fst c \<le> fst d *)
+        apply (case_tac "\<not> x \<le> (fst d)", simp,
+               simp add:nat_not_le_less,
+               frule_tac i = "fst d" and j = x and k = "fst c" in 
+               less_le_trans, assumption+,
+               drule_tac a = x in forall_spec1, simp add:max_def,
+               simp add:add_cf_def m_cf_len m_cf_def)
+
+        apply (simp,
+               drule_tac a = x in forall_spec1, simp add:max_def,
+               rule contrapos_pp, simp+,
+               simp add:add_cf_def m_cf_len m_cf_def,
+               frule_tac j = x in pol_coeff_mem[of c],
+               frule_tac i = x and j = "fst d" and k = "fst c" in
+               le_less_trans, assumption+, simp add:less_imp_le,
+               simp add:aGroup.ag_inv_zero aGroup.ag_r_zero[of S])
+
+ apply (rule subsetI, simp, erule conjE,
+        case_tac "fst d \<le> fst c",
+        frule_tac i = x and j = "fst d" and k = "fst c" in le_trans,
+        assumption+, simp,
+        drule_tac a = x in forall_spec1, simp add:max_def,
+        rule contrapos_pp, simp+,
+        simp add:add_cf_def m_cf_len m_cf_def)
+   apply (case_tac "fst d = fst c", simp, rotate_tac -1, drule sym, simp,
+          frule_tac j = x in pol_coeff_mem[of d], assumption,
+          frule_tac x = "snd d x" in aGroup.ag_mOp_closed, assumption+,
+          simp add:aGroup.ag_l_zero,
+          frule_tac x = "snd d x" in aGroup.ag_inv_inv[of S],
+                 assumption, simp add:aGroup.ag_inv_zero)
+
+   apply (drule noteq_le_less[of "fst d" "fst c"], assumption,
+          simp,
+          frule_tac j = x in pol_coeff_mem[of d], assumption,
+          frule_tac x = "snd d x" in aGroup.ag_mOp_closed, assumption+,
+          simp add:aGroup.ag_l_zero,
+          frule_tac x = "snd d x" in aGroup.ag_inv_inv[of S],
+                 assumption, simp add:aGroup.ag_inv_zero)
+
+   apply (simp add:nat_not_le_less,
+          case_tac "\<not> x \<le> fst c", simp,
+          simp add:nat_not_le_less,
+          drule_tac a = x in forall_spec1, simp add:max_def,
+          simp add:add_cf_def m_cf_len m_cf_def,
+          frule_tac j = x in pol_coeff_mem[of d], assumption,
+          frule_tac x = "snd d x" in aGroup.ag_mOp_closed, assumption+,
+          simp add:aGroup.ag_l_zero,
+          frule_tac x = "snd d x" in aGroup.ag_inv_inv[of S],
+                 assumption, simp add:aGroup.ag_inv_zero)
+
+   apply (simp,
+          drule_tac a = x in forall_spec1, simp add:max_def,
+          rule contrapos_pp, simp+,
+          simp add:add_cf_def m_cf_len m_cf_def,
+          frule_tac i = x and j = "fst c" and k = "fst d" in le_less_trans,
+           assumption+, frule_tac m = x and n = "fst d" in less_imp_le,
+          frule_tac j = x in pol_coeff_mem[of d], assumption,
+          frule_tac x = "snd d x" in aGroup.ag_mOp_closed, assumption+,
+          simp add:aGroup.ag_l_zero,
+          frule_tac x = "snd d x" in aGroup.ag_inv_inv[of S],
+                 assumption, simp add:aGroup.ag_inv_zero)
+
+ apply (thin_tac "\<forall>j\<le>max (fst c) (fst d). snd (add_cf S c (m_cf S d)) j = \<zero>\<^bsub>S\<^esub>")
+ apply (rotate_tac -1, drule sym, simp)
+ apply (simp add:coeff_0_pol_0[THEN sym, of c "fst c"])
  apply blast
- apply (thin_tac "\<exists>xa\<in>H\<^sub>(b_ag M) m. \<exists>h\<in>H. x =  h +\<^sub>M  a \<star>\<^sub>M xa")
- apply (rule ballI)+ apply (rule impI)
- apply (frule_tac x = xa in r_cosTool2 [of "b_ag M" "H" "m"])
- apply (simp add:asubgroup_def)
- apply (simp add:ag_carrier_carrier) apply assumption
- apply (subgoal_tac "\<forall>h\<in>H. GroupType.tOp (b_ag M) h m = xa \<longrightarrow> x \<in> H\<^sub>(b_ag M) ( a \<star>\<^sub>M m)")
- apply blast apply (thin_tac "\<exists>h\<in>H.  GroupType.tOp (b_ag M) h m = xa")
- apply (rule ballI) apply (rule impI)
- apply (simp add:agop_gop) apply (rotate_tac -1) apply (frule sym)
- apply (thin_tac "ha +\<^sub>M m = xa") apply simp
- apply (frule_tac c = ha in subsetD [of "H" "carrier M"], assumption+)
- apply (frule_tac m = ha and n = m in sprod_distrib2 [of "R" "M" "a"],
-                                                             assumption+)
+ apply simp+
+done
+
+lemma (in PolynRg) ex_polyn_expr:"p \<in> carrier R \<Longrightarrow>
+         \<exists>c. pol_coeff S c \<and> p = polyn_expr R X (fst c) c"
+apply (cut_tac S_X_generate[of p], blast)
+apply assumption
+done
+
+lemma (in PolynRg) c_max_eqTr0:"\<lbrakk>pol_coeff S c; k \<le> (fst c);
+     polyn_expr R X k c = polyn_expr R X (fst c) c; \<exists>j\<le>k. (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>\<rbrakk> \<Longrightarrow>
+               c_max S (k, snd c) = c_max S c"
+apply (simp add:polyn_expr_short[of c k],
+       frule pol_coeff_le[of c k], assumption+,
+       rule polyn_degree_unique[of "(k, snd c)" c], assumption+,
+       simp)
+done
+
+constdefs
+ cf_sol::"[('a, 'b) Ring_scheme, ('a, 'b1) Ring_scheme, 'a, 'a,
+                nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> bool"
+ "cf_sol R S X p c == pol_coeff S c \<and> (p = polyn_expr R X (fst c) c)"
+
+constdefs
+deg_n ::"[('a, 'b) Ring_scheme, ('a, 'b1) Ring_scheme, 'a, 'a] \<Rightarrow> nat"
+ "deg_n R S X p == c_max S (SOME c. cf_sol R S X p c)" 
+
+ deg ::"[('a, 'b) Ring_scheme, ('a, 'b1) Ring_scheme, 'a, 'a] \<Rightarrow> ant"
+ "deg R S X p == if p = \<zero>\<^bsub>R\<^esub> then -\<infinity> else (an (deg_n R S X p))"
+
+lemma (in PolynRg) ex_cf_sol:"p \<in> carrier R \<Longrightarrow>
+                                    \<exists>c. cf_sol R S X p c"
+apply (unfold cf_sol_def) 
+apply (frule ex_polyn_expr[of p], (erule exE)+)
+apply (cut_tac n = "fst c" in le_refl, blast)
+done 
+
+lemma (in PolynRg) deg_in_aug_minf:"p \<in> carrier R \<Longrightarrow>
+                                   deg R S X p \<in> Z\<^bsub>-\<infinity>\<^esub>"
+apply (simp add:aug_minf_def deg_def an_def)
+done
+
+lemma (in PolynRg) deg_noninf:"\<lbrakk>p \<noteq> \<zero>; p \<in> carrier R\<rbrakk> \<Longrightarrow>
+                                   deg R S X p \<noteq> \<infinity>"
+apply (cut_tac deg_in_aug_minf[of p], simp add:deg_def,
+       simp add:aug_minf_def)
+apply assumption
+done
+
+lemma (in PolynRg) deg_ant_int:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk>
+                  \<Longrightarrow> deg R S X p = ant (int (deg_n R S X p))"
+by (simp add:deg_def an_def)
+
+lemma (in PolynRg) deg_an:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk>
+        \<Longrightarrow> deg R S X p = an (deg_n R S X p)"
+by (simp add:deg_def)
+
+lemma (in PolynRg) pol_SOME_1:"p \<in> carrier R  \<Longrightarrow> 
+             cf_sol R S X p (SOME f. cf_sol R S X p f)"
+apply (frule ex_cf_sol[of p])
+apply (rule_tac P = "cf_sol R S X p" in someI_ex, assumption)
+done
+
+lemma (in PolynRg) pol_SOME_2:"p \<in> carrier R \<Longrightarrow>
+         pol_coeff S (SOME c. cf_sol R S X p c) \<and>  
+           p = polyn_expr R X (fst (SOME c. cf_sol R S X p c))
+                                      (SOME c. cf_sol R S X p c)"
+apply (frule pol_SOME_1[of p])
+apply (simp add:cf_sol_def)
+done
+
+lemma (in PolynRg) coeff_max_zeroTr:"pol_coeff S c \<Longrightarrow>
+                   \<forall>j. j \<le> (fst c) \<and> (c_max S c) < j \<longrightarrow> (snd c) j = \<zero>\<^bsub>S\<^esub>"
+apply (case_tac "\<forall>j \<le> (fst c). (snd c) j = \<zero>\<^bsub>S\<^esub>", rule allI, rule impI,
+       erule conjE, simp) 
+apply simp
+apply (frule coeff_nonzero_polyn_nonzero[THEN sym, of c "fst c"], simp,
+       simp)
+apply (rule allI, rule impI, erule conjE,
+       simp add:c_max_def,
+       simp add:polyn_degreeTr[of c "fst c"])
+apply (subgoal_tac "{j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>} \<subseteq> {j. j \<le> (fst c)}",
+       frule n_max[of "{j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>}" "fst c"], blast) 
+ apply (case_tac "\<forall>x\<le>fst c. snd c x = \<zero>\<^bsub>S\<^esub> ", blast, simp)
+ apply (erule conjE)
+apply (rule contrapos_pp, simp+,
+       thin_tac "\<exists>x\<le>fst c. snd c x \<noteq> \<zero>\<^bsub>S\<^esub>",
+       thin_tac "{j. j \<le> fst c \<and> snd c j \<noteq> \<zero>\<^bsub>S\<^esub>} \<subseteq> {j. j \<le> fst c}",
+       thin_tac "snd c (n_max {j. j \<le> fst c \<and> snd c j \<noteq> \<zero>\<^bsub>S\<^esub>}) \<noteq> \<zero>\<^bsub>S\<^esub>",
+       drule_tac a = j in forall_spec, simp)
+apply simp
+apply (rule subsetI, simp)
+done 
+
+lemma (in PolynRg) coeff_max_nonzeroTr:"\<lbrakk>pol_coeff S c; 
+       \<exists>j \<le> (fst c). (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>\<rbrakk> \<Longrightarrow> (snd c) (c_max S c) \<noteq> \<zero>\<^bsub>S\<^esub>"
+apply (simp add:c_max_def)
+apply (subgoal_tac "{j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>} \<subseteq> {j. j \<le> (fst c)}",
+       frule n_max[of "{j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>}" "fst c"], blast) 
+apply (erule conjE, simp)
+
+apply (rule subsetI, simp)
+done
+
+lemma (in PolynRg) coeff_max_bddTr:"pol_coeff S c \<Longrightarrow> c_max S c \<le> (fst c)"
+apply (case_tac "\<forall>j\<le>(fst c). (snd c) j = \<zero>\<^bsub>S\<^esub>", simp add:c_max_def)
+apply (simp add:c_max_def,
+       frule polyn_degreeTr[of c "fst c"], simp, simp,
+       subgoal_tac "{j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>} \<subseteq> {j. j \<le> (fst c)}",
+       frule n_max[of "{j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>}" "fst c"],
+       blast, erule conjE, simp)
+apply (rule subsetI, simp)
+done
+
+lemma (in PolynRg) pol_coeff_max:"pol_coeff S c \<Longrightarrow> 
+                             pol_coeff S ((c_max S c), snd c)"
+apply (rule pol_coeff_le[of c "c_max S c"], assumption)
+apply (simp add:coeff_max_bddTr)
+done
+
+lemma (in PolynRg) polyn_c_max:"pol_coeff S c \<Longrightarrow>
+       polyn_expr R X (fst c) c = polyn_expr R X (c_max S c) c"
+apply (case_tac "(c_max S c) = (fst c)", simp)
+apply (frule coeff_max_bddTr[of c], 
+       frule noteq_le_less[of "c_max S c" "fst c"], assumption)
+apply (subst polyn_n_m1[of c "c_max S c" "fst c"], assumption+, simp)
+
+apply (frule_tac polyn_mem[of c "c_max S c"], assumption+)
+ apply (subst higher_part_zero[of c "c_max S c"], assumption+)
+ apply (frule coeff_max_zeroTr[of c],
+        rule ballI, simp add:nset_def)
+
+apply (cut_tac ring_is_ag, simp add:aGroup.ag_r_zero)
+done
+
+lemma (in PolynRg) pol_deg_eq_c_max:"\<lbrakk>p \<in> carrier R; 
+       pol_coeff S c; p = polyn_expr R X (fst c) c\<rbrakk> \<Longrightarrow> 
+                   deg_n R S X p = c_max S c"
+apply (cut_tac subring, frule subring_Ring)
+ apply (frule polyn_c_max[of c]) 
+apply (frule pol_SOME_2[of p])
+apply (subst deg_n_def, erule conjE) 
+apply (rule polyn_degree_unique[of "Eps (cf_sol R S X p)" "c"], simp,
+       assumption)
  apply simp
- apply (thin_tac "a \<star>\<^sub>M ( ha +\<^sub>M m) = a \<star>\<^sub>M ha +\<^sub>M  a \<star>\<^sub>M m")
- apply (frule_tac m = ha in sprod_mem [of "R" "M" "a"], assumption+)
- apply (frule_tac m = m in sprod_mem [of "R" "M" "a"], assumption+)
- apply (frule_tac c = h in subsetD [of "H" "carrier M"], assumption+)
- apply (subst ag_pOp_assoc [THEN sym], assumption+)
- apply (subgoal_tac "a \<star>\<^sub>M ha \<in> H") prefer 2 apply simp
- apply (frule_tac h = h and k = "a \<star>\<^sub>M ha" in
-                    submodule_pOp_closed [of "R" "M" "H"], assumption+)
-apply (simp add:submodule_def) apply assumption+
- apply (simp add:agop_gop [THEN sym])
- apply (simp add:asubgroup_def)
- apply (simp add:ag_carrier_carrier [THEN sym])
- apply (frule_tac a = "a \<star>\<^sub>M m" and h = "GroupType.tOp (b_ag M) h (a \<star>\<^sub>M ha)"
-  in  r_coset_fixed1 [of "b_ag M" "H"], assumption+)
- apply simp
- apply (simp add:aInR_cos)
-apply (rule subsetI)
- apply (simp add:CollectI)
- apply (simp add:asubgroup_def)
- apply (frule_tac m = m in sprod_mem [of "R" "M" "a"], assumption+)
- apply (simp add:ag_carrier_carrier [THEN sym])
- apply (frule_tac x = x in r_cosTool2 [of "b_ag M" "H" "a \<star>\<^sub>M m"], assumption+)
- apply (simp add:agop_gop [THEN sym])
- apply (frule_tac aInR_cos [of "b_ag M" "H" "m"], assumption+)
-apply blast
 done
 
-lemma mr_cos_sprod_mem:"\<lbrakk>ring R; R module M; submodule R M H;
- a \<in> carrier R; X \<in> set_mr_cos M H\<rbrakk> \<Longrightarrow> mr_cos_sprod M H a X \<in> set_mr_cos M H"
-apply (subgoal_tac "\<exists>a\<in>carrier M. X = (a \<uplus>\<^sub>M H)")
-prefer 2  apply (simp add:set_mr_cos_def)
-apply auto apply (rename_tac m)
- apply (subst mr_cos_sprodTr, assumption+)
- apply (frule_tac m = m in sprod_mem [of "R" "M" "a"], assumption+)
-apply (simp add:set_mr_cos_def)
-apply blast
-done
-
-lemma mr_cos_sprod_assoc:"\<lbrakk>ring R; R module M; submodule R M H; a \<in> carrier R;
- b \<in> carrier R; X \<in> set_mr_cos M H \<rbrakk> \<Longrightarrow> mr_cos_sprod  M H (a \<cdot>\<^sub>R b) X =
-                           mr_cos_sprod M H a (mr_cos_sprod M H b X)"
-apply (subgoal_tac "\<exists>a\<in>carrier M. X = (a \<uplus>\<^sub>M H)")
-prefer 2 apply (simp add:set_mr_cos_def)
-apply (subgoal_tac "\<forall>m\<in>carrier M. X = m \<uplus>\<^sub>M H \<longrightarrow>
- mr_cos_sprod M H (a \<cdot>\<^sub>R b) X = mr_cos_sprod M H a (mr_cos_sprod M H b X)")
-apply blast apply (thin_tac "\<exists>a\<in>carrier M. X = a \<uplus>\<^sub>M H")
-apply (rule ballI) apply (rule impI) apply simp
- apply (frule_tac m = m in sprod_mem [of "R" "M" "b"], assumption+)
- apply (frule ring_tOp_closed [of "R" "a" "b"], assumption+)
- apply (subst mr_cos_sprodTr, assumption+)+
- apply (simp add: sprod_assoc [of "R" "M" "a" "b"])
-done
-
-lemma mr_cos_sprod_one:"\<lbrakk>ring R; R module M; submodule R M H;
- X \<in> set_mr_cos M H\<rbrakk> \<Longrightarrow> mr_cos_sprod M H (1\<^sub>R) X = X"
-apply (subgoal_tac "\<exists>a\<in>carrier M. X = (a \<uplus>\<^sub>M H)")
-prefer 2  apply (simp add:set_mr_cos_def)apply (subgoal_tac "\<forall>m\<in>carrier M. X = m \<uplus>\<^sub>M H \<longrightarrow>  mr_cos_sprod M H  (1\<^sub>R) X = X")
-apply blast apply (thin_tac "\<exists>a\<in>carrier M. X = a \<uplus>\<^sub>M H")
- apply (rule ballI) apply (rule impI) apply simp
- apply (frule ring_one[of "R"])
- apply (subst mr_cos_sprodTr, assumption+)
- apply (simp add:one_module_id)
-done
-
-lemma mr_cospOpTr:"\<lbrakk>ring R; R module M; submodule R M H; m \<in> carrier M;
- n \<in> carrier M\<rbrakk> \<Longrightarrow> mr_cospOp M H (m \<uplus>\<^sub>M H) (n \<uplus>\<^sub>M H) = (m +\<^sub>M n) \<uplus>\<^sub>M H"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule b_ag_group)
-apply (simp add:mr_cospOp_def mr_coset_def agop_gop [THEN sym])
-apply (simp add:ag_carrier_carrier [THEN sym])
-apply (simp add:submodule_def) apply (erule conjE)+
-apply (frule asubg_nsubg, assumption+) apply (simp add:ar_coset_def)
-apply (rule costOpwelldef [THEN sym, of "b_ag M" "H" "m" "n"], assumption+)
-done
-
-lemma mr_cos_sprod_distrib1:"\<lbrakk>ring R; R module M; submodule R M H;
- a \<in> carrier R; b \<in> carrier R;  X \<in> set_mr_cos M H\<rbrakk> \<Longrightarrow>
- mr_cos_sprod M H (a +\<^sub>R b) X =
-           mr_cospOp M H (mr_cos_sprod M H a X) (mr_cos_sprod M H b X)"
-apply (subgoal_tac "\<exists>m\<in>carrier M. X = (m \<uplus>\<^sub>M H)")
-prefer 2 apply (simp add:set_mr_cos_def)
-apply (subgoal_tac "\<forall>m\<in>carrier M. X = m \<uplus>\<^sub>M H \<longrightarrow> mr_cos_sprod M H ( a +\<^sub>R b) X = mr_cospOp M H (mr_cos_sprod M H a X) (mr_cos_sprod M H b X)")
-apply blast apply (thin_tac "\<exists>m\<in>carrier M. X = m \<uplus>\<^sub>M H")
-apply (rule ballI) apply (rule impI)
- apply simp
- apply (frule ring_is_ag)
- apply (frule ag_pOp_closed [of "R" "a" "b"], assumption+)
-apply (subst mr_cos_sprodTr [of "R" "M" "H"], assumption+)+
-apply (subst mr_cospOpTr, assumption+)
- apply (simp add:sprod_mem)
- apply (simp add:sprod_mem)
- apply (simp add:sprod_distrib1)
-done
-
-lemma mr_cos_sprod_distrib2:"\<lbrakk>ring R; R module M; submodule R M H;
- a \<in> carrier R; X \<in> set_mr_cos M H; Y \<in> set_mr_cos M H\<rbrakk> \<Longrightarrow>
- mr_cos_sprod M H a (mr_cospOp M H X Y) =
-           mr_cospOp M H (mr_cos_sprod M H a X) (mr_cos_sprod M H a Y)"
-apply (subgoal_tac "\<exists>m\<in>carrier M. X = (m \<uplus>\<^sub>M H)")
- prefer 2 apply (simp add:set_mr_cos_def)
-apply (subgoal_tac "\<exists>n\<in>carrier M. Y = (n \<uplus>\<^sub>M H)")
- prefer 2 apply (simp add:set_mr_cos_def)
-apply (subgoal_tac "\<forall>m\<in>carrier M. \<forall>n\<in>carrier M. X = m \<uplus>\<^sub>M H \<and> Y = n \<uplus>\<^sub>M H \<longrightarrow>
- mr_cos_sprod M H a (mr_cospOp M H X Y) =
-       mr_cospOp M H (mr_cos_sprod M H a X) (mr_cos_sprod M H a Y)")
-apply blast
- apply (thin_tac "\<exists>m\<in>carrier M. X = m \<uplus>\<^sub>M H")
- apply (thin_tac "\<exists>n\<in>carrier M. Y = n \<uplus>\<^sub>M H")
-apply (simp add: mr_cospOpTr sprod_mem mr_cos_sprodTr module_is_ag ag_pOp_closed sprod_distrib2)
-done
-
-lemma mr_cosmOpTr:"\<lbrakk>ring R; R module M; submodule R M H; m \<in> carrier M\<rbrakk> \<Longrightarrow>
-                mr_cosmOp M H (m \<uplus>\<^sub>M H) = (-\<^sub>M m) \<uplus>\<^sub>M H"
-apply (simp add:ar_coset_def)
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule b_ag_group)
-apply (simp add:ag_carrier_carrier [THEN sym])
-apply (simp add:agiop_giop [THEN sym])
-apply (simp add:mr_cosmOp_def)
-apply (rule cosiOpwelldef, assumption+)
- apply (simp add:submodule_def) apply (erule conjE)+
- apply (frule asubg_nsubg [of "M" "H"], assumption+)
-done
-
-lemma mr_cos_oneTr:"\<lbrakk>ring R; R module M; submodule R M H\<rbrakk> \<Longrightarrow>
-               H =  (0\<^sub>M) \<uplus>\<^sub>M H"
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule ag_inc_zero [of "M"])
- apply (simp add:ar_coset_def)
- apply (frule b_ag_group)
- apply (simp add:ag_carrier_carrier [THEN sym])
- apply (subgoal_tac "0\<^sub>M = GroupType.one (b_ag M)") apply simp
- apply (rule r_cosUnit1 [THEN sym, of "b_ag M" "H"], assumption+)
- apply (simp add:submodule_def) apply (erule conjE)+
- apply (simp add:asubgroup_def)
- apply (simp add:b_ag_def)
-done
-
-lemma mr_cos_oneTr1:"\<lbrakk>ring R; R module M; submodule R M H; m \<in> carrier M\<rbrakk> \<Longrightarrow>
-                            mr_cospOp M H H (m \<uplus>\<^sub>M H) = m \<uplus>\<^sub>M H"
-apply (subgoal_tac "mr_cospOp M H (0\<^sub>M \<uplus>\<^sub>M H) (m \<uplus>\<^sub>M H) = m \<uplus>\<^sub>M H")
-apply (simp add:mr_cos_oneTr [THEN sym, of "R" "M" "H"])
-apply (subst mr_cospOpTr, assumption+)
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (rule ag_inc_zero, assumption+)
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (subst ag_l_zero [of "M" "m"], assumption+)
+lemma (in PolynRg) pol_deg_le_n:"\<lbrakk>p \<in> carrier R; pol_coeff S c; 
+       p = polyn_expr R X (fst c) c\<rbrakk> \<Longrightarrow> deg_n R S X p \<le> (fst c)"
+apply (frule  pol_deg_eq_c_max[of p c], assumption+,
+       frule  coeff_max_bddTr[of c]) 
 apply simp
 done
 
-lemma qmodule_is_ag:"\<lbrakk>ring R; R module M; submodule R M H\<rbrakk> \<Longrightarrow>
-                          agroup (M /\<^sub>m H)"
-apply (simp add:agroup_def)
-apply (simp add:qmodule_def)
-apply (rule conjI)
- apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (rename_tac X Y)
- apply (simp add:set_mr_cos_def)
- apply (subgoal_tac "\<forall>a\<in>carrier M. \<forall>b\<in>carrier M. X = a \<uplus>\<^sub>M H \<and> Y = b \<uplus>\<^sub>M H
-  \<longrightarrow> (\<exists>a\<in>carrier M. mr_cospOp M H X Y = a \<uplus>\<^sub>M H)")
- apply blast apply (thin_tac "\<exists>a\<in>carrier M. X = a \<uplus>\<^sub>M H")
- apply (thin_tac "\<exists>a\<in>carrier M. Y = a \<uplus>\<^sub>M H")
- apply (rule ballI)+ apply (rule impI) apply (erule conjE)+
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule_tac x = a and y = b in ag_pOp_closed [of "M"], assumption+)
- apply (simp add: mr_cospOpTr)
- apply blast
-apply (rule conjI)
- apply (simp add:Pi_def) apply (rule allI) apply (rule impI)
- apply (simp add:set_mr_cos_def)
- apply (subgoal_tac "\<forall>a\<in>carrier M. x = a \<uplus>\<^sub>M H \<longrightarrow>
-                        (\<exists>a\<in>carrier M. mr_cosmOp M H x = a \<uplus>\<^sub>M H)")
- apply blast
- apply (thin_tac "\<exists>a\<in>carrier M. x = a \<uplus>\<^sub>M H")
- apply (rule ballI) apply (rule impI)
- apply (simp add: mr_cosmOpTr)
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule_tac x = a in ag_mOp_closed [of "M"], assumption+)
- apply blast
-apply (rule conjI)
- apply (simp add:set_mr_cos_def)
- apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (frule ag_inc_zero [of "M"])
- apply (frule mr_cos_oneTr [of "R" "M" "H"], assumption+)
- apply blast
-apply (rule ballI)+
- apply (simp add:set_mr_cos_def)
- apply (rule conjI)
- apply (subgoal_tac "\<forall>a\<in>carrier M.  x = a \<uplus>\<^sub>M H \<longrightarrow>
-                                 mr_cospOp M H H x = x")
- apply blast
-   apply (thin_tac "\<exists>a\<in>carrier M. x = a \<uplus>\<^sub>M H")
-   apply (thin_tac "\<exists>b\<in>carrier M. y = b \<uplus>\<^sub>M H")
-   apply (thin_tac "\<exists>c\<in>carrier M. z = c \<uplus>\<^sub>M H")
- apply (rule ballI) apply (rule impI) apply simp
- apply (simp add:mr_cos_oneTr1)
- apply (subgoal_tac "\<forall>a\<in>carrier M. \<forall>b\<in>carrier M. \<forall>c\<in>carrier M.
-   x = a \<uplus>\<^sub>M H \<and>  y = b \<uplus>\<^sub>M H \<and>  z = c \<uplus>\<^sub>M H \<longrightarrow>
-          mr_cospOp M H (mr_cosmOp M H x) x = H \<and>
-          mr_cospOp M H (mr_cospOp M H x y) z =
-          mr_cospOp M H x (mr_cospOp M H y z) \<and>
-          mr_cospOp M H x y = mr_cospOp M H y x")
- apply blast
-  apply (thin_tac "\<exists>a\<in>carrier M. x = a \<uplus>\<^sub>M H")
-  apply (thin_tac "\<exists>b\<in>carrier M. y = b \<uplus>\<^sub>M H")
-  apply (thin_tac "\<exists>c\<in>carrier M. z = c \<uplus>\<^sub>M H")
-apply (rule ballI)+
- apply (rule impI) apply simp
-apply (simp add:mr_cospOpTr)
-apply (simp add:mr_cosmOpTr)
-apply (thin_tac "x = a \<uplus>\<^sub>M H \<and> y = b \<uplus>\<^sub>M H \<and> z = c \<uplus>\<^sub>M H")
-apply (frule module_is_ag [of "R" "M"], assumption+)
-apply (frule_tac x = a in ag_mOp_closed [of "M"], assumption+)
-apply (frule_tac x = a and y = b in ag_pOp_closed [of "M"], assumption+)
-apply (frule_tac x = b and y = c in ag_pOp_closed [of "M"], assumption+)
-apply (simp add:mr_cospOpTr)
-apply (simp add:ag_l_inv1)
-apply (simp add:mr_cos_oneTr [THEN sym])
-apply (simp add:ag_pOp_assoc)
-apply (simp add:ag_pOp_commute)
+lemma (in PolynRg) pol_deg_le_n1:"\<lbrakk>p \<in> carrier R; pol_coeff S c; k \<le> (fst c); 
+       p = polyn_expr R X k c\<rbrakk> \<Longrightarrow> deg_n R S X p \<le> k"
+apply (simp add:deg_n_def, drule sym, simp)
+apply (frule pol_SOME_2[of p], erule conjE)
+apply (frule pol_coeff_le[of c k], assumption)
+apply (simp only:polyn_expr_short[of c k])
+apply (drule sym)
+apply (subst polyn_degree_unique[of "SOME c. cf_sol R S X p c" "(k, snd c)"],
+       assumption+, simp)
+apply (frule coeff_max_bddTr[of "(k, snd c)"], simp)
 done
 
-lemma qmodule_module:"\<lbrakk>ring R; R module M; submodule R M H\<rbrakk> \<Longrightarrow>
-                                                   R module (M /\<^sub>m H)"
-apply (simp add:Module_def [of "R" "M /\<^sub>m H"])
-apply (simp add:qmodule_is_ag)
-apply (simp add:qmodule_def)
-apply (rule conjI)
- apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:mr_cos_sprod_mem)
-apply (rule ballI)+
-apply (simp add:mr_cos_sprod_assoc)
-apply (simp add:mr_cos_sprod_distrib1)
-apply (simp add:mr_cos_sprod_distrib2)
-apply (simp add:mr_cos_sprod_one)
+lemma (in PolynRg) pol_len_gt_deg:"\<lbrakk>p \<in> carrier R; pol_coeff S c; 
+       p = polyn_expr R X (fst c) c; deg R S X p < (an j); j \<le> (fst c)\<rbrakk>
+       \<Longrightarrow>  (snd c) j = \<zero>\<^bsub>S\<^esub>"
+apply (case_tac "p = \<zero>\<^bsub>R\<^esub>", simp, drule sym)
+ apply (simp add:coeff_0_pol_0[THEN sym, of c "fst c"])
+ apply (simp add:deg_def, simp add:aless_natless)
+ apply (drule sym, simp)
+ apply (frule coeff_max_zeroTr[of c])
+ apply (simp add:pol_deg_eq_c_max)
+done
+
+lemma (in PolynRg) pol_diff_deg_less:"\<lbrakk>p \<in> carrier R; pol_coeff S c; 
+      p = polyn_expr R X (fst c) c; pol_coeff S d;
+      fst c = fst d; (snd c) (fst c) = (snd d) (fst d)\<rbrakk> \<Longrightarrow>
+      p \<plusminus> (-\<^sub>a (polyn_expr R X (fst d) d)) = \<zero> \<or> 
+     deg_n R S X (p \<plusminus> (-\<^sub>a (polyn_expr R X (fst d) d))) < (fst c)"
+apply (cut_tac ring_is_ag, 
+       cut_tac subring, frule subring_Ring)
+apply (case_tac "p \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> (polyn_expr R X (fst d) d)) = \<zero>\<^bsub>R\<^esub>", simp) 
+apply simp
+ apply (simp add:polyn_minus_m_cf[of d "fst d"],
+        frule m_cf_pol_coeff[of d])
+ apply (cut_tac  polyn_add1[of c "m_cf S d"], simp add:m_cf_len,
+        thin_tac "polyn_expr R X (fst d) c \<plusminus> polyn_expr R X (fst d) (m_cf S d)
+        = polyn_expr R X (fst d) (add_cf S c (m_cf S d))")
+ apply (frule add_cf_pol_coeff[of c "m_cf S d"], assumption+)
+ apply (cut_tac polyn_mem[of "add_cf S c (m_cf S d)" "fst d"],
+        frule pol_deg_le_n[of "polyn_expr R X (fst d) (add_cf S c (m_cf S d))"
+        "add_cf S c (m_cf S d)"], assumption+,
+        simp add:add_cf_len m_cf_len,
+        simp add:add_cf_len m_cf_len)
+ apply (rule noteq_le_less[of "deg_n R S X (polyn_expr R X (fst d) 
+         (add_cf S c (m_cf S d)))" "fst d"], assumption)
+ apply (rule contrapos_pp, simp+)
+ apply (cut_tac pol_deg_eq_c_max[of "polyn_expr R X (fst d) 
+             (add_cf S c (m_cf S d))" "add_cf S c (m_cf S d)"],
+        simp,
+        thin_tac "deg_n R S X (polyn_expr R X (fst d) (add_cf S c (m_cf S d)))
+                 = fst d") 
+ apply (frule coeff_nonzero_polyn_nonzero[of "add_cf S c (m_cf S d)" "fst d"],
+        simp add:add_cf_len m_cf_len, simp,
+              thin_tac "polyn_expr R X (fst d) (add_cf S c (m_cf S d)) \<noteq> \<zero>",
+        frule coeff_max_nonzeroTr[of "add_cf S c (m_cf S d)"],
+        simp add:add_cf_len m_cf_len,
+               thin_tac "\<exists>j\<le>fst d. snd (add_cf S c (m_cf S d)) j \<noteq> \<zero>\<^bsub>S\<^esub>",
+               thin_tac "pol_coeff S (m_cf S d)",
+               thin_tac "pol_coeff S (add_cf S c (m_cf S d))",
+               thin_tac "polyn_expr R X (fst d) (add_cf S c (m_cf S d)) \<in> 
+                         carrier R", simp,
+               thin_tac "c_max S (add_cf S c (m_cf S d)) = fst d")
+   apply (simp add:add_cf_def m_cf_def,
+          frule pol_coeff_mem[of d "fst d"], simp,
+          frule Ring.ring_is_ag[of S], 
+               simp add:aGroup.ag_r_inv1, assumption+,
+          simp add:add_cf_len m_cf_len, assumption,
+          simp add:add_cf_len m_cf_len, assumption+)
+done
+
+lemma (in PolynRg) pol_pre_lt_deg:"\<lbrakk>p \<in> carrier R; pol_coeff S c;
+      deg_n R S X p \<le> (fst c); (deg_n R S X p) \<noteq> 0;
+      p = polyn_expr R X (deg_n R S X p) c \<rbrakk> \<Longrightarrow> 
+ (deg_n R S X (polyn_expr R X ((deg_n R S X p) - Suc 0) c)) < (deg_n R S X p)"
+apply (frule polyn_expr_short[of c "deg_n R S X p"], assumption)
+apply (cut_tac pol_deg_le_n[of "polyn_expr R X (deg_n R S X p - Suc 0) c"
+           "(deg_n R S X p - Suc 0, snd c)"], simp)
+ apply (rule polyn_mem[of c "deg_n R S X p - Suc 0"], assumption+,
+        arith,
+        rule pol_coeff_le[of c "deg_n R S X p - Suc 0"], assumption,
+        arith, simp)
+ apply (subst polyn_expr_short[of c "deg_n R S X p - Suc 0"],
+         assumption+, arith, simp)
+done
+
+lemma (in PolynRg) pol_deg_n:"\<lbrakk>p \<in> carrier R; pol_coeff S c; 
+       n \<le> fst c; p = polyn_expr R X n c; (snd c) n \<noteq> \<zero>\<^bsub>S\<^esub>\<rbrakk> \<Longrightarrow>
+                   deg_n R S X p = n"
+apply (simp add:polyn_expr_short[of c n])
+ apply (frule pol_coeff_le[of c n], assumption+,
+        cut_tac pol_deg_eq_c_max[of p "(n, snd c)"],
+        drule sym, simp, simp add:c_max_def)
+ apply (rule conjI, rule impI, cut_tac le_refl[of n],
+        thin_tac "deg_n R S X p =
+        (if \<forall>x\<le>n. snd c x = \<zero>\<^bsub>S\<^esub> then 0
+        else n_max {j. j \<le> fst (n, snd c) \<and> snd (n, snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>})",
+        drule_tac a = n in forall_spec, assumption, simp)
+ apply (rule impI)
+ apply (cut_tac n_max[of "{j. j \<le> n \<and> snd c j \<noteq> \<zero>\<^bsub>S\<^esub>}" n], erule conjE,
+        drule_tac b = n in forball_spec1, simp, simp)
+ apply (rule subsetI, simp, blast,
+        drule sym, simp, assumption)
+apply simp
+done
+
+lemma (in PolynRg) pol_expr_deg:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk> 
+       \<Longrightarrow> \<exists>c. pol_coeff S c \<and> deg_n R S X p \<le> (fst c) \<and> 
+                p = polyn_expr R X (deg_n R S X p) c \<and> 
+               (snd c) (deg_n R S X p) \<noteq> \<zero>\<^bsub>S\<^esub>"  
+apply (cut_tac subring,
+       frule subring_Ring)
+apply (frule ex_polyn_expr[of p], erule exE, erule conjE)
+ apply (frule_tac c = c in polyn_c_max)
+ apply (frule_tac c = c in pol_deg_le_n[of p], assumption+)
+ apply (frule_tac c1 = c and k1 ="fst c" in coeff_0_pol_0[THEN sym], simp) 
+ apply (subgoal_tac "p = polyn_expr R X (deg_n R S X p) c \<and>
+               snd c (deg_n R S X p) \<noteq> \<zero>\<^bsub>S\<^esub>", blast)
+ apply (subst pol_deg_eq_c_max, assumption+)+
+ apply simp
+ apply (cut_tac c = c in coeff_max_nonzeroTr, simp+)
+done
+
+lemma (in PolynRg) deg_n_pos:"p \<in> carrier R \<Longrightarrow> 0 \<le> deg_n R S X p"
+by simp
+
+lemma (in PolynRg) pol_expr_deg1:"\<lbrakk>p \<in> carrier R; d = na (deg R S X p)\<rbrakk> \<Longrightarrow> 
+                \<exists>c. (pol_coeff S c \<and> p = polyn_expr R X d c)"
+apply (cut_tac subring, frule subring_Ring)
+apply (case_tac "p = \<zero>\<^bsub>R\<^esub>",
+       simp add:deg_def na_minf,
+       subgoal_tac "pol_coeff S (0, (\<lambda>j. \<zero>\<^bsub>S\<^esub>))", 
+       subgoal_tac "\<zero> = polyn_expr R X d (0, (\<lambda>j. \<zero>\<^bsub>S\<^esub>))", blast,
+       cut_tac coeff_0_pol_0[of "(d, \<lambda>j. \<zero>\<^bsub>S\<^esub>)" d], simp+,
+       simp add:pol_coeff_def,
+       simp add:Ring.ring_zero)
+
+apply (simp add:deg_def na_an,
+       frule pol_expr_deg[of p], assumption,
+       erule exE, (erule conjE)+,
+       cut_tac p = c in PairE_lemma, (erule exE)+, simp, blast)
 done
 
 end
