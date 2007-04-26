@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegExp2NA.thy,v 1.6 2006-01-21 20:59:41 makarius Exp $
+(*  ID:         $Id: RegExp2NA.thy,v 1.7 2007-04-26 14:32:17 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -11,8 +11,9 @@ begin
 
 types 'a bitsNA = "('a,bool list)na"
 
-syntax "##" :: "'a => 'a list set => 'a list set" (infixr 65)
-translations "x ## S" == "Cons x ` S"
+abbreviation
+  Cons_syn :: "'a => 'a list set => 'a list set" (infixr "##" 65) where
+  "x ## S == Cons x ` S"
 
 constdefs
 "atom"  :: "'a => 'a bitsNA"
