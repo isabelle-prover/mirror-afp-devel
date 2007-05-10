@@ -1,11 +1,13 @@
 (*  Title:      Jinja/JVM/JVMListExample.thy
-    ID:         $Id: JVMListExample.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: JVMListExample.thy,v 1.4 2007-05-10 08:22:56 fhaftmann Exp $
     Author:     Stefan Berghofer, Gerwin Klein
 *)
 
 header {* \isaheader{Example for generating executable code from JVM semantics}\label{sec:JVMListExample} *}
 
-theory JVMListExample imports SystemClasses JVMExec EfficientNat begin
+theory JVMListExample
+imports SystemClasses JVMExec EfficientNat
+begin
 
 constdefs
   list_name :: string
@@ -98,8 +100,8 @@ fun new_addr z s alloc some hp =
 *}
 
   "arbitrary" ("(error \"arbitrary\")")
-  "arbitrary" :: "val" ("{* Unit *}")
-  "arbitrary" :: "cname" ("Object")
+  "arbitrary :: val" ("{* Unit *}")
+  "arbitrary :: cname" ("Object")
 
 declare method_def2 [unfolded Method_def, OF exI, OF conjI, code ind]
 declare fields_def2 [code ind]

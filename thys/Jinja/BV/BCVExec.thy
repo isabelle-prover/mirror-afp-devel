@@ -1,4 +1,6 @@
-theory BCVExec imports BVExec BVNoTypeError Exceptions begin
+theory BCVExec
+imports BVExec BVNoTypeError Exceptions
+begin
 
 section {* Preliminaries *}
 
@@ -21,10 +23,10 @@ consts_code
 text {* some default values *}
 
 consts_code
-  arbitrary :: nat ("{* (0::nat) *}")
-  arbitrary :: string ("{* ''''Arbitrary'''' *}")
-  arbitrary :: val ("{* Unit *}")
-  arbitrary :: obj (" {* ((''''ArbitraryClassName'''',(\<lambda>x. None))::obj) *}")
+  "arbitrary :: nat" ("{* (0::nat) *}")
+  "arbitrary :: string" ("{* ''''Arbitrary'''' *}")
+  "arbitrary :: val" ("{* Unit *}")
+  "arbitrary :: obj" (" {* ((''''ArbitraryClassName'''',(\<lambda>x. None))::obj) *}")
 
 text {* code for the subclass relation, avoids non-termination due to 
         left-recursion in the transitive closure. *}

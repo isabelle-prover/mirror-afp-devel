@@ -1,11 +1,13 @@
 (*  Title:      Jinja/J/JListExample.thy
-    ID:         $Id: JListExample.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: JListExample.thy,v 1.3 2007-05-10 08:22:56 fhaftmann Exp $
     Author:     Stefan Berghofer
 *)
 
 header {* \isaheader{Example for generating executable code from Jinja semantics} *}
 
-theory JListExample imports Eval SystemClasses begin
+theory JListExample
+imports Eval SystemClasses
+begin
 
 ML {* Syntax.ambiguity_level := 100000 *}
 
@@ -68,8 +70,8 @@ consts_code
   "new_Addr" ("new'_addr {* %x. case x of None => True | Some y => False *}/ {* None *} {* Loc *}")
 
   "arbitrary" ("(raise ERROR)")
-  "arbitrary" :: "val" ("{* Unit *}")
-  "arbitrary" :: "cname" ("\"\"")
+  "arbitrary :: val" ("{* Unit *}")
+  "arbitrary :: cname" ("\"\"")
 
   "Object" ("\"Object\"")
   "list_name" ("\"list\"")

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.14 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: Execute.thy,v 1.15 2007-05-10 08:22:56 fhaftmann Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -7,7 +7,9 @@
 
 header {* \isaheader{Code generation for Semantics and Type Sysytem} *}
 
-theory Execute imports BigStep WellType ExecutableSet EfficientNat begin
+theory Execute
+imports BigStep WellType ExecutableSet EfficientNat
+begin
 
 section{* General redefinitions *}
 
@@ -734,11 +736,11 @@ lemmas [code ind] = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl'
 (* A hack to make set operations work on sets with function types *)
 
 consts_code
-  "insert" :: "('a \<times> ('b \<Rightarrow> 'c)) \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
+  "insert :: ('a \<times> ('b \<Rightarrow> 'c)) \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("insert (op = o pairself fst)")
-  "minus" :: "('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
+  "minus :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("(subtract (op = o pairself fst)/ (_)/ (_))")
-  "op Un" :: "('a * ('b => 'c)) set => ('a * ('b => 'c)) set => ('a * ('b => 'c)) set"
+  "op Un :: ('a * ('b => 'c)) set => ('a * ('b => 'c)) set => ('a * ('b => 'c)) set"
     ("(gen'_union (op = o pairself fst)/ (_,/ _))")
 
 consts_code
