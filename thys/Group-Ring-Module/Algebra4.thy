@@ -24,7 +24,11 @@
    section 5.  primary ideals, prime ideals
  **)   
 
-theory Algebra4 imports Binomial Algebra3 Zorn begin
+theory Algebra4
+imports Binomial Zorn Algebra3
+begin
+
+(*<*)hide const ring(*>*)
 
 section "20. Abelian groups"
 
