@@ -27,8 +27,8 @@ fun dfs2 x =
   dfs2 (x, (nexts x xa, (xa :: xb))))))))))
     x;
 
-fun op_64 [] ys = ys
-  | op_64 (x :: xs) ys = (x :: op_64 xs ys);
+fun append [] ys = ys
+  | append (x :: xs) ys = (x :: append xs ys);
 
 fun dfs x =
   wfrec (fn dfs => fn a =>
@@ -39,7 +39,8 @@ fun dfs x =
                   (case xa of [] => xb
                     | (xa :: xc) =>
                         (if memberl xa xb then dfs (x, (xc, xb))
-                          else dfs (x, (op_64 (nexts x xa) xc, (xa :: xb))))))))
+                          else dfs (x, (append (nexts x xa) xc,
+ (xa :: xb))))))))
     x;
 
 val dfs = (fn x => dfs x);
