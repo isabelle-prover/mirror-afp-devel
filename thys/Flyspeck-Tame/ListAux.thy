@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.4 2006-11-07 19:14:31 makarius Exp $
+(*  ID:         $Id: ListAux.thy,v 1.5 2007-06-06 18:15:27 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -55,40 +55,38 @@ subsubsection {* @{const filter} *}
 lemma filter_emptyE[dest]: "(filter P xs = []) \<Longrightarrow>  x \<in> set xs \<Longrightarrow>  \<not> P x" 
   by (simp add: filter_empty_conv)
 
-lemma filter_comm: "[x \<in> xs. P x \<and> Q x] = [x \<in> xs. Q x \<and> P x]"
+lemma filter_comm: "[x \<leftarrow> xs. P x \<and> Q x] = [x \<leftarrow> xs. Q x \<and> P x]"
   by (simp add: conj_aci)
 
-lemma filter1: " [x\<in>xs . P x] = [] \<Longrightarrow> 
-    [x\<in> xs. Q x \<and> P x] = []"
+lemma filter1: " [x\<leftarrow>xs . P x] = [] \<Longrightarrow> [x\<leftarrow>xs. Q x \<and> P x] = []"
   by (induct xs)  (simp_all split: split_if_asm)
 
-lemma filter_prop: "\<And>x. x \<in> set [u\<in>ys . P u] \<Longrightarrow> P x"
-proof (induct ys)
+lemma filter_prop: "x \<in> set [u\<leftarrow>ys . P u] \<Longrightarrow> P x"
+proof (induct ys arbitrary: x)
   case Nil then show ?case by simp 
 next 
-  case (Cons y ys) then show ?case 
-    by (auto split: split_if_asm) 
+  case Cons then show ?case by (auto split: split_if_asm)
 qed
    
-lemma filter_Cons_prop: "[u\<in>ys . P u] = x # xs \<Longrightarrow> P x"
+lemma filter_Cons_prop: "[u\<leftarrow>ys . P u] = x # xs \<Longrightarrow> P x"
 proof -
-  assume "[u\<in>ys . P u] = x # xs"
-  then have "x \<in> set [u\<in>ys . P u]" by simp
+  assume "[u\<leftarrow>ys . P u] = x # xs"
+  then have "x \<in> set [u\<leftarrow>ys . P u]" by simp
   then show "P x" by (rule filter_prop)
 qed
 
 lemma filter_compl1: 
- "([x \<in> xs. P x] = []) = ([x \<in> xs. \<not> P x] = xs)" (is "?lhs = ?rhs")
+ "([x\<leftarrow>xs. P x] = []) = ([x\<leftarrow>xs. \<not> P x] = xs)" (is "?lhs = ?rhs")
 proof
   show "?rhs \<Longrightarrow> ?lhs" 
   proof (induct xs) 
     case Nil then show ?case by simp
   next
     case (Cons x xs) 
-    have "[u\<in>xs . \<not> P u] \<noteq> x # xs"
+    have "[u\<leftarrow>xs . \<not> P u] \<noteq> x # xs"
     proof 
-      assume "[u\<in>xs . \<not> P u] = x # xs" 
-      then have "|x # xs| = |[u\<in>xs . \<not> P u]|" by simp
+      assume "[u\<leftarrow>xs . \<not> P u] = x # xs" 
+      then have "|x # xs| = |[u\<leftarrow>xs . \<not> P u]|" by simp
       also have "... \<le> |xs|" by simp 
       finally show False by simp 
     qed
@@ -105,14 +103,14 @@ lemma filter_compl2: "\<And>P. (filter (Not \<circ> P) xs = []) = (filter P xs =
   by (simp add: filter_compl1) 
 
 lemma filter_eqI: 
-  "(\<And>v. v \<in> set vs \<Longrightarrow> P v = Q v) \<Longrightarrow> [v \<in> vs . P v] = [v \<in> vs . Q v]"
+  "(\<And>v. v \<in> set vs \<Longrightarrow> P v = Q v) \<Longrightarrow> [v\<leftarrow>vs . P v] = [v\<leftarrow>vs . Q v]"
   by (induct vs) simp_all
 
-lemma filter_simp: "(\<And>x. x \<in> set xs \<Longrightarrow> P x) \<Longrightarrow> [x \<in> xs. P x \<and> Q x] = [x \<in> xs. Q x]"
+lemma filter_simp: "(\<And>x. x \<in> set xs \<Longrightarrow> P x) \<Longrightarrow> [x\<leftarrow>xs. P x \<and> Q x] = [x\<leftarrow>xs. Q x]"
  by (induct xs) auto
 
 lemma filter_True_eq1: 
-  "(length [y \<in> xs. P y] = length xs) \<Longrightarrow> (\<And>y. y \<in> set xs \<Longrightarrow> P y)"
+  "(length [y\<leftarrow>xs. P y] = length xs) \<Longrightarrow> (\<And>y. y \<in> set xs \<Longrightarrow> P y)"
 proof (induct xs)
   case Nil then show ?case by simp
 next
@@ -128,10 +126,10 @@ next
 qed
 
 lemma length_filter_True_eq: 
-  "(length [y \<in> xs. P y] = length xs) = (\<forall>y. y \<in> set xs \<longrightarrow> P y)"
+  "(length [y\<leftarrow>xs. P y] = length xs) = (\<forall>y. y \<in> set xs \<longrightarrow> P y)"
   by (intro iffI allI impI, erule filter_True_eq1) simp_all
 
-
+(*
 subsubsection {* @{const map} *}
 
 syntax (xsymbols)
@@ -144,7 +142,6 @@ translations
   "[f. x : xs]"== "map (\<lambda>x. f) xs";
 
 
-
 subsubsection {* @{const map_filter} *}
 
 syntax (xsymbols)
@@ -155,8 +152,9 @@ syntax
 translations
   "[f. x \<in> xs, P]"== "map_filter (\<lambda>x. f) P xs" 
   "[f. x : xs, P]"== "map_filter (\<lambda>x. f) P xs"
+*)
 
-lemma [simp]: "[f x. x \<in> xs, P] = [f x. x \<in> [x \<in> xs. P x]]"
+lemma [simp]: "[f x. x <- xs, P x] = [f x. x <- [x \<leftarrow> xs. P x]]"
   by (induct xs) auto
 
 
@@ -164,13 +162,13 @@ subsubsection {* @{const concat} *}
 
 syntax (xsymbols)
   "@concat"     :: "idt => 'a list => 'a list \<Rightarrow> 'a list"  ("\<Squnion>\<^bsub>_\<in> _\<^esub> _" 10)
-translations "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "concat [f. x \<in> xs]" 
+translations "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "concat [f. x <- xs]" 
 
 
 subsubsection {* List product *}
 
 constdefs listProd1 :: "'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list"
- "listProd1 a bs \<equiv> [(a,b). b \<in> bs]"
+ "listProd1 a bs \<equiv> [(a,b). b <- bs]"
 
 constdefs listProd :: "'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list" (infix "\<times>" 50)
  "as \<times> bs \<equiv> \<Squnion>\<^bsub>a \<in> as\<^esub> listProd1 a bs"
@@ -395,7 +393,7 @@ done
 subsubsection {* @{const"distinct"} *}
 
 lemma dist_filter_single:
-"distinct ls \<Longrightarrow> v \<in> set ls \<Longrightarrow> [a\<in> ls . a = v] = [v]"
+"distinct ls \<Longrightarrow> v \<in> set ls \<Longrightarrow> [a\<leftarrow>ls . a = v] = [v]"
 proof (induct ls)
   case Nil then show ?case by auto
 next
@@ -403,7 +401,7 @@ next
   proof (cases "l = v")
     case True with Cons
     have "v \<notin> set ls" by auto
-    then have "[a\<in>ls . a = v] = []" by (induct ls) auto
+    then have "[a\<leftarrow>ls . a = v] = []" by (induct ls) auto
     with Cons True show ?thesis by auto
   next
     case False with Cons show ?thesis by auto
@@ -1371,7 +1369,7 @@ lemma isTable_Cons: "isTable E vs ((a,b)#ps) \<Longrightarrow> isTable E vs ps"
 
 constdefs
 removeKey  :: "'a \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'b) list"
-"removeKey a ps \<equiv> [p \<in> ps. a \<noteq> fst p]"
+"removeKey a ps \<equiv> [p \<leftarrow> ps. a \<noteq> fst p]"
 
 consts removeKeyList :: "'a list \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'b) list"
 primrec
@@ -1442,10 +1440,10 @@ next
 qed
 
 lemma removeKeyList_eq:
-  "removeKeyList as ps = [p \<in> ps. \<forall>a \<in> set as. a \<noteq> fst p]"
-  by (induct as) (simp_all add: filter_comm removeKey_def)
+  "removeKeyList as ps = [p \<leftarrow> ps. \<forall>a \<in> set as. a \<noteq> fst p]"
+by (induct as) (simp_all add: filter_comm removeKey_def)
 
-lemma removeKey_empty[simp]: "removeKey a [] = []" 
+lemma removeKey_empty[simp]: "removeKey a [] = []"
   by (simp add: removeKey_def)
 lemma removeKeyList_empty[simp]: "removeKeyList ps [] = []"
   by (induct ps) simp_all

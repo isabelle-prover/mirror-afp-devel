@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListSum.thy,v 1.2 2006-07-31 00:57:28 webertj Exp $
+(*  ID:         $Id: ListSum.thy,v 1.3 2007-06-06 18:15:27 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -44,11 +44,11 @@ lemma [THEN eq_reflection, code unfold]: "((ListSum ls f)::int) = intListSum ls 
 lemma [simp]: "\<Sum>\<^bsub>v \<in> V\<^esub> 0 = (0::nat)" by (induct V) simp_all
 
 lemma ListSum_compl1: 
-  "(\<Sum>\<^bsub>x \<in> [x\<in>xs. \<not> P x]\<^esub> f x) + \<Sum>\<^bsub>x \<in> [x\<in>xs. P x]\<^esub> f x = \<Sum>\<^bsub>x \<in> xs\<^esub> (f x::nat)" 
+  "(\<Sum>\<^bsub>x \<in> [x\<leftarrow>xs. \<not> P x]\<^esub> f x) + \<Sum>\<^bsub>x \<in> [x\<leftarrow>xs. P x]\<^esub> f x = \<Sum>\<^bsub>x \<in> xs\<^esub> (f x::nat)" 
  by (induct xs) simp_all
 
 lemma ListSum_compl2: 
-  "(\<Sum>\<^bsub>x \<in>  [x\<in>xs. P x]\<^esub> f x) + \<Sum>\<^bsub>x \<in>  [x\<in>xs. \<not> P x]\<^esub> f x = \<Sum>\<^bsub>x \<in> xs\<^esub> (f x::nat)" 
+  "(\<Sum>\<^bsub>x \<in>  [x\<leftarrow>xs. P x]\<^esub> f x) + \<Sum>\<^bsub>x \<in>  [x\<leftarrow>xs. \<not> P x]\<^esub> f x = \<Sum>\<^bsub>x \<in> xs\<^esub> (f x::nat)" 
  by (induct xs) simp_all
 
 lemmas ListSum_compl = ListSum_compl1 ListSum_compl2

@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.4 2007-01-21 18:47:50 nipkow Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.5 2007-06-06 18:15:27 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -4062,7 +4062,7 @@ done
 subsection {* @{text removeNones} *}
 
 constdefs removeNones :: "'a option list \<Rightarrow> 'a list"
-"removeNones vOptionList \<equiv> [the x. x \<in> vOptionList, (\<lambda>x. x \<noteq> None)]"
+"removeNones vOptionList \<equiv> [the x. x \<leftarrow> vOptionList, x \<noteq> None]"
 
 (* "removeNones vOptionList \<equiv> map the [x \<in> vOptionList. x \<noteq> None]" *)
 
@@ -4142,7 +4142,7 @@ proof -
 qed
 
 lemma a: "distinct (vertices f) \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> (\<forall>i \<in> set is. i < length (vertices f)) \<Longrightarrow>
- (\<And>a. a < length (vertices f) \<Longrightarrow> hideDupsRec ((f \<bullet> ^ a) v) [(f \<bullet> ^ k) v. k \<in> is] = natToVertexListRec a v f is)"
+ (\<And>a. a < length (vertices f) \<Longrightarrow> hideDupsRec ((f \<bullet> ^ a) v) [(f \<bullet> ^ k) v. k \<leftarrow> is] = natToVertexListRec a v f is)"
 proof (induct "is")
   case Nil then show ?case by simp
 next
@@ -4490,13 +4490,13 @@ qed
 
 
 lemma filter_Cons2:
- "x \<notin> set ys \<Longrightarrow> [y \<in> ys.  y = x \<or> P y] = [y \<in> ys. P y]"
+ "x \<notin> set ys \<Longrightarrow> [y\<leftarrow>ys.  y = x \<or> P y] = [y\<leftarrow>ys. P y]"
  by (induct ys) (auto)
 
 lemma natToVertexList_removeNones:
   "distinct (vertices f) \<Longrightarrow> v \<in> \<V> f \<Longrightarrow>
   incrIndexList es (length es) (length (vertices f)) \<Longrightarrow>
-  [x \<in> verticesFrom f v. x \<in> set (removeNones (natToVertexList v f es))]
+  [x\<leftarrow>verticesFrom f v. x \<in> set (removeNones (natToVertexList v f es))]
  = removeNones (natToVertexList v f es)"
 proof -
   assume vors: "distinct (vertices f)" "v \<in> \<V> f"
@@ -4504,7 +4504,7 @@ proof -
   then have dist: "distinct (verticesFrom f v)" by auto
   from vors have sub_eq: "sublist (verticesFrom f v) (set es)
     = removeNones (natToVertexList v f es)" by (rule natToVertexList_sublist)
-  from dist have "[x \<in> verticesFrom f v.
+  from dist have "[x \<leftarrow> verticesFrom f v.
     x \<in> set (sublist (verticesFrom f v) (set es))] = removeNones (natToVertexList v f es)"
   apply (simp add: filter_in_sublist)
     by (simp add: sub_eq)
@@ -4514,7 +4514,7 @@ qed
 lemma indexToVertexList_removeNones:
   "distinct (vertices f) \<Longrightarrow> v \<in> \<V> f \<Longrightarrow>
   incrIndexList es (length es) (length (vertices f)) \<Longrightarrow>
-  [x \<in> verticesFrom f v. x \<in> set (removeNones (indexToVertexList f v es))]
+  [x \<leftarrow> verticesFrom f v. x \<in> set (removeNones (indexToVertexList f v es))]
  = removeNones (indexToVertexList f v es)"
 apply (subgoal_tac "indexToVertexList f v es = natToVertexList v f es")
  apply simp apply (rule natToVertexList_removeNones) apply assumption+
@@ -4542,7 +4542,7 @@ subsection {* @{text"pre_subdivFace(')"} *}
 
 constdefs pre_subdivFace_face :: "face \<Rightarrow> vertex \<Rightarrow> vertex option list \<Rightarrow> bool"
 "pre_subdivFace_face f v' vOptionList \<equiv>
-     [v \<in> verticesFrom f v'. v \<in> set (removeNones vOptionList)]
+     [v \<leftarrow> verticesFrom f v'. v \<in> set (removeNones vOptionList)]
        = (removeNones vOptionList)
   \<and> \<not> final f \<and> distinct (vertices f)
   \<and> hd (vOptionList) = Some v'
@@ -4564,7 +4564,7 @@ constdefs pre_subdivFace' :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Ri
   \<and> v' \<notin> set (removeNones vOptionList)
   \<and> distinct (vertices f)
   \<and> (
-    [v \<in> verticesFrom f v'. v \<in> set (removeNones vOptionList)]
+    [v \<leftarrow> verticesFrom f v'. v \<in> set (removeNones vOptionList)]
         =  (removeNones vOptionList)
   \<and> before (verticesFrom f v') ram1 (hd (removeNones vOptionList))
   \<and> last (vOptionList) =  Some (last (verticesFrom f v'))
@@ -4578,8 +4578,8 @@ constdefs pre_subdivFace' :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Ri
 
 lemma pre_subdivFace_face_in_f[intro]: "pre_subdivFace_face f v ls \<Longrightarrow> Some a \<in> set ls \<Longrightarrow> a \<in> set (verticesFrom f v)"
   apply (subgoal_tac "a \<in> set (removeNones ls)") apply (auto  simp: pre_subdivFace_face_def)
-  apply (subgoal_tac "a \<in> set [v\<in>verticesFrom f v . v \<in> set (removeNones ls)]")
-  apply (thin_tac "[v\<in>verticesFrom f v . v \<in> set (removeNones ls)] = removeNones ls") by auto
+  apply (subgoal_tac "a \<in> set [v\<leftarrow>verticesFrom f v . v \<in> set (removeNones ls)]")
+  apply (thin_tac "[v\<leftarrow>verticesFrom f v . v \<in> set (removeNones ls)] = removeNones ls") by auto
 
 lemma pre_subdivFace_in_f[intro]: "pre_subdivFace g f v ls \<Longrightarrow> Some a \<in> set ls \<Longrightarrow> a \<in> set (verticesFrom f v)"
  by (auto simp: pre_subdivFace_def)
@@ -4595,59 +4595,59 @@ by auto
 
 lemma hilf1: "a \<in> set b \<Longrightarrow> (v = a \<or> v \<in> set b) = (v \<in> set b)" by auto
 
-lemma filter_congs_shorten1': "distinct (vertices f) \<Longrightarrow> [v\<in>vertices f . v = a \<or> v \<in> set vs] \<cong> (a # vs)
-    \<Longrightarrow> [v\<in>vertices f . v \<in> set vs] \<cong> vs"
+lemma filter_congs_shorten1': "distinct (vertices f) \<Longrightarrow> [v\<leftarrow>vertices f . v = a \<or> v \<in> set vs] \<cong> (a # vs)
+    \<Longrightarrow> [v\<leftarrow>vertices f . v \<in> set vs] \<cong> vs"
 proof -
-  assume dist: "distinct (vertices f)" and "[v\<in>vertices f . v = a \<or> v \<in> set vs] \<cong> (a # vs)"
-  then obtain n where removeNones_vol: "a # vs = rotate n [v\<in>vertices f . v = a \<or> v \<in> set vs]"
+  assume dist: "distinct (vertices f)" and "[v\<leftarrow>vertices f . v = a \<or> v \<in> set vs] \<cong> (a # vs)"
+  then obtain n where removeNones_vol: "a # vs = rotate n [v\<leftarrow>vertices f . v = a \<or> v \<in> set vs]"
     by (auto simp: congs_def)
-  have "\<exists> m. rotate n [v\<in>vertices f . v = a \<or> v \<in> set vs] = [v\<in>(rotate m (vertices f)) . v = a \<or> v \<in> set vs]"
+  have "\<exists> m. rotate n [v\<leftarrow>vertices f . v = a \<or> v \<in> set vs] = [v \<leftarrow> rotate m (vertices f) . v = a \<or> v \<in> set vs]"
     by (auto intro: rotate_help6) (* rotate_help6 *)
-  then obtain m where " rotate n [v\<in>vertices f . v = a \<or> v \<in> set vs]
-     = [v\<in>(rotate m (vertices f)) . v = a \<or> v \<in> set vs]" by auto
-  with removeNones_vol have a_removeNones_vol: "[v\<in>(rotate m (vertices f)) . v = a \<or> v \<in> set vs] = a # vs" by simp
+  then obtain m where " rotate n [v\<leftarrow>vertices f . v = a \<or> v \<in> set vs]
+     = [v \<leftarrow> rotate m (vertices f) . v = a \<or> v \<in> set vs]" by auto
+  with removeNones_vol have a_removeNones_vol: "[v \<leftarrow> rotate m (vertices f) . v = a \<or> v \<in> set vs] = a # vs" by simp
 
-  have rule1: "\<And> vs a ys. distinct vs \<Longrightarrow> [v\<in>vs . v = a \<or> v \<in> set ys] = a # ys \<Longrightarrow>
-    [v \<in> vs. v \<in> set ys] = ys"
+  have rule1: "\<And> vs a ys. distinct vs \<Longrightarrow> [v\<leftarrow>vs . v = a \<or> v \<in> set ys] = a # ys \<Longrightarrow>
+    [v\<leftarrow>vs. v \<in> set ys] = ys"
   proof -
     fix vs a ys
-    assume dist: "distinct vs" and ays:  "[v\<in>vs . v = a \<or> v \<in> set ys] = a # ys"
-    then have "distinct ([v\<in>vs . v = a \<or> v \<in> set ys])" by (rule_tac distinct_filter)
+    assume dist: "distinct vs" and ays:  "[v\<leftarrow>vs . v = a \<or> v \<in> set ys] = a # ys"
+    then have "distinct ([v\<leftarrow>vs . v = a \<or> v \<in> set ys])" by (rule_tac distinct_filter)
     with ays have distys: "distinct (a # ys)" by simp
-    from dist distys ays show "[v \<in> vs. v \<in> set ys] = ys"
+    from dist distys ays show "[v\<leftarrow>vs. v \<in> set ys] = ys"
       apply (induct vs) by (auto  split: split_if_asm simp: filter_Cons2)
   qed
 
   from dist have "distinct (rotate m (vertices f))" by auto
-  with a_removeNones_vol have "[v \<in> (rotate m (vertices f)). v \<in> set vs] = vs" by (rule_tac rule1)
-  also have "\<exists> l. [v \<in> (rotate m (vertices f)). v \<in> set vs] = rotate l [v \<in> vertices f. v \<in> set vs]"
+  with a_removeNones_vol have "[v \<leftarrow> rotate m (vertices f). v \<in> set vs] = vs" by (rule_tac rule1)
+  also have "\<exists> l. [v \<leftarrow> rotate m (vertices f). v \<in> set vs] = rotate l [v \<leftarrow> vertices f. v \<in> set vs]"
     by (rule  rotate_help5) (* rotate_help5 *)
-  then obtain l where "[v \<in> (rotate m (vertices f)). v \<in> set vs] = rotate l [v \<in> vertices f. v \<in> set vs]" by auto
-  ultimately have "vs = rotate l [v\<in>vertices f . v \<in> set vs]" by simp
+  then obtain l where "[v \<leftarrow> rotate m (vertices f). v \<in> set vs] = rotate l [v \<leftarrow> vertices f. v \<in> set vs]" by auto
+  ultimately have "vs = rotate l [v\<leftarrow>vertices f . v \<in> set vs]" by simp
   thus ?thesis by (auto simp: congs_def)
 qed
 
-lemma filter_congs_shorten1: "distinct (verticesFrom f v) \<Longrightarrow> [v\<in>verticesFrom f v . v = a \<or> v \<in> set vs] = (a # vs)
-    \<Longrightarrow> [v\<in>verticesFrom f v . v \<in> set vs] = vs"
+lemma filter_congs_shorten1: "distinct (verticesFrom f v) \<Longrightarrow> [v\<leftarrow>verticesFrom f v . v = a \<or> v \<in> set vs] = (a # vs)
+    \<Longrightarrow> [v\<leftarrow>verticesFrom f v . v \<in> set vs] = vs"
 proof -
-  assume dist: "distinct (verticesFrom f v)" and eq: "[v\<in>verticesFrom  f v . v = a \<or> v \<in> set vs] = (a # vs)"
-  have rule1: "\<And> vs a ys. distinct vs \<Longrightarrow> [v\<in>vs . v = a \<or> v \<in> set ys] = a # ys \<Longrightarrow> [v \<in> vs. v \<in> set ys] = ys"
+  assume dist: "distinct (verticesFrom f v)" and eq: "[v\<leftarrow>verticesFrom  f v . v = a \<or> v \<in> set vs] = (a # vs)"
+  have rule1: "\<And> vs a ys. distinct vs \<Longrightarrow> [v\<leftarrow>vs . v = a \<or> v \<in> set ys] = a # ys \<Longrightarrow> [v\<leftarrow>vs. v \<in> set ys] = ys"
   proof -
     fix vs a ys
-    assume dist: "distinct vs" and ays:  "[v\<in>vs . v = a \<or> v \<in> set ys] = a # ys"
-    then have "distinct ([v\<in>vs . v = a \<or> v \<in> set ys])" by (rule_tac distinct_filter)
+    assume dist: "distinct vs" and ays:  "[v\<leftarrow>vs . v = a \<or> v \<in> set ys] = a # ys"
+    then have "distinct ([v\<leftarrow>vs . v = a \<or> v \<in> set ys])" by (rule_tac distinct_filter)
     with ays have distys: "distinct (a # ys)" by simp
-    from dist distys ays show "[v \<in> vs. v \<in> set ys] = ys"
+    from dist distys ays show "[v\<leftarrow>vs. v \<in> set ys] = ys"
      apply (induct vs) by (auto  split: split_if_asm simp: filter_Cons2)
   qed
 
   from dist eq show ?thesis  by (rule_tac rule1)
 qed
 
-lemma ovl_shorten': "distinct (vertices f) \<Longrightarrow> [v\<in>vertices f . v \<in> set (removeNones (va # vol))] \<cong> (removeNones (va # vol))
-    \<Longrightarrow> [v\<in>vertices f . v \<in> set (removeNones (vol))] \<cong> (removeNones (vol))"
+lemma ovl_shorten': "distinct (vertices f) \<Longrightarrow> [v\<leftarrow>vertices f . v \<in> set (removeNones (va # vol))] \<cong> (removeNones (va # vol))
+    \<Longrightarrow> [v\<leftarrow>vertices f . v \<in> set (removeNones (vol))] \<cong> (removeNones (vol))"
 proof -
-  assume dist: "distinct (vertices f)" and vors: "[v\<in>vertices f . v \<in> set (removeNones (va # vol))] \<cong> (removeNones (va # vol))"
+  assume dist: "distinct (vertices f)" and vors: "[v\<leftarrow>vertices f . v \<in> set (removeNones (va # vol))] \<cong> (removeNones (va # vol))"
   then show ?thesis
   proof (cases va)
     case None with vors Cons show ?thesis by auto
@@ -4657,11 +4657,11 @@ proof -
 qed
 
 lemma ovl_shorten: "distinct (verticesFrom f v) \<Longrightarrow>
-  [v\<in>verticesFrom f v . v \<in> set (removeNones (va # vol))] = (removeNones (va # vol))
-    \<Longrightarrow> [v\<in>verticesFrom f v . v \<in> set (removeNones (vol))] =  (removeNones (vol))"
+  [v\<leftarrow>verticesFrom f v . v \<in> set (removeNones (va # vol))] = (removeNones (va # vol))
+    \<Longrightarrow> [v\<leftarrow>verticesFrom f v . v \<in> set (removeNones (vol))] =  (removeNones (vol))"
 proof -
   assume dist: "distinct (verticesFrom f v)"
-  and vors: "[v\<in>verticesFrom f v . v \<in> set (removeNones (va # vol))] = (removeNones (va # vol))"
+  and vors: "[v\<leftarrow>verticesFrom f v . v \<in> set (removeNones (va # vol))] = (removeNones (va # vol))"
   then show ?thesis
   proof (cases va)
     case None with vors Cons show ?thesis by auto
@@ -4672,8 +4672,8 @@ qed
 
 lemma pre_subdivFace_face_distinct: "pre_subdivFace_face f v vol \<Longrightarrow> distinct (removeNones vol)"
   apply (auto dest!: verticesFrom_distinct simp: pre_subdivFace_face_def)
-  apply (subgoal_tac "distinct ([v\<in>verticesFrom f v . v \<in> set (removeNones vol)])") apply simp
-  apply (thin_tac "[v\<in>verticesFrom f v . v \<in> set (removeNones vol)] = removeNones vol") by auto
+  apply (subgoal_tac "distinct ([v\<leftarrow>verticesFrom f v . v \<in> set (removeNones vol)])") apply simp
+  apply (thin_tac "[v\<leftarrow>verticesFrom f v . v \<in> set (removeNones vol)] = removeNones vol") by auto
 
 lemma pre_subdivFace_face_not_empty: "pre_subdivFace_face f v (vo # vol) \<Longrightarrow> vol \<noteq> []"
   by (simp split: split_if_asm add: pre_subdivFace_face_def)
@@ -4730,8 +4730,8 @@ lemma pre_subdivFace'_distinct: "pre_subdivFace' g f v' v n vol \<Longrightarrow
   apply (cases vol) apply simp+
   apply (elim conjE)
   apply (drule_tac verticesFrom_distinct) apply assumption
-  apply (subgoal_tac "distinct [v\<in>verticesFrom f v' . v \<in> set (removeNones (a # list))]") apply force
-  apply (thin_tac "[v\<in>verticesFrom f v' . v \<in> set (removeNones (a # list))] = removeNones (a # list)")
+  apply (subgoal_tac "distinct [v\<leftarrow>verticesFrom f v' . v \<in> set (removeNones (a # list))]") apply force
+  apply (thin_tac "[v\<leftarrow>verticesFrom f v' . v \<in> set (removeNones (a # list))] = removeNones (a # list)")
   by auto
 
 
@@ -4747,7 +4747,7 @@ proof -
   from vors have nvl_l: "2 < | natToVertexList v f es |"
     by auto
 
-  from vors have "distinct [x\<in>verticesFrom f v . x \<in> set (removeNones (natToVertexList v f es))]" by auto
+  from vors have "distinct [x\<leftarrow>verticesFrom f v . x \<in> set (removeNones (natToVertexList v f es))]" by auto
   with vors have "distinct (removeNones (natToVertexList v f es))" by (simp add: natToVertexList_removeNones)
   with nvl_l lastOvl have hd_last: "hd (tl (natToVertexList v f es)) \<noteq> last (natToVertexList v f es)" apply auto
     apply (cases "natToVertexList v f es") apply simp
@@ -4811,44 +4811,44 @@ lemma verticesFrom_splitAt_v_snd[simp]:
 
 
 lemma filter_distinct_at:
-  "distinct xs \<Longrightarrow> xs = (as @ u # bs) \<Longrightarrow> [v \<in> xs. v = u \<or> P v] = u # us \<Longrightarrow>
-  [v \<in> bs. P v] = us \<and> [v \<in> as. P v] = []"
+  "distinct xs \<Longrightarrow> xs = (as @ u # bs) \<Longrightarrow> [v\<leftarrow>xs. v = u \<or> P v] = u # us \<Longrightarrow>
+  [v\<leftarrow>bs. P v] = us \<and> [v\<leftarrow>as. P v] = []"
 apply (subgoal_tac "filter P as @ u # filter P bs = [] @ u # us")
 apply (drule local_help')  by (auto simp: filter_Cons2)
 
 lemma filter_distinct_at2: "distinct xs \<Longrightarrow> xs = (as @ u # bs) \<Longrightarrow>
-  [v \<in> xs. v = u \<or> P v] = u # us \<Longrightarrow> filter P zs = [] \<Longrightarrow> [v \<in> zs@bs. P v] = us"
+  [v\<leftarrow>xs. v = u \<or> P v] = u # us \<Longrightarrow> filter P zs = [] \<Longrightarrow> [v\<leftarrow>zs@bs. P v] = us"
   apply (drule filter_distinct_at) apply assumption+ by simp
 
 lemma filter_distinct_at3: "distinct xs \<Longrightarrow> xs = (as @ u # bs) \<Longrightarrow>
-  [v \<in> xs. v = u \<or> P v] = u # us \<Longrightarrow> \<forall> z \<in> set zs. z \<in> set as \<or> \<not> ( P z) \<Longrightarrow>
-  [v \<in> zs@bs. P v] = us"
+  [v\<leftarrow>xs. v = u \<or> P v] = u # us \<Longrightarrow> \<forall> z \<in> set zs. z \<in> set as \<or> \<not> ( P z) \<Longrightarrow>
+  [v\<leftarrow>zs@bs. P v] = us"
 apply (drule filter_distinct_at) apply assumption+ apply simp
 by (induct zs) auto
 
 lemma filter_distinct_at4: "distinct xs \<Longrightarrow> xs = (as @ u # bs)
-  \<Longrightarrow> [v \<in> xs. v = u \<or> v \<in> set us] = u # us
+  \<Longrightarrow> [v\<leftarrow>xs. v = u \<or> v \<in> set us] = u # us
   \<Longrightarrow> set zs \<inter> set us \<subseteq> {u} \<union> set as
-  \<Longrightarrow> [v \<in> zs@bs. v \<in> set us] = us"
+  \<Longrightarrow> [v \<leftarrow> zs@bs. v \<in> set us] = us"
 proof -
   assume vors: "distinct xs" "xs = (as @ u # bs)"
-    "[v \<in> xs. v = u \<or> v \<in> set us] = u # us"
+    "[v\<leftarrow>xs. v = u \<or> v \<in> set us] = u # us"
     "set zs \<inter> set us \<subseteq> {u} \<union> set as"
-  then have "distinct ([v \<in> xs. v = u \<or> v \<in> set us])"  apply (rule_tac distinct_filter) by simp
+  then have "distinct ([v\<leftarrow>xs. v = u \<or> v \<in> set us])"  apply (rule_tac distinct_filter) by simp
   with vors have dist: "distinct (u # us)" by auto
   with vors show ?thesis
   apply (rule_tac filter_distinct_at3) by assumption+  auto
 qed
 
 lemma filter_distinct_at5: "distinct xs \<Longrightarrow> xs = (as @ u # bs)
-  \<Longrightarrow> [v \<in> xs. v = u \<or> v \<in> set us] = u # us
+  \<Longrightarrow> [v\<leftarrow>xs. v = u \<or> v \<in> set us] = u # us
   \<Longrightarrow> set zs \<inter> set xs \<subseteq> {u} \<union> set as
-  \<Longrightarrow> [v \<in> zs@bs. v \<in> set us] = us"
+  \<Longrightarrow> [v \<leftarrow> zs@bs. v \<in> set us] = us"
 proof -
   assume vors: "distinct xs" "xs = (as @ u # bs)"
-    "[v \<in> xs. v = u \<or> v \<in> set us] = u # us"
+    "[v\<leftarrow>xs. v = u \<or> v \<in> set us] = u # us"
     "set zs \<inter> set xs \<subseteq> {u} \<union> set as"
-  have "set ([v \<in> xs. v = u \<or> v \<in> set us]) \<subseteq> set xs" by auto
+  have "set ([v\<leftarrow>xs. v = u \<or> v \<in> set us]) \<subseteq> set xs" by auto
   with vors have "set (u # us) \<subseteq> set xs" by simp
   then have "set us \<subseteq> set xs" by simp
   with vors have "set zs \<inter> set us \<subseteq> set zs \<inter> insert u (set as \<union> set bs)" by auto
@@ -4856,12 +4856,12 @@ proof -
 qed
 
 lemma filter_distinct_at6: "distinct xs \<Longrightarrow> xs = (as @ u # bs)
-  \<Longrightarrow> [v \<in> xs. v = u \<or> v \<in> set us] = u # us
+  \<Longrightarrow> [v\<leftarrow>xs. v = u \<or> v \<in> set us] = u # us
   \<Longrightarrow> set zs \<inter> set xs \<subseteq> {u} \<union> set as
-  \<Longrightarrow> [v \<in> zs@bs. v \<in> set us] = us \<and> [v \<in> bs. v \<in> set us] = us"
+  \<Longrightarrow> [v \<leftarrow> zs@bs. v \<in> set us] = us \<and> [v \<leftarrow> bs. v \<in> set us] = us"
 proof -
   assume vors: "distinct xs" "xs = (as @ u # bs)"
-    "[v \<in> xs. v = u \<or> v \<in> set us] = u # us"
+    "[v \<leftarrow> xs. v = u \<or> v \<in> set us] = u # us"
     "set zs \<inter> set xs \<subseteq> {u} \<union> set as"
   then show ?thesis apply (rule_tac conjI)  apply (rule_tac filter_distinct_at5) apply assumption+
   apply (drule filter_distinct_at) apply assumption+ by auto
@@ -4869,20 +4869,20 @@ qed
 
 lemma filter_distinct_at_special:
   "distinct xs \<Longrightarrow> xs = (as @ u # bs)
-  \<Longrightarrow> [v \<in> xs. v = u \<or> v \<in> set us] = u # us
+  \<Longrightarrow> [v\<leftarrow>xs. v = u \<or> v \<in> set us] = u # us
   \<Longrightarrow> set zs \<inter> set xs \<subseteq> {u} \<union> set as
   \<Longrightarrow> us = hd_us # tl_us
-  \<Longrightarrow> [v \<in> zs@bs. v \<in> set us] = us \<and> hd_us \<in> set bs"
+  \<Longrightarrow> [v \<leftarrow> zs@bs. v \<in> set us] = us \<and> hd_us \<in> set bs"
 proof -
   assume vors: "distinct xs" "xs = (as @ u # bs)"
-    "[v \<in> xs. v = u \<or> v \<in> set us] = u # us"
+    "[v\<leftarrow>xs. v = u \<or> v \<in> set us] = u # us"
     "set zs \<inter> set xs \<subseteq> {u} \<union> set as"
     "us = hd_us # tl_us"
-  then have "[v \<in> zs@bs. v \<in> set us] = us \<and> [v \<in> bs. v \<in> set us] = us"
+  then have "[v \<leftarrow> zs@bs. v \<in> set us] = us \<and> [v\<leftarrow>bs. v \<in> set us] = us"
     by (rule_tac filter_distinct_at6)
   with vors show ?thesis apply (rule_tac conjI) apply safe apply simp
     apply (subgoal_tac "set (hd_us # tl_us) \<subseteq> set bs") apply simp
-    apply (subgoal_tac "set [v\<in>bs . v = hd_us \<or> v \<in> set tl_us] \<subseteq> set bs")  apply simp
+    apply (subgoal_tac "set [v\<leftarrow>bs . v = hd_us \<or> v \<in> set tl_us] \<subseteq> set bs")  apply simp
     by (rule_tac filter_is_subset)
 qed
 
@@ -4994,22 +4994,22 @@ next
     = fst (splitAt u (verticesFrom f v')) @ u # snd (splitAt u (verticesFrom f v'))"
     by (auto dest!: splitAt_ram)
 
-  then have rule1': "[v\<in>snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)] = removeNones vol"
+  then have rule1': "[v \<leftarrow> snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)] = removeNones vol"
   proof -
     from split_u have "v' # tl (verticesFrom f v')
        =  fst (splitAt u (verticesFrom f v')) @ u # snd (splitAt u (verticesFrom f v'))"
       by (simp add: verticesFrom_split)
     have "help": "set [] \<inter> set (verticesFrom f v') \<subseteq> {u} \<union> set (fst (splitAt u (verticesFrom f v')))" by auto
     from split_u  dist_vf_v'  pre_add
-    have "[v\<in> [] @ snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)] = removeNones vol"
+    have "[v \<leftarrow> [] @ snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)] = removeNones vol"
       apply (rule_tac filter_distinct_at5) apply assumption+
       apply (simp add: pre_subdivFace'_def) by (rule "help")
     then show ?thesis by auto
   qed
   then have inSnd_u: "\<And> x. x \<in> set (removeNones vol) \<Longrightarrow> x \<in> set (snd (splitAt u (verticesFrom f v')))"
-    apply (subgoal_tac "x \<in> set [v\<in>snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)] \<Longrightarrow>
+    apply (subgoal_tac "x \<in> set [v \<leftarrow> snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)] \<Longrightarrow>
       x \<in> set (snd (splitAt u (verticesFrom f v')))")
-    apply force apply (thin_tac "[v\<in>snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)] = removeNones vol")
+    apply force apply (thin_tac "[v \<leftarrow> snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)] = removeNones vol")
     by simp
 
   from split_u dist_vf_v' have notinFst_u: "\<And> x. x \<in> set (removeNones vol) \<Longrightarrow>
@@ -5089,7 +5089,7 @@ next
     by (simp add:  is_nextElem_edges_eq pre_subdivFace'_def)
 
 
-  have rule1: "[v\<in>verticesFrom f21 v' . v \<in> set (removeNones vol)]
+  have rule1: "[v\<leftarrow>verticesFrom f21 v' . v \<in> set (removeNones vol)]
     = removeNones vol \<and> hd (removeNones vol) \<in> set (snd (splitAt u (verticesFrom f v')))"
   proof (cases "v = v'")
     case True
@@ -5109,7 +5109,7 @@ next
       \<subseteq> {u} \<union> set (fst (splitAt u (verticesFrom f v')))" apply (rule_tac subset_trans)
       apply assumption apply (cases "u = v'") by simp_all
     from split_u dist_vf_v' pre_add pre_fdg removeNones_split have
-      "[v\<in> (v' # ws @ [u]) @ snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)]
+      "[v \<leftarrow> (v' # ws @ [u]) @ snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)]
       = removeNones vol \<and> hd (removeNones vol) \<in> set (snd (splitAt u (verticesFrom f v')))"
       apply (rule_tac filter_distinct_at_special) apply assumption+
       apply (simp add: pre_subdivFace'_def) apply (rule "help") .
@@ -5151,7 +5151,7 @@ next
 
 
     from split_u dist_vf_v' pre_add pre_fdg removeNones_split have
-      "[v\<in> (v' # tl (fst (splitAt v (verticesFrom f v'))) @ v # ws @ [u])
+      "[v \<leftarrow> (v' # tl (fst (splitAt v (verticesFrom f v'))) @ v # ws @ [u])
           @ snd (splitAt u (verticesFrom f v')) . v \<in> set (removeNones vol)]
        = removeNones vol \<and> hd (removeNones vol) \<in> set (snd (splitAt u (verticesFrom f v')))"
       apply (rule_tac filter_distinct_at_special) apply assumption+
@@ -5527,7 +5527,7 @@ apply auto
      apply(clarsimp simp:before_def)
     apply simp
    apply (rule ovl_shorten) apply simp
-   apply (subgoal_tac "[v\<in>verticesFrom f v' . v \<in> set (removeNones ((Some u) # vol))] = removeNones ((Some u) # vol)")
+   apply (subgoal_tac "[v \<leftarrow> verticesFrom f v' . v \<in> set (removeNones ((Some u) # vol))] = removeNones ((Some u) # vol)")
     apply assumption
    apply simp
   apply (rule before_filter)

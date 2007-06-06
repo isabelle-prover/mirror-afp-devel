@@ -1,4 +1,4 @@
-(*  ID:         $Id: Tame.thy,v 1.1 2006-05-22 09:54:04 nipkow Exp $
+(*  ID:         $Id: Tame.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -141,8 +141,8 @@ constdefs admissible\<^isub>3 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \
  "admissible\<^isub>3 w g \<equiv> 
      \<forall>V. separated g (set V) \<and> set V \<subseteq> \<V> g \<longrightarrow>
         (\<Sum>\<^bsub>v\<in>V\<^esub> \<a> (tri g v))
-     + (\<Sum>\<^bsub>f\<in>[f\<in>faces g. \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub> \<d> |vertices f| )
-     \<le> \<Sum>\<^bsub>f\<in>[f\<in>faces g. \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub> w f"
+     + (\<Sum>\<^bsub>f\<in>[f\<leftarrow>faces g. \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub> \<d> |vertices f| )
+     \<le> \<Sum>\<^bsub>f\<in>[f\<leftarrow>faces g. \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub> w f"
 
 
 text {* Finally we define admissibility of weights functions. *}

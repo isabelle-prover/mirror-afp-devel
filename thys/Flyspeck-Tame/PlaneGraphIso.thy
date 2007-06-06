@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneGraphIso.thy,v 1.1 2006-05-22 09:54:01 nipkow Exp $
+(*  ID:         $Id: PlaneGraphIso.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -690,7 +690,7 @@ by(simp add: test_correct)
 
 constdefs
   merge :: "('a,'b)merger"
- "merge I' I  \<equiv>  [xy : I'. fst xy \<notin> fst ` set I] @ I"
+ "merge I' I  \<equiv>  [xy \<leftarrow> I'. fst xy \<notin> fst ` set I] @ I"
 
 
 lemma help1:

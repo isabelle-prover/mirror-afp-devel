@@ -1,4 +1,4 @@
-(*  ID:         $Id: Graph.thy,v 1.1 2006-05-22 09:53:59 nipkow Exp $
+(*  ID:         $Id: Graph.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -163,10 +163,10 @@ subsection{* Operations on graphs *}
 text {* final graph, final / nonfinal faces *}
 
 constdefs finals :: "graph \<Rightarrow> face list"
-  "finals g \<equiv> [f \<in> faces g. final f]"
+  "finals g \<equiv> [f \<leftarrow> faces g. final f]"
 
 constdefs nonFinals :: "graph \<Rightarrow> face list"
-  "nonFinals g \<equiv> [f \<in> faces g. \<not> final f]"
+  "nonFinals g \<equiv> [f \<leftarrow> faces g. \<not> final f]"
 
 constdefs countNonFinals :: "graph \<Rightarrow> nat"
   "countNonFinals g \<equiv> |nonFinals g|"
@@ -196,13 +196,13 @@ constdefs degree :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
   "degree g v \<equiv> |facesAt g v|"
 
 constdefs tri :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
- "tri g v \<equiv> |[f: facesAt g v. final f \<and> |vertices f| = 3]|"
+ "tri g v \<equiv> |[f \<leftarrow> facesAt g v. final f \<and> |vertices f| = 3]|"
 
 constdefs quad :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
- "quad g v \<equiv> |[f: facesAt g v. final f \<and> |vertices f| = 4]|"
+ "quad g v \<equiv> |[f \<leftarrow> facesAt g v. final f \<and> |vertices f| = 4]|"
 
 constdefs except :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
- "except g v \<equiv> |[f: facesAt g v. final f \<and> 5 \<le> |vertices f| ]|"
+ "except g v \<equiv> |[f \<leftarrow> facesAt g v. final f \<and> 5 \<le> |vertices f| ]|"
 
 constdefs vertextype :: "graph \<Rightarrow> vertex \<Rightarrow> nat \<times> nat \<times> nat"
   "vertextype g v \<equiv> (tri g v, quad g v, except g v)"
@@ -228,7 +228,7 @@ defs edges_graph_def: (*>*)
  "edges (g::graph) \<equiv> \<Union>\<^bsub>f \<in> \<F> g\<^esub> edges f"
 
 constdefs neighbors :: "graph \<Rightarrow> vertex \<Rightarrow> vertex list"
- "neighbors g v \<equiv> [f\<bullet>v. f \<in> facesAt g v]"
+ "neighbors g v \<equiv> [f\<bullet>v. f \<leftarrow> facesAt g v]"
 
 
 subsection {* Navigation in graphs *}

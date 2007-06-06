@@ -1,4 +1,4 @@
-(*  ID:         $Id: Enumerator.thy,v 1.1 2006-05-22 09:53:59 nipkow Exp $
+(*  ID:         $Id: Enumerator.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
     Author:     Gertrud Bauer
 *)
 
@@ -43,15 +43,15 @@ we run over all osibilites fro the finishe face along the edge
 text{* \paragraph{Executable enumeration of patches} *}
 
 constdefs enumBase :: "nat \<Rightarrow> nat list list"
- "enumBase nmax \<equiv> [[i]. i \<in> [0 .. nmax]]"
+ "enumBase nmax \<equiv> [[i]. i \<leftarrow> [0 .. nmax]]"
 
 constdefs enumAppend :: "nat \<Rightarrow> nat list list \<Rightarrow> nat list list"
- "enumAppend nmax iss \<equiv> \<Squnion>\<^bsub>is\<in>iss\<^esub> [is @ [n]. n \<in> [last is .. nmax]]"
+ "enumAppend nmax iss \<equiv> \<Squnion>\<^bsub>is\<in>iss\<^esub> [is @ [n]. n \<leftarrow> [last is .. nmax]]"
 
 constdefs enumerator :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" (* precondition inner >= 3 *)
  "enumerator inner outer \<equiv>
      let nmax = outer - 2; k = inner - 3 in 
-     [[0] @ is @ [outer - 1]. is \<in> ((enumAppend nmax)^k) (enumBase nmax)]"    
+     [[0] @ is @ [outer - 1]. is \<leftarrow> ((enumAppend nmax)^k) (enumBase nmax)]"    
 
  enumTab :: "nat list list vector vector"
 "enumTab \<equiv> \<lbrakk> enumerator inner outer. inner < 9, outer < 9 \<rbrakk>"
@@ -74,7 +74,7 @@ primrec "hideDups [] = []"
  "hideDups (b#bs) = Some b # hideDupsRec b bs"
 
 constdefs indexToVertexList :: "face \<Rightarrow> vertex \<Rightarrow> nat list \<Rightarrow> vertex option list" (* precondition hd is = 0 *)
- "indexToVertexList f v is \<equiv> hideDups [f\<^bsup>k\<^esup>\<bullet>v. k \<in> is]" 
+ "indexToVertexList f v is \<equiv> hideDups [f\<^bsup>k\<^esup>\<bullet>v. k \<leftarrow> is]" 
 
 
 end

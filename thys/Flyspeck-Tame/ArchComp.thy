@@ -1,4 +1,4 @@
-(*  ID:         $Id: ArchComp.thy,v 1.1 2006-05-22 09:53:58 nipkow Exp $
+(*  ID:         $Id: ArchComp.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -11,8 +11,8 @@ begin
 consts qsort :: "('a \<Rightarrow> 'a => bool) * 'a list \<Rightarrow> 'a list"
 recdef qsort "measure (size o snd)"
     "qsort(le, [])   = []"
-    "qsort(le, x#xs) = qsort(le, [y:xs . ~ le x y]) @ [x] @
-		       qsort(le, [y:xs . le x y])"
+    "qsort(le, x#xs) = qsort(le, [y\<leftarrow>xs . ~ le x y]) @ [x] @
+		       qsort(le, [y\<leftarrow>xs . le x y])"
 (hints recdef_simp: length_filter_le[THEN le_less_trans])
 
 constdefs
@@ -25,7 +25,7 @@ constdefs
  hash :: "nat fgraph \<Rightarrow> nat list"
 "hash fs == let n = nof_vertices fs in
    [n, size fs] @
-   qsort (%x y. y < x, map (%i. foldl (op +) 0 (map size [f:fs. i mem f]))
+   qsort (%x y. y < x, map (%i. foldl (op +) 0 (map size [f\<leftarrow>fs. i mem f]))
                            [0..<n])"
 
 consts

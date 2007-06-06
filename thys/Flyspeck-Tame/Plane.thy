@@ -1,4 +1,4 @@
-(*  ID:         $Id: Plane.thy,v 1.1 2006-05-22 09:54:00 nipkow Exp $
+(*  ID:         $Id: Plane.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
     Author:     Gertrud Bauer
 *)
 
@@ -51,9 +51,9 @@ constdefs containsDuplicateEdge' :: "graph \<Rightarrow> face \<Rightarrow> vert
 constdefs generatePolygon :: "nat \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> graph \<Rightarrow> graph list"
  "generatePolygon n v f g \<equiv> 
      let enumeration = enumerator n |vertices f|;
-     enumeration = [is \<in> enumeration. \<not> containsDuplicateEdge g f v is];
-     vertexLists = [indexToVertexList f v is. is \<in> enumeration] in
-     [subdivFace g f vs. vs \<in> vertexLists]"
+     enumeration = [is \<leftarrow> enumeration. \<not> containsDuplicateEdge g f v is];
+     vertexLists = [indexToVertexList f v is. is \<leftarrow> enumeration] in
+     [subdivFace g f vs. vs \<leftarrow> vertexLists]"
 
 constdefs next_plane0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_plane0\<^bsub>_\<^esub>")
  "next_plane0\<^bsub>p\<^esub> g \<equiv>

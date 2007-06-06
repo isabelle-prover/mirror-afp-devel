@@ -1,4 +1,4 @@
-(*  ID:         $Id: Generator.thy,v 1.1 2006-05-22 09:53:59 nipkow Exp $
+(*  ID:         $Id: Generator.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -38,7 +38,7 @@ constdefs ExcessAt :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
 
 constdefs ExcessTable :: "graph \<Rightarrow> vertex list \<Rightarrow> (vertex \<times> nat) list"
  "ExcessTable g vs \<equiv>
-     [(v, ExcessAt g v). v \<in> [v \<in> vs. 0 < ExcessAt g v ]]"
+     [(v, ExcessAt g v). v \<leftarrow> [v \<leftarrow> vs. 0 < ExcessAt g v ]]"
 text{* Implementation: *}
 lemma [code]:
   "ExcessTable g =
@@ -86,7 +86,7 @@ text{* \paragraph{Tame graph enumeration} *}
 constdefs
  makeTrianglesFinal :: "graph \<Rightarrow> graph"
 "makeTrianglesFinal g \<equiv>
- foldl (%g f. makeFaceFinal f g) g [f \<in> faces g. \<not> final f \<and> triangle f]"
+ foldl (%g f. makeFaceFinal f g) g [f \<leftarrow> faces g. \<not> final f \<and> triangle f]"
 
 
 constdefs
@@ -100,16 +100,16 @@ constdefs
 "generatePolygonTame n v f g \<equiv>
      let
      enumeration = enum n |vertices f|;
-     enumeration = [is \<in> enumeration. \<not> containsDuplicateEdge g f v is];
-     vertexLists = [indexToVertexList f v is. is \<in> enumeration]
+     enumeration = [is \<leftarrow> enumeration. \<not> containsDuplicateEdge g f v is];
+     vertexLists = [indexToVertexList f v is. is \<leftarrow> enumeration]
      in
-     [g' \<in> [subdivFace g f vs. vs \<in> vertexLists] . \<not> notame g']"
+     [g' \<leftarrow> [subdivFace g f vs. vs \<leftarrow> vertexLists] . \<not> notame g']"
 
 constdefs
  polysizes :: "nat \<Rightarrow> graph \<Rightarrow> nat list"
 "polysizes p g \<equiv>
     let lb = squanderLowerBound g in
-    [n \<in> [3 .. maxGon p]. lb + \<d> n < squanderTarget]"
+    [n \<leftarrow> [3 .. maxGon p]. lb + \<d> n < squanderTarget]"
 
 constdefs
  next_tame0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_tame0\<^bsub>_\<^esub>")

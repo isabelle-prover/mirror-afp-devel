@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivision.thy,v 1.1 2006-05-22 09:53:59 nipkow Exp $
+(*  ID:         $Id: FaceDivision.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -28,12 +28,12 @@ constdefs makeFaceFinal :: "face \<Rightarrow> graph \<Rightarrow> graph"
  "makeFaceFinal f g \<equiv>
      Graph (makeFaceFinalFaceList f (faces g))
            (countVertices g)
-           [makeFaceFinalFaceList f fs. fs \<in> faceListAt g]
+           [makeFaceFinalFaceList f fs. fs \<leftarrow> faceListAt g]
            (heights g)"
 
 
 constdefs heightsNewVertices :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list"
- "heightsNewVertices h\<^isub>1 h\<^isub>2 n \<equiv> [min (h\<^isub>1 + i + 1) (h\<^isub>2 + n - i). i \<in> [0 ..< n]]"
+ "heightsNewVertices h\<^isub>1 h\<^isub>2 n \<equiv> [min (h\<^isub>1 + i + 1) (h\<^isub>2 + n - i). i \<leftarrow> [0 ..< n]]"
 
 constdefs splitFace
     :: "graph \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> vertex list \<Rightarrow> face \<times> face \<times> graph"
