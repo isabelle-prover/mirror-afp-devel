@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.2 2006-07-31 00:57:29 webertj Exp $
+(*  ID:         $Id: PlaneProps.thy,v 1.3 2007-06-08 12:06:55 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -85,7 +85,7 @@ qed
 lemma plane_fin_exceptionalVertex_def:
 assumes pl: "inv g" and fin: "final g"
 shows "exceptionalVertex g v =
- ( | [f \<in> facesAt g v . 5 \<le> |vertices f| ] | \<noteq> 0)"
+ ( | [f \<leftarrow> facesAt g v . 5 \<le> |vertices f| ] | \<noteq> 0)"
 proof -
   have "\<And>f. f \<in> set (facesAt g v) \<Longrightarrow> final f"
     by(rule plane_final_facesAt[OF pl fin])
@@ -238,7 +238,7 @@ proof (unfold except_def)
   note dist' = distinct_filter[OF mgp_dist_facesAt[OF mgp']]
   have "v \<in> \<V> g'"
     using prems(3) next_plane0_vertices_subset[OF prems(1) mgp] by blast
-  have "|[f\<in>facesAt g v . final f \<and> 5 \<le> |vertices f| ]| =
+  have "|[f\<leftarrow>facesAt g v . final f \<and> 5 \<le> |vertices f| ]| =
         card{f\<in> set(facesAt g v) . final f \<and> 5 \<le> |vertices f|}"
     (is "?L = card ?M") using distinct_card[OF dist] by simp
   also have "?M = {f\<in> \<F> g. v \<in> \<V> f \<and> final f \<and> 5 \<le> |vertices f|}"
@@ -255,7 +255,7 @@ proof (unfold except_def)
   also have "\<dots> = {f \<in> set(facesAt g' v) . final f \<and> 5 \<le> |vertices f|}"
     by(simp add: minGraphProps_facesAt_eq[OF mgp' `v \<in> \<V> g'`])
   also have "card \<dots> =
-    |[f\<in>facesAt g' v . final f \<and> 5 \<le> |vertices f| ]|" (is "_ = ?R")
+    |[f \<leftarrow> facesAt g' v . final f \<and> 5 \<le> |vertices f| ]|" (is "_ = ?R")
     using distinct_card[OF dist'] by simp
   finally show "?L \<le> ?R" .
 qed

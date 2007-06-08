@@ -1,4 +1,4 @@
-(*  ID:         $Id: Plane3Props.thy,v 1.1 2006-05-22 09:54:01 nipkow Exp $
+(*  ID:         $Id: Plane3Props.thy,v 1.2 2007-06-08 12:06:50 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -14,18 +14,18 @@ subsection{* Correctness *}
 
 lemma decomp_nonFinal3:
 assumes mgp: "minGraphProps g"
-and ffs: "f#fs = [f \<in> faces g. \<not> final f \<and> triangle f]"
+and ffs: "f#fs = [f \<leftarrow> faces g. \<not> final f \<and> triangle f]"
 shows "f = minimalFace(nonFinals g) &
-       fs = [f \<in> faces(makeFaceFinal (minimalFace(nonFinals g)) g).
+       fs = [f \<leftarrow> faces(makeFaceFinal (minimalFace(nonFinals g)) g).
              \<not> final f \<and> triangle f]" (is "?A & ?B")
 proof -
   have 3: "\<forall>f \<in> \<F> g. 3 \<le> |vertices f|"
     using minGraphProps2[OF mgp] by fastsimp
-  have ffs': "f#fs = [f \<in> nonFinals g. triangle f]" using ffs
+  have ffs': "f#fs = [f \<leftarrow> nonFinals g. triangle f]" using ffs
     by (simp add:nonFinals_def)
   from Cons_eq_filterD[OF ffs'] obtain us vs where
     [simp]: "nonFinals g = us @ f # vs" "triangle f"
-      "fs = [f\<in>vs . triangle f]" and us: "\<forall>u\<in>set us. \<not> triangle u"
+      "fs = [f\<leftarrow>vs . triangle f]" and us: "\<forall>u\<in>set us. \<not> triangle u"
     by blast
   have "\<forall>u \<in> set(nonFinals g). u \<in> \<F> g" by(simp add:nonFinals_def)
   hence usg: "\<forall>u\<in>set us. u \<in> \<F> g"
@@ -48,13 +48,13 @@ proof -
   qed
   moreover have ?B (is "?l = ?r")
   proof -
-    have "?r = [h \<in> faces (makeFaceFinal f g) . \<not> final h \<and> triangle h]"
+    have "?r = [h \<leftarrow> faces (makeFaceFinal f g) . \<not> final h \<and> triangle h]"
       using A by simp
-    also have "\<dots> = [h \<in> nonFinals (makeFaceFinal f g). triangle h]"
+    also have "\<dots> = [h \<leftarrow> nonFinals (makeFaceFinal f g). triangle h]"
       by(simp add:nonFinals_def)
-    also have "\<dots> = [h \<in> remove1 f (nonFinals g). triangle h]"
+    also have "\<dots> = [h \<leftarrow> remove1 f (nonFinals g). triangle h]"
       by(simp add:nonFins_mkFaceFin)
-    also have "\<dots> = [h \<in> vs. triangle h]"
+    also have "\<dots> = [h \<leftarrow> vs. triangle h]"
     proof -
       have "f \<notin> set us" using us by auto
       thus ?thesis using us by(simp add:remove1_append)
@@ -99,7 +99,7 @@ done
 
 lemma mkFaceFin3_in_succs1:
 assumes mgp: "minGraphProps g"
-and ffs: "f#fs = [f \<in> faces g. \<not> final f \<and> triangle f]"
+and ffs: "f#fs = [f \<leftarrow> faces g. \<not> final f \<and> triangle f]"
 shows "Graph (makeFaceFinalFaceList f (faces g)) (countVertices g)
         (map (makeFaceFinalFaceList f) (faceListAt g)) (heights g)
     \<in> set (next_plane\<^bsub>p\<^esub> g)" (is "?g' \<in> _")
@@ -127,7 +127,7 @@ qed
 
 
 lemma mkFaceFin3_in_rtrancl:
- "minGraphProps g \<Longrightarrow> f#fs = [f \<in> faces g . \<not> final f \<and> triangle f] \<Longrightarrow>
+ "minGraphProps g \<Longrightarrow> f#fs = [f \<leftarrow> faces g . \<not> final f \<and> triangle f] \<Longrightarrow>
   g [next_plane\<^bsub>p\<^esub>]\<rightarrow>* makeFaceFinal f g"
 apply(simp add:makeFaceFinal_def)
 apply(rule RTranCl.succs[OF _ RTranCl.refl])
@@ -135,7 +135,7 @@ apply(erule (1) mkFaceFin3_in_succs1)
 done
 
 lemma mk3Fin_lem:
-  "\<And>g. minGraphProps g \<Longrightarrow> fs = [f \<in> faces g. \<not> final f \<and> triangle f] \<Longrightarrow>
+  "\<And>g. minGraphProps g \<Longrightarrow> fs = [f \<leftarrow> faces g. \<not> final f \<and> triangle f] \<Longrightarrow>
   g [next_plane\<^bsub>p\<^esub>]\<rightarrow>* foldl (%g f. makeFaceFinal f g) g fs"
 proof(induct fs)
   case Nil show ?case by (simp add:RTranCl.refl)
@@ -176,7 +176,7 @@ apply(bestsimp dest!:edges_conv_Edges_if_cong simp: Edges_Cons)
 done
 
 lemma mk3Fin_id: "final g \<Longrightarrow> makeTrianglesFinal g = g"
-apply(subgoal_tac "[f\<in>faces g . \<not> final f \<and> triangle f] = []")
+apply(subgoal_tac "[f\<leftarrow>faces g . \<not> final f \<and> triangle f] = []")
  apply(simp add: makeTrianglesFinal_def)
 apply(simp add: finalGraph_def nonFinals_def filter_empty_conv)
 done
@@ -255,13 +255,13 @@ proof -
   let ?f = "minimalFace (nonFinals g)"
   from nf 3 have "minimalFace(nonFinals g) \<in> set(nonFinals g)"
     by (simp add:minimalFace_def)
-  with 3 have "[f \<in> faces g. \<not> final f \<and> triangle f] \<noteq> []"
+  with 3 have "[f \<leftarrow> faces g. \<not> final f \<and> triangle f] \<noteq> []"
     by (auto simp: filter_empty_conv nonFinals_def)
-  then obtain f fs where ffs: "f#fs = [f \<in> faces g. \<not> final f \<and> triangle f]"
+  then obtain f fs where ffs: "f#fs = [f \<leftarrow> faces g. \<not> final f \<and> triangle f]"
     by(fastsimp simp add:neq_Nil_conv)
   with decomp_nonFinal3[OF mgp ffs]
-  have "[f \<in> faces g. \<not> final f \<and> triangle f] =
-        ?f # [f \<in> faces(makeFaceFinal ?f g). \<not> final f \<and> triangle f]" by(simp)
+  have "[f \<leftarrow> faces g. \<not> final f \<and> triangle f] =
+        ?f # [f \<leftarrow> faces(makeFaceFinal ?f g). \<not> final f \<and> triangle f]" by(simp)
   thus ?thesis by(simp add:makeTrianglesFinal_def)
 qed
 

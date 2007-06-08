@@ -1,4 +1,4 @@
-(*  ID:         $Id: GeneratorProps.thy,v 1.2 2006-06-07 09:18:53 makarius Exp $
+(*  ID:         $Id: GeneratorProps.thy,v 1.3 2007-06-08 12:06:50 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -9,7 +9,7 @@ imports Plane3Props LowerBound
 begin
 
 lemma genPolyTame_spec:
- "generatePolygonTame n v f g = [g' \<in> generatePolygon n v f g . \<not> notame g']"
+ "generatePolygonTame n v f g = [g' \<leftarrow> generatePolygon n v f g . \<not> notame g']"
 by(simp add:generatePolygonTame_def generatePolygon_def enum_enumerator)
 
 lemma genPolyTame_subset_genPoly:
@@ -97,7 +97,7 @@ constdefs
                         else v = f \<bullet> u"
 
 (* FIXME This should be the def of delAround *)
-lemma delAround_def: "deleteAround g u ps = [p \<in> ps. \<not> close g u (fst p)]"
+lemma delAround_def: "deleteAround g u ps = [p \<leftarrow> ps. \<not> close g u (fst p)]"
 by (induct ps) (auto simp: deleteAroundCons close_def)
 
 

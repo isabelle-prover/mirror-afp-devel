@@ -1,4 +1,4 @@
-(* ID:         $Id: TameProps.thy,v 1.1 2006-05-22 09:54:04 nipkow Exp $
+(* ID:         $Id: TameProps.thy,v 1.2 2007-06-08 12:06:56 nipkow Exp $
    Author:     Tobias Nipkow
 *)
 
@@ -15,11 +15,11 @@ by(induct xs) auto
 
 lemma tri_quad_le_degree: "tri g v + quad g v \<le> degree g v"
 proof -
-  let ?fins = "[f\<in> facesAt g v . final f]"
+  let ?fins = "[f \<leftarrow> facesAt g v . final f]"
   have "tri g v + quad g v =
-        |[f\<in> ?fins . triangle f]| + |[f\<in> ?fins. |vertices f| = 4]|"
+        |[f \<leftarrow> ?fins . triangle f]| + |[f \<leftarrow> ?fins. |vertices f| = 4]|"
     by(simp add:tri_def quad_def)
-  also have "\<dots> \<le> |[f \<in> facesAt g v. final f]|"
+  also have "\<dots> \<le> |[f \<leftarrow> facesAt g v. final f]|"
     by(rule length_disj_filter_le) simp
   also have "\<dots> \<le> |facesAt g v|" by(rule length_filter_le)
   finally show ?thesis by(simp add:degree_def)

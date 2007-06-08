@@ -1,4 +1,4 @@
-(*  ID:         $Id: ScoreProps.thy,v 1.1 2006-05-22 09:54:04 nipkow Exp $
+(*  ID:         $Id: ScoreProps.thy,v 1.2 2007-06-08 12:06:55 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -103,7 +103,7 @@ qed
 lemma deleteAround_separated:
 assumes mgp: "minGraphProps g" and fin: "final g" and 4: "|vertices f| \<le> 4"
 and f: "f \<in> set(facesAt g a)"
-shows "\<V> f \<inter> set [fst p. p \<in> deleteAround g a ps] \<subseteq> {a}" (is "?A")
+shows "\<V> f \<inter> set [fst p. p \<leftarrow> deleteAround g a ps] \<subseteq> {a}" (is "?A")
 proof -
   have a: "a \<in> \<V> f" using mgp f by(blast intro:minGraphProps)
   have "2 < |vertices f|" using mgp f by(blast intro:minGraphProps)
@@ -266,7 +266,7 @@ next
 qed
 
 lemma ExcessNotAtRecList_subset:
-  "set (ExcessNotAtRecList ps g) \<subseteq> set [fst p. p \<in> ps]" (is "?P ps")
+  "set (ExcessNotAtRecList ps g) \<subseteq> set [fst p. p \<leftarrow> ps]" (is "?P ps")
 proof (induct ps rule: ExcessNotAtRecList.induct)
   show "?P []" by simp
 next
@@ -327,12 +327,12 @@ proof -
 
 	fix f assume "f \<in> set (facesAt g a)"
         then have
-        "f \<bullet> a \<notin> set [fst p. p \<in> deleteAround g a ps]"
+        "f \<bullet> a \<notin> set [fst p. p \<leftarrow> deleteAround g a ps]"
           by (auto simp add: facesAt_def deleteAround_eq deleteAround'_def
             removeKeyList_eq split: split_if_asm)
         moreover
         have "set (ExcessNotAtRecList (deleteAround g a ps) g)
-          \<subseteq> set [fst p. p \<in> deleteAround g a ps]"
+          \<subseteq> set [fst p. p \<leftarrow> deleteAround g a ps]"
           by (rule ExcessNotAtRecList_subset)
         ultimately
         show "f \<bullet> a
@@ -340,11 +340,11 @@ proof -
           by auto
         assume "|vertices f| \<le> 4"
         have "set (vertices f)
-          \<inter> set [fst p. p \<in> deleteAround g a ps] \<subseteq> {a}"
+          \<inter> set [fst p. p \<leftarrow> deleteAround g a ps] \<subseteq> {a}"
           by (rule_tac deleteAround_separated[OF mgp fin])
         moreover
         have "set (ExcessNotAtRecList (deleteAround g a ps) g)
-          \<subseteq> set [fst p. p \<in> deleteAround g a ps]"
+          \<subseteq> set [fst p. p \<leftarrow> deleteAround g a ps]"
 	   by (rule ExcessNotAtRecList_subset)
         ultimately
         show "set (vertices f)
@@ -391,12 +391,12 @@ next
   proof
     assume "a \<in> set (ExcessNotAtRecList (deleteAround g a ps) g)"
     also have "set (ExcessNotAtRecList (deleteAround g a ps) g)
-      \<subseteq> set [fst p. p \<in> deleteAround g a ps]"
+      \<subseteq> set [fst p. p \<leftarrow> deleteAround g a ps]"
      by (rule ExcessNotAtRecList_subset)
     also have "set (deleteAround g a ps) \<subseteq> set ps"
       by (rule deleteAround_subset)
-    then have "set [fst p. p \<in> deleteAround g a ps]
-      \<subseteq> set [fst p. p \<in> ps]" by auto
+    then have "set [fst p. p \<leftarrow> deleteAround g a ps]
+      \<subseteq> set [fst p. p \<leftarrow> ps]" by auto
     finally have "a \<in> set (map fst ps)" .
     with a show False by contradiction
   qed
@@ -448,7 +448,7 @@ qed
 
 lemma ExcessTable_cont_eq:
  "ExcessTable_cont E vs =
-  [(v, E v). v \<in> [v\<in>vs . 0 < E v]]"
+  [(v, E v). v \<leftarrow> [v\<leftarrow>vs . 0 < E v]]"
   by (induct vs) (simp_all)
 
 
@@ -459,7 +459,7 @@ proof (rule ext, rule ext)
 qed
 
 lemma distinct_ExcessTable:
-   "distinct vs \<Longrightarrow> distinct [fst p. p \<in> ExcessTable g vs]"
+   "distinct vs \<Longrightarrow> distinct [fst p. p \<leftarrow> ExcessTable g vs]"
   by (simp_all add: ExcessTable_eq ExcessTable'_def distinct_ExcessTable_cont)
 
 lemma ExcessNotAt_eq:
@@ -571,7 +571,7 @@ assumes pl: "inv g" and fin: "final g" and ne: "noExceptionals g (set V)"
 and pS: "preSeparated g (set V)" and dist: "distinct V"
 and V_subset: "set V \<subseteq> set (vertices g)"
 shows "(\<Sum>\<^bsub>v \<in> V\<^esub> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> (w::face \<Rightarrow> nat) f)
-       = \<Sum>\<^bsub>f \<in> [f\<in>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub> w f"
+       = \<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub> w f"
 proof -
   have s: "separating (set V) (\<lambda>v. set (facesAt g v))"
     by (rule preSeparated_separating[OF pl fin ne pS])
@@ -580,7 +580,7 @@ proof -
   have v: "\<And>v. v \<in> set V \<Longrightarrow> distinct (facesAt g v)"
     by(blast intro:mgp_dist_facesAt[OF inv_mgp])
   moreover
-  have "distinct [f\<in>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v)]"
+  have "distinct [f\<leftarrow>faces g . \<exists>v \<in> set V. f \<in> set (facesAt g v)]"
     by (intro distinct_filter minGraphProps11'[OF inv_mgp[OF pl]])
   moreover from pl have "{x. x \<in> set (faces g) \<and> (\<exists>v \<in> set V. x \<in> set (facesAt g v))} =
       (\<Union>v\<in>set V. set (facesAt g v))"
@@ -595,7 +595,7 @@ qed
 
 lemma squanderFace_distr2: "inv g \<Longrightarrow> final g \<Longrightarrow> noExceptionals g (set V) \<Longrightarrow>
   preSeparated g (set V) \<Longrightarrow> distinct V \<Longrightarrow> set V \<subseteq> set (vertices g) \<Longrightarrow>
-     \<Sum>\<^bsub>f \<in> [f\<in>faces g. \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub>
+     \<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g. \<exists>v \<in> set V. f \<in> set (facesAt g v)]\<^esub>
          \<d> |vertices f|
    = \<Sum>\<^bsub>v \<in> V\<^esub> ((tri g v) *  \<d> 3
          + (quad g v) * \<d> 4)"
@@ -605,7 +605,7 @@ proof -
   assume ne: "noExceptionals g (set V)"
   assume "preSeparated g (set V)"  "distinct V" and V_subset: "set V \<subseteq> set (vertices g)"
   with pl ne fin have
-    "\<Sum>\<^bsub>f \<in> [f\<in>faces g. \<exists>v\<in>set V. f\<in>set (facesAt g v)]\<^esub> \<d> |vertices f|
+    "\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g. \<exists>v\<in>set V. f\<in>set (facesAt g v)]\<^esub> \<d> |vertices f|
    = \<Sum>\<^bsub>v \<in> V\<^esub> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> \<d> |vertices f|"
     by (simp add: preSeparated_disj_Union2)
   also have "\<And>v. v \<in> set V \<Longrightarrow>
@@ -629,8 +629,8 @@ proof -
 
     from d pl v have
       "\<Sum>\<^bsub>f \<in> facesAt g v\<^esub> \<d> |vertices f|
-    = (\<Sum>\<^bsub>f\<in>[f \<in> facesAt g v. |vertices f| = 3]\<^esub> \<d> |vertices f| )
-    + (\<Sum>\<^bsub>f\<in>[f \<in> facesAt g v. |vertices f| = 4]\<^esub> \<d> |vertices f| )"
+    = (\<Sum>\<^bsub>f\<in>[f \<leftarrow> facesAt g v. |vertices f| = 3]\<^esub> \<d> |vertices f| )
+    + (\<Sum>\<^bsub>f\<in>[f \<leftarrow> facesAt g v. |vertices f| = 4]\<^esub> \<d> |vertices f| )"
       apply (rule_tac ListSum_disj_union)
       apply (rule distinct_filter) apply simp
       apply (rule distinct_filter) apply simp
@@ -640,8 +640,8 @@ proof -
       done
     also have "\<dots> = tri g v * \<d> 3 + quad g v * \<d> 4"
     proof -
-      from pl fin v have "\<And>A.[f \<in> facesAt g v. final f \<and> A f]
-        = [f \<in> facesAt g v. A f]"
+      from pl fin v have "\<And>A.[f \<leftarrow> facesAt g v. final f \<and> A f]
+        = [f \<leftarrow> facesAt g v. A f]"
         by (rule_tac filter_eqI) (auto simp:plane_final_facesAt)
       with fin show ?thesis  by (auto simp add: tri_def quad_def)
     qed

@@ -1,4 +1,4 @@
-(*  ID:         $Id: LowerBound.thy,v 1.1 2006-05-22 09:54:00 nipkow Exp $
+(*  ID:         $Id: LowerBound.thy,v 1.2 2007-06-08 12:06:50 nipkow Exp $
     Author:     Gertrud Bauer
 *)
 
@@ -66,8 +66,8 @@ proof -
   where $V2$ contains all exceptional vertices, $V1$ all
   not exceptional vertices. *}
 
-  also def V1 \<equiv> "[v \<in> V. except g v = 0]"
-  def V2 \<equiv> "[v \<in> V. except g v \<noteq> 0]"  (*<*)
+  also def V1 \<equiv> "[v \<leftarrow> V. except g v = 0]"
+  def V2 \<equiv> "[v \<leftarrow> V. except g v \<noteq> 0]"  (*<*)
   have s: "set V1 \<subseteq> set V" by (auto simp add: V1_def)
   with pS obtain pSV1: "preSeparated g (set V1)"
     by (auto dest: preSeparated_subset)
@@ -87,8 +87,8 @@ proof -
   $V3$ contains all exceptional vertices of degree $5$.
   *}
 
-  also def V4 \<equiv> "[v \<in> V2. degree g v \<noteq> 5]"
-  def V3 \<equiv> "[v \<in> V2. degree g v = 5]"
+  also def V4 \<equiv> "[v \<leftarrow> V2. degree g v \<noteq> 5]"
+  def V3 \<equiv> "[v \<leftarrow> V2. degree g v = 5]"
 
 (*<*)
   with pS V2_def have "preSeparated g (set V3)"
@@ -108,8 +108,8 @@ proof -
   $F1$ contains all faces that contain a vertex of $V1$,
   $F2$ the remaining faces. *}
 
-  also def F1 \<equiv> "[f\<in>faces g . \<exists> v \<in> set V1. f \<in> set (facesAt g v)]"
-  def F2 \<equiv> "[f\<in>faces g . \<not>(\<exists> v \<in> set V1. f \<in> set (facesAt g v))]"
+  also def F1 \<equiv> "[f \<leftarrow> faces g . \<exists> v \<in> set V1. f \<in> set (facesAt g v)]"
+  def F2 \<equiv> "[f \<leftarrow> faces g . \<not>(\<exists> v \<in> set V1. f \<in> set (facesAt g v))]"
 
   have "\<Sum>\<^bsub>f \<in> faces g\<^esub> \<d> |vertices f|
       = (\<Sum>\<^bsub>f \<in> F1\<^esub> \<d> |vertices f| ) + \<Sum>\<^bsub> f \<in> F2\<^esub> \<d> |vertices f|" (*<*)
@@ -117,10 +117,10 @@ proof -
 
   txt {*  We split up @{text "F2"} in two disjoint subsets: *}
 
-  also def F3 \<equiv> "[f \<in> F2. \<exists>v \<in> set V3. f \<in> set (facesAt g v)]"
-  def F4 \<equiv> "[f \<in> F2. \<not> (\<exists>v \<in> set V3. f \<in> set (facesAt g v))]"
+  also def F3 \<equiv> "[f\<leftarrow>F2. \<exists>v \<in> set V3. f \<in> set (facesAt g v)]"
+  def F4 \<equiv> "[f\<leftarrow>F2. \<not> (\<exists>v \<in> set V3. f \<in> set (facesAt g v))]"
 
-  have F3: "F3 = [f\<in>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v)]"
+  have F3: "F3 = [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v)]"
 proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
      fix f assume "f \<in> set (faces g)"
      with final have fin: "final f" by (rule finalGraph_face)
