@@ -554,7 +554,7 @@ text {*To show preservation of measurability by multiplication, it is
 (*This lemma should probably be in the RealPow Theory or a special Sqroot-Theory*)
 lemma pow2_le_abs: "(a\<twosuperior> \<le> b\<twosuperior>) = (\<bar>a\<bar> \<le> \<bar>b::real\<bar>)"
 (*<*)proof -
-  have "(a\<twosuperior> \<le> b\<twosuperior>) = (\<bar>a\<bar>\<twosuperior> \<le> \<bar>b\<bar>\<twosuperior>)" by (simp add: realpow_two_abs[THEN sym] numeral_2_eq_2)
+  have "(a\<twosuperior> \<le> b\<twosuperior>) = (\<bar>a\<bar>\<twosuperior> \<le> \<bar>b\<bar>\<twosuperior>)" by (simp add: numeral_2_eq_2)
   also have "\<dots> = (\<bar>a\<bar> \<le> \<bar>b\<bar>)" 
   proof
     assume "\<bar>a\<bar> \<le> \<bar>b\<bar>"
