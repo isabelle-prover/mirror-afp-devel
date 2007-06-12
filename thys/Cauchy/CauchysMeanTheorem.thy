@@ -1,5 +1,5 @@
 (*  Title:       Cauchy's Mean Theorem
-    ID:          $Id: CauchysMeanTheorem.thy,v 1.6 2006-10-23 14:58:20 fhaftmann Exp $
+    ID:          $Id: CauchysMeanTheorem.thy,v 1.7 2007-06-12 20:08:58 makarius Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
@@ -468,9 +468,7 @@ next
   assume "x\<noteq>y"
   then have "abs (x - y) > 0" by simp
   with diff have "(abs (x-y))^2 < (abs (z-w))^2"
-    apply -
-    apply (drule realpow_less [where x="abs (x-y)" and n=2 and y="abs (z-w)"])
-    by auto
+    by - (drule power_strict_mono [where a="abs (x-y)" and n=2 and b="abs (z-w)"], auto)
   thus ?thesis by simp
 qed
 
@@ -768,7 +766,7 @@ apply (induct_tac lst)
 apply simp
 apply clarsimp
 apply (subst real_of_nat_Suc)
-apply (subst real_add_commute)
+apply (subst add_commute)
 apply (subst real_mult_ac)
 by simp
 
