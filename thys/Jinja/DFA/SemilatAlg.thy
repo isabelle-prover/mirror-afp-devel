@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/SemilatAlg.thy
-    ID:         $Id: SemilatAlg.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: SemilatAlg.thy,v 1.3 2007-06-12 20:41:22 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)
@@ -185,7 +185,7 @@ qed
 
 lemma ub1': includes semilat
 shows "\<lbrakk>\<forall>(p,s) \<in> set S. s \<in> A; y \<in> A; (a,b) \<in> set S\<rbrakk> 
-  \<Longrightarrow> b \<sqsubseteq>\<^bsub>r\<^esub> map snd [(p', t')\<in>S. p' = a] \<Squnion>\<^bsub>f\<^esub> y" 
+  \<Longrightarrow> b \<sqsubseteq>\<^bsub>r\<^esub> map snd [(p', t') \<leftarrow> S. p' = a] \<Squnion>\<^bsub>f\<^esub> y" 
 (*<*)
 proof -
   let "b \<sqsubseteq>\<^bsub>r\<^esub> ?map \<Squnion>\<^bsub>f\<^esub> y" = ?thesis
@@ -205,7 +205,7 @@ qed
  
 lemma plusplus_empty:  
   "\<forall>s'. (q, s') \<in> set S \<longrightarrow> s' \<squnion>\<^bsub>f\<^esub> ss ! q = ss ! q \<Longrightarrow>
-   (map snd [(p', t')\<in> S. p' = q] \<Squnion>\<^bsub>f\<^esub> ss ! q) = ss ! q"
+   (map snd [(p', t') \<leftarrow> S. p' = q] \<Squnion>\<^bsub>f\<^esub> ss ! q) = ss ! q"
 (*<*)
 apply (induct S)
 apply auto 
