@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic for total correctness
-    ID:          $Id: HoareTotal.thy,v 1.3 2006-11-17 01:28:44 makarius Exp $
+    ID:          $Id: HoareTotal.thy,v 1.4 2007-06-12 20:14:16 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -86,7 +86,7 @@ apply(erule thoare.induct);
   apply clarify
   apply(erule allE)
   apply clarify
-  apply(erule allE, erule allE, erule impE, assumption)
+  apply(erule allE, erule allE, erule impE, erule asm_rl)
   apply simp
   apply(erule mp)
   apply(simp)
