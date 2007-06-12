@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: Kildall.thy,v 1.4 2007-06-12 22:45:24 makarius Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
@@ -48,7 +48,7 @@ lemmas [simp] = Let_def semilat.le_iff_plus_unchanged [symmetric]
 
 lemma (in semilat) nth_merges:
  "\<And>ss. \<lbrakk>p < length ss; ss \<in> list n A; \<forall>(p,t)\<in>set ps. p<n \<and> t\<in>A \<rbrakk> \<Longrightarrow>
-  (merges f ps ss)!p = map snd [(p',t') \<in> ps. p'=p] \<Squnion>\<^bsub>f\<^esub> ss!p"
+  (merges f ps ss)!p = map snd [(p',t') \<leftarrow> ps. p'=p] \<Squnion>\<^bsub>f\<^esub> ss!p"
   (is "\<And>ss. \<lbrakk>_; _; ?steptype ps\<rbrakk> \<Longrightarrow> ?P ss ps")
 (*<*)
 proof (induct ps)

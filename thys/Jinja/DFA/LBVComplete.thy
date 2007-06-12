@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/LBVComplete.thy
-    ID:         $Id: LBVComplete.thy,v 1.4 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: LBVComplete.thy,v 1.5 2007-06-12 22:45:24 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -80,12 +80,12 @@ proof-
     assume merge: "?s\<^isub>1 \<noteq> T" 
     from x ss\<^isub>1 have "?s\<^isub>1 =
       (if \<forall>(pc',s')\<in>set ss\<^isub>1. pc' \<noteq> pc + 1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'
-      then (map snd [(p', t')\<in>ss\<^isub>1 . p'=pc+1]) \<Squnion>\<^bsub>f\<^esub> x
+      then (map snd [(p', t') \<leftarrow> ss\<^isub>1 . p'=pc+1]) \<Squnion>\<^bsub>f\<^esub> x
       else \<top>)" by (rule merge_def)  
     with merge obtain
       app: "\<forall>(pc',s')\<in>set ss\<^isub>1. pc' \<noteq> pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'" 
            (is "?app ss\<^isub>1") and
-      sum: "(map snd [(p',t')\<in>ss\<^isub>1 . p' = pc+1] \<Squnion>\<^bsub>f\<^esub> x) = ?s\<^isub>1" 
+      sum: "(map snd [(p',t') \<leftarrow> ss\<^isub>1 . p' = pc+1] \<Squnion>\<^bsub>f\<^esub> x) = ?s\<^isub>1" 
            (is "?map ss\<^isub>1 \<Squnion>\<^bsub>f\<^esub> x = _" is "?sum ss\<^isub>1 = _")
       by (simp split: split_if_asm)
     from app less have "?app ss\<^isub>2" by (blast dest: trans_r lesub_step_typeD)
@@ -106,7 +106,7 @@ proof-
     }
     moreover from x ss\<^isub>2 have "?s\<^isub>2 =
       (if \<forall>(pc', s')\<in>set ss\<^isub>2. pc' \<noteq> pc + 1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'
-      then map snd [(p', t')\<in>ss\<^isub>2 . p' = pc + 1] \<Squnion>\<^bsub>f\<^esub> x
+      then map snd [(p', t') \<leftarrow> ss\<^isub>2 . p' = pc + 1] \<Squnion>\<^bsub>f\<^esub> x
       else \<top>)" by (rule merge_def)
     ultimately have ?thesis by simp
   }
@@ -171,7 +171,7 @@ proof -
   ultimately
   have "merge c pc ?step (c!Suc pc) =
     (if \<forall>(pc',s')\<in>set ?step. pc'\<noteq>pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'
-    then map snd [(p',t')\<in>?step.p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!Suc pc
+    then map snd [(p',t') \<leftarrow> ?step.p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!Suc pc
     else \<top>)" by (rule merge_def)
   moreover {
     fix pc' s' assume s': "(pc',s') \<in> set ?step" and suc_pc: "pc' \<noteq> pc+1"
@@ -182,14 +182,14 @@ proof -
     finally have "s' \<sqsubseteq>\<^sub>r c!pc'" .
   } hence "\<forall>(pc',s')\<in>set ?step. pc'\<noteq>pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'" by auto
   moreover from pc have "Suc pc = size \<tau>s \<or> Suc pc < size \<tau>s" by auto
-  hence "map snd [(p',t')\<in>?step.p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!Suc pc \<noteq> \<top>" (is "?map \<Squnion>\<^bsub>f\<^esub> _ \<noteq> _")
+  hence "map snd [(p',t') \<leftarrow> ?step.p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!Suc pc \<noteq> \<top>" (is "?map \<Squnion>\<^bsub>f\<^esub> _ \<noteq> _")
   proof (rule disjE)
     assume pc': "Suc pc = size \<tau>s"
     with cert have "c!Suc pc = \<bottom>" by (simp add: cert_okD2)
     moreover 
     from pc' bounded pc 
     have "\<forall>(p',t')\<in>set ?step. p'\<noteq>pc+1" by clarify (drule boundedD, auto)
-    hence "[(p',t')\<in>?step. p'=pc+1] = []" by (blast intro: filter_False)
+    hence "[(p',t') \<leftarrow> ?step. p'=pc+1] = []" by (blast intro: filter_False)
     hence "?map = []" by simp
     ultimately show ?thesis by (simp add: B_neq_T)
   next
@@ -228,7 +228,7 @@ proof -
   hence "merge c pc ?step (c!Suc pc) \<noteq> \<top>" by (simp add: wti)
   ultimately
   have "merge c pc ?step (c!Suc pc) =
-    map snd [(p',t')\<in>?step.p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!Suc pc" by (rule merge_not_top_s) 
+    map snd [(p',t') \<leftarrow> ?step.p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!Suc pc" by (rule merge_not_top_s) 
   hence "?wti = \<dots>" (is "_ = (?map \<Squnion>\<^bsub>f\<^esub> _)" is "_ = ?sum") by (simp add: wti)
   also {
     from suc_pc \<tau>s have "\<tau>s!Suc pc \<in> A" by simp

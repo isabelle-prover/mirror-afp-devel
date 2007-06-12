@@ -1,5 +1,5 @@
 (*
-    ID:         $Id: LBVCorrect.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: LBVCorrect.thy,v 1.3 2007-06-12 22:45:25 makarius Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -85,7 +85,7 @@ proof (unfold stable_def, clarify)
     have merge: "?s\<^isub>2 = merge c pc (?step pc) (c!(pc+1))" by (simp add: wti)
     also from s\<^isub>2 merge have "\<dots> \<noteq> \<top>" (is "?merge \<noteq> _") by simp
     with cert_in_A step_in_A
-    have "?merge = (map snd [(p',t')\<in>?step pc. p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!(pc+1))"
+    have "?merge = (map snd [(p',t') \<leftarrow> ?step pc. p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!(pc+1))"
       by (rule merge_not_top_s) 
     finally have "s' \<sqsubseteq>\<^sub>r ?s\<^isub>2" using step_in_A cert_in_A True step 
       by (auto intro: pp_ub1')
