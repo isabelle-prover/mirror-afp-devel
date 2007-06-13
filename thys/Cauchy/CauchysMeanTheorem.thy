@@ -1,5 +1,5 @@
 (*  Title:       Cauchy's Mean Theorem
-    ID:          $Id: CauchysMeanTheorem.thy,v 1.7 2007-06-12 20:08:58 makarius Exp $
+    ID:          $Id: CauchysMeanTheorem.thy,v 1.8 2007-06-13 20:14:38 makarius Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
@@ -213,34 +213,26 @@ lists. We then define sum and product operations over these lists. *}
 
 subsubsection {* Sum and product definitions *}
 
-constdefs
-  listsum :: "(real list) \<Rightarrow> real" ("\<Sum>:_")
-  "listsum s == foldr op+ s 0"
+definition
+  listsum :: "(real list) \<Rightarrow> real" ("\<Sum>:_") where
+  "listsum s = foldr op+ s 0"
 
-  listprod :: "(real list) \<Rightarrow> real" ("\<Prod>:_")
-  "listprod s == foldr op* s 1"
+definition
+  listprod :: "(real list) \<Rightarrow> real" ("\<Prod>:_") where
+  "listprod s = foldr op* s 1"
 
 lemma listsum_empty [simp]: "\<Sum>:[] = 0"
-  apply (unfold listsum_def)
-  by simp
+  unfolding listsum_def by simp
 
 lemma listsum_cons [simp]: "\<Sum>:(a#b) = a + \<Sum>:b"
-proof (unfold listsum_def, induct b)
-  case Nil show ?case by simp
-next
-  case Cons show ?case by simp
-qed
+  unfolding listsum_def by (induct b) simp_all
 
 lemma listprod_empty [simp]: "\<Prod>:[] = 1"
-  apply (unfold listprod_def)
-  by simp
+  unfolding listprod_def by simp
 
 lemma listprod_cons [simp]: "\<Prod>:(a#b) = a * \<Prod>:b"
-proof (unfold listprod_def, induct b)
-  case Nil show ?case by simp
-next
-  case Cons show ?case by simp
-qed
+  unfolding listprod_def by (induct b) simp_all
+
 
 subsubsection {* Properties of sum and product *}
 
@@ -501,15 +493,15 @@ subsubsection {* Definitions *}
 
 text {* {\em Arithmetic mean} *}
 
-constdefs
-  mean :: "(real list)\<Rightarrow>real"
-  "mean s == \<Sum>:s / (real (length s))"
+definition
+  mean :: "(real list)\<Rightarrow>real" where
+  "mean s = (\<Sum>:s / real (length s))"
 
 text {* {\em Geometric mean} *}
 
-constdefs
-  gmean :: "(real list)\<Rightarrow>real"
-  "gmean s == (root (length s) (\<Prod>:s))"
+definition
+  gmean :: "(real list)\<Rightarrow>real" where
+  "gmean s = root (length s) (\<Prod>:s)"
 
 
 subsubsection {* Properties *}
@@ -536,7 +528,7 @@ proof -
   from se le have
     "(\<Sum>:one / real (length one)) = (\<Sum>:two / real (length two))"
     by auto
-  thus ?thesis by (unfold mean_def)
+  thus ?thesis unfolding mean_def .
 qed
 
 lemma list_gmean_gt_iff:
@@ -555,7 +547,7 @@ proof -
     "Suc slen = len" by auto
   moreover with pe gz1 gz2 have
     "(root (Suc slen) \<Prod>:one > root (Suc slen) \<Prod>:two)" by auto
-  ultimately show ?thesis by (unfold gmean_def, auto)
+  ultimately show ?thesis unfolding gmean_def by auto
 qed
 
 text {* This slightly more complicated lemma shows that for every non-empty collection with mean $M$, adding another element $a$ where $a=M$ results in a new list with the same mean $M$. *}
@@ -569,9 +561,9 @@ proof
   with lne have lgt0: "len > 0" by simp
   then have lnez: "len \<noteq> 0" by simp
   from lgt0 have l1nez: "len + 1 \<noteq> 0" by simp
-  from ld have mean: "mean lst = \<Sum>:lst / len" by (unfold mean_def, simp)
-  with ld real_of_nat_add real_of_one mean_def have
-    "mean ((mean lst)#lst) = (\<Sum>:lst/len + \<Sum>:lst) / (1+len)"
+  from ld have mean: "mean lst = \<Sum>:lst / len" unfolding mean_def by simp
+  with ld real_of_nat_add real_of_one mean_def
+  have "mean ((mean lst)#lst) = (\<Sum>:lst/len + \<Sum>:lst) / (1+len)"
     by simp
   also from list_sum_distrib_aux have
     "\<dots> = (1 + (1/len))*\<Sum>:lst / (1+len)" by simp
@@ -602,7 +594,7 @@ proof
   from a have lxsgt0: "length xs \<noteq> 0" by simp
   from mgt0 have xsgt0: "0 < \<Sum>:xs"
   proof -
-    have "mean xs = \<Sum>:xs / real (length xs)" by (unfold mean_def, simp)
+    have "mean xs = \<Sum>:xs / real (length xs)" unfolding mean_def by simp
     then have "\<Sum>:xs = mean xs * real (length xs)" by simp
     moreover from lxsgt0 have "real (length xs) > 0" by simp
     moreover with calculation lxsgt0 mgt0 real_mult_order show ?thesis by auto
@@ -612,7 +604,7 @@ proof
   proof -
     assume "0 < \<Sum>:(x#xs)"
     moreover have "real (length (x#xs)) > 0" by simp
-    ultimately show ?thesis by (unfold mean_def, rule real_div_order)
+    ultimately show ?thesis unfolding mean_def by (rule real_div_order)
   qed
 qed
 
@@ -628,50 +620,47 @@ subsubsection {* Definitions *}
 
 text {* @{text "list_neq"} and @{text "list_eq"} just extract elements from a collection that are not equal (or equal) to some value. *}
 
-constdefs
-  list_neq :: "('a list) \<Rightarrow> 'a \<Rightarrow> ('a list)"
-  "list_neq lst el == (List.filter (\<lambda>x. x\<noteq>el) lst)"
+definition
+  list_neq :: "('a list) \<Rightarrow> 'a \<Rightarrow> ('a list)" where
+  "list_neq lst el = List.filter (\<lambda>x. x\<noteq>el) lst"
 
-  list_eq :: "('a list) \<Rightarrow> 'a \<Rightarrow> ('a list)"
-  "list_eq lst el == (List.filter (\<lambda>x. x=el) lst)"
+definition
+  list_eq :: "('a list) \<Rightarrow> 'a \<Rightarrow> ('a list)" where
+  "list_eq lst el = List.filter (\<lambda>x. x=el) lst"
 
 text {* Trivial properties of @{text "list_neq"}. *}
 
 lemma list_neq_empty[simp]: "list_neq [] m = []"
-  apply (unfold list_neq_def)
-  by simp
+  unfolding list_neq_def by simp
 
 lemma list_neq_cons [simp]:
   "list_neq (a#b) m =
   (if a=m then list_neq b m else a#(list_neq b m))"
-  apply (unfold list_neq_def)
-  by simp
+  unfolding list_neq_def by simp
 
 lemma list_neq_el [rule_format]:
   "\<forall>lst. (e::real) mem (list_neq lst a) \<longrightarrow> e \<noteq> a"
   apply (unfold list_neq_def)
   apply clarsimp
   apply (simp add: mem_iff)
-done
+  done
 
 lemma list_neq_el_orig [rule_format]:
   "\<forall>lst. (e::real) mem (list_neq lst a) \<longrightarrow> e mem lst"
   apply (unfold list_neq_def)
   apply clarsimp
   apply (simp add: mem_iff)
-done
+  done
 
 text {* Trivial properties of @{text "list_eq"}. *}
 
 lemma list_eq_empty[simp]: "list_eq [] m = []"
-  apply (unfold list_eq_def)
-  by simp
+  unfolding list_eq_def by simp
 
 lemma list_eq_cons[simp]:
   "list_eq (a#b) m =
-  (if a=m then a#(list_eq b m) else list_eq b m)"
-  apply (unfold list_eq_def)
-  by simp
+    (if a=m then a#(list_eq b m) else list_eq b m)"
+  unfolding list_eq_def by simp
 
 lemma list_eq_or_neq [rule_format]:
   "\<forall>m. e mem lst \<longrightarrow> (e mem (list_neq lst m)) =
@@ -679,18 +668,20 @@ lemma list_eq_or_neq [rule_format]:
   apply clarsimp
   apply (unfold list_eq_def list_neq_def)
   apply (simp add: mem_iff)
-done
+  done
 
 lemma list_eq_el_orig [rule_format]:
   "\<forall>lst. (e::real) mem (list_eq lst a) \<longrightarrow> e mem lst"
   apply (unfold list_eq_def)
   apply (simp add: mem_iff)
   apply clarsimp
-done
+  done
+
 
 subsubsection {* Properties *}
 
-text {* This lemma just proves a required fact about @{text "list_neq"}, {\em remove1} and {\em length}. *}
+text {* This lemma just proves a required fact about @{text
+  "list_neq"}, {\em remove1} and {\em length}. *}
 
 lemma list_neq_remove1 [rule_format]:
   shows "a\<noteq>m \<and> lst\<noteq>[] \<and> a mem lst
@@ -700,7 +691,7 @@ proof (induct lst)
   case Nil show ?case by simp
 next
   case (Cons x xs)
-  have "?P xs" .
+  note `?P xs`
   {
     assume a: "?A (x#xs)"
     then have
@@ -821,9 +812,9 @@ proof (rule ccontr)
   let ?neq = "list_neq lst ?m"
   let ?eq = "list_eq lst ?m"
   from list_eq_sum have "(\<Sum>:?eq) = ?m * (real (length ?eq))" by simp
-  from asum have neq_ne: " ?neq \<noteq> []" by (unfold m neq)
+  from asum have neq_ne: " ?neq \<noteq> []" unfolding m neq .
   assume not_el: "\<not>(\<exists>e. e mem noteq \<and> m < e)"
-  then have not_el_exp: "\<not>(\<exists>e. e mem ?neq \<and> ?m < e)" by (unfold m neq)
+  then have not_el_exp: "\<not>(\<exists>e. e mem ?neq \<and> ?m < e)" unfolding m neq .
   then have "\<forall>e. \<not>(e mem ?neq) \<or> \<not>(e > ?m)" by simp
   then have "\<forall>e. e mem ?neq \<longrightarrow> \<not>(e > ?m)" by simp
   then have "\<forall>e. e mem ?neq \<longrightarrow> e \<le> ?m" by (simp add: real_le_not_less[symmetric])
@@ -856,9 +847,9 @@ proof (rule ccontr) -- "reductio ad absurdum"
   let ?neq = "list_neq lst ?m"
   let ?eq = "list_eq lst ?m"
   from list_eq_sum have "(\<Sum>:?eq) = ?m * (real (length ?eq))" by simp
-  from asum have neq_ne: " ?neq \<noteq> []" by (unfold m neq)
+  from asum have neq_ne: " ?neq \<noteq> []" unfolding m neq .
   assume not_el: "\<not>(\<exists>e. e mem noteq \<and> m > e)"
-  then have not_el_exp: "\<not>(\<exists>e. e mem ?neq \<and> ?m > e)" by (unfold m neq)
+  then have not_el_exp: "\<not>(\<exists>e. e mem ?neq \<and> ?m > e)" unfolding m neq .
   then have "\<forall>e. \<not>(e mem ?neq) \<or> \<not>(e < ?m)" by simp
   then have "\<forall>e. e mem ?neq \<longrightarrow> \<not>(e < ?m)" by simp
   then have "\<forall>e. e mem ?neq \<longrightarrow> e \<ge> ?m" by (simp add: real_le_not_less[symmetric])
@@ -902,46 +893,40 @@ subsubsection {* Definitions *}
 
 text {* {\em het}: The heterogeneity of a collection is the number of elements not equal to its mean. A heterogeneity of zero implies the all the elements in the collection are the same (i.e. homogeneous). *}
 
-constdefs
-  het :: "real list \<Rightarrow> nat"
-  "het l \<equiv> length (list_neq l (mean l))"
+definition
+  het :: "real list \<Rightarrow> nat" where
+  "het l = length (list_neq l (mean l))"
 
 lemma het_gt_0_imp_noteq_ne: "het l > 0 \<Longrightarrow> list_neq l (mean l) \<noteq> []"
-  apply (unfold het_def)
-  by simp
+  unfolding het_def by simp
 
-text {* @{text "\<gamma>-eq"}: Two lists are $\gamma$-equivalent if and only if they both have the same number of elements and the same arithmetic means. *}
+text {* @{text "\<gamma>-eq"}: Two lists are $\gamma$-equivalent if and only
+if they both have the same number of elements and the same arithmetic
+means. *}
 
-constdefs
-  \<gamma>_eq :: "((real list)*(real list)) \<Rightarrow> bool"
-  "\<gamma>_eq a \<equiv> (mean (fst a) = mean (snd a) \<and> length (fst a) = length (snd a))"
+definition
+  \<gamma>_eq :: "((real list)*(real list)) \<Rightarrow> bool" where
+  "\<gamma>_eq a \<longleftrightarrow> mean (fst a) = mean (snd a) \<and> length (fst a) = length (snd a)"
 
 text {* @{text "\<gamma>_eq"} is transitive and symmetric. *}
 
 lemma \<gamma>_eq_sym: "\<gamma>_eq (a,b) = \<gamma>_eq (b,a)"
-  apply (unfold \<gamma>_eq_def)
-  by auto
+  unfolding \<gamma>_eq_def by auto
 
 lemma \<gamma>_eq_trans:
-  assumes "\<gamma>_eq (x,y)" "\<gamma>_eq (y,z)"
-  shows "\<gamma>_eq (x,z)"
-proof -
-  have "\<gamma>_eq (x,y) \<and> \<gamma>_eq (y,z)" ..
-  then show "\<gamma>_eq (x,z)"
-    apply (unfold \<gamma>_eq_def)
-    by auto
-qed
-
+  "\<gamma>_eq (x,y) \<Longrightarrow> \<gamma>_eq (y,z) \<Longrightarrow> \<gamma>_eq (x,z)"
+  unfolding \<gamma>_eq_def by simp
 
 
 text {* {\em pos}: A list is positive if all its elements are greater than 0. *}
-constdefs
-  pos :: "real list \<Rightarrow> bool"
-  "pos l \<equiv> if l=[] then False else \<forall>e. e mem l \<longrightarrow> e > 0"
 
-lemma pos_empty [simp]: "pos [] = False" by (unfold pos_def, simp)
-lemma pos_single [simp]: "pos [x] = (x > 0)" by (unfold pos_def, simp)
-lemma pos_imp_ne [rule_format]: "pos lst \<longrightarrow> lst\<noteq>[]" by (unfold pos_def, simp)
+definition
+  pos :: "real list \<Rightarrow> bool" where
+  "pos l \<longleftrightarrow> (if l=[] then False else \<forall>e. e mem l \<longrightarrow> e > 0)"
+
+lemma pos_empty [simp]: "pos [] = False" unfolding pos_def by simp
+lemma pos_single [simp]: "pos [x] = (x > 0)" unfolding pos_def by simp
+lemma pos_imp_ne: "pos lst \<Longrightarrow> lst\<noteq>[]" unfolding pos_def by auto
 
 lemma pos_cons [simp]:
   "xs \<noteq> [] \<longrightarrow> pos (x#xs) =
@@ -951,7 +936,7 @@ proof (simp add: split_if, rule impI)
   assume xsne: "xs \<noteq> []"
   then have pxs_simp:
     "pos xs = (\<forall>e. e mem xs \<longrightarrow> e > 0)"
-    by (unfold pos_def, simp)
+    unfolding pos_def by simp
   show
     "(0 < x \<longrightarrow> pos (x # xs) = pos xs) \<and>
      (\<not> 0 < x \<longrightarrow> \<not> pos (x # xs))"
@@ -961,20 +946,21 @@ proof (simp add: split_if, rule impI)
       {
         assume pxs: "pos xs"
         with pxs_simp have "\<forall>e. e mem xs \<longrightarrow> e > 0" by simp
-        then have "\<forall>e. e mem (x#xs) \<longrightarrow> e > 0" by simp
-        hence "pos (x#xs)" by (unfold pos_def, simp)
+        with xgt0 have "\<forall>e. e mem (x#xs) \<longrightarrow> e > 0" by simp
+        hence "pos (x#xs)" unfolding pos_def by simp
       }
       moreover
       {
         assume pxxs: "pos (x#xs)"
-        then have "\<forall>e. e mem (x#xs) \<longrightarrow> e > 0" by (unfold pos_def, simp)
+        then have "\<forall>e. e mem (x#xs) \<longrightarrow> e > 0" unfolding pos_def by simp
         hence "\<forall>e. e mem xs \<longrightarrow> e > 0" by simp
-        hence "pos xs" by (unfold pos_def, simp)
+        with xsne have "pos xs" unfolding pos_def by simp
       }
       ultimately have "pos (x # xs) = pos xs"
         apply -
         apply (rule iffI)
-        by auto
+        apply auto
+	done
     }
     thus "0 < x \<longrightarrow> pos (x # xs) = pos xs" by simp
   next
@@ -984,14 +970,14 @@ proof (simp add: split_if, rule impI)
         assume pxs: "pos xs"
         with pxs_simp have "\<forall>e. e mem xs \<longrightarrow> e > 0" by simp
         with xngt0 have "\<not> (\<forall>e. e mem (x#xs) \<longrightarrow> e > 0)" by auto
-        hence "\<not> (pos (x#xs))" by (unfold pos_def, simp)
+        hence "\<not> (pos (x#xs))" unfolding pos_def by simp
       }
       moreover
       {
         assume pxxs: "\<not>pos xs"
-        with xsne have "\<not> (\<forall>e. e mem xs \<longrightarrow> e > 0)" by (unfold pos_def, simp)
+        with xsne have "\<not> (\<forall>e. e mem xs \<longrightarrow> e > 0)" unfolding pos_def by simp
         hence "\<not> (\<forall>e. e mem (x#xs) \<longrightarrow> e > 0)" by auto
-        hence "\<not> (pos (x#xs))" by (unfold pos_def, simp)
+        hence "\<not> (pos (x#xs))" unfolding pos_def by simp
       }
       ultimately have "\<not> pos (x#xs)" by auto
     }
@@ -1027,27 +1013,25 @@ proof
     -- "ReportNote: The above should be simpler"
     with posdef show "z mem (remove1 a lst) \<longrightarrow> z > 0" by simp
   qed
-  with rmvne show "pos (remove1 a lst)" by (unfold pos_def, simp)
+  with rmvne show "pos (remove1 a lst)" unfolding pos_def by simp
 qed
 
 lemma pos_mean [rule_format]:
   shows "pos lst \<longrightarrow> mean lst > 0"
 proof (induct lst)
   case Nil show ?case
-    apply (unfold pos_def)
-    apply simp
-    done
+    unfolding pos_def by simp
 next
   case (Cons x xs)
-  then have "pos xs \<longrightarrow> 0 < mean xs" ..
-  then show "pos (x#xs) \<longrightarrow> 0 < mean (x#xs)"
+  from `pos xs \<longrightarrow> 0 < mean xs`
+  show "pos (x#xs) \<longrightarrow> 0 < mean (x#xs)"
   proof cases
     assume xse: "xs = []"
     then have pxxs: "pos (x#xs) = (x > 0)" by simp
     {
       assume "pos (x#xs)"
       with pxxs have "x>0" ..
-      with xse have "0 < mean (x#xs)" by (unfold mean_def, auto)
+      with xse have "0 < mean (x#xs)" unfolding mean_def by auto
     }
     thus ?thesis by simp
   next
@@ -1094,7 +1078,7 @@ lemma listprod_het0:
 proof -
   assume "x\<noteq>[] \<and> het x = 0"
   then have xne: "x\<noteq>[]" and hetx: "het x = 0" by auto
-  from hetx have lz: "length (list_neq x (mean x)) = 0" by (unfold het_def)
+  from hetx have lz: "length (list_neq x (mean x)) = 0" unfolding het_def .
   hence "\<Prod>:(list_neq x (mean x)) = 1" by simp
   with listprod_split have "\<Prod>:x = \<Prod>:(list_eq x (mean x))"
     apply -
@@ -1131,7 +1115,7 @@ proof -
     "root (length x) \<Prod>:x = root (Suc len) ((mean x)^(Suc len))"
     by simp
   also with mxgt0 real_root_pos have "\<dots> = mean x" by auto
-  finally show "gmean x = mean x" by (unfold gmean_def)
+  finally show "gmean x = mean x" unfolding gmean_def .
 qed
 
 (* =================================================================== *)
@@ -1167,9 +1151,9 @@ proof -
 
   txt {* Pick two elements from lst, one greater than m, one less than m. *}
   from prems pick_one_gt neqne obtain \<alpha> where
-    \<alpha>_def: "\<alpha> mem noteq \<and> \<alpha> > m" by (unfold neq m) auto
+    \<alpha>_def: "\<alpha> mem noteq \<and> \<alpha> > m" unfolding neq m by auto
   from prems pick_one_lt neqne obtain \<beta> where
-    \<beta>_def: "\<beta> mem noteq \<and> \<beta> < m" by (unfold neq m) auto
+    \<beta>_def: "\<beta> mem noteq \<and> \<beta> < m" unfolding neq m by auto
   from \<alpha>_def \<beta>_def have \<alpha>_gt: "\<alpha> > m" and \<beta>_lt: "\<beta> < m" by auto
   from prems have el_neq: "\<beta> \<noteq> \<alpha>" by simp
   from neqne neq have lstne: "lst \<noteq> []" by auto
@@ -1178,12 +1162,14 @@ proof -
     apply (unfold neq)
     apply (drule meta_spec)+
     apply (drule meta_mp)
-    by clarsimp+
+    apply auto
+    done
   from prems list_neq_el_orig have \<alpha>mem: "\<alpha> mem lst"
     apply (unfold neq)
     apply (drule meta_spec)+
     apply (drule meta_mp)
-    by clarsimp+
+    apply auto
+    done
 
   from pos_lst pos_def lstne \<alpha>mem \<beta>mem \<alpha>_def \<beta>_def have
     \<alpha>_pos: "\<alpha> > 0" and \<beta>_pos: "\<beta> > 0" by auto
@@ -1427,18 +1413,17 @@ theorem CauchysMeanTheorem:
   assumes "pos z"
   shows "gmean z \<le> mean z"
 proof -
-  have pz: "pos z" .
-  then have zne: "z\<noteq>[]" by (rule pos_imp_ne)
+  from `pos z` have zne: "z\<noteq>[]" by (rule pos_imp_ne)
   show "gmean z \<le> mean z"
   proof cases
     assume "het z = 0"
-    with pz zne het_base have "gmean z = mean z" by simp
+    with `pos z` zne het_base have "gmean z = mean z" by simp
     thus ?thesis by simp
   next
     assume "het z \<noteq> 0"
     then have "het z > 0" by simp
     moreover obtain k where "k = het z" by simp
-    moreover with calculation pz existence_of_het0 have
+    moreover with calculation `pos z` existence_of_het0 have
       "\<exists>y. gmean y > gmean z \<and> \<gamma>_eq (z,y) \<and> het y = 0 \<and> pos y" by auto
     then obtain \<alpha> where
       "gmean \<alpha> > gmean z \<and> \<gamma>_eq (z,\<alpha>) \<and> het \<alpha> = 0 \<and> pos \<alpha>" ..

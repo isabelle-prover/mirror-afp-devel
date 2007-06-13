@@ -1,10 +1,10 @@
 (*  Title:       The Cauchy-Schwarz Inequality
-    ID:          $Id: CauchySchwarz.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: CauchySchwarz.thy,v 1.5 2007-06-13 20:14:38 makarius Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
 
-header {*The Cauchy-Schwarz Inequality*}
+header {* The Cauchy-Schwarz Inequality *}
 
 theory CauchySchwarz
 imports Complex_Main
@@ -103,14 +103,17 @@ subsubsection {* Vector *}
 
 text {* We now define a vector type to be a tuple of (function,
 length). Where the function is of type @{typ "nat\<Rightarrow>real"}. We also
-define some accessor functions and appropriate syntax translations. *}
+define some accessor functions and appropriate notation. *}
 
 types vector = "(nat\<Rightarrow>real) * nat";
 
-constdefs ith :: "vector \<Rightarrow> nat \<Rightarrow> real" ("((_)\<^sub>_)" [80,100] 100)
-  "ith v i \<equiv> (fst v) i"
-  vlen :: "vector \<Rightarrow> nat"
-  "vlen v \<equiv> (snd v)"
+definition
+  ith :: "vector \<Rightarrow> nat \<Rightarrow> real" ("((_)\<^sub>_)" [80,100] 100) where
+  "ith v i = fst v i"
+
+definition
+  vlen :: "vector \<Rightarrow> nat" where
+  "vlen v = snd v"
 
 text {* Now to access the second element of some vector $v$ the syntax
 is $v_2$. *}
@@ -119,13 +122,16 @@ subsubsection {* Dot and Norm *}
 
 text {* We now define the dot product and norm operations. *}
 
-constdefs dot :: "vector \<Rightarrow> vector \<Rightarrow> real" (infixr "\<cdot>" 60)
-  "dot a b \<equiv> (\<Sum>j\<in>{1..(vlen a)}. a\<^sub>j*b\<^sub>j)"
-  norm :: "vector \<Rightarrow> real"                  ("\<parallel>_\<parallel>" 100)
-  "norm v \<equiv> sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^sub>j^2)"
+definition
+  dot :: "vector \<Rightarrow> vector \<Rightarrow> real" (infixr "\<cdot>" 60) where
+  "dot a b = (\<Sum>j\<in>{1..(vlen a)}. a\<^sub>j*b\<^sub>j)"
 
-syntax(HTML output)
-  "norm" :: "vector => real" ("||_||" 100)
+definition
+  norm :: "vector \<Rightarrow> real"                  ("\<parallel>_\<parallel>" 100) where
+  "norm v = sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^sub>j^2)"
+
+notation (HTML output)
+  "norm"  ("||_||" 100)
 
 text {* Another definition of the norm is @{term "\<parallel>v\<parallel> = sqrt
 (v\<cdot>v)"}. We show that our definition leads to this one. *}
@@ -133,9 +139,9 @@ text {* Another definition of the norm is @{term "\<parallel>v\<parallel> = sqrt
 lemma norm_dot:
  "\<parallel>v\<parallel> = sqrt (v\<cdot>v)"
 proof -
-  have "sqrt (v\<cdot>v) = sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^sub>j*v\<^sub>j)" by (unfold dot_def, simp)
+  have "sqrt (v\<cdot>v) = sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^sub>j*v\<^sub>j)" unfolding dot_def by simp
   also with real_sq have "\<dots> = sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^sub>j^2)" by simp
-  also have "\<dots> = \<parallel>v\<parallel>" by (unfold norm_def, simp)
+  also have "\<dots> = \<parallel>v\<parallel>" unfolding norm_def by simp
   finally show ?thesis ..
 qed
 
@@ -144,11 +150,11 @@ text {* A further important property is that the norm is never negative. *}
 lemma norm_pos:
   "\<parallel>v\<parallel> \<ge> 0"
 proof -
-  have "\<forall>j. v\<^sub>j^2 \<ge> 0" by (unfold ith_def, auto)
+  have "\<forall>j. v\<^sub>j^2 \<ge> 0" unfolding ith_def by auto
   hence "\<forall>j\<in>{1..(vlen v)}. v\<^sub>j^2 \<ge> 0" by simp
   with setsum_nonneg have "(\<Sum>j\<in>{1..(vlen v)}. v\<^sub>j^2) \<ge> 0" .
   with real_sqrt_ge_zero have "sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^sub>j^2) \<ge> 0" .
-  thus ?thesis by (unfold norm_def)
+  thus ?thesis unfolding norm_def .
 qed
 
 text {* We now prove an intermediary lemma regarding double summation. *}
@@ -205,7 +211,7 @@ proof -
     have "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 - \<bar>x\<cdot>y\<bar>^2 \<ge> 0"
     proof -
       obtain n where nx: "n = vlen x" by simp
-      hence ny: "n = vlen y" by simp
+      with `vlen x = vlen y` have ny: "n = vlen y" by simp
       {
         txt {* Some preliminary simplification rules. *}
         have "\<forall>j\<in>{1..n}. x\<^sub>j^2 \<ge> 0" by simp
@@ -225,7 +231,7 @@ proof -
           by (simp add: real_sq_exp)
         also from nx ny have
           "\<dots> = (sqrt (\<Sum>j\<in>{1..n}. x\<^sub>j^2))^2 * (sqrt (\<Sum>j\<in>{1..n}. y\<^sub>j^2))^2"
-          by (unfold norm_def, auto)
+          unfolding norm_def by auto
         also from xp yp have
           "\<dots> = (\<Sum>j\<in>{1..n}. x\<^sub>j^2)*(\<Sum>j\<in>{1..n}. y\<^sub>j^2)"
           by simp
@@ -242,7 +248,7 @@ proof -
           by simp
         also from nx have
           "\<dots> = (\<Sum>j\<in>{1..n}. x\<^sub>j*y\<^sub>j)^2"
-          by (unfold dot_def, simp)
+          unfolding dot_def by simp
         also from real_sq have
           "\<dots> = (\<Sum>j\<in>{1..n}. x\<^sub>j*y\<^sub>j)*(\<Sum>j\<in>{1..n}. x\<^sub>j*y\<^sub>j)"
           by simp
@@ -315,6 +321,5 @@ proof -
   qed
   ultimately show ?thesis by (rule real_sq_order)
 qed
-
 
 end
