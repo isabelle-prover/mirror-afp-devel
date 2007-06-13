@@ -1,5 +1,5 @@
 (*  Title:      HOL/ex/Exceptions.thy
-    ID:         $Id: Exceptions.thy,v 1.3 2004-08-19 10:38:33 nipkow Exp $
+    ID:         $Id: Exceptions.thy,v 1.4 2007-06-13 19:41:21 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2004 TU Muenchen
 *)
@@ -152,16 +152,16 @@ proof(induct e)
   case Val thus ?case by simp
 next
   case (Add x y)
-  have "l \<le> snd (compile l x)"
-   and "snd (compile l x) \<le> snd (compile (snd (compile l x)) y)" .
-  thus ?case by(simp_all add:split_def)
+  from `l \<le> snd (compile l x)`
+   and `snd (compile l x) \<le> snd (compile (snd (compile l x)) y)`
+  show ?case by(simp_all add:split_def)
 next
   case Throw thus ?case by simp
 next
   case (Catch x h)
-  have "l+2 \<le> snd (compile (l+2) x)"
-   and "snd (compile (l+2) x) \<le> snd (compile (snd (compile (l+2) x)) h)" .
-  thus ?case by(simp_all add:split_def)
+  from `l+2 \<le> snd (compile (l+2) x)`
+   and `snd (compile (l+2) x) \<le> snd (compile (snd (compile (l+2) x)) h)`
+  show ?case by(simp_all add:split_def)
 qed
 
 corollary [simp]: "l < m \<Longrightarrow> l < snd(compile m e)"
