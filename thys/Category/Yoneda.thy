@@ -1,14 +1,15 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Yoneda.thy,v 1.7 2006-07-04 12:48:19 ballarin Exp $
+    ID:          $Id: Yoneda.thy,v 1.8 2007-06-13 19:37:50 makarius Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
+header {* Yonedas Lemma *}
+
 theory Yoneda
-imports  HomFunctors NatTrans
+imports HomFunctors NatTrans
 begin
 
-section{* Yonedas Lemma *}
-subsection{* The Sandwich Natural Transformation *}
+subsection {* The Sandwich Natural Transformation *}
 
 locale Yoneda = functor + into_set +
   assumes "AA = (AA::('o,'a,'m)category_scheme)"
@@ -56,12 +57,12 @@ proof-
 qed
 
 lemma (in Yoneda) sandwich_funcset:
-  assumes "A \<in> Ob"
+  assumes A: "A \<in> Ob"
   and "a \<in> F\<^sub>\<o> A"
   shows  "\<sigma>(A,a) : Ob \<rightarrow> ar Set"
 proof (rule funcsetI)
   fix B
-  assume "B \<in> Ob"
+  assume B: "B \<in> Ob"
   thus "\<sigma>(A,a) B \<in> ar Set"
   proof (simp add: Set_def sandwich_def set_cat_def)
     show "set_arrow U \<lparr>
@@ -74,8 +75,8 @@ proof (rule funcsetI)
       show "(\<lambda>f\<in>Hom A B. set_func (F\<^sub>\<a> f) a) \<in> Hom A B \<rightarrow> F\<^sub>\<o> B"
       proof (rule funcsetI, simp)
 	fix f
-	assume "f \<in> Hom A B"
-	have "F\<^sub>\<a> f \<in> Hom\<^sub>2 (F\<^sub>\<o> A) (F\<^sub>\<o> B)"
+	assume f: "f \<in> Hom A B"
+	with A B have "F\<^sub>\<a> f \<in> Hom\<^sub>2 (F\<^sub>\<o> A) (F\<^sub>\<o> B)"
 	  by (rule functors_preserve_homsets)
 	hence "F\<^sub>\<a> f \<in> ar Set" 
 	  and "set_dom (F\<^sub>\<a> f) = (F\<^sub>\<o> A)"
@@ -84,6 +85,7 @@ proof (rule funcsetI)
 	hence "set_func (F\<^sub>\<a> f) : (F\<^sub>\<o> A) \<rightarrow> (F\<^sub>\<o> B)"
 	  by (simp add: Set_def set_cat_def set_arrow_def)
 	thus "set_func (F\<^sub>\<a> f) a \<in> F\<^sub>\<o> B"
+	  using `a \<in> F\<^sub>\<o> A`
 	  by (rule funcset_mem)
       qed
     qed
@@ -92,36 +94,35 @@ qed
 
 
 lemma (in Yoneda) sandwich_type:
-  assumes "A \<in> Ob" and 2:"B \<in> Ob"
+  assumes A: "A \<in> Ob" and B: "B \<in> Ob"
   and "a \<in> F\<^sub>\<o> A"
   shows "\<sigma>(A,a) B \<in> hom Set (Hom A B) (F\<^sub>\<o> B)"
 proof-
-  from sandwich_funcset 
-  have "\<sigma>(A,a) B \<in> ar Set"
-    by (rule funcset_mem)
+  have "\<sigma>(A,a) \<in> Ob \<rightarrow> Ar\<^bsub>Set\<^esub>"
+    using A and `a \<in> F\<^sub>\<o> A` by (rule sandwich_funcset)
+  hence "\<sigma>(A,a) B \<in> ar Set"
+    using B by (rule funcset_mem)
   thus ?thesis
-    by (simp add: sandwich_def hom_def Set_def 2)
+    using B by (simp add: sandwich_def hom_def Set_def)
 qed
 
 
 lemma (in Yoneda) sandwich_commutes:
-  assumes AOb:"A \<in> Ob" and BOb:"B \<in> Ob" and COb:"C \<in> Ob"
+  assumes AOb: "A \<in> Ob" and BOb: "B \<in> Ob" and COb: "C \<in> Ob"
   and aFa: "a \<in> F\<^sub>\<o> A"
-  and fBC:"f \<in> Hom B C"
+  and fBC: "f \<in> Hom B C"
   shows "(F \<^sub>\<a> f) \<odot> (\<sigma>(A,a) B) = (\<sigma>(A,a) C) \<odot> (Hom(A,_) \<^sub>\<a> f)"
 proof-
-  have "f \<in> Hom B C" .
-  hence 1:"f \<in> Ar" and 2:"Dom f = B" and 3:"Cod f = C"
+  from fBC have 1: "f \<in> Ar" and 2: "Dom f = B" and 3: "Cod f = C"
     by (simp_all add: hom_def)
-  from BOb
-  have "set_dom ((F \<^sub>\<a> f) \<odot> (\<sigma>(A,a) B)) = Hom A B"
+  from BOb have "set_dom ((F \<^sub>\<a> f) \<odot> (\<sigma>(A,a) B)) = Hom A B"
     by (simp add: set_comp_def sandwich_def)
   also have "\<dots> = set_dom ((\<sigma>(A,a) C) \<odot> (Hom(A,_) \<^sub>\<a> f))"
     by (simp add: set_comp_def homf_def 1 2)
   finally have set_dom_eq: 
     "set_dom ((F \<^sub>\<a> f) \<odot> (\<sigma>(A,a) B)) 
     = set_dom ((\<sigma>(A,a) C) \<odot> (Hom(A,_) \<^sub>\<a> f))" .
-  have "(F\<^sub>\<a> f) \<in> Hom\<^sub>2 (F\<^sub>\<o> B) (F\<^sub>\<o> C)" 
+  from BOb COb fBC have "(F\<^sub>\<a> f) \<in> Hom\<^sub>2 (F\<^sub>\<o> B) (F\<^sub>\<o> C)" 
     by (rule functors_preserve_homsets)
   hence "set_cod ((F \<^sub>\<a> f) \<odot> (\<sigma>(A,a) B)) = F\<^sub>\<o> C"
     by (simp add: set_comp_def BB_Set Set_def set_cat_def hom_def)
@@ -169,7 +170,7 @@ qed
 lemma (in Yoneda) sandwich_natural:
   assumes "A \<in> Ob"
   and "a \<in> F\<^sub>\<o> A"
-  shows  "\<sigma>(A,a) : Hom(A,_) \<Rightarrow> F in Func(AA,Set)"
+  shows "\<sigma>(A,a) : Hom(A,_) \<Rightarrow> F in Func(AA,Set)"
 proof (intro natural_transformation.intro natural_transformation_axioms.intro two_cats.intro)
   show "category AA" by unfold_locales
   show "category Set" 
@@ -179,24 +180,25 @@ proof (intro natural_transformation.intro natural_transformation_axioms.intro tw
   show "Functor F : AA \<longrightarrow> Set"
     by (rule F_into_set)
   show "\<forall>B\<in>Ob. \<sigma>(A,a) B \<in> hom Set (Hom(A,_)\<^sub>\<o> B) (F\<^sub>\<o> B)"
-    by (intro ballI, simp add: homf_def) (rule sandwich_type)
+    using assms by (auto simp add: homf_def intro: sandwich_type)
   show "\<sigma>(A,a) : Ob \<rightarrow> ar Set"
-    by (rule sandwich_funcset)
+    using assms by (rule sandwich_funcset)
   show "\<sigma>(A,a) \<in> extensional (Ob)"
-    by (unfold sandwich_def, rule restrict_extensional)
+    unfolding sandwich_def by (rule restrict_extensional)
   show "\<forall>B\<in>Ob. \<forall>C\<in>Ob. \<forall>f\<in>Hom B C.
     comp Set (F \<^sub>\<a> f) (\<sigma>(A,a) B) = comp Set (\<sigma>(A,a) C) (Hom(A,_) \<^sub>\<a> f)"
-    by (intro ballI, simp add: Set_def) (rule sandwich_commutes)
+    using assms by (auto simp add: Set_def intro: sandwich_commutes)
 qed (intro two_cats_axioms.intro, simp_all)
 
-subsection{* Sandwich Components are Bijective *}
+
+subsection {* Sandwich Components are Bijective *}
 
 lemma (in Yoneda) unsandwich_left_inverse:
   assumes 1: "A \<in> Ob"
   and 2: "a \<in> F\<^sub>\<o> A"
   shows "\<sigma>\<^sup>\<leftarrow>(A,\<sigma>(A,a)) = a"
 proof-
-  have "Id A \<in> Hom A A" ..
+  from 1 have "Id A \<in> Hom A A" ..
   with 1 
   have 3: "\<sigma>\<^sup>\<leftarrow>(A,\<sigma>(A,a)) = set_func (F\<^sub>\<a> (Id A)) a"
     by (simp add: sandwich_def homf_def unsandwich_def)
@@ -261,7 +263,7 @@ proof (rule extensionalityI)
     by (intro ballI, simp add: homf_def hom_def)
   have roolz: "\<And>f. f \<in> Hom A B \<Longrightarrow> set_dom (Hom(A,_)\<^sub>\<a> f) = Hom A A"
     by (simp add: homf_def hom_def)
-  have rooly: "Id A \<in> Hom A A" ..
+  from 1 have rooly: "Id A \<in> Hom A A" ..
   have roolx: "\<And>f. f \<in> Hom A B \<Longrightarrow> f \<in> Ar"
     by (simp add: hom_def)
   have roolw: "\<And>f. f \<in> Hom A B \<Longrightarrow> Id A \<in> Hom A (Dom f)"
@@ -270,7 +272,7 @@ proof (rule extensionalityI)
     assume "f \<in> Hom A B"
     hence "Dom f = A" by (simp add: hom_def)
     thus "Id A \<in> Hom A (Dom f)"
-      by simp rule
+      by (simp add: rooly)
   qed
   have annoying: "\<And>f. f \<in> Hom A B \<Longrightarrow> Id A = Id (Dom f)"
     by (simp add: hom_def)
@@ -325,13 +327,17 @@ omission from the Isabelle/HOL library. They define the idea of
 injectivity on a given set, but surjectivity is only defined relative
 to the entire universe of the target type. *}
 
-constdefs
-  surj_on :: "['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> bool"   
-  "surj_on f A B \<equiv> \<forall>y\<in>B. \<exists>x\<in>A. f(x)=y"
-  bij_on :: "['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> bool" 
-  "bij_on f A B \<equiv> inj_on f A & surj_on f A B"
-  equinumerous :: "['a set, 'b set] \<Rightarrow> bool" (infix "\<cong>" 40)
-  "equinumerous A B \<equiv> \<exists>f. bij_on f A B"
+definition
+  surj_on :: "['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> bool" where
+  "surj_on f A B \<longleftrightarrow> (\<forall>y\<in>B. \<exists>x\<in>A. f(x)=y)"
+
+definition
+  bij_on :: "['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> bool" where
+  "bij_on f A B \<longleftrightarrow> inj_on f A & surj_on f A B"
+
+definition
+  equinumerous :: "['a set, 'b set] \<Rightarrow> bool"  (infix "\<cong>" 40) where
+  "equinumerous A B \<longleftrightarrow> (\<exists>f. bij_on f A B)"
 
 theorem (in Yoneda) Yoneda:
   assumes 1: "A \<in> Ob"
@@ -364,7 +370,7 @@ next
     by (simp_all add: hom_def)
   hence uAfuncset: "set_func (u A) : (Hom A A) \<rightarrow> (F\<^sub>\<o> A)"
     by (simp add: Set_def set_cat_def set_arrow_def)
-  have "Id A \<in> Hom A A" ..
+  from 1 have "Id A \<in> Hom A A" ..
   with uAfuncset 
   show "\<sigma>\<^sup>\<leftarrow>(A,u) \<in> F\<^sub>\<o> A"
     by (simp add: unsandwich_def, rule funcset_mem)

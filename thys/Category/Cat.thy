@@ -1,13 +1,14 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Cat.thy,v 1.4 2005-10-20 18:43:32 nipkow Exp $
+    ID:          $Id: Cat.thy,v 1.5 2007-06-13 19:37:50 makarius Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
+
+header {* Categories *}
 
 theory Cat
 imports FuncSet
 begin
 
-section {* Categories *}
 subsection {* Definitions *}
 
 record ('o, 'a) category =
@@ -18,9 +19,9 @@ record ('o, 'a) category =
   id :: "'o \<Rightarrow> 'a" ("Id\<index> _" [81] 80)
   comp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl "\<bullet>\<index>" 60)
 
-constdefs
-  hom :: "[('o,'a,'m) category_scheme, 'o, 'o] \<Rightarrow> 'a set" ("Hom\<index> _ _")
-  "hom CC A B \<equiv> { f. f\<in>ar CC & dom CC f = A & cod CC f = B }"
+definition
+  hom :: "[('o,'a,'m) category_scheme, 'o, 'o] \<Rightarrow> 'a set"  ("Hom\<index> _ _") where
+  "hom CC A B = { f. f\<in>ar CC & dom CC f = A & cod CC f = B }"
 
 locale category = struct CC +
   assumes dom_object [intro]:
@@ -41,25 +42,26 @@ locale category = struct CC +
   \<Longrightarrow> f \<bullet> (g \<bullet> h) = (f \<bullet> g) \<bullet> h"
 
 
-subsection{* Lemmas *}
+subsection {* Lemmas *}
+
 lemma (in category) homI:
   assumes "f \<in> Ar" and "Dom f = A" and "Cod f = B"
-  shows "f \<in> Hom A B" 
-  by (simp add: hom_def) auto
+  shows "f \<in> Hom A B"
+  using assms by (auto simp add: hom_def)
 
 lemma (in category) homE:
   assumes "A \<in> Ob" and "B \<in> Ob" and "f \<in> Hom A B"
   shows "Dom f = A" and "Cod f = B"
 proof-
-  show "Dom f = A" by (simp! add: hom_def) 
-  show "Cod f = B" by (simp! add: hom_def) 
+  show "Dom f = A" using assms by (simp add: hom_def) 
+  show "Cod f = B" using assms by (simp add: hom_def) 
 qed
    
 lemma (in category) id_arrow [intro]:
   assumes "A \<in> Ob"
   shows "Id A \<in> Ar"
 proof-
-  have "Id A \<in> Hom A A" by (rule id_hom)
+  from `A \<in> Ob` have "Id A \<in> Hom A A" by (rule id_hom)
   thus "Id A \<in> Ar" by (simp add: hom_def)
 qed
 
@@ -67,21 +69,21 @@ lemma (in category) id_dom_cod:
   assumes "A \<in> Ob"
   shows "Dom (Id A) = A" and "Cod (Id A) = A"
 proof-
-  have 1: "Id A \<in> Hom A A" ..
-  from 1 show "Dom (Id A) = A" by (simp add: hom_def)
-  from 1 show "Cod (Id A) = A" by (simp add: hom_def)
+  from `A \<in> Ob` have 1: "Id A \<in> Hom A A" ..
+  then show "Dom (Id A) = A" and "Cod (Id A) = A"
+    by (simp_all add: hom_def)
 qed
 
 
 lemma (in category) compI [intro]:
-  assumes "f \<in> Ar" and "g \<in> Ar" and "Cod f = Dom g"
+  assumes f: "f \<in> Ar" and g: "g \<in> Ar" and "Cod f = Dom g"
   shows "g \<bullet> f \<in> Ar"
   and "Dom (g \<bullet> f) = Dom f"
   and "Cod (g \<bullet> f) = Cod g"
 proof-
-  have "f \<in> Hom (Dom f) (Cod f)" by (simp add: hom_def)
-  hence f_homset: "f \<in> Hom (Dom f) (Dom g)" by (simp!)
-  have g_homset: "g \<in> Hom (Dom g) (Cod g)" by (simp add: hom_def)
+  have "f \<in> Hom (Dom f) (Cod f)" using f by (simp add: hom_def)
+  with `Cod f = Dom g` have f_homset: "f \<in> Hom (Dom f) (Dom g)" by simp
+  have g_homset: "g \<in> Hom (Dom g) (Cod g)" using g by (simp add: hom_def)
   have "(op \<bullet>) : Hom (Dom g) (Cod g) \<rightarrow> Hom (Dom f) (Dom g) \<rightarrow> Hom (Dom f) (Cod g)" ..
   from this and g_homset 
   have "(op \<bullet>) g \<in> Hom (Dom f) (Dom g) \<rightarrow> Hom (Dom f) (Cod g)" 
@@ -94,7 +96,5 @@ proof-
   from gf_homset show "Dom (g \<bullet> f) = Dom f" and "Cod (g \<bullet> f) = Cod g"
     by (simp_all add: hom_def)
 qed
-
-
 
 end

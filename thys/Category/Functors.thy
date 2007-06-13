@@ -1,29 +1,29 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Functors.thy,v 1.7 2006-07-04 12:48:19 ballarin Exp $
+    ID:          $Id: Functors.thy,v 1.8 2007-06-13 19:37:50 makarius Exp $
     Author:      Greg O'Keefe, June, July, August 2003
+
+Functors: Define functors and prove a trivial example.
 *)
 
-(* 
-  Functors: Define functors and prove a trivial example.
-*)
+header {* Functors *}
 
 theory Functors
 imports Cat
 begin
 
-section{* Functors *}
-subsection{* Definitions *}
+subsection {* Definitions *}
 
 record ('o1,'a1,'o2,'a2) functor =
   om :: "'o1 \<Rightarrow> 'o2"
   am :: "'a1 \<Rightarrow> 'a2"
 
-syntax
-  "_om" :: "('o1,'a1,'o2,'a2,'m)functor_scheme \<Rightarrow> 'o1 \<Rightarrow> 'o2" ("_ \<^sub>\<o>" [81])
-  "_am" :: "('o1,'a1,'o2,'a2,'m)functor_scheme \<Rightarrow> 'o1 \<Rightarrow> 'o2" ("_ \<^sub>\<a>" [81])
-translations
-  "F\<^sub>\<o>" \<rightleftharpoons> "om F"
-  "F\<^sub>\<a>" \<rightleftharpoons> "am F"
+abbreviation
+  om_syn  ("_ \<^sub>\<o>" [81]) where
+  "F\<^sub>\<o> \<equiv> om F"
+
+abbreviation
+  am_syn  ("_ \<^sub>\<a>" [81]) where
+  "F\<^sub>\<a> \<equiv> am F"
 
 locale two_cats = category AA + category BB + 
   assumes "AA = (AA :: ('o1,'a1,'m1)category_scheme)"
@@ -54,14 +54,13 @@ locale functor = two_cats + struct F +
 
 text {* This gives us nicer notation for asserting that things are functors. *}
 
-syntax
-  "_functor" :: "[('o1,'a1,'m1)category_scheme, 
-  ('o2,'a2,'m2)category_scheme, 
-  ('o1,'a1,'o2,'a2,'mf)functor_scheme] \<Rightarrow> bool" ("Functor _ : _ \<longrightarrow> _" [81])
-translations
-  "Functor F : AA \<longrightarrow> BB" \<rightleftharpoons> "functor AA BB F"
+abbreviation
+  Functor  ("Functor _ : _ \<longrightarrow> _" [81]) where
+  "Functor F : AA \<longrightarrow> BB \<equiv> functor AA BB F"
+
 
 subsection {* Simple Lemmas *}
+
 text {* For example: *}
 
 lemma (in functor) "Functor F : AA \<longrightarrow> BB"
@@ -70,13 +69,14 @@ lemma (in functor) "Functor F : AA \<longrightarrow> BB"
 
 lemma functors_preserve_arrows [intro]:
   assumes "Functor F : AA \<longrightarrow> BB"
-  and "f \<in> ar AA"
+    and "f \<in> ar AA"
   shows "F\<^sub>\<a> f \<in> ar BB"
 proof-
+  from `Functor F : AA \<longrightarrow> BB`
   have "F\<^sub>\<a> : ar AA \<rightarrow> ar BB"
-    by (simp! add: functor_def functor_axioms_def)
-  thus ?thesis 
-    by (rule funcset_mem)
+    by (simp add: functor_def functor_axioms_def)
+  from this and `f \<in> ar AA`
+  show ?thesis by (rule funcset_mem)
 qed
 
 
@@ -112,22 +112,22 @@ qed
 
 lemma functors_preserve_objects [intro]:
   assumes "Functor F : AA \<longrightarrow> BB"
-  and "A \<in> ob AA"
+    and "A \<in> ob AA"
   shows "F\<^sub>\<o> A \<in> ob BB"
 proof-
+  from `Functor F : AA \<longrightarrow> BB`
   have "F\<^sub>\<o> : ob AA \<rightarrow> ob BB"
-    by (simp! add: functor_def functor_axioms_def)
-  thus ?thesis 
-    by (rule funcset_mem)
+    by (simp add: functor_def functor_axioms_def)
+  from this and `A \<in> ob AA`
+  show ?thesis by (rule funcset_mem)
 qed
-
 
 
 subsection {* Identity Functor *}
 
-constdefs
-  id_func :: "('o,'a,'m) category_scheme \<Rightarrow> ('o,'a,'o,'a) functor"
-  "id_func CC \<equiv> \<lparr>om=(\<lambda>A\<in>ob CC. A), am=(\<lambda>f\<in>ar CC. f)\<rparr>"
+definition
+  id_func :: "('o,'a,'m) category_scheme \<Rightarrow> ('o,'a,'o,'a) functor" where
+  "id_func CC = \<lparr>om=(\<lambda>A\<in>ob CC. A), am=(\<lambda>f\<in>ar CC. f)\<rparr>"
 
 locale one_cat = two_cats +
   assumes endo: "BB = AA"
@@ -144,14 +144,14 @@ lemma (in one_cat) id_func_preserves_objects:
 
 lemma (in one_cat) id_func_preserves_dom:
   shows  "preserves_dom (id_func AA)"
-apply (unfold preserves_dom_def, simp only: endo)
+unfolding preserves_dom_def endo
 proof
   fix f
-  assume "f \<in> Ar"
+  assume f: "f \<in> Ar"
   hence lhs: "(id_func AA)\<^sub>\<o> (Dom f) = Dom f"
     by (simp add: id_func_def) auto
   have "(id_func AA)\<^sub>\<a> f = f"
-    by (simp! add: id_func_def)
+    using f by (simp add: id_func_def)
   hence rhs: "Dom (id_func AA)\<^sub>\<a> f = Dom f"
     by simp
   from lhs and rhs show "(id_func AA)\<^sub>\<o> (Dom f) = Dom (id_func AA)\<^sub>\<a> f"
@@ -163,11 +163,11 @@ lemma (in one_cat) id_func_preserves_cod:
 apply (unfold preserves_cod_def, simp only: endo)
 proof
   fix f
-  assume "f \<in> Ar"
+  assume f: "f \<in> Ar"
   hence lhs: "(id_func AA)\<^sub>\<o> (Cod f) = Cod f"
     by (simp add: id_func_def) auto
   have "(id_func AA)\<^sub>\<a> f = f"
-    by (simp! add: id_func_def)
+    using f by (simp add: id_func_def)
   hence rhs: "Cod (id_func AA)\<^sub>\<a> f = Cod f"
     by simp
   from lhs and rhs show "(id_func AA)\<^sub>\<o> (Cod f) = Cod (id_func AA)\<^sub>\<a> f"
@@ -177,14 +177,14 @@ qed
 
 lemma (in one_cat) id_func_preserves_id:
   "preserves_id (id_func AA)"
-apply (unfold preserves_id_def, simp only: endo)
+unfolding preserves_id_def endo
 proof
   fix A
-  assume "A \<in> Ob"
+  assume A: "A \<in> Ob"
   hence lhs: "(id_func AA)\<^sub>\<a> (Id A) = Id A"
     by (simp add: id_func_def) auto
   have "(id_func AA)\<^sub>\<o> A = A"
-    by (simp! add: id_func_def)
+    using A by (simp add: id_func_def)
   hence rhs: "Id ((id_func AA)\<^sub>\<o> A) = Id A"
     by simp
   from lhs and rhs show "(id_func AA)\<^sub>\<a> (Id A) = Id ((id_func AA)\<^sub>\<o> A)"
@@ -194,17 +194,17 @@ qed
 
 lemma (in one_cat) id_func_preserves_comp:
   "preserves_comp (id_func AA)"
-apply (unfold preserves_comp_def, simp only: endo)
+unfolding preserves_comp_def endo
 proof (intro ballI impI)
   fix f and g
-  assume "f \<in> Ar" and "g \<in> Ar" and "Cod f = Dom g"
-  have "g \<bullet> f \<in> Ar" ..
+  assume f: "f \<in> Ar" and g: "g \<in> Ar" and "Cod f = Dom g"
+  then have "g \<bullet> f \<in> Ar" ..
   hence lhs: "(id_func AA)\<^sub>\<a> (g \<bullet> f) = g \<bullet> f"
     by (simp add: id_func_def)
   have id_f: "(id_func AA)\<^sub>\<a> f = f"
-    by (simp! add: id_func_def)
+    using f by (simp add: id_func_def)
   have id_g: "(id_func AA)\<^sub>\<a> g = g"
-    by (simp! add: id_func_def)
+    using g by (simp add: id_func_def)
   hence rhs: "(id_func AA)\<^sub>\<a> g \<bullet> (id_func AA)\<^sub>\<a> f = g \<bullet> f"
     by (simp add: id_f id_g)
   from lhs and rhs 
@@ -222,8 +222,8 @@ proof-
     and id_func_preserves_id
     and id_func_preserves_comp
   show ?thesis
-    by unfold_locales (simp_all! add: endo)
+    by unfold_locales (simp_all add: endo preserves_dom_def
+      preserves_cod_def preserves_id_def preserves_comp_def)
 qed
-
 
 end
