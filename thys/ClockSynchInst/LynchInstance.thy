@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: LynchInstance.thy,v 1.8 2006-08-31 12:11:45 webertj Exp $
+    ID:          $Id: LynchInstance.thy,v 1.9 2007-06-13 20:29:54 makarius Exp $
     Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
@@ -30,27 +30,21 @@ subsubsection {* Some constants *}
 
 text{* Here we define some parameters of the algorithm that we use:
 the number of process and the number of lowest and highest readed
-values that the algorithm discards.  *}
+values that the algorithm discards. The defined constants must satisfy
+this axiom. If not, the algorithm cannot obtain the maximum and
+minimum value, because it will have discarded all the values. *}
 
-consts
-  np  :: nat  -- "Number of processes"
-  khl :: nat  -- "Number of lowest and highest values"
-
-
-text {* The defined constants must satisfy this axiom. If not, the
-algorithm cannot obtain the maximum and minimum value, because it will
-have discarded all the values. *}
-
-axioms
+axiomatization
+  np  :: nat  -- "Number of processes" and
+  khl :: nat  -- "Number of lowest and highest values" where
   constants_ax: "2 * khl < np"
 
 text {* We define also the set of process that the algorithm
 manage. This definition exist only for readability matters. *}
 
-constdefs
-PR :: "process set"
-"PR \<equiv>  {..<np}"
-declare PR_def[simp]
+definition
+PR :: "process set" where
+[simp]: "PR = {..<np}"
 
 
 subsubsection {* Convergence function *}
@@ -71,13 +65,15 @@ description operator @{text SOME} in Isabelle) because in this way the
 formalization is not fixed to a particular eleccion of the processes's
 readings to discards and then the modelization is more general. *}
 
-constdefs
-kmax :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarrow> process set"
-"kmax f P \<equiv> SOME S. S \<subseteq> P \<and> card S = khl \<and> 
-                (\<forall> i\<in>S. \<forall> j\<in>(P-S). f j <= f i)"
-kmin :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarrow> process set"
-"kmin f P \<equiv> SOME S. S \<subseteq> P \<and> card S = khl \<and> 
-                (\<forall> i\<in>S. \<forall> j\<in>(P-S). f i <= f j)"
+definition
+kmax :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarrow> process set" where
+"kmax f P = (SOME S. S \<subseteq> P \<and> card S = khl \<and> 
+                (\<forall> i\<in>S. \<forall> j\<in>(P-S). f j <= f i))"
+
+definition
+kmin :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarrow> process set" where
+"kmin f P = (SOME S. S \<subseteq> P \<and> card S = khl \<and> 
+                (\<forall> i\<in>S. \<forall> j\<in>(P-S). f i <= f j))"
 
 text {* With the previus functions we define a new one @{term
 reduce}\footnote{The name of this function was taken from
@@ -86,17 +82,18 @@ processes and return de set of readings of the not dicarded
 processes. In order to define this function we use the image operator
 (@{term "op `"}) of Isabelle.*}
 
-constdefs
-reduce :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarrow> Clocktime set"
-"reduce f P \<equiv> f ` (P - (kmax f P \<union> kmin f P))"
+definition
+reduce :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarrow> Clocktime set" where
+"reduce f P = f ` (P - (kmax f P \<union> kmin f P))"
 
 text {* And finally the convergence function. This is defined with the
 builtin @{term Max} and @{term Min} functions of Isabelle.
 *}
 
-constdefs
-cfnl :: "process  \<Rightarrow> (process \<Rightarrow> Clocktime) \<Rightarrow> Clocktime"
-"cfnl p f \<equiv> (Max (reduce f PR) + Min (reduce f PR)) / 2"
+definition
+cfnl :: "process  \<Rightarrow> (process \<Rightarrow> Clocktime) \<Rightarrow> Clocktime" where
+"cfnl p f = (Max (reduce f PR) + Min (reduce f PR)) / 2"
+
 
 subsection {* Translation Invariance property.*}
 
@@ -166,9 +163,7 @@ qed
 text {* This trivial lemma is needed by the next two. *}
 
 lemma khl_bound: "khl < np"
-proof -
-from constants_ax show ?thesis by arith
-qed
+  using constants_ax by arith
 
 text {* The next two lemmas prove that de functions kmin and kmax
 return some values that satisfy their definition. This is not trivial
@@ -489,27 +484,18 @@ assumes
   finitA: "finite A" and 
   Bss: "B \<subseteq> A" and Css: "C \<subseteq> A" and 
   cardH: "card A + k <= card B + card C"
-shows
-  "k <= card (B \<inter> C)"
+shows "k <= card (B \<inter> C)"
 proof-
   from Bss Css have "B \<union> C \<subseteq> A" by blast
-  hence "card (B \<union> C) <= card A"
-    proof (intro card_mono)
-      from Bss Css
-      show ?this 
-	by simp
-    qed
+  with finitA have "card (B \<union> C) <= card A"
+    by (simp add: card_mono)
   with cardH have
-    h: "k <= card B + card C - card (B \<union> C)" 
+      h: "k <= card B + card C - card (B \<union> C)" 
     by arith
-  then 
-  show ?thesis 
-  proof-
-    from finitA Bss Css and finite_subset 
-    have "finite B \<and> finite C" by auto
-    thus ?thesis
-      using card_Un_Int and h by force
-  qed
+  from finitA Bss Css and finite_subset 
+  have "finite B \<and> finite C" by auto
+  thus ?thesis
+    using card_Un_Int and h by force
 qed
 
 text {*This lemma is a trivial consecuence of the previous one. With
@@ -606,7 +592,7 @@ property. This has been proved in ICS. The proof is in the appendix
 \ref{sec:abs_distrib_mult}.  This cannot be prove by a simple @{text
 arith} or @{text auto} tactic. *}
 
-text{* This lemma is true also with 0 <= c !! *}
+text{* This lemma is true also with @{text "0 <= c"} !! *}
 
 
 lemma abs_distrib_div:
@@ -745,7 +731,7 @@ proof-
   proof(rule pigeonhole)
     show "finite PR" by simp
   next
-    show "C \<subseteq> PR" .
+    show "C \<subseteq> PR" by fact
   next
     show "PR - kmin f PR \<subseteq> PR" by blast
   next

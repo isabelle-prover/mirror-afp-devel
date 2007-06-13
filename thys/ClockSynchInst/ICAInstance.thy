@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: ICAInstance.thy,v 1.5 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: ICAInstance.thy,v 1.6 2007-06-13 20:29:54 makarius Exp $
     Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
@@ -34,26 +34,22 @@ subsubsection {* Some constants *}
 text{* Here we define some parameters of the algorithm that we use:
 the number of process and the fix value that is used to discard the
 processes whose clocks differ more than this amount from the own one
-(see \cite{shankar92mechanical}).  *}
+(see \cite{shankar92mechanical}). The defined constants must satisfy
+this axiom (if $np = 0$ we have a division by cero in the definition
+of the convergence function).  *}
 
-consts
-  np :: nat      -- "Number of processes"
-  \<Delta> :: Clocktime -- "Fix value to discard processes"
-
-text {* The defined constants must satisfy this axiom (if $np = 0$ we
-have a division by cero in the definition of the convergence
-function). *}
-
-axioms
+axiomatization
+  np :: nat      -- "Number of processes" and
+  \<Delta> :: Clocktime -- "Fix value to discard processes" where
   constants_ax: "0 <= \<Delta> \<and> 0 < np" 
 
 text {* We define also the set of process that the algorithm
 manage. This definition exist only for readability matters. *}
 
-constdefs
-PR :: "process set"
-"PR \<equiv>  {..<np}"
-declare PR_def[simp]
+definition
+PR :: "process set" where
+[simp]: "PR = {..<np}"
+
 
 subsubsection {* Convergence function *}
 
@@ -70,19 +66,19 @@ clock readings and two processes, and return de reading of the second
 process if the difference of the readings is grater than @{term \<Delta>},
 otherwise it returns the reading of the first one. *}
 
-constdefs
-  fiX :: "[(process \<Rightarrow> Clocktime), process, process] \<Rightarrow> Clocktime"
-  "fiX f p l \<equiv> if \<bar>f p - f l\<bar> <= \<Delta> then (f l) else (f p)" 
+definition
+  fiX :: "[(process \<Rightarrow> Clocktime), process, process] \<Rightarrow> Clocktime" where
+  "fiX f p l = (if \<bar>f p - f l\<bar> <= \<Delta> then (f l) else (f p))"
 
 text {* And finally the convergence function. This is defined with the
 builtin generalized summation over a set constructor of Isabelle.
 Also we had to use the overloaded @{term real} function to typecast de
 number @{term np}. *}
 
-constdefs
+definition
   (* The averaging function to calculate clock adjustment *)
-  cfni :: "[process, (process \<Rightarrow> Clocktime)] \<Rightarrow> Clocktime"
-  "cfni p f \<equiv> (\<Sum> l\<in>{..<np}. fiX f p l) / (real np)"
+  cfni :: "[process, (process \<Rightarrow> Clocktime)] \<Rightarrow> Clocktime" where
+  "cfni p f = (\<Sum> l\<in>{..<np}. fiX f p l) / (real np)"
 
 subsection {* Translation Invariance property.*}
 
