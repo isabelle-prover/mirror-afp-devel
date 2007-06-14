@@ -1,18 +1,16 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.5 2006-10-10 17:24:00 makarius Exp $
+    ID:         $Id: LList2.thy,v 1.6 2007-06-14 12:54:52 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
 
-More on llists.
 Llists over an alphabet.
 Common operations on LLists (ltake, ldrop, lnth).
 The prefix order of llists.
 Safety and liveness.
-
 *)
 
-header{*\isaheader{LList2}*}
+header{* More on llists *}
 
 theory LList2 imports LList begin
 
@@ -731,8 +729,10 @@ proof (induct "i", simp)
 qed
 
 lemma ldrop_fun: "\<And>t. t \<up> i !! j = t!!(i + j)"
-proof (induct "i", simp)
-  case (Suc k) show ?case
+proof (induct i)
+  case 0 thus ?case by simp
+next
+  case (Suc k) then show ?case
     by (cases "t") auto
 qed
 

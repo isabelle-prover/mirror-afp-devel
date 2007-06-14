@@ -1,14 +1,11 @@
 (*  Title:      LList_Topology.thy
-    ID:         $Id: LList_Topology.thy,v 1.5 2006-11-09 10:29:24 makarius Exp $
+    ID:         $Id: LList_Topology.thy,v 1.6 2007-06-14 12:54:51 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
-
-The topology of llists.
-
 *)
 
-header {*\isaheader{LList\_Topology}*}
+header {* The topology of llists *}
 
 theory LList_Topology imports Topology "../Lazy-Lists-II/LList2" begin
 
@@ -24,10 +21,9 @@ text{*
   property can be represented as an intersection of a safety property
   and a liveness property.*}
 
-constdefs
-
-  ttop :: "'a set \<Rightarrow> 'a llist top"
-  "ttop A \<equiv> topo (\<Union> s\<in>A\<^sup>\<star>. {suff A s})"
+definition
+  ttop :: "'a set \<Rightarrow> 'a llist top" where
+  "ttop A = topo (\<Union> s\<in>A\<^sup>\<star>. {suff A s})"
 
 lemma ttop_topology [iff]: "topology (ttop A)"
   by (auto simp: ttop_def)
@@ -209,10 +205,9 @@ qed
 
 section{*The topology of infinite llists*}
 
-constdefs
-
-  itop :: "'a set \<Rightarrow> 'a llist top"
-  "itop A \<equiv> topo (\<Union> s\<in>A\<^sup>\<star>. {infsuff A s})"
+definition
+  itop :: "'a set \<Rightarrow> 'a llist top" where
+  "itop A = topo (\<Union> s\<in>A\<^sup>\<star>. {infsuff A s})"
 
 
 locale infsuffixes = var A + var B +
@@ -493,9 +488,8 @@ qed
 
 section{*The topology of non-empty llists*}
 
-constdefs
-
-  ptop :: "'a set \<Rightarrow> 'a llist top"
+definition
+  ptop :: "'a set \<Rightarrow> 'a llist top" where
   "ptop A \<equiv> topo (\<Union> s\<in>A\<^sup>\<clubsuit>. {suff A s})"
 
 

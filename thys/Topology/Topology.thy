@@ -1,14 +1,11 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.7 2006-07-04 12:48:20 ballarin Exp $
+    ID:         $Id: Topology.thy,v 1.8 2007-06-14 12:54:52 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
-
-A bit of general topology.
 *)
 
-header {*\isaheader{Topology}*}
-
+header {* A bit of general topology *}
 
 theory Topology imports FuncSet Zorn begin
 
@@ -62,12 +59,13 @@ types
   'a top = "'a set set"
 
 
-constdefs
-  carr :: "'a top \<Rightarrow> 'a set" ("carrier\<index>")
-  "carr T \<equiv> \<Union>T"
+definition
+  carr :: "'a top \<Rightarrow> 'a set" ("carrier\<index>") where
+  "carr T = \<Union>T"
 
-  is_open :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool" ("_ open\<index>" [50] 50)
-  "is_open T s \<equiv> s \<in> T"
+definition
+  is_open :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool" ("_ open\<index>" [50] 50) where
+  "is_open T s \<longleftrightarrow> s \<in> T"
 
 
 locale carrier =
@@ -327,22 +325,26 @@ next
 qed
 
 text{* Sample topologies *}
-constdefs
 
-  trivial_top :: "'a top"
-  "trivial_top \<equiv> {{}}"
+definition
+  trivial_top :: "'a top" where
+  "trivial_top = {{}}"
 
-  discrete_top :: "'a set \<Rightarrow> 'a set set"
-  "discrete_top X \<equiv> Pow X"
+definition
+  discrete_top :: "'a set \<Rightarrow> 'a set set" where
+  "discrete_top X = Pow X"
 
-  indiscrete_top :: "'a set \<Rightarrow> 'a set set"
-  "indiscrete_top X \<equiv> { {}, X }"
+definition
+  indiscrete_top :: "'a set \<Rightarrow> 'a set set" where
+  "indiscrete_top X = {{}, X}"
 
-  order_base :: "('a::order) set \<Rightarrow> 'a set set"
-  "order_base A \<equiv> \<Union>x\<in>A. {{y. y \<in> A \<and> x \<le> y}}"
+definition
+  order_base :: "('a::order) set \<Rightarrow> 'a set set" where
+  "order_base A = (\<Union>x\<in>A. {{y. y \<in> A \<and> x \<le> y}})"
 
-  order_top :: "('a::order) set \<Rightarrow> 'a set set"
-  "order_top X \<equiv> topo(order_base X)"
+definition
+  order_top :: "('a::order) set \<Rightarrow> 'a set set" where
+  "order_top X = topo(order_base X)"
 
 locale trivial = carrier +
   defines "T \<equiv> {{}}"
@@ -419,10 +421,9 @@ lemma ordertop_topology [iff]:
 
 section{*Neighbourhoods*}
 
-constdefs
-
-  nhd :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set set"  ( "nhds\<index>")
-  "nhd T x \<equiv> {U. U \<subseteq> carr T \<and> (\<exists> m. is_open T m \<and> x\<in>m \<and> m \<subseteq> U)}"
+definition
+  nhd :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set set"  ( "nhds\<index>") where
+  "nhd T x = {U. U \<subseteq> carr T \<and> (\<exists> m. is_open T m \<and> x\<in>m \<and> m \<subseteq> U)}"
 
 lemma (in carrier) nhdI [intro]:
   "\<lbrakk> U \<subseteq> carrier; m open; x \<in> m; m \<subseteq> U \<rbrakk> \<Longrightarrow>  U \<in> nhds x"
@@ -507,9 +508,9 @@ section{*Closed sets*}
 
 text{* A set is closed if its complement is open. *}
 
-constdefs
-  is_closed :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool" ("_ closed\<index>" [50] 50)
-  "is_closed T s \<equiv> is_open T (carr T - s)"
+definition
+  is_closed :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool" ("_ closed\<index>" [50] 50) where
+  "is_closed T s \<longleftrightarrow> is_open T (carr T - s)"
 
 lemma (in carrier) closedI:
   "(carrier - s) open \<Longrightarrow> s closed"
@@ -601,15 +602,17 @@ qed
 
 section{*Core, closure, and frontier of a set*}
 
-constdefs
-  cor :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("core\<index>")
-  "cor T s \<equiv> \<Union>{m. is_open T m \<and> m \<subseteq> s}"
+definition
+  cor :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("core\<index>") where
+  "cor T s = (\<Union>{m. is_open T m \<and> m \<subseteq> s})"
 
-  clsr :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("closure\<index>")
-  "clsr T a \<equiv> \<Inter>{c. is_closed T c \<and> a \<subseteq> c}"
+definition
+  clsr :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("closure\<index>") where
+  "clsr T a = (\<Inter>{c. is_closed T c \<and> a \<subseteq> c})"
 
-  frt :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("frontier\<index>")
-  "frt T s \<equiv> clsr T s - cor T s"
+definition
+  frt :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("frontier\<index>") where
+  "frt T s = clsr T s - cor T s"
 
 
 subsection{* Core *}
@@ -787,9 +790,9 @@ qed
 
 subsection{*Adherent points*}
 
-constdefs
-  adhs :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool"     (infix "adh\<index>" 50)
-  "adhs T x A \<equiv> \<forall> U \<in> nhd T x. U \<inter> A \<noteq> {}"
+definition
+  adhs :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool"     (infix "adh\<index>" 50) where
+  "adhs T x A \<longleftrightarrow> (\<forall> U \<in> nhd T x. U \<inter> A \<noteq> {})"
 
 lemma (in carrier) adhCE [elim?]:
 "\<lbrakk>x adh A;  U \<notin> nhds x \<Longrightarrow> R; U \<inter> A \<noteq> {}  \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
@@ -931,13 +934,13 @@ qed
 
 section{*Dense sets*}
 
-constdefs
+definition
+  is_densein :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "densein\<index>" 50) where
+  "is_densein T A B \<longleftrightarrow> B \<subseteq> clsr T A"
 
-  is_densein :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "densein\<index>" 50)
-  "is_densein T A B \<equiv> B \<subseteq> clsr T A"
-
-  is_dense :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool"             ("_ dense\<index>" [50] 50)
-  "is_dense T A \<equiv> is_densein T A (carr T)"
+definition
+  is_dense :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool"             ("_ dense\<index>" [50] 50) where
+  "is_dense T A = is_densein T A (carr T)"
 
 
 lemma (in carrier) densinI [intro!]: "B \<subseteq> closure A \<Longrightarrow> A densein B"
@@ -997,29 +1000,34 @@ qed
 section{*Continuous functions*}
 
 
-constdefs
+definition
+  INJ :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'b) set" where
+  "INJ A B = {f. f : A \<rightarrow> B \<and> inj_on f A}"
 
-  INJ :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'b) set"
-  "INJ A B \<equiv> {f. f : A \<rightarrow> B \<and> inj_on f A}"
+definition
+  SUR :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'b) set" where
+  "SUR A B = {f. f : A \<rightarrow> B \<and> (\<forall> y\<in>B. \<exists> x\<in>A. y = f x)}"
 
-  SUR :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'b) set"
-  "SUR A B \<equiv> {f. f : A \<rightarrow> B \<and> (\<forall> y\<in>B. \<exists> x\<in>A. y = f x)}"
+definition
+  BIJ :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'b) set" where
+  "BIJ A B = INJ A B \<inter> SUR A B"
 
-  BIJ :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'b) set"
-  "BIJ A B \<equiv> INJ A B \<inter> SUR A B"
-
-  cnt :: "'a top \<Rightarrow> 'b top \<Rightarrow> ('a \<Rightarrow> 'b) set"
-  "cnt S T \<equiv> {f. f : carr S \<rightarrow> carr T \<and>
+definition
+  cnt :: "'a top \<Rightarrow> 'b top \<Rightarrow> ('a \<Rightarrow> 'b) set" where
+  "cnt S T = {f. f : carr S \<rightarrow> carr T \<and>
                 (\<forall> m. is_open T m \<longrightarrow> is_open S (carr S \<inter> (f -` m)))}"
 
-  HOM :: " 'a top \<Rightarrow> 'b top \<Rightarrow> ('a \<Rightarrow> 'b) set"
-  "HOM S T \<equiv> {f. f \<in> cnt S T \<and> inv f \<in> cnt T S \<and> f \<in> BIJ (carr S) (carr T)}"
+definition
+  HOM :: " 'a top \<Rightarrow> 'b top \<Rightarrow> ('a \<Rightarrow> 'b) set" where
+  "HOM S T = {f. f \<in> cnt S T \<and> inv f \<in> cnt T S \<and> f \<in> BIJ (carr S) (carr T)}"
 
-  homeo :: "'a top \<Rightarrow> 'b top \<Rightarrow> bool"
-  "homeo S T \<equiv> \<exists>h \<in> BIJ (carr S) (carr T). h \<in> cnt S T \<and> inv h \<in> cnt T S"
+definition
+  homeo :: "'a top \<Rightarrow> 'b top \<Rightarrow> bool" where
+  "homeo S T \<longleftrightarrow> (\<exists>h \<in> BIJ (carr S) (carr T). h \<in> cnt S T \<and> inv h \<in> cnt T S)"
 
-  fimg :: "'b top \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a set set \<Rightarrow> 'b set set"
-  "fimg T f F \<equiv> {v. v \<subseteq> carr T \<and> (\<exists> u \<in> F. f`u \<subseteq> v)}"
+definition
+  fimg :: "'b top \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a set set \<Rightarrow> 'b set set" where
+  "fimg T f F = {v. v \<subseteq> carr T \<and> (\<exists> u \<in> F. f`u \<subseteq> v)}"
 
 
 lemma domain_subset_vimage:
@@ -1134,7 +1142,7 @@ lemma continuousI2:
   assumes R: "\<And>c. \<lbrakk> c \<subseteq> carrier\<^sub>2; c closed\<^sub>2 \<rbrakk> \<Longrightarrow> f -` c closed"
   shows "continuous f S T"
 proof (rule continuous.intro)
-  show "func f S T" by (auto simp: func_def)
+  from func show "func f S T" by (auto simp: func_def)
 next
   show "continuous_axioms f S T"
   proof (rule continuous_axioms.intro)
@@ -1186,19 +1194,20 @@ lemma (in indiscrete) continuous:
 
 section{*Filters*}
 
-constdefs
-
-  fbas :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("fbase\<index>")
-  "fbas T B \<equiv> {} \<notin> B \<and> B \<noteq> {} \<and>
+definition
+  fbas :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("fbase\<index>") where
+  "fbas T B \<longleftrightarrow> {} \<notin> B \<and> B \<noteq> {} \<and>
               (\<forall> a\<in>B. \<forall> b\<in>B. \<exists> c\<in>B. c \<subseteq> a \<inter> b)"
 
-  filters :: "'a top \<Rightarrow> 'a set set set"      ("Filters\<index>")
-  "filters T \<equiv> { F. {} \<notin> F \<and> \<Union>F \<subseteq> carr T \<and>
+definition
+  filters :: "'a top \<Rightarrow> 'a set set set"      ("Filters\<index>") where
+  "filters T = { F. {} \<notin> F \<and> \<Union>F \<subseteq> carr T \<and>
                 (\<forall> A B. A\<in>F \<and> B\<in>F \<longrightarrow> A\<inter>B \<in> F) \<and>
                 (\<forall> A B. A\<in>F \<and> A\<subseteq>B \<and> B \<subseteq> carr T \<longrightarrow> B \<in> F) }"
 
-  ultr :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool"      ("ultra\<index>")
-  "ultr T F \<equiv> \<forall> A. A \<subseteq> carr T \<longrightarrow> A \<in> F \<or> (carr T - A) \<in> F"
+definition
+  ultr :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool"      ("ultra\<index>") where
+  "ultr T F \<longleftrightarrow> (\<forall> A. A \<subseteq> carr T \<longrightarrow> A \<in> F \<or> (carr T - A) \<in> F)"
 
 lemma filtersI [intro]:
   includes carrier
@@ -1481,21 +1490,24 @@ qed
 section {* Convergence *}
 
 
-syntax (xsymbols)
-  converges :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<turnstile> _ \<longrightarrow> _)" [55, 55, 55] 55)
+definition
+  converges :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a \<Rightarrow> bool" ("(_ -\<longrightarrow>\<index> _)" [55, 55] 55) where
+  "converges T F x \<longleftrightarrow> nhd T x \<subseteq> F"
 
-constdefs
-  converges :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a \<Rightarrow> bool" ("(_ -\<longrightarrow>\<index> _)" [55, 55] 55)
-  "converges T F x \<equiv> nhd T x \<subseteq> F"
+notation (xsymbols)
+  converges  ("(_ \<turnstile> _ \<longrightarrow> _)" [55, 55, 55] 55)
 
-  cnvgnt :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("_ convergent\<index>" [50] 50)
-  "cnvgnt T F \<equiv> \<exists> x \<in> carr T. converges T F x"
+definition
+  cnvgnt :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("_ convergent\<index>" [50] 50) where
+  "cnvgnt T F \<longleftrightarrow> (\<exists> x \<in> carr T. converges T F x)"
 
-  limites :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a set" ("lims\<index>")
-  "limites T F \<equiv> {x. x \<in> carr T \<and> T \<turnstile> F \<longrightarrow> x}"
+definition
+  limites :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a set" ("lims\<index>") where
+  "limites T F = {x. x \<in> carr T \<and> T \<turnstile> F \<longrightarrow> x}"
 
-  limes :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a" ("lim\<index>")
-  "limes T F \<equiv> THE x. x \<in> carr T \<and> T \<turnstile> F \<longrightarrow> x"
+definition
+  limes :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a" ("lim\<index>") where
+  "limes T F = (THE x. x \<in> carr T \<and> T \<turnstile> F \<longrightarrow> x)"
 
 
 lemma (in carrier) convergesI [intro]:
@@ -1849,7 +1861,7 @@ next
     moreover have "?E -\<longrightarrow> x"
     proof (rule, rule)
       fix w assume "w \<in> nhds x"
-      moreover have "carrier \<in> nhds y" ..
+      moreover have "carrier \<in> nhds y" using `y \<in> carrier` ..
       moreover have "w \<inter> carrier \<subseteq> w" by auto
       ultimately show "w \<in> ?E" by auto
     qed
@@ -1857,7 +1869,7 @@ next
     moreover have "?E -\<longrightarrow> y"
     proof (rule, rule)
       fix w assume "w \<in> nhds y"
-      moreover have "carrier \<in> nhds x" ..
+      moreover have "carrier \<in> nhds x" using `x \<in> carrier` ..
       moreover have "w \<inter> carrier \<subseteq> w" by auto
       ultimately show "w \<in> ?E" by auto
     qed
@@ -1960,16 +1972,17 @@ qed
 
 section{*Compactness*}
 
-constdefs
-  covers :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("_ covering\<index>" [50] 50)
-  "covers T D \<equiv> \<Union>D = carr T"
+definition
+  covers :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("_ covering\<index>" [50] 50) where
+  "covers T D = (\<Union>D = carr T)"
 
+definition
+  card_le :: "'a set \<Rightarrow> 'b set \<Rightarrow> bool" (infix "cardle" 50) where
+  "A cardle B \<longleftrightarrow> (\<exists>f. f \<in> SUR B A)"
 
-  card_le :: "'a set \<Rightarrow> 'b set \<Rightarrow> bool" (infix "cardle" 50)
-  "A cardle B \<equiv> \<exists>f. f \<in> SUR B A"
-
-  countable :: "'a set \<Rightarrow> bool"
-  "countable A \<equiv> A cardle Nat"
+definition
+  countable :: "'a set \<Rightarrow> bool" where
+  "countable A = A cardle Nat"
 
 lemma cardle_refl: "A cardle A"
 proof-
