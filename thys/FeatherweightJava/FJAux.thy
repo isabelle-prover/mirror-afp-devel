@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJAux.thy,v 1.5 2007-02-07 17:26:12 stefanberghofer Exp $
+    ID:          $Id: FJAux.thy,v 1.6 2007-06-14 12:18:05 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -254,7 +254,7 @@ next
   case (f_class C CDef CT Cf D Dg DgCf DgCf')
   hence f_class_inv: 
     "(CT C = Some CDef) \<and> (cSuper CDef = D) \<and> (cFields CDef = Cf)" 
-    and "CT OK" by fastsimp
+    and "CT OK" by fastsimp+
   hence c_not_obj:"C \<noteq> Object" by (force elim:ct_typing.elims)
   from f_class have flds:"fields(CT,C) = DgCf'" by fastsimp
   then obtain Dg' where 

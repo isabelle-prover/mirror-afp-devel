@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJDefs.thy,v 1.5 2006-09-28 21:20:39 makarius Exp $
+    ID:          $Id: FJDefs.thy,v 1.6 2007-06-14 12:18:05 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -37,12 +37,13 @@ types varCtx     = "varName \<rightharpoonup> className"
 
 subsubsection{* Constants *}
 
-consts 
-  Object :: "className"
-  this :: "varName"
-defs 
-  Object : "Object == 0"
-  this : "this == 0"
+definition
+  Object :: "className" where
+  "Object = 0"
+
+definition
+  this :: "varName" where
+  "this == 0"
 
 subsubsection {* Expressions *}
 
@@ -187,11 +188,13 @@ text{* This section contains several helper functions for reading off
 the names and types of variable definitions (e.g., in field
  and method parameter declarations). *}
 
-constdefs varDefs_names :: "varDef list \<Rightarrow> varName list"
- "varDefs_names == map vdName"
+definition
+  varDefs_names :: "varDef list \<Rightarrow> varName list" where
+  "varDefs_names = map vdName"
 
-constdefs varDefs_types :: "varDef list \<Rightarrow> className list"
-  "varDefs_types == map vdType"
+definition
+  varDefs_types :: "varDef list \<Rightarrow> className list" where
+  "varDefs_types = map vdType"
 
 subsection {* Subtyping Relation *}
 
@@ -388,9 +391,9 @@ typings of single expressions and of lists of expressions.
 lemma typing_induct:
   assumes "CT;\<Gamma> \<turnstile> e : C" (is ?T)
   and "\<And>C CT \<Gamma> x. \<Gamma> x = Some C \<Longrightarrow> P CT \<Gamma> (Var x) C" 
-  and "\<And>C0 CT Cf Ci \<Gamma> e0 fDef fi. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : C0; P CT \<Gamma> e0 C0; (CT, C0, Cf) \<in> FJDefs.fields; lookup Cf (\<lambda>fd. vdName fd = fi) = Some fDef; vdType fDef = Ci\<rbrakk> \<Longrightarrow> P CT \<Gamma> (FieldProj e0 fi) Ci" 
+  and "\<And>C0 CT Cf Ci \<Gamma> e0 fDef fi. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : C0; P CT \<Gamma> e0 C0; (CT, C0, Cf) \<in> fields; lookup Cf (\<lambda>fd. vdName fd = fi) = Some fDef; vdType fDef = Ci\<rbrakk> \<Longrightarrow> P CT \<Gamma> (FieldProj e0 fi) Ci" 
   and "\<And>C C0 CT Cs Ds \<Gamma> e0 es m. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : C0; P CT \<Gamma> e0 C0; (CT, m, C0, Ds, C) \<in> mtype; CT;\<Gamma> \<turnstile>+ es : Cs; \<And>i . \<lbrakk> i < length es \<rbrakk> \<Longrightarrow>  P CT \<Gamma> (es!i) (Cs!i); CT \<turnstile>+ Cs <: Ds; length es = length Ds\<rbrakk> \<Longrightarrow> P CT \<Gamma> (MethodInvk e0 m es) C"
-  and "\<And>C CT Cs Df Ds \<Gamma> es. \<lbrakk>(CT, C, Df) \<in> FJDefs.fields; length es = length Df; varDefs_types Df = Ds; CT;\<Gamma> \<turnstile>+ es : Cs; \<And>i. \<lbrakk> i < length es \<rbrakk> \<Longrightarrow> P CT \<Gamma> (es!i) (Cs!i); CT \<turnstile>+ Cs <: Ds\<rbrakk> \<Longrightarrow> P CT \<Gamma> (New C es) C"
+  and "\<And>C CT Cs Df Ds \<Gamma> es. \<lbrakk>(CT, C, Df) \<in> fields; length es = length Df; varDefs_types Df = Ds; CT;\<Gamma> \<turnstile>+ es : Cs; \<And>i. \<lbrakk> i < length es \<rbrakk> \<Longrightarrow> P CT \<Gamma> (es!i) (Cs!i); CT \<turnstile>+ Cs <: Ds\<rbrakk> \<Longrightarrow> P CT \<Gamma> (New C es) C"
   and "\<And>C CT D \<Gamma> e0. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : D; P CT \<Gamma> e0 D; CT \<turnstile> D <: C\<rbrakk> \<Longrightarrow> P CT \<Gamma> (Cast C e0) C" 
   and "\<And>C CT D \<Gamma> e0. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : D; P CT \<Gamma> e0 D; CT \<turnstile> C <: D; C \<noteq> D\<rbrakk> \<Longrightarrow> P CT \<Gamma> (Cast C e0) C"
   and "\<And>C CT D \<Gamma> e0. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : D; P CT \<Gamma> e0 D; CT \<turnstile> C \<not><: D; CT \<turnstile> D \<not><: C\<rbrakk> \<Longrightarrow> P CT \<Gamma> (Cast C e0) C" 
@@ -398,28 +401,30 @@ lemma typing_induct:
 proof -
   let ?IH="CT;\<Gamma> \<turnstile>+ es : Cs \<longrightarrow> (\<forall>i < length es.  P CT \<Gamma> (es!i) (Cs!i))"
   have "?IH \<and> (?T \<longrightarrow> ?P)"
-proof(induct rule:typings_typing.induct)
-  case (ts_nil CT \<Gamma>) show ?case by auto
-next;
-  case (ts_cons C0 CT Cs \<Gamma> e0 es) 
-  show ?case proof
-  fix i
-  show "i < length (e0#es) \<longrightarrow> P CT \<Gamma> ((e0#es)!i) ((C0#Cs)!i)" using ts_cons by(cases i, auto)
+  proof(induct rule:typings_typing.induct)
+    case (ts_nil CT \<Gamma>) show ?case by auto
+  next
+    case (ts_cons C0 CT Cs \<Gamma> e0 es) 
+    show ?case proof
+      fix i
+      show "i < length (e0#es) \<longrightarrow> P CT \<Gamma> ((e0#es)!i) ((C0#Cs)!i)" using ts_cons by(cases i, auto)
+    qed
+  next
+    case(t_var C CT \<Gamma> x) then show ?case using assms by auto
+  next
+    case(t_field C0 CT Cf e0 fDef fi) then show ?case using assms by auto
+  next
+    case(t_invk C C0 CT Cs Ds \<Gamma> e0 es m) then show ?case using assms by auto
+  next
+    case(t_new C CT D \<Gamma> e0) then show ?case using assms by auto
+  next
+    case(t_ucast C CT \<Gamma> e0) then show ?case using assms by auto
+  next
+    case(t_dcast C CT \<Gamma> e0) then show ?case using assms by auto
+  next
+    case(t_scast C CT \<Gamma> e0) then show ?case using assms by auto
   qed
-next
-  case(t_field C0 CT Cf e0 fDef fi) show ?case using prems by auto
-next
-  case(t_invk C C0 CT Cs Ds \<Gamma> e0 es m) show ?case using prems by auto
-next;
-  case(t_new C CT D \<Gamma> e0) show ?case using prems by auto
-next;
-  case(t_ucast C CT \<Gamma> e0) show ?case using prems by auto
-next;
-  case(t_dcast C CT \<Gamma> e0) show ?case using prems by auto
-next;
-  case(t_scast C CT \<Gamma> e0) show ?case using prems by auto
-qed
-thus ?thesis using prems by auto
+  thus ?thesis using assms by auto
 qed
 
 subsection {* Method Typing Relation *}

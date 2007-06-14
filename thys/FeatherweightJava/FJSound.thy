@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJSound.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: FJSound.thy,v 1.5 2007-06-14 12:18:05 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -356,7 +356,7 @@ next
   hence ct: "CT OK"
     and IH: "\<lbrakk>CT OK; (CT, m, Da, Ds, D) \<in> mtype\<rbrakk> 
     \<Longrightarrow> \<exists>D0 C0. (CT \<turnstile> Da <: D0) \<and> (CT \<turnstile> C0 <: D) 
-              \<and> (CT;[xs [\<mapsto>] Ds, this \<mapsto> D0] \<turnstile> e:C0)" by fastsimp
+              \<and> (CT;[xs [\<mapsto>] Ds, this \<mapsto> D0] \<turnstile> e:C0)" by fastsimp+
   from mb_super have c_sub_da: "CT \<turnstile> C <: Da" by (auto simp add:s_super)
   from mb_super have mt:"mtype(CT,m,Da) = Ds \<rightarrow> D" by (auto elim: mtype.elims)
   from IH[OF ct mt] obtain D0 C0 
@@ -378,7 +378,7 @@ theorem Thm_2_4_1:
   hence "CT;\<Gamma> \<turnstile> FieldProj (New Ca es) fi : C" 
     and ct_ok: "CT OK" 
     and flds: "fields(CT,Ca) = Cf" 
-    and lkup2: "lookup2 Cf es (\<lambda>fd. vdName fd = fi) = Some e'" by fastsimp
+    and lkup2: "lookup2 Cf es (\<lambda>fd. vdName fd = fi) = Some e'" by fastsimp+
   then obtain Ca' Cf' fDef 
     where new_typ: "CT;\<Gamma> \<turnstile> New Ca es : Ca'" 
     and flds':"fields(CT,Ca') = Cf'" 
@@ -450,7 +450,7 @@ next
     where "CT;\<Gamma> \<turnstile> e0' : C'" 
     and "CT \<turnstile> C' <: C0" by auto
   moreover from sub_fields[OF _ Cf_def] obtain Cf'
-    where "fields(CT,C') = (Cf@Cf')" ..
+    where "fields(CT,C') = (Cf@Cf')" by rule (rule `CT \<turnstile> C' <: C0`)
   moreover with fd_def have "lookup (Cf@Cf') (\<lambda>fd. (vdName fd = f)) = Some fd" 
     by(simp add:lookup_append)
   ultimately have "CT;\<Gamma> \<turnstile> FieldProj e0' f : C" by(auto simp add:typings_typing.t_field)
@@ -667,7 +667,7 @@ next
     case 1 thus "?Q []" by(auto intro:vals_val.intros)
     next
     case (2 h t Ch Ct)
-      hence h_t_typs: "CT;\<Gamma> \<turnstile>+ (h#t) : (Ch#Ct)"
+      with 5 have h_t_typs: "CT;\<Gamma> \<turnstile>+ (h#t) : (Ch#Ct)"
         and OIH: "\<And> i. \<lbrakk>i < length (h#t); CT;\<Gamma> \<turnstile> ((h#t)!i) : ((Ch#Ct)!i); \<Gamma> = empty\<rbrakk> \<Longrightarrow> ?IH ((h#t)!i)"
         and G_def: "\<Gamma> = empty"
         by auto
