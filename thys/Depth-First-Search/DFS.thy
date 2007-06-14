@@ -20,32 +20,33 @@ primrec
   "nexts [] n = []"
   "nexts (e#es) n = (if fst e = n then snd e # nexts es n else nexts es n)"
 
-constdefs
-  nextss :: "[graph, node list] \<Rightarrow> node set"
-  "nextss g xs \<equiv> set g `` set xs"
+definition
+  nextss :: "[graph, node list] \<Rightarrow> node set" where
+  "nextss g xs = set g `` set xs"
 
 lemma nexts_set: "y \<in> set (nexts g x) = ((x,y) \<in> set g)"
-  by (induct g, auto)
+  by (induct g) auto
 
 lemma nextss_Cons: "nextss g (x#xs) = set (nexts g x) \<union> nextss g xs" 
-  by(unfold nextss_def,auto simp add:Image_def nexts_set)
+  unfolding nextss_def by (auto simp add:Image_def nexts_set)
 
-constdefs
-  reachable :: "[graph, node list] \<Rightarrow> node set"
-  "reachable g xs \<equiv> (set g)\<^sup>* `` set xs"
+definition
+  reachable :: "[graph, node list] \<Rightarrow> node set" where
+  "reachable g xs = (set g)\<^sup>* `` set xs"
+
 
 subsection "Depth-First Search with Stack" 
 
-constdefs
-  nodes_of :: "graph \<Rightarrow> node set" 
-  "nodes_of g \<equiv> set (map fst g @ map snd g)"
+definition
+  nodes_of :: "graph \<Rightarrow> node set" where
+  "nodes_of g = set (map fst g @ map snd g)"
 
-lemma [rule_format, simp]: "x \<notin> nodes_of g \<longrightarrow> nexts g x = []"
-  by (induct g, auto simp add: nodes_of_def)
+lemma [simp]: "x \<notin> nodes_of g \<Longrightarrow> nexts g x = []"
+  by (induct g) (auto simp add: nodes_of_def)
 
-constdefs
-  dfs_rel :: "((graph * node list * node list) * (graph * node list * node list)) set"
-  "dfs_rel \<equiv> inv_image (finite_psubset <*lex*> less_than)  
+definition
+  dfs_rel :: "((graph * node list * node list) * (graph * node list * node list)) set" where
+  "dfs_rel = inv_image (finite_psubset <*lex*> less_than)  
                    (\<lambda>(g,xs,ys). (nodes_of g - set ys, size xs))"
 
 lemma dfs_rel_wf: "wf dfs_rel"
@@ -210,25 +211,27 @@ proof (intro allI impI)
 qed
 
 lemma dfs2_induct[induct type]:
-  assumes "\<And>g ys. P g [] ys" and
+  assumes B: "\<And>g ys. P g [] ys" and
   H: "\<And>g x xs ys.
         \<lbrakk>\<not> x mem ys \<longrightarrow> P g xs (dfs2 (g, nexts g x, x # ys));
          \<not> x mem ys \<longrightarrow> P g (nexts g x) (x # ys); x mem ys \<longrightarrow> P g xs ys\<rbrakk>
          \<Longrightarrow> P g (x # xs) ys"
   shows "P u v w"
 proof (induct u v w rule: dfs2.induct[OF dfs2_tc])
+  case 1 show ?case by (rule B)
+next
   case (2 g x xs ys)
   show ?case
   proof (rule H)
     show "\<not> x mem ys \<longrightarrow> P g xs (dfs2 (g, nexts g x, x # ys))"
     proof 
-      assume "\<not> x mem ys"
+      assume *: "\<not> x mem ys"
       have "set (x#ys) \<subseteq> set (dfs2 (g, nexts g x, x # ys))"
 	by (rule dfs2_inv)
-      thus "P g xs (dfs2 (g, nexts g x, x # ys))"
-	by (auto!)
+      with 2 * show "P g xs (dfs2 (g, nexts g x, x # ys))"
+	by auto
     qed
-  qed
+  qed (rule 2)+
 qed
 
 lemma dfs2_inductive[simp]:
@@ -245,15 +248,15 @@ proof -
 qed
 
 lemma dfs_app: "dfs (g, xs@ys, zs) = dfs (g, ys, dfs (g, xs, zs))"
-  by (induct g xs zs rule:dfs_induct, auto!)
+  by (induct g xs zs rule:dfs_induct) auto
 
 lemma "dfs2 (g, xs, ys) = dfs (g, xs, ys)" 
-  by (induct g xs ys rule:dfs2_induct, auto simp add: dfs_app)
+  by (induct g xs ys rule:dfs2_induct) (auto simp add: dfs_app)
 
 subsection "Basic Properties"
 
 lemma visit_subset_dfs: "set ys \<subseteq> set (dfs (g, xs, ys))"
-  by (induct g xs ys rule: dfs_induct, auto simp add: mem_iff)
+  by (induct g xs ys rule: dfs_induct) (auto simp add: mem_iff)
 
 lemma next_subset_dfs: "set xs \<subseteq> set (dfs (g, xs, ys))"
 proof(induct g xs ys rule:dfs_induct)
@@ -292,7 +295,7 @@ proof
     thus "x \<in> X"
       by (induct, auto! simp add: Image_def)
   qed
-qed (auto)
+qed auto
 
 lemma reachable_closed_dfs: "reachable g xs \<subseteq> set(dfs(g,xs,[]))"
 proof -
