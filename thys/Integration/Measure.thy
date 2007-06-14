@@ -3,7 +3,6 @@ header {*Preliminaries*}
 theory Measure
 imports Sigma_Algebra MonConv
 begin
-(*<*)
 
 (*We use a modified version of the simple Sigma_Algebra Theory by
 Markus Wenzel here,
@@ -13,9 +12,9 @@ text {* Now we are already set for the central concept of
   measure. The following definitions are translated as faithfully as possible
   from those in Joe Hurd's thesis \cite{hurd2002}. *}
 
-constdefs
-  measurable:: "'a set set \<Rightarrow> 'b set set \<Rightarrow> ('a \<Rightarrow> 'b) set"
-  "measurable F G \<equiv> {f. \<forall>g\<in>G. f -` g \<in> F}"
+definition
+  measurable:: "'a set set \<Rightarrow> 'b set set \<Rightarrow> ('a \<Rightarrow> 'b) set" where
+  "measurable F G = {f. \<forall>g\<in>G. f -` g \<in> F}"
 
 text {*So a function is called $F$-$G$-measurable if and only if the inverse
   image of any set in $G$ is in $F$. $F$ and $G$ are usually the sets of
@@ -25,12 +24,13 @@ text {*So a function is called $F$-$G$-measurable if and only if the inverse
   whole type universe and therefore omitted.}.*}
 
 
-(*<*)constdefs(*>*)
-  measurable_sets:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> 'a set set"
-  "measurable_sets \<equiv> fst"
+definition
+  measurable_sets:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> 'a set set" where
+  "measurable_sets = fst"
 
-  measure:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a set \<Rightarrow> real)"
-  "measure \<equiv> snd"
+definition
+  measure:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a set \<Rightarrow> real)" where
+  "measure = snd"
 
 text {*The other component is the measure itself. It is a function that
   assigns a nonnegative real number to every measurable set and has
@@ -38,17 +38,17 @@ text {*The other component is the measure itself. It is a function that
   countably additive for disjoint sets.*}
 
 
-(*<*)constdefs(*>*)
-  positive:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> bool"
-  "positive M \<equiv> measure M {} = 0 \<and> 
+definition
+  positive:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> bool" where
+  "positive M \<longleftrightarrow> measure M {} = 0 \<and> 
   (\<forall>A. A\<in> measurable_sets M \<longrightarrow> 0 \<le> measure M A)"
   (*Remark: This definition of measure space is not minimal,
   in the sense that the containment of the UNION in the measurable sets 
   is implied by the measurable sets being a sigma algebra*)
 
-constdefs
-  countably_additive:: "('a set set * ('a set => real)) => bool"
-  "countably_additive M \<equiv> (\<forall>f::(nat => 'a set). range f \<subseteq> measurable_sets M
+definition
+  countably_additive:: "('a set set * ('a set => real)) => bool" where
+  "countably_additive M \<longleftrightarrow> (\<forall>f::(nat => 'a set). range f \<subseteq> measurable_sets M
   \<and> (\<forall>m n. m \<noteq> n \<longrightarrow> f m \<inter> f n = {}) \<and>  (\<Union>i. f i) \<in> measurable_sets M
   \<longrightarrow> (\<lambda>n. measure M (f n)) sums  measure M (\<Union>i. f i))" 
 
@@ -72,9 +72,9 @@ text {*This last property deserves some comments. The conclusion is
   influential probability textbook \cite{Williams.mart}}. 
   *}
 
-(*<*)constdefs(*>*)
-  measure_space:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> bool"
-  "measure_space M \<equiv> sigma_algebra (measurable_sets M) \<and> 
+definition
+  measure_space:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> bool" where
+  "measure_space M \<longleftrightarrow> sigma_algebra (measurable_sets M) \<and> 
   positive M \<and> countably_additive M"
 
 text {*Note that our definition is restricted to finite measure
@@ -466,6 +466,5 @@ lemma measure_additive: assumes ms: "measure_space M"
     by (simp_all add: sums_unique)
   thus ?thesis by simp
 qed
-(*>*)
 (*>*)
 end

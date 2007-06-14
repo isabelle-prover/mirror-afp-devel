@@ -31,22 +31,26 @@ then a surjective
 delight, these functions could be reused for the simple
   function integral properties.*}
 
-constdefs 
-  n2_to_n:: "(nat * nat) \<Rightarrow> nat"
-  "n2_to_n pair \<equiv> let (n,m) = pair in (n+m) * Suc (n+m) div 2 + n"
+definition
+  n2_to_n:: "(nat * nat) \<Rightarrow> nat" where
+  "n2_to_n pair = (let (n,m) = pair in (n+m) * Suc (n+m) div 2 + n)"
 
-  n_to_n2::  "nat \<Rightarrow> (nat * nat)"
-  "n_to_n2 \<equiv> inv n2_to_n"
+definition
+  n_to_n2::  "nat \<Rightarrow> (nat * nat)" where
+  "n_to_n2 = inv n2_to_n"
 
-  n3_to_rat:: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> real"
-  "n3_to_rat a b c \<equiv> if 2 dvd a then real b / real c else - real b /real c"
+definition
+  n3_to_rat:: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> real" where
+  "n3_to_rat a b c = (if 2 dvd a then real b / real c else - real b /real c)"
 
-  n_to_rat:: "nat \<Rightarrow> real"
-  "n_to_rat n \<equiv> let (a,x) = n_to_n2 n ;  (b,c) = n_to_n2 x in
-  n3_to_rat a b c"
+definition
+  n_to_rat:: "nat \<Rightarrow> real" where
+  "n_to_rat n = (let (a,x) = n_to_n2 n ;  (b,c) = n_to_n2 x in
+    n3_to_rat a b c)"
 
-  Rats:: "real set" ("\<rat>")
-  "\<rat> \<equiv> range n_to_rat"
+definition
+  Rats:: "real set" ("\<rat>") where
+  "\<rat> = range n_to_rat"
 
 lemma dvd2_a_x_suc_a: "2 dvd a * (Suc a)" 
 (*<*)proof (cases "2 dvd a") 

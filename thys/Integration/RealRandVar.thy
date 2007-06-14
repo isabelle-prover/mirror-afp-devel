@@ -44,13 +44,15 @@ we need the Borel-\<sigma>-Algebra on the Reals*)
 (*The smallest \<sigma>-Algebra containing {..u} for all rational u is
   sufficient, but we use all real u for simplicity!*)
 
-constdefs
-  Borelsets:: "real set set" ("\<bool>")
-  "\<bool> \<equiv> sigma {S. \<exists>u. S={..u}}"
+definition
+  Borelsets:: "real set set" ("\<bool>") where
+  "\<bool> = sigma {S. \<exists>u. S={..u}}"
+
+definition
 (*We use Joe Hurd's formalism of a measure space (which assumes that 
   the universe is always the whole type universe)*)
-  rv:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a \<Rightarrow> real) set"
-  "rv M \<equiv> {f. measure_space M \<and> f \<in> measurable (measurable_sets M) \<bool>}"
+  rv:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a \<Rightarrow> real) set" where
+  "rv M = {f. measure_space M \<and> f \<in> measurable (measurable_sets M) \<bool>}"
 
 text {* As explained in the first paragraph, the preceding
   definitions\footnote{The notation $@{text"{..u}"}$ signifies the
@@ -79,12 +81,13 @@ text {* As explained in the first paragraph, the preceding
 (*Perhaps one day we will need distributions, this might be the right
 time to define them*)
 
-constdefs
+definition
   distribution:: 
-  "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> (real set \<Rightarrow> real)" ("law")
+  "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> (real set \<Rightarrow> real)" ("law") where
   "f \<in> rv M \<Longrightarrow> law M f \<equiv> (measure M) \<circ> (vimage f)"
 
-  characteristic_function:: "'a set \<Rightarrow> ('a \<Rightarrow> real)" ("\<chi>_"(*<*)[1000](*>*))
+definition
+  characteristic_function:: "'a set \<Rightarrow> ('a \<Rightarrow> real)" ("\<chi>_"(*<*)[1000](*>*)) where
   "\<chi>A x \<equiv> if x \<in> A then 1 else 0" 
 
 lemma char_empty: "\<chi>{} = (\<lambda>t. 0)"
@@ -200,7 +203,7 @@ proof -
       by (auto simp add: measurable_def vimage_def)
     with ms have "f \<in> measurable (measurable_sets M) \<bool>" 
       by (simp only: Borelsets_def measure_space_def measurable_lift)
-    thus ?thesis 
+    with ms show ?thesis 
       by (auto simp add: rv_def)
    txt{*\nopagebreak*}                            
   qed
@@ -745,15 +748,17 @@ text {* Before we end this chapter to start the formalization of the
   that they are random variables, provided that their argument
   functions are measurable. *}
 
-constdefs
-  nonnegative:: "('a \<Rightarrow> ('b::{ord,zero})) \<Rightarrow> bool"
-  "nonnegative f \<equiv> \<forall>x. 0 \<le> f x"
+definition
+  nonnegative:: "('a \<Rightarrow> ('b::{ord,zero})) \<Rightarrow> bool" where
+  "nonnegative f \<longleftrightarrow> (\<forall>x. 0 \<le> f x)"
 
-  positive_part:: "('a \<Rightarrow> ('b::{ord,zero})) \<Rightarrow> ('a \<Rightarrow> 'b)" ("pp")
-  "pp f x \<equiv> if 0\<le>f(x) then f x else 0"
+definition
+  positive_part:: "('a \<Rightarrow> ('b::{ord,zero})) \<Rightarrow> ('a \<Rightarrow> 'b)" ("pp") where
+  "pp f x = (if 0\<le>f(x) then f x else 0)"
 
-  negative_part:: "('a \<Rightarrow> ('b::{ord,zero,minus})) \<Rightarrow> ('a \<Rightarrow> 'b)" ("np")
-  "np f x \<equiv> if 0\<le>f(x) then 0 else -f(x)"
+definition
+  negative_part:: "('a \<Rightarrow> ('b::{ord,zero,minus})) \<Rightarrow> ('a \<Rightarrow> 'b)" ("np") where
+  "np f x = (if 0\<le>f(x) then 0 else -f(x))"
   (*useful lemmata about positive and negative parts*)
 lemma f_plus_minus: "((f x)::real) = pp f x - np f x" 
   by (simp add:positive_part_def negative_part_def)
@@ -872,7 +877,7 @@ proof -
       hence "{w. pp f w \<le> a} = {w. f w \<le> a}" 
 	by (auto simp add: positive_part_def)
       also note fm also
-      have "{w. np f w \<le> a} = {w. -a \<le> f w}" 
+      from True have "{w. np f w \<le> a} = {w. -a \<le> f w}" 
 	by (auto simp add: negative_part_def)
       moreover from ms f have "\<dots> \<in> measurable_sets M" 
 	by (simp add: rv_ge_iff)

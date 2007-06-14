@@ -256,7 +256,7 @@ proof cases
       and Bdis: "\<forall>i\<in>S. \<forall>j\<in>S. i \<noteq> j \<longrightarrow> B i \<inter> B j = {}" 
       and Bun: "(\<Union>i\<in>S. B i) = UNIV" 
       and x: "nonnegative x" and y: "nonnegative y"
-      by simp
+      by simp_all
 txt{*\nopagebreak*}
     def "C" \<equiv> "(\<lambda>(i,j). A i \<inter> B j) \<circ> n_to_n2"
     def "z1" \<equiv> "(\<lambda>k. x (fst (n_to_n2 k)))"
@@ -865,7 +865,7 @@ next
   
   from yr True have r0: "0<r"
     by simp
-  hence "q/r < 1" 
+  with q have "q/r < 1" 
     by (simp add: pos_divide_less_eq)
   
   also from True yq r0 have "0<q/r"
@@ -1435,7 +1435,7 @@ proof -
       by (simp add: realfun_mon_conv)
     moreover from sf2 have "c m \<in> sfis (mu urev m) M" 
       and "c (Suc m) \<in> sfis (mu urev (Suc m)) M" 
-      by fast
+      by fast+
     ultimately have "c m \<le> c (Suc m)" 
       by (simp add: sfis_mono)
   }
@@ -2033,9 +2033,9 @@ theorem integral_char:
     by (rule sfis_char)
   hence nnfis: "measure M A \<in> nnfis \<chi>A M" 
     by (rule sfis_nnfis)
-  thus "\<integral> \<chi>A \<partial> M = measure M A" 
+  from this and ms show "\<integral> \<chi>A \<partial> M = measure M A" 
     by (rule nnfis_integral)
-  from nnfis show "integrable \<chi>A M" 
+  from nnfis and ms show "integrable \<chi>A M" 
     by (rule nnfis_integral) 
 qed(*>*)
 
