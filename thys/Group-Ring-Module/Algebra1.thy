@@ -3471,7 +3471,7 @@ done
 lemma asprod_pos_pos:"0 \<le> x \<Longrightarrow> 0 \<le> int n *\<^sub>a x" 
 apply (case_tac "n = 0", simp, simp,
        simp only:zless_int[THEN sym, of "0" "n"],
-       simp del:zero_less_int_conv)
+       simp del:of_nat_0_less_iff)
 apply (frule_tac w1 = "int n" in asprod_pos_mono[THEN sym, of _ "0" "x"],
        simp add:asprod_n_0)
 done
