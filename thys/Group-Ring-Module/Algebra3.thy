@@ -1902,33 +1902,8 @@ apply (simp add:compose_assoc)
 done
 
 lemma automgroup:"Group G  \<Longrightarrow> Group (automg G)"
-apply (unfold Group_def [of "automg G"])      
-apply (rule conjI, simp add:automg_def)   
- apply (simp add:Pi_def, rule allI) 
-apply (rule impI, rule allI, rule impI)
- apply (simp add: gbij_comp_bij)
-apply (rule conjI)
- apply ((rule allI)+, (rule impI)+,
-        simp add:automg_def,
-        simp add:gbij_comp_bij,
-        simp add:automgroupTr1)
-apply (rule conjI,
-       simp add:automg_def, rule univar_func_test, rule ballI,
-       simp, simp add:inv_gbijec_gbijec)
- apply (rule conjI)
-  apply (rule allI, simp add:automg_def)
-  apply (rule conjI,
-         (rule impI)+,
-        rule l_inv_gHom, assumption+) 
-  apply (rule impI)+
-  apply (simp add:inv_gbijec_gbijec)
- apply (rule conjI,
-        simp add:automg_def,
-        simp add:IdTr2)
- apply (rule allI, rule impI,
-        simp add:automg_def,
-        simp add:IdTr2,
-        simp add:Id_l_unit)
+apply (unfold Group_def [of "automg G"])
+apply(auto simp: automg_def Pi_def gbij_comp_bij automgroupTr1 IdTr2 Id_l_unit l_inv_gHom inv_gbijec_gbijec)
 done
 
 subsection "complete system of representatives"

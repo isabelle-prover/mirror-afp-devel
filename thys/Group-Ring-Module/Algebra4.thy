@@ -3444,43 +3444,37 @@ done
 lemma rimg_ring:"\<lbrakk>Ring A; Ring R; f \<in> rHom A R \<rbrakk> \<Longrightarrow> Ring (rimg A R f)"
 apply (unfold Ring_def [of "rimg A R f"])
 apply (frule rimg_ag[of "A" "R" "f"], assumption+)
- apply (rule conjI, simp add:aGroup_def[of "rimg A R f"])
- apply (rule conjI, simp add:aGroup_def[of "rimg A R f"])
- apply (rule conjI, simp add:aGroup_def[of "rimg A R f"])
- apply (rule conjI, simp add:aGroup_def[of "rimg A R f"])
- apply (rule conjI, simp add:aGroup_def[of "rimg A R f"])
- apply (rule conjI, simp add:aGroup_def[of "rimg A R f"])
+apply (rule conjI, simp add:aGroup_def[of "rimg A R f"])
+apply(rule conjI)
  apply (rule conjI, rule allI, rule impI)
- apply (frule aGroup.ag_inc_zero[of "rimg A R f"],
+  apply(frule aGroup.ag_inc_zero[of "rimg A R f"],
         subst aGroup.ag_pOp_commute, assumption+,
         simp add:aGroup.ag_r_zero[of "rimg A R f"])
-      
-apply (rule conjI)
-apply (rule bivar_func_test, (rule ballI)+)
-apply (thin_tac "aGroup (rimg A R f)",
+ apply (rule conjI)
+  apply (rule bivar_func_test, (rule ballI)+)
+  apply (thin_tac "aGroup (rimg A R f)",
        simp add:rimg_def, simp add:image_def, (erule bexE)+, 
        simp add:rHom_tOp[THEN sym])
- apply (frule_tac x = x and y = xa in Ring.ring_tOp_closed, assumption+,
+  apply (frule_tac x = x and y = xa in Ring.ring_tOp_closed, assumption+,
         blast)
-apply (rule conjI, (rule allI)+, (rule impI)+)
+ apply ((rule allI)+, (rule impI)+)
  apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
         simp add:image_def, (erule bexE)+, simp)
  apply (frule_tac x = x and y = xa in Ring.ring_tOp_closed, assumption+,
         frule_tac x = xa and y = xb in Ring.ring_tOp_closed, assumption+,
         simp add:rHom_tOp[THEN sym],
         simp add:Ring.ring_tOp_assoc)
-apply (rule conjI, (rule allI)+, (rule impI)+)
- apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
+apply (rule conjI, rule conjI, (rule allI)+, (rule impI)+)
+  apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
         simp add:image_def, (erule bexE)+, simp,
         simp add:rHom_tOp[THEN sym],
         simp add:Ring.ring_tOp_commute)
-apply (rule conjI)
-  apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
+ apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
          simp add:image_def)
-  apply (subst rHom_one [THEN sym, of "A" "R" "f"], assumption+,
+ apply (subst rHom_one [THEN sym, of "A" "R" "f"], assumption+,
          frule Ring.ring_one[of "A"], blast)
 apply (rule conjI, (rule allI)+, (rule impI)+)
-apply (simp add:rimg_def, fold rimg_def,
+ apply (simp add:rimg_def, fold rimg_def,
        simp add:image_def, (erule bexE)+, simp) 
  apply (frule rHom_aHom[of "f" "A" "R"],
         frule Ring.ring_is_ag [of "A"],
@@ -3496,10 +3490,9 @@ apply (simp add:rimg_def, fold rimg_def,
         simp add:aHom_add[THEN sym],
         simp add:rHom_tOp[THEN sym],
         simp add:Ring.ring_distrib1)
- 
- apply (rule allI, rule impI,
+apply (rule allI, rule impI,
         thin_tac "aGroup (rimg A R f)")
- apply (simp add:rimg_def,
+apply (simp add:rimg_def,
         simp add:image_def, erule bexE, simp add:rHom_tOp[THEN sym],
         frule_tac a = x in rHom_mem[of "f" "A" "R"], assumption+,
          simp add:Ring.ring_l_one)
