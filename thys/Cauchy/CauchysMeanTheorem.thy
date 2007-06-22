@@ -1,5 +1,5 @@
 (*  Title:       Cauchy's Mean Theorem
-    ID:          $Id: CauchysMeanTheorem.thy,v 1.8 2007-06-13 20:14:38 makarius Exp $
+    ID:          $Id: CauchysMeanTheorem.thy,v 1.9 2007-06-22 16:00:06 makarius Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
@@ -570,13 +570,13 @@ proof
   also with lnez have
     "\<dots> = (len + 1)*\<Sum>:lst / (len * (1+len))"
     apply -
-    apply (drule mult_divide_cancel_left
+    apply (drule mult_divide_mult_cancel_left
       [symmetric, where c="len" and a="(1 + 1 / len) * \<Sum>:lst" and b="1+len"])
     apply clarsimp
     done
   also from l1nez have "\<dots> = \<Sum>:lst / len"
     apply (subst real_mult_commute [where z="len"])
-    apply (drule mult_divide_cancel_left
+    apply (drule mult_divide_mult_cancel_left
       [where c="len+1" and a="\<Sum>:lst" and b="len"])
     by (simp add: mult_ac add_ac)
   finally show "mean ((mean lst)#lst) = mean lst" by (simp add: mean)
