@@ -1,5 +1,5 @@
 (*  Title:       Cauchy's Mean Theorem
-    ID:          $Id: CauchysMeanTheorem.thy,v 1.9 2007-06-22 16:00:06 makarius Exp $
+    ID:          $Id: CauchysMeanTheorem.thy,v 1.10 2007-06-22 18:18:57 brian_huffman Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
@@ -13,37 +13,14 @@ begin
 (*<*)
 (* These should be in RealDef.thy! *)
 
-lemma real_binminus_uminus_conv:
-  fixes a::real
-  shows "a - b = a + - b"
-by simp
-
 lemma real_mult_ac [simp]: "(a::real) * (b + c) = a * b + a * c"
-  apply (subst real_mult_commute)
-  apply (subst real_add_mult_distrib)
-  apply simp
-done
+by (rule right_distrib)
 
 lemma real_le_not_less: "((a::real) \<le> b) = (\<not>(a > b))"
 by auto
 
 lemma real_le_eq_or_less: "((a::real) \<le> b) = ((a = b) \<or> (a < b))"
 by auto
-
-lemma real_div_order [rule_format]:
-  fixes a::real
-  assumes agt0: "0 < a" and bgt0: "0 < b"
-  shows "0 < a / b"
-proof -
-  have "a / b = a * inverse b" by (simp only: real_divide_def)
-  moreover have "0 < a * inverse b"
-  proof -
-    from bgt0 have "0 < inverse b" by simp
-    with agt0 show "0 < a * inverse b" by (rule real_mult_order)
-  qed
-  thus ?thesis by (simp only: real_divide_def [symmetric])
-qed
-
 
 
 (* Should be in List *)
@@ -214,11 +191,11 @@ lists. We then define sum and product operations over these lists. *}
 subsubsection {* Sum and product definitions *}
 
 definition
-  listsum :: "(real list) \<Rightarrow> real" ("\<Sum>:_") where
+  listsum :: "(real list) \<Rightarrow> real" ("\<Sum>:_" [999] 1000) where
   "listsum s = foldr op+ s 0"
 
 definition
-  listprod :: "(real list) \<Rightarrow> real" ("\<Prod>:_") where
+  listprod :: "(real list) \<Rightarrow> real" ("\<Prod>:_" [999] 1000) where
   "listprod s = foldr op* s 1"
 
 lemma listsum_empty [simp]: "\<Sum>:[] = 0"
@@ -345,22 +322,22 @@ next
   show ?case
   proof -
     have
-      "\<Sum>:x#xs/n = x/n + \<Sum>:xs/n"
+      "\<Sum>:(x#xs)/n = x/n + \<Sum>:xs/n"
       by (simp add: add_divide_distrib)
     also with Cons have
       "\<dots> = x/n + (1+1/n)*\<Sum>:xs - \<Sum>:xs"
       by simp
     finally have
-      "\<Sum>:x # xs / n + \<Sum>:x # xs = x/n + (1+1/n)*\<Sum>:xs - \<Sum>:xs + \<Sum>:x#xs"
+      "\<Sum>:(x#xs) / n + \<Sum>:(x#xs) = x/n + (1+1/n)*\<Sum>:xs - \<Sum>:xs + \<Sum>:(x#xs)"
       by simp
     also have
-      "\<dots> = x/n + (1+(1/n)- 1)*\<Sum>:xs + \<Sum>:x#xs"
+      "\<dots> = x/n + (1+(1/n)- 1)*\<Sum>:xs + \<Sum>:(x#xs)"
       by (subst real_mult_1 [symmetric, of "\<Sum>:xs"], simp only: ring_eq_simps)
     also have
-      "\<dots> = x/n + (1/n)*\<Sum>:xs + \<Sum>:x#xs"
+      "\<dots> = x/n + (1/n)*\<Sum>:xs + \<Sum>:(x#xs)"
       by simp
     also have
-      "\<dots> = (1/n)*\<Sum>:x#xs + 1*\<Sum>:x#xs"
+      "\<dots> = (1/n)*\<Sum>:(x#xs) + 1*\<Sum>:(x#xs)"
       by simp
     finally show ?thesis by (simp only: ring_eq_simps)
   qed
@@ -379,7 +356,7 @@ next
   show "?P (aa#list)"
   proof
     assume aml: "a mem aa#list"
-    show "\<Prod>:aa # list = \<Prod>:remove1 a (aa # list) * a"
+    show "\<Prod>:(aa # list) = \<Prod>:remove1 a (aa # list) * a"
     proof (cases)
       assume aeq: "a = aa"
       then have
@@ -442,7 +419,7 @@ for this theorem. *}
 lemma prod_exp:
   fixes x::real
   shows "4*(x*y) = (x+y)^2 - (x-y)^2"
-apply (simp only: real_binminus_uminus_conv)
+apply (simp only: diff_minus)
 apply (simp add: real_sum_squared_expand)
 done
 
@@ -539,16 +516,8 @@ lemma list_gmean_gt_iff:
     pe: "(\<Prod>:one > \<Prod>:two)" and
     le: "(length one = length two)"
   shows "(gmean one > gmean two)"
-proof -
-  from le obtain len where
-    "len = length one \<and> len = length two" by simp
-  moreover with ne1 ne2 have "len > 0" by auto
-  moreover with gr0_conv_Suc obtain slen where
-    "Suc slen = len" by auto
-  moreover with pe gz1 gz2 have
-    "(root (Suc slen) \<Prod>:one > root (Suc slen) \<Prod>:two)" by auto
-  ultimately show ?thesis unfolding gmean_def by auto
-qed
+  unfolding gmean_def
+  using le ne2 pe by simp
 
 text {* This slightly more complicated lemma shows that for every non-empty collection with mean $M$, adding another element $a$ where $a=M$ results in a new list with the same mean $M$. *}
 
@@ -589,8 +558,6 @@ lemma mean_gt_0 [rule_format]:
 proof
   assume a: "xs \<noteq> [] \<and> 0 < x \<and> 0 < mean xs"
   then have xgt0: "0 < x" and mgt0: "0 < mean xs" by auto
-  from a gr0_conv_Suc obtain len where len_def:
-    "Suc len = length xs" by (simp only: length_greater_0_conv[symmetric], auto)
   from a have lxsgt0: "length xs \<noteq> 0" by simp
   from mgt0 have xsgt0: "0 < \<Sum>:xs"
   proof -
@@ -604,7 +571,7 @@ proof
   proof -
     assume "0 < \<Sum>:(x#xs)"
     moreover have "real (length (x#xs)) > 0" by simp
-    ultimately show ?thesis unfolding mean_def by (rule real_div_order)
+    ultimately show ?thesis unfolding mean_def by (rule divide_pos_pos)
   qed
 qed
 
@@ -1109,12 +1076,11 @@ proof -
     posx: "pos x"
     by auto
   from posx pos_mean have mxgt0: "mean x > 0" by simp
-  from xne have "length x > 0" by simp
-  with gr0_conv_Suc obtain len where len_def: "Suc len = length x" by auto
+  from xne have lxgt0: "length x > 0" by simp
   with ass listprod_het0 have
-    "root (length x) \<Prod>:x = root (Suc len) ((mean x)^(Suc len))"
+    "root (length x) (\<Prod>:x) = root (length x) ((mean x)^(length x))"
     by simp
-  also with mxgt0 real_root_pos have "\<dots> = mean x" by auto
+  also from lxgt0 mxgt0 real_root_power_cancel have "\<dots> = mean x" by auto
   finally show "gmean x = mean x" unfolding gmean_def .
 qed
 
