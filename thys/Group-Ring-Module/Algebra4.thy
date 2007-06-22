@@ -2421,7 +2421,7 @@ lemma (in Ring) rMulLC:
 lemma (in Ring) Zero_ring:"\<lbrakk>1\<^sub>r = \<zero> \<rbrakk> \<Longrightarrow> zeroring R"
 apply (simp add:zeroring_def)
 apply (rule conjI)
- apply assumption
+ apply (rule Ring_axioms)
 apply (rule equalityI)
  apply (rule subsetI)
  apply (frule_tac x = x in ring_r_one, simp add:ring_times_x_0)
@@ -2937,9 +2937,9 @@ lemma (in aGroup) nsum_addTr:
   apply (simp, rule impI)
   apply (cut_tac n = n in Nsetn_sub_mem1, simp)
  apply (thin_tac "\<Sigma>\<^sub>e A (\<lambda>i. f i \<plusminus> g i) n = \<Sigma>\<^sub>e A f n \<plusminus> \<Sigma>\<^sub>e A g n")
-  apply (rule aGroup.ag_add4_rel, assumption+) 
-  apply (rule aGroup.nsum_mem, assumption+, rule allI, simp)
-  apply (rule aGroup.nsum_mem, assumption+, rule allI, simp)
+  apply (rule aGroup.ag_add4_rel, rule aGroup_axioms)
+  apply (rule aGroup.nsum_mem, rule aGroup_axioms, rule allI, simp)
+  apply (rule aGroup.nsum_mem, rule aGroup_axioms, rule allI, simp)
   apply simp+
   done
 
@@ -3201,7 +3201,7 @@ lemma (in aGroup) nsum_zeroTr:
 
   apply (rule impI)
   apply (cut_tac n = na in Nsetn_sub_mem1, simp)
-    apply (subst aGroup.ag_l_zero, assumption) 
+    apply (subst aGroup.ag_l_zero, rule aGroup_axioms)
     apply (simp add:ag_inc_zero)
   apply simp
   done
@@ -3939,7 +3939,7 @@ lemma (in Ring) sum_of_prideals0:
 apply (induct_tac n) 
 apply (rule allI) apply (rule impI)
  apply simp 
- apply (rule Ring.principal_ideal, assumption+)
+ apply (rule Ring.principal_ideal, rule Ring_axioms, assumption)
 (** case n **) 
 apply (rule allI, rule impI)
  apply (frule_tac a = f in forall_spec1,
@@ -3949,8 +3949,7 @@ apply (rule allI, rule impI)
  apply (cut_tac a = "f (Suc n)" in  principal_ideal,
        simp)
  apply (rule_tac ?I1.0 = "Rxa R (f (Suc n))" and 
-        ?I2.0 = "sum_pr_ideals R f n" in Ring.sum_ideals,
-        assumption+) 
+        ?I2.0 = "sum_pr_ideals R f n" in Ring.sum_ideals, rule Ring_axioms, assumption+) 
 done
 
 lemma (in Ring) sum_of_prideals:"\<lbrakk>\<forall>l \<le> n. f l \<in> carrier R\<rbrakk> \<Longrightarrow>
@@ -5943,7 +5942,8 @@ apply (rule equalityI)
  apply (erule conjE)+
  apply (simp add:rInvim_def)
  apply (simp add:nilrad_def)
- apply (subst  pj_mem, assumption+)
+ apply (subst pj_mem, rule Ring_axioms)
+ apply assumption+
  apply (simp add:qring_def ar_coset_def set_rcs_def) 
  apply (simp add:aGroup.ag_carrier_carrier)
  apply blast 
@@ -5956,7 +5956,7 @@ done
 lemma (in Ring) id_rad_ideal:"ideal R I \<Longrightarrow> ideal R (rad_ideal R I)"
 (* thm invim_of_ideal *)
 apply (subst id_rad_invim [of "I"], assumption)
-apply (rule invim_of_ideal, assumption+)
+apply (rule invim_of_ideal, rule Ring_axioms, assumption)
 apply (rule Ring.id_nilrad_ideal) 
 apply (simp add:qring_ring)
 done
@@ -6540,7 +6540,7 @@ done
 lemma (in Ring) residue_field_cd:"maximal_ideal R mx \<Longrightarrow>
                                            Corps (qring R mx)"
 apply (rule Corps.intro)
-apply (rule Ring.qring_ring, assumption)
+apply (rule Ring.qring_ring, rule Ring_axioms)
 apply (simp add:maximal_ideal_ideal)
 apply (simp add:residue_fieldTr[of "mx"])
 done

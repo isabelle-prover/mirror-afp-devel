@@ -1,5 +1,5 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree_Map.thy,v 1.4 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: BinaryTree_Map.thy,v 1.5 2007-06-22 15:53:54 makarius Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL
@@ -104,7 +104,7 @@ proof
   next assume h: "ALL a. (i,a) ~: setOf t"
   show "mapOf t i = None"
   proof (cases "mapOf t i")
-  case None show ?thesis by assumption
+  case None then show ?thesis .
   next case (Some a) note mapsome = this
     from v mapsome have o1: "tlookup fst i t = Some (i,a)" by (simp add: mapOf_lookup4)
     (* moving mapOf_lookup4 to assumption does not work, although it uses

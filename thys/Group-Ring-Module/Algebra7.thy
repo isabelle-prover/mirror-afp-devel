@@ -829,7 +829,7 @@ lemma (in Module) invmfun_mHom:"\<lbrakk>R module N; bijec\<^bsub>M,N\<^esub> f;
 apply (frule minjec_inj [of N f])
  apply (simp add:bijec_def)
  apply (subgoal_tac "surjec\<^bsub>M,N\<^esub> f") prefer 2 apply (simp add:bijec_def)
- apply (rule Module.mHom_test, assumption+)
+ apply (rule Module.mHom_test) apply assumption apply (rule Module_axioms)
 
 apply (rule conjI) 
  apply (simp add:surjec_def, erule conjE)
@@ -889,11 +889,11 @@ apply (rule conjI)
 apply (rule ballI)+
 apply (simp add:compos_def compose_def)
  apply (simp add:Module.sc_mem)
- apply (subst Module.mHom_lin[of L R M _ f], assumption+) (*apply (
+ apply (subst Module.mHom_lin[of L R M _ f], assumption, rule Module_axioms, assumption+) (*apply (
         simp add:Module_def, rule conjI, assumption+) *)
- apply (subst Module.mHom_lin[of M R N _ g], assumption+) (*apply (
-        simp add:Module_def, rule conjI, assumption+)*)  (** ordering **)
- apply (rule Module.mHom_mem[of L R M f], assumption+) 
+ apply (subst Module.mHom_lin[of M R N _ g], rule Module_axioms, assumption) (*apply (
+        simp add:Module_def, rule conjI)*)  (** ordering **)
+ apply (rule Module.mHom_mem[of L R M f], assumption, rule Module_axioms, assumption+) 
  apply simp
 done
 
@@ -918,11 +918,11 @@ apply (rule conjI)
  apply (simp add:ker_def)
  apply (thin_tac "{a \<in> carrier M. g a = \<zero>\<^bsub>N\<^esub>} = {\<zero>}")
  apply (simp, erule conjE, simp)
- apply (rule Module.mHom_mem[of L R M f], assumption+) 
+ apply (rule Module.mHom_mem[of L R M f], assumption, rule Module_axioms, assumption+) 
 
 apply (rule subsetI, simp)
  apply (frule Module.module_inc_zero [of L R])
- apply (frule Module.mHom_0[of L R M f], assumption+) 
+ apply (frule Module.mHom_0[of L R M f], rule Module_axioms, assumption+) 
  apply (simp add:ker_def)
  apply (subst mHom_0[of N], assumption+, simp)
 done
@@ -941,7 +941,7 @@ apply (rule conjI)
 apply (rule surj_to_test)
  apply (cut_tac Module.mHom_compos [of M R L N f g]) 
  apply (simp add:mHom_def aHom_def) 
- apply assumption+
+ apply (rule Module_axioms, assumption+)
 
 apply (rule ballI)
  apply (simp add: compos_def compose_def)
@@ -986,7 +986,8 @@ apply (simp add:injec_def)
  apply (frule_tac f = "compose (carrier M) g f" and g = "mId\<^bsub>M\<^esub>" and x = x in
         eq_fun_eq_val, thin_tac "compose (carrier M) g f = mId\<^bsub>M\<^esub>", 
         simp add:compose_def)
- apply (cut_tac Module.mHom_0[of N R M g], simp add:mId_def, assumption+) 
+ apply (cut_tac Module.mHom_0[of N R M g], simp add:mId_def, assumption,
+   rule Module_axioms, assumption) 
 apply (rule subsetI, simp,
        simp add:ag_inc_zero, simp add:mHom_0)
 
@@ -1000,7 +1001,7 @@ apply (simp add:surjec_def)
         thin_tac "compose (carrier N) f g = mId\<^bsub>N\<^esub>", 
         simp add:compose_def)
  apply (simp add:mId_def)
- apply (frule_tac m = b in Module.mHom_mem [of N R M g], assumption+) 
+ apply (frule_tac m = b in Module.mHom_mem [of N R M g], rule Module_axioms, assumption+)
  apply blast
 done
 
@@ -1022,7 +1023,7 @@ constdefs
 lemma (in Module) sup_sharp_homTr:"\<lbrakk>R module N; R module L; u \<in> mHom R M N; 
       f \<in> mHom R N L \<rbrakk> \<Longrightarrow> sup_sharp R M N L u f \<in> mHom R M L"
 apply (simp add:sup_sharp_def)
-apply (rule Module.mHom_compos, assumption+) 
+apply (rule Module.mHom_compos, assumption, rule Module_axioms, assumption+) 
 done
 
 lemma (in Module) sup_sharp_hom:"\<lbrakk>R module N; R module L; u \<in> mHom R M N\<rbrakk> \<Longrightarrow> 
@@ -1052,7 +1053,7 @@ apply (rule conjI)
 
  apply (rule ballI)
  apply (simp add:sup_sharp_def tOp_mHom_def compose_def compos_def)
- apply (simp add:mHom_mem, assumption) 
+ apply (simp add:mHom_mem, rule Module_axioms)
 
 apply (rule ballI)+
  apply (simp add:HOM_def)
@@ -1067,7 +1068,7 @@ apply (rule ballI)+
  apply (rule mHom_eq, assumption+)
  apply (rule ballI)
  apply (simp add:sprod_mHom_def sup_sharp_def compose_def compos_def)
-apply (simp add:Module.mHom_mem, assumption)
+apply (simp add:Module.mHom_mem, rule Module_axioms)
 done
 
 lemma (in Module) sub_sharp_homTr:"\<lbrakk>R module N; R module L; u \<in> mHom R M N; 
@@ -1093,7 +1094,7 @@ apply (rule conjI)
 apply (rule ballI)+
  apply (simp add:HOM_def)
  apply (frule_tac f = a and g = b in Module.tOp_mHom_closed [of L R M],
-        assumption+)
+   rule Module_axioms, assumption+)
  apply (subgoal_tac "R module M")
  apply (frule_tac f = "tOp_mHom R L M a b" in Module.sub_sharp_homTr 
                                  [of M R N L u], assumption+)
@@ -1108,7 +1109,7 @@ apply (rule Module.mHom_eq, assumption+)
         simp add:compos_def compose_def)
  apply (rule Module.mHom_add [of M R], assumption+)
  apply (simp add:Module.mHom_mem, simp add:Module.mHom_mem)
- apply assumption+
+ apply (rule Module_axioms)
 
 apply (rule ballI)+
  apply (simp add:HOM_def)
@@ -1127,7 +1128,7 @@ apply (rule Module.mHom_eq, assumption+)
  apply (frule_tac  f = m and m = ma in Module.mHom_mem [of L R M], assumption+)
 apply (simp add:compos_def compose_def) 
 apply (simp add:mHom_lin)
-apply assumption
+apply (rule Module_axioms)
 done   
 
 lemma (in Module) mId_bijec:"bijec\<^bsub>M,M\<^esub> (mId\<^bsub>M\<^esub>)" 
@@ -1178,7 +1179,8 @@ apply (simp add:surjec_def,
  apply (simp add:surj_to_def)
  apply (rule equalityI, rule subsetI, simp add:image_def, erule bexE,
         simp) thm Module.mHom_mem[of N R M "invmfun R M N f"]
- apply (rule Module.mHom_mem[of N R M "invmfun R M N f"], assumption+) 
+ apply (rule Module.mHom_mem[of N R M "invmfun R M N f"], assumption,
+   rule Module_axioms, assumption+) 
  apply (rule subsetI, simp add:image_def)
  apply (frule_tac m = x in invmfun_l_inv[of N f], assumption+)
  apply (frule_tac m = x in mHom_mem[of N f], assumption+)
@@ -1208,7 +1210,7 @@ apply (simp add:misomorphic_def)
  apply (subgoal_tac  "bijec\<^bsub>L,N\<^esub> (compos L fa f)")
  apply (subgoal_tac "(compos L fa f) \<in> mHom R L N")
  apply blast
- apply (rule Module.mHom_compos[of M R L N], assumption+) 
+ apply (rule Module.mHom_compos[of M R L N], rule Module_axioms, assumption+) 
 
 apply (simp add:bijec_def) apply (erule conjE)+
 apply (simp add:mcompos_inj_inj)                                
@@ -1895,7 +1897,7 @@ apply blast
  apply (rule mHom_eq[of N _ f], assumption)
  apply (rule Module.mHom_compos[of "M /\<^sub>m H" R M N "mpj M H" 
          "\<lambda>X\<in>set_mr_cos M H. f (SOME x. x \<in> X)"]) apply (
-        simp add:qmodule_module, assumption+,
+        simp add:qmodule_module, rule Module_axioms, assumption,
         simp add:mpj_mHom)
  apply (rule Module.mHom_test,
         simp add:qmodule_module, assumption)

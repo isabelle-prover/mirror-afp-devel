@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Store.thy,v 1.4 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: Store.thy,v 1.5 2007-06-22 15:53:55 makarius Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -886,7 +886,7 @@ next
 	      by (simp add: lemma_3_2)
 	    ultimately
 	    show "s\<langle>t\<rangle>\<langle>l:=x\<rangle>@@l = x"
-	      by (rule update_access_same)
+	      using True by (rule update_access_same)
 	  qed
 	  ultimately show ?thesis 
 	    using eq_l_k lemma_3_3 by simp

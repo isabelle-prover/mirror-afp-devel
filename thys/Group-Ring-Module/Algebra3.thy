@@ -1296,7 +1296,7 @@ apply (frule nsg_sg [of "K"])
 apply (frule Group_Qg[of "K"])
 apply (cut_tac imgTr11 [of "G" "G / K" "Pj G K" "H"])
 apply (cut_tac Pj_im_subg [of "G" "H" "K"])
-apply simp apply assumption+
+apply simp apply (rule Group_axioms | assumption)+
 done
 
 section "10 incuded homomorphisms"
@@ -2073,12 +2073,11 @@ apply (simp add:Group_def)
  apply (rule univar_func_test, rule ballI)
  apply (simp add:Gcsrp_def)
  apply (rule univar_func_test, rule ballI)
- apply (rule_tac a = x and b = xa in gcsrp_top_closed[of "N"], assumption+)
+ apply (rule_tac a = x and b = xa in gcsrp_top_closed[of "N"], rule Group_axioms, assumption+)
 apply (rule conjI)
  apply (rule allI, rule impI)+
  apply (simp add:Gcsrp_def)
- apply (rule_tac a = a and b = b and c = c in gcsrp_tassoc[of "N"],
-                       assumption+)
+ apply (rule_tac a = a and b = b and c = c in gcsrp_tassoc[of "N"], rule Group_axioms, assumption+)
 apply (rule conjI)
  apply (rule univar_func_test, rule ballI)
  apply (simp add:Gcsrp_def, rule gcsrp_i_closed[of "N"], assumption+)
@@ -2091,7 +2090,7 @@ apply (rule conjI)
         simp add:Gcsrp_def gcsrp_one_def)
 apply (rule allI, rule impI)
  apply (simp add:Gcsrp_def)
- apply (rule gcsrp_l_one[of "N"], assumption+)
+ apply (rule gcsrp_l_one[of "N"], rule Group_axioms, assumption+)
 done
 
 lemma (in Group) gcsrp_map_gbijec:"G \<triangleright> N \<Longrightarrow> 

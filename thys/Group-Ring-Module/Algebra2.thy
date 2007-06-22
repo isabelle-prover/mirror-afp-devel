@@ -3599,7 +3599,7 @@ apply (rule ballI)
                     "carrier (fTo D)"], assumption+)
   apply (subst Order.Iod_le[of "fTo D" "{x \<in> carrier fTo D. C \<subseteq> x}"],
                       assumption+)
-        apply (subst Order.fTo_Order_sub, assumption+, simp)
+        apply (subst Order.fTo_Order_sub, rule Order_axioms, assumption, simp)
   apply (rule_tac A = s in mem_family_sub_Un[of _ "Ca"], assumption)
 
 apply (simp add:Order.Iod_carrier[of "fTo D"])
@@ -3638,7 +3638,7 @@ apply (rule ballI)
          "carrier (fTo D)"], assumption+,
         frule_tac c = x in subsetD[of "{S \<in> carrier fTo D. C \<subseteq> S}"
          "carrier (fTo D)"], assumption+)
-  apply (subst Order.fTo_Order_sub, assumption+, simp,
+  apply (subst Order.fTo_Order_sub, rule Order_axioms, assumption, simp,
          rule_tac C = Ca and B = x in family_subset_Un_sub)
   apply (rule ballI)
   apply (thin_tac "\<forall>s\<in>Ca. s \<preceq>\<^bsub>Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S}\<^esub> \<Union>Ca",

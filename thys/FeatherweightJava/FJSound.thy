@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJSound.thy,v 1.5 2007-06-14 12:18:05 makarius Exp $
+    ID:          $Id: FJSound.thy,v 1.6 2007-06-22 15:53:54 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -50,8 +50,9 @@ subsection{* Method Types and Field Declarations of Subtypes *}
 lemma A_1_1:
   assumes "CT \<turnstile> C <: D" and "CT OK"
   shows "(mtype(CT,m,D) = Cs \<rightarrow> C0) \<Longrightarrow> (mtype(CT,m,C) = Cs \<rightarrow> C0)"
-  using prems proof (induct rule:subtyping.induct)
-  case (s_refl C CT) show ?case by assumption
+using assms
+proof (induct rule:subtyping.induct)
+  case (s_refl C CT) show ?case by fact
   next
   case (s_trans C CT D E) thus ?case by auto
   next

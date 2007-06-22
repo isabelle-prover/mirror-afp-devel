@@ -5715,8 +5715,11 @@ done
 
 lemma (in Order) ord_equiv_box:"\<lbrakk>Order E; Order F; ord_equiv D E;
         ord_equiv D F\<rbrakk> \<Longrightarrow> ord_equiv E F"
-apply (rule Order.ord_equiv_trans[of E D F], assumption+)
-apply (rule ord_equiv_sym, assumption+)
+apply (rule Order.ord_equiv_trans[of E D F])
+    apply assumption
+   apply (rule Order_axioms)
+  apply assumption
+ apply (rule ord_equiv_sym) apply assumption+
 done
 
 lemma SIod_isom_Iod:"\<lbrakk>Order D; T \<subseteq> carrier D \<rbrakk> \<Longrightarrow>

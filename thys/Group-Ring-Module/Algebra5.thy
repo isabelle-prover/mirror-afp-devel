@@ -1071,7 +1071,7 @@ lemma (in Ring) A_to_prodag2_hom:"\<lbrakk>ideal R A; ideal R B; S 0 = pj R A;
       A_to_prodag R {j. j \<le> (Suc 0)} S (prodB1 (qring R A) (qring R B)) \<in> 
       rHom R (qring R A \<Oplus>\<^sub>r qring R B)"
 apply (subst coprime_2_n [of "A" "B"], assumption+)
-apply (rule A_to_prodag_rHom, assumption+)
+apply (rule A_to_prodag_rHom, rule Ring_axioms)
 apply (rule ballI)
 apply (case_tac "k = 0")
 apply (simp add:prodB1_def)
@@ -1084,7 +1084,7 @@ apply simp
 apply (rule ballI)
  apply (simp add:Nset_1)
  apply (erule disjE) 
- apply (simp add:prodB1_def, rule pj_Hom, assumption+)
+ apply (simp add:prodB1_def, rule pj_Hom, rule Ring_axioms, assumption)
  apply (simp, simp add:prodB1_def)
  apply (rule pj_Hom, assumption+)
 done
@@ -1371,8 +1371,8 @@ apply (cut_tac surjec_ind_bijec [of "R" "r\<Pi>\<^bsub>{j. j \<le> (Suc n)}\<^es
                    "A_to_prodag R {j. j \<le> (Suc n)} S B"])
 apply (cut_tac Ring,
        simp add:Chinese_remTr1 [of "R" "Suc n" "J" "B" "S"])
-apply (simp add:imset, assumption+)
-apply (rule A_to_prodag_rHom, assumption+)
+apply (simp add:imset, rule Ring_axioms, assumption+)
+apply (rule A_to_prodag_rHom, rule Ring_axioms)
  apply (rule ballI)
  apply (simp add:qring_ring)
  apply (rule ballI, simp, rule pj_Hom, assumption, simp)
@@ -3400,20 +3400,20 @@ done
 lemma (in Ring) Subring_tOp_ring_tOp:"\<lbrakk>Subring R S; a \<in> carrier S;
               b \<in> carrier S \<rbrakk> \<Longrightarrow> a \<cdot>\<^sub>r\<^bsub>S\<^esub> b = a \<cdot>\<^sub>r b"
 apply (simp add:Subring_def, (erule conjE)+)
-apply (frule rHom_tOp[of "S" "R" "a" "b" "ridmap S"], assumption+)
+apply (frule rHom_tOp[of "S" "R" "a" "b" "ridmap S"], rule Ring_axioms, assumption+)
 apply (frule Ring.ring_tOp_closed[of "S" "a" "b"], assumption+,
        simp add:ridmap_def)
 done
 
 lemma (in Ring) Subring_one_ring_one:"Subring R S \<Longrightarrow> 1\<^sub>r\<^bsub>S\<^esub> = 1\<^sub>r"
 apply (simp add:Subring_def, (erule conjE)+)
-apply (frule rHom_one[of "S" "R" "ridmap S"], assumption+)
+apply (frule rHom_one[of "S" "R" "ridmap S"], rule Ring_axioms, assumption+)
 apply (simp add:ridmap_def, simp add:Ring.ring_one[of S])
 done
 
 lemma (in Ring) Subring_zero_ring_zero:"Subring R S \<Longrightarrow> \<zero>\<^bsub>S\<^esub> = \<zero>"
 apply (simp add:Subring_def, (erule conjE)+,
-       frule rHom_0_0[of "S" "R" "ridmap S"], assumption+,
+       frule rHom_0_0[of "S" "R" "ridmap S"], rule Ring_axioms, assumption+,
        simp add:ridmap_def, simp add:Ring.ring_zero[of "S"])
 done
 
