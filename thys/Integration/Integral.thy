@@ -536,7 +536,7 @@ proof -
     also from z2 have "0 \<le> z2 t" 
       by (simp add: nonnegative_def)
     ultimately have "0 \<le> z1 t + z2 t" 
-      by (rule real_le_add_order)
+      by (rule add_nonneg_nonneg)
   }
    
   hence "nonnegative (\<lambda>w. z1 w + z2 w)" 
