@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListSum.thy,v 1.3 2007-06-06 18:15:27 nipkow Exp $
+(*  ID:         $Id: ListSum.thy,v 1.4 2007-06-24 20:26:09 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -132,7 +132,7 @@ qed
 
 lemma listsum_const[simp]: 
   "\<Sum>\<^bsub>x \<in> xs\<^esub> k = length xs * k"
-by (induct xs) (simp_all add: ring_distrib)
+by (induct xs) (simp_all add: ring_distribs)
 
 lemma ListSum_add: 
   "(\<Sum>\<^bsub>x \<in> V\<^esub> f x) + \<Sum>\<^bsub>x \<in> V\<^esub> g x = \<Sum>\<^bsub>x \<in> V\<^esub> (f x + (g x::nat))" 
