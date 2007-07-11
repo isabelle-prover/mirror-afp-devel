@@ -1554,7 +1554,7 @@ constdefs (structure D)
    ("(3ub\<index>/ _/ _)" [100,101]100)
  "ub S b == b \<in> (carrier D) \<and> (\<forall>s\<in>S. s \<preceq> b)" 
 
- inductive_set:: "_ \<Rightarrow> bool"
+ "inductive_set":: "_ \<Rightarrow> bool"
  "inductive_set D == \<forall>C. (Chain D C \<longrightarrow> (\<exists>b. ub C b))"
 
  maximal_element::"[_, 'a] \<Rightarrow> bool"
