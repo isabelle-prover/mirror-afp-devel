@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/SemiType.thy
-    ID:         $Id: SemiType.thy,v 1.6 2007-03-09 07:46:22 fhaftmann Exp $
+    ID:         $Id: SemiType.thy,v 1.7 2007-07-11 10:17:10 stefanberghofer Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -15,7 +15,7 @@ constdefs
   "super P C \<equiv> fst (the (class P C))"
 
 lemma superI:
-  "subcls1 P C D \<Longrightarrow> super P C = D"
+  "(C,D) \<in> subcls1 P \<Longrightarrow> super P C = D"
   by (unfold super_def) (auto dest: subcls1D)
 
 consts
@@ -48,7 +48,7 @@ constdefs
 lemma is_class_is_subcls:
   "wf_prog m P \<Longrightarrow> is_class P C = P \<turnstile> C \<preceq>\<^sup>* Object"
 (*<*)by (fastsimp simp:is_class_def
-                  elim: subcls_C_Object converse_rtranclE' subcls1I
+                  elim: subcls_C_Object converse_rtranclE subcls1I
                   dest: subcls1D)
 (*>*)
 
@@ -56,7 +56,7 @@ lemma is_class_is_subcls:
 (* FIXME: move to wellform *)
 lemma subcls_antisym:
   "\<lbrakk>wf_prog m P; P \<turnstile> C \<preceq>\<^sup>* D; P \<turnstile> D \<preceq>\<^sup>* C\<rbrakk> \<Longrightarrow> C = D"
-  (*<*) by (auto dest: acyclic_subcls1 acyclic_impl_antisym_rtrancl [to_pred] antisymD) (*>*)
+  (*<*) by (auto dest: acyclic_subcls1 acyclic_impl_antisym_rtrancl antisymD) (*>*)
 
 (* FIXME: move to wellform *)
 lemma widen_antisym:
@@ -73,7 +73,7 @@ done
 lemma order_widen [intro,simp]: 
   "wf_prog m P \<Longrightarrow> order (subtype P)"
 (*<*)
-  apply (unfold Semilat.order_def lesub_def fun_of_def)
+  apply (unfold Semilat.order_def lesub_def)
   apply (auto intro: widen_trans widen_antisym)
   done
 (*>*)
@@ -88,15 +88,15 @@ lemma Class_widen2: "P \<turnstile> Class C \<le> T = (\<exists>D. T = Class D \
 (*<*) by (cases T) auto (*>*)
  
 lemma wf_converse_subcls1_impl_acc_subtype:
-  "wfP ((subcls1 P)^--1) \<Longrightarrow> acc (subtype P)"
+  "wf ((subcls1 P)^-1) \<Longrightarrow> acc (subtype P)"
 (*<*)
 apply (unfold Semilat.acc_def lesssub_def)
-apply (drule_tac p = "inf ((subcls1 P)^--1) op \<noteq>" in wfP_subset)
+apply (drule_tac p = "(subcls1 P)^-1 - Id" in wf_subset)
  apply blast
-apply (drule wfP_trancl)
-apply (simp add: wfP_eq_minimal)
+apply (drule wf_trancl)
+apply (simp add: wf_eq_minimal)
 apply clarify
-apply (unfold lesub_def fun_of_def)
+apply (unfold lesub_def)
 apply (rename_tac M T) 
 apply (case_tac "EX C. Class C : M")
  prefer 2
@@ -119,16 +119,16 @@ apply (rule_tac x = "Class D" in bexI)
  apply assumption
 apply clarify
 apply (clarsimp simp: Class_widen2)
-apply (insert rtrancl_r_diff_Id' [symmetric, standard, of "subcls1 P"])
+apply (insert rtrancl_r_diff_Id [symmetric, standard, of "subcls1 P"])
 apply simp
-apply (erule rtrancl.cases)
+apply (erule rtranclE)
  apply blast
-apply (drule rtrancl_converseI')
-apply (subgoal_tac "(inf (subcls1 P) op \<noteq>)^--1 = (inf ((subcls1 P)^--1) op \<noteq>)")
+apply (drule rtrancl_converseI)
+apply (subgoal_tac "((subcls1 P)-Id)^-1 = ((subcls1 P)^-1 - Id)")
  prefer 2
- apply (simp add: converse_meet)
+ apply blast
 apply simp
-apply (blast intro: rtrancl_into_trancl2')
+apply (blast intro: rtrancl_into_trancl2)
 done
 (*>*)
 
@@ -167,12 +167,12 @@ proof -
       by (blast intro: subcls_C_Object)
     with single_valued_subcls1[OF wf_prog]
     obtain u where
-      "is_lub ((subcls1 P)^** ) c1 c2 u"      
+      "is_lub ((subcls1 P)^* ) c1 c2 u"      
       by (blast dest: single_valued_has_lubs)
     moreover
     note acyclic_subcls1[OF wf_prog]
     moreover
-    have "\<forall>x y. subcls1 P x y \<longrightarrow> super P x = y"
+    have "\<forall>x y. (x, y) \<in> subcls1 P \<longrightarrow> super P x = y"
       by (blast intro: superI)
     ultimately
     have "P \<turnstile> c1 \<preceq>\<^sup>* exec_lub (subcls1 P) (super P) c1 c2 \<and>
@@ -182,7 +182,7 @@ proof -
 
   assume "is_type P t1" "is_type P t2" "sup P t1 t2 = OK s"
   thus ?thesis
-    apply (unfold sup_def fun_of_def) 
+    apply (unfold sup_def) 
     apply (cases s)
     apply (auto simp add: is_refT_def split: split_if_asm)
     done
@@ -207,7 +207,7 @@ proof -
       by (blast intro: subcls_C_Object)
     with single_valued_subcls1[OF wf_prog]
     obtain u where
-      lub: "is_lub ((subcls1 P)^** ) c1 c2 u"
+      lub: "is_lub ((subcls1 P)^* ) c1 c2 u"
       by (blast dest: single_valued_has_lubs)   
     with acyclic_subcls1[OF wf_prog]
     have "exec_lub (subcls1 P) (super P) c1 c2 = u"
@@ -228,7 +228,7 @@ proof -
   assume "is_type P a" "is_type P b" "is_type P c"
          "subtype P a c" "subtype P b c" "sup P a b = OK d"
   thus ?thesis
-    by (auto simp add: fun_of_def sup_def is_refT_def
+    by (auto simp add: sup_def is_refT_def
              split: split_if_asm)
 qed
 (*>*)
@@ -236,7 +236,7 @@ qed
 lemma sup_exists:
   "\<lbrakk> subtype P a c; subtype P b c \<rbrakk> \<Longrightarrow> EX T. sup P a b = OK T"
 (*<*)
-apply (unfold fun_of_def sup_def)
+apply (unfold sup_def)
 apply (cases b)
 apply auto
 apply (cases a)

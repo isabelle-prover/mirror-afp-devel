@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.4 2007-05-10 08:22:56 fhaftmann Exp $
+    ID:         $Id: BVExample.thy,v 1.5 2007-07-11 10:17:10 stefanberghofer Exp $
     Author:     Gerwin Klein
 *)
 
@@ -85,34 +85,34 @@ lemma E_classes [simp]:
 
 text {* The subclass releation spelled out: *}
 lemma subcls1:
-  "subcls1 E = member2 {(list_name,Object), (test_name,Object), (NullPointer, Object),
+  "subcls1 E = {(list_name,Object), (test_name,Object), (NullPointer, Object),
                 (ClassCast, Object), (OutOfMemory, Object)}"
 (*<*)
   apply (simp add: subcls1_def2)
   apply (simp add: class_defs system_defs E_def class_def)
   (* FIXME: cannot simply expand class names, since
      inequality proofs on strings are too inefficient *)
-  apply (auto simp: member2_inject distinct_classes split: split_if_asm)
+  apply (auto simp: distinct_classes split: split_if_asm)
   done
 (*>*)
 
 text {* The subclass relation is acyclic; hence its converse is well founded: *}
 lemma notin_rtrancl:
-  "r\<^sup>*\<^sup>* a b \<Longrightarrow> a \<noteq> b \<Longrightarrow> (\<And>y. \<not> r a y) \<Longrightarrow> False"
-  by (auto elim: converse_rtranclE')
+  "(a,b) \<in> r\<^sup>* \<Longrightarrow> a \<noteq> b \<Longrightarrow> (\<And>y. (a,y) \<notin> r) \<Longrightarrow> False"
+  by (auto elim: converse_rtranclE)
 
-lemma acyclic_subcls1_E: "acyclicP (subcls1 E)"
+lemma acyclic_subcls1_E: "acyclic (subcls1 E)"
 (*<*)
-  apply (rule acyclicI [to_pred])
+  apply (rule acyclicI)
   apply (simp add: subcls1)
-  apply (auto dest!: tranclD')
+  apply (auto dest!: tranclD)
   apply (auto elim!: notin_rtrancl simp add: distinct_classes)
   done
 (*>*)
 
-lemma wf_subcls1_E: "wfP ((subcls1 E)\<inverse>\<inverse>)"
+lemma wf_subcls1_E: "wf ((subcls1 E)\<inverse>)"
 (*<*)
-  apply (rule finite_acyclic_wf_converse [to_pred])
+  apply (rule finite_acyclic_wf_converse)
   apply (simp add: subcls1)
   apply (rule acyclic_subcls1_E)
   done  
@@ -525,7 +525,7 @@ lemmas [code] =
   meta_eq_to_obj_eq [OF JVM_le_unfold]
 (*>*)
 
-lemmas [code ind] = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl'
+lemmas [code ind_set] = rtrancl_refl converse_rtrancl_into_rtrancl
 
 lemma [code]:
   "is_refT T = (case T of NT \<Rightarrow> True | Class C \<Rightarrow> True | _ \<Rightarrow> False)"
@@ -539,36 +539,24 @@ lemma [code ind params: 1]: "P \<turnstile> C sees_methods Mm \<Longrightarrow>
   Mm M = \<lfloor>((Ts, T, m), D)\<rfloor> \<Longrightarrow> P \<turnstile> C sees M: Ts\<rightarrow>T = m in D"
   by (auto simp add: Method_def)
 
-inductive2
-  swap_args :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
-  for r :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
-where
-  "r a b \<Longrightarrow> swap_args r b a"
-
-inductive2
-  swap_args' :: "('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool"
-  for r :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
-where
-  "r a b c d \<Longrightarrow> swap_args' r a"
-
 lemma [code]:
   "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
-    (\<exists>T\<^isub>f\<triangleright>swap_args (sees_field P C F) C. P \<turnstile> T \<le> Class C)"
-  by (auto intro: swap_args.intros elim: swap_args.cases)
+    (\<exists>T\<^isub>f\<in>{T\<^isub>f. sees_field P C F T\<^isub>f C}. P \<turnstile> T \<le> Class C)"
+  by auto
 
 lemma [code]:
   "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) = 
-    (\<exists>T\<^isub>f\<triangleright>swap_args (sees_field P C F) C. P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f)" 
-  by (auto intro: swap_args.intros elim: swap_args.cases)
+    (\<exists>T\<^isub>f\<in>{T\<^isub>f. sees_field P C F T\<^isub>f C}. P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f)" 
+  by auto
 
 lemma [code]:
   "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
     (n < length ST \<and> 
     (ST!n \<noteq> NT \<longrightarrow>
       (case ST!n of
-         Class C \<Rightarrow> (\<exists>Ts\<triangleright>swap_args' (Method P C M). P \<turnstile> rev (take n ST) [\<le>] Ts)
+         Class C \<Rightarrow> (\<exists>(Ts, T, m, D)\<in>{(Ts, T, m, D). Method P C M Ts T m D}. P \<turnstile> rev (take n ST) [\<le>] Ts)
        | _ \<Rightarrow> False)))"
-  by (fastsimp intro: swap_args'.intros elim: swap_args'.cases split add: ty.split_asm)
+  by (fastsimp split add: ty.split_asm)
 
 declare field_def2 [code ind]
 

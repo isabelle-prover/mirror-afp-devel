@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Opt.thy
-    ID:         $Id: Opt.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: Opt.thy,v 1.4 2007-07-11 10:17:11 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -213,7 +213,7 @@ done
 lemma acc_le_optI [intro!]: "acc r \<Longrightarrow> acc(le r)"
 (*<*)
 apply (unfold acc_def lesub_def le_def lesssub_def)
-apply (simp add: wfP_eq_minimal split: option.split)
+apply (simp add: wf_eq_minimal split: option.split)
 apply clarify
 apply (case_tac "\<exists>a. Some a \<in> Q")
  apply (erule_tac x = "{a . Some a \<in> Q}" in allE)

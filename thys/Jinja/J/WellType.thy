@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellType.thy
-    ID:         $Id: WellType.thy,v 1.4 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: WellType.thy,v 1.5 2007-07-11 10:17:12 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -13,7 +13,7 @@ begin
 types 
   env  = "vname \<rightharpoonup> ty"
 
-inductive2
+inductive
   WT :: "[J_prog,env, expr     , ty     ] \<Rightarrow> bool"
          ("_,_ \<turnstile> _ :: _"   [51,51,51]50)
   and WTs :: "[J_prog,env, expr list, ty list] \<Rightarrow> bool"
@@ -181,7 +181,7 @@ done
 (*>*)
 
 (*<*)
-inductive_cases2 WT_elim_cases[elim!]:
+inductive_cases WT_elim_cases[elim!]:
   "P,E \<turnstile> V :=e :: T"
   "P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T"
   "P,E \<turnstile> while (e) c :: T"

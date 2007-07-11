@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Annotate.thy
-    ID:         $Id: Annotate.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: Annotate.thy,v 1.4 2007-07-11 10:17:11 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -18,7 +18,7 @@ translations
   "unanFAss e F e'" == "FAss e F [] e'"
 (*>*)
 
-inductive2
+inductive
   Anno :: "[J_prog,env, expr     , expr] \<Rightarrow> bool"
          ("_,_ \<turnstile> _ \<leadsto> _"   [51,0,0,51]50)
   and Annos :: "[J_prog,env, expr list, expr list] \<Rightarrow> bool"

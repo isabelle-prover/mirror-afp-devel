@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/execute_Bigstep.thy
-    ID:         $Id: execute_Bigstep.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: execute_Bigstep.thy,v 1.4 2007-07-11 10:17:12 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2004 Technische Universitaet Muenchen
 *)
@@ -21,12 +21,12 @@ fun new_addr z s alloc some hp =
   "arbitrary" ("(error \"arbitrary\")")
 
 
-inductive2 map_val :: "expr list \<Rightarrow> val list \<Rightarrow> bool"
+inductive map_val :: "expr list \<Rightarrow> val list \<Rightarrow> bool"
 where
   Nil: "map_val [] []"
 | Cons: "map_val xs ys \<Longrightarrow> map_val (Val y # xs) (y # ys)"
 
-inductive2 map_val2 :: "expr list \<Rightarrow> val list \<Rightarrow> expr list \<Rightarrow> bool"
+inductive map_val2 :: "expr list \<Rightarrow> val list \<Rightarrow> expr list \<Rightarrow> bool"
 where
   Nil: "map_val2 [] [] []"
 | Cons: "map_val2 xs ys zs \<Longrightarrow> map_val2 (Val y # xs) (y # ys) zs"

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExec.thy
-    ID:         $Id: JVMExec.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: JVMExec.thy,v 1.3 2007-07-11 10:17:12 stefanberghofer Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -33,18 +33,14 @@ lemma [simp]: "exec (P, x, h, []) = None"
 by(cases x) simp+
 
 -- "relational view"
-consts
+inductive_set
   exec_1 :: "jvm_prog \<Rightarrow> (jvm_state \<times> jvm_state) set"
-syntax
-  "@exec_1" :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool" 
-  ("_ |-/ _ -jvm->1/ _" [61,61,61] 60)
-syntax (xsymbols)
-  "@exec_1" :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool" 
-  ("_ \<turnstile>/ _ -jvm\<rightarrow>\<^isub>1/ _" [61,61,61] 60)
-translations
-  "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>'" == "(\<sigma>,\<sigma>') \<in> exec_1 P"
-inductive "exec_1 P" intros
-  exec_1I: "exec (P,\<sigma>) = Some \<sigma>' \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>'"
+  and exec_1' :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool" 
+    ("_ \<turnstile>/ _ -jvm\<rightarrow>\<^isub>1/ _" [61,61,61] 60)
+  for P :: jvm_prog
+where
+  "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> exec_1 P"
+| exec_1I: "exec (P,\<sigma>) = Some \<sigma>' \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>'"
 
 -- "reflexive transitive closure:"
 consts
@@ -60,7 +56,7 @@ defs
 
 lemma exec_1_def:
   "exec_1 P = {(\<sigma>,\<sigma>'). exec (P,\<sigma>) = Some \<sigma>'}"
-(*<*)by (auto intro: exec_1I elim: exec_1.elims)(*>*)
+(*<*)by (auto intro: exec_1I elim: exec_1.cases)(*>*)
 
 lemma exec_1_iff:
   "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>' = (exec (P,\<sigma>) = Some \<sigma>')"

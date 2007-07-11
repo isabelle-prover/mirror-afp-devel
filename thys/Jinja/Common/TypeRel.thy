@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/TypeRel.thy
-    ID:         $Id: TypeRel.thy,v 1.6 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: TypeRel.thy,v 1.7 2007-07-11 10:17:10 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -10,14 +10,17 @@ theory TypeRel imports Decl begin
 
 subsection{* The subclass relations *}
 
-inductive2
-  subcls1 :: "'m prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sup>1 _" [71,71,71] 70)
+inductive_set
+  subcls1 :: "'m prog \<Rightarrow> (cname \<times> cname) set"
+  and subcls1' :: "'m prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sup>1 _" [71,71,71] 70)
   for P :: "'m prog"
-where subcls1I: "\<lbrakk>class P C = Some (D,rest); C \<noteq> Object\<rbrakk> \<Longrightarrow> P \<turnstile> C \<prec>\<^sup>1 D"
+where
+  "P \<turnstile> C  \<prec>\<^sup>1 D \<equiv> (C,D) \<in> subcls1 P"
+| subcls1I: "\<lbrakk>class P C = Some (D,rest); C \<noteq> Object\<rbrakk> \<Longrightarrow> P \<turnstile> C \<prec>\<^sup>1 D"
 
 abbreviation
   subcls  :: "'m prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<preceq>\<^sup>* _"  [71,71,71] 70)
-  where "P \<turnstile> C  \<preceq>\<^sup>*  D \<equiv> (subcls1 P)\<^sup>*\<^sup>* C D"
+  where "P \<turnstile> C  \<preceq>\<^sup>*  D \<equiv> (C,D) \<in> (subcls1 P)\<^sup>*"
 
 lemma subcls1D: "P \<turnstile> C \<prec>\<^sup>1 D \<Longrightarrow> C \<noteq> Object \<and> (\<exists>fs ms. class P C = Some (D,fs,ms))"
 (*<*)by(erule subcls1.induct)(fastsimp simp add:is_class_def)(*>*)
@@ -28,19 +31,19 @@ lemma [iff]: "\<not> P \<turnstile> Object \<prec>\<^sup>1 C"
 lemma [iff]: "(P \<turnstile> Object \<preceq>\<^sup>* C) = (C = Object)"
 (*<*)
 apply(rule iffI)
- apply(erule converse_rtranclE')
+ apply(erule converse_rtranclE)
   apply simp_all
 done
 (*>*)
 
 lemma subcls1_def2:
-  "subcls1 P = member2
+  "subcls1 P =
      (SIGMA C:{C. is_class P C}. {D. C\<noteq>Object \<and> fst (the (class P C))=D})"
 (*<*)
-  by (fastsimp simp:is_class_def expand_fun_eq dest: subcls1D elim: subcls1I)
+  by (fastsimp simp:is_class_def dest: subcls1D elim: subcls1I)
 (*>*)
 
-lemma finite_subcls1: "finite (Collect2 (subcls1 P))"
+lemma finite_subcls1: "finite (subcls1 P)"
 (*<*)
 apply (simp add: subcls1_def2)
 apply(rule finite_SigmaI [OF finite_is_class])
@@ -66,7 +69,7 @@ done
 
 subsection{* The subtype relations *}
 
-inductive2
+inductive
   widen   :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ \<le> _"   [71,71,71] 70)
   for P :: "'m prog"
 where
@@ -100,7 +103,7 @@ lemma [iff]: "(P \<turnstile> Integer \<le> T) = (T = Integer)"
 
 lemma Class_widen: "P \<turnstile> Class C \<le> T  \<Longrightarrow>  \<exists>D. T = Class D"
 (*<*)
-apply (ind_cases2 "P \<turnstile> Class C \<le> T")
+apply (ind_cases "P \<turnstile> Class C \<le> T")
 apply auto
 done
 (*>*)
@@ -115,7 +118,7 @@ done
 lemma Class_widen_Class [iff]: "(P \<turnstile> Class C \<le> Class D) = (P \<turnstile> C \<preceq>\<^sup>* D)"
 (*<*)
 apply (rule iffI)
-apply (ind_cases2 "P \<turnstile> Class C \<le> Class D")
+apply (ind_cases "P \<turnstile> Class C \<le> Class D")
 apply (auto elim: widen_subcls)
 done
 (*>*)
@@ -147,14 +150,14 @@ lemma widens_trans [trans]: "\<lbrakk>P \<turnstile> Ss [\<le>] Ts; P \<turnstil
 
 
 (*<*)
-lemmas widens_refl [iff] = list_all2_refl [of "widen P", OF widen_refl, standard]
-lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
+lemmas widens_refl [iff] = list_all2_refl [of "widen ?P", OF widen_refl]
+lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen ?P"]
 (*>*)
 
 
 subsection{* Method lookup *}
 
-inductive2
+inductive
   Methods :: "['m prog, cname, mname \<rightharpoonup> (ty list \<times> ty \<times> 'm) \<times> cname] \<Rightarrow> bool"
                     ("_ \<turnstile> _ sees'_methods _" [51,51,51] 50)
   for P :: "'m prog"
@@ -204,7 +207,7 @@ proof induct
 next
   case sees_methods_rec thus ?case
     by(fastsimp simp:option_map_def split:option.splits
-                elim:converse_rtrancl_into_rtrancl'[of "subcls1 P", OF subcls1I])
+                elim:converse_rtrancl_into_rtrancl[OF subcls1I])
 qed
 (*>*)
 
@@ -234,7 +237,7 @@ shows "P \<turnstile> C sees_methods Mm \<Longrightarrow>
 (*<*)
       (is "_ \<Longrightarrow> \<exists>Mm' Mm2. ?Q C' C Mm' Mm2")
 using sub
-proof (induct rule:converse_rtrancl_induct')
+proof (induct rule:converse_rtrancl_induct)
   assume "P \<turnstile> C sees_methods Mm"
   hence "?Q C C Mm empty" by simp
   thus "\<exists>Mm' Mm2. ?Q C C Mm' Mm2" by blast
@@ -254,7 +257,7 @@ next
   have "P \<turnstile> C'' sees_methods (Mm ++ Mm2) ++ ?Mm3"
     using sees_methods_rec[OF "class" C'sees refl] Mm' by simp
   hence "?Q C'' C ((Mm ++ Mm2) ++ ?Mm3) (Mm2++?Mm3)"
-    using converse_rtrancl_into_rtrancl'[OF sub1 sub]
+    using converse_rtrancl_into_rtrancl[OF sub1 sub]
     by simp (simp add:map_add_def subC split:option.split)
   thus "\<exists>Mm' Mm2. ?Q C'' C Mm' Mm2" by blast
 qed
@@ -300,7 +303,7 @@ apply(drule (1) sees_methods_decl_mono)
 apply clarsimp
 apply(drule (1) sees_methods_fun)
 apply clarsimp
-apply(blast intro:rtrancl_trans')
+apply(blast intro:rtrancl_trans)
 done
 (*>*)
 
@@ -311,7 +314,7 @@ lemma sees_method_is_class:
 
 subsection{* Field lookup *}
 
-inductive2
+inductive
   Fields :: "['m prog, cname, ((vname \<times> cname) \<times> ty) list] \<Rightarrow> bool"
                   ("_ \<turnstile> _ has'_fields _" [51,51,51] 50)
   for P :: "'m prog"
@@ -353,7 +356,7 @@ shows "\<lbrakk> P \<turnstile> C \<preceq>\<^sup>* D; class P D = Some(D',fs,ms
 (*<*)
 using sub apply(induct)
  apply(simp add:image_def)
- apply(erule converse_rtranclE')
+ apply(erule converse_rtranclE)
   apply(force)
  apply(drule subcls1D)
  apply fastsimp
@@ -372,26 +375,26 @@ apply clarsimp
 apply(erule disjE)
  apply(clarsimp simp add:image_def)
 apply simp
-apply(blast dest:subcls1I converse_rtrancl_into_rtrancl')
+apply(blast dest:subcls1I converse_rtrancl_into_rtrancl)
 done
 (*>*)
 
 
 lemma subcls_notin_has_fields:
 assumes fields: "P \<turnstile> C has_fields FDTs"
-shows "((F,D),T) \<in> set FDTs \<Longrightarrow> \<not> (subcls1 P)\<^sup>+\<^sup>+ D C"
+shows "((F,D),T) \<in> set FDTs \<Longrightarrow> (D,C) \<notin> (subcls1 P)\<^sup>+"
 (*<*)
 using fields apply(induct)
- prefer 2 apply(fastsimp dest: tranclD')
+ prefer 2 apply(fastsimp dest: tranclD)
 apply clarsimp
 apply(erule disjE)
  apply(clarsimp simp add:image_def)
- apply(drule tranclD')
+ apply(drule tranclD)
  apply clarify
  apply(frule subcls1D)
  apply(fastsimp dest:all_fields_in_has_fields)
 apply simp
-apply(blast dest:subcls1I trancl.trancl_into_trancl)
+apply(blast dest:subcls1I trancl_into_trancl)
 done
 (*>*)
 
@@ -401,13 +404,13 @@ assumes sub: "P \<turnstile> D \<preceq>\<^sup>* C"
 shows "P \<turnstile> C has_fields FDTs
          \<Longrightarrow> \<exists>pre. P \<turnstile> D has_fields pre@FDTs \<and> dom(map_of pre) \<inter> dom(map_of FDTs) = {}"
 (*<*)
-using sub apply(induct rule:converse_rtrancl_induct')
+using sub apply(induct rule:converse_rtrancl_induct)
  apply(rule_tac x = "[]" in exI)
  apply simp
 apply clarsimp
 apply(rename_tac D' D pre)
-apply(subgoal_tac "(subcls1 P)^++ D' C")
- prefer 2 apply(erule (1) rtrancl_into_trancl2')
+apply(subgoal_tac "(D',C) : (subcls1 P)^+")
+ prefer 2 apply(erule (1) rtrancl_into_trancl2)
 apply(drule subcls1D)
 apply clarsimp
 apply(rename_tac fs ms)

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/BigStep.thy
-    ID:         $Id: BigStep.thy,v 1.6 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: BigStep.thy,v 1.7 2007-07-11 10:17:12 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -8,7 +8,7 @@ header {* \isaheader{Big Step Semantics} *}
 
 theory BigStep imports Expr State begin
 
-inductive2
+inductive
   eval :: "J_prog \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
           ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
   and evals :: "J_prog \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
@@ -195,7 +195,7 @@ where
 lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
   and eval_evals_inducts = eval_evals.inducts [split_format (complete)]
 
-inductive_cases2 eval_cases [cases set]:
+inductive_cases eval_cases [cases set]:
  "P \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -210,7 +210,7 @@ inductive_cases2 eval_cases [cases set]:
  "P \<turnstile> \<langle>throw e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>try e\<^isub>1 catch(C V) e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  
-inductive_cases2 evals_cases [cases set]:
+inductive_cases evals_cases [cases set]:
  "P \<turnstile> \<langle>[],s\<rangle> [\<Rightarrow>] \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>e#es,s\<rangle> [\<Rightarrow>] \<langle>e',s'\<rangle>"
 (*>*) 

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallStep.thy
-    ID:         $Id: SmallStep.thy,v 1.5 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: SmallStep.thy,v 1.6 2007-07-11 10:17:12 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -28,15 +28,20 @@ constdefs
   assigned :: "vname \<Rightarrow> expr \<Rightarrow> bool"
   "assigned V e  \<equiv>  \<exists>v e'. e = (V := Val v;; e')"
 
-inductive2
-  red :: "J_prog \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
+inductive_set
+  red  :: "J_prog \<Rightarrow> ((expr \<times> state) \<times> (expr \<times> state)) set"
+  and reds  :: "J_prog \<Rightarrow> ((expr list \<times> state) \<times> (expr list \<times> state)) set"
+  and red' :: "J_prog \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
           ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
-  and reds :: "J_prog \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
+  and reds' :: "J_prog \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
           ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
   for P :: J_prog
 where
 
-  RedNew:
+  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<equiv> ((e,s), e',s') \<in> red P"
+| "P \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle> \<equiv> ((es,s), es',s') \<in> reds P"
+
+| RedNew:
   "\<lbrakk> new_Addr h = Some a; P \<turnstile> C has_fields FDTs; h' = h(a\<mapsto>(C,init_fields FDTs)) \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>new C, (h,l)\<rangle> \<rightarrow> \<langle>addr a, (h',l)\<rangle>"
 
@@ -211,7 +216,7 @@ where
 lemmas red_reds_induct = red_reds.induct [split_format (complete)]
   and red_reds_inducts = red_reds.inducts [split_format (complete)]
 
-inductive_cases2 [elim!]:
+inductive_cases [elim!]:
  "P \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile> \<langle>e1;;e2,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
 (*>*)
@@ -221,26 +226,12 @@ subsection{* The reflexive transitive closure *}
 abbreviation
   Step :: "J_prog \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
           ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
-  where "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<equiv> (\<lambda>(e,s) (e',s'). P \<turnstile> \<langle>e, s\<rangle> \<rightarrow> \<langle>e', s'\<rangle>)\<^sup>*\<^sup>* (e,s) (e',s')"
+  where "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<equiv> ((e,s), e',s') \<in> (red P)\<^sup>*"
 
 abbreviation
   Steps :: "J_prog \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
           ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
-  where "P \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<equiv> (\<lambda>(es,s) (es',s'). P \<turnstile> \<langle>es, s\<rangle> [\<rightarrow>] \<langle>es', s'\<rangle>)\<^sup>*\<^sup>* (es,s) (es',s')"
-
-lemmas converse_rtrancl_into_rtrancl2 =
-  converse_rtrancl_into_rtrancl' [of "\<lambda>(a, b) (c, d). r a b c d" "(a, b)" "(c, d)" "(e, f)",
-    simplified, standard]
-
-lemmas rtrancl_into_rtrancl2 =
-  rtrancl.rtrancl_into_rtrancl [of "\<lambda>(a, b) (c, d). r a b c d" "(a, b)" "(c, d)" "(e, f)",
-    simplified, standard]
-
-lemmas rtrancl_induct2'' = rtrancl_induct2'
-  [of "\<lambda>(a, b) (c, d). r a b c d", simplified, standard, consumes 1, case_names refl step]
-
-lemmas converse_rtrancl_induct2'' = converse_rtrancl_induct2'
-  [of "\<lambda>(a, b) (c, d). r a b c d", simplified, standard, consumes 1, case_names refl step]
+  where "P \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<equiv> ((es,s), es',s') \<in> (reds P)\<^sup>*"
 
 lemma converse_rtrancl_induct_red[consumes 1]:
 assumes "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow>* \<langle>e',(h',l')\<rangle>"
@@ -257,7 +248,7 @@ proof -
            \<lbrakk> P \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<rightarrow> \<langle>e\<^isub>1,s\<^isub>1\<rangle>; R e\<^isub>1 (hp s\<^isub>1) (lcl s\<^isub>1) e' (hp s') (lcl s') \<rbrakk>
            \<Longrightarrow> R e\<^isub>0 (hp s\<^isub>0) (lcl s\<^isub>0) e' (hp s') (lcl s')"
     from reds have "R e (hp s) (lcl s) e' (hp s') (lcl s')"
-    proof (induct rule:converse_rtrancl_induct2')
+    proof (induct rule:converse_rtrancl_induct2)
       case refl show ?case by(rule base)
     next
       case (step e\<^isub>0 s\<^isub>0 e s)
@@ -358,7 +349,7 @@ proof(induct rule:converse_rtrancl_induct_red)
   case 1 thus ?case by simp
 next
   case 2 thus ?case
-    by (blast dest: red_lcl_add intro: converse_rtrancl_into_rtrancl')
+    by (blast dest: red_lcl_add intro: converse_rtrancl_into_rtrancl)
 qed
 (*>*)
 

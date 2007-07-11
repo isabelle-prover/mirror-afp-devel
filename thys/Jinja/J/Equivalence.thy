@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Equivalence.thy
-    ID:         $Id: Equivalence.thy,v 1.6 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: Equivalence.thy,v 1.7 2007-07-11 10:17:12 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -15,9 +15,9 @@ subsubsection "Cast"
 lemma CastReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>Cast C e',s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule CastRed)
 done
 (*>*)
@@ -25,7 +25,7 @@ done
 lemma CastRedsNull:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>null,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>null,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CastReds)
 apply(rule RedCastNull)
 done
@@ -35,7 +35,7 @@ lemma CastRedsAddr:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>addr a,s'\<rangle>; hp s' a = Some(D,fs); P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>addr a,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CastReds)
 apply(erule (1) RedCast)
 done
@@ -45,7 +45,7 @@ lemma CastRedsFail:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>addr a,s'\<rangle>; hp s' a = Some(D,fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>THROW ClassCast,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CastReds)
 apply(erule (1) RedCastFail)
 done
@@ -54,7 +54,7 @@ done
 lemma CastRedsThrow:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>Cast C e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CastReds)
 apply(rule red_reds.CastThrow)
 done
@@ -65,9 +65,9 @@ subsubsection "LAss"
 lemma LAssReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle> V:=e,s\<rangle> \<rightarrow>* \<langle> V:=e',s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule LAssRed)
 done
 (*>*)
@@ -75,7 +75,7 @@ done
 lemma LAssRedsVal:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>Val v,(h',l')\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle> V:=e,s\<rangle> \<rightarrow>* \<langle>unit,(h',l'(V\<mapsto>v))\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule LAssReds)
 apply(rule RedLAss)
 done
@@ -84,7 +84,7 @@ done
 lemma LAssRedsThrow:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle> V:=e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule LAssReds)
 apply(rule red_reds.LAssThrow)
 done
@@ -95,9 +95,9 @@ subsubsection "BinOp"
 lemma BinOp1Reds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle> e \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>e' \<guillemotleft>bop\<guillemotright> e\<^isub>2, s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule BinOpRed1)
 done
 (*>*)
@@ -105,9 +105,9 @@ done
 lemma BinOp2Reds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e, s\<rangle> \<rightarrow>* \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e', s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule BinOpRed2)
 done
 (*>*)
@@ -116,9 +116,9 @@ lemma BinOpRedsVal:
   "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>Val v\<^isub>2,s\<^isub>2\<rangle>; binop(bop,v\<^isub>1,v\<^isub>2) = Some v \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule BinOp1Reds)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule BinOp2Reds)
 apply(rule RedBinOp)
 apply simp
@@ -128,7 +128,7 @@ done
 lemma BinOpRedsThrow1:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule BinOp1Reds)
 apply(rule red_reds.BinOpThrow1)
 done
@@ -138,9 +138,9 @@ lemma BinOpRedsThrow2:
   "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle>\<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule BinOp1Reds)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule BinOp2Reds)
 apply(rule red_reds.BinOpThrow2)
 done
@@ -151,9 +151,9 @@ subsubsection "FAcc"
 lemma FAccReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{D}, s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule FAccRed)
 done
 (*>*)
@@ -162,7 +162,7 @@ lemma FAccRedsVal:
   "\<lbrakk>P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>addr a,s'\<rangle>; hp s' a = Some(C,fs); fs(F,D) = Some v \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s\<rangle> \<rightarrow>* \<langle>Val v,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule FAccReds)
 apply(erule (1) RedFAcc)
 done
@@ -171,7 +171,7 @@ done
 lemma FAccRedsNull:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>null,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule FAccReds)
 apply(rule RedFAccNull)
 done
@@ -180,7 +180,7 @@ done
 lemma FAccRedsThrow:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D},s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule FAccReds)
 apply(rule red_reds.FAccThrow)
 done
@@ -191,9 +191,9 @@ subsubsection "FAss"
 lemma FAssReds1:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}:=e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{D}:=e\<^isub>2, s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule FAssRed1)
 done
 (*>*)
@@ -201,9 +201,9 @@ done
 lemma FAssReds2:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Val v\<bullet>F{D}:=e, s\<rangle> \<rightarrow>* \<langle>Val v\<bullet>F{D}:=e', s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule FAssRed2)
 done
 (*>*)
@@ -212,9 +212,9 @@ lemma FAssRedsVal:
   "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>addr a,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>Val v,(h\<^isub>2,l\<^isub>2)\<rangle>; Some(C,fs) = h\<^isub>2 a \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>unit, (h\<^isub>2(a\<mapsto>(C,fs((F,D)\<mapsto>v))),l\<^isub>2)\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule FAssReds1)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule FAssReds2)
 apply(rule RedFAss)
 apply simp
@@ -225,9 +225,9 @@ lemma FAssRedsNull:
   "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>null,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer, s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule FAssReds1)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule FAssReds2)
 apply(rule RedFAssNull)
 done
@@ -236,7 +236,7 @@ done
 lemma FAssRedsThrow1:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}:=e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule FAssReds1)
 apply(rule red_reds.FAssThrow1)
 done
@@ -246,9 +246,9 @@ lemma FAssRedsThrow2:
   "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1\<bullet>F{D}:=e\<^isub>2,s\<^isub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule FAssReds1)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule FAssReds2)
 apply(rule red_reds.FAssThrow2)
 done
@@ -259,9 +259,9 @@ subsubsection";;"
 lemma  SeqReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>e';;e\<^isub>2, s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule SeqRed)
 done
 (*>*)
@@ -269,7 +269,7 @@ done
 lemma SeqRedsThrow:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>throw e', s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule SeqReds)
 apply(rule red_reds.SeqThrow)
 done
@@ -278,9 +278,9 @@ done
 lemma SeqReds2:
   "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<rightarrow>* \<langle>e\<^isub>2',s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1;;e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>e\<^isub>2',s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule SeqReds)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedSeq)
 apply assumption
 done
@@ -292,9 +292,9 @@ subsubsection"If"
 lemma CondReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<rangle> \<rightarrow>* \<langle>if (e') e\<^isub>1 else e\<^isub>2,s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule CondRed)
 done
 (*>*)
@@ -302,7 +302,7 @@ done
 lemma CondRedsThrow:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2, s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CondReds)
 apply(rule red_reds.CondThrow)
 done
@@ -311,9 +311,9 @@ done
 lemma CondReds2T:
   "\<lbrakk>P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>true,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>1, s\<^isub>1\<rangle> \<rightarrow>* \<langle>e',s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>e',s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule CondReds)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedCondT)
 apply assumption
 done
@@ -322,9 +322,9 @@ done
 lemma CondReds2F:
   "\<lbrakk>P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>false,s\<^isub>1\<rangle>; P \<turnstile> \<langle>e\<^isub>2, s\<^isub>1\<rangle> \<rightarrow>* \<langle>e',s\<^isub>2\<rangle> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>e',s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule CondReds)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedCondF)
 apply assumption
 done
@@ -336,9 +336,9 @@ subsubsection "While"
 lemma WhileFReds:
   "P \<turnstile> \<langle>b,s\<rangle> \<rightarrow>* \<langle>false,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<rangle> \<rightarrow>* \<langle>unit,s'\<rangle>"
 (*<*)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedWhile)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CondReds)
 apply(rule RedCondF)
 done
@@ -347,9 +347,9 @@ done
 lemma WhileRedsThrow:
   "P \<turnstile> \<langle>b,s\<rangle> \<rightarrow>* \<langle>throw e,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<rangle> \<rightarrow>* \<langle>throw e,s'\<rangle>"
 (*<*)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedWhile)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CondReds)
 apply(rule red_reds.CondThrow)
 done
@@ -359,15 +359,15 @@ lemma WhileTReds:
   "\<lbrakk> P \<turnstile> \<langle>b,s\<^isub>0\<rangle> \<rightarrow>* \<langle>true,s\<^isub>1\<rangle>; P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<rightarrow>* \<langle>Val v\<^isub>1,s\<^isub>2\<rangle>; P \<turnstile> \<langle>while (b) c,s\<^isub>2\<rangle> \<rightarrow>* \<langle>e,s\<^isub>3\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<^isub>0\<rangle> \<rightarrow>* \<langle>e,s\<^isub>3\<rangle>"
 (*<*)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedWhile)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule CondReds)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedCondT)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule SeqReds)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedSeq)
 apply assumption
 done
@@ -377,13 +377,13 @@ lemma WhileTRedsThrow:
   "\<lbrakk> P \<turnstile> \<langle>b,s\<^isub>0\<rangle> \<rightarrow>* \<langle>true,s\<^isub>1\<rangle>; P \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>while (b) c,s\<^isub>0\<rangle> \<rightarrow>* \<langle>throw e,s\<^isub>2\<rangle>"
 (*<*)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedWhile)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule CondReds)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedCondT)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule SeqReds)
 apply(rule red_reds.SeqThrow)
 done
@@ -394,9 +394,9 @@ subsubsection"Throw"
 lemma ThrowReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>throw e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule ThrowRed)
 done
 (*>*)
@@ -404,7 +404,7 @@ done
 lemma ThrowRedsNull:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>null,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>throw e,s\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule ThrowReds)
 apply(rule RedThrowNull)
 done
@@ -413,7 +413,7 @@ done
 lemma ThrowRedsThrow:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>throw e,s\<rangle> \<rightarrow>* \<langle>throw a,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule ThrowReds)
 apply(rule red_reds.ThrowThrow)
 done
@@ -426,7 +426,7 @@ lemma InitBlockReds_aux:
   \<forall>h l h' l' v. s = (h,l(V\<mapsto>v)) \<longrightarrow> s' = (h',l') \<longrightarrow>
   P \<turnstile> \<langle>{V:T := Val v; e},(h,l)\<rangle> \<rightarrow>* \<langle>{V:T := Val(the(l' V)); e'},(h',l'(V:=(l V)))\<rangle>"
 (*<*)
-apply(erule converse_rtrancl_induct2'')
+apply(erule converse_rtrancl_induct2)
  apply(fastsimp simp: fun_upd_same simp del:fun_upd_apply)
 apply clarify
 apply(rename_tac e0 X Y e1 h1 l1 h0 l0 h2 l2 v0)
@@ -436,7 +436,7 @@ apply(subgoal_tac "V \<in> dom l1")
  apply simp
 apply clarsimp
 apply(rename_tac v1)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule InitBlockRed)
   apply assumption
  apply simp
@@ -458,7 +458,7 @@ lemma InitBlockRedsFinal:
   "\<lbrakk> P \<turnstile> \<langle>e,(h,l(V\<mapsto>v))\<rangle> \<rightarrow>* \<langle>e',(h',l')\<rangle>; final e' \<rbrakk> \<Longrightarrow>
   P \<turnstile> \<langle>{V:T := Val v; e},(h,l)\<rangle> \<rightarrow>* \<langle>e',(h', l'(V := l V))\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule InitBlockReds)
 apply(fast elim!:finalE intro:RedInitBlock InitBlockThrow)
 done
@@ -472,7 +472,7 @@ assumes reds: "P \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<rightarr
 shows "\<And>h\<^isub>0 l\<^isub>0. s\<^isub>0 = (h\<^isub>0,l\<^isub>0(V:=None)) \<Longrightarrow> P \<turnstile> \<langle>{V:T; e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2(V:=l\<^isub>0 V))\<rangle>"
 (*<*)
 using reds
-proof (induct rule:converse_rtrancl_induct2'')
+proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case
     by(fastsimp intro:finalE[OF fin] RedBlock BlockThrow
                 simp del:fun_upd_apply)
@@ -494,7 +494,7 @@ next
     from e\<^isub>1 fin have "e\<^isub>1 \<noteq> e\<^isub>2" by (auto simp:final_def)
     then obtain e' s' where red1: "P \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
       and reds': "P \<turnstile> \<langle>e',s'\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2)\<rangle>"
-      using converse_rtranclE2'[OF reds] by blast
+      using converse_rtranclE2[OF reds] by blast
     from red1 e\<^isub>1 have es': "e' = e" "s' = s\<^isub>1" by auto
     show ?case using e\<^isub>0 s\<^isub>1 es' reds'
       by(fastsimp intro!: InitBlockRedsFinal[OF _ fin] simp del:fun_upd_apply)
@@ -508,7 +508,7 @@ next
       moreover
       have "P \<turnstile> \<langle>{V:T; e\<^isub>1},(h\<^isub>1, l\<^isub>1(V := l\<^isub>0 V))\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2, l\<^isub>2(V := l\<^isub>0 V))\<rangle>"
 	using IH[of _ "l\<^isub>1(V := l\<^isub>0 V)"] s\<^isub>1 None by(simp add:fun_upd_idem)
-      ultimately show ?case by(rule converse_rtrancl_into_rtrancl2)
+      ultimately show ?case by(rule converse_rtrancl_into_rtrancl)
     next
       fix v assume Some: "l\<^isub>1 V = Some v"
       hence "P \<turnstile> \<langle>{V:T;e\<^isub>0},(h\<^isub>0,l\<^isub>0)\<rangle> \<rightarrow> \<langle>{V:T := Val v; e\<^isub>1},(h\<^isub>1,l\<^isub>1(V := l\<^isub>0 V))\<rangle>"
@@ -516,9 +516,9 @@ next
       moreover
       have "P \<turnstile> \<langle>{V:T := Val v; e\<^isub>1},(h\<^isub>1,l\<^isub>1(V:= l\<^isub>0 V))\<rangle> \<rightarrow>*
                 \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2(V:=l\<^isub>0 V))\<rangle>"
-	using InitBlockRedsFinal[OF _ fin,of _ _ _ "l\<^isub>1(V:=l\<^isub>0 V)" V]
+	using InitBlockRedsFinal[OF _ fin,of _ _ "l\<^isub>1(V:=l\<^isub>0 V)" V]
               Some reds s\<^isub>1 by(simp add:fun_upd_idem)
-      ultimately show ?case by(rule converse_rtrancl_into_rtrancl2)
+      ultimately show ?case by(rule converse_rtrancl_into_rtrancl)
     qed
   qed
 qed
@@ -530,9 +530,9 @@ subsubsection "try-catch"
 lemma TryReds:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>try e catch(C V) e\<^isub>2,s\<rangle> \<rightarrow>* \<langle>try e' catch(C V) e\<^isub>2,s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule TryRed)
 done
 (*>*)
@@ -540,7 +540,7 @@ done
 lemma TryRedsVal:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>Val v,s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>try e catch(C V) e\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Val v,s'\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule TryReds)
 apply(rule RedTry)
 done
@@ -551,9 +551,9 @@ lemma TryCatchRedsFinal:
      P \<turnstile> \<langle>e\<^isub>2, (h\<^isub>1, l\<^isub>1(V \<mapsto> Addr a))\<rangle> \<rightarrow>* \<langle>e\<^isub>2', (h\<^isub>2,l\<^isub>2)\<rangle>; final e\<^isub>2' \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>try e\<^isub>1 catch(C V) e\<^isub>2, s\<^isub>0\<rangle> \<rightarrow>* \<langle>e\<^isub>2', (h\<^isub>2, l\<^isub>2(V := l\<^isub>1 V))\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule TryReds)
-apply(rule converse_rtrancl_into_rtrancl2)
+apply(rule converse_rtrancl_into_rtrancl)
  apply(rule RedTryCatch)
   apply fastsimp
  apply assumption
@@ -567,7 +567,7 @@ lemma TryRedsFail:
   "\<lbrakk> P \<turnstile> \<langle>e\<^isub>1,s\<rangle> \<rightarrow>* \<langle>Throw a,(h,l)\<rangle>; h a = Some(D,fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>try e\<^isub>1 catch(C V) e\<^isub>2,s\<rangle> \<rightarrow>* \<langle>Throw a,(h,l)\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule TryReds)
 apply(fastsimp intro!: RedTryFail)
 done
@@ -578,9 +578,9 @@ subsubsection "List"
 lemma ListReds1:
   "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e#es,s\<rangle> [\<rightarrow>]* \<langle>e' # es,s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule ListRed1)
 done
 (*>*)
@@ -588,9 +588,9 @@ done
 lemma ListReds2:
   "P \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Val v # es,s\<rangle> [\<rightarrow>]* \<langle>Val v # es',s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule ListRed2)
 done
 (*>*)
@@ -599,7 +599,7 @@ lemma ListRedsVal:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<rightarrow>]* \<langle>es',s\<^isub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e#es,s\<^isub>0\<rangle> [\<rightarrow>]* \<langle>Val v # es',s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule ListReds1)
 apply(erule ListReds2)
 done
@@ -691,8 +691,8 @@ lemma blocksFinal:
 proof(induct Vs Ts vs e rule:blocks.induct)
   case 5
   show ?case using "5.prems" InitBlockReds[OF "5.hyps"]
-    by(fastsimp elim!:finalE elim: rtrancl_into_rtrancl2[of "red P", OF _ RedInitBlock]
-                                   rtrancl_into_rtrancl2[of "red P", OF _ InitBlockThrow])
+    by(fastsimp elim!:finalE elim: rtrancl_into_rtrancl[OF _ RedInitBlock]
+                                   rtrancl_into_rtrancl[OF _ InitBlockThrow])
 qed auto
 (*>*)
 
@@ -718,9 +718,9 @@ text{* An now the actual method call reduction lemmas. *}
 lemma CallRedsObj:
  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<rangle> \<rightarrow>* \<langle>e'\<bullet>M(es),s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule CallObj)
 done
 (*>*)
@@ -729,9 +729,9 @@ done
 lemma CallRedsParams:
  "P \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>(Val v)\<bullet>M(es),s\<rangle> \<rightarrow>* \<langle>(Val v)\<bullet>M(es'),s'\<rangle>"
 (*<*)
-apply(erule rtrancl_induct2'')
+apply(erule rtrancl_induct2)
  apply blast
-apply(erule rtrancl_into_rtrancl2)
+apply(erule rtrancl_into_rtrancl)
 apply(erule CallParams)
 done
 (*>*)
@@ -766,7 +766,7 @@ proof -
   also have "P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), (h\<^isub>2,l\<^isub>2)\<rangle> \<rightarrow>
                  \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^isub>2,l\<^isub>2)\<rangle>"
     by(rule RedCall)(auto simp: prems wf)
-  also (rtrancl_into_rtrancl2) have "P \<turnstile> \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^isub>2,l\<^isub>2)\<rangle>
+  also (rtrancl_into_rtrancl) have "P \<turnstile> \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^isub>2,l\<^isub>2)\<rangle>
                  \<rightarrow>* \<langle>ef,(h\<^isub>3,override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns))\<rangle>"
     by(rule blocksRedsFinal, insert prems wf body', simp_all)
   finally show ?thesis using eql\<^isub>2 by simp
@@ -778,9 +778,9 @@ lemma CallRedsThrowParams:
   "\<lbrakk> P \<turnstile> \<langle>e,s0\<rangle> \<rightarrow>* \<langle>Val v,s\<^isub>1\<rangle>;  P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs\<^isub>1 @ throw a # es\<^isub>2,s\<^isub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s0\<rangle> \<rightarrow>* \<langle>throw a,s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule CallRedsObj)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CallRedsParams)
 apply(rule CallThrowParams)
 apply simp
@@ -791,7 +791,7 @@ done
 lemma CallRedsThrowObj:
   "P \<turnstile> \<langle>e,s0\<rangle> \<rightarrow>* \<langle>throw a,s\<^isub>1\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s0\<rangle> \<rightarrow>* \<langle>throw a,s\<^isub>1\<rangle>"
 (*<*)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CallRedsObj)
 apply(rule CallThrowObj)
 done
@@ -802,9 +802,9 @@ lemma CallRedsNull:
   "\<lbrakk> P \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<rightarrow>* \<langle>null,s\<^isub>1\<rangle>; P \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<rightarrow>]* \<langle>map Val vs,s\<^isub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<rightarrow>* \<langle>THROW NullPointer,s\<^isub>2\<rangle>"
 (*<*)
-apply(rule rtrancl_trans')
+apply(rule rtrancl_trans)
  apply(erule CallRedsObj)
-apply(rule rtrancl_into_rtrancl2)
+apply(rule rtrancl_into_rtrancl)
  apply(erule CallRedsParams)
 apply(rule RedCallNull)
 done
@@ -1580,7 +1580,7 @@ and reds: "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e'',s''\
 shows "P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
 (*<*)
 using reds eval_rest 
-apply (induct rule: converse_rtrancl_induct2')
+apply (induct rule: converse_rtrancl_induct2)
 apply simp
 apply simp
 by (rule extend_1_eval)
@@ -1593,7 +1593,7 @@ and reds: "P \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es'',
 shows "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle>"
 (*<*)
 using reds eval_rest 
-apply (induct rule: converse_rtrancl_induct2')
+apply (induct rule: converse_rtrancl_induct2)
 apply simp
 apply simp
 by (rule extend_1_evals)

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Product.thy
-    ID:         $Id: Product.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: Product.thy,v 1.4 2007-07-11 10:17:11 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -62,8 +62,8 @@ lemma acc_le_prodI [intro!]:
   "\<lbrakk> acc r\<^isub>A; acc r\<^isub>B \<rbrakk> \<Longrightarrow> acc(Product.le r\<^isub>A r\<^isub>B)"
 (*<*)
 apply (unfold acc_def)
-apply (rule wfP_subset)
- apply (erule wf_lex_prod [to_pred, THEN wfP_wf_eq [THEN iffD2]])
+apply (rule wf_subset)
+ apply (erule wf_lex_prod)
  apply assumption
 apply (auto simp add: lesssub_def less_prod_Pair_conv lex_prod_def)
 done

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Listn.thy
-    ID:         $Id: Listn.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: Listn.thy,v 1.4 2007-07-11 10:17:11 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -393,22 +393,22 @@ lemma acc_le_listI [intro!]:
 (*<*)
 apply (unfold acc_def)
 apply (subgoal_tac
- "wfP (SUP n. (\<lambda>ys xs. size xs = n \<and> size ys = n \<and> xs <_(Listn.le r) ys))")
- apply (erule wfP_subset)
+ "wf(UN n. {(ys,xs). size xs = n \<and> size ys = n \<and> xs <_(Listn.le r) ys})")
+ apply (erule wf_subset)
  apply (blast intro: lesssub_lengthD)
-apply (rule wfP_SUP)
+apply (rule wf_UN)
  prefer 2
  apply clarify
  apply (rename_tac m n)
  apply (case_tac "m=n")
   apply simp
- apply (fast intro!: equals0I [to_pred] dest: not_sym)
+ apply (fast intro!: equals0I dest: not_sym)
 apply clarify
 apply (rename_tac n)
 apply (induct_tac n)
  apply (simp add: lesssub_def cong: conj_cong)
 apply (rename_tac k)
-apply (simp add: wfP_eq_minimal)
+apply (simp add: wf_eq_minimal)
 apply (simp (no_asm) add: length_Suc_conv cong: conj_cong)
 apply clarify
 apply (rename_tac M m)

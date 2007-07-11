@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.7 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: Progress.thy,v 1.8 2007-07-11 10:17:12 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -27,7 +27,7 @@ lemma finalRefE:
 
 text{* Derivation of new induction scheme for well typing: *}
 
-inductive2
+inductive
   WTrt' :: "[J_prog,heap,env,expr,ty] \<Rightarrow> bool"
   and WTrts' :: "[J_prog,heap,env,expr list, ty list] \<Rightarrow> bool"
   and WTrt2' :: "[J_prog,env,heap,expr,ty] \<Rightarrow> bool"
@@ -86,7 +86,7 @@ where
 lemmas WTrt'_induct = WTrt'_WTrts'.induct [split_format (complete)]
   and WTrt'_inducts = WTrt'_WTrts'.inducts [split_format (complete)]
 
-inductive_cases2 WTrt'_elim_cases[elim!]:
+inductive_cases WTrt'_elim_cases[elim!]:
   "P,E,h \<turnstile> V :=e :' T"
 (*>*)
 

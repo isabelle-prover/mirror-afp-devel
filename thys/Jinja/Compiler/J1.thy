@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/J1.thy
-    ID:         $Id: J1.thy,v 1.5 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: J1.thy,v 1.6 2007-07-11 10:17:11 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -39,7 +39,7 @@ primrec
 "max_varss [] = 0"
 "max_varss (e#es) = max (max_vars e) (max_varss es)"
 
-inductive2
+inductive
   eval\<^isub>1 :: "J\<^isub>1_prog \<Rightarrow> expr\<^isub>1 \<Rightarrow> state\<^isub>1 \<Rightarrow> expr\<^isub>1 \<Rightarrow> state\<^isub>1 \<Rightarrow> bool"
           ("_ \<turnstile>\<^sub>1 ((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
   and evals\<^isub>1 :: "J\<^isub>1_prog \<Rightarrow> expr\<^isub>1 list \<Rightarrow> state\<^isub>1 \<Rightarrow> expr\<^isub>1 list \<Rightarrow> state\<^isub>1 \<Rightarrow> bool"

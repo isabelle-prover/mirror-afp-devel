@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/WellType1.thy
-    ID:         $Id: J1WellForm.thy,v 1.4 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: J1WellForm.thy,v 1.5 2007-07-11 10:17:11 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -15,7 +15,7 @@ subsection "Well-Typedness"
 types 
   env\<^isub>1  = "ty list"   --"type environment indexed by variable number"
 
-inductive2
+inductive
   WT\<^isub>1 :: "[J\<^isub>1_prog,env\<^isub>1, expr\<^isub>1     , ty     ] \<Rightarrow> bool"
          ("(_,_ \<turnstile>\<^sub>1/ _ :: _)"   [51,51,51]50)
   and WTs\<^isub>1 :: "[J\<^isub>1_prog,env\<^isub>1, expr\<^isub>1 list, ty list] \<Rightarrow> bool"
@@ -101,7 +101,7 @@ declare WTNil\<^isub>1[iff]
 lemmas WT\<^isub>1_WTs\<^isub>1_induct = WT\<^isub>1_WTs\<^isub>1.induct [split_format (complete)]
   and WT\<^isub>1_WTs\<^isub>1_inducts = WT\<^isub>1_WTs\<^isub>1.inducts [split_format (complete)]
 
-inductive_cases2 eee[elim!]:
+inductive_cases eee[elim!]:
   "P,E \<turnstile>\<^sub>1 Val v :: T"
   "P,E \<turnstile>\<^sub>1 Var i :: T"
   "P,E \<turnstile>\<^sub>1 Cast D e :: T"

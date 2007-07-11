@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallTypeSafe.thy
-    ID:         $Id: TypeSafe.thy,v 1.3 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: TypeSafe.thy,v 1.4 2007-07-11 10:17:12 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -571,7 +571,7 @@ assumes wf: "wf_J_prog P" and Red: "P \<turnstile> \<langle>e,s\<rangle> \<right
 shows "\<And>T. \<lbrakk> P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
 (*<*)
 using Red
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl show ?case .
 next
   case step thus ?case
@@ -584,7 +584,7 @@ lemma Red_preserves_defass:
 assumes wf: "wf_J_prog P" and reds: "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>"
 shows "\<D> e \<lfloor>dom(lcl s)\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom(lcl s')\<rfloor>"
 using reds
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case .
 next
   case (step e s e' s') thus ?case
@@ -598,7 +598,7 @@ shows "!!T. \<lbrakk> P,E \<turnstile> s\<surd>; P,E,hp s \<turnstile> e:T \<rbr
     \<Longrightarrow> \<exists>T'. P \<turnstile> T' \<le> T \<and> P,E,hp s' \<turnstile> e':T'"
 (*<*)
 using Red
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case by blast
 next
   case step thus ?case
@@ -650,7 +650,7 @@ assumes wf: "wf_J_prog P" and reds: "P \<turnstile> \<langle>e,s\<rangle> \<righ
 shows "\<And>T. P,E,s \<turnstile> e:T \<surd> \<Longrightarrow> \<exists>T'. P,E,s' \<turnstile> e':T' \<surd> \<and> P \<turnstile> T' \<le> T"
 (*<*)
 using reds
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case by blast
 next
   case step thus ?case

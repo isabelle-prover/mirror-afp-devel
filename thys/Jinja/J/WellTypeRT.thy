@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/WellTypeRT.thy
-    ID:         $Id: WellTypeRT.thy,v 1.4 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: WellTypeRT.thy,v 1.5 2007-07-11 10:17:12 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -10,7 +10,7 @@ theory WellTypeRT
 imports WellType
 begin
 
-inductive2
+inductive
   WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"
   and WTrts :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool"
   and WTrt2 :: "[J_prog,env,heap,expr,ty] \<Rightarrow> bool"
@@ -197,7 +197,7 @@ apply (auto elim: WTrt.cases)
 done
 (*>*)
 (*<*)
-inductive_cases2 WTrt_elim_cases[elim!]:
+inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> v :=e : T"
   "P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
   "P,E,h \<turnstile> while(e) c : T"
