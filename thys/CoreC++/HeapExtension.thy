@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: HeapExtension.thy,v 1.9 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: HeapExtension.thy,v 1.10 2007-07-11 10:07:49 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -94,11 +94,11 @@ qed simp_all
 
 lemma step_hext_incr: "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>  \<Longrightarrow> hp s \<unlhd> hp s'"
 
-proof(induct rule:converse_rtrancl_induct2')
+proof(induct rule:converse_rtrancl_induct2)
   case refl thus ?case by(rule hext_refl)
 next
   case (step e s e'' s'')
-  have Red:"Red P E (e, s) (e'', s'')"
+  have Red:"((e, s), e'', s'') \<in> Red P E"
     and hext:"hp s'' \<unlhd> hp s'" .
   from Red have "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e'',s''\<rangle>" by simp
   hence "hp s \<unlhd> hp s''"
@@ -109,11 +109,11 @@ qed
 
 lemma steps_hext_incr: "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>  \<Longrightarrow> hp s \<unlhd> hp s'"
 
-proof(induct rule:converse_rtrancl_induct2')
+proof(induct rule:converse_rtrancl_induct2)
   case refl thus ?case by(rule hext_refl)
 next
   case (step es s es'' s'')
-  have Reds:"Reds P E (es, s) (es'', s'')"
+  have Reds:"((es, s), es'', s'') \<in> Reds P E"
     and hext:"hp s'' \<unlhd> hp s'" .
   from Reds have "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
   hence "hp s \<unlhd> hp s''"

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Objects.thy,v 1.7 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: Objects.thy,v 1.8 2007-07-11 10:07:49 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -24,7 +24,7 @@ constdefs
   "init_class_fieldmap P C \<equiv> 
      map_of (map (\<lambda>(F,T).(F,default_val T)) (fst(snd(the(class P C)))) )"
 
-inductive2
+inductive
   init_obj :: "prog \<Rightarrow> cname \<Rightarrow> (path \<times> (vname \<rightharpoonup> val)) \<Rightarrow> bool"
   for P :: prog and C :: cname
 where

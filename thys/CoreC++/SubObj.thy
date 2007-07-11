@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SubObj.thy,v 1.8 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: SubObj.thy,v 1.9 2007-07-11 10:07:49 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -85,7 +85,7 @@ proof -
   with 1 R C''Cs'' have subo1:"is_subobj(P,(C',C''#rev Ds))" by simp
   with R show ?thesis
     by (induct Ds,auto simp:mdc_def split:split_if_asm dest:subobj_aux,
-      auto elim:converse_rtranclE' dest!:subclsS_subcls1 elim:subcls1_class)
+      auto elim:converse_rtranclE dest!:subclsS_subcls1 elim:subcls1_class)
 qed
 
 
@@ -171,7 +171,7 @@ proof (induct Cs')
     from DDs have "D = last (C' # rev Cs'')" by simp
     with rel1 have lastrel1:"P \<turnstile> last (C' # rev Cs'') \<prec>\<^sup>1 C''" by simp
     with rel have "P \<turnstile> C \<preceq>\<^sup>* C''"
-      by(rule_tac b="last (C' # rev Cs'')" in rtrancl.rtrancl_into_rtrancl) simp
+      by(rule_tac b="last (C' # rev Cs'')" in rtrancl_into_rtrancl) simp
     thus ?case by simp
 qed
 
@@ -339,14 +339,14 @@ section {* Subobject handling and lemmas *}
 
 text{* Subobjects consisting of repeated inheritance relations only: *}
 
-inductive2 Subobjs\<^isub>R :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" for P :: prog
+inductive Subobjs\<^isub>R :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" for P :: prog
 where
   SubobjsR_Base: "is_class P C \<Longrightarrow> Subobjs\<^isub>R P C [C]"
 | SubobjsR_Rep: "\<lbrakk>P \<turnstile> C \<prec>\<^sub>R D; Subobjs\<^isub>R P D Cs\<rbrakk> \<Longrightarrow> Subobjs\<^isub>R P C (C # Cs)"
 
 text{* All subobjects: *}
 
-inductive2 Subobjs :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" for P :: prog
+inductive Subobjs :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" for P :: prog
 where
   Subobjs_Rep: "Subobjs\<^isub>R P C Cs \<Longrightarrow> Subobjs P C Cs"
 | Subobjs_Sh: "\<lbrakk>P \<turnstile> C \<preceq>\<^sup>* C'; P \<turnstile> C' \<prec>\<^sub>S D; Subobjs\<^isub>R P D Cs\<rbrakk>
@@ -369,7 +369,7 @@ by(erule Subobjs\<^isub>R.induct,simp+)
 
 
 lemma SubobjsR_subclassRep: 
-  "Subobjs\<^isub>R P C Cs \<Longrightarrow> (subclsR P)\<^sup>*\<^sup>* C (last Cs)"
+  "Subobjs\<^isub>R P C Cs \<Longrightarrow> (C,last Cs) \<in> (subclsR P)\<^sup>*"
 
 apply(erule Subobjs\<^isub>R.induct)
  apply simp
@@ -382,7 +382,7 @@ lemma SubobjsR_subclass: "Subobjs\<^isub>R P C Cs \<Longrightarrow> P \<turnstil
 apply(erule Subobjs\<^isub>R.induct)
  apply simp
 apply(simp add: SubobjsR_nonempty)
-apply(blast intro:subclsR_subcls1 rtrancl_trans')
+apply(blast intro:subclsR_subcls1 rtrancl_trans)
 done
 
 
@@ -390,8 +390,8 @@ lemma Subobjs_subclass: "Subobjs P C Cs \<Longrightarrow> P \<turnstile> C \<pre
 
 apply(erule Subobjs.induct)
  apply(erule SubobjsR_subclass)
-apply(erule rtrancl_trans')
-apply(blast intro:subclsS_subcls1 SubobjsR_subclass rtrancl_trans')
+apply(erule rtrancl_trans)
+apply(blast intro:subclsS_subcls1 SubobjsR_subclass rtrancl_trans)
 done
 
 
@@ -465,8 +465,8 @@ proof (induct rule:Subobjs.induct)
 next
   case (Subobjs_Sh C C' D Cs)
   have leq:"P \<turnstile> C \<preceq>\<^sup>* C'" and leqS:"P \<turnstile> C' \<prec>\<^sub>S D" .
-  hence "(subcls1 P)\<^sup>+\<^sup>+ C D" by (fastsimp intro:rtrancl_into_trancl1' subclsS_subcls1)
-  thus ?case by (induct rule:trancl_induct', fastsimp intro:subcls1_class)
+  hence "(C,D) \<in> (subcls1 P)\<^sup>+" by (fastsimp intro:rtrancl_into_trancl1 subclsS_subcls1)
+  thus ?case by (induct rule:trancl_induct, fastsimp intro:subcls1_class)
 qed
 
 
@@ -625,7 +625,7 @@ by(auto simp:appendPath_def last_append)(cases Cs, simp_all)+
 
 
 
-inductive2
+inductive
   casts_to :: "prog \<Rightarrow> ty \<Rightarrow> val \<Rightarrow> val \<Rightarrow> bool"
     ("_ \<turnstile> _ casts _ to _ " [51,51,51,51] 50)
   for P :: prog
@@ -639,7 +639,7 @@ where
   \<Longrightarrow> P \<turnstile> Class C casts Ref(a,Cs) to Ref(a,Ds)"
 
 
-inductive2
+inductive
   Casts_to :: "prog \<Rightarrow> ty list \<Rightarrow> val list \<Rightarrow> val list \<Rightarrow> bool"
     ("_ \<turnstile> _ Casts _ to _ " [51,51,51,51] 50)
   for P :: prog
@@ -664,18 +664,20 @@ by (induct rule:Casts_to.induct,simp_all)
 
 subsection {* The relation on paths *}
 
-inductive2
-  leq_path1 :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" ("_,_ \<turnstile> _ \<sqsubset>\<^sup>1 _" [71,71,71] 70)
+inductive_set
+  leq_path1 :: "prog \<Rightarrow> cname \<Rightarrow> (path \<times> path) set"
+  and leq_path1' :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" ("_,_ \<turnstile> _ \<sqsubset>\<^sup>1 _" [71,71,71] 70)
   for P :: prog and C :: cname
 where
-  leq_pathRep: "\<lbrakk> Subobjs P C Cs; Subobjs P C Ds; Cs = butlast Ds\<rbrakk>
+  "P,C \<turnstile> Cs \<sqsubset>\<^sup>1 Ds \<equiv> (Cs,Ds) \<in> leq_path1 P C"
+| leq_pathRep: "\<lbrakk> Subobjs P C Cs; Subobjs P C Ds; Cs = butlast Ds\<rbrakk>
   \<Longrightarrow> P,C \<turnstile> Cs \<sqsubset>\<^sup>1 Ds"
 | leq_pathSh:  "\<lbrakk> Subobjs P C Cs; P \<turnstile> last Cs \<prec>\<^sub>S D \<rbrakk>
   \<Longrightarrow> P,C \<turnstile> Cs \<sqsubset>\<^sup>1 [D]"
 
 abbreviation
   leq_path :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" ("_,_ \<turnstile> _ \<sqsubseteq> _"  [71,71,71] 70) where
-  "P,C \<turnstile> Cs \<sqsubseteq> Ds \<equiv> (leq_path1 P C)\<^sup>*\<^sup>* Cs Ds"
+  "P,C \<turnstile> Cs \<sqsubseteq> Ds \<equiv> (Cs,Ds) \<in> (leq_path1 P C)\<^sup>*"
 
 
 lemma leq_path_rep:
@@ -742,7 +744,7 @@ constdefs
       (*(\<forall>(Cs',mthd') \<in> OverriderMethodDefs P R M. Cs = Cs' \<and> mthd = mthd')"*)
 
 
-inductive2
+inductive
   SelectMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
      ("_ \<turnstile> '(_,_') selects _ = _ via _" [51,0,0,0,0,51] 50)
   for P :: prog

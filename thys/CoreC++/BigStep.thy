@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.15 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: BigStep.thy,v 1.16 2007-07-11 10:07:48 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -14,7 +14,7 @@ theory BigStep imports Syntax State begin
 
 section {* The rules *}
 
-inductive2
+inductive
   eval :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
           ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
   and evals :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
@@ -235,7 +235,7 @@ where
 lemmas eval_evals_induct = eval_evals.induct [split_format (complete)]
   and eval_evals_inducts = eval_evals.inducts [split_format (complete)]
 
-inductive_cases2 eval_cases [cases set]:
+inductive_cases eval_cases [cases set]:
  "P,E \<turnstile> \<langle>new C,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -253,7 +253,7 @@ inductive_cases2 eval_cases [cases set]:
  "P,E \<turnstile> \<langle>while (b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>throw e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
   
-inductive_cases2 evals_cases [cases set]:
+inductive_cases evals_cases [cases set]:
  "P,E \<turnstile> \<langle>[],s\<rangle> [\<Rightarrow>] \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e#es,s\<rangle> [\<Rightarrow>] \<langle>e',s'\<rangle>"
 

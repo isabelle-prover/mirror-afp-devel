@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellTypeRT.thy,v 1.9 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: WellTypeRT.thy,v 1.10 2007-07-11 10:07:50 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -50,7 +50,7 @@ by(induct v,auto split:split_if_asm)
 
 section {* The rules *}
 
-inductive2
+inductive
   WTrt :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ : _"   [51,51,51]50)
   and WTrts :: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
@@ -229,7 +229,7 @@ done
 
 
 
-inductive_cases2 WTrt_elim_cases[elim!]:
+inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> new C : T"
   "P,E,h \<turnstile> Cast C e : T"
   "P,E,h \<turnstile> \<lparr>C\<rparr>e : T"

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellType.thy,v 1.10 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: WellType.thy,v 1.11 2007-07-11 10:07:50 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -14,7 +14,7 @@ theory WellType imports Syntax TypeRel begin
 
 section {* The rules *}
 
-inductive2
+inductive
   WT :: "[prog,env,expr     ,ty     ] \<Rightarrow> bool"
          ("_,_ \<turnstile> _ :: _"   [51,51,51]50)
   and WTs :: "[prog,env,expr list,ty list] \<Rightarrow> bool"
@@ -181,7 +181,7 @@ done
 
 
 
-inductive_cases2 WT_elim_cases[elim!]:
+inductive_cases WT_elim_cases[elim!]:
   "P,E \<turnstile> new C :: T"
   "P,E \<turnstile> Cast C e :: T"
   "P,E \<turnstile> \<lparr>C\<rparr>e :: T"

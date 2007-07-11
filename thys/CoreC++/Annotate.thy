@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Annotate.thy,v 1.8 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: Annotate.thy,v 1.9 2007-07-11 10:07:48 stefanberghofer Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -19,7 +19,7 @@ translations
   "unanFAss e F e'" == "FAss e F [] e'"
 
 
-inductive2
+inductive
   Anno :: "[prog,env, expr     , expr] \<Rightarrow> bool"
          ("_,_ \<turnstile> _ \<leadsto> _"   [51,0,0,51]50)
   and Annos :: "[prog,env, expr list, expr list] \<Rightarrow> bool"

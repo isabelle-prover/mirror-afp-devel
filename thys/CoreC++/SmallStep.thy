@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.13 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: SmallStep.thy,v 1.14 2007-07-11 10:07:49 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -37,15 +37,20 @@ constdefs
 
 section {* The rules *}
 
-inductive2
-  red :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
+inductive_set
+  red  :: "prog \<Rightarrow> (env \<times> (expr \<times> state) \<times> (expr \<times> state)) set"
+  and reds  :: "prog \<Rightarrow> (env \<times> (expr list \<times> state) \<times> (expr list \<times> state)) set"
+  and red' :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
           ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
-  and reds :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
+  and reds' :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
           ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
   for P :: prog
 where
 
-RedNew:
+  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle> \<equiv> (E,(e,s), e',s') \<in> red P"
+| "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle> \<equiv> (E,(es,s), es',s') \<in> reds P"
+
+| RedNew:
   "\<lbrakk> new_Addr h = Some a; h' = h(a\<mapsto>(C,Collect (init_obj P C))) \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> \<langle>new C, (h,l)\<rangle> \<rightarrow> \<langle>ref (a,[C]), (h',l)\<rangle>"
 
@@ -251,7 +256,7 @@ RedNew:
 lemmas red_reds_induct = red_reds.induct [split_format (complete)]
   and red_reds_inducts = red_reds.inducts [split_format (complete)]
 
-inductive_cases2 [elim!]:
+inductive_cases [elim!]:
  "P,E \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
  "P,E \<turnstile> \<langle>e1;;e2,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
 
@@ -265,17 +270,17 @@ by (induct rule: red_reds.inducts) auto
 section{* The reflexive transitive closure *}
 
 consts
-  Red ::  "prog \<Rightarrow> env \<Rightarrow> (expr      \<times> state) \<Rightarrow> (expr      \<times> state) \<Rightarrow> bool"
-  Reds :: "prog \<Rightarrow> env \<Rightarrow> (expr list \<times> state) \<Rightarrow> (expr list \<times> state) \<Rightarrow> bool"
+  Red ::  "prog \<Rightarrow> env \<Rightarrow> ((expr      \<times> state) \<times> (expr      \<times> state)) set"
+  Reds :: "prog \<Rightarrow> env \<Rightarrow> ((expr list \<times> state) \<times> (expr list \<times> state)) set"
 
 defs
-  Red_def: "Red P E \<equiv>  \<lambda>(e,s) (e',s'). P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-  Reds_def:"Reds P E \<equiv> \<lambda>(es,s) (es',s'). P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
+  Red_def: "Red P E \<equiv>  {((e,s),e',s'). P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>}"
+  Reds_def:"Reds P E \<equiv> {((es,s),es',s'). P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>}"
 
-lemma[simp]: "Red P E (e,s) (e',s') = P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
+lemma[simp]: "((e,s),e',s') \<in> Red P E = P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
 by (simp add:Red_def)
 
-lemma[simp]: "Reds P E (es,s) (es',s') = P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
+lemma[simp]: "((es,s),es',s') \<in> Reds P E = P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
 by (simp add:Reds_def)
 
 
@@ -283,12 +288,12 @@ by (simp add:Reds_def)
 abbreviation
   Step :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
           ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81) where
-  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<equiv> (Red P E)\<^sup>*\<^sup>* (e,s) (e',s')"
+  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<equiv> ((e,s), e',s') \<in> (Red P E)\<^sup>*"
 
 abbreviation
   Steps :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
           ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81) where
-  "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<equiv> (Reds P E)\<^sup>*\<^sup>* (es,s) (es',s')"
+  "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<equiv> ((es,s), es',s') \<in> (Reds P E)\<^sup>*"
 
 
 lemma converse_rtrancl_induct_red[consumes 1]:
@@ -306,11 +311,11 @@ proof -
            \<lbrakk> P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<rightarrow> \<langle>e\<^isub>1,s\<^isub>1\<rangle>; R e\<^isub>1 (hp s\<^isub>1) (lcl s\<^isub>1) e' (hp s') (lcl s') \<rbrakk>
            \<Longrightarrow> R e\<^isub>0 (hp s\<^isub>0) (lcl s\<^isub>0) e' (hp s') (lcl s')"
     from reds have "R e (hp s) (lcl s) e' (hp s') (lcl s')"
-    proof (induct rule:converse_rtrancl_induct2')
+    proof (induct rule:converse_rtrancl_induct2)
       case refl show ?case by(rule base)
     next
       case (step e\<^isub>0 s\<^isub>0 e s)
-      have Red:"Red P E (e\<^isub>0,s\<^isub>0) (e,s)"
+      have Red:"((e\<^isub>0,s\<^isub>0),e,s) \<in> Red P E"
 	and R:"R e (hp s) (lcl s) e' (hp s') (lcl s')" .
       from IH[OF Red[simplified] R] show ?case .
     qed
@@ -321,7 +326,7 @@ qed
 
 
 lemma steps_length:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<Longrightarrow> length es = length es'"
-by(induct rule:rtrancl_induct2',auto intro:reds_length)
+by(induct rule:rtrancl_induct2,auto intro:reds_length)
 
 
 section{*Some easy lemmas*}
@@ -411,7 +416,7 @@ proof(induct rule:converse_rtrancl_induct_red)
   case 1 thus ?case by simp
 next
   case 2 thus ?case
-    by(auto dest: red_lcl_add intro: converse_rtrancl_into_rtrancl' simp:Red_def)
+    by(auto dest: red_lcl_add intro: converse_rtrancl_into_rtrancl simp:Red_def)
 qed
 
 

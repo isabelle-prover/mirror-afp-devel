@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.14 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: Progress.thy,v 1.15 2007-07-11 10:07:49 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -87,7 +87,7 @@ qed
 
 text{* Derivation of new induction scheme for well typing: *}
 
-inductive2
+inductive
   WTrt' :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ :' _"   [51,51,51]50)
   and WTrts':: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
@@ -142,7 +142,7 @@ where
 lemmas WTrt'_induct = WTrt'_WTrts'.induct [split_format (complete)]
   and WTrt'_inducts = WTrt'_WTrts'.inducts [split_format (complete)]
 
-inductive_cases2 WTrt'_elim_cases[elim!]:
+inductive_cases WTrt'_elim_cases[elim!]:
   "P,E,h \<turnstile> V :=e :' T"
 
 

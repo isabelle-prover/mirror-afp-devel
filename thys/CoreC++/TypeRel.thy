@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeRel.thy,v 1.9 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: TypeRel.thy,v 1.10 2007-07-11 10:07:49 stefanberghofer Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab 
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -12,7 +12,7 @@ header {* \isaheader{The subtype relation} *}
 theory TypeRel imports SubObj begin
 
 
-inductive2
+inductive
   widen   :: "prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ \<le> _"   [71,71,71] 70)
   for P :: prog
 where
@@ -47,7 +47,7 @@ by (auto elim: widen.cases)
 lemma [iff]: "(P \<turnstile> T \<le> NT) = (T = NT)"
 
 apply(cases T) apply auto
-apply (ind_cases2 "P \<turnstile> T \<le> NT" for T)
+apply (ind_cases "P \<turnstile> T \<le> NT" for T)
 apply auto
 done
 

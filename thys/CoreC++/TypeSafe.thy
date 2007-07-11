@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.13 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: TypeSafe.thy,v 1.14 2007-07-11 10:07:49 stefanberghofer Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -1313,7 +1313,7 @@ assumes wf: "wf_C_prog P" and step: "P,E \<turnstile> \<langle>e,s\<rangle> \<ri
 shows "\<And>T. \<lbrakk> P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
 
 using step
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl show ?case .
 next
   case step
@@ -1327,11 +1327,11 @@ assumes wf: "wf_C_prog P" and step: "P,E \<turnstile> \<langle>es,s\<rangle> [\<
 shows "\<And>Ts. \<lbrakk> P,E,hp s \<turnstile> es [:] Ts; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
 
 using step
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl show ?case .
 next
   case (step es s es'' s'' Ts)
-  have Reds:"Reds P E (es, s) (es'', s'')"
+  have Reds:"((es, s), es'', s'') \<in> Reds P E"
     and reds:"P,E \<turnstile> \<langle>es'',s''\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
     and wtes:"P,E,hp s \<turnstile> es [:] Ts"
     and sconf:"P,E \<turnstile> s \<surd>"
@@ -1382,7 +1382,7 @@ assumes wf: "wf_C_prog P" and step: "P,E \<turnstile> \<langle>e,s\<rangle> \<ri
 shows "\<D> e \<lfloor>dom(lcl s)\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom(lcl s')\<rfloor>"
 
 using step
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case .
 next
   case (step e s e' s') thus ?case
@@ -1397,7 +1397,7 @@ shows "\<And>T. \<lbrakk> P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e:T 
     \<Longrightarrow> P,E,(hp s') \<turnstile> e' :\<^bsub>NT\<^esub> T"
 
 using step
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case by -(rule wt_same_type_typeconf)
 next
   case (step e s e'' s'' T) thus ?case using wf
@@ -1469,11 +1469,11 @@ shows "\<And>Ts. \<lbrakk> P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> es 
   \<Longrightarrow> types_conf(P,E,hp s',es',Ts)"
   
 using steps
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case by -(rule wts_same_types_typesconf)
 next
   case (step es s es'' s'' Ts)
-  have Reds:"Reds P E (es, s) (es'', s'')"
+  have Reds:"((es, s), es'', s'') \<in> Reds P E"
     and steps:"P,E \<turnstile> \<langle>es'',s''\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
     and sconf:"P,E \<turnstile> s \<surd>" and wtes:"P,E,hp s \<turnstile> es [:] Ts"
     and IH:"\<And>Ts. \<lbrakk>P,E \<turnstile> s'' \<surd>; P,E,hp s'' \<turnstile> es'' [:] Ts \<rbrakk> 
@@ -1550,12 +1550,12 @@ assumes wf: "wf_C_prog P" and reds: "P,E \<turnstile> \<langle>e,s\<rangle> \<ri
 shows "\<And>T. P,E,s \<turnstile> e : T \<surd> \<Longrightarrow> P,E,(hp s') \<turnstile> e' :\<^bsub>NT\<^esub> T"
 
 using reds
-proof (induct rule:converse_rtrancl_induct2')
+proof (induct rule:converse_rtrancl_induct2)
   case refl thus ?case
     by (fastsimp intro:wt_same_type_typeconf simp:wf_config_def)
 next
   case (step e s e'' s'' T)
-  have Red:"Red P E (e, s) (e'', s'')"
+  have Red:"((e, s), e'', s'') \<in> Red P E"
     and IH:"\<And>T. P,E,s'' \<turnstile> e'' : T \<surd> \<Longrightarrow> P,E,(hp s') \<turnstile> e' :\<^bsub>NT\<^esub> T"
     and wte:"P,E,s \<turnstile> e : T \<surd>" .
   from Red have red:"P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e'',s''\<rangle>" by simp
