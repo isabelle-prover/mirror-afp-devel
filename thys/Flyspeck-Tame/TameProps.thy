@@ -1,4 +1,4 @@
-(* ID:         $Id: TameProps.thy,v 1.2 2007-06-08 12:06:56 nipkow Exp $
+(* ID:         $Id: TameProps.thy,v 1.3 2007-07-11 10:12:00 stefanberghofer Exp $
    Author:     Tobias Nipkow
 *)
 
@@ -40,7 +40,7 @@ using gg'
 proof (induct rule:RTranCl.induct)
   case refl show ?case by(rule RTranCl.refl)
 next
-  case (succs h h' h'')
+  case (succs h' h h'')
   hence "P h'"  using invP by(unfold invariant_def) blast
   show ?case
   proof cases
@@ -49,7 +49,7 @@ next
   next
     assume "\<not> ok h'" note fin_tame = ok_untame[OF `P h'` `\<not> ok h'`]
     have "h'' = h'" using fin_tame
-      by(rule_tac RTranCl.elims[OF succs(2)])(auto simp:fin)
+      by(rule_tac RTranCl.cases[OF succs(2)])(auto simp:fin)
     hence False using fin_tame succs by fast
     thus ?case ..
   qed
@@ -71,7 +71,7 @@ using gg'
 proof (induct rule:RTranCl.induct)
   case refl show ?case by(rule RTranCl.refl)
 next
-  case (succs h h' h'')
+  case (succs h' h h'')
   hence Ph': "P h'"  using invP by(unfold invariant_def) blast
   show ?case
   proof cases
@@ -100,7 +100,7 @@ using gg'
 proof (induct rule:RTranCl.induct)
   case refl show ?case by(rule RTranCl.refl)
 next
-  case (succs h h' h'')
+  case (succs h' h h'')
   hence Ph': "P h'" using invP by(unfold invariant_def) blast
   hence IH: "h' [map f \<circ> succs]\<rightarrow>* h''" using succs by blast
   thus ?case

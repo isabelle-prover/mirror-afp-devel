@@ -1,5 +1,5 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.6 2007-06-14 12:54:52 makarius Exp $
+    ID:         $Id: LList2.thy,v 1.7 2007-07-11 10:19:28 stefanberghofer Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -37,28 +37,28 @@ lemma llist_split_asm:
 section{*Finite and infinite llists over an alphabet*}
 
 consts
-  alllsts :: "'a set \<Rightarrow> 'a llist set"
-  finlsts :: "'a set \<Rightarrow> 'a llist set"
   inflsts :: "'a set \<Rightarrow> 'a llist set"
   fpslsts :: "'a set \<Rightarrow> 'a llist set"
   poslsts :: "'a set \<Rightarrow> 'a llist set"
 
 syntax (xsymbols)
-  alllsts :: "'a set \<Rightarrow> 'a llist set" ("(_\\<^sup>\<infinity>)" [1000] 999)
-  finlsts :: "'a set \<Rightarrow> 'a llist set" ("(_\\<^sup>\<star>)" [1000] 999)
   inflsts :: "'a set \<Rightarrow> 'a llist set" ("(_\\<^sup>\<omega>)" [1000] 999)
   fpslsts :: "'a set \<Rightarrow> 'a llist set" ("(_\\<^sup>\<clubsuit>)" [1000] 999)
   poslsts :: "'a set \<Rightarrow> 'a llist set" ("(_\\<^sup>\<spadesuit>)" [1000] 999)
 
-inductive "A\<^sup>\<star>"
-  intros
+inductive_set
+  finlsts :: "'a set \<Rightarrow> 'a llist set" ("(_\\<^sup>\<star>)" [1000] 999)
+  for A :: "'a set"
+where
   LNil_fin [iff]: "LNil \<in>  A\<^sup>\<star>"
-  LCons_fin [intro!]: "\<lbrakk> l \<in> A\<^sup>\<star>; a \<in> A \<rbrakk> \<Longrightarrow>  a ## l \<in> A\<^sup>\<star>"
+| LCons_fin [intro!]: "\<lbrakk> l \<in> A\<^sup>\<star>; a \<in> A \<rbrakk> \<Longrightarrow>  a ## l \<in> A\<^sup>\<star>"
 
-coinductive "A\<^sup>\<infinity>"
-  intros
+coinductive_set
+  alllsts :: "'a set \<Rightarrow> 'a llist set" ("(_\\<^sup>\<infinity>)" [1000] 999)
+  for A :: "'a set"
+where
   LNil_all [iff]: "LNil \<in> A\<^sup>\<infinity>"
-  LCons_all [intro!]: "\<lbrakk> l \<in> A\<^sup>\<infinity>; a \<in> A \<rbrakk> \<Longrightarrow>  a ## l \<in> A\<^sup>\<infinity>"
+| LCons_all [intro!]: "\<lbrakk> l \<in> A\<^sup>\<infinity>; a \<in> A \<rbrakk> \<Longrightarrow>  a ## l \<in> A\<^sup>\<infinity>"
 
 declare alllsts.cases [case_names LNil LCons, cases set: alllsts]
 
@@ -77,26 +77,28 @@ lemma neq_LNil_conv: "(xs \<noteq> LNil) = (\<exists>y ys. xs = y ## ys)"
 
 lemma alllsts_UNIV [iff]:
   "s \<in> UNIV\<^sup>\<infinity>"
-proof (rule alllsts.coinduct [of _ "UNIV"], simp)
-  fix z :: "'a llist" assume "z \<in> UNIV"
-  thus "z = LNil \<or> (\<exists>a l. z = a ## l \<and> l \<in> UNIV \<union> UNIV\<^sup>\<infinity> \<and> a \<in> UNIV)"
+proof (rule alllsts.coinduct [of "\<lambda>x. True"], simp)
+  fix z :: "'a llist"
+  show "z = LNil \<or> (\<exists>l a. z = a ## l \<and> (True \<or> l \<in> UNIV\<^sup>\<infinity>) \<and> a \<in> UNIV)"
     by (cases "z") auto
 qed
 
 lemma alllsts_empty [simp]: "{}\<^sup>\<infinity> = {LNil}"
   by (auto elim: alllsts.cases)
 
-lemma alllsts_mono [mono]:
+lemma alllsts_mono:
   assumes asubb: "A \<subseteq> B"
   shows "A\<^sup>\<infinity> \<subseteq> B\<^sup>\<infinity>"
 proof
   fix x assume "x \<in> A\<^sup>\<infinity>" thus "x \<in> B\<^sup>\<infinity>"
-  proof (elim alllsts.coinduct [of _ "A\<^sup>\<infinity>"])
+  proof (elim alllsts.coinduct [of "\<lambda>z. z \<in> A\<^sup>\<infinity>"])
     fix z assume "z \<in> A\<^sup>\<infinity>"
-    thus "z = LNil \<or> (\<exists>a l. z = a ## l \<and> l \<in> A\<^sup>\<infinity> \<union> B\<^sup>\<infinity> \<and> a \<in> B)"
+    thus "z = LNil \<or> (\<exists>l a. z = a ## l \<and> (l \<in> A\<^sup>\<infinity> \<or> l \<in> B\<^sup>\<infinity>) \<and> a \<in> B)"
       using asubb by (cases "z") auto
   qed
 qed
+
+declare alllsts_mono [mono_set]
 
 lemma LConsE [iff]: "x##xs \<in> A\<^sup>\<infinity> = (x\<in>A \<and> xs \<in> A\<^sup>\<infinity>)"
   by (auto elim: alllsts.cases)
@@ -115,7 +117,7 @@ lemma poslsts_UNIV [iff]:
 lemma poslsts_empty [simp]: "{}\<^sup>\<spadesuit> = {}"
   by auto
 
-lemma poslsts_mono [mono]:
+lemma poslsts_mono:
   "A \<subseteq> B \<Longrightarrow> A\<^sup>\<spadesuit> \<subseteq> B\<^sup>\<spadesuit>"
   by (auto dest: alllsts_mono)
 
@@ -127,9 +129,11 @@ lemma finlsts_empty [simp]: "{}\<^sup>\<star> = {LNil}"
 lemma finsubsetall: "x \<in> A\<^sup>\<star> \<Longrightarrow> x \<in> A\<^sup>\<infinity>"
   by (induct rule: finlsts.induct) auto
 
-lemma finlsts_mono [mono]:
+lemma finlsts_mono:
 "A\<subseteq>B \<Longrightarrow> A\<^sup>\<star> \<subseteq> B\<^sup>\<star>"
   by (auto, erule finlsts.induct) auto
+
+declare finlsts_mono [mono_set]
 
 lemma finlsts_induct
   [case_names LNil_fin LCons_fin, induct set: finlsts, consumes 1]:
@@ -149,7 +153,7 @@ lemma finite_lemma [rule_format]:
 proof (induct rule: finlsts.induct)
   case LNil_fin show ?case by auto
 next
-  case (LCons_fin a l)
+  case (LCons_fin l a)
   show ?case
   proof
     assume "a##l \<in> B\<^sup>\<infinity>" thus "a##l \<in> B\<^sup>\<star>" using LCons_fin
@@ -226,7 +230,7 @@ lemma fpslsts_iff [iff]:
 lemma fpslsts_empty [simp]: "{}\<^sup>\<clubsuit> = {}"
   by auto
 
-lemma fpslsts_mono [mono]:
+lemma fpslsts_mono:
   "A \<subseteq> B \<Longrightarrow> A\<^sup>\<clubsuit> \<subseteq> B\<^sup>\<clubsuit>"
   by (auto dest: finlsts_mono)
 
@@ -257,7 +261,7 @@ lemma inflsts_empty [simp]: "{}\<^sup>\<omega> = {}"
 lemma infsubsetall: "x \<in> A\<^sup>\<omega> \<Longrightarrow> x \<in> A\<^sup>\<infinity>"
   by (auto intro: finite_lemma finsubsetall)
 
-lemma inflsts_mono [mono]:
+lemma inflsts_mono:
   "A \<subseteq> B \<Longrightarrow> A\<^sup>\<omega> \<subseteq> B\<^sup>\<omega>"
   by (blast dest: alllsts_mono infsubsetall)
 
@@ -333,13 +337,13 @@ lemma lappT:
   assumes sllist: "s \<in> A\<^sup>\<infinity>"
   and tllist: "t \<in> A\<^sup>\<infinity>"
   shows "s@@t \<in> A\<^sup>\<infinity>"
-proof (rule alllsts.coinduct [of _ "\<Union> u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u@@v}"])
+proof (rule alllsts.coinduct [of "\<lambda>x. x \<in> (\<Union> u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u@@v})"])
   from sllist tllist show "s @@ t \<in> (\<Union>u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u @@ v})"
     by fast
 next fix z assume "z \<in> (\<Union>u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u @@ v})"
   then obtain u v where ullist: "u\<in>A\<^sup>\<infinity>" and vllist: "v\<in>A\<^sup>\<infinity>" and zapp: "z=u @@ v"
     by auto
-  thus "z = LNil \<or> (\<exists>a l. z = a ## l \<and> l \<in> (\<Union>u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u @@ v}) \<union> A\<^sup>\<infinity> \<and> a \<in> A)"
+  thus "z = LNil \<or> (\<exists>l a. z = a ## l \<and> (l \<in> (\<Union>u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u @@ v}) \<or> l \<in> A\<^sup>\<infinity>) \<and> a \<in> A)"
     by (cases "u") (auto elim: alllsts.cases)
 qed
 
@@ -411,7 +415,7 @@ lemma app_invT [rule_format]:
   "r \<in> A\<^sup>\<star> \<Longrightarrow> \<forall>s. r @@ s \<in> A\<^sup>\<omega> \<longrightarrow> s \<in> A\<^sup>\<omega>"
 proof (induct rule: finlsts.induct)
   case LNil_fin thus ?case by simp
-next case (LCons_fin a l) show ?case
+next case (LCons_fin l a) show ?case
   proof clarify
     fix s assume "(a ## l) @@ s \<in> A\<^sup>\<omega>"
     hence "a ## (l @@ s) \<in> A\<^sup>\<omega>" by simp
@@ -844,7 +848,7 @@ lemma llast_lappend [simp]:
 "\<lbrakk> x \<in> UNIV\<^sup>\<star>; y \<in> UNIV\<^sup>\<star> \<rbrakk> \<Longrightarrow> llast (x @@ a ## y) = llast (a ## y)"
 proof (induct rule: finlsts.induct)
   case LNil_fin thus ?case by simp
-next case (LCons_fin b l)
+next case (LCons_fin l b)
   hence "l @@ a ## y \<in> UNIV\<^sup>\<star>" by auto 
   thus ?case using LCons_fin 
     by (auto simp: llast_LCons [of _ UNIV])
@@ -884,11 +888,11 @@ lemma lconstT:
   shows "lconst a \<in> A\<^sup>\<omega>"
 proof (rule inflstsI)
   show "lconst a \<in> A\<^sup>\<infinity>"
-  proof (rule alllsts.coinduct [of _ "{lconst a}"], simp_all)
+  proof (rule alllsts.coinduct [of "\<lambda>x. x = lconst a"], simp_all)
     have "lconst a = a ## lconst a"
       by (rule lconst_unfold)
     with aA
-    show "\<exists>aa l. lconst a = aa ## l \<and> (l = lconst a \<or> l \<in> A\<^sup>\<infinity>) \<and> aa \<in> A"
+    show "\<exists>l aa. lconst a = aa ## l \<and> (l = lconst a \<or> l \<in> A\<^sup>\<infinity>) \<and> aa \<in> A"
       by blast
   qed
 next assume lconst: "lconst a \<in> UNIV\<^sup>\<star>"
@@ -962,7 +966,7 @@ proof-
     proof (induct rule: finlsts.induct)
       case LNil_fin thus ?case by auto
     next      
-      case (LCons_fin a l) show ?case
+      case (LCons_fin l a) show ?case
       proof
 	fix t from LCons_fin show  "a ## l \<le> t \<and> t \<le> a ## l \<longrightarrow> a ## l = t"
 	  by (cases "t") blast+

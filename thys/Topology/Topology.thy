@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.8 2007-06-14 12:54:52 makarius Exp $
+    ID:         $Id: Topology.thy,v 1.9 2007-07-11 10:21:45 stefanberghofer Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -152,16 +152,13 @@ text{*We can obtain a topology from a set of basic open sets by
 closing the set under finite intersections and arbitrary unions.*}
 
 
-consts
+inductive_set
   topo :: "'a set set \<Rightarrow> 'a top"
-
-inductive "topo B"
-  intros
+  for B :: "'a set set"
+where
   basic [intro]: "x \<in> B \<Longrightarrow> x \<in> topo B"
-  inter [intro]: "\<lbrakk> x \<in> topo B; y \<in> topo B \<rbrakk> \<Longrightarrow> x \<inter> y \<in> topo B"
-  union [intro]: "M \<subseteq> topo B \<Longrightarrow> \<Union>M \<in> topo B"
-
-  monos  subset_mono
+| inter [intro]: "\<lbrakk> x \<in> topo B; y \<in> topo B \<rbrakk> \<Longrightarrow> x \<inter> y \<in> topo B"
+| union [intro]: "(\<And>x. x \<in> M \<Longrightarrow> x \<in> topo B) \<Longrightarrow> \<Union>M \<in> topo B"
 
 locale topobase = var B + carrier T +
   defines "T \<equiv> topo B"

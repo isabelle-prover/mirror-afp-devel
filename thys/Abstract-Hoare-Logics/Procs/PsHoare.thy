@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: PsHoare.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
+    ID:          $Id: PsHoare.thy,v 1.3 2007-07-11 10:05:49 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -38,42 +38,37 @@ constdefs
  cnvalids :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>'__/ _" 50)
   "C |\<Turnstile>_n D  \<equiv>  |\<Turnstile>_n C \<longrightarrow> |\<Turnstile>_n D"
 
-consts hoare :: "('a cntxt \<times> 'a cntxt) set"
-abbreviation
-  hoare1 :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ \<tturnstile>/ _" 50) where
-  "C \<tturnstile> D  \<equiv>  (C,D) \<in> hoare"
-abbreviation
-  hoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50) where
-  "C \<turnstile> {P}c{Q}  \<equiv>  (C,{(P,c,Q)}) \<in> hoare"
-
-text{*Our Hoare logic now defines judgements of the form @{prop"C \<tturnstile>
+text{*Our Hoare logic now defines judgements of the form @{text"C \<tturnstile>
 D"} where both @{term C} and @{term D} are (potentially infinite) sets
-of Hoare triples; @{prop"C \<turnstile> {P}c{Q}"} is simply an abbreviation for
-@{prop[source]"C \<tturnstile> {(P,c,Q)}"}.*}
+of Hoare triples; @{text"C \<turnstile> {P}c{Q}"} is simply an abbreviation for
+@{text"C \<tturnstile> {(P,c,Q)}"}.*}
 
-inductive hoare
-intros
-  Do:  "C \<turnstile> {\<lambda>z s. \<forall>t \<in> f s . P z t} Do f {P}"
-  Semi: "\<lbrakk> C \<turnstile> {P}c{Q}; C \<turnstile> {Q}d{R} \<rbrakk> \<Longrightarrow> C \<turnstile> {P} c;d {R}"
-  If: "\<lbrakk> C \<turnstile> {\<lambda>z s. P z s \<and> b s}c{Q}; C \<turnstile> {\<lambda>z s. P z s \<and> \<not>b s}d{Q}  \<rbrakk> \<Longrightarrow>
+inductive
+  hoare :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ \<tturnstile>/ _" 50)
+  and hoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50)
+where
+  "C \<turnstile> {P}c{Q}  \<equiv>  C \<tturnstile> {(P,c,Q)}"
+| Do:  "C \<turnstile> {\<lambda>z s. \<forall>t \<in> f s . P z t} Do f {P}"
+| Semi: "\<lbrakk> C \<turnstile> {P}c{Q}; C \<turnstile> {Q}d{R} \<rbrakk> \<Longrightarrow> C \<turnstile> {P} c;d {R}"
+| If: "\<lbrakk> C \<turnstile> {\<lambda>z s. P z s \<and> b s}c{Q}; C \<turnstile> {\<lambda>z s. P z s \<and> \<not>b s}d{Q}  \<rbrakk> \<Longrightarrow>
       C \<turnstile> {P} IF b THEN c ELSE d {Q}"
-  While: "C \<turnstile> {\<lambda>z s. P z s \<and> b s} c {P} \<Longrightarrow>
+| While: "C \<turnstile> {\<lambda>z s. P z s \<and> b s} c {P} \<Longrightarrow>
           C \<turnstile> {P} WHILE b DO c {\<lambda>z s. P z s \<and> \<not>b s}"
 
-  Conseq: "\<lbrakk> C \<turnstile> {P'}c{Q'};
+| Conseq: "\<lbrakk> C \<turnstile> {P'}c{Q'};
              \<forall>s t. (\<forall>z. P' z s \<longrightarrow> Q' z t) \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t) \<rbrakk> \<Longrightarrow>
            C \<turnstile> {P}c{Q}"
 
-  Call: "\<lbrakk> \<forall>(P,c,Q) \<in> C. \<exists>p. c = CALL p;
+| Call: "\<lbrakk> \<forall>(P,c,Q) \<in> C. \<exists>p. c = CALL p;
      C \<tturnstile> {(P,b,Q). \<exists>p. (P,CALL p,Q) \<in> C \<and> b = body p} \<rbrakk>
   \<Longrightarrow> {} \<tturnstile> C"
 
-  Asm: "(P,CALL p,Q) \<in> C \<Longrightarrow> C \<turnstile> {P} CALL p {Q}"
+| Asm: "(P,CALL p,Q) \<in> C \<Longrightarrow> C \<turnstile> {P} CALL p {Q}"
 
-  ConjI: "\<forall>(P,c,Q) \<in> D. C \<turnstile> {P}c{Q}  \<Longrightarrow>  C \<tturnstile> D"
-  ConjE: "\<lbrakk> C \<tturnstile> D; (P,c,Q) \<in> D \<rbrakk> \<Longrightarrow> C \<turnstile> {P}c{Q}"
+| ConjI: "\<forall>(P,c,Q) \<in> D. C \<turnstile> {P}c{Q}  \<Longrightarrow>  C \<tturnstile> D"
+| ConjE: "\<lbrakk> C \<tturnstile> D; (P,c,Q) \<in> D \<rbrakk> \<Longrightarrow> C \<turnstile> {P}c{Q}"
 
-  Local: "\<lbrakk> \<forall>s'. C \<turnstile> {\<lambda>z s. P z s' \<and> s = f s'} c {\<lambda>z t. Q z (g s' t)} \<rbrakk> \<Longrightarrow>
+| Local: "\<lbrakk> \<forall>s'. C \<turnstile> {\<lambda>z s. P z s' \<and> s = f s'} c {\<lambda>z t. Q z (g s' t)} \<rbrakk> \<Longrightarrow>
         C \<turnstile> {P} LOCAL f;c;g {Q}"
 monos split_beta
 

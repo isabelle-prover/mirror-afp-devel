@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJAux.thy,v 1.6 2007-06-14 12:18:05 makarius Exp $
+    ID:          $Id: FJAux.thy,v 1.7 2007-07-11 10:10:53 stefanberghofer Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -223,7 +223,7 @@ lemma method_typings_lookup:
 proof(induct M)
   case Nil thus ?case by fastsimp
 next
-  case (Cons h t) thus ?case by(cases "f h", auto elim:method_typings.elims simp add:lookup.simps)
+  case (Cons h t) thus ?case by(cases "f h", auto elim:method_typings.cases simp add:lookup.simps)
 qed
 
 subsubsection{* Functional *}
@@ -234,13 +234,13 @@ lemma mtype_functional:
   assumes "mtype(CT,m,C) = Cs \<rightarrow> C0"
   and     "mtype(CT,m,C) = Ds \<rightarrow> D0"
   shows "Ds=Cs \<and> D0=C0"
-using prems by(induct, auto elim:mtype.elims)
+using prems by(induct, auto elim:mtype.cases)
 
 lemma mbody_functional:
   assumes mb1: "mbody(CT,m,C) = xs . e0"
   and     mb2: "mbody(CT,m,C) = ys . d0"
   shows "xs = ys \<and> e0 = d0"
-using prems by(induct, auto elim:mbody.elims)
+using prems by(induct, auto elim:mbody.cases)
 
 lemma fields_functional:
   assumes "fields(CT,C) = Cf" 
@@ -248,19 +248,19 @@ lemma fields_functional:
   shows "\<And>Cf'. \<lbrakk> fields(CT,C) = Cf'\<rbrakk> \<Longrightarrow> Cf = Cf'"
 using prems proof(induct)
   case (f_obj CT)
-  hence "CT(Object) = None" by (auto elim: ct_typing.elims)
-  thus ?case using f_obj by (auto elim: fields.elims)
+  hence "CT(Object) = None" by (auto elim: ct_typing.cases)
+  thus ?case using f_obj by (auto elim: fields.cases)
 next
-  case (f_class C CDef CT Cf D Dg DgCf DgCf')
+  case (f_class CT C CDef D Cf Dg DgCf DgCf')
   hence f_class_inv: 
     "(CT C = Some CDef) \<and> (cSuper CDef = D) \<and> (cFields CDef = Cf)" 
     and "CT OK" by fastsimp+
-  hence c_not_obj:"C \<noteq> Object" by (force elim:ct_typing.elims)
+  hence c_not_obj:"C \<noteq> Object" by (force elim:ct_typing.cases)
   from f_class have flds:"fields(CT,C) = DgCf'" by fastsimp
   then obtain Dg' where 
     "fields(CT,D) = Dg'"
     and "DgCf' = Dg' @ Cf" 
-    using f_class_inv c_not_obj by (auto elim:fields.elims)
+    using f_class_inv c_not_obj by (auto elim:fields.cases)
   hence "Dg' = Dg" using f_class by auto
   thus ?case using prems by force
 qed
@@ -268,7 +268,7 @@ qed
 subsubsection{* Subtyping and Typing *}
 
 lemma typings_lengths: assumes "CT;\<Gamma> \<turnstile>+ es:Cs" shows "length es = length Cs" 
-  using prems by(induct "es" "Cs", auto elim:typings_typing.elims)
+  using prems by(induct "es" "Cs", auto elim:typings.cases)
 
 lemma typings_index:
   assumes "CT;\<Gamma> \<turnstile>+ es:Cs" 
@@ -280,7 +280,7 @@ proof -
     case 1 thus ?case by auto
   next
     case (2 esh est hCs tCs i)
-    thus ?case by(cases "i", auto elim:typings_typing.elims)
+    thus ?case by(cases "i", auto elim:typings.cases)
   qed
 qed
 
@@ -301,7 +301,7 @@ lemma subtyping_append:
   shows "CT \<turnstile>+ (Cs@[C]) <: (Ds@[D])"
   using prems 
   proof(induct rule:subtypings.induct, 
-        auto simp add:subtypings.intros elim:subtypings.elims)
+        auto simp add:subtypings.intros elim:subtypings.cases)
   qed
 
 lemma typings_append: 
@@ -321,7 +321,7 @@ proof -
       and IH: "\<lbrakk>CT;\<Gamma> \<turnstile>+ xs : ys; CT;\<Gamma> \<turnstile> e : C\<rbrakk> \<Longrightarrow> CT;\<Gamma> \<turnstile>+ (xs @ [e]) : (ys @ [C])"
       and x_xs_typs: "CT;\<Gamma> \<turnstile>+ (x # xs) : (y # ys)"
       and e_typ: "CT;\<Gamma> \<turnstile> e : C"
-    from x_xs_typs have x_typ: "CT;\<Gamma> \<turnstile> x : y" and "CT;\<Gamma> \<turnstile>+ xs : ys" by(auto elim:typings_typing.elims)
+    from x_xs_typs have x_typ: "CT;\<Gamma> \<turnstile> x : y" and "CT;\<Gamma> \<turnstile>+ xs : ys" by(auto elim:typings.cases)
     with IH e_typ have "CT;\<Gamma> \<turnstile>+ (xs@[e]) : (ys@[C])" by simp
     with x_typ have "CT;\<Gamma> \<turnstile>+ ((x#xs)@[e]) : ((y#ys)@[C])" by (auto simp add:typings_typing.ts_cons)
     thus "CT;\<Gamma> \<turnstile>+ ((x # xs) @ [e]) : ((y # ys) @ [C])" by(auto simp add:typings_typing.ts_cons)
@@ -329,11 +329,11 @@ proof -
 qed
 
 lemma ith_typing: "\<And>Cs. \<lbrakk> CT;\<Gamma> \<turnstile>+ (es@(h#t)) : Cs \<rbrakk> \<Longrightarrow> CT;\<Gamma> \<turnstile> h : (Cs!(length es))"
-proof(induct "es", auto elim:typings_typing.elims)
+proof(induct "es", auto elim:typings.cases)
 qed
 
 lemma ith_subtyping: "\<And>Ds. \<lbrakk> CT \<turnstile>+ (Cs@(h#t)) <: Ds \<rbrakk> \<Longrightarrow> CT \<turnstile> h <: (Ds!(length Cs))"
-proof(induct "Cs", auto elim:subtypings.elims)
+proof(induct "Cs", auto elim:subtypings.cases)
 qed
 
 lemma subtypings_refl: "CT \<turnstile>+ Cs <: Cs" 
@@ -342,15 +342,15 @@ by(induct "Cs", auto simp add: subtyping.s_refl subtypings.intros)
 lemma subtypings_trans: "\<And>Ds Es. \<lbrakk> CT \<turnstile>+ Cs <: Ds;  CT \<turnstile>+ Ds <: Es \<rbrakk> \<Longrightarrow> CT \<turnstile>+ Cs <: Es"
 proof(induct "Cs")
   case Nil thus ?case 
-    by (auto elim:subtypings.elims simp add:subtypings.ss_nil)
+    by (auto elim:subtypings.cases simp add:subtypings.ss_nil)
 next
   case (Cons hCs tCs)
   then obtain hDs tDs
     where h1:"CT \<turnstile> hCs <: hDs" and t1:"CT \<turnstile>+ tCs <: tDs" and "Ds = hDs#tDs"
-    by (auto elim:subtypings.elims)
+    by (auto elim:subtypings.cases)
   then obtain hEs tEs
     where h2:"CT \<turnstile> hDs <: hEs" and t2:"CT \<turnstile>+ tDs <: tEs" and "Es = hEs#tEs" 
-    using Cons by (auto elim:subtypings.elims)
+    using Cons by (auto elim:subtypings.cases)
   moreover from subtyping.s_trans[OF h1 h2] have "CT \<turnstile> hCs <: hEs" by fastsimp
   moreover with t1 t2 have "CT \<turnstile>+ tCs <: tEs" using Cons by simp_all
   ultimately show ?case by (auto simp add:subtypings.intros)
@@ -365,7 +365,7 @@ proof(induct es)
 case Nil
  then obtain hCs tCs 
    where ts: "CT;\<Gamma> \<turnstile>+ t : tCs"
-   and Cs_def: "Cs = hCs # tCs" by(auto elim:typings_typing.elims)
+   and Cs_def: "Cs = hCs # tCs" by(auto elim:typings.cases)
  from Cs_def Nil have "CT \<turnstile> Ci' <: hCs" by auto
  with Cs_def have "CT \<turnstile>+ (Ci'#tCs) <: Cs" by(auto simp add:subtypings.ss_cons subtypings_refl)
  moreover from ts Nil have "CT;\<Gamma> \<turnstile>+ (h'#t) : (Ci'#tCs)" by(auto simp add:typings_typing.ts_cons)
@@ -376,7 +376,7 @@ then obtain hCs tCs
   where "CT;\<Gamma> \<turnstile> eh : hCs" 
   and "CT;\<Gamma> \<turnstile>+ (et@(h#t)) : tCs"
   and Cs_def: "Cs = hCs # tCs"
-  by(auto elim:typings_typing.elims)
+  by(auto elim:typings.cases)
 moreover with Cons obtain tCs'
   where "CT;\<Gamma> \<turnstile>+ (et@(h'#t)) : tCs'"
   and "CT \<turnstile>+ tCs' <: tCs"
@@ -394,7 +394,7 @@ proof(induct es)
   case Nil thus ?case by auto
 next
   case (Cons eh et) thus ?case 
-    by(cases "ei=eh", auto elim:typings_typing.elims)
+    by(cases "ei=eh", auto elim:typings.cases)
 qed
 
 lemma typings_proj: 
@@ -430,7 +430,7 @@ lemma not_subtypes:
 proof(induct rule:subtyping.induct)
   case s_refl thus ?case by auto
 next 
-  case (s_trans C CT D E Da)
+  case (s_trans CT C D E Da)
   have da_nsub_d:"CT \<turnstile> Da \<not><: D" proof(rule ccontr)
     assume "\<not> CT \<turnstile> Da \<not><: D"
     hence da_sub_d:"CT \<turnstile> Da <: D" by auto pr
@@ -440,7 +440,7 @@ next
   have d_nsub_da:"CT \<turnstile> D \<not><: Da" using s_trans by auto
   from da_nsub_d d_nsub_da s_trans show "CT \<turnstile> C \<not><: Da" by auto
 next
-  case (s_super C CDef CT D Da)
+  case (s_super CT C CDef D Da)
   have "C \<noteq> Da" proof(rule ccontr)
     assume "\<not> C \<noteq> Da"
     hence "C = Da" by auto 
@@ -456,21 +456,21 @@ lemma isubexpr_typing:
   assumes "e1 \<in> isubexprs(e0)"
   shows "\<And>C. \<lbrakk> CT;empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;empty \<turnstile> e1 : D"
   using prems 
-proof(induct rule:isubexprs.induct, auto elim:typings_typing.elims simp add:mem_typings)
+proof(induct rule:isubexprs.induct, auto elim:typing.cases simp add:mem_typings)
 qed
 
 lemma subexpr_typing: 
   assumes "e1 \<in> subexprs(e0)"
   shows "\<And>C. \<lbrakk> CT;empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;empty \<turnstile> e1 : D"
   using prems 
-by(induct rule:rtrancl_induct,auto,force simp add:isubexpr_typing)
+by(induct rule:rtrancl.induct,auto,force simp add:isubexpr_typing)
 
 lemma isubexpr_reduct: 
   assumes "d1 \<in> isubexprs(e1)"
   shows "\<And>d2. \<lbrakk> CT \<turnstile> d1 \<rightarrow> d2 \<rbrakk> \<Longrightarrow> \<exists>e2. CT \<turnstile> e1 \<rightarrow> e2"
 using prems mem_ith
 proof(induct, 
-      auto elim:isubexprs.elims intro:reduction.intros,
+      auto elim:isubexprs.cases intro:reduction.intros,
       force intro:reduction.intros, 
       force intro:reduction.intros)
 qed
@@ -479,7 +479,7 @@ lemma subexpr_reduct:
   assumes "d1 \<in> subexprs(e1)"
   shows "\<And>d2. \<lbrakk> CT \<turnstile> d1 \<rightarrow> d2 \<rbrakk> \<Longrightarrow> \<exists>e2. CT \<turnstile> e1 \<rightarrow> e2"
 using prems 
-proof(induct rule:rtrancl_induct, 
+proof(induct rule:rtrancl.induct, 
       auto, force simp add: isubexpr_reduct)
 qed
 

@@ -1,5 +1,5 @@
 (*  Title:      Inductive definition of termination
-    ID:         $Id: PsTermi.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
+    ID:         $Id: PsTermi.thy,v 1.3 2007-07-11 10:05:50 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -7,34 +7,30 @@ theory PsTermi imports PsLang begin
 
 subsection{*Termination*}
 
-consts  termi :: "(com \<times> state)set"
-abbreviation
- termi' :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl "\<down>" 50) where
- "c\<down>s  \<equiv>  (c,s) \<in> termi"
-
-inductive termi
-intros
+inductive
+  termi :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl "\<down>" 50)
+where
     Do[iff]: "f s \<noteq> {} \<Longrightarrow> Do f \<down> s"
-    Semi[intro!]:   "\<lbrakk> c1 \<down> s0; \<And>s1. s0 -c1\<rightarrow> s1 \<Longrightarrow> c2 \<down> s1 \<rbrakk>
+  | Semi[intro!]:   "\<lbrakk> c1 \<down> s0; \<And>s1. s0 -c1\<rightarrow> s1 \<Longrightarrow> c2 \<down> s1 \<rbrakk>
             \<Longrightarrow> (c1;c2) \<down> s0"
 
-    IfTrue[intro,simp]: "\<lbrakk> b s; c1 \<down> s \<rbrakk> \<Longrightarrow> IF b THEN c1 ELSE c2 \<down> s"
-    IfFalse[intro,simp]: "\<lbrakk> \<not>b s; c2 \<down> s \<rbrakk> \<Longrightarrow> IF b THEN c1 ELSE c2 \<down> s"
+  | IfTrue[intro,simp]: "\<lbrakk> b s; c1 \<down> s \<rbrakk> \<Longrightarrow> IF b THEN c1 ELSE c2 \<down> s"
+  | IfFalse[intro,simp]: "\<lbrakk> \<not>b s; c2 \<down> s \<rbrakk> \<Longrightarrow> IF b THEN c1 ELSE c2 \<down> s"
 
-    WhileFalse: "\<not>b s \<Longrightarrow> WHILE b DO c \<down> s"
+  | WhileFalse: "\<not>b s \<Longrightarrow> WHILE b DO c \<down> s"
 
-    WhileTrue:  "\<lbrakk> b s; c \<down> s; \<And>t. s -c\<rightarrow> t \<Longrightarrow> WHILE b DO c \<down> t \<rbrakk>
+  | WhileTrue:  "\<lbrakk> b s; c \<down> s; \<And>t. s -c\<rightarrow> t \<Longrightarrow> WHILE b DO c \<down> t \<rbrakk>
                 \<Longrightarrow> WHILE b DO c \<down> s"
 
-  "body p \<down> s \<Longrightarrow> CALL p \<down> s"
+  | "body p \<down> s \<Longrightarrow> CALL p \<down> s"
 
-  Local: "c \<down> f s \<Longrightarrow> LOCAL f;c;g \<down> s"
+  | Local: "c \<down> f s \<Longrightarrow> LOCAL f;c;g \<down> s"
 
 lemma [iff]: "(Do f \<down> s) = (f s \<noteq> {})"
 apply(rule iffI)
  prefer 2
  apply(best intro:termi.intros)
-apply(erule termi.elims)
+apply(erule termi.cases)
 apply blast+
 done
 
@@ -42,7 +38,7 @@ lemma [iff]: "((c1;c2) \<down> s0) = (c1 \<down> s0 \<and> (\<forall>s1. s0 -c1\
 apply(rule iffI)
  prefer 2
  apply(best intro:termi.intros)
-apply(erule termi.elims)
+apply(erule termi.cases)
 apply blast+
 done
 
@@ -54,21 +50,21 @@ apply(rule impI)
 apply(rule iffI)
 prefer 2
 apply(blast intro:termi.intros)
-apply(erule termi.elims)
+apply(erule termi.cases)
 apply blast+
 apply(rule impI)
 apply(rule iffI)
 prefer 2
 apply(blast intro:termi.intros)
-apply(erule termi.elims)
+apply(erule termi.cases)
 apply blast+
 done
 
 lemma [iff]: "(CALL p \<down> s) = (body p \<down> s)"
-by(fast elim: termi.elims intro:termi.intros)
+by(fast elim: termi.cases intro:termi.intros)
 
 lemma [iff]: "(LOCAL f;c;g \<down> s) = (c \<down> f s)"
-by(fast elim: termi.elims intro:termi.intros)
+by(fast elim: termi.cases intro:termi.intros)
 
 lemma termi_while_lemma[rule_format]:
  "w\<down>fk \<Longrightarrow>

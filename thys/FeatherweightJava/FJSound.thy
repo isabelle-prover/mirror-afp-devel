@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJSound.thy,v 1.6 2007-06-22 15:53:54 makarius Exp $
+    ID:          $Id: FJSound.thy,v 1.7 2007-07-11 10:10:53 stefanberghofer Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -26,9 +26,9 @@ lemma mtype_mbody:
   proof(induct rule:mtype.induct)
     case(mt_class C0 Cs C CDef CT m mDef)
     thus ?case 
-      by (force simp add:varDefs_types_def varDefs_names_def elim:mtype.elims intro:mbody.mb_class)
+      by (force simp add:varDefs_types_def varDefs_names_def elim:mtype.cases intro:mbody.mb_class)
   next
-    case(mt_super C0 Cs C CDef CT D m)
+    case(mt_super CT C0 CDef m D Cs C)
     then obtain xs e where "mbody(CT,m,D) = xs . e" and "length xs = length Cs" by auto
     thus ?case using mt_super by (auto intro:mbody.mb_super)    
   qed
@@ -56,12 +56,12 @@ proof (induct rule:subtyping.induct)
   next
   case (s_trans C CT D E) thus ?case by auto
   next
-  case (s_super C CDef CT D)
+  case (s_super CT C CDef D)
   hence "CT \<turnstile> CDef OK" and "cName CDef = C" 
-    by(auto elim:ct_typing.elims)
+    by(auto elim:ct_typing.cases)
   with s_super obtain M 
     where "CT \<turnstile>+ M OK IN C" and "cMethods CDef = M" 
-    by(auto elim:class_typing.elims)
+    by(auto elim:class_typing.cases)
   let ?lookup_m = "lookup M (\<lambda>md. (mName md =m))"
   show ?case using prems 
   proof(cases "\<exists>mDef. ?lookup_m = Some mDef") 
@@ -76,7 +76,7 @@ proof (induct rule:subtyping.induct)
         and "mReturn mDef = C0'"
         and "varDefs_types (mParams mDef) = Cs'"
         and "\<forall>Ds D0. (mtype(CT,m',D') = Ds \<rightarrow> D0) \<longrightarrow> Cs'=Ds \<and> C0'=D0"
-      by (auto elim: method_typing.elims) 
+      by (auto elim: method_typing.cases) 
    with s_super mDef_name have 
          "CDef=CDef'" 
      and "D=D'" 
@@ -96,15 +96,15 @@ lemma sub_fields:
   assumes "CT \<turnstile> C <: D"
   shows "\<And>Dg. fields(CT,D) = Dg \<Longrightarrow> \<exists>Cf. fields(CT,C) = (Dg@Cf)"
 using prems proof(induct)
-  case (s_refl C CT)
+  case (s_refl CT C)
   hence "fields(CT,C) = (Dg@[])" by simp
   thus ?case ..
 next
-  case (s_trans C CT D E)
+  case (s_trans CT C D E)
   then obtain Df Cf where "fields(CT,C) = ((Dg@Df)@Cf)" by force
   thus ?case by auto
 next
-  case (s_super C CDef CT D Dg) 
+  case (s_super CT C CDef D Dg) 
   then obtain Cf where "cFields CDef = Cf" by force
   with s_super have "fields(CT,C) = (Dg@Cf)" by(simp add:f_class)
   thus ?case ..
@@ -134,7 +134,7 @@ proof -
       from this show "\<exists>Cs.(CT;\<Gamma>1 \<turnstile>+ ([ds/xs][]):Cs) \<and> (CT \<turnstile>+ Cs <: [])" by auto;
     qed
   next
-   case(ts_cons C0 CT Cs' \<Gamma> e0 es)
+   case(ts_cons CT \<Gamma> e0 C0 es Cs')
    show ?case
    proof (rule impI)
      assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
@@ -152,7 +152,7 @@ proof -
      then show "\<exists>Cs. CT;\<Gamma>1 \<turnstile>+ map (substs [xs [\<mapsto>] ds]) (e0 # es) : Cs \<and> CT \<turnstile>+ Cs <: (C0 # Cs')" by auto
     qed
   next
-    case (t_var C' CT \<Gamma> x)
+    case (t_var \<Gamma> x C' CT)
     show ?case
     proof (rule impI)
       assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
@@ -192,7 +192,7 @@ proof -
       qed
     qed
   next
-    case(t_field C0 CT Cf Ci \<Gamma> e0 fDef fi)
+    case(t_field CT \<Gamma> e0 C0 Cf fi fDef Ci)
     show ?case
     proof(rule impI)
       assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
@@ -205,7 +205,7 @@ proof -
       ultimately show "\<exists>C. CT;\<Gamma>1 \<turnstile> (ds/xs)(FieldProj e0 fi) : C \<and> CT \<turnstile> C <: Ci" by auto
     qed
   next
-    case(t_invk C C0 CT Cs Ds \<Gamma> e0 es m)
+    case(t_invk CT \<Gamma> e0 C0 m Ds C es Cs)
     show ?case
       proof(rule impI)
         assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
@@ -230,7 +230,7 @@ proof -
         ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(MethodInvk e0 m es) : C' \<and> CT \<turnstile> C' <: C" by auto
       qed
     next
-    case(t_new C CT Cs Df Ds \<Gamma> es)
+    case(t_new CT C Df es Ds \<Gamma> Cs)
     show ?case
       proof(rule impI)
         assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
@@ -250,7 +250,7 @@ proof -
         ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(New C es) : C' \<and> CT \<turnstile> C' <: C" by auto
       qed
     next
-    case(t_ucast C CT D \<Gamma> e0)
+    case(t_ucast CT \<Gamma> e0 D C)
     show ?case
       proof(rule impI)
         assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
@@ -263,7 +263,7 @@ proof -
 	ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C' \<and> CT \<turnstile> C' <: C" by auto
       qed
     next
-    case(t_dcast C CT D \<Gamma> e0)
+    case(t_dcast CT \<Gamma> e0 D C)
     show ?case
       proof(rule impI)
         assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
@@ -288,7 +288,7 @@ proof -
         ultimately show "\<exists>C'. CT;\<Gamma>1 \<turnstile> (ds/xs)(Cast C e0) : C' \<and> CT \<turnstile> C' <: C" by auto
       qed
     next
-    case(t_scast C CT D \<Gamma> e0)
+    case(t_scast CT \<Gamma> e0 D C)
     show ?case
       proof(rule impI)
         assume asms: "(CT OK) \<and> (\<Gamma> = \<Gamma>1 ++ \<Gamma>2) \<and> (\<Gamma>2 = [xs [\<mapsto>] Bs]) \<and> (length Bs = length ds) \<and> (\<exists>As. CT;\<Gamma>1 \<turnstile>+ ds : As \<and> CT \<turnstile>+ As <: Bs)"
@@ -336,30 +336,30 @@ lemma A_1_4:
                 (CT \<turnstile> C0 <: D) \<and> 
                 (CT;[xs[\<mapsto>]Ds](this \<mapsto> D0) \<turnstile> e : C0)"
   using mb ct_ok mt proof(induct rule: mbody.induct)
-  case (mb_class C CDef CT e m mDef xs)
+  case (mb_class CT C CDef m mDef xs e)
   hence
     m_param:"varDefs_types (mParams mDef) = Ds" 
     and m_ret:"mReturn mDef = D" 
     and "CT \<turnstile> CDef OK" 
     and "cName CDef = C"
-    by (auto elim:mtype.elims ct_typing.elims)  
-  hence "CT \<turnstile>+ (cMethods CDef) OK IN C" by (auto elim:class_typing.elims)
+    by (auto elim:mtype.cases ct_typing.cases)  
+  hence "CT \<turnstile>+ (cMethods CDef) OK IN C" by (auto elim:class_typing.cases)
   hence "CT \<turnstile> mDef OK IN C" using mb_class by(auto simp add:method_typings_lookup)
   hence "\<exists> E0. ((CT;[xs[\<mapsto>]Ds,this\<mapsto>C] \<turnstile> e : E0) \<and> (CT \<turnstile> E0 <: D))"
-    using mb_class m_param m_ret by(auto elim:method_typing.elims)
+    using mb_class m_param m_ret by(auto elim:method_typing.cases)
   then obtain E0 
     where "CT;[xs[\<mapsto>]Ds,this\<mapsto>C] \<turnstile> e : E0"
     and "CT \<turnstile> E0 <: D"
     and "CT \<turnstile> C <: C" by (auto simp add: s_refl)
   thus ?case by blast
 next
-  case (mb_super C CDef CT Da e m xs)
+  case (mb_super CT C CDef m Da xs e)
   hence ct: "CT OK"
-    and IH: "\<lbrakk>CT OK; (CT, m, Da, Ds, D) \<in> mtype\<rbrakk> 
+    and IH: "\<lbrakk>CT OK; mtype(CT,m,Da) = Ds \<rightarrow> D\<rbrakk> 
     \<Longrightarrow> \<exists>D0 C0. (CT \<turnstile> Da <: D0) \<and> (CT \<turnstile> C0 <: D) 
               \<and> (CT;[xs [\<mapsto>] Ds, this \<mapsto> D0] \<turnstile> e:C0)" by fastsimp+
   from mb_super have c_sub_da: "CT \<turnstile> C <: Da" by (auto simp add:s_super)
-  from mb_super have mt:"mtype(CT,m,Da) = Ds \<rightarrow> D" by (auto elim: mtype.elims)
+  from mb_super have mt:"mtype(CT,m,Da) = Ds \<rightarrow> D" by (auto elim: mtype.cases)
   from IH[OF ct mt] obtain D0 C0 
     where s1: "CT \<turnstile> Da <: D0" 
     and "CT \<turnstile> C0 <: D" 
@@ -375,7 +375,7 @@ theorem Thm_2_4_1:
   shows "\<And>C. \<lbrakk> CT;\<Gamma> \<turnstile> e : C \<rbrakk> 
   \<Longrightarrow> \<exists>C'. (CT;\<Gamma> \<turnstile> e' : C' \<and> CT \<turnstile> C' <: C)"
   using prems proof(induct rule: reduction.induct)
-  case (r_field Ca CT Cf e' es fi)
+  case (r_field CT Ca Cf es fi e')
   hence "CT;\<Gamma> \<turnstile> FieldProj (New Ca es) fi : C" 
     and ct_ok: "CT OK" 
     and flds: "fields(CT,Ca) = Cf" 
@@ -384,8 +384,8 @@ theorem Thm_2_4_1:
     where new_typ: "CT;\<Gamma> \<turnstile> New Ca es : Ca'" 
     and flds':"fields(CT,Ca') = Cf'" 
     and lkup: "lookup Cf' (\<lambda>fd. vdName fd = fi) = Some fDef" 
-    and C_def: "vdType fDef = C" by (auto elim: typings_typing.elims)
-  hence Ca_Ca': "Ca = Ca'" by (auto elim:typings_typing.elims)
+    and C_def: "vdType fDef = C" by (auto elim: typing.cases)
+  hence Ca_Ca': "Ca = Ca'" by (auto elim:typing.cases)
   with flds' have Cf_Cf': "Cf = Cf'" by(simp add:fields_functional[OF flds ct_ok])
   from new_typ obtain Cs Ds Cf''
     where "fields(CT,Ca') = Cf''" 
@@ -393,7 +393,7 @@ theorem Thm_2_4_1:
     and Ds_def: "varDefs_types Cf'' = Ds" 
     and length_Cf_es: "length Cf'' = length es" 
     and subs: "CT \<turnstile>+ Cs <: Ds"
-    by(auto elim:typings_typing.elims)
+    by(auto elim:typing.cases)
   with Ca_Ca' have  Cf_Cf'': "Cf = Cf''" by(auto simp add:fields_functional[OF flds ct_ok]);
   from length_Cf_es Cf_Cf'' lookup2_index[OF lkup2] obtain i where 
     i_bound: "i < length es" 
@@ -406,16 +406,16 @@ theorem Thm_2_4_1:
     by(auto simp add:typings_index subtypings_index typings_lengths) 
   ultimately show ?case by auto
 next
-  case(r_invk Ca CT ds e e' es m xs)
+  case(r_invk CT m Ca xs e ds es e')
   from r_invk have mb: "mbody(CT,m,Ca) = xs . e" by fastsimp
   from r_invk obtain Ca' Ds Cs
     where "CT;\<Gamma> \<turnstile> New Ca es : Ca'"
     and  "mtype(CT,m,Ca') = Cs \<rightarrow> C" 
     and ds_typs: "CT;\<Gamma> \<turnstile>+ ds : Ds" 
     and Ds_subs: "CT \<turnstile>+ Ds <: Cs" 
-    and l1: "length ds = length Cs" by(auto elim:typings_typing.elims)
+    and l1: "length ds = length Cs" by(auto elim:typing.cases)
   hence new_typ: "CT;\<Gamma> \<turnstile> New Ca es : Ca" 
-    and mt: "mtype(CT,m,Ca) = Cs \<rightarrow> C" by (auto elim:typings_typing.elims)
+    and mt: "mtype(CT,m,Ca) = Cs \<rightarrow> C" by (auto elim:typing.cases)
   from ds_typs new_typ have "CT;\<Gamma> \<turnstile>+ (ds @[New Ca es]) : (Ds @[Ca])" by (simp add:typings_append)
   moreover from A_1_4[OF _ mb mt] r_invk obtain Da E  
     where "CT \<turnstile> Ca <: Da" 
@@ -434,11 +434,11 @@ next
   moreover from E'_sub_E E_sub_C have "CT \<turnstile> E' <: C" by (rule subtyping.s_trans)
   ultimately show ?case using r_invk by auto
 next
-  case (r_cast Ca CT D es)
+  case (r_cast CT Ca D es)
   then obtain Ca' 
     where "C = D" 
-    and "CT;\<Gamma> \<turnstile> New Ca es : Ca'" by (auto elim: typings_typing.elims)
-  thus ?case using r_cast by (auto elim: typings_typing.elims)
+    and "CT;\<Gamma> \<turnstile> New Ca es : Ca'" by (auto elim: typing.cases)
+  thus ?case using r_cast by (auto elim: typing.cases)
 next
   case (rc_field CT e0 e0' f)
   then obtain C0 Cf fd
@@ -446,7 +446,7 @@ next
     and Cf_def: "fields(CT,C0) = Cf" 
     and fd_def:"lookup Cf (\<lambda>fd. (vdName fd = f))  = Some fd"
     and "vdType fd = C" 
-    by (auto elim:typings_typing.elims)
+    by (auto elim:typing.cases)
   moreover with rc_field obtain C' 
     where "CT;\<Gamma> \<turnstile> e0' : C'" 
     and "CT \<turnstile> C' <: C0" by auto
@@ -457,7 +457,7 @@ next
   ultimately have "CT;\<Gamma> \<turnstile> FieldProj e0' f : C" by(auto simp add:typings_typing.t_field)
   thus ?case by (auto simp add:subtyping.s_refl)
 next
-  case (rc_invk_recv CT e0 e0' es m C)
+  case (rc_invk_recv CT e0 e0' m es C)
   then obtain C0 Ds Cs
     where ct_ok:"CT OK" 
     and "CT;\<Gamma> \<turnstile> e0 : C0" 
@@ -465,7 +465,7 @@ next
     and "CT;\<Gamma> \<turnstile>+ es : Cs"
     and "length es = length Ds"
     and "CT \<turnstile>+ Cs <: Ds"
-    by (auto elim:typings_typing.elims)
+    by (auto elim:typing.cases)
   moreover with rc_invk_recv obtain C0' 
     where "CT;\<Gamma> \<turnstile> e0' : C0'" 
     and "CT \<turnstile> C0' <: C0" by auto
@@ -473,14 +473,14 @@ next
   ultimately have "CT;\<Gamma> \<turnstile> MethodInvk e0' m es : C" by(auto simp add:typings_typing.t_invk)
   thus ?case by (auto simp add:subtyping.s_refl)
 next
-  case (rc_invk_arg CT e0 ei ei' el er m C)
+  case (rc_invk_arg CT ei ei' e0 m el er C)
   then obtain Cs Ds C0
     where typs: "CT;\<Gamma> \<turnstile>+ (el@(ei#er)) : Cs"
     and e0_typ: "CT;\<Gamma> \<turnstile> e0 : C0"
     and mt: "mtype(CT,m,C0) = Ds \<rightarrow> C"
     and Cs_sub_Ds: "CT \<turnstile>+ Cs <: Ds"
     and len: "length (el@(ei#er)) = length Ds"
-    by(auto elim:typings_typing.elims)
+    by(auto elim:typing.cases)
   hence "CT;\<Gamma> \<turnstile> ei:(Cs!(length el))" by (simp add:ith_typing)
   with rc_invk_arg obtain Ci' 
     where ei_typ: "CT;\<Gamma> \<turnstile> ei':Ci'"
@@ -495,7 +495,7 @@ next
     by(auto simp add:typings_typing.t_invk)
   thus ?case by (auto simp add:subtyping.s_refl)
 next
-  case (rc_new_arg Ca CT ei ei' el er C)
+  case (rc_new_arg CT ei ei' Ca el er C)
   then obtain Cs Df Ds 
     where typs: "CT;\<Gamma> \<turnstile>+ (el@(ei#er)) : Cs"
     and flds: "fields(CT,C) = Df"
@@ -503,7 +503,7 @@ next
     and Ds_def: "varDefs_types Df = Ds"
     and Cs_sub_Ds: "CT \<turnstile>+ Cs <: Ds"
     and C_def: "Ca = C"
-    by(auto elim:typings_typing.elims)
+    by(auto elim:typing.cases)
   hence "CT;\<Gamma> \<turnstile> ei:(Cs!(length el))" by (simp add:ith_typing)
   with rc_new_arg obtain Ci' 
     where ei_typ: "CT;\<Gamma> \<turnstile> ei':Ci'"
@@ -518,11 +518,11 @@ next
     by(auto simp add:typings_typing.t_new)
   thus ?case by (auto simp add:subtyping.s_refl)
 next
-  case (rc_cast C CT e0 e0' Ca)
+  case (rc_cast CT e0 e0' C Ca)
   then obtain D 
     where "CT;\<Gamma> \<turnstile> e0 : D"
     and Ca_def: "Ca = C"
-    by(auto elim:typings_typing.elims)
+    by(auto elim:typing.cases)
   with rc_cast obtain D' 
     where e0'_typ: "CT;\<Gamma> \<turnstile> e0':D'" and "CT \<turnstile> D' <: D"
     by auto
@@ -582,8 +582,8 @@ proof -
     where "CT;empty \<turnstile> (New C0 es) : C0'"
     and "fields(CT,C0') = Cf" 
     and "lookup Cf (\<lambda>fd. (vdName fd = fi)) = Some fDef"
-    by (auto elim:typings_typing.elims)
-  thus ?thesis by (auto elim:typings_typing.elims)
+    by (auto elim:typing.cases)
+  thus ?thesis by (auto elim:typing.cases)
 qed
 
 lemma Thm_2_4_2_2: 
@@ -597,8 +597,8 @@ proof -
     where "CT;empty \<turnstile> (New C0 es) : C0'"
     and mt:"mtype(CT,m,C0') = Cs \<rightarrow> D"
     and "length ds = length Cs"
-    by (auto elim:typings_typing.elims)
-  with mtype_mbody[OF mt] show ?thesis by (force elim:typings_typing.elims)
+    by (auto elim:typing.cases)
+  with mtype_mbody[OF mt] show ?thesis by (force elim:typing.cases)
 qed
      
 lemma closed_subterm_split: 
@@ -630,7 +630,7 @@ next
     from rtrancl_trans[OF s2 s1] have ?case by auto
   } moreover {
     assume "?V e0"
-    then obtain C0 es where "e0 = (New C0 es)" and "vals(es)" by (force elim:vals_val.elims)
+    then obtain C0 es where "e0 = (New C0 es)" and "vals(es)" by (force elim:val.cases)
     hence ?case by(force intro:isubexprs.intros)
   }
   ultimately show ?case by blast
@@ -652,7 +652,7 @@ next
     from rtrancl_trans[OF s2 s1] have ?case by auto
   } moreover {
     assume "?V e0"
-    then obtain C0 es' where "e0 = (New C0 es')" and "vals(es')" by (force elim:vals_val.elims)
+    then obtain C0 es' where "e0 = (New C0 es')" and "vals(es')" by (force elim:val.cases)
     hence ?case by(force intro:isubexprs.intros)
   }
   ultimately show ?case by blast
@@ -675,7 +675,7 @@ next
       from h_t_typs have 
         h_typ: "CT;\<Gamma> \<turnstile> (h#t)!0 : (Ch#Ct)!0" 
         and t_typs: "CT;\<Gamma> \<turnstile>+ t : Ct"
-        by(auto elim:typings_typing.elims)
+        by(auto elim:typings.cases)
       { fix i assume "i < length t"
         hence s_i: "Suc i < length (h#t)" by auto
         from OIH[OF s_i] have "\<lbrakk>i < length t; CT;\<Gamma> \<turnstile> (t!i) : (Ct!i); \<Gamma> = empty\<rbrakk> \<Longrightarrow> ?IH (t!i)" by auto }
@@ -741,7 +741,7 @@ next
     from rtrancl_trans[OF s2 s1] have ?case by auto
   } moreover {
     assume "?V e0"
-    then obtain C0 es' where "e0 = (New C0 es')" and "vals(es')" by (force elim:vals_val.elims)
+    then obtain C0 es' where "e0 = (New C0 es')" and "vals(es')" by (force elim:val.cases)
     hence ?case by(force intro:isubexprs.intros)
   }
   ultimately show ?case by blast
@@ -763,7 +763,7 @@ next
     from rtrancl_trans[OF s2 s1] have ?case by auto
   } moreover {
     assume "?V e0"
-    then obtain C0 es' where "e0 = (New C0 es')" and "vals(es')" by (force elim:vals_val.elims)
+    then obtain C0 es' where "e0 = (New C0 es')" and "vals(es')" by (force elim:val.cases)
     hence ?case by(force intro:isubexprs.intros)
   }
   ultimately show ?case by blast
@@ -785,7 +785,7 @@ next
     from rtrancl_trans[OF s2 s1] have ?case by auto
   } moreover {
     assume "?V e0"
-    then obtain C0 es' where "e0 = (New C0 es')" and "vals(es')" by (force elim:vals_val.elims)
+    then obtain C0 es' where "e0 = (New C0 es')" and "vals(es')" by (force elim:val.cases)
     hence ?case by(force intro:isubexprs.intros)
   }
   ultimately show ?case by blast
@@ -812,9 +812,9 @@ moreover
 { assume "?F e1" 
   then obtain C0 es fi where fp: "FieldProj (New C0 es) fi \<in> subexprs(e1)" by auto
   then obtain Ci where "CT;empty \<turnstile> FieldProj (New C0 es) fi : Ci" using e1_typ by(force simp add:subexpr_typing)
-  then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" by (force elim: typings_typing.elims)
-  hence "C0 = C0'" by (auto elim:typings_typing.elims)
-  with new_typ obtain Df where f1: "fields(CT,C0) = Df" and lens: "length es = length Df" by(auto elim:typings_typing.elims)
+  then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" by (force elim: typing.cases)
+  hence "C0 = C0'" by (auto elim:typing.cases)
+  with new_typ obtain Df where f1: "fields(CT,C0) = Df" and lens: "length es = length Df" by(auto elim:typing.cases)
   from Thm_2_4_2_1[OF e1_typ fp] obtain Cf fDef 
     where f2: "fields(CT,C0) = Cf" 
     and lkup: "lookup Cf (\<lambda>fd. vdName fd = fi) = Some(fDef)" by force
@@ -835,7 +835,7 @@ moreover
     where m_typ: "CT;empty \<turnstile> New C0 es : C0'" 
     and "mtype(CT,m,C0') = Es \<rightarrow> E"
     and "length ds = length Es"
-    by (auto elim:typings_typing.elims)
+    by (auto elim:typing.cases)
   from Thm_2_4_2_2[OF e1_typ mi] obtain xs e0 where mb: "mbody(CT, m, C0) = xs . e0" and "length xs = length ds" by auto
   hence "CT \<turnstile> (MethodInvk (New C0 es) m ds) \<rightarrow> (substs[xs[\<mapsto>]ds,this\<mapsto>(New C0 es)]e0)"  by(auto simp add:reduction.intros)
   with mi have "\<exists>e2. CT \<turnstile> e1 \<rightarrow> e2" by(simp add:subexpr_reduct)
@@ -844,8 +844,8 @@ moreover
   assume "?C e1"
   then obtain C0 D es where c_def: "Cast D (New C0 es) \<in> subexprs(e1)" by auto
   then obtain D' where "CT;empty \<turnstile> Cast D (New C0 es) : D'" using e1_typ by (force simp add:subexpr_typing)
-  then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" and D_eq_D': "D = D'" by (auto elim:typings_typing.elims)
-  hence C0_eq_C0': "C0 = C0'" by(auto elim:typings_typing.elims)
+  then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" and D_eq_D': "D = D'" by (auto elim:typing.cases)
+  hence C0_eq_C0': "C0 = C0'" by(auto elim:typing.cases)
   hence ?thesis proof(cases "CT \<turnstile> C0 <: D")
     case True
     hence "CT \<turnstile> Cast D (New C0 es) \<rightarrow> (New C0 es)" by(auto simp add:reduction.intros)

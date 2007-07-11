@@ -1,5 +1,5 @@
 
-(* $Id: Prover.thy,v 1.11 2006-10-23 14:58:37 fhaftmann Exp $ *)
+(* $Id: Prover.thy,v 1.12 2007-07-11 10:22:42 stefanberghofer Exp $ *)
 
 theory Prover imports Main Infinite_Set begin
 
@@ -119,12 +119,12 @@ primrec
   "is_axiom [] = False"
   "is_axiom (a#list) = ((? p vs. a = PAtom p vs & NAtom p vs : set list) | (? p vs. a = NAtom p vs & PAtom p vs : set list))"
 
-consts deriv :: "nseq => (nat * nseq) set"
-
-inductive "deriv s"
-  intros 
+inductive_set
+  deriv :: "nseq => (nat * nseq) set"
+  for s :: nseq
+where
   init: "(0,s) \<in> deriv s"
-  step: "(n,x) \<in> deriv s ==> y : set (subs x) ==> (Suc n,y) \<in> deriv s"
+| step: "(n,x) \<in> deriv s ==> y : set (subs x) ==> (Suc n,y) \<in> deriv s"
   -- "the closure of the branch at isaxiom"
 
 (*lemma step': "(n,x) \<in> deriv s ==> y : set (subs x) ==> ~ is_axiom (s_of_ns x) ==> (Suc n,y) \<in> deriv s"*)
@@ -146,7 +146,7 @@ lemmas [intro] = init step
 
 lemma deriv0[simp]: "(0,x) \<in> deriv y = (x = y)"
   apply(rule)
-  apply(erule deriv.elims) apply(simp) apply(simp)
+  apply(erule deriv.cases) apply(simp) apply(simp)
   apply(simp)
   done
 
@@ -173,7 +173,7 @@ lemma deriv_upwards: "(n,list) \<in> deriv s ==> ~ is_axiom (s_of_ns (list)) ==>
   done
 
 lemma deriv_downwards (*derivSucE*): "(Suc n, x) \<in> deriv s ==> \<exists>y. (n,y) \<in> deriv s & x : set (subs y) & ~ is_axiom (s_of_ns y)"
-  apply(erule deriv.elims)
+  apply(erule deriv.cases)
   apply(simp)
   apply(simp add: s_of_ns_def Let_def)
   apply(rule_tac x=xa in exI) apply(simp)
@@ -188,7 +188,7 @@ lemma deriv_deriv_child(*derivSuc*)[rule_format]: "\<forall>x y. (Suc n,x) \<in>
   apply(induct n)
    apply(rule, rule) apply(rule) apply(frule_tac deriv_downwards) apply(simp)
    apply(simp) apply(rule step) apply(simp) apply(simp)
-  apply(blast dest!: deriv_downwards elim: deriv.elims intro: deriv.intros) -- "blast needs some help with the reasoning, hence derivSucE"
+  apply(blast dest!: deriv_downwards elim: deriv.cases intro: deriv.intros) -- "blast needs some help with the reasoning, hence derivSucE"
   done
 
 (*
@@ -1217,7 +1217,7 @@ constdefs my_f :: "form"
 
   -- "we compute by rewriting"
 
-lemmas ss = list.simps if_True if_False flatten.simps map.simps bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def Let_def newvar_def subs.simps split_beta append_Nil append_Cons subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms mem_iff[symmetric] List.memberl.simps
+lemmas ss = list.simps if_True if_False flatten.simps map.simps bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def Let_def newvar_def subs.simps split_beta append_Nil append_Cons subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms mem_iff[symmetric] List.member.simps
 
 
 lemmas prove'_Nil = prove' [of "[]", simplified, standard]

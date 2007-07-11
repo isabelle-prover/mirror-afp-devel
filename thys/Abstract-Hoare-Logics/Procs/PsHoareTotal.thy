@@ -1,5 +1,5 @@
 (*  Title:      Inductive definition of Hoare logic for total correctness
-    ID:         $Id: PsHoareTotal.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
+    ID:         $Id: PsHoareTotal.thy,v 1.3 2007-07-11 10:05:49 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -22,44 +22,39 @@ constdefs
  cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>\<^sub>t/ _" 50)
   "C |\<Turnstile>\<^sub>t D    \<equiv>  |\<Turnstile>\<^sub>t C \<longrightarrow> |\<Turnstile>\<^sub>t D"
 
-consts thoare :: "('a cntxt \<times> 'a cntxt) set"
-abbreviation
- thoare' :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool"
-                   ("(_ \<turnstile>\<^sub>t/ ({(1_)}/ (_)/ {(1_)}))" [50,0,0,0] 50) where
- "C \<turnstile>\<^sub>t {P}c{Q}  \<equiv> (C,{(P,c,Q)}) : thoare"
-abbreviation
- thoare'' :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("(_ |\<turnstile>\<^sub>t/ _)" 50) where
- "C |\<turnstile>\<^sub>t D  \<equiv> (C,D) : thoare"
-
-inductive thoare
-intros
-  Do: "C \<turnstile>\<^sub>t {\<lambda>z s. (\<forall>t \<in> f s . P z t) \<and> f s \<noteq> {}} Do f {P}"
-  Semi: "\<lbrakk> C \<turnstile>\<^sub>t {P}c1{Q}; C \<turnstile>\<^sub>t {Q}c2{R} \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P} c1;c2 {R}"
-  If: "\<lbrakk> C \<turnstile>\<^sub>t {\<lambda>z s. P z s \<and> b s}c{Q}; C \<turnstile>\<^sub>t {\<lambda>z s. P z s \<and> ~b s}d{Q}  \<rbrakk> \<Longrightarrow>
+inductive
+  thoare :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("(_ |\<turnstile>\<^sub>t/ _)" 50)
+  and thoare' :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool"
+    ("(_ \<turnstile>\<^sub>t/ ({(1_)}/ (_)/ {(1_)}))" [50,0,0,0] 50)
+where
+ "C \<turnstile>\<^sub>t {P}c{Q}  \<equiv>  C |\<turnstile>\<^sub>t {(P,c,Q)}"
+| Do: "C \<turnstile>\<^sub>t {\<lambda>z s. (\<forall>t \<in> f s . P z t) \<and> f s \<noteq> {}} Do f {P}"
+| Semi: "\<lbrakk> C \<turnstile>\<^sub>t {P}c1{Q}; C \<turnstile>\<^sub>t {Q}c2{R} \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P} c1;c2 {R}"
+| If: "\<lbrakk> C \<turnstile>\<^sub>t {\<lambda>z s. P z s \<and> b s}c{Q}; C \<turnstile>\<^sub>t {\<lambda>z s. P z s \<and> ~b s}d{Q}  \<rbrakk> \<Longrightarrow>
       C \<turnstile>\<^sub>t {P} IF b THEN c ELSE d {Q}"
-  While:(*>*)
+| While:(*>*)
   "\<lbrakk>wf r;  \<forall>s'. C \<turnstile>\<^sub>t {\<lambda>z s. P z s \<and> b s \<and> s' = s} c {\<lambda>z s. P z s \<and> (s,s') \<in> r}\<rbrakk>
    \<Longrightarrow> C \<turnstile>\<^sub>t {P} WHILE b DO c {\<lambda>z s. P z s \<and> \<not>b s}"
 
-Call:
+| Call:
   "\<lbrakk> wf r;
      \<forall>q pre.
        (\<Union>p. {(\<lambda>z s. P p z s \<and> ((p,s),(q,pre)) \<in> r,CALL p,Q p)})
        \<turnstile>\<^sub>t {\<lambda>z s. P q z s \<and> s = pre} body q {Q q} \<rbrakk>
    \<Longrightarrow> {} |\<turnstile>\<^sub>t \<Union>p. {(P p, CALL p, Q p)}"
 
-  Asm: "(P,CALL p,Q) \<in> C \<Longrightarrow> C \<turnstile>\<^sub>t {P} CALL p {Q}"
+| Asm: "(P,CALL p,Q) \<in> C \<Longrightarrow> C \<turnstile>\<^sub>t {P} CALL p {Q}"
 
-  Conseq:
+| Conseq:
   "\<lbrakk> C \<turnstile>\<^sub>t {P'}c{Q'};
      (\<forall>s t. (\<forall>z. P' z s \<longrightarrow> Q' z t) \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t)) \<and>
      (\<forall>s. (\<exists>z. P z s) \<longrightarrow> (\<exists>z. P' z s)) \<rbrakk>
    \<Longrightarrow> C \<turnstile>\<^sub>t {P}c{Q}"
 
-  ConjI: "\<forall>(P,c,Q) \<in> D. C \<turnstile>\<^sub>t {P}c{Q}  \<Longrightarrow>  C |\<turnstile>\<^sub>t D"
-  ConjE: "\<lbrakk> C |\<turnstile>\<^sub>t D; (P,c,Q) \<in> D \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P}c{Q}"
+| ConjI: "\<forall>(P,c,Q) \<in> D. C \<turnstile>\<^sub>t {P}c{Q}  \<Longrightarrow>  C |\<turnstile>\<^sub>t D"
+| ConjE: "\<lbrakk> C |\<turnstile>\<^sub>t D; (P,c,Q) \<in> D \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P}c{Q}"
 
-  Local: "\<lbrakk> \<forall>s'. C \<turnstile>\<^sub>t {\<lambda>z s. P z s' \<and> s = f s'} c {\<lambda>z t. Q z (g s' t)} \<rbrakk> \<Longrightarrow>
+| Local: "\<lbrakk> \<forall>s'. C \<turnstile>\<^sub>t {\<lambda>z s. P z s' \<and> s = f s'} c {\<lambda>z t. Q z (g s' t)} \<rbrakk> \<Longrightarrow>
         C \<turnstile>\<^sub>t {P} LOCAL f;c;g {Q}"
 monos split_beta
 
@@ -94,7 +89,7 @@ done
 lemma unfold_while:
  "(s -WHILE b DO c\<rightarrow> u) =
   (s -IF b THEN c;WHILE b DO c ELSE Do(\<lambda>s. {s})\<rightarrow> u)"
-by(auto elim: exec.elims intro:exec.intros split:split_if_asm)
+by(auto elim: exec.cases intro:exec.intros split:split_if_asm)
 
 theorem "C |\<turnstile>\<^sub>t D  \<Longrightarrow>  C |\<Turnstile>\<^sub>t D"
 apply(erule thoare.induct);
@@ -172,10 +167,10 @@ apply blast
 done
 
 lemma while_termiE: "\<lbrakk> WHILE b DO c \<down> s; b s \<rbrakk> \<Longrightarrow> c \<down> s"
-by(erule termi.elims, auto)
+by(erule termi.cases, auto)
 
 lemma while_termiE2: "\<lbrakk> WHILE b DO c \<down> s; b s; s -c\<rightarrow> t \<rbrakk> \<Longrightarrow> WHILE b DO c \<down> t"
-by(erule termi.elims, auto)
+by(erule termi.cases, auto)
 
 lemma MGT_lemma: "\<forall>p. {} |\<turnstile>\<^sub>t {MGT\<^isub>t(CALL p)}  \<Longrightarrow>  {} |\<turnstile>\<^sub>t {MGT\<^isub>t c}"
 apply (simp)
@@ -213,45 +208,41 @@ apply(fast intro: rtrancl_refl)
 done
 
 
-consts  exec1 :: "((com list \<times> state) \<times> (com list \<times> state))set"
-syntax
- "@exec1" :: "(com list \<times> state) \<Rightarrow> (com list \<times> state) \<Rightarrow> bool"    ("_ \<rightarrow> _" [81,81] 100)
- "@exec*" :: "(com list \<times> state) \<Rightarrow> (com list \<times> state) \<Rightarrow> bool"    ("_ \<rightarrow>\<^sup>* _" [81,81] 100)
+inductive_set
+  exec1 :: "((com list \<times> state) \<times> (com list \<times> state))set"
+  and exec1' :: "(com list \<times> state) \<Rightarrow> (com list \<times> state) \<Rightarrow> bool"  ("_ \<rightarrow> _" [81,81] 100)
+where
+  "cs0 \<rightarrow> cs1 \<equiv> (cs0,cs1) : exec1"
 
-translations
-  "cs0 \<rightarrow> cs1"	     == "(cs0,cs1) : exec1"
-  "cs0 \<rightarrow> (c1,s1)"  == "(cs0,c1,s1) : exec1"
+| Do[iff]: "t \<in> f s \<Longrightarrow> ((Do f)#cs,s) \<rightarrow> (cs,t)"
 
-  "cs0 \<rightarrow>\<^sup>* cs1" 	    == "(cs0,cs1) : exec1^*"
-  "cs0 \<rightarrow>\<^sup>* (c1,s1)" == "(cs0,c1,s1) : exec1^*"
+| Semi[iff]: "((c1;c2)#cs,s) \<rightarrow> (c1#c2#cs,s)"
 
-inductive exec1
-intros
-Do[iff]: "t \<in> f s \<Longrightarrow> ((Do f)#cs,s) \<rightarrow> (cs,t)"
+| IfTrue:   "b s \<Longrightarrow> ((IF b THEN c1 ELSE c2)#cs,s) \<rightarrow> (c1#cs,s)"
+| IfFalse: "\<not>b s \<Longrightarrow> ((IF b THEN c1 ELSE c2)#cs,s) \<rightarrow> (c2#cs,s)"
 
-Semi[iff]: "((c1;c2)#cs,s) \<rightarrow> (c1#c2#cs,s)"
+| WhileFalse: "\<not>b s \<Longrightarrow> ((WHILE b DO c)#cs,s) \<rightarrow> (cs,s)"
+| WhileTrue:   "b s \<Longrightarrow> ((WHILE b DO c)#cs,s) \<rightarrow> (c#(WHILE b DO c)#cs,s)"
 
-IfTrue:   "b s \<Longrightarrow> ((IF b THEN c1 ELSE c2)#cs,s) \<rightarrow> (c1#cs,s)"
-IfFalse: "\<not>b s \<Longrightarrow> ((IF b THEN c1 ELSE c2)#cs,s) \<rightarrow> (c2#cs,s)"
+| Call[iff]: "(CALL p#cs,s) \<rightarrow> (body p#cs,s)"
 
-WhileFalse: "\<not>b s \<Longrightarrow> ((WHILE b DO c)#cs,s) \<rightarrow> (cs,s)"
-WhileTrue:   "b s \<Longrightarrow> ((WHILE b DO c)#cs,s) \<rightarrow> (c#(WHILE b DO c)#cs,s)"
+| Local[iff]: "((LOCAL f;c;g)#cs,s) \<rightarrow> (c # Do(\<lambda>t. {g s t})#cs, f s)"
 
-Call[iff]: "(CALL p#cs,s) \<rightarrow> (body p#cs,s)"
-
-Local[iff]: "((LOCAL f;c;g)#cs,s) \<rightarrow> (c # Do(\<lambda>t. {g s t})#cs, f s)"
+abbreviation
+  exectr :: "(com list \<times> state) \<Rightarrow> (com list \<times> state) \<Rightarrow> bool"  ("_ \<rightarrow>\<^sup>* _" [81,81] 100)
+  where "cs0 \<rightarrow>\<^sup>* cs1 \<equiv> (cs0,cs1) : exec1^*"
 
 inductive_cases exec1E[elim!]:
- "([],s) \<rightarrow> u"
- "(Do f#cs,s) \<rightarrow> u"
- "((c1;c2)#cs,s) \<rightarrow> u"
- "((IF b THEN c1 ELSE c2)#cs,s) \<rightarrow> u"
- "((WHILE b DO c)#cs,s) \<rightarrow> u"
- "(CALL p#cs,s) \<rightarrow> u"
- "((LOCAL f;c;g)#cs,s) \<rightarrow> u"
+ "([],s) \<rightarrow> (cs',s')"
+ "(Do f#cs,s) \<rightarrow> (cs',s')"
+ "((c1;c2)#cs,s) \<rightarrow> (cs',s')"
+ "((IF b THEN c1 ELSE c2)#cs,s) \<rightarrow> (cs',s')"
+ "((WHILE b DO c)#cs,s) \<rightarrow> (cs',s')"
+ "(CALL p#cs,s) \<rightarrow> (cs',s')"
+ "((LOCAL f;c;g)#cs,s) \<rightarrow> (cs',s')"
 
 lemma [iff]: "\<not> ([],s) \<rightarrow> u"
-by blast
+by (induct u) blast
 
 lemma app_exec: "(cs,s) \<rightarrow> (cs',s') \<Longrightarrow> (cs@cs2,s) \<rightarrow> (cs'@cs2,s')"
 apply(erule exec1.induct)
@@ -278,14 +269,11 @@ apply(erule exec.induct)
 apply(blast intro: rtrancl_trans)
 done
 
-consts execs :: "(state \<times> com list \<times> state) set"
-abbreviation execs' :: "state \<Rightarrow> com list \<Rightarrow> state \<Rightarrow> bool"   ("_/ =_\<Rightarrow>/ _" [50,0,50] 50) where
-"s =cs\<Rightarrow> t  \<equiv>  (s,cs,t) \<in> execs"
-
-inductive execs
-intros
-"s =[]\<Rightarrow> s"
-"s -c\<rightarrow> t \<Longrightarrow> t =cs\<Rightarrow> u \<Longrightarrow> s =c#cs\<Rightarrow> u"
+inductive
+  execs :: "state \<Rightarrow> com list \<Rightarrow> state \<Rightarrow> bool"  ("_/ =_\<Rightarrow>/ _" [50,0,50] 50)
+where
+  "s =[]\<Rightarrow> s"
+| "s -c\<rightarrow> t \<Longrightarrow> t =cs\<Rightarrow> u \<Longrightarrow> s =c#cs\<Rightarrow> u"
 
 inductive_cases [elim!]:
  "s =[]\<Rightarrow> t"
@@ -294,7 +282,7 @@ inductive_cases [elim!]:
 theorem exec1s_impl_execs: "(cs,s) \<rightarrow>\<^sup>* ([],t) \<Longrightarrow> s =cs\<Rightarrow> t"
 apply(erule converse_rtrancl_induct2)
  apply(rule execs.intros)
-apply(erule exec1.elims)
+apply(erule exec1.cases)
 apply(blast intro:execs.intros)
 apply(blast intro:execs.intros)
 apply(fastsimp intro:execs.intros)
@@ -383,6 +371,7 @@ apply(unfold inf_def)
 apply clarify
 apply(frule_tac x = 0 in spec)
 apply(erule_tac x = 1 in allE)
+apply (case_tac "fa (Suc 0)")
 apply clarsimp
 done
 
@@ -392,6 +381,7 @@ apply(rule iffI)
 apply clarify
 apply(rule_tac x = "\<lambda>i. f(Suc i)" in exI)
 apply(frule_tac x = 0 in spec)
+apply (case_tac "f (Suc 0)")
 apply clarsimp
 apply clarify
 apply(rule_tac x = "\<lambda>i. case i of 0 \<Rightarrow> ((c1;c2)#cs,s) | Suc i \<Rightarrow> f i" in exI)
@@ -404,6 +394,7 @@ apply(unfold inf_def)
 apply(rule iffI)
  apply clarsimp
  apply(frule_tac x = 0 in spec)
+ apply (case_tac "f (Suc 0)")
  apply(rule conjI)
   apply clarsimp
   apply(rule_tac x = "\<lambda>i. f(Suc i)" in exI)
@@ -423,6 +414,7 @@ apply(unfold inf_def)
 apply(rule iffI)
  apply clarsimp
  apply(frule_tac x = 0 in spec)
+ apply (case_tac "f (Suc 0)")
  apply(rule conjI)
   apply clarsimp
   apply(rule_tac x = "\<lambda>i. f(Suc i)" in exI)
@@ -442,6 +434,7 @@ apply(unfold inf_def)
 apply(rule iffI)
  apply clarsimp
  apply(frule_tac x = 0 in spec)
+ apply (case_tac "f (Suc 0)")
  apply clarsimp
  apply(rule_tac x = "\<lambda>i. f(Suc i)" in exI)
  apply clarsimp
@@ -457,6 +450,7 @@ apply(rule iffI)
  apply clarsimp
  apply(rename_tac F)
  apply(frule_tac x = 0 in spec)
+ apply (case_tac "F (Suc 0)")
  apply clarsimp
  apply(rule_tac x = "\<lambda>i. F(Suc i)" in exI)
  apply clarsimp

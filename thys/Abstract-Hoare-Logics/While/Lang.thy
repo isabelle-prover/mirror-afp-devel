@@ -1,5 +1,5 @@
 (*  Title:       A while language
-    ID:          $Id: Lang.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
+    ID:          $Id: Lang.thy,v 1.3 2007-07-11 10:05:50 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -57,30 +57,23 @@ and @{term[source]"While b c"}.
 The command @{term"LOCAL f;c;g"} applies function @{text f} to the state,
 executes @{term c}, and then combines initial and final state via function
 @{text g}. More below.
-*}
-
-consts  exec :: "(state \<times> com \<times> state)set"
-abbreviation
- exec' :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool" ("_/ -_\<rightarrow>/ _" [50,0,50] 50) where
- "s\<^isub>0 -c\<rightarrow> s\<^isub>1 \<equiv> (s\<^isub>0,c,s\<^isub>1) \<in> exec"
-
-
-text{* The semantics of commands is defined inductively by a so-called
+The semantics of commands is defined inductively by a so-called
 big-step semantics.*}
 
-inductive exec
-intros
+inductive
+  exec :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool" ("_/ -_\<rightarrow>/ _" [50,0,50] 50)
+where
   (*<*)Do:(*>*)"t \<in> f s \<Longrightarrow> s -Do f\<rightarrow> t"
 
-  (*<*)Semi:(*>*)"\<lbrakk> s0 -c1\<rightarrow> s1; s1 -c2\<rightarrow> s2 \<rbrakk> \<Longrightarrow> s0 -c1;c2\<rightarrow> s2"
+| (*<*)Semi:(*>*)"\<lbrakk> s0 -c1\<rightarrow> s1; s1 -c2\<rightarrow> s2 \<rbrakk> \<Longrightarrow> s0 -c1;c2\<rightarrow> s2"
 
-  (*<*)IfT:(*>*)"\<lbrakk>  b s; s -c1\<rightarrow> t \<rbrakk> \<Longrightarrow> s -IF b THEN c1 ELSE c2\<rightarrow> t"
-  (*<*)IfF:(*>*)"\<lbrakk> \<not>b s; s -c2\<rightarrow> t \<rbrakk> \<Longrightarrow> s -IF b THEN c1 ELSE c2\<rightarrow> t"
+| (*<*)IfT:(*>*)"\<lbrakk>  b s; s -c1\<rightarrow> t \<rbrakk> \<Longrightarrow> s -IF b THEN c1 ELSE c2\<rightarrow> t"
+| (*<*)IfF:(*>*)"\<lbrakk> \<not>b s; s -c2\<rightarrow> t \<rbrakk> \<Longrightarrow> s -IF b THEN c1 ELSE c2\<rightarrow> t"
 
-  (*<*)WhileF:(*>*)"\<not>b s \<Longrightarrow> s -WHILE b DO c\<rightarrow> s"
-  (*<*)WhileT:(*>*)"\<lbrakk> b s; s -c\<rightarrow> t; t -WHILE b DO c\<rightarrow> u \<rbrakk> \<Longrightarrow> s -WHILE b DO c\<rightarrow> u"
+| (*<*)WhileF:(*>*)"\<not>b s \<Longrightarrow> s -WHILE b DO c\<rightarrow> s"
+| (*<*)WhileT:(*>*)"\<lbrakk> b s; s -c\<rightarrow> t; t -WHILE b DO c\<rightarrow> u \<rbrakk> \<Longrightarrow> s -WHILE b DO c\<rightarrow> u"
 
-  (*<*)Local:(*>*) "f s -c\<rightarrow> t \<Longrightarrow> s -LOCAL f; c; g\<rightarrow> g s t"
+| (*<*)Local:(*>*) "f s -c\<rightarrow> t \<Longrightarrow> s -LOCAL f; c; g\<rightarrow> g s t"
 
 text{* Assuming that the state is a function from variables to values,
 the declaration of a new local variable @{text x} with inital value
@@ -88,24 +81,24 @@ the declaration of a new local variable @{text x} with inital value
 @{text"LOCAL (\<lambda>s. s(x := a s)); c; (\<lambda>s t. t(x := s x))"}. *}
 
 lemma exec_Do_iff[iff]: "(s -Do f\<rightarrow> t) = (t \<in> f s)"
-by(auto elim: exec.elims intro:exec.intros)
+by(auto elim: exec.cases intro:exec.intros)
 
 lemma [iff]: "(s -c;d\<rightarrow> u) = (\<exists>t. s -c\<rightarrow> t \<and> t -d\<rightarrow> u)"
-by(best elim: exec.elims intro:exec.intros)
+by(best elim: exec.cases intro:exec.intros)
 
 lemma [iff]: "(s -IF b THEN c ELSE d\<rightarrow> t) =
               (s -if b s then c else d\<rightarrow> t)"
 apply auto
-apply(blast elim: exec.elims intro:exec.intros)+
+apply(blast elim: exec.cases intro:exec.intros)+
 done
 
 lemma [iff]: "(s -LOCAL f; c; g\<rightarrow> u) = (\<exists>t. f s -c\<rightarrow> t \<and> u = g s t)"
-by(fastsimp elim: exec.elims intro:exec.intros)
+by(fastsimp elim: exec.cases intro:exec.intros)
 
 lemma unfold_while:
  "(s -WHILE b DO c\<rightarrow> u) =
   (s -IF b THEN c;WHILE b DO c ELSE Do(\<lambda>s. {s})\<rightarrow> u)"
-by(auto elim: exec.elims intro:exec.intros split:split_if_asm)
+by(auto elim: exec.cases intro:exec.intros split:split_if_asm)
 
 
 lemma while_lemma[rule_format]:

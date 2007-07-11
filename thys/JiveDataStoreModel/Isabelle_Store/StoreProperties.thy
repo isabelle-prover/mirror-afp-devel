@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: StoreProperties.thy,v 1.7 2007-06-22 15:53:55 makarius Exp $
+    ID:          $Id: StoreProperties.thy,v 1.8 2007-07-11 10:18:35 stefanberghofer Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -19,22 +19,13 @@ in the given store.
 The predicate @{text "reach"} decides whether a location is reachable from a value in a store.
 *}
 
-consts reachS:: "Store \<Rightarrow> (Location \<times> Value) set"
-
-
-syntax reach:: "Store \<Rightarrow> Location \<Rightarrow> Value \<Rightarrow> bool" 
-  ("_|- _ reachable'_from _" [91,91,91]90)
-syntax  (xsymbols) 
-  reach::"Store \<Rightarrow> Location \<Rightarrow> Value \<Rightarrow> bool" 
-  ("_\<turnstile> _ reachable'_from _" [91,91,91]90)
-
-translations 
-"reach s l x" == "(l,x) \<in> reachS s"
-"\<not> reach s l x" <= "(l,x) \<notin> reachS s"
-
-inductive "reachS s" intros
+inductive
+  reach :: "Store \<Rightarrow> Location \<Rightarrow> Value \<Rightarrow> bool" 
+    ("_\<turnstile> _ reachable'_from _" [91,91,91]90)
+  for s :: Store
+where
   Immediate: "ref l \<noteq> nullV \<Longrightarrow> s\<turnstile> l reachable_from (ref l)"
-  Indirect: "\<lbrakk>s\<turnstile> l reachable_from (s@@k); ref k \<noteq> nullV\<rbrakk> 
+| Indirect: "\<lbrakk>s\<turnstile> l reachable_from (s@@k); ref k \<noteq> nullV\<rbrakk> 
              \<Longrightarrow> s\<turnstile> l reachable_from (ref k)" 
 
 text {* Note that we explicitly exclude @{text "nullV"} as legal reference
@@ -65,13 +56,13 @@ corollary unreachable_NullE [elim]:
 
 lemma reachObjLoc [simp,intro]: 
   "C=cls cf \<Longrightarrow> s\<turnstile> objLoc cf a reachable_from objV C a"
-  by (iprover intro: reachS.Immediate [of "objLoc cf a",simplified])
+  by (iprover intro: reach.Immediate [of "objLoc cf a",simplified])
 
 lemma reachArrLoc [simp,intro]: "s\<turnstile> arrLoc T a i reachable_from arrV T a"
-  by (rule reachS.Immediate [of "arrLoc T a i",simplified])
+  by (rule reach.Immediate [of "arrLoc T a i",simplified])
 
 lemma reachArrLen [simp,intro]: "s\<turnstile> arrLenLoc T a reachable_from arrV T a"
-  by (rule reachS.Immediate [of "arrLenLoc T a",simplified])
+  by (rule reach.Immediate [of "arrLenLoc T a",simplified])
 
 lemma unreachStatic [simp]: "\<not> s\<turnstile> staticLoc f reachable_from x"
 proof -
@@ -90,14 +81,14 @@ lemma unreachStaticE [elim]: "s\<turnstile> staticLoc f reachable_from x \<Longr
 lemma reachable_from_ArrLoc_impl_Arr [simp,intro]:
   assumes reach_loc: "s\<turnstile> l reachable_from (s@@arrLoc T a i)"
   shows "s\<turnstile> l reachable_from (arrV T a)"
-  using reachS.Indirect [OF reach_loc]
+  using reach.Indirect [OF reach_loc]
   by simp
 
 lemma reachable_from_ObjLoc_impl_Obj [simp,intro]:
   assumes reach_loc: "s\<turnstile> l reachable_from (s@@objLoc cf a)"
   assumes C: "C=cls cf"
   shows "s\<turnstile> l reachable_from (objV C a)"
-  using C reachS.Indirect [OF reach_loc]
+  using C reach.Indirect [OF reach_loc]
   by simp
 
 
@@ -113,18 +104,18 @@ proof
     case (Immediate k)
     have "ref k \<noteq> nullV" by fact
     then show "s\<langle>l := y\<rangle>\<turnstile> k reachable_from (ref k)"
-      by (rule reachS.Immediate)
+      by (rule reach.Immediate)
   next
-    case (Indirect m k)
+    case (Indirect k m)
     have hyp: "\<not> s\<turnstile> l reachable_from (s@@m) 
                \<Longrightarrow> s\<langle>l:=y\<rangle> \<turnstile> k reachable_from (s@@m)" by fact
     have "ref m \<noteq> nullV" and "\<not> s\<turnstile> l reachable_from (ref m)" by fact+
     hence "l\<noteq>m" "\<not> s\<turnstile> l reachable_from (s@@m)"
-      by (auto intro: reachS.intros)
+      by (auto intro: reach.intros)
     with hyp have "s\<langle>l := y\<rangle> \<turnstile> k reachable_from (s\<langle>l := y\<rangle>@@m)"
       by simp
     then show "s\<langle>l := y\<rangle>\<turnstile> k reachable_from (ref m)"
-      by (rule reachS.Indirect) (rule Indirect.hyps)
+      by (rule reach.Indirect) (rule Indirect.hyps)
   qed
 next
   assume "s\<langle>l := y\<rangle>\<turnstile> k reachable_from x"
@@ -134,19 +125,19 @@ next
     case (Immediate k)
     have "ref k \<noteq> nullV" by fact
     then show "s \<turnstile> k reachable_from (ref k)"
-      by (rule reachS.Immediate)
+      by (rule reach.Immediate)
   next
-    case (Indirect m k)
+    case (Indirect k m)
     with Indirect.hyps 
     have hyp: "\<not> s\<turnstile> l reachable_from (s\<langle>l := y\<rangle>@@m)  
                \<Longrightarrow> s\<turnstile> k reachable_from (s\<langle>l := y\<rangle>@@m)" by simp
     have "ref m \<noteq> nullV" and "\<not> s\<turnstile> l reachable_from (ref m)" by fact+
     hence "l\<noteq>m" "\<not> s \<turnstile> l reachable_from (s@@m)"  
-      by (auto intro: reachS.intros)
+      by (auto intro: reach.intros)
     with hyp have "s \<turnstile> k reachable_from (s@@m)"
       by simp
     thus "s\<turnstile> k reachable_from (ref m)"
-      by (rule reachS.Indirect) (rule Indirect.hyps)
+      by (rule reach.Indirect) (rule Indirect.hyps)
   qed
 qed
 
@@ -158,7 +149,7 @@ lemma reach2:
 
 text {* Lemma 3.2 (iv) *}
 lemma reach4: "\<not> s \<turnstile> l reachable_from (ref k) \<Longrightarrow> k \<noteq> l \<or> (ref k) = nullV"
-  by (auto intro: reachS.intros)
+  by (auto intro: reach.intros)
 
 lemma reachable_isRef: 
   assumes reach: "s\<turnstile>l reachable_from x" 
@@ -169,7 +160,7 @@ proof (induct)
   show "isRefV (ref l)"
     by (cases l) simp_all
 next
-  case (Indirect k l)
+  case (Indirect l k)
   show "isRefV (ref k)"
     by (cases k) simp_all
 qed
@@ -205,9 +196,9 @@ proof
   proof (induct)
     case (Immediate l)
     thus "s\<turnstile> l reachable_from ref l"
-      by (rule reachS.intros)
+      by (rule reach.intros)
   next
-    case (Indirect k l)
+    case (Indirect l k)
     have reach_k: "s\<turnstile> l reachable_from (s\<langle>t\<rangle>@@k)" by fact
     moreover
     have "s\<langle>t\<rangle>@@k = s@@k"
@@ -229,7 +220,7 @@ proof
     ultimately have "s\<turnstile> l reachable_from (s@@k)"
       by simp
     thus "s\<turnstile> l reachable_from ref k"
-      by (rule reachS.intros) (rule Indirect.hyps)
+      by (rule reach.intros) (rule Indirect.hyps)
   qed
 next
   assume "s\<turnstile> l reachable_from x"
@@ -237,9 +228,9 @@ next
   proof (induct)
     case (Immediate l)
     thus "s\<langle>t\<rangle>\<turnstile> l reachable_from ref l"
-      by (rule reachS.intros)
+      by (rule reach.intros)
   next
-    case (Indirect k l)
+    case (Indirect l k)
     have reach_k: "s\<langle>t\<rangle>\<turnstile> l reachable_from (s@@k)" by fact
     moreover
     have "s\<langle>t\<rangle>@@k = s@@k"
@@ -261,7 +252,7 @@ next
     ultimately have "s\<langle>t\<rangle>\<turnstile> l reachable_from (s\<langle>t\<rangle>@@k)"
       by simp
     thus "s\<langle>t\<rangle>\<turnstile> l reachable_from ref k"
-      by (rule reachS.intros) (rule Indirect.hyps)
+      by (rule reach.intros) (rule Indirect.hyps)
   qed
 qed
        
@@ -290,9 +281,9 @@ proof
     case (Immediate l)
     have "\<not> s\<turnstile> l reachable_from ref l" and "ref l \<noteq> nullV" by fact+
     thus False
-      by (iprover intro: reachS.intros)
+      by (iprover intro: reach.intros)
   next
-    case (Indirect k m)
+    case (Indirect m k)
     have k_not_Null: "ref k \<noteq> nullV" by fact
     have not_m_y: "\<not> s\<turnstile> m reachable_from y" by fact
     have not_m_k: "\<not> s\<turnstile> m reachable_from ref k" by fact
@@ -305,7 +296,7 @@ proof
       then have "s\<langle>l := y\<rangle>@@k = s@@k" by simp
       moreover 
       from not_m_k k_not_Null have "\<not> s\<turnstile> m reachable_from (s@@k)"
-	by (iprover intro: reachS.intros)
+	by (iprover intro: reach.intros)
       ultimately show False
 	using not_m_y hyp by simp
     next
@@ -322,7 +313,7 @@ proof
 	  by auto
 	moreover 
 	from not_m_k k_not_Null have "\<not> s\<turnstile> m reachable_from (s@@k)"
-	  by (iprover intro: reachS.intros)
+	  by (iprover intro: reach.intros)
 	ultimately show False
 	  using not_m_y hyp by simp
       qed
@@ -347,7 +338,7 @@ proof induct
   show "ref l = ref l"
     by simp
 next
-  case (Indirect k l)
+  case (Indirect l k)
   have "ref k \<noteq> nullV" by fact
   have "\<not> alive (ref k) s" by fact
   hence "s@@k = init (ltype k)" by simp
@@ -365,7 +356,7 @@ proof induct
   case (Immediate l)
   show "ref l = new s t" by fact
 next
-  case (Indirect k l)
+  case (Indirect l k)
   hence "s@@k = new s t" by iprover
   moreover 
   have "\<not> alive (new s t) s"
@@ -388,7 +379,7 @@ proof (induct)
   case (Immediate l)
   show ?case by fact
 next
-  case (Indirect k l)
+  case (Indirect l k)
   have hyp: "alive (s@@k) s \<Longrightarrow> alive (ref l) s" by fact
   moreover have "alive (s@@k) s" by simp
   ultimately
@@ -407,9 +398,9 @@ proof
   proof (induct)
     case (Immediate l)
     show "s2\<turnstile> l reachable_from ref l"
-      by (rule reachS.intros) (rule Immediate.hyps)
+      by (rule reach.intros) (rule Immediate.hyps)
   next
-    case (Indirect k l)
+    case (Indirect l k)
     have hyp: "\<forall>l. s1\<turnstile> l reachable_from (s1@@k) \<longrightarrow> s1@@l = s2@@l 
                \<Longrightarrow> s2\<turnstile> l reachable_from (s1@@k)" by fact
     have k_not_Null: "ref k \<noteq> nullV" by fact
@@ -418,16 +409,16 @@ proof
     have "s1\<turnstile> l reachable_from (s1@@k)" by fact
     with k_not_Null
     have "s1@@k = s2@@k"
-      by (iprover intro: reach_impl_access_eq [rule_format] reachS.intros)
+      by (iprover intro: reach_impl_access_eq [rule_format] reach.intros)
     moreover from reach_impl_access_eq k_not_Null
     have "\<forall>l. s1\<turnstile> l reachable_from (s1@@k) \<longrightarrow> s1@@l = s2@@l"
-      by (iprover intro: reachS.intros)
+      by (iprover intro: reach.intros)
     then have "s2\<turnstile> l reachable_from (s1@@k)"
       by (rule hyp)
     ultimately have "s2\<turnstile> l reachable_from (s2@@k)"
       by simp
     thus "s2\<turnstile> l reachable_from ref k"
-      by (rule reachS.intros) (rule Indirect.hyps)
+      by (rule reach.intros) (rule Indirect.hyps)
   qed
 next
   assume "s2\<turnstile> l reachable_from x"
@@ -436,29 +427,29 @@ next
   proof (induct)
     case (Immediate l)
     show "s1\<turnstile> l reachable_from ref l"
-      by (rule reachS.intros) (rule Immediate.hyps)
+      by (rule reach.intros) (rule Immediate.hyps)
   next
-    case (Indirect k l)
+    case (Indirect l k)
     have hyp: "\<forall>l. s1\<turnstile> l reachable_from (s2@@k) \<longrightarrow> s1@@l = s2@@l 
                \<Longrightarrow> s1\<turnstile> l reachable_from (s2@@k)" by fact
     have k_not_Null: "ref k \<noteq> nullV" by fact
     have reach_impl_access_eq: 
       "\<forall>l. s1\<turnstile> l reachable_from ref k \<longrightarrow> s1@@l = s2@@l" by fact
     have "s1\<turnstile> k reachable_from ref k"
-      by (rule reachS.intros) (rule Indirect.hyps)
+      by (rule reach.intros) (rule Indirect.hyps)
     with reach_impl_access_eq
     have eq_k: "s1@@k = s2@@k"
       by simp
     from reach_impl_access_eq k_not_Null
     have "\<forall>l. s1\<turnstile> l reachable_from (s1@@k) \<longrightarrow> s1@@l = s2@@l"
-      by (iprover intro: reachS.intros)
+      by (iprover intro: reach.intros)
     then 
     have "\<forall>l. s1\<turnstile> l reachable_from (s2@@k) \<longrightarrow> s1@@l = s2@@l"
       by (simp add: eq_k)
     with eq_k hyp have "s1\<turnstile> l reachable_from (s1@@k)"
       by simp
     thus "s1\<turnstile> l reachable_from ref k"
-      by (rule reachS.intros) (rule Indirect.hyps)
+      by (rule reach.intros) (rule Indirect.hyps)
    qed
 qed
 
@@ -850,7 +841,7 @@ proof (rule xeq2)
 	  with unalive_x_s have "s@@l = init (ltype l)"
 	    by simp
 	  also from reach_s_x x have "t\<turnstile> l reachable_from x"
-	    by (auto intro: reachS.Immediate unreachable_Null)
+	    by (auto intro: reach.Immediate unreachable_Null)
 	  with False x have "t@@l = init (ltype l)"
 	    by simp
 	  finally show "s@@l = t@@l"
@@ -929,7 +920,7 @@ next
     with unalive_x_s have "s@@l = init (ltype l)"
       by simp
     also from reach_s_x x have "t\<turnstile> l reachable_from x"
-      by (auto intro: reachS.Immediate unreachable_Null)
+      by (auto intro: reach.Immediate unreachable_Null)
     with unalive_x_t x have "t@@l = init (ltype l)"
       by simp
     finally show "s@@l = t@@l"
@@ -971,28 +962,20 @@ text {* The predicate @{text "treach"} denotes the fact that the first type reac
 the second type by stepping finitely many times from a type to the range type of one 
 of its fields. This formalization diverges from \cite[p. 106]{Poetzsch-Heffter97specification} 
 in that it does not include the number of steps that are allowed to reach the second type.
-*}
-
-consts treachS:: "(Javatype \<times> Javatype) set"
-syntax "treach":: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool"
-
-translations
-"treach t u" == "(t,u) \<in> treachS"
-"\<not> treach t u" <= "(t,u) \<notin> treachS"
-
-text {* Reachability of types is a static approximation of reachability in
+Reachability of types is a static approximation of reachability in
 the store. If I cannot reach the type of a location from the type of a
 reference, I cannot reach the location from the reference. See lemma  
 @{text "not_treach_ref_impl_not_reach"} below.
 *}
 
-inductive treachS
-intros
+inductive
+  treach :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool"
+where
   Subtype:       "U \<le> T \<Longrightarrow> treach T U"
-  Attribute:     "\<lbrakk>treach T S; S \<le> dtype f; U \<le> rtype f\<rbrakk>  \<Longrightarrow> treach T U"
-  ArrLength:     "treach (ArrT AT) IntgT"
-  ArrElem:       "treach (ArrT AT) (at2jt AT)"
-  Trans [trans]: "\<lbrakk>treach T U; treach U V\<rbrakk> \<Longrightarrow> treach T V"
+| Attribute:     "\<lbrakk>treach T S; S \<le> dtype f; U \<le> rtype f\<rbrakk>  \<Longrightarrow> treach T U"
+| ArrLength:     "treach (ArrT AT) IntgT"
+| ArrElem:       "treach (ArrT AT) (at2jt AT)"
+| Trans [trans]: "\<lbrakk>treach T U; treach U V\<rbrakk> \<Longrightarrow> treach T V"
 
 
 lemma treach_ref_l [simp,intro]: 
@@ -1003,8 +986,8 @@ proof (cases l)
   have "l=objLoc cf a" by fact
   moreover
   have "treach (CClassT (cls cf)) (rtype (att cf))"
-    by (rule treachS.Attribute [where ?f="att cf" and ?S="CClassT (cls cf)"])
-       (auto intro: treachS.Subtype)
+    by (rule treach.Attribute [where ?f="att cf" and ?S="CClassT (cls cf)"])
+       (auto intro: treach.Subtype)
   ultimately show ?thesis
     by simp
 next
@@ -1017,12 +1000,12 @@ next
   case (arrLenLoc T a)
   have "l=arrLenLoc T a" by fact
   then show ?thesis
-    by (auto intro: treachS.ArrLength)
+    by (auto intro: treach.ArrLength)
 next
   case (arrLoc T a i)
   have "l=arrLoc T a i" by fact
   then show ?thesis
-    by (auto intro: treachS.ArrElem)
+    by (auto intro: treach.ArrElem)
 qed
 
 lemma treach_ref_l' [simp,intro]:
@@ -1033,7 +1016,7 @@ proof -
   also have "typeof (s@@l) \<le> ltype l"
     by simp
   hence "treach (ltype l) (typeof (s@@l))"
-    by (rule treachS.intros)
+    by (rule treach.intros)
   finally show ?thesis .
 qed
   
@@ -1048,14 +1031,14 @@ proof (induct)
   then show "treach (typeof (ref l)) (ltype l)"
     by (rule treach_ref_l)
 next
-  case (Indirect k l)
+  case (Indirect l k)
   have "treach (typeof (s@@k)) (ltype l)" by fact
   moreover
   have "ref k \<noteq> nullV" by fact
   hence "treach (typeof (ref k)) (typeof (s@@k))"
     by simp
   ultimately show "treach (typeof (ref k)) (ltype l)"
-    by (iprover intro: treachS.Trans)
+    by (iprover intro: treach.Trans)
 qed
 
 lemma not_treach_ref_impl_not_reach: 
@@ -1068,9 +1051,9 @@ proof
   proof (induct)
     case (Immediate l)
     have "\<not> treach (typeof (ref l)) (typeof (ref l))" by fact
-    thus False by (iprover intro: treachS.intros order_refl)
+    thus False by (iprover intro: treach.intros order_refl)
   next
-    case (Indirect k l)
+    case (Indirect l k)
     have hyp: "\<not> treach (typeof (s@@k)) (typeof (ref l)) \<Longrightarrow> False" by fact
     have not_Null: "ref k \<noteq> nullV" by fact
     have not_k_l:"\<not> treach (typeof (ref k)) (typeof (ref l))" by fact
@@ -1096,7 +1079,7 @@ lemma treach1:
 proof -
   have "\<not> treach (typeof x) (typeof (ref l))"
   proof 
-    from x_t have "treach T (typeof x)" by (rule treachS.intros)
+    from x_t have "treach T (typeof x)" by (rule treach.intros)
     also assume "treach (typeof x) (typeof (ref l))"
     finally have "treach T (typeof (ref l))" .
     with not_treach show False ..

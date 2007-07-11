@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJDefs.thy,v 1.6 2007-06-14 12:18:05 makarius Exp $
+    ID:          $Id: FJDefs.thy,v 1.7 2007-07-11 10:10:53 stefanberghofer Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -91,26 +91,20 @@ text {* The sub-expression relation, written $t \in
 closure of the immediate subexpression relation.
 *}
 
-consts 
+inductive_set
   isubexprs :: "(exp * exp) set" 
-syntax 
-  "_isubexprs" :: "[exp,exp] \<Rightarrow> bool"  ("_ \<in> isubexprs'(_')" [80,80] 80)
-translations
-  "e' \<in> isubexprs(e)" \<rightleftharpoons> "(e',e) \<in> isubexprs"
-inductive isubexprs
-intros
-se_field    : "e \<in> isubexprs(FieldProj e fi)"
-se_invkrecv : "e \<in> isubexprs(MethodInvk e m es)"
-se_invkarg  : "\<lbrakk> ei \<in> set es \<rbrakk> \<Longrightarrow> ei \<in> isubexprs(MethodInvk e m es)"
-se_newarg   : "\<lbrakk> ei \<in> set es \<rbrakk> \<Longrightarrow> ei \<in> isubexprs(New C es)"
-se_cast     : "e \<in> isubexprs(Cast C e)"
+  and isubexprs' :: "[exp,exp] \<Rightarrow> bool"  ("_ \<in> isubexprs'(_')" [80,80] 80)
+where
+  "e' \<in> isubexprs(e) \<equiv> (e',e) \<in> isubexprs"
+| se_field    : "e \<in> isubexprs(FieldProj e fi)"
+| se_invkrecv : "e \<in> isubexprs(MethodInvk e m es)"
+| se_invkarg  : "\<lbrakk> ei \<in> set es \<rbrakk> \<Longrightarrow> ei \<in> isubexprs(MethodInvk e m es)"
+| se_newarg   : "\<lbrakk> ei \<in> set es \<rbrakk> \<Longrightarrow> ei \<in> isubexprs(New C es)"
+| se_cast     : "e \<in> isubexprs(Cast C e)"
 
-consts
- subexprs :: "(exp * exp) set"
-syntax 
-  "_subexprs" :: "[exp,exp] \<Rightarrow> bool"  ("_ \<in> subexprs'(_')" [80,80] 80)
-translations
-  "e' \<in> subexprs(e)" \<rightleftharpoons> "(e',e) \<in> isubexprs^*"
+abbreviation
+  subexprs :: "[exp,exp] \<Rightarrow> bool"  ("_ \<in> subexprs'(_')" [80,80] 80)  where
+  "e' \<in> subexprs(e) \<equiv> (e',e) \<in> isubexprs^*"
 
 subsection {* Values *}
 
@@ -118,20 +112,13 @@ text{* A {\em value} is an expression of the form $\mathtt{new}\
 \mathtt{C}(\mathit{overline{vs}})$, where $\mathit{\overline{vs}}$ is a list
 of values. *}
 
-consts 
-  vals :: "(exp list) set"
-  val :: "exp set"
-syntax 
-  "_vals" :: "[exp list] \<Rightarrow> bool" ("vals'(_')" [80] 80)
-  "_val" :: "[exp] \<Rightarrow> bool" ("val'(_')" [80] 80)
-translations
-  "val(v)" \<rightleftharpoons> "v \<in> val"
-  "vals(vl)" \<rightleftharpoons> "vl \<in> vals"
-inductive vals val
-intros
+inductive
+  vals :: "[exp list] \<Rightarrow> bool" ("vals'(_')" [80] 80)
+  and val :: "[exp] \<Rightarrow> bool" ("val'(_')" [80] 80)
+where
    vals_nil : "vals([])"
-   vals_cons : "\<lbrakk> val(vh); vals(vt) \<rbrakk> \<Longrightarrow> vals((vh # vt))"
-   val : "\<lbrakk> vals(vs) \<rbrakk> \<Longrightarrow> val(New C vs)"
+ | vals_cons : "\<lbrakk> val(vh); vals(vt) \<rbrakk> \<Longrightarrow> vals((vh # vt))"
+ | val : "\<lbrakk> vals(vs) \<rbrakk> \<Longrightarrow> val(New C vs)"
 
 subsection {* Substitution *}
 
@@ -206,26 +193,22 @@ closure operator.) The subtyping relation is extended to lists of
 classes, written $\mathit{CT} \vdash\mathtt{+} \mathit{Cs} \mathtt{\lt:}
 \mathit{Ds}$. *}
 
-consts subtyping  :: "(classTable * className * className) set" 
-       subtypings :: "(classTable * className list * className list) set"
-syntax 
-  "_subtyping" :: "[classTable, className, className] \<Rightarrow> bool"  ("_ \<turnstile> _ <: _" [80,80,80] 80)
-  "_subtypings" :: "[classTable, className list, className list] \<Rightarrow> bool"  ("_ \<turnstile>+ _ <: _" [80,80,80] 80)
-  "_neg_subtyping" :: "[classTable, className, className] \<Rightarrow> bool"  ("_ \<turnstile> _ \<not><: _" [80,80,80] 80)  
-translations
-  "CT \<turnstile> S <: T" \<rightleftharpoons> "(CT,S,T) \<in> subtyping"
-  "CT \<turnstile>+ Ss <: Ts" \<rightleftharpoons> "(CT,Ss,Ts) \<in> subtypings"
-  "CT \<turnstile> S \<not><: T" \<rightleftharpoons> "(CT,S,T) \<notin> subtyping"
-inductive subtyping
-intros
-s_refl  :  "CT \<turnstile> C <: C"
-s_trans : "\<lbrakk> CT \<turnstile> C <: D; CT \<turnstile> D <: E \<rbrakk> \<Longrightarrow> CT \<turnstile> C <: E"
-s_super : "\<lbrakk> CT(C) = Some(CDef); cSuper CDef = D \<rbrakk> \<Longrightarrow> CT \<turnstile> C <: D"
+inductive
+  subtyping :: "[classTable, className, className] \<Rightarrow> bool"  ("_ \<turnstile> _ <: _" [80,80,80] 80)
+where
+  s_refl  :  "CT \<turnstile> C <: C"
+| s_trans : "\<lbrakk> CT \<turnstile> C <: D; CT \<turnstile> D <: E \<rbrakk> \<Longrightarrow> CT \<turnstile> C <: E"
+| s_super : "\<lbrakk> CT(C) = Some(CDef); cSuper CDef = D \<rbrakk> \<Longrightarrow> CT \<turnstile> C <: D"
 
-inductive subtypings
-intros
-ss_nil  : "CT \<turnstile>+ [] <: []"
-ss_cons : "\<lbrakk> CT \<turnstile> C0 <: D0; CT \<turnstile>+ Cs <: Ds \<rbrakk> \<Longrightarrow> CT \<turnstile>+ (C0 # Cs) <: (D0 # Ds)"
+abbreviation
+  neg_subtyping :: "[classTable, className, className] \<Rightarrow> bool"  ("_ \<turnstile> _ \<not><: _" [80,80,80] 80)
+  where "CT \<turnstile> S \<not><: T \<equiv> \<not> CT \<turnstile> S <: T"
+
+inductive
+  subtypings :: "[classTable, className list, className list] \<Rightarrow> bool"  ("_ \<turnstile>+ _ <: _" [80,80,80] 80)
+where
+  ss_nil  : "CT \<turnstile>+ [] <: []"
+| ss_cons : "\<lbrakk> CT \<turnstile> C0 <: D0; CT \<turnstile>+ Cs <: Ds \<rbrakk> \<Longrightarrow> CT \<turnstile>+ (C0 # Cs) <: (D0 # Ds)"
 
 subsection {* {\tt fields} Relation *}
 
@@ -234,16 +217,12 @@ $\mathtt{fields}(\mathit{CT},C) = \mathit{Cf}$, relates $\mathit{Cf}$
 to $C$ when $\mathit{Cf}$ is the list of fields declared directly or
 indirectly (i.e., by a superclass) in $C$.*}
 
-consts fields :: "(classTable * className * varDef list) set"
-syntax 
-  "_fields" :: "[classTable, className, varDef list] \<Rightarrow> bool" ("fields'(_,_') = _" [80,80,80] 80)
-translations
-  "fields(CT,C) = Cf" \<rightleftharpoons> "(CT,C,Cf) \<in> fields"
-inductive fields 
-intros
+inductive
+  fields :: "[classTable, className, varDef list] \<Rightarrow> bool" ("fields'(_,_') = _" [80,80,80] 80)
+where
   f_obj: 
   "fields(CT,Object) = []"
-  f_class: 
+| f_class: 
   "\<lbrakk> CT(C) = Some(CDef); cSuper CDef = D; cFields CDef = Cf; fields(CT,D) = Dg; DgCf = Dg @ Cf \<rbrakk> 
   \<Longrightarrow> fields(CT,C) = DgCf"
 
@@ -257,21 +236,17 @@ in $C$, if any such declaration exists, and otherwise returning the
 type of $m$ from $C$'s superclass.
 *}
 
-consts mtype :: "(classTable * methodName * className * ((className list) * className)) set"
-syntax 
-  "_mtype" :: "[classTable, methodName, className, className list, className] \<Rightarrow> bool" ("mtype'(_,_,_') = _ \<rightarrow> _" [80,80,80,80] 80)
-translations
-  "mtype(CT,m,C) = Cs \<rightarrow> C0" \<rightleftharpoons> "(CT,m,C,(Cs,C0)) \<in> mtype"
-inductive mtype
-intros
-mt_class: 
+inductive
+  mtype :: "[classTable, methodName, className, className list, className] \<Rightarrow> bool" ("mtype'(_,_,_') = _ \<rightarrow> _" [80,80,80,80] 80)
+where
+  mt_class: 
   "\<lbrakk> CT(C) = Some(CDef);
     lookup (cMethods CDef) (\<lambda>md.(mName md = m)) = Some(mDef);
     varDefs_types (mParams mDef) = Bs;
     mReturn mDef = B \<rbrakk>
   \<Longrightarrow> mtype(CT,m,C) = Bs \<rightarrow> B"
 
-mt_super: 
+| mt_super: 
   "\<lbrakk> CT(C) = Some (CDef);
     lookup (cMethods CDef) (\<lambda>md.(mName md = m)) = None;
     cSuper CDef = D;
@@ -289,22 +264,17 @@ declaration exists, and otherwise the parameter names and body of $m$
 from $C$'s superclass.  
 *}
 
-consts mbody :: "(classTable * methodName * className * (varName list * exp)) set"
-syntax 
-  "_mbody" :: "[classTable, methodName, className, varName list, exp] \<Rightarrow> bool" ("mbody'(_,_,_') = _ . _" [80,80,80,80] 80)
-translations
-  "mbody(CT,m,C) = xs . e" \<rightleftharpoons> "(CT,m,C,(xs,e)) \<in> mbody"
-
-inductive mbody
-intros
-mb_class: 
+inductive
+  mbody :: "[classTable, methodName, className, varName list, exp] \<Rightarrow> bool" ("mbody'(_,_,_') = _ . _" [80,80,80,80] 80)
+where
+  mb_class: 
   "\<lbrakk> CT(C) = Some(CDef);
      lookup (cMethods CDef) (\<lambda>md.(mName md = m)) = Some(mDef);
      varDefs_names (mParams mDef) = xs;
      mBody mDef = e \<rbrakk>
   \<Longrightarrow> mbody(CT,m,C) = xs . e"
 
-mb_super:
+| mb_super:
   "\<lbrakk> CT(C) = Some(CDef);
      lookup (cMethods CDef) (\<lambda>md.(mName md = m)) = None;
      cSuper CDef = D;
@@ -322,35 +292,27 @@ $\Gamma$. The multi-typing relation, written $\mathit{CT};\Gamma
 to lists of types. 
 *}
 
-consts 
-  typing  :: "(classTable * varCtx * exp * className) set"
-  typings :: "(classTable * varCtx * exp list * className list) set"
-syntax 
-  "_typing"  :: "[classTable, varCtx, exp list, className] \<Rightarrow> bool" ("_;_ \<turnstile> _ : _" [80,80,80,80] 80)
-  "_typings" :: "[classTable, varCtx, exp list, className] \<Rightarrow> bool" ("_;_ \<turnstile>+ _ : _" [80,80,80,80] 80)
-translations
-  "CT;\<Gamma> \<turnstile> e : C" \<rightleftharpoons> "(CT,\<Gamma>,e,C) \<in> typing"
-  "CT;\<Gamma> \<turnstile>+ es : Cs" \<rightleftharpoons> "(CT,\<Gamma>,es,Cs) \<in> typings"
+inductive
+  typings :: "[classTable, varCtx, exp list, className list] \<Rightarrow> bool" ("_;_ \<turnstile>+ _ : _" [80,80,80,80] 80)
+  and typing :: "[classTable, varCtx, exp, className] \<Rightarrow> bool" ("_;_ \<turnstile> _ : _" [80,80,80,80] 80)
+where
+  ts_nil : "CT;\<Gamma> \<turnstile>+ [] : []"
 
-inductive typings typing
-intros
-ts_nil : "CT;\<Gamma> \<turnstile>+ [] : []"
-
-ts_cons  : 
-"\<lbrakk> CT;\<Gamma> \<turnstile> e0 : C0; CT;\<Gamma> \<turnstile>+ es : Cs \<rbrakk> 
+| ts_cons  : 
+  "\<lbrakk> CT;\<Gamma> \<turnstile> e0 : C0; CT;\<Gamma> \<turnstile>+ es : Cs \<rbrakk> 
   \<Longrightarrow> CT;\<Gamma> \<turnstile>+ (e0 # es) : (C0 # Cs)"
 
-t_var : 
+| t_var : 
   "\<lbrakk> \<Gamma>(x) = Some C \<rbrakk> \<Longrightarrow> CT;\<Gamma> \<turnstile> (Var x) : C"
 
-t_field : 
+| t_field : 
   "\<lbrakk> CT;\<Gamma> \<turnstile> e0 : C0;
      fields(CT,C0) = Cf;
      lookup Cf (\<lambda>fd.(vdName fd = fi)) = Some(fDef);
      vdType fDef = Ci \<rbrakk>
   \<Longrightarrow> CT;\<Gamma> \<turnstile> FieldProj e0 fi : Ci"
 
-t_invk : 
+| t_invk : 
   "\<lbrakk> CT;\<Gamma> \<turnstile> e0 : C0;
      mtype(CT,m,C0) = Ds \<rightarrow> C;
      CT;\<Gamma> \<turnstile>+ es : Cs;
@@ -358,7 +320,7 @@ t_invk :
      length es = length Ds \<rbrakk>
   \<Longrightarrow> CT;\<Gamma> \<turnstile> MethodInvk e0 m es : C"
 
-t_new : 
+| t_new : 
   "\<lbrakk> fields(CT,C) = Df;
      length es = length Df;
      varDefs_types Df = Ds;
@@ -366,17 +328,17 @@ t_new :
      CT \<turnstile>+ Cs <: Ds \<rbrakk>
   \<Longrightarrow> CT;\<Gamma> \<turnstile> New C es : C"
 
-t_ucast : 
+| t_ucast : 
   "\<lbrakk> CT;\<Gamma> \<turnstile> e0 : D; 
      CT \<turnstile> D <: C \<rbrakk>
   \<Longrightarrow> CT;\<Gamma> \<turnstile> Cast C e0 : C"
 
-t_dcast : 
+| t_dcast : 
   "\<lbrakk> CT;\<Gamma> \<turnstile> e0 : D; 
      CT \<turnstile> C <: D; C \<noteq> D \<rbrakk>
   \<Longrightarrow> CT;\<Gamma> \<turnstile> Cast C e0 : C"
 
-t_scast : 
+| t_scast : 
   "\<lbrakk> CT;\<Gamma> \<turnstile> e0 : D;
      CT \<turnstile> C \<not><: D;
      CT \<turnstile> D \<not><: C \<rbrakk>
@@ -391,9 +353,9 @@ typings of single expressions and of lists of expressions.
 lemma typing_induct:
   assumes "CT;\<Gamma> \<turnstile> e : C" (is ?T)
   and "\<And>C CT \<Gamma> x. \<Gamma> x = Some C \<Longrightarrow> P CT \<Gamma> (Var x) C" 
-  and "\<And>C0 CT Cf Ci \<Gamma> e0 fDef fi. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : C0; P CT \<Gamma> e0 C0; (CT, C0, Cf) \<in> fields; lookup Cf (\<lambda>fd. vdName fd = fi) = Some fDef; vdType fDef = Ci\<rbrakk> \<Longrightarrow> P CT \<Gamma> (FieldProj e0 fi) Ci" 
-  and "\<And>C C0 CT Cs Ds \<Gamma> e0 es m. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : C0; P CT \<Gamma> e0 C0; (CT, m, C0, Ds, C) \<in> mtype; CT;\<Gamma> \<turnstile>+ es : Cs; \<And>i . \<lbrakk> i < length es \<rbrakk> \<Longrightarrow>  P CT \<Gamma> (es!i) (Cs!i); CT \<turnstile>+ Cs <: Ds; length es = length Ds\<rbrakk> \<Longrightarrow> P CT \<Gamma> (MethodInvk e0 m es) C"
-  and "\<And>C CT Cs Df Ds \<Gamma> es. \<lbrakk>(CT, C, Df) \<in> fields; length es = length Df; varDefs_types Df = Ds; CT;\<Gamma> \<turnstile>+ es : Cs; \<And>i. \<lbrakk> i < length es \<rbrakk> \<Longrightarrow> P CT \<Gamma> (es!i) (Cs!i); CT \<turnstile>+ Cs <: Ds\<rbrakk> \<Longrightarrow> P CT \<Gamma> (New C es) C"
+  and "\<And>C0 CT Cf Ci \<Gamma> e0 fDef fi. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : C0; P CT \<Gamma> e0 C0; fields(CT,C0) = Cf; lookup Cf (\<lambda>fd. vdName fd = fi) = Some fDef; vdType fDef = Ci\<rbrakk> \<Longrightarrow> P CT \<Gamma> (FieldProj e0 fi) Ci" 
+  and "\<And>C C0 CT Cs Ds \<Gamma> e0 es m. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : C0; P CT \<Gamma> e0 C0; mtype(CT,m,C0) = Ds \<rightarrow> C; CT;\<Gamma> \<turnstile>+ es : Cs; \<And>i . \<lbrakk> i < length es \<rbrakk> \<Longrightarrow>  P CT \<Gamma> (es!i) (Cs!i); CT \<turnstile>+ Cs <: Ds; length es = length Ds\<rbrakk> \<Longrightarrow> P CT \<Gamma> (MethodInvk e0 m es) C"
+  and "\<And>C CT Cs Df Ds \<Gamma> es. \<lbrakk>fields(CT,C) = Df; length es = length Df; varDefs_types Df = Ds; CT;\<Gamma> \<turnstile>+ es : Cs; \<And>i. \<lbrakk> i < length es \<rbrakk> \<Longrightarrow> P CT \<Gamma> (es!i) (Cs!i); CT \<turnstile>+ Cs <: Ds\<rbrakk> \<Longrightarrow> P CT \<Gamma> (New C es) C"
   and "\<And>C CT D \<Gamma> e0. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : D; P CT \<Gamma> e0 D; CT \<turnstile> D <: C\<rbrakk> \<Longrightarrow> P CT \<Gamma> (Cast C e0) C" 
   and "\<And>C CT D \<Gamma> e0. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : D; P CT \<Gamma> e0 D; CT \<turnstile> C <: D; C \<noteq> D\<rbrakk> \<Longrightarrow> P CT \<Gamma> (Cast C e0) C"
   and "\<And>C CT D \<Gamma> e0. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : D; P CT \<Gamma> e0 D; CT \<turnstile> C \<not><: D; CT \<turnstile> D \<not><: C\<rbrakk> \<Longrightarrow> P CT \<Gamma> (Cast C e0) C" 
@@ -404,25 +366,25 @@ proof -
   proof(induct rule:typings_typing.induct)
     case (ts_nil CT \<Gamma>) show ?case by auto
   next
-    case (ts_cons C0 CT Cs \<Gamma> e0 es) 
+    case (ts_cons CT \<Gamma> e0 C0 es Cs) 
     show ?case proof
       fix i
       show "i < length (e0#es) \<longrightarrow> P CT \<Gamma> ((e0#es)!i) ((C0#Cs)!i)" using ts_cons by(cases i, auto)
     qed
   next
-    case(t_var C CT \<Gamma> x) then show ?case using assms by auto
+    case t_var then show ?case using assms by auto
   next
-    case(t_field C0 CT Cf e0 fDef fi) then show ?case using assms by auto
+    case t_field then show ?case using assms by auto
   next
-    case(t_invk C C0 CT Cs Ds \<Gamma> e0 es m) then show ?case using assms by auto
+    case t_invk then show ?case using assms by auto
   next
-    case(t_new C CT D \<Gamma> e0) then show ?case using assms by auto
+    case t_new then show ?case using assms by auto
   next
-    case(t_ucast C CT \<Gamma> e0) then show ?case using assms by auto
+    case t_ucast then show ?case using assms by auto
   next
-    case(t_dcast C CT \<Gamma> e0) then show ?case using assms by auto
+    case t_dcast then show ?case using assms by auto
   next
-    case(t_scast C CT \<Gamma> e0) then show ?case using assms by auto
+    case t_scast then show ?case using assms by auto
   qed
   thus ?thesis using assms by auto
 qed
@@ -434,17 +396,9 @@ well-typed, written $\mathit{CT} \vdash \mathit{md} \texttt{OK IN}\ C$
 if its body is well-typed and it has the same type (i.e., overrides)
 any method with the same name declared in the superclass of $C$. *}
 
-consts method_typing :: "(classTable * methodDef * className) set"
-       method_typings :: "(classTable * methodDef list * className) set"
-syntax 
-  "_method_typing" :: "[classTable, methodDef, className] \<Rightarrow> bool" ("_ \<turnstile> _ OK IN _" [80,80,80] 80)
-  "_method_typings" :: "[classTable, methodDef list, className] \<Rightarrow> bool" ("_ \<turnstile>+ _ OK IN _" [80,80,80] 80)
-translations
-  "CT \<turnstile> md OK IN C" \<rightleftharpoons> "(CT,md,C) \<in> method_typing"
-  "CT \<turnstile>+ mds OK IN C" \<rightleftharpoons> "(CT,mds,C) \<in> method_typings"
-
-inductive method_typing
-intros
+inductive
+  method_typing :: "[classTable, methodDef, className] \<Rightarrow> bool" ("_ \<turnstile> _ OK IN _" [80,80,80] 80)
+where
 m_typing:
   "\<lbrakk> CT(C) = Some(CDef);
      cName CDef = C;
@@ -460,12 +414,13 @@ m_typing:
      \<forall>Ds D0. (mtype(CT,m,D) = Ds \<rightarrow> D0) \<longrightarrow> (Cs=Ds \<and> C0=D0) \<rbrakk>
   \<Longrightarrow> CT \<turnstile> mDef OK IN C"
 
-inductive method_typings
-intros
-ms_nil : 
+inductive
+  method_typings :: "[classTable, methodDef list, className] \<Rightarrow> bool" ("_ \<turnstile>+ _ OK IN _" [80,80,80] 80)
+where
+  ms_nil : 
   "CT \<turnstile>+ [] OK IN C"
 
-ms_cons : 
+| ms_cons : 
   "\<lbrakk> CT \<turnstile> m OK IN C; 
      CT \<turnstile>+ ms OK IN C \<rbrakk>
   \<Longrightarrow> CT \<turnstile>+ (m # ms) OK IN C"
@@ -477,14 +432,9 @@ text {* A class definition $\mathit{cd}$ is well-typed, written
 $\mathit{CT}\vdash \mathit{cd} \texttt{OK}$ if its constructor
 initializes each field, and all of its methods are well-typed. *}
 
-consts class_typing :: "(classTable * classDef) set"
-syntax 
-  "_class_typing" :: "[classTable, classDef] \<Rightarrow> bool" ("_ \<turnstile> _ OK" [80,80] 80)
-translations
-  "CT \<turnstile> cd OK" \<rightleftharpoons> "(CT,cd) \<in> class_typing"
-
-inductive class_typing 
-intros
+inductive
+  class_typing :: "[classTable, classDef] \<Rightarrow> bool" ("_ \<turnstile> _ OK" [80,80] 80)
+where
 t_class: "\<lbrakk> cName CDef = C;            
             cSuper CDef = D;
             cConstructor CDef = KDef;
@@ -503,13 +453,9 @@ text {* A class table is well-typed, written $\mathit{CT}\
 \texttt{OK}$ if for every class name $C$, the class definition mapped
 to by $\mathit{CT}$ is is well-typed and has name $C$. *}
 
-consts ct_typing :: "classTable set" 
-syntax 
-  "_ct_typing" :: "classTable \<Rightarrow> bool" ("_ OK" 80)
-translations
-  "CT OK" \<rightleftharpoons> "CT \<in> ct_typing"
-inductive ct_typing 
-intros 
+inductive
+  ct_typing :: "classTable \<Rightarrow> bool" ("_ OK" 80)
+where
 ct_all_ok: 
   "\<lbrakk> Object \<notin> dom(CT); 
      \<forall>C CDef. CT(C) = Some(CDef) \<longrightarrow> (CT \<turnstile> CDef OK) \<and> (cName CDef = C) \<rbrakk>
@@ -521,57 +467,48 @@ text {* The single-step and multi-step evaluation relations are
 written $\mathit{CT} \vdash e \rightarrow e'$ and $\mathit{CT} \vdash
 e \rightarrow^* e'$ respectively. *}
 
-consts reduction :: "(classTable * exp * exp) set" 
-syntax 
-  "_reduction" :: "[classTable, exp, exp] \<Rightarrow> bool" ("_ \<turnstile> _ \<rightarrow> _" [80,80,80] 80)
+inductive
+  reduction :: "[classTable, exp, exp] \<Rightarrow> bool" ("_ \<turnstile> _ \<rightarrow> _" [80,80,80] 80)
+where
 
-translations
-  "CT \<turnstile> e \<rightarrow> e'" \<rightleftharpoons> "(CT,e,e') \<in> reduction"
-inductive reduction
-intros 
-
-r_field: 
+  r_field: 
   "\<lbrakk> fields(CT,C) = Cf;                   
      lookup2 Cf es (\<lambda>fd.(vdName fd = fi)) = Some(ei) \<rbrakk>
   \<Longrightarrow> CT \<turnstile> FieldProj (New C es) fi \<rightarrow> ei"
 
-r_invk: 
+| r_invk: 
   "\<lbrakk> mbody(CT,m,C) = xs . e0;
      substs ((map_upds empty xs ds)(this \<mapsto> (New C es))) e0 = e0' \<rbrakk>
   \<Longrightarrow> CT \<turnstile> MethodInvk (New C es) m ds \<rightarrow> e0'"
 
-r_cast: 
+| r_cast: 
   "\<lbrakk> CT \<turnstile> C <: D \<rbrakk> 
   \<Longrightarrow> CT \<turnstile> Cast D (New C es) \<rightarrow> New C es"
 
-rc_field: 
+| rc_field: 
   "\<lbrakk> CT \<turnstile> e0 \<rightarrow> e0' \<rbrakk> 
   \<Longrightarrow> CT \<turnstile> FieldProj e0 f \<rightarrow> FieldProj e0' f"
 
-rc_invk_recv: 
+| rc_invk_recv: 
   "\<lbrakk> CT \<turnstile> e0 \<rightarrow> e0' \<rbrakk> 
   \<Longrightarrow> CT \<turnstile> MethodInvk e0 m es \<rightarrow> MethodInvk e0' m es"
 
-rc_invk_arg: 
+| rc_invk_arg: 
   "\<lbrakk> CT \<turnstile> ei \<rightarrow> ei' \<rbrakk>
   \<Longrightarrow> CT \<turnstile> MethodInvk e0 m (el@ei#er) \<rightarrow> MethodInvk e0 m (el@ei'#er)"
 
-rc_new_arg: 
+| rc_new_arg: 
   "\<lbrakk> CT \<turnstile> ei \<rightarrow> ei' \<rbrakk> 
   \<Longrightarrow> CT \<turnstile> New C (el@ei#er) \<rightarrow> New C (el@ei'#er)"
 
-rc_cast: 
+| rc_cast: 
   "\<lbrakk> CT \<turnstile> e0 \<rightarrow> e0' \<rbrakk> 
   \<Longrightarrow> CT \<turnstile> Cast C e0 \<rightarrow> Cast C e0'"
 
-consts reductions :: "(classTable * exp * exp) set" 
-syntax 
-  "_reductions" :: "[classTable, exp, exp] \<Rightarrow> bool" ("_ \<turnstile> _ \<rightarrow>* _" [80,80,80] 80)
-translations
-  "CT \<turnstile> e \<rightarrow>* e'" \<rightleftharpoons> "(CT,e,e') \<in> reductions"
-inductive reductions
-intros 
-rs_refl: "CT \<turnstile> e \<rightarrow>* e" 
-rs_trans: "\<lbrakk> CT \<turnstile> e \<rightarrow> e'; CT \<turnstile> e' \<rightarrow>* e'' \<rbrakk> \<Longrightarrow>  CT \<turnstile> e \<rightarrow>* e''"
+inductive
+  reductions :: "[classTable, exp, exp] \<Rightarrow> bool" ("_ \<turnstile> _ \<rightarrow>* _" [80,80,80] 80)
+where
+  rs_refl: "CT \<turnstile> e \<rightarrow>* e" 
+| rs_trans: "\<lbrakk> CT \<turnstile> e \<rightarrow> e'; CT \<turnstile> e' \<rightarrow>* e'' \<rbrakk> \<Longrightarrow>  CT \<turnstile> e \<rightarrow>* e''"
 
 end

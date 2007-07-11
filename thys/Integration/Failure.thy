@@ -83,16 +83,16 @@ and deliberately avoids ``hand-waving''.
   to be defined, but it can be represented as a set of pairs, where
   the first component is the function and the second its integral.
   To cut a long story short, here is the definition. *}
-  
-  consts  
+
+inductive_set
   integral_set:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> (('a \<Rightarrow> real) * real) set"
-  inductive "integral_set M" 
-  intros 
+  for M :: "'a set set * ('a set \<Rightarrow> real)"
+  where
     char: "\<lbrakk>f = \<chi>A; A \<in> measurable_sets M\<rbrakk> \<Longrightarrow> (f,measure M A) \<in> integral_set M"
-    add: "\<lbrakk>f = (\<lambda>w. g w + h w); (g,x) \<in> integral_set M; (h,y) \<in> integral_set M\<rbrakk> 
+  | add: "\<lbrakk>f = (\<lambda>w. g w + h w); (g,x) \<in> integral_set M; (h,y) \<in> integral_set M\<rbrakk> 
     \<Longrightarrow> (f,(x + y)) \<in> integral_set M"
-    times: "\<lbrakk>f = (\<lambda>w. a*g w); (g,x) \<in> integral_set M\<rbrakk> \<Longrightarrow> (f,a*x) \<in> integral_set M"
-    mon_conv: "\<lbrakk>u\<up>f; \<And>n. (u n, x n) \<in> integral_set M; x\<up>y\<rbrakk> 
+  | times: "\<lbrakk>f = (\<lambda>w. a*g w); (g,x) \<in> integral_set M\<rbrakk> \<Longrightarrow> (f,a*x) \<in> integral_set M"
+  | mon_conv: "\<lbrakk>u\<up>f; \<And>n. (u n, x n) \<in> integral_set M; x\<up>y\<rbrakk> 
     \<Longrightarrow> (f,y) \<in> integral_set M"
 
   text {*The technique is also encountered in the @{text

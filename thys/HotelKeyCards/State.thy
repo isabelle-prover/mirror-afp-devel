@@ -1,5 +1,5 @@
 (*  Title:      A state based hotel key card system
-    ID:         $Id: State.thy,v 1.1 2006-09-06 20:41:24 nipkow Exp $
+    ID:         $Id: State.thy,v 1.2 2007-07-11 10:14:40 stefanberghofer Exp $
     Author:     Tobias Nipkow, TU Muenchen
 *)
 
@@ -52,11 +52,8 @@ defined by four transitions: initialization, checking in, entering a room,
 and leaving a room: *}
 
 (*<*)
-consts
-  reach :: "state set"
-
-inductive reach
-intros
+inductive_set reach :: "state set"
+where
 (*>*)
 init:
 "inj initk \<Longrightarrow>
@@ -64,14 +61,14 @@ init:
   cards = (\<lambda>g. {}), roomk = initk, isin = (\<lambda>r. {}),
   safe = (\<lambda>r. True) \<rparr> \<in> reach"
 
-check_in:
+| check_in:
 "\<lbrakk> s \<in> reach; k \<notin> issued s \<rbrakk> \<Longrightarrow>
 s\<lparr> currk := (currk s)(r := k), issued := issued s \<union> {k},
    cards := (cards s)(g := cards s g \<union> {(currk s r, k)}),
    owns :=  (owns s)(r := Some g),
    safe := (safe s)(r := False) \<rparr> \<in> reach"
 
-enter_room:
+| enter_room:
 "\<lbrakk> s \<in> reach; (k,k') \<in> cards s g; roomk s r \<in> {k,k'} \<rbrakk> \<Longrightarrow>
 s\<lparr> isin := (isin s)(r := isin s r \<union> {g}),
    roomk := (roomk s)(r := k'),
@@ -79,7 +76,7 @@ s\<lparr> isin := (isin s)(r := isin s r \<union> {g}),
                               \<or> safe s r)
   \<rparr> \<in> reach"
 
-exit_room:
+| exit_room:
 "\<lbrakk> s \<in> reach;  g \<in> isin s r \<rbrakk> \<Longrightarrow>
 s\<lparr> isin := (isin s)(r := isin s r - {g}) \<rparr> \<in> reach"
 
@@ -271,7 +268,7 @@ assumes "s : reach"
 shows "\<lbrakk> safe s r; (k',roomk s r) \<in> cards s g \<rbrakk> \<Longrightarrow> owns s r = Some g"
 using prems
 proof induct
-  case (enter_room g1 k k1 r1 s)
+  case (enter_room s k k1 g1 r1)
   let ?s' = "s\<lparr>isin := (isin s)(r1 := isin s r1 \<union> {g1}),
                roomk := (roomk s)(r1 := k1),
                safe := (safe s)
@@ -317,7 +314,7 @@ theorem safe: assumes "s : reach"
 shows "safe s r \<Longrightarrow> g : isin s r \<Longrightarrow> owns s r = Some g"
 using prems
 proof induct
-  case (enter_room g1 k1 k2 r1 s)
+  case (enter_room s k1 k2 g1 r1)
   let ?s' = "s\<lparr>isin := (isin s)(r1 := isin s r1 \<union> {g1}),
                roomk := (roomk s)(r1 := k2),
                safe := (safe s)

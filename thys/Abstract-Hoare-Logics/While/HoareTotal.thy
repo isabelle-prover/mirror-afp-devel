@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic for total correctness
-    ID:          $Id: HoareTotal.thy,v 1.4 2007-06-12 20:14:16 makarius Exp $
+    ID:          $Id: HoareTotal.thy,v 1.5 2007-07-11 10:05:50 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -16,31 +16,26 @@ constdefs
  hoare_tvalid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50)
   "\<Turnstile>\<^sub>t {P}c{Q}  \<equiv>  \<Turnstile> {P}c{Q} \<and> (\<forall>s. P s \<longrightarrow> c\<down>s)"
 
-consts thoare :: "(assn \<times> com \<times> assn) set"
-abbreviation
- thoare' :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile>\<^sub>t ({(1_)}/ (_)/ {(1_)})" 50) where
-"\<turnstile>\<^sub>t {P}c{Q}  \<equiv> (P,c,Q) \<in> thoare"
-
-
 text{* Proveability of Hoare triples in the proof system for total
-correctness is written @{prop"\<turnstile>\<^sub>t {P}c{Q}"} and defined
+correctness is written @{text"\<turnstile>\<^sub>t {P}c{Q}"} and defined
 inductively. The rules for @{text"\<turnstile>\<^sub>t"} differ from those for
 @{text"\<turnstile>"} only in the one place where nontermination can arise: the
 @{term While}-rule. *}
 
-inductive thoare
-intros
+inductive
+  thoare :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile>\<^sub>t ({(1_)}/ (_)/ {(1_)})" 50)
+where
   Do:  "\<turnstile>\<^sub>t {\<lambda>s. (\<forall>t \<in> f s. P t) \<and> f s \<noteq> {}} Do f {P}"
-  Semi: "\<lbrakk> \<turnstile>\<^sub>t {P}c{Q}; \<turnstile>\<^sub>t {Q}d{R} \<rbrakk> \<Longrightarrow> \<turnstile>\<^sub>t {P} c;d {R}"
-  If: "\<lbrakk> \<turnstile>\<^sub>t {\<lambda>s. P s \<and> b s}c{Q}; \<turnstile>\<^sub>t {\<lambda>s. P s \<and> ~b s}d{Q}  \<rbrakk> \<Longrightarrow>
+| Semi: "\<lbrakk> \<turnstile>\<^sub>t {P}c{Q}; \<turnstile>\<^sub>t {Q}d{R} \<rbrakk> \<Longrightarrow> \<turnstile>\<^sub>t {P} c;d {R}"
+| If: "\<lbrakk> \<turnstile>\<^sub>t {\<lambda>s. P s \<and> b s}c{Q}; \<turnstile>\<^sub>t {\<lambda>s. P s \<and> ~b s}d{Q}  \<rbrakk> \<Longrightarrow>
       \<turnstile>\<^sub>t {P} IF b THEN c ELSE d {Q}"
-  While:
+| While:
   "\<lbrakk>wf r;  \<forall>s'. \<turnstile>\<^sub>t {\<lambda>s. P s \<and> b s \<and> s' = s} c {\<lambda>s. P s \<and> (s,s') \<in> r}\<rbrakk>
    \<Longrightarrow> \<turnstile>\<^sub>t {P} WHILE b DO c {\<lambda>s. P s \<and> \<not>b s}"
-  Conseq: "\<lbrakk> \<forall>s. P' s \<longrightarrow> P s; \<turnstile>\<^sub>t {P}c{Q}; \<forall>s. Q s \<longrightarrow> Q' s  \<rbrakk> \<Longrightarrow>
+| Conseq: "\<lbrakk> \<forall>s. P' s \<longrightarrow> P s; \<turnstile>\<^sub>t {P}c{Q}; \<forall>s. Q s \<longrightarrow> Q' s  \<rbrakk> \<Longrightarrow>
            \<turnstile>\<^sub>t {P'}c{Q'}"
 
-  Local: "(!!s. P s \<Longrightarrow> P' s (f s)) \<Longrightarrow> \<forall>p. \<turnstile>\<^sub>t {P' p} c {Q o (g p)} \<Longrightarrow>
+| Local: "(!!s. P s \<Longrightarrow> P' s (f s)) \<Longrightarrow> \<forall>p. \<turnstile>\<^sub>t {P' p} c {Q o (g p)} \<Longrightarrow>
         \<turnstile>\<^sub>t {P} LOCAL f;c;g {Q}"
 
 text{*\noindent The@{term While}- rule is like the one for partial

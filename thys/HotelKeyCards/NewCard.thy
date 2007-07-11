@@ -1,5 +1,5 @@
 (*  Title:      State based hotel key card system with "new card"
-    ID:         $Id: NewCard.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
+    ID:         $Id: NewCard.thy,v 1.3 2007-07-11 10:14:40 stefanberghofer Exp $
     Author:     Tobias Nipkow, TU Muenchen
 
 Like State.thy but with additional features: cards can be lost and new
@@ -37,18 +37,15 @@ record state =
  (* ghost variable: *)
  safe :: "room \<Rightarrow> bool"
 
-consts
- reach :: "state set"
-
-inductive reach
-intros
+inductive_set reach :: "state set"
+where
 init: (* prevk = arbitrary prevents the invariant prevk : issued *)
 "\<forall>r r'. (initk r = initk r') = (r = r') \<Longrightarrow>
 \<lparr> owns = (\<lambda>r. None), prevk = initk, currk = initk, issued = range initk,
   cards = (\<lambda>g. {}), roomk = initk, isin = (\<lambda>r. {}),
   safe = (\<lambda>r. True) \<rparr> \<in> reach"
 
-enter_room:
+| enter_room:
 "\<lbrakk> s \<in> reach; (k,k') \<in> cards s g; roomk s r \<in> {k,k'} \<rbrakk> \<Longrightarrow>
 s\<lparr> isin := (isin s)(r := isin s r \<union> {g}),
    roomk := (roomk s)(r := k'),
@@ -56,11 +53,11 @@ s\<lparr> isin := (isin s)(r := isin s r \<union> {g}),
                               \<or> safe s r)
   \<rparr> \<in> reach"
 
-exit_room:
+| exit_room:
 "\<lbrakk> s \<in> reach;  g \<in> isin s r \<rbrakk> \<Longrightarrow>
 s\<lparr> isin := (isin s)(r := isin s r - {g}) \<rparr> \<in> reach"
 
-check_in:
+| check_in:
 "\<lbrakk> s : reach; k \<notin> issued s \<rbrakk> \<Longrightarrow>
  s\<lparr>currk := (currk s)(r := k), prevk := (prevk s)(r := currk s r),
    issued := issued s \<union> {k},
@@ -68,11 +65,11 @@ check_in:
    owns :=  (owns s)(r := Some g),
    safe := (safe s)(r := False) \<rparr> : reach"
 
-loose_card:
+| loose_card:
 "s : reach \<Longrightarrow> c : cards s g \<Longrightarrow>
  s\<lparr>cards := (cards s)(g := cards s g - {c})\<rparr> : reach"
 
-new_card:
+| new_card:
 "s : reach \<Longrightarrow> owns s r = Some g \<Longrightarrow>
  s\<lparr>cards := (cards s)(g := cards s g \<union> {(prevk s r, currk s r)})\<rparr> : reach"
 

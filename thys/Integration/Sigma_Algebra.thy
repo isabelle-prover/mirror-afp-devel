@@ -1,5 +1,5 @@
 (*  Title:      Sigma_Algebra.thy
-    ID:         $Id: Sigma_Algebra.thy,v 1.4 2007-06-14 11:44:47 makarius Exp $
+    ID:         $Id: Sigma_Algebra.thy,v 1.5 2007-07-11 10:15:44 stefanberghofer Exp $
     Author:     Stefan Richter, Markus Wenzel, TU Muenchen
     License:    LGPL
 
@@ -47,15 +47,14 @@ text {*
   inductive definition of the $\isa {sigma}$ operator.  *}
 
 
-consts
+inductive_set
   sigma :: "'a set set \<Rightarrow> 'a set set"
-
-inductive "sigma A"
-  intros
+  for A :: "'a set set"
+  where
     basic: "a \<in> A \<Longrightarrow> a \<in> sigma A"
-    empty: "{} \<in> sigma A"
-    complement: "a \<in> sigma A \<Longrightarrow> -a \<in> sigma A"
-    Union: "(\<And>i::nat. a i \<in> sigma A) \<Longrightarrow> (\<Union>i. a i) \<in> sigma A"
+  | empty: "{} \<in> sigma A"
+  | complement: "a \<in> sigma A \<Longrightarrow> -a \<in> sigma A"
+  | Union: "(\<And>i::nat. a i \<in> sigma A) \<Longrightarrow> (\<Union>i. a i) \<in> sigma A"
 
 
 text {* He also proved the following basic facts. The easy proofs are omitted.

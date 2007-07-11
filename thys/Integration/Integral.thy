@@ -38,10 +38,10 @@ text {*Having learnt from my failures, we take the safe and clean way
   introduction rule.
   *}
 
-consts
+inductive_set
   sfis:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real set"
-inductive "sfis f M"
-  intros (*This uses normal forms*)
+  for f :: "'a \<Rightarrow> real" and M :: "'a set set * ('a set \<Rightarrow> real)"
+  where (*This uses normal forms*)
   base:  "\<lbrakk>f = (\<lambda>t. \<Sum>i\<in>(S::nat set). x i * \<chi>(A i) t);
   \<forall>i \<in> S. A i \<in> measurable_sets M; nonnegative x; finite S;
   \<forall>i\<in>S. \<forall>j\<in>S. i \<noteq> j \<longrightarrow> A i \<inter> A j = {}; (\<Union>i\<in>S. A i) = UNIV\<rbrakk>
@@ -238,10 +238,10 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)a:(*>*) "a \<in> sfis f M
   \<and> nonnegative z1 \<and> nonnegative z2"
   using a
 proof cases 
-  case (base A R x)
+  case (base x A R)
   show ?thesis using b
   proof cases
-    case (base B S y) 
+    case (base y B S) 
                       
     from prems have ms: "measure_space M" 
       and f: "f = (\<lambda>t. \<Sum>i\<in>(R::nat set). x i * \<chi>(A i) t)"
@@ -685,7 +685,7 @@ lemma sfis_times:
   assumes a: "a \<in> sfis f M" and z: "0\<le>z"
   shows "z*a \<in> sfis (\<lambda>w. z*f w) M" (*<*)using a
 proof (cases)
-  case (base A S x)
+  case (base x A S)
   {fix t
     from prems have "z*f t = (\<Sum>i\<in>S. z * (x i * \<chi>(A i) t))"
       by (simp add: setsum_right_distrib)
@@ -752,7 +752,7 @@ lemma sfis_nn:
   assumes f: "a \<in> sfis f M"
   shows "nonnegative f" (*<*)using f
 proof (cases)
-  case (base A S x)
+  case (base x A S)
   { fix t 
     { fix i
       from prems have "0 \<le> x i * \<chi>(A i) t" by (simp add: nonnegative_def characteristic_function_def)
@@ -798,7 +798,7 @@ lemma sfis_rv:
   assumes ms: "measure_space M" and f: "a \<in> sfis f M"
   shows "f \<in> rv M" using f
 proof (cases)
-  case (base A S x)
+  case (base x A S)
   hence "f = (\<lambda>t. \<Sum>i\<in>S. x i * \<chi>(A i) t)" 
     by simp
   also
@@ -888,7 +888,7 @@ lemma sfis_mon_conv_mono:
   and sr: " r \<in> sfis s M" and sf: "s \<le> f" and ms: "measure_space M"
   shows "r \<le> y" (*This is Satz 11.1 in Bauer*) using sr 
 proof cases
-  case (base A S a)
+  case (base a A S)
   
   { fix z assume znn: "0<(z::real)" and z1: "z<1"
     def B \<equiv> "(\<lambda>n. {w. z*s w \<le> u n w})" 
@@ -911,7 +911,7 @@ proof cases
 
       from xu have "z*(\<Sum>i\<in>S. a i * measure M (A i \<inter> B n)) \<le> x n" 
       proof (cases)
-	case (base C R c)
+	case (base c C R)
 	{ fix t
 	  { fix i
 	    have "S=S" and "a i * \<chi>(A i \<inter> B n) t = \<chi>(B n) t * (a i * \<chi>(A i) t)" 
@@ -1049,10 +1049,10 @@ text {*Now we are ready for the second step. The integral of a
   usual basic properties are
   straightforward. *}
 
-consts
-nnfis:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real set"
-inductive "nnfis f M"
-  intros
+inductive_set
+  nnfis:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real set"
+  for f :: "'a \<Rightarrow> real" and M :: "'a set set * ('a set \<Rightarrow> real)"
+  where
   base: "\<lbrakk>u\<up>f; \<And>n. x n \<in> sfis (u n) M; x\<up>y\<rbrakk> \<Longrightarrow> y \<in> nnfis f M"
 
 lemma sfis_nnfis:

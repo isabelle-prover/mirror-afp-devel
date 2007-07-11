@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegSet.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: RegSet.thy,v 1.6 2007-07-11 10:13:01 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -13,11 +13,12 @@ constdefs
  conc :: "'a list set => 'a list set => 'a list set"
 "conc A B == {xs@ys | xs ys. xs:A & ys:B}"
 
-consts star :: "'a list set => 'a list set"
-inductive "star A"
-intros
+inductive_set
+  star :: "'a list set => 'a list set"
+  for A :: "'a list set"
+where
   NilI[iff]:   "[] : star A"
-  ConsI[intro,simp]:  "[| a:A; as : star A |] ==> a@as : star A"
+| ConsI[intro,simp]:  "[| a:A; as : star A |] ==> a@as : star A"
 
 lemma concat_in_star: "!xs: set xss. xs:S ==> concat xss : star S"
 by (induct "xss") simp_all

@@ -1,4 +1,4 @@
-(*  ID:         $Id: RTranCl.thy,v 1.1 2006-05-22 09:54:04 nipkow Exp $
+(*  ID:         $Id: RTranCl.thy,v 1.2 2007-07-11 10:12:00 stefanberghofer Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -12,18 +12,19 @@ text{* The reflexive transitive closure of a relation induced by a
 function of type @{typ"'a \<Rightarrow> 'a list"}. Instead of defining the closure
 again it would have been simpler to take @{term"{(x,y) . y \<in> set(f x)}\<^sup>*"}. *}
 
-consts RTranCl :: "('a \<Rightarrow> 'a list) \<Rightarrow> ('a * 'a) set"
 syntax "in_set" :: "'a \<Rightarrow> ('a \<Rightarrow> 'a list) \<Rightarrow> 'a \<Rightarrow> bool"
       ("_ [_]\<rightarrow> _" [55,0,55] 50)
 translations "g [succs]\<rightarrow> g'" => "g' \<in> set (succs g)"
-syntax "in_RTranCl" :: "'a \<Rightarrow> ('a \<Rightarrow> 'a list) \<Rightarrow> 'a \<Rightarrow> bool"
-       ("_ [_]\<rightarrow>* _" [55,0,55] 50)
-translations "g [succs]\<rightarrow>* g'" == "(g,g') \<in> RTranCl succs"
 
-inductive "RTranCl succs"
-intros
-  refl: "g [succs]\<rightarrow>* g"
-  succs: "g [succs]\<rightarrow> g' \<Longrightarrow> g' [succs]\<rightarrow>* g'' \<Longrightarrow> g [succs]\<rightarrow>* g''"
+inductive_set
+  RTranCl :: "('a \<Rightarrow> 'a list) \<Rightarrow> ('a * 'a) set"
+  and in_RTranCl :: "'a \<Rightarrow> ('a \<Rightarrow> 'a list) \<Rightarrow> 'a \<Rightarrow> bool"
+    ("_ [_]\<rightarrow>* _" [55,0,55] 50)
+  for succs :: "'a \<Rightarrow> 'a list"
+where
+  "g [succs]\<rightarrow>* g' \<equiv> (g,g') \<in> RTranCl succs"
+| refl: "g [succs]\<rightarrow>* g"
+| succs: "g [succs]\<rightarrow> g' \<Longrightarrow> g' [succs]\<rightarrow>* g'' \<Longrightarrow> g [succs]\<rightarrow>* g''"
 
 lemmas RTranCl1 = RTranCl.succs[OF _ RTranCl.refl]
 

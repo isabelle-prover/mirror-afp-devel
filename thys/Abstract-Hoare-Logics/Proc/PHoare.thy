@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: PHoare.thy,v 1.2 2006-11-17 01:28:44 makarius Exp $
+    ID:          $Id: PHoare.thy,v 1.3 2007-07-11 10:05:49 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -68,35 +68,32 @@ constdefs
  cnvalid :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<Turnstile>_/ {(1_)}/ (_)/ {(1_)}" 50)
   "C \<Turnstile>n {P}c{Q}  \<equiv>  |\<Turnstile>_n C \<longrightarrow> \<Turnstile>n {P}c{Q}"
 
-consts hoare :: "('a cntxt \<times> 'a assn \<times> com \<times> 'a assn) set"
-abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a assn \<Rightarrow> bool" ("_ \<turnstile> _") where
-  "C \<turnstile> x \<equiv> (C,x) \<in> hoare"
-abbreviation
-  hoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50) where
-  "C \<turnstile> {P}c{Q}  \<equiv>  (C,P,c,Q) \<in> hoare"
-
 text{*Finally we come to the proof system for deriving triples in a context:*}
 
-inductive hoare
-intros
+inductive
+  hoare :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50)
+where
    (*<*)Do:(*>*)"C \<turnstile> {\<lambda>z s. \<forall>t \<in> f s . P z t} Do f {P}"
 
-   (*<*)Semi:(*>*)"\<lbrakk> C \<turnstile> {P}c1{Q}; C \<turnstile> {Q}c2{R} \<rbrakk> \<Longrightarrow> C \<turnstile> {P} c1;c2 {R}"
+ | (*<*)Semi:(*>*)"\<lbrakk> C \<turnstile> {P}c1{Q}; C \<turnstile> {Q}c2{R} \<rbrakk> \<Longrightarrow> C \<turnstile> {P} c1;c2 {R}"
 
-   (*<*)If:(*>*)"\<lbrakk> C \<turnstile> {\<lambda>z s. P z s \<and> b s}c1{Q};  C \<turnstile> {\<lambda>z s. P z s \<and> \<not>b s}c2{Q}  \<rbrakk>
+ | (*<*)If:(*>*)"\<lbrakk> C \<turnstile> {\<lambda>z s. P z s \<and> b s}c1{Q};  C \<turnstile> {\<lambda>z s. P z s \<and> \<not>b s}c2{Q}  \<rbrakk>
    \<Longrightarrow> C \<turnstile> {P} IF b THEN c1 ELSE c2 {Q}"
 
-   (*<*)While:(*>*)"C \<turnstile> {\<lambda>z s. P z s \<and> b s} c {P}
+ | (*<*)While:(*>*)"C \<turnstile> {\<lambda>z s. P z s \<and> b s} c {P}
    \<Longrightarrow> C \<turnstile> {P} WHILE b DO c {\<lambda>z s. P z s \<and> \<not>b s}"
 
-   (*<*)Conseq:(*>*)"\<lbrakk> C \<turnstile> {P'}c{Q'};  \<forall>s t. (\<forall>z. P' z s \<longrightarrow> Q' z t) \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t) \<rbrakk>
+ | (*<*)Conseq:(*>*)"\<lbrakk> C \<turnstile> {P'}c{Q'};  \<forall>s t. (\<forall>z. P' z s \<longrightarrow> Q' z t) \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t) \<rbrakk>
    \<Longrightarrow> C \<turnstile> {P}c{Q}"
 
-   (*<*)Call:(*>*)"{(P,CALL,Q)} \<turnstile> {P}body{Q} \<Longrightarrow> {} \<turnstile> {P} CALL {Q}"
+ | (*<*)Call:(*>*)"{(P,CALL,Q)} \<turnstile> {P}body{Q} \<Longrightarrow> {} \<turnstile> {P} CALL {Q}"
 
-   (*<*)Asm:(*>*)"{(P,CALL,Q)} \<turnstile> {P} CALL {Q}"
-  (*<*)Local:(*>*) "\<lbrakk> \<forall>s'. C \<turnstile> {\<lambda>z s. P z s' \<and> s = f s'} c {\<lambda>z t. Q z (g s' t)} \<rbrakk> \<Longrightarrow>
+ | (*<*)Asm:(*>*)"{(P,CALL,Q)} \<turnstile> {P} CALL {Q}"
+ | (*<*)Local:(*>*) "\<lbrakk> \<forall>s'. C \<turnstile> {\<lambda>z s. P z s' \<and> s = f s'} c {\<lambda>z t. Q z (g s' t)} \<rbrakk> \<Longrightarrow>
         C \<turnstile> {P} LOCAL f;c;g {Q}"
+
+abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a assn \<Rightarrow> bool" ("_ \<turnstile> _") where
+  "C \<turnstile> x \<equiv> C \<turnstile> {fst x}fst (snd x){snd (snd x)}"
 
 text{*\noindent The first four rules are familiar, except for their adaptation
 to auxiliary variables. The @{term CALL} rule embodies induction and
@@ -169,7 +166,7 @@ easy to see that, in the presence of the new consequence rule,
 
 lemma MGT_implies_complete:
  "{} \<turnstile> MGT c  \<Longrightarrow>  {} \<Turnstile> {P}c{Q}  \<Longrightarrow>  {} \<turnstile> {P}c{Q::state assn}"
-apply(unfold MGT_def)
+apply(simp add: MGT_def)
 apply (erule hoare.Conseq)
 apply(simp add: valid_defs)
 done

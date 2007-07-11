@@ -3,27 +3,26 @@ theory Tree imports Main begin
 
 subsection "Tree"
 
-consts
-    tree :: "['a => 'a set,'a] => (nat * 'a) set"
-
-inductive "tree subs gamma"
+inductive_set
+  tree :: "['a => 'a set,'a] => (nat * 'a) set"
+  for subs :: "'a => 'a set" and gamma :: 'a
   (******
    * This set represents the nodes in a tree which may represent a proof of gamma.
    * Only storing the annotation and it's level.
    * NOTE: could parameterize on subs
    ******)
-  intros
+  where
     tree0: "(0,gamma) : tree subs gamma"
 
-    tree1: "[| (n,delta) : tree subs gamma; sigma : subs(delta) |]
+  | tree1: "[| (n,delta) : tree subs gamma; sigma : subs(delta) |]
 	   ==> (Suc n,sigma) : tree subs gamma"
 
-declare tree.elims [elim] 
+declare tree.cases [elim] 
 declare tree.intros [intro] 
 
 lemma tree0Eq: "(0,y) : tree subs gamma = (y = gamma)"
   apply(rule iffI)
-  apply (erule tree.elims, auto) 
+  apply (erule tree.cases, auto) 
   done
 
 lemma tree1Eq [rule_format]:

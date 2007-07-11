@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalDef.thy,v 1.4 2007-02-14 09:08:57 fhaftmann Exp $
+    ID:          $Id: OrdinalDef.thy,v 1.5 2007-07-11 10:20:59 stefanberghofer Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -32,9 +32,7 @@ lemmas ord0_prec_induct = wf_induct[OF wf_trancl[OF wf_ord0_prec]]
 
 text {* less-than-or-equal ordering on ord0 *}
 
-consts ord0_leq :: "(ord0 \<times> ord0) set"
-
-inductive ord0_leq intros
+inductive_set ord0_leq :: "(ord0 \<times> ord0) set" where
 "\<lbrakk>\<forall>a. (a,x) \<in> ord0_prec\<^sup>+ \<longrightarrow> (\<exists>b. (b,y) \<in> ord0_prec\<^sup>+ \<and> (a,b) \<in> ord0_leq)\<rbrakk>
   \<Longrightarrow> (x,y) \<in> ord0_leq"
 

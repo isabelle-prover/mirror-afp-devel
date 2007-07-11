@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/MiniML.thy
-   ID:        $Id: MiniML.thy,v 1.8 2006-10-10 17:23:52 makarius Exp $
+   ID:        $Id: MiniML.thy,v 1.9 2007-07-11 10:20:17 stefanberghofer Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -15,21 +15,15 @@ datatype
   expr = Var nat | Abs expr | App expr expr | LET expr expr
 
 -- "type inference rules"
-consts
-  has_type :: "(ctxt * expr * typ)set"
-syntax
-  "@has_type" :: "[ctxt, expr, typ] => bool"
+inductive
+  has_type :: "[ctxt, expr, typ] => bool"
                   ("((_) |-/ (_) :: (_))" [60,0,60] 60)
-translations 
-  "A |- e :: t" == "(A,e,t):has_type"
-
-inductive has_type
-intros
+where
   VarI: "[| n < length A; t <| A!n |] ==> A |- Var n :: t"
-  AbsI: "[| (mk_scheme t1)#A |- e :: t2 |] ==> A |- Abs e :: t1 -> t2"
-  AppI: "[| A |- e1 :: t2 -> t1; A |- e2 :: t2 |] 
+| AbsI: "[| (mk_scheme t1)#A |- e :: t2 |] ==> A |- Abs e :: t1 -> t2"
+| AppI: "[| A |- e1 :: t2 -> t1; A |- e2 :: t2 |] 
          ==> A |- App e1 e2 :: t1"
-  LETI: "[| A |- e1 :: t1; (gen A t1)#A |- e2 :: t |] ==> A |- LET e1 e2 :: t"
+| LETI: "[| A |- e1 :: t1; (gen A t1)#A |- e2 :: t |] ==> A |- LET e1 e2 :: t"
 
 declare has_type.intros [simp]
 declare Un_upper1 [simp] Un_upper2 [simp]

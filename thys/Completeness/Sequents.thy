@@ -62,9 +62,9 @@ lemma mapRuleI: "!!f. [| A = map f a; B = (map f) ` b |] ==> (A,B) = mapRule f (
 
 subsection "Deductions"
 
-consts deductions  :: "rule set => formula list set"
-
-inductive "deductions(rules)"
+inductive_set
+  deductions  :: "rule set => formula list set"
+  for rules :: "rule set"
   (******
    * Given a set of rules,
    *   1. Given a rule conc/prem(i) in rules,
@@ -73,7 +73,7 @@ inductive "deductions(rules)"
    *   2. can derive permutation of any deducible formula list.
    *      (supposed to be multisets not lists).
    ******)
-  intros
+  where
     inferI: "[| (conc,prems) : rules;
 	       prems : Pow(deductions(rules))
 	    |] ==> conc : deductions(rules)"

@@ -1,5 +1,5 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: Hoare.thy,v 1.3 2006-11-17 01:28:44 makarius Exp $
+    ID:          $Id: Hoare.thy,v 1.4 2007-07-11 10:05:50 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -30,25 +30,21 @@ it does not require termination of @{term c}.
 Provability in Hoare logic is indicated by @{text"\<turnstile>"} and defined
 inductively:*}
 
-consts hoare :: "(assn \<times> com \<times> assn) set"
-abbreviation
- hoare' :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile> ({(1_)}/ (_)/ {(1_)})" 50) where
-"\<turnstile> {P}c{Q}  \<equiv>  (P,c,Q) \<in> hoare"
-
-inductive hoare
-intros
+inductive
+  hoare :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile> ({(1_)}/ (_)/ {(1_)})" 50)
+where
   (*<*)Do:(*>*)"\<turnstile> {\<lambda>s. \<forall>t \<in> f s. P t} Do f {P}"
 
-  (*<*)Semi:(*>*)"\<lbrakk> \<turnstile> {P}c1{Q};  \<turnstile> {Q}c2{R} \<rbrakk>  \<Longrightarrow>  \<turnstile> {P} c1;c2 {R}"
+| (*<*)Semi:(*>*)"\<lbrakk> \<turnstile> {P}c1{Q};  \<turnstile> {Q}c2{R} \<rbrakk>  \<Longrightarrow>  \<turnstile> {P} c1;c2 {R}"
 
-  (*<*)If:(*>*)"\<lbrakk> \<turnstile> {\<lambda>s. P s \<and> b s} c1 {Q};  \<turnstile> {\<lambda>s. P s \<and> \<not>b s} c2 {Q} \<rbrakk>
+| (*<*)If:(*>*)"\<lbrakk> \<turnstile> {\<lambda>s. P s \<and> b s} c1 {Q};  \<turnstile> {\<lambda>s. P s \<and> \<not>b s} c2 {Q} \<rbrakk>
   \<Longrightarrow> \<turnstile> {P} IF b THEN c1 ELSE c2 {Q}"
 
-  (*<*)While:(*>*)"\<turnstile> {\<lambda>s. P s \<and> b s} c {P}  \<Longrightarrow>  \<turnstile> {P} WHILE b DO c {\<lambda>s. P s \<and> \<not>b s}"
+| (*<*)While:(*>*)"\<turnstile> {\<lambda>s. P s \<and> b s} c {P}  \<Longrightarrow>  \<turnstile> {P} WHILE b DO c {\<lambda>s. P s \<and> \<not>b s}"
 
-  (*<*)Conseq:(*>*)"\<lbrakk> \<forall>s. P' s \<longrightarrow> P s;  \<turnstile> {P}c{Q};  \<forall>s. Q s \<longrightarrow> Q' s  \<rbrakk>  \<Longrightarrow>  \<turnstile> {P'}c{Q'}"
+| (*<*)Conseq:(*>*)"\<lbrakk> \<forall>s. P' s \<longrightarrow> P s;  \<turnstile> {P}c{Q};  \<forall>s. Q s \<longrightarrow> Q' s  \<rbrakk>  \<Longrightarrow>  \<turnstile> {P'}c{Q'}"
 
-  (*<*)Local:(*>*) "\<lbrakk> \<And>s. P s \<Longrightarrow> P' s (f s); \<forall>s. \<turnstile> {P' s} c {Q \<circ> (g s)} \<rbrakk> \<Longrightarrow>
+| (*<*)Local:(*>*) "\<lbrakk> \<And>s. P s \<Longrightarrow> P' s (f s); \<forall>s. \<turnstile> {P' s} c {Q \<circ> (g s)} \<rbrakk> \<Longrightarrow>
         \<turnstile> {P} LOCAL f;c;g {Q}"
 
 text{* Soundness is proved by induction on the derivation of @{prop"\<turnstile>
