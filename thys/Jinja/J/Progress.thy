@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.8 2007-07-11 10:17:12 stefanberghofer Exp $
+    ID:         $Id: Progress.thy,v 1.9 2007-07-19 21:23:12 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -179,7 +179,7 @@ next
   have wte: "P,E,h \<turnstile> e : T" and ref: "is_refT T"
    and IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-   and D: "\<D> (Cast C e) \<lfloor>dom l\<rfloor>" .
+   and D: "\<D> (Cast C e) \<lfloor>dom l\<rfloor>" by fact+
   from D have De: "\<D> e \<lfloor>dom l\<rfloor>" by auto
   show ?case
   proof cases
@@ -284,7 +284,7 @@ next
 next
   case (WTrtFAcc E e C F T D)
   have wte: "P,E,h \<turnstile> e : Class C"
-   and field: "P \<turnstile> C has F:T in D".
+   and field: "P \<turnstile> C has F:T in D" by fact+
   show ?case
   proof cases
     assume "final e"
@@ -317,7 +317,7 @@ next
   qed
 next
   case (WTrtFAss E e1 C F T D e2 T2)
-  have wte1: "P,E,h \<turnstile> e1 : Class C" .
+  have wte1: "P,E,h \<turnstile> e1 : Class C" by fact
   show ?case
   proof cases
     assume "final e1"
@@ -374,7 +374,7 @@ next
    and IHes: "\<And>l.
              \<lbrakk>\<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
              \<Longrightarrow> \<exists>es' s'. P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
-   and D: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" .
+   and D: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" by fact+
   show ?case
   proof cases
     assume "final e"
@@ -467,7 +467,7 @@ next
                 \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and IHes: "\<And>l. \<lbrakk>\<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
              \<Longrightarrow> \<exists>es' s'. P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
-   and D: "\<D>s (e#es) \<lfloor>dom l\<rfloor>" and not_fins: "\<not> finals(e # es)" .
+   and D: "\<D>s (e#es) \<lfloor>dom l\<rfloor>" and not_fins: "\<not> finals(e # es)" by fact+
   have De: "\<D> e \<lfloor>dom l\<rfloor>" and Des: "\<D>s es (\<lfloor>dom l\<rfloor> \<squnion> \<A> e)"
     using D by auto
   show ?case
@@ -493,11 +493,11 @@ next
   case (WTrtInitBlock v T\<^isub>1 T E V e\<^isub>2 T\<^isub>2)
   have IH2: "\<And>l. \<lbrakk>\<D> e\<^isub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^isub>2\<rbrakk>
                   \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-   and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" .
+   and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" by fact+
   show ?case
   proof cases
     assume "final e\<^isub>2"
-    show ?thesis
+    then show ?thesis
     proof (rule finalE)
       fix v\<^isub>2 assume "e\<^isub>2 = Val v\<^isub>2"
       thus ?thesis by(fast intro:RedInitBlock)
@@ -518,7 +518,7 @@ next
   case (WTrtBlock E V T e T')
   have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                  \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
-   and unass: "\<not> assigned V e" and D: "\<D> {V:T; e} \<lfloor>dom l\<rfloor>" .
+   and unass: "\<not> assigned V e" and D: "\<D> {V:T; e} \<lfloor>dom l\<rfloor>" by fact+
   show ?case
   proof cases
     assume "final e"
@@ -557,7 +557,7 @@ next
   qed
 next
   case (WTrtCond E e e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2 T)
-  have wt: "P,E,h \<turnstile> e : Boolean" .
+  have wt: "P,E,h \<turnstile> e : Boolean" by fact
   show ?case
   proof cases
     assume "final e"
@@ -595,7 +595,7 @@ next
   qed
 next
   case (WTrtTry E e1 T1 V C e2 T2)
-  have wt1: "P,E,h \<turnstile> e1 : T1" .
+  have wt1: "P,E,h \<turnstile> e1 : T1" by fact
   show ?case
   proof cases
     assume "final e1"

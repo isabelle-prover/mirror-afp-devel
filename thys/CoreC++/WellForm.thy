@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellForm.thy,v 1.10 2007-07-11 10:07:49 stefanberghofer Exp $
+    ID:          $Id: WellForm.thy,v 1.11 2007-07-19 21:23:09 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -322,14 +322,14 @@ proof (induct Cs')
   show ?case
   proof (cases "C=C'")
     case True
-    have "is_subobj (P,(C,C'#rev []))" .
+    have "is_subobj (P,(C,C'#rev []))" by fact
     with True have "is_subobj (P,(C,[C]))" by simp
     hence "is_class P C"
       by (fastsimp elim:converse_rtranclE dest:subclsS_subcls1 elim:subcls1_class)
     with True show ?thesis by (fastsimp intro:Subobjs_Base)
   next
     case False
-    have "is_subobj (P,(C,C'#rev []))" .
+    have "is_subobj (P,(C,C'#rev []))" by fact
     with False obtain D where sup:"P \<turnstile> C \<preceq>\<^sup>* D" and subS:"P \<turnstile> D \<prec>\<^sub>S C'"
       by fastsimp
     with wf have "is_class P C'"
@@ -341,7 +341,7 @@ proof (induct Cs')
 next 
   case (Cons C'' Cs'')
   have IH:"is_subobj (P,(C,C'#rev Cs'')) \<Longrightarrow> Subobjs P C (C'#rev Cs'')"
-    and subo:"is_subobj (P,(C,C'#rev(C''# Cs'')))" .
+    and subo:"is_subobj (P,(C,C'#rev(C''# Cs'')))" by fact+
   obtain Ds' where Ds':"Ds' = rev Cs''" by simp
   obtain D Ds where DDs:"D#Ds = Ds'@[C'']" by (cases Ds') auto
   with Ds' subo have "is_subobj(P,(C,C'#D#Ds))" by simp
@@ -365,7 +365,7 @@ proof (induct Cs)
   thus ?case by simp
 next
   case (Cons C' Cs')
-  have subo:"is_subobj(P,(C,C'#Cs'))" .
+  have subo:"is_subobj(P,(C,C'#Cs'))" by fact
   obtain Cs'' where Cs'':"Cs'' = rev Cs'" by simp
   with subo have "is_subobj(P,(C,C'#rev Cs''))" by simp
   with wf have "Subobjs P C (C'#rev Cs'')" by - (rule isSubobj_Subobjs_rev)
@@ -392,7 +392,7 @@ next
   case (Cons D Ds)
   have IH:"Subobjs P C (Cs @ C' # rev Ds) \<Longrightarrow>
            \<forall>C''\<in>set Ds. (C', C'') \<in> (subcls1 P)\<^sup>+"
-    and "Subobjs P C (Cs @ C' # rev (D # Ds))" .
+    and "Subobjs P C (Cs @ C' # rev (D # Ds))" by fact+
   hence subo':"Subobjs P C (Cs@ C'#rev Ds @ [D])" by simp
   hence "Subobjs P C (Cs@ C'#rev Ds)"
     by -(rule appendSubobj,simp_all)
@@ -437,7 +437,7 @@ lemma unique1:
 
 proof -
   obtain Ds where Ds:"Ds = rev Cs'" by simp
-  hence "Subobjs P C (Cs@ C'#rev Ds)" by simp
+  with subo have "Subobjs P C (Cs@ C'#rev Ds)" by simp
   with Ds subo have "\<forall>C'' \<in> set Cs'. (C',C'') \<in> (subcls1 P)\<^sup>+"
     by (fastsimp dest:subo_trans_subcls)
   with wf have "\<forall>C'' \<in> set Cs'. C' \<noteq> C''"
@@ -592,7 +592,7 @@ proof (induct Cs)
 next
   case (Cons C' Cs')
   have subo':"Subobjs P C (rev (C'#Cs'))"
-    and IH:"Subobjs P C (rev Cs') \<Longrightarrow> P,C \<turnstile> [C] \<sqsubseteq> rev Cs'" .
+    and IH:"Subobjs P C (rev Cs') \<Longrightarrow> P,C \<turnstile> [C] \<sqsubseteq> rev Cs'" by fact+
   from subo' have "class": "is_class P C" by(rule Subobjs_isClass)
   show ?case
   proof (cases "Cs' = []")
@@ -706,13 +706,13 @@ assumes subo1:"Subobjs P C Cs" and subo2:"Subobjs P (last Cs) (last Cs#rev Ds)"
 shows "Subobjs P C (Cs@(tl (last Cs#rev Ds)))"
 using subo2
 proof (induct Ds)
-case Nil
-  thus ?case by simp
+  case Nil
+  with subo1 show ?case by simp
 next
   case (Cons D' Ds')
   have IH:"Subobjs P (last Cs) (last Cs#rev Ds')
     \<Longrightarrow> Subobjs P C (Cs@tl(last Cs#rev Ds'))"
-    and subo:"Subobjs P (last Cs) (last Cs#rev (D'#Ds'))" .
+    and subo:"Subobjs P (last Cs) (last Cs#rev (D'#Ds'))" by fact+
   from subo have "Subobjs P (last Cs) (last Cs#rev Ds')"
     by (fastsimp intro:butlast_Subobjs)
   with IH have subo':"Subobjs P C (Cs@tl(last Cs#rev Ds'))"
@@ -741,7 +741,7 @@ shows "Subobjs P C (Cs@(tl Ds))"
 using subo2
 proof (cases Ds)
   case Nil
-  thus ?thesis by simp
+  with subo1 show ?thesis by simp
 next
   case (Cons D' Ds')
   with subo2 eq have subo:"Subobjs P (last Cs) (last Cs#Ds')" by simp
@@ -804,7 +804,7 @@ proof (induct Cs)
 next
   case (Cons C' Cs')
   have subo':"Subobjs P C (rev(C'#Cs'))"
-    and IH:"Subobjs P C (rev Cs') \<Longrightarrow> distinct Cs'" .
+    and IH:"Subobjs P C (rev Cs') \<Longrightarrow> distinct Cs'" by fact+
   show ?case
   proof (cases "Cs' = []")
     case True thus ?thesis by simp
@@ -1159,7 +1159,7 @@ next
     by (auto simp:LeastMethodDef_def MethodDefs_def)
   from least obtain Bs fs ms T Ts m where 
     "class": "class P (last Cs) = Some(Bs, fs, ms)" and map:"map_of ms M = Some(Ts,T,m)"
-    by (auto simp:LeastMethodDef_def MethodDefs_def)
+    by (auto simp:LeastMethodDef_def MethodDefs_def intro:that)
   from suboCs' lastCs' "class" map all have pathCs':"P,C \<turnstile> Cs \<sqsubseteq> Cs'"
     by simp
   with wf lastCs' have eq:"Cs = Cs'" by(fastsimp intro:leq_path_last)
@@ -1379,35 +1379,35 @@ lemma wf_select_method_fun:
 proof(induct rule:SelectMethodDef.induct)
   case (dyn_unique C M mthd Cs' Cs)
   have "P \<turnstile> (C, Cs) selects M = mthd' via Cs''"
-    and "P \<turnstile> C has least M = mthd via Cs'" .
+    and "P \<turnstile> C has least M = mthd via Cs'" by fact+
   thus ?case
   proof(induct rule:SelectMethodDef.induct)
     case (dyn_unique D M' mthd' Ds' Ds)
     have "P \<turnstile> D has least M' = mthd' via Ds'" 
-      and "P \<turnstile> D has least M' = mthd via Cs'" .
+      and "P \<turnstile> D has least M' = mthd via Cs'" by fact+
     with wf show ?case
       by -(rule wf_sees_method_fun,simp_all)
   next
     case (dyn_ambiguous D M' Ds mthd' Ds')
     have "\<forall>mthd Cs'. \<not> P \<turnstile> D has least M' = mthd via Cs'"
-      and "P \<turnstile> D has least M' = mthd via Cs'" .
+      and "P \<turnstile> D has least M' = mthd via Cs'" by fact+
     thus ?case by blast
   qed
 next
   case (dyn_ambiguous C M Cs mthd Cs')
   have "P \<turnstile> (C, Cs) selects M = mthd' via Cs''"
     and "P \<turnstile> (C, Cs) has overrider M = mthd via Cs'"
-    and "\<forall>mthd Cs'. \<not> P \<turnstile> C has least M = mthd via Cs'" .
+    and "\<forall>mthd Cs'. \<not> P \<turnstile> C has least M = mthd via Cs'" by fact+
   thus ?case
   proof(induct rule:SelectMethodDef.induct)
     case (dyn_unique D M' mthd' Ds' Ds)
     have "P \<turnstile> D has least M' = mthd' via Ds'"
-      and "\<forall>mthd Cs'. \<not> P \<turnstile> D has least M' = mthd via Cs'" .
+      and "\<forall>mthd Cs'. \<not> P \<turnstile> D has least M' = mthd via Cs'" by fact+
     thus ?case by blast
   next
     case (dyn_ambiguous D M' Ds mthd' Ds')
     have "P \<turnstile> (D, Ds) has overrider M' = mthd' via Ds'"
-      and "P \<turnstile> (D, Ds) has overrider M' = mthd via Cs'" .
+      and "P \<turnstile> (D, Ds) has overrider M' = mthd via Cs'" by fact+
     thus ?case by(fastsimp dest:overrider_method_fun)
   qed
 qed
@@ -1836,17 +1836,17 @@ and WTs_determ: "P,E \<turnstile> es [::] Ts \<Longrightarrow> (\<And>Ts'. P,E \
 
 proof(induct rule:WT_WTs_inducts)
   case (WTDynCast E e D C)
-  have "P,E \<turnstile> Cast C e :: T'" .
+  have "P,E \<turnstile> Cast C e :: T'" by fact
   thus ?case by (fastsimp elim:WT.cases)
 next
   case (WTStaticCast E e D C)
-  have "P,E \<turnstile> \<lparr>C\<rparr>e :: T'" .
+  have "P,E \<turnstile> \<lparr>C\<rparr>e :: T'" by fact
   thus ?case by (fastsimp elim:WT.cases)
 next
   case (WTBinOp E e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2 T bop)
   have bop:"case bop of Eq \<Rightarrow> T\<^isub>1 = T\<^isub>2 \<and> T = Boolean
     | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer"
-    and wt:"P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T'" .
+    and wt:"P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T'" by fact+
   from wt obtain T1' T2' where
     bop':"case bop of Eq \<Rightarrow> T1' = T2' \<and> T' = Boolean
     | Add \<Rightarrow> T1' = Integer \<and> T2' = Integer \<and> T' = Integer"
@@ -1865,13 +1865,13 @@ next
 next
   case (WTLAss E V T e T' T'')
   have "P,E \<turnstile> V:=e :: T''" 
-    and "E V = Some T" .
+    and "E V = Some T" by fact+
   thus ?case by auto
 next
   case (WTFAcc E e C F T Cs)
   have IH:"\<And>T'. P,E \<turnstile> e :: T' \<Longrightarrow> Class C = T'"
     and least:"P \<turnstile> C has least F:T via Cs"
-    and wt:"P,E \<turnstile> e\<bullet>F{Cs} :: T'" .
+    and wt:"P,E \<turnstile> e\<bullet>F{Cs} :: T'" by fact+
   from wt obtain C' where wte':"P,E \<turnstile> e :: Class C'"
     and least':"P \<turnstile> C' has least F:T' via Cs" by auto
   from IH[OF wte'] have "C = C'" by simp
@@ -1881,7 +1881,7 @@ next
   case (WTFAss E e\<^isub>1 C F T Cs e\<^isub>2 T' T'')
   have least:"P \<turnstile> C has least F:T via Cs"
     and wt:"P,E \<turnstile> e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 :: T''" 
-    and IH:"\<And>S. P,E \<turnstile> e\<^isub>1 :: S \<Longrightarrow> Class C = S" .
+    and IH:"\<And>S. P,E \<turnstile> e\<^isub>1 :: S \<Longrightarrow> Class C = S" by fact+
   from wt obtain C' where wte':"P,E \<turnstile> e\<^isub>1 :: Class C'" 
     and least':"P \<turnstile> C' has least F:T'' via Cs" by auto
   from IH[OF wte'] have "C = C'" by simp
@@ -1891,7 +1891,7 @@ next
   case (WTCall E e C M Ts T pns body Cs es Ts')
   have IH:"\<And>T'. P,E \<turnstile> e :: T' \<Longrightarrow> Class C = T'"
     and least:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
-    and wt:"P,E \<turnstile> e\<bullet>M(es) :: T'" .
+    and wt:"P,E \<turnstile> e\<bullet>M(es) :: T'" by fact+
   from wt obtain C' Ts' pns' body' Cs' where wte':"P,E \<turnstile> e :: Class C'"
     and least':"P \<turnstile> C' has least M = (Ts',T',pns',body') via Cs'" by auto
   from IH[OF wte'] have "C = C'" by simp
@@ -1901,7 +1901,7 @@ next
   have IH:"\<And>T'. P,E \<turnstile> e :: T' \<Longrightarrow> Class C' = T'" 
     and unique:"P \<turnstile> Path C' to C unique"
     and least:"P \<turnstile> C has least M = (Ts, T, pns, body) via Cs"
-    and wt:"P,E \<turnstile> e\<bullet>(C::)M(es) :: T'" .
+    and wt:"P,E \<turnstile> e\<bullet>(C::)M(es) :: T'" by fact+
   from wt obtain Ts' pns' body' Cs' 
     where "P \<turnstile> C has least M = (Ts',T',pns',body') via Cs'" by auto
   with least wf show ?case by (auto dest:wf_sees_method_fun)
@@ -1910,20 +1910,20 @@ next
 next
   case (WTSeq E e\<^isub>1 T\<^isub>1 e\<^isub>2 T\<^isub>2)
   have IH:"\<And>T'. P,E \<turnstile> e\<^isub>2 :: T' \<Longrightarrow> T\<^isub>2 = T'"
-    and wt:"P,E \<turnstile> e\<^isub>1;; e\<^isub>2 :: T'" .
+    and wt:"P,E \<turnstile> e\<^isub>1;; e\<^isub>2 :: T'" by fact+
   from wt have wt':"P,E \<turnstile> e\<^isub>2 :: T'" by auto
   from IH[OF wt'] show ?case .
 next
   case (WTCond E e e\<^isub>1 T e\<^isub>2)
   have IH:"\<And>S. P,E \<turnstile> e\<^isub>1 :: S \<Longrightarrow> T = S"
-    and wt:"P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T'" .
+    and wt:"P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T'" by fact+
   from wt have "P,E \<turnstile> e\<^isub>1 :: T'" by auto
   from IH[OF this] show ?case .
 next
   case (WTCons E e T es Ts)
   have IHe:"\<And>T'. P,E \<turnstile> e :: T' \<Longrightarrow> T = T'"
     and IHes:"\<And>Ts'. P,E \<turnstile> es [::] Ts' \<Longrightarrow> Ts = Ts'"
-    and wt:"P,E \<turnstile> e # es [::] Ts'" .
+    and wt:"P,E \<turnstile> e # es [::] Ts'" by fact+
   from wt show ?case
   proof (cases Ts')
     case Nil with wt show ?thesis by simp

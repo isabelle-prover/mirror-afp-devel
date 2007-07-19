@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.15 2007-07-11 10:07:49 stefanberghofer Exp $
+    ID:          $Id: Progress.thy,v 1.16 2007-07-19 21:23:09 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -219,7 +219,7 @@ and "P,E,h \<turnstile> es [:] Ts \<Longrightarrow>
 
 proof (induct rule:WTrt_inducts2)
   case (WTrtVal h v T E)
-  have type:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T" .
+  have type:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T" by fact
   { fix C a Cs D S
     assume "T = Class C" and "Val v = ref(a,Cs)" and "h a = Some(D,S)"
     with type have "Subobjs P D Cs" and "C = last Cs" by (auto split:split_if_asm)
@@ -278,7 +278,7 @@ next
     and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
     and D: "\<D> (Cast C e) \<lfloor>dom l\<rfloor>" 
-    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" .
+    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" by fact+
   from D have De: "\<D> e \<lfloor>dom l\<rfloor>" by auto
   show ?case
   proof cases
@@ -336,7 +336,7 @@ next
    and IH: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s'. P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and D: "\<D> (\<lparr>C\<rparr>e) \<lfloor>dom l\<rfloor>" 
-    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" .
+    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" by fact+
   from D have De: "\<D> e \<lfloor>dom l\<rfloor>" by auto
   show ?case
   proof cases
@@ -357,7 +357,7 @@ next
 	with True ref show ?thesis by(fastsimp intro:RedStaticUpCast)
       next
 	case False
-	have notleq:"\<not> P \<turnstile> last Cs \<preceq>\<^sup>* C" .
+	have notleq:"\<not> P \<turnstile> last Cs \<preceq>\<^sup>* C" by fact
 	thus ?thesis
 	proof(cases "C \<notin> set Cs")
 	  case False
@@ -386,7 +386,7 @@ next
   case (WTrtBinOp E h e1 T1 e2 T2 T' bop)
   have bop:"case bop of Eq \<Rightarrow> T' = Boolean
                       | Add \<Rightarrow> T1 = Integer \<and> T2 = Integer \<and> T' = Integer"
-    and wte1:"P,E,h \<turnstile> e1 : T1" and wte2:"P,E,h \<turnstile> e2 : T2" .
+    and wte1:"P,E,h \<turnstile> e1 : T1" and wte2:"P,E,h \<turnstile> e2 : T2" by fact+
   show ?case
   proof cases
     assume "final e1"
@@ -432,7 +432,7 @@ next
   have wte:"P,E,h \<turnstile> e : T'"
     and wtvar:"P,E,h \<turnstile> Var V : T"
     and sub:"P \<turnstile> T' \<le> T"
-    and envconf:"P \<turnstile> E \<surd>" .
+    and envconf:"P \<turnstile> E \<surd>" by fact+
   from envconf wtvar have type:"is_type P T" by(auto simp:envconf_def)
   show ?case
   proof cases
@@ -482,7 +482,7 @@ next
   have wte: "P,E,h \<turnstile> e : Class C" 
     and field: "P \<turnstile> C has least F:T via Cs"
     and notemptyCs:"Cs \<noteq> []"
-    and hconf: "P \<turnstile> h \<surd>" .
+    and hconf: "P \<turnstile> h \<surd>" by fact+
   show ?case
   proof cases
     assume "final e"
@@ -545,7 +545,7 @@ next
     and field:"P \<turnstile> C has least F:T via Cs" 
     and notemptyCs:"Cs \<noteq> []"
     and sub:"P \<turnstile> T' \<le> T"
-    and hconf:"P \<turnstile> h \<surd>" .
+    and hconf:"P \<turnstile> h \<surd>" by fact+
   from field wf have type:"is_type P T" by(rule least_field_is_type)
   show ?case
   proof cases
@@ -661,7 +661,7 @@ next
     and IHes: "\<And>l. \<lbrakk>P \<turnstile> h \<surd>; P \<turnstile> E \<surd>; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
              \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
     and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" 
-    and D: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" .
+    and D: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" by fact+
   show ?case
   proof cases
     assume final:"final e"
@@ -801,7 +801,7 @@ next
               \<lbrakk>P \<turnstile> h \<surd>; envconf P E; \<D>s es \<lfloor>dom l\<rfloor>; \<not> finals es\<rbrakk>
               \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
     and hconf: "P \<turnstile> h \<surd>" and envconf:"envconf P E"
-    and D: "\<D> (e\<bullet>(C::)M(es)) \<lfloor>dom l\<rfloor>" .
+    and D: "\<D> (e\<bullet>(C::)M(es)) \<lfloor>dom l\<rfloor>" by fact+
   show ?case
   proof cases
     assume final:"final e"
@@ -905,7 +905,7 @@ next
     and typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'"
     and type:"is_type P T" and sub:"P \<turnstile> T' \<le> T"
     and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>"
-    and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" .
+    and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" by fact+
   from wf typeof type sub obtain v' where casts:"P \<turnstile> T casts v to v'"
     by(auto dest:sub_casts)
   show ?case
@@ -929,11 +929,11 @@ next
                  \<Longrightarrow> \<exists>e' s'. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
    and unass: "\<not> assigned V e" and type:"is_type P T"
    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>" 
-    and D: "\<D> {V:T; e} \<lfloor>dom l\<rfloor>" .
+    and D: "\<D> {V:T; e} \<lfloor>dom l\<rfloor>" by fact+
   show ?case
   proof cases
     assume "final e"
-    show ?thesis
+    thus ?thesis
     proof (rule finalE)
       fix v assume "e = Val v" with type show ?thesis by(fast intro:RedBlock)
     next
@@ -969,7 +969,7 @@ next
   qed
 next
   case (WTrtCond E h e e\<^isub>1 T e\<^isub>2)
-  have wt: "P,E,h \<turnstile> e : Boolean" .
+  have wt: "P,E,h \<turnstile> e : Boolean" by fact
   show ?case
   proof cases
     assume "final e"
@@ -1016,7 +1016,7 @@ next
              \<Longrightarrow> \<exists>es' s'. P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
    and hconf: "P \<turnstile> h \<surd>" and envconf:"P \<turnstile> E \<surd>"
     and D: "\<D>s (e#es) \<lfloor>dom l\<rfloor>"
-   and not_fins: "\<not> finals(e # es)" .
+   and not_fins: "\<not> finals(e # es)" by fact+
   have De: "\<D> e \<lfloor>dom l\<rfloor>" and Des: "\<D>s es (\<lfloor>dom l\<rfloor> \<squnion> \<A> e)"
     using D by auto
   show ?case

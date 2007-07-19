@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: HeapExtension.thy,v 1.10 2007-07-11 10:07:49 stefanberghofer Exp $
+    ID:          $Id: HeapExtension.thy,v 1.11 2007-07-19 21:23:09 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -99,10 +99,10 @@ proof(induct rule:converse_rtrancl_induct2)
 next
   case (step e s e'' s'')
   have Red:"((e, s), e'', s'') \<in> Red P E"
-    and hext:"hp s'' \<unlhd> hp s'" .
+    and hext:"hp s'' \<unlhd> hp s'" by fact+
   from Red have "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e'',s''\<rangle>" by simp
   hence "hp s \<unlhd> hp s''"
-    by(cases s,cases s'',auto dest:red_hext_incr)
+    by(cases s,cases s'')(auto dest:red_hext_incr)
   with hext show ?case by-(rule hext_trans)
 qed
 
@@ -114,7 +114,7 @@ proof(induct rule:converse_rtrancl_induct2)
 next
   case (step es s es'' s'')
   have Reds:"((es, s), es'', s'') \<in> Reds P E"
-    and hext:"hp s'' \<unlhd> hp s'" .
+    and hext:"hp s'' \<unlhd> hp s'" by fact+
   from Reds have "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
   hence "hp s \<unlhd> hp s''"
     by(cases s,cases s'',auto dest:reds_hext_incr)

@@ -1,5 +1,5 @@
 (*
-    ID:         $Id: LBVCorrect.thy,v 1.3 2007-06-12 22:45:25 makarius Exp $
+    ID:         $Id: LBVCorrect.thy,v 1.4 2007-07-19 21:23:11 makarius Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -55,20 +55,20 @@ proof (unfold stable_def, clarify)
   
   from bounded pc step have pc': "pc' < size ins" by (rule boundedD)
 
-  have tkpc: "wtl (take pc ins) c 0 s\<^isub>0 \<noteq> \<top>" (is "?s\<^isub>1 \<noteq> _") by (rule wtl_take)
-  have s\<^isub>2: "wtl (take (pc+1) ins) c 0 s\<^isub>0 \<noteq> \<top>" (is "?s\<^isub>2 \<noteq> _") by (rule wtl_take)
+  have tkpc: "wtl (take pc ins) c 0 s\<^isub>0 \<noteq> \<top>" (is "?s\<^isub>1 \<noteq> _") using wtl by (rule wtl_take)
+  have s\<^isub>2: "wtl (take (pc+1) ins) c 0 s\<^isub>0 \<noteq> \<top>" (is "?s\<^isub>2 \<noteq> _") using wtl by (rule wtl_take)
   
   from wtl pc have wt_s\<^isub>1: "wtc c pc ?s\<^isub>1 \<noteq> \<top>" by (rule wtl_all)
 
   have c_Some: "\<forall>pc t. pc < size ins \<longrightarrow> c!pc \<noteq> \<bottom> \<longrightarrow> \<tau>s!pc = c!pc" 
     by (simp add: phi_def)
-  have c_None: "c!pc = \<bottom> \<Longrightarrow> \<tau>s!pc = ?s\<^isub>1" ..
+  have c_None: "c!pc = \<bottom> \<Longrightarrow> \<tau>s!pc = ?s\<^isub>1" using pc ..
 
   from wt_s\<^isub>1 pc c_None c_Some
   have inst: "wtc c pc ?s\<^isub>1  = wti c pc (\<tau>s!pc)"
     by (simp add: wtc split: split_if_asm)
 
-  have "?s\<^isub>1 \<in> A" by (rule wtl_pres) 
+  have "?s\<^isub>1 \<in> A" using pres cert s\<^isub>0 wtl pc by (rule wtl_pres)
   with pc c_Some cert c_None
   have "\<tau>s!pc \<in> A" by (cases "c!pc = \<bottom>") (auto dest: cert_okD1)
   with pc pres
@@ -134,7 +134,7 @@ proof -
     then obtain pc where pc: "pc < size \<tau>s" and x: "\<tau>s!pc = x"
       by (simp add: that [of "size xs"] nth_append)
     
-    from wtl s\<^isub>0 pc 
+    from pres cert wtl s\<^isub>0 pc 
     have "wtl (take pc ins) c 0 s\<^isub>0 \<in> A" by (auto intro!: wtl_pres)
     moreover
     from pc have "pc < size ins" by simp
@@ -162,7 +162,7 @@ next
   case False
   with 0 have "\<tau>s!0 = c!0" ..
   moreover 
-  have "wtl (take 1 ins) c 0 s\<^isub>0 \<noteq> \<top>"  by (rule wtl_take)
+  have "wtl (take 1 ins) c 0 s\<^isub>0 \<noteq> \<top>" using wtl by (rule wtl_take)
   with 0 False 
   have "s\<^isub>0 \<sqsubseteq>\<^sub>r c!0" by (auto simp add: neq_Nil_conv wtc split: split_if_asm)
   ultimately
@@ -172,7 +172,7 @@ qed
 
 
 theorem (in lbvs) wtl_sound:
-  assumes "wtl ins c 0 s\<^isub>0 \<noteq> \<top>" and "s\<^isub>0 \<in> A" 
+  assumes wtl: "wtl ins c 0 s\<^isub>0 \<noteq> \<top>" and "s\<^isub>0 \<in> A" 
   shows "\<exists>\<tau>s. wt_step r \<top> step \<tau>s"
 (*<*)
 proof -
@@ -180,7 +180,7 @@ proof -
   proof (unfold wt_step_def, intro strip conjI)
     fix pc assume "pc < size \<tau>s"
     then obtain "pc < size ins" by simp
-    show "\<tau>s!pc \<noteq> \<top>" by (rule phi_not_top)
+    with wtl show "\<tau>s!pc \<noteq> \<top>" by (rule phi_not_top)
     show "stable r step \<tau>s pc" by (rule wtl_stable)
   qed
   thus ?thesis ..
@@ -189,21 +189,21 @@ qed
 
 
 theorem (in lbvs) wtl_sound_strong:
-  assumes "wtl ins c 0 s\<^isub>0 \<noteq> \<top>" 
-  assumes "s\<^isub>0 \<in> A" and "0 < size ins"
+  assumes wtl: "wtl ins c 0 s\<^isub>0 \<noteq> \<top>" 
+  assumes s\<^isub>0: "s\<^isub>0 \<in> A" and ins: "0 < size ins"
   shows "\<exists>\<tau>s \<in> list (size ins) A. wt_step r \<top> step \<tau>s \<and> s\<^isub>0 \<sqsubseteq>\<^sub>r \<tau>s!0"
 (*<*)
 proof -
-  have "\<tau>s \<in> list (size ins) A" by (rule phi_in_A)
+  have "\<tau>s \<in> list (size ins) A" using wtl s\<^isub>0 by (rule phi_in_A)
   moreover
   have "wt_step r \<top> step \<tau>s"
   proof (unfold wt_step_def, intro strip conjI)
     fix pc assume "pc < size \<tau>s"
-    then obtain "pc < size ins" by simp
-    show "\<tau>s!pc \<noteq> \<top>" by (rule phi_not_top)
-    show "stable r step \<tau>s pc" by (rule wtl_stable)
+    then obtain pc: "pc < size ins" by simp
+    with wtl show "\<tau>s!pc \<noteq> \<top>" by (rule phi_not_top)
+    from wtl s\<^isub>0 and pc show "stable r step \<tau>s pc" by (rule wtl_stable)
   qed
-  moreover have "s\<^isub>0 \<sqsubseteq>\<^sub>r \<tau>s!0" by (rule phi0)
+  moreover from wtl ins have "s\<^isub>0 \<sqsubseteq>\<^sub>r \<tau>s!0" by (rule phi0)
   ultimately show ?thesis by fast
 qed
 (*>*)

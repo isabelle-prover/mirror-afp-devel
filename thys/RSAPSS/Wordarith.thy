@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Wordarith.thy
-    ID:         $Id: Wordarith.thy,v 1.3 2006-07-27 13:24:39 webertj Exp $
+    ID:         $Id: Wordarith.thy,v 1.4 2007-07-19 21:23:12 makarius Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)
@@ -27,9 +27,7 @@ lemma bv_to_nat_nat_to_bv_length [rule_format]: "nat_to_bv_length x y \<noteq> [
 by (simp add: nat_to_bv_length)
 
 lemma max_min: "max (a::nat) (min b a) = a"
-  apply (case_tac "a < b")
-  apply (simp add: min_def)
-by (simp add:max_def)
+  by (cases "a < b") (simp_all add: min_def max_def)
 
 consts
 roundup:: "nat \<Rightarrow> nat \<Rightarrow> nat" 
@@ -88,7 +86,7 @@ next
   proof (auto)
     assume a: "Suc a \<le> length l" and b: "a \<le> length (bvxor l l2)" 
     show "Suc a \<le> length (bvxor l l2)"
-    proof (case_tac "a = length (bvxor l l2)")
+    proof (cases "a = length (bvxor l l2)")
       assume c: "a = length (bvxor l l2)"
       show "Suc a \<le> length (bvxor l l2)"
       proof (simp add: bvxor)
@@ -104,14 +102,14 @@ next
 qed
 
 lemma len_lower_bound[rule_format]: "0<n \<longrightarrow> 2^(length (nat_to_bv n) - Suc 0) <= n"
-proof (case_tac "1<n")
+proof (cases "1<n")
   assume l1: "1<n"
   thus "0 < n \<longrightarrow> 2 ^ (length (nat_to_bv n) - Suc 0) \<le> n"
   proof (simp add: nat_to_bv_def,induct n rule: nat_to_bv_helper.induct, auto)
     fix n
     assume a: "Suc 0 < (n::nat)" and b: "~Suc 0<n div 2"
     hence "n=2 \<or> n=3"
-    proof (case_tac "n<=3")
+    proof (cases "n<=3")
       assume "n<=3" and "Suc 0<n"
       thus "n=2 \<or> n=3" by auto
     next
@@ -120,7 +118,7 @@ proof (case_tac "1<n")
       thus "n=2 \<or> n=3" using b by simp
     qed
     thus "2 ^ (length (nat_to_bv_helper n []) - Suc 0) \<le> n"
-    proof (case_tac "n=2")
+    proof (cases "n=2")
       assume a: "n=2" hence "nat_to_bv_helper n [] = [\<one>, \<zero>]"
       proof -
 	have "nat_to_bv_helper n [] = nat_to_bv n" using b by (simp add: nat_to_bv_def)
@@ -162,7 +160,7 @@ proof (case_tac "1<n")
 next
   assume c: "~1<n"
   show "0 < n \<longrightarrow> 2 ^ (length (nat_to_bv n) - Suc 0) \<le> n"
-  proof (auto, case_tac "n=1")
+  proof (auto, cases "n=1")
     assume a: "n=1" hence "nat_to_bv n = [\<one>]" by (simp add: nat_to_bv_non0)
     thus "2^(length (nat_to_bv n) - Suc 0) <= n" using a by simp
   next
@@ -199,14 +197,14 @@ lemma hd_append[rule_format]: shows "x ~= [] --> hd (x@y) = hd x"
 by (induct x, auto)
 
 lemma hd_one[rule_format]: "0<n \<longrightarrow> hd (nat_to_bv_helper n []) = \<one>"
-proof (induct_tac rule: nat_to_bv_helper.induct)
+proof (induct n rule: nat_to_bv_helper.induct)
   fix n
   show  "n \<noteq> 0 \<longrightarrow> 0 < n div 2 \<longrightarrow> hd (nat_to_bv_helper (n div 2) []) = \<one> \<Longrightarrow>
         0 < n \<longrightarrow> hd (nat_to_bv_helper n []) = \<one>"
     apply (rule impI)
     apply (erule impE)
     apply (simp)
-  proof (case_tac "1<n")
+  proof (cases "1<n")
     assume a: "1<n" and b: "0 < n div 2 \<longrightarrow> hd (nat_to_bv_helper (n div 2) []) = \<one>"
     hence c: "0<n div 2" by arith
     hence d: "hd (nat_to_bv_helper (n div 2) []) = \<one>" using b by simp
@@ -249,11 +247,11 @@ lemma exp_prod1: "\<lbrakk>1<b;2^x=2*(b::nat)\<rbrakk> \<Longrightarrow> 2 dvd b
 proof -
   assume a: "1<b" and b: "2^x=2*(b::nat)"
   have s1: "1<x" 
-  proof (case_tac "1<x")
+  proof (cases "1<x")
     assume "1<x" thus ?thesis by simp
   next
    assume x: "~1 < x" hence "2^x <= (2::nat)" using b 
-   proof (case_tac "x=0")
+   proof (cases "x=0")
       assume "x=0" thus "2^x <= (2::nat)" by simp
     next
       assume "x~=0" hence "x=1" using x by simp
@@ -264,7 +262,7 @@ proof -
   qed
   have s2: "2^(x-(1::nat)) = b"
   proof -
-    from s1 have "2^((x-Suc 0)+1) = 2*b" by (simp)
+    from s1 b have "2^((x-Suc 0)+1) = 2*b" by simp
     hence "2*2^(x-Suc 0) = 2*b" by simp
     thus "2^(x-(1::nat)) = b" by simp
   qed
@@ -289,13 +287,13 @@ proof -
   from a have d: "1 < p" by (simp add: prime_def)
   moreover from b have e: "1<q" by (simp add: prime_def)
   show "p=q"
-  proof (case_tac "p=2")
+  proof (cases "p=2")
     assume p: "p=2" hence "2 dvd q" using c and exp_prod1[of q x] and e by simp
     hence "2=q" using primerew[of 2 q] and b by auto
     thus ?thesis using p by simp
   next
     assume p: "p~=2" show "p=q"
-    proof (case_tac "q=2")
+    proof (cases "q=2")
       assume q: "q=2" hence "2 dvd p" using c and exp_prod1[of p x] and d by simp 
       hence "2=p" using primerew[of 2 p] and a by auto
       thus ?thesis using p by simp
@@ -306,7 +304,7 @@ proof -
         moreover from q have "~2 dvd q" using primerew and b by auto
 	ultimately have "~2 dvd p*q" by (simp add: odd_mul_odd)
 	moreover have "(2::nat) dvd 2^x" 
-	proof (case_tac "x=0")
+	proof (cases "x=0")
 	  assume "x=0" hence "(2::nat)^x=1" by simp
 	  thus ?thesis using c and d and e by simp
 	next

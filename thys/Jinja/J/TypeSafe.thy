@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallTypeSafe.thy
-    ID:         $Id: TypeSafe.thy,v 1.4 2007-07-11 10:17:12 stefanberghofer Exp $
+    ID:         $Id: TypeSafe.thy,v 1.5 2007-07-19 21:23:12 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -23,7 +23,7 @@ proof (induct rule:red_reds_inducts)
   case (RedNew h a C FDTs h' l)
   have new: "new_Addr h = Some a" and fields: "P \<turnstile> C has_fields FDTs"
    and h': "h' = h(a\<mapsto>(C, init_fields FDTs))"
-   and hconf: "P \<turnstile> h \<surd>" .
+   and hconf: "P \<turnstile> h \<surd>" by fact+
   from new have None: "h a = None" by(rule new_Addr_SomeD)
   moreover have "P,h \<turnstile> (C,init_fields FDTs) \<surd>"
     using fields by(rule oconf_init_fields)
@@ -32,7 +32,7 @@ next
   case (RedFAss h a C fs F D v l)
   let ?fs' = "fs((F,D)\<mapsto>v)"
   have hconf: "P \<turnstile> h \<surd>" and ha: "h a = Some(C,fs)"
-   and wt: "P,E,h \<turnstile> addr a\<bullet>F{D}:=Val v : T" .
+   and wt: "P,E,h \<turnstile> addr a\<bullet>F{D}:=Val v : T" by fact+
   from wt ha obtain TF Tv where typeofv: "typeof\<^bsub>h\<^esub> v = Some Tv"
     and has: "P \<turnstile> C has F:TF in D"
     and sub: "P \<turnstile> Tv \<le> TF" by auto
@@ -67,7 +67,7 @@ next
    and IH: "\<And>T E . \<lbrakk> P,E,h \<turnstile> e:T; P,h \<turnstile> l(V\<mapsto>v) (:\<le>) E \<rbrakk>
                      \<Longrightarrow> P,h' \<turnstile> l' (:\<le>) E"
    and l'V: "l' V = Some v'" and lconf: "P,h \<turnstile> l (:\<le>) E"
-   and wt: "P,E,h \<turnstile> {V:T := Val v; e} : T'" .
+   and wt: "P,E,h \<turnstile> {V:T := Val v; e} : T'" by fact+
   from lconf_hext[OF lconf red_hext_incr[OF red]]
   have "P,h' \<turnstile> l (:\<le>) E" .
   moreover from IH lconf wt have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)"
@@ -79,7 +79,7 @@ next
   have red: "P \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk> P,E,h \<turnstile> e : T; P,h \<turnstile> l(V:=None) (:\<le>) E \<rbrakk>
                    \<Longrightarrow> P,h' \<turnstile> l' (:\<le>) E"
-   and lconf: "P,h \<turnstile> l (:\<le>) E" and wt: "P,E,h \<turnstile> {V:T; e} : T'" .
+   and lconf: "P,h \<turnstile> l (:\<le>) E" and wt: "P,E,h \<turnstile> {V:T; e} : T'" by fact+
   from lconf_hext[OF lconf red_hext_incr[OF red]]
   have "P,h' \<turnstile> l (:\<le>) E" .
   moreover have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)"
@@ -91,7 +91,7 @@ next
   have red: "P \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E,h \<turnstile> e : T; P,h \<turnstile> l(V:=None) (:\<le>) E\<rbrakk>
                    \<Longrightarrow> P,h' \<turnstile> l' (:\<le>) E"
-   and lconf: "P,h \<turnstile> l (:\<le>) E" and wt: "P,E,h \<turnstile> {V:T; e} : T'" .
+   and lconf: "P,h \<turnstile> l (:\<le>) E" and wt: "P,E,h \<turnstile> {V:T; e} : T'" by fact+
   from lconf_hext[OF lconf red_hext_incr[OF red]]
   have "P,h' \<turnstile> l (:\<le>) E" .
   moreover have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)"
@@ -233,7 +233,7 @@ proof (induct rule:red_reds_inducts)
   case (RedCall h l a C fs M Ts T pns body D vs E T')
   have hp: "hp(h,l) a = Some(C,fs)"
    and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns,body) in D"
-   and wt: "P,E,h \<turnstile> addr a\<bullet>M(map Val vs) : T'" .
+   and wt: "P,E,h \<turnstile> addr a\<bullet>M(map Val vs) : T'" by fact+
   obtain Ts' where wtes: "P,E,h \<turnstile> map Val vs [:] Ts'"
     and subs: "P \<turnstile> Ts' [\<le>] Ts" and T'isT: "T' = T"
     using wt method hp by (auto dest:sees_method_fun)
@@ -266,7 +266,7 @@ next
   have red: "P \<turnstile> \<langle>e\<^isub>1,(h,l)\<rangle> \<rightarrow> \<langle>e\<^isub>1',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e\<^isub>1:T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e\<^isub>1' : U \<and> P \<turnstile> U \<le> T"
-   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T" .
+   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T" by fact+
   have "P,E,h' \<turnstile> e\<^isub>1' \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
   proof (cases bop)
     assume [simp]: "bop = Eq"
@@ -290,7 +290,7 @@ next
   have red: "P \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> \<rightarrow> \<langle>e\<^isub>2',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e\<^isub>2:T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e\<^isub>2' : U \<and> P \<turnstile> U \<le> T"
-   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> (Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T" .
+   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> (Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T" by fact+
   have "P,E,h' \<turnstile> (Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> e\<^isub>2' : T"
   proof (cases bop)
     assume [simp]: "bop = Eq"
@@ -324,7 +324,7 @@ next
   case (FAccRed e h l e' h' l' F D)
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
-   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>F{D} : T" .
+   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>F{D} : T" by fact+
   -- "The goal: ?case = @{prop ?case}"
   -- "Now distinguish the two cases how wt can have arisen."
   { fix C assume wte: "P,E,h \<turnstile> e : Class C"
@@ -358,7 +358,7 @@ next
   have red: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
-   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>F{D}:=e\<^isub>2 : T" .
+   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>F{D}:=e\<^isub>2 : T" by fact+
   from wt have void: "T = Void" by blast
   -- "We distinguish if @{term e} has type @{term NT} or a Class type"
   -- "Remember ?case = @{term ?case}"
@@ -392,7 +392,7 @@ next
   have red: "P \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> \<rightarrow> \<langle>e\<^isub>2',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e\<^isub>2 : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e\<^isub>2' : U \<and> P \<turnstile> U \<le> T"
-   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Val v\<bullet>F{D}:=e\<^isub>2 : T" .
+   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Val v\<bullet>F{D}:=e\<^isub>2 : T" by fact+
   from wt have [simp]: "T = Void" by auto
   from wt show ?case
   proof (rule WTrt_elim_cases)
@@ -425,7 +425,7 @@ next
   have red: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
-   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>M(es) : T" .
+   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> e\<bullet>M(es) : T" by fact+
   -- "We distinguish if @{term e} has type @{term NT} or a Class type"
   -- "Remember ?case = @{term ?case}"
   { assume "P,E,h \<turnstile> e:NT"
@@ -465,7 +465,7 @@ next
   have reds: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>"
    and IH: "\<And>E Ts. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> es [:] Ts\<rbrakk>
                  \<Longrightarrow> \<exists>Us. P,E,h' \<turnstile> es' [:] Us \<and> P \<turnstile> Us [\<le>] Ts"
-   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Val v\<bullet>M(es) : T" .
+   and conf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Val v\<bullet>M(es) : T" by fact+
   from wt show ?case
   proof (rule WTrt_elim_cases)
     fix C D Ts Us pns body
@@ -496,7 +496,7 @@ next
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l(V\<mapsto>v)) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                     \<Longrightarrow> \<exists>U. P,E,h' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and v': "l' V = Some v'" and conf: "P,E \<turnstile> (h,l) \<surd>"
-   and wt: "P,E,h \<turnstile> {V:T := Val v; e} : T'" .
+   and wt: "P,E,h \<turnstile> {V:T := Val v; e} : T'" by fact+
   from wt obtain T\<^isub>1 where wt\<^isub>1: "typeof\<^bsub>h\<^esub> v = Some T\<^isub>1"
     and T1subT: "P \<turnstile> T\<^isub>1 \<le> T" and wt\<^isub>2: "P,E(V\<mapsto>T),h \<turnstile> e : T'" by auto
   have lconf\<^isub>2: "P,h \<turnstile> l(V\<mapsto>v) (:\<le>) E(V\<mapsto>T)" using conf wt\<^isub>1 T1subT
@@ -514,7 +514,7 @@ next
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l(V:=None)) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                    \<Longrightarrow> \<exists>T'. P,E,h' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T"
    and Some: "l' V = Some v" and conf: "P,E \<turnstile> (h,l) \<surd>"
-   and wt: "P,E,h \<turnstile> {V:T; e} : Te" .
+   and wt: "P,E,h \<turnstile> {V:T; e} : Te" by fact+
   obtain Te' where IH': "P,E(V\<mapsto>T),h' \<turnstile> e' : Te' \<and> P \<turnstile> Te' \<le> Te"
     using IH conf wt by(fastsimp simp:sconf_def lconf_def)
   have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)" using conf wt
@@ -572,7 +572,7 @@ shows "\<And>T. \<lbrakk> P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd
 (*<*)
 using Red
 proof (induct rule:converse_rtrancl_induct2)
-  case refl show ?case .
+  case refl show ?case by fact
 next
   case step thus ?case
     by(blast intro:red_preserves_sconf dest: subject_reduction[OF wf])

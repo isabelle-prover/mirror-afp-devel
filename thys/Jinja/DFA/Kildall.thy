@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.5 2007-07-11 10:17:11 stefanberghofer Exp $
+    ID:         $Id: Kildall.thy,v 1.6 2007-07-19 21:23:11 makarius Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
@@ -59,15 +59,15 @@ proof (induct ps)
   assume l:  "p < length ss"
   assume "?steptype (p'#ps')"
   then obtain a b where
-    p': "p'=(a,b)" and ab: "a<n" "b\<in>A" and "?steptype ps'"
-    by (cases p', auto)
+    p': "p'=(a,b)" and ab: "a<n" "b\<in>A" and ps': "?steptype ps'"
+    by (cases p') auto
   assume "\<And>ss. p< length ss \<Longrightarrow> ss \<in> list n A \<Longrightarrow> ?steptype ps' \<Longrightarrow> ?P ss ps'"
-  hence IH: "\<And>ss. ss \<in> list n A \<Longrightarrow> p < length ss \<Longrightarrow> ?P ss ps'" .
+  hence IH: "\<And>ss. ss \<in> list n A \<Longrightarrow> p < length ss \<Longrightarrow> ?P ss ps'" using ps' by iprover
 
   from ss ab
   have "ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a] \<in> list n A" by (simp add: closedD)
   moreover
-  then have "p < length (ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a])" by simp
+  with l have "p < length (ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a])" by simp
   ultimately
   have "?P (ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a]) ps'" by (rule IH)
   with p' l
@@ -263,7 +263,7 @@ apply assumption
  apply (cases "q \<in> w")
   apply simp
   apply (rule ub1')
-     apply assumption
+     apply (rule semilat)
     apply clarify
     apply (rule pres_typeD)
        apply assumption
@@ -464,7 +464,9 @@ apply (unfold kildall_def)
 apply(case_tac "iter f step ss0 (unstables r step ss0)")
 apply(simp)
 apply (rule iter_properties)
-by (simp_all add: unstables_def stable_def)
+apply (simp_all add: unstables_def stable_def)
+apply (rule semilat)
+done
 
 
 lemma is_bcv_kildall: includes semilat

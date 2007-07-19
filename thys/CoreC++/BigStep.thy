@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.16 2007-07-11 10:07:48 stefanberghofer Exp $
+    ID:          $Id: BigStep.thy,v 1.17 2007-07-19 21:23:08 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -352,7 +352,7 @@ proof (induct es type: list)
 next
   case (Cons e es)
   have hyp: "finals es \<Longrightarrow> P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es,s\<rangle>"
-   and finals: "finals (e # es)".
+   and finals: "finals (e # es)" by fact+
   show "P,E \<turnstile> \<langle>e # es,s\<rangle> [\<Rightarrow>] \<langle>e # es,s\<rangle>"
   proof cases
     assume "final e"

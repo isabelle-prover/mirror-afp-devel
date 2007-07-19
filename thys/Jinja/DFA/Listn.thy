@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Listn.thy
-    ID:         $Id: Listn.thy,v 1.4 2007-07-11 10:17:11 stefanberghofer Exp $
+    ID:         $Id: Listn.thy,v 1.5 2007-07-19 21:23:11 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -280,9 +280,9 @@ proof -
   next
     fix n l ls
     assume "?list (l#ls) n"
-    then obtain n' where n: "n = Suc n'" "l \<in> A" and "ls@b \<in> list n' A" by fastsimp
+    then obtain n' where n: "n = Suc n'" "l \<in> A" and n': "ls@b \<in> list n' A" by fastsimp
     assume "\<And>n. ls @ b \<in> list n A \<Longrightarrow> \<exists>n1 n2. n = n1 + n2 \<and> ls \<in> list n1 A \<and> b \<in> list n2 A"
-    hence "\<exists>n1 n2. n' = n1 + n2 \<and> ls \<in> list n1 A \<and> b \<in> list n2 A" .
+    from this and n' have "\<exists>n1 n2. n' = n1 + n2 \<and> ls \<in> list n1 A \<and> b \<in> list n2 A" .
     then obtain n1 n2 where "n' = n1 + n2" "ls \<in> list n1 A" "b \<in> list n2 A" by fast
     with n have "?P (l#ls) n (n1+1) n2" by simp
     thus "\<exists>n1 n2. ?P (l#ls) n n1 n2" by fastsimp

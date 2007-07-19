@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/BigStep.thy
-    ID:         $Id: BigStep.thy,v 1.7 2007-07-11 10:17:12 stefanberghofer Exp $
+    ID:         $Id: BigStep.thy,v 1.8 2007-07-19 21:23:11 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -294,22 +294,22 @@ lemma eval_lcl_incr: "P \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0)\<rangle>
  and evals_lcl_incr: "P \<turnstile> \<langle>es,(h\<^isub>0,l\<^isub>0)\<rangle> [\<Rightarrow>] \<langle>es',(h\<^isub>1,l\<^isub>1)\<rangle> \<Longrightarrow> dom l\<^isub>0 \<subseteq> dom l\<^isub>1"
 (*<*)
 proof (induct rule: eval_evals_inducts)
-  case BinOp show ?case by(rule subset_trans)
+  case BinOp show ?case by(rule subset_trans)(rule BinOp.hyps)+
 next
   case Call thus ?case
     by(simp del: fun_upd_apply) 
 next
-  case Seq show ?case by(rule subset_trans)
+  case Seq show ?case by(rule subset_trans)(rule Seq.hyps)+
 next
-  case CondT show ?case by(rule subset_trans)
+  case CondT show ?case by(rule subset_trans)(rule CondT.hyps)+
 next
-  case CondF show ?case by(rule subset_trans)
+  case CondF show ?case by(rule subset_trans)(rule CondF.hyps)+
 next
   case WhileT thus ?case by(blast)
 next
   case TryCatch thus ?case by(clarsimp simp:dom_def split:split_if_asm) blast
 next
-  case Cons show ?case by(rule subset_trans)
+  case Cons show ?case by(rule subset_trans)(rule Cons.hyps)+
 next
   case Block thus ?case by(auto simp del:fun_upd_apply)
 qed auto
@@ -331,7 +331,7 @@ proof (induct es type: list)
 next
   case (Cons e es)
   have hyp: "finals es \<Longrightarrow> P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es,s\<rangle>"
-   and finals: "finals (e # es)".
+   and finals: "finals (e # es)" by fact+
   show "P \<turnstile> \<langle>e # es,s\<rangle> [\<Rightarrow>] \<langle>e # es,s\<rangle>"
   proof cases
     assume "final e"

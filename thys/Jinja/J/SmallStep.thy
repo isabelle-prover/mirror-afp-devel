@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallStep.thy
-    ID:         $Id: SmallStep.thy,v 1.6 2007-07-11 10:17:12 stefanberghofer Exp $
+    ID:         $Id: SmallStep.thy,v 1.7 2007-07-19 21:23:12 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -303,7 +303,7 @@ next
 next
   case (InitBlockRed e h l V v e' h' l' v' T l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V \<mapsto> v))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
-    and l'V: "l' V = Some v'" .
+    and l'V: "l' V = Some v'" by fact+
   from IH have IH': "P \<turnstile> \<langle>e,(h, (l\<^isub>0 ++ l)(V \<mapsto> v))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
     by simp
   have "(l\<^isub>0 ++ l')(V := (l\<^isub>0 ++ l) V) = l\<^isub>0 ++ l'(V := l V)"
@@ -312,7 +312,7 @@ next
 next
   case (BlockRedNone e h l V e' h' l' T l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
-    and l'V: "l' V = None" and unass: "\<not> assigned V e" .
+    and l'V: "l' V = None" and unass: "\<not> assigned V e" by fact+
   have "l\<^isub>0(V := None) ++ l(V := None) = (l\<^isub>0 ++ l)(V := None)"
     by(simp add:expand_fun_eq map_add_def)
   hence IH': "P \<turnstile> \<langle>e,(h, (l\<^isub>0++l)(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0(V := None) ++ l')\<rangle>"
@@ -324,7 +324,7 @@ next
 next
   case (BlockRedSome e h l V e' h' l' v T l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
-    and l'V: "l' V = Some v" and unass: "\<not> assigned V e" .
+    and l'V: "l' V = Some v" and unass: "\<not> assigned V e" by fact+
   have "l\<^isub>0(V := None) ++ l(V := None) = (l\<^isub>0 ++ l)(V := None)"
     by(simp add:expand_fun_eq map_add_def)
   hence IH': "P \<turnstile> \<langle>e,(h, (l\<^isub>0++l)(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0(V := None) ++ l')\<rangle>"

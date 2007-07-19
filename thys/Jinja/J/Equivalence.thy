@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Equivalence.thy
-    ID:         $Id: Equivalence.thy,v 1.7 2007-07-11 10:17:12 stefanberghofer Exp $
+    ID:         $Id: Equivalence.thy,v 1.8 2007-07-19 21:23:11 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -482,7 +482,7 @@ next
    and reds: "P \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2,l\<^isub>2)\<rangle>"
    and IH: "\<And>h l. s\<^isub>1 = (h,l(V := None))
                 \<Longrightarrow> P \<turnstile> \<langle>{V:T; e\<^isub>1},(h,l)\<rangle> \<rightarrow>* \<langle>e\<^isub>2,(h\<^isub>2, l\<^isub>2(V := l V))\<rangle>"
-   and s\<^isub>0: "s\<^isub>0 = (h\<^isub>0, l\<^isub>0(V := None))" .
+   and s\<^isub>0: "s\<^isub>0 = (h\<^isub>0, l\<^isub>0(V := None))" by fact+
   obtain h\<^isub>1 l\<^isub>1 where s\<^isub>1: "s\<^isub>1 = (h\<^isub>1,l\<^isub>1)" by fastsimp
   show ?case
   proof cases
@@ -759,13 +759,13 @@ proof -
     using Reds_dom_lcl[OF wwf body] wt l\<^isub>2' set_take_subset by force
   hence eql\<^isub>2: "override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns) = l\<^isub>2"
     by(fastsimp simp add:map_add_def override_on_def expand_fun_eq)
-  have "P \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<rightarrow>* \<langle>(addr a)\<bullet>M(es),s\<^isub>1\<rangle>" by(rule CallRedsObj)
+  have "P \<turnstile> \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<rightarrow>* \<langle>(addr a)\<bullet>M(es),s\<^isub>1\<rangle>" by(rule CallRedsObj)(rule assms(2))
   also have "P \<turnstile> \<langle>(addr a)\<bullet>M(es),s\<^isub>1\<rangle> \<rightarrow>*
                  \<langle>(addr a)\<bullet>M(map Val vs),(h\<^isub>2,l\<^isub>2)\<rangle>"
-    by(rule CallRedsParams)
+    by(rule CallRedsParams)(rule assms(3))
   also have "P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), (h\<^isub>2,l\<^isub>2)\<rangle> \<rightarrow>
                  \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^isub>2,l\<^isub>2)\<rangle>"
-    by(rule RedCall)(auto simp: prems wf)
+    by(rule RedCall)(auto simp: assms wf, rule assms(5))
   also (rtrancl_into_rtrancl) have "P \<turnstile> \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), (h\<^isub>2,l\<^isub>2)\<rangle>
                  \<rightarrow>* \<langle>ef,(h\<^isub>3,override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns))\<rangle>"
     by(rule blocksRedsFinal, insert prems wf body', simp_all)
@@ -872,7 +872,7 @@ next
     and same_length: "length vs = length pns"
     and l\<^isub>2': "l\<^isub>2' = [this \<mapsto> Addr a, pns[\<mapsto>]vs]"
     and eval_body: "P \<turnstile> \<langle>body,(h\<^isub>2, l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3, l\<^isub>3)\<rangle>"
-    and IHbody: "P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>".
+    and IHbody: "P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>3,l\<^isub>3)\<rangle>" by fact+
   show "P \<turnstile> \<langle>e\<bullet>M(ps),s\<^isub>0\<rangle> \<rightarrow>* \<langle>e',(h\<^isub>3, l\<^isub>2)\<rangle>"
     using method same_length l\<^isub>2' h\<^isub>2a IHbody eval_final[OF eval_body]
     by(fastsimp intro:CallRedsFinal[OF wwf IHe IHes])
@@ -979,7 +979,7 @@ proof (induct ps)
 next
   case (Cons p ps')
   have length_eqs: "length (p # ps') = length Ts" 
-                   "length (p # ps') = length vs" .
+                   "length (p # ps') = length vs" by fact+
   then obtain T Ts' where Ts: "Ts = T#Ts'" by (cases "Ts") simp
   obtain v vs' where vs: "vs = v#vs'" using length_eqs by (cases "vs") simp
   have "P \<turnstile> \<langle>blocks (p # ps', Ts, vs, e),(h,l)\<rangle> \<Rightarrow> \<langle>e',(h', l')\<rangle>".
@@ -1045,8 +1045,8 @@ and "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<langle>es',(h',
 (*<*)
 proof(induct rule:eval_evals_inducts)
   case (Block e\<^isub>0 h\<^isub>0 l\<^isub>0 V e\<^isub>1 h\<^isub>1 l\<^isub>1 T)
-  have IH: "\<And>W. fv e\<^isub>0 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None)|`W)\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1|`W)\<rangle>".
-  have "fv({V:T; e\<^isub>0}) \<subseteq> W".
+  have IH: "\<And>W. fv e\<^isub>0 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None)|`W)\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1|`W)\<rangle>" by fact
+  have "fv({V:T; e\<^isub>0}) \<subseteq> W" by fact+
   hence "fv e\<^isub>0 - {V} \<subseteq> W" by (simp_all add:Un_subset_iff)
   hence "fv e\<^isub>0 \<subseteq> insert V W" by fast
   from IH[OF this]
@@ -1080,8 +1080,8 @@ next
 next
   case (LAss e h\<^isub>0 l\<^isub>0 v h l l' V)
   have IH: "\<And>W. fv e \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e,(h\<^isub>0,l\<^isub>0|`W)\<rangle> \<Rightarrow> \<langle>Val v,(h,l|`W)\<rangle>"
-   and [simp]: "l' = l(V \<mapsto> v)".
-  have "fv (V:=e) \<subseteq> W".
+   and [simp]: "l' = l(V \<mapsto> v)" by fact+
+  have "fv (V:=e) \<subseteq> W" by fact
   hence fv: "fv e \<subseteq> W" and VinW: "V \<in> W" by auto
   from eval_evals.LAss[OF IH[OF fv] refl, of V] VinW
   show ?case by simp
@@ -1117,8 +1117,8 @@ next
    and h\<^isub>2a: "h\<^isub>2 a = Some (C, fs)"
    and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D"
    and same_len: "size vs = size pns"
-   and l\<^isub>2': "l\<^isub>2' = [this \<mapsto> Addr a, pns [\<mapsto>] vs]".
-  have "fv (e\<bullet>M(ps)) \<subseteq> W".
+   and l\<^isub>2': "l\<^isub>2' = [this \<mapsto> Addr a, pns [\<mapsto>] vs]" by fact+
+  have "fv (e\<bullet>M(ps)) \<subseteq> W" by fact
   hence fve: "fv e  \<subseteq> W" and fvps: "fvs(ps) \<subseteq> W" by auto
   have wfmethod: "size Ts = size pns \<and> this \<notin> set pns" and
        fvbd: "fv body \<subseteq> {this} \<union> set pns"
@@ -1155,8 +1155,8 @@ next
   case (TryCatch e\<^isub>1 h\<^isub>0 l\<^isub>0 a h\<^isub>1 l\<^isub>1 D fs C e\<^isub>2 V e\<^isub>2' h\<^isub>2 l\<^isub>2)
   have IH\<^isub>1: "\<And>W. fv e\<^isub>1 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>1,(h\<^isub>0,l\<^isub>0|`W)\<rangle> \<Rightarrow> \<langle>Throw a,(h\<^isub>1,l\<^isub>1|`W)\<rangle>"
    and IH\<^isub>2: "\<And>W. fv e\<^isub>2 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>2,(h\<^isub>1,l\<^isub>1(V\<mapsto>Addr a)|`W)\<rangle> \<Rightarrow> \<langle>e\<^isub>2',(h\<^isub>2,l\<^isub>2|`W)\<rangle>"
-   and lookup: "h\<^isub>1 a = Some(D, fs)" and subtype: "P \<turnstile> D \<preceq>\<^sup>* C".
-  have "fv (try e\<^isub>1 catch(C V) e\<^isub>2) \<subseteq> W".
+   and lookup: "h\<^isub>1 a = Some(D, fs)" and subtype: "P \<turnstile> D \<preceq>\<^sup>* C" by fact+
+  have "fv (try e\<^isub>1 catch(C V) e\<^isub>2) \<subseteq> W" by fact
   hence fv\<^isub>1: "fv e\<^isub>1 \<subseteq> W" and fv\<^isub>2: "fv e\<^isub>2 \<subseteq> insert V W" by auto
   have IH\<^isub>2': "P \<turnstile> \<langle>e\<^isub>2,(h\<^isub>1,(l\<^isub>1|`W)(V \<mapsto> Addr a))\<rangle> \<Rightarrow> \<langle>e\<^isub>2',(h\<^isub>2,l\<^isub>2|`insert V W)\<rangle>"
     using IH\<^isub>2[OF fv\<^isub>2] fun_upd_restrict[of l\<^isub>1 W] (*FIXME just l|W instead of l|(W-V) in simp rule??*) by simp
@@ -1211,7 +1211,7 @@ proof -
       case Nil thus ?case by simp
     next
       case (Cons e es vs)
-      have e_es: "e # es = map Val vs @ throw x # es'".
+      have e_es: "e # es = map Val vs @ throw x # es'" by fact
       show "P \<turnstile> \<langle>e # es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs @ e' # es',s'\<rangle>"
       proof (cases vs)
 	case Nil
@@ -1222,7 +1222,7 @@ proof -
 	ultimately show ?thesis using Nil e' by simp
       next
 	case (Cons v vs')
-	have vs: "vs = v # vs'".
+	have vs: "vs = v # vs'" by fact
 	with e_es obtain 
 	  e: "e=Val v" and es:"es= map Val vs' @ throw x # es'"
 	  by simp
@@ -1269,21 +1269,21 @@ proof (induct rule: red_reds.inducts)
   have "P \<turnstile> \<langle>addr a,s\<rangle> \<Rightarrow> \<langle>addr a,s\<rangle>" by (rule eval_evals.intros)
   moreover
   have finals: "finals(map Val vs)" by simp
-  obtain h\<^isub>2 l\<^isub>2 where s: "s = (h\<^isub>2,l\<^isub>2)" by (cases s) simp
+  obtain h\<^isub>2 l\<^isub>2 where s: "s = (h\<^isub>2,l\<^isub>2)" by (cases s)
   with finals have "P \<turnstile> \<langle>map Val vs,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,l\<^isub>2)\<rangle>"
     by (iprover intro: eval_finalsId)
   moreover from s have "h\<^isub>2 a = Some (C, fs)" using RedCall by simp
-  moreover have method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D".
+  moreover have method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by fact
   moreover have same_len\<^isub>1: "length Ts = length pns"
    and this_distinct: "this \<notin> set pns" and fv: "fv body \<subseteq> {this} \<union> set pns"
     using method wf by (fastsimp dest!:sees_wf_mdecl simp:wf_mdecl_def)+
-  have same_len: "length vs = length pns".
+  have same_len: "length vs = length pns" by fact
   moreover
   obtain l\<^isub>2' where l\<^isub>2': "l\<^isub>2' = [this\<mapsto>Addr a,pns[\<mapsto>]vs]" by simp
   moreover
-  obtain h\<^isub>3 l\<^isub>3 where s': "s' = (h\<^isub>3,l\<^isub>3)" by (cases s') simp
+  obtain h\<^isub>3 l\<^isub>3 where s': "s' = (h\<^isub>3,l\<^isub>3)" by (cases s')
   have eval_blocks:
-    "P \<turnstile> \<langle>blocks (this # pns, Class D # Ts, Addr a # vs, body),s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>".
+    "P \<turnstile> \<langle>blocks (this # pns, Class D # Ts, Addr a # vs, body),s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fact
   hence id: "l\<^isub>3 = l\<^isub>2" using fv s s' same_len\<^isub>1 same_len
     by(fastsimp elim: eval_closed_lcl_unchanged)
   from eval_blocks obtain l\<^isub>3' where "P \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,l\<^isub>3')\<rangle>"
@@ -1402,9 +1402,9 @@ next
                  simp add: map_upd_triv fun_upd_same)
 next
   case (RedInitBlock V T v u s s' e')
-  have "P \<turnstile> \<langle>Val u,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>".
+  have "P \<turnstile> \<langle>Val u,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fact
   then obtain s': "s'=s" and e': "e'=Val u" by cases simp
-  obtain h l where s: "s=(h,l)" by (cases s) simp
+  obtain h l where s: "s=(h,l)" by (cases s)
   have "P \<turnstile> \<langle>{V:T :=Val v; Val u},(h,l)\<rangle> \<Rightarrow> \<langle>Val u,(h, (l(V\<mapsto>v))(V:=l V))\<rangle>"
     by (fastsimp intro!: eval_evals.intros)
   thus "P \<turnstile> \<langle>{V:T := Val v; Val u},s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -1421,10 +1421,10 @@ next
                  simp add:  fun_upd_same fun_upd_idem)
 next
  case (RedBlock V T v s s' e') 
- have "P \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>".
+ have "P \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fact
  then obtain s': "s'=s" and e': "e'=Val v" 
     by cases simp
-  obtain h l where s: "s=(h,l)" by (cases s) simp
+  obtain h l where s: "s=(h,l)" by (cases s)
  have "P \<turnstile> \<langle>Val v,(h,l(V:=None))\<rangle> \<Rightarrow> \<langle>Val v,(h,l(V:=None))\<rangle>" 
    by (rule eval_evals.intros)
  hence "P \<turnstile> \<langle>{V:T;Val v},(h,l)\<rangle> \<Rightarrow> \<langle>Val v,(h,(l(V:=None))(V:=l V))\<rangle>"
@@ -1525,8 +1525,8 @@ next
   case (CallThrowParams es vs e es' v M s s' e')
   have "P \<turnstile> \<langle>Val v,s\<rangle> \<Rightarrow> \<langle>Val v,s\<rangle>" by (rule eval_evals.intros)
   moreover
-  have es: "es = map Val vs @ throw e # es'" .
-  have eval_e: "P \<turnstile> \<langle>throw e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>".
+  have es: "es = map Val vs @ throw e # es'" by fact
+  have eval_e: "P \<turnstile> \<langle>throw e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fact
   then obtain xa where e': "e' = Throw xa" by (cases) (auto dest!: eval_final)
   with list_eval_Throw [OF eval_e] es
   have "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs @ Throw xa # es',s'\<rangle>" by simp
@@ -1535,19 +1535,19 @@ next
   thus ?case using e' by simp
 next
   case (InitBlockThrow V T v a s s' e')
-  have "P \<turnstile> \<langle>Throw a,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>".
+  have "P \<turnstile> \<langle>Throw a,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fact
   then obtain s': "s' = s" and e': "e' = Throw a"
     by cases (auto elim!:eval_cases)
-  obtain h l where s: "s = (h,l)" by (cases s) simp
+  obtain h l where s: "s = (h,l)" by (cases s)
   have "P \<turnstile> \<langle>{V:T :=Val v; Throw a},(h,l)\<rangle> \<Rightarrow> \<langle>Throw a, (h, (l(V\<mapsto>v))(V:=l V))\<rangle>"
     by(fastsimp intro:eval_evals.intros)
   thus "P \<turnstile> \<langle>{V:T := Val v; Throw a},s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" using s s' e' by simp
 next
   case (BlockThrow V T a s s' e')
-  have "P \<turnstile> \<langle>Throw a, s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>".
+  have "P \<turnstile> \<langle>Throw a, s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fact
   then obtain s': "s' = s" and e': "e' = Throw a"
     by cases (auto elim!:eval_cases)
-  obtain h l where s: "s=(h,l)" by (cases s) simp
+  obtain h l where s: "s=(h,l)" by (cases s)
   have "P \<turnstile> \<langle>Throw a, (h,l(V:=None))\<rangle> \<Rightarrow> \<langle>Throw a, (h,l(V:=None))\<rangle>"
     by (simp add:eval_evals.intros eval_finalId)
   hence "P\<turnstile>\<langle>{V:T;Throw a},(h,l)\<rangle>\<Rightarrow>\<langle>Throw a, (h,(l(V:=None))(V:=l V))\<rangle>"
@@ -1583,7 +1583,11 @@ using reds eval_rest
 apply (induct rule: converse_rtrancl_induct2)
 apply simp
 apply simp
-by (rule extend_1_eval)
+apply (rule extend_1_eval)
+apply (rule wf)
+apply assumption
+apply assumption
+done
 (*>*)
 
 
@@ -1596,7 +1600,11 @@ using reds eval_rest
 apply (induct rule: converse_rtrancl_induct2)
 apply simp
 apply simp
-by (rule extend_1_evals)
+apply (rule extend_1_evals)
+apply (rule wf)
+apply assumption
+apply assumption
+done
 (*>*)
 
 text {* Finally, small step semantics can be simulated by big step semantics:

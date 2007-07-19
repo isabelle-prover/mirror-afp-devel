@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Conform.thy,v 1.13 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: Conform.thy,v 1.14 2007-07-19 21:23:08 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -246,7 +246,7 @@ proof(induct Ts)
 next
   case (Cons T' Ts')
   have wtes:"P,E,h \<turnstile> es [:] T'#Ts'"
-    and IH:"\<And>es. P,E,h \<turnstile> es [:] Ts' \<Longrightarrow> types_conf (P, E, h, es, Ts')" .
+    and IH:"\<And>es. P,E,h \<turnstile> es [:] Ts' \<Longrightarrow> types_conf (P, E, h, es, Ts')" by fact+
   from wtes obtain e' es' where es:"es = e'#es'" by(cases es) auto
   with wtes have wte':"P,E,h \<turnstile> e' : T'" and wtes':"P,E,h \<turnstile> es' [:] Ts'"
     by simp_all
@@ -267,7 +267,7 @@ next
     and types_conf:"types_conf(P,E,h,es,S#Ss)"
     and subs:"P \<turnstile> (S#Ss) [\<le>] Ts"
     and IH:"\<And>es Ts. \<lbrakk>length es = length Ss; types_conf(P,E,h,es,Ss); P \<turnstile> Ss [\<le>] Ts\<rbrakk>
-    \<Longrightarrow> \<exists>Ts''. P,E,h \<turnstile> es [:] Ts'' \<and> P \<turnstile> Ts'' [\<le>] Ts" .
+    \<Longrightarrow> \<exists>Ts''. P,E,h \<turnstile> es [:] Ts'' \<and> P \<turnstile> Ts'' [\<le>] Ts" by fact+
   from subs obtain U Us where Ts:"Ts = U#Us" by(cases Ts) auto
   from length obtain e' es' where es:"es = e'#es'" by(cases es) auto
   with types_conf have type:"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> S"

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVNoTypeErrors.thy
-    ID:         $Id: BVNoTypeError.thy,v 1.3 2007-07-11 10:17:10 stefanberghofer Exp $
+    ID:         $Id: BVNoTypeError.thy,v 1.4 2007-07-19 21:23:10 makarius Exp $
     Author:     Gerwin Klein
     Copyright   GPL
 *)
@@ -105,9 +105,9 @@ proof -
     with stk have mxs: "size stk \<le> mxs" 
       by (auto dest: list_all2_lengthD)
 
-    from welltyped meth conforms
+    from welltyped meth pc
     have "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-      by - (rule wt_jvm_prog_impl_wt_instr)
+      by (rule wt_jvm_prog_impl_wt_instr)
     hence app\<^isub>0: "app (ins!pc) P mxs T pc (size ins) xt (\<Phi> C M!pc) "
       by (simp add: wt_instr_def)
     with \<Phi> have eff: 
@@ -246,20 +246,22 @@ text {*
   state or in the canonical start state)
 *} 
 corollary welltyped_commutes:
-  assumes "wf_jvm_prog\<^sub>\<Phi> P" and "P,\<Phi> \<turnstile> \<sigma> \<surd>" 
+  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>" 
   shows "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> (Normal \<sigma>') = P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
-  by rule (erule defensive_imp_aggressive,rule welltyped_aggressive_imp_defensive)
-
+  apply rule
+  apply (erule defensive_imp_aggressive)
+  apply (erule welltyped_aggressive_imp_defensive [OF wf conforms])
+  done
 
 corollary welltyped_initial_commutes:
   assumes wf: "wf_jvm_prog P"  
-  assumes "P \<turnstile> C sees M:[]\<rightarrow>T = b in C" 
+  assumes meth: "P \<turnstile> C sees M:[]\<rightarrow>T = b in C" 
   defines start: "\<sigma> \<equiv> start_state P C M"
   shows "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> (Normal \<sigma>') = P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
 proof -
-  from wf obtain \<Phi> where "wf_jvm_prog\<^sub>\<Phi> P" by (auto simp: wf_jvm_prog_def)
-  have "P,\<Phi> \<turnstile> \<sigma> \<surd>" by (unfold start, rule BV_correct_initial)
-  thus ?thesis by  - (rule welltyped_commutes)
+  from wf obtain \<Phi> where wf': "wf_jvm_prog\<^sub>\<Phi> P" by (auto simp: wf_jvm_prog_def)
+  from this meth have "P,\<Phi> \<turnstile> \<sigma> \<surd>" unfolding start by (rule BV_correct_initial)
+  with wf' show ?thesis by (rule welltyped_commutes)
 qed
 
 

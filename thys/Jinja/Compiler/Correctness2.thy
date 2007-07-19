@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness2.thy
-    ID:         $Id: Correctness2.thy,v 1.6 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: Correctness2.thy,v 1.7 2007-07-19 21:23:10 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -400,7 +400,7 @@ next
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?pc\<^isub>2 = "?pc\<^isub>1 + length(compE\<^isub>2 e\<^isub>2)"
   have IH\<^isub>2: "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 (Val v\<^isub>2) h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 v\<^isub>2 xa (v\<^isub>1#vs) frs
-                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))".
+                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))" by fact
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^isub>1,(v\<^isub>1#vs,ls\<^isub>1,C,M,?pc\<^isub>1)#frs)" using BinOp\<^isub>1 by fastsimp
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^isub>2,(v\<^isub>2#v\<^isub>1#vs,ls\<^isub>2,C,M,?pc\<^isub>2)#frs)"
@@ -423,7 +423,7 @@ next
     { assume ?eq
       moreover
       have "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 (throw e) h\<^isub>2 ls\<^isub>2 C M ?pc v xa (v\<^isub>1#vs) frs
-                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))".
+                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))" by fact
       ultimately obtain pc\<^isub>2 where
 	pc\<^isub>2: "?pc \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc + size(compE\<^isub>2 e\<^isub>2) \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>2 ?pc (size vs + 1))" and
@@ -474,7 +474,7 @@ next
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?pc\<^isub>2 = "?pc\<^isub>1 + length(compE\<^isub>2 e\<^isub>2)"
   have IH\<^isub>2: "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 (Val w) h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 w xa (Addr a#vs) frs
-                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))".
+                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))" by fact
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^isub>1,(Addr a#vs,ls\<^isub>1,C,M,?pc\<^isub>1)#frs)" using FAss\<^isub>1 by fastsimp
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^isub>2,(w#Addr a#vs,ls\<^isub>2,C,M,?pc\<^isub>2)#frs)"
@@ -488,7 +488,7 @@ next
   let ?pc\<^isub>2 = "?pc\<^isub>1 + length(compE\<^isub>2 e\<^isub>2)"
   let ?xa = "addr_of_sys_xcpt NullPointer"
   have IH\<^isub>2: "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 (Val w) h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 w xa (Null#vs) frs
-                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))".
+                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))" by fact
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^isub>1,(Null#vs,ls\<^isub>1,C,M,?pc\<^isub>1)#frs)" using FAssNull\<^isub>1 by fastsimp
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^isub>2,(w#Null#vs,ls\<^isub>2,C,M,?pc\<^isub>2)#frs)"
@@ -513,7 +513,7 @@ next
     { assume ?eq
       moreover
       have "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 (throw e') h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 v xa (w#vs) frs
-                    (I - pcs (compxE\<^isub>2 e\<^isub>1 pc (length vs)))".
+                    (I - pcs (compxE\<^isub>2 e\<^isub>1 pc (length vs)))" by fact
       ultimately obtain pc\<^isub>2 where
 	pc\<^isub>2: "?pc\<^isub>1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1 + size(compE\<^isub>2 e\<^isub>2) \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>2 ?pc\<^isub>1 (size vs + 1))" and
@@ -530,7 +530,7 @@ next
   case FAssThrow\<^isub>1\<^isub>1 thus ?case by fastsimp
 next
   case (Call\<^isub>1 e h\<^isub>0 ls\<^isub>0 a h\<^isub>1 ls\<^isub>1 es pvs h\<^isub>2 ls\<^isub>2 Ca fs M' Ts T body D ls\<^isub>2' f h\<^isub>3 ls\<^isub>3)
-  have "P\<^isub>1 \<turnstile>\<^sub>1 \<langle>es,(h\<^isub>1, ls\<^isub>1)\<rangle> [\<Rightarrow>] \<langle>map Val pvs,(h\<^isub>2, ls\<^isub>2)\<rangle>".
+  have "P\<^isub>1 \<turnstile>\<^sub>1 \<langle>es,(h\<^isub>1, ls\<^isub>1)\<rangle> [\<Rightarrow>] \<langle>map Val pvs,(h\<^isub>2, ls\<^isub>2)\<rangle>" by fact
   hence [simp]: "length es = length pvs" by(auto dest:evals\<^isub>1_preserves_elen)
   let ?\<sigma>\<^isub>0 = "(None,h\<^isub>0,(vs, ls\<^isub>0, C,M,pc)#frs)"
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e)"
@@ -541,19 +541,19 @@ next
   let ?frs\<^isub>2' = "([], ls\<^isub>2', D,M',0) # ?frs\<^isub>2"
   let ?\<sigma>\<^isub>2' = "(None, h\<^isub>2, ?frs\<^isub>2')"
   have IH_es: "PROP ?Ps es h\<^isub>1 ls\<^isub>1 (map Val pvs) h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 pvs xa
-                    (map Val pvs) (Addr a # vs) frs (I - pcs(compxE\<^isub>2 e pc (size vs)))".
+                    (map Val pvs) (Addr a # vs) frs (I - pcs(compxE\<^isub>2 e pc (size vs)))" by fact
   have "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> ?\<sigma>\<^isub>1" using Call\<^isub>1 by fastsimp
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> ?\<sigma>\<^isub>2" using IH_es Call\<^isub>1.prems by fastsimp
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> ?\<sigma>\<^isub>2'"
     using Call\<^isub>1 by(auto simp add: nth_append compMb\<^isub>2_def)
   finally have 1: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> ?\<sigma>\<^isub>2'".
-  have "P\<^isub>1 \<turnstile> Ca sees M': Ts\<rightarrow>T = body in D".
-  have M'_in_D: "P\<^isub>1 \<turnstile> D sees M': Ts\<rightarrow>T = body in D"
-    by(rule sees_method_idemp)
+  have "P\<^isub>1 \<turnstile> Ca sees M': Ts\<rightarrow>T = body in D" by fact
+  then have M'_in_D: "P\<^isub>1 \<turnstile> D sees M': Ts\<rightarrow>T = body in D"
+    by(rule sees_method_idemp) 
   hence M'_code: "compP\<^isub>2 P\<^isub>1,D,M',0 \<rhd> compE\<^isub>2 body @ [Return]"
     and M'_xtab: "compP\<^isub>2 P\<^isub>1,D,M' \<rhd> compxE\<^isub>2 body 0 0/{..<size(compE\<^isub>2 body)},0"
     by(rule beforeM, rule beforexM)
-  have IH_body: "PROP ?P body h\<^isub>2 ls\<^isub>2' f h\<^isub>3 ls\<^isub>3 D M' 0 v xa [] ?frs\<^isub>2 ({..<size(compE\<^isub>2 body)})".
+  have IH_body: "PROP ?P body h\<^isub>2 ls\<^isub>2' f h\<^isub>3 ls\<^isub>3 D M' 0 v xa [] ?frs\<^isub>2 ({..<size(compE\<^isub>2 body)})" by fact
   show ?case (is "?Norm \<and> ?Err")
   proof
     show ?Norm (is "?val \<longrightarrow> ?trans")
@@ -600,7 +600,8 @@ next
   next
     { assume ?eq
       moreover
-      have "PROP ?Ps es h\<^isub>1 ls\<^isub>1 es' h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 pvs xa es'' (w#vs) frs (I - pcs (compxE\<^isub>2 e pc (length vs)))".
+      have "PROP ?Ps es h\<^isub>1 ls\<^isub>1 es' h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 pvs xa es'' (w#vs) frs
+        (I - pcs (compxE\<^isub>2 e pc (length vs)))" by fact
       ultimately have "\<exists>pc\<^isub>2.
 	(?pc\<^isub>1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1 + size(compEs\<^isub>2 es) \<and>
          \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxEs\<^isub>2 es ?pc\<^isub>1 (size vs + 1))) \<and>
@@ -616,13 +617,13 @@ next
   qed
 next
   case (CallNull\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 es pvs h\<^isub>2 ls\<^isub>2 M')
-  have "P\<^isub>1 \<turnstile>\<^sub>1 \<langle>es,(h\<^isub>1, ls\<^isub>1)\<rangle> [\<Rightarrow>] \<langle>map Val pvs,(h\<^isub>2, ls\<^isub>2)\<rangle>".
+  have "P\<^isub>1 \<turnstile>\<^sub>1 \<langle>es,(h\<^isub>1, ls\<^isub>1)\<rangle> [\<Rightarrow>] \<langle>map Val pvs,(h\<^isub>2, ls\<^isub>2)\<rangle>" by fact
   hence [simp]: "length es = length pvs" by(auto dest:evals\<^isub>1_preserves_elen)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e)"
   let ?pc\<^isub>2 = "?pc\<^isub>1 + length(compEs\<^isub>2 es)"
   let ?xa = "addr_of_sys_xcpt NullPointer"
   have IH_es: "PROP ?Ps es h\<^isub>1 ls\<^isub>1 (map Val pvs) h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 pvs xa
-                    (map Val pvs) (Null#vs) frs (I - pcs(compxE\<^isub>2 e pc (size vs)))".
+                    (map Val pvs) (Null#vs) frs (I - pcs(compxE\<^isub>2 e pc (size vs)))" by fact
   have "P \<turnstile> (None,h\<^isub>0,(vs,ls\<^isub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^isub>1,(Null#vs,ls\<^isub>1,C,M,?pc\<^isub>1)#frs)" using CallNull\<^isub>1 by fastsimp
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^isub>2,(rev pvs@Null#vs,ls\<^isub>2,C,M,?pc\<^isub>2)#frs)"
@@ -649,7 +650,7 @@ next
   finally have eval\<^isub>1: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> ?\<sigma>\<^isub>1".
   let ?pc\<^isub>2 = "?pc\<^isub>1 + 1 + length(compE\<^isub>2 e\<^isub>2)"
   have IH\<^isub>2: "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 e\<^isub>2' h\<^isub>2 ls\<^isub>2 C M (?pc\<^isub>1+1) v xa vs frs
-                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))".
+                     (I - pcs(compxE\<^isub>2 e\<^isub>1 pc (size vs)))" by fact
   show ?case (is "?Norm \<and> ?Err")
   proof
     show ?Norm (is "?val \<longrightarrow> ?trans")
@@ -705,7 +706,7 @@ next
       let ?I = "I - pcs(compxE\<^isub>2 e pc ?d) - pcs(compxE\<^isub>2 e\<^isub>2 (?pc\<^isub>1'+1) ?d)"
       assume throw: ?throw
       moreover
-      have "PROP ?P e\<^isub>1 h\<^isub>1 ls\<^isub>1 e' h\<^isub>2 ls\<^isub>2 C M (?pc\<^isub>1+1) v xa vs frs ?I".
+      have "PROP ?P e\<^isub>1 h\<^isub>1 ls\<^isub>1 e' h\<^isub>2 ls\<^isub>2 C M (?pc\<^isub>1+1) v xa vs frs ?I" by fact
       ultimately obtain pc\<^isub>2 where
 	pc\<^isub>2: "?pc\<^isub>1+1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1' \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>1 (?pc\<^isub>1+1) (size vs))" and
@@ -743,7 +744,7 @@ next
       let ?I = "I - pcs(compxE\<^isub>2 e pc ?d) - pcs(compxE\<^isub>2 e\<^isub>1 (?pc\<^isub>1+1) ?d)"
       assume throw: ?throw
       moreover
-      have "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 e' h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>2 v xa vs frs ?I".
+      have "PROP ?P e\<^isub>2 h\<^isub>1 ls\<^isub>1 e' h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>2 v xa vs frs ?I" by fact
       ultimately obtain pc\<^isub>2 where
 	pc\<^isub>2: "?pc\<^isub>2 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>2' \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 e\<^isub>2 ?pc\<^isub>2 ?d)" and
@@ -761,7 +762,7 @@ next
   let ?I = "I - (pcs ?xt\<^isub>1 \<union> pcs ?xt\<^isub>2)"
   have "pcs(compxE\<^isub>2 e pc ?d) \<inter> pcs(?xt\<^isub>1 @ ?xt\<^isub>2) = {}"
     using CondThrow\<^isub>1.prems by (simp add:Int_Un_distrib)
-  moreover have "PROP ?P e h\<^isub>0 ls\<^isub>0 (throw f) h\<^isub>1 ls\<^isub>1 C M pc v xa vs frs ?I".
+  moreover have "PROP ?P e h\<^isub>0 ls\<^isub>0 (throw f) h\<^isub>1 ls\<^isub>1 C M pc v xa vs frs ?I" by fact
   ultimately show ?case using CondThrow\<^isub>1.prems by fastsimp
 next
   case (WhileF\<^isub>1 e h\<^isub>0 ls\<^isub>0 h\<^isub>1 ls\<^isub>1 c)
@@ -804,7 +805,7 @@ next
     proof
       assume throw: ?throw
       moreover
-      have "PROP ?P (while (e) c) h\<^isub>2 ls\<^isub>2 e\<^isub>3 h\<^isub>3 ls\<^isub>3 C M pc v xa vs frs I".
+      have "PROP ?P (while (e) c) h\<^isub>2 ls\<^isub>2 e\<^isub>3 h\<^isub>3 ls\<^isub>3 C M pc v xa vs frs I" by fact
       ultimately obtain pc\<^isub>2 where
 	pc\<^isub>2: "pc \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc'+3 \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>3 xa (compxE\<^isub>2 (while (e) c) pc (size vs))" and
@@ -835,7 +836,7 @@ next
       assume throw: ?throw
       moreover
       have "PROP ?P c h\<^isub>1 ls\<^isub>1 (throw e') h\<^isub>2 ls\<^isub>2 C M (?pc\<^isub>1+1) v xa vs frs
-                    (I - pcs (compxE\<^isub>2 e pc (size vs)))".
+                    (I - pcs (compxE\<^isub>2 e pc (size vs)))" by fact
       ultimately obtain pc\<^isub>2 where
 	pc\<^isub>2: "?pc\<^isub>1+1 \<le> pc\<^isub>2 \<and> pc\<^isub>2 < ?pc\<^isub>1' \<and>
               \<not> caught P pc\<^isub>2 h\<^isub>2 xa (compxE\<^isub>2 c (?pc\<^isub>1+1) (size vs))" and
@@ -896,7 +897,7 @@ next
   case (Try\<^isub>1 e\<^isub>1 h\<^isub>0 ls\<^isub>0 v\<^isub>1 h\<^isub>1 ls\<^isub>1 Ci i e\<^isub>2)
   let ?pc\<^isub>1 = "pc + length(compE\<^isub>2 e\<^isub>1)"
   let ?pc\<^isub>1' = "?pc\<^isub>1 + 2 + length(compE\<^isub>2 e\<^isub>2)"
-  have "P,C,M \<rhd> compxE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2) pc (size vs) / I,size vs".
+  have "P,C,M \<rhd> compxE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2) pc (size vs) / I,size vs" by fact
   hence "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>1 pc (size vs) /
                  {pc..<pc + length (compE\<^isub>2 e\<^isub>1)},size vs"
     using Try\<^isub>1.prems by (fastsimp simp:beforex_def split:split_if_asm)
@@ -915,10 +916,11 @@ next
   let ?pc\<^isub>1' = "?pc\<^isub>1 + 2"
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(vs,?ls\<^isub>1,C,M, ?pc\<^isub>1') # frs)"
   have I: "{pc..<pc + length (compE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2))} \<subseteq> I"
-   and beforex: "P,C,M \<rhd> ?xt/I,size vs" .
+   and beforex: "P,C,M \<rhd> ?xt/I,size vs" by fact+
   have "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> (None,h\<^isub>1,((Addr a)#vs,ls\<^isub>1,C,M, ?pc\<^isub>1+1) # frs)"
   proof -
-    have "PROP ?P e\<^isub>1 h\<^isub>0 ls\<^isub>0 (Throw a) h\<^isub>1 ls\<^isub>1 C M pc w a vs frs {pc..<pc + length (compE\<^isub>2 e\<^isub>1)}".
+    have "PROP ?P e\<^isub>1 h\<^isub>0 ls\<^isub>0 (Throw a) h\<^isub>1 ls\<^isub>1 C M pc w a vs frs {pc..<pc + length (compE\<^isub>2 e\<^isub>1)}"
+      by fact
     moreover have "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>1 pc (size vs)/{pc..<?pc\<^isub>1},size vs"
       using beforex I pcs_subset by(force elim!: beforex_appendD1)
     ultimately have
@@ -933,19 +935,19 @@ next
     from beforex obtain xt\<^isub>0 xt\<^isub>1
       where ex_tab: "ex_table_of P C M = xt\<^isub>0 @ ?xt @ xt\<^isub>1"
       and disj: "pcs xt\<^isub>0 \<inter> I = {}" by(auto simp:beforex_def)
-    have hp: "h\<^isub>1 a = Some (D, fs)" "P\<^isub>1 \<turnstile> D \<preceq>\<^sup>* Ci".
+    have hp: "h\<^isub>1 a = Some (D, fs)" "P\<^isub>1 \<turnstile> D \<preceq>\<^sup>* Ci" by fact+
     have "pc\<^isub>1 \<notin> pcs xt\<^isub>0" using pc\<^isub>1_in_e\<^isub>1 I disj by auto
     with pc\<^isub>1_in_e\<^isub>1 pc\<^isub>1_not_caught hp
     show ?thesis using ex_tab 0 by(simp add:handle_def matches_ex_entry_def)
   qed
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> ?\<sigma>\<^isub>1" using TryCatch\<^isub>1 by auto
-  finally have 1: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> ?\<sigma>\<^isub>1".
+  finally have 1: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> ?\<sigma>\<^isub>1" .
   let ?pc\<^isub>2 = "?pc\<^isub>1' + length(compE\<^isub>2 e\<^isub>2)"
   let ?I\<^isub>2 = "{?pc\<^isub>1' ..< ?pc\<^isub>2}"
-  have "P,C,M \<rhd> compxE\<^isub>2 ?e pc (size vs) / I,size vs".
+  have "P,C,M \<rhd> compxE\<^isub>2 ?e pc (size vs) / I,size vs" by fact
   hence beforex\<^isub>2: "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>2 ?pc\<^isub>1' (size vs) / ?I\<^isub>2, size vs"
     using I pcs_subset[of _ ?pc\<^isub>1'] by(auto elim!:beforex_appendD2)
-  have IH\<^isub>2: "PROP ?P e\<^isub>2 h\<^isub>1 ?ls\<^isub>1 e\<^isub>2' h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1' v xa vs frs ?I\<^isub>2".
+  have IH\<^isub>2: "PROP ?P e\<^isub>2 h\<^isub>1 ?ls\<^isub>1 e\<^isub>2' h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1' v xa vs frs ?I\<^isub>2" by fact
   show ?case (is "?Norm \<and> ?Err")
   proof
     show ?Norm (is "?val \<longrightarrow> ?trans")
@@ -976,8 +978,8 @@ next
   let ?e = "try e\<^isub>1 catch(Ci i) e\<^isub>2"
   let ?xt = "compxE\<^isub>2 ?e pc (size vs)"
   have I: "{pc..<pc + length (compE\<^isub>2 (try e\<^isub>1 catch(Ci i) e\<^isub>2))} \<subseteq> I"
-   and beforex: "P,C,M \<rhd> ?xt/I,size vs" .
-  have "PROP ?P e\<^isub>1 h\<^isub>0 ls\<^isub>0 (Throw a) h\<^isub>1 ls\<^isub>1 C M pc w a vs frs {pc..<pc + length (compE\<^isub>2 e\<^isub>1)}".
+   and beforex: "P,C,M \<rhd> ?xt/I,size vs" by fact+
+  have "PROP ?P e\<^isub>1 h\<^isub>0 ls\<^isub>0 (Throw a) h\<^isub>1 ls\<^isub>1 C M pc w a vs frs {pc..<pc + length (compE\<^isub>2 e\<^isub>1)}" by fact
   moreover have "P,C,M \<rhd> compxE\<^isub>2 e\<^isub>1 pc (size vs)/{pc..<?pc\<^isub>1},size vs"
     using beforex I pcs_subset by(force elim!: beforex_appendD1)
     ultimately have
@@ -1009,7 +1011,8 @@ next
   let ?\<sigma>\<^isub>1 = "(None,h\<^isub>1,(v#vs,ls\<^isub>1,C,M,?pc\<^isub>1)#frs)"
   have 1: "P \<turnstile> ?\<sigma>\<^isub>0 -jvm\<rightarrow> ?\<sigma>\<^isub>1" using Cons\<^isub>1 by fastsimp
   let ?pc\<^isub>2 = "?pc\<^isub>1 + length(compEs\<^isub>2 es)"
-  have IHs: "PROP ?Ps es h\<^isub>1 ls\<^isub>1 fs h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 (tl ws) xa es' (v#vs) frs (I - pcs (compxE\<^isub>2 e pc (length vs)))".
+  have IHs: "PROP ?Ps es h\<^isub>1 ls\<^isub>1 fs h\<^isub>2 ls\<^isub>2 C M ?pc\<^isub>1 (tl ws) xa es' (v#vs) frs
+    (I - pcs (compxE\<^isub>2 e pc (length vs)))" by fact
   show ?case (is "?Norm \<and> ?Err")
   proof
     show ?Norm (is "?val \<longrightarrow> ?trans")

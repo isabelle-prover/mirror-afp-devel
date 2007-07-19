@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.14 2007-07-11 10:07:49 stefanberghofer Exp $
+    ID:          $Id: TypeSafe.thy,v 1.15 2007-07-19 21:23:09 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -51,7 +51,7 @@ and reds_preserves_hconf:
 proof (induct rule:red_reds_inducts)
   case (RedNew h a h' C E l)
   have new: "new_Addr h = Some a" and h':"h' = h(a \<mapsto> (C, Collect (init_obj P C)))"
-    and hconf:"P \<turnstile> h \<surd>" and wt_New:"P,E,h \<turnstile> new C : T" .
+    and hconf:"P \<turnstile> h \<surd>" and wt_New:"P,E,h \<turnstile> new C : T" by fact+
   from new have None: "h a = None" by(rule new_Addr_SomeD)
   with wf have oconf:"P,h \<turnstile> (C, Collect (init_obj P C)) \<surd>"
     apply (auto simp:oconf_def)
@@ -67,7 +67,7 @@ next
     and field:"P \<turnstile> last Cs' has least F:T via Cs"
     and casts:"P \<turnstile> T casts v to v'"
     and Ds:"Ds = Cs' @\<^sub>p Cs" and S:"(Ds,fs') \<in> S"
-    and wte:"P,E,h \<turnstile> ref(a,Cs')\<bullet>F{Cs} := Val v : T'" .
+    and wte:"P,E,h \<turnstile> ref(a,Cs')\<bullet>F{Cs} := Val v : T'" by fact+
   from wte have "P \<turnstile> last Cs' has least F:T' via Cs" by (auto split:split_if_asm)
   with field have eq:"T = T'" by (rule sees_field_fun)
   with casts wte wf have conf:"P,h \<turnstile> v' :\<le> T'"
@@ -131,7 +131,7 @@ proof(induct rule:red_reds_inducts)
 next
   case (RedLAss E V T v v' h l T')
   have casts:"P \<turnstile> T casts v to v'" and env:"E V = Some T"
-    and wt:"P,E,h \<turnstile> V:=Val v : T'" and lconf:"P,h \<turnstile> l (:\<le>)\<^sub>w E" .
+    and wt:"P,E,h \<turnstile> V:=Val v : T'" and lconf:"P,h \<turnstile> l (:\<le>)\<^sub>w E" by fact+
   from wt env have eq:"T = T'" by auto
   with casts wt wf have conf:"P,h \<turnstile> v' :\<le> T'"
     by(auto intro:casts_conf)
@@ -148,7 +148,7 @@ next
                       envconf P (E(V \<mapsto> T)) \<rbrakk>
                    \<Longrightarrow> P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V \<mapsto> T)"
     and lconf: "P,h \<turnstile> l (:\<le>)\<^sub>w E" and wte: "P,E,h \<turnstile> {V:T; e} : T'"
-    and envconf:"envconf P E" .
+    and envconf:"envconf P E" by fact+
   from lconf_hext[OF lconf red_hext_incr[OF red]]
   have lconf':"P,h' \<turnstile> l (:\<le>)\<^sub>w E" .
   from wte have wte':"P,E(V\<mapsto>T),h \<turnstile> e : T'" and type:"is_type P T"
@@ -167,7 +167,7 @@ next
                       envconf P (E(V \<mapsto> T)) \<rbrakk>
                    \<Longrightarrow> P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V \<mapsto> T)"
     and lconf: "P,h \<turnstile> l (:\<le>)\<^sub>w E" and wte: "P,E,h \<turnstile> {V:T; e} : T'"
-    and envconf:"envconf P E" .
+    and envconf:"envconf P E" by fact+
   from lconf_hext[OF lconf red_hext_incr[OF red]]
   have lconf':"P,h' \<turnstile> l (:\<le>)\<^sub>w E" .
   from wte have wte':"P,E(V\<mapsto>T),h \<turnstile> e : T'" and type:"is_type P T"
@@ -187,7 +187,7 @@ next
                    \<Longrightarrow> P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V \<mapsto> T)"
     and lconf:"P,h \<turnstile> l (:\<le>)\<^sub>w E" and l':"l' V = Some v''"
     and wte:"P,E,h \<turnstile> {V:T; V:=Val v;; e} : T'"
-    and casts:"P \<turnstile> T casts v to v'" and envconf:"envconf P E" .
+    and casts:"P \<turnstile> T casts v to v'" and envconf:"envconf P E" by fact+
   from lconf_hext[OF lconf red_hext_incr[OF red]]
   have lconf':"P,h' \<turnstile> l (:\<le>)\<^sub>w E" .
   from wte obtain T'' where wte':"P,E(V\<mapsto>T),h \<turnstile> e : T'"
@@ -336,7 +336,7 @@ proof(induct Vs Ts vs e rule:blocks.induct)
                   \<forall>S \<in> set Ts. is_type P S\<rbrakk>
      \<Longrightarrow> (P,E,h \<turnstile> blocks (Vs, Ts, vs, e) : T) =
          (P,E(Vs [\<mapsto>] Ts),h \<turnstile> e : T \<and>
-            (\<exists>Ts'. map P \<turnstile> typeof\<^bsub>h\<^esub> vs = map Some Ts' \<and> P \<turnstile> Ts' [\<le>] Ts))" .
+            (\<exists>Ts'. map P \<turnstile> typeof\<^bsub>h\<^esub> vs = map Some Ts' \<and> P \<turnstile> Ts' [\<le>] Ts))" by fact+
   from type have typeT':"is_type P T'" and type':"\<forall>S \<in> set Ts. is_type P S"
     by simp_all
   from length have "length Vs = length Ts" "length vs = length Ts"
@@ -386,7 +386,7 @@ and subjects_reduction2: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightar
 proof (induct rule:red_reds_inducts)
   case (RedNew h a h' C E l)
   have new:"new_Addr h = Some a" and h':"h' = h(a \<mapsto> (C, Collect (init_obj P C)))" 
-    and wt:"P,E,h \<turnstile> new C : T" .
+    and wt:"P,E,h \<turnstile> new C : T" by fact+
   from wt have eq:"T = Class C" and "class": "is_class P C" by auto
   from "class" have subo:"Subobjs P C [C]" by(rule Subobjs_Base)
   from h' have "h' a = Some(C, Collect (init_obj P C))" by(simp add:map_upd_Some_unfold)
@@ -394,7 +394,7 @@ proof (induct rule:red_reds_inducts)
   with eq show ?case by auto
 next
   case (RedNewFail h E C l)
-  have sconf:"P,E \<turnstile> (h, l) \<surd>" .
+  have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P OutOfMemory" 
     by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt OutOfMemory,[OutOfMemory])) = Some(Class OutOfMemory)"
@@ -406,7 +406,7 @@ next
   have wt:"P,E,h \<turnstile> \<lparr>C\<rparr>e : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" by fact+
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and isref:"is_refT T'" 
     and "class": "is_class P C" and T:"T = Class C"
     by auto
@@ -426,7 +426,7 @@ next
   case (RedStaticUpCast Cs C Cs' Ds E a h l)
   have wt:"P,E,h \<turnstile> \<lparr>C\<rparr>ref (a,Cs) : T"
     and path_via:"P \<turnstile> Path last Cs to C via Cs'"
-    and Ds:"Ds = Cs @\<^sub>p Cs'" .
+    and Ds:"Ds = Cs @\<^sub>p Cs'" by fact+
   from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs)) = Some(Class(last Cs))"
     and "class": "is_class P C" and T:"T = Class C"
     by auto
@@ -439,7 +439,7 @@ next
   with T show ?case by (fastsimp intro:wt_same_type_typeconf)
 next
   case (RedStaticDownCast E C a Cs Cs' h l)
-  have "P,E,h \<turnstile> \<lparr>C\<rparr>ref (a,Cs@[C]@Cs') : T" .
+  have "P,E,h \<turnstile> \<lparr>C\<rparr>ref (a,Cs@[C]@Cs') : T" by fact
   hence typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs@[C]@Cs')) = Some(Class(last(Cs@[C]@Cs')))"
     and "class": "is_class P C" and T:"T = Class C"
     by auto
@@ -451,7 +451,7 @@ next
   with T show ?case by (fastsimp intro:wt_same_type_typeconf)
 next
   case (RedStaticCastFail C Cs E a h l)
-  have sconf:"P,E \<turnstile> (h, l) \<surd>" .
+  have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P ClassCast" 
     by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt ClassCast,[ClassCast])) = Some(Class ClassCast)"
@@ -463,7 +463,7 @@ next
   have wt:"P,E,h \<turnstile> Cast C e : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h,l) \<surd>" .
+    and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and isref:"is_refT T'" 
     and "class": "is_class P C" and T:"T = Class C"
     by auto
@@ -483,7 +483,7 @@ next
   case (RedDynCast h l a D S C Cs' E Cs)
   have wt:"P,E,h \<turnstile> Cast C (ref (a,Cs)) : T"
     and path_via:"P \<turnstile> Path D to C via Cs'"
-    and hp:"hp (h,l) a = Some(D,S)" .
+    and hp:"hp (h,l) a = Some(D,S)" by fact+
   from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs)) = Some(Class(last Cs))"
     and "class": "is_class P C" and T:"T = Class C"
     by auto
@@ -497,7 +497,7 @@ next
   case (RedStaticUpDynCast Cs C Cs' Ds E a h l)
   have wt:"P,E,h \<turnstile> Cast C (ref (a,Cs)) : T"
     and path_via:"P \<turnstile> Path last Cs to C via Cs'"
-    and Ds:"Ds = Cs @\<^sub>p Cs'" .
+    and Ds:"Ds = Cs @\<^sub>p Cs'" by fact+
   from wt have typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs)) = Some(Class(last Cs))"
     and "class": "is_class P C" and T:"T = Class C"
     by auto
@@ -510,7 +510,7 @@ next
   with T show ?case by (fastsimp intro:wt_same_type_typeconf)
 next
   case (RedStaticDownDynCast E C a Cs Cs' h l)
-  have "P,E,h \<turnstile> Cast C (ref (a,Cs@[C]@Cs')) : T" .
+  have "P,E,h \<turnstile> Cast C (ref (a,Cs@[C]@Cs')) : T" by fact
   hence typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> (Ref(a,Cs@[C]@Cs')) = Some(Class(last(Cs@[C]@Cs')))"
     and "class": "is_class P C" and T:"T = Class C"
     by auto
@@ -528,7 +528,7 @@ next
     and wt:"P,E,h \<turnstile> e \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h,l) \<surd>" .
+    and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
   from wt obtain T\<^isub>1 T\<^isub>2 where wte:"P,E,h \<turnstile> e : T\<^isub>1" and wte2:"P,E,h \<turnstile> e\<^isub>2 : T\<^isub>2"
     and binop:"case bop of Eq \<Rightarrow> T = Boolean
                         | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer"
@@ -553,7 +553,7 @@ next
     and wt:"P,E,h \<turnstile> Val v\<^isub>1 \<guillemotleft>bop\<guillemotright> e : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h,l) \<surd>" .
+    and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
   from wt obtain T\<^isub>1 T\<^isub>2 where wtval:"P,E,h \<turnstile> Val v\<^isub>1 : T\<^isub>1" and wte:"P,E,h \<turnstile> e : T\<^isub>2"
     and binop:"case bop of Eq \<Rightarrow> T = Boolean
                         | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer"
@@ -583,7 +583,7 @@ next
 next
   case (RedVar h l V v E)
   have l:"lcl (h, l) V = Some v" and sconf:"P,E \<turnstile> (h, l) \<surd>"
-    and wt:"P,E,h \<turnstile> Var V : T" .
+    and wt:"P,E,h \<turnstile> Var V : T" by fact+
   hence conf:"P,h \<turnstile> v :\<le> T" by(force simp:sconf_def lconf_def)
   show ?case
   proof(cases "\<forall>C. T \<noteq> Class C")
@@ -601,7 +601,7 @@ next
 next
   case (LAssRed E e h l e' h' l' V)
   have wt:"P,E,h \<turnstile> V:=e : T" and sconf:"P,E \<turnstile> (h, l) \<surd>"
-    and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'" .
+    and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'" by fact+
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and env:"E V = Some T" 
     and sub:"P \<turnstile> T' \<le> T" by auto
   from sconf env have "is_type P T" by(auto simp:sconf_def envconf_def)
@@ -635,7 +635,7 @@ next
 next
   case (RedLAss E V T v v' h l T')
   have env:"E V = Some T" and casts:"P \<turnstile> T casts v to v'"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> V:=Val v : T'" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> V:=Val v : T'" by fact+
   show ?case
   proof(cases "\<forall>C. T \<noteq> Class C")
     case True
@@ -655,7 +655,7 @@ next
     and wt:"P,E,h \<turnstile> e\<bullet>F{Cs} : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h,l) \<surd>" .
+    and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
   from wt have "P,E,h' \<turnstile> e'\<bullet>F{Cs} : T"
   proof(rule WTrt_elim_cases)
     fix C assume wte: "P,E,h \<turnstile> e : Class C"
@@ -683,7 +683,7 @@ next
   have h:"hp (h,l) a = Some(D,S)" 
     and Ds:"Ds = Cs'@\<^sub>pCs" and S:"(Ds,fs') \<in> S"
     and fs':"fs' F = Some v" and sconf:"P,E \<turnstile> (h,l) \<surd>"
-    and wte:"P,E,h \<turnstile> ref (a,Cs')\<bullet>F{Cs} : T" .
+    and wte:"P,E,h \<turnstile> ref (a,Cs')\<bullet>F{Cs} : T" by fact+
   from wte have field:"P \<turnstile> last Cs' has least F:T via Cs"
     and notemptyCs:"Cs \<noteq> []"
     by (auto split:split_if_asm)
@@ -700,7 +700,7 @@ next
   thus ?case by (cases T) auto
 next
   case (RedFAccNull E F Cs h l)
-  have sconf:"P,E \<turnstile> (h, l) \<surd>" .
+  have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P NullPointer" 
     by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt NullPointer,[NullPointer])) = Some(Class NullPointer)"
@@ -713,7 +713,7 @@ next
     and wt:"P,E,h \<turnstile> e\<bullet>F{Cs} := e\<^isub>2 : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h,l) \<surd>" .
+    and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
   from wt have "P,E,h' \<turnstile> e'\<bullet>F{Cs} := e\<^isub>2 : T"
   proof (rule WTrt_elim_cases)
     fix C T' assume wte: "P,E,h \<turnstile> e : Class C"
@@ -730,7 +730,7 @@ next
       from wte' notemptyCs field wte2' sub show ?thesis by (rule WTrtFAss)
     next
       assume wte':"P,E,h' \<turnstile> e' : NT"
-      from wte' wte2' show ?thesis by (rule WTrtFAssNT)
+      from wte' wte2' sub show ?thesis by (rule WTrtFAssNT)
     qed
   next
     fix T' assume wte:"P,E,h \<turnstile> e : NT"
@@ -738,7 +738,7 @@ next
     have wte2': "P,E,h' \<turnstile> e\<^isub>2 : T'"
       by(rule WTrt_hext_mono[OF wte2 red_hext_incr[OF red]])
     from IH[OF sconf wte] have wte':"P,E,h' \<turnstile> e' : NT" by simp
-    from wte' wte2' show ?thesis by (rule WTrtFAssNT)
+    from wte' wte2' sub show ?thesis by (rule WTrtFAssNT)
   qed
   thus ?case by(rule wt_same_type_typeconf)
 next
@@ -747,7 +747,7 @@ next
     and wt:"P,E,h \<turnstile> Val v\<bullet>F{Cs} := e : T"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> 
             \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h,l) \<surd>" .
+    and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
   from wt have "P,E,h' \<turnstile> Val v\<bullet>F{Cs}:=e' : T"
   proof (rule WTrt_elim_cases)
     fix C T' assume wtval:"P,E,h \<turnstile> Val v : Class C"
@@ -805,7 +805,7 @@ next
   let ?h' = "h(a \<mapsto> (D,?S'))"
   have h:"h a = Some(D,S)" and casts:"P \<turnstile> T casts v to v'"
     and field:"P \<turnstile> last Cs' has least F:T via Cs"
-    and wt:"P,E,h \<turnstile> ref (a,Cs')\<bullet>F{Cs} := Val v : T'" .
+    and wt:"P,E,h \<turnstile> ref (a,Cs')\<bullet>F{Cs} := Val v : T'" by fact+
   from wt wf have type:"is_type P T'" 
     by (auto dest:least_field_is_type split:split_if_asm)
   from wt field obtain T'' where wtval:"P,E,h \<turnstile> Val v : T''" and eq:"T = T'" 
@@ -814,7 +814,7 @@ next
   from casts eq wtval show ?case
   proof(induct rule:casts_to.induct)
     case (casts_prim T\<^isub>0 w)
-    have "T\<^isub>0 = T'" and "\<forall>C. T\<^isub>0 \<noteq> Class C" and wtval':"P,E,h \<turnstile> Val w : T''" .
+    have "T\<^isub>0 = T'" and "\<forall>C. T\<^isub>0 \<noteq> Class C" and wtval':"P,E,h \<turnstile> Val w : T''" by fact+
     with leq have "T' = T''" by(cases T',auto)
     with wtval' have "P,E,h \<turnstile> Val w : T'" by simp
     with h have "P,E,(h(a\<mapsto>(D,insert(Ds,fs(F \<mapsto> w))(S-{(Ds,fs)})))) \<turnstile> Val w : T'"
@@ -823,7 +823,7 @@ next
       by(rule wt_same_type_typeconf)
   next
     case (casts_null C'')
-    have T':"Class C'' = T'" .
+    have T':"Class C'' = T'" by fact
     have "P,E,(h(a\<mapsto>(D,insert(Ds,fs(F \<mapsto> Null))(S-{(Ds,fs)})))) \<turnstile> null : NT"
       by simp
     with sym[OF T']
@@ -833,7 +833,7 @@ next
     case (casts_ref Xs C'' Xs' Ds'' a')
     have "Class C'' = T'" and "Ds'' = Xs @\<^sub>p Xs'"
       and "P \<turnstile> Path last Xs to C'' via Xs'"
-      and "P,E,h \<turnstile> ref (a', Xs) : T''" .
+      and "P,E,h \<turnstile> ref (a', Xs) : T''" by fact+
     with wf have "P,E,h \<turnstile> ref (a',Ds'') : T'"
       by (auto intro!:appendPath_last[THEN sym] Subobjs_nonempty
         split:split_if_asm simp:path_via_def,
@@ -847,7 +847,7 @@ next
   qed
 next
   case (RedFAssNull E F Cs v h l)
-  have sconf:"P,E \<turnstile> (h, l) \<surd>" .
+  have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P NullPointer"
     by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt NullPointer,[NullPointer])) = Some(Class NullPointer)"
@@ -859,7 +859,7 @@ next
   have red: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle>"
    and IH: "\<And>T'. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk>
                  \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-   and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Call e Copt M es : T" .
+   and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Call e Copt M es : T" by fact+
   from wt have "P,E,h' \<turnstile> Call e' Copt M es : T"
   proof(cases Copt)
     case None
@@ -930,7 +930,7 @@ next
   have reds: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>"
    and IH: "\<And>Ts. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> es [:] Ts\<rbrakk>
                  \<Longrightarrow> types_conf (P,E,h',es',Ts)"
-   and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Call (Val v) Copt M es : T" .
+   and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Call (Val v) Copt M es : T" by fact+
   from wt have "P,E,h' \<turnstile> Call (Val v) Copt M es' : T"
   proof(cases Copt)
     case None
@@ -1007,7 +1007,7 @@ next
     and length1:"length vs = length pns" and length2:"length Ts = length pns"
     and bs:"bs = blocks(this#pns,Class(last Cs')#Ts,Ref(a,Cs')#vs,body)"
     and body_case:"new_body = (case T' of Class D \<Rightarrow> \<lparr>D\<rparr>bs | _ \<Rightarrow> bs)"
-    and wt:"P,E,h \<turnstile> ref (a,Cs)\<bullet>M(map Val vs) : T''" .
+    and wt:"P,E,h \<turnstile> ref (a,Cs)\<bullet>M(map Val vs) : T''" by fact+
   from wt hp method wf obtain Ts''
     where wtref:"P,E,h \<turnstile> ref (a,Cs) : Class (last Cs)" and eq:"T'' = T'"
     and wtes:"P,E,h \<turnstile> map Val vs [:] Ts''" and subs: "P \<turnstile> Ts'' [\<le>] Ts'"
@@ -1068,7 +1068,7 @@ next
     and path_unique:"P \<turnstile> Path last Cs to C unique"
     and path_via:"P \<turnstile> Path last Cs to C via Cs''"
     and Ds:"Ds = (Cs @\<^sub>p Cs'') @\<^sub>p Cs'"
-    and wt:"P,E,h \<turnstile> ref (a,Cs)\<bullet>(C::)M(map Val vs) : T'" .
+    and wt:"P,E,h \<turnstile> ref (a,Cs)\<bullet>(C::)M(map Val vs) : T'" by fact+
   from wt method wf obtain Ts'
     where wtref:"P,E,h \<turnstile> ref (a,Cs) : Class (last Cs)"
     and wtes:"P,E,h \<turnstile> map Val vs [:] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
@@ -1112,7 +1112,7 @@ next
   with TeqT' show ?case by(fastsimp intro:wt_same_type_typeconf)
 next
   case (RedCallNull E Copt M vs h l)
-  have sconf:"P,E \<turnstile> (h, l) \<surd>" .
+  have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P NullPointer" 
     by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt NullPointer,[NullPointer])) = Some(Class NullPointer)"
@@ -1123,7 +1123,7 @@ next
   case (BlockRedNone E V T e h l e' h' l' T')
   have IH:"\<And>T'. \<lbrakk>P,E(V \<mapsto> T) \<turnstile> (h, l(V := None)) \<surd>; P,E(V \<mapsto> T),h \<turnstile> e : T'\<rbrakk>
                  \<Longrightarrow> P,E(V \<mapsto> T),h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> {V:T; e} : T'" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> {V:T; e} : T'" by fact+
   from wt have type:"is_type P T" and wte:"P,E(V\<mapsto>T),h \<turnstile> e : T'" by auto
   from sconf type have "P,E(V \<mapsto> T) \<turnstile> (h, l(V := None)) \<surd>"
     by (auto simp:sconf_def lconf_def envconf_def)
@@ -1134,7 +1134,7 @@ next
     and IH:"\<And>T'. \<lbrakk>P,E(V \<mapsto> T) \<turnstile> (h, l(V := None)) \<surd>; P,E(V \<mapsto> T),h \<turnstile> e : T'\<rbrakk>
                   \<Longrightarrow> P,E(V \<mapsto> T),h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and Some:"l' V = Some v"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> {V:T; e} : T'" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> {V:T; e} : T'" by fact+
   from wt have wte:"P,E(V\<mapsto>T),h \<turnstile> e : T'"  and type:"is_type P T" by auto
   with sconf wf red type have "P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V \<mapsto> T)"
     by -(auto simp:sconf_def,rule red_preserves_lconf,
@@ -1165,7 +1165,7 @@ next
     and IH:"\<And>T'. \<lbrakk>P,E(V \<mapsto> T) \<turnstile> (h, l(V \<mapsto> v')) \<surd>; P,E(V \<mapsto> T),h \<turnstile> e : T'\<rbrakk>
               \<Longrightarrow> P,E(V \<mapsto> T),h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
     and Some:"l' V = Some v''" and casts:"P \<turnstile> T casts v to v'"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> {V:T := Val v; e} : T'" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> {V:T := Val v; e} : T'" by fact+
   from wt have wte:"P,E(V \<mapsto> T),h \<turnstile> e : T'" and wtval:"P,E(V \<mapsto> T),h \<turnstile> V:=Val v : T"
     and type:"is_type P T"
     by auto
@@ -1191,7 +1191,7 @@ next
   case (SeqRed E e h l e' h' l' e\<^isub>2 T)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
     and IH:"\<And>T'. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T'\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T'"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> e;; e\<^isub>2 : T" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> e;; e\<^isub>2 : T" by fact+
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and wte2:"P,E,h \<turnstile> e\<^isub>2 : T" by auto
   from WTrt_hext_mono[OF wte2 red_hext_incr[OF red]] have wte2':"P,E,h' \<turnstile> e\<^isub>2 : T" .
   from IH[OF sconf wte] obtain T'' where "P,E,h' \<turnstile> e' : T''" by(cases T') auto
@@ -1205,7 +1205,7 @@ next
     and IH: "\<And>T. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk>
                      \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T"
     and wt:"P,E,h \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 : T"
-    and sconf:"P,E \<turnstile> (h,l) \<surd>" .
+    and sconf:"P,E \<turnstile> (h,l) \<surd>" by fact+
   from wt have wte:"P,E,h \<turnstile> e : Boolean"
       and wte1:"P,E,h \<turnstile> e\<^isub>1 : T" and wte2:"P,E,h \<turnstile> e\<^isub>2 : T" by auto
   from IH[OF sconf wte] have wte':"P,E,h' \<turnstile> e' : Boolean" by auto
@@ -1223,7 +1223,7 @@ next
 next
   case (ThrowRed E e h l e' h' l' T)
   have IH:"\<And>T. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> throw e : T" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> throw e : T" by fact+
   from wt obtain T' where wte:"P,E,h \<turnstile> e : T'" and ref:"is_refT T'"
     by auto
   from ref have "P,E,h' \<turnstile> throw e' : T"
@@ -1251,7 +1251,7 @@ next
   thus ?case by (rule wt_same_type_typeconf)
 next
   case (RedThrowNull E h l)
-  have sconf:"P,E \<turnstile> (h, l) \<surd>" .
+  have sconf:"P,E \<turnstile> (h, l) \<surd>" by fact
   from wf have "is_class P NullPointer"
     by (fastsimp intro:is_class_xcpt wf_prog_wwf_prog)
   hence "preallocated h \<Longrightarrow> P \<turnstile> typeof\<^bsub>h\<^esub> (Ref (addr_of_sys_xcpt NullPointer,[NullPointer])) = Some(Class NullPointer)"
@@ -1262,7 +1262,7 @@ next
   case (ListRed1 E e h l e' h' l' es Ts)
   have red:"P,E \<turnstile> \<langle>e,(h, l)\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
     and IH:"\<And>T. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> e : T\<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> e # es [:] Ts" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> e # es [:] Ts" by fact+
   from wt obtain U Us where Ts:"Ts = U#Us" by(cases Ts) auto
   with wt have wte:"P,E,h \<turnstile> e : U" and wtes:"P,E,h \<turnstile> es [:] Us" by simp_all
   from WTrts_hext_mono[OF wtes red_hext_incr[OF red]] 
@@ -1275,7 +1275,7 @@ next
   case (ListRed2 E es h l es' h' l' v Ts)
   have reds:"P,E \<turnstile> \<langle>es,(h, l)\<rangle> [\<rightarrow>] \<langle>es',(h', l')\<rangle>"
     and IH:"\<And>Ts. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> types_conf (P,E,h',es',Ts)"
-    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> Val v#es [:] Ts" .
+    and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> Val v#es [:] Ts" by fact+
   from wt obtain U Us where Ts:"Ts = U#Us" by(cases Ts) auto
   with wt have wtval:"P,E,h \<turnstile> Val v : U" and wtes:"P,E,h \<turnstile> es [:] Us" by simp_all
   from WTrt_hext_mono[OF wtval reds_hext_incr[OF reds]]
@@ -1314,12 +1314,17 @@ shows "\<And>T. \<lbrakk> P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd
 
 using step
 proof (induct rule:converse_rtrancl_induct2)
-  case refl show ?case .
+  case refl show ?case by fact 
 next
   case step
   thus ?case using wf
-    by simp(frule subject_reduction[OF wf],assumption,assumption,cases T,
-            auto dest:red_preserves_sconf intro:wf_prog_wwf_prog)
+    apply simp
+    apply (frule subject_reduction[OF wf])
+      apply (rule step.prems)
+      apply (rule step.prems)
+      apply (cases T)
+      apply (auto dest:red_preserves_sconf intro:wf_prog_wwf_prog)
+      done
 qed
 
 lemma steps_preserves_sconf:
@@ -1335,7 +1340,7 @@ next
     and reds:"P,E \<turnstile> \<langle>es'',s''\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
     and wtes:"P,E,hp s \<turnstile> es [:] Ts"
     and sconf:"P,E \<turnstile> s \<surd>"
-    and IH:"\<And>Ts. \<lbrakk>P,E,hp s'' \<turnstile> es'' [:] Ts; P,E \<turnstile> s'' \<surd>\<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>" .
+    and IH:"\<And>Ts. \<lbrakk>P,E,hp s'' \<turnstile> es'' [:] Ts; P,E \<turnstile> s'' \<surd>\<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>" by fact+
   from Reds have reds1:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
   from subjects_reduction[OF wf this sconf wtes] 
   have type:"types_conf (P,E,hp s'',es'',Ts)" .
@@ -1430,7 +1435,7 @@ next
   have type:"types_conf(P,E,h,es,T''#Ts'')"
     and conf:"conformable (T''#Ts'',Ts')"
     and IH:"\<And>Ts' es. \<lbrakk>types_conf(P,E,h,es,Ts''); conformable(Ts'',Ts')\<rbrakk>
-                   \<Longrightarrow> types_conf(P,E,h,es,Ts')" .
+                   \<Longrightarrow> types_conf(P,E,h,es,Ts')" by fact+
   from type obtain e' es' where es:"es = e'#es'" by (cases es) auto
   with type have type':"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> T''" and types':"types_conf(P,E,h,es',Ts'')"
     by simp_all
@@ -1451,7 +1456,7 @@ next
   case (Cons T'' Ts'')
   have type:"types_conf(P,E,h,es,T''#Ts'')"
     and IH:"\<And>es. types_conf(P,E,h,es,Ts'') \<Longrightarrow>
-                  \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable (Ts',Ts'')" .
+                  \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable (Ts',Ts'')" by fact+
   from type obtain e' es' where es:"es = e'#es'" by (cases es) auto
   with type have type':"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> T''" and types':"types_conf(P,E,h,es',Ts'')"
     by simp_all
@@ -1477,7 +1482,7 @@ next
     and steps:"P,E \<turnstile> \<langle>es'',s''\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
     and sconf:"P,E \<turnstile> s \<surd>" and wtes:"P,E,hp s \<turnstile> es [:] Ts"
     and IH:"\<And>Ts. \<lbrakk>P,E \<turnstile> s'' \<surd>; P,E,hp s'' \<turnstile> es'' [:] Ts \<rbrakk> 
-               \<Longrightarrow> types_conf (P, E, hp s', es', Ts)" .
+               \<Longrightarrow> types_conf (P, E, hp s', es', Ts)" by fact+
   from Reds have step:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
   with wtes sconf wf have sconf':"P,E \<turnstile> s'' \<surd>"
     by(auto intro:reds_preserves_sconf wf_prog_wwf_prog)
@@ -1557,7 +1562,7 @@ next
   case (step e s e'' s'' T)
   have Red:"((e, s), e'', s'') \<in> Red P E"
     and IH:"\<And>T. P,E,s'' \<turnstile> e'' : T \<surd> \<Longrightarrow> P,E,(hp s') \<turnstile> e' :\<^bsub>NT\<^esub> T"
-    and wte:"P,E,s \<turnstile> e : T \<surd>" .
+    and wte:"P,E,s \<turnstile> e : T \<surd>" by fact+
   from Red have red:"P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow> \<langle>e'',s''\<rangle>" by simp
   from red_preserves_sconf[OF red] wte wf have sconf:"P,E \<turnstile> s'' \<surd>"
     by(fastsimp dest:wf_prog_wwf_prog simp:wf_config_def)

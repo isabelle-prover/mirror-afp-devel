@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SubObj.thy,v 1.9 2007-07-11 10:07:49 stefanberghofer Exp $
+    ID:          $Id: SubObj.thy,v 1.10 2007-07-19 21:23:09 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -107,7 +107,7 @@ proof (induct Cs')
   with last butlast Cs'2 show ?case by simp
 next
   case (Cons C'' Cs'')
-  have IH:"is_subobj (P, C, Cs @ [D, D'] @ rev Cs'') \<Longrightarrow> P \<turnstile> D \<prec>\<^sub>R D'" .
+  have IH:"is_subobj (P, C, Cs @ [D, D'] @ rev Cs'') \<Longrightarrow> P \<turnstile> D \<prec>\<^sub>R D'" by fact
   from Cons obtain Cs' X Y Xs where Cs'1:"Cs' = Cs@[D,D']@(rev (C''#Cs''))" 
     and "X = hd(Cs@[D,D']@(rev (C''#Cs'')))" 
     and "Y = hd(tl(Cs@[D,D']@(rev (C''#Cs''))))"
@@ -159,7 +159,7 @@ proof (induct Cs')
   next
     case (Cons C'' Cs'')
     have IH:"is_subobj (P, C, C' # rev Cs'') \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* last (C' # rev Cs'')"
-      and subo:"is_subobj (P, C, C' # rev (C'' # Cs''))" .
+      and subo:"is_subobj (P, C, C' # rev (C'' # Cs''))" by fact+
     hence "is_subobj (P, C, C' # rev Cs'')" by (simp add:subobj_aux_rev)
     with IH have rel:"P \<turnstile> C \<preceq>\<^sup>* last (C' # rev Cs'')" by simp
     from subo obtain D Ds where DDs:"C' # rev Cs'' = Ds@[D]"
@@ -250,7 +250,7 @@ proof (induct Cs)
 next
   case (Cons C' Cs')
   have suboD:"is_subobj (P,(D,D#rev (C'#Cs')))" 
-    and IH:"is_subobj (P,(D,D#rev Cs')) \<Longrightarrow> is_subobj (P,(C,C#D#rev Cs'))" .
+    and IH:"is_subobj (P,(D,D#rev Cs')) \<Longrightarrow> is_subobj (P,(C,C#D#rev Cs'))" by fact+
   obtain E Es where E:"E = hd (rev (C'#Cs'))" and Es:"Es = tl (rev (C'#Cs'))"
     by simp
   with E have E_Es:"rev (C'#Cs') = E#Es" by simp
@@ -302,7 +302,7 @@ proof (induct Cs)
 next
   case (Cons C' Cs')
   have IH:"is_subobj (P,(D,D#rev Cs')) \<Longrightarrow> is_subobj (P,(C,D#rev Cs'))"
-    and "is_subobj (P,(D,D#rev (C'#Cs')))" .
+    and "is_subobj (P,(D,D#rev (C'#Cs')))" by fact+
   hence suboD:"is_subobj (P,(D,D#rev Cs'@[C']))" by simp
   hence "is_subobj (P,(D,D#rev Cs'))" by (rule subobj_aux_rev)
   with IH have suboC:"is_subobj (P,(C,D#rev Cs'))" by simp
@@ -416,7 +416,7 @@ proof (induct Cs)
 next
   case (Cons D Ds)
   have subo':"Subobjs\<^isub>R P (hd ((D#Ds) @ C'#Cs')) ((D#Ds) @ C'#Cs')"
-    and IH:"Subobjs\<^isub>R P (hd (Ds @ C'#Cs')) (Ds @ C'#Cs') \<Longrightarrow> Subobjs P C' (C'#Cs')" .
+    and IH:"Subobjs\<^isub>R P (hd (Ds @ C'#Cs')) (Ds @ C'#Cs') \<Longrightarrow> Subobjs P C' (C'#Cs')" by fact+
   from subo' have "Subobjs\<^isub>R P (hd (Ds @ C' # Cs')) (Ds @ C' # Cs')"
     apply -
     apply (drule Subobjs\<^isub>R.cases)
@@ -464,7 +464,7 @@ proof (induct rule:Subobjs.induct)
   case Subobjs_Rep thus ?case by (rule SubobjsR_isClass)
 next
   case (Subobjs_Sh C C' D Cs)
-  have leq:"P \<turnstile> C \<preceq>\<^sup>* C'" and leqS:"P \<turnstile> C' \<prec>\<^sub>S D" .
+  have leq:"P \<turnstile> C \<preceq>\<^sup>* C'" and leqS:"P \<turnstile> C' \<prec>\<^sub>S D" by fact+
   hence "(C,D) \<in> (subcls1 P)\<^sup>+" by (fastsimp intro:rtrancl_into_trancl1 subclsS_subcls1)
   thus ?case by (induct rule:trancl_induct, fastsimp intro:subcls1_class)
 qed
@@ -495,7 +495,7 @@ proof (induct Cs)
 next
   case (Cons C' Cs')
   have subo:"Subobjs\<^isub>R P (hd(C'#Cs')) ((C'#Cs')@[D])"
-    and IH:"\<lbrakk>Subobjs\<^isub>R P (hd Cs') (Cs'@[D]); Cs' \<noteq> []\<rbrakk> \<Longrightarrow> Subobjs\<^isub>R P (hd Cs') Cs'" .
+    and IH:"\<lbrakk>Subobjs\<^isub>R P (hd Cs') (Cs'@[D]); Cs' \<noteq> []\<rbrakk> \<Longrightarrow> Subobjs\<^isub>R P (hd Cs') Cs'" by fact+
   from subo have subo':"Subobjs\<^isub>R P C' (C'#Cs'@[D])" by simp
   show ?case
   proof (cases "Cs' = []")
@@ -552,7 +552,7 @@ proof(induct Cs')
 next
   case (Cons D Ds)
   have subo':"Subobjs P C (Cs@rev(D#Ds))"
-    and IH:"Subobjs P C (Cs@rev Ds) \<Longrightarrow> Subobjs P C Cs" .
+    and IH:"Subobjs P C (Cs@rev Ds) \<Longrightarrow> Subobjs P C Cs" by fact+
   from notempty subo' have "Subobjs P C (Cs@rev Ds)"
     by (fastsimp intro:butlast_Subobjs)
   with IH show ?case by simp

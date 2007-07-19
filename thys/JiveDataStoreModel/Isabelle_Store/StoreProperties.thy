@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: StoreProperties.thy,v 1.8 2007-07-11 10:18:35 stefanberghofer Exp $
+    ID:          $Id: StoreProperties.thy,v 1.9 2007-07-19 21:23:12 makarius Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -688,7 +688,7 @@ next
 	by (simp add: xeq_def)
     next
       case (arrLoc T a i)
-      have "l = arrLoc T a i".
+      have "l = arrLoc T a i" by fact
       hence "s\<turnstile> l reachable_from (arrV T a)"
 	by simp
       with xeq show ?thesis

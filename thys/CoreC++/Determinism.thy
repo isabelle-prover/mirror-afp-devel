@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Determinism.thy,v 1.5 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: Determinism.thy,v 1.6 2007-07-19 21:23:08 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -23,7 +23,7 @@ next
     and dist:"distinct (x'#xs')"
     and IH:"\<And>ys E. \<lbrakk>(E(xs' [\<mapsto>] ys)) x = Some y; length xs' = length ys; 
                      distinct xs'\<rbrakk> 
-         \<Longrightarrow> \<forall>i. x = xs'!i \<and> i < length xs' \<longrightarrow> y = ys!i" .
+         \<Longrightarrow> \<forall>i. x = xs'!i \<and> i < length xs' \<longrightarrow> y = ys!i" by fact+
   from length obtain y' ys' where ys:"ys = y'#ys'" by(cases ys) auto
   { fix i assume x:"x = (x'#xs')!i" and i:"i < length(x'#xs')"
     have "y = ys!i"
@@ -49,14 +49,14 @@ lemma nth_maps:"\<lbrakk>length pns = length Ts; distinct pns; i < length Ts\<rb
 proof (induct i arbitrary: E pns Ts)
   case 0
   have dist:"distinct pns" and length:"length pns = length Ts"
-    and i_length:"0 < length Ts" .
+    and i_length:"0 < length Ts" by fact+
   from i_length obtain T' Ts' where Ts:"Ts = T'#Ts'" by(cases Ts) auto
   with length obtain p' pns' where "pns = p'#pns'" by(cases pns) auto
   with Ts dist show ?case by simp
 next
   case (Suc n)
   have i_length:"Suc n < length Ts" and dist:"distinct pns"
-    and length:"length pns = length Ts" .
+    and length:"length pns = length Ts" by fact+
   from Suc obtain T' Ts' where Ts:"Ts = T'#Ts'" by(cases Ts) auto
   with length obtain p' pns' where pns:"pns = p'#pns'" by(cases pns) auto
   with Ts length dist have length':"length pns' = length Ts'" 
@@ -138,7 +138,7 @@ next
     \<lbrakk>P \<turnstile> Ts Casts xs to vs'; P \<turnstile> Ts Casts xs to ws'; \<forall>T \<in> set Ts. is_type P T; 
      P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts; P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val xs,(h,l)\<rangle>;
      P,E \<turnstile> s \<surd>\<rbrakk> 
-     \<Longrightarrow> vs' = ws'" .
+     \<Longrightarrow> vs' = ws'" by fact+
   from CastsCons obtain y ys S Ss where vs':"vs' = y#ys" and Ts:"Ts = S#Ss"
     apply -
     apply(frule length_Casts_vs,cases Ts,auto)
@@ -183,7 +183,7 @@ next
     and subs:"P \<turnstile> Ts' [\<le>] (T#Ts)" and sconf:"P,E \<turnstile> s \<surd>"
     and IH:"\<And>es s Ts'.\<lbrakk>P,E \<turnstile> es [::] Ts'; P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h,l)\<rangle>; 
                    P,E \<turnstile> s \<surd>; P \<turnstile> Ts' [\<le>] Ts\<rbrakk>
-               \<Longrightarrow> \<forall>i<length Ts. P,h \<turnstile> vs' ! i :\<le> Ts ! i" .
+               \<Longrightarrow> \<forall>i<length Ts. P,h \<turnstile> vs' ! i :\<le> Ts ! i" by fact+
   from subs obtain U Us where Ts':"Ts' = U#Us" by(cases Ts') auto
   with subs have sub':"P \<turnstile> U \<le> T" and subs':"P \<turnstile> Us [\<le>] Ts" 
     by (simp_all add:fun_of_def)
@@ -201,7 +201,7 @@ next
   from casts wtrt sub' have "P,h \<turnstile> v' :\<le> T"
   proof(induct rule:casts_to.induct)
     case (casts_prim T'' v'')
-    have "\<forall>C. T'' \<noteq> Class C" and "P,E,h \<turnstile> Val v'' :\<^bsub>NT\<^esub> U" and "P \<turnstile> U \<le> T''" .
+    have "\<forall>C. T'' \<noteq> Class C" and "P,E,h \<turnstile> Val v'' :\<^bsub>NT\<^esub> U" and "P \<turnstile> U \<le> T''" by fact+
     thus ?case by(cases T'') auto
   next
     case (casts_null C) thus ?case by simp
@@ -209,7 +209,7 @@ next
     case (casts_ref Cs C Cs' Ds a)
     have path:"P \<turnstile> Path last Cs to C via Cs'"
       and Ds:"Ds = Cs @\<^sub>p Cs'"
-      and wtref:"P,E,h \<turnstile> ref (a, Cs) :\<^bsub>NT\<^esub> U" .
+      and wtref:"P,E,h \<turnstile> ref (a, Cs) :\<^bsub>NT\<^esub> U" by fact+
     from wtref obtain D S where subo:"Subobjs P D Cs" and h:"h a = Some(D,S)"
       by(cases U,auto split:split_if_asm)
     from path Ds have last:"C = last Ds"  
@@ -229,7 +229,7 @@ proof (induct vs arbitrary: ws)
 next
   case (Cons v' vs')
   have eq:"map Val (v'#vs') = map Val ws @ throw ex # es"
-    and IH:"\<And>ws'. map Val vs' = map Val ws' @ throw ex # es \<Longrightarrow> False" .
+    and IH:"\<And>ws'. map Val vs' = map Val ws' @ throw ex # es \<Longrightarrow> False" by fact+
   from eq obtain w' ws' where ws:"ws = w'#ws'" by(cases ws) auto
   from eq have "tl(map Val (v'#vs')) = tl(map Val ws @ throw ex # es)" by simp
   hence "map Val vs' = tl(map Val ws @ throw ex # es)" by simp
@@ -270,7 +270,7 @@ next
     and path_via:"P \<turnstile> Path last Cs to C via Cs'" and Ds:"Ds = Cs @\<^sub>p Cs'" 
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-            \<Longrightarrow> ref (a,Cs) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+            \<Longrightarrow> ref (a,Cs) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain D where "class":"is_class P C" and wte:"P,E \<turnstile> e :: Class D"
     and disj:"P \<turnstile> Path D to C unique \<or> 
               (P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> Subobjs\<^isub>R P C Cs))"
@@ -353,7 +353,7 @@ next
     and eval':"P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ref(a,Cs@[C]@Cs'),s\<^isub>1\<rangle>"
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                      \<Longrightarrow> ref(a,Cs@[C]@Cs') = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                      \<Longrightarrow> ref(a,Cs@[C]@Cs') = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain D where wte:"P,E \<turnstile> e :: Class D"
     and disj:"P \<turnstile> Path D to C unique \<or> 
               (P \<turnstile> C \<preceq>\<^sup>* D \<and> (\<forall>Cs. P \<turnstile> Path C to D via Cs \<longrightarrow> Subobjs\<^isub>R P C Cs))"
@@ -408,7 +408,7 @@ next
   have eval:"P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                    \<Longrightarrow> null = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow> null = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain D where wte:"P,E \<turnstile> e :: Class D" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -436,7 +436,7 @@ next
     and notleq:"\<not> P \<turnstile> last Cs \<preceq>\<^sup>* C" and notin:"C \<notin> set Cs"
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                    \<Longrightarrow>ref (a, Cs) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow>ref (a, Cs) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain D where wte:"P,E \<turnstile> e :: Class D" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -471,7 +471,7 @@ next
   have eval:"P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> \<lparr>C\<rparr>e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                   \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                   \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain D where wte:"P,E \<turnstile> e :: Class D" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -501,7 +501,7 @@ next
     and path_unique:"P \<turnstile> Path last Cs to C unique"
     and Ds:"Ds = Cs@\<^sub>pCs'" and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> ref(a,Cs) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow> ref(a,Cs) = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain D where wte:"P,E \<turnstile> e :: Class D" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -563,7 +563,7 @@ next
   have eval:"P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> ref(a,Cs@[C]@Cs') = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow> ref(a,Cs@[C]@Cs') = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain D where wte:"P,E \<turnstile> e :: Class D" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -631,7 +631,7 @@ next
     and path_via:"P \<turnstile> Path D to C via Cs'" and path_unique:"P \<turnstile> Path D to C unique"
     and h:"h a = Some(D,S)" and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> ref(a,Cs) = e\<^isub>2 \<and> (h,l) = s\<^isub>2" .
+                    \<Longrightarrow> ref(a,Cs) = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by fact+
   from wt obtain D' where wte:"P,E \<turnstile> e :: Class D'" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -690,7 +690,7 @@ next
   have eval:"P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                    \<Longrightarrow> null = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow> null = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain D where wte:"P,E \<turnstile> e :: Class D" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -723,7 +723,7 @@ next
     and not_unique2:"\<not> P \<turnstile> Path last Cs to C unique" and notin:"C \<notin> set Cs"
     and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                   \<Longrightarrow> ref (a, Cs) = e\<^isub>2 \<and> (h,l) = s\<^isub>2" .
+                   \<Longrightarrow> ref (a, Cs) = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by fact+
   from wt obtain D' where wte:"P,E \<turnstile> e :: Class D'" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -762,7 +762,7 @@ next
   have eval:"P,E \<turnstile> \<langle>Cast C e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> Cast C e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                   \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                   \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain D where wte:"P,E \<turnstile> e :: Class D" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -799,7 +799,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
                      \<Longrightarrow> Val v\<^isub>1 = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>2 :: T; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-                     \<Longrightarrow> Val v\<^isub>2 = ei \<and> s\<^isub>2 = si" .
+                     \<Longrightarrow> Val v\<^isub>2 = ei \<and> s\<^isub>2 = si" by fact+
   from wt obtain T\<^isub>1 T\<^isub>2 where wte1:"P,E \<turnstile> e\<^isub>1 :: T\<^isub>1" and wte2:"P,E \<turnstile> e\<^isub>2 :: T\<^isub>2"
     by auto
   from eval show ?case
@@ -833,7 +833,7 @@ next
    have eval:"P,E \<turnstile> \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2\<rangle>"
      and wt:"P,E \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
      and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                     \<Longrightarrow> throw e = ei \<and> s\<^isub>1 = si" .
+                     \<Longrightarrow> throw e = ei \<and> s\<^isub>1 = si" by fact+
    from wt obtain T\<^isub>1 T\<^isub>2 where wte1:"P,E \<turnstile> e\<^isub>1 :: T\<^isub>1" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -856,7 +856,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
                     \<Longrightarrow> Val v\<^isub>1 = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>2 :: T; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-                    \<Longrightarrow> throw e = ei \<and> s\<^isub>2 = si" .
+                    \<Longrightarrow> throw e = ei \<and> s\<^isub>2 = si" by fact+
   from wt obtain T\<^isub>1 T\<^isub>2 where wte1:"P,E \<turnstile> e\<^isub>1 :: T\<^isub>1" and wte2:"P,E \<turnstile> e\<^isub>2 :: T\<^isub>2"
     by auto
   from eval show ?case
@@ -893,7 +893,7 @@ next
     and env:"E V = Some T" and casts:"P \<turnstile> T casts v to v'" and l':"l' = l(V \<mapsto> v')"
     and wt:"P,E \<turnstile> V:=e :: T'" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> Val v = e\<^isub>2 \<and> (h,l) = s\<^isub>2" .
+                    \<Longrightarrow> Val v = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by fact+
   from wt env obtain T'' where wte:"P,E \<turnstile> e :: T''" and leq:"P \<turnstile> T'' \<le> T" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -917,7 +917,7 @@ next
   have eval:"P,E \<turnstile> \<langle>V:=e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> V:=e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain T'' where wte:"P,E \<turnstile> e :: T''" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -937,7 +937,7 @@ next
     and S:"(Ds,fs) \<in> S" and fs:"fs F = Some v"
     and wt:"P,E \<turnstile> e\<bullet>F{Cs} :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> ref (a, Cs') = e\<^isub>2 \<and> (h,l) = s\<^isub>2" .
+                    \<Longrightarrow> ref (a, Cs') = e\<^isub>2 \<and> (h,l) = s\<^isub>2" by fact+
   from wt obtain C where wte:"P,E \<turnstile> e :: Class C" by auto
   from eval_preserves_sconf[OF wf eval' wte sconf] h have oconf:"P,h \<turnstile> (D,S) \<surd>"
     by(simp add:sconf_def hconf_def)
@@ -964,7 +964,7 @@ next
   have eval:"P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> e\<bullet>F{Cs} :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                    \<Longrightarrow> null = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow> null = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain C where wte:"P,E \<turnstile> e :: Class C" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -984,7 +984,7 @@ next
   have eval:"P,E \<turnstile> \<langle>e\<bullet>F{Cs},s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> e\<bullet>F{Cs} :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain C where wte:"P,E \<turnstile> e :: Class C" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1014,7 +1014,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
                      \<Longrightarrow> ref(a,Cs') = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>2 :: T; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-                    \<Longrightarrow> Val v = ei \<and> (h\<^isub>2,l\<^isub>2) = si" .
+                    \<Longrightarrow> Val v = ei \<and> (h\<^isub>2,l\<^isub>2) = si" by fact+
   from wt obtain C T'' where wte1:"P,E \<turnstile> e\<^isub>1 :: Class C" 
     and has_least':"P \<turnstile> C has least F:T' via Cs"
     and wte2:"P,E \<turnstile> e\<^isub>2 :: T''" and leq:"P \<turnstile> T'' \<le> T'"
@@ -1071,7 +1071,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
                      \<Longrightarrow> null = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>2 :: T; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-                    \<Longrightarrow> Val v = ei \<and> s\<^isub>2 = si" .
+                    \<Longrightarrow> Val v = ei \<and> s\<^isub>2 = si" by fact+
   from wt obtain C T'' where wte1:"P,E \<turnstile> e\<^isub>1 :: Class C" 
     and wte2:"P,E \<turnstile> e\<^isub>2 :: T''" by auto
   from eval show ?case
@@ -1109,7 +1109,7 @@ next
   have eval:"P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs} := e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2\<rangle>" 
     and wt:"P,E \<turnstile> e\<^isub>1\<bullet>F{Cs} := e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" .
+                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" by fact+
   from wt obtain C T'' where wte1:"P,E \<turnstile> e\<^isub>1 :: Class C" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1135,7 +1135,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
                     \<Longrightarrow> Val v = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>2 :: T; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>2 = si" .
+                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>2 = si" by fact+
   from wt obtain C T'' where wte1:"P,E \<turnstile> e\<^isub>1 :: Class C" 
     and wte2:"P,E \<turnstile> e\<^isub>2 :: T''" by auto
   from eval show ?case
@@ -1175,7 +1175,7 @@ next
   have eval:"P,E \<turnstile> \<langle>Call e Copt M es,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> Call e Copt M es :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow> throw e' = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt obtain C where wte:"P,E \<turnstile> e :: Class C" by(cases Copt)auto
   show ?case
   proof(cases Copt)
@@ -1228,7 +1228,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
                     \<Longrightarrow> Val v = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>esi si Ts. \<lbrakk>P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>esi,si\<rangle>; P,E \<turnstile> es [::] Ts; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-                      \<Longrightarrow> map Val vs @ throw ex # es' = esi \<and> s\<^isub>2 = si" .
+                      \<Longrightarrow> map Val vs @ throw ex # es' = esi \<and> s\<^isub>2 = si" by fact+
   from wt obtain C Ts where wte:"P,E \<turnstile> e :: Class C" and wtes:"P,E \<turnstile> es [::] Ts" 
     by(cases Copt)auto
   show ?case
@@ -1339,7 +1339,7 @@ next
     \<lbrakk>P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> \<langle>new_body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>;
      P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> new_body :: T;
      P,E(this \<mapsto> Class (last Cs'), pns [\<mapsto>] Ts) \<turnstile> (h\<^isub>2,l\<^isub>2') \<surd>\<rbrakk>
-  \<Longrightarrow> e' = ei \<and> (h\<^isub>3, l\<^isub>3) = si" .
+  \<Longrightarrow> e' = ei \<and> (h\<^isub>3, l\<^isub>3) = si" by fact+
   from wt obtain D Ss Ss' m Cs'' where wte:"P,E \<turnstile> e :: Class D" 
     and has_least':"P \<turnstile> D has least M = (Ss,T'',m) via Cs''"
     and wtes:"P,E \<turnstile> es [::] Ss'" and subs:"P \<turnstile> Ss' [\<le>] Ss" by auto
@@ -1355,7 +1355,7 @@ next
     by(induct rule:SelectMethodDef.induct,
        auto simp:FinalOverriderMethodDef_def OverriderMethodDefs_def 
                  MinimalMethodDefs_def LeastMethodDef_def MethodDefs_def)
-  hence "class":"is_class P (last Cs')" by(auto intro!:Subobj_last_isClass)
+  with wf have "class":"is_class P (last Cs')" by(auto intro!:Subobj_last_isClass)
   from eval'' have hext:"hp s\<^isub>1 \<unlhd> h\<^isub>2" by (cases s\<^isub>1,auto intro: evals_hext)
   from wf eval' sconf wte last have "P,E,(hp s\<^isub>1) \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
     by -(rule eval_preserves_type,simp_all)
@@ -1531,7 +1531,7 @@ next
    \<lbrakk>P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> \<langle>body,(h\<^isub>2,l\<^isub>2')\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>;
     P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> body :: T;
     P,E(this \<mapsto> Class (last Ds), pns [\<mapsto>] Ts) \<turnstile> (h\<^isub>2,l\<^isub>2') \<surd>\<rbrakk>
-                    \<Longrightarrow> e' = ei \<and> (h\<^isub>3, l\<^isub>3) = si" .
+                    \<Longrightarrow> e' = ei \<and> (h\<^isub>3, l\<^isub>3) = si" by fact+
   from wt has_least wf obtain C' Ts' where wte:"P,E \<turnstile> e :: Class C'"
       and wtes:"P,E \<turnstile> es [::] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
     by(auto dest:wf_sees_method_fun)
@@ -1553,7 +1553,7 @@ next
     by(auto intro:Subobjs_appendPath simp:path_via_def)
   with has_least wf last' Ds have subo:"Subobjs P D Ds"
     by(fastsimp intro:Subobjs_appendPath simp:LeastMethodDef_def MethodDefs_def)
-  hence "class":"is_class P (last Ds)" by(auto intro!:Subobj_last_isClass)
+  with wf have "class":"is_class P (last Ds)" by(auto intro!:Subobj_last_isClass)
   from has_least wf obtain D' where "Subobjs P D' Cs'"
     by(auto simp:LeastMethodDef_def MethodDefs_def)
   with Ds have last_Ds:"last Cs' = last Ds"
@@ -1691,7 +1691,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
     \<Longrightarrow> null = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>esi si Ts. \<lbrakk>P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>esi,si\<rangle>; P,E \<turnstile> es [::] Ts; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-    \<Longrightarrow> map Val vs = esi \<and> s\<^isub>2 = si" .
+    \<Longrightarrow> map Val vs = esi \<and> s\<^isub>2 = si" by fact+
   from wt obtain C Ts where wte:"P,E \<turnstile> e :: Class C" and wtes:"P,E \<turnstile> es [::] Ts" 
     by(cases Copt)auto
   show ?case
@@ -1770,7 +1770,7 @@ next
     and wt:"P,E \<turnstile> {V:T; e\<^isub>0} :: T'" and sconf:"P,E \<turnstile> (h\<^isub>0, l\<^isub>0) \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T'. \<lbrakk>P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0, l\<^isub>0(V := None))\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; 
                P,E(V \<mapsto> T) \<turnstile> e\<^isub>0 :: T'; P,E(V \<mapsto> T) \<turnstile> (h\<^isub>0, l\<^isub>0(V := None)) \<surd>\<rbrakk>
-    \<Longrightarrow> e\<^isub>1 = e\<^isub>2 \<and> (h\<^isub>1, l\<^isub>1) = s\<^isub>2" .
+    \<Longrightarrow> e\<^isub>1 = e\<^isub>2 \<and> (h\<^isub>1, l\<^isub>1) = s\<^isub>2" by fact+
   from wt have type:"is_type P T" and wte:"P,E(V \<mapsto> T) \<turnstile> e\<^isub>0 :: T'" by auto
   from sconf type have sconf':"P,E(V \<mapsto> T) \<turnstile> (h\<^isub>0, l\<^isub>0(V := None)) \<surd>"
     by(auto simp:sconf_def lconf_def envconf_def)
@@ -1785,7 +1785,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>0 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
                      \<Longrightarrow> Val v = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk> 
-                     \<Longrightarrow> e\<^isub>2 = ei \<and> s\<^isub>2 = si" .
+                     \<Longrightarrow> e\<^isub>2 = ei \<and> s\<^isub>2 = si" by fact+
   from wt obtain T' where wte0:"P,E \<turnstile> e\<^isub>0 :: T'" and wte1:"P,E \<turnstile> e\<^isub>1 :: T" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1805,7 +1805,7 @@ next
   have eval:"P,E \<turnstile> \<langle>e\<^isub>0;; e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> e\<^isub>0;; e\<^isub>1 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>0,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>0 :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                     \<Longrightarrow> throw e = ei \<and> s\<^isub>1 = si" .
+                     \<Longrightarrow> throw e = ei \<and> s\<^isub>1 = si" by fact+
   from wt obtain T' where wte0:"P,E \<turnstile> e\<^isub>0 :: T'" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1824,7 +1824,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
                     \<Longrightarrow> true = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>1,s\<^isub>1\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>1 :: T; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk> 
-                    \<Longrightarrow> e' = ei \<and> s\<^isub>2 = si" .
+                    \<Longrightarrow> e' = ei \<and> s\<^isub>2 = si" by fact+
   from wt have wte:"P,E \<turnstile> e :: Boolean" and wte1:"P,E \<turnstile> e\<^isub>1 :: T" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1848,7 +1848,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
                     \<Longrightarrow> false = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e\<^isub>2 :: T; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk> 
-                    \<Longrightarrow> e' = ei \<and> s\<^isub>2 = si" .
+                    \<Longrightarrow> e' = ei \<and> s\<^isub>2 = si" by fact+
   from wt have wte:"P,E \<turnstile> e :: Boolean" and wte2:"P,E \<turnstile> e\<^isub>2 :: T" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1872,7 +1872,7 @@ next
   have eval:"P,E \<turnstile> \<langle>if (e) e\<^isub>1 else e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2',s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" .
+                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" by fact+
   from wt have wte:"P,E \<turnstile> e :: Boolean" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1892,7 +1892,7 @@ next
   have eval:"P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> while (e) c :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>e\<^isub>2 s\<^isub>2 T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                    \<Longrightarrow> false = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" .
+                    \<Longrightarrow> false = e\<^isub>2 \<and> s\<^isub>1 = s\<^isub>2" by fact+
   from wt have wte:"P,E \<turnstile> e :: Boolean" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1920,7 +1920,7 @@ next
                     \<Longrightarrow> Val v\<^isub>1 = ei \<and> s\<^isub>2 = si"
     and IH3:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>while (e) c,s\<^isub>2\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> while (e) c :: T; 
                          P,E \<turnstile> s\<^isub>2 \<surd>\<rbrakk>
-                    \<Longrightarrow> e\<^isub>3 = ei \<and> s\<^isub>3 = si" .
+                    \<Longrightarrow> e\<^isub>3 = ei \<and> s\<^isub>3 = si" by fact+
   from wt obtain T' where wte:"P,E \<turnstile> e :: Boolean" and wtc:"P,E \<turnstile> c :: T'" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1955,7 +1955,7 @@ next
   have eval:"P,E \<turnstile> \<langle>while (e) c,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> while (e) c :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk>
-                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" .
+                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" by fact+
   from wt have wte:"P,E \<turnstile> e :: Boolean" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -1981,7 +1981,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
                     \<Longrightarrow> true = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>c,s\<^isub>1\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> c :: T; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-                   \<Longrightarrow> throw e' = ei \<and> s\<^isub>2 = si" .
+                   \<Longrightarrow> throw e' = ei \<and> s\<^isub>2 = si" by fact+
   from wt obtain T' where wte:"P,E \<turnstile> e :: Boolean" and wtc:"P,E \<turnstile> c :: T'" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -2014,7 +2014,7 @@ next
   have eval:"P,E \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> throw e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                   \<Longrightarrow> ref r = ei \<and> s\<^isub>1 = si" .
+                   \<Longrightarrow> ref r = ei \<and> s\<^isub>1 = si" by fact+
   from wt obtain C where wte:"P,E \<turnstile> e :: Class C" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -2033,7 +2033,7 @@ next
   have eval:"P,E \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> throw e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                   \<Longrightarrow> null = ei \<and> s\<^isub>1 = si" .
+                   \<Longrightarrow> null = ei \<and> s\<^isub>1 = si" by fact+
   from wt obtain C where wte:"P,E \<turnstile> e :: Class C" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -2052,7 +2052,7 @@ next
   have eval:"P,E \<turnstile> \<langle>throw e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>e\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> throw e :: T" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" .
+                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" by fact+
   from wt obtain C where wte:"P,E \<turnstile> e :: Class C" by auto
   from eval show ?case
   proof(rule eval_cases)
@@ -2075,7 +2075,7 @@ next
     and IH1:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
                     \<Longrightarrow> Val v = ei \<and> s\<^isub>1 = si"
     and IH2:"\<And>esi si Ts. \<lbrakk>P,E \<turnstile> \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>esi,si\<rangle>; P,E \<turnstile> es [::] Ts; P,E \<turnstile> s\<^isub>1 \<surd>\<rbrakk>
-                    \<Longrightarrow> es' = esi \<and> s\<^isub>2 = si" .
+                    \<Longrightarrow> es' = esi \<and> s\<^isub>2 = si" by fact+
   from wt obtain T' Ts' where Ts:"Ts = T'#Ts'" by(cases Ts) auto
   with wt have wte:"P,E \<turnstile> e :: T'" and wtes:"P,E \<turnstile> es [::] Ts'" by auto
   from evals show ?case
@@ -2097,7 +2097,7 @@ next
   have evals:"P,E \<turnstile> \<langle>e#es,s\<^isub>0\<rangle> [\<Rightarrow>] \<langle>es\<^isub>2,s\<^isub>2\<rangle>"
     and wt:"P,E \<turnstile> e#es [::] Ts" and sconf:"P,E \<turnstile> s\<^isub>0 \<surd>"
     and IH:"\<And>ei si T. \<lbrakk>P,E \<turnstile> \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>ei,si\<rangle>; P,E \<turnstile> e :: T; P,E \<turnstile> s\<^isub>0 \<surd>\<rbrakk> 
-                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" .
+                    \<Longrightarrow> throw e' = ei \<and> s\<^isub>1 = si" by fact+
   from wt obtain T' Ts' where Ts:"Ts = T'#Ts'" by(cases Ts) auto
   with wt have wte:"P,E \<turnstile> e :: T'" by auto
   from evals show ?case

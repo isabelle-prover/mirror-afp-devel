@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Effect.thy
-    ID:         $Id: Effect.thy,v 1.2 2006-04-30 09:25:21 lsf37 Exp $
+    ID:         $Id: Effect.thy,v 1.3 2007-07-19 21:23:10 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -247,7 +247,7 @@ lemma length_cases2:
   assumes "\<And>LT. P ([],LT)"
   assumes "\<And>l ST LT. P (l#ST,LT)"
   shows "P s"
-  by (cases s, cases "fst s", auto)
+  by (cases s, cases "fst s") (auto intro!: assms)
 
 
 lemma length_cases3:

@@ -1,12 +1,12 @@
 (*  Title:      Jinja/Compiler/Compiler1.thy
-    ID:         $Id: Compiler1.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Compiler1.thy,v 1.3 2007-07-19 21:23:10 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
 
 header {* \isaheader{Compilation Stage 1} *}
 
-theory Compiler1 imports  PCompiler J1 Index begin
+theory Compiler1 imports PCompiler J1 Index begin
 
 text{* Replacing variable names by indices. *}
 

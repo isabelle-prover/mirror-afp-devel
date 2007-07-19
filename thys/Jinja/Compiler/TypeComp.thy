@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.8 2006-08-31 12:11:46 webertj Exp $
+    ID:         $Id: TypeComp.thy,v 1.9 2007-07-19 21:23:11 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -958,7 +958,7 @@ proof(induct e and es)
   let ?\<tau>\<^isub>2' = "ty\<^isub>i' (T#ST) ?E\<^isub>i (?A\<^isub>i \<squnion> \<A> e\<^isub>2)"
   let ?\<tau>' = "ty\<^isub>i' (T#ST) E (A \<squnion> \<A> e\<^isub>1 \<sqinter> (\<A> e\<^isub>2 \<ominus> i))"
   let ?go = "Goto (int(size(compE\<^isub>2 e\<^isub>2)) + 2)"
-  have "PROP ?P e\<^isub>2 ?E\<^isub>i T ?A\<^isub>i ST".
+  have "PROP ?P e\<^isub>2 ?E\<^isub>i T ?A\<^isub>i ST" by fact
   hence "\<turnstile> compE\<^isub>2 e\<^isub>2,compxE\<^isub>2 e\<^isub>2 0 (size ST) [::] (?\<tau>\<^isub>3 # ?\<tau>s\<^isub>2) @ [?\<tau>\<^isub>2']"
     using TryCatch.prems by(auto simp:after_def)
   also have "?A\<^isub>i \<squnion> \<A> e\<^isub>2 = (A \<squnion> \<A> e\<^isub>2) \<squnion> \<lfloor>{size E}\<rfloor>"
@@ -1004,7 +1004,7 @@ next
 next
   case (BinOp e\<^isub>1 bop e\<^isub>2) 
   let ?op = "case bop of Eq \<Rightarrow> [CmpEq] | Add \<Rightarrow> [IAdd]"
-  have T: "P,E \<turnstile>\<^sub>1 e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T" .
+  have T: "P,E \<turnstile>\<^sub>1 e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 :: T" by fact
   then obtain T\<^isub>1 T\<^isub>2 where T\<^isub>1: "P,E \<turnstile>\<^sub>1 e\<^isub>1 :: T\<^isub>1" and T\<^isub>2: "P,E \<turnstile>\<^sub>1 e\<^isub>2 :: T\<^isub>2" and 
     bopT: "case bop of Eq \<Rightarrow> (P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1) \<and> T = Boolean 
                     | Add \<Rightarrow> T\<^isub>1 = Integer \<and> T\<^isub>2 = Integer \<and> T = Integer" by auto
@@ -1014,7 +1014,7 @@ next
   let ?\<tau>\<^isub>2 = "ty\<^isub>i' (T\<^isub>2#T\<^isub>1#ST) E ?A\<^isub>2" let ?\<tau>' = "ty\<^isub>i' (T#ST) E ?A\<^isub>2"
   from bopT have "\<turnstile> ?op,[] [::] [?\<tau>\<^isub>2,?\<tau>']" 
     by (cases bop) (auto simp add: wt_CmpEq wt_IAdd)
-  also have "PROP ?P e\<^isub>2 E T\<^isub>2 ?A\<^isub>1 (T\<^isub>1#ST)" .
+  also have "PROP ?P e\<^isub>2 E T\<^isub>2 ?A\<^isub>1 (T\<^isub>1#ST)" by fact
   with BinOp.prems T\<^isub>2 
   have "\<turnstile> compE\<^isub>2 e\<^isub>2, compxE\<^isub>2 e\<^isub>2 0 (size (T\<^isub>1#ST)) [::] ?\<tau>\<^isub>1#?\<tau>s\<^isub>2@[?\<tau>\<^isub>2]" 
     by (auto simp: after_def)
@@ -1023,7 +1023,7 @@ next
   finally show ?case using T T\<^isub>1 T\<^isub>2 by (simp add: after_def hyperUn_assoc)
 next
   case (Cons_exp e es)
-  have "P,E \<turnstile>\<^sub>1 e # es [::] Ts" .
+  have "P,E \<turnstile>\<^sub>1 e # es [::] Ts" by fact
   then obtain T\<^isub>e Ts' where 
     T\<^isub>e: "P,E \<turnstile>\<^sub>1 e :: T\<^isub>e" and Ts': "P,E \<turnstile>\<^sub>1 es [::] Ts'" and
     Ts: "Ts = T\<^isub>e#Ts'" by auto
@@ -1031,7 +1031,7 @@ next
   let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s\<^isub>e = "compT E A ST e"  
   let ?\<tau>\<^isub>e = "ty\<^isub>i' (T\<^isub>e#ST) E ?A\<^isub>e" let ?\<tau>s' = "compTs E ?A\<^isub>e (T\<^isub>e#ST) es"
   let ?\<tau>s = "?\<tau> # ?\<tau>s\<^isub>e @ (?\<tau>\<^isub>e # ?\<tau>s')"
-  have Ps: "PROP ?Ps es E Ts' ?A\<^isub>e (T\<^isub>e#ST)" .
+  have Ps: "PROP ?Ps es E Ts' ?A\<^isub>e (T\<^isub>e#ST)" by fact
   with Cons_exp.prems T\<^isub>e Ts'
   have "\<turnstile> compEs\<^isub>2 es, compxEs\<^isub>2 es 0 (size (T\<^isub>e#ST)) [::] ?\<tau>\<^isub>e#?\<tau>s'" by (simp add: after_def)
   also from Cons_exp T\<^isub>e have "\<turnstile> compE\<^isub>2 e, compxE\<^isub>2 e 0 (size ST) [::] ?\<tau>#?\<tau>s\<^isub>e@[?\<tau>\<^isub>e]" 
@@ -1054,7 +1054,7 @@ next
   from FAss.prems sees T'_T 
   have "\<turnstile> [Putfield F D,Push Unit],[] [::] [?\<tau>\<^isub>2,?\<tau>\<^isub>3,?\<tau>']"
     by (fastsimp simp add: wt_Push wt_Put)
-  also have "PROP ?P e\<^isub>2 E T' ?A\<^isub>1 (Class C#ST)".
+  also have "PROP ?P e\<^isub>2 E T' ?A\<^isub>1 (Class C#ST)" by fact
   with FAss.prems T' 
   have "\<turnstile> compE\<^isub>2 e\<^isub>2, compxE\<^isub>2 e\<^isub>2 0 (size ST+1) [::] ?\<tau>\<^isub>1#?\<tau>s\<^isub>2@[?\<tau>\<^isub>2]"
     by (auto simp add: after_def hyperUn_assoc) 
@@ -1068,7 +1068,7 @@ next
 next
   case (Block i T\<^isub>i e)
   let ?\<tau>s = "ty\<^isub>i' ST E A # compT (E @ [T\<^isub>i]) (A\<ominus>i) ST e"
-  have IH: "PROP ?P e (E@[T\<^isub>i]) T (A\<ominus>i) ST" .
+  have IH: "PROP ?P e (E@[T\<^isub>i]) T (A\<ominus>i) ST" by fact
   hence "\<turnstile> compE\<^isub>2 e, compxE\<^isub>2 e 0 (size ST) [::]
          ?\<tau>s @ [ty\<^isub>i' (T#ST) (E@[T\<^isub>i]) (A\<ominus>(size E) \<squnion> \<A> e)]"
     using Block.prems by (auto simp add: after_def)
@@ -1103,7 +1103,7 @@ next
   let ?\<tau>s = "(?\<tau> # ?\<tau>s\<^isub>e @ [?\<tau>\<^isub>e]) @ ?\<tau>\<^isub>1 # ?\<tau>s\<^isub>c @ [?\<tau>\<^isub>c, ?\<tau>\<^isub>2, ?\<tau>\<^isub>1, ?\<tau>']"
   have "\<turnstile> [],[] [::] [] @ ?\<tau>s" by(simp add:wt_instrs_def)
   also
-  have "PROP ?P e E Boolean A ST" .
+  have "PROP ?P e E Boolean A ST" by fact
   hence "\<turnstile> compE\<^isub>2 e,compxE\<^isub>2 e 0 (size ST) [::] ?\<tau> # ?\<tau>s\<^isub>e @ [?\<tau>\<^isub>e]"
     using While.prems by (auto simp:after_def)
   also
@@ -1117,7 +1117,7 @@ next
   also
   have "(?\<tau> # ?\<tau>s\<^isub>e) @ (?\<tau>\<^isub>e # ?\<tau>\<^isub>1 # ?\<tau>s\<^isub>c @ [?\<tau>\<^isub>c, ?\<tau>\<^isub>2, ?\<tau>\<^isub>1, ?\<tau>']) = ?\<tau>s" by simp
   also
-  have "PROP ?P c E Tc ?A\<^isub>0 ST" .
+  have "PROP ?P c E Tc ?A\<^isub>0 ST" by fact
   hence "\<turnstile> compE\<^isub>2 c,compxE\<^isub>2 c 0 (size ST) [::] ?\<tau>\<^isub>1 # ?\<tau>s\<^isub>c @ [?\<tau>\<^isub>c]"
     using While.prems wtc by (auto simp:after_def)
   also have "?\<tau>s = (?\<tau> # ?\<tau>s\<^isub>e @ [?\<tau>\<^isub>e,?\<tau>\<^isub>1] @ ?\<tau>s\<^isub>c) @ [?\<tau>\<^isub>c,?\<tau>\<^isub>2,?\<tau>\<^isub>1,?\<tau>']" by simp
@@ -1144,7 +1144,7 @@ next
   let ?A' = "?A\<^isub>0 \<squnion> \<A> e\<^isub>1 \<sqinter> \<A> e\<^isub>2"
   let ?\<tau>\<^isub>2 = "ty\<^isub>i' ST E ?A\<^isub>0" let ?\<tau>' = "ty\<^isub>i' (T#ST) E ?A'"
   let ?\<tau>s\<^isub>2 = "compT E ?A\<^isub>0 ST e\<^isub>2"
-  have "PROP ?P e\<^isub>2 E T\<^isub>2 ?A\<^isub>0 ST" .
+  have "PROP ?P e\<^isub>2 E T\<^isub>2 ?A\<^isub>0 ST" by fact
   hence "\<turnstile> compE\<^isub>2 e\<^isub>2, compxE\<^isub>2 e\<^isub>2 0 (size ST) [::] (?\<tau>\<^isub>2#?\<tau>s\<^isub>2) @ [ty\<^isub>i' (T\<^isub>2#ST) E ?A\<^isub>2]"
     using Cond.prems wt\<^isub>2 by(auto simp add:after_def)
   also have "P \<turnstile> ty\<^isub>i' (T\<^isub>2#ST) E ?A\<^isub>2 \<le>' ?\<tau>'" using sub\<^isub>2
@@ -1152,12 +1152,12 @@ next
   also
   let ?\<tau>\<^isub>3 = "ty\<^isub>i' (T\<^isub>1 # ST) E ?A\<^isub>1"
   let ?g\<^isub>2 = "Goto(int (size (compE\<^isub>2 e\<^isub>2) + 1))"
-  have "P,T\<^isub>r,mxs,size(compE\<^isub>2 e\<^isub>2)+2,[] \<turnstile> ?g\<^isub>2,0 :: ?\<tau>\<^isub>3#(?\<tau>\<^isub>2#?\<tau>s\<^isub>2)@[?\<tau>']"
+  from sub\<^isub>1 have "P,T\<^isub>r,mxs,size(compE\<^isub>2 e\<^isub>2)+2,[] \<turnstile> ?g\<^isub>2,0 :: ?\<tau>\<^isub>3#(?\<tau>\<^isub>2#?\<tau>s\<^isub>2)@[?\<tau>']"
     by(auto simp: hyperset_defs wt_defs nth_Cons ty\<^isub>i'_def
              split:nat.split intro!: ty\<^isub>l_antimono)
   also
   let ?\<tau>s\<^isub>1 = "compT E ?A\<^isub>0 ST e\<^isub>1"
-  have "PROP ?P e\<^isub>1 E T\<^isub>1 ?A\<^isub>0 ST" .
+  have "PROP ?P e\<^isub>1 E T\<^isub>1 ?A\<^isub>0 ST" by fact
   hence "\<turnstile> compE\<^isub>2 e\<^isub>1,compxE\<^isub>2 e\<^isub>1 0 (size ST) [::] ?\<tau>\<^isub>2 # ?\<tau>s\<^isub>1 @ [?\<tau>\<^isub>3]"
     using Cond.prems wt\<^isub>1 by(auto simp add:after_def)
   also
@@ -1169,7 +1169,7 @@ next
     by(simp add: wt_IfFalse nat_add_distrib split:nat_diff_split)
   also (wt_instrs_ext2) have "[?\<tau>\<^isub>1] @ ?\<tau>s\<^isub>1\<^isub>2 = ?\<tau>\<^isub>1 # ?\<tau>s\<^isub>1\<^isub>2" by simp also
   let ?\<tau> = "ty\<^isub>i' ST E A"
-  have "PROP ?P e E Boolean A ST" .
+  have "PROP ?P e E Boolean A ST" by fact
   hence "\<turnstile> compE\<^isub>2 e, compxE\<^isub>2 e 0 (size ST) [::] ?\<tau> # compT E A ST e @ [?\<tau>\<^isub>1]"
     using Cond.prems wte by(auto simp add:after_def)
   finally show ?case using wte wt\<^isub>1 wt\<^isub>2 by(simp add:after_def hyperUn_assoc)
@@ -1189,7 +1189,7 @@ next
   have "\<turnstile> [Invoke M (size es)],[] [::] [?\<tau>\<^isub>1,?\<tau>']"
     by(rule wt_Invoke[OF same_size method subs])
   also
-  have "PROP ?Ps es E Ts' ?A\<^isub>0 (Class C # ST)".
+  have "PROP ?Ps es E Ts' ?A\<^isub>0 (Class C # ST)" by fact
   hence "\<turnstile> compEs\<^isub>2 es,compxEs\<^isub>2 es 0 (size ST+1) [::] ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s"
         "last (?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s) = ?\<tau>\<^isub>1"
     using Call.prems wtes by(auto simp add:after_def)

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/LBVComplete.thy
-    ID:         $Id: LBVComplete.thy,v 1.5 2007-06-12 22:45:24 makarius Exp $
+    ID:         $Id: LBVComplete.thy,v 1.6 2007-07-19 21:23:11 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -91,7 +91,7 @@ proof-
     from app less have "?app ss\<^isub>2" by (blast dest: trans_r lesub_step_typeD)
     moreover {
       from ss\<^isub>1 have map1: "set (?map ss\<^isub>1) \<subseteq> A" by auto
-      with x have "?sum ss\<^isub>1 \<in> A" by (auto intro!: plusplus_closed)
+      with x and semilat have "?sum ss\<^isub>1 \<in> A" by (auto intro!: plusplus_closed)
       with sum have "?s\<^isub>1 \<in> A" by simp
       moreover    
       have mapD: "\<And>x ss. x \<in> set (?map ss) \<Longrightarrow> \<exists>p. (p,x) \<in> set ss \<and> p=pc+1" by auto
@@ -120,8 +120,8 @@ lemma (in lbvc) wti_mono:
   shows "wti c pc s\<^isub>2 \<sqsubseteq>\<^sub>r wti c pc s\<^isub>1" (is "?s\<^isub>2' \<sqsubseteq>\<^sub>r ?s\<^isub>1'")
 (*<*)
 proof -
-  from mono s\<^isub>2 have "set (step pc s\<^isub>2) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step pc s\<^isub>1)" by - (rule monoD)
-  moreover from pc cert have "c!Suc pc \<in> A" by - (rule cert_okD3)
+  from mono pc s\<^isub>2 less have "set (step pc s\<^isub>2) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step pc s\<^isub>1)" by (rule monoD)
+  moreover from cert B_A pc have "c!Suc pc \<in> A" by (rule cert_okD3)
   moreover from pres s\<^isub>1 pc have "snd`set (step pc s\<^isub>1) \<subseteq> A" by (rule pres_typeD2)
   moreover from pres s\<^isub>2 pc have "snd`set (step pc s\<^isub>2) \<subseteq> A" by (rule pres_typeD2)
   ultimately show ?thesis by (simp add: wti merge_mono)
@@ -135,7 +135,7 @@ lemma (in lbvc) wtc_mono:
 (*<*)
 proof (cases "c!pc = \<bottom>")
   case True 
-  moreover have "wti c pc s\<^isub>2 \<sqsubseteq>\<^sub>r wti c pc s\<^isub>1" by (rule wti_mono)
+  moreover from less pc s\<^isub>1 s\<^isub>2 have "wti c pc s\<^isub>2 \<sqsubseteq>\<^sub>r wti c pc s\<^isub>1" by (rule wti_mono)
   ultimately show ?thesis by (simp add: wtc)
 next
   case False
@@ -165,7 +165,7 @@ proof -
   from stable 
   have less: "\<forall>(q,s')\<in>set ?step. s' \<sqsubseteq>\<^sub>r \<tau>s!q" by (simp add: stable_def)
   
-  from cert pc have cert_suc: "c!Suc pc \<in> A" by - (rule cert_okD3)
+  from cert B_A pc have cert_suc: "c!Suc pc \<in> A" by (rule cert_okD3)
   moreover from \<tau>s pc have "\<tau>s!pc \<in> A" by simp
   with pres pc have stepA: "snd`set ?step \<subseteq> A" by - (rule pres_typeD2)
   ultimately
@@ -221,7 +221,7 @@ proof -
   have less: "\<forall>(q,s')\<in>set ?step. s' \<sqsubseteq>\<^sub>r \<tau>s!q" by (simp add: stable_def)
    
   from suc_pc have pc: "pc < size \<tau>s" by simp
-  with cert have cert_suc: "c!Suc pc \<in> A" by - (rule cert_okD3)
+  with cert B_A have cert_suc: "c!Suc pc \<in> A" by (rule cert_okD3)
   moreover from \<tau>s pc have "\<tau>s!pc \<in> A" by simp
   with pres pc have stepA: "snd`set ?step \<subseteq> A" by - (rule pres_typeD2)
   moreover from stable pc have "?wti \<noteq> \<top>" by (rule stable_wti)
@@ -249,7 +249,7 @@ lemma (in lbvc) stable_wtc:
   shows "wtc c pc (\<tau>s!pc) \<noteq> \<top>"
 (*<*)
 proof -
-  have wti: "wti c pc (\<tau>s!pc) \<noteq> \<top>" by (rule stable_wti)   
+  from stable pc have wti: "wti c pc (\<tau>s!pc) \<noteq> \<top>" by (rule stable_wti)
   show ?thesis
   proof (cases "c!pc = \<bottom>")
     case True with wti show ?thesis by (simp add: wtc)
@@ -267,17 +267,17 @@ lemma (in lbvc) wtc_less:
 (*<*)
 proof (cases "c!pc = \<bottom>")
   case True
-  moreover have "wti c pc (\<tau>s!pc) \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule wti_less)
+  moreover from stable suc_pc have "wti c pc (\<tau>s!pc) \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule wti_less)
   ultimately show ?thesis by (simp add: wtc)
 next
   case False
   from suc_pc have pc: "pc < size \<tau>s" by simp
-  hence "?wtc \<noteq> \<top>" by - (rule stable_wtc)
+  with stable have "?wtc \<noteq> \<top>" by (rule stable_wtc)
   with False have "?wtc = wti c pc (c!pc)" 
     by (unfold wtc) (simp split: split_if_asm)
   also from pc False have "c!pc = \<tau>s!pc" .. 
   finally have "?wtc = wti c pc (\<tau>s!pc)" .
-  also have "wti c pc (\<tau>s!pc) \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule wti_less)
+  also from stable suc_pc have "wti c pc (\<tau>s!pc) \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule wti_less)
   finally show ?thesis .
 qed
 (*>*)
@@ -302,13 +302,13 @@ next
 
   from pc_l obtain pc: "pc < size \<tau>s" by simp
   with wt_step have stable: "stable r step \<tau>s pc" by (simp add: wt_step_def)
-  moreover assume s_\<tau>s: "s \<sqsubseteq>\<^sub>r \<tau>s!pc"
-  ultimately have wt_\<tau>s: "wtc c pc (\<tau>s!pc) \<noteq> \<top>" by - (rule stable_wtc)
+  moreover note pc
+  ultimately have wt_\<tau>s: "wtc c pc (\<tau>s!pc) \<noteq> \<top>" by (rule stable_wtc)
 
+  assume s_\<tau>s: "s \<sqsubseteq>\<^sub>r \<tau>s!pc"
+  assume s: "s \<in> A"
   from \<tau>s pc have \<tau>s_pc: "\<tau>s!pc \<in> A" by simp
-  moreover assume s: "s \<in> A"
-  ultimately 
-  have wt_s_\<tau>s: "wtc c pc s \<sqsubseteq>\<^sub>r wtc c pc (\<tau>s!pc)" using s_\<tau>s by - (rule wtc_mono)
+  from s_\<tau>s pc \<tau>s_pc s have wt_s_\<tau>s: "wtc c pc s \<sqsubseteq>\<^sub>r wtc c pc (\<tau>s!pc)" by (rule wtc_mono)
   with wt_\<tau>s have wt_s: "wtc c pc s \<noteq> \<top>" by simp
   moreover assume s: "s \<noteq> \<top>" 
   ultimately have "ls = [] \<Longrightarrow> ?wtl (i#ls) pc s \<noteq> \<top>" by simp
@@ -328,13 +328,13 @@ qed
 (*>*)
 
 theorem (in lbvc) wtl_complete:
-  assumes "wt_step r \<top> step \<tau>s"
-  assumes "s \<sqsubseteq>\<^sub>r \<tau>s!0" and "s \<in> A" and "s \<noteq> \<top>" and "size ins = size \<tau>s"
+  assumes wt: "wt_step r \<top> step \<tau>s"
+  assumes s: "s \<sqsubseteq>\<^sub>r \<tau>s!0" "s \<in> A" "s \<noteq> \<top>" and eq: "size ins = size \<tau>s"
   shows "wtl ins c 0 s \<noteq> \<top>"
 (*<*)
 proof -  
-  have "0+size ins = size \<tau>s" by simp
-  thus ?thesis by - (rule wt_step_wtl_lemma)
+  from eq have "0+size ins = size \<tau>s" by simp
+  from wt this s show ?thesis by (rule wt_step_wtl_lemma)
 qed
 (*>*)
 

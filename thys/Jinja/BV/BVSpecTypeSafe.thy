@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVSpecTypeSafe.thy
-    ID:         $Id: BVSpecTypeSafe.thy,v 1.4 2007-04-24 13:26:31 stefanberghofer Exp $
+    ID:         $Id: BVSpecTypeSafe.thy,v 1.5 2007-07-19 21:23:10 makarius Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -763,13 +763,13 @@ proof -
   moreover
   from "h\<surd>" h have "P,h \<turnstile> (D',fs)\<surd>" by (rule hconfD) 
   with has_field vT' have "P,h \<turnstile> (D',fs((F, D)\<mapsto>v))\<surd>" ..
-  with "h\<surd>" have "P \<turnstile> ?h'\<surd>" by - (rule hconf_upd_obj) 
+  with "h\<surd>" h have "P \<turnstile> ?h'\<surd>" by (rule hconf_upd_obj)
   moreover
   from ST'' ST' have "P,h \<turnstile> stk' [:\<le>] ST'" ..
-  with hext have "P,?h' \<turnstile> stk' [:\<le>] ST'" by - (rule confs_hext)
+  from this hext have "P,?h' \<turnstile> stk' [:\<le>] ST'" by (rule confs_hext)
   moreover
   from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
-  with hext have "P,?h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" by - (rule confTs_hext)
+  from this hext have "P,?h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" by (rule confTs_hext)
   moreover
   from fs hext
   have "conf_fs P ?h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)

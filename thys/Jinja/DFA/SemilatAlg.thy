@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/SemilatAlg.thy
-    ID:         $Id: SemilatAlg.thy,v 1.3 2007-06-12 20:41:22 makarius Exp $
+    ID:         $Id: SemilatAlg.thy,v 1.4 2007-07-19 21:23:11 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)
@@ -92,11 +92,11 @@ lemma plusplus_closed: includes semilat shows
 proof (induct x)
   show "\<And>y. y \<in> A \<Longrightarrow> [] \<Squnion>\<^bsub>f\<^esub> y \<in> A" by simp
   fix y x xs
-  assume y: "y \<in> A" and xs: "set (x#xs) \<subseteq> A"
+  assume y: "y \<in> A" and xxs: "set (x#xs) \<subseteq> A"
   assume IH: "\<And>y. \<lbrakk> set xs \<subseteq> A; y \<in> A\<rbrakk> \<Longrightarrow> xs \<Squnion>\<^bsub>f\<^esub> y \<in> A"
-  from xs obtain x: "x \<in> A" and "set xs \<subseteq> A" by simp
+  from xxs obtain x: "x \<in> A" and xs: "set xs \<subseteq> A" by simp
   from x y have "x \<squnion>\<^bsub>f\<^esub> y \<in> A" ..
-  with xs have "xs \<Squnion>\<^bsub>f\<^esub> (x \<squnion>\<^bsub>f\<^esub> y) \<in> A" by - (rule IH)
+  with xs have "xs \<Squnion>\<^bsub>f\<^esub> (x \<squnion>\<^bsub>f\<^esub> y) \<in> A" by (rule IH)
   thus "x#xs \<Squnion>\<^bsub>f\<^esub> y \<in> A" by simp
 qed
 (*>*)
@@ -110,7 +110,7 @@ proof (induct x)
   fix y a l assume y:  "y \<in> A" and "set (a#l) \<subseteq> A"
   then obtain a: "a \<in> A" and x: "set l \<subseteq> A" by simp
   assume "\<And>y. \<lbrakk>set l \<subseteq> A; y \<in> A\<rbrakk> \<Longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> l \<Squnion>\<^bsub>f\<^esub> y"
-  hence IH: "\<And>y. y \<in> A \<Longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> l \<Squnion>\<^bsub>f\<^esub> y" .
+  from this and x have IH: "\<And>y. y \<in> A \<Longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> l \<Squnion>\<^bsub>f\<^esub> y" .
 
   from a y have "y \<sqsubseteq>\<^bsub>r\<^esub> a \<squnion>\<^bsub>f\<^esub> y" ..
   also from a y have "a \<squnion>\<^bsub>f\<^esub> y \<in> A" ..
@@ -133,7 +133,7 @@ proof (induct ls)
   assume y: "y \<in> A" 
 
   assume "\<And>y. \<lbrakk>set ls \<subseteq> A; y \<in> A; x \<in> set ls\<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> y"
-  hence IH: "\<And>y. x \<in> set ls \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> y" .
+  from this and ls have IH: "\<And>y. x \<in> set ls \<Longrightarrow> y \<in> A \<Longrightarrow> x \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> y" .
 
   assume "x \<in> set (s#ls)"
   then obtain xls: "x = s \<or> x \<in> set ls" by simp
@@ -159,7 +159,7 @@ qed
 
 
 lemma (in semilat) pp_lub:
-  assumes "z \<in> A"
+  assumes z: "z \<in> A"
   shows 
   "\<And>y. y \<in> A \<Longrightarrow> set xs \<subseteq> A \<Longrightarrow> \<forall>x \<in> set xs. x \<sqsubseteq>\<^bsub>r\<^esub> z \<Longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> z \<Longrightarrow> xs \<Squnion>\<^bsub>f\<^esub> y \<sqsubseteq>\<^bsub>r\<^esub> z"
 (*<*)
@@ -169,8 +169,8 @@ next
   fix y l ls assume y: "y \<in> A" and "set (l#ls) \<subseteq> A"
   then obtain l: "l \<in> A" and ls: "set ls \<subseteq> A" by auto
   assume "\<forall>x \<in> set (l#ls). x \<sqsubseteq>\<^bsub>r\<^esub> z"
-  then obtain "l \<sqsubseteq>\<^bsub>r\<^esub> z" and lsz: "\<forall>x \<in> set ls. x \<sqsubseteq>\<^bsub>r\<^esub> z" by auto
-  assume "y \<sqsubseteq>\<^bsub>r\<^esub> z" have "l \<squnion>\<^bsub>f\<^esub> y \<sqsubseteq>\<^bsub>r\<^esub> z" ..  
+  then obtain lz: "l \<sqsubseteq>\<^bsub>r\<^esub> z" and lsz: "\<forall>x \<in> set ls. x \<sqsubseteq>\<^bsub>r\<^esub> z" by auto
+  assume "y \<sqsubseteq>\<^bsub>r\<^esub> z" with lz have "l \<squnion>\<^bsub>f\<^esub> y \<sqsubseteq>\<^bsub>r\<^esub> z" using l y z ..
   moreover
   from l y have "l \<squnion>\<^bsub>f\<^esub> y \<in> A" ..
   moreover

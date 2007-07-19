@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.14 2007-07-11 10:07:49 stefanberghofer Exp $
+    ID:          $Id: SmallStep.thy,v 1.15 2007-07-19 21:23:09 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -316,7 +316,7 @@ proof -
     next
       case (step e\<^isub>0 s\<^isub>0 e s)
       have Red:"((e\<^isub>0,s\<^isub>0),e,s) \<in> Red P E"
-	and R:"R e (hp s) (lcl s) e' (hp s') (lcl s')" .
+	and R:"R e (hp s) (lcl s) e' (hp s') (lcl s')" by fact+
       from IH[OF Red[simplified] R] show ?case .
     qed
     }
@@ -372,7 +372,7 @@ next
 next
   case (InitBlockRed E V T e h l v' e' h' l' v'' v l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V \<mapsto> v'))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
-    and l'V: "l' V = Some v''" and casts:"P \<turnstile> T casts v to v'" .
+    and l'V: "l' V = Some v''" and casts:"P \<turnstile> T casts v to v'" by fact+
   from IH have IH': "P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, (l\<^isub>0 ++ l)(V \<mapsto> v'))\<rangle> \<rightarrow> \<langle>e',(h',l\<^isub>0 ++ l')\<rangle>"
     by simp
   have "(l\<^isub>0 ++ l')(V := (l\<^isub>0 ++ l) V) = l\<^isub>0 ++ l'(V := l V)"
@@ -382,7 +382,7 @@ next
 next
   case (BlockRedNone E V T e h l e' h' l' l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
-    and l'V: "l' V = None" and unass: "\<not> assigned V e" .
+    and l'V: "l' V = None" and unass: "\<not> assigned V e" by fact+
   have "l\<^isub>0(V := None) ++ l(V := None) = (l\<^isub>0 ++ l)(V := None)"
     by(simp add:expand_fun_eq map_add_def)
   hence IH': "P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, (l\<^isub>0++l)(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0(V := None) ++ l')\<rangle>"
@@ -394,7 +394,7 @@ next
 next
   case (BlockRedSome E V T e h l e' h' l' v l\<^isub>0)
   have IH: "\<And>l\<^isub>0. P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l\<^isub>0 ++ l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0 ++ l')\<rangle>"
-    and l'V: "l' V = Some v" and unass: "\<not> assigned V e" .
+    and l'V: "l' V = Some v" and unass: "\<not> assigned V e" by fact+
   have "l\<^isub>0(V := None) ++ l(V := None) = (l\<^isub>0 ++ l)(V := None)"
     by(simp add:expand_fun_eq map_add_def)
   hence IH': "P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, (l\<^isub>0++l)(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l\<^isub>0(V := None) ++ l')\<rangle>"

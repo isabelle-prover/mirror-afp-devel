@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/LBVSpec.thy
-    ID:         $Id: LBVSpec.thy,v 1.3 2007-06-12 22:45:25 makarius Exp $
+    ID:         $Id: LBVSpec.thy,v 1.4 2007-07-19 21:23:11 makarius Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -108,7 +108,7 @@ lemma (in lbv) sup_top [simp, elim]:
 (*<*)
 proof -
   from top have "x \<squnion>\<^sub>f \<top> \<sqsubseteq>\<^sub>r \<top>" ..
-  moreover from x have "\<top> \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f \<top>" ..
+  moreover from x T_A have "\<top> \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f \<top>" ..
   ultimately show ?thesis ..
 qed
 (*>*)
@@ -165,8 +165,8 @@ next
   moreover
   obtain pc' s' where [simp]: "l = (pc',s')" by (cases l)
   ultimately
-  obtain x' where "?merge ls x'" by simp 
-  assume "\<And>x. ?set ls \<Longrightarrow> ?merge ls x \<Longrightarrow> ?P ls" hence "?P ls" .
+  obtain x' where merge': "?merge ls x'" by simp 
+  assume "\<And>x. ?set ls \<Longrightarrow> ?merge ls x \<Longrightarrow> ?P ls" hence "?P ls" using set merge' .
   moreover
   from merge set
   have "pc' \<noteq> pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'" by (simp split: split_if_asm)
@@ -192,7 +192,7 @@ next
   assume "snd`set (l#ls) \<subseteq> A"
   then obtain l: "snd l \<in> A" and ls: "snd`set ls \<subseteq> A" by auto
   assume "\<And>x. x \<in> A \<Longrightarrow> snd`set ls \<subseteq> A \<Longrightarrow> ?P ls x" 
-  hence IH: "\<And>x. x \<in> A \<Longrightarrow> ?P ls x" .
+  hence IH: "\<And>x. x \<in> A \<Longrightarrow> ?P ls x" using ls by iprover
   obtain pc' s' where [simp]: "l = (pc',s')" by (cases l)
   hence "?merge (l#ls) x = ?merge ls 
     (if pc'=pc+1 then s' \<squnion>\<^sub>f x else if s' \<sqsubseteq>\<^sub>r c!pc' then x else \<top>)"
@@ -358,8 +358,8 @@ lemma (in lbv) wtc_pres:
   shows "wtc c pc s \<in> A"
 (*<*)
 proof -
-  have "wti c pc s \<in> A" ..
-  moreover have "wti c pc (c!pc) \<in> A" ..
+  have "wti c pc s \<in> A" using assms(1,3-5) ..
+  moreover have "wti c pc (c!pc) \<in> A" using assms(1,3,2,5) ..
   ultimately show ?thesis using T_A by (simp add: wtc) 
 qed
 (*>*)
@@ -375,23 +375,22 @@ lemma (in lbv) wtl_pres:
 proof (induct pc)
   from s show "?wtl 0 \<in> A" by simp
 next
-  fix n assume "Suc n < length is"
-  then obtain n: "n < length is" by simp  
+  fix n assume Suc_n: "Suc n < length is"
+  hence n1: "n+1 < length is" by simp
+  then obtain n: "n < length is" by simp
   assume "n < length is \<Longrightarrow> ?wtl n \<in> A"
-  hence "?wtl n \<in> A" .
-  moreover
-  from cert have "c!n \<in> A" by (rule cert_okD1)
-  moreover
-  have n1: "n+1 < length is" by simp
-  with cert have "c!(n+1) \<in> A" by (rule cert_okD1)
-  ultimately
-  have "wtc c n (?wtl n) \<in> A" by - (rule wtc_pres)
+  hence "?wtl n \<in> A" using n .
+  from pres _ _ this n
+  have "wtc c n (?wtl n) \<in> A"
+  proof (rule wtc_pres)
+    from cert n show "c!n \<in> A" by (rule cert_okD1)
+    from cert n1 show "c!(n+1) \<in> A" by (rule cert_okD1)
+  qed
   also
   from all n have "?wtl n \<noteq> \<top>" by - (rule wtl_take)
   with n1 have "wtc c n (?wtl n) = ?wtl (n+1)" by (rule wtl_Suc [symmetric])
   finally  show "?wtl (Suc n) \<in> A" by simp
 qed
 (*>*)
-
 
 end
