@@ -1,11 +1,11 @@
-(*  ID:         $Id: ListAux.thy,v 1.5 2007-06-06 18:15:27 nipkow Exp $
+(*  ID:         $Id: ListAux.thy,v 1.6 2007-07-19 19:50:51 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header {* Basic Functions Old and New *}
 
 theory ListAux
-imports Main EfficientNat
+imports Main Efficient_Nat
 begin
 
 declare Let_def[simp]

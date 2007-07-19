@@ -1,11 +1,11 @@
-(*  ID:         $Id: Vector.thy,v 1.1 2006-05-22 09:54:04 nipkow Exp $
+(*  ID:         $Id: Vector.thy,v 1.2 2007-07-19 19:50:51 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header {* Vector *}
 
 theory Vector
-imports Main EfficientNat
+imports Main Efficient_Nat
 begin
 
 datatype 'a vector = Vector "'a list"

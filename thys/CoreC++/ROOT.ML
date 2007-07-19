@@ -4,5 +4,5 @@ no_document use_thy "While_Combinator";
 
 use_thy "Determinism";
 use_thy "Annotate";
-no_document use_thy "EfficientNat";
+no_document use_thy "Efficient_Nat";
 use_thy "Execute";

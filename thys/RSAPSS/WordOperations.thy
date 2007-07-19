@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Wordoperations.thy
-    ID:         $Id: WordOperations.thy,v 1.1 2005-05-10 16:13:46 nipkow Exp $
+    ID:         $Id: WordOperations.thy,v 1.2 2007-07-19 19:50:53 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)
@@ -7,7 +7,7 @@
 header  {* Extensions to the Isabelle Word theory required for SHA1 *}
 
 theory WordOperations
-imports Word EfficientNat
+imports Word Efficient_Nat
 begin
 
 types bv = "bit list";

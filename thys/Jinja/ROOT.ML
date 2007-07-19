@@ -10,7 +10,7 @@ use_thy "J/Annotate";
 use_thy "Example";
 *)
 
-no_document use_thy "EfficientNat";
+no_document use_thy "Efficient_Nat";
 use_thy "J/execute_Bigstep";
 use_thy "J/execute_WellType";
 
@@ -22,7 +22,7 @@ use_thy "BV/BVExec";
 use_thy "BV/LBVJVM";
 use_thy "BV/BVNoTypeError";
 
-no_document use_thy "ExecutableSet";
+no_document use_thy "Executable_Set";
 use_thy "BV/BVExample";
 
 use_thy "Compiler/TypeComp";

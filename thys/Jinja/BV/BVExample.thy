@@ -1,12 +1,12 @@
 (*  Title:      Jinja/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.5 2007-07-11 10:17:10 stefanberghofer Exp $
+    ID:         $Id: BVExample.thy,v 1.6 2007-07-19 19:50:52 fhaftmann Exp $
     Author:     Gerwin Klein
 *)
 
 header {* \isaheader{Example Welltypings}\label{sec:BVExample} *}
 
 theory BVExample
-imports JVMListExample BVSpecTypeSafe BVExec ExecutableSet
+imports JVMListExample BVSpecTypeSafe BVExec Executable_Set
 begin
 
 text {*

@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Mod.thy
-    ID:         $Id: Mod.thy,v 1.1 2005-05-10 16:13:45 nipkow Exp $
+    ID:         $Id: Mod.thy,v 1.2 2007-07-19 19:50:53 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -7,7 +7,7 @@
 header "Leammata for modular arithmetic"
 
 theory Mod
-imports Main EfficientNat
+imports Main Efficient_Nat
 begin
 
 lemma divmultassoc: "a div (b*c) * (b*c) = ((a div (b * c)) * b)*(c::nat)"

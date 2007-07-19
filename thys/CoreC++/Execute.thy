@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.16 2007-07-11 10:07:49 stefanberghofer Exp $
+    ID:          $Id: Execute.thy,v 1.17 2007-07-19 19:50:45 fhaftmann Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -8,7 +8,7 @@
 header {* \isaheader{Code generation for Semantics and Type System} *}
 
 theory Execute
-imports BigStep WellType ExecutableSet EfficientNat
+imports BigStep WellType Executable_Set Efficient_Nat
 begin
 
 section{* General redefinitions *}

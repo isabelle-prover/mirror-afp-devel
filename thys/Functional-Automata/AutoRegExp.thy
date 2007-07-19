@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoRegExp.thy,v 1.8 2006-10-06 08:37:08 stefanberghofer Exp $
+(*  ID:         $Id: AutoRegExp.thy,v 1.9 2007-07-19 19:50:51 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -6,7 +6,7 @@
 header "Combining automata and regular expressions, including code generation"
 
 theory AutoRegExp
-imports Automata RegExp2NA RegExp2NAe ExecutableSet
+imports Automata RegExp2NA RegExp2NAe Executable_Set
 begin
 
 theorem "DA.accepts (na2da(rexp2na r)) w = (w : lang r)"

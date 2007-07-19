@@ -1,12 +1,12 @@
 (*  Title:      Jinja/J/execute_Bigstep.thy
-    ID:         $Id: execute_Bigstep.thy,v 1.4 2007-07-11 10:17:12 stefanberghofer Exp $
+    ID:         $Id: execute_Bigstep.thy,v 1.5 2007-07-19 19:50:53 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Code Generation For BigStep} *}
 
-theory execute_Bigstep imports BigStep Examples EfficientNat begin
+theory execute_Bigstep imports BigStep Examples Efficient_Nat begin
 
 consts_code
   "new_Addr"

@@ -10,7 +10,7 @@ use_thy "J/Annotate";
 use_thy "Example";
 *)
 
-no_document use_thy "EfficientNat";
+no_document use_thy "Efficient_Nat";
 use_thy "J/execute_Bigstep";
 use_thy "J/execute_WellType";
 
