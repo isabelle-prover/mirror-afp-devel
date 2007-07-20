@@ -1,5 +1,12 @@
 goals_limit := 1;
 
+add_path "BV";
+add_path "Common";
+add_path "Compiler";
+add_path "DFA";
+add_path "J";
+add_path "JVM";
+
 no_document use_thy "List_Prefix";
 no_document use_thy "While_Combinator";
 
