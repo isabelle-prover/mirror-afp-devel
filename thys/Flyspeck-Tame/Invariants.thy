@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.6 2007-07-20 18:45:57 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.7 2007-07-20 20:30:58 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -881,7 +881,9 @@ proof -
       apply (simp add: is_nextElem_def) apply (case_tac "vertices f12") apply (simp add: is_sublist_def)
       by simp
     ultimately show ?thesis apply (auto simp add: edges_graph_def) apply (frule normFace_in_cong)
-      apply assumption+ apply (elim bexE)
+      apply (rule props)
+      apply assumption
+      apply (elim bexE)
       apply (subgoal_tac "(ram2, ram1) \<in> edges f'") apply simp
       apply (subgoal_tac "(vertices f12) \<cong> (vertices f')")  apply (frule congs_distinct)
       apply (simp add: cong_face_def is_nextElem_congs_eq)+
@@ -917,7 +919,9 @@ proof -
     moreover from Nil pre
     have "(ram1, ram2) \<in> edges f21"
      apply (rule_tac splitFace_empty_ram1_ram2_in_f21)
-     by (auto simp: Nil[symmetric])
+     apply (auto simp: Nil[symmetric])
+     apply (rule spl)
+     done
     ultimately show ?thesis by (auto simp add: edges_graph_def)
   next
     case (Cons v vs)
@@ -950,16 +954,21 @@ proof -
     from Nil pre
     have "(ram1, ram2) \<in> edges f21"
       apply (rule_tac splitFace_empty_ram1_ram2_in_f21)
-      by (auto simp: Nil[symmetric])
+      apply (auto simp: Nil[symmetric])
+      apply (rule spl)
+      done
     moreover
     with dist_f21 have "vertices f21 \<noteq> []"
       apply (simp add: is_nextElem_def) apply (case_tac "vertices f21") apply (simp add: is_sublist_def)
       by simp
     ultimately show ?thesis apply (auto simp add: edges_graph_def) apply (frule normFace_in_cong)
-      apply assumption+ apply (elim bexE)
+      apply (rule props)
+      apply assumption
+      apply (elim bexE)
       apply (subgoal_tac "(ram1, ram2) \<in> edges f'") apply simp
       apply (subgoal_tac "(vertices f21) \<cong> (vertices f')")  apply (frule congs_distinct)
-      by (simp add: cong_face_def is_nextElem_congs_eq)+
+      apply (simp add: cong_face_def is_nextElem_congs_eq)+
+      done
   next
     case (Cons v vs)
     with pre have "v \<notin> \<V> g"
@@ -1998,23 +2007,21 @@ apply(subgoal_tac "pre_splitFace g u v f vs")
 by(drule (1) splitFace_face_face_op[where f\<^isub>1 = "fst(splitFace g u v f vs)" and f\<^isub>2 = "fst(snd(splitFace g u v f vs))"], auto)
 
 lemma splitFace_holds_minGraphProps:
- "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n] \<Longrightarrow>
- minGraphProps g' \<Longrightarrow>
- minGraphProps (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
+  assumes precond: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n]"
+  and min: "minGraphProps g'"
+  shows "minGraphProps (snd (snd (splitFace g' v a f' [countVertices g'..<countVertices g' + n])))"
 proof -
-  assume precond: "pre_splitFace g' v a f' [countVertices g'..<countVertices g' + n]"
-    "minGraphProps g'"
-  then have "minGraphProps' g'" by  (simp add: minGraphProps_def)
+  from min have "minGraphProps' g'" by (simp add: minGraphProps_def)
   then show ?thesis apply (simp add: minGraphProps_def) apply safe
-    apply (rule splitFace_holds_minGraphProps') apply assumption+
-    apply (rule splitFace_holds_facesAt_eq) apply assumption+ apply simp
-    apply (rule splitFace_holds_faceListAt_len) apply(simp add:precond) apply assumption+
-    apply (rule splitFace_holds_facesAt_distinct) apply assumption+
-    apply (rule splitFace_holds_faces_distinct) apply assumption+
-    apply (rule splitFace_holds_faces_subset)  apply assumption+
-    apply (rule splitFace_holds_edges_sym)  apply(simp add:precond) apply assumption
-    apply (rule splitFace_edges_disj2)  apply assumption+
-    apply (rule splitFace_face_face_op2)  apply assumption+
+    apply (rule splitFace_holds_minGraphProps') apply (rule precond) apply assumption
+    apply (rule splitFace_holds_facesAt_eq) apply (rule precond) apply assumption apply simp
+    apply (rule splitFace_holds_faceListAt_len) apply (rule precond) apply assumption
+    apply (rule splitFace_holds_facesAt_distinct) apply (rule precond) apply assumption
+    apply (rule splitFace_holds_faces_distinct) apply (rule precond) apply assumption
+    apply (rule splitFace_holds_faces_subset) apply (rule precond) apply assumption
+    apply (rule splitFace_holds_edges_sym) apply (rule precond) apply assumption
+    apply (rule splitFace_edges_disj2) apply assumption apply (rule precond)
+    apply (rule splitFace_face_face_op2) apply assumption apply (rule precond)
     done
 qed
 
@@ -2282,7 +2289,7 @@ proof -
   proof (auto del: disjCI simp:one_final_but_def F)
     case (goal1 a b)
     have ab: "(a,b) \<in> \<E> f\<^isub>1"
-      and nab: "(a,b) \<notin> Edges (r # ?f\<^isub>2rv @ [v])" .
+      and nab: "(a,b) \<notin> Edges (r # ?f\<^isub>2rv @ [v])" by fact+
     have "(a,b) \<in> Edges (v # rev vs @ [u]) \<or>
           (a,b) \<in> Edges (u # ?fuv @ [v])" (is "?A \<or> ?B")
       using E\<^isub>1 ab by blast
@@ -2330,7 +2337,7 @@ proof -
     case (goal2  f' a b)
     have f': "f' \<in> set (replace f [f\<^isub>2] (faces g))"
       and nf': "\<not> final f'" and abf': "(a,b) \<in> \<E> f'"
-      and nab: "(a,b) \<notin> Edges (r # between (vertices f\<^isub>2) r v @ [v])" .
+      and nab: "(a,b) \<notin> Edges (r # between (vertices f\<^isub>2) r v @ [v])" by fact+
     have "f' = f\<^isub>2 \<or> f' \<in> \<F> g \<and> f' \<noteq> f"
       using f' by(simp add:replace6[OF distFg]) blast
     hence "(b, a) \<in> Edges (r # between (vertices f\<^isub>2) r v @ [v]) \<or>

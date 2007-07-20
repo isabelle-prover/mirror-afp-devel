@@ -1,4 +1,4 @@
-(*  ID:         $Id: Completeness.thy,v 1.1 2006-05-22 09:53:59 nipkow Exp $
+(*  ID:         $Id: Completeness.thy,v 1.2 2007-07-20 20:30:58 makarius Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -41,18 +41,16 @@ lemma Seed_max_final_ex:
 
 lemma max_face_ex: assumes a: "Seed\<^bsub>p\<^esub> [next_plane0\<^bsub>p\<^esub>]\<rightarrow>* g"
 shows "\<exists>f \<in> set (finals g). |vertices f| = maxGon p"
-proof -
-  show ?thesis
   using a
-  proof (induct rule: RTranCl_induct)
-    case refl then show ?case using Seed_max_final_ex by simp
-  next
-    case (succs g g')
-    then obtain f where "f\<in>set (finals g)" and "|vertices f| = maxGon p"
-      by auto
-    moreover have "f\<in>set (finals g')" by (rule next_plane0_finals_incr)
-    ultimately show ?case by auto
-  qed
+proof (induct rule: RTranCl_induct)
+  case refl then show ?case using Seed_max_final_ex by simp
+next
+  case (succs g g')
+  then obtain f where f: "f\<in>set (finals g)" and "|vertices f| = maxGon p"
+    by auto
+  moreover have "f\<in>set (finals g')"
+    using succs(1) f by (rule next_plane0_finals_incr)
+  ultimately show ?case by auto
 qed
 
 (* final not necessary but slightly simpler because of lemmas *)
@@ -61,7 +59,7 @@ assumes g: "Seed\<^bsub>p\<^esub> [next_plane0\<^bsub>p\<^esub>]\<rightarrow>* g
 shows "p \<le> 5"
 proof -
   from `tame g` have bound: "\<forall>f \<in> \<F> g. |vertices f| \<le> 8"
-   by (simp add: tame_def tame\<^isub>1_def)
+    by (simp add: tame_def tame\<^isub>1_def)
   show "p \<le> 5"
   proof (rule ccontr)
     assume 6: "\<not> p \<le> 5"

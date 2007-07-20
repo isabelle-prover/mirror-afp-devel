@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.7 2007-07-20 18:45:57 makarius Exp $
+(*  ID:         $Id: ListAux.thy,v 1.8 2007-07-20 20:30:58 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -1173,7 +1173,7 @@ qed
 lemma local_help: "vs = a @ r # b \<Longrightarrow> vs = c @ r # d \<Longrightarrow> r \<notin> set a \<Longrightarrow> r \<notin> set b \<Longrightarrow> a = c \<and> b = d"
 proof -
   assume dist: "r \<notin> set a" "r \<notin> set b" and vs1: "vs = a @ r # b" and vs2: "vs = c @ r # d"
-  then have "a = c" apply (rule_tac local_help1) .
+  from vs2 vs1 dist have "a = c" by (rule local_help1)
   with dist vs1 vs2 show ?thesis by simp
 qed
 
