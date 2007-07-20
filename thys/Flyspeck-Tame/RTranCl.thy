@@ -1,4 +1,4 @@
-(*  ID:         $Id: RTranCl.thy,v 1.2 2007-07-11 10:12:00 stefanberghofer Exp $
+(*  ID:         $Id: RTranCl.thy,v 1.3 2007-07-20 18:45:57 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -42,9 +42,10 @@ proof -
   proof (induct rule: RTranCl.induct)
     fix g assume "P g" then show "P g" . 
   next
-    fix g g' g'' assume "P g" "g' \<in> set(succs g)" "(g', g'') \<in> RTranCl succs" 
-      and IH: "P g' \<Longrightarrow> P g''"
-    have "P g'" by (rule s)
+    fix g g' g''
+    assume IH: "P g' \<Longrightarrow> P g''"
+    assume "g' \<in> set(succs g)" "P g"
+    then have "P g'" by (rule s)
     then show "P g''" by (rule IH)
   qed
 qed
@@ -103,20 +104,20 @@ proof (induct rule: RTranCl.induct)
   ultimately show "(g, g'') \<in> RTranCl succs" by (rule RTranCl.succs)
 next
   fix g h' h'' assume "h' \<in> set (succs g)" 
-  moreover assume "(h', h'') \<in> RTranCl succs" and "g'' \<in> set (succs h'')"
+  moreover assume "(h', h'') \<in> RTranCl succs" and g'': "g'' \<in> set (succs h'')"
    and IH: "g'' \<in> set (succs h'') \<Longrightarrow> (h', g'') \<in> RTranCl succs"
-  have "(h', g'') \<in> RTranCl succs" by (rule IH)
+  from g'' have "(h', g'') \<in> RTranCl succs" by (rule IH)
   ultimately show "(g, g'') \<in> RTranCl succs" by (rule RTranCl.succs)
 qed
 
 lemma RTranCl_compose:
 assumes "(g,g') \<in> RTranCl succs"
 shows "(g',g'') \<in> RTranCl succs \<Longrightarrow> (g,g'') \<in> RTranCl succs"
-using prems(1)
+using assms
 proof (induct rule: RTranCl_induct)
-  case refl show ?case by assumption
+  case refl show ?case by fact
 next
-  case succs thus ?case by(blast intro:RTranCl.succs)
+  case succs thus ?case by (blast intro:RTranCl.succs)
 qed
 
 

@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.3 2007-06-08 12:06:55 nipkow Exp $
+(*  ID:         $Id: PlaneProps.thy,v 1.4 2007-07-20 18:45:57 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -766,9 +766,9 @@ proof (induct rule: RTranCl_induct)
   case refl then show ?case using Seed_max_final_ex by simp
 next
   case (succs g g')
-  then obtain f where "f\<in>set (finals g)" and "|vertices f| = maxGon p"
+  then obtain f where f: "f\<in>set (finals g)" and "|vertices f| = maxGon p"
     by auto
-  moreover have "f\<in>set (finals g')" by (rule next_plane0_finals_incr)
+  moreover from succs(1) f have "f\<in>set (finals g')" by (rule next_plane0_finals_incr)
   ultimately show ?case by auto
 qed
 

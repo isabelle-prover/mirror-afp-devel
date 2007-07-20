@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.6 2007-07-19 19:50:51 fhaftmann Exp $
+(*  ID:         $Id: ListAux.thy,v 1.7 2007-07-20 18:45:57 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -117,11 +117,11 @@ next
   case (Cons x xs)
   have l: "length (filter P xs) \<le> length xs"
     by (simp add: length_filter_le)
-  have hyp: "length (filter P (x # xs)) = length (x # xs)" .
+  have hyp: "length (filter P (x # xs)) = length (x # xs)" by fact
   then have "P x"  by (simp split: split_if_asm) (insert l, arith)
   moreover with hyp have "length (filter P xs) = length xs" 
     by (simp split: split_if_asm)
-  moreover have "y \<in> set (x#xs)" .
+  moreover have "y \<in> set (x#xs)" by fact
   ultimately show ?case by (auto dest: Cons(1))
 qed
 

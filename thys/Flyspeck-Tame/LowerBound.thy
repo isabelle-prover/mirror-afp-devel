@@ -1,4 +1,4 @@
-(*  ID:         $Id: LowerBound.thy,v 1.2 2007-06-08 12:06:50 nipkow Exp $
+(*  ID:         $Id: LowerBound.thy,v 1.3 2007-07-20 18:45:57 makarius Exp $
     Author:     Gertrud Bauer
 *)
 
@@ -161,8 +161,16 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
   proof -
     from noExV1 V_subset have "\<Sum>\<^bsub> f \<in> F1\<^esub> \<d> |vertices f|
       = \<Sum>\<^bsub>v \<in> V1\<^esub> (tri g v *  \<d> 3 + quad g v * \<d> 4)"
-    apply (unfold F1_def) apply (rule_tac squanderFace_distr2) apply assumption+
-    apply (unfold V1_def) by auto
+    apply (unfold F1_def)
+    apply (rule_tac squanderFace_distr2)
+    apply (rule pl)
+    apply (rule final)
+    apply (rule noExV1)
+    apply (rule pSV1)
+    apply (rule V1_distinct)
+    apply (unfold V1_def)
+    apply auto
+    done
 
     also have "(\<Sum>\<^bsub>v \<in> V1\<^esub> ExcessAt g v)
       + \<Sum>\<^bsub>v \<in> V1\<^esub> (tri g v * \<d> 3 + quad g v * \<d> 4)
@@ -207,9 +215,16 @@ proof(simp add: F3_def F2_def, intro filter_eqI iffI conjI)
   qed
 
   also(trans2) from pSV1 V1_distinct V_subset have "\<dots> = \<Sum>\<^bsub>f \<in> F1\<^esub> w f"
-    apply (unfold F1_def) apply (rule_tac preSeparated_disj_Union2)
-      apply assumption+
-    apply (unfold V1_def) by auto
+    apply (unfold F1_def)
+    apply (rule preSeparated_disj_Union2)
+    apply (rule pl)
+    apply (rule final)
+    apply (rule noExV1)
+    apply (rule pSV1)
+    apply (rule V1_distinct)
+    apply (unfold V1_def)
+    apply auto
+    done
 
   txt {* ($A_2$) We use property @{text "admissible\<^isub>4"}. *}
 

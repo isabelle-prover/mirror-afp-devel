@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.5 2007-06-06 18:15:27 nipkow Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.6 2007-07-20 18:45:57 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -259,17 +259,17 @@ lemma is_sublist_in1: "is_sublist [x,y] vs \<Longrightarrow> y \<in> set vs" by 
 lemma is_sublist_notlast[simp]: "distinct vs \<Longrightarrow> x = last vs \<Longrightarrow> \<not> is_sublist [x,y] vs"
 proof
   assume dvs: "distinct vs" and xl: "x = last vs" and subl:"is_sublist [x, y] vs"
-  then obtain rs ts where "vs = rs @ x # y # ts" by (auto simp: is_sublist_def)
+  then obtain rs ts where vs: "vs = rs @ x # y # ts" by (auto simp: is_sublist_def)
   def as \<equiv>  "rs @ [x]"
   def bs \<equiv>  "y # ts"
   then have bsne: "bs \<noteq> []" by auto
-  from as_def bs_def have vs: "vs = as @ bs" by auto
+  from as_def bs_def have vs2: "vs = as @ bs" using vs by auto
   with as_def have xas: "x \<in> set as" by auto
-  from bsne vs have "last vs = last bs" by auto
+  from bsne vs2 have "last vs = last bs" by auto
   with xl have "x = last bs" by auto
   with bsne have "bs = (butlast bs) @ [x]" by auto
   then have "x \<in> set bs" by (induct bs) auto
-  with xas vs dvs show False by auto
+  with xas vs2 dvs show False by auto
 qed
 
 lemma is_sublist_nth1: "is_sublist [x,y] ls \<Longrightarrow>
@@ -333,12 +333,12 @@ proof
   def as \<equiv> "rs @ [x]"
   def bs \<equiv> "y # ts"
   then have bsne: "bs \<noteq> []" by auto
-  from as_def bs_def have vs: "vs = as @ bs" by auto
+  from as_def bs_def have vs2: "vs = as @ bs" using vs by auto
   from as_def have xas: "x \<in> set as" by auto
-  from vs bs_def have "last vs = last bs" by auto
+  from vs2 bs_def have "last vs = last bs" by auto
   with xl have "x = last bs" by auto
   with bsne have "x \<in> set bs" by (induct bs) auto
-  with d xas vs show False by auto
+  with d xas vs2 show False by auto
 qed
 
 lemma is_sublist_y_hd: "distinct vs \<Longrightarrow> y = hd vs \<Longrightarrow> \<not> is_sublist [x,y] vs"
@@ -349,7 +349,7 @@ proof
   then have asne: "as \<noteq> []" by auto
   def bs \<equiv> "y # ts"
   then have bsne: "bs \<noteq> []" by auto
-  from as_def bs_def have vs2: "vs = as @ bs" by auto
+  from as_def bs_def have vs2: "vs = as @ bs" using vs by auto
   from bs_def have xbs: "y \<in> set bs" by auto
   from vs2 asne have "hd vs = hd as" by simp
   with yh have "y = hd as" by auto
@@ -2472,7 +2472,9 @@ proof -
   apply (unfold  splitFace_def pre_splitFace_def)
   apply (simp add: split_def)
   apply (rule split_face_empty_ram2_ram1_in_f12')
-  by (rule pre_splitFace_pre_split_face)
+  apply (rule pre_splitFace_pre_split_face)
+  apply (rule pre)
+  done
 qed
 
 lemma splitFace_f12_new_vertices:
@@ -2967,7 +2969,9 @@ proof -
   apply (unfold  splitFace_def pre_splitFace_def)
   apply (simp add: split_def)
   apply (rule split_face_empty_ram1_ram2_in_f21')
-  by (rule pre_splitFace_pre_split_face)
+  apply (rule pre_splitFace_pre_split_face)
+  apply (rule pre)
+  done
 qed
 
 lemma splitFace_f21_new_vertices:

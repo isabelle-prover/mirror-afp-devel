@@ -1,4 +1,4 @@
-(*  ID:         $Id: TameEnumProps.thy,v 1.2 2006-12-09 19:21:28 makarius Exp $
+(*  ID:         $Id: TameEnumProps.thy,v 1.3 2007-07-20 18:45:57 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -75,10 +75,11 @@ next
 next
   show "is_tame\<^isub>3 g" using tame by(simp add:tame_def tame\<^isub>3_is_tame\<^isub>3)
 next
-  from tame obtain w where "admissible w g"
-    and "\<Sum>\<^bsub>f \<in> faces g\<^esub> w f < squanderTarget" by(auto simp:tame_def tame\<^isub>7_def)
+  from tame obtain w where adm: "admissible w g"
+    and sqn: "\<Sum>\<^bsub>f \<in> faces g\<^esub> w f < squanderTarget" by(auto simp:tame_def tame\<^isub>7_def)
   moreover have "squanderLowerBound g \<le>  \<Sum>\<^bsub>f \<in> faces g\<^esub> w f"
-    by (rule total_weight_lowerbound)
+    using pl fin tame adm sqn by (rule total_weight_lowerbound)
+
   ultimately show "is_tame\<^isub>7 g" by(auto simp:is_tame\<^isub>7_def)
 qed
 

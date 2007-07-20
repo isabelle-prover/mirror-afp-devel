@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.15 2007-07-19 21:23:09 makarius Exp $
+    ID:          $Id: TypeSafe.thy,v 1.16 2007-07-20 18:45:57 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -1333,7 +1333,7 @@ shows "\<And>Ts. \<lbrakk> P,E,hp s \<turnstile> es [:] Ts; P,E \<turnstile> s \
 
 using step
 proof (induct rule:converse_rtrancl_induct2)
-  case refl show ?case .
+  case refl show ?case by fact
 next
   case (step es s es'' s'' Ts)
   have Reds:"((es, s), es'', s'') \<in> Reds P E"

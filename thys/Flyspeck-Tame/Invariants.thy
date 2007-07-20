@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.5 2006-12-09 19:21:28 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.6 2007-07-20 18:45:57 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -838,7 +838,9 @@ proof -
     moreover from Nil pre
     have "(ram2, ram1) \<in> edges f12"
      apply (rule_tac splitFace_empty_ram2_ram1_in_f12)
-     by (auto simp: Nil[symmetric])
+     apply (auto simp: Nil[symmetric])
+     apply (rule spl)
+     done
     ultimately show ?thesis by (auto simp add: edges_graph_def)
   next
     case (Cons v vs)
@@ -871,7 +873,9 @@ proof -
     from Nil pre
     have "(ram2, ram1) \<in> edges f12"
       apply (rule_tac splitFace_empty_ram2_ram1_in_f12)
-      by (auto simp: Nil[symmetric])
+      apply (auto simp: Nil[symmetric])
+      apply (rule spl)
+      done
     moreover
     with dist_f12 have "vertices f12 \<noteq> []"
       apply (simp add: is_nextElem_def) apply (case_tac "vertices f12") apply (simp add: is_sublist_def)
@@ -880,7 +884,8 @@ proof -
       apply assumption+ apply (elim bexE)
       apply (subgoal_tac "(ram2, ram1) \<in> edges f'") apply simp
       apply (subgoal_tac "(vertices f12) \<cong> (vertices f')")  apply (frule congs_distinct)
-      by (simp add: cong_face_def is_nextElem_congs_eq)+
+      apply (simp add: cong_face_def is_nextElem_congs_eq)+
+      done
   next
     case (Cons v vs)
     with pre have "v \<notin> \<V> g"

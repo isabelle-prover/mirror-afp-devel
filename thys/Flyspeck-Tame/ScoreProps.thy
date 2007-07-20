@@ -1,4 +1,4 @@
-(*  ID:         $Id: ScoreProps.thy,v 1.2 2007-06-08 12:06:55 nipkow Exp $
+(*  ID:         $Id: ScoreProps.thy,v 1.3 2007-07-20 18:45:57 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -128,7 +128,7 @@ proof -
         using b1 by simp
       with mgp f have "b \<notin> set (map fst (deleteAround g a ps))"
       using deleteAround_nextVertex deleteAround_prevVertex by auto
-      then show False by contradiction
+      then show False by contradiction (rule b1)
     qed
   next
     assume 4: "|vertices f| = 4"
@@ -147,7 +147,7 @@ proof -
       with f mgp 4 have "b \<notin> set (map fst (deleteAround g a ps))"
       using deleteAround_nextVertex deleteAround_prevVertex
            deleteAround_nextVertex_nextVertex by auto
-      then show False by contradiction
+      then show False by contradiction (rule b1)
     qed
   qed
 qed
@@ -170,9 +170,9 @@ assumes mgp: "minGraphProps g" and a: "a \<in> \<V> g"
   shows "preSeparated g (insert a V)"
 proof (simp add: preSeparated_def separated\<^isub>2_def separated\<^isub>3_def,
  intro conjI ballI impI)
-  fix f assume  "f \<in> set (facesAt g a)"
+  fix f assume f: "f \<in> set (facesAt g a)"
   then show "f \<bullet> a \<noteq> a" by (rule mgp_facesAt_no_loop[OF mgp])
-  show "f \<bullet> a \<notin> V" by (rule s2)
+  from f show "f \<bullet> a \<notin> V" by (rule s2)
 next
   fix f v assume v: "f \<in> set (facesAt g v)" and vV: "v \<in> V"
   show "f \<bullet> v \<noteq> a"
@@ -180,14 +180,14 @@ next
     assume f: "f \<bullet> v = a"
     then obtain f' where f': "f' \<in> set(facesAt g a)" and v: "f' \<bullet> a = v"
       using mgp_nextVertex_face_ex2[OF mgp v] by blast
-    have "f' \<bullet> a \<in> V" using v by simp
+    have "f' \<bullet> a \<in> V" using v vV by simp
     with f' s2 show False by blast
   qed
   from ps v vV show "f \<bullet> v \<notin> V"
     by (simp add: preSeparated_def separated\<^isub>2_def)
 next
   fix f assume f:  "f \<in> set (facesAt g a)" "|vertices f| \<le> 4"
-  have "\<V> f \<inter> V \<subseteq> {a}" by (rule_tac s3)
+  then have "\<V> f \<inter> V \<subseteq> {a}" by (rule s3)
   moreover from mgp f have "a \<in> \<V> f" by(blast intro:minGraphProps)
   ultimately show "\<V> f \<inter> insert a V = {a}" by auto
 next
@@ -247,8 +247,8 @@ next
    ?P (deleteAround g (fst (a, b)) ps)"
   assume hyp2:  "?T ps \<Longrightarrow> ?P ps"
   have H1: "?P (deleteAround g (fst (a, b)) ps)"
-    by (rule hyp1, rule isTable_deleteAround) simp
-  have H2: "?P ps" by (rule hyp2, rule isTable_Cons)
+    by (rule hyp1, rule isTable_deleteAround) (simp, rule prem)
+  have H2: "?P ps" by (rule hyp2, rule isTable_Cons, rule prem)
 
   show "?P ((a,b)#ps)"
   proof cases
@@ -309,14 +309,14 @@ proof -
       ?P (deleteAround g (fst (a, b)) ps)"
     assume hyp2:  "?T ps \<Longrightarrow> ?P ps"
     have H1: "?P (deleteAround g (fst (a, b)) ps)"
-      by (rule hyp1, rule isTable_deleteAround) simp
-    have H2: "?P ps" by (rule hyp2, rule isTable_Cons)
+      by (rule hyp1, rule isTable_deleteAround) (simp, rule prem)
+    have H2: "?P ps" by (rule hyp2, rule isTable_Cons) (rule prem)
 
     show "?P ((a,b)#ps)"
     proof cases
       assume c: "ExcessNotAtRec ps g
         \<le> b + ExcessNotAtRec (deleteAround g a ps) g"
-      have "preSeparated g
+      from mgp have "preSeparated g
        (insert a (set (ExcessNotAtRecList (deleteAround g a ps) g)))"
       proof (rule preSeparated_insert)
         from prem show "a \<in> set (vertices g)" by (auto simp add: isTable_def)
@@ -325,7 +325,7 @@ proof -
             (set (ExcessNotAtRecList (deleteAround g a ps) g))"
 	  by simp
 
-	fix f assume "f \<in> set (facesAt g a)"
+	fix f assume f: "f \<in> set (facesAt g a)"
         then have
         "f \<bullet> a \<notin> set [fst p. p \<leftarrow> deleteAround g a ps]"
           by (auto simp add: facesAt_def deleteAround_eq deleteAround'_def
@@ -339,9 +339,9 @@ proof -
           \<notin> set (ExcessNotAtRecList (deleteAround g a ps) g)"
           by auto
         assume "|vertices f| \<le> 4"
-        have "set (vertices f)
+        from this f have "set (vertices f)
           \<inter> set [fst p. p \<leftarrow> deleteAround g a ps] \<subseteq> {a}"
-          by (rule_tac deleteAround_separated[OF mgp fin])
+          by (rule deleteAround_separated[OF mgp fin])
         moreover
         have "set (ExcessNotAtRecList (deleteAround g a ps) g)
           \<subseteq> set [fst p. p \<leftarrow> deleteAround g a ps]"
@@ -561,7 +561,7 @@ proof -
       also from v f2 l i
       have "set (vertices f) \<inter> set V = {v2}" by simp
       finally have "v1 = v2" by auto
-      then show False by contradiction
+      then show False by contradiction (rule v)
     qed
   qed
 qed

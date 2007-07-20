@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.14 2007-07-19 21:23:08 makarius Exp $
+    ID:          $Id: Equivalence.thy,v 1.15 2007-07-20 18:45:57 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -2428,7 +2428,7 @@ next
   have same_len: "length vs = length pns" by fact
   moreover
   obtain h\<^isub>3 l\<^isub>3 where s': "s' = (h\<^isub>3,l\<^isub>3)" by (cases s')
-  have eval_blocks:"P,E \<turnstile> \<langle>new_body,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>".
+  have eval_blocks:"P,E \<turnstile> \<langle>new_body,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>" by fact
   hence id: "l\<^isub>3 = l\<^isub>2" using fv s s' same_len\<^isub>1 same_len wf blocks body_case
     by(cases T')(auto elim!: eval_closed_lcl_unchanged)
   from same_len\<^isub>1 have same_len':"length(this#pns) = length(Class (last Cs')#Ts)" 
@@ -2518,9 +2518,9 @@ next
   moreover have same_len:"length vs = length pns" by fact
   moreover have Ds:"Ds = (Cs @\<^sub>p Cs'') @\<^sub>p Cs'" by fact
   moreover
-  obtain h\<^isub>3 l\<^isub>3 where s': "s' = (h\<^isub>3,l\<^isub>3)" by (cases s') simp
+  obtain h\<^isub>3 l\<^isub>3 where s': "s' = (h\<^isub>3,l\<^isub>3)" by (cases s')
   have eval_blocks:"P,E \<turnstile> \<langle>blocks(this#pns,Class(last Ds)#Ts,Ref(a,Ds)#vs,body),s\<rangle>
-                       \<Rightarrow> \<langle>e',s'\<rangle>".
+                       \<Rightarrow> \<langle>e',s'\<rangle>" by fact
   hence id: "l\<^isub>3 = l\<^isub>2" using fv s s' same_len\<^isub>1 same_len wf
     by(auto elim!: eval_closed_lcl_unchanged)
   from same_len\<^isub>1 have same_len':"length(this#pns) = length(Class (last Ds)#Ts)"

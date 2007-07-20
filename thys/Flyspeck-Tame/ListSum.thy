@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListSum.thy,v 1.4 2007-06-24 20:26:09 nipkow Exp $
+(*  ID:         $Id: ListSum.thy,v 1.5 2007-07-20 18:45:57 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -120,11 +120,11 @@ next
   have IH: "(\<Sum>v\<in>V. \<Sum>f\<in>(F v). w f) = (\<Sum>f\<in>(\<Union>v\<in>V. F v). w f)" 
     by simp
 
-  moreover have prems: "finite V" "a \<notin> V" "\<And>f. finite (F f)" .
+  moreover have fin: "finite V" "a \<notin> V" "\<And>f. finite (F f)" by fact+
 
   moreover from s have "\<And>v. a \<notin> V \<Longrightarrow> v \<in> V \<Longrightarrow> F a \<inter> F v = {}"
    by (simp add: separating_insert2)
-  with prems have "(F a) \<inter> (\<Union>v\<in>V. F v) = {}" by auto 
+  with fin have "(F a) \<inter> (\<Union>v\<in>V. F v) = {}" by auto 
 
   ultimately show ?case by (simp add: setsum_Un_disjoint)
 qed
