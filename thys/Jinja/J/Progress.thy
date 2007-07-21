@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.9 2007-07-19 21:23:12 makarius Exp $
+    ID:         $Id: Progress.thy,v 1.10 2007-07-21 15:42:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -522,7 +522,7 @@ next
   show ?case
   proof cases
     assume "final e"
-    show ?thesis
+    thus ?thesis
     proof (rule finalE)
       fix v assume "e = Val v" thus ?thesis by(fast intro:RedBlock)
     next

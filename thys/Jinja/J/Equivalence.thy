@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Equivalence.thy
-    ID:         $Id: Equivalence.thy,v 1.8 2007-07-19 21:23:11 makarius Exp $
+    ID:         $Id: Equivalence.thy,v 1.9 2007-07-21 15:42:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -982,7 +982,7 @@ next
                    "length (p # ps') = length vs" by fact+
   then obtain T Ts' where Ts: "Ts = T#Ts'" by (cases "Ts") simp
   obtain v vs' where vs: "vs = v#vs'" using length_eqs by (cases "vs") simp
-  have "P \<turnstile> \<langle>blocks (p # ps', Ts, vs, e),(h,l)\<rangle> \<Rightarrow> \<langle>e',(h', l')\<rangle>".
+  have "P \<turnstile> \<langle>blocks (p # ps', Ts, vs, e),(h,l)\<rangle> \<Rightarrow> \<langle>e',(h', l')\<rangle>" by fact
   with Ts vs 
   have "P \<turnstile> \<langle>{p:T := Val v; blocks (ps', Ts', vs', e)},(h,l)\<rangle> \<Rightarrow> \<langle>e',(h', l')\<rangle>"
     by simp

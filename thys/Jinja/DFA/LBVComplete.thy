@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/LBVComplete.thy
-    ID:         $Id: LBVComplete.thy,v 1.6 2007-07-19 21:23:11 makarius Exp $
+    ID:         $Id: LBVComplete.thy,v 1.7 2007-07-21 15:42:45 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -306,9 +306,9 @@ next
   ultimately have wt_\<tau>s: "wtc c pc (\<tau>s!pc) \<noteq> \<top>" by (rule stable_wtc)
 
   assume s_\<tau>s: "s \<sqsubseteq>\<^sub>r \<tau>s!pc"
-  assume s: "s \<in> A"
+  assume sA: "s \<in> A"
   from \<tau>s pc have \<tau>s_pc: "\<tau>s!pc \<in> A" by simp
-  from s_\<tau>s pc \<tau>s_pc s have wt_s_\<tau>s: "wtc c pc s \<sqsubseteq>\<^sub>r wtc c pc (\<tau>s!pc)" by (rule wtc_mono)
+  from s_\<tau>s pc \<tau>s_pc sA have wt_s_\<tau>s: "wtc c pc s \<sqsubseteq>\<^sub>r wtc c pc (\<tau>s!pc)" by (rule wtc_mono)
   with wt_\<tau>s have wt_s: "wtc c pc s \<noteq> \<top>" by simp
   moreover assume s: "s \<noteq> \<top>" 
   ultimately have "ls = [] \<Longrightarrow> ?wtl (i#ls) pc s \<noteq> \<top>" by simp
@@ -319,7 +319,7 @@ next
     with wt_s_\<tau>s have "wtc c pc s \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule trans_r)      
     moreover from cert suc_pc have "c!pc \<in> A" "c!(pc+1) \<in> A" 
       by (auto simp add: cert_ok_def)
-    with pres have "wtc c pc s \<in> A" by (rule wtc_pres)
+    from pres this sA pc have "wtc c pc s \<in> A" by (rule wtc_pres)
     ultimately have "?wtl ls (Suc pc) (wtc c pc s) \<noteq> \<top>" using IH wt_s by blast
     with s wt_s have "?wtl (i#ls) pc s \<noteq> \<top>" by simp 
   }

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/LBVSpec.thy
-    ID:         $Id: LBVSpec.thy,v 1.4 2007-07-19 21:23:11 makarius Exp $
+    ID:         $Id: LBVSpec.thy,v 1.5 2007-07-21 15:42:45 makarius Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -202,7 +202,7 @@ next
   proof -
     from l have "s' \<in> A" by simp
     with x have "s' \<squnion>\<^sub>f x \<in> A" by simp
-    with x have "?if' \<in> A" by auto
+    with x T_A have "?if' \<in> A" by auto
     hence "?P ls ?if'" by (rule IH) thus ?thesis by simp
   qed
   also have "\<dots> = ?if (l#ls) x"
@@ -329,7 +329,7 @@ lemma (in lbv) merge_pres:
 (*<*)
 proof -
   from s0 have "set (map snd [(p', t') \<leftarrow> ss . p'=pc+1]) \<subseteq> A" by auto
-  with x  have "(map snd [(p', t') \<leftarrow> ss . p'=pc+1] \<Squnion>\<^bsub>f\<^esub> x) \<in> A"
+  with x semilat  have "(map snd [(p', t') \<leftarrow> ss . p'=pc+1] \<Squnion>\<^bsub>f\<^esub> x) \<in> A"
     by (auto intro!: plusplus_closed)
   with s0 x show ?thesis by (simp add: merge_def T_A)
 qed

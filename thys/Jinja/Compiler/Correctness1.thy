@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness1.thy
-    ID:         $Id: Correctness1.thy,v 1.5 2007-07-19 21:23:10 makarius Exp $
+    ID:         $Id: Correctness1.thy,v 1.6 2007-07-21 15:42:45 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -447,12 +447,12 @@ next
   have mdecl\<^isub>1: "compP\<^isub>1 P \<turnstile> C sees M: Ts\<rightarrow>T = (compE\<^isub>1 ?Vs body) in D"
     using sees_method_compP[OF mdecl, of "\<lambda>(pns,e). compE\<^isub>1 (this#pns) e"]
     by(simp)
-  have [simp]: "l\<^isub>2' = [this \<mapsto> Addr a, pns [\<mapsto>] vs]".
+  have [simp]: "l\<^isub>2' = [this \<mapsto> Addr a, pns [\<mapsto>] vs]" by fact
   have Call_size: "size vs = size pns" by fact
   have "PROP ?P body h\<^isub>2 l\<^isub>2' b' h\<^isub>3 l\<^isub>3 ?Vs ?ls" by fact
   with 1 2 fv_body Call_size Call.prems
   obtain ls\<^isub>3 where 3: "?Post body h\<^isub>2 l\<^isub>2' b' h\<^isub>3 l\<^isub>3 ?Vs ?ls ls\<^isub>3"  by(auto)
-  have hp: "h\<^isub>2 a = Some (C, fs)".
+  have hp: "h\<^isub>2 a = Some (C, fs)" by fact
   from 1 2 3 hp mdecl\<^isub>1 wf_size Call_size show ?case
     by(fastsimp simp add: map_compose[symmetric] comp_def
                 intro!: Call\<^isub>1 dest!:evals_final)

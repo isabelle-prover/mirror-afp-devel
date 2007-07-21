@@ -1,5 +1,5 @@
 (*
-    ID:         $Id: LBVCorrect.thy,v 1.4 2007-07-19 21:23:11 makarius Exp $
+    ID:         $Id: LBVCorrect.thy,v 1.5 2007-07-21 15:42:45 makarius Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -172,16 +172,16 @@ qed
 
 
 theorem (in lbvs) wtl_sound:
-  assumes wtl: "wtl ins c 0 s\<^isub>0 \<noteq> \<top>" and "s\<^isub>0 \<in> A" 
+  assumes wtl: "wtl ins c 0 s\<^isub>0 \<noteq> \<top>" and s\<^isub>0: "s\<^isub>0 \<in> A" 
   shows "\<exists>\<tau>s. wt_step r \<top> step \<tau>s"
 (*<*)
 proof -
   have "wt_step r \<top> step \<tau>s"
   proof (unfold wt_step_def, intro strip conjI)
     fix pc assume "pc < size \<tau>s"
-    then obtain "pc < size ins" by simp
+    then obtain pc: "pc < size ins" by simp
     with wtl show "\<tau>s!pc \<noteq> \<top>" by (rule phi_not_top)
-    show "stable r step \<tau>s pc" by (rule wtl_stable)
+    from wtl s\<^isub>0 pc show "stable r step \<tau>s pc" by (rule wtl_stable)
   qed
   thus ?thesis ..
 qed
