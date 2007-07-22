@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Type.thy
-   ID:        $Id: Type.thy,v 1.9 2006-09-14 06:41:08 alexkrauss Exp $
+   ID:        $Id: Type.thy,v 1.10 2007-07-22 20:44:19 makarius Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -69,9 +69,9 @@ text
 {* @{text "new_tv s n"} computes whether n is a new type variable w.r.t. a type 
    structure s, i.e. whether n is greater than any type variable 
    occuring in the type structure *}
-constdefs
-  new_tv :: "[nat,'a::type_struct] => bool"
-  "new_tv n ts == ! m. m:(free_tv ts) --> m<n"
+definition
+  new_tv :: "[nat,'a::type_struct] => bool" where
+  "new_tv n ts = (! m. m:(free_tv ts) --> m<n)"
 
   
 -- {* @{text "bound_tv s"}: the type variables occuring bound in the type structure s *}
@@ -104,9 +104,9 @@ primrec (min_new_bound_tv_type_scheme)
 types  subst = "nat => typ"
 
 -- "identity"
-constdefs
-  id_subst :: subst
-  "id_subst == (%n. TVar n)"
+definition
+  id_subst :: subst where
+  "id_subst = (%n. TVar n)"
 
 -- "extension of substitution to type structures"
 consts
@@ -125,14 +125,14 @@ defs
   app_subst_list: "$ S == map ($ S)"
 
 -- "domain of a substitution"
-constdefs
-  dom :: "subst => nat set"
-  "dom S == {n. S n ~= TVar n}" 
+definition
+  dom :: "subst => nat set" where
+  "dom S = {n. S n ~= TVar n}" 
 
 -- "codomain of a substitution: the introduced variables"
-constdefs
-  cod :: "subst => nat set"
-  "cod S == (UN m:dom S. (free_tv (S m)))"
+definition
+  cod :: "subst => nat set" where
+  "cod S = (UN m:dom S. (free_tv (S m)))"
 
 defs
   free_tv_subst: "free_tv S == (dom S) Un (cod S)" 

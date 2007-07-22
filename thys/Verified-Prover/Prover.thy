@@ -1,5 +1,5 @@
 
-(* $Id: Prover.thy,v 1.12 2007-07-11 10:22:42 stefanberghofer Exp $ *)
+(* $Id: Prover.thy,v 1.13 2007-07-22 20:44:19 makarius Exp $ *)
 
 theory Prover imports Main Infinite_Set begin
 
@@ -36,8 +36,9 @@ lemma finite_fv[simp]: "finite (set (fv f))" apply(simp)
   apply(induct f,auto simp add: preSuc_def) sorry
 *)
 
-constdefs bump :: "(var => var) => (var => var)" -- "substitute a different var for 0"
-  "bump phi y == case y of 0 => 0 | Suc n => Suc (phi n)"
+definition
+  bump :: "(var => var) => (var => var)" -- "substitute a different var for 0" where
+  "bump phi y = (case y of 0 => 0 | Suc n => Suc (phi n))"
 
 consts subst :: "(nat => nat) => form => form"
 primrec
@@ -49,13 +50,14 @@ primrec
   "subst r (FEx f) = FEx (subst (bump r) f)"
 
 lemma size_subst[simp]: "\<forall>m. size (subst m f) = size f"
-  apply(induct_tac f) apply(force+) done
+  by (induct f) (force+)
 
-constdefs finst :: "form => var => form"
-  "finst body w == subst (% v. case v of 0 => w | Suc n => n) body"
+definition
+  finst :: "form => var => form" where
+  "finst body w = (subst (% v. case v of 0 => w | Suc n => n) body)"
 
 lemma size_finst[simp]: "size (finst f m) = size f"
-  apply(simp add: finst_def) done
+  by (simp add: finst_def)
 
 types seq = "form list"
 
@@ -63,19 +65,22 @@ types nform = "nat * form"
 
 types nseq = "nform list"
 
-constdefs s_of_ns :: "nseq => seq"
-  "s_of_ns ns == map snd ns"
+definition
+  s_of_ns :: "nseq => seq" where
+  "s_of_ns ns = map snd ns"
 
-constdefs ns_of_s :: "seq => nseq"
-  "ns_of_s s == map (% x. (0,x)) s"
+definition
+  ns_of_s :: "seq => nseq" where
+  "ns_of_s s = map (% x. (0,x)) s"
 
 consts flatten :: "'a list list => 'a list"
 primrec 
   "flatten [] = []"
   "flatten (a#list) = (a@(flatten list))"
 
-constdefs sfv :: "seq => var list"
-  "sfv s == flatten (map fv s)"
+definition
+  sfv :: "seq => var list" where
+  "sfv s = flatten (map fv s)"
 
 lemma sfv_nil: "sfv [] = []" by(force simp: sfv_def)
 lemma sfv_cons: "sfv (a#list) = (fv a) @ (sfv list) " by(force simp: sfv_def)
@@ -86,14 +91,15 @@ primrec
   "maxvar (a#list) = max a (maxvar list)"
 
 lemma maxvar: "\<forall>v \<in> set vs. v \<le> maxvar vs"
-  apply(induct vs, auto simp: max_def) done
+  by (induct vs) (auto simp: max_def)
 
-constdefs newvar :: "var list => var"
-  "newvar vs == Suc (maxvar vs)"
+definition
+  newvar :: "var list => var" where
+  "newvar vs = Suc (maxvar vs)"
   -- "note that for newvar to be constructive, need an operation to get a different var from a given set"
 
 lemma newvar: "newvar vs \<notin> (set vs)"
-  using maxvar apply(force simp: newvar_def) done
+  using maxvar by (force simp: newvar_def)
 
 (*lemmas newvar_sfv = newvar[of "sfv s"]*)
 
@@ -205,8 +211,9 @@ lemma deriv_progress: "(n,a#list) \<in> deriv s ==> ~ is_axiom (s_of_ns (a#list)
        apply(force dest: not_is_axiom_subs)+
   done
 
-constdefs inc :: "nat * nseq => nat * nseq"
-  "inc == %(n,fs). (Suc n, fs)"
+definition
+  inc :: "nat * nseq => nat * nseq" where
+  "inc = (%(n,fs). (Suc n, fs))"
 
 lemma inj_inc[simp]: "inj inc"
   apply(simp add: inc_def) apply(simp add: inj_on_def) done
@@ -372,11 +379,13 @@ lemma SEval_cong: "(\<forall>x. x \<in> set (sfv s) --> e1 x = e2 x) --> SEval m
   apply(simp add: sfv_cons) 
   done
 
-constdefs is_env :: "model => env => bool"
-  "is_env MI e == \<forall>x. e x \<in> (fst MI)"
+definition
+  is_env :: "model => env => bool" where
+  "is_env MI e = (\<forall>x. e x \<in> (fst MI))"
 
-constdefs Svalid :: "form list => bool"
-  "Svalid s == \<forall>MI e. is_env MI e --> SEval MI e s"
+definition
+  Svalid :: "form list => bool" where
+  "Svalid s = (\<forall>MI e. is_env MI e --> SEval MI e s)"
 
 
 subsection "Soundness"
@@ -555,17 +564,19 @@ lemma finite_deriv[rule_format]: "finite (deriv s) --> finite  (deriv ` {w. ~is_
   apply(cut_tac y=s in finite_subs) apply(force simp: finite_UN)
   done
 
-constdefs init :: "nseq => bool"
-  "init s == (\<forall>x \<in> (set s). fst x = 0)"
+definition
+  init :: "nseq => bool" where
+  "init s = (\<forall>x \<in> (set s). fst x = 0)"
 
-constdefs is_FEx :: "form => bool"
-  "is_FEx f == case f of
-  PAtom p vs => False
-  | NAtom p vs => False
-  | FConj f g => False
-  | FDisj f g => False
-  | FAll f => False
-  | FEx f => True"
+definition
+  is_FEx :: "form => bool" where
+  "is_FEx f = (case f of
+      PAtom p vs => False
+    | NAtom p vs => False
+    | FConj f g => False
+    | FDisj f g => False
+    | FAll f => False
+    | FEx f => True)"
 
 lemma is_FEx[simp]: "~ is_FEx (PAtom p vs)
   & ~ is_FEx (NAtom p vs)
@@ -726,11 +737,13 @@ lemma soundness: "finite (deriv (ns_of_s s)) ==> Svalid s"
 
 subsection "Contains, Considers"
 
-constdefs "contains" :: "(nat => (nat*nseq)) => nat => nform => bool"
-  "contains f n nf == nf \<in> set (snd (f n))"
+definition
+  "contains" :: "(nat => (nat*nseq)) => nat => nform => bool" where
+  "contains f n nf = (nf \<in> set (snd (f n)))"
 
-constdefs considers :: "(nat => (nat*nseq)) => nat => nform => bool"
-  "considers f n nf == case snd (f n) of [] => False | (x#xs) => x = nf"
+definition
+  considers :: "(nat => (nat*nseq)) => nat => nform => bool" where
+  "considers f n nf = (case snd (f n) of [] => False | (x#xs) => x = nf)"
 
 lemma (in loc1) progress: "infinite (deriv s) ==> snd (f n) = a#list --> (\<exists>zs'. snd (f (Suc n)) = list@zs')"
   apply(subgoal_tac "(snd (f (Suc n))) : set (subs (snd (f n)))") defer apply(frule_tac is_path_f) apply(blast)
@@ -939,8 +952,7 @@ consts ntou :: "nat => U"
   -- "assume universe set is infinite"
 axioms ntou: "inj ntou"
 
-constdefs uton :: "U => nat"
-  "uton == inv ntou"
+definition uton :: "U => nat" where "uton = inv ntou"
 
 lemma uton_ntou: "uton (ntou x) = x"
   apply(simp add: uton_def) apply(simp add: ntou inv_f_f) done
@@ -955,9 +967,9 @@ lemma ntou_uton: "x \<in> range ntou ==> ntou (uton x) = x"
 
 subsection "Falsifying Model From Failing Path"
 
-constdefs model :: "nseq => model"
-  "model s == (range ntou, % p ms. (let f = failing_path (deriv s) in
-  (\<forall>n m. ~ contains f n (m,PAtom p (map uton ms)))))"
+definition model :: "nseq => model" where
+  "model s = (range ntou, % p ms. (let f = failing_path (deriv s) in
+    (\<forall>n m. ~ contains f n (m,PAtom p (map uton ms)))))"
 
 locale loc2 = loc1 +
   fixes mo
@@ -1114,8 +1126,9 @@ lemma ex_iter: "(\<exists>n. R (iter g a n)) = (if R a then True else (\<exists>
   apply (force ); 
   done
 
-constdefs f :: "nseq list => nat => nseq list"
-  "f s n == iter (% x. flatten (map subs x)) s n"
+definition
+  f :: "nseq list => nat => nseq list" where
+  "f s n = iter (% x. flatten (map subs x)) s n"
 
 lemma f_upwards: "f s n = [] ==> f s (n+m) = []"
   apply(induct_tac m) apply(simp)
@@ -1185,8 +1198,8 @@ lemma finite_deriv: "finite (deriv s) = (\<exists>m. f [s] m = [])"
 lemma ex_iter_fSucn: "(\<exists>m. iter (% x. flat (map subs x)) l m = []) = (if l = [] then True else (\<exists>n. (iter (% x. flat (map subs x)) ((% x. flat (map subs x)) l) n) = []))"
   using ex_iter[of "% x. x = []", of "(% x. flat (map subs x))" l ] apply(force) done
 
-constdefs prove' :: "nseq list => bool"
-  "prove' s == (\<exists>m. iter (% x. flatten (map subs x)) s m = [])"
+definition prove' :: "nseq list => bool" where
+  "prove' s = (\<exists>m. iter (% x. flatten (map subs x)) s m = [])"
 
 lemma prove': "prove' l = (if l = [] then True else prove' ((% x. flatten (map subs x)) l))"
   apply(simp only: prove'_def)
@@ -1194,11 +1207,10 @@ lemma prove': "prove' l = (if l = [] then True else prove' ((% x. flatten (map s
   done
     -- "this is the main claim for efficiency- we have a tail recursive implementation via this lemma"
 
-constdefs prove :: "nseq => bool"
-  "prove s == prove' ([s])"
+definition prove :: "nseq => bool" where "prove s = prove' ([s])"
 
 lemma finite_deriv_prove: "finite (deriv s) = prove s"
-  apply(simp add: finite_deriv prove_def prove'_def f_def) done
+  by (simp add: finite_deriv prove_def prove'_def f_def)
 
 
 subsection "Computation"
@@ -1210,8 +1222,8 @@ lemma "(\<exists>x. A x | B x) --> ( (\<exists>x. B x) | (\<exists>x. A x))" by 
 lemma "((\<exists>x. A x | B x) --> ( (\<exists>x. B x) | (\<exists>x. A x)))
   = ( (\<forall>x. ~ A x & ~ B x) | ( (\<exists>x. B x) | (\<exists>x. A x)))" by blast 
 
-constdefs my_f :: "form"
-  "my_f == FDisj 
+definition my_f :: "form" where
+  "my_f = FDisj 
   (FAll (FConj (NAtom 0 [0]) (NAtom 1 [0])))
   (FDisj (FEx (PAtom 1 [0])) (FEx (PAtom 0 [0])))"
 

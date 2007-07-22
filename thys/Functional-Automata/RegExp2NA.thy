@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegExp2NA.thy,v 1.7 2007-04-26 14:32:17 makarius Exp $
+(*  ID:         $Id: RegExp2NA.thy,v 1.8 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -15,40 +15,45 @@ abbreviation
   Cons_syn :: "'a => 'a list set => 'a list set" (infixr "##" 65) where
   "x ## S == Cons x ` S"
 
-constdefs
-"atom"  :: "'a => 'a bitsNA"
-"atom a == ([True],
+definition
+"atom"  :: "'a => 'a bitsNA" where
+"atom a = ([True],
             %b s. if s=[True] & b=a then {[False]} else {},
             %s. s=[False])"
 
- or :: "'a bitsNA => 'a bitsNA => 'a bitsNA"
-"or == %(ql,dl,fl)(qr,dr,fr).
+definition
+ or :: "'a bitsNA => 'a bitsNA => 'a bitsNA" where
+"or = (%(ql,dl,fl)(qr,dr,fr).
    ([],
     %a s. case s of
             [] => (True ## dl a ql) Un (False ## dr a qr)
           | left#s => if left then True ## dl a s
                               else False ## dr a s,
     %s. case s of [] => (fl ql | fr qr)
-                | left#s => if left then fl s else fr s)"
+                | left#s => if left then fl s else fr s))"
 
- conc :: "'a bitsNA => 'a bitsNA => 'a bitsNA"
-"conc == %(ql,dl,fl)(qr,dr,fr).
+definition
+ conc :: "'a bitsNA => 'a bitsNA => 'a bitsNA" where
+"conc = (%(ql,dl,fl)(qr,dr,fr).
    (True#ql,
     %a s. case s of
             [] => {}
           | left#s => if left then (True ## dl a s) Un
                                    (if fl s then False ## dr a qr else {})
                               else False ## dr a s,
-    %s. case s of [] => False | left#s => left & fl s & fr qr | ~left & fr s)"
+    %s. case s of [] => False | left#s => left & fl s & fr qr | ~left & fr s))"
 
- epsilon :: "'a bitsNA"
-"epsilon == ([],%a s. {}, %s. s=[])"
+definition
+ epsilon :: "'a bitsNA" where
+"epsilon = ([],%a s. {}, %s. s=[])"
 
- plus :: "'a bitsNA => 'a bitsNA"
-"plus == %(q,d,f). (q, %a s. d a s Un (if f s then d a q else {}), f)"
+definition
+ plus :: "'a bitsNA => 'a bitsNA" where
+"plus = (%(q,d,f). (q, %a s. d a s Un (if f s then d a q else {}), f))"
 
- star :: "'a bitsNA => 'a bitsNA"
-"star A == or epsilon (plus A)"
+definition
+ star :: "'a bitsNA => 'a bitsNA" where
+"star A = or epsilon (plus A)"
 
 consts rexp2na :: "'a rexp => 'a bitsNA"
 primrec

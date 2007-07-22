@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.8 2004-10-14 08:51:10 nipkow Exp $
+(*  ID:         $Id: RegSet_of_nat_DA.thy,v 1.9 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 
@@ -20,8 +20,9 @@ begin
 
 types 'a nat_next = "'a => nat => nat"
 
-syntax deltas :: "'a nat_next => 'a list => nat => nat"
-translations "deltas" == "foldl2"
+abbreviation
+  deltas :: "'a nat_next => 'a list => nat => nat" where
+  "deltas == foldl2"
 
 consts trace :: "'a nat_next => nat => 'a list => nat list"
 primrec
@@ -39,12 +40,13 @@ primrec
                              (conc (star(regset d k k k))
                                    (regset d k j k))"
 
-constdefs
- regset_of_DA :: "('a,nat)da => nat => 'a list set"
-"regset_of_DA A k == UN j:{j. j<k & fin A j}. regset (next A) (start A) j k"
+definition
+ regset_of_DA :: "('a,nat)da => nat => 'a list set" where
+"regset_of_DA A k = (UN j:{j. j<k & fin A j}. regset (next A) (start A) j k)"
 
- bounded :: "'a nat_next => nat => bool"
-"bounded d k == !n. n < k --> (!x. d x n < k)"
+definition
+ bounded :: "'a nat_next => nat => bool" where
+"bounded d k = (!n. n < k --> (!x. d x n < k))"
 
 declare
   in_set_butlast_appendI[simp,intro] less_SucI[simp] image_eqI[simp]
@@ -53,7 +55,7 @@ declare
 
 lemma butlast_empty[iff]:
   "(butlast xs = []) = (case xs of [] => True | y#ys => ys=[])"
-by (case_tac "xs") simp_all
+by (cases xs) simp_all
 
 lemma in_set_butlast_concatI:
  "x:set(butlast xs) ==> xs:set xss ==> x:set(butlast(concat xss))"

@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoMaxChop.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: AutoMaxChop.thy,v 1.6 2007-07-22 20:44:18 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -16,9 +16,9 @@ primrec
 "auto_split A q res ps (x#xs) =
    auto_split A (next A x q) (if fin A q then (ps,x#xs) else res) (ps@[x]) xs"
 
-constdefs
- auto_chop :: "('a,'s)da => 'a chopper"
-"auto_chop A == chop (%xs. auto_split A (start A) ([],xs) [] xs)"
+definition
+ auto_chop :: "('a,'s)da => 'a chopper" where
+"auto_chop A = chop (%xs. auto_split A (start A) ([],xs) [] xs)"
 
 
 lemma delta_snoc: "delta A (xs@[y]) q = next A y (delta A xs q)";

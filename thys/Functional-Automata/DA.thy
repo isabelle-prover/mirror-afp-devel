@@ -1,4 +1,4 @@
-(*  ID:         $Id: DA.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: DA.thy,v 1.6 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -11,15 +11,17 @@ begin
 
 types ('a,'s)da = "'s * ('a => 's => 's) * ('s => bool)"
 
-constdefs
- foldl2 :: "('a => 'b => 'b) => 'a list => 'b => 'b"
-"foldl2 f xs a == foldl (%a b. f b a) a xs"
+definition
+ foldl2 :: "('a => 'b => 'b) => 'a list => 'b => 'b" where
+"foldl2 f xs a = foldl (%a b. f b a) a xs"
 
- delta :: "('a,'s)da => 'a list => 's => 's"
-"delta A == foldl2 (next A)"
+definition
+ delta :: "('a,'s)da => 'a list => 's => 's" where
+"delta A = foldl2 (next A)"
 
- accepts :: "('a,'s)da => 'a list => bool"
-"accepts A == %w. fin A (delta A w (start A))"
+definition
+ accepts :: "('a,'s)da => 'a list => bool" where
+"accepts A = (%w. fin A (delta A w (start A)))"
 
 lemma [simp]: "foldl2 f [] a = a & foldl2 f (x#xs) a = foldl2 f xs (f x a)"
 by(simp add:foldl2_def)
@@ -32,6 +34,6 @@ by(simp add:delta_def)
 
 lemma delta_append[simp]:
  "!!q ys. delta A (xs@ys) q = delta A ys (delta A xs q)"
-by(induct xs, simp_all)
+by(induct xs) simp_all
 
 end

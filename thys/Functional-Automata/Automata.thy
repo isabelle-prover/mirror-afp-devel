@@ -1,4 +1,4 @@
-(*  ID:         $Id: Automata.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: Automata.thy,v 1.6 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -9,12 +9,13 @@ theory Automata
 imports DA NAe
 begin
 
-constdefs
- na2da :: "('a,'s)na => ('a,'s set)da"
-"na2da A == ({start A}, %a Q. Union(next A a ` Q), %Q. ? q:Q. fin A q)"
+definition
+ na2da :: "('a,'s)na => ('a,'s set)da" where
+"na2da A = ({start A}, %a Q. Union(next A a ` Q), %Q. ? q:Q. fin A q)"
 
- nae2da :: "('a,'s)nae => ('a,'s set)da"
-"nae2da A == ({start A},
+definition
+ nae2da :: "('a,'s)nae => ('a,'s set)da" where
+"nae2da A = ({start A},
               %a Q. Union(next A (Some a) ` ((eps A)^* `` Q)),
               %Q. ? p: (eps A)^* `` Q. fin A p)"
 

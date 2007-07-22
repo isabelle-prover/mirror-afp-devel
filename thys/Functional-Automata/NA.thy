@@ -1,4 +1,4 @@
-(*  ID:         $Id: NA.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: NA.thy,v 1.6 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -16,12 +16,13 @@ primrec
 "delta A []    p = {p}"
 "delta A (a#w) p = Union(delta A w ` next A a p)"
 
-constdefs
- accepts :: "('a,'s)na => 'a list => bool"
-"accepts A w == EX q : delta A w (start A). fin A q"
+definition
+ accepts :: "('a,'s)na => 'a list => bool" where
+"accepts A w = (EX q : delta A w (start A). fin A q)"
 
- step :: "('a,'s)na => 'a => ('s * 's)set"
-"step A a == {(p,q) . q : next A a p}"
+definition
+ step :: "('a,'s)na => 'a => ('s * 's)set" where
+"step A a = {(p,q) . q : next A a p}"
 
 consts steps :: "('a,'s)na => 'a list => ('s * 's)set"
 primrec

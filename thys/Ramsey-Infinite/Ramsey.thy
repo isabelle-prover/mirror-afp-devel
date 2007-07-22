@@ -1,5 +1,5 @@
 
-(* $Id: Ramsey.thy,v 1.6 2006-10-01 17:04:14 makarius Exp $ *)
+(* $Id: Ramsey.thy,v 1.7 2007-07-22 20:44:19 makarius Exp $ *)
 
 header "Ramsey's Theorem"
 
@@ -81,8 +81,9 @@ lemma dc: "
 subsection "Partitions"
 
 (* expect Y infinite *)
-constdefs part :: "nat => nat => 'a set => ('a set => nat) => bool"
-  "part r s Y f == ! X. X <= Y & finite X & card X = r --> f X < s"
+definition
+  part :: "nat => nat => 'a set => ('a set => nat) => bool" where
+  "part r s Y f = (! X. X <= Y & finite X & card X = r --> f X < s)"
 
 lemma part: "[| infinite YY; part (Suc n) s YY f; yy : YY |] ==> part n s (YY - {yy}) (%u. f (insert yy u))"
   apply(simp add: part_def)

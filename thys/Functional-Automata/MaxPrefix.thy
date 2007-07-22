@@ -1,4 +1,4 @@
-(*  ID:         $Id: MaxPrefix.thy,v 1.6 2004-10-14 07:59:07 nipkow Exp $
+(*  ID:         $Id: MaxPrefix.thy,v 1.7 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -9,16 +9,16 @@ theory MaxPrefix
 imports List_Prefix
 begin
 
-constdefs
- is_maxpref :: "('a list => bool) => 'a list => 'a list => bool"
-"is_maxpref P xs ys ==
- xs <= ys & (xs=[] | P xs) & (!zs. zs <= ys & P zs --> zs <= xs)"
+definition
+ is_maxpref :: "('a list => bool) => 'a list => 'a list => bool" where
+"is_maxpref P xs ys =
+ (xs <= ys & (xs=[] | P xs) & (!zs. zs <= ys & P zs --> zs <= xs))"
 
 types 'a splitter = "'a list => 'a list * 'a list"
 
-constdefs
- is_maxsplitter :: "('a list => bool) => 'a splitter => bool"
-"is_maxsplitter P f ==
+definition
+ is_maxsplitter :: "('a list => bool) => 'a splitter => bool" where
+"is_maxsplitter P f =
  (!xs ps qs. f xs = (ps,qs) = (xs=ps@qs & is_maxpref P ps xs))"
 
 consts

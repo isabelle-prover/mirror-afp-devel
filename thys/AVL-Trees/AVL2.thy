@@ -1,5 +1,5 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL2.thy,v 1.3 2006-08-08 13:56:37 nipkow Exp $
+    ID:         $Id: AVL2.thy,v 1.4 2007-07-22 20:44:18 makarius Exp $
     Author:     Tobias Nipkow and Cornelia Pusch,
                 converted to Isar by Gerwin Klein
                 contributions by Achim Brucker, Burkhart Wolff and Jan Smaus
@@ -258,9 +258,9 @@ primrec
 "hinv (MKT x l r h) = (h = 1 + max (height(erase l)) (height(erase r))
                         & hinv l & hinv r)"
 
-constdefs
- avl :: "'a tree \<Rightarrow> bool"
-"avl t \<equiv> is_bal(erase t) \<and> hinv t"
+definition
+ avl :: "'a tree \<Rightarrow> bool" where
+"avl t = (is_bal(erase t) \<and> hinv t)"
 
 subsubsection "AVL interface and efficient implementation"
 
@@ -280,9 +280,9 @@ primrec
 "ht ET = 0"
 "ht (MKT x l r h) = h"
 
-constdefs
- mkt :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
-"mkt x l r \<equiv> MKT x l r (max (ht l) (ht r) + 1)"
+definition
+ mkt :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+"mkt x l r = MKT x l r (max (ht l) (ht r) + 1)"
 
 consts
  l_bal :: "'a * 'a tree * 'a tree \<Rightarrow> 'a tree"

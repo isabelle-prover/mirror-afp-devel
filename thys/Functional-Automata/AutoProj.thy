@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoProj.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: AutoProj.thy,v 1.6 2007-07-22 20:44:18 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 
@@ -14,13 +14,9 @@ theory AutoProj
 imports Main
 begin
 
-constdefs
- start :: "'a * 'b * 'c => 'a"
-"start A == fst A"
- "next" :: "'a * 'b * 'c => 'b"
-"next A == fst(snd(A))"
- fin :: "'a * 'b * 'c => 'c"
-"fin A == snd(snd(A))"
+definition start :: "'a * 'b * 'c => 'a" where "start A = fst A"
+definition "next" :: "'a * 'b * 'c => 'b" where "next A = fst(snd(A))"
+definition fin :: "'a * 'b * 'c => 'c" where "fin A = snd(snd(A))"
 
 lemma [simp]: "start(q,d,f) = q"
 by(simp add:start_def)

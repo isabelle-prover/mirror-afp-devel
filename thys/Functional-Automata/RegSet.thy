@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegSet.thy,v 1.6 2007-07-11 10:13:01 stefanberghofer Exp $
+(*  ID:         $Id: RegSet.thy,v 1.7 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -9,9 +9,9 @@ theory RegSet
 imports Main
 begin
 
-constdefs
- conc :: "'a list set => 'a list set => 'a list set"
-"conc A B == {xs@ys | xs ys. xs:A & ys:B}"
+definition
+ conc :: "'a list set => 'a list set => 'a list set" where
+"conc A B = {xs@ys | xs ys. xs:A & ys:B}"
 
 inductive_set
   star :: "'a list set => 'a list set"
@@ -21,7 +21,7 @@ where
 | ConsI[intro,simp]:  "[| a:A; as : star A |] ==> a@as : star A"
 
 lemma concat_in_star: "!xs: set xss. xs:S ==> concat xss : star S"
-by (induct "xss") simp_all
+by (induct xss) simp_all
 
 lemma in_star:
  "w : star U = (? us. (!u : set(us). u : U) & (w = concat us))"

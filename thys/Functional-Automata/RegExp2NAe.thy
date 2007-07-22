@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegExp2NAe.thy,v 1.7 2007-04-26 14:32:17 makarius Exp $
+(*  ID:         $Id: RegExp2NAe.thy,v 1.8 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -15,40 +15,43 @@ abbreviation
   Cons_syn :: "'a => 'a list set => 'a list set" (infixr "##" 65) where
   "x ## S == Cons x ` S"
 
-constdefs
-"atom"  :: "'a => 'a bitsNAe"
-"atom a == ([True],
+definition
+"atom"  :: "'a => 'a bitsNAe" where
+"atom a = ([True],
             %b s. if s=[True] & b=Some a then {[False]} else {},
             %s. s=[False])"
 
- or :: "'a bitsNAe => 'a bitsNAe => 'a bitsNAe"
-"or == %(ql,dl,fl)(qr,dr,fr).
+definition
+ or :: "'a bitsNAe => 'a bitsNAe => 'a bitsNAe" where
+"or = (%(ql,dl,fl)(qr,dr,fr).
    ([],
     %a s. case s of
             [] => if a=None then {True#ql,False#qr} else {}
           | left#s => if left then True ## dl a s
                               else False ## dr a s,
-    %s. case s of [] => False | left#s => if left then fl s else fr s)"
+    %s. case s of [] => False | left#s => if left then fl s else fr s))"
 
- conc :: "'a bitsNAe => 'a bitsNAe => 'a bitsNAe"
-"conc == %(ql,dl,fl)(qr,dr,fr).
+definition
+ conc :: "'a bitsNAe => 'a bitsNAe => 'a bitsNAe" where
+"conc = (%(ql,dl,fl)(qr,dr,fr).
    (True#ql,
     %a s. case s of
             [] => {}
           | left#s => if left then (True ## dl a s) Un
                                    (if fl s & a=None then {False#qr} else {})
                               else False ## dr a s,
-    %s. case s of [] => False | left#s => ~left & fr s)"
+    %s. case s of [] => False | left#s => ~left & fr s))"
 
- star :: "'a bitsNAe => 'a bitsNAe"
-"star == %(q,d,f).
+definition
+ star :: "'a bitsNAe => 'a bitsNAe" where
+"star = (%(q,d,f).
    ([],
     %a s. case s of
             [] => if a=None then {True#q} else {}
           | left#s => if left then (True ## d a s) Un
                                    (if f s & a=None then {True#q} else {})
                               else {},
-    %s. case s of [] => True | left#s => left & f s)"
+    %s. case s of [] => True | left#s => left & f s))"
 
 consts rexp2nae :: "'a rexp => 'a bitsNAe"
 primrec

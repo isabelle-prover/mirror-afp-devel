@@ -1,5 +1,5 @@
 (*  Title:      HOL/ex/Exceptions.thy
-    ID:         $Id: Exceptions.thy,v 1.4 2007-06-13 19:41:21 makarius Exp $
+    ID:         $Id: Exceptions.thy,v 1.5 2007-07-22 20:44:18 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2004 TU Muenchen
 *)
@@ -105,10 +105,10 @@ primrec
 "isFresh l (it#s) = (case it of VAL i \<Rightarrow> isFresh l s
                      | HAN l' \<Rightarrow> l' < l \<and> isFresh l s)"
 
-constdefs
-  conv :: "code \<Rightarrow> stack \<Rightarrow> int option \<Rightarrow> stack"
- "conv cs s io == case io of None \<Rightarrow> unwind cs s
-                  | Some i \<Rightarrow> exec cs (VAL i # s)"
+definition
+  conv :: "code \<Rightarrow> stack \<Rightarrow> int option \<Rightarrow> stack" where
+ "conv cs s io = (case io of None \<Rightarrow> unwind cs s
+                  | Some i \<Rightarrow> exec cs (VAL i # s))"
 
 subsection{* The proofs*}
 

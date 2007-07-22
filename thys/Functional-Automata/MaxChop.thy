@@ -1,4 +1,4 @@
-(*  ID:         $Id: MaxChop.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: MaxChop.thy,v 1.6 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -11,20 +11,20 @@ begin
 
 types   'a chopper = "'a list => 'a list list * 'a list"
 
-constdefs
- is_maxchopper :: "('a list => bool) => 'a chopper => bool"
-"is_maxchopper P chopper ==
- !xs zs yss.
+definition
+ is_maxchopper :: "('a list => bool) => 'a chopper => bool" where
+"is_maxchopper P chopper =
+ (!xs zs yss.
     (chopper(xs) = (yss,zs)) =
     (xs = concat yss @ zs & (!ys : set yss. ys ~= []) &
      (case yss of
         [] => is_maxpref P [] xs
-      | us#uss => is_maxpref P us xs & chopper(concat(uss)@zs) = (uss,zs)))"
+      | us#uss => is_maxpref P us xs & chopper(concat(uss)@zs) = (uss,zs))))"
 
-constdefs
- reducing :: "'a splitter => bool"
-"reducing splitf ==
- !xs ys zs. splitf xs = (ys,zs) & ys ~= [] --> length zs < length xs"
+definition
+ reducing :: "'a splitter => bool" where
+"reducing splitf =
+ (!xs ys zs. splitf xs = (ys,zs) & ys ~= [] --> length zs < length xs)"
 
 consts
  chopr :: "'a splitter * 'a list => 'a list list * 'a list"
@@ -36,9 +36,9 @@ recdef (permissive) chopr "measure (length o snd)"
                                 in (fst pp # fst qq,snd qq)
                       else arbitrary)"
 
-constdefs
- chop :: "'a splitter  => 'a chopper"
-"chop splitf xs == chopr(splitf,xs)"
+definition
+ chop :: "'a splitter  => 'a chopper" where
+"chop splitf xs = chopr(splitf,xs)"
 
 (* Termination of chop *)
 

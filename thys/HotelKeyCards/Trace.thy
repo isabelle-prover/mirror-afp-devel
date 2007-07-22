@@ -115,17 +115,17 @@ text{*\medskip\noindent we define a trace to be @{text safe\<^isub>0} for a
 room if the card obtained at the last @{const Check_in} was later
 actually used to @{const Enter} the room: *}
 
-(*<*)constdefs safe\<^isub>0 :: "event list \<Rightarrow> room \<Rightarrow> bool"(*>*)
-"safe\<^isub>0 s r \<equiv> \<exists>s\<^isub>1 s\<^isub>2 s\<^isub>3 g c.
- s = s\<^isub>3 @ [Enter g r c] @ s\<^isub>2 @ [Check_in g r c] @ s\<^isub>1 \<and> no_Check_in (s\<^isub>3 @ s\<^isub>2) r"
+(*<*)definition safe\<^isub>0 :: "event list \<Rightarrow> room \<Rightarrow> bool" where(*>*)
+"safe\<^isub>0 s r = (\<exists>s\<^isub>1 s\<^isub>2 s\<^isub>3 g c.
+ s = s\<^isub>3 @ [Enter g r c] @ s\<^isub>2 @ [Check_in g r c] @ s\<^isub>1 \<and> no_Check_in (s\<^isub>3 @ s\<^isub>2) r)"
 
 text{* \medskip\noindent A trace is @{text safe} if additionally the room was
 empty when it was entered: *}
 
-(*<*)constdefs safe :: "event list \<Rightarrow> room \<Rightarrow> bool"(*>*)
-"safe s r \<equiv> \<exists>s\<^isub>1 s\<^isub>2 s\<^isub>3 g c.
+(*<*)definition safe :: "event list \<Rightarrow> room \<Rightarrow> bool" where(*>*)
+"safe s r = (\<exists>s\<^isub>1 s\<^isub>2 s\<^isub>3 g c.
  s = s\<^isub>3 @ [Enter g r c] @ s\<^isub>2 @ [Check_in g r c] @ s\<^isub>1 \<and>
- no_Check_in (s\<^isub>3 @ s\<^isub>2) r \<and> isin (s\<^isub>2 @ [Check_in g r c] @ s\<^isub>1) r = {}"
+ no_Check_in (s\<^isub>3 @ s\<^isub>2) r \<and> isin (s\<^isub>2 @ [Check_in g r c] @ s\<^isub>1) r = {})"
 
 text{* \medskip\noindent The two notions of safety are distinguished because,
 except for the main theorem, @{const safe\<^isub>0} suffices.

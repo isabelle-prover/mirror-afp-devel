@@ -1,4 +1,4 @@
-(*  ID:         $Id: NAe.thy,v 1.5 2004-08-19 10:54:14 nipkow Exp $
+(*  ID:         $Id: NAe.thy,v 1.6 2007-07-22 20:44:19 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -11,17 +11,18 @@ begin
 
 types ('a,'s)nae = "('a option,'s)na"
 
-syntax eps :: "('a,'s)nae => ('s * 's)set"
-translations "eps A" == "step A None"
+abbreviation
+  eps :: "('a,'s)nae => ('s * 's)set" where
+  "eps A == step A None"
 
 consts steps :: "('a,'s)nae => 'a list =>   ('s * 's)set"
 primrec
 "steps A [] = (eps A)^*"
 "steps A (a#w) = steps A w  O  step A (Some a)  O  (eps A)^*"
 
-constdefs
- accepts :: "('a,'s)nae => 'a list => bool"
-"accepts A w == ? q. (start A,q) : steps A w & fin A q"
+definition
+ accepts :: "('a,'s)nae => 'a list => bool" where
+"accepts A w = (? q. (start A,q) : steps A w & fin A q)"
 
 (* not really used:
 consts delta :: "('a,'s)nae => 'a list => 's => 's set"
