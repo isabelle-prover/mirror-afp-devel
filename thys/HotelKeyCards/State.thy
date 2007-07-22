@@ -1,5 +1,5 @@
 (*  Title:      A state based hotel key card system
-    ID:         $Id: State.thy,v 1.2 2007-07-11 10:14:40 stefanberghofer Exp $
+    ID:         $Id: State.thy,v 1.3 2007-07-22 20:44:49 makarius Exp $
     Author:     Tobias Nipkow, TU Muenchen
 *)
 
@@ -266,7 +266,7 @@ by (induct set: reach) (auto)
 lemma safe_only_owner_enter_normal:
 assumes "s : reach"
 shows "\<lbrakk> safe s r; (k',roomk s r) \<in> cards s g \<rbrakk> \<Longrightarrow> owns s r = Some g"
-using prems
+using assms
 proof induct
   case (enter_room s k k1 g1 r1)
   let ?s' = "s\<lparr>isin := (isin s)(r1 := isin s r1 \<union> {g1}),
@@ -312,7 +312,7 @@ by (induct set: reach) auto
 
 theorem safe: assumes "s : reach"
 shows "safe s r \<Longrightarrow> g : isin s r \<Longrightarrow> owns s r = Some g"
-using prems
+using assms
 proof induct
   case (enter_room s k1 k2 g1 r1)
   let ?s' = "s\<lparr>isin := (isin s)(r1 := isin s r1 \<union> {g1}),
