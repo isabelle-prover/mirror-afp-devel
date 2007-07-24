@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.10 2007-07-21 15:42:45 makarius Exp $
+    ID:         $Id: Progress.thy,v 1.11 2007-07-24 19:52:33 alexkrauss Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -397,7 +397,7 @@ next
 	let ?ex = "hd ?rest" let ?rst = "tl ?rest"
 	from not_all_Val have nonempty: "?rest \<noteq> []" by auto
 	hence es: "es = ?ves @ ?ex # ?rst" by simp
-	have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastsimp dest:set_take_whileD)
+	have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastsimp dest:set_takeWhileD)
 	then obtain vs where ves: "?ves = map Val vs"
 	  using ex_map_conv by blast
 	show ?thesis

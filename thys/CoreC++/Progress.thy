@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Progress.thy,v 1.16 2007-07-19 21:23:09 makarius Exp $
+    ID:          $Id: Progress.thy,v 1.17 2007-07-24 19:52:32 alexkrauss Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -759,7 +759,7 @@ next
 	let ?ex = "hd ?rest" let ?rst = "tl ?rest"
 	from not_all_Val have nonempty: "?rest \<noteq> []" by auto
 	hence es: "es = ?ves @ ?ex # ?rst" by simp
-	have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastsimp dest:set_take_whileD)
+	have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastsimp dest:set_takeWhileD)
 	then obtain vs where ves: "?ves = map Val vs"
 	  using ex_map_conv by blast
 	show ?thesis
@@ -835,7 +835,7 @@ next
 	let ?ex = "hd ?rest" let ?rst = "tl ?rest"
 	from not_all_Val have nonempty: "?rest \<noteq> []" by auto
 	hence es: "es = ?ves @ ?ex # ?rst" by simp
-	have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastsimp dest:set_take_whileD)
+	have "\<forall>e \<in> set ?ves. \<exists>v. e = Val v" by(fastsimp dest:set_takeWhileD)
 	then obtain vs where ves: "?ves = map Val vs"
 	  using ex_map_conv by blast
 	show ?thesis
