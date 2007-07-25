@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pdifference.thy
-    ID:         $Id: Pdifference.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
+    ID:         $Id: Pdifference.thy,v 1.3 2007-07-25 09:38:50 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -78,24 +78,23 @@ lemma multzero: "\<lbrakk>0 < m mod p; m*a = 0\<rbrakk> \<Longrightarrow> (a::na
   by (auto)
 
 lemma primekeytrick: "\<lbrakk>(M*A) mod P = (M*B) mod P;M mod P \<noteq> 0; prime P\<rbrakk> \<Longrightarrow> A mod P = (B::nat) mod P"
-  apply (drule equalmodstrick2);
-  apply (rule equalmodstrick1);
-  apply (rule multzero, simp);
-  apply (subst mod_mult_distrib2)
-  apply (subst timesdistributesoverpdifference);
-  apply (simp)
-  apply (rule conjI, rule impI, simp)
-  apply (subst diff_mult_distrib2 [THEN sym])
-  apply (simp add: dvd_eq_mod_eq_0 [THEN sym])
-  apply (rule mult_dvd_mono, simp)
-  apply (rule primekeyrewrite, simp)
+apply (drule equalmodstrick2)
+apply (rule equalmodstrick1)
+apply (rule multzero, simp)
+apply (subst mod_mult_distrib2)
+apply (subst timesdistributesoverpdifference)
+apply (simp)
+apply (rule conjI, rule impI, simp)
+ apply (subst diff_mult_distrib2 [THEN sym])
+ apply (simp add: dvd_eq_mod_eq_0 [THEN sym])
+ apply (rule primekeyrewrite, simp)
   apply (subst diff_mult_distrib2)
   apply (simp add: dvd_eq_mod_eq_0)+
-  apply (rule impI, simp)
-  apply (subst diff_mult_distrib2 [THEN sym])
-  apply (simp add: dvd_eq_mod_eq_0 [THEN sym])
-  apply (rule mult_dvd_mono, simp)
-  apply (rule primekeyrewrite);
+apply (rule impI, simp)
+apply (subst diff_mult_distrib2 [THEN sym])
+apply (simp add: dvd_eq_mod_eq_0 [THEN sym])
+apply (rule disjI2)
+apply (rule primekeyrewrite)
   by (simp add: dvd_eq_mod_eq_0 diff_mult_distrib2)+
 
 end
