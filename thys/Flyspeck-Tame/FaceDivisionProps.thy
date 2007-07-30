@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.6 2007-07-20 18:45:57 makarius Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.7 2007-07-30 23:04:07 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2264,10 +2264,10 @@ apply(clarsimp simp:prevVertex_def verticesFrom_Def split:list.split)
 done
 
 
-ML"fast_arith_neq_limit := 1"
 lemma rotate_before_vFrom:
   "\<lbrakk> distinct(vertices f); r \<in> \<V> f; r\<noteq>u \<rbrakk> \<Longrightarrow>
    before (verticesFrom f r) u v \<Longrightarrow> before (verticesFrom f v) r u"
+using [[option fast_arith_neq_limit = 1]]
 apply(frule split_list)
 apply(clarsimp simp:verticesFrom_Def)
 apply(rename_tac as bs)
@@ -2333,7 +2333,6 @@ apply(erule disjE)
 apply(clarsimp simp:append_eq_Cons_conv)
 apply(fastsimp simp:between_def split_def)
 done
-ML"fast_arith_neq_limit := 3"
 
 lemma before_between2:
  "\<lbrakk> before (verticesFrom f u) v w; distinct(vertices f); u \<in> \<V> f \<rbrakk>
@@ -2731,10 +2730,10 @@ apply(clarsimp simp:Edges_Cons notinset_notinEdge2 card_insert_if neq_Nil_conv
 done
 
 
-ML"fast_arith_neq_limit := 1"
 lemma Edges_compl:
  "\<lbrakk> distinct vs; x \<in> set vs; y \<in> set vs; x \<noteq> y \<rbrakk> \<Longrightarrow>
  Edges(x # between vs x y @ [y]) \<inter> Edges(y # between vs y x @ [x]) = {}"
+using [[option fast_arith_neq_limit = 1]]
 apply(subgoal_tac
  "!!xs (ys::vertex list). xs \<noteq> [] \<Longrightarrow> set xs \<inter> set ys = {} \<Longrightarrow> hd xs \<notin> set ys")
  prefer 2 apply(drule hd_in_set) apply(blast)
@@ -2826,7 +2825,6 @@ apply (clarsimp simp add:Edges_Cons Edges_append
     Int_Un_distrib Int_Un_distrib2)
 apply(fastsimp)
 done
-ML"fast_arith_neq_limit := 3"
 
 
 lemma Edges_between_edges:
@@ -2883,11 +2881,11 @@ apply simp
 done
 
 
-ML"fast_arith_neq_limit := 10"
 lemma triangle_if_3circular:
  "\<lbrakk> distinct[a,b,c]; distinct(vertices(f::face));
     (a,b) \<in> \<E> f; (b,c) \<in> \<E> f; (c,a) \<in> \<E> f \<rbrakk>
   \<Longrightarrow> \<E> f = {(a,b),(b,c),(c,a)}"
+using [[option fast_arith_neq_limit = 10]]
 apply(rule card_seteq[OF finite_edges, symmetric])
  apply simp
 apply(simp add:card_edges)
@@ -2903,7 +2901,6 @@ apply(case_tac "Suc(Suc(Suc i)) = |vertices f|")
  apply simp
 apply simp
 done
-ML"fast_arith_neq_limit := 3"
 
 
 (******************** split_face_edges ********************************)

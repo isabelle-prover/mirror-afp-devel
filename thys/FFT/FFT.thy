@@ -1,5 +1,5 @@
 (*  Title:       Fast Fourier Transform
-    ID:          $Id: FFT.thy,v 1.5 2006-07-27 13:24:37 webertj Exp $
+    ID:          $Id: FFT.thy,v 1.6 2007-07-30 23:04:07 makarius Exp $
     Author:      Clemens Ballarin <ballarin at in.tum.de>, started 12 April 2005
     Maintainer:  Clemens Ballarin <ballarin at in.tum.de>
 *)
@@ -419,11 +419,10 @@ lemma power_divides_special:
   a ^ (i * j) / a ^ (k * i) = (a ^ j / a ^ k) ^ i"
   by (simp add: nonzero_power_divide power_mult [THEN sym] mult_ac)
 
-ML {* fast_arith_split_limit := 0; *}  (*FIXME*)
-
 theorem DFT_inverse:
   assumes i_less: "i < n"
   shows  "IDFT n (DFT n a) i = of_nat n * a i"
+  using [[option fast_arith_split_limit = 0]]
   apply (unfold DFT_def IDFT_def)
   apply (simp add: setsum_divide_distrib)
   apply (subst setsum_commute)
@@ -462,7 +461,6 @@ theorem DFT_inverse:
     finally show "?s = ?t" .
   qed
 
-ML {* fast_arith_split_limit := 9; *}  (*FIXME*)
 
 section {* Discrete, Fast Fourier Transformation *}
 

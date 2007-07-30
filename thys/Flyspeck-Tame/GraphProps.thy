@@ -1,4 +1,4 @@
-(*  ID:         $Id: GraphProps.thy,v 1.1 2006-05-22 09:53:59 nipkow Exp $
+(*  ID:         $Id: GraphProps.thy,v 1.2 2007-07-30 23:04:07 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -8,7 +8,7 @@ theory GraphProps
 imports Graph
 begin
 
-ML"fast_arith_neq_limit := 3"
+declare [[option fast_arith_neq_limit = 3]]
 
 lemma final_setFinal[iff]: "final(setFinal f)"
 by (simp add:setFinal_def)
