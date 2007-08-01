@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.7 2007-07-30 23:04:07 makarius Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.8 2007-08-01 15:09:41 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2267,7 +2267,7 @@ done
 lemma rotate_before_vFrom:
   "\<lbrakk> distinct(vertices f); r \<in> \<V> f; r\<noteq>u \<rbrakk> \<Longrightarrow>
    before (verticesFrom f r) u v \<Longrightarrow> before (verticesFrom f v) r u"
-using [[option fast_arith_neq_limit = 1]]
+using [[fast_arith_neq_limit = 1]]
 apply(frule split_list)
 apply(clarsimp simp:verticesFrom_Def)
 apply(rename_tac as bs)
@@ -2733,7 +2733,7 @@ done
 lemma Edges_compl:
  "\<lbrakk> distinct vs; x \<in> set vs; y \<in> set vs; x \<noteq> y \<rbrakk> \<Longrightarrow>
  Edges(x # between vs x y @ [y]) \<inter> Edges(y # between vs y x @ [x]) = {}"
-using [[option fast_arith_neq_limit = 1]]
+using [[fast_arith_neq_limit = 1]]
 apply(subgoal_tac
  "!!xs (ys::vertex list). xs \<noteq> [] \<Longrightarrow> set xs \<inter> set ys = {} \<Longrightarrow> hd xs \<notin> set ys")
  prefer 2 apply(drule hd_in_set) apply(blast)
@@ -2885,7 +2885,7 @@ lemma triangle_if_3circular:
  "\<lbrakk> distinct[a,b,c]; distinct(vertices(f::face));
     (a,b) \<in> \<E> f; (b,c) \<in> \<E> f; (c,a) \<in> \<E> f \<rbrakk>
   \<Longrightarrow> \<E> f = {(a,b),(b,c),(c,a)}"
-using [[option fast_arith_neq_limit = 10]]
+using [[fast_arith_neq_limit = 10]]
 apply(rule card_seteq[OF finite_edges, symmetric])
  apply simp
 apply(simp add:card_edges)

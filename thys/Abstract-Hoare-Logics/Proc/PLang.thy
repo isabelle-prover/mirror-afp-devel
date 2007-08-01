@@ -1,5 +1,5 @@
 (*  Title:       One procedure
-    ID:          $Id: PLang.thy,v 1.4 2007-07-31 20:51:28 makarius Exp $
+    ID:          $Id: PLang.thy,v 1.5 2007-08-01 15:09:40 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -14,7 +14,7 @@ typedecl state
 
 types bexp = "state \<Rightarrow> bool"
 
-declare [[option datatype_distinctness_limit = 8]]
+declare [[datatype_distinctness_limit = 8]]
 
 datatype com = Do "(state \<Rightarrow> state set)"
                     | Semi  com com            ("_; _"  [60, 60] 10)
