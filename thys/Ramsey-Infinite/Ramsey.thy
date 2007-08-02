@@ -1,12 +1,12 @@
 
-(* $Id: Ramsey.thy,v 1.7 2007-07-22 20:44:19 makarius Exp $ *)
+(* $Id: Ramsey.thy,v 1.8 2007-08-02 10:07:00 makarius Exp $ *)
 
 header "Ramsey's Theorem"
 
 theory Ramsey imports Main Infinite_Set begin
 
 
-ML {* simp_depth_limit := 5 *}
+declare [[simp_depth_limit = 5]]
 
 subsection "Library lemmas"
 

@@ -97,9 +97,8 @@ lemma same_key2D:
  (k\<^isub>1,k) : cards(s\<^isub>2 @ Check_in g r (k\<^isub>2,k) # s\<^isub>1) g' \<Longrightarrow> g=g' \<and> k\<^isub>1=k\<^isub>2"
 apply(induct s\<^isub>2)
 apply clarsimp
-ML"simp_depth_limit := 5"
+using [[simp_depth_limit = 5]]
 apply (auto simp:issued_app split:event.splits)
-ML"simp_depth_limit := 100"
 done
 
 
