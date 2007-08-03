@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.7 2007-07-20 20:30:58 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.8 2007-08-03 12:04:45 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2494,7 +2494,7 @@ next
 	  apply(fastsimp simp add:Edges_Cons Edges_append)
 	  done
       have pre': "pre_subdivFace' g f u w 0 ovs"
-	using pre Some n by (simp (depth_limit:5) add: pre_subdivFace'_Some2)
+	using pre Some n using [[simp_depth_limit = 5]] by (simp add: pre_subdivFace'_Some2)
       have "one_final (subdivFace' g f w 0 ovs)"
 	by (simp add: IH[OF pre' mgp fg 2])
     } moreover

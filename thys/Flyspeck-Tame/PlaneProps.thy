@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.4 2007-07-20 18:45:57 makarius Exp $
+(*  ID:         $Id: PlaneProps.thy,v 1.5 2007-08-03 12:04:45 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -378,7 +378,7 @@ next
     have uw: "u \<noteq> w" using pre by(clarsimp simp: pre_subdivFace'_def)
     { assume w: "f \<bullet> v = w" and n: "n = 0"
       have pre': "pre_subdivFace' g f u w 0 ovs"
-	using pre Some n by (simp (depth_limit:5) add: pre_subdivFace'_Some2)
+	using pre Some n using [[simp_depth_limit = 5]] by (simp add: pre_subdivFace'_Some2)
       note IH[OF pre' mgp fg]
     } moreover
     { let ?vs = "[countVertices g..<countVertices g + n]"
@@ -565,7 +565,7 @@ next
     proof (cases "f \<bullet> u = v \<and> n = 0")
       case True
       have pre': "pre_subdivFace' g f r v 0 ovs"
-	using pre True by (simp (depth_limit:5) add: pre_subdivFace'_Some2)
+	using pre True using [[simp_depth_limit = 5]] by (simp add: pre_subdivFace'_Some2)
       have mt: "ovs = [] \<longrightarrow> 0 = 0 \<and> v = last (verticesFrom f r)"
 	using pre by(clarsimp simp:pre_subdivFace'_def)
       show ?thesis using Some True IH[OF mgp pre' fg mt] `r \<noteq> v`
