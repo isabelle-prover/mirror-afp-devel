@@ -1,2 +1,1 @@
-use_thy "AVL";
-use_thy "AVL2";
+use_thys ["AVL", "AVL2"];

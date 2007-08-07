@@ -1,9 +1,8 @@
-no_document use_thy "FuncSet";
-no_document use_thy "Zorn";
-
-add_path "../Lazy-Lists-II/";
-no_document use "../Lazy-Lists-II/ROOT.ML";
+no_document use_thys [
+  "FuncSet",
+  "Zorn",
+  "~~/src/HOL/Induct/LList",
+  "../Lazy-Lists-II/LList2"
+];
 
 use_thy "LList_Topology";
-
-

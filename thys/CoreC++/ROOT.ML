@@ -1,8 +1,4 @@
 goals_limit := 1;
 
-no_document use_thy "While_Combinator";
-
-use_thy "Determinism";
-use_thy "Annotate";
-no_document use_thy "Efficient_Nat";
-use_thy "Execute";
+no_document use_thys ["While_Combinator", "Efficient_Nat"];
+use_thys ["Determinism", "Annotate", "Execute"];

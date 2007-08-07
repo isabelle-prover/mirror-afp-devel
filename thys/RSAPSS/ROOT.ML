@@ -1,22 +1,20 @@
-no_document use_thy "Efficient_Nat";
-no_document use_thy "Word";
+no_document use_thys ["Efficient_Nat", "Word", "Primes"];
 
-use_thy "WordOperations";
-use_thy "SHA1Padding";
-use_thy "SHA1";
+use_thys [
+  "WordOperations",
+  "SHA1Padding",
+  "SHA1",
 
-no_document use_thy "Primes";
-no_document use_thy "Divides";
+  "Crypt",
+  "Mod",
+  "Pdifference",
+  "Productdivides",
+  "Pigeonholeprinciple",
+  "Fermat",
+  "Cryptinverts",
 
-use_thy "Crypt";
-use_thy "Mod";
-use_thy "Pdifference";
-use_thy "Productdivides";
-use_thy "Pigeonholeprinciple";
-use_thy "Fermat";
-use_thy "Cryptinverts";
+  "Wordarith",
 
-use_thy "Wordarith";
-
-use_thy "EMSAPSS";
-use_thy "RSAPSS";
+  "EMSAPSS",
+  "RSAPSS"
+];

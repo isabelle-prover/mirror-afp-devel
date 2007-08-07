@@ -1,2 +1,1 @@
-use_thy "Integral";
-use_thy "Failure";
+use_thys ["Integral", "Failure"];
