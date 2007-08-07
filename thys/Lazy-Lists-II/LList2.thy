@@ -1,5 +1,5 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.7 2007-07-11 10:19:28 stefanberghofer Exp $
+    ID:         $Id: LList2.thy,v 1.8 2007-08-07 19:31:14 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -12,7 +12,7 @@ Safety and liveness.
 
 header{* More on llists *}
 
-theory LList2 imports LList begin
+theory LList2 imports "~~/src/HOL/Induct/LList" begin
 
 section{*Preliminaries*}
 
