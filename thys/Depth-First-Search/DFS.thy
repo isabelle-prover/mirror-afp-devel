@@ -6,7 +6,7 @@
 header "Depth-First Search"
 
 theory DFS
-imports Main InductiveInvariant
+imports Main "~~/src/HOL/ex/InductiveInvariant"
 begin
 
 subsection "Definition of Graphs"
