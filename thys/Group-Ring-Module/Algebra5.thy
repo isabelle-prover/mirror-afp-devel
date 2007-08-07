@@ -3723,7 +3723,6 @@ lemma (in PolynRg) polyn_add_n:"\<lbrakk>pol_coeff S (n, f); pol_coeff S (n, g)\
            nsum R (\<lambda>j. ((f j) \<plusminus>\<^bsub>S\<^esub> (g j)) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) n"
 by (simp add:polyn_addTr)
 
-
 constdefs
   add_cf::"[('a, 'm) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a), nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow>
                      nat \<times> (nat \<Rightarrow> 'a)"
@@ -4871,11 +4870,11 @@ lemma (in PolynRg) deg_in_aug_minf:"p \<in> carrier R \<Longrightarrow>
 apply (simp add:aug_minf_def deg_def an_def)
 done
 
-lemma (in PolynRg) deg_noninf:"\<lbrakk>p \<noteq> \<zero>; p \<in> carrier R\<rbrakk> \<Longrightarrow>
+lemma (in PolynRg) deg_noninf:"p \<in> carrier R \<Longrightarrow>
                                    deg R S X p \<noteq> \<infinity>"
 apply (cut_tac deg_in_aug_minf[of p], simp add:deg_def,
        simp add:aug_minf_def)
-apply assumption
+apply (case_tac "p = \<zero>\<^bsub>R\<^esub>", simp+)
 done
 
 lemma (in PolynRg) deg_ant_int:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk>

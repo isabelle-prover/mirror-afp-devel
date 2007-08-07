@@ -34,7 +34,7 @@ section "20. Abelian groups"
 
 record 'a aGroup = "'a carrier" + 
   pop      :: "['a, 'a ] \<Rightarrow> 'a"  (infixl "\<plusminus>\<index>" 62) 
-  mop      :: "'a  \<Rightarrow> 'a"        ("-\<^sub>a\<index>" )
+  mop      :: "'a  \<Rightarrow> 'a"        ("(-\<^sub>a\<index> _)" [64]63 )
   zero     :: "'a"               ("\<zero>\<index>")
 
 locale aGroup =
@@ -464,7 +464,8 @@ apply (rule conjI)
 apply (rule conjI)
  apply (rule allI, rule impI)
  apply (simp add:Ag_ind_def surj_to_def)
- apply (frule_tac b = a in invfun_mem1[of "f" "carrier A" "D"], assumption+) 
+ apply (frule_tac b = a in invfun_mem1[of "f" "carrier A" "D"], assumption+)
+           
  apply (frule_tac x = "invfun (carrier A) D f a" in ag_mOp_closed)
  apply (simp add:funcset_mem[of "f" "carrier A" "D"])
  apply (subst injective_iff[of "f" "carrier A", THEN sym], assumption)
@@ -2334,8 +2335,8 @@ apply (frule ring_distrib2 [THEN sym, of "b" "a" "-\<^sub>a a"], assumption+)
  apply (frule aGroup.ag_eq_sol1 [of "R" "a \<cdot>\<^sub>r b" "(-\<^sub>a a) \<cdot>\<^sub>r b" "\<zero>"], 
            assumption+)
  apply (rule ring_zero, assumption+)
- apply (thin_tac "a \<cdot>\<^sub>r b \<plusminus> -\<^sub>a a \<cdot>\<^sub>r b = \<zero>")
- apply (frule sym) apply (thin_tac "-\<^sub>a a \<cdot>\<^sub>r b = -\<^sub>a (a \<cdot>\<^sub>r b) \<plusminus> \<zero>")
+ apply (thin_tac "a \<cdot>\<^sub>r b \<plusminus> (-\<^sub>a a) \<cdot>\<^sub>r b = \<zero>")
+ apply (frule sym) apply (thin_tac "(-\<^sub>a a) \<cdot>\<^sub>r b = -\<^sub>a (a \<cdot>\<^sub>r b) \<plusminus> \<zero>")
  apply (frule aGroup.ag_mOp_closed [of "R" " a \<cdot>\<^sub>r b"], assumption+)
  apply (simp add:aGroup.ag_r_zero)
 apply (frule ring_distrib1 [THEN sym, of "a" "b" "-\<^sub>a b"], assumption+)
@@ -2361,7 +2362,7 @@ lemma (in Ring) ring_inv1_2:"\<lbrakk> a \<in> carrier R; b \<in> carrier R \<rb
                                 -\<^sub>a (a \<cdot>\<^sub>r b) = a \<cdot>\<^sub>r (-\<^sub>a b)"
 apply (frule ring_inv1 [of "a" "b"], assumption+)
 apply (frule conj_2) 
-apply (thin_tac "-\<^sub>a (a \<cdot>\<^sub>r b) = -\<^sub>a a \<cdot>\<^sub>r b \<and> -\<^sub>a (a \<cdot>\<^sub>r b) = a \<cdot>\<^sub>r -\<^sub>a b") 
+apply (thin_tac "-\<^sub>a a \<cdot>\<^sub>r b = (-\<^sub>a a) \<cdot>\<^sub>r b \<and> -\<^sub>a (a \<cdot>\<^sub>r b) = a \<cdot>\<^sub>r (-\<^sub>a b)") 
 apply simp
 done
 
@@ -2418,7 +2419,7 @@ lemma (in Ring) rMulLC:
   apply simp
   done 
 
-lemma (in Ring) Zero_ring:"\<lbrakk>1\<^sub>r = \<zero> \<rbrakk> \<Longrightarrow> zeroring R"
+lemma (in Ring) Zero_ring:"1\<^sub>r = \<zero> \<Longrightarrow> zeroring R"
 apply (simp add:zeroring_def)
 apply (rule conjI)
  apply (rule Ring_axioms)
@@ -3247,7 +3248,7 @@ lemma (in Ring) npInverse:
  apply (subst ring_inv1_2[THEN sym, of _ x]) 
  apply (rule aGroup.ag_mOp_closed, assumption+,
         simp add:npClose, assumption)
- apply (thin_tac "-\<^sub>a x^\<^bsup>R na\<^esup> = -\<^sub>a (x^\<^bsup>R na\<^esup>)",
+ apply (thin_tac "(-\<^sub>a x)^\<^bsup>R na\<^esup> = -\<^sub>a (x^\<^bsup>R na\<^esup>)",
         frule_tac n = na in npClose[of x],
         frule_tac x = "x^\<^bsup>R na\<^esup>" in aGroup.ag_mOp_closed[of R], simp add:npClose)
  apply (simp add: ring_inv1_1[of _ x])
@@ -3444,18 +3445,19 @@ done
 lemma rimg_ring:"\<lbrakk>Ring A; Ring R; f \<in> rHom A R \<rbrakk> \<Longrightarrow> Ring (rimg A R f)"
 apply (unfold Ring_def [of "rimg A R f"])
 apply (frule rimg_ag[of "A" "R" "f"], assumption+)
-apply (rule conjI, simp add:aGroup_def[of "rimg A R f"])
+ apply (rule conjI, simp add:aGroup_def[of "rimg A R f"])
 apply(rule conjI)
  apply (rule conjI, rule allI, rule impI)
-  apply(frule aGroup.ag_inc_zero[of "rimg A R f"],
+ apply (frule aGroup.ag_inc_zero[of "rimg A R f"],
         subst aGroup.ag_pOp_commute, assumption+,
         simp add:aGroup.ag_r_zero[of "rimg A R f"])
- apply (rule conjI)
-  apply (rule bivar_func_test, (rule ballI)+)
-  apply (thin_tac "aGroup (rimg A R f)",
+      
+apply (rule conjI)
+apply (rule bivar_func_test, (rule ballI)+)
+apply (thin_tac "aGroup (rimg A R f)",
        simp add:rimg_def, simp add:image_def, (erule bexE)+, 
        simp add:rHom_tOp[THEN sym])
-  apply (frule_tac x = x and y = xa in Ring.ring_tOp_closed, assumption+,
+ apply (frule_tac x = x and y = xa in Ring.ring_tOp_closed, assumption+,
         blast)
  apply ((rule allI)+, (rule impI)+)
  apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
@@ -3465,16 +3467,16 @@ apply(rule conjI)
         simp add:rHom_tOp[THEN sym],
         simp add:Ring.ring_tOp_assoc)
 apply (rule conjI, rule conjI, (rule allI)+, (rule impI)+)
-  apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
+ apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
         simp add:image_def, (erule bexE)+, simp,
         simp add:rHom_tOp[THEN sym],
         simp add:Ring.ring_tOp_commute)
- apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
+  apply (thin_tac "aGroup (rimg A R f)", simp add:rimg_def,
          simp add:image_def)
- apply (subst rHom_one [THEN sym, of "A" "R" "f"], assumption+,
+  apply (subst rHom_one [THEN sym, of "A" "R" "f"], assumption+,
          frule Ring.ring_one[of "A"], blast)
 apply (rule conjI, (rule allI)+, (rule impI)+)
- apply (simp add:rimg_def, fold rimg_def,
+apply (simp add:rimg_def, fold rimg_def,
        simp add:image_def, (erule bexE)+, simp) 
  apply (frule rHom_aHom[of "f" "A" "R"],
         frule Ring.ring_is_ag [of "A"],
@@ -3490,9 +3492,9 @@ apply (rule conjI, (rule allI)+, (rule impI)+)
         simp add:aHom_add[THEN sym],
         simp add:rHom_tOp[THEN sym],
         simp add:Ring.ring_distrib1)
-apply (rule allI, rule impI,
+ apply (rule allI, rule impI,
         thin_tac "aGroup (rimg A R f)")
-apply (simp add:rimg_def,
+ apply (simp add:rimg_def,
         simp add:image_def, erule bexE, simp add:rHom_tOp[THEN sym],
         frule_tac a = x in rHom_mem[of "f" "A" "R"], assumption+,
          simp add:Ring.ring_l_one)
@@ -3586,8 +3588,8 @@ apply simp
  apply (frule ring_distrib2[THEN sym, of "b'" "a" "-\<^sub>a b" ], assumption+)
  apply simp
  
-apply (thin_tac "a \<cdot>\<^sub>r a' \<plusminus> -\<^sub>a b \<cdot>\<^sub>r b' = a \<cdot>\<^sub>r (a' \<plusminus> -\<^sub>a b') \<plusminus> (a \<plusminus> -\<^sub>a b) \<cdot>\<^sub>r b'",
-       thin_tac "a \<cdot>\<^sub>r b' \<plusminus> -\<^sub>a b \<cdot>\<^sub>r b' = (a \<plusminus> -\<^sub>a b) \<cdot>\<^sub>r b'")
+apply (thin_tac "a \<cdot>\<^sub>r a' \<plusminus> (-\<^sub>a b) \<cdot>\<^sub>r b' = a \<cdot>\<^sub>r (a' \<plusminus> -\<^sub>a b') \<plusminus> (a \<plusminus> -\<^sub>a b) \<cdot>\<^sub>r b'",
+       thin_tac "a \<cdot>\<^sub>r b' \<plusminus> (-\<^sub>a b) \<cdot>\<^sub>r b' = (a \<plusminus> -\<^sub>a b) \<cdot>\<^sub>r b'")
  apply (frule ideal_ring_multiple[of "I" "a' \<plusminus> (-\<^sub>a b')" "a"], assumption+,
         frule ideal_ring_multiple1[of "I" "a \<plusminus> (-\<^sub>a b)" "b'"], assumption+)
  apply (simp add:ideal_pOp_closed)
@@ -4369,7 +4371,7 @@ apply (rule ar_coset_same1, assumption+)
 apply (frule ar_coset_same2 [of "I" "a1" "a2"], assumption+)
 apply (frule ar_coset_same2 [of "I" "b1" "b2"], assumption+) 
 apply (frule ring_distrib4[of "a2" "b2" "a1" "b1"], assumption+)
- apply (subst ring_inv1_1, assumption+, simp)
+ apply simp
  apply (rule ideal_pOp_closed[of "I"], assumption)
  apply (simp add:ideal_ring_multiple, simp add:ideal_ring_multiple1)
 done

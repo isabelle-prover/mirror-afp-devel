@@ -3203,12 +3203,12 @@ apply (simp add:minus_set_def, erule bexE, simp)
 apply simp apply ((erule bexE)+, simp)
  apply (simp add:sop_assoc_def)
  apply (drule_tac b = "-\<^sub>a r" in forball_spec1, assumption,
-        thin_tac "\<forall>r\<in>carrier R. \<forall>x\<in>s_set R s A. r \<^sub>s\<cdot> (\<^sub>i- x) = -\<^sub>a r \<^sub>s\<cdot> x",
+        thin_tac "\<forall>r\<in>carrier R. \<forall>x\<in>s_set R s A. r \<^sub>s\<cdot> (\<^sub>i- x) = (-\<^sub>a r) \<^sub>s\<cdot> x",
         drule_tac b = ra in forball_spec1, assumption,
         drule_tac b = a in forball_spec1,
                 simp add:aug_pm_set_def, simp add:a_in_s_set) 
  apply (rotate_tac -1, frule sym, 
-              thin_tac "-\<^sub>a r \<cdot>\<^sub>r ra \<^sub>s\<cdot> a = -\<^sub>a r \<^sub>s\<cdot> (ra \<^sub>s\<cdot> a)", simp,
+              thin_tac "(-\<^sub>a r) \<cdot>\<^sub>r ra \<^sub>s\<cdot> a = (-\<^sub>a r) \<^sub>s\<cdot> (ra \<^sub>s\<cdot> a)", simp,
         frule_tac x = "-\<^sub>a r" and y = ra in ring_tOp_closed, assumption,
               simp add:ra_in_s_set)
 done
@@ -4205,8 +4205,9 @@ apply (rule ballI)+
         frule_tac a1 = a and x1 = "-\<^sub>a\<^bsub>M\<^esub> a1" in msub_sprod[THEN sym, of M M1],
         assumption+)
   apply (simp add:msub_mOp,
-        frule_tac x1 = a1 in msub_mOp[THEN sym, of M M1], assumption+, simp,
-        thin_tac "a \<cdot>\<^sub>s\<^bsub>M\<^esub> -\<^sub>a\<^bsub>M1\<^esub> a1 = a \<cdot>\<^sub>s\<^bsub>M1\<^esub> -\<^sub>a\<^bsub>M1\<^esub> a1",
+        frule_tac x1 = a1 in msub_mOp[THEN sym, of M M1], assumption+, simp)
+  apply (
+        thin_tac "a \<cdot>\<^sub>s\<^bsub>M\<^esub> (-\<^sub>a\<^bsub>M1\<^esub> a1) = a \<cdot>\<^sub>s\<^bsub>M1\<^esub> (-\<^sub>a\<^bsub>M1\<^esub> a1)",
         thin_tac "-\<^sub>a\<^bsub>M\<^esub> a1 = -\<^sub>a\<^bsub>M1\<^esub> a1",
         thin_tac "-\<^sub>a\<^bsub>M1\<^esub> a1 \<in> carrier M",
         frule_tac a = a and m = a1 in Module.sc_mem[of M1 R], 

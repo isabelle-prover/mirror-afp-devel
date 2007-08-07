@@ -32,7 +32,7 @@ by (simp add:lcf_def s_cf_def)
 
 lemma (in PolynRg) lcf_val:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero> \<rbrakk> \<Longrightarrow> 
                     lcf R S X p = (snd (s_cf R S X p)) (fst (s_cf R S X p))"
-by (simp add:lcf_def)
+by (simp add:lcf_def) 
 
 lemma (in PolynRg) s_cf_pol_coeff:"p \<in> carrier R \<Longrightarrow>
                          pol_coeff S (s_cf R S X p)"
@@ -97,6 +97,20 @@ apply simp
  apply simp
 done 
 
+lemma (in PolynRg) pos_deg_nonzero:"\<lbrakk>p \<in> carrier R; 0 < deg_n R S X p\<rbrakk> \<Longrightarrow>
+                     p \<noteq> \<zero>"
+apply (cut_tac s_cf_expr0[of p], (erule conjE)+)
+ apply (frule pol_deg_eq_c_max[of p "s_cf R S X p"], assumption+)
+ apply (simp, thin_tac "deg_n R S X p = c_max S (s_cf R S X p)")
+ apply (simp add:c_max_def) 
+ apply (case_tac "\<forall>x\<le>fst (s_cf R S X p). snd (s_cf R S X p) x = \<zero>\<^bsub>S\<^esub> ", simp)
+ apply (thin_tac "0 < (if \<forall>x\<le>fst (s_cf R S X p). snd (s_cf R S X p) x = \<zero>\<^bsub>S\<^esub> 
+   then 0 else n_max
+                {j. j \<le> fst (s_cf R S X p) \<and> snd (s_cf R S X p) j \<noteq> \<zero>\<^bsub>S\<^esub>})")
+ apply (simp add:coeff_0_pol_0[of "s_cf R S X p" "fst (s_cf R S X p)"])
+ apply assumption
+done
+
 lemma (in PolynRg) s_cf_expr:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk> \<Longrightarrow>
       pol_coeff S (s_cf R S X p) \<and>
       p = polyn_expr R X (fst (s_cf R S X p)) (s_cf R S X p) \<and>
@@ -133,13 +147,123 @@ apply (frule s_cf_expr[of p], assumption, (erule conjE)+)
 apply (simp add:pol_deg_n[of p "s_cf R S X p" "fst (s_cf R S X p)"])
 done
 
+lemma (in PolynRg) pol_expr_edeg:"\<lbrakk>p \<in> carrier R; deg R S X p \<le> (an d)\<rbrakk> \<Longrightarrow> 
+       \<exists>f. (pol_coeff S f \<and> fst f = d \<and> p = polyn_expr R X d f)"
+apply (case_tac "p = \<zero>\<^bsub>R\<^esub>")
+ apply (subgoal_tac "pol_coeff S (d, \<lambda>j. \<zero>\<^bsub>S\<^esub>) \<and> fst (d, \<lambda>j. \<zero>\<^bsub>S\<^esub>) = d \<and> 
+              p = polyn_expr R X d (d, \<lambda>j. \<zero>\<^bsub>S\<^esub>)", blast)
+ apply (rule conjI)
+ apply (simp add:pol_coeff_def, cut_tac Ring.ring_zero[of S], simp,
+        cut_tac subring, simp add:subring_Ring) 
+ apply (cut_tac coeff_0_pol_0[of "(d, \<lambda>j. \<zero>\<^bsub>S\<^esub>)" d], simp)
+ apply (simp add:pol_coeff_def, cut_tac Ring.ring_zero[of S], simp,
+        cut_tac subring, simp add:subring_Ring) 
+ apply simp
+ apply (frule s_cf_expr[of p], assumption+, (erule conjE)+)
+ apply (simp add:deg_def na_an, simp add:ale_natle)
+ apply (simp add:s_cf_deg)
+ apply (subgoal_tac "pol_coeff S (d, \<lambda>j. (if j \<le> (fst (s_cf R S X p)) then
+         (snd (s_cf R S X p) j) else \<zero>\<^bsub>S\<^esub>)) \<and>
+         p = polyn_expr R X d (d, \<lambda>j. (if j \<le> (fst (s_cf R S X p)) then
+         (snd (s_cf R S X p) j) else \<zero>\<^bsub>S\<^esub>))", blast)
+ apply (rule conjI)
+  apply (simp add:pol_coeff_def, rule allI, rule impI, rule impI)
+  apply (cut_tac subring, simp add:subring_Ring, simp add:subring_Ring[of S]
+         Ring.ring_zero)
+  apply (case_tac "fst (s_cf R S X p) = d", simp)
+  apply (subst polyn_exprs_eq[of "(d, \<lambda>j. if j \<le> d then snd (s_cf R S X p) j 
+         else \<zero>\<^bsub>S\<^esub>)" "s_cf R S X p" d])
+   apply (simp add:pol_coeff_def, cut_tac Ring.ring_zero[of S], simp,
+          cut_tac subring, simp add:subring_Ring, simp) 
+   apply (rule allI, rule impI, simp, assumption+)
+   apply (drule noteq_le_less[of "fst (s_cf R S X p)" d], assumption+)
+ apply (cut_tac polyn_n_m1[of "(d, \<lambda>j. if j \<le> fst (s_cf R S X p) then 
+        snd (s_cf R S X p) j else \<zero>\<^bsub>S\<^esub>)" "fst (s_cf R S X p)" d], simp)
+ apply (cut_tac higher_part_zero[of "(d, \<lambda>j. if j \<le> fst (s_cf R S X p) then 
+     snd (s_cf R S X p) j else \<zero>\<^bsub>S\<^esub>)" "fst (s_cf R S X p)"], simp,
+     thin_tac "polyn_expr R X d
+      (d, \<lambda>j. if j \<le> fst (s_cf R S X p) then snd (s_cf R S X p) j else \<zero>\<^bsub>S\<^esub>) =
+     polyn_expr R X (fst (s_cf R S X p)) (d, \<lambda>j. if j \<le> fst (s_cf R S X p) 
+      then snd (s_cf R S X p) j else \<zero>\<^bsub>S\<^esub>) \<plusminus> \<zero>",
+     thin_tac "\<Sigma>\<^sub>f R (\<lambda>j. (if j \<le> fst (s_cf R S X p) then snd (s_cf R S X p) j
+                else \<zero>\<^bsub>S\<^esub>) \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>) (Suc (fst (s_cf R S X p))) d = \<zero>")
+apply (subst polyn_exprs_eq[of "(d, \<lambda>j. if j \<le> fst (s_cf R S X p) then 
+       snd (s_cf R S X p) j else \<zero>\<^bsub>S\<^esub>)" "s_cf R S X p" "fst (s_cf R S X p)"])
+  apply (simp add:pol_coeff_def, rule allI, rule impI, rule impI,
+         cut_tac subring, simp add:subring_Ring, simp add:subring_Ring[of S]
+         Ring.ring_zero, assumption+) apply (simp add:min_def)
+  apply (rule allI, rule impI, simp)
+  apply (frule polyn_mem[of "s_cf R S X p" "fst (s_cf R S X p)"], simp+)
+  apply (cut_tac ring_is_ag, simp add:aGroup.ag_r_zero)
+  apply (simp add:pol_coeff_def, rule allI, rule impI, rule impI,
+         cut_tac subring, simp add:subring_Ring, simp add:subring_Ring[of S]
+         Ring.ring_zero)
+  apply simp
+  apply (rule ballI, simp add:nset_def)
+  apply (simp add:pol_coeff_def, rule allI, rule impI, rule impI,
+         cut_tac subring, simp add:subring_Ring, simp add:subring_Ring[of S]
+         Ring.ring_zero)
+  apply assumption apply simp
+done
+
+lemma (in PolynRg) cf_scf:"\<lbrakk>pol_coeff S c; k \<le> fst c; polyn_expr R X k c \<noteq> \<zero>\<rbrakk>
+    \<Longrightarrow>  \<forall>j \<le> fst (s_cf R S X (polyn_expr R X k c)).
+              snd (s_cf R S X (polyn_expr R X k c)) j = snd c j"
+apply (frule polyn_mem[of c k], assumption+)
+apply (simp add:polyn_expr_short[of c k],
+       rule allI, rule impI)
+apply (cut_tac pol_deg_le_n1[of "polyn_expr R X k c" c k],
+       frule s_cf_expr0[of "polyn_expr R X k (k, snd c)"], erule conjE)
+apply (rotate_tac -1, drule sym)
+apply (case_tac "fst (s_cf R S X (polyn_expr R X k (k, snd c))) = k",
+       simp,
+       cut_tac c = "s_cf R S X (polyn_expr R X k (k, snd c))" and 
+       d = "(k, snd c)" in pol_expr_unique2,
+       simp add:s_cf_pol_coeff, simp add:split_pol_coeff, simp,
+        simp, simp add:polyn_expr_short[THEN sym, of c k])
+
+ apply (simp add:s_cf_deg[of "polyn_expr R X k c"],
+        drule noteq_le_less[of "fst (s_cf R S X (polyn_expr R X k c))" k],
+        assumption) 
+ apply (frule pol_expr_unique3[of "s_cf R S X (polyn_expr R X k c)" 
+         "(k, snd c)"], simp add:split_pol_coeff, simp,
+        simp add:polyn_expr_short[THEN sym, of c k])
+apply (simp add:polyn_expr_short[THEN sym, of c k], assumption+, simp)
+done
+
+constdefs
+  scf_cond::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a, 
+                  nat, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> bool"
+ "scf_cond R S X p d c == pol_coeff S c \<and> fst c = d \<and> 
+                          p = polyn_expr R X d c"
+
+  scf_d::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a, nat]
+                \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)"
+  "scf_d R S X p d == SOME f. scf_cond R S X p d f" 
+ 
+  (** system of coefficients, coeff_length d **)
+
+lemma (in PolynRg) scf_d_polTr:"\<lbrakk>p \<in> carrier R; deg R S X p \<le> an d\<rbrakk> \<Longrightarrow> 
+           scf_cond R S X p d (scf_d R S X p d)" 
+apply (simp add:scf_d_def) 
+apply (rule_tac P = "scf_cond R S X p d" in someI2_ex)
+apply (frule pol_expr_edeg[of "p" "d"], assumption+)
+apply (simp add:scf_cond_def, assumption)
+done
+
+lemma (in PolynRg) scf_d_pol:"\<lbrakk>p \<in> carrier R; deg R S X p \<le> an d\<rbrakk> \<Longrightarrow> 
+      pol_coeff S (scf_d R S X p d) \<and> fst (scf_d R S X p d) = d \<and>
+       p = polyn_expr R X d (scf_d R S X p d)"
+apply (frule scf_d_polTr[of "p" "d"], assumption+)
+apply (simp add:scf_cond_def)
+done
+
 lemma (in PolynRg) pol_expr_of_X:
        "X = polyn_expr R X (Suc 0) (ext_cf S (Suc 0) (C\<^sub>0 S))"
 apply (cut_tac X_mem_R, cut_tac subring)
 apply (cut_tac X_to_d[of "Suc 0"])
  apply (simp add:ring_l_one)
 done
-
 
 lemma (in PolynRg) deg_n_of_X:"deg_n R S X X = Suc 0"
 apply (cut_tac X_mem_R, cut_tac polyn_ring_S_nonzero,
@@ -484,94 +608,425 @@ lemma (in PolynRg) lower_deg_part:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero
 done 
 
 constdefs
+ ldeg_p:: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, nat, 'a]
+                  \<Rightarrow> 'a"
+ "ldeg_p R S X d p == polyn_expr R X d (scf_d R S X p (Suc d))"
+      (** deg R S X p \<le> (Suc d) **)
+constdefs
+ hdeg_p::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, nat, 'a]
+                  \<Rightarrow> 'a"
+ "hdeg_p R S X d p == (snd (scf_d R S X p d) d) \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R d\<^esup>)"
+       (** deg R S X p \<le> d **) 
+
+lemma (in PolynRg) ldeg_p_mem:"\<lbrakk>p \<in> carrier R; deg R S X p \<le> an (Suc d) \<rbrakk> \<Longrightarrow>
+                      ldeg_p R S X d p \<in> carrier R"
+apply (frule scf_d_pol[of "p" "Suc d"], assumption+, 
+       erule conjE)
+apply (simp add:ldeg_p_def)
+apply (rule polyn_mem[of "scf_d R S X p (Suc d)" d],
+         assumption+)
+apply simp
+done
+
+lemma (in PolynRg) ldeg_p_zero:"p = \<zero>\<^bsub>R\<^esub> \<Longrightarrow> ldeg_p R S X d p = \<zero>\<^bsub>R\<^esub>"
+apply (subgoal_tac "deg R S X p \<le> an (Suc d)",
+       subgoal_tac "p \<in> carrier R")
+apply (frule scf_d_pol[of "p" "Suc d"], assumption+, 
+       erule conjE)
+apply simp
+apply (frule coeff_0_pol_0[of "scf_d R S X \<zero> (Suc d)" "Suc d"], simp)
+apply (simp add:ldeg_p_def)
+apply (subst coeff_0_pol_0[THEN sym, of "scf_d R S X \<zero> (Suc d)"],
+        assumption+, simp)
+apply (rule allI, rule impI, simp)
+apply (simp, simp add:ring_zero)
+apply (simp add:deg_def)
+done
+ 
+lemma (in PolynRg) hdeg_p_mem:"\<lbrakk>p \<in> carrier R; deg R S X p \<le> an (Suc d)\<rbrakk> \<Longrightarrow>
+                      hdeg_p R S X (Suc d) p \<in> carrier R" 
+apply (frule scf_d_pol[of p "Suc d"], assumption+, erule conjE)
+apply (simp only:hdeg_p_def, (erule conjE)+)
+apply (cut_tac Ring)
+apply (rule Ring.ring_tOp_closed[of "R"], assumption)
+apply (frule pol_coeff_mem[of "scf_d R S X p (Suc d)" "Suc d"], simp)
+apply (cut_tac subring)
+apply (simp add:Ring.mem_subring_mem_ring)
+apply (rule Ring.npClose[of "R"], assumption+)
+apply (rule X_mem_R)
+done
+
+
+   
+(*   *****************************************************************
+constdefs
  ldeg_p:: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a]
                   \<Rightarrow> 'a"
  "ldeg_p R S X p == if p = \<zero>\<^bsub>R\<^esub> then \<zero>\<^bsub>R\<^esub> 
-                       else if deg_n R S X p = 0 then \<zero>\<^bsub>R\<^esub>  
+                       else if deg_n R S X p = 0 then p
                        else polyn_expr R X (fst (s_cf R S X p)  - Suc 0) 
-                                                         (s_cf R S X p)"
-      (** deg R S X p \<le> (Suc d), lower degree part **)
-
+                                                         (s_cf R S X p)" *)
+      (** deg R S X p \<le> (Suc d), lower degree part **) (*
+constdefs
  hdeg_p::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,'a]
                   \<Rightarrow> 'a"
- "hdeg_p R S X p == (snd (s_cf R S X p) (fst (s_cf R S X p))) \<cdot>\<^sub>r\<^bsub>R\<^esub> 
-                            X^\<^bsup>R (fst (s_cf R S X p))\<^esup>"
+ "hdeg_p R S X p == if p = \<zero>\<^bsub>R\<^esub> then \<zero>\<^bsub>R\<^esub> else 
+                     (if (deg_n R S X p) = 0 then \<zero>\<^bsub>R\<^esub> else
+                      (snd (s_cf R S X p) (fst (s_cf R S X p))) \<cdot>\<^sub>r\<^bsub>R\<^esub> 
+                              X^\<^bsup>R (fst (s_cf R S X p))\<^esup>)" *)
        (** deg R S X p \<le> d, the highest degree term  **)
 
-
+(*
 lemma (in PolynRg) ldeg_p_mem:"p \<in> carrier R  \<Longrightarrow> ldeg_p R S X p \<in> carrier R"
 apply (simp add:ldeg_p_def)
  apply (simp add:ring_zero)
  apply (rule impI, rule impI)
 apply (frule s_cf_pol_coeff[of p])
  apply (simp add:polyn_mem)
-done   (* Note. ldeg_p and hdeg_p are well defined,
-          because we have uniqueness of polyn_expression *)
+done   
     
 lemma (in PolynRg) ldeg_p_zero:"ldeg_p R S X \<zero> = \<zero>"
 apply (simp add:ldeg_p_def)
-done
+done 
 
 lemma (in PolynRg) ldeg_p_zero1:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>; deg_n R S X p = 0\<rbrakk> \<Longrightarrow>
-                   ldeg_p R S X p = \<zero>"
+                   ldeg_p R S X p = p"
 by (simp add:ldeg_p_def)
  
 lemma (in PolynRg) hdeg_p_mem:"p \<in> carrier R  \<Longrightarrow>
                                    hdeg_p R S X p \<in> carrier R"
+apply (cut_tac ring_is_ag)
 apply (cut_tac subring)
 apply (simp add:hdeg_p_def)
+ apply (case_tac "deg_n R S X p = 0", simp add:aGroup.ag_inc_zero)
+apply simp
+ apply (simp add:aGroup.ag_inc_zero)
+ apply (rule impI)
  apply (frule s_cf_pol_coeff[of p])
  apply (cut_tac X_mem_R,
         rule ring_tOp_closed) 
  apply (simp add:pol_coeff_mem mem_subring_mem_ring)
  apply (rule npClose, assumption)
+done *)
+
+lemma (in PolynRg) hdeg_p_zero:"p = \<zero> \<Longrightarrow> hdeg_p R S X (Suc d) p = \<zero>"
+apply (cut_tac X_mem_R)
+apply (subgoal_tac "deg R S X p \<le> an (Suc d)",
+       subgoal_tac "p \<in> carrier R")
+apply (frule scf_d_pol[of p "Suc d"], assumption+, erule conjE)
+apply simp
+apply (frule coeff_0_pol_0[of "scf_d R S X \<zero> (Suc d)" "Suc d"], 
+        (erule conjE)+, simp)
+apply (simp only:hdeg_p_def)
+ apply (rotate_tac -1, drule sym, simp del:npow_suc)
+apply (cut_tac subring, 
+       simp del:npow_suc add:Subring_zero_ring_zero,
+       rule ring_times_0_x, rule npClose, assumption)
+apply (simp add:ring_zero)
+apply (simp add:deg_def)
 done
 
-lemma (in PolynRg) hdeg_p_zero:"hdeg_p R S X \<zero> = \<zero>"
-apply (cut_tac subring,
-       cut_tac X_mem_R)
-apply (simp add:hdeg_p_def s_cf_def)
-apply (simp add:Subring_zero_ring_zero,
-       cut_tac ring_zero, simp add:ring_r_one)
+lemma (in PolynRg) decompos_p:"\<lbrakk>p \<in> carrier R; deg R S X p \<le> an (Suc d)\<rbrakk> \<Longrightarrow>
+                p = (ldeg_p R S X d p) \<plusminus> (hdeg_p R S X (Suc d) p)"
+apply (frule scf_d_pol[of  p "Suc d"], assumption+, erule conjE)
+apply (cut_tac subring, (erule conjE)+)
+ apply (cut_tac polyn_Suc[of d "scf_d R S X p (Suc d)"])
+ apply (simp only:ldeg_p_def hdeg_p_def)
+ apply (rotate_tac -1, drule sym, simp del:npow_suc)
+ apply (thin_tac "polyn_expr R X d (scf_d R S X p (Suc d)) \<plusminus>
+     snd (scf_d R S X p (Suc d)) (Suc d) \<cdot>\<^sub>r X^\<^bsup>R (Suc d)\<^esup> =
+     polyn_expr R X (Suc d) (Suc d, snd (scf_d R S X p (Suc d)))")
+ apply (simp add:polyn_expr_split[of "Suc d" "scf_d R S X p (Suc d)"],
+        simp)
 done
 
-lemma (in PolynRg) decompos_p:"p \<in> carrier R \<Longrightarrow>
-                p = (ldeg_p R S X p) \<plusminus> (hdeg_p R S X p)"
-apply (case_tac "p =  \<zero>\<^bsub>R\<^esub>", simp)
- apply (simp add:ldeg_p_def hdeg_p_zero)
- apply (cut_tac ring_is_ag, simp add:aGroup.ag_r_zero)
-
-apply (frule s_cf_expr[of p], assumption, (erule conjE)+)
-apply (frule pol_deg_n[of p "s_cf R S X p" "fst (s_cf R S X p)"],
-        assumption, simp, assumption+)
-apply (case_tac "deg_n R S X p = 0", simp add:ldeg_p_def hdeg_p_def,
-       simp add:polyn_expr_def,
-       cut_tac ring_is_ag, simp add:aGroup.ag_l_zero)
-
-apply (simp add:ldeg_p_def hdeg_p_def)
- apply (cut_tac polyn_Suc[of "fst (s_cf R S X p) - Suc 0" "s_cf R S X p"],
-        simp, simp)
-done
-
-lemma (in PolynRg) deg_ldeg_p:"p \<in> carrier R \<Longrightarrow>
-                      deg R S X (ldeg_p R S X p) \<le> deg R S X p"
+lemma (in PolynRg) deg_ldeg_p:"\<lbrakk>p \<in> carrier R; deg R S X p \<le> an (Suc d)\<rbrakk>  \<Longrightarrow>  
+                deg R S X (ldeg_p R S X d p) \<le> an d"
 apply (cut_tac subring,
        frule subring_Ring)
-apply (case_tac "p = \<zero>\<^bsub>R\<^esub>", simp add:ldeg_p_zero)
-apply (case_tac "deg_n R S X p = 0", simp add:ldeg_p_zero1,
-       simp add:deg_def)
-
-apply (simp add:ldeg_p_def)
-apply (frule s_cf_expr[of p], assumption, (erule conjE)+)
-apply (frule pol_deg_le_n[of p "s_cf R S X p"], assumption+)
-apply (frule pol_deg_n[of p "s_cf R S X p" "fst (s_cf R S X p)"], assumption+,
-       simp, assumption+)
-apply (frule pol_pre_lt_deg[of p "s_cf R S X p"], assumption+,
-       simp, simp, simp)
-apply (case_tac "polyn_expr R X (fst (s_cf R S X p) - Suc 0) (s_cf R S X p) =
-                 \<zero>\<^bsub>R\<^esub>", simp add:deg_def)
+apply (case_tac "p = \<zero>\<^bsub>R\<^esub>")
+apply (simp add:ldeg_p_zero, simp add:deg_def)
+apply (frule scf_d_pol[of p "Suc d"], assumption+, (erule conjE)+)
+apply (simp only:ldeg_p_def)
+apply (case_tac "polyn_expr R X d (scf_d R S X p (Suc d)) = \<zero>\<^bsub>R\<^esub>")
 apply (simp add:deg_def)
- apply (simp add:ale_natle)
+
+apply (simp add:deg_an)
+apply (simp add:ale_natle)
+apply (cut_tac pol_deg_le_n1[of "polyn_expr R X d (scf_d R S X p (Suc d))" 
+       "scf_d R S X p (Suc d)" d], simp add:deg_def ale_natle)
+apply (rule polyn_mem, assumption+, simp+) 
+done
+
+lemma (in PolynRg) deg_minus_eq:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk> \<Longrightarrow>  
+                    deg_n R S X (-\<^sub>a p) = deg_n R S X p"
+apply (cut_tac subring, 
+       cut_tac ring_is_ag,
+       frule subring_Ring)
+apply (cut_tac ring_is_ag)
+ apply (frule s_cf_expr[of p], assumption, (erule conjE)+,
+        frule polyn_minus_m_cf[of "s_cf R S X p" "fst (s_cf R S X p)"], simp,
+        drule sym, simp)
+ apply (frule_tac x = p in aGroup.ag_mOp_closed, assumption+,
+        frule m_cf_pol_coeff [of "s_cf R S X p"],
+        frule pol_deg_n[of "-\<^sub>a p" "m_cf S (s_cf R S X p)" 
+              "fst (s_cf R S X p)"], assumption,
+        simp add:m_cf_len, assumption+)
+ apply (simp add:m_cf_def,
+        frule pol_coeff_mem[of "s_cf R S X p" "fst (s_cf R S X p)"], simp,
+        frule Ring.ring_is_ag[of S])
+ apply (rule contrapos_pp, simp+)
+ apply (frule aGroup.ag_inv_inv[THEN sym, 
+          of S "snd (s_cf R S X p) (fst (s_cf R S X p))"], assumption,
+        simp add:aGroup.ag_inv_zero)
+ apply (drule sym, simp, simp add:s_cf_deg)
+done
+
+lemma (in PolynRg) deg_minus_eq1:"p \<in> carrier R \<Longrightarrow> 
+                       deg R S X (-\<^sub>a p) = deg R S X p"
+apply (cut_tac ring_is_ag)
+apply (case_tac "p = \<zero>\<^bsub>R\<^esub>")
+apply (simp add:aGroup.ag_inv_zero)
+apply (frule deg_minus_eq[of p], assumption+,
+       frule aGroup.ag_inv_inj[of "R" "p" "\<zero>"], assumption,
+       simp add:ring_zero, assumption, simp add:aGroup.ag_inv_zero)
+apply (frule aGroup.ag_mOp_closed[of R p], assumption,
+       simp add:deg_an)
+done
+
+lemma (in PolynRg) ldeg_p_pOp:"\<lbrakk>p \<in> carrier R; q \<in> carrier R;
+      deg R S X p \<le> an (Suc d); deg R S X q \<le> an (Suc d)\<rbrakk> \<Longrightarrow>
+      (ldeg_p R S X d p) \<plusminus>\<^bsub>R\<^esub> (ldeg_p R S X d q) =
+                              ldeg_p R S X d (p \<plusminus>\<^bsub>R\<^esub> q)"
+apply (simp add:ldeg_p_def,
+       cut_tac ring_is_ag, cut_tac subring, frule subring_Ring[of S],
+       frule scf_d_pol[of p "Suc d"], assumption+,
+       frule scf_d_pol[of q "Suc d"], assumption+, (erule conjE)+)
+apply (frule polyn_add1[of "scf_d R S X p (Suc d)" "scf_d R S X q (Suc d)"],
+       assumption+,
+       rotate_tac -2, drule sym,
+       frule aGroup.ag_pOp_closed[of "R" "p" "q"], assumption+,
+       frule polyn_deg_add4 [of p q "Suc d"], assumption+,
+       rotate_tac -5, drule sym) 
+apply simp
+apply (rotate_tac 4, drule sym, simp) 
+
+apply (rotate_tac -1, drule sym,
+       frule scf_d_pol[of "p \<plusminus> q" "Suc d"], assumption+, (erule conjE)+,
+       frule box_equation[of "p \<plusminus> q" "polyn_expr R X (Suc d)
+        (add_cf S (scf_d R S X p (Suc d)) (scf_d R S X q (Suc d)))" 
+        "polyn_expr R X (Suc d) (scf_d R S X (p \<plusminus> q) (Suc d))"], assumption+,
+       thin_tac "p \<plusminus> q =
+        polyn_expr R X (Suc d) (scf_d R S X (p \<plusminus> q) (Suc d))")
+apply (frule add_cf_pol_coeff[of "scf_d R S X p (Suc d)" 
+                   "scf_d R S X q (Suc d)"],  assumption+)
+apply (frule pol_expr_unique2[of "add_cf S (scf_d R S X p (Suc d)) 
+       (scf_d R S X q (Suc d))" "scf_d R S X (p \<plusminus> q) (Suc d)"], assumption+)
+ apply (subst add_cf_len[of "scf_d R S X p (Suc d)" "scf_d R S X q (Suc d)"], 
+       assumption+) 
+ apply (thin_tac "polyn_expr R X (Suc d) (scf_d R S X p (Suc d)) = p",
+        thin_tac "polyn_expr R X (Suc d) (scf_d R S X q (Suc d)) = q",
+        thin_tac "p \<plusminus> q = polyn_expr R X (Suc d)
+          (add_cf S (scf_d R S X p (Suc d)) (scf_d R S X q (Suc d)))",
+        thin_tac "polyn_expr R X (Suc d)
+          (add_cf S (scf_d R S X p (Suc d)) (scf_d R S X q (Suc d))) =
+           polyn_expr R X (Suc d) (scf_d R S X (p \<plusminus> q) (Suc d))")
+ apply simp
+ apply (thin_tac "polyn_expr R X (Suc d) (scf_d R S X p (Suc d)) = p",
+        thin_tac "polyn_expr R X (Suc d) (scf_d R S X q (Suc d)) = q",
+        thin_tac "p \<plusminus> q = polyn_expr R X (Suc d)
+          (add_cf S (scf_d R S X p (Suc d)) (scf_d R S X q (Suc d)))")
+
+ apply (simp add:add_cf_len,
+       thin_tac "polyn_expr R X (Suc d)
+      (add_cf S (scf_d R S X p (Suc d)) (scf_d R S X q (Suc d))) =
+     polyn_expr R X (Suc d) (scf_d R S X (p \<plusminus> q) (Suc d))")
+ apply (subst  polyn_expr_short[of "scf_d R S X p (Suc d)" d], assumption,
+        simp)
+ apply (subst  polyn_expr_short[of "scf_d R S X q (Suc d)" d], assumption,
+        simp) thm polyn_add_n
+ apply (subst polyn_add_n[of d "snd (scf_d R S X p (Suc d))" 
+               "snd (scf_d R S X q (Suc d))"])
+ apply (simp add:split_pol_coeff, simp add:split_pol_coeff,
+        subst polyn_expr_def)
+ apply (rule aGroup.nsum_eq, assumption+,
+        rule allI, rule impI,
+        frule_tac j = j in pol_coeff_mem[of "scf_d R S X p (Suc d)"],
+               simp,
+        frule_tac j = j in pol_coeff_mem[of "scf_d R S X q (Suc d)"],
+               simp,
+        cut_tac Ring, rule Ring.ring_tOp_closed, assumption+,
+        rule Ring.mem_subring_mem_ring[of R S], assumption+,
+        frule Ring.ring_is_ag[of S], rule aGroup.ag_pOp_closed[of S],
+               assumption+,
+        rule Ring.npClose, assumption, simp add:X_mem_R)
+ apply (rule allI, rule impI,
+        frule_tac j = j in pol_coeff_mem[of "scf_d R S X (p \<plusminus> q) (Suc d)"], 
+        simp, cut_tac Ring,
+        subst Ring.ring_tOp_closed, assumption,
+        rule Ring.mem_subring_mem_ring[of R S], assumption+,
+        rule Ring.npClose, assumption, simp add:X_mem_R,
+        simp)
+ apply (rule allI, rule impI,
+        drule_tac a = j in forall_spec, simp,
+        thin_tac " pol_coeff S
+          (add_cf S (scf_d R S X p (Suc d)) (scf_d R S X q (Suc d)))")
+ apply (simp add:add_cf_def)
+done
+
+lemma (in PolynRg) hdeg_p_pOp:"\<lbrakk>p \<in> carrier R; q \<in> carrier R;
+      deg R S X p \<le> an (Suc d); deg R S X q \<le> an (Suc d)\<rbrakk> \<Longrightarrow>
+      (hdeg_p R S X (Suc d) p) \<plusminus> (hdeg_p R S X (Suc d) q) =
+                              hdeg_p R S X (Suc d) (p \<plusminus> q)"
+apply (cut_tac Ring, frule Ring.ring_is_ag[of "R"])
+apply (cut_tac subring, frule subring_Ring[of S])
+apply (frule scf_d_pol[of p "Suc d"], assumption+,
+       frule scf_d_pol[of q "Suc d"], assumption+,
+        (erule conjE)+)
+apply (frule polyn_add1[of "scf_d R S X p (Suc d)" "scf_d R S X q (Suc d)"],
+       assumption+,
+       rotate_tac -2, drule sym,
+       frule aGroup.ag_pOp_closed[of "R" "p" "q"], assumption+,
+       frule polyn_deg_add4 [of p q "Suc d"], assumption+,
+       rotate_tac -5, drule sym) 
+apply simp
+apply (rotate_tac -13, drule sym, simp)
+apply (rotate_tac -1, drule sym)
+apply (frule scf_d_pol[of "p \<plusminus> q" "Suc d"], assumption+, (erule conjE)+)
+apply (drule box_equation[of "p \<plusminus> q" "polyn_expr R X (Suc d)
+       (add_cf S (scf_d R S X p (Suc d)) (scf_d R S X q (Suc d)))" 
+       "polyn_expr R X (Suc d) (scf_d R S X (p \<plusminus> q) (Suc d))"],
+       assumption+) apply (
+      thin_tac "p \<plusminus> q = polyn_expr R X (Suc d) (scf_d R S X (p \<plusminus> q) (Suc d))")
+apply (frule add_cf_pol_coeff[of "scf_d R S X p (Suc d)"
+        "scf_d R S X q (Suc d)"], assumption+)
+apply (cut_tac pol_expr_unique2[of "add_cf S (scf_d R S X p (Suc d)) 
+       (scf_d R S X q (Suc d))" "scf_d R S X (p \<plusminus> q) (Suc d)"], 
+       simp add:add_cf_len) 
+apply (drule_tac a = "Suc d" in forall_spec, simp)
+ apply (simp del:npow_suc add:hdeg_p_def)
+ apply (rotate_tac -1, drule sym, simp del:npow_suc)
+ apply (subst add_cf_def, simp del:npow_suc)
+ apply (thin_tac "polyn_expr R X (Suc d) (scf_d R S X p (Suc d)) = p",
+        thin_tac "polyn_expr R X (Suc d) (scf_d R S X q (Suc d)) = q",
+        thin_tac "polyn_expr R X (Suc d) (add_cf S (scf_d R S X p (Suc d)) 
+         (scf_d R S X q (Suc d))) =
+          polyn_expr R X (Suc d) (scf_d R S X (p \<plusminus> q) (Suc d))",
+        thin_tac "pol_coeff S (add_cf S (scf_d R S X p (Suc d)) 
+                  (scf_d R S X q (Suc d)))",
+        thin_tac "snd (scf_d R S X (p \<plusminus> q) (Suc d)) (Suc d) =
+     snd (add_cf S (scf_d R S X p (Suc d)) (scf_d R S X q (Suc d))) (Suc d)")
+ apply (frule pol_coeff_mem[of "scf_d R S X p (Suc d)" "Suc d"], 
+        simp del:npow_suc,
+        frule pol_coeff_mem[of "scf_d R S X q (Suc d)" "Suc d"], 
+        simp del:npow_suc)
+ apply (simp del:npow_suc add:Subring_pOp_ring_pOp)
+ apply (frule mem_subring_mem_ring[of S "snd (scf_d R S X p (Suc d)) (Suc d)"],
+        assumption,
+        frule mem_subring_mem_ring[of S "snd (scf_d R S X q (Suc d)) (Suc d)"],
+        assumption,
+        cut_tac X_mem_R, frule Ring.npClose[of R X "Suc d"], assumption+)
+ apply (subst Ring.ring_distrib2[THEN sym], assumption+, simp)
+
+ apply (simp add:add_cf_pol_coeff, simp)
+ apply (simp add:add_cf_len)
+done
+
+lemma (in PolynRg) ldeg_p_mOp:"\<lbrakk>p \<in> carrier R; deg R S X p \<le> an (Suc d)\<rbrakk> \<Longrightarrow> 
+       -\<^sub>a (ldeg_p R S X d p) = ldeg_p R S X d (-\<^sub>a p)"
+apply (cut_tac Ring, frule Ring.ring_is_ag[of "R"],
+       cut_tac subring, frule subring_Ring[of S],
+       frule scf_d_pol[of p "Suc d"], assumption+, (erule conjE)+,
+       frule aGroup.ag_mOp_closed[of R p], assumption,
+       frule scf_d_pol[of "-\<^sub>a p" "Suc d"])
+apply (simp add:deg_minus_eq1, (erule conjE)+)
+apply (frule polyn_minus[of "scf_d R S X p (Suc d)"  "Suc d"], simp)
+apply (drule box_equation[of "-\<^sub>a p" "polyn_expr R X (Suc d)
+       (scf_d R S X (-\<^sub>a p) (Suc d))"
+       "polyn_expr R X (Suc d) (fst (scf_d R S X p (Suc d)), 
+                \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j)"])
+apply (rotate_tac 8, drule sym, simp,
+       thin_tac "-\<^sub>a polyn_expr R X (Suc d) (scf_d R S X p (Suc d)) =
+       polyn_expr R X (Suc d)
+       (fst (scf_d R S X p (Suc d)), \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j)")
+apply simp
+apply (frule pol_expr_unique2[of "scf_d R S X (-\<^sub>a p) (Suc d)" 
+       "(Suc d, \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j)"])
+ apply (subst pol_coeff_def, rule allI, rule impI, simp)
+ apply (frule_tac j = j in pol_coeff_mem[of "scf_d R S X p (Suc d)"],
+        simp,
+        frule Ring.ring_is_ag[of S],
+        rule aGroup.ag_mOp_closed[of S], assumption+, simp)
+ apply simp
+
+ apply (simp add:ldeg_p_def)
+ apply (subst polyn_minus[of "scf_d R S X p (Suc d)" d], assumption, simp,
+        simp)
+ apply (subst polyn_expr_short[of "(Suc d, 
+              \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j)" d])
+  apply (subst pol_coeff_def, rule allI, rule impI, simp,
+         frule_tac j = j in pol_coeff_mem[of "scf_d R S X p (Suc d)"],
+         simp,
+         frule Ring.ring_is_ag[of S],
+         rule aGroup.ag_mOp_closed[of S], assumption+, simp) 
+  apply (subst polyn_expr_short[of "scf_d R S X (-\<^sub>a p) (Suc d)" d], 
+          assumption, simp)
+ apply (cut_tac pol_expr_unique2[of "(d, snd (Suc d, 
+                \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j))" 
+                "(d, snd (scf_d R S X (-\<^sub>a p) (Suc d)))"])
+ apply (thin_tac "p = polyn_expr R X (Suc d) (scf_d R S X p (Suc d))",
+        thin_tac "polyn_expr R X (Suc d) (scf_d R S X (-\<^sub>a p) (Suc d)) =
+     polyn_expr R X (Suc d) (Suc d, \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j)",
+        simp)
+  apply (subst pol_coeff_def, rule allI, rule impI, simp,
+         frule Ring.ring_is_ag[of S], rule aGroup.ag_mOp_closed, assumption,
+         simp add:pol_coeff_mem)
+  apply (subst pol_coeff_def, rule allI, rule impI, simp,
+         frule Ring.ring_is_ag[of S], rule aGroup.ag_mOp_closed, assumption,
+         simp add:pol_coeff_mem)
+  apply simp
+done
+
+lemma (in PolynRg) hdeg_p_mOp:"\<lbrakk>p \<in> carrier R;deg R S X p \<le> an (Suc d)\<rbrakk> 
+  \<Longrightarrow> -\<^sub>a (hdeg_p R S X (Suc d) p) = hdeg_p R S X (Suc d) (-\<^sub>a p)"
+apply (cut_tac Ring, frule Ring.ring_is_ag[of "R"],
+       cut_tac subring, frule subring_Ring[of S],
+       frule scf_d_pol[of p "Suc d"], assumption+, (erule conjE)+,
+       frule aGroup.ag_mOp_closed[of R p], assumption) apply (
+       frule scf_d_pol[of "-\<^sub>a p" "Suc d"])
+apply (simp add:deg_minus_eq1, (erule conjE)+)
+apply (frule polyn_minus[of "scf_d R S X p (Suc d)"  "Suc d"], simp)
+apply (drule box_equation[of "-\<^sub>a p" "polyn_expr R X (Suc d)
+       (scf_d R S X (-\<^sub>a p) (Suc d))"
+       "polyn_expr R X (Suc d) (fst (scf_d R S X p (Suc d)), 
+                \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j)"])
+apply (rotate_tac 8, drule sym, simp,
+       thin_tac "-\<^sub>a polyn_expr R X (Suc d) (scf_d R S X p (Suc d)) =
+       polyn_expr R X (Suc d)
+       (fst (scf_d R S X p (Suc d)), \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j)")
+apply simp
+
+apply (frule pol_expr_unique2[of "scf_d R S X (-\<^sub>a p) (Suc d)" 
+       "(Suc d, \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j)"])
+ apply (subst pol_coeff_def, rule allI, rule impI, simp)
+ apply (frule_tac j = j in pol_coeff_mem[of "scf_d R S X p (Suc d)"],
+        simp,
+        frule Ring.ring_is_ag[of S],
+        rule aGroup.ag_mOp_closed[of S], assumption+, simp)
+ apply simp
+ apply (drule_tac a = "Suc d" in forall_spec, simp)
+ apply (simp del:npow_suc add:hdeg_p_def)
+ apply (thin_tac "p = polyn_expr R X (Suc d) (scf_d R S X p (Suc d))",
+        thin_tac "polyn_expr R X (Suc d) (scf_d R S X (-\<^sub>a p) (Suc d)) =
+     polyn_expr R X (Suc d) (Suc d, \<lambda>j. -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) j)",
+        thin_tac "snd (scf_d R S X (-\<^sub>a p) (Suc d)) (Suc d) =
+     -\<^sub>a\<^bsub>S\<^esub> snd (scf_d R S X p (Suc d)) (Suc d)")
+ apply (frule pol_coeff_mem[of "scf_d R S X p (Suc d)" "Suc d"], simp,
+        frule mem_subring_mem_ring[of S "snd (scf_d R S X p (Suc d)) (Suc d)"],
+        assumption+,
+        frule Ring.npClose[of R X "Suc d"], simp add:X_mem_R)
+apply (subst Ring.ring_inv1_1[of "R"], assumption+)
+apply (simp del:npow_suc add:Subring_minus_ring_minus)
 done
 
 subsection "multiplication of polynomials"
@@ -2849,6 +3304,9 @@ apply (simp add:P_mod_def,
        assumption)
 done
 
+lemma (in PolynRg) zero_P_mod:"ideal S I \<Longrightarrow> P_mod R S X I \<zero>" 
+by (simp add:P_mod_def)
+
 lemma (in PolynRg) P_mod_mod:"\<lbrakk>ideal S I; p \<in> carrier R; pol_coeff S c;
                      p = polyn_expr R X (fst c) c\<rbrakk> \<Longrightarrow> 
                      (\<forall>j \<le> (fst c). (snd c) j \<in> I) = (P_mod R S X I p)"
@@ -3010,7 +3468,7 @@ done
 
 lemma (in PolynRg) P_mod_pre:"\<lbrakk>ideal S I; pol_coeff S ((Suc n), f); 
        P_mod R S X I (polyn_expr R X (Suc n) (Suc n, f))\<rbrakk> \<Longrightarrow>
-       P_mod R S X I (polyn_expr R X n (n, f))"
+       P_mod R S X I (polyn_expr R X n (n, f))" 
 apply (frule pol_coeff_pre[of n f],
        frule polyn_mem[of "(n, f)" n],simp,
        frule polyn_mem[of "(Suc n, f)" "Suc n"], simp)
@@ -3020,6 +3478,11 @@ apply (subst P_mod_mod[THEN sym, of I
        frule P_mod_mod[THEN sym, of I "polyn_expr R X (Suc n) (Suc n, f)"
                "(Suc n, f)"], assumption+, simp, simp)
 done
+
+lemma (in PolynRg) P_mod_pre1:"\<lbrakk>ideal S I; pol_coeff S ((Suc n), f); 
+       P_mod R S X I (polyn_expr R X (Suc n) (Suc n, f))\<rbrakk> \<Longrightarrow>
+       P_mod R S X I (polyn_expr R X n (Suc n, f))" 
+by (simp add:polyn_expr_restrict[of n f], simp add:P_mod_pre)
 
 lemma (in PolynRg) P_mod_coeffTr:"\<lbrakk>ideal S I; d \<in> carrier S\<rbrakk> \<Longrightarrow> 
                    (P_mod R S X I d) = (d \<in> I)"
@@ -3231,6 +3694,24 @@ apply (cut_tac P_mod_mult[of I J "fst (s_cf R S X p)" "snd (s_cf R S X p)"
       apply (simp add:polyn_expr_split[THEN sym])+
 done
 
+lemma (in PolynRg) P_mod_mult2l:"\<lbrakk>ideal S I; p \<in> carrier R; q \<in> carrier R; 
+      P_mod R S X I p\<rbrakk>  \<Longrightarrow> P_mod R S X I (p \<cdot>\<^sub>r q)"
+apply (cut_tac subring, frule subring_Ring[of S],
+       frule Ring.whole_ideal[of S])
+apply (frule P_mod_whole[of q])
+apply (frule P_mod_mult1[of I "carrier S" p q], assumption+)
+apply (simp add:Ring.idealprod_whole_r)
+done
+
+lemma (in PolynRg) P_mod_mult2r:"\<lbrakk>ideal S I; p \<in> carrier R; q \<in> carrier R; 
+      P_mod R S X I q\<rbrakk>  \<Longrightarrow> P_mod R S X I (p \<cdot>\<^sub>r q)"
+apply (cut_tac subring, frule subring_Ring[of S],
+       frule Ring.whole_ideal[of S])
+apply (frule P_mod_whole[of p])
+apply (frule P_mod_mult1[of "carrier S" I p q], assumption+)
+apply (simp add:Ring.idealprod_whole_l)
+done
+
 lemma (in PolynRg) csrp_fn_pol_coeff:"\<lbrakk>ideal S P; PolynRg R' (S /\<^sub>r P) Y; 
        pol_coeff (S /\<^sub>r P) (n,  c')\<rbrakk> \<Longrightarrow>
                           pol_coeff S (n, (cmp (csrp_fn S P) c'))"
@@ -3305,10 +3786,10 @@ apply (drule_tac a = "deg_n R' (S /\<^sub>r P) Y g'" in forall_spec, simp,
        frule pj_Hom[of S P], assumption, simp add:rHom_0_0)
 done
 
-lemma (in PolynRg) erH_inv:"\<lbrakk>Idomain S; ideal S P; ring R'; 
-       PolynRg R' (S /\<^sub>r P) Y; g' \<in> carrier R'\<rbrakk> \<Longrightarrow>
+lemma (in PolynRg) erH_inv:"\<lbrakk>Idomain S; ideal S P; Ring R'; 
+       PolynRg R' (S /\<^sub>r P) Y; g' \<in> carrier R'\<rbrakk> \<Longrightarrow> 
       \<exists>g\<in>carrier R. deg R S X g \<le> (deg R' (S /\<^sub>r P) Y g') \<and>
-                (erH R S X R' (S /\<^sub>r P) Y (pj S P)) g = g'"
+                (erH R S X R' (S /\<^sub>r P) Y (pj S P)) g = g'" 
 apply (cut_tac subring, frule subring_Ring,
        frule Ring.qring_ring[of "S" "P"], assumption+,
        frule pj_Hom[of "S" "P"], assumption+)
@@ -3768,7 +4249,7 @@ apply (subst aGroup.ag_p_inv, assumption,
               rule aGroup.ag_mOp_closed, assumption+,
               (rule ring_tOp_closed, assumption+)+,
               rule aGroup.ag_mOp_closed, assumption+)
-      apply (subst ring_distrib1[THEN sym, of "t^\<^bsup>S m\<^esup>" ra  "v \<cdot>\<^sub>r -\<^sub>a h"],
+      apply (subst ring_distrib1[THEN sym, of "t^\<^bsup>S m\<^esup>" ra  "v \<cdot>\<^sub>r (-\<^sub>a h)"],
              assumption+,
              rule ring_tOp_closed, assumption+, rule aGroup.ag_mOp_closed,
              assumption+)
@@ -3810,9 +4291,9 @@ apply (subst aGroup.ag_p_inv, assumption,
            frule ring_tOp_closed[of u "-\<^sub>a g"], assumption+,
                   frule ring_tOp_closed[of v "-\<^sub>a h"], assumption+,
            simp del:npow_suc add:aGroup.ag_pOp_commute[of R
-                  "u \<cdot>\<^sub>r -\<^sub>a g" "v \<cdot>\<^sub>r -\<^sub>a h"],
+                  "u \<cdot>\<^sub>r (-\<^sub>a g)" "v \<cdot>\<^sub>r (-\<^sub>a h)"],
            simp del:npow_suc add:aGroup.ag_pOp_assoc[THEN sym, 
-                  of R ra "v \<cdot>\<^sub>r -\<^sub>a h" "u \<cdot>\<^sub>r -\<^sub>a g"])
+                  of R ra "v \<cdot>\<^sub>r (-\<^sub>a h)" "u \<cdot>\<^sub>r (-\<^sub>a g)"])
   apply (subst ring_tOp_assoc[THEN sym, of v "t^\<^bsup>S m\<^esup>" "-\<^sub>a u"], assumption+,
          rule aGroup.ag_mOp_closed, assumption+,
          simp only:ring_tOp_commute[of v "t^\<^bsup>S m\<^esup>"],
@@ -3966,12 +4447,13 @@ apply (erule bexE, erule bexE, (erule conjE)+,
                      "pj S (S \<diamondsuit>\<^sub>p t)" "g"], assumption+,
       frule_tac erH_mem[of R' "S /\<^sub>r (S \<diamondsuit>\<^sub>p t)" Y
                       "pj S (S \<diamondsuit>\<^sub>p t)" "h"], assumption+)
-apply (rename_tac ra u' v') 
- apply (frule_tac g' = v' in erH_inv[of "S \<diamondsuit>\<^sub>p t"],
-                 assumption+,
-        frule_tac g' = u' in erH_inv[of "S \<diamondsuit>\<^sub>p t" ],
-                 assumption+,
-        (erule bexE)+, rename_tac ra u' v' v u, (erule conjE)+,
+apply (rename_tac ra u' v')
+ apply (frule_tac g' = v' in erH_inv[of "S \<diamondsuit>\<^sub>p t" R' Y], assumption+,
+        simp add:PolynRg.is_Ring[of R'], assumption+)
+apply (frule_tac g' = u' in erH_inv[of "S \<diamondsuit>\<^sub>p t" R' Y ], assumption+,
+        simp add:PolynRg.is_Ring[of R'], assumption+)
+apply ((erule bexE)+, rename_tac ra u' v' v u, (erule conjE)+) 
+apply (
     frule_tac p1 = u in erH_mult[THEN sym, of R' "S /\<^sub>r (S \<diamondsuit>\<^sub>p t)" Y 
         "pj S (S \<diamondsuit>\<^sub>p t)"  _ "g"], assumption+,
     frule_tac p1 = v in erH_mult[THEN sym, of R' "S /\<^sub>r (S \<diamondsuit>\<^sub>p t)" Y
@@ -4255,10 +4737,10 @@ constdefs
 lemma  cart_prod_fst:"x \<in> A \<times> B \<Longrightarrow> fst x \<in> A" 
 by (cut_tac p = x in PairE_lemma, (erule exE)+, simp)
 
-lemma (in PolynRg) cart_prod_snd:"x \<in> A \<times> B \<Longrightarrow> snd x \<in> B"
+lemma  cart_prod_snd:"x \<in> A \<times> B \<Longrightarrow> snd x \<in> B"
 by (cut_tac p = x in PairE_lemma, (erule exE)+, simp)
 
-lemma (in PolynRg) cart_prod_split:"((x,y) \<in> A \<times> B) = (x \<in> A \<and> y \<in> B)"
+lemma cart_prod_split:"((x,y) \<in> A \<times> B) = (x \<in> A \<and> y \<in> B)"
 by auto
 
 lemma (in PolynRg) P_mod_diffxxx3:"\<lbrakk>Idomain S; t \<in> carrier S; t \<noteq> \<zero>\<^bsub>S\<^esub>; 

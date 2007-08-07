@@ -21,7 +21,7 @@ chapter "5. Modules"
 section "1. Basic properties of Modules"
 
 record ('a, 'b) Module = "'a aGroup" +
-  sprod  :: "'b \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>\<^sub>s\<index>" 70)
+  sprod  :: "'b \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>\<^sub>s\<index>" 76)
 
 locale Module = aGroup M +
   fixes R (structure)
@@ -146,10 +146,10 @@ apply (frule ag_mOp_closed [of m],
        frule sc_r_distr[of a m "-\<^sub>a m"], assumption+,
        simp add:ag_r_inv1,
        simp add:sc_a_0, frule sym,
-       thin_tac "\<zero> = a \<cdot>\<^sub>s m \<plusminus> a \<cdot>\<^sub>s -\<^sub>a m")
+       thin_tac "\<zero> = a \<cdot>\<^sub>s m \<plusminus> a \<cdot>\<^sub>s (-\<^sub>a m)")
  apply (frule sc_mem [of a m], assumption+,
         frule sc_mem [of a "-\<^sub>a m"], assumption+,
-        frule ag_eq_sol1 [of "a \<cdot>\<^sub>s m" "a \<cdot>\<^sub>s -\<^sub>a m" "\<zero>"], assumption+,
+        frule ag_eq_sol1 [of "a \<cdot>\<^sub>s m" "a \<cdot>\<^sub>s (-\<^sub>a m)" "\<zero>"], assumption+,
         simp add:ag_inc_zero, assumption)
  apply (frule ag_mOp_closed [of "a \<cdot>\<^sub>s m"],
         simp add:ag_r_zero)
@@ -161,14 +161,14 @@ apply (cut_tac sc_Ring, frule Ring.ring_is_ag,
        frule aGroup.ag_mOp_closed [of R a], assumption+,
        frule sc_l_distr[of a "-\<^sub>a\<^bsub>R\<^esub> a" m], assumption+,
        simp add:aGroup.ag_r_inv1 [of "R"],
-       simp add:sc_0_m, frule sym,
-       thin_tac "\<zero> = a \<cdot>\<^sub>s m \<plusminus> -\<^sub>a\<^bsub>R\<^esub> a \<cdot>\<^sub>s m")
+       simp add:sc_0_m, frule sym) apply (
+       thin_tac "\<zero> = a \<cdot>\<^sub>s m \<plusminus> (-\<^sub>a\<^bsub>R\<^esub> a) \<cdot>\<^sub>s m")
  apply (frule sc_mem [of a m], assumption+,
         frule sc_mem [of "-\<^sub>a\<^bsub>R\<^esub> a" m], assumption+)
- apply (frule ag_eq_sol1 [of "a \<cdot>\<^sub>s m" "-\<^sub>a\<^bsub>R\<^esub> a \<cdot>\<^sub>s m" \<zero>], assumption+,
+ apply (frule ag_eq_sol1 [of "a \<cdot>\<^sub>s m" "(-\<^sub>a\<^bsub>R\<^esub> a) \<cdot>\<^sub>s m" \<zero>], assumption+,
         simp add:ag_inc_zero, assumption)
  apply (frule ag_mOp_closed [of "a \<cdot>\<^sub>s m"])
- apply (thin_tac "a \<cdot>\<^sub>s m \<plusminus> -\<^sub>a\<^bsub>R\<^esub> a \<cdot>\<^sub>s m = \<zero>",
+ apply (thin_tac "a \<cdot>\<^sub>s m \<plusminus> (-\<^sub>a\<^bsub>R\<^esub> a) \<cdot>\<^sub>s m = \<zero>",
         simp add:ag_r_zero)
 done
 
@@ -3352,9 +3352,10 @@ apply (cut_tac n = n and f = "\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s
         subst sc_assoc, assumption,
         cut_tac sc_Ring, 
         simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD, simp)
- apply (simp,
-    thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s f j)) n = \<Sigma>\<^sub>e M (\<lambda>j. r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j \<cdot>\<^sub>s f j) n",
+        simp add:funcset_mem subsetD, simp,
+        simp,
+    thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s f j)) n = 
+                                \<Sigma>\<^sub>e M (\<lambda>j. (r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j) \<cdot>\<^sub>s f j) n",
     thin_tac "x = \<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s f j) n")
 
  apply (cut_tac n = n and f = "\<lambda>j. (r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j) \<cdot>\<^sub>s f j" and 
@@ -3376,7 +3377,7 @@ apply (cut_tac n = n and f = "\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s
   apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. r \<cdot>\<^sub>r\<^bsub>R\<^esub> s x) \<in> {j. j \<le> n} \<rightarrow> A",
          blast)
   apply (rule univar_func_test, simp)
-apply (thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j \<cdot>\<^sub>s f j) n =
+apply (thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j) \<cdot>\<^sub>s f j) n =
         \<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> n then r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j else arbitrary) \<cdot>\<^sub>s f j) n",
         rule allI, rule impI, cut_tac sc_Ring,
         rule Ring.ideal_ring_multiple, assumption+, simp add:funcset_mem,
@@ -3526,8 +3527,6 @@ apply (simp add:smodule_ideal_coeff_def linear_span_def,
        erule exE, (erule bexE)+, blast)
 done
 
-
-
 constdefs
  quotient_of_submodules::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
             'a set, 'a set] \<Rightarrow> 'r set"
@@ -3634,9 +3633,9 @@ apply (subst linear_span_def)
          h = "f j" in sc_linear_span, assumption+, simp add:Rxa_def,
          blast,
          simp add:funcset_mem)
-  apply (frule_tac c = "r \<cdot>\<^sub>r\<^bsub>R\<^esub> x \<cdot>\<^sub>s f j" and A = "linear_span R M (R \<diamondsuit>\<^sub>p x) Q" 
-         and B = P in subsetD, assumption+,
-         frule_tac c = "-\<^sub>a\<^bsub>R\<^esub> r \<cdot>\<^sub>r\<^bsub>R\<^esub> y \<cdot>\<^sub>s f j" and 
+  apply (frule_tac c = "(r \<cdot>\<^sub>r\<^bsub>R\<^esub> x) \<cdot>\<^sub>s f j" and A = "linear_span R M (R \<diamondsuit>\<^sub>p x) Q" 
+         and B = P in subsetD, assumption+) apply (
+         frule_tac c = "((-\<^sub>a\<^bsub>R\<^esub> r) \<cdot>\<^sub>r\<^bsub>R\<^esub> y) \<cdot>\<^sub>s f j" and 
          A = "linear_span R M (R \<diamondsuit>\<^sub>p y) Q" and B = P in subsetD, assumption+)
   apply (rule submodule_pOp_closed, assumption+)
 
@@ -4126,16 +4125,16 @@ apply (case_tac "H = {}")
         simp add:funcset_mem Ring.ideal_subset) 
 
  apply (simp add:linear_span_def) 
- apply (erule exE, (erule bexE)+, simp) apply (
+ apply (erule exE, (erule bexE)+, simp,
         thin_tac "f = l_comb R M n sa fa")
  apply (frule Ring.whole_ideal[of R])
  apply (frule_tac h = s in Ring.ideal_subset[of R A], assumption+)
  apply (frule_tac s = sa and g = f in l_comb_sc1[of "carrier R" H s],
         assumption+, simp add:l_comb_def,
         thin_tac "s \<cdot>\<^sub>s \<Sigma>\<^sub>e M (\<lambda>k. sa k \<cdot>\<^sub>s f k) n = 
-                        \<Sigma>\<^sub>e M (\<lambda>k. s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa k \<cdot>\<^sub>s f k) n")
- apply (cut_tac n = n and f = "\<lambda>j. s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa j \<cdot>\<^sub>s f j" and 
-        g = "\<lambda>j. (\<lambda>x\<in>{j. j \<le> n}. s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa x) j \<cdot>\<^sub>s f j" in nsum_eq)
+                                    \<Sigma>\<^sub>e M (\<lambda>k. (s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa k) \<cdot>\<^sub>s f k) n")
+ apply (cut_tac n = n and f = "\<lambda>j. (s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa j) \<cdot>\<^sub>s f j" and 
+        g = "\<lambda>j. ((\<lambda>x\<in>{j. j \<le> n}. (s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa x)) j) \<cdot>\<^sub>s f j" in nsum_eq)
         apply (rule allI, rule impI, rule sc_mem,
                rule Ring.ring_tOp_closed, assumption+,
                simp add:funcset_mem,
@@ -4146,9 +4145,9 @@ apply (case_tac "H = {}")
                simp add:funcset_mem,
                simp add:funcset_mem subsetD)
         apply (rule allI, rule impI, simp)
- apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa x) \<in> {j. j \<le> n} \<rightarrow> A",
+ apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. (s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa x)) \<in> {j. j \<le> n} \<rightarrow> A",
         blast,
-        thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa j \<cdot>\<^sub>s f j) n =
+        thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa j) \<cdot>\<^sub>s f j) n =
         \<Sigma>\<^sub>e M (\<lambda>j. (\<lambda>x\<in>{j. j \<le> n}. s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa x) j \<cdot>\<^sub>s f j) n")
         apply (rule univar_func_test, rule ballI, simp,
                rule_tac x = s and r = "sa x" in 
@@ -4157,9 +4156,9 @@ apply (case_tac "H = {}")
 done
 
 lemma (in Module) l_span_closed2Tr:"\<lbrakk>ideal R A; H \<subseteq> carrier M\<rbrakk> \<Longrightarrow> 
- s \<in> {j. j \<le> (n::nat)} \<rightarrow> A \<and> 
- f \<in> {j. j \<le> n} \<rightarrow> linear_span R M (carrier R) H \<longrightarrow>
-   l_comb R M n s f \<in> linear_span R M A H"
+       s \<in> {j. j \<le> (n::nat)} \<rightarrow> A \<and> 
+       f \<in> {j. j \<le> n} \<rightarrow> linear_span R M (carrier R) H \<longrightarrow>
+            l_comb R M n s f \<in> linear_span R M A H"
 apply (cut_tac sc_Ring)
 apply (induct_tac n)
 apply (rule impI, (erule conjE)+)
@@ -5854,12 +5853,12 @@ apply (rule contrapos_pp, simp+, simp add:subset_def)
           frule free_generator_sub[of H],
           frule_tac c = "f 0" in subsetD[of H "carrier M"], assumption+,
           simp add:sc_minus_am1)
-  apply (subgoal_tac "l_comb R M m t g \<plusminus> -\<^sub>a\<^bsub>R\<^esub> (s 0) \<cdot>\<^sub>s f 0 = 
-          l_comb R M (Suc m) (jointfun m t 0 (\<lambda>k\<in>{0}. -\<^sub>a\<^bsub>R\<^esub> (s 0)))
+  apply (subgoal_tac "l_comb R M m t g \<plusminus> (-\<^sub>a\<^bsub>R\<^esub> (s 0)) \<cdot>\<^sub>s f 0 = 
+          l_comb R M (Suc m) (jointfun m t 0 (\<lambda>k\<in>{0}. (-\<^sub>a\<^bsub>R\<^esub> (s 0))))
           (jointfun m g 0 (\<lambda>k\<in>{0}. f 0))", simp)
   apply (frule_tac f = g and n = m and B = H and b = "f 0" in jointfun_inj,
           assumption+)
-  apply (frule unique_expression1[of H "jointfun m t 0 (\<lambda>k\<in>{0}. -\<^sub>a\<^bsub>R\<^esub> (s 0))" 
+  apply (frule unique_expression1[of H "jointfun m t 0 (\<lambda>k\<in>{0}. (-\<^sub>a\<^bsub>R\<^esub> (s 0)))" 
         "Suc m" "jointfun m g 0 (\<lambda>k\<in>{0}. f 0)"], assumption+)
  apply (frule_tac b = "Suc m" in forball_spec1, simp,
         thin_tac "\<forall>j\<in>{j. j \<le> Suc m}. jointfun m t 0 (\<lambda>k\<in>{0}. -\<^sub>a\<^bsub>R\<^esub> (s 0)) j 
@@ -5868,7 +5867,7 @@ apply (rule contrapos_pp, simp+, simp add:subset_def)
   apply (frule aGroup.ag_inv_inv[THEN sym, of R "s 0"], assumption,
          simp add:aGroup.ag_inv_zero)
         
-  apply (thin_tac "l_comb R M m t g \<plusminus> -\<^sub>a\<^bsub>R\<^esub> (s 0) \<cdot>\<^sub>s f 0 = \<zero>",
+  apply (thin_tac "l_comb R M m t g \<plusminus> (-\<^sub>a\<^bsub>R\<^esub> (s 0)) \<cdot>\<^sub>s f 0 = \<zero>",
          simp del:nsum_suc add:l_comb_def)
   apply (cut_tac l_comb_jointfun_jj[of H "carrier R" t m g "\<lambda>k\<in>{0}. -\<^sub>a\<^bsub>R\<^esub> (s 0)"
                0 "\<lambda>k\<in>{0}. f 0"], simp,

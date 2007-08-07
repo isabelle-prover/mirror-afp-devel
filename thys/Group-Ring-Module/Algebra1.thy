@@ -2755,6 +2755,9 @@ by (simp only:Zero_ant_def, simp add: aug_inf_def)
 lemma z_in_aug_minf:"ant z \<in> Z\<^bsub>-\<infinity>\<^esub>"
 by (simp add:aug_minf_def)
 
+lemma mem_aug_minf:"a \<in> Z\<^bsub>-\<infinity>\<^esub> \<Longrightarrow> a = - \<infinity> \<or> (\<exists>z. a = ant z)" 
+by (cut_tac mem_ant[of a], simp add:aug_minf_def)
+
 lemma minus_an_in_aug_minf:" - an n \<in>  Z\<^bsub>-\<infinity>\<^esub>" 
 apply (simp add:an_def)
 apply (simp add:aminus)
@@ -3306,7 +3309,7 @@ apply (erule disjE, erule exE,
 done
 
 (* Axiom 'order_aless_le' of class 'order': *)
-lemma aless_le: "((w::ant) < z) = (w \<le> z & w \<noteq> z)"
+lemma aless_le: "((w::ant) < z) = (w \<le> z \<and> w \<noteq> z)"
 by (simp add: less_ant_def) 
 
 instance ant :: order
@@ -3315,7 +3318,7 @@ proof qed
   rule ale_refl ale_trans ale_antisym aless_le)+
 
 (* Axiom 'linorder_linear' of class 'linorder': *)
-lemma ale_linear: "(z::ant) \<le> w | w \<le> z"
+lemma ale_linear: "(z::ant) \<le> w \<or> w \<le> z"
 apply (cut_tac mem_ant[of "z"], cut_tac mem_ant[of "w"],
        erule disjE, simp,
        erule disjE, simp)
@@ -4944,7 +4947,23 @@ by simp
 
 lemma box_equation:"\<lbrakk>a = b; a = c\<rbrakk> \<Longrightarrow> b = c"
 apply simp
-done  
+done 
+
+lemma aeq_nat_eq:"\<lbrakk>n \<noteq> \<infinity>; 0 \<le> n; m \<noteq> \<infinity>; 0 \<le> m\<rbrakk> \<Longrightarrow> 
+                    (n = m) = (na n = na m)"
+apply (rule iffI, simp)
+apply (cut_tac aneg_less[THEN sym, of "0" "n"],
+       cut_tac aneg_less[THEN sym, of "0" "m"], simp,
+       simp add:na_def,
+       frule apos_neq_minf[of "n"],
+       frule apos_neq_minf[of "m"])
+apply (cut_tac mem_ant[of "m"],
+       cut_tac mem_ant[of "n"], simp,
+      (erule exE)+, simp,
+       simp add:tna_ant,
+       simp only:ant_0[THEN sym],
+       simp only:ale_zle)
+done
 
 lemma na_minf:"na (-\<infinity>) = 0"
 apply (simp add:na_def, rule impI,
@@ -5767,7 +5786,7 @@ lemma (in Order) minimum_elem_unique:"\<lbrakk>X \<subseteq> carrier D; minimum_
                     minimum_elem D X a2\<rbrakk> \<Longrightarrow> a1 = a2"
 apply (frule minimum_elem_mem[of "X" "a1"], assumption+,
        frule minimum_elem_mem[of "X" "a2"], assumption+)
-apply (simp add:minimum_elem_def) (** koko kara **)
+apply (simp add:minimum_elem_def) 
 apply (drule_tac b = a2 in forball_spec1, assumption)
 apply (drule_tac b = a1 in forball_spec1, assumption)
 apply (rule le_antisym[of a1 a2])

@@ -92,7 +92,7 @@ apply (cut_tac unique_expression3_1[of H "jointfun (Suc (n + n))
      thin_tac "jointfun n s n (\<lambda>x\<in>{j. j \<le> Suc n}. -\<^sub>a\<^bsub>R\<^esub> (t x))
                      \<in> {j. j \<le> Suc (n + n)} \<rightarrow> carrier R",
      thin_tac "(\<lambda>x\<in>{0}. s (Suc n) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (t (Suc n))) \<in> {0} \<rightarrow> carrier R")
- apply (thin_tac " -\<^sub>a\<^bsub>R\<^esub> (t (Suc n)) \<cdot>\<^sub>s g (Suc n) \<in> carrier M",
+ apply (thin_tac " (-\<^sub>a\<^bsub>R\<^esub> (t (Suc n))) \<cdot>\<^sub>s g (Suc n) \<in> carrier M",
         thin_tac "-\<^sub>a\<^bsub>R\<^esub> (t (Suc n)) \<in> carrier R",
         thin_tac "(\<lambda>x\<in>{0}. g (Suc n)) \<in> {0} \<rightarrow> H",
         thin_tac "l_comb R M n (\<lambda>x\<in>{j. j \<le> Suc n}. -\<^sub>a\<^bsub>R\<^esub> (t x)) g \<in> carrier M")
@@ -1991,9 +1991,9 @@ apply (rule allI, rule impI, rule sc_mem,
  apply (frule Ring.ring_is_ag, 
         frule aGroup.ag_mOp_closed[of R "s k"], assumption+)
        (** I don't know how to change s k to 1\<^sub>r\<^bsub>R\<^esub> \<cdot>\<^sub>s s k **) 
- apply (subgoal_tac "(1\<^sub>r\<^bsub>R\<^esub> \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (s k)) \<cdot>\<^sub>s h k = h k \<plusminus> -\<^sub>a\<^bsub>R\<^esub> (s k) \<cdot>\<^sub>s h k",
+ apply (subgoal_tac "(1\<^sub>r\<^bsub>R\<^esub> \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> (s k))) \<cdot>\<^sub>s h k = h k \<plusminus> (-\<^sub>a\<^bsub>R\<^esub> (s k)) \<cdot>\<^sub>s h k",
         simp,
-        thin_tac "h k \<plusminus> -\<^sub>a\<^bsub>R\<^esub> (s k) \<cdot>\<^sub>s h k = \<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s h j) (k - Suc 0)")
+        thin_tac "h k \<plusminus> (-\<^sub>a\<^bsub>R\<^esub> (s k)) \<cdot>\<^sub>s h k = \<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s h j) (k - Suc 0)")
  apply (cut_tac Ring.ring_one[of R],
         simp add:sc_l_distr sprod_one, assumption)
 done
@@ -2063,12 +2063,12 @@ apply (cut_tac H = "h ` {j. j \<le> (k - Suc 0)}" and s = s and n = "k - Suc 0"
     apply (frule_tac h = "s k" in Ring.ideal_subset[of R A], assumption+,
            frule Ring.ring_is_ag[of R],
            frule_tac x = "s k" in aGroup.ag_mOp_closed[of R], assumption,
-           thin_tac "\<forall>y. y \<in> carrier R \<longrightarrow> Unit R (1\<^sub>r\<^bsub>R\<^esub> \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (s k) \<cdot>\<^sub>r\<^bsub>R\<^esub> y)",
+           thin_tac "\<forall>y. y \<in> carrier R \<longrightarrow> Unit R (1\<^sub>r\<^bsub>R\<^esub> \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> (s k)) \<cdot>\<^sub>r\<^bsub>R\<^esub> y)",
            simp add:Ring.ring_r_one)
     apply (simp add:Unit_def, erule conjE, erule bexE)
     apply (simp add:Ring.ring_tOp_commute)
     apply (frule_tac H = "h ` {j. j \<le> k - Suc 0}" and r = b and 
-          x = "(1\<^sub>r\<^bsub>R\<^esub> \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (s k)) \<cdot>\<^sub>s h k" in linear_span_sc_closed[of A])
+          x = "(1\<^sub>r\<^bsub>R\<^esub> \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> (s k))) \<cdot>\<^sub>s h k" in linear_span_sc_closed[of A])
     apply (rule_tac A = "h ` {j. j \<le> k - Suc 0}" and B = "h ` {j. j \<le> k}"
            and C = "carrier M" in subset_trans,
            rule subsetI, simp add:image_def, erule exE, erule conjE)
@@ -2123,7 +2123,7 @@ apply (frule_tac a = h and b = "a \<cdot>\<^sub>s h" and c = "-\<^sub>a (a \<cdo
        simp add:sc_minus_am1,
        frule Ring.ring_is_ag[of R],
        frule_tac x = a in aGroup.ag_mOp_closed, assumption)
-apply (subgoal_tac "h \<plusminus> -\<^sub>a\<^bsub>R\<^esub> a \<cdot>\<^sub>s h = 1\<^sub>r\<^bsub>R\<^esub> \<cdot>\<^sub>s h \<plusminus>  -\<^sub>a\<^bsub>R\<^esub> a \<cdot>\<^sub>s h", simp)
+apply (subgoal_tac "h \<plusminus> (-\<^sub>a\<^bsub>R\<^esub> a) \<cdot>\<^sub>s h = 1\<^sub>r\<^bsub>R\<^esub> \<cdot>\<^sub>s h \<plusminus>  (-\<^sub>a\<^bsub>R\<^esub> a) \<cdot>\<^sub>s h", simp)
 apply (frule Ring.ring_one[of R],
        simp add:sc_l_distr[THEN sym],
        frule_tac x = a in Ring.J_rad_unit [of R], assumption, 
@@ -2431,7 +2431,7 @@ apply (cut_tac Ring, simp add:Module.sc_l_distr)
          thin_tac "(\<lambda>j\<in>I. b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
          thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j else arbitrary))
         \<in> carr_prodag I M",
-         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>r b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
+         thin_tac "(\<lambda>j\<in>I. (a \<cdot>\<^sub>r b) \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
          simp add:carr_prodag_def, (erule conjE)+,
          drule_tac b = i in forball_spec1, assumption)
      
@@ -2638,7 +2638,7 @@ apply (rule Module_axioms.intro)
         thin_tac "(\<lambda>j\<in>I. b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j else arbitrary))
         \<in> carr_dsumag I M",
-        thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>r b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
+        thin_tac "(\<lambda>j\<in>I. (a \<cdot>\<^sub>r b) \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
         frule_tac a = m in forall_spec, assumption,
         thin_tac "\<forall>x. x \<in> carr_dsumag I M \<longrightarrow> x \<in> carr_prodag I M",
         thin_tac "m \<in> carr_dsumag I M",
