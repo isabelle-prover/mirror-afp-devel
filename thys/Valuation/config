@@ -1,0 +1,11 @@
+# -*- shell-script -*-
+
+# $Id: config,v 1.1 2007-08-07 10:49:26 lp15 Exp $
+
+# Get email when automated build fails. May be empty.
+# values: "email1 email2 .. emailn"
+NOTIFY="lp15@cam.ac.uk"
+
+# Participate in frequent (nightly) build (only for small submissions)
+# values: "yes" "no"
+FREQUENT="yes"
