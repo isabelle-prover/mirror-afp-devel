@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.16 2007-07-20 18:45:57 makarius Exp $
+    ID:          $Id: TypeSafe.thy,v 1.17 2007-08-12 16:28:13 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -1615,8 +1615,8 @@ using progress[OF wf_prog_wwf_prog[OF wf]]
 by(auto simp:wf_config_def sconf_def)
 
 
-
 corollary TypeSafety:
+fixes s s' :: state
 assumes wf:"wf_C_prog P" and sconf:"P,E \<turnstile> s \<surd>" and wte:"P,E \<turnstile> e :: T"
   and D:"\<D> e \<lfloor>dom(lcl s)\<rfloor>" and step:"P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>"
   and nored:"\<not>(\<exists>e'' s''. P,E \<turnstile> \<langle>e',s'\<rangle> \<rightarrow> \<langle>e'',s''\<rangle>)"

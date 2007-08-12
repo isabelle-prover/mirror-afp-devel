@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJSound.thy,v 1.7 2007-07-11 10:10:53 stefanberghofer Exp $
+    ID:          $Id: FJSound.thy,v 1.8 2007-08-12 16:28:14 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -20,9 +20,10 @@ this section correspond to the same results in the ACM TOPLAS paper.
 subsection{* Method Type and Body Connection *}
 
 lemma mtype_mbody:
+  fixes Cs :: "nat list"
   assumes "mtype(CT,m,C) = Cs \<rightarrow> C0"
   shows "\<exists>xs e. mbody(CT,m,C) = xs . e \<and> length xs = length Cs"
-  using prems 
+  using assms
   proof(induct rule:mtype.induct)
     case(mt_class C0 Cs C CDef CT m mDef)
     thus ?case 
@@ -587,6 +588,7 @@ proof -
 qed
 
 lemma Thm_2_4_2_2: 
+  fixes es ds :: "exp list"
   assumes "CT;empty \<turnstile> e : C" 
   and "MethodInvk (New C0 es) m ds \<in> subexprs(e)"
   shows "\<exists>xs e0. mbody(CT,m,C0) = xs . e0 \<and> length xs = length ds"

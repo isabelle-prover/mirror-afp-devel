@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.5 2007-08-03 12:04:45 makarius Exp $
+(*  ID:         $Id: PlaneProps.thy,v 1.6 2007-08-12 16:28:14 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -648,7 +648,7 @@ next
       hence mt: "ovs = [] \<longrightarrow> 0 = 0 \<and> v = last (verticesFrom ?f\<^isub>2 r)"
 	using pre' pre by(auto simp:pre_subdivFace'_def splitFace_def
 	  split_def last_vFrom)
-      from IH[OF mgp' pre' f2g mt] `r \<noteq> v` obtain f' where
+      from IH[OF mgp' pre' f2g mt] `r \<noteq> v` obtain f' :: face where
 	f: "f' \<in> set(finals(subdivFace' ?g' ?f\<^isub>2 v 0 ovs)) - set(finals ?g')"
 	and ff: "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> f'"
 	"|vertices f'| = |ovs| + |between (vertices ?f\<^isub>2) r v| + 2"
@@ -706,7 +706,7 @@ next
       note pre' = pre_subdivFace'_Some1[OF pre fg False' VfVg HOL.refl HOL.refl]
       from pre_fdg have "v \<in> \<V> f" and disj: "\<V> f \<inter> set ?vs = {}"
     by(unfold pre_splitFace_def, simp)+
-      from IH[OF mgp' pre' f2g] obtain f' where
+      from IH[OF mgp' pre' f2g] obtain f' :: face where
 	"f' \<in> \<F> (subdivFace' ?g' ?f\<^isub>2 v 0 ovs)" and
 	"final f'" and "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> f'"
 	by blast

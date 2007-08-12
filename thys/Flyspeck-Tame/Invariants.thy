@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.8 2007-08-03 12:04:45 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.9 2007-08-12 16:28:14 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -307,7 +307,7 @@ proof -
   from f have "(v,f \<bullet> v) \<in> \<E> f"
     by(blast intro: nextVertex_in_edges minGraphProps)
   with in_facesAt_nextVertex[OF mgp f]
-  obtain f' where "f' \<in> set(facesAt g (f \<bullet> v))"
+  obtain f' :: face where "f' \<in> set(facesAt g (f \<bullet> v))"
     and "(f \<bullet> v,v) \<in> \<E> f'"
     by(blast dest: mgp_edge_face_ex[OF mgp])
   thus ?thesis by (auto simp: edges_face_eq)

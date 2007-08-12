@@ -1,4 +1,4 @@
-(*  ID:         $Id: ScoreProps.thy,v 1.3 2007-07-20 18:45:57 makarius Exp $
+(*  ID:         $Id: ScoreProps.thy,v 1.4 2007-08-12 16:28:15 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -89,7 +89,7 @@ proof -
   assume a: "minGraphProps g" "f \<in> set (facesAt g a)"
   have "(f\<^bsup>-1\<^esup> \<bullet> a, a) \<in> \<E> f" using a
     by(blast intro:prevVertex_in_edges minGraphProps)
-  then obtain f' where f': "f' \<in> set(facesAt g a)"
+  then obtain f' :: face where f': "f' \<in> set(facesAt g a)"
     and e: "(a, f\<^bsup>-1\<^esup> \<bullet> a) \<in> \<E> f'"
     using a by(blast dest:mgp_edge_face_ex)
   have "(f' \<bullet> a, b) \<notin> set (deleteAround g a ps)" using f'

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Determinism.thy,v 1.6 2007-07-19 21:23:08 makarius Exp $
+    ID:          $Id: Determinism.thy,v 1.7 2007-08-12 16:28:13 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -68,8 +68,8 @@ next
   with pns Ts map show ?case by simp
 qed
 
-
 lemma casts_casts_eq_result:
+  fixes s :: state
   assumes casts:"P \<turnstile> T casts v to v'" and casts':"P \<turnstile> T casts v to w'" 
   and type:"is_type P T" and wte:"P,E \<turnstile> e :: T'" and leq:"P \<turnstile> T' \<le> T"
   and eval:"P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>Val v,(h,l)\<rangle>" and sconf:"P,E \<turnstile> s \<surd>"

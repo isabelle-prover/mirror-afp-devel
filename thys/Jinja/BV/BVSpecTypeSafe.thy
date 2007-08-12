@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVSpecTypeSafe.thy
-    ID:         $Id: BVSpecTypeSafe.thy,v 1.5 2007-07-19 21:23:10 makarius Exp $
+    ID:         $Id: BVSpecTypeSafe.thy,v 1.6 2007-08-12 16:28:15 makarius Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -186,6 +186,7 @@ text {*
   next state always conforms:
 *}
 lemma xcpt_correct:
+  fixes \<sigma>' :: jvm_state
   assumes wtp:  "wf_jvm_prog\<^sub>\<Phi> P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
@@ -343,6 +344,7 @@ text {*
 declare defs1 [simp]
 
 lemma Invoke_correct: 
+  fixes \<sigma>' :: jvm_state
   assumes wtprog: "wf_jvm_prog\<^sub>\<Phi> P"
   assumes meth_C: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:    "ins ! pc = Invoke M' n"
@@ -466,6 +468,7 @@ qed
 declare list_all2_Cons2 [iff]
 
 lemma Return_correct:
+  fixes \<sigma>' :: jvm_state
   assumes wt_prog: "wf_jvm_prog\<^sub>\<Phi> P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins: "ins ! pc = Return"
@@ -644,6 +647,7 @@ declare split_paired_All [simp del]
 lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
 
 lemma Getfield_correct:
+  fixes \<sigma>' :: jvm_state
   assumes wf: "wf_prog wt P"
   assumes mC: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes i:  "ins!pc = Getfield F D"
@@ -709,6 +713,7 @@ qed
 (*>*)
 
 lemma Putfield_correct:
+  fixes \<sigma>' :: jvm_state
   assumes wf: "wf_prog wt P"
   assumes mC: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes i:  "ins!pc = Putfield F D"
@@ -801,6 +806,7 @@ lemma obj_ty_blank [iff]: "obj_ty (blank P C) = Class C"
   by (simp add: blank_def)
 
 lemma New_correct:
+  fixes \<sigma>' :: jvm_state
   assumes wf:   "wf_prog wt P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:  "ins!pc = New X"

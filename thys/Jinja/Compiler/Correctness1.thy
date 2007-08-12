@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness1.thy
-    ID:         $Id: Correctness1.thy,v 1.6 2007-07-21 15:42:45 makarius Exp $
+    ID:         $Id: Correctness1.thy,v 1.7 2007-08-12 16:28:15 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -65,9 +65,8 @@ apply(simp add:map_le_def);
 apply(simp add:fun_upds_apply index_less_aux eq_sym_conv)
 done
 (*>*)
-
-
 lemma Block_lem:
+fixes l :: "'a \<rightharpoonup> 'b"
 assumes 0: "l \<subseteq>\<^sub>m [Vs [\<mapsto>] ls]"
     and 1: "l' \<subseteq>\<^sub>m [Vs [\<mapsto>] ls', V\<mapsto>v]"
     and hidden: "V \<in> set Vs \<Longrightarrow> ls ! index Vs V = ls' ! index Vs V"
