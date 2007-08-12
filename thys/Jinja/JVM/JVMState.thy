@@ -1,5 +1,5 @@
 (*  Title:      Jinja/JVM/JVMState.thy
-    ID:         $Id: JVMState.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: JVMState.thy,v 1.3 2007-08-12 17:21:47 makarius Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -9,7 +9,7 @@ header {*
   \isaheader{State of the JVM} 
 *}
 
-theory JVMState imports Objects begin
+theory JVMState imports "../Common/Objects" begin
 
 section {* Frame Stack *}
 
