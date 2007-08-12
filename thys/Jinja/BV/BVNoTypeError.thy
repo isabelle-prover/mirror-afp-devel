@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVNoTypeErrors.thy
-    ID:         $Id: BVNoTypeError.thy,v 1.4 2007-07-19 21:23:10 makarius Exp $
+    ID:         $Id: BVNoTypeError.thy,v 1.5 2007-08-12 17:22:05 makarius Exp $
     Author:     Gerwin Klein
     Copyright   GPL
 *)
@@ -67,6 +67,7 @@ text {*
   are started in a conformant state.
 *}
 theorem no_type_error:
+  fixes \<sigma> :: jvm_state
   assumes welltyped: "wf_jvm_prog\<^sub>\<Phi> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>"
   shows "exec_d P \<sigma> \<noteq> TypeError"
 (*<*)
@@ -246,6 +247,7 @@ text {*
   state or in the canonical start state)
 *} 
 corollary welltyped_commutes:
+  fixes \<sigma> :: jvm_state
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>" 
   shows "P \<turnstile> (Normal \<sigma>) -jvmd\<rightarrow> (Normal \<sigma>') = P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>'"
   apply rule
