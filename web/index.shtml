@@ -57,14 +57,18 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
-2007-07-21:
+<a href="entries/FOL-Fitting.shtml">First-Order Logic According to Fitting</a>
+<br>Author: Stefan Berghofer
+<a href="http://www4.in.tum.de/~berghofe/">Stefan Berghofer</a>
+</td></tr>
+
+<tr><td class="entry">
 <a href="entries/Valuation.shtml">Fundamental Properties of Valuation Theory and Hensel's Lemma</a>
 <br>Author:
 Hidetsune Kobayashi
 </td></tr>
 
 <tr><td class="entry">
-2006-09-09:
 <a href="entries/HotelKeyCards.shtml">Hotel Key Card System</a>
 <br>Author:
 <a href="www.in.tum.de/~nipkow">Tobias Nipkow</a>
