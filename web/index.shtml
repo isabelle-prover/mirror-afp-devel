@@ -40,11 +40,10 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 </table>
 
 <p> </p>
-
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2006</td>
+      <td class="head">2007</td>
     </tr>
 
 <!-- entry template begin (delete this line) --
@@ -57,18 +56,36 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2007-08-16:
+<a href="entries/POPLmark-deBruijn.shtml">POPLmark Challenge Via de Bruijn Indices</a>
+<br>Author:
+<a href="http://www4.in.tum.de/~berghofe">Stefan Berghofer</a>
+</td></tr>
+
+<tr><td class="entry">
+2007-08-14:
 <a href="entries/FOL-Fitting.shtml">First-Order Logic According to Fitting</a>
-<br>Author: Stefan Berghofer
+<br>Author:
 <a href="http://www4.in.tum.de/~berghofe/">Stefan Berghofer</a>
 </td></tr>
 
 <tr><td class="entry">
+2007-08-08:
 <a href="entries/Valuation.shtml">Fundamental Properties of Valuation Theory and Hensel's Lemma</a>
 <br>Author:
 Hidetsune Kobayashi
 </td></tr>
+</table>
+
+<p> </p>
+<table width="80%" class="entries">
+  <tbody>
+    <tr>
+      <td class="head">2006</td>
+    </tr>
 
 <tr><td class="entry">
+2006-09-09:
 <a href="entries/HotelKeyCards.shtml">Hotel Key Card System</a>
 <br>Author:
 <a href="www.in.tum.de/~nipkow">Tobias Nipkow</a>
