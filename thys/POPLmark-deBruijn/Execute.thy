@@ -1,10 +1,9 @@
-(*  Title:      Poplmark/Execute.thy
-    ID:         $Id: Execute.thy,v 1.1 2007-08-16 13:04:18 nipkow Exp $
+(*  ID:         $Id: Execute.thy,v 1.2 2007-08-17 12:00:15 nipkow Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 (*<*)
 theory Execute
-imports PoplmarkRecord Executable_Set Efficient_Nat
+imports POPLmarkRecord Executable_Set Efficient_Nat
 begin
 (*>*)
 
