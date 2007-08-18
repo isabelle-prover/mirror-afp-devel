@@ -1,11 +1,11 @@
-(*  ID:         $Id: FOL_Fitting.thy,v 1.1 2007-08-14 19:44:34 nipkow Exp $
+(*  ID:         $Id: FOL_Fitting.thy,v 1.2 2007-08-18 13:57:34 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2003
 *)
-(*<*)
+
 theory FOL_Fitting
 imports Infinite_Set
 begin
-(*>*)
+
 
 section {* Miscellaneous Utilities *}
 
@@ -297,7 +297,7 @@ position up.
 
 definition
   shift :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a"  ("_\<langle>_:_\<rangle>" [90, 0, 0] 91)  where
-  "e\<langle>i:a\<rangle> \<equiv> \<lambda>j. if j < i then e j else if j = i then a else e (j - 1)"
+  "e\<langle>i:a\<rangle> = (\<lambda>j. if j < i then e j else if j = i then a else e (j - 1))"
 
 lemma shift_eq [simp]: "i = j \<Longrightarrow> (e\<langle>i:T\<rangle>) j = T"
   by (simp add: shift_def)
@@ -351,7 +351,7 @@ function and predicate symbols, respectively.
 definition
   model :: "(nat \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c list \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'c list \<Rightarrow> bool) \<Rightarrow>
     ('a, 'b) form list \<Rightarrow> ('a, 'b) form \<Rightarrow> bool"  ("_,_,_,_ \<Turnstile> _" [50,50] 50)  where
-  "e,f,g,ps \<Turnstile> p \<equiv> list_all (eval e f g) ps \<longrightarrow> eval e f g p"
+  "(e,f,g,ps \<Turnstile> p) = (list_all (eval e f g) ps \<longrightarrow> eval e f g p)"
 
 text {*
 The following substitution lemmas relate substitution and evaluation functions:
@@ -634,7 +634,7 @@ following holds:
 
 definition
   consistency :: "('a, 'b) form set set \<Rightarrow> bool" where
-  "consistency C \<equiv> (\<forall>S. S \<in> C \<longrightarrow>
+  "consistency C = (\<forall>S. S \<in> C \<longrightarrow>
      (\<forall>p ts. \<not> (Pred p ts \<in> S \<and> Neg (Pred p ts) \<in> S)) \<and>
      FF \<notin> S \<and> Neg TT \<notin> S \<and>
      (\<forall>Z. Neg (Neg Z) \<in> S \<longrightarrow> S \<union> {Z} \<in> C) \<and>
@@ -660,7 +660,7 @@ consistency property} as follows:
 
 definition
   alt_consistency :: "('a, 'b) form set set \<Rightarrow> bool" where
-  "alt_consistency C \<equiv> (\<forall>S. S \<in> C \<longrightarrow>
+  "alt_consistency C = (\<forall>S. S \<in> C \<longrightarrow>
      (\<forall>p ts. \<not> (Pred p ts \<in> S \<and> Neg (Pred p ts) \<in> S)) \<and>
      FF \<notin> S \<and> Neg TT \<notin> S \<and>
      (\<forall>Z. Neg (Neg Z) \<in> S \<longrightarrow> S \<union> {Z} \<in> C) \<and>
@@ -688,7 +688,7 @@ substitution:
 
 definition
   mk_alt_consistency :: "('a, 'b) form set set \<Rightarrow> ('a, 'b) form set set" where
-  "mk_alt_consistency C \<equiv> {S. \<exists>f. psubst f ` S \<in> C}"
+  "mk_alt_consistency C = {S. \<exists>f. psubst f ` S \<in> C}"
 
 theorem alt_consistency:
   "consistency C \<Longrightarrow> alt_consistency (mk_alt_consistency C)"
@@ -853,11 +853,11 @@ that is closed under subsets.
 
 definition
   close :: "('a, 'b) form set set \<Rightarrow> ('a, 'b) form set set" where
-  "close C \<equiv> {S. \<exists>S' \<in> C. S \<subseteq> S'}"
+  "close C = {S. \<exists>S' \<in> C. S \<subseteq> S'}"
 
 definition
   subset_closed :: "'a set set \<Rightarrow> bool" where
-  "subset_closed C \<equiv> \<forall>S' \<in> C. \<forall>S. S \<subseteq> S' \<longrightarrow> S \<in> C"
+  "subset_closed C = (\<forall>S' \<in> C. \<forall>S. S \<subseteq> S' \<longrightarrow> S \<in> C)"
 
 theorem close_consistency: "consistency C \<Longrightarrow> consistency (close C)"
   apply (simp add: close_def consistency_def)
@@ -965,11 +965,11 @@ if and only if every subset of @{text S} is.
 
 definition
   finite_char :: "'a set set \<Rightarrow> bool" where
-  "finite_char C \<equiv> (\<forall>S. S \<in> C = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> C))"
+  "finite_char C = (\<forall>S. S \<in> C = (\<forall>S'. finite S' \<longrightarrow> S' \<subseteq> S \<longrightarrow> S' \<in> C))"
 
 definition
   mk_finite_char :: "'a set set \<Rightarrow> 'a set set" where
-  "mk_finite_char C \<equiv> {S. \<forall>S'. S' \<subseteq> S \<longrightarrow> finite S' \<longrightarrow> S' \<in> C}"
+  "mk_finite_char C = {S. \<forall>S'. S' \<subseteq> S \<longrightarrow> finite S' \<longrightarrow> S' \<in> C}"
 
 theorem finite_alt_consistency:
   "alt_consistency C \<Longrightarrow> subset_closed C \<Longrightarrow> alt_consistency (mk_finite_char C)"
@@ -1352,11 +1352,11 @@ primrec
 
 definition
   diag_list :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a list" where
-  "diag_list f n \<equiv> list_of_btree f (diag_btree n)"
+  "diag_list f n = list_of_btree f (diag_btree n)"
 
 definition
   undiag_list :: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> nat" where
-  "undiag_list f xs \<equiv> undiag_btree (btree_of_list f xs)"
+  "undiag_list f xs = undiag_btree (btree_of_list f xs)"
 
 theorem diag_undiag_list [simp]:
   "(\<And>x. d (u x) = x) \<Longrightarrow> diag_list d (undiag_list u xs) = xs"
@@ -1393,11 +1393,11 @@ theorem term_btree: assumes du: "\<And>x. d (u x) = x"
 
 definition
   diag_term :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a term" where
-  "diag_term f n \<equiv> term_of_btree f (diag_btree n)"
+  "diag_term f n = term_of_btree f (diag_btree n)"
 
 definition
   undiag_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a term \<Rightarrow> nat" where
-  "undiag_term f t \<equiv> undiag_btree (btree_of_term f t)"
+  "undiag_term f t = undiag_btree (btree_of_term f t)"
 
 theorem diag_undiag_term [simp]:
   "(\<And>x. d (u x) = x) \<Longrightarrow> diag_term d (undiag_term u t) = t"
@@ -1444,11 +1444,11 @@ primrec
 
 definition
   diag_form :: "(nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> ('a, 'b) form" where
-  "diag_form f g n \<equiv> form_of_btree f g (diag_btree n)"
+  "diag_form f g n = form_of_btree f g (diag_btree n)"
 
 definition
   undiag_form :: "('a \<Rightarrow> nat) \<Rightarrow> ('b \<Rightarrow> nat) \<Rightarrow> ('a, 'b) form \<Rightarrow> nat" where
-  "undiag_form f g x \<equiv> undiag_btree (btree_of_form f g x)"
+  "undiag_form f g x = undiag_btree (btree_of_form f g x)"
 
 theorem diag_undiag_form [simp]:
   "(\<And>x. d (u x) = x) \<Longrightarrow> (\<And>x. d' (u' x) = x) \<Longrightarrow>
@@ -1457,11 +1457,11 @@ theorem diag_undiag_form [simp]:
 
 definition
   diag_form' :: "nat \<Rightarrow> (nat, nat) form" where
-  "diag_form' \<equiv> diag_form (\<lambda>n. n) (\<lambda>n. n)"
+  "diag_form' = diag_form (\<lambda>n. n) (\<lambda>n. n)"
 
 definition
   undiag_form' :: "(nat, nat) form \<Rightarrow> nat" where
-  "undiag_form' \<equiv> undiag_form (\<lambda>n. n) (\<lambda>n. n)"
+  "undiag_form' = undiag_form (\<lambda>n. n) (\<lambda>n. n)"
 
 theorem diag_undiag_form' [simp]: "diag_form' (undiag_form' f) = f"
   by (simp add: diag_form'_def undiag_form'_def)
@@ -1478,7 +1478,7 @@ of @{text C} is again an element of @{text C}.
 
 definition
   is_chain :: "(nat \<Rightarrow> 'a set) \<Rightarrow> bool" where
-  "is_chain f \<equiv> \<forall>n. f n \<subseteq> f (Suc n)"
+  "is_chain f = (\<forall>n. f n \<subseteq> f (Suc n))"
 
 theorem is_chainD: "is_chain f \<Longrightarrow> x \<in> f m \<Longrightarrow> x \<in> f (m + n)"
   by (induct n) (fastsimp simp add: is_chain_def)+
@@ -1558,7 +1558,7 @@ primrec
 definition
   Extend :: "(nat, 'b) form set \<Rightarrow> (nat, 'b) form set set \<Rightarrow>
     (nat \<Rightarrow> (nat, 'b) form) \<Rightarrow> (nat, 'b) form set" where
-  "Extend S C f \<equiv> \<Union>n. extend S C f n"
+  "Extend S C f = (\<Union>n. extend S C f n)"
 
 theorem is_chain_extend: "is_chain (extend S C f)"
   by (simp add: is_chain_def) blast
@@ -1665,7 +1665,7 @@ The @{text Extend} function yields a maximal set:
 
 definition
   maximal :: "'a set \<Rightarrow> 'a set set \<Rightarrow> bool" where
-  "maximal S C \<equiv> \<forall>S'\<in>C. S \<subseteq> S' \<longrightarrow> S = S'"
+  "maximal S C = (\<forall>S'\<in>C. S \<subseteq> S' \<longrightarrow> S = S')"
 
 theorem extend_maximal: "\<forall>y. \<exists>n. y = f n \<Longrightarrow>
   finite_char C \<Longrightarrow> maximal (Extend S C f) C"
@@ -1709,8 +1709,8 @@ A Hintikka set is defined as follows:
 
 definition
   hintikka :: "('a, 'b) form set \<Rightarrow> bool" where
-  "hintikka H \<equiv>
-     (\<forall>p ts. \<not> (Pred p ts \<in> H \<and> Neg (Pred p ts) \<in> H)) \<and>
+  "hintikka H =
+     ((\<forall>p ts. \<not> (Pred p ts \<in> H \<and> Neg (Pred p ts) \<in> H)) \<and>
      FF \<notin> H \<and> Neg TT \<notin> H \<and>
      (\<forall>Z. Neg (Neg Z) \<in> H \<longrightarrow> Z \<in> H) \<and>
      (\<forall>A B. And A B \<in> H \<longrightarrow> A \<in> H \<and> B \<in> H) \<and>
@@ -1722,7 +1722,7 @@ definition
      (\<forall>P t. closedt 0 t \<longrightarrow> Forall P \<in> H \<longrightarrow> subst P t 0 \<in> H) \<and>
      (\<forall>P t. closedt 0 t \<longrightarrow> Neg (Exists P) \<in> H \<longrightarrow> Neg (subst P t 0) \<in> H) \<and>
      (\<forall>P. Exists P \<in> H \<longrightarrow> (\<exists>t. closedt 0 t \<and> subst P t 0 \<in> H)) \<and>
-     (\<forall>P. Neg (Forall P) \<in> H \<longrightarrow> (\<exists>t. closedt 0 t \<and> Neg (subst P t 0) \<in> H))"
+     (\<forall>P. Neg (Forall P) \<in> H \<longrightarrow> (\<exists>t. closedt 0 t \<and> Neg (subst P t 0) \<in> H)))"
 
 text {*
 In Herbrand models, each {\em closed} term is interpreted by itself.
@@ -2445,4 +2445,4 @@ theorem loewenheim_skolem: "\<forall>p\<in>S. eval e f g p \<Longrightarrow>
   apply simp
   done
 
-(*<*)end(*>*)
+end
