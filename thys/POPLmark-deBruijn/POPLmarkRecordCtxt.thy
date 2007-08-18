@@ -1,12 +1,11 @@
 (*  Title:      POPLmark/POPLmarkRecordCtxt.thy
-    ID:         $Id: POPLmarkRecordCtxt.thy,v 1.1 2007-08-16 13:04:18 nipkow Exp $
+    ID:         $Id: POPLmarkRecordCtxt.thy,v 1.2 2007-08-18 13:57:45 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
-(*<*)
+
 theory POPLmarkRecordCtxt
 imports POPLmarkRecord
 begin
-(*>*)
 
 section {* Evaluation contexts *}
 
@@ -370,6 +369,4 @@ next
     by induct (auto intro: eval_evals.intros ctxt_imp_eval)
 qed
 
-(*<*)
 end
-(*>*)

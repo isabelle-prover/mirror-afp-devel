@@ -1,11 +1,10 @@
-(*  ID:         $Id: Execute.thy,v 1.2 2007-08-17 12:00:15 nipkow Exp $
+(*  ID:         $Id: Execute.thy,v 1.3 2007-08-18 13:57:45 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
-(*<*)
+
 theory Execute
 imports POPLmarkRecord Executable_Set Efficient_Nat
 begin
-(*>*)
 
 section {* Executing the specification *}
 
@@ -83,6 +82,4 @@ would have to extract the algorithm contained in the proof of the {\it decomposi
 from \secref{sec:evaluation-ctxt}.
 *}
 
-(*<*)
 end
-(*>*)

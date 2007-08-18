@@ -1,12 +1,12 @@
 (*  Title:      POPLmark/POPLmark.thy
-    ID:         $Id: POPLmark.thy,v 1.1 2007-08-16 13:04:18 nipkow Exp $
+    ID:         $Id: POPLmark.thy,v 1.2 2007-08-18 13:57:45 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
-(*<*)
+
 theory POPLmark
 imports Basis
 begin
-(*>*)
+
 
 section {* Formalization of the basic calculus *}
 
@@ -1571,6 +1571,4 @@ next
   show ?case by (rule T_Sub)
 qed
 
-(*<*)
 end
-(*>*)

@@ -1,12 +1,11 @@
 (*  Title:      POPLmark/POPLmarkRecord.thy
-    ID:         $Id: POPLmarkRecord.thy,v 1.1 2007-08-16 13:04:18 nipkow Exp $
+    ID:         $Id: POPLmarkRecord.thy,v 1.2 2007-08-18 13:57:45 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
-(*<*)
+
 theory POPLmarkRecord
 imports Basis
 begin
-(*>*)
 
 section {* Extending the calculus with records *}
 
@@ -2554,6 +2553,4 @@ next
   thus ?case by (auto intro: eval_evals.intros)
 qed
 
-(*<*)
 end
-(*>*)

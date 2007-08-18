@@ -1,11 +1,11 @@
-(*  ID:         $Id: Basis.thy,v 1.2 2007-08-17 12:00:15 nipkow Exp $
+(*  ID:         $Id: Basis.thy,v 1.3 2007-08-18 13:57:45 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
-(*<*)
+
 theory Basis
 imports Main
 begin
-(*>*)
+
 
 section {* General Utilities *}
 
@@ -128,6 +128,5 @@ no_syntax
   "_idtypdummy" :: "type => idt"  ("'_()\<Colon>_" [] 0)
   "_Map" :: "maplets => 'a ~=> 'b"  ("(1[_])")
 
-(*<*)
+
 end
-(*>*)
