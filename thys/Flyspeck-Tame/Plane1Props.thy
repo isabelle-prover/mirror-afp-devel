@@ -1,11 +1,10 @@
-(* ID:         $Id: Plane1Props.thy,v 1.1 2006-05-22 09:54:01 nipkow Exp $
+(* ID:         $Id: Plane1Props.thy,v 1.2 2007-08-19 19:17:42 nipkow Exp $
    Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 theory Plane1Props
 imports Plane1 PlaneProps Tame
 begin
-
 
 lemma next_plane_subset:
   "\<forall>f \<in> \<F> g. vertices f \<noteq> [] \<Longrightarrow>
@@ -28,8 +27,5 @@ lemma inv_inv_next_plane: "invariant inv next_plane\<^bsub>p\<^esub>"
 apply(rule inv_subset[OF inv_inv_next_plane0])
 apply(blast dest: mgp_next_plane0_if_next_plane[OF inv_mgp])
 done
-
-
-
 
 end

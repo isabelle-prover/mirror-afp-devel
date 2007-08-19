@@ -1,4 +1,4 @@
-(*  ID:         $Id: ScoreProps.thy,v 1.4 2007-08-12 16:28:15 makarius Exp $
+(*  ID:         $Id: ScoreProps.thy,v 1.5 2007-08-19 19:17:42 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -9,7 +9,7 @@ imports ListSum TameEnum PlaneProps TameProps
 begin
 
 lemma deleteAround_empty[simp]: "deleteAround g a [] = []"
-  by (simp add: deleteAround_def)
+by (simp add: deleteAround_def)
 
 lemma deleteAroundCons:
   "deleteAround g a (p#ps) =
@@ -19,19 +19,7 @@ lemma deleteAroundCons:
              \<or> length (vertices f) \<noteq>  4 \<and> v = f \<bullet> a}
      then deleteAround g a ps
      else p#deleteAround g a ps)"
-apply (auto simp add: deleteAround_def)
-    apply blast
-   apply (fastsimp simp:nextV2)
-  apply(drule_tac x = "[f \<bullet> a, f\<^bsup>2\<^esup> \<bullet> a]" in bspec)
-   apply (fastsimp simp:image_def)
-  apply (simp)
- apply(drule_tac x = "[f \<bullet> a, f\<^bsup>2\<^esup> \<bullet> a]" in bspec)
-  apply (fastsimp simp:image_def)
- apply (simp add:nextV2)
-apply(drule_tac x = "[f \<bullet> a]" in bspec)
- apply (fastsimp simp:image_def)
-apply (simp)
-done
+by (fastsimp simp: nextV2 deleteAround_def)
 
 lemma deleteAround_subset: "set (deleteAround g a ps) \<subseteq> set ps"
 by (simp add: deleteAround_def)
@@ -74,12 +62,12 @@ done
 lemma deleteAround_nextVertex:
   "f \<in> set (facesAt g a) \<Longrightarrow>
   (f \<bullet> a, b) \<notin> set (deleteAround g a ps)"
-  by (auto simp add: deleteAround_eq deleteAround'_def removeKeyList_eq)
+by (auto simp add: deleteAround_eq deleteAround'_def removeKeyList_eq)
 
 lemma deleteAround_nextVertex_nextVertex:
   "f \<in> set (facesAt g a) \<Longrightarrow> |vertices f| = 4 \<Longrightarrow>
   (f \<bullet> (f \<bullet> a), b) \<notin> set (deleteAround g a ps)"
-  by (auto simp add: deleteAround_eq deleteAround'_def removeKeyList_eq)
+by (auto simp add: deleteAround_eq deleteAround'_def removeKeyList_eq)
 
 
 lemma deleteAround_prevVertex:
@@ -159,7 +147,7 @@ prevVertex f a wird mit nachbarflaeche geloescht.
 
 
 lemma [iff]: "preSeparated g {}"
-  by (simp add: preSeparated_def separated\<^isub>2_def separated\<^isub>3_def)
+by (simp add: preSeparated_def separated\<^isub>2_def separated\<^isub>3_def)
 
 lemma preSeparated_insert:
 assumes mgp: "minGraphProps g" and a: "a \<in> \<V> g"
@@ -231,7 +219,7 @@ recdef ExcessNotAtRecList "measure (\<lambda>ps. size ps)"
 
 lemma isTable_deleteAround:
   "isTable E vs ((a,b)#ps) \<Longrightarrow> isTable E vs (deleteAround g a ps)"
-  by (rule isTable_subset, rule deleteAround_subset,
+by (rule isTable_subset, rule deleteAround_subset,
     rule isTable_Cons)
 
 lemma ListSum_ExcessNotAtRecList:
@@ -363,11 +351,11 @@ qed
 
 lemma isTable_ExcessTable:
   "isTable (\<lambda>v. ExcessAt g v) vs (ExcessTable g vs)"
-  by  (auto simp add: isTable_def ExcessTable_def ExcessAt_def)
+by (auto simp add: isTable_def ExcessTable_def ExcessAt_def)
 
 lemma ExcessTable_subset:
   "set (map fst (ExcessTable g vs)) \<subseteq> set vs"
-  by (induct vs) (auto simp add: ExcessTable_def)
+by (induct vs) (auto simp add: ExcessTable_def)
 
 lemma distinct_ExcessNotAtRecList:
   "distinct (map fst ps) \<Longrightarrow> distinct (ExcessNotAtRecList ps g)"
@@ -449,7 +437,7 @@ qed
 lemma ExcessTable_cont_eq:
  "ExcessTable_cont E vs =
   [(v, E v). v \<leftarrow> [v\<leftarrow>vs . 0 < E v]]"
-  by (induct vs) (simp_all)
+by (induct vs) (simp_all)
 
 
 lemma ExcessTable_eq: "ExcessTable = ExcessTable'"
@@ -460,7 +448,7 @@ qed
 
 lemma distinct_ExcessTable:
    "distinct vs \<Longrightarrow> distinct [fst p. p \<leftarrow> ExcessTable g vs]"
-  by (simp_all add: ExcessTable_eq ExcessTable'_def distinct_ExcessTable_cont)
+by (simp_all add: ExcessTable_eq ExcessTable'_def distinct_ExcessTable_cont)
 
 lemma ExcessNotAt_eq:
   "minGraphProps g \<Longrightarrow> final g \<Longrightarrow>
