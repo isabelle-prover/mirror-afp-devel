@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness2.thy
-    ID:         $Id: Correctness2.thy,v 1.7 2007-07-19 21:23:10 makarius Exp $
+    ID:         $Id: Correctness2.thy,v 1.8 2007-08-19 19:16:30 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -104,7 +104,7 @@ lemma [simp]: "pcs (x#xt) = {fst x ..< fst(snd x)} \<union> pcs xt"
 
 
 lemma [simp]: "pcs(xt\<^isub>1 @ xt\<^isub>2) = pcs xt\<^isub>1 \<union> pcs xt\<^isub>2"
-(*<*)by(simp add:pcs_def)blast(*>*)
+(*<*)by(simp add:pcs_def)(*>*)
 
 
 lemma [simp]: "pc < pc\<^isub>0 \<or> pc\<^isub>0+size(compE\<^isub>2 e) \<le> pc \<Longrightarrow> pc \<notin> pcs(compxE\<^isub>2 e pc\<^isub>0 d)"
