@@ -1,11 +1,11 @@
-(*  ID:         $Id: ArchComp.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
+(*  ID:         $Id: ArchComp.thy,v 1.3 2007-08-20 16:09:23 fhaftmann Exp $
     Author:     Tobias Nipkow
 *)
 
 header "Comparing Enumeration and Achive"
 
 theory ArchComp
-imports TameEnum TrieList Arch
+imports TameEnum TrieList Arch Efficient_Nat
 begin
 
 consts qsort :: "('a \<Rightarrow> 'a => bool) * 'a list \<Rightarrow> 'a list"
@@ -83,8 +83,7 @@ by evaluation
 lemma pre_iso_test8: "\<forall>g \<in> set Oct. pre_iso_test g"
 by evaluation
 
-
-ML"set Toplevel.timing"
+ML "set Toplevel.timing"
 
 lemma same3: "same (tameEnum 0 800000) Tri"
 by evaluation
@@ -104,6 +103,6 @@ by evaluation
 lemma same8: "same (tameEnum 5 2000000) Oct"
 by evaluation
 
-ML"reset Toplevel.timing"
+ML "reset Toplevel.timing"
 
 end

@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.9 2007-08-12 16:28:14 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.10 2007-08-20 16:09:23 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -11,7 +11,7 @@ begin
 subsection{* Rotation of face into normal form *}
 
 constdefs minVertex :: "face \<Rightarrow> vertex"
-"minVertex f \<equiv> minList (vertices f)"
+"minVertex f \<equiv> min_list (vertices f)"
 
 (* FIXME define normFace via rotate_min *)
 constdefs normFace :: "face \<Rightarrow> vertex list"
@@ -623,7 +623,7 @@ by (induct "is") (simp_all add: add:nth_list_update)
 
 subsection{*@{const normFace}*}
 
-(************************** minList & minVertex **********************)
+(************************** min_list & minVertex **********************)
 
 lemma minVertex_in: "vertices f \<noteq> [] \<Longrightarrow> minVertex f \<in> \<V> f"
 by (simp add: minVertex_def)
@@ -638,7 +638,7 @@ apply(case_tac "vs = []")
  apply(simp add:vertices_face_def minVertex_def)
 apply(subgoal_tac "vs' \<noteq> []")
  prefer 2 apply clarsimp
-apply(simp add:vertices_face_def minVertex_def minList_conv_Min
+apply(simp add:vertices_face_def minVertex_def min_list_conv_Min
                insert_absorb del:Min_insert)
 done
 

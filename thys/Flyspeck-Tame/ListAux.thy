@@ -1,11 +1,11 @@
-(*  ID:         $Id: ListAux.thy,v 1.8 2007-07-20 20:30:58 makarius Exp $
+(*  ID:         $Id: ListAux.thy,v 1.9 2007-08-20 16:09:23 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header {* Basic Functions Old and New *}
 
 theory ListAux
-imports Main Efficient_Nat
+imports Main
 begin
 
 declare Let_def[simp]
@@ -214,22 +214,21 @@ apply(induct xs)
 apply (auto split:split_if_asm)
 done
 
-(* FIXME minList to min_list *)
-consts minList :: "nat list \<Rightarrow> nat"
+consts min_list :: "nat list \<Rightarrow> nat"
 primrec
- "minList (x#xs) = (if xs=[] then x else min x (minList xs))"
+ "min_list (x#xs) = (if xs=[] then x else min x (min_list xs))"
 
 consts max_list :: "nat list \<Rightarrow> nat"
 primrec
  "max_list (x#xs) = (if xs=[] then x else max x (max_list xs))"
 
 
-lemma minList_conv_Min[simp]:
- "xs \<noteq> [] \<Longrightarrow> minList xs = Min(set xs)"
+lemma min_list_conv_Min[simp]:
+ "xs \<noteq> [] \<Longrightarrow> min_list xs = Min (set xs)"
 by (induct xs) auto
 
 lemma max_list_conv_Max[simp]:
- "xs \<noteq> [] \<Longrightarrow> max_list xs = Max(set xs)"
+ "xs \<noteq> [] \<Longrightarrow> max_list xs = Max (set xs)"
 by (induct xs) auto
 
 
