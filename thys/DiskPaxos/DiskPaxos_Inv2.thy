@@ -1,5 +1,5 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Inv2.thy,v 1.6 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: DiskPaxos_Inv2.thy,v 1.7 2007-08-20 16:10:38 fhaftmann Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro at fceia.unr.edu.ar>
 *)
@@ -1154,5 +1154,5 @@ proof(auto! simp add: HInv2_def)
        auto intro: HFail_Inv2c,
        auto simp add: HInv1_def intro: HEndPhase0_Inv2c)
 qed
-                  
+
 end
