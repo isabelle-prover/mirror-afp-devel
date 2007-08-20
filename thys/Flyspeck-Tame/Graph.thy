@@ -1,4 +1,4 @@
-(*  ID:         $Id: Graph.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
+(*  ID:         $Id: Graph.thy,v 1.3 2007-08-20 16:10:21 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -22,8 +22,10 @@ consts
  vertices :: "'a \<Rightarrow> vertex list"
  edges :: "'a \<Rightarrow> (vertex \<times> vertex) set" ("\<E>")
 
-syntax "_Vertices" :: "'a \<Rightarrow> vertex set" ("\<V>")
-translations "\<V> f" == "set(vertices f)"
+abbreviation
+  vertices_set :: "'a \<Rightarrow> vertex set" ("\<V>")
+where
+  "\<V> f \<equiv> set (vertices f)"
 
 
 subsection {* Faces *}
@@ -38,13 +40,13 @@ datatype face = Face "(vertex list)"  facetype
 
 consts final :: "'a \<Rightarrow> bool"
 primrec
-  "final (Face vs f) = (case f of Final \<Rightarrow> True | Nonfinal \<Rightarrow> False)"
+  final_face_simp: "final (Face vs f) = (case f of Final \<Rightarrow> True | Nonfinal \<Rightarrow> False)"
 
 consts type :: "'a \<Rightarrow> facetype"
 primrec "type (Face vs f) = f"
 
 primrec
-  "vertices (Face vs f) = vs"
+  vertices_face_simp: "vertices (Face vs f) = vs"
 
 defs (overloaded) cong_face_def:
  "f\<^isub>1 \<cong> (f\<^isub>2::face) \<equiv> vertices f\<^isub>1 \<cong> vertices f\<^isub>2" 
@@ -116,7 +118,8 @@ translations "\<F> g" == "set(faces g)"
 consts countVertices :: "graph \<Rightarrow> nat"
 primrec "countVertices (Graph fs n f h) = n"
 
-primrec "vertices (Graph fs n f h) = [0 ..< n]"
+primrec
+  vertices_graph_simp: "vertices (Graph fs n f h) = [0 ..< n]"
 
 lemma vertices_graph: "vertices g = [0 ..< countVertices g]"
 by (induct g) simp
