@@ -1,4 +1,4 @@
-(*  ID:         $Id: GeneratorProps.thy,v 1.3 2007-06-08 12:06:50 nipkow Exp $
+(*  ID:         $Id: GeneratorProps.thy,v 1.4 2007-08-20 16:16:09 fhaftmann Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -263,6 +263,10 @@ done
 lemma preSep_ne: "\<exists>P \<subseteq> M. preSeparated g (fst ` P)"
 by(unfold preSeparated_def separated\<^isub>2_def separated\<^isub>3_def) blast
 
+(*FIXME move to HOL*)
+instance nat :: linordered_ab_semigroup_add
+by intro_classes
+
 lemma ExcessNotAtRec_conv_Max:
 assumes mgp: "minGraphProps g"
 shows "distinct(map fst ps) \<Longrightarrow> ExcessNotAtRec ps g =
@@ -284,10 +288,10 @@ proof(induct ps rule: length_induct)
       apply(simp add: filter_map o_def)
       done
     have "ExcessNotAtRec ps0 g = max (Max(?M ps)) (snd p + Max(?M ?ps))"
-      using Cons IH le dist dist' by(simp)
-    also have "snd p + Max(?M ?ps) =
-      (Max{snd p + (\<Sum>p\<in>P. snd p) |P. ?S ?ps P})"
-      by(auto simp add:add_Max_commute fin_aux preSep_ne intro!:arg_cong[where f=Max])
+      using Cons IH le dist dist' by simp
+    also have "snd p + Max (?M ?ps) =
+      Max {snd p + (\<Sum>p\<in>P. snd p) | P. ?S ?ps P}"
+      by (auto simp add:add_Max_commute fin_aux preSep_ne intro!: arg_cong [where f=Max])
     also have "{snd p + (\<Sum>p\<in>P. snd p) |P. ?S ?ps P} =
       {setsum snd (insert p P) |P. ?S ?ps P}"
       using dist Cons
