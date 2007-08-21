@@ -1,4 +1,4 @@
-(*  ID:         $Id: GeneratorProps.thy,v 1.4 2007-08-20 16:16:09 fhaftmann Exp $
+(*  ID:         $Id: GeneratorProps.thy,v 1.5 2007-08-21 11:31:51 fhaftmann Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -262,10 +262,6 @@ done
 
 lemma preSep_ne: "\<exists>P \<subseteq> M. preSeparated g (fst ` P)"
 by(unfold preSeparated_def separated\<^isub>2_def separated\<^isub>3_def) blast
-
-(*FIXME move to HOL*)
-instance nat :: linordered_ab_semigroup_add
-by intro_classes
 
 lemma ExcessNotAtRec_conv_Max:
 assumes mgp: "minGraphProps g"
