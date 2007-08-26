@@ -24,7 +24,7 @@
 <p> </p>
 
 <!-- begin entry data: -->
-<h1><!-- Title: -->Exponents 3 and 4 of Fermat's Last Theorem
+<h1><!-- Title: -->Fermat's Last Theorem for Exponents 3 and 4
 and the Parametrisation of Pythagorean Triples</h1>
 <p> </p>
 
@@ -32,7 +32,7 @@ and the Parametrisation of Pythagorean Triples</h1>
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
     <td class="data" width="80%">
-<!-- Title: -->Exponents 3 and 4 of Fermat's Last Theorem
+<!-- Title: -->Fermat's Last Theorem for Exponents 3 and 4
 and the Parametrisation of Pythagorean Triples
     </td></tr>
 		
@@ -51,8 +51,8 @@ href="http://www.roelofoosterhuis.nl/">Roelof Oosterhuis</a>
 <!-- Abstract: -->	
 This document presents the mechanised proofs of
 <ul>
-<li>exponents 3 and 4 of Fermat's Last Theorem;</li>
-<li>the parametrisation of Pythagorean Triples</li>
+<li>Fermat's Last Theorem for exponents 3 and 4 and</li>
+<li>the parametrisation of Pythagorean Triples.</li>
 </ul>
    </td></tr>
 
@@ -101,6 +101,6 @@ This document presents the mechanised proofs of
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-08-26 21:24:52 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-08-26 21:34:27 $, $Revision: 1.1 
 $</div></body>
 </html>
