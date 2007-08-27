@@ -6,7 +6,7 @@
 header {* Sums of two squares *}
 
 theory TwoSquares
-  imports "../Fermat3_4/IntNatAux" "../Fermat3_4/InfDesc"
+  imports "../Fermat3_4/IntNatAux"
   "~~/src/HOL/NumberTheory/Euler"
 begin
 

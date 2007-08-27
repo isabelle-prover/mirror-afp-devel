@@ -34,7 +34,7 @@ text {* Shows there exists no solution $v^3+w^3 = x^3$ with $vwx\ne 0$ and $\gcd
 
 lemma no_rewritten_fermat3: 
   "\<not> (\<exists> v w. v^3+w^3 = x^3 \<and> v*w*x \<noteq> 0 \<and> x \<in> zEven \<and> zgcd(v,w)=1)" (is "?Q x")
-proof (rule_tac x="x" and V="\<lambda>x. nat\<bar>x^3\<bar>" in val_infinite_descent)
+proof (rule_tac x="x" and V="\<lambda>x. nat\<bar>x^3\<bar>" in infinite_descent_measure)
   fix x
   assume "nat\<bar>x^3\<bar> = 0" hence "x^3 = 0" by arith
   hence "x=0" by auto

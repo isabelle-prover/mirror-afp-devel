@@ -8,7 +8,7 @@ header {* The quadratic form $x^2 + Ny^2$ *}
 theory QuadForm
   imports 
   "~~/src/HOL/NumberTheory/Quadratic_Reciprocity" 
-  IntNatAux InfDesc
+  IntNatAux
 begin
 
 text {* Shows some properties of the quadratic form $x^2+Ny^2$, such as how to multiply and divide them. The second part focuses on the case $N=3$ and is used in the proof of the case $n=3$ of Fermat's last theorem. The last part -- not used for FLT3 -- shows which primes can be written as $x^2 + 3y^2$. *}
@@ -954,7 +954,7 @@ lemma qf3_oddprimedivisor:
 proof -
   have lem: "\<forall>a b. (zprime P \<and> P \<in> zOdd \<and> zgcd(a,b)=1 \<and> P dvd (a^2+3*b^2)) 
     \<longrightarrow> is_qfN P 3" (is "?B P")
-  proof (rule_tac x="P" and V="\<lambda>P. nat\<bar>P\<bar>" in val_infinite_descent)
+  proof (rule_tac x="P" and V="\<lambda>P. nat\<bar>P\<bar>" in infinite_descent_measure)
     fix x
     assume "nat\<bar>x\<bar> = 0"
     hence "x = 0" by arith

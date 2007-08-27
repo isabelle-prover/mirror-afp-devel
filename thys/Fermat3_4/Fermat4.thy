@@ -6,7 +6,7 @@
 header {* Pythagorean triples and Fermat's last theorem, case $n=4$ *}
 
 theory Fermat4
-  imports InfDesc IntNatAux Parity
+  imports IntNatAux Parity
 begin
 
 text {* Proof of Fermat's last theorem for the case $n=4$: $$\forall x,y,z:~x^4 + y^4 = z^4 \Longrightarrow xyz=0.$$ *}
@@ -493,7 +493,7 @@ lemma no_rewritten_fermat4:
   fixes c::int
   shows "\<not> (\<exists> a b. (a^4 + b^4 = c^2 \<and> a*b*c \<noteq> 0 \<and> a \<in> zOdd \<and> zgcd(a,b)=1))" 
   (is "?Q c")
-proof (rule_tac x="c" and V = "\<lambda>c. nat(c^2)" in val_infinite_descent)
+proof (rule_tac x="c" and V = "\<lambda>c. nat(c^2)" in infinite_descent_measure)
   fix x
   assume x2zero: "nat(x^2)=0"
   have "x^2 \<ge> 0" by (rule zero_le_power2)
