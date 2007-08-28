@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.17 2007-07-19 19:50:45 fhaftmann Exp $
+    ID:          $Id: Execute.thy,v 1.18 2007-08-28 16:30:31 stefanberghofer Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -767,14 +767,14 @@ contains
 V = "''V''"
 mult = "''mult''"
 
-ML {* local open NoProg in val Val (Intg 5) = fst (Seq.hd test1) end *}
-ML {* local open NoProg in val Val (Intg 11) = fst (Seq.hd test2) end *}
-ML {* local open NoProg in val Val (Intg 83) = fst (Seq.hd test3) end *}
+ML {* local open NoProg in val Val (Intg 5) = fst (DSeq.hd test1) end *}
+ML {* local open NoProg in val Val (Intg 11) = fst (DSeq.hd test2) end *}
+ML {* local open NoProg in val Val (Intg 83) = fst (DSeq.hd test3) end *}
 ML {* local open NoProg in val Some (Intg 6) = 
-      let val (_,(h,l)) = Seq.hd test4 in l V end end *}
+      let val (_,(h,l)) = DSeq.hd test4 in l V end end *}
 ML {* local open NoProg in val Some (Intg 12) = 
-      let val (_,(h,l)) = Seq.hd testWhile in l mult end end *}
-ML {* local open NoProg in val Val (Intg 30) = fst (Seq.hd testIf) end *}
+      let val (_,(h,l)) = DSeq.hd testWhile in l mult end end *}
+ML {* local open NoProg in val Val (Intg 30) = fst (DSeq.hd testIf) end *}
 
 
   (* progOverrider examples *)
@@ -859,33 +859,33 @@ Top = "''Top''"
 
 
 ML {* local open ProgOverrider in val Val(Ref(0,[Bottom,Left])) = 
-      fst (Seq.hd dynCastSide) end *}
+      fst (DSeq.hd dynCastSide) end *}
 ML {* local open ProgOverrider in val Val(Ref(0,[Right])) = 
-      fst (Seq.hd dynCastViaSh) end *}
-ML {* local open ProgOverrider in val Val(Intg 42) = fst (Seq.hd block) end *}
-ML {* local open ProgOverrider in val Val(Intg 8)  = fst (Seq.hd staticCall) end *}
-ML {* local open ProgOverrider in val Val(Intg 12) = fst (Seq.hd call) end *}
+      fst (DSeq.hd dynCastViaSh) end *}
+ML {* local open ProgOverrider in val Val(Intg 42) = fst (DSeq.hd block) end *}
+ML {* local open ProgOverrider in val Val(Intg 8)  = fst (DSeq.hd staticCall) end *}
+ML {* local open ProgOverrider in val Val(Intg 12) = fst (DSeq.hd call) end *}
 ML {* local open ProgOverrider in val Val(Ref(1,[Left,Top])) = 
-      fst (Seq.hd callClass) end *}
-ML {* local open ProgOverrider in val Val(Intg 42) = fst (Seq.hd fieldAss) end *}
+      fst (DSeq.hd callClass) end *}
+ML {* local open ProgOverrider in val Val(Intg 42) = fst (DSeq.hd fieldAss) end *}
 
 
 (* Typing rules *)
-ML {* local open ProgOverrider in val Class Bottom = Seq.hd typeNew end *}
-ML {* local open ProgOverrider in val Class Left   = Seq.hd typeDynCast end *}
-ML {* local open ProgOverrider in val Class Left   = Seq.hd typeStaticCast end *}
-ML {* local open ProgOverrider in val Integer      = Seq.hd typeVal end *}
-ML {* local open ProgOverrider in val Integer      = Seq.hd typeVar end *}
-ML {* local open ProgOverrider in val Boolean      = Seq.hd typeBinOp end *}
-ML {* local open ProgOverrider in val Class Top    = Seq.hd typeLAss end *}
-ML {* local open ProgOverrider in val Integer      = Seq.hd typeFAcc end *}
-ML {* local open ProgOverrider in val Integer      = Seq.hd typeFAss end *}
-ML {* local open ProgOverrider in val Integer      = Seq.hd typeStaticCall end *}
-ML {* local open ProgOverrider in val Class Top    = Seq.hd typeCall end *}
-ML {* local open ProgOverrider in val Class Top    = Seq.hd typeBlock end *}
-ML {* local open ProgOverrider in val Integer      = Seq.hd typeCond end *}
-ML {* local open ProgOverrider in val Void         = Seq.hd typeThrow end *}
-ML {* local open ProgOverrider in val Integer      = Seq.hd typeBig end *}
+ML {* local open ProgOverrider in val Class Bottom = DSeq.hd typeNew end *}
+ML {* local open ProgOverrider in val Class Left   = DSeq.hd typeDynCast end *}
+ML {* local open ProgOverrider in val Class Left   = DSeq.hd typeStaticCast end *}
+ML {* local open ProgOverrider in val Integer      = DSeq.hd typeVal end *}
+ML {* local open ProgOverrider in val Integer      = DSeq.hd typeVar end *}
+ML {* local open ProgOverrider in val Boolean      = DSeq.hd typeBinOp end *}
+ML {* local open ProgOverrider in val Class Top    = DSeq.hd typeLAss end *}
+ML {* local open ProgOverrider in val Integer      = DSeq.hd typeFAcc end *}
+ML {* local open ProgOverrider in val Integer      = DSeq.hd typeFAss end *}
+ML {* local open ProgOverrider in val Integer      = DSeq.hd typeStaticCall end *}
+ML {* local open ProgOverrider in val Class Top    = DSeq.hd typeCall end *}
+ML {* local open ProgOverrider in val Class Top    = DSeq.hd typeBlock end *}
+ML {* local open ProgOverrider in val Integer      = DSeq.hd typeCond end *}
+ML {* local open ProgOverrider in val Void         = DSeq.hd typeThrow end *}
+ML {* local open ProgOverrider in val Integer      = DSeq.hd typeBig end *}
 
 
 
@@ -953,16 +953,16 @@ TopRep = "''TopRep''"
 
 
 ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left])) = 
-      fst (Seq.hd cast1) end *}
-ML {* local open ProgDiamond in val Val(Ref(0,[TopSh])) = fst (Seq.hd cast2) end *}
+      fst (DSeq.hd cast1) end *}
+ML {* local open ProgDiamond in val Val(Ref(0,[TopSh])) = fst (DSeq.hd cast2) end *}
 (* ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left,TopRep])) =
-       if Seq.hd typeCast3 = Class TopRep then fst (Seq.hd cast3) else error "" end *}
+       if DSeq.hd typeCast3 = Class TopRep then fst (DSeq.hd cast3) else error "" end *}
  error! cast3 not typeable! *)
-ML {* local open ProgDiamond in val Val(Intg 17) = fst (Seq.hd fieldAss) end *}
-ML {* local open ProgDiamond in val Val Null = fst (Seq.hd dynCastNull) end *}
-ML {* local open ProgDiamond in val Val Null = fst (Seq.hd dynCastFail) end *}
+ML {* local open ProgDiamond in val Val(Intg 17) = fst (DSeq.hd fieldAss) end *}
+ML {* local open ProgDiamond in val Val Null = fst (DSeq.hd dynCastNull) end *}
+ML {* local open ProgDiamond in val Val Null = fst (DSeq.hd dynCastFail) end *}
 ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left])) = 
-      fst (Seq.hd dynCastSide) end *}
+      fst (DSeq.hd dynCastSide) end *}
 
 
 
@@ -997,6 +997,6 @@ contains
                                                                        \<Rightarrow> \<langle>_,_\<rangle>"
 
 ML {* local open Fail in val Val(Intg 42) = 
-      fst (Seq.hd callFailGplusplus) end *}
+      fst (DSeq.hd callFailGplusplus) end *}
 
 end

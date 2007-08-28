@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/execute_Bigstep.thy
-    ID:         $Id: execute_Bigstep.thy,v 1.5 2007-07-19 19:50:53 fhaftmann Exp $
+    ID:         $Id: execute_Bigstep.thy,v 1.6 2007-08-28 16:29:19 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   2004 Technische Universitaet Muenchen
 *)
@@ -144,17 +144,17 @@ contains
  N = "''N''"
  L = "''L''"
 
-ML {* let open Bigstep1 in if fst (Seq.hd test1) = Val (Intg 5) then () else error "" end *}
-ML {* let open Bigstep1 in if fst (Seq.hd test2) = Val (Intg 11) then () else error "" end *}
-ML {* let open Bigstep1 in if fst (Seq.hd test3) = Val (Intg 83) then () else error "" end *}
+ML {* let open Bigstep1 in if fst (DSeq.hd test1) = Val (Intg 5) then () else error "" end *}
+ML {* let open Bigstep1 in if fst (DSeq.hd test2) = Val (Intg 11) then () else error "" end *}
+ML {* let open Bigstep1 in if fst (DSeq.hd test3) = Val (Intg 83) then () else error "" end *}
 ML {*
 let open Bigstep1 in
-  if (let val (_,(h,l)) = Seq.hd test4 in l V end) = Some (Intg 6) then () else error ""
+  if (let val (_,(h,l)) = DSeq.hd test4 in l V end) = Some (Intg 6) then () else error ""
 end
 *}
 ML {*
 let open Bigstep1 in
-  if (let val (_,(h,l)) = Seq.hd test5
+  if (let val (_,(h,l)) = DSeq.hd test5
               val Some(c,fs) = h 1
               val Some(obj,_) = h 0
           in (C=c,fs(F,C),[obj ,c])end)=
@@ -162,7 +162,7 @@ let open Bigstep1 in
     then () else error ""
 end
 *}
-ML {* let open Bigstep1 in if fst (Seq.hd test6) = Val (Intg 160) then () else error "" end *}
+ML {* let open Bigstep1 in if fst (DSeq.hd test6) = Val (Intg 160) then () else error "" end *}
 
 code_module Bigstep2
 imports Bigstep1
@@ -171,7 +171,7 @@ contains
 
 ML {*
 let open Bigstep1 Bigstep2 in
-  if (let val (_,(h,_)) = Seq.hd test7
+  if (let val (_,(h,_)) = DSeq.hd test7
               val Some(_,fs1) = h 0
               val Some(_,fs2) = h 1
               val Some(_,fs3) = h 2
@@ -195,7 +195,7 @@ contains
 
 ML {*
 let open Bigstep1 Bigstep3 in
-  if (let val (_,(h,l)) = Seq.hd test8
+  if (let val (_,(h,l)) = DSeq.hd test8
               val Some(_,fs1) = h 0
               val Some(_,fs2) = h 1
           in [(fs1(i,A),fs1(t,A)), (fs2(i,A),fs2(t,A))] end)=
