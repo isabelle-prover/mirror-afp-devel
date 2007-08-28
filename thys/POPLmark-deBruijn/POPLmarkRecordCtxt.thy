@@ -1,5 +1,5 @@
 (*  Title:      POPLmark/POPLmarkRecordCtxt.thy
-    ID:         $Id: POPLmarkRecordCtxt.thy,v 1.2 2007-08-18 13:57:45 makarius Exp $
+    ID:         $Id: POPLmarkRecordCtxt.thy,v 1.3 2007-08-28 15:58:52 stefanberghofer Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -76,56 +76,56 @@ lemma context_typing: -- {* A.18 *}
      (\<And>T\<^isub>0. \<Gamma> \<turnstile> t : T\<^isub>0 \<Longrightarrow> \<Gamma> \<turnstile> t' : T\<^isub>0) \<Longrightarrow> \<Gamma> \<turnstile> E\<^isub>r t' [:] fTs"
 proof (induct arbitrary: E t t' and E\<^isub>r t t' set: typing typings)
   case (T_Var \<Gamma> i U T E t t')
-  have "E \<in> ctxt" .
-  hence "E = (\<lambda>t. t)" using T_Var by cases simp_all
+  from `E \<in> ctxt`
+  have "E = (\<lambda>t. t)" using T_Var by cases simp_all
   with T_Var show ?case by (blast intro: typing_typings.intros)
 next
   case (T_Abs T\<^isub>1 T\<^isub>2 \<Gamma> t\<^isub>2 E t t')
-  have "E \<in> ctxt" .
-  hence "E = (\<lambda>t. t)" using T_Abs by cases simp_all
+  from `E \<in> ctxt`
+  have "E = (\<lambda>t. t)" using T_Abs by cases simp_all
   with T_Abs show ?case by (blast intro: typing_typings.intros)
 next
   case (T_App \<Gamma> t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 t\<^isub>2 E t t')
-  have "E \<in> ctxt" .
-  thus ?case using T_App
+  from `E \<in> ctxt`
+  show ?case using T_App
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
   case (T_TAbs T\<^isub>1 \<Gamma> t\<^isub>2 T\<^isub>2 E t t')
-  have "E \<in> ctxt" .
-  hence "E = (\<lambda>t. t)" using T_TAbs by cases simp_all
+  from `E \<in> ctxt`
+  have "E = (\<lambda>t. t)" using T_TAbs by cases simp_all
   with T_TAbs show ?case by (blast intro: typing_typings.intros)
 next
   case (T_TApp \<Gamma> t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 T\<^isub>2 E t t')
-  have "E \<in> ctxt" .
-  thus ?case using T_TApp
+  from `E \<in> ctxt`
+  show ?case using T_TApp
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
   case (T_Sub \<Gamma> t S T E ta t')
   thus ?case by (blast intro: typing_typings.intros)
 next
   case (T_Let \<Gamma> t\<^isub>1 T\<^isub>1 p \<Delta> t\<^isub>2 T\<^isub>2 E t t')
-  have "E \<in> ctxt" .
-  thus ?case using T_Let
+  from `E \<in> ctxt`
+  show ?case using T_Let
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
   case (T_Rcd \<Gamma> fs fTs E t t')
-  have "E \<in> ctxt" .
-  thus ?case using T_Rcd
+  from `E \<in> ctxt`
+  show ?case using T_Rcd
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
   case (T_Proj \<Gamma> t fTs l T E ta t')
-  have "E \<in> ctxt" .
-  thus ?case using T_Proj
+  from `E \<in> ctxt`
+  show ?case using T_Proj
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
   case (T_Nil \<Gamma> E t t')
-  have "E \<in> rctxt" .
-  thus ?case using T_Nil
+  from `E \<in> rctxt`
+  show ?case using T_Nil
     by cases simp_all
 next
   case (T_Cons \<Gamma> t T fs fTs l E ta t')
-  have "E \<in> rctxt" .
-  thus ?case using T_Cons
+  from `E \<in> rctxt`
+  show ?case using T_Cons
     by cases (blast intro: typing_typings.intros rctxt_labels)+
 qed
 
@@ -146,8 +146,8 @@ proof (induct \<Gamma> t \<equiv> "(\<lambda>:T\<^isub>1\<^isub>1. t\<^isub>1\<^
     where T\<^isub>1\<^isub>1: "\<Gamma> \<turnstile> T\<^isub>1\<^isub>1 <: T\<^isub>1\<^isub>1'"
     and t\<^isub>1\<^isub>2: "VarB T\<^isub>1\<^isub>1' \<Colon> \<Gamma> \<turnstile> t\<^isub>1\<^isub>2 : S'"
     and S': "\<Gamma> \<turnstile> S'[0 \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau> <: T\<^isub>1\<^isub>2" by (rule Abs_type' [simplified]) blast
-  have "\<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>1\<^isub>1" .
-  hence "\<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>1\<^isub>1'" using T\<^isub>1\<^isub>1 by (rule T_Sub)
+  from `\<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>1\<^isub>1`
+  have "\<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>1\<^isub>1'" using T\<^isub>1\<^isub>1 by (rule T_Sub)
   with t\<^isub>1\<^isub>2 have "\<Gamma> \<turnstile> t\<^isub>1\<^isub>2[0 \<mapsto> t\<^isub>2] : S'[0 \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>"
     by (rule subst_type [where \<Delta>="[]", simplified])
   hence "\<Gamma> \<turnstile> t\<^isub>1\<^isub>2[0 \<mapsto> t\<^isub>2] : T\<^isub>1\<^isub>2" using S' by (rule T_Sub)
@@ -291,8 +291,8 @@ next
     thus ?thesis by (iprover intro: ctxt_rctxt.intros)
   qed
 next
-  case T_Sub
-  show ?case by (rule T_Sub)
+  case (T_Sub \<Gamma> t S T)
+  from `\<Gamma> = []` show ?case by (rule T_Sub)
 next
   case (T_Let \<Gamma> t\<^isub>1 T\<^isub>1 p \<Delta> t\<^isub>2 T\<^isub>2)
   hence "t\<^isub>1 \<in> value \<or> (\<exists>E t\<^isub>0 t\<^isub>0'. E \<in> ctxt \<and> t\<^isub>1 = E t\<^isub>0 \<and> t\<^isub>0 \<longmapsto>\<^sub>c t\<^isub>0')" by simp
