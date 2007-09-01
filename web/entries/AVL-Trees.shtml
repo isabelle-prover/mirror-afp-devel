@@ -58,6 +58,10 @@ and Cornelia Pusch
   If you are interested in developing this further, please contact 
   <tt>gerwin.klein@nicta.com.au</tt>.
    </td></tr>
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.html"-->
 </tbody>
 </table>
 
@@ -99,6 +103,6 @@ and Cornelia Pusch
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-08-07 13:08:10 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-09-01 03:33:12 $, $Revision: 1.1 
 $</div></body>
 </html>
