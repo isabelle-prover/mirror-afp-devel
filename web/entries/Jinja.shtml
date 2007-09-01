@@ -59,6 +59,10 @@ on providing a <em>unified</em> model of the source language, the virtual
 machine and the compiler. The whole development has been carried out
 in the theorem prover Isabelle/HOL.
    </td></tr>
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
 </tbody>
 </table>
 
@@ -95,6 +99,6 @@ in the theorem prover Isabelle/HOL.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.5 $</div>
+<div align="right" class="date">$Date: 2007-09-01 04:02:45 $, $Revision: 1.6 $</div>
 </body>
 </html>

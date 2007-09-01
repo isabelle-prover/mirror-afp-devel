@@ -65,6 +65,9 @@ a standard signature algorithm.
 </tr> 
 -->
 
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
 </tbody>
 </table>
 
@@ -102,6 +105,6 @@ a standard signature algorithm.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-09-01 04:02:45 $, $Revision: 1.1 
 $</div></body>
 </html>

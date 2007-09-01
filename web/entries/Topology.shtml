@@ -41,6 +41,10 @@
 
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"><!-- Abstract: -->This entry contains two theories. The first, <tt><i>Topology</i></tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <i><kbd>LList_Topology</kbd></i>. It develops the topology of lazy lists.</td></tr>
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
 </tbody>
 </table>
 
@@ -78,6 +82,6 @@
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-09-01 04:02:45 $, $Revision: 1.1 
 $</div></body>
 </html>

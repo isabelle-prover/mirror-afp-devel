@@ -63,6 +63,9 @@ href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
     <a href="../download.shtml">development version</a> of AFP.</td>
 </tr> 
 
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
 </tbody>
 </table>
 
@@ -104,6 +107,6 @@ href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-09-01 04:02:45 $, $Revision: 1.1 
 $</div></body>
 </html>

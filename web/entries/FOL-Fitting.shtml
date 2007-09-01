@@ -64,6 +64,9 @@ L&ouml;wenheim-Skolem theorem.
 </tr> 
 -->
 
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
 </tbody>
 </table>
 
@@ -101,6 +104,6 @@ L&ouml;wenheim-Skolem theorem.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-08-14 19:53:02 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-09-01 04:02:44 $, $Revision: 1.1 
 $</div></body>
 </html>

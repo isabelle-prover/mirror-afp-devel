@@ -43,6 +43,10 @@
   <td class="abstract"><!-- Abstract: -->The correctness is shown of binary search tree operations 
   (lookup, insert and remove) implementing a set. Two versions are given, for both structured and
   linear (tactic-style) proofs. An implementation of integer-indexed maps is also verified.</td></tr>
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
 </tbody>
 </table>
 
@@ -80,6 +84,6 @@
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-09-01 04:02:44 $, $Revision: 1.1 
 $</div></body>
 </html>

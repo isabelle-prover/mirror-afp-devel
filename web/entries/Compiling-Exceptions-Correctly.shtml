@@ -52,6 +52,10 @@ href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
   article of the same name by
   <a href="http://www.cs.nott.ac.uk/~gmh/">Hutton</a> and Wright.
    </td></tr>
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
 </tbody>
 </table>
 
@@ -89,6 +93,6 @@ href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-09-01 04:02:44 $, $Revision: 1.1 
 $</div></body>
 </html>

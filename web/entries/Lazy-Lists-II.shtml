@@ -50,6 +50,10 @@ constants take and drop and the prefix order of llists. Finally, the
 notions of safety and liveness in the sense of Alpern and Schneider (1985)
 are defined.</td>
 									</tr>
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
 								</tbody>
 							</table>
 							<p>&nbsp;</p>
@@ -85,6 +89,6 @@ are defined.</td>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-09-01 04:02:45 $, $Revision: 1.1 
 $</div></body>
 </html>

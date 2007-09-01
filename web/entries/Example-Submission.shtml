@@ -44,6 +44,10 @@ This is an example submission to the Archive of Formal Proof. It shows
 submission requirements and explains the structure of a simple typical
 submission.
    </td></tr>
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
 </tbody>
 </table>
 
@@ -84,6 +88,6 @@ submission.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2006-05-26 14:18:59 $, $Revision: 1.7 $</div>
+<div align="right" class="date">$Date: 2007-09-01 04:02:44 $, $Revision: 1.8 $</div>
 </body>
 </html>
