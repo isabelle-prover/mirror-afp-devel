@@ -61,7 +61,7 @@ and Cornelia Pusch
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
-<!---INCLUDE- file="devel-warning.html"-->
+<!---INCLUDE- file="devel-warning.shtml"-->
 </tbody>
 </table>
 
@@ -103,6 +103,6 @@ and Cornelia Pusch
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-09-01 03:33:12 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-09-01 03:54:35 $, $Revision: 1.1 
 $</div></body>
 </html>

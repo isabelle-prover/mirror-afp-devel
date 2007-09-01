@@ -1,0 +1,11 @@
+<!-- afp development version  -->
+
+	<tr><td class="datahead" valign="top">Status: [<!--#echo
+	var="status"-->]</td> <td class="data"> This is the development
+	version of this entry generated for <a
+	href="http://isabelle.in.tum.de/devel/"><!--#echo var="version"
+	--></a>. The development version might change over time and is only
+	permanently archived at Isabelle release points. It is provided as a
+	preview of the next  upcoming release. Please refer to release
+	versions only in citations. If the status shows [FAIL], the links below
+  will point to the last working version if any.</td></tr>
