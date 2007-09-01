@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.18 2007-02-19 15:20:20 lsf37 Exp $
+# $Id: regression,v 1.19 2007-09-01 04:35:06 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -79,6 +79,10 @@ if [ "$1" == "-" ]; then
   LOG=$LOG-devel-$DATE.log
   SNAPSHOT=1;
   REPORT=$REPORT-devel
+
+  BROWSER_INFO=`isatool getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
+  [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
+
 else
   TAG="-r $1"
   AFP_VER="release ($1)"
@@ -173,13 +177,65 @@ if [ "$SNAPSHOT" == "1" ]; then
     EXPORT=afp-devel
     STATUS=entry-status.txt
     WEB=~/html-data/afp
-    cp $REPORT $WEB/$STATUS
-    cvs -Q export -D now -d $EXPORT thys
+    AFPRELEASE=$WEB/release
+    mkdir -p $AFPRELEASE
+    cp $REPORT $AFPRELASE/$STATUS
+    cvs -Q export -D now -d $EXPORT thys web
+    
+    # update status report
     cp $REPORT $EXPORT/$STATUS
     echo >> $EXPORT/$STATUS
     echo `date` >> $EXPORT/$STATUS
-    tar cf $EXPORT.tar $EXPORT
+
+    # make devel tar files
+    tar cf $EXPORT.tar $EXPORT/thys
     gzip --best -f $EXPORT.tar
-    mv $EXPORT.tar.gz $WEB
+    mv $EXPORT.tar.gz $AFPRELEASE
+
+    cd $EXPORT/thys
+    for DIR in `ls -d *`; do
+        if [ -d $DIR -a "$DIR" != "CVS" ]; then
+            TF=afp-$DIR-devel.tar
+            tar -cf $TF $DIR
+            gzip --best -f $TF
+            mv $TF.gz $AFPRELEASE
+        fi
+    done
+    cd ../..    
+
+    # prepare development entries
+    DEVENTRIES=$WEB/devel-entries
+    mkdir -p $DEVENTRIES
+    cp -r $EXPORT/web/entries/* $DEVENTRIES
+    perl -pi -e "s:browser_info/current/:browser_info/devel/:g" $DEVENTRIES/*.shtml
+    perl -pi -e "s:current.tar.gz:devel.tar.gz:g" $DEVENTRIES/*.shtml
+    VERSION=$(env LC_ALL=C date "+%d-%b-%Y")
+    perl -pi -e "s:-VERSION-:Isabelle-$VERSION:g" $DEVENTRIES/*.shtml
+    perl -pi -e "s:-INCLUDE-:#include:g" $DEVENTRIES/*.shtml
+    # terribly inefficient. should write a perl script that does this all at once.
+    for F in $DEVENTRIES/*.shtml; do
+        BASE=$(basename $F)
+        ENTRY=${BASE%.shtml}
+        LINE=$(grep $ENTRY report.txt) 
+        STATUS=${LINE#"$ENTRY: "}
+        if [ "$STATUS" != "" ]; then
+            perl -pi -e "s:-STATUS-:$STATUS:g" $F
+        fi
+    done
+    cp $EXPORT/web/index.shtml $WEB/devel.shtml
+    perl -pi -e "s:entries/:devel-entries/:g" $WEB/devel.shtml
+      
+    # prepare generated html
+    BROWSER_DEVEL=$WEB/browser_info/devel
+    mkdir -p $BROWSER_DEVEL
+    cp -r $BROWSER_INFO/* $BROWSER_DEVEL
+
+    # fix permissions
+    chmod -R g=u $WEB
+    chmod -R a+r $WEB
+    find $WEB -type d | xargs chmod g+s
+    find $WEB -type d | xargs chmod a+x
+
+    # clean up export dir, leave prepared pages in $WEB
     rm -rf $EXPORT
 fi
