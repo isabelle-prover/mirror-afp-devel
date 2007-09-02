@@ -1,5 +1,5 @@
 (*  Title:       An example submission to the Archive of Formal Proof
-    ID:          $Id: Submission.thy,v 1.7 2006-11-13 15:20:28 lsf37 Exp $
+    ID:          $Id: Submission.thy,v 1.8 2007-09-02 14:22:19 lsf37 Exp $
     Author:      Gerwin Klein <kleing at cse.unsw.edu.au>, 2004
     Maintainer:  Gerwin Klein <kleing at cse.unsw.edu.au>
 *)
@@ -117,6 +117,15 @@ the article MiniML, the way to import it is:
 \begin{verbatim}
 theory MyTheory
   imports "../MiniML/W"
+begin
+\end{verbatim}
+
+To build on a theory that is in the Isabelle distribtion, but not in
+one of the standard images like HOL, use something like the following:
+
+\begin{verbatim}
+theory MyTheory
+  imports "~~/src/HOL/NumberTheory"
 begin
 \end{verbatim}
 *}
