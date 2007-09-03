@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.20 2007-09-02 06:44:41 lsf37 Exp $
+# $Id: regression,v 1.21 2007-09-03 12:37:57 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -179,7 +179,7 @@ if [ "$SNAPSHOT" == "1" ]; then
     WEB=~/html-data/afp
     AFPRELEASE=$WEB/release
     mkdir -p $AFPRELEASE
-    cp $REPORT $AFPRELASE/$STATUS
+    cp $REPORT $AFPRELEASE/$STATUS
     cvs -Q export -D now -d $EXPORT thys web
     
     # update status report
@@ -212,11 +212,11 @@ if [ "$SNAPSHOT" == "1" ]; then
     VERSION=$(env LC_ALL=C date "+%d-%b-%Y")
     perl -pi -e "s:-VERSION-:Isabelle-$VERSION:g" $DEVENTRIES/*.shtml
     perl -pi -e "s:-INCLUDE-:#include:g" $DEVENTRIES/*.shtml
-    # terribly inefficient. should write a perl script that does this all at once.
+    # inefficient. should write a perl script that does this all at once.
     for F in $DEVENTRIES/*.shtml; do
         BASE=$(basename $F)
         ENTRY=${BASE%.shtml}
-        LINE=$(grep $ENTRY report.txt) 
+        LINE=$(grep $ENTRY $REPORT) 
         STATUS=${LINE#"$ENTRY: "}
         if [ "$STATUS" != "" ]; then
             perl -pi -e "s:-STATUS-:$STATUS:g" $F
