@@ -490,19 +490,15 @@ qed
 text {* Show that no solution exists, by infinite descent of $c^2$. *}
 
 lemma no_rewritten_fermat4:
-  fixes c::int
-  shows "\<not> (\<exists> a b. (a^4 + b^4 = c^2 \<and> a*b*c \<noteq> 0 \<and> a \<in> zOdd \<and> zgcd(a,b)=1))" 
-  (is "?Q c")
-proof (rule_tac x="c" and V = "\<lambda>c. nat(c^2)" in infinite_descent_measure)
-  fix x
-  assume x2zero: "nat(x^2)=0"
+  "\<not> (\<exists> a b. (a^4 + b^4 = c^2 \<and> a*b*c \<noteq> 0 \<and> a \<in> zOdd \<and> zgcd(a,b)=1))"
+proof (induct c rule: infinite_descent0_measure[where V="\<lambda>c. nat(c^2)"])
+  case (0 x)
   have "x^2 \<ge> 0" by (rule zero_le_power2)
-  with x2zero have "int(nat(x^2)) = 0" by auto
+  with 0 have "int(nat(x^2)) = 0" by auto
   hence "x = 0" by auto
-  thus "?Q x" by auto
+  thus ?case by auto
 next
-  fix x
-  assume x2pos: "0<nat(x^2)" and "\<not> ?Q x"
+  case (smaller x)
   then obtain a b where "a^4 + b^4 = x^2" and "a*b*x \<noteq> 0" 
     and "a \<in> zOdd" and "zgcd(a,b)=1" by auto
   hence "\<exists> p q r. (p^4+q^4=r^2 \<and> p*q*r \<noteq> 0 \<and> p \<in> zOdd 
@@ -513,7 +509,7 @@ next
   hence "int(nat(r^2)) = r^2 \<and> int(nat(x^2)) = x^2" by auto
   with pqr have "int(nat(r^2)) < int(nat(x^2))" by auto
   hence "nat(r^2) < nat(x^2)" by (simp only: zless_int)
-  with pqr show "\<exists> y. nat(y^2) < nat(x^2) \<and> \<not> ?Q y" by auto
+  with pqr show ?case by auto
 qed
 
 text {* The theorem. Puts equation in requested shape. *}

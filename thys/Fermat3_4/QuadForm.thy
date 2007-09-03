@@ -951,198 +951,190 @@ qed
 lemma qf3_oddprimedivisor: 
   "\<lbrakk> zprime P; P \<in> zOdd; zgcd(a,b)=1; P dvd (a^2+3*b^2) \<rbrakk> 
   \<Longrightarrow> is_qfN P 3"
-proof -
-  have lem: "\<forall>a b. (zprime P \<and> P \<in> zOdd \<and> zgcd(a,b)=1 \<and> P dvd (a^2+3*b^2)) 
-    \<longrightarrow> is_qfN P 3" (is "?B P")
-  proof (rule_tac x="P" and V="\<lambda>P. nat\<bar>P\<bar>" in infinite_descent_measure)
-    fix x
-    assume "nat\<bar>x\<bar> = 0"
-    hence "x = 0" by arith
-    thus "?B x" by (simp add: zprime_def)
-  next
-    fix x
-    assume "nat\<bar>x\<bar> > 0" and "\<not> ?B x"
-    then obtain a b where abx: "zprime x \<and> x \<in> zOdd \<and> zgcd(a,b)=1 
-      \<and> x dvd (a^2+3*b^2) \<and> \<not> is_qfN x 3" by auto
-    then obtain M where M: "a^2+3*b^2 = x*M" by (auto simp add: dvd_def)
-    let ?A = "a^2 + 3*b^2"
-    from abx have x0: "x > 0 \<and> x \<in> zOdd" by (simp add: zprime_def)
-    then obtain m where "2*\<bar>a-m*x\<bar><x" by (auto dest: best_odd_division_abs)
-    then obtain c where cm: "c = a-m*x \<and> 2*\<bar>c\<bar> < x" by auto
-    from x0 obtain n where "2*\<bar>b-n*x\<bar><x" by (auto dest: best_odd_division_abs)
-    then obtain d where dn: "d = b-n*x \<and> 2*\<bar>d\<bar> < x" by auto
-    let ?C = "c^2+3*d^2"
-    have C3: "is_qfN ?C 3" by (unfold is_qfN_def, auto)
-    have C0: "?C > 0"
-    proof -
-      have hlp: "(3::int) \<ge> 1" by simp
-      with C3 have "?C \<ge> 0" by (simp only: qfN_pos)
-      hence "?C = 0 \<or> ?C > 0" by auto
-      moreover 
-      { assume "?C = 0"
-	with hlp have "c=0 \<and> d=0" by (rule qfN_zero)
-	with cm dn have "a = m*x \<and> b = n*x" by simp
-	hence "x dvd a \<and> x dvd b" by simp
-	hence "x dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
-	with abx have False by (auto simp add: zprime_def) }
-      ultimately show ?thesis by blast
-    qed
-    have "x dvd ?C"
-    proof
-      have "?C = \<bar>c\<bar>^2 + 3*\<bar>d\<bar>^2" by (simp only: power2_abs)
-      also with cm dn have "\<dots> = (a-m*x)^2 + 3*(b-n*x)^2" by simp
-      also have "\<dots> = 
-	a^2 - 2*a*(m*x) + (m*x)^2 + 3*(b^2 - 2*b*(n*x) + (n*x)^2)" 
-	by (simp only: zdiff_power2)
-      also with abx M have "\<dots> = 
-	x*M - x*(2*a*m + 3*2*b*n) + x^2*(m^2 + 3*n^2)" 
-	by (simp only: power_mult_distrib zadd_zmult_distrib2 mult_ac, auto)
-      finally show "?C = x*(M - (2*a*m + 3*2*b*n) + x*(m^2 + 3*n^2))" 
-	by (simp add: power2_eq_square zadd_zmult_distrib2 zdiff_zmult_distrib2)
-    qed
-    then obtain y where y: "?C = x*y" by (auto simp add: dvd_def)
-    have yx: "y < x" 
-    proof (rule ccontr)
-      assume "\<not> y < x" hence xy: "x-y \<le> 0" by simp
-      have hlp: "2*\<bar>c\<bar> \<ge> 0 \<and> 2*\<bar>d\<bar> \<ge> 0 \<and> (3::nat) > 0" by simp
-      from y have "4*x*y = 2^2*c^2 + 3*2^2*d^2" by simp
-      hence "4*x*y = (2*\<bar>c\<bar>)^2 + 3*(2*\<bar>d\<bar>)^2" 
-	by (auto simp add: power2_abs power_mult_distrib)
-      with cm dn hlp have "4*x*y < x^2 + 3*(2*\<bar>d\<bar>)^2" 
-        and "(3::int) > 0 \<and> (2*\<bar>d\<bar>)^2 < x^2" 
-	by (auto simp add: power_strict_mono)
-      hence "x*4*y < x^2 + 3*x^2" by (auto)
-      also have "\<dots> = x*4*x" by (simp add: power2_eq_square)
-      finally have contr: "(x-y)*(4*x) > 0" by (auto simp add: zdiff_zmult_distrib2)
-      show False
-      proof (cases)
-	assume "x-y = 0" with contr show False by auto
-      next
-	assume "\<not> x-y =0" with xy have "x-y < 0" by simp
-	moreover from x0 have "4*x > 0" by simp
-	ultimately have "4*x*(x-y) < 4*x*0" by (simp only: zmult_zless_mono2)
-	with contr show False by auto
-      qed
-    qed
-    have y0: "y > 0" 
-    proof (rule ccontr)
-      assume "\<not> y > 0" 
-      hence "y \<le> 0" by simp
-      moreover have "y \<noteq> 0"
-      proof (rule ccontr)
-	assume "\<not> y\<noteq>0" hence "y=0" by simp
-	with y and C0 show False by auto
-      qed
-      ultimately have "y < 0" by simp
-      with x0 have "x*y < x*0" by (simp only: zmult_zless_mono2)
-      with C0 y show False by simp
-    qed
-    let ?g = "zgcd(c,d)"
-    have "c \<noteq> 0 \<or> d \<noteq> 0" 
-    proof (rule ccontr)
-      assume "\<not> (c\<noteq>0 \<or> d\<noteq>0)" hence "c=0 \<and> d=0" by simp
-      with C0 show False by simp
-    qed
-    then obtain e f where ef: "c = ?g*e \<and> d = ?g * f \<and> zgcd(e,f)=1" 
-      by (frule_tac a="c" in make_zrelprime, auto)
-    have g2nonzero: "?g^2 \<noteq> 0"
-    proof (rule ccontr, clarsimp)
-      assume "?g =0" 
-      hence "nat\<bar>c\<bar>=0 \<and> nat\<bar>d\<bar>=0" 
-	by (unfold zgcd_def, auto simp add: gcd_zero)
-      hence "c=0 \<and> d=0" by arith
-      with C0 show False by simp
-    qed    
-    let ?E = "e^2 + 3*f^2"
-    have E3: "is_qfN ?E 3" by (unfold is_qfN_def, auto)
-    have CgE: "?C = ?g^2 * ?E"
-    proof -
-      have "?g^2 * ?E = (?g*e)^2 + 3*(?g*f)^2"
-	by (simp add: zadd_zmult_distrib2 power_mult_distrib)
-      with ef show ?thesis by simp
-    qed
-    hence "?g^2 dvd ?C" by (simp add: dvd_def)
-    with y have g2dvdxy: "?g^2 dvd y*x" by (simp add: mult_ac)
-    moreover have "zgcd(x, ?g^2) = 1"
-    proof -
-      let ?h = "zgcd(?g, x)"
-      have "?h dvd ?g" and "?g dvd c" by auto
-      hence hc: "?h dvd c" by (rule zdvd_trans)
-      have "?h dvd ?g" and "?g dvd d" by auto
-      hence hd: "?h dvd d" by (rule zdvd_trans)
-      have hx: "?h dvd x" by simp
-      hence "?h dvd m*x" by (rule zdvd_zmult)
-      with hc have "?h dvd c+m*x" by (rule zdvd_zadd)
-      with cm have ha: "?h dvd a" by simp
-      from hx have "?h dvd n*x" by (rule zdvd_zmult)
-      with hd have "?h dvd d+n*x" by (rule zdvd_zadd)
-      with dn have hb: "?h dvd b" by simp
-      with ha have "?h dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
-      with abx have "?h dvd 1" by simp
-      hence "?h = 1" by (simp add: zgcd_geq_zero)
-      hence "zgcd(?g^2,x)=1" by (rule zgcd_1_power_left_distrib)
-      thus ?thesis by (simp only: zgcd_commute)
-    qed
-    ultimately have "?g^2 dvd y" by (auto dest: zrelprime_zdvd_zmult)
-    then obtain w where w: "y = ?g^2 * w" by (auto simp add: dvd_def)
-    with CgE y g2nonzero have Ewx: "?E = x*w" by auto
-    have w0: "w>0"
-    proof (rule ccontr)
-      assume "\<not> w>0" hence "w \<le> 0" by auto
-      hence "w=0 \<or> w<0" by auto
-      moreover
-      { assume "w=0" with w y0 have False by auto }
-      moreover
-      { assume wneg: "w<0" 
-	have "?g^2 \<ge> 0" by (rule zero_le_power2)
-	with g2nonzero have "?g^2 > 0" by arith
-	with wneg have "?g^2*w < ?g^2*0" by (simp only: zmult_zless_mono2)
-	with w y0 have False by auto }
-      ultimately show False by blast
-    qed
-    have w_le_y: "w \<le> y"
-    proof (rule ccontr)
-      assume "\<not> w \<le> y"
-      hence wy: "w > y" by simp
-      have "?g^2 = 1 \<or> ?g^2 > 1"
-      proof - 
-	have "?g^2 \<ge> 0" by (rule zero_le_power2)
-	hence "?g^2 =0 \<or> ?g^2 > 0" by auto
-	with g2nonzero show ?thesis by arith
-      qed
-      moreover
-      { assume "?g^2 =1" with w wy have False by simp }
-      moreover
-      { assume g1: "?g^2 >1" 
-	with w0 have "w*1 < w*?g^2" by (auto dest: zmult_zless_mono2)
-	with w have "w < y" by (simp add: zmult_1 mult_ac)
-	with wy have False by auto }
-      ultimately show False by blast
-    qed
-    from Ewx E3 abx w0 have 
-      "zprime x \<and> x \<in> zOdd \<and> w > 0 \<and> is_qfN (x*w) 3 \<and> \<not> is_qfN x 3" by simp
-    then obtain z where z: "zprime z \<and> z \<in> zOdd \<and> z dvd w \<and> \<not> is_qfN z 3"
-      by (frule_tac P="x" in qf3_oddprimedivisor_not, auto)
-    from Ewx have "w dvd ?E" by simp
-    with z have "z dvd ?E" by (auto dest: zdvd_trans)
-    with z ef have "zprime z \<and> z \<in> zOdd \<and> zgcd(e,f)=1 \<and> z dvd ?E \<and> \<not> is_qfN z 3" 
-      by auto
-    moreover have "nat\<bar>z\<bar> < nat\<bar>x\<bar>"
-    proof -
-      have "z \<le> w"
-      proof (rule ccontr)
-	assume "\<not> z \<le> w" hence "w < z" by auto
-	with w0 have "\<not> z dvd w" by (rule zdvd_not_zless)
-	with z show False by simp
-      qed
-      with w_le_y yx have "z < x" by simp
-      with z have "\<bar>z\<bar> < \<bar>x\<bar>" by (simp add: zprime_def)
-      thus ?thesis by auto
-    qed
-    ultimately show "\<exists> z. nat\<bar>z\<bar> < nat\<bar>x\<bar> \<and> \<not> ?B z" by auto
+proof(induct P arbitrary:a b rule:infinite_descent0_measure[where V="\<lambda>P. nat\<bar>P\<bar>"])
+  case (0 x)
+  moreover hence "x = 0" by arith
+  ultimately show ?case by (simp add: zprime_def)
+next
+  case (smaller x)
+  then obtain a b where abx: "zprime x \<and> x \<in> zOdd \<and> zgcd(a,b)=1 
+    \<and> x dvd (a^2+3*b^2) \<and> \<not> is_qfN x 3" by auto
+  then obtain M where M: "a^2+3*b^2 = x*M" by (auto simp add: dvd_def)
+  let ?A = "a^2 + 3*b^2"
+  from abx have x0: "x > 0 \<and> x \<in> zOdd" by (simp add: zprime_def)
+  then obtain m where "2*\<bar>a-m*x\<bar><x" by (auto dest: best_odd_division_abs)
+  then obtain c where cm: "c = a-m*x \<and> 2*\<bar>c\<bar> < x" by auto
+  from x0 obtain n where "2*\<bar>b-n*x\<bar><x" by (auto dest: best_odd_division_abs)
+  then obtain d where dn: "d = b-n*x \<and> 2*\<bar>d\<bar> < x" by auto
+  let ?C = "c^2+3*d^2"
+  have C3: "is_qfN ?C 3" by (unfold is_qfN_def, auto)
+  have C0: "?C > 0"
+  proof -
+    have hlp: "(3::int) \<ge> 1" by simp
+    with C3 have "?C \<ge> 0" by (simp only: qfN_pos)
+    hence "?C = 0 \<or> ?C > 0" by auto
+    moreover 
+    { assume "?C = 0"
+      with hlp have "c=0 \<and> d=0" by (rule qfN_zero)
+      with cm dn have "a = m*x \<and> b = n*x" by simp
+      hence "x dvd a \<and> x dvd b" by simp
+      hence "x dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+      with abx have False by (auto simp add: zprime_def) }
+    ultimately show ?thesis by blast
   qed
-  assume "zprime P" and "P \<in> zOdd" and "zgcd(a,b)=1" and "P dvd a^2+3*b^2"
-  with lem show ?thesis by blast
+  have "x dvd ?C"
+  proof
+    have "?C = \<bar>c\<bar>^2 + 3*\<bar>d\<bar>^2" by (simp only: power2_abs)
+    also with cm dn have "\<dots> = (a-m*x)^2 + 3*(b-n*x)^2" by simp
+    also have "\<dots> = 
+      a^2 - 2*a*(m*x) + (m*x)^2 + 3*(b^2 - 2*b*(n*x) + (n*x)^2)" 
+      by (simp only: zdiff_power2)
+    also with abx M have "\<dots> = 
+      x*M - x*(2*a*m + 3*2*b*n) + x^2*(m^2 + 3*n^2)" 
+      by (simp only: power_mult_distrib zadd_zmult_distrib2 mult_ac, auto)
+    finally show "?C = x*(M - (2*a*m + 3*2*b*n) + x*(m^2 + 3*n^2))" 
+      by (simp add: power2_eq_square zadd_zmult_distrib2 zdiff_zmult_distrib2)
+  qed
+  then obtain y where y: "?C = x*y" by (auto simp add: dvd_def)
+  have yx: "y < x" 
+  proof (rule ccontr)
+    assume "\<not> y < x" hence xy: "x-y \<le> 0" by simp
+    have hlp: "2*\<bar>c\<bar> \<ge> 0 \<and> 2*\<bar>d\<bar> \<ge> 0 \<and> (3::nat) > 0" by simp
+    from y have "4*x*y = 2^2*c^2 + 3*2^2*d^2" by simp
+    hence "4*x*y = (2*\<bar>c\<bar>)^2 + 3*(2*\<bar>d\<bar>)^2" 
+      by (auto simp add: power2_abs power_mult_distrib)
+    with cm dn hlp have "4*x*y < x^2 + 3*(2*\<bar>d\<bar>)^2" 
+      and "(3::int) > 0 \<and> (2*\<bar>d\<bar>)^2 < x^2" 
+      by (auto simp add: power_strict_mono)
+    hence "x*4*y < x^2 + 3*x^2" by (auto)
+    also have "\<dots> = x*4*x" by (simp add: power2_eq_square)
+    finally have contr: "(x-y)*(4*x) > 0" by (auto simp add: zdiff_zmult_distrib2)
+    show False
+    proof (cases)
+      assume "x-y = 0" with contr show False by auto
+    next
+      assume "\<not> x-y =0" with xy have "x-y < 0" by simp
+      moreover from x0 have "4*x > 0" by simp
+      ultimately have "4*x*(x-y) < 4*x*0" by (simp only: zmult_zless_mono2)
+      with contr show False by auto
+    qed
+  qed
+  have y0: "y > 0" 
+  proof (rule ccontr)
+    assume "\<not> y > 0" 
+    hence "y \<le> 0" by simp
+    moreover have "y \<noteq> 0"
+    proof (rule ccontr)
+      assume "\<not> y\<noteq>0" hence "y=0" by simp
+      with y and C0 show False by auto
+    qed
+    ultimately have "y < 0" by simp
+    with x0 have "x*y < x*0" by (simp only: zmult_zless_mono2)
+    with C0 y show False by simp
+  qed
+  let ?g = "zgcd(c,d)"
+  have "c \<noteq> 0 \<or> d \<noteq> 0" 
+  proof (rule ccontr)
+    assume "\<not> (c\<noteq>0 \<or> d\<noteq>0)" hence "c=0 \<and> d=0" by simp
+    with C0 show False by simp
+  qed
+  then obtain e f where ef: "c = ?g*e \<and> d = ?g * f \<and> zgcd(e,f)=1" 
+    by (frule_tac a="c" in make_zrelprime, auto)
+  have g2nonzero: "?g^2 \<noteq> 0"
+  proof (rule ccontr, clarsimp)
+    assume "?g =0" 
+    hence "nat\<bar>c\<bar>=0 \<and> nat\<bar>d\<bar>=0" 
+      by (unfold zgcd_def, auto simp add: gcd_zero)
+    hence "c=0 \<and> d=0" by arith
+    with C0 show False by simp
+  qed
+  let ?E = "e^2 + 3*f^2"
+  have E3: "is_qfN ?E 3" by (unfold is_qfN_def, auto)
+  have CgE: "?C = ?g^2 * ?E"
+  proof -
+    have "?g^2 * ?E = (?g*e)^2 + 3*(?g*f)^2"
+      by (simp add: zadd_zmult_distrib2 power_mult_distrib)
+    with ef show ?thesis by simp
+  qed
+  hence "?g^2 dvd ?C" by (simp add: dvd_def)
+  with y have g2dvdxy: "?g^2 dvd y*x" by (simp add: mult_ac)
+  moreover have "zgcd(x, ?g^2) = 1"
+  proof -
+    let ?h = "zgcd(?g, x)"
+    have "?h dvd ?g" and "?g dvd c" by auto
+    hence "?h dvd c" by (rule zdvd_trans)
+    have "?h dvd ?g" and "?g dvd d" by auto
+    hence "?h dvd d" by (rule zdvd_trans)
+    have "?h dvd x" by simp
+    hence "?h dvd m*x" by (rule zdvd_zmult)
+    with `?h dvd c` have "?h dvd c+m*x" by (rule zdvd_zadd)
+    with cm have "?h dvd a" by simp
+    from `?h dvd x` have "?h dvd n*x" by (rule zdvd_zmult)
+    with `?h dvd d` have "?h dvd d+n*x" by (rule zdvd_zadd)
+    with dn have "?h dvd b" by simp
+    with `?h dvd a` have "?h dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+    with abx have "?h dvd 1" by simp
+    hence "?h = 1" by (simp add: zgcd_geq_zero)
+    hence "zgcd(?g^2,x)=1" by (rule zgcd_1_power_left_distrib)
+    thus ?thesis by (simp only: zgcd_commute)
+  qed
+  ultimately have "?g^2 dvd y" by (auto dest: zrelprime_zdvd_zmult)
+  then obtain w where w: "y = ?g^2 * w" by (auto simp add: dvd_def)
+  with CgE y g2nonzero have Ewx: "?E = x*w" by auto
+  have "w>0"
+  proof (rule ccontr)
+    assume "\<not> w>0" hence "w \<le> 0" by auto
+    hence "w=0 \<or> w<0" by auto
+    moreover
+    { assume "w=0" with w y0 have False by auto }
+    moreover
+    { assume wneg: "w<0" 
+      have "?g^2 \<ge> 0" by (rule zero_le_power2)
+      with g2nonzero have "?g^2 > 0" by arith
+      with wneg have "?g^2*w < ?g^2*0" by (simp only: zmult_zless_mono2)
+      with w y0 have False by auto }
+    ultimately show False by blast
+  qed
+  have w_le_y: "w \<le> y"
+  proof (rule ccontr)
+    assume "\<not> w \<le> y"
+    hence wy: "w > y" by simp
+    have "?g^2 = 1 \<or> ?g^2 > 1"
+    proof - 
+      have "?g^2 \<ge> 0" by (rule zero_le_power2)
+      hence "?g^2 =0 \<or> ?g^2 > 0" by auto
+      with g2nonzero show ?thesis by arith
+    qed
+    moreover
+    { assume "?g^2 =1" with w wy have False by simp }
+    moreover
+    { assume g1: "?g^2 >1" 
+      with `w>0` have "w*1 < w*?g^2" by (auto dest: zmult_zless_mono2)
+      with w have "w < y" by (simp add: zmult_1 mult_ac)
+      with wy have False by auto }
+    ultimately show False by blast
+  qed
+  from Ewx E3 abx `w>0` have 
+    "zprime x \<and> x \<in> zOdd \<and> w > 0 \<and> is_qfN (x*w) 3 \<and> \<not> is_qfN x 3" by simp
+  then obtain z where z: "zprime z \<and> z \<in> zOdd \<and> z dvd w \<and> \<not> is_qfN z 3"
+    by (frule_tac P="x" in qf3_oddprimedivisor_not, auto)
+  from Ewx have "w dvd ?E" by simp
+  with z have "z dvd ?E" by (auto dest: zdvd_trans)
+  with z ef have "zprime z \<and> z \<in> zOdd \<and> zgcd(e,f)=1 \<and> z dvd ?E \<and> \<not> is_qfN z 3"
+    by auto
+  moreover have "nat\<bar>z\<bar> < nat\<bar>x\<bar>"
+  proof -
+    have "z \<le> w"
+    proof (rule ccontr)
+      assume "\<not> z \<le> w" hence "w < z" by auto
+      with `w>0` have "\<not> z dvd w" by (rule zdvd_not_zless)
+      with z show False by simp
+    qed
+    with w_le_y yx have "z < x" by simp
+    with z have "\<bar>z\<bar> < \<bar>x\<bar>" by (simp add: zprime_def)
+    thus ?thesis by auto
+  qed
+  ultimately show ?case by auto
 qed
   
 lemma qf3_cube_prime_impl_cube_form: 

@@ -191,7 +191,7 @@ next
   proof (rule ccontr)
     assume nQ1: "\<not> ?Q 1"
     have "\<not> ?Q t"
-    proof (rule_tac x=t and V="\<lambda>x. (nat x)- 1" in infinite_descent_measure, clarify)
+    proof (induct t rule: infinite_descent0_measure[where V="\<lambda>x. (nat x)- 1"], clarify)
       fix x a b c d 
       assume "nat x - 1 = 0" and "x > 0" and s: "sum4sq(a,b,c,d)=p*x" and "x < p"
       moreover hence "x = 1" by arith

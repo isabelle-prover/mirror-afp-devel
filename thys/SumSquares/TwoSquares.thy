@@ -116,7 +116,7 @@ proof -
     proof (rule ccontr)
       assume nQ1: "\<not> ?Q 0"
       have "(1+int tn) < ?p \<Longrightarrow> \<not> ?Q tn"
-      proof (induct tn rule: infinite_descent)
+      proof (induct tn rule: infinite_descent0)
 	case 0 
 	from nQ1 show "1+int 0 < ?p \<Longrightarrow> \<not> ?Q 0" by simp
       next

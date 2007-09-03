@@ -33,17 +33,15 @@ qed
 text {* Shows there exists no solution $v^3+w^3 = x^3$ with $vwx\ne 0$ and $\gcd(v,w)=1$ and $x$ even, by constructing a solution with a smaller $|x^3|$. *}
 
 lemma no_rewritten_fermat3: 
-  "\<not> (\<exists> v w. v^3+w^3 = x^3 \<and> v*w*x \<noteq> 0 \<and> x \<in> zEven \<and> zgcd(v,w)=1)" (is "?Q x")
-proof (rule_tac x="x" and V="\<lambda>x. nat\<bar>x^3\<bar>" in infinite_descent_measure)
-  fix x
-  assume "nat\<bar>x^3\<bar> = 0" hence "x^3 = 0" by arith
+  "\<not> (\<exists> v w. v^3+w^3 = x^3 \<and> v*w*x \<noteq> 0 \<and> x \<in> zEven \<and> zgcd(v,w)=1)"
+proof (induct x rule: infinite_descent0_measure[where V="\<lambda>x. nat\<bar>x^3\<bar>"])
+  case (0 x) hence "x^3 = 0" by arith
   hence "x=0" by auto
-  thus "?Q x" by auto
+  thus ?case by auto
 next
-  fix x
-  assume x3pos: "0 < nat\<bar>x^3\<bar>" and "\<not> ?Q x"
+  case (smaller x)
   then obtain v w where vwx: 
-    "v^3+w^3=x^3 \<and> v*w*x \<noteq> 0 \<and> x \<in> zEven \<and> zgcd(v,w)=1" (is "?P v w x") 
+    "v^3+w^3=x^3 \<and> v*w*x \<noteq> 0 \<and> x \<in> zEven \<and> zgcd(v,w)=1" (is "?P v w x")
     by auto
   have "\<exists> \<alpha> \<beta> \<gamma>. ?P \<alpha> \<beta> \<gamma> \<and> nat\<bar>\<gamma>^3\<bar> < nat\<bar>x^3\<bar>"
   proof -
@@ -84,7 +82,7 @@ next
       also have "\<dots> = p*((v+w)^2 + 3*(v-w)^2)" 
 	by (simp add: nat_number ring_simps)
       also with pq have "\<dots> = p*((2*p)^2 + 3*(2*q)^2)" by simp
-      also have "\<dots> = 2*(2*p)*(p^2+3*q^2)" by (simp add: power_mult_distrib)      
+      also have "\<dots> = 2*(2*p)*(p^2+3*q^2)" by (simp add: power_mult_distrib)
       finally show ?thesis by simp
     qed
     let ?g = "zgcd(2*p, p^2+3*q^2)"
@@ -95,7 +93,7 @@ next
       ultimately have "?g = 0" by simp
       hence "nat\<bar>2*p\<bar> = 0" by (unfold zgcd_def, simp add: gcd_zero)
       hence "p = 0" by arith
-      with vwpq vwx x3pos show False by auto
+      with vwpq vwx `0 < nat\<bar>x^3\<bar>` show False by auto
     qed
     have gOdd: "\<not> 2 dvd ?g"
     proof (rule ccontr, simp)
@@ -276,7 +274,7 @@ next
 	also with albega have "\<dots> = \<gamma>^3 *((a+3*b)*(a- 3*b)*?A)" by auto
 	finally have eq: "\<bar>x^3\<bar> = \<bar>\<gamma>^3\<bar> * \<bar>(a+3*b)*(a- 3*b)*?A\<bar>"
 	  by (auto simp add: abs_mult)
-	with x3pos have "\<bar>(a+3*b)*(a- 3*b)*?A\<bar> > 0" by auto
+	with `0 < nat\<bar>x^3\<bar>` have "\<bar>(a+3*b)*(a- 3*b)*?A\<bar> > 0" by auto
 	hence eqpos: "\<bar>(a+3*b)*(a- 3*b)\<bar> > 0" by auto
 	moreover have Ag1: "\<bar>?A\<bar> > 1"
 	proof -
@@ -312,7 +310,7 @@ next
 	moreover have "\<bar>\<gamma>^3\<bar> > 0"
 	proof - 
 	  from eq have "\<bar>\<gamma>^3\<bar> = 0 \<Longrightarrow> \<bar>x^3\<bar>=0" by auto
-	  with x3pos show ?thesis by auto
+	  with `0 < nat\<bar>x^3\<bar>` show ?thesis by auto
 	qed
 	ultimately have "\<bar>\<gamma>^3\<bar> * 1 < \<bar>\<gamma>^3\<bar> * \<bar>(a+3*b)*(a- 3*b)*?A\<bar>"
 	  by (rule zmult_zless_mono2)
@@ -532,13 +530,13 @@ next
 	also with a1 have "\<dots> = \<gamma>^3 *(9*(a+b)*(a-b)*?A)" by auto
 	finally have eq: "\<bar>x^3\<bar> = \<bar>\<gamma>^3\<bar> * \<bar>9*(a+b)*(a-b)*?A\<bar>" 
 	  by (auto simp add: abs_mult)
-	with x3pos have "\<bar>9*(a+b)*(a-b)*?A\<bar> > 0" by auto
+	with `0 < nat\<bar>x^3\<bar>` have "\<bar>9*(a+b)*(a-b)*?A\<bar> > 0" by auto
 	hence "\<bar>(a+b)*(a-b)*?A\<bar> \<ge> 1" by arith
 	hence "\<bar>9*(a+b)*(a-b)*?A\<bar> > 1" by arith
 	moreover have "\<bar>\<gamma>^3\<bar> > 0"
 	proof - 
 	  from eq have "\<bar>\<gamma>^3\<bar> = 0 \<Longrightarrow> \<bar>x^3\<bar>=0" by auto
-	  with x3pos show ?thesis by auto
+	  with `0 < nat\<bar>x^3\<bar>` show ?thesis by auto
 	qed
 	ultimately have "\<bar>\<gamma>^3\<bar> * 1 < \<bar>\<gamma>^3\<bar> * \<bar>9*(a+b)*(a-b)*?A\<bar>"
 	  by (rule zmult_zless_mono2)
@@ -548,7 +546,7 @@ next
       ultimately have ?thesis by auto }
     ultimately show ?thesis by auto
   qed
-  thus "\<exists> y. nat\<bar>y^3\<bar> < nat\<bar>x^3\<bar> \<and> \<not> ?Q y" by auto
+  thus ?case by auto
 qed
 
 text {* The theorem. Puts equation in requested shape. *}  
