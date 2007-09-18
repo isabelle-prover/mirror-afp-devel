@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Example.thy
-    ID:         $Id: Example.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Example.thy,v 1.3 2007-09-18 14:55:07 makarius Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -133,7 +133,7 @@ translations
   "s3" == "(Some NP, empty(a\<mapsto>obj1),empty(e\<mapsto>Addr a))"
 
 
-ML {* bind_thm ("map_of_Cons", hd (tl (thms "map_of.simps"))) *}
+lemmas map_of_Cons = map_of.simps(2)
 lemma map_of_Cons1 [simp]: "map_of ((aa,bb)#ps) aa = Some bb"
 (*<*)
 apply (simp (no_asm))
