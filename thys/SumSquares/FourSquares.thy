@@ -17,12 +17,13 @@ text {* Shows that all nonnegative integers can be written as the sum of four sq
 \item Finally, using the multiplicity of this form, the same holds for all positive numbers.
 \end{itemize} *}
 
-constdefs 
-  sum4sq :: "int \<times> int \<times> int \<times> int \<Rightarrow> int"
-  "sum4sq == \<lambda>(a,b,c,d). a^2+b^2+c^2+d^2"
+definition
+  sum4sq :: "int \<times> int \<times> int \<times> int \<Rightarrow> int" where
+  "sum4sq = (\<lambda>(a,b,c,d). a^2+b^2+c^2+d^2)"
 
-  is_sum4sq :: "int \<Rightarrow> bool"
-  "is_sum4sq x == \<exists> a b c d. sum4sq(a,b,c,d) = x"
+definition
+  is_sum4sq :: "int \<Rightarrow> bool" where
+  "is_sum4sq x \<longleftrightarrow> (\<exists> a b c d. sum4sq(a,b,c,d) = x)"
 
 lemma mult_sum4sq: "sum4sq(a,b,c,d) * sum4sq(p,q,r,s) = 
   sum4sq(a*p+b*q+c*r+d*s, a*q-b*p-c*s+d*r, 

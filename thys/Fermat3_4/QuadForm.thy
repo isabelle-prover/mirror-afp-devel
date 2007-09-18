@@ -15,12 +15,13 @@ text {* Shows some properties of the quadratic form $x^2+Ny^2$, such as how to m
 
 subsection {* Definitions and auxiliary results *}
 
-constdefs
-  is_qfN :: "int \<Rightarrow> int \<Rightarrow> bool"
-  "is_qfN A N == \<exists> x y. A = x^2 + N*y^2"
+definition
+  is_qfN :: "int \<Rightarrow> int \<Rightarrow> bool" where
+  "is_qfN A N \<longleftrightarrow> (\<exists> x y. A = x^2 + N*y^2)"
 
-  is_cube_form :: "int \<Rightarrow> int \<Rightarrow> bool"
-  "is_cube_form a b == \<exists> p q. a = p^3 - 9*p*q^2 \<and> b = 3*p^2*q - 3*q^3"
+definition
+  is_cube_form :: "int \<Rightarrow> int \<Rightarrow> bool" where
+  "is_cube_form a b \<longleftrightarrow> (\<exists> p q. a = p^3 - 9*p*q^2 \<and> b = 3*p^2*q - 3*q^3)"
 
 lemma abs_eq_impl_unitfactor: "\<bar>a::int\<bar> = \<bar>b\<bar> \<Longrightarrow> \<exists> u. a = u*b \<and> \<bar>u\<bar>=1"
 proof -

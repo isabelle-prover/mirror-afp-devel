@@ -12,12 +12,13 @@ begin
 
 text {* Show that $(\frac{-1}{p}) = +1$ for primes $p \equiv 1 \bmod 4$. *}
   
-constdefs 
-  sum2sq :: "int \<times> int \<Rightarrow> int"
-  "sum2sq == \<lambda>(a,b). a^2+b^2"
+definition
+  sum2sq :: "int \<times> int \<Rightarrow> int" where
+  "sum2sq = (\<lambda>(a,b). a^2+b^2)"
 
-  is_sum2sq :: "int \<Rightarrow> bool"
-  "is_sum2sq x == \<exists> a b. sum2sq(a,b) = x"
+definition
+  is_sum2sq :: "int \<Rightarrow> bool" where
+  "is_sum2sq x \<longleftrightarrow> (\<exists> a b. sum2sq(a,b) = x)"
 
 lemma mult_sum2sq: "sum2sq(a,b) * sum2sq(p,q) = 
   sum2sq(a*p+b*q, a*q-b*p)"
