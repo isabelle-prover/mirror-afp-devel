@@ -1,4 +1,4 @@
-(*  ID:         $Id: Generator.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
+(*  ID:         $Id: Generator.thy,v 1.3 2007-09-20 12:54:48 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -109,7 +109,7 @@ constdefs
  polysizes :: "nat \<Rightarrow> graph \<Rightarrow> nat list"
 "polysizes p g \<equiv>
     let lb = squanderLowerBound g in
-    [n \<leftarrow> [3 .. maxGon p]. lb + \<d> n < squanderTarget]"
+    [n \<leftarrow> [3 ..< Suc(maxGon p)]. lb + \<d> n < squanderTarget]"
 
 constdefs
  next_tame0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_tame0\<^bsub>_\<^esub>")

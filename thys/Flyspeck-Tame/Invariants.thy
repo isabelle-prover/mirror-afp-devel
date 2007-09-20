@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.10 2007-08-20 16:09:23 fhaftmann Exp $
+(*  ID:         $Id: Invariants.thy,v 1.11 2007-09-20 12:54:48 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2601,11 +2601,11 @@ by (simp  add: graph_def Seed_def minGraphProps'_def)
 lemma Seed_holds_facesAt_eq: "facesAt_eq (Seed p)"
 by (force simp  add: graph_def Seed_def facesAt_eq_def facesAt_def)
 
-lemma minVertex_zero1: "minVertex (Face [0..z] Final) = 0"
+lemma minVertex_zero1: "minVertex (Face [0..<Suc z] Final) = 0"
   apply (induct z) apply (simp add: minVertex_def)
   by (simp add: minVertex_def upt_conv_Cons del: upt_Suc)
 
-lemma minVertex_zero2: "minVertex (Face (rev [0..z]) Nonfinal) = 0"
+lemma minVertex_zero2: "minVertex (Face (rev [0..<Suc z]) Nonfinal) = 0"
   apply (induct z) apply (simp add: minVertex_def)
   by (simp add: minVertex_def min_def)
 
@@ -2629,9 +2629,8 @@ by (simp add: Seed_def graph_def edges_sym_def edges_graph_def)
 
 
 lemma Seed_holds_edges_disj: "edges_disj (Seed p)"
-using is_nextElem_circ[of "[0..<p+3]"]
-apply (fastsimp simp add: Seed_def graph_def edges_disj_def edges_graph_def)
-done
+using is_nextElem_circ[of "[0..<(p+3)]"]
+by (fastsimp simp add: Seed_def graph_def edges_disj_def edges_graph_def)
 
 
 lemma Seed_holds_faces_distinct: "faces_distinct (Seed p)"

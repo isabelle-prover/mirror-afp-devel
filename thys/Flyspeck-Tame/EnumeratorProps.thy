@@ -1,4 +1,4 @@
-(*  ID:         $Id: EnumeratorProps.thy,v 1.2 2006-07-27 13:24:37 webertj Exp $
+(*  ID:         $Id: EnumeratorProps.thy,v 1.3 2007-09-20 12:54:47 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -75,13 +75,10 @@ qed
 lemma enumBase_length: "ls \<in> set (enumBase nmax) \<Longrightarrow> length ls = 1"
 by (auto simp: enumBase_def)
 
-lemma enumBase_lenght2: "\<forall> ls \<in> set (enumBase nmax). length ls = 1"
+lemma enumBase_bound: "\<forall> y \<in> set (enumBase nmax). \<forall> z \<in> set y. z <= nmax"
 by (auto simp: enumBase_def)
 
-lemma enumBase_bound: "\<forall> y \<in> set (enumBase nmax). \<forall> z \<in> set y. z \<le>  nmax"
-by (auto simp: enumBase_def)
-
-lemmas enumBase_simps = enumBase_length enumBase_lenght2 enumBase_bound
+lemmas enumBase_simps = enumBase_length enumBase_bound
 
 
 (********** enumAppend ************)

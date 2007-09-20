@@ -1,4 +1,4 @@
-(*  ID:         $Id: Enumerator.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
+(*  ID:         $Id: Enumerator.thy,v 1.3 2007-09-20 12:54:47 nipkow Exp $
     Author:     Gertrud Bauer
 *)
 
@@ -43,10 +43,10 @@ we run over all osibilites fro the finishe face along the edge
 text{* \paragraph{Executable enumeration of patches} *}
 
 constdefs enumBase :: "nat \<Rightarrow> nat list list"
- "enumBase nmax \<equiv> [[i]. i \<leftarrow> [0 .. nmax]]"
+ "enumBase nmax \<equiv> [[i]. i \<leftarrow> [0 ..< Suc nmax]]"
 
 constdefs enumAppend :: "nat \<Rightarrow> nat list list \<Rightarrow> nat list list"
- "enumAppend nmax iss \<equiv> \<Squnion>\<^bsub>is\<in>iss\<^esub> [is @ [n]. n \<leftarrow> [last is .. nmax]]"
+ "enumAppend nmax iss \<equiv> \<Squnion>\<^bsub>is\<in>iss\<^esub> [is @ [n]. n \<leftarrow> [last is ..< Suc nmax]]"
 
 constdefs enumerator :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" (* precondition inner >= 3 *)
  "enumerator inner outer \<equiv>

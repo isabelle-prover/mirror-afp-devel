@@ -1,5 +1,5 @@
 (*  Title:      Plane1.thy
-    ID:         $Id: Plane1.thy,v 1.1 2006-05-22 09:54:01 nipkow Exp $
+    ID:         $Id: Plane1.thy,v 1.2 2007-09-20 12:54:48 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 
 Fixing a single face and vertex in each refinement step.
@@ -25,7 +25,7 @@ constdefs next_plane :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("nex
      let fs = nonFinals g in
      if fs = [] then [] 
      else let f = minimalFace fs; v = minimalVertex g f in
-          \<Squnion>\<^bsub>i\<in>[3..maxGon p]\<^esub> generatePolygon i v f g"
+          \<Squnion>\<^bsub>i\<in>[3..<Suc(maxGon p)]\<^esub> generatePolygon i v f g"
 
 constdefs
  PlaneGraphsP  :: "nat \<Rightarrow> graph set" ("PlaneGraphs\<^bsub>_\<^esub>")

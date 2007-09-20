@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.6 2007-08-12 16:28:14 makarius Exp $
+(*  ID:         $Id: PlaneProps.thy,v 1.7 2007-09-20 12:54:48 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -118,7 +118,7 @@ by(auto simp:next_plane0_def finalGraph_def)
 
 lemma next_plane0_ex:
 assumes a: "g [next_plane0\<^bsub>p\<^esub>]\<rightarrow> g'"
-shows "\<exists>f\<in> set(nonFinals g). \<exists>v \<in> \<V> f. \<exists>i \<in> set([3..maxGon p]).
+shows "\<exists>f\<in> set(nonFinals g). \<exists>v \<in> \<V> f. \<exists>i \<in> set([3..<Suc(maxGon p)]).
        g' \<in> set (generatePolygon i v f g)"
 proof -
   from a have "\<not> final g" by (auto simp add: next_plane0_def)

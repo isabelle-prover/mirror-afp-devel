@@ -1,4 +1,4 @@
-(*  ID:         $Id: Plane.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
+(*  ID:         $Id: Plane.thy,v 1.3 2007-09-20 12:54:48 nipkow Exp $
     Author:     Gertrud Bauer
 *)
 
@@ -58,7 +58,7 @@ constdefs generatePolygon :: "nat \<Rightarrow> vertex \<Rightarrow> face \<Righ
 constdefs next_plane0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_plane0\<^bsub>_\<^esub>")
  "next_plane0\<^bsub>p\<^esub> g \<equiv>
      if final g then [] 
-     else \<Squnion>\<^bsub>f\<in>nonFinals g\<^esub> \<Squnion>\<^bsub>v\<in>vertices f\<^esub> \<Squnion>\<^bsub>i\<in>[3..maxGon p]\<^esub> generatePolygon i v f g"
+     else \<Squnion>\<^bsub>f\<in>nonFinals g\<^esub> \<Squnion>\<^bsub>v\<in>vertices f\<^esub> \<Squnion>\<^bsub>i\<in>[3..<Suc(maxGon p)]\<^esub> generatePolygon i v f g"
 
 
 constdefs Seed :: "nat \<Rightarrow> graph" ("Seed\<^bsub>_\<^esub>")
