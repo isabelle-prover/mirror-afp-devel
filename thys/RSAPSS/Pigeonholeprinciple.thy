@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pigeonholeprinciple.thy
-    ID:         $Id: Pigeonholeprinciple.thy,v 1.2 2005-07-02 10:10:14 nipkow Exp $
+    ID:         $Id: Pigeonholeprinciple.thy,v 1.3 2007-09-20 07:54:09 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -176,7 +176,7 @@ lemma dellengthinperm: "\<lbrakk> length (x # xs) mem (x#xs); perm (positives (l
   apply (rule permSuclengthdel2)
   by (simp)+
 
-lemma positiveseq: "positives (length xs) = rev ([1 .. length xs])"
+lemma positiveseq: "positives (length xs) = rev ([1 ..< Suc(length xs)])"
   apply (induct_tac xs)
   by (auto)
 
