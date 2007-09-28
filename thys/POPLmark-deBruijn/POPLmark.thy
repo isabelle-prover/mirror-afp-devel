@@ -1,5 +1,5 @@
 (*  Title:      POPLmark/POPLmark.thy
-    ID:         $Id: POPLmark.thy,v 1.3 2007-08-28 15:58:52 stefanberghofer Exp $
+    ID:         $Id: POPLmark.thy,v 1.4 2007-09-28 11:33:49 stefanberghofer Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -474,8 +474,6 @@ theorem wf_subst:
   apply simp_all
   apply (rule conjI)
   apply (rule impI)
-  apply (frule_tac T=U and B=B in wf_weaken [of "[]", simplified])
-  apply simp
   apply (drule_tac \<Gamma>=\<Gamma> and \<Delta>="\<Delta>[0 \<mapsto>\<^isub>\<tau> U]\<^isub>e" in wf_weaken')
   apply simp
   apply (rule impI conjI)+
