@@ -2190,7 +2190,7 @@ apply (frule Ring.ring_one[of R],
   apply (frule_tac m = "Suc 0" and n = "card H" in  Suc_leI,
          simp add:Suc_Suc_Tr, simp add:finite_generator_def) (*
   apply (rule_tac i = "card (h ` {j. j \<le> card H - Suc (Suc 0)})" and 
-         j = "card H - Suc 0" and k = "card H" in le_less_trans, assumption+)  
+         j = "card H - Suc 0" and k = "card H" in Nat.le_less_trans, assumption+)  
   apply simp*)
   apply (cut_tac n = "card H - Suc 0 - Suc 0" in finite_Nset,
          frule_tac F = "{j. j \<le> card H - Suc 0 - Suc 0}" and h = h in 

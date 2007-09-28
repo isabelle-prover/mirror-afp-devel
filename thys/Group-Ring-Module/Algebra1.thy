@@ -1450,9 +1450,9 @@ apply (rule equalityI)
  apply (simp add:image_def,
         erule disjE, blast,
         erule exE, erule conjE,
-        frule_tac i = xa and j = n and k = "Suc n" in le_less_trans,
+        frule_tac i = xa and j = n and k = "Suc n" in Nat.le_less_trans,
         simp+,
-        frule_tac m = xa and n = "Suc n" in less_imp_le, blast)
+        frule_tac m = xa and n = "Suc n" in Nat.less_imp_le, blast)
  apply (rule subsetI,
         simp add:image_def,
         erule exE, simp, erule conjE,
@@ -1616,11 +1616,11 @@ apply (rule equalityI)
  apply (cut_tac x = xa and n = n in skip_im_Tr2_1[of i], simp+)
  
 apply (rule subsetI, simp, erule conjE)
- apply (cut_tac m = x and n = i in less_linear, simp)
+ apply (cut_tac m = x and n = i in Nat.less_linear, simp)
  apply (erule disjE)
  apply (simp add:image_def)
  apply (frule_tac x = x in skip_im_Tr1_2[of i n], assumption,
-        frule_tac i = x and j = i and k = "Suc n" in less_le_trans, 
+        frule_tac i = x and j = i and k = "Suc n" in Nat.less_le_trans, 
         assumption+,
         frule_tac m = x and n = "Suc n" in Suc_leI,
         simp only:Suc_le_mono,
@@ -3518,26 +3518,13 @@ lemma gt_a0_ge_aN:"\<lbrakk>0 < x; N \<noteq> 0\<rbrakk>  \<Longrightarrow> (ant
 done
 
 lemma aless_le_trans:"\<lbrakk>(x::ant) < y; y \<le> z\<rbrakk> \<Longrightarrow> x < z"
-apply (simp add:aless_le[of "x" "y"], simp add:aless_le[of "x" "z"],
-       erule conjE, rule conjI,
-       simp add: ale_trans[of "x" "y" "z"])
-apply (rule contrapos_pp, simp+)
-done
+by auto
 
 lemma ale_less_trans:"\<lbrakk>(x::ant) \<le> y; y < z\<rbrakk> \<Longrightarrow> x < z"
-apply (simp add:aless_le[of "y" "z"], simp add:aless_le[of "x" "z"],
-       erule conjE, rule conjI,
-       simp add: ale_trans[of "x" "y" "z"])
-apply (rule contrapos_pp, simp+)
-done
+by auto
 
 lemma aless_trans:"\<lbrakk>(x::ant) < y; y < z\<rbrakk> \<Longrightarrow> x < z"
-apply (simp add:aless_le[of "x" "y"], simp add:aless_le[of "y" "z"],
-       simp add:aless_le[of "x" "z"])
-apply ((erule conjE)+, rule conjI,
-       simp add: ale_trans[of "x" "y" "z"])
-apply (rule contrapos_pp, simp+)
-done
+by auto
 
 lemma ale_neq_less:"\<lbrakk> (x::ant)\<le> y; x \<noteq> y\<rbrakk> \<Longrightarrow> x < y" 
 apply (simp add:less_ant_def)
@@ -3550,11 +3537,7 @@ apply (rule contrapos_pp, simp+)
 done
 
 lemma aneg_less:"(\<not> x < (y::ant)) = (y \<le> x)"
-apply (cut_tac aless_linear[of "x" "y"])
-apply (rule iffI,
-       simp add:aless_le[of "y" "x"],
-       rule contrapos_pp, simp+)
-done
+by auto
 
 lemma aadd_le_mono:"x \<le> (y::ant) \<Longrightarrow> x + z \<le> y + z"
 apply (cut_tac mem_ant[of "x"], cut_tac mem_ant[of "y"], 
@@ -3587,15 +3570,13 @@ apply (cut_tac x = "ant za" in inf_ge_any, frule_tac x = "ant za" in
 done
 
 lemma aadd_less_mono_z:"(x::ant) < y \<Longrightarrow> (x + (ant z)) < (y + (ant z))"
-apply (simp add:less_ant_def, simp add:aadd_le_mono,
-       rule contrapos_pp, simp+, erule conjE,
-       cut_tac mem_ant[of "x"], cut_tac mem_ant[of "y"])
-apply ((erule disjE)+, simp, erule disjE, erule exE, simp add:a_zpz,
-       frule sym, thin_tac "- \<infinity> = ant (za + z)", simp, simp,
-       (erule disjE)+, erule exE, simp add:a_zpz, simp,
-       (erule disjE)+, (erule exE)+, simp add:a_zpz, simp,
-       erule exE, simp add:a_zpz,
-       erule disjE, erule exE, simp add:a_zpz, simp)
+apply (simp add:less_ant_def, simp add:aadd_le_mono);
+apply (cut_tac mem_ant[of "x"], cut_tac mem_ant[of "y"])
+apply auto
+apply (metis a_inv a_ipi a_ipz a_zpz aadd_minus_r aless_le diff_ant_def minf_less_0)
+apply (metis a_inv a_ipi a_ipz a_zpz aadd_minus_r aless_le diff_ant_def minf_less_0)
+apply (metis a_zpz add_right_cancel aeq_zeq)
+apply (metis a_zpz aless_le z_less_i)
 done
 
 lemma aless_le_suc[simp]:"(a::ant) < b \<Longrightarrow> a + 1 \<le> b" 
@@ -4519,7 +4500,7 @@ proof -
   apply (simp add:surj_to_def image_def)
   apply (rule equalityI,
          rule subsetI, simp, erule exE, simp add:slide_def nset_def,
-         frule_tac m = i and n = j in less_imp_le, erule conjE,
+         frule less_imp_le [of i j], erule conjE,
          thin_tac "i < j", frule add_le_mono [of _ "j - i" "i" "i"],
          simp+, rule subsetI, simp)
  apply (simp add:nset_def slide_def, erule conjE, 
@@ -4715,9 +4696,7 @@ apply (simp add:image_def)
  apply blast
  apply (rule subsetI, simp, erule exE, erule conjE)
  apply (case_tac "xa = Suc n", simp)
- apply (frule_tac m = xa in le_imp_less_or_eq[of _ "Suc n"],
-        thin_tac "xa \<le> Suc n", simp,
-        frule_tac x = xa and n = n in Suc_less_le, blast)
+ apply (metis le_SucE linorder_antisym_conv2 linorder_neq_iff)
 done
 
 lemma Nset_injTr0:"\<lbrakk>f \<in> {i. i \<le> (Suc n)} \<rightarrow> {i. i \<le> (Suc n)}; 

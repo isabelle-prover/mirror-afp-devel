@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Type.thy
-   ID:        $Id: Type.thy,v 1.10 2007-07-22 20:44:19 makarius Exp $
+   ID:        $Id: Type.thy,v 1.11 2007-09-28 13:15:24 lp15 Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -573,12 +573,9 @@ apply (safe)
   apply simp
  apply (fastsimp simp add: free_tv_subst cod_def dom_def)
 (* <== *)
-apply (unfold free_tv_subst cod_def dom_def)
+apply (unfold free_tv_subst cod_def dom_def) 
 apply safe
- apply (cut_tac m = "m" and n = "n" in less_linear)
- apply (fast intro!: less_or_eq_imp_le)
-apply (cut_tac m = "ma" and n = "n" in less_linear)
-apply (fast intro!: less_or_eq_imp_le) 
+apply (metis not_leE)+
 done
 
 lemma new_tv_list: "new_tv n x = (!y:set x. new_tv n y)"
@@ -710,9 +707,7 @@ declare new_tv_subst_comp_1 [simp] new_tv_subst_comp_2 [simp]
 -- "new type variables do not occur freely in a type structure"
 lemma new_tv_not_free_tv: 
       "new_tv n A ==> n~:(free_tv A)"
-apply (unfold new_tv_def)
-apply (fast elim: less_irrefl)
-done
+by (auto simp add: new_tv_def)
 declare new_tv_not_free_tv [simp]
 
 lemma fresh_variable_types: "!!t::typ. ? n. (new_tv n t)"

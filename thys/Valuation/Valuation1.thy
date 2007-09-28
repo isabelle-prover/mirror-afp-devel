@@ -145,12 +145,7 @@ apply (frule aadd_pos_poss[of "-a" "-b"], assumption+,
 done
 
 lemma aadd_two_negg[simp]:"\<lbrakk>a < (0::ant); b < 0\<rbrakk> \<Longrightarrow> a + b < 0"
-apply (frule aless_minus[of "a" "0"], simp,
-       frule aless_minus[of "b" "0"], simp)
-apply (frule aadd_poss_pos[of "-a" "-b"], simp add:aless_imp_le,
-       simp add:aminus_add_distrib[THEN sym, of "a" "b"],
-       frule aless_minus[of "0" "-(a + b)"], simp add:a_minus_minus)
-done 
+by auto
 
 lemma amin_aminTr:"(z::ant) \<le> z' \<Longrightarrow> amin z w \<le> amin z' w"
 by (simp add:amin_def, simp add:aneg_le,
@@ -348,22 +343,11 @@ done
 
 lemma nset_Tr52:"\<lbrakk>j \<noteq> Suc (Suc 0); Suc 0 \<le> j - Suc 0\<rbrakk>
        \<Longrightarrow> \<not> j - Suc 0 \<le> Suc 0"
-apply (frule_tac m = "Suc 0" and n = "j - Suc 0" in le_imp_less_or_eq,
-       thin_tac "Suc 0 \<le> j - Suc 0",
-       case_tac "Suc 0 = j - Suc 0", simp, simp)
-done  
+by auto 
 
 lemma nset_Suc:"nset (Suc 0) (Suc (Suc n)) = 
                   nset (Suc 0) (Suc n) \<union> {Suc (Suc n)}"
-apply (rule equalityI,
-       rule subsetI, simp add:nset_def,
-       case_tac "x = Suc (Suc n)", simp,
-       erule conjE, simp add:zle_imp_zless_or_eq)
-apply (rule subsetI,
-       simp add:nset_def, 
-       case_tac "x = Suc (Suc n)", simp) 
-apply simp
-done 
+by (auto simp add:nset_def); 
 
 lemma AinequalityTr0:"x \<noteq> -\<infinity> \<Longrightarrow> \<exists>L. (\<forall>N. L < N \<longrightarrow> 
                           (an m) < (x + an N))"
@@ -390,14 +374,8 @@ done
 
 lemma two_inequalities:"\<lbrakk>\<forall>(n::nat). x < n \<longrightarrow> P n; \<forall>(n::nat). y < n \<longrightarrow> Q n\<rbrakk>
  \<Longrightarrow>  \<forall>n. (max x y) < n \<longrightarrow> (P n) \<and> (Q n)"
-apply (rule allI, rule impI, 
-      subgoal_tac "x \<le> (max x y)",
-      frule_tac k = n in le_less_trans[of "x" "max x y"], assumption+)
- apply (subgoal_tac "y \<le> (max x y)")
- apply (frule_tac k = n in le_less_trans[of "y" "max x y"], assumption+,
-        simp, (simp add:max_def)+)
-done
- 
+by auto 
+
 lemma multi_inequalityTr0:"(\<forall>j \<le> (n::nat). (x j) \<noteq> -\<infinity> ) \<longrightarrow>
       (\<exists>L. (\<forall>N. L < N \<longrightarrow>  (\<forall>l \<le> n. (an m) < (x l) + (an N))))"
 apply (induct_tac n) 
@@ -1745,9 +1723,8 @@ by (frule Vr_ring[of v], frule vp_apow_ideal[of v N], assumption,
     simp add:Ring.ideal_subset)
 
 lemma (in Corps) elem_out_vp_unit:"\<lbrakk>valuation K v; x \<in> carrier (Vr K v);
-      x \<notin> vp K v\<rbrakk>  \<Longrightarrow> v x = 0" 
-by (simp add:vp_def Vr_def Sr_def)
-
+      x \<notin> vp K v\<rbrakk>  \<Longrightarrow> v x = 0"
+by (metis Vr_mem_f_mem ale_antisym aneg_le val_pos_mem_Vr vp_mem_val_poss) 
 
 lemma (in Corps) vp_maximal:"valuation K v \<Longrightarrow>
                           maximal_ideal (Vr K v) (vp K v)"

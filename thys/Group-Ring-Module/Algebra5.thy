@@ -851,7 +851,7 @@ apply (rule conjI)
         erule exE, erule conjE, erule exE, simp, erule conjE,
         frule_tac i = i and j = n and k = "Suc n" in Nat.le_less_trans,
         simp, 
-        frule_tac m = i and n = "Suc n" in less_imp_le, blast)
+        frule_tac m = i and n = "Suc n" in Nat.less_imp_le, blast)
  apply (simp add:sliden_def)
  apply (simp add:carr_prodag_def Un_carrier_def, (erule conjE)+)
  apply (simp add:compose_def slide_def)
@@ -1035,7 +1035,7 @@ apply (rule impI)
         frule_tac a = xa in forall_spec,
         frule_tac i = k and j = "Suc n" and k = "Suc (Suc n)" in 
         Nat.le_less_trans, simp,
-        frule_tac m = k and n = "Suc (Suc n)" in less_imp_le, blast)
+        frule_tac m = k and n = "Suc (Suc n)" in Nat.less_imp_le, blast)
  apply simp 
  apply (frule_tac a = "J (Suc (Suc n))" in forall_spec,
         cut_tac n = "Suc (Suc n)" in Nat.le_refl, blast, simp)
@@ -1426,10 +1426,10 @@ apply (frule_tac n = n and f = "ppa R P A i" and A = "P l" in ideal_nprod_inc)
   apply (frule_tac m = l and n = i in nat_not_less,
          thin_tac "\<not> l < i",
          cut_tac x = l and A = "{j. j \<le> (Suc n)}" and a = i in in_diff1)
-         apply simp
+         apply simp  
          apply (erule conjE,
          frule not_sym, thin_tac "l \<noteq> i",
-         frule_tac m = i and n = l in le_imp_less_or_eq,
+         frule_tac m = i and n = l in Nat.le_imp_less_or_eq,
          erule disjE, thin_tac "i \<le> l",
          frule_tac x = i and n = l in less_le_diff) 
   apply (cut_tac i = i and n = n and x = "l - Suc 0" in skip_im_Tr2_1,
@@ -1809,13 +1809,13 @@ apply (case_tac "n = Suc (Suc 0)", simp)
  apply (subst ag_pOp_assoc,
         rule nsum_mem, rule allI, rule impI)
  apply (frule_tac i = j and j = "n - Suc (Suc 0)" and k = n in 
-        Nat.le_less_trans, simp, frule_tac m = j and n = n in less_imp_le)
+        Nat.le_less_trans, simp, frule_tac m = j and n = n in Nat.less_imp_le)
         apply simp+
  apply (subst ag_pOp_commute[of "f n"], simp, simp)
  apply (subst ag_pOp_assoc[THEN sym],
          rule nsum_mem, rule allI, rule impI,
          frule_tac i = j and j = "n - Suc (Suc 0)" and k = n in 
-         Nat.le_less_trans, simp, frule_tac m = j and n = n in less_imp_le)
+         Nat.le_less_trans, simp, frule_tac m = j and n = n in Nat.less_imp_le)
         apply simp+ 
 
  apply (rule allI, rule impI, simp add:cmp_def)
@@ -3614,7 +3614,7 @@ lemma (in PolynRg) polyn_n_m1:"\<lbrakk>pol_coeff S c; n < m; m \<le> (fst c)\<r
       polyn_expr R X m c = polyn_expr R X n c \<plusminus>  
                         (fSum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) (Suc n) m)"
 apply (subst polyn_expr_short[of c n], assumption)
- apply (frule_tac i = n and j = m and k = "fst c" in less_le_trans, assumption,
+ apply (frule_tac i = n and j = m and k = "fst c" in Nat.less_le_trans, assumption,
         simp add:less_imp_le)
  apply (subst polyn_expr_short[of c m], assumption+)
  apply (simp add:polyn_n_m)
@@ -3799,8 +3799,8 @@ apply (case_tac "(fst c) = (fst d)", simp add:pol_coeff_def)
 apply (case_tac "(fst d) < (fst c)", simp,
        rule allI, rule impI, rule impI,
        rule aGroup.ag_pOp_commute, assumption+) 
-apply (frule_tac i = j and j = "fst d" and k = "fst c" in le_less_trans, 
-          assumption+, frule_tac m = j and n = "fst c" in less_imp_le,
+apply (frule_tac i = j and j = "fst d" and k = "fst c" in Nat.le_less_trans, 
+          assumption+, frule_tac m = j and n = "fst c" in Nat.less_imp_le,
           thin_tac "j < fst c", simp add:pol_coeff_mem, simp add:pol_coeff_mem)
 
 apply simp
@@ -3811,8 +3811,8 @@ apply (frule nat_not_less[of "fst d" "fst c"],
 
 apply (rule aGroup.ag_pOp_commute, assumption+,
        simp add:pol_coeff_mem,
-       frule_tac i = j and j = "fst c" and k = "fst d" in le_less_trans, 
-          assumption+, frule_tac m = j and n = "fst d" in less_imp_le,
+       frule_tac i = j and j = "fst c" and k = "fst d" in Nat.le_less_trans, 
+          assumption+, frule_tac m = j and n = "fst d" in Nat.less_imp_le,
            thin_tac "j < fst d", simp add:pol_coeff_mem)
 done
 
@@ -4098,7 +4098,7 @@ done
 lemma (in PolynRg) ext_cf_lo_zero:"\<lbrakk>pol_coeff S c; 0 < n; x \<le> (n - Suc 0)\<rbrakk>
               \<Longrightarrow> snd (ext_cf S n c) x = \<zero>\<^bsub>S\<^esub>"
 apply (cut_tac Suc_le_mono[THEN sym, of x "n - Suc 0"], simp,
-       cut_tac i = x and j = "Suc x" and k = n in less_le_trans,
+       cut_tac i = x and j = "Suc x" and k = n in Nat.less_le_trans,
        simp, assumption,
        simp add:nat_not_le_less[THEN sym, of x n],
               thin_tac "x \<le> n - Suc 0")
@@ -4672,9 +4672,9 @@ apply (frule m_cf_pol_coeff[of d])
  apply (simp add:add_cf_def m_cf_def max_def)
  apply (rule conjI)
   apply (rule allI, rule impI,
-         frule_tac i = j and j = "fst c" and k = "fst d" in le_less_trans, 
+         frule_tac i = j and j = "fst c" and k = "fst d" in Nat.le_less_trans, 
          assumption+,
-         frule_tac m = j and n = "fst d" in less_imp_le)
+         frule_tac m = j and n = "fst d" in Nat.less_imp_le)
   apply (drule_tac a = j in forall_spec, simp, simp)
   apply (frule_tac j = j in pol_coeff_mem[of c], simp,
          frule_tac j = j in pol_coeff_mem[of d], simp)
@@ -4682,7 +4682,7 @@ apply (frule m_cf_pol_coeff[of d])
 
   apply (rule ballI, simp add:nset_def, erule conjE)
   apply (cut_tac i = "fst c" and j = "Suc (fst c)" and k = j in 
-         less_le_trans, simp, assumption)
+         Nat.less_le_trans, simp, assumption)
   apply (cut_tac m1 = "fst c" and n1 = j in nat_not_le_less[THEN sym], simp)
   apply (drule_tac a = j in forall_spec, assumption, simp,
          frule_tac j = j in pol_coeff_mem[of d], simp)
@@ -4766,7 +4766,7 @@ apply (rule subsetI, simp)
         apply (case_tac "\<not> x \<le> (fst d)", simp,
                simp add:nat_not_le_less,
                frule_tac i = "fst d" and j = x and k = "fst c" in 
-               less_le_trans, assumption+,
+               Nat.less_le_trans, assumption+,
                drule_tac a = x in forall_spec1, simp add:max_def,
                simp add:add_cf_def m_cf_len m_cf_def)
 
@@ -4776,7 +4776,7 @@ apply (rule subsetI, simp)
                simp add:add_cf_def m_cf_len m_cf_def,
                frule_tac j = x in pol_coeff_mem[of c],
                frule_tac i = x and j = "fst d" and k = "fst c" in
-               le_less_trans, assumption+, simp add:less_imp_le,
+               Nat.le_less_trans, assumption+, simp add:less_imp_le,
                simp add:aGroup.ag_inv_zero aGroup.ag_r_zero[of S])
 
  apply (rule subsetI, simp, erule conjE,
@@ -4816,8 +4816,8 @@ apply (rule subsetI, simp)
           drule_tac a = x in forall_spec1, simp add:max_def,
           rule contrapos_pp, simp+,
           simp add:add_cf_def m_cf_len m_cf_def,
-          frule_tac i = x and j = "fst c" and k = "fst d" in le_less_trans,
-           assumption+, frule_tac m = x and n = "fst d" in less_imp_le,
+          frule_tac i = x and j = "fst c" and k = "fst d" in Nat.le_less_trans,
+           assumption+, frule_tac m = x and n = "fst d" in Nat.less_imp_le,
           frule_tac j = x in pol_coeff_mem[of d], assumption,
           frule_tac x = "snd d x" in aGroup.ag_mOp_closed, assumption+,
           simp add:aGroup.ag_l_zero,

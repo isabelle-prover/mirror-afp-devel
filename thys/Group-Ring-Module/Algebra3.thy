@@ -2426,33 +2426,19 @@ apply (case_tac "j = Suc n")
         frule_tac x = l and n = n in Suc_less_le)
   apply (case_tac "l = n", simp,
          thin_tac "l < Suc n",
-         frule_tac m = l and n = n in le_imp_less_or_eq, 
+         frule_tac m = l and n = n in Nat.le_imp_less_or_eq, 
          thin_tac "l \<le> n", simp)
   apply (frule_tac a = l in forall_spec, simp,
          thin_tac "\<forall>l\<le>n. \<forall>j\<le>n. l < j \<longrightarrow> f j \<subseteq> f l") apply (
          frule_tac a = n in forall_spec) apply (simp,
          thin_tac "\<forall>j\<le>n. l < j \<longrightarrow> f j \<subseteq> f l", simp)
-  apply (frule_tac m = j and n = "Suc n" in le_imp_less_or_eq, 
-         thin_tac "j \<le> Suc n", simp) apply (
-         frule_tac x = j and n = n in Suc_less_le) 
-  apply (frule d_gchain_pre,
-         frule_tac a = f in forall_spec,
-         thin_tac "\<forall>f. d_gchain G n f \<longrightarrow> (\<forall>l\<le>n. \<forall>j\<le>n. l < j \<longrightarrow> f j \<subseteq> f l)",
-         assumption) apply (
-         thin_tac "\<forall>f. d_gchain G n f \<longrightarrow> (\<forall>l\<le>n. \<forall>j\<le>n. l < j \<longrightarrow> f j \<subseteq> f l)",
-         frule_tac a = l in forall_spec, simp,
-         thin_tac "\<forall>l\<le>n. \<forall>j\<le>n. l < j \<longrightarrow> f j \<subseteq> f l",
-         frule_tac a = j in forall_spec, simp, simp) 
+  apply (metis Nat.less_le_trans d_gchain_pre less_Suc_eq_le linorder_antisym_conv1 mod_if mod_le_divisor)
 done
 
 lemma (in Group) d_gchainTr2:"\<lbrakk>0 < n; d_gchain G n f; l \<le> n; j \<le> n; l \<le> j \<rbrakk>
                                \<Longrightarrow> f j \<subseteq> f l"
 apply (case_tac "l = j", simp)
-apply (frule_tac m = l and n = j in le_imp_less_or_eq, thin_tac "l \<le> j",
-       simp)
-apply (cut_tac d_gchainTr1[of n],
-       frule_tac i = l and j = j and k = n in Nat.less_le_trans, assumption+,
-       simp)
+apply (metis Group.d_gchainTr1 Group_axioms linorder_antisym_conv2)
 done
 
 lemma (in Group) im_d_gchainTr1:"\<lbrakk>d_gchain G n f;
@@ -2519,7 +2505,7 @@ apply (subst image_def)
 apply (rule equalityI)
 apply (rule subsetI, simp, erule exE, erule conjE)
  apply (frule_tac i = xa and j = "j - Suc 0" and 
-        k = "(LEAST j. f j \<in> f ` {i. i \<le> n} \<and> f j \<noteq> f 0)" in le_less_trans,
+        k = "(LEAST j. f j \<in> f ` {i. i \<le> n} \<and> f j \<noteq> f 0)" in Nat.le_less_trans,
         simp,
         frule_tac k = xa in im_d_gchainsTr1_3[of "n" "f"])
   apply (simp, blast, simp, simp) 
@@ -2626,7 +2612,7 @@ apply (case_tac "n = 0")
 apply simp (** case 0 < n **)
 apply (simp add:inj_on_def)
  apply ((rule allI)+, rule impI, rule contrapos_pp, simp+, erule exE)
- apply (cut_tac m = x and n = y in less_linear, simp)
+ apply (cut_tac m = x and n = y in Nat.less_linear, simp)
 apply (erule disjE, (erule conjE)+)
  apply (frule_tac i = x and j = y in D_gchain0 [of "n" "f"], assumption+,
         simp,
@@ -2727,7 +2713,7 @@ apply (rule allI, rule impI)
         thin_tac "n < Suc la", simp)
  apply (case_tac "la = n", simp add:sliden_def)
 apply (frule not_sym, thin_tac "la \<noteq> n", 
-       frule_tac m = n and n = la in le_imp_less_or_eq, 
+       frule_tac m = n and n = la in Nat.le_imp_less_or_eq, 
        thin_tac "n \<le> la", simp,
        frule_tac m = n and n = la in Suc_leI, simp add:sliden_def)
  apply (simp add:d_gchain_def[of _ m g])
@@ -2759,7 +2745,7 @@ apply (rule allI, rule impI)
         frule_tac m = n and n = "Suc l" in Suc_leI, thin_tac "n < Suc l", simp)
  apply (case_tac "l = n", simp add:jointfun_def sliden_def)
  apply (frule not_sym, thin_tac "l \<noteq> n",
-        frule_tac m = n and n = l in le_imp_less_or_eq,
+        frule_tac m = n and n = l in Nat.le_imp_less_or_eq,
         thin_tac "n \<le> l", simp)
  apply (simp add:jointfun_def sliden_def)
  apply (frule_tac m = l and n = "n + m" and l = n in  diff_le_mono)
@@ -2800,14 +2786,14 @@ apply (rule allI, rule impI)
  apply (case_tac "m = 0") apply (simp add:sliden_def)
  apply (erule conjE)
  apply (simp add:sliden_def)
- apply (frule_tac i = 0 and j = l and k = m in less_le_trans, assumption+) 
+ apply (frule_tac i = 0 and j = l and k = m in Nat.less_le_trans, assumption+) 
  apply (frule_tac m = l and n = m and l = "Suc 0" in diff_le_mono)
  apply (frule_tac a = "l - Suc 0" in forall_spec, assumption,
         thin_tac "\<forall>l\<le>(m - Suc 0). (\<natural>(g l)) \<triangleright> (g (Suc l))")
  apply simp
  apply (case_tac "l \<le> n - Suc 0", simp) 
  apply (frule less_pre_n [of "n"])
- apply (frule_tac i = l in le_less_trans[of _ "n - Suc 0" "n"], assumption+) 
+ apply (frule_tac i = l in Nat.le_less_trans[of _ "n - Suc 0" "n"], assumption+) 
  apply (simp add:jointfun_def w_cmpser_def [of _ "n"])
 apply (simp add:nat_not_le_less)
  apply (frule_tac n = l in Suc_leI [of "n - Suc 0" _], simp)
@@ -2969,9 +2955,9 @@ apply (rule equalityI)
   apply (simp add:image_def)
   apply (erule disjE) apply blast
   apply (erule exE, erule conjE)
-  apply (frule_tac i = xa and j = n and k = "Suc n" in le_less_trans,
+  apply (frule_tac i = xa and j = n and k = "Suc n" in Nat.le_less_trans,
          simp,
-         frule_tac m = xa and n = "Suc n" in less_imp_le, blast)
+         frule_tac m = xa and n = "Suc n" in Nat.less_imp_le, blast)
  apply (cut_tac Nset_Suc [of "n"], simp)
 done
 
@@ -3610,18 +3596,12 @@ done
 lemma isom_gch_units_transpTr8_1:"\<lbrakk>Ugp E; Gchain n g; i \<le> n; j \<le> n; 
       g i \<cong> E; \<not> g j \<cong> E\<rbrakk> \<Longrightarrow> 
       {i. i \<le> n \<and> g i \<cong> E} = {i. i \<le> n \<and> g i \<cong> E} - { j }"
-apply (rule equalityI)
-apply (rule subsetI) apply (simp add:CollectI)
-apply (rule subsetI) apply (simp add:CollectI)
-done
+by auto
 
 lemma isom_gch_units_transpTr8_2:"\<lbrakk>Ugp E; Gchain n g; i \<le> n; j \<le> n;
        \<not> g i \<cong> E; \<not> g j \<cong> E\<rbrakk> \<Longrightarrow> 
        {i. i \<le> n \<and> g i \<cong> E} = {i. i \<le> n \<and> g i \<cong> E} - {i, j }"
-apply (rule equalityI)
-apply (rule subsetI) apply (simp add:CollectI)
-apply (rule subsetI) apply (simp add:CollectI)
-done
+by auto
 
 lemma isom_gch_units_transp:"\<lbrakk>Ugp E; Gchain n g; Gchain n h; i \<le> n; j \<le> n; 
       i < j; isom_Gchains n (transpos i j) g h\<rbrakk> \<Longrightarrow>  
@@ -3782,7 +3762,7 @@ apply (subst card_insert_disjoint)
         simp)
  apply (rule equalityI, rule subsetI, simp,
         erule conjE, case_tac "x = Suc n", simp,
-        frule_tac m = x and n = "Suc n" in le_imp_less_or_eq,
+        frule_tac m = x and n = "Suc n" in Nat.le_imp_less_or_eq,
         thin_tac "x \<le> Suc n", simp,
         rule subsetI, simp)
  apply (rule equalityI, rule subsetI, simp,
@@ -3887,11 +3867,7 @@ apply (cut_tac l = "f l" in transpos_mem[of "f (Suc n)" "Suc n" "Suc n"])
             cmp (transpos (f (Suc n)) (Suc n)) f (Suc n) =
             cmp (transpos (f (Suc n)) (Suc n)) f y \<longrightarrow>
             Suc n = y")
- apply (frule_tac i = l and j = n and k = "Suc n" in Nat.le_less_trans,
-        simp,
-        frule_tac m = l and n = "Suc n" in less_imp_le, simp,
-        simp add:cmp_def)
-
+apply (metis CollectD cmp_def in_set_with_P le_SucE le_SucI less_Suc_eq_le linorder_neq_iff linorder_not_le mem_of_Nset not_leE skip_im_Tr2_1)
 apply (simp add:isom_gch_unitsTr1_4)
 apply (simp add:isom_Gchains_def[of "n"])
 apply (rule allI, rule impI)
@@ -4402,10 +4378,8 @@ apply (rule allI, rule impI)
         simp only:mult_0_right)
  apply (frule_tac  r = r and s = s and l = l in rtos_hom2, assumption+)
  apply (rule less_le_diff)
- apply simp 
- apply (frule_tac i = "rtos r s l" in le_less_trans [of _ "r * s - Suc 0" 
-                       "r * s"], simp)
- apply (simp add:less_imp_le)
+ apply simp
+ apply (metis le_pre_le) 
 done
     
 lemma rtos_rs_Tr3:"\<lbrakk>(0::nat) < r; 0 < s \<rbrakk> \<Longrightarrow>
@@ -4867,7 +4841,7 @@ apply (rule compser_nsg[of r f], simp+)
         assumption+,
         thin_tac "i mod s \<noteq> s - Suc 0", thin_tac "i mod s \<le> s - Suc 0");
      apply (frule_tac i = "i mod s" and j = "s - Suc 0" and k = s in 
-            less_trans, simp,
+            Nat.less_trans, simp,
         frule_tac k = "i mod s" in nat_pos2 [of _ s],
         cut_tac l1 = i in div_Tr3_2 [THEN sym, of "r" "s"], simp+,
         frule_tac i = "i mod s" in compser_nsg [of "s" "g"], assumption+,
@@ -4920,7 +4894,7 @@ lemma (in Group) cmp_rfn5:"\<lbrakk>0 < r; 0 < s; compseries G r f; compseries G
 apply (rule allI, rule impI)
 apply (simp add:cmp_rfn_def)
 apply (case_tac "i < r", simp,
-       frule_tac m = i in less_imp_le [of _ "r"],
+       frule_tac m = i in Nat.less_imp_le [of _ "r"],
        frule_tac x = i in mem_of_Nset[of _ "r"],
        frule_tac i = i in compseriesTr0 [of "r" "f"], assumption+,
        thin_tac "i \<le> r",
@@ -4932,7 +4906,7 @@ apply (subst compseriesTr2 [of "s" "g"], assumption+,
        subst Int_absorb2, assumption+,
        frule rfn_tool8, assumption+, simp)
 apply (cut_tac n = i in zero_less_Suc,
-       frule_tac i = 0 and j = "Suc i" and k = r in less_le_trans, assumption+,
+       frule_tac i = 0 and j = "Suc i" and k = r in Nat.less_le_trans, assumption+,
        frule_tac l = i and j = "Suc i" in d_gchainTr2 [of "r" "f"],
        frule compseries_is_D_gchain[of "r" "f"], assumption,
         rule D_gchain_is_d_gchain, assumption+,
@@ -5404,7 +5378,7 @@ apply (simp add:Qw_cmpser_def)
  apply (simp only:cmp_rfn_def [of "G" "s" "g"]) 
  apply (frule_tac l = i in rtos_hom1 [of "r" "s"], assumption+)
  apply (frule_tac i = "rtos r s i" and j = "s * r - Suc 0" and k = "s * r" in
-          le_less_trans, simp)
+          Nat.le_less_trans, simp)
  apply (simp add:mult_commute [of "s" "r"])
 apply (case_tac "Suc (rtos r s i) < r * s", simp)
 prefer 2 apply simp

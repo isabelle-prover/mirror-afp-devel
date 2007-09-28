@@ -2075,7 +2075,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
 
  apply (rule conjI)
   apply (rule impI,
-         frule_tac m = j and n = "Suc (l + n)" in less_imp_le,
+         frule_tac m = j and n = "Suc (l + n)" in Nat.less_imp_le,
          frule_tac m = j and n = "Suc (l + n)" and l = "Suc n" in diff_le_mono,
          simp,
          frule_tac c = "(l, u)" and j = "j - Suc n" in pol_coeff_mem, simp,
@@ -2518,7 +2518,7 @@ apply (rule conjI)
    
    apply (case_tac "deg_n R S X a = deg_n R S X b",
           simp add:erHomTr1[of A B Y h])
-   apply (cut_tac n = "deg_n R S X a" and m = "deg_n R S X b" in less_linear,
+   apply (cut_tac n = "deg_n R S X a" and m = "deg_n R S X b" in Nat.less_linear,
           simp)
    apply (erule disjE)
    apply (subst aGroup.ag_pOp_commute, assumption+,
@@ -3409,7 +3409,7 @@ apply (subst add_cf_len, assumption+)
 apply (rule allI, rule impI)
 
 apply (cut_tac m = "fst (s_cf R S X p)" and n = "fst (s_cf R S X q)" in 
-       less_linear)
+       Nat.less_linear)
 apply (erule disjE)
  apply (simp add:max_def, 
         subst add_cf_def, simp,
@@ -3417,8 +3417,8 @@ apply (erule disjE)
         drule_tac a = j in forall_spec, assumption,
         drule_tac a = j in forall_spec1,
         frule_tac i = j and j = "fst (s_cf R S X p)" and 
-           k = "fst (s_cf R S X q)" in le_less_trans, assumption+,
-        frule_tac m = j and n = "fst (s_cf R S X q)" in less_imp_le, simp))
+           k = "fst (s_cf R S X q)" in Nat.le_less_trans, assumption+,
+        frule_tac m = j and n = "fst (s_cf R S X q)" in Nat.less_imp_le, simp))
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 apply (erule disjE)
  apply (simp add:max_def, 
@@ -3432,8 +3432,8 @@ apply (erule disjE)
         drule_tac a = j in forall_spec1, 
         drule_tac a = j in forall_spec, assumption,
         frule_tac i = j and j = "fst (s_cf R S X q)" and 
-           k = "fst (s_cf R S X p)" in le_less_trans, assumption+,
-        frule_tac m = j and n = "fst (s_cf R S X p)" in less_imp_le, simp)
+           k = "fst (s_cf R S X p)" in Nat.le_less_trans, assumption+,
+        frule_tac m = j and n = "fst (s_cf R S X p)" in Nat.less_imp_le, simp)
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 done
 

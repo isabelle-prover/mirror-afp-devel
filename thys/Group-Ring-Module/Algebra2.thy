@@ -1977,11 +1977,15 @@ apply (rule equalityI)
        "Iod D (segment (Iod D W2) (g t))" 
          "restrict g (carrier (Iod D (segment (Iod D W1) t)))"], assumption+,
         simp add:Iod_carrier, simp add:Iod_carrier, simp add:fixp_def)
+apply (metis Order.Iod_carrier Order_axioms)
  apply (rule subsetI)
  apply (frule_tac b = x in Order.ord_isom_surj[of 
          "Iod D (segment (Iod D W1) t)" "Iod D (segment (Iod D W2) (g t))" 
-         "restrict g (carrier (Iod D (segment (Iod D W1) t)))"], assumption+,
-         simp add:Iod_carrier, erule bexE, simp add:Iod_carrier fixp_def)
+         "restrict g (carrier (Iod D (segment (Iod D W1) t)))"]); 
+apply assumption
+apply (metis Order.Iod_carrier Order_axioms)
+apply (metis Order.Iod_carrier Order.segment_free Order_axioms)
+apply (metis Order.Iod_carrier Order_axioms fixp_def restrict_apply)
 done
 
 lemma (in Order) BNTr4_1:"\<lbrakk>f \<in> carrier D \<rightarrow> carrier D;  a \<in> carrier D; 

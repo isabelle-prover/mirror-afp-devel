@@ -701,7 +701,7 @@ apply (subst limit_def)
          blast) 
   apply (rule allI, rule impI)
   apply (cut_tac i = "Na" and j = "max Na M" and k = n
-         in le_less_trans)
+         in Nat.le_less_trans)
   apply simp+
   apply (thin_tac "\<forall>N. \<exists>M. \<forall>n>M. f n \<plusminus> -\<^sub>a b \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>")
  apply (drule_tac m = n in nat_forall_spec,
