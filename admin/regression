@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.22 2007-09-10 21:52:53 lsf37 Exp $
+# $Id: regression,v 1.23 2007-09-29 14:20:19 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -88,6 +88,8 @@ else
   AFP_VER="release ($1)"
   WORKING_COPY=$WORKING_COPY/release
   ISATOOL=$ISABELLE_RELEASES/$1/bin/isatool
+  ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
+  export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
   LOG=$LOG-$1-$DATE.log
   REPORT=$REPORT-$1
 fi
