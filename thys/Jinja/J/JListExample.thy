@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/JListExample.thy
-    ID:         $Id: JListExample.thy,v 1.3 2007-05-10 08:22:56 fhaftmann Exp $
+    ID:         $Id: JListExample.thy,v 1.4 2007-09-30 17:36:43 makarius Exp $
     Author:     Stefan Berghofer
 *)
 
@@ -64,7 +64,7 @@ types_code
   cname ("string")
   vnam ("string")
   mname ("string")
-  loc_ ("int")
+  loc' ("int")
 
 consts_code
   "new_Addr" ("new'_addr {* %x. case x of None => True | Some y => False *}/ {* None *} {* Loc *}")

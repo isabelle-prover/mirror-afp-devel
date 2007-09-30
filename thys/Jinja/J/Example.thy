@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Example.thy
-    ID:         $Id: Example.thy,v 1.3 2007-09-18 14:55:07 makarius Exp $
+    ID:         $Id: Example.thy,v 1.4 2007-09-30 17:36:43 makarius Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -37,23 +37,23 @@ class Example {
 \end{verbatim}
 *}
 
-datatype cnam_ = Base_ | Ext_
-datatype vnam_ = vee_ | x_ | e_
+datatype cnam' = Base' | Ext'
+datatype vnam' = vee' | x' | e'
 
 consts
-  cnam_ :: "cnam_ => cname"
-  vnam_ :: "vnam_ => vnam"
+  cnam' :: "cnam' => cname"
+  vnam' :: "vnam' => vnam"
 
--- "@{text cnam_} and @{text vnam_} are intended to be isomorphic 
+-- "@{text cnam'} and @{text vnam'} are intended to be isomorphic 
     to @{text cnam} and @{text vnam}"
 axioms 
-  inj_cnam_:  "(cnam_ x = cnam_ y) = (x = y)"
-  inj_vnam_:  "(vnam_ x = vnam_ y) = (x = y)"
+  inj_cnam':  "(cnam' x = cnam' y) = (x = y)"
+  inj_vnam':  "(vnam' x = vnam' y) = (x = y)"
 
-  surj_cnam_: "\<exists>m. n = cnam_ m"
-  surj_vnam_: "\<exists>m. n = vnam_ m"
+  surj_cnam': "\<exists>m. n = cnam' m"
+  surj_vnam': "\<exists>m. n = vnam' m"
 
-declare inj_cnam_ [simp] inj_vnam_ [simp]
+declare inj_cnam' [simp] inj_vnam' [simp]
 
 syntax
   Base :: cname
@@ -63,11 +63,11 @@ syntax
   e    :: vname
 
 translations
-  "Base" == "cnam_ Base_"
-  "Ext"  == "cnam_ Ext_"
-  "vee"  == "VName (vnam_ vee_)"
-  "x"  == "VName (vnam_ x_)"
-  "e"  == "VName (vnam_ e_)"
+  "Base" == "cnam' Base'"
+  "Ext"  == "cnam' Ext'"
+  "vee"  == "VName (vnam' vee')"
+  "x"  == "VName (vnam' x')"
+  "e"  == "VName (vnam' e')"
 
 axioms
   Base_not_Object: "Base \<noteq> Object"
@@ -257,20 +257,20 @@ done
 
 declare ty_expr_ty_exprs_wt_stmt.intros [intro!]
 
-lemma acyclic_subcls1_: "acyclic (subcls1 tprg)"
+lemma acyclic_subcls1': "acyclic (subcls1 tprg)"
 (*<*)
 apply (rule acyclicI)
 apply safe
 done
 (*>*)
 
-lemmas wf_subcls1_ = acyclic_subcls1_ [THEN finite_subcls1 [THEN finite_acyclic_wf_converse]]
+lemmas wf_subcls1' = acyclic_subcls1' [THEN finite_subcls1 [THEN finite_acyclic_wf_converse]]
 
-lemmas fields_rec_ = wf_subcls1_ [THEN [2] fields_rec_lemma]
+lemmas fields_rec' = wf_subcls1' [THEN [2] fields_rec_lemma]
 
 lemma fields_Object [simp]: "fields (tprg, Object) = []"
 (*<*)
-apply (subst fields_rec_)
+apply (subst fields_rec')
 apply   auto
 done
 (*>*)
@@ -279,7 +279,7 @@ declare is_class_def [simp]
 
 lemma fields_Base [simp]: "fields (tprg,Base) = [((vee, Base), PrimT Boolean)]"
 (*<*)
-apply (subst fields_rec_)
+apply (subst fields_rec')
 apply   auto
 done
 (*>*)
@@ -288,16 +288,16 @@ lemma fields_Ext [simp]:
   "fields (tprg, Ext)  = [((vee, Ext ), PrimT Integer)] @ fields (tprg, Base)"
 (*<*)
 apply (rule trans)
-apply  (rule fields_rec_)
+apply  (rule fields_rec')
 apply   auto
 done
 (*>*)
 
-lemmas method_rec_ = wf_subcls1_ [THEN [2] method_rec_lemma]
+lemmas method_rec' = wf_subcls1' [THEN [2] method_rec_lemma]
 
 lemma method_Object [simp]: "method tprg Object = map_of []"
 (*<*)
-apply (subst method_rec_)
+apply (subst method_rec')
 apply  auto
 done
 (*>*)
@@ -306,7 +306,7 @@ lemma method_Base [simp]: "method tprg Base = map_of
   [(foo, Base, [Class Base], (Class Base, foo_Base))]"
 (*<*)
 apply (rule trans)
-apply  (rule method_rec_)
+apply  (rule method_rec')
 apply  (auto simp: map_of.simps)
 done
 (*>*)
@@ -315,7 +315,7 @@ lemma method_Ext [simp]: "method tprg Ext = (method tprg Base ++ map_of
   [(foo, Ext, [Class Base], Class Ext, foo_Ext)])"
 (*<*)
 apply (rule trans)
-apply  (rule method_rec_)
+apply  (rule method_rec')
 apply  (auto simp: map_of.simps)
 done
 (*>*)
