@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Maybe.thy
-   ID:        $Id: Maybe.thy,v 1.7 2007-07-22 20:44:19 makarius Exp $
+   ID:        $Id: Maybe.thy,v 1.8 2007-10-03 19:09:51 makarius Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -20,33 +20,24 @@ translations "P := E; F" == "CONST option_bind E (%P. F)"
 
 -- "constructor laws for @{text option_bind}"
 lemma option_bind_Some: "option_bind (Some s) f = (f s)"
-apply (unfold option_bind_def)
-apply (simp (no_asm))
-done
+  by (simp add: option_bind_def)
 
 lemma option_bind_None: "option_bind None f = None"
-apply (unfold option_bind_def)
-apply (simp (no_asm))
-done
+  by (simp add: option_bind_def)
 
 declare option_bind_Some [simp] option_bind_None [simp]
 
 -- "expansion of @{text option_bind}"
 lemma split_option_bind: "P(option_bind res f) =  
           ((res = None --> P None) & (!s. res = Some s --> P(f s)))"
-apply (unfold option_bind_def)
-apply (rule option.split)
-done
+  unfolding option_bind_def
+  by (rule option.split)
 
-lemma option_bind_eq_None: 
-  "((option_bind m f) = None) = ((m=None) | (? p. m = Some p & f p = None))"
-apply (simp (no_asm) split add: split_option_bind)
-done
-
-declare option_bind_eq_None [simp]
+lemma option_bind_eq_None [simp]:
+    "((option_bind m f) = None) = ((m=None) | (? p. m = Some p & f p = None))"
+  by (simp split: split_option_bind)
 
 lemma rotate_Some: "(y = Some x) = (Some x = y)"
-apply ( simp (no_asm) add: eq_sym_conv)
-done
+  by (simp add: eq_sym_conv)
 
 end
