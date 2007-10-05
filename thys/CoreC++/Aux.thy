@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Aux.thy,v 1.8 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Aux.thy,v 1.9 2007-10-05 15:02:21 nipkow Exp $
     Author:      David von Oheimb, Tobias Nipkow, Daniel Wasserrab  
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -87,25 +87,6 @@ lemma only_one_append:"\<lbrakk>C' \<notin> set Cs; C' \<notin> set Cs'; Ds@ C'#
    apply simp
   apply (simp (no_asm))
   done
-
-
-lemma assumes elem:"a \<in> A" shows Singleton_card:"(card A = 1) = (\<forall>a' \<in> A. a = a')"
-proof -
-  { assume elem:"a \<in> A" "\<forall>a'\<in>A. a = a'"
-    hence "A \<subseteq> {a}" by -(rule subsetI,erule_tac x="x" in ballE,simp+)
-    with elem have "A = {a}" by fastsimp
-    hence "card A = Suc 0" by simp }
-  hence 1:"\<lbrakk>a \<in> A; \<forall>a'\<in>A. a = a'\<rbrakk> \<Longrightarrow> card A = Suc 0" .
-  { fix b assume elem:"a \<in> A" and cardSuc:"card A = Suc 0" and elem':"b \<in> A"
-    from cardSuc have "~(card A = 0)" by simp
-    from contrapos_nn[OF this card_infinite[of A]] have "finite A" by fastsimp
-    with elem cardSuc have "A - {a} = {}"
-      by -(frule card_Diff_singleton,simp+)
-    with elem' have "a = b" by auto }
-  hence 2:"\<And>b. \<lbrakk>a \<in> A; card A = Suc 0; b \<in> A\<rbrakk> \<Longrightarrow> a = b" by simp
-  from elem show ?thesis by (auto intro:1 2)
-qed
-
 
 
 constdefs

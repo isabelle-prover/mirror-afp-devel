@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: SubObj.thy,v 1.10 2007-07-19 21:23:09 makarius Exp $
+    ID:          $Id: SubObj.thy,v 1.11 2007-10-05 15:02:21 nipkow Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -802,7 +802,7 @@ proof -
     and "card(OverriderMethodDefs P (C,Cs) M) = 1" 
     by(simp_all add:FinalOverriderMethodDef_def)
   hence "\<forall>(Ds,mthd'') \<in> OverriderMethodDefs P (C,Cs) M. (Cs',mthd) = (Ds,mthd'')"
-    by(fastsimp dest:Singleton_card)
+    by(fastsimp simp:card_Suc_eq)
   with omd show ?thesis by fastsimp
 qed
 

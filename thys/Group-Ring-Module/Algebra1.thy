@@ -4341,26 +4341,22 @@ by auto
 lemma Nset2_finiteTr:"\<forall>A. (finite A \<and>(card A = Suc n) \<longrightarrow> 
      (\<exists>f. f \<in> {i. i \<le> n} \<rightarrow> A \<and> surj_to f {i. i \<le> n} A))"
 apply (induct_tac n, rule allI, rule impI, erule conjE, simp add:card1_Tr2)
-  (* n *) 
- apply (rule allI, rule impI, erule conjE, frule Nset2_prep1, assumption+)
- apply (erule exE)
- apply (frule_tac A = A and x = x in card_Diff_singleton, assumption+,
-        simp, frule_tac B = A and Ba = "{x}" in finite_Diff,
-        frule_tac  P = "finite (A - {x})" and Q = "card (A - {x}) = Suc n" 
-        in conjI, assumption+, 
-        frule_tac a = "A - {x}" in forall_spec, assumption)
- apply (thin_tac "\<forall>A. finite A \<and> card A = Suc n \<longrightarrow> 
-        (\<exists>f. f \<in> {i. i \<le> n} \<rightarrow> A \<and>surj_to f {i. i \<le> n} A)", erule exE)
- apply (cut_tac x = x in card1_tr1, (erule conjE)+)
- apply (frule_tac f = f and n = n and A = "A - {x}" and 
-        g = "constmap {0} {x}" and m = 0 and B = "{x}" in jointfun_surj, 
-        assumption+)
- apply simp+
- apply (frule_tac f = f and n = n and A = "A - {x}" and 
+  (* n *)
+apply (rule allI, rule impI, erule conjE, frule Nset2_prep1, assumption+)
+apply (erule exE)
+apply(drule_tac a = "A - {x}" in forall_spec)
+ apply simp
+apply (erule exE)
+apply (cut_tac x = x in card1_tr1, (erule conjE)+)
+apply (frule_tac f = f and n = n and A = "A - {x}" and 
+       g = "constmap {0} {x}" and m = 0 and B = "{x}" in jointfun_surj,
+       assumption+)
+  apply simp+
+apply (frule_tac f = f and n = n and A = "A - {x}" and 
         g = "constmap {0} {x}" and m = 0 and B = "{x}" in jointfun_hom0,
         simp,
         frule_tac x = x and A = A in Nset2_prep2, simp, blast)
- done
+done
 
 lemma Nset2_finite:"\<lbrakk> finite A; card A = Suc n\<rbrakk> \<Longrightarrow>
                        \<exists>f. f \<in> {i. i \<le> n} \<rightarrow> A \<and> surj_to f {i. i \<le> n} A "
