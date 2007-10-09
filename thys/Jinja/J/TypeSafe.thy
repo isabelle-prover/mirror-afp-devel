@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallTypeSafe.thy
-    ID:         $Id: TypeSafe.thy,v 1.5 2007-07-19 21:23:12 makarius Exp $
+    ID:         $Id: TypeSafe.thy,v 1.6 2007-10-09 07:19:16 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -380,10 +380,10 @@ next
     { assume "U = NT" with wt\<^isub>1' wt\<^isub>2' void have ?case
 	by(blast intro!:WTrtFAssNT) }
     moreover
-    { fix C' assume UClass: "U = Class C'" and subclass: "P \<turnstile> C' \<preceq>\<^sup>* C"
+    { fix C' assume UClass: "U = Class C'" and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C"
       have "P,E,h' \<turnstile> e' : Class C'" using wt\<^isub>1' UClass by auto
       moreover have "P \<turnstile> C' has F:TF in D"
-	by(rule has_field_mono[OF has subclass])
+	by(rule has_field_mono[OF has "subclass"])
       ultimately have ?case using wt\<^isub>2' sub void by(blast intro:WTrtFAss) }
     ultimately have ?case using UsubC by(auto simp add:widen_Class) }
   ultimately show ?case using wt by blast
@@ -448,12 +448,12 @@ next
 	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
       ultimately have ?case using wte' by(blast intro!:WTrtCallNT) }
     moreover
-    { fix C' assume UClass: "U = Class C'" and subclass: "P \<turnstile> C' \<preceq>\<^sup>* C"
+    { fix C' assume UClass: "U = Class C'" and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C"
       have "P,E,h' \<turnstile> e' : Class C'" using wte' UClass by auto
       moreover obtain Ts' T' pns' body' D'
 	where method': "P \<turnstile> C' sees M:Ts'\<rightarrow>T' = (pns',body') in D'"
 	and subs': "P \<turnstile> Ts [\<le>] Ts'" and sub': "P \<turnstile> T' \<le> T"
-	using Call_lemma[OF method subclass wf] by fast
+	using Call_lemma[OF method "subclass" wf] by fast
       moreover have "P,E,h' \<turnstile> es [:] Us"
 	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
       ultimately have ?case
