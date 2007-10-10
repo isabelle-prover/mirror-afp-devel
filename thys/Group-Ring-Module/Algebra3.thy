@@ -3820,8 +3820,6 @@ lemma isom_gch_unitsTr1_4:"\<lbrakk>Ugp E; f (Suc n) \<noteq> Suc n; inj_on f {i
 apply (frule isom_gch_unitsTr1_3 [of "E" "f" "n"], assumption+)
 apply (frule isom_gch_unitsTr1_2 [of "E" "f" "n"], assumption+)
 apply (rule Nset_injTr1 [of "n" "(cmp (transpos (f (Suc n)) (Suc n)) f)"])
-
-
 apply (rule allI, rule impI)
 apply (simp add:cmp_def)  
 apply (cut_tac l = "f l" in transpos_mem[of "f (Suc n)" "Suc n" "Suc n"], 
@@ -3867,7 +3865,7 @@ apply (cut_tac l = "f l" in transpos_mem[of "f (Suc n)" "Suc n" "Suc n"])
             cmp (transpos (f (Suc n)) (Suc n)) f (Suc n) =
             cmp (transpos (f (Suc n)) (Suc n)) f y \<longrightarrow>
             Suc n = y")
-apply (metis CollectD cmp_def in_set_with_P le_SucE le_SucI less_Suc_eq_le linorder_neq_iff linorder_not_le mem_of_Nset not_leE skip_im_Tr2_1)
+apply (metis Nfunc_iNJTr comp_transpos_1 le_SucE le_SucI le_refl less_Suc_eq_le transpos_ij_2)
 apply (simp add:isom_gch_unitsTr1_4)
 apply (simp add:isom_Gchains_def[of "n"])
 apply (rule allI, rule impI)
