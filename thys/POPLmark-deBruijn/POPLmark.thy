@@ -1,5 +1,5 @@
 (*  Title:      POPLmark/POPLmark.thy
-    ID:         $Id: POPLmark.thy,v 1.4 2007-09-28 11:33:49 stefanberghofer Exp $
+    ID:         $Id: POPLmark.thy,v 1.5 2007-10-16 09:10:53 stefanberghofer Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -1260,7 +1260,7 @@ theorem subst_type: -- {* A.8 *}
   apply assumption
   done
 
-theorem substT_type:
+theorem substT_type: -- {* A.11 *}
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> t : T"
   shows "\<Gamma> \<turnstile> P <: Q \<Longrightarrow>
     \<Delta>[0 \<mapsto>\<^isub>\<tau> P]\<^isub>e @ \<Gamma> \<turnstile> t[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> P] : T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^isub>\<tau> P]\<^isub>\<tau>" using H
