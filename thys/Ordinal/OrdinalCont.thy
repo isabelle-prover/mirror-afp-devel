@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalCont.thy,v 1.3 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: OrdinalCont.thy,v 1.4 2007-10-18 07:21:22 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -20,7 +20,7 @@ lemmas continuousD = continuous.cont
 
 lemma (in continuous) mono: "mono F"
  apply (rule monoI)
- apply (cut_tac f="nat_case A (\<lambda>n. B)" in cont)
+ apply (cut_tac f="nat_case x (\<lambda>n. y)" in cont)
  apply (subgoal_tac "\<forall>x y. oLimit (nat_case x (\<lambda>n. y)) = max x y")
   apply (subgoal_tac "\<forall>x y n. F (case n of 0 \<Rightarrow> x | Suc n \<Rightarrow> y)
                           = (case n of 0 \<Rightarrow> F x | Suc n \<Rightarrow> F y)")

@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalInduct.thy,v 1.3 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: OrdinalInduct.thy,v 1.4 2007-10-18 07:21:22 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -115,7 +115,7 @@ fixes f :: "nat \<Rightarrow> 'a::order"
 shows "(\<And>n. f n \<le> f (Suc n)) \<Longrightarrow> mono f"
  apply (rule monoI)
  apply (drule le_add_diff_inverse)
- apply (subgoal_tac "\<forall>k. f A \<le> f (A + k)")
+ apply (subgoal_tac "\<forall>k. f x \<le> f (x + k)")
   apply (erule subst, erule spec)
  apply (rule allI, induct_tac k, simp)
  apply (erule order_trans, simp)

@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalFix.thy,v 1.3 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: OrdinalFix.thy,v 1.4 2007-10-18 07:21:22 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -44,7 +44,7 @@ done
 
 lemma mono_oFix: "mono F \<Longrightarrow> mono (oFix F)"
  apply (rule monoI, unfold oFix_def)
- apply (subgoal_tac "\<forall>n. iter n F A \<le> iter n F B")
+ apply (subgoal_tac "\<forall>n. iter n F x \<le> iter n F y")
   apply (rule oLimit_leI, clarify)
   apply (rule_tac n=n in le_oLimitI, erule spec)
  apply (rule allI, induct_tac n)

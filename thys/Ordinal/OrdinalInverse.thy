@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalInverse.thy,v 1.3 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: OrdinalInverse.thy,v 1.4 2007-10-18 07:21:22 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -133,12 +133,17 @@ lemma (in normal) oInv_le:
 done
 
 lemma (in normal) mono_oInv: "mono (oInv F)"
- apply (rule monoI)
- apply (rule_tac x=A and y="F 0" in linorder_le_cases)
-  apply (simp add: oInv_eq_0)
- apply (rule le_oInv)
- apply (simp only: order_trans[OF oInv_bound1])
-done
+proof
+  fix x y :: ordinal
+  assume "x \<le> y"
+  show "oInv F x \<le> oInv F y"
+  proof (rule linorder_le_cases [of x "F 0"])
+    assume "x \<le> F 0" then show ?thesis by (simp add: oInv_eq_0)
+  next
+    assume "F 0 \<le> x" show ?thesis
+      by (rule le_oInv, simp only: `x \<le> y` `F 0 \<le> x` order_trans [OF oInv_bound1])
+  qed
+qed
 
 lemma (in normal) oInv_decreasing:
 "F 0 \<le> x \<Longrightarrow> oInv F x \<le> x"
