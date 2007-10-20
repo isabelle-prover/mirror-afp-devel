@@ -342,7 +342,7 @@ lemma (in Ring) coprime_n_idealsTr3:"(\<forall>k \<le> (Suc n). ideal R (J k)) \
     coprime_ideals R (J i) (J j)) \<longrightarrow>  coprime_ideals R (i\<Pi>\<^bsub>R,n\<^esub> J) (J (Suc n))"
 apply (rule impI, erule conjE)
 apply (case_tac "n = 0", simp)
- apply (simp add:Nset_1)
+ apply (simp add:Nset_1 neq0_conv)
  apply (cut_tac nat_eq_le[of "Suc n" "Suc n"],
         frule_tac a = "Suc n" in forall_spec, assumption) 
  apply (rotate_tac 1, frule_tac a = "Suc n" in forall_spec, assumption,
@@ -1076,7 +1076,7 @@ apply (rule ballI)
 apply (case_tac "k = 0")
 apply (simp add:prodB1_def)
 apply (simp add:qring_ring)
-apply simp 
+apply (simp add: neq0_conv)
  apply (frule_tac n = k in Suc_leI[of 0], thin_tac "0 < k")
  apply (frule_tac m = k and n = "Suc 0" in Nat.le_anti_sym, assumption)
  apply (simp, simp add:prodB1_def, simp add:qring_ring)
@@ -3045,7 +3045,7 @@ done
 
 lemma (in Idomain) principal_pow_prime_condTr:
   "\<lbrakk>a \<in> carrier R; a \<noteq> \<zero>; prime_ideal R ((Rxa R a) \<^bsup>\<diamondsuit>R (Suc n)\<^esup>)\<rbrakk> \<Longrightarrow> n = 0"
-apply (rule contrapos_pp, (simp del:ipSuc)+) 
+apply (rule contrapos_pp, (simp del:ipSuc add: neq0_conv)+) 
 apply (frule n_pow_not_prime[of  "a" "n"], assumption+)
 apply (simp del:ipSuc)
 done
@@ -3054,7 +3054,7 @@ lemma (in Idomain) principal_pow_prime_cond:
   "\<lbrakk>a \<in> carrier R; a \<noteq> \<zero>;  prime_ideal R ((Rxa R a) \<^bsup>\<diamondsuit>R n\<^esup>)\<rbrakk> \<Longrightarrow> n = Suc 0"
 apply (case_tac "n = 0")
  apply simp
- apply (simp add:prime_ideal_def) apply (erule conjE)
+ apply (simp add:prime_ideal_def neq0_conv) apply (erule conjE)
  apply (cut_tac ring_one, simp)
 apply (subgoal_tac "prime_ideal R (R \<diamondsuit>\<^sub>p a \<^bsup>\<diamondsuit>R (Suc (n - Suc 0))\<^esup>)")
 apply (frule principal_pow_prime_condTr[of "a" "n - Suc 0"], assumption+)
@@ -4151,7 +4151,7 @@ apply (case_tac "d = 0")
  apply (simp add:polyn_expr_def ext_cf_def sliden_def)
 apply (frule ext_cf_pol_coeff[of c d]) 
 apply (cut_tac polyn_Suc[of "d - Suc 0" "ext_cf S d c"])
-apply simp
+apply (simp add: neq0_conv)
 apply (cut_tac polyn_ext_cf_lo_zero[of c d], simp,
        thin_tac "polyn_expr R X (d - Suc 0) (ext_cf S d c) = \<zero>")
  apply (frule monomial_mem[of "ext_cf S d c"], simp add:ext_cf_len,
@@ -4159,7 +4159,7 @@ apply (cut_tac polyn_ext_cf_lo_zero[of c d], simp,
  apply (subst polyn_expr_short[of "ext_cf S d c" d], assumption,
         simp add:ext_cf_len)
  apply (simp,
-        subst ext_cf_def, simp add:sliden_def, assumption+,
+        subst ext_cf_def, simp add:sliden_def , assumption+,
         simp add:ext_cf_len)
 done
 

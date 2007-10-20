@@ -1452,7 +1452,7 @@ lemma (in Ring) apow_ring_pow:"ideal R I \<Longrightarrow>
                   I\<^bsup>\<diamondsuit>R n\<^esup> =  I\<^bsup>R (an n)\<^esup>"
 apply (simp add:r_apow_def)
 apply (case_tac "n = 0", simp add:an_0)
-apply (simp add:aless_nat_less[THEN sym],
+apply (simp add: neq0_conv aless_nat_less[THEN sym],
        cut_tac an_neq_inf[of n],
        simp add: aless_le[of 0 "an n"] na_an) 
 done
@@ -2588,11 +2588,11 @@ done
 
 lemma (in Corps) n_value_x_1_nat:"\<lbrakk>valuation K v; x \<in> (vp K v)\<^bsup>\<diamondsuit>(Vr K v) n\<^esup> \<rbrakk> \<Longrightarrow>
              (an n) \<le> (n_val K v x)"
-apply (cut_tac an_nat_pos[of "n"],
-       frule n_value_x_1[of  "v" "an n" "x"], assumption+,
-       simp add:r_apow_def,
-       case_tac "n = 0", simp, simp,
-       cut_tac aless_nat_less[THEN sym, of "0" "n"], simp,
+apply (cut_tac an_nat_pos[of "n"])
+apply( frule n_value_x_1[of  "v" "an n" "x"], assumption+)
+apply (simp add:r_apow_def)
+apply (case_tac "n = 0", simp, simp add: neq0_conv)
+apply (cut_tac aless_nat_less[THEN sym, of "0" "n"], simp,
        simp add:aless_le, cut_tac an_neq_inf[of "n"], simp,
        simp add:na_an, assumption)
 done
@@ -2837,12 +2837,12 @@ apply (subgoal_tac "0 \<le> int n", subgoal_tac "0 \<le> int m",
 apply (case_tac "n = 0", simp, case_tac "m = 0", simp,
        simp only:zero_less_int_conv[THEN sym, of "m"],
        simp only:asprod_amult a_z_z,
-       simp only:ant_0[THEN sym], simp only:aeq_zeq, simp)
+       simp only:ant_0[THEN sym], simp only:aeq_zeq, simp add: neq0_conv)
 
-apply (simp, simp only:zero_less_int_conv[THEN sym, of "n"],
+apply (simp add: neq0_conv, simp only:zero_less_int_conv[THEN sym, of "n"],
        simp only:asprod_amult a_z_z, 
        case_tac "m = 0", simp,
-       simp, simp only:zero_less_int_conv[THEN sym, of "m"],
+       simp add: neq0_conv, simp only:zero_less_int_conv[THEN sym, of "m"],
        simp only:asprod_amult a_z_z, simp only:aeq_zeq, simp, simp+)
 done
 
@@ -2944,7 +2944,7 @@ apply (frule Vr_ring[of v],
                   simp, simp, assumption+) 
       
 apply (case_tac "na (n_val K v (Ig K v I)) = 0",
-       simp, frule Ring.Rxa_one[of "Vr K v"], simp,
+       simp, frule Ring.Rxa_one[of "Vr K v"], simp add: neq0_conv,
        frule Suc_leI[of "0" "na (n_val K v (Ig K v I))"],
        thin_tac "0 < na (n_val K v (Ig K v I))")
 apply (case_tac "na (n_val K v (Ig K v I)) = Suc 0", simp,

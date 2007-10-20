@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Crypt.thy
-    ID:         $Id: Crypt.thy,v 1.1 2005-05-10 16:13:45 nipkow Exp $ 
+    ID:         $Id: Crypt.thy,v 1.2 2007-10-20 10:11:58 chaieb Exp $ 
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -26,7 +26,7 @@ recdef rsa_crypt "measure(\<lambda>(M,e,n).e)"
   "rsa_crypt (M,Suc e,n) = (if even (Suc e) then ((rsa_crypt (M, (Suc e) div 2,n))^2 mod n) else ((M * ((rsa_crypt (M, Suc e div 2,n))^2 mod n)) mod n))"
 
 lemma div_2_times_2: "(if (even m) then  (m div 2 * 2 = m) else (m div 2 * 2 = m - 1))"
-  by (simp add: even_def dvd_eq_mod_eq_0 mult_commute mult_div_cancel)
+  by (simp add: even_def dvd_eq_mod_eq_0 mult_commute mult_div_cancel neq0_conv)
 
 theorem cryptcorrect[rule_format]: "((n \<noteq> 0) & (n \<noteq> 1)) \<longrightarrow> (rsa_crypt(M,e,n) = M^e mod n)"
   apply (induct_tac M e n rule: rsa_crypt.induct) 

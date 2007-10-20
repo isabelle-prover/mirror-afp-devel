@@ -363,7 +363,7 @@ apply (erule exE)
  apply simp apply simp apply (thin_tac "\<not> 0 \<le> v (f n)")
  apply (simp add:aneg_le) apply blast
 
-apply simp
+apply (simp add: neq0_conv)
  apply (subgoal_tac "\<forall>n. ((f n) \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>) = 
                                 ((an N) \<le> n_val K v (f n))")
  apply simp
@@ -393,7 +393,7 @@ apply (simp add:limit_def)
  apply (rule allI) apply (rotate_tac 3,
        drule_tac m = N in nat_forall_spec,
        drule_tac m = N in nat_forall_spec,
-       (erule exE)+) thm two_inequalities
+       (erule exE)+) 
  apply (frule_tac x = M and y = Ma in two_inequalities, simp,
         subgoal_tac "\<forall>n > (max M  Ma). (f n) \<plusminus> (g n) \<plusminus> -\<^sub>a (b \<plusminus> c)
         \<in> (vp K v)\<^bsup>(Vr K v) (an N)\<^esup>")

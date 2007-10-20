@@ -2536,7 +2536,7 @@ lemma (in Group) im_d_gchains1_1:"\<lbrakk>d_gchain G n f; f n \<noteq> f 0\<rbr
       f `{i. i \<le> n} = {f 0} \<union> 
          {f i |i. (LEAST j. f j \<in> (f `{i. i \<le> n} - {f 0})) \<le> i \<and> i \<le> n}"
 apply (case_tac "n = 0") apply simp
-apply simp 
+apply (simp add: neq0_conv)
 apply (frule im_d_gchains1 [of "n" "f" "n" 
                 "(LEAST j. f j \<in> f ` {i. i \<le> n} - {f 0})"], assumption+,
        simp add:n_in_Nsetn)
@@ -2560,7 +2560,7 @@ done
 
 lemma (in Group) im_d_gchainTr2:"\<lbrakk>d_gchain G n f; j \<le> n; f j \<noteq> f 0\<rbrakk> \<Longrightarrow>
                                  \<forall>i \<le> n. f 0 = f i \<longrightarrow> \<not> j \<le> i"
-apply (case_tac "n = 0", simp, simp)
+apply (case_tac "n = 0", simp, simp add: neq0_conv)
 apply (rule allI, rule impI)
 apply (rule contrapos_pp, simp+)
 apply (case_tac "j = i", simp) 
@@ -2609,7 +2609,7 @@ done
 lemma (in Group) D_gchain1:"D_gchain G n f \<Longrightarrow> inj_on f {i. i \<le> n}"
 apply (case_tac "n = 0")
  apply (simp add:inj_on_def)
-apply simp (** case 0 < n **)
+apply (simp add: neq0_conv) (** case 0 < n **)
 apply (simp add:inj_on_def)
  apply ((rule allI)+, rule impI, rule contrapos_pp, simp+, erule exE)
  apply (cut_tac m = x and n = y in Nat.less_linear, simp)
@@ -2785,13 +2785,13 @@ apply (rule allI, rule impI)
  apply (simp add:w_cmpser_def [of _ "m" "g"])
  apply (case_tac "m = 0") apply (simp add:sliden_def)
  apply (erule conjE)
- apply (simp add:sliden_def)
+ apply (simp add:sliden_def neq0_conv)
  apply (frule_tac i = 0 and j = l and k = m in Nat.less_le_trans, assumption+) 
  apply (frule_tac m = l and n = m and l = "Suc 0" in diff_le_mono)
  apply (frule_tac a = "l - Suc 0" in forall_spec, assumption,
         thin_tac "\<forall>l\<le>(m - Suc 0). (\<natural>(g l)) \<triangleright> (g (Suc l))")
  apply simp
- apply (case_tac "l \<le> n - Suc 0", simp) 
+ apply (case_tac "l \<le> n - Suc 0", simp add: neq0_conv) 
  apply (frule less_pre_n [of "n"])
  apply (frule_tac i = l in Nat.le_less_trans[of _ "n - Suc 0" "n"], assumption+) 
  apply (simp add:jointfun_def w_cmpser_def [of _ "n"])
@@ -3108,7 +3108,7 @@ lemma (in Group) ex_redchainTr1:"\<lbrakk>d_gchain G n f;
        D_gchain G (card (f ` {i. i \<le> n}) - Suc 0) g; 
        g ` {i. i \<le> (card (f ` {i. i \<le> n}) - Suc 0)} = f ` {i. i \<le> n}\<rbrakk> \<Longrightarrow> 
        g (card (f ` {i. i \<le> n}) - Suc 0) = f n" 
-apply (case_tac "n = 0", simp, simp)
+apply (case_tac "n = 0", simp, simp add: neq0_conv)
 apply (rule contrapos_pp, simp+)
 apply (cut_tac n_in_Nsetn[of "card (f ` {i. i \<le> n}) - Suc 0"])
 apply (frule mem_in_image2[of "card (f ` {i. i \<le> n}) - Suc 0" 
@@ -3177,8 +3177,8 @@ apply (cut_tac Nset_inc_0[of "card (f ` {i. i \<le> n}) - Suc 0"],
        thin_tac "g ` {i. i \<le> card (f ` {i. i \<le> n}) - Suc 0} = f ` {i. i \<le> n}")
  apply (
        thin_tac "g 0 \<in> g ` {i. i \<le> card (f ` {i. i \<le> n}) - Suc 0}")
-apply (case_tac "n = 0", simp)
- apply simp
+apply (case_tac "n = 0", simp add: neq0_conv)
+ apply (simp add: neq0_conv)
  apply (cut_tac mem_in_image3[of "f 0" "g" 
                 "{i. i \<le> card (f ` {i. i \<le> n}) - Suc 0}"],
         frule mem_in_image3[of "g 0" "f" 
@@ -3189,9 +3189,9 @@ apply (case_tac "n = 0", simp)
   apply simp+ 
 apply (rotate_tac -2, frule sym, thin_tac "g 0 = f aa", simp)
 apply (case_tac "a = 0", simp)
-apply (simp,
+apply (simp add: neq0_conv,
        frule_tac j = a in D_gchain0[of "card (f ` {i. i \<le> n}) - Suc 0" g 0],
-       simp add:Nset_inc_0, assumption+,
+       simp add:Nset_inc_0 neq0_conv, assumption+,
        simp add:psubset_contr) 
 apply simp
 done

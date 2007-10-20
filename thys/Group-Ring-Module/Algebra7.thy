@@ -4965,7 +4965,7 @@ apply (rule impI, rule allI, (rule ballI)+)
          drule_tac b = s in forball_spec1, assumption,
          drule_tac b = f in forball_spec1, assumption)
         
-  apply (erule bexE, simp)
+  apply (erule bexE, simp )
   apply (thin_tac "l_comb R M na s f = l_comb R M n t h") 
 apply (simp add:l_comb_def)
  apply (subgoal_tac "\<Sigma>\<^sub>e M (\<lambda>j. t j  \<cdot>\<^sub>s (h j)) n =
@@ -5029,6 +5029,7 @@ apply (erule bexE)+
         rule sc_mem, simp add:funcset_mem Ring.ideal_subset,
         simp add:funcset_mem, simp)
  (**** l = 0 done ***)
+apply (simp add: neq0_conv)
  apply (thin_tac "l_comb R M na s f = l_comb R M l sa g")
  apply (unfold bij_to_def, frule conj_1, frule conj_2, fold bij_to_def)
  apply (simp add:surj_to_def, rotate_tac -2, frule sym,
@@ -5043,9 +5044,9 @@ apply (frule_tac g = g and l = l and A = A and h = h and n = n and s = s and
 
 apply (subgoal_tac "l_comb R M l sa g = l_comb R M (Suc (l - Suc 0)) sa g")
    prefer 2 apply simp
-  apply (simp del:nsum_suc Suc_pred,
+  apply (simp del:nsum_suc Suc_pred  add: neq0_conv,
           thin_tac "l_comb R M l sa g = l_comb R M (Suc (l - Suc 0)) sa g",
-          simp del:nsum_suc Suc_pred add:l_comb_def)
+          simp del:nsum_suc Suc_pred add:l_comb_def neq0_conv)
    apply (cut_tac f1 = "\<lambda>j. sa j \<cdot>\<^sub>s g j" and n1 = "l - Suc 0" and
           h1 = "transpos x (Suc (l - Suc 0))" in addition2[THEN sym],
           thin_tac "\<forall>na. \<forall>s\<in>{j. j \<le> na} \<rightarrow> A.
@@ -5879,7 +5880,7 @@ apply (rule contrapos_pp, simp+, simp add:subset_def)
          rule univar_func_test, rule ballI, simp,
          rule aGroup.ag_mOp_closed, assumption+,
          rule univar_func_test, rule ballI, simp)
- apply (case_tac "x = n", simp,
+ apply (case_tac "x = n", simp add: neq0_conv,
         rule unique_prepression5_0[of H f n s g m t], assumption+)
  apply (frule_tac j = x in l_comb_transpos1[of "carrier R" H s "n - Suc 0" f],
         rule subsetI, simp,

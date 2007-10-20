@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pigeonholeprinciple.thy
-    ID:         $Id: Pigeonholeprinciple.thy,v 1.3 2007-09-20 07:54:09 nipkow Exp $
+    ID:         $Id: Pigeonholeprinciple.thy,v 1.4 2007-10-20 10:11:58 chaieb Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -218,7 +218,7 @@ lemma pigeonholeprinciple[rule_format]: "allnonzero xs \<longrightarrow> alldist
   apply (erule_tac P="x mem xs" in notE)
   apply (simp add:seteqmem [THEN sym])
   apply (frule memsetpositives)
-  apply (simp add:seteqmem)+
+  apply (simp add:seteqmem neq0_conv)+
   apply (rule permmember)
   apply (simp)
   apply (simp)
@@ -259,7 +259,7 @@ lemma pigeonholeprinciple[rule_format]: "allnonzero xs \<longrightarrow> alldist
   apply (erule_tac P="x mem xs" in notE)
   apply (simp add:seteqmem [THEN sym])
   apply (frule memsetpositives)
-  apply (simp add:seteqmem)+
+  apply (simp add:seteqmem neq0_conv)+
   apply (rule permmember)
   apply (simp)+
   apply (case_tac "Suc (length xs) = x")
@@ -271,7 +271,7 @@ lemma pigeonholeprinciple[rule_format]: "allnonzero xs \<longrightarrow> alldist
   apply (erule_tac P="x mem xs" in notE)
   apply (simp add:seteqmem [THEN sym])
   apply (frule memsetpositives)
-  apply (simp add:seteqmem)+
+  apply (simp add:seteqmem neq0_conv)+
   apply (rule permmember)
   by (simp)+
 

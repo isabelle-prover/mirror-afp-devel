@@ -1589,7 +1589,7 @@ lemma skip_im_Tr2_1:"\<lbrakk>i \<in> {i. i \<le> (Suc n)}; i \<le> x\<rbrakk> \
                              skip i x = Suc x"
 apply (case_tac "i = 0")
    apply (simp add:skip_def)
-apply (simp,
+apply (simp add: neq0_conv,
        rule skip_im_Tr2, assumption+, simp+)
 done
 
@@ -3472,7 +3472,7 @@ apply (erule disjE, erule exE, simp, simp,
 done 
 
 lemma asprod_pos_pos:"0 \<le> x \<Longrightarrow> 0 \<le> int n *\<^sub>a x" 
-apply (case_tac "n = 0", simp, simp,
+apply (case_tac "n = 0", simp , simp add: neq0_conv,
        simp only:zless_int[THEN sym, of "0" "n"],
        simp del:of_nat_0_less_iff)
 apply (frule_tac w1 = "int n" in asprod_pos_mono[THEN sym, of _ "0" "x"],
@@ -3787,7 +3787,7 @@ by (simp only:na_def an_def,
 
 lemma asprod_ge:"\<lbrakk>0 < b; N \<noteq> 0\<rbrakk>  \<Longrightarrow> an N \<le> int N *\<^sub>a b" 
 apply (frule aposs_le_1[of "b"], 
-       simp, simp only:zero_less_int_conv[THEN sym, of "N"],
+       simp add: neq0_conv, simp only:zero_less_int_conv[THEN sym, of "N"],
        frule asprod_pos_mono[THEN sym, of "int N" "1" "b"], simp)
 apply (simp only:ant_1[THEN sym], simp del:ant_1 add:asprod_amult,
        simp add:an_def)

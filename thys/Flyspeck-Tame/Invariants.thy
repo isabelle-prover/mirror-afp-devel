@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.11 2007-09-20 12:54:48 nipkow Exp $
+(*  ID:         $Id: Invariants.thy,v 1.12 2007-10-20 10:11:55 chaieb Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2509,7 +2509,7 @@ next
       have pre_fdg: "pre_splitFace g v w f ?vs"
            apply (rule pre_subdivFace'_preFaceDiv[OF _ fg _ fsubg])
             using Some pre apply simp
-           using a apply simp
+           using a apply (simp add: neq0_conv)
 	   done
       have bet: "before (verticesFrom f u) v w" using pre Some
 	by(unfold pre_subdivFace'_def) simp
@@ -2521,11 +2521,11 @@ next
       note mgp' = splitFace_holds_minGraphProps[OF pre_fdg mgp]
       have pre2': "pre_subdivFace' (snd (snd ?fdg)) (fst (snd ?fdg)) u w 0 ovs"
 	by (rule pre_subdivFace'_Some1[OF pre2 fg _ fsubg HOL.refl HOL.refl])
-           (simp add:a)
+           (simp add:a neq0_conv)
       note f2inF = splitFace_add_f21'[OF fg]
       have "one_final (subdivFace' (snd (snd ?fdg)) (fst (snd ?fdg)) w 0 ovs)"
 	by (simp add: IH[OF pre2' mgp' f2inF 2])
-    } ultimately show ?thesis using Some by (simp add: split_def)
+    } ultimately show ?thesis using Some by (simp add: split_def neq0_conv)
   qed
 qed
 

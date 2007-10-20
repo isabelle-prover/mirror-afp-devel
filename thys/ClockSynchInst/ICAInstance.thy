@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: ICAInstance.thy,v 1.6 2007-06-13 20:29:54 makarius Exp $
+    ID:          $Id: ICAInstance.thy,v 1.7 2007-10-20 10:11:53 chaieb Exp $
     Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
@@ -95,7 +95,7 @@ done
 theorem trans_inv: 
 "\<forall> p f x . cfni p (\<lambda> y. f y + x) = cfni p f + x"
 apply (auto simp add: cfni_def trans_inv' left_distrib 
-       divide_inverse  constants_ax)
+       divide_inverse  constants_ax neq0_conv)
 done
 
 subsection {* Precision Enhancement property *}

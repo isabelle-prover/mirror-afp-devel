@@ -589,11 +589,11 @@ apply (simp add:vals_nonequiv_def)
  apply (case_tac "j = 0", simp add:transpos_eq) 
  apply (cut_tac x = ja in transpos_id_1[of 0 "Suc n" j], simp, assumption+,
         rule not_sym, assumption+)
- apply (simp add:vals_nonequiv_valuation,
+ apply (simp add:vals_nonequiv_valuation neq0_conv,
         (rule allI, rule impI)+, rule impI)
  apply (case_tac "j = 0", simp add:transpos_eq,
         simp add:vals_nonequiv_def,
-        cut_tac transpos_inj[of "0" "Suc n" "j"], simp) 
+        cut_tac transpos_inj[of "0" "Suc n" "j"], simp add: neq0_conv) 
  apply (frule_tac x = ja and y = l in injective[of "transpos 0 j" 
                        "{j. j \<le> (Suc n)}"], simp, simp, assumption+)
  apply (cut_tac l = ja in transpos_mem[of "0" "Suc n" "j"], simp, assumption+,
@@ -661,10 +661,10 @@ apply (rule someI2_ex, blast,
        thin_tac "\<exists>x\<in>carrier K. Ostrowski_elem K (Suc n) (vv \<circ> \<tau>\<^bsub>0 ja\<^esub>) x",
        simp add:Ostrowski_elem_def, (erule conjE)+)
 apply (case_tac "ja = 0", simp, cut_tac transpos_eq[of "j"],
-       simp add:nset_def, frule Suc_leI[of "0" "j"],
+       simp add:nset_def neq0_conv , frule Suc_leI[of "0" "j"],
        frule_tac a = j in forall_spec, simp, simp)
 apply (case_tac "j = 0", simp,
-       frule_tac b = ja in forball_spec1, simp add:nset_def,
+       frule_tac b = ja in forball_spec1, simp add:nset_def neq0_conv,
        cut_tac  transpos_ij_2[of "0" "Suc n" "ja"], simp, simp+) 
 apply (frule_tac b = j in forball_spec1, simp add:nset_def,
        cut_tac transpos_id[of "0" "Suc n" "ja" "j"], simp+) 
@@ -677,7 +677,7 @@ apply (rule allI, rule impI,
        rename_tac k,
        subst App_base_def)
  apply (case_tac "k = 0", simp, simp add:transpos_eq,
-        frule Approximation1_5P[of "n" "vv"], simp,
+        frule Approximation1_5P[of "n" "vv"], simp add: neq0_conv,
         rule someI2_ex, blast, simp)
  apply (frule_tac j = k in transpos_vals_nonequiv[of "n" "vv"],
                  simp add:nset_def,
@@ -693,7 +693,7 @@ lemma (in Corps) Approzimation1_5P2:"\<lbrakk>vals_nonequiv K (Suc n) vv;
 apply (simp add:App_base_def) 
 apply (case_tac "j = 0", simp add:transpos_eq,
        rule someI2_ex,
-       frule Approximation1_5P[of "n" "vv"], simp, blast,
+       frule Approximation1_5P[of "n" "vv"], simp , blast,
        simp add:Kronecker_delta_def, rule impI, (erule conjE)+,
        frule_tac b = i in forball_spec1, simp add:nset_def, assumption) 
 
@@ -951,7 +951,7 @@ apply (rule allI, rule impI)
 apply (cut_tac i = 0 and j = "v (x^\<^bsup>K j\<^esup>)" and k = "v (\<^bsub>Suc n\<^esub>C\<^bsub>Suc j\<^esub> \<times>\<^bsub>K\<^esub> x^\<^bsup>K j\<^esup>)"
        in ale_trans)
  apply (case_tac "j = 0", simp add:value_of_one)
- apply (simp add:val_exp_ring[THEN sym],
+ apply (simp add: neq0_conv val_exp_ring[THEN sym],
         frule val_nonzero_z[of v x], assumption+,
         erule exE,
         cut_tac m1 = 0 and n1 = j in zless_int[THEN sym],
@@ -968,14 +968,15 @@ apply (frule_tac w1 = "int j" and x1 = 0 and y1 = "ant z" in
        simp add:Ring.npClose, simp add:val_exp_ring[THEN sym],
        frule val_nonzero_z[of "v" "x"], assumption+, erule exE, simp)
  apply (case_tac "j = 0", simp)
- apply (subst asprod_amult, simp, simp add:a_z_z,
+ apply (subst asprod_amult, simp add: neq0_conv, simp add:a_z_z neq0_conv)
+apply(
         simp only:ant_0[THEN sym], simp only:ale_zle,
-        cut_tac m1 = 0 and n1 = j in zless_int[THEN sym],
-        frule_tac a = "0 < j" and b = "int 0 < int j" in a_b_exchange, 
+        cut_tac m1 = 0 and n1 = j in zless_int[THEN sym])
+apply (        frule_tac a = "0 < j" and b = "int 0 < int j" in a_b_exchange, 
         assumption+, thin_tac "0 < j", thin_tac "(0 < j) = (int 0 < int j)",
         frule_tac z = "int 0" and z' = "int j" in zless_imp_zle,
         frule_tac i = "int 0" and j = "int j" and k = z in int_mult_le,
-         assumption+, simp add:zmult_commute)
+         assumption+, simp add:zmult_commute )
  apply assumption
 done
 
@@ -2046,7 +2047,7 @@ apply (simp add:distinct_pds_def)
  apply (simp add:Ig_def Zl_mI_def)
  apply (simp add:ring_n_pd_def Vr_def)
 
- apply simp
+ apply (simp add: neq0_conv)
  apply (frule value_Zl_mI[of n P I j], assumption+)
  apply (erule conjE)
  apply (rule contrapos_pp, simp+)

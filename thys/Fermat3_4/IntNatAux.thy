@@ -55,7 +55,7 @@ proof -
   proof -
     from abcd have "?g * zgcd(c,d) = ?g" 
       by (auto simp add: zgcd_zmult_distrib2 zgcd_geq_zero)
-    moreover with ab0 have "?g \<noteq> 0" by (auto simp add: zgcd_def gcd_zero)
+    moreover with ab0 have "?g \<noteq> 0" by (auto simp add: zgcd_def gcd_zero neq0_conv)
     ultimately show ?thesis by simp
   qed
   ultimately show ?thesis by auto
@@ -395,7 +395,8 @@ proof -
       hence ass: "primel ps \<and> prime p \<and> a*b=p^n*(prod ps)^n \<and> gcd(a,b)=1 " 
 	and IH: "!!a b. primel ps \<and> a*b = (prod ps)^n \<and> gcd(a,b)=1 \<Longrightarrow> \<exists> k. a = k^n" 
 	by (auto simp add: primel_def power_mult_distrib)
-      hence pnab: "p^n dvd a*b" and pn0: "p^n \<noteq> 0" by (auto simp add: prime_def)
+      hence pnab: "p^n dvd a*b" and pn0: "p^n \<noteq> 0" 
+	by (auto simp add: neq0_conv prime_def)
       moreover
       { assume pa: "p dvd a"
 	have "\<not> p dvd b"
@@ -569,7 +570,7 @@ next
   assume "\<not> (a=0 \<and> b=0)"
   hence ab0: "a \<noteq> 0 \<or> b \<noteq> 0" by simp
   hence non0: "zgcd(a,b) \<noteq> 0 \<and> zgcd(a^n,b^n) \<noteq> 0" 
-    by (auto simp add: zgcd_def gcd_zero power_eq_0_iff)
+    by (auto simp add: zgcd_def gcd_zero power_eq_0_iff neq0_conv)
   moreover have "zgcd(a,b) \<ge> 0 \<and> zgcd(a^n,b^n) \<ge> 0" by (simp add: zgcd_geq_zero)
   ultimately have "zgcd(a,b)^n > 0 \<and> zgcd(a^n,b^n) > 0" 
     by (auto simp add: zero_less_power)

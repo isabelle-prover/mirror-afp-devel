@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pdifference.thy
-    ID:         $Id: Pdifference.thy,v 1.3 2007-07-25 09:38:50 nipkow Exp $
+    ID:         $Id: Pdifference.thy,v 1.4 2007-10-20 10:11:58 chaieb Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -80,7 +80,7 @@ lemma multzero: "\<lbrakk>0 < m mod p; m*a = 0\<rbrakk> \<Longrightarrow> (a::na
 lemma primekeytrick: "\<lbrakk>(M*A) mod P = (M*B) mod P;M mod P \<noteq> 0; prime P\<rbrakk> \<Longrightarrow> A mod P = (B::nat) mod P"
 apply (drule equalmodstrick2)
 apply (rule equalmodstrick1)
-apply (rule multzero, simp)
+apply (rule multzero, simp add: neq0_conv)
 apply (subst mod_mult_distrib2)
 apply (subst timesdistributesoverpdifference)
 apply (simp)

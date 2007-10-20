@@ -564,7 +564,7 @@ proof (rule ccontr)
     by (frule_tac a="x" in make_zrelprime, auto)
   moreover have abc: "?c*?g = z \<and> a^3 + b^3 = ?c^3 \<and> a*b*?c \<noteq> 0"
   proof -
-    from xyz0 have g0: "?g\<noteq>0" by (simp add: zgcd_def gcd_zero)
+    from xyz0 have g0: "?g\<noteq>0" by (simp add: zgcd_def gcd_zero neq0_conv)
     have zgab: "z^3 = ?g^3 * (a^3+b^3)"
     proof -
       from ab and ass have "z^3 = (?g*a)^3+(?g*b)^3" by simp
