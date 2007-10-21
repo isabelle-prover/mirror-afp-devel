@@ -400,7 +400,7 @@ subsection "costBarrier: lemmas"
 
 subsection "costBarrier: exp3 lemmas - bit specific..."
 
-lemma exp3Min: "0 < exp 3 a"
+lemma exp3Min: "exp 3 a \<noteq> 0"
 by (induct a, simp, simp)
 
 lemma exp1: "exp 3 (A) + exp 3 (B) < 3 * ((exp 3 A) * (exp 3 B))" 
@@ -428,9 +428,10 @@ lemma expSum: "exp x (a+b) = (exp x a) * (exp x b)"
 
 subsection "costBarrier: decreases whilst contains and unconsiders"
 
-lemma costBarrierDecreases': 
-  notes ss = subs_def2 nforms_def Let_def subsFAtom_def subsFConj_def subsFAll_def costBarrier_def atoms_def exp3Min expSum
-  shows "~SATAxiom (sequent (a, (num,fm) # list)) --> iA ~= (num, fm) --> \<not> proofTree (tree subs (a, (num, fm) # list)) --> fSucn : subs (a, (num, fm) # list) --> iA \<in> set list --> costBarrier iA (fSucn) < costBarrier iA (a, (num, fm) # list)"
+lemma costBarrierDecreases':
+  notes ss = subs_def2 nforms_def Let_def subsFAtom_def subsFConj_def subsFAll_def costBarrier_def atoms_def exp3Min expSum gr0_conv
+  shows "~SATAxiom (sequent 
+(a, (num,fm) # list)) --> iA ~= (num, fm) --> \<not> proofTree (tree subs (a, (num, fm) # list)) --> fSucn : subs (a, (num, fm) # list) --> iA \<in> set list --> costBarrier iA (fSucn) < costBarrier iA (a, (num, fm) # list)"
   apply(rule_tac A=fm in formula_signs_cases)
     -- "atoms"
        apply(simp add: ss)

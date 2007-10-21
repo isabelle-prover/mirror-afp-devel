@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: ICAInstance.thy,v 1.7 2007-10-20 10:11:53 chaieb Exp $
+    ID:          $Id: ICAInstance.thy,v 1.8 2007-10-21 20:39:18 nipkow Exp $
     Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
@@ -41,7 +41,7 @@ of the convergence function).  *}
 axiomatization
   np :: nat      -- "Number of processes" and
   \<Delta> :: Clocktime -- "Fix value to discard processes" where
-  constants_ax: "0 <= \<Delta> \<and> 0 < np" 
+  constants_ax: "0 <= \<Delta> \<and> np \<noteq> 0" 
 
 text {* We define also the set of process that the algorithm
 manage. This definition exist only for readability matters. *}
@@ -95,7 +95,7 @@ done
 theorem trans_inv: 
 "\<forall> p f x . cfni p (\<lambda> y. f y + x) = cfni p f + x"
 apply (auto simp add: cfni_def trans_inv' left_distrib 
-       divide_inverse  constants_ax neq0_conv)
+       divide_inverse  constants_ax)
 done
 
 subsection {* Precision Enhancement property *}
