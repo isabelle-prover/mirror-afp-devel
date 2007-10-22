@@ -342,14 +342,14 @@ lemma (in Module) gen_mHom_eq:"\<lbrakk>R module N; generator R M H; f \<in> mHo
        g \<in> mHom R M N; \<forall>h\<in>H. f h = g h \<rbrakk> \<Longrightarrow> f = g"
 apply (rule mHom_eq[of N], assumption+)
  apply (rule ballI)
- apply (unfold generator_def, frule conj_2, fold generator_def)
+ apply (unfold generator_def, frule conjunct2, fold generator_def)
  apply (frule sym, thin_tac "linear_span R M (carrier R) H = carrier M",
         simp,
         thin_tac "carrier M = linear_span R M (carrier R) H")
  apply (simp add:linear_span_def)
  apply (case_tac "H = {}", simp, simp add:mHom_0, simp)
  apply (erule exE, (erule bexE)+)
- apply (unfold generator_def, frule conj_1, fold generator_def)
+ apply (unfold generator_def, frule conjunct1, fold generator_def)
 apply (cut_tac sc_Ring, frule Ring.whole_ideal)
  apply simp
  apply (simp add:linmap_im_lincomb[of "carrier R" N])
@@ -1370,13 +1370,13 @@ apply (frule free_generator_sub)
          assumption, rule subsetI, simp, simp add:subsetD,
          simp, rule univar_func_test, simp, assumption)
   apply (subgoal_tac "l_comb R M m t g = l_comb R M (Suc (m - Suc 0)) t g",
-         simp del:Suc_pred add: neq0_conv,
+         simp del:Suc_pred,
          frule insert_sub[of H1 H h], assumption+,
          frule subset_trans[of "insert h H1" H "carrier M"], assumption+,
          subst l_comb_Suc[of "insert h H1" "carrier R"], assumption+,
-         (subst Suc_pred, assumption+)+,
-         thin_tac "l_comb R M m t g = l_comb R M (Suc (m - Suc 0)) t g",
-                simp)
+         (subst Suc_pred, erule not_sym,
+          thin_tac "l_comb R M m t g = l_comb R M (Suc (m - Suc 0)) t g",
+                simp)+)
   apply (subgoal_tac "l_comb R M (m - Suc 0) t g \<in> fgs R M H1",
          subgoal_tac "t m \<cdot>\<^sub>s h \<in> fgs R M {h}", blast,
          subst fgs_def,
@@ -2084,7 +2084,7 @@ lemma (in Module) NAK:"\<lbrakk>\<not> zeroring R; M fgover R; ideal R A; A \<su
        A \<odot>\<^bsub>R\<^esub> M = carrier M \<rbrakk> \<Longrightarrow> carrier M = {\<zero>}"
 apply (cut_tac sc_Ring)
 apply (frule NAKTr1, erule exE, erule conjE)
-apply (simp add:finite_generator_def, frule conj_1, frule conj_2,
+apply (simp add:finite_generator_def, frule conjunct1, frule conjunct2,
        fold finite_generator_def)
 apply (case_tac "H = {}", simp add:generator_def linear_span_def,
        frule_tac A = H in nonempty_card_pos1, assumption+)

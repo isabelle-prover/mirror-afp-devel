@@ -815,7 +815,7 @@ lemma (in Module) invmfun_l_inv:"\<lbrakk>R module N; bijec\<^bsub>M,N\<^esub> f
 apply (simp add:bijec_def, erule conjE)
 apply (frule minjec_inj [of N f], assumption+)
 apply (simp add:surjec_def, erule conjE, simp add:aHom_def)
-apply (frule conj_1) 
+apply (frule conjunct1) 
 apply (thin_tac "f \<in> carrier M \<rightarrow> carrier N \<and>
      f \<in> extensional (carrier M) \<and>
      (\<forall>a\<in>carrier M. \<forall>b\<in>carrier M. f (a \<plusminus> b) = f a \<plusminus>\<^bsub>N\<^esub> f b)")
@@ -833,7 +833,7 @@ apply (frule minjec_inj [of N f])
 
 apply (rule conjI) 
  apply (simp add:surjec_def, erule conjE)
- apply (simp add:aHom_def, frule conj_1)
+ apply (simp add:aHom_def, frule conjunct1)
  apply (thin_tac "f \<in> carrier M \<rightarrow> carrier N \<and>
      f \<in> extensional (carrier M) \<and>
      (\<forall>a\<in>carrier M. \<forall>b\<in>carrier M. f (a \<plusminus> b) = f a \<plusminus>\<^bsub>N\<^esub> f b)")
@@ -867,7 +867,7 @@ lemma (in Module) invmfun_r_inv:"\<lbrakk>R module N; bijec\<^bsub>M,N\<^esub> f
                            f ((invmfun R M N f) n) = n"
 apply (frule minjec_inj[of N f])
  apply (simp add:bijec_def)
- apply (unfold bijec_def, frule conj_2, fold bijec_def)
+ apply (unfold bijec_def, frule conjunct2, fold bijec_def)
  apply (simp add:surjec_def, erule conjE, simp add:surj_to_def)
  apply (frule sym, thin_tac "f ` carrier M = carrier N", simp,
         thin_tac "carrier N = f ` carrier M")
@@ -1961,7 +1961,7 @@ apply (rule equalityI)
         thin_tac "y \<plusminus> xa = x", simp)
  apply (frule_tac x = xa in x_in_mr_coset[of H m], assumption+, erule bexE,
         rotate_tac -1, frule sym, thin_tac "m \<plusminus> h = xa", simp)
- apply (unfold submodule_def, frule conj_1, rotate_tac 1, frule conj_1,
+ apply (unfold submodule_def, frule conjunct1, rotate_tac 1, frule conjunct1,
         fold submodule_def,
         frule_tac c = y in subsetD[of N "carrier M"], assumption+,
         frule_tac c = h in subsetD[of H "carrier M"], assumption+,
@@ -1977,7 +1977,7 @@ apply (rule equalityI)
  apply (rule subsetI, simp,
         frule_tac x = x in x_in_mr_coset[of N m], assumption+,
         erule bexE, frule sym, thin_tac "m \<plusminus> h = x", simp,
-        simp add:submodule_def[of R M N], frule conj_1, fold submodule_def,
+        simp add:submodule_def[of R M N], frule conjunct1, fold submodule_def,
         frule_tac c = h in subsetD[of N "carrier M"], assumption+)
 apply (frule_tac m_in_mr_coset[of H m], assumption+,
         subst ag_pOp_commute[of m], assumption+)
@@ -2025,7 +2025,7 @@ done
 lemma (in Module) mQmpTr4:"\<lbrakk>submodule R M H; submodule R M N; H \<subseteq> N;
                             a \<in> N\<rbrakk> \<Longrightarrow> mr_coset a (mdl M N) H = mr_coset a M H"
 apply (simp add:mr_coset_def)
- apply (unfold submodule_def[of R M N], frule conj_1, fold submodule_def,
+ apply (unfold submodule_def[of R M N], frule conjunct1, fold submodule_def,
         frule subsetD[of N "carrier M" a], assumption+)
 apply (rule equalityI)
  apply (rule subsetI)
@@ -2035,7 +2035,7 @@ apply (rule equalityI)
  apply (simp add:mdl_carrier)
  apply assumption+
  apply (erule bexE)
- apply (unfold submodule_def[of R M H], frule conj_1, fold submodule_def)
+ apply (unfold submodule_def[of R M H], frule conjunct1, fold submodule_def)
  apply (frule_tac c = h in subsetD[of H "carrier M"], assumption+)
  apply (thin_tac "x \<in> a \<uplus>\<^bsub>mdl M N\<^esub> H", thin_tac "R module mdl M N",
         simp add:mdl_def)
@@ -2124,7 +2124,7 @@ apply (rule equalityI)
   apply (frule_tac a = a in mQmpTr4[of H N], assumption+,
          simp add:mr_coset_def)
  apply (thin_tac "a \<uplus>\<^bsub>mdl M N\<^esub> H = a \<uplus>\<^bsub>M\<^esub> H")
- apply (unfold submodule_def[of R M N], frule conj_1, fold submodule_def,
+ apply (unfold submodule_def[of R M N], frule conjunct1, fold submodule_def,
         frule_tac c = a in subsetD[of N "carrier M"], assumption+)
  apply (rule conjI) 
  apply (simp add:set_mr_cos_def, blast)
@@ -2206,7 +2206,7 @@ apply (rule subsetI)
  apply (frule_tac x = i in funcset_mem[of f I "{X. submodule R M X}"], 
          assumption+, simp)
  apply (thin_tac "f \<in> I \<rightarrow> {X. submodule R M X}", unfold submodule_def,
-        frule conj_1, fold submodule_def, simp add:subsetD)
+        frule conjunct1, fold submodule_def, simp add:subsetD)
 done
 
 lemma (in Module) finitesum_sub_carrier:"f \<in> I \<rightarrow> {X. submodule R M X} \<Longrightarrow>
@@ -2369,8 +2369,8 @@ translations
 lemma (in Module) sSum_cont_H:"\<lbrakk>submodule R M H; submodule R M K\<rbrakk> \<Longrightarrow>
                      H \<subseteq>  H \<minusplus> K"
 apply (rule subsetI)
-apply (unfold submodule_def[of R M H], frule conj_1, fold submodule_def,
-       unfold submodule_def[of R M K], frule conj_1, fold submodule_def)
+apply (unfold submodule_def[of R M H], frule conjunct1, fold submodule_def,
+       unfold submodule_def[of R M K], frule conjunct1, fold submodule_def)
 apply (simp add:set_sum) 
 apply (frule submodule_inc_0 [of K])
 apply (cut_tac t = x in ag_r_zero [THEN sym],
@@ -2380,8 +2380,8 @@ done
 
 lemma (in Module) sSum_commute:"\<lbrakk>submodule R M H; submodule R M K\<rbrakk> \<Longrightarrow>
                        H \<minusplus> K =  K \<minusplus> H"
-apply (unfold submodule_def[of R M H], frule conj_1, fold submodule_def,
-       unfold submodule_def[of R M K], frule conj_1, fold submodule_def)   
+apply (unfold submodule_def[of R M H], frule conjunct1, fold submodule_def,
+       unfold submodule_def[of R M K], frule conjunct1, fold submodule_def)   
 apply (rule equalityI)
 apply (rule subsetI) 
 apply (simp add:set_sum)
@@ -4908,7 +4908,7 @@ apply (
       apply simp (*
       apply (rule_tac i = x and j = "l - Suc 0" and k = l in Nat.le_trans,
              assumption, subst Suc_le_mono[THEN sym], simp) *)
-      apply (unfold bij_to_def, frule conj_2, fold bij_to_def,
+      apply (unfold bij_to_def, frule conjunct2, fold bij_to_def,
              thin_tac "bij_to g {j. j \<le> l} (g ` {j. j \<le> l})",
              thin_tac "g \<in> {j. j \<le> l} \<rightarrow> h ` {j. j \<le> Suc n}")
       apply (simp add:image_def, erule exE, erule conjE)
@@ -4999,7 +4999,7 @@ apply (frule_tac h = h and n = n and m = "l_comb R M na s f" in
 apply (erule bexE)+
  apply (simp, (erule conjE)+)
  apply (case_tac "l = 0", simp)
- apply (unfold bij_to_def, frule conj_1, frule conj_2, fold bij_to_def)
+ apply (unfold bij_to_def, frule conjunct1, frule conjunct2, fold bij_to_def)
  apply (thin_tac "l_comb R M na s f = l_comb R M 0 sa g")
  apply (simp add:l_comb_def)
  apply (simp add:surj_to_def, rotate_tac -1, frule sym, 
@@ -5031,7 +5031,7 @@ apply (erule bexE)+
  (**** l = 0 done ***)
 apply (simp add: neq0_conv)
  apply (thin_tac "l_comb R M na s f = l_comb R M l sa g")
- apply (unfold bij_to_def, frule conj_1, frule conj_2, fold bij_to_def)
+ apply (unfold bij_to_def, frule conjunct1, frule conjunct2, fold bij_to_def)
  apply (simp add:surj_to_def, rotate_tac -2, frule sym,
         thin_tac "g ` {j. j \<le> l} = f ` {j. j \<le> na}", simp)
   apply (subgoal_tac "\<exists>x\<in>{j. j \<le> l}. h (Suc n) = g x")  
@@ -5220,7 +5220,7 @@ apply (rule contrapos_pp, simp+)
  apply (simp add:l_comb_def)
  apply (cut_tac n = n and f = "\<lambda>j. s j \<cdot>\<^sub>s f j" in nsum_zeroA)
  apply (rule allI, rule impI)
- apply (simp add:free_generator_def generator_def, frule conj_1,
+ apply (simp add:free_generator_def generator_def, frule conjunct1,
         frule_tac x = j and f = f and A = "{j. j \<le> n}" and B = H in
         funcset_mem, simp,
         frule_tac c = "f j" in subsetD[of H "carrier M"], assumption+,
@@ -5263,18 +5263,19 @@ apply (frule Ring.whole_ideal [of "R"])
 apply (frule_tac  A = "carrier R" and H = H and s = s and f = f in 
        same_together, assumption+)
 apply ((erule bexE)+, erule conjE)
- apply (frule_tac f = f and A = "{j. j \<le> n}" in image_sub0,
-        frule_tac f = g and A = "{j. j \<le> card (f ` {j. j \<le> n}) - Suc 0}" 
-        and B = "f ` {j. j \<le> n}" in extend_fun[of _ _ _ "H"], assumption)
-  apply (subgoal_tac "bij_to g {j. j \<le> (card (f ` {j. j \<le> n}) - Suc 0)} 
+apply (frule_tac f = f and A = "{j. j \<le> n}" in image_sub0,
+       frule_tac f = g and A = "{j. j \<le> card (f ` {j. j \<le> n}) - Suc 0}" 
+       and B = "f ` {j. j \<le> n}" in extend_fun[of _ _ _ "H"], assumption)
+apply (subgoal_tac "bij_to g {j. j \<le> (card (f ` {j. j \<le> n}) - Suc 0)} 
                                   (f ` {j. j \<le> n})")
  apply (simp add:l_comb_def, blast)
- apply (simp add:bij_to_def)
- apply (cut_tac finite_Nset[of n],
+apply (simp add:bij_to_def)
+apply (cut_tac finite_Nset[of n],
         frule finite_imageI[of "{j. j \<le> n}" f])
- apply (rule_tac A = "f ` {j. j \<le> n}" and n = "card (f ` {j. j \<le> n}) - 
+apply (rule_tac A = "f ` {j. j \<le> n}" and n = "card (f ` {j. j \<le> n}) - 
         Suc 0" and f = g in Nset2finite_inj, assumption)
- apply (simp add:image_Nsetn_card_pos[of f n], assumption)
+ using image_Nsetn_card_pos[of f n] apply simp
+apply assumption
 done
 
 lemma (in Module) unique_expression3_1:"\<lbrakk>H \<subseteq> carrier M; 
@@ -5322,7 +5323,7 @@ apply (simp add:Nset_pre1)
  apply (rule_tac f = g and n = m and b = "f (Suc n)" and B = H in jointfun_inj,
         assumption+)
   apply (simp add:bij_to_def)
-  apply (unfold bij_to_def, frule conj_1, fold bij_to_def,
+  apply (unfold bij_to_def, frule conjunct1, fold bij_to_def,
          simp add:surj_to_def)
 done
 (*
@@ -5370,7 +5371,7 @@ apply (simp add:Nset_pre1)
  apply (rule_tac f = g and n = m and b = "f (Suc n)" and B = H in jointfun_inj,
         assumption+)
   apply (simp add:bij_to_def)
-  apply (unfold bij_to_def, frule conj_1, fold bij_to_def,
+  apply (unfold bij_to_def, frule conjunct1, fold bij_to_def,
          simp add:surj_to_def)
 done     *)
 

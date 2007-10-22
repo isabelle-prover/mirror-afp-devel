@@ -1536,7 +1536,7 @@ apply (rule conjI)
 (** ginjec **)
 apply (frule induced_ghom_ginjec[of "F" "G" "f"], assumption+)
  apply (simp add:ginjec_def) 
- apply (frule conj_2)
+ apply (frule conjunct2)
   apply (thin_tac "f\<dieresis>\<^bsub>F,G\<^esub> \<in> gHom (F / gker\<^bsub>F,G\<^esub> f) G \<and>
      inj_on (f\<dieresis>\<^bsub>F,G\<^esub>) (carrier (F / gker\<^bsub>F,G\<^esub> f))")
  apply (simp add:inj_on_def)
@@ -1593,7 +1593,7 @@ apply (simp add:gkernel_def iim_def)
 apply (simp add:Group.Qg_one[of "G" "N"] cmpghom_def compose_def)
 apply (rule equalityI)
  apply (rule subsetI, simp, erule conjE, simp)
- apply (simp add:gsurjec_def, frule conj_1, fold gsurjec_def)
+ apply (simp add:gsurjec_def, frule conjunct1, fold gsurjec_def)
  apply (frule_tac x = x in gHom_mem[of "F" "G" "f"], assumption+)
  apply (simp add:Group.Pj_mem[of "G" "N"])
  apply (frule Group.nsg_sg[of "G" "N"], assumption+)
@@ -1613,7 +1613,7 @@ apply (frule Group.Group_Qg[of "G" "H"], assumption+,
        simp add:gbijec_def, erule conjE)
 apply (frule_tac f = f in gkern2[of "G / H" "E"],
        simp add:Ugp_def, simp add:gsurjec_def, assumption,
-       simp add:gsurjec_def, frule conj_1, fold gsurjec_def,
+       simp add:gsurjec_def, frule conjunct1, fold gsurjec_def,
        frule_tac f = f in gkern1[of "G/H" "E"], assumption+)
  apply (simp, thin_tac "gker\<^bsub>(G / H),E\<^esub> f = {\<one>\<^bsub>G / H\<^esub>}",
         thin_tac "gsurj\<^bsub>(G / H),E\<^esub> f", thin_tac "ginj\<^bsub>(G / H),E\<^esub> f",
@@ -1892,8 +1892,8 @@ lemma automgroupTr1:"\<lbrakk>Group G; gbij\<^bsub>G,G\<^esub> f; gbij\<^bsub>G,
                         (h \<circ>\<^bsub>G\<^esub> g) \<circ>\<^bsub>G\<^esub> f =  h \<circ>\<^bsub>G\<^esub> (g \<circ>\<^bsub>G\<^esub> f)" 
 apply (simp add:cmpghom_def, 
        unfold gbijec_def)
- apply (frule conj_1, rotate_tac 2, frule conj_1,
-        rotate_tac 1, frule conj_1, fold gbijec_def)
+ apply (frule conjunct1, rotate_tac 2, frule conjunct1,
+        rotate_tac 1, frule conjunct1, fold gbijec_def)
  apply (simp add:gsurjec_def, (erule conjE)+,
         frule gHom_func[of "G" "G" "f"], assumption+,
         frule gHom_func[of "G" "G" "g"], assumption+,
@@ -2588,7 +2588,7 @@ lemma (in Group) D_gchain0:"\<lbrakk>D_gchain G n f; i \<le> n; j \<le> n; i < j
 apply (case_tac "n = 0") 
  apply (simp, simp)
 apply (cut_tac d_gchainTr1[of "n"], simp)
- apply (simp add:D_gchain_def, frule conj_1)
+ apply (simp add:D_gchain_def, frule conjunct1)
  apply (frule_tac a = f in forall_spec, assumption,
         thin_tac "\<forall>f. d_gchain G n f \<longrightarrow> (\<forall>l\<le>n. \<forall>j\<le>n. l < j \<longrightarrow> f j \<subseteq> f l)") 
  apply (frule_tac a = i in forall_spec,
@@ -2907,7 +2907,7 @@ constdefs (structure G)
 lemma (in Group) compseriesTr0:"\<lbrakk>compseries G n f; i \<le> n\<rbrakk> \<Longrightarrow>
                                     G \<guillemotright> (f i)"
 apply (simp add:compseries_def) 
- apply (frule conj_1)
+ apply (frule conjunct1)
  apply (fold compseries_def)
  apply (frule tW_cmpser_is_W_cmpser,
         frule W_cmpser_is_w_cmpser, 
@@ -3273,7 +3273,7 @@ apply (simp add: ex_redchainTr1)
  apply (cut_tac n = "card (f ` {i. i \<le> n}) - Suc 0" and f = g and m = 0 and 
         g = "constmap {0} {f (Suc n)}" in im_jointfun1)
  apply simp
- apply (simp add:Nset_0 constmap_def)
+ apply (simp add:Nset_0 constmap_def gr0_conv)
 apply blast
 done
 
@@ -3345,7 +3345,7 @@ apply (frule_tac n = "card (f ` {i. i \<le> n}) - Suc 0" and f = g and
  apply (cut_tac n = "card (f ` {i. i \<le> n}) - Suc 0" and f = g and m = 0 and 
         g = "constmap {0::nat} {f (Suc n)}" in im_jointfun1)
  apply simp
- apply (simp add:Nset_0 constmap_def)
+ apply (simp add:Nset_0 constmap_def gr0_conv)
 apply blast
 done
 
@@ -3612,7 +3612,7 @@ apply (frule isom_gch_units_transpTr6 [of "n" "g" "i"], assumption+)
 apply (frule isom_gch_units_transpTr6 [of "n" "h" "i"], assumption+)
 apply (frule isom_gch_units_transpTr6 [of "n" "g" "j"], assumption+)
 apply (frule isom_gch_units_transpTr6 [of "n" "h" "j"], assumption+)
-apply (unfold Ugp_def) apply (frule conj_1) apply (fold Ugp_def)
+apply (unfold Ugp_def) apply (frule conjunct1) apply (fold Ugp_def)
 apply (frule isom_gch_units_transpTr5_1 [of "E" "n" "g" "h" "i" "j"], 
                                                           assumption+)
 apply (frule isom_gch_units_transpTr5_2 [of "E" "n" "g" "h" "i" "j"], 
@@ -3835,7 +3835,7 @@ apply (erule conjE)+
 apply (simp add:Gchain_pre [of "n" "g"])
 apply (rule conjI)
 apply (simp add:Gchain_def) apply (rule allI, rule impI)
-apply (simp add:Gch_bridge_def) apply (frule conj_1)
+apply (simp add:Gch_bridge_def) apply (frule conjunct1)
 apply (fold Gch_bridge_def)
 apply (cut_tac n_in_Nsetn[of "Suc n"])
 apply (cut_tac l = l in transpos_mem [of "f (Suc n)" "Suc n" "Suc n"])
@@ -3886,8 +3886,8 @@ lemma isom_gch_unitsTr1_6:"\<lbrakk>Ugp E; f (Suc n) \<noteq> Suc n; Gchain (Suc
            (cmp (transpos (f (Suc n)) (Suc n)) f)"
 apply (erule conjE)+
 apply simp
-apply (simp add:Gch_bridge_def, frule conj_1)
-apply (frule conj_2, fold Gch_bridge_def, erule conjE)
+apply (simp add:Gch_bridge_def, frule conjunct1)
+apply (frule conjunct2, fold Gch_bridge_def, erule conjE)
 apply (rule conjI)
 apply (thin_tac "Gchain (Suc n) g")
 apply (simp add:Gchain_def, rule allI, rule impI)
@@ -4532,7 +4532,7 @@ apply (frule compseriesTr0 [of "n" "f" "i"])
  apply (erule conjE)
  apply (frule compseriesTr4[of "n" "f"])
  apply (frule w_cmpser_ns[of "n" "f" "i"], simp+) 
- apply (unfold compseries_def, frule conj_2, fold compseries_def, simp)
+ apply (unfold compseries_def, frule conjunct2, fold compseries_def, simp)
  apply (frule_tac a = i in forall_spec1, 
         thin_tac "\<forall>i\<le>n - Suc 0. simple_Group ((\<natural>f i) / f (Suc i))",
         simp)

@@ -31,8 +31,8 @@ consts
   blockSize :: nat  -- "in bytes"
   numBlocks :: nat  -- "total number of blocks in the file system"
 axioms
-  nonZeroBlockSize: "0 < blockSize"
-  nonZeroNumBlocks: "0 < numBlocks"
+  nonZeroBlockSize: "blockSize \<noteq> 0"
+  nonZeroNumBlocks: "numBlocks \<noteq> 0"
 
 (* ------------------------------------------------------------ *)
 subsection {* Abstract File *}
@@ -178,7 +178,7 @@ text {* We prove each invariant individually and then summarize. *}
 lemma nextFreeBlockInvariant1:
   "nextFreeBlockInvariant makeCF"
 apply (simp add: nextFreeBlockInvariant_def makeCF_def)
-apply (simp add: nonZeroBlockSize)
+apply (simp add: nonZeroBlockSize gr0_conv)
 done
 
 lemma unallocatedBlocksInvariant1:
@@ -251,7 +251,7 @@ apply (subgoal_tac "(fileSize cfile1 + blockSize - Suc 0) <=
   (index + blockSize)", simp add: div_le_mono)
 apply (subgoal_tac "(fileSize cfile1 + blockSize - Suc 0) < 
   (fileSize cfile1 + blockSize)", simp)
-apply (simp_all add: div_add_self2 nonZeroBlockSize)
+apply (simp_all add: div_add_self2 nonZeroBlockSize gr0_conv)
 done
 
 
@@ -272,7 +272,7 @@ apply (case_tac "byteIndex div blockSize < numBlocks", simp_all)
 apply (case_tac "byteIndex < fileSize cfile1", simp_all)
 apply (simp_all add: cfWriteNoExtend_def cfExtendFile_def Let_def)
 apply auto
-apply (simp add: div_add_self2 nonZeroBlockSize)
+apply (simp add: div_add_self2 nonZeroBlockSize gr0_conv)
 done
 
 lemma modInequalityLemma:
@@ -373,10 +373,10 @@ apply auto
 apply (simp add: unallocatedBlocksInvariant_def)
 apply (erule_tac x="index div blockSize" in allE)
 apply (erule_tac x="index mod blockSize" in allE)
-apply (simp add: nonZeroBlockSize)
+apply (simp add: nonZeroBlockSize gr0_conv)
 apply (insert modInequalityLemma)
 apply auto
-apply (simp add: nextFreeBlockIncreases)
+apply (simp add: nextFreeBlockIncreases gr0_conv)
 done
 
 text {* Final statement that all invariants are preserved. *}

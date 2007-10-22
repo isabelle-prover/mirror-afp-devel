@@ -36,31 +36,19 @@ lemma True_then:"True \<longrightarrow> P \<Longrightarrow> P"
 by simp
 
 lemma ex_conjI:"\<lbrakk>P c; Q c\<rbrakk> \<Longrightarrow> \<exists>c. P c \<and> Q c"
-apply blast
-done
+by blast
 
 lemma nat_forall_spec:"\<forall>(n::nat). P n \<Longrightarrow> P (m::nat)"
-apply simp
-done  
+by simp
 
 lemma forall_spec:"\<lbrakk> \<forall>b. P b \<longrightarrow> Q b; P a\<rbrakk> \<Longrightarrow> Q a" 
-apply simp
-done
+by simp
 
 lemma forall_spec1:"\<forall>x. P x \<Longrightarrow> P a"
 by simp
 
 lemma forball_spec1:"\<lbrakk>\<forall>x\<in>A. P x; b \<in> A\<rbrakk> \<Longrightarrow> P b"
-apply simp
-done 
-
-lemma conj_1:"P \<and> Q \<Longrightarrow> P"
- apply simp
-done
-
-lemma conj_2:"P \<and> Q \<Longrightarrow> Q"
-apply simp
-done
+by simp
 
 lemma a_b_exchange:"\<lbrakk>a; a = b\<rbrakk> \<Longrightarrow> b"
 by simp
@@ -80,20 +68,16 @@ section "1. Natural numbers and Integers"
 text{* Elementary properties of natural numbers and integers *}
 
 lemma nat_nonzero_pos:"(a::nat) \<noteq> 0 \<Longrightarrow> 0 < a"
-apply simp
-done
+by simp
 
 lemma add_both:"(a::nat) = b \<Longrightarrow> a + c = b + c"
- apply simp
-done
+by simp
 
 lemma add_bothl:"a = b \<Longrightarrow> c + a = c + b"
-apply simp 
-done
+by simp
 
 lemma diff_Suc:"(n::nat) \<le> m \<Longrightarrow> m - n + Suc 0 = Suc m - n"
-apply (simp add:Suc_diff_le[THEN sym])
-done
+by arith
 
 lemma le_convert:"\<lbrakk>a = b; a \<le> c\<rbrakk> \<Longrightarrow> b \<le> c"
 by simp
@@ -102,34 +86,25 @@ lemma ge_convert:"\<lbrakk>a = b; c \<le> a\<rbrakk> \<Longrightarrow> c \<le> b
 by simp
 
 lemma less_convert:"\<lbrakk> a = b; c < b \<rbrakk> \<Longrightarrow> c < a"
-apply auto
-done
+by auto
 
 lemma ineq_conv1:"\<lbrakk>a = b; a < c\<rbrakk> \<Longrightarrow> b < c"
 by simp
 
 lemma nat_diff_le:"(a::nat) - x \<le> a" 
-apply simp
-done
+by simp
 
 lemma diff_Suc_pos:"0 < a - Suc 0 \<Longrightarrow>  0 < a"
-apply simp
-done  
+by simp
 
 lemma minus_SucSuc:"a - Suc (Suc 0) = a - Suc 0 - Suc 0" 
-apply simp
-done
+by simp
 
 lemma Suc_Suc_Tr:"Suc (Suc 0) \<le> n \<Longrightarrow> Suc (n - Suc (Suc 0)) = n - Suc 0"
-apply (simp add:Suc_diff_le [THEN sym, of "Suc (Suc 0)" "n"])
-done
+by arith
 
 lemma Suc_Suc_less:"Suc 0 < a \<Longrightarrow> Suc (a - Suc (Suc 0)) < a"
-apply (subst minus_SucSuc)
-apply (subgoal_tac "0 < a - Suc 0")
-apply (subst Suc_pred, assumption) 
-apply simp+
-done
+by arith
 
 lemma diff_zero_eq:"n = (0::nat) \<Longrightarrow> m = m - n"
 by simp
@@ -138,22 +113,16 @@ lemma nat_not_le:"\<not>(m::nat) \<le> n \<Longrightarrow> n < m"
 by (simp add:le_def)
 
 lemma less_Suc_le1:"x < n \<Longrightarrow> Suc x \<le> n"
-apply simp
-done
+by simp
 
 lemma Suc_less_le:"x < Suc n \<Longrightarrow> x \<le> n"
-apply auto
-done
+by auto
 
 lemma less_le_diff:"x < n \<Longrightarrow> x \<le> n - Suc 0"
-apply (frule_tac x = x and n = n in less_Suc_le1)
-apply (frule diff_le_mono [of "Suc x" "n" "Suc 0"])
-apply simp
-done
+by arith
 
 lemma le_pre_le:"x \<le> n - Suc 0 \<Longrightarrow> x \<le> n"
-apply arith
-done
+by arith
 
 lemma nat_not_less:"\<not> (m::nat) < n \<Longrightarrow> n \<le> m"
 by (rule contrapos_pp, simp+)
@@ -162,20 +131,10 @@ lemma less_neq:"n < (m::nat) \<Longrightarrow> n \<noteq> m"
 by (simp add:nat_neq_iff[THEN sym, of "n" "m"])
 
 lemma less_le_diff1:"n \<noteq> 0 \<Longrightarrow> ((m::nat) < n) = (m \<le> (n - Suc 0))"
-apply (rule iffI)
- apply (simp add:less_le_diff)
- apply (cut_tac lessI[of "n - Suc 0"])
- apply (cut_tac Suc_pred[of n])
- apply (frule Nat.le_less_trans[of m "n - Suc 0" "Suc (n - Suc 0)"],
-          assumption+, simp)
- apply simp
-done
+by arith
 
 lemma nat_not_less1:"n \<noteq> 0 \<Longrightarrow> (\<not> (m::nat) < n) = (\<not> m \<le> (n - Suc 0))"
-apply (simp add:less_le_diff1[of m n])
-apply (rule less_le_diff1)
-apply simp
-done
+by arith
 
 lemma nat_eq_le:"m = (n::nat) \<Longrightarrow> m \<le> n" 
 by simp
@@ -184,56 +143,40 @@ by simp
 subsection "integers"
 
 lemma non_zero_int:" (n::int) \<noteq> 0 \<Longrightarrow> 0 < n \<or> n < 0"
-apply (subgoal_tac "n < 0 \<or> n = 0 \<or> 0 < n") apply simp
-apply (thin_tac "n \<noteq> 0") apply blast
-apply (rule zless_linear)
-done
+by arith
 
 lemma zgt_0_zge_1:"(0::int) < z \<Longrightarrow> 1 \<le> z" 
-apply arith
-done
+by arith
 
 lemma not_zle:"(\<not> (n::int) \<le> m) =  (m < n)"
-apply auto
-done
+by auto
 
 lemma not_zless:"(\<not> (n::int) < m) = (m \<le> n)"
-apply auto
-done
+by auto
 
 lemma zle_imp_zless_or_eq:"(n::int) \<le> m \<Longrightarrow> n < m \<or> n = m"
-apply (subgoal_tac "n < m \<or> n = m \<or> m < n") 
-apply (simp add:not_zless[THEN sym])
-apply (rule zless_linear[of "n" "m"])
-done
+by arith
 
 lemma zminus_zadd_cancel:" - z + (z + w) = (w::int)"
-apply simp
-done
+by simp
 
 lemma int_neq_iff:"((w::int) \<noteq> z) = (w < z) \<or> (z < w)"
-apply auto
-done
+by auto
 
 lemma zless_imp_zle:"(z::int) < z' \<Longrightarrow> z \<le> z'"
-apply simp
-done 
+by simp
 
 lemma zdiff:"z - (w::int) = z + (- w)"
-apply simp
-done
+by simp
 
 lemma zle_zless_trans:"\<lbrakk> (i::int) \<le> j; j < k\<rbrakk> \<Longrightarrow> i < k"
-apply arith
-done
+by arith
 
 lemma zless_zle_trans:"\<lbrakk> (i::int) < j; j \<le> k\<rbrakk> \<Longrightarrow> i < k"
-apply arith
-done 
+by arith
 
 lemma zless_neq:"(i::int) < j \<Longrightarrow> i \<noteq> j"
-apply simp
-done
+by simp
 
 lemma int_mult_mono:"\<lbrakk> i < j; (0::int) < k \<rbrakk> \<Longrightarrow> k * i < k * j"
 apply (frule zmult_zless_mono2_lemma [of "i" "j" "nat k"])
@@ -290,8 +233,7 @@ apply (frule int_mult_mono[of "i" "0" "j"], assumption+,
 done
 
 lemma zle:"((z::int) \<le> w) = (\<not> (w < z))" 
-apply auto
-done
+by auto
 
 lemma times_1_both:"\<lbrakk>(0::int) < z; z * z' = 1\<rbrakk> \<Longrightarrow> z = 1 \<and> z' = 1"
 apply (subgoal_tac "0 < z'")
@@ -303,18 +245,16 @@ apply (subgoal_tac "0 < z'")
 apply (rule contrapos_pp, simp+, simp add:zle[THEN sym], 
        frule zless_imp_zle[of "0" "z"], frule int_mult_le[of "z'" "0" "z"], 
        assumption+, simp)
-done 
+done
 
 lemma zminus_minus:"i - - (j::int) = i + j"
-apply simp
-done
+by simp
 
 lemma zminus_minus_pos:"(n::int) < 0 \<Longrightarrow> 0 < - n"
-by  simp 
+by simp 
 
 lemma zadd_zle_mono:"\<lbrakk>w' \<le> w; z' \<le> (z::int)\<rbrakk> \<Longrightarrow> w' + z' \<le> w + z" 
-apply simp
-done
+by simp
 
 lemma zmult_zle_mono:"\<lbrakk>i \<le> (j::int); 0 < k\<rbrakk> \<Longrightarrow> k * i \<le>  k * j"
 apply (case_tac "i = j") apply simp
@@ -359,50 +299,33 @@ apply (rule contrapos_pp, simp+)
 done
 
 lemma zmult_eq:"\<lbrakk>(0::int) < w; z = z'\<rbrakk> \<Longrightarrow> w * z = w * z'"
-apply simp
-done
+by simp
 
 lemma zmult_eq_r:"\<lbrakk>(0::int) < w; z = z'\<rbrakk> \<Longrightarrow> z * w =  z' * w"
-apply simp
-done
+by simp
 
 
 lemma zdiv_eq_l:"\<lbrakk>(0::int) < w; z * w  = z' * w \<rbrakk> \<Longrightarrow> z = z'"
-apply simp
-done
+by simp
 
 lemma zdiv_eq_r:"\<lbrakk>(0::int) < w; w * z  = w * z' \<rbrakk> \<Longrightarrow> z = z'"
-apply simp
-done
+by simp
 
 lemma int_nat_minus:"0 < (n::int) \<Longrightarrow> nat (n - 1) = (nat n) - 1"
-apply (subgoal_tac "0 \<le> (1::int)")
-apply (subgoal_tac "1 \<le> n") 
-apply (frule_tac z' = 1 and z = n in nat_diff_distrib)
- apply (frule_tac w1 = 0 and z1 = n in add1_zle_eq [THEN sym])
- apply (subgoal_tac "nat (1::int) = (1::nat)") apply simp
- apply simp 
- apply (subgoal_tac "0 + 1 \<le> n") apply simp 
- apply (simp add:add1_zle_eq[THEN sym, of "0" "n"])
- apply simp
-done
+by arith
 
 lemma int_nat_add:"\<lbrakk>0 < (n::int); 0 < (m::int)\<rbrakk> \<Longrightarrow> (nat (n - 1)) + (nat (m - 1)) + (Suc 0) = nat (n + m - 1)"
-apply (subgoal_tac "nat (n - 1) + (nat (m - 1)) = (nat n - 1) + (nat m - 1)")
-apply simp_all
-done
+by arith
 
 lemma int_equation:"(x::int) = y + z \<Longrightarrow> x - y = z"
-apply simp
-done
+by simp
 
 lemma int_pos_mult_monor:"\<lbrakk> 0 < (n::int); 0 \<le> n * m \<rbrakk> \<Longrightarrow> 0 \<le> m" 
- apply (rule mult_pos_iff, assumption+)
-done
+by (rule mult_pos_iff, assumption+)
 
 lemma int_pos_mult_monol:"\<lbrakk> 0 < (m::int); 0 \<le> n * m \<rbrakk> \<Longrightarrow> 0 \<le> n" 
- apply (rule int_pos_mult_monor, assumption+)
- apply (simp add:zmult_commute)
+apply (rule int_pos_mult_monor, assumption+)
+apply (simp add:zmult_commute)
 done
 
 lemma zdiv_positive:"\<lbrakk>(0::int) \<le> a; 0 < b\<rbrakk> \<Longrightarrow> 0 \<le> a div b"
@@ -436,31 +359,25 @@ subsection "a short notes for proof steps"
 subsection "sets" 
 
 lemma inEx:"x \<in> A \<Longrightarrow> \<exists>y\<in>A. y = x"
-apply simp
-done
+by simp
 
 lemma inEx_rev:" \<exists>y\<in>A. y = x \<Longrightarrow> x \<in> A"
 by blast
 
 lemma nonempty_ex:"A \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> A" 
- apply blast
-done
+by blast
 
 lemma ex_nonempty:"\<exists>x. x \<in> A \<Longrightarrow> A \<noteq> {}"
- apply blast
-done
+by blast
 
 lemma not_eq_outside:"a \<notin> A \<Longrightarrow> \<forall>b\<in>A. b \<noteq> a"
 by blast
 
 lemma ex_nonempty_set:"\<exists>a. P a \<Longrightarrow> {x. P x} \<noteq> {}"
-apply (rule ex_nonempty[of "{x. P x}"]) 
-apply simp
-done
+by blast
 
 lemma nonempty: "x \<in> A \<Longrightarrow> A \<noteq> {}"
- apply blast
-done
+by blast
 
 lemma subset_self:"A \<subseteq> A"
 by simp
@@ -472,35 +389,22 @@ lemma bsubsetTr:"{x. x \<in> A \<and> P x} \<subseteq> A"
 by blast
 
 lemma sets_not_eq:"\<lbrakk>A \<noteq> B; B \<subseteq> A\<rbrakk> \<Longrightarrow> \<exists>a\<in>A. a \<notin> B" 
-apply (rule contrapos_pp, simp+)
-apply (subgoal_tac "A \<subseteq> B")
-apply (frule equalityI[of "A" "B"], assumption+)
-apply simp
-apply (rule subsetI) apply simp
-done
+by blast
 
-lemma diff_nonempty:"\<lbrakk>A \<noteq> B; B \<subseteq> A\<rbrakk> \<Longrightarrow> A - B \<noteq> {}" 
-apply (rule ex_nonempty[of "A - B"],
-       frule sets_not_eq[of "A" "B"], assumption+, erule bexE)
-apply blast
-done
+lemma diff_nonempty:"\<lbrakk>A \<noteq> B; B \<subseteq> A\<rbrakk> \<Longrightarrow> A - B \<noteq> {}"
+by blast
 
 lemma sub_which1:"\<lbrakk>A \<subseteq> B \<or> B \<subseteq> A; x \<in> A; x \<notin> B\<rbrakk> \<Longrightarrow> B \<subseteq> A"
-apply (rule contrapos_pp, simp+)
-apply (simp add:subsetD[of "A" "B" "x"])
-done
+by blast
 
 lemma sub_which2:"\<lbrakk>A \<subseteq> B \<or> B \<subseteq> A; x \<notin> A; x \<in> B\<rbrakk> \<Longrightarrow> A \<subseteq> B"
-apply (rule contrapos_pp, simp+)
-apply (simp add:subsetD[of "B" "A" "x"])
-done
+by blast
 
 lemma diff_sub:"A - B \<subseteq> A"
 by blast
 
 lemma nonempty_int: "A \<inter> B \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> A \<inter> B "
- apply (rule nonempty_ex [of "A \<inter> B"], assumption+)
-done
+by blast
 
 lemma no_meet1:"A \<inter> B = {}\<Longrightarrow> \<forall>a \<in> A. a \<notin> B"
 by blast
@@ -509,74 +413,55 @@ lemma no_meet2:"A \<inter> B = {}\<Longrightarrow> \<forall>a \<in> B. a \<notin
 by blast
 
 lemma elem_some:"x \<in> A \<Longrightarrow> \<exists>y\<in>A. x = y"  
- apply simp
-done
+by blast
 
 lemma singleton_sub:"a \<in> A \<Longrightarrow> {a} \<subseteq> A"
-apply (rule subsetI)
-apply simp
-done
+by blast
 
 lemma eq_elem_in: "\<lbrakk> a \<in> A; a = b \<rbrakk> \<Longrightarrow> b \<in> A"
- apply simp
-done
+by simp
 
 lemma eq_set_inc: "\<lbrakk> a \<in> A; A = B \<rbrakk> \<Longrightarrow> a \<in> B"
- apply simp
-done
+by simp
 
 lemma eq_set_not_inc:"\<lbrakk>a \<notin> A; A = B \<rbrakk> \<Longrightarrow> a \<notin> B"
 by simp
 
 lemma int_subsets: "\<lbrakk> A1 \<subseteq> A; B1 \<subseteq> B \<rbrakk> \<Longrightarrow> A1 \<inter> B1 \<subseteq> A \<inter> B"
-apply (rule subsetI)
- apply (simp add:subsetD)
-done
+by blast
 
 lemma inter_mono:"A \<subseteq> B \<Longrightarrow> A \<inter> C \<subseteq> B \<inter> C"
 by (rule subsetI, simp add:subset_def)
 
 lemma sub_Un1:"B \<subseteq>  B \<union> C" 
-apply (rule subsetI)
- apply simp
-done
+by blast
 
 lemma sub_Un2:"C \<subseteq>  B \<union> C" 
-apply (rule subsetI)
- apply simp
-done
+by blast
 
 lemma subset_contr:"\<lbrakk> A \<subset> B; B \<subseteq> A \<rbrakk> \<Longrightarrow> False"
-apply (simp add:psubset_def)
-done
+by blast
 
 lemma psubset_contr:"\<lbrakk> A \<subset> B; B \<subset> A \<rbrakk> \<Longrightarrow> False"
-apply (simp add:psubset_def)
- apply blast
-done
+by blast
 
 lemma eqsets_sub:"A = B \<Longrightarrow> A \<subseteq> B"
 by simp
 
 lemma not_subseteq:" \<not> A \<subseteq> B \<Longrightarrow> \<exists>a \<in> A. a \<notin> B"
-apply (simp add:subset_def)
-done
+by blast
 
 lemma in_un1:"\<lbrakk> x \<in> A \<union> B; x \<notin> B \<rbrakk> \<Longrightarrow> x \<in> A"
-apply simp
-done
+by blast
 
 lemma proper_subset:"\<lbrakk>A \<subseteq> B; x \<notin> A; x \<in> B\<rbrakk> \<Longrightarrow> A \<noteq> B"
-by (rule contrapos_pp, simp+) 
-
+by blast
 
 lemma in_un2:"\<lbrakk> x \<in> A \<union> B; x \<notin> A \<rbrakk> \<Longrightarrow> x \<in> B"
-apply simp
-done
+by simp
 
 lemma diff_disj:"x \<notin> A \<Longrightarrow> A - {x} = A" 
-apply auto
-done 
+by auto
 
 lemma in_diff:"\<lbrakk>x \<noteq> a; x \<in> A\<rbrakk> \<Longrightarrow> x \<in> A - {a}"
 by simp
@@ -585,35 +470,19 @@ lemma in_diff1:"x \<in> A - {a} \<Longrightarrow> x \<noteq> a"
 by simp
 
 lemma sub_inserted1:"\<lbrakk>Y \<subseteq> insert a X; \<not> Y \<subseteq> X\<rbrakk> \<Longrightarrow> a \<notin> X \<and> a \<in> Y"
-apply (rule contrapos_pp, simp+)
-apply (erule disjE)
-apply (subgoal_tac "insert a X = X", simp)
-apply (rule equalityI)
- apply (rule subsetI) apply simp apply blast
- apply (rule subsetI, simp)
- apply blast
-done
+by blast
+
 lemma sub_inserted2:"\<lbrakk>Y \<subseteq> insert a X; \<not> Y \<subseteq> X\<rbrakk> \<Longrightarrow> Y = (Y - {a}) \<union> {a}"
-apply (frule sub_inserted1[of "Y" "a" "X"], assumption+)
-apply (rule equalityI)
- apply (erule conjE, rule subsetI)
- apply simp
-apply (rule subsetI)
- apply simp apply blast
-done
+by blast
 
 lemma insert_sub:"\<lbrakk> A \<subseteq> B; a \<in> B\<rbrakk> \<Longrightarrow> (insert a A) \<subseteq> B"
-apply (rule subsetI)
- apply simp apply blast
-done
+by blast
 
 lemma insert_diff:"A \<subseteq> (insert b B) \<Longrightarrow> A - {b} \<subseteq> B"
-apply (rule subsetI)
- apply simp apply blast
-done
+by blast
 
 lemma insert_inc1:"A \<subseteq> insert a A"
-by (rule subsetI, simp)
+by blast
 
 lemma insert_inc2:"a \<in> insert a A"
 by simp
@@ -627,34 +496,22 @@ lemma mem_family_sub_Un:"A \<in> C \<Longrightarrow> A \<subseteq> \<Union> C"
 by blast
 
 lemma sub_Union:"\<exists>X\<in>C. A \<subseteq> X \<Longrightarrow> A \<subseteq> \<Union> C" 
-apply (erule bexE, rule subsetI,
-       frule_tac c = x and B = X in subsetD[of "A"], assumption+,
-       frule_tac A = X in mem_family_sub_Un[of _ "C"],
-       rule_tac c = x and A = X in subsetD[of _ "\<Union>C"], assumption+)
-done
+by blast
 
 lemma family_subset_Un_sub:"\<forall>A\<in>C. A \<subseteq> B \<Longrightarrow> \<Union> C \<subseteq> B"
-apply (rule subsetI, simp, erule bexE)
-apply (frule_tac b = X in forball_spec1, assumption,
-       thin_tac "\<forall>A\<in>C. A \<subseteq> B")
-apply (rule_tac c = x and A = X in subsetD[of _ "B"], assumption+)
-done
+by blast
 
 lemma in_set_with_P:"P x \<Longrightarrow> x \<in> {y. P y}"
 by blast
 
 lemma sub_single:"\<lbrakk>A \<noteq> {}; A \<subseteq> {a}\<rbrakk> \<Longrightarrow> A = {a}"
-apply (rule equalityI, simp) 
-apply (rule subsetI,frule nonempty_ex[of "A"], erule exE,
-       frule_tac c = xa in subsetD[of "A" "{a}"], assumption+, simp)
-done (** move this to the section "set" **)
+by blast
 
 lemma not_sub_single:"\<lbrakk>A \<noteq> {}; A \<noteq> {a}\<rbrakk> \<Longrightarrow> \<not> A \<subseteq> {a}"
-apply (rule contrapos_pp, simp+, simp add:sub_single)
-done
+by blast
 
 lemma not_sub:"\<not> A \<subseteq> B \<Longrightarrow> \<exists>a. a\<in>A \<and> a \<notin> B"
-by (rule contrapos_pp, simp+, insert subsetI[of "A" "B"], simp)
+by blast
 
 
 section "3. Functions"
@@ -2004,30 +1861,19 @@ subsection "lemmas for Existence of reduced chain. Later some of lemmas
             should be removed. "
 
 lemma jointgd_tool1:" 0 < i \<Longrightarrow> 0 \<le> i - Suc 0"
-apply (frule Suc_leI [of "0" "i"])
- apply simp
-done
+by arith
 
 lemma jointgd_tool2:" 0 < i \<Longrightarrow> i = Suc (i - Suc 0)"
-apply (simp add:Suc_pred [THEN sym])
-done
+by arith
 
 lemma jointgd_tool3:"\<lbrakk>0 < i;  i \<le> m\<rbrakk> \<Longrightarrow> i - Suc 0 \<le> (m - Suc 0)"
-  apply (rule  diff_le_mono [of _ "m" "Suc 0"], assumption+)
-done
+by arith
 
 lemma jointgd_tool4:"n < i \<Longrightarrow> i - n = Suc( i - Suc n)"
-apply (frule less_diff_pos [of "n" "i"])
-apply (subst less_diff_Suc [of "n" "i"], assumption+)
-apply (rule Suc_pred [THEN sym, of "i - n"], assumption+)
-done
+by arith
 
 lemma pos_prec_less:"0 < i \<Longrightarrow> i - Suc 0 < i"
-apply (frule Suc_pred[THEN sym, of "i"])
-apply (rule less_convert[of "i" "Suc (i - Suc 0)" "i - Suc 0"], assumption+,
-       thin_tac "i = Suc (i - Suc 0)")
-apply (simp del:Suc_pred)
-done
+by arith
 
 lemma Un_less_Un:"\<lbrakk>f \<in> {j. j \<le> (Suc n)} \<rightarrow> (X::'a set set); 
         A \<subseteq> \<Union>f ` {j. j \<le> (Suc n)}; 
@@ -4459,11 +4305,11 @@ prefer 2 apply simp
 apply (frule nonempty[of "(0::int)" UNIV])
 apply (frule_tac nonempty_card_pos[of UNIV], assumption)
 apply (frule Nset2_finite[of UNIV "(card UNIV) - Suc 0"],
-       rule Suc_pred[THEN sym, of "card UNIV"], assumption)
+       rule Suc_pred[THEN sym, of "card UNIV"],simp)
 apply (erule exE, erule conjE)
 apply (frule_tac f = f in 
             Nset2finite_inj[of UNIV "(card UNIV) - Suc 0"],
-       rule Suc_pred[THEN sym, of "card UNIV"], assumption+)
+       rule Suc_pred[THEN sym, of "card UNIV"], simp, assumption)
 apply (frule_tac f = f and n = "card UNIV - Suc 0" in Zmax_plus1)
 apply (simp add:surj_to_def)
 done

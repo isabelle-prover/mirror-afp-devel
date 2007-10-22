@@ -401,7 +401,7 @@ by (simp add:Ag_ind_def)
 
 lemma (in aGroup) Ag_ind_aGroup:"\<lbrakk>f \<in> carrier A \<rightarrow> D;
       bij_to f (carrier A) (D::'d set)\<rbrakk> \<Longrightarrow> aGroup (Ag_ind A f)"
-apply (simp add:bij_to_def, frule conj_1, frule conj_2, fold bij_to_def)
+apply (simp add:bij_to_def, frule conjunct1, frule conjunct2, fold bij_to_def)
 apply (simp add:aGroup_def) 
  apply (rule conjI)
  apply (rule bivar_func_test)
@@ -425,7 +425,7 @@ apply (simp add:Ag_ind_def)
         frule_tac x = "invfun (carrier A) D f b" and 
                   y = "invfun (carrier A) D f c" in ag_pOp_closed, assumption+)
  apply (simp add:funcset_mem[of "f" "carrier A" "D"])
- apply (unfold bij_to_def, frule conj_1, fold bij_to_def)
+ apply (unfold bij_to_def, frule conjunct1, fold bij_to_def)
  apply (simp add:invfun_l) 
  apply (subst injective_iff[of "f" "carrier A", THEN sym], assumption) 
  apply (simp add:ag_pOp_closed)+
@@ -469,11 +469,11 @@ apply (rule conjI)
  apply (frule_tac x = "invfun (carrier A) D f a" in ag_mOp_closed)
  apply (simp add:funcset_mem[of "f" "carrier A" "D"])
  apply (subst injective_iff[of "f" "carrier A", THEN sym], assumption)
- apply (unfold bij_to_def, frule conj_1, fold bij_to_def)
+ apply (unfold bij_to_def, frule conjunct1, fold bij_to_def)
  apply (simp add:invfun_l)
  apply (simp add:ag_pOp_closed)
  apply (simp add:ag_inc_zero)
- apply (unfold bij_to_def, frule conj_1, fold bij_to_def)
+ apply (unfold bij_to_def, frule conjunct1, fold bij_to_def)
  apply (simp add:invfun_l)
  apply (simp add:l_m)
 
@@ -485,7 +485,7 @@ apply (rule conjI)
 apply (rule allI, rule impI)
   apply (simp add:Ag_ind_def surj_to_def)
   apply (cut_tac ag_inc_zero, simp add:funcset_mem)
-  apply (unfold bij_to_def, frule conj_1, fold bij_to_def)
+  apply (unfold bij_to_def, frule conjunct1, fold bij_to_def)
   apply (simp add:invfun_l)
  apply (frule_tac b = a in invfun_mem1[of "f" "carrier A" "D"], assumption+)   
  apply (simp add:l_zero)
@@ -788,7 +788,7 @@ done
 lemma (in aGroup) Ag_ind_aHom:"\<lbrakk>f \<in> carrier A \<rightarrow> D; 
       bij_to f (carrier A) (D::'d set)\<rbrakk> \<Longrightarrow> Agii A f \<in> aHom A (Ag_ind A f)"
 apply (simp add:aHom_def)
- apply (unfold bij_to_def, frule conj_1, frule conj_2, fold bij_to_def)
+ apply (unfold bij_to_def, frule conjunct1, frule conjunct2, fold bij_to_def)
  apply (simp add:Ag_ind_carrier surj_to_def)
 apply (rule conjI)
  apply (rule univar_func_test)
@@ -797,7 +797,7 @@ apply (rule conjI)
  apply (rule ballI)+
  apply (simp add:Ag_ind_def)
  apply (simp add:funcset_mem)+
- apply (unfold bij_to_def, frule conj_1, fold bij_to_def) 
+ apply (unfold bij_to_def, frule conjunct1, fold bij_to_def) 
  apply (simp add:invfun_l)
  apply (simp add:ag_pOp_closed)
 done
@@ -820,7 +820,7 @@ apply (simp add:bijec_def)
 apply (frule aHom_0_0[of "A" "Ag_ind A f" "Agii A f"], assumption+)
  apply (rotate_tac -2, frule sym, thin_tac "Agii A f x = \<zero>\<^bsub>Ag_ind A f\<^esub>", simp)
  apply (frule aGroup.ag_inc_zero[of "A"], simp add:Agii_def)
- apply (unfold bij_to_def, frule conj_2, fold bij_to_def)
+ apply (unfold bij_to_def, frule conjunct2, fold bij_to_def)
  apply (frule aGroup.ag_inc_zero[of "A"])
  apply (simp add:injective_iff[THEN sym, of "f" "carrier A" "\<zero>\<^bsub>A\<^esub>"])
  apply (rule subsetI, simp)
@@ -828,7 +828,7 @@ apply (frule aHom_0_0[of "A" "Ag_ind A f" "Agii A f"], assumption+)
  apply (simp add:aGroup.ag_inc_zero, simp add:aHom_0_0)
 
 apply (subst surjec_def)
-apply (unfold bij_to_def, frule conj_1, fold bij_to_def, simp)
+apply (unfold bij_to_def, frule conjunct1, fold bij_to_def, simp)
  apply (simp add:aGroup.Ag_ind_carrier surj_to_def Agii_def)
 done
 
@@ -1862,7 +1862,7 @@ apply (thin_tac "ainvf\<^bsub>(a\<Pi>\<^bsub>I\<^esub> A),Ag_ind (a\<Pi>\<^bsub>
 apply (frule ainvf_bijec[of "a\<Pi>\<^bsub>I\<^esub> A" "Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f" "Agii (a\<Pi>\<^bsub>I\<^esub> A) f"],
                    assumption+)
 apply (thin_tac "bijec\<^bsub>(a\<Pi>\<^bsub>I\<^esub> A),Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f\<^esub> Agii (a\<Pi>\<^bsub>I\<^esub> A) f")
-apply (unfold bijec_def, frule conj_1, fold bijec_def)
+apply (unfold bijec_def, frule conjunct1, fold bijec_def)
 apply (frule injec_inj_on[of "Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f" "a\<Pi>\<^bsub>I\<^esub> A" "ainvf\<^bsub>(a\<Pi>\<^bsub>I\<^esub> A),Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f\<^esub> Agii (a\<Pi>\<^bsub>I\<^esub> A) f"], assumption+)
 apply (simp add:injective_iff[THEN sym, of "ainvf\<^bsub>(a\<Pi>\<^bsub>I\<^esub> A),Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f\<^esub> Agii (a\<Pi>\<^bsub>I\<^esub> A) f" "carrier (Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f)" "x" "y"])
 done
@@ -1914,8 +1914,8 @@ apply (frule map_family_triangle[of "I" "A" "S" "g"], assumption+)
 apply (frule ex1_implies_ex)
 apply (erule exE)
 apply (erule conjE)
-apply (unfold bijec_def, frule conj_2, fold bijec_def)
-apply (unfold surjec_def, frule conj_1, fold surjec_def)
+apply (unfold bijec_def, frule conjunct2, fold bijec_def)
+apply (unfold surjec_def, frule conjunct1, fold surjec_def)
 apply (rename_tac fa,
        frule_tac f = fa in aHom_compos[of "S" "a\<Pi>\<^bsub>I\<^esub> A" "Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f" _ 
                  "Agii (a\<Pi>\<^bsub>I\<^esub> A) f"], assumption+)
@@ -2361,7 +2361,7 @@ done
 lemma (in Ring) ring_inv1_2:"\<lbrakk> a \<in> carrier R; b \<in> carrier R \<rbrakk> \<Longrightarrow>
                                 -\<^sub>a (a \<cdot>\<^sub>r b) = a \<cdot>\<^sub>r (-\<^sub>a b)"
 apply (frule ring_inv1 [of "a" "b"], assumption+)
-apply (frule conj_2) 
+apply (frule conjunct2) 
 apply (thin_tac "-\<^sub>a a \<cdot>\<^sub>r b = (-\<^sub>a a) \<cdot>\<^sub>r b \<and> -\<^sub>a (a \<cdot>\<^sub>r b) = a \<cdot>\<^sub>r (-\<^sub>a b)") 
 apply simp
 done
@@ -2515,7 +2515,7 @@ apply (rule conjI)
 apply (rule conjI)
   apply (rule allI)
   apply ((subst Sr_def)+, simp add:Sr_mOp_closed, rule impI)
-  apply (unfold sr_def, frule conj_1, fold sr_def,
+  apply (unfold sr_def, frule conjunct1, fold sr_def,
          frule_tac c = a in subsetD[of "S" "carrier R"], assumption+,
          simp add:aGroup.ag_l_inv1)
 
@@ -2525,7 +2525,7 @@ apply (rule conjI)
 apply (rule conjI)
   apply (rule allI, simp add:Sr_def Sr_zero)
   apply (rule impI)
-  apply (unfold sr_def, frule conj_1, fold sr_def,
+  apply (unfold sr_def, frule conjunct1, fold sr_def,
          frule_tac c = a in subsetD[of "S" "carrier R"], assumption+,
          simp add:aGroup.ag_l_zero) 
 
@@ -2537,7 +2537,7 @@ apply (rule conjI)
 apply (rule conjI)
   apply (rule allI, rule impI)+
   apply (simp add:Sr_def Sr_tOp_closed)
-  apply (unfold sr_def, frule conj_1, fold sr_def,
+  apply (unfold sr_def, frule conjunct1, fold sr_def,
          frule_tac c = a in subsetD[of "S" "carrier R"], assumption+,
          frule_tac c = b in subsetD[of "S" "carrier R"], assumption+,
          frule_tac c = c in subsetD[of "S" "carrier R"], assumption+)
@@ -2545,7 +2545,7 @@ apply (rule conjI)
 
 apply (rule conjI)
   apply ((rule allI, rule impI)+, simp add:Sr_def)
-  apply (unfold sr_def, frule conj_1, fold sr_def,
+  apply (unfold sr_def, frule conjunct1, fold sr_def,
          frule_tac c = a in subsetD[of "S" "carrier R"], assumption+,
          frule_tac c = b in subsetD[of "S" "carrier R"], assumption+,
          simp add:ring_tOp_commute)
@@ -2556,7 +2556,7 @@ apply (rule conjI)
 apply (rule conjI)
   apply (simp add:Sr_def Sr_pOp_closed Sr_tOp_closed)
   apply (rule allI, rule impI)+
-  apply (unfold sr_def, frule conj_1, fold sr_def,
+  apply (unfold sr_def, frule conjunct1, fold sr_def,
          frule_tac c = a in subsetD[of "S" "carrier R"], assumption+,
          frule_tac c = b in subsetD[of "S" "carrier R"], assumption+,
          frule_tac c = c in subsetD[of "S" "carrier R"], assumption+)
@@ -2564,7 +2564,7 @@ apply (rule conjI)
 
 apply (simp add:Sr_def Sr_one)
  apply (rule allI, rule impI)
-   apply (unfold sr_def, frule conj_1, fold sr_def,
+   apply (unfold sr_def, frule conjunct1, fold sr_def,
          frule_tac c = a in subsetD[of "S" "carrier R"], assumption+)
  apply (simp add:ring_l_one)
 done
@@ -3324,10 +3324,10 @@ apply (simp add:rimg_def)
 done
 
 lemma rHom_mem:"\<lbrakk> f \<in> rHom A R; a \<in> carrier A \<rbrakk> \<Longrightarrow> f a \<in> carrier R"
-apply (simp add:rHom_def, frule conj_1)
+apply (simp add:rHom_def, frule conjunct1)
  apply (thin_tac "f \<in> aHom A R \<and>
      (\<forall>x\<in>carrier A. \<forall>y\<in>carrier A. f (x \<cdot>\<^sub>r\<^bsub>A\<^esub> y) = f x \<cdot>\<^sub>r\<^bsub>R\<^esub> f y) \<and> f 1\<^sub>r\<^bsub>A\<^esub> = 1\<^sub>r\<^bsub>R\<^esub>")
- apply (simp add:aHom_def, frule conj_1)
+ apply (simp add:aHom_def, frule conjunct1)
  apply (thin_tac "f \<in> carrier A \<rightarrow> carrier R \<and>
      f \<in> extensional (carrier A) \<and>
      (\<forall>a\<in>carrier A. \<forall>b\<in>carrier A. f (a \<plusminus>\<^bsub>A\<^esub> b) = f a \<plusminus>\<^bsub>R\<^esub> f b)") 
@@ -3513,7 +3513,7 @@ by (simp add:ideal_def)
 
 lemma (in Ring) ideal_pOp_closed:"\<lbrakk>ideal R I; x \<in> I; y \<in> I \<rbrakk> 
                                                    \<Longrightarrow> x \<plusminus> y \<in> I"
-apply (unfold ideal_def, frule conj_1, fold ideal_def)
+apply (unfold ideal_def, frule conjunct1, fold ideal_def)
 apply (cut_tac ring_is_ag,
        simp add:aGroup.asubg_pOp_closed)
 done
@@ -3535,7 +3535,7 @@ lemma (in Ring) ideal_nsum_closed:"\<lbrakk>ideal R I; \<forall>j \<le> n. f j \
 by (simp add:ideal_nsum_closedTr)
 
 lemma (in Ring) ideal_subset1:"ideal R I \<Longrightarrow> I \<subseteq> carrier R"
-apply (unfold ideal_def, frule conj_1, fold ideal_def)
+apply (unfold ideal_def, frule conjunct1, fold ideal_def)
   apply (simp add:asubGroup_def sg_def, (erule conjE)+)
   apply (cut_tac ring_is_ag,
          simp add:aGroup.ag_carrier_carrier)
@@ -3609,14 +3609,14 @@ done
 
 lemma (in Ring) ideal_inv1_closed:"\<lbrakk> ideal R I; x \<in> I \<rbrakk> \<Longrightarrow> -\<^sub>a x \<in> I"
 apply (cut_tac ring_is_ag)
-apply (unfold ideal_def, frule conj_1, fold ideal_def)
+apply (unfold ideal_def, frule conjunct1, fold ideal_def)
 apply (simp add:aGroup.asubg_mOp_closed[of "R" "I"])
 done
 
 lemma (in Ring) ideal_zero:"ideal R I  \<Longrightarrow> \<zero> \<in> I"
 
 apply (cut_tac ring_is_ag)
-apply (unfold ideal_def, frule conj_1, fold ideal_def)
+apply (unfold ideal_def, frule conjunct1, fold ideal_def)
 apply (simp add:aGroup.asubg_inc_zero)
 done
 
@@ -4038,13 +4038,13 @@ apply (frule Ring.ring_is_ag[of "A"], frule Ring.ring_is_ag[of "R"])
 apply (rule Ring.ideal_condition1, assumption+) 
 apply (rule subsetI,
        simp add:ker_def) 
-apply (simp add:rHom_def, frule conj_1)
+apply (simp add:rHom_def, frule conjunct1)
 apply (frule ker_inc_zero[of "A" "R" "f"], assumption+, blast)
 
 apply (rule ballI)+
  apply (simp add:ker_def, (erule conjE)+)
  apply (simp add:aGroup.ag_pOp_closed)
- apply (simp add:rHom_def, frule conj_1,
+ apply (simp add:rHom_def, frule conjunct1,
         simp add:aHom_add, 
         frule Ring.ring_zero[of "R"],
         simp add:aGroup.ag_l_zero)
@@ -4222,7 +4222,7 @@ lemma (in Ring) ar_coset_same2:"\<lbrakk>ideal R I; a \<in> carrier R; b \<in> c
 apply (cut_tac ring_is_ag)
 apply (simp add:ar_coset_def)
  apply (frule aGroup.b_ag_group[of "R"])
- apply (simp add:ideal_def asubGroup_def, frule conj_1, fold asubGroup_def,
+ apply (simp add:ideal_def asubGroup_def, frule conjunct1, fold asubGroup_def,
         fold ideal_def, simp add:asubGroup_def)
  apply (subgoal_tac "a \<in> carrier (b_ag R)",
          subgoal_tac "b \<in> carrier (b_ag R)")
@@ -4597,7 +4597,7 @@ apply (simp add:rind_hom_def)
         frule_tac h = h in Ring.ideal_subset[of "A" "ker\<^bsub>A,R\<^esub> f"], assumption+)
  apply (frule_tac Ring.ring_is_ag[of "A"],
         frule_tac Ring.ring_is_ag[of "R"],
-        simp add:rHom_def, frule conj_1, simp add:aHom_add)
+        simp add:rHom_def, frule conjunct1, simp add:aHom_add)
  apply (simp add:ker_def)
  apply (frule aHom_mem[of "A" "R" "f" "a"], assumption+,
         simp add:aGroup.ag_r_zero)
@@ -4658,7 +4658,7 @@ apply (rule ballI)+
         frule_tac x = aa and y = ab in aGroup.ag_pOp_closed[of "A"],
         assumption+) 
  apply (simp add:rind_hom_well_def[THEN sym])
- apply (simp add:rHom_def, frule conj_1, simp add:aHom_add)
+ apply (simp add:rHom_def, frule conjunct1, simp add:aHom_add)
 apply (rule conjI) 
  apply (rule ballI)+
  apply (frule ker_ideal[of "A" "R" "f"], assumption+,
@@ -5248,7 +5248,7 @@ apply (rule ballI)+
  apply simp 
  apply (erule bexE)+
 apply (simp add:chain_def)
- apply (frule conj_1) apply (frule conj_2)
+ apply (frule conjunct1) apply (frule conjunct2)
  apply (thin_tac "c \<subseteq> {I. ideal R I \<and> I \<subset> carrier R} \<and> (\<forall>x\<in>c. \<forall>y\<in>c. x \<subseteq> y \<or> y \<subseteq> x)")
  apply (frule_tac b = X in forball_spec1, assumption,
         thin_tac "\<forall>x\<in>c. \<forall>y\<in>c. x \<subseteq> y \<or> y \<subseteq> x",
