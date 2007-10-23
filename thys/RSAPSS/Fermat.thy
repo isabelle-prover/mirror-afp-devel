@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Fermat.thy
-    ID:         $Id: Fermat.thy,v 1.4 2007-10-20 10:11:58 chaieb Exp $
+    ID:         $Id: Fermat.thy,v 1.5 2007-10-23 20:52:24 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -60,7 +60,7 @@ lemma diffI: "\<And>b. (0::nat) = b - b"
 
 lemma alldistincts[rule_format]: "prime p \<longrightarrow> (m mod p \<noteq> 0) \<longrightarrow> (n2 < n1) \<longrightarrow> (n1 < p) --> \<not>(((m*n1) mod p) mem (S (n2,m,p)))"
   apply (induct_tac rule: S.induct)
-  apply (auto simp add: neq0_conv)
+  apply (auto)
   apply (drule equalmodstrick2)
   apply (subgoal_tac "M+M*w < M*n1")
   apply (auto)
@@ -78,7 +78,7 @@ lemma alldistincts[rule_format]: "prime p \<longrightarrow> (m mod p \<noteq> 0)
 
 lemma alldistincts2[rule_format]: "prime p \<longrightarrow> (m mod p \<noteq> 0) \<longrightarrow> (n < p) \<longrightarrow> alldistinct (S (n,m,p))"
   apply (induct_tac rule: S.induct)
-  apply (simp add: neq0_conv)+
+  apply (simp)+
   apply (subst sucassoc)
   apply (rule impI)+
   apply (rule alldistincts)
@@ -90,7 +90,7 @@ lemma notdvdless: "\<not> a dvd b \<Longrightarrow> 0 < (b::nat) mod a"
 
 lemma allnonzerop[rule_format]: "prime p \<longrightarrow> (m mod p \<noteq> 0) \<longrightarrow> (n < p) \<longrightarrow> allnonzero (S (n,m,p))"
   apply (induct_tac rule: S.induct)
-  apply (simp add: neq0_conv)+
+  apply (simp)+
   apply (auto)
   apply (subst sucassoc)
   apply (rule notdvdless)

@@ -1,5 +1,5 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Inv4.thy,v 1.5 2007-10-20 10:11:54 chaieb Exp $
+    ID:          $Id: DiskPaxos_Inv4.thy,v 1.6 2007-10-23 20:52:12 nipkow Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro at fceia.unr.edu.ar>
 *)
@@ -133,7 +133,7 @@ proof -
     by(auto simp add: StartBallot_def)
   from act inv inv2a
   show ?thesis
-    by(auto simp del: HStartBallot_def simp  add: HInv4a_def phase neq0_conv
+    by(auto simp del: HStartBallot_def simp  add: HInv4a_def phase
 	       elim: HStartBallot_HInv4a1 HStartBallot_HInv4a2)
 qed
 

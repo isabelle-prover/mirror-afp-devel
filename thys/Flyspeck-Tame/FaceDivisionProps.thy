@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.9 2007-10-20 10:11:55 chaieb Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.10 2007-10-23 20:52:13 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -5635,7 +5635,7 @@ lemma pre_subdivFace'_Some1:
   \<Longrightarrow> pre_subdivFace' g' f21 v' u 0 vol"
   apply (subgoal_tac "pre_splitFace g v u f [countVertices g ..< countVertices g + n]")
    apply (rule pre_subdivFace'_Some1') apply assumption+
-  apply (simp add: neq0_conv)
+  apply (simp)
   apply (rule pre_subdivFace'_preFaceDiv)
   by auto
 

@@ -400,7 +400,7 @@ subsection "costBarrier: lemmas"
 
 subsection "costBarrier: exp3 lemmas - bit specific..."
 
-lemma exp3Min: "exp 3 a \<noteq> 0"
+lemma exp3Min: "exp 3 a > 0"
 by (induct a, simp, simp)
 
 lemma exp1: "exp 3 (A) + exp 3 (B) < 3 * ((exp 3 A) * (exp 3 B))" 
@@ -429,7 +429,7 @@ lemma expSum: "exp x (a+b) = (exp x a) * (exp x b)"
 subsection "costBarrier: decreases whilst contains and unconsiders"
 
 lemma costBarrierDecreases':
-  notes ss = subs_def2 nforms_def Let_def subsFAtom_def subsFConj_def subsFAll_def costBarrier_def atoms_def exp3Min expSum gr0_conv
+  notes ss = subs_def2 nforms_def Let_def subsFAtom_def subsFConj_def subsFAll_def costBarrier_def atoms_def exp3Min expSum
   shows "~SATAxiom (sequent 
 (a, (num,fm) # list)) --> iA ~= (num, fm) --> \<not> proofTree (tree subs (a, (num, fm) # list)) --> fSucn : subs (a, (num, fm) # list) --> iA \<in> set list --> costBarrier iA (fSucn) < costBarrier iA (a, (num, fm) # list)"
   apply(rule_tac A=fm in formula_signs_cases)
@@ -439,7 +439,7 @@ lemma costBarrierDecreases':
 	-- "conj"
      apply clarify
      apply(simp add: ss)
-     apply(erule disjE) 
+     apply(erule disjE)
       apply(simp add: ss exp2)
      apply(simp add: ss exp2)
     -- "disj"
@@ -943,4 +943,3 @@ lemma adequacy[simplified sequent_pseq]: "validS fs ==> (sequent (pseq fs)) : de
   done
 
 end
-

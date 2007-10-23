@@ -540,7 +540,7 @@ proof (rule ccontr)
       with ab show ?thesis by (auto simp only: power2_eq_square mult_ac)
     qed
     with xyz0 have c0: "?c\<noteq>0" by (auto simp add: power2_eq_square)
-    from xyz0 have g0: "?g\<noteq>0" by (simp add: zgcd_def gcd_zero neq0_conv)
+    from xyz0 have g0: "?g\<noteq>0" by (simp add: zgcd_def gcd_zero)
     have "a^4 + b^4 = ?c^2"
     proof -
       have "?c^2 * ?g^4 = (a^4+b^4)*?g^4"

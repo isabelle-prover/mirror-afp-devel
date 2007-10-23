@@ -1,4 +1,4 @@
-(*  ID:         $Id: GeneratorProps.thy,v 1.6 2007-10-20 10:11:55 chaieb Exp $
+(*  ID:         $Id: GeneratorProps.thy,v 1.7 2007-10-23 20:52:14 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -422,7 +422,7 @@ done
 lemma untame_notame:
  "untame (\<lambda>g. inv g \<and> notame g)"
 proof(clarsimp simp add: notame_def untame_def tame\<^isub>4\<^isub>5_def is_tame\<^isub>7_def
-                         linorder_not_le linorder_not_less neq0_conv)
+                         linorder_not_le linorder_not_less)
   fix g assume "final g" "inv g" "tame g"
     and cases: "(\<exists>v\<in>\<V> g. (except g v = 0 \<longrightarrow> 6 < degree g v) \<and>
                             (0 < except g v \<longrightarrow> 5 < degree g v))

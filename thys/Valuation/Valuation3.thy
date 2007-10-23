@@ -363,7 +363,7 @@ apply (erule exE)
  apply simp apply simp apply (thin_tac "\<not> 0 \<le> v (f n)")
  apply (simp add:aneg_le) apply blast
 
-apply (simp add: neq0_conv)
+apply (simp)
  apply (subgoal_tac "\<forall>n. ((f n) \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>) = 
                                 ((an N) \<le> n_val K v (f n))")
  apply simp

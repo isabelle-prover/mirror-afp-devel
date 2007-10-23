@@ -1444,7 +1444,7 @@ apply (frule PolynRg.pol_expr_unique2[of A B Y
 apply (rule allI, rule impI)
  apply (case_tac "j = 0", simp add:cf_h_def cmp_def ext_cf_def sliden_def)
  apply (simp add:rHom_0_0)
- apply (simp add: neq0_conv)
+ apply (simp)
  apply (frule_tac n = j in less_Suc_le1[of 0],
         frule_tac m = j and n = "Suc 0" in le_anti_sym, assumption+,
         thin_tac "j \<le> Suc 0", thin_tac "Suc 0 \<le> j",
@@ -5057,7 +5057,7 @@ lemma (in PolynRg) P_mod_diffxxx5_2:"\<lbrakk>Idomain S; t \<in> carrier S; t \<
     (erH R S X R' (S /\<^sub>r (S \<diamondsuit>\<^sub>p t)) Y (pj S (S \<diamondsuit>\<^sub>p t)) h);
   P_mod R S X (S \<diamondsuit>\<^sub>p t) (f \<plusminus> -\<^sub>a (g \<cdot>\<^sub>r h))\<rbrakk> \<Longrightarrow> 
                 (Hpr\<^bsub>R S X t R' Y f g h\<^esub> m) \<in> carrier R \<times> carrier R"
-apply (case_tac "m = 0", simp, simp add: neq0_conv) 
+apply (case_tac "m = 0", simp, simp) 
 apply (frule P_mod_diffxxx5_1[of t R' Y f g h 
        "m - Suc 0"], assumption+) apply (erule conjE)+
 apply simp
@@ -5268,5 +5268,3 @@ apply (simp add:aadd_0_l, simp add:aadd_commute[of  _
 done
 
 end
-
-

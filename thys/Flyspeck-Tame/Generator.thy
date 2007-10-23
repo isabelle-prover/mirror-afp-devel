@@ -1,4 +1,4 @@
-(*  ID:         $Id: Generator.thy,v 1.4 2007-10-20 10:11:55 chaieb Exp $
+(*  ID:         $Id: Generator.thy,v 1.5 2007-10-23 20:52:14 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -43,7 +43,7 @@ text{* Implementation: *}
 lemma [code]:
   "ExcessTable g =
    filtermap (\<lambda>v. let e = ExcessAt g v in if 0 < e then Some (v, e) else None)"
- by (rule ext) (simp add: ExcessTable_def filtermap_conv neq0_conv)
+ by (rule ext) (simp add: ExcessTable_def filtermap_conv)
 
 (* FIXME delete stupid removeKeyList *)
 constdefs deleteAround ::

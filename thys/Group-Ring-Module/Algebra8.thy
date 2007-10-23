@@ -1348,7 +1348,7 @@ apply (frule free_generator_sub)
                 thin_tac "inj_on g {j. j \<le> m}",
                 thin_tac "g xa \<in> carrier M",
                 thin_tac "fgs R M {g xa} \<subseteq> carrier M") 
-         apply (rotate_tac 13, frule sym, thin_tac "h = g xa", simp add: neq0_conv) 
+         apply (rotate_tac 13, frule sym, thin_tac "h = g xa", simp) 
          apply (thin_tac "g xa = h", thin_tac "0 < m", thin_tac "xa \<le> m",
                 thin_tac "ta ma = t xa", simp)
          apply (rename_tac x g m t)
@@ -1374,7 +1374,7 @@ apply (frule free_generator_sub)
          frule insert_sub[of H1 H h], assumption+,
          frule subset_trans[of "insert h H1" H "carrier M"], assumption+,
          subst l_comb_Suc[of "insert h H1" "carrier R"], assumption+,
-         (subst Suc_pred, erule not_sym,
+         (subst Suc_pred, assumption,
           thin_tac "l_comb R M m t g = l_comb R M (Suc (m - Suc 0)) t g",
                 simp)+)
   apply (subgoal_tac "l_comb R M (m - Suc 0) t g \<in> fgs R M H1",
@@ -2819,5 +2819,5 @@ apply (rule ballI)+
          drule_tac b = j in forball_spec1, assumption)
   apply (simp add:Module.mHom_lin)
 done
-          
+
 end

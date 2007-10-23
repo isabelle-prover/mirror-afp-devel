@@ -470,7 +470,7 @@ apply (rule conjI)
 apply (subgoal_tac "exact3 R M g N z1 (Zm R e)") 
 prefer 2 apply (simp add:exact4_def exact3_def)
 apply (frule right_exact_surjec [of M N g z1], assumption+)
- apply (simp add:surjec_def, frule conj_2)
+ apply (simp add:surjec_def, frule conjunct2)
  apply (simp add:surj_to_def, erule conjE)
  apply (rotate_tac -1, frule sym, thin_tac "g ` carrier M = carrier N",
         simp, thin_tac "carrier N = g ` carrier M")
@@ -803,7 +803,7 @@ apply (rule conjI)
   apply (frule_tac M = N and f = xa and m = m in Module.mHom_mem [of _ R 
          "Zm R e"], assumption+)
  apply (simp add:exact4_def)
- apply (frule conj_1) 
+ apply (frule conjunct1) 
  apply (thin_tac "z ` carrier (Zm R e) = ker\<^bsub>M1,M2\<^esub> f")
  apply (erule conjE, thin_tac "f ` carrier M1 = ker\<^bsub>M2,M3\<^esub> g")
  apply (frule Ring.mHom_func[of R z "(Zm R e)" M1], assumption)
@@ -816,7 +816,7 @@ apply (rule subsetI)
  apply (erule conjE)
  apply (frule_tac M = N in Ring.mHom_to_zero [of "R" _ "e"], assumption+)
  apply simp apply (simp add:sub_sharp_def)
- apply (simp add:exact4_def) apply (frule conj_1)
+ apply (simp add:exact4_def) apply (frule conjunct1)
  apply (thin_tac "z ` carrier (Zm R e) = ker\<^bsub>M1,M2\<^esub> f \<and>
                                           f ` carrier M1 = ker\<^bsub>M2,M3\<^esub> g")
  apply (simp add:Zm_def, fold Zm_def)
@@ -854,7 +854,7 @@ apply (rule equalityI)
  apply (thin_tac "(\<lambda>x\<in>carrier N. g (if x \<in> carrier N then f (xa x) else arbitrary)) \<in> mHom R N M3")
  apply (frule_tac M = N and f = xa and m = m in Module.mHom_mem [of _ R M1], 
         assumption+) 
- apply (simp add:exact4_def) apply (frule conj_2)
+ apply (simp add:exact4_def) apply (frule conjunct2)
  apply (thin_tac "z ` carrier (Zm R e) = ker\<^bsub>M1,M2\<^esub> f \<and>
                                      f ` carrier M1 = ker\<^bsub>M2,M3\<^esub> g")
  apply (frule Ring.mHom_func[of R f M1 M2], assumption+,
@@ -868,7 +868,7 @@ apply (rule equalityI)
  apply (frule_tac L = N and f = x in Ring.mzero_im_sub_ker [of R _ M2 M3 _ g],
         assumption+)
  apply (simp add:exact4_def)
- apply (frule conj_2) apply (rotate_tac -1) apply (frule sym)
+ apply (frule conjunct2) apply (rotate_tac -1) apply (frule sym)
  apply (thin_tac "f ` carrier M1 = ker\<^bsub>M2,M3\<^esub> g")
  apply simp apply (thin_tac "ker\<^bsub>M2,M3\<^esub> g = f ` carrier M1")
  apply (frule Ring.left_exact_injec[of "R" "M1" "M2" "z" "e" "f"], assumption+)
@@ -1056,7 +1056,7 @@ lemma tensor_prod_uniqueTr:"\<lbrakk>Ring R; R module (M::('a, 'r, 'm1) Module_s
       universal_property R M N MN f; universal_property R M N MN1 g\<rbrakk> \<Longrightarrow>
       \<exists>!k. k \<in> mHom R MN1 MN \<and> compose (M \<times>\<^sub>c N) k g = f" 
 apply (simp add: universal_property_def [of  _ _ _ _ "f"])
- apply (frule conj_1) apply (fold universal_property_def)
+ apply (frule conjunct1) apply (fold universal_property_def)
  apply (simp add:universal_property_def [of _ _ _ _ "g"])
 done
 
@@ -4055,8 +4055,8 @@ lemma (in Ring) ds2_components1:"\<lbrakk>R module M1; R module M2; R module M;
          \<exists>a1\<in>carrier M1. a \<plusminus>\<^bsub>M\<^esub> -\<^sub>a\<^bsub>M\<^esub> a1 \<in> carrier M2"
 apply (frule ds2_components[of M1 M2 M a], assumption+, (erule bexE)+,
        frule Module.module_is_ag[of M R],
-       unfold ds2_def, frule conj_2[THEN conj_1],
-       frule conj_2[THEN conj_2[THEN conj_1]], fold ds2_def)
+       unfold ds2_def, frule conjunct2[THEN conjunct1],
+       frule conjunct2[THEN conjunct2[THEN conjunct1]], fold ds2_def)
  apply (simp add:msubmodule_def, (erule conjE)+)
  apply (frule_tac c = a1 in subsetD[of "carrier M1" "carrier M"], assumption+,
         frule_tac c = a2 in subsetD[of "carrier M2" "carrier M"], assumption+)
@@ -4159,7 +4159,7 @@ apply (simp add:restrict_def mproj1_def extensional_def)
         simp add:ds2_def, assumption+, simp,
           thin_tac "a \<plusminus>\<^bsub>M\<^esub> -\<^sub>a\<^bsub>M\<^esub> a1 \<plusminus>\<^bsub>M2\<^esub> (b \<plusminus>\<^bsub>M\<^esub> -\<^sub>a\<^bsub>M\<^esub> b1) = 
                                  a \<plusminus>\<^bsub>M\<^esub> -\<^sub>a\<^bsub>M\<^esub> a1 \<plusminus>\<^bsub>M\<^esub> (b \<plusminus>\<^bsub>M\<^esub> -\<^sub>a\<^bsub>M\<^esub> b1)",
-        unfold ds2_def, frule conj_2[THEN conj_1], fold ds2_def,
+        unfold ds2_def, frule conjunct2[THEN conjunct1], fold ds2_def,
           simp add:msubmodule_def, (erule conjE)+,
          frule_tac c = a1 in subsetD[of "carrier M1" "carrier M"], assumption+,
          frule_tac c = b1 in subsetD[of "carrier M1" "carrier M"], assumption+,
@@ -4182,20 +4182,20 @@ apply (simp add:restrict_def mproj1_def extensional_def)
           mprojTr2[of M1 M2 M], assumption+,
          frule Module.module_is_ag[of M1], 
          simp add:aGroup.ag_pOp_closed[of M1], unfold ds2_def, 
-         frule conj_2[THEN conj_1], fold ds2_def,
+         frule conjunct2[THEN conjunct1], fold ds2_def,
          subst msub_addition[of M M1], assumption+)
 
 apply (rule ballI)+
  apply (simp add:mproj1_def, simp add:Module.sc_mem)
  apply (frule_tac a = m in ds2_components1[of M1 M2 M], assumption+,
         erule bexE,
-        unfold ds2_def, frule conj_2[THEN conj_1], fold ds2_def,
+        unfold ds2_def, frule conjunct2[THEN conjunct1], fold ds2_def,
           simp add:msubmodule_def, (erule conjE)+,
         frule_tac c = a1 in subsetD[of "carrier M1" "carrier M"], assumption+,
         frule_tac a = a and m = "m \<plusminus>\<^bsub>M\<^esub> -\<^sub>a\<^bsub>M\<^esub> a1" in Module.sc_mem[of M2 R],
         assumption+,
-        unfold ds2_def, frule conj_2[THEN conj_1], 
-        frule conj_2[THEN conj_2[THEN conj_1]], fold ds2_def,
+        unfold ds2_def, frule conjunct2[THEN conjunct1], 
+        frule conjunct2[THEN conjunct2[THEN conjunct1]], fold ds2_def,
         simp add:msub_sprod[of M M2],
         frule Module.module_is_ag[of M],
         frule_tac x = a1 in aGroup.ag_mOp_closed[of M], assumption+,
@@ -4902,7 +4902,7 @@ lemma (in Ring) tensor_univ_propTr:"\<lbrakk>R module M; R module N; FM\<^bsub>R
       R module Z; bilinear_map f R M N Z\<rbrakk> \<Longrightarrow>
      \<exists>g. g \<in> mHom R P Z \<and> (compose (M \<times>\<^sub>c N) g (tau R M N P)) = f"
 apply (unfold fm_gen_by_prod_def)
- apply (frule conj_1, frule conj_2) 
+ apply (frule conjunct1, frule conjunct2) 
  apply (fold fm_gen_by_prod_def)
  apply (frule bilinear_func[of f M N Z])
 apply (frule Module.exist_extension_mhom [of P R Z "M \<times>\<^sub>c N" "f"], assumption+)

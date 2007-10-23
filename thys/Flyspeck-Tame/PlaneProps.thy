@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.8 2007-10-20 10:11:56 chaieb Exp $
+(*  ID:         $Id: PlaneProps.thy,v 1.9 2007-10-23 20:52:18 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -391,7 +391,7 @@ next
 	using mgp fg by(simp add: minGraphProps_def faces_subset_def)
       have pre_fdg: "pre_splitFace g v w f ?vs"
            apply (rule pre_subdivFace'_preFaceDiv[OF pre fg _ fsubg])
-           using a by (simp add: neq0_conv)
+           using a by (simp)
       hence "v \<noteq> w" and "w \<in> \<V> f" by(unfold pre_splitFace_def)simp+
       have f\<^isub>1: "?f\<^isub>1= fst(split_face f v w ?vs)"
 	and f\<^isub>2: "?f\<^isub>2 = snd(split_face f v w ?vs)"
@@ -406,7 +406,7 @@ next
       note distFg' = minGraphProps11'[OF mgp']
       have pre': "pre_subdivFace' ?g' ?f\<^isub>2 u w 0 ovs"
 	by (rule pre_subdivFace'_Some1[OF pre fg _ fsubg HOL.refl HOL.refl])
-           (simp add:a neq0_conv)
+           (simp add:a)
       note f2inF = splitFace_add_f21'[OF fg]
       have 1: "\<exists>e \<in> \<E> ?f\<^isub>1. e \<notin> \<E> g"
       proof cases
@@ -489,7 +489,7 @@ next
 	qed
       qed
     }
-    ultimately show ?thesis using Some by(auto simp: split_def neq0_conv)
+    ultimately show ?thesis using Some by(auto simp: split_def)
   qed
 qed
 

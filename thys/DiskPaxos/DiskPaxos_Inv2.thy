@@ -1,5 +1,5 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Inv2.thy,v 1.8 2007-10-20 10:11:54 chaieb Exp $
+    ID:          $Id: DiskPaxos_Inv2.thy,v 1.9 2007-10-23 20:52:12 nipkow Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro at fceia.unr.edu.ar>
 *)
@@ -644,7 +644,7 @@ proof -
     by(auto simp add: HInv1_def)
   ultimately show ?thesis
     using act inv2a
-    by(auto simp add: Inv2a_innermost_def EndPhase1_def neq0_conv)
+    by(auto simp add: Inv2a_innermost_def EndPhase1_def)
 qed
 
 lemma HEndPhase1_Inv2a_dblock_q:

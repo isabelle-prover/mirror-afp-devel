@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: ICAInstance.thy,v 1.8 2007-10-21 20:39:18 nipkow Exp $
+    ID:          $Id: ICAInstance.thy,v 1.9 2007-10-23 20:52:11 nipkow Exp $
     Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
@@ -41,7 +41,7 @@ of the convergence function).  *}
 axiomatization
   np :: nat      -- "Number of processes" and
   \<Delta> :: Clocktime -- "Fix value to discard processes" where
-  constants_ax: "0 <= \<Delta> \<and> np \<noteq> 0" 
+  constants_ax: "0 <= \<Delta> \<and> np > 0" 
 
 text {* We define also the set of process that the algorithm
 manage. This definition exist only for readability matters. *}
@@ -610,11 +610,6 @@ next
 qed
 
 subsubsection {* Main theorem *}
-
-lemma 
-  "\<lbrakk> 0<(c::nat); a * (real c) = b \<rbrakk> \<Longrightarrow> a = b / (real c)"
-    apply auto
-done
 
 lemma accur_pres:
 assumes 
