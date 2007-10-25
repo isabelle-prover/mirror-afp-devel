@@ -1770,7 +1770,7 @@ lemma (in Corps) Vr_local:"\<lbrakk>valuation K v; maximal_ideal (Vr K v) I\<rbr
 apply (frule Vr_ring[of v], 
        frule ideal_sub_vp[of v I], simp add:Ring.maximal_ideal_ideal) 
 apply (simp add:maximal_ideal_def,
-       frule conj_2, fold maximal_ideal_def, frule conj_1,
+       frule conjunct2, fold maximal_ideal_def, frule conjunct1,
        rule Ring.proper_ideal, assumption+,simp add:maximal_ideal_def, assumption)
 apply (rule equalityI) prefer 2 apply assumption
  apply (rule contrapos_pp, simp+,
@@ -3929,7 +3929,7 @@ done
 lemma (in Corps) Ostrowski_elem_nonzero:"\<lbrakk>vals_nonequiv K (Suc n) vv; 
  x \<in> carrier K; Ostrowski_elem K (Suc n) vv x\<rbrakk> \<Longrightarrow> x \<noteq> \<zero>"
 apply (simp add:Ostrowski_elem_def, 
-       frule conj_1, fold Ostrowski_elem_def,
+       frule conjunct1, fold Ostrowski_elem_def,
        frule vals_nonequiv_valuation[of "Suc n" "vv" "0"], simp) 
 apply (rule contrapos_pp, simp+,
        cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
@@ -3941,7 +3941,7 @@ lemma (in Corps) Ostrowski_elem_not_one:"\<lbrakk>vals_nonequiv K (Suc n) vv;
       x \<in> carrier K; Ostrowski_elem K (Suc n) vv x\<rbrakk>  \<Longrightarrow>  1\<^sub>r \<plusminus> -\<^sub>a x \<noteq> \<zero>"
 apply (frule vals_nonequiv_valuation [of "Suc n" "vv" "Suc 0"],
        simp,
-       simp add:Ostrowski_elem_def, frule conj_2,
+       simp add:Ostrowski_elem_def, frule conjunct2,
        fold Ostrowski_elem_def)
 apply (subgoal_tac "0 < (vv (Suc 0) x)",
        rule contrapos_pp, simp+,
@@ -3977,4 +3977,3 @@ apply (simp add:value_of_one)
 done
 
 end
-

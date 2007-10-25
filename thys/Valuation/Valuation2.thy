@@ -373,7 +373,7 @@ apply (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
        rule allI, rule impI,
        frule vals_nonequiv_valuation[of "Suc n" "vv" "0"],
        simp,
-       simp add:Ostrowski_elem_def, frule conj_1, fold Ostrowski_elem_def,
+       simp add:Ostrowski_elem_def, frule conjunct1, fold Ostrowski_elem_def,
        frule val_1_nonzero[of "vv 0" "a"], assumption+)
 apply (frule vals_nonequiv_valuation[of "Suc n" "vv" "0"], simp,
        frule val_nonzero_noninf[of "vv 0" "a"], assumption+,
@@ -467,7 +467,7 @@ apply (frule_tac m = j in vals_nonequiv_valuation[of "Suc n" "vv"],
        simp add:nset_def,
        frule val_nonzero_z[of "vv j" "a"], assumption+, erule exE,
        simp add:Ostrowski_elem_def,
-       frule conj_2, fold Ostrowski_elem_def,
+       frule conjunct2, fold Ostrowski_elem_def,
        drule_tac b = j in forball_spec1, assumption) 
 apply (frule Ostrowski_elem_nonzero[of "n" "vv" "x"], assumption+,
        frule val_nonzero_z[of "vv j" "x"], assumption+, erule exE, simp,
@@ -575,7 +575,7 @@ by (simp add:transpos_def)
 lemma (in Corps) transpos_vals_nonequiv:"\<lbrakk>vals_nonequiv K (Suc n) vv; 
       j \<le> (Suc n)\<rbrakk> \<Longrightarrow> vals_nonequiv K (Suc n) (vv \<circ> (\<tau>\<^bsub>0 j\<^esub>))"
 apply (simp add:vals_nonequiv_def)
- apply (frule conj_1, fold vals_nonequiv_def)
+ apply (frule conjunct1, fold vals_nonequiv_def)
  apply (simp add:valuations_def, rule conjI)
  apply (rule allI, rule impI) 
  apply (case_tac "ja = 0", simp,
@@ -748,7 +748,7 @@ apply (simp add:Ostrowski_base_def,
        cut_tac Ostrowski[of "n"],
        drule_tac a = "vv \<circ> \<tau>\<^bsub>0 l\<^esub>" in forall_spec, assumption) 
 apply (erule bexE,
-       unfold Ostrowski_elem_def, frule conj_1,
+       unfold Ostrowski_elem_def, frule conjunct1,
        fold Ostrowski_elem_def, 
        rule conjI, simp add:Ostrowski_elem_def)
 apply (case_tac "l = 0", simp, simp add:transpos_eq,
@@ -2716,7 +2716,7 @@ lemma (in Corps) prime_n_pd_principal:"\<lbrakk>distinct_pds K n P; j \<le> n\<r
        (P\<^bsub>K P n\<^esub> j) = Rxa (O\<^bsub>K P n\<^esub>) (((Kb\<^bsub>K n P\<^esub>) j))"
 apply (frule ring_n_pd[of "n" "P"])
 apply (frule prime_n_pd_prime[of "n" "P" "j"], assumption+)
-apply (simp add:prime_ideal_def, frule conj_1)
+apply (simp add:prime_ideal_def, frule conjunct1)
  apply (fold prime_ideal_def)
  apply (thin_tac "prime_ideal (O\<^bsub>K P n\<^esub>) (P\<^bsub>K P n\<^esub> j)")
 apply (rule equalityI)
@@ -2837,4 +2837,3 @@ apply simp
 done
 
 end
- 

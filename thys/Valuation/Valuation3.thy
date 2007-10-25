@@ -950,7 +950,7 @@ lemma (in Corps) subfield_pOp:"\<lbrakk>Corps K'; subfield K K'; x \<in> carrier
 apply (cut_tac field_is_ring, frule Corps.field_is_ring[of "K'"],
        frule Ring.ring_is_ag[of "K"], frule Ring.ring_is_ag[of "K'"])
 apply (simp add:subfield_def, erule conjE, simp add:rHom_def,
-       frule conj_1)
+       frule conjunct1)
 apply (thin_tac "I\<^bsub>K\<^esub> \<in> aHom K K' \<and>
      (\<forall>x\<in>carrier K. \<forall>y\<in>carrier K. I\<^bsub>K\<^esub> (x \<cdot>\<^sub>r y) = I\<^bsub>K\<^esub> x \<cdot>\<^sub>r\<^bsub>K'\<^esub> I\<^bsub>K\<^esub> y) \<and>
      I\<^bsub>K\<^esub> 1\<^sub>r = 1\<^sub>r\<^bsub>K'\<^esub>")
@@ -964,7 +964,7 @@ lemma (in Corps) subfield_mOp:"\<lbrakk>Corps K'; subfield K K'; x \<in> carrier
 apply (cut_tac field_is_ring, frule Corps.field_is_ring[of "K'"],
        frule Ring.ring_is_ag[of "K"], frule Ring.ring_is_ag[of "K'"])
 apply (simp add:subfield_def, erule conjE, simp add:rHom_def,
-       frule conj_1)
+       frule conjunct1)
 apply (thin_tac "I\<^bsub>K\<^esub> \<in> aHom K K' \<and>
      (\<forall>x\<in>carrier K. \<forall>y\<in>carrier K. I\<^bsub>K\<^esub> (x \<cdot>\<^sub>r y) = I\<^bsub>K\<^esub> x \<cdot>\<^sub>r\<^bsub>K'\<^esub> I\<^bsub>K\<^esub> y) \<and>
      I\<^bsub>K\<^esub> 1\<^sub>r = 1\<^sub>r\<^bsub>K'\<^esub>")
@@ -1089,7 +1089,7 @@ apply (simp add:v_completion_def, erule conjE, (erule conjE)+)
     thm Corps.limit_val
  apply (frule_tac f = f and v = v' in  Corps.limit_val[of "K'" "x"],
         assumption+,
-        unfold Cauchy_seq_def, frule conj_1, fold Cauchy_seq_def) 
+        unfold Cauchy_seq_def, frule conjunct1, fold Cauchy_seq_def) 
 apply (rule allI, drule_tac m = j in nat_forall_spec,
        simp add:subfield_def, erule conjE, simp add:subsetD, assumption+)
  apply (simp add:Cauchy_seq_def)
@@ -1101,7 +1101,7 @@ lemma (in Corps) v_completion_v_limit:"\<lbrakk>Corps K'; valuation K v;
 apply (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
        frule Corps.field_is_ring[of K'], frule Ring.ring_is_ag[of "K'"],
        subgoal_tac "\<forall>j. f j \<in> carrier K'",
-       unfold subfield_def, frule conj_2, fold subfield_def, erule conjE)
+       unfold subfield_def, frule conjunct2, fold subfield_def, erule conjE)
 apply (frule subsetD[of "carrier K" "carrier K'" "x"], assumption+,
        simp add:limit_diff_val[of "x" "f"],
        subgoal_tac "\<forall>n. f n \<plusminus>\<^bsub>K'\<^esub> -\<^sub>a\<^bsub>K'\<^esub> x = f n \<plusminus> -\<^sub>a x")
@@ -1156,7 +1156,7 @@ apply (rule ballI)+
         aGroup.ag_pOp_closed[of "Vr K' v'"], assumption+, 
         simp add:Vr_pOp_f_pOp)
  apply (simp add:idmap_def, simp add:subfield_def, erule conjE,
-        simp add:rHom_def, frule conj_1,
+        simp add:rHom_def, frule conjunct1,
         thin_tac "I\<^bsub>K\<^esub> \<in> aHom K K' \<and>
            (\<forall>x\<in>carrier K. \<forall>y\<in>carrier K. I\<^bsub>K\<^esub> (x \<cdot>\<^sub>r y) = I\<^bsub>K\<^esub> x \<cdot>\<^sub>r\<^bsub>K'\<^esub> I\<^bsub>K\<^esub> y) \<and>
            I\<^bsub>K\<^esub> 1\<^sub>r = 1\<^sub>r\<^bsub>K'\<^esub>")
@@ -1263,7 +1263,7 @@ lemma (in Corps) Cauchy_up:"\<lbrakk>Corps K'; valuation K v; valuation K' v';
       Completion\<^bsub>v v'\<^esub> K K'; Cauchy\<^bsub> K v \<^esub>f\<rbrakk> \<Longrightarrow> Cauchy\<^bsub> K' v' \<^esub>f" 
 apply (simp add:Cauchy_seq_def,
        erule conjE,
-       rule conjI, unfold v_completion_def, frule conj_1,
+       rule conjI, unfold v_completion_def, frule conjunct1,
        fold v_completion_def, rule allI, frule subfield_sub[of K'])
 apply (simp add:subsetD) 
 
@@ -1278,7 +1278,7 @@ apply (rotate_tac -3, drule_tac m = n in nat_forall_spec,
        drule_tac m = m in nat_forall_spec, simp,
        frule_tac m = n in nat_forall_spec,
        drule_tac m = m in nat_forall_spec)
- apply(unfold v_completion_def, frule conj_1, fold v_completion_def,
+ apply(unfold v_completion_def, frule conjunct1, fold v_completion_def,
        cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
        frule_tac x = "f m" in aGroup.ag_mOp_closed[of "K"], assumption+,
        frule_tac x = "f n" and y = "-\<^sub>a (f m)" in aGroup.ag_pOp_closed[of "K"],
@@ -1349,7 +1349,7 @@ apply (frule Corps.Vr_mem_f_mem [of "K'" "v'" "x"], assumption+,
        simp add:v_completion_def, (erule conjE)+,
        rotate_tac -1, drule_tac b = x in forball_spec1, assumption+, 
        erule exE, erule conjE)
-apply (unfold Cauchy_seq_def, frule conj_1, fold Cauchy_seq_def)
+apply (unfold Cauchy_seq_def, frule conjunct1, fold Cauchy_seq_def)
 apply (case_tac "x = \<zero>\<^bsub>K'\<^esub>", 
        simp, frule Corps.field_is_ring[of "K'"], 
        frule Ring.ring_is_ag[of "K'"],
