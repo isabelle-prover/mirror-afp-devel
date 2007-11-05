@@ -345,8 +345,8 @@ lemma containsPropagates: "!!f.\
   apply(frule_tac branchSubs) apply assumption
   apply(case_tac "considers f iA n") apply simp
   apply simp
-  apply(simp add: contains_def) apply(case_tac "f n") apply simp apply(frule_tac list_decomp) apply(elim exE conjE) apply simp
-  apply(case_tac xs)
+  apply(simp add: contains_def) apply(case_tac "f n") apply simp apply(drule split_list) apply(elim exE conjE) apply simp
+  apply(case_tac ys)
    apply (simp add: considers_def, simp)
   apply(case_tac "SATAxiom (sequent (f n))") apply(blast dest: iffD2[OF SATAxiomEq])
   apply(simp add: subs_def2 nforms_def Let_def)

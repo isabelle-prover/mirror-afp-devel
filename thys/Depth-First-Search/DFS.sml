@@ -12,7 +12,7 @@ fun nexts [] n = []
     (if (fst e = n) then (snd e :: nexts es n) else nexts es n);
 
 fun member x [] = false
-  | member x (y :: ys) = ((x = y) orelse member x ys);
+  | member x (y :: ys) = (if (y = x) then true else member x ys);
 
 fun dfs2 x =
   wfrec (fn dfs2 => fn a =>

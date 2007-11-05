@@ -5,7 +5,7 @@ theory Soundness imports Completeness Multiset begin
 lemma permutation_validS: "fs <~~> gs --> (validS fs = validS gs)"
   apply(simp add: validS_def)
   apply(simp add: evalS_def)
-  apply(simp add: perm_set)
+  apply(simp add: perm_set_eq)
   done
 
 lemma modelAssigns_vblcase: "phi \<in> modelAssigns M \<Longrightarrow>  x \<in> objects M \<Longrightarrow> vblcase x phi \<in> modelAssigns M"

@@ -23,14 +23,6 @@ lemma count_Suc: "count a B = Suc m \<Longrightarrow> a : set B"
   apply(induct B, auto) apply(case_tac "a = aa")
   by auto
 
-lemma list_decomp[rule_format]: "v \<in> set p --> (\<exists> xs ys. p = xs@(v#ys) \<and> v \<notin> set xs)"
-  apply (induct p, force)
-  apply (case_tac "v=a", force, auto)
-  apply (rule_tac x="a#xs" in exI, auto)
-  done
-
-(*lemmas list_decomp' = list_decomp[simplified mem_iff[symmetric]]*)
-
 lemma count_append: "count a (xs@ys) = count a xs + count a ys"
   apply(induct xs, auto) done
 
@@ -43,11 +35,10 @@ proof -
     and b: "\<forall>x. count x (a # list) = count x B"
   from b have "a : set B"
     apply auto
-    apply (drule_tac x=a in spec, simp) apply(drule sym) apply(erule count_Suc) done
-  from list_decomp[OF this] obtain xs ys where B: "B = xs@a#ys" by force
+    apply (drule_tac x=a in spec, simp) apply(metis count_Suc) done
+  from split_list[OF this] obtain xs ys where B: "B = xs@a#ys" by blast
   let ?B' = "xs@ys"
-  from b have "\<forall>x. count x list = count x ?B'"
-    apply(simp add: count_append B) done
+  from b have "\<forall>x. count x list = count x ?B'" by(simp add: count_append B)
   from a[OF this] have c: "list <~~> xs@ys" .
   hence "a#list <~~> a#(xs@ys)" by rule
   also have "a#(xs@ys) <~~> xs@a#ys" by(rule perm_append_Cons)
@@ -61,29 +52,6 @@ lemma perm_count_conv: "A <~~> B = (\<forall> x. count x A = count x B)"
 
 subsection "Properties closed under Perm and Contr hold for x iff hold for remdups x"
 
-  -- "FIXME some stuff may be useful elsewhere, particularly connection between remdups, lists, set and permutations"
-
-
-lemma remdups_neq': "! ws. length ws = n --> remdups ws ~= ws --> (? xs ys zs y. ws = xs@[y]@ys@[y]@zs)"
-  apply (induct n, simp, rule)
-  apply rule
-  apply rule
-  apply(case_tac ws) apply simp
-  apply simp
-  apply (case_tac "a : set list", simp)
-   apply(frule_tac p=list in list_decomp) apply(elim exE conjE)
-   apply(rule_tac x="[]" in exI) apply(rule_tac x=xs in exI) apply(rule_tac x=ys in exI) apply(rule_tac x=a in exI) apply simp
-  apply simp
-  apply(drule_tac x=list in spec) apply(erule impE) apply simp
-  apply(erule impE) apply simp
-  apply(erule exE) 
-  apply (rule_tac x="a#xs" in exI, simp)
-  done
-  -- "and its this kind of lemma that really kills automation"
-
-lemma remdups_neq: "remdups ws ~= ws ==> (? xs ys zs y. ws = xs@[y]@ys@[y]@zs)"
-  apply(rule remdups_neq'[rule_format]) by auto
-
 lemma remdups_append: "y : set ys --> remdups (ws@y#ys) = remdups (ws@ys)"
   apply (induct ws, simp)
   apply (case_tac "y = a", simp, simp)
@@ -96,14 +64,13 @@ lemma perm_contr': assumes perm[rule_format]: "! xs ys. xs <~~> ys --> (P xs = P
 proof (safe)
   fix xs :: "'a list"
   assume a[rule_format]: "\<forall>m<length xs. \<forall>ys. length ys = m \<longrightarrow> P ys = P (remdups ys)"
-  
   show "P xs = P (remdups xs)"
-  proof (cases "remdups xs = xs")
+  proof (cases "distinct xs")
     case True
-    thus ?thesis by simp
+    thus ?thesis by(simp add:distinct_remdups_id)
   next
-    case False 
-    from remdups_neq[OF this] obtain ws ys zs y where xs: "xs = ws@[y]@ys@[y]@zs" by force
+    case False
+    from not_distinct_decomp[OF this] obtain ws ys zs y where xs: "xs = ws@[y]@ys@[y]@zs" by force
     have "P xs = P (ws@[y]@ys@[y]@zs)" by (simp add: xs)
     also have "... = P ([y,y]@ws@ys@zs)" 
       apply(rule perm) apply(rule iffD2[OF perm_count_conv]) apply rule apply(simp add: count_append) done
@@ -135,92 +102,11 @@ lemma rem: "x ~: set (rem x xs)"
 lemma length_rem: "length (rem x xs) <= length xs"
   apply(simp add: rem_def) done
 
-lemma remdups_nil[iff]: "(remdups x = []) = (x=[])"
-  apply(induct x)
-  by auto
-
 lemma rem_notin: "x ~: set xs ==> rem x xs = xs"
   apply(simp add: rem_def)
   apply(rule filter_True)
   by force
 
-lemma t: "y <= x ==> y < Suc x" by arith
-
-lemma distinct_remdups_id: "distinct xs ==> remdups xs = xs"
-by (induct xs, auto)
-
-lemma remdups_decomp_hd: "remdups x = a#list ==> a ~: set list"
-  apply(subgoal_tac "distinct (a#list)")
-  apply(case_tac x) apply simp
-  apply simp
-  apply(drule sym) apply simp
-  done
-
-lemma remdups_decomp: "remdups x = x1@[a]@x2 ==> a ~: set x1 & a ~: set x2"
-  apply(subgoal_tac "distinct (x1@[a]@x2)")
-  apply simp
-  apply(drule sym) apply simp
-  done
-  
-lemma remdups_set: "! y. (remdups x <~~> remdups y) --> (set x = set y)"
-  apply(rule length_induct[of _ x]) apply (rename_tac x, rule)
-  apply (case_tac "remdups x", simp, simp)
-  apply rule
-  apply(subgoal_tac "a : set (remdups y)")
-   apply(drule_tac list_decomp) apply(elim exE conjE)
-   apply(drule_tac x="xs@ys" in spec) apply(erule impE) prefer 2
-    apply(drule_tac x=list in spec) apply(erule impE) prefer 2
-     apply(subgoal_tac "set x = set (remdups x)") apply(simp only:) apply simp apply(drule_tac sym) back back apply simp
-      apply(subgoal_tac "set y = set (remdups y)") apply(simp only:) apply simp 
-      apply(rule sym) apply(rule set_remdups)
-     apply(rule sym) apply (rule set_remdups, simp) -- "FIXME Cons(a,list) <~~> y = list <~~> rem a y"  apply(subgoal_tac "remdups (xs@ys) = (xs@ys) & remdups list = list") 
-     apply simp apply(rule_tac z=a in Permutation.cons_perm_imp_perm) apply(rule perm_sym) apply(subgoal_tac "xs @ a # ys <~~> a # xs @ ys")
-      apply(rule trans) apply assumption apply assumption
-     apply(rule perm_sym, rule perm_append_Cons)
-    apply(subgoal_tac "distinct (remdups x) & distinct (remdups y)")
-     apply(simp add: distinct_remdups_id)
-    apply(blast intro: distinct_remdups)
-   apply(subgoal_tac "length (remdups y) = length (remdups x)")
-    apply simp
-    apply(subgoal_tac "length (remdups x) <= length x")
-     apply simp
-    apply(rule length_remdups_leq)
-   apply(rule perm_length) apply simp apply(rule perm_sym) apply simp
-  apply(frule_tac x = a and xs = "a#list" in perm_mem) apply simp apply(simp add: mem_iff)
-  done
-
-lemma insert_ident: "a ~: X ==> a ~: Y ==> (insert a X = insert a Y) = (X = Y)"
-  by force
-
-lemma set_remdups: "! y. (set x = set y) --> (remdups x <~~> remdups y)"
-  apply(rule length_induct[of _ x]) apply (rename_tac x, rule)
-  apply (case_tac "remdups x", simp, simp)
-  apply rule
-  apply(subgoal_tac "a : set (remdups y)")
-   apply(drule_tac list_decomp) apply(elim exE conjE)
-   apply(drule_tac x=list in spec) apply(erule impE) prefer 2
-    apply(drule_tac x="xs@ys" in spec) apply(erule impE) prefer 2
-     apply simp
-     apply(subgoal_tac "a#list <~~> a#xs@ys") 
-      apply(rule trans) apply assumption
-      apply(rule perm_append_Cons)
-     apply(rule Cons)
-    apply(subgoal_tac "distinct (a#list) & distinct (xs@a#ys)")
-     apply(simp add: distinct_remdups_id)
-    apply(drule_tac sym) apply(drule_tac sym) back apply simp
-    apply(subgoal_tac "set (a#list) = set (xs@a#ys) & distinct (a#list) & distinct (xs@a#ys)")
-     apply(elim conjE) apply simp apply(elim conjE) apply(simp add: insert_ident)
-    apply(drule_tac sym) apply(drule_tac sym) back apply simp
-   apply(subgoal_tac "length (a#list) <= length x")
-    apply force
-   apply(drule_tac sym) apply simp
-  apply(subgoal_tac "set x = set (remdups x)") 
-   apply force
-  apply(rule sym) apply(rule set_remdups)
-  done
-
-lemma remdups_perm_set: "remdups x <~~> remdups y = (set x = set y)"
-  using set_remdups remdups_set by blast
 
 lemma perm_weak_filter': assumes perm[rule_format]: "! xs ys. xs <~~> ys --> (P xs = P ys)"
   and weak[rule_format]: "! x xs. P xs --> P (x#xs)"
@@ -259,7 +145,7 @@ proof -
 
   def y' == "filter (% z. z : set x) y"
   from xy have "set x = set y'" apply(simp add: y'_def) apply blast done
-  hence rxry': "remdups x <~~> remdups y'" by(simp add: remdups_perm_set)
+  hence rxry': "remdups x <~~> remdups y'" by(simp add: perm_remdups_iff_eq_set)
 
   from Px perm_contr[OF perm contr'] have Prx: "P (remdups x)" by simp
   with rxry' have "P (remdups y')" by(simp add: perm)
@@ -289,13 +175,5 @@ lemma perm_multiset: "A <~~> B = (multiset_of_list A = multiset_of_list B)"
 
 lemma set_of_multiset_of_list: "set_of (multiset_of_list A) = set A"
 by (induct A, auto)
-
-lemma perm_set: "A <~~> B \<Longrightarrow> set A = set B"
-  apply(simp add: perm_multiset)
-  apply(subgoal_tac "set_of (multiset_of_list A) = set_of (multiset_of_list B)")
-   apply(thin_tac "multiset_of_list A = multiset_of_list B")
-   apply (simp add: set_of_multiset_of_list, simp)
-  done
-
 
 end
