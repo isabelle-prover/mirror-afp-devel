@@ -1,0 +1,31 @@
+
+## targets
+
+default: MuchAdoAboutTwo
+images: 
+test: MuchAdoAboutTwo
+
+all: images test
+
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+USEDIR = $(ISATOOL) usedir -v true -i true -d pdf  ## -D generated
+
+
+## MuchAdoAboutTwo
+
+MuchAdoAboutTwo: $(LOG)/HOL-MuchAdoAboutTwo.gz
+
+$(LOG)/HOL-MuchAdoAboutTwo.gz: ROOT.ML document/root.tex *.thy
+	cd .. ; $(USEDIR) HOL MuchAdoAboutTwo
+
+
+## clean
+
+clean:
+	@rm -f $(LOG)/HOL-MuchAdoAboutTwo.gz

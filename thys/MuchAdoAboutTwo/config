@@ -1,0 +1,11 @@
+# -*- shell-script -*-
+
+# $Id: config,v 1.1 2007-11-06 16:55:08 nipkow Exp $
+
+# Get email when automated build fails. May be empty.
+# values: "email1 email2 .. emailn"
+NOTIFY="boehmes@in.tum.de"
+
+# Participate in frequent (nightly) build (only for small submissions)
+# values: "yes" "no"
+FREQUENT="yes"
