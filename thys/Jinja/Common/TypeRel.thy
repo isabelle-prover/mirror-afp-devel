@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/TypeRel.thy
-    ID:         $Id: TypeRel.thy,v 1.8 2007-07-19 21:23:10 makarius Exp $
+    ID:         $Id: TypeRel.thy,v 1.9 2007-11-08 19:20:20 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -150,8 +150,8 @@ lemma widens_trans [trans]: "\<lbrakk>P \<turnstile> Ss [\<le>] Ts; P \<turnstil
 
 
 (*<*)
-lemmas widens_refl [iff] = list_all2_refl [of "widen ?P", OF widen_refl]
-lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen ?P"]
+lemmas widens_refl [iff] = list_all2_refl [of "widen P", OF widen_refl, standard]
+lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
 (*>*)
 
 
