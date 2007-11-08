@@ -294,7 +294,7 @@ proof -
   proof (induct n)
     case 0 thus ?case by auto
   next
-    case (Suc n) hence IH: "!!a. p^n dvd a*b \<longrightarrow> p^n dvd a" ..
+    case (Suc n) hence IH: "!!a. p^n dvd a*b \<longrightarrow> p^n dvd a" .
     fix a show "p^Suc n dvd a*b \<longrightarrow> p^Suc n dvd a"
     proof (auto)
       assume ppnab: "p*p^n dvd a*b" 
@@ -631,7 +631,7 @@ proof -
   proof (induct n)
     case 0 thus ?case by auto
   next
-    case (Suc n) hence IH: "!!a. p^n dvd a*b \<longrightarrow> p^n dvd a" ..
+    case (Suc n) hence IH: "!!a. p^n dvd a*b \<longrightarrow> p^n dvd a" .
     fix a show "p^Suc n dvd a*b \<longrightarrow> p^Suc n dvd a"
     proof (auto)
       assume ppnab: "p*p^n dvd a*b"

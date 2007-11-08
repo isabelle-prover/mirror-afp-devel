@@ -202,7 +202,7 @@ proof -
     assume "\<not> e=1" with e have "e=-1" by simp
     with a and b show ?thesis by (simp add: qfN_mult2 zmult_1 mult_ac)
   qed
-  moreover from e have "\<bar>e\<bar> = 1" ..
+  moreover from e have "\<bar>e\<bar> = 1" .
   ultimately show ?thesis by blast
 qed
     
@@ -429,7 +429,7 @@ proof (rule ccontr, auto)
   next
     case (Cons p ps) 
     hence ass3: "?B ps \<Longrightarrow> False" 
-      and IH: "?B (p#ps)" by simp
+      and IH: "?B (p#ps)" by simp_all
     hence p: "zprime (int p)" and "int p dvd int(prod(p#ps))" 
       by (auto simp add: primel_def prime_impl_zprime_int int_mult)
     moreover with IH have pqfN: "is_qfN (int p) N" 
@@ -1165,7 +1165,7 @@ proof -
       assume "\<not> b = 3*p^2*q - 3*q^3" 
       with b have "b = - 3*p^2*q + 3*q^3" by simp
       with s have "b = 3*p^2*s - 3*s^3" by (simp add: power3_minus)
-      moreover from a s have "a = p^3 - 9*p*s^2" by (simp add: power2_minus)
+      moreover from a1 s have "a = p^3 - 9*p*s^2" by (simp add: power2_minus)
       ultimately show ?thesis by (unfold is_cube_form_def, auto)
     qed
   next
@@ -1280,7 +1280,7 @@ next
   proof -
     from ass have "a^2+3*b^2 = (?p*?X)^3" by (simp add: zmult_int)
     hence "?p dvd a^2+3*b^2" by (simp add: nat_number ring_simps)
-    moreover from ass have "zprime ?p" and "zgcd(a,b)=1" by simp
+    moreover from ass have "zprime ?p" and "zgcd(a,b)=1" by simp_all
     moreover from pw have "?p \<in> zOdd" by simp
     ultimately show ?thesis by (simp only: qf3_oddprimedivisor)
   qed

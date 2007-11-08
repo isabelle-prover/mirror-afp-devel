@@ -628,7 +628,7 @@ proof (rule ccontr)
 	with h hu uvwabc have "h dvd a \<and> h dvd b" by (auto dest: zprime_zdvd_power)
 	with h ab show False by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
-      ultimately have "?Q u v w" by simp
+      ultimately have "?Q u v w" using `a \<in> zEven` by simp
       hence ?thesis by auto }
     moreover 
     { assume "b \<in> zEven"
@@ -653,7 +653,7 @@ proof (rule ccontr)
 	with h hu uvwabc have "h dvd a \<and> h dvd b" by (auto dest: zprime_zdvd_power)
 	with h ab show False by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
-      ultimately have "?Q u v w" by simp
+      ultimately have "?Q u v w" using `b \<in> zEven` by simp
       hence ?thesis by auto }
     moreover 
     { assume "?c \<in> zEven"
