@@ -37,16 +37,16 @@
 \usepackage{xspace}
 
 \usepackage{fancyvrb}
-\usepackage{fancyheadings}
+\usepackage{fancyhdr}
 \usepackage{prooftree}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Einstellungen f"ur den Seitenstil (fancyheadings)
+% Einstellungen f"ur den Seitenstil (fancyhdr)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagestyle{fancyplain}
 
 %% Setzen von Dicke und Breite der Linie unter der Kopfzeile.
-\setlength{\headrulewidth}{1.6pt}
+\renewcommand{\headrulewidth}{1.6pt}
 \newfont{\kopffont}{cmr10}  % zum Justieren des Fonts
 \renewcommand{\sectionmark}[1]{\markboth{\kopffont\thesection\ #1}{}}
 \renewcommand{\subsectionmark}[1]{\markright{\kopffont\thesubsection\ #1}}
