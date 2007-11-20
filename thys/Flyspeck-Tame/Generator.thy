@@ -1,11 +1,11 @@
-(*  ID:         $Id: Generator.thy,v 1.5 2007-10-23 20:52:14 nipkow Exp $
+(*  ID:         $Id: Generator.thy,v 1.6 2007-11-20 07:49:16 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header {* Enumeration of Tame Plane Graphs *}
 
 theory Generator
-imports Vector Plane1 Tame
+imports Plane1 Tame
 begin
 
 
