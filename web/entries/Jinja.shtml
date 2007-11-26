@@ -93,12 +93,16 @@ in the theorem prover Isabelle/HOL.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases: None</td></tr>
+    <tr><td class="links">Older releases:
+    <ul>
+    <li>Isabelle 2005: <a href="../release/afp-Jinja-2006-08-08.tar.gz">afp-Jinja-2006-08-08.tar.gz</a>
+    </ul>
+    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-09-01 04:02:45 $, $Revision: 1.6 $</div>
+<div align="right" class="date">$Date: 2007-11-26 21:36:54 $, $Revision: 1.7 $</div>
 </body>
 </html>

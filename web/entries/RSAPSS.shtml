@@ -21,11 +21,11 @@
       <!-- content -->
 
 <div align="center">
-<p>&nbsp;</p>
+<p> </p>
 
 <!-- begin entry data: -->
 <h1><!-- Title: -->SHA1, RSA, PSS and more</h1>
-<p>&nbsp;</p>
+<p> </p>
 
 <table width="80%" class="data">
   <tbody>
@@ -59,7 +59,7 @@ a standard signature algorithm.
 
 <!-- uncomment for entries significantly updated in devel version:
 <tr>
-<td class="datahead">&nbsp;</td>
+<td class="datahead"> </td>
 <td class="data">An updated version of this entry is available in the 
     <a href="../download.shtml">development version</a> of AFP.</td>
 </tr> 
@@ -71,7 +71,7 @@ a standard signature algorithm.
 </tbody>
 </table>
 
-<p>&nbsp;</p>
+<p> </p>
 
 <!-- entry directory name: -->
 <!--#set var="name" value="RSAPSS" -->
@@ -99,12 +99,16 @@ a standard signature algorithm.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:	
+    <ul>
+    <li>Isabelle 2005: <a href="../release/afp-RSAPSS-2005-10-14.tar.gz">afp-RSAPSS-2005-10-14.tar.gz</a></li>
+    </ul>
+    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-09-01 04:02:45 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-11-26 21:36:54 $, $Revision: 1.1 
 $</div></body>
 </html>

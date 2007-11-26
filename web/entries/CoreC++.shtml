@@ -21,11 +21,11 @@
       <!-- content -->
 
 <div align="center">
-<p>&nbsp;</p>
+<p> </p>
 
 <!-- begin entry data: -->
 <h1><!-- Title: -->CoreC++</h1>
-<p>&nbsp;</p>
+<p> </p>
 
 <table width="80%" class="data">
   <tbody>
@@ -57,7 +57,7 @@ explanations see the OOPSLA 2006 paper by Wasserrab, Nipkow, Snelting and Tip.
 
 <!-- uncomment for entries significantly updated in devel version:
 <tr>
-<td class="datahead">&nbsp;</td>
+<td class="datahead"> </td>
 <td class="data">An updated version of this entry is available in the 
     <a href="../download.shtml">development version</a> of AFP.</td>
 </tr> 
@@ -69,7 +69,7 @@ explanations see the OOPSLA 2006 paper by Wasserrab, Nipkow, Snelting and Tip.
 </tbody>
 </table>
 
-<p>&nbsp;</p>
+<p> </p>
 
 <!-- entry directory name: -->
 <!--#set var="name" value="CoreC++" -->
@@ -97,12 +97,16 @@ explanations see the OOPSLA 2006 paper by Wasserrab, Nipkow, Snelting and Tip.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:
+    <ul>
+    <li>Isabelle 2005: <a href="../release/afp-CoreC++-2006-05-16.tar.gz">afp-CoreC++-2006-05-16.tar.gz</a>
+    </ul>
+    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-09-01 04:02:44 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-11-26 21:36:53 $, $Revision: 1.1 
 $</div></body>
 </html>

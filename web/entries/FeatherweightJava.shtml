@@ -21,11 +21,11 @@
       <!-- content -->
 
 <div align="center">
-<p>&nbsp;</p>
+<p> </p>
 
 <!-- begin entry data: -->
 <h1><!-- Title: -->A Theory of Featherweight Java in Isabelle/HOL</h1>
-<p>&nbsp;</p>
+<p> </p>
 
 <table width="80%" class="data">
   <tbody>
@@ -57,7 +57,7 @@ object calculus, in Isabelle/HOL.
 
 <!-- uncomment for entries significantly updated in devel version:
 <tr>
-<td class="datahead">&nbsp;</td>
+<td class="datahead"> </td>
 <td class="data">An updated version of this entry is available in the 
     <a href="../download.shtml">development version</a> of AFP.</td>
 </tr> 
@@ -69,7 +69,7 @@ object calculus, in Isabelle/HOL.
 </tbody>
 </table>
 
-<p>&nbsp;</p>
+<p> </p>
 
 <!-- entry directory name: -->
 <!--#set var="name" value="FeatherweightJava" -->
@@ -97,12 +97,16 @@ object calculus, in Isabelle/HOL.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:
+    <ul>
+    <li>Isabelle 2005: <a href="../release/afp-FeatherweightJava-2006-04-06.tar.gz">afp-FeatherweightJava-2006-04-06.tar.gz</a>
+    </ul>
+    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-09-01 04:02:44 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2007-11-26 21:36:54 $, $Revision: 1.1 
 $</div></body>
 </html>
