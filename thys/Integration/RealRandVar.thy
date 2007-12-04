@@ -87,13 +87,13 @@ definition
   "f \<in> rv M \<Longrightarrow> law M f \<equiv> (measure M) \<circ> (vimage f)"
 
 definition
-  characteristic_function:: "'a set \<Rightarrow> ('a \<Rightarrow> real)" ("\<chi>_"(*<*)[1000](*>*)) where
-  "\<chi>A x \<equiv> if x \<in> A then 1 else 0" 
+  characteristic_function:: "'a set \<Rightarrow> ('a \<Rightarrow> real)" ("\<chi> _"(*<*)[1000](*>*)) where
+  "\<chi> A x \<equiv> if x \<in> A then 1 else 0" 
 
-lemma char_empty: "\<chi>{} = (\<lambda>t. 0)"
+lemma char_empty: "\<chi> {} = (\<lambda>t. 0)"
 proof (rule ext)
   fix t
-  show "\<chi>{} t = 0" by (simp add: characteristic_function_def)
+  show "\<chi> {} t = 0" by (simp add: characteristic_function_def)
 qed
 
 text {* Now that random variables are defined, we aim to show that a
@@ -132,20 +132,20 @@ text{*Characteristic functions produce four cases already, so the
   details are glossed over.*}
 
 lemma assumes a: "a \<in> S" and sigma: "sigma_algebra S" shows 
-char_measurable : "\<chi>a \<in> measurable S x"
+char_measurable : "\<chi> a \<in> measurable S x"
 (*<*)proof -
   {fix g
-    have "\<chi>a -` g \<in> S"
+    have "\<chi> a -` g \<in> S"
     proof (cases "1 \<in> g")
       case True
       show ?thesis
       proof (cases "0 \<in> g") 
         case True
-        from prems have "\<chi>a -` g = UNIV" by (auto simp add: vimage_def characteristic_function_def)
+        from prems have "\<chi> a -` g = UNIV" by (auto simp add: vimage_def characteristic_function_def)
         with sigma show ?thesis by (auto simp add: sigma_algebra_UNIV) 
       next
         case False 
-        from prems have "\<chi>a -` g = a" 
+        from prems have "\<chi> a -` g = a" 
 	  by (auto simp add: vimage_def characteristic_function_def)
 	with a show ?thesis by simp
       qed
@@ -155,12 +155,12 @@ char_measurable : "\<chi>a \<in> measurable S x"
       show ?thesis
       proof (cases "0 \<in> g")
 	case True
-	from prems have "\<chi>a -` g = -a" 
+	from prems have "\<chi> a -` g = -a" 
 	  by (auto simp add: vimage_def characteristic_function_def)
 	with a sigma show ?thesis by (simp add: sigma_algebra_def)
       next
 	case False
-	from prems have "\<chi>a -` g = {}" by (auto simp add: vimage_def characteristic_function_def)
+	from prems have "\<chi> a -` g = {}" by (auto simp add: vimage_def characteristic_function_def)
 	also from sigma have "{} \<in> S" by  (simp only: sigma_algebra_def)
 	finally show ?thesis .
       qed
@@ -170,7 +170,7 @@ qed(*>*)
 
 
 theorem assumes ms: "measure_space M" and A: "A \<in> measurable_sets M"
-  shows char_rv: "\<chi>A \<in> rv M" using ms A
+  shows char_rv: "\<chi> A \<in> rv M" using ms A
   by (auto simp only: measure_space_def char_measurable rv_def)  
 
 text {*For more intricate functions, the following application of the
