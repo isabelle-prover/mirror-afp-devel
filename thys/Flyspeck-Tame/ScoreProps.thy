@@ -1,4 +1,4 @@
-(*  ID:         $Id: ScoreProps.thy,v 1.5 2007-08-19 19:17:42 nipkow Exp $
+(*  ID:         $Id: ScoreProps.thy,v 1.6 2007-12-10 10:24:35 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -478,36 +478,40 @@ proof (intro exI conjI)
    by (simp add: distinct_ExcessNotAtRecList distinct_ExcessTable)
 qed
 
-
+lemma nat_minus_add_max (*FIXME move to theory Nat*):
+  fixes n m :: nat
+  shows "n - m + m = max n m"
+  by (simp add: max_def)
 
 lemma excess_eq:
   assumes 6: "t + q \<le> 6"
   shows "excessAtType t q 0 + t * \<d> 3 + q * \<d> 4 = \<b> t q"
 proof -
-  note simps = excessAtType_def squanderVertex_def squanderFace_def squanderTarget_def
+  note simps = excessAtType_def squanderVertex_def squanderFace_def
+    nat_minus_add_max squanderTarget_def
   from 6 have "q=0 \<or> q=1 \<or> q=2 \<or> q=3 \<or> q=4 \<or> q=5 \<or> q=6" by arith
   then show ?thesis
   proof (elim disjE)
     assume q: "q = 0" (* 16 subgoals *)
-    with prems show ?thesis by (simp add:simps)
+    with 6 show ?thesis by (simp add: simps)
   next
     assume q: "q = 1" (* 29 subgoals *)
-    with prems show ?thesis by (simp add:simps)
+    with 6 show ?thesis by (simp add: simps)
   next
     assume q: "q = 2" (* 16 subgoals *)
-    with prems show ?thesis by (simp add: simps)
+    with 6 show ?thesis by (simp add: simps)
   next
     assume q: "q = 3" (* 16 subgoals *)
-    with prems show ?thesis  by (simp add: simps)
+    with 6 show ?thesis by (simp add: simps)
   next
     assume q: "q = 4" (* 6 subgoals *)
-    with prems show ?thesis  by (simp add: simps)
+    with 6 show ?thesis by (simp add: simps)
   next
     assume q: "q = 5" (* 1 subgoal *)
-    with prems show ?thesis  by (simp add: simps)
+    with 6 show ?thesis by (simp add: simps)
   next
     assume q: "q = 6" (* 1 subgoal *)
-    with prems show ?thesis  by (simp add: simps)
+    with 6 show ?thesis by (simp add: simps)
   qed
 qed
 
