@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.23 2007-09-29 14:20:19 lsf37 Exp $
+# $Id: regression,v 1.24 2007-12-10 22:00:51 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -67,9 +67,8 @@ if [ "$1" == "-" ]; then
   ISATOOL=$ISABELLE_DEVEL/bin/isatool
     
   ERRORDIR=$HOME/var
-  ERRORLOG=$ERRORDIR/error.log
   RUNNING=$HOME/var/running
-  if [ -f "$RUNNING/$SHORT.running" -o -e $ERRORLOG ]; then
+  if [ -f "$RUNNING/$SHORT.running" -o -e $ERRORDIR/$SHORT*.log ]; then
     echo "`date` $HOSTNAME: Skipped test. Isabelle devel version broken." >> $MASTERLOG
     exit 1
   fi
@@ -89,7 +88,7 @@ else
   WORKING_COPY=$WORKING_COPY/release
   ISATOOL=$ISABELLE_RELEASES/$1/bin/isatool
   ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
-  export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
+  export ISABELLE_IMAGE_PATH="$HOME/isabelle/heaps/$ML_IDENTIFIER/"
   LOG=$LOG-$1-$DATE.log
   REPORT=$REPORT-$1
 fi
