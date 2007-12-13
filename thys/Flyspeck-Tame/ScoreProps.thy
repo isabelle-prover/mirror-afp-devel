@@ -1,4 +1,4 @@
-(*  ID:         $Id: ScoreProps.thy,v 1.6 2007-12-10 10:24:35 fhaftmann Exp $
+(*  ID:         $Id: ScoreProps.thy,v 1.7 2007-12-13 09:48:41 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -477,11 +477,6 @@ proof (intro exI conjI)
   show "distinct ?V"
    by (simp add: distinct_ExcessNotAtRecList distinct_ExcessTable)
 qed
-
-lemma nat_minus_add_max (*FIXME move to theory Nat*):
-  fixes n m :: nat
-  shows "n - m + m = max n m"
-  by (simp add: max_def)
 
 lemma excess_eq:
   assumes 6: "t + q \<le> 6"
