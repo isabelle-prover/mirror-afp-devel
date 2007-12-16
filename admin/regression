@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.24 2007-12-10 22:00:51 lsf37 Exp $
+# $Id: regression,v 1.25 2007-12-16 22:13:25 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -218,7 +218,7 @@ if [ "$SNAPSHOT" == "1" ]; then
     for F in $DEVENTRIES/*.shtml; do
         BASE=$(basename $F)
         ENTRY=${BASE%.shtml}
-        LINE=$(grep $ENTRY $REPORT) 
+        LINE=$(grep ^$ENTRY: $REPORT) 
         STATUS=${LINE#"$ENTRY: "}
         if [ "$STATUS" != "" ]; then
             perl -pi -e "s:-STATUS-:$STATUS:g" $F
