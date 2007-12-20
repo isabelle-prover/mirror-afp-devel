@@ -1,0 +1,108 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p> </p>
+
+<!-- begin entry data: -->
+<h1><!-- Title: -->Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</h1>
+<p> </p>
+
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+    <td class="data" width="80%">
+<!-- Title: -->Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors
+    </td></tr>
+		
+    <tr><td class="datahead">Author:</td>
+<td class="data">
+<!-- Author: --><a
+href="http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/">Peter Lammich</a>
+and <a href="http://wwwmath.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a>
+</td></tr>		
+    
+	<tr><td class="datahead">Submission date:</td>
+	
+<td class="data"><!-- Submission date: -->2007-12-14</td></tr>
+
+	<tr><td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract"> 
+<!-- Abstract: -->	
+  In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e.g.\ data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. 
+  As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, 
+  and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. 
+
+  The formalization is based upon a flowgraph-based program model with an operational semantics as reference point. 
+   </td></tr>
+
+<!-- uncomment for entries significantly updated in devel version:
+<tr>
+<td class="datahead"> </td>
+<td class="data">An updated version of this entry is available in the 
+    <a href="../download.shtml">development version</a> of AFP.</td>
+</tr> 
+-->
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+</tbody>
+</table>
+
+<p> </p>
+
+<!-- entry directory name: -->
+<!--#set var="name" value="Program-Conflict-Analysis" -->
+
+<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
+<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:	None</td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+<div align="right" class="date">$Date: 2007-12-20 15:22:54 $, $Revision: 1.1 
+$</div></body>
+</html>

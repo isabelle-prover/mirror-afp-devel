@@ -67,6 +67,14 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2007-12-20:
+<a href="entries/Program-Conflict-Analysis.shtml">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</a>
+<br>Author:
+<a href="http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/">Peter Lammich</a>
+and <a href="http://wwwmath.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a>
+</td></tr>
+
+<tr><td class="entry">
 2007-12-03:
 <a href="entries/JinjaThreads.shtml">Jinja With Threads</a>
 <br>Author:
