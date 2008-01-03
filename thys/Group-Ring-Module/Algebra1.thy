@@ -2070,13 +2070,6 @@ typedef (Ainteg)
       ant = "zag"
        by (subgoal_tac "(1, 0) \<in> zag", auto, simp add:zag_def)
 
-instance ant :: ord ..
-instance ant :: zero ..
-instance ant :: one ..
-instance ant :: plus ..
-instance ant :: times ..
-instance ant :: minus ..
-
 constdefs
   ant :: "int \<Rightarrow> ant"
  "ant m == Abs_Ainteg( (m, 0))"
@@ -2085,22 +2078,33 @@ constdefs
   "tna z == if Rep_Ainteg(z) \<noteq> (0,1) \<and> Rep_Ainteg(z) \<noteq> (0,-1) then
                   fst (Rep_Ainteg(z)) else arbitrary"
 
-defs (overloaded)
+instantiation ant :: "{zero, one, plus, uminus, minus, times, ord}"
+begin
 
+definition
   Zero_ant_def  : "0 == ant 0"
+
+definition
   One_ant_def   : "1 == ant 1"
-  minus_ant_def : "- z == 
-         Abs_Ainteg((- (fst (Rep_Ainteg z)), - (snd (Rep_Ainteg z))))"
+
+definition
   add_ant_def:
    "z + w ==
        Abs_Ainteg (zag_pl (Rep_Ainteg z) (Rep_Ainteg w))"
 
+definition
+  minus_ant_def : "- z == 
+         Abs_Ainteg((- (fst (Rep_Ainteg z)), - (snd (Rep_Ainteg z))))"
+
+definition
     diff_ant_def:  "z - (w::ant) == z + (-w)"
- 
+
+definition 
     mult_ant_def:
       "z * w ==
        Abs_Ainteg (zag_t (Rep_Ainteg z) (Rep_Ainteg w))"
 
+definition
     le_ant_def:
      "(z::ant) \<le> w == if (snd (Rep_Ainteg w)) = 1 then True 
        else (if (snd (Rep_Ainteg w)) = 0 then (if (snd (Rep_Ainteg z)) = 1 
@@ -2108,7 +2112,12 @@ defs (overloaded)
         (fst (Rep_Ainteg z)) \<le> (fst (Rep_Ainteg w))  else True))
           else (if snd (Rep_Ainteg z) = -1 then True else False))" 
 
+definition
     less_ant_def: "((z::ant) < (w::ant)) == (z \<le> w \<and> z \<noteq> w)"            
+
+instance ..
+
+end
 
 constdefs
  inf_ant:: ant

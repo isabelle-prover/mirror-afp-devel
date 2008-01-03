@@ -757,7 +757,7 @@ definition
   "pp f x = (if 0\<le>f(x) then f x else 0)"
 
 definition
-  negative_part:: "('a \<Rightarrow> ('b::{ord,zero,minus})) \<Rightarrow> ('a \<Rightarrow> 'b)" ("np") where
+  negative_part:: "('a \<Rightarrow> ('b::{ord,zero,uminus,minus})) \<Rightarrow> ('a \<Rightarrow> 'b)" ("np") where
   "np f x = (if 0\<le>f(x) then 0 else -f(x))"
   (*useful lemmata about positive and negative parts*)
 lemma f_plus_minus: "((f x)::real) = pp f x - np f x" 
