@@ -1,0 +1,67 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+%\usepackage[latin1]{inputenc}
+  %for \<onesuperior>, \<onequarter>, \<twosuperior>, \<onehalf>,
+  %\<threesuperior>, \<threequarters>, \<degree>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Quantifier Elimination for Linear Arithmetic}
+\author{Tobias Nipkow}
+\maketitle
+
+\begin{abstract}
+This article formalizes quantifier elimination procedures for dense
+linear orders, linear real arithmetic and Presburger arithmetic.  In
+each case both a DNF-based non-elementary algorithm and one or more
+(doubly) exponential NNF-based algorithms are formalized, including
+the well-known algorithms by Ferrante and Rackoff and by Cooper. The
+NNF-based algorithms for dense linear orders are new but based on
+Ferrante and Rackoff and on an algorithm by Loos and Weisspfenning
+which simulates infenitesimals.
+
+All algorithms are directly executable. In particular, they yield
+reflective quantifier elimination procedures for HOL itself.
+
+The formalization makes heavy use of locales and is therefore highly modular.
+\end{abstract}
+
+\tableofcontents
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{plain}
+\bibliography{root}
+
+\end{document}

@@ -54,7 +54,7 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2007</td>
+      <td class="head">2008</td>
     </tr>
 
 <!-- entry template begin (delete this line) --
@@ -65,6 +65,21 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 <a href="???">???</a>
 </td></tr>
 -- entry template end (delete this line) -->
+
+<tr><td class="entry">
+2008-01-11:
+<a href="entries/LinearQuantifierElim.shtml">Quantifier Elimination for Linear Arithmetic</a>
+<br>Author:
+<a href="http://www.in.tum.de/">Tobias Nipkow</a>
+</td></tr>
+</table>
+
+<p>&nbsp;</p>
+<table width="80%" class="entries">
+  <tbody>
+    <tr>
+      <td class="head">2007</td>
+    </tr>
 
 <tr><td class="entry">
 2007-12-20:
