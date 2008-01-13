@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListSpace.thy,v 1.2 2008-01-11 15:22:16 lsf37 Exp $
+(*  ID:         $Id: ListSpace.thy,v 1.3 2008-01-13 15:00:17 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -26,12 +26,12 @@ where
 "zipwith0 f [] (y#ys) = f 0 y # zipwith0 f [] ys"
 
 instance list :: ("{zero,plus}")plus
-list_add_def : "op + \<equiv> zipwith0 (op +)"..
-(*
+list_add_def : "op + \<equiv> zipwith0 (op +)" ..
+
 instance list :: ("{zero,uminus}")uminus
-*)
+list_uminus_def: "uminus \<equiv> map uminus" ..
+
 instance list :: ("{zero,minus}")minus
-list_uminus_def: "uminus \<equiv> map uminus"
 list_diff_def: "op - \<equiv> zipwith0 (op -)" ..
 
 lemma zipwith0_Nil[simp]: "zipwith0 f [] ys = map (f 0) ys"
