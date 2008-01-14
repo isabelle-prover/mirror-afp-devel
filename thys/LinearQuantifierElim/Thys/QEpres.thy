@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEpres.thy,v 1.2 2008-01-11 15:22:29 lsf37 Exp $
+(*  ID:         $Id: QEpres.thy,v 1.3 2008-01-14 11:34:42 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -93,8 +93,8 @@ qed
 
 lemma I_hd_coeffs1:
 assumes 0: "\<forall>a\<in>set as. hd_coeff a \<noteq> 0" shows
-  "(\<exists>x. \<forall>a \<in> set as. I\<^isub>Z a (x#e)) =
-   (\<exists>x. \<forall>a \<in> set(hd_coeffs1 as). I\<^isub>Z a (x#e))" (is "?A = ?B")
+  "(\<exists>x. \<forall>a \<in> set(hd_coeffs1 as). I\<^isub>Z a (x#e)) =
+   (\<exists>x. \<forall>a \<in> set as. I\<^isub>Z a (x#e))" (is "?B = ?A")
 proof -
   let ?m = "zlcms(map hd_coeff as)"
   have "?m>0" using 0 by(simp add:zlcms_pos)
