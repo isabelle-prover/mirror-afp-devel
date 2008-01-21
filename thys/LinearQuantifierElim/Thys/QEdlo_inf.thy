@@ -1,5 +1,5 @@
 
-(*  ID:         $Id: QEdlo_inf.thy,v 1.2 2008-01-11 15:22:21 lsf37 Exp $
+(*  ID:         $Id: QEdlo_inf.thy,v 1.3 2008-01-21 17:45:36 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -29,25 +29,25 @@ fun asubst_peps :: "nat \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^isu
 abbreviation subst_peps :: "atom fm \<Rightarrow> nat \<Rightarrow> atom fm" ("subst\<^isub>+") where
 "subst\<^isub>+ \<phi> k \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^isub>+ k) \<phi>"
 
-definition "nolb f xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB f xs)"
+definition "nolb \<phi> xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB \<phi> xs)"
 
 lemma nolb_And[simp]:
-  "nolb (And f g) xs l x = (nolb f xs l x \<and> nolb g xs l x)"
+  "nolb (And \<phi>\<^isub>1 \<phi>\<^isub>2) xs l x = (nolb \<phi>\<^isub>1 xs l x \<and> nolb \<phi>\<^isub>2 xs l x)"
 apply(clarsimp simp:nolb_def)
 apply blast
 done
 
 lemma nolb_Or[simp]:
-  "nolb (Or f g) xs l x = (nolb f xs l x \<and> nolb g xs l x)"
+  "nolb (Or \<phi>\<^isub>1 \<phi>\<^isub>2) xs l x = (nolb \<phi>\<^isub>1 xs l x \<and> nolb \<phi>\<^isub>2 xs l x)"
 apply(clarsimp simp:nolb_def)
 apply blast
 done
 
 declare[[simp_depth_limit=3]]
 lemma innermost_intvl:
- "\<lbrakk> nqfree f; nolb f xs l x; l < x; x \<notin> EQ f xs; DLO.I f (x#xs); l < y; y \<le> x\<rbrakk>
-  \<Longrightarrow> DLO.I f (y#xs)"
-proof(induct f)
+ "\<lbrakk> nqfree \<phi>; nolb \<phi> xs l x; l < x; x \<notin> EQ \<phi> xs; DLO.I \<phi> (x#xs); l < y; y \<le> x\<rbrakk>
+  \<Longrightarrow> DLO.I \<phi> (y#xs)"
+proof(induct \<phi>)
   case (Atom a)
   show ?case
   proof (cases a)
@@ -67,17 +67,17 @@ proof(induct f)
       done
   qed
 next
-  case (And f1 f2) thus ?case by (fastsimp)
+  case And thus ?case by (fastsimp)
 next
-  case (Or f1 f2) thus ?case by (fastsimp)
+  case Or thus ?case by (fastsimp)
 qed simp+
 
 
 lemma I_subst_peps2:
- "nqfree f \<Longrightarrow> xs!l < x \<Longrightarrow> nolb f xs (xs!l) x \<Longrightarrow> x \<notin> EQ f xs
- \<Longrightarrow> \<forall>y \<in> {xs!l <.. x}. DLO.I f (y#xs)
- \<Longrightarrow> DLO.I (subst\<^isub>+ f l) xs"
-proof(induct f)
+ "nqfree \<phi> \<Longrightarrow> xs!l < x \<Longrightarrow> nolb \<phi> xs (xs!l) x \<Longrightarrow> x \<notin> EQ \<phi> xs
+ \<Longrightarrow> \<forall>y \<in> {xs!l <.. x}. DLO.I \<phi> (y#xs)
+ \<Longrightarrow> DLO.I (subst\<^isub>+ \<phi> l) xs"
+proof(induct \<phi>)
   case FalseF thus ?case
     by simp (metis linorder_antisym_conv1 linorder_neq_iff)
 next
@@ -114,9 +114,9 @@ qed
 
 
 lemma I_subst_peps:
-  "nqfree f \<Longrightarrow> DLO.I (subst\<^isub>+ f l) xs \<longrightarrow>
-  (\<exists>leps>xs!l. \<forall>x. xs!l < x \<and> x \<le> leps \<longrightarrow> DLO.I f (x#xs))"
-proof(induct f)
+  "nqfree \<phi> \<Longrightarrow> DLO.I (subst\<^isub>+ \<phi> l) xs \<longrightarrow>
+  (\<exists>leps>xs!l. \<forall>x. xs!l < x \<and> x \<le> leps \<longrightarrow> DLO.I \<phi> (x#xs))"
+proof(induct \<phi>)
   case TrueF thus ?case by simp (metis no_ub)
 next
   case (Atom a)
@@ -153,54 +153,54 @@ qed simp_all
 
 
 definition
-"eps\<^isub>1(f) =
-(let as = DLO.atoms\<^isub>0 f; lbs = lbounds as; ebs = ebounds as
- in list_disj (inf\<^isub>- f # map (subst\<^isub>+ f) lbs @ map (subst f) ebs))"
+"eps\<^isub>1(\<phi>) =
+(let as = DLO.atoms\<^isub>0 \<phi>; lbs = lbounds as; ebs = ebounds as
+ in list_disj (inf\<^isub>- \<phi> # map (subst\<^isub>+ \<phi>) lbs @ map (subst \<phi>) ebs))"
 
 theorem I_eps1:
-assumes "nqfree f" shows "DLO.I (eps\<^isub>1 f) xs = (\<exists>x. DLO.I f (x#xs))"
+assumes "nqfree \<phi>" shows "DLO.I (eps\<^isub>1 \<phi>) xs = (\<exists>x. DLO.I \<phi> (x#xs))"
   (is "?QE = ?EX")
 proof
-  let ?as = "DLO.atoms\<^isub>0 f" let ?ebs = "ebounds ?as"
+  let ?as = "DLO.atoms\<^isub>0 \<phi>" let ?ebs = "ebounds ?as"
   assume ?QE
-  { assume "DLO.I (inf\<^isub>- f) xs"
-    hence ?EX using `?QE` min_inf[of f xs] `nqfree f`
+  { assume "DLO.I (inf\<^isub>- \<phi>) xs"
+    hence ?EX using `?QE` min_inf[of \<phi> xs] `nqfree \<phi>`
       by(auto simp add:eps\<^isub>1_def amap_fm_list_disj)
   } moreover
-  { assume "\<forall>i \<in> set ?ebs. \<not>DLO.I f (xs!i # xs)"
-           "\<not> DLO.I (inf\<^isub>- f) xs"
-    with `?QE` `nqfree f` obtain l where "DLO.I (subst\<^isub>+ f l) xs"
+  { assume "\<forall>i \<in> set ?ebs. \<not>DLO.I \<phi> (xs!i # xs)"
+           "\<not> DLO.I (inf\<^isub>- \<phi>) xs"
+    with `?QE` `nqfree \<phi>` obtain l where "DLO.I (subst\<^isub>+ \<phi> l) xs"
       by(fastsimp simp: I_subst eps\<^isub>1_def set_ebounds set_lbounds)
-    then obtain leps where "DLO.I f (leps#xs)"
-      using I_subst_peps[OF `nqfree f`] by fastsimp
+    then obtain leps where "DLO.I \<phi> (leps#xs)"
+      using I_subst_peps[OF `nqfree \<phi>`] by fastsimp
     hence ?EX .. }
   ultimately show ?EX by blast
 next
-  let ?as = "DLO.atoms\<^isub>0 f" let ?ebs = "ebounds ?as"
+  let ?as = "DLO.atoms\<^isub>0 \<phi>" let ?ebs = "ebounds ?as"
   assume ?EX
-  then obtain x where x: "DLO.I f (x#xs)" ..
-  { assume "DLO.I (inf\<^isub>- f) xs"
-    hence ?QE using `nqfree f` by(auto simp:eps\<^isub>1_def)
+  then obtain x where x: "DLO.I \<phi> (x#xs)" ..
+  { assume "DLO.I (inf\<^isub>- \<phi>) xs"
+    hence ?QE using `nqfree \<phi>` by(auto simp:eps\<^isub>1_def)
   } moreover
-  { assume "\<exists>k \<in> set ?ebs. DLO.I (subst f k) xs"
+  { assume "\<exists>k \<in> set ?ebs. DLO.I (subst \<phi> k) xs"
     hence ?QE by(auto simp:eps\<^isub>1_def) } moreover
-  { assume "\<not> DLO.I (inf\<^isub>- f) xs"
-    and "\<forall>k \<in> set ?ebs. \<not> DLO.I (subst f k) xs"
-    hence noE: "\<forall>e \<in> EQ f xs. \<not> DLO.I f (e#xs)" using `nqfree f`
+  { assume "\<not> DLO.I (inf\<^isub>- \<phi>) xs"
+    and "\<forall>k \<in> set ?ebs. \<not> DLO.I (subst \<phi> k) xs"
+    hence noE: "\<forall>e \<in> EQ \<phi> xs. \<not> DLO.I \<phi> (e#xs)" using `nqfree \<phi>`
       by (auto simp:set_ebounds EQ_def I_subst nth_Cons' split:split_if_asm)
-    hence "x \<notin> EQ f xs" using x by fastsimp
-    obtain l where "l \<in> LB f xs" "l < x"
-      using LBex[OF `nqfree f` x `\<not> DLO.I(inf\<^isub>- f) xs` `x \<notin> EQ f xs`] ..
-    have "\<exists>l\<in>LB f xs. l<x \<and> nolb f xs l x \<and>
-            (\<forall>y. l < y \<and> y \<le> x \<longrightarrow> DLO.I f (y#xs))"
-      using dense_interval[where P = "\<lambda>x. DLO.I f (x#xs)", OF finite_LB `l\<in>LB f xs` `l<x` x] x innermost_intvl[OF `nqfree f` _ _ `x \<notin> EQ f xs`]
+    hence "x \<notin> EQ \<phi> xs" using x by fastsimp
+    obtain l where "l \<in> LB \<phi> xs" "l < x"
+      using LBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^isub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
+    have "\<exists>l\<in>LB \<phi> xs. l<x \<and> nolb \<phi> xs l x \<and>
+            (\<forall>y. l < y \<and> y \<le> x \<longrightarrow> DLO.I \<phi> (y#xs))"
+      using dense_interval[where P = "\<lambda>x. DLO.I \<phi> (x#xs)", OF finite_LB `l\<in>LB \<phi> xs` `l<x` x] x innermost_intvl[OF `nqfree \<phi>` _ _ `x \<notin> EQ \<phi> xs`]
       by (simp add:nolb_def)
     then obtain m
-      where "Less (Suc m) 0 \<in> set ?as \<and> xs!m < x \<and> nolb f xs (xs!m) x
-            \<and> (\<forall>y. xs!m < y \<and> y \<le> x \<longrightarrow> DLO.I f (y#xs))"
+      where "Less (Suc m) 0 \<in> set ?as \<and> xs!m < x \<and> nolb \<phi> xs (xs!m) x
+            \<and> (\<forall>y. xs!m < y \<and> y \<le> x \<longrightarrow> DLO.I \<phi> (y#xs))"
       by blast
-    then moreover have "DLO.I (subst\<^isub>+ f m) xs"
-      using noE by(auto intro!: I_subst_peps2[OF `nqfree f`])
+    then moreover have "DLO.I (subst\<^isub>+ \<phi> m) xs"
+      using noE by(auto intro!: I_subst_peps2[OF `nqfree \<phi>`])
     ultimately have ?QE
       by(simp add:eps\<^isub>1_def bex_Un set_lbounds set_ebounds) metis
   } ultimately show ?QE by blast

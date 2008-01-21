@@ -1,4 +1,4 @@
-(*  ID:         $Id: QElin_inf.thy,v 1.2 2008-01-11 15:22:27 lsf37 Exp $
+(*  ID:         $Id: QElin_inf.thy,v 1.3 2008-01-21 17:45:36 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -17,11 +17,11 @@ fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" (
   (if d=0 then Atom(Less s ds) else
    let u = s - d*r; v = d *\<^sub>s cs + ds; less = Atom(Less u v)
    in if d<0 then less else Or less (Atom(Eq u v)))" |
-"asubst_peps k (Eq r (d#ds)) = (if d=0 then Atom(Eq r ds) else FalseF)" |
-"asubst_peps k a = Atom a"
+"asubst_peps rcs (Eq r (d#ds)) = (if d=0 then Atom(Eq r ds) else FalseF)" |
+"asubst_peps rcs a = Atom a"
 
 abbreviation subst_peps :: "atom fm \<Rightarrow> real * real list \<Rightarrow> atom fm" ("subst\<^isub>+")
-where "subst\<^isub>+ \<phi> k \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^isub>+ k) \<phi>"
+where "subst\<^isub>+ \<phi> rcs \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^isub>+ rcs) \<phi>"
 
 definition "nolb f xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB f xs)"
 
@@ -253,10 +253,10 @@ next
   { assume "R.I (inf\<^isub>- f) xs"
     hence ?QE using `nqfree f` by(auto simp:eps\<^isub>1_def)
   } moreover
-  { assume "\<exists>k \<in> set ?ebs. R.I (subst f k) xs"
+  { assume "\<exists>rcs \<in> set ?ebs. R.I (subst f rcs) xs"
     hence ?QE by(auto simp:eps\<^isub>1_def) } moreover
   { assume "\<not> R.I (inf\<^isub>- f) xs"
-    and "\<forall>k \<in> set ?ebs. \<not> R.I (subst f k) xs"
+    and "\<forall>rcs \<in> set ?ebs. \<not> R.I (subst f rcs) xs"
     hence noE: "\<forall>e \<in> EQ f xs. \<not> R.I f (e#xs)" using `nqfree f`
       by (force simp:set_ebounds I_subst diff_divide_distrib eval_def
 	iprod_assoc diff_minus[symmetric] split:split_if_asm)
@@ -280,10 +280,10 @@ next
   } ultimately show ?QE by blast
 qed
 
-lemma qfree_asubst_peps: "qfree (asubst\<^isub>+ k a)"
-by(cases "(k,a)" rule:asubst_peps.cases) simp_all
+lemma qfree_asubst_peps: "qfree (asubst\<^isub>+ rcs a)"
+by(cases "(rcs,a)" rule:asubst_peps.cases) simp_all
 
-lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>+ \<phi> k)"
+lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>+ \<phi> rcs)"
 by(induct \<phi>) (simp_all add:qfree_asubst_peps)
 
 lemma qfree_eps\<^isub>1: "nqfree \<phi> \<Longrightarrow> qfree(eps\<^isub>1 \<phi>)"
