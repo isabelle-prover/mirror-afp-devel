@@ -29,22 +29,15 @@ defs
   list_set_append[simp]: "a\<odot>S == op @ a ` S"
 
 subsubsection "The interleaving operator"
-consts interleave_helper :: "'a list * 'a list \<Rightarrow> 'a list set"
 
-syntax
+function
   interleave :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list set" (infixr "\<otimes>" 64)
-translations
-  "a\<otimes>b" == "interleave_helper (a,b)"
-
-recdef interleave_helper "measure(\<lambda> (x,y) . size x + size y)"
+where
   "[]\<otimes>b = {b}"
-  "a\<otimes>[] = {a}"
-  "a#l \<otimes> b#r = ((a\<cdot>(l \<otimes> b#r)) \<union> (b\<cdot>(a#l \<otimes> r)))"
-
-lemma [simp]: "a\<otimes>[]={a}" 
-  apply (case_tac a)
-  apply(auto)
-done
+  | "a\<otimes>[] = {a}"
+  | "a#l \<otimes> b#r = ((a\<cdot>(l \<otimes> b#r)) \<union> (b\<cdot>(a#l \<otimes> r)))"
+by pat_completeness auto
+termination by lexicographic_order
 
 
 subsection "Properties"
@@ -85,7 +78,7 @@ done
 
 (* TODO: Is this wise as default simp ?*)
 lemma interleave_length[rule_format, simp]: "ALL x : a\<otimes>b . length x = length a + length b"
-  apply(induct_tac rule: interleave_helper.induct)
+  apply(induct_tac rule: interleave.induct)
   apply(auto)
 done
 
@@ -98,7 +91,7 @@ lemma interleave_same[simp]: "y\<in>l\<otimes>y = (l=[])"
 done
 
 lemma interleave_comm[simp]: "a\<otimes>b = b\<otimes>a" (is "?P f a b")
-  apply(induct_tac rule: interleave_helper.induct)
+  apply(induct_tac rule: interleave.induct)
   apply(auto)
 done
 
@@ -114,7 +107,7 @@ lemma interleave_cont_rev_conc[simp]: "b@a \<in> a\<otimes>b"
 done
 
 lemma interleave_not_empty: "a\<otimes>b ~= {}" 
-	apply(induct rule: interleave_helper.induct)
+	apply(induct rule: interleave.induct)
 	apply(auto)
 done
 

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.17 2007-08-12 16:28:13 makarius Exp $
+    ID:          $Id: TypeSafe.thy,v 1.18 2008-01-21 15:24:25 fhaftmann Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -381,7 +381,7 @@ theorem assumes wf: "wf_C_prog P"
 shows subject_reduction2: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow>
   (\<And>T. \<lbrakk> P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> e : T \<rbrakk> \<Longrightarrow> P,E,h' \<turnstile> e' :\<^bsub>NT\<^esub> T)"
 and subjects_reduction2: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow>
-  (\<And>Ts.\<lbrakk> P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> es [:] Ts \<rbrakk> \<Longrightarrow> types_conf (P,E,h',es',Ts))"
+  (\<And>Ts.\<lbrakk> P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> es [:] Ts \<rbrakk> \<Longrightarrow> types_conf P E h' es' Ts)"
 
 proof (induct rule:red_reds_inducts)
   case (RedNew h a h' C E l)
@@ -929,7 +929,7 @@ next
   case (CallParams E es h l es' h' l' v Copt M)
   have reds: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle>"
    and IH: "\<And>Ts. \<lbrakk>P,E \<turnstile> (h,l) \<surd>; P,E,h \<turnstile> es [:] Ts\<rbrakk>
-                 \<Longrightarrow> types_conf (P,E,h',es',Ts)"
+                 \<Longrightarrow> types_conf P E h' es' Ts"
    and sconf: "P,E \<turnstile> (h,l) \<surd>" and wt: "P,E,h \<turnstile> Call (Val v) Copt M es : T" by fact+
   from wt have "P,E,h' \<turnstile> Call (Val v) Copt M es' : T"
   proof(cases Copt)
@@ -1268,13 +1268,13 @@ next
   from WTrts_hext_mono[OF wtes red_hext_incr[OF red]] 
   have wtes':"P,E,h' \<turnstile> es [:] Us" .
   hence "length es = length Us" by (rule WTrts_same_length)
-  with wtes' have "types_conf(P,E,h',es,Us)"
+  with wtes' have "types_conf P E h' es Us"
     by (fastsimp intro:wts_same_types_typesconf)
   with IH[OF sconf wte] Ts show ?case by simp
 next
   case (ListRed2 E es h l es' h' l' v Ts)
   have reds:"P,E \<turnstile> \<langle>es,(h, l)\<rangle> [\<rightarrow>] \<langle>es',(h', l')\<rangle>"
-    and IH:"\<And>Ts. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> types_conf (P,E,h',es',Ts)"
+    and IH:"\<And>Ts. \<lbrakk>P,E \<turnstile> (h, l) \<surd>; P,E,h \<turnstile> es [:] Ts\<rbrakk> \<Longrightarrow> types_conf P E h' es' Ts"
     and sconf:"P,E \<turnstile> (h, l) \<surd>" and wt:"P,E,h \<turnstile> Val v#es [:] Ts" by fact+
   from wt obtain U Us where Ts:"Ts = U#Us" by(cases Ts) auto
   with wt have wtval:"P,E,h \<turnstile> Val v : U" and wtes:"P,E,h \<turnstile> es [:] Us" by simp_all
@@ -1299,7 +1299,7 @@ by(cases s, cases s', fastsimp dest:subject_reduction2)
 
 corollary subjects_reduction:
   "\<lbrakk> wf_C_prog P; P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> es[:]Ts \<rbrakk>
-  \<Longrightarrow> types_conf(P,E,hp s',es',Ts)"
+  \<Longrightarrow> types_conf P E (hp s') es' Ts"
 by(cases s, cases s', fastsimp dest:subjects_reduction2)
 
 
@@ -1343,34 +1343,34 @@ next
     and IH:"\<And>Ts. \<lbrakk>P,E,hp s'' \<turnstile> es'' [:] Ts; P,E \<turnstile> s'' \<surd>\<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>" by fact+
   from Reds have reds1:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
   from subjects_reduction[OF wf this sconf wtes] 
-  have type:"types_conf (P,E,hp s'',es'',Ts)" .
+  have type:"types_conf P E (hp s'') es'' Ts" .
   from reds1 wtes sconf wf have sconf':"P,E \<turnstile> s'' \<surd>" 
     by(fastsimp intro:wf_prog_wwf_prog reds_preserves_sconf)
   from type have "\<exists>Ts'. P,E,hp s'' \<turnstile> es'' [:] Ts'"
   proof (induct Ts arbitrary: es'')
     fix esi
-    assume "types_conf(P,E,hp s'',esi,[])"
+    assume "types_conf P E (hp s'') esi []"
     thus "\<exists>Ts'. P,E,hp s'' \<turnstile> esi [:] Ts'"
     proof(induct esi)
       case Nil thus "\<exists>Ts'. P,E,hp s'' \<turnstile> [] [:] Ts'" by simp
     next
       fix ex esx
-      assume "types_conf(P,E,hp s'',ex#esx,[])"
+      assume "types_conf P E (hp s'') (ex#esx) []"
       thus "\<exists>Ts'. P,E,hp s'' \<turnstile> ex#esx [:] Ts'" by simp
     qed
   next
     fix T' Ts' esi
-    assume type':"types_conf(P,E,hp s'',esi,T'#Ts')"
-      and IH:"\<And>es''. types_conf(P,E,hp s'',es'',Ts') \<Longrightarrow>
+    assume type':"types_conf P E (hp s'') esi (T'#Ts')"
+      and IH:"\<And>es''. types_conf P E (hp s'') es'' Ts' \<Longrightarrow>
                       \<exists>Ts''. P,E,hp s'' \<turnstile> es'' [:] Ts''"
     from type' show "\<exists>Ts'. P,E,hp s'' \<turnstile> esi [:] Ts'"
     proof(induct esi)
       case Nil thus "\<exists>Ts'. P,E,hp s'' \<turnstile> [] [:] Ts'" by simp
     next
       fix ex esx
-      assume "types_conf(P,E,hp s'',ex#esx,T'#Ts')"
+      assume "types_conf P E (hp s'') (ex#esx) (T'#Ts')"
       hence type':"P,E,hp s'' \<turnstile> ex :\<^bsub>NT\<^esub> T'" 
-	and types':"types_conf(P,E,hp s'',esx,Ts')" by simp_all
+	and types':"types_conf P E (hp s'') esx Ts'" by simp_all
       from type' obtain Tx where type'':"P,E,hp s'' \<turnstile> ex : Tx"
 	by(cases T') auto
       from IH[OF types'] obtain Tsx where "P,E,hp s'' \<turnstile> esx [:] Tsx" by auto
@@ -1417,31 +1417,31 @@ qed
 
 text{* predicate to show the same lemma for lists *}
 
-consts
-  conformable :: "(ty list \<times> ty list) \<Rightarrow> bool"
-
-recdef conformable "measure(\<lambda>(Ts,Ts'). size Ts)"
-  "conformable([],Ts')       = (if Ts' = [] then True else False)"
-  "conformable(T''#Ts'',Ts') = (if Ts' \<noteq> [] then
-      (T'' = hd Ts' \<or> (\<exists>C. T'' = NT \<and> hd Ts' = Class C)) \<and> conformable(Ts'',tl Ts')
-                                else False)"
+fun
+  conformable :: "ty list \<Rightarrow> ty list \<Rightarrow> bool"
+where
+  "conformable [] [] \<longleftrightarrow> True"
+  | "conformable (T''#Ts'') (T'#Ts') \<longleftrightarrow> (T'' = T'
+     \<or> (\<exists>C. T'' = NT \<and> T' = Class C)) \<and> conformable Ts'' Ts'"
+  | "conformable _ _ \<longleftrightarrow> False"
 
 lemma types_conf_conf_types_conf:
-  "\<lbrakk>types_conf (P,E,h,es,Ts); conformable(Ts,Ts')\<rbrakk> \<Longrightarrow> types_conf (P,E,h,es,Ts')"
+  "\<lbrakk>types_conf P E h es Ts; conformable Ts Ts'\<rbrakk> \<Longrightarrow> types_conf P E h es Ts'"
 proof (induct Ts arbitrary: Ts' es)
-  case Nil thus ?case by(auto split:split_if_asm)
+  case Nil thus ?case by (cases Ts') (auto split: split_if_asm)
 next
   case (Cons T'' Ts'')
-  have type:"types_conf(P,E,h,es,T''#Ts'')"
-    and conf:"conformable (T''#Ts'',Ts')"
-    and IH:"\<And>Ts' es. \<lbrakk>types_conf(P,E,h,es,Ts''); conformable(Ts'',Ts')\<rbrakk>
-                   \<Longrightarrow> types_conf(P,E,h,es,Ts')" by fact+
+  have type:"types_conf P E h es (T''#Ts'')"
+    and conf:"conformable (T''#Ts'') Ts'"
+    and IH:"\<And>Ts' es. \<lbrakk>types_conf P E h es Ts''; conformable Ts'' Ts'\<rbrakk>
+                   \<Longrightarrow> types_conf P E h es Ts'" by fact+
   from type obtain e' es' where es:"es = e'#es'" by (cases es) auto
-  with type have type':"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> T''" and types':"types_conf(P,E,h,es',Ts'')"
+  with type have type':"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> T''"
+    and types': "types_conf P E h es' Ts''"
     by simp_all
-  from conf obtain U Us where Ts':"Ts' = U#Us" by (cases Ts') auto
+  from conf obtain U Us where Ts': "Ts' = U#Us" by (cases Ts') auto
   with conf have disj:"T'' = U \<or> (\<exists>C. T'' = NT \<and> U = Class C)"
-    and conf':"conformable(Ts'',Us)"
+    and conf':"conformable Ts'' Us"
     by simp_all
   from type' disj have "P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> U" by auto
   with IH[OF types' conf'] Ts' es show ?case by simp
@@ -1449,16 +1449,17 @@ qed
 
 
 lemma types_conf_Wtrt_conf:
-  "types_conf (P,E,h,es,Ts) \<Longrightarrow> \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable(Ts',Ts)"
+  "types_conf P E h es Ts \<Longrightarrow> \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable Ts' Ts"
 proof (induct Ts arbitrary: es)
-  case Nil thus ?case by(auto split:split_if_asm)
+  case Nil thus ?case by (cases es) (auto split:split_if_asm)
 next
   case (Cons T'' Ts'')
-  have type:"types_conf(P,E,h,es,T''#Ts'')"
-    and IH:"\<And>es. types_conf(P,E,h,es,Ts'') \<Longrightarrow>
-                  \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable (Ts',Ts'')" by fact+
+  have type:"types_conf P E h es (T''#Ts'')"
+    and IH:"\<And>es. types_conf P E h es Ts'' \<Longrightarrow>
+                  \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable Ts' Ts''" by fact+
   from type obtain e' es' where es:"es = e'#es'" by (cases es) auto
-  with type have type':"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> T''" and types':"types_conf(P,E,h,es',Ts'')"
+  with type have type':"P,E,h \<turnstile> e' :\<^bsub>NT\<^esub> T''"
+    and types': "types_conf P E h es' Ts''"
     by simp_all
   from type' obtain T' where "P,E,h \<turnstile> e' : T'" and 
     "T' = T'' \<or> (\<exists>C. T' = NT \<and> T'' = Class C)" by(cases T'') auto
@@ -1471,7 +1472,7 @@ qed
 lemma steps_preserves_types:
 assumes wf: "wf_C_prog P" and steps: "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
 shows "\<And>Ts. \<lbrakk> P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> es [:] Ts\<rbrakk>
-  \<Longrightarrow> types_conf(P,E,hp s',es',Ts)"
+  \<Longrightarrow> types_conf P E (hp s') es' Ts"
   
 using steps
 proof (induct rule:converse_rtrancl_induct2)
@@ -1482,16 +1483,17 @@ next
     and steps:"P,E \<turnstile> \<langle>es'',s''\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle>"
     and sconf:"P,E \<turnstile> s \<surd>" and wtes:"P,E,hp s \<turnstile> es [:] Ts"
     and IH:"\<And>Ts. \<lbrakk>P,E \<turnstile> s'' \<surd>; P,E,hp s'' \<turnstile> es'' [:] Ts \<rbrakk> 
-               \<Longrightarrow> types_conf (P, E, hp s', es', Ts)" by fact+
+               \<Longrightarrow> types_conf P E (hp s') es' Ts" by fact+
   from Reds have step:"P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>] \<langle>es'',s''\<rangle>" by simp
   with wtes sconf wf have sconf':"P,E \<turnstile> s'' \<surd>"
     by(auto intro:reds_preserves_sconf wf_prog_wwf_prog)
   from wtes have "length es = length Ts" by(fastsimp dest:WTrts_same_length)
-  from step sconf wtes have type':"types_conf(P,E,hp s'',es'',Ts)"
-    by(rule subjects_reduction[OF wf])
+  from step sconf wtes
+  have type': "types_conf P E (hp s'') es'' Ts"
+    by (rule subjects_reduction[OF wf])
   then obtain Ts' where wtes'':"P,E,hp s'' \<turnstile> es'' [:] Ts'" 
-    and conf:"conformable(Ts',Ts)" by(auto dest:types_conf_Wtrt_conf)
-  from IH[OF sconf' wtes''] have "types_conf(P,E,hp s',es',Ts')" .
+    and conf:"conformable Ts' Ts" by (auto dest:types_conf_Wtrt_conf)
+  from IH[OF sconf' wtes''] have "types_conf P E (hp s') es' Ts'" .
   with conf show ?case by(fastsimp intro:types_conf_conf_types_conf)
 qed
   
@@ -1525,7 +1527,7 @@ shows "\<lbrakk> P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e
 
 lemma evals_preserves_types: assumes wf: "wf_C_prog P"
 shows "\<lbrakk> P,E \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E \<turnstile> es [::] Ts \<rbrakk>
-  \<Longrightarrow> types_conf(P,E,hp s',es',Ts)"
+  \<Longrightarrow> types_conf P E (hp s') es' Ts"
 using wf
   by (auto dest!:bigs_by_smalls[OF wf_prog_wwf_prog[OF wf]] WTs_implies_WTrts
            intro:wf_prog_wwf_prog
