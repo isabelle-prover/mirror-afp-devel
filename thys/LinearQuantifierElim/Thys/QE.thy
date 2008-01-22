@@ -1,4 +1,4 @@
-(*  ID:         $Id: QE.thy,v 1.2 2008-01-11 15:22:18 lsf37 Exp $
+(*  ID:         $Id: QE.thy,v 1.3 2008-01-22 18:46:39 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -221,6 +221,13 @@ proof(induct "\<phi>" arbitrary:xs)
     by (simp add: assms nqfree_nnf qfree_lift_nnf_qe I_nnf
                   normal_lift_nnf_qe normal_nnf)
 qed auto
+
+lemma I_lift_nnf_qe_normal2:
+assumes  "qe : |nqfree| \<rightarrow> |qfree|"
+and "qe : |nqfree| \<inter> |normal| \<rightarrow> |normal|"
+and "\<And>xs \<phi>. normal \<phi> \<Longrightarrow> nqfree \<phi> \<Longrightarrow> I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
+shows "normal \<phi> \<Longrightarrow> I (lift_nnf_qe qe \<phi>) xs = I \<phi> xs"
+using assms by(simp add:Pi_def I_lift_nnf_qe_normal)
 
 end
 
