@@ -38,7 +38,7 @@ of a scientific journal. Submissions are refereed. The preferred citation style
 is available <a href="citing.shtml">[here]</a>.</td></tr>
 </tbody>
 </table>
-<p>&nbsp;</p>
+<p> </p>
 <table width="80%" class="entries">
   <tbody>
     <tr><td><strong>This is the development version of the AFP.</strong> It is
@@ -70,11 +70,11 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 2008-01-11:
 <a href="entries/LinearQuantifierElim.shtml">Quantifier Elimination for Linear Arithmetic</a>
 <br>Author:
-<a href="http://www.in.tum.de/">Tobias Nipkow</a>
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
 </td></tr>
 </table>
 
-<p>&nbsp;</p>
+<p> </p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
@@ -86,7 +86,7 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 <a href="entries/Program-Conflict-Analysis.shtml">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</a>
 <br>Author:
 <a href="http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/">Peter Lammich</a>
-and <a href="http://wwwmath.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a>
+and <a href="http://wwwmath.uni-muenster.de/u/mmo/">Markus Müller-Olm</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -100,7 +100,7 @@ and <a href="http://wwwmath.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a>
 2007-11-06:
 <a href="entries/MuchAdoAboutTwo.shtml">Much Ado About Two</a>
 <br>Author:
-<a href="http://www4.in.tum.de/~boehmes/">Sascha B&ouml;hme</a>
+<a href="http://www4.in.tum.de/~boehmes/">Sascha Böhme</a>
 </td></tr>
 
 <tr><td class="entry">

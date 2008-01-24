@@ -37,7 +37,7 @@
     <tr><td class="datahead">Author:</td>
 <td class="data">
 <!-- Author: --><a
-href="http://www.in.tum.de/">Tobias Nipkow</a>
+href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
 </td></tr>		
     
 	<tr><td class="datahead">Submission date:</td>
@@ -110,6 +110,6 @@ The formalization makes heavy use of locales and is therefore highly modular.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-01-11 15:22:31 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-01-24 08:07:53 $, $Revision: 1.1 
 $</div></body>
 </html>
