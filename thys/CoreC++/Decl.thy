@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Decl.thy,v 1.8 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Decl.thy,v 1.9 2008-01-28 21:28:45 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -13,7 +13,7 @@ theory Decl imports Expr begin
 
 types
   fdecl    = "vname \<times> ty"                        -- "field declaration"
-  method = "ty list \<times> ty \<times> (vname list \<times> expr)"    -- "arg.\ types, return type, params, body"
+  method = "ty list \<times> ty \<times> (vname list \<times> expr)"    -- {* arg.\ types, return type, params, body *}
   mdecl = "mname \<times> method"                         -- "method declaration"
   "class" = "base list \<times> fdecl list \<times> mdecl list"  -- "class = superclasses, fields, methods"
   cdecl = "cname \<times> class"                        -- "classa declaration"
