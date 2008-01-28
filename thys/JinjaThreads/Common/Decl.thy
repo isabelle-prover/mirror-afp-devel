@@ -11,7 +11,7 @@ theory Decl imports Type begin
 types 
   fdecl    = "vname \<times> ty"        -- "field declaration"
 
-  'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg.\ types, return type, body"
+  'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- {* method = name, arg.\ types, return type, body *}
 
   'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
 
