@@ -55,9 +55,10 @@ submission.
 
 <!--#set var="name" value="Example-Submission" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -90,6 +91,6 @@ submission.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-11-26 21:36:54 $, $Revision: 1.9 $</div>
+<div align="right" class="date">$Date: 2008-02-13 15:21:06 $, $Revision: 1.10 $</div>
 </body>
 </html>

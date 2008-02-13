@@ -65,12 +65,12 @@ language.
 <p> </p>
 
 <!-- entry directory name: -->
-<!--#set var="name" value="HOL-Complex/Integration" -->
+<!--#set var="name" value="Integration" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
-<!--#set var="tar" value="../release/afp-Integration-current.tar.gz" -->
+<!--#set var="doc" value="../browser_info/current/HOL/HOL-Complex/${name}/document.pdf" -->
+<!--#set var="outline" value="../browser_info/current/HOL/HOL-Complex/${name}/outline.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL/HOL-Complex/${name}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
   <tbody>
@@ -101,6 +101,6 @@ language.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-11-26 21:36:54 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-02-13 15:21:06 $, $Revision: 1.1 
 $</div></body>
 </html>
