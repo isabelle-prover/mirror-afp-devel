@@ -110,7 +110,7 @@ lemma diff_zero_eq:"n = (0::nat) \<Longrightarrow> m = m - n"
 by simp
 
 lemma nat_not_le:"\<not>(m::nat) \<le> n \<Longrightarrow> n < m"
-by (simp add:le_def)
+by (simp add: not_le)
 
 lemma less_Suc_le1:"x < n \<Longrightarrow> Suc x \<le> n"
 by simp
@@ -1175,7 +1175,7 @@ apply auto
 done
 
 lemma nat_not_le_less:"(\<not> (n::nat) \<le> m) = (m < n)"
-by (simp add:le_def)
+by (simp add: not_le)
 
 lemma self_le:"(n::nat) \<le> n"
 apply simp
@@ -1265,12 +1265,7 @@ lemma Nset_nset:"{i. i \<le> (Suc (n + m))} = {i. i \<le> n} \<union>
 apply (rule equalityI)
  apply (rule subsetI)
  apply (simp add:nset_def)
- apply (case_tac "x \<le> n", simp)
- apply (simp add:le_def[of _ "n"])
-apply (rule subsetI)
- apply (simp add:nset_def)
- apply (erule disjE, simp)
- apply simp
+  apply (auto simp add: nset_def)
 done
 
 lemma Nset_nset_1:"\<lbrakk>0 < n; i < n\<rbrakk> \<Longrightarrow> {j. j \<le> n} = {j. j \<le> i} \<union> 
@@ -1330,9 +1325,9 @@ primrec
 
 lemma nasc_seq_mem:"\<lbrakk>(a::nat) \<in> A; \<not> (\<exists>m. m\<in>A \<and> (\<forall>x\<in>A. x \<le> m))\<rbrakk> \<Longrightarrow>
                         (nasc_seq A a n) \<in> A"
-apply (induct_tac n)
- apply (simp, simp, simp add:le_def,
-        subgoal_tac "\<exists>x\<in>A. (nasc_seq A a n) < x") prefer 2 apply blast
+apply (induct n)
+apply (simp_all add: not_le)
+apply (subgoal_tac "\<exists>x\<in>A. (nasc_seq A a n) < x") prefer 2 apply blast
  apply (thin_tac "\<forall>m. m \<in> A \<longrightarrow> (\<exists>x\<in>A. m < x)",
         rule someI2_ex, blast, simp)
 done
@@ -1341,7 +1336,7 @@ lemma nasc_seqn:"\<lbrakk>(a::nat) \<in> A; \<not> (\<exists>m. m\<in>A \<and> (
                                (nasc_seq A a n) < (nasc_seq A a (Suc n))"
 apply (simp,
        frule nasc_seq_mem [of "a" "A" "n"], simp) 
-apply (simp add:le_def,
+apply (simp add: not_le,
        subgoal_tac "\<exists>x\<in>A. (nasc_seq A a n) < x") prefer 2 apply simp
  apply (thin_tac "\<forall>m. m \<in> A \<longrightarrow> (\<exists>x\<in>A. m < x)",
         rule someI2_ex, blast, simp)
@@ -1527,10 +1522,10 @@ apply (rule univar_func_test, rule ballI)
 apply (simp add:jointfun_def)
 apply (rule conjI)
 apply (rule impI, simp add:funcset_mem)
-apply (rule impI, simp add:le_def) 
+apply (rule impI, simp add: not_less [symmetric])
 apply (frule_tac x = n and n = x in less_Suc_le1)
  apply (thin_tac "n < x")
- apply (simp add:nat_not_le_less[THEN sym, of "Suc (n + m)"])
+ apply (simp add: nat_not_le_less [THEN sym, of "Suc (n + m)"])
  apply (frule_tac m = x and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
  apply simp
  apply (simp add:sliden_def funcset_mem)
@@ -1605,7 +1600,7 @@ apply (rule univar_func_test)
 apply (rule impI)
   apply (simp add:sliden_def)
   apply (thin_tac "f \<in> {i. i \<le> n} \<rightarrow> A")
-  apply (simp add:le_def[of _ "n"])
+  apply (simp add: not_less [symmetric, of _ "n"])
   apply (frule_tac x = n and n = x in less_Suc_le1)
   apply (frule_tac m = x and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
   apply simp
@@ -1640,8 +1635,7 @@ apply auto
   apply (subgoal_tac "g xa = g (sliden (Suc n) (slide (Suc n) xa))")
   apply blast
   apply (simp add:slide_def sliden_def)
- apply (subst le_def, simp)
- apply (rule ballI, simp add:nset_def)
+  apply (auto simp add: nset_def)
 done
 
 lemma im_jointfun:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow> A; g \<in> {j. j \<le> m} \<rightarrow> B\<rbrakk> \<Longrightarrow> 
@@ -1782,7 +1776,8 @@ ndec_seq_Suc:"ndec_seq A a (Suc n) =
 lemma ndec_seq_mem:"\<lbrakk>a \<in> (A::nat set); \<not> (\<exists>m. m\<in>A \<and> (\<forall>x\<in>A. m \<le> x))\<rbrakk> \<Longrightarrow>
                         (ndec_seq A a n) \<in> A"
 apply (induct_tac n)
- apply simp apply simp  apply (simp add:le_def)
+ apply simp apply simp
+ apply (simp add: not_less [symmetric])
 apply (subgoal_tac "\<exists>x\<in>A. x < (ndec_seq A a n)") prefer 2 apply blast
  apply (thin_tac "\<forall>m. m \<in> A \<longrightarrow> (\<exists>x\<in>A. x < m)")
  apply (rule someI2_ex) apply blast
@@ -1793,7 +1788,7 @@ lemma ndec_seqn:"\<lbrakk>a \<in> (A::nat set);\<not> (\<exists>m. m\<in>A \<and
                        (ndec_seq A a (Suc n)) < (ndec_seq A a n)"
  apply (frule ndec_seq_mem [of "a" "A" "n"], assumption+)
  apply simp
- apply (simp add:le_def)
+ apply (simp add: not_less [symmetric])
  apply (subgoal_tac "\<exists>x\<in>A. x < (ndec_seq A a n)") prefer 2 apply simp
  apply (thin_tac "\<forall>m. m \<in> A \<longrightarrow> (\<exists>x\<in>A. x < m)")
 apply (rule someI2_ex) apply blast

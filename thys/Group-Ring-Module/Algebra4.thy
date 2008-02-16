@@ -5841,7 +5841,7 @@ apply (rule impI, rule allI, rule impI)
 apply (case_tac "l \<le> n")
  apply (cut_tac n = n in Nset_Suc, blast)
  apply (cut_tac m = l and n = "Suc n" in Nat.le_anti_sym, assumption)
- apply (simp add:le_def)
+ apply (simp add: not_less)
  apply simp
  apply (rule ring_tOp_closed, simp)
  apply (cut_tac n = n in Nset_Suc, blast)

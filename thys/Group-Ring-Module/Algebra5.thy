@@ -861,7 +861,7 @@ apply (rule conjI)
  apply (case_tac "i \<le> n", simp)
  apply (simp add:carr_prodag_def [of "{i. i \<le> n}" _])
  apply simp apply (thin_tac "g \<in> carr_prodag {i. i \<le> n} B")
- apply (simp add:Nat.le_def[of _ n],
+ apply (simp add: not_less [symmetric, of _ n],
         frule_tac n = i in Suc_leI[of n],
         frule_tac m = i and n = "Suc n" in Nat.le_anti_sym, assumption+, simp)
  apply (simp add:carr_prodag_def compose_def slide_def sliden_def)

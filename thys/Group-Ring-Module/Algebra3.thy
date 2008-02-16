@@ -2708,7 +2708,7 @@ apply (rule allI, rule impI)
  apply (rule_tac l = la and j = "Suc la" in d_gchainTr2[of n f],
         simp+)
  apply (simp add:jointfun_def)
- apply (cut_tac m = "Suc la" and n = n in Nat.le_def, simp)
+ apply (cut_tac y = "Suc la" and x = n in not_less [symmetric], simp)
  apply (frule_tac m = n and n = "Suc la" in Suc_leI,
         thin_tac "n < Suc la", simp)
  apply (case_tac "la = n", simp add:sliden_def)
@@ -4233,7 +4233,7 @@ done
 
 lemma div_Tr2:"\<lbrakk>(0::nat) < r; 0 < s; l < s * r\<rbrakk> \<Longrightarrow> l div s \<le> r - Suc 0"
 apply (rule contrapos_pp, simp+)
-apply (simp add:Nat.le_def [of "l div s" "r - Suc 0"])
+apply (simp add: not_less [symmetric, of "l div s" "r - Suc 0"])
 apply (frule Suc_leI [of "r - Suc 0" "l div s"])
 apply simp
 apply (frule less_imp_le [of "l" "s * r"])
@@ -4395,7 +4395,7 @@ apply (simp add:inj_on_def [of _ "{i. i \<le> (r * s)}"])
  apply (simp only: rtos_rs_Tr1) 
  apply (frule sym, thin_tac "r * s = rtos r s y", simp)
  apply (simp add:mult_commute[of "s" "r"])
- apply (simp add:Nat.le_def[of "r * s" "r * s - Suc 0"])
+ apply (simp add: not_less [symmetric, of "r * s" "r * s - Suc 0"])
 
 apply (frule mult_less_mono2[of "0" "s" "r"],
        simp only:nat_mult_commute, simp only:mult_0_right,
@@ -4404,7 +4404,7 @@ apply (frule mult_less_mono2[of "0" "s" "r"],
         apply (simp add: rtos_rs_Tr1)
  apply (frule_tac l = x in rtos_hom1[of "r" "s"], assumption+)       
        apply (simp add:mult_commute[of "s" "r"])
-        apply (simp add:Nat.le_def[of "r * s" "r * s - Suc 0"])
+        apply (simp add: not_less [symmetric, of "r * s" "r * s - Suc 0"])
  
  apply (cut_tac x = y in Nset_pre[of _ "r * s - Suc 0"], simp+)
  apply (frule rtos_inj[of "r" "s"], assumption+)
@@ -4661,7 +4661,8 @@ apply (frule rfn_compseries_iMTr3[of "r" "s" "f" "r" "h"], assumption+,
  apply (frule_tac l = a and j = "Suc (a div s) * s" in d_gchainTr2[of "r * s" 
        "h"], assumption+)
  apply (frule_tac i = a in rtos_hom0[of "r" "s"], assumption+)
- apply (rule less_le_diff, simp add:less_def)
+ apply (rule less_le_diff)
+ apply simp
  apply (frule_tac m = "a div s" and n = r in Nat.less_imp_le,
         frule_tac a = "a div s" in forall_spec, assumption,
         frule_tac a = "Suc (a div s)" in forall_spec)
