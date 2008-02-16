@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Instance.thy
-   ID:        $Id: Instance.thy,v 1.7 2007-10-03 19:09:51 makarius Exp $
+   ID:        $Id: Instance.thy,v 1.8 2008-02-16 18:22:39 fhaftmann Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -92,7 +92,7 @@ lemma subst_to_scheme_inverse:
     subst_to_scheme (%k. if n <= k then BVar (k - n) else FVar k)  
       (bound_typ_inst (%k. TVar (k + n)) sch) = sch"
   apply (induct sch)
-    apply (simp add: le_def)
+    apply (simp add: not_le)
    apply (simp add: le_add2 diff_add_inverse2)
   apply simp
   done

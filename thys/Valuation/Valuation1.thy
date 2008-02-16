@@ -326,7 +326,7 @@ apply (rule contrapos_pp, simp+)
 done
 
 lemma neg_zle:"\<not> (z::int) \<le> z' \<Longrightarrow> z' < z"
-apply (simp add:le_def)
+apply (simp add: not_le)
 done
 
 lemma nset_m_m:"nset m m = {m}"
