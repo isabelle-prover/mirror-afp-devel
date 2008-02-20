@@ -1,4 +1,4 @@
-(*  ID:         $Id: NBE.thy,v 1.2 2008-02-19 15:23:40 lsf37 Exp $
+(*  ID:         $Id: NBE.thy,v 1.3 2008-02-20 13:33:47 nipkow Exp $
     Author:     Klaus Aehlig, Tobias Nipkow
     Normalization by Evaluation
 *)
@@ -8,6 +8,12 @@ theory NBE imports Main begin
 ML"Syntax.ambiguity_level := 1000000"
 
 declare Let_def[simp]
+
+(* still needed for termination proofs: *)
+lemma [simp]: "x \<in> set vs \<Longrightarrow> size x < Suc (list_size size vs)"
+by (induct vs) auto
+lemma [simp]:"x \<in> set vs \<Longrightarrow> size x < Suc (size v + list_size size vs)"
+by (induct vs) auto
 (*>*)
 section "Terms"
 
@@ -35,16 +41,6 @@ text{* Lambda-terms: *}
 
 datatype tm = C cname | V vname | \<Lambda> tm | At tm tm (infix "\<bullet>" 100)
             | "term" ml   -- {*ML function \texttt{term}*}
-
-text{* Only needed for Isabelle2007: *}
-lemma ls1[simp]: "x \<in> set vs \<Longrightarrow> size x < Suc (size v + ml_list_size1 vs)"
-by (induct vs) auto
-lemma ls2[simp]: "x \<in> set vs \<Longrightarrow> size x < Suc (ml_list_size2 vs)"
-by (induct vs) auto
-lemma ls3[simp]:"x \<in> set vs \<Longrightarrow> size x < Suc (ml_list_size3 vs)"
-by (induct vs) auto
-lemma ls4[simp]: "x \<in> set vs \<Longrightarrow> size x < Suc (size v + ml_list_size4 vs)"
-by (induct vs) auto
 
 locale Vars =
  fixes r s t:: tm
