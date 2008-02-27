@@ -11,19 +11,9 @@ begin
 
 text {* Proof of Fermat's last theorem for the case $n=4$: $$\forall x,y,z:~x^4 + y^4 = z^4 \Longrightarrow xyz=0.$$ *}
 
-lemma even_eq_two_dvd: "even (r::nat) = (2 dvd r)"
-  apply safe
-  apply (simp only: even_nat_equiv_def2, arith)
-  apply (auto simp add: even_def dvd_eq_mod_eq_0)
-done
+lemma even_eq_two_dvd: "even (r::nat) = (2 dvd r)" by presburger
 
-lemma nat_power2_add: "((a::nat)+b)^2 = a^2 + b^2 + 2*a*b"
-proof -
-  have "(a+b)^2 = (a+b)*(a+b)" by (rule power2_eq_square)
-  also have "\<dots> = a^2 + 2*(a*b) + b^2" 
-    by (simp only: add_mult_distrib add_mult_distrib2 mult_commute power2_eq_square)
-  finally show ?thesis by simp
-qed
+lemma nat_power2_add: "((a::nat)+b)^2 = a^2 + b^2 + 2*a*b" by algebra
 (* 
 NB: this lemma is quite slow, maybe use more steps *)
 lemma nat_power2_diff: "a \<ge> (b::nat) \<Longrightarrow> (a-b)^2 = a^2 + b^2 - 2*a*b"
@@ -169,12 +159,12 @@ proof -
   -- "now $p := (s+r)/2$ and $q := (s-r)/2$ is our solution"
   have rs_odd: "odd r \<and> odd s"
   proof (auto dest: ccontr)
-    assume "even r" hence "2 dvd r" by (simp only: even_eq_two_dvd )
+    assume "even r" hence "2 dvd r"by presburger
     with r have  "2 dvd (c-b)" by (simp only: power2_eq_square dvd_mult)
     hence "even (c-b)" by (simp only: even_eq_two_dvd)
     with factors_odd show False by simp
   next
-    assume "even s" hence "2 dvd s" by (simp only: even_eq_two_dvd)
+    assume "even s" hence "2 dvd s" by presburger
     with s have "2 dvd (c+b)" by (simp only: power2_eq_square dvd_mult)
     hence "even (c+b)" by (simp only: even_eq_two_dvd)
     with factors_odd show False by auto
@@ -185,7 +175,7 @@ proof -
   with m have m2: "s = r + m" by simp
   have "even m" 
   proof (rule ccontr)
-    assume "odd m" with rs_odd and m2 show False by auto
+    assume "odd m" with rs_odd and m2 show False by presburger 
   qed
   hence "2 dvd m" by (simp only: even_eq_two_dvd)
   then obtain q where "m = 2*q" by (auto simp add: dvd_def)
