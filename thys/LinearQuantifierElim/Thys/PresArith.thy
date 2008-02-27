@@ -1,11 +1,11 @@
-(*  ID:         $Id: PresArith.thy,v 1.2 2008-01-11 15:22:17 lsf37 Exp $
+(*  ID:         $Id: PresArith.thy,v 1.3 2008-02-27 21:09:01 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
 header{* Presburger arithmetic *}
 
 theory PresArith
-imports GCD QE ListSpace
+imports GCD QE ListVector
 begin
 
 subsection{*Syntax*}
