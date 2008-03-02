@@ -1161,7 +1161,7 @@ lemma (in Module) od_fm_fun_Chain:"\<lbrakk>R module N; free_generator R M H;
       \<forall>a\<in>C. \<forall>b\<in>C. fst a \<subseteq> fst b \<or> fst b \<subseteq> fst a"
 apply (frule Order_od_fm_fun[of N H f], assumption+)
  apply (rule ballI)+
- apply (simp add:Chain_def, erule conjE, simp add:Torder_def, erule conjE,
+ apply (simp add:Algebra2.Chain_def, erule conjE, simp add:Torder_def, erule conjE,
         simp add:Torder_axioms_def)
  apply (simp add:Order.Iod_carrier)
  apply (cut_tac p = a in PairE_lemma, (erule exE)+,
@@ -1178,7 +1178,7 @@ lemma (in Module) od_fm_fun_inPr0:"\<lbrakk>R module N; free_generator R M H;
        f \<in> H \<rightarrow> carrier N; Chain (od_fm_fun R M N f H) C; C \<noteq> {};
        \<exists>b. (y, b) \<in> C; z \<in> y\<rbrakk>  \<Longrightarrow> z \<in> fgs R M (\<Union>{a. \<exists>b. (a, b) \<in> C})"
 apply (frule Un_C_fgs_sub[of N H f C], assumption+)
- apply (simp add:Chain_def od_fm_fun_def, assumption) 
+ apply (simp add:Algebra2.Chain_def od_fm_fun_def, assumption) 
  apply (simp add:od_fm_fun_Chain)
  apply (rule_tac subsetD[of "\<Union>{a. \<exists>b. (a, b) \<in> C}" 
                      "fgs R M (\<Union>{a. \<exists>b. (a, b) \<in> C})" z], assumption+)
@@ -1192,14 +1192,14 @@ lemma (in Module) od_fm_fun_indPr1:" \<lbrakk>R module N; free_generator R M H;
          (\<exists>a b. (a, b) \<in> C \<and> x \<in> fgs R M a \<and> y = b x)) \<in> fsps R M N f H"
 apply (simp add:fsps_def fsp_def, rule conjI)
  apply (rule fsps_chain_bound1[of N H f C], assumption+)
- apply (simp add:od_fm_fun_def Chain_def)
+ apply (simp add:od_fm_fun_def Algebra2.Chain_def)
  apply (simp add:od_fm_fun_Chain, assumption)
 apply (rule conjI)
  apply (rule allI, rule impI)
  apply (rule ballI)
  apply (simp add:od_fm_fun_inPr0[of N H f C])
  apply (frule fsps_chain_bound2[of N H f C], assumption+,
-        simp add:Chain_def od_fm_fun_def, assumption)
+        simp add:Algebra2.Chain_def od_fm_fun_def, assumption)
  apply (simp add:od_fm_fun_Chain) 
  apply (drule_tac b = z in forball_spec1)
   apply (simp, blast) 

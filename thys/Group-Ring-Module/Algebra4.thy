@@ -25,7 +25,7 @@
  **)   
 
 theory Algebra4
-imports Binomial Zorn Algebra3
+imports Algebra3 Binomial Zorn
 begin
 
 (*<*)hide const ring(*>*)
