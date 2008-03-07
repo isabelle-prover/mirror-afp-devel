@@ -67,6 +67,20 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2008-02-29:
+<a href="entries/BDD.shtml">BDD Normalisation</a>
+<br>Veronika Ortner and <a
+href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
+</td></tr>
+
+<tr><td class="entry">
+2008-02-29:
+<a href="entries/Simpl.shtml">A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</a>
+<br>Author:
+<a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
+</td></tr>
+
+<tr><td class="entry">
 2008-02-18
 <a href="entries/NormByEval.shtml">Normalization by Evaluation</a>
 <br>Author:

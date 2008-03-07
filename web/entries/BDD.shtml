@@ -24,31 +24,34 @@
 <p> </p>
 
 <!-- begin entry data: -->
-<h1><!-- Title: -->???</h1>
+<h1><!-- Title: -->BDD Normalisation</h1>
 <p> </p>
 
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
     <td class="data" width="80%">
-<!-- Title: -->???
+<!-- Title: -->BDD-Normalisation
     </td></tr>
 		
     <tr><td class="datahead">Author:</td>
 <td class="data">
-<!-- Author: --><a
-href="???">???</a>
+<!-- Author: -->Veronika Ortner and <a
+href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
 </td></tr>		
     
 	<tr><td class="datahead">Submission date:</td>
 	
-<td class="data"><!-- Submission date: -->????-??-??</td></tr>
+<td class="data"><!-- Submission date: -->2008-02-29</td></tr>
 
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"> 
 <!-- Abstract: -->	
-???
-
+We present the verification of the normalisation of a binary decision
+diagram (BDD). The normalisation follows the original algorithm
+presented by Bryant in 1986 and transforms an ordered BDD in a
+reduced, ordered and shared BDD. The verification is based on Hoare
+logics.
    </td></tr>
 
 <!-- uncomment for entries significantly updated in devel version:
@@ -68,9 +71,9 @@ href="???">???</a>
 <p> </p>
 
 <!-- entry directory name: -->
-<!--#set var="name" value="???" -->
+<!--#set var="name" value="BDD" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/Simpl/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

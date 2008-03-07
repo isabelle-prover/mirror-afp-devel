@@ -24,31 +24,42 @@
 <p> </p>
 
 <!-- begin entry data: -->
-<h1><!-- Title: -->???</h1>
+<h1><!-- Title: -->A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment</h1>
 <p> </p>
 
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
     <td class="data" width="80%">
-<!-- Title: -->???
+<!-- Title: -->A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment
     </td></tr>
 		
     <tr><td class="datahead">Author:</td>
 <td class="data">
 <!-- Author: --><a
-href="???">???</a>
+href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
 </td></tr>		
     
 	<tr><td class="datahead">Submission date:</td>
 	
-<td class="data"><!-- Submission date: -->????-??-??</td></tr>
+<td class="data"><!-- Submission date: -->2008-02-29</td></tr>
 
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"> 
 <!-- Abstract: -->	
-???
+We present the theory of Simpl, a sequential imperative programming language.
+We introduce its syntax, its semantics (big and small-step operational
+semantics) and Hoare logics for both partial as well as total correctness.
+We prove soundness and completeness of the Hoare logic. We
+integrate and automate the Hoare logic in Isabelle/HOL to obtain a
+practically usable verification environment for imperative programs.
 
+Simpl is independent of a concrete programming language but expressive
+enough to cover all common language features: mutually recursive
+procedures, abrupt termination and exceptions, runtime faults, local
+and global variables, pointers and heap, expressions with side
+effects, pointers to procedures, partial application and closures,
+dynamic method invocation and also unbounded nondeterminism.
    </td></tr>
 
 <!-- uncomment for entries significantly updated in devel version:
@@ -68,12 +79,11 @@ href="???">???</a>
 <p> </p>
 
 <!-- entry directory name: -->
-<!--#set var="name" value="???" -->
+<!--#set var="name" value="Simpl" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
-<!--#set var="doc" value="${binfo}/document.pdf" -->
-<!--#set var="outline" value="${binfo}/outline.pdf" -->
-<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
+<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">

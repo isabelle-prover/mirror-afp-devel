@@ -1,3 +1,9 @@
+(*  ID:          $Id: DPC0Expressions.thy,v 1.3 2008-03-07 15:23:43 lsf37 Exp $
+    Author:      Norbert Schirmer
+    Maintainer:  Norbert Schirmer, norbert.schirmer at web de
+    License:     LGPL
+*)
+
 header {* SHORTENED! Parallel expressions in DPC/Hoare. *}
 
 theory DPC0Expressions imports Main begin

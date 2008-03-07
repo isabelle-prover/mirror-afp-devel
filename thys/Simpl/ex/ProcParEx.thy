@@ -1,3 +1,9 @@
+(*  ID:          $Id: ProcParEx.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+    Author:      Norbert Schirmer
+    Maintainer:  Norbert Schirmer, norbert.schirmer at web de
+    License:     LGPL
+*)
+
 (*  Title:      ProcParEx.thy
     Author:     Norbert Schirmer, TU Muenchen
 

@@ -1,3 +1,9 @@
+(*  ID:          $Id: HoarePartialDef.thy,v 1.3 2008-03-07 15:23:43 lsf37 Exp $
+    Author:      Norbert Schirmer
+    Maintainer:  Norbert Schirmer, norbert.schirmer at web de
+    License:     LGPL
+*)
+
 (*  Title:      HoarePartialDef.thy
     Author:     Norbert Schirmer, TU Muenchen
 
