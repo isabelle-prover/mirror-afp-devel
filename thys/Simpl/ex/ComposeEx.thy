@@ -208,8 +208,6 @@ lemmas RevStr_modifies' =
          OF \<N>_ok, of "''Rev''", simplified \<N>_def Rev_clique_def,simplified]
 end
 
-lemma K_record_simp: "K_record c = (\<lambda>x. c)"
-  by (rule ext) auto
 
 lemma (in RevStr_impl) RevStr_modifies:
 "\<forall>\<sigma>. \<Gamma>\<turnstile>\<^bsub>/UNIV \<^esub>{\<sigma>} \<acute>str :== PROC RevStr(\<acute>str) 
@@ -218,9 +216,9 @@ apply (rule allI)
 apply (rule HoarePartialProps.ConseqMGT [OF RevStr_modifies'])
 apply (clarsimp simp add: 
   lift\<^isub>s_def mex_def meq_def
-  project_str_def inject_str_def project_globals_str_def inject_globals_str_def
-  K_record_simp)
+  project_str_def inject_str_def project_globals_str_def inject_globals_str_def)
 apply blast
 done
 
 end
+
