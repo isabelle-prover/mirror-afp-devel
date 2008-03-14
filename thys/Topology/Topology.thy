@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.9 2007-07-11 10:21:45 stefanberghofer Exp $
+    ID:         $Id: Topology.thy,v 1.10 2008-03-14 21:46:26 nipkow Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -1419,7 +1419,7 @@ lemma filter_chain_lemma:
 proof-
   from C_chain have C_subset_FF[dest]: "\<And> x. x\<in>C \<Longrightarrow> x \<in> ?FF" and
     C_ordered: "\<forall> A \<in> C. \<forall> B \<in> C. A \<subseteq> B \<or> B \<subseteq> A"
-    by (auto simp: chain_def)
+    by (auto simp: chain_def chain_subset_def)
 
   show ?thesis
   proof    
