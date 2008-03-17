@@ -1,5 +1,5 @@
 
-(* $Id: Prover.thy,v 1.14 2008-03-17 20:52:35 makarius Exp $ *)
+(* $Id: Prover.thy,v 1.15 2008-03-17 22:01:38 makarius Exp $ *)
 
 theory Prover imports Main Infinite_Set begin
 
@@ -464,7 +464,7 @@ lemma sound_FAll: "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==
     -- "note that we can avoid maxscoping at the cost of instantiating the hyp twice- an additional time for M"
 
     -- "different proof, instantiating quantifier twice, avoiding maxscoping"
-lemma sound_FAll: "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==> Svalid (FAll f#s)"
+lemma sound_FAll': "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==> Svalid (FAll f#s)"
   apply(simp add: Svalid_def del: SEval.simps) 
   apply(rule allI) 
   apply(rule allI)

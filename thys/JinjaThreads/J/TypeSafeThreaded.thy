@@ -32,7 +32,7 @@ abbreviation
 where
   "sconf_subject_ts_ok \<equiv> \<lambda>P. ts_inv (\<lambda>ET (e, x) m. sconf_subject_ok P ET e m x)"
 
-lemma red_sconf_subject_newthread:
+lemma red_sconf_subject_newthread_aux:
   assumes wf: "wf_J_prog P"
   and red: "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   and ta: "NewThread t'' (e'', x'') (hp s') \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
@@ -75,7 +75,7 @@ lemma red_sconf_subject_newthread:
      NewThread t'' (e'', x'') h' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>;
      P,E,h \<turnstile> e : T; wf_J_prog P; P,E \<turnstile> (h, x) \<surd> \<rbrakk> 
   \<Longrightarrow> \<exists>E T. P,E,h' \<turnstile> e'' : T \<and> P,h' \<turnstile> x'' (:\<le>) E"
-apply(frule red_sconf_subject_newthread)
+apply(frule red_sconf_subject_newthread_aux)
     apply(assumption)
    apply(fastsimp)
   apply(fastsimp)
