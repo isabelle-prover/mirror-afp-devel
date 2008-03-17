@@ -5247,7 +5247,7 @@ apply (rule Union_least[of "c" "carrier R"])
 apply (rule ballI)+
  apply simp 
  apply (erule bexE)+
-apply (simp add:chain_def)
+apply (simp add: chain_def chain_subset_def)
  apply (frule conjunct1) apply (frule conjunct2)
  apply (thin_tac "c \<subseteq> {I. ideal R I \<and> I \<subset> carrier R} \<and> (\<forall>x\<in>c. \<forall>y\<in>c. x \<subseteq> y \<or> y \<subseteq> x)")
  apply (frule_tac b = X in forball_spec1, assumption,
@@ -6667,7 +6667,7 @@ apply (rule contrapos_pp, simp+)
         thin_tac "c \<subseteq> {I. ideal R I \<and> S \<inter> I = {}}")
  apply (simp, blast)
 
-apply (simp add:chain_def, erule conjE)
+apply (simp add:chain_def chain_subset_def, erule conjE)
  apply (rule subsetI)
  apply (frule_tac c = x and A = c and B = "{I. ideal R I \<and> S \<inter> I = {}}" in 
                   subsetD, assumption+,
