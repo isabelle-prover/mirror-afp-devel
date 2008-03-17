@@ -1,5 +1,5 @@
 (*  Title:      A state based hotel key card system
-    ID:         $Id: State.thy,v 1.4 2008-03-17 20:52:34 makarius Exp $
+    ID:         $Id: State.thy,v 1.5 2008-03-17 22:01:45 makarius Exp $
     Author:     Tobias Nipkow, TU Muenchen
 *)
 
@@ -303,7 +303,7 @@ proof induct
     qed
   next
     assume "roomk s r1 = k1"
-    from prems show ?case by auto
+    with enter_room show ?case by auto
   qed
 qed auto
 
