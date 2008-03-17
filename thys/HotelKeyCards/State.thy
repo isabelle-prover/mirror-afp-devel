@@ -1,5 +1,5 @@
 (*  Title:      A state based hotel key card system
-    ID:         $Id: State.thy,v 1.3 2007-07-22 20:44:49 makarius Exp $
+    ID:         $Id: State.thy,v 1.4 2008-03-17 20:52:34 makarius Exp $
     Author:     Tobias Nipkow, TU Muenchen
 *)
 
@@ -259,7 +259,7 @@ lemma safe_roomk_currk[simp]:
 by (induct set: reach) auto
 
 
-lemma safe_only_owner_enter_normal[simp]:
+lemma safe_only_owner_enter_normal_aux[simp]:
  "\<lbrakk> s : reach; safe s r; (k',roomk s r) \<in> cards s g \<rbrakk> \<Longrightarrow> owns s r = Some g"
 by (induct set: reach) (auto)
 

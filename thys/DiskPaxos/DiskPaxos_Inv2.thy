@@ -1,5 +1,5 @@
 (*  Title:       Proving the Correctness of Disk Paxos
-    ID:          $Id: DiskPaxos_Inv2.thy,v 1.9 2007-10-23 20:52:12 nipkow Exp $
+    ID:          $Id: DiskPaxos_Inv2.thy,v 1.10 2008-03-17 20:52:34 makarius Exp $
     Author:      Mauro J. Jaskelioff, Stephan Merz, 2005
     Maintainer:  Mauro J. Jaskelioff <mauro at fceia.unr.edu.ar>
 *)
@@ -390,7 +390,7 @@ lemma HEndPhase0_dblock_allBlocksRead:
 using act HEndPhase0_some[OF act inv1]
     by(auto simp add: EndPhase0_def)
 
-lemma HNextPart_allInput:
+lemma HNextPart_allInput_or_NotAnInput:
   assumes act: "HNextPart s s'"
   and inv2a: "Inv2a_innermost s p (dblock s' p)"
   shows "inp (dblock s' p) \<in> allInput s' \<union> {NotAnInput}"
@@ -468,7 +468,7 @@ proof -
   have inv2_dblock: "Inv2a_innermost s p (dblock s' p)" by auto 
   with act
   have "inp (dblock s' p) \<in> allInput s' \<union> {NotAnInput}"
-    by(auto dest: HNextPart_allInput)
+    by(auto dest: HNextPart_allInput_or_NotAnInput)
   with inv2_dblock
   show ?thesis
     by(auto simp add: Inv2a_innermost_def)
