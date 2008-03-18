@@ -2441,7 +2441,7 @@ apply (simp add:mult_ant_def inf_ant_def minus_ant_def ant_def,
 apply (simp add:zag_t_def)
 done
 
-lemma a_neg_m[simp]:"m < 0 \<Longrightarrow> (-\<infinity>) * (ant m) = \<infinity>"
+lemma neg_a_m[simp]:"m < 0 \<Longrightarrow> (-\<infinity>) * (ant m) = \<infinity>"
 apply (simp add:mult_ant_def inf_ant_def minus_ant_def ant_def,
       cut_tac ant_inf_in_Ainteg,
       cut_tac ant_minf_in_Ainteg,
@@ -2963,7 +2963,7 @@ by (cut_tac mem_ant[of "x"], erule disjE, simp,
        erule disjE, erule exE, simp add:asprod_mult, simp)
 (** atode asprod_1_x to awaseru **)
 
-lemma agsprod_assoc:"m *\<^sub>a (n *\<^sub>a (ant x)) = (m * n) *\<^sub>a (ant x)"
+lemma agsprod_assoc_a:"m *\<^sub>a (n *\<^sub>a (ant x)) = (m * n) *\<^sub>a (ant x)"
 apply (simp add:asprod_mult)
 done
 
@@ -4732,11 +4732,6 @@ by (simp add:an_def, subst aless_zless[of "int n" "int m"], simp)
 lemma apos_natpos:"\<lbrakk>a \<noteq> \<infinity>; 0 \<le> a\<rbrakk> \<Longrightarrow> 0 \<le> na a"  
 by (cut_tac ale_nat_le[of "0" "na a"], simp add:na_def an_def) 
   
-lemma apos_neq_minf:"0 \<le> a \<Longrightarrow> a \<noteq> -\<infinity>"
-by (rule contrapos_pp, simp+,
-       cut_tac minf_le_any[of "0"],
-       frule ale_antisym[of "0" "-\<infinity>"], assumption+, simp)
-
 lemma apos_tna_pos:"\<lbrakk>n \<noteq> \<infinity>; 0 \<le> n\<rbrakk> \<Longrightarrow> 0 \<le> tna n"
 by (subst tna_0[THEN sym], 
        subst ale_zle[THEN sym, of "tna 0" "tna n"],

@@ -576,22 +576,6 @@ apply simp
  apply (simp add:ODordTr1[of "Y" "D"])
 done
 
-lemma ODnum_subTr:"\<lbrakk>Worder D; x = ordinal_number D; y \<in>ODnums; y \<sqsubset> x; Y \<in> y\<rbrakk>
-                   \<Longrightarrow> \<exists>c\<in>carrier D. ord_equiv Y (Iod D (segment D c))"
-apply simp
- apply (thin_tac "x = ordinal_number D")
- apply (simp add:ODnums_def, erule exE, erule conjE, simp,
-        thin_tac "y = ordinal_number S")
- apply (frule_tac D = S and X = Y in mem_ordinal_number_Worder, 
-                                                      assumption+)
- apply (frule_tac D = Y and X = "ordinal_number S" in ordinal_numberTr4,
-        simp add:ODnods_def ODnums_def, blast, simp)
- apply simp
- apply (thin_tac "Y \<in> ordinal_number Y",
-        thin_tac "ordinal_number S = ordinal_number Y")
- apply (simp add:ODordTr1[of "Y" "D"])
-done
-
 lemma ODnum_segmentTr:"\<lbrakk>Worder D; x = ordinal_number D; y \<in>ODnums; y \<sqsubset> x\<rbrakk> \<Longrightarrow> 
         \<exists>c. c\<in>carrier D \<and> (\<forall>Y\<in>y. ord_equiv Y (Iod D (segment D c)))"
 apply (frule ordinal_numberTr1_1[of "y"], erule exE, erule conjE,
@@ -4712,7 +4696,7 @@ apply (simp add:set_rcs_def)
 apply blast
 done
 
-lemma (in Group) rcsTr2:"\<lbrakk>G \<guillemotright> H; a \<in> carrier G; b \<in> carrier G\<rbrakk> \<Longrightarrow>
+lemma (in Group) rcsTr0:"\<lbrakk>G \<guillemotright> H; a \<in> carrier G; b \<in> carrier G\<rbrakk> \<Longrightarrow>
                          H \<bullet> (a \<cdot> b) \<in> set_rcs G H"
 apply (rule rcs_in_set_rcs [of "H" "a \<cdot> b"], assumption)
 apply (simp add:mult_closed)
@@ -4730,7 +4714,7 @@ apply (frule_tac a = a in a_in_rcs[of "H"], assumption+, simp)
 apply (simp add:nonempty)
 done
 
-lemma (in Group) rcs_tool1:"\<lbrakk>G \<guillemotright> H; a \<in> carrier G; b \<in> carrier G;
+lemma (in Group) rcs_tool0:"\<lbrakk>G \<guillemotright> H; a \<in> carrier G; b \<in> carrier G;
       a \<cdot> (\<rho> b) \<in> H\<rbrakk> \<Longrightarrow> b \<cdot> (\<rho> a) \<in> H"
 by (frule sg_i_closed [of "H" "a \<cdot> ( \<rho> b)"], assumption+,
        frule i_closed[of "b"], simp add:i_ab iop_i_i)
@@ -4779,7 +4763,7 @@ apply (frule_tac a = "h \<cdot> a" in r_mult_eqn[of _ "x" "\<rho> b"], assumptio
        thin_tac "h \<cdot> a = x",
        simp add:tassoc[of _ "a" "\<rho> b"],
        frule_tac x = h in sg_mult_closed[of "H" _ "a \<cdot> (\<rho> b)"], assumption+,
-       rule rcs_tool1[of "H" "b" "a"], assumption+)
+       rule rcs_tool0[of "H" "b" "a"], assumption+)
 apply simp
 done
 
@@ -4958,10 +4942,6 @@ done
 
 lemma (in Group) nsg_subset_elem:"\<lbrakk>G \<triangleright> H; h \<in> H\<rbrakk> \<Longrightarrow> h \<in> carrier G"
 by (insert nsg_sg[of "H"], simp add:sg_subset_elem)
-
-lemma (in Group) nsg_subset:"G \<triangleright> N \<Longrightarrow> N \<subseteq> carrier G"
-by (rule subsetI,
-       rule nsg_subset_elem[of "N"], assumption+)
 
 lemma (in Group) nsg_l_rcs_eq:"\<lbrakk>G \<triangleright> N; a \<in> carrier G\<rbrakk> \<Longrightarrow> a \<diamondsuit> N = N \<bullet> a"
 by (simp add: nsg_def)
