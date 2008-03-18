@@ -3295,16 +3295,6 @@ apply (rule impI) apply (erule conjE)
         simp add:funcset_mem subsetD, simp)
 done
 
-lemma (in Module) l_comb_mem_linear_span:"\<lbrakk>ideal R A; H \<subseteq> carrier M;
-      s \<in> {j. j \<le> (n::nat)} \<rightarrow> A; f \<in> {j. j \<le> n} \<rightarrow>  H\<rbrakk> \<Longrightarrow>
-       l_comb R M n s f \<in> linear_span R M A H"
-apply (case_tac "H = {}", simp add:linear_span_def)
- apply (frule_tac x = 0 in funcset_mem[of f "{j. j \<le> n}" "{}"], simp)
- apply blast
-apply (simp add:linear_span_def)
-apply blast
-done
-
 lemma (in Module) l_comb_sc:"\<lbrakk>ideal R A; H \<subseteq> carrier M; r \<in> carrier R; 
       s \<in> {j. j \<le> (n::nat)} \<rightarrow> A;  g \<in> {j. j \<le> n} \<rightarrow>  H\<rbrakk> \<Longrightarrow>
 r \<cdot>\<^sub>s (nsum M (\<lambda>k. (s k) \<cdot>\<^sub>s (g k)) n) = nsum M (\<lambda>k. r \<cdot>\<^sub>s ((s k) \<cdot>\<^sub>s (g k))) n" 
