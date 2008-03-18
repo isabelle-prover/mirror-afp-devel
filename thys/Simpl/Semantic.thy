@@ -1,4 +1,4 @@
-(*  ID:          $Id: Semantic.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: Semantic.thy,v 1.4 2008-03-18 13:49:02 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -266,7 +266,7 @@ lemma Abrupt_end: assumes exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rig
   shows "t=Abrupt s'"
 using exec s by (induct) auto
 
-lemma exec_Call_body: 
+lemma exec_Call_body_aux: 
   "\<Gamma> p=Some bdy \<Longrightarrow> 
    \<Gamma>\<turnstile>\<langle>Call p,s\<rangle> \<Rightarrow> t = \<Gamma>\<turnstile>\<langle>bdy,s\<rangle> \<Rightarrow> t"
 apply (rule)
@@ -280,7 +280,7 @@ lemma exec_Call_body':
   "p \<in> dom \<Gamma> \<Longrightarrow> 
   \<Gamma>\<turnstile>\<langle>Call p,s\<rangle> \<Rightarrow> t = \<Gamma>\<turnstile>\<langle>the (\<Gamma> p),s\<rangle> \<Rightarrow> t"
   apply clarsimp
-  by (rule exec_Call_body)
+  by (rule exec_Call_body_aux)
 
 
 lemma exec_block_Normal_elim [consumes 1]:
@@ -1187,7 +1187,7 @@ proof (rule final_notinI)
   qed
 qed
 
-lemma Seq_NoFaultStuckD2: 
+lemma Seq_NoFaultStuckD2': 
   assumes noabort: "\<Gamma>\<turnstile>\<langle>Seq c1 c2,s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault `  F)"
   shows "\<forall>t. \<Gamma>\<turnstile>\<langle>c1,s\<rangle> \<Rightarrow> t \<longrightarrow> t\<notin> ({Stuck} \<union> Fault `  F) \<longrightarrow> 
              \<Gamma>\<turnstile>\<langle>c2,t\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault `  F)"

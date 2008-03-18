@@ -3924,7 +3924,7 @@ apply (cut_tac p = c in PairE_lemma, (erule exE)+,
 apply (simp add:polyn_add)
 done
 
-lemma (in PolynRg) polyn_minus:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow> 
+lemma (in PolynRg) polyn_minus_nsum:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow> 
        -\<^sub>a (polyn_expr R X k c) = nsum R (\<lambda>j. ((-\<^sub>a\<^bsub>S\<^esub> ((snd c) j)) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>))) k"
 apply (cut_tac subring,
        frule subring_Ring[of S],
@@ -3973,7 +3973,7 @@ lemma (in PolynRg) polyn_minus:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk>
        -\<^sub>a (polyn_expr R X k c) = 
                     polyn_expr R X k (fst c, (\<lambda>j. (-\<^sub>a\<^bsub>S\<^esub> ((snd c) j))))"
 apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp)
- apply (subst polyn_minus, assumption+, simp, simp add:polyn_expr_def)
+ apply (subst polyn_minus_nsum, assumption+, simp, simp add:polyn_expr_def)
 done
 
 constdefs

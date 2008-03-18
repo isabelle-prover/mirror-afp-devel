@@ -1,4 +1,4 @@
-(*  ID:          $Id: VcgExSP.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: VcgExSP.thy,v 1.4 2008-03-18 13:49:04 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -528,7 +528,7 @@ the verification condition generator encounters a procedure call it tries to
 of the procedure in the context.  
 *}
 
-lemma (in Fac_impl) Fac_spec:
+lemma (in Fac_impl) Fac_spec1:
   shows "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>{\<sigma>} \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac \<^bsup>\<sigma>\<^esup>N\<rbrace>"
   apply (hoare_rule HoarePartial.ProcRec1)
   apply vcg_step
@@ -541,7 +541,7 @@ lemma (in Fac_impl) Fac_spec:
 
 
 text {* Here some Isar style version of the proof *}
-lemma (in Fac_impl) Fac_spec:
+lemma (in Fac_impl) Fac_spec2:
   
   shows "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>{\<sigma>} \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac \<^bsup>\<sigma>\<^esup>N\<rbrace>"
 proof (hoare_rule HoarePartial.ProcRec1)
@@ -563,7 +563,7 @@ the previous proof we can use the casual term abbreviations of the Isar
 language.
 *}
 
-lemma (in Fac_impl) Fac_spec:
+lemma (in Fac_impl) Fac_spec3:
   shows "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>{\<sigma>} \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac \<^bsup>\<sigma>\<^esup>N\<rbrace>" 
   (is "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>(?Pre \<sigma>) ?Fac (?Post \<sigma>)")
 proof (hoare_rule HoarePartial.ProcRec1)
@@ -588,7 +588,7 @@ case it can be a good idea to introduce a new variable for the augmented
 context.
 *}
 
-lemma (in Fac_impl) Fac_spec:
+lemma (in Fac_impl) Fac_spec4:
   shows "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>{\<sigma>} \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac \<^bsup>\<sigma>\<^esup>N\<rbrace>" 
   (is "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>(?Pre \<sigma>) ?Fac (?Post \<sigma>)")
 proof (hoare_rule HoarePartial.ProcRec1)
@@ -693,8 +693,12 @@ lemma (in Fac_impl) shows
   CALL Fac(\<acute>N) \<ggreater> n. CALL Fac(\<acute>N) \<ggreater> m. 
   \<acute>R :== n + m
   \<lbrace>\<acute>R = fac \<acute>N + fac \<acute>N\<rbrace>"
-apply vcg
-done
+proof -
+  note Fac_spec = Fac_spec4
+  show ?thesis
+    apply vcg
+    done
+qed
 
 (* R := Fac (N) + Fac (M) *)
 lemma (in Fac_impl) shows 
@@ -702,8 +706,13 @@ lemma (in Fac_impl) shows
   CALL Fac(\<acute>N) \<ggreater> n. CALL Fac(n) \<ggreater> m. 
   \<acute>R :== m
   \<lbrace>\<acute>R = fac (fac \<acute>N)\<rbrace>"
-apply vcg
-done
+proof -
+  note Fac_spec = Fac_spec4
+  show ?thesis
+    apply vcg
+    done
+qed
+
 
 subsection {* Global Variables and Heap *}
 

@@ -1,4 +1,4 @@
-(*  ID:          $Id: UserGuide.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: UserGuide.thy,v 1.4 2008-03-18 13:49:03 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -602,7 +602,7 @@ in @{term Null}.
 *}
 
 
-lemma (in append_impl) append_spec: 
+lemma (in append_impl) append_spec1: 
 shows "\<forall>\<sigma> Ps Qs. 
   \<Gamma>\<turnstile> \<lbrace>\<sigma>. List \<acute>p \<acute>next Ps \<and>  List \<acute>q \<acute>next Qs \<and> set Ps \<inter> set Qs = {}\<rbrace>  
        \<acute>p :== PROC append(\<acute>p,\<acute>q) 
@@ -652,15 +652,18 @@ the @{term "cont"} part of the heap.
 *}
 lemma (in append_impl)
 shows "\<Gamma>\<turnstile> \<lbrace>\<acute>cont=c\<rbrace> \<acute>p :== CALL append(Null,Null) \<lbrace>\<acute>cont=c\<rbrace>" 
-apply vcg
-  txt {* @{subgoals [display]} *}
-  txt {* Only focus on the very last line: @{term conta} is the heap component 
-   after the procedure call,
-   and @{term cont} the heap component before the procedure call. Since
-   we have not added the modified clause we do not know that they have
-   to be equal. 
-  *}
-oops
+proof -
+  note append_spec = append_spec1
+  show ?thesis
+    apply vcg
+    txt {* @{subgoals [display]} *}
+    txt {* Only focus on the very last line: @{term conta} is the heap component 
+      after the procedure call,
+      and @{term cont} the heap component before the procedure call. Since
+      we have not added the modified clause we do not know that they have
+      to be equal. 
+      *}
+    oops
 
 text {*
 We now add the frame condition.
@@ -703,13 +706,17 @@ text {* Now that we have proven the frame-condition, it is available within
 the locale @{text "append_impl"} and the @{text "vcg"} exploits it.*}
 
 lemma (in append_impl) 
-shows "\<Gamma>\<turnstile> \<lbrace>\<acute>cont=c\<rbrace> \<acute>p :== CALL append(Null,Null) \<lbrace>\<acute>cont=c\<rbrace>" 
-apply vcg
-  txt {* @{subgoals [display]} *}
-  txt {* With a modifies clause present we know that no change to @{term cont}
-   has occurred. 
-  *}
-by simp
+shows "\<Gamma>\<turnstile> \<lbrace>\<acute>cont=c\<rbrace> \<acute>p :== CALL append(Null,Null) \<lbrace>\<acute>cont=c\<rbrace>"
+proof -
+  note append_spec = append_spec1
+  show ?thesis
+    apply vcg
+    txt {* @{subgoals [display]} *}
+    txt {* With a modifies clause present we know that no change to @{term cont}
+      has occurred. 
+      *}
+    by simp
+qed
  
 
 text {*
@@ -807,7 +814,7 @@ the recursive call.
 *}
 by simp
 
-lemma (in append_impl) append_spec:
+lemma (in append_impl) append_spec2:
 shows "\<forall>\<sigma> Ps Qs. \<Gamma>\<turnstile>\<^sub>t 
   \<lbrace>\<sigma>. List \<acute>p \<acute>next Ps \<and>  List \<acute>q \<acute>next Qs \<and> set Ps \<inter> set Qs = {}\<rbrace>  
        \<acute>p :== PROC append(\<acute>p,\<acute>q) 

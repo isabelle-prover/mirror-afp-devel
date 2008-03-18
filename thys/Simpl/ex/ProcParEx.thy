@@ -1,4 +1,4 @@
-(*  ID:          $Id: ProcParEx.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: ProcParEx.thy,v 1.4 2008-03-18 13:49:04 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -122,7 +122,7 @@ procedures
   \<lbrace>\<acute>k = mx leq \<^bsup>\<sigma>\<^esup>n \<^bsup>\<sigma>\<^esup>m\<rbrace>"
 
 
-lemma (in Max_impl ) Max_spec: 
+lemma (in Max_impl ) Max_spec1: 
 shows
 "\<forall>\<sigma> leq. \<Gamma>\<turnstile> 
   ({\<sigma>} \<inter> \<lbrace> (\<forall>\<tau>. \<Gamma>\<turnstile>{\<tau>} \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) \<lbrace>\<acute>b = (leq \<^bsup>\<tau>\<^esup>n \<^bsup>\<tau>\<^esup>m)\<rbrace>) \<and> 
@@ -153,7 +153,7 @@ proof -
  qed
 
 
-lemma (in Max_impl) Max_spec: 
+lemma (in Max_impl) Max_spec2: 
 shows
 "\<forall>\<sigma> leq. \<Gamma>\<turnstile> 
   ({\<sigma>} \<inter> \<lbrace>(\<forall>\<tau>. \<Gamma>\<turnstile> {\<tau>} \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) \<lbrace>\<acute>b = (leq \<^bsup>\<tau>\<^esup>n \<^bsup>\<tau>\<^esup>m)\<rbrace>) \<and> 
@@ -169,7 +169,7 @@ apply vcg
 apply (clarsimp simp add: mx_def)
 done
 
-lemma (in Max_impl) Max_spec: 
+lemma (in Max_impl) Max_spec3: 
 shows
 "\<forall>n m leq. \<Gamma>\<turnstile> 
   (\<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace>  \<inter> 
@@ -186,7 +186,7 @@ apply vcg
 apply (clarsimp simp add: mx_def)
 done
 
-lemma (in Max_impl) Max_spec: 
+lemma (in Max_impl) Max_spec4: 
 shows
 "\<forall>n m leq. \<Gamma>\<turnstile> 
   (\<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace> \<inter> \<lbrace>\<forall>\<tau>. \<Gamma>\<turnstile> {\<tau>} \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) \<lbrace>\<acute>b = (leq \<^bsup>\<tau>\<^esup>n \<^bsup>\<tau>\<^esup>m)\<rbrace>\<rbrace>)
@@ -218,7 +218,7 @@ proof -
 qed
 
 
-lemma (in Max_impl) Max_spec:
+lemma (in Max_impl) Max_spec5:
 shows
 "\<forall>n m leq. \<Gamma>\<turnstile> 
   (\<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace> \<inter> \<lbrace>\<forall>n' m'. \<Gamma>\<turnstile> \<lbrace>\<acute>n=n' \<and> \<acute>m=m'\<rbrace> \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) \<lbrace>\<acute>b = (leq n' m')\<rbrace>\<rbrace>)
@@ -245,15 +245,15 @@ locale Max_test' = Max_impl + LEQ_impl
 lemma (in Max_test') 
   shows
   "\<forall>n m. \<Gamma>\<turnstile> \<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace> \<acute>k :== CALL Max(LEQ_'proc,\<acute>n,\<acute>m) \<lbrace>\<acute>k = mx (op \<le>) n m\<rbrace>"
-apply vcg
-apply (rule_tac x="op \<le>" in exI)
-apply clarsimp
-thm LEQ_spec
-apply (rule LEQ_spec [rule_format])
-done
+proof -
+  note Max_spec = Max_spec5
+  show ?thesis
+    apply vcg
+    apply (rule_tac x="op \<le>" in exI)
+    apply clarsimp
+    thm LEQ_spec
+    apply (rule LEQ_spec [rule_format])
+    done
+qed
 
 end
-
-
-
-

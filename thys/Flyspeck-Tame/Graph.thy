@@ -1,4 +1,4 @@
-(*  ID:         $Id: Graph.thy,v 1.3 2007-08-20 16:10:21 fhaftmann Exp $
+(*  ID:         $Id: Graph.thy,v 1.4 2008-03-18 13:49:01 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -242,7 +242,7 @@ is implemeted by the function @{text nextFace}
 *}
 
 constdefs nextFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*) ("_ \<bullet>")(*>*)
-(*<*) "p \<bullet> \<equiv> \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
+(*<*) nextFace_def_aux: "p \<bullet> \<equiv> \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
    (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem fs (hd fs) f))"  (*>*)
 (*<*) lemma nextFace_def: (*>*)
@@ -250,11 +250,11 @@ constdefs nextFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> fa
   "(g,v) \<bullet> f \<equiv> (let fs = (facesAt g v) in
    (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem fs (hd fs) f))"
-(*<*) by (simp add: nextFace_def) (*>*)
+(*<*) by (simp add: nextFace_def_aux) (*>*)
 
 (* Unused: *)
 constdefs prevFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*) ("_\<^bsup>-1\<^esup> \<bullet>")(*>*)
-(*<*) "p\<^bsup>-1\<^esup> \<bullet> \<equiv>
+(*<*) prevFace_def_aux: "p\<^bsup>-1\<^esup> \<bullet> \<equiv>
      \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
     (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem (rev fs) (last fs) f))"  (*>*)
@@ -263,7 +263,7 @@ constdefs prevFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> fa
   "(g,v)\<^bsup>-1\<^esup> \<bullet> f \<equiv> (let fs = (facesAt g v) in
    (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem (rev fs) (last fs) f))"
-(*<*) by (simp add: prevFace_def) (*>*)
+(*<*) by (simp add: prevFace_def_aux) (*>*)
 
 
 (* precondition a b in f *)

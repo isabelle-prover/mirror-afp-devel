@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.10 2007-10-23 20:52:13 nipkow Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.11 2008-03-18 13:49:01 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -539,7 +539,7 @@ proof -
   qed
 qed
 
-lemma is_nextElem_rotate1:
+lemma is_nextElem_rotate1_aux:
   "is_nextElem (rotate m ls) x y \<Longrightarrow> is_nextElem ls x y"
 proof -
   assume is_nextElem: "is_nextElem (rotate m ls) x y"
@@ -578,7 +578,7 @@ proof -
 qed
 
 lemma is_nextElem_rotate_eq[simp]: "is_nextElem (rotate m ls) x y = is_nextElem ls x y"
-  apply (auto dest: is_nextElem_rotate1) apply (rule is_nextElem_rotate1)
+  apply (auto dest: is_nextElem_rotate1_aux) apply (rule is_nextElem_rotate1_aux)
   apply (subgoal_tac   "is_nextElem (rotate (length ls - m mod length ls) (rotate m ls)) x y")
   apply assumption by simp
 

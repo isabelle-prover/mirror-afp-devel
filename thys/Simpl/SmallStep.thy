@@ -1,4 +1,4 @@
-(*  ID:          $Id: SmallStep.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: SmallStep.thy,v 1.4 2008-03-18 13:49:03 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -630,7 +630,7 @@ qed simp_all
 
 lemma step_extend:
   assumes step: "\<Gamma>\<turnstile>(c,s) \<rightarrow> (c', s')"
-  shows exec_rest: "\<And>t. \<Gamma>\<turnstile>\<langle>c',s'\<rangle> \<Rightarrow> t \<Longrightarrow> \<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> t"
+  shows "\<And>t. \<Gamma>\<turnstile>\<langle>c',s'\<rangle> \<Rightarrow> t \<Longrightarrow> \<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> t"
 using step 
 proof (induct)
   case Basic thus ?case
@@ -940,7 +940,7 @@ qed
 
 theorem steps_Skip_impl_exec:
   assumes steps: "\<Gamma>\<turnstile>(c,s) \<rightarrow>\<^sup>* (Skip,t)"
-  shows exec_rest: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> t"
+  shows "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> t"
 using steps
 proof (induct rule: converse_rtranclp_induct2 [case_names Refl Trans])
   case Refl thus ?case
@@ -954,7 +954,7 @@ qed
 
 theorem steps_Throw_impl_exec:
   assumes steps: "\<Gamma>\<turnstile>(c,s) \<rightarrow>\<^sup>* (Throw,Normal t)"
-  shows exec_rest: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> Abrupt t"
+  shows "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> Abrupt t"
 using steps
 proof (induct rule: converse_rtranclp_induct2 [case_names Refl Trans])
   case Refl thus ?case
@@ -1093,7 +1093,7 @@ next
 qed
 
 ML_setup {*
-  bind_thm ("trancl_induct2", split_rule
+  bind_thm ("tranclp_induct2", split_rule
     (read_instantiate [("a","(aa,ab)"), ("b","(ba,bb)")] (thm "tranclp_induct")));
 *}
 
@@ -1101,7 +1101,7 @@ lemma steps_preserves_termination':
   assumes steps: "\<Gamma>\<turnstile>(c,s) \<rightarrow>\<^sup>+ (c',s')"
   shows "\<Gamma>\<turnstile>c\<down>s \<Longrightarrow> \<Gamma>\<turnstile>c'\<down>s'"
 using steps
-proof (induct rule: trancl_induct2 [consumes 1, case_names Step Trans])
+proof (induct rule: tranclp_induct2 [consumes 1, case_names Step Trans])
   case Step thus ?case by (blast intro: step_preserves_termination)
 next
   case Trans
