@@ -1,4 +1,4 @@
-(*  ID:         $Id: QElin_inf.thy,v 1.4 2008-03-17 22:01:53 makarius Exp $
+(*  ID:         $Id: QElin_inf.thy,v 1.5 2008-03-18 02:32:34 makarius Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -154,13 +154,13 @@ lemma I_subst_peps:
   "nqfree f \<Longrightarrow> R.I (subst\<^isub>+ f (r,cs)) xs \<Longrightarrow>
   (\<exists>leps>r+\<langle>cs,xs\<rangle>. \<forall>x. r+\<langle>cs,xs\<rangle> < x \<and> x \<le> leps \<longrightarrow> R.I f (x#xs))"
 proof(induct f)
-  case TrueF thus ?case by simp (metis Transcendental.less_add_one)
+  case TrueF thus ?case by simp (metis ordered_semidom_class.less_add_one)
 next
   case (Atom a)
   show ?case
   proof (cases "((r,cs),a)" rule: asubst_peps.cases)
     case (1 r cs s d ds)
-    { assume "d=0" hence ?thesis using Atom 1 by auto(metis Transcendental.less_add_one) }
+    { assume "d=0" hence ?thesis using Atom 1 by auto(metis ordered_semidom_class.less_add_one) }
     moreover
     { assume "d<0"
       with Atom 1 have "r + \<langle>cs,xs\<rangle> < (s - \<langle>ds,xs\<rangle>)/d" (is "?a < ?b")
@@ -179,7 +179,8 @@ next
 	assume "?a = ?b"
 	thus ?thesis using `d>0` Atom 1
 	  by(simp add:field_simps iprod_left_add_distrib iprod_assoc)
-	    (metis Transcendental.less_add_one real_mult_commute real_mult_less_mono2 ring_class.ring_simps(12))
+	    (metis ordered_semidom_class.less_add_one real_mult_commute
+	      real_mult_less_mono2 ring_class.ring_simps(12))
       next
 	assume "?a < ?b"
 	{ fix x assume "r+\<langle>cs,xs\<rangle> < x \<and> x \<le> r+\<langle>cs,xs\<rangle> + 1"
@@ -192,7 +193,7 @@ next
 	  by(force simp: iprod_left_add_distrib iprod_assoc)
       qed
     } ultimately show ?thesis by (metis less_linear)
-  qed (insert Atom, auto split:split_if_asm intro: Transcendental.less_add_one)
+  qed (insert Atom, auto split:split_if_asm intro: ordered_semidom_class.less_add_one)
 next
   case And thus ?case
     apply clarsimp
