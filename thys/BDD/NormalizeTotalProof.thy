@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: NormalizeTotalProof.thy,v 1.2 2008-03-07 15:23:43 lsf37 Exp $
+    ID:          $Id: NormalizeTotalProof.thy,v 1.3 2008-03-18 13:48:33 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -31,7 +31,6 @@ header {* Proof of Procedure Normalize *}
 theory NormalizeTotalProof imports LevellistProof ShareReduceRepListProof 
                         RepointProof begin
 
-ML {*bind_thm ("True_implies_equals",True_implies_equals)*}
 lemma  (in Normalize_impl) Normalize_modifies:
   shows
    "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>p :== PROC Normalize (\<acute>p) 

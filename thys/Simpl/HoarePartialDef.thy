@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartialDef.thy,v 1.3 2008-03-07 15:23:43 lsf37 Exp $
+(*  ID:          $Id: HoarePartialDef.thy,v 1.4 2008-03-18 13:48:34 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -225,11 +225,6 @@ proof (rule validI)
   qed
 qed
 
-lemma cvalidD: 
- "\<lbrakk>\<Gamma>,\<Theta>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A;
-   \<forall>(P,p,Q,A)\<in>\<Theta>. \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P (Call p) Q,A;\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow> t;s \<in> P;t \<notin> Fault ` F\<rbrakk> 
-  \<Longrightarrow> t \<in> Normal ` Q \<union> Abrupt ` A"
-  by (auto simp add: cvalid_def valid_def)
 
 subsection {* The Hoare Rules: @{text "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c Q,A"} *}
 

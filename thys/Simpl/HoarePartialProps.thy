@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartialProps.thy,v 1.3 2008-03-07 15:23:43 lsf37 Exp $
+(*  ID:          $Id: HoarePartialProps.thy,v 1.4 2008-03-18 13:48:34 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -481,43 +481,6 @@ lemma Seq_NoFaultStuckD2:
              \<Gamma>\<turnstile>\<langle>c2,t\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault `  F)"
 using noabort
 by (auto simp add: final_notin_def intro: exec_Seq')
-
-
-lemma Seq_NoFaultStuckD1: 
-  assumes noabort: "\<Gamma>\<turnstile>\<langle>Seq c1 c2,s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault `  F)"
-  shows "\<Gamma>\<turnstile>\<langle>c1,s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault `  F)"
-proof (rule final_notinI)
-  fix t
-  assume exec_c1: "\<Gamma>\<turnstile>\<langle>c1,s\<rangle> \<Rightarrow> t"
-  show "t \<notin> {Stuck} \<union> Fault `  F"
-  proof 
-    assume "t \<in> {Stuck} \<union> Fault `  F"
-    moreover
-    {
-      assume "t = Stuck"
-      with exec_c1
-      have "\<Gamma>\<turnstile>\<langle>Seq c1 c2,s\<rangle> \<Rightarrow> Stuck"
-	by (auto intro: exec_Seq')
-      with noabort have False
-	by (auto simp add: final_notin_def)
-      hence False ..
-    }
-    moreover 
-    {
-      assume "t \<in> Fault ` F"
-      then obtain f where 
-      t: "t=Fault f" and f: "f \<in> F"
-	by auto
-      from t exec_c1
-      have "\<Gamma>\<turnstile>\<langle>Seq c1 c2,s\<rangle> \<Rightarrow> Fault f"
-	by (auto intro: exec_Seq')
-      with noabort f have False
-	by (auto simp add: final_notin_def)
-      hence False ..
-    }
-    ultimately show False by auto
-  qed
-qed
 
 
 lemma MGT_implies_complete:

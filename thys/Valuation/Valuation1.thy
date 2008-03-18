@@ -291,9 +291,6 @@ by (frule zmult_zless_mono2[of "0" "a" "int m"], simp, simp)
 lemma  ant_int_na:"\<lbrakk>0 \<le> a; a \<noteq> \<infinity> \<rbrakk> \<Longrightarrow> ant (int (na a)) = a"
 by (frule an_na[of "a"], assumption, simp add:an_def) 
 
-lemma ant_int:"ant (int n) = an n" 
-by (simp add:an_def) 
-
 lemma zpos_nat:"0 \<le> (z::int) \<Longrightarrow> \<exists>n. z = int n"
 apply (subgoal_tac "z = int (nat z)")
 apply blast apply simp

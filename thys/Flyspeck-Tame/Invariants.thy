@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.13 2007-10-23 20:52:18 nipkow Exp $
+(*  ID:         $Id: Invariants.thy,v 1.14 2008-03-18 13:48:33 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -477,9 +477,6 @@ lemma distinct_replacefacesAt2_2:
   distinct ((replacefacesAt2 is olfF newFs Fss)! i)"
 apply  (cases "i \<in> set is")
  by (auto intro: distinct_replacefacesAt21 distinct_replacefacesAt22)
-
-lemma replacefacesAt2_length: "\<And> vs. |replacefacesAt2 nvs f' [f''] vs| = |vs|"
-by (induct nvs) simp_all
 
 lemma replacefacesAt2_nth1: "!!F. k \<notin> set ns \<Longrightarrow>
   (replacefacesAt2 ns oldf newfs F) ! k  =  F ! k"

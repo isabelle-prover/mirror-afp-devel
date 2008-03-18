@@ -1102,42 +1102,6 @@ done
 (*lemma (in PolynRg) deg_minus_eq:"\<lbrakk>ring R; integral_domain S; polyn_ring R S X; 
 p \<in> carrier R; p \<noteq> 0\<^sub>R\<rbrakk> \<Longrightarrow>   deg_n R S X (-\<^sub>R p) = deg_n R S X p" *)
 
-lemma (in PolynRg) deg_minus_eq:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk> \<Longrightarrow>  
-                    deg_n R S X (-\<^sub>a p) = deg_n R S X p"
-apply (cut_tac subring, 
-       cut_tac ring_is_ag,
-       frule subring_Ring)
-apply (cut_tac ring_is_ag)
- apply (frule s_cf_expr[of p], assumption, (erule conjE)+,
-        frule polyn_minus_m_cf[of "s_cf R S X p" "fst (s_cf R S X p)"], simp,
-        drule sym, simp)
- apply (frule_tac x = p in aGroup.ag_mOp_closed, assumption+,
-        frule m_cf_pol_coeff [of "s_cf R S X p"],
-        frule pol_deg_n[of "-\<^sub>a p" "m_cf S (s_cf R S X p)" 
-              "fst (s_cf R S X p)"], assumption,
-        simp add:m_cf_len, assumption+)
- apply (simp add:m_cf_def,
-        frule pol_coeff_mem[of "s_cf R S X p" "fst (s_cf R S X p)"], simp,
-        frule Ring.ring_is_ag[of S])
- apply (rule contrapos_pp, simp+)
- apply (frule aGroup.ag_inv_inv[THEN sym, 
-          of S "snd (s_cf R S X p) (fst (s_cf R S X p))"], assumption,
-        simp add:aGroup.ag_inv_zero)
- apply (drule sym, simp, simp add:s_cf_deg)
-done
-
-lemma (in PolynRg) deg_minus_eq1:"p \<in> carrier R \<Longrightarrow> 
-                       deg R S X (-\<^sub>a p) = deg R S X p"
-apply (cut_tac ring_is_ag)
-apply (case_tac "p = \<zero>\<^bsub>R\<^esub>")
-apply (simp add:aGroup.ag_inv_zero)
-apply (frule deg_minus_eq[of p], assumption+,
-       frule aGroup.ag_inv_inj[of "R" "p" "\<zero>"], assumption,
-       simp add:ring_zero, assumption, simp add:aGroup.ag_inv_zero)
-apply (frule aGroup.ag_mOp_closed[of R p], assumption,
-       simp add:deg_an)
-done
-
 lemma (in PolynRg) p_times_monomial_nonzero:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk> \<Longrightarrow>
                                                           (X^\<^bsup>R j\<^esup>) \<cdot>\<^sub>r p \<noteq> \<zero>"
 apply (cut_tac subring, frule subring_Ring)
