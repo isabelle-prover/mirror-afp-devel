@@ -534,7 +534,7 @@ lemma (in PolynRg) polyn_deg_add3:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero
 apply (case_tac "(deg_n R S X p) = (deg_n R S X q)",
        frule polyn_deg_add2[of "p" "q"], assumption+,
        simp)
-apply (cut_tac Nat.less_linear[of "deg_n R S X p" "deg_n R S X q"],
+apply (cut_tac less_linear[of "deg_n R S X p" "deg_n R S X q"],
        simp, thin_tac "deg_n R S X p \<noteq> deg_n R S X q",
        erule disjE, simp add:polyn_deg_add1,
        cut_tac ring_is_ag, simp add:aGroup.ag_pOp_commute[of "R" "p" "q"],
@@ -1594,7 +1594,7 @@ apply (cut_tac subring,
        frule PolynRg.subring[of A B Y],
        frule Ring.subring_Ring[of A B], assumption+)
 apply (simp add:erh_def)
-apply (cut_tac Nat.less_linear[of "fst c" "fst d"])
+apply (cut_tac less_linear[of "fst c" "fst d"])
 apply (erule disjE,
        frule pol_expr_unique3[of c d], assumption+, simp,
        thin_tac "polyn_expr R X (fst c) c = polyn_expr R X (fst d) d",
@@ -2039,7 +2039,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
 
  apply (rule conjI)
   apply (rule impI,
-         frule_tac m = j and n = "Suc (l + n)" in Nat.less_imp_le,
+         frule_tac x = j and y = "Suc (l + n)" in less_imp_le,
          frule_tac m = j and n = "Suc (l + n)" and l = "Suc n" in diff_le_mono,
          simp,
          frule_tac c = "(l, u)" and j = "j - Suc n" in pol_coeff_mem, simp,
@@ -2482,7 +2482,7 @@ apply (rule conjI)
    
    apply (case_tac "deg_n R S X a = deg_n R S X b",
           simp add:erHomTr1[of A B Y h])
-   apply (cut_tac n = "deg_n R S X a" and m = "deg_n R S X b" in Nat.less_linear,
+   apply (cut_tac y = "deg_n R S X a" and x = "deg_n R S X b" in less_linear,
           simp)
    apply (erule disjE)
    apply (subst aGroup.ag_pOp_commute, assumption+,
@@ -3372,17 +3372,17 @@ apply (subst P_mod_mod[THEN sym, of I "p \<plusminus> q"
 apply (subst add_cf_len, assumption+)
 apply (rule allI, rule impI)
 
-apply (cut_tac m = "fst (s_cf R S X p)" and n = "fst (s_cf R S X q)" in 
-       Nat.less_linear)
+apply (cut_tac x = "fst (s_cf R S X p)" and y = "fst (s_cf R S X q)" in 
+       less_linear)
 apply (erule disjE)
  apply (simp add:max_def, 
         subst add_cf_def, simp,
        (rule impI, 
         drule_tac a = j in forall_spec, assumption,
         drule_tac a = j in forall_spec1,
-        frule_tac i = j and j = "fst (s_cf R S X p)" and 
-           k = "fst (s_cf R S X q)" in Nat.le_less_trans, assumption+,
-        frule_tac m = j and n = "fst (s_cf R S X q)" in Nat.less_imp_le, simp))
+        frule_tac x = j and y = "fst (s_cf R S X p)" and 
+           z = "fst (s_cf R S X q)" in le_less_trans, assumption+,
+        frule_tac x = j and y = "fst (s_cf R S X q)" in less_imp_le, simp))
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 apply (erule disjE)
  apply (simp add:max_def, 
@@ -3395,9 +3395,9 @@ apply (erule disjE)
         subst add_cf_def, simp, rule impI,
         drule_tac a = j in forall_spec1, 
         drule_tac a = j in forall_spec, assumption,
-        frule_tac i = j and j = "fst (s_cf R S X q)" and 
-           k = "fst (s_cf R S X p)" in Nat.le_less_trans, assumption+,
-        frule_tac m = j and n = "fst (s_cf R S X p)" in Nat.less_imp_le, simp)
+        frule_tac x = j and y = "fst (s_cf R S X q)" and 
+           z = "fst (s_cf R S X p)" in le_less_trans, assumption+,
+        frule_tac x = j and y = "fst (s_cf R S X p)" in less_imp_le, simp)
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 done
 

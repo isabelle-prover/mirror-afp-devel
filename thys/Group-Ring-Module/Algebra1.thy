@@ -1289,9 +1289,9 @@ apply (rule equalityI)
          thin_tac "xb < Suc n", simp, blast)
  apply (rule subsetI, simp add:image_def, (erule exE)+, (erule conjE)+)
  apply (simp,
-        frule_tac i = xb and j = n and k = "Suc n" in Nat.le_less_trans,
+        frule_tac x = xb and y = n and z = "Suc n" in le_less_trans,
         simp,
-        frule_tac m = xb and n = "Suc n" in Nat.less_imp_le,
+        frule_tac x = xb and y = "Suc n" in less_imp_le,
          blast)
 done
 
@@ -1302,9 +1302,9 @@ apply (rule equalityI)
  apply (simp add:image_def,
         erule disjE, blast,
         erule exE, erule conjE,
-        frule_tac i = xa and j = n and k = "Suc n" in Nat.le_less_trans,
+        frule_tac x = xa and y = n and z = "Suc n" in le_less_trans,
         simp+,
-        frule_tac m = xa and n = "Suc n" in Nat.less_imp_le, blast)
+        frule_tac x = xa and y = "Suc n" in less_imp_le, blast)
  apply (rule subsetI,
         simp add:image_def,
         erule exE, simp, erule conjE,
@@ -1467,11 +1467,11 @@ apply (rule equalityI)
  apply (cut_tac x = xa and n = n in skip_im_Tr2_1[of i], simp+)
  
 apply (rule subsetI, simp, erule conjE)
- apply (cut_tac m = x and n = i in Nat.less_linear, simp)
+ apply (cut_tac x = x and y = i in less_linear, simp)
  apply (erule disjE)
  apply (simp add:image_def)
  apply (frule_tac x = x in skip_im_Tr1_2[of i n], assumption,
-        frule_tac i = x and j = i and k = "Suc n" in Nat.less_le_trans, 
+        frule_tac x = x and y = i and z = "Suc n" in less_le_trans, 
         assumption+,
         frule_tac m = x and n = "Suc n" in Suc_leI,
         simp only:Suc_le_mono,
@@ -1880,7 +1880,7 @@ apply (simp add:compose_def)
  apply (erule exE, (erule conjE)+)
  apply (case_tac "xa = i", simp,
         frule_tac c = x in subsetD[of "f i" "f j"], assumption+)
- apply (cut_tac Nat.less_linear[of i j], simp, erule disjE,
+ apply (cut_tac less_linear[of i j], simp, erule disjE,
         frule less_le_diff[of i j],
         cut_tac skip_im_Tr2_1[of i n "j - Suc 0"],
         simp, 
@@ -1892,17 +1892,17 @@ apply (simp add:compose_def)
         frule eq_elems_eq_val[THEN sym, of "skip i j" j f])
  apply (cut_tac a = x in eq_set_inc[of _ "f j" "f (skip i j)"],
               assumption+)
- apply (frule_tac i = j and j = i and k = "Suc n" in Nat.less_le_trans,
+ apply (frule_tac x = j and y = i and z = "Suc n" in less_le_trans,
         assumption+,
         frule Suc_less_le[of j n], blast)
- apply (cut_tac m = xa and n = i in Nat.less_linear, simp,
+ apply (cut_tac x = xa and y = i in less_linear, simp,
         erule disjE,
         frule_tac x = xa in skip_im_Tr1_2[of i n], assumption)
  apply (frule_tac x1 = "skip i xa" and y1 = xa and f1 = f in 
                   eq_elems_eq_val[THEN sym],
         frule_tac a = x and A = "f xa" and B = "f (skip i xa)" in eq_set_inc,
         assumption,
-        frule_tac i = xa and j = i and k = "Suc n" in Nat.less_le_trans,
+        frule_tac x = xa and y = i and z = "Suc n" in less_le_trans,
         assumption+,
         frule_tac x = xa and n = n in Suc_less_le, blast)
  apply (frule_tac x = i and n = xa in less_le_diff,
@@ -4536,7 +4536,7 @@ apply (simp add:image_def)
  apply (rule subsetI, simp)
  apply (erule disjE, blast) 
  apply (erule exE, erule conjE, simp,
-        frule_tac i = xa and j = n and k = "Suc n" in Nat.le_trans,
+        frule_tac i = xa and j = n and k = "Suc n" in le_trans,
         simp)
  apply blast
  apply (rule subsetI, simp, erule exE, erule conjE)
@@ -4559,7 +4559,7 @@ proof -
   apply (rule contrapos_pp, simp+)
   apply (simp add:nat_not_le_less)
   apply (frule_tac n = "f x" in Suc_leI[of n], thin_tac "n < (f x)")
-  apply (frule_tac m = "Suc n" and n = "f x" in Nat.le_anti_sym, assumption)
+  apply (frule_tac m = "Suc n" and n = "f x" in le_anti_sym, assumption)
   apply(unfold inj_on_def)
   apply (frule_tac b = x in forball_spec1, simp,
        thin_tac "\<forall>x\<in>{i. i \<le> Suc n}. \<forall>y\<in>{i. i \<le> Suc n}. f x = f y \<longrightarrow> x = y",
