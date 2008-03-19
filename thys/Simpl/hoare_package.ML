@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.3 2008-03-19 21:34:42 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.4 2008-03-19 23:23:42 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -2178,8 +2178,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
     val pname' = unsuffix proc_deco pname;
     val spec = (case assoc_string (asms,pname) of
                  SOME s => SOME s
-               | NONE =>  try (ProofContext.get_thm ctxt) 
-                                     (Facts.Named (suffix spec_sfx pname', NONE)));
+               | NONE =>  try (ProofContext.get_thm ctxt) (suffix spec_sfx pname'));
 
     fun dest_UN (Const ("UNION",_)$Const ("UNIV",_)$t) = SOME t
       | dest_UN _ = NONE;
@@ -2516,7 +2515,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
        
   val test_modify_in_ctxt_tac =
     let val mname = (suffix modifysfx pname');
-        val mspec = (case try (ProofContext.get_thm ctxt) (Facts.Named (mname, NONE)) of
+        val mspec = (case try (ProofContext.get_thm ctxt) mname of
                       SOME s => SOME s
                      | NONE => (case assoc_string (asms,pname) of
                                  SOME s => if is_modifies_clause (concl_of s) 
@@ -2534,10 +2533,10 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
     end;
 
   fun inline_bdy_tac has_args i =
-    (case try (ProofContext.get_thm ctxt) (Facts.Named (suffix bodyP pname', NONE)) of
+    (case try (ProofContext.get_thm ctxt) (suffix bodyP pname') of
        NONE => no_tac
      | SOME impl =>
-        (case try (ProofContext.get_thm ctxt) (Facts.Named (suffix (body_def_sfx^"_def") pname', NONE)) of
+        (case try (ProofContext.get_thm ctxt) (suffix (body_def_sfx^"_def") pname') of
            NONE => no_tac
          | SOME bdy =>
             (tracing ("No specification found for procedure \"" ^ pname' ^
@@ -2785,7 +2784,7 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
     fun dest_lemAnno ctxt (Const ("Language.lem",_)$n$c) =
       let val x = NameSpace.base (dest_name n);
       in
-         (case try (ProofContext.get_thm ctxt) (Facts.Named (x, NONE)) of
+         (case try (ProofContext.get_thm ctxt) x of
 	    NONE => error ("No lemma: '" ^ x ^ "' found.")
           | SOME spec => (strip_qnt_vars "All" 
 			   (HOLogic.dest_Trueprop (Thm.concl_of spec)),spec))
@@ -3479,10 +3478,9 @@ fun proc_lookup_simp_tac ctxt i st =
           (* the$(Gamma$name) or the$(strip$Gamma$name) *)
     val pname = (unsuffix proc_deco (dest_string' name));
     val thms =  List.mapPartial I (map (try (ProofContext.get_thm ctxt))
-                            [Facts.Named (suffix bodyP pname, NONE),
-                             Facts.Named (suffix (body_def_sfx^"_def") pname, NONE),
-                             Facts.Named ((suffix procL pname)^"."^
-                                   (suffix (body_def_sfx^"_def") pname), NONE)]);
+                            [suffix bodyP pname,
+                             suffix (body_def_sfx^"_def") pname,
+                             suffix procL pname^"."^ (suffix (body_def_sfx^"_def") pname)]);
   in simp_tac (HOL_basic_ss addsimps thms@strip_simps@the_simps) i st end
   handle _ => all_tac st;
 
@@ -3492,7 +3490,7 @@ fun proc_lookup_in_dom_simp_tac ctxt i st =
         (* name : Gamma *)
     val pname = (unsuffix proc_deco (dest_string' name));
     val thms =  List.mapPartial I (map (try (ProofContext.get_thm ctxt))
-                               [Facts.Named (suffix bodyP pname, NONE)]);
+                               [suffix bodyP pname]);
   in simp_tac (HOL_basic_ss addsimps (lookup_Some_in_dom::dom_strip::thms)) i st end
   handle _ => all_tac st;
 
