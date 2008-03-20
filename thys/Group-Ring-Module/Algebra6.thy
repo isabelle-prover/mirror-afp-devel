@@ -1551,9 +1551,7 @@ done
 lemma (in PolynRg) pHom_memc:"\<lbrakk>PolynRg A B Y; f \<in> pHom R S X, A B Y; 
       pol_coeff S c\<rbrakk> \<Longrightarrow> 
       f (polyn_expr R X (fst c) c) = polyn_expr A Y (fst c) (cf_h f c)"
-apply (cut_tac p = c in PairE_lemma, (erule exE)+,
-       simp add:cf_h_def pHom_mem)
-done
+by (cases c) (simp add: cf_h_def pHom_mem)
 
 lemma (in PolynRg) pHom_mem1:"\<lbrakk>PolynRg A B Y; f \<in> pHom R S X, A B Y; 
        p \<in> carrier R\<rbrakk> \<Longrightarrow>  f p \<in> carrier A"
@@ -1715,9 +1713,10 @@ apply (cut_tac subring, frule subring_Ring,
        frule PolynRg.is_Ring[of A B Y],
        frule PolynRg.subring[of A B Y],
        frule Ring.subring_Ring[of A B], assumption)
-apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp,
-       thin_tac "c = (x, y)", rename_tac l u)
-
+apply (cases c)
+apply (simp only:)
+apply (rename_tac l u)
+apply (thin_tac "c = (l, u)")
 apply (induct_tac m) 
  apply ((rule allI)+, rule impI, (erule conjE)+, simp)
  apply (simp add:cf_h_polyn[of A B Y h])
@@ -2059,13 +2058,8 @@ lemma (in PolynRg) erH_multTr1:"\<lbrakk>PolynRg A B Y; h \<in> rHom S B;
     (polyn_expr R X (fst c) c) \<cdot>\<^sub>r (polyn_expr R X (fst d) d) = 
      polyn_expr R X ((fst c) + (fst d)) e \<rbrakk> \<Longrightarrow> 
  (polyn_expr A Y (fst c) (cf_h h c)) \<cdot>\<^sub>r\<^bsub>A\<^esub> (polyn_expr A Y (fst d) (cf_h h d))
-  =  (polyn_expr A Y (fst e) (cf_h h e))" 
-apply (cut_tac p = d in PairE_lemma, (erule exE)+, simp)
-apply (cut_tac p = e in PairE_lemma, (erule exE)+, simp)
-
-apply (rename_tac m f xa g)
-apply (simp add:erH_multTr)
-done
+  =  (polyn_expr A Y (fst e) (cf_h h e))"
+by (cases d, cases e) (simp add: erH_multTr)
 
 lemma (in PolynRg) erHomTr0:"\<lbrakk>PolynRg A B Y; h \<in> rHom S B; x \<in> carrier R\<rbrakk>
       \<Longrightarrow> erH R S X A B Y h (-\<^sub>a x) = -\<^sub>a\<^bsub>A\<^esub> (erH R S X A B Y h x)"
@@ -4699,10 +4693,10 @@ constdefs
   P_mod R S X (S \<diamondsuit>\<^sub>p (t^\<^bsup>S (Suc m)\<^esup>)) (f \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> ((fst gh1) \<cdot>\<^sub>r\<^bsub>R\<^esub> (snd gh1))))"
 
 lemma  cart_prod_fst:"x \<in> A \<times> B \<Longrightarrow> fst x \<in> A" 
-by (cut_tac p = x in PairE_lemma, (erule exE)+, simp)
+by auto
 
 lemma  cart_prod_snd:"x \<in> A \<times> B \<Longrightarrow> snd x \<in> B"
-by (cut_tac p = x in PairE_lemma, (erule exE)+, simp)
+by auto
 
 lemma cart_prod_split:"((x,y) \<in> A \<times> B) = (x \<in> A \<and> y \<in> B)"
 by auto
@@ -4731,12 +4725,12 @@ lemma (in PolynRg) P_mod_diffxxx3:"\<lbrakk>Idomain S; t \<in> carrier S; t \<no
                                                               deg R S X f) \<and>
         P_mod R S X (S \<diamondsuit>\<^sub>p (t^\<^bsup>S m\<^esup>)) ((snd gh) \<plusminus> -\<^sub>a (snd gh1)) \<and> 
         P_mod R S X (S \<diamondsuit>\<^sub>p (t^\<^bsup>S (Suc m)\<^esup>)) (f \<plusminus> (-\<^sub>a ((fst gh1) \<cdot>\<^sub>r (snd gh1))))"
-apply (cut_tac p = gh in PairE_lemma, (erule exE)+, simp del:npow_suc,
-       thin_tac "gh = (x, y)", rename_tac g h)
+apply (cases gh)
+apply (simp del: npow_suc)
+apply (rename_tac g h)
 apply (erule conjE,
         frule_tac g = g and h = h and f = f in P_mod_diffxxx2[of t R' Y],
         assumption+)
-apply (erule exE)+ 
 apply blast
 done
 

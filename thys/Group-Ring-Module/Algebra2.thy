@@ -1178,7 +1178,7 @@ lemma (in Order) Order_adjunct_ord:"a \<notin> carrier D \<Longrightarrow>
 apply (cut_tac closed)
 apply (rule Order.intro)
  apply (rule subsetI)
- apply (cut_tac p = x in PairE_lemma, (erule exE)+)
+ apply (unfold split_paired_all)
  apply simp
  apply (simp add:adjunct_ord_def insert_absorb)
  apply blast
@@ -1294,12 +1294,8 @@ apply (rule equalityI)
  apply (rule subsetI)
  apply (cut_tac closed,
         frule_tac c = x in subsetD[of "rel D" "carrier D \<times> carrier D"],
-        assumption+,
-        cut_tac p = x in PairE_lemma, (erule exE)+, simp)
-
- apply (rule subsetI,
-        cut_tac p = x in PairE_lemma, (erule exE)+, simp,
-        blast)
+        assumption+)
+apply auto
 done
 
 lemma Ssegment_adjunct_ord:"\<lbrakk>Order D; a \<notin> carrier D\<rbrakk> \<Longrightarrow> 

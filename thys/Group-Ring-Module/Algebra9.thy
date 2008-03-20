@@ -4477,9 +4477,7 @@ by (simp add:prod_carr_def)
 
 lemma (in Ring) cartesianTr:"\<lbrakk>R module M; R module N; x \<in> M \<times>\<^sub>c N\<rbrakk> \<Longrightarrow> 
        \<exists>m n. m\<in>carrier M \<and> n \<in> carrier N \<and> x = (m, n)"
-apply (simp add: prod_carr_def)
- apply (cut_tac p = x in PairE_lemma, (erule exE)+, simp)
-done
+by (cases x) (simp add: prod_carr_def)
 
 lemma (in Ring) free_module_mem:"\<lbrakk>R module M; R module N; m \<in> carrier M;
          n \<in> carrier N; FM\<^bsub>R\<^esub> P M N\<rbrakk> \<Longrightarrow>  (m, n) \<in> carrier P"

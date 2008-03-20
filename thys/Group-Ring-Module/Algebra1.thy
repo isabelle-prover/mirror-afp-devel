@@ -4999,15 +4999,7 @@ lemma (in Order) Iod_self: "D = Iod D (carrier D)"
   apply (simp add:Iod_def)
   apply (rule equalityI)
   apply (rule subsetI)
-  apply (cut_tac p = x in PairE_lemma)
-  apply (erule exE)+
-  apply (frule_tac c = x and A = rel and B = "carrier \<times> carrier" in subsetD,
-          assumption)
-  apply simp
-
-  apply (rule subsetI)
-  apply (cut_tac p = x in PairE_lemma)
-  apply (erule exE)+ apply simp
+  apply auto
 done
 
 lemma SIod_self:"Order D \<Longrightarrow> D = SIod D (carrier D)"
@@ -5068,8 +5060,7 @@ lemma (in Order) Iod_Order:
 apply (rule Order.intro)
 apply (simp add:Iod_def)
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma)
-apply (erule exE)+
+apply (unfold split_paired_all)
 apply simp 
 apply (simp add:Iod_carrier)
 apply (simp add:Iod_def)
@@ -5088,7 +5079,8 @@ lemma  SIod_Order:"\<lbrakk> Order D; T \<subseteq> carrier D\<rbrakk> \<Longrig
 apply (rule Order.intro)
  apply (rule subsetI)
  apply (simp add:SIod_def)
- apply (cut_tac p = x in PairE_lemma, (erule exE)+, simp)
+ apply (unfold split_paired_all)
+ apply simp
  apply (simp add:SIod_def)
  apply (frule_tac c = a in subsetD[of T "carrier D"], assumption+)
  apply (simp add:Order.refl[of D])
@@ -5128,16 +5120,14 @@ lemma rel_SIod:"\<lbrakk>Order D; Order E; carrier E \<subseteq> carrier D;
                   rel E = rel (SIod D (carrier E))"
 apply (rule equalityI) (* show the equality of the sets *)
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma)
-apply ((erule exE)+, simp)
+apply (unfold split_paired_all)
 apply (simp add:ole_def)
 apply (simp add:SIod_def)
  apply (cut_tac Order.closed[of "E"])
 apply blast   
 apply assumption
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma)
-apply ((erule exE)+, simp)
+apply (unfold split_paired_all)
 apply (simp add:SIod_def)
 apply (simp add:ole_def)
 done
@@ -5240,7 +5230,7 @@ interpretation order_Pow: Order ["po A"]
   apply (unfold Order_Pow_def)
   apply (rule Order.intro)
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma, (erule exE)+)  
+apply (unfold split_paired_all)
 apply simp
 apply simp
 apply simp
@@ -5261,23 +5251,8 @@ lemma Order_fs:"Order (Order_fs A B)"
 apply (simp add:Order_fs_def)
 apply (rule Order.intro)
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma, (erule exE)+)
-apply simp
-apply simp
-apply simp
-apply (erule exE)+
-apply (erule conjE)+
-apply ((erule exE)+, (erule conjE)+)
-apply simp
-apply (rule_tac f = f and A = A1 and g = fa in funcset_eq, assumption+)
-apply simp
-apply ((erule exE)+, (erule conjE)+, (erule exE)+, (erule conjE)+)
-apply simp
-apply (frule_tac A = A1 and B = A1a and C = A1b in subset_trans, 
-        assumption+) 
-apply simp
-apply (rule ballI)
-apply blast
+apply (unfold split_paired_all)
+apply (auto intro: funcset_eq)
 done
  
 subsection {* homomorphism of ordered sets *}

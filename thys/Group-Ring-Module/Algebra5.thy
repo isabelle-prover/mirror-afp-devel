@@ -3485,8 +3485,7 @@ done
 subsection "coefficients of a polynomial" 
 
 lemma (in PolynRg) pol_coeff_split:"pol_coeff S f = pol_coeff S (fst f, snd f)"
-apply (cut_tac p = f in PairE_lemma, (erule exE)+, simp)
-done
+by simp
 
 lemma (in PolynRg) pol_coeff_cartesian:"pol_coeff S c \<Longrightarrow>
                    (fst c, snd c) = c"
@@ -3580,13 +3579,12 @@ done
 
 lemma (in PolynRg) polyn_expr_split:"
           polyn_expr R X k f = polyn_expr R X k (fst f, snd f)"
-by (cut_tac p = f in PairE_lemma, (erule exE)+, simp)
+by simp
 
 lemma (in PolynRg) polyn_Suc:"Suc n \<le> (fst c) \<Longrightarrow> 
        polyn_expr R X (Suc n) ((Suc n), (snd c)) = 
                polyn_expr R X n c \<plusminus> ((snd c) (Suc n)) \<cdot>\<^sub>r (X^\<^bsup>R (Suc n)\<^esup>)"
-apply (simp add:polyn_expr_def)
-done
+by (simp add:polyn_expr_def)
 
 lemma (in PolynRg) polyn_Suc_split:"pol_coeff S (Suc n, f) \<Longrightarrow> 
        polyn_expr R X (Suc n) ((Suc n), f) = 
@@ -3918,10 +3916,10 @@ done
 
 lemma (in PolynRg) polyn_add1:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
        \<Longrightarrow> polyn_expr R X (fst c) c \<plusminus> (polyn_expr R X (fst d) d)
-                   = polyn_expr R X (max (fst c) (fst d)) (add_cf S c d)"  
-apply (cut_tac p = c in PairE_lemma, (erule exE)+,
-       cut_tac p = d in PairE_lemma, (erule exE)+, simp)
-apply (simp add:polyn_add)
+                   = polyn_expr R X (max (fst c) (fst d)) (add_cf S c d)"
+apply (cases c)
+apply (cases d)
+apply (simp add: polyn_add)
 done
 
 lemma (in PolynRg) polyn_minus_nsum:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow> 
@@ -3972,8 +3970,9 @@ done
 lemma (in PolynRg) polyn_minus:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rbrakk> \<Longrightarrow> 
        -\<^sub>a (polyn_expr R X k c) = 
                     polyn_expr R X k (fst c, (\<lambda>j. (-\<^sub>a\<^bsub>S\<^esub> ((snd c) j))))"
-apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp)
- apply (subst polyn_minus_nsum, assumption+, simp, simp add:polyn_expr_def)
+apply (cases c)
+apply (subst polyn_minus_nsum)
+apply (simp_all add: polyn_expr_def)
 done
 
 constdefs
@@ -4017,15 +4016,8 @@ apply (rule allI, rule impI,
  apply (drule_tac a = j in forall_spec, simp,
         frule_tac n = j in npClose[of X], simp)
  apply (simp add:ring_times_0_x)
-
-apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp,
-       thin_tac "c = (x, y)", rename_tac n f)
-apply (cut_tac algfree, simp add:algfree_cond_def)
- apply (drule_tac a = n in forall_spec1,
-        drule_tac a = f in forall_spec1, erule conjE,
-        drule_tac a = k in forall_spec, assumption)
- apply (simp add:polyn_expr_def)
-done
+apply (cases c)
+using algfree [simplified algfree_cond_def] by (auto simp add: polyn_expr_def)
 
 subsection "multiplication of pol_exprs"
 
@@ -4057,14 +4049,11 @@ done
 
 lemma (in PolynRg) ext_cf_pol_coeff:"pol_coeff S c \<Longrightarrow> 
                            pol_coeff S (ext_cf S n c)"
-apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp,
-       thin_tac "c = (x, y)", rename_tac m g)
-apply (simp add:pol_coeff_def, rule allI,
-       simp add:ext_cf_def,
-       case_tac "n \<le> j", simp add:sliden_def, rule conjI, (rule impI)+) 
-       apply (simp add:sliden_def)
-apply (cut_tac subring, frule subring_Ring,
-       simp add:Ring.ring_zero)
+apply (simp add: pol_coeff_def ext_cf_def sliden_def)
+apply (rule impI)
+apply (rule Ring.ring_zero)
+apply (rule subring_Ring)
+apply (rule subring)
 done
 
 lemma (in PolynRg) ext_cf_len:"pol_coeff S c \<Longrightarrow>
@@ -4254,8 +4243,9 @@ done
 lemma (in PolynRg) scalar_times_pol_expr:"\<lbrakk>a \<in> carrier S; pol_coeff S c; 
        n \<le> fst c\<rbrakk> \<Longrightarrow> 
            a \<cdot>\<^sub>r (polyn_expr R X n c) = polyn_expr R X n (sp_cf S a c)"
-apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp,
-       thin_tac "c = (x, y)", rename_tac m g)
+apply (cases c) apply (simp only:)
+apply (rename_tac m g)
+apply (thin_tac "c = (m, g)")
 apply (frule_tac c = "(m, g)" and k = n in polyn_expr_short, simp,
        simp)
 apply (frule scalar_times_polynTr[of a n],
@@ -4373,8 +4363,7 @@ by (simp add:low_deg_terms_zeroTr)
 lemma (in PolynRg) low_deg_terms_zero1:"pol_coeff S c \<Longrightarrow> 
   polyn_expr R X ((fst c) + j) (ext_cf S j c) = 
                             (X^\<^bsup>R j\<^esup>) \<cdot>\<^sub>r (polyn_expr R X (fst c) c)"
-by (cut_tac p = c in PairE_lemma, (erule exE)+,
-    simp add:low_deg_terms_zeroTr)
+by (cases c) (simp add: low_deg_terms_zeroTr)
 
 lemma (in PolynRg) polyn_expr_tOpTr:"pol_coeff S (n, f) \<Longrightarrow> 
       \<forall>g. (pol_coeff S (m, g) \<longrightarrow> (\<exists>h. pol_coeff S ((n + m), h) \<and>
@@ -4506,12 +4495,7 @@ lemma (in PolynRg) polyn_expr_tOp_c:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbra
           (snd e) (fst e) = (snd c (fst c)) \<cdot>\<^sub>r\<^bsub>S\<^esub> (snd d) (fst d) \<and>
           polyn_expr R X (fst e) e =
                   (polyn_expr R X (fst c) c) \<cdot>\<^sub>r (polyn_expr R X (fst d) d)"  
-apply (cut_tac p = c in PairE_lemma, (erule exE)+,
-       cut_tac p = d in PairE_lemma, (erule exE)+, simp,
-       thin_tac "c = (x, y)", thin_tac "d = (xa, ya)",
-       rename_tac n f m g)
-apply (simp add:polyn_expr_tOpTr) 
-done
+by (cases c, cases d) (simp add: polyn_expr_tOpTr)
 
 section "14. the degree of a polynomial"
 
@@ -5121,7 +5105,7 @@ apply (case_tac "p = \<zero>\<^bsub>R\<^esub>",
 apply (simp add:deg_def na_an,
        frule pol_expr_deg[of p], assumption,
        erule exE, (erule conjE)+,
-       cut_tac p = c in PairE_lemma, (erule exE)+, simp, blast)
+       unfold split_paired_all, simp, blast)
 done
 
 end
