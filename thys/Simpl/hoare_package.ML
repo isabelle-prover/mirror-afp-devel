@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.4 2008-03-19 23:23:42 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.5 2008-03-20 11:11:42 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -2168,6 +2168,8 @@ val destr_to_constr =
         in NameSpace.implode (path @ ["val",unprefix "the_" base]) end;
     in  swap_constr_destr convert end;
 
+fun get_thm ctxt = ProofContext.get_thm ctxt o Name;
+
 local
 val strip_ss = HOL_basic_ss addsimps [strip_idem];
 in
@@ -2178,7 +2180,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
     val pname' = unsuffix proc_deco pname;
     val spec = (case assoc_string (asms,pname) of
                  SOME s => SOME s
-               | NONE =>  try (ProofContext.get_thm ctxt) (suffix spec_sfx pname'));
+               | NONE =>  try (get_thm ctxt) (suffix spec_sfx pname'));
 
     fun dest_UN (Const ("UNION",_)$Const ("UNIV",_)$t) = SOME t
       | dest_UN _ = NONE;
@@ -2515,7 +2517,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
        
   val test_modify_in_ctxt_tac =
     let val mname = (suffix modifysfx pname');
-        val mspec = (case try (ProofContext.get_thm ctxt) mname of
+        val mspec = (case try (get_thm ctxt) mname of
                       SOME s => SOME s
                      | NONE => (case assoc_string (asms,pname) of
                                  SOME s => if is_modifies_clause (concl_of s) 
@@ -2533,10 +2535,10 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
     end;
 
   fun inline_bdy_tac has_args i =
-    (case try (ProofContext.get_thm ctxt) (suffix bodyP pname') of
+    (case try (get_thm ctxt) (suffix bodyP pname') of
        NONE => no_tac
      | SOME impl =>
-        (case try (ProofContext.get_thm ctxt) (suffix (body_def_sfx^"_def") pname') of
+        (case try (get_thm ctxt) (suffix (body_def_sfx^"_def") pname') of
            NONE => no_tac
          | SOME bdy =>
             (tracing ("No specification found for procedure \"" ^ pname' ^
@@ -2784,7 +2786,7 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
     fun dest_lemAnno ctxt (Const ("Language.lem",_)$n$c) =
       let val x = NameSpace.base (dest_name n);
       in
-         (case try (ProofContext.get_thm ctxt) x of
+         (case try (get_thm ctxt) x of
 	    NONE => error ("No lemma: '" ^ x ^ "' found.")
           | SOME spec => (strip_qnt_vars "All" 
 			   (HOLogic.dest_Trueprop (Thm.concl_of spec)),spec))
@@ -3417,9 +3419,9 @@ val record_vanish_tac = raw_record_vanish_tac;
 local
  val state_fun_update_ss = 
     (HOL_basic_ss
-                addsimps ([thm "StateFun.update_def", id_def, fun_upd_apply,if_True,if_False]@
-                           thms "list.inject"@thms "char.inject"@simp_thms@K_fun_convs)
-                addcongs ([imp_cong](*@K_fun_congs  FIXME: Stefan fragen*))
+                addsimps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}] @
+                           @{thms list.inject} @ @{thms char.inject} @ @{thms simp_thms} @ K_fun_convs)
+                addcongs ([imp_cong] (* @ K_fun_congs  FIXME: Stefan fragen*))
                 addsplits [split_if]
                 addsimprocs [distinct_simproc ,
                              DistinctTreeProver.distinct_simproc 
@@ -3477,7 +3479,7 @@ fun proc_lookup_simp_tac ctxt i st =
           |> dest_hoare |> #2 |> strip_comb |> #2 |> last |> strip_comb |> #2 |> last;
           (* the$(Gamma$name) or the$(strip$Gamma$name) *)
     val pname = (unsuffix proc_deco (dest_string' name));
-    val thms =  List.mapPartial I (map (try (ProofContext.get_thm ctxt))
+    val thms =  List.mapPartial I (map (try (get_thm ctxt))
                             [suffix bodyP pname,
                              suffix (body_def_sfx^"_def") pname,
                              suffix procL pname^"."^ (suffix (body_def_sfx^"_def") pname)]);
@@ -3489,7 +3491,7 @@ fun proc_lookup_in_dom_simp_tac ctxt i st =
     val _$name$_  = (HOLogic.dest_Trueprop (Logic.concl_of_goal (prop_of st) i));
         (* name : Gamma *)
     val pname = (unsuffix proc_deco (dest_string' name));
-    val thms =  List.mapPartial I (map (try (ProofContext.get_thm ctxt))
+    val thms =  List.mapPartial I (map (try (get_thm ctxt))
                                [suffix bodyP pname]);
   in simp_tac (HOL_basic_ss addsimps (lookup_Some_in_dom::dom_strip::thms)) i st end
   handle _ => all_tac st;
