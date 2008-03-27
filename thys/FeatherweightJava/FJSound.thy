@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJSound.thy,v 1.8 2007-08-12 16:28:14 makarius Exp $
+    ID:          $Id: FJSound.thy,v 1.9 2008-03-27 18:05:41 fhaftmann Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -667,9 +667,9 @@ next
     by (auto simp add:typings_lengths)
   hence "(\<exists>i < length es. (?F (es!i) \<or> ?M (es!i) \<or> ?C (es!i))) \<or> (vals(es))" (is "?Q es")
   proof(induct "es" "Cs" rule:list_induct2)
-    case 1 thus "?Q []" by(auto intro:vals_val.intros)
+    case Nil thus "?Q []" by(auto intro:vals_val.intros)
     next
-    case (2 h t Ch Ct)
+    case (Cons h t Ch Ct)
       with 5 have h_t_typs: "CT;\<Gamma> \<turnstile>+ (h#t) : (Ch#Ct)"
         and OIH: "\<And> i. \<lbrakk>i < length (h#t); CT;\<Gamma> \<turnstile> ((h#t)!i) : ((Ch#Ct)!i); \<Gamma> = empty\<rbrakk> \<Longrightarrow> ?IH ((h#t)!i)"
         and G_def: "\<Gamma> = empty"
@@ -681,7 +681,7 @@ next
       { fix i assume "i < length t"
         hence s_i: "Suc i < length (h#t)" by auto
         from OIH[OF s_i] have "\<lbrakk>i < length t; CT;\<Gamma> \<turnstile> (t!i) : (Ct!i); \<Gamma> = empty\<rbrakk> \<Longrightarrow> ?IH (t!i)" by auto }
-      with t_typs have "?Q t" using 2 by auto
+      with t_typs have "?Q t" using Cons by auto
       moreover { 
         assume "\<exists>i < length t. (?F (t!i) \<or> ?M (t!i) \<or> ?C (t!i))"
         then obtain i 

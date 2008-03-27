@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJAux.thy,v 1.7 2007-07-11 10:10:53 stefanberghofer Exp $
+    ID:          $Id: FJAux.thy,v 1.8 2008-03-27 18:05:40 fhaftmann Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -277,9 +277,9 @@ proof -
   have "length es = length Cs" using prems by (auto simp: typings_lengths)
   thus "\<And>i. \<lbrakk> i < length es \<rbrakk> \<Longrightarrow> CT;\<Gamma> \<turnstile> (es!i) : (Cs!i)" 
     using prems proof(induct es Cs rule:list_induct2)
-    case 1 thus ?case by auto
+    case Nil thus ?case by auto
   next
-    case (2 esh est hCs tCs i)
+    case (Cons esh est hCs tCs i)
     thus ?case by(cases "i", auto elim:typings.cases)
   qed
 qed
@@ -455,33 +455,30 @@ subsubsection{* Sub-Expressions *}
 lemma isubexpr_typing: 
   assumes "e1 \<in> isubexprs(e0)"
   shows "\<And>C. \<lbrakk> CT;empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;empty \<turnstile> e1 : D"
-  using prems 
-proof(induct rule:isubexprs.induct, auto elim:typing.cases simp add:mem_typings)
-qed
+using prems 
+  by (induct rule:isubexprs.induct, auto elim:typing.cases simp add:mem_typings)
 
 lemma subexpr_typing: 
   assumes "e1 \<in> subexprs(e0)"
   shows "\<And>C. \<lbrakk> CT;empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;empty \<turnstile> e1 : D"
-  using prems 
-by(induct rule:rtrancl.induct,auto,force simp add:isubexpr_typing)
+using prems 
+  by (induct rule:rtrancl.induct,auto,force simp add:isubexpr_typing)
 
 lemma isubexpr_reduct: 
   assumes "d1 \<in> isubexprs(e1)"
   shows "\<And>d2. \<lbrakk> CT \<turnstile> d1 \<rightarrow> d2 \<rbrakk> \<Longrightarrow> \<exists>e2. CT \<turnstile> e1 \<rightarrow> e2"
 using prems mem_ith
-proof(induct, 
+  by (induct, 
       auto elim:isubexprs.cases intro:reduction.intros,
       force intro:reduction.intros, 
       force intro:reduction.intros)
-qed
 
 lemma subexpr_reduct: 
   assumes "d1 \<in> subexprs(e1)"
   shows "\<And>d2. \<lbrakk> CT \<turnstile> d1 \<rightarrow> d2 \<rbrakk> \<Longrightarrow> \<exists>e2. CT \<turnstile> e1 \<rightarrow> e2"
 using prems 
-proof(induct rule:rtrancl.induct, 
+  by (induct rule:rtrancl.induct, 
       auto, force simp add: isubexpr_reduct)
-qed
 
 end 
 
