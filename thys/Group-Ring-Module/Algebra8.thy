@@ -1161,7 +1161,7 @@ apply (rule ballI)
 done
 
 lemma (in Module) od_fm_fun_Chain:"\<lbrakk>R module N; free_generator R M H; 
-      f \<in> H \<rightarrow> carrier N; Chain (od_fm_fun R M N f H) C; C \<noteq> {}\<rbrakk> \<Longrightarrow> 
+      f \<in> H \<rightarrow> carrier N; Algebra2.Chain (od_fm_fun R M N f H) C; C \<noteq> {}\<rbrakk> \<Longrightarrow> 
       \<forall>a\<in>C. \<forall>b\<in>C. fst a \<subseteq> fst b \<or> fst b \<subseteq> fst a"
 apply (frule Order_od_fm_fun[of N H f], assumption+)
  apply (rule ballI)+
@@ -1173,7 +1173,7 @@ apply (frule Order_od_fm_fun[of N H f], assumption+)
 done
 
 lemma (in Module) od_fm_fun_inPr0:"\<lbrakk>R module N; free_generator R M H; 
-       f \<in> H \<rightarrow> carrier N; Chain (od_fm_fun R M N f H) C; C \<noteq> {};
+       f \<in> H \<rightarrow> carrier N; Algebra2.Chain (od_fm_fun R M N f H) C; C \<noteq> {};
        \<exists>b. (y, b) \<in> C; z \<in> y\<rbrakk>  \<Longrightarrow> z \<in> fgs R M (\<Union>{a. \<exists>b. (a, b) \<in> C})"
 apply (frule Un_C_fgs_sub[of N H f C], assumption+)
  apply (simp add:Algebra2.Chain_def od_fm_fun_def, assumption) 
@@ -1184,7 +1184,7 @@ apply (frule Un_C_fgs_sub[of N H f C], assumption+)
 done
 
 lemma (in Module) od_fm_fun_indPr1:" \<lbrakk>R module N; free_generator R M H; 
-      f \<in> H \<rightarrow> carrier N; Chain (od_fm_fun R M N f H) C; C \<noteq> {}\<rbrakk> \<Longrightarrow>
+      f \<in> H \<rightarrow> carrier N; Algebra2.Chain (od_fm_fun R M N f H) C; C \<noteq> {}\<rbrakk> \<Longrightarrow>
       (\<Union>{a. \<exists>b. (a, b) \<in> C}, 
          \<lambda>x \<in> fgs R M (\<Union>{a. \<exists>b. (a, b) \<in> C}). THE y. y \<in> carrier N \<and>
          (\<exists>a b. (a, b) \<in> C \<and> x \<in> fgs R M a \<and> y = b x)) \<in> fsps R M N f H"
@@ -1205,7 +1205,7 @@ apply (rule conjI)
 apply (rule subsetI, simp, erule exE, erule conjE, erule exE)
  apply (frule Order_od_fm_fun[of N H f], assumption+,
         frule Order.Chain_sub[of "od_fm_fun R M N f H" C], assumption,
-        thin_tac "Chain (od_fm_fun R M N f H) C",
+        thin_tac "Algebra2.Chain (od_fm_fun R M N f H) C",
         thin_tac "Order (od_fm_fun R M N f H)")
  apply (simp add:od_fm_fun_def)
  apply (frule_tac a = xa and b = b in mem_fsps_fst_sub[of N H f], assumption+,
@@ -1213,7 +1213,7 @@ apply (rule subsetI, simp, erule exE, erule conjE, erule exE)
 done
 
 lemma (in Module) od_fm_fun_indPr2:" \<lbrakk>R module N; free_generator R M H; 
-      f \<in> H \<rightarrow> carrier N; Chain (od_fm_fun R M N f H) C; C \<noteq> {}\<rbrakk> \<Longrightarrow>
+      f \<in> H \<rightarrow> carrier N; Algebra2.Chain (od_fm_fun R M N f H) C; C \<noteq> {}\<rbrakk> \<Longrightarrow>
      ub\<^bsub>od_fm_fun R M N f H\<^esub> C (\<Union>{a. \<exists>b. (a, b) \<in> C}, 
          \<lambda>x \<in> fgs R M (\<Union>{a. \<exists>b. (a, b) \<in> C}). THE y. y \<in> carrier N \<and>
                           (\<exists>a b. (a, b) \<in> C \<and> x \<in> fgs R M a \<and> y = b x))"
