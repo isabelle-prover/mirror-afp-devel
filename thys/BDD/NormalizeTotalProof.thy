@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: NormalizeTotalProof.thy,v 1.3 2008-03-18 13:48:33 makarius Exp $
+    ID:          $Id: NormalizeTotalProof.thy,v 1.4 2008-03-27 20:09:13 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -30,6 +30,8 @@ USA
 header {* Proof of Procedure Normalize *}
 theory NormalizeTotalProof imports LevellistProof ShareReduceRepListProof 
                         RepointProof begin
+
+hide (open) const DistinctTreeProver.set_of tree.Node tree.Tip
 
 lemma  (in Normalize_impl) Normalize_modifies:
   shows
