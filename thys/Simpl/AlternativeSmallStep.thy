@@ -1,4 +1,4 @@
-(*  ID:          $Id: AlternativeSmallStep.thy,v 1.3 2008-03-07 15:23:43 lsf37 Exp $
+(*  ID:          $Id: AlternativeSmallStep.thy,v 1.4 2008-03-29 18:12:42 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -224,7 +224,7 @@ apply induct
 apply (simp_all del: fun_upd_apply,(blast intro: step.intros)+)
 done
 
-ML_setup {*
+ML {*
   bind_thm ("trancl_induct3", split_rule
     (read_instantiate [("a","(ax,ay,az)"), ("b","(bx,by,bz)")] (thm "tranclp_induct")));
 *}
@@ -550,7 +550,7 @@ inductive_cases execs_elim_cases [cases set]:
  "\<Gamma>\<turnstile>\<langle>[],css,s\<rangle> \<Rightarrow> t"
  "\<Gamma>\<turnstile>\<langle>c#cs,css,s\<rangle> \<Rightarrow> t"
 
-ML_setup {*
+ML {*
   bind_thm ("converse_rtrancl_induct3", split_rule
     (read_instantiate [("a","(cs,css,s)"), ("b","(cs',css',t)")] 
                       (thm "converse_rtranclp_induct")));
@@ -974,7 +974,7 @@ next
 qed
 
 
-ML_setup {*
+ML {*
   bind_thm ("rtrancl_induct3", split_rule
     (read_instantiate [("a","(ax,ay,az)"), ("b","(bx,by,bz)")] (thm "rtranclp_induct")));
 *}

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.15 2007-07-20 18:45:57 makarius Exp $
+    ID:          $Id: Equivalence.thy,v 1.16 2008-03-29 18:12:43 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -2065,7 +2065,7 @@ qed
 abschalten. Wieder anschalten siehe nach dem Beweis. *)
 
 declare split_paired_All [simp del] split_paired_Ex [simp del]
-ML_setup {*
+ML {*
 change_simpset (fn ss => ss delloop "split_all_tac");
 change_claset (fn cs => cs delSWrapper "split_all_tac");
 *}
@@ -2763,7 +2763,7 @@ qed
 
 (* ... und wieder anschalten: *)
 declare split_paired_All [simp] split_paired_Ex [simp]
-ML_setup {*
+ML {*
 change_claset (fn cs => cs addSbefore ("split_all_tac", split_all_tac));
 change_simpset (fn ss => ss addloop ("split_all_tac", split_all_tac));
 *}

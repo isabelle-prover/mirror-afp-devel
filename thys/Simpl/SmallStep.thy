@@ -1,4 +1,4 @@
-(*  ID:          $Id: SmallStep.thy,v 1.4 2008-03-18 13:49:03 makarius Exp $
+(*  ID:          $Id: SmallStep.thy,v 1.5 2008-03-29 18:12:42 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -1092,7 +1092,7 @@ next
     by (blast dest: step_preserves_termination)
 qed
 
-ML_setup {*
+ML {*
   bind_thm ("tranclp_induct2", split_rule
     (read_instantiate [("a","(aa,ab)"), ("b","(ba,bb)")] (thm "tranclp_induct")));
 *}
@@ -2160,7 +2160,7 @@ qed
 thm converse_rtranclE 
 thm trancl_induct
 
-ML_setup {*
+ML {*
   bind_thm ("trancl_induct2", split_rule
     (read_instantiate [("a","(aa,ab)"), ("b","(ba,bb)")] (thm "trancl_induct")));
 *}
