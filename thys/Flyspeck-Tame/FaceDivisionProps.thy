@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.11 2008-03-18 13:49:01 makarius Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.12 2008-03-31 19:46:27 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -4075,7 +4075,6 @@ lemma removeNones_in[simp]: "removeNones (as @ Some a # bs) = removeNones as @ a
 lemma removeNones_none_hd[simp]: "removeNones ( None # ls) = removeNones ls" by auto
 lemma removeNones_none_last[simp]: "removeNones (ls @ [None]) = removeNones ls" by auto
 lemma removeNones_none_in[simp]: "removeNones (as @ None # bs) = removeNones (as @ bs)" by auto
-lemma removeNones_inI[intro]: "Some a \<in> set ls \<Longrightarrow> a \<in> set (removeNones ls)" by (induct ls)  auto
 lemma removeNones_empty[simp]: "removeNones [] = []" by auto
 declare removeNones_def [simp del]
 
