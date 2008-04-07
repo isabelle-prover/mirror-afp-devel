@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Location.thy,v 1.4 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: Location.thy,v 1.5 2008-04-07 13:38:10 fhaftmann Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -7,7 +7,9 @@
 
 header {* Location *}
 
-theory Location imports AttributesIndep Value begin 
+theory Location
+imports AttributesIndep Value
+begin 
 
 text {* A storage location can be a field of an object, a static field,
  the length of an array, or the contents of an array.  

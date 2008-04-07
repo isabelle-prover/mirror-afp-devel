@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Attributes.thy,v 1.4 2006-05-18 14:19:23 lsf37 Exp $
+    ID:          $Id: Attributes.thy,v 1.5 2008-04-07 13:38:10 fhaftmann Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -7,7 +7,9 @@
 
 header {* Attributes *}
 
-theory Attributes imports Subtype  begin
+theory Attributes
+imports "../Isabelle/Subtype"
+begin
 
 text {* This theory has to be generated as well for each program under 
 verification. It defines the attributes of the classes and various functions

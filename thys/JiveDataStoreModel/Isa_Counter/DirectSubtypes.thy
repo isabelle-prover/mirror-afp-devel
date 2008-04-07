@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: DirectSubtypes.thy,v 1.4 2006-05-18 14:19:23 lsf37 Exp $
+    ID:          $Id: DirectSubtypes.thy,v 1.5 2008-04-07 13:38:10 fhaftmann Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>  and  
                  Nicole Rauch <rauch at informatik.uni-kl.de>, 2005
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
@@ -8,7 +8,9 @@
 
 header {* The Direct Subtype Relation of Java Types *}
 
-theory DirectSubtypes imports JavaType begin
+theory DirectSubtypes
+imports "../Isabelle/JavaType"
+begin
 
 text {*
 In this theory, we formalize the direct subtype relations of the Java types (as defined
