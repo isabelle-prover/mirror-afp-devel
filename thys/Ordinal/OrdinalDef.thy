@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalDef.thy,v 1.5 2007-07-11 10:20:59 stefanberghofer Exp $
+    ID:          $Id: OrdinalDef.thy,v 1.6 2008-04-07 13:37:52 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -76,10 +76,18 @@ done
 
 text {* ordering on ord0 *}
 
-instance ord0 :: ord ..
-defs (overloaded)
-  ord0_less_def: "x < y \<equiv> (x,y) \<in> ord0_prec\<^sup>+ O ord0_leq"
-  ord0_le_def:   "x \<le> y \<equiv> (x,y) \<in> ord0_leq"
+instantiation ord0 :: ord
+begin
+
+definition
+  ord0_less_def: "x < y \<longleftrightarrow> (x,y) \<in> ord0_prec\<^sup>+ O ord0_leq"
+
+definition
+  ord0_le_def:   "x \<le> y \<longleftrightarrow> (x,y) \<in> ord0_leq"
+
+instance ..
+
+end
 
 lemma ord0_order_refl[simp]: "(x::ord0) \<le> x"
 by (unfold ord0_le_def, rule ord0_leq_refl)
@@ -179,14 +187,18 @@ theorem Abs_ordinal_cases2 [case_names Abs_ordinal, cases type: ordinal]:
 by (cases x, auto simp add: quotient_def)
 
 
-instance ordinal :: ord ..
+instantiation ordinal :: ord
+begin
 
-defs (overloaded)
-  ordinal_less_def:
-  "x < y \<equiv> \<forall>a\<in>Rep_ordinal x. \<forall>b\<in>Rep_ordinal y. a < b"
+definition
+  ordinal_less_def: "x < y \<longleftrightarrow> (\<forall>a\<in>Rep_ordinal x. \<forall>b\<in>Rep_ordinal y. a < b)"
 
-  ordinal_le_def:
-  "x \<le> y \<equiv> \<forall>a\<in>Rep_ordinal x. \<forall>b\<in>Rep_ordinal y. a \<le> b"
+definition
+  ordinal_le_def: "x \<le> y \<longleftrightarrow> (\<forall>a\<in>Rep_ordinal x. \<forall>b\<in>Rep_ordinal y. a \<le> b)"
+
+instance ..
+
+end
 
 lemma Rep_Abs_ord0rel [simp]:
 "Rep_ordinal (Abs_ordinal (ord0rel `` {x})) = (ord0rel `` {x})"

@@ -13,51 +13,46 @@ text {*
 *}
 
 subsection "Definitions"
-inductive_set
-  ileq_helper :: "('a list * 'a list) set"
-  where
-  "([],l)\<in>ileq_helper"
-  | "(l',l)\<in>ileq_helper \<Longrightarrow> (l',a#l)\<in>ileq_helper"
-  | "(l',l)\<in>ileq_helper \<Longrightarrow> (a#l',a#l)\<in>ileq_helper"
 
+instantiation list :: (type) order
+begin
 
-instance list :: (type) ord ..
-defs (overloaded)
-  ileq_def: "(l::'a list) <= la == (l,la)\<in>ileq_helper"
-  ilt_def: "(l::'a list) < la == (l <= la & l ~= la)"
+inductive less_eq_list where
+  "[] \<le> l"
+  | "l \<le> l' \<Longrightarrow> l \<le> a # l'"
+  | "l \<le> l' \<Longrightarrow> a # l \<le> a # l'"
 
-syntax (xsymbols)
-  "_ileq" :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "\<preceq>" 50)
-  "_ilt" :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "\<prec>" 50)
+definition
+  ilt_def: "(l \<Colon> 'a list) < la \<longleftrightarrow> l \<le> la \<and> l \<noteq> la"
 
-syntax (output)
-  "_ileq" :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "\<preceq>" 50)
-  "_ilt" :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "\<prec>" 50)
+abbreviation ileq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
+  "ileq \<equiv> op \<le>"
 
-translations
-  "op \<preceq>" => "op <= :: _ list => _ list => bool"
-  "op \<prec>" => "op < :: _ list => _ list => bool"
+abbreviation ilt :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
+  "ilt \<equiv> op <"
 
-typed_print_translation {*
-  let
-    fun le_tr' _ (Type ("fun", (Type ("list", _) :: _))) ts =
-          list_comb (Syntax.const "_ileq", ts)
-      | le_tr' _ _ _ = raise Match;
+notation (xsymbols)
+  ileq (infix "\<preceq>" 50)
 
-    fun less_tr' _ (Type ("fun", (Type ("list", _) :: _))) ts =
-          list_comb (Syntax.const "_ilt", ts)
-      | less_tr' _ _ _ = raise Match;
-  in [("op <=", le_tr'), ("op <", less_tr')] end
-*}
+notation (output)
+  ileq (infix "\<preceq>" 50)
+
+notation (xsymbols)
+  ilt (infix "\<prec>" 50)
+
+notation (output)
+  ilt (infix "\<prec>" 50)
+
 
 subsection "Basic lemmas"
-lemma ileq_cases[cases set, case_names empty drop take]: "\<lbrakk>
+
+lemma ileq_cases [cases set, case_names empty drop take]: "\<lbrakk>
     l1\<preceq>l2; 
     l1=[] \<Longrightarrow> P; 
     \<And>a l2'. \<lbrakk>l2=a#l2'; l1\<preceq>l2'\<rbrakk> \<Longrightarrow> P; 
     \<And>a l1' l2'. \<lbrakk>l1=a#l1'; l2=a#l2'; l1'\<preceq>l2'\<rbrakk> \<Longrightarrow> P
   \<rbrakk> \<Longrightarrow> P"
-  by (unfold ileq_def, blast elim: ileq_helper.cases)
+  by (blast elim: less_eq_list.cases)
 
 lemma ileq_induct[induct set, case_names empty drop take]: "\<lbrakk>
     l1\<preceq>l2; 
@@ -65,14 +60,14 @@ lemma ileq_induct[induct set, case_names empty drop take]: "\<lbrakk>
     \<And>a l l'. \<lbrakk>l'\<preceq>l; P l' l\<rbrakk> \<Longrightarrow> P l' (a # l); 
     \<And>a l l'. \<lbrakk>l'\<preceq>l; P l' l\<rbrakk> \<Longrightarrow> P (a # l') (a # l)
   \<rbrakk> \<Longrightarrow> P l1 l2" 
-  by (unfold ileq_def, induct rule: ileq_helper.induct) (blast+)
+  by (induct rule: less_eq_list.induct) (blast+)
 
 lemma ileq_empty[simp, intro!]: "[]\<preceq>l"
-  by (unfold ileq_def, blast intro: ileq_helper.intros)
+  by (blast intro: less_eq_list.intros)
 lemma ileq_drop: "l'\<preceq>l \<Longrightarrow> l'\<preceq>a#l"
-  by (unfold ileq_def, blast intro: ileq_helper.intros)
+  by (blast intro: less_eq_list.intros)
 lemma ileq_take: "l'\<preceq>l \<Longrightarrow> a#l'\<preceq>a#l"
-  by (unfold ileq_def, blast intro: ileq_helper.intros)
+  by (blast intro: less_eq_list.intros)
 lemmas ileq_intros = ileq_empty ileq_drop ileq_take
 lemma ileq_drop_many: "a\<preceq>c \<Longrightarrow> a\<preceq>b@c"
   by (induct b) (auto intro: ileq_drop)
@@ -186,10 +181,12 @@ proof -
   note A
   ultimately show ?thesis by blast
 qed
-   
-instance list :: (type) order 
-  by (intro_classes) (auto intro: ileq_refl ileq_trans ileq_antisym simp add: ilt_def)
+
+instance by default
+  (auto intro: ileq_refl ileq_trans ileq_antisym simp add: ilt_def)
   
+end
+
 (*lemma ileq_empty_antisym: "l\<preceq>[] \<Longrightarrow> l=[]" using order_antisym[OF ileq_empty] by blast -- "Superseded by ileq_below_empty"*)
 
 subsection "Appending elements"

@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalInverse.thy,v 1.4 2007-10-18 07:21:22 fhaftmann Exp $
+    ID:          $Id: OrdinalInverse.thy,v 1.5 2008-04-07 13:37:52 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -156,12 +156,20 @@ done
 
 subsection {* Division *}
 
-instance ordinal :: "Divides.div" ..
-defs (overloaded)
+instantiation ordinal :: "Divides.div"
+begin
+
+definition
   div_ordinal_def:
-   "x div y \<equiv> if 0 < y then oInv (op * y) x else 0"
+   "x div y = (if 0 < y then oInv (op * y) x else 0)"
+
+definition
   mod_ordinal_def: 
-   "x mod y \<equiv> (x::ordinal) - y * (x div y)"
+   "x mod y = ((x::ordinal) - y * (x div y))"
+
+instance ..
+
+end
 
 lemma ordinal_divI: "\<lbrakk>x = y * q + r; r < y\<rbrakk> \<Longrightarrow> x div y = (q::ordinal)"
  apply (simp add: div_ordinal_def, safe)
