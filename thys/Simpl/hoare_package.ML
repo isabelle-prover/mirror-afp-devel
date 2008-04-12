@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.6 2008-03-20 15:08:35 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.7 2008-04-12 15:02:25 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -1585,7 +1585,8 @@ end;
 
 fun cond_rename_bvars cond name thm =
     let
-      val {thy, prop, ...} = rep_thm thm;
+      val thy = Thm.theory_of_thm thm;
+      val prop = Thm.prop_of thm;
       fun ren (trm as (Abs (x, T, t))) = if cond trm then Abs (name x, T, ren t) 
                                          else Abs (x,T,ren t)
         | ren (t $ u) = ren t $ ren u
