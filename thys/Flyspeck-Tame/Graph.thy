@@ -1,4 +1,4 @@
-(*  ID:         $Id: Graph.thy,v 1.4 2008-03-18 13:49:01 makarius Exp $
+(*  ID:         $Id: Graph.thy,v 1.5 2008-04-14 20:02:11 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -45,7 +45,7 @@ primrec
 consts type :: "'a \<Rightarrow> facetype"
 primrec "type (Face vs f) = f"
 
-primrec
+primrec (vertices_face)
   vertices_face_simp: "vertices (Face vs f) = vs"
 
 defs (overloaded) cong_face_def:
@@ -101,8 +101,9 @@ constdefs prevVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("
 
 
 
-syntax triangle :: "face \<Rightarrow> bool"
-translations "triangle f" == "|vertices f| = 3"
+abbreviation
+  triangle :: "face \<Rightarrow> bool" where
+  "triangle f == |vertices f| = 3"
 
 
 subsection {* Graphs *}
@@ -112,8 +113,9 @@ datatype graph = Graph "(face list)" "nat" "face list list" "nat list"
 consts faces :: "graph \<Rightarrow> face list"
 primrec "faces (Graph fs n f h) = fs"
 
-syntax "_Faces" :: "graph \<Rightarrow> face set" ("\<F>")
-translations "\<F> g" == "set(faces g)"
+abbreviation
+  Faces :: "graph \<Rightarrow> face set" ("\<F>") where
+  "\<F> g == set(faces g)"
 
 consts countVertices :: "graph \<Rightarrow> nat"
 primrec "countVertices (Graph fs n f h) = n"
