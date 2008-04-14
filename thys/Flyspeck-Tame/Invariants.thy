@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.14 2008-03-18 13:48:33 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.15 2008-04-14 20:02:44 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2209,10 +2209,10 @@ qed
 
 (* Invariance of one_final *)
 
-syntax Edges_if :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> (vertex \<times> vertex)set"
-translations
-"Edges_if f u v" =>
-"if u=v then {} else Edges(u # between (vertices f) u v @ [v])"
+abbreviation (input)
+  Edges_if :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> (vertex \<times> vertex)set" where
+  "Edges_if f u v ==
+    if u=v then {} else Edges(u # between (vertices f) u v @ [v])"
 
 lemma FaceDivsionGraph_one_final_but:
 assumes mgp: "minGraphProps g" and pre: "pre_splitFace g u v f vs"
