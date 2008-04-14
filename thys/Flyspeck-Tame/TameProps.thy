@@ -1,4 +1,4 @@
-(* ID:         $Id: TameProps.thy,v 1.3 2007-07-11 10:12:00 stefanberghofer Exp $
+(* ID:         $Id: TameProps.thy,v 1.4 2008-04-14 20:03:06 makarius Exp $
    Author:     Tobias Nipkow
 *)
 
@@ -40,7 +40,7 @@ using gg'
 proof (induct rule:RTranCl.induct)
   case refl show ?case by(rule RTranCl.refl)
 next
-  case (succs h' h h'')
+  case (succs h h' h'')
   hence "P h'"  using invP by(unfold invariant_def) blast
   show ?case
   proof cases
@@ -71,7 +71,7 @@ using gg'
 proof (induct rule:RTranCl.induct)
   case refl show ?case by(rule RTranCl.refl)
 next
-  case (succs h' h h'')
+  case (succs h h' h'')
   hence Ph': "P h'"  using invP by(unfold invariant_def) blast
   show ?case
   proof cases
@@ -100,7 +100,7 @@ using gg'
 proof (induct rule:RTranCl.induct)
   case refl show ?case by(rule RTranCl.refl)
 next
-  case (succs h' h h'')
+  case (succs h h' h'')
   hence Ph': "P h'" using invP by(unfold invariant_def) blast
   hence IH: "h' [map f \<circ> succs]\<rightarrow>* h''" using succs by blast
   thus ?case
