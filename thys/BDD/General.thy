@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: General.thy,v 1.2 2008-03-07 15:23:43 lsf37 Exp $
+    ID:          $Id: General.thy,v 1.3 2008-04-14 20:01:50 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -51,27 +51,27 @@ recdef isLeaf "measure size"
 
 datatype bdt = Zero | One | Bdt_Node bdt nat bdt
 
-consts bdt :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt option"
-recdef bdt "measure size"
-"bdt Tip = (\<lambda>bdtvar . None)"
-"bdt (Node Tip vref Tip) = 
+consts bdt_fn :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt option"
+recdef bdt_fn "measure size"
+"bdt_fn Tip = (\<lambda>bdtvar . None)"
+"bdt_fn (Node Tip vref Tip) = 
     (\<lambda>bdtvar . 
           (if (bdtvar vref = 0) 
            then Some Zero 
 	         else (if (bdtvar vref = 1) 
                  then Some One
                  else None)))"  
-"bdt (Node Tip vref (Node l vref1 r)) = (\<lambda>bdtvar . None)"
-"bdt (Node (Node l vref1 r) vref Tip) = (\<lambda>bdtvar . None)"
-"bdt (Node (Node l1 vref1 r1) vref (Node l2 vref2 r2)) = 
+"bdt_fn (Node Tip vref (Node l vref1 r)) = (\<lambda>bdtvar . None)"
+"bdt_fn (Node (Node l vref1 r) vref Tip) = (\<lambda>bdtvar . None)"
+"bdt_fn (Node (Node l1 vref1 r1) vref (Node l2 vref2 r2)) = 
   (\<lambda>bdtvar .
     (if (bdtvar vref = 0 \<or> bdtvar vref = 1) 
      then None 
      else  
-      (case (bdt (Node l1 vref1 r1) bdtvar) of 
+      (case (bdt_fn (Node l1 vref1 r1) bdtvar) of 
        None \<Rightarrow> None
        |(Some b1) \<Rightarrow>
-         (case (bdt (Node l2 vref2 r2) bdtvar) of 
+         (case (bdt_fn (Node l2 vref2 r2) bdtvar) of 
           None \<Rightarrow> None
          |(Some b2) \<Rightarrow> Some (Bdt_Node b1 (bdtvar vref) b2)))))"
 (hints cong add: option.case_cong if_cong) 
@@ -83,7 +83,7 @@ Auswertungsstrategie einer Programmiersprache, da wird auch zunächst nur die
 Bedingung vereinfacht. Will man mehr so kann man die entsprechenden Kongruenz 
 regeln dazunehmen.
 *)
-
+abbreviation "bdt == bdt_fn"
 
 consts eval :: "bdt \<Rightarrow> bool list \<Rightarrow> bool"
 primrec
@@ -141,13 +141,13 @@ done
 
 lemma bdt_Some_One_iff [simp]: 
   "(bdt t var = Some One) = (\<exists> p. t = Node Tip p Tip \<and> var p = 1)"
-apply (induct_tac t rule: bdt.induct) (*bdt is a recdef*)
+apply (induct_tac t rule: bdt_fn.induct)
 apply (auto split: option.splits) (*in order to split the cases Zero and One*)
 done
 
 lemma bdt_Some_Zero_iff [simp]: 
   "(bdt t var = Some Zero) = (\<exists> p. t = Node Tip p Tip \<and> var p = 0)"
-apply (induct_tac t rule: bdt.induct)
+apply (induct_tac t rule: bdt_fn.induct)
 apply (auto split: option.splits)
 done
 
@@ -156,7 +156,7 @@ lemma bdt_Some_Node_iff [simp]:
  "(bdt t var = Some (Bdt_Node bdt1 v bdt2)) = 
     (\<exists> p l r. t = Node l p r \<and> bdt l var = Some bdt1 \<and> bdt r var = Some bdt2 \<and> 
                1 < v \<and> var p = v )"
-apply (induct_tac t rule: bdt.induct)
+apply (induct_tac t rule: bdt_fn.induct)
 prefer 5
 apply (fastsimp split: if_splits option.splits)
 apply auto
