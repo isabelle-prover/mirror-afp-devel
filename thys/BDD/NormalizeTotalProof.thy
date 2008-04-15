@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: NormalizeTotalProof.thy,v 1.4 2008-03-27 20:09:13 makarius Exp $
+    ID:          $Id: NormalizeTotalProof.thy,v 1.5 2008-04-15 13:15:26 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -37,7 +37,7 @@ lemma  (in Normalize_impl) Normalize_modifies:
   shows
    "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>p :== PROC Normalize (\<acute>p) 
      {t. t may_only_modify_globals \<sigma> in [rep,mark,low,high,next]}"
-  apply (hoare_rule ProcRec1)
+  apply (hoare_rule HoarePartial.ProcRec1)
   apply (vcg spec=modifies)
   done
 

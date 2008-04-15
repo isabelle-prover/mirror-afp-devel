@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: LevellistProof.thy,v 1.3 2008-03-27 20:09:13 makarius Exp $
+    ID:          $Id: LevellistProof.thy,v 1.4 2008-04-15 13:15:25 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -35,7 +35,7 @@ hide (open) const DistinctTreeProver.set_of tree.Node tree.Tip
 lemma (in Levellist_impl) Levellist_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>levellist :== PROC Levellist (\<acute>p, \<acute>m, \<acute>levellist) 
              {t. t may_only_modify_globals \<sigma> in [mark,next]}"
-  apply (hoare_rule ProcRec1)
+  apply (hoare_rule HoarePartial.ProcRec1)
   apply (vcg spec=modifies)
   done
 
@@ -311,10 +311,10 @@ apply (rule conjI)
 apply  clarify
 apply  (rule conjI)
 apply   clarify
-apply   (clarsimp simp del: set_of.simps split del: split_if)
+apply   (clarsimp simp del: BinDag.set_of.simps split del: split_if)
 defer
 apply   (rule impI)
-apply   (clarsimp simp del: set_of.simps split del: split_if)
+apply   (clarsimp simp del: BinDag.set_of.simps split del: split_if)
 defer
 apply   (clarsimp simp add: wf_levellist_def wf_marking_def) (* p=Null*)
 apply (simp only: Levellist_ext_to_all )
@@ -487,7 +487,7 @@ proof -
               then n \<in> set (lla ! var n) \<and>
                    (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> marka p = m)
               else n \<notin> set (concat lla))"
-	  apply (simp only:set_of.simps)
+	  apply (simp only: BinDag.set_of.simps)
 	  apply clarify
 	  apply (drule_tac x=n in bspec)
 	  apply  blast
@@ -584,7 +584,7 @@ proof -
      then n \<in> set (ll ! var n) \<and>
           (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m)
      else n \<notin> set (concat ll)"
-      apply (simp only:set_of.simps)
+      apply (simp only: BinDag.set_of.simps)
       apply clarify
       apply (drule_tac x=n in bspec)
       apply  blast

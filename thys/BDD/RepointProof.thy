@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: RepointProof.thy,v 1.3 2008-03-27 20:09:14 makarius Exp $
+    ID:          $Id: RepointProof.thy,v 1.4 2008-04-15 13:15:26 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -35,7 +35,7 @@ hide (open) const DistinctTreeProver.set_of tree.Node tree.Tip
 lemma (in Repoint_impl) Repoint_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>p :==  PROC Repoint (\<acute>p)
         {t. t may_only_modify_globals \<sigma> in [low,high]}"
-  apply (hoare_rule ProcRec1)
+  apply (hoare_rule HoarePartial.ProcRec1)
   apply (vcg spec=modifies)
   done
 
@@ -198,7 +198,7 @@ shows
   \<and> (\<forall> no \<in> set_of rept. \<^bsup>\<sigma>\<^esup>rep no = no))
   \<longrightarrow> Dag \<acute>p \<acute>low \<acute>high rept \<and>
   (\<forall>pt. pt \<notin> set_of rept \<longrightarrow> \<^bsup>\<sigma>\<^esup>low pt = \<acute>low pt \<and> \<^bsup>\<sigma>\<^esup>high pt = \<acute>high pt)\<rbrace>"
-apply (hoare_rule ProcRec1)
+apply (hoare_rule HoarePartial.ProcRec1)
 apply vcg
 apply  (rule conjI)
 apply  clarify
@@ -412,7 +412,7 @@ shows
   \<acute>p :== PROC Repoint (\<acute>p)
   \<lbrace>Dag \<acute>p \<acute>low \<acute>high rept \<and>
   (\<forall>pt. pt \<notin> set_of rept \<longrightarrow> \<^bsup>\<sigma>\<^esup>low pt = \<acute>low pt \<and> \<^bsup>\<sigma>\<^esup>high pt = \<acute>high pt)\<rbrace>"
-apply (hoare_rule ProcRec1)
+apply (hoare_rule HoarePartial.ProcRec1)
 apply vcg
 apply (rule conjI)
 prefer 2

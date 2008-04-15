@@ -1,4 +1,4 @@
-(*  ID:          $Id: Quicksort.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: Quicksort.thy,v 1.4 2008-04-15 13:15:28 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -170,7 +170,7 @@ procedures quickSort(p|p) =
 lemma (in quickSort_impl) quickSort_modifies:
   shows
   "\<forall>\<sigma>. \<Gamma>\<turnstile> {\<sigma>} \<acute>p :== PROC quickSort(\<acute>p) {t. t may_only_modify_globals \<sigma> in [next]}"
-apply (hoare_rule ProcRec1)
+apply (hoare_rule HoarePartial.ProcRec1)
 apply (vcg spec=modifies)
 done
 
@@ -182,7 +182,7 @@ shows
                  sorted (op \<le>) (map \<^bsup>\<sigma>\<^esup>cont sortedPs) \<and>
                  Ps <~~> sortedPs) \<and>
                  (\<forall>x. x\<notin>set Ps \<longrightarrow> \<acute>next x = \<^bsup>\<sigma>\<^esup>next x)\<rbrace>"
-apply (hoare_rule ProcRec1)
+apply (hoare_rule HoarePartial.ProcRec1)
 apply (hoare_rule anno = 
  "IF \<acute>p=Null THEN SKIP
   ELSE \<acute>tl :== \<acute>p\<rightarrow>\<acute>next;;
@@ -214,7 +214,7 @@ apply (hoare_rule anno =
        \<acute>p\<rightarrow>\<acute>next :== \<acute>gt;;
        \<acute>le :== CALL append(\<acute>le,\<acute>p);;
        \<acute>p :== \<acute>le
-  FI" in annotateI)
+  FI" in HoarePartial.annotateI)
 apply vcg
 apply   fastsimp
 apply  clarsimp
