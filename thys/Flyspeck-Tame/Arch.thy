@@ -1,4 +1,4 @@
-(*  ID:         $Id: Arch.thy,v 1.2 2007-08-20 16:08:54 fhaftmann Exp $
+(*  ID:         $Id: Arch.thy,v 1.3 2008-04-15 17:21:57 makarius Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -30,7 +30,7 @@ setup {* fn thy =>
         val rhs = term_of l;
       in ((c, T'), (Thm.def_name c, Logic.mk_equals (lhs, rhs))) end;
     fun add_defs defs =
-      Theory.add_consts_i (map (fn ((c, T), _) => (c, T, Syntax.NoSyn)) defs)
+      Sign.add_consts_i (map (fn ((c, T), _) => (c, T, Syntax.NoSyn)) defs)
       #> PureThy.add_defs_i false (map (fn (_, (name, prop)) => ((name, prop), [])) defs)
   in
     thy
