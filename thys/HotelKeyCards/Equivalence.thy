@@ -1,15 +1,15 @@
 (*<*)
 theory Equivalence
-imports Trace State
+imports State Trace
 begin
 
 declare expand_fun_eq[simp]
 
 lemma [simp]: "safe [] = (%r. False)"
-by(simp add:safe_def)
+by(simp add:Trace.safe_def)
 
 lemma [simp]: "safe (Exit g r # t) r' = safe t r'"
-apply(simp add:safe_def)
+apply(simp add:Trace.safe_def)
 apply(rule iffI)
  apply clarsimp
  apply(case_tac s\<^isub>3) apply simp
@@ -24,14 +24,14 @@ apply simp
 done
 
 lemma [simp]: "\<not> safe (Check_in g r c # t) r"
-apply(clarsimp simp add:safe_def)
+apply(clarsimp simp add:Trace.safe_def)
 apply(case_tac s\<^isub>3) apply simp
 apply(cases c)
 apply auto
 done
 
 lemma [simp]: "r \<noteq> r' \<Longrightarrow> safe (Check_in g r' c # t) r = safe t r"
-apply(simp add:safe_def)
+apply(simp add:Trace.safe_def)
 apply(rule iffI)
  apply clarsimp
  apply(case_tac s\<^isub>3) apply simp
@@ -48,7 +48,7 @@ done
 
 
 lemma [simp]: "r \<noteq> r' \<Longrightarrow> safe (Enter g r' c # t) r = safe t r"
-apply(simp add:safe_def)
+apply(simp add:Trace.safe_def)
 apply(rule iffI)
  apply clarsimp
  apply(case_tac s\<^isub>3) apply simp
@@ -86,7 +86,7 @@ apply simp
 done
 
 lemma [simp]: "safe t r \<Longrightarrow> safe (Enter g r c # t) r"
-apply(clarsimp simp:safe_def)
+apply(clarsimp simp:Trace.safe_def)
 apply(rule_tac x = s\<^isub>1 in exI)
 apply(rule_tac x = s\<^isub>2 in exI)
 apply simp
@@ -106,8 +106,8 @@ lemma safe_Enter[simp]: "hotel (Enter g r (k,k') # t) \<Longrightarrow>
  safe (Enter g r (k,k') # t) r =
  (owns t r = \<lfloor>g\<rfloor> \<and> isin t r = {} \<and> k' = currk t r \<or> safe t r)"
  apply rule
- apply(frule_tac g=g in safe, assumption) apply simp
- apply(clarsimp simp add:safe_def)
+ apply(frule_tac g=g in Trace.safe, assumption) apply simp
+ apply(clarsimp simp add:Trace.safe_def)
  apply(case_tac s\<^isub>3)
   apply clarsimp
  apply simp
@@ -116,7 +116,7 @@ lemma safe_Enter[simp]: "hotel (Enter g r (k,k') # t) \<Longrightarrow>
    prefer 2 apply fastsimp
   apply (erule conjE)+
   apply(drule ownsD)
-  apply(clarsimp simp add:safe_def)
+  apply(clarsimp simp add:Trace.safe_def)
   apply(frule (1) same_key2D)
   apply(rule_tac x = s\<^isub>1 in exI)
   apply(rule_tac x = s\<^isub>2 in exI)
