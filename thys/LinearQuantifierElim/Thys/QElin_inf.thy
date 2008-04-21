@@ -1,4 +1,4 @@
-(*  ID:         $Id: QElin_inf.thy,v 1.5 2008-03-18 02:32:34 makarius Exp $
+(*  ID:         $Id: QElin_inf.thy,v 1.6 2008-04-21 07:59:06 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -10,7 +10,7 @@ subsection {*Quantifier elimination with infinitesimals \label{sec:lin-inf}*}
 
 text{* This section formalizes Loos and Weispfenning's quantifier
 elimination procedure based on (the simulation of)
-infenitesimals~\cite{LoosW93}. *}
+infinitesimals~\cite{LoosW93}. *}
 
 fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^isub>+") where
 "asubst_peps (r,cs) (Less s (d#ds)) =

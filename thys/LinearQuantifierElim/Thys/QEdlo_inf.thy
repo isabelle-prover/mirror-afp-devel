@@ -1,5 +1,4 @@
-
-(*  ID:         $Id: QEdlo_inf.thy,v 1.3 2008-01-21 17:45:36 nipkow Exp $
+(*  ID:         $Id: QEdlo_inf.thy,v 1.4 2008-04-21 07:59:06 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -7,10 +6,10 @@ theory QEdlo_inf
 imports DLO
 begin
 
-subsection "Quantifier elimination with infenitesimals"
+subsection "Quantifier elimination with infinitesimals"
 
 text{* This section presents a new quantifier elimination procedure
-for dense linear orders based on (the simulation of) infenitesimals.
+for dense linear orders based on (the simulation of) infinitesimals.
 It is a fairly straightforward adaptation of the analogous algorithm
 by Loos and Weispfenning for linear arithmetic described in
 \S\ref{sec:lin-inf}. *}
