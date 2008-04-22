@@ -1,4 +1,4 @@
-(*  ID:         $Id: QE.thy,v 1.4 2008-04-02 14:02:56 fhaftmann Exp $
+(*  ID:         $Id: QE.thy,v 1.5 2008-04-22 06:33:48 fhaftmann Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -7,9 +7,6 @@ header{* Quantifier elimination *}
 theory QE
 imports Logic
 begin
-
-hide (open) const eq
-hide (open) const eq
 
 text{* \noindent
 The generic, i.e.\ theory-independent part of quantifier elimination.
