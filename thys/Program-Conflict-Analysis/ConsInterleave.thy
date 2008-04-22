@@ -33,24 +33,17 @@ lemma mon_pl_ileq: "w\<preceq>w' \<Longrightarrow> mon_pl w \<subseteq> mon_pl w
 lemma mon_pl_set: "mon_pl w = \<Union>{ fst e \<union> snd e | e. e\<in>set w }"
   by (unfold mon_pl_def) (safe, auto simp add: Bex_def foldl_set)
 
-consts cil :: "('a \<Rightarrow> ('m set \<times> 'm set)) \<times> ('a list) \<times> ('a list) \<Rightarrow> 'a list set"
-
-subsection "Definition of consistent interleaving"
-syntax
-  cons_interleave :: "'a list \<Rightarrow> ('a \<Rightarrow> ('m set \<times> 'm set)) \<Rightarrow> 'a list \<Rightarrow> 'a list set" 
-    ("_ \<otimes>\<^bsub>_\<^esub> _" [64,64,64] 64)
-translations
-  "a\<otimes>\<^bsub>\<alpha>\<^esub>b" == "cil (\<alpha>,a,b)"
-
-recdef "cil" "measure (\<lambda>(\<alpha>,x,y). length x + length y)"
+fun
+  cil :: "'a list \<Rightarrow> ('a \<Rightarrow> ('m set \<times> 'm set)) \<Rightarrow> 'a list \<Rightarrow> 'a list set" 
+    ("_ \<otimes>\<^bsub>_\<^esub> _" [64,64,64] 64) where
   -- "Interleaving with the empty word results in the empty word"
   "[] \<otimes>\<^bsub>\<alpha> \<^esub> w = {w}" 
-  "w \<otimes>\<^bsub>\<alpha>\<^esub> [] = {w}"
+  | "w \<otimes>\<^bsub>\<alpha>\<^esub> [] = {w}"
   -- "If both words are not empty, we can take the first step of one word, 
   interleave the rest with the other word and then append
   the first step to all result set elements, provided it does not allocate 
   a monitor that is used by the other word"
-  "e1#w1 \<otimes>\<^bsub>\<alpha>\<^esub> e2#w2 = (
+  | "e1#w1 \<otimes>\<^bsub>\<alpha>\<^esub> e2#w2 = (
     if fst (\<alpha> e1) \<inter> mon_pl (map \<alpha> (e2#w2)) = {} then 
       e1\<cdot>(w1 \<otimes>\<^bsub>\<alpha>\<^esub> e2#w2) 
     else {}
@@ -58,7 +51,7 @@ recdef "cil" "measure (\<lambda>(\<alpha>,x,y). length x + length y)"
     if fst (\<alpha> e2) \<inter> mon_pl (map \<alpha> (e1#w1)) = {} then 
       e2\<cdot>(e1#w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2) 
     else {}
-  )" 
+  )"
 
 text {* Note that this definition allows reentrant monitors, because it only checks that a monitor that is going to be entered by one word is not used in the {\em other} word. Thus the same word may enter the same monitor
   multiple times. *}
@@ -83,14 +76,13 @@ lemma cil_cases[cases set, case_names both_empty left_empty right_empty app_left
     !!eb wb' w'. \<lbrakk>w=eb#w'; wb=eb#wb'; w'\<in>wa\<otimes>\<^bsub>\<alpha>\<^esub>wb'; 
                   fst (\<alpha> eb) \<inter> mon_pl (map \<alpha> wa) = {}  \<rbrakk> \<Longrightarrow> P
   \<rbrakk> \<Longrightarrow> P"
-proof (induct \<alpha> wa wb rule: cil.induct)
+proof (induct wa \<alpha> wb rule: cil.induct)
   case 1 thus ?case by simp next
   case 2 thus ?case by simp next
-  case 3 thus ?case by simp next
-  case (4 \<alpha> ea wa' eb wb') 
-  from "4.prems"(1) show ?thesis proof (cases rule: cil_last_case_split)
-    case (left w') from "4.prems"(5)[OF left(1) _ left(2,3)] show ?thesis by simp next
-    case (right w') from "4.prems"(6)[OF right(1) _ right(2,3)] show ?thesis by simp
+  case (3 ea wa' \<alpha> eb wb') 
+  from "3.prems"(1) show ?thesis proof (cases rule: cil_last_case_split)
+    case (left w') from "3.prems"(5)[OF left(1) _ left(2,3)] show ?thesis by simp next
+    case (right w') from "3.prems"(6)[OF right(1) _ right(2,3)] show ?thesis by simp
   qed
 qed
 
@@ -103,7 +95,10 @@ lemma cil_induct'[case_names both_empty left_empty right_empty append]: "\<lbrak
     \<lbrakk>fst (\<alpha> e2) \<inter> mon_pl (map \<alpha> (e1 # w1)) = {}\<rbrakk> \<Longrightarrow> P \<alpha> (e1 # w1) w2\<rbrakk> 
   \<Longrightarrow> P \<alpha> (e1 # w1) (e2 # w2)
   \<rbrakk> \<Longrightarrow> P \<alpha> wa wb"
-  by (induct rule: cil.induct) (blast+)
+  apply (induct wa \<alpha> wb rule: cil.induct)
+  apply (case_tac w)
+  apply auto
+  done
   
 lemma cil_induct_fix\<alpha>: "\<lbrakk>
   P \<alpha> [] []; 
@@ -114,8 +109,10 @@ lemma cil_induct_fix\<alpha>: "\<lbrakk>
      fst (\<alpha> e1) \<inter> mon_pl (map \<alpha> (e2 # w2)) = {} \<longrightarrow> P \<alpha> w1 (e2 # w2)\<rbrakk>
      \<Longrightarrow> P \<alpha> (e1 # w1) (e2 # w2)\<rbrakk>
   \<Longrightarrow> P \<alpha> v w"
-  by (induct rule: cil.induct) (blast+)
-
+  apply (induct v \<alpha> w rule: cil.induct)
+  apply (case_tac w)
+  apply auto
+  done
 
 lemma cil_induct_fix\<alpha>'[case_names both_empty left_empty right_empty append]: "\<lbrakk>
   P \<alpha> [] []; 
@@ -126,13 +123,16 @@ lemma cil_induct_fix\<alpha>'[case_names both_empty left_empty right_empty appen
     fst (\<alpha> e2) \<inter> mon_pl (map \<alpha> (e1 # w1)) = {} \<Longrightarrow> P \<alpha> (e1 # w1) w2\<rbrakk> 
     \<Longrightarrow> P \<alpha> (e1 # w1) (e2 # w2)
   \<rbrakk> \<Longrightarrow> P \<alpha> wa wb"
-  by (induct rule: cil_induct') (blast+)
+  apply (induct wa \<alpha> wb rule: cil.induct)
+  apply (case_tac w)
+  apply auto
+  done
 
 lemma [simp]: "w\<otimes>\<^bsub>\<alpha>\<^esub>[] = {w}"
   by (cases w, auto)
 
 lemma cil_contains_empty[rule_format, simp]: "([] \<in> wa\<otimes>\<^bsub>\<alpha>\<^esub>wb) = (wa=[] \<and> wb=[])"
-  by (induct \<alpha> wa wb rule: cil.induct) auto
+  by (induct wa \<alpha> wb rule: cil.induct) auto
 
 lemma cil_cons_cases[cases set, case_names left right]: "\<lbrakk> e#w \<in> w1\<otimes>\<^bsub>\<alpha>\<^esub>w2; 
   !!w1'. \<lbrakk>w1=e#w1'; w\<in>w1'\<otimes>\<^bsub>\<alpha>\<^esub>w2; fst (\<alpha> e) \<inter> mon_pl (map \<alpha> w2) = {} \<rbrakk> \<Longrightarrow> P;
@@ -171,7 +171,12 @@ subsection "Properties of consistent interleaving"
 
 -- {* Consistent interleaving is a restriction of interleaving *}
 lemma cil_subset_il: "w\<otimes>\<^bsub>\<alpha>\<^esub>w' \<subseteq> w\<otimes>w'"
-  by (induct rule: cil.induct) (auto simp add: mon_pl_def)
+  apply (induct w \<alpha> w' rule: cil.induct)
+  apply simp_all
+  apply safe
+  apply auto
+  done
+
 lemma cil_subset_il': "w\<in>w1\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<Longrightarrow> w\<in>w1\<otimes>w2" 
   using cil_subset_il by (auto)
 

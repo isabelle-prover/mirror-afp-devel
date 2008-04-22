@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pigeonholeprinciple.thy
-    ID:         $Id: Pigeonholeprinciple.thy,v 1.5 2007-10-23 20:52:25 nipkow Exp $
+    ID:         $Id: Pigeonholeprinciple.thy,v 1.6 2008-04-22 06:34:06 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -22,9 +22,6 @@ consts
   timeslist:: "nat list \<Rightarrow> nat"
   fac:: "nat \<Rightarrow> nat"
   del:: "nat \<Rightarrow> nat list \<Rightarrow> nat list"
-  pigeonholeinduction::" nat list \<Rightarrow> bool"
-  insort:: "nat \<Rightarrow> nat list \<Rightarrow> nat list"
-  sort:: "nat list \<Rightarrow> nat list"
 
 primrec 
   "alldistinct [] = True"
@@ -54,24 +51,29 @@ primrec
   "del a [] = []"
   "del a (x#xs) = (if a \<noteq> x then x # (del a xs) else xs)" 
 
-lemma length_del [rule_format]: "x mem xs \<longrightarrow> length (del x xs) < length xs"
+lemma length_del: "x mem xs \<Longrightarrow> length (del x xs) < length xs"
   by (induct xs) auto
 
-recdef pigeonholeinduction "measure length"
+function pigeonholeinduction where
   "pigeonholeinduction [] = True"
-  "pigeonholeinduction (x#xs) = (if ((length (x#xs)) mem xs) then (pigeonholeinduction (del (length (x#xs)) (x#xs))) else (pigeonholeinduction xs))"
-  (hints recdef_simp: length_del)
+  | "pigeonholeinduction (x#xs) = (if ((length (x#xs)) mem xs) then (pigeonholeinduction (del (length (x#xs)) (x#xs))) else (pigeonholeinduction xs))"
+by pat_completeness auto
 
-primrec
-  "insort x[] = [x]"
-  "insort x (y#ys) = (if (x < y) then (x#y#ys) else y#(insort x ys))"
+termination by (relation "measure size") (auto simp add: length_del)
 
-recdef sort "measure length"
-  "sort [] = []"
-  "sort (x#xs) = insort x (sort xs)"
+lemma old_pig_induct:
+  fixes P
+  assumes "P []"
+    and "(\<And>(x\<Colon>nat) xs\<Colon>nat list.
+    \<not> length (x # xs) mem xs \<longrightarrow> P xs \<Longrightarrow>
+    length (x # xs) mem xs \<longrightarrow> P (del (length (x # xs)) (x # xs)) \<Longrightarrow>
+    P (x # xs))"
+  shows "P x"
+  apply (rule pigeonholeinduction.induct)
+  using assms apply auto done
 
-constdefs perm:: "nat list \<Rightarrow> nat list \<Rightarrow> bool"
-  "perm xs ys == (sort xs = sort ys)"
+definition perm:: "nat list \<Rightarrow> nat list \<Rightarrow> bool" where
+  "perm xs ys \<longleftrightarrow> (sort xs = sort ys)"
 
 lemma allnonzerodelete[rule_format]: "(allnonzero xs) \<longrightarrow> allnonzero (del x xs)"
   apply (induct_tac xs)
@@ -106,25 +108,19 @@ lemma ainsort: "a mem (insort a b)"
   by (auto)
 
 lemma memeqsort: "x mem xs = x mem (sort xs)"
-  apply (induct_tac xs)
-  apply (simp)+
+  apply (induct xs)
+  apply simp
   apply (case_tac "x=a")
   apply (simp add: ainsort)+
   by (rule anotinsort, simp)
 
-lemma  permmember: "\<lbrakk>perm xs ys; x mem xs\<rbrakk> \<Longrightarrow> x mem ys"
+lemma permmember: "\<lbrakk>perm xs ys; x mem xs\<rbrakk> \<Longrightarrow> x mem ys"
   by (simp add:perm_def memeqsort [of x xs] memeqsort [of x ys])
-
-lemma seteqmem: "x \<in> set xs = x mem xs"
-  apply (induct_tac xs)
-  by (auto)
-
-lemma lengtheqSuc: "length (x#xs) = Suc (length xs)"
-  by (auto)
 
 lemma alllesseqdelete: "\<lbrakk>alldistinct (x#xs); alllesseq (x#xs) (length(x#xs))\<rbrakk> \<Longrightarrow> alllesseq (del (length(x#xs)) (x#xs)) (length (xs))"
   apply (insert pigeonholeprinciple_lemma1 [of "x#xs" "length xs" ])
-  by (simp only: lengtheqSuc)
+  apply simp
+  done
 
 lemma perminsert: "perm xs ys \<Longrightarrow> perm (a#xs) (a#ys)"
   by (simp add: perm_def)
@@ -185,8 +181,19 @@ lemma memsetpositives:"\<lbrakk>perm (positives (length xs)) xs; 0 < x; x \<le> 
   apply (simp add:set_upt)
   by (auto)
 
-lemma pigeonholeprinciple[rule_format]: "allnonzero xs \<longrightarrow> alldistinct xs \<longrightarrow> alllesseq xs (length xs) \<longrightarrow> perm (positives (length xs)) xs"
-  apply (induct_tac xs rule:pigeonholeinduction.induct)
+lemma pigeonholeprinciple:
+  "allnonzero xs \<Longrightarrow> alldistinct xs \<Longrightarrow> alllesseq xs (length xs) \<Longrightarrow> perm (positives (length xs)) xs"
+proof (induct xs rule: pigeonholeinduction.induct)
+  case 1 then show ?case by (simp add: perm_def)
+next
+  case (2 x xs) then show ?case
+  thm notE [of "allnonzero (del (length (x # xs)) (x # xs))"]
+  oops
+
+lemmas seteqmem = mem_iff [symmetric]
+
+lemma pigeonholeprinciple [rule_format]: "allnonzero xs \<longrightarrow> alldistinct xs \<longrightarrow> alllesseq xs (length xs) \<longrightarrow> perm (positives (length xs)) xs"
+  apply (induct xs rule: old_pig_induct)
   apply (simp add:perm_def)
   apply (safe)
   apply (erule_tac P="allnonzero (del (length (x # xs)) (x # xs))" in notE)

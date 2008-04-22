@@ -4,7 +4,7 @@
 *)
 header "List Interleaving Operator"
 theory Interleave
-imports Main Permutation Misc SublistOrder
+imports Main Permutation Misc
 begin
 text_raw {*\label{thy:Interleave}*}
 
@@ -311,10 +311,10 @@ qed
 lemma ileq_interleave: "w\<in>w1\<otimes>w2 \<Longrightarrow> w1\<preceq>w & w2\<preceq>w"
   by (unfold ileq_interleave_alt, auto)
 
-lemma ilt_ex_notempty: "x<y = (EX lb . lb ~= [] & y\<in>lb\<otimes>x)"
-  apply(unfold ilt_def ileq_interleave_alt, auto)
-  apply(case_tac lb)
-  apply(auto)
+lemma ilt_ex_notempty: "x < y \<longleftrightarrow> (\<exists>xs. xs \<noteq> [] \<and> y \<in> xs \<otimes> x)"
+  apply (auto simp add: order_less_le ileq_interleave_alt)
+  apply (case_tac lb)
+  apply auto
 done
 
 

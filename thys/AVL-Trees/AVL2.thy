@@ -1,5 +1,5 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL2.thy,v 1.4 2007-07-22 20:44:18 makarius Exp $
+    ID:         $Id: AVL2.thy,v 1.5 2008-04-22 06:34:05 fhaftmann Exp $
     Author:     Tobias Nipkow and Cornelia Pusch,
                 converted to Isar by Gerwin Klein
                 contributions by Achim Brucker, Burkhart Wolff and Jan Smaus
@@ -73,18 +73,14 @@ primrec
                          if k<n then (is_in\<^isub>0 k l)
                          else (is_in\<^isub>0 k r))"
 
-consts
- l_bal\<^isub>0 :: "'a * 'a tree\<^isub>0 * 'a tree\<^isub>0 \<Rightarrow> 'a tree\<^isub>0"
- r_bal\<^isub>0 :: "'a * 'a tree\<^isub>0 * 'a tree\<^isub>0 \<Rightarrow> 'a tree\<^isub>0"
-
-recdef l_bal\<^isub>0 "{}"
+fun l_bal\<^isub>0 where
 "l_bal\<^isub>0(n, MKT\<^isub>0 ln ll lr, r) =
  (if height ll < height lr
   then case lr of ET\<^isub>0 \<Rightarrow> ET\<^isub>0 (* impossible *)
                 | MKT\<^isub>0 lrn lrl lrr \<Rightarrow> MKT\<^isub>0 lrn (MKT\<^isub>0 ln ll lrl) (MKT\<^isub>0 n lrr r)
   else MKT\<^isub>0 ln ll (MKT\<^isub>0 n lr r))"
 
-recdef r_bal\<^isub>0 "{}"
+fun r_bal\<^isub>0 where
 "r_bal\<^isub>0(n, l, MKT\<^isub>0 rn rl rr) =
  (if height rl > height rr
   then case rl of ET\<^isub>0 \<Rightarrow> ET\<^isub>0 (* impossible *)
@@ -284,11 +280,7 @@ definition
  mkt :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "mkt x l r = MKT x l r (max (ht l) (ht r) + 1)"
 
-consts
- l_bal :: "'a * 'a tree * 'a tree \<Rightarrow> 'a tree"
- r_bal :: "'a * 'a tree * 'a tree \<Rightarrow> 'a tree"
-
-recdef l_bal "{}"
+fun l_bal where
 "l_bal(n, MKT ln ll lr h, r) =
  (if ht ll < ht lr
   then case lr of ET \<Rightarrow> ET (* impossible *)
@@ -296,7 +288,7 @@ recdef l_bal "{}"
                   mkt lrn (mkt ln ll lrl) (mkt n lrr r)
   else mkt ln ll (mkt n lr r))"
 
-recdef r_bal "{}"
+fun r_bal where
 "r_bal(n, l, MKT rn rl rr h) =
  (if ht rl > ht rr
   then case rl of ET \<Rightarrow> ET (* impossible *)

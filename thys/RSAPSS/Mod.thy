@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Mod.thy
-    ID:         $Id: Mod.thy,v 1.2 2007-07-19 19:50:53 fhaftmann Exp $
+    ID:         $Id: Mod.thy,v 1.3 2008-04-22 06:34:06 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -7,7 +7,7 @@
 header "Leammata for modular arithmetic"
 
 theory Mod
-imports Main Efficient_Nat
+imports Main
 begin
 
 lemma divmultassoc: "a div (b*c) * (b*c) = ((a div (b * c)) * b)*(c::nat)"
@@ -43,12 +43,5 @@ lemma remainderexp: "((a mod (n::nat))^i) mod n = (a^i) mod n"
   apply (subst timesmod3);
   apply (rule remainderexplemma);
   by (auto)
-
-lemma oneexp: "(1::nat)^n = 1"
-  apply (induct_tac n);
-  by (auto);
-
-lemma sucis: "Suc 0 = (1::nat)"
-  by (auto);
 
 end

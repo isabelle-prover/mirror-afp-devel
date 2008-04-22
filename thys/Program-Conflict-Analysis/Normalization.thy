@@ -1370,7 +1370,7 @@ next
       "(cet,w22,ce22')\<in>trcl (ntr fg)" by blast 
     
     -- {* And finally we add the path from @{term s} again. This requires some monitor sorting and the associativity of the consistent interleaving operator. *}
-    from cil_assoc2[of w _ w1 w2 w22 w21] SPLIT(2) IHAPP(3) obtain wl where CASSOC: "w\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>wl" "wl\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" by (auto simp add: cil_commute)
+    from cil_assoc2 [of w w1 _ w2 w22 w21] SPLIT(2) IHAPP(3) obtain wl where CASSOC: "w\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>wl" "wl\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" by (auto simp add: cil_commute)
     from CASSOC IHAPP(1,3,4,5) SPLIT(3,4) have COMBINE: "({#s#} + cet, wl, ce1' + ce22') \<in> trcl (ntr fg)" by (rule_tac ntr_unsplit[OF CASSOC(2) SPLIT(5) IHAPP(7)]) (auto simp add: mon_c_unconc mon_ww_cil) 
     moreover from CASSOC IHAPP(1,3,4,5) SPLIT(3,4) have "mon_s fg st \<inter> (mon_c fg ({#s#}+cet) \<union> mon_ww fg wl) = {}" "mon_c fg ({#s#}+cet) \<inter> (mon_s fg st \<union> mon_ww fg w21) = {}" by (auto simp add: mon_c_unconc mon_ww_cil)
     moreover from right IHAPP(1,2) have "{#s#}+ce={#st#}+({#s#}+cet)" "ce'=ce21'+(ce1'+ce22')" by (simp_all add: union_ac)
@@ -1379,5 +1379,4 @@ next
   qed
 qed
     
-
 end

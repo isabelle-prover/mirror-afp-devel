@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pdifference.thy
-    ID:         $Id: Pdifference.thy,v 1.5 2007-10-23 20:52:24 nipkow Exp $
+    ID:         $Id: Pdifference.thy,v 1.6 2008-04-22 06:34:06 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -9,17 +9,12 @@ theory Pdifference
 imports Primes Mod
 begin
 
-consts pdifference:: "nat * nat => nat"
-recdef pdifference "measure (% (a, b). a)"
-  "pdifference (a,b) = (if a < b then (b-a)
+definition pdifference:: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  [simp]: "pdifference a b = (if a < b then (b-a)
                        else (a-b))"
 
-lemma timesdistributesoverpdifference: "m*(pdifference (a,b)) = pdifference ((m*(a::nat)), (m* (b::nat)))"
-  apply (auto);
-  apply (induct_tac m);
-  apply (auto);
-  apply (induct_tac m);
-  by (auto)
+lemma timesdistributesoverpdifference: "m*(pdifference a b) = pdifference (m*(a::nat)) (m* (b::nat))"
+  by (auto simp add: nat_distrib)
 
 lemma addconst: "a = (b::nat) \<Longrightarrow> c+a = c+b"
   by (auto)
@@ -35,7 +30,7 @@ lemma invers2: "\<lbrakk>a \<le> b;(b-a) = p*q\<rbrakk> \<Longrightarrow> (b::na
 lemma modadd: "\<lbrakk>b = a+p*q\<rbrakk> \<Longrightarrow> (a::nat) mod p = b mod p"
   by (auto)
 
-lemma equalmodstrick1: "pdifference (a,b) mod p = 0 \<Longrightarrow> a mod p = b mod p"
+lemma equalmodstrick1: "pdifference a b mod p = 0 \<Longrightarrow> a mod p = b mod p"
   apply (case_tac "a < b");
   apply (auto);
   apply (rule modadd, rule invers2, auto);
@@ -54,7 +49,7 @@ lemma diff_add_diff [rule_format]: "(x \<le> b) \<longrightarrow> (b::nat) - x +
   apply (induct_tac b)
   by (auto)
 
-lemma equalmodstrick2: "a mod p = b mod p \<Longrightarrow>  pdifference (a,b) mod p = 0"
+lemma equalmodstrick2: "a mod p = b mod p \<Longrightarrow>  pdifference a b mod p = 0"
   apply (auto);
   apply (drule mod_eqD [simplified], auto)
   apply (subst mod_div_equality' [of b])

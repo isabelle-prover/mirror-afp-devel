@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: General.thy,v 1.3 2008-04-14 20:01:50 makarius Exp $
+    ID:          $Id: General.thy,v 1.4 2008-04-22 06:34:05 fhaftmann Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -42,28 +42,26 @@ primrec
 "root Tip = Null"
 "root (Node l a r) = a"
 
-consts isLeaf :: "dag \<Rightarrow> bool"
-recdef isLeaf "measure size"
+fun isLeaf :: "dag \<Rightarrow> bool" where
 "isLeaf Tip = False"
-"isLeaf (Node Tip v Tip) = True"
-"isLeaf (Node (Node l v\<^isub>1 r) v\<^isub>2 Tip) = False"
-"isLeaf (Node Tip v\<^isub>1 (Node l v\<^isub>2 r)) = False"
+| "isLeaf (Node Tip v Tip) = True"
+| "isLeaf (Node (Node l v\<^isub>1 r) v\<^isub>2 Tip) = False"
+| "isLeaf (Node Tip v\<^isub>1 (Node l v\<^isub>2 r)) = False"
 
 datatype bdt = Zero | One | Bdt_Node bdt nat bdt
 
-consts bdt_fn :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt option"
-recdef bdt_fn "measure size"
+fun bdt_fn :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt option" where
 "bdt_fn Tip = (\<lambda>bdtvar . None)"
-"bdt_fn (Node Tip vref Tip) = 
+| "bdt_fn (Node Tip vref Tip) = 
     (\<lambda>bdtvar . 
           (if (bdtvar vref = 0) 
            then Some Zero 
 	         else (if (bdtvar vref = 1) 
                  then Some One
                  else None)))"  
-"bdt_fn (Node Tip vref (Node l vref1 r)) = (\<lambda>bdtvar . None)"
-"bdt_fn (Node (Node l vref1 r) vref Tip) = (\<lambda>bdtvar . None)"
-"bdt_fn (Node (Node l1 vref1 r1) vref (Node l2 vref2 r2)) = 
+| "bdt_fn (Node Tip vref (Node l vref1 r)) = (\<lambda>bdtvar . None)"
+| "bdt_fn (Node (Node l vref1 r) vref Tip) = (\<lambda>bdtvar . None)"
+| "bdt_fn (Node (Node l1 vref1 r1) vref (Node l2 vref2 r2)) = 
   (\<lambda>bdtvar .
     (if (bdtvar vref = 0 \<or> bdtvar vref = 1) 
      then None 
@@ -74,7 +72,7 @@ recdef bdt_fn "measure size"
          (case (bdt_fn (Node l2 vref2 r2) bdtvar) of 
           None \<Rightarrow> None
          |(Some b2) \<Rightarrow> Some (Bdt_Node b1 (bdtvar vref) b2)))))"
-(hints cong add: option.case_cong if_cong) 
+
 (*
 Kongruenzregeln sind das Feintuning für den Simplifier (siehe Kapitel 9 im Isabelle
 Tutorial). Im Fall von case wird standardmäßig nur die case bedingung nicht
@@ -93,30 +91,28 @@ primrec
  
 (*A given bdt is ordered if it is a One or Zero or its value is smaller than
 its parents value*)
-consts ordered_bdt:: "bdt \<Rightarrow> bool"
-recdef ordered_bdt "measure size"  
+fun ordered_bdt:: "bdt \<Rightarrow> bool" where
 "ordered_bdt Zero = True"
-"ordered_bdt One = True"
-"ordered_bdt (Bdt_Node (Bdt_Node l1 v1 r1) v (Bdt_Node l2 v2 r2)) = 
+| "ordered_bdt One = True"
+| "ordered_bdt (Bdt_Node (Bdt_Node l1 v1 r1) v (Bdt_Node l2 v2 r2)) = 
     ((v1 < v) \<and> (v2 < v) \<and> 
      (ordered_bdt (Bdt_Node l1 v1 r1)) \<and> (ordered_bdt (Bdt_Node l2 v2 r2)))"
-"ordered_bdt (Bdt_Node (Bdt_Node l1 v1 r1) v r) = 
+| "ordered_bdt (Bdt_Node (Bdt_Node l1 v1 r1) v r) = 
     ((v1 < v) \<and> (ordered_bdt (Bdt_Node l1 v1 r1)))"
-"ordered_bdt (Bdt_Node l v (Bdt_Node l2 v2 r2)) = 
+| "ordered_bdt (Bdt_Node l v (Bdt_Node l2 v2 r2)) = 
     ((v2 < v) \<and> (ordered_bdt (Bdt_Node l2 v2 r2)))"
-"ordered_bdt (Bdt_Node l v r) = True"
+| "ordered_bdt (Bdt_Node l v r) = True"
 
 (*In case t = (Node Tip v Tip) v should have the values 0 or 1. This is not checked by this function*)
-consts ordered:: "dag \<Rightarrow> (ref\<Rightarrow>nat) \<Rightarrow> bool"
-recdef ordered "measure size"
+fun ordered:: "dag \<Rightarrow> (ref\<Rightarrow>nat) \<Rightarrow> bool" where
 "ordered Tip = (\<lambda> var. True)"
-"ordered (Node (Node l\<^isub>1 v\<^isub>1 r\<^isub>1) v (Node l\<^isub>2 v\<^isub>2 r\<^isub>2)) = 
+| "ordered (Node (Node l\<^isub>1 v\<^isub>1 r\<^isub>1) v (Node l\<^isub>2 v\<^isub>2 r\<^isub>2)) = 
     (\<lambda> var. (var v\<^isub>1 < var v \<and> var v\<^isub>2 < var v) \<and> 
         (ordered (Node l\<^isub>1 v\<^isub>1 r\<^isub>1) var) \<and> (ordered (Node l\<^isub>2 v\<^isub>2 r\<^isub>2) var))"
-"ordered (Node Tip v Tip) = (\<lambda> var. (True))"
-"ordered (Node Tip v r) = 
+| "ordered (Node Tip v Tip) = (\<lambda> var. (True))"
+| "ordered (Node Tip v r) = 
      (\<lambda> var. (var (root r) < var v) \<and> (ordered r var))"
-"ordered (Node l v Tip) = 
+| "ordered (Node l v Tip) = 
      (\<lambda> var. (var (root l) < var v) \<and> (ordered l var))"
  
 
@@ -708,11 +704,10 @@ defs shared_lower_levels_def : "shared_lower_levels t i bdtvar == \<forall> st1 
 *)
 
 
-consts reduced :: "dag \<Rightarrow> bool"
-recdef reduced "measure size"
+fun reduced :: "dag \<Rightarrow> bool" where
 "reduced Tip = True"
-"reduced (Node Tip v Tip) = True"
-"reduced (Node l v r) = (l \<noteq> r \<and> reduced l \<and> reduced r)"  
+| "reduced (Node Tip v Tip) = True"
+| "reduced (Node l v r) = (l \<noteq> r \<and> reduced l \<and> reduced r)"  
 
 consts reduced_bdt :: "bdt \<Rightarrow> bool"
 primrec
