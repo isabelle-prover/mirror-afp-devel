@@ -1,7 +1,7 @@
 (*  Title:      Jinja/J/WellTypeRT.thy
+    ID:         $Id: WellTypeRT.thy,v 1.3 2008-04-23 08:43:38 alochbihler Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
-
-    Based on the Jinja theory J/WellTypeRT by Tobias Nipkow
+    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Runtime Well-typedness} *}
@@ -103,6 +103,10 @@ inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> exp
     "\<lbrakk> WTrt P h E e T; is_refT T; T \<noteq> NT \<rbrakk>
     \<Longrightarrow> WTrt P h E (e\<bullet>notifyAll([])) Void"
 
+| WTrtJoin:
+    "\<lbrakk> WTrt P h E e (Class C); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+    \<Longrightarrow> WTrt P h E (e\<bullet>join([])) Void"
+
 | WTrtBlock:
     "WTrt P h (E(V\<mapsto>T)) e T' \<Longrightarrow> WTrt P h E {V:T; e} T'"
 
@@ -113,6 +117,10 @@ inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> exp
 | WTrtSynchronizedNT:
     "\<lbrakk> WTrt P h E o' NT; WTrt P h E e T \<rbrakk>
     \<Longrightarrow> WTrt P h E (sync(o') e) T'"
+
+| WTrtInSynchronized:
+    "\<lbrakk> WTrt P h E (addr a) T; WTrt P h E e T' \<rbrakk>
+    \<Longrightarrow> WTrt P h E (insync(a) e) T'"
 
 | WTrtSeq:
     "\<lbrakk> WTrt P h E e1 T1; WTrt P h E e2 T2 \<rbrakk>
@@ -150,6 +158,7 @@ declare
   WTrtWait[rule del]
   WTrtNotify[rule del]
   WTrtNotifyAll[rule del]
+  WTrtJoin[rule del]
 
 subsection{*Easy consequences*}
 
@@ -201,8 +210,10 @@ inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> e\<bullet>wait([]) : T"
   "P,E,h \<turnstile> e\<bullet>notify([]) : T"
   "P,E,h \<turnstile> e\<bullet>notifyAll([]) : T"
+  "P,E,h \<turnstile> e\<bullet>join([]) : T"
   "P,E,h \<turnstile> e\<bullet>M(es) : T"
   "P,E,h \<turnstile> sync(o') e : T"
+  "P,E,h \<turnstile> insync(a) e : T"
 
 subsection{*Some interesting lemmas*}
 
@@ -248,11 +259,13 @@ apply(fastsimp intro: WTrtNewThread)
 apply(fastsimp intro: WTrtWait)
 apply(fastsimp intro: WTrtNotify)
 apply(fastsimp intro: WTrtNotifyAll)
+apply(fastsimp intro: WTrtJoin)
 apply(fastsimp simp: map_le_def)
 apply(rule WTrtSynchronized)
   apply(blast)
  apply(assumption)
 apply(fastsimp)
+apply(fastsimp intro: WTrtInSynchronized)
 apply(fastsimp)
 apply(fastsimp)
 apply(fastsimp simp: WTrtSeq)
@@ -261,7 +274,7 @@ apply(fastsimp simp: WTrtWhile)
 apply(fastsimp simp: WTrtThrow)
 apply(auto simp: WTrtTry map_le_def dom_def)
 done
-(*>*)
+
 
 
 lemma WTrt_hext_mono: "P,E,h \<turnstile> e : T \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> e : T"
@@ -307,6 +320,7 @@ apply(fastsimp intro: WTrtNewThread)
 apply(fastsimp intro: WTrtWait)
 apply(fastsimp intro: WTrtNotify)
 apply(fastsimp intro: WTrtNotifyAll)
+apply(fastsimp intro: WTrtJoin)
 apply(fastsimp)
 apply(rule WTrtSynchronized)
   apply(blast)
@@ -314,6 +328,7 @@ apply(rule WTrtSynchronized)
 apply(fastsimp)
 apply(fastsimp)
 apply(fastsimp)
+apply(fastsimp intro: WTrtInSynchronized)
 apply(fastsimp simp add: WTrtSeq)
 apply(fastsimp simp add: WTrtCond)
 apply(fastsimp simp add: WTrtWhile)
@@ -347,6 +362,7 @@ apply(fastsimp intro: WTrtNewThread)
 apply(fastsimp intro: WTrtWait)
 apply(fastsimp intro: WTrtNotify)
 apply(fastsimp intro: WTrtNotifyAll)
+apply(fastsimp intro: WTrtJoin)
 apply(fastsimp)
 apply(erule WTrtSynchronized)
  apply(assumption)+

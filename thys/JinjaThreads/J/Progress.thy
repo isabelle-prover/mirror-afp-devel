@@ -1,7 +1,7 @@
-(*  Title:      JinjaThreads/J/SmallProgress.thy
+(*  Title:      Jinja/J/SmallProgress.thy
+    ID:         $Id: Progress.thy,v 1.3 2008-04-23 08:43:37 alochbihler Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
-
-    Based on the Jinja theory J/Progress by Tobias Nipkow
+    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Progress of Small Step Semantics} *}
@@ -9,32 +9,12 @@ theory Progress
 imports WellTypeRT DefAss SmallStep "../Common/Conform" WWellForm
 begin
 
-definition final :: "expr \<Rightarrow> bool" where
-  "final e \<equiv> (\<exists>v. e = Val v) \<or> (\<exists>a. e = Throw a)"
-
-definition final_expr :: "expr \<times> locals \<Rightarrow> bool" where
-  "final_expr \<equiv> \<lambda>(e, x). final e"
-
-declare final_expr_def[simp]
-
-lemma [simp]: "final(Val v)"
-(*<*)by(simp add:final_def)(*>*)
-
-lemma [simp]: "final(throw e) = (\<exists>a. e = addr a)"
-(*<*)by(simp add:final_def)(*>*)
-
-lemma finalE: "\<lbrakk> final e;  \<And>v. e = Val v \<Longrightarrow> R;  \<And>a. e = Throw a \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
-(*<*)by(auto simp:final_def)(*>*)
-
-lemma final_locks: "final e \<Longrightarrow> expr_locks e l = 0"
-by(auto elim: finalE)
 
 lemma final_addrE:
   "\<lbrakk> P,E,h \<turnstile> e : Class C; final e;
     \<And>a. e = addr a \<Longrightarrow> R;
     \<And>a. e = Throw a \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
-(*<*)apply(auto simp:final_def)(*>*)
-done
+by(auto elim!: final.cases)
 
 lemma finalRefE:
  "\<lbrakk> P,E,h \<turnstile> e : T; is_refT T; final e;
@@ -42,60 +22,7 @@ lemma finalRefE:
    \<And>a C. \<lbrakk> e = addr a; T = Class C \<rbrakk> \<Longrightarrow> R;
    \<And>a U. \<lbrakk> e = addr a; T = U\<lfloor>\<rceil> \<rbrakk> \<Longrightarrow> R;
    \<And>a. e = Throw a \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
-(*<*)by(auto simp:final_def is_refT_def)(*>*)
-
-definition finals:: "'a exp list \<Rightarrow> bool" where
-  "finals es  \<equiv>  (\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
-
-lemma [iff]: "finals []"
-(*<*)by(simp add:finals_def)(*>*)
-
-lemma [iff]: "finals (Val v # es) = finals es"
-(*<*)
-apply(clarsimp simp add:finals_def)
-apply(rule iffI)
- apply(erule disjE)
-  apply(fastsimp)
- apply(rule disjI2)
- apply clarsimp
- apply(case_tac vs)
-  apply simp
- apply fastsimp
-apply(erule disjE)
- apply(erule exE)
- apply(rule disjI1)
- apply(rule_tac x="v#vs" in exI)
- apply(simp) 
-apply(rule disjI2)
-apply clarsimp
-apply(rule_tac x = "v#vs" in exI)
-apply simp
-done
-(*>*)
-
-lemma finals_app_map[iff]: "finals (map Val vs @ es) = finals es"
-(*<*)by(induct_tac vs, auto)(*>*)
-
-lemma [iff]: "finals (map Val vs)"
-(*<*)using finals_app_map[of vs "[]"]by(simp)(*>*)
-
-lemma [iff]: "finals (throw e # es) = (\<exists>a. e = addr a)"
-(*<*)
-apply(simp add:finals_def)
-apply(rule iffI)
- apply(erule disjE)
-  apply(clarsimp)
- apply clarsimp
- apply(case_tac vs)
-  apply simp
- apply fastsimp
-apply(erule exE)
-apply(rule disjI2)
-apply(rule_tac x = "[]" in exI)
-apply simp
-done
-(*>*)
-
+by(auto simp:final_iff elim!: refTE)
 
 
 inductive WTrt' :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"
@@ -144,6 +71,8 @@ inductive WTrt' :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> ex
 
 | "\<lbrakk> WTrt' P h E e T; is_refT T; T \<noteq> NT \<rbrakk> \<Longrightarrow> WTrt' P h E (e\<bullet>notifyAll([])) Void"
 
+| "\<lbrakk> WTrt' P h E e (Class C); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> WTrt' P h E (e\<bullet>join([])) Void"
+
 | "\<lbrakk> typeof\<^bsub>h\<^esub> v = Some T1; P \<turnstile> T1 \<le> T; WTrt' P h (E(V\<mapsto>T)) e2 T2 \<rbrakk> \<Longrightarrow> WTrt' P h E {V:T := Val v; e2} T2"
 
 | "\<lbrakk> WTrt' P h (E(V\<mapsto>T)) e T'; \<not> assigned V e \<rbrakk> \<Longrightarrow> WTrt' P h E {V:T; e} T'"
@@ -151,6 +80,8 @@ inductive WTrt' :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> ex
 | "\<lbrakk> WTrt' P h E o' T; is_refT T; T \<noteq> NT; WTrt' P h E e T' \<rbrakk> \<Longrightarrow> WTrt' P h E (sync(o') e) T'"
 
 | "\<lbrakk> WTrt' P h E o' NT; WTrt' P h E e T \<rbrakk> \<Longrightarrow> WTrt' P h E (sync(o') e) T'"
+
+| "\<lbrakk> WTrt' P h E (addr a) T; WTrt' P h E e T' \<rbrakk> \<Longrightarrow> WTrt' P h E (insync(a) e) T'"
 
 | "\<lbrakk> WTrt' P h E e1 T1; WTrt' P h E e2 T2 \<rbrakk> \<Longrightarrow> WTrt' P h E (e1;;e2) T2"
 
@@ -219,13 +150,14 @@ apply(blast intro:WTrt'.intros)
 apply(blast intro:WTrt'.intros)
 apply(blast intro:WTrt'.intros)
 apply(blast intro:WTrt'.intros)
+apply(blast intro:WTrt'.intros)
 apply(case_tac "assigned V e")
 apply(clarsimp simp add:fun_upd_same assigned_def simp del:fun_upd_apply)
 apply(erule (2) WTrt'.intros)
 apply(erule (1) WTrt'.intros)
 apply(blast intro:WTrt'.intros)+
 done
-(*>*)
+
 
 
 lemma wt'_wt: "P,E,h \<turnstile> e :' T \<Longrightarrow> P,E,h \<turnstile> e : T"
@@ -256,6 +188,7 @@ apply(erule WTrtNewThread, assumption)
 apply(erule WTrtWait, assumption, assumption)
 apply(erule WTrtNotify, assumption, assumption)
 apply(erule WTrtNotifyAll, assumption, assumption)
+apply(erule WTrtJoin, assumption)
 apply(rule WTrt.intros)
 apply(rule WTrt.intros)
 apply(rule WTrt.intros)
@@ -268,23 +201,21 @@ apply(assumption)+
 apply(erule WTrtSynchronizedNT, assumption)
 apply(blast intro: WTrt.intros)+
 done
-(*>*)
+
 
 
 corollary wt'_iff_wt: "(P,E,h \<turnstile> e :' T) = (P,E,h \<turnstile> e : T)"
-(*<*)by(blast intro:wt_wt' wt'_wt)(*>*)
+by(blast intro:wt_wt' wt'_wt)
 
 
 (*<*)
 lemmas WTrt_induct2 = WTrt'.inducts[unfolded wt'_iff_wt,
  case_names WTrtNew WTrtNewArray WTrtCast WTrtVal WTrtVar WTrtBinOpEq WTrtBinOpAdd WTrtLAss
  WTrtAAcc WTrtAAccNT WTrtAAss WTrtAAssNT WTrtFAcc WTrtFAccNT WTrtFAss
- WTrtFAssNT WTrtCall WTrtCallNT WTrtNewThread WTrtWait WTrtNotify WTrtNotifyAll
- WTrtInitBlock WTrtBlock WTrtSynchronized WTrtSynchronizedNT WTrtSeq WTrtCond
+ WTrtFAssNT WTrtCall WTrtCallNT WTrtNewThread WTrtWait WTrtNotify WTrtNotifyAll WTrtJoin
+ WTrtInitBlock WTrtBlock WTrtSynchronized WTrtSynchronizedNT WTrtInSynchronized WTrtSeq WTrtCond
  WTrtWhile WTrtThrow WTrtTry, consumes 1]
 (*>*)
-
-
 
 
 theorem red_progress:
@@ -393,7 +324,7 @@ next
     from IH[OF De nf] show ?thesis by (blast intro:CastRed)
   qed
 next
-  case WTrtVal thus ?case by(simp add:final_def)
+  case WTrtVal thus ?case by(simp add:final_iff)
 next
   case WTrtVar thus ?case by(fastsimp intro:RedVar simp:hyper_isin_def)
 next
@@ -463,7 +394,7 @@ next
   show ?case
   proof cases
     assume "final e" from prems show ?thesis
-      by(fastsimp simp:final_def intro!:RedLAss LAssThrow)
+      by(fastsimp simp:final_iff intro!:RedLAss LAssThrow)
   next
     assume "\<not> final e" from prems show ?thesis
       by simp (fast intro:LAssRed)
@@ -784,18 +715,18 @@ next
       proof (cases "final e")
 	assume fe: "final e"
 	from prems show ?thesis
-	  by(fastsimp simp:final_def intro: RedAAssNull AAssThrow1 AAssThrow2 AAssThrow3)
+	  by(fastsimp simp:final_iff intro: RedAAssNull AAssThrow1 AAssThrow2 AAssThrow3)
       next
 	assume "\<not> final e"
-	from prems show ?thesis by (fastsimp simp: final_def intro!:AAssRed3 AAssThrow1 AAssThrow2)
+	from prems show ?thesis by (fastsimp simp: final_iff intro!:AAssRed3 AAssThrow1 AAssThrow2)
       qed
     next
       assume "\<not> final i"
-      from prems show ?thesis by (fastsimp simp: final_def intro!:AAssRed2 AAssThrow1)
+      from prems show ?thesis by (fastsimp simp: final_iff intro!:AAssRed2 AAssThrow1)
     qed
   next
     assume "\<not> final a"
-    from prems show ?thesis by (fastsimp simp: final_def intro!:AAssRed1)
+    from prems show ?thesis by (fastsimp simp: final_iff intro!:AAssRed1)
   qed
 next
   case (WTrtFAcc E e C F T D l)
@@ -826,7 +757,7 @@ next
   proof cases
     assume "final e"  --"@{term e} is @{term null} or @{term throw}"
     from prems show ?thesis
-      by(fastsimp simp:final_def intro: RedFAccNull FAccThrow)
+      by(fastsimp simp:final_iff intro: RedFAccNull FAccThrow)
   next
     assume "\<not> final e" --"@{term e} reduces by IH"
     from prems show ?thesis by simp (fast intro:FAccRed)
@@ -875,11 +806,11 @@ next
     proof cases
       assume "final e\<^isub>2"  --"@{term e\<^isub>2} is @{term Val} or @{term throw}"
       from prems show ?thesis
-	by(fastsimp simp:final_def intro: RedFAssNull FAssThrow1 FAssThrow2)
+	by(fastsimp simp:final_iff intro: RedFAssNull FAssThrow1 FAssThrow2)
     next
       assume  "\<not> final e\<^isub>2" --"@{term e\<^isub>2} reduces by IH"
       from prems show ?thesis
-	by (fastsimp  simp:final_def intro!:FAssRed2 FAssThrow1)
+	by (fastsimp  simp:final_iff intro!:FAssRed2 FAssThrow1)
     qed
   next
     assume "\<not> final e\<^isub>1" --"@{term e\<^isub>1} reduces by IH"
@@ -910,21 +841,6 @@ next
 	  have "P \<turnstile> xs [\<le>] ys \<Longrightarrow> length xs = length ys"
 	    apply(induct xs arbitrary: ys) by(auto) }
 	ultimately have esTs: "length es = length Ts" using subtype by(auto)
-	have "\<not> threadstart P C M"
-	proof
-	  assume "threadstart P C M"
-	  hence Mstart: "M = start" and PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
-	    by(auto simp: threadstart_def)
-	  have CnObject: "C \<noteq> Object" using threadnobject PCThread by auto
-	  have "is_class P C" by(rule sees_method_is_class[OF sees])
-	  then obtain C' fsC MsC where classC: "class P C = \<lfloor>(C', fsC, MsC)\<rfloor>"
-	    by(auto simp add: is_class_def)
-	  have "\<not> (P \<turnstile> C sees start: Ts \<rightarrow> T = (pns, body) in D)" using PCThread
-	    apply(clarsimp simp:Method_def)
-	    apply(erule Thread_no_sees_method_start[OF wf])
-	    by(auto)
-	  with sees show False using Mstart by simp
-	qed
 	thus ?thesis using e_addr ha sees subtype esTs es wf
 	  apply(clarify)
 	  apply(frule sees_wf_mdecl)
@@ -944,7 +860,8 @@ next
 	    thus ?case by simp
 	  next
 	    case (Cons x xes)
-	    have IH: "\<not> (\<exists>vs. xes = map Val vs) \<Longrightarrow> \<exists>vs ex rst. xes = map Val vs @ ex # rst \<and> \<not> (\<exists>v. ex = Val v)" .
+	    have IH: "\<not> (\<exists>vs. xes = map Val vs)
+	              \<Longrightarrow> \<exists>vs ex rst. xes = map Val vs @ ex # rst \<and> \<not> (\<exists>v. ex = Val v)" .
 	    have neq: "\<not> (\<exists>vs. x # xes = map Val vs)" .
 	    { assume xval: "\<exists>v. x = Val v"
 	      with neq have "\<not> (\<exists>vs. xes = map Val vs)"
@@ -990,7 +907,8 @@ next
 	                        and lengthTs2: "length Ts2 = length (ex # rst)"
                                 and lsaTs1: "list_all2 ?pred (map Val vs) Ts1"
 	                        and lsaTs2: "list_all2 ?pred (ex # rst) Ts2" by fast
-	  from lsaTs2 have "\<exists>T' Ts2'. Ts2 = T' # Ts2' \<and> ?pred ex T' \<and> list_all2 ?pred rst Ts2'" by - (rule list_all2_Cons1[THEN iffD1])
+	  from lsaTs2 have "\<exists>T' Ts2'. Ts2 = T' # Ts2' \<and> ?pred ex T' \<and> list_all2 ?pred rst Ts2'" 
+	    by - (rule list_all2_Cons1[THEN iffD1])
 	  then obtain T' Ts2' where Ts2TTs2': "Ts2 = T' # Ts2'"
 	                      and IHex: "?pred ex T'"
 	                      and lsaTs2': "list_all2 ?pred rst Ts2'" by(auto)
@@ -1020,17 +938,17 @@ next
     { fix v assume "e = Val v"
       hence enull: "e = null" using wte by simp
       have ?case
-      proof (cases "finals es")
-	assume "finals es"
+      proof (cases "(\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')")
+	assume "(\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
 	moreover
 	{ fix vs assume "es = map Val vs"
 	  with enull have ?thesis by(fastsimp intro: RedCallNull) }
 	moreover
 	{ fix vs a es' assume "es = map Val vs @ Throw a # es'"
 	  with enull have ?thesis by(fastsimp intro: CallThrowParams) }
-	ultimately show ?thesis by(fastsimp simp:finals_def)
+	ultimately show ?thesis by(fastsimp)
       next
-	assume "\<not> finals es"
+	assume "\<not> ((\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es'))"
 	hence nav: "\<not>(\<exists>vs. es = map Val vs)" by auto
 	hence not_all_Val: "\<not>(\<forall>e \<in> set es. \<exists>v. e = Val v)"
 	  by(simp add:ex_map_conv)
@@ -1076,7 +994,8 @@ next
 	    by(fastsimp intro:CallThrowParams)
 	next
 	  assume not_fin: "\<not> final ex"
-	  from IHes es have "\<exists>Ts1 Ts2. Ts = Ts1 @ Ts2 \<and> length Ts1 = length (map Val vs) \<and> length Ts2 = length (ex # rst) \<and>
+	  from IHes es
+	  have "\<exists>Ts1 Ts2. Ts = Ts1 @ Ts2 \<and> length Ts1 = length (map Val vs) \<and> length Ts2 = length (ex # rst) \<and>
                 list_all2 ?pred (map Val vs) Ts1 \<and> list_all2 ?pred (ex # rst) Ts2"
 	    apply(auto)
 	    apply(drule list_all2_append1[THEN iffD1])
@@ -1087,7 +1006,8 @@ next
 	                        and lengthTs2: "length Ts2 = length (ex # rst)"
                                 and lsaTs1: "list_all2 ?pred (map Val vs) Ts1"
 	                        and lsaTs2: "list_all2 ?pred (ex # rst) Ts2" by fast
-	  from lsaTs2 have "\<exists>T' Ts2'. Ts2 = T' # Ts2' \<and> ?pred ex T' \<and> list_all2 ?pred rst Ts2'" by - (rule list_all2_Cons1[THEN iffD1])
+	  from lsaTs2 have "\<exists>T' Ts2'. Ts2 = T' # Ts2' \<and> ?pred ex T' \<and> list_all2 ?pred rst Ts2'"
+	    by - (rule list_all2_Cons1[THEN iffD1])
 	  then obtain T' Ts2' where Ts2TTs2': "Ts2 = T' # Ts2'"
 	                      and IHex: "?pred ex T'"
 	                      and lsaTs2': "list_all2 ?pred rst Ts2'" by(auto)
@@ -1100,7 +1020,7 @@ next
     moreover
     { fix a assume "e = Throw a"
       hence ?case by(fastsimp intro: CallThrowObj) }
-    ultimately show ?thesis using fine by(fastsimp simp:final_def)
+    ultimately show ?thesis using fine by(fastsimp simp:final_iff)
   next
     assume "\<not> final e"
     with prems show ?thesis by simp (blast intro!:CallObj)
@@ -1234,6 +1154,29 @@ next
     show ?thesis using IH[OF _ nfine] dae by (fastsimp intro: CallObj)
   qed
 next
+  case (WTrtJoin E e C l)
+  have wt: "P,E,h \<turnstile> e : Class C" .
+  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' ta. P \<turnstile> \<langle>e,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" .
+  have PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" .
+  have "\<D> (e\<bullet>join([])) \<lfloor>dom l\<rfloor>" .
+  hence da: "\<D> e \<lfloor>dom l\<rfloor>" by simp
+  show ?case
+  proof(cases "final e")
+    assume fine: "final e"
+    with wt show ?thesis
+    proof (rule final_addrE)
+      fix a assume e_addr: "e = addr a"
+      with wt obtain fs where ha: "h a = Some(Obj C fs)" apply(auto) apply(case_tac aa) by auto
+      with PCThread e_addr show ?thesis by(fastsimp intro: RedJoin)
+    next
+      fix a assume ethrow: "e = Throw a"
+      thus ?thesis by(fastsimp intro: CallThrowObj)
+    qed
+  next
+    assume nfine: "\<not> final e"
+    show ?thesis using IH[OF da nfine] by (fastsimp intro: CallObj)
+  qed
+next
   case (WTrtInitBlock v T\<^isub>1 T E V e\<^isub>2 T\<^isub>2 l)
   have IH2: "\<And>l. \<lbrakk>\<D> e\<^isub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^isub>2\<rbrakk>
                   \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
@@ -1290,15 +1233,13 @@ next
   qed
 next
   case (WTrtSynchronized E o' T e T' l)
-  have wto: "P,E,h \<turnstile> o' : T" .
-  have IHe: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk>
-                  \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
-  have wte: "P,E,h \<turnstile> e : T'" .
-  have IHo: "\<And>l. \<lbrakk>\<D> o' \<lfloor>dom l\<rfloor>; \<not> final o' \<rbrakk>
-                  \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>o',(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
-  have refT: "is_refT T" .
-  have TNT: "T \<noteq> NT" .
-  have dae: "\<D> (sync(o') e) \<lfloor>dom l\<rfloor>" .
+  note wto = `P,E,h \<turnstile> o' : T`
+  note IHe = `\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>`
+  note wte = `P,E,h \<turnstile> e : T'`
+  note IHo = `\<And>l. \<lbrakk>\<D> o' \<lfloor>dom l\<rfloor>; \<not> final o' \<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>o',(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>`
+  note refT = `is_refT T`
+  note TNT = `T \<noteq> NT`
+  note dae = `\<D> (sync(o') e) \<lfloor>dom l\<rfloor>`
   show ?case
   proof(cases "final o'")
     assume fino: "final o'" 
@@ -1306,28 +1247,18 @@ next
     proof (rule finalE)
       fix v
       assume oval: "o' = Val v"
-      show ?thesis
+      with wto refT show ?thesis
       proof(cases "v")
-	assume "v = Unit"
-	with oval wto refT show ?thesis by(simp add: is_refT_def)
-      next
 	assume vnull: "v = Null"
 	with oval vnull show ?thesis
 	  by(fastsimp intro: SynchronizedNull)
       next
-	fix b
-	assume "v = Bool b"
-	with oval wto refT show ?thesis by(simp add: is_refT_def)
-      next
-	fix i
-	assume "v = Intg i"
-	with oval wto refT show ?thesis by (simp add: is_refT_def)
-      next
 	fix ad
 	assume vaddr: "v = Addr ad"
+	from wto oval vaddr obtain arrobj where ha: "h ad = \<lfloor>arrobj\<rfloor>" by auto
 	thus ?thesis using oval vaddr
 	  by(fastsimp intro: LockSynchronized)
-      qed
+      qed(auto elim: refTE)
     next
       fix a
       assume othrow: "o' = Throw a"
@@ -1335,77 +1266,33 @@ next
     qed
   next
     assume nfino: "\<not> final o'"
-    { assume olocked: "lock_granted o'"
-      hence "\<exists>a. o' = locked(a)" by (simp add: lock_granted_def)
-      then obtain alock where alock: "o' = locked(alock)" by blast
-      { assume fine: "final e"
-	hence ?thesis
-	proof(rule finalE)
-	  fix v
-	  assume eval: "e = Val v"
-	  thus ?thesis using alock by(fastsimp intro: UnlockSynchronized)
-	next
-	  fix ex
-	  assume ethrow: "e = Throw ex"
-	  thus ?thesis using alock by(fastsimp intro: SynchronizedThrow2)
-	qed }
-      moreover
-      { assume nfine: "\<not> final e"
-	from dae alock have dae': "\<D> e \<lfloor>dom l\<rfloor>" by(auto)
-	from IHe[OF dae' nfine]
-	obtain e' s' ta
-	  where red: "P \<turnstile> \<langle>e,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>"
-	  by(auto)
-	have ?thesis
-	proof(cases "\<exists>tas'. \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> = Suspend alock # tas'")
-	  case True
-	  then obtain was where wa': "\<lbrace>ta\<rbrace>\<^bsub>w\<^esub> = Suspend alock # was" by blast
-	  with alock red show ?thesis
-	    by(fastsimp intro: SynchronizedWait)
-	next
-	  case False
-	  with alock red show ?thesis by(fastsimp intro: SynchronizedRed2)
-	qed }
-      ultimately have ?case by blast }
-    moreover
-    { assume nlg: "\<not> lock_granted o'"
-      with dae IHo nfino have ?thesis by(fastsimp intro: SynchronizedRed1) }
-    ultimately show ?case by blast
+    with dae IHo show ?case by(fastsimp intro: SynchronizedRed1)
   qed
 next
   case (WTrtSynchronizedNT E o' e T T' l)
   have wto: "P,E,h \<turnstile> o' : NT" .
-  have IHe: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk>
-                  \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
-  have wte: "P,E,h \<turnstile> e : T" .
   have IHo: "\<And>l. \<lbrakk>\<D> o' \<lfloor>dom l\<rfloor>; \<not> final o' \<rbrakk>
                   \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>o',(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
   have dae: "\<D> (sync(o') e) \<lfloor>dom l\<rfloor>" .
   show ?case
   proof(cases "final o'")
-    assume fino: "final o'"
-    thus ?thesis
-    proof(rule finalE)
-      fix v
-      assume oval: "o' = Val v"
-      with wto have "o' = null" by auto
-      thus ?thesis by(fastsimp intro: SynchronizedNull)
-    next
-      fix a
-      assume "o' = Throw a"
-      thus ?thesis by(fastsimp intro: SynchronizedThrow1)
-    qed
+    assume "final o'" thus ?thesis using wto
+      by(fastsimp elim!: finalE intro: SynchronizedNull SynchronizedThrow1)
   next
     assume nfino: "\<not> final o'"
-    { assume olocked: "lock_granted o'"
-      hence "\<exists>a. o' = locked(a)" by (simp add: lock_granted_def)
-      then obtain alock where alock: "o' = locked(alock)" by blast
-      with wto have False apply(auto) apply(case_tac "a") by(auto)
-      hence ?thesis by simp }
-    moreover
-    { assume nlg: "\<not> lock_granted o'"
-      with dae IHo nfino have ?thesis by(fastsimp intro: SynchronizedRed1) }
-    ultimately show ?case by blast
+    with dae IHo nfino show ?thesis by(fastsimp intro: SynchronizedRed1)
+  qed
+next
+  case (WTrtInSynchronized E a T e T' l)
+  show ?case
+  proof(cases "final e")
+    case True thus ?thesis
+      by(fastsimp elim!: finalE intro: UnlockSynchronized SynchronizedThrow2)
+  next
+    case False 
+    moreover  from `\<D> (insync(a) e) \<lfloor>dom l\<rfloor>` have "\<D> e \<lfloor>dom l\<rfloor>" by simp
+    moreover note IHe = `\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>`
+    ultimately show ?thesis by(fastsimp intro: SynchronizedRed2)
   qed
 next
   case (WTrtSeq E e1 T1 e2 T2 l)
@@ -1449,9 +1336,16 @@ next
   show ?case
   proof cases
     assume "final e" -- {*Then @{term e} must be @{term throw} or @{term null}*}
-    from prems show ?thesis
-      by(fastsimp simp:final_def is_refT_class_def
-	          intro:ThrowThrow RedThrowNull)
+    thus ?thesis
+    proof(induct rule: finalE)
+      case (Val v)
+      with `is_refT_class T` `\<not> final (throw e)` `P,E,h \<turnstile> e : T`
+      have "v = Null" by(auto elim!: final.cases refT_classE)
+      thus ?thesis using Val by(fastsimp intro: RedThrowNull)
+    next
+      case (Throw a)
+      thus ?thesis by(fastsimp intro: ThrowThrow)
+    qed
   next
     assume "\<not> final e" -- {*Then @{term e} must reduce*}
     from prems show ?thesis by simp (blast intro:ThrowRed)
@@ -1469,7 +1363,8 @@ next
     next
       fix a
       assume e1_Throw: "e1 = Throw a"
-      with wt1 obtain D fs where ha: "h a = Some(Obj D fs)" apply(auto) apply(case_tac aa) by(auto simp add: is_refT_class_def)
+      with wt1 obtain D fs where ha: "h a = Some(Obj D fs)"
+	by(fastsimp split: heapobj.split_asm elim!: is_refT_class.cases)
       show ?thesis
       proof cases
 	assume "P \<turnstile> D \<preceq>\<^sup>* C"
@@ -1486,6 +1381,3 @@ next
 qed
 
 end
-
-
-

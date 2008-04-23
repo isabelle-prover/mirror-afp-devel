@@ -38,7 +38,12 @@ constdefs
   IllegalMonitorStateC :: "'m cdecl"
   "IllegalMonitorStateC \<equiv> (IllegalMonitorState, (Object,[],[]))"
 
+  IllegalThreadStateC :: "'m cdecl"
+  "IllegalThreadStateC \<equiv> (IllegalThreadState, (Object,[],[]))"
+
   SystemClasses :: "'m cdecl list"
-  "SystemClasses \<equiv> [ObjectC, NullPointerC, ClassCastC, OutOfMemoryC, ArrayIndexOutOfBoundsC, ArrayStoreC, NegativeArraySizeC, IllegalMonitorStateC]"
+  "SystemClasses \<equiv> [ObjectC, NullPointerC, ClassCastC, OutOfMemoryC,
+                    ArrayIndexOutOfBoundsC, ArrayStoreC, NegativeArraySizeC,
+                    IllegalMonitorStateC, IllegalThreadStateC]"
 
 end

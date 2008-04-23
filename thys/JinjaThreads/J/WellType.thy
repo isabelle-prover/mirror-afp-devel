@@ -1,13 +1,13 @@
 (*  Title:      Jinja/J/WellType.thy
+    ID:         $Id: WellType.thy,v 1.3 2008-04-23 08:43:38 alochbihler Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
-
-    Based on the Jinja theory J/WellType by Tobias Nipkow
+    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Well-typedness of Jinja expressions} *}
 
 theory WellType
-imports "../Common/Objects" Expr
+imports "../Common/Objects" Expr State
 begin
 
 types 
@@ -91,6 +91,10 @@ WTNew:
   "\<lbrakk> P,E \<turnstile> e :: T; is_refT T; T \<noteq> NT \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<bullet>notifyAll([]) :: Void"
 
+| WTJoin:
+  "\<lbrakk> P,E \<turnstile> e :: Class C; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e\<bullet>join([]) :: Void"
+
 | WTBlock:
   "\<lbrakk> is_type P T;  P,E(V \<mapsto> T) \<turnstile> e :: T' \<rbrakk>
   \<Longrightarrow>  P,E \<turnstile> {V:T; e} :: T'"
@@ -98,6 +102,8 @@ WTNew:
 | WTSynchronized:
   "\<lbrakk> P,E \<turnstile> o' :: T; is_refT T; T \<noteq> NT; P,E \<turnstile> e :: T' \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> sync(o') e :: T'"
+
+(* Note that insync is not statically typable. *)
 
 | WTSeq:
   "\<lbrakk> P,E \<turnstile> e\<^isub>1::T\<^isub>1;  P,E \<turnstile> e\<^isub>2::T\<^isub>2 \<rbrakk>
@@ -172,6 +178,7 @@ inductive_cases WT_elim_cases[elim!]:
   "P,E \<turnstile> e\<bullet>notifyAll([]) :: T"
   "P,E \<turnstile> e\<bullet>M(ps) :: T"
   "P,E \<turnstile> sync(o') e :: T"
+  "P,E \<turnstile> insync(a) e :: T"
 (*>*)
 
 
@@ -201,6 +208,7 @@ apply(fastsimp)
 apply(fastsimp)
 apply(fastsimp)
 apply(fastsimp)
+apply(fastsimp)
 apply(fastsimp simp: map_le_def WTBlock)
 apply(fastsimp simp: WTSynchronized)
 apply(fastsimp simp: WTSeq)
@@ -219,7 +227,6 @@ apply(auto simp add: list_all2_Cons1)
 done
 
 lemma WT_fv: "P,E \<turnstile> e :: T \<Longrightarrow> fv e \<subseteq> dom E"
-(*<*)
 apply(induct rule:WT.inducts)
 apply(simp_all del: fun_upd_apply)
 apply fast+
@@ -227,14 +234,12 @@ apply(erule WTCall_fv)
 apply(fast+)
 done
 
-lemma WTs_contains_addrs: "list_all2 (\<lambda>e T. P,E \<turnstile> e :: T \<and> \<not> contains_addr e) es Ts' \<Longrightarrow> \<not> contains_addrs es"
-apply(induct es arbitrary: Ts')
-by(auto simp add: list_all2_Cons1 list_all2_Cons2 )
 
-lemma WT_contains_addr: "P,E \<turnstile> e :: T \<Longrightarrow> \<not> contains_addr e"
-apply(induct rule: WT.induct)
-by(auto intro!: WTs_contains_addrs )
+lemma WTs_expr_lockss: "list_all2 (\<lambda>e T. P,E \<turnstile> e :: T \<and> expr_locks e = (\<lambda>ad. 0)) es Ts' \<Longrightarrow> expr_lockss es = (\<lambda>ad. 0)"
+by(induct es arbitrary: Ts')(auto simp add: list_all2_Cons1 list_all2_Cons2)
 
+lemma WT_expr_locks: "P,E \<turnstile> e :: T \<Longrightarrow> expr_locks e = (\<lambda>ad. 0)"
+by(induct rule: WT.induct)(auto intro: WTs_expr_lockss)
 
 end
-(*>*)
+

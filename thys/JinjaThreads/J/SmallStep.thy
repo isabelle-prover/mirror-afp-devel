@@ -1,12 +1,12 @@
-(*  Title:      JinjaThreads/J/SmallStep.thy
+(*  Title:      Jinja/J/SmallStep.thy
+    ID:         $Id: SmallStep.thy,v 1.3 2008-04-23 08:43:37 alochbihler Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
-
-    Based on the Jinja Theory J/SmallStep by Tobias Nipkow
+    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Small Step Semantics} *}
 
-theory SmallStep imports Expr State "../Framework/FWSemantics" begin
+theory SmallStep imports Expr State "../Framework/FWState" "../Common/Exceptions" begin
 
 consts blocks :: "vname list * ty list * val list * expr \<Rightarrow> expr"
 recdef blocks "measure(\<lambda>(Vs,Ts,vs,e). size Vs)"
@@ -24,25 +24,19 @@ done
 (*>*)
 
 lemma expr_locks_blocks:
-  "\<lbrakk> \<not> contains_addr e; length vs = length pns; length Ts = length pns \<rbrakk>
-  \<Longrightarrow> expr_locks (blocks (pns, Ts, vs, e)) l = 0 "
-apply(induct pns Ts vs e rule: blocks.induct)
-by(auto intro: contains_addr_expr_locks)
+  "\<lbrakk> expr_locks e = (\<lambda>ad. 0); length vs = length pns; length Ts = length pns \<rbrakk>
+  \<Longrightarrow> expr_locks (blocks (pns, Ts, vs, e)) = (\<lambda>ad. 0)"
+by(induct pns Ts vs e rule: blocks.induct)(auto)
+
 
 constdefs
   assigned :: "vname \<Rightarrow> expr \<Rightarrow> bool"
   "assigned V e  \<equiv>  \<exists>v e'. e = (V := Val v;; e')"
 
-constdefs
-  threadstart :: "J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool"
-  "threadstart P C M \<equiv> P \<turnstile> Class C \<le> Class Thread \<and> (M = start)"
-
-
 inductive red :: "J_prog \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) thread_action \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
           ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0] 81)
 for P :: J_prog
 where
-
   RedNew:
   "\<lbrakk> new_Addr h = Some a; P \<turnstile> C has_fields FDTs; h' = h(a\<mapsto>(Obj C (init_fields FDTs))) \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>new C, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
@@ -169,19 +163,19 @@ where
   P \<turnstile> \<langle>(Val v)\<bullet>M((map Val vs) @ e # es), s\<rangle> -ta\<rightarrow> \<langle>(Val v)\<bullet>M((map Val vs) @ e' # es), s'\<rangle>"
 
 | RedCall:
-  "\<lbrakk> hp s a = Some(Obj C fs); P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D; size vs = size pns; size Ts = size pns; \<not> threadstart P C M \<rbrakk>
+  "\<lbrakk> hp s a = Some(Obj C fs); P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D; size vs = size pns; size Ts = size pns (*; \<not> threadstart P C M*) \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -\<epsilon>\<rightarrow> \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), s\<rangle>"
 
 | RedNewThread:
   "\<lbrakk> hp s a = Some(Obj C fs); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>start([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread t (((Var this)\<bullet>run([])), [this \<mapsto> Addr a]) (hp s)\<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
+  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>start([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread a (((Var this)\<bullet>run([])), [this \<mapsto> Addr a]) (hp s)\<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
 
 | RedNewThreadFail:
   "\<lbrakk> hp s a = Some(Obj C fs); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow>
-  P \<turnstile> \<langle>(addr a)\<bullet>start([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThreadFail \<rbrace>\<rightarrow> \<langle>THROW OutOfMemory, s\<rangle>"
+  P \<turnstile> \<langle>(addr a)\<bullet>start([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> ThreadExists a \<rbrace>\<rightarrow> \<langle>THROW IllegalThreadState, s\<rangle>"
 
 | RedWait:
-  "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>wait([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Suspend a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
+  "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>wait([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Suspend a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a \<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
 
 | RedWaitFail:
   "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>wait([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, s\<rangle>"
@@ -197,6 +191,10 @@ where
 
 | RedNotifyAllFail:
   "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>notifyAll([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, s\<rangle>"
+
+| RedJoin:
+  "\<lbrakk> hp s a = Some(Obj C fs); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>join([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub> Join a\<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
 
 | RedCallNull:
   "P \<turnstile> \<langle>null\<bullet>M(map Val vs), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
@@ -225,10 +223,8 @@ where
   The expression on which the thread is synchronized is evaluated first to a value.
   If this expression evaluates to null, a null pointer expression is thrown.
   If this expression evaluates to an address, a lock must be obtained on this address, the
-  synchronization expression is rewritten to locked(a) which is shorthand for unit;;addr a.
-  locked(a) should not occur in a normal program, i.e., the locks of a thread can be stored in the program code itself.
-  If the synchronization expression is locked(a), the body expression may be evaluated.
-  During this evaluation, the lock is remembered in the as.
+  sync expression is rewritten to insync.
+  For insync expressions, the body expression may be evaluated.
   If the body expression is only a value or a thrown exception, the lock is released and
   the synchronized expression reduces to the body's expression. This is the normal Java semantics,
   not the one as presented in LNCS 1523, Cenciarelli/Knapp/Reus/Wirsing. There
@@ -238,23 +234,19 @@ where
   changes the evaluation result of this last step, the thread then will try to synchronize on the new object. *)
 
 | SynchronizedRed1:
-  "\<lbrakk> P \<turnstile> \<langle>o', s\<rangle> -ta\<rightarrow> \<langle>o'', s'\<rangle>; \<not> lock_granted o' \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>sync(o'') e, s'\<rangle>"
+  "P \<turnstile> \<langle>o', s\<rangle> -ta\<rightarrow> \<langle>o'', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>sync(o'') e, s'\<rangle>"
 
 | SynchronizedNull:
   "P \<turnstile> \<langle>sync(null) e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
 | LockSynchronized:
-  "P \<turnstile> \<langle>sync(addr a) e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>sync(locked(a)) e, s\<rangle>"
+  "hp s a = \<lfloor>arrobj\<rfloor> \<Longrightarrow> P \<turnstile> \<langle>sync(addr a) e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>insync(a) e, s\<rangle>"
 
 | SynchronizedRed2:
-  "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<forall>was. \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<noteq> Suspend a # was \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>sync(locked(a)) e, s\<rangle> -ta\<rightarrow> \<langle>sync(locked(a)) e', s'\<rangle>"
-
-| SynchronizedWait:
-  "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> = Suspend a # was \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>sync(locked(a)) e, s\<rangle> -ta\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>sync(addr a) e', s'\<rangle>"
+  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>insync(a) e, s\<rangle> -ta\<rightarrow> \<langle>insync(a) e', s'\<rangle>"
 
 | UnlockSynchronized:
-  "P \<turnstile> \<langle>sync(locked(a)) (Val v), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
+  "P \<turnstile> \<langle>insync(a) (Val v), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
 
 | SeqRed:
   "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e2, s\<rangle> -ta\<rightarrow> \<langle>e';;e2, s'\<rangle>"
@@ -314,7 +306,7 @@ where
 | BlockThrow: "P \<turnstile> \<langle>{V:T; Throw a}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | InitBlockThrow: "P \<turnstile> \<langle>{V:T := Val v; Throw a}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | SynchronizedThrow1: "P \<turnstile> \<langle>sync(throw a) e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| SynchronizedThrow2: "P \<turnstile> \<langle>sync(locked(a)) throw ad, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>throw ad, s\<rangle>"
+| SynchronizedThrow2: "P \<turnstile> \<langle>insync(a) throw ad, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>throw ad, s\<rangle>"
 | SeqThrow: "P \<turnstile> \<langle>(throw a);;e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
 | CondThrow: "P \<turnstile> \<langle>if (throw a) e\<^isub>1 else e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
 | ThrowThrow: "P \<turnstile> \<langle>throw(throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
@@ -331,9 +323,14 @@ inductive_cases red_cases:
   "P \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "P \<turnstile> \<langle>e\<bullet>F{D} := e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
   "P \<turnstile> \<langle>e\<bullet>start([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+  "P \<turnstile> \<langle>e\<bullet>wait([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+  "P \<turnstile> \<langle>e\<bullet>notify([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+  "P \<turnstile> \<langle>e\<bullet>notifyAll([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+  "P \<turnstile> \<langle>e\<bullet>join([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
   "P \<turnstile> \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "P \<turnstile> \<langle>{V:T; e}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "P \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "P \<turnstile> \<langle>insync(a) e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "P \<turnstile> \<langle>e;;e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
   "P \<turnstile> \<langle>if (b) e1 else e2, s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "P \<turnstile> \<langle>while (b) e, s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
@@ -346,7 +343,7 @@ abbreviation
   Step :: "J_prog \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) thread_action list \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
           ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0] 81)
 where
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow>* \<langle>e', s'\<rangle> == ((e,s),ta,e',s') \<in> stepify_pred (\<lambda>(e, s) ta (e', s'). red P e s ta e' s')"
+  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow>* \<langle>e', s'\<rangle> == stepify_pred (\<lambda>(e, s) ta (e', s'). red P e s ta e' s') (e,s) ta (e',s')"
 
 lemmas Step_induct = stepify_pred.induct[where r = "\<lambda>(e, s) ta (e', s'). red P e s ta e' s'", split_format (complete), simplified, consumes 1, case_names refl step]
 
@@ -356,10 +353,15 @@ lemma [iff]:
   "\<not> P \<turnstile> \<langle>Val v, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 by(fastsimp elim:red.cases)
 
+lemma red_no_val [dest]:
+  "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow> \<langle>e', s'\<rangle>; is_val e \<rbrakk> \<Longrightarrow> False"
+by(auto)
+
+
 lemma [iff]: "\<not> P \<turnstile> \<langle>Throw a, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 by(fastsimp elim: red.cases)
 
-lemma red_hext_incr_aux:
+lemma red_hext_incr:
   "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> hp s \<unlhd> hp s'"
 proof(induct rule:red.induct)
   case (RedNew C FDTs a h h' l) thus ?case by(auto dest: new_Addr_SomeD intro: hext_new simp del: fun_upd_apply)
@@ -370,26 +372,17 @@ next
 next
   case RedFAss thus ?case by(fastsimp simp add:hext_def split:if_splits)
 qed fastsimp+
-(*>*)
 
-lemma red_hext_incr:
-  "P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle> \<Longrightarrow> h \<unlhd> h'"
-by(drule red_hext_incr_aux, simp)
-
-lemma red_lcl_incr_aux:
+lemma red_lcl_incr:
   "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> dom (lcl s) \<subseteq> dom (lcl s')"
 apply(induct rule:red.induct)
 by(auto simp del: fun_upd_apply)
 
-lemma red_lcl_incr:
-  "P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle> \<Longrightarrow> dom l \<subseteq> dom l'"
-by(drule red_lcl_incr_aux, simp)
-
 lemma red_lcl_add_aux: 
   "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e, (hp s, l0 ++ lcl s)\<rangle> -ta\<rightarrow> \<langle>e', (hp s', l0 ++ lcl s')\<rangle>"
 proof (induct arbitrary: l0 rule:red.induct) prefer 38
-  case (RedNewThread s a C fs t l0)
-  hence "P \<turnstile> \<langle>addr a\<bullet>start([]),(hp s, l0 ++ lcl s)\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread t ((Var this\<bullet>run([])), [this \<mapsto> Addr a]) (hp (hp s, l0 ++ lcl s))\<rbrace>\<rightarrow> \<langle>unit,(hp s, l0 ++ lcl s)\<rangle>"
+  case (RedNewThread s a C fs l0)
+  hence "P \<turnstile> \<langle>addr a\<bullet>start([]),(hp s, l0 ++ lcl s)\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread a ((Var this\<bullet>run([])), [this \<mapsto> Addr a]) (hp (hp s, l0 ++ lcl s))\<rbrace>\<rightarrow> \<langle>unit,(hp s, l0 ++ lcl s)\<rangle>"
     by(fastsimp intro: red.RedNewThread)
   thus ?case by(simp)
 next prefer 46
@@ -439,29 +432,41 @@ next prefer 46
     apply(rule red.InitBlockRed)
     by(simp_all)
 next
-  case (RedTryFail s a D fs C V e2 l0) thus ?case 
-    apply(simp)
-    apply(rule_tac D="D" and fs="fs" in red.RedTryFail)
-    by(clarsimp)
+  case (RedTryFail s a D fs C V e2 l0) thus ?case
+    by(auto intro: red.RedTryFail)
 qed (fastsimp intro:red.intros simp del: fun_upd_apply)+
 
 lemma red_lcl_add:
   "P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e, (h, l0 ++ l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l0 ++ l')\<rangle>"
-by(auto dest:red_lcl_add_aux)
-
+by(auto dest:red_lcl_add_aux
+)
 lemma Step_lcl_add:
   "P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow>* \<langle>e', (h', l')\<rangle> \<Longrightarrow>  P \<turnstile> \<langle>e, (h, l0 ++ l)\<rangle> -ta\<rightarrow>* \<langle>e', (h', l0 ++ l')\<rangle>"
 proof(induct rule: Step_induct)
   case refl thus ?case by(auto intro: stepify_pred.intros)
 next
-  case (step e h l ta e' h' l' las tas was e'' h'' l'')
+  case (step e h l ta e' h' l' las tas cas was e'' h'' l'')
   have IH: "P \<turnstile> \<langle>e,(h, l0 ++ l)\<rangle> -ta\<rightarrow>* \<langle>e',(h', l0 ++ l')\<rangle>"
-   and red: "P \<turnstile> \<langle>e',(h', l')\<rangle> -(las, tas, was)\<rightarrow> \<langle>e'',(h'', l'')\<rangle>" .
-  from red have "P \<turnstile> \<langle>e',(h', l0 ++ l')\<rangle> -(las, tas, was)\<rightarrow> \<langle>e'',(h'', l0 ++ l'')\<rangle>" by - (rule red_lcl_add)
+   and red: "P \<turnstile> \<langle>e',(h', l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l'')\<rangle>" .
+  from red have "P \<turnstile> \<langle>e',(h', l0 ++ l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l0 ++ l'')\<rangle>" by - (rule red_lcl_add)
   with IH show ?case
-    by(auto elim: stepify_pred_trans)
+    by(auto elim: stepify_pred_step)
 qed
 
 
+inductive final :: "expr \<Rightarrow> bool" where
+  "final (Val v)"
+| "final (Throw a)"
+
+declare final.cases [elim]
+declare final.intros[simp]
+
+lemmas finalE[consumes 1, case_names Val Throw] = final.cases
+
+lemma final_iff: "final e \<longleftrightarrow> (\<exists>v. e = Val v) \<or> (\<exists>a. e = Throw a)"
+by(auto)
+
+lemma final_locks: "final e \<Longrightarrow> expr_locks e l = 0"
+by(auto elim: finalE)
 
 end

@@ -1,7 +1,7 @@
-(*  Title:      JinjaThreads/J/Expr.thy
+(*  Title:      Jinja/J/Expr.thy
+    ID:         $Id: Expr.thy,v 1.3 2008-04-23 08:43:36 alochbihler Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
-
-    Based on the Jinja Theory J/Expr by Tobias Nipkow
+    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Expressions} *}
@@ -25,6 +25,7 @@ datatype 'a exp
   | Call "('a exp)" mname "('a exp list)"     ("_\<bullet>_'(_')" [90,99,0] 90)            -- "method call"
   | Block 'a ty "('a exp)"     ("'{_:_; _}")
   | Synchronized "'a exp" "'a exp" ("sync'(_') _" [99,90] 90)
+  | InSynchronized addr "'a exp" ("insync'(_') _" [99,90] 90)
   | Seq "('a exp)" "('a exp)"     ("_;;/ _"             [61,60]60)
   | Cond "('a exp)" "('a exp)" "('a exp)"     ("if '(_') _/ else _" [80,79,79]70)
   | While "('a exp)" "('a exp)"     ("while '(_') _"     [80,79]70)
@@ -83,11 +84,6 @@ translations
   "Throw a" == "throw(Val(Addr a))"
   "THROW xc" == "Throw(addr_of_sys_xcpt xc)"
 
-syntax
-  lock :: "addr \<Rightarrow> 'a exp" ( "locked'(_')" 100 )
-translations
-  "locked(a)" == "unit;;addr a"
-
 subsection{*Free Variables*}
 
 consts
@@ -108,6 +104,7 @@ primrec
   "fv(e\<bullet>M(es)) = fv e \<union> fvs es"
   "fv({V:T; e}) = fv e - {V}"
   "fv(sync(h) e) = fv h \<union> fv e"
+  "fv(insync(a) e) = fv e"
   "fv(e\<^isub>1;;e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
   "fv(if (b) e\<^isub>1 else e\<^isub>2) = fv b \<union> fv e\<^isub>1 \<union> fv e\<^isub>2"
   "fv(while (b) e) = fv b \<union> fv e"
@@ -125,45 +122,6 @@ lemma [simp]: "fvs(map Val vs) = {}"
 
 
 subsection{*Locks and addresses*}
-
-constdefs
-  lock_granted :: "expr \<Rightarrow> bool"
-  "lock_granted o' \<equiv> \<exists>a. o' = locked(a)"
-
-lemma [simp]:
-  "lock_granted(locked(a))"
-by(simp add: lock_granted_def)
-
-consts
-  contains_addr :: "expr \<Rightarrow> bool"
-  contains_addrs :: "expr list \<Rightarrow> bool"
-primrec
-"contains_addr (new C) = False"
-"contains_addr (newA T\<lfloor>i\<rceil>) = contains_addr i"
-"contains_addr (Cast T e) = contains_addr e"
-"contains_addr (Val v) = (\<exists>a. v = Addr a)"
-"contains_addr (Var v) = False"
-"contains_addr (e \<guillemotleft>bop\<guillemotright> e') = (contains_addr e \<or> contains_addr e')"
-"contains_addr (V := e) = contains_addr e"
-"contains_addr (a\<lfloor>i\<rceil>) = (contains_addr a \<or> contains_addr i)"
-"contains_addr (a\<lfloor>i\<rceil> := e) = (contains_addr a \<or> contains_addr i \<or> contains_addr e)"
-"contains_addr (e\<bullet>F{E}) = contains_addr e"
-"contains_addr (e\<bullet>F{E} := e') = (contains_addr e \<or> contains_addr e')"
-"contains_addr (e\<bullet>m(ps)) = (contains_addr e \<or> contains_addrs ps)"
-"contains_addr ({V : T; e}) = contains_addr e"
-"contains_addr (sync(o') e) = (contains_addr e \<or> contains_addr o')"
-"contains_addr (e;;e') = (contains_addr e \<or> contains_addr e')"
-"contains_addr (if (b) e else e') = (contains_addr b \<or> contains_addr e \<or> contains_addr e')"
-"contains_addr (while (b) e) = (contains_addr b \<or> contains_addr e)"
-"contains_addr (throw e) = contains_addr e"
-"contains_addr (try e catch(C v) e') = (contains_addr e \<or> contains_addr e')"
-"contains_addrs [] = False"
-"contains_addrs (x # xs) = (contains_addr x \<or> contains_addrs xs)"
-
-lemma contains_addrs_append [simp]: "contains_addrs (es @ fs) = (contains_addrs es \<or> contains_addrs fs)"
-apply(induct es)
-apply(auto)
-done
 
 consts
   expr_locks :: "expr \<Rightarrow> addr \<Rightarrow> nat"
@@ -183,7 +141,8 @@ primrec
 "expr_locks (e\<bullet>F{D} := e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
 "expr_locks (e\<bullet>m(ps)) = (\<lambda>ad. expr_locks e ad + expr_lockss ps ad)"
 "expr_locks ({V : T; e}) = expr_locks e"
-"expr_locks (sync(o') e) = (\<lambda>ad. if (o' = locked(ad)) then Suc (expr_locks e ad) else (expr_locks o' ad + expr_locks e ad))"
+"expr_locks (sync(o') e) = (\<lambda>ad. expr_locks o' ad + expr_locks e ad)"
+"expr_locks (insync(a) e) = (\<lambda>ad. if (a = ad) then Suc (expr_locks e ad) else expr_locks e ad)"
 "expr_locks (e;;e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
 "expr_locks (if (b) e else e') = (\<lambda>ad. expr_locks b ad + expr_locks e ad + expr_locks e' ad)"
 "expr_locks (while (b) e) = (\<lambda>ad. expr_locks b ad + expr_locks e ad)"
@@ -202,16 +161,15 @@ apply(induct vs)
 apply(auto)
 done
 
-lemma expr_locks_contains_addr: "expr_locks e a > 0 \<Longrightarrow> contains_addr e"
-  and expr_lockss_contains_addrs: "expr_lockss es a > 0 \<Longrightarrow> contains_addrs es"
-apply(induct e and es)
-apply(auto simp add: lock_granted_def split:if_splits)
-done
+(* is val *)
 
-lemma contains_addr_expr_locks: "\<not> contains_addr e \<Longrightarrow> expr_locks e l = 0"
-by(auto intro: expr_locks_contains_addr)
+inductive is_val :: "expr \<Rightarrow> bool" where
+  "is_val (Val v)"
 
-lemma contains_addrs_expr_lockss: "\<not> contains_addrs es \<Longrightarrow> expr_lockss es l = 0"
-by(auto intro: expr_lockss_contains_addrs)
+declare is_val.intros [simp]
+declare is_val.cases [elim!]
+
+lemma is_val_iff: "is_val e \<longleftrightarrow> (\<exists>v. e = Val v)"
+by(auto)
 
 end

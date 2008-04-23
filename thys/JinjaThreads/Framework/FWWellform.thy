@@ -10,44 +10,55 @@ theory FWWellform imports FWLocking FWThread begin
 
 (* locks are held by real threads *)
 definition
-  lock_thread_ok :: "('l, 't) locks \<Rightarrow> ('t,'x) thread_info \<Rightarrow> bool"
+  lock_thread_ok :: "('l, 't) locks \<Rightarrow> ('l, 't,'x) thread_info \<Rightarrow> bool"
 where
-  "lock_thread_ok ls ts \<equiv> \<forall>l. (case ls l of None     \<Rightarrow> True
-                                       | \<lfloor>(t, n)\<rfloor>  \<Rightarrow> \<exists>x. ts t = \<lfloor>x\<rfloor>)"
+  "lock_thread_ok ls ts \<equiv> \<forall>l t. has_lock (ls l) t \<longrightarrow> (\<exists>xw. ts t = \<lfloor>xw\<rfloor>)"
 
 lemma lock_thread_okI:
-  "(\<And>l t n. ls l = \<lfloor>(t, n)\<rfloor> \<Longrightarrow> \<exists>x. ts t = \<lfloor>x\<rfloor>) \<Longrightarrow> lock_thread_ok ls ts"
-by(simp add: lock_thread_ok_def)
-
-lemma lock_thread_okD:
-  "\<lbrakk> lock_thread_ok ls ts; ls l = \<lfloor>(t, n)\<rfloor> \<rbrakk> \<Longrightarrow> \<exists>x. ts t = \<lfloor>x\<rfloor>"
-by(fastsimp simp add: lock_thread_ok_def)
-
-lemma lock_thread_okE:
-  "\<lbrakk> lock_thread_ok ls ts; \<forall>l t n. ls l = \<lfloor>(t, n)\<rfloor> \<longrightarrow> (\<exists>x. ts t = \<lfloor>x\<rfloor>) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  "(\<And>l t. has_lock (ls l) t \<Longrightarrow> \<exists>xw. ts t = \<lfloor>xw\<rfloor>) \<Longrightarrow> lock_thread_ok ls ts"
 by(auto simp add: lock_thread_ok_def)
 
+lemma lock_thread_okD:
+  "\<lbrakk> lock_thread_ok ls ts; has_lock (ls l) t \<rbrakk> \<Longrightarrow> \<exists>xw. ts t = \<lfloor>xw\<rfloor>"
+by(fastsimp simp add: lock_thread_ok_def)
+
+lemma lock_thread_okD':
+  "\<lbrakk> lock_thread_ok ls ts; has_locks (ls l) t = Suc n \<rbrakk> \<Longrightarrow> \<exists>xw. ts t = \<lfloor>xw\<rfloor>"
+by(auto elim: lock_thread_okD[where l=l] simp del: split_paired_Ex)
+
+lemma lock_thread_okE:
+  "\<lbrakk> lock_thread_ok ls ts; \<forall>l t. has_lock (ls l) t \<longrightarrow> (\<exists>xw. ts t = \<lfloor>xw\<rfloor>) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+by(auto simp add: lock_thread_ok_def simp del: split_paired_Ex)
+
 lemma lock_thread_ok_upd:
-  "lock_thread_ok ls ts \<Longrightarrow> lock_thread_ok ls (ts(t \<mapsto> x))"
+  "lock_thread_ok ls ts \<Longrightarrow> lock_thread_ok ls (ts(t \<mapsto> xw))"
 by(auto intro!: lock_thread_okI dest: lock_thread_okD)
+
+lemma lock_thread_ok_has_lockE:
+  assumes "lock_thread_ok ls ts"
+  and "has_lock (ls l) t"
+  obtains x ln where "ts t = \<lfloor>(x, ln)\<rfloor>"
+using assms
+by(auto dest!: lock_thread_okD)
 
 lemma redT_updLs_preserves_lock_thread_ok:
   assumes lto: "lock_thread_ok ls ts"
-  and tst: "ts t = \<lfloor>x\<rfloor>"
+  and tst: "ts t = \<lfloor>xw\<rfloor>"
   shows "lock_thread_ok (redT_updLs ls t las) ts"
 proof(rule lock_thread_okI)
-  fix L T N
-  assume ru: "redT_updLs ls t las L = \<lfloor>(T, N)\<rfloor>"
-  show "\<exists>x. ts T = \<lfloor>x\<rfloor>"
+  fix L T
+  assume ru: "has_lock (redT_updLs ls t las L) T"
+  show "\<exists>xw. ts T = \<lfloor>xw\<rfloor>"
   proof(cases "t = T")
     case True
     thus ?thesis using tst lto
       by(auto elim: lock_thread_okE)
   next
     case False
-    with ru have "\<exists>n. ls L = \<lfloor>(T, n)\<rfloor>"
-      by -(erule redT_updLs_Some_thread_idD)
-    thus ?thesis using lto by(auto elim!: lock_thread_okE)
+    with ru have "has_lock (ls L) T"
+      by(rule redT_updLs_Some_thread_idD) 
+    thus ?thesis using lto
+      by(auto elim!: lock_thread_okE simp del: split_paired_Ex)
   qed
 qed
 
@@ -55,14 +66,40 @@ lemma redT_updTs_preserves_lock_thread_ok:
   assumes lto: "lock_thread_ok ls ts"
   shows "lock_thread_ok ls (redT_updTs ts nts)"
 proof(rule lock_thread_okI)
-  fix l t n
-  assume "ls l = \<lfloor>(t, n)\<rfloor>"
-  with lto have "\<exists>x. ts t = \<lfloor>x\<rfloor>"
-    by(auto elim!: lock_thread_okE)
-  thus "\<exists>x. redT_updTs ts nts t = \<lfloor>x\<rfloor>"
-    by(auto intro: redT_updTs_Some1)
+  fix l t
+  assume "has_lock (ls l) t"
+  with lto have "\<exists>xw. ts t = \<lfloor>xw\<rfloor>"
+    by(auto elim!: lock_thread_okE simp del: split_paired_Ex)
+  thus "\<exists>xw. redT_updTs ts nts t = \<lfloor>xw\<rfloor>"
+    by(auto intro: redT_updTs_Some1 simp del: split_paired_Ex)
 qed
 
 lemmas redT_upds_preserves_lock_thread_ok = redT_updTs_preserves_lock_thread_ok[OF redT_updLs_preserves_lock_thread_ok]
+
+lemma lock_thread_ok_has_lock:
+  assumes "lock_thread_ok ls ts"
+  and "has_lock (ls l) t"
+  obtains xw where "ts t = \<lfloor>xw\<rfloor>"
+using assms
+by(auto dest!: lock_thread_okD)
+
+lemma lock_thread_ok_None_has_locks_0:
+  "\<lbrakk> lock_thread_ok ls ts; ts t = None \<rbrakk> \<Longrightarrow> has_locks (ls l) t = 0"
+by(rule ccontr)(auto dest: lock_thread_okD)
+
+lemma redT_upds_preserves_lock_thread_ok:
+  "\<lbrakk>lock_thread_ok ls ts; ts t = \<lfloor>xw\<rfloor>; thread_oks ts m' tas\<rbrakk>
+  \<Longrightarrow> lock_thread_ok (redT_updLs ls t las) (redT_updTs ts tas(t \<mapsto> xw'))"
+apply(rule lock_thread_okI)
+apply(clarsimp simp del: split_paired_Ex)
+apply(drule has_lock_upd_locks_implies_has_lock, simp)
+apply(drule lock_thread_okD, assumption)
+apply(erule exE)
+by(rule redT_updTs_Some1)
+
+lemma acquire_all_preserves_lock_thread_ok:
+  "\<lbrakk> lock_thread_ok ls ts; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> lock_thread_ok (acquire_all ls t ln) (ts(t \<mapsto> xw))"
+by(rule lock_thread_okI, auto dest!: has_lock_acquire_locks_implies_has_lock dest: lock_thread_okD)
+
 
 end

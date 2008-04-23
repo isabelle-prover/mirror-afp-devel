@@ -56,16 +56,6 @@ apply (unfold distinct_fst_def)
 apply (auto simp:image_def)
 done
 (*>*)
-(*
-lemma distinct_fst_append:
- "\<lbrakk> distinct_fst kxs'; distinct_fst kxs; \<forall>(k,x) \<in> set kxs. \<forall>(k',x') \<in> set kxs'. k' \<noteq> k \<rbrakk>
-  \<Longrightarrow> distinct_fst(kxs @ kxs')"
-by (induct kxs) (auto dest: fst_in_set_lemma)
-
-lemma distinct_fst_map_inj:
-  "\<lbrakk> distinct_fst kxs; inj f \<rbrakk> \<Longrightarrow> distinct_fst (map (\<lambda>(k,x). (f k, g k x)) kxs)"
-by (induct kxs) (auto dest: fst_in_set_lemma simp: inj_eq)
-*)
 
 lemma map_of_SomeI:
   "\<lbrakk> distinct_fst kxs; (k,x) \<in> set kxs \<rbrakk> \<Longrightarrow> map_of kxs k = Some x"
@@ -203,6 +193,13 @@ by(simp)
 
 lemma disjE3: "\<lbrakk> P \<or> Q \<or> R; P \<Longrightarrow> S; Q \<Longrightarrow> S; R \<Longrightarrow> S \<rbrakk> \<Longrightarrow> S"
 by auto
+
+consts_code (* code for code generator setup *)
+  "arbitrary :: nat" ("{* (0::nat) *}")
+  "arbitrary :: string" ("{* ''''Arbitrary'''' *}")
+
+lemma Plus_eq_empty_conv: "A <+> B = {} \<longleftrightarrow> A = {} \<and> B = {}"
+by(auto)
 
 
 end

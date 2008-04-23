@@ -1,7 +1,7 @@
-(*  Title:      JinjaThreads/J/DefAss.thy
+(*  Title:      Jinja/DefAss.thy
+    ID:         $Id: DefAss.thy,v 1.3 2008-04-23 08:43:36 alochbihler Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
-
-    Based on the Jinja theory J/DefAss by Tobias Nipkow
+    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Definite assignment} *}
@@ -76,6 +76,7 @@ primrec
 "\<A> (e\<bullet>M(es)) = \<A> e \<squnion> \<A>s es"
 "\<A> ({V:T; e}) = \<A> e \<ominus> V"
 "\<A> (sync(o') e) = \<A> o' \<squnion> \<A> e"
+"\<A> (insync(a) e) = \<A> e"
 "\<A> (e\<^isub>1;;e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
 "\<A> (if (e) e\<^isub>1 else e\<^isub>2) =  \<A> e \<squnion> (\<A> e\<^isub>1 \<sqinter> \<A> e\<^isub>2)"
 "\<A> (while (b) e) = \<A> b"
@@ -100,6 +101,7 @@ primrec
 "\<D> (e\<bullet>M(es)) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
 "\<D> ({V:T; e}) A = \<D> e (A \<ominus> V)"
 "\<D> (sync(o') e) A = (\<D> o' A \<and> \<D> e (A \<squnion> \<A> o'))"
+"\<D> (insync(a) e) A = \<D> e A"
 "\<D> (e\<^isub>1;;e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
 "\<D> (if (e) e\<^isub>1 else e\<^isub>2) A =
   (\<D> e A \<and> \<D> e\<^isub>1 (A \<squnion> \<A> e) \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e))"
@@ -158,6 +160,7 @@ apply simp apply (iprover dest:sqUn_lem)
 apply simp apply (iprover dest:sqUn_lem)
 apply simp apply (iprover dest:diff_lem)
 apply simp apply (iprover dest:sqUn_lem)
+apply simp
 apply simp apply (iprover dest:sqUn_lem)
 apply simp apply (iprover dest:sqUn_lem)
 apply simp apply (iprover dest:sqUn_lem)
