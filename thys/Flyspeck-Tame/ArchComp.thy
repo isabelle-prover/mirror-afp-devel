@@ -1,4 +1,4 @@
-(*  ID:         $Id: ArchComp.thy,v 1.3 2007-08-20 16:09:23 fhaftmann Exp $
+(*  ID:         $Id: ArchComp.thy,v 1.4 2008-04-24 11:42:59 fhaftmann Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -8,12 +8,13 @@ theory ArchComp
 imports TameEnum TrieList Arch Efficient_Nat
 begin
 
-consts qsort :: "('a \<Rightarrow> 'a => bool) * 'a list \<Rightarrow> 'a list"
-recdef qsort "measure (size o snd)"
-    "qsort(le, [])   = []"
-    "qsort(le, x#xs) = qsort(le, [y\<leftarrow>xs . ~ le x y]) @ [x] @
-		       qsort(le, [y\<leftarrow>xs . le x y])"
-(hints recdef_simp: length_filter_le[THEN le_less_trans])
+function qsort :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  "qsort le []       = []"
+  | "qsort le (x#xs) = qsort le [y\<leftarrow>xs . ~ le x y] @ [x] @
+		       qsort le [y\<leftarrow>xs . le x y]"
+by pat_completeness auto
+termination by (relation "measure (size o snd)")
+  (auto simp add: length_filter_le [THEN le_less_trans])
 
 constdefs
  nof_vertices :: "'a fgraph \<Rightarrow> nat"
@@ -25,7 +26,7 @@ constdefs
  hash :: "nat fgraph \<Rightarrow> nat list"
 "hash fs == let n = nof_vertices fs in
    [n, size fs] @
-   qsort (%x y. y < x, map (%i. foldl (op +) 0 (map size [f\<leftarrow>fs. i mem f]))
+   qsort (%x y. y < x) (map (%i. foldl (op +) 0 (map size [f\<leftarrow>fs. i mem f]))
                            [0..<n])"
 
 consts
