@@ -74,7 +74,9 @@ proof(rule lock_thread_okI)
     by(auto intro: redT_updTs_Some1 simp del: split_paired_Ex)
 qed
 
+(*
 lemmas redT_upds_preserves_lock_thread_ok = redT_updTs_preserves_lock_thread_ok[OF redT_updLs_preserves_lock_thread_ok]
+*)
 
 lemma lock_thread_ok_has_lock:
   assumes "lock_thread_ok ls ts"
