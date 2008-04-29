@@ -1,4 +1,4 @@
-(*  ID:          $Id: Vcg.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: Vcg.thy,v 1.4 2008-04-29 09:06:36 alexkrauss Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -595,7 +595,7 @@ syntax
 
 
 translations
- "MEASURE f"       => "measure (_quote f)"
+ "MEASURE f"       => "(CONST measure) (_quote f)"
  "f <*MLEX*> r"       => "(_quote f) <*mlex*> r"
 
 
