@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartialDef.thy,v 1.4 2008-03-18 13:48:34 makarius Exp $
+(*  ID:          $Id: HoarePartialDef.thy,v 1.5 2008-05-07 09:04:44 stefanberghofer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -234,18 +234,6 @@ lemma mono_WeakenContext: "A \<subseteq> B \<Longrightarrow>
 apply blast
 done
 
-(*
-lemma mono_CallRec:
- "A \<subseteq> B \<Longrightarrow>
-   (\<lambda>(P, p, Q, Aa). p \<in> dom \<Gamma> \<and> (\<Gamma>, \<Theta>, F, P, the (\<Gamma> p), Q, Aa) \<in> A) xa \<longrightarrow>
-   (\<lambda>(P, p, Q, A). p \<in> dom \<Gamma> \<and> (\<Gamma>, \<Theta>, F, P, the (\<Gamma> p), Q, A) \<in> B) xa"
-by blast
-*)
-lemma mono_CallRec: "A \<le> B \<Longrightarrow>
-     (\<lambda>(P, p, Q, Aa). p \<in> dom \<Gamma> \<and>   A (\<Theta> \<union> Specs) F P (the (\<Gamma> p)) Q Aa) xa \<longrightarrow>
-     (\<lambda>(P, p, Q, A). p \<in> dom \<Gamma> \<and> B (\<Theta> \<union> Specs) F P (the (\<Gamma> p)) Q A) xa"
-by (auto simp add: le_bool_def le_fun_def)
-  
 
 inductive "hoarep"::"[('s,'p,'f) body,('s,'p) quadruple set,'f set,
     's assn,('s,'p,'f) com, 's assn,'s assn] => bool"
@@ -304,7 +292,6 @@ where
 | ExFalso: "\<lbrakk>\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A; \<not> \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c Q,A"
   -- {* This is a hack rule that enables us to derive completeness for
         an arbitrary context @{text "\<Theta>"}, from completeness for an empty context.*}  
-monos mono_CallRec
 
 
 

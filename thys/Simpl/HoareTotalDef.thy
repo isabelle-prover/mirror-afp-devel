@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoareTotalDef.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: HoareTotalDef.thy,v 1.4 2008-05-07 09:04:44 stefanberghofer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -89,15 +89,6 @@ lemma validt_augment_Faults:
   using valid F'
   by (auto intro: valid_augment_Faults simp add: validt_def)
 
-lemma CallRec_mono: "A \<le> B \<Longrightarrow>
-        (\<lambda>(P, p, Q, Aa).
-            p \<in> dom \<Gamma> \<and> (\<forall>\<tau>. A (\<Theta> \<union> Specs_wf p \<tau>) F ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q  Aa))
-         xa \<longrightarrow>
-        (\<lambda>(P, p, Q, A).
-            p \<in> dom \<Gamma> \<and> (\<forall>\<tau>. B (\<Theta> \<union> Specs_wf p \<tau>) F ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q A))
-         xa"
-  by (auto simp add: le_bool_def le_fun_def)
-
 subsection {* The Hoare Rules: @{text "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" } *}
 
 inductive "hoaret"::"[('s,'p,'f) body,('s,'p) quadruple set,'f set,
@@ -163,7 +154,6 @@ where
 | ExFalso: "\<lbrakk>\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A; \<not> \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A"
   -- {* This is a hack rule that enables us to derive completeness for
         an arbitrary context @{text "\<Theta>"}, from completeness for an empty context.*}
-monos CallRec_mono
 
   
 text {* Does not work, because of rule ExFalso, the context @{text \<Theta>} is to blame.
