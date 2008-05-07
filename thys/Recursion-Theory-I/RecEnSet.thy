@@ -980,7 +980,7 @@ defs
   total_recursive_def: "total_recursive \<equiv> (\<lambda> f. graph f \<in> ce_rels)"
 
 lemma total_recursive_def1: "total_recursive = (\<lambda> f. c_graph f \<in> ce_sets)"
-proof fix f show " total_recursive f = (c_graph f \<in> ce_sets)"
+proof (rule ext) fix f show " total_recursive f = (c_graph f \<in> ce_sets)"
   proof
     assume A: "total_recursive f"
     then have "graph f \<in> ce_rels" by (unfold total_recursive_def)
