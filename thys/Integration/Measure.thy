@@ -160,15 +160,15 @@ lemma mkdisjoint_un:
 next
   case (Suc n)
   hence "A n = (\<Union>i\<in>{..n}. mkdisjoint A i)" .
-  also
+  moreover
   have "(\<Union>i\<in>{..(Suc n)}. mkdisjoint A i) = mkdisjoint A (Suc n) \<union>
     (\<Union>i\<in>{..n}. mkdisjoint A i)" by (simp add: atMost_Suc) 
-  also
+  moreover
   have "mkdisjoint A (Suc n) \<union> A n = A (Suc n) \<union> A n" by simp
-  also 
+  moreover
   from up have "\<dots> = A (Suc n)" by auto
-  finally
-  show ?case ..
+  ultimately
+  show ?case by simp
 qed(*>*)
 
 
@@ -315,13 +315,13 @@ proof -
 	(\<Union>i\<in>{..n}. if i\<le>n then mkdisjoint A i else {}) 
 	\<union>  (\<Union>i\<in>{n<..}. if i\<le>n then mkdisjoint A i else {})" 
 	by (auto simp add: UN_Un)
-      also 
+      moreover
       { have "(\<Union>i\<in>{n<..}. if i\<le>n then mkdisjoint A i else {}) = {}"
 	  by force }
       hence "\<dots> = (\<Union>i\<in>{..n}. mkdisjoint A i)" 
 	by auto
-      finally show 
-	"(\<Union>i\<in>{..n}. mkdisjoint A i) = (\<Union>i. if i\<le>n then mkdisjoint A i else {})" ..
+      ultimately show 
+	"(\<Union>i\<in>{..n}. mkdisjoint A i) = (\<Union>i. if i\<le>n then mkdisjoint A i else {})" by simp
     qed
     
     ultimately have 
@@ -445,7 +445,7 @@ lemma measure_additive: assumes ms: "measure_space M"
   with m1 m2 have "(\<lambda>n. measure M (trivial_series2 a b n)) sums  measure M (\<Union>i. trivial_series2 a b i)" 
     using ms 
     by (simp add: measure_space_def countably_additive_def)
-  also
+  moreover
   from ms have "\<forall>m. Suc(Suc 0) \<le> m \<longrightarrow> measure M (trivial_series2 a b m) = 0"
   proof (clarify)
     fix m 

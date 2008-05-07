@@ -1180,18 +1180,18 @@ lemma sf_norm_help:
   shows "(\<Sum>i\<in>K. (z i) * \<chi> (C i) t) = z j"
 (*<*)proof -
   from jK have "K = insert j (K-{j})"  by blast
-  also
+  moreover
   from fin have fin2: "finite (K-{j})" and "j \<notin> (K-{j})"  by simp_all
   hence "(\<Sum>i\<in>insert j (K-{j}). (z i) * \<chi> (C i) t) = (z j * \<chi> (C j) t) + (\<Sum>i\<in>K-{j}. (z i) * \<chi> (C i) t)"
     by (rule setsum_insert)
-  also from tj have "\<dots> = z j + (\<Sum>i\<in>K-{j}. (z i) * \<chi> (C i) t)"
+  moreover from tj have "\<dots> = z j + (\<Sum>i\<in>K-{j}. (z i) * \<chi> (C i) t)"
     by (simp add: characteristic_function_def)
-  also
+  moreover
   { from iK have "\<forall>i\<in>K-{j}. (z i) * \<chi> (C i) t = 0"
       by (auto simp add: characteristic_function_def)
   }
   hence "\<dots> = z j"  by (simp add:setsum_0')
-  finally show ?thesis .
+  ultimately show ?thesis by simp
 qed(*>*)
 
 lemma upclose_sfis: 

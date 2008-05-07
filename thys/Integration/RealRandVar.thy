@@ -108,18 +108,18 @@ proof (unfold measurable_def, rule, rule)
   show "(\<lambda>x. c) -` g \<in> S"
   proof (cases "c \<in> g")
     case True 
-    hence "(\<lambda>x. c) -` g = UNIV" 
+    hence "(\<lambda>x::'a. c) -` g = UNIV" 
       by blast
-    also from sigma have "UNIV \<in> S" 
+    moreover from sigma have "UNIV \<in> S" 
       by (rule sigma_algebra_UNIV)
-    finally show ?thesis .
+    ultimately show ?thesis by simp
   next
     case False
-    hence "(\<lambda>x. c) -` g = {}" 
+    hence "(\<lambda>x::'a. c) -` g = {}" 
       by blast
-    also from sigma have "{} \<in> S" 
+    moreover from sigma have "{} \<in> S" 
       by (simp only: sigma_algebra_def)
-    finally show ?thesis .
+    ultimately show ?thesis by simp
     txt{*\nopagebreak*}   
   qed                     
 qed                       
@@ -161,8 +161,8 @@ char_measurable : "\<chi> a \<in> measurable S x"
       next
 	case False
 	from prems have "\<chi> a -` g = {}" by (auto simp add: vimage_def characteristic_function_def)
-	also from sigma have "{} \<in> S" by  (simp only: sigma_algebra_def)
-	finally show ?thesis .
+	moreover from sigma have "{} \<in> S" by  (simp only: sigma_algebra_def)
+	ultimately show ?thesis by simp
       qed
     qed}
   thus ?thesis by (unfold measurable_def) blast
@@ -456,7 +456,7 @@ proof -
 txt{*\nopagebreak*}
   qed
   
-  also have 
+  moreover have 
     "(\<Union>i. let s = n_to_rat i in {w. f w < s} \<inter> {w. s < g w}) \<in> measurable_sets M"
   proof -
     from ms have sig: "sigma_algebra (measurable_sets M)" 
@@ -479,7 +479,7 @@ txt{*\nopagebreak*}
       by (auto simp only: sigma_algebra_def Let_def)
   qed
   
-  finally show ?thesis .
+  ultimately show ?thesis by simp
 qed
 
 (*The preceding theorem took me about 1 month to establish through its deep dependencies*)
@@ -540,11 +540,11 @@ proof -
   { fix a 
     have "{w. a \<le> f w + g w} = {w. a + (g w)*(-1) \<le> f w}" 
       by auto
-    also from g have "(\<lambda>w. a + (g w)*(-1)) \<in> rv M" 
+    moreover from g have "(\<lambda>w. a + (g w)*(-1)) \<in> rv M" 
       by (rule affine_rv) 
     with f have "{w. a + (g w)*(-1) \<le> f w} \<in> measurable_sets M"  
       by (simp add: rv_le_rv_measurable)
-    finally have "{w. a \<le> f w + g w} \<in> measurable_sets M" .
+    ultimately have "{w. a \<le> f w + g w} \<in> measurable_sets M" by simp
   }
   with ms show ?thesis 
     by (simp add: rv_ge_iff)
@@ -605,15 +605,15 @@ lemma assumes f: "f \<in> rv M"
 	}
 	
 	ultimately have "?F a = {w. f w = 0}" by simp
-	also have "\<dots> = {w. f w \<le> 0} \<inter> {w. 0 \<le> f w}" by auto
-	also have "\<dots> \<in> ?M"
+	moreover have "\<dots> = {w. f w \<le> 0} \<inter> {w. 0 \<le> f w}" by auto
+	moreover have "\<dots> \<in> ?M"
 	proof - 
 	  from ms f have "{w. f w \<le> 0} \<in> ?M" by (simp only: rv_le_iff)
 	  also from ms f have "{w. 0 \<le> f w} \<in> ?M" by (simp only: rv_ge_iff)
 	  ultimately show ?thesis using sig by (simp only: sigma_algebra_inter)
 	qed
 	
-	finally show ?thesis .
+	ultimately show ?thesis by simp
    
       next
 	case False
@@ -624,14 +624,14 @@ lemma assumes f: "f \<in> rv M"
 	    by (auto simp only: pow2_le_abs abs_le_interval_iff)
         }
 	then obtain sqra where "?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}" by fast
-	also have "\<dots> \<in> ?M" 
+	moreover have "\<dots> \<in> ?M" 
 	proof - 
 	  from ms f have "{w. f w \<le> sqra} \<in> ?M" by (simp only: rv_le_iff)
 	  also from ms f have "{w. -sqra \<le> f w} \<in> ?M" by (simp only: rv_ge_iff)
 	  ultimately show ?thesis using sig by (simp only: sigma_algebra_inter)
 	qed
 	
-	finally show ?thesis .
+	ultimately show ?thesis by simp
       
       qed 
     qed
@@ -728,14 +728,14 @@ proof -
       ultimately have "(f w \<le> a) = (\<forall>i. u i w \<le> a)" by fast
     }
     hence "{w. f w \<le> a} = (\<Inter>i. {w. u i w \<le> a})" by fast
-    also
+    moreover
     from ms u have "\<And>i. {w. u i w \<le> a} \<in> sigma(measurable_sets M)"
       by (simp add: rv_le_iff sigma.intros)
     hence "(\<Inter>i. {w. u i w \<le> a}) \<in> sigma(measurable_sets M)" 
       by (rule sigma_Inter)
     with ms have "(\<Inter>i. {w. u i w \<le> a}) \<in> measurable_sets M" 
       by (simp only: measure_space_def sigma_sigma_algebra)
-    finally have "{w. f w \<le> a} \<in> measurable_sets M" .
+    ultimately have "{w. f w \<le> a} \<in> measurable_sets M" by simp
   }
   with ms show ?thesis 
     by (simp add: rv_le_iff)
@@ -876,7 +876,7 @@ proof -
       case True
       hence "{w. pp f w \<le> a} = {w. f w \<le> a}" 
 	by (auto simp add: positive_part_def)
-      also note fm also
+      moreover note fm moreover
       from True have "{w. np f w \<le> a} = {w. -a \<le> f w}" 
 	by (auto simp add: negative_part_def)
       moreover from ms f have "\<dots> \<in> measurable_sets M" 
