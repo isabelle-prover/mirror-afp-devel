@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoRegExp.thy,v 1.9 2007-07-19 19:50:51 fhaftmann Exp $
+(*  ID:         $Id: AutoRegExp.thy,v 1.10 2008-05-07 09:03:30 stefanberghofer Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -16,6 +16,8 @@ theorem  "DA.accepts (nae2da(rexp2nae r)) w = (w : lang r)"
 by (simp add: NAe_DA_equiv accepts_rexp2nae)
 
 (* Testing code generation: *)
+
+declare RegExp2NA.star_def [unfolded epsilon_def, code]
 
 code_module Generated
 contains
