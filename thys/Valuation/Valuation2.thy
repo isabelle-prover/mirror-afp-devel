@@ -1523,7 +1523,7 @@ apply (rule ballI)+
  
 apply (rule allI, rule impI,
        cut_tac P = "P j" in representative_of_pd_valuation, simp,
-       subst val_t2p, assumption+,
+       subst val_t2p [where v="\<nu>\<^bsub>K P j\<^esub>"], assumption+,
        rule aadd_two_pos, simp+)
 done
 
@@ -1761,11 +1761,11 @@ apply (frule ring_n_pd[of n P])
 
  apply (rule allI, rule impI, drule_tac a = j in forall_spec, assumption+,
         cut_tac invf_closed1[of x], simp, erule conjE)
- apply (subst val_t2p, simp,
+ apply (subst val_t2p [where v="\<nu>\<^bsub>K P j\<^esub>"], simp,
         rule mem_ring_n_pd_mem_K[of "n" "P" "y"], assumption+,
         frule_tac a = j in forall_spec1, simp,
         simp add:zero_in_ring_n_pd_zero_K)
- apply (subst value_of_inv, simp,
+ apply (subst value_of_inv [where v="\<nu>\<^bsub>K P j\<^esub>"], simp,
         simp add:ring_n_pd_def Sr_def, assumption+)
  apply (frule_tac x = "(\<nu>\<^bsub>K (P j)\<^esub>) x" and y = "(\<nu>\<^bsub>K (P j)\<^esub>) y" in ale_diff_pos,
         simp add:diff_ant_def,
@@ -2473,7 +2473,7 @@ apply (frule value_Zl_mI[of "n" "P" "I" "n"], assumption+, simp)
  apply (simp add:value_mI_genTr1)  
 
  apply (rule allI, rule impI) apply (simp add:cmp_def)
- apply (subst val_t2p, assumption+)
+ apply (subst val_t2p [where v="\<nu>\<^bsub>K P n\<^esub>"], assumption+)
  apply (simp add:Zl_mI_mem_K)
  apply (simp add:value_mI_genTr1) 
 
@@ -2573,7 +2573,7 @@ apply (frule val_LI_pos[of "n" "P" "I" "n"], assumption+, simp,
 
  apply (frule_tac l = ja in transpos_mem[of "j" "n" "n"], simp+)
 
- apply (subst val_t2p, assumption+) 
+ apply (subst val_t2p [where v="\<nu>\<^bsub>K P j\<^esub>"], assumption+) 
  apply (simp add:Zl_mI_mem_K)
  apply (simp add:value_mI_genTr1)
  apply (cut_tac k = ja in transpos_noteqTr[of "n" _ "j"], simp+) 
