@@ -1754,7 +1754,7 @@ done
 lemma (in Corps) ideal_sub_vp:"\<lbrakk> valuation K v; ideal (Vr K v) I;
  I \<noteq> carrier (Vr K v)\<rbrakk> \<Longrightarrow> I \<subseteq> (vp K v)"
 apply (frule Vr_ring[of v], rule contrapos_pp, simp+)
- apply (simp add:subset_def,
+ apply (simp add:subset_eq,
         erule bexE)
  apply (frule_tac h = x in Ring.ideal_subset[of "Vr K v" I], assumption+,
         frule_tac x = x in elem_out_vp_unit[of v], assumption+,

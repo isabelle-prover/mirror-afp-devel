@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/MiniML.thy
-   ID:        $Id: MiniML.thy,v 1.9 2007-07-11 10:20:17 stefanberghofer Exp $
+   ID:        $Id: MiniML.thy,v 1.10 2008-05-07 09:03:14 stefanberghofer Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -114,7 +114,7 @@ lemma cod_S':
   "!!(A::type_scheme list) (t::typ).   
    cod (%n. if n : free_tv A Un free_tv t then S n else TVar n) <=  
    free_tv ($ S A) Un free_tv ($ S t)"
-apply (unfold free_tv_subst cod_def subset_def)
+apply (unfold free_tv_subst cod_def subset_eq)
 apply (rule ballI)
 apply (erule UN_E)
 apply (drule dom_S' [THEN subsetD])

@@ -5820,7 +5820,7 @@ lemma (in Module) unique_expression5:"\<lbrakk>free_generator R M H;
 apply (cut_tac sc_Ring, frule Ring.ring_is_ag[of R],
        frule Ring.whole_ideal, 
        frule free_generator_sub[of H]) 
-apply (rule contrapos_pp, simp+, simp add:subset_def)
+apply (rule contrapos_pp, simp+, simp add:subset_eq)
  apply (erule exE, erule conjE) 
  apply (case_tac "n = 0", simp)
   apply (frule_tac f = t and n = m and A = "carrier R" and 

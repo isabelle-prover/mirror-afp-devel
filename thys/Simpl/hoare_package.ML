@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.8 2008-04-29 09:06:36 alexkrauss Exp $
+    ID:         $Id: hoare_package.ML,v 1.9 2008-05-07 09:03:14 stefanberghofer Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -1623,7 +1623,8 @@ fun split_pair_apps thm =
               let
 		val len = length args;
                 val idxs = (len - 1) downto 0;
-                val (argTs,bdyT) = strip_type vT;
+                val (argTs, bdyTs) = chop len (binder_types vT);
+                val bdyT = bdyTs ---> body_type vT;
                 val used = foldr add_term_free_names (args,[]);
                 val z = Name.variant used ("z");
                 val frees = map (apfst (fn i => z^string_of_int i)) 
@@ -1670,11 +1671,11 @@ infix 0 ===;
 val (op ===) = Trueprop o HOLogic.mk_eq;
 
 
-fun UN_const (dT as (Type ("set",[dT']))) rT = 
+fun UN_const (dT as (Type ("fun", [dT', Type ("bool", [])]))) rT = 
       Const ("UNION",[dT, dT' --> rT] ---> rT) $ Const ("UNIV",dT)
   | UN_const _ _ = raise Match;
 
-fun mk_UN (x,T,P) = UN_const (Type ("set",[T])) (fastype_of P) $ absfree (x,T,P);
+fun mk_UN (x,T,P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x,T,P);
 
 fun prove_standard thy xs asms prop tac
  = Drule.standard (Goal.prove_global thy xs asms prop tac);
@@ -1712,7 +1713,7 @@ fun mk_split_thms ctxt (vars as _::_)  =
       end;
 
     val split_UN_prop =
-      let val P = Free (Name.variant names "P",pT --> (Type ("set",[zeta])));
+      let val P = Free (Name.variant names "P",pT --> HOLogic.mk_setT zeta);
           fun UN vs t = foldr (fn ((v,T),t) => mk_UN (v,T,t)) (vs,t)
       in (UN [x] (P $ Free x)) === (UN vars (P $ xp))
       end;
@@ -1776,7 +1777,7 @@ fun gen_call_rec_rule specs_name n rule =
     val maxidx = #maxidx (rep_cterm (cprop_of rule));
     val vars = map (dest_Var) (term_vars (prop_of rule));
     fun get_type n = valOf (assoc (vars,(n,0))); 
-    val specsT as (Type (_,[Type (_,[assT,Type (_,[pT,_])])])) = get_type specs_name;
+    val specsT as (Type ("fun", [Type (_,[assT,Type (_,[pT,_])]), Type ("bool", [])])) = get_type specs_name;
     val zT = TVar (("z",maxidx+1),Sign.defaultS thy)
 
     fun mk_var i n T = Var ((n ^ string_of_int i,0),T);
@@ -1784,7 +1785,7 @@ fun gen_call_rec_rule specs_name n rule =
     val quadT = HOLogic.mk_prodT (assT,
                           HOLogic.mk_prodT (pT,
                            HOLogic.mk_prodT (assT,assT)));
-    val quadT_set = Type ("set",[quadT]);
+    val quadT_set = HOLogic.mk_setT quadT;
     fun mk_spec i =
       let
          val quadruple = HOLogic.mk_tuple quadT 
@@ -1794,8 +1795,8 @@ fun gen_call_rec_rule specs_name n rule =
                  mk_var i "A" (zT --> assT)$Bound 0];
          val single = Const ("insert",quadT --> quadT_set --> quadT_set)$
                        quadruple$Const ("{}",quadT_set)
-     in Const ("UNION",Type ("set",[zT]) --> (zT --> quadT_set) --> quadT_set)$
-         Const ("UNIV", Type ("set",[zT]))$
+     in Const ("UNION", HOLogic.mk_setT zT --> (zT --> quadT_set) --> quadT_set)$
+         Const ("UNIV", HOLogic.mk_setT zT) $
           Abs("Z",zT,single)
      end;
 
@@ -3602,7 +3603,7 @@ fun get_state_space_in_subset_eq thy t =
     val (subset_eq,_) = (strip_comb o HOLogic.dest_Trueprop o strip_qnt_body "all") t;
     val Ts = map snd (strip_vars t);
     val T = fastype_of1 (Ts,subset_eq);
-    val Type(_,[_,Type(_,[Type (_,[state_spaceT]),_])]) = T; 
+    val Type(_,[_,Type(_,[Type ("fun", [state_spaceT, Type ("bool", [])]),_])]) = T; 
             (* also works for "in": x : P *) 
     val SOME Tids = stateT_ids state_spaceT;
   in SOME (Tids,Partial,state_kind_of thy state_spaceT)

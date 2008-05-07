@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEpres.thy,v 1.3 2008-01-14 11:34:42 nipkow Exp $
+(*  ID:         $Id: QEpres.thy,v 1.4 2008-05-07 09:03:14 stefanberghofer Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -310,7 +310,7 @@ proof -
 	    from `a \<in> ?Ls` have "i-\<langle>ks,xs\<rangle> \<in> ?L" by(fastsimp simp:set_lbounds)
 	    hence "i-\<langle>ks,xs\<rangle> \<le> li - \<langle>lks,xs\<rangle>"
 	      using lm[symmetric] `finite ?L` `?L \<noteq> {}` by auto
-	    hence ?thesis using n by simp arith }
+	    hence ?thesis using n by simp }
 	  moreover
 	  { assume "a \<in> ?Us"
 	    then obtain i ks where [simp]: "a = Le i (-1#ks)" using hd

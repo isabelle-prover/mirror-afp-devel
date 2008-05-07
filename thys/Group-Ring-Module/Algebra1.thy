@@ -431,7 +431,7 @@ lemma int_subsets: "\<lbrakk> A1 \<subseteq> A; B1 \<subseteq> B \<rbrakk> \<Lon
 by blast
 
 lemma inter_mono:"A \<subseteq> B \<Longrightarrow> A \<inter> C \<subseteq> B \<inter> C"
-by (rule subsetI, simp add:subset_def)
+by blast
 
 lemma sub_Un1:"B \<subseteq>  B \<union> C" 
 by blast
@@ -5597,7 +5597,7 @@ done
 lemma (in Order) minimum_elem_sub:"\<lbrakk>T \<subseteq> carrier D; X \<subseteq> T\<rbrakk>
         \<Longrightarrow> minimum_elem D X a = minimum_elem (Iod D T) X a"
 apply (simp add:minimum_elem_def)
-apply (simp add:subset_def[of X T])
+apply (simp add:subset_eq[of X T])
 apply (rule iffI, erule conjE)
  apply simp
  apply (rule ballI)
@@ -5639,7 +5639,7 @@ apply (frule insert_mono[of "Y - {a}" "X" "a"])
  apply (simp add:minimum_elem_sub[THEN sym, of "insert a X" Y],
         simp add:minimum_elem_sub[THEN sym, of X "Y - {a}"])
 
- apply (simp add:subset_def[of "Y - {a}" X])
+ apply (simp add:subset_eq[of "Y - {a}" X])
 
  apply (simp add:minimum_elem_def, (erule conjE)+)
  apply (rule ballI)
@@ -5655,7 +5655,7 @@ apply (frule insert_mono[of "Y - {a}" "X" "a"])
  apply (simp add:minimum_elem_Ssub[THEN sym, of D "insert a X" Y],
         simp add:minimum_elem_Ssub[THEN sym, of D X "Y - {a}"])
 
- apply (simp add:subset_def[of "Y - {a}" X])
+ apply (simp add:subset_eq[of "Y - {a}" X])
 
  apply (simp add:minimum_elem_def, (erule conjE)+)
  apply (rule ballI)
@@ -6130,7 +6130,7 @@ apply (rule iffI)
           assumption+)  
  apply (cut_tac a_notin_segment[of "a"],
         simp add:segment_inc[of "a" "b"], blast)
-apply (simp add:psubset_def, erule conjE,
+apply (simp add:psubset_eq, erule conjE,
        frule not_sym[of "segment D a" "segment D b"],
        thin_tac "segment D a \<noteq> segment D b",
        frule sets_not_eq[of "segment D b" "segment D a"], assumption+)
@@ -6155,7 +6155,7 @@ apply (rule iffI)
           assumption+)  
  apply (cut_tac a_notin_Ssegment[of "a"],
         simp add:Ssegment_inc[of "D" "a" "b"], blast)
-apply (simp add:psubset_def, erule conjE,
+apply (simp add:psubset_eq, erule conjE,
        frule not_sym[of "Ssegment D a" "Ssegment D b"],
        thin_tac "Ssegment D a \<noteq> Ssegment D b",
        frule sets_not_eq[of "Ssegment D b" "Ssegment D a"], assumption+)
@@ -6178,7 +6178,7 @@ apply (rule iffI)
 apply (erule disjE)
  apply (simp add:segment_mono[of "a" "b"], simp)
  apply (frule segment_mono[THEN sym, of "a" "b"], assumption+)
- apply (simp add:psubset_def)
+ apply (simp add:psubset_eq)
 apply (case_tac "segment D a \<noteq> segment D b", simp)
  apply simp
  apply (rule contrapos_pp, simp+,
@@ -6196,10 +6196,10 @@ apply (erule disjE)
  apply (simp add: Ssegment_mono[of "D" "a" "b"])
 
  apply (frule Ssegment_mono[THEN sym, of "D" "a" "b"], assumption+)
- apply (simp add:psubset_def)
+ apply (simp add:psubset_eq)
 apply (case_tac "Ssegment D a \<noteq> Ssegment D b") 
  apply (cut_tac Ssegment_mono[THEN sym, of "D" "a" "b"])
- apply (simp add:psubset_def, assumption+)
+ apply (simp add:psubset_eq, assumption+)
  apply simp
  apply (cut_tac a_notin_Ssegment[of "a" "D"], simp)
  apply (simp add:Ssegment_not_inc_iff[THEN sym, of "D" "b" "a"])
@@ -6244,7 +6244,7 @@ by (simp add:Ssegment_inj)
 
 lemma (in Order) segment_inc_psub:"\<lbrakk>x \<in> segment D a\<rbrakk> \<Longrightarrow>
                                             segment D x \<subset> segment D a"
-apply (simp add:psubset_def) 
+apply (simp add:psubset_eq) 
 apply (rule conjI, rule subsetI)
  apply (simp add:segment_def)
  apply (case_tac "a \<notin> carrier D", simp)
@@ -6255,7 +6255,7 @@ done
 
 lemma Ssegment_inc_psub:"\<lbrakk>Order D; x \<in> Ssegment D a\<rbrakk> \<Longrightarrow>
                                             Ssegment D x \<subset> Ssegment D a"
-apply (simp add:psubset_def) 
+apply (simp add:psubset_eq) 
 apply (rule conjI, rule subsetI)
  apply (simp add:Ssegment_def)
  apply (case_tac "a \<notin> carrier D", simp)
@@ -6572,12 +6572,12 @@ apply (rule subsetI)
   apply (subst Order.segment_inc[THEN sym, of "Iod D (segment D b)"],
          assumption+)
   apply (simp add:Iod_carrier)
-  apply (simp add:segment_mono[of a b] psubset_def, erule conjE)
+  apply (simp add:segment_mono[of a b] psubset_eq, erule conjE)
   apply (rule subsetD[of "segment D a" "segment D b"], assumption+)
   apply (simp add:Iod_carrier segment_inc)
   apply (frule segment_inc[of a b], assumption, simp)
   apply (frule segment_mono[of a b], assumption, simp)
-  apply (simp add:psubset_def, (erule conjE)+)
+  apply (simp add:psubset_eq, (erule conjE)+)
   apply (frule_tac c = x in subsetD[of "segment D a" "segment D b"], 
          assumption+)
   apply (simp add:Iod_less)
@@ -6824,7 +6824,7 @@ lemma (in Worder) segment_unique1:"\<lbrakk>a \<in> carrier D; b \<in> carrier D
        \<not> ord_equiv (Iod D (segment D b)) (Iod D (segment D a))"
 apply (cut_tac segment_Worder[of b],
        cut_tac segment_sub[of b],
-       frule segment_mono[of a b], assumption, simp add:psubset_def,
+       frule segment_mono[of a b], assumption, simp add:psubset_eq,
        erule conjE) 
 apply (simp add:segment_inc,
        frule Worder.nonequiv_segment[of "Iod D (segment D b)" a],
@@ -6844,7 +6844,7 @@ apply (frule Worder.Order[of "D"], frule Worder.Torder[of "D"],
  apply (frule nonequiv_Ssegment[of "SIod D (Ssegment D b)" "a"]) 
        apply (simp add:SIod_carrier)
        apply (frule le_Ssegment_Ssegment[of D a b], assumption+)
-       apply (simp add:oless_def psubset_def, (erule conjE)+)
+       apply (simp add:oless_def psubset_eq, (erule conjE)+)
  apply (simp add:SIod_sub_sub[of "Ssegment D a" "Ssegment D b"])
 done
 

@@ -3263,7 +3263,7 @@ apply (simp add: ex_redchainTr1)
  apply (frule_tac n = "Suc n" and f = f and l = n and j = "Suc n" in 
         d_gchainTr2, assumption+)
         apply simp  apply simp  apply simp
- apply (simp add:psubset_def)
+ apply (simp add:psubset_eq)
  apply (cut_tac f = f and n = n in image_Nsetn_card_pos,
         cut_tac n = n in finite_Nset, 
         frule_tac F = "{i. i \<le> n}" and h = f in finite_imageI,
@@ -3335,7 +3335,7 @@ apply (frule_tac n = "card (f ` {i. i \<le> n}) - Suc 0" and f = g and
         thin_tac "d_gchain G n f", simp add:d_gchain_def) 
  apply (cut_tac n = "Suc n" in n_in_Nsetn,
         frule_tac a = "Suc n" in forall_spec1, simp,
-        simp add:psubset_def)
+        simp add:psubset_eq)
  apply (cut_tac f = f and n = n in image_Nsetn_card_pos,
         cut_tac n = n in finite_Nset, 
         frule_tac F = "{i. i \<le> n}" and h = f in finite_imageI,

@@ -5325,7 +5325,7 @@ done
 lemma (in Group) Qg_iop_closed:"\<lbrakk>G \<triangleright> N; A \<in> set_rcs G N\<rbrakk> \<Longrightarrow>
                                    c_iop G N A \<in> set_rcs G N"
 by (frule Qg_iop[of "N"],
-       rule funcset_mem, assumption+)
+       erule funcset_mem, assumption)
 
 lemma (in Group) Qg_unit_closed: "G \<triangleright> N \<Longrightarrow>  N \<in> set_rcs G N"
 by (frule nsg_sg[of "N"],
