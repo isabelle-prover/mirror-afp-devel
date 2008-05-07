@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.10 2008-03-14 21:46:26 nipkow Exp $
+    ID:         $Id: Topology.thy,v 1.11 2008-05-07 09:05:16 stefanberghofer Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -1756,13 +1756,17 @@ proof (rule T1_axioms.intro, clarify)
     by force
   show "(\<exists>u\<in>nhds x. y \<notin> u) = (\<exists>v\<in>nhds y. x \<notin> v)"
   proof safe
-    from unhd have "x \<in> u" by auto
-    with Int_empty have "x \<notin> v" by auto
-    with vnhd show "\<exists>v\<in>nhds y. x \<notin> v" ..
+    show "\<exists>v\<in>nhds y. x \<notin> v"
+    proof
+      from unhd have "x \<in> u" by auto
+      with Int_empty show "x \<notin> v" by auto
+    qed (rule vnhd)
   next
-    from vnhd have "y \<in> v" by auto
-    with Int_empty have "y \<notin> u" by auto
-    with unhd show "\<exists>u\<in>nhds x. y \<notin> u" ..
+    show "\<exists>u\<in>nhds x. y \<notin> u"
+    proof
+      from vnhd have "y \<in> v" by auto
+      with Int_empty show "y \<notin> u" by auto
+    qed (rule unhd)
   qed
 qed
 
@@ -1778,9 +1782,11 @@ proof (rule T0_axioms.intro, clarify)
     where unhd: "u \<in> nhds x" and
     vnhd: "v \<in> nhds y" and Int_empty: "u \<inter> v = {}"
     by force
-  from vnhd have "y \<in> v" by auto
-  with Int_empty have "y \<notin> u" by auto
-  with unhd show "\<exists>u\<in>nhds x. y \<notin> u" ..
+  show "\<exists>u\<in>nhds x. y \<notin> u"
+  proof
+    from vnhd have "y \<in> v" by auto
+    with Int_empty show "y \<notin> u" by auto
+  qed (rule unhd)
 qed
 
 
