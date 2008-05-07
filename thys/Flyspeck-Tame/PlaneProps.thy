@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.9 2007-10-23 20:52:18 nipkow Exp $
+(*  ID:         $Id: PlaneProps.thy,v 1.10 2008-05-07 09:03:23 stefanberghofer Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -287,7 +287,7 @@ lemma next_plane0_incr_finV:
 apply(rule next_plane0_incr[where Q = ?Q and g=g and g'=g'])
 prefer 4 apply assumption
 prefer 4 apply assumption
-  apply blast
+  apply fast
  apply(clarsimp simp:makeFaceFinal_def vertices_graph makeFaceFinalFaceList_def)
  apply(drule replace5)
  apply(erule disjE)apply blast apply simp
