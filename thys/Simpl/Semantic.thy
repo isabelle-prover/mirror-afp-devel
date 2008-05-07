@@ -1,4 +1,4 @@
-(*  ID:          $Id: Semantic.thy,v 1.4 2008-03-18 13:49:02 makarius Exp $
+(*  ID:          $Id: Semantic.thy,v 1.5 2008-05-07 09:04:54 stefanberghofer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -4433,13 +4433,13 @@ next
 next
   case SpecStuck thus ?case by (auto intro: execn.SpecStuck)
 next
-  case Seq thus ?case by (blast intro: execn.Seq)
+  case Seq thus ?case by (metis insertCI execn.Seq StuckProp)
 next
   case CondTrue thus ?case by (auto intro: execn.CondTrue)
 next
   case CondFalse thus ?case by (auto intro: execn.CondFalse)
 next
-  case WhileTrue thus ?case by (blast intro: execn.WhileTrue)
+  case WhileTrue thus ?case by (metis insertCI execn.WhileTrue StuckProp)
 next
   case WhileFalse thus ?case by (auto intro: execn.WhileFalse)
 next
@@ -4481,7 +4481,7 @@ next
     s''_Stuck: "s'' = Stuck \<longrightarrow> t'' = Stuck" and
     s''_Fault: "\<forall>f. s'' = Fault f \<longrightarrow> t'' \<in> {Fault f, Stuck}" and 
     t''_notStuck: "t'' \<noteq> Stuck \<longrightarrow> t'' = s''"
-    by blast
+    by auto
   show ?case
   proof (cases "t'=Stuck")
     case True
@@ -4509,7 +4509,7 @@ next
     w_Stuck: "w = Stuck \<longrightarrow> w' = Stuck" and
     w_Fault: "\<forall>f. w = Fault f \<longrightarrow> w' \<in> {Fault f, Stuck}" and
     w'_noStuck: "w' \<noteq> Stuck \<longrightarrow> w' = w"
-    by blast
+    by auto
   have noAbr_w: "\<not> isAbr w".
   show ?case
   proof (cases w')
