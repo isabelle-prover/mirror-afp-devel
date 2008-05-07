@@ -1,4 +1,4 @@
-(*  ID:          $Id: Termination.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: Termination.thy,v 1.4 2008-05-07 09:05:06 stefanberghofer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -722,8 +722,8 @@ next
     proof (induct)
       case (WhileTrue s b' c')
       have eqs: "While b' c' = While b (strip_guards F c)".
-      from WhileTrue have b: "s\<in>b" by simp
-      from WhileTrue have "\<Gamma>\<turnstile>strip_guards F c \<down> Normal s"
+      with `s\<in>b'` have b: "s\<in>b" by simp
+      from eqs `\<Gamma>\<turnstile>c' \<down> Normal s` have "\<Gamma>\<turnstile>strip_guards F c \<down> Normal s"
 	by simp
       hence term_c: "\<Gamma>\<turnstile>c \<down> Normal s"
 	by (rule hyp_c)
@@ -748,7 +748,7 @@ next
 	    by (auto intro: exec_to_exec_strip_guards)
 	  with WhileTrue.hyps eqs Normal
 	  show ?thesis
-	    by auto
+	    by fastsimp
 	qed
       }
       ultimately
