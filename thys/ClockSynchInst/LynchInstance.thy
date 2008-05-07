@@ -1,5 +1,5 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: LynchInstance.thy,v 1.9 2007-06-13 20:29:54 makarius Exp $
+    ID:          $Id: LynchInstance.thy,v 1.10 2008-05-07 09:02:57 stefanberghofer Exp $
     Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
@@ -230,7 +230,8 @@ proof-
   hence "?P khl" using khl_bound by auto
   then obtain S where 
     "S\<le>PR \<and> card S = khl \<and> (\<forall>i\<in>S. \<forall>j\<in>PR - S. f j \<le> f i)" ..
-    thus ?thesis by (unfold kmax_def)(rule someI)
+    thus ?thesis by (unfold kmax_def)
+      (rule someI [where P="\<lambda>S. S \<subseteq> PR \<and> card S = khl \<and> (\<forall>i\<in>S. \<forall>j\<in>PR - S. f j \<le> f i)"])
 qed
 
 lemma kmin_prop:
@@ -292,7 +293,8 @@ proof-
   hence "?P khl" using khl_bound by auto
   then obtain S where 
     "S\<le>PR \<and> card S = khl \<and> (\<forall>i\<in>S. \<forall>j\<in>PR - S. f i \<le> f j)" ..
-    thus ?thesis by (unfold kmin_def)(rule someI)
+    thus ?thesis by (unfold kmin_def)
+      (rule someI [where P="\<lambda>S. S \<subseteq> PR \<and> card S = khl \<and> (\<forall>i\<in>S. \<forall>j\<in>PR - S. f i \<le> f j)"])
 qed
 
 text {* The next two lemmas are trivial from the previous ones *}
