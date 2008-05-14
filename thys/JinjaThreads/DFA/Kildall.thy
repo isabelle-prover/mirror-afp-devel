@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.1 2008-04-23 08:43:30 alochbihler Exp $
+    ID:         $Id: Kildall.thy,v 1.2 2008-05-14 10:06:33 makarius Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
@@ -165,9 +165,9 @@ lemma (in semilat) list_update_le_listI [rule_format]:
 (*>*)
 
 lemma (in semilat) merges_pres_le_ub:
-shows "\<lbrakk> set ts \<subseteq> A; set ss \<subseteq> A;
-         \<forall>(p,t)\<in>set ps. t \<sqsubseteq>\<^bsub>r\<^esub> ts!p \<and> t \<in> A \<and> p < size ts; ss [\<sqsubseteq>\<^bsub>r\<^esub>] ts \<rbrakk>
-  \<Longrightarrow> merges f ps ss [\<sqsubseteq>\<^bsub>r\<^esub>] ts"
+  assumes "set ts \<subseteq> A"  "set ss \<subseteq> A"
+    "\<forall>(p,t)\<in>set ps. t \<sqsubseteq>\<^bsub>r\<^esub> ts!p \<and> t \<in> A \<and> p < size ts"  "ss [\<sqsubseteq>\<^bsub>r\<^esub>] ts"
+  shows "merges f ps ss [\<sqsubseteq>\<^bsub>r\<^esub>] ts"
 (*<*)
 proof -
   { fix t ts ps
@@ -187,8 +187,7 @@ proof -
     apply (simp add: list_update_le_listI)
     done 
   } note this [dest]  
-  case rule_context
-  thus ?thesis by blast
+  from assms show ?thesis by blast
 qed
 (*>*)
 

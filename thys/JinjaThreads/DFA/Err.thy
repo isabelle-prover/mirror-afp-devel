@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Err.thy
-    ID:         $Id: Err.thy,v 1.1 2008-04-23 08:43:30 alochbihler Exp $
+    ID:         $Id: Err.thy,v 1.2 2008-05-14 10:06:33 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -273,16 +273,15 @@ done
 (*>*)
 
 lemma OK_plus_OK_eq_Err_conv [simp]:
-  "\<lbrakk> x\<in>A; y\<in>A; semilat(err A, le r, fe) \<rbrakk> \<Longrightarrow> 
-  (OK x \<squnion>\<^bsub>fe\<^esub> OK y = Err) = (\<not>(\<exists>z\<in>A. x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z))"
+  assumes "x\<in>A"  "y\<in>A"  "semilat(err A, le r, fe)"
+  shows "(OK x \<squnion>\<^bsub>fe\<^esub> OK y = Err) = (\<not>(\<exists>z\<in>A. x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z))"
 (*<*)
 proof -
   have plus_le_conv3: "\<And>A x y z f r. 
     \<lbrakk> semilat (A,r,f); x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z; x\<in>A; y\<in>A; z\<in>A \<rbrakk> 
     \<Longrightarrow> x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z"
 (*<*) by (rule semilat.plus_le_conv [THEN iffD1]) (*>*)
-  case rule_context
-  thus ?thesis
+  from assms show ?thesis
   apply (rule_tac iffI)
    apply clarify
    apply (drule OK_le_err_OK [THEN iffD2])
