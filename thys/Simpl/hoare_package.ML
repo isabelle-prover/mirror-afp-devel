@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.9 2008-05-07 09:03:14 stefanberghofer Exp $
+    ID:         $Id: hoare_package.ML,v 1.10 2008-05-17 11:55:30 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -1038,7 +1038,7 @@ fun apply_in_context thy lexp f t =
 
 fun print_cterm ct = 
       setmp show_sorts false 
-       (setmp show_types false (setmp print_mode [] string_of_cterm)) ct;
+       (setmp show_types false (setmp print_mode [] Display.string_of_cterm)) ct;
 
 fun add_abbrev loc mode spec thy =
   thy
