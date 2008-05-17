@@ -1,5 +1,5 @@
 (*  Title:      POPLmark/POPLmarkRecordCtxt.thy
-    ID:         $Id: POPLmarkRecordCtxt.thy,v 1.3 2007-08-28 15:58:52 stefanberghofer Exp $
+    ID:         $Id: POPLmarkRecordCtxt.thy,v 1.4 2008-05-17 21:40:49 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -358,9 +358,10 @@ lemma ctxt_imp_eval:
 
 lemma eval_evalc_eq: "(t \<longmapsto> t') = (t \<longmapsto>\<^sub>c t')"
 proof
+  fix ts
   have r: "t \<longmapsto> t' \<Longrightarrow> t \<longmapsto>\<^sub>c t'" and
     "ts [\<longmapsto>] ts' \<Longrightarrow> \<exists>E t t'. E \<in> rctxt \<and> ts = E t \<and> ts' = E t' \<and> t \<longmapsto>\<^sub>c t'"
-  by (induct rule: eval_evals.inducts) (iprover intro: ctxt_rctxt.intros eval.intros)+
+    by (induct rule: eval_evals.inducts) (iprover intro: ctxt_rctxt.intros eval.intros)+
   assume "t \<longmapsto> t'"
   thus "t \<longmapsto>\<^sub>c t'" by (rule r)
 next
