@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.15 2008-04-14 20:02:44 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.16 2008-05-17 20:51:44 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -472,11 +472,11 @@ next
 qed
 
 lemma distinct_replacefacesAt2_2:
-  "\<And>i. i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
+  "i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
   set (Fss ! i) \<inter> set newFs \<subseteq> {olfF} \<Longrightarrow>
   distinct ((replacefacesAt2 is olfF newFs Fss)! i)"
-apply  (cases "i \<in> set is")
- by (auto intro: distinct_replacefacesAt21 distinct_replacefacesAt22)
+  by (cases "i \<in> set is")
+    (auto intro: distinct_replacefacesAt21 distinct_replacefacesAt22)
 
 lemma replacefacesAt2_nth1: "!!F. k \<notin> set ns \<Longrightarrow>
   (replacefacesAt2 ns oldf newfs F) ! k  =  F ! k"
@@ -716,11 +716,11 @@ next
 qed
 
 lemma distinct_replacefacesAt_norm:
-  "\<And>i. i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (normFaces (Fss!i)) \<Longrightarrow> distinct (normFaces newFs) \<Longrightarrow>
+  "i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (normFaces (Fss!i)) \<Longrightarrow> distinct (normFaces newFs) \<Longrightarrow>
   set (normFaces (Fss ! i)) \<inter> set (normFaces newFs) \<subseteq> {} \<Longrightarrow>
   distinct (normFaces ((replacefacesAt is olfF newFs Fss)! i))"
-apply  (cases "i \<in> set is")
- by (auto intro: distinct_replacefacesAt1_norm distinct_replacefacesAt2_norm)
+  by (cases "i \<in> set is")
+    (auto intro: distinct_replacefacesAt1_norm distinct_replacefacesAt2_norm)
 
 
 
