@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.10 2008-05-17 11:55:30 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.11 2008-05-18 13:03:58 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -2643,7 +2643,7 @@ fun while_annotate_tac ctxt inv i st =
                   (List.last (prems_of annotateWhile));
     val annotate = cterm_instantiate 
                            [(cterm_of thy invVar,cterm_of thy lifted_inv)] annotateWhile;
- in  ((trace_tac ("annotating While with: "^ Sign.string_of_term thy lifted_inv )) 
+ in  ((trace_tac ("annotating While with: "^ Syntax.string_of_term ctxt lifted_inv )) 
        THEN 
        compose_tac (false,annotate,1) i) st
  end;
@@ -2656,7 +2656,7 @@ fun cond_annotate_tac ctxt inv mode (_,i) st =
     val invVar = List.last (prems_of annotateCond) |> dest_hoare |> #3 |> strip_comb |> #1;
     val annotate = cterm_instantiate 
                            [(cterm_of thy invVar,cterm_of thy lifted_inv)] annotateCond;
-  in  ((trace_tac ("annotating Cond with: "^ Sign.string_of_term thy lifted_inv )) 
+  in  ((trace_tac ("annotating Cond with: "^ Syntax.string_of_term ctxt lifted_inv )) 
        THEN 
        compose_tac (false,annotate,5) i) st
  end;
@@ -2724,7 +2724,7 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
 	 (fst o strip_comb o #3 o dest_whileAnno o nth 1 o snd o strip_comb o #2 o dest_hoare) 
             (List.last (prems_of WhileG));
     val WhileGInst = cterm_instantiate [(cterm_of thy invVar,cterm_of thy J)] WhileG; 	
-  in ((trace_tac ("WhileAnnoG, adding guards to invariant: "^ Sign.string_of_term thy J))
+  in ((trace_tac ("WhileAnnoG, adding guards to invariant: "^ Syntax.string_of_term ctxt J))
       THEN compose_tac (false,WhileGInst,1) i) st 
   end
   handle TERM _ => no_tac st 

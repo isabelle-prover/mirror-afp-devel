@@ -1,5 +1,5 @@
 (*  Title:      hoare_syntax.ML
-    ID:         $Id: hoare_syntax.ML,v 1.2 2008-03-06 15:22:27 lsf37 Exp $
+    ID:         $Id: hoare_syntax.ML,v 1.3 2008-05-18 13:03:59 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -654,7 +654,7 @@ fun guard ctxt Ts (add as (Const ("HOL.plus_class.plus",_)$l$r)) = guard ctxt Ts
       let
         val g = (if (fastype_of1 (Ts,sub)) = HOLogic.natT then le r l else in_range sub)
                 handle TERM _ => error ("guard generation, cannot determine type of: "
-                                        ^ Sign.string_of_term (Context.theory_of ctxt) sub);
+                                        ^ Syntax.string_of_term (Context.proof_of ctxt) sub);
       in guard ctxt Ts l & guard ctxt Ts r & SOME g end
   | guard ctxt Ts (mul as (Const ("HOL.times_class.times",_)$l$r)) = guard ctxt Ts l & guard ctxt Ts r & SOME (in_range mul)
   | guard ctxt Ts (Const ("op &",_)$l$r) = guard ctxt Ts l & mk_imp (l,guard ctxt Ts r)
