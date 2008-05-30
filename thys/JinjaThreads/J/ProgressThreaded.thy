@@ -107,61 +107,56 @@ lemma NewThread_is_class_Thread:
   shows "is_class P Thread"
 using major minor
 proof(induct arbitrary: E T rule: red.induct)
-  prefer 36
   case (CallParams e s ta e' s' v M vs es E T)
   note red = `P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
-  have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T; NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<rbrakk> \<Longrightarrow> is_class P Thread" .
-  have conf: "P,E \<turnstile> s \<surd>" .
-  have wt: "P,E,hp s \<turnstile> Val v\<bullet>M(map Val vs @ e # es) : T" .
-  have ta: "NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" .
+  have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T; NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<rbrakk> \<Longrightarrow> is_class P Thread" by fact
+  have conf: "P,E \<turnstile> s \<surd>" by fact
+  have wt: "P,E,hp s \<turnstile> Val v\<bullet>M(map Val vs @ e # es) : T" by fact
+  have ta: "NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" by fact
   from wt have "\<exists>T. P,E,hp s \<turnstile> e : T"
     by(fastsimp elim: WTrt_elim_cases simp add: list_all2_append1 list_all2_Cons1)+
   then obtain T where "P,E,hp s \<turnstile> e : T" by blast
   thus ?case by -(rule IH[OF conf _ ta])
 next
-  prefer 37
   case (RedNewThread s a C fs E T)
-  have hpsa: "hp s a = \<lfloor>Obj C fs\<rfloor>" .
-  have PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" .
-  have conf: "P,E \<turnstile> s \<surd>" .
-  have wt: "P,E,hp s \<turnstile> addr a\<bullet>start([]) : T" .
+  have hpsa: "hp s a = \<lfloor>Obj C fs\<rfloor>" by fact
+  have PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" by fact
+  have conf: "P,E \<turnstile> s \<surd>" by fact
+  have wt: "P,E,hp s \<turnstile> addr a\<bullet>start([]) : T" by fact
   note ta = `NewThread t'' (e'', l'') h'' \<in> set \<lbrace>\<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a (Var this\<bullet>run([]), [this \<mapsto> Addr a]) (hp s)\<rbrace>\<rbrace>\<^bsub>t\<^esub>`
   from conf hpsa have "is_class P C" by(force simp add: sconf_def hconf_def oconf_def)
   thus ?case
     by(auto intro: converse_subcls_is_class[OF wf PCThread])
 next
-  prefer 45
   case (BlockRedNone e h l V ta e' h' l' T E T')
-  have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h, l(V := None)) \<surd>; P,E,hp (h, l(V := None)) \<turnstile> e : T; NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<rbrakk> \<Longrightarrow> is_class P Thread" .
-  have conf: "P,E \<turnstile> (h, l) \<surd>" .
-  have wt: "P,E,hp (h, l) \<turnstile> {V:T; e} : T'" .
-  have ta: "NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" .
+  have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h, l(V := None)) \<surd>; P,E,hp (h, l(V := None)) \<turnstile> e : T; NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<rbrakk> \<Longrightarrow> is_class P Thread" by fact
+  have conf: "P,E \<turnstile> (h, l) \<surd>" by fact
+  have wt: "P,E,hp (h, l) \<turnstile> {V:T; e} : T'" by fact
+  have ta: "NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" by fact
   from conf have conf': "P,E(V \<mapsto> T) \<turnstile> (h, l(V := None)) \<surd>"
     by(clarsimp simp add: sconf_def lconf_def)
   thus ?case using wt ta by -(erule IH, simp_all)
 next
-  prefer 45
   case (BlockRedSome e h l V ta e' h' l' v T E T')
-  have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h, l(V := None)) \<surd>; P,E,hp (h, l(V := None)) \<turnstile> e : T; NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<rbrakk> \<Longrightarrow> is_class P Thread" .
-  have conf: "P,E \<turnstile> (h, l) \<surd>" .
-  have wt: "P,E,hp (h, l) \<turnstile> {V:T; e} : T'" .
-  have ta: "NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" .
+  have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h, l(V := None)) \<surd>; P,E,hp (h, l(V := None)) \<turnstile> e : T; NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<rbrakk> \<Longrightarrow> is_class P Thread" by fact
+  have conf: "P,E \<turnstile> (h, l) \<surd>" by fact
+  have wt: "P,E,hp (h, l) \<turnstile> {V:T; e} : T'" by fact
+  have ta: "NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" by fact
   from conf have conf': "P,E(V \<mapsto> T) \<turnstile> (h, l(V := None)) \<surd>"
     by(clarsimp simp add: sconf_def lconf_def)
   thus ?case using wt ta by -(erule IH, simp_all)
 next
-  prefer 45
   case (InitBlockRed e h l V v ta e' h' l' v' T E T')
-  have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h, l(V \<mapsto> v)) \<surd>; P,E,hp (h, l(V \<mapsto> v)) \<turnstile> e : T; NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<rbrakk> \<Longrightarrow> is_class P Thread" .
-  have conf: "P,E \<turnstile> (h, l) \<surd>" .
-  have wt: "P,E,hp (h, l) \<turnstile> {V:T := Val v; e} : T'" .
-  have v': "l' V = Some v'" .
-  have ta: "NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" .
+  have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h, l(V \<mapsto> v)) \<surd>; P,E,hp (h, l(V \<mapsto> v)) \<turnstile> e : T; NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<rbrakk> \<Longrightarrow> is_class P Thread" by fact
+  have conf: "P,E \<turnstile> (h, l) \<surd>" by fact
+  have wt: "P,E,hp (h, l) \<turnstile> {V:T := Val v; e} : T'" by fact
+  have v': "l' V = Some v'" by fact
+  have ta: "NewThread t'' (e'', l'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" by fact
   from wt obtain T\<^isub>1 where wt\<^isub>1: "typeof\<^bsub>h\<^esub> v = Some T\<^isub>1"
     and T1subT: "P \<turnstile> T\<^isub>1 \<le> T" and wt\<^isub>2: "P,E(V\<mapsto>T),h \<turnstile> e : T'" by auto
   with conf have conf': "P,E(V \<mapsto> T) \<turnstile> (h, l(V \<mapsto> v)) \<surd>"
     by(clarsimp simp add: sconf_def lconf_def conf_def)
-  thus ?case using ta by -(erule IH, simp_all)
+  thus ?case apply (rule IH) apply simp apply (rule wt\<^isub>2) apply (rule ta) done
 qed(fastsimp)+
 
 
@@ -195,15 +190,14 @@ lemma red_sconf_type_newthread:
   and sconf: "P,(E::env) \<turnstile> s \<surd>"
   shows "\<exists>E T. P,E,hp s' \<turnstile> e'' : T \<and> P,hp s' \<turnstile> x'' (:\<le>) E"
 proof -
-  from wf red ta have isclassThread: "is_class P Thread"
+  from assms have isclassThread: "is_class P Thread"
     by(auto intro!: NewThread_is_class_Thread)
   from red ta wt show ?thesis
   proof(induct arbitrary: E T rule: red.induct)
-    prefer 38
     case (RedNewThread s a C fs E T)
-    have wt: "P,E,hp s \<turnstile> addr a\<bullet>start([]) : T" .
-    have hpsa: "hp s a = \<lfloor>Obj C fs\<rfloor>" .
-    have PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" .
+    have wt: "P,E,hp s \<turnstile> addr a\<bullet>start([]) : T" by fact
+    have hpsa: "hp s a = \<lfloor>Obj C fs\<rfloor>" by fact
+    have PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" by fact
     note `NewThread t'' (e'', x'') (hp s) \<in> set \<lbrace>\<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a (Var this\<bullet>run([]), [this \<mapsto> Addr a]) (hp s)\<rbrace>\<rbrace>\<^bsub>t\<^esub>`
     hence NT: "NewThread a (Var this\<bullet>run([]), [this \<mapsto> Addr a]) (hp s)  = NewThread t'' (e'', x'') (hp s)" by simp
     have "\<exists>D mthd. P \<turnstile> C sees run: []\<rightarrow>Void = mthd in D"
@@ -373,25 +367,24 @@ lemma red_Unlock_Lock_no_lock_ex_UnlockFail:
      \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las \<rbrakk>
   \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>l\<rbrace>\<rightarrow> \<langle>e', s'\<rangle>"
 proof(induct rule: red.induct)
-  prefer 40
   case (RedWait s a arrobj)
   note `\<lbrace>\<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las`
   hence "a = l" by(simp split: split_if_asm)
   with `hp s a = \<lfloor>arrobj\<rfloor>` show ?case
     by(fastsimp intro: RedWaitFail)
-next prefer 41
+next
   case (RedNotify s a arrobj)
   note `\<lbrace>\<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las`
   hence "a = l" by(simp split: split_if_asm)
   with `hp s a = \<lfloor>arrobj\<rfloor>` show ?case
     by(fastsimp intro: RedNotifyFail)
-next prefer 42
+next
   case (RedNotifyAll s a arrobj)
   note `\<lbrace>\<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las`
   hence "a = l" by(simp split: split_if_asm)
   with `hp s a = \<lfloor>arrobj\<rfloor>` show ?case
     by(fastsimp intro: RedNotifyAllFail)
-next prefer 44
+next
   case (BlockRedNone e h x V ta e' h' l' T)
   note IH = `\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e,(h, x(V := None))\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>l\<rbrace>\<rightarrow> \<langle>e',s'\<rangle>`
   with `\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las` obtain e' s'
@@ -402,7 +395,7 @@ next prefer 44
     apply(cases "x' V")
      apply(fastsimp intro: red.BlockRedNone)
     by(fastsimp intro: red.BlockRedSome)
-next prefer 44
+next
   case (BlockRedSome e h x V ta e' h' l' v T)
   note IH = `\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e,(h, x(V := None))\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>l\<rbrace>\<rightarrow> \<langle>e',s'\<rangle>`
   with `\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las` obtain e' s'
@@ -413,7 +406,7 @@ next prefer 44
     apply(cases "x' V")
      apply(fastsimp intro: red.BlockRedNone)
     by(fastsimp intro: red.BlockRedSome)
-next prefer 44
+next
   case (InitBlockRed e h x V v ta e' h' x' v' T)
   from `\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e,(h, x(V \<mapsto> v))\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>l\<rbrace>\<rightarrow> \<langle>e',s'\<rangle>`
     `\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l = [Unlock, Lock] @ las`
@@ -433,28 +426,27 @@ lemma red_UnlockFail_ex_Unlock:
            \<or> P \<turnstile> \<langle>e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>l, Lock\<rightarrow>l\<rbrace>\<lbrace>\<^bsub>w\<^esub> Notify l\<rbrace>\<rightarrow> \<langle>e', s'\<rangle>
            \<or> P \<turnstile> \<langle>e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>l, Lock\<rightarrow>l\<rbrace>\<lbrace>\<^bsub>w\<^esub> NotifyAll l\<rbrace>\<rightarrow> \<langle>e', s'\<rangle>"
 proof(induct rule: red.induct)
-  prefer 41
   case (RedWaitFail s a arrobj)
   note h = `hp s a = \<lfloor>arrobj\<rfloor>`
   note `\<lbrace>\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>\<rbrace>\<^bsub>l\<^esub> l = [UnlockFail]`
   hence "a = l" by(auto split: split_if_asm)
   with h show ?case
     by -(drule RedWait, fastsimp simp add: fun_upd_def if_else_if_else_eq_if_else split: split_if_asm)
-next prefer 42
+next
   case (RedNotifyFail s a arrobj)
   note h = `hp s a = \<lfloor>arrobj\<rfloor>`
   note `\<lbrace>\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>\<rbrace>\<^bsub>l\<^esub> l = [UnlockFail]`
   hence "a = l" by(auto split: split_if_asm)
   with h show ?case
     by -(drule RedNotify, fastsimp simp add: fun_upd_def if_else_if_else_eq_if_else split: split_if_asm)
-next prefer 43
+next
   case (RedNotifyAllFail s a arrobj)
   note h = `hp s a = \<lfloor>arrobj\<rfloor>`
   note `\<lbrace>\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>\<rbrace>\<^bsub>l\<^esub> l = [UnlockFail]`
   hence "a = l" by(auto split: split_if_asm)
   with h show ?case
     by -(drule RedNotifyAll, fastsimp simp add: fun_upd_def if_else_if_else_eq_if_else split: split_if_asm)
-next prefer 44
+next
   case (BlockRedNone e h x V ta e' h' l' T)
   let "?c e' s'" = "P \<turnstile> \<langle>e,(h, x(V := None))\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>l, Lock\<rightarrow>l, ReleaseAcquire\<rightarrow>l\<rbrace>\<lbrace>\<^bsub>w\<^esub>Suspend l\<rbrace>\<rightarrow> \<langle>e',s'\<rangle> \<or>
                     P \<turnstile> \<langle>e,(h, x(V := None))\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>l, Lock\<rightarrow>l\<rbrace>\<lbrace>\<^bsub>w\<^esub>Notify l\<rbrace>\<rightarrow> \<langle>e',s'\<rangle> \<or>
@@ -469,7 +461,7 @@ next prefer 44
      apply(fastsimp simp add: fun_upd_def intro: red.BlockRedNone)
     apply(fastsimp simp add: fun_upd_def intro: red.BlockRedSome)
     done
-next prefer 44
+next
   case (BlockRedSome e h x V ta e' h' l' v T)
   let "?c e' s'" = "P \<turnstile> \<langle>e,(h, x(V := None))\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>l, Lock\<rightarrow>l, ReleaseAcquire\<rightarrow>l\<rbrace>\<lbrace>\<^bsub>w\<^esub>Suspend l\<rbrace>\<rightarrow> \<langle>e',s'\<rangle> \<or>
                     P \<turnstile> \<langle>e,(h, x(V := None))\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>l, Lock\<rightarrow>l\<rbrace>\<lbrace>\<^bsub>w\<^esub>Notify l\<rbrace>\<rightarrow> \<langle>e',s'\<rangle> \<or>
@@ -484,7 +476,7 @@ next prefer 44
      apply(fastsimp simp add: fun_upd_def intro: red.BlockRedNone)
     apply(fastsimp simp add: fun_upd_def intro: red.BlockRedSome)
     done
-next prefer 44
+next
   case (InitBlockRed e h x V v ta e' h' l' v' T)
   let "?c e' s'" = "P \<turnstile> \<langle>e,(h, x(V \<mapsto> v))\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>l, Lock\<rightarrow>l, ReleaseAcquire\<rightarrow>l\<rbrace>\<lbrace>\<^bsub>w\<^esub>Suspend l\<rbrace>\<rightarrow> \<langle>e',s'\<rangle> \<or>
                     P \<turnstile> \<langle>e,(h, x(V \<mapsto> v))\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>l, Lock\<rightarrow>l\<rbrace>\<lbrace>\<^bsub>w\<^esub>Notify l\<rbrace>\<rightarrow> \<langle>e',s'\<rangle> \<or>
@@ -492,7 +484,7 @@ next prefer 44
   from `\<lbrakk> \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l = [UnlockFail] \<rbrakk> \<Longrightarrow> \<exists>e' s'. ?c e' s'`[OF `\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l = [UnlockFail]`]
   obtain e' s' where red: "?c e' s'" by blast 
   moreover
-  obtain h' x' where "s' = (h', x')" by (cases s', auto)
+  obtain h' x' where "s' = (h', x')" by (cases s') auto
   moreover
   from red have "\<exists>v. lcl s' V = \<lfloor>v\<rfloor>"
     by(auto dest!: red_lcl_incr)
@@ -516,28 +508,24 @@ lemma red_NewThreadFail_NewThread:
   "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> = [ThreadExists t] \<rbrakk> 
   \<Longrightarrow> \<exists>e' s' e'' x''. P \<turnstile> \<langle>e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread t (e'', x'') (hp s')\<rbrace>\<rightarrow> \<langle>e', s'\<rangle>"
 proof(induct rule: red.induct)
-  prefer 39
   case (RedNewThreadFail s a C fs)
   from `\<lbrace>\<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>\<rbrace>\<^bsub>t\<^esub> = [ThreadExists t]`
   have "t = a" by simp
   with `P \<turnstile> C \<preceq>\<^sup>* Thread` `hp s a = \<lfloor>Obj C fs\<rfloor>`
   show ?case by(fastsimp intro: red.RedNewThread)
 next
-  prefer 46
   case (BlockRedNone e h l V ta e' h' l' T)
   thus ?case
     apply(clarsimp)
     apply(case_tac "b V")
     by(fastsimp intro: red.BlockRedNone red.BlockRedSome)+
 next
-  prefer 47
   case (BlockRedSome e h l V ta e' h' l' v T)
   thus ?case
     apply(clarsimp)
     apply(case_tac "b V")
     by(fastsimp intro: red.BlockRedNone red.BlockRedSome)+
 next
-  prefer 47
   case (InitBlockRed e h l V v ta e' h' l' v' T)
   from `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> = [ThreadExists t]`
     `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> = [ThreadExists t] \<Longrightarrow> \<exists>e' s' e'' x''. P \<turnstile> \<langle>e,(h, l(V \<mapsto> v))\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread t (e'', x'') (hp s')\<rbrace>\<rightarrow> \<langle>e',s'\<rangle>`
@@ -554,7 +542,6 @@ qed(fastsimp intro: red.intros)+
 lemma red_NewThread_NewThreadFail:
   "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> = [NewThread t (e'', x'') (hp s')] \<rbrakk> \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> ThreadExists t\<rbrace>\<rightarrow> \<langle>e', s'\<rangle>"
 proof(induct rule: red.induct)
-  prefer 38
   case (RedNewThread s a C fs)
   note `\<lbrace>\<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a (Var this\<bullet>run([]), [this \<mapsto> Addr a]) (hp s)\<rbrace>\<rbrace>\<^bsub>t\<^esub> = [NewThread t (e'', x'') (hp s)]`
   hence ta: "a = t"
@@ -563,21 +550,18 @@ proof(induct rule: red.induct)
   with `hp s a = \<lfloor>Obj C fs\<rfloor>` `P \<turnstile> C \<preceq>\<^sup>* Thread`
   show ?case by(fastsimp intro: red.RedNewThreadFail)
 next
-  prefer 46
   case (BlockRedNone e h l V ta e' h' l' T)
   thus ?case
     apply(clarsimp)
     apply(case_tac "b V")
     by(fastsimp intro: red.BlockRedNone red.BlockRedSome)+
 next
-  prefer 46
   case (BlockRedSome e h l V ta e' h' l' v T)
   thus ?case
     apply(clarsimp)
     apply(case_tac "b V")
     by(fastsimp intro: red.BlockRedNone red.BlockRedSome)+
 next
-  prefer 46
   case (InitBlockRed e h l V v ta e' h' l' v' T)
   from `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> = [NewThread t (e'', x'') (hp (h', l'(V := l V)))]`
     `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> = [NewThread t (e'', x'') (hp (h', l'))] \<Longrightarrow> \<exists>e' s'. P \<turnstile> \<langle>e, (h, l(V \<mapsto> v))\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists t\<rbrace>\<rightarrow> \<langle>e', s'\<rangle>`
@@ -598,9 +582,9 @@ proof(unfold_locales)
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
     and "thr s t = \<lfloor>(ex, no_wait_locks)\<rfloor>"
     and "mred P (ex, shr s) ta (e'x', m')"
-  moreover obtain ls ts m ws where s: "s = (ls, (ts, m), ws)" by(cases s, auto)
-  moreover obtain e x where ex: "ex = (e, x)" by(cases ex, auto)
-  moreover obtain e' x' where e'x': "e'x' = (e', x')" by(cases e'x', auto)
+  moreover obtain ls ts m ws where s: "s = (ls, (ts, m), ws)" by(cases s) auto
+  moreover obtain e x where ex: "ex = (e, x)" by(cases ex) auto
+  moreover obtain e' x' where e'x': "e'x' = (e', x')" by(cases e'x') auto
   ultimately have tst: "ts t = \<lfloor>(ex, no_wait_locks)\<rfloor>" 
     and red: "P \<turnstile> \<langle>e, (m, x)\<rangle> -ta\<rightarrow> \<langle>e', (m', x')\<rangle>" by auto
   from wf have wwf: "wwf_J_prog P" by(rule wf_prog_wwf_prog)
@@ -747,7 +731,7 @@ proof(unfold_locales)
 	moreover have "collect_locks' ((\<lambda>l. [])(l := [Unlock, Lock])) \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
 	  by(auto intro: collect_locksI elim!: collect_locks'E split: split_if_asm)
 	ultimately show ?thesis using ex
-	  by(cases s', fastsimp)
+	  by(cases s') fastsimp
       qed
     qed
   next
@@ -806,8 +790,8 @@ proof(unfold_locales)
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
     and "thr s t = \<lfloor>(ex, ln)\<rfloor>"
     and "\<not> final_expr ex"
-  moreover obtain ls ts m ws where s: "s = (ls, (ts, m), ws)" by(cases s, auto)
-  moreover obtain e x where ex: "ex = (e, x)" by(cases ex, auto)
+  moreover obtain ls ts m ws where s: "s = (ls, (ts, m), ws)" by(cases s) auto
+  moreover obtain e x where ex: "ex = (e, x)" by(cases ex) auto
   ultimately have tst: "ts t = \<lfloor>(ex, ln)\<rfloor>" 
     and nfine: "\<not> final e" by auto
   from wf have wwf: "wwf_J_prog P" by(rule wf_prog_wwf_prog)
@@ -898,8 +882,8 @@ proof(rule conjI)
   from RedT tc show "thread_conf P (thr s') (shr s')" by(rule RedT_preserves_thread_conf)
 next
   let ?Es' = "upd_invs Es (\<lambda>ET (e, x) m. sconf_type_ok P ET e m x) (\<down>map (thr_a \<circ> snd) ttas\<down>)"
-  obtain ls ts m ws where s [simp]: "s = (ls, (ts, m), ws)" by(cases s, auto)
-  obtain ls' ts' m' ws' where s' [simp]: "s' = (ls', (ts', m'), ws')" by(cases s', auto)
+  obtain ls ts m ws where s [simp]: "s = (ls, (ts, m), ws)" by(cases s) auto
+  obtain ls' ts' m' ws' where s' [simp]: "s' = (ls', (ts', m'), ws')" by(cases s') auto
   from wf have wwf: "wwf_J_prog P" by(rule wf_prog_wwf_prog)
   from RedT defass have defass': "def_ass_ts_ok ts' m'"
     by(auto dest: RedT_preserves_defass[OF wf])
@@ -972,7 +956,7 @@ next
       by(blast) }
   moreover
   have "Es \<unlhd> ?Es'" using esinv RedT
-    by -(auto intro: multithreaded.RedT_upd_inv_ext)
+    by (auto intro: multithreaded.RedT_upd_inv_ext)
   ultimately show "let Es' = upd_invs Es (\<lambda>ET (e, x) m. sconf_type_ok P ET e m x) (\<down>map (thr_a \<circ> snd) ttas\<down>) in
           (\<forall>t e'. \<exists>x' ln'. thr s' t = \<lfloor>((e', x'), ln')\<rfloor> \<longrightarrow>
                     (\<exists>v. e' = Val v \<and> (\<exists>E T. Es' t = \<lfloor>(E, T)\<rfloor> \<and> P,shr s' \<turnstile> v :\<le> T) \<and> ln' = no_wait_locks)

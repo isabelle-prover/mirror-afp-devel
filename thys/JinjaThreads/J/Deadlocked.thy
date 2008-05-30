@@ -19,7 +19,6 @@ done
 lemma red_Lock_wth:
   "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l); P,E,h \<turnstile> e : T \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e, (h, lcl s)\<rangle> -ta\<rightarrow> \<langle>e', (h, lcl s')\<rangle>"
 proof(induct arbitrary: E T rule: red.induct)
-  prefer 36
   case (CallParams e s ta e' s' v M vs es E T)
   from `P,E,h \<turnstile> Val v\<bullet>M(map Val vs @ e # es) : T`
   have "\<exists>T'. P,E,h \<turnstile> e : T'"
@@ -27,27 +26,24 @@ proof(induct arbitrary: E T rule: red.induct)
   with CallParams show ?case
     by(blast intro: red.CallParams)
 next
-  prefer 39
   case (RedWait s a arrobj E T)
   from `P,E,h \<turnstile> addr a\<bullet>wait([]) : T`
   have "\<exists>arrobj. h a = \<lfloor>arrobj\<rfloor>"
     by(auto elim: WTrt_elim_cases)
   thus ?case by(fastsimp intro: red.RedWait)
 next
-  prefer 40
   case (RedNotify s a arrobj E T)
   from `P,E,h \<turnstile> addr a\<bullet>notify([]) : T`
   have "\<exists>arrobj. h a = \<lfloor>arrobj\<rfloor>"
     by(auto elim: WTrt_elim_cases)
   thus ?case by(fastsimp intro: red.RedNotify)
 next
-  prefer 41
   case (RedNotifyAll s a arrobj E T)
   from `P,E,h \<turnstile> addr a\<bullet>notifyAll([]) : T`
   have "\<exists>arrobj. h a = \<lfloor>arrobj\<rfloor>"
     by(auto elim: WTrt_elim_cases)
   thus ?case by(fastsimp intro: red.RedNotifyAll)
-next prefer 50
+next
   case (LockSynchronized s a arrobj e E T)
   from `P,E,h \<turnstile> sync(addr a) e : T`
   have "\<exists>arrobj. h a = \<lfloor>arrobj\<rfloor>"
@@ -59,7 +55,6 @@ lemma red_Join_wth:
   "\<lbrakk>P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>; P,E,h \<turnstile> e : T; hext h (hp s) \<rbrakk>
   \<Longrightarrow> P \<turnstile> \<langle>e, (h, lcl s)\<rangle> -ta\<rightarrow> \<langle>e', (h, lcl s')\<rangle>"
 proof(induct arbitrary: E T rule: red.induct)
-  prefer 36
   case (CallParams e s ta e' s' v M vs es E T)
   from `P,E,h \<turnstile> Val v\<bullet>M(map Val vs @ e # es) : T`
   have "\<exists>T'. P,E,h \<turnstile> e : T'"
@@ -67,7 +62,6 @@ proof(induct arbitrary: E T rule: red.induct)
   with CallParams show ?case
     by(blast intro: red.CallParams)
 next
-  prefer 45
   case (RedJoin s a C fs E T)
   from `P,E,h \<turnstile> addr a\<bullet>join([]) : T`
   have "\<exists>C' fs'. h a = \<lfloor>Obj C' fs'\<rfloor>"
@@ -110,7 +104,7 @@ next
     with `P,E,H \<turnstile> new C : T` wf show ?thesis
       by(fastsimp del:exE intro!:RedNew simp add:new_Addr_def elim!:wf_Fields_Ex[THEN exE])
   qed
-next prefer 2
+next
   case (RedNewArray h a i h' T l E T')
   show ?case
   proof(cases "new_Addr H")
@@ -121,7 +115,7 @@ next prefer 2
     with `0 \<le> i` show ?thesis
       by(fastsimp intro: red.RedNewArray)
   qed
-next prefer 3
+next
   case (RedNewArrayFail h i T l E T')
   show ?case
   proof(cases "new_Addr H")
@@ -132,7 +126,7 @@ next prefer 3
     with `0 \<le> i` show ?thesis
       by(fastsimp intro: red.RedNewArray)
   qed
-next prefer 4
+next
   case (RedCast s v U T E T')
   from `P,E,H \<turnstile> Cast T (Val v) : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -149,7 +143,7 @@ next prefer 4
 	by(fastsimp intro: red.RedCastFail)
     qed
   qed
-next prefer 4
+next
   case (RedCastFail s v U T E T')
   from `P,E,H \<turnstile> Cast T (Val v) : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -166,7 +160,7 @@ next prefer 4
 	by(fastsimp intro: red.RedCastFail)
     qed
   qed
-next prefer 13
+next
   case (RedAAccBounds s a T si el i E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -181,7 +175,7 @@ next prefer 13
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 13
+next
   case (RedAAcc s a T si el i E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -196,7 +190,7 @@ next prefer 13
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 17
+next
   case (RedAAssBounds s a T si el i e E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val e : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -213,7 +207,7 @@ next prefer 17
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 17
+next
   case (RedAAssStore s a T si el i w U E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -233,7 +227,7 @@ next prefer 17
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 17
+next
   case (RedAAss h a T s el i w U h' l E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -253,7 +247,7 @@ next prefer 17
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 18
+next
   case (RedFAcc s a C fs F D v E T)
   from `P,E,H \<turnstile> addr a\<bullet>F{D} : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -271,7 +265,7 @@ next prefer 18
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 21
+next
   case (RedFAss h a C fs F D v l E T)
   from `P,E,H \<turnstile> addr a\<bullet>F{D} := Val v : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -290,11 +284,11 @@ next prefer 21
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 23
+next
   case (CallParams e s ta e' s' v M vs es E T)
   thus ?case
     by(fastsimp intro: red.CallParams simp add: list_all2_Cons1 list_all2_append1)
-next prefer 23
+next
   case (RedCall s a C fs M Ts T pns body D vs E T')
   from `P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -374,7 +368,7 @@ next prefer 23
       by(auto dest: Thread_not_sees_method_join[OF wf])
     thus ?thesis ..
   qed
-next prefer 23
+next
   case (RedNewThread s a C fs E T)
   from `P,E,H \<turnstile> addr a\<bullet>start([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -399,7 +393,7 @@ next prefer 23
     with sub show ?thesis
       by(fastsimp intro: red.RedNewThread)
   qed
-next prefer 23
+next
   case (RedNewThreadFail s a C fs E T)
   from `P,E,H \<turnstile> addr a\<bullet>start([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -424,7 +418,7 @@ next prefer 23
     with sub show ?thesis
       by(fastsimp intro: red.RedNewThreadFail)
   qed
-next prefer 23
+next
   case (RedWait s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>wait([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -436,7 +430,7 @@ next prefer 23
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
   qed(fastsimp split: heapobj.split_asm intro: red.RedWait)+
-next prefer 23
+next
   case (RedWaitFail s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>wait([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -448,7 +442,7 @@ next prefer 23
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
   qed(fastsimp split: heapobj.split_asm intro: red.RedWaitFail)+
-next prefer 23
+next
   case (RedNotify s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>notify([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -460,7 +454,7 @@ next prefer 23
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
   qed(fastsimp split: heapobj.split_asm intro: red.RedNotify)+
-next prefer 23
+next
   case (RedNotifyFail s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>notify([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -472,7 +466,7 @@ next prefer 23
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
   qed(fastsimp split: heapobj.split_asm intro: red.RedNotifyFail)+
-next prefer 23
+next
   case (RedNotifyAll s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>notifyAll([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -484,7 +478,7 @@ next prefer 23
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
   qed(fastsimp split: heapobj.split_asm intro: red.RedNotifyAll)+
-next prefer 23
+next
   case (RedNotifyAllFail s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>notifyAll([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -496,7 +490,7 @@ next prefer 23
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
   qed(fastsimp split: heapobj.split_asm intro: red.RedNotifyAllFail)+
-next prefer 23
+next
   case (RedJoin s a C fs E T)
   from `P,E,H \<turnstile> addr a\<bullet>join([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -521,7 +515,7 @@ next prefer 23
     with sub show ?thesis
       by(fastsimp intro: red.RedJoin)
   qed
-next prefer 24
+next
   case (BlockRedNone e h l V ta e' h' l' T E T')
   from `P,E,H \<turnstile> {V:T; e} : T'`
     `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp (h, l(V := None))) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl (h, l(V := None)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>`
@@ -530,9 +524,8 @@ next prefer 24
     where "P \<turnstile> \<langle>e,(H, l(V := None))\<rangle> -ta'\<rightarrow> \<langle>e', (H', l')\<rangle>"
     and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" by fastsimp
   with `\<not> assigned V e` show ?case
-    apply(cases "l' V")
-    by(fastsimp intro: red.BlockRedNone red.BlockRedSome)+
-next prefer 24
+    by (cases "l' V") (fastsimp intro: red.BlockRedNone red.BlockRedSome)+
+next
   case (BlockRedSome e h l V ta e' h' l' v T E T')
   from `P,E,H \<turnstile> {V:T; e} : T'`
     `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp (h, l(V := None))) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl (h, l(V := None)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>`
@@ -541,9 +534,8 @@ next prefer 24
     where "P \<turnstile> \<langle>e,(H, l(V := None))\<rangle> -ta'\<rightarrow> \<langle>e', (H', l')\<rangle>"
     and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" by fastsimp
   with `\<not> assigned V e` show ?case
-    apply(cases "l' V")
-    by(fastsimp intro: red.BlockRedNone red.BlockRedSome)+
-next prefer 24
+    by (cases "l' V") (fastsimp intro: red.BlockRedNone red.BlockRedSome)+
+next
   case (InitBlockRed e h l V v ta e' h' l' v' T E T')
   from `P,E,H \<turnstile> {V:T; V:=Val v;; e} : T'`
     `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp (h, l(V \<mapsto> v))) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl (h, l(V \<mapsto> v)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>`
@@ -555,7 +547,7 @@ next prefer 24
     by(auto dest: red_lcl_incr)
   ultimately show ?case
     by(fastsimp intro: red.InitBlockRed)
-next prefer 28
+next
   case (LockSynchronized s a arrobj e E T)
   from `P,E,H \<turnstile> sync(addr a) e : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -570,7 +562,7 @@ next prefer 28
     hence False by(clarsimp split: heapobj.split_asm)
     thus ?thesis ..
   qed
-next prefer 40
+next
   case (RedTryCatch s a D fs C V e2 E T)
   from `P,E,H \<turnstile> try Throw a catch(C V) e2 : T`
   show ?case
@@ -588,7 +580,7 @@ next prefer 40
 	by(fastsimp intro: red.RedTryCatch)
     qed
   qed
-next prefer 40
+next
   case (RedTryFail s a D fs C V e2 E T)
   from `P,E,H \<turnstile> try Throw a catch(C V) e2 : T`
   show ?case
@@ -635,12 +627,12 @@ proof(rule multithreaded.must_syncI)
     and ta'w: "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
     and ta'c: "\<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" by blast
   from ml red have "(\<exists>l. Lock \<in> set (\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> l)) \<or> (\<exists>t. Join t \<in> set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>)"
-    by(cases s', auto dest!: multithreaded.must_syncD)
+    by(cases s') (auto dest!: multithreaded.must_syncD)
   with ta'l ta'c show "(\<exists>l. Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l)) \<or> (\<exists>t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>)" by simp
 next
   from ml obtain ta ex m' where red: "mred P ((e, snd (h, x)), fst (h, x)) ta (ex, m')"
     by(auto elim: multithreaded.must_syncE)
-  obtain e' x' where e'x': "ex = (e', x')" by (cases ex, auto)
+  obtain e' x' where e'x': "ex = (e', x')" by (cases ex) auto
   with red have red': "P \<turnstile> \<langle>e, (h, x)\<rangle> -ta\<rightarrow> \<langle>e', (m', x')\<rangle>" by simp
   from red ml have "(\<exists>l. Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l)) \<or> (\<exists>t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>)"
     by -(rule multithreaded.must_syncD)
@@ -679,7 +671,7 @@ proof -
     assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
       and red: "P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
       and tst: "thr s t = \<lfloor>(x, ln)\<rfloor>"
-    obtain e l where x [simp]: "x = (e, l)" by(cases x, auto)
+    obtain e l where x [simp]: "x = (e, l)" by(cases x) auto
     let ?Es' = "upd_invs Es (\<lambda>ET (e, x) m. sconf_type_ok P ET e m x) (\<down>map (thr_a \<circ> snd) tta\<down>)"
     from st Red have st': "sconf_type_ts_ok P ?Es' (thr s) (shr s)"
       by(auto dest: RedT_invariant_sconf_type[OF wf])
@@ -694,8 +686,8 @@ proof -
 
     { assume "multithreaded.must_sync (mred P) x (shr s)"
       hence ml: "P \<turnstile> \<langle>e, (shr s, l)\<rangle> \<wrong>" by auto
-      with hext hconf have "P \<turnstile> \<langle>e, (shr s', l)\<rangle> \<wrong>"
-	by-(rule must_sync_preserved)
+      from this and wf wte hext hconf
+      have "P \<turnstile> \<langle>e, (shr s', l)\<rangle> \<wrong>" by (rule must_sync_preserved)
       hence "multithreaded.must_sync (mred P) x (shr s')" by simp }
     note ml = this
     { fix L
