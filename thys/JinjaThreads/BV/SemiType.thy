@@ -125,7 +125,7 @@ proof(relation "{((P, C), (P', C')). P = P' \<and> acyclicP (subcls1 P) \<and> P
     fix Q x
     assume "\<forall>x. (\<forall>y. (y, x) \<in> {((P, C), P', C'). P = P' \<and> acyclicP (subcls1 P) \<and> P \<turnstile> C' \<prec>\<^sup>1 C} \<longrightarrow> Q y) \<longrightarrow> Q x"
     hence wf: "\<And>x. (\<And>y. (y, x) \<in> {((P, C), P', C'). P = P' \<and> acyclicP (subcls1 P) \<and> P \<turnstile> C' \<prec>\<^sup>1 C} \<Longrightarrow> Q y) \<Longrightarrow> Q x" by blast
-    obtain P C where PC: "(x :: 'c prog \<times> cname) = (P, C)" by(cases x, auto)
+    obtain P C where PC: "(x :: 'c prog \<times> cname) = (P, C)" by(cases x) auto
     show "Q x"
     proof(cases "acyclicP (subcls1 P)")
       case False
@@ -212,11 +212,11 @@ lemma superI:
 proof(induct rule: widen1.induct)
   prefer 6
   case (widen1_Array_Array T U)
-  thus ?case by(cases T, auto elim: widen1.cases)
+  thus ?case by(cases T) (auto elim: widen1.cases)
 next
   prefer 6
   case (widen1_NT_Object T)
-  thus ?case by(cases T, auto)
+  thus ?case by(cases T) auto
 qed(auto dest: subcls1D)
 
 
@@ -320,8 +320,8 @@ next
       by(auto intro: IH)
     hence "(A\<lfloor>\<rceil>, Class Object) \<in> (widen1 P)\<^sup>*"
       by(rule trancl_into_rtrancl)
-    hence "(A\<lfloor>\<rceil>\<lfloor>\<rceil>, Class Object\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>*"
-      by(rule widen1_rtrancl_into_Array_widen1_rtrancl)
+    from this and `\<not> is_NT_Array (A\<lfloor>\<rceil>)` have "(A\<lfloor>\<rceil>\<lfloor>\<rceil>, Class Object\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>*"
+      by (rule widen1_rtrancl_into_Array_widen1_rtrancl)
     with widen1_Array_Object[where P=P] is_class_Object[OF wf]
     show ?case
       by (blast intro: rtrancl_into_trancl1)
@@ -344,7 +344,7 @@ next
     by - (rule Array_Object_widen1_trancl[OF wf])
 next
   case (widen_array_array A B)
-  hence "(A, B) \<in> (widen1 P)\<^sup>+" by(cases A, auto)
+  hence "(A, B) \<in> (widen1 P)\<^sup>+" by(cases A) auto
   with `\<not> is_NT_Array A` show "(A\<lfloor>\<rceil>, B\<lfloor>\<rceil>) \<in> (widen1 P)\<^sup>+"
     by -(rule widen1_trancl_into_Array_widen1_trancl)
 qed(fastsimp)+
@@ -441,7 +441,7 @@ proof -
 	moreover
 	from BObject BNT
 	have "(B, Class Object) \<in> (widen1 P)\<^sup>*"
-	  by(cases "B = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wfP])
+	  by(cases "B = Class Object") (auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wfP])
 	hence "is_ub ((widen1 P)\<^sup>*) (Class Object) B (Class Object)"
 	  by(auto intro: is_ubI)
 	hence "is_lub ((widen1 P)\<^sup>*) (Class Object) B (Class Object)"
@@ -455,7 +455,7 @@ proof -
 	moreover
 	from AObject ANT
 	have "(A, Class Object) \<in> (widen1 P)\<^sup>*"
-	  by(cases "A = Class Object", auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wfP])
+	  by(cases "A = Class Object") (auto intro: trancl_into_rtrancl widen_into_widen1_trancl[OF wfP])
 	hence "is_ub ((widen1 P)\<^sup>*) (Class Object) A (Class Object)"
 	  by(auto intro: is_ubI)
 	hence "is_lub ((widen1 P)\<^sup>*) (Class Object) A (Class Object)"
@@ -499,8 +499,7 @@ qed
 
 lemma widen_into_widen1_rtrancl:
   "\<lbrakk>wf_prog wfmd P; subtype P A B; A \<noteq> NT\<rbrakk> \<Longrightarrow> (A, B) \<in> (widen1 P)\<^sup>*"
-apply(cases "A = B", auto intro: trancl_into_rtrancl widen_into_widen1_trancl)
-done
+by (cases "A = B") (auto intro: trancl_into_rtrancl widen_into_widen1_trancl)
 
 
 lemma sup_subtype_greater:
@@ -537,7 +536,7 @@ proof -
       by (simp add: exec_lub_conv) (blast dest: is_lubD is_ubD intro: widen1_rtrancl_into_widen)
   qed
   with it1 it2 sup show ?thesis
-    by(cases s, auto simp add: sup_def split: split_if_asm elim: refTE)
+    by(cases s) (auto simp add: sup_def split: split_if_asm elim: refTE)
 qed
 
 lemma sup_subtype_smallest:
