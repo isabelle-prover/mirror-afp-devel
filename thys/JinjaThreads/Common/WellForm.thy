@@ -452,10 +452,10 @@ lemma Thread_no_sees_method_start:
   shows "\<lbrakk> P \<turnstile> C sees_methods Mm; Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> False"
 proof(induct rule: Methods.induct)
   case (sees_methods_Object D' fs ms Mm) 
-  have classO: "class P Object = \<lfloor>(D', fs, ms)\<rfloor>" .
-  have Mm: "Mm = option_map (\<lambda>m. (m, Object)) \<circ> map_of ms" .
-  have Mmstart: "Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>" .
-  have "P \<turnstile> Object \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* Object" .
+  have classO: "class P Object = \<lfloor>(D', fs, ms)\<rfloor>" by fact
+  have Mm: "Mm = option_map (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
+  have Mmstart: "Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
+  have "P \<turnstile> Object \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* Object" by fact
   hence PTO: "P \<turnstile> Thread \<preceq>\<^sup>* Object" by(auto)
   with wf classO have "\<not> (\<exists>Ts T m. (start, Ts, T, m) \<in> set ms)"
     apply -
@@ -466,13 +466,13 @@ proof(induct rule: Methods.induct)
     by (auto dest: map_of_is_SomeD)
 next
   case (sees_methods_rec C D' fs ms Mm Mm')
-  have classC: "class P C = \<lfloor>(D', fs, ms)\<rfloor>" .
-  have CnObject: "C \<noteq> Object" .
-  have PD'Mm: "P \<turnstile> D' sees_methods Mm" .
-  have IH: "\<lbrakk>Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> D' \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* D'\<rbrakk> \<Longrightarrow> False" .
-  have Mm': "Mm' = Mm ++ (option_map (\<lambda>m. (m, C)) \<circ> map_of ms)" .
-  have Mm'start: "Mm' start = \<lfloor>((Ts, T, mthd), D)\<rfloor>" .
-  have "P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C" .
+  have classC: "class P C = \<lfloor>(D', fs, ms)\<rfloor>" by fact
+  have CnObject: "C \<noteq> Object" by fact
+  have PD'Mm: "P \<turnstile> D' sees_methods Mm" by fact
+  have IH: "\<lbrakk>Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> D' \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* D'\<rbrakk> \<Longrightarrow> False" by fact
+  have Mm': "Mm' = Mm ++ (option_map (\<lambda>m. (m, C)) \<circ> map_of ms)" by fact
+  have Mm'start: "Mm' start = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
+  have "P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C" by fact
   thus ?case
   proof(rule disjE)
     assume PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
@@ -549,10 +549,10 @@ lemma Thread_no_sees_method_join:
   shows "\<lbrakk> P \<turnstile> C sees_methods Mm; Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> False"
 proof(induct rule: Methods.induct)
   case (sees_methods_Object D' fs ms Mm) 
-  have classO: "class P Object = \<lfloor>(D', fs, ms)\<rfloor>" .
-  have Mm: "Mm = option_map (\<lambda>m. (m, Object)) \<circ> map_of ms" .
-  have Mmstart: "Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>" .
-  have "P \<turnstile> Object \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* Object" .
+  have classO: "class P Object = \<lfloor>(D', fs, ms)\<rfloor>" by fact
+  have Mm: "Mm = option_map (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
+  have Mmstart: "Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
+  have "P \<turnstile> Object \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* Object" by fact
   hence PTO: "P \<turnstile> Thread \<preceq>\<^sup>* Object" by(auto)
   with wf classO have "\<not> (\<exists>Ts T m. (join, Ts, T, m) \<in> set ms)"
     apply -
@@ -563,13 +563,13 @@ proof(induct rule: Methods.induct)
     by (auto dest: map_of_is_SomeD)
 next
   case (sees_methods_rec C D' fs ms Mm Mm')
-  have classC: "class P C = \<lfloor>(D', fs, ms)\<rfloor>" .
-  have CnObject: "C \<noteq> Object" .
-  have PD'Mm: "P \<turnstile> D' sees_methods Mm" .
-  have IH: "\<lbrakk>Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> D' \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* D'\<rbrakk> \<Longrightarrow> False" .
-  have Mm': "Mm' = Mm ++ (option_map (\<lambda>m. (m, C)) \<circ> map_of ms)" .
-  have Mm'start: "Mm' join = \<lfloor>((Ts, T, mthd), D)\<rfloor>" .
-  have "P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C" .
+  have classC: "class P C = \<lfloor>(D', fs, ms)\<rfloor>" by fact
+  have CnObject: "C \<noteq> Object" by fact
+  have PD'Mm: "P \<turnstile> D' sees_methods Mm" by fact
+  have IH: "\<lbrakk>Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> D' \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* D'\<rbrakk> \<Longrightarrow> False" by fact
+  have Mm': "Mm' = Mm ++ (option_map (\<lambda>m. (m, C)) \<circ> map_of ms)" by fact
+  have Mm'start: "Mm' join = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
+  have "P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C" by fact
   thus ?case
   proof(rule disjE)
     assume PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"

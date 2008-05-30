@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallStep.thy
-    ID:         $Id: SmallStep.thy,v 1.3 2008-04-23 08:43:37 alochbihler Exp $
+    ID:         $Id: SmallStep.thy,v 1.4 2008-05-30 00:29:13 makarius Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -387,10 +387,10 @@ proof (induct arbitrary: l0 rule:red.induct) prefer 38
   thus ?case by(simp)
 next prefer 46
   case (BlockRedNone E H L V TA E' H' L' T L0)
-  have red: "P \<turnstile> \<langle>E, (H, L(V := None))\<rangle> -TA\<rightarrow> \<langle>E', (H', L')\<rangle>" .
-  have IH: "\<And>l0. P \<turnstile> \<langle>E,(hp (H, L(V := None)), l0 ++ lcl (H, L(V := None)))\<rangle> -TA\<rightarrow> \<langle>E',(hp (H', L'), l0 ++ lcl (H', L'))\<rangle>" .
+  have red: "P \<turnstile> \<langle>E, (H, L(V := None))\<rangle> -TA\<rightarrow> \<langle>E', (H', L')\<rangle>" by fact
+  have IH: "\<And>l0. P \<turnstile> \<langle>E,(hp (H, L(V := None)), l0 ++ lcl (H, L(V := None)))\<rangle> -TA\<rightarrow> \<langle>E',(hp (H', L'), l0 ++ lcl (H', L'))\<rangle>" by fact
   have l'V: "L' V = None"
-   and unass: "\<not> assigned V E" .
+   and unass: "\<not> assigned V E" by fact+
   have lrew: "\<And>l l'. l(V := None) ++ l'(V := None) = (l ++ l')(V := None)" 
     by(simp add:expand_fun_eq map_add_def)
   have lrew1: "(L0(V := None) ++ L')(V := (L0 ++ L) V) = L0 ++ L'(V := L V)"
@@ -404,10 +404,10 @@ next prefer 46
     by(simp)+
 next prefer 46
   case (BlockRedSome E H L V TA E' H' L' v T L0)
-  have IH: "\<And>l0. P \<turnstile> \<langle>E,(hp (H, L(V := None)), l0 ++ lcl (H, L(V := None)))\<rangle> -TA\<rightarrow> \<langle>E',(hp (H', L'), l0 ++ lcl (H', L'))\<rangle>" .
+  have IH: "\<And>l0. P \<turnstile> \<langle>E,(hp (H, L(V := None)), l0 ++ lcl (H, L(V := None)))\<rangle> -TA\<rightarrow> \<langle>E',(hp (H', L'), l0 ++ lcl (H', L'))\<rangle>" by fact
   have l'V: "L' V = Some v"
-   and unass: "\<not> assigned V E" .
-  have red: "P \<turnstile> \<langle>E,(H, L(V := None))\<rangle> -TA\<rightarrow> \<langle>E',(H', L')\<rangle>" .
+   and unass: "\<not> assigned V E" by fact+
+  have red: "P \<turnstile> \<langle>E,(H, L(V := None))\<rangle> -TA\<rightarrow> \<langle>E',(H', L')\<rangle>" by fact
   have lrew: "\<And>l l'. l(V := None) ++ l'(V := None) = (l ++ l')(V := None)" 
     by(simp add:expand_fun_eq map_add_def)
   have lrew1: "(L0(V := None) ++ L')(V := (L0 ++ L) V) = L0 ++ L'(V := L V)"
@@ -422,9 +422,9 @@ next prefer 46
     by(simp)+
 next prefer 46
   case (InitBlockRed E H L V v TA E' H' L' v' T L0)
-  have red: "P \<turnstile> \<langle>E,(H, L(V \<mapsto> v))\<rangle> -TA\<rightarrow> \<langle>E',(H', L')\<rangle>" .
-  have IH: "\<And>l0. P \<turnstile> \<langle>E,(hp (H, L(V \<mapsto> v)), l0 ++ lcl (H, L(V \<mapsto> v)))\<rangle> -TA\<rightarrow> \<langle>E',(hp (H', L'), l0 ++ lcl (H', L'))\<rangle>" .
-  have l'V: "L' V = \<lfloor>v'\<rfloor>" .
+  have red: "P \<turnstile> \<langle>E,(H, L(V \<mapsto> v))\<rangle> -TA\<rightarrow> \<langle>E',(H', L')\<rangle>" by fact
+  have IH: "\<And>l0. P \<turnstile> \<langle>E,(hp (H, L(V \<mapsto> v)), l0 ++ lcl (H, L(V \<mapsto> v)))\<rangle> -TA\<rightarrow> \<langle>E',(hp (H', L'), l0 ++ lcl (H', L'))\<rangle>" by fact
+  have l'V: "L' V = \<lfloor>v'\<rfloor>" by fact
   have lrew: "(L0 ++ L')(V := (L0 ++ L) V) = L0 ++ L'(V := L V)" by (rule ext)(simp add: map_add_def)
   from IH[of "L0"] l'V show ?case
     apply(clarsimp simp del:fun_upd_apply)
@@ -447,7 +447,7 @@ proof(induct rule: Step_induct)
 next
   case (step e h l ta e' h' l' las tas cas was e'' h'' l'')
   have IH: "P \<turnstile> \<langle>e,(h, l0 ++ l)\<rangle> -ta\<rightarrow>* \<langle>e',(h', l0 ++ l')\<rangle>"
-   and red: "P \<turnstile> \<langle>e',(h', l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l'')\<rangle>" .
+   and red: "P \<turnstile> \<langle>e',(h', l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l'')\<rangle>" by fact+
   from red have "P \<turnstile> \<langle>e',(h', l0 ++ l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l0 ++ l'')\<rangle>" by - (rule red_lcl_add)
   with IH show ?case
     by(auto elim: stepify_pred_step)

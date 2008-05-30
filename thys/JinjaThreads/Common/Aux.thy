@@ -155,7 +155,7 @@ proof(induct n arbitrary: xs ys)
   case 0 thus ?case by simp
 next
   case (Suc n xs ys)
-  have IH: "\<And>xs ys. (replicate n x = xs @ ys) = (\<exists>m\<le>n. xs = replicate m x \<and> ys = replicate (n - m) x)".
+  have IH: "\<And>xs ys. (replicate n x = xs @ ys) = (\<exists>m\<le>n. xs = replicate m x \<and> ys = replicate (n - m) x)" by fact
   show ?case
   proof(unfold replicate_Suc, rule iffI)
     assume a: "x # replicate n x = xs @ ys"

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.3 2008-04-23 08:43:37 alochbihler Exp $
+    ID:         $Id: Progress.thy,v 1.4 2008-05-30 00:29:12 makarius Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -238,7 +238,7 @@ next
   case (WTrtNewArray E e T l)
   have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h,l)\<rangle> -tas\<rightarrow> \<langle>e', s'\<rangle>"
    and D: "\<D> (newA T\<lfloor>e\<rceil>) \<lfloor>dom l\<rfloor>"
-   and ei: "P,E,h \<turnstile> e : Integer" .
+   and ei: "P,E,h \<turnstile> e : Integer" by fact+
   from D have De: "\<D> e \<lfloor>dom l\<rfloor>" by auto
   show ?case
   proof cases
@@ -292,7 +292,7 @@ next
   have wte: "P,E,h \<turnstile> e : T"
    and IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                 \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
-   and D: "\<D> (Cast U e) \<lfloor>dom l\<rfloor>" .
+   and D: "\<D> (Cast U e) \<lfloor>dom l\<rfloor>" by fact+
   from D have De: "\<D> e \<lfloor>dom l\<rfloor>" by auto
   show ?case
   proof (cases "final e")
@@ -407,7 +407,7 @@ next
                  \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>a,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
    and IHi: "\<And>l. \<lbrakk>\<D> i \<lfloor>dom l\<rfloor>; \<not> final i\<rbrakk>
                  \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>i,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
-   and D: "\<D> (a\<lfloor>i\<rceil>) \<lfloor>dom l\<rfloor>" .
+   and D: "\<D> (a\<lfloor>i\<rceil>) \<lfloor>dom l\<rfloor>" by fact+
   have ref: "is_refT (T\<lfloor>\<rceil>)" by simp
   from D have Da: "\<D> a \<lfloor>dom l\<rfloor>" by simp
   show ?case
@@ -508,7 +508,7 @@ next
    and IHa: "\<And>l. \<lbrakk>\<D> a \<lfloor>dom l\<rfloor>; \<not> final a\<rbrakk>
                  \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>a,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
    and IHi: "\<And>l. \<lbrakk>\<D> i \<lfloor>dom l\<rfloor>; \<not> final i\<rbrakk>
-                 \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>i,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
+                 \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>i,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact+
   have ref: "is_refT NT" by simp
   with prems have Da: "\<D> a \<lfloor>dom l\<rfloor>" by simp
   thus ?case
@@ -564,7 +564,7 @@ next
     and D: "\<D> (a\<lfloor>i\<rceil> := e) \<lfloor>dom l\<rfloor>"
     and IH1: "\<And>l. \<lbrakk>\<D> a \<lfloor>dom l\<rfloor>; \<not> final a\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>a,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
     and IH2: "\<And>l. \<lbrakk>\<D> i \<lfloor>dom l\<rfloor>; \<not> final i\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>i,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
-    and IH3: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
+    and IH3: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact+
   have ref: "is_refT (T\<lfloor>\<rceil>)" by simp
   show ?case
   proof (cases "final a")
@@ -703,7 +703,7 @@ next
     and D: "\<D> (a\<lfloor>i\<rceil> := e) \<lfloor>dom l\<rfloor>"
     and IH1: "\<And>l. \<lbrakk>\<D> a \<lfloor>dom l\<rfloor>; \<not> final a\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>a,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
     and IH2: "\<And>l. \<lbrakk>\<D> i \<lfloor>dom l\<rfloor>; \<not> final i\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>i,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
-    and IH3: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
+    and IH3: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact+
   have ref: "is_refT NT" by simp
   show ?case
   proof (cases "final a")
@@ -731,7 +731,7 @@ next
 next
   case (WTrtFAcc E e C F T D l)
   have wte: "P,E,h \<turnstile> e : Class C"
-   and field: "P \<turnstile> C has F:T in D".
+   and field: "P \<turnstile> C has F:T in D" by fact+
   show ?case
   proof cases
     assume "final e"
@@ -764,7 +764,7 @@ next
   qed
 next
   case (WTrtFAss E e1 C F T D e2 T2 l)
-  have wte1: "P,E,h \<turnstile> e1 : Class C" .
+  have wte1: "P,E,h \<turnstile> e1 : Class C" by fact
   show ?case
   proof cases
     assume "final e1"
@@ -818,13 +818,13 @@ next
   qed
 next
   case (WTrtCall E e C M Ts T pns body D es Ts' l)
-  have wte: "P,E,h \<turnstile> e : Class C" .
+  have wte: "P,E,h \<turnstile> e : Class C" by fact
   have IHe: "\<And>l. \<lbrakk> \<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk>
-             \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
-  have sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" .
-  have IHes: "list_all2 (\<lambda>e T. P,E,h \<turnstile> e : T \<and> (\<forall>x. \<D> e \<lfloor>dom x\<rfloor> \<longrightarrow> \<not> final e \<longrightarrow> (\<exists>e' s' ta. P \<turnstile> \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>))) es Ts'" .
-  have subtype: "P \<turnstile> Ts' [\<le>] Ts" .
-  have dae: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" .
+             \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by fact
+  have IHes: "list_all2 (\<lambda>e T. P,E,h \<turnstile> e : T \<and> (\<forall>x. \<D> e \<lfloor>dom x\<rfloor> \<longrightarrow> \<not> final e \<longrightarrow> (\<exists>e' s' ta. P \<turnstile> \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>))) es Ts'" by fact
+  have subtype: "P \<turnstile> Ts' [\<le>] Ts" by fact
+  have dae: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" by fact
   show ?case
   proof(cases "final e")
     assume fine: "final e"
@@ -861,8 +861,8 @@ next
 	  next
 	    case (Cons x xes)
 	    have IH: "\<not> (\<exists>vs. xes = map Val vs)
-	              \<Longrightarrow> \<exists>vs ex rst. xes = map Val vs @ ex # rst \<and> \<not> (\<exists>v. ex = Val v)" .
-	    have neq: "\<not> (\<exists>vs. x # xes = map Val vs)" .
+	              \<Longrightarrow> \<exists>vs ex rst. xes = map Val vs @ ex # rst \<and> \<not> (\<exists>v. ex = Val v)" by fact
+	    have neq: "\<not> (\<exists>vs. x # xes = map Val vs)" by fact
 	    { assume xval: "\<exists>v. x = Val v"
 	      with neq have "\<not> (\<exists>vs. xes = map Val vs)"
 		apply -
@@ -927,11 +927,11 @@ next
   qed
 next
   case (WTrtCallNT E e es Ts M T l)
-  have wte: "P,E,h \<turnstile> e : NT" .
+  have wte: "P,E,h \<turnstile> e : NT" by fact
   have IHe: "\<And>l. \<lbrakk> \<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk>
-             \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
-  have IHes: "list_all2 (\<lambda>e T. P,E,h \<turnstile> e : T \<and> (\<forall>x. \<D> e \<lfloor>dom x\<rfloor> \<longrightarrow> \<not> final e \<longrightarrow> (\<exists>e' s' ta. P \<turnstile> \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>))) es Ts" .
-  have dae: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" .
+             \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have IHes: "list_all2 (\<lambda>e T. P,E,h \<turnstile> e : T \<and> (\<forall>x. \<D> e \<lfloor>dom x\<rfloor> \<longrightarrow> \<not> final e \<longrightarrow> (\<exists>e' s' ta. P \<turnstile> \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>))) es Ts" by fact
+  have dae: "\<D> (e\<bullet>M(es)) \<lfloor>dom l\<rfloor>" by fact
   show ?case
   proof(cases "final e")
     assume fine: "final e"
@@ -959,8 +959,8 @@ next
 	    thus ?case by simp
 	  next
 	    case (Cons x xes)
-	    have IH: "\<not> (\<exists>vs. xes = map Val vs) \<Longrightarrow> \<exists>vs ex rst. xes = map Val vs @ ex # rst \<and> \<not> (\<exists>v. ex = Val v)" .
-	    have neq: "\<not> (\<exists>vs. x # xes = map Val vs)" .
+	    have IH: "\<not> (\<exists>vs. xes = map Val vs) \<Longrightarrow> \<exists>vs ex rst. xes = map Val vs @ ex # rst \<and> \<not> (\<exists>v. ex = Val v)" by fact
+	    have neq: "\<not> (\<exists>vs. x # xes = map Val vs)" by fact
 	    { assume xval: "\<exists>v. x = Val v"
 	      with neq have "\<not> (\<exists>vs. xes = map Val vs)"
 		apply -
@@ -1027,10 +1027,10 @@ next
   qed
 next
   case (WTrtNewThread E e C l)
-  have wt: "P,E,h \<turnstile> e : Class C" .
-  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' ta. P \<turnstile> \<langle>e,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" .
-  have PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" .
-  have "\<D> (e\<bullet>start([])) \<lfloor>dom l\<rfloor>" .
+  have wt: "P,E,h \<turnstile> e : Class C" by fact
+  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' ta. P \<turnstile> \<langle>e,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" by fact
+  have "\<D> (e\<bullet>start([])) \<lfloor>dom l\<rfloor>" by fact
   hence da: "\<D> e \<lfloor>dom l\<rfloor>" by simp
   show ?case
   proof(cases "final e")
@@ -1050,11 +1050,11 @@ next
   qed
 next
   case (WTrtWait E e T l)
-  have wt: "P,E,h \<turnstile> e : T" .
-  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
-  have refT: "is_refT T" .
-  have TNT: "T \<noteq> NT" .
-  have dae: "\<D> (e\<bullet>wait([])) \<lfloor>dom l\<rfloor>" .
+  have wt: "P,E,h \<turnstile> e : T" by fact
+  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have refT: "is_refT T" by fact
+  have TNT: "T \<noteq> NT" by fact
+  have dae: "\<D> (e\<bullet>wait([])) \<lfloor>dom l\<rfloor>" by fact
   show ?case
   proof(cases "final e")
     case True
@@ -1085,15 +1085,15 @@ next
   qed
 next
   case (WTrtNotify E e T l)
-  have wt: "P,E,h \<turnstile> e : T" .
-  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
-  have refT: "is_refT T" .
-  have TNT: "T \<noteq> NT" .
-  have dae: "\<D> (e\<bullet>notify([])) \<lfloor>dom l\<rfloor>" .
+  have wt: "P,E,h \<turnstile> e : T" by fact
+  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have refT: "is_refT T" by fact
+  have TNT: "T \<noteq> NT" by fact
+  have dae: "\<D> (e\<bullet>notify([])) \<lfloor>dom l\<rfloor>" by fact
   show ?case
   proof(cases "final e")
     case True
-    have fine: "final e" .
+    have fine: "final e" by fact
     with wt refT show ?thesis
     proof (rule finalRefE)
       assume enull: "e = null"
@@ -1120,15 +1120,15 @@ next
   qed
 next
   case (WTrtNotifyAll E e T l)
-  have wt: "P,E,h \<turnstile> e : T" .
-  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
-  have refT: "is_refT T" .
-  have TNT: "T \<noteq> NT" .
-  have dae: "\<D> (e\<bullet>notifyAll([])) \<lfloor>dom l\<rfloor>" .
+  have wt: "P,E,h \<turnstile> e : T" by fact
+  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have refT: "is_refT T" by fact
+  have TNT: "T \<noteq> NT" by fact
+  have dae: "\<D> (e\<bullet>notifyAll([])) \<lfloor>dom l\<rfloor>" by fact
   show ?case
   proof(cases "final e")
     case True
-    have fine: "final e" .
+    have fine: "final e" by fact
     with wt refT show ?thesis
     proof (rule finalRefE)
       assume enull: "e = null"
@@ -1155,10 +1155,10 @@ next
   qed
 next
   case (WTrtJoin E e C l)
-  have wt: "P,E,h \<turnstile> e : Class C" .
-  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' ta. P \<turnstile> \<langle>e,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" .
-  have PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" .
-  have "\<D> (e\<bullet>join([])) \<lfloor>dom l\<rfloor>" .
+  have wt: "P,E,h \<turnstile> e : Class C" by fact
+  have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' ta. P \<turnstile> \<langle>e,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" by fact
+  have "\<D> (e\<bullet>join([])) \<lfloor>dom l\<rfloor>" by fact
   hence da: "\<D> e \<lfloor>dom l\<rfloor>" by simp
   show ?case
   proof(cases "final e")
@@ -1180,11 +1180,11 @@ next
   case (WTrtInitBlock v T\<^isub>1 T E V e\<^isub>2 T\<^isub>2 l)
   have IH2: "\<And>l. \<lbrakk>\<D> e\<^isub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^isub>2\<rbrakk>
                   \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
-   and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" .
+   and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" by fact
   show ?case
   proof cases
     assume "final e\<^isub>2"
-    show ?thesis
+    then show ?thesis
     proof (rule finalE)
       fix v\<^isub>2 assume "e\<^isub>2 = Val v\<^isub>2"
       thus ?thesis by(fast intro:RedInitBlock)
@@ -1205,11 +1205,11 @@ next
   case (WTrtBlock E V T e T' l)
   have IH: "\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk>
                  \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
-   and unass: "\<not> assigned V e" and D: "\<D> {V:T; e} \<lfloor>dom l\<rfloor>" .
+   and unass: "\<not> assigned V e" and D: "\<D> {V:T; e} \<lfloor>dom l\<rfloor>" by fact+
   show ?case
   proof cases
     assume "final e"
-    show ?thesis
+    then show ?thesis
     proof (rule finalE)
       fix v assume "e = Val v" thus ?thesis by(fast intro:RedBlock)
     next
@@ -1270,10 +1270,10 @@ next
   qed
 next
   case (WTrtSynchronizedNT E o' e T T' l)
-  have wto: "P,E,h \<turnstile> o' : NT" .
+  have wto: "P,E,h \<turnstile> o' : NT" by fact
   have IHo: "\<And>l. \<lbrakk>\<D> o' \<lfloor>dom l\<rfloor>; \<not> final o' \<rbrakk>
-                  \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>o',(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" .
-  have dae: "\<D> (sync(o') e) \<lfloor>dom l\<rfloor>" .
+                  \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>o',(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have dae: "\<D> (sync(o') e) \<lfloor>dom l\<rfloor>" by fact
   show ?case
   proof(cases "final o'")
     assume "final o'" thus ?thesis using wto
@@ -1307,7 +1307,7 @@ next
   qed
 next
   case (WTrtCond E e e1 T1 e2 T2 T l)
-  have wt: "P,E,h \<turnstile> e : Boolean" .
+  have wt: "P,E,h \<turnstile> e : Boolean" by fact
   show ?case
   proof cases
     assume "final e"
@@ -1352,7 +1352,7 @@ next
   qed
 next
   case (WTrtTry E e1 T1 V C e2 T2 l)
-  have wt1: "P,E,h \<turnstile> e1 : T1" .
+  have wt1: "P,E,h \<turnstile> e1 : T1" by fact
   show ?case
   proof cases
     assume "final e1"

@@ -208,7 +208,7 @@ proof -
               "P \<turnstile> C' \<preceq>\<^sup>* D"
 	    apply(auto dest!: conf_ClassD)
 	    by(case_tac obj, auto simp add: widen_Class)
-	  with `P \<turnstile> C' \<preceq>\<^sup>* D` wf obtain m' Ts' T' D'' where 
+	  with `P \<turnstile> C' \<preceq>\<^sup>* D` wf M' obtain m' Ts' T' D'' where 
             C': "P \<turnstile> C' sees M': Ts'\<rightarrow>T' = m' in D''" and
             Ts': "P \<turnstile> Ts [\<le>] Ts'"
 	    by (auto dest!: sees_method_mono)

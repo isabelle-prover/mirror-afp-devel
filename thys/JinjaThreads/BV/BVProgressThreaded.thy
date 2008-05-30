@@ -350,31 +350,37 @@ apply(unfold_locales)
 by(auto intro: BV_correct_d_1 correct_state_new_thread correct_state_heap_change)
 
 lemma lifting_wf_correct_state:
-  assumes "wf_jvm_prog\<^sub>\<Phi> P"
+  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   shows "lifting_wf (mexec P) (\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>)"
 proof(unfold_locales)
   fix x m ta x' m'
   assume "mexec P (x, m) ta (x', m')"
     and "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x m"
-  thus "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x' m'"
+  with wf show "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x' m'"
     apply(cases x, cases x', simp add: welltyped_commute[symmetric, OF `wf_jvm_prog\<^sub>\<Phi> P`])
-    by(rule BV_correct_d_1)
+    apply (rule BV_correct_d_1)
+    apply assumption+
+    done
 next
   fix x m ta x' m' t'' x''
   assume "mexec P (x, m) ta (x', m')"
     and "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x m"
     and "NewThread t'' x'' m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
-  thus "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x'' m'"
+  with wf show "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x'' m'"
     apply(cases x, cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF `wf_jvm_prog\<^sub>\<Phi> P`])
-    by(rule correct_state_new_thread)
+    apply(rule correct_state_new_thread)
+    apply assumption+
+    done
 next
   fix x m ta x' m' x''
   assume "mexec P (x, m) ta (x', m')"
     and "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x m"
     and "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x'' m"
-  thus "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x'' m'"
+  with wf show "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x'' m'"
     apply(cases x, cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF `wf_jvm_prog\<^sub>\<Phi> P`])
-    by(rule correct_state_heap_change)
+    apply(rule correct_state_heap_change)
+    apply assumption+
+    done
 qed
 
 declare split_paired_Ex [simp del]
@@ -467,12 +473,15 @@ proof(induct rule: multithreaded.RedT_induct[consumes 1, case_names refl step])
   case refl thus ?case by simp
 next
   case (step s tta s' t ta s'')
-  from `P \<turnstile> s -\<triangleright>tta\<rightarrow>\<^bsub>jvmd\<^esub>* s'` `correct_state_ts P \<Phi> (thr s) (shr s)`
-  have "correct_state_ts P \<Phi> (thr s') (shr s')" by(rule preserves_correct_state_d[OF wf])
-  moreover from `thread_conf P (thr s) (shr s)` `correct_state_ts P \<Phi> (thr s) (shr s)`
-    `\<lbrakk>correct_state_ts P \<Phi> (thr s) (shr s); thread_conf P (thr s) (shr s)\<rbrakk> \<Longrightarrow> thread_conf P (thr s') (shr s')`
-  have "thread_conf P (thr s') (shr s')" by blast
-  ultimately show ?case by-(rule mexecdT_preserves_thread_conf[OF wf])
+  from wf show ?case
+  proof (rule mexecdT_preserves_thread_conf)
+    from `P \<turnstile> s -\<triangleright>tta\<rightarrow>\<^bsub>jvmd\<^esub>* s'` `correct_state_ts P \<Phi> (thr s) (shr s)`
+    show "correct_state_ts P \<Phi> (thr s') (shr s')" by(rule preserves_correct_state_d[OF wf])
+    from `thread_conf P (thr s) (shr s)` `correct_state_ts P \<Phi> (thr s) (shr s)`
+      `\<lbrakk>correct_state_ts P \<Phi> (thr s) (shr s); thread_conf P (thr s) (shr s)\<rbrakk> \<Longrightarrow> thread_conf P (thr s') (shr s')`
+    show "thread_conf P (thr s') (shr s')" by blast
+    show "multithreaded.redT final (mexecd P) s' (t, ta) s''" by fact
+  qed
 qed
 
 
@@ -1215,5 +1224,3 @@ next
 qed
 
 end
-
-

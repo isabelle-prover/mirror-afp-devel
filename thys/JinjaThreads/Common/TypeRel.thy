@@ -377,7 +377,7 @@ next
    and notObj: "C \<noteq> Object" and Dmethods: "P \<turnstile> D sees_methods Dres"
    and IH: "\<And>Dres'. P \<turnstile> D sees_methods Dres' \<Longrightarrow> Dres' = Dres"
    and Cres: "Cres = Dres ++ (option_map (\<lambda>m. (m,C)) \<circ> map_of ms)"
-   and Cmethods': "P \<turnstile> C sees_methods Cres'" .
+   and Cmethods': "P \<turnstile> C sees_methods Cres'" by fact+
   from Cmethods' notObj "class" obtain Dres'
     where Dmethods': "P \<turnstile> D sees_methods Dres'"
      and Cres': "Cres' = Dres' ++ (option_map (\<lambda>m. (m,C)) \<circ> map_of ms)"
@@ -538,7 +538,7 @@ next
    and notObj: "C \<noteq> Object" and DFields: "P \<turnstile> D has_fields Dres"
    and IH: "\<And>Dres'. P \<turnstile> D has_fields Dres' \<Longrightarrow> Dres' = Dres"
    and Cres: "Cres = map (\<lambda>(F,T). ((F,C),T)) fs @ Dres"
-   and CFields': "P \<turnstile> C has_fields Cres'" .
+   and CFields': "P \<turnstile> C has_fields Cres'" by fact+
   from CFields' notObj "class" obtain Dres'
     where DFields': "P \<turnstile> D has_fields Dres'"
      and Cres': "Cres' = map (\<lambda>(F,T). ((F,C),T)) fs @ Dres'"
