@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.11 2008-05-18 13:03:58 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.12 2008-05-30 14:35:45 norbertschirmer Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -630,9 +630,9 @@ fun remdeco str =
     in String.implode (remove (String.explode deco) (String.explode str)) end;
  
 fun undeco (Const (c,T)) = (Const (remdeco c,T))
-  | undeco ((f as Const ("_free",_)) $ Free (x, T)) = f$Free (remdeco x,T) 
-  | undeco (Const (lookup,_)$_$((f as Const ("_free",_)) $ Free (x, T))) = f$Free (remdeco x,T) 
-  | undeco (Free (c,T)) = (Free (remdeco c,T))
+  | undeco ((f as Const ("_free",_)) $ Free (x, T)) = (*f$*)Const (remdeco x,T) 
+  | undeco (Const (lookup,_)$_$((f as Const ("_free",_)) $ Free (x, T))) = (*f$*)Const (remdeco x,T) 
+  | undeco (Free (c,T)) = (Const (remdeco c,T))
   | undeco x = x
 
 fun varname x = x ^ deco

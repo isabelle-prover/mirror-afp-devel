@@ -1,5 +1,5 @@
 (*  Title:      hoare_syntax.ML
-    ID:         $Id: hoare_syntax.ML,v 1.3 2008-05-18 13:03:59 makarius Exp $
+    ID:         $Id: hoare_syntax.ML,v 1.4 2008-05-30 14:35:45 norbertschirmer Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -864,7 +864,7 @@ fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
 
 
 (* FIXME: What is prfx for, maybe unused *)
-fun dest_procname ctxt prfx false (Const (p,_)) = (prfx ^ p,mk_string (String.explode p))
+fun dest_procname ctxt prfx false (Const (p,_)) = (prfx ^ suffix proc_deco p,mk_string (String.explode p))
   | dest_procname ctxt prfx false (t as Free (p,T)) = (prfx ^ suffix proc_deco p,Free 
                                                                       (suffix proc_deco p,T))
   | dest_procname ctxt prfx false (Const ("_free",_)$Free (p,T)) = 
@@ -944,9 +944,9 @@ fun upd_tr' (x_upd, T) =
              | NONE => raise Match));
 
 
-fun update_name_tr' (Free x) = Free (upd_tr' x)
+fun update_name_tr' (Free x) = Const (upd_tr' x)
   | update_name_tr' ((c as Const ("_free", _)) $ Free x) =
-      c $ Free (upd_tr' x)
+      (*c $*) Const (upd_tr' x)
   | update_name_tr' (Const x) = Const (upd_tr' x)
   | update_name_tr' _ = raise Match;
 
@@ -1240,8 +1240,8 @@ fun gen_fcall_tr' init p return result c =
   end;
 
 
-fun pname_tr' ((f as Const ("_free",_))$(Free (p,T))) = f$Free (unsuffix' proc_deco p,T) 
-| pname_tr' (Free (p,T)) = Free (unsuffix' proc_deco p,T) 
+fun pname_tr' ((f as Const ("_free",_))$(Free (p,T))) = (*f$*)Const (unsuffix' proc_deco p,T) 
+| pname_tr' (Free (p,T)) = Const (unsuffix' proc_deco p,T) 
 | pname_tr' p =
   let 
       (* from HOL strings to ML strings *)
