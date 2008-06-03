@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoareTotalDef.thy,v 1.4 2008-05-07 09:04:44 stefanberghofer Exp $
+(*  ID:          $Id: HoareTotalDef.thy,v 1.5 2008-06-03 11:11:10 norbertschirmer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -266,7 +266,7 @@ lemma hoaret_augment_context:
 using deriv
 proof (induct)
   case (CallRec P p Q A Specs r Specs_wf \<Theta> F \<Theta>')
-  have aug: "\<Theta> \<subseteq> \<Theta>'".
+  have aug: "\<Theta> \<subseteq> \<Theta>'" by fact
   then
   have h: "\<And>\<tau> p. \<Theta> \<union> Specs_wf p \<tau>
        \<subseteq> \<Theta>' \<union> Specs_wf p \<tau>"
@@ -275,7 +275,7 @@ proof (induct)
      (\<forall>\<tau>. \<Gamma>,\<Theta> \<union> Specs_wf p \<tau>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A \<and>
            (\<forall>x. \<Theta> \<union> Specs_wf p \<tau>
                  \<subseteq> x \<longrightarrow>
-                 \<Gamma>,x\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A))".
+                 \<Gamma>,x\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A))" by fact
   hence "\<forall>(P,p,Q,A)\<in>Specs. p \<in> dom \<Gamma> \<and> 
          (\<forall>\<tau>. \<Gamma>,\<Theta>'\<union> Specs_wf p \<tau> \<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A)"
     apply (clarify)
@@ -299,7 +299,7 @@ next
   with Conseq show ?case by - (rule hoaret.Conseq)
 next
   case (ExFalso \<Theta> F P  c Q A \<Theta>')
-  have "\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<not> \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<Theta> \<subseteq> \<Theta>'" .
+  have "\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<not> \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<Theta> \<subseteq> \<Theta>'"  by fact+
   then show ?case
     by (fastsimp intro: hoaret.ExFalso simp add: cvalidt_def)
 qed (blast intro: hoaret.intros)+

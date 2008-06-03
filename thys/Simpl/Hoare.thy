@@ -1,4 +1,4 @@
-(*  ID:          $Id: Hoare.thy,v 1.3 2008-03-07 15:23:43 lsf37 Exp $
+(*  ID:          $Id: Hoare.thy,v 1.4 2008-06-03 11:11:06 norbertschirmer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -358,12 +358,12 @@ proof (rule ccontr)
     assume "k \<le> i" then show "f (g i) = f (g k)"
     proof (induct i)
       case 0
-      have "k \<le> 0" . hence "k = 0" by simp
+      have "k \<le> 0" by fact hence "k = 0" by simp
       thus "f (g 0) = f (g k)"
 	by simp
     next
       case (Suc n)
-      have k_Suc_n: "k \<le> Suc n".
+      have k_Suc_n: "k \<le> Suc n" by fact
       then show "f (g (Suc n)) = f (g k)"
       proof (cases "k = Suc n")
 	case True

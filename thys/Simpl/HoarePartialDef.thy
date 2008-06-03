@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartialDef.thy,v 1.5 2008-05-07 09:04:44 stefanberghofer Exp $
+(*  ID:          $Id: HoarePartialDef.thy,v 1.6 2008-06-03 11:11:09 norbertschirmer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -382,10 +382,10 @@ next
   with Conseq show ?case by - (rule hoarep.Conseq)
 next
   case (ExFalso \<Theta> F P c Q A \<Theta>')
-  have valid_ctxt: "\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A" "\<Theta> \<subseteq> \<Theta>'".
+  have valid_ctxt: "\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A" "\<Theta> \<subseteq> \<Theta>'" by fact+
   hence "\<forall>n. \<Gamma>,\<Theta>'\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A"
     by (simp add: cnvalid_def) blast
-  moreover have invalid: "\<not> \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A" .
+  moreover have invalid: "\<not> \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A"  by fact
   ultimately show ?case
     by (rule hoarep.ExFalso)
 qed (blast intro: hoarep.intros)+

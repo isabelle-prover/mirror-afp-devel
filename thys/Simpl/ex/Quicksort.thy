@@ -1,4 +1,4 @@
-(*  ID:          $Id: Quicksort.thy,v 1.4 2008-04-15 13:15:28 makarius Exp $
+(*  ID:          $Id: Quicksort.thy,v 1.5 2008-06-03 11:11:13 norbertschirmer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -132,7 +132,7 @@ proof (induct)
   from xs_zs
   show "(l # x # y) @ xs <~~> (x # l # y) @ zs"
   by (induct) auto
-qed auto
+qed (insert xs_zs , auto)
 
 procedures quickSort(p|p) =
  "IF \<acute>p=Null THEN SKIP

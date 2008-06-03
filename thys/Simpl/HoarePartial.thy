@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartial.thy,v 1.3 2008-03-07 15:23:43 lsf37 Exp $
+(*  ID:          $Id: HoarePartial.thy,v 1.4 2008-06-03 11:11:09 norbertschirmer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -221,7 +221,9 @@ next
   from deriv_c2 
   show "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> ({s. (s \<in> b \<longrightarrow> s \<in> P\<^isub>1) \<and> (s \<notin> b \<longrightarrow> s \<in> P\<^isub>2)} \<inter> - b) c\<^isub>2 Q,A"
     by (rule conseqPre) blast
-qed
+next
+  show "P \<subseteq> {s. (s\<in>b \<longrightarrow> s\<in>P\<^isub>1) \<and> (s\<notin>b \<longrightarrow> s\<in>P\<^isub>2)}" by (rule wp)
+qed 
 
 
 lemma CondSwap: 
@@ -494,6 +496,7 @@ assumes c: "\<forall>s t. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (R s t
 assumes bdy: "\<forall>s. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P' s) bdy {t. return s t \<in> R s t},{t. return s t \<in> A}"
 assumes adapt: "P \<subseteq> {s. init s \<in> P' s}"
 shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (block init bdy return c) Q,A"
+using adapt bdy c  
   by (rule Block)
 
 
@@ -580,6 +583,7 @@ lemma ProcSpec:
   assumes c: "\<forall>s t. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (R s t) (c s t) Q,A"
   assumes p: "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P' Z) Call p (Q' Z),(A' Z)" 
   shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (call init p return c) Q,A"
+using adapt c p
 apply (unfold call_def) 
 by (rule BlockSpec)
 
@@ -665,7 +669,7 @@ lemma ProcRec1:
   assumes p_defined: "p \<in> dom \<Gamma>"
   shows "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P Z) Call p (Q Z),(A Z)"
 proof -
-  from deriv_body 
+  from deriv_body p_defined
   have "\<forall>p\<in>{p}. \<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P Z) Call p (Q Z),(A Z)"
     by - (rule ProcRec [where A="\<lambda>p. A" and P="\<lambda>p. P" and Q="\<lambda>p. Q"],
           simp_all)
@@ -676,14 +680,14 @@ qed
 lemma ProcNoRec1:
   assumes deriv_body:  
    "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P Z) (the (\<Gamma> p)) (Q Z),(A Z)"
-  assumes "p \<in> dom \<Gamma>"
+  assumes p_def: "p \<in> dom \<Gamma>"
   shows "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P Z) Call p (Q Z),(A Z)"
 proof -
 from deriv_body
   have "\<forall>Z. \<Gamma>,\<Theta>\<union>(\<Union>Z. {(P Z,p,Q Z,A Z)})
              \<turnstile>\<^bsub>/F\<^esub> (P Z) (the (\<Gamma> p)) (Q Z),(A Z)"
     by (blast intro: hoare_augment_context)
-  from this 
+  from this p_def
   show ?thesis 
     by (rule ProcRec1)
 qed
@@ -798,7 +802,7 @@ proof -
                           (\<forall>t. t \<in> Q' s Z \<longrightarrow>  return s t \<in> R s t) \<and>
                           (\<forall>t. t \<in> A' s Z \<longrightarrow> return s t \<in> A)}"
     by blast
-  thus ?thesis
+  from this c p show ?thesis
     by (rule DynProc)
 qed
 

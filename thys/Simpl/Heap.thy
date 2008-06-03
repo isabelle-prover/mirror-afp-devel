@@ -1,4 +1,4 @@
-(*  ID:          $Id: Heap.thy,v 1.3 2008-03-07 15:23:43 lsf37 Exp $
+(*  ID:          $Id: Heap.thy,v 1.4 2008-06-03 11:10:43 norbertschirmer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -42,7 +42,7 @@ proof (induct)
   show ?case by auto
 next
   case (insert k N)
-  have "\<exists>m. \<forall>n\<in>N. n < m".
+  have "\<exists>m. \<forall>n\<in>N. n < m" by fact
   then obtain m where m_max: "\<forall>n\<in>N. n < m"..
   show "\<exists>m. \<forall>n\<in>insert k N. n < m"
   proof (rule exI [where x="Suc (max k m)"])

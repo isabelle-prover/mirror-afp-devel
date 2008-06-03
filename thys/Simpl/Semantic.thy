@@ -1,4 +1,4 @@
-(*  ID:          $Id: Semantic.thy,v 1.5 2008-05-07 09:04:54 stefanberghofer Exp $
+(*  ID:          $Id: Semantic.thy,v 1.6 2008-06-03 11:11:11 norbertschirmer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -283,24 +283,25 @@ lemma exec_Call_body':
   by (rule exec_Call_body_aux)
 
 
+
 lemma exec_block_Normal_elim [consumes 1]:
 assumes exec_block: "\<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> \<Rightarrow>  t"
-assumes 
+assumes Normal:
  "\<And>t'.
     \<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Normal t';
      \<Gamma>\<turnstile>\<langle>c s t',Normal (return s t')\<rangle> \<Rightarrow>  t\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Abrupt: 
  "\<And>t'.
     \<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Abrupt t'; 
      t = Abrupt (return s t')\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Fault:
  "\<And>f.
     \<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Fault f; 
      t = Fault f\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Stuck:
  "\<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Stuck; 
      t = Stuck\<rbrakk>
     \<Longrightarrow> P"
@@ -317,8 +318,8 @@ apply     (elim exec_Normal_elim_cases)
 apply     simp
 apply    (drule Abrupt_end) apply simp 
 apply    (erule exec_Normal_elim_cases)
-apply    simp
-apply    assumption
+apply    simp  
+apply    (rule Abrupt,assumption+)
 apply   (drule Fault_end) apply simp
 apply   (erule exec_Normal_elim_cases)
 apply   simp
@@ -329,36 +330,36 @@ apply (case_tac s')
 apply    simp_all
 apply   (elim exec_Normal_elim_cases)
 apply   simp
-apply   assumption
+apply   (rule Normal, assumption+)
 apply  (drule Fault_end) apply simp
-apply  assumption
+apply  (rule Fault,assumption+) 
 apply (drule Stuck_end) apply simp
-apply assumption
+apply (rule Stuck,assumption+)
 done
 
 lemma exec_call_Normal_elim [consumes 1]:
 assumes exec_call: "\<Gamma>\<turnstile>\<langle>call init p return c,Normal s\<rangle> \<Rightarrow>  t"
-assumes 
+assumes Normal:
  "\<And>bdy t'.
     \<lbrakk>\<Gamma> p = Some bdy; \<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Normal t';
      \<Gamma>\<turnstile>\<langle>c s t',Normal (return s t')\<rangle> \<Rightarrow>  t\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Abrupt:
  "\<And>bdy t'.
     \<lbrakk>\<Gamma> p = Some bdy; \<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Abrupt t'; 
      t = Abrupt (return s t')\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Fault:
  "\<And>bdy f.
     \<lbrakk>\<Gamma> p = Some bdy; \<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Fault f; 
      t = Fault f\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Stuck:
  "\<And>bdy.
     \<lbrakk>\<Gamma> p = Some bdy; \<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> \<Rightarrow>  Stuck; 
      t = Stuck\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Undef:
  "\<lbrakk>\<Gamma> p = None; t = Stuck\<rbrakk> \<Longrightarrow> P"
 shows "P"
   using exec_call
@@ -376,26 +377,26 @@ shows "P"
   apply    simp
   apply   (elim exec_Normal_elim_cases)
   apply    simp
-  apply   assumption
-  apply  assumption
+  apply   (rule Undef,assumption,assumption)
+  apply  (rule Undef,assumption+)
   apply (erule exec_block_Normal_elim)
   apply     (elim exec_Normal_elim_cases)
   apply      simp
-  apply      assumption
+  apply      (rule Normal,assumption+)
   apply     simp
   apply    (elim exec_Normal_elim_cases)
   apply     simp
-  apply     assumption
+  apply     (rule Abrupt,assumption+)
   apply    simp
   apply   (elim exec_Normal_elim_cases)
   apply    simp
-  apply   assumption
+  apply   (rule Fault, assumption+)
   apply   simp
   apply  (elim exec_Normal_elim_cases)
   apply   simp
-  apply  assumption
+  apply  (rule Stuck,assumption,assumption,assumption)
   apply  simp
-  apply assumption
+  apply (rule Undef,assumption+)
   done
 
 
@@ -408,12 +409,12 @@ by (rule DynCom)
 
 lemma exec_dynCall_Normal_elim:
   assumes exec: "\<Gamma>\<turnstile>\<langle>dynCall init p return c,Normal s\<rangle> \<Rightarrow>  t"
-  assumes "\<Gamma>\<turnstile>\<langle>call init (p s) return c,Normal s\<rangle> \<Rightarrow>  t \<Longrightarrow> P"
+  assumes call: "\<Gamma>\<turnstile>\<langle>call init (p s) return c,Normal s\<rangle> \<Rightarrow>  t \<Longrightarrow> P"
   shows "P"
   using exec
   apply (simp add: dynCall_def)
   apply (erule exec_Normal_elim_cases)
-  apply assumption
+  apply (rule call,assumption)
   done
 
 
@@ -642,26 +643,26 @@ done
 
 lemma execn_block_Normal_elim [consumes 1]:
 assumes execn_block: "\<Gamma>\<turnstile>\<langle>block init bdy return c,Normal s\<rangle> =n\<Rightarrow>  t"
-assumes 
+assumes Normal: 
  "\<And>t'.
     \<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =n\<Rightarrow>  Normal t';
      \<Gamma>\<turnstile>\<langle>c s t',Normal (return s t')\<rangle> =n\<Rightarrow>  t\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Abrupt:
  "\<And>t'.
     \<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =n\<Rightarrow>  Abrupt t'; 
      t = Abrupt (return s t')\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Fault:
  "\<And>f.
     \<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =n\<Rightarrow>  Fault f; 
      t = Fault f\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Stuck:
  "\<lbrakk>\<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =n\<Rightarrow>  Stuck; 
      t = Stuck\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Undef:
  "\<lbrakk>\<Gamma> p = None; t = Stuck\<rbrakk> \<Longrightarrow> P"
 shows "P"
   using execn_block
@@ -675,7 +676,7 @@ apply     simp
 apply    (drule execn_Abrupt_end) apply simp 
 apply    (erule execn_Normal_elim_cases)
 apply    simp
-apply    assumption
+apply    (rule Abrupt,assumption+)
 apply   (drule execn_Fault_end) apply simp
 apply   (erule execn_Normal_elim_cases)
 apply   simp
@@ -686,36 +687,36 @@ apply (case_tac s')
 apply    simp_all
 apply   (elim execn_Normal_elim_cases)
 apply   simp
-apply   assumption
+apply   (rule Normal,assumption+)
 apply  (drule execn_Fault_end) apply simp
-apply  assumption
+apply  (rule Fault,assumption+)
 apply (drule execn_Stuck_end) apply simp
-apply assumption
+apply (rule Stuck,assumption+)
 done
 
 lemma execn_call_Normal_elim [consumes 1]:
 assumes exec_call: "\<Gamma>\<turnstile>\<langle>call init p return c,Normal s\<rangle> =n\<Rightarrow>  t"
-assumes 
+assumes Normal:
  "\<And>bdy i t'.
     \<lbrakk>\<Gamma> p = Some bdy; \<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =i\<Rightarrow>  Normal t'; 
      \<Gamma>\<turnstile>\<langle>c s t',Normal (return s t')\<rangle> =Suc i\<Rightarrow>  t; n = Suc i\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Abrupt:
  "\<And>bdy i t'.
     \<lbrakk>\<Gamma> p = Some bdy; \<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =i\<Rightarrow>  Abrupt t'; n = Suc i;
      t = Abrupt (return s t')\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Fault:
  "\<And>bdy i f.
     \<lbrakk>\<Gamma> p = Some bdy; \<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =i\<Rightarrow>  Fault f; n = Suc i;
      t = Fault f\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Stuck:
  "\<And>bdy i.
     \<lbrakk>\<Gamma> p = Some bdy; \<Gamma>\<turnstile>\<langle>bdy,Normal (init s)\<rangle> =i\<Rightarrow>  Stuck; n = Suc i;
      t = Stuck\<rbrakk>
     \<Longrightarrow> P"
-assumes 
+assumes Undef:
  "\<And>i. \<lbrakk>\<Gamma> p = None; n = Suc i; t = Stuck\<rbrakk> \<Longrightarrow> P"
 shows "P"
   using exec_call
@@ -736,26 +737,26 @@ shows "P"
   apply    simp
   apply   (elim execn_Normal_elim_cases)
   apply    simp
-  apply   assumption
-  apply  assumption
+  apply   (rule Undef,assumption,assumption,assumption)
+  apply  (rule Undef,assumption+)
   apply (erule execn_block_Normal_elim)
   apply     (elim execn_Normal_elim_cases)
   apply      simp
-  apply      assumption
+  apply      (rule Normal,assumption+)
   apply     simp
   apply    (elim execn_Normal_elim_cases)
   apply     simp
-  apply     assumption
+  apply     (rule Abrupt,assumption+)
   apply    simp
   apply   (elim execn_Normal_elim_cases)
   apply    simp
-  apply   assumption
+  apply   (rule Fault,assumption+)
   apply   simp
   apply  (elim execn_Normal_elim_cases)
   apply   simp
-  apply  assumption
-  apply  simp
-  apply assumption
+  apply  (rule Stuck,assumption,assumption,assumption,assumption)
+  apply  (rule Undef,assumption,assumption,assumption)
+  apply (rule Undef,assumption+)
   done
 
 lemma execn_dynCall:  
@@ -772,7 +773,7 @@ lemma execn_dynCall_Normal_elim:
   using exec
   apply (simp add: dynCall_def)
   apply (erule execn_Normal_elim_cases)
-  apply assumption
+  apply fact
   done
 
 
@@ -1208,8 +1209,8 @@ proof (induct xs)
   thus ?case by (auto elim: execn_Normal_elim_cases)
 next
   case (Cons x xs)
-  have exec_x_xs: "\<Gamma>\<turnstile>\<langle>sequence Seq (x # xs),Normal s\<rangle> =n\<Rightarrow> s'".
-  have exec_ys: "\<Gamma>\<turnstile>\<langle>sequence Seq ys,s'\<rangle> =n\<Rightarrow> t".
+  have exec_x_xs: "\<Gamma>\<turnstile>\<langle>sequence Seq (x # xs),Normal s\<rangle> =n\<Rightarrow> s'" by fact
+  have exec_ys: "\<Gamma>\<turnstile>\<langle>sequence Seq ys,s'\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases xs)
     case Nil
@@ -1228,7 +1229,7 @@ next
     proof (cases s'')
       case (Normal s''')
       from Cons.hyps [OF exec_xs [simplified Normal] exec_ys]
-      have "\<Gamma>\<turnstile>\<langle>sequence Seq (xs @ ys),Normal s'''\<rangle> =n\<Rightarrow> t".
+      have "\<Gamma>\<turnstile>\<langle>sequence Seq (xs @ ys),Normal s'''\<rangle> =n\<Rightarrow> t" .
       with Cons exec_x Normal
       show ?thesis
 	by (auto intro: execn.intros)
@@ -1268,7 +1269,7 @@ proof (induct xs)
     by (auto intro: execn.intros)
 next
   case (Cons x xs)
-  have exec_app: "\<Gamma>\<turnstile>\<langle>sequence Seq ((x # xs) @ ys),Normal s\<rangle> =n\<Rightarrow> t".
+  have exec_app: "\<Gamma>\<turnstile>\<langle>sequence Seq ((x # xs) @ ys),Normal s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases xs)
     case Nil
@@ -1341,7 +1342,7 @@ lemma execn_sequence_flatten_to_execn:
   shows "\<And>s t. \<Gamma>\<turnstile>\<langle>sequence Seq (flatten c),s\<rangle> =n\<Rightarrow> t \<Longrightarrow> \<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t"
 proof (induct c)
   case (Seq c1 c2)
-  have exec_seq: "\<Gamma>\<turnstile>\<langle>sequence Seq (flatten (Seq c1 c2)),s\<rangle> =n\<Rightarrow> t".
+  have exec_seq: "\<Gamma>\<turnstile>\<langle>sequence Seq (flatten (Seq c1 c2)),s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases s)
     case (Normal s')
@@ -1377,7 +1378,7 @@ next
   case Spec thus ?case by simp
 next
   case (Seq c1 c2)
-  have "\<Gamma>\<turnstile>\<langle>normalize (Seq c1 c2),s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>normalize (Seq c1 c2),s\<rangle> =n\<Rightarrow> t" by fact
   hence exec_norm_seq: 
     "\<Gamma>\<turnstile>\<langle>sequence Seq (flatten (normalize c1) @ flatten (normalize c2)),s\<rangle> =n\<Rightarrow> t"
     by simp
@@ -1416,7 +1417,7 @@ next
     by (auto intro: execn.intros elim!: execn_elim_cases)
 next
   case (While b c)
-  have "\<Gamma>\<turnstile>\<langle>normalize (While b c),s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>normalize (While b c),s\<rangle> =n\<Rightarrow> t" by fact
   hence exec_norm_w: "\<Gamma>\<turnstile>\<langle>While b (normalize c),s\<rangle> =n\<Rightarrow> t"
     by simp
   {
@@ -1475,7 +1476,7 @@ proof -
     "\<Gamma>\<turnstile>\<langle>sequence Seq ys,s'\<rangle> =max n m\<Rightarrow> t"
     by (auto intro: execn_mono le_maxI1 le_maxI2)
   from execn_sequence_app [OF this]
-  have "\<Gamma>\<turnstile>\<langle>sequence Seq (xs @ ys),Normal s\<rangle> =max n m\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>sequence Seq (xs @ ys),Normal s\<rangle> =max n m\<Rightarrow> t" .
   thus ?thesis
     by (rule execn_to_exec)
 qed
@@ -1566,14 +1567,14 @@ next
          elim: execn_elim_cases)
 next
   case (Seq c1' c2')
-  have "c \<subseteq>\<^sub>g Seq c1' c2'".
+  have "c \<subseteq>\<^sub>g Seq c1' c2'" by fact
   from subseteq_guards_Seq [OF this]
   obtain c1 c2 where 
     c: "c = Seq c1 c2" and
     c1_c1': "c1 \<subseteq>\<^sub>g c1'" and
     c2_c2': "c2 \<subseteq>\<^sub>g c2'"
     by blast
-  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t".
+  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t" by fact
   with c obtain w where
     exec_c1: "\<Gamma>\<turnstile>\<langle>c1,s\<rangle> =n\<Rightarrow> w" and
     exec_c2: "\<Gamma>\<turnstile>\<langle>c2,w\<rangle> =n\<Rightarrow> t"
@@ -1644,8 +1645,8 @@ next
   qed
 next
   case (Cond b c1' c2') 
-  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t".
-  have "c \<subseteq>\<^sub>g Cond b c1' c2'".
+  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t" by fact
+  have "c \<subseteq>\<^sub>g Cond b c1' c2'" by fact
   from subseteq_guards_Cond [OF this]
   obtain c1 c2 where
     c: "c = Cond b c1 c2" and
@@ -1699,8 +1700,8 @@ next
   qed
 next
   case (While b c')
-  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t".
-  have "c \<subseteq>\<^sub>g While b c'".
+  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t" by fact
+  have "c \<subseteq>\<^sub>g While b c'" by fact
   from subseteq_guards_While [OF this]
   obtain c'' where 
     c: "c = While b c''" and
@@ -1715,7 +1716,7 @@ next
     using exec c
     proof (induct)
       case (WhileTrue r b' ca n u w)
-      have eqs: "While b' ca = While b c''".
+      have eqs: "While b' ca = While b c''" by fact
       from WhileTrue have r_in_b: "r \<in> b" by simp
       from WhileTrue have exec_c'': "\<Gamma>\<turnstile>\<langle>c'',Normal r\<rangle> =n\<Rightarrow> u" by simp
       from While.hyps [OF c''_c' exec_c''] obtain u' where
@@ -1752,8 +1753,8 @@ next
          elim: execn_elim_cases)
 next
   case (DynCom C') 
-  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t".
-  have "c \<subseteq>\<^sub>g DynCom C'".
+  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t" by fact
+  have "c \<subseteq>\<^sub>g DynCom C'" by fact
   from subseteq_guards_DynCom [OF this] obtain C where
     c: "c = DynCom C" and
     C_C': "\<forall>s. C s \<subseteq>\<^sub>g C' s"
@@ -1792,8 +1793,8 @@ next
   qed
 next
   case (Guard f' g' c')
-  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t".
-  have "c \<subseteq>\<^sub>g Guard f' g' c'".
+  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t" by fact
+  have "c \<subseteq>\<^sub>g Guard f' g' c'" by fact
   hence subset_cases: "(c \<subseteq>\<^sub>g c') \<or> (\<exists>c''. c = Guard f' g' c'' \<and> (c'' \<subseteq>\<^sub>g c'))"
     by (rule subseteq_guards_Guard)
   show ?case
@@ -1862,14 +1863,14 @@ next
          elim: execn_elim_cases)
 next
   case (Catch c1' c2')
-  have "c \<subseteq>\<^sub>g Catch c1' c2'".
+  have "c \<subseteq>\<^sub>g Catch c1' c2'" by fact
   from subseteq_guards_Catch [OF this]
   obtain c1 c2 where 
     c: "c = Catch c1 c2" and
     c1_c1': "c1 \<subseteq>\<^sub>g c1'" and
     c2_c2': "c2 \<subseteq>\<^sub>g c2'"
     by blast
-  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t".
+  have exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases "s")
     case (Fault f)
@@ -1966,8 +1967,8 @@ theorem execn_to_execn_merge_guards:
 using exec_c 
 proof (induct) 
   case (Guard s g c n t f)
-  have s_in_g: "s \<in> g" .
-  have exec_merge_c: "\<Gamma>\<turnstile>\<langle>merge_guards c,Normal s\<rangle> =n\<Rightarrow> t".
+  have s_in_g: "s \<in> g"  by fact
+  have exec_merge_c: "\<Gamma>\<turnstile>\<langle>merge_guards c,Normal s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases "\<exists>f' g' c'. merge_guards c = Guard f' g' c'")
     case False
@@ -1992,7 +1993,7 @@ proof (induct)
   qed
 next
   case (GuardFault s g f c n)
-  have s_notin_g: "s \<notin> g" .
+  have s_notin_g: "s \<notin> g"  by fact
   show ?case
   proof (cases "\<exists>f' g' c'. merge_guards c = Guard f' g' c'")
     case False
@@ -2027,7 +2028,7 @@ next
   case Spec thus ?case by auto
 next
   case (Seq c1 c2) 
-  have "\<Gamma>\<turnstile>\<langle>merge_guards (Seq c1 c2),Normal s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>merge_guards (Seq c1 c2),Normal s\<rangle> =n\<Rightarrow> t" by fact
   hence exec_merge: "\<Gamma>\<turnstile>\<langle>Seq (merge_guards c1) (merge_guards c2),Normal s\<rangle> =n\<Rightarrow> t"
     by simp
   then obtain s' where
@@ -2080,11 +2081,11 @@ next
       using exec_c' c' 
     proof (induct)
       case (WhileTrue r b' c'' n u w)
-      have eqs: "While b' c'' = While b (merge_guards c)".
+      have eqs: "While b' c'' = While b (merge_guards c)" by fact
       from WhileTrue 
       have r_in_b: "r \<in> b" 
 	by simp
-      from WhileTrue have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal r\<rangle> =n\<Rightarrow> u"
+      from WhileTrue While.hyps have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal r\<rangle> =n\<Rightarrow> u"
 	by simp
       from WhileTrue have exec_w: "\<Gamma>\<turnstile>\<langle>While b c,u\<rangle> =n\<Rightarrow> w"
 	by simp
@@ -2104,7 +2105,7 @@ next
     by (fastsimp intro: execn.intros elim: execn_Normal_elim_cases)
 next
   case (Guard f g c)
-  have exec_merge: "\<Gamma>\<turnstile>\<langle>merge_guards (Guard f g c),Normal s\<rangle> =n\<Rightarrow> t".
+  have exec_merge: "\<Gamma>\<turnstile>\<langle>merge_guards (Guard f g c),Normal s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases "s \<in> g")
     case False
@@ -2179,7 +2180,7 @@ next
   case Throw thus ?case by simp
 next
   case (Catch c1 c2)
-  have "\<Gamma>\<turnstile>\<langle>merge_guards (Catch c1 c2),Normal s\<rangle> =n\<Rightarrow> t" .
+  have "\<Gamma>\<turnstile>\<langle>merge_guards (Catch c1 c2),Normal s\<rangle> =n\<Rightarrow> t"  by fact
   hence "\<Gamma>\<turnstile>\<langle>Catch (merge_guards c1) (merge_guards c2),Normal s\<rangle> =n\<Rightarrow> t" by simp
   thus ?case
     by cases (auto intro: execn.intros Catch.hyps)
@@ -2243,9 +2244,9 @@ next
  case SpecStuck thus ?case by auto
 next
   case (Seq c1 s n w c2 t)
-  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> w".
-  have exec_c2: "\<Gamma>\<turnstile>\<langle>c2,w\<rangle> =n\<Rightarrow> t".
-  have t: "t=Fault f".
+  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> w" by fact
+  have exec_c2: "\<Gamma>\<turnstile>\<langle>c2,w\<rangle> =n\<Rightarrow> t" by fact
+  have t: "t=Fault f" by fact
   show ?case
   proof (cases w)
     case (Fault f')
@@ -2290,10 +2291,10 @@ next
   case CondFalse thus ?case by (fastsimp intro: execn.intros)
 next
   case (WhileTrue s b c n w t) 
-  have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> w".
-  have exec_w: "\<Gamma>\<turnstile>\<langle>While b c,w\<rangle> =n\<Rightarrow> t".
-  have t: "t = Fault f".
-  have s_in_b: "s \<in> b".
+  have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> w" by fact
+  have exec_w: "\<Gamma>\<turnstile>\<langle>While b c,w\<rangle> =n\<Rightarrow> t" by fact
+  have t: "t = Fault f" by fact
+  have s_in_b: "s \<in> b" by fact
   show ?case
   proof (cases w)
     case (Fault f')
@@ -2348,9 +2349,9 @@ next
   case AbruptProp thus ?case by simp
 next
   case (CatchMatch c1 s n w c2 t) 
-  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> Abrupt w".
-  have exec_c2: "\<Gamma>\<turnstile>\<langle>c2,Normal w\<rangle> =n\<Rightarrow> t".
-  have t: "t = Fault f".
+  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> Abrupt w" by fact
+  have exec_c2: "\<Gamma>\<turnstile>\<langle>c2,Normal w\<rangle> =n\<Rightarrow> t" by fact
+  have t: "t = Fault f" by fact
   from execn_to_execn_mark_guards [OF exec_c1]
   have exec_mark_c1: "\<Gamma>\<turnstile>\<langle>mark_guards x c1,Normal s\<rangle> =n\<Rightarrow> Abrupt w"
     by simp
@@ -2378,7 +2379,7 @@ next
   case Spec thus ?case by auto
 next
   case (Seq c1 c2 s n t)
-  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (Seq c1 c2),s\<rangle> =n\<Rightarrow> t".
+  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (Seq c1 c2),s\<rangle> =n\<Rightarrow> t" by fact
   then obtain w where 
     exec_mark_c1: "\<Gamma>\<turnstile>\<langle>mark_guards f c1,s\<rangle> =n\<Rightarrow> w" and
     exec_mark_c2: "\<Gamma>\<turnstile>\<langle>mark_guards f c2,w\<rangle> =n\<Rightarrow> t"
@@ -2461,7 +2462,7 @@ next
   qed
 next
   case (Cond b c1 c2 s n t)
-  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (Cond b c1 c2),s\<rangle> =n\<Rightarrow> t".
+  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (Cond b c1 c2),s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases s)
     case (Fault f)
@@ -2518,7 +2519,7 @@ next
   qed
 next
   case (While b c s n t)
-  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (While b c),s\<rangle> =n\<Rightarrow> t".
+  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (While b c),s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases s)
     case (Fault f)
@@ -2550,7 +2551,7 @@ next
 	using exec_c' c' 
       proof (induct)
 	case (WhileTrue r b' c'' n u w)
-	have eqs: "While b' c'' = While b (mark_guards f c)".
+	have eqs: "While b' c'' = While b (mark_guards f c)" by fact
 	from WhileTrue.hyps eqs
 	have r_in_b: "r\<in>b" by simp
 	from WhileTrue.hyps eqs
@@ -2602,7 +2603,7 @@ next
 	qed
       next
 	case (WhileFalse r b' c'' n)
-	have eqs: "While b'  c'' = While b (mark_guards f c)".
+	have eqs: "While b'  c'' = While b (mark_guards f c)" by fact
 	from WhileFalse.hyps eqs
 	have r_not_in_b: "r\<notin>b" by simp
 	show ?case
@@ -2678,7 +2679,7 @@ next
     by (fastsimp elim!: execn_elim_cases intro: execn.intros)
 next
   case (Guard f' g c s n t)
-  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (Guard f' g c),s\<rangle> =n\<Rightarrow> t".
+  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (Guard f' g c),s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases s)
     case (Fault f)
@@ -2731,7 +2732,7 @@ next
   case Throw thus ?case by auto
 next
   case (Catch c1 c2 s n t)
-  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (Catch c1 c2),s\<rangle> =n\<Rightarrow> t".
+  have exec_mark: "\<Gamma>\<turnstile>\<langle>mark_guards f (Catch c1 c2),s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases "s")
     case (Fault f)
@@ -2897,10 +2898,10 @@ next
  case SpecStuck thus ?case by auto
 next
   case (Seq c1 s n w c2 t)
-  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> w".
-  have exec_c2: "\<Gamma>\<turnstile>\<langle>c2,w\<rangle> =n\<Rightarrow> t".
-  have t: "t=Fault f".
-  have notinF: "f \<notin> F".
+  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> w" by fact
+  have exec_c2: "\<Gamma>\<turnstile>\<langle>c2,w\<rangle> =n\<Rightarrow> t" by fact
+  have t: "t=Fault f" by fact
+  have notinF: "f \<notin> F" by fact
   show ?case
   proof (cases w)
     case (Fault f')
@@ -2945,11 +2946,11 @@ next
   case CondFalse thus ?case by (fastsimp intro: execn.intros)
 next
   case (WhileTrue s b c n w t) 
-  have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> w".
-  have exec_w: "\<Gamma>\<turnstile>\<langle>While b c,w\<rangle> =n\<Rightarrow> t".
-  have t: "t = Fault f".
-  have notinF: "f \<notin> F".
-  have s_in_b: "s \<in> b".
+  have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> w" by fact
+  have exec_w: "\<Gamma>\<turnstile>\<langle>While b c,w\<rangle> =n\<Rightarrow> t" by fact
+  have t: "t = Fault f" by fact
+  have notinF: "f \<notin> F" by fact
+  have s_in_b: "s \<in> b" by fact
   show ?case
   proof (cases w)
     case (Fault f')
@@ -3004,10 +3005,10 @@ next
   case AbruptProp thus ?case by simp
 next
   case (CatchMatch c1 s n w c2 t) 
-  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> Abrupt w".
-  have exec_c2: "\<Gamma>\<turnstile>\<langle>c2,Normal w\<rangle> =n\<Rightarrow> t".
-  have t: "t = Fault f".
-  have notinF: "f \<notin> F".
+  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> Abrupt w" by fact
+  have exec_c2: "\<Gamma>\<turnstile>\<langle>c2,Normal w\<rangle> =n\<Rightarrow> t" by fact
+  have t: "t = Fault f" by fact
+  have notinF: "f \<notin> F" by fact
   from execn_to_execn_strip_guards [OF exec_c1]
   have exec_strip_c1: "\<Gamma>\<turnstile>\<langle>strip_guards F c1,Normal s\<rangle> =n\<Rightarrow> Abrupt w"
     by simp
@@ -3044,7 +3045,7 @@ next
   case Spec thus ?case by auto
 next
   case (Seq c1 c2 s n t)
-  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (Seq c1 c2),s\<rangle> =n\<Rightarrow> t".
+  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (Seq c1 c2),s\<rangle> =n\<Rightarrow> t" by fact
   then obtain w where 
     exec_strip_c1: "\<Gamma>\<turnstile>\<langle>strip_guards F c1,s\<rangle> =n\<Rightarrow> w" and
     exec_strip_c2: "\<Gamma>\<turnstile>\<langle>strip_guards F c2,w\<rangle> =n\<Rightarrow> t"
@@ -3122,7 +3123,7 @@ next
 next
 next
   case (Cond b c1 c2 s n t)
-  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (Cond b c1 c2),s\<rangle> =n\<Rightarrow> t".
+  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (Cond b c1 c2),s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases s)
     case (Fault f)
@@ -3177,7 +3178,7 @@ next
   qed
 next
   case (While b c s n t)
-  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (While b c),s\<rangle> =n\<Rightarrow> t".
+  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (While b c),s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases s)
     case (Fault f)
@@ -3209,7 +3210,7 @@ next
 	using exec_c' c' 
       proof (induct)
 	case (WhileTrue r b' c'' n u w)
-	have eqs: "While b' c'' = While b (strip_guards F c)".
+	have eqs: "While b' c'' = While b (strip_guards F c)" by fact
 	from WhileTrue.hyps eqs
 	have r_in_b: "r\<in>b" by simp
 	from WhileTrue.hyps eqs
@@ -3267,7 +3268,7 @@ next
 	qed
       next
 	case (WhileFalse r b' c'' n)
-	have eqs: "While b'  c'' = While b (strip_guards F c)".
+	have eqs: "While b'  c'' = While b (strip_guards F c)" by fact
 	from WhileFalse.hyps eqs
 	have r_not_in_b: "r\<notin>b" by simp
 	show ?case
@@ -3348,7 +3349,7 @@ next
     by (fastsimp elim!: execn_elim_cases intro: execn.intros)
 next
   case (Guard f g c s n t)
-  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (Guard f g c),s\<rangle> =n\<Rightarrow> t".
+  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (Guard f g c),s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases s)
     case (Fault f)
@@ -3419,7 +3420,7 @@ next
   case Throw thus ?case by auto
 next
   case (Catch c1 c2 s n t)
-  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (Catch c1 c2),s\<rangle> =n\<Rightarrow> t".
+  have exec_strip: "\<Gamma>\<turnstile>\<langle>strip_guards F (Catch c1 c2),s\<rangle> =n\<Rightarrow> t" by fact
   show ?case
   proof (cases "s")
     case (Fault f)
@@ -3660,7 +3661,7 @@ lemma execn_to_execn_strip:
 using exec_c t_not_Fault
 proof (induct)
   case (Call p bdy s n  s')
-  have bdy: "\<Gamma> p = Some bdy".
+  have bdy: "\<Gamma> p = Some bdy" by fact
   from Call have "strip F \<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> =n\<Rightarrow> s'"
     by blast
   from execn_to_execn_strip_guards [OF this] Call
@@ -3682,7 +3683,7 @@ lemma execn_to_execn_strip':
 using exec_c t_not_Fault
 proof (induct)
   case (Call p bdy s n s')
-  have bdy: "\<Gamma> p = Some bdy".
+  have bdy: "\<Gamma> p = Some bdy" by fact
   from Call have "strip F \<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> =n\<Rightarrow> s'"
     by blast
   from execn_to_execn_strip_guards' [OF this] Call
@@ -3778,10 +3779,10 @@ lemma inter_guards_execn_Normal_noFault:
         \<Longrightarrow> \<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> t \<and> \<Gamma>\<turnstile>\<langle>c2,Normal s\<rangle> =n\<Rightarrow> t"
 proof (induct c1)
   case Skip
-  have "(Skip \<inter>\<^sub>g c2) = Some c".
+  have "(Skip \<inter>\<^sub>g c2) = Some c" by fact
   then obtain c2: "c2=Skip" and c: "c=Skip"
     by (simp add: inter_guards_Skip)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t" by fact
   with c have "t=Normal s"
     by (auto elim: execn_Normal_elim_cases)
   with Skip c2
@@ -3789,10 +3790,10 @@ proof (induct c1)
     by (auto intro: execn.intros)
 next
   case (Basic f)
-  have "(Basic f \<inter>\<^sub>g c2) = Some c".
+  have "(Basic f \<inter>\<^sub>g c2) = Some c" by fact
   then obtain c2: "c2=Basic f" and c: "c=Basic f"
     by (simp add: inter_guards_Basic)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t" by fact
   with c have "t=Normal (f s)"
     by (auto elim: execn_Normal_elim_cases)
   with Basic c2
@@ -3800,23 +3801,23 @@ next
     by (auto intro: execn.intros)
 next
   case (Spec r)
-  have "(Spec r \<inter>\<^sub>g c2) = Some c".
+  have "(Spec r \<inter>\<^sub>g c2) = Some c" by fact
   then obtain c2: "c2=Spec r" and c: "c=Spec r"
     by (simp add: inter_guards_Spec)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t" by fact
   with c have "\<Gamma>\<turnstile>\<langle>Spec r,Normal s\<rangle> =n\<Rightarrow> t" by simp
   from this Spec c2 show ?case
     by (cases) (auto intro: execn.intros)
 next
   case (Seq a1 a2)
-  have noFault: "\<not> isFault t".
-  have "(Seq a1 a2 \<inter>\<^sub>g c2) = Some c".
+  have noFault: "\<not> isFault t" by fact
+  have "(Seq a1 a2 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain b1 b2 d1 d2 where
     c2: "c2=Seq b1 b2" and 
     d1: "(a1 \<inter>\<^sub>g b1) = Some d1" and d2: "(a2 \<inter>\<^sub>g b2) = Some d2" and
     c: "c=Seq d1 d2"
     by (auto simp add: inter_guards_Seq)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t" by fact
   with c obtain s' where 
     exec_d1: "\<Gamma>\<turnstile>\<langle>d1,Normal s\<rangle> =n\<Rightarrow> s'" and
     exec_d2: "\<Gamma>\<turnstile>\<langle>d2,s'\<rangle> =n\<Rightarrow> t"
@@ -3873,15 +3874,15 @@ next
   qed
 next
   case (Cond b t1 e1)
-  have noFault: "\<not> isFault t".
-  have "(Cond b t1 e1 \<inter>\<^sub>g c2) = Some c".
+  have noFault: "\<not> isFault t" by fact
+  have "(Cond b t1 e1 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain t2 e2 t3 e3 where
     c2: "c2=Cond b t2 e2" and
     t3: "(t1 \<inter>\<^sub>g t2) = Some t3" and
     e3: "(e1 \<inter>\<^sub>g e2) = Some e3" and
     c: "c=Cond b t3 e3"
     by (auto simp add: inter_guards_Cond)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t" by fact
   with c have "\<Gamma>\<turnstile>\<langle>Cond b t3 e3,Normal s\<rangle> =n\<Rightarrow> t"
     by simp
   then show ?case
@@ -3904,14 +3905,14 @@ next
   qed
 next
   case (While b bdy1)
-  have noFault: "\<not> isFault t".
-  have "(While b bdy1 \<inter>\<^sub>g c2) = Some c".
+  have noFault: "\<not> isFault t" by fact
+  have "(While b bdy1 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain bdy2 bdy where
     c2: "c2=While b bdy2" and
     bdy: "(bdy1 \<inter>\<^sub>g bdy2) = Some bdy" and
     c: "c=While b bdy"
     by (auto simp add: inter_guards_While)
-  have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t".
+  have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t" by fact
   {
     fix s t n w w1 w2
     assume exec_w: "\<Gamma>\<turnstile>\<langle>w,Normal s\<rangle> =n\<Rightarrow> t" 
@@ -3923,9 +3924,9 @@ next
     proof (induct)
       prefer 10
       case (WhileTrue s b' bdy' n s' s'')
-      have eqs: "While b'  bdy' = While b bdy".
+      have eqs: "While b'  bdy' = While b bdy" by fact
       from WhileTrue have s_in_b: "s \<in> b" by simp
-      have noFault_s'': "\<not> isFault s''" .
+      have noFault_s'': "\<not> isFault s''"  by fact
       from WhileTrue 
       have exec_bdy: "\<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> =n\<Rightarrow> s'" by simp
       from WhileTrue
@@ -3993,14 +3994,14 @@ next
   case Call thus ?case by (simp add: inter_guards_Call)
 next
   case (DynCom f1)  
-  have noFault: "\<not> isFault t".
-  have "(DynCom f1 \<inter>\<^sub>g c2) = Some c".
+  have noFault: "\<not> isFault t" by fact
+  have "(DynCom f1 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain f2 f where
     c2: "c2=DynCom f2" and
     f_defined: "\<forall>s. ((f1 s) \<inter>\<^sub>g (f2 s)) \<noteq> None" and
     c: "c=DynCom (\<lambda>s. the ((f1 s) \<inter>\<^sub>g (f2 s)))"
     by (auto simp add: inter_guards_DynCom)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t" by fact
   with c have "\<Gamma>\<turnstile>\<langle>DynCom (\<lambda>s. the ((f1 s) \<inter>\<^sub>g (f2 s))),Normal s\<rangle> =n\<Rightarrow> t" by simp
   then show ?case
   proof (cases)
@@ -4021,14 +4022,14 @@ next
         simp add: inter_guards_Throw)
 next
   case (Catch a1 a2)
-  have noFault: "\<not> isFault t".
-  have "(Catch a1 a2 \<inter>\<^sub>g c2) = Some c".
+  have noFault: "\<not> isFault t" by fact
+  have "(Catch a1 a2 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain b1 b2 d1 d2 where
     c2: "c2=Catch b1 b2" and 
     d1: "(a1 \<inter>\<^sub>g b1) = Some d1" and d2: "(a2 \<inter>\<^sub>g b2) = Some d2" and
     c: "c=Catch d1 d2"
     by (auto simp add: inter_guards_Catch)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> t" by fact
   with c have "\<Gamma>\<turnstile>\<langle>Catch d1 d2,Normal s\<rangle> =n\<Rightarrow> t" by simp
   then show ?case
   proof (cases)
@@ -4114,13 +4115,13 @@ next
   case (Spec r) thus ?case by (fastsimp simp add: inter_guards_Spec)
 next
   case (Seq a1 a2)
-  have "(Seq a1 a2 \<inter>\<^sub>g c2) = Some c".
+  have "(Seq a1 a2 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain b1 b2 d1 d2 where
     c2: "c2=Seq b1 b2" and 
     d1: "(a1 \<inter>\<^sub>g b1) = Some d1" and d2: "(a2 \<inter>\<^sub>g b2) = Some d2" and
     c: "c=Seq d1 d2"
     by (auto simp add: inter_guards_Seq)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f" by fact
   with c obtain s' where 
     exec_d1: "\<Gamma>\<turnstile>\<langle>d1,Normal s\<rangle> =n\<Rightarrow> s'" and
     exec_d2: "\<Gamma>\<turnstile>\<langle>d2,s'\<rangle> =n\<Rightarrow> Fault f"
@@ -4165,14 +4166,14 @@ next
   qed
 next
   case (Cond b t1 e1)
-  have "(Cond b t1 e1 \<inter>\<^sub>g c2) = Some c".
+  have "(Cond b t1 e1 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain t2 e2 t e where
     c2: "c2=Cond b t2 e2" and
     t: "(t1 \<inter>\<^sub>g t2) = Some t" and
     e: "(e1 \<inter>\<^sub>g e2) = Some e" and
     c: "c=Cond b t e"
     by (auto simp add: inter_guards_Cond)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f" by fact
   with c have "\<Gamma>\<turnstile>\<langle>Cond b t e,Normal s\<rangle> =n\<Rightarrow> Fault f" by simp
   thus ?case
   proof (cases)
@@ -4190,13 +4191,13 @@ next
   qed
 next
   case (While b bdy1)
-  have "(While b bdy1 \<inter>\<^sub>g c2) = Some c".
+  have "(While b bdy1 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain bdy2 bdy where
     c2: "c2=While b bdy2" and
     bdy: "(bdy1 \<inter>\<^sub>g bdy2) = Some bdy" and
     c: "c=While b bdy"
     by (auto simp add: inter_guards_While)
-  have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f".
+  have exec_c: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f" by fact
   {
     fix s t n w w1 w2 
     assume exec_w: "\<Gamma>\<turnstile>\<langle>w,Normal s\<rangle> =n\<Rightarrow> t" 
@@ -4207,9 +4208,9 @@ next
           \<Gamma>\<turnstile>\<langle>While b bdy2,Normal s\<rangle> =n\<Rightarrow> Fault f"
     proof (induct)
       case (WhileTrue s b' bdy' n  s' s'')
-      have eqs: "While b' bdy' = While b bdy".
+      have eqs: "While b' bdy' = While b bdy" by fact
       from WhileTrue have s_in_b: "s \<in> b" by simp
-      have Fault_s'': "s''=Fault f" .
+      have Fault_s'': "s''=Fault f"  by fact
       from WhileTrue 
       have exec_bdy: "\<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> =n\<Rightarrow> s'" by simp
       from WhileTrue
@@ -4255,13 +4256,13 @@ next
   case Call thus ?case by (fastsimp simp add: inter_guards_Call)
 next
   case (DynCom f1)
-  have "(DynCom f1 \<inter>\<^sub>g c2) = Some c".
+  have "(DynCom f1 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain f2  where
     c2: "c2=DynCom f2" and
     F_defined: "\<forall>s. ((f1 s) \<inter>\<^sub>g (f2 s)) \<noteq> None" and
     c: "c=DynCom (\<lambda>s. the ((f1 s) \<inter>\<^sub>g (f2 s)))"
     by (auto simp add: inter_guards_DynCom)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f" by fact
   with c have "\<Gamma>\<turnstile>\<langle>DynCom (\<lambda>s. the ((f1 s) \<inter>\<^sub>g (f2 s))),Normal s\<rangle> =n\<Rightarrow> Fault f" by simp
   then show ?case
   proof (cases)
@@ -4274,13 +4275,13 @@ next
   qed
 next
   case (Guard m g1 bdy1)
-  have "(Guard m g1 bdy1 \<inter>\<^sub>g c2) = Some c".
+  have "(Guard m g1 bdy1 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain g2 bdy2 bdy where
     c2: "c2=Guard m g2 bdy2" and
     bdy: "(bdy1 \<inter>\<^sub>g bdy2) = Some bdy" and
     c: "c=Guard m (g1 \<inter> g2) bdy"
     by (auto simp add: inter_guards_Guard)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f" by fact
   with c have "\<Gamma>\<turnstile>\<langle>Guard m (g1 \<inter> g2) bdy,Normal s\<rangle> =n\<Rightarrow> Fault f"
     by simp
   thus ?case
@@ -4305,13 +4306,13 @@ next
   case Throw thus ?case by (fastsimp simp add: inter_guards_Throw)
 next
   case (Catch a1 a2)
-  have "(Catch a1 a2 \<inter>\<^sub>g c2) = Some c".
+  have "(Catch a1 a2 \<inter>\<^sub>g c2) = Some c" by fact
   then obtain b1 b2 d1 d2 where
     c2: "c2=Catch b1 b2" and 
     d1: "(a1 \<inter>\<^sub>g b1) = Some d1" and d2: "(a2 \<inter>\<^sub>g b2) = Some d2" and
     c: "c=Catch d1 d2"
     by (auto simp add: inter_guards_Catch)
-  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f".
+  have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> =n\<Rightarrow> Fault f" by fact
   with c have "\<Gamma>\<turnstile>\<langle>Catch d1 d2,Normal s\<rangle> =n\<Rightarrow> Fault f" by simp
   thus ?case
   proof (cases)
@@ -4444,11 +4445,11 @@ next
   case WhileFalse thus ?case by (auto intro: execn.WhileFalse)
 next
   case (Call p bdy n s s')
-  have "\<Gamma> p = Some bdy".
+  have "\<Gamma> p = Some bdy" by fact
   show ?case
   proof (cases "p \<in> P")
     case True 
-    hence "(\<Gamma>|\<^bsub>P\<^esub>) p = Some bdy"
+    with Call have "(\<Gamma>|\<^bsub>P\<^esub>) p = Some bdy"
       by (simp)
     with Call show ?thesis
       by (auto intro: execn.intros)
@@ -4460,7 +4461,7 @@ next
   qed
 next
   case (CallUndefined p n s)
-  have "\<Gamma> p = None".
+  have "\<Gamma> p = None" by fact
   hence "(\<Gamma>|\<^bsub>P\<^esub>) p = None" by (rule restrict_NoneD)
   thus ?case by (auto intro: execn.CallUndefined)
 next
@@ -4503,14 +4504,14 @@ next
   qed
 next
   case (CatchMiss c1 s n w c2) 
-  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> w".
+  have exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> w" by fact
   from CatchMiss.hyps obtain w' where
     exec_c1': "\<Gamma>|\<^bsub>P\<^esub>\<turnstile>\<langle>c1,Normal s\<rangle> =n\<Rightarrow> w'" and
     w_Stuck: "w = Stuck \<longrightarrow> w' = Stuck" and
     w_Fault: "\<forall>f. w = Fault f \<longrightarrow> w' \<in> {Fault f, Stuck}" and
     w'_noStuck: "w' \<noteq> Stuck \<longrightarrow> w' = w"
     by auto
-  have noAbr_w: "\<not> isAbr w".
+  have noAbr_w: "\<not> isAbr w" by fact
   show ?case
   proof (cases w')
     case (Normal s')
