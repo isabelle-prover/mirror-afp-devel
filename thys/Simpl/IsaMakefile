@@ -44,7 +44,7 @@ $(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib ex/
 keywords: $(LOG)/Simpl.gz $(LOG)/Pure.gz $(LOG)/Pure-ProofGeneral.gz $(LOG)/HOL.gz \
 	  $(LOG)/HOLCF.gz $(LOG)/IOA.gz \
 	  $(LOG)/HOL-Nominal.gz $(LOG)/HOL-Statespace.gz
-	isatool keywords -t emacs -k simpl \
+	$(ISATOOL) keywords -t emacs -k simpl \
 	  $(LOG)/Pure.gz $(LOG)/Pure-ProofGeneral.gz $(LOG)/HOL.gz $(LOG)/HOLCF.gz \
 	  $(LOG)/IOA.gz $(LOG)/HOL-Nominal.gz $(LOG)/HOL-Statespace.gz \
 	  $(LOG)/Simpl.gz
