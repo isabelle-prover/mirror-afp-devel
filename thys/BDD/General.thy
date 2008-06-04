@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: General.thy,v 1.4 2008-04-22 06:34:05 fhaftmann Exp $
+    ID:          $Id: General.thy,v 1.5 2008-06-04 18:05:56 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -167,9 +167,9 @@ proof (induct t)
 next
   case (Node lt a rt)
   note NN= this
-  have bdt1: "bdt (Node lt a rt) var = Some bdt1" . 
-  have no_in_t: " no \<in> set_of (Node lt a rt)" . 
-  have p_tree: "Dag p low high (Node lt a rt)" . 
+  have bdt1: "bdt (Node lt a rt) var = Some bdt1" by fact
+  have no_in_t: " no \<in> set_of (Node lt a rt)" by fact
+  have p_tree: "Dag p low high (Node lt a rt)" by fact
   from Node.prems obtain 
     lt: "Dag (low p) low high lt" and 
     rt: "Dag (high p) low high rt" 
@@ -469,7 +469,7 @@ lemma subdag_ordered:
               no \<in> set_of t\<rbrakk> \<Longrightarrow> ordered not var"
 proof (induct t) 
   case Tip
-  with Tip.prems show ?case by simp
+  from Tip.prems show ?case by simp
 next
   case (Node lt po rt)
   note nN=this
@@ -485,9 +485,7 @@ next
       from Tip ltTip Node.prems have "no=p"
         by simp
       with ppo Node.prems have "not=(Node lt po rt)"
-        apply -
-        apply (simp del: Dag_Ref add: Dag_unique)
-        done
+        by (simp del: Dag_Ref add: Dag_unique)
       with Node.prems show ?thesis by simp
     next
       case (Node lrnot rn rrnot)
@@ -497,20 +495,21 @@ next
         by simp
       from Node.prems have ponN: "po \<noteq> Null"
         by auto
-      with ppo ponN ltTip Node.prems Node have "Dag (high po) low high rt"
+      with ppo ponN ltTip Node.prems have *: "Dag (high po) low high rt"
         by auto
-      with Node.hyps Node.prems ord_rt show ?thesis
+      show ?thesis
       proof (cases "no=po")
         case True
-        with ppo Node.prems have "not = (Node lt po rt)"
+        with ppo Node.prems have "not = Node lt po rt"
           by (simp del: Dag_Ref add: Dag_unique)
-        with Node.prems show ?thesis by simp
+        with Node.prems show ?thesis
+	  by simp
       next
-        assume "no\<noteq> po" 
+	case False
         with Node.prems ltTip have "no \<in> set_of rt" 
           by simp
-        with ord_rt Node.prems show ?thesis
-          by auto
+	with ord_rt * `Dag no low high not` show ?thesis
+	  by (rule Node.hyps)
       qed
     qed
   next
@@ -525,20 +524,20 @@ next
         by simp
       from Node.prems have ponN: "po \<noteq> Null"
         by auto
-      with ppo ponN Tip Node.prems ltNode have "Dag (low po) low high lt"
+      with ppo ponN Tip Node.prems ltNode have *: "Dag (low po) low high lt"
         by auto
-      with Node.hyps Node.prems ord_lt show ?thesis
+      show ?thesis
       proof (cases "no=po")
         case True
         with ppo Node.prems have "not = (Node lt po rt)"
           by (simp del: Dag_Ref add: Dag_unique)
         with Node.prems show ?thesis by simp
       next
-        assume "no\<noteq> po" 
+	case False
         with Node.prems Tip have "no \<in> set_of lt" 
           by simp
-        with ord_lt Node.prems show ?thesis
-          by auto
+        with ord_lt * `Dag no low high not` show ?thesis
+          by (rule Node.hyps)
       qed   
     next
       case (Node lrt r rrt)
@@ -1217,9 +1216,12 @@ proof (rule ballI)
       done
     from x_in_pret ord_pret highnN True have children_var_smaller: "var (low x) < var x \<and> var (high x) < var x"
       apply -
-      thm var_ordered_children
       apply (rule var_ordered_children)
-      apply assumption+
+      apply (rule pret_dag)
+      apply (rule ord_pret)
+      apply (rule x_in_pret)
+      apply (rule True)
+      apply (rule highnN)
       done
     with xsnb have lowxsnb: "var (low x) < nb"
       by arith

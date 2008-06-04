@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: RepointProof.thy,v 1.4 2008-04-15 13:15:26 makarius Exp $
+    ID:          $Id: RepointProof.thy,v 1.5 2008-06-04 18:05:56 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -51,7 +51,7 @@ proof (induct rt)
   case Tip thus ?case by simp
 next
   case (Node lrt q' rrt)
-  have "Dag q (rep \<propto> low) (rep \<propto> high) (Node lrt q' rrt)".
+  have "Dag q (rep \<propto> low) (rep \<propto> high) (Node lrt q' rrt)" by fact
   then obtain 
     q': "q = q'"  and
     q_notNull: "q \<noteq> Null" and 
@@ -334,8 +334,8 @@ proof -
         show "lowb no = (rep \<propto> low) no \<and> (highb(rep p := pb)) no = (rep \<propto> high) no"
         proof (cases "no \<in> set_of rrept")
           case True
-          with lowb_highb_def show ?thesis
-            by auto
+          with lowb_highb_def pb_def show ?thesis
+            by simp
         next
           assume no_notin_rrept: " no \<notin> set_of rrept"
           show ?thesis
@@ -471,9 +471,9 @@ proof -
       apply clarify
     proof -
       case (goal1 lowa higha pa)
-      have lrepta: "Dag pa lowa higha lrept".
+      have lrepta: "Dag pa lowa higha lrept" by fact
       have low_lowa_nc: 
-	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt".
+	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt" by fact
       from lrept_dag lrepta  obtain 
 	pa_def: "pa = (rep \<propto> low) (rep p)" and
 	lowa_higha_def: "\<forall>no \<in> set_of lrept. 
@@ -537,9 +537,9 @@ proof -
 	apply clarify
       proof -
 	case (goal1 lowb highb pb)
-	have rreptb: "Dag pb lowb highb rrept".
+	have rreptb: "Dag pb lowb highb rrept" by fact
 	have ab_nc: "\<forall>pt. pt \<notin> set_of rrept \<longrightarrow> 
-	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt".
+	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt" by fact
 	from rreptb rrept_dag obtain
 	  pb_def: "pb = ((rep \<propto> high) (rep p))" and
 	  lowb_highb_def: "\<forall>no \<in> set_of rrept. 
@@ -560,8 +560,8 @@ proof -
                   (highb(rep p := pb)) no = (rep \<propto> high) no"
             proof (cases "no \<in> set_of rrept")
               case True
-              with lowb_highb_def show ?thesis
-		by auto
+              with lowb_highb_def pb_def show ?thesis
+		by simp
             next
               assume no_notin_rrept: " no \<notin> set_of rrept"
               show ?thesis
@@ -715,9 +715,9 @@ proof -
       apply clarify
     proof -
       case (goal1 lowa higha pa)
-      have lrepta: "Dag pa lowa higha lrept".
+      have lrepta: "Dag pa lowa higha lrept" by fact
       have low_lowa_nc: 
-	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt".
+	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt" by fact
       from lrept_dag lrepta  obtain 
 	pa_def: "pa = (rep \<propto> low) (rep p)" and
 	lowa_higha_def: "\<forall>no \<in> set_of lrept. 
@@ -785,9 +785,9 @@ proof -
 	apply clarify
       proof -
 	case (goal1 lowb highb pb)
-	have rreptb: "Dag pb lowb highb rrept".
+	have rreptb: "Dag pb lowb highb rrept" by fact
 	have ab_nc: "\<forall>pt. pt \<notin> set_of rrept \<longrightarrow> 
-	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt".
+	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt" by fact
 	from rreptb rrept_dag obtain
 	  pb_def: "pb = ((rep \<propto> high) (rep p))" and
 	  lowb_highb_def: "\<forall>no \<in> set_of rrept. 
@@ -808,8 +808,8 @@ proof -
                   (highb(rep p := pb)) no = (rep \<propto> high) no"
             proof (cases "no \<in> set_of rrept")
               case True
-              with lowb_highb_def show ?thesis
-		by auto
+              with lowb_highb_def pb_def show ?thesis
+		by simp
             next
               assume no_notin_rrept: " no \<notin> set_of rrept"
               show ?thesis
