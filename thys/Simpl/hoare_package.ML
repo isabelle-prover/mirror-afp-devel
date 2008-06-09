@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.12 2008-05-30 14:35:45 norbertschirmer Exp $
+    ID:         $Id: hoare_package.ML,v 1.13 2008-06-09 15:32:58 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -1856,7 +1856,7 @@ fun assertion_simp_tac ctxt = raw_assertion_simp_tac ctxt;
 fun string_eq_simp_tac ctxt =
      simp_tac ((Simplifier.context ctxt HOL_basic_ss)
                  addsimps (list_injects@char_injects@simp_thms)
-                 addsimprocs [distinct_simproc])
+                 addsimprocs [DatatypePackage.distinct_simproc])
 
 
 fun assertion_string_eq_simp_tac ctxt state_kind thms i =
@@ -3279,7 +3279,7 @@ local
           (thm "StateFun.lookup_def"::thm "StateFun.id_id_cancel"::
            thms "list.inject"@thms "char.inject"@simp_thms)
           addsimprocs
-          [RecordPackage.record_simproc,distinct_simproc,StateFun.lazy_conj_simproc]
+          [RecordPackage.record_simproc,DatatypePackage.distinct_simproc,StateFun.lazy_conj_simproc]
           addcongs [thm "block_conj_cong"];
 in
 fun ex_tac vs st = 
@@ -3423,7 +3423,7 @@ local
                            @{thms list.inject} @ @{thms char.inject} @ @{thms simp_thms} @ K_fun_convs)
                 addcongs ([imp_cong] (* @ K_fun_congs  FIXME: Stefan fragen*))
                 addsplits [split_if]
-                addsimprocs [distinct_simproc ,
+                addsimprocs [DatatypePackage.distinct_simproc,
                              DistinctTreeProver.distinct_simproc 
                                    ["distinct_fields","distinct_fields_globals"]])
 in
