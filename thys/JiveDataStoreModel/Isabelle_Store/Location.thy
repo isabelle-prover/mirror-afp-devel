@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Location.thy,v 1.5 2008-04-07 13:38:10 fhaftmann Exp $
+    ID:          $Id: Location.thy,v 1.6 2008-06-09 18:54:05 makarius Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -133,12 +133,12 @@ therefore keep the verification simpler.
 
 lemma ref_loc [simp]: "\<lbrakk>isObjV r; typeof r \<le> dtype f\<rbrakk> \<Longrightarrow> ref (r..f) = r"
   apply (case_tac r)
-  apply (tactic {* ALLGOALS (case_tac "f") *})
+  apply (case_tac [!] f)
   apply (simp_all)
   done
 
 lemma obj_arr_loc [simp]: "isArrV r \<Longrightarrow> ref (r.[i]) = r"
-   by (cases r) simp_all
+  by (cases r) simp_all
 
 lemma obj_arr_len [simp]: "isArrV r \<Longrightarrow> ref (arr_len r) = r"
   by (cases r) simp_all
