@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Type.thy
-   ID:        $Id: Type.thy,v 1.12 2007-10-03 19:09:51 makarius Exp $
+   ID:        $Id: Type.thy,v 1.13 2008-06-10 13:31:27 fhaftmann Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -283,20 +283,20 @@ lemma free_tv_id_subst [simp]: "free_tv id_subst = {}"
 
 lemma free_tv_nth_A_impl_free_tv_A [rule_format, simp]:
   "!n. n < length A --> x : free_tv (A!n) --> x : free_tv A"
-apply (induct_tac "A")
+apply (induct A)
 apply simp
 apply (rule allI)
-apply (induct_tac "n" rule: nat_induct)
+apply (induct_tac n)
 apply simp
 apply simp
 done
 
 lemma free_tv_nth_nat_A [rule_format]:
   "!nat. nat < length A --> x : free_tv (A!nat) --> x : free_tv A"
-apply (induct_tac "A")
+apply (induct A)
 apply simp
 apply (rule allI)
-apply (induct_tac "nat" rule: nat_induct)
+apply (induct_tac nat)
 apply (intro strip)
 apply simp
 apply simp
@@ -549,7 +549,7 @@ lemma new_tv_subst_te [simp]:
 
 lemma new_tv_subst_type_scheme [rule_format, simp]: 
   "new_tv n S --> new_tv n (sch::type_scheme) --> new_tv n ($ S sch)"
-apply (induct_tac "sch")
+apply (induct sch)
 apply (simp_all)
 apply (unfold new_tv_def)
 apply (simp (no_asm) add: free_tv_subst dom_def cod_def)
@@ -580,10 +580,10 @@ lemma new_tv_only_depends_on_free_tv_scheme_list:
 lemma new_tv_nth_nat_A [rule_format]: 
   "!nat. nat < length A --> new_tv n A --> (new_tv n (A!nat))"
 apply (unfold new_tv_def)
-apply (induct_tac "A")
+apply (induct A)
 apply simp
 apply (rule allI)
-apply (induct_tac "nat" rule: nat_induct)
+apply (induct_tac "nat")
 apply (intro strip)
 apply simp
 apply (simp (no_asm))
@@ -606,7 +606,7 @@ lemma new_tv_not_free_tv [simp]:
 
 lemma fresh_variable_types [simp]: "!!t::typ. ? n. (new_tv n t)"
 apply (unfold new_tv_def)
-apply (induct_tac "t")
+apply (induct_tac t)
 apply (rule_tac x = "Suc nat" in exI)
 apply (simp (no_asm_simp))
 apply (erule exE)+
@@ -618,7 +618,7 @@ done
 lemma fresh_variable_type_schemes [simp]:
   "!!sch::type_scheme. ? n. (new_tv n sch)"
 apply (unfold new_tv_def)
-apply (induct_tac "sch")
+apply (induct_tac sch)
 apply (rule_tac x = "Suc nat" in exI)
 apply (simp (no_asm))
 apply (rule_tac x = "Suc nat" in exI)
@@ -631,7 +631,7 @@ done
 
 lemma fresh_variable_type_scheme_lists [simp]: 
   "!!A::type_scheme list. ? n. (new_tv n A)"
-apply (induct_tac "A")
+apply (induct_tac A)
 apply (simp (no_asm))
 apply (simp (no_asm))
 apply (erule exE)
@@ -775,11 +775,11 @@ done
 
 lemma nth_subst [rule_format]: 
   "!n. n < length A --> ($ S A)!n = $S (A!n)"
-apply (induct_tac "A")
+apply (induct A)
 apply simp
 apply (rule allI)
 apply (rename_tac "n1")
-apply (induct_tac "n1" rule: nat_induct)
+apply (induct_tac "n1")
 apply simp
 apply simp
 done

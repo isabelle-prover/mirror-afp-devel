@@ -1,9 +1,11 @@
 
-(* $Id: Ramsey.thy,v 1.9 2008-05-07 09:04:28 stefanberghofer Exp $ *)
+(* $Id: Ramsey.thy,v 1.10 2008-06-10 13:31:26 fhaftmann Exp $ *)
 
 header "Ramsey's Theorem"
 
-theory Ramsey imports Main Infinite_Set begin
+theory Ramsey
+imports Main Infinite_Set
+begin
 
 
 declare [[simp_depth_limit = 5]]
@@ -59,7 +61,7 @@ lemma dc: "
   apply(intro allI impI, elim exE conjE)
   apply(rule_tac x="choice P R" in exI)
   apply(subgoal_tac "(ALL n. P (choice P R n))") prefer 2
-  apply(rule, rule_tac n=n in nat_induct)
+  apply(rule, induct_tac n)
   apply(simp add: Let_def) apply(rule someI_ex) apply(blast)
   apply(simp add: Let_def) apply(subgoal_tac "P (SOME y. P y & R (choice P R na) y) & R (choice P R na) (SOME y. P y & R (choice P R na) y)") apply(blast) apply(rule someI_ex) apply(blast)
   apply(rule) apply(assumption)
@@ -71,7 +73,7 @@ lemma dc: "
   apply(rule someI_ex) apply(force)
 
   apply(rule) apply(rule)
-  apply(rule_tac n=m in nat_induct) 
+  apply(induct_tac m) 
   apply(force)
   apply(drule_tac x="n+na+1" in spec) back
   apply(force simp del: choice.simps)
@@ -113,7 +115,7 @@ lemma ramsey: "
   & t' < s 
   & (! X. X <= Y' & finite X & card X = r --> f X = t'))"
   apply(simp add: part_def[symmetric] del: ex_simps)
-  apply(rule, rule, rule_tac nat_induct)
+  apply(rule, rule, rule_tac nat.induct)
 
   apply(intro allI impI)
   apply(rule_tac x="YY" in exI)
@@ -129,7 +131,7 @@ lemma ramsey: "
     y : YY & y ~: Y 
     & Y <= YY & infinite Y
     & t < s 
-    & (! X. X <= Y & finite X & card X = n --> (f o insert y) X = t))
+    & (! X. X <= Y & finite X & card X = nat --> (f o insert y) X = t))
     & (! m m'.     
     let (y,Y,t) = (g m) in 
     let (y',Y',t') =(g (m+m'+1)) in 
@@ -145,7 +147,7 @@ lemma ramsey: "
      y : YY & y ~: Y 
      & Y <= YY & infinite Y
      & t < s
-     & (! X. X <= Y & finite X & card X = n --> (f o insert y) X = t)
+     & (! X. X <= Y & finite X & card X = nat --> (f o insert y) X = t)
      "
  
      and R = "% gn gn'.

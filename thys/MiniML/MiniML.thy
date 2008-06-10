@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/MiniML.thy
-   ID:        $Id: MiniML.thy,v 1.10 2008-05-07 09:03:14 stefanberghofer Exp $
+   ID:        $Id: MiniML.thy,v 1.11 2008-06-10 13:31:26 fhaftmann Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -140,17 +140,9 @@ apply (simp (no_asm))
 apply fast
 done
 
-lemma aux_plus: "!!(k::nat). n <= n + k"
-apply (induct_tac "k" rule: nat_induct)
-apply (simp (no_asm))
-apply (simp (no_asm_simp))
-done
-
-declare aux_plus [simp]
-
 lemma new_tv_Int_free_tv_empty_type: "!!t::typ. new_tv n t ==> {x. ? y. x = n + y} Int free_tv t = {}"
 apply safe
-apply (cut_tac aux_plus)
+apply (cut_tac le_add1)
 apply (drule new_tv_le)
 apply assumption
 apply (rotate_tac 1)
@@ -160,7 +152,7 @@ done
 
 lemma new_tv_Int_free_tv_empty_scheme: "!!sch::type_scheme. new_tv n sch ==> {x. ? y. x = n + y} Int free_tv sch = {}"
 apply safe
-apply (cut_tac aux_plus)
+apply (cut_tac le_add1)
 apply (drule new_tv_le)
 apply assumption
 apply (rotate_tac 1)
@@ -183,7 +175,7 @@ apply (intro strip)
 apply (erule exE)
 apply (hypsubst)
 apply (rule_tac x = " (%x. S (if n <= x then x - n else x))" in exI)
-apply (induct_tac "t")
+apply (induct_tac t)
 apply (simp (no_asm))
 apply (case_tac "nat : free_tv A")
 apply (simp (no_asm_simp))

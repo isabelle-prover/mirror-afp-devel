@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/W.thy
-   ID:        $Id: W.thy,v 1.10 2008-03-20 11:11:30 fhaftmann Exp $
+   ID:        $Id: W.thy,v 1.11 2008-06-10 13:31:28 fhaftmann Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -201,7 +201,7 @@ declare free_tv_bound_typ_inst1 [simp]
 lemma free_tv_W [rule_format (no_asm)]: 
   "!n A S t m v. W e A n = Some (S,t,m) -->             
           (v:free_tv S | v:free_tv t) --> v<n --> v:free_tv A"
-apply (induct_tac "e")
+apply (induct e)
 (* case Var n *)
 apply (simp (no_asm) add: free_tv_subst split add: split_option_bind)
 apply (intro strip)
@@ -406,7 +406,7 @@ lemma W_complete_lemma [rule_format (no_asm)]:
   "ALL S' A t' n. $S' A |- e :: t' --> new_tv n A -->      
                (EX S t. (EX m. W e A n = Some (S,t,m)) &   
                        (EX R. $S' A = $R ($S A) & t' = $R t))"
-apply (induct_tac "e")
+apply (induct e)
    (* case Var n *)
    apply (intro strip)
    apply (simp (no_asm) cong add: conj_cong)

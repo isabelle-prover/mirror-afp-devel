@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Generalize.thy
-   ID:        $Id: Generalize.thy,v 1.9 2007-10-03 19:09:51 makarius Exp $
+   ID:        $Id: Generalize.thy,v 1.10 2008-06-10 13:31:26 fhaftmann Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -61,7 +61,7 @@ lemma free_tv_gen_cons [simp]:
 
 lemma bound_tv_gen [simp]: 
   "bound_tv (gen A t1) = (free_tv t1) - (free_tv A)"
-apply (induct_tac "t1")
+apply (induct t1)
 apply (simp (no_asm))
 apply (case_tac "nat : free_tv A")
 apply (simp (no_asm_simp))
@@ -76,7 +76,7 @@ lemma new_tv_compatible_gen: "new_tv n t \<Longrightarrow> new_tv n (gen A t)"
 
 lemma gen_eq_gen_ML: "gen A t = gen_ML A t"
 apply (unfold gen_ML_def)
-apply (induct_tac "t")
+apply (induct t)
  apply (simp add: free_tv_ML_scheme_list)
 apply (simp add: free_tv_ML_scheme_list)
 done
@@ -84,9 +84,9 @@ done
 lemma gen_subst_commutes [rule_format]: 
   "(free_tv S) Int ((free_tv t) - (free_tv A)) = {}  
       --> gen ($ S A) ($ S t) = $ S (gen A t)"
-apply (induct_tac "t")
+apply (induct t)
  apply (intro strip)
- apply (case_tac "nat: (free_tv A) ")
+ apply (case_tac "nat : (free_tv A) ")
   apply (simp (no_asm_simp))
  apply simp
  apply (subgoal_tac "nat ~: free_tv S")
@@ -132,7 +132,7 @@ apply (intro strip)
 apply (erule exE)
 apply (hypsubst)
 apply (rule_tac x = " (%x. S (if n <= x then x - n else x))" in exI)
-apply (induct_tac "t")
+apply (induct t)
 apply (simp (no_asm))
 apply (case_tac "nat : free_tv A")
 apply (simp (no_asm_simp))
