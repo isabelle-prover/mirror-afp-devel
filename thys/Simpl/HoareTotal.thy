@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoareTotal.thy,v 1.4 2008-06-03 11:11:10 norbertschirmer Exp $
+(*  ID:          $Id: HoareTotal.thy,v 1.5 2008-06-10 14:38:11 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -696,11 +696,7 @@ lemma  ProcRecSpecs:
   \<Longrightarrow> \<forall>(P,p,Q,A) \<in> Specs. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P (Call p) Q,A"
 apply (rule ballI)
 apply (case_tac x)
-apply (rename_tac x P p_Q_A)
-apply (case_tac p_Q_A)
-apply (rename_tac p Q_A)
-apply (case_tac Q_A)
-apply (rename_tac Q A)
+apply (rename_tac x P p Q A)
 apply simp
 apply (rule hoaret.CallRec)
 apply auto
