@@ -97,6 +97,7 @@ Environment, Jive.
   </tr>
     <tr><td class="links">Older releases:
     <ul>
+	    <li>Isabelle 2007: <a href="../release/afp-JiveDataStoreModel-2007-11-27.tar.gz">afp-JiveDataStoreModel-2007-11-27.tar.gz</a>
     <li>Isabelle 2005: <a href="../release/afp-JiveDataStoreModel-2005-10-14.tar.gz">afp-JiveDataStoreModel-2005-10-14.tar.gz</a>
     </ul>
     </td></tr>
@@ -105,6 +106,6 @@ Environment, Jive.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-11-26 21:36:54 $, $Revision: 1.5 $
+<div align="right" class="date">$Date: 2008-06-10 10:26:50 $, $Revision: 1.6 $
 </div></body>
 </html>

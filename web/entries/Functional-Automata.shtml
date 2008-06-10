@@ -93,6 +93,7 @@ finite deterministic ones) into regular sets.
   </tr>
     <tr><td class="links">Older releases:
     <ul>
+    <li>Isabelle 2007: <a href="../release/afp-Functional-Automata-2007-11-27.tar.gz">afp-Functional-Automata-2007-11-27.tar.gz</a></li>
     <li>Isabelle 2005: <a href="../release/afp-Functional-Automata-2005-10-14.tar.gz">afp-Functional-Automata-2005-10-14.tar.gz</a></li>
     <li>Isabelle 2004: <a href="../release/afp-Functional-Automata-2004-05-21.tar.gz">afp-Functional-Automata-2004-05-21.tar.gz</a></li>
     <li>Isabelle 2003: <a href="../release/afp-Functional-Automata-2004-03-30.tar.gz">afp-Functional-Automata-2004-03-30.tar.gz</a></li>
@@ -103,6 +104,6 @@ finite deterministic ones) into regular sets.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-11-26 21:36:54 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-06-10 10:26:49 $, $Revision: 1.1 
 $</div></body>
 </html>

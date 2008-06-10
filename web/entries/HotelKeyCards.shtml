@@ -36,7 +36,7 @@
     <tr><td class="datahead">Author:</td>
 <td class="data">
 <!-- Author: --><a
-href="???">Tobias Nipkow</a>
+href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>		
     
 	<tr><td class="datahead">Submission date:</td>
@@ -95,12 +95,16 @@ she can be sure that nobody but her can enter her room.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:
+	    <ul>
+	    <li>Isabelle 2007: <a href="../release/afp-HotelKeyCards-2007-11-27.tar.gz">afp-HotelKeyCards-2007-11-27.tar.gz</a></li>
+		</ul>
+	</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2007-09-01 04:02:45 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-06-10 10:26:49 $, $Revision: 1.1 
 $</div></body>
 </html>
