@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.13 2008-06-09 15:32:58 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.14 2008-06-10 14:37:25 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -3511,7 +3511,7 @@ fun HoareRuleTac ctxt insts st =
 	if is_com_eq (Logic.concl_of_goal (prop_of st) i) 
         then annotate_simp_tac i st
         else all_tac st;
-  in ((fn i => REPEAT (rtac allI i)) THEN' RuleInsts.bires_inst_tac false ctxt insts st) 
+  in ((fn i => REPEAT (rtac allI i)) THEN' RuleInsts.res_inst_tac ctxt insts st)
      THEN_ALL_NEW annotate_tac 
   end;
 
