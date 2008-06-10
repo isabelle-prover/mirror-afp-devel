@@ -1,5 +1,5 @@
 
-(* $Id: Ramsey.thy,v 1.10 2008-06-10 13:31:26 fhaftmann Exp $ *)
+(* $Id: Ramsey.thy,v 1.11 2008-06-10 19:48:13 makarius Exp $ *)
 
 header "Ramsey's Theorem"
 
@@ -169,7 +169,7 @@ lemma ramsey: "
      apply(elim exE conjE)
      apply(rule_tac x="(yy,Y',t')" in exI) apply(simp) apply(blast)
     apply(intro allI impI)
-    apply(case_tac x) apply(case_tac b) apply(rename_tac yx b Yx tx)
+    apply(case_tac x) apply(rename_tac yx b Yx tx)
     apply(subgoal_tac "? yx'. yx' : Yx") prefer 2 apply(rule infinite_mem) apply(force) 
     apply(elim exE conjE) 
     apply(drule_tac x="Yx - {yx'}" in spec) 
@@ -226,7 +226,7 @@ lemma ramsey: "
   apply(simp add: subset_image_iff) apply(elim exE conjE)
   apply(subgoal_tac "? a. a : AA & (! a'. a' : AA --> a <= a')") prefer 2 apply(rule not_empty_least) apply(force)
   apply(elim exE conjE)
-  apply(case_tac "g a") apply(case_tac b) apply(rename_tac ya b Ya ta)
+  apply(case_tac "g a" rule: prod.exhaust) apply(case_tac b rule: prod.exhaust) apply(rename_tac ya b Ya ta)
   apply(subgoal_tac "ya : X") prefer 2 apply(force intro!: rev_image_eqI simp: Let_def) 
   apply(drule_tac s=X in sym)
   apply(subgoal_tac "f X = (f o insert ya) (X - {ya})") apply(simp)
@@ -241,7 +241,7 @@ lemma ramsey: "
   apply(subgoal_tac "a' ~= a") prefer 2 apply(force)
   apply(drule_tac x=a in spec)
   apply(drule_tac x="a'-Suc a" in spec) back
-  apply(simp add: Let_def split_beta) apply(case_tac "g a'") apply(case_tac ba) apply(rename_tac ya' ba Ya' ta') apply(simp add: Let_def split_beta)
+  apply(simp add: Let_def split_beta) apply(case_tac "g a'" rule: prod.exhaust) apply(case_tac ba rule: prod.exhaust) apply(rename_tac ya' ba Ya' ta') apply(simp add: Let_def split_beta)
   apply(drule_tac x=a' in spec) apply(erule impE) apply(force)
   apply(force)
   apply(force simp add: card_Diff_singleton_if)
