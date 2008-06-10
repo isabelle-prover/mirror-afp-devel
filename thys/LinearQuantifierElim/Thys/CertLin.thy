@@ -1,4 +1,4 @@
-(*  ID:         $Id: CertLin.thy,v 1.2 2008-01-11 15:22:14 lsf37 Exp $
+(*  ID:         $Id: CertLin.thy,v 1.3 2008-06-10 13:31:19 fhaftmann Exp $
     Author:     Tobias Nipkow, 2007
 
 A simple certificate checker for q-free linear arithmetic:
@@ -9,19 +9,23 @@ theory CertLin
 imports LinArith
 begin
 
-fun pls_atom :: "atom \<Rightarrow> atom \<Rightarrow> atom" where
-"pls_atom (Eq r\<^isub>1 cs\<^isub>1) (Eq r\<^isub>2 cs\<^isub>2) = Eq (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)" |
-"pls_atom (Eq r\<^isub>1 cs\<^isub>1) (Less r\<^isub>2 cs\<^isub>2) = Less (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)" |
-"pls_atom (Less r\<^isub>1 cs\<^isub>1) (Eq r\<^isub>2 cs\<^isub>2) = Less (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)" |
-"pls_atom (Less r\<^isub>1 cs\<^isub>1) (Less r\<^isub>2 cs\<^isub>2) = Less (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)"
+declare list_add_assoc [simp]
 
-declare list_add_assoc[simp]
+instantiation atom :: monoid_add
+begin
 
-instance atom :: plus plus_atom_def: "op + == pls_atom" ..
-instance atom :: zero zero_atom_def: "0 == Eq 0 []" ..
-instance atom :: monoid_add
+fun plus_atom :: "atom \<Rightarrow> atom \<Rightarrow> atom" where
+  "(Eq r\<^isub>1 cs\<^isub>1) + (Eq r\<^isub>2 cs\<^isub>2) = Eq (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)" |
+  "(Eq r\<^isub>1 cs\<^isub>1) + (Less r\<^isub>2 cs\<^isub>2) = Less (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)" |
+  "(Less r\<^isub>1 cs\<^isub>1) + (Eq r\<^isub>2 cs\<^isub>2) = Less (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)" |
+  "(Less r\<^isub>1 cs\<^isub>1) + (Less r\<^isub>2 cs\<^isub>2) = Less (r\<^isub>1+r\<^isub>2) (cs\<^isub>1+cs\<^isub>2)"
+
+definition
+  "0 = Eq 0 []"
+
+instance
 apply intro_classes
-apply(simp_all add:plus_atom_def zero_atom_def)
+apply(simp_all add: zero_atom_def)
 apply(case_tac a)
 apply(case_tac b)
 apply(case_tac c)
@@ -39,8 +43,9 @@ apply(case_tac a)
 apply simp_all
 done
 
+end
+
 lemma I_R_additive: "I\<^isub>R a xs \<Longrightarrow> I\<^isub>R b xs \<Longrightarrow> I\<^isub>R(a+b) xs"
-apply(simp add:plus_atom_def)
 apply(case_tac a)
 apply(case_tac b)
 apply (simp_all add:iprod_left_add_distrib)
