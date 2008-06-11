@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Subtype.thy,v 1.7 2008-04-07 13:37:51 fhaftmann Exp $
+    ID:          $Id: Subtype.thy,v 1.8 2008-06-11 14:22:58 lsf37 Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -7,9 +7,7 @@
 
 header {* Widening the Direct Subtype Relation *}
 
-theory Subtype
-imports "../Isa_Counter/DirectSubtypes"
-begin
+theory Subtype imports DirectSubtypes  begin
 
 text {*
 In this theory, we define the widening subtype relation of types and prove 
@@ -168,10 +166,20 @@ lemma widen_antisym [trans]:
 
 subsection {* Javatype Ordering Properties *}
 
+text {* We can show that @{typ Javatype} is in the type class @{term ord}, which
+  does not require to prove any axioms.
+  *}
+  
+instance Javatype:: ord ..
+
 text {* The type class @{term ord} allows us to overwrite the two comparison 
 operators $<$ and $\leq$.
   These are  the two comparison operators on @{typ Javatype} that we want
 to use subsequently. *}
+
+defs (overloaded)
+le_Javatype_def:   "A \<le> B \<equiv> A \<preceq> B"
+less_Javatype_def: "A < B \<equiv> A \<le> B \<and> A\<noteq>(B::Javatype)"
 
 text {* We can also prove that @{typ Javatype} is in the type class @{term order}. 
 For this we
@@ -181,17 +189,9 @@ defined in such
 be achieved by using the
   lemmas proved above and the definition of @{term less_Javatype_def}.
   *}
-
-instantiation Javatype:: order
-begin
-
-definition
-  le_Javatype_def:   "A \<le> B \<equiv> A \<preceq> B"
-
-definition
-  less_Javatype_def: "A < B \<equiv> A \<le> B \<and> A\<noteq>(B::Javatype)"
   
-instance proof
+instance Javatype:: order
+proof
   fix x y z:: "Javatype"
   {
     show "x \<le> x"
@@ -212,8 +212,6 @@ instance proof
       by (simp add: less_Javatype_def)
   }
 qed
-
-end
 
 
 subsection {* Enhancing the Simplifier *}

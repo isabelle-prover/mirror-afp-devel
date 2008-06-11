@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Product.thy
-    ID:         $Id: Product.thy,v 1.5 2008-05-14 10:06:33 makarius Exp $
+    ID:         $Id: Product.thy,v 1.6 2008-06-11 14:22:55 lsf37 Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -85,15 +85,16 @@ lemma unfold_plussub_lift2: "e\<^isub>1 \<squnion>\<^bsub>lift2 f\<^esub> e\<^is
 
 
 lemma plus_eq_Err_conv [simp]:
-  assumes "x\<in>A"  "y\<in>A"  "semilat(err A, Err.le r, lift2 f)"
-  shows "(x \<squnion>\<^sub>f y = Err) = (\<not>(\<exists>z\<in>A. x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z))"
+  "\<lbrakk> x\<in>A; y\<in>A; semilat(err A, Err.le r, lift2 f) \<rbrakk> 
+  \<Longrightarrow> (x \<squnion>\<^sub>f y = Err) = (\<not>(\<exists>z\<in>A. x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z))"
 (*<*)
 proof -
   have plus_le_conv2:
     "\<And>r f z. \<lbrakk> z \<in> err A; semilat (err A, r, f); OK x \<in> err A; OK y \<in> err A;
                  OK x \<squnion>\<^sub>f OK y \<sqsubseteq>\<^sub>r z\<rbrakk> \<Longrightarrow> OK x \<sqsubseteq>\<^sub>r z \<and> OK y \<sqsubseteq>\<^sub>r z"
 (*<*) by (rule semilat.plus_le_conv [THEN iffD1]) (*>*)
-  from assms show ?thesis
+  case rule_context
+  thus ?thesis
   apply (rule_tac iffI)
    apply clarify
    apply (drule OK_le_err_OK [THEN iffD2])

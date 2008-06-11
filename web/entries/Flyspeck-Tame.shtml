@@ -93,16 +93,12 @@ explanations see the IJCAR 2006 paper by Nipkow, Bauer and Schultz.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-	<ul>
-    <li>Isabelle 2007: <a href="../release/afp-Flyspeck-Tame-2008-01-04.tar.gz">afp-Flyspeck-Tame-2008-01-04.tar.gz</a></li>
-    </ul>
-	</td></tr>
+    <tr><td class="links">Older releases:	None</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-06-10 10:26:49 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-06-11 14:23:03 $, $Revision: 1.1 
 $</div></body>
 </html>

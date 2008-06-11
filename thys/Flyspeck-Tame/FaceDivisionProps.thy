@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.12 2008-03-31 19:46:27 makarius Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.13 2008-06-11 14:22:50 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -539,7 +539,7 @@ proof -
   qed
 qed
 
-lemma is_nextElem_rotate1_aux:
+lemma is_nextElem_rotate1:
   "is_nextElem (rotate m ls) x y \<Longrightarrow> is_nextElem ls x y"
 proof -
   assume is_nextElem: "is_nextElem (rotate m ls) x y"
@@ -578,7 +578,7 @@ proof -
 qed
 
 lemma is_nextElem_rotate_eq[simp]: "is_nextElem (rotate m ls) x y = is_nextElem ls x y"
-  apply (auto dest: is_nextElem_rotate1_aux) apply (rule is_nextElem_rotate1_aux)
+  apply (auto dest: is_nextElem_rotate1) apply (rule is_nextElem_rotate1)
   apply (subgoal_tac   "is_nextElem (rotate (length ls - m mod length ls) (rotate m ls)) x y")
   apply assumption by simp
 
@@ -4075,6 +4075,7 @@ lemma removeNones_in[simp]: "removeNones (as @ Some a # bs) = removeNones as @ a
 lemma removeNones_none_hd[simp]: "removeNones ( None # ls) = removeNones ls" by auto
 lemma removeNones_none_last[simp]: "removeNones (ls @ [None]) = removeNones ls" by auto
 lemma removeNones_none_in[simp]: "removeNones (as @ None # bs) = removeNones (as @ bs)" by auto
+lemma removeNones_inI[intro]: "Some a \<in> set ls \<Longrightarrow> a \<in> set (removeNones ls)" by (induct ls)  auto
 lemma removeNones_empty[simp]: "removeNones [] = []" by auto
 declare removeNones_def [simp del]
 

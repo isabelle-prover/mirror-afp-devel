@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: RepointProof.thy,v 1.5 2008-06-04 18:05:56 makarius Exp $
+    ID:          $Id: RepointProof.thy,v 1.6 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -30,12 +30,10 @@ USA
 header {* Proof of Procedure Repoint *}
 theory RepointProof imports ProcedureSpecs begin
 
-hide (open) const DistinctTreeProver.set_of tree.Node tree.Tip
-
 lemma (in Repoint_impl) Repoint_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>p :==  PROC Repoint (\<acute>p)
         {t. t may_only_modify_globals \<sigma> in [low,high]}"
-  apply (hoare_rule HoarePartial.ProcRec1)
+  apply (hoare_rule ProcRec1)
   apply (vcg spec=modifies)
   done
 
@@ -51,7 +49,7 @@ proof (induct rt)
   case Tip thus ?case by simp
 next
   case (Node lrt q' rrt)
-  have "Dag q (rep \<propto> low) (rep \<propto> high) (Node lrt q' rrt)" by fact
+  have "Dag q (rep \<propto> low) (rep \<propto> high) (Node lrt q' rrt)".
   then obtain 
     q': "q = q'"  and
     q_notNull: "q \<noteq> Null" and 
@@ -198,7 +196,7 @@ shows
   \<and> (\<forall> no \<in> set_of rept. \<^bsup>\<sigma>\<^esup>rep no = no))
   \<longrightarrow> Dag \<acute>p \<acute>low \<acute>high rept \<and>
   (\<forall>pt. pt \<notin> set_of rept \<longrightarrow> \<^bsup>\<sigma>\<^esup>low pt = \<acute>low pt \<and> \<^bsup>\<sigma>\<^esup>high pt = \<acute>high pt)\<rbrace>"
-apply (hoare_rule HoarePartial.ProcRec1)
+apply (hoare_rule ProcRec1)
 apply vcg
 apply  (rule conjI)
 apply  clarify
@@ -334,8 +332,8 @@ proof -
         show "lowb no = (rep \<propto> low) no \<and> (highb(rep p := pb)) no = (rep \<propto> high) no"
         proof (cases "no \<in> set_of rrept")
           case True
-          with lowb_highb_def pb_def show ?thesis
-            by simp
+          with lowb_highb_def show ?thesis
+            by auto
         next
           assume no_notin_rrept: " no \<notin> set_of rrept"
           show ?thesis
@@ -412,7 +410,7 @@ shows
   \<acute>p :== PROC Repoint (\<acute>p)
   \<lbrace>Dag \<acute>p \<acute>low \<acute>high rept \<and>
   (\<forall>pt. pt \<notin> set_of rept \<longrightarrow> \<^bsup>\<sigma>\<^esup>low pt = \<acute>low pt \<and> \<^bsup>\<sigma>\<^esup>high pt = \<acute>high pt)\<rbrace>"
-apply (hoare_rule HoarePartial.ProcRec1)
+apply (hoare_rule ProcRec1)
 apply vcg
 apply (rule conjI)
 prefer 2
@@ -471,9 +469,9 @@ proof -
       apply clarify
     proof -
       case (goal1 lowa higha pa)
-      have lrepta: "Dag pa lowa higha lrept" by fact
+      have lrepta: "Dag pa lowa higha lrept".
       have low_lowa_nc: 
-	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt" by fact
+	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt".
       from lrept_dag lrepta  obtain 
 	pa_def: "pa = (rep \<propto> low) (rep p)" and
 	lowa_higha_def: "\<forall>no \<in> set_of lrept. 
@@ -537,9 +535,9 @@ proof -
 	apply clarify
       proof -
 	case (goal1 lowb highb pb)
-	have rreptb: "Dag pb lowb highb rrept" by fact
+	have rreptb: "Dag pb lowb highb rrept".
 	have ab_nc: "\<forall>pt. pt \<notin> set_of rrept \<longrightarrow> 
-	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt" by fact
+	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt".
 	from rreptb rrept_dag obtain
 	  pb_def: "pb = ((rep \<propto> high) (rep p))" and
 	  lowb_highb_def: "\<forall>no \<in> set_of rrept. 
@@ -560,8 +558,8 @@ proof -
                   (highb(rep p := pb)) no = (rep \<propto> high) no"
             proof (cases "no \<in> set_of rrept")
               case True
-              with lowb_highb_def pb_def show ?thesis
-		by simp
+              with lowb_highb_def show ?thesis
+		by auto
             next
               assume no_notin_rrept: " no \<notin> set_of rrept"
               show ?thesis
@@ -715,9 +713,9 @@ proof -
       apply clarify
     proof -
       case (goal1 lowa higha pa)
-      have lrepta: "Dag pa lowa higha lrept" by fact
+      have lrepta: "Dag pa lowa higha lrept".
       have low_lowa_nc: 
-	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt" by fact
+	"\<forall>pt. pt \<notin> set_of lrept \<longrightarrow> low pt = lowa pt \<and> high pt = higha pt".
       from lrept_dag lrepta  obtain 
 	pa_def: "pa = (rep \<propto> low) (rep p)" and
 	lowa_higha_def: "\<forall>no \<in> set_of lrept. 
@@ -785,9 +783,9 @@ proof -
 	apply clarify
       proof -
 	case (goal1 lowb highb pb)
-	have rreptb: "Dag pb lowb highb rrept" by fact
+	have rreptb: "Dag pb lowb highb rrept".
 	have ab_nc: "\<forall>pt. pt \<notin> set_of rrept \<longrightarrow> 
-	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt" by fact
+	                (lowa(rep p := pa)) pt = lowb pt \<and> higha pt = highb pt".
 	from rreptb rrept_dag obtain
 	  pb_def: "pb = ((rep \<propto> high) (rep p))" and
 	  lowb_highb_def: "\<forall>no \<in> set_of rrept. 
@@ -808,8 +806,8 @@ proof -
                   (highb(rep p := pb)) no = (rep \<propto> high) no"
             proof (cases "no \<in> set_of rrept")
               case True
-              with lowb_highb_def pb_def show ?thesis
-		by simp
+              with lowb_highb_def show ?thesis
+		by auto
             next
               assume no_notin_rrept: " no \<notin> set_of rrept"
               show ?thesis

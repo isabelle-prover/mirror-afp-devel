@@ -71,7 +71,7 @@ lemma soundness: "fs : deductions(PC) ==> (validS fs)"
   apply(erule_tac deductions.induct)
   apply(drule_tac PowD)
   apply(subgoal_tac "prems \<subseteq>  {x. validS x}") prefer 2 apply force apply(thin_tac "prems \<subseteq> deductions PC \<inter> {x. validS x}")
-  apply(simp add: subset_eq)
+  apply(simp add: subset_def)
   apply(simp add: PC_def)
   apply(elim disjE)
           apply(force simp add: Perms_def permutation_validS)

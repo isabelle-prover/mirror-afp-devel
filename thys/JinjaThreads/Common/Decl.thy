@@ -11,7 +11,7 @@ theory Decl imports Type begin
 types 
   fdecl    = "vname \<times> ty"        -- "field declaration"
 
-  'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg. types, return type, body"
+  'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg.\ types, return type, body"
 
   'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
 
@@ -53,8 +53,12 @@ is_type_nt:     "is_type P NT = True"
 is_type_class:  "is_type P (Class C) = is_class P C"
 is_type_array:  "is_type P (A\<lfloor>\<rceil>) = is_type P A"
 
-lemma NT_Array_is_type: "is_NT_Array A \<Longrightarrow> is_type P A"
-by(induct A, auto)
+lemmas is_type_def = is_type_void is_type_bool is_type_int is_type_nt is_type_class is_type_array
+
+lemma is_type_simps [simp]:
+  "is_type P Void \<and> is_type P Boolean \<and> is_type P Integer \<and>
+  is_type P NT \<and> is_type P (Class C) = is_class P C"
+(*<*)by(simp)(*>*)
 
 
 translations

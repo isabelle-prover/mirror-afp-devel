@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.11 2008-05-07 09:05:16 stefanberghofer Exp $
+    ID:         $Id: Topology.thy,v 1.12 2008-06-11 14:23:01 lsf37 Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -1419,7 +1419,7 @@ lemma filter_chain_lemma:
 proof-
   from C_chain have C_subset_FF[dest]: "\<And> x. x\<in>C \<Longrightarrow> x \<in> ?FF" and
     C_ordered: "\<forall> A \<in> C. \<forall> B \<in> C. A \<subseteq> B \<or> B \<subseteq> A"
-    by (auto simp: chain_def chain_subset_def)
+    by (auto simp: chain_def)
 
   show ?thesis
   proof    
@@ -1756,17 +1756,13 @@ proof (rule T1_axioms.intro, clarify)
     by force
   show "(\<exists>u\<in>nhds x. y \<notin> u) = (\<exists>v\<in>nhds y. x \<notin> v)"
   proof safe
-    show "\<exists>v\<in>nhds y. x \<notin> v"
-    proof
-      from unhd have "x \<in> u" by auto
-      with Int_empty show "x \<notin> v" by auto
-    qed (rule vnhd)
+    from unhd have "x \<in> u" by auto
+    with Int_empty have "x \<notin> v" by auto
+    with vnhd show "\<exists>v\<in>nhds y. x \<notin> v" ..
   next
-    show "\<exists>u\<in>nhds x. y \<notin> u"
-    proof
-      from vnhd have "y \<in> v" by auto
-      with Int_empty show "y \<notin> u" by auto
-    qed (rule unhd)
+    from vnhd have "y \<in> v" by auto
+    with Int_empty have "y \<notin> u" by auto
+    with unhd show "\<exists>u\<in>nhds x. y \<notin> u" ..
   qed
 qed
 
@@ -1782,11 +1778,9 @@ proof (rule T0_axioms.intro, clarify)
     where unhd: "u \<in> nhds x" and
     vnhd: "v \<in> nhds y" and Int_empty: "u \<inter> v = {}"
     by force
-  show "\<exists>u\<in>nhds x. y \<notin> u"
-  proof
-    from vnhd have "y \<in> v" by auto
-    with Int_empty show "y \<notin> u" by auto
-  qed (rule unhd)
+  from vnhd have "y \<in> v" by auto
+  with Int_empty have "y \<notin> u" by auto
+  with unhd show "\<exists>u\<in>nhds x. y \<notin> u" ..
 qed
 
 

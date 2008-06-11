@@ -1,4 +1,4 @@
-(*  ID:         $Id: Logic.thy,v 1.3 2008-01-22 18:46:39 nipkow Exp $
+(*  ID:         $Id: Logic.thy,v 1.4 2008-06-11 14:22:58 lsf37 Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -18,21 +18,21 @@ datatype 'a fm =
   TrueF | FalseF | Atom 'a | And "'a fm" "'a fm" | Or "'a fm" "'a fm" |
   Neg "'a fm" | ExQ "'a fm"
 
-abbreviation Imp where "Imp \<phi>\<^isub>1 \<phi>\<^isub>2 \<equiv> Or (Neg \<phi>\<^isub>1) \<phi>\<^isub>2"
-abbreviation AllQ where "AllQ \<phi> \<equiv> Neg(ExQ(Neg \<phi>))"
+abbreviation Imp where "Imp f1 f2 \<equiv> Or (Neg f1) f2"
+abbreviation AllQ where "AllQ f \<equiv> Neg(ExQ(Neg f))"
 
 definition neg where
-"neg \<phi> = (if \<phi>=TrueF then FalseF else if \<phi>=FalseF then TrueF else Neg \<phi>)"
+"neg f = (if f=TrueF then FalseF else if f=FalseF then TrueF else Neg f)"
 
 definition "and" :: "'a fm \<Rightarrow> 'a fm \<Rightarrow> 'a fm" where
-"and \<phi>\<^isub>1 \<phi>\<^isub>2 =
- (if \<phi>\<^isub>1=TrueF then \<phi>\<^isub>2 else if \<phi>\<^isub>2=TrueF then \<phi>\<^isub>1 else
-  if \<phi>\<^isub>1=FalseF \<or> \<phi>\<^isub>2=FalseF then FalseF else And \<phi>\<^isub>1 \<phi>\<^isub>2)"
+"and f1 f2 =
+ (if f1=TrueF then f2 else if f2=TrueF then f1 else
+  if f1=FalseF \<or> f2=FalseF then FalseF else And f1 f2)"
 
 definition or :: "'a fm \<Rightarrow> 'a fm \<Rightarrow> 'a fm" where
-"or \<phi>\<^isub>1 \<phi>\<^isub>2 =
- (if \<phi>\<^isub>1=FalseF then \<phi>\<^isub>2 else if \<phi>\<^isub>2=FalseF then \<phi>\<^isub>1 else
-  if \<phi>\<^isub>1=TrueF \<or> \<phi>\<^isub>2=TrueF then TrueF else Or \<phi>\<^isub>1 \<phi>\<^isub>2)"
+"or f1 f2 =
+ (if f1=FalseF then f2 else if f2=FalseF then f1 else
+  if f1=TrueF \<or> f2=TrueF then TrueF else Or f1 f2)"
 
 definition list_conj :: "'a fm list \<Rightarrow> 'a fm" where
 "list_conj fs = foldr and fs TrueF"
@@ -46,10 +46,10 @@ fun atoms :: "'a fm \<Rightarrow> 'a set" where
 "atoms TrueF = {}" |
 "atoms FalseF = {}" |
 "atoms (Atom a) = {a}" |
-"atoms (And \<phi>\<^isub>1 \<phi>\<^isub>2) = atoms \<phi>\<^isub>1 \<union> atoms \<phi>\<^isub>2" |
-"atoms (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = atoms \<phi>\<^isub>1 \<union> atoms \<phi>\<^isub>2" |
-"atoms (Neg \<phi>) = atoms \<phi>" |
-"atoms (ExQ \<phi>) = atoms \<phi>"
+"atoms (And f1 f2) = atoms f1 \<union> atoms f2" |
+"atoms (Or f1 f2) = atoms f1 \<union> atoms f2" |
+"atoms (Neg f) = atoms f" |
+"atoms (ExQ f) = atoms f"
 
 fun map_fm :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fm \<Rightarrow> 'b fm" ("map\<^bsub>fm\<^esub>") where
 "map\<^bsub>fm\<^esub> h TrueF = TrueF" |
@@ -57,7 +57,7 @@ fun map_fm :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fm \<Rightarrow> 'b fm" ("
 "map\<^bsub>fm\<^esub> h (Atom a) = Atom(h a)" |
 "map\<^bsub>fm\<^esub> h (And \<phi>\<^isub>1 \<phi>\<^isub>2) = And (map\<^bsub>fm\<^esub> h \<phi>\<^isub>1) (map\<^bsub>fm\<^esub> h \<phi>\<^isub>2)" |
 "map\<^bsub>fm\<^esub> h (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = Or (map\<^bsub>fm\<^esub> h \<phi>\<^isub>1) (map\<^bsub>fm\<^esub> h \<phi>\<^isub>2)" |
-"map\<^bsub>fm\<^esub> h (Neg \<phi>) = Neg (map\<^bsub>fm\<^esub> h \<phi>)" |
+"map\<^bsub>fm\<^esub> h (Neg f) = Neg (map\<^bsub>fm\<^esub> h f)" |
 "map\<^bsub>fm\<^esub> h (ExQ \<phi>) = ExQ (map\<^bsub>fm\<^esub> h \<phi>)"
 
 lemma atoms_map_fm[simp]: "atoms(map\<^bsub>fm\<^esub> f \<phi>) = f ` atoms \<phi>"
@@ -67,9 +67,9 @@ fun amap_fm :: "('a \<Rightarrow> 'b fm) \<Rightarrow> 'a fm \<Rightarrow> 'b fm
 "amap\<^bsub>fm\<^esub> h TrueF = TrueF" |
 "amap\<^bsub>fm\<^esub> h FalseF = FalseF" |
 "amap\<^bsub>fm\<^esub> h (Atom a) = h a" |
-"amap\<^bsub>fm\<^esub> h (And \<phi>\<^isub>1 \<phi>\<^isub>2) = and (amap\<^bsub>fm\<^esub> h \<phi>\<^isub>1) (amap\<^bsub>fm\<^esub> h \<phi>\<^isub>2)" |
-"amap\<^bsub>fm\<^esub> h (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = or (amap\<^bsub>fm\<^esub> h \<phi>\<^isub>1) (amap\<^bsub>fm\<^esub> h \<phi>\<^isub>2)" |
-"amap\<^bsub>fm\<^esub> h (Neg \<phi>) = neg (amap\<^bsub>fm\<^esub> h \<phi>)"
+"amap\<^bsub>fm\<^esub> h (And f1 f2) = and (amap\<^bsub>fm\<^esub> h f1) (amap\<^bsub>fm\<^esub> h f2)" |
+"amap\<^bsub>fm\<^esub> h (Or f1 f2) = or (amap\<^bsub>fm\<^esub> h f1) (amap\<^bsub>fm\<^esub> h f2)" |
+"amap\<^bsub>fm\<^esub> h (Neg f) = neg (amap\<^bsub>fm\<^esub> h f)"
 
 lemma amap_fm_list_disj:
   "amap\<^bsub>fm\<^esub> h (list_disj fs) = list_disj (map (amap\<^bsub>fm\<^esub> h) fs)"
@@ -77,38 +77,38 @@ by(induct fs) (auto simp:list_disj_def or_def)
 
 fun qfree :: "'a fm \<Rightarrow> bool" where
 "qfree(ExQ f) = False" |
-"qfree(And \<phi>\<^isub>1 \<phi>\<^isub>2) = (qfree \<phi>\<^isub>1 \<and> qfree \<phi>\<^isub>2)" |
-"qfree(Or \<phi>\<^isub>1 \<phi>\<^isub>2) = (qfree \<phi>\<^isub>1 \<and> qfree \<phi>\<^isub>2)" |
-"qfree(Neg \<phi>) = (qfree \<phi>)" |
-"qfree \<phi> = True"
+"qfree(And f1 f2) = (qfree f1 \<and> qfree f2)" |
+"qfree(Or f1 f2) = (qfree f1 \<and> qfree f2)" |
+"qfree(Neg f) = (qfree f)" |
+"qfree f = True"
 
-lemma qfree_and[simp]: "\<lbrakk> qfree \<phi>\<^isub>1; qfree \<phi>\<^isub>2 \<rbrakk> \<Longrightarrow> qfree(and \<phi>\<^isub>1 \<phi>\<^isub>2)"
+lemma qfree_and[simp]: "\<lbrakk> qfree f1; qfree f2 \<rbrakk> \<Longrightarrow> qfree(and f1 f2)"
 by(simp add:and_def)
 
-lemma qfree_or[simp]: "\<lbrakk> qfree \<phi>\<^isub>1; qfree \<phi>\<^isub>2 \<rbrakk> \<Longrightarrow> qfree(or \<phi>\<^isub>1 \<phi>\<^isub>2)"
+lemma qfree_or[simp]: "\<lbrakk> qfree f1; qfree f2 \<rbrakk> \<Longrightarrow> qfree(or f1 f2)"
 by(simp add:or_def)
 
-lemma qfree_neg[simp]: "qfree(neg \<phi>) = qfree \<phi>"
+lemma qfree_neg[simp]: "qfree(neg f) = qfree f"
 by(simp add:neg_def)
 
 lemma qfree_foldr_Or[simp]:
- "qfree(foldr Or fs \<phi>) = (qfree \<phi> \<and> (\<forall>\<phi> \<in> set fs. qfree \<phi>))"
+ "qfree(foldr Or fs f) = (qfree f \<and> (\<forall>f \<in> set fs. qfree f))"
 by (induct fs) auto
 
 lemma qfree_list_conj[simp]:
-assumes "\<forall>\<phi> \<in> set fs. qfree \<phi>" shows "qfree(list_conj fs)"
+assumes "\<forall>f \<in> set fs. qfree f" shows "qfree(list_conj fs)"
 proof -
-  { fix fs \<phi>
-    have "\<lbrakk> \<forall>\<phi> \<in> set fs. qfree \<phi>; qfree \<phi> \<rbrakk> \<Longrightarrow> qfree(foldr and fs \<phi>)"
+  { fix fs f
+    have "\<lbrakk> \<forall>f \<in> set fs. qfree f; qfree f \<rbrakk> \<Longrightarrow> qfree(foldr and fs f)"
       by (induct fs) auto
   } thus ?thesis using assms by (fastsimp simp add:list_conj_def)
 qed
 
 lemma qfree_list_disj[simp]:
-assumes "\<forall>\<phi> \<in> set fs. qfree \<phi>" shows "qfree(list_disj fs)"
+assumes "\<forall>f \<in> set fs. qfree f" shows "qfree(list_disj fs)"
 proof -
-  { fix fs \<phi>
-    have "\<lbrakk> \<forall>\<phi> \<in> set fs. qfree \<phi>; qfree \<phi> \<rbrakk> \<Longrightarrow> qfree(foldr or fs \<phi>)"
+  { fix fs f
+    have "\<lbrakk> \<forall>f \<in> set fs. qfree f; qfree f \<rbrakk> \<Longrightarrow> qfree(foldr or fs f)"
       by (induct fs) auto
   } thus ?thesis using assms by (fastsimp simp add:list_disj_def)
 qed
@@ -117,14 +117,14 @@ lemma qfree_map_fm: "qfree (map\<^bsub>fm\<^esub> f \<phi>) = qfree \<phi>"
 by (induct \<phi>) simp_all
 
 lemma atoms_list_disjE:
-  "a : atoms(list_disj fs) \<Longrightarrow> a : (\<Union>\<phi> \<in> set fs. atoms \<phi>)"
+  "a : atoms(list_disj fs) \<Longrightarrow> a : (\<Union>f \<in> set fs. atoms f)"
 apply(induct fs)
  apply (simp add:list_disj_def)
 apply (auto simp add:list_disj_def Logic.or_def split:split_if_asm)
 done
 
 lemma atoms_list_conjE:
-  "a : atoms(list_conj fs) \<Longrightarrow> a : (\<Union>\<phi> \<in> set fs. atoms \<phi>)"
+  "a : atoms(list_conj fs) \<Longrightarrow> a : (\<Union>f \<in> set fs. atoms f)"
 apply(induct fs)
  apply (simp add:list_conj_def)
 apply (auto simp add:list_conj_def Logic.and_def split:split_if_asm)
@@ -142,12 +142,12 @@ fun nqfree :: "'a fm \<Rightarrow> bool" where
 "nqfree(Atom a) = True" |
 "nqfree TrueF = True" |
 "nqfree FalseF = True" |
-"nqfree (And \<phi>\<^isub>1 \<phi>\<^isub>2) = (nqfree \<phi>\<^isub>1 \<and> nqfree \<phi>\<^isub>2)" |
-"nqfree (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = (nqfree \<phi>\<^isub>1 \<and> nqfree \<phi>\<^isub>2)" |
-"nqfree \<phi> = False"
+"nqfree (And f1 f2) = (nqfree f1 \<and> nqfree f2)" |
+"nqfree (Or f1 f2) = (nqfree f1 \<and> nqfree f2)" |
+"nqfree f = False"
 
-lemma nqfree_qfree[simp]: "nqfree \<phi> \<Longrightarrow> qfree \<phi>"
-by (induct \<phi>) simp_all
+lemma nqfree_qfree[simp]: "nqfree f \<Longrightarrow> qfree f"
+by (induct f) simp_all
 
 lemma nqfree_map_fm: "nqfree (map\<^bsub>fm\<^esub> f \<phi>) = nqfree \<phi>"
 by (induct \<phi>) simp_all
@@ -188,9 +188,9 @@ fun atoms\<^isub>0 :: "'a fm \<Rightarrow> 'a list" where
 "atoms\<^isub>0 TrueF = []" |
 "atoms\<^isub>0 FalseF = []" |
 "atoms\<^isub>0 (Atom a) = (if depends\<^isub>0 a then [a] else [])" |
-"atoms\<^isub>0 (And \<phi>\<^isub>1 \<phi>\<^isub>2) = atoms\<^isub>0 \<phi>\<^isub>1 @ atoms\<^isub>0 \<phi>\<^isub>2" |
-"atoms\<^isub>0 (Or \<phi>\<^isub>1 \<phi>\<^isub>2) = atoms\<^isub>0 \<phi>\<^isub>1 @ atoms\<^isub>0 \<phi>\<^isub>2" |
-"atoms\<^isub>0 (Neg \<phi>) = atoms\<^isub>0 \<phi>"
+"atoms\<^isub>0 (And f1 f2) = atoms\<^isub>0 f1 @ atoms\<^isub>0 f2" |
+"atoms\<^isub>0 (Or f1 f2) = atoms\<^isub>0 f1 @ atoms\<^isub>0 f2" |
+"atoms\<^isub>0 (Neg f) = atoms\<^isub>0 f"
 
 abbreviation I where "I \<equiv> interpret I\<^isub>a"
 
@@ -205,37 +205,37 @@ fun nnf :: "'a fm \<Rightarrow> 'a fm" where
 "nnf (Neg (Atom a)) = aneg a" |
 "nnf \<phi> = \<phi>"
 
-lemma nqfree_nnf: "qfree \<phi> \<Longrightarrow> nqfree(nnf \<phi>)"
-by(induct \<phi> rule:nnf.induct)
+lemma nqfree_nnf: "qfree f \<Longrightarrow> nqfree(nnf f)"
+by(induct f rule:nnf.induct)
   (simp_all add: nqfree_aneg and_def or_def)
 
-lemma qfree_nnf[simp]: "qfree(nnf \<phi>) = qfree \<phi>"
-by (induct \<phi> rule:nnf.induct)(simp_all add: nqfree_aneg)
+lemma qfree_nnf[simp]: "qfree(nnf f) = qfree f"
+by (induct f rule:nnf.induct)(simp_all add: nqfree_aneg)
 
 
-lemma I_neg[simp]: "I (neg \<phi>) xs = I (Neg \<phi>) xs"
+lemma I_neg[simp]: "I (neg f) xs = I (Neg f) xs"
 by(simp add:neg_def)
 
-lemma I_and[simp]: "I (and \<phi>\<^isub>1 \<phi>\<^isub>2) xs = I (And \<phi>\<^isub>1 \<phi>\<^isub>2) xs"
+lemma I_and[simp]: "I (and f1 f2) xs = I (And f1 f2) xs"
 by(simp add:and_def)
 
 lemma I_list_conj[simp]:
- "I (list_conj fs) xs = (\<forall>\<phi> \<in> set fs. I \<phi> xs)"
+ "I (list_conj fs) xs = (\<forall>f \<in> set fs. I f xs)"
 proof -
-  { fix fs \<phi>
-    have "I (foldr and fs \<phi>) xs = (I \<phi> xs \<and> (\<forall>\<phi> \<in> set fs. I \<phi> xs))"
+  { fix fs f
+    have "I (foldr and fs f) xs = (I f xs \<and> (\<forall>f \<in> set fs. I f xs))"
       by (induct fs) auto
   } thus ?thesis by(simp add:list_conj_def)
 qed
 
-lemma I_or[simp]: "I (or \<phi>\<^isub>1 \<phi>\<^isub>2) xs = I (Or \<phi>\<^isub>1 \<phi>\<^isub>2) xs"
+lemma I_or[simp]: "I (or f1 f2) xs = I (Or f1 f2) xs"
 by(simp add:or_def)
 
 lemma I_list_disj[simp]:
- "I (list_disj fs) xs = (\<exists>\<phi> \<in> set fs. I \<phi> xs)"
+ "I (list_disj fs) xs = (\<exists>f \<in> set fs. I f xs)"
 proof -
-  { fix fs \<phi>
-    have "I (foldr or fs \<phi>) xs = (I \<phi> xs \<or> (\<exists>\<phi> \<in> set fs. I \<phi> xs))"
+  { fix fs f
+    have "I (foldr or fs f) xs = (I f xs \<or> (\<exists>f \<in> set fs. I f xs))"
       by (induct fs) auto
   } thus ?thesis by(simp add:list_disj_def)
 qed
@@ -244,8 +244,8 @@ lemma I_nnf: "I (nnf \<phi>) xs = I \<phi> xs"
 by(induct rule:nnf.induct)(simp_all add: I\<^isub>a_aneg)
 
 lemma I_dnf:
-"nqfree \<phi> \<Longrightarrow> (\<exists>as\<in>set (dnf \<phi>). \<forall>a\<in>set as. I\<^isub>a a xs) = I \<phi> xs"
-by (induct \<phi>) (fastsimp)+
+"nqfree f \<Longrightarrow> (\<exists>as\<in>set (dnf f). \<forall>a\<in>set as. I\<^isub>a a xs) = I f xs"
+by (induct f) (fastsimp)+
 
 definition "normal \<phi> = (\<forall>a \<in> atoms \<phi>. anormal a)"
 
@@ -293,12 +293,12 @@ apply(simp_all)
 apply (blast dest:anormal_aneg)+
 done
 
-lemma atoms_dnf: "nqfree \<phi> \<Longrightarrow> as : set(dnf \<phi>) \<Longrightarrow> a : set as \<Longrightarrow> a : atoms \<phi>"
-by(induct \<phi> arbitrary: as a rule:nqfree.induct)(auto)
+lemma atoms_dnf: "nqfree f \<Longrightarrow> as : set(dnf f) \<Longrightarrow> a : set as \<Longrightarrow> a : atoms f"
+by(induct f arbitrary: as a rule:nqfree.induct)(auto)
 
 lemma anormal_dnf_nnf:
-  "as : set(dnf(nnf \<phi>)) \<Longrightarrow> qfree \<phi> \<Longrightarrow> normal \<phi> \<Longrightarrow> a : set as \<Longrightarrow> anormal a"
-apply(induct \<phi> arbitrary: a as rule:nnf.induct)
+  "as : set(dnf(nnf f)) \<Longrightarrow> qfree f \<Longrightarrow> normal f \<Longrightarrow> a : set as \<Longrightarrow> anormal a"
+apply(induct f arbitrary: a as rule:nnf.induct)
             apply(simp_all add: normal_def)
     apply clarify
     apply (metis UnE set_append)

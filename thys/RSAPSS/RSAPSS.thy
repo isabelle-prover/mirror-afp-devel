@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/RSAPSS.thy
-    ID:         $Id: RSAPSS.thy,v 1.6 2008-04-22 06:34:06 fhaftmann Exp $
+    ID:         $Id: RSAPSS.thy,v 1.7 2008-06-11 14:22:59 lsf37 Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -26,12 +26,12 @@ defs
 			  else (rsapss_sign_help1 (bv_to_nat (emsapss_encode m (length (nat_to_bv n) - 1)) ) e n)"
 
   rsapss_sign_help1:
-  "rsapss_sign_help1 em_nat e n == nat_to_bv_length (rsa_crypt em_nat e n) (length (nat_to_bv n))"
+  "rsapss_sign_help1 em_nat e n == nat_to_bv_length (rsa_crypt(em_nat, e, n)) (length (nat_to_bv n))"
 
   rsapss_verify:
   "rsapss_verify m s d n == if (length s) \<noteq> length(nat_to_bv n)
                             then False
-                            else let em = nat_to_bv_length (rsa_crypt (bv_to_nat s) d n) ((roundup (length(nat_to_bv n) - 1) 8) * 8) in emsapss_decode m em (length(nat_to_bv n) - 1)"
+                            else let em = nat_to_bv_length (rsa_crypt ((bv_to_nat s), d, n)) ((roundup (length(nat_to_bv n) - 1) 8) * 8) in emsapss_decode m em (length(nat_to_bv n) - 1)"
 
 lemma length_emsapss_encode [rule_format]: "emsapss_encode m x \<noteq> [] \<longrightarrow> length (emsapss_encode m x) = roundup x 8 * 8"
   apply (simp add: emsapss_encode)

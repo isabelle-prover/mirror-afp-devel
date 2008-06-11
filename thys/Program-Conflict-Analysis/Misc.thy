@@ -7,7 +7,7 @@
 header {* Miscellanneous Definitions and Lemmas *}
 
 theory Misc
-imports Main Multiset Sublist_Order
+imports Main Multiset
 begin
 text_raw {*\label{thy:Misc}*}
 
@@ -43,28 +43,6 @@ lemma (in su_rel_fun) repr2: "(A,B)\<in>F \<Longrightarrow> B=f A" using repr1
 
 lemma (in su_rel_fun) repr: "(f A = B) = ((A,B)\<in>F)" using repr1 repr2
   by (blast) 
-
-
-subsection {* Abbreviations for list order *}
-
-abbreviation ileq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
-  "ileq \<equiv> op \<le>"
-
-abbreviation ilt :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
-  "ilt \<equiv> op <"
-
-notation (xsymbols)
-  ileq (infix "\<preceq>" 50)
-
-notation (output)
-  ileq (infix "\<preceq>" 50)
-
-notation (xsymbols)
-  ilt (infix "\<prec>" 50)
-
-notation (output)
-  ilt (infix "\<prec>" 50)
-
 
 subsection {* Sets *}
   lemma setsum_subset_split: assumes P: "finite A" "B\<subseteq>A" shows T: "setsum f A = setsum f (A-B) + setsum f B" proof -
@@ -695,7 +673,7 @@ lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>
 lemma mset_map_id: "\<lbrakk>!!x. f (g x) = x\<rbrakk> \<Longrightarrow> f `# g `# X = X"
   by (induct X) auto
 
-text {* The following is a very specialized lemma. Intuitively, it splits the original multiset *}
+text {* The following is a very specialized lemma. Intuitively, it splits the original multiset
 text {* The following is a very specialized   by a splitting of some pointwise supermultiset of its image.
 
   Application:

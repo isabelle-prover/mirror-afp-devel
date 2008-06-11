@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalArith.thy,v 1.4 2008-04-07 13:37:52 fhaftmann Exp $
+    ID:          $Id: OrdinalArith.thy,v 1.5 2008-06-11 14:22:58 lsf37 Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -12,15 +12,9 @@ begin
 
 subsection {* Addition *}
 
-instantiation ordinal :: plus
-begin
-
-definition
-  plus_ordinal_def: "op + = (\<lambda>x. ordinal_rec x (\<lambda>p. oSuc))"
-
-instance ..
-
-end
+instance ordinal :: plus ..
+defs (overloaded)
+  plus_ordinal_def: "op + \<equiv> \<lambda>x. ordinal_rec x (\<lambda>p. oSuc)"
 
 lemma normal_plus: "normal (op + x)"
 by (simp add: plus_ordinal_def normal_ordinal_rec)
@@ -98,16 +92,10 @@ by (rule not_inject, simp add: ordinal_plus_not_0)
 
 subsection {* Subtraction *}
 
-instantiation ordinal :: minus
-begin
-
-definition
+instance ordinal :: minus ..
+defs (overloaded)
   minus_ordinal_def:
-    "x - y = ordinal_rec 0 (\<lambda>p w. if y \<le> p then oSuc w else w) x"
-
-instance ..
-
-end
+    "x - y \<equiv> ordinal_rec 0 (\<lambda>p w. if y \<le> p then oSuc w else w) x"
 
 lemma continuous_minus: "continuous (\<lambda>x. x - y)"
  apply (unfold minus_ordinal_def)
@@ -183,15 +171,9 @@ done
 
 subsection {* Multiplication *}
 
-instantiation ordinal :: times
-begin
-
-definition
-  times_ordinal_def: "op * = (\<lambda>x. ordinal_rec 0 (\<lambda>p w. w + x))"
-
-instance ..
-
-end
+instance ordinal :: times ..
+defs (overloaded)
+  times_ordinal_def: "op * \<equiv> \<lambda>x. ordinal_rec 0 (\<lambda>p w. w + x)"
 
 lemma continuous_times: "continuous (op * x)"
 by (simp add: times_ordinal_def continuous_ordinal_rec)

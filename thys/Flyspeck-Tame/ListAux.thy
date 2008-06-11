@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.10 2008-03-18 13:49:01 makarius Exp $
+(*  ID:         $Id: ListAux.thy,v 1.11 2008-06-11 14:22:50 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -911,36 +911,36 @@ qed
 
 subsubsection {* Distinctness *}
 
-lemma splitAt_distinct_ab_aux:
+lemma splitAt_distinct_ab:
  "distinct vs \<Longrightarrow> (a,b) = splitAt ram vs \<Longrightarrow> distinct a \<and> distinct b"
 apply (cases "ram \<in> set vs") by (auto dest: splitAt_split simp: splitAt_no_ram)
 
-lemma splitAt_distinct_a_aux:
+lemma splitAt_distinct_a:
  "distinct vs \<Longrightarrow> (a,b) = splitAt ram vs \<Longrightarrow> distinct a"
 apply (cases "ram \<in> set vs") by (auto dest: splitAt_split simp: splitAt_no_ram)
 
-lemma splitAt_distinct_b_aux:
+lemma splitAt_distinct_b:
  "distinct vs \<Longrightarrow> (a,b) = splitAt ram vs \<Longrightarrow> distinct b"
 apply (cases "ram \<in> set vs") by (auto dest: splitAt_split simp: splitAt_no_ram)
 
-lemma splitAt_distinct_fst_aux[intro]:
+lemma splitAt_distinct_fst[intro]:
  "distinct vs \<Longrightarrow> distinct (fst (splitAt ram vs))"
 proof -
   assume d: "distinct vs"
   def b: b \<equiv> "snd (splitAt ram vs)"
   def a: a \<equiv> "fst (splitAt ram vs)"
   with b have "(a,b) = splitAt ram vs" by auto
-  with a d show ?thesis  by (auto dest: splitAt_distinct_ab_aux)
+  with a d show ?thesis  by (auto dest: splitAt_distinct_ab)
 qed
 
-lemma splitAt_distinct_snd_aux[intro]:
+lemma splitAt_distinct_snd[intro]:
  "distinct vs \<Longrightarrow> distinct (snd (splitAt ram vs))"
 proof -
   assume d: "distinct vs"
   def b: b \<equiv> "snd (splitAt ram vs)"
   def a: a \<equiv> "fst (splitAt ram vs)"
   with b have "(a,b) = splitAt ram vs" by auto
-  with b d show ?thesis  by (auto dest: splitAt_distinct_ab_aux)
+  with b d show ?thesis  by (auto dest: splitAt_distinct_ab)
 qed
 
 lemma splitAt_distinct_ab:

@@ -1,4 +1,4 @@
-(*  ID:          $Id: Termination.thy,v 1.5 2008-06-03 11:11:13 norbertschirmer Exp $
+(*  ID:          $Id: Termination.thy,v 1.6 2008-06-11 14:23:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -171,7 +171,7 @@ next
   then obtain s' where 
     "\<Gamma>\<turnstile>\<langle>bdy,Normal s \<rangle> \<Rightarrow> s'"
     by iprover
-  moreover have "\<Gamma> p = Some bdy" by fact
+  moreover have "\<Gamma> p = Some bdy".
   ultimately show ?case 
     by (cases s') (iprover intro: exec.intros)+
 next
@@ -306,7 +306,7 @@ shows P
 using termi
 apply (unfold dynCall_def)
 apply (elim terminates_Normal_elim_cases)
-apply fact
+apply assumption
 done
 
 
@@ -324,8 +324,8 @@ proof (induct xs)
   thus ?case by (auto intro: exec.intros)
 next
   case (Cons x xs)
-  have termi_x_xs: "\<Gamma>\<turnstile>sequence Seq (x # xs) \<down> Normal s" by fact
-  have termi_ys: "\<forall>s'. \<Gamma>\<turnstile>\<langle>sequence Seq (x # xs),Normal s \<rangle> \<Rightarrow> s' \<longrightarrow> \<Gamma>\<turnstile>sequence Seq ys \<down> s'" by fact
+  have termi_x_xs: "\<Gamma>\<turnstile>sequence Seq (x # xs) \<down> Normal s".
+  have termi_ys: "\<forall>s'. \<Gamma>\<turnstile>\<langle>sequence Seq (x # xs),Normal s \<rangle> \<Rightarrow> s' \<longrightarrow> \<Gamma>\<turnstile>sequence Seq ys \<down> s'".
   show ?case
   proof (cases xs)
     case Nil
@@ -380,7 +380,7 @@ proof (induct xs)
          intro: terminates.intros)
 next
   case (Cons x xs)
-  have termi_x_xs_ys: "\<Gamma>\<turnstile>sequence Seq ((x # xs) @ ys) \<down> Normal s" by fact
+  have termi_x_xs_ys: "\<Gamma>\<turnstile>sequence Seq ((x # xs) @ ys) \<down> Normal s".
   show ?case
   proof (cases xs)
     case Nil
@@ -404,7 +404,7 @@ next
       show "\<Gamma>\<turnstile>sequence Seq xs \<down> s'"
       proof -
 	from termi_xs_ys [rule_format, OF exec_x]
-	have termi_xs_ys': "\<Gamma>\<turnstile>sequence Seq (xs@ys) \<down> s'" .
+	have termi_xs_ys': "\<Gamma>\<turnstile>sequence Seq (xs@ys) \<down> s'".
 	show ?thesis
 	proof (cases s')
 	  case (Normal s'')
@@ -505,7 +505,7 @@ lemma terminates_sequence_flatten_to_terminates:
   shows "\<And>s. \<Gamma>\<turnstile>sequence Seq (flatten c)\<down>s \<Longrightarrow> \<Gamma>\<turnstile>c\<down>s" 
 proof (induct c)
   case (Seq c1 c2)
-  have "\<Gamma>\<turnstile>sequence Seq (flatten (Seq c1 c2)) \<down> s" by fact
+  have "\<Gamma>\<turnstile>sequence Seq (flatten (Seq c1 c2)) \<down> s".
   hence termi_app: "\<Gamma>\<turnstile>sequence Seq (flatten c1 @ flatten c2) \<down> s" by simp
   show ?case
   proof (cases s)
@@ -543,7 +543,7 @@ next
   case Spec thus ?case by (cases s) (auto intro: terminates.intros)
 next
   case (Seq c1 c2)
-  have "\<Gamma>\<turnstile>normalize (Seq c1 c2) \<down> s" by fact
+  have "\<Gamma>\<turnstile>normalize (Seq c1 c2) \<down> s".
   hence termi_app: "\<Gamma>\<turnstile>sequence Seq (flatten (normalize c1) @ flatten (normalize c2)) \<down> s"
     by simp
   show ?case
@@ -561,7 +561,7 @@ next
       fix s''
       assume "\<Gamma>\<turnstile>\<langle>c1,Normal s' \<rangle> \<Rightarrow> s''"
       from exec_to_exec_normalize [OF this]
-      have "\<Gamma>\<turnstile>\<langle>normalize c1,Normal s' \<rangle> \<Rightarrow> s''" .
+      have "\<Gamma>\<turnstile>\<langle>normalize c1,Normal s' \<rangle> \<Rightarrow> s''".
       from termi_app [simplified Normal] exec_to_exec_sequence_flatten [OF this] 
       have "\<Gamma>\<turnstile>sequence Seq (flatten (normalize c2))  \<down> s''"
 	by (cases rule: terminates_sequence_appE) auto
@@ -578,7 +578,7 @@ next
        (auto intro: terminates.intros elim!: terminates_Normal_elim_cases)
 next
   case (While b c)
-  have "\<Gamma>\<turnstile>normalize (While b c) \<down> s" by fact
+  have "\<Gamma>\<turnstile>normalize (While b c) \<down> s".
   hence termi_norm_w: "\<Gamma>\<turnstile>While b (normalize c) \<down> s" by simp
   {
     fix t w
@@ -711,7 +711,7 @@ next
   qed
 next
   case (While b c)
-  have hyp_c: "\<And>s. \<Gamma>\<turnstile>strip_guards F c \<down> s \<Longrightarrow> \<Gamma>\<turnstile>c \<down> s" by fact
+  have hyp_c: "\<And>s. \<Gamma>\<turnstile>strip_guards F c \<down> s \<Longrightarrow> \<Gamma>\<turnstile>c \<down> s".
   have "\<Gamma>\<turnstile>While b (strip_guards F c) \<down> s" using While.prems by simp
   moreover
   {
@@ -721,9 +721,9 @@ next
       \<Gamma>\<turnstile>While b c \<down> s"
     proof (induct)
       case (WhileTrue s b' c')
-      have eqs: "While b' c' = While b (strip_guards F c)" by fact
-      with `s\<in>b'` have b: "s\<in>b" by simp
-      from eqs `\<Gamma>\<turnstile>c' \<down> Normal s` have "\<Gamma>\<turnstile>strip_guards F c \<down> Normal s"
+      have eqs: "While b' c' = While b (strip_guards F c)".
+      from WhileTrue have b: "s\<in>b" by simp
+      from WhileTrue have "\<Gamma>\<turnstile>strip_guards F c \<down> Normal s"
 	by simp
       hence term_c: "\<Gamma>\<turnstile>c \<down> Normal s"
 	by (rule hyp_c)
@@ -748,7 +748,7 @@ next
 	    by (auto intro: exec_to_exec_strip_guards)
 	  with WhileTrue.hyps eqs Normal
 	  show ?thesis
-	    by fastsimp
+	    by auto
 	qed
       }
       ultimately
@@ -817,7 +817,7 @@ lemma terminates_strip_to_terminates:
 using termi_strip
 proof induct
   case (Seq c1 s c2)
-  have "\<Gamma>\<turnstile>c1 \<down> Normal s" by fact
+  have "\<Gamma>\<turnstile>c1 \<down> Normal s".
   moreover
   {
     fix s'
@@ -838,7 +838,7 @@ proof induct
     by (auto intro: terminates.intros)
 next
   case (WhileTrue s b c)
-  have "\<Gamma>\<turnstile>c \<down> Normal s" by fact
+  have "\<Gamma>\<turnstile>c \<down> Normal s".
   moreover
   {
     fix s'
@@ -859,7 +859,7 @@ next
     by (auto intro: terminates.intros)
 next
   case (Catch c1 s c2)
-  have "\<Gamma>\<turnstile>c1 \<down> Normal s" by fact
+  have "\<Gamma>\<turnstile>c1 \<down> Normal s".
   moreover
   {
     fix s'
@@ -890,13 +890,13 @@ next
   case (Spec r) thus ?case by (fastsimp simp add: inter_guards_Spec)
 next
   case (Seq a1 a2)
-  have "(Seq a1 a2 \<inter>\<^sub>g c2) = Some c" by fact
+  have "(Seq a1 a2 \<inter>\<^sub>g c2) = Some c".
   then obtain b1 b2 d1 d2 where
     c2: "c2=Seq b1 b2" and 
     d1: "(a1 \<inter>\<^sub>g b1) = Some d1" and d2: "(a2 \<inter>\<^sub>g b2) = Some d2" and
     c: "c=Seq d1 d2"
     by (auto simp add: inter_guards_Seq)
-  have termi_c1: "\<Gamma>\<turnstile>Seq a1 a2 \<down> s" by fact
+  have termi_c1: "\<Gamma>\<turnstile>Seq a1 a2 \<down> s".
   have "\<Gamma>\<turnstile>Seq d1 d2 \<down> s"
   proof (cases s)
     case Fault thus ?thesis by simp
@@ -945,13 +945,13 @@ next
                simp add: inter_guards_Cond)
 next
   case (While b bdy1)
-  have "(While b bdy1 \<inter>\<^sub>g c2) = Some c" by fact
+  have "(While b bdy1 \<inter>\<^sub>g c2) = Some c".
   then obtain bdy2 bdy where
     c2: "c2=While b bdy2" and
     bdy: "(bdy1 \<inter>\<^sub>g bdy2) = Some bdy" and
     c: "c=While b bdy"
     by (auto simp add: inter_guards_While)
-  have "\<Gamma>\<turnstile>While b bdy1 \<down> s" by fact
+  have "\<Gamma>\<turnstile>While b bdy1 \<down> s". 
   moreover
   {
     fix s w w1 w2
@@ -961,7 +961,7 @@ next
     have "\<Gamma>\<turnstile>While b bdy \<down> s"    
     proof (induct)
       case (WhileTrue s b' bdy1')
-      have eqs: "While b' bdy1' = While b bdy1" by fact
+      have eqs: "While b' bdy1' = While b bdy1".
       from WhileTrue have s_in_b: "s \<in> b" by simp
       from WhileTrue have termi_bdy1: "\<Gamma>\<turnstile>bdy1 \<down> Normal s" by simp
       show ?case
@@ -1005,13 +1005,13 @@ next
   case Call thus ?case by (simp add: inter_guards_Call)
 next
   case (DynCom f1) 
-  have "(DynCom f1 \<inter>\<^sub>g c2) = Some c" by fact
+  have "(DynCom f1 \<inter>\<^sub>g c2) = Some c".
   then obtain f2 f where
     c2: "c2=DynCom f2" and
     f_defined: "\<forall>s. ((f1 s) \<inter>\<^sub>g (f2 s)) \<noteq> None" and
     c: "c=DynCom (\<lambda>s. the ((f1 s) \<inter>\<^sub>g (f2 s)))"
     by (auto simp add: inter_guards_DynCom)
-  have termi: "\<Gamma>\<turnstile>DynCom f1 \<down> s" by fact
+  have termi: "\<Gamma>\<turnstile>DynCom f1 \<down> s".
   show ?case
   proof (cases s)
     case Fault thus ?thesis by simp
@@ -1027,20 +1027,20 @@ next
     have "\<Gamma>\<turnstile>f1 s'\<down> (Normal s')"
       by (auto elim: terminates_Normal_elim_cases)
     from DynCom.hyps [OF f this] 
-    have "\<Gamma>\<turnstile>f\<down> (Normal s')" .
+    have "\<Gamma>\<turnstile>f\<down> (Normal s')".
     with c f Normal
     show ?thesis
       by (auto intro: terminates.intros)
   qed
 next
   case (Guard f g1 bdy1)
-  have "(Guard f g1 bdy1 \<inter>\<^sub>g c2) = Some c" by fact
+  have "(Guard f g1 bdy1 \<inter>\<^sub>g c2) = Some c".
   then obtain g2 bdy2 bdy where
     c2: "c2=Guard f g2 bdy2" and
     bdy: "(bdy1 \<inter>\<^sub>g bdy2) = Some bdy" and
     c: "c=Guard f (g1 \<inter> g2) bdy"
     by (auto simp add: inter_guards_Guard)
-  have termi_c1: "\<Gamma>\<turnstile>Guard f g1 bdy1 \<down> s" by fact
+  have termi_c1: "\<Gamma>\<turnstile>Guard f g1 bdy1 \<down> s".
   show ?case
   proof (cases s)
     case Fault thus ?thesis by simp
@@ -1075,13 +1075,13 @@ next
     by (auto simp add: inter_guards_Throw)
 next
   case (Catch a1 a2)
-  have "(Catch a1 a2 \<inter>\<^sub>g c2) = Some c" by fact
+  have "(Catch a1 a2 \<inter>\<^sub>g c2) = Some c".
   then obtain b1 b2 d1 d2 where
     c2: "c2=Catch b1 b2" and 
     d1: "(a1 \<inter>\<^sub>g b1) = Some d1" and d2: "(a2 \<inter>\<^sub>g b2) = Some d2" and
     c: "c=Catch d1 d2"
     by (auto simp add: inter_guards_Catch)
-  have termi_c1: "\<Gamma>\<turnstile>Catch a1 a2 \<down> s" by fact
+  have termi_c1: "\<Gamma>\<turnstile>Catch a1 a2 \<down> s".
   have "\<Gamma>\<turnstile>Catch d1 d2 \<down> s"
   proof (cases s)
     case Fault thus ?thesis by simp
@@ -1151,7 +1151,7 @@ next
   case Fault thus ?case by (fastsimp intro: terminates.intros)
 next
   case (Seq c1 s c2)
-  have "\<Gamma>\<turnstile>mark_guards f c1 \<down> Normal s" by fact
+  have "\<Gamma>\<turnstile>mark_guards f c1 \<down> Normal s".
   moreover 
   {
     fix t
@@ -1188,8 +1188,8 @@ next
   case CondFalse thus ?case by (fastsimp intro: terminates.intros)
 next
   case (WhileTrue s b c)
-  have s_in_b: "s \<in> b" by fact
-  have "\<Gamma>\<turnstile>mark_guards f c \<down> Normal s" by fact
+  have s_in_b: "s \<in> b".
+  have "\<Gamma>\<turnstile>mark_guards f c \<down> Normal s".
   moreover 
   {
     fix t
@@ -1236,7 +1236,7 @@ next
   case Abrupt thus ?case by (fastsimp intro: terminates.intros)
 next 
   case (Catch c1 s c2) 
-  have "\<Gamma>\<turnstile>mark_guards f c1 \<down> Normal s" by fact
+  have "\<Gamma>\<turnstile>mark_guards f c1 \<down> Normal s".
   moreover 
   {
     fix t
@@ -1277,7 +1277,7 @@ next
   case Spec thus ?case by (fastsimp intro: terminates.intros)
 next
   case (Seq c1 c2) 
-  have "\<Gamma>\<turnstile>mark_guards f (Seq c1 c2) \<down> Normal s" by fact
+  have "\<Gamma>\<turnstile>mark_guards f (Seq c1 c2) \<down> Normal s".
   then obtain
     termi_merge_c1: "\<Gamma>\<turnstile>mark_guards f c1 \<down> Normal s" and
     termi_merge_c2: "\<forall>s'. \<Gamma>\<turnstile>\<langle>mark_guards f c1,Normal s \<rangle> \<Rightarrow> s' \<longrightarrow> 
@@ -1296,7 +1296,7 @@ next
     next
       case False
       from exec_to_exec_mark_guards [OF exec_c1 False] 
-      have "\<Gamma>\<turnstile>\<langle>mark_guards f c1,Normal s \<rangle> \<Rightarrow> s'" .
+      have "\<Gamma>\<turnstile>\<langle>mark_guards f c1,Normal s \<rangle> \<Rightarrow> s'".
       from termi_merge_c2 [rule_format, OF this] Seq.hyps
       show ?thesis
 	by (cases s') (auto)
@@ -1352,7 +1352,7 @@ next
     by (fastsimp intro: terminates.intros )
 next
   case (Catch c1 c2) 
-  have "\<Gamma>\<turnstile>mark_guards f (Catch c1 c2) \<down> Normal s" by fact
+  have "\<Gamma>\<turnstile>mark_guards f (Catch c1 c2) \<down> Normal s".
   then obtain
     termi_merge_c1: "\<Gamma>\<turnstile>mark_guards f c1 \<down> Normal s" and
     termi_merge_c2: "\<forall>s'. \<Gamma>\<turnstile>\<langle>mark_guards f c1,Normal s \<rangle> \<Rightarrow> Abrupt s' \<longrightarrow> 
@@ -1391,8 +1391,8 @@ lemma terminates_to_terminates_merge_guards:
 using termi
 proof (induct)
   case (Guard s g c f)
-  have s_in_g: "s \<in> g" by fact
-  have termi_merge_c: "\<Gamma>\<turnstile>merge_guards c \<down> Normal s" by fact
+  have s_in_g: "s \<in> g".
+  have termi_merge_c: "\<Gamma>\<turnstile>merge_guards c \<down> Normal s".
   show ?case
   proof (cases "\<exists>f' g' c'. merge_guards c = Guard f' g' c'")
     case False
@@ -1424,7 +1424,7 @@ proof (induct)
   qed
 next
   case (GuardFault s g f c)
-  have "s \<notin> g" by fact
+  have "s \<notin> g".
   thus ?case
     by (cases "merge_guards c")
        (auto intro: terminates.intros split: split_if_asm simp add: Let_def)
@@ -1440,7 +1440,7 @@ next
   case Spec thus ?case by (fastsimp intro: terminates.intros)
 next
   case (Seq c1 c2) 
-  have "\<Gamma>\<turnstile>merge_guards (Seq c1 c2) \<down> Normal s" by fact
+  have "\<Gamma>\<turnstile>merge_guards (Seq c1 c2) \<down> Normal s".
   then obtain
     termi_merge_c1: "\<Gamma>\<turnstile>merge_guards c1 \<down> Normal s" and
     termi_merge_c2: "\<forall>s'. \<Gamma>\<turnstile>\<langle>merge_guards c1,Normal s \<rangle> \<Rightarrow> s' \<longrightarrow> 
@@ -1455,7 +1455,7 @@ next
     have "\<Gamma>\<turnstile> c2 \<down> s'"
     proof -
       from exec_to_exec_merge_guards [OF exec_c1] 
-      have "\<Gamma>\<turnstile>\<langle>merge_guards c1,Normal s \<rangle> \<Rightarrow> s'" .
+      have "\<Gamma>\<turnstile>\<langle>merge_guards c1,Normal s \<rangle> \<Rightarrow> s'".
       from termi_merge_c2 [rule_format, OF this] Seq.hyps
       show ?thesis
 	by (cases s') (auto)
@@ -1501,7 +1501,7 @@ next
     by (fastsimp intro: terminates.intros elim: terminates_Normal_elim_cases)
 next
   case (Guard f g c)
-  have termi_merge: "\<Gamma>\<turnstile>merge_guards (Guard f g c) \<down> Normal s" by fact
+  have termi_merge: "\<Gamma>\<turnstile>merge_guards (Guard f g c) \<down> Normal s".
   show ?case
   proof (cases "\<exists>f' g' c'. merge_guards c = Guard f' g' c'")
     case False
@@ -1538,7 +1538,7 @@ next
     by (fastsimp intro: terminates.intros )
 next
   case (Catch c1 c2) 
-  have "\<Gamma>\<turnstile>merge_guards (Catch c1 c2) \<down> Normal s" by fact
+  have "\<Gamma>\<turnstile>merge_guards (Catch c1 c2) \<down> Normal s".
   then obtain
     termi_merge_c1: "\<Gamma>\<turnstile>merge_guards c1 \<down> Normal s" and
     termi_merge_c2: "\<forall>s'. \<Gamma>\<turnstile>\<langle>merge_guards c1,Normal s \<rangle> \<Rightarrow> Abrupt s' \<longrightarrow> 
@@ -1553,7 +1553,7 @@ next
     have "\<Gamma>\<turnstile> c2 \<down> Normal s'"
     proof -
       from exec_to_exec_merge_guards [OF exec_c1] 
-      have "\<Gamma>\<turnstile>\<langle>merge_guards c1,Normal s \<rangle> \<Rightarrow> Abrupt s'" .
+      have "\<Gamma>\<turnstile>\<langle>merge_guards c1,Normal s \<rangle> \<Rightarrow> Abrupt s'".
       from termi_merge_c2 [rule_format, OF this] Catch.hyps
       show ?thesis
 	by iprover
@@ -1586,15 +1586,15 @@ next
   case Spec thus ?case by (auto intro: terminates.intros dest: subseteq_guardsD)
 next
   case (Seq c1' c2')
-  have termi: "\<Gamma>\<turnstile>Seq c1' c2' \<down> Normal s" by fact
+  have termi: "\<Gamma>\<turnstile>Seq c1' c2' \<down> Normal s".
   then obtain 
     termi_c1': "\<Gamma>\<turnstile>c1'\<down> Normal s" and
     termi_c2': "\<forall>s'. \<Gamma>\<turnstile>\<langle>c1',Normal s \<rangle> \<Rightarrow> s' \<longrightarrow> \<Gamma>\<turnstile>c2'\<down> s'"
     by (auto elim: terminates_Normal_elim_cases)
-  have noFault: "\<Gamma>\<turnstile>\<langle>Seq c1' c2',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV" by fact
+  have noFault: "\<Gamma>\<turnstile>\<langle>Seq c1' c2',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV".
   hence noFault_c1': "\<Gamma>\<turnstile>\<langle>c1',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV"
     by (auto intro: exec.intros simp add: final_notin_def)
-  have "c \<subseteq>\<^sub>g Seq c1' c2'" by fact
+  have "c \<subseteq>\<^sub>g Seq c1' c2'".
   from subseteq_guards_Seq [OF this] obtain c1 c2 where 
     c: "c = Seq c1 c2" and
     c1_c1': "c1 \<subseteq>\<^sub>g c1'" and
@@ -1651,9 +1651,9 @@ next
   ultimately show ?case using c by (auto intro: terminates.intros)
 next
   case (Cond b c1' c2')
-  have noFault: "\<Gamma>\<turnstile>\<langle>Cond b c1' c2',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV" by fact
-  have termi: "\<Gamma>\<turnstile>Cond b c1' c2' \<down> Normal s" by fact
-  have "c \<subseteq>\<^sub>g Cond b c1' c2'" by fact
+  have noFault: "\<Gamma>\<turnstile>\<langle>Cond b c1' c2',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV".
+  have termi: "\<Gamma>\<turnstile>Cond b c1' c2' \<down> Normal s".
+  have "c \<subseteq>\<^sub>g Cond b c1' c2'".
   from subseteq_guards_Cond [OF this] obtain c1 c2 where
     c: "c = Cond b c1 c2" and
     c1_c1': "c1 \<subseteq>\<^sub>g c1'" and
@@ -1685,9 +1685,9 @@ next
   qed
 next
   case (While b c')
-  have noFault: "\<Gamma>\<turnstile>\<langle>While b c',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV" by fact
-  have termi: "\<Gamma>\<turnstile>While b c' \<down> Normal s" by fact
-  have "c \<subseteq>\<^sub>g While b c'" by fact
+  have noFault: "\<Gamma>\<turnstile>\<langle>While b c',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV".
+  have termi: "\<Gamma>\<turnstile>While b c' \<down> Normal s".
+  have "c \<subseteq>\<^sub>g While b c'".
   from subseteq_guards_While [OF this]
   obtain c'' where 
     c: "c = While b c''" and
@@ -1757,26 +1757,26 @@ next
   case Call thus ?case by (auto intro: terminates.intros dest: subseteq_guardsD)
 next
   case (DynCom C') 
-  have termi: "\<Gamma>\<turnstile>DynCom C' \<down> Normal s" by fact
+  have termi: "\<Gamma>\<turnstile>DynCom C' \<down> Normal s".
   hence termi_C': "\<Gamma>\<turnstile>C' s \<down> Normal s"
     by cases
-  have noFault: "\<Gamma>\<turnstile>\<langle>DynCom C',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV" by fact
+  have noFault: "\<Gamma>\<turnstile>\<langle>DynCom C',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV".
   hence noFault_C': "\<Gamma>\<turnstile>\<langle>C' s,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV"
     by (auto intro: exec.intros simp add: final_notin_def)
-  have "c \<subseteq>\<^sub>g DynCom C'" by fact
+  have "c \<subseteq>\<^sub>g DynCom C'".
   from subseteq_guards_DynCom [OF this] obtain C where
     c: "c = DynCom C" and
     C_C': "\<forall>s. C s \<subseteq>\<^sub>g C' s"
     by blast
   from DynCom.hyps [OF termi_C' C_C' [rule_format] noFault_C']
-  have "\<Gamma>\<turnstile>C s \<down> Normal s" .
+  have "\<Gamma>\<turnstile>C s \<down> Normal s".
   with c show ?case
     by (auto intro: terminates.intros)
 next 
   case (Guard f' g' c')
-  have noFault: "\<Gamma>\<turnstile>\<langle>Guard f' g' c',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV" by fact
-  have termi: "\<Gamma>\<turnstile>Guard f' g' c' \<down> Normal s" by fact
-  have "c \<subseteq>\<^sub>g Guard f' g' c'" by fact
+  have noFault: "\<Gamma>\<turnstile>\<langle>Guard f' g' c',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV".
+  have termi: "\<Gamma>\<turnstile>Guard f' g' c' \<down> Normal s".
+  have "c \<subseteq>\<^sub>g Guard f' g' c'".
   hence c_cases: "(c \<subseteq>\<^sub>g c') \<or> (\<exists>c''. c = Guard f' g' c'' \<and> (c'' \<subseteq>\<^sub>g c'))"
     by (rule subseteq_guards_Guard)
   thus ?case
@@ -1815,15 +1815,15 @@ next
   case Throw thus ?case by (auto intro: terminates.intros dest: subseteq_guardsD)
 next
   case (Catch c1' c2')
-  have termi: "\<Gamma>\<turnstile>Catch c1' c2' \<down> Normal s" by fact
+  have termi: "\<Gamma>\<turnstile>Catch c1' c2' \<down> Normal s".
   then obtain 
     termi_c1': "\<Gamma>\<turnstile>c1'\<down> Normal s" and
     termi_c2': "\<forall>s'. \<Gamma>\<turnstile>\<langle>c1',Normal s \<rangle> \<Rightarrow> Abrupt s' \<longrightarrow> \<Gamma>\<turnstile>c2'\<down> Normal s'"
     by (auto elim: terminates_Normal_elim_cases)
-  have noFault: "\<Gamma>\<turnstile>\<langle>Catch c1' c2',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV" by fact
+  have noFault: "\<Gamma>\<turnstile>\<langle>Catch c1' c2',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV".
   hence noFault_c1': "\<Gamma>\<turnstile>\<langle>c1',Normal s \<rangle> \<Rightarrow>\<notin>Fault ` UNIV"
     by (fastsimp intro: exec.intros simp add: final_notin_def)
-  have "c \<subseteq>\<^sub>g Catch c1' c2'"  by fact
+  have "c \<subseteq>\<^sub>g Catch c1' c2'" .
   from subseteq_guards_Catch [OF this] obtain c1 c2 where 
     c: "c = Catch c1 c2" and
     c1_c1': "c1 \<subseteq>\<^sub>g c1'" and
@@ -1884,9 +1884,9 @@ next
   case Spec thus ?case by (auto intro: terminates.intros)
 next
   case (Guard s g c f)
-  have s_in_g: "s \<in> g" by fact
-  have "\<Gamma>\<turnstile>c \<down> Normal s" by fact
-  have "\<Gamma>\<turnstile>\<langle>Guard f g c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F" by fact
+  have s_in_g: "s \<in> g".
+  have "\<Gamma>\<turnstile>c \<down> Normal s".
+  have "\<Gamma>\<turnstile>\<langle>Guard f g c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F".
   with s_in_g have "\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (fastsimp simp add: final_notin_def intro: exec.intros)
   with Guard.hyps have "\<Gamma>\<turnstile>strip_guards F c \<down> Normal s" by simp
@@ -1899,7 +1899,7 @@ next
   case Fault thus ?case by (auto intro: terminates.intros)
 next
   case (Seq c1 s c2) 
-  have noFault_Seq: "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F" by fact
+  have noFault_Seq: "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F".
   hence noFault_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (auto simp add: final_notin_def intro: exec.intros)
   with Seq.hyps have "\<Gamma>\<turnstile>strip_guards F c1 \<down> Normal s" by simp
@@ -1933,8 +1933,8 @@ next
     by (fastsimp intro: terminates.intros exec.intros simp add: final_notin_def ) 
 next
   case (WhileTrue s b c)
-  have s_in_b: "s \<in> b" by fact
-  have noFault_while: "\<Gamma>\<turnstile>\<langle>While b c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F" by fact
+  have s_in_b: "s \<in> b".
+  have noFault_while: "\<Gamma>\<turnstile>\<langle>While b c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F".
   with s_in_b have noFault_c: "\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (auto simp add: final_notin_def intro: exec.intros)
   with WhileTrue.hyps have "\<Gamma>\<turnstile>strip_guards F c \<down> Normal s" by simp
@@ -1977,7 +1977,7 @@ next
   case Abrupt thus ?case by (auto intro: terminates.intros)
 next
   case (Catch c1 s c2)
-  have noFault_Catch: "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F" by fact
+  have noFault_Catch: "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F".
   hence noFault_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (fastsimp simp add: final_notin_def intro: exec.intros)
   with Catch.hyps have "\<Gamma>\<turnstile>strip_guards F c1 \<down> Normal s" by simp
@@ -2017,11 +2017,11 @@ next
   case Spec thus ?case by (auto intro: terminates.intros)
 next
   case (Guard s g c f)
-  have s_in_g: "s \<in> g" by fact
-  have "\<Gamma>\<turnstile>\<langle>Guard f g c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F" by fact
+  have s_in_g: "s \<in> g".
+  have "\<Gamma>\<turnstile>\<langle>Guard f g c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F".
   with s_in_g have "\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (fastsimp simp add: final_notin_def intro: exec.intros)
-  then have "strip F \<Gamma>\<turnstile>c \<down> Normal s" by (simp add: Guard.hyps) 
+  with Guard.hyps have "strip F \<Gamma>\<turnstile>c \<down> Normal s" by simp
   with s_in_g show ?case
     by (auto intro: terminates.intros simp del: strip_simp)
 next
@@ -2031,10 +2031,10 @@ next
   case Fault thus ?case by (auto intro: terminates.intros)
 next
   case (Seq c1 s c2) 
-  have noFault_Seq: "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F" by fact
+  have noFault_Seq: "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F".
   hence noFault_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (auto simp add: final_notin_def intro: exec.intros)
-  then have "strip F \<Gamma>\<turnstile>c1 \<down> Normal s" by (simp add: Seq.hyps)
+  with Seq.hyps have "strip F \<Gamma>\<turnstile>c1 \<down> Normal s" by simp
   moreover
   {
     fix s'
@@ -2065,11 +2065,11 @@ next
     by (fastsimp intro: terminates.intros exec.intros simp add: final_notin_def ) 
 next
   case (WhileTrue s b c)
-  have s_in_b: "s \<in> b" by fact
-  have noFault_while: "\<Gamma>\<turnstile>\<langle>While b c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F" by fact
+  have s_in_b: "s \<in> b".
+  have noFault_while: "\<Gamma>\<turnstile>\<langle>While b c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F".
   with s_in_b have noFault_c: "\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (auto simp add: final_notin_def intro: exec.intros)
-  then have "strip F \<Gamma>\<turnstile>c \<down> Normal s" by (simp add: WhileTrue.hyps)
+  with WhileTrue.hyps have "strip F \<Gamma>\<turnstile>c \<down> Normal s" by simp
   moreover
   {
     fix s'
@@ -2096,14 +2096,14 @@ next
   case WhileFalse thus ?case by (auto intro: terminates.intros)
 next
   case (Call p bdy s) 
-  have bdy: "\<Gamma> p = Some bdy" by fact
-  have "\<Gamma>\<turnstile>\<langle>Call p,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F" by fact
+  have bdy: "\<Gamma> p = Some bdy".
+  have "\<Gamma>\<turnstile>\<langle>Call p,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F".
   with bdy have bdy_noFault: "\<Gamma>\<turnstile>\<langle>bdy,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (auto intro: exec.intros simp add: final_notin_def)
   then have strip_bdy_noFault: "strip F \<Gamma>\<turnstile>\<langle>bdy,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (auto simp add: final_notin_def dest!: exec_strip_to_exec elim!: isFaultE)
 
-  from bdy_noFault have "strip F \<Gamma>\<turnstile>bdy \<down> Normal s" by (simp add: Call.hyps)
+  from bdy_noFault Call.hyps have "strip F \<Gamma>\<turnstile>bdy \<down> Normal s" by simp
   from terminates_noFault_strip_guards [OF this strip_bdy_noFault]
   have "strip F \<Gamma>\<turnstile>strip_guards F bdy \<down> Normal s".
   with bdy show ?case
@@ -2121,10 +2121,10 @@ next
   case Abrupt thus ?case by (auto intro: terminates.intros)
 next
   case (Catch c1 s c2)
-  have noFault_Catch: "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F" by fact
+  have noFault_Catch: "\<Gamma>\<turnstile>\<langle>Catch c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F".
   hence noFault_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow>\<notin>Fault ` F"
     by (fastsimp simp add: final_notin_def intro: exec.intros)
-  then have "strip F \<Gamma>\<turnstile>c1 \<down> Normal s" by (simp add: Catch.hyps)
+  with Catch.hyps have "strip F \<Gamma>\<turnstile>c1 \<down> Normal s" by simp
   moreover
   {
     fix s'
@@ -2193,12 +2193,12 @@ next
   case Guard thus ?case 
     by (auto intro: terminates.Guard dest: notStuck_GuardD)
 next
-  case GuardFault thus ?case by (auto intro: terminates.GuardFault)
+  case GuardFault show ?case by (rule terminates.GuardFault)
 next
   case Fault show ?case by (rule terminates.Fault)
 next
   case (Seq c1 s c2) 
-  have not_Stuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>Seq c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}" by fact
+  have not_Stuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>Seq c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}".
   hence c1_notStuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}"
     by (rule notStuck_SeqD1)
   show "\<Gamma>\<turnstile>Seq c1 c2 \<down> Normal s"
@@ -2241,10 +2241,10 @@ next
     by (auto intro: terminates.CondFalse dest: notStuck_CondFalseD)
 next
   case (WhileTrue s b c)
-  have s: "s \<in> b" by fact
-  have not_Stuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>While b c,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}" by fact
-  with WhileTrue have c_notStuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}"
-    by (iprover intro:  notStuck_WhileTrueD1)
+  have s: "s \<in> b".
+  have not_Stuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>While b c,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}".
+  hence c_notStuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}"
+    by (rule notStuck_WhileTrueD1)
   show ?case
   proof (rule terminates.WhileTrue [OF s],safe)
     from c_notStuck
@@ -2278,7 +2278,7 @@ next
     qed
   qed
 next
-  case WhileFalse then show ?case by (iprover intro: terminates.WhileFalse)
+  case WhileFalse show ?case by (rule terminates.WhileFalse)
 next
   case Call thus ?case 
     by (auto intro: terminates.Call dest: notStuck_CallD restrict_SomeD)
@@ -2298,7 +2298,7 @@ next
   case Abrupt show ?case by (rule terminates.Abrupt)
 next
   case (Catch c1 s c2) 
-  have not_Stuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>Catch c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}" by fact
+  have not_Stuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>Catch c1 c2,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}".
   hence c1_notStuck: "\<Gamma>|\<^bsub>M\<^esub>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow>\<notin>{Stuck}"
     by (rule notStuck_CatchD1)
   show "\<Gamma>\<turnstile>Catch c1 c2 \<down> Normal s"

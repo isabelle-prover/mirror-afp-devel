@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Equivalence.thy
-    ID:         $Id: Equivalence.thy,v 1.10 2008-05-07 09:03:45 stefanberghofer Exp $
+    ID:         $Id: Equivalence.thy,v 1.11 2008-06-11 14:22:55 lsf37 Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -1192,7 +1192,7 @@ qed simp_all
 
 lemma eval_closed_lcl_unchanged:
   "\<lbrakk> P \<turnstile> \<langle>e,(h,l)\<rangle> \<Rightarrow> \<langle>e',(h',l')\<rangle>; fv e = {} \<rbrakk> \<Longrightarrow> l' = l"
-(*<*)by(fastsimp dest:eval_notfree_unchanged simp add:expand_fun_eq [where 'b="val option"])(*>*)
+(*<*)by(fastsimp dest:eval_notfree_unchanged simp add:expand_fun_eq)(*>*)
 
 
 lemma list_eval_Throw: 

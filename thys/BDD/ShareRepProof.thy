@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: ShareRepProof.thy,v 1.3 2008-04-15 13:15:27 makarius Exp $
+    ID:          $Id: ShareRepProof.thy,v 1.4 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -33,7 +33,7 @@ theory ShareRepProof imports ProcedureSpecs "../HeapList" begin
 lemma (in ShareRep_impl) ShareRep_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>}  PROC ShareRep (\<acute>nodeslist, \<acute>p) 
              {t. t may_only_modify_globals \<sigma> in [rep]}"
-  apply (hoare_rule HoarePartial.ProcRec1)
+  apply (hoare_rule ProcRec1)
   apply (vcg spec=modifies)
   done
 

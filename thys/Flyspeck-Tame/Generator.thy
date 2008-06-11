@@ -1,4 +1,4 @@
-(*  ID:         $Id: Generator.thy,v 1.7 2008-04-24 11:42:59 fhaftmann Exp $
+(*  ID:         $Id: Generator.thy,v 1.8 2008-06-11 14:22:50 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -61,13 +61,13 @@ lemma [code]: "deleteAround g v ps =
 lemma length_deleteAround: "length (deleteAround g v ps) \<le> length ps"
   by (auto simp only: deleteAround_def length_removeKeyList Let_def)
 
-function ExcessNotAtRec :: "(nat, nat) table \<Rightarrow> graph \<Rightarrow> nat" where
+
+consts ExcessNotAtRec :: "(nat, nat) table \<Rightarrow> graph \<Rightarrow> nat"
+recdef ExcessNotAtRec "measure (\<lambda>ps. size ps)"
  "ExcessNotAtRec [] = (%g. 0)"
- | "ExcessNotAtRec ((x, y)#ps) = (%g.  max (ExcessNotAtRec ps g)
-         (y + ExcessNotAtRec (deleteAround g x ps) g))"
-by pat_completeness auto
-termination by (relation "measure size") 
-  (auto simp add: length_deleteAround less_Suc_eq_le)
+ "ExcessNotAtRec (p#ps) = (%g.  max (ExcessNotAtRec ps g)
+         (snd p + ExcessNotAtRec (deleteAround g (fst p) ps) g))"
+  (hints recdef_simp: less_Suc_eq_le length_deleteAround)
 
 constdefs ExcessNotAt :: "graph \<Rightarrow> vertex option \<Rightarrow> nat"
  "ExcessNotAt g v_opt \<equiv>

@@ -1,4 +1,4 @@
-(*  ID:         $Id: GeneratorProps.thy,v 1.8 2008-04-25 08:54:35 fhaftmann Exp $
+(*  ID:         $Id: GeneratorProps.thy,v 1.9 2008-06-11 14:22:50 lsf37 Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -284,7 +284,7 @@ proof(induct ps rule: length_induct)
       apply(simp add: filter_map o_def)
       done
     have "ExcessNotAtRec ps0 g = max (Max(?M ps)) (snd p + Max(?M ?ps))"
-      using Cons IH le dist dist' by (cases p) simp
+      using Cons IH le dist dist' by simp
     also have "snd p + Max (?M ?ps) =
       Max {snd p + (\<Sum>p\<in>P. snd p) | P. ?S ?ps P}"
       by (auto simp add:add_Max_commute fin_aux preSep_ne intro!: arg_cong [where f=Max])

@@ -1,5 +1,5 @@
 (*  Title:       An example submission to the Archive of Formal Proof
-    ID:          $Id: Submission.thy,v 1.9 2008-05-17 19:48:25 makarius Exp $
+    ID:          $Id: Submission.thy,v 1.10 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Gerwin Klein <kleing at cse.unsw.edu.au>, 2004
     Maintainer:  Gerwin Klein <kleing at cse.unsw.edu.au>
 *)
@@ -61,7 +61,7 @@ text {*
 lemma very_true: "True"
 proof -
   -- "a very roundabout way"
-  fix P have "P \<longrightarrow> True" by blast
+  have "P \<longrightarrow> True" by blast
   -- "to show @{term True}"
   thus True by blast
 qed

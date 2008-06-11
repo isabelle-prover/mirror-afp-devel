@@ -1,9 +1,9 @@
-(*  ID:         $Id: FOL_Fitting.thy,v 1.3 2007-12-10 10:24:29 fhaftmann Exp $
+(*  ID:         $Id: FOL_Fitting.thy,v 1.4 2008-06-11 14:22:50 lsf37 Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2003
 *)
 
 theory FOL_Fitting
-imports Main Infinite_Set
+imports Infinite_Set
 begin
 
 

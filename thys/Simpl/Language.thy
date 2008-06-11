@@ -1,4 +1,4 @@
-(*  ID:          $Id: Language.thy,v 1.4 2008-06-03 11:11:11 norbertschirmer Exp $
+(*  ID:          $Id: Language.thy,v 1.5 2008-06-11 14:23:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -52,7 +52,6 @@ datatype ('s, 'p, 'f) com =
   | Guard "'f" "'s bexp" "('s,'p,'f) com" 
   | Throw
   | Catch "('s,'p,'f) com" "('s,'p,'f) com"
-
 
 
 
@@ -247,7 +246,7 @@ lemma flatten_normalize: "\<And>x xs. flatten (normalize c) = x#xs
               | (x'#xs') \<Rightarrow> normalize c= Seq x (sequence Seq xs))"
 proof (induct c)
   case (Seq c1 c2)
-  have "flatten (normalize (Seq c1 c2)) = x # xs" by fact
+  have "flatten (normalize (Seq c1 c2)) = x # xs".
   hence "flatten (sequence Seq (flatten (normalize c1) @ flatten (normalize c2))) = 
           x#xs"
     by simp

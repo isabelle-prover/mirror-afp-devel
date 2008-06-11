@@ -1,12 +1,12 @@
 (*  Title:      Jinja/JVM/JVMListExample.thy
-    ID:         $Id: JVMListExample.thy,v 1.6 2008-01-15 13:19:09 stefanberghofer Exp $
+    ID:         $Id: JVMListExample.thy,v 1.7 2008-06-11 14:22:55 lsf37 Exp $
     Author:     Stefan Berghofer, Gerwin Klein
 *)
 
 header {* \isaheader{Example for generating executable code from JVM semantics}\label{sec:JVMListExample} *}
 
 theory JVMListExample
-imports "../Common/SystemClasses" JVMExec Efficient_Nat
+imports SystemClasses JVMExec Efficient_Nat
 begin
 
 constdefs

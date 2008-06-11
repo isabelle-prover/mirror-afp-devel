@@ -737,7 +737,7 @@ next
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT(5)] obtain s2i' c2ie' ww2' where R_CONV: "c2i'={#s2i'#}+c2ie'" "w2'=map le_rem_s ww2'" "(([entry fg q'], {#}), ww2', s2i', c2ie') \<in> trcl (ntrp fg)" .
       from RU_sound[OF R_CONV(3), of V] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RV: "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto
       moreover have "mon_loc fg ww2' \<subseteq> mon_ww fg w2" "mon_env fg ww2' \<subseteq> mon_ww fg w2" using mon_ww_ileq[OF REVSPLIT(2), of fg] R_CONV(2) by (auto simp add: mon_ww_of_le_rem)
-      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_map2_\<alpha>nl[symmetric] ileq_map intro: \<alpha>ah_ileq del: predicate2I)
+      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_map2_\<alpha>nl[symmetric] ileq_map intro: \<alpha>ah_ileq)
       ultimately show ?thesis using goal1 REVSPLIT(1) by (blast intro: order_trans)
     qed
     from S_ENTRY_PAT[of "{#q'#}", simplified] RV(1) have S_ENTRY: "(v, mon_w fg w, {#q'#}) \<in> S_cs fg 1" by simp
@@ -761,7 +761,7 @@ next
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT(5)] obtain s2i' c2ie' ww2' where R_CONV: "c2i'={#s2i'#}+c2ie'" "w2'=map le_rem_s ww2'" "(([entry fg q'], {#}), ww2', s2i', c2ie') \<in> trcl (ntrp fg)" .
       from RU_sound[OF R_CONV(3), of U] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RU: "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto
       moreover have "mon_loc fg ww2' \<subseteq> mon_ww fg w2" "mon_env fg ww2' \<subseteq> mon_ww fg w2" using mon_ww_ileq[OF REVSPLIT(2), of fg] R_CONV(2) by (auto simp add: mon_ww_of_le_rem)
-      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_map2_\<alpha>nl[symmetric] ileq_map intro: \<alpha>ah_ileq del: predicate2I)
+      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_map2_\<alpha>nl[symmetric] ileq_map intro: \<alpha>ah_ileq)
       ultimately show ?thesis using goal1 REVSPLIT(1) by (blast intro: order_trans)
     qed
     from S_ENTRY_PAT[of "{#q'#}", simplified] RU(1) have S_ENTRY: "(v, mon_w fg w, {#q'#}) \<in> S_cs fg 1" by simp

@@ -1,4 +1,4 @@
-(*  ID:          $Id: Closure.thy,v 1.4 2008-04-15 13:15:27 makarius Exp $
+(*  ID:          $Id: Closure.thy,v 1.5 2008-06-11 14:23:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -224,7 +224,7 @@ lemma conseq_extract_pre:
              "\<lbrakk>\<forall>s \<in> P. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> ({s}) c Q,A\<rbrakk>
               \<Longrightarrow>
               \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c Q,A"
-  apply (rule hoarep.Conseq)
+  apply (rule Conseq)
   apply clarify
   apply (rule_tac x="{s}" in exI)  
   apply (rule_tac x="Q" in exI)  

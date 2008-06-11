@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJDefs.thy,v 1.8 2008-05-17 19:48:25 makarius Exp $
+    ID:          $Id: FJDefs.thy,v 1.9 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -361,7 +361,6 @@ lemma typing_induct:
   and "\<And>C CT D \<Gamma> e0. \<lbrakk>CT;\<Gamma> \<turnstile> e0 : D; P CT \<Gamma> e0 D; CT \<turnstile> C \<not><: D; CT \<turnstile> D \<not><: C\<rbrakk> \<Longrightarrow> P CT \<Gamma> (Cast C e0) C" 
  shows "P CT \<Gamma> e C" (is ?P)
 proof -
-  fix es Cs
   let ?IH="CT;\<Gamma> \<turnstile>+ es : Cs \<longrightarrow> (\<forall>i < length es.  P CT \<Gamma> (es!i) (Cs!i))"
   have "?IH \<and> (?T \<longrightarrow> ?P)"
   proof(induct rule:typings_typing.induct)

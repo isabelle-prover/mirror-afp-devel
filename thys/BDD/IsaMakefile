@@ -31,9 +31,9 @@ MAXTIME = 3600
 
 ## dependencies
 
-$(SESSION-NAME): Simpl $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
-Simpl:
+$(IMAGE):
 	cd ../Simpl; $(ISATOOL) make Simpl 
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib

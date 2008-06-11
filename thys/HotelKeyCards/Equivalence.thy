@@ -1,13 +1,15 @@
 (*<*)
 theory Equivalence
-imports State Trace
+imports Trace State
 begin
 
+declare expand_fun_eq[simp]
+
 lemma [simp]: "safe [] = (%r. False)"
-by(simp add:Trace.safe_def expand_fun_eq)
+by(simp add:safe_def)
 
 lemma [simp]: "safe (Exit g r # t) r' = safe t r'"
-apply(simp add:Trace.safe_def)
+apply(simp add:safe_def)
 apply(rule iffI)
  apply clarsimp
  apply(case_tac s\<^isub>3) apply simp
@@ -22,14 +24,14 @@ apply simp
 done
 
 lemma [simp]: "\<not> safe (Check_in g r c # t) r"
-apply(clarsimp simp add:Trace.safe_def)
+apply(clarsimp simp add:safe_def)
 apply(case_tac s\<^isub>3) apply simp
 apply(cases c)
 apply auto
 done
 
 lemma [simp]: "r \<noteq> r' \<Longrightarrow> safe (Check_in g r' c # t) r = safe t r"
-apply(simp add:Trace.safe_def)
+apply(simp add:safe_def)
 apply(rule iffI)
  apply clarsimp
  apply(case_tac s\<^isub>3) apply simp
@@ -46,7 +48,7 @@ done
 
 
 lemma [simp]: "r \<noteq> r' \<Longrightarrow> safe (Enter g r' c # t) r = safe t r"
-apply(simp add:Trace.safe_def)
+apply(simp add:safe_def)
 apply(rule iffI)
  apply clarsimp
  apply(case_tac s\<^isub>3) apply simp
@@ -84,7 +86,7 @@ apply simp
 done
 
 lemma [simp]: "safe t r \<Longrightarrow> safe (Enter g r c # t) r"
-apply(clarsimp simp:Trace.safe_def)
+apply(clarsimp simp:safe_def)
 apply(rule_tac x = s\<^isub>1 in exI)
 apply(rule_tac x = s\<^isub>2 in exI)
 apply simp
@@ -104,8 +106,8 @@ lemma safe_Enter[simp]: "hotel (Enter g r (k,k') # t) \<Longrightarrow>
  safe (Enter g r (k,k') # t) r =
  (owns t r = \<lfloor>g\<rfloor> \<and> isin t r = {} \<and> k' = currk t r \<or> safe t r)"
  apply rule
- apply(frule_tac g=g in Trace.safe, assumption) apply simp
- apply(clarsimp simp add:Trace.safe_def)
+ apply(frule_tac g=g in safe, assumption) apply simp
+ apply(clarsimp simp add:safe_def)
  apply(case_tac s\<^isub>3)
   apply clarsimp
  apply simp
@@ -114,7 +116,7 @@ lemma safe_Enter[simp]: "hotel (Enter g r (k,k') # t) \<Longrightarrow>
    prefer 2 apply fastsimp
   apply (erule conjE)+
   apply(drule ownsD)
-  apply(clarsimp simp add:Trace.safe_def)
+  apply(clarsimp simp add:safe_def)
   apply(frule (1) same_key2D)
   apply(rule_tac x = s\<^isub>1 in exI)
   apply(rule_tac x = s\<^isub>2 in exI)
@@ -134,23 +136,23 @@ apply(induct t)
  apply(insert State.init[where initk=initk])[1]
  apply simp
  apply(erule reach_cong)
- apply (simp add: expand_fun_eq)
+ apply simp
 
 apply (clarsimp split:event.splits)
 prefer 3
 apply(drule exit_room)
 apply simp
 apply(erule reach_cong)
-apply (simp add: expand_fun_eq)
+apply simp
 
 apply(drule_tac g = guest and r = room in check_in)
 apply simp
 apply(erule reach_cong)
-apply (simp add: expand_fun_eq)
+apply simp
 
 apply(drule_tac g = guest and r = room in enter_room) apply simp apply simp
 apply(erule reach_cong)
-apply (fastsimp simp add: expand_fun_eq)
+apply fastsimp
 done
 
 lemma reach_hotel: "s : reach \<Longrightarrow>
@@ -166,8 +168,8 @@ apply(erule reach.induct)
  apply fastsimp
 apply clarsimp
 apply(rule_tac x = "Check_in g r (currk t r,k) # t" in exI)
-apply (simp add: expand_fun_eq [where 'a=room] expand_fun_eq [where 'a=guest])
-apply (clarsimp simp add: expand_fun_eq [where 'a=room] expand_fun_eq [where 'a=guest and 'b="(key \<times> key) set"])
+apply simp
+apply clarsimp
 apply(erule disjE)
 apply clarsimp
 apply(rule_tac x = "Enter g r (roomk t r,k') # t" in exI)
@@ -177,7 +179,7 @@ apply(rule_tac x = "Enter g r (k, roomk t r) # t" in exI)
 apply clarsimp
 apply clarsimp
 apply(rule_tac x = "Exit g r # t" in exI)
-apply (clarsimp simp add: expand_fun_eq [where 'a=room] expand_fun_eq [where 'a=guest and 'b="(key \<times> key) set"])
+apply clarsimp
 done
 (*>*)
 

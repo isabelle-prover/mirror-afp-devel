@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEpres.thy,v 1.4 2008-05-07 09:03:14 stefanberghofer Exp $
+(*  ID:         $Id: QEpres.thy,v 1.5 2008-06-11 14:22:58 lsf37 Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -93,8 +93,8 @@ qed
 
 lemma I_hd_coeffs1:
 assumes 0: "\<forall>a\<in>set as. hd_coeff a \<noteq> 0" shows
-  "(\<exists>x. \<forall>a \<in> set(hd_coeffs1 as). I\<^isub>Z a (x#e)) =
-   (\<exists>x. \<forall>a \<in> set as. I\<^isub>Z a (x#e))" (is "?B = ?A")
+  "(\<exists>x. \<forall>a \<in> set as. I\<^isub>Z a (x#e)) =
+   (\<exists>x. \<forall>a \<in> set(hd_coeffs1 as). I\<^isub>Z a (x#e))" (is "?A = ?B")
 proof -
   let ?m = "zlcms(map hd_coeff as)"
   have "?m>0" using 0 by(simp add:zlcms_pos)
@@ -310,7 +310,7 @@ proof -
 	    from `a \<in> ?Ls` have "i-\<langle>ks,xs\<rangle> \<in> ?L" by(fastsimp simp:set_lbounds)
 	    hence "i-\<langle>ks,xs\<rangle> \<le> li - \<langle>lks,xs\<rangle>"
 	      using lm[symmetric] `finite ?L` `?L \<noteq> {}` by auto
-	    hence ?thesis using n by simp }
+	    hence ?thesis using n by simp arith }
 	  moreover
 	  { assume "a \<in> ?Us"
 	    then obtain i ks where [simp]: "a = Le i (-1#ks)" using hd

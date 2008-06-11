@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: EvalProof.thy,v 1.3 2008-04-15 14:07:35 makarius Exp $
+    ID:          $Id: EvalProof.thy,v 1.4 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LPGL
@@ -33,7 +33,7 @@ theory EvalProof imports ProcedureSpecs begin
 lemma (in Eval_impl) Eval_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>}  PROC Eval (\<acute>p, \<acute>varval, \<acute>R) 
                 {t. t may_not_modify_globals \<sigma>}"
-  apply (hoare_rule HoarePartial.ProcRec1)
+  apply (hoare_rule ProcRec1)
   apply (vcg spec=modifies)
   done 
 
@@ -43,7 +43,7 @@ lemma (in Eval_impl) Eval_spec:
   \<lbrace>\<sigma>. Dag \<acute>p \<acute>low \<acute>high t \<and> bdt t \<acute>var = Some bdt1\<rbrace> 
    \<acute>R :== PROC Eval(\<acute>p, \<acute>varval) 
   \<lbrace>\<acute>R = eval bdt1 \<^bsup>\<sigma>\<^esup>varval \<rbrace>"
-apply (hoare_rule HoarePartial.ProcRec1)
+apply (hoare_rule ProcRec1)
 apply vcg
 apply clarsimp
 apply safe

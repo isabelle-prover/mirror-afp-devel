@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoareTotal.thy,v 1.5 2008-06-10 14:38:11 makarius Exp $
+(*  ID:          $Id: HoareTotal.thy,v 1.6 2008-06-11 14:23:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -208,7 +208,7 @@ next
   from deriv_c2 
   show "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({s. (s \<in> b \<longrightarrow> s \<in> P\<^isub>1) \<and> (s \<notin> b \<longrightarrow> s \<in> P\<^isub>2)} \<inter> - b) c\<^isub>2 Q,A"
     by (rule conseqPre) blast
-qed (insert wp)
+qed
 
 
 lemma CondSwap: 
@@ -518,7 +518,6 @@ assumes c: "\<forall>s t. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub
 assumes bdy: "\<forall>s. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' s) bdy {t. return s t \<in> R s t},{t. return s t \<in> A}"
 assumes adapt: "P \<subseteq> {s. init s \<in> P' s}"
 shows "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P (block init bdy return c) Q,A"
-  using adapt bdy c
   by (rule Block)
 
 lemma BlockSpec:
@@ -605,7 +604,6 @@ lemma ProcSpec:
   assumes c: "\<forall>s t. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> (R s t) (c s t) Q,A"
   assumes p: "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' Z) Call p (Q' Z),(A' Z)" 
   shows "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P (call init p return c) Q,A"
-using adapt c p
 apply (unfold call_def) 
 by (rule BlockSpec)
 
@@ -728,13 +726,13 @@ lemma ProcNoRec1:
 proof -
   have "\<forall>\<sigma> Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> P Z) (the (\<Gamma> p)) (Q Z),(A Z)"
     by (blast intro: conseqPre deriv_body [rule_format])
-  with p_defined have "\<forall>\<sigma> Z. \<Gamma>,\<Theta>\<union>(\<Union>Z. {(P Z \<inter> {s. ((s,p), \<sigma>,p) \<in> {}},
+  hence "\<forall>\<sigma> Z. \<Gamma>,\<Theta>\<union>(\<Union>Z. {(P Z \<inter> {s. ((s,p), \<sigma>,p) \<in> {}},
                          p,Q Z,A Z)})
              \<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> P Z) (the (\<Gamma> p)) (Q Z),(A Z)"
     by (blast intro: hoaret_augment_context)
-  from this  
+  from this 
   show ?thesis 
-    by (rule ProcRec1) (auto simp add: p_defined) 
+    by (rule ProcRec1) simp
 qed
 
 lemma ProcBody:
@@ -848,7 +846,7 @@ proof -
                           (\<forall>t. t \<in> Q' s Z \<longrightarrow>  return s t \<in> R s t) \<and>
                           (\<forall>t. t \<in> A' s Z \<longrightarrow> return s t \<in> A)}"
     by blast
-  from this c p show ?thesis
+  thus ?thesis
     by (rule DynProc)
 qed
 

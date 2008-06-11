@@ -41,7 +41,7 @@ constdefs
                        P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T')) \<and>
   (C = Object \<longrightarrow> (fs = []) \<and> (ms = [])) \<and>  (* require object to have no fields/methods because of array subtype of object *)
   (C = Thread \<longrightarrow> (\<exists>m. (run, [], Void, m) \<in> set ms)) \<and>
-  (P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C \<longrightarrow> \<not> (\<exists>m Ts T. (start, Ts, T, m) \<in> set ms) \<and> \<not> (\<exists>m Ts T. (join, Ts, T, m) \<in> set ms)) \<and>
+  (P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C \<longrightarrow> \<not> (\<exists>m Ts T. (start, Ts, T, m) \<in> set ms)) \<and>
   (\<not> (\<exists>m Ts T. (wait, Ts, T, m) \<in> set ms)) \<and> 
   (\<not> (\<exists>m Ts T. (notify, Ts, T, m) \<in> set ms)) \<and>
   (\<not> (\<exists>m Ts T. (notifyAll, Ts, T, m) \<in> set ms))"
@@ -87,17 +87,16 @@ lemma is_class_xcpt:
 
 
 lemma subcls1_wfD:
-  "\<lbrakk> P \<turnstile> C \<prec>\<^sup>1 D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> D \<noteq> C \<and> \<not> (subcls1 P)\<^sup>+\<^sup>+ D C"
-apply( frule tranclp.r_into_trancl[where r="subcls1 P"])
+  "\<lbrakk> P \<turnstile> C \<prec>\<^sup>1 D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> D \<noteq> C \<and> (D,C) \<notin> (subcls1 P)\<^sup>+"
+(*<*)
+apply( frule r_into_trancl)
 apply( drule subcls1D)
 apply(clarify)
 apply( drule (1) class_wf)
 apply( unfold wf_cdecl_def)
-apply(rule conjI)
- apply(force)
-apply(unfold reflcl_tranclp[symmetric, where r="subcls1 P"])
-apply(blast)
+apply(force simp add: reflcl_trancl [THEN sym] simp del: reflcl_trancl)
 done
+(*>*)
 
 
 lemma wf_cdecl_supD: 
@@ -106,70 +105,63 @@ lemma wf_cdecl_supD:
 
 
 lemma subcls_asym:
-  "\<lbrakk> wf_prog wf_md P; (subcls1 P)\<^sup>+\<^sup>+ C D \<rbrakk> \<Longrightarrow> \<not> (subcls1 P)\<^sup>+\<^sup>+ D C"
+  "\<lbrakk> wf_prog wf_md P; (C,D) \<in> (subcls1 P)\<^sup>+ \<rbrakk> \<Longrightarrow> (D,C) \<notin> (subcls1 P)\<^sup>+"
 (*<*)
-apply(erule tranclp.cases)
+apply(erule tranclE)
 apply(fast dest!: subcls1_wfD )
-apply(fast dest!: subcls1_wfD intro: tranclp_trans)
+apply(fast dest!: subcls1_wfD intro: trancl_trans)
 done
 (*>*)
 
 
 lemma subcls_irrefl:
-  "\<lbrakk> wf_prog wf_md P; (subcls1 P)\<^sup>+\<^sup>+ C D\<rbrakk> \<Longrightarrow> C \<noteq> D"
+  "\<lbrakk> wf_prog wf_md P; (C,D) \<in> (subcls1 P)\<^sup>+ \<rbrakk> \<Longrightarrow> C \<noteq> D"
 (*<*)
-apply (erule tranclp_trans_induct)
+apply (erule trancl_trans_induct)
 apply  (auto dest: subcls1_wfD subcls_asym)
 done
 (*>*)
 
-lemma acyclicP_def:
-  "acyclicP r \<longleftrightarrow> (\<forall>x. \<not> r^++ x x)"
-  unfolding acyclic_def trancl_def
-by(auto)
 
 lemma acyclic_subcls1:
-  "wf_prog wf_md P \<Longrightarrow> acyclicP (subcls1 P)"
+  "wf_prog wf_md P \<Longrightarrow> acyclic (subcls1 P)"
 (*<*)
-apply (unfold acyclicP_def)
+apply (unfold acyclic_def)
 apply (fast dest: subcls_irrefl)
 done
 (*>*)
 
 
-
 lemma wf_subcls1:
-  "wf_prog wf_md P \<Longrightarrow> wfP ((subcls1 P)\<inverse>\<inverse>)"
-unfolding wfP_def
+  "wf_prog wf_md P \<Longrightarrow> wf ((subcls1 P)\<inverse>)"
+(*<*)
 apply (rule finite_acyclic_wf)
- apply(subst finite_converse[unfolded converse_def, symmetric])
- apply(simp)
- apply(rule finite_subcls1)
-apply(subst acyclic_converse[unfolded converse_def, symmetric])
-apply(simp)
+apply ( subst finite_converse)
+apply ( rule finite_subcls1)
+apply (subst acyclic_converse)
 apply (erule acyclic_subcls1)
 done
 (*>*)
 
 
 lemma single_valued_subcls1:
-  "wf_prog wf_md G \<Longrightarrow> single_valuedP (subcls1 G)"
+  "wf_prog wf_md G \<Longrightarrow> single_valued (subcls1 G)"
 (*<*)
 by(auto simp:wf_prog_def distinct_fst_def single_valued_def dest!:subcls1D)
 (*>*)
 
 
 lemma subcls_induct: 
-  "\<lbrakk> wf_prog wf_md P; \<And>C. \<forall>D. (subcls1 P)\<^sup>+\<^sup>+ C D \<longrightarrow> Q D \<Longrightarrow> Q C \<rbrakk> \<Longrightarrow> Q C"
+  "\<lbrakk> wf_prog wf_md P; \<And>C. \<forall>D. (C,D) \<in> (subcls1 P)\<^sup>+ \<longrightarrow> Q D \<Longrightarrow> Q C \<rbrakk> \<Longrightarrow> Q C"
 (*<*)
   (is "?A \<Longrightarrow> PROP ?P \<Longrightarrow> _")
 proof -
   assume p: "PROP ?P"
   assume ?A thus ?thesis apply -
 apply(drule wf_subcls1)
-apply(drule wfP_trancl)
-apply(simp only: tranclp_converse)
-apply(erule_tac a = C in wfP_induct)
+apply(drule wf_trancl)
+apply(simp only: trancl_converse)
+apply(erule_tac a = C in wf_induct)
 apply(rule p)
 apply(auto)
 done
@@ -230,14 +222,14 @@ lemma subcls_C_Object:
 (*<*)
 apply(erule (1) subcls1_induct)
  apply( fast)
-apply(erule (1) converse_rtranclp_into_rtranclp)
+apply(erule (1) converse_rtrancl_into_rtrancl)
 done
 (*>*)
 
 lemma converse_subcls_is_class:
   assumes wf: "wf_prog wf_md P"
   shows "\<lbrakk> P \<turnstile> C \<preceq>\<^sup>* D; is_class P C \<rbrakk> \<Longrightarrow> is_class P D"
-proof(induct rule: rtranclp_induct)
+proof(induct rule: rtrancl_induct)
   assume "is_class P C"
   thus "is_class P C" .
 next
@@ -262,18 +254,13 @@ qed
 lemma is_class_is_subcls:
   "wf_prog m P \<Longrightarrow> is_class P C = P \<turnstile> C \<preceq>\<^sup>* Object"
 (*<*)by (fastsimp simp:is_class_def
-                  elim: subcls_C_Object converse_rtranclpE subcls1I
+                  elim: subcls_C_Object converse_rtranclE subcls1I
                   dest: subcls1D)
 (*>*)
 
 lemma subcls_antisym:
   "\<lbrakk>wf_prog m P; P \<turnstile> C \<preceq>\<^sup>* D; P \<turnstile> D \<preceq>\<^sup>* C\<rbrakk> \<Longrightarrow> C = D"
-apply(drule acyclic_subcls1)
-apply(drule acyclic_impl_antisym_rtrancl)
-apply(drule antisymD)
-apply(unfold rtrancl_def)
-apply(auto)
-done
+  (*<*) by (auto dest: acyclic_subcls1 acyclic_impl_antisym_rtrancl antisymD) (*>*)
 
 lemma is_type_pTs:
 assumes "wf_prog wf_md P" and "(C,S,fs,ms) \<in> set P" and "(M,Ts,T,m) \<in> set ms"
@@ -298,11 +285,11 @@ proof (erule widen.induct)
 next
   fix C D
   assume CscD: "P \<turnstile> C \<preceq>\<^sup>* D"
-  then have CpscD: "C = D \<or> (C \<noteq> D \<and> (subcls1 P)\<^sup>+\<^sup>+ C D)" by (simp add: rtranclpD)
+  then have CpscD: "C = D \<or> (C \<noteq> D \<and> (C,D) \<in> (subcls1 P)\<^sup>+)" by (simp add: rtranclD)
   { assume "P \<turnstile> D \<preceq>\<^sup>* C"
-    then have DpscC: "D = C \<or> (D \<noteq> C \<and> (subcls1 P)\<^sup>+\<^sup>+ D C)" by (simp add: rtranclpD)
-    { assume "(subcls1 P)\<^sup>+\<^sup>+ D C"
-      with wfP have CnscD: "\<not> (subcls1 P)\<^sup>+\<^sup>+ C D" by (rule subcls_asym)
+    then have DpscC: "D = C \<or> (D \<noteq> C \<and> (D,C) \<in> (subcls1 P)\<^sup>+)" by (simp add: rtranclD)
+    { assume "(D,C) \<in> (subcls1 P)\<^sup>+"
+      with wfP have CnscD: "(C,D) \<notin> (subcls1 P)\<^sup>+" by (rule subcls_asym)
       with CpscD have "C = D" by simp
     }
     with DpscC have "C = D" by blast
@@ -347,10 +334,6 @@ by(auto dest: widen_asym)
 lemma widen_C_Object: "\<lbrakk> wf_prog wf_md P; is_class P C \<rbrakk> \<Longrightarrow> P \<turnstile> Class C \<le> Class Object"
 by(simp add: subcls_C_Object)
 
-lemma is_refType_widen_Object:
-  assumes wfP: "wf_prog wfmc P"
-  shows "\<lbrakk> is_type P A; is_refT A \<rbrakk> \<Longrightarrow> P \<turnstile> A \<le> Class Object"
-by(induct A)(auto elim: refTE intro: subcls_C_Object[OF _ wfP] widen_array_object)
 
 subsection{* Well-formedness and method lookup *}
 
@@ -371,11 +354,11 @@ lemma sees_method_mono [rule_format (no_asm)]:
   \<forall>D Ts T m. P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<longrightarrow>
      (\<exists>D' Ts' T' m'. P \<turnstile> C' sees M:Ts'\<rightarrow>T' = m' in D' \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T' \<le> T)"
 (*<*)
-apply( drule rtranclpD)
+apply( drule rtranclD)
 apply( erule disjE)
 apply(  fastsimp intro: widen_refl widens_refl)
 apply( erule conjE)
-apply( erule tranclp_trans_induct)
+apply( erule trancl_trans_induct)
 prefer 2
 apply(  clarify)
 apply(  drule spec, drule spec, drule spec, drule spec, erule (1) impE)
@@ -449,13 +432,13 @@ qed
 
 lemma Thread_no_sees_method_start:
   assumes wf: "wf_prog wf_md P"
-  shows "\<lbrakk> P \<turnstile> C sees_methods Mm; Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> False"
+  shows "\<lbrakk> P \<turnstile> C sees_methods Mm; Mm start = \<lfloor>((Ts, T, pns, body), D)\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> False"
 proof(induct rule: Methods.induct)
   case (sees_methods_Object D' fs ms Mm) 
-  have classO: "class P Object = \<lfloor>(D', fs, ms)\<rfloor>" by fact
-  have Mm: "Mm = option_map (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
-  have Mmstart: "Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
-  have "P \<turnstile> Object \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* Object" by fact
+  have classO: "class P Object = \<lfloor>(D', fs, ms)\<rfloor>" .
+  have Mm: "Mm = option_map (\<lambda>m. (m, Object)) \<circ> map_of ms" .
+  have Mmstart: "Mm start = \<lfloor>((Ts, T, pns, body), D)\<rfloor>" .
+  have "P \<turnstile> Object \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* Object" .
   hence PTO: "P \<turnstile> Thread \<preceq>\<^sup>* Object" by(auto)
   with wf classO have "\<not> (\<exists>Ts T m. (start, Ts, T, m) \<in> set ms)"
     apply -
@@ -466,25 +449,25 @@ proof(induct rule: Methods.induct)
     by (auto dest: map_of_is_SomeD)
 next
   case (sees_methods_rec C D' fs ms Mm Mm')
-  have classC: "class P C = \<lfloor>(D', fs, ms)\<rfloor>" by fact
-  have CnObject: "C \<noteq> Object" by fact
-  have PD'Mm: "P \<turnstile> D' sees_methods Mm" by fact
-  have IH: "\<lbrakk>Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> D' \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* D'\<rbrakk> \<Longrightarrow> False" by fact
-  have Mm': "Mm' = Mm ++ (option_map (\<lambda>m. (m, C)) \<circ> map_of ms)" by fact
-  have Mm'start: "Mm' start = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
-  have "P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C" by fact
+  have classC: "class P C = \<lfloor>(D', fs, ms)\<rfloor>" .
+  have CnObject: "C \<noteq> Object" .
+  have PD'Mm: "P \<turnstile> D' sees_methods Mm" .
+  have IH: "\<lbrakk>Mm start = \<lfloor>((Ts, T, pns, body), D)\<rfloor>; P \<turnstile> D' \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* D'\<rbrakk> \<Longrightarrow> False" .
+  have Mm': "Mm' = Mm ++ (option_map (\<lambda>m. (m, C)) \<circ> map_of ms)" .
+  have Mm'start: "Mm' start = \<lfloor>((Ts, T, pns, body), D)\<rfloor>" .
+  have "P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C" .
   thus ?case
   proof(rule disjE)
     assume PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
     show ?thesis
     proof(cases "(option_map (\<lambda>m. (m, C)) \<circ> map_of ms) start")
       case None
-      with Mm' Mm'start have Mmstart: "Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>"
+      with Mm' Mm'start have Mmstart: "Mm start = \<lfloor>((Ts, T, pns, body), D)\<rfloor>"
 	by(auto)
       from classC have PCs1D: "P \<turnstile> C \<prec>\<^sup>1 D'" using CnObject by(auto intro: subcls1I)
       with wf classC have "is_class P D'" 
 	apply -
-	apply(drule r_into_rtranclp[where r="subcls1 P"])
+	apply(drule r_into_rtrancl)
 	apply(erule converse_subcls_is_class, assumption)
 	by (simp add: is_class_def)
       then obtain E fsD MsD where classD': "class P D' = \<lfloor>(E, fsD, MsD)\<rfloor>" by(auto simp: is_class_def)
@@ -496,14 +479,14 @@ next
 	assume "\<not> P \<turnstile> D' \<preceq>\<^sup>* Thread"
 	with PCThread PCs1D wf have "C = Thread"
 	  apply -
-	  apply(erule converse_rtranclpE)
+	  apply(erule converse_rtranclE)
 	  by(auto elim!: subcls1.cases)
 	hence "P \<turnstile> Thread \<preceq>\<^sup>* D'" using PCs1D by auto
 	thus ?thesis by(auto intro: IH[OF Mmstart])
       qed
     next
       case (Some a)
-      with Mm'start Mm' have "(start, Ts, T, mthd) \<in> set ms"
+      with Mm'start Mm' have "(start, Ts, T, pns, body) \<in> set ms"
 	by(auto dest: map_of_is_SomeD)
       with wf classC PCThread show ?thesis
 	apply -
@@ -516,12 +499,12 @@ next
     show ?thesis
     proof(cases "(option_map (\<lambda>m. (m, C)) \<circ> map_of ms) start")
       case None
-      with Mm' Mm'start have Mmstart: "Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>"
+      with Mm' Mm'start have Mmstart: "Mm start = \<lfloor>((Ts, T, pns, body), D)\<rfloor>"
 	by(auto)
       from classC have PCs1D: "P \<turnstile> C \<prec>\<^sup>1 D'" using CnObject by(auto intro: subcls1I)
       with wf classC have "is_class P D'" 
 	apply -
-	apply(drule r_into_rtranclp[where r="subcls1 P"])
+	apply(drule r_into_rtrancl)
 	apply(erule converse_subcls_is_class, assumption)
 	by (simp add: is_class_def)
       then obtain E fsD MsD where classD': "class P D' = \<lfloor>(E, fsD, MsD)\<rfloor>" by(auto simp: is_class_def)
@@ -529,7 +512,7 @@ next
       thus ?thesis by(auto intro: IH[OF Mmstart])
     next
       case (Some a)
-      with Mm'start Mm' have "(start, Ts, T, mthd) \<in> set ms"
+      with Mm'start Mm' have "(start, Ts, T, pns, body) \<in> set ms"
 	by(auto dest: map_of_is_SomeD)
       with wf classC PThreadC show ?thesis
 	apply -
@@ -539,107 +522,6 @@ next
     qed
   qed
 qed
-
-lemma Thread_not_sees_method_start:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees start: Ts \<rightarrow> T = mthd in D; P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> False"
-by(auto simp add: Method_def del: disjE elim: Thread_no_sees_method_start)
-
-lemma Thread_no_sees_method_join:
-  assumes wf: "wf_prog wf_md P"
-  shows "\<lbrakk> P \<turnstile> C sees_methods Mm; Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> False"
-proof(induct rule: Methods.induct)
-  case (sees_methods_Object D' fs ms Mm) 
-  have classO: "class P Object = \<lfloor>(D', fs, ms)\<rfloor>" by fact
-  have Mm: "Mm = option_map (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
-  have Mmstart: "Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
-  have "P \<turnstile> Object \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* Object" by fact
-  hence PTO: "P \<turnstile> Thread \<preceq>\<^sup>* Object" by(auto)
-  with wf classO have "\<not> (\<exists>Ts T m. (join, Ts, T, m) \<in> set ms)"
-    apply -
-    apply(auto simp add: wf_prog_def)
-    apply(auto dest!: bspec map_of_is_SomeD simp: class_def)
-    by(clarsimp simp: wf_cdecl_def)
-  with Mm Mmstart show ?case
-    by (auto dest: map_of_is_SomeD)
-next
-  case (sees_methods_rec C D' fs ms Mm Mm')
-  have classC: "class P C = \<lfloor>(D', fs, ms)\<rfloor>" by fact
-  have CnObject: "C \<noteq> Object" by fact
-  have PD'Mm: "P \<turnstile> D' sees_methods Mm" by fact
-  have IH: "\<lbrakk>Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> D' \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* D'\<rbrakk> \<Longrightarrow> False" by fact
-  have Mm': "Mm' = Mm ++ (option_map (\<lambda>m. (m, C)) \<circ> map_of ms)" by fact
-  have Mm'start: "Mm' join = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
-  have "P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C" by fact
-  thus ?case
-  proof(rule disjE)
-    assume PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
-    show ?thesis
-    proof(cases "(option_map (\<lambda>m. (m, C)) \<circ> map_of ms) join")
-      case None
-      with Mm' Mm'start have Mmstart: "Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>"
-	by(auto)
-      from classC have PCs1D: "P \<turnstile> C \<prec>\<^sup>1 D'" using CnObject by(auto intro: subcls1I)
-      with wf classC have "is_class P D'" 
-	apply -
-	apply(drule r_into_rtranclp[where r="subcls1 P"])
-	apply(erule converse_subcls_is_class, assumption)
-	by (simp add: is_class_def)
-      then obtain E fsD MsD where classD': "class P D' = \<lfloor>(E, fsD, MsD)\<rfloor>" by(auto simp: is_class_def)
-      show ?thesis
-      proof(cases "P \<turnstile> D' \<preceq>\<^sup>* Thread")
-	assume "P \<turnstile> D' \<preceq>\<^sup>* Thread"
-	thus ?thesis by(auto intro: IH[OF Mmstart])
-      next
-	assume "\<not> P \<turnstile> D' \<preceq>\<^sup>* Thread"
-	with PCThread PCs1D wf have "C = Thread"
-	  apply -
-	  apply(erule converse_rtranclpE)
-	  by(auto elim!: subcls1.cases)
-	hence "P \<turnstile> Thread \<preceq>\<^sup>* D'" using PCs1D by auto
-	thus ?thesis by(auto intro: IH[OF Mmstart])
-      qed
-    next
-      case (Some a)
-      with Mm'start Mm' have "(join, Ts, T, mthd) \<in> set ms"
-	by(auto dest: map_of_is_SomeD)
-      with wf classC PCThread show ?thesis
-	apply -
-	apply(auto simp add: wf_prog_def)
-	apply(auto dest!: bspec map_of_is_SomeD simp: class_def)
-	by(clarsimp simp: wf_cdecl_def)
-    qed
-  next
-    assume PThreadC: "P \<turnstile> Thread \<preceq>\<^sup>* C"
-    show ?thesis
-    proof(cases "(option_map (\<lambda>m. (m, C)) \<circ> map_of ms) join")
-      case None
-      with Mm' Mm'start have Mmstart: "Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>"
-	by(auto)
-      from classC have PCs1D: "P \<turnstile> C \<prec>\<^sup>1 D'" using CnObject by(auto intro: subcls1I)
-      with wf classC have "is_class P D'" 
-	apply -
-	apply(drule r_into_rtranclp[where r="subcls1 P"])
-	apply(erule converse_subcls_is_class, assumption)
-	by (simp add: is_class_def)
-      then obtain E fsD MsD where classD': "class P D' = \<lfloor>(E, fsD, MsD)\<rfloor>" by(auto simp: is_class_def)
-      from PCs1D PThreadC have "P \<turnstile> Thread \<preceq>\<^sup>* D'" by(auto)
-      thus ?thesis by(auto intro: IH[OF Mmstart])
-    next
-      case (Some a)
-      with Mm'start Mm' have "(join, Ts, T, mthd) \<in> set ms"
-	by(auto dest: map_of_is_SomeD)
-      with wf classC PThreadC show ?thesis
-	apply -
-	apply(auto simp add: wf_prog_def)
-	apply(auto dest!: bspec map_of_is_SomeD simp: class_def)
-	by(clarsimp simp: wf_cdecl_def)
-    qed
-  qed
-qed
-
-lemma Thread_not_sees_method_join:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees join: Ts \<rightarrow> T = mthd in D; P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C \<rbrakk> \<Longrightarrow> False"
-by(auto simp add: Method_def del: disjE elim: Thread_no_sees_method_join)
 
 lemma Call_lemma:
   "\<lbrakk> P \<turnstile> C sees M:Ts\<rightarrow>T = m in D; P \<turnstile> C' \<preceq>\<^sup>* C; wf_prog wf_md P \<rbrakk>
@@ -653,54 +535,6 @@ apply(fastsimp intro:sees_method_decl_above dest:sees_wf_mdecl
 done
 (*>*)
 
-lemma sub_Thread_sees_run:
-  assumes wf: "wf_prog wf_md P"
-  and PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
-  and isclassThread: "is_class P Thread"
-  shows "\<exists>D mthd. P \<turnstile> C sees run: []\<rightarrow>Void = mthd in D"
-proof -
-  from isclassThread obtain T' fsT MsT where classT: "class P Thread = \<lfloor>(T', fsT, MsT)\<rfloor>"
-    by(auto simp: is_class_def)
-  with wf have wfcThread: "wf_cdecl wf_md P (Thread, T', fsT, MsT)"
-    by(auto dest: map_of_is_SomeD bspec simp add: wf_prog_def class_def)
-  then obtain mrunT where runThread: "(run, [], Void, mrunT) \<in> set MsT"
-    by(auto simp add: wf_cdecl_def)
-  moreover have "\<exists>MmT. P \<turnstile> Thread sees_methods MmT \<and>
-                       (\<forall>(M,Ts,T,m) \<in> set MsT. MmT M = Some((Ts,T,m),Thread))"
-    by(rule mdecls_visible[OF wf isclassThread classT])
-  then obtain MmT where ThreadMmT: "P \<turnstile> Thread sees_methods MmT"
-    and MmT: "\<forall>(M,Ts,T,m) \<in> set MsT. MmT M = Some((Ts,T,m),Thread)"
-    by blast
-  ultimately obtain mthd
-    where "MmT run = \<lfloor>(([], Void, mthd), Thread)\<rfloor>"
-    by(fastsimp)
-  with ThreadMmT have Tseesrun: "P \<turnstile> Thread sees run: []\<rightarrow>Void = mthd in Thread"
-    by(auto simp add: Method_def)
-  from sees_method_mono[OF PCThread wf Tseesrun] show ?thesis by auto
-qed
-
-lemma wf_Object_method_empty:
-  assumes wf: "wf_prog wf_md P"
-  and sees: "P \<turnstile> Object sees M: Ts\<rightarrow>T = m in D"
-  shows False
-proof -
-  from wf obtain O' fs ms
-    where classO: "class P Object = \<lfloor>(O', fs, ms)\<rfloor>"
-    by(fastsimp dest!: is_class_Object simp add: is_class_def)
-  from wf classO have "ms = []"
-    by(auto simp add: wf_prog_def wf_cdecl_def class_def dest: map_of_is_SomeD bspec)
-  with classO sees show False
-    by(auto elim: Methods.cases simp: Method_def)
-qed
-
-lemma no_sees_wait: "\<lbrakk> wf_prog wfmd P; P \<turnstile> C sees wait: Ts\<rightarrow>Ta = mthd in D \<rbrakk> \<Longrightarrow> False"
-by(fastsimp dest: visible_method_exists class_wf map_of_SomeD simp add: wf_cdecl_def)
-
-lemma no_sees_notify: "\<lbrakk> wf_prog wfmd P; P \<turnstile> C sees notify: Ts\<rightarrow>Ta = mthd in D \<rbrakk> \<Longrightarrow> False"
-by(fastsimp dest: visible_method_exists class_wf map_of_SomeD simp add: wf_cdecl_def)
-
-lemma no_sees_notifyAll: "\<lbrakk> wf_prog wfmd P; P \<turnstile> C sees notifyAll: Ts\<rightarrow>Ta = mthd in D \<rbrakk> \<Longrightarrow> False"
-by(fastsimp dest: visible_method_exists class_wf map_of_SomeD simp add: wf_cdecl_def)
 
 lemma wf_prog_lift:
   assumes wf: "wf_prog (\<lambda>P C bd. A P C bd) P"
@@ -768,16 +602,28 @@ lemma wf_Object_field_empty:
   shows "P \<turnstile> Object has_fields []"
 proof -
   from wf obtain O' fs ms where classO: "class P Object = \<lfloor>(O', fs, ms)\<rfloor>"
-    by -(drule is_class_Object,auto simp add: is_class_def)
+    apply -
+    apply(drule is_class_Object)
+    by(unfold is_class_def, auto)
   from wf classO have "fs = []"
     by(auto simp add: wf_prog_def wf_cdecl_def class_def dest: map_of_is_SomeD bspec)
   with classO show ?thesis
     by(auto intro: has_fields_Object)
 qed
 
-lemma wf_Object_not_has_field [dest]:
-  "\<lbrakk> P \<turnstile> Object has F:T in D; wf_prog wf_md P \<rbrakk> \<Longrightarrow> False"
-by(auto dest: wf_Object_field_empty has_fields_fun simp add: has_field_def)
-
+lemma wf_Object_method_empty:
+  assumes wf: "wf_prog wf_md P"
+  shows "\<not> P \<turnstile> Object sees M: Ts\<rightarrow>T = m in D"
+proof
+  assume sees: "P \<turnstile> Object sees M: Ts\<rightarrow>T = m in D"
+  from wf obtain O' fs ms where classO: "class P Object = \<lfloor>(O', fs, ms)\<rfloor>"
+    apply -
+    apply(drule is_class_Object)
+    by(unfold is_class_def, auto)
+  from wf classO have "ms = []"
+    by(auto simp add: wf_prog_def wf_cdecl_def class_def dest: map_of_is_SomeD bspec)
+  with classO sees show False
+    by(auto elim: Methods.cases simp: Method_def)
+qed
 
 end

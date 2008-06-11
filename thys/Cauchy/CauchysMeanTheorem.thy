@@ -1,5 +1,5 @@
 (*  Title:       Cauchy's Mean Theorem
-    ID:          $Id: CauchysMeanTheorem.thy,v 1.12 2008-04-02 15:00:07 fhaftmann Exp $
+    ID:          $Id: CauchysMeanTheorem.thy,v 1.13 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Benjamin Porter <Benjamin.Porter at gmail.com>, 2006
                  cleaned up a bit by Tobias Nipkow, 2007
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
@@ -884,10 +884,9 @@ positive, has a strictly lower heterogeneity and a greater geometric
 mean. *}
 
 lemma new_list_gt_gmean:
-  fixes xs :: "real list" and m :: real
-  and neq and eq
+  fixes xs::"real list" and m::real
   defines
-    m: "m \<equiv> mean xs" and
+    m: "m \<equiv> (mean xs)" and
     neq: "noteq \<equiv> list_neq xs m" and
     eq: "eq \<equiv> list_eq xs m"
   assumes pos_xs: "pos xs" and het_gt_0: "het xs > 0"
@@ -1098,7 +1097,7 @@ proof (induct p rule: nat_less_induct)
     hence "het x > 0" and "pos x" by auto
     with new_list_gt_gmean have
       "\<exists>y. gmean y > gmean x \<and> \<gamma>_eq (x,y) \<and> het y < het x \<and> pos y"
-      apply - 
+      apply -
       apply (drule meta_spec [of _ x])
       apply (drule meta_mp)
         apply assumption
@@ -1108,26 +1107,26 @@ proof (induct p rule: nat_less_induct)
       apply simp
       done
     then obtain \<beta> where
-      \<beta>_def: "gmean \<beta> > gmean x \<and> \<gamma>_eq (x,\<beta>) \<and> het \<beta> < het x \<and> pos \<beta>" ..
+      \<beta>def: "gmean \<beta> > gmean x \<and> \<gamma>_eq (x,\<beta>) \<and> het \<beta> < het x \<and> pos \<beta>" ..
     then obtain b where bdef: "b = het \<beta>" by simp
-    with ass \<beta>_def have "b < n" by auto
+    with ass \<beta>def have "b < n" by auto
     with ind have "?Q b" by simp
-    with \<beta>_def have
+    with \<beta>def have
       ind2: "b = het \<beta> \<and> 0 < b \<and> pos \<beta> \<longrightarrow>
       (\<exists>y. gmean \<beta> < gmean y \<and> \<gamma>_eq (\<beta>, y) \<and> het y = 0 \<and> pos y)" by simp
     {
       assume "\<not>(0<b)"
       hence "b=0" by simp
       with bdef have "het \<beta> = 0" by simp
-      with \<beta>_def have "?S x" by auto
+      with \<beta>def have "?S x" by auto
     }
     moreover
     {
       assume "0 < b"
-      with bdef ind2 \<beta>_def have "?S \<beta>" by simp
+      with bdef ind2 \<beta>def have "?S \<beta>" by simp
       then obtain \<gamma> where
         "gmean \<beta> < gmean \<gamma> \<and> \<gamma>_eq (\<beta>, \<gamma>) \<and> het \<gamma> = 0 \<and> pos \<gamma>" ..
-      with \<beta>_def have "gmean x < gmean \<gamma> \<and> \<gamma>_eq (x,\<gamma>) \<and> het \<gamma> = 0 \<and> pos \<gamma>"
+      with \<beta>def have "gmean x < gmean \<gamma> \<and> \<gamma>_eq (x,\<gamma>) \<and> het \<gamma> = 0 \<and> pos \<gamma>"
         apply clarsimp
         apply (rule \<gamma>_eq_trans)
         by auto

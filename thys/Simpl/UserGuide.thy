@@ -1,4 +1,4 @@
-(*  ID:          $Id: UserGuide.thy,v 1.5 2008-04-15 13:15:27 makarius Exp $
+(*  ID:          $Id: UserGuide.thy,v 1.6 2008-06-11 14:23:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -357,7 +357,7 @@ lemma, and that the lemma is added as a fact to the locale, after it is proven. 
 next time locale @{term "Square_impl"} is invoked this lemma is immediately available
 as fact, which the verification condition generator can use.
 *}
-apply (hoare_rule HoarePartial.ProcNoRec1)
+apply (hoare_rule ProcNoRec1)
 term "\<acute>R :== \<acute>N * \<acute>N"
  txt "@{subgoals[display]}"
  txt {* The method @{text "hoare_rule"}, like @{text "rule"} applies a 
@@ -602,15 +602,15 @@ in @{term Null}.
 *}
 
 
-lemma (in append_impl) append_spec1: 
+lemma (in append_impl) append_spec: 
 shows "\<forall>\<sigma> Ps Qs. 
   \<Gamma>\<turnstile> \<lbrace>\<sigma>. List \<acute>p \<acute>next Ps \<and>  List \<acute>q \<acute>next Qs \<and> set Ps \<inter> set Qs = {}\<rbrace>  
        \<acute>p :== PROC append(\<acute>p,\<acute>q) 
      \<lbrace>List \<acute>p \<acute>next (Ps@Qs) \<and> (\<forall>x. x\<notin>set Ps \<longrightarrow> \<acute>next x = \<^bsup>\<sigma>\<^esup>next x)\<rbrace>"
-apply (hoare_rule HoarePartial.ProcRec1)
+apply (hoare_rule ProcRec1)
 txt {* @{subgoals [margin=80,display]} 
 Note that @{term "hoare_rule"} takes care of multiple auxiliary variables! 
-@{thm [source] HoarePartial.ProcRec1} has only one auxiliary variable, namely @{term Z}. 
+@{thm [source] ProcRec1} has only one auxiliary variable, namely @{term Z}. 
 But the type of @{term Z} can be instantiated arbitrarily. So @{text "hoare_rule"} 
 instantiates @{term Z} with the tuple @{term "(\<sigma>,Ps,Qs)"} and derives a proper variant
 of the rule. Therefore @{text "hoare_rule"} depends on the proper quantification of
@@ -641,7 +641,7 @@ applied. Simplification of the procedure call means that the ``copy
 back'' of the global components is simplified. Only those components
 that occur in the modifies clause are actually copied back.  This
 simplification is justified by the rule @{thm [source]
-HoarePartial.ProcModifyReturn}. 
+ProcModifyReturn}. 
 So after this simplification all global
 components that do not appear in the modifies clause are treated
 as local variables. *}
@@ -652,18 +652,15 @@ the @{term "cont"} part of the heap.
 *}
 lemma (in append_impl)
 shows "\<Gamma>\<turnstile> \<lbrace>\<acute>cont=c\<rbrace> \<acute>p :== CALL append(Null,Null) \<lbrace>\<acute>cont=c\<rbrace>" 
-proof -
-  note append_spec = append_spec1
-  show ?thesis
-    apply vcg
-    txt {* @{subgoals [display]} *}
-    txt {* Only focus on the very last line: @{term conta} is the heap component 
-      after the procedure call,
-      and @{term cont} the heap component before the procedure call. Since
-      we have not added the modified clause we do not know that they have
-      to be equal. 
-      *}
-    oops
+apply vcg
+  txt {* @{subgoals [display]} *}
+  txt {* Only focus on the very last line: @{term conta} is the heap component 
+   after the procedure call,
+   and @{term cont} the heap component before the procedure call. Since
+   we have not added the modified clause we do not know that they have
+   to be equal. 
+  *}
+oops
 
 text {*
 We now add the frame condition.
@@ -679,7 +676,7 @@ acute, because we explicitly note the state @{term t} here.
 lemma (in append_impl) append_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>\<^bsub>/UNIV\<^esub> {\<sigma>} \<acute>p :== PROC append(\<acute>p,\<acute>q) 
              {t. t may_only_modify_globals \<sigma> in [next]}"
-  apply (hoare_rule HoarePartial.ProcRec1)
+  apply (hoare_rule ProcRec1)
   apply (vcg spec=modifies)
   done
 
@@ -706,17 +703,13 @@ text {* Now that we have proven the frame-condition, it is available within
 the locale @{text "append_impl"} and the @{text "vcg"} exploits it.*}
 
 lemma (in append_impl) 
-shows "\<Gamma>\<turnstile> \<lbrace>\<acute>cont=c\<rbrace> \<acute>p :== CALL append(Null,Null) \<lbrace>\<acute>cont=c\<rbrace>"
-proof -
-  note append_spec = append_spec1
-  show ?thesis
-    apply vcg
-    txt {* @{subgoals [display]} *}
-    txt {* With a modifies clause present we know that no change to @{term cont}
-      has occurred. 
-      *}
-    by simp
-qed
+shows "\<Gamma>\<turnstile> \<lbrace>\<acute>cont=c\<rbrace> \<acute>p :== CALL append(Null,Null) \<lbrace>\<acute>cont=c\<rbrace>" 
+apply vcg
+  txt {* @{subgoals [display]} *}
+  txt {* With a modifies clause present we know that no change to @{term cont}
+   has occurred. 
+  *}
+by simp
  
 
 text {*
@@ -814,7 +807,7 @@ the recursive call.
 *}
 by simp
 
-lemma (in append_impl) append_spec2:
+lemma (in append_impl) append_spec:
 shows "\<forall>\<sigma> Ps Qs. \<Gamma>\<turnstile>\<^sub>t 
   \<lbrace>\<sigma>. List \<acute>p \<acute>next Ps \<and>  List \<acute>q \<acute>next Qs \<and> set Ps \<inter> set Qs = {}\<rbrace>  
        \<acute>p :== PROC append(\<acute>p,\<acute>q) 
@@ -1010,7 +1003,7 @@ procedures (imports globals_heap)
 lemma (in insert_impl) insert_modifies:
    "\<forall>\<sigma>. \<Gamma>\<turnstile>\<^bsub>/UNIV\<^esub> {\<sigma>} \<acute>p :== PROC insert(\<acute>r,\<acute>p) 
         {t. t may_only_modify_globals \<sigma> in [next]}"
-  by (hoare_rule HoarePartial.ProcRec1) (vcg spec=modifies)
+  by (hoare_rule ProcRec1) (vcg spec=modifies)
 
 lemma (in insert_impl) insert_spec:
   "\<forall>\<sigma> Ps . \<Gamma>\<turnstile> 
@@ -1061,13 +1054,13 @@ Logically a statement with an annotation is
 equal to the statement without it. Hence annotations can be introduced by the user
 while building a proof:
 
-@{thm [source] HoarePartial.annotateI}: @{thm [mode=Rule] HoarePartial.annotateI [no_vars]} 
+@{thm [source] annotateI}: @{thm [mode=Rule] annotateI [no_vars]} 
 
 When introducing annotations it can easily happen that these mess around with the 
 nesting of sequential composition. Then after stripping the annotations the resulting statement
 is no longer syntactically identical to original one, only equivalent modulo associativity of sequential composition. The following rule also deals with this case:
 
-@{thm [source] HoarePartial.annotate_normI}: @{thm [mode=Rule] HoarePartial.annotate_normI [no_vars]} 
+@{thm [source] annotate_normI}: @{thm [mode=Rule] annotate_normI [no_vars]} 
 *}
 
 text_raw {* \paragraph{Loop Annotations} 
@@ -1120,7 +1113,7 @@ apply (hoare_rule anno=
                   sorted (op \<le>) (map \<acute>cont Rs) \<and> set Qs \<union> set Rs = set Ps \<and>
                   \<acute>cont = \<^bsup>\<sigma>\<^esup>cont \<rbrace>
           DO \<acute>q :== \<acute>p;; \<acute>p :== \<acute>p\<rightarrow>\<acute>next;; \<acute>r :== CALL insert(\<acute>q,\<acute>r) OD;;
-          \<acute>p :== \<acute>r" in HoarePartial.annotateI)
+          \<acute>p :== \<acute>r" in annotateI)
 apply vcg
 txt {* @{text "\<dots>"} *}
 (*<*)
@@ -1306,7 +1299,7 @@ lemma (in vars)
            LEMMA foo_lemma 
               \<acute>N :== \<acute>N + 1;; \<acute>M :== \<acute>M + 1
            END"
-          in HoarePartial.annotate_normI)
+          in annotate_normI)
   apply vcg
   apply simp
   done

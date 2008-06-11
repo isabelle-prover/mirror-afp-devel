@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.17 2008-04-15 13:49:28 makarius Exp $
+    ID:          $Id: Equivalence.thy,v 1.18 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -1831,7 +1831,7 @@ next
     from eval have 
       "P,E(p#ps'[\<mapsto>]Ts) \<turnstile> \<langle>\<lparr>C'\<rparr>e,(h,l(p#ps'[\<mapsto>]vs''))\<rangle> \<Rightarrow> 
                           \<langle>throw r,(h',l'')\<rangle>"
-      by(auto intro:eval_evals.StaticCastThrow)
+      by(auto intro:StaticCastThrow)
     with e' casts length have ?case by simp blast }
   ultimately show ?case
     by -(erule eval_cases,fastsimp+)
@@ -2065,7 +2065,7 @@ qed
 abschalten. Wieder anschalten siehe nach dem Beweis. *)
 
 declare split_paired_All [simp del] split_paired_Ex [simp del]
-ML {*
+ML_setup {*
 change_simpset (fn ss => ss delloop "split_all_tac");
 change_claset (fn cs => cs delSWrapper "split_all_tac");
 *}
@@ -2221,14 +2221,14 @@ next
   { fix e' assume throw:"P,E \<turnstile> \<langle>e\<^isub>1',s''\<rangle> \<Rightarrow> \<langle>throw e',s'\<rangle>"
     from IH[OF throw] have "P,E \<turnstile> \<langle>e\<^isub>1,s\<rangle> \<Rightarrow> \<langle>throw e',s'\<rangle>" .
     hence "P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs} := e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw e',s'\<rangle>"
-      by-(rule eval_evals.FAssThrow1,simp_all) }
+      by-(rule FAssThrow1,simp_all) }
   moreover
   { fix e' s\<^isub>1 v
     assume val:"P,E \<turnstile> \<langle>e\<^isub>1',s''\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>"
       and rest:"P,E \<turnstile> \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw e',s'\<rangle>"
     from IH[OF val] have "P,E \<turnstile> \<langle>e\<^isub>1,s\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>" .
     with rest have "P,E \<turnstile> \<langle>e\<^isub>1\<bullet>F{Cs} := e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw e',s'\<rangle>"
-      by-(rule eval_evals.FAssThrow2,simp_all) }
+      by-(rule FAssThrow2,simp_all) }
   ultimately show ?case using eval
     by -(erule eval_cases,auto)
 next
@@ -2261,7 +2261,7 @@ next
   { fix r assume val:"P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>throw r,s'\<rangle>"
     hence s'':"s'' = s'" by -(erule eval_cases,simp)
     with val have "P,E \<turnstile> \<langle>Val v\<bullet>F{Cs} := e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw r,s'\<rangle>" 
-      by -(rule eval_evals.FAssThrow1,erule eval_cases,simp) }
+      by -(rule FAssThrow1,erule eval_cases,simp) }
   moreover
   { fix r s\<^isub>1 v'
     assume val1:"P,E \<turnstile> \<langle>Val v,s''\<rangle> \<Rightarrow> \<langle>Val v',s\<^isub>1\<rangle>"
@@ -2271,7 +2271,7 @@ next
       by(fastsimp elim:eval_cases intro:eval_finalId)
     also from IH[OF val2[simplified s'']] have "P,E \<turnstile> \<langle>e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw r,s'\<rangle>" .
     ultimately have "P,E \<turnstile> \<langle>Val v\<bullet>F{Cs} := e\<^isub>2,s\<rangle> \<Rightarrow> \<langle>throw r,s'\<rangle>" 
-      by -(rule eval_evals.FAssThrow2,simp_all) }
+      by -(rule FAssThrow2,simp_all) }
   ultimately show ?case using eval
     by -(erule eval_cases,auto)
 next
@@ -2763,7 +2763,7 @@ qed
 
 (* ... und wieder anschalten: *)
 declare split_paired_All [simp] split_paired_Ex [simp]
-ML {*
+ML_setup {*
 change_claset (fn cs => cs addSbefore ("split_all_tac", split_all_tac));
 change_simpset (fn ss => ss addloop ("split_all_tac", split_all_tac));
 *}

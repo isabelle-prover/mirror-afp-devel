@@ -1,4 +1,4 @@
-(*  ID:         $Id: ScoreProps.thy,v 1.8 2008-04-24 11:43:00 fhaftmann Exp $
+(*  ID:         $Id: ScoreProps.thy,v 1.9 2008-06-11 14:22:50 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -205,7 +205,7 @@ qed
 
 
 
-(*consts ExcessNotAtRecList :: "(vertex, nat) table \<Rightarrow> graph \<Rightarrow> vertex list"
+consts ExcessNotAtRecList :: "(vertex, nat) table \<Rightarrow> graph \<Rightarrow> vertex list"
 recdef ExcessNotAtRecList "measure (\<lambda>ps. size ps)"
 "ExcessNotAtRecList [] = (%g. [])"
 "ExcessNotAtRecList (p#ps) = (%g.
@@ -215,25 +215,7 @@ recdef ExcessNotAtRecList "measure (\<lambda>ps. size ps)"
    \<le> snd p + ExcessNotAtRec (deleteAround g (fst p) ps) g
   then fst p#l2 else l1)"
 (hints recdef_simp: less_Suc_eq_le length_deleteAround)
-thm ExcessNotAtRecList.induct
 
-lemma ExcessNotAtRecList_induct'
-(?P\<Colon>(nat \<times> nat) list \<Rightarrow> bool) [] \<Longrightarrow>
-(\<And>(a\<Colon>nat) (b\<Colon>nat) ps\<Colon>(nat \<times> nat) list.
-    \<forall>:000\<Colon>graph. ?P (deleteAround :000 a ps) \<Longrightarrow> ?P ps \<Longrightarrow> ?P ((a, b) # ps)) \<Longrightarrow>
-?P (?x\<Colon>(nat \<times> nat) list)*)
-
-function ExcessNotAtRecList :: "(vertex, nat) table \<Rightarrow> graph \<Rightarrow> vertex list" where
-  "ExcessNotAtRecList [] = (%g. [])"
-  | "ExcessNotAtRecList ((x, y) # ps) = (%g.
-      let l1 = ExcessNotAtRecList ps g;
-      l2 = ExcessNotAtRecList (deleteAround g x ps) g in
-      if ExcessNotAtRec ps g
-       \<le> y + ExcessNotAtRec (deleteAround g x ps) g
-      then x # l2 else l1)"
-by pat_completeness auto
-termination by (relation "measure size")
-  (auto simp add: less_Suc_eq_le length_deleteAround)
 
 lemma isTable_deleteAround:
   "isTable E vs ((a,b)#ps) \<Longrightarrow> isTable E vs (deleteAround g a ps)"
@@ -243,18 +225,19 @@ by (rule isTable_subset, rule deleteAround_subset,
 lemma ListSum_ExcessNotAtRecList:
  "isTable E vs ps \<Longrightarrow> ExcessNotAtRec ps g
   = \<Sum>\<^bsub>p \<in> ExcessNotAtRecList ps g\<^esub> E p" (is "?T ps \<Longrightarrow> ?P ps")
-proof (induct ps rule: ExcessNotAtRecList.induct)
-  case 1 show ?case by simp
+proof (induct ps rule: ExcessNotAtRec.induct)
+  show "?P []" by simp
 next
-  case (2 a b ps)
-  from 2 have prem: "?T ((a,b)#ps)" by blast
+  fix a b ps
+  assume prem: "?T ((a,b)#ps)"
   then have E: "b = E a" by (simp add: isTable_eq)
-  from 2 have hyp1: "?T (deleteAround g a ps) \<Longrightarrow>
-   ?P (deleteAround g a ps)" by blast
-  from 2 have hyp2:  "?T ps \<Longrightarrow> ?P ps" by blast
-  have H1: "?P (deleteAround g a ps)"
-    by (rule hyp1, rule isTable_deleteAround) (rule prem)
+  assume hyp1: "?T (deleteAround g (fst (a, b)) ps) \<Longrightarrow>
+   ?P (deleteAround g (fst (a, b)) ps)"
+  assume hyp2:  "?T ps \<Longrightarrow> ?P ps"
+  have H1: "?P (deleteAround g (fst (a, b)) ps)"
+    by (rule hyp1, rule isTable_deleteAround) (simp, rule prem)
   have H2: "?P ps" by (rule hyp2, rule isTable_Cons, rule prem)
+
   show "?P ((a,b)#ps)"
   proof cases
     assume
@@ -273,9 +256,9 @@ qed
 lemma ExcessNotAtRecList_subset:
   "set (ExcessNotAtRecList ps g) \<subseteq> set [fst p. p \<leftarrow> ps]" (is "?P ps")
 proof (induct ps rule: ExcessNotAtRecList.induct)
-  case 1 show ?case by simp
+  show "?P []" by simp
 next
-  case (2 a b ps)
+  fix a b ps
   presume H1: "?P (deleteAround g a ps)"
   presume H2: "?P ps"
   show "?P ((a, b) # ps)"
@@ -305,16 +288,16 @@ proof -
    "isTable E (vertices g) ps \<Longrightarrow> preSeparated g (set (ExcessNotAtRecList ps g))"
    (is "?T ps \<Longrightarrow> ?P ps")
   proof (induct rule: ExcessNotAtRec.induct)
-    case 1 show ?case by simp
+    show "?P []" by simp
   next
-    case (2 a b ps)
-    from 2 have prem: "?T ((a,b)#ps)" by blast
+    fix a b ps
+    assume prem: "?T ((a,b)#ps)"
     then have E: "b = E a" by (simp add: isTable_eq)
-    from 2 have hyp1: "?T (deleteAround g a ps) \<Longrightarrow>
-      ?P (deleteAround g a ps)" by blast
-    from 2 have hyp2:  "?T ps \<Longrightarrow> ?P ps" by blast
-    have H1: "?P (deleteAround g a ps)"
-      by (rule hyp1, rule isTable_deleteAround) (rule prem)
+    assume hyp1: "?T (deleteAround g (fst (a, b)) ps) \<Longrightarrow>
+      ?P (deleteAround g (fst (a, b)) ps)"
+    assume hyp2:  "?T ps \<Longrightarrow> ?P ps"
+    have H1: "?P (deleteAround g (fst (a, b)) ps)"
+      by (rule hyp1, rule isTable_deleteAround) (simp, rule prem)
     have H2: "?P ps" by (rule hyp2, rule isTable_Cons) (rule prem)
 
     show "?P ((a,b)#ps)"
@@ -378,17 +361,17 @@ lemma distinct_ExcessNotAtRecList:
   "distinct (map fst ps) \<Longrightarrow> distinct (ExcessNotAtRecList ps g)"
     (is "?T ps \<Longrightarrow> ?P ps")
 proof (induct rule: ExcessNotAtRec.induct)
-  case 1 show ?case by simp
+  show "?P []" by simp
 next
-  case (2 a b ps)
-  from 2 have prem: "?T ((a,b)#ps)" by blast
+  fix a b ps
+  assume prem: "?T ((a,b)#ps)"
   then have a: "a \<notin> set (map fst ps)" by simp
-  from 2 have hyp1: "?T (deleteAround g a ps) \<Longrightarrow>
-    ?P (deleteAround g a ps)" by blast
-  from 2 have hyp2:  "?T ps \<Longrightarrow> ?P ps" by blast
+  assume hyp1: "?T (deleteAround g (fst (a, b)) ps) \<Longrightarrow>
+    ?P (deleteAround g (fst (a, b)) ps)"
+  assume hyp2:  "?T ps \<Longrightarrow> ?P ps"
   from prems have "?T ps" by simp
-  then have H1: "?P (deleteAround g a ps)"
-   by (rule_tac hyp1) (rule distinct_deleteAround [simplified])
+  then have H1: "?P (deleteAround g (fst (a, b)) ps)"
+   by (rule_tac hyp1) (rule distinct_deleteAround)
   from prem have H2: "?P ps"
     by (rule_tac hyp2) simp
 
@@ -495,35 +478,36 @@ proof (intro exI conjI)
    by (simp add: distinct_ExcessNotAtRecList distinct_ExcessTable)
 qed
 
+
+
 lemma excess_eq:
   assumes 6: "t + q \<le> 6"
   shows "excessAtType t q 0 + t * \<d> 3 + q * \<d> 4 = \<b> t q"
 proof -
-  note simps = excessAtType_def squanderVertex_def squanderFace_def
-    nat_minus_add_max squanderTarget_def
+  note simps = excessAtType_def squanderVertex_def squanderFace_def squanderTarget_def
   from 6 have "q=0 \<or> q=1 \<or> q=2 \<or> q=3 \<or> q=4 \<or> q=5 \<or> q=6" by arith
   then show ?thesis
   proof (elim disjE)
     assume q: "q = 0" (* 16 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with prems show ?thesis by (simp add:simps)
   next
     assume q: "q = 1" (* 29 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with prems show ?thesis by (simp add:simps)
   next
     assume q: "q = 2" (* 16 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with prems show ?thesis by (simp add: simps)
   next
     assume q: "q = 3" (* 16 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with prems show ?thesis  by (simp add: simps)
   next
     assume q: "q = 4" (* 6 subgoals *)
-    with 6 show ?thesis by (simp add: simps)
+    with prems show ?thesis  by (simp add: simps)
   next
     assume q: "q = 5" (* 1 subgoal *)
-    with 6 show ?thesis by (simp add: simps)
+    with prems show ?thesis  by (simp add: simps)
   next
     assume q: "q = 6" (* 1 subgoal *)
-    with 6 show ?thesis by (simp add: simps)
+    with prems show ?thesis  by (simp add: simps)
   qed
 qed
 

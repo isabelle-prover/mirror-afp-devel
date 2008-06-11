@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: LevellistProof.thy,v 1.5 2008-06-04 18:05:56 makarius Exp $
+    ID:          $Id: LevellistProof.thy,v 1.6 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -30,12 +30,10 @@ USA
 header {* Proof of Procedure Levellist *}
 theory LevellistProof imports ProcedureSpecs "../HeapList"  begin
 
-hide (open) const DistinctTreeProver.set_of tree.Node tree.Tip
-
 lemma (in Levellist_impl) Levellist_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>levellist :== PROC Levellist (\<acute>p, \<acute>m, \<acute>levellist) 
              {t. t may_only_modify_globals \<sigma> in [mark,next]}"
-  apply (hoare_rule HoarePartial.ProcRec1)
+  apply (hoare_rule ProcRec1)
   apply (vcg spec=modifies)
   done
 
@@ -311,10 +309,10 @@ apply (rule conjI)
 apply  clarify
 apply  (rule conjI)
 apply   clarify
-apply   (clarsimp simp del: BinDag.set_of.simps split del: split_if)
+apply   (clarsimp simp del: set_of.simps split del: split_if)
 defer
 apply   (rule impI)
-apply   (clarsimp simp del: BinDag.set_of.simps split del: split_if)
+apply   (clarsimp simp del: set_of.simps split del: split_if)
 defer
 apply   (clarsimp simp add: wf_levellist_def wf_marking_def) (* p=Null*)
 apply (simp only: Levellist_ext_to_all )
@@ -390,10 +388,10 @@ proof -
 	using size_rt_dec Tip lt_Tip Tip lt rt  
       proof (clarsimp)
 	case (goal1 marka nexta levellista lla markb nextb levellistb llb)
-	have lla: "Levellist levellista nexta lla" by fact
-	have llb: "Levellist levellistb nextb llb" by fact
+	have lla: "Levellist levellista nexta lla".
+	have llb: "Levellist levellistb nextb llb".
 	have wfll_lt: "wf_levellist Tip ll lla var"
-                      "wf_marking Tip mark marka m" by fact+
+                      "wf_marking Tip mark marka m".
 	
 	then have ll_lla: "ll = lla"
 	  by (simp add: wf_levellist_def)
@@ -403,7 +401,7 @@ proof -
 	  by (simp add: wf_marking_def)
 	moreover
 	have wfll_rt:"wf_levellist Tip lla llb var"
-                     "wf_marking Tip marka markb m" by fact+
+                     "wf_marking Tip marka markb m".
 	then have lla_llb: "lla = llb"
 	  by (simp add: wf_levellist_def)
 	moreover 
@@ -456,7 +454,7 @@ proof -
       qed
     next
       case (Node dag1 a dag2)
-      have rt_node: "rt = Node dag1 a dag2" by fact
+      have rt_node: "rt = Node dag1 a dag2".
       with rt have high_p: "high p = a"
 	by simp
       have s: "\<And>nexta. (\<forall>p. next p = nexta p) = (next = nexta)"
@@ -466,9 +464,9 @@ proof -
 	apply (clarsimp simp del: set_of_Node split del: split_if simp add: s)
       proof -      
 	case (goal1 marka levellista lla)
-	have lla: "Levellist levellista next lla" by fact
+	have lla: "Levellist levellista next lla".
 	have wfll_lt:"wf_levellist Tip ll lla var"
-                     "wf_marking Tip mark marka m" by fact+
+                     "wf_marking Tip mark marka m".
 	from this have ll_lla: "ll = lla"
 	  by (simp add: wf_levellist_def)
 	moreover
@@ -480,13 +478,14 @@ proof -
 	from orderedt high_p rt_node lt_Tip
 	have ordered_rt: "ordered (Node dag1 (high p) dag2) var"
 	  by simp
+	term ?case
 	from high_p marklrec marked_child_ll lt rt lt_Tip rt_node ll_lla
 	have mark_rt: "(\<forall>n\<in>set_of (Node dag1 (high p) dag2).
               if marka n = m
               then n \<in> set (lla ! var n) \<and>
                    (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> marka p = m)
               else n \<notin> set (concat lla))"
-	  apply (simp only: BinDag.set_of.simps)
+	  apply (simp only:set_of.simps)
 	  apply clarify
 	  apply (drule_tac x=n in bspec)
 	  apply  blast
@@ -503,9 +502,9 @@ proof -
 	  apply clarsimp
 	proof -
 	  case (goal1 markb nextb levellistb llb)
-	  have llb: "Levellist levellistb nextb llb" by fact
-	  have wfll_rt: "wf_levellist (Node dag1 (high p) dag2) lla llb var" by fact
-	  have wfmarking_rt: "wf_marking (Node dag1 (high p) dag2) marka markb m" by fact
+	  have llb: "Levellist levellistb nextb llb".
+	  have wfll_rt: "wf_levellist (Node dag1 (high p) dag2) lla llb var".
+	  have wfmarking_rt: "wf_marking (Node dag1 (high p) dag2) marka markb m".
 	  from wfll_rt varsll llb ll_lla 
 	  obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
 	    by (simp add: Levellist_length wf_levellist_def)
@@ -572,7 +571,7 @@ proof -
     qed
   next
     case (Node llt l rlt)
-    have lt_Node: "lt = Node llt l rlt" by fact
+    have lt_Node: "lt = Node llt l rlt".
     from orderedt lt varsll' lt_Node
     obtain ordered_lt: 
       "ordered lt var" "(low p \<noteq> Null \<longrightarrow> var (low p) < length levellist)"
@@ -583,7 +582,7 @@ proof -
      then n \<in> set (ll ! var n) \<and>
           (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m)
      else n \<notin> set (concat ll)"
-      apply (simp only: BinDag.set_of.simps)
+      apply (simp only:set_of.simps)
       apply clarify
       apply (drule_tac x=n in bspec)
       apply  blast
@@ -596,9 +595,9 @@ proof -
       apply (simp only: Levellist_ext_to_all )
     proof -
       case (goal1 marka nexta levellista lla)
-      have lla: "Levellist levellista nexta lla" by fact
-      have wfll_lt: "wf_levellist lt ll lla var"  by fact
-      have wfmarking_lt:"wf_marking lt mark marka m" by fact
+      have lla: "Levellist levellista nexta lla".
+      have wfll_lt: "wf_levellist lt ll lla var" .
+      have wfmarking_lt:"wf_marking lt mark marka m".
       from wfll_lt lt_Node 
       have lla_eq_ll: "length lla = length ll"
 	by (simp add: wf_levellist_def)
@@ -771,9 +770,9 @@ proof -
 	apply clarify
       proof -
 	case (goal1 markb nextb levellistb llb)
-	have llb: "Levellist levellistb nextb llb" by fact
-	have wfll_rt: "wf_levellist rt lla llb var" by fact
-	have wfmarking_rt: "wf_marking rt marka markb m" by fact
+	have llb: "Levellist levellistb nextb llb".
+	have wfll_rt: "wf_levellist rt lla llb var".
+	have wfmarking_rt: "wf_marking rt marka markb m".
 	show ?case
 	proof (cases rt)
 	  case Tip
@@ -845,7 +844,7 @@ proof -
 	    done
 	next
 	  case (Node lrt r rrt)
-	  have rt_Node: "rt = Node lrt r rrt" by fact
+	  have rt_Node: "rt = Node lrt r rrt".
 	  from wfll_rt rt_Node 
 	  have llb_eq_lla: "length llb = length lla"
 	    by (simp add: wf_levellist_def)

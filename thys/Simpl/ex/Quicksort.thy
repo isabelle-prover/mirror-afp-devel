@@ -1,4 +1,4 @@
-(*  ID:          $Id: Quicksort.thy,v 1.5 2008-06-03 11:11:13 norbertschirmer Exp $
+(*  ID:          $Id: Quicksort.thy,v 1.6 2008-06-11 14:23:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -132,7 +132,7 @@ proof (induct)
   from xs_zs
   show "(l # x # y) @ xs <~~> (x # l # y) @ zs"
   by (induct) auto
-qed (insert xs_zs , auto)
+qed auto
 
 procedures quickSort(p|p) =
  "IF \<acute>p=Null THEN SKIP
@@ -170,7 +170,7 @@ procedures quickSort(p|p) =
 lemma (in quickSort_impl) quickSort_modifies:
   shows
   "\<forall>\<sigma>. \<Gamma>\<turnstile> {\<sigma>} \<acute>p :== PROC quickSort(\<acute>p) {t. t may_only_modify_globals \<sigma> in [next]}"
-apply (hoare_rule HoarePartial.ProcRec1)
+apply (hoare_rule ProcRec1)
 apply (vcg spec=modifies)
 done
 
@@ -182,7 +182,7 @@ shows
                  sorted (op \<le>) (map \<^bsup>\<sigma>\<^esup>cont sortedPs) \<and>
                  Ps <~~> sortedPs) \<and>
                  (\<forall>x. x\<notin>set Ps \<longrightarrow> \<acute>next x = \<^bsup>\<sigma>\<^esup>next x)\<rbrace>"
-apply (hoare_rule HoarePartial.ProcRec1)
+apply (hoare_rule ProcRec1)
 apply (hoare_rule anno = 
  "IF \<acute>p=Null THEN SKIP
   ELSE \<acute>tl :== \<acute>p\<rightarrow>\<acute>next;;
@@ -214,7 +214,7 @@ apply (hoare_rule anno =
        \<acute>p\<rightarrow>\<acute>next :== \<acute>gt;;
        \<acute>le :== CALL append(\<acute>le,\<acute>p);;
        \<acute>p :== \<acute>le
-  FI" in HoarePartial.annotateI)
+  FI" in annotateI)
 apply vcg
 apply   fastsimp
 apply  clarsimp

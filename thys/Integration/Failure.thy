@@ -88,7 +88,7 @@ inductive_set
   integral_set:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> (('a \<Rightarrow> real) * real) set"
   for M :: "'a set set * ('a set \<Rightarrow> real)"
   where
-    char: "\<lbrakk>f = \<chi> A; A \<in> measurable_sets M\<rbrakk> \<Longrightarrow> (f,measure M A) \<in> integral_set M"
+    char: "\<lbrakk>f = \<chi>A; A \<in> measurable_sets M\<rbrakk> \<Longrightarrow> (f,measure M A) \<in> integral_set M"
   | add: "\<lbrakk>f = (\<lambda>w. g w + h w); (g,x) \<in> integral_set M; (h,y) \<in> integral_set M\<rbrakk> 
     \<Longrightarrow> (f,(x + y)) \<in> integral_set M"
   | times: "\<lbrakk>f = (\<lambda>w. a*g w); (g,x) \<in> integral_set M\<rbrakk> \<Longrightarrow> (f,a*x) \<in> integral_set M"

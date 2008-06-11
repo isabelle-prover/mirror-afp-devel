@@ -291,6 +291,9 @@ by (frule zmult_zless_mono2[of "0" "a" "int m"], simp, simp)
 lemma  ant_int_na:"\<lbrakk>0 \<le> a; a \<noteq> \<infinity> \<rbrakk> \<Longrightarrow> ant (int (na a)) = a"
 by (frule an_na[of "a"], assumption, simp add:an_def) 
 
+lemma ant_int:"ant (int n) = an n" 
+by (simp add:an_def) 
+
 lemma zpos_nat:"0 \<le> (z::int) \<Longrightarrow> \<exists>n. z = int n"
 apply (subgoal_tac "z = int (nat z)")
 apply blast apply simp
@@ -323,7 +326,7 @@ apply (rule contrapos_pp, simp+)
 done
 
 lemma neg_zle:"\<not> (z::int) \<le> z' \<Longrightarrow> z' < z"
-apply (simp add: not_le)
+apply (simp add:le_def)
 done
 
 lemma nset_m_m:"nset m m = {m}"
@@ -1754,7 +1757,7 @@ done
 lemma (in Corps) ideal_sub_vp:"\<lbrakk> valuation K v; ideal (Vr K v) I;
  I \<noteq> carrier (Vr K v)\<rbrakk> \<Longrightarrow> I \<subseteq> (vp K v)"
 apply (frule Vr_ring[of v], rule contrapos_pp, simp+)
- apply (simp add:subset_eq,
+ apply (simp add:subset_def,
         erule bexE)
  apply (frule_tac h = x in Ring.ideal_subset[of "Vr K v" I], assumption+,
         frule_tac x = x in elem_out_vp_unit[of v], assumption+,

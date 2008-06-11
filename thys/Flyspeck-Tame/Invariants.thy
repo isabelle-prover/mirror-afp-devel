@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.16 2008-05-17 20:51:44 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.17 2008-06-11 14:22:50 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -472,11 +472,14 @@ next
 qed
 
 lemma distinct_replacefacesAt2_2:
-  "i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
+  "\<And>i. i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (Fss!i) \<Longrightarrow> distinct newFs \<Longrightarrow>
   set (Fss ! i) \<inter> set newFs \<subseteq> {olfF} \<Longrightarrow>
   distinct ((replacefacesAt2 is olfF newFs Fss)! i)"
-  by (cases "i \<in> set is")
-    (auto intro: distinct_replacefacesAt21 distinct_replacefacesAt22)
+apply  (cases "i \<in> set is")
+ by (auto intro: distinct_replacefacesAt21 distinct_replacefacesAt22)
+
+lemma replacefacesAt2_length: "\<And> vs. |replacefacesAt2 nvs f' [f''] vs| = |vs|"
+by (induct nvs) simp_all
 
 lemma replacefacesAt2_nth1: "!!F. k \<notin> set ns \<Longrightarrow>
   (replacefacesAt2 ns oldf newfs F) ! k  =  F ! k"
@@ -716,11 +719,11 @@ next
 qed
 
 lemma distinct_replacefacesAt_norm:
-  "i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (normFaces (Fss!i)) \<Longrightarrow> distinct (normFaces newFs) \<Longrightarrow>
+  "\<And>i. i < |Fss| \<Longrightarrow> distinct is \<Longrightarrow> distinct (normFaces (Fss!i)) \<Longrightarrow> distinct (normFaces newFs) \<Longrightarrow>
   set (normFaces (Fss ! i)) \<inter> set (normFaces newFs) \<subseteq> {} \<Longrightarrow>
   distinct (normFaces ((replacefacesAt is olfF newFs Fss)! i))"
-  by (cases "i \<in> set is")
-    (auto intro: distinct_replacefacesAt1_norm distinct_replacefacesAt2_norm)
+apply  (cases "i \<in> set is")
+ by (auto intro: distinct_replacefacesAt1_norm distinct_replacefacesAt2_norm)
 
 
 
@@ -2209,10 +2212,10 @@ qed
 
 (* Invariance of one_final *)
 
-abbreviation (input)
-  Edges_if :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> (vertex \<times> vertex)set" where
-  "Edges_if f u v ==
-    if u=v then {} else Edges(u # between (vertices f) u v @ [v])"
+syntax Edges_if :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> (vertex \<times> vertex)set"
+translations
+"Edges_if f u v" =>
+"if u=v then {} else Edges(u # between (vertices f) u v @ [v])"
 
 lemma FaceDivsionGraph_one_final_but:
 assumes mgp: "minGraphProps g" and pre: "pre_splitFace g u v f vs"

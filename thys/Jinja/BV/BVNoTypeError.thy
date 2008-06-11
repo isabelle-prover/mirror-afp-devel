@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVNoTypeErrors.thy
-    ID:         $Id: BVNoTypeError.thy,v 1.6 2008-03-17 22:01:37 makarius Exp $
+    ID:         $Id: BVNoTypeError.thy,v 1.7 2008-06-11 14:22:55 lsf37 Exp $
     Author:     Gerwin Klein
     Copyright   GPL
 *)
@@ -287,7 +287,7 @@ theorem (in cnf) no_type_errors:
   apply (drule defensive_imp_aggressive)
   apply (frule (2) BV_correct)
   apply (drule (1) no_type_error) back
-  apply (auto simp add: exec_1_d_eq)
+  apply (auto simp add: exec_1_d_def)
   done
 
 locale start =

@@ -1,5 +1,5 @@
 (*  Title:      Inductive definition of Hoare logic for total correctness
-    ID:         $Id: PsHoareTotal.thy,v 1.4 2008-03-17 22:01:37 makarius Exp $
+    ID:         $Id: PsHoareTotal.thy,v 1.5 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -339,7 +339,7 @@ apply(blast intro:trancl_trans)
 done
 
 
-lemma renumber_aux:
+lemma renumber:
  "\<lbrakk>\<forall>i. (a,f i) : r^* \<and> (f i,f(Suc i)) : r; (a,b) : r^* \<rbrakk> \<Longrightarrow> b = f 0 \<longrightarrow> (\<exists>f. f 0 = a & (\<forall>i. (f i, f(Suc i)) : r))"
 apply(erule converse_rtrancl_induct)
  apply blast
@@ -353,7 +353,7 @@ done
 
 lemma renumber:
  "\<forall>i. (a,f i) : r^* \<and> (f i,f(Suc i)) : r \<Longrightarrow> \<exists>f. f 0 = a & (\<forall>i. (f i, f(Suc i)) : r)"
-by(blast dest:renumber_aux)
+by(blast dest:renumber)
 
 
 constdefs inf :: "com list \<Rightarrow> state \<Rightarrow> bool"
@@ -460,16 +460,16 @@ apply(rule_tac x = "\<lambda>i. case i of 0 \<Rightarrow> ((LOCAL f;c;g)#cs,s) |
 apply(simp add: exec1.intros split:nat.split)
 done
 
-lemma exec1_only1_aux: "(ccs,s) \<rightarrow> (cs',t) \<Longrightarrow>
+lemma exec1_only1: "(ccs,s) \<rightarrow> (cs',t) \<Longrightarrow>
                     \<forall>c cs. ccs = c#cs \<longrightarrow> (\<exists>cs1. cs' = cs1 @ cs)"
 apply(erule exec1.induct)
 apply force+
 done
 
 lemma exec1_only1: "(c#cs,s) \<rightarrow> (cs',t) \<Longrightarrow> \<exists>cs1. cs' = cs1 @ cs"
-by(blast dest:exec1_only1_aux)
+by(blast dest:exec1_only1)
 
-lemma exec1_drop_suffix_aux:
+lemma exec1_drop_suffix:
 "(cs12,s) \<rightarrow> (cs1'2,s') \<Longrightarrow> !cs1 cs2 cs1'.
  cs12 = cs1@cs2 & cs1'2 = cs1'@cs2 & cs1 \<noteq> [] \<longrightarrow> (cs1,s) \<rightarrow> (cs1',s')"
 apply(erule exec1.induct)
@@ -478,7 +478,7 @@ done
 
 lemma exec1_drop_suffix:
  "(cs1@cs2,s) \<rightarrow> (cs1'@cs2,s') \<Longrightarrow> cs1 \<noteq> [] \<Longrightarrow> (cs1,s) \<rightarrow> (cs1',s')"
-by(blast dest:exec1_drop_suffix_aux)
+by(blast dest:exec1_drop_suffix)
 
 lemma execs_drop_suffix[rule_format(no_asm)]:
   "\<lbrakk> f 0 = (c#cs,s);!i. f(i) \<rightarrow> f(Suc i) \<rbrakk> \<Longrightarrow>
@@ -504,7 +504,7 @@ apply(drule execs_drop_suffix,assumption,assumption)
 apply simp
 done
 
-lemma skolemize1: "\<forall>x. P x \<longrightarrow> (\<exists>y. Q x y) \<Longrightarrow> \<exists>f.\<forall>x. P x \<longrightarrow> Q x (f x)"
+lemma skolemize: "\<forall>x. P x \<longrightarrow> (\<exists>y. Q x y) \<Longrightarrow> \<exists>f.\<forall>x. P x \<longrightarrow> Q x (f x)"
 apply(rule_tac x = "\<lambda>x. SOME y. Q x y" in exI)
 apply(fast intro:someI2)
 done
@@ -547,7 +547,7 @@ apply(rule conjI)
  apply(fast intro: LeastI)
 apply(subgoal_tac
  "!i<=LEAST i. fst (f i) = cs. EX p. ((p \<noteq> []) = (i<(LEAST i. fst (f i) = cs))) & fst(f i) = p@cs")
- apply(drule skolemize1)
+ apply(drule skolemize)
  apply clarify
  apply(rename_tac p)
  apply(erule_tac p=p in execs_drop_suffix0, assumption)
@@ -563,7 +563,7 @@ apply(drule not_less_Least)
 apply blast
 done
 
-lemma skolemize2: "\<forall>x.\<exists>y. P x y \<Longrightarrow> \<exists>f.\<forall>x. P x (f x)"
+lemma skolemize: "\<forall>x.\<exists>y. P x y \<Longrightarrow> \<exists>f.\<forall>x. P x (f x)"
 apply(rule_tac x = "\<lambda>x. SOME y. P x y" in exI)
 apply(fast intro:someI2)
 done
@@ -584,7 +584,7 @@ apply(case_tac "EX i. fst(f i) = cs")
 apply(rule disjI1)
 apply simp
 apply(subgoal_tac "\<forall>i. \<exists>p. p \<noteq> [] \<and> fst(f i) = p@cs")
- apply(drule skolemize2)
+ apply(drule skolemize)
  apply clarify
  apply(rename_tac p)
  apply(rule_tac x = "\<lambda>i. (p i, snd(f i))" in exI)

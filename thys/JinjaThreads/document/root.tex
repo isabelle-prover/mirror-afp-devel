@@ -1,57 +1,56 @@
-%\documentclass[11pt,a4paper]{article}
 \documentclass[11pt,a4paper]{book}
-\usepackage[french,english]{babel}
-\usepackage{graphicx,latexsym,isabelle,isabellesym,pdfsetup}
+\usepackage{isabelle,isabellesym}
 
-% proper setup for best-style documents
+\usepackage{latexsym}
+\usepackage{amssymb}
+
+\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+\usepackage[latin1]{inputenc}
+  %for \<onesuperior>, \<onequarter>, \<twosuperior>, \<onehalf>,
+  %\<threesuperior>, \<threequarters>, \<degree>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
 \urlstyle{rm}
 \isabellestyle{it}
 
-\pagestyle{myheadings}
 
-%make a bit more space
-\addtolength{\hoffset}{-1,5cm}
-\addtolength{\textwidth}{3cm}
-\addtolength{\voffset}{-1cm}
-\addtolength{\textheight}{2cm}
+\hyphenation{Isabelle}
 
 \newcommand{\isaheader}[1]
-{\newpage\markright{Theory~\isabellecontext}\section{#1}}
+{\newpage\markright{\isabellecontext}\section{#1}}
 \renewcommand{\isamarkupheader}[1]{#1}
 \renewcommand{\isamarkupsection}[1]{\subsection{#1}}
 
-\newcommand{\secref}[1]{Section~\ref{#1}}
-\newcommand{\secrefs}[1]{Sections~\ref{#1}}
-\newcommand{\charef}[1]{Chapter~\ref{#1}}
-\newcommand{\charefs}[1]{Chapters~\ref{#1}}
-
-%remove clutter from the toc
-\setcounter{secnumdepth}{2}
-\setcounter{tocdepth}{1}
-
 \begin{document}
 
-\title{A Machine-Checked Model for a Java-like Language,\\
-       Virtual Machine and Compiler}
-\author{Gerwin Klein \and Tobias Nipkow}
+\title{JinjaThreads}
+\author{Andreas Lochbihler}
 \maketitle
-
 
 \tableofcontents
 
-\section{Theory Dependencies}
+\parindent 0pt\parskip 0.5ex
 
-Figure \ref{theory-deps} shows the dependencies between 
-the Isabelle theories in the following sections.
-
-\begin{figure}[h!t]
-\begin{center}
-  \includegraphics[width=\textwidth]{session_graph}
-\end{center}
-\caption{Theory Dependency Graph\label{theory-deps}}
-\end{figure}
-
-\newpage
+% generated text of all theories
 \input{session}
 
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
 \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

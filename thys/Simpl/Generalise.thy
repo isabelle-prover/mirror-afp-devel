@@ -1,4 +1,4 @@
-(*  ID:          $Id: Generalise.thy,v 1.4 2008-06-03 11:10:42 norbertschirmer Exp $
+(*  ID:          $Id: Generalise.thy,v 1.5 2008-06-11 14:23:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -91,7 +91,7 @@ lemma generaliseTrans:
 
 lemma meta_spec:
   assumes "\<And>x. PROP P x"
-  shows "PROP P x" by fact
+  shows "PROP P x".
 
 lemma meta_spec_protect:
   assumes g: "\<And>x. PROP P x"

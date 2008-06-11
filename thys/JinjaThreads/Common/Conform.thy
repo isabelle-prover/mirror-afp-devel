@@ -137,17 +137,7 @@ done
 lemma conf_NT [iff]: "P,h \<turnstile> v :\<le> NT = (v = Null)"
 (*<*)by (auto simp add: conf_def)(*>*)
 
-lemma is_IntgI: "P,h \<turnstile> v :\<le> Integer \<Longrightarrow> is_Intg v"
-by (unfold conf_def) auto
 
-lemma is_BoolI: "P,h \<turnstile> v :\<le> Boolean \<Longrightarrow> is_Bool v"
-by (unfold conf_def) auto
-
-lemma is_RefI: "P,h \<turnstile> v :\<le> T \<Longrightarrow> is_refT T \<Longrightarrow> is_Ref v"
-  apply (cases T)
-  apply (auto simp add: is_Ref_def dest: conf_ClassD elim: is_refT.cases)
-  apply(auto simp add: conf_def widen_Array)
-  done
 
 section{* Value list conformance @{text"[:\<le>]"} *}
 

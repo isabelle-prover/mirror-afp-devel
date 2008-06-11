@@ -101,16 +101,12 @@ For explanations see the FOOL 2008 paper by A. Lochbihler.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-	    <ul>
-	    <li>Isabelle 2007: <a href="../release/afp-JinjaThreads-2007-12-03.tar.gz">afp-JinjaThreads-2007-12-03.tar.gz</a>
-		</ul>
-	</td></tr>
+    <tr><td class="links">Older releases:	None</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-06-10 10:26:49 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-06-11 14:23:03 $, $Revision: 1.1 
 $</div></body>
 </html>

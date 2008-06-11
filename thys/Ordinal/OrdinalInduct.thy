@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalInduct.thy,v 1.5 2008-04-07 13:37:52 fhaftmann Exp $
+    ID:          $Id: OrdinalInduct.thy,v 1.6 2008-06-11 14:22:58 lsf37 Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -22,18 +22,11 @@ by (unfold oSuc_def, rule oStrictLimit_ub)
 lemma oSuc_leI: "x < y \<Longrightarrow> oSuc x \<le> y"
 by (unfold oSuc_def, rule oStrictLimit_lub, simp)
 
-instantiation ordinal :: "{zero, one}"
-begin
-
-definition
-  ordinal_zero_def:       "(0::ordinal) = oZero"
-
-definition
-  ordinal_one_def [simp]: "(1::ordinal) = oSuc 0"
-
-instance ..
-
-end
+instance ordinal :: zero ..
+instance ordinal :: one ..
+defs (overloaded)
+  ordinal_zero_def:       "(0::ordinal) \<equiv> oZero"
+  ordinal_one_def [simp]: "(1::ordinal) \<equiv> oSuc 0"
 
 
 subsubsection {* Derived properties of 0 and oSuc *}

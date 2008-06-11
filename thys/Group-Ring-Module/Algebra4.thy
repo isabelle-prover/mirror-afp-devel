@@ -25,7 +25,7 @@
  **)   
 
 theory Algebra4
-imports Algebra3 Binomial Zorn
+imports Binomial Zorn Algebra3
 begin
 
 (*<*)hide const ring(*>*)
@@ -3894,7 +3894,7 @@ done
 lemma (in Ring) id_ideal_psub_sum:"\<lbrakk>ideal R I; a \<in> carrier R; a \<notin> I\<rbrakk> \<Longrightarrow>
                                              I \<subset> I \<minusplus> Rxa R a"  
 apply (cut_tac ring_is_ag)
-apply (simp add:psubset_eq) 
+apply (simp add:psubset_def) 
 apply (frule principal_ideal)
 apply (rule conjI)
 apply (rule sum_ideals_la1, assumption+)
@@ -5247,7 +5247,7 @@ apply (rule Union_least[of "c" "carrier R"])
 apply (rule ballI)+
  apply simp 
  apply (erule bexE)+
-apply (simp add: chain_def chain_subset_def)
+apply (simp add:chain_def)
  apply (frule conjunct1) apply (frule conjunct2)
  apply (thin_tac "c \<subseteq> {I. ideal R I \<and> I \<subset> carrier R} \<and> (\<forall>x\<in>c. \<forall>y\<in>c. x \<subseteq> y \<or> y \<subseteq> x)")
  apply (frule_tac b = X in forball_spec1, assumption,
@@ -5298,7 +5298,7 @@ lemma (in Ring) id_maximal_Exist:"\<not>(zeroring R) \<Longrightarrow> \<exists>
    apply (cut_tac ring_zero,
          frule singleton_sub[of "\<zero>" "carrier R"],
          thin_tac "\<zero> \<in> carrier R")
-   apply (subst psubset_eq)
+   apply (subst psubset_def)
    apply blast 
  apply (subgoal_tac "\<Union>c \<in> {I. ideal R I \<and> I \<subset> carrier R}") 
  apply (subgoal_tac "\<forall>x\<in>c. x \<subseteq> (\<Union>c)", blast) 
@@ -5308,7 +5308,7 @@ lemma (in Ring) id_maximal_Exist:"\<not>(zeroring R) \<Longrightarrow> \<exists>
   apply (simp add:chain_def, erule conjE,
         frule_tac c = X and A = c in 
           subsetD[of _ "{I. ideal R I \<and> I \<subset> carrier R}"], assumption+,
-          simp add:ideal_subset1, simp add:psubset_eq)
+          simp add:ideal_subset1, simp add:psubset_def)
   apply (rule contrapos_pp, simp+,
          cut_tac ring_one, frule sym, thin_tac "\<Union>c = carrier R")
   apply (frule_tac B = "\<Union>c" in eq_set_inc[of "1\<^sub>r" "carrier R"], assumption,
@@ -5332,7 +5332,7 @@ apply (rule equalityI)
  apply (erule conjE)
  apply (frule_tac a = x in forall_spec1,
         thin_tac "\<forall>x. ideal R x \<and> x \<subset> carrier R \<longrightarrow> y \<subseteq> x \<longrightarrow> y = x", simp)
- apply (frule_tac I = x in ideal_subset1, simp add:psubset_eq)
+ apply (frule_tac I = x in ideal_subset1, simp add:psubset_def)
  apply (case_tac "x = carrier R", simp)
  apply simp
 
@@ -5641,7 +5641,7 @@ done
 lemma (in Ring) ideal_prod_prime:"\<lbrakk>ideal R I; ideal R J; prime_ideal R P;
                           I \<diamondsuit>\<^sub>r J \<subseteq> P \<rbrakk> \<Longrightarrow> I \<subseteq> P \<or> J \<subseteq> P"
 apply (rule contrapos_pp, simp+)
-apply (erule conjE, simp add:subset_eq, (erule bexE)+)
+apply (erule conjE, simp add:subset_def, (erule bexE)+)
 apply (frule_tac i = x and j = xa in prod_mem_prod_ideals[of "I" "J"],
           assumption+)
  apply (frule_tac b = "x \<cdot>\<^sub>r xa" in forball_spec1, assumption,
@@ -5688,7 +5688,7 @@ constdefs (structure R)
 
 lemma (in Ring) prod_primeTr:"\<lbrakk>prime_ideal R P; ideal R A; \<not> A \<subseteq> P; 
                 ideal R B; \<not> B \<subseteq> P \<rbrakk> \<Longrightarrow> \<exists>x. x \<in> A \<and> x \<in> B \<and> x \<notin> P"  
-apply (simp add:subset_eq)
+apply (simp add:subset_def)
  apply (erule bexE)+
 apply (subgoal_tac "x \<cdot>\<^sub>r xa \<in> A \<and> x \<cdot>\<^sub>r xa \<in> B \<and> x \<cdot>\<^sub>r xa \<notin> P")
  apply blast
@@ -5841,7 +5841,7 @@ apply (rule impI, rule allI, rule impI)
 apply (case_tac "l \<le> n")
  apply (cut_tac n = n in Nset_Suc, blast)
  apply (cut_tac m = l and n = "Suc n" in Nat.le_anti_sym, assumption)
- apply (simp add: not_less)
+ apply (simp add:le_def)
  apply simp
  apply (rule ring_tOp_closed, simp)
  apply (cut_tac n = n in Nset_Suc, blast)
@@ -6568,7 +6568,7 @@ by (simp add:maximal_set_def)
 
 lemma (in Ring) maximal_setTr:"\<lbrakk>maximal_set {I. ideal R I \<and> S \<inter> I = {}} mx; 
                                          ideal R J; mx \<subset> J \<rbrakk> \<Longrightarrow> S \<inter> J \<noteq> {}"
-by (rule contrapos_pp, simp+, simp add:psubset_eq, erule conjE,
+by (rule contrapos_pp, simp+, simp add:psubset_def, erule conjE,
        simp add:maximal_set_def)
 
 lemma (in Ring) mulDisj:"\<lbrakk>mul_closed_set R S; 1\<^sub>r \<in> S; \<zero> \<notin> S; 
@@ -6667,14 +6667,14 @@ apply (rule contrapos_pp, simp+)
         thin_tac "c \<subseteq> {I. ideal R I \<and> S \<inter> I = {}}")
  apply (simp, blast)
 
-apply (simp add:chain_def chain_subset_def, erule conjE)
+apply (simp add:chain_def, erule conjE)
  apply (rule subsetI)
  apply (frule_tac c = x and A = c and B = "{I. ideal R I \<and> S \<inter> I = {}}" in 
                   subsetD, assumption+,
         thin_tac "c \<subseteq> {I. ideal R I \<and> S \<inter> I = {}}",
         thin_tac "T = {I. ideal R I \<and> S \<inter> I = {}}")
  apply (simp, thin_tac "\<forall>x\<in>c. \<forall>y\<in>c. x \<subseteq> y \<or> y \<subseteq> x", erule conjE)
- apply (simp add:psubset_eq ideal_subset1)
+ apply (simp add:psubset_def ideal_subset1)
  apply (rule contrapos_pp, simp+)
  apply (rotate_tac -1, frule sym, thin_tac "x = carrier R", 
         thin_tac "carrier R = x")
@@ -6790,7 +6790,7 @@ apply (rule contrapos_pp, simp+, erule bexE)
  apply (rule subsetI, simp)
  apply (frule_tac c = x and A = c and B = "{J. ideal R J \<and> 1\<^sub>r \<notin> J \<and> I \<subseteq> J}"
         in subsetD, assumption+, simp, (erule conjE)+)
- apply (subst psubset_eq, simp add:ideal_subset1)
+ apply (subst psubset_def, simp add:ideal_subset1)
  apply (rule contrapos_pp, simp+, simp add:ring_one)
  
  apply (rule ballI)
@@ -6902,7 +6902,7 @@ apply (rule subsetI)
  apply simp
 
  apply (rule contrapos_pp, simp+)
- apply (simp add:subset_eq, erule bexE)
+ apply (simp add:subset_def, erule bexE)
  apply (frule_tac mx = x in maximal_ideal_ideal,
         frule_tac b = xa in forball_spec1, 
         thin_tac "\<forall>a\<in>carrier R - mx. Unit R a", simp,

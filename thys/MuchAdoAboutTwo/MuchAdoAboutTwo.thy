@@ -589,7 +589,8 @@ lemma foldl1_append:
   shows "foldl1 f (xs @ ys) = foldl1 f (foldl1 f xs # ys)"
 proof -
   have non_empty_list: "xs \<noteq> [] \<Longrightarrow> \<exists>y ys. xs = y # ys" by (cases xs, auto)
-  with assms obtain x xs' where x_xs_def: "xs = x # xs'" by auto
+  with assms have "\<exists>x xs'. xs = x # xs'" by auto
+  then obtain x xs' where x_xs_def: "xs = x # xs'" by auto
 
   have "foldl1 f (xs @ ys) = foldl f x (xs' @ ys)" using x_xs_def by simp
   also have "\<dots> = foldl f (foldl f x xs') ys" using List.foldl_append by simp
@@ -1103,8 +1104,9 @@ proof (rule ccontr)
     proof 
       assume "One \<in> set (map (h1 k i) js)" 
       hence "One \<in> (h1 k i) ` (set js)" by simp
-      then obtain j where j_def: "j \<in> set js \<and> One = h1 k i j" 
+      hence "\<exists>j \<in> set js. One = h1 k i j" 
         using Set.image_iff [where f="h1 k i"] by auto
+      then obtain j where j_def: "j \<in> set js \<and> One = h1 k i j" by auto
       hence "i = j" by (simp split: if_splits)
       with i_not_in_js and j_def show False by simp
     qed
@@ -1322,8 +1324,9 @@ proof (rule ccontr)
     proof
       assume "Two \<in> set (map (h2 i) ys)"
       hence "Two \<in> (h2 i) ` (set ys)" by simp
-      then obtain j where j_def: "j \<in> set ys \<and> Two = h2 i j" 
-	using Set.image_iff [where f="h2 i"] by auto
+      hence "\<exists>j \<in> set ys. Two = h2 i j" using Set.image_iff [where f="h2 i"]
+        by auto
+      then obtain j where j_def: "j \<in> set ys \<and> Two = h2 i j" by auto
       hence "i + 1 = j" by (simp split: if_splits)
       with Suc_i_not_in_ys and j_def show False by simp
     qed
@@ -1472,8 +1475,9 @@ next
   next
     case Suc 
     with IH have "(i + r) \<in> set ys" by simp
-    then obtain p where p_def: "p < length ys \<and> ys ! p = i + r" 
+    hence "\<exists>p < length ys. ys ! p = i + r" 
       using List.in_set_conv_nth [where x="i + r"] by auto
+    then obtain p where p_def: "p < length ys \<and> ys ! p = i + r" by auto
     
     let ?xs = "xs @ take (p + 1) ys"
     let ?ys = "drop (p + 1) ys"
@@ -1509,8 +1513,9 @@ proof (rule ccontr)
   assume "\<not>(i \<le> j)"
   hence i_j: "i > j" by simp
 
-  from A5 obtain pj where pj_def: "pj < length ys \<and> ys ! pj = j" 
+  from A5 have "\<exists>pj < length ys. ys ! pj = j" 
     using List.in_set_conv_nth [where x=j] by auto
+  then obtain pj where pj_def: "pj < length ys \<and> ys ! pj = j" by auto
 
   let ?xs = "xs @ take (pj + 1) ys"
   let ?ys = "drop (pj + 1) ys"
@@ -1608,10 +1613,11 @@ lemma Lemma_5:
 proof -
   have P1: "length jss = length (ups n)" 
     proof -
-      obtain f :: "three \<Rightarrow> three \<Rightarrow> three" where f_assoc: "associative f"
+      have "\<exists>(f :: three \<Rightarrow> three \<Rightarrow> three). associative f"
         using f1_assoc by auto
-
-      fix h
+      then obtain f where f_assoc: "associative (f :: three \<Rightarrow> three \<Rightarrow> three)"
+        by auto
+ 
       have 
       "length jss = length (map (foldl1 f \<circ> map h) jss)" by (simp add: L2)
       also have 

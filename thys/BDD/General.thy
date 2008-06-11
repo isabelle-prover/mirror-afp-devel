@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: General.thy,v 1.5 2008-06-04 18:05:56 makarius Exp $
+    ID:          $Id: General.thy,v 1.6 2008-06-11 14:22:50 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -42,37 +42,39 @@ primrec
 "root Tip = Null"
 "root (Node l a r) = a"
 
-fun isLeaf :: "dag \<Rightarrow> bool" where
+consts isLeaf :: "dag \<Rightarrow> bool"
+recdef isLeaf "measure size"
 "isLeaf Tip = False"
-| "isLeaf (Node Tip v Tip) = True"
-| "isLeaf (Node (Node l v\<^isub>1 r) v\<^isub>2 Tip) = False"
-| "isLeaf (Node Tip v\<^isub>1 (Node l v\<^isub>2 r)) = False"
+"isLeaf (Node Tip v Tip) = True"
+"isLeaf (Node (Node l v\<^isub>1 r) v\<^isub>2 Tip) = False"
+"isLeaf (Node Tip v\<^isub>1 (Node l v\<^isub>2 r)) = False"
 
 datatype bdt = Zero | One | Bdt_Node bdt nat bdt
 
-fun bdt_fn :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt option" where
-"bdt_fn Tip = (\<lambda>bdtvar . None)"
-| "bdt_fn (Node Tip vref Tip) = 
+consts bdt :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt option"
+recdef bdt "measure size"
+"bdt Tip = (\<lambda>bdtvar . None)"
+"bdt (Node Tip vref Tip) = 
     (\<lambda>bdtvar . 
           (if (bdtvar vref = 0) 
            then Some Zero 
 	         else (if (bdtvar vref = 1) 
                  then Some One
                  else None)))"  
-| "bdt_fn (Node Tip vref (Node l vref1 r)) = (\<lambda>bdtvar . None)"
-| "bdt_fn (Node (Node l vref1 r) vref Tip) = (\<lambda>bdtvar . None)"
-| "bdt_fn (Node (Node l1 vref1 r1) vref (Node l2 vref2 r2)) = 
+"bdt (Node Tip vref (Node l vref1 r)) = (\<lambda>bdtvar . None)"
+"bdt (Node (Node l vref1 r) vref Tip) = (\<lambda>bdtvar . None)"
+"bdt (Node (Node l1 vref1 r1) vref (Node l2 vref2 r2)) = 
   (\<lambda>bdtvar .
     (if (bdtvar vref = 0 \<or> bdtvar vref = 1) 
      then None 
      else  
-      (case (bdt_fn (Node l1 vref1 r1) bdtvar) of 
+      (case (bdt (Node l1 vref1 r1) bdtvar) of 
        None \<Rightarrow> None
        |(Some b1) \<Rightarrow>
-         (case (bdt_fn (Node l2 vref2 r2) bdtvar) of 
+         (case (bdt (Node l2 vref2 r2) bdtvar) of 
           None \<Rightarrow> None
          |(Some b2) \<Rightarrow> Some (Bdt_Node b1 (bdtvar vref) b2)))))"
-
+(hints cong add: option.case_cong if_cong) 
 (*
 Kongruenzregeln sind das Feintuning für den Simplifier (siehe Kapitel 9 im Isabelle
 Tutorial). Im Fall von case wird standardmäßig nur die case bedingung nicht
@@ -81,7 +83,7 @@ Auswertungsstrategie einer Programmiersprache, da wird auch zunächst nur die
 Bedingung vereinfacht. Will man mehr so kann man die entsprechenden Kongruenz 
 regeln dazunehmen.
 *)
-abbreviation "bdt == bdt_fn"
+
 
 consts eval :: "bdt \<Rightarrow> bool list \<Rightarrow> bool"
 primrec
@@ -91,28 +93,30 @@ primrec
  
 (*A given bdt is ordered if it is a One or Zero or its value is smaller than
 its parents value*)
-fun ordered_bdt:: "bdt \<Rightarrow> bool" where
+consts ordered_bdt:: "bdt \<Rightarrow> bool"
+recdef ordered_bdt "measure size"  
 "ordered_bdt Zero = True"
-| "ordered_bdt One = True"
-| "ordered_bdt (Bdt_Node (Bdt_Node l1 v1 r1) v (Bdt_Node l2 v2 r2)) = 
+"ordered_bdt One = True"
+"ordered_bdt (Bdt_Node (Bdt_Node l1 v1 r1) v (Bdt_Node l2 v2 r2)) = 
     ((v1 < v) \<and> (v2 < v) \<and> 
      (ordered_bdt (Bdt_Node l1 v1 r1)) \<and> (ordered_bdt (Bdt_Node l2 v2 r2)))"
-| "ordered_bdt (Bdt_Node (Bdt_Node l1 v1 r1) v r) = 
+"ordered_bdt (Bdt_Node (Bdt_Node l1 v1 r1) v r) = 
     ((v1 < v) \<and> (ordered_bdt (Bdt_Node l1 v1 r1)))"
-| "ordered_bdt (Bdt_Node l v (Bdt_Node l2 v2 r2)) = 
+"ordered_bdt (Bdt_Node l v (Bdt_Node l2 v2 r2)) = 
     ((v2 < v) \<and> (ordered_bdt (Bdt_Node l2 v2 r2)))"
-| "ordered_bdt (Bdt_Node l v r) = True"
+"ordered_bdt (Bdt_Node l v r) = True"
 
 (*In case t = (Node Tip v Tip) v should have the values 0 or 1. This is not checked by this function*)
-fun ordered:: "dag \<Rightarrow> (ref\<Rightarrow>nat) \<Rightarrow> bool" where
+consts ordered:: "dag \<Rightarrow> (ref\<Rightarrow>nat) \<Rightarrow> bool"
+recdef ordered "measure size"
 "ordered Tip = (\<lambda> var. True)"
-| "ordered (Node (Node l\<^isub>1 v\<^isub>1 r\<^isub>1) v (Node l\<^isub>2 v\<^isub>2 r\<^isub>2)) = 
+"ordered (Node (Node l\<^isub>1 v\<^isub>1 r\<^isub>1) v (Node l\<^isub>2 v\<^isub>2 r\<^isub>2)) = 
     (\<lambda> var. (var v\<^isub>1 < var v \<and> var v\<^isub>2 < var v) \<and> 
         (ordered (Node l\<^isub>1 v\<^isub>1 r\<^isub>1) var) \<and> (ordered (Node l\<^isub>2 v\<^isub>2 r\<^isub>2) var))"
-| "ordered (Node Tip v Tip) = (\<lambda> var. (True))"
-| "ordered (Node Tip v r) = 
+"ordered (Node Tip v Tip) = (\<lambda> var. (True))"
+"ordered (Node Tip v r) = 
      (\<lambda> var. (var (root r) < var v) \<and> (ordered r var))"
-| "ordered (Node l v Tip) = 
+"ordered (Node l v Tip) = 
      (\<lambda> var. (var (root l) < var v) \<and> (ordered l var))"
  
 
@@ -137,13 +141,13 @@ done
 
 lemma bdt_Some_One_iff [simp]: 
   "(bdt t var = Some One) = (\<exists> p. t = Node Tip p Tip \<and> var p = 1)"
-apply (induct_tac t rule: bdt_fn.induct)
+apply (induct_tac t rule: bdt.induct) (*bdt is a recdef*)
 apply (auto split: option.splits) (*in order to split the cases Zero and One*)
 done
 
 lemma bdt_Some_Zero_iff [simp]: 
   "(bdt t var = Some Zero) = (\<exists> p. t = Node Tip p Tip \<and> var p = 0)"
-apply (induct_tac t rule: bdt_fn.induct)
+apply (induct_tac t rule: bdt.induct)
 apply (auto split: option.splits)
 done
 
@@ -152,7 +156,7 @@ lemma bdt_Some_Node_iff [simp]:
  "(bdt t var = Some (Bdt_Node bdt1 v bdt2)) = 
     (\<exists> p l r. t = Node l p r \<and> bdt l var = Some bdt1 \<and> bdt r var = Some bdt2 \<and> 
                1 < v \<and> var p = v )"
-apply (induct_tac t rule: bdt_fn.induct)
+apply (induct_tac t rule: bdt.induct)
 prefer 5
 apply (fastsimp split: if_splits option.splits)
 apply auto
@@ -167,9 +171,9 @@ proof (induct t)
 next
   case (Node lt a rt)
   note NN= this
-  have bdt1: "bdt (Node lt a rt) var = Some bdt1" by fact
-  have no_in_t: " no \<in> set_of (Node lt a rt)" by fact
-  have p_tree: "Dag p low high (Node lt a rt)" by fact
+  have bdt1: "bdt (Node lt a rt) var = Some bdt1" . 
+  have no_in_t: " no \<in> set_of (Node lt a rt)" . 
+  have p_tree: "Dag p low high (Node lt a rt)" . 
   from Node.prems obtain 
     lt: "Dag (low p) low high lt" and 
     rt: "Dag (high p) low high rt" 
@@ -469,7 +473,7 @@ lemma subdag_ordered:
               no \<in> set_of t\<rbrakk> \<Longrightarrow> ordered not var"
 proof (induct t) 
   case Tip
-  from Tip.prems show ?case by simp
+  with Tip.prems show ?case by simp
 next
   case (Node lt po rt)
   note nN=this
@@ -485,7 +489,9 @@ next
       from Tip ltTip Node.prems have "no=p"
         by simp
       with ppo Node.prems have "not=(Node lt po rt)"
-        by (simp del: Dag_Ref add: Dag_unique)
+        apply -
+        apply (simp del: Dag_Ref add: Dag_unique)
+        done
       with Node.prems show ?thesis by simp
     next
       case (Node lrnot rn rrnot)
@@ -495,21 +501,20 @@ next
         by simp
       from Node.prems have ponN: "po \<noteq> Null"
         by auto
-      with ppo ponN ltTip Node.prems have *: "Dag (high po) low high rt"
+      with ppo ponN ltTip Node.prems Node have "Dag (high po) low high rt"
         by auto
-      show ?thesis
+      with Node.hyps Node.prems ord_rt show ?thesis
       proof (cases "no=po")
         case True
-        with ppo Node.prems have "not = Node lt po rt"
+        with ppo Node.prems have "not = (Node lt po rt)"
           by (simp del: Dag_Ref add: Dag_unique)
-        with Node.prems show ?thesis
-	  by simp
+        with Node.prems show ?thesis by simp
       next
-	case False
+        assume "no\<noteq> po" 
         with Node.prems ltTip have "no \<in> set_of rt" 
           by simp
-	with ord_rt * `Dag no low high not` show ?thesis
-	  by (rule Node.hyps)
+        with ord_rt Node.prems show ?thesis
+          by auto
       qed
     qed
   next
@@ -524,20 +529,20 @@ next
         by simp
       from Node.prems have ponN: "po \<noteq> Null"
         by auto
-      with ppo ponN Tip Node.prems ltNode have *: "Dag (low po) low high lt"
+      with ppo ponN Tip Node.prems ltNode have "Dag (low po) low high lt"
         by auto
-      show ?thesis
+      with Node.hyps Node.prems ord_lt show ?thesis
       proof (cases "no=po")
         case True
         with ppo Node.prems have "not = (Node lt po rt)"
           by (simp del: Dag_Ref add: Dag_unique)
         with Node.prems show ?thesis by simp
       next
-	case False
+        assume "no\<noteq> po" 
         with Node.prems Tip have "no \<in> set_of lt" 
           by simp
-        with ord_lt * `Dag no low high not` show ?thesis
-          by (rule Node.hyps)
+        with ord_lt Node.prems show ?thesis
+          by auto
       qed   
     next
       case (Node lrt r rrt)
@@ -703,10 +708,11 @@ defs shared_lower_levels_def : "shared_lower_levels t i bdtvar == \<forall> st1 
 *)
 
 
-fun reduced :: "dag \<Rightarrow> bool" where
+consts reduced :: "dag \<Rightarrow> bool"
+recdef reduced "measure size"
 "reduced Tip = True"
-| "reduced (Node Tip v Tip) = True"
-| "reduced (Node l v r) = (l \<noteq> r \<and> reduced l \<and> reduced r)"  
+"reduced (Node Tip v Tip) = True"
+"reduced (Node l v r) = (l \<noteq> r \<and> reduced l \<and> reduced r)"  
 
 consts reduced_bdt :: "bdt \<Rightarrow> bool"
 primrec
@@ -1216,12 +1222,9 @@ proof (rule ballI)
       done
     from x_in_pret ord_pret highnN True have children_var_smaller: "var (low x) < var x \<and> var (high x) < var x"
       apply -
+      thm var_ordered_children
       apply (rule var_ordered_children)
-      apply (rule pret_dag)
-      apply (rule ord_pret)
-      apply (rule x_in_pret)
-      apply (rule True)
-      apply (rule highnN)
+      apply assumption+
       done
     with xsnb have lowxsnb: "var (low x) < nb"
       by arith

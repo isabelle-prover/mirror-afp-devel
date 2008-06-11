@@ -1,1 +1,4 @@
-use_thys ["EvalProof", "NormalizeTotalProof"];
+use_thy "EvalProof";
+use_thy "NormalizeTotalProof";
+
+

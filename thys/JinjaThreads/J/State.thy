@@ -1,26 +1,26 @@
 (*  Title:      Jinja/J/State.thy
-    ID:         $Id: State.thy,v 1.3 2008-04-23 08:43:37 alochbihler Exp $
-    Author:     Tobias Nipkow, Andreas Lochbihler
+    ID:         $Id: State.thy,v 1.4 2008-06-11 14:22:58 lsf37 Exp $
+    Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Program State} *}
 
-theory State imports "../Objects" begin
+theory State imports Expr "../Common/Exceptions" begin
 
+types
+  thread_id = nat
 
 types
   locals = "vname \<rightharpoonup> val"      -- "local vars, incl. params and ``this''"
   Jstate = "heap \<times> locals"     -- "the heap and the local vars"
 
-definition hp :: "Jstate \<Rightarrow> heap" where "hp \<equiv> fst"
+constdefs
+  hp :: "Jstate \<Rightarrow> heap"
+  "hp \<equiv> fst"
+  lcl :: "Jstate \<Rightarrow> locals"
+  "lcl \<equiv> snd"
 
-definition lcl :: "Jstate \<Rightarrow> locals" where "lcl \<equiv> snd"
-
-lemma hp_conv [simp]: "hp (h, l) = h"
-by(simp add: hp_def)
-
-lemma lcl_conv [simp]: "lcl (h, l) = l"
-by(simp add: lcl_def)
+declare hp_def[simp] lcl_def[simp]
 
 end

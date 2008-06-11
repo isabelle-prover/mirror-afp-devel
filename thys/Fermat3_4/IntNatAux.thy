@@ -209,6 +209,11 @@ lemma even_plus_odd: "a \<in> zEven \<Longrightarrow> b \<in> zOdd \<Longrightar
   apply (rule_tac x="k+ka" in exI, auto)
 done
 
+lemma odd_plus_odd: "\<lbrakk> x \<in> zOdd; y \<in> zOdd \<rbrakk> \<Longrightarrow> x+y \<in> zEven"
+  apply (auto simp add: zOdd_def zEven_def)
+  apply (rule_tac x="1+k+ka" in exI, auto)
+done
+
 lemma odd_plus_odd: "a \<in> zOdd \<Longrightarrow> b \<in> zOdd \<Longrightarrow> a+b \<in> zEven"
   apply (auto simp add: zEven_def zOdd_def)
   apply (rule_tac x="1+k+ka" in exI, auto)

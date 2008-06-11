@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalOmega.thy,v 1.4 2008-04-22 06:34:06 fhaftmann Exp $
+    ID:          $Id: OrdinalOmega.thy,v 1.5 2008-06-11 14:22:58 lsf37 Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -314,24 +314,28 @@ by (rule absorb_omega_exp, simp add: ordinal_exp_strict_monoR)
 
 subsection {* Cantor normal form *}
 
-lemma cnf_lemma: "x > 0 \<Longrightarrow> x - \<omega> ** oLog \<omega> x < x"
-  apply (subst ordinal_minus_less_eq)
-   apply (erule ordinal_exp_oLog_le, simp)
-  apply (rule ordinal_less_plusL)
-  apply (rule ordinal_less_exp_oLog, simp)
-  done
+consts
+  to_cnf   :: "ordinal \<Rightarrow> ordinal list"
+  from_cnf :: "ordinal list \<Rightarrow> ordinal"
 
-primrec from_cnf where
+primrec
   "from_cnf []       = 0"
-  | "from_cnf (x # xs) = \<omega> ** x + from_cnf xs"
+  "from_cnf (x # xs) = \<omega> ** x + from_cnf xs"
 
-function to_cnf where
- [simp del]: "to_cnf x = (if x = 0 then [] else
+lemma to_cnf_lemma:
+"0 < x \<Longrightarrow> x - \<omega> ** oLog \<omega> x < x"
+ apply (subst ordinal_minus_less_eq)
+  apply (erule ordinal_exp_oLog_le, simp)
+ apply (rule ordinal_less_plusL)
+ apply (rule ordinal_less_exp_oLog, simp)
+done
+
+recdef to_cnf "{(x,y). x < y}"
+ "to_cnf x = (if x = 0 then [] else
     oLog \<omega> x # to_cnf (x - \<omega> ** oLog \<omega> x))"
-by pat_completeness auto
+(hints recdef_wf: wf recdef_simp: to_cnf_lemma)
 
-termination by (relation "{(x, y). x < y}")
-  (simp_all add: wf cnf_lemma)
+declare to_cnf.simps [simp del]
 
 lemma to_cnf_0 [simp]: "to_cnf 0 = []"
 by (simp add: to_cnf.simps)
@@ -347,14 +351,17 @@ lemma to_cnf_inverse: "from_cnf (to_cnf x) = x"
  apply (rule wf_induct[OF wf], simp)
  apply (case_tac "x = 0", simp_all)
  apply (simp add: to_cnf_not_0)
- apply (simp add: cnf_lemma)
+ apply (simp add: to_cnf_lemma)
  apply (rule ordinal_plus_minus2)
  apply (erule ordinal_exp_oLog_le, simp)
 done
 
-primrec normalize_cnf where
-  normalize_cnf_Nil: "normalize_cnf [] = []"
-  | normalize_cnf_Cons: "normalize_cnf (x # xs) =
+consts normalize_cnf :: "ordinal list \<Rightarrow> ordinal list"
+primrec
+  normalize_cnf_Nil:
+    "normalize_cnf [] = []"
+  normalize_cnf_Cons:
+    "normalize_cnf (x # xs) =
       (case xs of [] \<Rightarrow> [x] | y # ys \<Rightarrow>
         (if x < y then [] else [x]) @ normalize_cnf xs)"
 
@@ -367,37 +374,40 @@ done
 lemma normalize_cnf_to_cnf: "normalize_cnf (to_cnf x) = to_cnf x"
  apply (rule_tac a=x in wf_induct[OF wf], simp)
  apply (case_tac "x = 0", simp_all)
- apply (drule spec, drule mp, erule cnf_lemma)
+ apply (drule spec, drule mp, erule to_cnf_lemma)
  apply (simp add: to_cnf_not_0)
  apply (case_tac "to_cnf (x - \<omega> ** oLog \<omega> x)", simp_all)
  apply (drule to_cnf_eq_Cons, simp add: linorder_not_less)
  apply (rule ordinal_oLog_monoR)
  apply (rule order_less_imp_le)
- apply (erule cnf_lemma)
+ apply (erule to_cnf_lemma)
 done
 
 
 text "alternate form of CNF"
 
-lemma cnf2_lemma:
+consts
+  to_cnf2   :: "ordinal \<Rightarrow> (ordinal \<times> nat) list"
+  from_cnf2 :: "(ordinal \<times> nat) list \<Rightarrow> ordinal"
+
+primrec
+  "from_cnf2 []       = 0"
+  "from_cnf2 (x # xs) = \<omega> ** fst x * ordinal_of_nat (snd x) + from_cnf2 xs"
+
+lemma to_cnf2_lemma:
 "0 < x \<Longrightarrow> x mod \<omega> ** oLog \<omega> x < x"
  apply (rule order_less_le_trans)
   apply (rule ordinal_mod_less, simp)
  apply (erule ordinal_exp_oLog_le, simp)
 done
 
-primrec from_cnf2 where
-  "from_cnf2 []       = 0"
-  | "from_cnf2 (x # xs) = \<omega> ** fst x * ordinal_of_nat (snd x) + from_cnf2 xs"
-
-function to_cnf2 where
-  [simp del]: "to_cnf2 x = (if x = 0 then [] else
+recdef to_cnf2 "{(x,y). x < y}"
+ "to_cnf2 x = (if x = 0 then [] else
     (oLog \<omega> x, inv ordinal_of_nat (x div (\<omega> ** oLog \<omega> x)))
       # to_cnf2 (x mod (\<omega> ** oLog \<omega> x)))"
-by pat_completeness auto
+(hints recdef_wf: wf recdef_simp: to_cnf2_lemma)
 
-termination by (relation "{(x,y). x < y}")
-  (simp_all add: wf cnf2_lemma)
+declare to_cnf2.simps [simp del]
 
 lemma to_cnf2_0 [simp]: "to_cnf2 0 = []"
 by (simp add: to_cnf2.simps)
@@ -422,24 +432,27 @@ lemma to_cnf2_inverse: "from_cnf2 (to_cnf2 x) = x"
  apply (rule wf_induct[OF wf], simp)
  apply (case_tac "x = 0", simp_all)
  apply (simp add: to_cnf2_not_0)
- apply (simp add: cnf2_lemma)
+ apply (simp add: to_cnf2_lemma)
  apply (drule_tac x="x mod \<omega> ** oLog \<omega> x" in spec)
- apply (simp add: cnf2_lemma)
+ apply (simp add: to_cnf2_lemma)
  apply (subst ordinal_of_nat_of_ordinal)
   apply (rule ordinal_div_less)
   apply (rule ordinal_less_exp_oLog, simp)
  apply (rule ordinal_div_plus_mod)
 done
 
-primrec is_normalized2 where
-  is_normalized2_Nil: "is_normalized2 [] = True"
-  | is_normalized2_Cons: "is_normalized2 (x # xs) =
+consts is_normalized2 :: "(ordinal \<times> nat) list \<Rightarrow> bool"
+primrec
+  is_normalized2_Nil:
+    "is_normalized2 [] = True"
+  is_normalized2_Cons:
+    "is_normalized2 (x # xs) =
       (case xs of [] \<Rightarrow> True | y # ys \<Rightarrow> fst y < fst x \<and> is_normalized2 xs)"
 
 lemma is_normalized2_to_cnf2: "is_normalized2 (to_cnf2 x)"
  apply (rule_tac a=x in wf_induct[OF wf], simp)
  apply (case_tac "x = 0", simp_all)
- apply (drule spec, drule mp, erule cnf2_lemma)
+ apply (drule spec, drule mp, erule to_cnf2_lemma)
  apply (simp add: to_cnf2_not_0)
  apply (case_tac "x mod \<omega> ** oLog \<omega> x = 0", simp_all)
  apply (case_tac "to_cnf2 (x mod \<omega> ** oLog \<omega> x)", simp_all)
@@ -452,8 +465,9 @@ done
 
 subsection {* Epsilon 0 *}
 
-definition epsilon0 :: ordinal  ("\<epsilon>\<^sub>0") where
-  "epsilon0 = oFix (op ** \<omega>) 0"
+constdefs
+  epsilon0 :: ordinal  ("\<epsilon>\<^sub>0")
+  "epsilon0 \<equiv> oFix (op ** \<omega>) 0"
 
 lemma less_omega_exp: "x < \<epsilon>\<^sub>0 \<Longrightarrow> x < \<omega> ** x"
  apply (unfold epsilon0_def)

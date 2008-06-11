@@ -1,4 +1,4 @@
-(*  ID:         $Id: Basis.thy,v 1.4 2008-05-07 09:03:54 stefanberghofer Exp $
+(*  ID:         $Id: Basis.thy,v 1.5 2008-06-11 14:22:58 lsf37 Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -56,6 +56,8 @@ lemma bexpE: "\<exists>(x, y) \<in> A. P x y \<Longrightarrow>
 
 lemma ball_eq_sym: "\<forall>(x, y) \<in> S. f x y = g x y \<Longrightarrow> \<forall>(x, y) \<in> S. g x y = f x y"
   by auto
+
+lemma [mono]: "split f p = f (fst p) (snd p)" by (simp add: split_def)
 
 lemma measure_eq [simp]: "(x, y) \<in> measure f = (f x < f y)"
   by (simp add: measure_def inv_image_def)

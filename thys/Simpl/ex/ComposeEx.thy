@@ -1,4 +1,4 @@
-(*  ID:          $Id: ComposeEx.thy,v 1.4 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: ComposeEx.thy,v 1.5 2008-06-11 14:23:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -214,6 +214,8 @@ lemmas RevStr_modifies' =
          OF \<N>_ok, of "''Rev''", simplified \<N>_def Rev_clique_def,simplified]
 end
 
+lemma K_record_simp: "K_record c = (\<lambda>x. c)"
+  by (rule ext) auto
 
 lemma (in RevStr_impl) RevStr_modifies:
 "\<forall>\<sigma>. \<Gamma>\<turnstile>\<^bsub>/UNIV \<^esub>{\<sigma>} \<acute>str :== PROC RevStr(\<acute>str) 
@@ -222,9 +224,9 @@ apply (rule allI)
 apply (rule HoarePartialProps.ConseqMGT [OF RevStr_modifies'])
 apply (clarsimp simp add: 
   lift\<^isub>s_def mex_def meq_def
-  project_str_def inject_str_def project_globals_str_def inject_globals_str_def)
+  project_str_def inject_str_def project_globals_str_def inject_globals_str_def
+  K_record_simp)
 apply blast
 done
 
 end
-

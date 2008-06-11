@@ -1,5 +1,5 @@
 (*  Title:      A state based hotel key card system
-    ID:         $Id: State.thy,v 1.5 2008-03-17 22:01:45 makarius Exp $
+    ID:         $Id: State.thy,v 1.6 2008-06-11 14:22:55 lsf37 Exp $
     Author:     Tobias Nipkow, TU Muenchen
 *)
 
@@ -259,7 +259,7 @@ lemma safe_roomk_currk[simp]:
 by (induct set: reach) auto
 
 
-lemma safe_only_owner_enter_normal_aux[simp]:
+lemma safe_only_owner_enter_normal[simp]:
  "\<lbrakk> s : reach; safe s r; (k',roomk s r) \<in> cards s g \<rbrakk> \<Longrightarrow> owns s r = Some g"
 by (induct set: reach) (auto)
 
@@ -303,7 +303,7 @@ proof induct
     qed
   next
     assume "roomk s r1 = k1"
-    with enter_room show ?case by auto
+    from prems show ?case by auto
   qed
 qed auto
 

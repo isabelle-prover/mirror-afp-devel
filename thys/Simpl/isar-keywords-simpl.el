@@ -1,18 +1,17 @@
 ;;
 ;; Keyword classification tables for Isabelle/Isar.
-;; Generated from Pure + Pure-ProofGeneral + HOL + HOLCF + IOA + HOL-Nominal + HOL-Statespace + Simpl.
+;; Generated from Pure + Pure-ProofGeneral + HOL + HOLCF + IOA + HOL-Nominal + HOL-Statespace + simpl.
 ;; *** DO NOT EDIT *** DO NOT EDIT *** DO NOT EDIT ***
 ;;
-;; $Id: isar-keywords-simpl.el,v 1.3 2008-03-29 18:18:38 makarius Exp $
+;; $Id: isar-keywords-simpl.el,v 1.4 2008-06-11 14:23:00 lsf37 Exp $
 ;;
 
 (defconst isar-keywords-major
   '("\\."
     "\\.\\."
-    "Isabelle\\.command"
     "ML"
     "ML_command"
-    "ML_val"
+    "ML_setup"
     "ProofGeneral\\.inform_file_processed"
     "ProofGeneral\\.inform_file_retracted"
     "ProofGeneral\\.kill_proof"
@@ -108,6 +107,7 @@
     "inductive_set"
     "init_toplevel"
     "instance"
+    "instance_proof"
     "instantiation"
     "interpret"
     "interpretation"
@@ -136,7 +136,6 @@
     "obtain"
     "oops"
     "oracle"
-    "overloading"
     "parse_ast_translation"
     "parse_translation"
     "pcpodef"
@@ -237,7 +236,6 @@
     "undo"
     "undos_proof"
     "unfolding"
-    "unused_thms"
     "use"
     "use_thy"
     "using"
@@ -310,8 +308,7 @@
     "where"))
 
 (defconst isar-keywords-control
-  '("Isabelle\\.command"
-    "ProofGeneral\\.inform_file_processed"
+  '("ProofGeneral\\.inform_file_processed"
     "ProofGeneral\\.inform_file_retracted"
     "ProofGeneral\\.kill_proof"
     "ProofGeneral\\.process_pgip"
@@ -327,8 +324,8 @@
     "undos_proof"))
 
 (defconst isar-keywords-diag
-  '("ML_command"
-    "ML_val"
+  '("ML"
+    "ML_command"
     "cd"
     "class_deps"
     "code_deps"
@@ -388,7 +385,7 @@
     "touch_child_thys"
     "touch_thy"
     "typ"
-    "unused_thms"
+    "use"
     "use_thy"
     "value"
     "welcome"))
@@ -409,7 +406,7 @@
     "subsubsection"))
 
 (defconst isar-keywords-theory-decl
-  '("ML"
+  '("ML_setup"
     "abbreviation"
     "arities"
     "atom_decl"
@@ -472,7 +469,6 @@
     "nonterminals"
     "notation"
     "oracle"
-    "overloading"
     "parse_ast_translation"
     "parse_translation"
     "primrec"
@@ -498,8 +494,7 @@
     "typed_print_translation"
     "typedecl"
     "types"
-    "types_code"
-    "use"))
+    "types_code"))
 
 (defconst isar-keywords-theory-script
   '("inductive_cases"))
@@ -510,6 +505,7 @@
     "cpodef"
     "function"
     "instance"
+    "instance_proof"
     "interpretation"
     "lemma"
     "nominal_inductive"

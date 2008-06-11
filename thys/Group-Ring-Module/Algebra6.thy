@@ -534,7 +534,7 @@ lemma (in PolynRg) polyn_deg_add3:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero
 apply (case_tac "(deg_n R S X p) = (deg_n R S X q)",
        frule polyn_deg_add2[of "p" "q"], assumption+,
        simp)
-apply (cut_tac less_linear[of "deg_n R S X p" "deg_n R S X q"],
+apply (cut_tac Nat.less_linear[of "deg_n R S X p" "deg_n R S X q"],
        simp, thin_tac "deg_n R S X p \<noteq> deg_n R S X q",
        erule disjE, simp add:polyn_deg_add1,
        cut_tac ring_is_ag, simp add:aGroup.ag_pOp_commute[of "R" "p" "q"],
@@ -1102,6 +1102,42 @@ done
 (*lemma (in PolynRg) deg_minus_eq:"\<lbrakk>ring R; integral_domain S; polyn_ring R S X; 
 p \<in> carrier R; p \<noteq> 0\<^sub>R\<rbrakk> \<Longrightarrow>   deg_n R S X (-\<^sub>R p) = deg_n R S X p" *)
 
+lemma (in PolynRg) deg_minus_eq:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk> \<Longrightarrow>  
+                    deg_n R S X (-\<^sub>a p) = deg_n R S X p"
+apply (cut_tac subring, 
+       cut_tac ring_is_ag,
+       frule subring_Ring)
+apply (cut_tac ring_is_ag)
+ apply (frule s_cf_expr[of p], assumption, (erule conjE)+,
+        frule polyn_minus_m_cf[of "s_cf R S X p" "fst (s_cf R S X p)"], simp,
+        drule sym, simp)
+ apply (frule_tac x = p in aGroup.ag_mOp_closed, assumption+,
+        frule m_cf_pol_coeff [of "s_cf R S X p"],
+        frule pol_deg_n[of "-\<^sub>a p" "m_cf S (s_cf R S X p)" 
+              "fst (s_cf R S X p)"], assumption,
+        simp add:m_cf_len, assumption+)
+ apply (simp add:m_cf_def,
+        frule pol_coeff_mem[of "s_cf R S X p" "fst (s_cf R S X p)"], simp,
+        frule Ring.ring_is_ag[of S])
+ apply (rule contrapos_pp, simp+)
+ apply (frule aGroup.ag_inv_inv[THEN sym, 
+          of S "snd (s_cf R S X p) (fst (s_cf R S X p))"], assumption,
+        simp add:aGroup.ag_inv_zero)
+ apply (drule sym, simp, simp add:s_cf_deg)
+done
+
+lemma (in PolynRg) deg_minus_eq1:"p \<in> carrier R \<Longrightarrow> 
+                       deg R S X (-\<^sub>a p) = deg R S X p"
+apply (cut_tac ring_is_ag)
+apply (case_tac "p = \<zero>\<^bsub>R\<^esub>")
+apply (simp add:aGroup.ag_inv_zero)
+apply (frule deg_minus_eq[of p], assumption+,
+       frule aGroup.ag_inv_inj[of "R" "p" "\<zero>"], assumption,
+       simp add:ring_zero, assumption, simp add:aGroup.ag_inv_zero)
+apply (frule aGroup.ag_mOp_closed[of R p], assumption,
+       simp add:deg_an)
+done
+
 lemma (in PolynRg) p_times_monomial_nonzero:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk> \<Longrightarrow>
                                                           (X^\<^bsup>R j\<^esup>) \<cdot>\<^sub>r p \<noteq> \<zero>"
 apply (cut_tac subring, frule subring_Ring)
@@ -1551,7 +1587,9 @@ done
 lemma (in PolynRg) pHom_memc:"\<lbrakk>PolynRg A B Y; f \<in> pHom R S X, A B Y; 
       pol_coeff S c\<rbrakk> \<Longrightarrow> 
       f (polyn_expr R X (fst c) c) = polyn_expr A Y (fst c) (cf_h f c)"
-by (cases c) (simp add: cf_h_def pHom_mem)
+apply (cut_tac p = c in PairE_lemma, (erule exE)+,
+       simp add:cf_h_def pHom_mem)
+done
 
 lemma (in PolynRg) pHom_mem1:"\<lbrakk>PolynRg A B Y; f \<in> pHom R S X, A B Y; 
        p \<in> carrier R\<rbrakk> \<Longrightarrow>  f p \<in> carrier A"
@@ -1592,7 +1630,7 @@ apply (cut_tac subring,
        frule PolynRg.subring[of A B Y],
        frule Ring.subring_Ring[of A B], assumption+)
 apply (simp add:erh_def)
-apply (cut_tac less_linear[of "fst c" "fst d"])
+apply (cut_tac Nat.less_linear[of "fst c" "fst d"])
 apply (erule disjE,
        frule pol_expr_unique3[of c d], assumption+, simp,
        thin_tac "polyn_expr R X (fst c) c = polyn_expr R X (fst d) d",
@@ -1713,10 +1751,9 @@ apply (cut_tac subring, frule subring_Ring,
        frule PolynRg.is_Ring[of A B Y],
        frule PolynRg.subring[of A B Y],
        frule Ring.subring_Ring[of A B], assumption)
-apply (cases c)
-apply (simp only:)
-apply (rename_tac l u)
-apply (thin_tac "c = (l, u)")
+apply (cut_tac p = c in PairE_lemma, (erule exE)+, simp,
+       thin_tac "c = (x, y)", rename_tac l u)
+
 apply (induct_tac m) 
  apply ((rule allI)+, rule impI, (erule conjE)+, simp)
  apply (simp add:cf_h_polyn[of A B Y h])
@@ -2038,7 +2075,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
 
  apply (rule conjI)
   apply (rule impI,
-         frule_tac x = j and y = "Suc (l + n)" in less_imp_le,
+         frule_tac m = j and n = "Suc (l + n)" in Nat.less_imp_le,
          frule_tac m = j and n = "Suc (l + n)" and l = "Suc n" in diff_le_mono,
          simp,
          frule_tac c = "(l, u)" and j = "j - Suc n" in pol_coeff_mem, simp,
@@ -2058,8 +2095,13 @@ lemma (in PolynRg) erH_multTr1:"\<lbrakk>PolynRg A B Y; h \<in> rHom S B;
     (polyn_expr R X (fst c) c) \<cdot>\<^sub>r (polyn_expr R X (fst d) d) = 
      polyn_expr R X ((fst c) + (fst d)) e \<rbrakk> \<Longrightarrow> 
  (polyn_expr A Y (fst c) (cf_h h c)) \<cdot>\<^sub>r\<^bsub>A\<^esub> (polyn_expr A Y (fst d) (cf_h h d))
-  =  (polyn_expr A Y (fst e) (cf_h h e))"
-by (cases d, cases e) (simp add: erH_multTr)
+  =  (polyn_expr A Y (fst e) (cf_h h e))" 
+apply (cut_tac p = d in PairE_lemma, (erule exE)+, simp)
+apply (cut_tac p = e in PairE_lemma, (erule exE)+, simp)
+
+apply (rename_tac m f xa g)
+apply (simp add:erH_multTr)
+done
 
 lemma (in PolynRg) erHomTr0:"\<lbrakk>PolynRg A B Y; h \<in> rHom S B; x \<in> carrier R\<rbrakk>
       \<Longrightarrow> erH R S X A B Y h (-\<^sub>a x) = -\<^sub>a\<^bsub>A\<^esub> (erH R S X A B Y h x)"
@@ -2476,7 +2518,7 @@ apply (rule conjI)
    
    apply (case_tac "deg_n R S X a = deg_n R S X b",
           simp add:erHomTr1[of A B Y h])
-   apply (cut_tac y = "deg_n R S X a" and x = "deg_n R S X b" in less_linear,
+   apply (cut_tac n = "deg_n R S X a" and m = "deg_n R S X b" in Nat.less_linear,
           simp)
    apply (erule disjE)
    apply (subst aGroup.ag_pOp_commute, assumption+,
@@ -3366,17 +3408,17 @@ apply (subst P_mod_mod[THEN sym, of I "p \<plusminus> q"
 apply (subst add_cf_len, assumption+)
 apply (rule allI, rule impI)
 
-apply (cut_tac x = "fst (s_cf R S X p)" and y = "fst (s_cf R S X q)" in 
-       less_linear)
+apply (cut_tac m = "fst (s_cf R S X p)" and n = "fst (s_cf R S X q)" in 
+       Nat.less_linear)
 apply (erule disjE)
  apply (simp add:max_def, 
         subst add_cf_def, simp,
        (rule impI, 
         drule_tac a = j in forall_spec, assumption,
         drule_tac a = j in forall_spec1,
-        frule_tac x = j and y = "fst (s_cf R S X p)" and 
-           z = "fst (s_cf R S X q)" in le_less_trans, assumption+,
-        frule_tac x = j and y = "fst (s_cf R S X q)" in less_imp_le, simp))
+        frule_tac i = j and j = "fst (s_cf R S X p)" and 
+           k = "fst (s_cf R S X q)" in Nat.le_less_trans, assumption+,
+        frule_tac m = j and n = "fst (s_cf R S X q)" in Nat.less_imp_le, simp))
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 apply (erule disjE)
  apply (simp add:max_def, 
@@ -3389,9 +3431,9 @@ apply (erule disjE)
         subst add_cf_def, simp, rule impI,
         drule_tac a = j in forall_spec1, 
         drule_tac a = j in forall_spec, assumption,
-        frule_tac x = j and y = "fst (s_cf R S X q)" and 
-           z = "fst (s_cf R S X p)" in le_less_trans, assumption+,
-        frule_tac x = j and y = "fst (s_cf R S X p)" in less_imp_le, simp)
+        frule_tac i = j and j = "fst (s_cf R S X q)" and 
+           k = "fst (s_cf R S X p)" in Nat.le_less_trans, assumption+,
+        frule_tac m = j and n = "fst (s_cf R S X p)" in Nat.less_imp_le, simp)
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 done
 
@@ -4693,10 +4735,10 @@ constdefs
   P_mod R S X (S \<diamondsuit>\<^sub>p (t^\<^bsup>S (Suc m)\<^esup>)) (f \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> ((fst gh1) \<cdot>\<^sub>r\<^bsub>R\<^esub> (snd gh1))))"
 
 lemma  cart_prod_fst:"x \<in> A \<times> B \<Longrightarrow> fst x \<in> A" 
-by auto
+by (cut_tac p = x in PairE_lemma, (erule exE)+, simp)
 
 lemma  cart_prod_snd:"x \<in> A \<times> B \<Longrightarrow> snd x \<in> B"
-by auto
+by (cut_tac p = x in PairE_lemma, (erule exE)+, simp)
 
 lemma cart_prod_split:"((x,y) \<in> A \<times> B) = (x \<in> A \<and> y \<in> B)"
 by auto
@@ -4725,12 +4767,12 @@ lemma (in PolynRg) P_mod_diffxxx3:"\<lbrakk>Idomain S; t \<in> carrier S; t \<no
                                                               deg R S X f) \<and>
         P_mod R S X (S \<diamondsuit>\<^sub>p (t^\<^bsup>S m\<^esup>)) ((snd gh) \<plusminus> -\<^sub>a (snd gh1)) \<and> 
         P_mod R S X (S \<diamondsuit>\<^sub>p (t^\<^bsup>S (Suc m)\<^esup>)) (f \<plusminus> (-\<^sub>a ((fst gh1) \<cdot>\<^sub>r (snd gh1))))"
-apply (cases gh)
-apply (simp del: npow_suc)
-apply (rename_tac g h)
+apply (cut_tac p = gh in PairE_lemma, (erule exE)+, simp del:npow_suc,
+       thin_tac "gh = (x, y)", rename_tac g h)
 apply (erule conjE,
         frule_tac g = g and h = h and f = f in P_mod_diffxxx2[of t R' Y],
         assumption+)
+apply (erule exE)+ 
 apply blast
 done
 

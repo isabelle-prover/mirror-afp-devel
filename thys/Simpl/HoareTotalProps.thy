@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoareTotalProps.thy,v 1.4 2008-06-03 11:11:10 norbertschirmer Exp $
+(*  ID:          $Id: HoareTotalProps.thy,v 1.5 2008-06-11 14:23:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -75,8 +75,8 @@ next
   qed
 next
   case (Seq \<Theta> F P c1 R A c2 Q)
-  have valid_c1: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c1 R,A" by fact
-  have valid_c2: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> R c2 Q,A" by fact
+  have valid_c1: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c1 R,A".
+  have valid_c2: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> R c2 Q,A".
   show "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P Seq c1 c2 Q,A"
   proof (rule cvalidtI)
     fix s t
@@ -141,8 +141,8 @@ next
   qed
 next
   case (Cond \<Theta> F P b c1 Q A c2)
-  have valid_c1: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (P \<inter> b) c1 Q,A" by fact
-  have valid_c2: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (P \<inter> - b) c2 Q,A" by fact
+  have valid_c1: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (P \<inter> b) c1 Q,A".
+  have valid_c2: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (P \<inter> - b) c2 Q,A".
   show "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P Cond b c1 c2 Q,A"
   proof (rule cvalidtI)
     fix s t
@@ -183,7 +183,7 @@ next
   proof (rule cvalidtI)
     fix s t
     assume ctxt: "\<forall>(P, p, Q, A)\<in>\<Theta>. \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P (Call p) Q,A"
-    assume wprems: "\<Gamma>\<turnstile>\<langle>While b c,Normal s\<rangle> \<Rightarrow> t" "s \<in> P" "t \<notin> Fault ` F"
+    assume "\<Gamma>\<turnstile>\<langle>While b c,Normal s\<rangle> \<Rightarrow> t" "s \<in> P" "t \<notin> Fault ` F"
     from wf
     have "\<And>t. \<lbrakk>\<Gamma>\<turnstile>\<langle>While b c,Normal s\<rangle> \<Rightarrow> t; s \<in> P; t \<notin> Fault ` F\<rbrakk> 
                  \<Longrightarrow> t \<in> Normal ` (P \<inter> - b) \<union> Abrupt ` A"
@@ -236,7 +236,7 @@ next
 	assume "s\<notin>b" "t=Normal s" with P show ?thesis by simp
       qed
     qed
-    with wprems show "t \<in> Normal ` (P \<inter> - b) \<union> Abrupt ` A" by blast
+    thus "t \<in> Normal ` (P \<inter> - b) \<union> Abrupt ` A".
   next
     fix s
     assume ctxt: "\<forall>(P, p, Q, A)\<in>\<Theta>. \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P (Call p) Q,A"
@@ -279,7 +279,7 @@ next
   qed
 next
   case (Guard \<Theta> F g P c Q A  f)
-  have valid_c: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (g \<inter> P) c Q,A" by fact
+  have valid_c: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (g \<inter> P) c Q,A".
   show "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (g \<inter> P) Guard f g c Q,A"
   proof (rule cvalidtI)
     fix s t
@@ -289,7 +289,7 @@ next
     assume P:"s \<in> (g \<inter> P)"
     from exec P have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> t"
       by cases auto
-    from valid_c ctxt this P t_notin_F
+    from valid_c ctxt this P
     show "t \<in> Normal ` Q \<union> Abrupt ` A"
       by (rule cvalidt_postD)
   next
@@ -301,8 +301,8 @@ next
   qed
 next
   case (Guarantee f F \<Theta> g P c Q A)
-  have valid_c: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (g \<inter> P) c Q,A" by fact
-  have f_F: "f \<in> F" by fact
+  have valid_c: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> (g \<inter> P) c Q,A".
+  have f_F: "f \<in> F".
   show "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P Guard f g c Q,A"
   proof (rule cvalidtI)
     fix s t
@@ -316,7 +316,7 @@ next
       by blast
     from exec g have "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> t"
       by cases auto
-    from valid_c ctxt this P' t_notin_F
+    from valid_c ctxt this P'
     show "t \<in> Normal ` Q \<union> Abrupt ` A"
       by (rule cvalidt_postD)
   next
@@ -328,10 +328,10 @@ next
   qed
 next
   case (CallRec P p Q A Specs r Specs_wf \<Theta>  F)
-  have p: "(P,p,Q,A) \<in> Specs"  by fact
-  have wf: "wf r" by fact
+  have p: "(P,p,Q,A) \<in> Specs" .
+  have wf: "wf r".
   have Specs_wf: 
-    "Specs_wf = (\<lambda>p \<tau>. (\<lambda>(P,q,Q,A). (P \<inter> {s. ((s, q),\<tau>,p) \<in> r},q,Q,A)) ` Specs)" by fact
+    "Specs_wf = (\<lambda>p \<tau>. (\<lambda>(P,q,Q,A). (P \<inter> {s. ((s, q),\<tau>,p) \<in> r},q,Q,A)) ` Specs)".
   from CallRec.hyps
   have valid_body: 
     "\<forall>(P, p, Q, A)\<in>Specs. p \<in> dom \<Gamma> \<and>
@@ -346,8 +346,8 @@ next
                   \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> (p))) Q,A"	
       proof (induct \<tau>p rule: wf_induct [rule_format, consumes 1, case_names WF])
 	case (WF \<tau>p \<tau> p P Q A)
-	have \<tau>p: "\<tau>p = (\<tau>, p)" by fact
-	have p: "(P, p, Q, A) \<in> Specs" by fact
+	have \<tau>p: "\<tau>p = (\<tau>, p)".
+	have p: "(P, p, Q, A) \<in> Specs".
 	{
 	  fix q P' Q' A'
           assume q: "(P',q,Q',A') \<in> Specs"
@@ -498,8 +498,8 @@ next
   qed
 next
   case (Catch \<Theta> F P c\<^isub>1 Q R c\<^isub>2 A)
-  have valid_c1: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c\<^isub>1 Q,R" by fact
-  have valid_c2: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> R c\<^isub>2 Q,A" by fact
+  have valid_c1: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c\<^isub>1 Q,R".
+  have valid_c2: "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> R c\<^isub>2 Q,A".
   show "\<Gamma>,\<Theta> \<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P Catch c\<^isub>1 c\<^isub>2 Q,A"
   proof (rule cvalidtI)
     fix s t
@@ -521,7 +521,7 @@ next
     next
       assume exec_c1: "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> t" 
       assume notAbr: "\<not> isAbr t"
-      from cvalidt_postD [OF valid_c1 ctxt exec_c1 P] t_notin_F
+      from cvalidt_postD [OF valid_c1 ctxt exec_c1 P] 
       have "t \<in> Normal ` Q \<union> Abrupt ` R" .
       with notAbr
       show ?thesis
@@ -760,12 +760,12 @@ next
     proof (rule ConseqMGT [OF hyp_c2],safe)
       fix r t
       assume "\<Gamma>\<turnstile>\<langle>c1,Normal Z\<rangle> \<Rightarrow> Normal r" "\<Gamma>\<turnstile>\<langle>c2,Normal r\<rangle> \<Rightarrow> Normal t"
-      then show "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t"
+      show "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal Z\<rangle> \<Rightarrow> Normal t"
 	by (rule exec.intros)
     next
       fix r t
       assume "\<Gamma>\<turnstile>\<langle>c1,Normal Z\<rangle> \<Rightarrow> Normal r" "\<Gamma>\<turnstile>\<langle>c2,Normal r\<rangle> \<Rightarrow> Abrupt t"
-      then show "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t"
+      show "\<Gamma>\<turnstile>\<langle>Seq c1 c2,Normal Z\<rangle> \<Rightarrow> Abrupt t"
 	by (rule exec.intros)
     qed
   qed
@@ -2037,7 +2037,7 @@ done
 
 lemma Call_lemma_switch_Call_body:
  assumes 
- call: "\<forall>q \<in> dom \<Gamma>. \<forall>Z. \<Gamma>,\<Theta> \<turnstile>\<^sub>t\<^bsub>/F\<^esub> 
+ "\<forall>q \<in> dom \<Gamma>. \<forall>Z. \<Gamma>,\<Theta> \<turnstile>\<^sub>t\<^bsub>/F\<^esub> 
                  {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>Call q,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
                     \<Gamma>\<turnstile>Call q\<down>Normal s \<and> ((s,q),(\<sigma>,p)) \<in> termi_call_steps \<Gamma>}
                  (Call q)
@@ -2053,7 +2053,7 @@ lemma Call_lemma_switch_Call_body:
 apply (simp only: exec_Call_body' [OF p_defined] noFaultStuck_Call_body' [OF p_defined] terminates_Normal_Call_body [OF p_defined])
 apply (rule conseqPre)
 apply (rule Call_lemma')
-apply (rule call)
+apply (assumption)
 using p_defined
 apply (fastsimp intro: terminates.intros tranclp.r_into_trancl [of "(step \<Gamma>)", OF step.Call] 
 root_in_redexes)
@@ -2262,14 +2262,14 @@ proof (rule cvalidtI)
       "t = Stuck"
     with bdy have "\<Gamma>\<turnstile>\<langle>call init p return' c ,Normal s\<rangle> \<Rightarrow> t"
       by (auto intro: exec_callStuck)
-    from valid_call ctxt this P t_notin_F
+    from valid_call ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   next
     assume "\<Gamma> p = None" "t=Stuck"
     hence "\<Gamma>\<turnstile>\<langle>call init p return' c ,Normal s\<rangle> \<Rightarrow> t"
       by (auto intro: exec_callUndefined)
-    from valid_call ctxt this P t_notin_F
+    from valid_call ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   qed
@@ -2410,14 +2410,14 @@ proof (rule cvalidtI)
       "t = Stuck"
     with bdy have "\<Gamma>\<turnstile>\<langle>call init p return' c,Normal s\<rangle> \<Rightarrow> t"
       by (auto intro: exec_callStuck)
-    from valid_call ctxt this P t_notin_F
+    from valid_call ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   next
     assume "\<Gamma> p = None" "t=Stuck"
     hence "\<Gamma>\<turnstile>\<langle>call init p return' c,Normal s\<rangle> \<Rightarrow> t"
       by (auto intro: exec_callUndefined)
-    from valid_call ctxt this P t_notin_F
+    from valid_call ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   qed
@@ -2575,7 +2575,7 @@ proof (rule cvalidtI)
       by (auto intro: exec_callStuck)
     hence "\<Gamma>\<turnstile>\<langle>dynCall init p return' c,Normal s\<rangle> \<Rightarrow> t" 
       by (rule exec_dynCall)
-    from valid_call ctxt this P t_notin_F
+    from valid_call ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   next
@@ -2585,7 +2585,7 @@ proof (rule cvalidtI)
       by (auto intro: exec_callUndefined)
     hence "\<Gamma>\<turnstile>\<langle>dynCall init p return' c,Normal s\<rangle> \<Rightarrow> t" 
       by (rule exec_dynCall)
-    from valid_call ctxt this P t_notin_F
+    from valid_call ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   qed
@@ -2746,7 +2746,7 @@ proof (rule cvalidtI)
       by (auto intro: exec_callStuck)
     hence "\<Gamma>\<turnstile>\<langle>dynCall init p return' c,Normal s\<rangle> \<Rightarrow> t" 
       by (rule exec_dynCall)
-    from valid_call ctxt this P t_notin_F
+    from valid_call ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   next
@@ -2756,7 +2756,7 @@ proof (rule cvalidtI)
       by (auto intro: exec_callUndefined)
     hence "\<Gamma>\<turnstile>\<langle>dynCall init p return' c,Normal s\<rangle> \<Rightarrow> t" 
       by (rule exec_dynCall)
-    from valid_call ctxt this P t_notin_F
+    from valid_call ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   qed
@@ -2835,10 +2835,10 @@ proof (rule cvalidtI)
   assume exec: "\<Gamma>\<turnstile>\<langle>c,Normal s\<rangle> \<Rightarrow> t" 
   assume P: "s \<in> P"
   assume t_notin_F: "t \<notin> Fault ` F"
-  from valid_Q ctxt exec P t_notin_F have "t \<in> Normal ` Q \<union> Abrupt ` A"
+  from valid_Q ctxt exec P have "t \<in> Normal ` Q \<union> Abrupt ` A"
     by (rule cvalidt_postD)
   moreover
-  from valid_R ctxt exec P t_notin_F have "t \<in> Normal ` R \<union> Abrupt ` B"
+  from valid_R ctxt exec P have "t \<in> Normal ` R \<union> Abrupt ` B"
     by (rule cvalidt_postD)
   ultimately show "t \<in> Normal ` (Q \<inter> R) \<union> Abrupt ` (A \<inter> B)"
     by blast
@@ -2939,7 +2939,7 @@ proof (rule cvalidtI)
     case Abrupt
     with inter_guards_exec_noFault [OF c exec]
     have "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> t" by simp
-    from valid_c1 ctxt this P t_notin_F
+    from valid_c1 ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   next
@@ -2964,7 +2964,7 @@ proof (rule cvalidtI)
     case Stuck
     with inter_guards_exec_noFault [OF c exec]
     have "\<Gamma>\<turnstile>\<langle>c\<^isub>1,Normal s\<rangle> \<Rightarrow> t" by simp
-    from valid_c1 ctxt this P t_notin_F
+    from valid_c1 ctxt this P
     show ?thesis
       by (rule cvalidt_postD)
   qed
@@ -3494,5 +3494,4 @@ proof -
 qed
  
 end
-
 

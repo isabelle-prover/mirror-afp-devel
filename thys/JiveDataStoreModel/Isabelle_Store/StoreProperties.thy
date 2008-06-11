@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: StoreProperties.thy,v 1.10 2008-04-07 13:37:52 fhaftmann Exp $
+    ID:          $Id: StoreProperties.thy,v 1.11 2008-06-11 14:22:58 lsf37 Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -7,9 +7,7 @@
 
 header {* Store Properties *}
 
-theory StoreProperties
-imports Store
-begin
+theory StoreProperties imports Store begin
 
 text {* This theory formalizes advanced concepts and properties of stores. *}
 
@@ -862,21 +860,18 @@ can be added to the appropriate type class @{term "ord"} which lets us define th
 $\leq$ symbols, and to the type class  @{term "order"} which axiomatizes partial orderings.
 *}
 
-instantiation Store :: order
-begin
+instance Store:: ord ..
+defs (overloaded)
+le_Store_def: "s \<le> t \<equiv> s \<lless> t"
+less_Store_def: "(s::Store) < t \<equiv> s \<le> t \<and> s \<noteq> t"
 
-definition
-  le_Store_def: "s \<le> t \<longleftrightarrow> s \<lless> t"
-
-definition
-  less_Store_def: "(s::Store) < t \<longleftrightarrow> s \<le> t \<and> s \<noteq> t"
 
 text {* We prove Lemma 3.5 of \cite[p. 56]{Poetzsch-Heffter97specification} for this relation.
 *}
 
 text {* Lemma 3.5 (i) *}
-
-instance  proof 
+instance Store:: order
+proof 
   fix s t w:: "Store"
   {
     show "s \<le> s"
@@ -894,8 +889,6 @@ instance  proof
       by (simp add: less_Store_def)
   }
 qed
-
-end
 
 text {* Lemma 3.5 (ii) *}
 lemma lessalive2: "\<lbrakk>s \<lless> t; alive x s\<rbrakk> \<Longrightarrow> alive x t"
