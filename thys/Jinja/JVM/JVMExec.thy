@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExec.thy
-    ID:         $Id: JVMExec.thy,v 1.5 2008-06-11 14:22:55 lsf37 Exp $
+    ID:         $Id: JVMExec.thy,v 1.6 2008-06-12 06:57:20 lsf37 Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -54,17 +54,17 @@ defs
   exec_all_def1: "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> (exec_1 P)\<^sup>*"
 
 
-lemma exec_1_def:
+lemma exec_1_eq:
   "exec_1 P = {(\<sigma>,\<sigma>'). exec (P,\<sigma>) = Some \<sigma>'}"
 (*<*)by (auto intro: exec_1I elim: exec_1.cases)(*>*)
 
 lemma exec_1_iff:
   "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>' = (exec (P,\<sigma>) = Some \<sigma>')"
-(*<*)by (simp add: exec_1_def)(*>*)
+(*<*)by (simp add: exec_1_eq)(*>*)
 
 lemma exec_all_def:
   "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>' = ((\<sigma>,\<sigma>') \<in> {(\<sigma>,\<sigma>'). exec (P,\<sigma>) = Some \<sigma>'}\<^sup>*)"
-(*<*)by (simp add: exec_all_def1 exec_1_def)(*>*)
+(*<*)by (simp add: exec_all_def1 exec_1_eq)(*>*)
 
 lemma jvm_refl[iff]: "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>"
 (*<*)by(simp add: exec_all_def)(*>*)

@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: BinDag.thy,v 1.4 2008-06-11 14:22:50 lsf37 Exp $
+    ID:          $Id: BinDag.thy,v 1.5 2008-06-12 06:57:15 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -29,7 +29,9 @@ USA
 
 header {* BDD Abstractions *}
 
-theory BinDag imports "../Heap" begin
+theory BinDag
+imports "../Simpl/Heap"
+begin
 
 datatype dag = Tip | Node dag ref dag
 
@@ -77,12 +79,14 @@ lemma subdag_NodeD:
 lemma subdag_not_sym: "\<And>t. \<lbrakk>subdag s t; subdag t s\<rbrakk> \<Longrightarrow> P"
   by (induct s) (auto dest: subdag_NodeD)
 
+instantiation dag:: order
+begin
 
-instance dag:: ord ..
+definition
+  less_dag_def: "s < (t::dag) \<longleftrightarrow> subdag t s"
 
-defs (overloaded)
-less_dag_def: "s < (t::dag) \<equiv> subdag t s"
-le_dag_def: "s \<le> (t::dag) \<equiv> s=t \<or> s < t"
+definition
+  le_dag_def: "s \<le> (t::dag) \<longleftrightarrow> s=t \<or> s < t"
 
 lemma le_dag_refl: "(x::dag) \<le> x"
   by (simp add: le_dag_def)
@@ -111,7 +115,6 @@ lemma le_dag_trans:
     qed
   qed
 
-
 lemma le_dag_antisym:
   fixes x::dag and  y   
   assumes x_y: "x \<le> y" and y_x: "y \<le> x" 
@@ -129,10 +132,10 @@ lemma dag_less_le:
   shows "(x < y) = (x \<le> y \<and> x \<noteq> y)"
   by (auto simp add: less_dag_def le_dag_def dest: subdag_neq)
  
-instance dag:: order
-  by (intro_classes,
-      (assumption 
-       | rule le_dag_refl le_dag_trans le_dag_antisym dag_less_le)+)
+instance by default
+  (assumption | rule le_dag_refl le_dag_trans le_dag_antisym dag_less_le)+
+
+end
 
 lemma less_dag_Tip [simp]: "\<not> (x < Tip)"
   by (simp add: less_dag_def)

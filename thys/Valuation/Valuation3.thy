@@ -700,8 +700,8 @@ apply (subst limit_def)
           (if f n = \<zero> then \<zero> else f n\<^bsup>\<hyphen>K\<^esup>) \<plusminus> -\<^sub>a b\<^bsup>\<hyphen>K\<^esup> \<in> vp K v\<^bsup>(Vr K v) (an N)\<^esup>", 
          blast) 
   apply (rule allI, rule impI)
-  apply (cut_tac i = "Na" and j = "max Na M" and k = n
-         in Nat.le_less_trans)
+  apply (cut_tac x = "Na" and y = "max Na M" and z = n
+         in le_less_trans)
   apply simp+
   apply (thin_tac "\<forall>N. \<exists>M. \<forall>n>M. f n \<plusminus> -\<^sub>a b \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>")
  apply (drule_tac m = n in nat_forall_spec,

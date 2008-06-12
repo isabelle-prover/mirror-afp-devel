@@ -303,10 +303,10 @@ lemma nformsTerminal: "nforms (f n) = [] ==> terminal subs (f n)"
   apply(simp add: subs_def Let_def terminal_def nforms_def split_beta)
   done
 
-lemma nformsStops: "!!f.\
- \ [| branch subs gamma f; !n . ~proofTree (tree subs (f n)); \
- \    nforms (f n) = [] |] \
- \ ==> nforms (f (Suc n)) = [] & atoms (f (Suc n)) = atoms (f n)"
+lemma nformsStops: "!!f.
+  [| branch subs gamma f; !n . ~proofTree (tree subs (f n));
+     nforms (f n) = [] |]
+  ==> nforms (f (Suc n)) = [] & atoms (f (Suc n)) = atoms (f n)"
   apply(subgoal_tac "f (Suc n) = f n")
   apply simp
   apply(blast intro: branchStops nformsTerminal)
@@ -337,10 +337,10 @@ lemma containsNotTerminal: "[| branch subs gamma f; !n . ~proofTree (tree subs (
   apply (simp add:  subs_def subs_def subsFAtom_def subsFConj_def subsFAll_def Let_def contains_def terminal_def nforms_def split_beta branch_def split: list.split signs.split expand_formula_case, force)
   done
 
-lemma containsPropagates: "!!f.\
- \ [| branch subs gamma f; !n . ~proofTree (tree subs (f n)); \
- \    contains f iA n |] \
- \ ==> contains f iA (Suc n) | considers f iA n"
+lemma containsPropagates: "!!f.
+  [| branch subs gamma f; !n . ~proofTree (tree subs (f n));
+     contains f iA n |]
+  ==> contains f iA (Suc n) | considers f iA n"
   apply(frule_tac containsNotTerminal) apply force apply force
   apply(frule_tac branchSubs) apply assumption
   apply(case_tac "considers f iA n") apply simp
@@ -383,7 +383,7 @@ lemma contains_initialEVs:
 subsection "termination: (for EV contains implies EV considers)"
 
 lemmas r = wf_induct[of "measure msrFn", OF wf_measure]
-lemmas r' = r[simplified measure_def inv_image_def less_than_def less_def[symmetric] mem_Collect_eq split]
+lemmas r' = r[simplified measure_def inv_image_def less_than_def less_eq mem_Collect_eq]
 
 lemma r'': "(\<forall> x. (\<forall> y. ( ((msrFn::'a \<Rightarrow> nat) y) < ((msrFn :: 'a \<Rightarrow> nat) x)) \<longrightarrow> P y) \<longrightarrow> P x) \<Longrightarrow> P a"
   by (blast intro: r' [of P]) 
@@ -481,9 +481,9 @@ lemma considersContains: "considers f iA n \<Longrightarrow> contains f iA n"
   apply(simp add: considers_def contains_def)
   apply(cases "snd (f n)", auto) done
 
-lemma containsConsiders: "[| branch subs gamma f; !n . ~ proofTree (tree subs (f n)); \
- \    EV (contains f iA) |] \
- \ ==> EV (considers f iA)"
+lemma containsConsiders: "[| branch subs gamma f; !n . ~ proofTree (tree subs (f n));
+     EV (contains f iA) |]
+  ==> EV (considers f iA)"
   apply(simp add: EV_def)
   apply(erule exE)
   apply(case_tac "considers f iA n") apply force
@@ -504,9 +504,9 @@ lemma containsConsiders: "[| branch subs gamma f; !n . ~ proofTree (tree subs (f
 subsection "EV contains: common lemma"
 
 lemma lemmA: 
-  "[| branch subs gamma f; ! n. ~ proofTree (tree subs (f n)); \
-\    EV (contains f (i,A)) |] \
-\ ==> ? n nAs. ~SATAxiom (sequent (f n)) & (nforms (f n) = (i,A) # nAs & f (Suc n) : subs (f n))"
+  "[| branch subs gamma f; ! n. ~ proofTree (tree subs (f n));
+    EV (contains f (i,A)) |]
+ ==> ? n nAs. ~SATAxiom (sequent (f n)) & (nforms (f n) = (i,A) # nAs & f (Suc n) : subs (f n))"
   apply(frule containsConsiders) apply(assumption+)
   apply(unfold EV_def)
   apply(erule exE, frule considersContains)
@@ -561,9 +561,9 @@ lemma evContainsDisj: "[| EV (contains f (i,FConj Neg A0 A1));
   done
     
 lemma evContainsAll: 
-  "[| EV (contains f (i,FAll Pos body)); branch subs gamma f; !n . ~ proofTree (tree subs (f n)) \
- \    |] \
-  \ ==> ? v . EV (contains f (0,instanceF v body))"
+  "[| EV (contains f (i,FAll Pos body)); branch subs gamma f; !n . ~ proofTree (tree subs (f n))
+     |]
+   ==> ? v . EV (contains f (0,instanceF v body))"
   apply(drule lemmA) apply(assumption+)
   apply(erule exE) 
   apply(rule_tac x="freshVar(freeVarsFL (sequent (f n)))" in exI)
@@ -575,9 +575,9 @@ lemma evContainsAll:
   done
     
 lemma evContainsEx_instance: 
-  "[| EV (contains f (i,FAll Neg body)); branch subs gamma f; !n . ~ proofTree (tree subs (f n)) \
- \     |] \
-  \ ==> EV (contains f (0,instanceF (X i) body))"
+  "[| EV (contains f (i,FAll Neg body)); branch subs gamma f; !n . ~ proofTree (tree subs (f n))
+      |]
+  ==> EV (contains f (0,instanceF (X i) body))"
   apply(drule lemmA) apply(assumption+)
   apply(erule exE) 
   apply(unfold EV_def)
@@ -588,9 +588,9 @@ lemma evContainsEx_instance:
   done
 
 lemma evContainsEx_repeat: "
-  [| branch subs gamma f; !n . ~ proofTree (tree subs (f n)); \
- \    EV (contains f (i,FAll Neg body)) |] \
-  \ ==> EV (contains f (Suc i,FAll Neg body))"
+  [| branch subs gamma f; !n . ~ proofTree (tree subs (f n));
+     EV (contains f (i,FAll Neg body)) |]
+   ==> EV (contains f (Suc i,FAll Neg body))"
   apply(drule lemmA) apply(assumption+)
   apply(erule exE) 
   apply(unfold EV_def)
@@ -615,14 +615,14 @@ subsection "EV contains: lemmas (temporal related)"
  Q: where? share proofs?
  ******)
 
-lemma lemma1: "[| P A n ; !A n. P A n --> P A (Suc n) |] \
-  \ ==> P A (n + m)";
+lemma lemma1: "[| P A n ; !A n. P A n --> P A (Suc n) |]
+   ==> P A (n + m)";
   apply (induct m, simp, simp)
   done
 
 lemma lemma2: 
-  "[| P A n ; P B m ; ! A n. P A n --> P A (Suc n) |] \
- \ ==> ? n . P A n & P B n"
+  "[| P A n ; P B m ; ! A n. P A n --> P A (Suc n) |]
+  ==> ? n . P A n & P B n"
   apply (rule exI[of _ "n+m"], rule)
   apply(blast intro!: lemma1)
   apply(rule subst[OF add_commute]) 
@@ -638,8 +638,8 @@ lemma notTerminalNotSATAxiom: "\<not> terminal subs gamma \<Longrightarrow> \<no
 lemma notTerminalNforms: "\<not> terminal subs (f n) \<Longrightarrow> nforms (f n) \<noteq> []"
   apply(erule contrapos_nn) apply(erule nformsTerminal) done
     
-lemma atomsPropagate: "[| branch subs gamma f |] \
-  \ ==> x : set (atoms (f n)) --> x : set (atoms (f (Suc n)))"
+lemma atomsPropagate: "[| branch subs gamma f |]
+   ==> x : set (atoms (f n)) --> x : set (atoms (f (Suc n)))"
   apply(cases "terminal subs (f n)")
    apply(drule branchStops) apply assumption apply simp
   apply(drule branchSubs) apply assumption
@@ -661,17 +661,17 @@ lemma atomsPropagate: "[| branch subs gamma f |] \
 subsection "EV contains: FEx cases"
 
 lemma evContainsEx0_allRepeats: 
-  "[| branch subs gamma f; !n . ~ proofTree (tree subs (f n)); \     
- \    EV (contains f (0,FAll Neg A)) |] \
- \ ==> EV (contains f (i,FAll Neg A))"
+  "[| branch subs gamma f; !n . ~ proofTree (tree subs (f n));
+     EV (contains f (0,FAll Neg A)) |]
+  ==> EV (contains f (i,FAll Neg A))"
   apply (induct i, simp)
   apply(blast dest!: evContainsEx_repeat)
   done
 
 lemma evContainsEx0_allInstances:
-  "[| branch subs gamma f; !n . ~ proofTree (tree subs (f n)); \     
- \    EV (contains f (0,FAll Neg A)) |] \ 
- \ ==> EV (contains f (0,instanceF (X i) A))";
+  "[| branch subs gamma f; !n . ~ proofTree (tree subs (f n));
+     EV (contains f (0,FAll Neg A)) |]
+  ==> EV (contains f (0,instanceF (X i) A))";
   apply(blast dest!: evContainsEx0_allRepeats intro!: evContainsEx_instance)
   done
 
@@ -720,9 +720,9 @@ lemma notTerminalSucNotTerminal: "\<lbrakk> \<not> terminal subs (f (Suc n)); br
     -- "FIXME move to Tree?"
 
 lemma evContainsExSuc_containsEx:
-  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n)); \
- \    EV (contains f (Suc i,FAll Neg body)) |] \
- \ ==> EV (contains f (i,FAll Neg body))";
+  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n));
+     EV (contains f (Suc i,FAll Neg body)) |]
+  ==> EV (contains f (i,FAll Neg body))";
   apply(cut_tac P="%n. ~ contains f (Suc i,FAll Neg body) n" in natPredCases)
   apply simp apply(erule disjE)
   apply(simp add: EV_def)
@@ -756,9 +756,9 @@ lemma evContainsExSuc_containsEx:
 subsection "EV contains: contain any (i,FEx y) means contain all (i,FEx y)"
 
 lemma evContainsEx_containsEx0: 
-  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n)) |] \
- \ ==> EV (contains f (i,FAll Neg A)) --> \
- \     EV (contains f (0,FAll Neg A))"
+  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n)) |]
+  ==> EV (contains f (i,FAll Neg A)) -->
+      EV (contains f (0,FAll Neg A))"
   apply (induct i, simp)
   apply(blast dest!: evContainsExSuc_containsEx)
   done
@@ -766,7 +766,7 @@ lemma evContainsEx_containsEx0:
 lemma evContainsExval: 
   "[| EV (contains f (i,FAll Neg body)); branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n))
   |] 
- \ ==> ! v . EV (contains f (0,instanceF v body))"
+  ==> ! v . EV (contains f (0,instanceF v body))"
   apply rule apply(induct_tac v) 
   apply(blast intro!: evContainsEx0_allInstances dest!: evContainsEx_containsEx0)
   done
@@ -774,16 +774,16 @@ lemma evContainsExval:
 
 subsection "EV contains: atoms"
 
-lemma atomsInSequentI[rule_format]: "  (z,P,vs) : set (fst ps) --> \
-     \ FAtom z P vs : set (sequent ps)"
+lemma atomsInSequentI[rule_format]: "  (z,P,vs) : set (fst ps) -->
+     FAtom z P vs : set (sequent ps)"
   apply(simp add: sequent_def)
   apply(cases ps, force)
   done
     
 lemma evContainsAtom1: 
-  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n)); \    
- \    EV (contains f (i,FAtom z P vs)) |] \
- \ ==> ? n . (z,P,vs) : set (fst (f n))";
+  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n));
+     EV (contains f (i,FAtom z P vs)) |]
+  ==> ? n . (z,P,vs) : set (fst (f n))";
   apply(drule lemmA) apply(assumption+)
   apply(erule exE) apply(rule_tac x="Suc n" in exI)
   apply(simp add: subs_def2) apply clarify apply(simp add: subs_def2 Let_def)
@@ -793,9 +793,9 @@ lemmas atomsPropagate'' = atomsPropagate[rule_format]
 lemmas atomsPropagate' = atomsPropagate''[simplified atoms_def, simplified]
 
 lemma evContainsAtom: 
-  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n)); \
- \  EV (contains f (i,FAtom z P vs)) |] \
- \ ==> ? n . (! m . FAtom z P vs : set (sequent (f (n + m))))"
+  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n));
+   EV (contains f (i,FAtom z P vs)) |]
+  ==> ? n . (! m . FAtom z P vs : set (sequent (f (n + m))))"
   apply(frule evContainsAtom1) apply(assumption+)
   apply(erule exE)
   apply (rule_tac x=n in exI, rule)
@@ -804,9 +804,9 @@ lemma evContainsAtom:
   apply(rule atomsPropagate') apply(assumption+) done
 
 lemma notEvContainsBothAtoms: 
-  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n)) |] \
- \ ==> ~ EV (contains f (i,FAtom Pos p vs)) | \
- \     ~ EV (contains f (j,FAtom Neg p vs))"
+  "[| branch subs (pseq fs) f; !n . ~ proofTree (tree subs (f n)) |]
+  ==> ~ EV (contains f (i,FAtom Pos p vs)) |
+      ~ EV (contains f (j,FAtom Neg p vs))"
   apply clarify
   apply(frule evContainsAtom) apply(assumption+) apply(thin_tac "EV (contains f (j, FAtom Neg p vs))")
   apply(frule evContainsAtom) apply(assumption+) apply(thin_tac "EV (contains f (i, FAtom Pos p vs))")

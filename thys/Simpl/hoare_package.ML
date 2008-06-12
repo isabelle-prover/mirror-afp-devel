@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.15 2008-06-11 14:23:00 lsf37 Exp $
+    ID:         $Id: hoare_package.ML,v 1.16 2008-06-12 06:57:27 lsf37 Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -363,10 +363,10 @@ val triv_All_eq = thm "Hoare.triv_All_eq";
 val triv_Ex_eq = thm "Hoare.triv_Ex_eq";
 val mex_def = thm "Hoare.mex_def";
 val meq_def = thm "Hoare.meq_def";
-val wf_measure = thm "Wellfounded_Relations.wf_measure";
-val wf_same_fst = thm "Wellfounded_Relations.wf_same_fst";
-val wf_inv_image = thm "Wellfounded_Relations.wf_inv_image";
-val wf_lex_prod = thm "Wellfounded_Relations.wf_lex_prod";
+val wf_measure = @{thm "Wellfounded.wf_measure"};
+val wf_same_fst = @{thm "Wellfounded.wf_same_fst"};
+val wf_inv_image = @{thm "Wellfounded.wf_inv_image"};
+val wf_lex_prod = @{thm "Wellfounded.wf_lex_prod"};
 val wf_measure_lex_prod = thm "Hoare.wf_measure_lex_prod";
 val in_measure_iff = thm "Hoare.in_measure_iff";
 val in_lex_iff = thm "Hoare.in_lex_iff";
@@ -630,9 +630,9 @@ fun remdeco str =
     in String.implode (remove (String.explode deco) (String.explode str)) end;
  
 fun undeco (Const (c,T)) = (Const (remdeco c,T))
-  | undeco ((f as Const ("_free",_)) $ Free (x, T)) = f$Free (remdeco x,T) 
-  | undeco (Const (lookup,_)$_$((f as Const ("_free",_)) $ Free (x, T))) = f$Free (remdeco x,T) 
-  | undeco (Free (c,T)) = (Free (remdeco c,T))
+  | undeco ((f as Const ("_free",_)) $ Free (x, T)) = (*f$*)Const (remdeco x,T) 
+  | undeco (Const (lookup,_)$_$((f as Const ("_free",_)) $ Free (x, T))) = (*f$*)Const (remdeco x,T) 
+  | undeco (Free (c,T)) = (Const (remdeco c,T))
   | undeco x = x
 
 fun varname x = x ^ deco
@@ -1038,7 +1038,7 @@ fun apply_in_context thy lexp f t =
 
 fun print_cterm ct = 
       setmp show_sorts false 
-       (setmp show_types false (setmp print_mode [] string_of_cterm)) ct;
+       (setmp show_types false (setmp print_mode [] Display.string_of_cterm)) ct;
 
 fun add_abbrev loc mode spec thy =
   thy
@@ -1585,7 +1585,8 @@ end;
 
 fun cond_rename_bvars cond name thm =
     let
-      val {thy, prop, ...} = rep_thm thm;
+      val thy = Thm.theory_of_thm thm;
+      val prop = Thm.prop_of thm;
       fun ren (trm as (Abs (x, T, t))) = if cond trm then Abs (name x, T, ren t) 
                                          else Abs (x,T,ren t)
         | ren (t $ u) = ren t $ ren u
@@ -1622,7 +1623,8 @@ fun split_pair_apps thm =
               let
 		val len = length args;
                 val idxs = (len - 1) downto 0;
-                val (argTs,bdyT) = strip_type vT;
+                val (argTs, bdyTs) = chop len (binder_types vT);
+                val bdyT = bdyTs ---> body_type vT;
                 val used = foldr add_term_free_names (args,[]);
                 val z = Name.variant used ("z");
                 val frees = map (apfst (fn i => z^string_of_int i)) 
@@ -1669,11 +1671,11 @@ infix 0 ===;
 val (op ===) = Trueprop o HOLogic.mk_eq;
 
 
-fun UN_const (dT as (Type ("set",[dT']))) rT = 
+fun UN_const (dT as (Type ("fun", [dT', Type ("bool", [])]))) rT = 
       Const ("UNION",[dT, dT' --> rT] ---> rT) $ Const ("UNIV",dT)
   | UN_const _ _ = raise Match;
 
-fun mk_UN (x,T,P) = UN_const (Type ("set",[T])) (fastype_of P) $ absfree (x,T,P);
+fun mk_UN (x,T,P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x,T,P);
 
 fun prove_standard thy xs asms prop tac
  = Drule.standard (Goal.prove_global thy xs asms prop tac);
@@ -1711,7 +1713,7 @@ fun mk_split_thms ctxt (vars as _::_)  =
       end;
 
     val split_UN_prop =
-      let val P = Free (Name.variant names "P",pT --> (Type ("set",[zeta])));
+      let val P = Free (Name.variant names "P",pT --> HOLogic.mk_setT zeta);
           fun UN vs t = foldr (fn ((v,T),t) => mk_UN (v,T,t)) (vs,t)
       in (UN [x] (P $ Free x)) === (UN vars (P $ xp))
       end;
@@ -1775,7 +1777,7 @@ fun gen_call_rec_rule specs_name n rule =
     val maxidx = #maxidx (rep_cterm (cprop_of rule));
     val vars = map (dest_Var) (term_vars (prop_of rule));
     fun get_type n = valOf (assoc (vars,(n,0))); 
-    val specsT as (Type (_,[Type (_,[assT,Type (_,[pT,_])])])) = get_type specs_name;
+    val specsT as (Type ("fun", [Type (_,[assT,Type (_,[pT,_])]), Type ("bool", [])])) = get_type specs_name;
     val zT = TVar (("z",maxidx+1),Sign.defaultS thy)
 
     fun mk_var i n T = Var ((n ^ string_of_int i,0),T);
@@ -1783,7 +1785,7 @@ fun gen_call_rec_rule specs_name n rule =
     val quadT = HOLogic.mk_prodT (assT,
                           HOLogic.mk_prodT (pT,
                            HOLogic.mk_prodT (assT,assT)));
-    val quadT_set = Type ("set",[quadT]);
+    val quadT_set = HOLogic.mk_setT quadT;
     fun mk_spec i =
       let
          val quadruple = HOLogic.mk_tuple quadT 
@@ -1793,8 +1795,8 @@ fun gen_call_rec_rule specs_name n rule =
                  mk_var i "A" (zT --> assT)$Bound 0];
          val single = Const ("insert",quadT --> quadT_set --> quadT_set)$
                        quadruple$Const ("{}",quadT_set)
-     in Const ("UNION",Type ("set",[zT]) --> (zT --> quadT_set) --> quadT_set)$
-         Const ("UNIV", Type ("set",[zT]))$
+     in Const ("UNION", HOLogic.mk_setT zT --> (zT --> quadT_set) --> quadT_set)$
+         Const ("UNIV", HOLogic.mk_setT zT) $
           Abs("Z",zT,single)
      end;
 
@@ -1854,7 +1856,7 @@ fun assertion_simp_tac ctxt = raw_assertion_simp_tac ctxt;
 fun string_eq_simp_tac ctxt =
      simp_tac ((Simplifier.context ctxt HOL_basic_ss)
                  addsimps (list_injects@char_injects@simp_thms)
-                 addsimprocs [distinct_simproc])
+                 addsimprocs [DatatypePackage.distinct_simproc])
 
 
 fun assertion_string_eq_simp_tac ctxt state_kind thms i =
@@ -2178,8 +2180,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
     val pname' = unsuffix proc_deco pname;
     val spec = (case assoc_string (asms,pname) of
                  SOME s => SOME s
-               | NONE =>  try (ProofContext.get_thm ctxt) 
-                                     (Name (suffix spec_sfx pname')));
+               | NONE =>  try (ProofContext.get_thm ctxt) (suffix spec_sfx pname'));
 
     fun dest_UN (Const ("UNION",_)$Const ("UNIV",_)$t) = SOME t
       | dest_UN _ = NONE;
@@ -2516,7 +2517,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
        
   val test_modify_in_ctxt_tac =
     let val mname = (suffix modifysfx pname');
-        val mspec = (case try (ProofContext.get_thm ctxt) (Name mname) of
+        val mspec = (case try (ProofContext.get_thm ctxt) mname of
                       SOME s => SOME s
                      | NONE => (case assoc_string (asms,pname) of
                                  SOME s => if is_modifies_clause (concl_of s) 
@@ -2534,10 +2535,10 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
     end;
 
   fun inline_bdy_tac has_args i =
-    (case try (ProofContext.get_thm ctxt) (Name (suffix bodyP pname')) of
+    (case try (ProofContext.get_thm ctxt) (suffix bodyP pname') of
        NONE => no_tac
      | SOME impl =>
-        (case try (ProofContext.get_thm ctxt) (Name (suffix (body_def_sfx^"_def") pname')) of
+        (case try (ProofContext.get_thm ctxt) (suffix (body_def_sfx^"_def") pname') of
            NONE => no_tac
          | SOME bdy =>
             (tracing ("No specification found for procedure \"" ^ pname' ^
@@ -2642,7 +2643,7 @@ fun while_annotate_tac ctxt inv i st =
                   (List.last (prems_of annotateWhile));
     val annotate = cterm_instantiate 
                            [(cterm_of thy invVar,cterm_of thy lifted_inv)] annotateWhile;
- in  ((trace_tac ("annotating While with: "^ Sign.string_of_term thy lifted_inv )) 
+ in  ((trace_tac ("annotating While with: "^ Syntax.string_of_term ctxt lifted_inv )) 
        THEN 
        compose_tac (false,annotate,1) i) st
  end;
@@ -2655,7 +2656,7 @@ fun cond_annotate_tac ctxt inv mode (_,i) st =
     val invVar = List.last (prems_of annotateCond) |> dest_hoare |> #3 |> strip_comb |> #1;
     val annotate = cterm_instantiate 
                            [(cterm_of thy invVar,cterm_of thy lifted_inv)] annotateCond;
-  in  ((trace_tac ("annotating Cond with: "^ Sign.string_of_term thy lifted_inv )) 
+  in  ((trace_tac ("annotating Cond with: "^ Syntax.string_of_term ctxt lifted_inv )) 
        THEN 
        compose_tac (false,annotate,5) i) st
  end;
@@ -2723,7 +2724,7 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
 	 (fst o strip_comb o #3 o dest_whileAnno o nth 1 o snd o strip_comb o #2 o dest_hoare) 
             (List.last (prems_of WhileG));
     val WhileGInst = cterm_instantiate [(cterm_of thy invVar,cterm_of thy J)] WhileG; 	
-  in ((trace_tac ("WhileAnnoG, adding guards to invariant: "^ Sign.string_of_term thy J))
+  in ((trace_tac ("WhileAnnoG, adding guards to invariant: "^ Syntax.string_of_term ctxt J))
       THEN compose_tac (false,WhileGInst,1) i) st 
   end
   handle TERM _ => no_tac st 
@@ -2785,7 +2786,7 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
     fun dest_lemAnno ctxt (Const ("Language.lem",_)$n$c) =
       let val x = NameSpace.base (dest_name n);
       in
-         (case try (ProofContext.get_thm ctxt) (Name x) of
+         (case try (ProofContext.get_thm ctxt) x of
 	    NONE => error ("No lemma: '" ^ x ^ "' found.")
           | SOME spec => (strip_qnt_vars "All" 
 			   (HOLogic.dest_Trueprop (Thm.concl_of spec)),spec))
@@ -3278,7 +3279,7 @@ local
           (thm "StateFun.lookup_def"::thm "StateFun.id_id_cancel"::
            thms "list.inject"@thms "char.inject"@simp_thms)
           addsimprocs
-          [RecordPackage.record_simproc,distinct_simproc,StateFun.lazy_conj_simproc]
+          [RecordPackage.record_simproc,DatatypePackage.distinct_simproc,StateFun.lazy_conj_simproc]
           addcongs [thm "block_conj_cong"];
 in
 fun ex_tac vs st = 
@@ -3418,11 +3419,11 @@ val record_vanish_tac = raw_record_vanish_tac;
 local
  val state_fun_update_ss = 
     (HOL_basic_ss
-                addsimps ([thm "StateFun.update_def", id_def, fun_upd_apply,if_True,if_False]@
-                           thms "list.inject"@thms "char.inject"@simp_thms@K_fun_convs)
-                addcongs ([imp_cong](*@K_fun_congs  FIXME: Stefan fragen*))
+                addsimps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}] @
+                           @{thms list.inject} @ @{thms char.inject} @ @{thms simp_thms} @ K_fun_convs)
+                addcongs ([imp_cong] (* @ K_fun_congs  FIXME: Stefan fragen*))
                 addsplits [split_if]
-                addsimprocs [distinct_simproc ,
+                addsimprocs [DatatypePackage.distinct_simproc,
                              DistinctTreeProver.distinct_simproc 
                                    ["distinct_fields","distinct_fields_globals"]])
 in
@@ -3479,10 +3480,9 @@ fun proc_lookup_simp_tac ctxt i st =
           (* the$(Gamma$name) or the$(strip$Gamma$name) *)
     val pname = (unsuffix proc_deco (dest_string' name));
     val thms =  List.mapPartial I (map (try (ProofContext.get_thm ctxt))
-                            [Name (suffix bodyP pname),
-                             Name (suffix (body_def_sfx^"_def") pname),
-                             Name ((suffix procL pname)^"."^
-                                   (suffix (body_def_sfx^"_def") pname))]);
+                            [suffix bodyP pname,
+                             suffix (body_def_sfx^"_def") pname,
+                             suffix procL pname^"."^ (suffix (body_def_sfx^"_def") pname)]);
   in simp_tac (HOL_basic_ss addsimps thms@strip_simps@the_simps) i st end
   handle _ => all_tac st;
 
@@ -3492,7 +3492,7 @@ fun proc_lookup_in_dom_simp_tac ctxt i st =
         (* name : Gamma *)
     val pname = (unsuffix proc_deco (dest_string' name));
     val thms =  List.mapPartial I (map (try (ProofContext.get_thm ctxt))
-                               [Name (suffix bodyP pname)]);
+                               [suffix bodyP pname]);
   in simp_tac (HOL_basic_ss addsimps (lookup_Some_in_dom::dom_strip::thms)) i st end
   handle _ => all_tac st;
 
@@ -3603,7 +3603,7 @@ fun get_state_space_in_subset_eq thy t =
     val (subset_eq,_) = (strip_comb o HOLogic.dest_Trueprop o strip_qnt_body "all") t;
     val Ts = map snd (strip_vars t);
     val T = fastype_of1 (Ts,subset_eq);
-    val Type(_,[_,Type(_,[Type (_,[state_spaceT]),_])]) = T; 
+    val Type(_,[_,Type(_,[Type ("fun", [state_spaceT, Type ("bool", [])]),_])]) = T; 
             (* also works for "in": x : P *) 
     val SOME Tids = stateT_ids state_spaceT;
   in SOME (Tids,Partial,state_kind_of thy state_spaceT)

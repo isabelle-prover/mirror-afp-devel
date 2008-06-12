@@ -8,19 +8,23 @@ theory FWThread imports FWState begin
 
 (* Abstractions for thread ids *)
 
-definition
-  free_thread_id :: "('t,'x) thread_info \<Rightarrow> 't \<Rightarrow> bool"
-where "free_thread_id ts t \<equiv> ts t = None"
+inductive free_thread_id :: "('l,'t,'x) thread_info \<Rightarrow> 't \<Rightarrow> bool"
+for ts :: "('l,'t,'x) thread_info" and t :: 't
+where "ts t = None \<Longrightarrow> free_thread_id ts t"
 
+declare free_thread_id.cases [elim]
+
+lemma free_thread_id_iff: "free_thread_id ts t = (ts t = None)"
+by(auto elim: free_thread_id.cases intro: free_thread_id.intros)
 
 (* Update functions for the multithreaded state *)
 
-fun redT_updT :: "('t,'x) thread_info \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> ('t,'x) thread_info"
+fun redT_updT :: "('l,'t,'x) thread_info \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> ('l,'t,'x) thread_info"
 where
-  "redT_updT ts (NewThread t' x m) = ts(t' \<mapsto> x)"
-| "redT_updT ts NewThreadFail = ts"
+  "redT_updT ts (NewThread t' x m) = ts(t' \<mapsto> (x, no_wait_locks))"
+| "redT_updT ts _ = ts"
 
-fun redT_updTs :: "('t,'x) thread_info \<Rightarrow> ('t,'x,'m) new_thread_action list \<Rightarrow> ('t,'x) thread_info"
+fun redT_updTs :: "('l,'t,'x) thread_info \<Rightarrow> ('t,'x,'m) new_thread_action list \<Rightarrow> ('l,'t,'x) thread_info"
 where
   "redT_updTs ts [] = ts"
 | "redT_updTs ts (ta#tas) = redT_updTs (redT_updT ts ta) tas"
@@ -29,14 +33,43 @@ lemma redT_updTs_append [simp]:
   "redT_updTs ts (tas @ tas') = redT_updTs (redT_updTs ts tas) tas'"
 by(induct tas arbitrary: ts, auto)
 
+lemma redT_updT_None: 
+  "redT_updT ts ta t = None \<Longrightarrow> ts t = None"
+by(cases ta, auto split: if_splits)
+
+lemma redT_updTs_None: "redT_updTs ts tas t = None \<Longrightarrow> ts t = None"
+by(induct tas arbitrary: ts, auto intro: redT_updT_None)
+
+lemma redT_updT_Some1:
+  "ts t = \<lfloor>xw\<rfloor> \<Longrightarrow> \<exists>xw. redT_updT ts ta t = \<lfloor>xw\<rfloor>"
+by(cases ta, auto)
+
+lemma redT_updTs_Some1:
+  "ts t = \<lfloor>xw\<rfloor> \<Longrightarrow> \<exists>xw. redT_updTs ts tas t = \<lfloor>xw\<rfloor>"
+proof(induct tas arbitrary: ts xw)
+  case Nil thus ?case by simp
+next
+  case (Cons TA TAS TS XW)
+  note IH = `\<And>ts xw. ts t = \<lfloor>xw\<rfloor> \<Longrightarrow> \<exists>xw. redT_updTs ts TAS t = \<lfloor>xw\<rfloor>`
+  note TS = `TS t = \<lfloor>XW\<rfloor>`
+  hence "\<exists>xw. redT_updT TS TA t = \<lfloor>xw\<rfloor>"
+    by(rule redT_updT_Some1)
+  then obtain xw where "redT_updT TS TA t = \<lfloor>xw\<rfloor>" by blast
+  hence "\<exists>xw. redT_updTs (redT_updT TS TA) TAS t = \<lfloor>xw\<rfloor>"
+    by(rule IH)
+  thus ?case by(simp)
+qed
+
+
 (* Preconditions for thread creation actions *)
 
-fun thread_ok :: "('t,'x) thread_info \<Rightarrow> 'm \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> bool"
+fun thread_ok :: "('l,'t,'x) thread_info \<Rightarrow> 'm \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> bool"
 where
   "thread_ok ts m (NewThread t x m') = (free_thread_id ts t \<and> m = m')"
 | "thread_ok ts m NewThreadFail = (\<not> (\<exists>t. free_thread_id ts t))"
+| "thread_ok ts m (ThreadExists t) = (\<not> free_thread_id ts t)"
 
-fun thread_oks :: "('t,'x) thread_info \<Rightarrow> 'm \<Rightarrow> ('t,'x,'m) new_thread_action list \<Rightarrow> bool"
+fun thread_oks :: "('l,'t,'x) thread_info \<Rightarrow> 'm \<Rightarrow> ('t,'x,'m) new_thread_action list \<Rightarrow> bool"
 where
   "thread_oks ts m [] = True"
 | "thread_oks ts m (ta#tas) = (thread_ok ts m ta \<and> thread_oks (redT_updT ts ta) m tas)"
@@ -95,46 +128,23 @@ next
   qed
 qed
 
-lemma redT_updT_None: "redT_updT ts ta t = None \<Longrightarrow> ts t = None"
-by(cases ta, auto split: if_splits)
-
-lemma redT_updTs_None: "redT_updTs ts tas t = None \<Longrightarrow> ts t = None"
-by(induct tas arbitrary: ts, auto intro: redT_updT_None)
 
 lemma redT_updT_Some:
-  "\<lbrakk> ts t = \<lfloor>x\<rfloor>; thread_ok ts m ta \<rbrakk> \<Longrightarrow> redT_updT ts ta t = \<lfloor>x\<rfloor>"
-apply(cases ta)
-by(auto simp: free_thread_id_def)
+  "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_ok ts m ta \<rbrakk> \<Longrightarrow> redT_updT ts ta t = \<lfloor>xw\<rfloor>"
+by(cases ta, auto)
 
 lemma redT_updTs_Some:
-  "\<lbrakk> ts t = \<lfloor>x\<rfloor>; thread_oks ts m tas \<rbrakk> \<Longrightarrow> redT_updTs ts tas t = \<lfloor>x\<rfloor>"
+  "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_oks ts m tas \<rbrakk> \<Longrightarrow> redT_updTs ts tas t = \<lfloor>xw\<rfloor>"
 apply(induct tas arbitrary: ts)
 by(auto intro: redT_updT_Some)
 
-lemma redT_updT_Some1:
-  "ts t = \<lfloor>x\<rfloor> \<Longrightarrow> \<exists>x. redT_updT ts ta t = \<lfloor>x\<rfloor>"
-apply(cases ta, auto)
-done
 
-lemma redT_updTs_Some1:
-  "ts t = \<lfloor>x\<rfloor> \<Longrightarrow> \<exists>x. redT_updTs ts tas t = \<lfloor>x\<rfloor>"
-proof(induct tas arbitrary: ts x)
-  case Nil thus ?case by simp
-next
-  case (Cons TA TAS TS X)
-  note IH = `\<And>ts x. ts t = \<lfloor>x\<rfloor> \<Longrightarrow> \<exists>x. redT_updTs ts TAS t = \<lfloor>x\<rfloor>`
-  note TS = `TS t = \<lfloor>X\<rfloor>`
-  hence "\<exists>x. redT_updT TS TA t = \<lfloor>x\<rfloor>"
-    by(rule redT_updT_Some1)
-  then obtain x where "redT_updT TS TA t = \<lfloor>x\<rfloor>" by blast
-  hence "\<exists>x. redT_updTs (redT_updT TS TA) TAS t = \<lfloor>x\<rfloor>" by(rule IH)
-  thus ?case by(simp)
-qed
+lemma thread_ok_new_thread:
+  "thread_ok ts m (NewThread t m' x) \<Longrightarrow> ts t = None"
+by(auto)
 
-lemma thread_ok_new_thread: "thread_ok ts m (NewThread t m' x) \<Longrightarrow> ts t = None"
-by(auto simp: free_thread_id_def)
-
-lemma thread_oks_new_thread: "\<lbrakk> thread_oks ts m tas; NewThread t m' x \<in> set tas \<rbrakk> \<Longrightarrow> ts t = None"
+lemma thread_oks_new_thread:
+  "\<lbrakk> thread_oks ts m tas; NewThread t m' x \<in> set tas \<rbrakk> \<Longrightarrow> ts t = None"
 proof(induct tas arbitrary: ts)
   case Nil thus ?case by simp
 next
@@ -156,16 +166,16 @@ qed
 
 
 lemma redT_updT_new_thread_ts:
-  "thread_ok ts c (NewThread t x m) \<Longrightarrow> redT_updT ts (NewThread t x m) t = \<lfloor>x\<rfloor>"
+  "thread_ok ts c (NewThread t x m) \<Longrightarrow> redT_updT ts (NewThread t x m) t = \<lfloor>(x, no_wait_locks)\<rfloor>"
 by(simp)
 
 lemma redT_updTs_new_thread_ts:
-  "\<lbrakk> thread_oks ts m tas; NewThread t x m' \<in> set tas \<rbrakk> \<Longrightarrow> redT_updTs ts tas t = \<lfloor>x\<rfloor>"
+  "\<lbrakk> thread_oks ts m tas; NewThread t x m' \<in> set tas \<rbrakk> \<Longrightarrow> redT_updTs ts tas t = \<lfloor>(x, no_wait_locks)\<rfloor>"
 proof(induct tas arbitrary: ts)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS)
-  note IH = `\<And>ts. \<lbrakk>thread_oks ts m TAS; NewThread t x m' \<in> set TAS\<rbrakk> \<Longrightarrow> redT_updTs ts TAS t = \<lfloor>x\<rfloor>`
+  note IH = `\<And>ts. \<lbrakk>thread_oks ts m TAS; NewThread t x m' \<in> set TAS\<rbrakk> \<Longrightarrow> redT_updTs ts TAS t = \<lfloor>(x, no_wait_locks)\<rfloor>`
   note cct = `thread_oks TS m (TA # TAS)`
   note nt = `NewThread t x m' \<in> set (TA # TAS)`
   { assume "NewThread t x m' = TA"
@@ -180,30 +190,30 @@ qed
 
 
 lemma redT_updT_new_thread:
-  "\<lbrakk> redT_updT ts ta t = \<lfloor>x\<rfloor>; thread_ok ts m ta; ts t = None \<rbrakk> \<Longrightarrow> ta = NewThread t x m"
-apply(cases ta)
-by(auto split: if_splits)
+  "\<lbrakk> redT_updT ts ta t = \<lfloor>(x, w)\<rfloor>; thread_ok ts m ta; ts t = None \<rbrakk> \<Longrightarrow> ta = NewThread t x m \<and> w = no_wait_locks"
+by(cases ta, auto split: split_if_asm)
 
 lemma redT_updTs_new_thread:
-  "\<lbrakk> redT_updTs ts tas t = \<lfloor>x\<rfloor>; thread_oks ts m tas; ts t = None \<rbrakk> 
-  \<Longrightarrow> NewThread t x m \<in> set tas"
+  "\<lbrakk> redT_updTs ts tas t = \<lfloor>(x, w)\<rfloor>; thread_oks ts m tas; ts t = None \<rbrakk> 
+  \<Longrightarrow> NewThread t x m \<in> set tas \<and> w = no_wait_locks"
 proof(induct tas arbitrary: ts)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS)
-  note IH = `\<And>ts. \<lbrakk>redT_updTs ts TAS t = \<lfloor>x\<rfloor>; thread_oks ts m TAS; ts t = None\<rbrakk> \<Longrightarrow> NewThread t x m \<in> set TAS`
-  note es't = `redT_updTs TS (TA # TAS) t = \<lfloor>x\<rfloor>`
+  note IH = `\<And>ts. \<lbrakk>redT_updTs ts TAS t = \<lfloor>(x, w)\<rfloor>; thread_oks ts m TAS; ts t = None\<rbrakk> \<Longrightarrow> NewThread t x m \<in> set TAS \<and> w = no_wait_locks`
+  note es't = `redT_updTs TS (TA # TAS) t = \<lfloor>(x, w)\<rfloor>`
   note cct = `thread_oks TS m (TA # TAS)`
   hence cctta: "thread_ok TS m TA" and ccts: "thread_oks (redT_updT TS TA) m TAS" by auto
   note est = `TS t = None`
-  { fix X
-    assume rest: "redT_updT TS TA t = \<lfloor>X\<rfloor>"
-    hence "TA = NewThread t X m" using cctta est
+  { fix X W
+    assume rest: "redT_updT TS TA t = \<lfloor>(X, W)\<rfloor>"
+    hence "TA = NewThread t X m \<and> W = no_wait_locks" using cctta est
       by -(rule redT_updT_new_thread)
+    then obtain "TA = NewThread t X m" "W = no_wait_locks" ..
     moreover from rest ccts
-    have "redT_updTs TS (TA # TAS) t = \<lfloor>X\<rfloor>" 
+    have "redT_updTs TS (TA # TAS) t = \<lfloor>(X, W)\<rfloor>" 
       by(auto intro:redT_updTs_Some)
-    with es't have "X = x" by auto
+    with es't have "X = x" "W = w" by auto
     ultimately have ?case by simp }
   moreover
   { assume rest: "redT_updT TS TA t = None"
@@ -214,63 +224,29 @@ next
 qed
 
 lemma redT_updT_upd:
-  "\<lbrakk> ts t = \<lfloor>x\<rfloor>; thread_ok ts m ta \<rbrakk> \<Longrightarrow> redT_updT ts ta(t \<mapsto> x') = redT_updT (ts(t \<mapsto> x')) ta"
+  "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_ok ts m ta \<rbrakk> \<Longrightarrow> redT_updT ts ta(t \<mapsto> xw') = redT_updT (ts(t \<mapsto> xw')) ta"
 apply(cases ta)
-by(auto simp add: free_thread_id_def intro: fun_upd_twist)
+by(fastsimp intro: fun_upd_twist)+
 
 lemma redT_updTs_upd:
-  "\<lbrakk> ts t = \<lfloor>x\<rfloor>; thread_oks ts m tas \<rbrakk> \<Longrightarrow> redT_updTs ts tas(t \<mapsto> x') = redT_updTs (ts(t \<mapsto> x')) tas"
+  "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_oks ts m tas \<rbrakk> \<Longrightarrow> redT_updTs ts tas(t \<mapsto> xw') = redT_updTs (ts(t \<mapsto> xw')) tas"
 proof(induct tas arbitrary: ts)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS)
-  note est = `TS t = \<lfloor>x\<rfloor>`
+  note est = `TS t = \<lfloor>xw\<rfloor>`
   note cct = `thread_oks TS m (TA # TAS)`
-  note IH = `\<And>ts. \<lbrakk>ts t = \<lfloor>x\<rfloor>; thread_oks ts m TAS\<rbrakk> \<Longrightarrow> redT_updTs ts TAS(t \<mapsto> x') = redT_updTs (ts(t \<mapsto> x')) TAS`
-  from cct have cctta: "thread_ok TS m TA" and ccts: "thread_oks (redT_updT TS TA) m TAS" by auto
-  have "redT_updT TS TA t = \<lfloor>x\<rfloor>" by(rule redT_updT_Some[OF est cctta])
-  hence "redT_updTs (redT_updT TS TA) TAS(t \<mapsto> x') = redT_updTs (redT_updT TS TA(t \<mapsto> x')) TAS" by(rule IH[OF _ ccts])
+  note IH = `\<And>ts. \<lbrakk>ts t = \<lfloor>xw\<rfloor>; thread_oks ts m TAS\<rbrakk> \<Longrightarrow> redT_updTs ts TAS(t \<mapsto> xw') = redT_updTs (ts(t \<mapsto> xw')) TAS`
+  from cct have cctta: "thread_ok TS m TA"
+    and ccts: "thread_oks (redT_updT TS TA) m TAS" by auto
+  have "redT_updT TS TA t = \<lfloor>xw\<rfloor>" by(rule redT_updT_Some[OF est cctta])
+  hence "redT_updTs (redT_updT TS TA) TAS(t \<mapsto> xw') = redT_updTs (redT_updT TS TA(t \<mapsto> xw')) TAS" by(rule IH[OF _ ccts])
   thus ?case by(simp del: fun_upd_apply add: redT_updT_upd[OF est cctta, THEN sym])
 qed
-
-
-lemma thread_ok_upd:
-  "ts t = \<lfloor>x\<rfloor> \<Longrightarrow> thread_ok (ts(t \<mapsto> x')) m ta = thread_ok ts m ta"
-apply(cases ta)
-apply(auto simp add: free_thread_id_def)
-done
-
-lemma thread_oks_upd:
-  "ts t = \<lfloor>x\<rfloor> \<Longrightarrow> thread_oks (ts(t \<mapsto> x')) m tas = thread_oks ts m tas"
-proof(induct tas arbitrary: ts)
-  case Nil thus ?case by simp
-next
-  case (Cons TA TAS TS)
-  note est = `TS t = \<lfloor>x\<rfloor>`
-  note IH = `\<And>ts. ts t = \<lfloor>x\<rfloor> \<Longrightarrow> thread_oks (ts(t \<mapsto> x')) m TAS = thread_oks ts m TAS`
-  { assume cct: "thread_ok TS m TA"
-    moreover
-    hence "thread_ok (TS(t \<mapsto> x')) m TA" using est by -(erule thread_ok_upd[THEN iffD2])
-    moreover
-    from est cct have "redT_updT TS TA t = \<lfloor>x\<rfloor>" by -(rule redT_updT_Some)
-    hence "thread_oks (redT_updT TS TA(t \<mapsto> x')) m TAS = thread_oks (redT_updT TS TA) m TAS"
-      by -(rule IH)
-    hence "thread_oks (redT_updT (TS(t \<mapsto> x')) TA) m TAS = thread_oks (redT_updT TS TA) m TAS"
-      by(simp only: redT_updT_upd[OF est cct])
-    ultimately have ?case by(simp del: fun_upd_apply) }
-  moreover
-  { assume ncct: "\<not> thread_ok TS m TA"
-    moreover
-    hence "\<not> thread_ok (TS(t \<mapsto> x')) m TA" using est by (auto intro: thread_ok_upd[THEN iffD1])
-    ultimately have ?case by(simp del: fun_upd_apply) }
-  ultimately show ?case by blast
-qed
-
 
 lemma thread_oks_commonD:
  "\<lbrakk> thread_oks ts m tas; NewThread t x m' \<in> set tas \<rbrakk> \<Longrightarrow> m = m'"
 by(induct tas arbitrary: ts, auto)
-
 
 lemma thread_oks_newThread_unique:
   "\<lbrakk> thread_oks ts m tas; NewThread t x m' \<in> set tas \<rbrakk> \<Longrightarrow> \<exists>!n. n < length tas \<and> (\<exists>x' m'. tas ! n = NewThread t x' m')"

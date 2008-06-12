@@ -1,5 +1,5 @@
 
-(* $Id: Prover.thy,v 1.16 2008-06-11 14:23:01 lsf37 Exp $ *)
+(* $Id: Prover.thy,v 1.17 2008-06-12 06:57:28 lsf37 Exp $ *)
 
 theory Prover imports Main Infinite_Set begin
 
@@ -464,7 +464,7 @@ lemma sound_FAll: "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==
     -- "note that we can avoid maxscoping at the cost of instantiating the hyp twice- an additional time for M"
 
     -- "different proof, instantiating quantifier twice, avoiding maxscoping"
-lemma sound_FAll: "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==> Svalid (FAll f#s)"
+lemma sound_FAll': "u \<notin> set (sfv (FAll f#s)) ==> Svalid (s@[finst f u]) ==> Svalid (FAll f#s)"
   apply(simp add: Svalid_def del: SEval.simps) 
   apply(rule allI) 
   apply(rule allI)
@@ -557,7 +557,7 @@ lemma finite_inc: "finite (inc ` X) = finite X"
   apply(auto) 
   done
 
-lemma finite_deriv[rule_format]: "finite (deriv s) --> finite  (deriv ` {w. ~is_axiom (s_of_ns s) & w : set (subs s)})"
+lemma finite_deriv_deriv[rule_format]: "finite (deriv s) --> finite  (deriv ` {w. ~is_axiom (s_of_ns s) & w : set (subs s)})"
   apply(subst deriv) 
   apply(simp)
   apply(simp add: finite_inc)

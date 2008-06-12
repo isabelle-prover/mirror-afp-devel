@@ -1,4 +1,4 @@
-(*  ID:         $Id: RTranCl.thy,v 1.5 2008-06-11 14:22:50 lsf37 Exp $
+(*  ID:         $Id: RTranCl.thy,v 1.6 2008-06-12 06:57:17 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -12,9 +12,9 @@ text{* The reflexive transitive closure of a relation induced by a
 function of type @{typ"'a \<Rightarrow> 'a list"}. Instead of defining the closure
 again it would have been simpler to take @{term"{(x,y) . y \<in> set(f x)}\<^sup>*"}. *}
 
-syntax "in_set" :: "'a \<Rightarrow> ('a \<Rightarrow> 'a list) \<Rightarrow> 'a \<Rightarrow> bool"
-      ("_ [_]\<rightarrow> _" [55,0,55] 50)
-translations "g [succs]\<rightarrow> g'" => "g' \<in> set (succs g)"
+abbreviation (input)
+  in_set :: "'a => ('a => 'b list) => 'b => bool" ("_ [_]\<rightarrow> _" [55,0,55] 50) where
+  "g [succs]\<rightarrow> g' == g' \<in> set (succs g)"
 
 inductive_set
   RTranCl :: "('a \<Rightarrow> 'a list) \<Rightarrow> ('a * 'a) set"

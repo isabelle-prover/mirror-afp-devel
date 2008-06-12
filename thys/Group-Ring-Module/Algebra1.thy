@@ -110,7 +110,7 @@ lemma diff_zero_eq:"n = (0::nat) \<Longrightarrow> m = m - n"
 by simp
 
 lemma nat_not_le:"\<not>(m::nat) \<le> n \<Longrightarrow> n < m"
-by (simp add:le_def)
+by (simp add: not_le)
 
 lemma less_Suc_le1:"x < n \<Longrightarrow> Suc x \<le> n"
 by simp
@@ -431,7 +431,7 @@ lemma int_subsets: "\<lbrakk> A1 \<subseteq> A; B1 \<subseteq> B \<rbrakk> \<Lon
 by blast
 
 lemma inter_mono:"A \<subseteq> B \<Longrightarrow> A \<inter> C \<subseteq> B \<inter> C"
-by (rule subsetI, simp add:subset_def)
+by blast
 
 lemma sub_Un1:"B \<subseteq>  B \<union> C" 
 by blast
@@ -1175,7 +1175,7 @@ apply auto
 done
 
 lemma nat_not_le_less:"(\<not> (n::nat) \<le> m) = (m < n)"
-by (simp add:le_def)
+by (simp add: not_le)
 
 lemma self_le:"(n::nat) \<le> n"
 apply simp
@@ -1265,12 +1265,7 @@ lemma Nset_nset:"{i. i \<le> (Suc (n + m))} = {i. i \<le> n} \<union>
 apply (rule equalityI)
  apply (rule subsetI)
  apply (simp add:nset_def)
- apply (case_tac "x \<le> n", simp)
- apply (simp add:le_def[of _ "n"])
-apply (rule subsetI)
- apply (simp add:nset_def)
- apply (erule disjE, simp)
- apply simp
+  apply (auto simp add: nset_def)
 done
 
 lemma Nset_nset_1:"\<lbrakk>0 < n; i < n\<rbrakk> \<Longrightarrow> {j. j \<le> n} = {j. j \<le> i} \<union> 
@@ -1294,9 +1289,9 @@ apply (rule equalityI)
          thin_tac "xb < Suc n", simp, blast)
  apply (rule subsetI, simp add:image_def, (erule exE)+, (erule conjE)+)
  apply (simp,
-        frule_tac i = xb and j = n and k = "Suc n" in Nat.le_less_trans,
+        frule_tac x = xb and y = n and z = "Suc n" in le_less_trans,
         simp,
-        frule_tac m = xb and n = "Suc n" in Nat.less_imp_le,
+        frule_tac x = xb and y = "Suc n" in less_imp_le,
          blast)
 done
 
@@ -1307,9 +1302,9 @@ apply (rule equalityI)
  apply (simp add:image_def,
         erule disjE, blast,
         erule exE, erule conjE,
-        frule_tac i = xa and j = n and k = "Suc n" in Nat.le_less_trans,
+        frule_tac x = xa and y = n and z = "Suc n" in le_less_trans,
         simp+,
-        frule_tac m = xa and n = "Suc n" in Nat.less_imp_le, blast)
+        frule_tac x = xa and y = "Suc n" in less_imp_le, blast)
  apply (rule subsetI,
         simp add:image_def,
         erule exE, simp, erule conjE,
@@ -1330,9 +1325,9 @@ primrec
 
 lemma nasc_seq_mem:"\<lbrakk>(a::nat) \<in> A; \<not> (\<exists>m. m\<in>A \<and> (\<forall>x\<in>A. x \<le> m))\<rbrakk> \<Longrightarrow>
                         (nasc_seq A a n) \<in> A"
-apply (induct_tac n)
- apply (simp, simp, simp add:le_def,
-        subgoal_tac "\<exists>x\<in>A. (nasc_seq A a n) < x") prefer 2 apply blast
+apply (induct n)
+apply (simp_all add: not_le)
+apply (subgoal_tac "\<exists>x\<in>A. (nasc_seq A a n) < x") prefer 2 apply blast
  apply (thin_tac "\<forall>m. m \<in> A \<longrightarrow> (\<exists>x\<in>A. m < x)",
         rule someI2_ex, blast, simp)
 done
@@ -1341,7 +1336,7 @@ lemma nasc_seqn:"\<lbrakk>(a::nat) \<in> A; \<not> (\<exists>m. m\<in>A \<and> (
                                (nasc_seq A a n) < (nasc_seq A a (Suc n))"
 apply (simp,
        frule nasc_seq_mem [of "a" "A" "n"], simp) 
-apply (simp add:le_def,
+apply (simp add: not_le,
        subgoal_tac "\<exists>x\<in>A. (nasc_seq A a n) < x") prefer 2 apply simp
  apply (thin_tac "\<forall>m. m \<in> A \<longrightarrow> (\<exists>x\<in>A. m < x)",
         rule someI2_ex, blast, simp)
@@ -1472,11 +1467,11 @@ apply (rule equalityI)
  apply (cut_tac x = xa and n = n in skip_im_Tr2_1[of i], simp+)
  
 apply (rule subsetI, simp, erule conjE)
- apply (cut_tac m = x and n = i in Nat.less_linear, simp)
+ apply (cut_tac x = x and y = i in less_linear, simp)
  apply (erule disjE)
  apply (simp add:image_def)
  apply (frule_tac x = x in skip_im_Tr1_2[of i n], assumption,
-        frule_tac i = x and j = i and k = "Suc n" in Nat.less_le_trans, 
+        frule_tac x = x and y = i and z = "Suc n" in less_le_trans, 
         assumption+,
         frule_tac m = x and n = "Suc n" in Suc_leI,
         simp only:Suc_le_mono,
@@ -1527,10 +1522,10 @@ apply (rule univar_func_test, rule ballI)
 apply (simp add:jointfun_def)
 apply (rule conjI)
 apply (rule impI, simp add:funcset_mem)
-apply (rule impI, simp add:le_def) 
+apply (rule impI, simp add: not_less [symmetric])
 apply (frule_tac x = n and n = x in less_Suc_le1)
  apply (thin_tac "n < x")
- apply (simp add:nat_not_le_less[THEN sym, of "Suc (n + m)"])
+ apply (simp add: nat_not_le_less [THEN sym, of "Suc (n + m)"])
  apply (frule_tac m = x and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
  apply simp
  apply (simp add:sliden_def funcset_mem)
@@ -1605,7 +1600,7 @@ apply (rule univar_func_test)
 apply (rule impI)
   apply (simp add:sliden_def)
   apply (thin_tac "f \<in> {i. i \<le> n} \<rightarrow> A")
-  apply (simp add:le_def[of _ "n"])
+  apply (simp add: not_less [symmetric, of _ "n"])
   apply (frule_tac x = n and n = x in less_Suc_le1)
   apply (frule_tac m = x and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
   apply simp
@@ -1640,8 +1635,7 @@ apply auto
   apply (subgoal_tac "g xa = g (sliden (Suc n) (slide (Suc n) xa))")
   apply blast
   apply (simp add:slide_def sliden_def)
- apply (subst le_def, simp)
- apply (rule ballI, simp add:nset_def)
+  apply (auto simp add: nset_def)
 done
 
 lemma im_jointfun:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow> A; g \<in> {j. j \<le> m} \<rightarrow> B\<rbrakk> \<Longrightarrow> 
@@ -1782,7 +1776,8 @@ ndec_seq_Suc:"ndec_seq A a (Suc n) =
 lemma ndec_seq_mem:"\<lbrakk>a \<in> (A::nat set); \<not> (\<exists>m. m\<in>A \<and> (\<forall>x\<in>A. m \<le> x))\<rbrakk> \<Longrightarrow>
                         (ndec_seq A a n) \<in> A"
 apply (induct_tac n)
- apply simp apply simp  apply (simp add:le_def)
+ apply simp apply simp
+ apply (simp add: not_less [symmetric])
 apply (subgoal_tac "\<exists>x\<in>A. x < (ndec_seq A a n)") prefer 2 apply blast
  apply (thin_tac "\<forall>m. m \<in> A \<longrightarrow> (\<exists>x\<in>A. x < m)")
  apply (rule someI2_ex) apply blast
@@ -1793,7 +1788,7 @@ lemma ndec_seqn:"\<lbrakk>a \<in> (A::nat set);\<not> (\<exists>m. m\<in>A \<and
                        (ndec_seq A a (Suc n)) < (ndec_seq A a n)"
  apply (frule ndec_seq_mem [of "a" "A" "n"], assumption+)
  apply simp
- apply (simp add:le_def)
+ apply (simp add: not_less [symmetric])
  apply (subgoal_tac "\<exists>x\<in>A. x < (ndec_seq A a n)") prefer 2 apply simp
  apply (thin_tac "\<forall>m. m \<in> A \<longrightarrow> (\<exists>x\<in>A. x < m)")
 apply (rule someI2_ex) apply blast
@@ -1885,7 +1880,7 @@ apply (simp add:compose_def)
  apply (erule exE, (erule conjE)+)
  apply (case_tac "xa = i", simp,
         frule_tac c = x in subsetD[of "f i" "f j"], assumption+)
- apply (cut_tac Nat.less_linear[of i j], simp, erule disjE,
+ apply (cut_tac less_linear[of i j], simp, erule disjE,
         frule less_le_diff[of i j],
         cut_tac skip_im_Tr2_1[of i n "j - Suc 0"],
         simp, 
@@ -1897,17 +1892,17 @@ apply (simp add:compose_def)
         frule eq_elems_eq_val[THEN sym, of "skip i j" j f])
  apply (cut_tac a = x in eq_set_inc[of _ "f j" "f (skip i j)"],
               assumption+)
- apply (frule_tac i = j and j = i and k = "Suc n" in Nat.less_le_trans,
+ apply (frule_tac x = j and y = i and z = "Suc n" in less_le_trans,
         assumption+,
         frule Suc_less_le[of j n], blast)
- apply (cut_tac m = xa and n = i in Nat.less_linear, simp,
+ apply (cut_tac x = xa and y = i in less_linear, simp,
         erule disjE,
         frule_tac x = xa in skip_im_Tr1_2[of i n], assumption)
  apply (frule_tac x1 = "skip i xa" and y1 = xa and f1 = f in 
                   eq_elems_eq_val[THEN sym],
         frule_tac a = x and A = "f xa" and B = "f (skip i xa)" in eq_set_inc,
         assumption,
-        frule_tac i = xa and j = i and k = "Suc n" in Nat.less_le_trans,
+        frule_tac x = xa and y = i and z = "Suc n" in less_le_trans,
         assumption+,
         frule_tac x = xa and n = n in Suc_less_le, blast)
  apply (frule_tac x = i and n = xa in less_le_diff,
@@ -2070,13 +2065,6 @@ typedef (Ainteg)
       ant = "zag"
        by (subgoal_tac "(1, 0) \<in> zag", auto, simp add:zag_def)
 
-instance ant :: ord ..
-instance ant :: zero ..
-instance ant :: one ..
-instance ant :: plus ..
-instance ant :: times ..
-instance ant :: minus ..
-
 constdefs
   ant :: "int \<Rightarrow> ant"
  "ant m == Abs_Ainteg( (m, 0))"
@@ -2085,22 +2073,33 @@ constdefs
   "tna z == if Rep_Ainteg(z) \<noteq> (0,1) \<and> Rep_Ainteg(z) \<noteq> (0,-1) then
                   fst (Rep_Ainteg(z)) else arbitrary"
 
-defs (overloaded)
+instantiation ant :: "{zero, one, plus, uminus, minus, times, ord}"
+begin
 
+definition
   Zero_ant_def  : "0 == ant 0"
+
+definition
   One_ant_def   : "1 == ant 1"
-  minus_ant_def : "- z == 
-         Abs_Ainteg((- (fst (Rep_Ainteg z)), - (snd (Rep_Ainteg z))))"
+
+definition
   add_ant_def:
    "z + w ==
        Abs_Ainteg (zag_pl (Rep_Ainteg z) (Rep_Ainteg w))"
 
+definition
+  minus_ant_def : "- z == 
+         Abs_Ainteg((- (fst (Rep_Ainteg z)), - (snd (Rep_Ainteg z))))"
+
+definition
     diff_ant_def:  "z - (w::ant) == z + (-w)"
- 
+
+definition 
     mult_ant_def:
       "z * w ==
        Abs_Ainteg (zag_t (Rep_Ainteg z) (Rep_Ainteg w))"
 
+definition
     le_ant_def:
      "(z::ant) \<le> w == if (snd (Rep_Ainteg w)) = 1 then True 
        else (if (snd (Rep_Ainteg w)) = 0 then (if (snd (Rep_Ainteg z)) = 1 
@@ -2108,7 +2107,12 @@ defs (overloaded)
         (fst (Rep_Ainteg z)) \<le> (fst (Rep_Ainteg w))  else True))
           else (if snd (Rep_Ainteg z) = -1 then True else False))" 
 
+definition
     less_ant_def: "((z::ant) < (w::ant)) == (z \<le> w \<and> z \<noteq> w)"            
+
+instance ..
+
+end
 
 constdefs
  inf_ant:: ant
@@ -2437,7 +2441,7 @@ apply (simp add:mult_ant_def inf_ant_def minus_ant_def ant_def,
 apply (simp add:zag_t_def)
 done
 
-lemma a_neg_m[simp]:"m < 0 \<Longrightarrow> (-\<infinity>) * (ant m) = \<infinity>"
+lemma neg_a_m[simp]:"m < 0 \<Longrightarrow> (-\<infinity>) * (ant m) = \<infinity>"
 apply (simp add:mult_ant_def inf_ant_def minus_ant_def ant_def,
       cut_tac ant_inf_in_Ainteg,
       cut_tac ant_minf_in_Ainteg,
@@ -2959,7 +2963,7 @@ by (cut_tac mem_ant[of "x"], erule disjE, simp,
        erule disjE, erule exE, simp add:asprod_mult, simp)
 (** atode asprod_1_x to awaseru **)
 
-lemma agsprod_assoc:"m *\<^sub>a (n *\<^sub>a (ant x)) = (m * n) *\<^sub>a (ant x)"
+lemma agsprod_assoc_a:"m *\<^sub>a (n *\<^sub>a (ant x)) = (m * n) *\<^sub>a (ant x)"
 apply (simp add:asprod_mult)
 done
 
@@ -4532,7 +4536,7 @@ apply (simp add:image_def)
  apply (rule subsetI, simp)
  apply (erule disjE, blast) 
  apply (erule exE, erule conjE, simp,
-        frule_tac i = xa and j = n and k = "Suc n" in Nat.le_trans,
+        frule_tac i = xa and j = n and k = "Suc n" in le_trans,
         simp)
  apply blast
  apply (rule subsetI, simp, erule exE, erule conjE)
@@ -4555,7 +4559,7 @@ proof -
   apply (rule contrapos_pp, simp+)
   apply (simp add:nat_not_le_less)
   apply (frule_tac n = "f x" in Suc_leI[of n], thin_tac "n < (f x)")
-  apply (frule_tac m = "Suc n" and n = "f x" in Nat.le_anti_sym, assumption)
+  apply (frule_tac m = "Suc n" and n = "f x" in le_anti_sym, assumption)
   apply(unfold inj_on_def)
   apply (frule_tac b = x in forball_spec1, simp,
        thin_tac "\<forall>x\<in>{i. i \<le> Suc n}. \<forall>y\<in>{i. i \<le> Suc n}. f x = f y \<longrightarrow> x = y",
@@ -4728,11 +4732,6 @@ by (simp add:an_def, subst aless_zless[of "int n" "int m"], simp)
 lemma apos_natpos:"\<lbrakk>a \<noteq> \<infinity>; 0 \<le> a\<rbrakk> \<Longrightarrow> 0 \<le> na a"  
 by (cut_tac ale_nat_le[of "0" "na a"], simp add:na_def an_def) 
   
-lemma apos_neq_minf:"0 \<le> a \<Longrightarrow> a \<noteq> -\<infinity>"
-by (rule contrapos_pp, simp+,
-       cut_tac minf_le_any[of "0"],
-       frule ale_antisym[of "0" "-\<infinity>"], assumption+, simp)
-
 lemma apos_tna_pos:"\<lbrakk>n \<noteq> \<infinity>; 0 \<le> n\<rbrakk> \<Longrightarrow> 0 \<le> tna n"
 by (subst tna_0[THEN sym], 
        subst ale_zle[THEN sym, of "tna 0" "tna n"],
@@ -5000,15 +4999,7 @@ lemma (in Order) Iod_self: "D = Iod D (carrier D)"
   apply (simp add:Iod_def)
   apply (rule equalityI)
   apply (rule subsetI)
-  apply (cut_tac p = x in PairE_lemma)
-  apply (erule exE)+
-  apply (frule_tac c = x and A = rel and B = "carrier \<times> carrier" in subsetD,
-          assumption)
-  apply simp
-
-  apply (rule subsetI)
-  apply (cut_tac p = x in PairE_lemma)
-  apply (erule exE)+ apply simp
+  apply auto
 done
 
 lemma SIod_self:"Order D \<Longrightarrow> D = SIod D (carrier D)"
@@ -5069,8 +5060,7 @@ lemma (in Order) Iod_Order:
 apply (rule Order.intro)
 apply (simp add:Iod_def)
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma)
-apply (erule exE)+
+apply (unfold split_paired_all)
 apply simp 
 apply (simp add:Iod_carrier)
 apply (simp add:Iod_def)
@@ -5089,7 +5079,8 @@ lemma  SIod_Order:"\<lbrakk> Order D; T \<subseteq> carrier D\<rbrakk> \<Longrig
 apply (rule Order.intro)
  apply (rule subsetI)
  apply (simp add:SIod_def)
- apply (cut_tac p = x in PairE_lemma, (erule exE)+, simp)
+ apply (unfold split_paired_all)
+ apply simp
  apply (simp add:SIod_def)
  apply (frule_tac c = a in subsetD[of T "carrier D"], assumption+)
  apply (simp add:Order.refl[of D])
@@ -5129,16 +5120,14 @@ lemma rel_SIod:"\<lbrakk>Order D; Order E; carrier E \<subseteq> carrier D;
                   rel E = rel (SIod D (carrier E))"
 apply (rule equalityI) (* show the equality of the sets *)
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma)
-apply ((erule exE)+, simp)
+apply (unfold split_paired_all)
 apply (simp add:ole_def)
 apply (simp add:SIod_def)
  apply (cut_tac Order.closed[of "E"])
 apply blast   
 apply assumption
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma)
-apply ((erule exE)+, simp)
+apply (unfold split_paired_all)
 apply (simp add:SIod_def)
 apply (simp add:ole_def)
 done
@@ -5241,7 +5230,7 @@ interpretation order_Pow: Order ["po A"]
   apply (unfold Order_Pow_def)
   apply (rule Order.intro)
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma, (erule exE)+)  
+apply (unfold split_paired_all)
 apply simp
 apply simp
 apply simp
@@ -5262,23 +5251,8 @@ lemma Order_fs:"Order (Order_fs A B)"
 apply (simp add:Order_fs_def)
 apply (rule Order.intro)
 apply (rule subsetI)
-apply (cut_tac p = x in PairE_lemma, (erule exE)+)
-apply simp
-apply simp
-apply simp
-apply (erule exE)+
-apply (erule conjE)+
-apply ((erule exE)+, (erule conjE)+)
-apply simp
-apply (rule_tac f = f and A = A1 and g = fa in funcset_eq, assumption+)
-apply simp
-apply ((erule exE)+, (erule conjE)+, (erule exE)+, (erule conjE)+)
-apply simp
-apply (frule_tac A = A1 and B = A1a and C = A1b in subset_trans, 
-        assumption+) 
-apply simp
-apply (rule ballI)
-apply blast
+apply (unfold split_paired_all)
+apply (auto intro: funcset_eq)
 done
  
 subsection {* homomorphism of ordered sets *}
@@ -5623,7 +5597,7 @@ done
 lemma (in Order) minimum_elem_sub:"\<lbrakk>T \<subseteq> carrier D; X \<subseteq> T\<rbrakk>
         \<Longrightarrow> minimum_elem D X a = minimum_elem (Iod D T) X a"
 apply (simp add:minimum_elem_def)
-apply (simp add:subset_def[of X T])
+apply (simp add:subset_eq[of X T])
 apply (rule iffI, erule conjE)
  apply simp
  apply (rule ballI)
@@ -5665,7 +5639,7 @@ apply (frule insert_mono[of "Y - {a}" "X" "a"])
  apply (simp add:minimum_elem_sub[THEN sym, of "insert a X" Y],
         simp add:minimum_elem_sub[THEN sym, of X "Y - {a}"])
 
- apply (simp add:subset_def[of "Y - {a}" X])
+ apply (simp add:subset_eq[of "Y - {a}" X])
 
  apply (simp add:minimum_elem_def, (erule conjE)+)
  apply (rule ballI)
@@ -5681,7 +5655,7 @@ apply (frule insert_mono[of "Y - {a}" "X" "a"])
  apply (simp add:minimum_elem_Ssub[THEN sym, of D "insert a X" Y],
         simp add:minimum_elem_Ssub[THEN sym, of D X "Y - {a}"])
 
- apply (simp add:subset_def[of "Y - {a}" X])
+ apply (simp add:subset_eq[of "Y - {a}" X])
 
  apply (simp add:minimum_elem_def, (erule conjE)+)
  apply (rule ballI)
@@ -6156,7 +6130,7 @@ apply (rule iffI)
           assumption+)  
  apply (cut_tac a_notin_segment[of "a"],
         simp add:segment_inc[of "a" "b"], blast)
-apply (simp add:psubset_def, erule conjE,
+apply (simp add:psubset_eq, erule conjE,
        frule not_sym[of "segment D a" "segment D b"],
        thin_tac "segment D a \<noteq> segment D b",
        frule sets_not_eq[of "segment D b" "segment D a"], assumption+)
@@ -6181,7 +6155,7 @@ apply (rule iffI)
           assumption+)  
  apply (cut_tac a_notin_Ssegment[of "a"],
         simp add:Ssegment_inc[of "D" "a" "b"], blast)
-apply (simp add:psubset_def, erule conjE,
+apply (simp add:psubset_eq, erule conjE,
        frule not_sym[of "Ssegment D a" "Ssegment D b"],
        thin_tac "Ssegment D a \<noteq> Ssegment D b",
        frule sets_not_eq[of "Ssegment D b" "Ssegment D a"], assumption+)
@@ -6204,7 +6178,7 @@ apply (rule iffI)
 apply (erule disjE)
  apply (simp add:segment_mono[of "a" "b"], simp)
  apply (frule segment_mono[THEN sym, of "a" "b"], assumption+)
- apply (simp add:psubset_def)
+ apply (simp add:psubset_eq)
 apply (case_tac "segment D a \<noteq> segment D b", simp)
  apply simp
  apply (rule contrapos_pp, simp+,
@@ -6222,10 +6196,10 @@ apply (erule disjE)
  apply (simp add: Ssegment_mono[of "D" "a" "b"])
 
  apply (frule Ssegment_mono[THEN sym, of "D" "a" "b"], assumption+)
- apply (simp add:psubset_def)
+ apply (simp add:psubset_eq)
 apply (case_tac "Ssegment D a \<noteq> Ssegment D b") 
  apply (cut_tac Ssegment_mono[THEN sym, of "D" "a" "b"])
- apply (simp add:psubset_def, assumption+)
+ apply (simp add:psubset_eq, assumption+)
  apply simp
  apply (cut_tac a_notin_Ssegment[of "a" "D"], simp)
  apply (simp add:Ssegment_not_inc_iff[THEN sym, of "D" "b" "a"])
@@ -6270,7 +6244,7 @@ by (simp add:Ssegment_inj)
 
 lemma (in Order) segment_inc_psub:"\<lbrakk>x \<in> segment D a\<rbrakk> \<Longrightarrow>
                                             segment D x \<subset> segment D a"
-apply (simp add:psubset_def) 
+apply (simp add:psubset_eq) 
 apply (rule conjI, rule subsetI)
  apply (simp add:segment_def)
  apply (case_tac "a \<notin> carrier D", simp)
@@ -6281,7 +6255,7 @@ done
 
 lemma Ssegment_inc_psub:"\<lbrakk>Order D; x \<in> Ssegment D a\<rbrakk> \<Longrightarrow>
                                             Ssegment D x \<subset> Ssegment D a"
-apply (simp add:psubset_def) 
+apply (simp add:psubset_eq) 
 apply (rule conjI, rule subsetI)
  apply (simp add:Ssegment_def)
  apply (case_tac "a \<notin> carrier D", simp)
@@ -6598,12 +6572,12 @@ apply (rule subsetI)
   apply (subst Order.segment_inc[THEN sym, of "Iod D (segment D b)"],
          assumption+)
   apply (simp add:Iod_carrier)
-  apply (simp add:segment_mono[of a b] psubset_def, erule conjE)
+  apply (simp add:segment_mono[of a b] psubset_eq, erule conjE)
   apply (rule subsetD[of "segment D a" "segment D b"], assumption+)
   apply (simp add:Iod_carrier segment_inc)
   apply (frule segment_inc[of a b], assumption, simp)
   apply (frule segment_mono[of a b], assumption, simp)
-  apply (simp add:psubset_def, (erule conjE)+)
+  apply (simp add:psubset_eq, (erule conjE)+)
   apply (frule_tac c = x in subsetD[of "segment D a" "segment D b"], 
          assumption+)
   apply (simp add:Iod_less)
@@ -6850,7 +6824,7 @@ lemma (in Worder) segment_unique1:"\<lbrakk>a \<in> carrier D; b \<in> carrier D
        \<not> ord_equiv (Iod D (segment D b)) (Iod D (segment D a))"
 apply (cut_tac segment_Worder[of b],
        cut_tac segment_sub[of b],
-       frule segment_mono[of a b], assumption, simp add:psubset_def,
+       frule segment_mono[of a b], assumption, simp add:psubset_eq,
        erule conjE) 
 apply (simp add:segment_inc,
        frule Worder.nonequiv_segment[of "Iod D (segment D b)" a],
@@ -6870,7 +6844,7 @@ apply (frule Worder.Order[of "D"], frule Worder.Torder[of "D"],
  apply (frule nonequiv_Ssegment[of "SIod D (Ssegment D b)" "a"]) 
        apply (simp add:SIod_carrier)
        apply (frule le_Ssegment_Ssegment[of D a b], assumption+)
-       apply (simp add:oless_def psubset_def, (erule conjE)+)
+       apply (simp add:oless_def psubset_eq, (erule conjE)+)
  apply (simp add:SIod_sub_sub[of "Ssegment D a" "Ssegment D b"])
 done
 

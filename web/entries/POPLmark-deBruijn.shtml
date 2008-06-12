@@ -99,12 +99,16 @@ to also cover records and more advanced binding constructs.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:
+	    <ul>
+	    <li>Isabelle 2007: <a href="../release/afp-POPLmark-deBruijn-2007-11-27.tar.gz">afp-POPLmark-deBruijn-2007-11-27.tar.gz</a>
+		</ul>
+	</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-06-11 14:23:03 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-06-12 06:57:30 $, $Revision: 1.1 
 $</div></body>
 </html>

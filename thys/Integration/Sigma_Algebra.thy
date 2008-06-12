@@ -1,5 +1,5 @@
 (*  Title:      Sigma_Algebra.thy
-    ID:         $Id: Sigma_Algebra.thy,v 1.7 2008-06-11 14:22:55 lsf37 Exp $
+    ID:         $Id: Sigma_Algebra.thy,v 1.8 2008-06-12 06:57:20 lsf37 Exp $
     Author:     Stefan Richter, Markus Wenzel, TU Muenchen
     License:    LGPL
 
@@ -232,7 +232,7 @@ proof -
 
   qed
 
-  also have "(\<Inter>i::nat. trivial_series a b i) \<in> A"
+  moreover have "(\<Inter>i::nat. trivial_series a b i) \<in> A"
   proof -
     { fix i
       from a b have "trivial_series a b i \<in> A"
@@ -246,7 +246,7 @@ proof -
       by (simp only: sigma_sigma_algebra)
   qed
 
-  finally show ?thesis .
+  ultimately show ?thesis by simp
 qed
 
 text {* Of course, a like theorem holds for union instead of

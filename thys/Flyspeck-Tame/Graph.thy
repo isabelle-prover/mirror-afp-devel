@@ -1,4 +1,4 @@
-(*  ID:         $Id: Graph.thy,v 1.6 2008-06-11 14:22:50 lsf37 Exp $
+(*  ID:         $Id: Graph.thy,v 1.7 2008-06-12 06:57:17 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -45,7 +45,7 @@ primrec
 consts type :: "'a \<Rightarrow> facetype"
 primrec "type (Face vs f) = f"
 
-primrec
+primrec (vertices_face)
   vertices_face_simp: "vertices (Face vs f) = vs"
 
 defs (overloaded) cong_face_def:
@@ -101,8 +101,9 @@ constdefs prevVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("
 
 
 
-syntax triangle :: "face \<Rightarrow> bool"
-translations "triangle f" == "|vertices f| = 3"
+abbreviation
+  triangle :: "face \<Rightarrow> bool" where
+  "triangle f == |vertices f| = 3"
 
 
 subsection {* Graphs *}
@@ -112,8 +113,9 @@ datatype graph = Graph "(face list)" "nat" "face list list" "nat list"
 consts faces :: "graph \<Rightarrow> face list"
 primrec "faces (Graph fs n f h) = fs"
 
-syntax "_Faces" :: "graph \<Rightarrow> face set" ("\<F>")
-translations "\<F> g" == "set(faces g)"
+abbreviation
+  Faces :: "graph \<Rightarrow> face set" ("\<F>") where
+  "\<F> g == set(faces g)"
 
 consts countVertices :: "graph \<Rightarrow> nat"
 primrec "countVertices (Graph fs n f h) = n"
@@ -242,7 +244,7 @@ is implemeted by the function @{text nextFace}
 *}
 
 constdefs nextFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*) ("_ \<bullet>")(*>*)
-(*<*) "p \<bullet> \<equiv> \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
+(*<*) nextFace_def_aux: "p \<bullet> \<equiv> \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
    (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem fs (hd fs) f))"  (*>*)
 (*<*) lemma nextFace_def: (*>*)
@@ -250,11 +252,11 @@ constdefs nextFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> fa
   "(g,v) \<bullet> f \<equiv> (let fs = (facesAt g v) in
    (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem fs (hd fs) f))"
-(*<*) by (simp add: nextFace_def) (*>*)
+(*<*) by (simp add: nextFace_def_aux) (*>*)
 
 (* Unused: *)
 constdefs prevFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*) ("_\<^bsup>-1\<^esup> \<bullet>")(*>*)
-(*<*) "p\<^bsup>-1\<^esup> \<bullet> \<equiv>
+(*<*) prevFace_def_aux: "p\<^bsup>-1\<^esup> \<bullet> \<equiv>
      \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
     (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem (rev fs) (last fs) f))"  (*>*)
@@ -263,7 +265,7 @@ constdefs prevFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> fa
   "(g,v)\<^bsup>-1\<^esup> \<bullet> f \<equiv> (let fs = (facesAt g v) in
    (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem (rev fs) (last fs) f))"
-(*<*) by (simp add: prevFace_def) (*>*)
+(*<*) by (simp add: prevFace_def_aux) (*>*)
 
 
 (* precondition a b in f *)

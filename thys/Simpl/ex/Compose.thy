@@ -1,4 +1,4 @@
-(*  ID:          $Id: Compose.thy,v 1.5 2008-06-11 14:23:00 lsf37 Exp $
+(*  ID:          $Id: Compose.thy,v 1.6 2008-06-12 06:57:28 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -494,7 +494,7 @@ next
   case Fault thus ?case by (clarsimp simp add: project\<^isub>x_def xstate_map_convs)
 next
   case (Seq c1 s c2)
-  have "project\<^isub>x S = Normal s".
+  have "project\<^isub>x S = Normal s" by fact
   then obtain s' where S: "S=Normal s'" and s: "s = project s'"
     by (auto simp add: project\<^isub>x_def xstate_map_convs)
   from Seq have "lift\<^isub>e \<Gamma>\<turnstile>lift\<^isub>c c1 \<down> S"
@@ -527,7 +527,7 @@ next
       intro: terminates.intros) 
 next
   case (WhileTrue s b c)
-  have "project\<^isub>x S = Normal s".
+  have "project\<^isub>x S = Normal s" by fact
   then obtain s' where S: "S=Normal s'" and s: "s = project s'"
     by (auto simp add: project\<^isub>x_def xstate_map_convs)
   from WhileTrue have "lift\<^isub>e \<Gamma>\<turnstile>lift\<^isub>c c \<down> S"
@@ -579,7 +579,7 @@ next
       intro: terminates.intros)
 next
   case (Catch c1 s c2) 
-  have "project\<^isub>x S = Normal s".
+  have "project\<^isub>x S = Normal s" by fact
   then obtain s' where S: "S=Normal s'" and s: "s = project s'"
     by (auto simp add: project\<^isub>x_def xstate_map_convs)
   from Catch have "lift\<^isub>e \<Gamma>\<turnstile>lift\<^isub>c c1 \<down> S"
@@ -677,8 +677,8 @@ next
   thus ?case by simp
 next
   case (Seq lc1 s s' lc2 t c) 
-  have t: "t \<notin> Fault ` UNIV \<union> {Stuck}".
-  have "lift\<^isub>c c = Seq lc1 lc2".
+  have t: "t \<notin> Fault ` UNIV \<union> {Stuck}" by fact
+  have "lift\<^isub>c c = Seq lc1 lc2" by fact
   then obtain c1 c2 where
     c: "c = Seq c1 c2" and
     lc1: "lc1 = lift\<^isub>c c1" and
@@ -732,8 +732,8 @@ next
     by (clarsimp simp add: lift\<^isub>c_Cond lift\<^isub>c_def)
 next
   case (WhileTrue s lb lc' s' t c)
-  have t: "t \<notin> Fault ` UNIV \<union> {Stuck}".
-  have lw: "lift\<^isub>c c = While lb lc'".
+  have t: "t \<notin> Fault ` UNIV \<union> {Stuck}" by fact
+  have lw: "lift\<^isub>c c = While lb lc'" by fact
   then obtain b c' where 
     c: "c = While b c'" and
     lb: "lb = lift\<^isub>s b" and
@@ -800,8 +800,8 @@ next
   case AbruptProp thus ?case by (simp add: inj_proj_commute)
 next
   case (CatchMatch lc1 s s' lc2 t c) 
-  have t: "t \<notin> Fault ` UNIV \<union> {Stuck}".
-  have "lift\<^isub>c c = Catch lc1 lc2".
+  have t: "t \<notin> Fault ` UNIV \<union> {Stuck}" by fact
+  have "lift\<^isub>c c = Catch lc1 lc2" by fact
   then obtain c1 c2 where
     c: "c = Catch c1 c2" and
     lc1: "lc1 = lift\<^isub>c c1" and
@@ -1020,8 +1020,8 @@ next
   case WhileFalse thus ?case by (fastsimp intro: exec.intros simp add: rename_While)
 next
   case (Call p rbdy s t)
-  have rbdy: "\<Gamma>' p = Some rbdy".
-  have "rename h c = Call p".
+  have rbdy: "\<Gamma>' p = Some rbdy" by fact
+  have "rename h c = Call p" by fact
   then obtain q where c: "c=Call q" and p: "p=h q"
     by (auto simp add: rename_Call)
   show ?case
@@ -1038,8 +1038,8 @@ next
   qed
 next
   case (CallUndefined p s)
-  have undef: "\<Gamma>' p = None".
-  have "rename h c = Call p".
+  have undef: "\<Gamma>' p = None" by fact
+  have "rename h c = Call p" by fact
   then obtain q where c: "c=Call q" and p: "p=h q"
     by (auto simp add: rename_Call)
   from undef p \<Gamma> have "\<Gamma> q = None"
@@ -1143,8 +1143,8 @@ next
     simp add: final_notin_def exec.intros)
 next
   case (WhileTrue s b c)
-  have s_in_b: "s \<in> b".
-  have noStuck: "\<Gamma>\<turnstile> \<langle>While b c,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}".
+  have s_in_b: "s \<in> b" by fact
+  have noStuck: "\<Gamma>\<turnstile> \<langle>While b c,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}" by fact
   with s_in_b have "\<Gamma>\<turnstile> \<langle>c,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}"
     by (auto simp add: final_notin_def intro: exec.intros)
   with WhileTrue.hyps have "\<Gamma>'\<turnstile>rename N c \<down> Normal s"
@@ -1172,7 +1172,7 @@ next
   case WhileFalse thus ?case by (fastsimp intro: terminates.intros)
 next
   case (Call p bdy s)
-  have "\<Gamma> p = Some bdy".
+  have "\<Gamma> p = Some bdy" by fact
   from \<Gamma> [rule_format, OF this]
   have bdy': "\<Gamma>' (N p) = Some (rename N bdy)".
   from Call have "\<Gamma>'\<turnstile>rename N bdy \<down> Normal s"
@@ -1182,7 +1182,7 @@ next
   thus ?case by simp
 next
   case (CallUndefined p s)
-  have "\<Gamma> p = None" "\<Gamma>\<turnstile> \<langle>Call p,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}".
+  have "\<Gamma> p = None" "\<Gamma>\<turnstile> \<langle>Call p,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}" by fact+
   hence False by (auto simp add: final_notin_def intro: exec.intros)
   thus ?case ..
 next
@@ -1196,7 +1196,7 @@ next
   case Abrupt thus ?case by (fastsimp intro: terminates.intros)
 next
   case (Catch c1 s c2)
-  have noStuck: "\<Gamma>\<turnstile> \<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}".
+  have noStuck: "\<Gamma>\<turnstile> \<langle>Catch c1 c2,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}" by fact
   hence "\<Gamma>\<turnstile> \<langle>c1,Normal s\<rangle> \<Rightarrow>\<notin>{Stuck}"
     by (fastsimp simp add: final_notin_def intro: exec.intros)
   with Catch.hyps have "\<Gamma>'\<turnstile>rename N c1 \<down> Normal s"

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/Decl.thy
-    ID:         $Id: Decl.thy,v 1.5 2008-06-11 14:22:55 lsf37 Exp $
+    ID:         $Id: Decl.thy,v 1.6 2008-06-12 06:57:20 lsf37 Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -11,7 +11,7 @@ theory Decl imports Type begin
 types 
   fdecl    = "vname \<times> ty"        -- "field declaration"
 
-  'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- "method = name, arg.\ types, return type, body"
+  'm mdecl = "mname \<times> ty list \<times> ty \<times> 'm"     -- {* method = name, arg.\ types, return type, body *}
 
   'm "class" = "cname \<times> fdecl list \<times> 'm mdecl list"       -- "class = superclass, fields, methods"
 

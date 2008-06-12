@@ -124,7 +124,7 @@ proof -
   assume A1: "A \<in> ce_sets"
   assume A2: "p \<in> PrimRec1"
   let ?B = "{ p x | x. x \<in> A }"
-  have S1: "(y \<in> ?B) = (\<exists> x. x \<in> A \<and> (y = p x))" by auto
+  fix y have S1: "(y \<in> ?B) = (\<exists> x. x \<in> A \<and> (y = p x))" by auto
   from A1 have "\<exists> pA \<in> PrimRec2. A = fn_to_set pA" by (rule ce_set_lm_3)
   then obtain pA where pA_is_pr: "pA \<in> PrimRec2" and S2: "A = fn_to_set pA" by auto
   from S2 have S3: "A = { x. \<exists> y. pA x y = 0 }" by (simp add: fn_to_set_def)
@@ -980,7 +980,7 @@ defs
   total_recursive_def: "total_recursive \<equiv> (\<lambda> f. graph f \<in> ce_rels)"
 
 lemma total_recursive_def1: "total_recursive = (\<lambda> f. c_graph f \<in> ce_sets)"
-proof fix f show " total_recursive f = (c_graph f \<in> ce_sets)"
+proof (rule ext) fix f show " total_recursive f = (c_graph f \<in> ce_sets)"
   proof
     assume A: "total_recursive f"
     then have "graph f \<in> ce_rels" by (unfold total_recursive_def)

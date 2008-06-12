@@ -1,11 +1,11 @@
-(*  ID:         $Id: LinArith.thy,v 1.4 2008-06-11 14:22:58 lsf37 Exp $
+(*  ID:         $Id: LinArith.thy,v 1.5 2008-06-12 06:57:24 lsf37 Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
 header{* Linear real arithmetic *}
 
 theory LinArith
-imports QE ListSpace Complex_Main
+imports QE ListVector Complex_Main
 begin
 
 subsection{*Basics*}

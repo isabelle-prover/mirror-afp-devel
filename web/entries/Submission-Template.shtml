@@ -94,12 +94,14 @@ href="???">???</a>
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:
+	None
+	</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-06-11 14:23:03 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-06-12 06:57:30 $, $Revision: 1.1 
 $</div></body>
 </html>

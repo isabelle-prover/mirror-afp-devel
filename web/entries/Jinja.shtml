@@ -95,6 +95,7 @@ in the theorem prover Isabelle/HOL.
   </tr>
     <tr><td class="links">Older releases:
     <ul>
+    <li>Isabelle 2007: <a href="../release/afp-Jinja-2007-11-27.tar.gz">afp-Jinja-2007-11-27.tar.gz</a>
     <li>Isabelle 2005: <a href="../release/afp-Jinja-2006-08-08.tar.gz">afp-Jinja-2006-08-08.tar.gz</a>
     </ul>
     </td></tr>
@@ -103,6 +104,6 @@ in the theorem prover Isabelle/HOL.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-06-11 14:23:03 $, $Revision: 1.9 $</div>
+<div align="right" class="date">$Date: 2008-06-12 06:57:29 $, $Revision: 1.10 $</div>
 </body>
 </html>

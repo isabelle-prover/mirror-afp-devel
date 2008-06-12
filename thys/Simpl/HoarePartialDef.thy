@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartialDef.thy,v 1.7 2008-06-11 14:23:00 lsf37 Exp $
+(*  ID:          $Id: HoarePartialDef.thy,v 1.8 2008-06-12 06:57:26 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -225,11 +225,6 @@ proof (rule validI)
   qed
 qed
 
-lemma cvalidD: 
- "\<lbrakk>\<Gamma>,\<Theta>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A;
-   \<forall>(P,p,Q,A)\<in>\<Theta>. \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P (Call p) Q,A;\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow> t;s \<in> P;t \<notin> Fault ` F\<rbrakk> 
-  \<Longrightarrow> t \<in> Normal ` Q \<union> Abrupt ` A"
-  by (auto simp add: cvalid_def valid_def)
 
 subsection {* The Hoare Rules: @{text "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c Q,A"} *}
 
@@ -239,18 +234,6 @@ lemma mono_WeakenContext: "A \<subseteq> B \<Longrightarrow>
 apply blast
 done
 
-(*
-lemma mono_CallRec:
- "A \<subseteq> B \<Longrightarrow>
-   (\<lambda>(P, p, Q, Aa). p \<in> dom \<Gamma> \<and> (\<Gamma>, \<Theta>, F, P, the (\<Gamma> p), Q, Aa) \<in> A) xa \<longrightarrow>
-   (\<lambda>(P, p, Q, A). p \<in> dom \<Gamma> \<and> (\<Gamma>, \<Theta>, F, P, the (\<Gamma> p), Q, A) \<in> B) xa"
-by blast
-*)
-lemma mono_CallRec: "A \<le> B \<Longrightarrow>
-     (\<lambda>(P, p, Q, Aa). p \<in> dom \<Gamma> \<and>   A (\<Theta> \<union> Specs) F P (the (\<Gamma> p)) Q Aa) xa \<longrightarrow>
-     (\<lambda>(P, p, Q, A). p \<in> dom \<Gamma> \<and> B (\<Theta> \<union> Specs) F P (the (\<Gamma> p)) Q A) xa"
-by (auto simp add: le_bool_def le_fun_def)
-  
 
 inductive "hoarep"::"[('s,'p,'f) body,('s,'p) quadruple set,'f set,
     's assn,('s,'p,'f) com, 's assn,'s assn] => bool"
@@ -309,7 +292,6 @@ where
 | ExFalso: "\<lbrakk>\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A; \<not> \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P c Q,A"
   -- {* This is a hack rule that enables us to derive completeness for
         an arbitrary context @{text "\<Theta>"}, from completeness for an empty context.*}  
-monos mono_CallRec
 
 
 
@@ -400,10 +382,10 @@ next
   with Conseq show ?case by - (rule hoarep.Conseq)
 next
   case (ExFalso \<Theta> F P c Q A \<Theta>')
-  have valid_ctxt: "\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A" "\<Theta> \<subseteq> \<Theta>'".
+  have valid_ctxt: "\<forall>n. \<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A" "\<Theta> \<subseteq> \<Theta>'" by fact+
   hence "\<forall>n. \<Gamma>,\<Theta>'\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A"
     by (simp add: cnvalid_def) blast
-  moreover have invalid: "\<not> \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A" .
+  moreover have invalid: "\<not> \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A"  by fact
   ultimately show ?case
     by (rule hoarep.ExFalso)
 qed (blast intro: hoarep.intros)+

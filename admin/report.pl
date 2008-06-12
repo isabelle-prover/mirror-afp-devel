@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# $Id: report.pl,v 1.5 2008-06-11 14:22:50 lsf37 Exp $
+# $Id: report.pl,v 1.6 2008-06-12 06:57:14 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Parses log file and generates report of entry status.
@@ -66,6 +66,9 @@ foreach $t (keys old_tests) {
   }
   elsif ($old_fail{$t} != $fail{$t}) {
     print "[$t] changed from $old_status to $new_status.\n";
+  }
+  elsif ($fail{$t}) {
+    print "[$t] is still on $new_status.\n";
   }
 }
 

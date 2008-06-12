@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoareTotalDef.thy,v 1.6 2008-06-11 14:23:00 lsf37 Exp $
+(*  ID:          $Id: HoareTotalDef.thy,v 1.7 2008-06-12 06:57:26 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -89,15 +89,6 @@ lemma validt_augment_Faults:
   using valid F'
   by (auto intro: valid_augment_Faults simp add: validt_def)
 
-lemma CallRec_mono: "A \<le> B \<Longrightarrow>
-        (\<lambda>(P, p, Q, Aa).
-            p \<in> dom \<Gamma> \<and> (\<forall>\<tau>. A (\<Theta> \<union> Specs_wf p \<tau>) F ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q  Aa))
-         xa \<longrightarrow>
-        (\<lambda>(P, p, Q, A).
-            p \<in> dom \<Gamma> \<and> (\<forall>\<tau>. B (\<Theta> \<union> Specs_wf p \<tau>) F ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q A))
-         xa"
-  by (auto simp add: le_bool_def le_fun_def)
-
 subsection {* The Hoare Rules: @{text "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" } *}
 
 inductive "hoaret"::"[('s,'p,'f) body,('s,'p) quadruple set,'f set,
@@ -163,7 +154,6 @@ where
 | ExFalso: "\<lbrakk>\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A; \<not> \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A\<rbrakk> \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A"
   -- {* This is a hack rule that enables us to derive completeness for
         an arbitrary context @{text "\<Theta>"}, from completeness for an empty context.*}
-monos CallRec_mono
 
   
 text {* Does not work, because of rule ExFalso, the context @{text \<Theta>} is to blame.
@@ -276,7 +266,7 @@ lemma hoaret_augment_context:
 using deriv
 proof (induct)
   case (CallRec P p Q A Specs r Specs_wf \<Theta> F \<Theta>')
-  have aug: "\<Theta> \<subseteq> \<Theta>'".
+  have aug: "\<Theta> \<subseteq> \<Theta>'" by fact
   then
   have h: "\<And>\<tau> p. \<Theta> \<union> Specs_wf p \<tau>
        \<subseteq> \<Theta>' \<union> Specs_wf p \<tau>"
@@ -285,7 +275,7 @@ proof (induct)
      (\<forall>\<tau>. \<Gamma>,\<Theta> \<union> Specs_wf p \<tau>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A \<and>
            (\<forall>x. \<Theta> \<union> Specs_wf p \<tau>
                  \<subseteq> x \<longrightarrow>
-                 \<Gamma>,x\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A))".
+                 \<Gamma>,x\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A))" by fact
   hence "\<forall>(P,p,Q,A)\<in>Specs. p \<in> dom \<Gamma> \<and> 
          (\<forall>\<tau>. \<Gamma>,\<Theta>'\<union> Specs_wf p \<tau> \<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<tau>} \<inter> P) (the (\<Gamma> p)) Q,A)"
     apply (clarify)
@@ -309,7 +299,7 @@ next
   with Conseq show ?case by - (rule hoaret.Conseq)
 next
   case (ExFalso \<Theta> F P  c Q A \<Theta>')
-  have "\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<not> \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<Theta> \<subseteq> \<Theta>'" .
+  have "\<Gamma>,\<Theta>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<not> \<Gamma>\<Turnstile>\<^sub>t\<^bsub>/F\<^esub> P c Q,A" "\<Theta> \<subseteq> \<Theta>'"  by fact+
   then show ?case
     by (fastsimp intro: hoaret.ExFalso simp add: cvalidt_def)
 qed (blast intro: hoaret.intros)+

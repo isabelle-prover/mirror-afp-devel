@@ -2,25 +2,23 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Preservation of deadlock} *}
-
-theory Deadlocked imports TypeSafeThreaded begin
+theory Deadlocked imports ProgressThreaded begin
 
 lemma red_Lock_hext: 
   "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l); hext (hp s) h \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e, (h, lcl s)\<rangle> -ta\<rightarrow> \<langle>e', (h, lcl s')\<rangle>"
-proof(induct rule: red.induct)
-  prefer 56
-  case (SynchronizedWait e s ta e' s' a was)
-  from `Lock \<in> set (\<lbrace>ta\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a\<rbrace>\<rbrace>\<^bsub>l\<^esub> l)`
-  have "Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l)"
-    by(cases ta, auto split: split_if_asm)
-  with SynchronizedWait show ?case by (auto intro: red.SynchronizedWait)
-qed(fastsimp intro: red.intros dest: hext_objarrD)+
+apply(induct rule: red.induct)
+apply(fastsimp intro: red.intros dest: hext_objarrD)+
+done
+
+lemma red_Join_hext:
+  "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>; hext (hp s) h \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e, (h, lcl s)\<rangle> -ta\<rightarrow> \<langle>e', (h, lcl s')\<rangle>"
+apply(induct rule: red.induct)
+apply(fastsimp intro: red.intros dest: hext_objD hext_arrD)+
+done
 
 lemma red_Lock_wth:
   "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l); P,E,h \<turnstile> e : T \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e, (h, lcl s)\<rangle> -ta\<rightarrow> \<langle>e', (h, lcl s')\<rangle>"
 proof(induct arbitrary: E T rule: red.induct)
-  prefer 36
   case (CallParams e s ta e' s' v M vs es E T)
   from `P,E,h \<turnstile> Val v\<bullet>M(map Val vs @ e # es) : T`
   have "\<exists>T'. P,E,h \<turnstile> e : T'"
@@ -28,29 +26,53 @@ proof(induct arbitrary: E T rule: red.induct)
   with CallParams show ?case
     by(blast intro: red.CallParams)
 next
-  prefer 39
   case (RedWait s a arrobj E T)
   from `P,E,h \<turnstile> addr a\<bullet>wait([]) : T`
   have "\<exists>arrobj. h a = \<lfloor>arrobj\<rfloor>"
     by(auto elim: WTrt_elim_cases)
   thus ?case by(fastsimp intro: red.RedWait)
 next
-  prefer 40
   case (RedNotify s a arrobj E T)
   from `P,E,h \<turnstile> addr a\<bullet>notify([]) : T`
   have "\<exists>arrobj. h a = \<lfloor>arrobj\<rfloor>"
     by(auto elim: WTrt_elim_cases)
   thus ?case by(fastsimp intro: red.RedNotify)
 next
-  prefer 41
   case (RedNotifyAll s a arrobj E T)
   from `P,E,h \<turnstile> addr a\<bullet>notifyAll([]) : T`
   have "\<exists>arrobj. h a = \<lfloor>arrobj\<rfloor>"
     by(auto elim: WTrt_elim_cases)
   thus ?case by(fastsimp intro: red.RedNotifyAll)
+next
+  case (LockSynchronized s a arrobj e E T)
+  from `P,E,h \<turnstile> sync(addr a) e : T`
+  have "\<exists>arrobj. h a = \<lfloor>arrobj\<rfloor>"
+    by(auto elim: WTrt_elim_cases)
+  thus ?case by(fastsimp intro: red.LockSynchronized)
 qed(fastsimp intro: red.intros split: split_if_asm)+
 
-
+lemma red_Join_wth:
+  "\<lbrakk>P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>; P,E,h \<turnstile> e : T; hext h (hp s) \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>e, (h, lcl s)\<rangle> -ta\<rightarrow> \<langle>e', (h, lcl s')\<rangle>"
+proof(induct arbitrary: E T rule: red.induct)
+  case (CallParams e s ta e' s' v M vs es E T)
+  from `P,E,h \<turnstile> Val v\<bullet>M(map Val vs @ e # es) : T`
+  have "\<exists>T'. P,E,h \<turnstile> e : T'"
+    by(auto elim: WTrt_elim_cases simp add: list_all2_append1 list_all2_Cons1)
+  with CallParams show ?case
+    by(blast intro: red.CallParams)
+next
+  case (RedJoin s a C fs E T)
+  from `P,E,h \<turnstile> addr a\<bullet>join([]) : T`
+  have "\<exists>C' fs'. h a = \<lfloor>Obj C' fs'\<rfloor>"
+    by(auto elim: WTrt_elim_cases split: heapobj.split_asm)
+  then obtain C' fs' where "h a = \<lfloor>Obj C' fs'\<rfloor>" by blast
+  moreover with `hext h (hp s)` `hp s a = \<lfloor>Obj C fs\<rfloor>`
+  have "C' = C" by(auto dest: hext_objD)
+  moreover note `P \<turnstile> C \<preceq>\<^sup>* Thread`
+  ultimately show ?case
+    by -(rule red.RedJoin, auto)
+qed(fastsimp intro: red.intros split: split_if_asm)+
 
 lemma red_wt_hconf_hext:
   assumes red: "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
@@ -58,7 +80,7 @@ lemma red_wt_hconf_hext:
   and hconf: "P \<turnstile> H \<surd>"
   and wf: "wf_J_prog P"
   and hext: "hext H (hp s)"
-  shows "\<exists>ta' e' s'. P \<turnstile> \<langle>e, (H, lcl s)\<rangle> -ta'\<rightarrow> \<langle>e', s'\<rangle> \<and> locks_a ta' = locks_a ta \<and> wset_a ta' = wset_a ta"
+  shows "\<exists>ta' e' s'. P \<turnstile> \<langle>e, (H, lcl s)\<rangle> -ta'\<rightarrow> \<langle>e', s'\<rangle> \<and> locks_a ta' = locks_a ta \<and> wset_a ta' = wset_a ta \<and> cond_a ta' = cond_a ta"
 using red wt hext
 proof(induct arbitrary: E T rule: red.induct)
   case (RedNew h a C FDTs h' l E T)
@@ -82,7 +104,7 @@ next
     with `P,E,H \<turnstile> new C : T` wf show ?thesis
       by(fastsimp del:exE intro!:RedNew simp add:new_Addr_def elim!:wf_Fields_Ex[THEN exE])
   qed
-next prefer 2
+next
   case (RedNewArray h a i h' T l E T')
   show ?case
   proof(cases "new_Addr H")
@@ -93,7 +115,7 @@ next prefer 2
     with `0 \<le> i` show ?thesis
       by(fastsimp intro: red.RedNewArray)
   qed
-next prefer 3
+next
   case (RedNewArrayFail h i T l E T')
   show ?case
   proof(cases "new_Addr H")
@@ -104,7 +126,7 @@ next prefer 3
     with `0 \<le> i` show ?thesis
       by(fastsimp intro: red.RedNewArray)
   qed
-next prefer 4
+next
   case (RedCast s v U T E T')
   from `P,E,H \<turnstile> Cast T (Val v) : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -121,7 +143,7 @@ next prefer 4
 	by(fastsimp intro: red.RedCastFail)
     qed
   qed
-next prefer 4
+next
   case (RedCastFail s v U T E T')
   from `P,E,H \<turnstile> Cast T (Val v) : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -138,7 +160,7 @@ next prefer 4
 	by(fastsimp intro: red.RedCastFail)
     qed
   qed
-next prefer 13
+next
   case (RedAAccBounds s a T si el i E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -153,7 +175,7 @@ next prefer 13
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 13
+next
   case (RedAAcc s a T si el i E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -168,7 +190,7 @@ next prefer 13
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 17
+next
   case (RedAAssBounds s a T si el i e E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val e : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -185,7 +207,7 @@ next prefer 17
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 17
+next
   case (RedAAssStore s a T si el i w U E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -205,7 +227,7 @@ next prefer 17
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 17
+next
   case (RedAAss h a T s el i w U h' l E T')
   from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -225,7 +247,7 @@ next prefer 17
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 18
+next
   case (RedFAcc s a C fs F D v E T)
   from `P,E,H \<turnstile> addr a\<bullet>F{D} : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -243,7 +265,7 @@ next prefer 18
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 21
+next
   case (RedFAss h a C fs F D v l E T)
   from `P,E,H \<turnstile> addr a\<bullet>F{D} := Val v : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -262,11 +284,11 @@ next prefer 21
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
   qed
-next prefer 23
+next
   case (CallParams e s ta e' s' v M vs es E T)
   thus ?case
     by(fastsimp intro: red.CallParams simp add: list_all2_Cons1 list_all2_append1)
-next prefer 23
+next
   case (RedCall s a C fs M Ts T pns body D vs E T')
   from `P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T'` show ?case
   proof(rule WTrt_elim_cases)
@@ -286,7 +308,6 @@ next prefer 23
       by(simp add: wf_mdecl_def)
     moreover from `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` fs' have "C = C'"
       by(auto dest: hext_objD)
-    moreover note `\<not> threadstart P C M`
     ultimately show ?thesis using sees
       by(fastsimp intro: red.RedCall)
   next
@@ -303,7 +324,7 @@ next prefer 23
     with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "C = C'"
       by(auto dest: hext_objD)
     with sub start have False using `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
-      by(auto simp: Method_def intro: Thread_no_sees_method_start[OF wf])
+      by(auto dest: Thread_not_sees_method_start[OF wf])
     thus ?thesis ..
   next
     fix T'
@@ -335,9 +356,20 @@ next prefer 23
     ultimately have False using wf
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
+  next
+    fix C'
+    assume sub: "P \<turnstile> C' \<preceq>\<^sup>* Thread"
+      and start: "M = join"
+      and wt: "P,E,H \<turnstile> addr a : Class C'"
+    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(clarsimp, case_tac aa, auto)
+    with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "C = C'"
+      by(auto dest: hext_objD)
+    with sub start have False using `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
+      by(auto dest: Thread_not_sees_method_join[OF wf])
+    thus ?thesis ..
   qed
-next prefer 23
-  case (RedNewThread s a C fs t E T)
+next
+  case (RedNewThread s a C fs E T)
   from `P,E,H \<turnstile> addr a\<bullet>start([]) : T` show ?case
   proof(rule WTrt_elim_cases)
     fix C' pns' body' D'
@@ -360,8 +392,8 @@ next prefer 23
     from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(clarsimp, case_tac aa, auto)
     with sub show ?thesis
       by(fastsimp intro: red.RedNewThread)
-  qed(simp_all add: start_def wait_def notify_def notifyAll_def)
-next prefer 23
+  qed
+next
   case (RedNewThreadFail s a C fs E T)
   from `P,E,H \<turnstile> addr a\<bullet>start([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -385,8 +417,8 @@ next prefer 23
     from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(clarsimp, case_tac aa, auto)
     with sub show ?thesis
       by(fastsimp intro: red.RedNewThreadFail)
-  qed(simp_all add: start_def wait_def notify_def notifyAll_def)
-next prefer 23
+  qed
+next
   case (RedWait s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>wait([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -397,18 +429,8 @@ next prefer 23
     hence False using wf
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
-  next
-    assume "P,E,H \<turnstile> addr a : NT"
-    hence False by(clarsimp, case_tac aa, auto)
-    thus ?thesis ..
-  next prefer 2
-    fix T
-    assume "P,E,H \<turnstile> addr a : T"
-    then obtain arrobj where "H a = \<lfloor>arrobj\<rfloor>"
-      by(auto)
-    thus ?thesis by(fastsimp intro: red.RedWait)
-  qed(simp_all add: start_def wait_def notify_def notifyAll_def)
-next prefer 23
+  qed(fastsimp split: heapobj.split_asm intro: red.RedWait)+
+next
   case (RedWaitFail s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>wait([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -419,18 +441,8 @@ next prefer 23
     hence False using wf
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
-  next
-    assume "P,E,H \<turnstile> addr a : NT"
-    hence False by(clarsimp, case_tac aa, auto)
-    thus ?thesis ..
-  next prefer 2
-    fix T
-    assume "P,E,H \<turnstile> addr a : T"
-    then obtain arrobj where "H a = \<lfloor>arrobj\<rfloor>"
-      by(auto)
-    thus ?thesis by(fastsimp intro: red.RedWaitFail)
-  qed(simp_all add: start_def wait_def notify_def notifyAll_def)
-next prefer 23
+  qed(fastsimp split: heapobj.split_asm intro: red.RedWaitFail)+
+next
   case (RedNotify s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>notify([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -441,18 +453,8 @@ next prefer 23
     hence False using wf
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
-  next
-    assume "P,E,H \<turnstile> addr a : NT"
-    hence False by(clarsimp, case_tac aa, auto)
-    thus ?thesis ..
-  next prefer 3
-    fix T
-    assume "P,E,H \<turnstile> addr a : T"
-    then obtain arrobj where "H a = \<lfloor>arrobj\<rfloor>"
-      by(auto)
-    thus ?thesis by(fastsimp intro: red.RedNotify)
-  qed(simp_all add: start_def wait_def notify_def notifyAll_def)
-next prefer 23
+  qed(fastsimp split: heapobj.split_asm intro: red.RedNotify)+
+next
   case (RedNotifyFail s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>notify([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -463,18 +465,8 @@ next prefer 23
     hence False using wf
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
-  next
-    assume "P,E,H \<turnstile> addr a : NT"
-    hence False by(clarsimp, case_tac aa, auto)
-    thus ?thesis ..
-  next prefer 3
-    fix T
-    assume "P,E,H \<turnstile> addr a : T"
-    then obtain arrobj where "H a = \<lfloor>arrobj\<rfloor>"
-      by(auto)
-    thus ?thesis by(fastsimp intro: red.RedNotifyFail)
-  qed(simp_all add: start_def wait_def notify_def notifyAll_def)
-next prefer 23
+  qed(fastsimp split: heapobj.split_asm intro: red.RedNotifyFail)+
+next
   case (RedNotifyAll s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>notifyAll([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -485,18 +477,8 @@ next prefer 23
     hence False using wf
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
-  next
-    assume "P,E,H \<turnstile> addr a : NT"
-    hence False by(clarsimp, case_tac aa, auto)
-    thus ?thesis ..
-  next prefer 4
-    fix T
-    assume "P,E,H \<turnstile> addr a : T"
-    then obtain arrobj where "H a = \<lfloor>arrobj\<rfloor>"
-      by(auto)
-    thus ?thesis by(fastsimp intro: red.RedNotifyAll)
-  qed(simp_all add: start_def wait_def notify_def notifyAll_def)
-next prefer 23
+  qed(fastsimp split: heapobj.split_asm intro: red.RedNotifyAll)+
+next
   case (RedNotifyAllFail s a arrobj E T)
   from `P,E,H \<turnstile> addr a\<bullet>notifyAll([]) : T` show ?case
   proof(rule WTrt_elim_cases)
@@ -507,79 +489,80 @@ next prefer 23
     hence False using wf
       by(auto dest: class_wf simp add: wf_cdecl_def)
     thus ?thesis ..
+  qed(fastsimp split: heapobj.split_asm intro: red.RedNotifyAllFail)+
+next
+  case (RedJoin s a C fs E T)
+  from `P,E,H \<turnstile> addr a\<bullet>join([]) : T` show ?case
+  proof(rule WTrt_elim_cases)
+    fix C' pns' body' D'
+    assume sees: "P \<turnstile> C' sees join: []\<rightarrow>T = (pns', body') in D'"
+      and wt: "P,E,H \<turnstile> addr a : Class C'"
+    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(clarsimp, case_tac aa, auto)
+    with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "C = C'"
+      by(auto dest: hext_objD)
+    with `P \<turnstile> C \<preceq>\<^sup>* Thread` fs' sees wf have False
+      by(auto dest: Thread_not_sees_method_join[OF wf])
+    thus ?thesis ..
   next
     assume "P,E,H \<turnstile> addr a : NT"
     hence False by(clarsimp, case_tac aa, auto)
     thus ?thesis ..
-  next prefer 4
-    fix T
-    assume "P,E,H \<turnstile> addr a : T"
-    then obtain arrobj where "H a = \<lfloor>arrobj\<rfloor>"
-      by(auto)
-    thus ?thesis by(fastsimp intro: red.RedNotifyAllFail)
-  qed(simp_all add: start_def wait_def notify_def notifyAll_def)
-next prefer 24
+  next
+    fix C'
+    assume wt: "P,E,H \<turnstile> addr a : Class C'"
+      and sub: "P \<turnstile> C' \<preceq>\<^sup>* Thread"
+    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(clarsimp, case_tac aa, auto)
+    with sub show ?thesis
+      by(fastsimp intro: red.RedJoin)
+  qed
+next
   case (BlockRedNone e h l V ta e' h' l' T E T')
   from `P,E,H \<turnstile> {V:T; e} : T'`
-    `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp (h, l(V := None))) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl (h, l(V := None)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>`
+    `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp (h, l(V := None))) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl (h, l(V := None)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>`
     `hext H (hp (h, l))`
   obtain ta' e' H' l'
     where "P \<turnstile> \<langle>e,(H, l(V := None))\<rangle> -ta'\<rightarrow> \<langle>e', (H', l')\<rangle>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" by fastsimp
+    and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" by fastsimp
   with `\<not> assigned V e` show ?case
-    apply(cases "l' V")
-    by(fastsimp intro: red.BlockRedNone red.BlockRedSome)+
-next prefer 24
+    by (cases "l' V") (fastsimp intro: red.BlockRedNone red.BlockRedSome)+
+next
   case (BlockRedSome e h l V ta e' h' l' v T E T')
   from `P,E,H \<turnstile> {V:T; e} : T'`
-    `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp (h, l(V := None))) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl (h, l(V := None)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>`
+    `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp (h, l(V := None))) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl (h, l(V := None)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>`
     `hext H (hp (h, l))`
   obtain ta' e' H' l'
     where "P \<turnstile> \<langle>e,(H, l(V := None))\<rangle> -ta'\<rightarrow> \<langle>e', (H', l')\<rangle>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" by fastsimp
+    and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" by fastsimp
   with `\<not> assigned V e` show ?case
-    apply(cases "l' V")
-    by(fastsimp intro: red.BlockRedNone red.BlockRedSome)+
-next prefer 24
+    by (cases "l' V") (fastsimp intro: red.BlockRedNone red.BlockRedSome)+
+next
   case (InitBlockRed e h l V v ta e' h' l' v' T E T')
   from `P,E,H \<turnstile> {V:T; V:=Val v;; e} : T'`
-    `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp (h, l(V \<mapsto> v))) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl (h, l(V \<mapsto> v)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>`
+    `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp (h, l(V \<mapsto> v))) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl (h, l(V \<mapsto> v)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>`
     `hext H (hp (h, l))`
   obtain ta' e' H' l'
     where "P \<turnstile> \<langle>e,(H, l(V \<mapsto> v))\<rangle> -ta'\<rightarrow> \<langle>e', (H', l')\<rangle>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" by fastsimp
+    and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" by fastsimp
   moreover hence "\<exists>v. l' V = \<lfloor>v\<rfloor>"
     by(auto dest: red_lcl_incr)
   ultimately show ?case
     by(fastsimp intro: red.InitBlockRed)
-next prefer 29
-  case (SynchronizedRed2 e s ta e' s' a E T)
-  from `P,E,H \<turnstile> sync(locked(a)) e : T`
-    `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp s) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl s)\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>`
-    `hext H (hp s)`
-  obtain ta' e' s'
-    where "P \<turnstile> \<langle>e,(H, lcl s)\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" by fastsimp
-  with `\<forall>was. \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<noteq> Suspend a # was` show ?case
-    by(fastsimp intro: red.SynchronizedRed2)
-next prefer 29
-  case (SynchronizedWait e s ta e' s' a was E T)
-  from `P,E,H \<turnstile> sync(locked(a)) e : T`
-    `\<And>E T. \<lbrakk> P,E,H \<turnstile> e : T; hext H (hp s) \<rbrakk> \<Longrightarrow> \<exists>ta' e' s'. P \<turnstile> \<langle>e,(H, lcl s)\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>`
-    `hext H (hp s)`
-  obtain ta' e' s'
-    where "P \<turnstile> \<langle>e,(H, lcl s)\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-    and "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" by fastsimp
-  with `\<lbrace>ta\<rbrace>\<^bsub>w\<^esub> = Suspend a # was` show ?case
-    apply(cases ta, cases ta')
-    apply(drule red.SynchronizedWait)
-    by(fastsimp)+
-next prefer 40
+next
+  case (LockSynchronized s a arrobj e E T)
+  from `P,E,H \<turnstile> sync(addr a) e : T` show ?case
+  proof(rule WTrt_elim_cases)
+    fix T
+    assume "P,E,H \<turnstile> addr a : T" "is_refT T" "T \<noteq> NT"
+    then obtain arrobj where "H a = \<lfloor>arrobj\<rfloor>"
+      by(auto)
+    thus ?thesis by(fastsimp intro: red.LockSynchronized)
+  next
+    fix T
+    assume "P,E,H \<turnstile> addr a : NT"
+    hence False by(clarsimp split: heapobj.split_asm)
+    thus ?thesis ..
+  qed
+next
   case (RedTryCatch s a D fs C V e2 E T)
   from `P,E,H \<turnstile> try Throw a catch(C V) e2 : T`
   show ?case
@@ -597,7 +580,7 @@ next prefer 40
 	by(fastsimp intro: red.RedTryCatch)
     qed
   qed
-next prefer 40
+next
   case (RedTryFail s a D fs C V e2 E T)
   from `P,E,H \<turnstile> try Throw a catch(C V) e2 : T`
   show ?case
@@ -621,154 +604,102 @@ next prefer 40
   qed
 qed(fastsimp intro: red.intros)+
   
-lemma must_lock_preserved:
+lemma must_sync_preserved:
   assumes ml: "P \<turnstile> \<langle>e, (h, x)\<rangle> \<wrong>"
   and wf: "wf_J_prog P"
   and wt: "P,E,h \<turnstile> e : T"
   and hext: "hext h h'"
   and hconf: "P \<turnstile> h \<surd>"
   shows "P \<turnstile> \<langle>e, (h', x)\<rangle> \<wrong>"
-proof(rule multithreaded.must_lockI)
+proof(rule multithreaded.must_syncI)
   fix ta X' h''
-  assume "(((e, snd (h', x)), fst (h', x)), ta, X', h'') \<in> mred P"
+  assume "mred P ((e, snd (h', x)), fst (h', x)) ta (X', h'')"
   then obtain e' x'
     where e'x': "X' = (e', x')"
     and red: "P \<turnstile> \<langle>e, (h', x)\<rangle> -ta\<rightarrow> \<langle>e', (h'', x')\<rangle>"
     by(auto)
   from hext red wt wf hconf 
-  have "\<exists>ta' e' s'. P \<turnstile> \<langle>e, (h, x)\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
+  have "\<exists>ta' e' s'. P \<turnstile> \<langle>e, (h, x)\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
     by - (drule red_wt_hconf_hext, auto)
   then obtain ta' e' s'
     where red: "P \<turnstile> \<langle>e, (h, x)\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle>"
     and ta'l: "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-    and ta'w: "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" by blast
-  from ml red have "\<exists>l. Lock \<in> set (\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> l)"
-    by(cases s', auto dest!: multithreaded.must_lockD)
-  with ta'l show "\<exists>l. Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l)" by simp
-qed
-
-lemma can_lock_preserved:
-  assumes cl: "P \<turnstile> \<langle>e, (h, x)\<rangle> L \<wrong>"
-  and Lnempty: "l \<in> L"
-  and hext: "hext h h'"
-  shows "\<exists>L. P \<turnstile> \<langle>e, (h', x)\<rangle> L \<wrong>"
-using cl
-proof(rule multithreaded.can_lockE)
-  fix ta ex m'
-  assume red: "(((e, snd (h, x)), fst (h, x)), ta, ex, m') \<in> mred P"
-    and L: "L = collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
-  then obtain e' x' where e'x': "ex = (e', x')" by (cases ex, auto)
-  with red have "P \<turnstile> \<langle>e, (h, x)\<rangle> -ta\<rightarrow> \<langle>e', (m', x')\<rangle>" by simp
-  with Lnempty hext L have "P \<turnstile> \<langle>e, (h', x)\<rangle> -ta\<rightarrow> \<langle>e', (h', x')\<rangle>"
-    apply(cases ta)
-    apply(drule red_Lock_hext)
-    by(auto elim: collect_locksE)
-  with L Lnempty show ?thesis
-    by(fastsimp intro: multithreaded.can_lockI)
-qed
-
-lemma can_lock_devreserp:
-  "\<lbrakk> P \<turnstile> \<langle>e, (h', l)\<rangle> L \<wrong>; P,E,h \<turnstile> e : T; L \<noteq> {} \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e, (h, l)\<rangle> L \<wrong>"
-apply(erule multithreaded.can_lockE)
-apply(case_tac x', auto elim!: collect_locksE)
-apply(drule red_Lock_wth)
-apply(auto intro: multithreaded.can_lockI)
-done
-
-lemma red_deadlocked_subset:
-  assumes wf: "wf_J_prog P"
-  and wt: "wt_ts_ok P ts m"
-  and hconf: "P \<turnstile> m \<surd>"
-  and red: "P \<turnstile> \<langle>ls, (ts, m), ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws'\<rangle>"
-  shows "progress.deadlocked (mred P) final_expr (ls, (ts, m), ws) \<subseteq> progress.deadlocked (mred P) final_expr (ls', (ts', m'), ws')"
-proof -
-  from red have hext: "hext m m'"
-    by(rule redT_hext_incr)
-  from red
-  show ?thesis
-  proof(rule red_mthr_progress.redT_deadlocked_subset)
-    fix t x
-    assume "thr (ls, (ts, m), ws) t = \<lfloor>x\<rfloor>"
-      and "multithreaded.must_lock (mred P) x (shr (ls, (ts, m), ws))"
-    moreover
-    obtain e l where el: "x = (e, l)" by (cases x, auto)
-    ultimately have tst: "ts t = \<lfloor>x\<rfloor>" 
-      and ml: "P \<turnstile> \<langle>e, (m, l)\<rangle> \<wrong>" by auto
-    from tst wt el obtain E T where wte: "P,E,m \<turnstile> e : T"
-      by(auto dest!: ts_okD)
-    with ml wf hconf hext have "P \<turnstile> \<langle>e, (m', l)\<rangle> \<wrong>"
-      by -(rule must_lock_preserved)
-    with el show "multithreaded.must_lock (mred P) x (shr (ls', (ts', m'), ws'))"
-      by(simp)
+    and ta'w: "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
+    and ta'c: "\<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>" by blast
+  from ml red have "(\<exists>l. Lock \<in> set (\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> l)) \<or> (\<exists>t. Join t \<in> set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>)"
+    by(cases s') (auto dest!: multithreaded.must_syncD)
+  with ta'l ta'c show "(\<exists>l. Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l)) \<or> (\<exists>t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>)" by simp
+next
+  from ml obtain ta ex m' where red: "mred P ((e, snd (h, x)), fst (h, x)) ta (ex, m')"
+    by(auto elim: multithreaded.must_syncE)
+  obtain e' x' where e'x': "ex = (e', x')" by (cases ex) auto
+  with red have red': "P \<turnstile> \<langle>e, (h, x)\<rangle> -ta\<rightarrow> \<langle>e', (m', x')\<rangle>" by simp
+  from red ml have "(\<exists>l. Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l)) \<or> (\<exists>t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>)"
+    by -(rule multithreaded.must_syncD)
+  thus "\<exists>ta x' m'. mred P ((e, snd (h', x)), fst (h', x)) ta (x', m')"
+  proof(rule disjE)
+    assume "\<exists>l. Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> l)"
+    with red' hext have "P \<turnstile> \<langle>e, (h', x)\<rangle> -ta\<rightarrow> \<langle>e', (h', x')\<rangle>"
+      by(auto dest: red_Lock_hext)
+    thus ?thesis by(fastsimp)
   next
-    fix t x L
-    assume "multithreaded.can_lock (mred P) x (shr (ls, (ts, m), ws)) L"
-      and L: "L \<noteq> {}"
-    moreover
-    obtain e l where el: "x = (e, l)" by (cases x, auto)
-    ultimately have cl: "P \<turnstile> \<langle>e, (m, l)\<rangle> L \<wrong>" by auto
-    moreover from L obtain l' where "l' \<in> L" by auto
-    ultimately have "\<exists>L. P \<turnstile> \<langle>e, (m', l)\<rangle> L \<wrong>" using hext
-      by(rule can_lock_preserved)
-    with el show "\<exists>L. multithreaded.can_lock (mred P) x (shr (ls', (ts', m'), ws')) L"
-      by(simp)
-  next
-    fix t x L
-    assume "thr (ls, (ts, m), ws) t = \<lfloor>x\<rfloor>"
-      and "multithreaded.can_lock (mred P) x (shr (ls', (ts', m'), ws')) L"
-      and L: "L \<noteq> {}"
-    moreover
-    obtain e l where el: "x = (e, l)" by (cases x, auto)
-    ultimately have tst: "ts t = \<lfloor>x\<rfloor>" 
-      and cl: "P \<turnstile> \<langle>e, (m', l)\<rangle> L \<wrong>" by auto
-    from tst wt el obtain E T where wte: "P,E,m \<turnstile> e : T"
-      by(auto dest!: ts_okD)
-    with L cl have "P \<turnstile> \<langle>e, (m, l)\<rangle> L \<wrong>"
-      by -(rule can_lock_devreserp)
-    with el show "\<exists>L'\<subseteq>L. multithreaded.can_lock (mred P) x (shr (ls, (ts, m), ws)) L'"
-      by auto
+    assume "\<exists>t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
+    with red' hext have "P \<turnstile> \<langle>e, (h', x)\<rangle> -ta\<rightarrow> \<langle>e', (h', x')\<rangle>"
+      by(auto dest: red_Join_hext)
+    thus ?thesis by(fastsimp)
   qed
 qed
 
-declare [[unify_search_bound = 40, unify_trace_bound = 40]]
+lemma can_lock_devreserp:
+  "\<lbrakk> P \<turnstile> \<langle>e, (h', l)\<rangle> L \<wrong>; P,E,h \<turnstile> e : T; L \<noteq> {}; hext h h' \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e, (h, l)\<rangle> L \<wrong>"
+apply(erule multithreaded.can_syncE)
+apply(case_tac x', auto elim!: collect_locksE)
+ apply(drule red_Lock_wth)
+ apply(auto intro: multithreaded.can_syncI)
+apply(drule red_Join_wth)
+apply(auto intro: multithreaded.can_syncI)
+done
 
-lemma Red_deadlocked_subset:
+
+lemma preserve_deadlocked:
   assumes wf: "wf_J_prog P"
-  and wt: "sconf_subject_ts_ok P I ts m"
-  and da: "def_ass_ts_ok ts m"
-  and red: "P \<turnstile> \<langle>ls, (ts, m), ws\<rangle> -\<triangleright>ttas\<rightarrow>* \<langle>ls', (ts', m'), ws'\<rangle>"
-  shows "progress.deadlocked (mred P) final_expr (ls, (ts, m), ws) \<subseteq> progress.deadlocked (mred P) final_expr (ls', (ts', m'), ws')"
-using red wt da
-proof(induct rule: multithreaded.RedT_induct4[where r="mred P", consumes 1, case_names refl step])
-  case refl thus ?case by simp
-next
-  case (step ls ts m ws ttas ls' ts' m' ws' t ta ls'' ts'' m'' ws'')
-  note Red = `P \<turnstile> \<langle>ls, (ts, m), ws\<rangle> -\<triangleright>ttas\<rightarrow>* \<langle>ls', (ts', m'), ws'\<rangle>`
-  note red = `P \<turnstile> \<langle>ls', (ts', m'), ws'\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls'', (ts'', m''), ws''\<rangle>`
-  note sc = `sconf_subject_ts_ok P I ts m`
-  note da = `def_ass_ts_ok ts m`
-  with wf Red have da': "def_ass_ts_ok ts' m'"
-    by(rule RedT_preserves_defass)
-  moreover
-  from da Red wf sc
-  have sc': "sconf_subject_ts_ok P (upd_invs I (\<lambda>ET (e, x) m. sconf_subject_ok P ET e m x) (\<down>map (thr_a \<circ> snd) ttas\<down>)) ts' m'"
-    by -(rule RedT_invariant_sconf_subject)
-  hence "wt_ts_ok P ts' m'"
-    by(rule sconf_subject_es_ok_wt_es_ok)
-  moreover
-  from red obtain x' where "ts' t = \<lfloor>x'\<rfloor>"
-    by(fastsimp elim!: multithreaded.redT.cases)
-  with sc' have "P \<turnstile> m' \<surd>"
-    by(auto simp add: sconf_subject_ok_def sconf_def dest: ts_invD)
-  ultimately have "progress.deadlocked (mred P) final_expr (ls', (ts', m'), ws') \<subseteq> progress.deadlocked (mred P) final_expr (ls'', (ts'', m''), ws'')" using red
-    by -(rule red_deadlocked_subset[OF wf])
-  moreover
-  from sc da 
-    `\<lbrakk>sconf_subject_ts_ok P I ts m; def_ass_ts_ok ts m\<rbrakk>
-        \<Longrightarrow> progress.deadlocked (mred P) final_expr (ls, (ts, m), ws) \<subseteq> progress.deadlocked (mred P) final_expr (ls', (ts', m'), ws')`
-  have "progress.deadlocked (mred P) final_expr (ls, (ts, m), ws) \<subseteq> progress.deadlocked (mred P) final_expr (ls', (ts', m'), ws')" by blast
-  ultimately show ?case by blast
-qed
+  and st: "sconf_type_ts_ok P Es (thr S) (shr S)"
+  and da: "def_ass_ts_ok (thr S) (shr S)"
+  shows "preserve_deadlocked final_expr (mred P) S"
+proof -
+  { fix tta s t' ta' s' t x ln
+    assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
+      and red: "P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
+      and tst: "thr s t = \<lfloor>(x, ln)\<rfloor>"
+    obtain e l where x [simp]: "x = (e, l)" by(cases x) auto
+    let ?Es' = "upd_invs Es (\<lambda>ET (e, x) m. sconf_type_ok P ET e m x) (\<down>map (thr_a \<circ> snd) tta\<down>)"
+    from st Red have st': "sconf_type_ts_ok P ?Es' (thr s) (shr s)"
+      by(auto dest: RedT_invariant_sconf_type[OF wf])
+    with tst obtain E T where Est: "?Es' t = \<lfloor>(E, T)\<rfloor>" 
+      and stt: "sconf_type_ok P (E, T) e (shr s) l" by(auto dest!: ts_invD)
+    from stt have hconf: "P \<turnstile> shr s \<surd>"
+      by(simp add: sconf_type_ok_def sconf_def)
+    from stt obtain T' where wte: "P,E,shr s \<turnstile> e : T'"
+      by(auto simp add: sconf_type_ok_def type_ok_def)
+    from red have hext: "hext (shr s) (shr s')"
+      by(cases s, cases s')(auto dest: redT_hext_incr)
 
+    { assume "multithreaded.must_sync (mred P) x (shr s)"
+      hence ml: "P \<turnstile> \<langle>e, (shr s, l)\<rangle> \<wrong>" by auto
+      from this and wf wte hext hconf
+      have "P \<turnstile> \<langle>e, (shr s', l)\<rangle> \<wrong>" by (rule must_sync_preserved)
+      hence "multithreaded.must_sync (mred P) x (shr s')" by simp }
+    note ml = this
+    { fix L
+      assume "multithreaded.can_sync (mred P) x (shr s') L"
+	and L: "L \<noteq> {}"
+      hence cl: "P \<turnstile> \<langle>e, (shr s', l)\<rangle> L \<wrong>" by auto
+      with wte L hext have "P \<turnstile> \<langle>e, (shr s, l)\<rangle> L \<wrong>"
+	by -(rule can_lock_devreserp)
+      hence "\<exists>L'\<subseteq>L. multithreaded.can_sync (mred P) x (shr s) L'"
+	by(auto) }
+    note this ml }
+  thus ?thesis by(unfold_locales)
+qed
 
 end

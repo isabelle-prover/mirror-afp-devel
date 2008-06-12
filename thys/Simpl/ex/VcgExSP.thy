@@ -1,4 +1,4 @@
-(*  ID:          $Id: VcgExSP.thy,v 1.6 2008-06-11 14:23:01 lsf37 Exp $
+(*  ID:          $Id: VcgExSP.thy,v 1.7 2008-06-12 06:57:28 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -528,7 +528,7 @@ the verification condition generator encounters a procedure call it tries to
 of the procedure in the context.  
 *}
 
-lemma (in Fac_impl) Fac_spec:
+lemma (in Fac_impl) Fac_spec1:
   shows "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>{\<sigma>} \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac \<^bsup>\<sigma>\<^esup>N\<rbrace>"
   apply (hoare_rule HoarePartial.ProcRec1)
   apply vcg_step
@@ -541,7 +541,7 @@ lemma (in Fac_impl) Fac_spec:
 
 
 text {* Here some Isar style version of the proof *}
-lemma (in Fac_impl) Fac_spec:
+lemma (in Fac_impl) Fac_spec2:
   
   shows "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>{\<sigma>} \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac \<^bsup>\<sigma>\<^esup>N\<rbrace>"
 proof (hoare_rule HoarePartial.ProcRec1)
@@ -563,7 +563,7 @@ the previous proof we can use the casual term abbreviations of the Isar
 language.
 *}
 
-lemma (in Fac_impl) Fac_spec:
+lemma (in Fac_impl) Fac_spec3:
   shows "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>{\<sigma>} \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac \<^bsup>\<sigma>\<^esup>N\<rbrace>" 
   (is "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>(?Pre \<sigma>) ?Fac (?Post \<sigma>)")
 proof (hoare_rule HoarePartial.ProcRec1)
@@ -588,7 +588,7 @@ case it can be a good idea to introduce a new variable for the augmented
 context.
 *}
 
-lemma (in Fac_impl) Fac_spec:
+lemma (in Fac_impl) Fac_spec4:
   shows "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>{\<sigma>} \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac \<^bsup>\<sigma>\<^esup>N\<rbrace>" 
   (is "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>(?Pre \<sigma>) ?Fac (?Post \<sigma>)")
 proof (hoare_rule HoarePartial.ProcRec1)
@@ -608,10 +608,10 @@ qed
 text {* There are different rules available to prove procedure calls,
 depending on the kind of postcondition and whether or not the
 procedure is recursive or even mutually recursive. 
-See for example @{thm [source] ProcRec1}, 
-@{thm [source] ProcNoRec1}. 
+See for example @{thm [source] HoareTotal.ProcRec1}, 
+@{thm [source] HoareTotal.ProcNoRec1}. 
 They are all derived from the most general rule
-@{thm [source] ProcRec}. 
+@{thm [source] HoareTotal.ProcRec}. 
 All of them have some side-conditions concerning the parameter
 passing protocol and its relation to the pre and postcondition. They can be
 solved in a uniform fashion. Thats why we have created the method 
@@ -645,7 +645,7 @@ print_locale! odd_even_clique
 text {* To prove the procedure calls to @{term "odd"} respectively 
 @{term "even"} correct we first derive a rule to justify that we
 can assume both specifications to verify the bodies. This rule can
-be derived from the general @{thm [source] ProcRec} rule. An ML function will
+be derived from the general @{thm [source] HoareTotal.ProcRec} rule. An ML function will
 do this work:
 *}
 
@@ -693,8 +693,12 @@ lemma (in Fac_impl) shows
   CALL Fac(\<acute>N) \<ggreater> n. CALL Fac(\<acute>N) \<ggreater> m. 
   \<acute>R :== n + m
   \<lbrace>\<acute>R = fac \<acute>N + fac \<acute>N\<rbrace>"
-apply vcg
-done
+proof -
+  note Fac_spec = Fac_spec4
+  show ?thesis
+    apply vcg
+    done
+qed
 
 (* R := Fac (N) + Fac (M) *)
 lemma (in Fac_impl) shows 
@@ -702,8 +706,13 @@ lemma (in Fac_impl) shows
   CALL Fac(\<acute>N) \<ggreater> n. CALL Fac(n) \<ggreater> m. 
   \<acute>R :== m
   \<lbrace>\<acute>R = fac (fac \<acute>N)\<rbrace>"
-apply vcg
-done
+proof -
+  note Fac_spec = Fac_spec4
+  show ?thesis
+    apply vcg
+    done
+qed
+
 
 subsection {* Global Variables and Heap *}
 
@@ -791,10 +800,10 @@ lemma (in append_impl) shows "{t. t may_only_modify_globals Z in [next]}
 text {* If the verification condition generator works on a procedure call
 it checks whether it can find a modifies clause in the context. If one
 is present the procedure call is simplified before the Hoare rule 
-@{thm [source] ProcSpec} is applied. Simplification of the procedure call means,
+@{thm [source] HoareTotal.ProcSpec} is applied. Simplification of the procedure call means,
 that the ``copy back'' of the global components is simplified. Only those
 components that occur in the modifies clause will actually be copied back.
-This simplification is justified by the rule @{thm [source] ProcModifyReturn}. 
+This simplification is justified by the rule @{thm [source] HoareTotal.ProcModifyReturn}. 
 So after this simplification all global components that do not appear in
 the modifies clause will be treated as local variables. 
 *}
@@ -946,7 +955,7 @@ text {* Insertion sort is not implemented recursively here but with a while
 loop. Note that the while loop is not annotated with an invariant in the
 procedure definition. The invariant only comes into play during verification.
 Therefore we will annotate the body during the proof with the
-rule @{thm [source] annotateI}.
+rule @{thm [source] HoareTotal.annotateI}.
 *}
 
 
@@ -964,7 +973,7 @@ lemma (in insertSort_impl) insertSort_body_spec:
                   sorted (op \<le>) (map \<acute>cont Rs) \<and> set Qs \<union> set Rs = set Ps \<and>
                   \<acute>cont = \<^bsup>\<sigma>\<^esup>cont \<rbrace>
           DO \<acute>q :== \<acute>p;; \<acute>p :== \<acute>p\<rightarrow>\<acute>next;; \<acute>r :== CALL insert(\<acute>q,\<acute>r) OD;;
-          \<acute>p :== \<acute>r" in annotateI)
+          \<acute>p :== \<acute>r" in HoarePartial.annotateI)
   apply vcg
   apply   fastsimp
   prefer 2
@@ -1179,12 +1188,12 @@ lemma CombineStrip':
 proof -
   from deriv_strip [simplified c'']
   have "\<Gamma>,\<Theta>\<turnstile> P (strip_guards (- F) c') UNIV,UNIV"
-    by (rule MarkGuardsD)
+    by (rule HoarePartialProps.MarkGuardsD)
   with deriv 
   have "\<Gamma>,\<Theta>\<turnstile> P c' Q,A"
-    by (rule CombineStrip)
+    by (rule HoarePartialProps.CombineStrip)
   hence "\<Gamma>,\<Theta>\<turnstile> P mark_guards False c' Q,A"
-    by (rule MarkGuardsI)
+    by (rule HoarePartialProps.MarkGuardsI)
   thus ?thesis
     by (simp add: c)
 qed
@@ -1192,7 +1201,7 @@ qed
 
 text {* We can then combine the prove that no fault will occur with the
 functional prove of the programm without guards to get the full proove by
-the rule @{thm CombineStrip}
+the rule @{thm HoarePartialProps.CombineStrip}
 *}
 
 

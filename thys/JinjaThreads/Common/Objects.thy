@@ -23,6 +23,19 @@ primrec
 "obj_ty (Obj c f)   = Class c"
 "obj_ty (Arr t s e) = Array t"
 
+fun is_Arr :: "heapobj \<Rightarrow> bool" where
+  "is_Arr (Obj C fs)    = False"
+| "is_Arr (Arr T si el) = True"
+
+lemma is_Arr_conv:
+  "is_Arr arrobj = (\<exists>T si el. arrobj = Arr T si el)"
+by(cases arrobj, auto)
+
+lemma is_ArrE:
+  "\<lbrakk> is_Arr arrobj; \<And>T si el. arrobj = Arr T si el \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
+  "\<lbrakk> \<not> is_Arr arrobj; \<And>C fs. arrobj = Obj C fs \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
+by(cases arrobj, auto)+
+
 constdefs
   init_fields :: "((vname \<times> cname) \<times> ty) list \<Rightarrow> fields"
   "init_fields  \<equiv>  map_of \<circ> map (\<lambda>(F,T). (F,default_val T))"
@@ -31,14 +44,21 @@ constdefs
   blank :: "'m prog \<Rightarrow> cname \<Rightarrow> heapobj"
   "blank P C  \<equiv>  Obj C (init_fields (fields P C))"
 
+  blank_arr :: "ty \<Rightarrow> int \<Rightarrow> heapobj"
+  "blank_arr T i \<equiv> Arr T i (\<lambda>n. default_val T)"
+
 lemma blank_obj: "\<exists>c f. blank P C = Obj c f"
 apply(rule_tac x = "C" in exI)
 apply(rule_tac x = "init_fields (fields P C)" in exI)
 by(simp add: blank_def)
 
+lemma obj_ty_blank [iff]: "obj_ty (blank P C) = Class C"
+  by (simp add: blank_def)
+
+
 subsection{* Heap *}
 
-types heap  = "addr \<rightharpoonup> heapobj"
+types heap = "addr \<rightharpoonup> heapobj"
 
 fun the_obj :: "heapobj \<Rightarrow> cname \<times> fields" where
   "the_obj (Obj C fs) = (C, fs)"
@@ -111,7 +131,11 @@ lemma typeof_lit_typeof:
 
 lemma typeof_lit_is_type: 
   "typeof v = Some T \<Longrightarrow> is_type P T"
- (*<*)by (induct v) (auto simp:is_type_def)(*>*)
+ (*<*)by (induct v) (auto)(*>*)
+
+lemma typeof_NoneD [simp,dest]:
+  "typeof v = Some x \<Longrightarrow> \<not>is_Addr v"
+  by (cases v) auto
 
 
 definition cast_ok :: "'m prog \<Rightarrow> ty \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> bool" where
@@ -237,14 +261,16 @@ apply(auto dest!: hext_None simp add: new_Addr_def split: split_if_asm)
 apply(fastsimp)
 done
 
-lemma hext_typeof_eq: "\<lbrakk> hext h h'; h a = \<lfloor>v\<rfloor> \<rbrakk> \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr a) = typeof\<^bsub>h'\<^esub> (Addr a)"
+lemma hext_typeof_eq:
+  "\<lbrakk> hext h h'; h a = \<lfloor>v\<rfloor> \<rbrakk> \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr a) = typeof\<^bsub>h'\<^esub> (Addr a)"
 apply(cases v, auto dest: hext_objD hext_arrD)
 apply(auto simp: hext_def)
  apply(erule_tac x="a" in allE, fastsimp)
 apply(erule_tac x="a" in allE, fastsimp)
 done
 
-lemma type_of_hext_type_of: "\<lbrakk> typeof\<^bsub>h\<^esub> w = \<lfloor>T\<rfloor>; hext h h' \<rbrakk> \<Longrightarrow> typeof\<^bsub>h'\<^esub> w = \<lfloor>T\<rfloor>"
+lemma type_of_hext_type_of:
+  "\<lbrakk> typeof\<^bsub>h\<^esub> w = \<lfloor>T\<rfloor>; hext h h' \<rbrakk> \<Longrightarrow> typeof\<^bsub>h'\<^esub> w = \<lfloor>T\<rfloor>"
 apply(cases w, auto)
  apply(case_tac a, auto dest: hext_objarrD)
 apply(case_tac a, auto)

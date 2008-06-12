@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: NormalizeTotalProof.thy,v 1.7 2008-06-11 14:22:50 lsf37 Exp $
+    ID:          $Id: NormalizeTotalProof.thy,v 1.8 2008-06-12 06:57:15 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -31,12 +31,13 @@ header {* Proof of Procedure Normalize *}
 theory NormalizeTotalProof imports LevellistProof ShareReduceRepListProof 
                         RepointProof begin
 
-ML {*bind_thm ("True_implies_equals",True_implies_equals)*}
+hide (open) const DistinctTreeProver.set_of tree.Node tree.Tip
+
 lemma  (in Normalize_impl) Normalize_modifies:
   shows
    "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>p :== PROC Normalize (\<acute>p) 
      {t. t may_only_modify_globals \<sigma> in [rep,mark,low,high,next]}"
-  apply (hoare_rule ProcRec1)
+  apply (hoare_rule HoarePartial.ProcRec1)
   apply (vcg spec=modifies)
   done
 
@@ -513,7 +514,6 @@ next
 	apply (rule set_of_nn)
 	apply auto
 	done
-      thm Nodes_def
       from pret_dag prebdt_pret no_in_pret_var 
       have balanced_no: "(low no = Null) = (high no = Null)"
 	apply -
@@ -620,7 +620,6 @@ next
 	apply (drule subnode_dag_cons)
 	apply (auto simp del: Dag_Ref)
 	done
-      thm subbdt_ex
       with pret_dag prebdt_pret no_in_pret_var obtain nobdt 
 	where nobdt_ex: 
 	"bdt not var = Some nobdt"
@@ -1077,13 +1076,13 @@ next
                   apply (drule balanced_bdt)
                   apply auto
                   done
-		with share_prop obtain 
+		with share_prop True obtain 
                   repcy_in_llb: "repc y \<in> set (ll ! n)" and
                   rry_ry: " repc (repc y) = repc y" and
                   y_other_node_prop: "\<forall>no1\<in>set (ll ! n). 
                   ((repc \<propto> high) no1 = (repc \<propto> high) y \<and> 
                   (repc \<propto> low) no1 = (repc \<propto> low) y) = (repc y = repc no1)"
-                  by auto
+                  by simp
 		from repcy_in_llb  x_repcy show ?thesis
                   by (auto simp add: Nodes_def)
               next
@@ -1110,7 +1109,6 @@ next
                     done
                   with  vary_n have varhighy: "var (high y) < n"
                     by auto
-                  thm subelem_set_of_high
                   from y_in_pret y_nNull highy_nNull pret_dag  
 	          have "high y \<in> set_of pret" 
                     apply -
@@ -1201,7 +1199,6 @@ next
               apply simp
               done
             moreover
-            thm normalize_prop
             from True normalize_prop no_in_Nodes obtain not nort where
               nort_dag: "Dag (repb no) (repb \<propto> low) (repb \<propto> high) nort" and
               ord_nort: "ordered nort var" and
@@ -1250,7 +1247,6 @@ next
               proof (rule ballI)
 		fix x
 		assume x_in_nort: "x \<in> set_of nort"
-		thm subset_nort_not
 		from x_in_nort subset_nort_not repbNodes_in_Nodes 
 		have "x \<in> Nodes n ll"
                   by blast
@@ -1298,7 +1294,6 @@ next
               then have repbNodesn_in_repbNodesSucn: 
 		"repb `(Nodes n ll) \<subseteq> repb `(Nodes (n + 1) ll)"
 		by blast
-              thm repbc_nc
               from wf_ll nsll  
               have Nodes_n_notin_lln: "\<forall>no \<in> Nodes n ll. no \<notin> set (ll ! n)"
 		apply (simp add: Nodes_def length_ll_eq)
@@ -1331,7 +1326,6 @@ next
               with repbNodes_repcNodes subset_nort_not repbNodesn_in_repbNodesSucn 
               show ?thesis by simp
             qed
-            thm repbc_nc
             ultimately show ?thesis 
               by blast
           next
@@ -1531,7 +1525,6 @@ next
 		apply (auto simp add: length_ll_eq)
 		done
               with repbc_nc have repb_repc_high: "repb (high no) = repc (high no)" by simp
-              thm normalize_prop
               with normalize_prop hno_in_Nodesn varhnos_varno varno 
               have high_normalize: "var (repc (high no)) \<le> var (high no) \<and>
 		(\<exists>not nort. Dag (repc (high no)) (repb \<propto> low) (repb \<propto> high) nort \<and>
@@ -1726,7 +1719,6 @@ next
 	            "Dag (repc (high no)) (repb \<propto> low) (repb \<propto> high) rnort"
                   assume ord_nort: " ordered rnort var"
                   assume rnort_in_repNodes: " set_of rnort \<subseteq>  repb ` Nodes n ll"
-                  thm repbNodes_in_Nodes
                   from rnort_in_repNodes repbNodes_in_Nodes 
 	          have nort_in_Nodes: "set_of rnort \<subseteq> Nodes n ll"
                     by blast
@@ -1796,7 +1788,6 @@ next
                     done
                   then have "repc ` Nodes n ll \<subseteq> repc ` Nodes (n + 1) ll"
                     by blast
-                  thm repbNodes_repcNodes
                   with rnort_in_Nodes repbNodes_repcNodes 
 	          show " set_of rnort \<subseteq> repc ` Nodes (n + 1) ll" 
                     by (simp add: Nodes_def)
@@ -2430,7 +2421,6 @@ next
           assume t_dag: "Dag p (repc \<propto> low) (repc \<propto> high) t"
           assume t_nTip: " t \<noteq> Tip"
           assume x_t: "x=t"
-          thm Nodes_repbc_Dags_eq
           from t_nTip t_dag have "p \<noteq> Null"
             apply -
             apply (case_tac "p=Null")
@@ -2468,7 +2458,6 @@ next
           assume t_dag: "Dag p (repb \<propto> low) (repb \<propto> high) t"
           assume t_nTip: " t \<noteq> Tip"
           assume x_t: "x=t"
-          thm Nodes_repbc_Dags_eq
           from t_nTip t_dag have "p \<noteq> Null"
             apply -
             apply (case_tac "p=Null")
@@ -2585,7 +2574,6 @@ next
             apply (erule_tac x=q in allE)
             apply auto
             done
-          thm normalize_prop
           from normalize_prop q_in_Nodesn have "var (repb q) <= var q"
             apply -
             apply (erule_tac x=q in ballE)
@@ -2604,7 +2592,6 @@ next
             done
           then have ord_t1: "ordered t1 var" by simp
           from ord_t1_var_rep have varrep_q: "var (repc q) <= var q" by simp
-          thm while_while_prop
           from t2_in_DagsNodesSucn have ord_t2: "ordered t2 var"
           proof (elim Dags.cases)
             fix p t
@@ -2682,7 +2669,6 @@ next
             by (simp add: wf_ll_def length_ll_eq)
           from wf_ll nsll  a_in_lln have vara_n: "var a = n" 
             by (simp add: wf_ll_def length_ll_eq)
-          thm rep_prop
           from a_in_lln rep_prop  obtain
             repp_nNull: " repc a \<noteq> Null" and
             repp_reduce: "(repc \<propto> low) a = (repc \<propto> high) a \<and> low a \<noteq> Null 
@@ -2735,8 +2721,6 @@ next
               by (simp add: Nodes_def)
             then have rhigha_in_rNodesn: "repc (high a) \<in> repc ` Nodes n ll"
               by simp
-            thm rep_prop
-            thm normalize_prop
             from higha_in_Nodesn normalize_prop obtain rt where 
               rt_dag:  "Dag (repb (high a)) (repb \<propto> low) (repb \<propto> high) rt" and
               rt_in_repbNort: "set_of rt \<subseteq> repb `Nodes n ll"
@@ -2744,11 +2728,9 @@ next
               apply (erule_tac x="high a" in ballE)
               apply auto
               done
-            thm repbNodes_repcNodes
             from rt_in_repbNort repbNodes_repcNodes 
             have rt_in_repcNodesn: "set_of rt \<subseteq> repc `Nodes n ll"
               by blast
-            thm Nodes_repbc_Dags_eq
             from rt_dag higha_in_Nodesn 
             have repcrt_dag: "Dag (repc (high a)) (repc \<propto> low) (repc \<propto> high) rt"
               apply -
@@ -2838,7 +2820,6 @@ next
               next
 		case (Node lt1 p1 rt1)
 		note t1_Node=this
-		thm Dag_q_Nodes_n
 		with Dag_q_Nodes_n have "p1=(repc q)"
                   by simp
 		with t2_Node bdt_t1 bdt_t2 t1_Node have "var (repc q) = var (repc a)"
@@ -2990,7 +2971,6 @@ next
             by (simp add: wf_ll_def length_ll_eq)
           from wf_ll nsll  a1_in_lln have vara1_n: "var a1 = n" 
             by (simp add: wf_ll_def length_ll_eq)
-          thm rep_prop
           from a1_in_lln rep_prop  obtain
             repa1_nNull: " repc a1 \<noteq> Null" and
             repa1_reduce: "(repc \<propto> low) a1 = (repc \<propto> high) a1 \<and> low a1 \<noteq> Null 
@@ -3057,7 +3037,6 @@ next
             by (simp add: wf_ll_def length_ll_eq)
           from wf_ll nsll  a2_in_lln have vara2_n: "var a2 = n" 
             by (simp add: wf_ll_def length_ll_eq)
-          thm rep_prop
           from a2_in_lln rep_prop  obtain
             repa2_nNull: " repc a2 \<noteq> Null" and
             repa2_reduce: "(repc \<propto> low) a2 = (repc \<propto> high) a2 \<and> low a2 \<noteq> Null 
@@ -3246,7 +3225,6 @@ next
             next
               assume t2_share_cond: 
 	        "\<not> ((repc \<propto> low) a2 = (repc \<propto> high) a2 \<and> low a2 \<noteq> Null)"
-              thm mixed_Dags_case
               from t1_in_Dags_Nodesn t2_notin_DagsNodesn t2_in_DagsNodesSucn 
 	        isomorphic_dags_eq repbc_dags_eq
               show ?thesis
@@ -3352,7 +3330,6 @@ next
 		apply (subgoal_tac "t2=rt2")
 		apply (auto simp add: Dag_unique)
 		done
-              thm mixed_Dags_case
               from t2_in_Dags_Nodesn t1_notin_DagsNodesn t1_in_DagsNodesSucn 
 		isomorphic_dags_eq repbc_dags_eq 
               have "isomorphic_dags_eq t2 t1 var"
@@ -3529,7 +3506,6 @@ next
                   then have rhigha1_in_rNodesn: 
 	            "repc (high a1) \<in> repc ` Nodes n ll"
                     by simp
-                  thm normalize_prop
                   from higha1_in_Nodesn normalize_prop obtain rt1h where
                     rt1_dag:  "Dag (repb (high a1)) (repb \<propto> low) (repb \<propto> high) rt1h" and
                     rt1_in_repbNort: "set_of rt1h \<subseteq> repb `Nodes n ll"
@@ -3673,7 +3649,6 @@ next
                   then have rhigha2_in_rNodesn: 
 	            "repc (high a2) \<in> repc ` Nodes n ll"
                     by simp
-                  thm normalize_prop
                   from higha2_in_Nodesn normalize_prop obtain rt2h where
                     rt2_dag:  "Dag (repb (high a2)) (repb \<propto> low) (repb \<propto> high) rt2h" and
                     rt2_in_repbNort: "set_of rt2h \<subseteq> repb `Nodes n ll"

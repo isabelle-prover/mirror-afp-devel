@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Cryptinverts.thy
-    ID:         $Id: Cryptinverts.thy,v 1.4 2008-06-11 14:22:59 lsf37 Exp $
+    ID:         $Id: Cryptinverts.thy,v 1.5 2008-06-12 06:57:26 lsf37 Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -20,10 +20,10 @@ lemma cryptinverts_hilf1: "prime p \<Longrightarrow> (m * m ^(k * pred p)) mod p
   apply (simp only: mult_commute [of k "pred p"] power_mult mod_mult1_eq [of "m" "(m^pred p)^k" "p"] remainderexp [of "m^pred p" "p" "k", THEN sym])
   apply (insert fermat [of p m])
   apply (simp add: predd)
-  apply (subst sucis)
-  apply (subst oneexp)
+  apply (simp add: power_Suc0)
+  apply (subst One_nat_def [symmetric])
   apply (subst onemodprime)
-  by (auto)
+  by auto
 
 lemma cryptinverts_hilf2: "prime p \<Longrightarrow> m*(m^(k * (pred p) * (pred q))) mod p = m mod p"
   apply (simp add: mult_commute [of "k * pred p" "pred q"] mult_assoc [THEN sym])
@@ -59,9 +59,9 @@ lemma primmultgreater2: "\<lbrakk>prime p; prime q; p \<noteq> q\<rbrakk> \<Long
   apply (erule primmultgreater)
   by (auto)
 
-lemma cryptinverts: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; m < n; e*d mod ((pred p)*(pred q)) = 1\<rbrakk> \<Longrightarrow> rsa_crypt (rsa_crypt (m,e,n), d , n) = m"
+lemma cryptinverts: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; m < n; e*d mod ((pred p)*(pred q)) = 1\<rbrakk> \<Longrightarrow> rsa_crypt (rsa_crypt m e n) d n = m"
   apply (insert cryptinverts_hilf4 [of p q m "e*d"])
-  apply (insert cryptcorrect [of "p*q" "rsa_crypt (m, e, p * q)" d])
+  apply (insert cryptcorrect [of "p*q" "rsa_crypt m e (p * q)" d])
   apply (insert cryptcorrect [of "p*q" m e])
   apply (insert primmultgreater2 [of p q])
   apply (auto simp add: prime_def)

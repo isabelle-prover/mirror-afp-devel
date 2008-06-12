@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Store.thy,v 1.7 2008-06-11 14:22:58 lsf37 Exp $
+    ID:          $Id: Store.thy,v 1.8 2008-06-12 06:57:24 lsf37 Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -7,7 +7,9 @@
 
 header {* Store *}
 
-theory Store imports Location begin
+theory Store
+imports Location
+begin
 
 subsection {* New *}
 text {* The store provides a uniform interface to allocate new objects and

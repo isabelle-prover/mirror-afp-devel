@@ -1,5 +1,4 @@
-(*  Title:      HOL/ex/Exceptions.thy
-    ID:         $Id: Exceptions.thy,v 1.7 2008-06-11 14:22:50 lsf37 Exp $
+(*  ID:         $Id: Exceptions.thy,v 1.8 2008-06-12 06:57:16 lsf37 Exp $
     Author:     Tobias Nipkow
     Copyright   2004 TU Muenchen
 *)
@@ -34,53 +33,46 @@ datatype item = VAL int | HAN nat
 types code = "instr list"
       stack = "item list"
 
-consts
-  exec2 :: "bool * code * stack \<Rightarrow> stack"
-  jump :: "nat * code \<Rightarrow> code"
+fun jump where
+  "jump l [] = []"
+  | "jump l (Label l' # cs) = (if l = l' then cs else jump l cs)"
+  | "jump l (c # cs) = jump l cs"
 
-recdef jump "measure(%(l,cs). size cs)"
-"jump(l,[]) = []"
-"jump(l, Label l' # cs) = (if l = l' then cs else jump(l,cs))"
-"jump(l, c # cs) = jump(l,cs)"
-
-lemma size_jump1: "size (jump (l, cs)) < Suc(size cs)"
+lemma size_jump1: "size (jump l cs) < Suc (size cs)"
 apply(induct cs)
  apply simp
 apply(case_tac a)
 apply auto
 done
 
-lemma size_jump2: "size (jump (l, cs)) < size cs \<or> jump(l,cs) = cs"
+lemma size_jump2: "size (jump l cs) < size cs \<or> jump l cs = cs"
 apply(induct cs)
  apply simp
 apply(case_tac a)
 apply auto
 done
 
-syntax
-  exec   :: "code \<Rightarrow> stack \<Rightarrow> stack"
-  unwind :: "code \<Rightarrow> stack \<Rightarrow> stack"
-translations
-  "exec cs s" == "exec2(True,cs,s)"
-  "unwind cs s" == "exec2(False,cs,s)"
+function (sequential) exec2 :: "bool \<Rightarrow> code \<Rightarrow> stack \<Rightarrow> stack" where
+  "exec2 True [] s = s"
+  | "exec2 True (Push i#cs) s = exec2 True cs (VAL i # s)"
+  | "exec2 True (ADD#cs) (VAL j # VAL i # s) = exec2 True cs (VAL(i+j) # s)"
+  | "exec2 True (THROW#cs) s = exec2 False cs s"
+  | "exec2 True (Mark l#cs) s = exec2 True cs (HAN l # s)"
+  | "exec2 True (Unmark#cs) (v # HAN l # s) = exec2 True cs (v # s)"
+  | "exec2 True (Label l#cs) s = exec2 True cs s"
+  | "exec2 True (Jump l#cs) s = exec2 True (jump l cs) s"
 
-recdef exec2
- "inv_image (measure(%cs. size cs) <*lex*> measure(%s. size s))
-            (%(b,cs,s). (cs,s))"
-"exec [] s = s"
-"exec (Push i#cs) s = exec cs (VAL i # s)"
-"exec (ADD#cs) (VAL j # VAL i # s) = exec cs (VAL(i+j) # s)"
-"exec (THROW#cs) s = unwind cs s"
-"exec (Mark l#cs) s = exec cs (HAN l # s)"
-"exec (Unmark#cs) (v # HAN l # s) = exec cs (v # s)"
-"exec (Label l#cs) s = exec cs s"
-"exec (Jump l#cs) s = exec (jump(l,cs)) s"
+  | "exec2 False cs [] = []"
+  | "exec2 False cs (VAL i # s) = exec2 False cs s"
+  | "exec2 False cs (HAN l # s) = exec2 True (jump l cs) s"
+by pat_completeness auto
 
-"unwind cs [] = []"
-"unwind cs (VAL i # s) = unwind cs s"
-"unwind cs (HAN l # s) = exec (jump(l,cs)) s"
+termination by (relation
+  "inv_image (measure(%cs. size cs) <*lex*> measure(%s. size s)) (%(b,cs,s). (cs,s))")
+    (auto simp add: size_jump1 size_jump2)
 
-(hints recdef_simp: size_jump1 size_jump2)
+abbreviation "exec \<equiv> exec2 True"
+abbreviation "unwind \<equiv> exec2 False"
 
 subsection{*The compiler*}
 
@@ -179,8 +171,8 @@ lemma 4 [simp]: "\<And>l cs. isFresh l s \<Longrightarrow> unwind (cmp l e @ cs)
 by (induct e) (auto simp add:split_def)
 
 
-lemma 7 [simp]: "\<And>m cs. l < m \<Longrightarrow> jump(l, cmp m e @ cs) = jump(l, cs)"
-by (induct e) (simp_all add:split_def)
+lemma 7 [simp]: "l < m \<Longrightarrow> jump l (cmp m e @ cs) = jump l cs"
+by (induct e arbitrary: m cs) (simp_all add:split_def)
 
 text{* The compiler correctness theorem: *}
 

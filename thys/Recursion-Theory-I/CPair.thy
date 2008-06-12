@@ -1,4 +1,5 @@
 (*  Title:       Defintion and basics facts about Cantor pairing function
+    ID:         $Id: CPair.thy,v 1.5 2008-06-12 06:57:26 lsf37 Exp $
     Author:      Michael Nedzelsky <MichaelNedzelsky at yandex.ru>, 2008
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
@@ -484,7 +485,7 @@ proof -
     then show ?thesis .
   next
     assume "\<not> c_snd x < x"
-    then have S1: "c_snd x \<ge> x" by (unfold le_def)
+    then have S1: "c_snd x \<ge> x" by auto
     have "c_snd x \<le> x" by (rule c_snd_le_arg)
     with S1 have "c_snd x = x" by simp
     then have "x \<le> 1" by (rule c_snd_eq_arg)

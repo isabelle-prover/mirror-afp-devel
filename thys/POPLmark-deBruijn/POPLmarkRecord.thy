@@ -1,5 +1,5 @@
 (*  Title:      POPLmark/POPLmarkRecord.thy
-    ID:         $Id: POPLmarkRecord.thy,v 1.6 2008-06-11 14:22:58 lsf37 Exp $
+    ID:         $Id: POPLmarkRecord.thy,v 1.7 2008-06-12 06:57:25 lsf37 Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -337,8 +337,10 @@ lemma liftT_liftT' [simp]:
 
 lemma lift_size [simp]:
   "size (\<up>\<^isub>\<tau> n k T) = size T"
-  "char_list_type_x_list_size (\<up>\<^bsub>r\<tau>\<^esub> n k rT) = char_list_type_x_list_size rT"
-  "char_list_type_x_size (\<up>\<^bsub>f\<tau>\<^esub> n k fT) = char_list_type_x_size fT"
+  "list_size (prod_size (list_size char_size) size) (\<up>\<^bsub>r\<tau>\<^esub> n k rT) =
+     list_size (prod_size (list_size char_size) size) rT"
+  "prod_size (list_size char_size) size (\<up>\<^bsub>f\<tau>\<^esub> n k fT) =
+     prod_size (list_size char_size) size fT"
   by (induct T and rT and fT arbitrary: k and k and k) simp_all
 
 lemma liftT0 [simp]:
@@ -978,7 +980,7 @@ lemma subtype_weaken': -- {* A.2 *}
   done
 
 lemma fieldT_size [simp]:
-  "(a, T) \<in> set fs \<Longrightarrow> size T < Suc (char_list_type_x_list_size fs)"
+  "(a, T) \<in> set fs \<Longrightarrow> size T < Suc (list_size (prod_size (list_size char_size) size) fs)"
   apply (induct fs arbitrary: a T rule: list.induct)
   apply simp
   apply simp

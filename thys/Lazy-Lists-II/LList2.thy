@@ -1,5 +1,5 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.10 2008-06-11 14:22:58 lsf37 Exp $
+    ID:         $Id: LList2.thy,v 1.11 2008-06-12 06:57:24 lsf37 Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -12,7 +12,9 @@ Safety and liveness.
 
 header{* More on llists *}
 
-theory LList2 imports "~~/src/HOL/Induct/LList" begin
+theory LList2
+imports "~~/src/HOL/Induct/LList"
+begin
 
 section{*Preliminaries*}
 
@@ -920,11 +922,14 @@ qed
 
 section{*The prefix order of llists*}
 
-instance llist :: (type)ord ..
+instantiation llist :: (type) order
+begin
 
-defs (overloaded)
-llist_le_def: "(s :: 'a llist) \<le> t \<equiv> \<exists>d. t = s @@ d"
-llist_less_def: "(s :: 'a llist) < t \<equiv> s \<le> t \<and> s \<noteq> t"
+definition
+  llist_le_def: "(s :: 'a llist) \<le> t \<longleftrightarrow> (\<exists>d. t = s @@ d)"
+
+definition
+  llist_less_def: "(s :: 'a llist) < t \<longleftrightarrow> (s \<le> t \<and> s \<noteq> t)"
 
 lemma not_LCons_le_LNil [iff]:
   "\<not> (a##l) \<le> LNil"
@@ -982,10 +987,11 @@ lemma llist_less_le:
   shows "(s < t) = (s \<le> t \<and> s \<noteq> t)"
   by (unfold llist_less_def) auto
 
-instance llist :: (type) order
-  by (intro_classes,
+instance by default
   (assumption | rule llist_le_refl
-    llist_le_trans llist_le_anti_sym llist_less_le)+)
+    llist_le_trans llist_le_anti_sym llist_less_le)+
+
+end
 
 
 subsection{*Typing rules*}

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.28 2008-06-11 14:22:50 lsf37 Exp $
+# $Id: regression,v 1.29 2008-06-12 06:57:14 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -122,7 +122,7 @@ DIFF=`$WORKING_COPY/admin/report.pl $LOG $REPORT`
 # send mail on status changes
 if [ -n "$DIFF" ]; then
   cat > $TMP <<EOF
-The status of the following AFP entries changed:
+The status of the following AFP entries changed or remains FAIL: 
 $DIFF
 
 Tested version: $AFP_VER
@@ -133,7 +133,7 @@ Have a nice day,
 
 EOF
   for R in $MAIN_NOTIFY; do
-    $MAIL 'status changed (AFP)' "$R" $TMP $REPORT $LOG
+    $MAIL 'status (AFP)' "$R" $TMP $REPORT $LOG
   done  
 fi
 

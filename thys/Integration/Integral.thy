@@ -42,7 +42,7 @@ inductive_set
   sfis:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real set"
   for f :: "'a \<Rightarrow> real" and M :: "'a set set * ('a set \<Rightarrow> real)"
   where (*This uses normal forms*)
-  base:  "\<lbrakk>f = (\<lambda>t. \<Sum>i\<in>(S::nat set). x i * \<chi>(A i) t);
+  base:  "\<lbrakk>f = (\<lambda>t. \<Sum>i\<in>(S::nat set). x i * \<chi> (A i) t);
   \<forall>i \<in> S. A i \<in> measurable_sets M; nonnegative x; finite S;
   \<forall>i\<in>S. \<forall>j\<in>S. i \<noteq> j \<longrightarrow> A i \<inter> A j = {}; (\<Union>i\<in>S. A i) = UNIV\<rbrakk>
   \<Longrightarrow> (\<Sum>i\<in>S. x i * measure M (A i)) \<in> sfis f M"
@@ -79,23 +79,23 @@ text{*As you can see we require two extra conditions, and they amount
 
 lemma assumes un: "(\<Union>i\<in>R. B i) = UNIV" and fin: "finite R"
   and dis: "\<forall>j1\<in>R. \<forall>j2\<in>R. j1 \<noteq> j2 \<longrightarrow> (B j1) \<inter> (B j2) = {}"
-  shows char_split: "\<chi>A t = (\<Sum>j\<in>R. \<chi>(A \<inter> B j) t)"
+  shows char_split: "\<chi> A t = (\<Sum>j\<in>R. \<chi> (A \<inter> B j) t)"
 (*<*)proof (cases "t \<in> A")
   case True
   with un obtain j where jR: "j\<in>R" and tj: "t \<in> A \<inter> B j" by fast
-  from tj have "\<chi>(A \<inter> B j) t = 1" by (simp add: characteristic_function_def)
-  with fin jR have "(\<Sum>i\<in>R-{j}. \<chi>(A \<inter> B i) t) = (\<Sum>i\<in>R. \<chi>(A \<inter> B i) t) - 1"
+  from tj have "\<chi> (A \<inter> B j) t = 1" by (simp add: characteristic_function_def)
+  with fin jR have "(\<Sum>i\<in>R-{j}. \<chi> (A \<inter> B i) t) = (\<Sum>i\<in>R. \<chi> (A \<inter> B i) t) - 1"
     by (simp add: setsum_diff1)
   also 
-  from dis jR tj have "R-{j} = R-{j}" and "\<And>x. x \<in> R-{j} \<Longrightarrow> \<chi>(A \<inter> B x) t = 0" 
+  from dis jR tj have "R-{j} = R-{j}" and "\<And>x. x \<in> R-{j} \<Longrightarrow> \<chi> (A \<inter> B x) t = 0" 
     by (auto simp add: characteristic_function_def) 
-  hence "(\<Sum>i\<in>R-{j}. \<chi>(A \<inter> B i) t) = (\<Sum>i\<in>R-{j}. 0)" by (rule setsum_cong) 
-  finally have "1 = (\<Sum>i\<in>R. \<chi>(A \<inter> B i) t)" by (simp)
+  hence "(\<Sum>i\<in>R-{j}. \<chi> (A \<inter> B i) t) = (\<Sum>i\<in>R-{j}. 0)" by (rule setsum_cong) 
+  finally have "1 = (\<Sum>i\<in>R. \<chi> (A \<inter> B i) t)" by (simp)
   with True show ?thesis by (simp add: characteristic_function_def)
 next
   case False
-  hence "\<And>i. \<chi>(A \<inter> B i) t = 0" by (simp add: characteristic_function_def)
-  hence "0 = (\<Sum>i\<in>R. \<chi>(A \<inter> B i) t)" by (simp)
+  hence "\<And>i. \<chi> (A \<inter> B i) t = 0" by (simp add: characteristic_function_def)
+  hence "0 = (\<Sum>i\<in>R. \<chi> (A \<inter> B i) t)" by (simp)
   with False show ?thesis by (simp add: characteristic_function_def)
 qed
 
@@ -231,7 +231,7 @@ lemma n2_to_n_snd_inj: "inj (\<lambda>j. n2_to_n(i,j))" using n2_to_n_inj
 (*>*)
 lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)a:(*>*) "a \<in> sfis f M" and (*<*)b:(*>*) "b \<in> sfis g M"
   shows sfis_present: "\<exists> z1 z2 C K. 
-  f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi>(C i) t) \<and> g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi>(C i) t) 
+  f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t) \<and> g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t) 
   \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i)) \<and> b = (\<Sum>i\<in>K. z2 i * measure M (C i))
   \<and> finite K \<and> (\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {})
   \<and> (\<forall>i \<in> K. C i \<in> measurable_sets M) \<and> (\<Union>i\<in>K. C i) = UNIV 
@@ -244,12 +244,12 @@ proof cases
     case (base y B S) 
                       
     from prems have ms: "measure_space M" 
-      and f: "f = (\<lambda>t. \<Sum>i\<in>(R::nat set). x i * \<chi>(A i) t)"
+      and f: "f = (\<lambda>t. \<Sum>i\<in>(R::nat set). x i * \<chi> (A i) t)"
       and a: "a = (\<Sum>i\<in>R. x i * measure M (A i))" 
       and Ams: "\<forall>i \<in> R. A i \<in> measurable_sets M" 
       and R: "finite R" and Adis: "\<forall>i\<in>R. \<forall>j\<in>R. i \<noteq> j \<longrightarrow> A i \<inter> A j = {}"
       and Aun: "(\<Union>i\<in>R. A i) = UNIV" 
-      and g: "g = (\<lambda>t. \<Sum>i\<in>(S::nat set). y i * \<chi>(B i) t)"
+      and g: "g = (\<lambda>t. \<Sum>i\<in>(S::nat set). y i * \<chi> (B i) t)"
       and b: "b = (\<Sum>j\<in>S. y j * measure M (B j))" 
       and Bms: "\<forall>i \<in> S. B i \<in> measurable_sets M"
       and S: "finite S" 
@@ -267,24 +267,24 @@ txt{*\nopagebreak*}
 
     { fix t
       { fix i
-	from Bun S Bdis have "\<chi>(A i) t = (\<Sum>j\<in>S. \<chi>(A i \<inter> B j) t)" 
+	from Bun S Bdis have "\<chi> (A i) t = (\<Sum>j\<in>S. \<chi> (A i \<inter> B j) t)" 
 	  by (rule char_split)
-	hence "x i * \<chi>(A i) t = (\<Sum>j\<in>S. x i * \<chi>(A i \<inter> B j) t)" 
+	hence "x i * \<chi> (A i) t = (\<Sum>j\<in>S. x i * \<chi> (A i \<inter> B j) t)" 
 	  by (simp add: setsum_right_distrib)
 	also 
 	{ fix j
 	  have "S=S" and 
-	    "x i * \<chi>(A i \<inter> B j) t = (let k=n2_to_n(i,j) in z1 k * \<chi>(C k) t)"
+	    "x i * \<chi> (A i \<inter> B j) t = (let k=n2_to_n(i,j) in z1 k * \<chi> (C k) t)"
 	    by (auto simp add: C_def z1_def Let_def n2_to_n_inj n_to_n2_def)
 	}
-	hence "\<dots> = (\<Sum>j\<in>S. let k=n2_to_n (i,j) in z1 k * \<chi>(C k) t)"
+	hence "\<dots> = (\<Sum>j\<in>S. let k=n2_to_n (i,j) in z1 k * \<chi> (C k) t)"
 	  by (rule setsum_cong)
 
-	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi>(C k) t)"
+	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi> (C k) t)"
 	  by (simp add: G_def Let_def o_def
                 setsum_reindex[OF subset_inj_on[OF n2_to_n_snd_inj]])
 
-	finally have eq: "x i * \<chi>(A i) t = (\<Sum>k\<in> G i. z1 k * \<chi>(C k) t)" .
+	finally have eq: "x i * \<chi> (A i) t = (\<Sum>k\<in> G i. z1 k * \<chi> (C k) t)" .
 	  (*Repeat with measure instead of char*)
 	
 	from S have G: "finite (G i)" 
@@ -315,7 +315,7 @@ txt{*\nopagebreak*}
 	  by fast
 	note eq G this
       }
-      hence eq: "\<And>i. x i * \<chi>(A i) t = (\<Sum>k\<in>G i. z1 k * \<chi>(C k) t)"
+      hence eq: "\<And>i. x i * \<chi> (A i) t = (\<Sum>k\<in>G i. z1 k * \<chi> (C k) t)"
 	and G: "\<And>i. finite (G i)" 
 	and Gdis: "\<And>i j. i \<noteq> j \<Longrightarrow> G i \<inter> G j = {}" .
 
@@ -348,33 +348,33 @@ txt{*\nopagebreak*}
 	"(\<Sum>i\<in>R. x i * measure M (A i)) 
 	= (\<Sum>i\<in>R. (\<Sum>k\<in>(G i). z1 k * measure M (C k)))"  
 	by (rule setsum_cong)
-      with eq f a have "f t = (\<Sum>i\<in>R. (\<Sum>k\<in>G i. z1 k * \<chi>(C k) t))"
+      with eq f a have "f t = (\<Sum>i\<in>R. (\<Sum>k\<in>G i. z1 k * \<chi> (C k) t))"
 	and "a = (\<Sum>i\<in>R. (\<Sum>k\<in>(G i). z1 k * measure M (C k)))" 
 	by auto
       also have KG: "K = (\<Union>i\<in>R. G i)" 
 	by (auto simp add: K_def G_def)
       moreover note G Gdis R
-      ultimately have f: "f t = (\<Sum>k\<in>K. z1 k * \<chi>(C k) t)" 
+      ultimately have f: "f t = (\<Sum>k\<in>K. z1 k * \<chi> (C k) t)" 
 	and a: "a = (\<Sum>k\<in>K. z1 k * measure M (C k))"
 	by (auto simp add: setsum_UN_disjoint)
       	  (*And now (almost) the same for g*)
       { fix j
-	from Aun R Adis have "\<chi>(B j) t = (\<Sum>i\<in>R. \<chi>(B j \<inter> A i) t)" 
+	from Aun R Adis have "\<chi> (B j) t = (\<Sum>i\<in>R. \<chi> (B j \<inter> A i) t)" 
 	  by (rule char_split) 
-	hence "y j * \<chi>(B j) t = (\<Sum>i\<in>R. y j * \<chi>(A i \<inter> B j) t)" 
+	hence "y j * \<chi> (B j) t = (\<Sum>i\<in>R. y j * \<chi> (A i \<inter> B j) t)" 
 	  by (simp add: setsum_right_distrib Int_commute)
 	also 
 	{ fix i
 	  have "R=R" and 
-	    "y j * \<chi>(A i \<inter> B j) t = (let k=n2_to_n(i,j) in z2 k * \<chi>(C k) t)"
+	    "y j * \<chi> (A i \<inter> B j) t = (let k=n2_to_n(i,j) in z2 k * \<chi> (C k) t)"
 	    by (auto simp add: C_def z2_def Let_def n2_to_n_inj n_to_n2_def)
 	}
-	hence "\<dots> = (\<Sum>i\<in>R. let k=n2_to_n (i,j) in z2 k * \<chi>(C k) t)"
+	hence "\<dots> = (\<Sum>i\<in>R. let k=n2_to_n (i,j) in z2 k * \<chi> (C k) t)"
 	  by (rule setsum_cong)
-	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * \<chi>(C k) t)" 
+	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * \<chi> (C k) t)" 
 	  by (simp add: H_def Let_def o_def
                 setsum_reindex[OF subset_inj_on[OF n2_to_n_fst_inj]])
-	finally have eq: "y j * \<chi>(B j) t = (\<Sum>k\<in> H j. z2 k * \<chi>(C k) t)" .
+	finally have eq: "y j * \<chi> (B j) t = (\<Sum>k\<in> H j. z2 k * \<chi> (C k) t)" .
 		
 	from R have H: "finite (H j)"  by (simp add: H_def)
 	
@@ -401,10 +401,10 @@ txt{*\nopagebreak*}
 	  by fast
 	note eq H this
       }
-      hence eq: "\<And>j.  y j * \<chi>(B j) t = (\<Sum>k\<in>H j. z2 k * \<chi>(C k) t)" 
+      hence eq: "\<And>j.  y j * \<chi> (B j) t = (\<Sum>k\<in>H j. z2 k * \<chi> (C k) t)" 
 	and H: "\<And>i. finite (H i)"
 	and Hdis: "\<And>i j. i \<noteq> j \<Longrightarrow> H i \<inter> H j = {}" .
-      from eq g have "g t = (\<Sum>j\<in>S. (\<Sum>k\<in>H j. z2 k * \<chi>(C k) t))" 
+      from eq g have "g t = (\<Sum>j\<in>S. (\<Sum>k\<in>H j. z2 k * \<chi> (C k) t))" 
 	by simp
       also
       { fix j assume jS: "j\<in>S"
@@ -434,7 +434,7 @@ txt{*\nopagebreak*}
       moreover have "K = (\<Union>j\<in>S. H j)" 
 	by (auto simp add: K_def H_def)
       moreover note H Hdis S
-      ultimately have g: "g t = (\<Sum>k\<in>K. z2 k * \<chi>(C k) t)" and K: "finite K"
+      ultimately have g: "g t = (\<Sum>k\<in>K. z2 k * \<chi> (C k) t)" and K: "finite K"
 	and b: "b = (\<Sum>k\<in>K. z2 k * measure M (C k))"
 	by (auto simp add: setsum_UN_disjoint)
       
@@ -451,8 +451,8 @@ txt{*\nopagebreak*}
       
       note f g a b Kun K
     }  txt{*\nopagebreak*}
-    hence f: "f = (\<lambda>t. (\<Sum>k\<in>K. z1 k * \<chi>(C k) t))" 
-      and g: "g = (\<lambda>t. (\<Sum>k\<in>K. z2 k * \<chi>(C k) t))" 
+    hence f: "f = (\<lambda>t. (\<Sum>k\<in>K. z1 k * \<chi> (C k) t))" 
+      and g: "g = (\<lambda>t. (\<Sum>k\<in>K. z2 k * \<chi> (C k) t))" 
       and a: "a = (\<Sum>k\<in>K. z1 k * measure M (C k))" 
       and b: "b = (\<Sum>k\<in>K. z2 k * measure M (C k))" 
       and Kun: "UNION K C = UNIV" and K: "finite K" 
@@ -501,16 +501,16 @@ lemma assumes ms: "measure_space M" and a: "a \<in> sfis f M" and b: "b \<in> sf
   shows sfis_add: "a+b \<in> sfis (\<lambda>w. f w + g w) M" 
 proof -     
   from prems have 
-    "\<exists> z1 z2 C K. f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi>(C i) t) \<and> 
-    g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi>(C i) t) \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i))
+    "\<exists> z1 z2 C K. f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t) \<and> 
+    g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t) \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i))
     \<and> b = (\<Sum>i\<in>K. z2 i * measure M (C i))
     \<and> finite K \<and> (\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {})
     \<and> (\<forall>i \<in> K. C i \<in> measurable_sets M) \<and> (\<Union>i\<in>K. C i) = UNIV
     \<and> nonnegative z1 \<and> nonnegative z2"
     by (rule sfis_present)
         
-  then obtain z1 z2 C K where f: "f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi>(C i) t)" 
-    and g: "g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi>(C i) t)" 
+  then obtain z1 z2 C K where f: "f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t)" 
+    and g: "g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t)" 
     and a2: "a = (\<Sum>i\<in>K. z1 i * measure M (C i))"
     and b2: "b = (\<Sum>i\<in>K. z2 i * measure M (C i))"
     and CK: "finite K \<and> (\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {}) \<and> 
@@ -520,13 +520,13 @@ proof -
  
   { fix t
     from f g have 
-      "f t + g t = (\<Sum>i\<in>K. z1 i * \<chi>(C i) t) + (\<Sum>i\<in>K. z2 i * \<chi>(C i) t)" 
+      "f t + g t = (\<Sum>i\<in>K. z1 i * \<chi> (C i) t) + (\<Sum>i\<in>K. z2 i * \<chi> (C i) t)" 
       by simp
-    also have "\<dots> = (\<Sum>i\<in>K. z1 i * \<chi>(C i) t + z2 i * \<chi>(C i) t)" 
+    also have "\<dots> = (\<Sum>i\<in>K. z1 i * \<chi> (C i) t + z2 i * \<chi> (C i) t)" 
       by (rule setsum_addf[THEN sym])
-    also have "\<dots> = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi>(C i) t)" 
+    also have "\<dots> = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi> (C i) t)" 
       by (simp add: real_add_mult_distrib)
-    finally have "f t + g t = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi>(C i) t)" .
+    finally have "f t + g t = (\<Sum>i\<in>K. (z1 i + z2 i) * \<chi> (C i) t)" .
   }
 
   also
@@ -556,16 +556,16 @@ lemma assumes ms: "measure_space M" and a: "a \<in> sfis f M"
   shows sfis_mono: "a \<le> b" 
 proof - txt{*\nopagebreak*}
   from ms a b have 
-    "\<exists> z1 z2 C K. f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi>(C i) t) \<and> 
-    g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi>(C i) t) \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i))
+    "\<exists> z1 z2 C K. f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t) \<and> 
+    g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t) \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i))
     \<and> b = (\<Sum>i\<in>K. z2 i * measure M (C i))
     \<and> finite K \<and> (\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {})
     \<and> (\<forall>i \<in> K. C i \<in> measurable_sets M) \<and> (\<Union>i\<in>K. C i) = UNIV
     \<and> nonnegative z1 \<and> nonnegative z2"
     by (rule sfis_present)
  
-  then obtain z1 z2 C K where f: "f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi>(C i) t)" 
-    and g: "g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi>(C i) t)" 
+  then obtain z1 z2 C K where f: "f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t)" 
+    and g: "g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t)" 
     and a2: "a = (\<Sum>i\<in>K. z1 i * measure M (C i))"
     and b2: "b = (\<Sum>i\<in>K. z2 i * measure M (C i))"
     and K: "finite K" and dis: "(\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {})" 
@@ -576,26 +576,26 @@ proof - txt{*\nopagebreak*}
     { assume "C i \<noteq> {}" 
       then obtain t where ti: "t \<in> C i" 
 	by auto
-      hence "z1 i = z1 i * \<chi>(C i) t" 
+      hence "z1 i = z1 i * \<chi> (C i) t" 
 	by (simp add: characteristic_function_def)
       also 
       from dis iK ti have "K-{i} = K-{i}" 
-	and "\<And>x. x \<in> K-{i} \<Longrightarrow> z1 x * \<chi>(C x) t = 0" 
+	and "\<And>x. x \<in> K-{i} \<Longrightarrow> z1 x * \<chi> (C x) t = 0" 
 	by (auto simp add: characteristic_function_def) 
-      hence "0 = (\<Sum>k\<in>K-{i}. z1 k * \<chi>(C k) t)" 
+      hence "0 = (\<Sum>k\<in>K-{i}. z1 k * \<chi> (C k) t)" 
 	by (simp only: setsum_0 setsum_cong)
-      with K iK have "z1 i * \<chi>(C i) t = (\<Sum>k\<in>K. z1 k * \<chi>(C k) t)" 
+      with K iK have "z1 i * \<chi> (C i) t = (\<Sum>k\<in>K. z1 k * \<chi> (C k) t)" 
 	by (simp add: setsum_diff1)
       also  
-      from fg f g have "(\<Sum>i\<in>K. z1 i * \<chi>(C i) t) \<le> (\<Sum>i\<in>K. z2 i * \<chi>(C i) t)" 
+      from fg f g have "(\<Sum>i\<in>K. z1 i * \<chi> (C i) t) \<le> (\<Sum>i\<in>K. z2 i * \<chi> (C i) t)" 
 	by (simp add: le_fun_def)
       also 
       from dis iK ti have "K-{i} = K-{i}" 
-	and "\<And>x. x \<in> K-{i} \<Longrightarrow> z2 x * \<chi>(C x) t = 0" 
+	and "\<And>x. x \<in> K-{i} \<Longrightarrow> z2 x * \<chi> (C x) t = 0" 
 	by (auto simp add: characteristic_function_def)
-      hence "0 = (\<Sum>k\<in>K-{i}. z2 k * \<chi>(C k) t)" 
+      hence "0 = (\<Sum>k\<in>K-{i}. z2 k * \<chi> (C k) t)" 
 	by (simp only: setsum_0 setsum_cong)
-      with K iK have "(\<Sum>k\<in>K. z2 k * \<chi>(C k) t) = z2 i * \<chi>(C i) t" 
+      with K iK have "(\<Sum>k\<in>K. z2 k * \<chi> (C k) t) = z2 i * \<chi> (C i) t" 
 	by (simp add: setsum_diff1)
       also
       from ti have "\<dots> = z2 i" 
@@ -642,7 +642,7 @@ text {*The integral of characteristic functions, as well as the effect of
 
 lemma sfis_char:
   assumes ms: "measure_space M" and mA: "A \<in> measurable_sets M" 
-  shows "measure M A \<in> sfis \<chi>A M"
+  shows "measure M A \<in> sfis \<chi> A M"
 (*<*)proof -
   def "R" \<equiv> "(\<lambda>i::nat. if i = 0 then A else if i=1 then -A else {})::(nat\<Rightarrow>'a set)"
   def "x" \<equiv> "(\<lambda>i::nat. if i = 0 then 1 else 0)::(nat \<Rightarrow> real)"
@@ -655,17 +655,17 @@ lemma sfis_char:
   have fin: "finite K" by (simp add: K_def)
   have dis: "\<forall>j1\<in>K. \<forall>j2\<in>K. j1 \<noteq> j2 \<longrightarrow> (R j1) \<inter> (R j2) = {}" by (auto simp add: R_def K_def)
   { fix t
-    from un fin dis have "\<chi>A t = (\<Sum>i\<in>K. \<chi>(A \<inter> R i) t)" by (rule char_split)
+    from un fin dis have "\<chi> A t = (\<Sum>i\<in>K. \<chi> (A \<inter> R i) t)" by (rule char_split)
     also 
     { fix i 
-      have "K=K" and "\<chi>(A \<inter> R i) t = x i * \<chi>(R i) t" 
+      have "K=K" and "\<chi> (A \<inter> R i) t = x i * \<chi> (R i) t" 
 	by (auto simp add: R_def x_def characteristic_function_def)}
-    hence "\<dots> = (\<Sum>i\<in>K. x i * \<chi>(R i) t)" by (rule setsum_cong)
-    finally have "\<chi>A t = (\<Sum>i\<in>K. x i * \<chi>(R i) t)" .
+    hence "\<dots> = (\<Sum>i\<in>K. x i * \<chi> (R i) t)" by (rule setsum_cong)
+    finally have "\<chi> A t = (\<Sum>i\<in>K. x i * \<chi> (R i) t)" .
   }
-  hence "\<chi>A = (\<lambda>t. \<Sum>i\<in>K. x i * \<chi>(R i) t)" by (simp add: ext)
+  hence "\<chi> A = (\<lambda>t. \<Sum>i\<in>K. x i * \<chi> (R i) t)" by (simp add: ext)
   
-  from this Rms nn fin dis un have "(\<Sum>i\<in>K. x i * measure M (R i)) \<in> sfis \<chi>A M"
+  from this Rms nn fin dis un have "(\<Sum>i\<in>K. x i * measure M (R i)) \<in> sfis \<chi> A M"
     by (rule sfis.base)
   also
   { fix i
@@ -687,14 +687,14 @@ lemma sfis_times:
 proof (cases)
   case (base x A S)
   {fix t
-    from prems have "z*f t = (\<Sum>i\<in>S. z * (x i * \<chi>(A i) t))"
+    from prems have "z*f t = (\<Sum>i\<in>S. z * (x i * \<chi> (A i) t))"
       by (simp add: setsum_right_distrib)
     also { fix i 
-      have "S=S" and "z * (x i * \<chi>(A i) t) = (z * x i) * \<chi>(A i) t" by auto }
-    hence "\<dots> = (\<Sum>i\<in>S. (z * x i) * \<chi>(A i) t)" by (rule setsum_cong)
-    finally have "z * f t = (\<Sum>i\<in>S. z * x i * \<chi>(A i) t)" .
+      have "S=S" and "z * (x i * \<chi> (A i) t) = (z * x i) * \<chi> (A i) t" by auto }
+    hence "\<dots> = (\<Sum>i\<in>S. (z * x i) * \<chi> (A i) t)" by (rule setsum_cong)
+    finally have "z * f t = (\<Sum>i\<in>S. z * x i * \<chi> (A i) t)" .
   }
-  hence zf: "(\<lambda>w. z*f w) = (\<lambda>t. \<Sum>i\<in>S. z * x i * \<chi>(A i) t)" by (simp add: ext)
+  hence zf: "(\<lambda>w. z*f w) = (\<lambda>t. \<Sum>i\<in>S. z * x i * \<chi> (A i) t)" by (simp add: ext)
   
   from prems have nn: "nonnegative (\<lambda>w. z*x w)" by (simp add: nonnegative_def zero_le_mult_iff)
 
@@ -713,7 +713,7 @@ lemma assumes ms: "measure_space M"
   shows sfis_setsum: "(\<Sum>i\<in>S. a i) \<in> sfis (\<lambda>t. \<Sum>i\<in>S. f i t) M" (*<*)using S a
 proof (induct)  
   case  empty
-  with ms have "measure M {} \<in> sfis \<chi>{} M" by (simp add: measure_space_def sigma_algebra_def sfis_char)
+  with ms have "measure M {} \<in> sfis \<chi> {} M" by (simp add: measure_space_def sigma_algebra_def sfis_char)
   with ms show ?case by (simp add: setsum_empty measure_space_def positive_def char_empty)
 next
   case (insert s S)
@@ -732,12 +732,12 @@ lemma sfis_intro:
   assumes ms: "measure_space M" and Ams: "\<forall>i \<in> S. A i \<in> measurable_sets M" 
   and nn: "nonnegative x" and S: "finite S"
   shows "(\<Sum>i\<in>S. x i * measure M (A i)) \<in> 
-  sfis (\<lambda>t. \<Sum>i\<in>(S::nat set). x i * \<chi>(A i) t) M"
+  sfis (\<lambda>t. \<Sum>i\<in>(S::nat set). x i * \<chi> (A i) t) M"
 proof -
   { fix i assume iS: "i \<in> S"
-    with ms Ams have "measure M (A i) \<in> sfis \<chi>(A i) M" 
+    with ms Ams have "measure M (A i) \<in> sfis \<chi> (A i) M" 
       by (simp add: sfis_char)
-    with nn have "x i * measure M (A i) \<in> sfis (\<lambda>t. x i * \<chi>(A i) t) M" 
+    with nn have "x i * measure M (A i) \<in> sfis (\<lambda>t. x i * \<chi> (A i) t) M" 
       by (simp add: nonnegative_def sfis_times) 
   }
   with ms S show ?thesis 
@@ -755,7 +755,7 @@ proof (cases)
   case (base x A S)
   { fix t 
     { fix i
-      from prems have "0 \<le> x i * \<chi>(A i) t" by (simp add: nonnegative_def characteristic_function_def)
+      from prems have "0 \<le> x i * \<chi> (A i) t" by (simp add: nonnegative_def characteristic_function_def)
     }
     with prems have "(\<Sum>i\<in>S. 0) \<le> f t"
       by (simp del: setsum_0 setsum_constant add: setsum_mono)
@@ -799,14 +799,14 @@ lemma sfis_rv:
   shows "f \<in> rv M" using f
 proof (cases)
   case (base x A S)
-  hence "f = (\<lambda>t. \<Sum>i\<in>S. x i * \<chi>(A i) t)" 
+  hence "f = (\<lambda>t. \<Sum>i\<in>S. x i * \<chi> (A i) t)" 
     by simp
   also
   { fix i
     assume "i \<in> S"
     from prems have "A i \<in> measurable_sets M"
      by simp
-    with ms have "(\<lambda>t. x i * \<chi>(A i) t) \<in> rv M"
+    with ms have "(\<lambda>t. x i * \<chi> (A i) t) \<in> rv M"
       by (simp add: char_rv const_rv rv_times_rv)
   } with ms
   have "\<dots> \<in> rv M"
@@ -914,29 +914,29 @@ proof cases
 	case (base c C R)
 	{ fix t
 	  { fix i
-	    have "S=S" and "a i * \<chi>(A i \<inter> B n) t = \<chi>(B n) t * (a i * \<chi>(A i) t)" 
+	    have "S=S" and "a i * \<chi> (A i \<inter> B n) t = \<chi> (B n) t * (a i * \<chi> (A i) t)" 
 	      by (auto simp add: characteristic_function_def) }
-	  hence "(\<Sum>i\<in>S. a i * \<chi>(A i \<inter> B n) t) = 
-	    (\<Sum>i\<in>S. \<chi>(B n) t * (a i * \<chi>(A i) t))" 
+	  hence "(\<Sum>i\<in>S. a i * \<chi> (A i \<inter> B n) t) = 
+	    (\<Sum>i\<in>S. \<chi> (B n) t * (a i * \<chi> (A i) t))" 
 	    by (rule setsum_cong)
-	  hence "z*(\<Sum>i\<in>S. a i * \<chi>(A i \<inter> B n) t) = 
-	    z*(\<Sum>i\<in>S. \<chi>(B n) t * (a i * \<chi>(A i) t))" 
+	  hence "z*(\<Sum>i\<in>S. a i * \<chi> (A i \<inter> B n) t) = 
+	    z*(\<Sum>i\<in>S. \<chi> (B n) t * (a i * \<chi> (A i) t))" 
 	    by simp
-	  also have "\<dots> = z * \<chi>(B n) t * (\<Sum>i\<in>S. a i * \<chi>(A i) t)" 
+	  also have "\<dots> = z * \<chi> (B n) t * (\<Sum>i\<in>S. a i * \<chi> (A i) t)" 
 	    by (simp add: setsum_right_distrib[THEN sym])
 	  also 
 	  from prems have "nonnegative s" 
 	    by (simp add: sfis_nn)
 	  with nnu B_def prems 
-	  have "z * \<chi>(B n) t * (\<Sum>i\<in>S. a i * \<chi>(A i) t) \<le> u n t" 
+	  have "z * \<chi> (B n) t * (\<Sum>i\<in>S. a i * \<chi> (A i) t) \<le> u n t" 
 	    by (auto simp add: characteristic_function_def nonnegative_def)
-	  finally have "z*(\<Sum>i\<in>S. a i * \<chi>(A i \<inter> B n) t) \<le> u n t" .
+	  finally have "z*(\<Sum>i\<in>S. a i * \<chi> (A i \<inter> B n) t) \<le> u n t" .
 	}
 	 
 	also
 	from prems ABms have 
 	  "z*(\<Sum>i\<in>S. a i * measure M (A i \<inter> B n)) \<in> 
-	  sfis (\<lambda>t. z*(\<Sum>i\<in>S. a i * \<chi>(A i \<inter> B n) t)) M" 
+	  sfis (\<lambda>t. z*(\<Sum>i\<in>S. a i * \<chi> (A i \<inter> B n) t)) M" 
 	  by (simp add: sfis_intro sfis_times)
 	moreover note xu ms
 	ultimately show ?thesis 
@@ -1177,21 +1177,21 @@ constdefs
 
 lemma sf_norm_help:
   assumes fin: "finite K" and jK: "j \<in> K" and tj: "t \<in> C j" and iK: "\<forall>i\<in>K-{j}. t \<notin> C i"
-  shows "(\<Sum>i\<in>K. (z i) * \<chi>(C i) t) = z j"
+  shows "(\<Sum>i\<in>K. (z i) * \<chi> (C i) t) = z j"
 (*<*)proof -
   from jK have "K = insert j (K-{j})"  by blast
-  also
+  moreover
   from fin have fin2: "finite (K-{j})" and "j \<notin> (K-{j})"  by simp_all
-  hence "(\<Sum>i\<in>insert j (K-{j}). (z i) * \<chi>(C i) t) = (z j * \<chi>(C j) t) + (\<Sum>i\<in>K-{j}. (z i) * \<chi>(C i) t)"
+  hence "(\<Sum>i\<in>insert j (K-{j}). (z i) * \<chi> (C i) t) = (z j * \<chi> (C j) t) + (\<Sum>i\<in>K-{j}. (z i) * \<chi> (C i) t)"
     by (rule setsum_insert)
-  also from tj have "\<dots> = z j + (\<Sum>i\<in>K-{j}. (z i) * \<chi>(C i) t)"
+  moreover from tj have "\<dots> = z j + (\<Sum>i\<in>K-{j}. (z i) * \<chi> (C i) t)"
     by (simp add: characteristic_function_def)
-  also
-  { from iK have "\<forall>i\<in>K-{j}. (z i) * \<chi>(C i) t = 0"
+  moreover
+  { from iK have "\<forall>i\<in>K-{j}. (z i) * \<chi> (C i) t = 0"
       by (auto simp add: characteristic_function_def)
   }
   hence "\<dots> = z j"  by (simp add:setsum_0')
-  finally show ?thesis .
+  ultimately show ?thesis by simp
 qed(*>*)
 
 lemma upclose_sfis: 
@@ -1199,16 +1199,16 @@ lemma upclose_sfis:
   shows "\<exists>c. c \<in> sfis (upclose f g) M" (*<*)using f
 proof -     
   from prems have 
-    "\<exists> z1 z2 C K. f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi>(C i) t) \<and> 
-    g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi>(C i) t) \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i))
+    "\<exists> z1 z2 C K. f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t) \<and> 
+    g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t) \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i))
     \<and> b = (\<Sum>i\<in>K. z2 i * measure M (C i))
     \<and> finite K \<and> (\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {})
     \<and> (\<forall>i \<in> K. C i \<in> measurable_sets M) \<and> (\<Union>i\<in>K. C i) = UNIV
     \<and> nonnegative z1 \<and> nonnegative z2"
     by (rule sfis_present)
         
-  then obtain z1 z2 C K where f: "f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi>(C i) t)" 
-    and g: "g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi>(C i) t)" 
+  then obtain z1 z2 C K where f: "f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t)" 
+    and g: "g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t)" 
     and a2: "a = (\<Sum>i\<in>K. z1 i * measure M (C i))"
     and b2: "b = (\<Sum>i\<in>K. z2 i * measure M (C i))"
     and CK: "finite K \<and> (\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {}) \<and> 
@@ -1220,17 +1220,17 @@ proof -
       by force
     with CK have iK: "\<forall>i\<in>K-{j}. t \<notin> C i"
       by auto
-    from f and g have "max (f t) (g t) = max (\<Sum>i\<in>K. (z1 i) * \<chi>(C i) t) (\<Sum>i\<in>K. (z2 i) * \<chi>(C i) t)" 
+    from f and g have "max (f t) (g t) = max (\<Sum>i\<in>K. (z1 i) * \<chi> (C i) t) (\<Sum>i\<in>K. (z2 i) * \<chi> (C i) t)" 
       by simp
     also
     from CK jK iK tj have "\<dots> = max (z1 j) (z2 j)"
       by (simp add: sf_norm_help)
     also 
-    from CK jK iK tj have "\<dots> = (\<Sum>i\<in>K. (max (z1 i) (z2 i)) * \<chi>(C i) t)"
+    from CK jK iK tj have "\<dots> = (\<Sum>i\<in>K. (max (z1 i) (z2 i)) * \<chi> (C i) t)"
       by (simp add: sf_norm_help)
-    finally have "max (f t) (g t) = (\<Sum>i\<in>K. max (z1 i) (z2 i) * \<chi>(C i) t)" .
+    finally have "max (f t) (g t) = (\<Sum>i\<in>K. max (z1 i) (z2 i) * \<chi> (C i) t)" .
   }
-  hence "upclose f g = (\<lambda>t. (\<Sum>i\<in>K. max (z1 i) (z2 i) * \<chi>(C i) t))"
+  hence "upclose f g = (\<lambda>t. (\<Sum>i\<in>K. max (z1 i) (z2 i) * \<chi> (C i) t))"
     by (simp add: upclose_def)
   also 
   { from z1 z2 have "nonnegative (\<lambda>i. max (z1 i) (z2 i))"
@@ -1521,7 +1521,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 (*<*)proof (rule+)
     (*We don't need the greater case in the book, since our functions are real*)
   def A \<equiv> "(\<lambda>n i. {w. real i/(2::real)^n \<le> f w} \<inter> {w. f w < real (Suc i)/(2::real)^n})"
-  def u \<equiv> "(\<lambda>n t. \<Sum>i\<in>{..<(n*2^n)}-{0}. (real i/(2::real)^n)*\<chi>(A n i) t)" 
+  def u \<equiv> "(\<lambda>n t. \<Sum>i\<in>{..<(n*2^n)}-{0}. (real i/(2::real)^n)*\<chi> (A n i) t)" 
   def x \<equiv> "(\<lambda>n. \<Sum>i\<in>{..<(n*2^n)}-{0}. (real i/(2::real)^n)*measure M (A n i))" 
   
   { fix n 
@@ -1561,7 +1561,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 
       { fix m i assume tai: "t \<in> A m i" and iS: "i \<in> {..<(m*2^m)}"
 	    
-	have usum: "u m t = (\<Sum>j\<in>{..<(m*2^m)}-{0}. real j / (2::real)^m * \<chi>(A m j) t)"
+	have usum: "u m t = (\<Sum>j\<in>{..<(m*2^m)}-{0}. real j / (2::real)^m * \<chi> (A m j) t)"
 	  by (simp add: u_def)
 	    
 	{ fix j assume ne: "i \<noteq> j" 
@@ -1591,16 +1591,16 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	      by (simp add: A_def order_less_le)
 	  qed
 	}
-	hence "\<And>j. i \<noteq> j \<Longrightarrow> \<chi>(A m j) t = 0"
+	hence "\<And>j. i \<noteq> j \<Longrightarrow> \<chi> (A m j) t = 0"
 	  by (simp add: characteristic_function_def)
-	hence "\<And>j. j\<in>{..<(m*2^m)}-{0}-{i} \<Longrightarrow>  real j / (2::real)^m * \<chi>(A m j) t = 0"
+	hence "\<And>j. j\<in>{..<(m*2^m)}-{0}-{i} \<Longrightarrow>  real j / (2::real)^m * \<chi> (A m j) t = 0"
 	  by force
-	with refl have "(\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t) = 
+	with refl have "(\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi> (A m j) t) = 
 	  (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. 0)" 
 	  by (rule setsum_cong)
 	also have "\<dots> = 0"
 	  by (rule setsum_0)
-	finally have sum0: "(\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t) = 0" .
+	finally have sum0: "(\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi> (A m j) t) = 0" .
 	
 	have "u m t = real i / (2::real)^m"
 	proof (cases "i=0")
@@ -1611,7 +1611,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	    by simp
 	  with usum sum0 have "u m t = 0" 
 	    by simp
-	  also from True have "\<dots> = real i / (2::real)^m * \<chi>(A m i) t"
+	  also from True have "\<dots> = real i / (2::real)^m * \<chi> (A m i) t"
 	    by simp
 	  finally show ?thesis using tai
 	    by (simp add: characteristic_function_def)
@@ -1629,13 +1629,13 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	  have "i \<notin> ({..<(m*2^m)}-{0}-{i})" 
 	    by simp
 	  
- 	  with fin have "(\<Sum>j\<in>insert i ({..<(m*2^m)}-{0}-{i}). real j / (2::real)^m * \<chi>(A m j) t)
-	    = real i / (2::real)^m * \<chi>(A m i) t +
-	    (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t)"
+ 	  with fin have "(\<Sum>j\<in>insert i ({..<(m*2^m)}-{0}-{i}). real j / (2::real)^m * \<chi> (A m j) t)
+	    = real i / (2::real)^m * \<chi> (A m i) t +
+	    (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi> (A m j) t)"
 	    by (rule setsum_insert)
- 	  with ins tai have "(\<Sum>j\<in>{..<(m*2^m)}-{0}. real j / (2::real)^m * \<chi>(A m j) t)
+ 	  with ins tai have "(\<Sum>j\<in>{..<(m*2^m)}-{0}. real j / (2::real)^m * \<chi> (A m j) t)
 	    = real i / (2::real)^m +
-	    (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi>(A m j) t)"
+	    (\<Sum>j\<in>{..<(m*2^m)}-{0}-{i}. real j / (2::real)^m * \<chi> (A m j) t)"
 	    by (simp add: characteristic_function_def)
 	  
 	  also note sum0
@@ -1718,7 +1718,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	    have "(2::real) \<noteq> 0"
 	      by simp
 	    hence "real (2*(Suc i)) / ((2::real)^(Suc n)) = real (Suc i) / (2::real)^n"
-	      by (simp only: real_of_nat_mult  realpow.simps) (simp add: mult_div_cancel)
+	      by (simp only: real_of_nat_mult power_real.simps) (simp add: mult_div_cancel)
 	    with ai2 have "f t < real (2*(Suc i)) / (2::real)^(n+1)"
 	     by simp 
 	    with False have tA2: "t \<in> A (n+1) (2*i+1)"	  
@@ -1758,10 +1758,10 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	      by (simp add: order_less_le)
 	    hence "t \<notin> A n i"
 	      by (simp add: A_def)
-	    hence "(real i/(2::real)^n)*\<chi>(A n i) t = 0"
+	    hence "(real i/(2::real)^n)*\<chi> (A n i) t = 0"
 	      by (simp add: characteristic_function_def)
 	  }
-	  with refl have "(\<Sum>i\<in>{..<n * 2 ^ n} - {0}. real i / (2::real)^n * \<chi>(A n i) t)
+	  with refl have "(\<Sum>i\<in>{..<n * 2 ^ n} - {0}. real i / (2::real)^n * \<chi> (A n i) t)
 	    = (\<Sum>i\<in>{..<n * 2 ^ n} - {0}. 0)"
 	    by (rule setsum_cong)
 	  hence "u n t = 0"  by (simp add: u_def)
@@ -1769,9 +1769,9 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	  also 
 	  { fix m
 	    { fix i assume "i \<in> {..<(m*2^m)}-{0}"
-	      hence  "0 \<le> real i / (2::real)^m * \<chi>(A m i) t"
+	      hence  "0 \<le> real i / (2::real)^m * \<chi> (A m i) t"
 		by (simp add: characteristic_function_def real_0_le_divide_iff)
-	    } hence "\<forall>i\<in>{..<(m*2^m)}-{0}. 0 \<le> real i / (2::real)^m * \<chi>(A m i) t"
+	    } hence "\<forall>i\<in>{..<(m*2^m)}-{0}. 0 \<le> real i / (2::real)^m * \<chi> (A m i) t"
 	      by fast
 	    hence "0 \<le> u m t"  by (simp add: u_def setsum_nonneg)
 	  }
@@ -2027,15 +2027,15 @@ qed(*>*)
 
 theorem integral_char: 
   assumes ms: "measure_space M" and mA: "A \<in> measurable_sets M" 
-  shows "\<integral> \<chi>A \<partial> M = measure M A" and "integrable \<chi>A M"
+  shows "\<integral> \<chi> A \<partial> M = measure M A" and "integrable \<chi> A M"
 (*<*)proof -
-  from ms mA have "measure M A \<in> sfis \<chi>A M" 
+  from ms mA have "measure M A \<in> sfis \<chi> A M" 
     by (rule sfis_char)
-  hence nnfis: "measure M A \<in> nnfis \<chi>A M" 
+  hence nnfis: "measure M A \<in> nnfis \<chi> A M" 
     by (rule sfis_nnfis)
-  from this and ms show "\<integral> \<chi>A \<partial> M = measure M A" 
+  from this and ms show "\<integral> \<chi> A \<partial> M = measure M A" 
     by (rule nnfis_integral)
-  from nnfis and ms show "integrable \<chi>A M" 
+  from nnfis and ms show "integrable \<chi> A M" 
     by (rule nnfis_integral) 
 qed(*>*)
 
@@ -2197,7 +2197,7 @@ qed(*>*)
  (* Left out for lack of time   
    
 theorem sf_integral: 
-  assumes M: "measure_space M" and f: "f = (\<lambda>t. \<Sum>i\<in>(S::nat set). x i * \<chi>(A i) t)"
+  assumes M: "measure_space M" and f: "f = (\<lambda>t. \<Sum>i\<in>(S::nat set). x i * \<chi> (A i) t)"
   and A: "\<forall>i\<in>S. A i \<in> measurable_sets M" and S: "finite S"
   shows "\<integral> f \<partial> M = (\<Sum>i\<in>S. x i * measure M (A i))" 
   and "integrable f M"
@@ -2237,16 +2237,16 @@ proof -
   from rv have "(a^n)*law M f {a..} = (a^n)*measure M {w. a \<le> f w}"
     by (simp add: distribution_def vimage_def)
   also 
-  from ms ams have int2: "integrable \<chi>{w. a \<le> f w} M" 
-    and eq2: "\<dots> = (a^n)*\<integral> \<chi>{w. a \<le> f w} \<partial> M"
+  from ms ams have int2: "integrable \<chi> {w. a \<le> f w} M" 
+    and eq2: "\<dots> = (a^n)*\<integral> \<chi> {w. a \<le> f w} \<partial> M"
     by (auto simp add: integral_char)
   note eq2 also 
-  from int2 have int3: "integrable (\<lambda>t. (a^n)*\<chi>{w. a \<le> f w} t) M" 
-    and eq3: "\<dots> = \<integral> (\<lambda>t. (a^n)*\<chi>{w. a \<le> f w} t) \<partial> M"
+  from int2 have int3: "integrable (\<lambda>t. (a^n)*\<chi> {w. a \<le> f w} t) M" 
+    and eq3: "\<dots> = \<integral> (\<lambda>t. (a^n)*\<chi> {w. a \<le> f w} t) \<partial> M"
     by (auto simp add: integral_times)
   note eq3 also
   { fix t
-    from a have "(a^n)*\<chi>{w. a \<le> f w} t \<le> \<bar>f t\<bar> ^ n"
+    from a have "(a^n)*\<chi> {w. a \<le> f w} t \<le> \<bar>f t\<bar> ^ n"
     proof (cases "a \<le> f t")
       case False 
       thus ?thesis 

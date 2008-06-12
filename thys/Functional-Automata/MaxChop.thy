@@ -1,4 +1,4 @@
-(*  ID:         $Id: MaxChop.thy,v 1.8 2008-06-11 14:22:50 lsf37 Exp $
+(*  ID:         $Id: MaxChop.thy,v 1.9 2008-06-12 06:57:17 lsf37 Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -26,40 +26,32 @@ definition
 "reducing splitf =
  (!xs ys zs. splitf xs = (ys,zs) & ys ~= [] --> length zs < length xs)"
 
-consts
- chopr :: "'a splitter * 'a list => 'a list list * 'a list"
-recdef (permissive) chopr "measure (length o snd)"
-"chopr (splitf,xs) = (if reducing splitf
+function chop :: "'a splitter \<Rightarrow> 'a list \<Rightarrow> 'a list list \<times> 'a list" where
+  [simp del]: "chop splitf xs = (if reducing splitf
                       then let pp = splitf xs
-                           in if fst(pp)=[] then ([],xs)
-                           else let qq = chopr (splitf,snd pp)
-                                in (fst pp # fst qq,snd qq)
+                           in if fst pp = [] then ([], xs)
+                           else let qq = chop splitf (snd pp)
+                                in (fst pp # fst qq, snd qq)
                       else arbitrary)"
+by pat_completeness auto
 
-definition
- chop :: "'a splitter  => 'a chopper" where
-"chop splitf xs = chopr(splitf,xs)"
+termination apply (relation "measure (length o snd)")
+apply (auto simp: reducing_def)
+apply (case_tac "splitf xs")
+apply auto
+done
 
-(* Termination of chop *)
+lemma chop_rule: "reducing splitf ==>
+  chop splitf xs = (let (pre, post) = splitf xs
+                    in if pre = [] then ([], xs)
+                       else let (xss, zs) = chop splitf post
+                            in (pre # xss,zs))"
+apply (simp add: chop.simps)
+apply (simp add: Let_def split: split_split)
+done
 
 lemma reducing_maxsplit: "reducing(%qs. maxsplit P ([],qs) [] qs)"
 by (simp add: reducing_def maxsplit_eq)
-
-recdef_tc chopr_tc: chopr
-apply(unfold reducing_def)
-apply(blast dest: sym)
-done
-
-lemmas chopr_rule = chopr.simps[OF chopr_tc]
-
-lemma chop_rule: "reducing splitf ==>
-  chop splitf xs = (let (pre,post) = splitf xs
-                    in if pre=[] then ([],xs)
-                       else let (xss,zs) = chop splitf post
-                            in (pre#xss,zs))"
-apply(simp add: chop_def chopr_rule)
-apply(simp add: chop_def Let_def split: split_split)
-done
 
 lemma is_maxsplitter_reducing:
  "is_maxsplitter P splitf ==> reducing splitf";

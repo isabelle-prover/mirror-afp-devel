@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Location.thy,v 1.7 2008-06-11 14:22:58 lsf37 Exp $
+    ID:          $Id: Location.thy,v 1.8 2008-06-12 06:57:24 lsf37 Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -7,7 +7,9 @@
 
 header {* Location *}
 
-theory Location imports AttributesIndep Value begin 
+theory Location
+imports AttributesIndep Value
+begin 
 
 text {* A storage location can be a field of an object, a static field,
  the length of an array, or the contents of an array.  
@@ -131,12 +133,12 @@ therefore keep the verification simpler.
 
 lemma ref_loc [simp]: "\<lbrakk>isObjV r; typeof r \<le> dtype f\<rbrakk> \<Longrightarrow> ref (r..f) = r"
   apply (case_tac r)
-  apply (tactic {* ALLGOALS (case_tac "f") *})
+  apply (case_tac [!] f)
   apply (simp_all)
   done
 
 lemma obj_arr_loc [simp]: "isArrV r \<Longrightarrow> ref (r.[i]) = r"
-   by (cases r) simp_all
+  by (cases r) simp_all
 
 lemma obj_arr_len [simp]: "isArrV r \<Longrightarrow> ref (arr_len r) = r"
   by (cases r) simp_all

@@ -97,12 +97,16 @@ and <a href="http://wwwmath.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a>
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	None</td></tr>
+    <tr><td class="links">Older releases:
+	    <ul>
+	    <li>Isabelle 2007: <a href="../release/afp-Program-Conflict-Analysis-2007-12-20.tar.gz">afp-Program-Conflict-Analysis-2007-12-20.tar.gz</a>
+		</ul>
+	</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-06-11 14:23:03 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-06-12 06:57:30 $, $Revision: 1.1 
 $</div></body>
 </html>

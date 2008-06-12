@@ -4,7 +4,7 @@
 *)
 header "List Interleaving Operator"
 theory Interleave
-imports Main Permutation Misc SublistOrder
+imports Main Permutation Misc
 begin
 text_raw {*\label{thy:Interleave}*}
 
@@ -29,22 +29,15 @@ defs
   list_set_append[simp]: "a\<odot>S == op @ a ` S"
 
 subsubsection "The interleaving operator"
-consts interleave_helper :: "'a list * 'a list \<Rightarrow> 'a list set"
 
-syntax
+function
   interleave :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list set" (infixr "\<otimes>" 64)
-translations
-  "a\<otimes>b" == "interleave_helper (a,b)"
-
-recdef interleave_helper "measure(\<lambda> (x,y) . size x + size y)"
+where
   "[]\<otimes>b = {b}"
-  "a\<otimes>[] = {a}"
-  "a#l \<otimes> b#r = ((a\<cdot>(l \<otimes> b#r)) \<union> (b\<cdot>(a#l \<otimes> r)))"
-
-lemma [simp]: "a\<otimes>[]={a}" 
-  apply (case_tac a)
-  apply(auto)
-done
+  | "a\<otimes>[] = {a}"
+  | "a#l \<otimes> b#r = ((a\<cdot>(l \<otimes> b#r)) \<union> (b\<cdot>(a#l \<otimes> r)))"
+by pat_completeness auto
+termination by lexicographic_order
 
 
 subsection "Properties"
@@ -85,7 +78,7 @@ done
 
 (* TODO: Is this wise as default simp ?*)
 lemma interleave_length[rule_format, simp]: "ALL x : a\<otimes>b . length x = length a + length b"
-  apply(induct_tac rule: interleave_helper.induct)
+  apply(induct_tac rule: interleave.induct)
   apply(auto)
 done
 
@@ -98,7 +91,7 @@ lemma interleave_same[simp]: "y\<in>l\<otimes>y = (l=[])"
 done
 
 lemma interleave_comm[simp]: "a\<otimes>b = b\<otimes>a" (is "?P f a b")
-  apply(induct_tac rule: interleave_helper.induct)
+  apply(induct_tac rule: interleave.induct)
   apply(auto)
 done
 
@@ -114,7 +107,7 @@ lemma interleave_cont_rev_conc[simp]: "b@a \<in> a\<otimes>b"
 done
 
 lemma interleave_not_empty: "a\<otimes>b ~= {}" 
-	apply(induct rule: interleave_helper.induct)
+	apply(induct rule: interleave.induct)
 	apply(auto)
 done
 
@@ -318,10 +311,10 @@ qed
 lemma ileq_interleave: "w\<in>w1\<otimes>w2 \<Longrightarrow> w1\<preceq>w & w2\<preceq>w"
   by (unfold ileq_interleave_alt, auto)
 
-lemma ilt_ex_notempty: "x<y = (EX lb . lb ~= [] & y\<in>lb\<otimes>x)"
-  apply(unfold ilt_def ileq_interleave_alt, auto)
-  apply(case_tac lb)
-  apply(auto)
+lemma ilt_ex_notempty: "x < y \<longleftrightarrow> (\<exists>xs. xs \<noteq> [] \<and> y \<in> xs \<otimes> x)"
+  apply (auto simp add: order_less_le ileq_interleave_alt)
+  apply (case_tac lb)
+  apply auto
 done
 
 

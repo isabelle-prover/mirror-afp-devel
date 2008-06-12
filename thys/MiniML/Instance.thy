@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Instance.thy
-   ID:        $Id: Instance.thy,v 1.10 2008-06-11 14:22:58 lsf37 Exp $
+   ID:        $Id: Instance.thy,v 1.11 2008-06-12 06:57:24 lsf37 Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -30,9 +30,18 @@ definition
   is_bound_typ_instance :: "[typ, type_scheme] => bool"  (infixr "<|" 70) where
   is_bound_typ_instance: "t <| sch = (? S. t = (bound_typ_inst S sch))"
 
-instance type_scheme :: ord ..
-defs (overloaded)
-  le_type_scheme_def: "sch' <= (sch::type_scheme) == !t. t <| sch' --> t <| sch"
+instantiation type_scheme :: ord
+begin
+
+definition
+  le_type_scheme_def: "sch' <= (sch::type_scheme) \<longleftrightarrow> (!t. t <| sch' --> t <| sch)"
+
+definition
+  "(sch' < (sch \<Colon> type_scheme)) \<longleftrightarrow> sch' \<le> sch \<and> sch' \<noteq> sch"
+
+instance ..
+
+end
 
 consts
   subst_to_scheme :: "[nat => type_scheme, typ] => type_scheme"
@@ -40,10 +49,18 @@ primrec
   "subst_to_scheme B (TVar n) = (B n)"
   "subst_to_scheme B (t1 -> t2) = ((subst_to_scheme B t1) =-> (subst_to_scheme B t2))"
   
-instance list :: (ord)ord ..
-defs (overloaded)
-  le_env_def: "A <= B == length B = length A & (!i. i < length A --> A!i <= B!i)"
+instantiation list :: (ord) ord
+begin
 
+definition
+  le_env_def: "A \<le> B \<longleftrightarrow> length B = length A \<and> (!i. i < length A --> A!i <= B!i)"
+
+definition
+  "(A < (B \<Colon> 'a list)) \<longleftrightarrow> A \<le> B \<and> A \<noteq> B"
+
+instance ..
+
+end
 
 text "lemmas for instatiation"
 
@@ -92,7 +109,7 @@ lemma subst_to_scheme_inverse:
     subst_to_scheme (%k. if n <= k then BVar (k - n) else FVar k)  
       (bound_typ_inst (%k. TVar (k + n)) sch) = sch"
   apply (induct sch)
-    apply (simp add: le_def)
+    apply (simp add: not_le)
    apply (simp add: le_add2 diff_add_inverse2)
   apply simp
   done

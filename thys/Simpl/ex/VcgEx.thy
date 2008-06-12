@@ -1,4 +1,4 @@
-(*  ID:          $Id: VcgEx.thy,v 1.5 2008-06-11 14:23:01 lsf37 Exp $
+(*  ID:          $Id: VcgEx.thy,v 1.6 2008-06-12 06:57:28 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -666,10 +666,10 @@ qed
 text {* There are different rules available to prove procedure calls,
 depending on the kind of postcondition and whether or not the
 procedure is recursive or even mutually recursive. 
-See for example @{thm [source] ProcRec1}, 
-@{thm [source] ProcNoRec1}. 
+See for example @{thm [source] HoarePartial.ProcRec1}, 
+@{thm [source] HoarePartial.ProcNoRec1}. 
 They are all derived from the most general rule
-@{thm [source] ProcRec}. 
+@{thm [source] HoarePartial.ProcRec}. 
 All of them have some side-condition concerning definedness of the procedure. 
 They can be
 solved in a uniform fashion. Thats why we have created the method 
@@ -707,7 +707,7 @@ print_locale odd_even_clique
 text {* To prove the procedure calls to @{term "odd"} respectively 
 @{term "even"} correct we first derive a rule to justify that we
 can assume both specifications to verify the bodies. This rule can
-be derived from the general @{thm [source] ProcRec} rule. An ML function does 
+be derived from the general @{thm [source] HoarePartial.ProcRec} rule. An ML function does 
 this work:
 *}
 
@@ -869,10 +869,10 @@ lemma "{t. t may_only_modify_globals Z in [next]}
 text {* If the verification condition generator works on a procedure call
 it checks whether it can find a modifies clause in the context. If one
 is present the procedure call is simplified before the Hoare rule 
-@{thm [source] ProcSpec} is applied. Simplification of the procedure call means,
+@{thm [source] HoarePartial.ProcSpec} is applied. Simplification of the procedure call means,
 that the ``copy back'' of the global components is simplified. Only those
 components that occur in the modifies clause will actually be copied back.
-This simplification is justified by the rule @{thm [source] ProcModifyReturn}. 
+This simplification is justified by the rule @{thm [source] HoarePartial.ProcModifyReturn}. 
 So after this simplification all global components that do not appear in
 the modifies clause will be treated as local variables. 
 *}
@@ -1028,7 +1028,7 @@ text {* Insertion sort is not implemented recursively here but with a while
 loop. Note that the while loop is not annotated with an invariant in the
 procedure definition. The invariant only comes into play during verification.
 Therefore we will annotate the body during the proof with the
-rule @{thm [source] annotateI}.
+rule @{thm [source] HoarePartial.annotateI}.
 *}
 
 
@@ -1046,7 +1046,7 @@ lemma (in insertSort_impl) insertSort_body_spec:
                   sorted (op \<le>) (map \<acute>cont Rs) \<and> set Qs \<union> set Rs = set Ps \<and>
                   \<acute>cont = \<^bsup>\<sigma>\<^esup>cont \<rbrace>
           DO \<acute>q :== \<acute>p;; \<acute>p :== \<acute>p\<rightarrow>\<acute>next;; \<acute>r :== CALL insert(\<acute>q,\<acute>r) OD;;
-          \<acute>p :== \<acute>r" in annotateI)
+          \<acute>p :== \<acute>r" in HoarePartial.annotateI)
   apply vcg
   apply   fastsimp
   prefer 2
@@ -1249,12 +1249,12 @@ lemma CombineStrip':
 proof -
   from deriv_strip [simplified c'']
   have "\<Gamma>,\<Theta>\<turnstile> P (strip_guards (- F) c') UNIV,UNIV"
-    by (rule MarkGuardsD)
+    by (rule HoarePartialProps.MarkGuardsD)
   with deriv 
   have "\<Gamma>,\<Theta>\<turnstile> P c' Q,A"
-    by (rule CombineStrip)
+    by (rule HoarePartialProps.CombineStrip)
   hence "\<Gamma>,\<Theta>\<turnstile> P mark_guards False c' Q,A"
-    by (rule MarkGuardsI)
+    by (rule HoarePartialProps.MarkGuardsI)
   thus ?thesis
     by (simp add: c)
 qed
@@ -1262,7 +1262,7 @@ qed
 
 text {* We can then combine the prove that no fault will occur with the
 functional proof of the programme without guards to get the full prove by
-the rule @{thm CombineStrip}
+the rule @{thm HoarePartialProps.CombineStrip}
 *}
 
 
@@ -1466,7 +1466,7 @@ lemma "\<Gamma>\<turnstile> \<lbrace>\<acute>N = n \<and> \<acute>M = m\<rbrace>
            LEMMA foo_lemma 
               \<acute>N :== \<acute>N + 1;; \<acute>M :== \<acute>M + 1
            END"
-          in annotate_normI)
+          in HoarePartial.annotate_normI)
   apply vcg
   apply simp
   done

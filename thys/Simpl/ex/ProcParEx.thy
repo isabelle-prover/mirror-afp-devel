@@ -1,4 +1,4 @@
-(*  ID:          $Id: ProcParEx.thy,v 1.6 2008-06-11 14:23:00 lsf37 Exp $
+(*  ID:          $Id: ProcParEx.thy,v 1.7 2008-06-12 06:57:28 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -39,7 +39,7 @@ lemma DynProcProcPar':
  assumes result: "\<forall>s t. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>(R s t) result s t Q,A" 
  assumes q: "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>(P' Z) Call q (Q' Z),(A' Z)"
  shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P dynCall init p return result Q,A"
-apply (rule DynProcProcPar [OF _ result q])
+apply (rule HoarePartial.DynProcProcPar [OF _ result q])
 apply (insert adapt)
 apply fast
 done
@@ -49,7 +49,7 @@ lemma conseq_exploit_pre':
              "\<lbrakk>\<forall>s \<in> S. \<Gamma>,\<Theta> \<turnstile> ({s} \<inter> P) c Q,A\<rbrakk>
               \<Longrightarrow>
               \<Gamma>,\<Theta>\<turnstile> (P \<inter> S)c Q,A"
-  apply (rule Conseq)
+  apply (rule HoarePartialDef.Conseq)
   apply clarify
   apply (rule_tac x="{s} \<inter> P" in exI)  
   apply (rule_tac x="Q" in exI)  
@@ -122,14 +122,14 @@ procedures
   \<lbrace>\<acute>k = mx leq \<^bsup>\<sigma>\<^esup>n \<^bsup>\<sigma>\<^esup>m\<rbrace>"
 
 
-lemma (in Max_impl ) Max_spec: 
+lemma (in Max_impl ) Max_spec1: 
 shows
 "\<forall>\<sigma> leq. \<Gamma>\<turnstile> 
   ({\<sigma>} \<inter> \<lbrace> (\<forall>\<tau>. \<Gamma>\<turnstile>{\<tau>} \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) \<lbrace>\<acute>b = (leq \<^bsup>\<tau>\<^esup>n \<^bsup>\<tau>\<^esup>m)\<rbrace>) \<and> 
       (\<forall>\<tau>. \<Gamma>\<turnstile> {\<tau>} \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) {t. t may_only_modify_globals \<tau> in []})\<rbrace>)
     \<acute>k :== PROC Max(\<acute>compare,\<acute>n,\<acute>m)
   \<lbrace>\<acute>k = mx leq \<^bsup>\<sigma>\<^esup>n \<^bsup>\<sigma>\<^esup>m\<rbrace>"
-apply (hoare_rule ProcNoRec1)
+apply (hoare_rule HoarePartial.ProcNoRec1)
 apply (intro allI)
 apply (rule conseq_exploit_pre')
 apply (rule)
@@ -153,14 +153,14 @@ proof -
  qed
 
 
-lemma (in Max_impl) Max_spec: 
+lemma (in Max_impl) Max_spec2: 
 shows
 "\<forall>\<sigma> leq. \<Gamma>\<turnstile> 
   ({\<sigma>} \<inter> \<lbrace>(\<forall>\<tau>. \<Gamma>\<turnstile> {\<tau>} \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) \<lbrace>\<acute>b = (leq \<^bsup>\<tau>\<^esup>n \<^bsup>\<tau>\<^esup>m)\<rbrace>) \<and> 
       (\<forall>\<tau>. \<Gamma>\<turnstile> {\<tau>} \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) {t. t may_only_modify_globals \<tau> in []})\<rbrace>)
     \<acute>k :== PROC Max(\<acute>compare,\<acute>n,\<acute>m)
   \<lbrace>\<acute>k = mx leq \<^bsup>\<sigma>\<^esup>n \<^bsup>\<sigma>\<^esup>m\<rbrace>"
-apply (hoare_rule ProcNoRec1)
+apply (hoare_rule HoarePartial.ProcNoRec1)
 apply (intro allI)
 apply (rule conseq_exploit_pre')
 apply (rule)
@@ -169,7 +169,7 @@ apply vcg
 apply (clarsimp simp add: mx_def)
 done
 
-lemma (in Max_impl) Max_spec: 
+lemma (in Max_impl) Max_spec3: 
 shows
 "\<forall>n m leq. \<Gamma>\<turnstile> 
   (\<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace>  \<inter> 
@@ -177,7 +177,7 @@ shows
      (\<forall>\<tau>. \<Gamma>\<turnstile> {\<tau>} \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) {t. t may_only_modify_globals \<tau> in []})\<rbrace>)
     \<acute>k :== PROC Max(\<acute>compare,\<acute>n,\<acute>m)
   \<lbrace>\<acute>k = mx leq n m\<rbrace>"
-apply (hoare_rule ProcNoRec1)
+apply (hoare_rule HoarePartial.ProcNoRec1)
 apply (intro allI)
 apply (rule conseq_exploit_pre')
 apply (rule)
@@ -186,13 +186,13 @@ apply vcg
 apply (clarsimp simp add: mx_def)
 done
 
-lemma (in Max_impl) Max_spec: 
+lemma (in Max_impl) Max_spec4: 
 shows
 "\<forall>n m leq. \<Gamma>\<turnstile> 
   (\<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace> \<inter> \<lbrace>\<forall>\<tau>. \<Gamma>\<turnstile> {\<tau>} \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) \<lbrace>\<acute>b = (leq \<^bsup>\<tau>\<^esup>n \<^bsup>\<tau>\<^esup>m)\<rbrace>\<rbrace>)
     \<acute>k :== PROC Max(\<acute>compare,\<acute>n,\<acute>m)
   \<lbrace>\<acute>k = mx leq n m\<rbrace>"
-apply (hoare_rule ProcNoRec1)
+apply (hoare_rule HoarePartial.ProcNoRec1)
 apply (intro allI)
 apply (rule conseq_exploit_pre')
 apply (rule)
@@ -218,14 +218,14 @@ proof -
 qed
 
 
-lemma (in Max_impl) Max_spec:
+lemma (in Max_impl) Max_spec5:
 shows
 "\<forall>n m leq. \<Gamma>\<turnstile> 
   (\<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace> \<inter> \<lbrace>\<forall>n' m'. \<Gamma>\<turnstile> \<lbrace>\<acute>n=n' \<and> \<acute>m=m'\<rbrace> \<acute>b :== PROC \<acute>compare(\<acute>n,\<acute>m) \<lbrace>\<acute>b = (leq n' m')\<rbrace>\<rbrace>)
     \<acute>k :== PROC Max(\<acute>compare,\<acute>n,\<acute>m)
   \<lbrace>\<acute>k = mx leq n m\<rbrace>"
 term "\<lbrace>{s. \<^bsup>s\<^esup>n = n' \<and> \<^bsup>s\<^esup>m = m'} = X\<rbrace>"
-apply (hoare_rule ProcNoRec1)
+apply (hoare_rule HoarePartial.ProcNoRec1)
 apply (intro allI)
 apply (rule conseq_exploit_pre')
 apply (rule)
@@ -245,15 +245,15 @@ locale Max_test' = Max_impl + LEQ_impl
 lemma (in Max_test') 
   shows
   "\<forall>n m. \<Gamma>\<turnstile> \<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace> \<acute>k :== CALL Max(LEQ_'proc,\<acute>n,\<acute>m) \<lbrace>\<acute>k = mx (op \<le>) n m\<rbrace>"
-apply vcg
-apply (rule_tac x="op \<le>" in exI)
-apply clarsimp
-thm LEQ_spec
-apply (rule LEQ_spec [rule_format])
-done
+proof -
+  note Max_spec = Max_spec5
+  show ?thesis
+    apply vcg
+    apply (rule_tac x="op \<le>" in exI)
+    apply clarsimp
+    thm LEQ_spec
+    apply (rule LEQ_spec [rule_format])
+    done
+qed
 
 end
-
-
-
-

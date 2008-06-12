@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: AttributesIndep.thy,v 1.6 2008-06-11 14:22:58 lsf37 Exp $
+    ID:          $Id: AttributesIndep.thy,v 1.7 2008-06-12 06:57:24 lsf37 Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>  and  
                  Nicole Rauch <rauch at informatik.uni-kl.de>, 2005
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
@@ -8,7 +8,9 @@
 
 header {* Program-Independent Lemmas on Attributes *}
 
-theory AttributesIndep imports Attributes  begin
+theory AttributesIndep
+imports "../Isa_Counter_Store/Attributes"
+begin
 
 text {* The following lemmas validate the functions defined in the Attributes theory.
 They also aid in subsequent proving tasks. Since they are

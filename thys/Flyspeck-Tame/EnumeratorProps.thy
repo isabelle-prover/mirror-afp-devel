@@ -1,4 +1,4 @@
-(*  ID:         $Id: EnumeratorProps.thy,v 1.5 2008-06-11 14:22:50 lsf37 Exp $
+(*  ID:         $Id: EnumeratorProps.thy,v 1.6 2008-06-12 06:57:17 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -82,9 +82,6 @@ lemmas enumBase_simps = enumBase_length enumBase_bound
 
 
 (********** enumAppend ************)
-
-lemma enumAppend_length1: "(\<forall> ls \<in> set lss. length ls = k) \<Longrightarrow> ls2 \<in> set (enumAppend nmax lss) \<Longrightarrow> length ls2 = k + 1"
-by (auto simp: enumAppend_def)
 
 lemma enumAppend_length: "(\<forall> ls \<in> set lss. length ls = k) \<Longrightarrow> (\<forall> ls2 \<in> set (enumAppend nmax lss). length ls2 = Suc k)"
 by (auto simp: enumAppend_def)

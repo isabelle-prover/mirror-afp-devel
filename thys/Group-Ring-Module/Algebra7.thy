@@ -3295,16 +3295,6 @@ apply (rule impI) apply (erule conjE)
         simp add:funcset_mem subsetD, simp)
 done
 
-lemma (in Module) l_comb_mem_linear_span:"\<lbrakk>ideal R A; H \<subseteq> carrier M;
-      s \<in> {j. j \<le> (n::nat)} \<rightarrow> A; f \<in> {j. j \<le> n} \<rightarrow>  H\<rbrakk> \<Longrightarrow>
-       l_comb R M n s f \<in> linear_span R M A H"
-apply (case_tac "H = {}", simp add:linear_span_def)
- apply (frule_tac x = 0 in funcset_mem[of f "{j. j \<le> n}" "{}"], simp)
- apply blast
-apply (simp add:linear_span_def)
-apply blast
-done
-
 lemma (in Module) l_comb_sc:"\<lbrakk>ideal R A; H \<subseteq> carrier M; r \<in> carrier R; 
       s \<in> {j. j \<le> (n::nat)} \<rightarrow> A;  g \<in> {j. j \<le> n} \<rightarrow>  H\<rbrakk> \<Longrightarrow>
 r \<cdot>\<^sub>s (nsum M (\<lambda>k. (s k) \<cdot>\<^sub>s (g k)) n) = nsum M (\<lambda>k. r \<cdot>\<^sub>s ((s k) \<cdot>\<^sub>s (g k))) n" 
@@ -5830,7 +5820,7 @@ lemma (in Module) unique_expression5:"\<lbrakk>free_generator R M H;
 apply (cut_tac sc_Ring, frule Ring.ring_is_ag[of R],
        frule Ring.whole_ideal, 
        frule free_generator_sub[of H]) 
-apply (rule contrapos_pp, simp+, simp add:subset_def)
+apply (rule contrapos_pp, simp+, simp add:subset_eq)
  apply (erule exE, erule conjE) 
  apply (case_tac "n = 0", simp)
   apply (frule_tac f = t and n = m and A = "carrier R" and 

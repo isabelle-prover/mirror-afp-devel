@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: HomFunctors.thy,v 1.11 2008-06-11 14:22:50 lsf37 Exp $
+    ID:          $Id: HomFunctors.thy,v 1.12 2008-06-12 06:57:16 lsf37 Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 
 Define homfunctors, prove that they are functors.
@@ -53,9 +53,9 @@ proof (rule funcsetI)
   assume B: "B \<in> Ob"
   have "Hom(A,_)\<^sub>\<o> B = Hom A B"
     using B by (simp add: homf_def)
-  also have "\<dots> \<in> ob Set"
+  moreover have "\<dots> \<in> ob Set"
     by (simp add: U_def Set_def set_cat_def)
-  finally show "Hom(A,_)\<^sub>\<o> B \<in> ob Set" .
+  ultimately show "Hom(A,_)\<^sub>\<o> B \<in> ob Set" by simp
 qed
 
 

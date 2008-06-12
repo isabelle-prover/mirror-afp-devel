@@ -413,7 +413,7 @@ apply (simp add:val_t2p,
        frule value_zero_nonzero[of "vv 0" "x"], assumption+,
        simp add:val_exp_ring[THEN sym], simp add:asprod_n_0,
        simp add:aadd_0_r,
-       cut_tac k = m in Nat.less_le_trans[of "0" "2"], simp, assumption+)
+       cut_tac z = m in less_le_trans[of "0" "2"], simp, assumption+)
 done
 
 lemma (in Corps) Approximation1_5Tr3:"\<lbrakk>vals_nonequiv K (Suc n) vv; 
@@ -550,8 +550,8 @@ apply (frule_tac a = aa and x = x in Approximation1_5Tr7[of _ "vv" _ "n"],
        cut_tac y = "Suc l" in le_maxI1[of "2"],
        cut_tac y = "Suc l" in le_maxI2[of _ "2"],
        cut_tac n = l in lessI,
-       frule_tac i = l and j = "Suc l" and k = "max 2 (Suc l)" in 
-         Nat.less_le_trans, assumption+,
+       frule_tac x = l and y = "Suc l" and z = "max 2 (Suc l)" in 
+         less_le_trans, assumption+,
        thin_tac "Suc l \<le> max 2 (Suc l)", thin_tac "l < Suc l",
        drule_tac a = "max 2 (Suc l)" in forall_spec, simp,
        drule_tac a = "max 2 (Suc l)" in forall_spec, assumption) 
@@ -1447,8 +1447,8 @@ apply (frule_tac j = j in  app_LB[of  "n" "vv" "x" _ "m"],
        simp, assumption,
        subgoal_tac "(\<Psi>\<^bsub>K (Suc n) vv x m\<^esub>) j < N", blast)
 apply (frule_tac l = j and n = "Suc n" and f = "\<Psi>\<^bsub>K (Suc n) vv x m\<^esub>" in m_max_gt,
-       frule_tac i = "(\<Psi>\<^bsub>K (Suc n) vv x m\<^esub>) j" and 
-       j = "m_max (Suc n) (\<Psi>\<^bsub>K (Suc n) vv x m\<^esub>)" and k = N in Nat.le_less_trans, 
+       frule_tac x = "(\<Psi>\<^bsub>K (Suc n) vv x m\<^esub>) j" and 
+       y = "m_max (Suc n) (\<Psi>\<^bsub>K (Suc n) vv x m\<^esub>)" and z = N in le_less_trans, 
        assumption+)
 done
 
@@ -1523,7 +1523,7 @@ apply (rule ballI)+
  
 apply (rule allI, rule impI,
        cut_tac P = "P j" in representative_of_pd_valuation, simp,
-       subst val_t2p, assumption+,
+       subst val_t2p [where v="\<nu>\<^bsub>K P j\<^esub>"], assumption+,
        rule aadd_two_pos, simp+)
 done
 
@@ -1761,11 +1761,11 @@ apply (frule ring_n_pd[of n P])
 
  apply (rule allI, rule impI, drule_tac a = j in forall_spec, assumption+,
         cut_tac invf_closed1[of x], simp, erule conjE)
- apply (subst val_t2p, simp,
+ apply (subst val_t2p [where v="\<nu>\<^bsub>K P j\<^esub>"], simp,
         rule mem_ring_n_pd_mem_K[of "n" "P" "y"], assumption+,
         frule_tac a = j in forall_spec1, simp,
         simp add:zero_in_ring_n_pd_zero_K)
- apply (subst value_of_inv, simp,
+ apply (subst value_of_inv [where v="\<nu>\<^bsub>K P j\<^esub>"], simp,
         simp add:ring_n_pd_def Sr_def, assumption+)
  apply (frule_tac x = "(\<nu>\<^bsub>K (P j)\<^esub>) x" and y = "(\<nu>\<^bsub>K (P j)\<^esub>) y" in ale_diff_pos,
         simp add:diff_ant_def,
@@ -2473,7 +2473,7 @@ apply (frule value_Zl_mI[of "n" "P" "I" "n"], assumption+, simp)
  apply (simp add:value_mI_genTr1)  
 
  apply (rule allI, rule impI) apply (simp add:cmp_def)
- apply (subst val_t2p, assumption+)
+ apply (subst val_t2p [where v="\<nu>\<^bsub>K P n\<^esub>"], assumption+)
  apply (simp add:Zl_mI_mem_K)
  apply (simp add:value_mI_genTr1) 
 
@@ -2573,7 +2573,7 @@ apply (frule val_LI_pos[of "n" "P" "I" "n"], assumption+, simp,
 
  apply (frule_tac l = ja in transpos_mem[of "j" "n" "n"], simp+)
 
- apply (subst val_t2p, assumption+) 
+ apply (subst val_t2p [where v="\<nu>\<^bsub>K P j\<^esub>"], assumption+) 
  apply (simp add:Zl_mI_mem_K)
  apply (simp add:value_mI_genTr1)
  apply (cut_tac k = ja in transpos_noteqTr[of "n" _ "j"], simp+) 

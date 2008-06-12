@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMDefensive.thy
-    ID:         $Id: JVMDefensive.thy,v 1.6 2008-06-11 14:22:55 lsf37 Exp $
+    ID:         $Id: JVMDefensive.thy,v 1.7 2008-06-12 06:57:20 lsf37 Exp $
     Author:     Gerwin Klein
     Copyright   GPL
 *)
@@ -153,7 +153,7 @@ syntax (xsymbols)
 defs
   exec_all_d_def1: "P \<turnstile> \<sigma> -jvmd\<rightarrow> \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> (exec_1_d P)\<^sup>*"
 
-lemma exec_1_d_def:
+lemma exec_1_d_eq:
   "exec_1_d P = {(s,t). \<exists>\<sigma>. s = Normal \<sigma> \<and> t = TypeError \<and> exec_d P \<sigma> = TypeError} \<union> 
                 {(s,t). \<exists>\<sigma> \<sigma>'. s = Normal \<sigma> \<and> t = Normal \<sigma>' \<and> exec_d P \<sigma> = Normal (Some \<sigma>')}"
 by (auto elim!: exec_1_d.cases intro!: exec_1_d.intros)

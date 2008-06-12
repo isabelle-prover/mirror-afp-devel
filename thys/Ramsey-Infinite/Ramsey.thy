@@ -1,5 +1,5 @@
 
-(* $Id: Ramsey.thy,v 1.12 2008-06-11 14:22:59 lsf37 Exp $ *)
+(* $Id: Ramsey.thy,v 1.13 2008-06-12 06:57:26 lsf37 Exp $ *)
 
 header "Ramsey's Theorem"
 
@@ -246,7 +246,7 @@ lemma ramsey: "
   apply(force)
   apply(force simp add: card_Diff_singleton_if)
   apply(subgoal_tac "ta = s'") apply(simp) apply(force)
-  apply(simp) apply(rule arg_cong) back apply(force)
+  apply(simp) apply(rule_tac f=f in arg_cong) apply(force)
   done
   
 end

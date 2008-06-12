@@ -1,4 +1,4 @@
-(*  ID:         $Id: QElin_inf.thy,v 1.7 2008-06-11 14:22:58 lsf37 Exp $
+(*  ID:         $Id: QElin_inf.thy,v 1.8 2008-06-12 06:57:24 lsf37 Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -6,22 +6,22 @@ theory QElin_inf
 imports LinArith
 begin
 
-subsection {*Quantifier elimination with infenitesimals \label{sec:lin-inf}*}
+subsection {*Quantifier elimination with infinitesimals \label{sec:lin-inf}*}
 
 text{* This section formalizes Loos and Weispfenning's quantifier
 elimination procedure based on (the simulation of)
-infenitesimals~\cite{LoosW93}. *}
+infinitesimals~\cite{LoosW93}. *}
 
 fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^isub>+") where
 "asubst_peps (r,cs) (Less s (d#ds)) =
   (if d=0 then Atom(Less s ds) else
    let u = s - d*r; v = d *\<^sub>s cs + ds; less = Atom(Less u v)
    in if d<0 then less else Or less (Atom(Eq u v)))" |
-"asubst_peps k (Eq r (d#ds)) = (if d=0 then Atom(Eq r ds) else FalseF)" |
-"asubst_peps k a = Atom a"
+"asubst_peps rcs (Eq r (d#ds)) = (if d=0 then Atom(Eq r ds) else FalseF)" |
+"asubst_peps rcs a = Atom a"
 
 abbreviation subst_peps :: "atom fm \<Rightarrow> real * real list \<Rightarrow> atom fm" ("subst\<^isub>+")
-where "subst\<^isub>+ \<phi> k \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^isub>+ k) \<phi>"
+where "subst\<^isub>+ \<phi> rcs \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^isub>+ rcs) \<phi>"
 
 definition "nolb f xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB f xs)"
 
@@ -154,13 +154,13 @@ lemma I_subst_peps:
   "nqfree f \<Longrightarrow> R.I (subst\<^isub>+ f (r,cs)) xs \<Longrightarrow>
   (\<exists>leps>r+\<langle>cs,xs\<rangle>. \<forall>x. r+\<langle>cs,xs\<rangle> < x \<and> x \<le> leps \<longrightarrow> R.I f (x#xs))"
 proof(induct f)
-  case TrueF thus ?case by simp (metis less_add_one)
+  case TrueF thus ?case by simp (metis ordered_semidom_class.less_add_one)
 next
   case (Atom a)
   show ?case
   proof (cases "((r,cs),a)" rule: asubst_peps.cases)
     case (1 r cs s d ds)
-    { assume "d=0" hence ?thesis using Atom 1 by auto(metis less_add_one) }
+    { assume "d=0" hence ?thesis using Atom 1 by auto(metis ordered_semidom_class.less_add_one) }
     moreover
     { assume "d<0"
       with Atom 1 have "r + \<langle>cs,xs\<rangle> < (s - \<langle>ds,xs\<rangle>)/d" (is "?a < ?b")
@@ -179,7 +179,8 @@ next
 	assume "?a = ?b"
 	thus ?thesis using `d>0` Atom 1
 	  by(simp add:field_simps iprod_left_add_distrib iprod_assoc)
-	    (metis less_add_one real_mult_commute real_mult_less_mono2 ring_class.ring_simps(12))
+	    (metis ordered_semidom_class.less_add_one real_mult_commute
+	      real_mult_less_mono2 ring_class.ring_simps(12))
       next
 	assume "?a < ?b"
 	{ fix x assume "r+\<langle>cs,xs\<rangle> < x \<and> x \<le> r+\<langle>cs,xs\<rangle> + 1"
@@ -192,7 +193,7 @@ next
 	  by(force simp: iprod_left_add_distrib iprod_assoc)
       qed
     } ultimately show ?thesis by (metis less_linear)
-  qed (insert Atom, auto split:split_if_asm intro: less_add_one)
+  qed (insert Atom, auto split:split_if_asm intro: ordered_semidom_class.less_add_one)
 next
   case And thus ?case
     apply clarsimp
@@ -253,10 +254,10 @@ next
   { assume "R.I (inf\<^isub>- f) xs"
     hence ?QE using `nqfree f` by(auto simp:eps\<^isub>1_def)
   } moreover
-  { assume "\<exists>k \<in> set ?ebs. R.I (subst f k) xs"
+  { assume "\<exists>rcs \<in> set ?ebs. R.I (subst f rcs) xs"
     hence ?QE by(auto simp:eps\<^isub>1_def) } moreover
   { assume "\<not> R.I (inf\<^isub>- f) xs"
-    and "\<forall>k \<in> set ?ebs. \<not> R.I (subst f k) xs"
+    and "\<forall>rcs \<in> set ?ebs. \<not> R.I (subst f rcs) xs"
     hence noE: "\<forall>e \<in> EQ f xs. \<not> R.I f (e#xs)" using `nqfree f`
       by (force simp:set_ebounds I_subst diff_divide_distrib eval_def
 	iprod_assoc diff_minus[symmetric] split:split_if_asm)
@@ -280,10 +281,10 @@ next
   } ultimately show ?QE by blast
 qed
 
-lemma qfree_asubst_peps: "qfree (asubst\<^isub>+ k a)"
-by(cases "(k,a)" rule:asubst_peps.cases) simp_all
+lemma qfree_asubst_peps: "qfree (asubst\<^isub>+ rcs a)"
+by(cases "(rcs,a)" rule:asubst_peps.cases) simp_all
 
-lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>+ \<phi> k)"
+lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>+ \<phi> rcs)"
 by(induct \<phi>) (simp_all add:qfree_asubst_peps)
 
 lemma qfree_eps\<^isub>1: "nqfree \<phi> \<Longrightarrow> qfree(eps\<^isub>1 \<phi>)"
