@@ -1,4 +1,4 @@
-(*  ID:          $Id: AlternativeSmallStep.thy,v 1.7 2008-06-12 06:57:26 lsf37 Exp $
+(*  ID:          $Id: AlternativeSmallStep.thy,v 1.8 2008-06-12 11:50:36 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -226,7 +226,7 @@ done
 
 ML {*
   bind_thm ("trancl_induct3", split_rule
-    (read_instantiate [("a","(ax,ay,az)"), ("b","(bx,by,bz)")] (thm "tranclp_induct")));
+    (Drule.read_instantiate [("a","(ax,ay,az)"), ("b","(bx,by,bz)")] (thm "tranclp_induct")));
 *}
 
 lemma app_css_steps:  
@@ -552,7 +552,7 @@ inductive_cases execs_elim_cases [cases set]:
 
 ML {*
   bind_thm ("converse_rtrancl_induct3", split_rule
-    (read_instantiate [("a","(cs,css,s)"), ("b","(cs',css',t)")] 
+    (Drule.read_instantiate [("a","(cs,css,s)"), ("b","(cs',css',t)")] 
                       (thm "converse_rtranclp_induct")));
 *}
 
@@ -976,7 +976,7 @@ qed
 
 ML {*
   bind_thm ("rtrancl_induct3", split_rule
-    (read_instantiate [("a","(ax,ay,az)"), ("b","(bx,by,bz)")] (thm "rtranclp_induct")));
+    (Drule.read_instantiate [("a","(ax,ay,az)"), ("b","(bx,by,bz)")] (thm "rtranclp_induct")));
 *}
 
 lemma steps_preserves_terminations: 

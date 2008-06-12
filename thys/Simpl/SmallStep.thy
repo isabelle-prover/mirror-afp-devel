@@ -1,4 +1,4 @@
-(*  ID:          $Id: SmallStep.thy,v 1.8 2008-06-12 06:57:27 lsf37 Exp $
+(*  ID:          $Id: SmallStep.thy,v 1.9 2008-06-12 11:50:36 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -1094,7 +1094,7 @@ qed
 
 ML {*
   bind_thm ("tranclp_induct2", split_rule
-    (read_instantiate [("a","(aa,ab)"), ("b","(ba,bb)")] (thm "tranclp_induct")));
+    (Drule.read_instantiate [("a","(aa,ab)"), ("b","(ba,bb)")] (thm "tranclp_induct")));
 *}
 
 lemma steps_preserves_termination': 
@@ -2157,12 +2157,9 @@ next
   finally show ?case .
 qed
 
-thm converse_rtranclE 
-thm trancl_induct
-
 ML {*
   bind_thm ("trancl_induct2", split_rule
-    (read_instantiate [("a","(aa,ab)"), ("b","(ba,bb)")] (thm "trancl_induct")));
+    (Drule.read_instantiate [("a","(aa,ab)"), ("b","(ba,bb)")] (thm "trancl_induct")));
 *}
 
 lemma steps_redex':

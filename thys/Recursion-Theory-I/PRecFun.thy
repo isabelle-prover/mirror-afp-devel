@@ -242,14 +242,14 @@ ML {*
   add_to_pr_list "op_mult_is_pr";
   add_to_pr_list "op_sub_is_pr";
   
-  add_thm_to_pr_list (read_instantiate [("n","0")] (thm "const_is_pr_2"));
-  add_thm_to_pr_list (read_instantiate [("n","0")] (thm "const_is_pr_3"));
-  add_thm_to_pr_list (read_instantiate [("n","1")] (thm "const_is_pr"));
-  add_thm_to_pr_list (read_instantiate [("n","1")] (thm "const_is_pr_2"));
-  add_thm_to_pr_list (read_instantiate [("n","1")] (thm "const_is_pr_3"));
-  add_thm_to_pr_list (read_instantiate [("n","2")] (thm "const_is_pr"));
-  add_thm_to_pr_list (read_instantiate [("n","2")] (thm "const_is_pr_2"));
-  add_thm_to_pr_list (read_instantiate [("n","2")] (thm "const_is_pr_3"));
+  add_thm_to_pr_list (Drule.read_instantiate [("n","0")] (thm "const_is_pr_2"));
+  add_thm_to_pr_list (Drule.read_instantiate [("n","0")] (thm "const_is_pr_3"));
+  add_thm_to_pr_list (Drule.read_instantiate [("n","1")] (thm "const_is_pr"));
+  add_thm_to_pr_list (Drule.read_instantiate [("n","1")] (thm "const_is_pr_2"));
+  add_thm_to_pr_list (Drule.read_instantiate [("n","1")] (thm "const_is_pr_3"));
+  add_thm_to_pr_list (Drule.read_instantiate [("n","2")] (thm "const_is_pr"));
+  add_thm_to_pr_list (Drule.read_instantiate [("n","2")] (thm "const_is_pr_2"));
+  add_thm_to_pr_list (Drule.read_instantiate [("n","2")] (thm "const_is_pr_3"));
 *}
 
 consts
