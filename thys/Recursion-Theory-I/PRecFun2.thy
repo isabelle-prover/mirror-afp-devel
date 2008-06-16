@@ -22,7 +22,7 @@ consts
 defs
   c_f_pair_def: "c_f_pair \<equiv> (\<lambda> f g x. c_pair (f x) (g x))"
 
-lemma c_f_pair_to_pr: "\<lbrakk> f \<in> PrimRec1; g \<in> PrimRec1 \<rbrakk> \<Longrightarrow> c_f_pair f g \<in> PrimRec1" by (simp add: c_f_pair_def, tactic "pr_tac()")
+lemma c_f_pair_to_pr: "\<lbrakk> f \<in> PrimRec1; g \<in> PrimRec1 \<rbrakk> \<Longrightarrow> c_f_pair f g \<in> PrimRec1" by (simp add: c_f_pair_def, tactic "pr_tac @{context}")
 
 inductive_set PrimRec1' :: "(nat \<Rightarrow> nat) set"
 where
@@ -518,7 +518,7 @@ defs
   pair_by_index_def: "pair_by_index \<equiv> (\<lambda> n1 n2. c_pair 5 (c_pair n1 n2))"
   rec_by_index_def:  "rec_by_index  \<equiv> (\<lambda> n1 n2. c_pair 6 (c_pair n1 n2))"
 
-lemma comp_by_index_is_pr: "comp_by_index \<in> PrimRec2" by (unfold comp_by_index_def, insert const_is_pr_2 [where ?n="(4::nat)"], tactic "pr_tac()")
+lemma comp_by_index_is_pr: "comp_by_index \<in> PrimRec2" by (unfold comp_by_index_def, insert const_is_pr_2 [where ?n="(4::nat)"], tactic "pr_tac @{context}")
 
 lemma comp_by_index_inj: "comp_by_index x1 y1 = comp_by_index x2 y2 \<Longrightarrow> x1=x2 \<and> y1=y2"
 proof -
@@ -534,7 +534,7 @@ lemma comp_by_index_inj2: "comp_by_index x1 y1 = comp_by_index x2 y2 \<Longright
 
 lemma comp_by_index_main: "nat_to_pr (comp_by_index n1 n2) = (\<lambda> x. (nat_to_pr n1) ((nat_to_pr n2) x))" by (unfold comp_by_index_def, unfold nat_to_pr_def, simp add: loc_srj_3_1)
 
-lemma pair_by_index_is_pr: "pair_by_index \<in> PrimRec2" by (unfold pair_by_index_def, insert const_is_pr_2 [where ?n="(5::nat)"], tactic "pr_tac()")
+lemma pair_by_index_is_pr: "pair_by_index \<in> PrimRec2" by (unfold pair_by_index_def, insert const_is_pr_2 [where ?n="(5::nat)"], tactic "pr_tac @{context}")
 
 lemma pair_by_index_inj: "pair_by_index x1 y1 = pair_by_index x2 y2 \<Longrightarrow> x1=x2 \<and> y1=y2"
 proof -
@@ -553,7 +553,7 @@ lemma pair_by_index_main: "nat_to_pr (pair_by_index n1 n2) = c_f_pair (nat_to_pr
 lemma nat_to_sch_of_pair_by_index [simp]: "nat_to_sch (pair_by_index n1 n2) = Pair_op (nat_to_sch n1) (nat_to_sch n2)"
   by (simp add: pair_by_index_def loc_srj_4_1)
 
-lemma rec_by_index_is_pr: "rec_by_index \<in> PrimRec2" by (unfold rec_by_index_def, insert const_is_pr_2 [where ?n="(6::nat)"], tactic "pr_tac()")
+lemma rec_by_index_is_pr: "rec_by_index \<in> PrimRec2" by (unfold rec_by_index_def, insert const_is_pr_2 [where ?n="(6::nat)"], tactic "pr_tac @{context}")
 
 lemma rec_by_index_inj: "rec_by_index x1 y1 = rec_by_index x2 y2 \<Longrightarrow> x1=x2 \<and> y1=y2"
 proof -
@@ -578,7 +578,7 @@ defs
 
 lemma index_of_const_is_pr: "index_of_const \<in> PrimRec1"
 proof -
-  have "(\<lambda> x y. c_pair (4::nat) (c_pair (2::nat) y)) \<in> PrimRec2" by (insert const_is_pr_2 [where ?n="(4::nat)"], tactic "pr_tac()")
+  have "(\<lambda> x y. c_pair (4::nat) (c_pair (2::nat) y)) \<in> PrimRec2" by (insert const_is_pr_2 [where ?n="(4::nat)"], tactic "pr_tac @{context}")
   then show ?thesis by (simp add: index_of_const_def pr_rec1)
 qed
 
@@ -642,7 +642,7 @@ defs
 lemma index_of_c_pair_n_is_pr: "index_of_c_pair_n \<in> PrimRec1"
 proof -
   have "(\<lambda> x. index_of_id) \<in> PrimRec1" by (rule const_is_pr)
-  with pair_by_index_is_pr index_of_const_is_pr have "(\<lambda> n. pair_by_index (index_of_const n) index_of_id) \<in> PrimRec1" by (tactic "pr_ex_tac facts")
+  with pair_by_index_is_pr index_of_const_is_pr have "(\<lambda> n. pair_by_index (index_of_const n) index_of_id) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
   then show ?thesis by (fold index_of_c_pair_n_def)
 qed
 
@@ -667,7 +667,7 @@ consts
 defs
   s1_1_def: "s1_1 \<equiv> (\<lambda> n x. comp_by_index n (index_of_c_pair_n x))"
 
-lemma s1_1_is_pr: "s1_1 \<in> PrimRec2" by (unfold s1_1_def, insert comp_by_index_is_pr index_of_c_pair_n_is_pr, tactic "pr_tac()")
+lemma s1_1_is_pr: "s1_1 \<in> PrimRec2" by (unfold s1_1_def, insert comp_by_index_is_pr index_of_c_pair_n_is_pr, tactic "pr_tac @{context}")
 
 theorem s1_1_th: "(\<lambda> y. (nat_to_pr n) (c_pair x y)) = nat_to_pr (s1_1 n x)"
 proof -
@@ -703,7 +703,7 @@ proof -
   def g_def: g \<equiv> "\<lambda> (x::nat). x"
   have g_is_pr: "g \<in> PrimRec1" by (unfold g_def, rule pr_id1_1)
   def h_def: h \<equiv> "\<lambda> (a::nat) b (c::nat). comp_by_index index_of_id b"
-  from comp_by_index_is_pr have h_is_pr: "h \<in> PrimRec3" by (unfold h_def, tactic "pr_ex_tac facts")
+  from comp_by_index_is_pr have h_is_pr: "h \<in> PrimRec3" by (unfold h_def, tactic "pr_ex_tac @{context} facts")
   let ?f = "pr_index_enumerator"
   from g_def have f_at_0: "\<forall> x. ?f x 0 = g x" by auto
   from h_def have f_at_Suc: "\<forall> x y. ?f x (Suc y) = h x (?f x y) y" by auto

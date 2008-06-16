@@ -98,7 +98,7 @@ proof (rule ccontr)
   assume "\<not> univ_for_pr \<notin> PrimRec1" then have A1: "univ_for_pr \<in> PrimRec1" by simp
   let ?f = "\<lambda> n. univ_for_pr (c_pair n n) + 1"
   let ?n0 = "index_of_pr ?f"
-  from A1 have S1: "?f \<in> PrimRec1" by (tactic "pr_ex_tac facts")
+  from A1 have S1: "?f \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
   then have S2: "nat_to_pr ?n0 = ?f" by (rule index_of_pr_is_real)
   then have S3: "nat_to_pr ?n0 ?n0 = ?f ?n0" by simp
   have S4: "?f ?n0 = univ_for_pr (c_pair ?n0 ?n0) + 1" by simp
@@ -1253,28 +1253,28 @@ theorem pr_gr_value: "c_assoc_value (pr_gr (loc_upb (n,x))) (c_pair n x) = univ_
 theorem g_comp_is_pr: "g_comp \<in> PrimRec2"
 proof -
   from c_assoc_have_key_is_pr c_assoc_value_is_pr c_cons_is_pr have "(\<lambda> x y. g_comp x y) \<in> PrimRec2"
-    by (unfold g_comp_def, unfold Let_def, tactic "pr_tac ()")
+    by (unfold g_comp_def, unfold Let_def, tactic "pr_tac @{context}")
   thus ?thesis by auto
 qed
 
 theorem g_pair_is_pr: "g_pair \<in> PrimRec2"
 proof -
   from c_assoc_have_key_is_pr c_assoc_value_is_pr c_cons_is_pr have "(\<lambda> x y. g_pair x y) \<in> PrimRec2"
-    by (unfold g_pair_def, unfold Let_def, tactic "pr_tac ()")
+    by (unfold g_pair_def, unfold Let_def, tactic "pr_tac @{context}")
   thus ?thesis by auto
 qed
 
 theorem g_rec_is_pr: "g_rec \<in> PrimRec2"
 proof -
   from c_assoc_have_key_is_pr c_assoc_value_is_pr c_cons_is_pr have "(\<lambda> x y. g_rec x y) \<in> PrimRec2"
-    by (unfold g_rec_def, unfold Let_def, tactic "pr_tac ()")
+    by (unfold g_rec_def, unfold Let_def, tactic "pr_tac @{context}")
   thus ?thesis by auto
 qed
 
 theorem g_step_is_pr: "g_step \<in> PrimRec2"
 proof -
   from g_comp_is_pr g_pair_is_pr g_rec_is_pr mod_is_pr c_assoc_have_key_is_pr c_assoc_value_is_pr c_cons_is_pr have
-    "(\<lambda> ls key. g_step ls key) \<in> PrimRec2" by (unfold g_step_def, unfold Let_def, tactic "pr_tac ()")
+    "(\<lambda> ls key. g_step ls key) \<in> PrimRec2" by (unfold g_step_def, unfold Let_def, tactic "pr_tac @{context}")
   thus ?thesis by auto
 qed
 
@@ -1287,7 +1287,7 @@ proof -
   qed
   have S2: "PrimRecOp1 0 (\<lambda> x y. g_step y (c_fst x)) \<in> PrimRec1"
   proof (rule pr_rec1)
-    from g_step_is_pr show "(\<lambda>x y. g_step y (c_fst x)) \<in> PrimRec2" by (tactic "pr_ex_tac facts")
+    from g_step_is_pr show "(\<lambda>x y. g_step y (c_fst x)) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
   qed
   from S1 S2 show ?thesis by auto
 qed

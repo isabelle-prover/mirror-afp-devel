@@ -19,7 +19,7 @@ defs
 
 lemma c_len_1: "c_len u = (case u of 0 \<Rightarrow> 0 | Suc v \<Rightarrow> c_fst(v)+1)" by (unfold c_len_def, case_tac u, auto)
 
-lemma c_len_is_pr: "c_len \<in> PrimRec1" by (unfold c_len_def, tactic "pr_tac()")
+lemma c_len_is_pr: "c_len \<in> PrimRec1" by (unfold c_len_def, tactic "pr_tac @{context}")
 
 lemma [simp]: "c_len 0 = 0" by (simp add: c_len_def)
 
@@ -384,8 +384,8 @@ proof -
     proof (rule if_eq_is_pr)
       show "c_len \<in> PrimRec1" by (rule c_len_is_pr)
       next show "(\<lambda> x. 1) \<in> PrimRec1" by (rule const_is_pr)
-      next show "(\<lambda>x. c_snd (x - 1)) \<in> PrimRec1" by (tactic "pr_tac()")
-      next show "(\<lambda>x. c_fst (c_snd (x - 1))) \<in> PrimRec1" by (tactic "pr_tac()")
+      next show "(\<lambda>x. c_snd (x - 1)) \<in> PrimRec1" by (tactic "pr_tac @{context}")
+      next show "(\<lambda>x. c_fst (c_snd (x - 1))) \<in> PrimRec1" by (tactic "pr_tac @{context}")
     qed
   qed
   ultimately show ?thesis by simp
@@ -487,7 +487,7 @@ qed
 theorem c_tl_is_pr: "c_tl \<in> PrimRec1"
 proof -
   have "c_tl = (\<lambda> u. (sgn1 ((c_len u) - 1))*((c_pair (c_len u - (2::nat)) (c_snd (c_snd (u-(1::nat))))) + 1))" (is "_ = ?R") by (simp add: c_tl_aux3 ext)
-  moreover from c_len_is_pr c_pair_is_pr have "?R \<in> PrimRec1" by (tactic "pr_ex_tac facts")
+  moreover from c_len_is_pr c_pair_is_pr have "?R \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
   ultimately show ?thesis by simp
 qed
 
@@ -551,7 +551,7 @@ qed
 theorem c_cons_is_pr: "c_cons \<in> PrimRec2"
 proof -
   have "c_cons = (\<lambda> x u. (sgn2 u)*((c_pair 0 x)+1) + (sgn1 u)*((c_pair (c_len u) (c_pair x (c_snd (u-(1::nat))))) + 1))" (is "_ = ?R") by (simp add: c_cons_aux3)
-  moreover from c_pair_is_pr c_len_is_pr have "?R \<in> PrimRec2" by (tactic "pr_ex_tac facts")
+  moreover from c_pair_is_pr c_len_is_pr have "?R \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
   ultimately show ?thesis by simp
 qed
 
@@ -568,7 +568,7 @@ lemma c_drop_at_Suc: "c_drop (Suc y) x = c_tl (c_drop y x)" by (simp add: c_drop
 theorem c_drop_is_pr: "c_drop \<in> PrimRec2"
 proof -
   have "(\<lambda> x. x) \<in> PrimRec1" by (rule pr_id1_1)
-  moreover from c_tl_is_pr have "(\<lambda> x y z. c_tl y) \<in> PrimRec3" by (tactic "pr_ex_tac facts")
+  moreover from c_tl_is_pr have "(\<lambda> x y z. c_tl y) \<in> PrimRec3" by (tactic "pr_ex_tac @{context} facts")
   ultimately show ?thesis by (simp add: c_drop_def pr_rec)
 qed
 
@@ -609,7 +609,7 @@ defs
 
 lemma c_nth_is_pr: "c_nth \<in> PrimRec2"
 proof (unfold c_nth_def)
-  from c_hd_is_pr c_drop_is_pr show "(\<lambda>x n. c_hd (c_drop n x)) \<in> PrimRec2" by (tactic "pr_ex_tac facts")
+  from c_hd_is_pr c_drop_is_pr show "(\<lambda>x n. c_hd (c_drop n x)) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
 qed
 
 lemma c_nth_at_0: "c_nth x 0 = c_hd x" by (simp add: c_nth_def)
@@ -635,9 +635,9 @@ lemma c_f_list_is_pr: "f \<in> PrimRec2 \<Longrightarrow> c_f_list f \<in> PrimR
 proof -
   assume A1: "f \<in> PrimRec2"
   let ?g = "(%x. c_cons (f 0 x) 0)"
-  from A1 c_cons_is_pr have S1: "?g \<in> PrimRec1" by (tactic "pr_ex_tac facts")
+  from A1 c_cons_is_pr have S1: "?g \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
   let ?h = "(%a b c. c_cons (f (Suc a) c) b)"
-  from A1 c_cons_is_pr have S2: "?h \<in> PrimRec3" by (tactic "pr_ex_tac facts")
+  from A1 c_cons_is_pr have S2: "?h \<in> PrimRec3" by (tactic "pr_ex_tac @{context} facts")
   from S1 S2 show ?thesis by (simp add: pr_rec c_f_list_def Let_def)
 qed
 
@@ -656,7 +656,7 @@ lemma c_f_list_f_is_pr: "c_f_list f \<in> PrimRec2 \<Longrightarrow> f \<in> Pri
 proof -
   assume A1: "c_f_list f \<in> PrimRec2"
   have S1: "f = (\<lambda> y x. c_hd (c_f_list f y x))" by (rule c_f_list_to_f)
-  from A1 c_hd_is_pr have S2: "(\<lambda> y x. c_hd (c_f_list f y x)) \<in> PrimRec2" by (tactic "pr_ex_tac facts")
+  from A1 c_hd_is_pr have S2: "(\<lambda> y x. c_hd (c_f_list f y x)) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
   with S1 show ?thesis by simp
 qed
 
@@ -740,8 +740,8 @@ proof -
   let ?g' = "\<lambda> x. c_cons (g x) 0"
   let ?h' = "\<lambda> a b c. c_cons (h a (c_nth b (a - (\<alpha> a c))) c) b"
   let ?r = "c_f_list f"
-  from g_is_pr c_cons_is_pr have g'_is_pr: "?g' \<in> PrimRec1" by (tactic "pr_ex_tac facts")
-  from h_is_pr c_cons_is_pr c_nth_is_pr a_is_pr have h'_is_pr: "?h' \<in> PrimRec3" by (tactic "pr_ex_tac facts")
+  from g_is_pr c_cons_is_pr have g'_is_pr: "?g' \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  from h_is_pr c_cons_is_pr c_nth_is_pr a_is_pr have h'_is_pr: "?h' \<in> PrimRec3" by (tactic "pr_ex_tac @{context} facts")
   have S1: "\<forall> x. ?r 0 x = ?g' x"
   proof
     fix x have "?r 0 x = c_cons (f 0 x) 0" by (rule c_f_list_at_0)
@@ -782,14 +782,14 @@ proof -
   let ?a = "\<lambda> y x. c_tl (Suc y)"
   let ?g = "\<lambda> x. (1::nat)"
   have g_is_pr: "?g \<in> PrimRec1" by (rule const_is_pr)
-  from c_tl_is_pr have a_is_pr: "?a \<in> PrimRec2" by (tactic "pr_ex_tac facts")
+  from c_tl_is_pr have a_is_pr: "?a \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
   have h_is_pr: "?h \<in> PrimRec3"
   proof (rule if_eq_is_pr3)
-    from c_fst_is_pr c_hd_is_pr show "(\<lambda>x y z. c_fst (c_hd (Suc x))) \<in> PrimRec3" by (tactic "pr_ex_tac facts")
+    from c_fst_is_pr c_hd_is_pr show "(\<lambda>x y z. c_fst (c_hd (Suc x))) \<in> PrimRec3" by (tactic "pr_ex_tac @{context} facts")
   next
     show "(\<lambda>x y z. z) \<in> PrimRec3" by (rule pr_id3_3)
   next
-    show "(\<lambda>x y z. 0) \<in> PrimRec3" by (tactic "pr_tac()")
+    show "(\<lambda>x y z. 0) \<in> PrimRec3" by (tactic "pr_tac @{context}")
   next
     show "(\<lambda>x y z. y) \<in> PrimRec3" by (rule pr_id3_2)
   qed
@@ -826,14 +826,14 @@ proof -
   let ?a = "\<lambda> y x. c_tl (Suc y)"
   let ?g = "\<lambda> x. (0::nat)"
   have g_is_pr: "?g \<in> PrimRec1" by (rule const_is_pr)
-  from c_tl_is_pr have a_is_pr: "?a \<in> PrimRec2" by (tactic "pr_ex_tac facts")
+  from c_tl_is_pr have a_is_pr: "?a \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
   have h_is_pr: "?h \<in> PrimRec3"
   proof (rule if_eq_is_pr3)
-    from c_fst_is_pr c_hd_is_pr show "(\<lambda>x y z. c_fst (c_hd (Suc x))) \<in> PrimRec3" by (tactic "pr_ex_tac facts")
+    from c_fst_is_pr c_hd_is_pr show "(\<lambda>x y z. c_fst (c_hd (Suc x))) \<in> PrimRec3" by (tactic "pr_ex_tac @{context} facts")
   next
     show "(\<lambda>x y z. z) \<in> PrimRec3" by (rule pr_id3_3)
   next
-    from c_snd_is_pr c_hd_is_pr show "(\<lambda>x y z. c_snd (c_hd (Suc x))) \<in> PrimRec3" by (tactic "pr_ex_tac facts")
+    from c_snd_is_pr c_hd_is_pr show "(\<lambda>x y z. c_snd (c_hd (Suc x))) \<in> PrimRec3" by (tactic "pr_ex_tac @{context} facts")
   next
     show "(\<lambda>x y z. y) \<in> PrimRec3" by (rule pr_id3_2)
   qed

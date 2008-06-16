@@ -85,7 +85,7 @@ fun term_to_string t =
 
 (************ Tactic. ***************)
 
-fun local_subgoal_tactic (t,i) =
+fun pr_comp_tac ctxt = SUBGOAL (fn (t,i) =>
   let
     val t = extract_trueprop_arg (extract_right_expr t)
     val (t1, t2) = extract_set_args t
@@ -98,13 +98,11 @@ fun local_subgoal_tactic (t,i) =
     val (name, _, n1) = extract_free_arg t1
     val comp = get_comp_by_indexes (n1, n2)
   in
-    res_inst_tac [("f", name)] comp i
+    res_inst_tac ctxt [(("f", 0), ProofContext.revert_skolem ctxt name)] comp i
   end
-  handle BadArgument => no_tac
+  handle BadArgument => no_tac)
 
-val pr_comp_tac = SUBGOAL local_subgoal_tactic
-
-fun pr_tac () = cut_facts_tac (get_pr_list()) 1 THEN
-                      REPEAT (assume_tac 1 ORELSE pr_comp_tac 1)
-fun pr_ex_tac ls  = cut_facts_tac ((get_pr_list()) @ ls) 1 THEN
-                      REPEAT (assume_tac 1 ORELSE pr_comp_tac 1)
+fun pr_tac ctxt = cut_facts_tac (get_pr_list()) 1 THEN
+                      REPEAT (assume_tac 1 ORELSE pr_comp_tac ctxt 1)
+fun pr_ex_tac ctxt ls  = cut_facts_tac ((get_pr_list()) @ ls) 1 THEN
+                      REPEAT (assume_tac 1 ORELSE pr_comp_tac ctxt 1)
