@@ -22,7 +22,7 @@ defs
 
 lemma c_in_is_pr: "c_in \<in> PrimRec2"
 proof -
-  from mod_is_pr power_is_pr div_is_pr have "(\<lambda> x u. (u div (2 ^ x)) mod 2) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
+  from mod_is_pr power_is_pr div_is_pr have "(\<lambda> x u. (u div (2 ^ x)) mod 2) \<in> PrimRec2" by prec
   with c_in_def show ?thesis by auto
 qed
 
@@ -656,7 +656,7 @@ proof -
   def f_def: f \<equiv> "\<lambda> n. setsum g {i. i<n}"
   from f_def have f_at_0: "f 0 = 0" by auto
   def h_def: h \<equiv> "\<lambda> a (b::nat). (g a) + b"
-  from g_is_pr have h_is_pr: "h \<in> PrimRec2" by (unfold h_def, tactic "pr_ex_tac @{context} facts")
+  from g_is_pr have h_is_pr: "h \<in> PrimRec2" unfolding h_def by prec
   have f_at_Suc: "\<forall> y. f (Suc y) = h y (f y)"
   proof
     fix y show "f (Suc y) = h y (f y)"
@@ -687,7 +687,7 @@ proof -
     fix x from f_def g_def show "f 0 x = g x" by auto
   qed
   def h_def: h \<equiv> "\<lambda> a (b::nat) c. (p a c) + b"
-  from p_is_pr have h_is_pr: "h \<in> PrimRec3" by (unfold h_def, tactic "pr_ex_tac @{context} facts")
+  from p_is_pr have h_is_pr: "h \<in> PrimRec3" unfolding h_def by prec
   have f_at_Suc: "\<forall> x y. f (Suc y) x = h y (f y x) x"
   proof (rule allI, rule allI)
     fix x y show "f (Suc y) x = h y (f y x) x"
@@ -718,7 +718,7 @@ proof -
   next
     show "(\<lambda>x y. 1) \<in> PrimRec2" by (rule const_is_pr_2 [where ?n=1])
   next
-    from g_is_pr show "(\<lambda>x y. g x) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
+    from g_is_pr show "(\<lambda>x y. g x) \<in> PrimRec2" by prec
   next
     show "(\<lambda>x y. 0) \<in> PrimRec2" by (rule const_is_pr_2 [where ?n=0])
   qed
@@ -727,7 +727,7 @@ proof -
   from g1_is_pr have "(\<lambda> (u::nat) v. setsum (\<lambda> x. g1 x v) {i. (i::nat) < u}) \<in> PrimRec2" by (rule sum_of_pr_is_pr2)
   with f1_def have f1_is_pr: "f1 \<in> PrimRec2" by auto
   from f_def f1_def have f_f1: "f = (\<lambda> u. f1 u u)" by auto
-  from f1_is_pr have "(\<lambda> u. f1 u u) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  from f1_is_pr have "(\<lambda> u. f1 u u) \<in> PrimRec1" by prec
   with f_f1 have f_is_pr: "f \<in> PrimRec1" by auto
   have f_is_result: "f = (\<lambda> u. setsum g (nat_to_set u))"
   proof
@@ -787,7 +787,7 @@ next
 next
   show "(\<lambda>x y. y) \<in> PrimRec2" by (rule pr_id2_2)
 next
-  from power_is_pr show "(\<lambda>x y. y + 2 ^ x) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
+  from power_is_pr show "(\<lambda>x y. y + 2 ^ x) \<in> PrimRec2" by prec
 qed
 
 lemma [simp]: "set_to_nat (nat_to_set u) = u"
@@ -847,7 +847,7 @@ next
 next
   show "(\<lambda>x y. y) \<in> PrimRec2" by (rule pr_id2_2)
 next
-  from power_is_pr show "(\<lambda>x y. y - 2 ^ x) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
+  from power_is_pr show "(\<lambda>x y. y - 2 ^ x) \<in> PrimRec2" by prec
 qed
 
 lemma remove_lemma: "x \<in> nat_to_set u \<Longrightarrow> set_to_nat (nat_to_set u - {x}) = u - 2 ^ x"
@@ -899,7 +899,7 @@ proof -
     def g_def: g \<equiv> "c_fst"
     from c_fst_is_pr g_def have g_is_pr: "g \<in> PrimRec1" by auto
     def h_def: h \<equiv> "\<lambda> a b c. if c_in a (c_snd c) = 1 then c_insert a b else b"
-    from c_in_is_pr c_insert_is_pr have h_is_pr: "h \<in> PrimRec3" by (unfold h_def, tactic "pr_tac @{context}")
+    from c_in_is_pr c_insert_is_pr have h_is_pr: "h \<in> PrimRec3" unfolding h_def by prec
     have f_at_0: "\<forall> x. f 0 x = g x"
     proof
       fix x show "f 0 x = g x" by (unfold f_def, unfold g_def, simp)
@@ -940,7 +940,7 @@ proof -
     from g_is_pr h_is_pr f_at_0 f_at_Suc show ?thesis by (rule pr_rec_scheme)
   qed
   def union_def: union \<equiv> "\<lambda> u v. f v (c_pair u v)"
-  from f_is_pr have union_is_pr: "union \<in> PrimRec2" by (unfold union_def, tactic "pr_ex_tac @{context} facts")
+  from f_is_pr have union_is_pr: "union \<in> PrimRec2" unfolding union_def by prec
   have "\<And> u v. union u v = set_to_nat (nat_to_set u \<union> nat_to_set v)"
   proof -
     fix u v show "union u v = set_to_nat (nat_to_set u \<union> nat_to_set v)"
@@ -967,7 +967,7 @@ proof -
     def g_def: g \<equiv> "c_fst"
     from c_fst_is_pr g_def have g_is_pr: "g \<in> PrimRec1" by auto
     def h_def: h \<equiv> "\<lambda> a b c. if c_in a (c_snd c) = 1 then c_remove a b else b"
-    from c_in_is_pr c_remove_is_pr have h_is_pr: "h \<in> PrimRec3" by (unfold h_def, tactic "pr_tac @{context}")
+    from c_in_is_pr c_remove_is_pr have h_is_pr: "h \<in> PrimRec3" unfolding h_def by prec
     have f_at_0: "\<forall> x. f 0 x = g x"
     proof
       fix x show "f 0 x = g x" by (unfold f_def, unfold g_def, simp)
@@ -1013,7 +1013,7 @@ proof -
     from g_is_pr h_is_pr f_at_0 f_at_Suc show ?thesis by (rule pr_rec_scheme)
   qed
   def diff_def: diff \<equiv> "\<lambda> u v. f v (c_pair u v)"
-  from f_is_pr have diff_is_pr: "diff \<in> PrimRec2" by (unfold diff_def, tactic "pr_ex_tac @{context} facts")
+  from f_is_pr have diff_is_pr: "diff \<in> PrimRec2" unfolding diff_def by prec
   have "\<And> u v. diff u v = set_to_nat (nat_to_set u - nat_to_set v)"
   proof -
     fix u v show "diff u v = set_to_nat (nat_to_set u - nat_to_set v)"
@@ -1035,7 +1035,7 @@ defs
 theorem c_intersect_is_pr: "c_intersect \<in> PrimRec2"
 proof -
   def f_def: f \<equiv> "\<lambda> u v. c_diff (c_union u v) (c_union (c_diff u v) (c_diff v u))"
-  from c_diff_is_pr c_union_is_pr have f_is_pr: "f \<in> PrimRec2" by (unfold f_def, tactic "pr_ex_tac @{context} facts")
+  from c_diff_is_pr c_union_is_pr have f_is_pr: "f \<in> PrimRec2" unfolding f_def by prec
   have "\<And> u v. f u v = c_intersect u v"
   proof -
     fix u v show "f u v = c_intersect u v"

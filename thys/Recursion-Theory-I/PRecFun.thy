@@ -89,7 +89,21 @@ lemmas pr_rec = PrimRec1_PrimRec2_PrimRec3.prim_rec
 
 use "Utils.ML"
 
-lemma pr_swap: "f \<in> PrimRec2 \<Longrightarrow> (\<lambda> x y. f y x) \<in> PrimRec2"  by (tactic "pr_tac @{context}")
+ML {*
+structure PRec = NamedThmsFun(val name = "prec" val description = "fact for prec method")
+*}
+
+setup PRec.setup
+
+method_setup prec0 = {*
+  Method.thms_ctxt_args (fn ths => fn ctxt => Method.METHOD (fn facts =>
+    HEADGOAL (prec0_tac ctxt (facts @ PRec.get ctxt))))
+*} "apply primitive recursive functions"
+
+
+lemmas [prec] = pr_zero pr_suc pr_id1_1 pr_id2_1 pr_id2_2 pr_id3_1 pr_id3_2 pr_id3_3
+
+lemma pr_swap: "f \<in> PrimRec2 \<Longrightarrow> (\<lambda> x y. f y x) \<in> PrimRec2" by prec0
 
 theorem pr_rec_scheme: "\<lbrakk> g \<in> PrimRec1; h \<in> PrimRec3; \<forall> x. f 0 x = g x; \<forall> x y. f (Suc y) x = h y (f y x) x \<rbrakk> \<Longrightarrow> f \<in> PrimRec2"
 proof -
@@ -102,7 +116,7 @@ proof -
   with g_is_pr h_is_pr show ?thesis by (simp add: pr_rec)
 qed
 
-lemma op_plus_is_pr: "(\<lambda> x y. x + y) \<in> PrimRec2"
+lemma op_plus_is_pr [prec]: "(\<lambda> x y. x + y) \<in> PrimRec2"
 proof (rule pr_swap)
  show "(\<lambda> x y. y+x) \<in> PrimRec2"
   proof -
@@ -110,7 +124,7 @@ proof (rule pr_swap)
     proof (rule pr_rec)
       show "(\<lambda> x. x) \<in> PrimRec1" by (rule pr_id1_1)
     next
-      show "(\<lambda> x y z. Suc y) \<in> PrimRec3" by (tactic "pr_tac @{context}")
+      show "(\<lambda> x y z. Suc y) \<in> PrimRec3" by prec0
     qed
     have "(\<lambda> x y. y+x) = PrimRecOp (\<lambda> x. x) (\<lambda> x y z. Suc y)" (is "_ = ?f")
     proof -
@@ -121,9 +135,7 @@ proof (rule pr_swap)
   qed
 qed
 
-ML {* add_to_pr_list "op_plus_is_pr" *}
-
-lemma op_mult_is_pr: "(\<lambda> x y. x*y) \<in> PrimRec2"
+lemma op_mult_is_pr [prec]: "(\<lambda> x y. x*y) \<in> PrimRec2"
 proof (rule pr_swap)
  show "(\<lambda> x y. y*x) \<in> PrimRec2"
   proof -
@@ -131,7 +143,7 @@ proof (rule pr_swap)
     proof (rule pr_rec)
       show "(\<lambda> x. 0) \<in> PrimRec1" by (rule pr_zero)
     next
-      show "(\<lambda> x y z. y+z) \<in> PrimRec3" by (tactic "pr_tac @{context}")
+      show "(\<lambda> x y z. y+z) \<in> PrimRec3" by prec0
     qed
     have "(\<lambda> x y. y*x) = PrimRecOp (\<lambda> x. 0) (\<lambda> x y z. y+z)" (is "_ = ?f")
     proof -
@@ -143,11 +155,11 @@ proof (rule pr_swap)
 qed
 
 lemma const_is_pr: "(\<lambda> x. (n::nat)) \<in> PrimRec1"
-proof (induct_tac n)
+proof (induct n)
   show "(\<lambda> x. 0) \<in> PrimRec1" by (rule pr_zero)
 next
   fix n assume "(\<lambda> x. n) \<in> PrimRec1"
-  then show "(\<lambda> x. Suc n) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  then show "(\<lambda> x. Suc n) \<in> PrimRec1" by prec0
 qed
 
 lemma const_is_pr_2: "(\<lambda> x y. (n::nat)) \<in> PrimRec2"
@@ -185,7 +197,7 @@ proof -
   let ?g = "(\<lambda> x. a)"
   have g_is_pr: "?g \<in> PrimRec1" by (rule const_is_pr)
   let ?h1 = "(\<lambda> x y z. h x y)"
-  from A1 have h1_is_pr: "?h1 \<in> PrimRec3" by (tactic "pr_ex_tac @{context} facts")
+  from A1 have h1_is_pr: "?h1 \<in> PrimRec3" by prec0
   let ?f1 = "PrimRecOp ?g ?h1"  
   from g_is_pr h1_is_pr have f1_is_pr: "?f1 \<in> PrimRec2" by (rule pr_rec)
   let ?f = "(\<lambda> x. ?f1 x 0)"
@@ -219,7 +231,7 @@ proof -
   with S1 show ?thesis by simp
 qed
 
-lemma op_sub_is_pr: "(\<lambda> x y. x-y) \<in> PrimRec2"
+lemma op_sub_is_pr [prec]: "(\<lambda> x y. x-y) \<in> PrimRec2"
 proof (rule pr_swap)
  show "(\<lambda> x y. y - x) \<in> PrimRec2"
   proof -
@@ -238,19 +250,10 @@ proof (rule pr_swap)
   qed
 qed
 
-ML {*
-  add_to_pr_list "op_mult_is_pr";
-  add_to_pr_list "op_sub_is_pr";
-  
-  add_thm_to_pr_list (read_instantiate @{context} [(("n", 0),"0")] (thm "const_is_pr_2"));
-  add_thm_to_pr_list (read_instantiate @{context} [(("n", 0),"0")] (thm "const_is_pr_3"));
-  add_thm_to_pr_list (read_instantiate @{context} [(("n", 0),"1")] (thm "const_is_pr"));
-  add_thm_to_pr_list (read_instantiate @{context} [(("n", 0),"1")] (thm "const_is_pr_2"));
-  add_thm_to_pr_list (read_instantiate @{context} [(("n", 0),"1")] (thm "const_is_pr_3"));
-  add_thm_to_pr_list (read_instantiate @{context} [(("n", 0),"2")] (thm "const_is_pr"));
-  add_thm_to_pr_list (read_instantiate @{context} [(("n", 0),"2")] (thm "const_is_pr_2"));
-  add_thm_to_pr_list (read_instantiate @{context} [(("n", 0),"2")] (thm "const_is_pr_3"));
-*}
+lemmas [prec] =
+  const_is_pr [of 0] const_is_pr_2 [of 0] const_is_pr_3 [of 0]
+  const_is_pr [of 1] const_is_pr_2 [of 1] const_is_pr_3 [of 1]
+  const_is_pr [of 2] const_is_pr_2 [of 2] const_is_pr_3 [of 2]
 
 consts
   sgn1 :: "nat \<Rightarrow> nat"
@@ -295,27 +298,27 @@ proof
   qed
 qed
 
-lemma sgn2_is_pr: "sgn2 \<in> PrimRec1"
+lemma sgn2_is_pr [prec]: "sgn2 \<in> PrimRec1"
 proof -
-  have "(\<lambda> x. 1 - x) \<in> PrimRec1" by (tactic "pr_tac @{context}")
+  have "(\<lambda> x. 1 - x) \<in> PrimRec1" by prec0
   thus ?thesis by (simp add: sgn2_eq_1_sub_arg)
 qed
 
-lemma sgn1_is_pr: "sgn1 \<in> PrimRec1"
+lemma sgn1_is_pr [prec]: "sgn1 \<in> PrimRec1"
 proof -
-  from sgn2_is_pr have "(\<lambda> x. 1 - (sgn2 x)) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  from sgn2_is_pr have "(\<lambda> x. 1 - (sgn2 x)) \<in> PrimRec1" by prec0
   thus ?thesis by (simp add: sgn1_eq_1_sub_sgn2)
 qed
 
-lemma abs_of_diff_is_pr: "abs_of_diff \<in> PrimRec2" by (unfold abs_of_diff_def, tactic "pr_tac @{context}")
+lemma abs_of_diff_is_pr [prec]: "abs_of_diff \<in> PrimRec2" unfolding abs_of_diff_def by prec0
 
 lemma abs_of_diff_eq: "(abs_of_diff x y = 0) = (x = y)" by (simp add: abs_of_diff_def, arith)
 
-lemma sf_is_pr: "sf \<in> PrimRec1"
+lemma sf_is_pr [prec]: "sf \<in> PrimRec1"
 proof -
   have S1: "PrimRecOp1 0 (\<lambda> x y. y + x + 1) \<in> PrimRec1"
   proof (rule pr_rec1)
-    show "(\<lambda> x y. y + x + 1) \<in> PrimRec2" by (tactic "pr_tac @{context}")
+    show "(\<lambda> x y. y + x + 1) \<in> PrimRec2" by prec0
   qed
   have "(\<lambda> x. sf x) = PrimRecOp1 0 (\<lambda> x y. y + x + 1)" (is "_ = ?f")
   proof -
@@ -331,20 +334,12 @@ proof -
   with S1 show ?thesis by simp
 qed
 
-lemma c_pair_is_pr: "c_pair \<in> PrimRec2"
+lemma c_pair_is_pr [prec]: "c_pair \<in> PrimRec2"
 proof -
   have "c_pair = (\<lambda> x y. sf (x+y) + x)" by (simp add: c_pair_def ext)
-  moreover from sf_is_pr have "(\<lambda> x y. sf (x+y) + x) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
+  moreover from sf_is_pr have "(\<lambda> x y. sf (x+y) + x) \<in> PrimRec2" by prec0
   ultimately show ?thesis by (simp)
 qed
-
-ML {*
-  add_to_pr_list "sgn1_is_pr";
-  add_to_pr_list "sgn2_is_pr";
-  add_to_pr_list "abs_of_diff_is_pr";
-  add_to_pr_list "sf_is_pr";
-  add_to_pr_list "c_pair_is_pr";
-*}
 
 lemma if_is_pr: "\<lbrakk> p \<in> PrimRec1; q1 \<in> PrimRec1; q2 \<in> PrimRec1\<rbrakk> \<Longrightarrow> (\<lambda> x. if (p x = 0) then (q1 x) else (q2 x)) \<in> PrimRec1"
 proof -
@@ -363,21 +358,21 @@ proof -
     qed
   qed
   assume "p \<in> PrimRec1" and "q1 \<in> PrimRec1" and "q2 \<in> PrimRec1"
-  then have "(\<lambda> x. (sgn2 (p x)) * (q1 x) + (sgn1 (p x)) * (q2 x)) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  then have "(\<lambda> x. (sgn2 (p x)) * (q1 x) + (sgn1 (p x)) * (q2 x)) \<in> PrimRec1" by prec0
   with if_as_pr show ?thesis by simp
 qed
 
-lemma if_eq_is_pr: "\<lbrakk> p1 \<in> PrimRec1; p2 \<in> PrimRec1; q1 \<in> PrimRec1; q2 \<in> PrimRec1\<rbrakk> \<Longrightarrow> (\<lambda> x. if (p1 x = p2 x) then (q1 x) else (q2 x)) \<in> PrimRec1"
+lemma if_eq_is_pr [prec]: "\<lbrakk> p1 \<in> PrimRec1; p2 \<in> PrimRec1; q1 \<in> PrimRec1; q2 \<in> PrimRec1\<rbrakk> \<Longrightarrow> (\<lambda> x. if (p1 x = p2 x) then (q1 x) else (q2 x)) \<in> PrimRec1"
 proof -
   have S1: "(\<lambda> x. if (p1 x = p2 x) then (q1 x) else (q2 x)) = (\<lambda> x. if (abs_of_diff (p1 x) (p2 x) = 0) then (q1 x) else (q2 x))" (is "?L = ?R") by (simp add: abs_of_diff_eq)
   assume A1: "p1 \<in> PrimRec1" and A2: "p2 \<in> PrimRec1"
-  with abs_of_diff_is_pr have S2: "(\<lambda> x. abs_of_diff (p1 x) (p2 x)) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  with abs_of_diff_is_pr have S2: "(\<lambda> x. abs_of_diff (p1 x) (p2 x)) \<in> PrimRec1" by prec0
   assume "q1 \<in> PrimRec1" and "q2 \<in> PrimRec1"
   with S2 have "?R \<in> PrimRec1" by (rule if_is_pr)
   with S1 show ?thesis by simp
 qed
 
-lemma if_is_pr2: "\<lbrakk> p \<in> PrimRec2; q1 \<in> PrimRec2; q2 \<in> PrimRec2\<rbrakk> \<Longrightarrow> (\<lambda> x y. if (p x y = 0) then (q1 x y) else (q2 x y)) \<in> PrimRec2"
+lemma if_is_pr2 [prec]: "\<lbrakk> p \<in> PrimRec2; q1 \<in> PrimRec2; q2 \<in> PrimRec2\<rbrakk> \<Longrightarrow> (\<lambda> x y. if (p x y = 0) then (q1 x y) else (q2 x y)) \<in> PrimRec2"
 proof -
   have if_as_pr: "(\<lambda> x y. if (p x y = 0) then (q1 x y) else (q2 x y)) = (\<lambda> x y. (sgn2 (p x y)) * (q1 x y) + (sgn1 (p x y)) * (q2 x y))"
   proof (rule ext, rule ext)
@@ -394,7 +389,7 @@ proof -
     qed
   qed
   assume "p \<in> PrimRec2" and "q1 \<in> PrimRec2" and "q2 \<in> PrimRec2"
-  then have "(\<lambda> x y. (sgn2 (p x y)) * (q1 x y) + (sgn1 (p x y)) * (q2 x y)) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
+  then have "(\<lambda> x y. (sgn2 (p x y)) * (q1 x y) + (sgn1 (p x y)) * (q2 x y)) \<in> PrimRec2" by prec0
   with if_as_pr show ?thesis by simp
 qed
 
@@ -402,13 +397,13 @@ lemma if_eq_is_pr2: "\<lbrakk> p1 \<in> PrimRec2; p2 \<in> PrimRec2; q1 \<in> Pr
 proof -
   have S1: "(\<lambda> x y. if (p1 x y = p2 x y) then (q1 x y) else (q2 x y)) = (\<lambda> x y. if (abs_of_diff (p1 x y) (p2 x y) = 0) then (q1 x y) else (q2 x y))" (is "?L = ?R") by (simp add: abs_of_diff_eq)
   assume A1: "p1 \<in> PrimRec2" and A2: "p2 \<in> PrimRec2"
-  with abs_of_diff_is_pr have S2: "(\<lambda> x y. abs_of_diff (p1 x y) (p2 x y)) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
+  with abs_of_diff_is_pr have S2: "(\<lambda> x y. abs_of_diff (p1 x y) (p2 x y)) \<in> PrimRec2" by prec0
   assume "q1 \<in> PrimRec2" and "q2 \<in> PrimRec2"
   with S2 have "?R \<in> PrimRec2" by (rule if_is_pr2)
   with S1 show ?thesis by simp
 qed
 
-lemma if_is_pr3: "\<lbrakk> p \<in> PrimRec3; q1 \<in> PrimRec3; q2 \<in> PrimRec3\<rbrakk> \<Longrightarrow> (\<lambda> x y z. if (p x y z = 0) then (q1 x y z) else (q2 x y z)) \<in> PrimRec3"
+lemma if_is_pr3 [prec]: "\<lbrakk> p \<in> PrimRec3; q1 \<in> PrimRec3; q2 \<in> PrimRec3\<rbrakk> \<Longrightarrow> (\<lambda> x y z. if (p x y z = 0) then (q1 x y z) else (q2 x y z)) \<in> PrimRec3"
 proof -
   have if_as_pr: "(\<lambda> x y z. if (p x y z = 0) then (q1 x y z) else (q2 x y z)) = (\<lambda> x y z. (sgn2 (p x y z)) * (q1 x y z) + (sgn1 (p x y z)) * (q2 x y z))"
   proof (rule ext, rule ext, rule ext)
@@ -425,7 +420,8 @@ proof -
     qed
   qed
   assume "p \<in> PrimRec3" and "q1 \<in> PrimRec3" and "q2 \<in> PrimRec3"
-  then have "(\<lambda> x y z. (sgn2 (p x y z)) * (q1 x y z) + (sgn1 (p x y z)) * (q2 x y z)) \<in> PrimRec3" by (tactic "pr_ex_tac @{context} facts")
+  then have "(\<lambda> x y z. (sgn2 (p x y z)) * (q1 x y z) + (sgn1 (p x y z)) * (q2 x y z)) \<in> PrimRec3"
+    by prec0
   with if_as_pr show ?thesis by simp
 qed
 
@@ -433,25 +429,17 @@ lemma if_eq_is_pr3: "\<lbrakk> p1 \<in> PrimRec3; p2 \<in> PrimRec3; q1 \<in> Pr
 proof -
   have S1: "(\<lambda> x y z. if (p1 x y z = p2 x y z) then (q1 x y z) else (q2 x y z)) = (\<lambda> x y z. if (abs_of_diff (p1 x y z) (p2 x y z) = 0) then (q1 x y z) else (q2 x y z))" (is "?L = ?R") by (simp add: abs_of_diff_eq)
   assume A1: "p1 \<in> PrimRec3" and A2: "p2 \<in> PrimRec3"
-  with abs_of_diff_is_pr have S2: "(\<lambda> x y z. abs_of_diff (p1 x y z) (p2 x y z)) \<in> PrimRec3" by (tactic "pr_ex_tac @{context} facts")
+  with abs_of_diff_is_pr have S2: "(\<lambda> x y z. abs_of_diff (p1 x y z) (p2 x y z)) \<in> PrimRec3"
+    by prec0
   assume "q1 \<in> PrimRec3" and "q2 \<in> PrimRec3"
   with S2 have "?R \<in> PrimRec3" by (rule if_is_pr3)
   with S1 show ?thesis by simp
 qed
 
 ML {*
-val if_eq_is_pr1 = thm "if_eq_is_pr"
-val if_eq_is_pr2 = thm "if_eq_is_pr2"
-val if_eq_is_pr3 = thm "if_eq_is_pr3"
-
-val const_is_pr = thm "const_is_pr"
-val const_is_pr2 = thm "const_is_pr_2"
-val const_is_pr3 = thm "const_is_pr_3"
-
-
-fun get_if_by_index 1 = if_eq_is_pr1
-  | get_if_by_index 2 = if_eq_is_pr2
-  | get_if_by_index 3 = if_eq_is_pr3
+fun get_if_by_index 1 = @{thm if_eq_is_pr}
+  | get_if_by_index 2 = @{thm if_eq_is_pr2}
+  | get_if_by_index 3 = @{thm if_eq_is_pr3}
   | get_if_by_index _ = raise BadArgument
 
 fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
@@ -466,7 +454,7 @@ fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
       end
     val (name, _, n1) = extract_free_arg t1
   in
-    if name = "HOL.If" then
+    if name = @{const_name If} then
       resolve_tac [get_if_by_index n2] i
     else
       let
@@ -477,13 +465,17 @@ fun if_comp_tac ctxt = SUBGOAL (fn (t, i) =>
   end
   handle BadArgument => no_tac)
 
-fun pr_tac ctxt = cut_facts_tac (get_pr_list()) 1 THEN
-  REPEAT (resolve_tac [const_is_pr] 1 ORELSE resolve_tac [const_is_pr2] 1 ORELSE resolve_tac [const_is_pr3] 1
-          ORELSE assume_tac 1 ORELSE if_comp_tac ctxt 1)
-fun pr_ex_tac ctxt ls  = cut_facts_tac ((get_pr_list()) @ ls) 1 THEN
-  REPEAT (resolve_tac [const_is_pr] 1 ORELSE resolve_tac [const_is_pr2] 1 ORELSE resolve_tac [const_is_pr3] 1
-          ORELSE assume_tac 1 ORELSE if_comp_tac ctxt 1)
+fun prec_tac ctxt facts i =
+  Method.insert_tac facts i THEN
+  REPEAT (resolve_tac [@{thm const_is_pr}, @{thm const_is_pr_2}, @{thm const_is_pr_3}] i ORELSE
+    assume_tac i ORELSE if_comp_tac ctxt i)
 *}
+
+method_setup prec = {*
+  Method.thms_ctxt_args (fn ths => fn ctxt => Method.METHOD (fn facts =>
+    HEADGOAL (prec_tac ctxt (facts @ PRec.get ctxt))))
+*} "apply primitive recursive functions"
+
 
 subsection {* Bounded least operator *}
 
@@ -793,7 +785,7 @@ proof -
   assume A1: "f \<in> PrimRec2"
   have pr_loc_Op2: "loc_Op2 f \<in> PrimRec2"
   proof -
-    from A1 have S1: "loc_Op1 f \<in> PrimRec3" by (simp add: loc_Op1_def, tactic "pr_tac @{context}")
+    from A1 have S1: "loc_Op1 f \<in> PrimRec3" by (simp add: loc_Op1_def, prec)
     from pr_zero S1 have S2: "PrimRecOp_last (\<lambda> x. 0) (loc_Op1 f) \<in> PrimRec2" by (rule pr_rec_last)
     from this show ?thesis by (simp add: loc_Op2_def)
   qed
@@ -849,34 +841,31 @@ qed
 theorem c_sum_is_pr: "c_sum \<in> PrimRec1"
 proof -
   let ?f = "\<lambda> u z. (sgn1 (sf(z+1) - u))"
-  have S1: "(\<lambda> u z. sgn1 ((sf(z+1) - u))) \<in> PrimRec2" by (tactic "pr_tac @{context}")
+  have S1: "(\<lambda> u z. sgn1 ((sf(z+1) - u))) \<in> PrimRec2" by prec
   def D1: g == "b_least2 ?f"
   from D1 S1 have "g \<in> PrimRec2" by (simp add: pr_b_least2)
-  then have S2: "(\<lambda> u. g u (Suc u)) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  then have S2: "(\<lambda> u. g u (Suc u)) \<in> PrimRec1" by prec
   from D1 have "c_sum = (\<lambda> u. g u (Suc u))" by (simp add: c_sum_as_b_least ext)
   with S2 show ?thesis by simp
 qed
 
-theorem c_fst_is_pr: "c_fst \<in> PrimRec1"
+theorem c_fst_is_pr [prec]: "c_fst \<in> PrimRec1"
 proof -
   have S1: "(\<lambda> u. c_fst u) = (\<lambda> u. (u - sf (c_sum u)))" by (simp add: c_fst_def ext)
-  from c_sum_is_pr have "(\<lambda> u. (u - sf (c_sum u))) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  from c_sum_is_pr have "(\<lambda> u. (u - sf (c_sum u))) \<in> PrimRec1" by prec
   with S1 show ?thesis by simp
 qed
 
-theorem c_snd_is_pr: "c_snd \<in> PrimRec1"
+theorem c_snd_is_pr [prec]: "c_snd \<in> PrimRec1"
 proof -
   have S1: "c_snd = (\<lambda> u. (c_sum u) - (c_fst u))" by (simp add: c_snd_def ext)
-  from c_sum_is_pr c_fst_is_pr have S2: "(\<lambda> u. (c_sum u) - (c_fst u)) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  from c_sum_is_pr c_fst_is_pr have S2: "(\<lambda> u. (c_sum u) - (c_fst u)) \<in> PrimRec1" by prec
   from S1 this show ?thesis by simp
 qed
 
-ML {* add_to_pr_list "c_fst_is_pr" *}
-ML {* add_to_pr_list "c_snd_is_pr" *}
+theorem pr_1_to_2: "f \<in> PrimRec1 \<Longrightarrow> (\<lambda> x y. f (c_pair x y)) \<in> PrimRec2" by prec
 
-theorem pr_1_to_2: "f \<in> PrimRec1 \<Longrightarrow> (\<lambda> x y. f (c_pair x y)) \<in> PrimRec2" by (tactic "pr_tac @{context}")
-
-theorem pr_2_to_1: "f \<in> PrimRec2 \<Longrightarrow> (\<lambda> z. f (c_fst z) (c_snd z)) \<in> PrimRec1" by (tactic "pr_tac @{context}")
+theorem pr_2_to_1: "f \<in> PrimRec2 \<Longrightarrow> (\<lambda> z. f (c_fst z) (c_snd z)) \<in> PrimRec1" by prec
 
 consts
   pr_conv_1_to_2 :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat)"
@@ -900,10 +889,10 @@ lemma [simp]: "pr_conv_3_to_1 (pr_conv_1_to_3 f) = f" by(simp add: pr_conv_1_to_
 lemma [simp]: "pr_conv_3_to_2 (pr_conv_2_to_3 f) = f" by(simp add: pr_conv_3_to_2_def pr_conv_2_to_3_def)
 lemma [simp]: "pr_conv_2_to_3 (pr_conv_3_to_2 f) = f" by(simp add: pr_conv_3_to_2_def pr_conv_2_to_3_def)
 
-lemma pr_conv_1_to_2_lm: "f \<in> PrimRec1 \<Longrightarrow> pr_conv_1_to_2 f \<in> PrimRec2" by (simp add: pr_conv_1_to_2_def, tactic "pr_tac @{context}")
-lemma pr_conv_1_to_3_lm: "f \<in> PrimRec1 \<Longrightarrow> pr_conv_1_to_3 f \<in> PrimRec3" by (simp add: pr_conv_1_to_3_def, tactic "pr_tac @{context}")
-lemma pr_conv_2_to_1_lm: "f \<in> PrimRec2 \<Longrightarrow> pr_conv_2_to_1 f \<in> PrimRec1" by (simp add: pr_conv_2_to_1_def, tactic "pr_tac @{context}")
-lemma pr_conv_3_to_1_lm: "f \<in> PrimRec3 \<Longrightarrow> pr_conv_3_to_1 f \<in> PrimRec1" by (simp add: pr_conv_3_to_1_def, tactic "pr_tac @{context}")
+lemma pr_conv_1_to_2_lm: "f \<in> PrimRec1 \<Longrightarrow> pr_conv_1_to_2 f \<in> PrimRec2" by (simp add: pr_conv_1_to_2_def, prec)
+lemma pr_conv_1_to_3_lm: "f \<in> PrimRec1 \<Longrightarrow> pr_conv_1_to_3 f \<in> PrimRec3" by (simp add: pr_conv_1_to_3_def, prec)
+lemma pr_conv_2_to_1_lm: "f \<in> PrimRec2 \<Longrightarrow> pr_conv_2_to_1 f \<in> PrimRec1" by (simp add: pr_conv_2_to_1_def, prec)
+lemma pr_conv_3_to_1_lm: "f \<in> PrimRec3 \<Longrightarrow> pr_conv_3_to_1 f \<in> PrimRec1" by (simp add: pr_conv_3_to_1_def, prec)
 lemma pr_conv_3_to_2_lm: "f \<in> PrimRec3 \<Longrightarrow> pr_conv_3_to_2 f \<in> PrimRec2"
 proof -
   assume "f \<in> PrimRec3"
@@ -944,7 +933,7 @@ proof -
     qed
   def f1_def: f1 \<equiv> "b_least2 f"
   from f_is_pr f1_def have f1_is_pr: "f1 \<in> PrimRec2" by (simp add: pr_b_least2)
-  with g_is_pr have "(\<lambda> x. f1 x (g x)) \<in> PrimRec1" by (tactic "pr_ex_tac @{context} facts")
+  with g_is_pr have "(\<lambda> x. f1 x (g x)) \<in> PrimRec1" by prec
   with h_def f1_def show "h \<in> PrimRec1" by auto
 qed
 
@@ -973,10 +962,10 @@ qed
 theorem div_is_pr: "(\<lambda> a b. a div b) \<in> PrimRec2"
 proof -
   def f_def: f \<equiv> "\<lambda> a b z. (sgn1 b) * (sgn1 (b*(z+1)-a)) + (sgn2 b)*(sgn2 z)"
-  have f_is_pr: "f \<in> PrimRec3" by (unfold f_def, tactic "pr_tac @{context}")
+  have f_is_pr: "f \<in> PrimRec3" unfolding f_def by prec
   def h_def: h \<equiv> "\<lambda> (a::nat) (b::nat). a div b"
   def g_def: g \<equiv> "\<lambda> (a::nat) (b::nat). a + 1"
-  have g_is_pr: "g \<in> PrimRec2" by (unfold g_def, tactic "pr_tac @{context}")
+  have g_is_pr: "g \<in> PrimRec2" unfolding g_def by prec
   have h_lt_g: "\<forall> a b. h a b < g a b"
   proof (rule allI, rule allI)
     fix a b
@@ -1048,7 +1037,7 @@ proof -
   proof (rule ext, rule ext)
     fix a b show "(a::nat) mod b = a - (a div b) * b" by (rule mod_div_equality')
   qed
-  also from div_is_pr have "(\<lambda> a b. a - (a div b) * b) \<in> PrimRec2" by (tactic "pr_ex_tac @{context} facts")
+  also from div_is_pr have "(\<lambda> a b. a - (a div b) * b) \<in> PrimRec2" by prec
   ultimately show ?thesis by auto
 qed
 
@@ -1067,8 +1056,8 @@ theorem power_is_pr: "(\<lambda> (x::nat) (n::nat). x ^ n) \<in> PrimRec2"
 proof -
   def g_def: g \<equiv> "\<lambda> (x::nat). (1::nat)"
   def h_def: h \<equiv> "\<lambda> (a::nat) (b::nat) (c::nat). a * b"
-  have g_is_pr: "g \<in> PrimRec1" by (unfold g_def, tactic "pr_tac @{context}")
-  have h_is_pr: "h \<in> PrimRec3" by (unfold h_def, tactic "pr_tac @{context}")
+  have g_is_pr: "g \<in> PrimRec1" unfolding g_def by prec
+  have h_is_pr: "h \<in> PrimRec3" unfolding h_def by prec
   let ?f = "\<lambda> (x::nat) (n::nat). x ^ n"
   have f_at_0: "\<forall> x. ?f x 0 = g x"
   proof
