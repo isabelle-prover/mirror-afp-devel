@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.17 2008-06-16 20:13:41 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.18 2008-06-19 19:15:50 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -996,7 +996,7 @@ fun add_variable_statespaces prep_typ (cname,(inpars,outpars,locvars)) thy =
     val inpars'  = if forall (fn (_,T) => T="") inpars then [] else inpars;
     val outpars' = if forall (fn (_,T) => T="") outpars then [] else outpars;
     fun prep_comp (n,T) env =
-      let val (T', env') = prep_typ thy T env handle ERROR msg =>
+      let val (T', env') = prep_typ (ProofContext.init thy) T env handle ERROR msg =>
        cat_error msg ("The error(s) above occured in component " ^ quote n)
       in ((n,T'), env') end;
 
@@ -1361,7 +1361,7 @@ fun procedures_definition locname procs thy =
         
    val sp_thy = 
         thy 
-        |> fold (add_variable_statespaces (StateSpace.read_typ)) (map clique_vars cliques)
+        |> fold (add_variable_statespaces RecordPackage.read_typ) (map clique_vars cliques)
         |> fold add_signature_locale
                         (List.concat (map (fn c => map (fn n => (lname "" c,n)) c) cliques))
         |> fold add_body_locale name_pars
