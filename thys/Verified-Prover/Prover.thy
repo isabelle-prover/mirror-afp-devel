@@ -1,5 +1,5 @@
 
-(* $Id: Prover.thy,v 1.17 2008-06-12 06:57:28 lsf37 Exp $ *)
+(* $Id: Prover.thy,v 1.18 2008-06-21 18:13:21 makarius Exp $ *)
 
 theory Prover imports Main Infinite_Set begin
 
@@ -17,37 +17,32 @@ datatype form =
   | FAll form
   | FEx form
 
-consts preSuc :: "nat list => nat list"
-primrec
+primrec preSuc :: "nat list => nat list"
+where
   "preSuc [] = []"
-  "preSuc (a#list) = (case a of 0 => preSuc list | Suc n => n#(preSuc list))"
+| "preSuc (a#list) = (case a of 0 => preSuc list | Suc n => n#(preSuc list))"
 
-consts fv :: "form => var list" -- "shouldn't need to be more constructive than this"
-primrec 
+primrec fv :: "form => var list" -- "shouldn't need to be more constructive than this"
+where
   "fv (PAtom p vs) = vs"
-  "fv (NAtom p vs) = vs"
-  "fv (FConj f g) = (fv f) @ (fv g)"
-  "fv (FDisj f g) = (fv f) @ (fv g)"
-  "fv (FAll f) = preSuc (fv f)"
-  "fv (FEx f) = preSuc (fv f)"
-
-(*
-lemma finite_fv[simp]: "finite (set (fv f))" apply(simp)
-  apply(induct f,auto simp add: preSuc_def) sorry
-*)
+| "fv (NAtom p vs) = vs"
+| "fv (FConj f g) = (fv f) @ (fv g)"
+| "fv (FDisj f g) = (fv f) @ (fv g)"
+| "fv (FAll f) = preSuc (fv f)"
+| "fv (FEx f) = preSuc (fv f)"
 
 definition
   bump :: "(var => var) => (var => var)" -- "substitute a different var for 0" where
   "bump phi y = (case y of 0 => 0 | Suc n => Suc (phi n))"
 
-consts subst :: "(nat => nat) => form => form"
-primrec
+primrec subst :: "(nat => nat) => form => form"
+where
   "subst r (PAtom p vs) = (PAtom p (map r vs))"
-  "subst r (NAtom p vs) = (NAtom p (map r vs))"
-  "subst r (FConj f g) = FConj (subst r f) (subst r g)"
-  "subst r (FDisj f g) = FDisj (subst r f) (subst r g)"
-  "subst r (FAll f) = FAll (subst (bump r) f)"
-  "subst r (FEx f) = FEx (subst (bump r) f)"
+| "subst r (NAtom p vs) = (NAtom p (map r vs))"
+| "subst r (FConj f g) = FConj (subst r f) (subst r g)"
+| "subst r (FDisj f g) = FDisj (subst r f) (subst r g)"
+| "subst r (FAll f) = FAll (subst (bump r) f)"
+| "subst r (FEx f) = FEx (subst (bump r) f)"
 
 lemma size_subst[simp]: "\<forall>m. size (subst m f) = size f"
   by (induct f) (force+)
@@ -73,10 +68,10 @@ definition
   ns_of_s :: "seq => nseq" where
   "ns_of_s s = map (% x. (0,x)) s"
 
-consts flatten :: "'a list list => 'a list"
-primrec 
+primrec flatten :: "'a list list => 'a list"
+where
   "flatten [] = []"
-  "flatten (a#list) = (a@(flatten list))"
+| "flatten (a#list) = (a@(flatten list))"
 
 definition
   sfv :: "seq => var list" where
@@ -85,10 +80,10 @@ definition
 lemma sfv_nil: "sfv [] = []" by(force simp: sfv_def)
 lemma sfv_cons: "sfv (a#list) = (fv a) @ (sfv list) " by(force simp: sfv_def)
 
-consts maxvar :: "var list => var"
-primrec
+primrec maxvar :: "var list => var"
+where
   "maxvar [] = 0"
-  "maxvar (a#list) = max a (maxvar list)"
+| "maxvar (a#list) = max a (maxvar list)"
 
 lemma maxvar: "\<forall>v \<in> set vs. v \<le> maxvar vs"
   by (induct vs) (auto simp: max_def)
@@ -103,10 +98,10 @@ lemma newvar: "newvar vs \<notin> (set vs)"
 
 (*lemmas newvar_sfv = newvar[of "sfv s"]*)
 
-consts subs :: "nseq => nseq list"
-primrec
+primrec subs :: "nseq => nseq list"
+where
   "subs [] = [[]]"
-  "subs (x#xs) = 
+| "subs (x#xs) =
   (let (m,f) = x in
 		case f of
 			PAtom p vs => if NAtom p vs : set (map snd xs) then [] else [xs@[(0,PAtom p vs)]]
@@ -120,10 +115,10 @@ primrec
 
 subsection "Derivations"
 
-consts is_axiom :: "seq => bool"
-primrec
+primrec is_axiom :: "seq => bool"
+where
   "is_axiom [] = False"
-  "is_axiom (a#list) = ((? p vs. a = PAtom p vs & NAtom p vs : set list) | (? p vs. a = NAtom p vs & PAtom p vs : set list))"
+| "is_axiom (a#list) = ((? p vs. a = PAtom p vs & NAtom p vs : set list) | (? p vs. a = NAtom p vs & PAtom p vs : set list))"
 
 inductive_set
   deriv :: "nseq => (nat * nseq) set"
@@ -240,10 +235,10 @@ lemma is_axiom_finite_deriv: "is_axiom (s_of_ns s) ==> finite (deriv s)"
 
 subsection "Failing path"
 
-consts failing_path :: "(nat * nseq) set => nat => (nat * nseq)"
-primrec
+primrec failing_path :: "(nat * nseq) set => nat => (nat * nseq)"
+where
   "failing_path ns 0 = (SOME x. x \<in> ns & fst x = 0 & infinite (deriv (snd x)) & ~ is_axiom (s_of_ns (snd x)))"
-  "failing_path ns (Suc n) = (let fn = failing_path ns n in 
+| "failing_path ns (Suc n) = (let fn = failing_path ns n in 
   (SOME fsucn. fsucn \<in> ns & fst fsucn = Suc n & (snd fsucn) : set (subs (snd fn)) & infinite (deriv (snd fsucn)) & ~ is_axiom (s_of_ns (snd fsucn))))"
 
 locale loc1 = 
@@ -319,14 +314,14 @@ types model = "U set * (pred => U list => bool)"
 
 types env = "var => U" 
 
-consts FEval :: "model => env => form => bool"
-primrec
+primrec FEval :: "model => env => form => bool"
+where
   "FEval MI e (PAtom P vs) = (let IP = (snd MI) P in IP (map e vs))"
-  "FEval MI e (NAtom P vs) = (let IP = (snd MI) P in ~ (IP (map e vs)))"
-  "FEval MI e (FConj f g) = ((FEval MI e f) & (FEval MI e g))"
-  "FEval MI e (FDisj f g) = ((FEval MI e f) | (FEval MI e g))"
-  "FEval MI e (FAll f) = (\<forall>m \<in> (fst MI). FEval MI (% y. case y of 0 => m | Suc n => e n) f)" 
-  "FEval MI e (FEx f) = (\<exists>m \<in> (fst MI). FEval MI (% y. case y of 0 => m | Suc n => e n) f)"
+| "FEval MI e (NAtom P vs) = (let IP = (snd MI) P in ~ (IP (map e vs)))"
+| "FEval MI e (FConj f g) = ((FEval MI e f) & (FEval MI e g))"
+| "FEval MI e (FDisj f g) = ((FEval MI e f) | (FEval MI e g))"
+| "FEval MI e (FAll f) = (\<forall>m \<in> (fst MI). FEval MI (% y. case y of 0 => m | Suc n => e n) f)" 
+| "FEval MI e (FEx f) = (\<exists>m \<in> (fst MI). FEval MI (% y. case y of 0 => m | Suc n => e n) f)"
 
 lemma and_lem: "(a=c) ==> (b=d) ==> (a & b) = (c & d)" by simp
 
@@ -357,16 +352,16 @@ lemma FEval_cong: "\<forall>e1 e2. (\<forall>x. x \<in> set (fv A) --> e1 x = e2
   apply(assumption)
   done
 
-consts SEval :: "model => env => form list => bool"
-primrec
+primrec SEval :: "model => env => form list => bool"
+where
   "SEval m e [] = False"
-  "SEval m e (x#xs) = (FEval m e x | SEval m e xs)"
+| "SEval m e (x#xs) = (FEval m e x | SEval m e xs)"
 
 lemma SEval_def2: "SEval m e s = (\<exists>f. f \<in> set s & FEval m e f)"
-  apply(induct s, auto) done
+  by (induct s) auto
 
 lemma SEval_append: "SEval m e (xs@ys) = ( (SEval m e xs) | (SEval m e ys))"
-  apply(induct xs, auto) done
+  by (induct xs) auto
 
 lemma all_eq_all: "\<forall>x. P x = Q x ==> (\<forall>x. P x) = (\<forall>x. Q x)" by blast
 
@@ -947,10 +942,8 @@ lemma (in loc1) FEx_upward: "infinite (deriv s) ==> init s ==> contains f n (m, 
 
 subsection "Models 2"
 
-consts ntou :: "nat => U"
-
-  -- "assume universe set is infinite"
-axioms ntou: "inj ntou"
+axiomatization ntou :: "nat => U"
+where ntou: "inj ntou"  -- "assume universe set is infinite"
 
 definition uton :: "U => nat" where "uton = inv ntou"
 
@@ -1094,10 +1087,10 @@ lemma "Svalid s = finite (deriv (ns_of_s s))"
 
 subsection "Algorithm"
 
-consts iter :: "('a => 'a) => 'a => nat => 'a" -- "fold for nats"
-primrec
+primrec iter :: "('a => 'a) => 'a => nat => 'a" -- "fold for nats"
+where
   "iter g a 0 = a"
-  "iter g a (Suc n) = g (iter g a n)"
+| "iter g a (Suc n) = g (iter g a n)"
 
 lemma iter: "\<forall>a. (iter g (g a) n) = (g (iter g a n))"
   apply(induct n)

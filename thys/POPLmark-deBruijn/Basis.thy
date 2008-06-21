@@ -1,4 +1,4 @@
-(*  ID:         $Id: Basis.thy,v 1.6 2008-06-12 06:57:25 lsf37 Exp $
+(*  ID:         $Id: Basis.thy,v 1.7 2008-06-21 18:13:20 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -79,12 +79,11 @@ The following variant of the standard @{text nth} function returns
 @{text "\<bottom>"} if the index is out of range.
 *}
 
-consts
-  nth_el :: "'a list \<Rightarrow> nat \<Rightarrow> 'a option" ("_\<langle>_\<rangle>" [90, 0] 91)
-
 primrec
+  nth_el :: "'a list \<Rightarrow> nat \<Rightarrow> 'a option" ("_\<langle>_\<rangle>" [90, 0] 91)
+where
   "[]\<langle>i\<rangle> = \<bottom>"
-  "(x # xs)\<langle>i\<rangle> = (case i of 0 \<Rightarrow> \<lfloor>x\<rfloor> | Suc j \<Rightarrow> xs \<langle>j\<rangle>)"
+| "(x # xs)\<langle>i\<rangle> = (case i of 0 \<Rightarrow> \<lfloor>x\<rfloor> | Suc j \<Rightarrow> xs \<langle>j\<rangle>)"
 
 lemma [simp]: "i < \<parallel>xs\<parallel> \<Longrightarrow> (xs @ ys)\<langle>i\<rangle> = xs\<langle>i\<rangle>"
   apply (induct xs arbitrary: i)
@@ -102,15 +101,15 @@ lemma [simp]: "\<parallel>xs\<parallel> \<le> i \<Longrightarrow> (xs @ ys)\<lan
 
 text {* Association lists *}
 
-consts assoc :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option" ("_\<langle>_\<rangle>\<^isub>?" [90, 0] 91)
-primrec
+primrec assoc :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option" ("_\<langle>_\<rangle>\<^isub>?" [90, 0] 91)
+where
   "[]\<langle>a\<rangle>\<^isub>? = \<bottom>"
-  "(x # xs)\<langle>a\<rangle>\<^isub>? = (if fst x = a then \<lfloor>snd x\<rfloor> else xs\<langle>a\<rangle>\<^isub>?)"
+| "(x # xs)\<langle>a\<rangle>\<^isub>? = (if fst x = a then \<lfloor>snd x\<rfloor> else xs\<langle>a\<rangle>\<^isub>?)"
 
-consts unique :: "('a \<times> 'b) list \<Rightarrow> bool"
-primrec
+primrec unique :: "('a \<times> 'b) list \<Rightarrow> bool"
+where
   "unique [] = True"
-  "unique (x # xs) = (xs\<langle>fst x\<rangle>\<^isub>? = \<bottom> \<and> unique xs)"
+| "unique (x # xs) = (xs\<langle>fst x\<rangle>\<^isub>? = \<bottom> \<and> unique xs)"
 
 lemma assoc_set: "ps\<langle>x\<rangle>\<^isub>? = \<lfloor>y\<rfloor> \<Longrightarrow> (x, y) \<in> set ps"
   by (induct ps) (auto split add: split_if_asm)

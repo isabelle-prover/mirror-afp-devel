@@ -1,5 +1,5 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree.thy,v 1.8 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: BinaryTree.thy,v 1.9 2008-06-21 18:13:19 makarius Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL
@@ -21,12 +21,12 @@ section {* Tree Definition *}
 
 datatype 'a Tree = Tip | T "'a Tree" 'a "'a Tree"
 
-consts
+primrec
   setOf :: "'a Tree => 'a set" 
   -- {* set abstraction of a tree *} 
-primrec
-"setOf Tip = {}"
-"setOf (T t1 x t2) = (setOf t1) Un (setOf t2) Un {x}"
+where
+  "setOf Tip = {}"
+| "setOf (T t1 x t2) = (setOf t1) Un (setOf t2) Un {x}"
 
 types
   -- {* we require index to have an irreflexive total order < *}
@@ -41,16 +41,16 @@ constdefs
   -- {* equivalence class of elements with the same hash code *}
   "eqs h x == {y. h y = h x}"
 
-consts
+primrec
   sortedTree :: "'a hash => 'a Tree => bool"
   -- {* check if a tree is sorted *}
-primrec
-"sortedTree h Tip = True"
-"sortedTree h (T t1 x t2) = 
-  (sortedTree h t1 & 
-   (ALL l: setOf t1. h l < h x) &
-   (ALL r: setOf t2. h x < h r) &
-   sortedTree h t2)"
+where
+  "sortedTree h Tip = True"
+| "sortedTree h (T t1 x t2) = 
+    (sortedTree h t1 & 
+     (ALL l: setOf t1. h l < h x) &
+     (ALL r: setOf t2. h x < h r) &
+     sortedTree h t2)"
 
 lemma sortLemmaL: 
   "sortedTree h (T t1 x t2) ==> sortedTree h t1" by simp
@@ -61,14 +61,14 @@ lemma sortLemmaR:
 section {* Tree Lookup *}
 (*============================================================*)
 
-consts
-  tlookup :: "'a hash => index => 'a Tree => 'a option"
 primrec
-"tlookup h k Tip = None"
-"tlookup h k (T t1 x t2) = 
- (if k < h x then tlookup h k t1
-  else if h x < k then tlookup h k t2
-  else Some x)"
+  tlookup :: "'a hash => index => 'a Tree => 'a option"
+where
+  "tlookup h k Tip = None"
+| "tlookup h k (T t1 x t2) = 
+   (if k < h x then tlookup h k t1
+    else if h x < k then tlookup h k t2
+    else Some x)"
 
 lemma tlookup_none: 
      "sortedTree h t & (tlookup h k t = None) --> (ALL x:setOf t. h x ~= k)"
@@ -252,12 +252,11 @@ declare sorted_distinct_pred_def [simp del]
 section {* Insertion into a Tree *}
 (*============================================================*)
 
-consts
-  binsert :: "'a hash => 'a => 'a Tree => 'a Tree"
-
 primrec
-"binsert h e Tip = (T Tip e Tip)"
-"binsert h e (T t1 x t2) = (if h e < h x then
+  binsert :: "'a hash => 'a => 'a Tree => 'a Tree"
+where
+  "binsert h e Tip = (T Tip e Tip)"
+| "binsert h e (T t1 x t2) = (if h e < h x then
                              (T (binsert h e t1) x t2)
                             else
                              (if h x < h e then
@@ -403,40 +402,40 @@ section {* Removing an element from a tree *}
 
 text {* These proofs are influenced by those in @{text BinaryTree_Tactic} *}
 
-consts 
+primrec
   rm :: "'a hash => 'a Tree => 'a"
   -- {* rightmost element of a tree *}
-primrec
+where
 "rm h (T t1 x t2) =
   (if t2=Tip then x else rm h t2)"
 
-consts 
+primrec
   wrm :: "'a hash => 'a Tree => 'a Tree"
   -- {* tree without the rightmost element *}
-primrec
+where
 "wrm h (T t1 x t2) =
   (if t2=Tip then t1 else (T t1 x (wrm h t2)))"
 
-consts 
+primrec
   wrmrm :: "'a hash => 'a Tree => 'a Tree * 'a"
   -- {* computing rightmost and removal in one pass *}
-primrec
+where
 "wrmrm h (T t1 x t2) =
   (if t2=Tip then (t1,x)
    else (T t1 x (fst (wrmrm h t2)),
          snd (wrmrm h t2)))"
 
-consts
+primrec
   remove :: "'a hash => 'a => 'a Tree => 'a Tree"
    -- {* removal of an element from the tree *}
-primrec
-"remove h e Tip = Tip"
-"remove h e (T t1 x t2) = 
-  (if h e < h x then (T (remove h e t1) x t2)
-   else if h x < h e then (T t1 x (remove h e t2))
-   else (if t1=Tip then t2
-         else let (t1p,r) = wrmrm h t1
-              in (T t1p r t2)))"
+where
+  "remove h e Tip = Tip"
+| "remove h e (T t1 x t2) = 
+    (if h e < h x then (T (remove h e t1) x t2)
+     else if h x < h e then (T t1 x (remove h e t2))
+     else (if t1=Tip then t2
+           else let (t1p,r) = wrmrm h t1
+                in (T t1p r t2)))"
 
 theorem wrmrm_decomp: "t ~= Tip --> wrmrm h t = (wrm h t, rm h t)"
 apply (induct_tac t)

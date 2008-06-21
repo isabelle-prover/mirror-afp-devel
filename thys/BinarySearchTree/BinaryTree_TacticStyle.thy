@@ -1,5 +1,5 @@
 (*  Title:       Binary Search Trees, Tactic-Style
-    ID:          $Id: BinaryTree_TacticStyle.thy,v 1.5 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: BinaryTree_TacticStyle.thy,v 1.6 2008-06-21 18:13:20 makarius Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL
@@ -20,55 +20,55 @@ section {* Definition of a sorted binary tree *}
 
 datatype tree = Tip | Nd tree nat tree
 
-consts set_of :: "tree => nat set"
+primrec set_of :: "tree => nat set"
 -- {* The set of nodes stored in a tree. *}
-primrec
-"set_of Tip = {}"
-"set_of(Nd l x r) = set_of l Un set_of r  Un {x}"
+where
+  "set_of Tip = {}"
+| "set_of(Nd l x r) = set_of l Un set_of r  Un {x}"
 
-consts sorted :: "tree => bool"
+primrec sorted :: "tree => bool"
 -- {* Tree is sorted *}
-primrec
-"sorted Tip = True"
-"sorted(Nd l y r) =
-  (sorted l & sorted r & (ALL x:set_of l. x < y) & (ALL z:set_of r. y < z))"
+where
+  "sorted Tip = True"
+| "sorted(Nd l y r) =
+    (sorted l & sorted r & (ALL x:set_of l. x < y) & (ALL z:set_of r. y < z))"
 
 (*============================================================*)
 section {* Tree Membership *}
 (*============================================================*)
 
-consts
-  memb :: "nat => tree => bool"
 primrec
-"memb e Tip = False"
-"memb e (Nd t1 x t2) = 
- (if e < x then memb e t1
-  else if x < e then memb e t2
-  else True)"
+  memb :: "nat => tree => bool"
+where
+  "memb e Tip = False"
+| "memb e (Nd t1 x t2) = 
+   (if e < x then memb e t1
+    else if x < e then memb e t2
+    else True)"
 
 lemma member_set: "sorted t --> memb e t = (e : set_of t)"
-by (induct t, auto)
+by (induct t) auto
 
 (*============================================================*)
 section {* Insertion operation *}
 (*============================================================*)
 
-consts binsert :: "nat => tree => tree"
+primrec binsert :: "nat => tree => tree"
 -- {* Insert a node into sorted tree. *}
-primrec
-"binsert x Tip = (Nd Tip x Tip)"
-"binsert x (Nd t1 y t2) = (if x < y then
-                               (Nd (binsert x t1) y t2)
-                           else
-                             (if y < x then
-                               (Nd t1 y (binsert x t2))
-                              else (Nd t1 y t2)))"
+where
+  "binsert x Tip = (Nd Tip x Tip)"
+| "binsert x (Nd t1 y t2) = (if x < y then
+                                 (Nd (binsert x t1) y t2)
+                             else
+                               (if y < x then
+                                 (Nd t1 y (binsert x t2))
+                                else (Nd t1 y t2)))"
 
 theorem set_of_binsert [simp]: "set_of (binsert x t) = set_of t Un {x}"
-by (induct_tac t, auto)
+by (induct t) auto
 
 theorem binsert_sorted: "sorted t --> sorted (binsert x t)"
-by (induct_tac t, auto simp add: set_of_binsert)
+by (induct t) (auto simp add: set_of_binsert)
 
 corollary binsert_spec:  (* summary specification of binsert *)
 "sorted t ==>
@@ -80,22 +80,24 @@ by (simp add: binsert_sorted)
 section {* Remove operation *}
 (*============================================================*)
 
-consts
- remove:: "nat => tree => tree" -- {* remove a node from sorted tree *}
- -- {* auxiliary operations: *}
- rm :: "tree => nat" -- {* find the rightmost element in the tree *}
- rem :: "tree => tree" -- {* find the tree without the rightmost element *}
 primrec
-"rm(Nd l x r) = (if r = Tip then x else rm r)"
+  rm :: "tree => nat" -- {* find the rightmost element in the tree *}
+where
+  "rm(Nd l x r) = (if r = Tip then x else rm r)"
 primrec
-"rem(Nd l x r) = (if r=Tip then l else Nd l x (rem r))"
+  rem :: "tree => tree" -- {* find the tree without the rightmost element *}
+where
+  "rem(Nd l x r) = (if r=Tip then l else Nd l x (rem r))"
+
 primrec
-"remove x Tip = Tip"
-"remove x (Nd l y r) =
-  (if x < y then Nd (remove x l) y r else
-   if y < x then Nd l y (remove x r) else
-   if l = Tip then r
-   else Nd (rem l) (rm l) r)"
+  remove:: "nat => tree => tree" -- {* remove a node from sorted tree *}
+where
+  "remove x Tip = Tip"
+| "remove x (Nd l y r) =
+    (if x < y then Nd (remove x l) y r else
+     if y < x then Nd l y (remove x r) else
+     if l = Tip then r
+     else Nd (rem l) (rm l) r)"
 
 lemma rm_in_set_of: "t ~= Tip ==> rm t : set_of t"
 by (induct t) auto
@@ -133,8 +135,8 @@ by (simp add: remove_sorted)
 text {* Finally, note that rem and rm can be computed
         using a single tree traversal given by remrm. *}
 
-consts remrm :: "tree => tree * nat"
-primrec
+primrec remrm :: "tree => tree * nat"
+where
 "remrm(Nd l x r) = (if r=Tip then (l,x) else
                     let (r',y) = remrm r in (Nd l x r',y))"
 

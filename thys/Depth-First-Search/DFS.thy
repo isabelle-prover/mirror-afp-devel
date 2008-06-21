@@ -14,11 +14,11 @@ subsection "Definition of Graphs"
 typedecl node 
 types graph = "(node * node) list"
 
-consts
-  nexts :: "[graph, node] \<Rightarrow> node list"
 primrec
+  nexts :: "[graph, node] \<Rightarrow> node list"
+where
   "nexts [] n = []"
-  "nexts (e#es) n = (if fst e = n then snd e # nexts es n else nexts es n)"
+| "nexts (e#es) n = (if fst e = n then snd e # nexts es n else nexts es n)"
 
 definition
   nextss :: "[graph, node list] \<Rightarrow> node set" where

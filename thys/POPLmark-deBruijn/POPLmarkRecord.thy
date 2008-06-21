@@ -1,5 +1,5 @@
 (*  Title:      POPLmark/POPLmarkRecord.thy
-    ID:         $Id: POPLmarkRecord.thy,v 1.7 2008-06-12 06:57:25 lsf37 Exp $
+    ID:         $Id: POPLmarkRecord.thy,v 1.8 2008-06-21 18:13:21 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -43,22 +43,20 @@ datatype binding = VarB type | TVarB type
 
 types env = "binding list"
 
-consts
-  is_TVarB :: "binding \<Rightarrow> bool"
-  type_ofB :: "binding \<Rightarrow> type"
-  mapB :: "(type \<Rightarrow> type) \<Rightarrow> binding \<Rightarrow> binding"
-
-primrec
+primrec is_TVarB :: "binding \<Rightarrow> bool"
+where
   "is_TVarB (VarB T) = False"
-  "is_TVarB (TVarB T) = True"
+| "is_TVarB (TVarB T) = True"
 
-primrec
+primrec type_ofB :: "binding \<Rightarrow> type"
+where
   "type_ofB (VarB T) = T"
-  "type_ofB (TVarB T) = T"
+| "type_ofB (TVarB T) = T"
 
-primrec
+primrec mapB :: "(type \<Rightarrow> type) \<Rightarrow> binding \<Rightarrow> binding"
+where
   "mapB f (VarB T) = VarB (f T)"
-  "mapB f (TVarB T) = TVarB (f T)"
+| "mapB f (TVarB T) = TVarB (f T)"
 
 text {*
 A record type is essentially an association list, mapping names of record fields
@@ -101,95 +99,83 @@ can be treated like a nested abstraction @{text "(\<lambda>:T\<^isub>1. \<dots> 
 
 subsection {* Lifting and Substitution *}
 
-consts
-  psize :: "pat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^isub>p")
-  rsize :: "rpat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^isub>r")
-  fsize :: "fpat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^isub>f")
-
-primrec
+primrec psize :: "pat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^isub>p")
+  and rsize :: "rpat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^isub>r")
+  and fsize :: "fpat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^isub>f")
+where
   "\<parallel>PVar T\<parallel>\<^isub>p = 1"
-  "\<parallel>PRcd fs\<parallel>\<^isub>p = \<parallel>fs\<parallel>\<^isub>r"
-  "\<parallel>[]\<parallel>\<^isub>r = 0"
-  "\<parallel>f \<Colon> fs\<parallel>\<^isub>r = \<parallel>f\<parallel>\<^isub>f + \<parallel>fs\<parallel>\<^isub>r"
-  "\<parallel>(l, p)\<parallel>\<^isub>f = \<parallel>p\<parallel>\<^isub>p"
+| "\<parallel>PRcd fs\<parallel>\<^isub>p = \<parallel>fs\<parallel>\<^isub>r"
+| "\<parallel>[]\<parallel>\<^isub>r = 0"
+| "\<parallel>f \<Colon> fs\<parallel>\<^isub>r = \<parallel>f\<parallel>\<^isub>f + \<parallel>fs\<parallel>\<^isub>r"
+| "\<parallel>(l, p)\<parallel>\<^isub>f = \<parallel>p\<parallel>\<^isub>p"
 
-consts
-  liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" ("\<up>\<^isub>\<tau>")
-  liftrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT" ("\<up>\<^bsub>r\<tau>\<^esub>")
-  liftfT :: "nat \<Rightarrow> nat \<Rightarrow> fldT \<Rightarrow> fldT" ("\<up>\<^bsub>f\<tau>\<^esub>")
-
-primrec
+primrec liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" ("\<up>\<^isub>\<tau>")
+  and liftrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT" ("\<up>\<^bsub>r\<tau>\<^esub>")
+  and liftfT :: "nat \<Rightarrow> nat \<Rightarrow> fldT \<Rightarrow> fldT" ("\<up>\<^bsub>f\<tau>\<^esub>")
+where
   "\<up>\<^isub>\<tau> n k (TVar i) = (if i < k then TVar i else TVar (i + n))"
-  "\<up>\<^isub>\<tau> n k Top = Top"
-  "\<up>\<^isub>\<tau> n k (T \<rightarrow> U) = \<up>\<^isub>\<tau> n k T \<rightarrow> \<up>\<^isub>\<tau> n k U"
-  "\<up>\<^isub>\<tau> n k (\<forall><:T. U) = (\<forall><:\<up>\<^isub>\<tau> n k T. \<up>\<^isub>\<tau> n (k + 1) U)"
-  "\<up>\<^isub>\<tau> n k (RcdT fs) = RcdT (\<up>\<^bsub>r\<tau>\<^esub> n k fs)"
-  "\<up>\<^bsub>r\<tau>\<^esub> n k [] = []"
-  "\<up>\<^bsub>r\<tau>\<^esub> n k (f \<Colon> fs) = \<up>\<^bsub>f\<tau>\<^esub> n k f \<Colon> \<up>\<^bsub>r\<tau>\<^esub> n k fs"
-  "\<up>\<^bsub>f\<tau>\<^esub> n k (l, T) = (l, \<up>\<^isub>\<tau> n k T)"
+| "\<up>\<^isub>\<tau> n k Top = Top"
+| "\<up>\<^isub>\<tau> n k (T \<rightarrow> U) = \<up>\<^isub>\<tau> n k T \<rightarrow> \<up>\<^isub>\<tau> n k U"
+| "\<up>\<^isub>\<tau> n k (\<forall><:T. U) = (\<forall><:\<up>\<^isub>\<tau> n k T. \<up>\<^isub>\<tau> n (k + 1) U)"
+| "\<up>\<^isub>\<tau> n k (RcdT fs) = RcdT (\<up>\<^bsub>r\<tau>\<^esub> n k fs)"
+| "\<up>\<^bsub>r\<tau>\<^esub> n k [] = []"
+| "\<up>\<^bsub>r\<tau>\<^esub> n k (f \<Colon> fs) = \<up>\<^bsub>f\<tau>\<^esub> n k f \<Colon> \<up>\<^bsub>r\<tau>\<^esub> n k fs"
+| "\<up>\<^bsub>f\<tau>\<^esub> n k (l, T) = (l, \<up>\<^isub>\<tau> n k T)"
 
-consts
-  liftp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat" ("\<up>\<^isub>p")
-  liftrp :: "nat \<Rightarrow> nat \<Rightarrow> rpat \<Rightarrow> rpat" ("\<up>\<^bsub>rp\<^esub>")
-  liftfp :: "nat \<Rightarrow> nat \<Rightarrow> fpat \<Rightarrow> fpat" ("\<up>\<^bsub>fp\<^esub>")
-
-primrec
+primrec liftp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat" ("\<up>\<^isub>p")
+  and liftrp :: "nat \<Rightarrow> nat \<Rightarrow> rpat \<Rightarrow> rpat" ("\<up>\<^bsub>rp\<^esub>")
+  and liftfp :: "nat \<Rightarrow> nat \<Rightarrow> fpat \<Rightarrow> fpat" ("\<up>\<^bsub>fp\<^esub>")
+where
   "\<up>\<^isub>p n k (PVar T) = PVar (\<up>\<^isub>\<tau> n k T)"
-  "\<up>\<^isub>p n k (PRcd fs) = PRcd (\<up>\<^bsub>rp\<^esub> n k fs)"
-  "\<up>\<^bsub>rp\<^esub> n k [] = []"
-  "\<up>\<^bsub>rp\<^esub> n k (f \<Colon> fs) = \<up>\<^bsub>fp\<^esub> n k f \<Colon> \<up>\<^bsub>rp\<^esub> n k fs"
-  "\<up>\<^bsub>fp\<^esub> n k (l, p) = (l, \<up>\<^isub>p n k p)"
+| "\<up>\<^isub>p n k (PRcd fs) = PRcd (\<up>\<^bsub>rp\<^esub> n k fs)"
+| "\<up>\<^bsub>rp\<^esub> n k [] = []"
+| "\<up>\<^bsub>rp\<^esub> n k (f \<Colon> fs) = \<up>\<^bsub>fp\<^esub> n k f \<Colon> \<up>\<^bsub>rp\<^esub> n k fs"
+| "\<up>\<^bsub>fp\<^esub> n k (l, p) = (l, \<up>\<^isub>p n k p)"
 
-consts
-  lift :: "nat \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm" ("\<up>")
-  liftr :: "nat \<Rightarrow> nat \<Rightarrow> rcd \<Rightarrow> rcd" ("\<up>\<^isub>r")
-  liftf :: "nat \<Rightarrow> nat \<Rightarrow> fld \<Rightarrow> fld" ("\<up>\<^isub>f")
-
-primrec
+primrec lift :: "nat \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm" ("\<up>")
+  and liftr :: "nat \<Rightarrow> nat \<Rightarrow> rcd \<Rightarrow> rcd" ("\<up>\<^isub>r")
+  and liftf :: "nat \<Rightarrow> nat \<Rightarrow> fld \<Rightarrow> fld" ("\<up>\<^isub>f")
+where
   "\<up> n k (Var i) = (if i < k then Var i else Var (i + n))"
-  "\<up> n k (\<lambda>:T. t) = (\<lambda>:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
-  "\<up> n k (\<lambda><:T. t) = (\<lambda><:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
-  "\<up> n k (s \<bullet> t) = \<up> n k s \<bullet> \<up> n k t"
-  "\<up> n k (t \<bullet>\<^isub>\<tau> T) = \<up> n k t \<bullet>\<^isub>\<tau> \<up>\<^isub>\<tau> n k T"
-  "\<up> n k (Rcd fs) = Rcd (\<up>\<^isub>r n k fs)"
-  "\<up> n k (t..a) = (\<up> n k t)..a"
-  "\<up> n k (LET p = t IN u) = (LET \<up>\<^isub>p n k p = \<up> n k t IN \<up> n (k + \<parallel>p\<parallel>\<^isub>p) u)"
-  "\<up>\<^isub>r n k [] = []"
-  "\<up>\<^isub>r n k (f \<Colon> fs) = \<up>\<^isub>f n k f \<Colon> \<up>\<^isub>r n k fs"
-  "\<up>\<^isub>f n k (l, t) = (l, \<up> n k t)"
+| "\<up> n k (\<lambda>:T. t) = (\<lambda>:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
+| "\<up> n k (\<lambda><:T. t) = (\<lambda><:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
+| "\<up> n k (s \<bullet> t) = \<up> n k s \<bullet> \<up> n k t"
+| "\<up> n k (t \<bullet>\<^isub>\<tau> T) = \<up> n k t \<bullet>\<^isub>\<tau> \<up>\<^isub>\<tau> n k T"
+| "\<up> n k (Rcd fs) = Rcd (\<up>\<^isub>r n k fs)"
+| "\<up> n k (t..a) = (\<up> n k t)..a"
+| "\<up> n k (LET p = t IN u) = (LET \<up>\<^isub>p n k p = \<up> n k t IN \<up> n (k + \<parallel>p\<parallel>\<^isub>p) u)"
+| "\<up>\<^isub>r n k [] = []"
+| "\<up>\<^isub>r n k (f \<Colon> fs) = \<up>\<^isub>f n k f \<Colon> \<up>\<^isub>r n k fs"
+| "\<up>\<^isub>f n k (l, t) = (l, \<up> n k t)"
 
-consts
-  substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>\<tau>" [300, 0, 0] 300)
-  substrTT :: "rcdT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcdT"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^bsub>r\<tau>\<^esub>" [300, 0, 0] 300)
-  substfTT :: "fldT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fldT"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^bsub>f\<tau>\<^esub>" [300, 0, 0] 300)
-
-primrec
+primrec substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>\<tau>" [300, 0, 0] 300)
+  and substrTT :: "rcdT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcdT"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^bsub>r\<tau>\<^esub>" [300, 0, 0] 300)
+  and substfTT :: "fldT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fldT"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^bsub>f\<tau>\<^esub>" [300, 0, 0] 300)
+where
   "(TVar i)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> =
      (if k < i then TVar (i - 1) else if i = k then \<up>\<^isub>\<tau> k 0 S else TVar i)"
-  "Top[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = Top"
-  "(T \<rightarrow> U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> \<rightarrow> U[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
-  "(\<forall><:T. U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = (\<forall><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. U[k+1 \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>)"
-  "(RcdT fs)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = RcdT (fs[k \<mapsto>\<^isub>\<tau> S]\<^bsub>r\<tau>\<^esub>)"
-  "[][k \<mapsto>\<^isub>\<tau> S]\<^bsub>r\<tau>\<^esub> = []"
-  "(f \<Colon> fs)[k \<mapsto>\<^isub>\<tau> S]\<^bsub>r\<tau>\<^esub> = f[k \<mapsto>\<^isub>\<tau> S]\<^bsub>f\<tau>\<^esub> \<Colon> fs[k \<mapsto>\<^isub>\<tau> S]\<^bsub>r\<tau>\<^esub>"
-  "(l, T)[k \<mapsto>\<^isub>\<tau> S]\<^bsub>f\<tau>\<^esub> = (l, T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>)"
+| "Top[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = Top"
+| "(T \<rightarrow> U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> \<rightarrow> U[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
+| "(\<forall><:T. U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = (\<forall><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. U[k+1 \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>)"
+| "(RcdT fs)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = RcdT (fs[k \<mapsto>\<^isub>\<tau> S]\<^bsub>r\<tau>\<^esub>)"
+| "[][k \<mapsto>\<^isub>\<tau> S]\<^bsub>r\<tau>\<^esub> = []"
+| "(f \<Colon> fs)[k \<mapsto>\<^isub>\<tau> S]\<^bsub>r\<tau>\<^esub> = f[k \<mapsto>\<^isub>\<tau> S]\<^bsub>f\<tau>\<^esub> \<Colon> fs[k \<mapsto>\<^isub>\<tau> S]\<^bsub>r\<tau>\<^esub>"
+| "(l, T)[k \<mapsto>\<^isub>\<tau> S]\<^bsub>f\<tau>\<^esub> = (l, T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>)"
 
-consts
-  substpT :: "pat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> pat"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>p" [300, 0, 0] 300)
-  substrpT :: "rpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rpat"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^bsub>rp\<^esub>" [300, 0, 0] 300)
-  substfpT :: "fpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fpat"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^bsub>fp\<^esub>" [300, 0, 0] 300)
-
-primrec
+primrec substpT :: "pat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> pat"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>p" [300, 0, 0] 300)
+  and substrpT :: "rpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rpat"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^bsub>rp\<^esub>" [300, 0, 0] 300)
+  and substfpT :: "fpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fpat"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^bsub>fp\<^esub>" [300, 0, 0] 300)
+where
   "(PVar T)[k \<mapsto>\<^isub>\<tau> S]\<^isub>p = PVar (T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>)"
-  "(PRcd fs)[k \<mapsto>\<^isub>\<tau> S]\<^isub>p = PRcd (fs[k \<mapsto>\<^isub>\<tau> S]\<^bsub>rp\<^esub>)"
-  "[][k \<mapsto>\<^isub>\<tau> S]\<^bsub>rp\<^esub> = []"
-  "(f \<Colon> fs)[k \<mapsto>\<^isub>\<tau> S]\<^bsub>rp\<^esub> = f[k \<mapsto>\<^isub>\<tau> S]\<^bsub>fp\<^esub> \<Colon> fs[k \<mapsto>\<^isub>\<tau> S]\<^bsub>rp\<^esub>"
-  "(l, p)[k \<mapsto>\<^isub>\<tau> S]\<^bsub>fp\<^esub> = (l, p[k \<mapsto>\<^isub>\<tau> S]\<^isub>p)"
+| "(PRcd fs)[k \<mapsto>\<^isub>\<tau> S]\<^isub>p = PRcd (fs[k \<mapsto>\<^isub>\<tau> S]\<^bsub>rp\<^esub>)"
+| "[][k \<mapsto>\<^isub>\<tau> S]\<^bsub>rp\<^esub> = []"
+| "(f \<Colon> fs)[k \<mapsto>\<^isub>\<tau> S]\<^bsub>rp\<^esub> = f[k \<mapsto>\<^isub>\<tau> S]\<^bsub>fp\<^esub> \<Colon> fs[k \<mapsto>\<^isub>\<tau> S]\<^bsub>rp\<^esub>"
+| "(l, p)[k \<mapsto>\<^isub>\<tau> S]\<^bsub>fp\<^esub> = (l, p[k \<mapsto>\<^isub>\<tau> S]\<^isub>p)"
 
-consts decp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat"  ("\<down>\<^isub>p")
-primrec
+primrec decp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat"  ("\<down>\<^isub>p")
+where
   "\<down>\<^isub>p 0 k p = p"
-  "\<down>\<^isub>p (Suc n) k p = \<down>\<^isub>p n k (p[k \<mapsto>\<^isub>\<tau> Top]\<^isub>p)"
+| "\<down>\<^isub>p (Suc n) k p = \<down>\<^isub>p n k (p[k \<mapsto>\<^isub>\<tau> Top]\<^isub>p)"
 
 text {*
 In addition to the lifting and substitution functions already needed for the
@@ -199,24 +185,22 @@ respectively. The extension of the existing lifting and substitution
 functions to records is fairly standard.
 *}
 
-consts
-  subst :: "trm \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm"  ("_[_ \<mapsto> _]" [300, 0, 0] 300)
-  substr :: "rcd \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> rcd"  ("_[_ \<mapsto> _]\<^isub>r" [300, 0, 0] 300)
-  substf :: "fld \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> fld"  ("_[_ \<mapsto> _]\<^isub>f" [300, 0, 0] 300)
-
-primrec
+primrec subst :: "trm \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm"  ("_[_ \<mapsto> _]" [300, 0, 0] 300)
+  and substr :: "rcd \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> rcd"  ("_[_ \<mapsto> _]\<^isub>r" [300, 0, 0] 300)
+  and substf :: "fld \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> fld"  ("_[_ \<mapsto> _]\<^isub>f" [300, 0, 0] 300)
+where
   "(Var i)[k \<mapsto> s] =
      (if k < i then Var (i - 1) else if i = k then \<up> k 0 s else Var i)"
-  "(t \<bullet> u)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet> u[k \<mapsto> s]"
-  "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet>\<^isub>\<tau> T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>"
-  "(\<lambda>:T. t)[k \<mapsto> s] = (\<lambda>:T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>. t[k+1 \<mapsto> s])"
-  "(\<lambda><:T. t)[k \<mapsto> s] = (\<lambda><:T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>. t[k+1 \<mapsto> s])"
-  "(Rcd fs)[k \<mapsto> s] = Rcd (fs[k \<mapsto> s]\<^isub>r)"
-  "(t..a)[k \<mapsto> s] = (t[k \<mapsto> s])..a"
-  "(LET p = t IN u)[k \<mapsto> s] = (LET \<down>\<^isub>p 1 k p = t[k \<mapsto> s] IN u[k + \<parallel>p\<parallel>\<^isub>p \<mapsto> s])"
-  "[][k \<mapsto> s]\<^isub>r = []"
-  "(f \<Colon> fs)[k \<mapsto> s]\<^isub>r = f[k \<mapsto> s]\<^isub>f \<Colon> fs[k \<mapsto> s]\<^isub>r"
-  "(l, t)[k \<mapsto> s]\<^isub>f = (l, t[k \<mapsto> s])"
+| "(t \<bullet> u)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet> u[k \<mapsto> s]"
+| "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet>\<^isub>\<tau> T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>"
+| "(\<lambda>:T. t)[k \<mapsto> s] = (\<lambda>:T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>. t[k+1 \<mapsto> s])"
+| "(\<lambda><:T. t)[k \<mapsto> s] = (\<lambda><:T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>. t[k+1 \<mapsto> s])"
+| "(Rcd fs)[k \<mapsto> s] = Rcd (fs[k \<mapsto> s]\<^isub>r)"
+| "(t..a)[k \<mapsto> s] = (t[k \<mapsto> s])..a"
+| "(LET p = t IN u)[k \<mapsto> s] = (LET \<down>\<^isub>p 1 k p = t[k \<mapsto> s] IN u[k + \<parallel>p\<parallel>\<^isub>p \<mapsto> s])"
+| "[][k \<mapsto> s]\<^isub>r = []"
+| "(f \<Colon> fs)[k \<mapsto> s]\<^isub>r = f[k \<mapsto> s]\<^isub>f \<Colon> fs[k \<mapsto> s]\<^isub>r"
+| "(l, t)[k \<mapsto> s]\<^isub>f = (l, t[k \<mapsto> s])"
 
 text {*
 Note that the substitution function on terms is defined simultaneously
@@ -228,34 +212,32 @@ the @{text LET} binder, where @{term "\<parallel>p\<parallel>\<^isub>p"} is the 
 in the pattern @{term p}.
 *}
 
-consts
-  substT :: "trm \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> trm"  ("_[_ \<mapsto>\<^isub>\<tau> _]" [300, 0, 0] 300)
-  substrT :: "rcd \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcd"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>r" [300, 0, 0] 300)
-  substfT :: "fld \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fld"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>f" [300, 0, 0] 300)
-
-primrec
+primrec substT :: "trm \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> trm"  ("_[_ \<mapsto>\<^isub>\<tau> _]" [300, 0, 0] 300)
+  and substrT :: "rcd \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcd"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>r" [300, 0, 0] 300)
+  and substfT :: "fld \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fld"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>f" [300, 0, 0] 300)
+where
   "(Var i)[k \<mapsto>\<^isub>\<tau> S] = (if k < i then Var (i - 1) else Var i)"
-  "(t \<bullet> u)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet> u[k \<mapsto>\<^isub>\<tau> S]"
-  "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet>\<^isub>\<tau> T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
-  "(\<lambda>:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda>:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
-  "(\<lambda><:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
-  "(Rcd fs)[k \<mapsto>\<^isub>\<tau> S] = Rcd (fs[k \<mapsto>\<^isub>\<tau> S]\<^isub>r)"
-  "(t..a)[k \<mapsto>\<^isub>\<tau> S] = (t[k \<mapsto>\<^isub>\<tau> S])..a"
-  "(LET p = t IN u)[k \<mapsto>\<^isub>\<tau> S] =
+| "(t \<bullet> u)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet> u[k \<mapsto>\<^isub>\<tau> S]"
+| "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet>\<^isub>\<tau> T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
+| "(\<lambda>:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda>:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
+| "(\<lambda><:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
+| "(Rcd fs)[k \<mapsto>\<^isub>\<tau> S] = Rcd (fs[k \<mapsto>\<^isub>\<tau> S]\<^isub>r)"
+| "(t..a)[k \<mapsto>\<^isub>\<tau> S] = (t[k \<mapsto>\<^isub>\<tau> S])..a"
+| "(LET p = t IN u)[k \<mapsto>\<^isub>\<tau> S] =
      (LET p[k \<mapsto>\<^isub>\<tau> S]\<^isub>p = t[k \<mapsto>\<^isub>\<tau> S] IN u[k + \<parallel>p\<parallel>\<^isub>p \<mapsto>\<^isub>\<tau> S])"
-  "[][k \<mapsto>\<^isub>\<tau> S]\<^isub>r = []"
-  "(f \<Colon> fs)[k \<mapsto>\<^isub>\<tau> S]\<^isub>r = f[k \<mapsto>\<^isub>\<tau> S]\<^isub>f \<Colon> fs[k \<mapsto>\<^isub>\<tau> S]\<^isub>r"
-  "(l, t)[k \<mapsto>\<^isub>\<tau> S]\<^isub>f = (l, t[k \<mapsto>\<^isub>\<tau> S])"
+| "[][k \<mapsto>\<^isub>\<tau> S]\<^isub>r = []"
+| "(f \<Colon> fs)[k \<mapsto>\<^isub>\<tau> S]\<^isub>r = f[k \<mapsto>\<^isub>\<tau> S]\<^isub>f \<Colon> fs[k \<mapsto>\<^isub>\<tau> S]\<^isub>r"
+| "(l, t)[k \<mapsto>\<^isub>\<tau> S]\<^isub>f = (l, t[k \<mapsto>\<^isub>\<tau> S])"
 
-consts liftE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env" ("\<up>\<^isub>e")
-primrec
+primrec liftE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env" ("\<up>\<^isub>e")
+where
   "\<up>\<^isub>e n k [] = []"
-  "\<up>\<^isub>e n k (B \<Colon> \<Gamma>) = mapB (\<up>\<^isub>\<tau> n (k + \<parallel>\<Gamma>\<parallel>)) B \<Colon> \<up>\<^isub>e n k \<Gamma>"
+| "\<up>\<^isub>e n k (B \<Colon> \<Gamma>) = mapB (\<up>\<^isub>\<tau> n (k + \<parallel>\<Gamma>\<parallel>)) B \<Colon> \<up>\<^isub>e n k \<Gamma>"
 
-consts substE :: "env \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> env"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>e" [300, 0, 0] 300)
-primrec
+primrec substE :: "env \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> env"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>e" [300, 0, 0] 300)
+where
   "[][k \<mapsto>\<^isub>\<tau> T]\<^isub>e = []"
-  "(B \<Colon> \<Gamma>)[k \<mapsto>\<^isub>\<tau> T]\<^isub>e = mapB (\<lambda>U. U[k + \<parallel>\<Gamma>\<parallel> \<mapsto>\<^isub>\<tau> T]\<^isub>\<tau>) B \<Colon> \<Gamma>[k \<mapsto>\<^isub>\<tau> T]\<^isub>e"
+| "(B \<Colon> \<Gamma>)[k \<mapsto>\<^isub>\<tau> T]\<^isub>e = mapB (\<lambda>U. U[k + \<parallel>\<Gamma>\<parallel> \<mapsto>\<^isub>\<tau> T]\<^isub>\<tau>) B \<Colon> \<Gamma>[k \<mapsto>\<^isub>\<tau> T]\<^isub>e"
 
 text {*
 For the formalization of the reduction
@@ -264,25 +246,25 @@ for simultaneously substituting terms @{term us} for variables with
 consecutive indices:
 *}
 
-consts substs :: "trm \<Rightarrow> nat \<Rightarrow> trm list \<Rightarrow> trm"  ("_[_ \<mapsto>\<^isub>s _]" [300, 0, 0] 300)
-primrec
+primrec substs :: "trm \<Rightarrow> nat \<Rightarrow> trm list \<Rightarrow> trm"  ("_[_ \<mapsto>\<^isub>s _]" [300, 0, 0] 300)
+where
   "t[k \<mapsto>\<^isub>s []] = t"
-  "t[k \<mapsto>\<^isub>s u \<Colon> us] = t[k + \<parallel>us\<parallel> \<mapsto> u][k \<mapsto>\<^isub>s us]"
+| "t[k \<mapsto>\<^isub>s u \<Colon> us] = t[k + \<parallel>us\<parallel> \<mapsto> u][k \<mapsto>\<^isub>s us]"
 
-consts decT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("\<down>\<^isub>\<tau>")
-primrec
+primrec decT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("\<down>\<^isub>\<tau>")
+where
   "\<down>\<^isub>\<tau> 0 k T = T"
-  "\<down>\<^isub>\<tau> (Suc n) k T = \<down>\<^isub>\<tau> n k (T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>)"
+| "\<down>\<^isub>\<tau> (Suc n) k T = \<down>\<^isub>\<tau> n k (T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>)"
 
-consts decE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env"  ("\<down>\<^isub>e")
-primrec
+primrec decE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env"  ("\<down>\<^isub>e")
+where
   "\<down>\<^isub>e 0 k \<Gamma> = \<Gamma>"
-  "\<down>\<^isub>e (Suc n) k \<Gamma> = \<down>\<^isub>e n k (\<Gamma>[k \<mapsto>\<^isub>\<tau> Top]\<^isub>e)"
+| "\<down>\<^isub>e (Suc n) k \<Gamma> = \<down>\<^isub>e n k (\<Gamma>[k \<mapsto>\<^isub>\<tau> Top]\<^isub>e)"
 
-consts decrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT"  ("\<down>\<^bsub>r\<tau>\<^esub>")
-primrec
+primrec decrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT"  ("\<down>\<^bsub>r\<tau>\<^esub>")
+where
   "\<down>\<^bsub>r\<tau>\<^esub> 0 k fTs = fTs"
-  "\<down>\<^bsub>r\<tau>\<^esub> (Suc n) k fTs = \<down>\<^bsub>r\<tau>\<^esub> n k (fTs[k \<mapsto>\<^isub>\<tau> Top]\<^bsub>r\<tau>\<^esub>)"
+| "\<down>\<^bsub>r\<tau>\<^esub> (Suc n) k fTs = \<down>\<^bsub>r\<tau>\<^esub> n k (fTs[k \<mapsto>\<^isub>\<tau> Top]\<^bsub>r\<tau>\<^esub>)"
 
 text {*
 The lemmas about substitution and lifting are very similar to those needed

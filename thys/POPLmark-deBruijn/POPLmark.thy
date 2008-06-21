@@ -1,5 +1,5 @@
 (*  Title:      POPLmark/POPLmark.thy
-    ID:         $Id: POPLmark.thy,v 1.5 2007-10-16 09:10:53 stefanberghofer Exp $
+    ID:         $Id: POPLmark.thy,v 1.6 2008-06-21 18:13:20 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -48,22 +48,20 @@ a type variable binding, function @{term type_ofB} extracts the type contained i
 and @{term "mapB f"} applies @{term f} to the type contained in a binding.
 *}
 
-consts
-  is_TVarB :: "binding \<Rightarrow> bool"
-  type_ofB :: "binding \<Rightarrow> type"
-  mapB :: "(type \<Rightarrow> type) \<Rightarrow> binding \<Rightarrow> binding"
-
-primrec
+primrec is_TVarB :: "binding \<Rightarrow> bool"
+where
   "is_TVarB (VarB T) = False"
-  "is_TVarB (TVarB T) = True"
+| "is_TVarB (TVarB T) = True"
 
-primrec
+primrec type_ofB :: "binding \<Rightarrow> type"
+where
   "type_ofB (VarB T) = T"
-  "type_ofB (TVarB T) = T"
+| "type_ofB (TVarB T) = T"
 
-primrec
+primrec mapB :: "(type \<Rightarrow> type) \<Rightarrow> binding \<Rightarrow> binding"
+where
   "mapB f (VarB T) = VarB (f T)"
-  "mapB f (TVarB T) = TVarB (f T)"
+| "mapB f (TVarB T) = TVarB (f T)"
 
 text {*
 The following datatype represents the terms of System \fsub{}:
@@ -90,20 +88,20 @@ variables with indices @{text "\<ge> k"} by @{term n}. The lifting functions on
 types and terms are defined by
 *}
 
-consts liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" ("\<up>\<^isub>\<tau>")
-primrec
+primrec liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" ("\<up>\<^isub>\<tau>")
+where
   "\<up>\<^isub>\<tau> n k (TVar i) = (if i < k then TVar i else TVar (i + n))"
-  "\<up>\<^isub>\<tau> n k Top = Top"
-  "\<up>\<^isub>\<tau> n k (T \<rightarrow> U) = \<up>\<^isub>\<tau> n k T \<rightarrow> \<up>\<^isub>\<tau> n k U"
-  "\<up>\<^isub>\<tau> n k (\<forall><:T. U) = (\<forall><:\<up>\<^isub>\<tau> n k T. \<up>\<^isub>\<tau> n (k + 1) U)"
+| "\<up>\<^isub>\<tau> n k Top = Top"
+| "\<up>\<^isub>\<tau> n k (T \<rightarrow> U) = \<up>\<^isub>\<tau> n k T \<rightarrow> \<up>\<^isub>\<tau> n k U"
+| "\<up>\<^isub>\<tau> n k (\<forall><:T. U) = (\<forall><:\<up>\<^isub>\<tau> n k T. \<up>\<^isub>\<tau> n (k + 1) U)"
 
-consts lift :: "nat \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm" ("\<up>")
-primrec
+primrec lift :: "nat \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm" ("\<up>")
+where
   "\<up> n k (Var i) = (if i < k then Var i else Var (i + n))"
-  "\<up> n k (\<lambda>:T. t) = (\<lambda>:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
-  "\<up> n k (\<lambda><:T. t) = (\<lambda><:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
-  "\<up> n k (s \<bullet> t) = \<up> n k s \<bullet> \<up> n k t"
-  "\<up> n k (t \<bullet>\<^isub>\<tau> T) = \<up> n k t \<bullet>\<^isub>\<tau> \<up>\<^isub>\<tau> n k T"
+| "\<up> n k (\<lambda>:T. t) = (\<lambda>:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
+| "\<up> n k (\<lambda><:T. t) = (\<lambda><:\<up>\<^isub>\<tau> n k T. \<up> n (k + 1) t)"
+| "\<up> n k (s \<bullet> t) = \<up> n k s \<bullet> \<up> n k t"
+| "\<up> n k (t \<bullet>\<^isub>\<tau> T) = \<up> n k t \<bullet>\<^isub>\<tau> \<up>\<^isub>\<tau> n k T"
 
 text {*
 It is useful to also define an ``unlifting'' function @{text "\<down>\<^isub>\<tau> n k"} for
@@ -114,53 +112,53 @@ which substitute type variables in types, type variables in terms,
 and term variables in terms, respectively. They are defined as follows:
 *}
 
-consts substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>\<tau>" [300, 0, 0] 300)
-primrec
+primrec substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>\<tau>" [300, 0, 0] 300)
+where
   "(TVar i)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> =
      (if k < i then TVar (i - 1) else if i = k then \<up>\<^isub>\<tau> k 0 S else TVar i)"
-  "Top[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = Top"
-  "(T \<rightarrow> U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> \<rightarrow> U[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
-  "(\<forall><:T. U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = (\<forall><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. U[k+1 \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>)"
+| "Top[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = Top"
+| "(T \<rightarrow> U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> \<rightarrow> U[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
+| "(\<forall><:T. U)[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau> = (\<forall><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. U[k+1 \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>)"
 
-consts decT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("\<down>\<^isub>\<tau>")
-primrec
+primrec decT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("\<down>\<^isub>\<tau>")
+where
   "\<down>\<^isub>\<tau> 0 k T = T"
-  "\<down>\<^isub>\<tau> (Suc n) k T = \<down>\<^isub>\<tau> n k (T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>)"
+| "\<down>\<^isub>\<tau> (Suc n) k T = \<down>\<^isub>\<tau> n k (T[k \<mapsto>\<^isub>\<tau> Top]\<^isub>\<tau>)"
 
-consts subst :: "trm \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm"  ("_[_ \<mapsto> _]" [300, 0, 0] 300)
-primrec
+primrec subst :: "trm \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm"  ("_[_ \<mapsto> _]" [300, 0, 0] 300)
+where
   "(Var i)[k \<mapsto> s] = (if k < i then Var (i - 1) else if i = k then \<up> k 0 s else Var i)"
-  "(t \<bullet> u)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet> u[k \<mapsto> s]"
-  "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet>\<^isub>\<tau> \<down>\<^isub>\<tau> 1 k T"
-  "(\<lambda>:T. t)[k \<mapsto> s] = (\<lambda>:\<down>\<^isub>\<tau> 1 k T. t[k+1 \<mapsto> s])"
-  "(\<lambda><:T. t)[k \<mapsto> s] = (\<lambda><:\<down>\<^isub>\<tau> 1 k T. t[k+1 \<mapsto> s])"
+| "(t \<bullet> u)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet> u[k \<mapsto> s]"
+| "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto> s] = t[k \<mapsto> s] \<bullet>\<^isub>\<tau> \<down>\<^isub>\<tau> 1 k T"
+| "(\<lambda>:T. t)[k \<mapsto> s] = (\<lambda>:\<down>\<^isub>\<tau> 1 k T. t[k+1 \<mapsto> s])"
+| "(\<lambda><:T. t)[k \<mapsto> s] = (\<lambda><:\<down>\<^isub>\<tau> 1 k T. t[k+1 \<mapsto> s])"
 
-consts substT :: "trm \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> trm"    ("_[_ \<mapsto>\<^isub>\<tau> _]" [300, 0, 0] 300)
-primrec
+primrec substT :: "trm \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> trm"    ("_[_ \<mapsto>\<^isub>\<tau> _]" [300, 0, 0] 300)
+where
   "(Var i)[k \<mapsto>\<^isub>\<tau> S] = (if k < i then Var (i - 1) else Var i)"
-  "(t \<bullet> u)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet> u[k \<mapsto>\<^isub>\<tau> S]"
-  "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet>\<^isub>\<tau> T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
-  "(\<lambda>:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda>:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
-  "(\<lambda><:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
+| "(t \<bullet> u)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet> u[k \<mapsto>\<^isub>\<tau> S]"
+| "(t \<bullet>\<^isub>\<tau> T)[k \<mapsto>\<^isub>\<tau> S] = t[k \<mapsto>\<^isub>\<tau> S] \<bullet>\<^isub>\<tau> T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>"
+| "(\<lambda>:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda>:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
+| "(\<lambda><:T. t)[k \<mapsto>\<^isub>\<tau> S] = (\<lambda><:T[k \<mapsto>\<^isub>\<tau> S]\<^isub>\<tau>. t[k+1 \<mapsto>\<^isub>\<tau> S])"
 
 text {*
 Lifting and substitution extends to typing contexts as follows:
 *}
 
-consts liftE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env" ("\<up>\<^isub>e")
-primrec
+primrec liftE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env" ("\<up>\<^isub>e")
+where
   "\<up>\<^isub>e n k [] = []"
-  "\<up>\<^isub>e n k (B \<Colon> \<Gamma>) = mapB (\<up>\<^isub>\<tau> n (k + \<parallel>\<Gamma>\<parallel>)) B \<Colon> \<up>\<^isub>e n k \<Gamma>"
+| "\<up>\<^isub>e n k (B \<Colon> \<Gamma>) = mapB (\<up>\<^isub>\<tau> n (k + \<parallel>\<Gamma>\<parallel>)) B \<Colon> \<up>\<^isub>e n k \<Gamma>"
 
-consts substE :: "env \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> env"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>e" [300, 0, 0] 300)
-primrec
+primrec substE :: "env \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> env"  ("_[_ \<mapsto>\<^isub>\<tau> _]\<^isub>e" [300, 0, 0] 300)
+where
   "[][k \<mapsto>\<^isub>\<tau> T]\<^isub>e = []"
-  "(B \<Colon> \<Gamma>)[k \<mapsto>\<^isub>\<tau> T]\<^isub>e = mapB (\<lambda>U. U[k + \<parallel>\<Gamma>\<parallel> \<mapsto>\<^isub>\<tau> T]\<^isub>\<tau>) B \<Colon> \<Gamma>[k \<mapsto>\<^isub>\<tau> T]\<^isub>e"
+| "(B \<Colon> \<Gamma>)[k \<mapsto>\<^isub>\<tau> T]\<^isub>e = mapB (\<lambda>U. U[k + \<parallel>\<Gamma>\<parallel> \<mapsto>\<^isub>\<tau> T]\<^isub>\<tau>) B \<Colon> \<Gamma>[k \<mapsto>\<^isub>\<tau> T]\<^isub>e"
 
-consts decE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env"  ("\<down>\<^isub>e")
-primrec
+primrec decE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env"  ("\<down>\<^isub>e")
+where
   "\<down>\<^isub>e 0 k \<Gamma> = \<Gamma>"
-  "\<down>\<^isub>e (Suc n) k \<Gamma> = \<down>\<^isub>e n k (\<Gamma>[k \<mapsto>\<^isub>\<tau> Top]\<^isub>e)"
+| "\<down>\<^isub>e (Suc n) k \<Gamma> = \<down>\<^isub>e n k (\<Gamma>[k \<mapsto>\<^isub>\<tau> Top]\<^isub>e)"
 
 text {*
 Note that in a context of the form @{term "B \<Colon> \<Gamma>"}, all variables in @{term B} with
