@@ -10,17 +10,15 @@ begin
 
 subsection {* Alternative definition of primitive recursive functions of one variable *}
 
-consts
-  UnaryRecOp :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)"
-defs
-  UnaryRecOp_def: "UnaryRecOp \<equiv> (\<lambda> g h. pr_conv_2_to_1 (PrimRecOp g (pr_conv_1_to_3 h)))"
+definition
+  UnaryRecOp :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)" where
+  "UnaryRecOp = (\<lambda> g h. pr_conv_2_to_1 (PrimRecOp g (pr_conv_1_to_3 h)))"
 
 lemma unary_rec_into_pr: "\<lbrakk> g \<in> PrimRec1; h \<in> PrimRec1 \<rbrakk> \<Longrightarrow> UnaryRecOp g h \<in> PrimRec1" by (simp add: UnaryRecOp_def pr_conv_1_to_3_lm pr_conv_2_to_1_lm pr_rec)
 
-consts
-  c_f_pair :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)"
-defs
-  c_f_pair_def: "c_f_pair \<equiv> (\<lambda> f g x. c_pair (f x) (g x))"
+definition
+  c_f_pair :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)" where
+  "c_f_pair = (\<lambda> f g x. c_pair (f x) (g x))"
 
 lemma c_f_pair_to_pr: "\<lbrakk> f \<in> PrimRec1; g \<in> PrimRec1 \<rbrakk> \<Longrightarrow> c_f_pair f g \<in> PrimRec1"
   unfolding c_f_pair_def by prec
@@ -201,16 +199,16 @@ datatype PrimScheme = Base_zero | Base_suc | Base_fst | Base_snd
                       | Pair_op PrimScheme PrimScheme
                       | Rec_op PrimScheme PrimScheme
 
-consts
-  sch_to_pr :: "PrimScheme \<Rightarrow> (nat \<Rightarrow> nat)"
 primrec
+  sch_to_pr :: "PrimScheme \<Rightarrow> (nat \<Rightarrow> nat)"
+where
   "sch_to_pr Base_zero = (\<lambda> x. 0)"
-  "sch_to_pr Base_suc = Suc"
-  "sch_to_pr Base_fst = c_fst"
-  "sch_to_pr Base_snd = c_snd"
-  "sch_to_pr (Comp_op t1 t2)  = (\<lambda> x. (sch_to_pr t1) ((sch_to_pr t2) x))"
-  "sch_to_pr (Pair_op t1 t2)  = c_f_pair (sch_to_pr t1) (sch_to_pr t2)"
-  "sch_to_pr (Rec_op t1 t2)  = UnaryRecOp (sch_to_pr t1) (sch_to_pr t2)"
+| "sch_to_pr Base_suc = Suc"
+| "sch_to_pr Base_fst = c_fst"
+| "sch_to_pr Base_snd = c_snd"
+| "sch_to_pr (Comp_op t1 t2)  = (\<lambda> x. (sch_to_pr t1) ((sch_to_pr t2) x))"
+| "sch_to_pr (Pair_op t1 t2)  = c_f_pair (sch_to_pr t1) (sch_to_pr t2)"
+| "sch_to_pr (Rec_op t1 t2)  = UnaryRecOp (sch_to_pr t1) (sch_to_pr t2)"
 
 lemma sch_to_pr_into_pr: "sch_to_pr sch \<in> PrimRec1" by (simp add: pr_1_eq_1', induct_tac sch, simp_all add: PrimRec1'.intros)
 
@@ -251,22 +249,21 @@ proof -
   qed
 qed
 
-consts
-  loc_f :: "nat \<Rightarrow> PrimScheme \<Rightarrow> PrimScheme \<Rightarrow> PrimScheme"
-defs
-  loc_f_def: "loc_f n sch1 sch2 \<equiv> if n=0 then Base_zero else
-                                  if n=1 then Base_suc else
-                                  if n=2 then Base_fst else
-                                  if n=3 then Base_snd else
-                                  if n=4 then (Comp_op sch1 sch2) else
-                                  if n=5 then (Pair_op sch1 sch2) else
-                                  if n=6 then (Rec_op sch1 sch2) else
-                                  Base_zero"
+definition
+  loc_f :: "nat \<Rightarrow> PrimScheme \<Rightarrow> PrimScheme \<Rightarrow> PrimScheme" where
+  "loc_f n sch1 sch2 =
+    (if n=0 then Base_zero else
+     if n=1 then Base_suc else
+     if n=2 then Base_fst else
+     if n=3 then Base_snd else
+     if n=4 then (Comp_op sch1 sch2) else
+     if n=5 then (Pair_op sch1 sch2) else
+     if n=6 then (Rec_op sch1 sch2) else
+     Base_zero)"
 
-consts
-  mod7 :: "nat \<Rightarrow> nat"
-defs
-  mod7_def: "mod7 \<equiv> (\<lambda> x. x mod 7)"
+definition
+  mod7 :: "nat \<Rightarrow> nat" where
+  "mod7 = (\<lambda> x. x mod 7)"
 
 lemma c_snd_snd_lt: "c_snd (c_snd (Suc (Suc x))) < Suc (Suc x)"
 proof -
@@ -294,16 +291,16 @@ recdef nat_to_sch "measure (%x. x)"
   "nat_to_sch x = (let u=mod7 (c_fst x); v=c_snd x; v1=c_fst v; v2 = c_snd v; sch1=nat_to_sch v1; sch2=nat_to_sch v2 in loc_f u sch1 sch2)"
 (hints recdef_simp: c_snd_snd_lt c_fst_snd_lt)
 
-consts
-  sch_to_nat :: "PrimScheme \<Rightarrow> nat"
 primrec
+  sch_to_nat :: "PrimScheme \<Rightarrow> nat"
+where
   "sch_to_nat Base_zero = 0"
-  "sch_to_nat Base_suc = c_pair 1 0"
-  "sch_to_nat Base_fst = c_pair 2 0"
-  "sch_to_nat Base_snd = c_pair 3 0"
-  "sch_to_nat (Comp_op t1 t2) = c_pair 4 (c_pair (sch_to_nat t1) (sch_to_nat t2))"
-  "sch_to_nat (Pair_op t1 t2) = c_pair 5 (c_pair (sch_to_nat t1) (sch_to_nat t2))"
-  "sch_to_nat (Rec_op t1 t2)  = c_pair 6 (c_pair (sch_to_nat t1) (sch_to_nat t2))"
+| "sch_to_nat Base_suc = c_pair 1 0"
+| "sch_to_nat Base_fst = c_pair 2 0"
+| "sch_to_nat Base_snd = c_pair 3 0"
+| "sch_to_nat (Comp_op t1 t2) = c_pair 4 (c_pair (sch_to_nat t1) (sch_to_nat t2))"
+| "sch_to_nat (Pair_op t1 t2) = c_pair 5 (c_pair (sch_to_nat t1) (sch_to_nat t2))"
+| "sch_to_nat (Rec_op t1 t2)  = c_pair 6 (c_pair (sch_to_nat t1) (sch_to_nat t2))"
 
 lemma loc_srj_lm_1: "nat_to_sch (Suc (Suc x)) = (let u=mod7 (c_fst (Suc (Suc x))); v=c_snd (Suc (Suc x)); v1=c_fst v; v2 = c_snd v; sch1=nat_to_sch v1; sch2=nat_to_sch v2 in loc_f u sch1 sch2)" by simp
 
@@ -474,10 +471,9 @@ done
 
 subsection {* Indexes of primitive recursive functions of one variables *}
 
-consts
-  nat_to_pr :: "nat \<Rightarrow> (nat \<Rightarrow> nat)"
-defs
-  nat_to_pr_def: "nat_to_pr \<equiv> (\<lambda> x. sch_to_pr (nat_to_sch x))"
+definition
+  nat_to_pr :: "nat \<Rightarrow> (nat \<Rightarrow> nat)" where
+  "nat_to_pr = (\<lambda> x. sch_to_pr (nat_to_sch x))"
 
 theorem nat_to_pr_into_pr: "nat_to_pr n \<in> PrimRec1" by (simp add: nat_to_pr_def sch_to_pr_into_pr)
 
@@ -497,10 +493,9 @@ qed
 
 lemma nat_to_pr_at_0: "nat_to_pr 0 = (\<lambda> x. 0)" by (simp add: nat_to_pr_def)
 
-consts
-  index_of_pr :: "(nat \<Rightarrow> nat) \<Rightarrow> nat"
-defs
-  index_of_pr_def: "index_of_pr f \<equiv> (SOME n. f = nat_to_pr n)"
+definition
+  index_of_pr :: "(nat \<Rightarrow> nat) \<Rightarrow> nat" where
+  "index_of_pr f = (SOME n. f = nat_to_pr n)"
 
 theorem index_of_pr_is_real: "f \<in> PrimRec1 \<Longrightarrow> nat_to_pr (index_of_pr f) = f"
 proof -
@@ -510,16 +505,21 @@ proof -
   thus ?thesis by (simp add: index_of_pr_def)
 qed
 
-consts
-  comp_by_index :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-  pair_by_index :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-  rec_by_index  :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  comp_by_index_def: "comp_by_index \<equiv> (\<lambda> n1 n2. c_pair 4 (c_pair n1 n2))"
-  pair_by_index_def: "pair_by_index \<equiv> (\<lambda> n1 n2. c_pair 5 (c_pair n1 n2))"
-  rec_by_index_def:  "rec_by_index  \<equiv> (\<lambda> n1 n2. c_pair 6 (c_pair n1 n2))"
+definition
+  comp_by_index :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "comp_by_index = (\<lambda> n1 n2. c_pair 4 (c_pair n1 n2))"
 
-lemma comp_by_index_is_pr: "comp_by_index \<in> PrimRec2" by (unfold comp_by_index_def, insert const_is_pr_2 [where ?n="(4::nat)"], prec)
+definition
+  pair_by_index :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "pair_by_index = (\<lambda> n1 n2. c_pair 5 (c_pair n1 n2))"
+
+definition
+  rec_by_index :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "rec_by_index = (\<lambda> n1 n2. c_pair 6 (c_pair n1 n2))"
+
+lemma comp_by_index_is_pr: "comp_by_index \<in> PrimRec2"
+  unfolding comp_by_index_def
+  using const_is_pr_2 [of 4] by prec
 
 lemma comp_by_index_inj: "comp_by_index x1 y1 = comp_by_index x2 y2 \<Longrightarrow> x1=x2 \<and> y1=y2"
 proof -
@@ -572,10 +572,9 @@ lemma rec_by_index_main: "nat_to_pr (rec_by_index n1 n2) = UnaryRecOp (nat_to_pr
 
 subsection {* s-1-1 theorem for primitive recursive functions of one variable *}
 
-consts
-  index_of_const :: "nat \<Rightarrow> nat"
-defs
-  index_of_const_def: "index_of_const \<equiv> PrimRecOp1 0 (\<lambda> x y. c_pair 4 (c_pair 2 y))"
+definition
+  index_of_const :: "nat \<Rightarrow> nat" where
+  "index_of_const = PrimRecOp1 0 (\<lambda> x y. c_pair 4 (c_pair 2 y))"
 
 lemma index_of_const_is_pr: "index_of_const \<in> PrimRec1"
 proof -
@@ -604,18 +603,11 @@ proof -
   thus ?thesis by (simp add: index_of_const_lm_1)
 qed
 
-consts
-  index_of_zero :: nat
-  index_of_suc :: nat
-  index_of_c_fst :: nat
-  index_of_c_snd :: nat
-  index_of_id :: nat
-defs
-  index_of_zero_def: "index_of_zero \<equiv> sch_to_nat Base_zero"
-  index_of_suc_def: "index_of_suc \<equiv> sch_to_nat Base_suc"
-  index_of_c_fst_def: "index_of_c_fst \<equiv> sch_to_nat Base_fst"
-  index_of_c_snd_def: "index_of_c_snd \<equiv> sch_to_nat Base_snd"
-  index_of_id_def: "index_of_id \<equiv> pair_by_index index_of_c_fst index_of_c_snd"
+definition "index_of_zero = sch_to_nat Base_zero"
+definition "index_of_suc = sch_to_nat Base_suc"
+definition "index_of_c_fst = sch_to_nat Base_fst"
+definition "index_of_c_snd = sch_to_nat Base_snd"
+definition "index_of_id = pair_by_index index_of_c_fst index_of_c_snd"
 
 lemma index_of_zero_main: "nat_to_pr index_of_zero = (\<lambda> x. 0)" by (simp add: index_of_zero_def nat_to_pr_def)
 
@@ -635,10 +627,9 @@ lemma [simp]: "nat_to_sch index_of_c_snd = Base_snd" by (unfold index_of_c_snd_d
 
 lemma index_of_id_main: "nat_to_pr index_of_id = (\<lambda> x. x)" by (simp add: index_of_id_def nat_to_pr_def c_f_pair_def)
 
-consts
-  index_of_c_pair_n :: "nat \<Rightarrow> nat"
-defs
-  index_of_c_pair_n_def: "index_of_c_pair_n \<equiv> (\<lambda> n. pair_by_index (index_of_const n) index_of_id)"
+definition
+  index_of_c_pair_n :: "nat \<Rightarrow> nat" where
+  "index_of_c_pair_n = (\<lambda> n. pair_by_index (index_of_const n) index_of_id)"
 
 lemma index_of_c_pair_n_is_pr: "index_of_c_pair_n \<in> PrimRec1"
 proof -
@@ -663,10 +654,9 @@ proof -
   thus ?thesis by (rule index_of_const_inj)
 qed
 
-consts
-  s1_1 :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  s1_1_def: "s1_1 \<equiv> (\<lambda> n x. comp_by_index n (index_of_c_pair_n x))"
+definition
+  s1_1 :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "s1_1 = (\<lambda> n x. comp_by_index n (index_of_c_pair_n x))"
 
 lemma s1_1_is_pr: "s1_1 \<in> PrimRec2" by (unfold s1_1_def, insert comp_by_index_is_pr index_of_c_pair_n_is_pr, prec)
 
@@ -693,11 +683,11 @@ lemma s1_1_inj1: "s1_1 x1 y1 = s1_1 x2 y2 \<Longrightarrow> x1=x2" by (frule s1_
 
 lemma s1_1_inj2: "s1_1 x1 y1 = s1_1 x2 y2 \<Longrightarrow> y1=y2" by (frule s1_1_inj, drule conjunct2)
 
-consts
-  pr_index_enumerator :: "nat \<Rightarrow> nat \<Rightarrow> nat"
 primrec
-"pr_index_enumerator n 0 = n"
-"pr_index_enumerator n (Suc m) = comp_by_index index_of_id (pr_index_enumerator n m)"
+  pr_index_enumerator :: "nat \<Rightarrow> nat \<Rightarrow> nat"
+where
+  "pr_index_enumerator n 0 = n"
+| "pr_index_enumerator n (Suc m) = comp_by_index index_of_id (pr_index_enumerator n m)"
 
 theorem pr_index_enumerator_is_pr: "pr_index_enumerator \<in> PrimRec2"
 proof -

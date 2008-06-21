@@ -6,7 +6,7 @@
 header {* Primitive recursive functions *}
 
 theory PRecFun imports CPair
-uses("Utils.ML")
+uses ("Utils.ML")
 begin
 
 text {*
@@ -16,38 +16,28 @@ text {*
 
 subsection {* Basic definitions *}
 
-consts
+primrec
   PrimRecOp :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat)"
-primrec
+where
   "PrimRecOp g h 0 x  = g x"
-  "PrimRecOp g h (Suc y) x = h y (PrimRecOp g h y x) x"
+| "PrimRecOp g h (Suc y) x = h y (PrimRecOp g h y x) x"
 
-consts
+primrec
   PrimRecOp_last :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat)"
-primrec
+where
   "PrimRecOp_last g h x 0  = g x"
-  "PrimRecOp_last g h x (Suc y)= h x (PrimRecOp_last g h x y) y"
+| "PrimRecOp_last g h x (Suc y)= h x (PrimRecOp_last g h x y) y"
 
-consts
-  PrimRecOp1 :: "nat \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)"
 primrec
+  PrimRecOp1 :: "nat \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)"
+where
   "PrimRecOp1 a h 0 = a"
-  "PrimRecOp1 a h (Suc y) = h y (PrimRecOp1 a h y)"
-
-(*
-consts
-  PrimRec1 :: "(nat \<Rightarrow> nat) set"
-  PrimRec2 :: "(nat \<Rightarrow> nat \<Rightarrow> nat) set"
-  PrimRec3 :: "(nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat) set"
-*)
+| "PrimRecOp1 a h (Suc y) = h y (PrimRecOp1 a h y)"
 
 inductive_set 
   PrimRec1 :: "(nat \<Rightarrow> nat) set" and
   PrimRec2 :: "(nat \<Rightarrow> nat \<Rightarrow> nat) set" and
   PrimRec3 :: "(nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat) set"
-
-(* PrimRec1
-PrimRec2 PrimRec3 intros *)
 where
   zero: "(\<lambda> x. 0) \<in> PrimRec1"
   | suc:   "Suc \<in> PrimRec1"
@@ -255,14 +245,17 @@ lemmas [prec] =
   const_is_pr [of 1] const_is_pr_2 [of 1] const_is_pr_3 [of 1]
   const_is_pr [of 2] const_is_pr_2 [of 2] const_is_pr_3 [of 2]
 
-consts
-  sgn1 :: "nat \<Rightarrow> nat"
-  sgn2 :: "nat \<Rightarrow> nat"
-  abs_of_diff :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  sgn1_def: "sgn1 x \<equiv> (case x of 0 \<Rightarrow> 0 | Suc y \<Rightarrow> 1)"
-  sgn2_def: "sgn2 x \<equiv> (case x of 0 \<Rightarrow> 1 | Suc y \<Rightarrow> 0)"
-  abs_of_diff_def: "abs_of_diff \<equiv> (\<lambda> x y. (x - y) + (y - x))"
+definition
+  sgn1 :: "nat \<Rightarrow> nat" where
+  "sgn1 x = (case x of 0 \<Rightarrow> 0 | Suc y \<Rightarrow> 1)"
+
+definition
+  sgn2 :: "nat \<Rightarrow> nat" where
+  "sgn2 x \<equiv> (case x of 0 \<Rightarrow> 1 | Suc y \<Rightarrow> 0)"
+
+definition
+  abs_of_diff :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "abs_of_diff = (\<lambda> x y. (x - y) + (y - x))"
 
 lemma [simp]: "sgn1 0 = 0" by (simp add: sgn1_def)
 lemma [simp]: "sgn1 (Suc y) = 1" by (simp add: sgn1_def)
@@ -479,12 +472,13 @@ method_setup prec = {*
 
 subsection {* Bounded least operator *}
 
-consts
-  b_least :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)"
-  b_least2 :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat)"
-defs
-  b_least_def: " b_least f x \<equiv> (Least (%y. y = x \<or> (y < x \<and> (f x y) \<noteq> 0)))"
-  b_least2_def: " b_least2 f x y \<equiv> (Least (%z. z = y \<or> (z < y \<and> (f x z) \<noteq> 0)))"
+definition
+  b_least :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)" where
+  "b_least f x \<equiv> (Least (%y. y = x \<or> (y < x \<and> (f x y) \<noteq> 0)))"
+
+definition
+  b_least2 :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat)" where
+  "b_least2 f x y \<equiv> (Least (%z. z = y \<or> (z < y \<and> (f x z) \<noteq> 0)))"
 
 lemma b_least_aux1: "b_least f x = x \<or> (b_least f x < x \<and> (f x (b_least f x)) \<noteq> 0)"
 proof -
@@ -867,20 +861,12 @@ theorem pr_1_to_2: "f \<in> PrimRec1 \<Longrightarrow> (\<lambda> x y. f (c_pair
 
 theorem pr_2_to_1: "f \<in> PrimRec2 \<Longrightarrow> (\<lambda> z. f (c_fst z) (c_snd z)) \<in> PrimRec1" by prec
 
-consts
-  pr_conv_1_to_2 :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat)"
-  pr_conv_1_to_3 :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat)"
-  pr_conv_2_to_1 :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)"
-  pr_conv_3_to_1 :: "(nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)"
-  pr_conv_3_to_2 :: "(nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat)"
-  pr_conv_2_to_3 :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat)"
-defs
-  pr_conv_1_to_2_def: "pr_conv_1_to_2 \<equiv> (\<lambda> f x y. f (c_pair x y))"
-  pr_conv_1_to_3_def: "pr_conv_1_to_3 \<equiv> (\<lambda> f x y z. f (c_pair (c_pair x y) z))"
-  pr_conv_2_to_1_def: "pr_conv_2_to_1 \<equiv> (\<lambda> f x. f (c_fst x) (c_snd x))"
-  pr_conv_3_to_1_def: "pr_conv_3_to_1 \<equiv> (\<lambda> f x. f (c_fst (c_fst x)) (c_snd (c_fst x)) (c_snd x))"
-  pr_conv_3_to_2_def: "pr_conv_3_to_2 \<equiv> (\<lambda> f. pr_conv_1_to_2 (pr_conv_3_to_1 f))"
-  pr_conv_2_to_3_def: "pr_conv_2_to_3 \<equiv> (\<lambda> f. pr_conv_1_to_3 (pr_conv_2_to_1 f))"
+definition "pr_conv_1_to_2 = (\<lambda> f x y. f (c_pair x y))"
+definition "pr_conv_1_to_3 = (\<lambda> f x y z. f (c_pair (c_pair x y) z))"
+definition "pr_conv_2_to_1 = (\<lambda> f x. f (c_fst x) (c_snd x))"
+definition "pr_conv_3_to_1 = (\<lambda> f x. f (c_fst (c_fst x)) (c_snd (c_fst x)) (c_snd x))"
+definition "pr_conv_3_to_2 = (\<lambda> f. pr_conv_1_to_2 (pr_conv_3_to_1 f))"
+definition "pr_conv_2_to_3 = (\<lambda> f. pr_conv_1_to_3 (pr_conv_2_to_1 f))"
 
 lemma [simp]: "pr_conv_1_to_2 (pr_conv_2_to_1 f) = f" by(simp add: pr_conv_1_to_2_def pr_conv_2_to_1_def)
 lemma [simp]: "pr_conv_2_to_1 (pr_conv_1_to_2 f) = f" by(simp add: pr_conv_1_to_2_def pr_conv_2_to_1_def)

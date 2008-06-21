@@ -9,15 +9,13 @@ theory PRecUnGr imports PRecFun2 PRecList
 begin
 
 text {*
-  We introduce a particular function which is universal for primitive recursive functions of one variable.
+  We introduce a particular function which is universal for primitive
+  recursive functions of one variable.
 *}
 
-consts
-  g_comp :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-  g_pair :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-  g_rec  :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  g_comp_def: "g_comp c_ls key \<equiv> (
+definition
+  g_comp :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "g_comp c_ls key = (
     let n = c_fst key; x = c_snd key; m = c_snd n;
     m1 = c_fst m; m2 = c_snd m in
     (* We have key = <n, x>; n = <?, m>; m = <m1, m2>. *)
@@ -30,7 +28,10 @@ defs
       )
     else c_ls
   )"
-  g_pair_def: "g_pair c_ls key \<equiv> (
+
+definition
+  g_pair :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "g_pair c_ls key = (
     let n = c_fst key; x = c_snd key; m = c_snd n;
     m1 = c_fst m; m2 = c_snd m in
     (* We have key = <n, x>; n = <?, m>; m = <m1, m2>. *)
@@ -43,7 +44,10 @@ defs
       )
     else c_ls
   )"
-  g_rec_def: "g_rec c_ls key \<equiv> (
+
+definition
+  g_rec :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "g_rec c_ls key = (
     let n = c_fst key; x = c_snd key; m = c_snd n;
     m1 = c_fst m; m2 = c_snd m; y1 = c_fst x; x1 = c_snd x in
     (* We have key = <n, x>; n = <?, m>; m = <m1, m2>; x = <y1, x1>. *)
@@ -67,11 +71,9 @@ defs
     )
   )"
 
-consts
-  g_step :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-  pr_gr :: "nat \<Rightarrow> nat"
-defs
-  g_step_def: "g_step c_ls key \<equiv> (
+definition
+  g_step :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "g_step c_ls key = (
     let n = c_fst key; x = c_snd key; n1 = (c_fst n) mod 7 in
     if n1 = 0 then c_cons (c_pair key 0) c_ls else
     if n1 = 1 then c_cons (c_pair key (Suc x)) c_ls else
@@ -82,16 +84,18 @@ defs
     if n1 = 6 then g_rec c_ls key else
     c_ls
   )"
-  pr_gr_def: "pr_gr \<equiv> PrimRecOp1 0 (\<lambda> a b. g_step b (c_fst a))"
+
+definition
+  pr_gr :: "nat \<Rightarrow> nat" where
+  pr_gr_def: "pr_gr = PrimRecOp1 0 (\<lambda> a b. g_step b (c_fst a))"
 
 lemma pr_gr_at_0: "pr_gr 0 = 0" by (simp add: pr_gr_def)
 
 lemma pr_gr_at_Suc: "pr_gr (Suc x) = g_step (pr_gr x) (c_fst x)" by (simp add: pr_gr_def)
 
-consts
-  univ_for_pr :: "nat \<Rightarrow> nat"
-defs
-  univ_for_pr_def: "univ_for_pr \<equiv> pr_conv_2_to_1 nat_to_pr"
+definition
+  univ_for_pr :: "nat \<Rightarrow> nat" where
+  "univ_for_pr = pr_conv_2_to_1 nat_to_pr"
 
 theorem univ_is_not_pr: "univ_for_pr \<notin> PrimRec1"
 proof (rule ccontr)
@@ -105,10 +109,9 @@ proof (rule ccontr)
   from S3 S4 show False by (simp add: univ_for_pr_def pr_conv_2_to_1_def)
 qed
 
-consts
-  c_is_sub_fun :: "nat \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> bool"
-defs
-  c_is_sub_fun_def: "c_is_sub_fun ls f \<equiv> \<forall> x. c_assoc_have_key ls x = 0 \<longrightarrow> c_assoc_value ls x = f x"
+definition
+  c_is_sub_fun :: "nat \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> bool" where
+  "c_is_sub_fun ls f \<longleftrightarrow> (\<forall> x. c_assoc_have_key ls x = 0 \<longrightarrow> c_assoc_value ls x = f x)"
 
 lemma c_is_sub_fun_lm_1: "\<lbrakk> c_is_sub_fun ls f; c_assoc_have_key ls x = 0 \<rbrakk>  \<Longrightarrow> c_assoc_value ls x = f x"
 apply(unfold c_is_sub_fun_def)
@@ -813,10 +816,9 @@ aa: "loc_upb (n,x) = (
  )"
 (hints recdef_simp add: loc_upb_lm_2_0 loc_upb_lm_2_2 loc_upb_lm_2_3 loc_upb_lm_2_4 loc_upb_lm_2_5 loc_upb_lm_2_6 loc_upb_lm_2_7)
 
-consts
-  lex_p :: "((nat \<times> nat) \<times> nat \<times> nat) set"
-defs
-  lex_p_def: "lex_p == ((measure (\<lambda> m. m)) <*lex*> (measure (\<lambda> n. n)))"
+definition
+  lex_p :: "((nat \<times> nat) \<times> nat \<times> nat) set" where
+  "lex_p = ((measure (\<lambda> m. m)) <*lex*> (measure (\<lambda> n. n)))"
 
 lemma wf_lex_p: "wf(lex_p)"
 apply(simp add: lex_p_def)

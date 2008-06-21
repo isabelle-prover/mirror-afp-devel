@@ -1,5 +1,5 @@
 (*  Title:       Defintion and basics facts about Cantor pairing function
-    ID:         $Id: CPair.thy,v 1.5 2008-06-12 06:57:26 lsf37 Exp $
+    ID:         $Id: CPair.thy,v 1.6 2008-06-21 16:20:37 makarius Exp $
     Author:      Michael Nedzelsky <MichaelNedzelsky at yandex.ru>, 2008
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
@@ -9,19 +9,20 @@ header {* Cantor pairing function *}
 theory CPair imports Main begin
 
 text {*
-  We introduce a particular coding @{text "c_pair"} from ordered pairs of natural numbers to natural numbers.
-  See \cite{Rogers} and the Isabelle documentation for more information.
+  We introduce a particular coding @{text "c_pair"} from ordered pairs
+  of natural numbers to natural numbers.  See \cite{Rogers} and the
+  Isabelle documentation for more information.
 *}
 
 subsection {* Pairing function *}
 
-consts
-  c_pair :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-  sf :: "nat \<Rightarrow> nat"
+definition
+  sf :: "nat \<Rightarrow> nat" where
+  sf_def: "sf x = x * (x+1) div 2"
 
-defs
-  sf_def: "sf x \<equiv> x * (x+1) div 2"
-  c_pair_def: "c_pair x y \<equiv> sf (x+y) + x"
+definition
+  c_pair :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_pair x y = sf (x+y) + x"
 
 lemma sf_at_0: "sf 0 = 0" by (simp add: sf_def)
 
@@ -264,18 +265,21 @@ qed
 subsection {* Inverse mapping *}
 
 text {*
-  @{text "c_fst"} and @{text "c_snd"} are the functions which yield the inverse mapping to @{text "c_pair"}.
+  @{text "c_fst"} and @{text "c_snd"} are the functions which yield
+  the inverse mapping to @{text "c_pair"}.
 *}
 
-consts
-  c_sum :: "nat \<Rightarrow> nat"
-  c_fst  :: "nat \<Rightarrow> nat"
-  c_snd  :: "nat \<Rightarrow> nat"
+definition
+  c_sum :: "nat \<Rightarrow> nat" where
+  "c_sum u = (LEAST z. u < sf (z+1))"
 
-defs
-  c_sum_def : "c_sum u \<equiv> (Least (%z. u < sf (z+1)))"
-  c_fst_def : "c_fst u \<equiv> u - sf (c_sum u)"
-  c_snd_def : "c_snd u \<equiv> (c_sum u) - (c_fst u)"
+definition
+  c_fst :: "nat \<Rightarrow> nat" where
+  "c_fst u = u - sf (c_sum u)"
+
+definition
+  c_snd :: "nat \<Rightarrow> nat" where
+  "c_snd u = c_sum u - c_fst u"
 
 lemma arg_less_sf_at_Suc_of_c_sum: "u < sf ((c_sum u) + 1)"
 proof -

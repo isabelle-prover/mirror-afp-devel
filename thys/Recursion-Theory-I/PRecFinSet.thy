@@ -10,15 +10,15 @@ theory PRecFinSet imports PRecFun
 begin
 
 text {*
-  We introduce a particular mapping @{text "nat_to_set"} from natural numbers to finite sets of natural numbers
-  and a particular mapping @{text "set_to_nat"} from finite sets of natural numbers to natural numbers.
-  See \cite{Rogers} and \cite{Soare} for more information.
+  We introduce a particular mapping @{text "nat_to_set"} from natural
+  numbers to finite sets of natural numbers and a particular mapping
+  @{text "set_to_nat"} from finite sets of natural numbers to natural
+  numbers.  See \cite{Rogers} and \cite{Soare} for more information.
 *}
 
-consts
-  c_in :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  c_in_def: "c_in \<equiv> (\<lambda> x u. (u div (2 ^ x)) mod 2)"
+definition
+  c_in :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_in = (\<lambda> x u. (u div (2 ^ x)) mod 2)"
 
 lemma c_in_is_pr: "c_in \<in> PrimRec2"
 proof -
@@ -26,10 +26,9 @@ proof -
   with c_in_def show ?thesis by auto
 qed
 
-consts
-  nat_to_set :: "nat \<Rightarrow> nat set"
-defs
-  nat_to_set_def: "nat_to_set u \<equiv> {x. 2^x \<le> u \<and> c_in x u = 1}"
+definition
+  nat_to_set :: "nat \<Rightarrow> nat set" where
+  "nat_to_set u \<equiv> {x. 2^x \<le> u \<and> c_in x u = 1}"
 
 lemma c_in_upper_bound: "c_in x u = 1 \<Longrightarrow> 2 ^ x \<le> u"
 proof -
@@ -77,10 +76,9 @@ qed
 
 lemma x_in_u_eq: "(x \<in> nat_to_set u) = (c_in x u = 1)" by (auto simp add: nat_to_set_def c_in_upper_bound)
 
-consts
-  log2 :: "nat \<Rightarrow> nat"
-defs
-  log2_def: "log2 \<equiv> (\<lambda> x. Least(%z. x < 2^(z+1)))"
+definition
+  log2 :: "nat \<Rightarrow> nat" where
+  "log2 = (\<lambda> x. Least(%z. x < 2^(z+1)))"
 
 lemma log2_at_0: "log2 0 = 0"
 proof -
@@ -503,10 +501,9 @@ qed
   with P1 P2 show "u = v" by auto
 qed
 
-consts
-  set_to_nat :: "nat set => nat"
-defs
-  set_to_nat_def: "set_to_nat \<equiv> (\<lambda> D. setsum (\<lambda> x. 2 ^ x) D)"
+definition
+  set_to_nat :: "nat set => nat" where
+  "set_to_nat = (\<lambda> D. setsum (\<lambda> x. 2 ^ x) D)"
 
 lemma two_power_sum: "setsum (\<lambda> x. (2::nat) ^ x) {i. i< Suc m} = (2 ^ Suc m) - 1"
 proof (induct_tac m)
@@ -757,10 +754,9 @@ proof -
   with f_is_pr show ?thesis by auto
 qed
 
-consts
-  c_card :: "nat \<Rightarrow> nat"
-defs
-  c_card_def: "c_card \<equiv> (\<lambda> u. card (nat_to_set u))"
+definition
+  c_card :: "nat \<Rightarrow> nat" where
+  "c_card = (\<lambda> u. card (nat_to_set u))"
 
 theorem c_card_is_pr: "c_card \<in> PrimRec1"
 proof -
@@ -774,10 +770,9 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-consts
-  c_insert :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  c_insert_def: "c_insert \<equiv> (\<lambda> x u. if c_in x u = 1 then u else u + 2^x)"
+definition
+  c_insert :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_insert = (\<lambda> x u. if c_in x u = 1 then u else u + 2^x)"
 
 lemma c_insert_is_pr: "c_insert \<in> PrimRec2"
 proof (unfold c_insert_def, rule if_eq_is_pr2)
@@ -834,10 +829,9 @@ proof (rule ext, rule ext)
   qed
 qed
 
-consts
-  c_remove :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  c_remove_def: "c_remove \<equiv> (\<lambda> x u. if c_in x u = 0 then u else u - 2^x)"
+definition
+  c_remove :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_remove = (\<lambda> x u. if c_in x u = 0 then u else u - 2^x)"
 
 lemma c_remove_is_pr: "c_remove \<in> PrimRec2"
 proof (unfold c_remove_def, rule if_eq_is_pr2)
@@ -886,10 +880,9 @@ proof (rule ext, rule ext)
   qed
 qed
 
-consts
-  c_union :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  c_union_def: "c_union \<equiv> (\<lambda> u v. set_to_nat (nat_to_set u \<union> nat_to_set v))"
+definition
+  c_union :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_union = (\<lambda> u v. set_to_nat (nat_to_set u \<union> nat_to_set v))"
 
 theorem c_union_is_pr: "c_union \<in> PrimRec2"
 proof -
@@ -954,10 +947,9 @@ proof -
   with union_is_pr show ?thesis by simp
 qed
 
-consts
-  c_diff :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  c_diff_def: "c_diff \<equiv> (\<lambda> u v. set_to_nat (nat_to_set u - nat_to_set v))"
+definition
+  c_diff :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_diff = (\<lambda> u v. set_to_nat (nat_to_set u - nat_to_set v))"
 
 theorem c_diff_is_pr: "c_diff \<in> PrimRec2"
 proof -
@@ -1027,10 +1019,9 @@ proof -
   with diff_is_pr show ?thesis by simp
 qed
 
-consts
-  c_intersect :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  c_intersect_def: "c_intersect \<equiv> (\<lambda> u v. set_to_nat (nat_to_set u \<inter> nat_to_set v))"
+definition
+  c_intersect :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_intersect = (\<lambda> u v. set_to_nat (nat_to_set u \<inter> nat_to_set v))"
 
 theorem c_intersect_is_pr: "c_intersect \<in> PrimRec2"
 proof -

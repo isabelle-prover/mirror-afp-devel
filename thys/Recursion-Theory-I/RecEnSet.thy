@@ -9,15 +9,13 @@ theory RecEnSet imports PRecList PRecFun2 PRecFinSet PRecUnGr begin
 
 subsection {* Basic definitions *}
 
-consts
-  fn_to_set :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> nat set"
-defs
-  fn_to_set_def: "fn_to_set f \<equiv> { x. \<exists> y. f x y = 0 }"
+definition
+  fn_to_set :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> nat set" where
+  "fn_to_set f = { x. \<exists> y. f x y = 0 }"
 
-consts
-  ce_sets :: "(nat set) set"
-defs
-  ce_sets_def: "ce_sets \<equiv> { (fn_to_set p) | p. p \<in> PrimRec2 }"
+definition
+  ce_sets :: "(nat set) set" where
+  "ce_sets = { (fn_to_set p) | p. p \<in> PrimRec2 }"
 
 subsection {* Basic properties of computably enumerable sets *}
 
@@ -264,10 +262,9 @@ qed
 
 subsection {* Enumeration of computably enumerable sets *}
 
-consts
-  nat_to_ce_set :: "nat \<Rightarrow> (nat set)"
-defs
-  nat_to_ce_set_def: "nat_to_ce_set \<equiv> (\<lambda> n. fn_to_set (pr_conv_1_to_2 (nat_to_pr n)))"
+definition
+  nat_to_ce_set :: "nat \<Rightarrow> (nat set)" where
+  "nat_to_ce_set = (\<lambda> n. fn_to_set (pr_conv_1_to_2 (nat_to_pr n)))"
 
 lemma nat_to_ce_set_lm_1: "nat_to_ce_set n = { x . \<exists> y. (nat_to_pr n) (c_pair x y) = 0 }"
 proof -
@@ -303,12 +300,13 @@ qed
 
 subsection {* Characteristic functions *}
 
-consts
-  chf :: "nat set \<Rightarrow> (nat \<Rightarrow> nat)" -- "Characteristic function"
-  zero_set :: "(nat \<Rightarrow> nat) \<Rightarrow> nat set"
-defs
-  chf_def: "chf \<equiv> (\<lambda> A x. if x \<in> A then 0 else 1 )"
-  zero_set_def: "zero_set \<equiv> (\<lambda> f. { x. f x = 0})"
+definition
+  chf :: "nat set \<Rightarrow> (nat \<Rightarrow> nat)" -- "Characteristic function" where
+  "chf = (\<lambda> A x. if x \<in> A then 0 else 1 )"
+
+definition
+  zero_set :: "(nat \<Rightarrow> nat) \<Rightarrow> nat set" where
+  "zero_set = (\<lambda> f. { x. f x = 0})"
 
 lemma chf_lm_1 [simp]: "zero_set (chf A) = A" by (unfold chf_def, unfold zero_set_def, simp)
 
@@ -371,17 +369,17 @@ qed
 
 subsection {* Computably enumerable relations *}
 
-consts
-  ce_set_to_rel :: "nat set \<Rightarrow> (nat * nat) set"
-  ce_rel_to_set :: "(nat * nat) set \<Rightarrow> nat set"
-defs
-  ce_set_to_rel_def: "ce_set_to_rel \<equiv> (\<lambda> A. { (c_fst x, c_snd x) | x. x \<in> A})"
-  ce_rel_to_set_def: "ce_rel_to_set \<equiv> (\<lambda> R. { c_pair x y | x y. (x,y) \<in> R})"
+definition
+  ce_set_to_rel :: "nat set \<Rightarrow> (nat * nat) set" where
+  "ce_set_to_rel = (\<lambda> A. { (c_fst x, c_snd x) | x. x \<in> A})"
 
-consts
-  ce_rels :: "((nat * nat) set) set"
-defs
-  ce_rels_def: "ce_rels \<equiv> { R | R. ce_rel_to_set R \<in> ce_sets }"
+definition
+  ce_rel_to_set :: "(nat * nat) set \<Rightarrow> nat set" where
+  "ce_rel_to_set = (\<lambda> R. { c_pair x y | x y. (x,y) \<in> R})"
+
+definition
+  ce_rels :: "((nat * nat) set) set" where
+  "ce_rels = { R | R. ce_rel_to_set R \<in> ce_sets }"
 
 lemma ce_rel_lm_1 [simp]: "ce_set_to_rel (ce_rel_to_set r) = r"
 proof
@@ -932,10 +930,9 @@ qed
 
 subsection {* Total computable functions *}
 
-consts
-  graph :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<times> nat) set"
-defs
-  graph_def: "graph \<equiv> (\<lambda> f. { (x, f x) | x. x \<in> UNIV})"
+definition
+  graph :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<times> nat) set" where
+  "graph = (\<lambda> f. { (x, f x) | x. x \<in> UNIV})"
 
 lemma graph_lm_1: "(x,y) \<in> graph f \<Longrightarrow> y = f x" by (unfold graph_def, auto)
 
@@ -945,10 +942,9 @@ lemma graph_lm_3: "((x,y) \<in> graph f) = (y = f x)" by (unfold graph_def, auto
 
 lemma graph_lm_4: "graph (f o g) = (graph f) O (graph g)" by (unfold graph_def, auto)
 
-consts
-  c_graph :: "(nat \<Rightarrow> nat) \<Rightarrow> nat set"
-defs
-  c_graph_def: "c_graph \<equiv> (\<lambda> f. { c_pair x (f x) | x. x \<in> UNIV})"
+definition
+  c_graph :: "(nat \<Rightarrow> nat) \<Rightarrow> nat set" where
+  "c_graph = (\<lambda> f. { c_pair x (f x) | x. x \<in> UNIV})"
 
 lemma c_graph_lm_1: "c_pair x y \<in> c_graph f \<Longrightarrow> y = f x"
 proof -
@@ -974,10 +970,9 @@ lemma c_graph_lm_4: "c_graph f = ce_rel_to_set (graph f)" by (unfold c_graph_def
 
 lemma c_graph_lm_5: "graph f = ce_set_to_rel (c_graph f)" by (simp add: c_graph_lm_4)
 
-consts
-  total_recursive :: "(nat \<Rightarrow> nat) \<Rightarrow> bool"
-defs
-  total_recursive_def: "total_recursive \<equiv> (\<lambda> f. graph f \<in> ce_rels)"
+definition
+  total_recursive :: "(nat \<Rightarrow> nat) \<Rightarrow> bool" where
+  "total_recursive = (\<lambda> f. graph f \<in> ce_rels)"
 
 lemma total_recursive_def1: "total_recursive = (\<lambda> f. c_graph f \<in> ce_sets)"
 proof (rule ext) fix f show " total_recursive f = (c_graph f \<in> ce_sets)"
@@ -1091,10 +1086,9 @@ qed
 
 subsection {* Computable sets, Post's theorem *}
 
-consts
-  computable :: "nat set \<Rightarrow> bool"
-defs
-  computable_def: "computable \<equiv> (\<lambda> A. A \<in> ce_sets \<and> -A \<in> ce_sets)"
+definition
+  computable :: "nat set \<Rightarrow> bool" where
+  "computable = (\<lambda> A. A \<in> ce_sets \<and> -A \<in> ce_sets)"
 
 lemma computable_complement_1: "computable A \<Longrightarrow> computable (- A)"
 proof -
@@ -1213,10 +1207,9 @@ qed
 
 subsection {* Universal computably enumerable set *}
 
-consts
-  univ_ce :: "nat set"
-defs
-  univ_ce_def: "univ_ce \<equiv> { c_pair n x | n x. x \<in> nat_to_ce_set n }"
+definition
+  univ_ce :: "nat set" where
+  "univ_ce = { c_pair n x | n x. x \<in> nat_to_ce_set n }"
 
 lemma univ_for_pr_lm: "univ_for_pr (c_pair n x) = (nat_to_pr n) x" by (simp add: univ_for_pr_def pr_conv_2_to_1_def)
 
@@ -1346,10 +1339,9 @@ qed
 
 subsection {* s-1-1 theorem, one-one and many-one reducibilities*}
 
-consts
-  index_of_r_to_l :: nat
-defs
-  index_of_r_to_l_def: "index_of_r_to_l \<equiv>
+definition
+  index_of_r_to_l :: nat where
+  "index_of_r_to_l =
   pair_by_index
     (pair_by_index index_of_c_fst (comp_by_index index_of_c_fst index_of_c_snd))
     (comp_by_index index_of_c_snd index_of_c_snd)"
@@ -1364,10 +1356,9 @@ lemma index_of_r_to_l_lm: "nat_to_pr index_of_r_to_l (c_pair x (c_pair y z)) = c
   apply(simp add: index_of_c_snd_main)
 done
 
-consts
-  s_ce:: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  s_ce_def: "s_ce \<equiv> (\<lambda> e x. s1_1 (comp_by_index e index_of_r_to_l) x)"
+definition
+  s_ce :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "s_ce == (\<lambda> e x. s1_1 (comp_by_index e index_of_r_to_l) x)"
 
 lemma s_ce_is_pr: "s_ce \<in> PrimRec2"
   unfolding s_ce_def using comp_by_index_is_pr s1_1_is_pr by prec
@@ -1431,16 +1422,21 @@ next
   from this nat_to_ce_set_lm_1 show "c_pair x y \<in> nat_to_ce_set e" by auto
 qed
 
-consts
-  one_reducible_to_via :: "(nat set) \<Rightarrow> (nat set) \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> bool"
-  one_reducible_to :: "(nat set) \<Rightarrow> (nat set) \<Rightarrow> bool"
-  many_reducible_to_via :: "(nat set) \<Rightarrow> (nat set) \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> bool"
-  many_reducible_to :: "(nat set) \<Rightarrow> (nat set) \<Rightarrow> bool"
-defs
-  one_reducible_to_via_def: "one_reducible_to_via \<equiv> (\<lambda> A B f. total_recursive f \<and> inj f \<and> (\<forall> x. (x \<in> A) = (f x \<in> B)))"
-  one_reducible_to_def: "one_reducible_to \<equiv> (\<lambda> A B. \<exists> f. one_reducible_to_via A B f)"
-  many_reducible_to_via_def: "many_reducible_to_via \<equiv> (\<lambda> A B f. total_recursive f \<and> (\<forall> x. (x \<in> A) = (f x \<in> B)))"
-  many_reducible_to_def: "many_reducible_to \<equiv> (\<lambda> A B. \<exists> f. many_reducible_to_via A B f)"
+definition
+  one_reducible_to_via :: "(nat set) \<Rightarrow> (nat set) \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> bool" where
+  "one_reducible_to_via = (\<lambda> A B f. total_recursive f \<and> inj f \<and> (\<forall> x. (x \<in> A) = (f x \<in> B)))"
+
+definition
+  one_reducible_to :: "(nat set) \<Rightarrow> (nat set) \<Rightarrow> bool" where
+  "one_reducible_to = (\<lambda> A B. \<exists> f. one_reducible_to_via A B f)"
+
+definition
+  many_reducible_to_via :: "(nat set) \<Rightarrow> (nat set) \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> bool" where
+  "many_reducible_to_via = (\<lambda> A B f. total_recursive f \<and> (\<forall> x. (x \<in> A) = (f x \<in> B)))"
+
+definition
+  many_reducible_to :: "(nat set) \<Rightarrow> (nat set) \<Rightarrow> bool" where
+  "many_reducible_to = (\<lambda> A B. \<exists> f. many_reducible_to_via A B f)"
 
 lemma inj_comp: "\<lbrakk> inj f; inj g \<rbrakk> \<Longrightarrow> inj (f o g)"
 proof (rule datatype_injI)
@@ -1636,10 +1632,9 @@ qed
 
 subsection {* One-complete sets *}
 
-consts
-  one_complete :: "nat set \<Rightarrow> bool"
-defs
-  one_complete_def: "one_complete \<equiv> (\<lambda> A. A \<in> ce_sets \<and> (\<forall> B. B \<in> ce_sets \<longrightarrow> one_reducible_to B A))"
+definition
+  one_complete :: "nat set \<Rightarrow> bool" where
+  "one_complete = (\<lambda> A. A \<in> ce_sets \<and> (\<forall> B. B \<in> ce_sets \<longrightarrow> one_reducible_to B A))"
 
 theorem univ_is_complete: "one_complete univ_ce"
 proof (unfold one_complete_def)
@@ -1656,10 +1651,9 @@ qed
 
 subsection {* Index sets, Rice's theorem *}
 
-consts
-  index_set :: "nat set \<Rightarrow> bool"
-defs
-  index_set_def: "index_set \<equiv> (\<lambda> A. \<forall> n m. n \<in> A \<and> (nat_to_ce_set n = nat_to_ce_set m) \<longrightarrow> m \<in> A)"
+definition
+  index_set :: "nat set \<Rightarrow> bool" where
+  "index_set = (\<lambda> A. \<forall> n m. n \<in> A \<and> (nat_to_ce_set n = nat_to_ce_set m) \<longrightarrow> m \<in> A)"
 
 lemma index_set_lm_1: "\<lbrakk> index_set A; n\<in> A; nat_to_ce_set n = nat_to_ce_set m \<rbrakk> \<Longrightarrow> m \<in> A"
 proof -

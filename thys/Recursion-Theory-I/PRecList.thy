@@ -9,13 +9,13 @@ theory PRecList imports PRecFun
 begin
 
 text {*
-  We introduce a particular coding @{text "list_to_nat"} from lists of natural numbers to natural numbers.
+  We introduce a particular coding @{text "list_to_nat"} from lists of
+  natural numbers to natural numbers.
 *}
 
-consts
-  c_len :: "nat \<Rightarrow> nat"
-defs
-  c_len_def: "c_len \<equiv> (\<lambda> (u::nat). (sgn1 u) * (c_fst(u-(1::nat))+1))"
+definition
+  c_len :: "nat \<Rightarrow> nat" where
+  "c_len = (\<lambda> (u::nat). (sgn1 u) * (c_fst(u-(1::nat))+1))"
 
 lemma c_len_1: "c_len u = (case u of 0 \<Rightarrow> 0 | Suc v \<Rightarrow> c_fst(v)+1)" by (unfold c_len_def, case_tac u, auto)
 
@@ -63,11 +63,11 @@ proof -
   from S1 S2 S3 show ?thesis by simp
 qed
 
-consts
-  c_unfold :: "nat \<Rightarrow> nat \<Rightarrow> nat list"
 primrec
+  c_unfold :: "nat \<Rightarrow> nat \<Rightarrow> nat list"
+where
   "c_unfold 0 u = []"
-  "c_unfold (Suc k) u = (if k = 0 then [u] else ((c_fst u) # (c_unfold k (c_snd u))))"
+| "c_unfold (Suc k) u = (if k = 0 then [u] else ((c_fst u) # (c_unfold k (c_snd u))))"
 
 lemma c_fold_1: "c_unfold 1 (c_fold [x]) = [x]" by simp
 
@@ -201,12 +201,13 @@ apply(rule th_3_lm_2)
 apply(assumption)
 done
 
-consts
-  list_to_nat :: "nat list \<Rightarrow> nat"
-  nat_to_list :: "nat \<Rightarrow> nat list"
-defs
-  list_to_nat_def: "list_to_nat \<equiv> (\<lambda> ls. if ls=[] then 0 else (c_pair ((length ls) - 1) (c_fold ls))+1)"
-  nat_to_list_def: "nat_to_list \<equiv> (\<lambda> u. if u=0 then [] else (c_unfold (c_len u) (c_snd (u-(1::nat)))))"
+definition
+  list_to_nat :: "nat list \<Rightarrow> nat" where
+  "list_to_nat = (\<lambda> ls. if ls=[] then 0 else (c_pair ((length ls) - 1) (c_fold ls))+1)"
+
+definition
+  nat_to_list :: "nat \<Rightarrow> nat list" where
+  "nat_to_list = (\<lambda> u. if u=0 then [] else (c_unfold (c_len u) (c_snd (u-(1::nat)))))"
 
 lemma nat_to_list_of_pos: "u>0 \<Longrightarrow> nat_to_list u = c_unfold (c_len u) (c_snd (u-(1::nat)))" by (simp add: nat_to_list_def)
 
@@ -304,14 +305,18 @@ proof -
   from S1 S2 show ?thesis by (rule ssubst)
 qed
 
-consts
-  c_hd :: "nat \<Rightarrow> nat"
-  c_tl :: "nat \<Rightarrow> nat"
-  c_cons :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  c_hd_def: "c_hd \<equiv> (\<lambda> u. if u=0 then 0 else hd (nat_to_list u))"
-  c_tl_def: "c_tl \<equiv> (\<lambda> u. list_to_nat (tl (nat_to_list u)))"
-  c_cons_def: "c_cons \<equiv> (\<lambda> x u. list_to_nat (x # (nat_to_list u)))"
+definition
+  c_hd :: "nat \<Rightarrow> nat" where
+  "c_hd = (\<lambda> u. if u=0 then 0 else hd (nat_to_list u))"
+
+definition
+  c_tl :: "nat \<Rightarrow> nat" where
+  "c_tl = (\<lambda> u. list_to_nat (tl (nat_to_list u)))"
+
+definition
+  c_cons :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_cons = (\<lambda> x u. list_to_nat (x # (nat_to_list u)))"
+
 
 lemma [simp]: "c_hd 0 = 0" by (simp add: c_hd_def)
 
@@ -555,11 +560,9 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-consts
-  c_drop :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  (* c_drop_def :: "c_drop \<equiv> (\<lambda> n x. list_to_nat (drop n (nat_to_list x)))" *)
-  c_drop_def: "c_drop \<equiv> PrimRecOp (\<lambda> x. x) (\<lambda> x y z. c_tl y)"
+definition
+  c_drop :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_drop = PrimRecOp (\<lambda> x. x) (\<lambda> x y z. c_tl y)"
 
 lemma c_drop_at_0 [simp]: "c_drop 0 x = x" by (simp add: c_drop_def)
 
@@ -602,10 +605,9 @@ next
   qed
 qed
 
-consts
-  c_nth :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  c_nth_def: "c_nth \<equiv> (\<lambda> x n. c_hd (c_drop n x))"
+definition
+  c_nth :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_nth = (\<lambda> x n. c_hd (c_drop n x))"
 
 lemma c_nth_is_pr: "c_nth \<in> PrimRec2"
 proof (unfold c_nth_def)
@@ -622,10 +624,10 @@ qed
 
 lemma c_tl_c_cons [simp]: "c_tl (c_cons x y) = y" by (simp add: c_tl_def c_cons_def)
 
-consts
-  c_f_list :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
-defs
-  c_f_list_def: "c_f_list \<equiv> (\<lambda> f. let g = (%x. c_cons (f 0 x) 0); h = (%a b c. c_cons (f (Suc a) c) b) in PrimRecOp g h)"
+definition
+  c_f_list :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "c_f_list = (\<lambda> f.
+    let g = (%x. c_cons (f 0 x) 0); h = (%a b c. c_cons (f (Suc a) c) b) in PrimRecOp g h)"
 
 lemma c_f_list_at_0: "c_f_list f 0 x = c_cons (f 0 x) 0" by (simp add: c_f_list_def Let_def)
 
