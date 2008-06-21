@@ -1,4 +1,4 @@
-(*  ID:         $Id: Exceptions.thy,v 1.8 2008-06-12 06:57:16 lsf37 Exp $
+(*  ID:         $Id: Exceptions.thy,v 1.9 2008-06-21 19:01:49 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2004 TU Muenchen
 *)
@@ -13,15 +13,15 @@ subsection{*The source language*}
 
 datatype expr = Val int | Add expr expr | Throw | Catch expr expr
 
-consts eval :: "expr \<Rightarrow> int option"
-primrec
-"eval (Val i) = Some i"
-"eval (Add x y) =
- (case eval x of None \<Rightarrow> None
-  | Some i \<Rightarrow> (case eval y of None \<Rightarrow> None
-               | Some j \<Rightarrow> Some(i+j)))"
-"eval Throw = None"
-"eval (Catch x h) = (case eval x of None \<Rightarrow> eval h | Some i \<Rightarrow> Some i)"
+primrec eval :: "expr \<Rightarrow> int option"
+where
+  "eval (Val i) = Some i"
+| "eval (Add x y) =
+   (case eval x of None \<Rightarrow> None
+    | Some i \<Rightarrow> (case eval y of None \<Rightarrow> None
+                 | Some j \<Rightarrow> Some(i+j)))"
+| "eval Throw = None"
+| "eval (Catch x h) = (case eval x of None \<Rightarrow> eval h | Some i \<Rightarrow> Some i)"
 
 subsection{*The target language*}
 
@@ -76,30 +76,29 @@ abbreviation "unwind \<equiv> exec2 False"
 
 subsection{*The compiler*}
 
-consts
-  compile :: "nat \<Rightarrow> expr \<Rightarrow> code * nat"
-primrec
-"compile l (Val i) = ([Push i], l)"
-"compile l (Add x y) = (let (xs,m) = compile l x; (ys,n) = compile m y
-                     in (xs @ ys @ [ADD], n))"
-"compile l Throw = ([THROW],l)"
-"compile l (Catch x h) =
-  (let (xs,m) = compile (l+2) x; (hs,n) = compile m h
-   in (Mark l # xs @ [Unmark, Jump (l+1), Label l] @ hs @ [Label(l+1)], n))"
+primrec compile :: "nat \<Rightarrow> expr \<Rightarrow> code * nat"
+where
+  "compile l (Val i) = ([Push i], l)"
+| "compile l (Add x y) = (let (xs,m) = compile l x; (ys,n) = compile m y
+                       in (xs @ ys @ [ADD], n))"
+| "compile l Throw = ([THROW],l)"
+| "compile l (Catch x h) =
+    (let (xs,m) = compile (l+2) x; (hs,n) = compile m h
+     in (Mark l # xs @ [Unmark, Jump (l+1), Label l] @ hs @ [Label(l+1)], n))"
 
-syntax cmp :: "nat \<Rightarrow> expr \<Rightarrow> code"
-translations "cmp l e" == "fst(compile l e)"
+abbreviation
+  cmp :: "nat \<Rightarrow> expr \<Rightarrow> code" where
+  "cmp l e == fst(compile l e)"
 
-consts
-  isFresh :: "nat \<Rightarrow> stack \<Rightarrow> bool"
-primrec
-"isFresh l [] = True"
-"isFresh l (it#s) = (case it of VAL i \<Rightarrow> isFresh l s
-                     | HAN l' \<Rightarrow> l' < l \<and> isFresh l s)"
+primrec isFresh :: "nat \<Rightarrow> stack \<Rightarrow> bool"
+where
+  "isFresh l [] = True"
+| "isFresh l (it#s) = (case it of VAL i \<Rightarrow> isFresh l s
+                       | HAN l' \<Rightarrow> l' < l \<and> isFresh l s)"
 
 definition
   conv :: "code \<Rightarrow> stack \<Rightarrow> int option \<Rightarrow> stack" where
- "conv cs s io = (case io of None \<Rightarrow> unwind cs s
+  "conv cs s io = (case io of None \<Rightarrow> unwind cs s
                   | Some i \<Rightarrow> exec cs (VAL i # s))"
 
 subsection{* The proofs*}
