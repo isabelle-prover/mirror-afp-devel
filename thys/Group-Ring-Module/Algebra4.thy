@@ -49,45 +49,43 @@ locale aGroup =
  and     ex_zero: "\<zero> \<in> carrier A"
  and     l_zero:"a \<in> carrier A \<Longrightarrow> \<zero> \<plusminus> a = a"
 
-constdefs (structure A)
- b_ag::"_  \<Rightarrow>
-   \<lparr>carrier:: 'a set, top:: ['a, 'a] \<Rightarrow> 'a , iop:: 'a \<Rightarrow> 'a, one:: 'a \<rparr>"
-   "b_ag A == \<lparr>carrier = carrier A, top = pop A, iop = mop A,
-    one = zero A \<rparr>"
+definition
+  b_ag :: "_  \<Rightarrow>
+   \<lparr>carrier:: 'a set, top:: ['a, 'a] \<Rightarrow> 'a , iop:: 'a \<Rightarrow> 'a, one:: 'a \<rparr>" where
+  "b_ag A = \<lparr>carrier = carrier A, top = pop A, iop = mop A, one = zero A \<rparr>"
 
- asubGroup :: "[_ , 'a set] \<Rightarrow> bool"
-     "asubGroup A H == (b_ag A) \<guillemotright> H"
+definition
+  asubGroup :: "[_ , 'a set] \<Rightarrow> bool" where
+  "asubGroup A H \<longleftrightarrow> (b_ag A) \<guillemotright> H"
 
-constdefs (structure A)
- aqgrp :: "[_ , 'a set] \<Rightarrow> 
+definition
+  aqgrp :: "[_ , 'a set] \<Rightarrow> 
          \<lparr> carrier::'a set set, pop::['a  set, 'a set] \<Rightarrow> 'a set,
-           mop::'a set \<Rightarrow> 'a set, zero :: 'a set \<rparr>"
- 
-      "aqgrp A H  ==  \<lparr>carrier = set_rcs (b_ag A) H, 
+           mop::'a set \<Rightarrow> 'a set, zero :: 'a set \<rparr>" where
+  "aqgrp A H = \<lparr>carrier = set_rcs (b_ag A) H,
          pop = \<lambda>X. \<lambda>Y. (c_top (b_ag A) H X Y), 
 	 mop = \<lambda>X. (c_iop (b_ag A) H X), zero = H \<rparr>"
- 
- ag_idmap::"_ \<Rightarrow> ('a \<Rightarrow> 'a)"  ("(aI\<^bsub>_\<^esub>)")
- "aI\<^bsub>A\<^esub> == \<lambda>x\<in>carrier A. x"
 
-syntax (xsymbols)
-  "@ASubG"  :: "[('a, 'more) aGroup_scheme, 'a set] => bool" 
-            (infixl "+>" 58)
+definition 
+  ag_idmap :: "_ \<Rightarrow> ('a \<Rightarrow> 'a)"  ("(aI\<^bsub>_\<^esub>)") where
+  "aI\<^bsub>A\<^esub> = (\<lambda>x\<in>carrier A. x)"
 
-translations
-  "A +> H" == "asubGroup A H"
+abbreviation
+  ASubG :: "[('a, 'more) aGroup_scheme, 'a set] => bool"   (infixl "+>" 58) where
+  "A +> H == asubGroup A H"
 
-constdefs (structure A)
- Ag_ind ::"[_ , 'a \<Rightarrow> 'd] \<Rightarrow> 'd aGroup"
-"Ag_ind A f == \<lparr>carrier = f`(carrier A),
-  pop = \<lambda>x \<in> f`(carrier A). \<lambda>y \<in> f`(carrier A). 
-              f(((invfun (carrier A) (f`(carrier A)) f) x) \<plusminus>  
+definition
+  Ag_ind :: "[_ , 'a \<Rightarrow> 'd] \<Rightarrow> 'd aGroup" where
+  "Ag_ind A f = \<lparr>carrier = f`(carrier A),
+    pop = \<lambda>x \<in> f`(carrier A). \<lambda>y \<in> f`(carrier A).
+               f(((invfun (carrier A) (f`(carrier A)) f) x) \<plusminus>\<^bsub>A\<^esub>
                     ((invfun (carrier A) (f`(carrier A)) f) y)),
-  mop = \<lambda>x\<in>(f`(carrier A)). f (-\<^sub>a ((invfun (carrier A) (f`(carrier A)) f) x)),
-  zero = f (\<zero> ) \<rparr>"
+    mop = \<lambda>x\<in>(f`(carrier A)). f (-\<^sub>a\<^bsub>A\<^esub> ((invfun (carrier A) (f`(carrier A)) f) x)),
+    zero = f (\<zero>\<^bsub>A\<^esub>)\<rparr>"
 
- Agii ::"[_ , 'a \<Rightarrow> 'd] \<Rightarrow> ('a \<Rightarrow> 'd)"
- "Agii A f == \<lambda>x\<in>carrier A. f x"   (** Ag_induced_isomorphism **)
+definition
+  Agii :: "[_ , 'a \<Rightarrow> 'd] \<Rightarrow> ('a \<Rightarrow> 'd)" where
+  "Agii A f = (\<lambda>x\<in>carrier A. f x)"   (** Ag_induced_isomorphism **)
 
 lemma (in aGroup) ag_carrier_carrier:"carrier (b_ag A) = carrier A"
 by (simp add:b_ag_def)
@@ -494,39 +492,39 @@ done
 
 subsection "20-1. Homomorphism of abelian groups"
 
-constdefs 
-  aHom::"[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme] \<Rightarrow> ('a \<Rightarrow> 'b) set"
- "aHom A B == {f. f \<in> carrier A \<rightarrow> carrier B \<and> f \<in> extensional (carrier A) \<and>
+definition
+  aHom :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme] \<Rightarrow> ('a \<Rightarrow> 'b) set" where
+  "aHom A B = {f. f \<in> carrier A \<rightarrow> carrier B \<and> f \<in> extensional (carrier A) \<and>
                (\<forall>a\<in>carrier A. \<forall>b\<in>carrier A. f (a \<plusminus>\<^bsub>A\<^esub> b) = (f a) \<plusminus>\<^bsub>B\<^esub> (f b))}"
 
-constdefs
- compos::"[('a, 'm) aGroup_scheme, 'b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c"
- "compos A g f == compose (carrier A) g f"
+definition
+  compos :: "[('a, 'm) aGroup_scheme, 'b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c" where
+  "compos A g f = compose (carrier A) g f"
 
-constdefs
- ker::"[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme] \<Rightarrow> ('a \<Rightarrow> 'b)
-        \<Rightarrow> 'a set" ("(3ker\<^bsub>_,_\<^esub> _)" [82,82,83]82)
- "ker\<^bsub>F,G\<^esub> f == {a. a \<in> carrier F \<and> f a = (\<zero>\<^bsub>G\<^esub>)}"
+definition
+  ker :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme] \<Rightarrow> ('a \<Rightarrow> 'b)
+        \<Rightarrow> 'a set" ("(3ker\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+  "ker\<^bsub>F,G\<^esub> f = {a. a \<in> carrier F \<and> f a = (\<zero>\<^bsub>G\<^esub>)}"
 
-constdefs
- injec::"[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
-            \<Rightarrow> bool"             ("(3injec\<^bsub>_,_\<^esub> _)" [82,82,83]82)
- "injec\<^bsub>F,G\<^esub> f == f \<in> aHom F G \<and> ker\<^bsub>F,G\<^esub> f = {\<zero>\<^bsub>F\<^esub>}"
+definition
+ injec :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
+            \<Rightarrow> bool"             ("(3injec\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+  "injec\<^bsub>F,G\<^esub> f \<longleftrightarrow> f \<in> aHom F G \<and> ker\<^bsub>F,G\<^esub> f = {\<zero>\<^bsub>F\<^esub>}"
 
-constdefs
- surjec::"[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
-            \<Rightarrow> bool"             ("(3surjec\<^bsub>_,_\<^esub> _)" [82,82,83]82)
- "surjec\<^bsub>F,G\<^esub> f == f \<in> aHom F G \<and> surj_to f (carrier F) (carrier G)"  
+definition
+  surjec :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
+            \<Rightarrow> bool"             ("(3surjec\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+  "surjec\<^bsub>F,G\<^esub> f \<longleftrightarrow> f \<in> aHom F G \<and> surj_to f (carrier F) (carrier G)"
 
-constdefs
- bijec::"[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
-            \<Rightarrow> bool"             ("(3bijec\<^bsub>_,_\<^esub> _)" [82,82,83]82)
- "bijec\<^bsub>F,G\<^esub> f == injec\<^bsub>F,G\<^esub> f \<and>surjec\<^bsub>F,G\<^esub> f"
+definition
+  bijec :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
+            \<Rightarrow> bool"             ("(3bijec\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+  "bijec\<^bsub>F,G\<^esub> f \<longleftrightarrow> injec\<^bsub>F,G\<^esub> f \<and> surjec\<^bsub>F,G\<^esub> f"
 
-constdefs
- ainvf::"[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
-            \<Rightarrow> ('b \<Rightarrow> 'a)"             ("(3ainvf\<^bsub>_,_\<^esub> _)" [82,82,83]82)
- "ainvf\<^bsub>F,G\<^esub> f == invfun (carrier F) (carrier G) f"
+definition
+  ainvf :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
+            \<Rightarrow> ('b \<Rightarrow> 'a)"             ("(3ainvf\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+  "ainvf\<^bsub>F,G\<^esub> f = invfun (carrier F) (carrier G) f"
  
 lemma aHom_mem:"\<lbrakk>aGroup F; aGroup G; f \<in> aHom F G; a \<in> carrier F\<rbrakk> \<Longrightarrow>
                        f a \<in> carrier G"
@@ -832,10 +830,10 @@ apply (unfold bij_to_def, frule conjunct1, fold bij_to_def, simp)
  apply (simp add:aGroup.Ag_ind_carrier surj_to_def Agii_def)
 done
 
-constdefs
- aimg ::"[('b, 'm1) aGroup_scheme, _, 'b \<Rightarrow> 'a]
-            \<Rightarrow> 'a aGroup"  ("(3aimg\<^bsub>_,_\<^esub> _)" [82,82,83]82)
-  "aimg\<^bsub>F,A\<^esub> f \<equiv> A \<lparr> carrier := f ` (carrier F), pop := pop A, mop := mop A,
+definition
+  aimg :: "[('b, 'm1) aGroup_scheme, _, 'b \<Rightarrow> 'a]
+            \<Rightarrow> 'a aGroup"  ("(3aimg\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+  "aimg\<^bsub>F,A\<^esub> f = A \<lparr> carrier := f ` (carrier F), pop := pop A, mop := mop A,
                   zero := zero A\<rparr>"
 
 lemma ker_subg:"\<lbrakk>aGroup F; aGroup G; f \<in> aHom F G \<rbrakk> \<Longrightarrow> F +> ker\<^bsub>F,G\<^esub> f"
@@ -859,22 +857,22 @@ done
 
 subsection "20-2 quotient abelian group"
 
-constdefs (structure A)
- ar_coset :: "['a, _ , 'a set] \<Rightarrow> 'a set" (** a_rcs **)
-     ("(3_ \<uplus>\<^bsub>_\<^esub> _)" [66,66,67]66)
-  "ar_coset a A H ==  H \<bullet>\<^bsub>(b_ag A)\<^esub> a"
+definition
+  ar_coset :: "['a, _ , 'a set] \<Rightarrow> 'a set" (** a_rcs **)
+     ("(3_ \<uplus>\<^bsub>_\<^esub> _)" [66,66,67]66) where
+  "ar_coset a A H = H \<bullet>\<^bsub>(b_ag A)\<^esub> a"
 
- set_ar_cos:: "[_ , 'a set] \<Rightarrow> 'a set set"
-  "set_ar_cos A I == {X. \<exists>a\<in>carrier A. X = ar_coset a A I}"
+definition
+  set_ar_cos :: "[_ , 'a set] \<Rightarrow> 'a set set" where
+  "set_ar_cos A I = {X. \<exists>a\<in>carrier A. X = ar_coset a A I}"
 
- aset_sum :: "[_ , 'a set, 'a set] \<Rightarrow> 'a set "
-  "aset_sum A H K == s_top (b_ag A) H K"
+definition
+  aset_sum :: "[_ , 'a set, 'a set] \<Rightarrow> 'a set" where
+  "aset_sum A H K = s_top (b_ag A) H K"
 
-syntax 
-  "@ASBOP1" :: "['a set, _ , 'a set] \<Rightarrow> 'a set" (infix "\<minusplus>\<index>" 60)
- 
-translations
-  "H \<minusplus>\<^bsub>A\<^esub> K" == "aset_sum A H K"
+abbreviation
+  ASBOP1  (infix "\<minusplus>\<index>" 60) where
+  "H \<minusplus>\<^bsub>A\<^esub> K == aset_sum A H K"
 
 lemma (in aGroup) ag_a_in_ar_cos:"\<lbrakk>A +> H; a \<in> carrier A\<rbrakk> \<Longrightarrow> a \<in> a \<uplus>\<^bsub>A\<^esub> H"
 apply (simp add:ar_coset_def)
@@ -1004,59 +1002,56 @@ lemma (in aGroup) arcos_fixed:"\<lbrakk>A +> H; a \<in> carrier A; h \<in> H \<r
  apply (simp add:Group.rcs_fixed1[of "b_ag A" "H"])
 done
 
-constdefs
- rind_hom :: "[('a, 'more) aGroup_scheme, ('b, 'more1) aGroup_scheme, 
-                ('a  \<Rightarrow> 'b)] \<Rightarrow> ('a set  \<Rightarrow> 'b )"
-   "rind_hom A B f == \<lambda>X\<in>(set_ar_cos A (ker\<^bsub>A,B\<^esub> f)). f (SOME x. x \<in> X)"
+definition
+  rind_hom :: "[('a, 'more) aGroup_scheme, ('b, 'more1) aGroup_scheme, 
+                ('a  \<Rightarrow> 'b)] \<Rightarrow> ('a set  \<Rightarrow> 'b )" where
+  "rind_hom A B f = (\<lambda>X\<in>(set_ar_cos A (ker\<^bsub>A,B\<^esub> f)). f (SOME x. x \<in> X))"
 
-syntax 
- "@RIND_HOM"::"['a \<Rightarrow> 'b, ('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme]
-         \<Rightarrow>  ('a set  \<Rightarrow> 'b )" ("(3_\<degree>\<^bsub>_,_\<^esub>)" [82,82,83]82)  
-
-translations
-    "f\<degree>\<^bsub>F,G\<^esub> " == "rind_hom F G f"
-
+abbreviation
+  RIND_HOM  ("(3_\<degree>\<^bsub>_,_\<^esub>)" [82,82,83]82)  where
+  "f\<degree>\<^bsub>F,G\<^esub> == rind_hom F G f"
+                                                          (* tOp \<rightarrow> pOp *) 
 
 section "21 direct product and direct sum of abelian groups, in general case"
 
-constdefs
- Un_carrier::"['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> 'a set"
-   "Un_carrier I A ==  \<Union>{X. \<exists>i\<in>I. X = carrier (A i)}"
+definition
+  Un_carrier :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> 'a set" where
+  "Un_carrier I A = \<Union>{X. \<exists>i\<in>I. X = carrier (A i)}"
 
- carr_prodag::"['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> 
-               ('i  \<Rightarrow> 'a ) set"  
- "carr_prodag I A == {f. f \<in> extensional I \<and> f \<in> I \<rightarrow> (Un_carrier I A) \<and> 
+definition
+  carr_prodag :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> ('i  \<Rightarrow> 'a ) set" where
+  "carr_prodag I A = {f. f \<in> extensional I \<and> f \<in> I \<rightarrow> (Un_carrier I A) \<and>
                                                (\<forall>i\<in>I. f i \<in> carrier (A i))}"
 
- prod_pOp::"['i set,  'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> 
-                                 ('i \<Rightarrow> 'a) \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow>  ('i \<Rightarrow> 'a)"
-  "prod_pOp I A  == \<lambda>f\<in>carr_prodag I A. \<lambda>g\<in>carr_prodag I A.
-                                        \<lambda>x\<in>I. (f x) \<plusminus>\<^bsub>(A x)\<^esub> (g x)" 
+definition
+  prod_pOp :: "['i set,  'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> 
+                                 ('i \<Rightarrow> 'a) \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow>  ('i \<Rightarrow> 'a)" where
+  "prod_pOp I A = (\<lambda>f\<in>carr_prodag I A. \<lambda>g\<in>carr_prodag I A.
+                                        \<lambda>x\<in>I. (f x) \<plusminus>\<^bsub>(A x)\<^esub> (g x))" 
 
- prod_mOp::"['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow>
-                                  ('i \<Rightarrow> 'a) \<Rightarrow> ('i \<Rightarrow> 'a)"
-  "prod_mOp I A  == \<lambda>f\<in>carr_prodag I A. \<lambda>x\<in>I. (-\<^sub>a\<^bsub>(A x)\<^esub> (f x))" 
+definition
+  prod_mOp :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow>
+                                  ('i \<Rightarrow> 'a) \<Rightarrow> ('i \<Rightarrow> 'a)" where
+  "prod_mOp I A = (\<lambda>f\<in>carr_prodag I A. \<lambda>x\<in>I. (-\<^sub>a\<^bsub>(A x)\<^esub> (f x)))" 
 
- prod_zero::"['i set,  'i  \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> ('i \<Rightarrow> 'a)"
-  "prod_zero I A == \<lambda>x\<in>I. \<zero>\<^bsub>(A x)\<^esub>"
+definition
+  prod_zero :: "['i set,  'i  \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> ('i \<Rightarrow> 'a)" where
+  "prod_zero I A = (\<lambda>x\<in>I. \<zero>\<^bsub>(A x)\<^esub>)"
 
- prodag::"['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> ('i \<Rightarrow> 'a) aGroup" 
-     
- "prodag I A == \<lparr> carrier = carr_prodag I A, 
-   pop = prod_pOp I A, mop = prod_mOp I A,
-   zero = prod_zero I A\<rparr>"  
+definition
+  prodag :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> ('i \<Rightarrow> 'a) aGroup" where
+  "prodag I A = \<lparr> carrier = carr_prodag I A, 
+    pop = prod_pOp I A, mop = prod_mOp I A,
+    zero = prod_zero I A\<rparr>"  
 
+definition
+  PRoject :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme, 'i]
+                   \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow> 'a" ("(3\<pi>\<^bsub>_,_,_\<^esub>)" [82,82,83]82) where
+  "PRoject I A x = (\<lambda>f \<in> carr_prodag I A. f x)"
 
- PRoject::"['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme, 'i]
-                   \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow> 'a" ("(3\<pi>\<^bsub>_,_,_\<^esub>)" [82,82,83]82)
-  "PRoject I A x == \<lambda>f \<in> carr_prodag I A. f x"
-
-syntax 
-  "@PRODag" :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> 
-               ('i \<Rightarrow> 'a ) set"  ("(a\<Pi>\<^bsub>_\<^esub> _)" [72,73]72)
-
-translations
-   "a\<Pi>\<^bsub>I\<^esub> A" == "prodag I A"
+abbreviation
+  PRODag  ("(a\<Pi>\<^bsub>_\<^esub> _)" [72,73]72) where
+  "a\<Pi>\<^bsub>I\<^esub> A == prodag I A"
 
 lemma prodag_comp_i:"\<lbrakk>a \<in> carr_prodag I A; i \<in> I\<rbrakk> \<Longrightarrow> (a i) \<in> carrier (A i)"
 by (simp add:carr_prodag_def)
@@ -1362,10 +1357,10 @@ apply (rule ballI)
 apply (rule project_aHom, assumption+)
 done
  
-constdefs
- A_to_prodag :: "[('a, 'm) aGroup_scheme, 'i set, 'i \<Rightarrow>('a \<Rightarrow> 'b), 
- 'i  \<Rightarrow> ('b, 'm1) aGroup_scheme] \<Rightarrow> ('a \<Rightarrow> ('i \<Rightarrow>'b))"
- "A_to_prodag A I S B == \<lambda>a\<in>carrier A. \<lambda>k\<in>I. S k a" 
+definition
+  A_to_prodag :: "[('a, 'm) aGroup_scheme, 'i set, 'i \<Rightarrow>('a \<Rightarrow> 'b), 
+   'i  \<Rightarrow> ('b, 'm1) aGroup_scheme] \<Rightarrow> ('a \<Rightarrow> ('i \<Rightarrow>'b))" where
+ "A_to_prodag A I S B = (\<lambda>a\<in>carrier A. \<lambda>k\<in>I. S k a)" 
 
  (* I is an index set, A is an abelian group, S: I \<rightarrow> carrier A \<rightarrow> 
   carrier (prodag I B),   s i \<in> carrier A \<rightarrow> B i  *)  
@@ -1435,31 +1430,29 @@ apply (rule ballI)+
 apply (simp add: aHom_add)
 done
 
-constdefs
- finiteHom::"['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme, 'i \<Rightarrow> 'a] \<Rightarrow> bool"
-  "finiteHom I A f == f \<in> carr_prodag I A \<and> (\<exists>H. H \<subseteq> I \<and> finite H \<and> (
+definition
+  finiteHom :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme, 'i \<Rightarrow> 'a] \<Rightarrow> bool" where
+  "finiteHom I A f \<longleftrightarrow> f \<in> carr_prodag I A \<and> (\<exists>H. H \<subseteq> I \<and> finite H \<and> (
     \<forall>j \<in> (I - H). (f j) = \<zero>\<^bsub>(A j)\<^esub>))"
 
-constdefs
- carr_dsumag::"['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> 
-               ('i  \<Rightarrow> 'a ) set"  
- "carr_dsumag I A == {f. finiteHom I A f}"
+definition
+  carr_dsumag :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> ('i  \<Rightarrow> 'a ) set" where
+  "carr_dsumag I A = {f. finiteHom I A f}"
 
- dsumag::"['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> ('i \<Rightarrow> 'a) aGroup" 
-  "dsumag I A == \<lparr> carrier = carr_dsumag I A, 
-   pop = prod_pOp I A, mop = prod_mOp I A,
-   zero = prod_zero I A\<rparr>"  
+definition
+  dsumag :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> ('i \<Rightarrow> 'a) aGroup" where
+  "dsumag I A = \<lparr> carrier = carr_dsumag I A, 
+     pop = prod_pOp I A, mop = prod_mOp I A,
+     zero = prod_zero I A\<rparr>"  
 
+definition
+  dProj :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme, 'i]
+                   \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow> 'a" where
+  "dProj I A x = (\<lambda>f\<in>carr_dsumag I A. f x)"
 
- dProj::"['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme, 'i]
-                   \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow> 'a"
-  "dProj I A x == \<lambda>f\<in>carr_dsumag I A. f x"
-
-syntax 
-  "@DSUMag" :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme] \<Rightarrow> 
-               ('i \<Rightarrow> 'a ) set"  ("(a\<Oplus>\<^bsub>_\<^esub> _)" [72,73]72)
-translations
-  "a\<Oplus>\<^bsub>I\<^esub> A" == "dsumag I A"
+abbreviation
+  DSUMag  ("(a\<Oplus>\<^bsub>_\<^esub> _)" [72,73]72) where
+  "a\<Oplus>\<^bsub>I\<^esub> A == dsumag I A"
 
 lemma dsum_pOp_func:"\<forall>k\<in>I. aGroup (A k) \<Longrightarrow>
     prod_pOp I A \<in> carr_dsumag I A \<rightarrow> carr_dsumag I A \<rightarrow> carr_dsumag I A"
@@ -1806,10 +1799,10 @@ done
                         \  |
                           A j             , where f' = Agii (a\<Pi>\<^bsub>I\<^esub> A) f **)
 
-constdefs
- ProjInd :: "['i set, 'i \<Rightarrow> ('a, 'm) aGroup_scheme, ('i \<Rightarrow> 'a) \<Rightarrow> 'd, 'i] \<Rightarrow> 
-                       ('d \<Rightarrow> 'a)"
- "ProjInd I A f j == compos (Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f)(PRoject I A j) (ainvf\<^bsub>(a\<Pi>\<^bsub>I\<^esub> A), (Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f)\<^esub> (Agii (a\<Pi>\<^bsub>I\<^esub> A) f))"
+definition
+  ProjInd :: "['i set, 'i \<Rightarrow> ('a, 'm) aGroup_scheme, ('i \<Rightarrow> 'a) \<Rightarrow> 'd, 'i] \<Rightarrow> 
+                       ('d \<Rightarrow> 'a)" where
+  "ProjInd I A f j = compos (Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f)(PRoject I A j) (ainvf\<^bsub>(a\<Pi>\<^bsub>I\<^esub> A), (Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f)\<^esub> (Agii (a\<Pi>\<^bsub>I\<^esub> A) f))"
 
 (** Note               f'
                  a\<Pi>\<^bsub>I\<^esub> A \<rightarrow> Ag_ind (a\<Pi>\<^bsub>I\<^esub> A) f
@@ -2134,61 +2127,59 @@ locale Ring =
                      a \<cdot>\<^sub>r (b \<plusminus> c) = a \<cdot>\<^sub>r b  \<plusminus>  a \<cdot>\<^sub>r c"
  and     rg_l_unit: "a \<in> carrier R \<Longrightarrow> (1\<^sub>r) \<cdot>\<^sub>r a = a"
  
-constdefs
- zeroring :: "('a, 'more) Ring_scheme \<Rightarrow> bool"
-  "zeroring R == Ring R \<and> carrier R = {\<zero>\<^bsub>R\<^esub>}"
+definition
+  zeroring :: "('a, 'more) Ring_scheme \<Rightarrow> bool" where
+  "zeroring R \<longleftrightarrow> Ring R \<and> carrier R = {\<zero>\<^bsub>R\<^esub>}"
 
-consts
-  nscal ::  "('a, 'more) Ring_scheme  => 'a => nat  => 'a"
-  npow   ::  "('a, 'more) Ring_scheme  => 'a => nat  => 'a"
+primrec nscal ::  "('a, 'more) Ring_scheme  => 'a => nat  => 'a"
+where
+  nscal_0:  "nscal R x 0 = \<zero>\<^bsub>R\<^esub>"
+| nscal_suc:  "nscal R x (Suc n) = (nscal R x n) \<plusminus>\<^bsub>R\<^esub> x"
 
-  nsum  :: "('a, 'more) aGroup_scheme => (nat => 'a) => nat => 'a"
-  nprod  :: "('a, 'more) Ring_scheme => (nat => 'a) => nat => 'a"
-
-primrec
- nscal_0:  "nscal R x 0 = \<zero>\<^bsub>R\<^esub>"
- nscal_suc:  "nscal R x (Suc n) = (nscal R x n) \<plusminus>\<^bsub>R\<^esub> x"
-
-primrec
+primrec npow ::  "('a, 'more) Ring_scheme  => 'a => nat  => 'a"
+where
   npow_0: "npow R x 0 = 1\<^sub>r\<^bsub>R\<^esub>"
-  npow_suc: "npow R x (Suc n) = (npow R x n) \<cdot>\<^sub>r\<^bsub>R\<^esub> x" 
+| npow_suc: "npow R x (Suc n) = (npow R x n) \<cdot>\<^sub>r\<^bsub>R\<^esub> x" 
 
-primrec
-  nprod_0:  "nprod R f 0 = f 0"
-  nprod_suc:"nprod R f (Suc n) = (nprod R f n) \<cdot>\<^sub>r\<^bsub>R\<^esub> (f (Suc n))"  
+primrec nprod  :: "('a, 'more) Ring_scheme => (nat => 'a) => nat => 'a"
+where
+  nprod_0: "nprod R f 0 = f 0"
+| nprod_suc: "nprod R f (Suc n) = (nprod R f n) \<cdot>\<^sub>r\<^bsub>R\<^esub> (f (Suc n))"
 
-primrec
+primrec nsum :: "('a, 'more) aGroup_scheme => (nat => 'a) => nat => 'a"
+where
   nsum_0: "nsum R f 0 = f 0"
-  nsum_suc: "nsum R f (Suc n) = (nsum R f n) \<plusminus>\<^bsub>R\<^esub> (f (Suc n))"
+| nsum_suc: "nsum R f (Suc n) = (nsum R f n) \<plusminus>\<^bsub>R\<^esub> (f (Suc n))"
 
-syntax 
-  "@NSCAL" :: "[nat, ('a, 'more) Ring_scheme, 'a] \<Rightarrow> 'a" 
-       ("(3 _ \<times>\<^bsub>_\<^esub> _)" [75,75,76]75)
-  "@NPOW" ::  "['a, ('a, 'more) Ring_scheme, nat] \<Rightarrow>  'a" 
-       ("(3_^\<^bsup>_ _\<^esup>)" [77,77,78]77)
-  "@SUM" :: "('a, 'more) aGroup_scheme => (nat => 'a) => nat => 'a"
-       ("(3\<Sigma>\<^sub>e _ _ _)" [85,85,86]85)
+abbreviation
+  NSCAL :: "[nat, ('a, 'more) Ring_scheme, 'a] \<Rightarrow> 'a" 
+    ("(3 _ \<times>\<^bsub>_\<^esub> _)" [75,75,76]75) where
+  "n \<times>\<^bsub>R\<^esub> x == nscal R x n"
 
-  "@NPROD"::"[('a, 'm) Ring_scheme, nat, nat \<Rightarrow> 'a] \<Rightarrow> 'a"
-           ("(3e\<Pi>\<^bsub>_,_\<^esub> _)" [98,98,99]98)
+abbreviation
+  NPOW :: "['a, ('a, 'more) Ring_scheme, nat] \<Rightarrow>  'a" 
+    ("(3_^\<^bsup>_ _\<^esup>)" [77,77,78]77) where
+  "a^\<^bsup>R n\<^esup> == npow R a n" 
 
-translations
-  "n \<times>\<^bsub>R\<^esub> x" == "nscal R x n"
-  "a^\<^bsup>R n\<^esup>" == "npow R a n" 
-  "\<Sigma>\<^sub>e G f n" == "nsum G f n"
-  "e\<Pi>\<^bsub>R,n\<^esub> f" == "nprod R f n"
- 
-constdefs (structure A)
- fSum::"[_, (nat => 'a), nat, nat] \<Rightarrow> 'a"
- "fSum A f n m == if n \<le> m then nsum A (cmp f (slide n))(m - n) 
-                       else \<zero>" 
+abbreviation
+  SUM :: "('a, 'more) aGroup_scheme => (nat => 'a) => nat => 'a"
+    ("(3\<Sigma>\<^sub>e _ _ _)" [85,85,86]85) where
+  "\<Sigma>\<^sub>e G f n == nsum G f n"
 
-syntax 
-   "@FSUM" :: "[('a, 'more) aGroup_scheme, (nat \<Rightarrow> 'a), nat, nat] \<Rightarrow> 'a"
-       ("(4\<Sigma>\<^sub>f _ _ _ _)" [85,85,85,86]85)
+abbreviation
+  NPROD :: "[('a, 'm) Ring_scheme, nat, nat \<Rightarrow> 'a] \<Rightarrow> 'a"
+    ("(3e\<Pi>\<^bsub>_,_\<^esub> _)" [98,98,99]98) where
+  "e\<Pi>\<^bsub>R,n\<^esub> f == nprod R f n"
 
-translations
-  "\<Sigma>\<^sub>f G f n m" == "fSum G f n m"
+definition
+  fSum :: "[_, (nat => 'a), nat, nat] \<Rightarrow> 'a" where
+  "fSum A f n m = (if n \<le> m then nsum A (cmp f (slide n))(m - n) 
+                       else \<zero>\<^bsub>A\<^esub>)" 
+
+abbreviation
+  FSUM :: "[('a, 'more) aGroup_scheme, (nat \<Rightarrow> 'a), nat, nat] \<Rightarrow> 'a"
+    ("(4\<Sigma>\<^sub>f _ _ _ _)" [85,85,85,86]85) where
+  "\<Sigma>\<^sub>f G f n m == fSum G f n m"
 
 lemma (in aGroup) nsum_zeroGTr:"(\<forall>j \<le> n. f j = \<zero>) \<longrightarrow> nsum A f n = \<zero>"
 apply (induct_tac n) 
@@ -2204,14 +2195,15 @@ lemma (in aGroup) nsum_zeroA:"\<forall>j \<le> n. f j = \<zero> \<Longrightarrow
 apply (simp add:nsum_zeroGTr)
 done
 
-constdefs (structure R)
- sr::"[_ , 'a set] \<Rightarrow> bool"
-  "sr R S == S \<subseteq> carrier R \<and> 1\<^sub>r \<in> S \<and> (\<forall>x\<in>S. \<forall>y \<in> S. x  \<plusminus> (-\<^sub>a y) \<in> S \<and> 
-               x \<cdot>\<^sub>r y \<in> S)"
+definition
+  sr :: "[_ , 'a set] \<Rightarrow> bool" where
+  "sr R S == S \<subseteq> carrier R \<and> 1\<^sub>r\<^bsub>R\<^esub> \<in> S \<and> (\<forall>x\<in>S. \<forall>y \<in> S. x  \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> y) \<in> S \<and> 
+               x \<cdot>\<^sub>r\<^bsub>R\<^esub> y \<in> S)"
 
- Sr ::"[_ , 'a set] \<Rightarrow> _"
-  "Sr R S == R \<lparr>carrier := S, pop := \<lambda>x\<in>S. \<lambda>y\<in>S. x \<plusminus>\<^bsub>R\<^esub> y, mop := \<lambda>x\<in>S. (-\<^sub>a\<^bsub>R\<^esub> x),
-   zero := \<zero>\<^bsub>R\<^esub>, tp := \<lambda>x\<in>S. \<lambda>y\<in>S. x \<cdot>\<^sub>r\<^bsub>R\<^esub> y, un := 1\<^sub>r\<^bsub>R\<^esub> \<rparr>"
+definition
+  Sr :: "[_ , 'a set] \<Rightarrow> _" where
+  "Sr R S = R \<lparr>carrier := S, pop := \<lambda>x\<in>S. \<lambda>y\<in>S. x \<plusminus>\<^bsub>R\<^esub> y, mop := \<lambda>x\<in>S. (-\<^sub>a\<^bsub>R\<^esub> x),
+    zero := \<zero>\<^bsub>R\<^esub>, tp := \<lambda>x\<in>S. \<lambda>y\<in>S. x \<cdot>\<^sub>r\<^bsub>R\<^esub> y, un := 1\<^sub>r\<^bsub>R\<^esub> \<rparr>"
 
 (** sr is a subring without ring structure, Sr is a subring with Ring structure
      **)
@@ -3270,35 +3262,35 @@ lemma (in Ring) npMul:
 
 section "3. ring homomorphisms"
 
-constdefs
- rHom :: "[('a, 'm) Ring_scheme, ('b, 'm1) Ring_scheme] 
-                      \<Rightarrow> ('a  \<Rightarrow> 'b) set"
-  "rHom A R == {f. f \<in> aHom A R \<and>
-   (\<forall>x\<in>carrier A. \<forall>y\<in>carrier A. f ( x \<cdot>\<^sub>r\<^bsub>A\<^esub> y) =  (f x) \<cdot>\<^sub>r\<^bsub>R\<^esub> (f y)) 
-   \<and> f (1\<^sub>r\<^bsub>A\<^esub>) = (1\<^sub>r\<^bsub>R\<^esub>)}"
+definition
+  rHom :: "[('a, 'm) Ring_scheme, ('b, 'm1) Ring_scheme] 
+                      \<Rightarrow> ('a  \<Rightarrow> 'b) set" where
+  "rHom A R = {f. f \<in> aHom A R \<and>
+    (\<forall>x\<in>carrier A. \<forall>y\<in>carrier A. f ( x \<cdot>\<^sub>r\<^bsub>A\<^esub> y) =  (f x) \<cdot>\<^sub>r\<^bsub>R\<^esub> (f y)) 
+    \<and> f (1\<^sub>r\<^bsub>A\<^esub>) = (1\<^sub>r\<^bsub>R\<^esub>)}"
   
-constdefs
+definition
   rInvim :: "[('a, 'm) Ring_scheme, ('b, 'm1) Ring_scheme, 'a \<Rightarrow> 'b, 'b set]
-               \<Rightarrow> 'a set"
-  "rInvim A R f K == {a. a \<in> carrier A \<and> f a \<in> K}"
+               \<Rightarrow> 'a set" where
+  "rInvim A R f K = {a. a \<in> carrier A \<and> f a \<in> K}"
 
-constdefs
-  rimg::"[('a, 'm) Ring_scheme, ('b, 'm1) Ring_scheme, 'a \<Rightarrow> 'b] \<Rightarrow>
-            'b Ring"
-  "rimg A R f == \<lparr>carrier= f `(carrier A), pop = pop R, mop = mop R,
-  zero = zero R, tp = tp R, un = un R \<rparr>"
+definition
+  rimg :: "[('a, 'm) Ring_scheme, ('b, 'm1) Ring_scheme, 'a \<Rightarrow> 'b] \<Rightarrow>
+            'b Ring" where
+  "rimg A R f = \<lparr>carrier= f `(carrier A), pop = pop R, mop = mop R,
+    zero = zero R, tp = tp R, un = un R \<rparr>"
 
-constdefs
- ridmap::"('a, 'm) Ring_scheme \<Rightarrow> ('a \<Rightarrow> 'a)"
- "ridmap R == \<lambda>x\<in>carrier R. x"
+definition
+  ridmap :: "('a, 'm) Ring_scheme \<Rightarrow> ('a \<Rightarrow> 'a)" where
+  "ridmap R = (\<lambda>x\<in>carrier R. x)"
 
-constdefs
- r_isom::"[('a, 'm) Ring_scheme, ('b, 'm1) Ring_scheme] \<Rightarrow> bool"
-                       (infixr "\<cong>\<^sub>r" 100)
- "r_isom R R' == \<exists>f\<in>rHom R R'. bijec\<^bsub>R,R'\<^esub> f"
+definition
+  r_isom :: "[('a, 'm) Ring_scheme, ('b, 'm1) Ring_scheme] \<Rightarrow> bool"
+                       (infixr "\<cong>\<^sub>r" 100) where
+  "r_isom R R' \<longleftrightarrow> (\<exists>f\<in>rHom R R'. bijec\<^bsub>R,R'\<^esub> f)"
 
-constdefs 
- Subring::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme] \<Rightarrow> bool"
+definition
+  Subring :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme] \<Rightarrow> bool" where
   "Subring R S == Ring S \<and> (carrier S \<subseteq> carrier R) \<and> (ridmap S) \<in> rHom S R" 
 
 lemma ridmap_surjec:"Ring A \<Longrightarrow> surjec\<^bsub>A,A\<^esub> (ridmap A)"
@@ -3500,13 +3492,10 @@ apply (simp add:rimg_def, fold rimg_def,
          simp add:Ring.ring_l_one)
 done
 
-constdefs (structure R)
- ideal::"[_ , 'a set] \<Rightarrow> bool"
-  "ideal R I == (R +> I) \<and> (\<forall>r\<in>carrier R. \<forall>x\<in>I. (r \<cdot>\<^sub>r x \<in> I))"
+definition
+  ideal :: "[_ , 'a set] \<Rightarrow> bool" where
+  "ideal R I \<longleftrightarrow> (R +> I) \<and> (\<forall>r\<in>carrier R. \<forall>x\<in>I. (r \<cdot>\<^sub>r\<^bsub>R\<^esub> x \<in> I))"
 
-translations
-    "f\<degree>\<^bsub>F,G\<^esub> " == "rind_hom F G f"
-                                                          (* tOp \<rightarrow> pOp *) 
 
 lemma (in Ring) ideal_asubg:"ideal R I \<Longrightarrow> R +> I"
 by (simp add:ideal_def)
@@ -3701,9 +3690,9 @@ apply (rule iffI)
         cut_tac ring_one, simp)
 done
 
-constdefs (structure R)
-  Unit :: "_ \<Rightarrow> 'a \<Rightarrow> bool"
-  "Unit R a == a \<in> carrier R \<and> (\<exists>b\<in>carrier R. a \<cdot>\<^sub>r b = 1\<^sub>r)"
+definition
+  Unit :: "_ \<Rightarrow> 'a \<Rightarrow> bool" where
+  "Unit R a \<longleftrightarrow> a \<in> carrier R \<and> (\<exists>b\<in>carrier R. a \<cdot>\<^sub>r\<^bsub>R\<^esub> b = 1\<^sub>r\<^bsub>R\<^esub>)"
 
 lemma (in Ring) ideal_inc_unit:"\<lbrakk>ideal R I; a \<in> I; Unit R a\<rbrakk> \<Longrightarrow> 1\<^sub>r \<in> I"
 by (simp add:Unit_def, erule conjE, erule bexE,
@@ -3733,10 +3722,10 @@ apply (frule ideal_subset1[of "I"], frule ideal_subset1[of "J"])
  apply (simp add:ideal_ring_multiple)
 done
 
-constdefs (structure R)
-   ideal_prod::"[_, 'a set, 'a set] \<Rightarrow> 'a set" (infix "\<diamondsuit>\<^sub>r\<index>" 90 )
-   "ideal_prod R I J == \<Inter> {L. ideal R L \<and> 
-                               {x.(\<exists>i\<in>I. \<exists>j\<in>J. x = i \<cdot>\<^sub>r j)} \<subseteq> L}"
+definition
+  ideal_prod::"[_, 'a set, 'a set] \<Rightarrow> 'a set" (infix "\<diamondsuit>\<^sub>r\<index>" 90 ) where
+  "ideal_prod R I J == \<Inter> {L. ideal R L \<and> 
+                              {x.(\<exists>i\<in>I. \<exists>j\<in>J. x = i \<cdot>\<^sub>r\<^bsub>R\<^esub> j)} \<subseteq> L}"
 
 lemma (in Ring) set_sum_mem:"\<lbrakk>a \<in> I; b \<in> J; I \<subseteq> carrier R; J \<subseteq> carrier R\<rbrakk> \<Longrightarrow>
              a \<plusminus> b \<in> I \<minusplus> J"
@@ -3822,9 +3811,9 @@ apply (cut_tac ring_is_ag,
        simp add:aGroup.set_sum)
 done
 
-constdefs (structure R)
-  Rxa :: "[_, 'a ] \<Rightarrow> 'a set" (infixl "\<diamondsuit>\<^sub>p" 200) 
-  "Rxa R a == {x. \<exists>r\<in>carrier R. x = (r \<cdot>\<^sub>r a)}"
+definition
+  Rxa :: "[_, 'a ] \<Rightarrow> 'a set" (infixl "\<diamondsuit>\<^sub>p" 200)  where
+  "Rxa R a = {x. \<exists>r\<in>carrier R. x = (r \<cdot>\<^sub>r\<^bsub>R\<^esub> a)}"
 
 lemma (in Ring) a_in_principal:"a \<in> carrier R \<Longrightarrow> a \<in> Rxa R a"
 apply (cut_tac ring_one,
@@ -3921,13 +3910,12 @@ apply (simp add:ring_tOp_commute[of b a])
 apply blast
 done
 
-consts 
-  sum_pr_ideals::"[('a, 'm) Ring_scheme, nat \<Rightarrow> 'a, nat] \<Rightarrow> 'a set"
- 
-primrec 
- sum_pr0: "sum_pr_ideals R f 0 = Rxa R (f 0)"
- sum_prn: "sum_pr_ideals R f (Suc n) =
-                   (Rxa R (f (Suc n))) \<minusplus>\<^bsub>R\<^esub> (sum_pr_ideals R f n)"
+
+primrec sum_pr_ideals::"[('a, 'm) Ring_scheme, nat \<Rightarrow> 'a, nat] \<Rightarrow> 'a set"
+where
+  sum_pr0: "sum_pr_ideals R f 0 = Rxa R (f 0)"
+| sum_prn: "sum_pr_ideals R f (Suc n) =
+                  (Rxa R (f (Suc n))) \<minusplus>\<^bsub>R\<^esub> (sum_pr_ideals R f n)"
 
 lemma (in Ring) restrictfun_Nset:"f \<in> {i. i \<le> (Suc n)} \<rightarrow> carrier R
           \<Longrightarrow> f \<in> {i. i \<le> n} \<rightarrow> carrier R" 
@@ -4058,10 +4046,10 @@ done
 
 subsection "ring of integers"
 
- constdefs
-  Zr::"int Ring"
-  "Zr == \<lparr> carrier = Zset, pop = \<lambda>n\<in>Zset. \<lambda>m\<in>Zset. (m + n),
- mop = \<lambda>l\<in>Zset. -l, zero = 0, tp = \<lambda>m\<in>Zset. \<lambda>n\<in>Zset. m * n, un = 1\<rparr>"
+definition
+  Zr :: "int Ring" where
+  "Zr = \<lparr> carrier = Zset, pop = \<lambda>n\<in>Zset. \<lambda>m\<in>Zset. (m + n),
+    mop = \<lambda>l\<in>Zset. -l, zero = 0, tp = \<lambda>m\<in>Zset. \<lambda>n\<in>Zset. m * n, un = 1\<rparr>"
 
 lemma ring_of_integers:"Ring Zr"
 apply (simp add:Ring_def)
@@ -4112,9 +4100,9 @@ by (simp add:Zr_def Zset_def)
 lemma Zr_times:"n \<cdot>\<^sub>r\<^bsub>Zr\<^esub> m = n * m"
 by (simp add:Zr_def Zset_def)
 
-constdefs
- lev :: "int set \<Rightarrow> int"
- "lev I == Zleast {n. n \<in> I \<and> 0 < n}"
+definition
+  lev :: "int set \<Rightarrow> int" where
+  "lev I = Zleast {n. n \<in> I \<and> 0 < n}"
 
 lemma Zr_gen_Zleast:"\<lbrakk>ideal Zr I; I \<noteq> {0::int}\<rbrakk> \<Longrightarrow> 
                        Rxa Zr (lev I) = I"
@@ -4376,11 +4364,10 @@ apply (frule ring_distrib4[of "a2" "b2" "a1" "b1"], assumption+)
  apply (simp add:ideal_ring_multiple, simp add:ideal_ring_multiple1)
 done
 
-constdefs (structure R)
- rcostOp :: "[_, 'a set] \<Rightarrow> (['a set, 'a set] \<Rightarrow> 'a set)" 
-    
-    "rcostOp R I == \<lambda>X\<in>(set_rcs (b_ag R) I). \<lambda>Y\<in>(set_rcs (b_ag R) I).
-                {z. \<exists> x \<in> X. \<exists> y \<in> Y. \<exists>h\<in>I. (x \<cdot>\<^sub>r y) \<plusminus> h = z}"
+definition
+  rcostOp :: "[_, 'a set] \<Rightarrow> (['a set, 'a set] \<Rightarrow> 'a set)" where
+  "rcostOp R I = (\<lambda>X\<in>(set_rcs (b_ag R) I). \<lambda>Y\<in>(set_rcs (b_ag R) I).
+                {z. \<exists> x \<in> X. \<exists> y \<in> Y. \<exists>h\<in>I. (x \<cdot>\<^sub>r\<^bsub>R\<^esub> y) \<plusminus>\<^bsub>R\<^esub> h = z})"
 
 lemma (in Ring) rcostOp:"\<lbrakk>ideal R I; a \<in> carrier R; b \<in> carrier R\<rbrakk> \<Longrightarrow>
                     rcostOp R I (a \<uplus>\<^bsub>R\<^esub> I) (b \<uplus>\<^bsub>R\<^esub> I) = (a \<cdot>\<^sub>r b) \<uplus>\<^bsub>R\<^esub> I"
@@ -4425,20 +4412,20 @@ apply (rule equalityI)
  apply blast
 done
 
-constdefs (structure R)
- qring ::  "[('a, 'm) Ring_scheme, 'a set] \<Rightarrow> \<lparr> carrier :: 'a set set,
- pop :: ['a  set, 'a set] \<Rightarrow> 'a set, mop :: 'a set \<Rightarrow> 'a set, 
- zero :: 'a set, tp :: ['a  set, 'a set] \<Rightarrow> 'a set, un :: 'a set \<rparr>"
- 
-"qring R I == \<lparr> carrier = set_rcs (b_ag R) I, pop = c_top (b_ag R) I, 
-                mop = c_iop (b_ag R) I, zero = I,
-                tp = rcostOp R I, un = 1\<^sub>r \<uplus>\<^bsub>R\<^esub> I\<rparr>" 
+definition
+  qring ::  "[('a, 'm) Ring_scheme, 'a set] \<Rightarrow> \<lparr> carrier :: 'a set set,
+    pop :: ['a  set, 'a set] \<Rightarrow> 'a set, mop :: 'a set \<Rightarrow> 'a set, 
+    zero :: 'a set, tp :: ['a  set, 'a set] \<Rightarrow> 'a set, un :: 'a set \<rparr>" where
+  "qring R I = \<lparr> carrier = set_rcs (b_ag R) I,
+    pop = c_top (b_ag R) I,
+    mop = c_iop (b_ag R) I,
+    zero = I,
+    tp = rcostOp R I,
+    un = 1\<^sub>r\<^bsub>R\<^esub> \<uplus>\<^bsub>R\<^esub> I\<rparr>" 
 
- syntax 
-  "@QRING" :: "([('a, 'more) Ring_scheme, 'a set] => ('a set) Ring)"
-              (infixl "'/'\<^sub>r" 200) 
-translations
-  "R /\<^sub>r I" == "qring R I"
+abbreviation
+  QRING  (infixl "'/\<^sub>r" 200) where
+  "R /\<^sub>r I == qring R I"
 
 lemma (in Ring) carrier_qring:"ideal R I \<Longrightarrow> 
                                carrier (qring R I) = set_rcs (b_ag R) I"
@@ -4845,9 +4832,9 @@ apply (frule ridmap_ind_bijec)
 apply (simp add: ker_of_idmap)
 done           (** A /\<^sub>r {0\<^sub>A}\<^sub> \<cong> A **)
 
-constdefs
- pj :: "[('a, 'm) Ring_scheme, 'a set] \<Rightarrow> ('a => 'a set)" 
-      "pj R I == \<lambda>x. Pj (b_ag R) I x" 
+definition
+  pj :: "[('a, 'm) Ring_scheme, 'a set] \<Rightarrow> ('a => 'a set)" where
+  "pj R I = (\<lambda>x. Pj (b_ag R) I x)" 
 
  (* pj is projection homomorphism *)
 
@@ -5050,28 +5037,32 @@ done
 
 section "5. Primary ideals, Prime ideals"
 
-constdefs
-  maximal_set::"['a set set, 'a set] \<Rightarrow> bool"
- "maximal_set S mx == mx \<in> S \<and> (\<forall>s\<in>S. mx \<subseteq> s \<longrightarrow> mx = s)" 
+definition
+  maximal_set :: "['a set set, 'a set] \<Rightarrow> bool" where
+  "maximal_set S mx \<longleftrightarrow> mx \<in> S \<and> (\<forall>s\<in>S. mx \<subseteq> s \<longrightarrow> mx = s)" 
 
-constdefs (structure R)
- nilpotent::"[_, 'a] \<Rightarrow> bool"
-  "nilpotent R a == \<exists>(n::nat). a^\<^bsup>R n\<^esup> = \<zero>"
+definition
+  nilpotent :: "[_, 'a] \<Rightarrow> bool" where
+  "nilpotent R a \<longleftrightarrow> (\<exists>(n::nat). a^\<^bsup>R n\<^esup> = \<zero>\<^bsub>R\<^esub>)"
 
- zero_divisor::"[_, 'a] \<Rightarrow> bool"
-  "zero_divisor R a == \<exists>x\<in> carrier R. x \<noteq> \<zero> \<and> x \<cdot>\<^sub>r a = \<zero>"
+definition
+ zero_divisor :: "[_, 'a] \<Rightarrow> bool" where
+  "zero_divisor R a \<longleftrightarrow> (\<exists>x\<in> carrier R. x \<noteq> \<zero>\<^bsub>R\<^esub> \<and> x \<cdot>\<^sub>r\<^bsub>R\<^esub> a = \<zero>\<^bsub>R\<^esub>)"
 
- primary_ideal::"[_, 'a set] \<Rightarrow> bool"
-   "primary_ideal R q == ideal R q \<and> (1\<^sub>r) \<notin> q \<and> 
-   (\<forall>x\<in> carrier R. \<forall>y\<in> carrier R. 
-    x \<cdot>\<^sub>r y \<in> q  \<longrightarrow> (\<exists>n. (npow R x n) \<in> q \<or> y \<in> q))"
+definition
+  primary_ideal :: "[_, 'a set] \<Rightarrow> bool" where
+  "primary_ideal R q \<longleftrightarrow> ideal R q \<and> (1\<^sub>r\<^bsub>R\<^esub>) \<notin> q \<and> 
+    (\<forall>x\<in> carrier R. \<forall>y\<in> carrier R. 
+      x \<cdot>\<^sub>r\<^bsub>R\<^esub> y \<in> q  \<longrightarrow> (\<exists>n. (npow R x n) \<in> q \<or> y \<in> q))"
 
- prime_ideal::"[_, 'a set] \<Rightarrow> bool"
-  "prime_ideal R p == ideal R p \<and> (1\<^sub>r) \<notin> p \<and> (\<forall>x\<in> carrier R. \<forall>y\<in> carrier R. 
-   (x \<cdot>\<^sub>r y \<in> p \<longrightarrow> x \<in> p \<or> y \<in> p))"
+definition
+  prime_ideal :: "[_, 'a set] \<Rightarrow> bool" where
+  "prime_ideal R p \<longleftrightarrow> ideal R p \<and> (1\<^sub>r\<^bsub>R\<^esub>) \<notin> p \<and> (\<forall>x\<in> carrier R. \<forall>y\<in> carrier R.
+    (x \<cdot>\<^sub>r\<^bsub>R\<^esub> y \<in> p \<longrightarrow> x \<in> p \<or> y \<in> p))"
 
- maximal_ideal::"[_, 'a set] \<Rightarrow> bool"
-  "maximal_ideal R mx == ideal R mx \<and> 1\<^sub>r \<notin> mx \<and> 
+definition
+  maximal_ideal :: "[_, 'a set] \<Rightarrow> bool" where
+  "maximal_ideal R mx \<longleftrightarrow> ideal R mx \<and> 1\<^sub>r\<^bsub>R\<^esub> \<notin> mx \<and>
         {J. (ideal R J \<and> mx \<subseteq> J)} = {mx, carrier R}"
 
 lemma (in Ring) maximal_ideal_ideal:"\<lbrakk>maximal_ideal R mx\<rbrakk> \<Longrightarrow> ideal R mx" 
@@ -5342,8 +5333,8 @@ apply (rule equalityI)
  apply (simp add:whole_ideal)
 done
 
-constdefs (structure R)
- ideal_Int::"[_, 'a set set] \<Rightarrow> 'a set"
+definition
+  ideal_Int :: "[_, 'a set set] \<Rightarrow> 'a set" where
   "ideal_Int R S == \<Inter> S"
 
 lemma (in Ring) ideal_Int_ideal:"\<lbrakk>S \<subseteq> {I. ideal R I}; S\<noteq>{}\<rbrakk> \<Longrightarrow> 
@@ -5395,26 +5386,22 @@ done
 text{* This proves that (sum_pr_ideals R f n) is the smallest ideal containing
  f ` (Nset n) *} 
 
-consts
- ideal_n_prod::"[('a, 'm) Ring_scheme, nat,  nat \<Rightarrow> 'a set] \<Rightarrow> 'a set"
-
-primrec
+primrec ideal_n_prod::"[('a, 'm) Ring_scheme, nat,  nat \<Rightarrow> 'a set] \<Rightarrow> 'a set"
+where
   ideal_n_prod0: "ideal_n_prod R 0 J = J 0"
-  ideal_n_prodSn: "ideal_n_prod R (Suc n) J = 
+| ideal_n_prodSn: "ideal_n_prod R (Suc n) J = 
                           (ideal_n_prod R n J) \<diamondsuit>\<^sub>r\<^bsub>R\<^esub> (J (Suc n))"
 
-syntax
- "@IDNPROD"::"[('a, 'm) Ring_scheme, nat,  nat \<Rightarrow> 'a set] \<Rightarrow> 'a set"
-          ("(3i\<Pi>\<^bsub>_,_\<^esub> _)" [98,98,99]98)
-translations
-  "i\<Pi>\<^bsub>R,n\<^esub> J" == "ideal_n_prod R n J" 
+abbreviation
+  IDNPROD  ("(3i\<Pi>\<^bsub>_,_\<^esub> _)" [98,98,99]98) where
+  "i\<Pi>\<^bsub>R,n\<^esub> J == ideal_n_prod R n J" 
 
-consts
+primrec
   ideal_pow :: "['a set, ('a, 'more) Ring_scheme, nat] \<Rightarrow> 'a set"
                ("(3_/ \<^bsup>\<diamondsuit>_ _\<^esup>)" [120,120,121]120)
-primrec
- ip0:  "I \<^bsup>\<diamondsuit>R 0\<^esup> = carrier R"
- ipSuc:  "I \<^bsup>\<diamondsuit>R (Suc n)\<^esup> = I \<diamondsuit>\<^sub>r\<^bsub>R\<^esub> (I \<^bsup>\<diamondsuit>R n\<^esup>)"
+where
+  ip0:  "I \<^bsup>\<diamondsuit>R 0\<^esup> = carrier R"
+| ipSuc:  "I \<^bsup>\<diamondsuit>R (Suc n)\<^esup> = I \<diamondsuit>\<^sub>r\<^bsub>R\<^esub> (I \<^bsup>\<diamondsuit>R n\<^esup>)"
 
 lemma (in Ring) prod_mem_prod_ideals:"\<lbrakk>ideal R I; ideal R J; i \<in> I; j \<in> J\<rbrakk> \<Longrightarrow> 
                             i \<cdot>\<^sub>r j \<in> (I \<diamondsuit>\<^sub>r J)" 
@@ -5680,9 +5667,9 @@ lemma (in Ring) ideal_n_prod_prime:"\<lbrakk>prime_ideal R P;
 apply (simp add:ideal_n_prod_primeTr)
 done
 
-constdefs (structure R)
- ppa::"[_, nat \<Rightarrow> 'a set, 'a set, nat] \<Rightarrow> (nat \<Rightarrow> 'a)"
-  "ppa R P A i l == SOME x. x \<in> A \<and> x \<in> (P (skip i l)) \<and> x \<notin> P i"  
+definition
+  ppa::"[_, nat \<Rightarrow> 'a set, 'a set, nat] \<Rightarrow> (nat \<Rightarrow> 'a)" where
+  "ppa R P A i l = (SOME x. x \<in> A \<and> x \<in> (P (skip i l)) \<and> x \<notin> P i)"  
      (** Note (ppa R P A) is used to prove prime_ideal_cont1,
          some element x of A such that x \<in> P j for (i \<noteq> j) and x \<notin> P i **)
 
@@ -5900,9 +5887,9 @@ lemma (in Ring) prime_nprod_exc:"\<lbrakk>prime_ideal R P; \<forall>i \<le> n. f
                 \<forall>l \<le> n. f l \<notin> P\<rbrakk> \<Longrightarrow> nprod R f n \<notin> P"
 by (simp add:nprod_excTr)
 
-constdefs (structure R)
- nilrad::"_ \<Rightarrow> 'a set"
-  "nilrad R == {x. x \<in> carrier R \<and> nilpotent R x}" 
+definition
+  nilrad :: "_ \<Rightarrow> 'a set" where
+  "nilrad R = {x. x \<in> carrier R \<and> nilpotent R x}" 
 
 lemma (in Ring) id_nilrad_ideal:"ideal R (nilrad R)"
 apply (cut_tac ring_is_ag)
@@ -5931,9 +5918,9 @@ apply (simp add:nilrad_def nilpotent_def, (erule conjE)+)
         apply (simp add:ring_times_x_0, blast)
 done
 
-constdefs (structure R)
- rad_ideal :: "[_, 'a set ] \<Rightarrow> 'a set"
-  "rad_ideal R I == {a. a \<in> carrier R \<and> nilpotent (qring R I) ((pj R I) a)}"
+definition
+  rad_ideal :: "[_, 'a set ] \<Rightarrow> 'a set" where
+  "rad_ideal R I = {a. a \<in> carrier R \<and> nilpotent (qring R I) ((pj R I) a)}"
 
 lemma (in Ring) id_rad_invim:"ideal R I \<Longrightarrow> 
        rad_ideal R I = (rInvim R (qring R I) (pj R I ) (nilrad (qring R I)))"
@@ -6043,9 +6030,9 @@ apply (frule npow_notin_prime, assumption+)
 apply blast
 done
        
-constdefs (structure R)
- mul_closed_set::"[_, 'a set ] \<Rightarrow> bool"
- "mul_closed_set R S == S \<subseteq> carrier R \<and> (\<forall>s\<in>S. \<forall>t\<in>S. s \<cdot>\<^sub>r t \<in> S)"
+definition
+  mul_closed_set::"[_, 'a set ] \<Rightarrow> bool" where
+  "mul_closed_set R S \<longleftrightarrow> S \<subseteq> carrier R \<and> (\<forall>s\<in>S. \<forall>t\<in>S. s \<cdot>\<^sub>r\<^bsub>R\<^esub> t \<in> S)"
 
 locale Idomain = Ring +
        assumes idom: 
@@ -6074,9 +6061,9 @@ apply (cut_tac  f_is_ring)
         simp add:Ring.ring_tOp_commute[of K x x''] Ring.ring_r_one[of K])
 done
 
-constdefs (structure K)
-  invf:: "[_, 'a] \<Rightarrow> 'a"
-  "invf K x == THE y. y \<in> carrier K \<and> y \<cdot>\<^sub>r x = 1\<^sub>r"
+definition
+  invf :: "[_, 'a] \<Rightarrow> 'a" where
+  "invf K x = (THE y. y \<in> carrier K \<and> y \<cdot>\<^sub>r\<^bsub>K\<^esub> x = 1\<^sub>r\<^bsub>K\<^esub>)"
 
 lemma (in Corps) invf_inv:"x \<in> carrier K - {\<zero>} \<Longrightarrow>
                 (invf K x) \<in> carrier K \<and> (invf K x) \<cdot>\<^sub>r x = 1\<^sub>r " 
@@ -6090,21 +6077,18 @@ done
 
 
 
-constdefs (structure K)
-  npowf   ::  "_  \<Rightarrow> 'a \<Rightarrow> int  \<Rightarrow> 'a"
-  "npowf K x n == 
-        if 0 \<le> n then npow K x (nat n) else npow K (invf K x) (nat (- n))"
+definition
+  npowf :: "_  \<Rightarrow> 'a \<Rightarrow> int  \<Rightarrow> 'a" where
+  "npowf K x n =
+    (if 0 \<le> n then npow K x (nat n) else npow K (invf K x) (nat (- n)))"
   
-syntax
-  "@NPOWF" ::  "['a, _, int] \<Rightarrow>  'a" 
-       ("(3_\<^bsub>_\<^esub>\<^bsup>_\<^esup>)" [77,77,78]77)
+abbreviation
+  NPOWF ::  "['a, _, int] \<Rightarrow>  'a"  ("(3_\<^bsub>_\<^esub>\<^bsup>_\<^esup>)" [77,77,78]77) where
+  "a\<^bsub>K\<^esub>\<^bsup>n\<^esup> == npowf K a n" 
  
-  "@IOP"   :: "['a, _] \<Rightarrow> 'a"
-       ("(_\<^bsup>\<hyphen> _\<^esup>)" [87,88]87) 
-  
-translations
-  "a\<^bsub>K\<^esub>\<^bsup>n\<^esup>" == "npowf K a n " 
-  "a\<^bsup>\<hyphen>K\<^esup>" == "invf K a"
+abbreviation
+  IOP :: "['a, _] \<Rightarrow> 'a" ("(_\<^bsup>\<hyphen> _\<^esup>)" [87,88]87) where
+  "a\<^bsup>\<hyphen>K\<^esup> == invf K a"
 
 lemma (in Idomain) idom_is_ring:"Ring R"
 by unfold_locales
@@ -6861,9 +6845,9 @@ apply (erule exE, erule conjE)
  apply (frule_tac B = mx in subsetD[of "R \<diamondsuit>\<^sub>p a" _ "a"], assumption, blast)
 done
 
-constdefs (structure R)
- local_ring :: "_ \<Rightarrow> bool"
- "local_ring R == Ring R \<and> \<not> zeroring R \<and> card {mx. maximal_ideal R mx} = 1"
+definition
+  local_ring :: "_ \<Rightarrow> bool" where
+  "local_ring R == Ring R \<and> \<not> zeroring R \<and> card {mx. maximal_ideal R mx} = 1"
 
 lemma (in Ring) local_ring_diff:"\<lbrakk>\<not> zeroring R; ideal R mx; mx \<noteq> carrier R;
   \<forall>a\<in> (carrier R - mx). Unit R a \<rbrakk> \<Longrightarrow> local_ring R \<and> maximal_ideal R mx" 
@@ -6952,10 +6936,10 @@ apply (frule local_ring_diff[of "mx"], assumption)
  apply simp
 done
 
-constdefs (structure R)
- J_rad ::"_ \<Rightarrow> 'a set"
-  "J_rad R == if (zeroring R) then (carrier R) else
-                 \<Inter> {mx. maximal_ideal R mx}" 
+definition
+  J_rad ::"_ \<Rightarrow> 'a set" where
+  "J_rad R = (if (zeroring R) then (carrier R) else
+                 \<Inter> {mx. maximal_ideal R mx})" 
   (** if zeroring R then \<Inter> {mx. maximal_ideal R mx} is UNIV, hence
       we restrict UNIV to carrier R **)
 

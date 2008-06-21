@@ -52,13 +52,10 @@ mdl :: "[('a, 'b, 'm) Module_scheme, 'a set] \<Rightarrow> ('a, 'b) Module"
  "mdl M H == \<lparr>carrier = H, pop = pop M, mop = mop M, zero = zero M,
     sprod = \<lambda>a. \<lambda>x\<in>H. sprod M a x\<rparr>" 
 
-syntax
- "@MODULE"::"('b, 'd) Ring_scheme \<Rightarrow> ('a, 'b, 'c) Module_scheme \<Rightarrow> bool"
-                   (infixl "module" 58)
-
-
-translations
- "R module M" == "Module M R"
+abbreviation
+  MODULE :: "('b, 'd) Ring_scheme \<Rightarrow> ('a, 'b, 'c) Module_scheme \<Rightarrow> bool"
+    (infixl "module" 58) where
+ "R module M == Module M R"
  
 
 lemma (in Module) module_is_ag:"aGroup M"
@@ -784,12 +781,11 @@ constdefs
  mcompose::"[('a, 'r, 'm1) Module_scheme, 'b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c" 
     "mcompose M g f == compose (carrier M) g f"
 
-syntax 
- "@MISOM" ::"[('a, 'b, 'm1) Module_scheme, ('b, 'm) Ring_scheme,
+abbreviation
+  MISOM :: "[('a, 'b, 'm1) Module_scheme, ('b, 'm) Ring_scheme,
               ('c, 'b, 'm2) Module_scheme] \<Rightarrow> bool"
-             ("(3_ \<cong>\<^bsub>_\<^esub> _)" [82,82,83]82)
-translations
- "M \<cong>\<^bsub>R\<^esub> N" == "misomorphic R M N"
+             ("(3_ \<cong>\<^bsub>_\<^esub> _)" [82,82,83]82) where
+  "M \<cong>\<^bsub>R\<^esub> N == misomorphic R M N"
 
 lemma (in Module) minjec_inj:"\<lbrakk>R module N; injec\<^bsub>M,N\<^esub> f\<rbrakk> \<Longrightarrow>
                             inj_on f (carrier M)" 
@@ -1250,15 +1246,15 @@ constdefs
  "sub_mr_set_cos M H N == {X. \<exists>n\<in>N. X = n \<uplus>\<^bsub>M\<^esub> H}" 
  (* N/H, where N is a submodule *)
 
-syntax 
-  "@QMODULE" :: "[('a, 'r, 'more) Module_scheme, 'a set] \<Rightarrow>
-                         ('a set, 'r) Module"  (infixl "'/'\<^sub>m" 200)
-syntax
-  "@SUBMRSET" ::"['a set, ('a, 'r, 'more) Module_scheme, 'a set] \<Rightarrow>
-                            'a set set"  ("(3_/ \<^sub>s'/'\<^sub>_/ _)" [82,82,83]82)
-translations
-  "M /\<^sub>m H" == "qmodule M H"
-  "N \<^sub>s/\<^sub>M H" == "sub_mr_set_cos M H N"
+abbreviation
+  QMODULE :: "[('a, 'r, 'more) Module_scheme, 'a set] \<Rightarrow>
+                         ('a set, 'r) Module"  (infixl "'/'\<^sub>m" 200) where
+  "M /\<^sub>m H == qmodule M H"
+
+abbreviation
+  SUBMRSET ::"['a set, ('a, 'r, 'more) Module_scheme, 'a set] \<Rightarrow>
+                            'a set set"  ("(3_/ \<^sub>s'/'\<^sub>_/ _)" [82,82,83]82) where
+  "N \<^sub>s/\<^sub>M H == sub_mr_set_cos M H N"
 
 lemma (in Module) qmodule_carr:"submodule R M H \<Longrightarrow>
             carrier (qmodule M H) = set_mr_cos M H"
@@ -1556,13 +1552,11 @@ constdefs
        
  "indmhom R M N f == \<lambda>X\<in> (set_mr_cos M (ker\<^bsub>M,N\<^esub> f)). f ( SOME x. x \<in> X)"
 
-syntax 
- "@INDMHOM"::"['a \<Rightarrow> 'b, ('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
+abbreviation
+  INDMHOM :: "['a \<Rightarrow> 'b, ('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
                 ('b, 'r, 'm2) Module_scheme]  \<Rightarrow>  ('a set  \<Rightarrow> 'b )" 
-  ("(4_\<^sup>\<flat>\<^bsub>_ _, _\<^esub>)" [92,92,92,93]92) 
-
-translations
-    "f\<^sup>\<flat>\<^bsub>R M,N\<^esub>" == "indmhom R M N f"
+    ("(4_\<^sup>\<flat>\<^bsub>_ _, _\<^esub>)" [92,92,92,93]92) where
+  "f\<^sup>\<flat>\<^bsub>R M,N\<^esub> == indmhom R M N f"
 
 
 lemma (in Module) indmhom_someTr:"\<lbrakk>R module N; f \<in> mHom R M N; 
@@ -1944,11 +1938,10 @@ constdefs
                                                    ('a set \<Rightarrow> 'a set)"
  "mQmp M H N == \<lambda>X\<in> set_mr_cos M H. {z. \<exists> x \<in> X. \<exists> y \<in> N. (y \<plusminus>\<^bsub>M\<^esub> x = z)}"
              (* H \<subseteq> N *)
-syntax
-   "@MQP" :: "[('a, 'b) Module, 'a set, 'a set] \<Rightarrow> ('a set \<Rightarrow> 'a set)"
-               ("(3Mp\<^bsub>_  _,_\<^esub>)" [82,82,83]82)
-translations
-   "Mp\<^bsub>M H,N\<^esub>" == "mQmp M H N"
+
+abbreviation
+  MQP  ("(3Mp\<^bsub>_  _,_\<^esub>)" [82,82,83]82) where
+  "Mp\<^bsub>M H,N\<^esub> == mQmp M H N"
 
  (* "\<lbrakk> R Module M; H \<subseteq> N \<rbrakk> \<Longrightarrow> Mp\<^bsub>M H,N\<^esub> \<in> rHom (M /\<^sub> m H) (M /\<^sub>m N)"  *)
 
@@ -2353,18 +2346,6 @@ apply (rule conjI)
         assumption+)
 apply blast
 done
-
-(*
-constdefs
- sSum ::"[('a, 'r, 'm1) Module_scheme, 'a set, 'a set] \<Rightarrow> 'a set"
- "sSum M H1 H2 == {x. \<exists>h1\<in>H1. \<exists>h2\<in>H2. x = h1 \<plusminus>\<^bsub>M\<^esub> h2}"
-
-syntax
- "@SSUM":: "['a set, ('a, 'r, 'm1) Module_scheme, 'a set] \<Rightarrow> 'a set"
-             ("(3_/ \<plusminus>\<^bsub>_\<^esub>/ _)" [60,60,61]60)
-
-translations
- "H1 \<plusminus>\<^bsub>M\<^esub> H2" == "sSum M H1 H2" *)
 
 lemma (in Module) sSum_cont_H:"\<lbrakk>submodule R M H; submodule R M K\<rbrakk> \<Longrightarrow>
                      H \<subseteq>  H \<minusplus> K"
@@ -3495,12 +3476,9 @@ constdefs
        'r set] \<Rightarrow> 'a set"
  "smodule_ideal_coeff R M A == linear_span R M A (carrier M)"
 
-syntax
- "@SMLIDEALCOEFF" ::"['r set, ('r, 'm) Ring_scheme,
- ('a, 'r, 'm1) Module_scheme] \<Rightarrow> 'a set" ("(3_/ \<odot>\<^bsub>_\<^esub> _)" [64,64,65]64)
-
-translations
- "A \<odot>\<^bsub>R\<^esub> M" == "smodule_ideal_coeff R M A"
+abbreviation
+  SMLIDEALCOEFF  ("(3_/ \<odot>\<^bsub>_\<^esub> _)" [64,64,65]64) where
+  "A \<odot>\<^bsub>R\<^esub> M == smodule_ideal_coeff R M A"
 
 lemma (in Module) smodule_ideal_coeff_is_Submodule:"ideal R A  \<Longrightarrow>
             submodule R M (A \<odot>\<^bsub>R\<^esub> M)"
@@ -3527,12 +3505,9 @@ constdefs
   \<Rightarrow> 'r set" ("(Ann\<^bsub>_\<^esub> _)" [82,83]82)
  "Ann\<^bsub>R\<^esub> M == quotient_of_submodules R M {\<zero>\<^bsub>M\<^esub>} (carrier M)"
 
-syntax
- "@QOFSUBMDS" :: "['a set, ('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
-            'a set] \<Rightarrow> 'r set" ("(4_ \<^bsub>_\<ddagger>_\<^esub> _)" [82,82,82,83]82)
-
-translations
- "N \<^bsub>R\<ddagger>M\<^esub> P" == "quotient_of_submodules R M N P"
+abbreviation
+  QOFSUBMDS  ("(4_ \<^bsub>_\<ddagger>_\<^esub> _)" [82,82,82,83]82) where
+  "N \<^bsub>R\<ddagger>M\<^esub> P == quotient_of_submodules R M N P"
 
 lemma (in Module) quotient_of_submodules_inc_0:
      "\<lbrakk>submodule R M P; submodule R M Q\<rbrakk> \<Longrightarrow> \<zero>\<^bsub>R\<^esub> \<in> (P \<^bsub>R\<ddagger>M\<^esub> Q)"
@@ -3882,111 +3857,7 @@ constdefs
     ('a, 'r, 'r set) bModule" 
  "r_qr_bmod R A M == \<lparr>carrier = carrier M, pop = pop M, mop = mop M, 
   zero = zero M, sc_l = sprod M, sc_r = cos_scr R A M \<rparr>" *)
- (* Remark. A should be an ideal contained in Ann\<^sub>R M. *) (*
-syntax 
- "@RQBMOD" :: "[('a, 'r, 'm1) Module_scheme, ('r, 'm) Ring_scheme,
-  'r set] \<Rightarrow>  ('a, 'r, 'r set) bModule" ("(3_\<^bsub>_ _\<^esub>)" [84,84,85]84) 
-translations
- "M\<^bsub>R A\<^esub>" == "r_qr_bmod R A M"
-
-lemma  r_qr_Mmodule:"\<lbrakk>Ring R; R module M; A \<subseteq> Ann\<^bsub>R\<^esub> M; ideal R A\<rbrakk> \<Longrightarrow> 
-                         bModule (r_qr_bmod R A M) R (R /\<^sub>r A)"
-apply (simp add:bModule_def)
-apply (simp add:r_qr_bmod_def)
-apply (simp add:qring_ring)
-apply (subgoal_tac " agroup
-        \<lparr>carrier = carrier M, pOp = pOp M, mOp = mOp M, zero = 0\<^sub>M,
-           sprodl = sprod M, sprodr = cos_scr R A M\<rparr>") apply simp
-prefer 2 apply (frule module_is_ag [of "R" "M"], assumption+)
- apply (simp add:agroup_def) apply (fold agroup_def)
- apply (rule impI) apply (rule ballI) apply (simp add:ag_r_zero)
- apply (thin_tac " agroup
-        \<lparr>carrier = carrier M, pOp = pOp M, mOp = mOp M, zero = 0\<^sub>M,
-           sprodl = sprod M, sprodr = cos_scr R A M\<rparr>")
-apply (rule conjI)
-apply (simp add:Module_def) 
-apply (rule conjI)
-apply (simp add:Module_def)
-apply (rule conjI) apply (simp add:qring_def)
- apply (subgoal_tac "set_r_cos (b_ag R) A = set_ar_cos R A") apply simp
- apply (rule bivar_func_test) apply (rule ballI)+
- apply (thin_tac "set_r_cos (b_ag R) A = set_ar_cos R A")
- apply (simp add:set_ar_cos_def)
- apply (subgoal_tac "\<forall>aa\<in>carrier R. a = aa \<uplus>\<^sub>R A \<longrightarrow>
-                             cos_scr R A M a b \<in> carrier M")
- apply blast apply (thin_tac "\<exists>aa\<in>carrier R. a = aa \<uplus>\<^sub>R A")
- apply (rule ballI) apply (rule impI) apply simp
- apply (rename_tac X m a)
- apply (frule_tac X = "a \<uplus>\<^sub>R A" and a = a and m = m in 
-               cos_scr_welldef[of "R" "M" "A"], assumption+)
- apply (simp add:set_ar_cos_def) apply blast
- apply assumption apply simp apply assumption apply simp
- apply (simp add:sprod_mem)
- apply (simp add:set_ar_cos_def)
- apply (frule ring_is_ag)
- apply (frule b_ag_group)
- apply (simp add:ag_carrier_carrier [THEN sym])
- apply (simp add:ar_coset_def set_r_cos_def)
-apply (rule ballI)+
- apply (frule ring_is_ag)
- apply (frule b_ag_group)
- apply (simp add:qring_def)
-apply (subgoal_tac "set_r_cos (b_ag R) A = set_ar_cos R A") apply simp
-apply (rename_tac X Y m n)
- apply (subgoal_tac "\<exists>x\<in>carrier R. X = x \<uplus>\<^sub>R A")
- apply (subgoal_tac "\<exists>y\<in>carrier R. Y = y \<uplus>\<^sub>R A")
- apply (subgoal_tac "\<forall>x \<in> carrier R. \<forall>y\<in> carrier R. X = x \<uplus>\<^sub>R A \<and> Y = y \<uplus>\<^sub>R A
-  \<longrightarrow>     cos_scr R A M (rcostOp R A X Y) m =
-          cos_scr R A M X (cos_scr R A M Y m) \<and>
-          cos_scr R A M (costOp (b_ag R) A X Y) m =
-          cos_scr R A M X m +\<^sub>M (cos_scr R A M Y m) \<and>
-          cos_scr R A M X ( m +\<^sub>M n) =
-          cos_scr R A M X m +\<^sub>M (cos_scr R A M X n) \<and>
-          cos_scr R A M (1\<^sub>R \<uplus>\<^sub>R A) m = m")
- apply blast
- apply (thin_tac "\<exists>x\<in>carrier R. X = x \<uplus>\<^sub>R A")
- apply (thin_tac "\<exists>y\<in>carrier R. Y = y \<uplus>\<^sub>R A")
- apply (rule ballI)+
- apply (rule impI) apply (erule conjE) apply simp
- apply (subst rcostOp, assumption+)
- apply (frule_tac x = x and y = y in ring_tOp_closed, assumption+)
- apply (simp add:cos_scr_welldef)
-apply (subgoal_tac "costOp (b_ag R) A (x \<uplus>\<^sub>R A) (y \<uplus>\<^sub>R A) = (x +\<^sub>R y) \<uplus>\<^sub>R A")
- apply simp
-prefer 3 apply (simp add:set_ar_cos_def) 
-prefer 3 apply (simp add:set_ar_cos_def) 
-prefer 3 apply (simp add:set_ar_cos_def)
- apply (simp add:ag_carrier_carrier [THEN sym]) 
- apply (simp add:set_r_cos_def ar_coset_def)
-prefer 2
- apply (simp add:ag_carrier_carrier [THEN sym])
- apply (simp add:ar_coset_def) apply (simp add:agop_gop [THEN sym])
- apply (rule  costOpwelldef [THEN sym], assumption+)
- apply (simp add:ideal_def) apply (erule conjE)
- apply (simp add:asubg_nsubg) apply assumption+
-apply (frule_tac x = x and y = y in ag_pOp_closed[of "R"], assumption+)
- apply (frule module_is_ag [of "R" "M"], assumption)
- apply (frule_tac x = m and y = n in ag_pOp_closed [of "M"], assumption+)
- apply (frule_tac a = y and m = m in sprod_mem [of "R" "M"], assumption+)
- apply (frule ring_one [of "R"]) 
- apply (simp add:cos_scr_welldef)
- apply (frule_tac X = "x \<cdot>\<^sub>R y \<uplus>\<^sub>R A" and a = "x \<cdot>\<^sub>R y" and m = m in 
-                        cos_scr_welldef [of "R" "M" "A"], assumption+)
- apply (simp add:set_ar_cos_def) apply blast apply assumption apply simp
- apply assumption apply simp
- apply (simp add:sprod_assoc)
- apply (frule ring_one [of "R"])
- apply (frule_tac X = "(x +\<^sub>R y) \<uplus>\<^sub>R A" and a = "(x +\<^sub>R y)" and m = m in 
-                        cos_scr_welldef [of "R" "M" "A"], assumption+)
- apply (simp add:set_ar_cos_def) apply blast
- apply simp+
- apply (simp add:sprod_distrib1)
- apply (simp add:sprod_distrib2)
-apply (frule_tac X = "1\<^sub>R \<uplus>\<^sub>R A" and a = "1\<^sub>R" and m = m in 
-                        cos_scr_welldef [of "R" "M" "A"], assumption+)
- apply (simp add:set_ar_cos_def) apply blast apply assumption apply simp+
- apply (simp add:sprod_one)
-done    *)
+ (* Remark. A should be an ideal contained in Ann\<^sub>R M. *)
 
 constdefs
  faithful::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme]
@@ -4009,12 +3880,9 @@ constdefs
               (*(infixl 70)*) 
  "fGOver M R ==  \<exists>H. finite_generator R M H"
 
-syntax 
- "@FGENOVER"::"[('a, 'r, 'm1) Module_scheme, ('r, 'm) Ring_scheme] \<Rightarrow>  bool" 
-              (infixl "fgover" 70)
-
-translations
- "M fgover R" == "fGOver M R"
+abbreviation
+  FGENOVER  (infixl "fgover" 70) where
+  "M fgover R == fGOver M R"
 
 lemma (in Module) h_in_linear_span:"\<lbrakk>H \<subseteq> carrier M; h \<in> H\<rbrakk> \<Longrightarrow>
                                    h \<in> linear_span R M (carrier R) H"

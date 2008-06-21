@@ -255,24 +255,29 @@ apply (erule disjE) apply simp
  apply simp
 done
 
-constdefs
- ordinal_number :: "'a Order  \<Rightarrow> 'a Order set"
- "ordinal_number S == {X. Worder X \<and> ord_equiv X S}"
+definition
+  ordinal_number :: "'a Order  \<Rightarrow> 'a Order set" where
+  "ordinal_number S = {X. Worder X \<and> ord_equiv X S}"
 
- ODnums :: "'a Order set set"
- "ODnums == {X. \<exists>S. Worder S \<and> X = ordinal_number S}"
+definition
+  ODnums :: "'a Order set set" where
+  "ODnums = {X. \<exists>S. Worder S \<and> X = ordinal_number S}"
 
- ODord :: "['a Order set, 'a Order set] \<Rightarrow> bool" (infix "\<sqsubset>" 60)
- "X \<sqsubset> Y == \<exists>x \<in> X. \<exists>y \<in> Y. (\<exists>c\<in>carrier y. ord_equiv x (Iod y (segment y c)))"
+definition
+  ODord :: "['a Order set, 'a Order set] \<Rightarrow> bool" (infix "\<sqsubset>" 60) where
+  "X \<sqsubset> Y \<longleftrightarrow> (\<exists>x \<in> X. \<exists>y \<in> Y. (\<exists>c\<in>carrier y. ord_equiv x (Iod y (segment y c))))"
 
- ODord_le::"['a Order set, 'a Order set] \<Rightarrow> bool" (infix "\<sqsubseteq>" 60)
- "X \<sqsubseteq> Y == X = Y \<or> ODord X Y"
+definition
+  ODord_le :: "['a Order set, 'a Order set] \<Rightarrow> bool" (infix "\<sqsubseteq>" 60) where
+  "X \<sqsubseteq> Y \<longleftrightarrow> X = Y \<or> ODord X Y"
 
- ODrel :: "((('a Order) set) * (('a Order) set)) set"
- "ODrel == {Z. Z \<in> ODnums \<times> ODnums \<and> ODord_le (fst Z) (snd Z)}" 
+definition
+  ODrel :: "((('a Order) set) * (('a Order) set)) set" where
+  "ODrel = {Z. Z \<in> ODnums \<times> ODnums \<and> ODord_le (fst Z) (snd Z)}" 
 
- ODnods :: "('a Order set) Order"
- "ODnods == \<lparr>carrier = ODnums, rel = ODrel \<rparr>"
+definition
+  ODnods :: "('a Order set) Order" where
+  "ODnods = \<lparr>carrier = ODnums, rel = ODrel \<rparr>"
 
 lemma Worder_ord_equivTr:"\<lbrakk>Worder S; Worder T\<rbrakk> \<Longrightarrow>
        ord_equiv S T = (\<exists>f. ord_isom S T f)"
@@ -700,10 +705,10 @@ apply (simp add:ODnods_less,
          blast)
 done
 
-constdefs
- ODNmap :: "'a Order \<Rightarrow> ('a Order) set \<Rightarrow> 'a"
- "ODNmap D y == SOME z. (z \<in> carrier D \<and> 
-                        (\<forall>Y\<in>y. ord_equiv Y (Iod D (segment D z))))" 
+definition
+  ODNmap :: "'a Order \<Rightarrow> ('a Order) set \<Rightarrow> 'a" where
+  "ODNmap D y = (SOME z. (z \<in> carrier D \<and> 
+                        (\<forall>Y\<in>y. ord_equiv Y (Iod D (segment D z)))))" 
 
 lemma ODNmap_mem:"\<lbrakk>Worder D; x = ordinal_number D; y \<in> ODnums; ODord y x\<rbrakk> \<Longrightarrow> 
       ODNmap D y \<in> carrier D \<and> 
@@ -942,15 +947,17 @@ done
 
 section "2. Pre"    (* pre elements *)
 
-constdefs (structure D)
-  ExPre :: "_ \<Rightarrow> 'a \<Rightarrow> bool"
-   "ExPre D a == \<exists>x. (x \<in> carrier D \<and> x \<prec> a 
-                      \<and> \<not> (\<exists>y\<in>carrier D. (x \<prec> y \<and> y \<prec> a)))" 
+definition
+  ExPre :: "_ \<Rightarrow> 'a \<Rightarrow> bool" where
+  "ExPre D a \<longleftrightarrow> (\<exists>x. x \<in> carrier D \<and> x \<prec>\<^bsub>D\<^esub> a 
+                      \<and> \<not> (\<exists>y\<in>carrier D. x \<prec>\<^bsub>D\<^esub> y \<and> y \<prec>\<^bsub>D\<^esub> a))" 
      (* exists pre element *)
-  Pre :: "[_ ,  'a] \<Rightarrow> 'a" 
-   "Pre D a == SOME x. (x \<in> carrier D \<and> 
-                           x \<prec> a \<and>
-                         \<not> (\<exists>y\<in>carrier D. (x \<prec> y \<and> y \<prec> a)))"
+
+definition
+  Pre :: "[_ ,  'a] \<Rightarrow> 'a" where
+  "Pre D a = (SOME x. x \<in> carrier D \<and> 
+                           x \<prec>\<^bsub>D\<^esub> a \<and>
+                         \<not> (\<exists>y\<in>carrier D. x \<prec>\<^bsub>D\<^esub> y \<and> y \<prec>\<^bsub>D\<^esub> a))"
      (* Pre element of a *)
 
 lemma (in Order) Pre_mem:"\<lbrakk>a \<in> carrier D; ExPre D a\<rbrakk> \<Longrightarrow>
@@ -1163,9 +1170,9 @@ done
 
 section "4. ordered_set2. Lemmas to prove Zorn's lemma "
  
-constdefs (structure D)
-  adjunct_ord ::"[_ , 'a] \<Rightarrow> _"
-  "adjunct_ord D a == D \<lparr>carrier := carrier D \<union> {a},
+definition
+  adjunct_ord ::"[_ , 'a] \<Rightarrow> _" where
+  "adjunct_ord D a = D \<lparr>carrier := carrier D \<union> {a},
                        rel := {(x,y). (x, y) \<in> rel D \<or> 
                                      (x \<in> (carrier D \<union> {a}) \<and> y = a)}\<rparr> " 
 
@@ -1527,29 +1534,35 @@ done
  
 section "5. Zorn's lemma"
 
-constdefs (structure D)
- Chain :: "_ \<Rightarrow> 'a set \<Rightarrow> bool"
- "Chain D C == C \<subseteq> carrier D \<and> Torder (Iod D C)" 
- upper_bound :: "[_, 'a set, 'a] \<Rightarrow> bool"
-   ("(3ub\<index>/ _/ _)" [100,101]100)
- "ub S b == b \<in> (carrier D) \<and> (\<forall>s\<in>S. s \<preceq> b)" 
+definition
+  Chain :: "_ \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "Chain D C \<longleftrightarrow> C \<subseteq> carrier D \<and> Torder (Iod D C)" 
 
- "inductive_set":: "_ \<Rightarrow> bool"
- "inductive_set D == \<forall>C. (Chain D C \<longrightarrow> (\<exists>b. ub C b))"
+definition
+  upper_bound :: "[_, 'a set, 'a] \<Rightarrow> bool"
+    ("(3ub\<index>/ _/ _)" [100,101]100) where
+  "ub\<^bsub>D\<^esub> S b \<longleftrightarrow> b \<in> carrier D \<and> (\<forall>s\<in>S. s \<preceq>\<^bsub>D\<^esub> b)" 
 
- maximal_element::"[_, 'a] \<Rightarrow> bool"
-         ("(maximal\<index>/ _)" [101]100)
- "maximal m == m \<in> carrier D \<and> (\<forall>b\<in>carrier D. m \<preceq> b \<longrightarrow> m = b)"
+definition
+  "inductive_set" :: "_ \<Rightarrow> bool" where
+  "inductive_set D \<longleftrightarrow> (\<forall>C. (Chain D C \<longrightarrow> (\<exists>b. ub\<^bsub>D\<^esub> C b)))"
 
- upper_bounds::"[_, 'a set] \<Rightarrow> 'a set"
- "upper_bounds D H == {x. ub H x}"
+definition
+  maximal_element :: "[_, 'a] \<Rightarrow> bool"  ("(maximal\<index>/ _)" [101]100) where
+  "maximal\<^bsub>D\<^esub> m \<longleftrightarrow> m \<in> carrier D \<and> (\<forall>b\<in>carrier D. m \<preceq>\<^bsub>D\<^esub> b \<longrightarrow> m = b)"
 
- Sup::"[_, 'a set] \<Rightarrow> 'a"
- "Sup D X == THE x. minimum_elem D (upper_bounds D X) x"
+definition
+  upper_bounds::"[_, 'a set] \<Rightarrow> 'a set" where
+  "upper_bounds D H = {x. ub\<^bsub>D\<^esub> H x}"
 
- S_inductive_set::"_ \<Rightarrow> bool"
- "S_inductive_set D == (\<forall>C. Chain D C \<longrightarrow> 
-         (\<exists>x\<in>carrier D. minimum_elem D (upper_bounds D C) x))" 
+definition
+  Sup :: "[_, 'a set] \<Rightarrow> 'a" where
+  "Sup D X = (THE x. minimum_elem D (upper_bounds D X) x)"
+
+definition
+  S_inductive_set :: "_ \<Rightarrow> bool" where
+  "S_inductive_set D \<longleftrightarrow> (\<forall>C. Chain D C \<longrightarrow> 
+    (\<exists>x\<in>carrier D. minimum_elem D (upper_bounds D C) x))" 
 
 lemma (in Order) mem_upper_bounds:"\<lbrakk>X \<subseteq> carrier D; b \<in> carrier D; 
                  \<forall>x\<in>X. x \<preceq> b\<rbrakk> \<Longrightarrow> ub X b"
@@ -1758,14 +1771,15 @@ lemma (in Order) S_inductive_sup_compare:"\<lbrakk>S_inductive_set D; Chain D X1
        simp add:S_inductive_sup, simp add:S_inductive_sup)
 done
 
-constdefs (structure D)
- Wa :: "[_, 'a set, 'a \<Rightarrow> 'a, 'a] \<Rightarrow> bool"
- "Wa D W g a == W \<subseteq> carrier D \<and> Worder (Iod D W) \<and> a \<in> W \<and> (\<forall>x\<in>W. a \<preceq> x) \<and> 
-  (\<forall>x\<in>W. (if (ExPre (Iod D W) x) then  g (Pre (Iod D W) x) = x else
-  (if a \<noteq> x then Sup D (segment (Iod D W) x) = x else a = a)))" 
+definition
+  Wa :: "[_, 'a set, 'a \<Rightarrow> 'a, 'a] \<Rightarrow> bool" where
+  "Wa D W g a \<longleftrightarrow> W \<subseteq> carrier D \<and> Worder (Iod D W) \<and> a \<in> W \<and> (\<forall>x\<in>W. a \<preceq>\<^bsub>D\<^esub> x) \<and> 
+    (\<forall>x\<in>W. (if (ExPre (Iod D W) x) then  g (Pre (Iod D W) x) = x else
+    (if a \<noteq> x then Sup D (segment (Iod D W) x) = x else a = a)))"
 
- WWa :: "[_, 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a set set"
- "WWa D g a == {W. Wa D W g a}"
+definition 
+  WWa :: "[_, 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a set set" where
+  "WWa D g a = {W. Wa D W g a}"
  
 lemma (in Order) mem_of_WWa:"\<lbrakk>W \<subseteq> carrier D; Worder (Iod D W); a \<in> W;
   (\<forall>x\<in>W. a \<preceq> x); 
@@ -1904,9 +1918,9 @@ apply (simp add:Iod_less[of "insert (Sup D X) X"],
 apply (rule contrapos_pp, simp+)
 done
 
-constdefs
- fixp :: "['a \<Rightarrow> 'a, 'a] \<Rightarrow> bool"
- "fixp f a == f a = a"    (** a is a fixed point of f **)
+definition
+  fixp :: "['a \<Rightarrow> 'a, 'a] \<Rightarrow> bool" where
+  "fixp f a \<longleftrightarrow> f a = a"    (** a is a fixed point of f **)
 
 lemma (in Order) fixp_same:"\<lbrakk>W1 \<subseteq> carrier D; W2 \<subseteq> carrier D; t \<in> W1; 
  b \<in> carrier D; ord_isom (Iod D W1) (Iod (Iod D W2) (segment (Iod D W2) b)) g;
@@ -3385,10 +3399,10 @@ apply (frule BNTr8[of "f" "a"], assumption+,
 apply blast
 done
 
-constdefs (structure D)
- maxl_fun::" _  \<Rightarrow> 'a \<Rightarrow> 'a"
- "maxl_fun D == \<lambda>x\<in>carrier D. if \<exists>y. y\<in>(upper_bounds D {x}) \<and> y \<noteq> x then
-  SOME z. z \<in> (upper_bounds D {x}) \<and> z \<noteq> x else x"
+definition
+  maxl_fun :: " _  \<Rightarrow> 'a \<Rightarrow> 'a" where
+  "maxl_fun D = (\<lambda>x\<in>carrier D. if \<exists>y. y\<in>(upper_bounds D {x}) \<and> y \<noteq> x then
+    SOME z. z \<in> (upper_bounds D {x}) \<and> z \<noteq> x else x)"
 
 lemma (in Order) maxl_funTr:"\<lbrakk>x \<in> carrier D; 
       \<exists>y. y \<in> upper_bounds D {x} \<and> y \<noteq> x\<rbrakk> \<Longrightarrow> 
@@ -3440,14 +3454,14 @@ done
 lemma (in Order) maximal_mem:"maximal m \<Longrightarrow> m \<in> carrier D"
 by (simp add:maximal_element_def)
 
-constdefs (structure D)
- Chains :: " _  \<Rightarrow> ('a set) set"
- "Chains D == {C. Chain D C}"
+definition
+  Chains :: " _  \<Rightarrow> ('a set) set" where
+  "Chains D == {C. Chain D C}"
 
-
- family_Torder::" _  \<Rightarrow> ('a set) Order"
-  ("(fTo _)" [999]1000)
- "fTo D == \<lparr>carrier = Chains D , rel = {Z. Z \<in> (Chains D) \<times> (Chains D) \<and> (fst Z) \<subseteq> (snd Z)}\<rparr>"
+definition
+  family_Torder::" _  \<Rightarrow> ('a set) Order"
+    ("(fTo _)" [999]1000) where
+  "fTo D = \<lparr>carrier = Chains D , rel = {Z. Z \<in> (Chains D) \<times> (Chains D) \<and> (fst Z) \<subseteq> (snd Z)}\<rparr>"
 
 lemma (in Order) Chain_mem_fTo:"Chain D C \<Longrightarrow> C \<in> carrier (fTo D)"
 by (simp add:family_Torder_def Chains_def)
@@ -4112,40 +4126,44 @@ by (rule mult_closed,
 
 section "2. Subgroups"
 
-
-constdefs (structure G)
-   sg ::"[_ , 'a set ] \<Rightarrow> bool"  ("_ \<guillemotright> _ " [60, 61]60)
-   "G \<guillemotright> H == H \<noteq> {} \<and> H \<subseteq> carrier G \<and> (\<forall>a \<in> H. \<forall>b \<in> H. a \<cdot> (\<rho> b) \<in> H)" 
+definition
+  sg ::"[_ , 'a set ] \<Rightarrow> bool"  ("_ \<guillemotright> _ " [60, 61]60) where
+  "G \<guillemotright> H \<longleftrightarrow> H \<noteq> {} \<and> H \<subseteq> carrier G \<and> (\<forall>a \<in> H. \<forall>b \<in> H. a \<cdot>\<^bsub>G\<^esub> (\<rho>\<^bsub>G\<^esub> b) \<in> H)" 
  
  (** SG is a set satisfying the condition above. In math textbooks this is 
   called a subgroup and it is also taken as a group with induced structure.**)
 
-   Gp::"_ \<Rightarrow> 'a set \<Rightarrow> _"        ("(\<natural>\<index>_)" 70)
-   "\<natural>H \<equiv> G \<lparr> carrier := H, top := top G, iop := iop G, one := one G\<rparr>"     
+definition
+   Gp :: "_ \<Rightarrow> 'a set \<Rightarrow> _"        ("(\<natural>\<index>_)" 70) where
+   "\<natural>\<^bsub>G\<^esub>H \<equiv> G \<lparr> carrier := H, top := top G, iop := iop G, one := one G\<rparr>"     
 
   (** Gp G H is a group with carrier H, where H is sg **)
 
 
-constdefs (structure G)
-   rcs :: "[_ , 'a set, 'a] \<Rightarrow> 'a set" (infix "\<bullet>\<index>" 70)
-      "H \<bullet> a \<equiv> {b. \<exists> h \<in> H. h \<cdot> a = b}"
+definition
+  rcs :: "[_ , 'a set, 'a] \<Rightarrow> 'a set" (infix "\<bullet>\<index>" 70) where
+  "H \<bullet>\<^bsub>G\<^esub> a = {b. \<exists> h \<in> H. h \<cdot>\<^bsub>G\<^esub> a = b}"
 
-   lcs:: "[_ , 'a, 'a set] \<Rightarrow> 'a set" (infix "\<diamondsuit>\<index>" 70)
-      "a \<diamondsuit> H \<equiv> {b. \<exists> h \<in> H. a \<cdot> h = b}" 
+definition
+  lcs :: "[_ , 'a, 'a set] \<Rightarrow> 'a set" (infix "\<diamondsuit>\<index>" 70) where
+  "a \<diamondsuit>\<^bsub>G\<^esub> H = {b. \<exists> h \<in> H. a \<cdot>\<^bsub>G\<^esub> h = b}" 
 
-   nsg :: "_ \<Rightarrow> 'a set \<Rightarrow> bool"    ("_ \<triangleright> _" [60,61]60)
-      "G \<triangleright> H  == (G \<guillemotright> H) \<and>   
-          (\<forall>x \<in> carrier G. H \<bullet> x = x \<diamondsuit> H)" 
+definition
+  nsg :: "_ \<Rightarrow> 'a set \<Rightarrow> bool"    ("_ \<triangleright> _" [60,61]60) where
+  "G \<triangleright> H \<longleftrightarrow> G \<guillemotright> H \<and> (\<forall>x \<in> carrier G. H \<bullet>\<^bsub>G\<^esub> x = x \<diamondsuit>\<^bsub>G\<^esub> H)" 
 
-   set_rcs :: "[_ , 'a set] \<Rightarrow> 'a set set"
-   "set_rcs G H == {C. \<exists> a \<in> carrier G. C = H \<bullet> a}"
+definition
+  set_rcs :: "[_ , 'a set] \<Rightarrow> 'a set set" where
+  "set_rcs G H = {C. \<exists>a \<in> carrier G. C = H \<bullet>\<^bsub>G\<^esub> a}"
 
-   c_iop :: "[_ , 'a set]  \<Rightarrow> 'a set \<Rightarrow> 'a set"
-   "c_iop G H ==\<lambda>X\<in>set_rcs G H. {z. \<exists> x \<in> X . \<exists>h \<in> H. h \<cdot> (\<rho> x) = z}"      
+definition
+  c_iop :: "[_ , 'a set]  \<Rightarrow> 'a set \<Rightarrow> 'a set" where
+  "c_iop G H = (\<lambda>X\<in>set_rcs G H. {z. \<exists> x \<in> X . \<exists>h \<in> H. h \<cdot>\<^bsub>G\<^esub> (\<rho>\<^bsub>G\<^esub> x) = z})"      
  
-   c_top :: "[_, 'a set] \<Rightarrow> (['a set, 'a set] \<Rightarrow> 'a set)" 
-    "c_top G H == \<lambda>X\<in>set_rcs G H. \<lambda>Y\<in>set_rcs G H. 
-                          {z. \<exists> x \<in> X. \<exists> y \<in> Y. x \<cdot> y = z}" 
+definition
+  c_top :: "[_, 'a set] \<Rightarrow> (['a set, 'a set] \<Rightarrow> 'a set)" where
+  "c_top G H = (\<lambda>X\<in>set_rcs G H. \<lambda>Y\<in>set_rcs G H. 
+    {z. \<exists>x \<in> X. \<exists> y \<in> Y. x \<cdot>\<^bsub>G\<^esub> y = z})" 
 
 lemma (in Group) sg_subset:"G \<guillemotright> H \<Longrightarrow> H \<subseteq> carrier G"
 by (simp add:sg_def)
@@ -4234,9 +4252,9 @@ lemma (in Group) sg_m_i_closed:"\<lbrakk>G \<guillemotright> H; a \<in> H ; b \<
 apply (simp add:sg_def)
 done
 
-constdefs (structure G)
-  sg_gen :: "[_ , 'a set] \<Rightarrow> 'a set"
-    "sg_gen G A == \<Inter> {H. ((G \<guillemotright> H ) \<and> (A \<subseteq> H))}" 
+definition
+  sg_gen :: "[_ , 'a set] \<Rightarrow> 'a set" where
+  "sg_gen G A = \<Inter>{H. G \<guillemotright> H \<and> A \<subseteq> H}"
 
 lemma (in Group) smallest_sg_gen:"\<lbrakk>A \<subseteq> carrier G; G \<guillemotright> H; A \<subseteq> H\<rbrakk> \<Longrightarrow>
                                    sg_gen G A \<subseteq> H"
@@ -4292,87 +4310,89 @@ apply ((rule ballI)+,
  apply (simp add:sg_m_i_closed)
 done
 
-constdefs (structure G)
- Qg::"[_ , 'a set] \<Rightarrow> 
+definition
+  Qg :: "[_ , 'a set] \<Rightarrow> 
          \<lparr>carrier:: 'a set set, top:: ['a set, 'a set] \<Rightarrow> 'a set,
-           iop:: 'a set \<Rightarrow> 'a set, one:: 'a set \<rparr>" 
- 
-   "Qg G H  ==  \<lparr>carrier = set_rcs G H, top = c_top G H, iop = c_iop G H,
-                                  one = H \<rparr>"
+           iop:: 'a set \<Rightarrow> 'a set, one:: 'a set \<rparr>" where
+  "Qg G H = \<lparr>carrier = set_rcs G H, top = c_top G H, iop = c_iop G H, one = H \<rparr>"
 
 
-constdefs (structure G)
-   Pj :: "[_ , 'a set] \<Rightarrow>  ( 'a => 'a set)" 
-      "Pj G H == \<lambda>x \<in> carrier G. H \<bullet> x"        
+definition
+  Pj :: "[_ , 'a set] \<Rightarrow>  ( 'a => 'a set)" where
+  "Pj G H = (\<lambda>x \<in> carrier G. H \<bullet>\<^bsub>G\<^esub> x)"        
 
- syntax 
-  "@QGRP" :: "([('a, 'more) Group_scheme, 'a set] => ('a set) Group)"
-              (infixl "'/'" 200)  
-  translations
-    "G / H" == "Qg G H"
+no_notation divide (infixl "'/" 70)
+
+abbreviation
+  QGRP :: "([('a, 'more) Group_scheme, 'a set] => ('a set) Group)"
+    (infixl "'/" 70) where
+  "G / H == Qg G H"
   
 
-constdefs 
+definition
   gHom ::"[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme] \<Rightarrow> 
-           ('a  \<Rightarrow> 'b) set"
-  "gHom G F =={f. (f \<in> extensional (carrier G) \<and> f \<in> carrier G \<rightarrow> carrier F) \<and>
+           ('a  \<Rightarrow> 'b) set" where
+  "gHom G F = {f. (f \<in> extensional (carrier G) \<and> f \<in> carrier G \<rightarrow> carrier F) \<and>
        (\<forall>x \<in> carrier G. \<forall>y \<in> carrier G. f (x \<cdot>\<^bsub>G\<^esub> y) = (f x) \<cdot>\<^bsub>F\<^esub> (f y))}"
  
-constdefs 
+definition
   gkernel ::"[('a, 'more) Group_scheme , ('b, 'more1) Group_scheme, 'a \<Rightarrow> 'b]
-            \<Rightarrow> 'a set"  
-     "gkernel G F f == {x. (x \<in> carrier G) \<and> (f x = \<one>\<^bsub>F\<^esub>)}"
-
-  iim::"[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 'a \<Rightarrow> 'b, 
-            'b set]  \<Rightarrow> 'a set"  
-     "iim G F f K == {x. (x \<in> carrier G) \<and> (f x \<in> K)}"
-
-syntax 
- "@GKER"::"[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 'a \<Rightarrow> 'b ] \<Rightarrow>
-         'a set"  ("(3gker\<^bsub>_,_\<^esub> _)" [88,88,89]88)
-
-translations
-     "gker\<^bsub>G,F\<^esub> f" == "gkernel G F f"
-
-constdefs
-  gsurjec ::"[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 
-             'a \<Rightarrow> 'b] \<Rightarrow> bool"  ("(3gsurj\<^bsub>_,_\<^esub> _)" [88,88,89]88)
-  "gsurj\<^bsub>F,G\<^esub> f  == (f \<in> gHom F G) \<and> (surj_to f (carrier F) (carrier G))" 
+            \<Rightarrow> 'a set" where
+  "gkernel G F f = {x. (x \<in> carrier G) \<and> (f x = \<one>\<^bsub>F\<^esub>)}"
 
 
-  ginjec ::"[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 
-             'a \<Rightarrow> 'b]  \<Rightarrow> bool"    ("(3ginj\<^bsub>_,_\<^esub> _)" [88,88,89]88) 
-     "ginj\<^bsub>F,G\<^esub> f == (f \<in> gHom F G) \<and> (inj_on f (carrier F))"
+definition
+  iim :: "[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 'a \<Rightarrow> 'b, 
+            'b set]  \<Rightarrow> 'a set" where
+  "iim G F f K = {x. (x \<in> carrier G) \<and> (f x \<in> K)}"
 
+abbreviation
+  GKER :: "[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 'a \<Rightarrow> 'b ] \<Rightarrow> 'a set"
+    ("(3gker\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+  "gker\<^bsub>G,F\<^esub> f == gkernel G F f"
+
+definition
+  gsurjec :: "[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 
+             'a \<Rightarrow> 'b] \<Rightarrow> bool"  ("(3gsurj\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+  "gsurj\<^bsub>F,G\<^esub> f \<longleftrightarrow> f \<in> gHom F G \<and> surj_to f (carrier F) (carrier G)" 
+
+
+definition
+  ginjec :: "[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 
+             'a \<Rightarrow> 'b]  \<Rightarrow> bool"    ("(3ginj\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+  "ginj\<^bsub>F,G\<^esub> f \<longleftrightarrow> f \<in> gHom F G \<and> inj_on f (carrier F)"
+
+definition
   gbijec :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme, 'a \<Rightarrow> 'b]
-             \<Rightarrow> bool"       ("(3gbij\<^bsub>_,_\<^esub> _)" [88,88,89]88)
-      "gbij\<^bsub>F,G\<^esub> f ==  (gsurj\<^bsub>F,G\<^esub> f) \<and> (ginj\<^bsub>F,G\<^esub> f)"
+             \<Rightarrow> bool"       ("(3gbij\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+  "gbij\<^bsub>F,G\<^esub> f \<longleftrightarrow> gsurj\<^bsub>F,G\<^esub> f \<and> ginj\<^bsub>F,G\<^esub> f"
 
-constdefs (structure G)
-  Ug :: "_  \<Rightarrow>  ('a, 'more) Group_scheme"
-  "Ug G == \<natural> {\<one>}"
+definition
+  Ug :: "_  \<Rightarrow>  ('a, 'more) Group_scheme" where
+  "Ug G = \<natural>\<^bsub>G\<^esub> {\<one>\<^bsub>G\<^esub>}"
 
-  Ugp:: "_ \<Rightarrow> bool"
-  "Ugp G == Group G \<and> carrier G = {\<one>}"
+definition
+  Ugp :: "_ \<Rightarrow> bool" where
+  "Ugp G == Group G \<and> carrier G = {\<one>\<^bsub>G\<^esub>}"
 
-constdefs
-  isomorphic::"[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme]
-                         \<Rightarrow> bool"   (infix "\<cong>" 100)
-              "F \<cong> G == \<exists>f. (gbij\<^bsub>F,G\<^esub> f)"
-constdefs
-  constghom::"[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme] 
-                           \<Rightarrow> ('a \<Rightarrow> 'b)"  ("('1'\<^bsub>_,_\<^esub>)" [88,89]88)
-            "1\<^bsub>F,G\<^esub> == \<lambda>x\<in>carrier F. (\<one>\<^bsub>G\<^esub>)" 
+definition
+  isomorphic :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme]
+                         \<Rightarrow> bool"   (infix "\<cong>" 100) where
+  "F \<cong> G \<longleftrightarrow> (\<exists>f. gbij\<^bsub>F,G\<^esub> f)"
 
-constdefs
- cmpghom:: "[('a, 'm) Group_scheme, 'b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c"
- "cmpghom F g f == compose (carrier F) g f"  
+definition
+  constghom :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme] 
+                           \<Rightarrow> ('a \<Rightarrow> 'b)"  ("('1'\<^bsub>_,_\<^esub>)" [88,89]88) where
+  "1\<^bsub>F,G\<^esub> = (\<lambda>x\<in>carrier F. \<one>\<^bsub>G\<^esub>)" 
 
-syntax
-   "@GCOMP" :: "['b \<Rightarrow> 'c, ('a, 'm) Group_scheme, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c"
-   ("(3_ \<circ>\<^bsub>_\<^esub> _)" [88, 88, 89]88)
-translations
-   "g \<circ>\<^bsub>F\<^esub> f"=="cmpghom F g f"
+definition
+  cmpghom :: "[('a, 'm) Group_scheme, 'b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c" where
+  "cmpghom F g f = compose (carrier F) g f"  
+
+abbreviation
+  GCOMP :: "['b \<Rightarrow> 'c, ('a, 'm) Group_scheme, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c"
+    ("(3_ \<circ>\<^bsub>_\<^esub> _)" [88, 88, 89]88) where
+  "g \<circ>\<^bsub>F\<^esub> f == cmpghom F g f"
 
 lemma Group_Ugp:"Ugp G \<Longrightarrow> Group G"
 by (simp add:Ugp_def)
@@ -4410,16 +4430,15 @@ lemma (in Group) sg_condition:"\<lbrakk>H \<subseteq> carrier G; H \<noteq> {};
        \<forall>a. \<forall>b. a \<in> H \<and> b \<in> H \<longrightarrow>  a \<cdot> (\<rho> b) \<in> H\<rbrakk> \<Longrightarrow> G \<guillemotright> H"
 by (simp add:sg_def)
 
-constdefs
-   Gimage :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme, 'a  \<Rightarrow> 'b] \<Rightarrow>
-                         ('b, 'm1) Group_scheme"
-   "Gimage F G f == Gp G (f `(carrier F))"
+definition
+  Gimage :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme, 'a  \<Rightarrow> 'b] \<Rightarrow>
+                         ('b, 'm1) Group_scheme" where
+  "Gimage F G f = Gp G (f `(carrier F))"
   
-syntax
-   "@GIMAGE" :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme, 
-        'a \<Rightarrow> 'b ] \<Rightarrow> ('b, 'm1) Group_scheme"    ("(3Img\<^bsub>_,_\<^esub> _)" [88,88,89]88)
-translations
-     "Img\<^bsub>F,G\<^esub> f" == "Gimage F G f"
+abbreviation
+  GIMAGE :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme,
+        'a \<Rightarrow> 'b ] \<Rightarrow> ('b, 'm1) Group_scheme"    ("(3Img\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+  "Img\<^bsub>F,G\<^esub> f == Gimage F G f"
 
 lemma (in Group) Group_Gp:"G \<guillemotright> H \<Longrightarrow> Group (\<natural> H)" 
 apply (simp add:Group_def Gp_def)

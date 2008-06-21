@@ -2280,12 +2280,9 @@ constdefs
  
  "mProject R I A j == \<lambda>f\<in>carr_prodag I A. f j"
 
-syntax 
-  "@PRODMODULES" :: "[('r, 'm) Ring_scheme, 'i set, 'i \<Rightarrow> ('a, 'r, 'more) 
-         Module_scheme] \<Rightarrow> ('i \<Rightarrow> 'a ) set"  ("(3m\<Pi>\<^bsub>_ _\<^esub> _)" [72,72,73]72)
-
-translations
-  "m\<Pi>\<^bsub>R I\<^esub> A" == "prodM R I A"
+abbreviation
+  PRODMODULES  ("(3m\<Pi>\<^bsub>_ _\<^esub> _)" [72,72,73]72) where
+  "m\<Pi>\<^bsub>R I\<^esub> A == prodM R I A"
 
 lemma (in Ring) prodM_carr:"\<lbrakk>\<forall>i\<in>I. (R module (M i))\<rbrakk> \<Longrightarrow> 
                                 carrier (prodM R I M) = carr_prodag I M"
@@ -2460,12 +2457,9 @@ constdefs
    pop = prod_pOp I A, mop = prod_mOp I A,
    zero = prod_zero I A, sprod = prodM_sprod R I A\<rparr>"  
 
-syntax 
-  "@DSUMMOD" :: "[('r, 'm) Ring_scheme, 'i set, 'i \<Rightarrow> ('a, 'r, 'more) 
-  Module_scheme] \<Rightarrow> ('i \<Rightarrow> 'a ) set"  ("(3\<^bsub>_\<^esub>\<Sigma>\<^sub>d\<^bsub>_\<^esub> _)" [72,72,73]72)
-
-translations
-  "\<^bsub>R\<^esub>\<Sigma>\<^sub>d\<^bsub>I\<^esub> A" == "dsumM R I A"
+abbreviation
+  DSUMMOD  ("(3\<^bsub>_\<^esub>\<Sigma>\<^sub>d\<^bsub>_\<^esub> _)" [72,72,73]72) where
+  "\<^bsub>R\<^esub>\<Sigma>\<^sub>d\<^bsub>I\<^esub> A == dsumM R I A"
 
 lemma (in Ring) dsumM_carr:"carrier (dsumM R I M) = carr_dsumag I M"
 by (simp add:dsumM_def)

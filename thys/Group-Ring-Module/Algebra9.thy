@@ -1209,16 +1209,15 @@ constdefs (* for modules *)
  sop :: "['r \<Rightarrow> 'a \<Rightarrow> 'a, 'r, 'a] \<Rightarrow> 'a"
  "sop s r a == s r a"
 
-syntax
- "@BOP"::"['a, 'a \<Rightarrow> 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"
-     ("(3_/ \<^sub>_+/ _)" [62,62,63]62)
+abbreviation
+  BOP :: "['a, 'a \<Rightarrow> 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"
+    ("(3_/ \<^sub>_+/ _)" [62,62,63]62) where
+  "a \<^sub>f+ b == bpp f a b"
 
- "@SOP"::"['r, 'r \<Rightarrow> 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"
-     ("(3_/ \<^sub>_\<cdot> _)" [68,68,69]68)
-
-translations
- "a \<^sub>f+ b" == "bpp f a b"
- "r \<^sub>s\<cdot> a" == "sop s r a"
+abbreviation
+  SOP :: "['r, 'r \<Rightarrow> 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"
+    ("(3_/ \<^sub>_\<cdot> _)" [68,68,69]68) where
+  "r \<^sub>s\<cdot> a == sop s r a"
 
 constdefs
  minus_set :: "['a \<Rightarrow> 'a, 'a set] \<Rightarrow> 'a set"
@@ -2215,11 +2214,10 @@ constdefs
    (if 0 < n then (THE x. x \<in> (add_set f {a} (nat (n - 1)))) 
       else (THE x. x \<in> (add_set f {\<^sub>i- a} (nat (- n - 1)))))"
 
-syntax 
- "@FGELEMSNGLE"::"[int, 'a, 'a \<Rightarrow> 'a \<Rightarrow> 'a, 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"
-             ("(5_\<Odot>_\<^bsub>_,_,_\<^esub>)" [99,98,98,98,98]99)
-translations
-  "n\<Odot>a\<^bsub>f,i,z\<^esub>" == "fg_elem_single f i a z n"
+abbreviation
+  FGELEMSNGLE :: "[int, 'a, 'a \<Rightarrow> 'a \<Rightarrow> 'a, 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"
+    ("(5_\<Odot>_\<^bsub>_,_,_\<^esub>)" [99,98,98,98,98]99) where
+  "n\<Odot>a\<^bsub>f,i,z\<^esub> == fg_elem_single f i a z n"
 
 lemma  single_addition_pm_mem:"\<lbrakk>assoc_bpp (aug_pm_set z i {a}) f; 
        ipp_cond1 {a} i; ipp_cond2 z {a} i f; ipp_cond3 z i; inv_ipp z i f {a};
@@ -2634,12 +2632,6 @@ constdefs
  ag_single_gen::"[('a, 'm) aGroup_scheme, 'a] \<Rightarrow> bool" 
   "ag_single_gen A a == aGroup A \<and> carrier A = \<Inter> {H. asubGroup A H \<and> a \<in> H}"
 
-(* syntax
-   "@AGSGEN"::"['a AgroupType, 'a] \<Rightarrow> bool" 
-    ("(_\<^sub>_)" [90,91]90)
-translations
-  "G\<^sub>a" == "ag_single_gen A a" *)
-
 consts
  aSum :: "[('a, 'm) aGroup_scheme, nat,'a]  \<Rightarrow> 'a"
  
@@ -2652,11 +2644,10 @@ constdefs
  "sprod_n_a A n x ==  if 0 \<le> n then (aSum A (nat n) x) 
                           else (aSum A (nat (- n)) (-\<^sub>a\<^bsub>A\<^esub> x))"
 
-syntax
- "@SPRODNA" :: "[int, 'a, ('a, 'm) aGroup_scheme] \<Rightarrow> 'a"
-                  ("(3_\<triangleright>_\<^bsub>_\<^esub>)" [95,95,96]95)
-translations
-  "n\<triangleright>a\<^bsub>A\<^esub>" == "sprod_n_a A n a"
+abbreviation
+  SPRODNA :: "[int, 'a, ('a, 'm) aGroup_scheme] \<Rightarrow> 'a"
+    ("(3_\<triangleright>_\<^bsub>_\<^esub>)" [95,95,96]95) where
+  "n\<triangleright>a\<^bsub>A\<^esub> == sprod_n_a A n a"
 
 lemma (in aGroup) asum_mem:"a \<in> carrier A \<Longrightarrow> aSum A n a \<in> carrier A"
 apply (induct_tac n)
@@ -3882,12 +3873,11 @@ constdefs
           (\<forall>x\<in>carrier M. \<exists>m1\<in>carrier M1. \<exists>m2\<in>carrier M2. x = m1 \<plusminus>\<^bsub>M\<^esub> m2) \<and>  
            (carrier M1) \<inter> (carrier M2) = {\<zero>\<^bsub>M\<^esub>}"
 
-syntax
-"@DS2"::"[('a, 'r, 'm1) Module_scheme, ('r, 'm) Ring_scheme, 
-          ('a, 'r, 'm1) Module_scheme, ('a, 'r, 'm1) Module_scheme] \<Rightarrow> bool"
-  ("(4_/ \<Oplus>\<^bsub>_,_\<^esub> _)" [92,93,92,92]92)
- translations
- "M1 \<Oplus>\<^bsub>R,M\<^esub> M2" == "ds2 R M M1 M2"
+abbreviation
+  DS2 :: "[('a, 'r, 'm1) Module_scheme, ('r, 'm) Ring_scheme, 
+    ('a, 'r, 'm1) Module_scheme, ('a, 'r, 'm1) Module_scheme] \<Rightarrow> bool"
+    ("(4_/ \<Oplus>\<^bsub>_,_\<^esub> _)" [92,93,92,92]92) where
+  "M1 \<Oplus>\<^bsub>R,M\<^esub> M2 == ds2 R M M1 M2"
 
 lemma (in Ring) ds2_commute:"\<lbrakk>R module M1; R module M2; R module M; 
                M1 \<Oplus>\<^bsub>R,M\<^esub> M2\<rbrakk> \<Longrightarrow> M2 \<Oplus>\<^bsub>R,M\<^esub> M1"
@@ -4462,14 +4452,12 @@ constdefs
    (('a * 'b) set, 'r) Module"
      "tensor_product R M N MN == MN /\<^sub>m (TR\<^bsub>R\<^esub> M N MN)" 
 
-syntax
- "@TENSORPROD"::"[('a, 'r, 'm1) Module_scheme,
+abbreviation
+  TENSORPROD :: "[('a, 'r, 'm1) Module_scheme,
     (('a * 'b), 'r, 'm1) Module_scheme, ('r, 'm) Ring_scheme,
     ('b, 'r, 'm1) Module_scheme] \<Rightarrow> (('a * 'b) set, 'r) Module"
-  ("(4_/ \<^bsub>_\<^esub>\<Otimes>\<^bsub>_\<^esub>/ _)" [92,92,92,93]92)
- 
-translations
- "M \<^bsub>P\<^esub>\<Otimes>\<^bsub>R\<^esub> N" == "tensor_product R M N P"
+    ("(4_/ \<^bsub>_\<^esub>\<Otimes>\<^bsub>_\<^esub>/ _)" [92,92,92,93]92) where
+  "M \<^bsub>P\<^esub>\<Otimes>\<^bsub>R\<^esub> N == tensor_product R M N P"
 
 lemma (in Ring) mem_cartesian:"\<lbrakk>R module M; R module N; m \<in> carrier M;
       n \<in> carrier N \<rbrakk> \<Longrightarrow> (m, n) \<in> M \<times>\<^sub>c N"
@@ -4887,14 +4875,12 @@ constdefs
 
   "tensor_elem R P M N m n == tnm R P M N (m, n)" 
 
-syntax
- "@TNSELEM"::"['a, ('r, 'm) Ring_scheme, (('a * 'b), 'r, 'm1) Module_scheme,
- ('a, 'r, 'm1) Module_scheme, ('b, 'r, 'm1) Module_scheme, 'b] \<Rightarrow>
- ('a * 'b) set" 
-  ("(6_ \<^bsub>_,_\<^esub>\<otimes>\<^bsub>_,_\<^esub>/ _)" [100,100,100,100,100,101]101)
-
- translations
- "m \<^bsub>R,P\<^esub>\<otimes>\<^bsub>M,N\<^esub> n" == "tensor_elem R P M N m n"
+abbreviation
+  TNSELEM :: "['a, ('r, 'm) Ring_scheme, (('a * 'b), 'r, 'm1) Module_scheme,
+    ('a, 'r, 'm1) Module_scheme, ('b, 'r, 'm1) Module_scheme, 'b] \<Rightarrow>
+    ('a * 'b) set"
+    ("(6_ \<^bsub>_,_\<^esub>\<otimes>\<^bsub>_,_\<^esub>/ _)" [100,100,100,100,100,101]101) where
+  "m \<^bsub>R,P\<^esub>\<otimes>\<^bsub>M,N\<^esub> n == tensor_elem R P M N m n"
   
 lemma (in Ring) tensor_univ_propTr:"\<lbrakk>R module M; R module N; FM\<^bsub>R\<^esub> P M N; 
       R module Z; bilinear_map f R M N Z\<rbrakk> \<Longrightarrow>

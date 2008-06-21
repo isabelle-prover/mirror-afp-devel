@@ -519,12 +519,9 @@ constdefs
     ("(\<gamma>\<^bsub>_ _\<^esub>)" [70,71]70) 
  "\<gamma>\<^bsub>i j\<^esub> == if i = j then 0 else 1"
  
-syntax
- "@TRANSPOS"::"[nat, nat] \<Rightarrow> nat"
-   ("(\<tau>\<^bsub>_ _\<^esub>)" [90,91]90)
-
-translations
- "\<tau>\<^bsub>i j\<^esub>" == "transpos i j"
+abbreviation
+  TRANSPOS  ("(\<tau>\<^bsub>_ _\<^esub>)" [90,91]90) where
+  "\<tau>\<^bsub>i j\<^esub> == transpos i j"
 
 lemma Kdelta_in_Zinf:"\<lbrakk>j \<le> (Suc n); k \<le> (Suc n)\<rbrakk>  \<Longrightarrow> 
                  z *\<^sub>a (\<delta>\<^bsub>j k\<^esub>) \<in> Z\<^sub>\<infinity>"

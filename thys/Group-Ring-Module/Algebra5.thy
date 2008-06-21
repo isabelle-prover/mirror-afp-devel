@@ -124,9 +124,9 @@ apply (rule equalityI)
          assumption+)
 done
 
-constdefs (structure R)
- coprime_ideals::"[_, 'a set, 'a set] \<Rightarrow> bool"
-  "coprime_ideals R A B == A \<minusplus> B = carrier R"
+definition
+  coprime_ideals::"[_, 'a set, 'a set] \<Rightarrow> bool" where
+  "coprime_ideals R A B \<longleftrightarrow> A \<minusplus>\<^bsub>R\<^esub> B = carrier R"
 
 lemma (in Ring) coprimeTr:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrightarrow>
                 coprime_ideals R A B = (\<exists>a \<in> A. \<exists>b \<in> B. a \<plusminus> b = 1\<^sub>r)"
@@ -365,61 +365,62 @@ done
 
 section "7. direct product1, general case"
 
-constdefs 
-  prod_tOp::"['i set,  'i \<Rightarrow> ('a, 'm) Ring_scheme] \<Rightarrow> 
-    ('i \<Rightarrow> 'a) \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow>  ('i \<Rightarrow> 'a)"
-  "prod_tOp I A  == \<lambda>f\<in>carr_prodag I A. \<lambda>g\<in>carr_prodag I A.
-                           \<lambda>x\<in>I. (f x) \<cdot>\<^sub>r\<^bsub>(A x)\<^esub> (g x)"
+definition
+  prod_tOp :: "['i set,  'i \<Rightarrow> ('a, 'm) Ring_scheme] \<Rightarrow> 
+    ('i \<Rightarrow> 'a) \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow>  ('i \<Rightarrow> 'a)" where
+  "prod_tOp I A = (\<lambda>f\<in>carr_prodag I A. \<lambda>g\<in>carr_prodag I A.
+                           \<lambda>x\<in>I. (f x) \<cdot>\<^sub>r\<^bsub>(A x)\<^esub> (g x))"
   (** Let x \<in> I, then A x is a ring, {A x | x \<in> I} is a set of rings. **)
 
- prod_one::"['i set,  'i  \<Rightarrow> ('a, 'm) Ring_scheme] \<Rightarrow> ('i \<Rightarrow> 'a)"
+definition
+  prod_one::"['i set,  'i  \<Rightarrow> ('a, 'm) Ring_scheme] \<Rightarrow> ('i \<Rightarrow> 'a)" where
   "prod_one I A == \<lambda>x\<in>I. 1\<^sub>r\<^bsub>(A x)\<^esub>"
   (** 1\<^sub>(A x) is the unit of a ring A x. **)
 
-constdefs
- prodrg :: "['i set, 'i \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> ('i \<Rightarrow> 'a) Ring"
- "prodrg I A == \<lparr>carrier = carr_prodag I A, pop = prod_pOp I A, mop = 
-  prod_mOp I A, zero = prod_zero I A, tp = prod_tOp I A, 
-  un = prod_one I A \<rparr>"
+definition
+  prodrg :: "['i set, 'i \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> ('i \<Rightarrow> 'a) Ring" where
+  "prodrg I A = \<lparr>carrier = carr_prodag I A, pop = prod_pOp I A, mop = 
+    prod_mOp I A, zero = prod_zero I A, tp = prod_tOp I A, 
+    un = prod_one I A \<rparr>"
  (** I is the index set **)
-syntax 
-  "@PRODRING" :: "['i set, 'i \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> 
-               ('i \<Rightarrow> 'a ) Ring"  ("(r\<Pi>\<^bsub>_\<^esub>/ _)" [72,73]72)
-translations
-  "r\<Pi>\<^bsub>I\<^esub> A" == "prodrg I A"
 
-constdefs
- augm_func::"[nat, nat \<Rightarrow> 'a,'a set, nat, nat \<Rightarrow> 'a, 'a set] \<Rightarrow> nat \<Rightarrow> 'a"
-  "augm_func n f A m g B == \<lambda>i\<in>{j. j \<le> (n + m)}. if i \<le> n then f i else
-    if (Suc n) \<le> i \<and> i \<le> n + m then g ((sliden (Suc n)) i) else arbitrary"
+abbreviation
+  PRODRING  ("(r\<Pi>\<^bsub>_\<^esub>/ _)" [72,73]72) where
+  "r\<Pi>\<^bsub>I\<^esub> A == prodrg I A"
+
+definition
+  augm_func :: "[nat, nat \<Rightarrow> 'a,'a set, nat, nat \<Rightarrow> 'a, 'a set] \<Rightarrow> nat \<Rightarrow> 'a" where
+  "augm_func n f A m g B = (\<lambda>i\<in>{j. j \<le> (n + m)}. if i \<le> n then f i else
+    if (Suc n) \<le> i \<and> i \<le> n + m then g ((sliden (Suc n)) i) else arbitrary)"
  (* Remark. g is a function of Nset (m - 1) \<rightarrow> B *)  
-    
- ag_setfunc::"[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme, nat, 
+
+definition    
+  ag_setfunc :: "[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme, nat, 
 nat \<Rightarrow> ('a, 'more)  Ring_scheme] \<Rightarrow> (nat \<Rightarrow> 'a) set \<Rightarrow> (nat \<Rightarrow> 'a) set
- \<Rightarrow> (nat  \<Rightarrow> 'a) set" 
-"ag_setfunc n B1 m B2 X Y
- == {f. \<exists>g. \<exists>h. (g\<in>X) \<and>(h\<in>Y) \<and>(f = (augm_func n g (Un_carrier {j. j \<le> n} B1) 
-    m h (Un_carrier {j. j \<le> (m - 1)} B2)))}"
+ \<Rightarrow> (nat  \<Rightarrow> 'a) set" where
+  "ag_setfunc n B1 m B2 X Y =
+    {f. \<exists>g. \<exists>h. (g\<in>X) \<and>(h\<in>Y) \<and>(f = (augm_func n g (Un_carrier {j. j \<le> n} B1) 
+      m h (Un_carrier {j. j \<le> (m - 1)} B2)))}"
  (* Later we consider X = ac_Prod_Rg (Nset n) B1 and Y = ac_Prod_Rg (Nset (m - 1)) B2 *)  
  
-consts
- ac_fProd_Rg::"[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow>
-                 (nat \<Rightarrow> 'a) set"
-
 primrec
- fprod_0: "ac_fProd_Rg 0 B = carr_prodag {0::nat} B"
- frpod_n: "ac_fProd_Rg (Suc n) B = ag_setfunc n B (Suc 0) (compose {0::nat} 
+  ac_fProd_Rg :: "[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow>
+                 (nat \<Rightarrow> 'a) set"
+where
+  fprod_0: "ac_fProd_Rg 0 B = carr_prodag {0::nat} B"
+| frpod_n: "ac_fProd_Rg (Suc n) B = ag_setfunc n B (Suc 0) (compose {0::nat} 
  B (slide (Suc n))) (carr_prodag {j. j \<le> n} B) (carr_prodag {0} (compose {0} B (slide (Suc n))))"
 
-constdefs
- prodB1 :: "[('a, 'm) Ring_scheme, ('a, 'm) Ring_scheme] \<Rightarrow>
-                 (nat \<Rightarrow> ('a, 'm) Ring_scheme)" 
-  "prodB1 R S == \<lambda>k. if k=0 then R else if k=Suc 0 then S else
-                 arbitrary"
+definition
+  prodB1 :: "[('a, 'm) Ring_scheme, ('a, 'm) Ring_scheme] \<Rightarrow>
+                 (nat \<Rightarrow> ('a, 'm) Ring_scheme)" where
+  "prodB1 R S = (\<lambda>k. if k=0 then R else if k=Suc 0 then S else
+                 arbitrary)"
 
- Prod2Rg :: "[('a, 'm) Ring_scheme, ('a, 'm) Ring_scheme]
-              \<Rightarrow> (nat \<Rightarrow> 'a) Ring" (infixl "\<Oplus>\<^sub>r" 80)
-  "A1 \<Oplus>\<^sub>r A2 == prodrg {0, Suc 0} (prodB1 A1 A2)"
+definition
+  Prod2Rg :: "[('a, 'm) Ring_scheme, ('a, 'm) Ring_scheme]
+              \<Rightarrow> (nat \<Rightarrow> 'a) Ring" (infixl "\<Oplus>\<^sub>r" 80) where
+  "A1 \<Oplus>\<^sub>r A2 = prodrg {0, Suc 0} (prodB1 A1 A2)"
 
 text {* Don't try (Prod_ring (Nset n) B) \<Oplus>\<^sub>r (B (Suc n)) *}
 
@@ -919,26 +920,25 @@ done
 text{* A direct product of a finite number of rings defined with
  ac_fProd_Rg is equal to that defined by using carr_prodag. *}
 
-constdefs
- fprodrg::"[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> 
+definition
+ fprodrg :: "[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> 
   \<lparr>carrier:: (nat \<Rightarrow> 'a) set, pop::[(nat \<Rightarrow> 'a), (nat \<Rightarrow> 'a)]
    \<Rightarrow> (nat \<Rightarrow> 'a), mop:: (nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a), zero::(nat \<Rightarrow> 'a), 
-   tp :: [(nat \<Rightarrow> 'a), (nat \<Rightarrow> 'a)] \<Rightarrow> (nat \<Rightarrow> 'a), un :: (nat \<Rightarrow> 'a) \<rparr>" 
+   tp :: [(nat \<Rightarrow> 'a), (nat \<Rightarrow> 'a)] \<Rightarrow> (nat \<Rightarrow> 'a), un :: (nat \<Rightarrow> 'a) \<rparr>" where
   
-  "fprodrg n B == \<lparr> carrier = ac_fProd_Rg n B, 
- pop = \<lambda>f. \<lambda>g. prod_pOp {i. i \<le> n} B f g, mop = \<lambda>f. prod_mOp {i. i \<le> n} B f,
- zero = prod_zero {i. i \<le> n} B, tp =  \<lambda>f. \<lambda>g. prod_tOp {i. i \<le> n} B f g, 
- un = prod_one {i. i \<le> n} B \<rparr>"  
+  "fprodrg n B = \<lparr> carrier = ac_fProd_Rg n B,
+     pop = \<lambda>f. \<lambda>g. prod_pOp {i. i \<le> n} B f g, mop = \<lambda>f. prod_mOp {i. i \<le> n} B f,
+     zero = prod_zero {i. i \<le> n} B, tp =  \<lambda>f. \<lambda>g. prod_tOp {i. i \<le> n} B f g, 
+     un = prod_one {i. i \<le> n} B \<rparr>"  
 
- fPRoject::"[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme, nat]
-                   \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a"
-  "fPRoject n B x == \<lambda>f\<in>ac_fProd_Rg n B. f x"
+definition
+  fPRoject ::"[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme, nat]
+                   \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a" where
+  "fPRoject n B x = (\<lambda>f\<in>ac_fProd_Rg n B. f x)"
 
-syntax 
-  "@FPRODRING" :: "[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> 
-               (nat \<Rightarrow> 'a) set"  ("(fr\<Pi>\<^sub>_/ _)" [72,73]72)
-translations
-  "fr\<Pi>\<^sub>n B" == "fprodrg n B"
+abbreviation
+  FPRODRING  ("(fr\<Pi>\<^sub>_/ _)" [72,73]72) where
+  "fr\<Pi>\<^sub>n B == fprodrg n B"
 
 lemma fprodrg_ring:"\<forall>k \<le> n. Ring (B k) \<Longrightarrow> Ring (fprodrg n B)"
 apply (simp add:fprodrg_def)
@@ -1622,16 +1622,13 @@ apply (rule equalityI, simp)
  apply blast
 done
 
-constdefs (structure R)
- ideal_quotient::"[_ , 'a set, 'a set] \<Rightarrow> 'a set"
- "ideal_quotient R A B == {x| x. x \<in> carrier R \<and> (\<forall>b\<in>B. x \<cdot>\<^sub>r b \<in> A)}"
+definition
+  ideal_quotient :: "[_ , 'a set, 'a set] \<Rightarrow> 'a set" where
+  "ideal_quotient R A B = {x| x. x \<in> carrier R \<and> (\<forall>b\<in>B. x \<cdot>\<^sub>r\<^bsub>R\<^esub> b \<in> A)}"
 
-syntax
- "@IDEALQT"::"['a set, _ , 'a set] \<Rightarrow> 'a set"
-    ("(3_/ \<dagger>\<^sub>_/ _)" [82,82,83]82)
-
-translations
- "A \<dagger>\<^sub>R B" =="ideal_quotient R A B"
+abbreviation
+  IDEALQT  ("(3_/ \<dagger>\<^sub>_/ _)" [82,82,83]82) where
+  "A \<dagger>\<^sub>R B == ideal_quotient R A B"
 
 
 lemma (in Ring) ideal_quotient_is_ideal:
@@ -2181,12 +2178,13 @@ lemma (in aGroup) ag_nsum_1_nonzero:"\<lbrakk>\<forall>j \<le> n. f j \<in> carr
 apply (simp add:ag_nsum_1_nonzeroTr[of n l])
 done
 
-constdefs (structure R)
- set_mult::"[_ , 'a set, 'a set] \<Rightarrow> 'a set"
- "set_mult R A B == {z. \<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>r y = z}"
+definition
+  set_mult :: "[_ , 'a set, 'a set] \<Rightarrow> 'a set" where
+  "set_mult R A B = {z. \<exists>x\<in>A. \<exists>y\<in>B.  x \<cdot>\<^sub>r\<^bsub>R\<^esub> y = z}"
 
- sum_mult::"[_ , 'a set, 'a set] \<Rightarrow> 'a set"
-  "sum_mult R A B == {x. \<exists>n. \<exists>f \<in> {j. j \<le> (n::nat)}
+definition
+  sum_mult :: "[_ , 'a set, 'a set] \<Rightarrow> 'a set" where
+  "sum_mult R A B = {x. \<exists>n. \<exists>f \<in> {j. j \<le> (n::nat)}
                            \<rightarrow> set_mult R A B. nsum R f n = x}"  
 (*
  zero_fini::"[_ , 'a set, 'a set] \<Rightarrow> (nat \<Rightarrow> 'a)"
@@ -2879,10 +2877,9 @@ apply (rule ballI, simp)
 apply (rule ballI) apply simp
 done
 
-constdefs
- mprod_expR::"[('b, 'm) Ring_scheme, nat \<Rightarrow> nat, nat \<Rightarrow> 'b, nat] 
-              \<Rightarrow> 'b"                 
-  "mprod_expR R e f n == nprod R (\<lambda>j. ((f j)^\<^bsup>R (e j)\<^esup>)) n"
+definition
+  mprod_expR :: "[('b, 'm) Ring_scheme, nat \<Rightarrow> nat, nat \<Rightarrow> 'b, nat] \<Rightarrow> 'b" where
+  "mprod_expR R e f n = nprod R (\<lambda>j. ((f j)^\<^bsup>R (e j)\<^esup>)) n"
 
  (** Note that e j is a natural number for all j in Nset n **)
 
@@ -3069,14 +3066,15 @@ locale TwoRings = Ring +
        assumes secondR: "Ring R'"
 
 
-constdefs 
- i_contract::"['a \<Rightarrow> 'b, ('a, 'm1) Ring_scheme, ('b, 'm2) Ring_scheme,
-  'b set]  \<Rightarrow> 'a set"
-   "i_contract f R R' J == invim f (carrier R) J"
+definition
+  i_contract :: "['a \<Rightarrow> 'b, ('a, 'm1) Ring_scheme, ('b, 'm2) Ring_scheme,
+    'b set]  \<Rightarrow> 'a set" where
+  "i_contract f R R' J = invim f (carrier R) J"
 
- i_extension::"['a \<Rightarrow> 'b, ('a, 'm1) Ring_scheme, ('b, 'm2) Ring_scheme,
-           'a set] \<Rightarrow> 'b set"
- "i_extension f R R' I == sum_mult R' (f ` I) (carrier R')"
+definition
+  i_extension :: "['a \<Rightarrow> 'b, ('a, 'm1) Ring_scheme, ('b, 'm2) Ring_scheme,
+           'a set] \<Rightarrow> 'b set" where
+  "i_extension f R R' I = sum_mult R' (f ` I) (carrier R')"
 
 lemma (in TwoRings) i_contract_sub:"\<lbrakk>f \<in> rHom R R'; ideal R' J \<rbrakk> \<Longrightarrow>
                        (i_contract f R R' J) \<subseteq> carrier R"
@@ -3244,11 +3242,12 @@ done
 
 section "11. complete system of representatives"
 
-constdefs (structure R)
- csrp_fn :: "[_, 'a set] \<Rightarrow> 'a set \<Rightarrow> 'a"
-  "csrp_fn R I == \<lambda>x\<in>carrier (R /\<^sub>r I). (if x = I then \<zero> else SOME y. y \<in> x)"
+definition
+  csrp_fn :: "[_, 'a set] \<Rightarrow> 'a set \<Rightarrow> 'a" where
+  "csrp_fn R I = (\<lambda>x\<in>carrier (R /\<^sub>r I). (if x = I then \<zero>\<^bsub>R\<^esub> else SOME y. y \<in> x))"
  
- csrp :: "[_ , 'a set] \<Rightarrow> 'a set"
+definition
+  csrp :: "[_ , 'a set] \<Rightarrow> 'a set" where
   "csrp R I == (csrp_fn R I) ` (carrier (R /\<^sub>r I))"
 
 (** complete system of representatives having 1-1 correspondence with
@@ -3346,22 +3345,25 @@ section "12. polynomial ring"
 text{* In this section, we treat a ring of polynomials over a ring S.
        Numbers are of type ant *}
 
-constdefs
-  pol_coeff::"[('a, 'more) Ring_scheme, (nat \<times> (nat \<Rightarrow> 'a))] \<Rightarrow> bool"
-   "pol_coeff S c ==  (\<forall>j \<le> (fst c). (snd c) j \<in> carrier S)"
+definition
+  pol_coeff :: "[('a, 'more) Ring_scheme, (nat \<times> (nat \<Rightarrow> 'a))] \<Rightarrow> bool" where
+  "pol_coeff S c \<longleftrightarrow> (\<forall>j \<le> (fst c). (snd c) j \<in> carrier S)"
 
-  c_max::"[('a, 'more) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat"
-  "c_max S c == if {j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>} = {} then 0 else
-                   n_max {j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>}"
+definition
+  c_max :: "[('a, 'more) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat" where
+  "c_max S c = (if {j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>} = {} then 0 else
+                   n_max {j. j \<le> (fst c) \<and> (snd c) j \<noteq> \<zero>\<^bsub>S\<^esub>})"
 
- polyn_expr::"[('a, 'more) Ring_scheme, 'a, nat, nat \<times> (nat \<Rightarrow> 'a)]  \<Rightarrow> 'a"
- "polyn_expr R X k c == nsum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R j\<^esup>)) k"
+definition
+  polyn_expr :: "[('a, 'more) Ring_scheme, 'a, nat, nat \<times> (nat \<Rightarrow> 'a)]  \<Rightarrow> 'a" where
+  "polyn_expr R X k c == nsum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R j\<^esup>)) k"
 
-  algfree_cond::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 
-                                                'a] \<Rightarrow> bool"
-  "algfree_cond R S X == \<forall>c. pol_coeff S c \<and> (\<forall>k \<le> (fst c).  
+definition
+  algfree_cond :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme,
+                                                'a] \<Rightarrow> bool" where
+  "algfree_cond R S X \<longleftrightarrow> (\<forall>c. pol_coeff S c \<and> (\<forall>k \<le> (fst c).  
              (nsum R (\<lambda>j. ((snd c) j) \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R j\<^esup>)) k = \<zero>\<^bsub>R\<^esub> \<longrightarrow> 
-             (\<forall>j \<le> k. (snd c) j = \<zero>\<^bsub>S\<^esub>)))"
+             (\<forall>j \<le> k. (snd c) j = \<zero>\<^bsub>S\<^esub>))))"
 
 locale PolynRg = Ring +
        fixes S (structure)
@@ -3721,15 +3723,15 @@ lemma (in PolynRg) polyn_add_n:"\<lbrakk>pol_coeff S (n, f); pol_coeff S (n, g)\
            nsum R (\<lambda>j. ((f j) \<plusminus>\<^bsub>S\<^esub> (g j)) \<cdot>\<^sub>r (X^\<^bsup>R j\<^esup>)) n"
 by (simp add:polyn_addTr)
 
-constdefs
-  add_cf::"[('a, 'm) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a), nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow>
-                     nat \<times> (nat \<Rightarrow> 'a)"
-"add_cf S c d == 
-  if (fst c) < (fst d) then ((fst d),  \<lambda>j. (if j \<le> (fst c)
-                  then (((snd c) j) \<plusminus>\<^bsub>S\<^esub> ((snd d) j)) else ((snd d) j)))
-   else if (fst c) = (fst d) then ((fst c), \<lambda>j. ((snd c) j \<plusminus>\<^bsub>S\<^esub> (snd d) j))
-   else ((fst c), \<lambda>j. (if j \<le> (fst d) then 
-                        ((snd c) j \<plusminus>\<^bsub>S\<^esub> (snd d) j) else ((snd c) j)))" 
+definition
+  add_cf :: "[('a, 'm) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a), nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow>
+                     nat \<times> (nat \<Rightarrow> 'a)" where
+  "add_cf S c d =
+    (if (fst c) < (fst d) then ((fst d),  \<lambda>j. (if j \<le> (fst c)
+                                               then (((snd c) j) \<plusminus>\<^bsub>S\<^esub> ((snd d) j)) else ((snd d) j)))
+     else if (fst c) = (fst d) then ((fst c), \<lambda>j. ((snd c) j \<plusminus>\<^bsub>S\<^esub> (snd d) j))
+     else ((fst c), \<lambda>j. (if j \<le> (fst d) then 
+                        ((snd c) j \<plusminus>\<^bsub>S\<^esub> (snd d) j) else ((snd c) j))))" 
 
 lemma (in PolynRg) add_cf_pol_coeff:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
       \<Longrightarrow>  pol_coeff S (add_cf S c d)"
@@ -3975,9 +3977,9 @@ apply (subst polyn_minus_nsum)
 apply (simp_all add: polyn_expr_def)
 done
 
-constdefs
- m_cf ::"[('a, 'm) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)"
- "m_cf S c == (fst c, (\<lambda>j. (-\<^sub>a\<^bsub>S\<^esub> ((snd c) j))))"  
+definition
+  m_cf :: "[('a, 'm) Ring_scheme, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" where
+  "m_cf S c = (fst c, (\<lambda>j. (-\<^sub>a\<^bsub>S\<^esub> ((snd c) j))))"  
 
 lemma (in PolynRg) m_cf_pol_coeff:"pol_coeff S c \<Longrightarrow>
                               pol_coeff S (m_cf S c)"
@@ -4023,19 +4025,21 @@ subsection "multiplication of pol_exprs"
 
 subsection "multiplication"
 
-constdefs 
-  ext_cf ::"[('a, 'm) Ring_scheme, nat, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> 
-                                                  nat \<times> (nat \<Rightarrow> 'a)"
- "ext_cf S n c == (n + fst c, \<lambda>i. if n \<le> i then (snd c) (sliden n i) else \<zero>\<^bsub>S\<^esub>)"
+definition
+  ext_cf :: "[('a, 'm) Ring_scheme, nat, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> 
+                                                  nat \<times> (nat \<Rightarrow> 'a)" where
+  "ext_cf S n c = (n + fst c, \<lambda>i. if n \<le> i then (snd c) (sliden n i) else \<zero>\<^bsub>S\<^esub>)"
 
   (* 0         0 g(0)         g(m) 
      0            n           m+n  , where (m, g) is a pol_coeff  **)
 
-  sp_cf::"[('a, 'm) Ring_scheme, 'a, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)"
-  "sp_cf S a c == (fst c, \<lambda>j. a \<cdot>\<^sub>r\<^bsub>S\<^esub> ((snd c) j))" (* scalar times cf *)
+definition
+  sp_cf :: "[('a, 'm) Ring_scheme, 'a, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" where
+  "sp_cf S a c = (fst c, \<lambda>j. a \<cdot>\<^sub>r\<^bsub>S\<^esub> ((snd c) j))" (* scalar times cf *)
 
-  special_cf ::"('a, 'm) Ring_scheme \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" ("C\<^sub>0")
-  "C\<^sub>0 S == (0, \<lambda>j. 1\<^sub>r\<^bsub>S\<^esub>)"
+definition
+  special_cf :: "('a, 'm) Ring_scheme \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" ("C\<^sub>0") where
+  "C\<^sub>0 S = (0, \<lambda>j. 1\<^sub>r\<^bsub>S\<^esub>)"
 
 lemma (in PolynRg) special_cf_pol_coeff:"pol_coeff S (C\<^sub>0 S)"  
 apply (cut_tac subring, frule subring_Ring)
@@ -4830,17 +4834,18 @@ apply (simp add:polyn_expr_short[of c k],
        simp)
 done
 
-constdefs
- cf_sol::"[('a, 'b) Ring_scheme, ('a, 'b1) Ring_scheme, 'a, 'a,
-                nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> bool"
- "cf_sol R S X p c == pol_coeff S c \<and> (p = polyn_expr R X (fst c) c)"
+definition
+  cf_sol :: "[('a, 'b) Ring_scheme, ('a, 'b1) Ring_scheme, 'a, 'a,
+                nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> bool" where
+ "cf_sol R S X p c \<longleftrightarrow> pol_coeff S c \<and> (p = polyn_expr R X (fst c) c)"
 
-constdefs
-deg_n ::"[('a, 'b) Ring_scheme, ('a, 'b1) Ring_scheme, 'a, 'a] \<Rightarrow> nat"
- "deg_n R S X p == c_max S (SOME c. cf_sol R S X p c)" 
+definition
+  deg_n ::"[('a, 'b) Ring_scheme, ('a, 'b1) Ring_scheme, 'a, 'a] \<Rightarrow> nat" where
+  "deg_n R S X p = c_max S (SOME c. cf_sol R S X p c)" 
 
- deg ::"[('a, 'b) Ring_scheme, ('a, 'b1) Ring_scheme, 'a, 'a] \<Rightarrow> ant"
- "deg R S X p == if p = \<zero>\<^bsub>R\<^esub> then -\<infinity> else (an (deg_n R S X p))"
+definition
+  deg ::"[('a, 'b) Ring_scheme, ('a, 'b1) Ring_scheme, 'a, 'a] \<Rightarrow> ant" where
+  "deg R S X p = (if p = \<zero>\<^bsub>R\<^esub> then -\<infinity> else (an (deg_n R S X p)))"
 
 lemma (in PolynRg) ex_cf_sol:"p \<in> carrier R \<Longrightarrow>
                                     \<exists>c. cf_sol R S X p c"

@@ -29,10 +29,10 @@ theory Algebra3 imports Algebra2 begin
 
 section "5. Setproducts"
        
-constdefs (structure G)
-  commutators:: "_ \<Rightarrow> 'a set"
-     "commutators G == {z. \<exists> a\<in> (carrier G). \<exists>b \<in> (carrier G). 
-                        ((a \<cdot> b) \<cdot> (\<rho> a)) \<cdot> (\<rho> b) = z}" 
+definition
+  commutators:: "_ \<Rightarrow> 'a set" where
+  "commutators G = {z. \<exists> a \<in> carrier G. \<exists>b \<in> carrier G.
+                        ((a \<cdot>\<^bsub>G\<^esub> b) \<cdot>\<^bsub>G\<^esub> (\<rho>\<^bsub>G\<^esub> a)) \<cdot>\<^bsub>G\<^esub> (\<rho>\<^bsub>G\<^esub> b) = z}" 
 
 lemma (in Group) contain_commutator:"\<lbrakk>G \<guillemotright> H; (commutators G) \<subseteq> H\<rbrakk> \<Longrightarrow> G \<triangleright> H" 
 apply (rule cond_nsg[of "H"], assumption)
@@ -56,15 +56,14 @@ apply (rule ballI)+
  apply assumption+
 done
 
-constdefs (structure G)
- s_top :: "[_ , 'a set, 'a set] \<Rightarrow> 'a set "  
-  "s_top G H K == {z. \<exists>x \<in> H. \<exists>y \<in> K. (x \<cdot> y = z)}"
+definition
+  s_top :: "[_ , 'a set, 'a set] \<Rightarrow> 'a set " where
+  "s_top G H K = {z. \<exists>x \<in> H. \<exists>y \<in> K. (x \<cdot>\<^bsub>G\<^esub> y = z)}"
 
-syntax 
-  "@S_TOP":: "['a set, ('a, 'm) Group_scheme, 'a set] \<Rightarrow> 'a set"
-            ("(3_ \<struct>\<^bsub>_\<^esub> _)" [66,66,67]66)   
-translations
-   "H \<struct>\<^bsub>G\<^esub> K" == "s_top G H K" 
+abbreviation
+  S_TOP :: "['a set, ('a, 'm) Group_scheme, 'a set] \<Rightarrow> 'a set"
+    ("(3_ \<struct>\<^bsub>_\<^esub> _)" [66,66,67]66) where
+  "H \<struct>\<^bsub>G\<^esub> K == s_top G H K" 
 
 lemma (in Group) s_top_induced:"\<lbrakk>G \<guillemotright> L; H \<subseteq> L; K \<subseteq> L\<rbrakk> \<Longrightarrow> 
                                         H \<struct>\<^bsub>(Gp G L)\<^esub> K =  H \<struct>\<^bsub>G\<^esub> K"
@@ -923,15 +922,13 @@ apply (simp add:idmap_def extensional_def)
 apply (simp add:Pi_def mult_closed)
 done
 
-syntax 
-  "@IDMAP"::"('a, 'more) Group_scheme \<Rightarrow> ('a \<Rightarrow> 'a)"
-                ("(I\<^bsub>_\<^esub>)" [999]1000)
+abbreviation
+  IDMAP ("(I\<^bsub>_\<^esub>)" [999]1000) where
+   "I\<^bsub>F\<^esub> == idmap (carrier F)"
 
-  "@INVFUN"::"[('a, 'm1) Group_scheme, ('b, 'm) Group_scheme, 'a \<Rightarrow> 'b]
-              \<Rightarrow> ('b \<Rightarrow> 'a)" ("(3Ifn _ _ _)" [88,88,89]88)
-translations
-   "I\<^bsub>F\<^esub>" == "idmap (carrier F)"
-   "Ifn F G f" == "invfun (carrier F) (carrier G) f"
+abbreviation
+  INVFUN ("(3Ifn _ _ _)" [88,88,89]88) where
+  "Ifn F G f == invfun (carrier F) (carrier G) f"
 
 lemma IdTr1:"\<lbrakk>Group F; x \<in> carrier F\<rbrakk> \<Longrightarrow> (I\<^bsub>F\<^esub>) x = x"
 apply (simp add:idmap_def)
@@ -1022,7 +1019,7 @@ apply (simp add:gHom)
  apply (simp add:ghom_inv_inv, simp add:Group.r_i)
 done
 
-lemma Group_coim:"\<lbrakk>Group F; Group G; f \<in> gHom F G\<rbrakk> \<Longrightarrow> Group ( F/ gker\<^bsub>F,G\<^esub> f)"
+lemma Group_coim:"\<lbrakk>Group F; Group G; f \<in> gHom F G\<rbrakk> \<Longrightarrow> Group ( F / gker\<^bsub>F,G\<^esub> f)"
 by (frule gker_normal[of "F" "G" "f"], assumption+,
        simp add:Group.Group_Qg[of "F" "gker\<^bsub>F,G\<^esub> f"])
 
@@ -1310,17 +1307,15 @@ apply (frule_tac a1 = a in gkernTr11[THEN sym, of "F" "G" "f"], assumption+,
 apply (simp add:iim_def)
 done
 
-constdefs
- induced_ghom ::"[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 
-                ('a  \<Rightarrow> 'b)] \<Rightarrow> ('a set  \<Rightarrow> 'b )"
-  "induced_ghom F G f == \<lambda>X\<in> (set_rcs F (gker\<^bsub>F,G\<^esub> f)). f (SOME  x. x \<in> X)"
+definition
+  induced_ghom :: "[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 
+                ('a  \<Rightarrow> 'b)] \<Rightarrow> ('a set  \<Rightarrow> 'b )" where
+  "induced_ghom F G f = (\<lambda>X\<in> (set_rcs F (gker\<^bsub>F,G\<^esub> f)). f (SOME  x. x \<in> X))"
 
-syntax 
- "@INDUCED_GHOM"::"['a \<Rightarrow> 'b, ('a, 'm) Group_scheme, ('b, 'm1) Group_scheme]
- \<Rightarrow>  ('a set  \<Rightarrow> 'b )" ("(3_\<dieresis>\<^bsub>_,_\<^esub>)" [82,82,83]82)  
-
-translations
-    "f\<dieresis>\<^bsub>F,G\<^esub> " == "induced_ghom F G f"
+abbreviation
+  INDUCED_GHOM :: "['a \<Rightarrow> 'b, ('a, 'm) Group_scheme, ('b, 'm1) Group_scheme]
+    \<Rightarrow>  ('a set  \<Rightarrow> 'b )" ("(3_\<dieresis>\<^bsub>_,_\<^esub>)" [82,82,83]82) where
+  "f\<dieresis>\<^bsub>F,G\<^esub> == induced_ghom F G f"
 
 lemma induced_ghom_someTr:"\<lbrakk>Group F; Group G; f \<in> gHom F G; 
 X \<in> set_rcs F (gker\<^bsub>F,G\<^esub> f)\<rbrakk> \<Longrightarrow> f (SOME xa. xa \<in> X) \<in> f `(carrier F)"
@@ -1370,7 +1365,7 @@ done
 
 lemma inducedHom:"\<lbrakk>Group F; Group G; f \<in> gHom F G\<rbrakk> \<Longrightarrow> 
                          (f\<dieresis>\<^bsub>F,G\<^esub>) \<in> gHom (F/(gker\<^bsub>F,G\<^esub> f)) G"
-apply (simp add: gHom_def [of "F/(gker\<^bsub>F,G\<^esub> f)" "G"])
+apply (simp add: gHom_def [of "F/ gker\<^bsub>F,G\<^esub> f" "G"])
 apply (rule conjI)
 apply (simp add:induced_ghom_def extensional_def)
  apply (rule allI) apply (rule impI)+ apply (simp add:Qg_def)
@@ -1428,7 +1423,7 @@ done
 
 lemma homomtr: "\<lbrakk>Group F; Group G; f \<in> gHom F G\<rbrakk> \<Longrightarrow> 
                   (f\<dieresis>\<^bsub>F,G\<^esub>) \<in> gHom (F / (gker\<^bsub>F,G\<^esub> f)) (Img\<^bsub>F,G\<^esub> f)"
-apply (simp add:gHom_def [of "F / gker\<^bsub>F,G\<^esub> f" _])
+apply (simp add:gHom_def [of "F / (gker\<^bsub>F,G\<^esub> f)" _])
 apply (rule conjI)
 apply (simp add:induced_ghom_def extensional_def)
  apply (rule allI, (rule impI)+, simp add:Qg_def)
@@ -1468,11 +1463,11 @@ done
 
 subsection "11 Homomorphism therems"
 
-constdefs
+definition
   iota :: "('a, 'm) Group_scheme \<Rightarrow> ('a \<Rightarrow> 'a)"  
 (* should be used exclusively as an inclusion map *)
-          ("(\<iota>\<^bsub>_\<^esub>)" [1000]999) 
-   "\<iota>\<^bsub>F\<^esub> == \<lambda>x \<in> (carrier F). x"
+          ("(\<iota>\<^bsub>_\<^esub>)" [1000]999) where
+  "\<iota>\<^bsub>F\<^esub> = (\<lambda>x \<in> carrier F. x)"
 
 lemma iotahomTr0:"\<lbrakk>Group G; G \<guillemotright> H; h \<in> H \<rbrakk> \<Longrightarrow> (\<iota>\<^bsub>(Gp G H)\<^esub>) h = h"
 apply (simp add:iota_def)
@@ -1515,7 +1510,7 @@ apply (frule homom2img [of "F" "G" "f"], assumption+)
 apply (simp add:gbijec_def)
 apply (frule hom_to_Img [of "F" "G" "f"], assumption+)
 apply (frule Group_coim[of "F" "G" "f"], assumption+,
-       frule gHom_func[of "F / gker\<^bsub>F,G\<^esub> f" "Img\<^bsub>F,G\<^esub> f" 
+       frule gHom_func[of "F / (gker\<^bsub>F,G\<^esub> f)" "Img\<^bsub>F,G\<^esub> f" 
         "f\<dieresis>\<^bsub>F,Img\<^bsub>F,G\<^esub> f\<^esub>"], simp add:Group_Img, assumption)
 apply (rule conjI)
  (** gsurjec **)  
@@ -1657,15 +1652,14 @@ apply (simp add:Group.Gp_carrier)
 apply simp
 done
 
-constdefs
-  Qmp :: "[('a, 'm) Group_scheme, 'a set, 'a set] \<Rightarrow> ('a set \<Rightarrow> 'a set)"
-   "Qmp G H N == \<lambda>X\<in> set_rcs G H. {z. \<exists> x \<in> X. \<exists> y \<in> N. (y \<cdot>\<^bsub>G\<^esub> x = z)}"
+definition
+  Qmp :: "[('a, 'm) Group_scheme, 'a set, 'a set] \<Rightarrow> ('a set \<Rightarrow> 'a set)" where
+  "Qmp G H N = (\<lambda>X\<in> set_rcs G H. {z. \<exists> x \<in> X. \<exists> y \<in> N. (y \<cdot>\<^bsub>G\<^esub> x = z)})"
   
-syntax
-   "@QP" :: "['a Group, 'a set, 'a set] \<Rightarrow> ('a set \<Rightarrow> 'a set)"
-               ("(3Qm\<^bsub>_ _,_\<^esub>)" [82,82,83]82)
-translations
-   "Qm\<^bsub>G H,N\<^esub>" == "Qmp G H N"
+abbreviation
+  QP :: "[_, 'a set, 'a set] \<Rightarrow> ('a set \<Rightarrow> 'a set)"
+    ("(3Qm\<^bsub>_ _,_\<^esub>)" [82,82,83]82) where
+  "Qm\<^bsub>G H,N\<^esub> == Qmp G H N"
 
  (* "\<lbrakk> Group G; G \<triangleright> H; G \<triangleright> N; H \<subseteq> N \<rbrakk> \<Longrightarrow>
            Qmp\<^bsub>G H,N\<^esub>  \<in> gHom (G / H) (G / N)"  *)
@@ -1764,16 +1758,6 @@ apply (rule ballI)
  apply (frule_tac a = a in rcs_in_set_rcs[of "H"], assumption+,
         blast)
 done
-(*
-constdefs
-  S_d::"[('a, 'm) Group_scheme, 'a set, 'a set] \<Rightarrow> 'a set set"
-   "S_d G N H == carrier ((Gp G N) / H)"
-  
-syntax
-   "@S_D":: "['a set, ('a, 'm) Group_scheme, 'a set] \<Rightarrow> 'a set set"
-               ("(3_ '/'\<^bsub>s_\<^esub> _)" [82,82,83]82)
-translations
-   "N /\<^bsub>sG\<^esub> H" == "S_d G N H" *)
 
 lemma (in Group) gkerQmp:"\<lbrakk>G \<triangleright> H; G \<triangleright> N; H \<subseteq> N \<rbrakk> \<Longrightarrow>
                gker\<^bsub>(G / H),(G / N)\<^esub> (Qm\<^bsub>G H,N\<^esub>) = carrier ((Gp G N)/ H)"   
@@ -1879,12 +1863,11 @@ done
 
 subsection " An automorphism groups"
 
-constdefs (structure G)
-   automg :: "_  \<Rightarrow> 
+definition
+  automg :: "_  \<Rightarrow> 
       \<lparr> carrier :: ('a \<Rightarrow> 'a) set, top :: ['a \<Rightarrow> 'a,'a \<Rightarrow> 'a] \<Rightarrow> ('a \<Rightarrow> 'a),
-        iop :: ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a), one :: ('a \<Rightarrow> 'a)\<rparr>"
- 
-      "automg G  ==  \<lparr> carrier = {f. gbij\<^bsub>G,G\<^esub> f}, 
+        iop :: ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a), one :: ('a \<Rightarrow> 'a)\<rparr>" where
+  "automg G =  \<lparr> carrier = {f. gbij\<^bsub>G,G\<^esub> f}, 
         top = \<lambda>g\<in>{f. gbij\<^bsub>G,G\<^esub> f}. \<lambda>f\<in>{f. gbij\<^bsub>G,G\<^esub> f}. ( g \<circ>\<^bsub>G\<^esub> f), 
         iop = \<lambda>f\<in>{f. gbij\<^bsub>G,G\<^esub> f}. (Ifn G G f), one = I\<^bsub>G\<^esub> \<rparr>" 
 
@@ -1908,14 +1891,14 @@ done
 
 subsection "complete system of representatives"
 
-constdefs (structure G)
-   
- gcsrp::"_ \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool"
- "gcsrp G H S == \<exists>f. (bij_to f (set_rcs G H) S)"
+definition
+  gcsrp :: "_ \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "gcsrp G H S == \<exists>f. (bij_to f (set_rcs G H) S)"
 (** G_csrp is defined iff H is a nsg **)
 
- gcsrp_map::"_ \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> 'a"
- "gcsrp_map G H == \<lambda>X\<in>(set_rcs G H). SOME x. x \<in> X"
+definition
+  gcsrp_map::"_ \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> 'a" where
+  "gcsrp_map G H == \<lambda>X\<in>(set_rcs G H). SOME x. x \<in> X"
 
 lemma (in Group) gcsrp_func:"G \<guillemotright> H \<Longrightarrow> gcsrp_map G H \<in> set_rcs G H \<rightarrow> UNIV"  
 apply (rule univar_func_test)
@@ -1958,9 +1941,8 @@ done
 lemma (in Group) gcsrp_exists:"G \<guillemotright> H \<Longrightarrow> \<exists>S. gcsrp G H S"
 by (frule image_gcsrp[of "H"], blast)
 
-constdefs (structure G)
-
- gcsrp_top::"[_ , 'a set] \<Rightarrow>  'a \<Rightarrow>  'a  \<Rightarrow> 'a"
+definition
+ gcsrp_top :: "[_ , 'a set] \<Rightarrow>  'a \<Rightarrow>  'a  \<Rightarrow> 'a" where
  "gcsrp_top G H == \<lambda>x \<in> ((gcsrp_map G H) `(set_rcs G H)).
                      \<lambda>y \<in> ((gcsrp_map G H) `(set_rcs G H)).
  gcsrp_map G H 
@@ -1968,17 +1950,20 @@ constdefs (structure G)
   ((invfun (set_rcs G H) ((gcsrp_map G H) `(set_rcs G H)) (gcsrp_map G H)) x) 
   ((invfun (set_rcs G H) ((gcsrp_map G H) `(set_rcs G H)) (gcsrp_map G H)) y))"
 
- gcsrp_iop::"[_ , 'a set] \<Rightarrow> 'a \<Rightarrow> 'a"
- "gcsrp_iop G H == \<lambda>x \<in> ((gcsrp_map G H) `(set_rcs G H)).
-  gcsrp_map G H 
-  (c_iop G H
-  ((invfun (set_rcs G H) ((gcsrp_map G H) `(set_rcs G H)) (gcsrp_map G H)) x))"
+definition
+  gcsrp_iop::"[_ , 'a set] \<Rightarrow> 'a \<Rightarrow> 'a" where
+  "gcsrp_iop G H = (\<lambda>x \<in> ((gcsrp_map G H) `(set_rcs G H)).
+    gcsrp_map G H 
+    (c_iop G H
+    ((invfun (set_rcs G H) ((gcsrp_map G H) `(set_rcs G H)) (gcsrp_map G H)) x)))"
 
-  gcsrp_one::"[_ , 'a set] \<Rightarrow> 'a" 
-  "gcsrp_one G H == gcsrp_map G H H"
+definition
+  gcsrp_one::"[_ , 'a set] \<Rightarrow> 'a" where
+  "gcsrp_one G H = gcsrp_map G H H"
 
- Gcsrp::"_ \<Rightarrow> 'a set \<Rightarrow> 'a Group"
- "Gcsrp G N == \<lparr>carrier = (gcsrp_map G N) `(set_rcs G N),
+definition
+  Gcsrp :: "_ \<Rightarrow> 'a set \<Rightarrow> 'a Group" where
+  "Gcsrp G N = \<lparr>carrier = (gcsrp_map G N) `(set_rcs G N),
                 top = gcsrp_top G N, iop = gcsrp_iop G N, one = gcsrp_one G N\<rparr>"
 
 lemma (in Group) gcsrp_top_closed:"\<lbrakk>Group G; G \<triangleright> N;
@@ -2307,64 +2292,68 @@ done
 
 section "15. chain of groups I"  
 
-constdefs (structure G)
-  d_gchain:: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool"
-    "d_gchain G n g  == if n=0 then G \<guillemotright> g 0 else (\<forall>l\<le> n. G \<guillemotright> (g l) \<and> 
-            (\<forall>l \<le> (n - Suc 0). g (Suc l) \<subseteq> g l ))" 
+definition
+  d_gchain :: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool" where
+  "d_gchain G n g = (if n=0 then G \<guillemotright> g 0 else (\<forall>l\<le> n. G \<guillemotright> (g l) \<and> 
+            (\<forall>l \<le> (n - Suc 0). g (Suc l) \<subseteq> g l )))" 
             (**  g 0 \<supseteq> \<dots> \<supseteq> g n  **)
 
-constdefs (structure G)
-  D_gchain:: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool"
-  "D_gchain G n g == if n = 0 then G \<guillemotright> (g 0) else (d_gchain G n g) \<and> 
-      (\<forall>l \<le> (n - Suc 0). (g (Suc l)) \<subset> (g l))"
+definition
+  D_gchain :: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool" where
+  "D_gchain G n g = (if n = 0 then G \<guillemotright> (g 0) else (d_gchain G n g) \<and> 
+      (\<forall>l \<le> (n - Suc 0). (g (Suc l)) \<subset> (g l)))"
             (**  g 0 \<supset> \<dots> \<supset> g n **) 
 
-constdefs (structure G)
- td_gchain::"[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool"
- "td_gchain G n g == if n=0 then g 0 = carrier G \<and> g 0 = {\<one>} else 
-       d_gchain G n g \<and> g 0 = carrier G \<and> g n = {\<one>}"
+definition
+  td_gchain :: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool" where
+  "td_gchain G n g = (if n=0 then g 0 = carrier G \<and> g 0 = {\<one>\<^bsub>G\<^esub>} else 
+       d_gchain G n g \<and> g 0 = carrier G \<and> g n = {\<one>\<^bsub>G\<^esub>})"
            (**  g 0 \<supseteq> \<dots> \<supseteq> g n with g 0 = carrier G and g n = {e}  **)
-constdefs (structure G)
- tD_gchain::"[_, nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool"
- "tD_gchain G n g == if n=0 then g 0 = carrier G \<and> g 0 = {\<one>} else 
-        D_gchain G n g \<and> (g 0 = carrier G) \<and> (g n = {\<one>})" 
+
+definition
+  tD_gchain :: "[_, nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool" where
+  "tD_gchain G n g = (if n=0 then g 0 = carrier G \<and> g 0 = {\<one>\<^bsub>G\<^esub>} else 
+        D_gchain G n g \<and> (g 0 = carrier G) \<and> (g n = {\<one>\<^bsub>G\<^esub>}))" 
            (**  g 0 \<supset> \<dots> \<supset> g n with g 0 = carrier G and g n = {e}  **)
 
- w_cmpser::"[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool"
-  "w_cmpser G n g == if n = 0 then d_gchain G n g else d_gchain G n g \<and>  
-    (\<forall>l \<le> (n - 1). (Gp G (g l)) \<triangleright> (g (Suc l)))" 
+definition
+  w_cmpser :: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool" where
+  "w_cmpser G n g = (if n = 0 then d_gchain G n g else d_gchain G n g \<and>  
+    (\<forall>l \<le> (n - 1). (Gp G (g l)) \<triangleright> (g (Suc l))))" 
            (**  g 0 \<rhd> \<dots> \<rhd> g n ** with g l \<supseteq> g (Suc l) **) 
 
-
- W_cmpser::"[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool"
-  "W_cmpser G n g == if n = 0 then d_gchain G 0 g else D_gchain G n g \<and> 
-  (\<forall>l \<le> (n - 1). (Gp G (g l)) \<triangleright> (g (Suc l)))" 
+definition
+  W_cmpser :: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool" where
+  "W_cmpser G n g = (if n = 0 then d_gchain G 0 g else D_gchain G n g \<and> 
+    (\<forall>l \<le> (n - 1). (Gp G (g l)) \<triangleright> (g (Suc l))))" 
            (**  g 0 \<rhd> \<dots> \<rhd> g n  with g i \<supset> g (Suc i) **) 
 
- tw_cmpser::"[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool"
-  "tw_cmpser G n g == if n = 0 then td_gchain G 0 g else td_gchain G n g \<and> 
-  (\<forall>l \<le> (n - 1). (Gp G (g l)) \<triangleright> (g (Suc l)))" 
+definition
+  tw_cmpser :: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool" where
+  "tw_cmpser G n g = (if n = 0 then td_gchain G 0 g else td_gchain G n g \<and> 
+    (\<forall>l \<le> (n - 1). (Gp G (g l)) \<triangleright> (g (Suc l))))" 
          (**  g 0 \<rhd> \<dots> \<rhd> g n with g 0 = carrier G and g n = {e}  **) 
 
- tW_cmpser::"[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool"
- "tW_cmpser G n g == if n = 0 then td_gchain G 0 g else tD_gchain G n g \<and> 
-     (\<forall>l \<le> (n - 1). (Gp G (g l)) \<triangleright> (g (Suc l)))"
+definition
+  tW_cmpser :: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> bool" where
+  "tW_cmpser G n g = (if n = 0 then td_gchain G 0 g else tD_gchain G n g \<and> 
+     (\<forall>l \<le> (n - 1). (Gp G (g l)) \<triangleright> (g (Suc l))))"
     (* g 0 \<rhd> \<dots> \<rhd> g n with g 0 = carrier G, g n = {e} and g (Suc i) \<subset> g i*) 
 
- Qw_cmpser::"[_ , nat \<Rightarrow> 'a set] \<Rightarrow> 
-                                (nat \<Rightarrow> ('a set) Group)" 
-  "Qw_cmpser G f l == ((Gp G (f l)) / (f (Suc l)))" 
+definition
+  Qw_cmpser :: "[_ , nat \<Rightarrow> 'a set] \<Rightarrow> (nat \<Rightarrow> ('a set) Group)" where
+  "Qw_cmpser G f l = ((Gp G (f l)) / (f (Suc l)))" 
 
  (* f 0 \<rhd> \<dots> \<rhd> f (n+1), Qw_cmpser G n f is (f 0)/(f 1),\<dots>,f n/f (n+1) *)
 
-constdefs (structure G)
- red_chn:: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> (nat \<Rightarrow> 'a set)"  
- "red_chn G n f == SOME g. g \<in> {h.(tW_cmpser G (card (f ` {i. i \<le> n}) - 1) h)
-     \<and> h `{i. i \<le> (card (f ` {i. i \<le> n}) - 1)} = f `{i. i \<le> n}}"
+definition
+  red_chn :: "[_ , nat, (nat \<Rightarrow> 'a set)] \<Rightarrow> (nat \<Rightarrow> 'a set)" where
+  "red_chn G n f = (SOME g. g \<in> {h.(tW_cmpser G (card (f ` {i. i \<le> n}) - 1) h)
+    \<and> h `{i. i \<le> (card (f ` {i. i \<le> n}) - 1)} = f `{i. i \<le> n}})"
 
-  chain_cutout :: "[nat, (nat \<Rightarrow> 'a set) ]
-                                 \<Rightarrow> (nat \<Rightarrow> 'a set)"
-      "chain_cutout l f  == \<lambda>j. f (slide l j)"
+definition
+  chain_cutout :: "[nat, (nat \<Rightarrow> 'a set) ] \<Rightarrow> (nat \<Rightarrow> 'a set)" where
+  "chain_cutout l f = (\<lambda>j. f (slide l j))"
 
 lemma (in Group) d_gchainTr0:"\<lbrakk>0 < n; d_gchain G n f; k \<le> (n - 1)\<rbrakk>
                         \<Longrightarrow> f (Suc k) \<subseteq> f k"
@@ -2892,16 +2881,18 @@ apply (frule joint_W_cmpser [of "n" "f" "0" "g"], assumption+)
 apply simp
 done
 
-constdefs (structure G)
- simple_Group :: "_ \<Rightarrow> bool"
-    "simple_Group G == {N. G \<guillemotright> N} = {carrier G, {\<one>}}"
+definition
+  simple_Group :: "_ \<Rightarrow> bool" where
+  "simple_Group G \<longleftrightarrow> {N. G \<guillemotright> N} = {carrier G, {\<one>\<^bsub>G\<^esub>}}"
 
- compseries:: "[_ , nat, nat \<Rightarrow> 'a set] \<Rightarrow> bool"
-   "compseries G n f == tW_cmpser G n f \<and> (if n = 0 then f 0 = {\<one>} else 
-   (\<forall> i \<le> (n - 1). (simple_Group ((Gp G (f i))/(f (Suc i))))))"
+definition
+  compseries:: "[_ , nat, nat \<Rightarrow> 'a set] \<Rightarrow> bool" where
+  "compseries G n f \<longleftrightarrow> tW_cmpser G n f \<and> (if n = 0 then f 0 = {\<one>\<^bsub>G\<^esub>} else 
+    (\<forall>i \<le> (n - 1). (simple_Group ((Gp G (f i))/(f (Suc i))))))"
 
- length_twcmpser:: "[_ , nat, nat \<Rightarrow> 'a set] \<Rightarrow> nat"
-   "length_twcmpser G n f == card (f `{i. i \<le> n}) - Suc 0" 
+definition
+  length_twcmpser :: "[_ , nat, nat \<Rightarrow> 'a set] \<Rightarrow> nat" where
+  "length_twcmpser G n f = card (f `{i. i \<le> n}) - Suc 0" 
 
 
 lemma (in Group) compseriesTr0:"\<lbrakk>compseries G n f; i \<le> n\<rbrakk> \<Longrightarrow>
@@ -2961,9 +2952,9 @@ apply (rule equalityI)
  apply (cut_tac Nset_Suc [of "n"], simp)
 done
 
-constdefs
-  NfuncPair_neq_at::"[nat \<Rightarrow> 'a set, nat \<Rightarrow> 'a set, nat] \<Rightarrow> bool"
-    "NfuncPair_neq_at f g i == (f i \<noteq>  g i)" 
+definition
+  NfuncPair_neq_at::"[nat \<Rightarrow> 'a set, nat \<Rightarrow> 'a set, nat] \<Rightarrow> bool" where
+  "NfuncPair_neq_at f g i \<longleftrightarrow> f i \<noteq> g i" 
 
 lemma LeastTr0:"\<lbrakk> (i::nat) < (LEAST l. P (l))\<rbrakk> \<Longrightarrow> \<not> P (i)"
 apply (rule not_less_Least)
@@ -3399,13 +3390,14 @@ apply (frule_tac g = g in ex_W_cmpserTr3m1 [of "m" "f"])
 apply simp+ apply blast
 done
 
-constdefs (structure G) 
-  red_ch_cd::"[_ , nat \<Rightarrow> 'a set, nat, nat \<Rightarrow> 'a set ] \<Rightarrow> bool"
-    "red_ch_cd G f m g == tW_cmpser G (card (f ` {i. i \<le> m}) - 1) g \<and> 
+definition
+  red_ch_cd :: "[_ , nat \<Rightarrow> 'a set, nat, nat \<Rightarrow> 'a set ] \<Rightarrow> bool" where
+  "red_ch_cd G f m g \<longleftrightarrow> tW_cmpser G (card (f ` {i. i \<le> m}) - 1) g \<and> 
                  (g `{i . i \<le> (card (f ` {i. i \<le> m}) - 1)} = f` {i. i \<le> m})"
  
-  red_chain::"[_ , nat, nat \<Rightarrow> 'a set] \<Rightarrow> (nat \<Rightarrow> 'a set)"
-  "red_chain G m f == (SOME g. g \<in> {h. red_ch_cd G f m h})"
+definition
+  red_chain :: "[_ , nat, nat \<Rightarrow> 'a set] \<Rightarrow> (nat \<Rightarrow> 'a set)" where
+  "red_chain G m f = (SOME g. g \<in> {h. red_ch_cd G f m h})"
 
 lemma (in Group) red_chainTr0m1_1:"tw_cmpser G m f \<Longrightarrow> 
        (SOME g. g \<in> {h. red_ch_cd G f m h}) \<in> {h. red_ch_cd G f m h}"
@@ -3426,19 +3418,21 @@ done
 
 section "18. Chain of groups II"
 
-constdefs  
- Gchain :: "[nat, nat \<Rightarrow> (('a set), 'more) Group_scheme] \<Rightarrow> bool"
- "Gchain n g == \<forall>l \<le> n. Group (g l)"  
+definition
+  Gchain :: "[nat, nat \<Rightarrow> (('a set), 'more) Group_scheme] \<Rightarrow> bool" where
+  "Gchain n g \<longleftrightarrow> (\<forall>l \<le> n. Group (g l))"  
 
- isom_Gchains::"[nat, nat \<Rightarrow> nat, nat \<Rightarrow> (('a set), 'more) Group_scheme, 
-            nat \<Rightarrow> (('a set), 'more) Group_scheme]  \<Rightarrow> bool"
- "isom_Gchains n f g h == \<forall>i \<le> n. (g i) \<cong> (h (f i))"
+definition
+  isom_Gchains :: "[nat, nat \<Rightarrow> nat, nat \<Rightarrow> (('a set), 'more) Group_scheme, 
+            nat \<Rightarrow> (('a set), 'more) Group_scheme]  \<Rightarrow> bool" where
+  "isom_Gchains n f g h \<longleftrightarrow> (\<forall>i \<le> n. (g i) \<cong> (h (f i)))"
 (* g, h are sequences of groups and f is gbijection of Nset to Nset *)
 
- Gch_bridge::"[nat, nat \<Rightarrow> (('a set), 'more) Group_scheme, nat \<Rightarrow> 
-             (('a set), 'more) Group_scheme, nat \<Rightarrow> nat]  \<Rightarrow> bool"
- "Gch_bridge n g h f == (\<forall>l \<le> n. f l \<le> n) \<and> inj_on f {i. i \<le> n} \<and> 
-                         isom_Gchains n f g h" 
+definition
+ Gch_bridge :: "[nat, nat \<Rightarrow> (('a set), 'more) Group_scheme, nat \<Rightarrow> 
+             (('a set), 'more) Group_scheme, nat \<Rightarrow> nat]  \<Rightarrow> bool" where
+ "Gch_bridge n g h f \<longleftrightarrow> (\<forall>l \<le> n. f l \<le> n) \<and> inj_on f {i. i \<le> n} \<and> 
+                         isom_Gchains n f g h"
 
 lemma Gchain_pre:"Gchain (Suc n) g \<Longrightarrow> Gchain n g"    
 apply (simp add:Gchain_def)
@@ -4272,9 +4266,9 @@ apply (cut_tac mod_div_equality[of "x" "r"])
 apply simp
 done
 
-constdefs 
- rtos::"[nat, nat] \<Rightarrow> (nat \<Rightarrow> nat)"
-  "rtos r s i == if i < r * s then (i mod s) * r + i div s else r * s"
+definition
+  rtos :: "[nat, nat] \<Rightarrow> (nat \<Rightarrow> nat)" where
+  "rtos r s i = (if i < r * s then (i mod s) * r + i div s else r * s)"
  
 lemma rtos_hom0:"\<lbrakk>(0::nat) < r; (0::nat) < s; i \<le> (r * s - Suc 0)\<rbrakk> \<Longrightarrow>
    i div s < r" 
@@ -4427,16 +4421,17 @@ apply (rule allI, rule impI)
  apply blast apply assumption
 done
 
-constdefs (structure G)
- wcsr_rfns::"[_ , nat, nat \<Rightarrow> 'a set, nat] \<Rightarrow> (nat \<Rightarrow> 'a set) set"
-  "wcsr_rfns G r f s  == {h. tw_cmpser G (s * r) h \<and> 
+definition
+  wcsr_rfns :: "[_ , nat, nat \<Rightarrow> 'a set, nat] \<Rightarrow> (nat \<Rightarrow> 'a set) set" where
+  "wcsr_rfns G r f s = {h. tw_cmpser G (s * r) h \<and> 
                                  (\<forall>i \<le> r. h (i * s) = f i)}"
       (** where f \<in> tw_cmpser G r **)
   (**  0-+-+-2-+-+-4-+-+-6  h 
       f 0   f 1   f 2   f 3  **)
 
- trivial_rfn::"[_ , nat, nat \<Rightarrow> 'a set, nat] \<Rightarrow> (nat \<Rightarrow> 'a set)"
-   "trivial_rfn G r f s k == if k < (s * r) then f (k div s) else f r"
+definition
+  trivial_rfn :: "[_ , nat, nat \<Rightarrow> 'a set, nat] \<Rightarrow> (nat \<Rightarrow> 'a set)" where
+  "trivial_rfn G r f s k == if k < (s * r) then f (k div s) else f r"
 
 lemma (in Group) rfn_tool8:"\<lbrakk>compseries G r f; 0 < r\<rbrakk> \<Longrightarrow> d_gchain G r f" 
 apply (simp add:compseries_def tW_cmpser_def) 
@@ -4679,10 +4674,10 @@ apply (frule rfn_compseries_iMTr3[of "r" "s" "f" "r" "h"], assumption+,
  apply (frule_tac x = "a div s" and y = r in less_imp_le, blast)
 done
 
-constdefs (structure G)
- cmp_rfn::"[_ , nat, nat \<Rightarrow> 'a set, nat, nat \<Rightarrow> 'a set] \<Rightarrow> (nat \<Rightarrow> 'a set)"
-  "cmp_rfn G r f s g  == \<lambda>i. (if i < s * r then  
-      f (Suc (i div s)) \<struct>\<^bsub>G\<^esub> (f (i div s) \<inter> g (i mod s)) else {\<one>})"
+definition
+  cmp_rfn :: "[_ , nat, nat \<Rightarrow> 'a set, nat, nat \<Rightarrow> 'a set] \<Rightarrow> (nat \<Rightarrow> 'a set)" where
+  "cmp_rfn G r f s g = (\<lambda>i. (if i < s * r then  
+      f (Suc (i div s)) \<struct>\<^bsub>G\<^esub> (f (i div s) \<inter> g (i mod s)) else {\<one>\<^bsub>G\<^esub>}))"
 
  (** refinement of compseries G r f by a compseries G s g **) 
 

@@ -829,11 +829,9 @@ apply (frule  aGroup.ag_pOp_add_r[of "K" "1\<^sub>r \<plusminus> -\<^sub>a ((\<O
         rule Ostrowski_baseTr2, assumption+)
 done
 
-syntax
- "@CHOOSE" :: "[nat, nat] \<Rightarrow> nat"
-     ("(\<^bsub>_\<^esub>C\<^bsub>_\<^esub>)" [80, 81]80)
-translations
-  "\<^bsub>n\<^esub>C\<^bsub>i\<^esub>" == "n choose i" 
+abbreviation
+  CHOOSE :: "[nat, nat] \<Rightarrow> nat"  ("(\<^bsub>_\<^esub>C\<^bsub>_\<^esub>)" [80, 81]80) where
+  "\<^bsub>n\<^esub>C\<^bsub>i\<^esub> == n choose i"
 
 lemma (in Ring) expansion_of_sum1:"x \<in> carrier R \<Longrightarrow> 
                 (1\<^sub>r \<plusminus> x)^\<^bsup>R n\<^esup> = nsum R (\<lambda>i. \<^bsub>n\<^esub>C\<^bsub>i\<^esub> \<times>\<^bsub>R\<^esub> x^\<^bsup>R i\<^esup>) n"

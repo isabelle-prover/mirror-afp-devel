@@ -516,24 +516,25 @@ by blast
 
 section "3. Functions"
 
-constdefs
-   cmp::"['b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> ('a \<Rightarrow> 'c)"
-   "cmp g f == \<lambda>x. g (f x)"
+definition
+  cmp :: "['b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> ('a \<Rightarrow> 'c)" where
+  "cmp g f = (\<lambda>x. g (f x))"
 
-   idmap :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a)"   
-    "idmap A == \<lambda>x\<in>A. x" 
+definition
+  idmap :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a)" where
+  "idmap A = (\<lambda>x\<in>A. x)" 
 
-   constmap::"['a set, 'b set] \<Rightarrow> ('a \<Rightarrow>'b)"
-   "constmap A B == \<lambda>x\<in>A. SOME y. y \<in> B" 
+definition
+  constmap :: "['a set, 'b set] \<Rightarrow> ('a \<Rightarrow>'b)" where
+  "constmap A B = (\<lambda>x\<in>A. SOME y. y \<in> B)" 
 
-   invfun :: "['a set, 'b set, 'a \<Rightarrow> 'b] \<Rightarrow> ('b \<Rightarrow> 'a)"     
-    "invfun A B (f :: 'a \<Rightarrow> 'b) == \<lambda>y\<in>B.(SOME x. (x \<in> A \<and> f x = y))"
+definition
+  invfun :: "['a set, 'b set, 'a \<Rightarrow> 'b] \<Rightarrow> ('b \<Rightarrow> 'a)" where
+  "invfun A B (f :: 'a \<Rightarrow> 'b) = (\<lambda>y\<in>B.(SOME x. (x \<in> A \<and> f x = y)))"
 
- syntax 
-  "@INVFUN" :: "['a \<Rightarrow> 'b, 'b set, 'a set] \<Rightarrow> ('b \<Rightarrow> 'a)"
-              ("(3_\<inverse>\<^bsub>_,_\<^esub>)" [82,82,83]82)
-  translations
-    "f\<inverse>\<^bsub>B,A\<^esub>" == "invfun A B f"
+abbreviation
+  INVFUN :: "['a \<Rightarrow> 'b, 'b set, 'a set] \<Rightarrow> ('b \<Rightarrow> 'a)"  ("(3_\<inverse>\<^bsub>_,_\<^esub>)" [82,82,83]82) where
+  "f\<inverse>\<^bsub>B,A\<^esub> == invfun A B f"
 
 lemma eq_fun:"\<lbrakk> f \<in> A \<rightarrow> B; f = g \<rbrakk> \<Longrightarrow> g \<in> A \<rightarrow> B"
 by simp
@@ -865,9 +866,9 @@ apply (rule subsetI,
        simp add:image_def, erule disjE, erule bexE, blast, erule bexE, blast)
 done
 
-constdefs
- invim::"['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> 'a set"
-  "invim f A B == {x. x\<in>A \<and> f x \<in> B}"
+definition
+  invim::"['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> 'a set" where
+  "invim f A B = {x. x\<in>A \<and> f x \<in> B}"
 
 lemma invim: "\<lbrakk> f:A \<rightarrow> B; B1 \<subseteq> B \<rbrakk> \<Longrightarrow> invim f A B1 \<subseteq> A"
  apply (simp add:invim_def)
@@ -880,9 +881,9 @@ apply (simp add:image_def compose_def)
  apply auto
  done
 
-constdefs
- surj_to ::"['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> bool"
-  "surj_to f A B == f`A = B"
+definition
+  surj_to :: "['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> bool" where
+  "surj_to f A B \<longleftrightarrow> f`A = B"
 
 lemma surj_to_test:"\<lbrakk> f \<in> A \<rightarrow> B; \<forall>b\<in>B. \<exists>a\<in>A. f a = b \<rbrakk> \<Longrightarrow>
                                                   surj_to f A B" 
@@ -1036,9 +1037,9 @@ apply (frule funcset_mem [of "f" "A" "B"], assumption+)
  apply auto
 done
 
-constdefs
-  bij_to :: "['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> bool"
-   "bij_to f A B  == (surj_to f A B) \<and> (inj_on f A)"
+definition
+  bij_to :: "['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> bool" where
+  "bij_to f A B \<longleftrightarrow> surj_to f A B \<and> inj_on f A"
 
 lemma idmap_bij:"bij_to (idmap A) A A"
 apply (simp add:bij_to_def)
@@ -1133,22 +1134,26 @@ section "4.Nsets"
  (* NSet is the set of natural numbers, and "Nset n" is the set of 
 natural numbers from 0 through n  *)
 
-constdefs
-    nset:: "[nat, nat] \<Rightarrow> (nat) set"
-    "nset i j == {k. i \<le> k \<and> k \<le> j}"
+definition
+  nset :: "[nat, nat] \<Rightarrow> (nat) set" where
+  "nset i j = {k. i \<le> k \<and> k \<le> j}"
 
-   slide :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-    "slide i j == i + j"
-   sliden :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-    "sliden i j == j - i"
+definition
+  slide :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "slide i j == i + j"
 
-  jointfun :: "[nat, nat \<Rightarrow> 'a, nat, nat \<Rightarrow> 'a] \<Rightarrow> (nat \<Rightarrow> 'a)"
-   "(jointfun n f m g) ==\<lambda> i. if i \<le> n then f i else  g ((sliden (Suc n)) i)"
+definition
+  sliden :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "sliden i j == j - i"
 
+definition
+  jointfun :: "[nat, nat \<Rightarrow> 'a, nat, nat \<Rightarrow> 'a] \<Rightarrow> (nat \<Rightarrow> 'a)" where
+  "(jointfun n f m g) = (\<lambda>i. if i \<le> n then f i else  g ((sliden (Suc n)) i))"
 
-   skip::"nat \<Rightarrow> (nat \<Rightarrow> nat)"
-    "skip i  == \<lambda>x. (if i = 0 then Suc x else 
-                  (if x \<in> {j. j \<le> (i - Suc 0)} then x  else Suc x))" 
+definition
+  skip :: "nat \<Rightarrow> (nat \<Rightarrow> nat)" where
+  "skip i = (\<lambda>x. (if i = 0 then Suc x else
+                 (if x \<in> {j. j \<le> (i - Suc 0)} then x  else Suc x)))" 
 
 lemma nat_pos:"0 \<le> (l::nat)"
 apply simp
@@ -1315,12 +1320,10 @@ apply (rule equalityI)
  apply blast
 done
 
-consts
- nasc_seq::"[nat set, nat, nat] \<Rightarrow> nat"
-
-primrec
- dec_seq_0   : "nasc_seq A a 0 = a"
- dec_seq_Suc : "nasc_seq A a (Suc n) = 
+primrec nasc_seq :: "[nat set, nat, nat] \<Rightarrow> nat"
+where
+  dec_seq_0: "nasc_seq A a 0 = a"
+| dec_seq_Suc: "nasc_seq A a (Suc n) =
                      (SOME b. ((b \<in> A) \<and> (nasc_seq A a n) < b))"
 
 lemma nasc_seq_mem:"\<lbrakk>(a::nat) \<in> A; \<not> (\<exists>m. m\<in>A \<and> (\<forall>x\<in>A. x \<le> m))\<rbrakk> \<Longrightarrow>
@@ -1382,9 +1385,9 @@ apply (frule_tac c = "nasc_seq A a (n + 1)" in subsetD[of "A" "{i. i \<le> n}"],
          assumption+, simp)
 done
  
-constdefs
- n_max::"nat set \<Rightarrow> nat"
- "n_max A == THE m. m \<in> A \<and> (\<forall>x\<in>A. x \<le> m)"
+definition
+  n_max :: "nat set \<Rightarrow> nat" where
+  "n_max A = (THE m. m \<in> A \<and> (\<forall>x\<in>A. x \<le> m))"
 
 lemma n_max:"\<lbrakk>A \<subseteq> {i. i \<le> (n::nat)}; A \<noteq> {}\<rbrakk> \<Longrightarrow> 
                     (n_max A) \<in> A \<and> (\<forall>x\<in>A. x \<le> (n_max A))" 
@@ -1758,19 +1761,18 @@ apply (frule im_set_un2[of "{j. j \<le> (Suc n)}" "{j. j \<le> n}" "{Suc n}" "f"
 apply (simp add:Un_commute)
 done
 
-constdefs
-  Nleast::"nat set \<Rightarrow> nat"
-  "Nleast A == THE a. (a \<in> A \<and> (\<forall>x\<in>A. a \<le> x))"  
+definition
+  Nleast :: "nat set \<Rightarrow> nat" where
+  "Nleast A = (THE a. (a \<in> A \<and> (\<forall>x\<in>A. a \<le> x)))"  
  
-  Nlb::"[nat set, nat] \<Rightarrow> bool"
-  "Nlb A n == \<forall>a\<in>A. n \<le> a"
+definition
+  Nlb :: "[nat set, nat] \<Rightarrow> bool" where
+  "Nlb A n \<longleftrightarrow> (\<forall>a\<in>A. n \<le> a)"
 
-consts
- ndec_seq::"[nat set, nat, nat] \<Rightarrow> nat"
 
-primrec
-ndec_seq_0  :"ndec_seq A a 0 = a"
-ndec_seq_Suc:"ndec_seq A a (Suc n) = 
+primrec ndec_seq :: "[nat set, nat, nat] \<Rightarrow> nat" where
+  ndec_seq_0  :"ndec_seq A a 0 = a"
+| ndec_seq_Suc:"ndec_seq A a (Suc n) =
                       (SOME b. ((b \<in> A) \<and> b < (ndec_seq A a n)))"
 
 lemma ndec_seq_mem:"\<lbrakk>a \<in> (A::nat set); \<not> (\<exists>m. m\<in>A \<and> (\<forall>x\<in>A. m \<le> x))\<rbrakk> \<Longrightarrow>
@@ -1922,16 +1924,15 @@ section "4'. Lower bounded set of integers"
 (* In this section. I prove that a lower bounded set of integers
   has the minimal element *)
 
-constdefs
- Zset ::"int set"
- "Zset == {x. \<exists>(n::int). x = n}"
+definition "Zset = {x. \<exists>(n::int). x = n}"
 
-constdefs
- Zleast ::"int set \<Rightarrow> int"
- "Zleast A == THE a. (a \<in> A \<and> (\<forall>x\<in>A. a \<le> x))"
+definition
+  Zleast :: "int set \<Rightarrow> int" where
+  "Zleast A = (THE a. (a \<in> A \<and> (\<forall>x\<in>A. a \<le> x)))"
 
- LB::"[int set, int] \<Rightarrow> bool"
- "LB A n == \<forall>a\<in>A. n \<le> a"
+definition
+  LB :: "[int set, int] \<Rightarrow> bool" where
+  "LB A n = (\<forall>a\<in>A. n \<le> a)"
 
 lemma zle_linear1:"(m::int) < n \<or> n \<le> m"
 apply (subgoal_tac "m < n \<or> n = m \<or> n < m")
@@ -1941,12 +1942,10 @@ apply blast
 apply (simp add:zless_linear)
 done
 
-consts
- dec_seq::"[int set, int, nat] \<Rightarrow> int"
-
-primrec
- dec_seq_0   : "dec_seq A a 0 = a"
- dec_seq_Suc : "dec_seq A a (Suc n) = (SOME b. ((b \<in> A) \<and> b < (dec_seq A a n)))"
+primrec dec_seq :: "[int set, int, nat] \<Rightarrow> int"
+where
+  dec_seq_0: "dec_seq A a 0 = a"
+| dec_seq_Suc: "dec_seq A a (Suc n) = (SOME b. ((b \<in> A) \<and> b < (dec_seq A a n)))"
 
 lemma dec_seq_mem:"\<lbrakk>a \<in> A; A \<subseteq> Zset;\<not> (\<exists>m. m\<in>A \<and> (\<forall>x\<in>A. m \<le> x))\<rbrakk> \<Longrightarrow>
                         (dec_seq A a n) \<in> A"
@@ -2043,35 +2042,39 @@ done
 
 section "5. augmented integer: integer and \<infinity> -\<infinity> "
 
-constdefs
- zag :: "(int * int) set"
- "zag == {(x,y) | x y. x * y = (0::int) \<and> (y = -1 \<or> y = 0 \<or> y = 1)}"
+definition
+  zag :: "(int * int) set" where
+  "zag = {(x,y) | x y. x * y = (0::int) \<and> (y = -1 \<or> y = 0 \<or> y = 1)}"
 
- zag_pl::"[(int * int), (int * int)] \<Rightarrow> (int * int)"
- "zag_pl x y == if (snd x + snd y) = 2 then (0, 1)
+definition
+  zag_pl::"[(int * int), (int * int)] \<Rightarrow> (int * int)" where
+  "zag_pl x y == if (snd x + snd y) = 2 then (0, 1)
                  else if (snd x + snd y) = 1 then (0, 1)
                  else if (snd x + snd y) = 0 then (fst x + fst y, 0)
                  else if (snd x + snd y) = -1 then (0, -1)
                  else if (snd x + snd y) = -2 then (0, -1) else arbitrary"
 
- zag_t::"[(int * int), (int * int)] \<Rightarrow> (int * int)"
- "zag_t x y == if (snd x)*(snd y) = 0 then
+definition
+  zag_t :: "[(int * int), (int * int)] \<Rightarrow> (int * int)" where
+  "zag_t x y = (if (snd x)*(snd y) = 0 then
                      (if 0 < (fst x)*(snd y) + (snd x)*(fst y) then (0,1)
                            else (if (fst x)*(snd y) + (snd x)*(fst y) = 0
                                then ((fst x)*(fst y), 0) else (0, -1)))
-            else (if 0 < (snd x)*(snd y) then (0, 1) else (0, -1))" 
+            else (if 0 < (snd x)*(snd y) then (0, 1) else (0, -1)))" 
 
-typedef (Ainteg)
-      ant = "zag"
-       by (subgoal_tac "(1, 0) \<in> zag", auto, simp add:zag_def)
+typedef (Ainteg) ant = "zag"
+proof
+  show "(1, 0) \<in> zag" unfolding zag_def by auto
+qed
 
-constdefs
-  ant :: "int \<Rightarrow> ant"
- "ant m == Abs_Ainteg( (m, 0))"
+definition
+  ant :: "int \<Rightarrow> ant" where
+  "ant m = Abs_Ainteg( (m, 0))"
 
-  tna :: "ant \<Rightarrow> int"
-  "tna z == if Rep_Ainteg(z) \<noteq> (0,1) \<and> Rep_Ainteg(z) \<noteq> (0,-1) then
-                  fst (Rep_Ainteg(z)) else arbitrary"
+definition
+  tna :: "ant \<Rightarrow> int" where
+  "tna z = (if Rep_Ainteg(z) \<noteq> (0,1) \<and> Rep_Ainteg(z) \<noteq> (0,-1) then
+            fst (Rep_Ainteg(z)) else arbitrary)"
 
 instantiation ant :: "{zero, one, plus, uminus, minus, times, ord}"
 begin
@@ -2114,25 +2117,26 @@ instance ..
 
 end
 
-constdefs
- inf_ant:: ant
-   ("\<infinity>")
- "\<infinity> == Abs_Ainteg((0,1))"
+definition
+  inf_ant :: ant  ("\<infinity>") where
+  "\<infinity> = Abs_Ainteg((0,1))"
 
-constdefs
-   an :: "nat \<Rightarrow> ant"
-   "an m == ant (int m)"
+definition
+  an :: "nat \<Rightarrow> ant" where
+  "an m = ant (int m)"
 
-   na :: "ant \<Rightarrow> nat"
-   "na x == if (x < 0) then 0 else 
-               if x \<noteq> \<infinity> then (nat (tna x)) else arbitrary" 
+definition
+  na :: "ant \<Rightarrow> nat" where
+  "na x = (if (x < 0) then 0 else 
+           if x \<noteq> \<infinity> then (nat (tna x)) else arbitrary)" 
 
-constdefs
-   UBset::"ant \<Rightarrow> ant set"
-   "UBset z == {(x::ant).  x \<le> z}"
+definition
+  UBset :: "ant \<Rightarrow> ant set" where
+  "UBset z = {(x::ant).  x \<le> z}"
 
-   LBset::"ant \<Rightarrow> ant set"
-   "LBset z == {(x::ant). z \<le> x}"  
+definition
+   LBset :: "ant \<Rightarrow> ant set" where
+  "LBset z = {(x::ant). z \<le> x}"  
 
 lemma ant_z_in_Ainteg:"(z::int, 0) \<in> Ainteg"
 apply (simp add:Ainteg_def zag_def)
@@ -2585,14 +2589,13 @@ apply ((erule disjE)+, (erule exE)+, simp add:a_zpz,
       erule exE, simp, erule disjE, erule exE, simp+)
 done
 
-constdefs
- aug_inf::"ant set"
-    ("Z\<^sub>\<infinity>")
-  "Z\<^sub>\<infinity> == {(z::ant). z \<noteq> -\<infinity> }" 
+definition
+  aug_inf :: "ant set"  ("Z\<^sub>\<infinity>") where
+  "Z\<^sub>\<infinity> = {(z::ant). z \<noteq> -\<infinity> }" 
 
- aug_minf::"ant set"
-    ("Z\<^bsub>-\<infinity>\<^esub>")
-  "Z\<^bsub>-\<infinity>\<^esub> == {(z::ant). z \<noteq> \<infinity> }"
+definition
+  aug_minf :: "ant set"  ("Z\<^bsub>-\<infinity>\<^esub>") where
+  "Z\<^bsub>-\<infinity>\<^esub> = {(z::ant). z \<noteq> \<infinity> }"
 
 lemma z_in_aug_inf:"ant z \<in> Z\<^sub>\<infinity>"
 apply (simp add:aug_inf_def)
@@ -2926,8 +2929,8 @@ lemma amult_0_l:"0 * (ant z) = 0"
 by (simp add:ant_0[THEN sym] a_z_z)
  
 
-constdefs
- asprod::"[int, ant] \<Rightarrow> ant" (infixl "*\<^sub>a" 200)
+definition
+  asprod :: "[int, ant] \<Rightarrow> ant" (infixl "*\<^sub>a" 200) where
   "m *\<^sub>a x == 
   if x = \<infinity> then (if 0 < m then \<infinity> else (if m < 0 then -\<infinity> else 
                  if m = 0 then 0 else arbitrary))
@@ -3654,24 +3657,23 @@ done
 
 section "6. amin, amax"
 
-constdefs
-  amin :: "[ant, ant] \<Rightarrow> ant"
-  "amin x y == if (x \<le> y) then x else y"
+definition
+  amin :: "[ant, ant] \<Rightarrow> ant" where
+  "amin x y = (if (x \<le> y) then x else y)"
   
-  amax :: "[ant, ant] \<Rightarrow> ant"
-   "amax x y == if (x \<le> y) then y else x"
+definition
+  amax :: "[ant, ant] \<Rightarrow> ant" where
+  "amax x y = (if (x \<le> y) then y else x)"
 
-consts
-  Amin :: "[nat, nat \<Rightarrow> ant] \<Rightarrow> ant"
-  Amax :: "[nat, nat \<Rightarrow> ant] \<Rightarrow> ant"
+primrec Amin :: "[nat, nat \<Rightarrow> ant] \<Rightarrow> ant"
+where
+  Amin_0 :  "Amin 0 f = (f 0)"
+| Amin_Suc :"Amin (Suc n) f = amin (Amin n f) (f (Suc n))"
 
-primrec
- Amin_0 :  "Amin 0 f = (f 0)"
- Amin_Suc :"Amin (Suc n) f = amin (Amin n f) (f (Suc n))"
-
-primrec
- Amax_0 : "Amax 0 f = f 0"
- Amax_Suc :"Amax (Suc n) f = amax (Amax n f) (f (Suc n))"
+primrec Amax :: "[nat, nat \<Rightarrow> ant] \<Rightarrow> ant"
+where
+  Amax_0 : "Amax 0 f = f 0"
+| Amax_Suc :"Amax (Suc n) f = amax (Amax n f) (f (Suc n))"
 
 lemma amin_ge:"x \<le> amin x y \<or> y \<le> amin x y"
 apply (simp add:amin_def)
@@ -3880,12 +3882,10 @@ done
 
 subsection "maximum element of a set of ants"
 
-consts
- aasc_seq::"[ant set, ant, nat] \<Rightarrow> ant"
-
-primrec
- aasc_seq_0   : "aasc_seq A a 0 = a"
- aasc_seq_Suc : "aasc_seq A a (Suc n) = 
+primrec aasc_seq :: "[ant set, ant, nat] \<Rightarrow> ant"
+where
+  aasc_seq_0   : "aasc_seq A a 0 = a"
+| aasc_seq_Suc : "aasc_seq A a (Suc n) = 
                      (SOME b. ((b \<in> A) \<and> (aasc_seq A a n) < b))"
 
 lemma aasc_seq_mem:"\<lbrakk>a \<in> A; \<not> (\<exists>m. m\<in>A \<and> (\<forall>x\<in>A. x \<le> m))\<rbrakk> \<Longrightarrow>
@@ -3966,15 +3966,17 @@ apply (subgoal_tac "0 \<le> \<bar>w\<bar> + \<bar>z\<bar> + 1", simp, arith);
         frule_tac ale_antisym[of "ant z" "\<infinity>"], assumption+, simp)
 done
 
-constdefs
- AMax::"ant set \<Rightarrow> ant"
- "AMax A == THE m. m \<in> A \<and> (\<forall>x\<in>A. x \<le> m)"
+definition
+  AMax :: "ant set \<Rightarrow> ant" where
+  "AMax A = (THE m. m \<in> A \<and> (\<forall>x\<in>A. x \<le> m))"
 
- AMin::"ant set \<Rightarrow> ant"
- "AMin A == THE m. m \<in> A \<and> (\<forall>x\<in>A. m \<le> x)"
+definition
+  AMin::"ant set \<Rightarrow> ant" where
+  "AMin A = (THE m. m \<in> A \<and> (\<forall>x\<in>A. m \<le> x))"
 
- rev_o::"ant \<Rightarrow> ant"
- "rev_o x == - x"
+definition
+  rev_o :: "ant \<Rightarrow> ant" where
+  "rev_o x = - x"
 
 lemma AMax:"\<lbrakk>A \<subseteq> UBset (ant z); A \<noteq> {}\<rbrakk> \<Longrightarrow> 
                     (AMax A) \<in> A \<and> (\<forall>x\<in>A. x \<le> (AMax A))" 
@@ -4038,12 +4040,10 @@ lemma AMin_mem:"\<lbrakk>A \<subseteq> LBset (ant z); A \<noteq> {}\<rbrakk> \<L
 apply (simp add:AMin) 
 done
 
-consts
- ASum  :: "(nat \<Rightarrow> ant) \<Rightarrow> nat \<Rightarrow> ant"
-
-primrec
- ASum_0:"ASum f 0 = f 0"
- ASum_Suc: "ASum f (Suc n) = (ASum f n) + (f (Suc n))"
+primrec ASum :: "(nat \<Rightarrow> ant) \<Rightarrow> nat \<Rightarrow> ant"
+where
+  ASum_0: "ASum f 0 = f 0"
+| ASum_Suc: "ASum f (Suc n) = (ASum f n) + (f (Suc n))"
 
 lemma age_plus:"\<lbrakk>0 \<le> (a::ant); 0 \<le> b; a + b \<le> c\<rbrakk> \<Longrightarrow> a \<le> c"
 apply (frule aadd_le_mono[of "0" "b" "a"]) 
@@ -4242,16 +4242,14 @@ apply (frule_tac i = i and n = n and j = j and f = f in Nset2finite_inj_tr1,
        cut_tac j = j and n = n in Nset2finite_inj_tr0, simp+) 
 done
 
-constdefs
-  zmax :: "[int, int] \<Rightarrow> int"
-   "zmax x y == if (x \<le> y) then y else x"
+definition
+  zmax :: "[int, int] \<Rightarrow> int" where
+  "zmax x y = (if (x \<le> y) then y else x)"
 
-consts
-  Zmax :: "[nat, nat \<Rightarrow> int] \<Rightarrow> int"
-
-primrec
- Zmax_0 : "Zmax 0 f = f 0"
- Zmax_Suc :"Zmax (Suc n) f = zmax (Zmax n f) (f (Suc n))"
+primrec Zmax :: "[nat, nat \<Rightarrow> int] \<Rightarrow> int"
+where
+  Zmax_0 : "Zmax 0 f = f 0"
+| Zmax_Suc :"Zmax (Suc n) f = zmax (Zmax n f) (f (Suc n))"
 
 lemma Zmax_memTr:"f \<in> {i. i \<le> (n::nat)} \<rightarrow> (UNIV::int set) \<longrightarrow>
                                        Zmax n f \<in> f ` {i. i \<le> n}"
@@ -4391,9 +4389,9 @@ lemma sliden_inj: "i < j \<Longrightarrow>  inj_on (sliden i) (nset i j)"
  apply (rule eq_diff_iff, assumption+)
 done
 
-constdefs
- transpos :: "[nat, nat] \<Rightarrow> (nat \<Rightarrow> nat)"
- "transpos i j  == \<lambda>k. if k = i then j else if k = j then i else k" 
+definition
+  transpos :: "[nat, nat] \<Rightarrow> (nat \<Rightarrow> nat)" where
+  "transpos i j = (\<lambda>k. if k = i then j else if k = j then i else k)" 
 
 lemma transpos_id:"\<lbrakk> i \<le> n; j \<le> n; i \<noteq> j ; x \<in> {k. k \<le> n} - {i, j} \<rbrakk>
   \<Longrightarrow> transpos i j x = x"
@@ -4644,9 +4642,9 @@ lemma enumerate_1:"\<lbrakk>\<forall>j \<le> (n::nat). f j \<in> A; \<forall>j \
   apply (cut_tac card_Nset[of n], cut_tac card_Nset[of m], simp)
 done
 
-constdefs
-  ninv::"[nat, (nat \<Rightarrow> nat)] \<Rightarrow> (nat \<Rightarrow> nat)"
-   "ninv n f == \<lambda>y\<in>{i. i \<le> n}. (SOME x. (x \<le> n \<and> y = f x))"
+definition
+  ninv :: "[nat, (nat \<Rightarrow> nat)] \<Rightarrow> (nat \<Rightarrow> nat)" where
+  "ninv n f = (\<lambda>y\<in>{i. i \<le> n}. (SOME x. (x \<le> n \<and> y = f x)))"
 
 lemma ninv_hom:"\<lbrakk>f \<in> {i. i \<le> n} \<rightarrow> {i. i \<le> n}; inj_on f {i. i \<le> n}\<rbrakk> \<Longrightarrow>
                         ninv n f \<in> {i. i \<le> n} \<rightarrow> {i. i \<le> n}"
@@ -4860,11 +4858,13 @@ locale Order =
 
 (* print_locale Order *)
 
-constdefs (structure D)
-  ole :: "_ \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"    (infix "\<preceq>\<index>" 60)
-  "a \<preceq> b \<equiv> (a, b) \<in> rel D"
-  oless :: "_ \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"    (infix "\<prec>\<index>" 60)
-  "a \<prec> b \<equiv> a \<preceq> b \<and> a \<noteq> b"
+definition
+  ole :: "_ \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"    (infix "\<preceq>\<index>" 60) where
+  "a \<preceq>\<^bsub>D\<^esub> b \<longleftrightarrow> (a, b) \<in> rel D"
+
+definition
+  oless :: "_ \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"    (infix "\<prec>\<index>" 60) where
+  "a \<prec>\<^bsub>D\<^esub> b \<equiv> a \<preceq>\<^bsub>D\<^esub> b \<and> a \<noteq> b"
 
 
 lemma Order_component:"(E::'a Order) = \<lparr> carrier = carrier E, rel = rel E \<rparr>"
@@ -4984,13 +4984,14 @@ apply  (assumption,
        thin_tac "\<forall>x\<in>A. x \<prec> b", simp add:oless_def)
 done
 
-constdefs (structure D) 
-  Iod :: "_ \<Rightarrow> 'a set \<Rightarrow> _"   
-  "Iod D T \<equiv>
+definition
+  Iod :: "_ \<Rightarrow> 'a set \<Rightarrow> _" where
+  "Iod D T =
     D \<lparr>carrier := T, rel := {(a, b). (a, b) \<in> rel D \<and> a \<in> T \<and> b \<in> T}\<rparr>"
 
-  SIod :: "'a Order \<Rightarrow> 'a set \<Rightarrow> 'a Order"
-  "SIod D T \<equiv> \<lparr>carrier = T, rel = {(a, b). (a, b) \<in> rel D \<and> a \<in> T \<and> b \<in> T}\<rparr>"
+definition
+  SIod :: "'a Order \<Rightarrow> 'a set \<Rightarrow> 'a Order" where
+  "SIod D T = \<lparr>carrier = T, rel = {(a, b). (a, b) \<in> rel D \<and> a \<in> T \<and> b \<in> T}\<rparr>"
 
 lemma (in Order) Iod_self: "D = Iod D (carrier D)"
   apply (unfold  Iod_def)
@@ -5220,9 +5221,9 @@ done
 
 subsection {* two ordered sets *}
 
-constdefs
-  Order_Pow :: "'a set \<Rightarrow> 'a set Order"    ("(po _)" [999] 1000)
-  "po A \<equiv>
+definition
+  Order_Pow :: "'a set \<Rightarrow> 'a set Order"    ("(po _)" [999] 1000) where
+  "po A =
     \<lparr>carrier = Pow A,
       rel = {(X, Y). X \<in> Pow A \<and> Y \<in> Pow A \<and> X \<subseteq> Y}\<rparr>"
 
@@ -5237,9 +5238,9 @@ apply simp
 apply simp
 done
 
-constdefs
-  Order_fs :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a set * ('a \<Rightarrow> 'b)) Order"
-  "Order_fs A B ==
+definition
+  Order_fs :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a set * ('a \<Rightarrow> 'b)) Order" where
+  "Order_fs A B =
    \<lparr>carrier = {Z. \<exists>A1 f. A1 \<in> Pow A \<and> f \<in> A1 \<rightarrow> B \<and> 
                  f \<in> extensional A1 \<and> Z = (A1, f)}, 
  rel = {Y. Y \<in> ({Z. \<exists>A1 f. A1 \<in> Pow A \<and> f \<in> A1 \<rightarrow> B \<and> f \<in> extensional A1 
@@ -5257,17 +5258,18 @@ done
  
 subsection {* homomorphism of ordered sets *}
 
-constdefs
+definition
  ord_inj :: "[('a, 'm0) Order_scheme, ('b, 'm1) Order_scheme, 
-                'a \<Rightarrow> 'b] \<Rightarrow> bool"
- "ord_inj D E f == f \<in> extensional (carrier D) \<and> 
+                'a \<Rightarrow> 'b] \<Rightarrow> bool" where
+ "ord_inj D E f \<longleftrightarrow> f \<in> extensional (carrier D) \<and> 
               f \<in> (carrier D) \<rightarrow> (carrier E) \<and> 
               (inj_on f (carrier D)) \<and> 
               (\<forall>a\<in>carrier D. \<forall>b\<in>carrier D. (a \<prec>\<^bsub>D\<^esub> b) = ((f a) \<prec>\<^bsub>E\<^esub> (f b)))"
 
+definition
  ord_isom :: "[('a, 'm0) Order_scheme, ('b, 'm1) Order_scheme,
-               'a \<Rightarrow> 'b] \<Rightarrow> bool"
- "ord_isom D E f == ord_inj D E f \<and>
+               'a \<Rightarrow> 'b] \<Rightarrow> bool" where
+ "ord_isom D E f \<longleftrightarrow> ord_inj D E f \<and>
                     (surj_to f (carrier D) (carrier E))"
 
 lemma (in Order) ord_inj_func:"\<lbrakk>Order E; ord_inj D E f\<rbrakk> \<Longrightarrow>
@@ -5491,9 +5493,9 @@ apply (frule_tac a = a and b = b in ord_isom_less[of E f], assumption+,
        apply (simp add:compose_def)
 done
 
-constdefs
- ord_equiv :: "[_, ('b, 'm1) Order_scheme] \<Rightarrow> bool"
- "ord_equiv D E == \<exists>f. ord_isom D E f"
+definition
+  ord_equiv :: "[_, ('b, 'm1) Order_scheme] \<Rightarrow> bool" where
+  "ord_equiv D E \<longleftrightarrow> (\<exists>f. ord_isom D E f)"
 
 lemma (in Order) ord_equiv:"\<lbrakk>Order E; ord_isom D E f\<rbrakk> \<Longrightarrow> ord_equiv D E"
 by (simp add:ord_equiv_def, blast)
@@ -5549,9 +5551,9 @@ apply (rule conjI)
         simp add:bij_to_def)
 done
 
-constdefs (structure D)
- minimum_elem::"[_ , 'a set, 'a] \<Rightarrow> bool"
- "minimum_elem  == \<lambda> D X a. a \<in> X \<and> (\<forall>x\<in>X. a \<preceq> x)"  
+definition
+  minimum_elem :: "[_ , 'a set, 'a] \<Rightarrow> bool" where
+  "minimum_elem = (\<lambda>D X a. a \<in> X \<and> (\<forall>x\<in>X. a \<preceq>\<^bsub>D\<^esub> x))"  
 
 locale Worder = Torder + 
        assumes ex_minimum: "\<forall>X. X \<subseteq> (carrier D) \<and> X \<noteq> {} \<longrightarrow>
@@ -5861,14 +5863,15 @@ apply (frule_tac x = x in eq_funcs[of
  apply simp
 done
  
-constdefs (structure D)
- segment :: "_ \<Rightarrow> 'a \<Rightarrow> 'a set"
- "segment D a == if (a \<notin> carrier D) then carrier D else 
-                              {x.  x \<prec> a \<and> x \<in> carrier D}"
-constdefs
- Ssegment:: "'a Order \<Rightarrow> 'a \<Rightarrow> 'a set"
- "Ssegment D a == if (a \<notin> carrier D) then carrier D else 
-                              {x.  x \<prec>\<^bsub>D\<^esub> a \<and> x \<in> carrier D}"   
+definition
+  segment :: "_ \<Rightarrow> 'a \<Rightarrow> 'a set" where
+  "segment D a = (if a \<notin> carrier D then carrier D else
+      {x.  x \<prec>\<^bsub>D\<^esub> a \<and> x \<in> carrier D})"
+
+definition
+  Ssegment :: "'a Order \<Rightarrow> 'a \<Rightarrow> 'a set" where
+  "Ssegment D a = (if a \<notin> carrier D then carrier D else
+      {x.  x \<prec>\<^bsub>D\<^esub> a \<and> x \<in> carrier D})"   
 
 lemma (in Order) segment_sub:"segment D a \<subseteq> carrier D"
 apply (rule subsetI, simp add:segment_def)
@@ -6681,15 +6684,16 @@ apply (simp add:Iod_def segment_inc)
 done
 
 
-constdefs (structure D)
- SS :: "_ \<Rightarrow> 'a set Order"
- "SS D == \<lparr>carrier = {X. \<exists>a\<in>carrier D. X = segment D a}, rel = 
- {XX. XX \<in> {X. \<exists>a\<in>carrier D. X = segment D a} \<times> 
- {X. \<exists>a\<in>carrier D. X = segment D a} \<and> ((fst XX) \<subseteq> (snd XX))} \<rparr>"
+definition
+  SS :: "_ \<Rightarrow> 'a set Order" where
+  "SS D = \<lparr>carrier = {X. \<exists>a\<in>carrier D. X = segment D a}, rel =
+    {XX. XX \<in> {X. \<exists>a\<in>carrier D. X = segment D a} \<times> 
+    {X. \<exists>a\<in>carrier D. X = segment D a} \<and> ((fst XX) \<subseteq> (snd XX))} \<rparr>"
 (** Ordered set consisting of segments **)
 
- segmap::"_ \<Rightarrow> 'a \<Rightarrow> 'a set"
- "segmap D == \<lambda>x\<in>(carrier D). (segment D x)"
+definition
+  segmap::"_ \<Rightarrow> 'a \<Rightarrow> 'a set" where
+  "segmap D = (\<lambda>x\<in>(carrier D). segment D x)"
 
 lemma segmap_func:"segmap D \<in> carrier D \<rightarrow> carrier (SS D)"
  apply (rule univar_func_test)
@@ -7041,10 +7045,10 @@ lemma (in Worder) ord_isom_segment_segment:"\<lbrakk>Worder E;
 by (frule Worder.Order[of "E"],
        rule ord_isom_segment_segment[of "E" "f" "a"], assumption+) 
 
-constdefs (structure D)
- Tw :: "[ _ , ('b, 'm1) Order_scheme] \<Rightarrow> 'a \<Rightarrow> 'b" ("(2Tw\<^bsub>_,_\<^esub>)" [60,61]60)
- "Tw\<^bsub>D,T\<^esub>  == \<lambda>a\<in> carrier D. SOME x. x\<in>carrier T \<and> 
-                     ord_equiv (Iod D (segment D a)) (Iod T (segment T x))"
+definition
+  Tw :: "[_ , ('b, 'm1) Order_scheme] \<Rightarrow> 'a \<Rightarrow> 'b"  ("(2Tw\<^bsub>_,_\<^esub>)" [60,61]60) where
+  "Tw\<^bsub>D,T\<^esub> = (\<lambda>a\<in> carrier D. SOME x. x\<in>carrier T \<and>
+    ord_equiv (Iod D (segment D a)) (Iod T (segment T x)))"
 
 lemma (in Worder) Tw_func:"\<lbrakk>Worder T; 
      \<forall>a\<in>carrier D. \<exists>b\<in>carrier T. ord_equiv (Iod D (segment D a)) 
