@@ -12,30 +12,29 @@ datatype vbl = X nat
   wonder whether things wouldn't be clearer is we just identified vbls
   with nats"
 
-consts deX     :: "vbl => nat"
-primrec "deX (X n) = n"
+primrec deX :: "vbl => nat" where "deX (X n) = n"
 
 lemma X_deX[simp]: "X (deX a) = a"
-  apply(cases a) apply simp done
+  by(cases a) simp
 
-constdefs
-  zeroX   :: "vbl"
-  "zeroX \<equiv> X 0"
+constdefs "zeroX == X 0"
 
-consts nextX   :: "vbl => vbl"
+consts nextX :: "vbl => vbl"
 primrec "nextX (X n) = X (Suc n)"
 
-constdefs vblcase :: "['a,vbl => 'a,vbl] => 'a"
-  "vblcase a f n \<equiv> @z. (n=zeroX \<longrightarrow> z=a) \<and> (!x. n=nextX x \<longrightarrow> z=f(x))"
+definition
+  vblcase :: "['a,vbl => 'a,vbl] => 'a" where
+  "vblcase a f n = (@z. (n=zeroX \<longrightarrow> z=a) \<and> (!x. n=nextX x \<longrightarrow> z=f(x)))"
 
 translations
-  "case p of zeroX \<Rightarrow> a | nextX y \<Rightarrow> b" == "(vblcase a (%y. b) p)"
+  "case p of zeroX \<Rightarrow> a | nextX y \<Rightarrow> b" == "(CONST vblcase a (%y. b) p)"
 				    
-constdefs freshVar :: "vbl set => vbl"
-  "freshVar vs \<equiv> X (LEAST n. n \<notin> deX ` vs)"
+definition
+  freshVar :: "vbl set => vbl" where
+  "freshVar vs = X (LEAST n. n \<notin> deX ` vs)"
     
 lemma nextX_nextX[iff]: "nextX x = nextX y = (x =  y)"
-  by(case_tac x, case_tac y, auto)
+  by(cases x, cases y) auto
 
 lemma inj_nextX: "inj nextX"
   by(auto simp add: inj_on_def)
@@ -131,19 +130,19 @@ lemma expand_signs_case: "Q(signs_case vpos vneg F) = (
   (F = Pos --> Q (vpos)) & 
   (F = Neg --> Q (vneg)) 
  )"
-  apply(induct F) by simp_all
+  by(induct F) simp_all
 
-consts sign    :: "signs \<Rightarrow> bool \<Rightarrow> bool"
-primrec 
+primrec sign :: "signs \<Rightarrow> bool \<Rightarrow> bool"
+where
   "sign Pos x = x"
-  "sign Neg x = (\<not> x)"
+| "sign Neg x = (\<not> x)"
 
 lemma sign_arg_cong: "x = y ==> sign z x = sign z y" by simp
     
-consts invSign :: "signs \<Rightarrow> signs"
-primrec 
+primrec invSign :: "signs \<Rightarrow> signs"
+where
   "invSign Pos = Neg"
-  "invSign Neg = Pos"
+| "invSign Neg = Pos"
 
 
 subsection "Formulas"
@@ -201,23 +200,23 @@ lemma expand_formula_case:
  )"
   apply(cases F) apply simp_all done
 
-consts FNot    :: "formula => formula"
-primrec 
+primrec FNot :: "formula => formula"
+where
   FNot_FAtom: "FNot (FAtom z P vs)  = FAtom (invSign z) P vs"
-  FNot_FConj: "FNot (FConj z A0 A1) = FConj (invSign z) (FNot A0) (FNot A1)"    
-  FNot_FAll:  "FNot (FAll  z body)  = FAll  (invSign z) (FNot body)"
+| FNot_FConj: "FNot (FConj z A0 A1) = FConj (invSign z) (FNot A0) (FNot A1)"    
+| FNot_FAll:  "FNot (FAll  z body)  = FAll  (invSign z) (FNot body)"
 
-consts neg  :: "signs => signs"
-primrec 
-    "neg Pos = Neg"
-    "neg Neg = Pos"
+primrec neg  :: "signs => signs"
+where
+  "neg Pos = Neg"
+| "neg Neg = Pos"
 
-consts 
+primrec
   dual :: "[(signs => signs),(signs => signs),(signs => signs)] => formula => formula"
-primrec 
+where
   dual_FAtom: "dual p q r (FAtom z P vs)  = FAtom (p z) P vs"
-  dual_FConj: "dual p q r (FConj z A0 A1) = FConj (q z) (dual p q r A0) (dual p q r A1)"
-  dual_FAll:  "dual p q r (FAll  z body)  = FAll  (r z) (dual p q r body)"
+| dual_FConj: "dual p q r (FConj z A0 A1) = FConj (q z) (dual p q r A0) (dual p q r A1)"
+| dual_FAll:  "dual p q r (FAll  z body)  = FAll  (r z) (dual p q r body)"
 
 lemma dualCompose: "dual p q r o dual P Q R = dual (p o P) (q o Q) (r o R)"
   apply(rule ext)
@@ -227,77 +226,75 @@ lemma dualCompose: "dual p q r o dual P Q R = dual (p o P) (q o Q) (r o R)"
 lemma dualFNot': "dual invSign invSign invSign = FNot"
   apply(rule ext) 
   apply(induct_tac x) 
-  by auto
+  apply auto
+  done
 
 lemma dualFNot: "dual invSign id id (FNot A) = FNot (dual invSign id id A)"
-  apply(induct A) apply(auto simp: id_def) done
+  by(induct A) (auto simp: id_def)
 
 lemma dualId: "dual id id id A = A"
-  apply(induct A, auto simp: id_def) done
+  by(induct A) (auto simp: id_def)
 
 
 subsection "Frees"
 
-consts freeVarsF  :: "formula => vbl set"
-primrec 
+primrec freeVarsF  :: "formula => vbl set"
+where
   freeVarsFAtom: "freeVarsF (FAtom z P vs)  = set vs"
-  freeVarsFConj: "freeVarsF (FConj z A0 A1) = (freeVarsF A0) Un (freeVarsF A1)"    
-  freeVarsFAll:  "freeVarsF (FAll  z body)  = preImage nextX (freeVarsF body)"
+| freeVarsFConj: "freeVarsF (FConj z A0 A1) = (freeVarsF A0) Un (freeVarsF A1)"    
+| freeVarsFAll:  "freeVarsF (FAll  z body)  = preImage nextX (freeVarsF body)"
 
-constdefs
-  freeVarsFL :: "formula list => vbl set"
-  "freeVarsFL gamma == Union (freeVarsF ` (set gamma))"
+definition
+  freeVarsFL :: "formula list => vbl set" where
+  "freeVarsFL gamma = Union (freeVarsF ` (set gamma))"
 
 lemma freeVarsF_FNot[simp]: "freeVarsF (FNot A) = freeVarsF A"
-  apply(induct A, auto) done
+  by(induct A) auto
 
 lemma finite_freeVarsF[simp]: "finite (freeVarsF A)"
-  apply(induct A) 
-  apply(auto simp add: inj_nextX finite_preImage) 
-  done 
+  by(induct A) (auto simp add: inj_nextX finite_preImage) 
 
 lemma freeVarsFL_nil[simp]: "freeVarsFL ([]) = {}"
-  apply(simp add: freeVarsFL_def) done
+  by(simp add: freeVarsFL_def)
 
 lemma freeVarsFL_cons: "freeVarsFL (A#Gamma) = freeVarsF A \<union> freeVarsFL Gamma"
   by(simp add: freeVarsFL_def)
     -- "FIXME not simp, since simp stops some later lemmas because the simpset isn't confluent"
 
 lemma finite_freeVarsFL[simp]: "finite (freeVarsFL gamma)"
-  apply(induct gamma)
-  apply(auto simp: freeVarsFL_cons)
-  done
+  by(induct gamma) (auto simp: freeVarsFL_cons)
 
 lemma freeVarsDual: "freeVarsF (dual p q r A) = freeVarsF A"
-  apply(induct A, auto) done
+  by(induct A) auto
 
 
 subsection "Substitutions"
 
-consts subF         :: "[vbl => vbl,formula] => formula"
-primrec 
+primrec subF :: "[vbl => vbl,formula] => formula"
+where
   subFAtom: "subF theta (FAtom z P vs)  = FAtom z P (map theta vs)"
-  subFConj: "subF theta (FConj z A0 A1) = FConj z (subF theta A0) (subF theta A1)"
-  subFAll: "subF theta (FAll z body)  = 
+| subFConj: "subF theta (FConj z A0 A1) = FConj z (subF theta A0) (subF theta A1)"
+| subFAll: "subF theta (FAll z body)  = 
   FAll  z (subF (% v . (case v of zeroX => zeroX | nextX v => nextX (theta v))) body)"
 
-lemma size_subF[rule_format]: "! theta. size (subF theta A) = size (A::formula)"
-  apply(induct A, auto) done
+lemma size_subF: "!!theta. size (subF theta A) = size (A::formula)"
+  by(induct A) auto
 
-lemma subFNot[rule_format]: "!theta. subF theta (FNot A) = FNot (subF theta A)"
-  apply(induct A, auto) done
+lemma subFNot: "!!theta. subF theta (FNot A) = FNot (subF theta A)"
+  by(induct A) auto
 
-lemma subFDual[rule_format]: "!theta. subF theta (dual p q r A) = dual p q r (subF theta A)"
-  by(induct A, auto)
+lemma subFDual: "!!theta. subF theta (dual p q r A) = dual p q r (subF theta A)"
+  by(induct A) auto
 
-constdefs instanceF :: "[vbl,formula] => formula"
-  "instanceF w body == subF (%v. case v of zeroX => w | nextX v => v) body"
+definition
+  instanceF :: "[vbl,formula] => formula" where
+  "instanceF w body = subF (%v. case v of zeroX => w | nextX v => v) body"
 
-lemma size_instance: "! v. size (instanceF v A) = size (A::formula)"
-  apply(induct A) apply(auto simp: instanceF_def size_subF) done
+lemma size_instance: "!!v. size (instanceF v A) = size (A::formula)"
+  by(induct A) (auto simp: instanceF_def size_subF)
 
 lemma instanceFDual: "instanceF u (dual p q r A) = dual p q r (instanceF u A)" 
-  apply(induct A) apply(simp_all add: instanceF_def subFDual) done
+  by(induct A) (simp_all add: instanceF_def subFDual)
 
 
 subsection "Models"
@@ -305,24 +302,21 @@ subsection "Models"
 typedecl
   object
 
-consts
-  obj :: "nat => object"
-
-axioms
-  inj_obj: "inj obj"
+axiomatization obj :: "nat => object"
+where inj_obj: "inj obj"
 
 
 subsection "model, non empty set and positive atom valuation"
 
 typedef model = "{ z :: (object set * ([predicate,object list] => bool)) . (fst z ~= {}) }" by auto
 
-consts
-    objects :: "model => object set"
-    evalP   :: "model => predicate => object list => bool"
+definition
+  objects :: "model => object set" where
+  "objects M = fst (Rep_model M)"
 
-defs
-    objects_def: "objects M == fst (Rep_model M)"
-    evalP_def:   "evalP   M == snd (Rep_model M)"
+definition
+  evalP :: "model => predicate => object list => bool" where
+  "evalP M = snd (Rep_model M)"
 
 
 lemma evalP_arg2_cong: "x = y ==> evalP M p x = evalP M p y" by simp
@@ -337,34 +331,31 @@ lemma modelsNonEmptyI: "fst (Rep_model M) \<noteq> {}"
 
 subsection "Validity"
 
-consts
-    evalF            :: "[model,vbl => object,formula] => bool"
-    valid            :: "formula => bool"    
-
-defs    
-    valid_def:	"valid F == ! M phi. evalF M phi F = True"
-
-primrec 
-    evalFAtom: "evalF M phi (FAtom z P vs)  = sign z (evalP M P (map phi vs))"
-    evalFConj: "evalF M phi (FConj z A0 A1) = sign z (sign z (evalF M phi A0) & sign z (evalF M phi A1))"
-    evalFAll:  "evalF M phi (FAll  z body)  = sign z (!x: (objects M).
+primrec evalF :: "[model,vbl => object,formula] => bool"
+where
+  evalFAtom: "evalF M phi (FAtom z P vs)  = sign z (evalP M P (map phi vs))"
+| evalFConj: "evalF M phi (FConj z A0 A1) = sign z (sign z (evalF M phi A0) & sign z (evalF M phi A1))"
+| evalFAll:  "evalF M phi (FAll  z body)  = sign z (!x: (objects M).
 				                       sign z
 				                            (evalF M (%v . (case v of
 										zeroX   => x
 									      | nextX v => phi v)) body))"
 
+definition
+  valid :: "formula => bool" where
+  "valid F \<longleftrightarrow> (\<forall>M phi. evalF M phi F = True)"
+
+
 lemma evalF_FAll: "evalF M phi (FAll Pos A) = (!x: (objects M). (evalF M (vblcase x (%v .phi v)) A))"
-  apply simp done
+  by simp
   
 lemma evalF_FEx: "evalF M phi (FAll Neg A) = ( ? x:(objects M). (evalF M (vblcase x (%v. phi v)) A))"
-  apply simp done
+  by simp
 
 lemma evalF_arg2_cong: "x = y ==> evalF M p x = evalF M p y" by simp
 
-lemma evalF_FNot[rule_format]: "!phi. evalF M phi (FNot A) = (\<not> evalF M phi A)"
-  apply(rule_tac formula_signs_induct)
-  apply(simp+)
-  done
+lemma evalF_FNot: "!!phi. evalF M phi (FNot A) = (\<not> evalF M phi A)"
+  by(induct A rule: formula_signs_induct) simp_all
 
 lemma evalF_equiv[rule_format]: "! f g. (equalOn (freeVarsF A) f g) \<longrightarrow> (evalF M f A = evalF M g A)"
   apply(induct A)

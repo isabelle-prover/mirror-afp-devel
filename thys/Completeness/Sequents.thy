@@ -6,14 +6,15 @@ begin
 
 types sequent = "formula list"
 
-constdefs evalS :: "[model,vbl => object,formula list] => bool"
-  "evalS M phi fs == ? f : set fs . evalF M phi f = True"
+definition
+  evalS :: "[model,vbl => object,formula list] => bool" where
+  "evalS M phi fs \<longleftrightarrow> (? f : set fs . evalF M phi f = True)"
 
 lemma evalS_nil[simp]: "evalS M phi [] = False"
   by(simp add: evalS_def)
 
 lemma evalS_cons[simp]: "evalS M phi (A # Gamma) = (evalF M phi A | evalS M phi Gamma)"
-  apply(simp add: evalS_def) done
+  by(simp add: evalS_def)
 
 lemma evalS_append: "evalS M phi (Gamma @ Delta) = (evalS M phi Gamma | evalS M phi Delta)"
   by(force simp add: evalS_def)
@@ -26,37 +27,39 @@ lemma evalS_equiv[rule_format]: "(equalOn (freeVarsFL Gamma) f g) --> (evalS M f
   done
 
 
-constdefs modelAssigns :: "[model] => (vbl => object) set"
-  "modelAssigns M == { phi . range phi <= objects M }"
+definition
+  modelAssigns :: "[model] => (vbl => object) set" where
+  "modelAssigns M = { phi . range phi <= objects M }"
 
 lemma modelAssignsI: "range f <= objects M \<Longrightarrow> f : modelAssigns M" 
-  apply(simp add: modelAssigns_def) done
+  by(simp add: modelAssigns_def)
 
 lemma modelAssignsD: "f : modelAssigns M \<Longrightarrow> range f <= objects M" 
-  apply(simp add: modelAssigns_def) done
+  by(simp add: modelAssigns_def)
   
-constdefs
-  validS           :: "formula list => bool"
-  "validS fs == ! M . ! phi : modelAssigns M . evalS M phi fs = True"
+definition
+  validS :: "formula list => bool" where
+  "validS fs \<longleftrightarrow> (! M . ! phi : modelAssigns M . evalS M phi fs = True)"
 
 
 subsection "Rules"
 
 types rule     = "sequent * (sequent set)"
 
-constdefs
-  concR	:: "rule => sequent"
-  "concR   == %   (conc,prems) . conc"
+definition
+  concR	:: "rule => sequent" where
+  "concR = (%(conc,prems). conc)"
 
-  premsR	:: "rule => sequent set"
-  "premsR  == %   (conc,prems) . prems"
+definition
+  premsR :: "rule => sequent set" where
+  "premsR = (%(conc,prems). prems)"
 
-constdefs
-  mapRule	:: "(formula => formula) => rule => rule"
-  "mapRule == % f (conc,prems) . (map f conc,(map f) ` prems)"
+definition
+  mapRule :: "(formula => formula) => rule => rule" where
+  "mapRule = (%f (conc,prems) . (map f conc,(map f) ` prems))"
 
-lemma mapRuleI: "!!f. [| A = map f a; B = (map f) ` b |] ==> (A,B) = mapRule f (a,b)"
-  apply(simp add: mapRule_def) done
+lemma mapRuleI: "[| A = map f a; B = (map f) ` b |] ==> (A,B) = mapRule f (a,b)"
+  by(simp add: mapRule_def)
     -- "FIXME tjr would like symmetric"
 
 
@@ -136,30 +139,26 @@ lemma deductionsCloseRules: "! (conc,prems) : S . prems <= deductions R --> conc
 
 subsection "Basic Rule sets"
 
-consts
-    Axioms    :: "rule set"
-    Conjs     :: "rule set"
-    Disjs     :: "rule set"
-    Alls      :: "rule set"
-    Exs       :: "rule set"
-    Weaks     :: "rule set"
-    Contrs    :: "rule set"
-    Cuts      :: "rule set"
-    Perms     :: "rule set"
-    DAxioms   :: "rule set"
-
-defs
-    Axioms_def:     "Axioms  == { z. ? p vs.              z = ([FAtom Pos p vs,FAtom Neg p vs],{}) }"
-    Conjs_def:      "Conjs   == { z. ? A0 A1 Delta Gamma. z = (FConj Pos A0 A1#Gamma @ Delta,{A0#Gamma,A1#Delta}) }"
-    Disjs_def:      "Disjs   == { z. ? A0 A1       Gamma. z = (FConj Neg A0 A1#Gamma,{A0#A1#Gamma}) }"
-    Alls_def:       "Alls    == { z. ? A x         Gamma. z = (FAll Pos A#Gamma,{instanceF x A#Gamma}) & x ~: freeVarsFL (FAll Pos A#Gamma) }"
-    Exs_def:        "Exs     == { z. ? A x         Gamma. z = (FAll Neg A#Gamma,{instanceF x A#Gamma})}"
-    Weaks_def:      "Weaks   == { z. ? A           Gamma. z = (A#Gamma,{Gamma})}"
-    Contrs_def:     "Contrs  == { z. ? A           Gamma. z = (A#Gamma,{A#A#Gamma})}"
-    Cuts_def:       "Cuts    == { z. ? C Delta     Gamma. z = (Gamma @ Delta,{C#Gamma,FNot C#Delta})}"
-    Perms_def:      "Perms   == { z. ? Gamma Gamma'     . z = (Gamma,{Gamma'}) & Gamma <~~> Gamma'}"
-
-    DAxioms_def:    "DAxioms == { z. ? p vs.              z = ([FAtom Neg p vs,FAtom Pos p vs],{}) }"
+definition
+  "Axioms  = { z. ? p vs.              z = ([FAtom Pos p vs,FAtom Neg p vs],{}) }"
+definition
+  "Conjs   = { z. ? A0 A1 Delta Gamma. z = (FConj Pos A0 A1#Gamma @ Delta,{A0#Gamma,A1#Delta}) }"
+definition
+  "Disjs   = { z. ? A0 A1       Gamma. z = (FConj Neg A0 A1#Gamma,{A0#A1#Gamma}) }"
+definition
+  "Alls    = { z. ? A x         Gamma. z = (FAll Pos A#Gamma,{instanceF x A#Gamma}) & x ~: freeVarsFL (FAll Pos A#Gamma) }"
+definition
+  "Exs     = { z. ? A x         Gamma. z = (FAll Neg A#Gamma,{instanceF x A#Gamma})}"
+definition
+  "Weaks   = { z. ? A           Gamma. z = (A#Gamma,{Gamma})}"
+definition
+  "Contrs  = { z. ? A           Gamma. z = (A#Gamma,{A#A#Gamma})}"
+definition
+  "Cuts    = { z. ? C Delta     Gamma. z = (Gamma @ Delta,{C#Gamma,FNot C#Delta})}"
+definition
+  "Perms   = { z. ? Gamma Gamma'     . z = (Gamma,{Gamma'}) & Gamma <~~> Gamma'}"
+definition
+  "DAxioms = { z. ? p vs.              z = ([FAtom Neg p vs,FAtom Pos p vs],{}) }"
 
 
 lemma AxiomI: "[| Axioms <= A |] ==> [FAtom Pos p vs,FAtom Neg p vs] : deductions(A)"
@@ -254,13 +253,13 @@ lemma ConjI': "[| (A0#Gamma) : deductions(A);  (A1#Gamma) : deductions(A); Contr
 
 subsection "Standard Rule Sets For Predicate Calculus"
 
-constdefs
-  PC        :: "rule set"
-  "PC        == Union {Perms,Axioms,Conjs,Disjs,Alls,Exs,Weaks,Contrs,Cuts}"
+definition
+  PC :: "rule set" where
+  "PC = Union {Perms,Axioms,Conjs,Disjs,Alls,Exs,Weaks,Contrs,Cuts}"
 
-constdefs
-  CutFreePC :: "rule set"
-  "CutFreePC == Union {Perms,Axioms,Conjs,Disjs,Alls,Exs,Weaks,Contrs}"
+definition
+  CutFreePC :: "rule set" where
+  "CutFreePC = Union {Perms,Axioms,Conjs,Disjs,Alls,Exs,Weaks,Contrs}"
 
 lemma rulesInPCs: "Axioms <= PC" "Axioms <= CutFreePC"
   "Conjs  <= PC" "Conjs  <= CutFreePC"
@@ -272,8 +271,7 @@ lemma rulesInPCs: "Axioms <= PC" "Axioms <= CutFreePC"
   "Perms  <= PC" "Perms  <= CutFreePC"
   "Cuts   <= PC"
   "CutFreePC <= PC"
-  apply(auto simp: PC_def CutFreePC_def)
-  done
+  by(auto simp: PC_def CutFreePC_def)
 
 
 subsection "Monotonicity for CutFreePC deductions"
@@ -281,8 +279,9 @@ subsection "Monotonicity for CutFreePC deductions"
   -- "these lemmas can be used to replace complicated permutation reasoning above"
   -- "essentially if x is a deduction, and set x subset set y, then y is a deduction"
 
-constdefs inDed :: "formula list => bool"
-  "inDed xs == xs : deductions CutFreePC"
+definition
+  inDed :: "formula list => bool" where
+  "inDed xs \<longleftrightarrow> xs : deductions CutFreePC"
 
 lemma perm: "! xs ys. xs <~~> ys --> (inDed xs = inDed ys)"
   apply(subgoal_tac "! xs ys. xs <~~> ys --> inDed xs --> inDed ys")

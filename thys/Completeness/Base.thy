@@ -34,45 +34,47 @@ lemma LeastI_ex: "(\<exists> x. P (x::'a::wellorder)) \<Longrightarrow> P (LEAST
 
 subsection "Summation"
 
-consts summation :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat"
-primrec 
+primrec summation :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat"
+where
   "summation f 0 = f 0"
-  "summation f (Suc n) = f (Suc n) + summation f n"
+| "summation f (Suc n) = f (Suc n) + summation f n"
 
 
 subsection "Termination Measure"
 
-consts exp :: "[nat,nat] \<Rightarrow> nat"
-primrec 
+primrec exp :: "[nat,nat] \<Rightarrow> nat"
+where
   "exp x 0       = 1"
-  "exp x (Suc m) = x * exp x m"
+| "exp x (Suc m) = x * exp x m"
 
-consts sumList     :: "nat list \<Rightarrow> nat"
-primrec 
+primrec sumList     :: "nat list \<Rightarrow> nat"
+where
   "sumList []     = 0"
-  "sumList (x#xs) = x + sumList xs"
+| "sumList (x#xs) = x + sumList xs"
 
 
 subsection "Functions"
 
-constdefs
-  preImage :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b set \<Rightarrow> 'a set"
-  "preImage f A \<equiv> { x . f x \<in> A}"
+definition
+  preImage :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b set \<Rightarrow> 'a set" where
+  "preImage f A = { x . f x \<in> A}"
 
-  pre      :: "('a \<Rightarrow> 'b) => 'b \<Rightarrow> 'a set"
-  "pre f a \<equiv> { x . f x = a}"
+definition
+  pre :: "('a \<Rightarrow> 'b) => 'b \<Rightarrow> 'a set" where
+  "pre f a = { x . f x = a}"
 
-  equalOn  :: "['a set,'a => 'b,'a => 'b] => bool"
-  "equalOn A f g \<equiv> (!x:A. f x = g x)"    
+definition
+  equalOn :: "['a set,'a => 'b,'a => 'b] => bool" where
+  "equalOn A f g = (!x:A. f x = g x)"    
 
 lemma preImage_insert: "preImage f (insert a A) = pre f a Un preImage f A"
   by(auto simp add: preImage_def pre_def)
 
 lemma preImageI: "f x : A ==> x : preImage f A"
-  apply(simp add: preImage_def) done
+  by(simp add: preImage_def)
     
 lemma preImageE: "x : preImage f A ==> f x : A"
-  apply(simp add: preImage_def) done
+  by(simp add: preImage_def)
 
 lemma equalOn_Un:  "equalOn (A \<union> B) f g = (equalOn A f g \<and> equalOn B f g)"
   by(auto simp add: equalOn_def) 
@@ -84,7 +86,7 @@ lemma equalOnI:"(\<forall> x \<in> A . f x = g x) \<Longrightarrow> equalOn A f 
   by(simp add: equalOn_def)
 
 lemma equalOn_UnD: "equalOn (A Un B) f g ==> equalOn A f g & equalOn B f g"
-  apply(auto simp: equalOn_def) done 
+  by(auto simp: equalOn_def)
 
 
     -- "FIXME move following elsewhere?"

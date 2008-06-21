@@ -11,57 +11,48 @@ types "atom"  = "(signs * predicate * vbl list)"
       nform = "(nat * formula)"
       pseq  = "(atom list * nform list)"
 
-consts
-    sequent :: "pseq => formula list"
-    pseq    :: "formula list => pseq"
+definition
+  sequent :: "pseq => formula list" where
+  "sequent = (%(atoms,nforms) . map snd nforms @ map (% (z,p,vs) . FAtom z p vs) atoms)"
 
-defs
-    sequent_def: "sequent == % (atoms,nforms) . map snd nforms @ map (% (z,p,vs) . FAtom z p vs) atoms"
-    pseq_def:    "pseq fs == ([],map (%f.(0,f)) fs)"
+definition
+  pseq :: "formula list => pseq" where
+  "pseq fs = ([],map (%f.(0,f)) fs)"
 
-consts
-    atoms  :: "pseq => atom list"
-    nforms :: "pseq => nform list"
-
-defs
-    atoms_def:  "atoms  == fst"
-    nforms_def: "nforms == snd"
+definition atoms :: "pseq => atom list" where "atoms = fst"
+definition nforms :: "pseq => nform list" where "nforms = snd"
 
 
 subsection "subs: SATAxiom"
 
-constdefs
-    SATAxiom :: "formula list => bool"
-    "SATAxiom fs == ? n vs . FAtom Pos n vs : set fs & FAtom Neg n vs : set fs"
+definition
+  SATAxiom :: "formula list => bool" where
+  "SATAxiom fs \<longleftrightarrow> (? n vs . FAtom Pos n vs : set fs & FAtom Neg n vs : set fs)"
 
 
 subsection "subs: a CutFreePC justifiable backwards proof step"
 
-consts
-    subs       :: "pseq => pseq set"
-    subsFAtom  :: "[atom list,(nat * formula) list,signs,predicate,vbl list] => pseq set"
-    subsFConj  :: "[atom list,(nat * formula) list,signs,formula,formula] => pseq set"
-    subsFAll   :: "[atom list,(nat * formula) list,nat,signs,formula,vbl set] => pseq set"
+definition
+  subsFAtom :: "[atom list,(nat * formula) list,signs,predicate,vbl list] => pseq set" where
+  "subsFAtom atms nAs z P vs = { ((z,P,vs)#atms,nAs) }"
 
-defs	
-    subsFAtom_def:
-    "subsFAtom atms nAs z P vs == { ((z,P,vs)#atms,nAs) }"
+definition
+  subsFConj :: "[atom list,(nat * formula) list,signs,formula,formula] => pseq set" where
+  "subsFConj atms nAs z A0 A1 =
+    (case z of
+      Pos => { (atms,(0,A0)#nAs),(atms,(0,A1)#nAs) }
+    | Neg => { (atms,(0,A0)#(0,A1)#nAs) })"
 
-    subsFConj_def:
-    "subsFConj atms nAs z A0 A1 ==
-	case z of
-	    Pos => { (atms,(0,A0)#nAs),(atms,(0,A1)#nAs) }
-	  | Neg => { (atms,(0,A0)#(0,A1)#nAs) }"
-
-    subsFAll_def:
-    "subsFAll atms nAs n z A frees ==
-         case z of
-	     Pos => { let v = freshVar frees in  (atms,(0,instanceF v A)#nAs) }
-	   | Neg => { (atms,(0,instanceF (X n) A)#nAs @ [(Suc n,FAll Neg A)]) }"
+definition
+  subsFAll :: "[atom list,(nat * formula) list,nat,signs,formula,vbl set] => pseq set" where
+  "subsFAll atms nAs n z A frees =
+    (case z of
+      Pos => { let v = freshVar frees in  (atms,(0,instanceF v A)#nAs) }
+    | Neg => { (atms,(0,instanceF (X n) A)#nAs @ [(Suc n,FAll Neg A)]) })"
     
-defs
-    subs_def:
-    "subs == % pseq .
+definition
+  subs :: "pseq => pseq set" where
+  "subs = (% pseq .
 	     if SATAxiom (sequent pseq) then
 		 {}
 	     else let (atms,nforms) = pseq
@@ -71,39 +62,36 @@ defs
 			 	   in  (case A of
 				            FAtom z P vs  => subsFAtom atms nAs z P vs
 					  | FConj z A0 A1 => subsFConj atms nAs z A0 A1
-					  | FAll  z A     => subsFAll  atms nAs n z A (freeVarsFL (sequent pseq)))"
+					  | FAll  z A     => subsFAll  atms nAs n z A (freeVarsFL (sequent pseq))))"
 
 
 subsection "proofTree(Gamma) says whether tree(Gamma) is a proof"
 
-consts
-    proofTree   :: "(nat * pseq) set => bool"    
-
-defs
-    proofTree_def:
-    "proofTree A == bounded A & founded subs (SATAxiom o sequent) A"
+definition
+  proofTree :: "(nat * pseq) set => bool" where
+  "proofTree A \<longleftrightarrow> bounded A & founded subs (SATAxiom o sequent) A"
 
 
 subsection "path: considers, contains, costBarrier"
 
-consts
-    considers   :: "[nat => pseq,nat * formula,nat] => bool"
-    "contains"    :: "[nat => pseq,nat * formula,nat] => bool"
+definition
+  considers :: "[nat => pseq,nat * formula,nat] => bool" where
+  "considers f nA n = (case (snd (f n)) of [] => False | x#xs => x=nA)"
 
-    costBarrier :: "[nat * formula,pseq] => nat"
-  
-defs
-    considers_def: "considers f nA n == case (snd (f n)) of [] => False | x#xs => x=nA"
-    contains_def:  "contains  f nA n == nA : set (snd (f n))"
+definition
+  "contains" :: "[nat => pseq,nat * formula,nat] => bool" where
+  "contains f nA n \<longleftrightarrow> nA : set (snd (f n))"
 
-defs
+definition
+  costBarrier :: "[nat * formula,pseq] => nat" where
     (******
      costBarrier justifies: eventually contains ==> eventually considers
      with a termination thm, (barrier strictly decreases in |N).
      ******)
-    costBarrier_def: "costBarrier nA == % (atms,nAs) . let barrier = takeWhile (%x. nA ~= x) nAs
-						      in  let costs = map (exp 3 o size o snd) barrier
-						          in  sumList costs"
+  "costBarrier nA = (%(atms,nAs).
+    let barrier = takeWhile (%x. nA ~= x) nAs
+    in  let costs = map (exp 3 o size o snd) barrier
+    in  sumList costs)"
 
 
 subsection "path: eventually"
@@ -112,11 +100,9 @@ subsection "path: eventually"
  Could do this with composable temporal operators, but following paper proof first.
  ******)
 
-consts
-    EV  :: "[nat => bool] => bool"
-  
-defs
-    EV_def: "EV f == ( ? n . f n)"
+definition
+  EV :: "[nat => bool] => bool" where
+  "EV f == (? n . f n)"
 	(****** 
 	 This allows blast_tac like searching to be done without hassle
 	 of removing exists rules. (hopefully).
@@ -125,19 +111,21 @@ defs
 
 subsection "path: counter model"
 
-consts
-    counterM        :: "(nat => pseq) => object set"
-    counterEvalP    :: "(nat => pseq) => predicate => object list => bool"
-    counterModel    :: "(nat => pseq) => model"
-    counterAssign   :: "vbl => object"
+definition
+  counterM :: "(nat => pseq) => object set" where
+  "counterM f = range obj"
 
-defs
-    counterM_def:     "counterM     f == range obj"
-    counterEvalP_def: "counterEvalP f == % p args . ! i . ~(EV (contains f (i,FAtom Pos p (map (X o inv obj) args))))"
-    counterModel_def: "counterModel f == Abs_model (counterM f,counterEvalP f)"
+definition
+  counterEvalP :: "(nat => pseq) => predicate => object list => bool" where
+  "counterEvalP f = (%p args . ! i . ~(EV (contains f (i,FAtom Pos p (map (X o inv obj) args)))))"
 
-primrec 
-    (*counterAssign_def:*) "counterAssign (X n) = obj n"  (* just deX *)
+definition
+  counterModel :: "(nat => pseq) => model" where
+  "counterModel f = Abs_model (counterM f, counterEvalP f)"
+
+
+primrec counterAssign :: "vbl => object"
+where "counterAssign (X n) = obj n"  (* just deX *)
 
 
 subsection "subs: finite"
@@ -270,7 +258,7 @@ lemma subsJustified: "!! gamma. ~ terminal subs gamma
 
 subsection "proofTrees are deductions: instance of boundedTreeInduction"
 
-lemmas proofTreeD = meta_eq_to_obj_eq[OF proofTree_def, THEN iffD1]
+lemmas proofTreeD = proofTree_def [THEN iffD1]
 
 lemma proofTreeDeductionD[rule_format]: "proofTree(tree subs gamma) \<Longrightarrow> sequent gamma : deductions (CutFreePC)"
   apply(rule boundedTreeInduction[OF fansSubs]) 

@@ -27,17 +27,18 @@ lemma tree0Eq: "(0,y) : tree subs gamma = (y = gamma)"
 
 lemma tree1Eq [rule_format]:
     "\<forall>Y. (Suc n,Y) \<in> tree subs gamma = (\<exists>sigma \<in> subs gamma . (n,Y) \<in> tree subs sigma)"
-  by (induct n, blast, force)
+  by (induct n) (blast, force)
     --"moving down a tree"
 
-constdefs  
-  incLevel :: "nat * 'a => nat * 'a"
-  "incLevel == % (n,a). (Suc n,a)"
+definition
+  incLevel :: "nat * 'a => nat * 'a" where
+  "incLevel = (% (n,a). (Suc n,a))"
 
 lemma injIncLevel: "inj incLevel"
   apply(simp add: incLevel_def)
   apply(rule inj_onI) 
-  by auto
+  apply auto
+  done
   
 lemma treeEquation: "tree subs gamma = insert (0,gamma) (UN delta:subs gamma . incLevel ` tree subs delta)"
   apply(rule set_ext)
@@ -47,38 +48,37 @@ lemma treeEquation: "tree subs gamma = insert (0,gamma) (UN delta:subs gamma . i
   apply(force simp add: tree1Eq incLevel_def)
   done
 
-constdefs
-  fans :: "['a => 'a set] => bool"
-  "fans subs == !x. finite (subs x)"
+definition
+  fans :: "['a => 'a set] => bool" where
+  "fans subs \<longleftrightarrow> (!x. finite (subs x))"
 
 lemma fansD: "fans subs ==> finite (subs A)"
   by(simp add: fans_def)
 
 lemma fansI:  "(!A. finite (subs A)) ==> fans subs" 
-  by (simp add: fans_def) 
+  by(simp add: fans_def) 
 
 
 subsection "Terminal"
 
-constdefs
-  terminal    :: "['a => 'a set,'a] => bool"
-  "terminal subs delta == subs(delta) = {}"
+definition
+  terminal :: "['a => 'a set,'a] => bool" where
+  "terminal subs delta \<longleftrightarrow> subs(delta) = {}"
 
 lemma terminalD: "terminal subs Gamma ==> x ~: subs Gamma" 
-  apply(simp add: terminal_def) done
+  by(simp add: terminal_def)
   -- "not a good dest rule"
 
 lemma terminalI: "x \<in> subs Gamma ==> ~ terminal subs Gamma" 
-  apply(simp add: terminal_def) 
-  by blast
+  by(auto simp add: terminal_def) 
   -- "not a good intro rule"
 
 
 subsection "Inherited"
 
-constdefs
-  inherited   :: "['a => 'a set,(nat * 'a) set => bool] => bool"
-  "inherited subs P == (!A B. (P A & P B) = P (A Un B))
+definition
+  inherited :: "['a => 'a set,(nat * 'a) set => bool] => bool" where
+  "inherited subs P \<longleftrightarrow> (!A B. (P A & P B) = P (A Un B))
                        & (!A. P A = P (incLevel ` A))
 		       & (!n Gamma A. ~(terminal subs Gamma) --> P A = P (insert (n,Gamma) A))
 		       & (P {})"
@@ -172,39 +172,41 @@ lemma inheritedJoinI[rule_format]: "[| inherited subs P; inherited subs Q; R = (
 
 subsection "bounded, boundedBy"
 
-constdefs
-  boundedBy   :: "nat => (nat * 'a) set => bool"
-  "boundedBy N A == (\<forall>(n,delta) \<in> A. n < N)"
+definition
+  boundedBy :: "nat => (nat * 'a) set => bool" where
+  "boundedBy N A \<longleftrightarrow> (\<forall>(n,delta) \<in> A. n < N)"
 
-  bounded     :: "(nat * 'a) set => bool"
-  "bounded A == \<exists>N . boundedBy N A"
+definition
+  bounded :: "(nat * 'a) set => bool" where
+  "bounded A \<longleftrightarrow> (\<exists>N . boundedBy N A)"
 
 lemma boundedByEmpty[simp]: "boundedBy N {}"
-  apply(simp add: boundedBy_def) done
+  by(simp add: boundedBy_def)
 
 lemma boundedByInsert: "boundedBy N (insert (n,delta) B)     = (n < N & boundedBy N B)"
-  apply(simp add: boundedBy_def) done
+  by(simp add: boundedBy_def)
 
 lemma boundedByUn: "boundedBy N (A Un B) = (boundedBy N A & boundedBy N B)"
-  apply(auto simp add: boundedBy_def) done
+  by(auto simp add: boundedBy_def)
 
 lemma boundedByIncLevel': "boundedBy (Suc N) (incLevel ` A) = boundedBy N A";    
-by (simp add: incLevel_def boundedBy_def, auto)
+  by(auto simp add: incLevel_def boundedBy_def)
 
-lemma boundedByAdd1[rule_format]: "boundedBy N B --> boundedBy (N+M) B"
+lemma boundedByAdd1: "boundedBy N B \<Longrightarrow> boundedBy (N+M) B"
   by(auto simp add: boundedBy_def) 
 
-lemma boundedByAdd2[rule_format]: "boundedBy M B --> boundedBy (N+M) B"
+lemma boundedByAdd2: "boundedBy M B \<Longrightarrow> boundedBy (N+M) B"
   by(auto simp add: boundedBy_def) 
 
-lemma boundedByMono[rule_format]: "boundedBy m B --> m < M --> boundedBy M B"
+lemma boundedByMono: "boundedBy m B \<Longrightarrow> m < M \<Longrightarrow> boundedBy M B"
   by(auto simp: boundedBy_def) 
 
 lemmas boundedByMonoD  = boundedByMono
     
 lemma boundedBy0: "boundedBy 0 A = (A = {})"
   apply(simp add: boundedBy_def)
-  apply(auto simp add: boundedBy_def) done
+  apply(auto simp add: boundedBy_def)
+  done
 
 lemma boundedBySuc': "boundedBy N A \<Longrightarrow> boundedBy (Suc N) A"
   by (auto simp add: boundedBy_def) 
@@ -264,9 +266,9 @@ lemma inheritedBounded: "inherited subs bounded"
 
 subsection "founded"
 
-constdefs  
-  founded     :: "['a => 'a set,'a => bool,(nat * 'a) set] => bool"
-  "founded subs Pred == %A. !(n,delta):A. terminal subs delta --> Pred delta"
+definition
+  founded :: "['a => 'a set,'a => bool,(nat * 'a) set] => bool" where
+  "founded subs Pred = (%A. !(n,delta):A. terminal subs delta --> Pred delta)"
 
 lemma foundedD: "founded subs P (tree subs delta) ==> terminal subs delta ==> P delta"
   by(simp add: treeEquation [of _ delta] founded_def)
@@ -328,9 +330,9 @@ lemma inheritedFinite: "inherited subs (%A. finite A)"
 
 subsection "path: follows a failing inherited property through tree"
 
-constdefs
-  failingSub :: "['a => 'a set,(nat * 'a) set => bool,'a] => 'a"
-  "failingSub subs P gamma == (SOME sigma. (sigma:subs gamma & ~P(tree subs sigma)))"
+definition
+  failingSub :: "['a => 'a set,(nat * 'a) set => bool,'a] => 'a" where
+  "failingSub subs P gamma = (SOME sigma. (sigma:subs gamma & ~P(tree subs sigma)))"
 
 lemma failingSubProps: "[| inherited subs P; ~P (tree subs gamma); ~(terminal subs gamma); fans subs |] 
   ==> failingSub subs P gamma \<in> subs gamma & ~(P (tree subs (failingSub subs P gamma)))"
@@ -350,11 +352,11 @@ lemma failingSubSubs: "[| inherited subs P; ~P (tree subs gamma); ~(terminal sub
   ==> failingSub subs P gamma \<in> subs gamma"
   apply(rule conjunct1[OF failingSubProps]) .
 
-consts
-  "path"     :: "['a => 'a set,'a,(nat * 'a) set => bool,nat] => 'a"
-primrec 
+
+primrec path :: "['a => 'a set,'a,(nat * 'a) set => bool,nat] => 'a"
+where
   path0:   "path subs gamma P 0       = gamma"
-  pathSuc: "path subs gamma P (Suc n) = (if terminal subs (path subs gamma P n)
+| pathSuc: "path subs gamma P (Suc n) = (if terminal subs (path subs gamma P n)
 			    	          then path subs gamma P n
 					  else failingSub subs P (path subs gamma P n))"
 
@@ -388,11 +390,11 @@ lemma pathStops: "terminal subs (path subs gamma P n) ==> path subs gamma P (Suc
 
 subsection "Branch"
 
-constdefs
-  branch      :: "['a => 'a set,'a,nat => 'a] => bool"
-  "branch subs Gamma f == (f 0 = Gamma)
-                                          & ( !n . terminal subs (f n) --> f (Suc n) = f n)
-                                          & ( !n . ~ terminal subs (f n) --> f (Suc n) \<in> subs (f n))"
+definition
+  branch :: "['a => 'a set,'a,nat => 'a] => bool" where
+  "branch subs Gamma f \<longleftrightarrow> f 0 = Gamma
+    & (!n . terminal subs (f n) --> f (Suc n) = f n)
+    & (!n . ~ terminal subs (f n) --> f (Suc n) \<in> subs (f n))"
 
 lemma branch0: "branch subs Gamma f ==> f 0 = Gamma" 
   by (simp add: branch_def)
@@ -436,9 +438,9 @@ lemma failingBranchExistence:  "!!subs.
   apply(rule pathFailsP) 
   by auto
 
-constdefs    
-  infBranch   :: "['a => 'a set,'a,nat => 'a] => bool"
-  "infBranch subs Gamma f == (f 0 = Gamma) & (\<forall>n . f (Suc n) \<in> subs (f n))"
+definition
+  infBranch :: "['a => 'a set,'a,nat => 'a] => bool" where
+  "infBranch subs Gamma f \<longleftrightarrow> f 0 = Gamma & (\<forall>n. f (Suc n) \<in> subs (f n))"
 
 lemma infBranchI: "[| (f 0 = Gamma); !n . f (Suc n) \<in> subs (f n) |] ==> infBranch subs Gamma f"
   by (simp add: infBranch_def)

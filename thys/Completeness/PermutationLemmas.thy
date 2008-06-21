@@ -8,23 +8,26 @@ begin
 
 subsection "perm, count equivalence"
 
-consts count :: "'a \<Rightarrow> 'a list \<Rightarrow> nat"
-primrec 
+primrec count :: "'a \<Rightarrow> 'a list \<Rightarrow> nat"
+where
   "count x [] = 0"
-  "count x (y#ys) = (if x=y then 1 else 0) + count x ys"
+| "count x (y#ys) = (if x=y then 1 else 0) + count x ys"
 
 lemma perm_count: "A <~~> B \<Longrightarrow> (\<forall> x. count x A = count x B)"
-  apply(erule perm.induct, auto) done
+  by(induct set: perm) auto
 
 lemma count_0: "(\<forall>x. count x B = 0) = (B = [])"
-  apply(induct B, auto) done
+  by(induct B) auto
 
 lemma count_Suc: "count a B = Suc m \<Longrightarrow> a : set B"
-  apply(induct B, auto) apply(case_tac "a = aa")
-  by auto
+  apply(induct B)
+   apply auto
+  apply(case_tac "a = aa")
+   apply auto
+  done
 
 lemma count_append: "count a (xs@ys) = count a xs + count a ys"
-  apply(induct xs, auto) done
+  by(induct xs) auto
 
 lemma count_perm: "!! B. (\<forall> x. count x A = count x B) \<Longrightarrow> A <~~> B"
   apply(induct A)
@@ -93,19 +96,21 @@ lemma perm_contr: assumes perm: "! xs ys. xs <~~> ys --> (P xs = P ys)"
 
 subsection "List properties closed under Perm, Weak and Contr are monotonic in the set of the list"
 
-constdefs rem :: "'a => 'a list => 'a list"
-  "rem x xs == filter (%y. y ~= x) xs"
+definition
+  rem :: "'a => 'a list => 'a list" where
+  "rem x xs = filter (%y. y ~= x) xs"
 
 lemma rem: "x ~: set (rem x xs)"
-  apply(simp add: rem_def) done
+  by(simp add: rem_def)
 
 lemma length_rem: "length (rem x xs) <= length xs"
-  apply(simp add: rem_def) done
+  by(simp add: rem_def)
 
 lemma rem_notin: "x ~: set xs ==> rem x xs = xs"
   apply(simp add: rem_def)
   apply(rule filter_True)
-  by force
+  apply force
+  done
 
 
 lemma perm_weak_filter': assumes perm[rule_format]: "! xs ys. xs <~~> ys --> (P xs = P ys)"
@@ -159,13 +164,13 @@ qed
 
 subsection "Following used in Soundness"
 
-consts multiset_of_list :: "'a list \<Rightarrow> 'a multiset"
-primrec 
+primrec multiset_of_list :: "'a list \<Rightarrow> 'a multiset"
+where
   "multiset_of_list [] = {#}"
-  "multiset_of_list (x#xs) = {#x#} + multiset_of_list xs"
+| "multiset_of_list (x#xs) = {#x#} + multiset_of_list xs"
 
 lemma count_count[symmetric]: "count x A = Multiset.count (multiset_of_list A) x"
-by (induct A, simp, simp)
+  by (induct A) simp_all
 
 lemma perm_multiset: "A <~~> B = (multiset_of_list A = multiset_of_list B)"
   apply(simp add: perm_count_conv)
@@ -174,6 +179,6 @@ lemma perm_multiset: "A <~~> B = (multiset_of_list A = multiset_of_list B)"
   done
 
 lemma set_of_multiset_of_list: "set_of (multiset_of_list A) = set A"
-by (induct A, auto)
+  by (induct A) auto
 
 end
