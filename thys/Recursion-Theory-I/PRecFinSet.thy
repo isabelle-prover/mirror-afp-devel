@@ -46,7 +46,7 @@ qed
 
 lemma nat_to_set_upper_bound: "x \<in> nat_to_set u \<Longrightarrow> 2 ^ x \<le> u" by (simp add: nat_to_set_def)
 
-lemma x_lt_2_x: "x < 2 ^ x" by (induct_tac x, auto)
+lemma x_lt_2_x: "x < 2 ^ x" by (induct x) auto
 
 lemma nat_to_set_upper_bound1: "x \<in> nat_to_set u \<Longrightarrow> x < u"
 proof -
@@ -506,7 +506,7 @@ definition
   "set_to_nat = (\<lambda> D. setsum (\<lambda> x. 2 ^ x) D)"
 
 lemma two_power_sum: "setsum (\<lambda> x. (2::nat) ^ x) {i. i< Suc m} = (2 ^ Suc m) - 1"
-proof (induct_tac m)
+proof (induct m)
   show "setsum (\<lambda> x. (2::nat) ^ x) {i. i< Suc 0} = (2 ^ Suc 0) - 1" by auto
 next
   fix n
@@ -538,7 +538,7 @@ qed
 lemma set_to_nat_at_empty: "set_to_nat {} = 0" by (unfold set_to_nat_def, rule setsum_empty)
 
 lemma set_to_nat_of_interval: "set_to_nat {i. (i::nat)<m} = 2 ^ m - 1"
-proof (induct_tac m)
+proof (induct m)
   show "set_to_nat {i. i < 0} = 2 ^ 0 - 1"
   proof -
     have S1: "{i. (i::nat) < 0} = {}" by auto

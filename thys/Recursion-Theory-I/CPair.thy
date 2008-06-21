@@ -1,5 +1,5 @@
 (*  Title:       Defintion and basics facts about Cantor pairing function
-    ID:         $Id: CPair.thy,v 1.6 2008-06-21 16:20:37 makarius Exp $
+    ID:         $Id: CPair.thy,v 1.7 2008-06-21 17:12:27 makarius Exp $
     Author:      Michael Nedzelsky <MichaelNedzelsky at yandex.ru>, 2008
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
@@ -292,7 +292,7 @@ lemma arg_less_sf_imp_c_sum_less_arg: "u < sf(x) \<Longrightarrow> c_sum u < x"
 proof -
   assume A1: "u < sf(x)"
   then show ?thesis
-  proof (case_tac x)
+  proof (cases x)
     assume "x=0"
     with A1 show ?thesis by (simp add: sf_def)
   next

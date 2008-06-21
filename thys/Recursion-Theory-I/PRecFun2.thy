@@ -210,7 +210,7 @@ where
 | "sch_to_pr (Pair_op t1 t2)  = c_f_pair (sch_to_pr t1) (sch_to_pr t2)"
 | "sch_to_pr (Rec_op t1 t2)  = UnaryRecOp (sch_to_pr t1) (sch_to_pr t2)"
 
-lemma sch_to_pr_into_pr: "sch_to_pr sch \<in> PrimRec1" by (simp add: pr_1_eq_1', induct_tac sch, simp_all add: PrimRec1'.intros)
+lemma sch_to_pr_into_pr: "sch_to_pr sch \<in> PrimRec1" by (simp add: pr_1_eq_1', induct sch, simp_all add: PrimRec1'.intros)
 
 lemma sch_to_pr_srj: "f \<in> PrimRec1 \<Longrightarrow> (\<exists> sch. f = sch_to_pr sch)"
 proof -
@@ -464,7 +464,7 @@ proof -
 qed
 
 theorem nat_to_sch_srj: "nat_to_sch (sch_to_nat sch) = sch"
-apply(induct_tac sch, auto simp add: loc_srj_0 loc_srj_1 loc_srj_2 loc_srj_3 loc_srj_4 loc_srj_5)
+apply(induct sch, auto simp add: loc_srj_0 loc_srj_1 loc_srj_2 loc_srj_3 loc_srj_4 loc_srj_5)
 apply(insert loc_srj_0)
 apply(simp)
 done
@@ -584,7 +584,7 @@ qed
 
 lemma index_of_const_at_0: "index_of_const 0 = 0" by (simp add: index_of_const_def)
 
-lemma index_of_const_at_suc: "index_of_const (Suc u) = c_pair 4 (c_pair 2 (index_of_const u))" by (unfold index_of_const_def, induct_tac u, auto)
+lemma index_of_const_at_suc: "index_of_const (Suc u) = c_pair 4 (c_pair 2 (index_of_const u))" by (unfold index_of_const_def, induct u, auto)
 
 lemma index_of_const_main: "nat_to_pr (index_of_const n) = (\<lambda> x. n)" (is "?P n")
 proof (induct n)
@@ -702,7 +702,7 @@ proof -
 qed
 
 lemma pr_index_enumerator_increase1: "pr_index_enumerator n m < pr_index_enumerator (n+1) m"
-proof (induct_tac m)
+proof (induct m)
   show "pr_index_enumerator n 0 < pr_index_enumerator (n + 1) 0" by simp
   next fix na assume A: "pr_index_enumerator n na < pr_index_enumerator (n + 1) na"
   show "pr_index_enumerator n (Suc na) < pr_index_enumerator (n + 1) (Suc na)"
@@ -738,9 +738,9 @@ proof (rule allI, rule allI)
     assume A1: "x < y"
     have L1: "\<And> u v. f u < f (u + (v+1))"
     proof -
-      fix u show "\<And> v. f u < f (u + (v+1))"
-      proof (induct_tac v)
-	from A show "\<And>v. f u < f (u + (0 + 1))" by auto
+      fix u v show "f u < f (u + (v+1))"
+      proof (induct v)
+	from A show "f u < f (u + (0 + 1))" by auto
       next
         fix v n
 	assume A2: "f u < f (u + (n + 1))"
@@ -824,9 +824,10 @@ proof -
 qed
 
 theorem pr_index_enumerator_main: "nat_to_pr n = nat_to_pr (pr_index_enumerator n m)"
-proof (induct_tac m)
+proof (induct m)
   show "nat_to_pr n = nat_to_pr (pr_index_enumerator n 0)" by simp
-next fix na assume A: "nat_to_pr n = nat_to_pr (pr_index_enumerator n na)"
+next
+  fix na assume A: "nat_to_pr n = nat_to_pr (pr_index_enumerator n na)"
   show "nat_to_pr n = nat_to_pr (pr_index_enumerator n (Suc na))"
   proof -
     let ?a = "pr_index_enumerator n na"

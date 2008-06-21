@@ -261,25 +261,25 @@ lemma [simp]: "sgn1 0 = 0" by (simp add: sgn1_def)
 lemma [simp]: "sgn1 (Suc y) = 1" by (simp add: sgn1_def)
 lemma [simp]: "sgn2 0 = 1" by (simp add: sgn2_def)
 lemma [simp]: "sgn2 (Suc y) = 0" by (simp add: sgn2_def)
-lemma [simp]: "x \<noteq> 0 \<Longrightarrow> sgn1 x = 1" by (simp add: sgn1_def, case_tac x, auto)
-lemma [simp]: "x \<noteq> 0 \<Longrightarrow> sgn2 x = 0" by (simp add: sgn2_def, case_tac x, auto)
+lemma [simp]: "x \<noteq> 0 \<Longrightarrow> sgn1 x = 1" by (simp add: sgn1_def, cases x, auto)
+lemma [simp]: "x \<noteq> 0 \<Longrightarrow> sgn2 x = 0" by (simp add: sgn2_def, cases x, auto)
 
-lemma sgn1_nz_impl_arg_pos: "sgn1 x \<noteq> 0 \<Longrightarrow> x > 0" by (case_tac x, auto)
-lemma sgn1_zero_impl_arg_zero: "sgn1 x = 0 \<Longrightarrow> x = 0" by (case_tac x, auto)
-lemma sgn2_nz_impl_arg_zero: "sgn2 x \<noteq> 0 \<Longrightarrow> x = 0" by (case_tac x, auto)
-lemma sgn2_zero_impl_arg_pos: "sgn2 x = 0 \<Longrightarrow> x > 0" by (case_tac x, auto)
+lemma sgn1_nz_impl_arg_pos: "sgn1 x \<noteq> 0 \<Longrightarrow> x > 0" by (cases x) auto
+lemma sgn1_zero_impl_arg_zero: "sgn1 x = 0 \<Longrightarrow> x = 0" by (cases x) auto
+lemma sgn2_nz_impl_arg_zero: "sgn2 x \<noteq> 0 \<Longrightarrow> x = 0" by (cases x) auto
+lemma sgn2_zero_impl_arg_pos: "sgn2 x = 0 \<Longrightarrow> x > 0" by (cases x) auto
 
-lemma sgn1_nz_eq_arg_pos: "(sgn1 x \<noteq> 0) = (x > 0)" by (case_tac x, auto)
-lemma sgn1_zero_eq_arg_zero: "(sgn1 x = 0) = (x = 0)" by (case_tac x, auto)
-lemma sgn2_nz_eq_arg_pos: "(sgn2 x \<noteq> 0) = (x = 0)" by (case_tac x, auto)
-lemma sgn2_zero_eq_arg_zero: "(sgn2 x = 0) = (x > 0)" by (case_tac x, auto)
+lemma sgn1_nz_eq_arg_pos: "(sgn1 x \<noteq> 0) = (x > 0)" by (cases x) auto
+lemma sgn1_zero_eq_arg_zero: "(sgn1 x = 0) = (x = 0)" by (cases x) auto
+lemma sgn2_nz_eq_arg_pos: "(sgn2 x \<noteq> 0) = (x = 0)" by (cases x) auto
+lemma sgn2_zero_eq_arg_zero: "(sgn2 x = 0) = (x > 0)" by (cases x) auto
 
-lemma sgn1_pos_eq_one: "sgn1 x > 0 \<Longrightarrow> sgn1 x = 1" by (case_tac x, auto)
-lemma sgn2_pos_eq_one: "sgn2 x > 0 \<Longrightarrow> sgn2 x = 1" by (case_tac x, auto)
+lemma sgn1_pos_eq_one: "sgn1 x > 0 \<Longrightarrow> sgn1 x = 1" by (cases x) auto
+lemma sgn2_pos_eq_one: "sgn2 x > 0 \<Longrightarrow> sgn2 x = 1" by (cases x) auto
 
 lemma sgn2_eq_1_sub_arg: "sgn2 = (\<lambda> x. 1 - x)"
 proof (rule ext)
-  fix x show "sgn2 x = 1 - x" by (case_tac "x::nat", auto)
+  fix x show "sgn2 x = 1 - x" by (cases x) auto
 qed
 
 lemma sgn1_eq_1_sub_sgn2: "sgn1  = (\<lambda> x. 1 - (sgn2 x))"
@@ -287,7 +287,7 @@ proof
   fix x show "sgn1 x = 1 - sgn2 x"
   proof -
     have "1- sgn2 x = 1 - (1 - x)" by (simp add: sgn2_eq_1_sub_arg)
-    then show ?thesis by (simp add: sgn1_def, case_tac "x::nat", auto)
+    then show ?thesis by (simp add: sgn1_def, cases x, auto)
   qed
 qed
 

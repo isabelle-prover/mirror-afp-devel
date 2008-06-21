@@ -17,7 +17,7 @@ definition
   c_len :: "nat \<Rightarrow> nat" where
   "c_len = (\<lambda> (u::nat). (sgn1 u) * (c_fst(u-(1::nat))+1))"
 
-lemma c_len_1: "c_len u = (case u of 0 \<Rightarrow> 0 | Suc v \<Rightarrow> c_fst(v)+1)" by (unfold c_len_def, case_tac u, auto)
+lemma c_len_1: "c_len u = (case u of 0 \<Rightarrow> 0 | Suc v \<Rightarrow> c_fst(v)+1)" by (unfold c_len_def, cases u, auto)
 
 lemma c_len_is_pr: "c_len \<in> PrimRec1" unfolding c_len_def by prec
 
@@ -135,7 +135,7 @@ proof -
 qed
 
 theorem th_1: "\<forall> u. c_fold (c_unfold (Suc k) u) = u"
-apply(induct_tac k)
+apply(induct k)
 apply(simp add: c_fold_2)
 apply(rule th_lm_3)
 apply(assumption)
@@ -153,7 +153,7 @@ qed
 lemma c_fold_3: "c_unfold 2 (c_fold [x, y]) = [x, y]" by (simp add: two)
 
 theorem c_unfold_len: "ALL u. length (c_unfold k u) = k"
-apply(induct_tac k)
+apply(induct k)
 apply(simp)
 apply(subgoal_tac "n=(0::nat) \<or> n>0")
 apply(drule disjE)
@@ -182,20 +182,20 @@ proof -
 qed
 
 lemma th_3_lm_1: "\<lbrakk>c_unfold (length ls) (c_fold ls) = ls; ls = a # ls1\<rbrakk> \<Longrightarrow> c_unfold (length (x # ls)) (c_fold (x # ls)) = x # ls"
-apply(case_tac ls1)
+apply(cases ls1)
 apply(simp add: c_fold_1)
 apply(simp)
 done
 
 lemma th_3_lm_2: "c_unfold (length ls) (c_fold ls) = ls \<Longrightarrow> c_unfold (length (x # ls)) (c_fold (x # ls)) = x # ls"
-apply(case_tac ls)
+apply(cases ls)
 apply(simp add: c_fold_1)
 apply(rule th_3_lm_1)
 apply(assumption+)
 done
 
 theorem th_3: "c_unfold (length ls) (c_fold ls) = ls"
-apply(induct_tac ls)
+apply(induct ls)
 apply(simp)
 apply(rule th_3_lm_2)
 apply(assumption)
@@ -479,7 +479,7 @@ proof -
 qed
 
 lemma c_tl_le: "c_tl u \<le> u"
-proof (case_tac u)
+proof (cases u)
   assume "u=0"
   then show ?thesis by simp
 next
@@ -576,7 +576,7 @@ proof -
 qed
 
 lemma c_tl_c_drop: "c_tl (c_drop y x) = c_drop y (c_tl x)"
-apply(induct_tac y)
+apply(induct y)
 apply(simp)
 apply(simp add: c_drop_at_Suc)
 done
@@ -586,7 +586,7 @@ apply(simp add: c_drop_at_Suc c_tl_c_drop)
 done
 
 lemma c_drop_df: "\<forall> ls. drop n ls = nat_to_list (c_drop n (list_to_nat ls))"
-proof (induct_tac n)
+proof (induct n)
   show "\<forall> ls. drop 0 ls = nat_to_list (c_drop 0 (list_to_nat ls))" by (simp add: c_drop_def)
 next
   fix n assume A1: "\<forall> ls. drop n ls = nat_to_list (c_drop n (list_to_nat ls))"
@@ -644,7 +644,7 @@ proof -
 qed
 
 lemma c_f_list_to_f_0: "f y x = c_hd (c_f_list f y x)"
-apply(induct_tac y)
+apply(induct y)
 apply(simp add: c_f_list_at_0)
 apply(simp add: c_f_list_at_Suc)
 done
@@ -675,7 +675,7 @@ proof -
 qed
 
 lemma c_f_list_nth: "z \<le> y \<longrightarrow> c_nth (c_f_list f y x) (y-z) = f z x"
-proof (induct_tac y)
+proof (induct y)
   show "z \<le> 0 \<longrightarrow> c_nth (c_f_list f 0 x) (0 - z) = f z x"
   proof
     assume "z \<le> 0" then have A1: "z=0" by simp
@@ -772,7 +772,7 @@ recdef c_assoc_have_key "measure (%x. x)"
   "c_assoc_have_key y = (\<lambda> x. (if c_fst (c_hd y) = x then 0 else c_assoc_have_key (c_tl y) x))"
 (hints recdef_simp: c_tl_less)
 
-lemma c_assoc_have_key_df: "c_assoc_have_key y x = (if y = 0 then 1 else (if c_fst (c_hd y) = x then 0 else c_assoc_have_key (c_tl y) x))" by (case_tac y, auto)
+lemma c_assoc_have_key_df: "c_assoc_have_key y x = (if y = 0 then 1 else (if c_fst (c_hd y) = x then 0 else c_assoc_have_key (c_tl y) x))" by (cases y) auto
 
 declare c_assoc_have_key.simps [simp del]
 
@@ -816,7 +816,7 @@ recdef c_assoc_value "measure (%x. x)"
   "c_assoc_value y = (\<lambda> x. (if c_fst (c_hd y) = x then c_snd (c_hd y) else c_assoc_value (c_tl y) x))"
 (hints recdef_simp: c_tl_less)
 
-lemma c_assoc_value_df: "c_assoc_value y x = (if y = 0 then 0 else (if c_fst (c_hd y) = x then c_snd (c_hd y) else c_assoc_value (c_tl y) x))" by (case_tac y, auto)
+lemma c_assoc_value_df: "c_assoc_value y x = (if y = 0 then 0 else (if c_fst (c_hd y) = x then c_snd (c_hd y) else c_assoc_value (c_tl y) x))" by (cases y) auto
 
 declare c_assoc_value.simps [simp del]
 

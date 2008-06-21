@@ -636,7 +636,7 @@ proof -
 qed
 
 theorem pr_gr_1: "c_is_sub_fun (pr_gr x) univ_for_pr"
-apply(induct_tac x)
+apply(induct x)
 apply(simp add: pr_gr_at_0 c_is_sub_fun_def c_assoc_have_key_df)
 apply(simp add: pr_gr_at_Suc)
 apply(simp add: g_step_lm_7)
