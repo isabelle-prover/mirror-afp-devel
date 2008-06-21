@@ -1283,9 +1283,9 @@ qed
 theorem pr_gr_is_pr: "pr_gr \<in> PrimRec1"
 proof -
   have S1: "(\<lambda> x. pr_gr x) = PrimRecOp1 0 (\<lambda> x y. g_step y (c_fst x))" (is "_ = ?f")
-  proof -
-    have "\<And> x. (?f x = pr_gr x)" by (induct_tac x, simp add: pr_gr_at_0, simp add: pr_gr_at_Suc)
-    thus ?thesis by (simp add: ext)
+  proof
+    fix x
+    show "pr_gr x = ?f x" by (induct x) (simp add: pr_gr_at_0, simp add: pr_gr_at_Suc)
   qed
   have S2: "PrimRecOp1 0 (\<lambda> x y. g_step y (c_fst x)) \<in> PrimRec1"
   proof (rule pr_rec1)
