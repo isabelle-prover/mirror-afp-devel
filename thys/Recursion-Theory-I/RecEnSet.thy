@@ -26,7 +26,7 @@ proof -
   assume p_is_pr: "p \<in> PrimRec2"
   assume "\<forall> x. (x \<in> A) = (\<exists> y. p x y = 0)"
   then have "A = fn_to_set p" by (unfold fn_to_set_def, auto)
-  from this p_is_pr show "A \<in> ce_sets" by (simp add: ce_set_lm_1)
+  with p_is_pr show "A \<in> ce_sets" by (simp add: ce_set_lm_1)
 qed
 
 lemma ce_set_lm_3: "A \<in> ce_sets \<Longrightarrow> \<exists> p \<in> PrimRec2. A = fn_to_set p"
@@ -146,17 +146,17 @@ proof -
     have LL2: "y = p (c_snd z0)"
     proof (rule ccontr)
       assume "y \<noteq> p (c_snd z0)"
-      from q_def LL_1 this have "q y z0 = 1" by auto
-      from this LL_1 show False by auto
+      with q_def LL_1 have "q y z0 = 1" by auto
+      with LL_1 show False by auto
     qed
     from LL2 LL_1 q_def have LL3: "pA (c_snd z0) (c_fst z0) = 0" by auto
     with S3 have LL4: "c_snd z0 \<in> A" by auto
-    from this LL2 show "y \<in> {p x | x. x \<in> A}" by auto
+    with LL2 show "y \<in> {p x | x. x \<in> A}" by auto
   qed
   qed
-  from this have L2: "?B = { y | y. \<exists> z. q y z = 0}" by auto
-  from this fn_to_set_def have "?B = fn_to_set q" by auto
-  from this q_is_pr ce_set_lm_1 show ?thesis by auto
+  then have L2: "?B = { y | y. \<exists> z. q y z = 0}" by auto
+  with fn_to_set_def have "?B = fn_to_set q" by auto
+  with q_is_pr ce_set_lm_1 show ?thesis by auto
 qed
 
 theorem ce_empty: "{} \<in> ce_sets"
@@ -166,7 +166,7 @@ proof -
   then have "\<forall> x a. ?f x a \<noteq> 0" by simp
   then have "{x. \<exists> a. ?f x a = 0 }={}" by auto
   also have "fn_to_set ?f = \<dots>" by (simp add: fn_to_set_def)
-  from S1 this show ?thesis by (auto simp add: ce_sets_def)
+  with S1 show ?thesis by (auto simp add: ce_sets_def)
 qed
 
 theorem ce_univ: "UNIV \<in> ce_sets"
@@ -176,7 +176,7 @@ proof -
   then have "\<forall> x a. ?f x a = 0" by simp
   then have "{x. \<exists> a. ?f x a = 0 }=UNIV" by auto
   also have "fn_to_set ?f = \<dots>" by (simp add: fn_to_set_def)
-  from S1 this show ?thesis by (auto simp add: ce_sets_def)
+  with S1 show ?thesis by (auto simp add: ce_sets_def)
 qed
 
 theorem ce_singleton: "{a} \<in> ce_sets"
@@ -211,7 +211,7 @@ proof -
   from S6 have S11: "B = {x. \<exists> y. p_b x y = 0}" by (simp add: fn_to_set_def)
   from S10 S11 S9 S8 have S12: "?C = A \<union> B" by auto
   from S7 have "?C \<in> ce_sets" by (auto simp add: ce_sets_def)
-  from S12 this show ?thesis by simp
+  with S12 show ?thesis by simp
 qed
 
 theorem ce_intersect: "\<lbrakk> A \<in> ce_sets; B \<in> ce_sets \<rbrakk> \<Longrightarrow> A \<inter> B \<in> ce_sets"
@@ -257,7 +257,7 @@ proof -
   from S6 have S11: "B = {x. \<exists> y. p_b x y = 0}" by (simp add: fn_to_set_def)
   from S10 S11 S9 S8 have S12: "?C = A \<inter> B" by auto
   from S7 have "?C \<in> ce_sets" by (auto simp add: ce_sets_def)
-  from S12 this show ?thesis by simp
+  with S12 show ?thesis by simp
 qed
 
 subsection {* Enumeration of computably enumerable sets *}
@@ -393,7 +393,7 @@ proof
     from L4 have L5: "c_fst u = x" by simp
     from L4 have L6: "c_snd u = y" by simp
     from L5 L6 L2 have "z = (x,y)" by simp
-    from this L3 show "z \<in> r" by auto
+    with L3 show "z \<in> r" by auto
   qed
 next
   show "r \<subseteq> ce_set_to_rel (ce_rel_to_set r)"
@@ -422,7 +422,7 @@ proof
       from L2 have "\<exists> u. (x,y) = (c_fst u, c_snd u) \<and> u \<in> A" by (unfold ce_set_to_rel_def, auto)
       then obtain u where L3: "(x,y) = (c_fst u, c_snd u)" and L4: "u \<in> A" by auto
       from L3 L1 have L5: "z = u" by simp
-      from this L4 show "z \<in> A" by auto
+      with L4 show "z \<in> A" by auto
     qed
   qed
 next
@@ -435,7 +435,7 @@ next
       def y_def: y \<equiv> "c_snd z"
       from L1 x_def y_def have L2: "(x,y) \<in> ce_set_to_rel A" by simp
       then have L3: "c_pair x y \<in> ce_rel_to_set (ce_set_to_rel A)" by (unfold ce_rel_to_set_def, auto)
-      from this x_def y_def show "z \<in> ce_rel_to_set (ce_set_to_rel A)" by simp
+      with x_def y_def show "z \<in> ce_rel_to_set (ce_set_to_rel A)" by simp
     qed
   qed
 qed
@@ -450,7 +450,7 @@ proof
       def A_def: A \<equiv> "ce_rel_to_set r"
       from A_def L1 have L2: "A \<in> ce_sets" by auto
       from A_def have L3: "ce_set_to_rel A = r" by simp
-      from this L2 show "r \<in> {ce_set_to_rel A |A. A \<in> ce_sets}" by auto
+      with L2 show "r \<in> {ce_set_to_rel A |A. A \<in> ce_sets}" by auto
     qed
   qed
 next
@@ -461,7 +461,7 @@ next
       then have "\<exists> A. r = ce_set_to_rel A \<and> A \<in> ce_sets" by auto
       then obtain A where L1: "r = ce_set_to_rel A" and L2: "A \<in> ce_sets" by auto
       from L1 have "ce_rel_to_set r = A" by simp
-      from L2 this show "r \<in> ce_rels" by (unfold ce_rels_def, auto)
+      with L2 show "r \<in> ce_rels" by (unfold ce_rels_def, auto)
     qed
   qed
 qed
@@ -627,26 +627,26 @@ proof -
       with A_def2 have "z \<in> { x. \<exists> y. q x y = 0}" by auto
       then have "\<exists> u. q z u = 0" by auto
       then obtain u where "q z u = 0" by auto
-      from this z_def have "p x y u = 0"  by (unfold z_def, unfold p_def, simp)
+      with z_def have "p x y u = 0"  by (unfold z_def, unfold p_def, simp)
       then show "\<exists> u. p x y u = 0" by auto
     next
       assume A: "\<exists> u. p x y u = 0"
     def z_def: z \<equiv> "c_pair x y"
     from A obtain u where "p x y u = 0" by auto
-    from this have q_z: "q z u = 0" by (unfold z_def, simp add: p_def)
-    from this A_def2 have z_in_A: "z \<in> A" by auto
+    then have q_z: "q z u = 0" by (unfold z_def, simp add: p_def)
+    with A_def2 have z_in_A: "z \<in> A" by auto
     then have "c_pair x y \<in> A" by (unfold z_def)
     then have "c_pair x y \<in> ce_rel_to_set r" by (unfold A_def)
     then show "(x,y) \<in> r" by (rule ce_rel_lm_11)
     qed
   qed
-  from this p_is_pr show ?thesis by auto
+  with p_is_pr show ?thesis by auto
 qed
 
 lemma ce_rel_lm_22: "r \<in> ce_rels \<Longrightarrow> \<exists> p \<in> PrimRec3. r = { (x,y). \<exists> u. p x y u = 0 }"
 proof -
   assume r_ce: "r \<in> ce_rels"
-  from this have "\<exists> p \<in> PrimRec3. \<forall> x y. ((x,y) \<in> r) = (\<exists> u. p x y u = 0)" by (rule ce_rel_lm_21)
+  then have "\<exists> p \<in> PrimRec3. \<forall> x y. ((x,y) \<in> r) = (\<exists> u. p x y u = 0)" by (rule ce_rel_lm_21)
   then obtain p where p_is_pr: "p \<in> PrimRec3" and L1: "\<forall> x y. ((x,y) \<in> r) = (\<exists> u. p x y u = 0)" by auto
   from p_is_pr L1 show ?thesis by blast
 qed
@@ -669,11 +669,11 @@ proof -
 	def y_def: y \<equiv> "c_snd z"
 	from z_in_A A_def have L1: "\<exists> u. q z u = 0" by auto
 	then obtain u where L2: "q z u = 0" by auto
-	from this x_def y_def q_def have L3: "p x y u = 0" by simp
+	with x_def y_def q_def have L3: "p x y u = 0" by simp
 	then have "\<exists>u. p x y u = 0" by auto
-	from this A have "(x,y) \<in> r" by auto
-	from this have "c_pair x y \<in> ce_rel_to_set r" by (rule ce_rel_lm_9)
-	from this x_def y_def show ?thesis by simp
+	with A have "(x,y) \<in> r" by auto
+	then have "c_pair x y \<in> ce_rel_to_set r" by (rule ce_rel_lm_9)
+	with x_def y_def show ?thesis by simp
       qed
     qed
   next
@@ -683,15 +683,15 @@ proof -
       def x_def: x \<equiv> "c_fst z"
       def y_def: y \<equiv> "c_snd z"
       from z_in_r have "(c_fst z, c_snd z) \<in> r" by (rule ce_rel_lm_16)
-      from this x_def y_def have "(x,y) \<in> r" by simp
-      from this A have "\<exists> u. p x y u = 0" by auto
+      with x_def y_def have "(x,y) \<in> r" by simp
+      with A have "\<exists> u. p x y u = 0" by auto
       then obtain u where L1: "p x y u = 0" by auto
-      from this x_def y_def q_def have "q z u = 0" by simp
-      from this A_def show "z \<in> A" by auto
+      with x_def y_def q_def have "q z u = 0" by simp
+      with A_def show "z \<in> A" by auto
     qed
   qed
   qed
-  from this A_ce have "ce_rel_to_set r \<in> ce_sets" by auto
+  with A_ce have "ce_rel_to_set r \<in> ce_sets" by auto
   then show "r \<in> ce_rels" by (rule ce_rel_lm_7)
 qed
 
@@ -724,18 +724,18 @@ proof -
       assume A: "\<exists>u. p x z u = 0" show "(x, z) \<in> rs"
       proof -
 	from A obtain u where L1: "p x z u = 0" by auto
-	from this have L2: "(p_s x (c_fst u) (c_fst (c_snd u))) + (p_r (c_fst u) z (c_snd (c_snd u))) = 0" by (unfold p_def)
+	then have L2: "(p_s x (c_fst u) (c_fst (c_snd u))) + (p_r (c_fst u) z (c_snd (c_snd u))) = 0" by (unfold p_def)
 	from L2 have L3: "p_s x (c_fst u) (c_fst (c_snd u)) = 0" by auto
 	from L2 have L4: "p_r (c_fst u) z (c_snd (c_snd u)) = 0" by auto
 	from L3 S1 have L5: "(x,(c_fst u)) \<in> s" by auto
         from L4 R1 have L6: "((c_fst u),z) \<in> r" by auto
 	from L5 L6 have "(x,z) \<in> r O s" by auto
-	from this rs_def show ?thesis by auto
+	with rs_def show ?thesis by auto
       qed
     qed
   qed
   from p_is_pr main have "rs \<in> ce_rels" by (rule ce_rel_lm_23)
-  from this show ?thesis by (unfold rs_def)
+  then show ?thesis by (unfold rs_def)
 qed
 
 lemma ce_rel_lm_25: "r \<in> ce_rels \<Longrightarrow> r^-1 \<in> ce_rels"
@@ -748,8 +748,8 @@ proof -
   def q_def: q \<equiv> "\<lambda> x y u. p y x u"
   from p_is_pr have q_is_pr: "q \<in> PrimRec3" unfolding q_def by prec
   from L1 R1 have L2: "\<forall> x y. ((x,y) \<in> r^-1) = (\<exists> u. p y x u = 0)" by auto
-  from this q_def have L3: "\<forall> x y. ((x,y) \<in> r^-1) = (\<exists> u. q x y u = 0)" by auto
-  from q_is_pr this show ?thesis by (rule ce_rel_lm_23)
+  with q_def have L3: "\<forall> x y. ((x,y) \<in> r^-1) = (\<exists> u. q x y u = 0)" by auto
+  with q_is_pr show ?thesis by (rule ce_rel_lm_23)
 qed
 
 lemma ce_rel_lm_26: "r \<in> ce_rels \<Longrightarrow> Domain r \<in> ce_sets"
@@ -758,7 +758,7 @@ proof -
   have L1: "\<forall> x. (x \<in> Domain r) = (\<exists> y. (x,y) \<in> r)" by auto
   def A_def: A \<equiv> "ce_rel_to_set r"
   from r_ce have "ce_rel_to_set r \<in> ce_sets" by (rule ce_rel_lm_6)
-  from this have A_ce: "A \<in> ce_sets" by (unfold A_def)
+  then have A_ce: "A \<in> ce_sets" by (unfold A_def)
   have "\<forall> x y. ((x,y) \<in> r) = (c_pair x y \<in> ce_rel_to_set r)" by (simp add: ce_rel_lm_12)
   then have L2: "\<forall> x y. ((x,y) \<in> r) = (c_pair x y \<in> A)" by (unfold A_def)
   from A_ce c_fst_is_pr have L3: "{ c_fst z |z.  z \<in> A } \<in> ce_sets" by (rule ce_set_lm_7)
@@ -783,7 +783,7 @@ proof -
   from L1 L2 have L5: "\<forall> x. (x \<in> Domain r) = (\<exists> y. c_pair x y \<in> A)" by auto
   from L4 L5 have L6: "\<forall> x. (x \<in> Domain r) = (x \<in> { c_fst z |z.  z \<in> A })" by auto
   then have "Domain r = { c_fst z |z.  z \<in> A }" by auto  
-  from this L3 show "Domain r \<in> ce_sets" by auto
+  with L3 show "Domain r \<in> ce_sets" by auto
 qed
 
 lemma ce_rel_lm_27: "r \<in> ce_rels \<Longrightarrow> Range r \<in> ce_sets"
@@ -817,7 +817,7 @@ proof -
     have p_is_pr: "p \<in> PrimRec1" unfolding p_def by prec
     from A_ce p_is_pr have "{ c_pair x 0 | x. x \<in> A} \<in> ce_sets" by (simp add: p_def ce_set_lm_7)
     with loc1 have "ce_rel_to_set r_a \<in> ce_sets" by auto
-    from this show ?thesis by (rule ce_rel_lm_7)
+    then show ?thesis by (rule ce_rel_lm_7)
   qed
   have r_b_ce: "r_b \<in> ce_rels"
   proof -
@@ -826,23 +826,23 @@ proof -
     have p_is_pr: "p \<in> PrimRec1" unfolding p_def by prec
     from B_ce p_is_pr have "{ c_pair 0 z | z. z \<in> B} \<in> ce_sets" by (simp add: p_def ce_set_lm_7)
     with loc1 have "ce_rel_to_set r_b \<in> ce_sets" by auto
-    from this show ?thesis by (rule ce_rel_lm_7)
+    then show ?thesis by (rule ce_rel_lm_7)
   qed
   from r_b_ce r_a_ce have "r_b O r_a \<in> ce_rels" by (rule ce_rel_lm_24)
-  from this L1 show ?thesis by auto
+  with L1 show ?thesis by auto
 qed
 
 lemma ce_rel_lm_30: "{} \<in> ce_rels"
 proof -
   have "ce_rel_to_set {} = {}" by (unfold ce_rel_to_set_def, auto)
-  from this ce_empty have "ce_rel_to_set {} \<in> ce_sets" by auto
-  from this show ?thesis by (rule ce_rel_lm_7)
+  with ce_empty have "ce_rel_to_set {} \<in> ce_sets" by auto
+  then show ?thesis by (rule ce_rel_lm_7)
 qed
 
 lemma ce_rel_lm_31: "UNIV \<in> ce_rels"
 proof -
   from ce_univ ce_univ have "UNIV \<times> UNIV \<in> ce_rels" by (rule ce_rel_lm_29)
-  from this show ?thesis by auto
+  then show ?thesis by auto
 qed
 
 lemma ce_rel_lm_32: "ce_rel_to_set (r \<union> s) = (ce_rel_to_set r) \<union> (ce_rel_to_set s)" by (unfold ce_rel_to_set_def, auto)
@@ -875,8 +875,8 @@ next
     then have "u1=u" by (rule c_pair_inj1)
     moreover from L7 have "v1=v" by (rule c_pair_inj2)
     ultimately have "(u,v)=(u1,v1)" by auto
-    from L3 L5 this have "(u,v) \<in> r \<inter> s" by auto
-    from this L4 show "x \<in> ce_rel_to_set (r \<inter> s)" by (unfold ce_rel_to_set_def, auto)
+    with L3 L5 have "(u,v) \<in> r \<inter> s" by auto
+    with L4 show "x \<in> ce_rel_to_set (r \<inter> s)" by (unfold ce_rel_to_set_def, auto)
   qed
 qed
 
@@ -902,7 +902,7 @@ proof -
     fix x assume "(x::nat) \<in> UNIV" show "split c_pair (c_fst x, c_snd x) = x" by simp
   qed
   from f_inj have "f ` (A \<inter> B) = f ` A \<inter> f ` B" by (rule image_Int)
-  from this show ?thesis by (unfold f_def, unfold ce_set_to_rel_def, auto)
+  then show ?thesis by (unfold f_def, unfold ce_set_to_rel_def, auto)
 qed
 
 lemma ce_rel_lm_38: "\<lbrakk> r \<in> ce_rels; A \<in> ce_sets \<rbrakk> \<Longrightarrow> r``A \<in> ce_sets"
@@ -999,7 +999,7 @@ proof -
   have U_1: "?U = { c_pair x (f x) | x. x \<in> UNIV}" by (simp add: p_def)
   with U_ce have S1: "{ c_pair x (f x) | x. x \<in> UNIV} \<in> ce_sets" by simp
   with c_graph_def have c_graph_f_is_ce: "c_graph f \<in> ce_sets" by (unfold c_graph_def, auto)
-  from this show ?thesis by (unfold total_recursive_def1, auto)
+  then show ?thesis by (unfold total_recursive_def1, auto)
 qed
 
 theorem comp_tot_rec: "\<lbrakk> total_recursive f; total_recursive g \<rbrakk> \<Longrightarrow> total_recursive (f o g)"
@@ -1129,9 +1129,9 @@ proof -
   proof - fix x y show "((x \<in> A \<and> y=0) \<or> (x \<notin> A \<and> y=1)) = (y = chf A x)" by(unfold chf_def, auto)
   qed
   from V_2 U_1 L1 have "U=V" by simp
-  from this U_ce have V_ce: "V \<in> ce_sets" by auto
-  from this V_def have "c_graph (chf A) \<in> ce_sets" by auto
-  from this show ?thesis by (unfold total_recursive_def1)
+  with U_ce have V_ce: "V \<in> ce_sets" by auto
+  with V_def have "c_graph (chf A) \<in> ce_sets" by auto
+  then show ?thesis by (unfold total_recursive_def1)
 qed
 
 theorem tot_rec_impl_comp: "total_recursive (chf A) \<Longrightarrow> computable A"
@@ -1324,7 +1324,7 @@ qed
 theorem univ_ce_is_not_comp2: "\<not> total_recursive (chf univ_ce)"
 proof
   assume "total_recursive (chf univ_ce)"
-  from this have "computable univ_ce" by (rule tot_rec_impl_comp)
+  then have "computable univ_ce" by (rule tot_rec_impl_comp)
   then have "- univ_ce \<in> ce_sets" by (unfold computable_def, auto)
   with univ_ce_is_not_comp1 show False by auto
 qed
@@ -1334,7 +1334,7 @@ proof (rule ccontr)
   assume "\<not> \<not> computable univ_ce"
   then have "computable univ_ce" by auto
   then have "total_recursive (chf univ_ce)" by (rule comp_impl_tot_rec)
-  from this univ_ce_is_not_comp2 show False by auto
+  with univ_ce_is_not_comp2 show False by auto
 qed
 
 subsection {* s-1-1 theorem, one-one and many-one reducibilities*}
@@ -1394,7 +1394,7 @@ proof (rule allI, rule allI, rule allI)
   fix n x y show "nat_to_pr n (c_pair x y) = nat_to_pr (s1_1 n x) y"
   proof -
     have "(\<lambda> y. (nat_to_pr n) (c_pair x y)) = nat_to_pr (s1_1 n x)" by (rule s1_1_th)
-    from this show ?thesis by (simp add: expand_fun_eq)
+    then show ?thesis by (simp add: expand_fun_eq)
   qed
 qed
 
@@ -1413,13 +1413,13 @@ proof
   then have "\<exists> z. (nat_to_pr e) (c_pair (c_pair x y) z) = 0" by (simp add: nat_to_ce_set_lm_1)
   then obtain z where L1: "(nat_to_pr e) (c_pair (c_pair x y) z) = 0" by auto
   have "(nat_to_pr (s_ce e x)) (c_pair y z) = 0" by (simp add: s_lm L1)
-  from this nat_to_ce_set_lm_1 show "y \<in> nat_to_ce_set (s_ce e x)" by auto
+  with nat_to_ce_set_lm_1 show "y \<in> nat_to_ce_set (s_ce e x)" by auto
 next
   assume A: "y \<in> nat_to_ce_set (s_ce e x)"
   then have "\<exists> z. (nat_to_pr (s_ce e x)) (c_pair y z) = 0" by (simp add: nat_to_ce_set_lm_1)
   then obtain z where L1: "(nat_to_pr (s_ce e x)) (c_pair y z) = 0" by auto
   then have "(nat_to_pr e) (c_pair (c_pair x y) z) = 0" by (simp add: s_lm)
-  from this nat_to_ce_set_lm_1 show "c_pair x y \<in> nat_to_ce_set e" by auto
+  with nat_to_ce_set_lm_1 show "c_pair x y \<in> nat_to_ce_set e" by auto
 qed
 
 definition
@@ -1445,8 +1445,8 @@ proof (rule datatype_injI)
     proof
       assume "(f \<circ> g) x = (f \<circ> g) y"
       then have "f (g x) = f (g y)" by simp
-      from f_inj this have "g x = g y" by (rule injD)
-      from g_inj this show "x = y" by (rule injD)
+      with f_inj have "g x = g y" by (rule injD)
+      with g_inj show "x = y" by (rule injD)
     qed
   qed
 qed
@@ -1464,7 +1464,7 @@ proof -
   from g_tr f_tr have fg_tr: "total_recursive (g o f)" by (rule comp_tot_rec)
   from g_inj f_inj have fg_inj: "inj (g o f)" by (rule inj_comp)
   from L1 L2 have L3: "(\<forall> x. (x \<in> A) = ((g o f) x \<in> C))" by auto
-  from fg_tr fg_inj this show ?thesis by (unfold one_reducible_to_via_def, auto)
+  with fg_tr fg_inj show ?thesis by (unfold one_reducible_to_via_def, auto)
 qed
 
 lemma one_reducible_to_trans: "\<lbrakk> one_reducible_to A B; one_reducible_to B C \<rbrakk> \<Longrightarrow> one_reducible_to A C"
@@ -1485,7 +1485,7 @@ proof -
   then have is_tr: "total_recursive (\<lambda> x. x)" by (rule pr_is_total_rec)
   have is_inj: "inj (\<lambda> x. x)" by simp
   have L1: "\<forall> x. (x \<in> A) = (((\<lambda> x. x) x) \<in> A)" by simp
-  from is_tr is_inj this show ?thesis by (unfold one_reducible_to_via_def, auto)
+  with is_tr is_inj show ?thesis by (unfold one_reducible_to_via_def, auto)
 qed
 
 lemma one_reducible_to_refl: "one_reducible_to A A"
@@ -1504,7 +1504,7 @@ proof -
   from A2 have L2: "\<forall> x. (x \<in> B) = (g x \<in> C)" by (unfold many_reducible_to_via_def, auto)
   from g_tr f_tr have fg_tr: "total_recursive (g o f)" by (rule comp_tot_rec)
   from L1 L2 have L3: "(\<forall> x. (x \<in> A) = ((g o f) x \<in> C))" by auto
-  from fg_tr this show ?thesis by (unfold many_reducible_to_via_def, auto)
+  with fg_tr show ?thesis by (unfold many_reducible_to_via_def, auto)
 qed
 
 lemma many_reducible_to_trans: "\<lbrakk> many_reducible_to A B; many_reducible_to B C \<rbrakk> \<Longrightarrow> many_reducible_to A C"
@@ -1524,7 +1524,7 @@ proof -
   assume A: "one_reducible_to_via A B f"
   from A have f_tr: "total_recursive f" by (unfold one_reducible_to_via_def, auto)
   from A have "\<forall> x. (x \<in> A) = (f x \<in> B)" by (unfold one_reducible_to_via_def, auto)
-  from f_tr this show ?thesis by (unfold many_reducible_to_via_def, auto)
+  with f_tr show ?thesis by (unfold many_reducible_to_via_def, auto)
 qed
 
 lemma one_reducibility_is_many: "one_reducible_to A B \<Longrightarrow> many_reducible_to A B"
@@ -1576,8 +1576,8 @@ proof -
     then show "chf A x = (chf B \<circ> f) x" by auto
   qed
   from L2 f_tr have "total_recursive (chf B \<circ> f)" by (rule comp_tot_rec)
-  from L3 this have "total_recursive (chf A)" by auto
-  from this show ?thesis by (rule tot_rec_impl_comp)
+  with L3 have "total_recursive (chf A)" by auto
+  then show ?thesis by (rule tot_rec_impl_comp)
 qed
 
 lemma many_reducible_lm_1: "many_reducible_to univ_ce A \<Longrightarrow> \<not> computable A"
@@ -1586,7 +1586,7 @@ proof (rule ccontr)
   assume "\<not> \<not> computable A"
   then have A2: "computable A" by auto
   from A1 A2 have "computable univ_ce" by (rule m_red_to_comp)
-  from this univ_ce_is_not_comp3 show False by auto
+  with univ_ce_is_not_comp3 show False by auto
 qed
 
 lemma one_reducible_lm_1: "one_reducible_to univ_ce A \<Longrightarrow> \<not> computable A"
@@ -1613,7 +1613,7 @@ proof -
   have "\<forall> x. (x \<in> (nat_to_ce_set n)) = (f x \<in> univ_ce)"
   proof fix x show "(x \<in> nat_to_ce_set n) = (f x \<in> univ_ce)" by (unfold f_def, simp add: univ_ce_lm_1)
   qed
-  from f_tr f_inj this show ?thesis by (unfold f_def, unfold one_reducible_to_via_def, auto)
+  with f_tr f_inj show ?thesis by (unfold f_def, unfold one_reducible_to_via_def, auto)
 qed
 
 lemma one_reducible_lm_3: "one_reducible_to (nat_to_ce_set n) univ_ce"
@@ -1627,7 +1627,7 @@ proof -
   assume "A \<in> ce_sets"
   then have "\<exists> n. A = nat_to_ce_set n" by (rule nat_to_ce_set_srj)
   then obtain n where "A = nat_to_ce_set n" by auto
-  from this one_reducible_lm_3 show ?thesis by auto
+  with one_reducible_lm_3 show ?thesis by auto
 qed
 
 subsection {* One-complete sets *}
@@ -1679,7 +1679,7 @@ proof -
       proof
 	assume "m \<in> A"
 	from A this A3 have "n \<in> A" by (rule index_set_lm_1)
-	from this A2 show False by auto
+	with A2 show False by auto
       qed
     qed
   qed
@@ -1694,14 +1694,14 @@ proof -
   then obtain e_0 where e_0_in_A: "e_0 \<in> A" and e_0_empty: "nat_to_ce_set e_0 = {}" by auto
   from e_0_in_A A3 have "\<exists> e_1. e_1 \<in> (- A)" by auto
   then obtain e_1 where e_1_not_in_A: "e_1 \<in> (- A)" by auto
-  from e_0_in_A this have e_0_neq_e_1: "e_0 \<noteq> e_1" by auto
+  with e_0_in_A have e_0_neq_e_1: "e_0 \<noteq> e_1" by auto
   have "nat_to_ce_set e_0 \<noteq> nat_to_ce_set e_1"
   proof
     assume "nat_to_ce_set e_0 = nat_to_ce_set e_1"
-    from A1 e_0_in_A this have "e_1 \<in> A" by (rule index_set_lm_1)
-    from this e_1_not_in_A show False by auto
+    with A1 e_0_in_A have "e_1 \<in> A" by (rule index_set_lm_1)
+    with e_1_not_in_A show False by auto
   qed
-  from this e_0_empty have e1_not_empty: "nat_to_ce_set e_1 \<noteq> {}" by auto
+  with e_0_empty have e1_not_empty: "nat_to_ce_set e_1 \<noteq> {}" by auto
   def we_1_def: we_1 \<equiv> "nat_to_ce_set e_1"
   from e1_not_empty have we_1_not_empty: "we_1 \<noteq> {}" by (unfold we_1_def)
   def r_def: r \<equiv> "univ_ce \<times> we_1"
@@ -1743,11 +1743,11 @@ proof -
       then have S1: "\<forall> y. (y \<in> we_1) = ((x,y) \<in> r)" by (rule loc_lm_1)
       from ce_rel_lm_12 have "\<forall> y. (c_pair x y \<in> ce_rel_to_set r) = ((x,y) \<in> r)" by auto
       then have "\<forall> y. ((x,y) \<in> r) = (c_pair x y \<in> we_n)" by (unfold we_n_def, auto)
-      from S1 this have "\<forall> y. (y \<in> we_1) = (c_pair x y \<in> we_n)" by auto
-      from this loc_lm_3 have "\<forall> y. (y \<in> we_1) = (y \<in> nat_to_ce_set (f x))" by auto
+      with S1 have "\<forall> y. (y \<in> we_1) = (c_pair x y \<in> we_n)" by auto
+      with loc_lm_3 have "\<forall> y. (y \<in> we_1) = (y \<in> nat_to_ce_set (f x))" by auto
       then have S2: "we_1 = nat_to_ce_set (f x)" by auto
       then have "nat_to_ce_set e_1 = nat_to_ce_set (f x)" by (unfold we_1_def)
-      from loc_lm_4 e_1_not_in_A this show "f x \<in> -A" by (rule index_set_lm_1)
+      with loc_lm_4 e_1_not_in_A show "f x \<in> -A" by (rule index_set_lm_1)
     next
       show " f x \<in> - A \<Longrightarrow> x \<in> univ_ce"
       proof (rule ccontr)
@@ -1756,16 +1756,16 @@ proof -
 	then have S1: "\<forall> y. (y \<in> {}) = ((x,y) \<in> r)" by (rule loc_lm_2)
         from ce_rel_lm_12 have "\<forall> y. (c_pair x y \<in> ce_rel_to_set r) = ((x,y) \<in> r)" by auto
         then have "\<forall> y. ((x,y) \<in> r) = (c_pair x y \<in> we_n)" by (unfold we_n_def, auto)
-        from S1 this have "\<forall> y. (y \<in> {}) = (c_pair x y \<in> we_n)" by auto
-        from this loc_lm_3 have "\<forall> y. (y \<in> {}) = (y \<in> nat_to_ce_set (f x))" by auto
+        with S1 have "\<forall> y. (y \<in> {}) = (c_pair x y \<in> we_n)" by auto
+        with loc_lm_3 have "\<forall> y. (y \<in> {}) = (y \<in> nat_to_ce_set (f x))" by auto
         then have S2: "{} = nat_to_ce_set (f x)" by auto
         then have "nat_to_ce_set e_0 = nat_to_ce_set (f x)" by (unfold e_0_empty)
-        from A1 e_0_in_A this have "f x \<in> A" by (rule index_set_lm_1)
-	from this fx_in_A show False by auto
+        with A1 e_0_in_A have "f x \<in> A" by (rule index_set_lm_1)
+	with fx_in_A show False by auto
       qed
     qed
   qed
-  from f_tr f_inj this have "one_reducible_to_via univ_ce (-A) f" by (unfold one_reducible_to_via_def, auto)
+  with f_tr f_inj have "one_reducible_to_via univ_ce (-A) f" by (unfold one_reducible_to_via_def, auto)
   then show ?thesis by (unfold one_reducible_to_def, auto)
 qed
 
@@ -1809,16 +1809,16 @@ proof -
   assume A2: "A \<noteq> {}"
   assume A3: "A \<noteq> UNIV"
   from A1 A2 A3 have "one_reducible_to univ_ce A \<or> one_reducible_to univ_ce (- A)" by (rule Rice_1)
-  from this have S1: "\<not> one_reducible_to univ_ce A \<longrightarrow> one_reducible_to univ_ce (- A)" by auto
+  then have S1: "\<not> one_reducible_to univ_ce A \<longrightarrow> one_reducible_to univ_ce (- A)" by auto
   show ?thesis
   proof cases
     assume "one_reducible_to univ_ce A"
     then show "\<not> computable A" by (rule one_reducible_lm_1)
   next
     assume "\<not> one_reducible_to univ_ce A"
-    from this S1 have "one_reducible_to univ_ce (- A)" by auto
+    with S1 have "one_reducible_to univ_ce (- A)" by auto
     then have "\<not> computable (- A)" by (rule one_reducible_lm_1)
-    from this computable_complement_3 show "\<not> computable A" by auto
+    with computable_complement_3 show "\<not> computable A" by auto
   qed
 qed
 
@@ -1838,7 +1838,7 @@ proof (rule ccontr)
       from A1_1 have "n \<in> A" by auto
       then have S1_1: "nat_to_ce_set n \<in> C" by (unfold A_def, auto)
       from A1_1 have "nat_to_ce_set n = nat_to_ce_set m" by auto
-      from S1_1 this have "nat_to_ce_set m \<in> C" by auto
+      with S1_1 have "nat_to_ce_set m \<in> C" by auto
       then show "m \<in> A" by (unfold A_def, auto)
     qed
   qed
@@ -1846,11 +1846,11 @@ proof (rule ccontr)
   proof -
     from A4 have "\<exists> B. B \<in> C" by auto
     then obtain B where S2_1: "B \<in> C" by auto
-    from this A1 have "B \<in> ce_sets" by auto
+    with A1 have "B \<in> ce_sets" by auto
     then have "\<exists> n. B = nat_to_ce_set n" by (rule nat_to_ce_set_srj)
     then obtain n where "B = nat_to_ce_set n" by auto
-    from S2_1 this have "nat_to_ce_set n \<in> C" by auto
-    from this show ?thesis by (unfold A_def, auto)
+    with S2_1 have "nat_to_ce_set n \<in> C" by auto
+    then show ?thesis by (unfold A_def, auto)
   qed
   have S3: "A \<noteq> UNIV"
   proof -
@@ -1858,11 +1858,11 @@ proof (rule ccontr)
     then obtain B where S2_1: "B \<notin> C" and S2_2: "B \<in> ce_sets" by auto
     from S2_2 have "\<exists> n. B = nat_to_ce_set n" by (rule nat_to_ce_set_srj)
     then obtain n where "B = nat_to_ce_set n" by auto
-    from S2_1 this have "nat_to_ce_set n \<notin> C" by auto
-    from this show ?thesis by (unfold A_def, auto)
+    with S2_1 have "nat_to_ce_set n \<notin> C" by auto
+    then show ?thesis by (unfold A_def, auto)
   qed
   from S1 S2 S3 have "\<not> computable A" by (rule Rice_2)
-  from this A2 show False unfolding A_def by auto
+  with A2 show False unfolding A_def by auto
 qed
 
 end
