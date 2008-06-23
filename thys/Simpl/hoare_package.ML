@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.18 2008-06-19 19:15:50 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.19 2008-06-23 21:34:46 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -481,7 +481,7 @@ fun absfree_name ((a,T,body)) =
 fun list_all_free_name ([], t: term) = t
   | list_all_free_name ((a,T)::vars, t) =
       let val (t' as Abs (_,T',_)) = (absfree_name(a, T, list_all_free_name(vars,t)));
-      in (all T') $ t' end;
+      in Term.all T' $ t' end;
 
 
 (* first_subterm 
