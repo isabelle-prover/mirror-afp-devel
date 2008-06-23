@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: CWellForm.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: CWellForm.thy,v 1.7 2008-06-23 21:24:36 makarius Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -29,10 +29,9 @@ by(simp add:wf_C_mdecl_def)
 
 
 
-syntax 
-  wf_C_prog :: "prog \<Rightarrow> bool"
-translations
-  "wf_C_prog"  ==  "wf_prog wf_C_mdecl"
+abbreviation
+  wf_C_prog :: "prog \<Rightarrow> bool" where
+  "wf_C_prog ==  wf_prog wf_C_mdecl"
 
 lemma wf_C_prog_wf_C_mdecl:
   "\<lbrakk> wf_C_prog P; (C,Bs,fs,ms) \<in> set P; m \<in> set ms \<rbrakk>

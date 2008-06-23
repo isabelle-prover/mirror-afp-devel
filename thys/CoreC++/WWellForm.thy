@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: WWellForm.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: WWellForm.thy,v 1.7 2008-06-23 21:24:36 makarius Exp $
     Author:      Tobias Nipkow
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -21,9 +21,8 @@ lemma wwf_mdecl[simp]:
 by(simp add:wwf_mdecl_def)
 
 
-syntax
-  wwf_prog :: "prog \<Rightarrow> bool"
-translations
-  "wwf_prog"  ==  "wf_prog wwf_mdecl"
+abbreviation
+  wwf_prog :: "prog \<Rightarrow> bool" where
+  "wwf_prog == wf_prog wwf_mdecl"
 
 end

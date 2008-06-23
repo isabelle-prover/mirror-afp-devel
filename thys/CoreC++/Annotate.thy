@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Annotate.thy,v 1.9 2007-07-11 10:07:48 stefanberghofer Exp $
+    ID:          $Id: Annotate.thy,v 1.10 2008-06-23 21:24:36 makarius Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -10,13 +10,13 @@ header {* \isaheader{Program annotation} *}
 theory Annotate imports WellType begin
 
 
-syntax (output)
-  unanFAcc :: "expr \<Rightarrow> vname \<Rightarrow> expr" ("(_\<bullet>_)" [10,10] 90)
-  unanFAss :: "expr \<Rightarrow> vname \<Rightarrow> expr \<Rightarrow> expr" ("(_\<bullet>_ := _)" [10,0,90] 90)
+abbreviation (output)
+  unanFAcc :: "expr \<Rightarrow> vname \<Rightarrow> expr" ("(_\<bullet>_)" [10,10] 90) where
+  "unanFAcc e F == FAcc e F []"
 
-translations
-  "unanFAcc e F" == "FAcc e F []"
-  "unanFAss e F e'" == "FAss e F [] e'"
+abbreviation (output)
+  unanFAss :: "expr \<Rightarrow> vname \<Rightarrow> expr \<Rightarrow> expr" ("(_\<bullet>_ := _)" [10,0,90] 90) where
+  "unanFAss e F e' == FAss e F [] e'"
 
 
 inductive

@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Syntax.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
+    ID:          $Id: Syntax.thy,v 1.7 2008-06-23 21:24:36 makarius Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab 
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -14,30 +14,22 @@ theory Syntax imports Exceptions begin
 
 text{*Syntactic sugar*}
 
-syntax
-  InitBlock:: "vname \<Rightarrow> ty \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> expr"   ("(1'{_:_ := _;/ _})")
-translations
-  "InitBlock V T e1 e2" => "{V:T; V := e1;; e2}"
+abbreviation (input)
+  InitBlock :: "vname \<Rightarrow> ty \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> expr"   ("(1'{_:_ := _;/ _})") where
+  "InitBlock V T e1 e2 == {V:T; V := e1;; e2}"
 
-syntax
- unit  :: expr
- null  :: expr
- ref   :: "reference \<Rightarrow> expr"
- true  :: expr
- false :: expr
-translations
- "unit" == "Val Unit"
- "null" == "Val Null"
- "ref r" == "Val(Ref r)"
- "true" == "Val(Bool True)"
- "false" == "Val(Bool False)"
+abbreviation unit where "unit == Val Unit"
+abbreviation null where "null == Val Null"
+abbreviation "ref r == Val(Ref r)"
+abbreviation "true == Val(Bool True)"
+abbreviation "false == Val(Bool False)"
 
-syntax
-  Throw :: "reference \<Rightarrow> expr"
-  THROW :: "cname \<Rightarrow> expr"
-translations
-  "Throw r" == "throw(ref r)"
-  "THROW xc" => "Throw(addr_of_sys_xcpt xc,[xc])"
+abbreviation
+  Throw :: "reference \<Rightarrow> expr" where
+  "Throw r == throw(ref r)"
 
+abbreviation (input)
+  THROW :: "cname \<Rightarrow> expr" where
+  "THROW xc == Throw(addr_of_sys_xcpt xc,[xc])"
 
 end

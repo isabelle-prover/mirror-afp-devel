@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Aux.thy,v 1.9 2007-10-05 15:02:21 nipkow Exp $
+    ID:          $Id: Aux.thy,v 1.10 2008-06-23 21:24:36 makarius Exp $
     Author:      David von Oheimb, Tobias Nipkow, Daniel Wasserrab  
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -26,9 +26,7 @@ lemma Suc_add_max_le[simp]:
 by arith
 
 
-syntax "_Some" :: "'a \<Rightarrow> 'a option" ("(\<lfloor>_\<rfloor>)")
-
-translations "\<lfloor>x\<rfloor>" == "Some x"
+notation Some  ("(\<lfloor>_\<rfloor>)")
 
 declare
  option.splits[split]

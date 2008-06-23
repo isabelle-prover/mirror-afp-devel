@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Decl.thy,v 1.11 2008-06-12 06:57:16 lsf37 Exp $
+    ID:          $Id: Decl.thy,v 1.12 2008-06-23 21:24:36 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -106,7 +106,7 @@ lemma is_type_simps [simp]:
 by(simp add:is_type_def)
 
 translations
-  "types P" == "Collect (is_type P)"
+  "types P" == "Collect (CONST is_type P)"
 
 lemma typeof_lit_is_type: 
   "typeof v = Some T \<Longrightarrow> is_type P T"

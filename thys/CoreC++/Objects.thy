@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Objects.thy,v 1.8 2007-07-11 10:07:49 stefanberghofer Exp $
+    ID:          $Id: Objects.thy,v 1.9 2008-06-23 21:24:36 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -61,10 +61,9 @@ section{* Heap *}
 
 types heap  = "addr \<rightharpoonup> obj"
 
-syntax
-  cname_of  :: "heap \<Rightarrow> addr \<Rightarrow> cname" 
-translations
-  "cname_of hp a"  == "fst (the (hp a))"
+abbreviation
+  cname_of :: "heap \<Rightarrow> addr \<Rightarrow> cname" where
+  "cname_of hp a == fst (the (hp a))"
 
 constdefs
   new_Addr  :: "heap \<Rightarrow> addr option"
