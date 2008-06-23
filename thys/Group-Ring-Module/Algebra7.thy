@@ -40,21 +40,19 @@ locale Module = aGroup M +
     and sprod_one:
       "m \<in> carrier M \<Longrightarrow> (1\<^sub>r\<^bsub>R\<^esub>) \<cdot>\<^sub>s m = m" 
 
-constdefs 
- 
-submodule :: "[('b, 'm) Ring_scheme, ('a, 'b, 'c) Module_scheme, 'a set] \<Rightarrow>
-            bool" 
- "submodule R A H == H \<subseteq> carrier A \<and> A +> H \<and> (\<forall>a. \<forall>m. 
+definition 
+  submodule :: "[('b, 'm) Ring_scheme, ('a, 'b, 'c) Module_scheme, 'a set] \<Rightarrow>
+            bool" where
+  "submodule R A H \<longleftrightarrow> H \<subseteq> carrier A \<and> A +> H \<and> (\<forall>a. \<forall>m. 
                      (a \<in> carrier R \<and> m \<in> H) \<longrightarrow> (sprod A a m) \<in> H)"
 
-constdefs 
-mdl :: "[('a, 'b, 'm) Module_scheme, 'a set] \<Rightarrow> ('a, 'b) Module"
- "mdl M H == \<lparr>carrier = H, pop = pop M, mop = mop M, zero = zero M,
+definition
+  mdl :: "[('a, 'b, 'm) Module_scheme, 'a set] \<Rightarrow> ('a, 'b) Module" where
+  "mdl M H = \<lparr>carrier = H, pop = pop M, mop = mop M, zero = zero M,
     sprod = \<lambda>a. \<lambda>x\<in>H. sprod M a x\<rparr>" 
 
 abbreviation
-  MODULE :: "('b, 'd) Ring_scheme \<Rightarrow> ('a, 'b, 'c) Module_scheme \<Rightarrow> bool"
-    (infixl "module" 58) where
+  MODULE  (infixl "module" 58) where
  "R module M == Module M R"
  
 
@@ -200,22 +198,23 @@ apply (simp add:submodule_def,
 apply (rule asubg_mOp_closed, assumption+)
 done 
 
-constdefs
- mHom :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
+definition
+  mHom :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
                     ('c, 'b, 'm2) Module_scheme] \<Rightarrow>  ('a \<Rightarrow> 'c) set"
-        (*  ("(3HOM\<^sub>_/ _/ _)" [90, 90, 91]90 ) *)
-
- "mHom R M N == {f. f \<in> aHom M N \<and> 
+        (*  ("(3HOM\<^sub>_/ _/ _)" [90, 90, 91]90 ) *) where
+  "mHom R M N = {f. f \<in> aHom M N \<and> 
              (\<forall>a\<in>carrier R. \<forall>m\<in>carrier M. f (a \<cdot>\<^sub>s\<^bsub>M\<^esub> m) = a \<cdot>\<^sub>s\<^bsub>N\<^esub> (f m))}"
 
- mimg ::"[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
+definition
+  mimg :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
            ('c, 'b, 'm2) Module_scheme, 'a \<Rightarrow> 'c] \<Rightarrow>  ('c, 'b) Module" 
-                 ("(4mimg\<^bsub>_ _,_\<^esub>/ _)" [88,88,88,89]88)
- "mimg\<^bsub>R M,N\<^esub> f == mdl N (f ` (carrier M))"
+                 ("(4mimg\<^bsub>_ _,_\<^esub>/ _)" [88,88,88,89]88) where
+  "mimg\<^bsub>R M,N\<^esub> f = mdl N (f ` (carrier M))"
 
- mzeromap::"[('a, 'b, 'm1) Module_scheme, ('c, 'b, 'm2) Module_scheme]
-                              \<Rightarrow> ('a \<Rightarrow> 'c)"
-  "mzeromap M N == \<lambda>x\<in>carrier M. \<zero>\<^bsub>N\<^esub>"
+definition
+  mzeromap :: "[('a, 'b, 'm1) Module_scheme, ('c, 'b, 'm2) Module_scheme]
+                              \<Rightarrow> ('a \<Rightarrow> 'c)" where
+  "mzeromap M N = (\<lambda>x\<in>carrier M. \<zero>\<^bsub>N\<^esub>)"
 
 lemma (in Ring) mHom_func:"f \<in> mHom R M N \<Longrightarrow> f \<in> carrier M \<rightarrow> carrier N"
 by (simp add:mHom_def aHom_def)
@@ -461,24 +460,26 @@ apply (simp add:mimg_def mdl_def)
  apply (simp add:surj_to_def image_def)
 done
  
-constdefs
- tOp_mHom :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
-  ('c, 'b, 'm2) Module_scheme] \<Rightarrow>  ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c)"
- "tOp_mHom R M N f g == \<lambda>x \<in> carrier M. (f x \<plusminus>\<^bsub>N\<^esub> (g x))"
+definition
+  tOp_mHom :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
+    ('c, 'b, 'm2) Module_scheme] \<Rightarrow>  ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c)" where
+  "tOp_mHom R M N f g = (\<lambda>x \<in> carrier M. (f x \<plusminus>\<^bsub>N\<^esub> (g x)))"
 
- iOp_mHom :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
-  ('c, 'b, 'm2) Module_scheme] \<Rightarrow>  ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c)"
- "iOp_mHom R M N f  == \<lambda>x \<in> carrier M. (-\<^sub>a\<^bsub>N\<^esub> (f x))" 
+definition
+  iOp_mHom :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
+    ('c, 'b, 'm2) Module_scheme] \<Rightarrow>  ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c)" where
+  "iOp_mHom R M N f = (\<lambda>x \<in> carrier M. (-\<^sub>a\<^bsub>N\<^esub> (f x)))" 
 
- sprod_mHom ::"[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
-  ('c, 'b, 'm2) Module_scheme] \<Rightarrow> 'b \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c)"
- "sprod_mHom R M N a f  == \<lambda>x \<in> carrier M. a \<cdot>\<^sub>s\<^bsub>N\<^esub> (f x)"
+definition
+  sprod_mHom ::"[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
+    ('c, 'b, 'm2) Module_scheme] \<Rightarrow> 'b \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c)" where
+  "sprod_mHom R M N a f = (\<lambda>x \<in> carrier M. a \<cdot>\<^sub>s\<^bsub>N\<^esub> (f x))"
 
- HOM :: "[('b, 'more) Ring_scheme, ('a, 'b, 'more1) Module_scheme, 
-   ('c, 'b, 'more2) Module_scheme] \<Rightarrow> ('a \<Rightarrow> 'c, 'b) Module"   
-                                       ("(3HOM\<^bsub>_\<^esub> _/ _)" [90, 90, 91]90 )
-
- "HOM\<^bsub>R\<^esub> M N == \<lparr>carrier = mHom R M N, pop = tOp_mHom R M N, 
+definition
+  HOM :: "[('b, 'more) Ring_scheme, ('a, 'b, 'more1) Module_scheme, 
+    ('c, 'b, 'more2) Module_scheme] \<Rightarrow> ('a \<Rightarrow> 'c, 'b) Module"   
+    ("(3HOM\<^bsub>_\<^esub> _/ _)" [90, 90, 91] 90) where
+ "HOM\<^bsub>R\<^esub> M N = \<lparr>carrier = mHom R M N, pop = tOp_mHom R M N, 
   mop = iOp_mHom R M N, zero = mzeromap M N,  sprod =sprod_mHom R M N \<rparr>"
 
 lemma (in Module) zero_HOM:"R module N \<Longrightarrow>
@@ -765,26 +766,27 @@ done
 
 section "2. injective hom, surjective hom, bijective hom and iverse hom"
 
-constdefs
- invmfun :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
-              ('c, 'b, 'm2) Module_scheme, 'a \<Rightarrow> 'c] \<Rightarrow> 'c \<Rightarrow> 'a"
-    "invmfun R M N (f :: 'a \<Rightarrow> 'c) ==
-                    \<lambda>y\<in>(carrier N). SOME x. (x \<in> (carrier M) \<and> f x = y)"
+definition
+  invmfun :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
+              ('c, 'b, 'm2) Module_scheme, 'a \<Rightarrow> 'c] \<Rightarrow> 'c \<Rightarrow> 'a" where
+  "invmfun R M N (f :: 'a \<Rightarrow> 'c) =
+                    (\<lambda>y\<in>(carrier N). SOME x. (x \<in> (carrier M) \<and> f x = y))"
 
- misomorphic :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
-              ('c, 'b, 'm2) Module_scheme] \<Rightarrow> bool"
-    "misomorphic R M N == \<exists>f. f \<in> mHom R M N \<and> bijec\<^bsub>M,N\<^esub> f"
+definition
+  misomorphic :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
+              ('c, 'b, 'm2) Module_scheme] \<Rightarrow> bool" where
+  "misomorphic R M N \<longleftrightarrow> (\<exists>f. f \<in> mHom R M N \<and> bijec\<^bsub>M,N\<^esub> f)"
 
- mId :: "('a, 'b, 'm1) Module_scheme \<Rightarrow> 'a \<Rightarrow> 'a"   ("(mId\<^bsub>_\<^esub>/ )" [89]88)    
-    "mId\<^bsub>M\<^esub>  == \<lambda>m\<in>carrier M. m"
+definition
+  mId :: "('a, 'b, 'm1) Module_scheme \<Rightarrow> 'a \<Rightarrow> 'a"   ("(mId\<^bsub>_\<^esub>/ )" [89]88) where
+  "mId\<^bsub>M\<^esub> = (\<lambda>m\<in>carrier M. m)"
 
- mcompose::"[('a, 'r, 'm1) Module_scheme, 'b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c" 
-    "mcompose M g f == compose (carrier M) g f"
+definition
+  mcompose :: "[('a, 'r, 'm1) Module_scheme, 'b \<Rightarrow> 'c, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c" where
+  "mcompose M g f = compose (carrier M) g f"
 
 abbreviation
-  MISOM :: "[('a, 'b, 'm1) Module_scheme, ('b, 'm) Ring_scheme,
-              ('c, 'b, 'm2) Module_scheme] \<Rightarrow> bool"
-             ("(3_ \<cong>\<^bsub>_\<^esub> _)" [82,82,83]82) where
+  MISOM  ("(3_ \<cong>\<^bsub>_\<^esub> _)" [82,82,83]82) where
   "M \<cong>\<^bsub>R\<^esub> N == misomorphic R M N"
 
 lemma (in Module) minjec_inj:"\<lbrakk>R module N; injec\<^bsub>M,N\<^esub> f\<rbrakk> \<Longrightarrow>
@@ -1001,16 +1003,17 @@ apply (simp add:surjec_def)
  apply blast
 done
 
-constdefs
- sup_sharp::"[('r, 'n) Ring_scheme, ('b, 'r, 'm1) Module_scheme, 
+definition
+  sup_sharp :: "[('r, 'n) Ring_scheme, ('b, 'r, 'm1) Module_scheme, 
     ('c, 'r, 'm2) Module_scheme, ('a, 'r, 'm) Module_scheme, 'b \<Rightarrow> 'c] 
-     \<Rightarrow> ('c \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'a)"
- "sup_sharp R M N L u == \<lambda>f\<in>mHom R N L. compos M f u"
+     \<Rightarrow> ('c \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'a)" where
+  "sup_sharp R M N L u = (\<lambda>f\<in>mHom R N L. compos M f u)"
 
- sub_sharp::"[('r, 'n) Ring_scheme, ('a, 'r, 'm) Module_scheme, 
+definition
+  sub_sharp :: "[('r, 'n) Ring_scheme, ('a, 'r, 'm) Module_scheme, 
     ('b, 'r, 'm1) Module_scheme, ('c, 'r, 'm2) Module_scheme, 'b \<Rightarrow> 'c] 
-     \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c)"
- "sub_sharp R L M N u == \<lambda>f\<in>mHom R L M. compos L u f"
+     \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c)" where
+  "sub_sharp R L M N u = (\<lambda>f\<in>mHom R L M. compos L u f)"
 
        (*  L
           f| u
@@ -1213,47 +1216,47 @@ apply (simp add:mcompos_inj_inj)
 apply (simp add:mcompos_surj_surj)
 done
 
-constdefs
- mr_coset :: "['a, ('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 'a set"
-     "mr_coset a M H == a \<uplus>\<^bsub>M\<^esub> H"
+definition
+  mr_coset :: "['a, ('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 'a set" where
+  "mr_coset a M H = a \<uplus>\<^bsub>M\<^esub> H"
 
-constdefs
- set_mr_cos:: "[('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 'a set set"
-  "set_mr_cos M H == {X. \<exists>a\<in>carrier M. X = a \<uplus>\<^bsub>M\<^esub> H}"
+definition
+  set_mr_cos :: "[('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 'a set set" where
+  "set_mr_cos M H = {X. \<exists>a\<in>carrier M. X = a \<uplus>\<^bsub>M\<^esub> H}"
 
-constdefs
- mr_cos_sprod ::"[('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 
-                                              'b \<Rightarrow> 'a set \<Rightarrow> 'a set" 
- "mr_cos_sprod M H a X == {z. \<exists>x\<in>X. \<exists>h\<in>H. z = h \<plusminus>\<^bsub>M\<^esub> (a \<cdot>\<^sub>s\<^bsub>M\<^esub> x)}"
+definition
+  mr_cos_sprod :: "[('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 
+                                              'b \<Rightarrow> 'a set \<Rightarrow> 'a set" where
+  "mr_cos_sprod M H a X = {z. \<exists>x\<in>X. \<exists>h\<in>H. z = h \<plusminus>\<^bsub>M\<^esub> (a \<cdot>\<^sub>s\<^bsub>M\<^esub> x)}"
 
-constdefs
- mr_cospOp ::"[('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 
-                                               'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"
- "mr_cospOp M H ==  \<lambda>X. \<lambda>Y. c_top (b_ag M) H X Y"  
+definition
+  mr_cospOp :: "[('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 
+                                               'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" where
+  "mr_cospOp M H = (\<lambda>X. \<lambda>Y. c_top (b_ag M) H X Y)"  
 
- mr_cosmOp ::"[('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 
-                                                  'a set \<Rightarrow> 'a set"
- "mr_cosmOp M H == \<lambda>X. c_iop (b_ag M) H X"
+definition
+  mr_cosmOp :: "[('a, 'b, 'more) Module_scheme, 'a set] \<Rightarrow> 
+                                                  'a set \<Rightarrow> 'a set" where
+  "mr_cosmOp M H = (\<lambda>X. c_iop (b_ag M) H X)"
 
-constdefs
- qmodule :: "[('a, 'r, 'more) Module_scheme, 'a set] \<Rightarrow>
-                 ('a set, 'r) Module"
- "qmodule M H == \<lparr> carrier = set_mr_cos M H, pop = mr_cospOp M H, 
-  mop = mr_cosmOp M H, zero = H, sprod = mr_cos_sprod M H\<rparr>"
+definition
+  qmodule :: "[('a, 'r, 'more) Module_scheme, 'a set] \<Rightarrow>
+                 ('a set, 'r) Module" where
+  "qmodule M H = \<lparr> carrier = set_mr_cos M H, pop = mr_cospOp M H, 
+    mop = mr_cosmOp M H, zero = H, sprod = mr_cos_sprod M H\<rparr>"
 
-  sub_mr_set_cos:: "[('a, 'r, 'more) Module_scheme, 'a set, 'a set] \<Rightarrow>
-                            'a set set"
- "sub_mr_set_cos M H N == {X. \<exists>n\<in>N. X = n \<uplus>\<^bsub>M\<^esub> H}" 
+definition
+  sub_mr_set_cos :: "[('a, 'r, 'more) Module_scheme, 'a set, 'a set] \<Rightarrow>
+                            'a set set" where
+ "sub_mr_set_cos M H N = {X. \<exists>n\<in>N. X = n \<uplus>\<^bsub>M\<^esub> H}" 
  (* N/H, where N is a submodule *)
 
 abbreviation
-  QMODULE :: "[('a, 'r, 'more) Module_scheme, 'a set] \<Rightarrow>
-                         ('a set, 'r) Module"  (infixl "'/'\<^sub>m" 200) where
+  QMODULE  (infixl "'/'\<^sub>m" 200) where
   "M /\<^sub>m H == qmodule M H"
 
 abbreviation
-  SUBMRSET ::"['a set, ('a, 'r, 'more) Module_scheme, 'a set] \<Rightarrow>
-                            'a set set"  ("(3_/ \<^sub>s'/'\<^sub>_/ _)" [82,82,83]82) where
+  SUBMRSET  ("(3_/ \<^sub>s'/'\<^sub>_/ _)" [82,82,83]82) where
   "N \<^sub>s/\<^sub>M H == sub_mr_set_cos M H N"
 
 lemma (in Module) qmodule_carr:"submodule R M H \<Longrightarrow>
@@ -1546,16 +1549,13 @@ apply (simp add:qmodule_def)
  apply (simp add:mr_cos_sprod_one)
 done
 
-constdefs
- indmhom :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
-   ('c, 'b, 'm2) Module_scheme, 'a \<Rightarrow> 'c] \<Rightarrow>  'a set \<Rightarrow> 'c"
-       
- "indmhom R M N f == \<lambda>X\<in> (set_mr_cos M (ker\<^bsub>M,N\<^esub> f)). f ( SOME x. x \<in> X)"
+definition
+  indmhom :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
+    ('c, 'b, 'm2) Module_scheme, 'a \<Rightarrow> 'c] \<Rightarrow>  'a set \<Rightarrow> 'c" where
+  "indmhom R M N f = (\<lambda>X\<in> (set_mr_cos M (ker\<^bsub>M,N\<^esub> f)). f ( SOME x. x \<in> X))"
 
 abbreviation
-  INDMHOM :: "['a \<Rightarrow> 'b, ('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
-                ('b, 'r, 'm2) Module_scheme]  \<Rightarrow>  ('a set  \<Rightarrow> 'b )" 
-    ("(4_\<^sup>\<flat>\<^bsub>_ _, _\<^esub>)" [92,92,92,93]92) where
+  INDMHOM  ("(4_\<^sup>\<flat>\<^bsub>_ _, _\<^esub>)" [92,92,92,93]92) where
   "f\<^sup>\<flat>\<^bsub>R M,N\<^esub> == indmhom R M N f"
 
 
@@ -1778,9 +1778,9 @@ apply (simp add:ker_to_mimg)
 apply blast
 done
 
-constdefs
- mpj :: "[('a, 'r, 'm) Module_scheme, 'a set] \<Rightarrow>  ('a => 'a set)" 
-      "mpj M H == \<lambda>x\<in>carrier M. x \<uplus>\<^bsub>M\<^esub> H" 
+definition
+  mpj :: "[('a, 'r, 'm) Module_scheme, 'a set] \<Rightarrow>  ('a => 'a set)" where
+  "mpj M H = (\<lambda>x\<in>carrier M. x \<uplus>\<^bsub>M\<^esub> H)" 
 
 lemma (in Module) elem_mpj:"\<lbrakk>m \<in> carrier M; submodule R M H\<rbrakk> \<Longrightarrow>
                                                  mpj M H m = m \<uplus>\<^bsub>M\<^esub> H"
@@ -1933,10 +1933,10 @@ apply blast
  apply (simp add:compos_def compose_def elem_mpj)
 done
 
-constdefs
+definition
   mQmp :: "[('a, 'r, 'm) Module_scheme, 'a set, 'a set] \<Rightarrow> 
-                                                   ('a set \<Rightarrow> 'a set)"
- "mQmp M H N == \<lambda>X\<in> set_mr_cos M H. {z. \<exists> x \<in> X. \<exists> y \<in> N. (y \<plusminus>\<^bsub>M\<^esub> x = z)}"
+                                                   ('a set \<Rightarrow> 'a set)" where
+  "mQmp M H N = (\<lambda>X\<in> set_mr_cos M H. {z. \<exists> x \<in> X. \<exists> y \<in> N. (y \<plusminus>\<^bsub>M\<^esub> x = z)})"
              (* H \<subseteq> N *)
 
 abbreviation
@@ -2170,23 +2170,20 @@ apply (frule misom2Tr [of H N], assumption+)
 apply (simp add:eq_class_of_Submodule)
 done
 
-consts
-  natm ::  "('a, 'm) aGroup_scheme  => nat \<Rightarrow> 'a  => 'a"
+primrec natm :: "('a, 'm) aGroup_scheme  => nat \<Rightarrow> 'a  => 'a"
+where
+  natm_0:  "natm M 0 x = \<zero>\<^bsub>M\<^esub>"
+| natm_Suc:  "natm M (Suc n) x = (natm M n x) \<plusminus>\<^bsub>M\<^esub> x"
 
-primrec
- natm_0:  "natm M 0 x = \<zero>\<^bsub>M\<^esub>"
- natm_Suc:  "natm M (Suc n) x = (natm M n x) \<plusminus>\<^bsub>M\<^esub> x"
+definition
+  finitesum_base :: "[('a, 'r, 'm) Module_scheme, 'b set, 'b \<Rightarrow> 'a set]
+                      \<Rightarrow> 'a set " where
+  "finitesum_base M I f = \<Union>{f i | i. i \<in> I}" 
 
-constdefs 
-
- finitesum_base::"[('a, 'r, 'm) Module_scheme, 'b set, 'b \<Rightarrow> 'a set]
-                      \<Rightarrow> 'a set "
-   "finitesum_base M I f == \<Union>{f i | i. i \<in> I}" 
-
-constdefs
-finitesum ::"[('a, 'r, 'm) Module_scheme, 'b set, 'b \<Rightarrow> 'a set]
-                      \<Rightarrow> 'a set "
-"finitesum M I f == {x. \<exists>n. \<exists>g. g \<in> {j. j \<le> (n::nat)} \<rightarrow> finitesum_base M I f
+definition
+  finitesum :: "[('a, 'r, 'm) Module_scheme, 'b set, 'b \<Rightarrow> 'a set]
+                      \<Rightarrow> 'a set " where
+  "finitesum M I f = {x. \<exists>n. \<exists>g. g \<in> {j. j \<le> (n::nat)} \<rightarrow> finitesum_base M I f
                                            \<and> x =  nsum M g n}"
 
 
@@ -2446,10 +2443,10 @@ apply (rule impI, erule conjE, frule asubg_subset[of H],
  apply blast
 done
 
-constdefs
- iotam::"[('a, 'r, 'm) Module_scheme, 'a set, 'a set] \<Rightarrow> ('a \<Rightarrow> 'a)"
-      ("(3\<iota>m\<^bsub>_ _,_\<^esub>)" [82, 82, 83]82)
- "\<iota>m\<^bsub>M H,K\<^esub> == \<lambda>x\<in>H. (x \<plusminus>\<^bsub>M\<^esub> \<zero>\<^bsub>M\<^esub>)"  (** later we define miota. This is not 
+definition
+  iotam :: "[('a, 'r, 'm) Module_scheme, 'a set, 'a set] \<Rightarrow> ('a \<Rightarrow> 'a)"
+      ("(3\<iota>m\<^bsub>_ _,_\<^esub>)" [82, 82, 83]82) where
+  "\<iota>m\<^bsub>M H,K\<^esub> = (\<lambda>x\<in>H. (x \<plusminus>\<^bsub>M\<^esub> \<zero>\<^bsub>M\<^esub>))"  (** later we define miota. This is not 
  equal to iotam **) 
 
 lemma (in Module) iotam_mHom:"\<lbrakk>submodule R M H; submodule R M K\<rbrakk>
@@ -2647,25 +2644,27 @@ apply (simp add:mhomom3Tr2[of H K])
 apply blast
 done
 
-constdefs
-l_comb::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, nat] \<Rightarrow> (nat \<Rightarrow> 'r) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a"
- "l_comb R M n s m == nsum M (\<lambda>j. (s j) \<cdot>\<^sub>s\<^bsub>M\<^esub> (m j)) n" 
-    
-linear_span::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 'r set,
-              'a set] \<Rightarrow> 'a set"
- "linear_span R M A H == if H = {} then {\<zero>\<^bsub>M\<^esub>} else 
+definition
+  l_comb :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, nat] \<Rightarrow>
+    (nat \<Rightarrow> 'r) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a" where
+  "l_comb R M n s m = nsum M (\<lambda>j. (s j) \<cdot>\<^sub>s\<^bsub>M\<^esub> (m j)) n" 
+
+definition
+  linear_span :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 'r set,
+              'a set] \<Rightarrow> 'a set" where
+  "linear_span R M A H = (if H = {} then {\<zero>\<^bsub>M\<^esub>} else 
                            {x. \<exists>n. \<exists>f \<in> {j. j \<le> (n::nat)} \<rightarrow> H.
-         \<exists>s\<in>{j. j \<le> (n::nat)} \<rightarrow> A.  x = l_comb R M n s f}"
+         \<exists>s\<in>{j. j \<le> (n::nat)} \<rightarrow> A.  x = l_comb R M n s f})"
 
-coefficient::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
-               nat, nat \<Rightarrow> 'r, nat \<Rightarrow> 'a] \<Rightarrow> nat \<Rightarrow> 'r"
+definition
+  coefficient :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
+               nat, nat \<Rightarrow> 'r, nat \<Rightarrow> 'a] \<Rightarrow> nat \<Rightarrow> 'r" where
+  "coefficient R M n s m j = s j"
 
-        "coefficient R M n s m j == s j"
-
-body::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, nat, nat \<Rightarrow> 'r, 
-         nat \<Rightarrow> 'a] \<Rightarrow> nat \<Rightarrow> 'a"
-
-"body R M n s m j == m j"
+definition
+  body :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, nat, nat \<Rightarrow> 'r, 
+         nat \<Rightarrow> 'a] \<Rightarrow> nat \<Rightarrow> 'a" where
+  "body R M n s m j = m j"
 
 lemma (in Module) l_comb_mem_linear_span:"\<lbrakk>ideal R A; H \<subseteq> carrier M; 
        s \<in> {j. j \<le> (n::nat)} \<rightarrow> A; f \<in> {j. j \<le> n} \<rightarrow> H\<rbrakk> \<Longrightarrow>
@@ -3471,10 +3470,10 @@ apply (frule linear_span_subModule[of A H], assumption+)
 apply (simp add:submodule_subset)
 done
 
-constdefs
- smodule_ideal_coeff::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
-       'r set] \<Rightarrow> 'a set"
- "smodule_ideal_coeff R M A == linear_span R M A (carrier M)"
+definition
+  smodule_ideal_coeff :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
+       'r set] \<Rightarrow> 'a set" where
+  "smodule_ideal_coeff R M A = linear_span R M A (carrier M)"
 
 abbreviation
   SMLIDEALCOEFF  ("(3_/ \<odot>\<^bsub>_\<^esub> _)" [64,64,65]64) where
@@ -3495,15 +3494,16 @@ apply (simp add:smodule_ideal_coeff_def linear_span_def,
        erule exE, (erule bexE)+, blast)
 done
 
-constdefs
- quotient_of_submodules::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
-            'a set, 'a set] \<Rightarrow> 'r set"
- "quotient_of_submodules R M N P == {x | x. x\<in>carrier R \<and> 
+definition
+  quotient_of_submodules :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
+            'a set, 'a set] \<Rightarrow> 'r set" where
+  "quotient_of_submodules R M N P = {x | x. x\<in>carrier R \<and> 
                                     (linear_span R M (Rxa R x)  P) \<subseteq> N}"
 
- Annihilator::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme]
-  \<Rightarrow> 'r set" ("(Ann\<^bsub>_\<^esub> _)" [82,83]82)
- "Ann\<^bsub>R\<^esub> M == quotient_of_submodules R M {\<zero>\<^bsub>M\<^esub>} (carrier M)"
+definition
+  Annihilator :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme]
+    \<Rightarrow> 'r set" ("(Ann\<^bsub>_\<^esub> _)" [82,83]82) where
+  "Ann\<^bsub>R\<^esub> M = quotient_of_submodules R M {\<zero>\<^bsub>M\<^esub>} (carrier M)"
 
 abbreviation
   QOFSUBMDS  ("(4_ \<^bsub>_\<ddagger>_\<^esub> _)" [82,82,82,83]82) where
@@ -3859,26 +3859,28 @@ constdefs
   zero = zero M, sc_l = sprod M, sc_r = cos_scr R A M \<rparr>" *)
  (* Remark. A should be an ideal contained in Ann\<^sub>R M. *)
 
-constdefs
- faithful::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme]
-                             \<Rightarrow> bool"
-  "faithful R M == Ann\<^bsub>R\<^esub> M = {\<zero>\<^bsub>R\<^esub>}"
+definition
+  faithful :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme]
+                             \<Rightarrow> bool" where
+  "faithful R M \<longleftrightarrow> Ann\<^bsub>R\<^esub> M = {\<zero>\<^bsub>R\<^esub>}"
 
 section "4. nsum and Generators"
 
-constdefs
- generator ::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
-               'a set] \<Rightarrow> bool" 
+definition
+  generator :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
+               'a set] \<Rightarrow> bool" where
  "generator R M H == H \<subseteq> carrier M \<and> 
                       linear_span R M (carrier R) H = carrier M"
 
- finite_generator::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
-               'a set] \<Rightarrow> bool" 
- "finite_generator R M H == finite H \<and> generator R M H"
+definition
+  finite_generator :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
+               'a set] \<Rightarrow> bool" where
+  "finite_generator R M H \<longleftrightarrow> finite H \<and> generator R M H"
 
- fGOver :: "[('a, 'r, 'm1) Module_scheme, ('r, 'm) Ring_scheme]  \<Rightarrow>  bool"
-              (*(infixl 70)*) 
- "fGOver M R ==  \<exists>H. finite_generator R M H"
+definition
+  fGOver :: "[('a, 'r, 'm1) Module_scheme, ('r, 'm) Ring_scheme]  \<Rightarrow>  bool"
+              (*(infixl 70)*)  where
+  "fGOver M R \<longleftrightarrow> (\<exists>H. finite_generator R M H)"
 
 abbreviation
   FGENOVER  (infixl "fgover" 70) where
@@ -4632,9 +4634,9 @@ apply (frule_tac f = l and n = n and A = A and g = "\<lambda>x\<in>Nset 0. 0\<^s
  apply (simp add:ideal_zero) apply simp
 done *) 
 
-constdefs
- coeff_at_k::"[('r, 'm) Ring_scheme, 'r, nat] \<Rightarrow> (nat \<Rightarrow> 'r)"
- "coeff_at_k R a k  == \<lambda>j. if j = k then a else (\<zero>\<^bsub>R\<^esub>)" 
+definition
+  coeff_at_k :: "[('r, 'm) Ring_scheme, 'r, nat] \<Rightarrow> (nat \<Rightarrow> 'r)" where
+  "coeff_at_k R a k = (\<lambda>j. if j = k then a else (\<zero>\<^bsub>R\<^esub>))" 
 
 lemma card_Nset_im:"f \<in> {j. j \<le> (n::nat)} \<rightarrow> A \<Longrightarrow> 
                       (Suc 0) \<le> card (f `{j. j \<le> n})"
@@ -4656,9 +4658,9 @@ card (f `{j. j \<le> n1}) - Suc 0 =  Suc (card (f ` {j. j \<le> n1}) - Suc 0 - S
 apply simp
 done
 
-constdefs
- zeroi::"[('r, 'm) Ring_scheme] \<Rightarrow> nat \<Rightarrow> 'r"
- "zeroi R == \<lambda>j. \<zero>\<^bsub>R\<^esub>" 
+definition
+  zeroi :: "[('r, 'm) Ring_scheme] \<Rightarrow> nat \<Rightarrow> 'r" where
+  "zeroi R = (\<lambda>j. \<zero>\<^bsub>R\<^esub>)" 
 
 lemma zeroi_func:"\<lbrakk>Ring R; ideal R A\<rbrakk> \<Longrightarrow>  zeroi R \<in> {j. j \<le> 0} \<rightarrow> A"
 apply (rule univar_func_test, rule ballI)
@@ -5022,10 +5024,11 @@ apply (simp add:finite_lin_spanTr3)
 done
 
 subsection "4-2. free generators"
-constdefs
- free_generator::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 'a set]
-        \<Rightarrow> bool"
- "free_generator R M H == generator R M H \<and>
+
+definition
+  free_generator :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 'a set]
+        \<Rightarrow> bool" where
+ "free_generator R M H \<longleftrightarrow> generator R M H \<and>
       (\<forall>n. (\<forall>s f. (s \<in> {j. j \<le> (n::nat)} \<rightarrow> carrier R \<and>
                    f \<in> {j. j \<le> n} \<rightarrow> H \<and> inj_on f {j. j \<le> n} \<and> 
          l_comb R M n s f = \<zero>\<^bsub>M\<^esub>) \<longrightarrow> s \<in> {j. j \<le> n} \<rightarrow> {\<zero>\<^bsub>R\<^esub>}))"

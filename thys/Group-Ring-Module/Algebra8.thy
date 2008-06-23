@@ -376,28 +376,30 @@ done
 
 section "5. existence of homomorphism"
 
-constdefs
-  fgs::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 'a set]  \<Rightarrow>
-       'a set" 
+definition
+  fgs :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 'a set]  \<Rightarrow>
+       'a set" where
   (* free generator span, A is a subset of free generator *)
-  "fgs R M A == linear_span R M (carrier R) A"
+  "fgs R M A = linear_span R M (carrier R) A"
  
- fsp::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
-  ('b, 'r, 'm2) Module_scheme, 'a \<Rightarrow> 'b, 'a set, 'a set, 'a \<Rightarrow> 'b] \<Rightarrow> bool"
- "fsp R M N f H A g == g \<in> mHom R (mdl M (fgs R M A)) N \<and> (\<forall>z\<in>A. f z = g z) 
-  \<and> A \<subseteq> H" 
+definition
+  fsp :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
+  ('b, 'r, 'm2) Module_scheme, 'a \<Rightarrow> 'b, 'a set, 'a set, 'a \<Rightarrow> 'b] \<Rightarrow> bool" where
+  "fsp R M N f H A g \<longleftrightarrow> g \<in> mHom R (mdl M (fgs R M A)) N \<and> (\<forall>z\<in>A. f z = g z) \<and> A \<subseteq> H" 
  (* f \<in> H \<rightarrow> N (not a module hom), free span pair condition *)
 
- fsps::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
+definition
+  fsps :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
    ('b, 'r, 'm2) Module_scheme, 'a \<Rightarrow> 'b, 'a set] \<Rightarrow> 
-                                      (('a set) * ('a \<Rightarrow> 'b)) set"
- "fsps R M N f H == {Z. \<exists>A g. Z = (A, g) \<and> fsp R M N f H A g}"
+                                      (('a set) * ('a \<Rightarrow> 'b)) set" where
+  "fsps R M N f H = {Z. \<exists>A g. Z = (A, g) \<and> fsp R M N f H A g}"
          (* free span pairs *)
-constdefs
- od_fm_fun::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
+
+definition
+  od_fm_fun :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
  ('b, 'r, 'm2) Module_scheme, 'a \<Rightarrow> 'b, 'a set] \<Rightarrow> 
-                          (('a set) * ('a \<Rightarrow> 'b)) Order"
-  "od_fm_fun R M N f H == \<lparr>carrier = fsps R M N f H, 
+                          (('a set) * ('a \<Rightarrow> 'b)) Order" where
+  "od_fm_fun R M N f H = \<lparr>carrier = fsps R M N f H, 
      rel = {Y. Y \<in> (fsps R M N f H) \<times> (fsps R M N f H) \<and> 
                               (fst (fst Y)) \<subseteq> (fst (snd Y))} \<rparr>" 
  (* ordered set free module with function f *)
@@ -1398,10 +1400,10 @@ apply (frule free_generator_sub)
   apply (rule subsetI, simp add:subsetD)
 done
 
-constdefs
- monofun::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
-            ('b, 'r, 'm2) Module_scheme, 'a \<Rightarrow> 'b, 'a set, 'a] \<Rightarrow> ('a \<Rightarrow> 'b)"
- "monofun R M N f H h == (\<lambda>x\<in>fgs R M {h}. 
+definition
+  monofun :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
+            ('b, 'r, 'm2) Module_scheme, 'a \<Rightarrow> 'b, 'a set, 'a] \<Rightarrow> ('a \<Rightarrow> 'b)" where
+  "monofun R M N f H h = (\<lambda>x\<in>fgs R M {h}. 
           (THE y. (\<exists>r\<in>carrier R. x = r \<cdot>\<^sub>s\<^bsub>M\<^esub> h \<and>  y = r \<cdot>\<^sub>s\<^bsub>N\<^esub> (f h))))"  
 
 lemma (in Module) fgs_single_span:"\<lbrakk>h \<in> carrier M; x \<in> (fgs R M {h})\<rbrakk> \<Longrightarrow> 
@@ -1912,9 +1914,9 @@ done
 
 section "6. Nakayama lemma" 
 
-constdefs
- Lcg::"[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, nat] \<Rightarrow> bool"
-  "Lcg R M j == \<exists>H. finite_generator R M H \<and> j = card H" 
+definition
+  Lcg :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, nat] \<Rightarrow> bool" where
+  "Lcg R M j \<longleftrightarrow> (\<exists>H. finite_generator R M H \<and> j = card H)" 
  (* Least cardinality of generator *)
 
 lemma (in Module) NAKTr1:"M fgover R \<Longrightarrow> 
@@ -2257,28 +2259,26 @@ done
 
 section "7. direct sum and direct products of modules"
 
-constdefs
- prodM_sprod ::"[('r, 'm) Ring_scheme, 'i set, 
-      'i \<Rightarrow> ('a, 'r, 'm1) Module_scheme] \<Rightarrow>  'r \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow>  ('i \<Rightarrow> 'a)"
+definition
+  prodM_sprod :: "[('r, 'm) Ring_scheme, 'i set, 
+      'i \<Rightarrow> ('a, 'r, 'm1) Module_scheme] \<Rightarrow>  'r \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow>  ('i \<Rightarrow> 'a)" where
+  "prodM_sprod R I A = (\<lambda>a\<in>carrier R. \<lambda>g\<in>carr_prodag I A. 
+                                         (\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>(A j)\<^esub> (g j)))"
 
- "prodM_sprod R I A == \<lambda>a\<in>carrier R. \<lambda>g\<in>carr_prodag I A. 
-                                         (\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>(A j)\<^esub> (g j))"
-constdefs
- prodM::"[('r, 'm) Ring_scheme, 'i set, 'i \<Rightarrow> ('a, 'r, 'm1) Module_scheme] \<Rightarrow>
+definition
+  prodM :: "[('r, 'm) Ring_scheme, 'i set, 'i \<Rightarrow> ('a, 'r, 'm1) Module_scheme] \<Rightarrow>
      \<lparr> carrier:: ('i \<Rightarrow> 'a) set, 
        pop::['i \<Rightarrow> 'a, 'i \<Rightarrow> 'a] \<Rightarrow> ('i \<Rightarrow> 'a),
        mop:: ('i \<Rightarrow> 'a) \<Rightarrow> ('i \<Rightarrow> 'a), zero::('i \<Rightarrow> 'a), 
-       sprod :: ['r, 'i \<Rightarrow> 'a] \<Rightarrow> ('i \<Rightarrow> 'a) \<rparr>"
-  
- "prodM R I A == \<lparr>carrier = carr_prodag I A, 
+       sprod :: ['r, 'i \<Rightarrow> 'a] \<Rightarrow> ('i \<Rightarrow> 'a) \<rparr>" where
+  "prodM R I A = \<lparr>carrier = carr_prodag I A, 
     pop = prod_pOp I A, mop = prod_mOp I A,
     zero = prod_zero I A, sprod = prodM_sprod R I A \<rparr>"  
 
-constdefs
-  mProject::"[('r, 'm) Ring_scheme, 'i set,
-             'i \<Rightarrow> ('a, 'r, 'more) Module_scheme, 'i] \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow> 'a"
- 
- "mProject R I A j == \<lambda>f\<in>carr_prodag I A. f j"
+definition
+  mProject :: "[('r, 'm) Ring_scheme, 'i set,
+             'i \<Rightarrow> ('a, 'r, 'more) Module_scheme, 'i] \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow> 'a" where
+  "mProject R I A j = (\<lambda>f\<in>carr_prodag I A. f j)"
 
 abbreviation
   PRODMODULES  ("(3m\<Pi>\<^bsub>_ _\<^esub> _)" [72,72,73]72) where
@@ -2445,17 +2445,17 @@ apply (cut_tac Ring, simp add:Module.sc_l_distr)
          simp add:Module.sprod_one)
 done
          
-constdefs
- dsumM::"[('r, 'm) Ring_scheme, 'i set, 'i \<Rightarrow> ('a, 'r, 'more) Module_scheme]
+definition
+  dsumM :: "[('r, 'm) Ring_scheme, 'i set, 'i \<Rightarrow> ('a, 'r, 'more) Module_scheme]
   \<Rightarrow>  \<lparr> carrier:: ('i \<Rightarrow> 'a) set, 
         pop::['i \<Rightarrow> 'a, 'i \<Rightarrow> 'a] \<Rightarrow> ('i \<Rightarrow> 'a),
         mop:: ('i \<Rightarrow> 'a) \<Rightarrow> ('i \<Rightarrow> 'a), 
         zero::('i \<Rightarrow> 'a), 
-        sprod :: ['r, 'i \<Rightarrow> 'a] \<Rightarrow> ('i \<Rightarrow> 'a) \<rparr>"
+        sprod :: ['r, 'i \<Rightarrow> 'a] \<Rightarrow> ('i \<Rightarrow> 'a) \<rparr>" where
  
- "dsumM R I A == \<lparr> carrier = carr_dsumag I A, 
-   pop = prod_pOp I A, mop = prod_mOp I A,
-   zero = prod_zero I A, sprod = prodM_sprod R I A\<rparr>"  
+  "dsumM R I A = \<lparr> carrier = carr_dsumag I A, 
+     pop = prod_pOp I A, mop = prod_mOp I A,
+     zero = prod_zero I A, sprod = prodM_sprod R I A\<rparr>"  
 
 abbreviation
   DSUMMOD  ("(3\<^bsub>_\<^esub>\<Sigma>\<^sub>d\<^bsub>_\<^esub> _)" [72,72,73]72) where
@@ -2660,10 +2660,10 @@ apply (rule Module_axioms.intro)
          simp add:Module.sprod_one)
 done
   
-constdefs
- ringModule::"('r, 'b) Ring_scheme \<Rightarrow> ('r, 'r) Module"
-                ("(M\<^bsub>_\<^esub>)" [998]999)
- "M\<^bsub>R\<^esub> == \<lparr>carrier = carrier R, pop = pop R, mop = mop R,
+definition
+  ringModule :: "('r, 'b) Ring_scheme \<Rightarrow> ('r, 'r) Module"
+                ("(M\<^bsub>_\<^esub>)" [998]999) where
+  "M\<^bsub>R\<^esub> = \<lparr>carrier = carrier R, pop = pop R, mop = mop R,
         zero = zero R, sprod = tp R\<rparr>" 
 
 lemma (in Ring) ringModule_Module:"R module M\<^bsub>R\<^esub>"
@@ -2683,12 +2683,12 @@ apply (rule Module_axioms.intro)
         simp add:ringModule_def, simp add:rg_l_unit)
 done
 
-constdefs
- dsumMhom::"['i set, 'i \<Rightarrow> ('a, 'r, 'm) Module_scheme, 
+definition
+  dsumMhom :: "['i set, 'i \<Rightarrow> ('a, 'r, 'm) Module_scheme, 
     'i \<Rightarrow> ('b, 'r, 'm1) Module_scheme, 'i \<Rightarrow> ('a \<Rightarrow> 'b)] \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow> 
-    ('i \<Rightarrow> 'b)"
+    ('i \<Rightarrow> 'b)" where
 
- "dsumMhom I A B S == \<lambda>f\<in>carr_dsumag I A. (\<lambda>k\<in>I. (S k) (f k))" 
+  "dsumMhom I A B S = (\<lambda>f\<in>carr_dsumag I A. (\<lambda>k\<in>I. (S k) (f k)))" 
 
 (**     I \<longrightarrow> A
           \   |

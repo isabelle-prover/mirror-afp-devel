@@ -604,14 +604,15 @@ apply (simp add:vals_nonequiv_def)
         simp, assumption, rule not_sym, assumption)
 done
 
-constdefs (structure K)
- Ostrowski_base::"[_, nat \<Rightarrow> 'b \<Rightarrow> ant, nat] \<Rightarrow> (nat \<Rightarrow> 'b)"
-                             ("(\<Omega>\<^bsub>_ _ _\<^esub>)" [90,90,91]90)
- "Ostrowski_base K vv n == (\<lambda>j\<in>{h. h \<le> n}. (SOME x. x\<in>carrier K \<and>
+definition
+  Ostrowski_base :: "[_, nat \<Rightarrow> 'b \<Rightarrow> ant, nat] \<Rightarrow> (nat \<Rightarrow> 'b)"
+                             ("(\<Omega>\<^bsub>_ _ _\<^esub>)" [90,90,91]90) where
+  "Ostrowski_base K vv n = (\<lambda>j\<in>{h. h \<le> n}. (SOME x. x\<in>carrier K \<and>
                             (Ostrowski_elem K n (vv \<circ> (\<tau>\<^bsub>0 j\<^esub>)) x)))"
 
- App_base::"[_, nat \<Rightarrow> 'b \<Rightarrow> ant, nat] \<Rightarrow> (nat \<Rightarrow> 'b)"
- "App_base K vv n == (\<lambda>j\<in>{h. h \<le> n}. (SOME x. x\<in>carrier K \<and> (((vv \<circ> \<tau>\<^bsub>0 j\<^esub>) 0 x 
+definition
+  App_base :: "[_, nat \<Rightarrow> 'b \<Rightarrow> ant, nat] \<Rightarrow> (nat \<Rightarrow> 'b)" where
+  "App_base K vv n = (\<lambda>j\<in>{h. h \<le> n}. (SOME x. x\<in>carrier K \<and> (((vv \<circ> \<tau>\<^bsub>0 j\<^esub>) 0 x 
                       = 1) \<and> (\<forall>k\<in>nset (Suc 0) n. ((vv \<circ> \<tau>\<^bsub>0 j\<^esub>) k x) = 0))))"
   (* Approximation base. *)
 
@@ -1410,12 +1411,12 @@ apply (rule_tac aa = "(\<Omega>\<^bsub>K vv (Suc n)\<^esub>) ja" in Approximatio
        simp add:Ostrowski_base_mem)
 done
  
-constdefs (structure K)
+definition
   app_lb :: "[_ , nat, nat \<Rightarrow> 'b \<Rightarrow> ant, nat \<Rightarrow> 'b, nat] \<Rightarrow> 
-            (nat \<Rightarrow> nat)"   ("(5\<Psi>\<^bsub>_ _ _ _ _\<^esub>)" [98,98,98,98,99]98)
- "\<Psi>\<^bsub>K n vv x m\<^esub> == \<lambda>j\<in>{h. h \<le> n}. (SOME L. (\<forall>N. L < N \<longrightarrow>
-  (an m) \<le> (vv j (\<Sigma>\<^sub>e K (\<lambda>j\<in>{h. h \<le> n}. (x j) \<cdot>\<^sub>r (1\<^sub>r \<plusminus> -\<^sub>a
-  (1\<^sub>r \<plusminus> -\<^sub>a ((\<Omega>\<^bsub>K vv n\<^esub>) j)^\<^bsup>K N\<^esup>)^\<^bsup>K N\<^esup>)) n \<plusminus> -\<^sub>a (x j)))))"
+            (nat \<Rightarrow> nat)"   ("(5\<Psi>\<^bsub>_ _ _ _ _\<^esub>)" [98,98,98,98,99]98) where
+  "\<Psi>\<^bsub>K n vv x m\<^esub> = (\<lambda>j\<in>{h. h \<le> n}. (SOME L. (\<forall>N. L < N \<longrightarrow>
+  (an m) \<le> (vv j (\<Sigma>\<^sub>e K (\<lambda>j\<in>{h. h \<le> n}. (x j) \<cdot>\<^sub>r\<^bsub>K\<^esub> (1\<^sub>r\<^bsub>K\<^esub> \<plusminus>\<^bsub>K\<^esub> -\<^sub>a\<^bsub>K\<^esub>
+  (1\<^sub>r\<^bsub>K\<^esub> \<plusminus>\<^bsub>K\<^esub> -\<^sub>a\<^bsub>K\<^esub> ((\<Omega>\<^bsub>K vv n\<^esub>) j)^\<^bsup>K N\<^esup>)^\<^bsup>K N\<^esup>)) n \<plusminus>\<^bsub>K\<^esub> -\<^sub>a\<^bsub>K\<^esub> (x j))))))"
  (** Approximation lower bound **)
 
 lemma (in Corps) app_LB:"\<lbrakk>vals_nonequiv K (Suc n) vv; 
@@ -1474,9 +1475,9 @@ apply (subgoal_tac "\<exists>l. (\<forall>N. l < N \<longrightarrow> (\<forall>j
  apply simp
 done
 
-constdefs (structure K)
- distinct_pds::"[_, nat, nat \<Rightarrow> ('b \<Rightarrow> ant) set] \<Rightarrow> bool"
- "distinct_pds K n P  == (\<forall>j\<le> n. P j \<in> Pds\<^bsub> K\<^esub>) \<and> 
+definition
+  distinct_pds :: "[_, nat, nat \<Rightarrow> ('b \<Rightarrow> ant) set] \<Rightarrow> bool" where
+  "distinct_pds K n P \<longleftrightarrow> (\<forall>j\<le> n. P j \<in> Pds\<^bsub> K\<^esub>) \<and> 
           (\<forall>l\<le> n. \<forall>m\<le> n. l \<noteq> m \<longrightarrow> P l \<noteq> P m)"
 
  (** pds --- prime divisors **)
@@ -1548,11 +1549,11 @@ apply (case_tac "n = 0",
  apply (simp add:distinct_pds_valuation1[of "n"])
 done
 
-constdefs 
- ring_n_pd ::"[('b, 'm) Ring_scheme, nat \<Rightarrow> ('b \<Rightarrow> ant) set,
+definition
+  ring_n_pd :: "[('b, 'm) Ring_scheme, nat \<Rightarrow> ('b \<Rightarrow> ant) set,
                              nat ] \<Rightarrow> ('b, 'm) Ring_scheme"
-                 ("(3O\<^bsub>_ _ _\<^esub>)" [98,98,99]98)
- "O\<^bsub>K P n\<^esub> == Sr K {x. x \<in> carrier K \<and>
+                 ("(3O\<^bsub>_ _ _\<^esub>)" [98,98,99]98) where
+  "O\<^bsub>K P n\<^esub> = Sr K {x. x \<in> carrier K \<and>
            (\<forall>j \<le> n. 0 \<le> ((\<nu>\<^bsub>K (P j)\<^esub>) x))}" 
   (** ring defined by n prime divisors **)
 
@@ -1602,11 +1603,11 @@ apply (frule ring_n_pd[of "n" "P"]) thm Ring.ideal_nsum_closed
  apply assumption
 done
 
-constdefs (structure K)
- prime_n_pd ::"[_, nat \<Rightarrow> ('b \<Rightarrow> ant) set,
+definition
+  prime_n_pd :: "[_, nat \<Rightarrow> ('b \<Rightarrow> ant) set,
                              nat, nat] \<Rightarrow> 'b set"
-                 ("(4P\<^bsub>_ _ _\<^esub> _)" [98,98,98,99]98)
- "P\<^bsub>K P n\<^esub> j == {x. x \<in> (carrier (O\<^bsub>K P n\<^esub>)) \<and> 0 < ((\<nu>\<^bsub>K (P j)\<^esub>) x)}"
+                 ("(4P\<^bsub>_ _ _\<^esub> _)" [98,98,98,99]98) where
+  "P\<^bsub>K P n\<^esub> j = {x. x \<in> (carrier (O\<^bsub>K P n\<^esub>)) \<and> 0 < ((\<nu>\<^bsub>K (P j)\<^esub>) x)}"
 
 lemma (in Corps) zero_in_ring_n_pd_zero_K:"distinct_pds K n P \<Longrightarrow> 
                                \<zero>\<^bsub>(O\<^bsub>K P n\<^esub>)\<^esub> = \<zero>\<^bsub>K\<^esub>"
@@ -1788,14 +1789,14 @@ apply (rule equalityI)
  apply simp
 done  
  
-constdefs (structure K)
- mI_gen :: "[_ , nat \<Rightarrow> ('r \<Rightarrow> ant) set, nat, 'r set] \<Rightarrow> 'r"
- "mI_gen K P n I == SOME x. x \<in> I \<and> 
-                             (\<forall>j \<le> n. (\<nu>\<^bsub>K (P j)\<^esub>) x = LI K (\<nu>\<^bsub>K (P j)\<^esub>) I)"
+definition
+  mI_gen :: "[_ , nat \<Rightarrow> ('r \<Rightarrow> ant) set, nat, 'r set] \<Rightarrow> 'r" where
+  "mI_gen K P n I = (SOME x. x \<in> I \<and> 
+                             (\<forall>j \<le> n. (\<nu>\<^bsub>K (P j)\<^esub>) x = LI K (\<nu>\<^bsub>K (P j)\<^esub>) I))"
 
-constdefs (structure K)
- mL :: "[_, nat \<Rightarrow> ('r \<Rightarrow> ant) set, 'r set, nat] \<Rightarrow> int" 
-        "mL K P I j == tna (LI K (\<nu>\<^bsub>K (P j)\<^esub>) I)"
+definition
+  mL :: "[_, nat \<Rightarrow> ('r \<Rightarrow> ant) set, 'r set, nat] \<Rightarrow> int" where
+  "mL K P I j = tna (LI K (\<nu>\<^bsub>K (P j)\<^esub>) I)"
 
 lemma (in Corps) mI_vals_nonempty:"\<lbrakk>distinct_pds K n P; ideal (O\<^bsub>K P n\<^esub>) I; j\<le>n\<rbrakk>
     \<Longrightarrow> (\<nu>\<^bsub>K (P j)\<^esub>) ` I \<noteq> {}"
@@ -1946,16 +1947,16 @@ apply  ((rule allI, rule impI)+, rule impI)
  apply (simp add:distinct_p_divisors)
 done
 
-constdefs (structure K)
- KbaseP ::"[_, nat \<Rightarrow> ('r \<Rightarrow> ant) set, nat] \<Rightarrow> 
-                                          (nat \<Rightarrow> 'r) \<Rightarrow> bool" 
-
- "KbaseP K P n f  == (\<forall>j \<le> n. f j \<in> carrier K) \<and> 
+definition
+  KbaseP :: "[_, nat \<Rightarrow> ('r \<Rightarrow> ant) set, nat] \<Rightarrow> 
+                                          (nat \<Rightarrow> 'r) \<Rightarrow> bool"  where
+  "KbaseP K P n f \<longleftrightarrow> (\<forall>j \<le> n. f j \<in> carrier K) \<and> 
      (\<forall>j \<le> n. \<forall>l \<le> n. (\<nu>\<^bsub>K (P j)\<^esub>) (f l) =  (\<delta>\<^bsub>j l\<^esub>))"
 
- Kbase :: "[_, nat, nat \<Rightarrow> ('r \<Rightarrow> ant) set] 
-               \<Rightarrow> (nat \<Rightarrow> 'r)" ("(3Kb\<^bsub>_ _ _\<^esub>)" [95,95,96]95)
-  "Kb\<^bsub>K n P \<^esub> == SOME f. KbaseP K P n f"
+definition
+  Kbase :: "[_, nat, nat \<Rightarrow> ('r \<Rightarrow> ant) set] 
+               \<Rightarrow> (nat \<Rightarrow> 'r)" ("(3Kb\<^bsub>_ _ _\<^esub>)" [95,95,96]95) where
+  "Kb\<^bsub>K n P \<^esub> = (SOME f. KbaseP K P n f)"
 
 lemma (in Corps) KbaseTr:"distinct_pds K n P \<Longrightarrow>  \<exists>f. KbaseP K P n f"
 apply (simp add: KbaseP_def)
@@ -2020,10 +2021,10 @@ apply (frule Kbase_hom[of n P])
  apply (simp add:funcset_mem Kbase_nonzero)
 done
 
-constdefs (structure K)
-  Zl_mI ::"[_, nat \<Rightarrow> ('b \<Rightarrow> ant) set, 'b set]
-                         \<Rightarrow> nat \<Rightarrow> 'b"
- "Zl_mI K P I j == SOME x. (x \<in> I \<and> ( (\<nu>\<^bsub>K (P j)\<^esub>) x = LI K (\<nu>\<^bsub>K (P j)\<^esub>) I))"
+definition
+  Zl_mI :: "[_, nat \<Rightarrow> ('b \<Rightarrow> ant) set, 'b set]
+                         \<Rightarrow> nat \<Rightarrow> 'b" where
+  "Zl_mI K P I j = (SOME x. (x \<in> I \<and> ( (\<nu>\<^bsub>K (P j)\<^esub>) x = LI K (\<nu>\<^bsub>K (P j)\<^esub>) I)))"
 
 lemma (in Corps) value_Zl_mI:"\<lbrakk>distinct_pds K n P; ideal (O\<^bsub>K P n\<^esub>) I; j \<le> n\<rbrakk>
  \<Longrightarrow>  (Zl_mI K P I j \<in> I) \<and> (\<nu>\<^bsub>K (P j)\<^esub>) (Zl_mI K P I j) = LI K (\<nu>\<^bsub>K (P j)\<^esub>) I"
@@ -2076,10 +2077,10 @@ apply (erule conjE)
  apply (simp add:mem_ring_n_pd_mem_K[of "n" "P" "Zl_mI K P I l"])
 done
 
-constdefs (structure K)
- mprod_exp::"[_, nat \<Rightarrow> int, nat \<Rightarrow> 'b, nat] 
-              \<Rightarrow> 'b"
-  "mprod_exp K e f n == nprod K (\<lambda>j. ((f j)\<^bsub>K\<^esub>\<^bsup>(e j)\<^esup>)) n"
+definition
+  mprod_exp :: "[_, nat \<Rightarrow> int, nat \<Rightarrow> 'b, nat] 
+              \<Rightarrow> 'b" where
+  "mprod_exp K e f n = nprod K (\<lambda>j. ((f j)\<^bsub>K\<^esub>\<^bsup>(e j)\<^esup>)) n"
 
 lemma (in Corps) mprod_expR_memTr:"(\<forall>j\<le>n. f j \<in> carrier K)  \<longrightarrow>  
                       mprod_expR K e f n \<in> carrier K"
@@ -2365,12 +2366,13 @@ apply (rule allI, rule impI)
  apply (simp add:val_LI_pos)
 done
 
-constdefs (structure K)
- m_zmax_pdsI_hom::"[_, nat \<Rightarrow> ('b \<Rightarrow> ant) set, 'b set] \<Rightarrow> nat \<Rightarrow> int"
- "m_zmax_pdsI_hom K P I == \<lambda>j. tna (AMin ((\<nu>\<^bsub>K (P j)\<^esub>) ` I))"
+definition
+  m_zmax_pdsI_hom :: "[_, nat \<Rightarrow> ('b \<Rightarrow> ant) set, 'b set] \<Rightarrow> nat \<Rightarrow> int" where
+  "m_zmax_pdsI_hom K P I = (\<lambda>j. tna (AMin ((\<nu>\<^bsub>K (P j)\<^esub>) ` I)))"
 
- m_zmax_pdsI ::"[_, nat, nat \<Rightarrow> ('b \<Rightarrow> ant) set, 'b set] \<Rightarrow> int"
- "m_zmax_pdsI K n P I == (m_zmax n (m_zmax_pdsI_hom K P I)) + 1"
+definition
+  m_zmax_pdsI :: "[_, nat, nat \<Rightarrow> ('b \<Rightarrow> ant) set, 'b set] \<Rightarrow> int" where
+  "m_zmax_pdsI K n P I = (m_zmax n (m_zmax_pdsI_hom K P I)) + 1"
  
 lemma (in Corps) value_Zl_mI_pos:"\<lbrakk>0 < n; distinct_pds K n P; ideal (O\<^bsub>K P n\<^esub>) I;
      I \<noteq> {\<zero>\<^bsub>(O\<^bsub>K P n\<^esub>)\<^esub>}; I \<noteq> carrier (O\<^bsub>K P n\<^esub>); j \<le> n; l \<le> n\<rbrakk> \<Longrightarrow>
@@ -2661,10 +2663,10 @@ text{* We write the element
                     n)\<^sub>K\<^sup>(m_zmax_pdsI K n P I))) n
       as mIg\<^bsub>K G a i n P I\<^esub> *}
 
-constdefs (structure K)
+definition
   mIg :: "[_, nat, nat \<Rightarrow> ('b \<Rightarrow> ant) set,
-             'b set] \<Rightarrow> 'b" ("(4mIg\<^bsub> _ _ _ _\<^esub>)" [82,82,82,83]82)
-  "mIg\<^bsub>K n P I\<^esub> == \<Sigma>\<^sub>e K (\<lambda>k. (Zl_mI K P I k) \<cdot>\<^sub>r
+             'b set] \<Rightarrow> 'b" ("(4mIg\<^bsub> _ _ _ _\<^esub>)" [82,82,82,83]82) where
+  "mIg\<^bsub>K n P I\<^esub> = \<Sigma>\<^sub>e K (\<lambda>k. (Zl_mI K P I k) \<cdot>\<^sub>r\<^bsub>K\<^esub>
              ((mprod_exp K (K_gamma k) (Kb\<^bsub>K n P\<^esub>) n)\<^bsub>K\<^esub>\<^bsup>(m_zmax_pdsI K n P I)\<^esup>)) n"
 
 text{* We can rewrite above two lemmas by using mIg\<^bsub>K G a i n P I\<^esub> *} 

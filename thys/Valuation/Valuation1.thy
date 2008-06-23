@@ -74,12 +74,13 @@ apply (simp add:an_def)
 apply (simp add:zmult_int[THEN sym] a_z_z)
 done
 
-constdefs
-  adiv::"[ant, ant] \<Rightarrow> ant" (infixl "adiv" 200)
-  "x adiv y == ant ((tna x) div (tna y))"
+definition
+  adiv :: "[ant, ant] \<Rightarrow> ant" (infixl "adiv" 200) where
+  "x adiv y = ant ((tna x) div (tna y))"
  
-  amod::"[ant, ant] \<Rightarrow> ant" (infixl "amod" 200)
-  "x amod y == ant ((tna x) mod (tna y))"
+definition
+  amod :: "[ant, ant] \<Rightarrow> ant" (infixl "amod" 200) where
+  "x amod y = ant ((tna x) mod (tna y))"
 
 lemma apos_amod_conj:"0 < ant b \<Longrightarrow> 
                   0 \<le> (ant a) amod (ant b) \<and> (ant a) amod (ant b) < (ant b)" 
@@ -176,9 +177,9 @@ lemma Amin_ge:"\<lbrakk>\<forall>j \<le> n. f j \<in> Z\<^sub>\<infinity>; \<for
                              z \<le> (Amin n f)"
 by (simp add:Amin_geTr)
 
-constdefs
-  Abs::"ant \<Rightarrow> ant"
-  "Abs z == if z < 0 then -z else z"
+definition
+  Abs :: "ant \<Rightarrow> ant" where
+  "Abs z = (if z < 0 then -z else z)"
 
 lemma Abs_pos:"0 \<le> Abs z" 
 by (simp add:Abs_def, rule conjI, rule impI,
@@ -426,12 +427,10 @@ apply (frule_tac x = "an N" and y = "int N *\<^sub>a b N l" and z = "x l" in
  apply simp
 done
 
-consts
- m_max :: "[nat, nat \<Rightarrow> nat] \<Rightarrow> nat"
-
-primrec
- m_max_0 : "m_max 0 f = f 0"
- m_max_Suc :"m_max (Suc n) f  = max (m_max n f) (f (Suc n))"
+primrec m_max :: "[nat, nat \<Rightarrow> nat] \<Rightarrow> nat"
+where
+  m_max_0: "m_max 0 f = f 0"
+| m_max_Suc: "m_max (Suc n) f  = max (m_max n f) (f (Suc n))"
 
    (** maximum value of f **)
 
@@ -510,14 +509,15 @@ lemma ASum_eq:"\<lbrakk>\<forall>j \<le> n. f j \<in> Z\<^sub>\<infinity>; \<for
 by (cut_tac ASum_eqTr[of n f g], simp)
 
 
-constdefs
- Kronecker_delta::"[nat, nat] \<Rightarrow> ant"
-    ("(\<delta>\<^bsub>_ _\<^esub>)" [70,71]70) 
- "\<delta>\<^bsub>i j\<^esub> == if i = j then 1 else 0"
+definition
+  Kronecker_delta :: "[nat, nat] \<Rightarrow> ant"
+    ("(\<delta>\<^bsub>_ _\<^esub>)" [70,71]70) where
+  "\<delta>\<^bsub>i j\<^esub> = (if i = j then 1 else 0)"
 
- K_gamma::"[nat, nat] \<Rightarrow> int"
-    ("(\<gamma>\<^bsub>_ _\<^esub>)" [70,71]70) 
- "\<gamma>\<^bsub>i j\<^esub> == if i = j then 0 else 1"
+definition
+  K_gamma :: "[nat, nat] \<Rightarrow> int"
+    ("(\<gamma>\<^bsub>_ _\<^esub>)" [70,71]70) where
+  "\<gamma>\<^bsub>i j\<^esub> = (if i = j then 0 else 1)"
  
 abbreviation
   TRANSPOS  ("(\<tau>\<^bsub>_ _\<^esub>)" [90,91]90) where
@@ -537,12 +537,10 @@ apply (rule impI)
 apply (simp only:ant_1[THEN sym], simp del:ant_1 add:z_in_aug_inf) 
 done
 
-consts
- m_zmax :: "[nat, nat \<Rightarrow> int] \<Rightarrow> int"
- 
-primrec
- m_zmax_0 : "m_zmax 0 f = f 0"
- m_zmax_Suc : "m_zmax (Suc n) f = zmax (m_zmax n f) (f (Suc n))" 
+primrec m_zmax :: "[nat, nat \<Rightarrow> int] \<Rightarrow> int"
+where
+  m_zmax_0: "m_zmax 0 f = f 0"
+| m_zmax_Suc: "m_zmax (Suc n) f = zmax (m_zmax n f) (f (Suc n))" 
 
 lemma m_zmax_gt_eachTr:
       "(\<forall>j \<le> n. f j \<in> Zset) \<longrightarrow> (\<forall>j \<le> n. (f j) \<le> m_zmax n f)"
@@ -589,9 +587,9 @@ chapter "1. elementary properties of a valuation"
 
 section "1. definition of a valuation"
       
-constdefs 
- valuation::"[('b, 'm) Ring_scheme, 'b \<Rightarrow> ant] \<Rightarrow> bool"
-  "valuation K v == 
+definition
+  valuation :: "[('b, 'm) Ring_scheme, 'b \<Rightarrow> ant] \<Rightarrow> bool" where
+  "valuation K v \<longleftrightarrow>
      v \<in> extensional (carrier K) \<and> 
      v \<in> carrier K \<rightarrow> Z\<^sub>\<infinity>  \<and>
      v (\<zero>\<^bsub>K\<^esub>) = \<infinity> \<and> (\<forall>x\<in>((carrier K) - {\<zero>\<^bsub>K\<^esub>}). v x \<noteq> \<infinity>) \<and> 
@@ -847,16 +845,18 @@ by (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
 
 section "2. the normal valuation of v"
 
- constdefs
- Lv::"[('r, 'm) Ring_scheme , 'r \<Rightarrow> ant] \<Rightarrow> ant" (* Least nonnegative value *)
-  "Lv K v == AMin {x. x \<in> v ` carrier K \<and> 0 < x}"
+definition
+  Lv :: "[('r, 'm) Ring_scheme , 'r \<Rightarrow> ant] \<Rightarrow> ant" (* Least nonnegative value *) where
+  "Lv K v = AMin {x. x \<in> v ` carrier K \<and> 0 < x}"
 
- n_val::"[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant] \<Rightarrow> ('r \<Rightarrow> ant)"
- "n_val K v == \<lambda>x\<in> carrier K.  (THE l. (l * (Lv K v)) = v x)"
+definition
+  n_val :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant] \<Rightarrow> ('r \<Rightarrow> ant)" where
+  "n_val K v = (\<lambda>x\<in> carrier K.  (THE l. (l * (Lv K v)) = v x))"
                      (* normal valuation *)
 
-  Pg::"[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant] \<Rightarrow> 'r" (* Positive generator *)
-  "Pg K v == SOME x. x \<in> carrier K - {\<zero>\<^bsub>K\<^esub>} \<and> v x = Lv K v"
+definition
+  Pg :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant] \<Rightarrow> 'r" (* Positive generator *) where
+  "Pg K v = (SOME x. x \<in> carrier K - {\<zero>\<^bsub>K\<^esub>} \<and> v x = Lv K v)"
 
 lemma (in Corps) vals_pos_nonempty:"valuation K v \<Longrightarrow> 
                        {x. x \<in> v ` carrier K \<and> 0 < x} \<noteq> {}" 
@@ -1406,24 +1406,23 @@ done
 
 section "3. valuation ring"
 
-constdefs
- Vr::"[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant] \<Rightarrow> ('r, 'm) Ring_scheme"
-  "Vr K v == Sr K ({x. x \<in> carrier K \<and> 0 \<le> (v x)})"
+definition
+  Vr :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant] \<Rightarrow> ('r, 'm) Ring_scheme" where
+  "Vr K v = Sr K ({x. x \<in> carrier K \<and> 0 \<le> (v x)})"
 
- vp::"[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant] \<Rightarrow> 'r set"
-   "vp K v == {x. x \<in> carrier (Vr K v) \<and> 0 < (v x)}" 
+definition
+  vp :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant] \<Rightarrow> 'r set" where
+  "vp K v = {x. x \<in> carrier (Vr K v) \<and> 0 < (v x)}" 
 
- r_apow::"[('r, 'm) Ring_scheme, 'r set, ant] \<Rightarrow> 'r set"
-  "r_apow R I a == if a = \<infinity> then {\<zero>\<^bsub>R\<^esub>} else
-                     (if a = 0 then carrier R else I\<^bsup>\<diamondsuit>R (na a)\<^esup>)"  
+definition
+  r_apow :: "[('r, 'm) Ring_scheme, 'r set, ant] \<Rightarrow> 'r set" where
+  "r_apow R I a = (if a = \<infinity> then {\<zero>\<^bsub>R\<^esub>} else
+                   (if a = 0 then carrier R else I\<^bsup>\<diamondsuit>R (na a)\<^esup>))"  
                                           (** 0 \<le> a and a \<noteq> -\<infinity> **)
 
-syntax
-  "@RAPOW"::"['r set, ('r, 'm) Ring_scheme, ant] \<Rightarrow> 'r set"
-     ("(3_\<^bsup> _ _\<^esup>)" [62,62,63]62)
-
-translations
- "I\<^bsup>R a\<^esup>" == "r_apow R I a"
+abbreviation
+  RAPOW  ("(3_\<^bsup> _ _\<^esup>)" [62,62,63]62) where
+  "I\<^bsup>R a\<^esup> == r_apow R I a"
 
 lemma (in Ring) ring_pow_apow:"ideal R I \<Longrightarrow>
                   I\<^bsup>\<diamondsuit>R n\<^esup> =  I\<^bsup>R (an n)\<^esup>" 
@@ -1983,15 +1982,15 @@ done
 
 text{* We prove that Vr K v is a principal ideal ring *}
 
-constdefs
- LI :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant, 'r set] \<Rightarrow> ant"  
+definition
+  LI :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant, 'r set] \<Rightarrow> ant" where
          (** The least nonzero value of I **)
- "LI K v I == AMin (v ` I)" 
+ "LI K v I = AMin (v ` I)" 
 
-constdefs
- Ig :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant, 'r set] \<Rightarrow> 'r"  
-                                           (** Generator of I **)
- "Ig K v I == SOME x. x \<in> I \<and> v x = LI K v I"
+definition
+  Ig :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant, 'r set] \<Rightarrow> 'r" where
+                                          (** Generator of I **)
+  "Ig K v I = (SOME x. x \<in> I \<and> v x = LI K v I)"
 
 lemma (in Corps) val_in_image:"\<lbrakk>valuation K v; ideal (Vr K v) I; x \<in> I\<rbrakk> \<Longrightarrow>
                             v x \<in> v ` I" 
@@ -3155,9 +3154,9 @@ done
 
 section "6. equivalent valuations"
 
-constdefs (structure K)
- v_equiv ::"[_ , 'r \<Rightarrow> ant, 'r \<Rightarrow> ant] \<Rightarrow> bool"
- "v_equiv K v1 v2 == n_val K v1 = n_val K v2"  
+definition
+  v_equiv :: "[_ , 'r \<Rightarrow> ant, 'r \<Rightarrow> ant] \<Rightarrow> bool" where
+  "v_equiv K v1 v2 \<longleftrightarrow> n_val K v1 = n_val K v2"  
 
 
 lemma (in Corps) valuation_equivTr1:"\<lbrakk>valuation K v; valuation K v'; 
@@ -3305,20 +3304,19 @@ done
 
 section "7.  prime divisors"
 
-constdefs (structure K)
- prime_divisor :: "[_, 'b \<Rightarrow> ant] \<Rightarrow>
-        ('b \<Rightarrow> ant) set"  ("(2P\<^bsub> _ _\<^esub>)" [96,97]96)
- "P\<^bsub>K v\<^esub> == {v'. valuation K v' \<and> v_equiv K v v'}"
+definition
+  prime_divisor :: "[_, 'b \<Rightarrow> ant] \<Rightarrow>
+        ('b \<Rightarrow> ant) set"  ("(2P\<^bsub> _ _\<^esub>)" [96,97]96) where
+ "P\<^bsub>K v\<^esub> = {v'. valuation K v' \<and> v_equiv K v v'}"
 
-constdefs (structure K)
- prime_divisors :: "_ \<Rightarrow> ('b \<Rightarrow> ant) set set" ("Pds\<index>" 96)
- "Pds == {P. \<exists>v. valuation K v \<and> P = P\<^bsub> K v\<^esub> }"
+definition
+  prime_divisors :: "_ \<Rightarrow> ('b \<Rightarrow> ant) set set" ("Pds\<index>" 96) where
+  "Pds\<^bsub>K\<^esub> = {P. \<exists>v. valuation K v \<and> P = P\<^bsub> K v\<^esub> }"
 
-constdefs (structure K)
- normal_valuation_belonging_to_prime_divisor::
- "[_ ,  ('b \<Rightarrow> ant) set] \<Rightarrow> ('b \<Rightarrow> ant)" 
-   ("(\<nu>\<^bsub>_ _\<^esub>)" [96,97]96)
-        "\<nu>\<^bsub>K P\<^esub> == n_val K (SOME v. v \<in> P)"  
+definition
+  normal_valuation_belonging_to_prime_divisor ::
+    "[_ ,  ('b \<Rightarrow> ant) set] \<Rightarrow> ('b \<Rightarrow> ant)"  ("(\<nu>\<^bsub>_ _\<^esub>)" [96,97]96) where
+  "\<nu>\<^bsub>K P\<^esub> = n_val K (SOME v. v \<in> P)"  
 
 lemma (in Corps) val_in_P_valuation:"\<lbrakk>valuation K v; v' \<in> P\<^bsub>K v\<^esub>\<rbrakk> \<Longrightarrow> 
        valuation K v'" 
@@ -3467,18 +3465,19 @@ done
 
 section "8. approximation"
     
-constdefs (structure K)
-  valuations::"[_ , nat, nat \<Rightarrow> ('r \<Rightarrow> ant)] \<Rightarrow> bool"
-  "valuations K n vv == \<forall>j \<le> n. valuation K (vv j)"
+definition
+  valuations :: "[_ , nat, nat \<Rightarrow> ('r \<Rightarrow> ant)] \<Rightarrow> bool" where
+  "valuations K n vv \<longleftrightarrow> (\<forall>j \<le> n. valuation K (vv j))"
 
- vals_nonequiv::"[_, nat, nat \<Rightarrow> ('r \<Rightarrow> ant)] \<Rightarrow> bool"
- "vals_nonequiv K n vv == valuations K n vv \<and> 
+definition
+  vals_nonequiv :: "[_, nat, nat \<Rightarrow> ('r \<Rightarrow> ant)] \<Rightarrow> bool" where
+  "vals_nonequiv K n vv \<longleftrightarrow> valuations K n vv \<and> 
   (\<forall>j\<le>n. \<forall>l \<le> n. j \<noteq> l \<longrightarrow> \<not> (v_equiv K (vv j) (vv l)))"
 
-constdefs (structure K)
- Ostrowski_elem::"[_, nat, nat \<Rightarrow> ('b \<Rightarrow> ant), 'b] \<Rightarrow> bool"
- "Ostrowski_elem K n vv x ==
-       (0 < (vv 0 (1\<^sub>r \<plusminus> (-\<^sub>a x)))) \<and>  (\<forall>j\<in>nset (Suc 0) n. 0 < (vv j x))"
+definition
+  Ostrowski_elem :: "[_, nat, nat \<Rightarrow> ('b \<Rightarrow> ant), 'b] \<Rightarrow> bool" where
+  "Ostrowski_elem K n vv x \<longleftrightarrow>
+       (0 < (vv 0 (1\<^sub>r\<^bsub>K\<^esub> \<plusminus>\<^bsub>K\<^esub> (-\<^sub>a\<^bsub>K\<^esub> x)))) \<and>  (\<forall>j\<in>nset (Suc 0) n. 0 < (vv j x))"
 
  (** vv 0, vv 1, vv 2,\<dots>, vv n are valuations **)
 

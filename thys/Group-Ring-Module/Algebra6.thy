@@ -15,16 +15,17 @@
 
 theory Algebra6 imports Algebra5 begin
 
-constdefs
-  s_cf::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a]  
-                                           \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)"
-  "s_cf R S X p == if p = \<zero>\<^bsub>R\<^esub> then (0, \<lambda>j. \<zero>\<^bsub>S\<^esub>) else 
+definition
+  s_cf :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a]  
+                                           \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" where
+  "s_cf R S X p = (if p = \<zero>\<^bsub>R\<^esub> then (0, \<lambda>j. \<zero>\<^bsub>S\<^esub>) else 
               SOME c. (pol_coeff S c \<and> p = polyn_expr R X (fst c) c \<and>
-              (snd c) (fst c) \<noteq> \<zero>\<^bsub>S\<^esub>)"
+              (snd c) (fst c) \<noteq> \<zero>\<^bsub>S\<^esub>))"
   (* special coefficients for p  *)
 
- lcf::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a]  \<Rightarrow> 'a"
-  "lcf R S X p ==  (snd (s_cf R S X p)) (fst (s_cf R S X p))"
+definition
+  lcf :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a]  \<Rightarrow> 'a" where
+  "lcf R S X p = (snd (s_cf R S X p)) (fst (s_cf R S X p))"
   
  
 lemma (in PolynRg) lcf_val_0:"lcf R S X \<zero> = \<zero>\<^bsub>S\<^esub>"
@@ -231,15 +232,15 @@ apply (case_tac "fst (s_cf R S X (polyn_expr R X k (k, snd c))) = k",
 apply (simp add:polyn_expr_short[THEN sym, of c k], assumption+, simp)
 done
 
-constdefs
-  scf_cond::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a, 
-                  nat, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> bool"
- "scf_cond R S X p d c == pol_coeff S c \<and> fst c = d \<and> 
-                          p = polyn_expr R X d c"
+definition
+  scf_cond :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a, 
+                  nat, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> bool" where
+  "scf_cond R S X p d c \<longleftrightarrow> pol_coeff S c \<and> fst c = d \<and> p = polyn_expr R X d c"
 
-  scf_d::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a, nat]
-                \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)"
-  "scf_d R S X p d == SOME f. scf_cond R S X p d f" 
+definition
+  scf_d :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a, nat]
+                \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" where
+  "scf_d R S X p d = (SOME f. scf_cond R S X p d f)" 
  
   (** system of coefficients, coeff_length d **)
 
@@ -607,15 +608,16 @@ lemma (in PolynRg) lower_deg_part:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero
          rule pol_coeff_le, assumption, arith, simp)
 done 
 
-constdefs
- ldeg_p:: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, nat, 'a]
-                  \<Rightarrow> 'a"
- "ldeg_p R S X d p == polyn_expr R X d (scf_d R S X p (Suc d))"
+definition
+  ldeg_p :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, nat, 'a]
+                  \<Rightarrow> 'a" where
+  "ldeg_p R S X d p = polyn_expr R X d (scf_d R S X p (Suc d))"
       (** deg R S X p \<le> (Suc d) **)
-constdefs
- hdeg_p::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, nat, 'a]
-                  \<Rightarrow> 'a"
- "hdeg_p R S X d p == (snd (scf_d R S X p d) d) \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R d\<^esup>)"
+
+definition
+  hdeg_p :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, nat, 'a]
+                  \<Rightarrow> 'a" where
+  "hdeg_p R S X d p = (snd (scf_d R S X p d) d) \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R d\<^esup>)"
        (** deg R S X p \<le> d **) 
 
 lemma (in PolynRg) ldeg_p_mem:"\<lbrakk>p \<in> carrier R; deg R S X p \<le> an (Suc d) \<rbrakk> \<Longrightarrow>
@@ -1341,24 +1343,24 @@ done
  
 section "15. homomorphism of polynomial rings"
 
-constdefs
+definition
+  cf_h :: " ('a \<Rightarrow> 'b) \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<times> (nat \<Rightarrow> 'b)" where
+  "cf_h f = (\<lambda>c. (fst c, cmp f (snd c)))"
 
-  cf_h::" ('a \<Rightarrow> 'b) \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<times> (nat \<Rightarrow> 'b)"
-  "cf_h f == \<lambda>c. (fst c, cmp f (snd c))"
-
-constdefs
- polyn_Hom::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
+definition
+  polyn_Hom :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
               ('b, 'n) Ring_scheme, ('b, 'n1) Ring_scheme, 'b] \<Rightarrow>
               ('a \<Rightarrow> 'b) set"
-            ("(pHom _ _ _, _ _ _)" [67,67,67,67,67,68]67)
- "pHom R S X, A B Y == {f. f \<in> rHom R A \<and> f`(carrier S) \<subseteq> carrier B \<and> 
+            ("(pHom _ _ _, _ _ _)" [67,67,67,67,67,68]67) where
+  "pHom R S X, A B Y = {f. f \<in> rHom R A \<and> f`(carrier S) \<subseteq> carrier B \<and> 
                           f X = Y}"  (* Hom from a polynomial ring to
                                         a polynomial ring *)
-constdefs
- erh::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
+
+definition
+  erh :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
            ('b, 'n) Ring_scheme, ('b, 'n1) Ring_scheme, 'b, 'a \<Rightarrow> 'b, 
-          nat, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> 'b"
- "erh R S X A B Y f n c == polyn_expr A Y n (cf_h f c)"
+          nat, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> 'b" where
+  "erh R S X A B Y f n c = polyn_expr A Y n (cf_h f c)"
  (* extension of a ring hom. *)
 
 lemma (in PolynRg) cf_h_len:"\<lbrakk>PolynRg A B Y; f \<in> rHom S B; 
@@ -1632,12 +1634,12 @@ apply (frule PolynRg.pol_expr_unique3[of A B Y "cf_h h d" "cf_h h c"],
        simp add:cf_h_def cmp_def, simp add:rHom_0_0)
 done
 
-constdefs
- erH::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
+definition
+  erH :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
          ('b, 'n) Ring_scheme, ('b, 'n1) Ring_scheme, 'b, 'a \<Rightarrow> 'b] \<Rightarrow> 
-                  'a \<Rightarrow> 'b"
-   "erH R S X A B Y h == \<lambda>x\<in>carrier R. erh R S X A B Y h 
-                              (fst (s_cf R S X x)) (s_cf R S X x)" 
+                  'a \<Rightarrow> 'b" where
+  "erH R S X A B Y h = (\<lambda>x\<in>carrier R. erh R S X A B Y h 
+                              (fst (s_cf R S X x)) (s_cf R S X x))" 
 (*
 lemma (in PolynRg) erH_phom:"\<lbrakk>PolynRg A B y; h \<in> rHom S B\<rbrakk> \<Longrightarrow>
               erH R S X A B Y h \<in> pHom R S X, A B Y" *)
@@ -2767,15 +2769,15 @@ done
 
 section "16. relatively prime polynomials"
 
-constdefs
- rel_prime_pols::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
-         'a, 'a ] \<Rightarrow> bool"
-  "rel_prime_pols R S X p q == (1\<^sub>r\<^bsub>R\<^esub>) \<in> ((Rxa R p) \<minusplus>\<^bsub>R\<^esub> (Rxa R q))"
+definition
+  rel_prime_pols :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
+         'a, 'a ] \<Rightarrow> bool" where
+  "rel_prime_pols R S X p q \<longleftrightarrow> (1\<^sub>r\<^bsub>R\<^esub>) \<in> ((Rxa R p) \<minusplus>\<^bsub>R\<^esub> (Rxa R q))"
 
-constdefs
- div_condn::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, nat, 
-                'a, 'a ] \<Rightarrow> bool"
-  "div_condn R S X n g f == f \<in> carrier R \<and> n = deg_n R S X f \<longrightarrow>
+definition
+  div_condn :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, nat, 
+                'a, 'a ] \<Rightarrow> bool" where
+  "div_condn R S X n g f \<longleftrightarrow> f \<in> carrier R \<and> n = deg_n R S X f \<longrightarrow>
    (\<exists>q.  q \<in> carrier R \<and> ((f \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> (q \<cdot>\<^sub>r\<^bsub>R\<^esub> g)) = \<zero>\<^bsub>R\<^esub>) \<or> (deg_n R S X 
     (f \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> (q \<cdot>\<^sub>r\<^bsub>R\<^esub> g))) < deg_n R S X g)))"
 
@@ -3246,10 +3248,10 @@ done
 
 subsection "polynomial, coeff mod P"
 
-constdefs
- P_mod::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a set,
-          'a] \<Rightarrow> bool"
-  "P_mod R S X P p == p = \<zero>\<^bsub>R\<^esub> \<or> 
+definition
+  P_mod :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a set,
+          'a] \<Rightarrow> bool" where
+  "P_mod R S X P p \<longleftrightarrow> p = \<zero>\<^bsub>R\<^esub> \<or> 
      (\<forall>j \<le> (fst (s_cf R S X p)). (snd (s_cf R S X p) j) \<in> P)"
 
 lemma (in PolynRg) P_mod_whole:"p \<in> carrier R \<Longrightarrow>
@@ -4677,12 +4679,12 @@ done
 
 (** Hensel_next R S X t R' Y f m gh **) 
 
-constdefs
- Hensel_next::"[('a, 'b) Ring_scheme, ('a, 'c) Ring_scheme, 'a, 'a,
+definition
+  Hensel_next :: "[('a, 'b) Ring_scheme, ('a, 'c) Ring_scheme, 'a, 'a,
  ('a set, 'm) Ring_scheme, 'a set,'a, nat] \<Rightarrow> ('a \<times> 'a) \<Rightarrow> ('a \<times> 'a)"
-     ("(9Hen\<^bsub> _ _ _ _ _ _ _\<^esub> _ _)"  [67,67,67,67,67,67,67,68]67)
+     ("(9Hen\<^bsub> _ _ _ _ _ _ _\<^esub> _ _)"  [67,67,67,67,67,67,67,68]67) where
 
- "Hen\<^bsub>R S X t R' Y f \<^esub> m gh == SOME gh1. 
+ "Hen\<^bsub>R S X t R' Y f \<^esub> m gh = (SOME gh1. 
       gh1 \<in> carrier R \<times> carrier R \<and>
       (deg R S X (fst gh1) \<le> deg R' (S /\<^sub>r (S \<diamondsuit>\<^sub>p t)) Y
       (erH R S X R' (S /\<^sub>r (S \<diamondsuit>\<^sub>p t)) Y (pj S (S \<diamondsuit>\<^sub>p t)) (fst gh1))) \<and> 
@@ -4690,7 +4692,7 @@ constdefs
   (deg R S X (snd gh1) + deg R' (S /\<^sub>r (S \<diamondsuit>\<^sub>p t)) Y (erH R S X R' 
       (S /\<^sub>r (S \<diamondsuit>\<^sub>p  t)) Y (pj S (S \<diamondsuit>\<^sub>p  t)) (fst gh1)) \<le> deg R S X f) \<and>
   P_mod R S X (S \<diamondsuit>\<^sub>p (t^\<^bsup>S m\<^esup>)) ((snd gh) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (snd gh1)) \<and> 
-  P_mod R S X (S \<diamondsuit>\<^sub>p (t^\<^bsup>S (Suc m)\<^esup>)) (f \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> ((fst gh1) \<cdot>\<^sub>r\<^bsub>R\<^esub> (snd gh1))))"
+  P_mod R S X (S \<diamondsuit>\<^sub>p (t^\<^bsup>S (Suc m)\<^esup>)) (f \<plusminus>\<^bsub>R\<^esub> (-\<^sub>a\<^bsub>R\<^esub> ((fst gh1) \<cdot>\<^sub>r\<^bsub>R\<^esub> (snd gh1)))))"
 
 lemma  cart_prod_fst:"x \<in> A \<times> B \<Longrightarrow> fst x \<in> A" 
 by auto
@@ -4767,14 +4769,13 @@ done
 
 (* Hensel_pair R S X t R' Y f g h m *)
 
-consts
- Hensel_pair::"[('a, 'b) Ring_scheme, ('a, 'c) Ring_scheme, 'a, 'a,
- ('a set, 'm) Ring_scheme, 'a set, 'a, 'a, 'a, nat] \<Rightarrow> ('a \<times> 'a)"
-     ("(10Hpr\<^bsub> _ _ _ _ _ _ _ _ _\<^esub> _)"  [67,67,67,67,67,67,67,67,67,68]67)
-   
 primrec
- Hpr_0: "Hpr\<^bsub>R S X t R' Y f g h\<^esub> 0 = (g, h)"
- Hpr_Suc: "Hpr\<^bsub>R S X t R' Y f g h\<^esub> (Suc m) = 
+  Hensel_pair :: "[('a, 'b) Ring_scheme, ('a, 'c) Ring_scheme, 'a, 'a,
+    ('a set, 'm) Ring_scheme, 'a set, 'a, 'a, 'a, nat] \<Rightarrow> ('a \<times> 'a)"
+      ("(10Hpr\<^bsub> _ _ _ _ _ _ _ _ _\<^esub> _)"  [67,67,67,67,67,67,67,67,67,68]67)
+where
+  Hpr_0: "Hpr\<^bsub>R S X t R' Y f g h\<^esub> 0 = (g, h)"
+| Hpr_Suc: "Hpr\<^bsub>R S X t R' Y f g h\<^esub> (Suc m) = 
             Hen\<^bsub>R S X t R' Y f \<^esub> (Suc m) (Hpr\<^bsub>R S X t R' Y f g h\<^esub> m)" 
 
 lemma (in PolynRg) fst_xxx:" \<lbrakk>t \<in> carrier S; t \<noteq> \<zero>\<^bsub>S\<^esub>; ideal S (S \<diamondsuit>\<^sub>p t);  

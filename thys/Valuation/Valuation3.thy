@@ -20,11 +20,11 @@ section "Completion"
 
 text{* In this section we formalize "completion" of the ground field K *}
 
-constdefs (structure K)
- limit ::"[_, 'b \<Rightarrow> ant, nat \<Rightarrow> 'b, 'b]
-           \<Rightarrow> bool" ("(4lim\<^bsub> _ _ \<^esub>_ _)" [90,90,90,91]90)
- "lim\<^bsub>K v\<^esub> f b == \<forall>N. \<exists>M. (\<forall>n. M < n \<longrightarrow> 
-                ((f n) \<plusminus> (-\<^sub>a b)) \<in> (vp K v)\<^bsup> (Vr K v) (an N)\<^esup>)"
+definition
+  limit :: "[_, 'b \<Rightarrow> ant, nat \<Rightarrow> 'b, 'b]
+           \<Rightarrow> bool" ("(4lim\<^bsub> _ _ \<^esub>_ _)" [90,90,90,91]90) where
+  "lim\<^bsub>K v\<^esub> f b \<longleftrightarrow> (\<forall>N. \<exists>M. (\<forall>n. M < n \<longrightarrow> 
+                ((f n) \<plusminus>\<^bsub>K\<^esub> (-\<^sub>a\<^bsub>K\<^esub> b)) \<in> (vp K v)\<^bsup> (Vr K v) (an N)\<^esup>))"
 
 (* In this definition, f represents a sequence of elements of K, which is
    converging to b. Key lemmas of this section are n_value_x_1 and
@@ -788,17 +788,18 @@ apply (subst limit_def)
   apply simp
 done
 
-constdefs (structure K)
- Cauchy_seq::"[_ , 'b \<Rightarrow> ant, nat \<Rightarrow> 'b]
-           \<Rightarrow> bool" ("(3Cauchy\<^bsub> _ _ \<^esub>_)" [90,90,91]90)
- "Cauchy\<^bsub>K v\<^esub> f == (\<forall>n. (f n) \<in> carrier K) \<and> (
+definition
+  Cauchy_seq :: "[_ , 'b \<Rightarrow> ant, nat \<Rightarrow> 'b]
+           \<Rightarrow> bool" ("(3Cauchy\<^bsub> _ _ \<^esub>_)" [90,90,91]90) where
+  "Cauchy\<^bsub>K v\<^esub> f \<longleftrightarrow> (\<forall>n. (f n) \<in> carrier K) \<and> (
   \<forall>N. \<exists>M. (\<forall>n m. M < n \<and> M < m \<longrightarrow> 
-                ((f n) \<plusminus> (-\<^sub>a (f m))) \<in> (vp K v)\<^bsup>(Vr K v) (an N)\<^esup>))"
+                ((f n) \<plusminus>\<^bsub>K\<^esub> (-\<^sub>a\<^bsub>K\<^esub> (f m))) \<in> (vp K v)\<^bsup>(Vr K v) (an N)\<^esup>))"
 
- v_complete::"['b \<Rightarrow> ant, _] \<Rightarrow> bool"
-                    ("(2Complete\<^bsub>_\<^esub> _)"  [90,91]90) 
- "Complete\<^bsub>v\<^esub> K == \<forall>f. (Cauchy\<^bsub>K v\<^esub> f) \<longrightarrow> 
-                           (\<exists>b. b \<in> (carrier K) \<and> lim\<^bsub>K v\<^esub> f b)"
+definition
+  v_complete :: "['b \<Rightarrow> ant, _] \<Rightarrow> bool"
+                    ("(2Complete\<^bsub>_\<^esub> _)"  [90,91]90) where
+  "Complete\<^bsub>v\<^esub> K \<longleftrightarrow> (\<forall>f. (Cauchy\<^bsub>K v\<^esub> f) \<longrightarrow> 
+                           (\<exists>b. b \<in> (carrier K) \<and> lim\<^bsub>K v\<^esub> f b))"
 
 lemma (in Corps) has_limit_Cauchy:"\<lbrakk>valuation K v; \<forall>j. f j \<in> carrier K; 
       b \<in> carrier K; lim\<^bsub>K v\<^esub> f b\<rbrakk> \<Longrightarrow> Cauchy\<^bsub>K v\<^esub> f" 
@@ -924,15 +925,15 @@ apply (frule no_limit_zero_Cauchy[of "v" "f"], assumption+)
  apply (simp add:n_val[THEN sym, of "v"])
 done
  
-constdefs (structure K)
- subfield::"[_, ('b, 'm1) Ring_scheme] \<Rightarrow> bool"
- "subfield K K' == Corps K' \<and> carrier K \<subseteq> carrier K' \<and> 
+definition
+  subfield :: "[_, ('b, 'm1) Ring_scheme] \<Rightarrow> bool" where
+  "subfield K K' \<longleftrightarrow> Corps K' \<and> carrier K \<subseteq> carrier K' \<and> 
                    idmap (carrier K) \<in> rHom K K'"
 
-constdefs (structure K)
- v_completion::"['b \<Rightarrow> ant, 'b \<Rightarrow> ant, _, ('b, 'm) Ring_scheme] \<Rightarrow> bool" 
-               ("(4Completion\<^bsub>_ _\<^esub> _ _)" [90,90,90,91]90) 
- "Completion\<^bsub>v v'\<^esub> K K' == subfield K K' \<and>
+definition
+  v_completion :: "['b \<Rightarrow> ant, 'b \<Rightarrow> ant, _, ('b, 'm) Ring_scheme] \<Rightarrow> bool" 
+               ("(4Completion\<^bsub>_ _\<^esub> _ _)" [90,90,90,91]90) where
+  "Completion\<^bsub>v v'\<^esub> K K' \<longleftrightarrow> subfield K K' \<and>
 		 Complete\<^bsub>v'\<^esub> K' \<and> (\<forall>x \<in> carrier K. v x = v' x) \<and>
       (\<forall>x \<in> carrier K'. (\<exists>f. Cauchy\<^bsub>K v\<^esub> f \<and> lim\<^bsub>K' v'\<^esub> f x))"
 
@@ -1503,39 +1504,38 @@ done
 text{* expansion of x in a complete field K, with normal valuation v. Here
 we suppose t is an element of K satisfying the equation v t = 1.*}
 
-constdefs (structure K)
- Kxa :: "[_, 'b \<Rightarrow> ant, 'b] \<Rightarrow> 'b set"
- "Kxa K v x == {y. \<exists>k\<in>carrier (Vr K v). y = x \<cdot>\<^sub>r k}"
+definition
+  Kxa :: "[_, 'b \<Rightarrow> ant, 'b] \<Rightarrow> 'b set" where
+  "Kxa K v x = {y. \<exists>k\<in>carrier (Vr K v). y = x \<cdot>\<^sub>r\<^bsub>K\<^esub> k}"
     (**  x *\<^sub>r carrier (Vr K v) **)
-consts 
- partial_sum :: "[('b, 'm) Ring_scheme, 'b, 'b \<Rightarrow> ant, 'b] 
-                                   \<Rightarrow> nat \<Rightarrow> 'b"
-        ("(5psum\<^bsub> _ _ _ _\<^esub> _)" [96,96,96,96,97]96)       
-primrec 
-  psum_0 :"psum\<^bsub> K x v t\<^esub> 0 = (csrp_fn (Vr K v) (vp K v) 
-     (pj (Vr K v) (vp K v) (x \<cdot>\<^sub>r\<^bsub>K\<^esub> t\<^bsub>K\<^esub>\<^bsup>-(tna (v x))\<^esup>))) \<cdot>\<^sub>r\<^bsub>K\<^esub> (t\<^bsub>K\<^esub>\<^bsup>(tna (v x))\<^esup>)"
 
-  psum_Suc: "psum\<^bsub> K x v t\<^esub> (Suc n) = (psum\<^bsub> K x v t\<^esub> n) \<plusminus>\<^bsub>K\<^esub> 
+primrec 
+  partial_sum :: "[('b, 'm) Ring_scheme, 'b, 'b \<Rightarrow> ant, 'b] 
+                                   \<Rightarrow> nat \<Rightarrow> 'b"
+        ("(5psum\<^bsub> _ _ _ _\<^esub> _)" [96,96,96,96,97]96)
+where
+  psum_0: "psum\<^bsub> K x v t\<^esub> 0 = (csrp_fn (Vr K v) (vp K v) 
+     (pj (Vr K v) (vp K v) (x \<cdot>\<^sub>r\<^bsub>K\<^esub> t\<^bsub>K\<^esub>\<^bsup>-(tna (v x))\<^esup>))) \<cdot>\<^sub>r\<^bsub>K\<^esub> (t\<^bsub>K\<^esub>\<^bsup>(tna (v x))\<^esup>)"
+| psum_Suc: "psum\<^bsub> K x v t\<^esub> (Suc n) = (psum\<^bsub> K x v t\<^esub> n) \<plusminus>\<^bsub>K\<^esub> 
   ((csrp_fn (Vr K v) (vp K v) (pj (Vr K v) (vp K v)  
    ((x \<plusminus>\<^bsub>K\<^esub> -\<^sub>a\<^bsub>K\<^esub> (psum\<^bsub> K x v t\<^esub> n)) \<cdot>\<^sub>r\<^bsub>K\<^esub> (t\<^bsub>K\<^esub>\<^bsup>- (tna (v x) + int (Suc n))\<^esup>)))) \<cdot>\<^sub>r\<^bsub>K\<^esub> 
          (t\<^bsub>K\<^esub>\<^bsup>(tna (v x) + int (Suc n))\<^esup>))" 
 
-
-constdefs (structure K)
- expand_coeff :: "[_ , 'b \<Rightarrow> ant, 'b, 'b] 
+definition
+  expand_coeff :: "[_ , 'b \<Rightarrow> ant, 'b, 'b] 
                       \<Rightarrow> nat \<Rightarrow> 'b"
-                   ("(5ecf\<^bsub>_ _ _ _\<^esub> _)" [96,96,96,96,97]96)
-        
- "ecf\<^bsub>K v t x\<^esub> n == if n = 0 then  csrp_fn (Vr K v) (vp K v) 
-     (pj (Vr K v) (vp K v) (x \<cdot>\<^sub>r t\<^bsub>K\<^esub>\<^bsup>(-(tna (v x)))\<^esup>))
+                   ("(5ecf\<^bsub>_ _ _ _\<^esub> _)" [96,96,96,96,97]96) where
+  "ecf\<^bsub>K v t x\<^esub> n = (if n = 0 then  csrp_fn (Vr K v) (vp K v) 
+     (pj (Vr K v) (vp K v) (x \<cdot>\<^sub>r\<^bsub>K\<^esub> t\<^bsub>K\<^esub>\<^bsup>(-(tna (v x)))\<^esup>))
      else csrp_fn (Vr K v) (vp K v) (pj (Vr K v) 
-  (vp K v) ((x \<plusminus> -\<^sub>a (psum\<^bsub> K x v t\<^esub> (n - 1))) \<cdot>\<^sub>r (t\<^bsub>K\<^esub>\<^bsup>(- (tna (v x) + int n))\<^esup>)))" 
+  (vp K v) ((x \<plusminus>\<^bsub>K\<^esub> -\<^sub>a\<^bsub>K\<^esub> (psum\<^bsub> K x v t\<^esub> (n - 1))) \<cdot>\<^sub>r\<^bsub>K\<^esub> (t\<^bsub>K\<^esub>\<^bsup>(- (tna (v x) + int n))\<^esup>))))" 
 
-expand_term :: "[_, 'b \<Rightarrow> ant, 'b, 'b] 
+definition
+  expand_term :: "[_, 'b \<Rightarrow> ant, 'b, 'b] 
                       \<Rightarrow> nat \<Rightarrow> 'b"
-                   ("(5etm\<^bsub> _ _ _ _\<^esub> _)" [96,96,96,96,97]96)
+                   ("(5etm\<^bsub> _ _ _ _\<^esub> _)" [96,96,96,96,97]96) where
         
- "etm\<^bsub>K v t x\<^esub> n == (ecf\<^bsub>K v t x\<^esub> n)\<cdot>\<^sub>r (t\<^bsub>K\<^esub>\<^bsup>(tna (v x) + int n)\<^esup>)"
+  "etm\<^bsub>K v t x\<^esub> n = (ecf\<^bsub>K v t x\<^esub> n)\<cdot>\<^sub>r\<^bsub>K\<^esub> (t\<^bsub>K\<^esub>\<^bsup>(tna (v x) + int n)\<^esup>)"
 
 
 
@@ -1969,35 +1969,36 @@ done
 
 subsection "Hensel's theorem"
 
-constdefs (structure K)
+definition
 (*** Cauchy sequence of polynomials in (Vr K v)[X] ***)
- pol_Cauchy_seq::"[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, 
-         nat \<Rightarrow> 'b] \<Rightarrow> bool" ("(5PCauchy\<^bsub> _ _ _ _ \<^esub>_)" [90,90,90,90,91]90)
-
- "PCauchy\<^bsub>R X K v\<^esub> F == (\<forall>n. (F n) \<in> carrier R) \<and> 
-  (\<exists>d. (\<forall>n. deg R (Vr K v) X (F n) \<le> (an d))) \<and>
-  (\<forall>N. \<exists>M. (\<forall>n m. M < n \<and> M < m \<longrightarrow>  
+  pol_Cauchy_seq :: "[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, 
+         nat \<Rightarrow> 'b] \<Rightarrow> bool" ("(5PCauchy\<^bsub> _ _ _ _ \<^esub>_)" [90,90,90,90,91]90) where
+  "PCauchy\<^bsub>R X K v\<^esub> F \<longleftrightarrow> (\<forall>n. (F n) \<in> carrier R) \<and> 
+    (\<exists>d. (\<forall>n. deg R (Vr K v) X (F n) \<le> (an d))) \<and>
+    (\<forall>N. \<exists>M. (\<forall>n m. M < n \<and> M < m \<longrightarrow>  
         P_mod R (Vr K v) X ((vp K v)\<^bsup>(Vr K v) (an N)\<^esup>) (F n \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (F m))))"
 
- pol_limit::"[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, 
+definition
+  pol_limit :: "[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, 
              nat \<Rightarrow> 'b, 'b] \<Rightarrow> bool" 
-             ("(6Plimit\<^bsub> _ _ _ _ \<^esub>_ _)" [90,90,90,90,90,91]90)
-
- "Plimit\<^bsub>R X K v\<^esub> F p == (\<forall>n. (F n) \<in> carrier R) \<and> 
-  (\<forall>N. \<exists>M. (\<forall>m. M < m \<longrightarrow>  
+             ("(6Plimit\<^bsub> _ _ _ _ \<^esub>_ _)" [90,90,90,90,90,91]90) where
+  "Plimit\<^bsub>R X K v\<^esub> F p \<longleftrightarrow> (\<forall>n. (F n) \<in> carrier R) \<and> 
+    (\<forall>N. \<exists>M. (\<forall>m. M < m \<longrightarrow>  
         P_mod R (Vr K v) X ((vp K v)\<^bsup>(Vr K v) (an N)\<^esup>) ((F m) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> p)))"
 
-  Pseql::"[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, nat, 
+definition
+  Pseql :: "[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, nat, 
              nat \<Rightarrow> 'b] \<Rightarrow> nat \<Rightarrow> 'b" 
-            ("(6Pseql\<^bsub>_  _ _ _ _ \<^esub>_)" [90,90,90,90,90,91]90)
- "Pseql\<^bsub>R X K v d\<^esub> F == \<lambda>n. (ldeg_p R (Vr K v) X d (F n))"
+            ("(6Pseql\<^bsub>_  _ _ _ _ \<^esub>_)" [90,90,90,90,90,91]90) where
+  "Pseql\<^bsub>R X K v d\<^esub> F = (\<lambda>n. (ldeg_p R (Vr K v) X d (F n)))"
 
    (** deg R (Vr K v) X (F n) \<le> an (Suc d) **)
 
-  Pseqh::"[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, nat, nat \<Rightarrow> 'b] \<Rightarrow>  
+definition
+  Pseqh :: "[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, nat, nat \<Rightarrow> 'b] \<Rightarrow>  
         nat \<Rightarrow> 'b" 
-           ("(6Pseqh\<^bsub> _ _ _ _ _ \<^esub>_)" [90,90,90,90,90,91]90)
-  "Pseqh\<^bsub>R X K v d\<^esub> F == \<lambda>n. (hdeg_p R (Vr K v) X (Suc d) (F n))"
+           ("(6Pseqh\<^bsub> _ _ _ _ _ \<^esub>_)" [90,90,90,90,90,91]90) where
+  "Pseqh\<^bsub>R X K v d\<^esub> F = (\<lambda>n. (hdeg_p R (Vr K v) X (Suc d) (F n)))"
 
     (** deg R (Vr K v) X (F n) \<le> an (Suc d) **)
 
@@ -3118,16 +3119,16 @@ apply (frule_tac x = p1 and y = "G m" in Ring.ring_tOp_closed, assumption+,
        simp add:aGroup.ag_l_inv1 aGroup.ag_r_zero)
 done
        (** Hfst K v R X t S Y f g h m**)
-constdefs (structure K)
- Hfst::"[_, 'b \<Rightarrow> ant, ('b, 'm1) Ring_scheme, 'b,'b, ('b set, 'm2) Ring_scheme, 'b set, 'b, 'b, 'b, nat] \<Rightarrow> 'b" 
-        ("(11Hfst\<^bsub> _ _ _ _ _ _ _ _ _ _\<^esub> _)" [67,67,67,67,67,67,67,67,67,67,68]67)
- 
-  "Hfst\<^bsub>K v R X t S Y f g h\<^esub> m == fst (Hpr\<^bsub>R (Vr K v) X t S Y f g h\<^esub> m)"
+definition
+  Hfst :: "[_, 'b \<Rightarrow> ant, ('b, 'm1) Ring_scheme, 'b,'b, ('b set, 'm2) Ring_scheme, 'b set, 'b, 'b, 'b, nat] \<Rightarrow> 'b" 
+        ("(11Hfst\<^bsub> _ _ _ _ _ _ _ _ _ _\<^esub> _)" [67,67,67,67,67,67,67,67,67,67,68]67) where
+  "Hfst\<^bsub>K v R X t S Y f g h\<^esub> m = fst (Hpr\<^bsub>R (Vr K v) X t S Y f g h\<^esub> m)"
 
- Hsnd::"[_, 'b \<Rightarrow> ant, ('b, 'm1) Ring_scheme, 'b,'b, ('b set, 'm2) Ring_scheme, 'b set, 'b, 'b, 'b, nat] \<Rightarrow> 'b" 
-        ("(11Hsnd\<^bsub> _ _ _ _ _ _ _ _ _ _\<^esub> _)" [67,67,67,67,67,67,67,67,67,67,68]67)
+definition
+  Hsnd :: "[_, 'b \<Rightarrow> ant, ('b, 'm1) Ring_scheme, 'b,'b, ('b set, 'm2) Ring_scheme, 'b set, 'b, 'b, 'b, nat] \<Rightarrow> 'b" 
+        ("(11Hsnd\<^bsub> _ _ _ _ _ _ _ _ _ _\<^esub> _)" [67,67,67,67,67,67,67,67,67,67,68]67) where
  
-  "Hsnd\<^bsub>K v R X t S Y f g h\<^esub> m == snd (Hpr\<^bsub>R (Vr K v) X t S Y f g h\<^esub> m)"
+  "Hsnd\<^bsub>K v R X t S Y f g h\<^esub> m = snd (Hpr\<^bsub>R (Vr K v) X t S Y f g h\<^esub> m)"
 
 lemma (in Corps) Hensel_starter:"\<lbrakk>valuation K v; Complete\<^bsub>v\<^esub> K; 
     PolynRg R (Vr K v) X; PolynRg S ((Vr K v) /\<^sub>r (vp K v)) Y;
