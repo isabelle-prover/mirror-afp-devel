@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExceptions.thy
-    ID:         $Id: JVMExceptions.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: JVMExceptions.thy,v 1.3 2008-06-24 22:23:36 makarius Exp $
     Author:     Gerwin Klein, Martin Strecker
     Copyright   2001 Technische Universitaet Muenchen
 *)
@@ -23,10 +23,9 @@ primrec
                                    then Some (snd(snd(snd e)))
                                    else match_ex_table P C pc es)"
 
-consts
-  ex_table_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table"
-translations
-  "ex_table_of P C M" == "snd (snd (snd (snd (snd (snd(method P C M))))))"
+abbreviation
+  ex_table_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table" where
+  "ex_table_of P C M == snd (snd (snd (snd (snd (snd(method P C M))))))"
 
 
 consts

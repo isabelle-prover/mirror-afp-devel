@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.6 2007-07-19 19:50:52 fhaftmann Exp $
+    ID:         $Id: BVExample.thy,v 1.7 2008-06-24 22:23:28 makarius Exp $
     Author:     Gerwin Klein
 *)
 
@@ -332,12 +332,8 @@ lemma wt_append [simp]:
 (*>*)
 
 text {* Some abbreviations for readability *} 
-syntax
-  Clist :: ty 
-  Ctest :: ty
-translations
-  "Clist" == "Class list_name"
-  "Ctest" == "Class test_name"
+abbreviation "Clist == Class list_name"
+abbreviation "Ctest == Class test_name"
 
 constdefs
   phi_makelist :: ty\<^isub>m ("\<phi>\<^sub>m")

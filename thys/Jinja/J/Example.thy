@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Example.thy
-    ID:         $Id: Example.thy,v 1.4 2007-09-30 17:36:43 makarius Exp $
+    ID:         $Id: Example.thy,v 1.5 2008-06-24 22:23:36 makarius Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -55,19 +55,11 @@ axioms
 
 declare inj_cnam' [simp] inj_vnam' [simp]
 
-syntax
-  Base :: cname
-  Ext  :: cname
-  vee  :: vname
-  x    :: vname
-  e    :: vname
-
-translations
-  "Base" == "cnam' Base'"
-  "Ext"  == "cnam' Ext'"
-  "vee"  == "VName (vnam' vee')"
-  "x"  == "VName (vnam' x')"
-  "e"  == "VName (vnam' e')"
+abbreviation "Base == cnam' Base'"
+abbreviation "Ext == cnam' Ext'"
+abbreviation "vee == VName (vnam' vee')"
+abbreviation "x == VName (vnam' x')"
+abbreviation "e == VName (vnam' e')"
 
 axioms
   Base_not_Object: "Base \<noteq> Object"
@@ -110,27 +102,17 @@ defs
                     Expr(Var e\<bullet>foo([Lit Null]))"
 
 
-syntax
+abbreviation "NP == NullPointer"
+abbreviation "tprg == [ObjectC, BaseC, ExtC, ClassCastC, NullPointerC, OutOfMemoryC]"
 
-  NP  :: xcpt
-  tprg  :: J_prog
-  obj1  :: obj
-  obj2  :: obj
-  s0  :: state
-  s1  :: state
-  s2  :: state
-  s3  :: state
-  s4  :: state
-
-translations
-  "NP"   == "NullPointer"
-  "tprg" == "[ObjectC, BaseC, ExtC, ClassCastC, NullPointerC, OutOfMemoryC]"
-  "obj1"    <= "(Ext, empty((vee, Base)\<mapsto>Bool False)
+abbreviation (output)
+  "obj1 == (Ext, empty((vee, Base)\<mapsto>Bool False)
          ((vee, Ext )\<mapsto>Intg 0))"
-  "s0" == " Norm    (empty, empty)"
-  "s1" == " Norm    (empty(a\<mapsto>obj1),empty(e\<mapsto>Addr a))"
-  "s2" == " Norm    (empty(a\<mapsto>obj1),empty(x\<mapsto>Null)(This\<mapsto>Addr a))"
-  "s3" == "(Some NP, empty(a\<mapsto>obj1),empty(e\<mapsto>Addr a))"
+
+abbreviation "s0 == Norm    (empty, empty)"
+abbreviation "s1 == Norm    (empty(a\<mapsto>obj1),empty(e\<mapsto>Addr a))"
+abbreviation "s2 == Norm    (empty(a\<mapsto>obj1),empty(x\<mapsto>Null)(This\<mapsto>Addr a))"
+abbreviation "s3 == (Some NP, empty(a\<mapsto>obj1),empty(e\<mapsto>Addr a))"
 
 
 lemmas map_of_Cons = map_of.simps(2)

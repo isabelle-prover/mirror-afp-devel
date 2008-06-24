@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/Decl.thy
-    ID:         $Id: Decl.thy,v 1.6 2008-06-12 06:57:20 lsf37 Exp $
+    ID:         $Id: Decl.thy,v 1.7 2008-06-24 22:23:29 makarius Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -56,7 +56,7 @@ lemma is_type_simps [simp]:
 (*<*)by(simp add:is_type_def)(*>*)
 
 
-translations
-  "types P" == "Collect (is_type P)"
+abbreviation
+  "types P == Collect (is_type P)"
 
 end

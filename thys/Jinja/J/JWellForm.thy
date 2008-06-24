@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/JWellForm.thy
-    ID:         $Id: JWellForm.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: JWellForm.thy,v 1.2 2008-06-24 22:23:36 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -29,10 +29,9 @@ lemma wf_J_mdecl[simp]:
 (*<*)by(simp add:wf_J_mdecl_def)(*>*)
 
 
-syntax 
-  wf_J_prog :: "J_prog \<Rightarrow> bool"
-translations
-  "wf_J_prog"  ==  "wf_prog wf_J_mdecl"
+abbreviation
+  wf_J_prog :: "J_prog \<Rightarrow> bool" where
+  "wf_J_prog == wf_prog wf_J_mdecl"
 
 lemma wf_J_prog_wf_J_mdecl:
   "\<lbrakk> wf_J_prog P; (C, D, fds, mths) \<in> set P; jmdcl \<in> set mths \<rbrakk>

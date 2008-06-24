@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVSpec.thy
-    ID:         $Id: BVSpec.thy,v 1.1 2005-05-31 23:21:04 lsf37 Exp $
+    ID:         $Id: BVSpec.thy,v 1.2 2008-06-24 22:23:29 makarius Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 
@@ -57,10 +57,8 @@ constdefs
   wf_jvm_prog :: "jvm_prog \<Rightarrow> bool"
   "wf_jvm_prog P \<equiv> \<exists>\<Phi>. wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
 
-syntax
-  wf_jvm_prog_phi :: "ty\<^isub>P \<Rightarrow> jvm_prog \<Rightarrow> bool" ("wf'_jvm'_prog\<^sub>_ _" [0,999] 1000)
-translations
-  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" <= "wf_jvm_prog\<^sub>\<Phi> P"
+notation (input)
+  wf_jvm_prog_phi  ("wf'_jvm'_prog\<^sub>_ _" [0,999] 1000)
 
 
 lemma wt_jvm_progD:

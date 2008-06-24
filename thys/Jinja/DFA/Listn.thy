@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Listn.thy
-    ID:         $Id: Listn.thy,v 1.5 2007-07-19 21:23:11 makarius Exp $
+    ID:         $Id: Listn.thy,v 1.6 2008-06-24 22:23:30 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -18,26 +18,31 @@ constdefs
   "le r \<equiv> list_all2 (\<lambda>x y. x \<sqsubseteq>\<^sub>r y)"
 
 (*<*)
-syntax 
-  "lesublist" :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[<=_] _)" [50, 0, 51] 50)
-  "lesssublist" :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[<_] _)" [50, 0, 51] 50)
+abbreviation
+  lesublist1 :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[<=_] _)" [50, 0, 51] 50) where
+  "x [<=r] y == x <=_(Listn.le r) y"
+
+abbreviation
+  lesssublist1 :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[<_] _)" [50, 0, 51] 50) where
+  "x [<r] y == x <_(Listn.le r) y"
 (*>*)
 
-syntax (xsymbols)
-  "lesublist" :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubseteq>\<^bsub>_\<^esub>] _)" [50, 0, 51] 50)
-  "lesssublist" :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubset>\<^bsub>_\<^esub>] _)" [50, 0, 51] 50)
-translations
- "x [\<sqsubseteq>\<^bsub>r\<^esub>] y" == "x <=_(Listn.le r) y"
- "x [\<sqsubset>\<^bsub>r\<^esub>] y"  == "x <_(Listn.le r) y"
+abbreviation (xsymbols)
+  lesublist :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubseteq>\<^bsub>_\<^esub>] _)" [50, 0, 51] 50) where
+  "x [\<sqsubseteq>\<^bsub>r\<^esub>] y == x <=_(Listn.le r) y"
+
+abbreviation (xsymbols)
+  lesssublist :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubset>\<^bsub>_\<^esub>] _)" [50, 0, 51] 50) where
+  "x [\<sqsubset>\<^bsub>r\<^esub>] y == x <_(Listn.le r) y"
 
 (*<*)
-syntax (xsymbols)
-  "@lesublist" :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubseteq>\<^sub>_] _)" [50, 0, 51] 50)
-  "@lesssublist" :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubset>\<^sub>_] _)" [50, 0, 51] 50)
+abbreviation (input)
+  lesublist2 :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubseteq>\<^sub>_] _)" [50, 0, 51] 50) where
+  "x [\<sqsubseteq>\<^sub>r] y == x [\<sqsubseteq>\<^bsub>r\<^esub>] y"
 
-translations
- "x [\<sqsubseteq>\<^sub>r] y" => "x [\<sqsubseteq>\<^bsub>r\<^esub>] y"
- "x [\<sqsubset>\<^sub>r] y" => "x [\<sqsubset>\<^bsub>r\<^esub>] y"
+abbreviation (input)
+  lesssublist2 :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubset>\<^sub>_] _)" [50, 0, 51] 50) where
+  "x [\<sqsubset>\<^sub>r] y == x [\<sqsubset>\<^bsub>r\<^esub>] y"
 (*>*)
 
 constdefs
@@ -45,20 +50,22 @@ constdefs
   "map2 f \<equiv> (\<lambda>xs ys. map (split f) (zip xs ys))"
 
 (*<*)
-syntax 
-  "plussublist" :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list" ("(_ /[+_] _)" [65, 0, 66] 65)
+abbreviation
+  plussublist1 :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list"
+    ("(_ /[+_] _)" [65, 0, 66] 65) where
+  "x [+f] y == x \<squnion>\<^bsub>map2 f\<^esub> y"
 (*>*)
 
-syntax (xsymbols)
-  "plussublist" :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list" ("(_ /[\<squnion>\<^bsub>_\<^esub>] _)" [65, 0, 66] 65)
-translations  
-  "x [\<squnion>\<^bsub>f\<^esub>] y" == "x \<squnion>\<^bsub>map2 f\<^esub> y"
+abbreviation (xsymbols)
+  plussublist :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list"
+    ("(_ /[\<squnion>\<^bsub>_\<^esub>] _)" [65, 0, 66] 65) where
+  "x [\<squnion>\<^bsub>f\<^esub>] y == x \<squnion>\<^bsub>map2 f\<^esub> y"
 
 (*<*)
-syntax
-  "@plussublist" :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list" ("(_ /[\<squnion>\<^sub>_] _)" [65, 0, 66] 65)
-translations  
-  "x [\<squnion>\<^sub>f] y" == "x [\<squnion>\<^bsub>f\<^esub>] y"
+abbreviation (input)
+  plussublist2 :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list"
+    ("(_ /[\<squnion>\<^sub>_] _)" [65, 0, 66] 65) where
+  "x [\<squnion>\<^sub>f] y == x [\<squnion>\<^bsub>f\<^esub>] y"
 (*>*)
 
 

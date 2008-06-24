@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/WellType1.thy
-    ID:         $Id: J1WellForm.thy,v 1.5 2007-07-11 10:17:11 stefanberghofer Exp $
+    ID:         $Id: J1WellForm.thy,v 1.6 2008-06-24 22:23:30 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -220,12 +220,6 @@ lemma wf_J\<^isub>1_mdecl[simp]:
      \<D> body \<lfloor>{..size Ts}\<rfloor> \<and> \<B> body (size Ts + 1))"
 (*<*)by (simp add:wf_J\<^isub>1_mdecl_def)(*>*)
 
-(*<*)
-syntax
-  wf_J\<^isub>1_prog :: "J\<^isub>1_prog \<Rightarrow> bool"
-(*>*)
-
-translations
-  "wf_J\<^isub>1_prog"  ==  "wf_prog wf_J\<^isub>1_mdecl"
+abbreviation "wf_J\<^isub>1_prog == wf_prog wf_J\<^isub>1_mdecl"
 
 end

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExec.thy
-    ID:         $Id: JVMExec.thy,v 1.6 2008-06-12 06:57:20 lsf37 Exp $
+    ID:         $Id: JVMExec.thy,v 1.7 2008-06-24 22:23:37 makarius Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -8,8 +8,9 @@ header {* \isaheader{Program Execution in the JVM} *}
 
 theory JVMExec imports JVMExecInstr JVMExceptions begin
 
-syntax instrs_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> instr list"
-translations "instrs_of P C M" == "fst(snd(snd(snd(snd(snd(method P C M))))))"
+abbreviation
+  instrs_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> instr list" where
+  "instrs_of P C M == fst(snd(snd(snd(snd(snd(method P C M))))))"
 
 
 -- "single step execution:"

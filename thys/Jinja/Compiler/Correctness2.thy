@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness2.thy
-    ID:         $Id: Correctness2.thy,v 1.8 2007-08-19 19:16:30 nipkow Exp $
+    ID:         $Id: Correctness2.thy,v 1.9 2008-06-24 22:23:29 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -9,6 +9,8 @@ header {* \isaheader{Correctness of Stage 2} *}
 theory Correctness2
 imports List_Prefix Compiler2
 begin
+
+(*<*)hide (open) const Throw(*>*)
 
 subsection{* Instruction sequences *}
 

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Common/Basis.thy
-    ID:         $Id: Aux.thy,v 1.4 2006-01-04 17:48:04 nipkow Exp $
+    ID:         $Id: Aux.thy,v 1.5 2008-06-24 22:23:29 makarius Exp $
     Author:     David von Oheimb, Tobias Nipkow
     Copyright   1999 TU Muenchen
 *)
@@ -19,12 +19,9 @@ lemma Suc_add_max_le[simp]:
   "(Suc(n + max i j) \<le> m) = (Suc(n + i) \<le> m \<and> Suc(n + j) \<le> m)"
 (*<*)by arith(*>*)
 
-(*<*)
-syntax "_Some" :: "'a \<Rightarrow> 'a option" ("(\<lfloor>_\<rfloor>)")
-(*>*)
 
+notation Some  ("(\<lfloor>_\<rfloor>)")
 
-translations "\<lfloor>x\<rfloor>" == "Some x"
 (*<*)
 declare
  option.splits[split]
