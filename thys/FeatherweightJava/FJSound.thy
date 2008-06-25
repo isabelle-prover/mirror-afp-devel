@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJSound.thy,v 1.11 2008-06-12 06:57:16 lsf37 Exp $
+    ID:          $Id: FJSound.thy,v 1.12 2008-06-25 18:30:17 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -64,7 +64,7 @@ proof (induct rule:subtyping.induct)
     where "CT \<turnstile>+ M OK IN C" and "cMethods CDef = M" 
     by(auto elim:class_typing.cases)
   let ?lookup_m = "lookup M (\<lambda>md. (mName md =m))"
-  show ?case using prems 
+  show ?case
   proof(cases "\<exists>mDef. ?lookup_m = Some mDef") 
   case True
     then obtain mDef where "?lookup_m = Some mDef" by(rule exE)
@@ -96,7 +96,8 @@ qed
 lemma sub_fields: 
   assumes "CT \<turnstile> C <: D"
   shows "\<And>Dg. fields(CT,D) = Dg \<Longrightarrow> \<exists>Cf. fields(CT,C) = (Dg@Cf)"
-using prems proof(induct)
+using assms
+proof induct
   case (s_refl CT C)
   hence "fields(CT,C) = (Dg@[])" by simp
   thus ?case ..
@@ -375,7 +376,8 @@ theorem Thm_2_4_1:
   and "CT OK"
   shows "\<And>C. \<lbrakk> CT;\<Gamma> \<turnstile> e : C \<rbrakk> 
   \<Longrightarrow> \<exists>C'. (CT;\<Gamma> \<turnstile> e' : C' \<and> CT \<turnstile> C' <: C)"
-  using prems proof(induct rule: reduction.induct)
+  using assms
+proof(induct rule: reduction.induct)
   case (r_field CT Ca Cf es fi e')
   hence "CT;\<Gamma> \<turnstile> FieldProj (New Ca es) fi : C" 
     and ct_ok: "CT OK" 
@@ -549,7 +551,8 @@ corollary Cor_2_4_1_multi:
   assumes "CT \<turnstile> e \<rightarrow>* e'" 
   and "CT OK"
   shows "\<And>C. \<lbrakk> CT;\<Gamma> \<turnstile> e : C \<rbrakk> \<Longrightarrow> \<exists>C'. (CT;\<Gamma> \<turnstile> e' : C' \<and> CT \<turnstile> C' <: C)"
-  using prems proof induct
+  using assms
+proof induct
   case (rs_refl CT e C) thus ?case by (auto simp add:subtyping.s_refl)
 next
   case(rs_trans CT e e' e'' C)
@@ -578,7 +581,7 @@ theorem Thm_2_4_2_1:
   shows "\<exists>Cf fDef. fields(CT, C0) = Cf \<and> lookup Cf (\<lambda>fd. (vdName fd = fi)) = Some fDef"
 proof -
   obtain Ci where "CT;empty \<turnstile> (FieldProj (New C0 es) fi) : Ci" 
-    using prems by (force simp add:subexpr_typing)
+    using assms by (force simp add:subexpr_typing)
   then obtain Cf fDef C0'
     where "CT;empty \<turnstile> (New C0 es) : C0'"
     and "fields(CT,C0') = Cf" 
@@ -594,7 +597,7 @@ lemma Thm_2_4_2_2:
   shows "\<exists>xs e0. mbody(CT,m,C0) = xs . e0 \<and> length xs = length ds"
 proof -
   obtain D where "CT;empty \<turnstile> MethodInvk (New C0 es) m ds : D" 
-    using prems by (force simp add:subexpr_typing)
+    using assms by (force simp add:subexpr_typing)
   then obtain C0' Cs
     where "CT;empty \<turnstile> (New C0 es) : C0'"
     and mt:"mtype(CT,m,C0') = Cs \<rightarrow> D"
@@ -610,8 +613,9 @@ lemma closed_subterm_split:
   \<or> (\<exists>C0 es m ds. (MethodInvk (New C0 es) m ds) \<in> subexprs(e))
   \<or> (\<exists>C0 D es. (Cast D (New C0 es)) \<in> subexprs(e))
   \<or> val(e))" (is "?F e \<or> ?M e \<or> ?C e \<or> ?V e" is "?IH e")
-using prems proof(induct "CT" "\<Gamma>" "e" "C" rule:typing_induct)
-  case 1 thus ?case using prems by auto
+using assms
+proof(induct CT \<Gamma> e C rule:typing_induct)
+  case 1 thus ?case using assms by auto
 next
   case (2 C CT \<Gamma> x) thus ?case by auto
 next
@@ -803,7 +807,7 @@ theorem Thm_2_4_3:
   shows "(val(e1) \<and> (\<exists>D. CT;empty \<turnstile> e1 : D \<and> CT \<turnstile> D <: C))
       \<or> (\<exists>D C es. (Cast D (New C es) \<in> subexprs(e1) \<and> CT \<turnstile> C \<not><: D))" 
 proof -  
-from prems Cor_2_4_1_multi[OF multisteps ct_ok e_typ] obtain C1 
+from assms Cor_2_4_1_multi[OF multisteps ct_ok e_typ] obtain C1 
   where e1_typ: "CT;empty \<turnstile> e1 : C1" 
   and C1_sub_C: "CT \<turnstile> C1 <: C" by auto
 from e1_typ have "((\<exists>C0 es fi. (FieldProj (New C0 es) fi) \<in> subexprs(e1))  

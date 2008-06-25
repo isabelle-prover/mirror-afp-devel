@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJAux.thy,v 1.10 2008-06-12 06:57:16 lsf37 Exp $
+    ID:          $Id: FJAux.thy,v 1.11 2008-06-25 18:30:11 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -20,7 +20,7 @@ subsubsection{* Lists *}
 lemma mem_ith: 
   assumes "ei \<in> set es" 
   shows "\<exists> el er. es = el@ei#er"
-  using prems 
+  using assms
 proof(induct es)
   case Nil thus ?case by auto
 next
@@ -47,10 +47,8 @@ subsubsection{* Maps *}
 lemma map_shuffle: 
   assumes "length xs = length ys"
   shows "[xs[\<mapsto>]ys,x\<mapsto>y] = [(xs@[x])[\<mapsto>](ys@[y])]"
-  using prems 
-proof(induct "xs" "ys" rule:list_induct2, 
-      auto simp add:map_upds_append1)
-qed
+  using assms
+by (induct "xs" "ys" rule:list_induct2) (auto simp add:map_upds_append1)
 
 lemma map_upds_index: 
   assumes "length xs = length As"
@@ -61,7 +59,7 @@ lemma map_upds_index:
                             \<longrightarrow> ([xs[\<mapsto>]Bs] x = Some (Bs !i))))" 
   (is "\<exists>i. ?P i xs As" 
    is "\<exists>i.(?P1 i As) \<and> (?P2 i As) \<and> (\<forall>Bs::('c list).(?P3 i xs As Bs))")
-using prems proof(induct "xs" "As" rule:list_induct2)
+using assms proof(induct "xs" "As" rule:list_induct2)
 assume "[[][\<mapsto>][]] x = Some Ai"
 moreover have "\<not>[[][\<mapsto>][]] x = Some Ai" by auto
 ultimately show "\<exists>i. ?P i [] []" by contradiction
@@ -126,28 +124,27 @@ lemma lookup_functional:
   assumes "lookup l f = o1"
   and "lookup l f = o2"
   shows "o1 = o2"
-using prems by(induct l, auto)
+using assms by (induct l) auto
 
 lemma lookup_true:
   "lookup l f = Some r \<Longrightarrow> f r"
 proof(induct l)
   case Nil thus ?case by simp
 next
-  case(Cons h t) thus ?case by(cases "f h", auto simp add:lookup.simps)
+  case(Cons h t) thus ?case by(cases "f h") (auto simp add:lookup.simps)
 qed
 
 lemma lookup_hd:
   "\<lbrakk> length l > 0; f (l!0) \<rbrakk> \<Longrightarrow> lookup l f = Some (l!0)"
-proof(induct l, auto)
-qed  
+by (induct l) auto
 
 lemma lookup_split: "lookup l f = None \<or> (\<exists>h. lookup l f = Some h)"
-by (induct l, simp_all)
+by (induct l) simp_all
 
 lemma lookup_index:
   assumes "lookup l1 f = Some e" 
   shows " \<And>l2. \<exists>i < (length l1). e = l1!i \<and> ((length l1 = length l2) \<longrightarrow> lookup2 l1 l2 f = Some (l2!i))"
-  using prems 
+  using assms
 proof(induct l1)
   case Nil thus ?case by auto
 next
@@ -192,7 +189,7 @@ proof(induct l1)
   case Nil thus ?case by auto
 next
   case (Cons h1 t1) 
-  hence "length l2 = Suc (length t1)" using prems by auto;
+  hence "length l2 = Suc (length t1)" by auto
   then obtain h2 t2 where l2_def:"l2 = h2#t2" by (auto simp add: length_Suc_conv)
   { assume asm:"f h1"
     hence "e = h2" using prems by (auto simp add:lookup2.simps) 
@@ -213,7 +210,7 @@ qed
 lemma lookup_append:
   assumes "lookup l f = Some r"
   shows "lookup (l@l') f = Some r"
-  using prems by(induct "l", auto)
+  using assms by(induct l) auto
 
 lemma method_typings_lookup:
   assumes lookup_eq_Some: "lookup M f = Some mDef"
@@ -234,19 +231,20 @@ lemma mtype_functional:
   assumes "mtype(CT,m,C) = Cs \<rightarrow> C0"
   and     "mtype(CT,m,C) = Ds \<rightarrow> D0"
   shows "Ds=Cs \<and> D0=C0"
-using prems by(induct, auto elim:mtype.cases)
+using assms by induct (auto elim:mtype.cases)
 
 lemma mbody_functional:
   assumes mb1: "mbody(CT,m,C) = xs . e0"
   and     mb2: "mbody(CT,m,C) = ys . d0"
   shows "xs = ys \<and> e0 = d0"
-using prems by(induct, auto elim:mbody.cases)
+using assms by induct (auto elim:mbody.cases)
 
 lemma fields_functional:
   assumes "fields(CT,C) = Cf" 
   and "CT OK" 
   shows "\<And>Cf'. \<lbrakk> fields(CT,C) = Cf'\<rbrakk> \<Longrightarrow> Cf = Cf'"
-using prems proof(induct)
+using assms
+proof induct
   case (f_obj CT)
   hence "CT(Object) = None" by (auto elim: ct_typing.cases)
   thus ?case using f_obj by (auto elim: fields.cases)
@@ -268,19 +266,20 @@ qed
 subsubsection{* Subtyping and Typing *}
 
 lemma typings_lengths: assumes "CT;\<Gamma> \<turnstile>+ es:Cs" shows "length es = length Cs" 
-  using prems by(induct "es" "Cs", auto elim:typings.cases)
+  using assms by(induct "es" "Cs") (auto elim:typings.cases)
 
 lemma typings_index:
   assumes "CT;\<Gamma> \<turnstile>+ es:Cs" 
   shows "\<And>i. \<lbrakk> i < length es \<rbrakk> \<Longrightarrow> CT;\<Gamma> \<turnstile> (es!i) : (Cs!i)" 
 proof -
-  have "length es = length Cs" using prems by (auto simp: typings_lengths)
+  have "length es = length Cs" using assms by (auto simp: typings_lengths)
   thus "\<And>i. \<lbrakk> i < length es \<rbrakk> \<Longrightarrow> CT;\<Gamma> \<turnstile> (es!i) : (Cs!i)" 
-    using prems proof(induct es Cs rule:list_induct2)
+    using assms
+  proof(induct es Cs rule:list_induct2)
     case Nil thus ?case by auto
   next
     case (Cons esh est hCs tCs i)
-    thus ?case by(cases "i", auto elim:typings.cases)
+    thus ?case by(cases i) (auto elim:typings.cases)
   qed
 qed
 
@@ -288,7 +287,8 @@ qed
 lemma subtypings_index:
   assumes "CT \<turnstile>+ Cs <: Ds"
   shows "\<And>i. \<lbrakk> i < length Cs \<rbrakk> \<Longrightarrow> CT \<turnstile> (Cs!i) <: (Ds!i)"
-  using prems proof(induct)
+  using assms
+proof induct
   case ss_nil thus ?case by auto
 next
   case (ss_cons hCs CT tCs hDs tDs i) 
@@ -299,21 +299,19 @@ lemma subtyping_append:
   assumes "CT \<turnstile>+ Cs <: Ds"
   and "CT \<turnstile> C <: D"
   shows "CT \<turnstile>+ (Cs@[C]) <: (Ds@[D])"
-  using prems 
-  proof(induct rule:subtypings.induct, 
-        auto simp add:subtypings.intros elim:subtypings.cases)
-  qed
+  using assms
+  by (induct rule:subtypings.induct) (auto simp add:subtypings.intros elim:subtypings.cases)
 
 lemma typings_append: 
   assumes "CT;\<Gamma> \<turnstile>+ es : Cs"
   and "CT;\<Gamma> \<turnstile> e : C"
   shows "CT;\<Gamma> \<turnstile>+ (es@[e]) : (Cs@[C])"
 proof - 
-  have "length es = length Cs" using prems by(simp_all add:typings_lengths)
+  have "length es = length Cs" using assms by(simp_all add:typings_lengths)
   thus "CT;\<Gamma> \<turnstile>+ (es@[e]) : (Cs@[C])" using prems
   proof(induct "es" "Cs" rule:list_induct2)
     have "CT;\<Gamma> \<turnstile>+ []:[]" by(simp add:typings_typing.ts_nil)
-    moreover from prems have "CT;\<Gamma> \<turnstile> e : C" by simp
+    moreover from assms have "CT;\<Gamma> \<turnstile> e : C" by simp
     ultimately show "CT;\<Gamma> \<turnstile>+ ([]@[e]) : ([]@[C])" by (auto simp add:typings_typing.ts_cons)
   next
     fix x xs y ys
@@ -404,14 +402,11 @@ lemma typings_proj:
       and "length ds = length Bs" 
       and "i < length ds" 
     shows "CT;\<Gamma> \<turnstile> ds!i : As!i" and "CT \<turnstile> As!i <: Bs!i"
-proof - 
-  show "CT;\<Gamma> \<turnstile> ds!i : As!i" and "CT \<turnstile> As!i <: Bs!i" 
-    using prems by (auto simp add:typings_index subtypings_index)
-qed
+  using assms by (auto simp add:typings_index subtypings_index)
 
 lemma subtypings_length: 
   "CT \<turnstile>+ As <: Bs \<Longrightarrow> length As = length Bs" 
-  by(induct rule:subtypings.induct,simp_all);
+  by(induct rule:subtypings.induct) simp_all
 
 lemma not_subtypes_aux: 
   assumes "CT \<turnstile> C <: Da" 
@@ -419,21 +414,20 @@ lemma not_subtypes_aux:
   and "CT C = Some CDef" 
   and "cSuper CDef = D"
   shows "CT \<turnstile> D <: Da"
-  using prems 
-proof(induct rule:subtyping.induct, auto intro:subtyping.intros) 
-qed
+  using assms
+by (induct rule:subtyping.induct) (auto intro:subtyping.intros) 
 
 lemma not_subtypes:
   assumes "CT \<turnstile> A <: C"
   shows "\<And>D. \<lbrakk> CT \<turnstile> D \<not><: C;  CT \<turnstile> C \<not><: D\<rbrakk> \<Longrightarrow> CT \<turnstile> A \<not><: D"
-  using prems 
+  using assms
 proof(induct rule:subtyping.induct)
   case s_refl thus ?case by auto
 next 
   case (s_trans CT C D E Da)
   have da_nsub_d:"CT \<turnstile> Da \<not><: D" proof(rule ccontr)
     assume "\<not> CT \<turnstile> Da \<not><: D"
-    hence da_sub_d:"CT \<turnstile> Da <: D" by auto pr
+    hence da_sub_d:"CT \<turnstile> Da <: D" by auto
     have d_sub_e:"CT \<turnstile> D <: E" using prems by fastsimp
     thus "False" using prems by (force simp add:subtyping.s_trans[OF da_sub_d d_sub_e])
   qed 
@@ -455,30 +449,28 @@ subsubsection{* Sub-Expressions *}
 lemma isubexpr_typing: 
   assumes "e1 \<in> isubexprs(e0)"
   shows "\<And>C. \<lbrakk> CT;empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;empty \<turnstile> e1 : D"
-using prems 
-  by (induct rule:isubexprs.induct, auto elim:typing.cases simp add:mem_typings)
+using assms
+  by (induct rule:isubexprs.induct) (auto elim:typing.cases simp add:mem_typings)
 
 lemma subexpr_typing: 
   assumes "e1 \<in> subexprs(e0)"
   shows "\<And>C. \<lbrakk> CT;empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;empty \<turnstile> e1 : D"
-using prems 
-  by (induct rule:rtrancl.induct,auto,force simp add:isubexpr_typing)
+using assms
+  by (induct rule:rtrancl.induct) (auto, force simp add:isubexpr_typing)
 
 lemma isubexpr_reduct: 
   assumes "d1 \<in> isubexprs(e1)"
   shows "\<And>d2. \<lbrakk> CT \<turnstile> d1 \<rightarrow> d2 \<rbrakk> \<Longrightarrow> \<exists>e2. CT \<turnstile> e1 \<rightarrow> e2"
-using prems mem_ith
-  by (induct, 
-      auto elim:isubexprs.cases intro:reduction.intros,
+using assms mem_ith
+  by induct
+    (auto elim:isubexprs.cases intro:reduction.intros,
       force intro:reduction.intros, 
       force intro:reduction.intros)
 
 lemma subexpr_reduct: 
   assumes "d1 \<in> subexprs(e1)"
   shows "\<And>d2. \<lbrakk> CT \<turnstile> d1 \<rightarrow> d2 \<rbrakk> \<Longrightarrow> \<exists>e2. CT \<turnstile> e1 \<rightarrow> e2"
-using prems 
-  by (induct rule:rtrancl.induct, 
-      auto, force simp add: isubexpr_reduct)
+using assms
+  by (induct rule:rtrancl.induct) (auto, force simp add: isubexpr_reduct)
 
 end 
-
