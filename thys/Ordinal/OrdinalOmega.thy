@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalOmega.thy,v 1.6 2008-06-12 06:57:24 lsf37 Exp $
+    ID:          $Id: OrdinalOmega.thy,v 1.7 2008-06-25 18:30:28 makarius Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -12,17 +12,16 @@ begin
 
 subsection {* Embedding naturals in the ordinals *}
 
-consts
-  ordinal_of_nat :: "nat \<Rightarrow> ordinal"
-primrec
+primrec ordinal_of_nat :: "nat \<Rightarrow> ordinal"
+where
   "ordinal_of_nat 0 = 0"
-  "ordinal_of_nat (Suc n) = oSuc (ordinal_of_nat n)"
+| "ordinal_of_nat (Suc n) = oSuc (ordinal_of_nat n)"
 
 lemma strict_mono_ordinal_of_nat: "strict_mono ordinal_of_nat"
 by (rule strict_mono_natI, simp)
 
 lemma not_limit_ordinal_nat: "\<not> limit_ordinal (ordinal_of_nat n)"
-by (induct_tac n, simp_all)
+by (induct n) simp_all
 
 lemma ordinal_of_nat_eq [simp]:
 "(ordinal_of_nat x = ordinal_of_nat y) = (x = y)"
@@ -38,23 +37,24 @@ by (rule strict_mono_cancel_le[OF strict_mono_ordinal_of_nat])
 
 lemma ordinal_of_nat_plus [simp]:
 "ordinal_of_nat x + ordinal_of_nat y = ordinal_of_nat (x + y)"
-by (induct_tac y, simp_all)
+by (induct y) simp_all
 
 lemma ordinal_of_nat_times [simp]:
 "ordinal_of_nat x * ordinal_of_nat y = ordinal_of_nat (x * y)"
-by (induct_tac y, simp_all add: add_commute)
+by (induct y) (simp_all add: add_commute)
 
 lemma ordinal_of_nat_exp [simp]:
 "ordinal_of_nat x ** ordinal_of_nat y = ordinal_of_nat (x ^ y)"
-by (induct_tac y, case_tac x, simp_all add: mult_commute)
+by (induct y, cases x) (simp_all add: mult_commute)
 
 lemma oSuc_plus_ordinal_of_nat:
 "oSuc x + ordinal_of_nat n = oSuc (x + ordinal_of_nat n)"
-by (induct_tac n, simp_all)
+by (induct n) simp_all
 
 lemma less_ordinal_of_nat:
 "(x < ordinal_of_nat n) = (\<exists>m. x = ordinal_of_nat m \<and> m < n)"
- apply (induct_tac n, simp)
+ apply (induct n)
+  apply simp
  apply (safe, simp_all del: ordinal_of_nat.simps)
  apply (auto elim: less_oSucE)
 done
@@ -66,8 +66,9 @@ by (auto simp add: order_le_less less_ordinal_of_nat)
 
 subsection {* Omega, the least limit ordinal *}
 
-constdefs omega :: "ordinal"  ("\<omega>")
-  "omega \<equiv> oLimit ordinal_of_nat"
+definition
+  omega :: "ordinal"  ("\<omega>") where
+  "omega = oLimit ordinal_of_nat"
 
 lemma less_omegaD: "x < \<omega> \<Longrightarrow> \<exists>n. x = ordinal_of_nat n"
  apply (unfold omega_def)
@@ -134,7 +135,7 @@ done
 
 lemma ordinal_of_nat_plus_omega [simp]:
 "ordinal_of_nat n + \<omega> = \<omega>"
-by (induct_tac n, simp_all)
+by (induct n) simp_all
 
 lemma ordinal_of_nat_times_omega [simp]:
 "0 < k \<Longrightarrow> ordinal_of_nat k * \<omega> = \<omega>"
