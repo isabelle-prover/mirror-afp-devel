@@ -22,16 +22,12 @@ definition "zeroX = X 0"
 consts nextX :: "vbl => vbl"
 primrec "nextX (X n) = X (Suc n)"
 
-syntax
-  zeroX :: logic
-  nextX :: logic
-
 definition
   vblcase :: "['a,vbl => 'a,vbl] => 'a" where
   "vblcase a f n = (@z. (n=zeroX \<longrightarrow> z=a) \<and> (!x. n=nextX x \<longrightarrow> z=f(x)))"
 
 translations
-  "case p of zeroX \<Rightarrow> a | nextX y \<Rightarrow> b" == "(CONST vblcase a (%y. b) p)"
+  "case p of XCONST zeroX \<Rightarrow> a | XCONST nextX y \<Rightarrow> b" == "(CONST vblcase a (%y. b) p)"
 				    
 definition
   freshVar :: "vbl set => vbl" where
