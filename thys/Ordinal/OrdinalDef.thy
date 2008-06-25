@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalDef.thy,v 1.8 2008-06-12 06:57:24 lsf37 Exp $
+    ID:          $Id: OrdinalDef.thy,v 1.9 2008-06-25 18:29:59 makarius Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -16,9 +16,9 @@ datatype ord0 = ord0_Zero | ord0_Lim "nat \<Rightarrow> ord0"
 
 text {* subterm ordering on ord0 *}
 
-constdefs
-  ord0_prec :: "(ord0 \<times> ord0) set"
-  "ord0_prec \<equiv> \<Union>f i. {(f i, ord0_Lim f)}"
+definition
+  ord0_prec :: "(ord0 \<times> ord0) set" where
+  "ord0_prec = (\<Union>f i. {(f i, ord0_Lim f)})"
 
 lemma wf_ord0_prec: "wf ord0_prec"
  apply (unfold ord0_prec_def)
@@ -175,9 +175,9 @@ done
 
 subsection {* Ordinal type *}
 
-constdefs
-  ord0rel :: "(ord0 \<times> ord0) set"
-  "ord0rel \<equiv> {(x,y). x \<le> y \<and> y \<le> x}"
+definition
+  ord0rel :: "(ord0 \<times> ord0) set" where
+  "ord0rel = {(x,y). x \<le> y \<and> y \<le> x}"
 
 typedef (open) ordinal = "(UNIV::ord0 set) // ord0rel"
 by (unfold quotient_def, auto)
@@ -272,12 +272,13 @@ subsection {* Induction over ordinals *}
 
 text "zero and strict limits"
 
-constdefs
-  oZero :: "ordinal"
-    "oZero \<equiv> Abs_ordinal (ord0rel `` {ord0_Zero})"
+definition
+  oZero :: "ordinal" where
+    "oZero = Abs_ordinal (ord0rel `` {ord0_Zero})"
 
-  oStrictLimit :: "(nat \<Rightarrow> ordinal) \<Rightarrow> ordinal"
-    "oStrictLimit f \<equiv> Abs_ordinal
+definition
+  oStrictLimit :: "(nat \<Rightarrow> ordinal) \<Rightarrow> ordinal" where
+    "oStrictLimit f = Abs_ordinal
       (ord0rel `` {ord0_Lim (\<lambda>n. SOME x. x \<in> Rep_ordinal (f n))})"
 
 text "induction over ordinals"

@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalInverse.thy,v 1.7 2008-06-12 06:57:24 lsf37 Exp $
+    ID:          $Id: OrdinalInverse.thy,v 1.8 2008-06-25 18:29:59 makarius Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -52,9 +52,9 @@ lemma oInv_uniq:
  apply assumption
 done
 
-constdefs
-  oInv :: "(ordinal \<Rightarrow> ordinal) \<Rightarrow> ordinal \<Rightarrow> ordinal"
-  "oInv F a \<equiv> if F 0 \<le> a then (THE x. F x \<le> a \<and> a < F (oSuc x)) else 0"
+definition
+  oInv :: "(ordinal \<Rightarrow> ordinal) \<Rightarrow> ordinal \<Rightarrow> ordinal" where
+  "oInv F a = (if F 0 \<le> a then (THE x. F x \<le> a \<and> a < F (oSuc x)) else 0)"
 
 lemma (in normal) oInv_bounds:
 "F 0 \<le> a \<Longrightarrow> F (oInv F a) \<le> a \<and> a < F (oSuc (oInv F a))"
@@ -294,9 +294,9 @@ done
 
 subsection {* Logarithms *}
 
-constdefs
-  oLog :: "ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal"
-  "oLog b \<equiv> \<lambda>x. if 1 < b then oInv (op ** b) x else 0"
+definition
+  oLog :: "ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal" where
+  "oLog b = (\<lambda>x. if 1 < b then oInv (op ** b) x else 0)"
 
 lemma ordinal_oLogI:
 "\<lbrakk>b ** y \<le> x; x < b ** y * b\<rbrakk> \<Longrightarrow> oLog b x = y"

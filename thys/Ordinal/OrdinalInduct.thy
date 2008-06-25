@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalInduct.thy,v 1.7 2008-06-12 06:57:24 lsf37 Exp $
+    ID:          $Id: OrdinalInduct.thy,v 1.8 2008-06-25 18:29:59 makarius Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -12,9 +12,9 @@ begin
 
 subsection {* Zero and successor ordinals *}
 
-constdefs
-  oSuc :: "ordinal \<Rightarrow> ordinal"
-    "oSuc x \<equiv> oStrictLimit (\<lambda>n. x)"
+definition
+  oSuc :: "ordinal \<Rightarrow> ordinal" where
+    "oSuc x = oStrictLimit (\<lambda>n. x)"
 
 lemma less_oSuc[iff]: "x < oSuc x"
 by (unfold oSuc_def, rule oStrictLimit_ub)
@@ -171,9 +171,9 @@ done
 
 subsection {* Limit ordinals *}
 
-constdefs
-  oLimit :: "(nat \<Rightarrow> ordinal) \<Rightarrow> ordinal"
-  "oLimit f \<equiv> LEAST k. \<forall>n. f n \<le> k"
+definition
+  oLimit :: "(nat \<Rightarrow> ordinal) \<Rightarrow> ordinal" where
+  "oLimit f = (LEAST k. \<forall>n. f n \<le> k)"
 
 lemma oLimit_leI: "\<forall>n. f n \<le> x \<Longrightarrow> oLimit f \<le> x"
  apply (unfold oLimit_def)
@@ -260,9 +260,9 @@ done
 
 text "limit ordinal predicate"
 
-constdefs
-  limit_ordinal  :: "ordinal \<Rightarrow> bool"
-  "limit_ordinal x \<equiv> (x \<noteq> 0) \<and> (\<forall>y. x \<noteq> oSuc y)"
+definition
+  limit_ordinal :: "ordinal \<Rightarrow> bool" where
+  "limit_ordinal x \<longleftrightarrow> (x \<noteq> 0) \<and> (\<forall>y. x \<noteq> oSuc y)"
 
 lemma limit_ordinal_not_0 [simp]: "\<not> limit_ordinal 0"
 by (simp add: limit_ordinal_def)
@@ -309,10 +309,10 @@ done
 
 subsubsection {* Making strict monotonic sequences *}
 
-consts make_mono :: "(nat \<Rightarrow> ordinal) \<Rightarrow> nat \<Rightarrow> nat"
-primrec
+primrec make_mono :: "(nat \<Rightarrow> ordinal) \<Rightarrow> nat \<Rightarrow> nat"
+where
   "make_mono f 0       = 0"
-  "make_mono f (Suc n) = (LEAST x. f (make_mono f n) < f x)"
+| "make_mono f (Suc n) = (LEAST x. f (make_mono f n) < f x)"
 
 lemma f_make_mono_less:
 "\<forall>n. f n < oLimit f \<Longrightarrow> f (make_mono f n) < f (make_mono f (Suc n))"

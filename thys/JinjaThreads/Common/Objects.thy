@@ -119,11 +119,9 @@ by(induct v) (auto simp:fun_upd_apply)
 text{* For literal values the first parameter of @{term typeof} can be
 set to @{term empty} because they do not contain addresses: *}
 
-consts
-  typeof :: "val \<Rightarrow> ty option"
-
-translations
-  "typeof v" == "typeof_h (CONST empty) v"
+abbreviation
+  typeof :: "val \<Rightarrow> ty option" where
+  "typeof v == typeof_h empty v"
 
 lemma typeof_lit_typeof:
   "typeof v = Some T \<Longrightarrow> typeof\<^bsub>h\<^esub> v = Some T"

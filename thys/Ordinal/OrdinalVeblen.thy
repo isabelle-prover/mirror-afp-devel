@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalVeblen.thy,v 1.3 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: OrdinalVeblen.thy,v 1.4 2008-06-25 18:29:59 makarius Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -82,9 +82,9 @@ subsection {* Ordering functions *}
 text "There is a one-to-one correspondence between closed,
 unbounded sets of ordinals and normal functions on ordinals."
 
-constdefs
-  ordering  :: "(ordinal set) \<Rightarrow> (ordinal \<Rightarrow> ordinal)"
-  "ordering A \<equiv> ordinal_rec (LEAST z. z \<in> A) (\<lambda>p x. LEAST z. z \<in> A \<and> x < z)"
+definition
+  ordering  :: "(ordinal set) \<Rightarrow> (ordinal \<Rightarrow> ordinal)" where
+  "ordering A = ordinal_rec (LEAST z. z \<in> A) (\<lambda>p x. LEAST z. z \<in> A \<and> x < z)"
 
 lemma ordering_0:
 "ordering A 0 = (LEAST z. z \<in> A)"
@@ -175,9 +175,9 @@ done
 
 subsection {* Critical ordinals *}
 
-constdefs
-  critical_set :: "ordinal set \<Rightarrow> ordinal \<Rightarrow> ordinal set"
-  "critical_set A \<equiv>
+definition
+  critical_set :: "ordinal set \<Rightarrow> ordinal \<Rightarrow> ordinal set" where
+  "critical_set A =
      ordinal_rec0 A (\<lambda>p x. x \<inter> range (oDeriv (ordering x))) (\<lambda>f. \<Inter>n. f n)"
 
 lemma critical_set_0:
@@ -251,9 +251,9 @@ done
 
 subsection {* Veblen hierarchy over a normal function *}
 
-constdefs
-  oVeblen :: "(ordinal \<Rightarrow> ordinal) \<Rightarrow> ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal"
-  "oVeblen F \<equiv> \<lambda>x. ordering (critical_set (range F) x)"
+definition
+  oVeblen :: "(ordinal \<Rightarrow> ordinal) \<Rightarrow> ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal" where
+  "oVeblen F = (\<lambda>x. ordering (critical_set (range F) x))"
 
 lemma (in normal) oVeblen_0: "oVeblen F 0 = F"
  apply (unfold oVeblen_def)

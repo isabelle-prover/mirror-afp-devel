@@ -1,4 +1,4 @@
-(*  ID:         $Id: NBE.thy,v 1.5 2008-06-12 06:57:24 lsf37 Exp $
+(*  ID:         $Id: NBE.thy,v 1.6 2008-06-25 18:29:58 makarius Exp $
     Author:     Klaus Aehlig, Tobias Nipkow
     Normalization by Evaluation
 *)
@@ -85,13 +85,13 @@ abbreviation foldl_At (infix "\<bullet>\<bullet>" 90) where
 "t \<bullet>\<bullet> ts \<equiv> foldl (op \<bullet>) t ts"
 
 text{*Auxiliary measure function:*}
-consts depth_At :: "tm \<Rightarrow> nat"
-primrec
-"depth_At(C nm) = 0"
-"depth_At(V x) = 0"
-"depth_At(s \<bullet> t) = depth_At s + 1"
-"depth_At(\<Lambda> t) = 0"
-"depth_At(term v) = 0"
+primrec depth_At :: "tm \<Rightarrow> nat"
+where
+  "depth_At(C nm) = 0"
+| "depth_At(V x) = 0"
+| "depth_At(s \<bullet> t) = depth_At s + 1"
+| "depth_At(\<Lambda> t) = 0"
+| "depth_At(term v) = 0"
 
 lemma depth_At_foldl:
  "depth_At(s \<bullet>\<bullet> ts) = depth_At s + size ts"
@@ -146,19 +146,21 @@ fun lift_ML :: "nat \<Rightarrow> ml \<Rightarrow> ml" ("lift\<^bsub>ML\<^esub>"
 "lift\<^bsub>ML\<^esub> i (Clo v vs n) = Clo (lift\<^bsub>ML\<^esub> i v) (map (lift\<^bsub>ML\<^esub> i) vs) n" |
 "lift\<^bsub>ML\<^esub> i (apply u v) = apply (lift\<^bsub>ML\<^esub> i u) (lift\<^bsub>ML\<^esub> i v)"
 
-constdefs
- cons :: "tm \<Rightarrow> (nat \<Rightarrow> tm) \<Rightarrow> (nat \<Rightarrow> tm)" (infix "##" 65)
+definition
+ cons :: "tm \<Rightarrow> (nat \<Rightarrow> tm) \<Rightarrow> (nat \<Rightarrow> tm)" (infix "##" 65) where
 "t##\<sigma> \<equiv> \<lambda>i. case i of 0 \<Rightarrow> t | Suc j \<Rightarrow> lift 0 (\<sigma> j)"
- cons_ML :: "ml \<Rightarrow> (nat \<Rightarrow> ml) \<Rightarrow> (nat \<Rightarrow> ml)" (infix "##" 65)
+
+definition
+ cons_ML :: "ml \<Rightarrow> (nat \<Rightarrow> ml) \<Rightarrow> (nat \<Rightarrow> ml)" (infix "##" 65) where
 "v##\<sigma> \<equiv> \<lambda>i. case i of 0 \<Rightarrow> v::ml | Suc j \<Rightarrow> lift\<^bsub>ML\<^esub> 0 (\<sigma> j)"
 
 text{* Only for pure terms! *}
-consts subst :: "(nat \<Rightarrow> tm) \<Rightarrow> tm \<Rightarrow> tm"
-primrec
-"subst \<sigma> (C nm) = C nm"
-"subst \<sigma> (V x) = \<sigma> x"
-"subst \<sigma> (\<Lambda> t) = \<Lambda>(subst (V 0 ## \<sigma>) t)"
-"subst \<sigma> (s\<bullet>t) = (subst \<sigma> s) \<bullet> (subst \<sigma> t)"
+primrec subst :: "(nat \<Rightarrow> tm) \<Rightarrow> tm \<Rightarrow> tm"
+where
+  "subst \<sigma> (C nm) = C nm"
+| "subst \<sigma> (V x) = \<sigma> x"
+| "subst \<sigma> (\<Lambda> t) = \<Lambda>(subst (V 0 ## \<sigma>) t)"
+| "subst \<sigma> (s\<bullet>t) = (subst \<sigma> s) \<bullet> (subst \<sigma> t)"
 
 fun subst_ML :: "(nat \<Rightarrow> ml) \<Rightarrow> ml \<Rightarrow> ml" ("subst\<^bsub>ML\<^esub>") where
 "subst\<^bsub>ML\<^esub> \<sigma> (C_ML nm) = C_ML nm" |
@@ -404,8 +406,9 @@ done
 section "Reduction"
 
 text{* Rewrite rules and their compiled version: *}
-consts
+axiomatization
   R :: "(cname * tm list * tm)set"
+consts
   compR :: "(cname * ml list * ml)set"
 
 text{* Reduction of lambda-terms: *}
@@ -616,13 +619,13 @@ function kernel  :: "ml \<Rightarrow> tm"  ("_!" 300) where
 by pat_completeness auto
 termination by(relation "measure size'") auto
 
-consts kernelt :: "tm \<Rightarrow> tm" ("_!" 300)
-primrec 
-"(C nm)! = C nm"
-"(V x)! = V x"
-"(s \<bullet> t)! = (s!) \<bullet> (t!)"
-"(\<Lambda> t)! = \<Lambda>(t!)"
-"(term v)! = v!"
+primrec kernelt :: "tm \<Rightarrow> tm" ("_!" 300)
+where
+  "(C nm)! = C nm"
+| "(V x)! = V x"
+| "(s \<bullet> t)! = (s!) \<bullet> (t!)"
+| "(\<Lambda> t)! = \<Lambda>(t!)"
+| "(term v)! = v!"
 
 abbreviation
   kernels :: "ml list \<Rightarrow> tm list" ("_!" 300) where
@@ -897,14 +900,14 @@ qed (simp_all add:list_eq_iff_nth_eq, (simp_all add:rev_nth)?)
 
 section "Compiler"
 
-consts arity :: "cname \<Rightarrow> nat"
+axiomatization arity :: "cname \<Rightarrow> nat"
 
-consts compile :: "tm \<Rightarrow> (nat \<Rightarrow> ml) \<Rightarrow> ml"
-primrec
-"compile (V x) \<sigma> = \<sigma> x"
-"compile (C nm) \<sigma> = Clo (C\<^bsub>ML\<^esub> nm) [] (arity nm)"
-"compile (s \<bullet> t) \<sigma> = apply (compile s \<sigma>) (compile t \<sigma>)"
-"compile (\<Lambda> t) \<sigma> = Clo (Lam\<^bsub>ML\<^esub> (compile t (V\<^bsub>ML\<^esub> 0 ## \<sigma>))) [] 1"
+primrec compile :: "tm \<Rightarrow> (nat \<Rightarrow> ml) \<Rightarrow> ml"
+where
+  "compile (V x) \<sigma> = \<sigma> x"
+| "compile (C nm) \<sigma> = Clo (C\<^bsub>ML\<^esub> nm) [] (arity nm)"
+| "compile (s \<bullet> t) \<sigma> = apply (compile s \<sigma>) (compile t \<sigma>)"
+| "compile (\<Lambda> t) \<sigma> = Clo (Lam\<^bsub>ML\<^esub> (compile t (V\<^bsub>ML\<^esub> 0 ## \<sigma>))) [] 1"
 
 text{* Compiler for open terms and for terms with fixed free variables: *}
 
@@ -919,7 +922,7 @@ defs compR_def:
 
 text{* Axioms about @{text R}: *}
 
-axioms
+axiomatization where
 pure_R: "(nm,ts,t) : R \<Longrightarrow> (\<forall>t \<in> set ts. pure t) \<and> pure t"
 
 lemma lift_compile:

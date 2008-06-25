@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Expr.thy
-    ID:         $Id: Expr.thy,v 1.5 2008-06-12 06:57:22 lsf37 Exp $
+    ID:         $Id: Expr.thy,v 1.6 2008-06-25 18:29:58 makarius Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -59,30 +59,24 @@ done
 
 subsection "Syntactic sugar"
 
-syntax
-  InitBlock:: "vname \<Rightarrow> ty \<Rightarrow> 'a exp \<Rightarrow> 'a exp \<Rightarrow> 'a exp"   ("(1'{_:_ := _;/ _})")
-translations
-  "InitBlock V T e1 e2" => "{V:T; V := e1;; e2}"
+abbreviation (input)
+  InitBlock:: "'a \<Rightarrow> ty \<Rightarrow> 'a exp \<Rightarrow> 'a exp \<Rightarrow> 'a exp"   ("(1'{_:_ := _;/ _})") where
+  "InitBlock V T e1 e2 == {V:T; V := e1;; e2}"
 
-syntax
- unit :: "'a exp"
- null :: "'a exp"
- addr :: "addr \<Rightarrow> 'a exp"
- true :: "'a exp"
- false :: "'a exp"
-translations
- "unit" == "Val Unit"
- "null" == "Val Null"
- "addr a" == "Val(Addr a)"
- "true" == "Val(Bool True)"
- "false" == "Val(Bool False)"
+abbreviation unit where "unit == Val Unit"
+abbreviation null where "null == Val Null"
+abbreviation "addr a == Val(Addr a)"
+abbreviation "true == Val(Bool True)"
+abbreviation "false == Val(Bool False)"
 
-syntax
-  Throw :: "addr \<Rightarrow> 'a exp"
-  THROW :: "cname \<Rightarrow> 'a exp"
-translations
-  "Throw a" == "throw(Val(Addr a))"
-  "THROW xc" == "Throw(addr_of_sys_xcpt xc)"
+abbreviation
+  Throw :: "addr \<Rightarrow> 'a exp" where
+  "Throw a == throw(Val(Addr a))"
+
+abbreviation
+  THROW :: "cname \<Rightarrow> 'a exp" where
+  "THROW xc == Throw(addr_of_sys_xcpt xc)"
+
 
 subsection{*Free Variables*}
 

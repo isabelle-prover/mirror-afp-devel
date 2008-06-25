@@ -17,10 +17,14 @@ primrec deX :: "vbl => nat" where "deX (X n) = n"
 lemma X_deX[simp]: "X (deX a) = a"
   by(cases a) simp
 
-constdefs "zeroX == X 0"
+definition "zeroX = X 0"
 
 consts nextX :: "vbl => vbl"
 primrec "nextX (X n) = X (Suc n)"
+
+syntax
+  zeroX :: logic
+  nextX :: logic
 
 definition
   vblcase :: "['a,vbl => 'a,vbl] => 'a" where

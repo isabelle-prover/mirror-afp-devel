@@ -253,12 +253,10 @@ text {*This brings the theory to an end. Notice how the definition of the limit 
   reconstruction there.
   Before making disjoint, we first need an ascending series of sets*)
 
-consts
-  mk_mon::"(nat \<Rightarrow> 'a set) \<Rightarrow> nat \<Rightarrow> 'a set"
-
-primrec
+primrec mk_mon::"(nat \<Rightarrow> 'a set) \<Rightarrow> nat \<Rightarrow> 'a set"
+where
   "mk_mon A 0 = A 0"
-  "mk_mon A (Suc n) = A (Suc n) \<union> mk_mon A n"
+| "mk_mon A (Suc n) = A (Suc n) \<union> mk_mon A n"
 
 lemma "mk_mon A \<up> (\<Union>i. A i)"
 proof (unfold set_mon_conv)

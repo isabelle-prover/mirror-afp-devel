@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJDefs.thy,v 1.10 2008-06-12 06:57:16 lsf37 Exp $
+    ID:          $Id: FJDefs.thy,v 1.11 2008-06-25 18:29:54 makarius Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -134,13 +134,6 @@ consts
   subst_list1 :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp list \<Rightarrow> exp list"
   subst_list2 :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp list \<Rightarrow> exp list"
 
-syntax 
-  "_substs" :: "[varName list] \<Rightarrow> [exp list] \<Rightarrow> [exp] \<Rightarrow> exp"  ("'(_/_')_" [80,80,80] 80)
-  "_subst_list" :: "[varName list] \<Rightarrow> [exp list] \<Rightarrow> [exp list] \<Rightarrow> exp list"  ("'[_/_']_" [80,80,80] 80)
-translations
-  "(ds/xs)e" \<rightleftharpoons> "substs (map_upds (CONST empty) xs ds) e"
-  "[ds/xs]es" \<rightleftharpoons> "map (substs (map_upds (CONST empty) xs ds)) es"
-
 primrec 
   "substs \<sigma> (Var x) =             (case (\<sigma>(x)) of None \<Rightarrow> (Var x) | Some p \<Rightarrow> p)"
   "substs \<sigma> (FieldProj e f) =     FieldProj (substs \<sigma> e) f"
@@ -152,6 +145,17 @@ primrec
   "subst_list2 \<sigma> [] = []"
   "subst_list2 \<sigma> (h # t) = (substs \<sigma> h) # (subst_list2 \<sigma> t)"
 
+abbreviation
+  substs_syn :: "[exp list] \<Rightarrow> [varName list] \<Rightarrow> [exp] \<Rightarrow> exp"
+    ("'(_'/_')_" [80,80,80] 80) where
+  "(ds/xs)e \<equiv> substs (map_upds empty xs ds) e"
+
+abbreviation
+  subst_list_syn :: "[exp list] \<Rightarrow> [varName list] \<Rightarrow> [exp list] \<Rightarrow> exp list"
+    ("'[_'/_']_" [80,80,80] 80) where
+  "[ds/xs]es \<equiv> map (substs (map_upds empty xs ds)) es"
+
+
 subsection {* Lookup *}
 
 text {* The fuction $\mathit{lookup}\ f\ l$ function returns an option
@@ -159,15 +163,15 @@ containing the first element of $l$ satisfying $f$, or $\mathtt{None}$
 if no such element exists 
 *}
 
-consts lookup :: "'a list \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a option"
-primrec 
+primrec lookup :: "'a list \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a option"
+where
   "lookup [] P = None"
-  "lookup (h#t) P = (if P h then Some h else lookup t P)"
+| "lookup (h#t) P = (if P h then Some h else lookup t P)"
 
-consts lookup2 :: "'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'b option"
-primrec
+primrec lookup2 :: "'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'b option"
+where
   "lookup2 [] l2 P = None"
-  "lookup2 (h1#t1) l2 P = (if P h1 then Some(hd l2) else lookup2 t1 (tl l2) P)"
+| "lookup2 (h1#t1) l2 P = (if P h1 then Some(hd l2) else lookup2 t1 (tl l2) P)"
 
 subsection {* Variable Definition Accessors *}
 

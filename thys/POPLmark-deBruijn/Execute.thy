@@ -1,4 +1,4 @@
-(*  ID:         $Id: Execute.thy,v 1.3 2007-08-18 13:57:45 makarius Exp $
+(*  ID:         $Id: Execute.thy,v 1.4 2008-06-25 18:29:59 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -42,10 +42,12 @@ lemma [code ind_set]: "t \<in> value \<Longrightarrow> Rcd fs \<in> value \<Long
 
 lemmas [code ind_set] = value.Abs value.TAbs
 
-constdefs
-  natT :: type
+definition
+  natT :: type where
   "natT \<equiv> \<forall><:Top. (\<forall><:TVar 0. (\<forall><:TVar 1. (TVar 2 \<rightarrow> TVar 1) \<rightarrow> TVar 0 \<rightarrow> TVar 1))"
-  fact2 :: trm
+
+definition
+  fact2 :: trm where
   "fact2 \<equiv>
    LET PVar natT =
      (\<lambda><:Top. \<lambda><:TVar 0. \<lambda><:TVar 1. \<lambda>:TVar 2 \<rightarrow> TVar 1. \<lambda>: TVar 1. Var 1 \<bullet> Var 0)

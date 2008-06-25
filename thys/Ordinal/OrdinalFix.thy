@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalFix.thy,v 1.4 2007-10-18 07:21:22 fhaftmann Exp $
+    ID:          $Id: OrdinalFix.thy,v 1.5 2008-06-25 18:29:59 makarius Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -10,15 +10,14 @@ theory OrdinalFix
 imports OrdinalInverse
 begin
 
-consts
-  iter :: "nat \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)"
-primrec
+primrec iter :: "nat \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)"
+where
   "iter 0       F x = x"
-  "iter (Suc n) F x = F (iter n F x)"
+| "iter (Suc n) F x = F (iter n F x)"
 
-constdefs
-  oFix :: "(ordinal \<Rightarrow> ordinal) \<Rightarrow> ordinal \<Rightarrow> ordinal"
-  "oFix F a \<equiv> oLimit (\<lambda>n. iter n F a)"
+definition
+  oFix :: "(ordinal \<Rightarrow> ordinal) \<Rightarrow> ordinal \<Rightarrow> ordinal" where
+  "oFix F a = oLimit (\<lambda>n. iter n F a)"
 
 lemma oFix_fixed:
 "\<lbrakk>continuous F; a \<le> F a\<rbrakk> \<Longrightarrow> F (oFix F a) = oFix F a"
@@ -106,9 +105,9 @@ subsection {* Derivatives of ordinal functions *}
 
 text "The derivative of F enumerates all the fixed-points of F"
 
-constdefs
-  oDeriv :: "(ordinal \<Rightarrow> ordinal) \<Rightarrow> ordinal \<Rightarrow> ordinal"
-  "oDeriv F \<equiv> ordinal_rec (oFix F 0) (\<lambda>p x. oFix F (oSuc x))"
+definition
+  oDeriv :: "(ordinal \<Rightarrow> ordinal) \<Rightarrow> ordinal \<Rightarrow> ordinal" where
+  "oDeriv F = ordinal_rec (oFix F 0) (\<lambda>p x. oFix F (oSuc x))"
 
 lemma oDeriv_0 [simp]:
 "oDeriv F 0 = oFix F 0"

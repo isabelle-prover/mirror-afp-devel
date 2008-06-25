@@ -56,10 +56,8 @@ constdefs
   wf_jvm_prog :: "jvm_prog \<Rightarrow> bool"
   "wf_jvm_prog P \<equiv> \<exists>\<Phi>. wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
 
-syntax
-  wf_jvm_prog_phi :: "ty\<^isub>P \<Rightarrow> jvm_prog \<Rightarrow> bool" ("wf'_jvm'_prog\<^sub>_ _" [0,999] 1000)
-translations
-  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" <= "wf_jvm_prog\<^sub>\<Phi> P"
+notation (input)
+  wf_jvm_prog_phi  ("wf'_jvm'_prog\<^sub>_ _" [0,999] 1000)
 
 
 lemma wt_jvm_progD:

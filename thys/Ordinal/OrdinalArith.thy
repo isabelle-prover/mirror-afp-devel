@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalArith.thy,v 1.6 2008-06-12 06:57:24 lsf37 Exp $
+    ID:          $Id: OrdinalArith.thy,v 1.7 2008-06-25 18:29:59 makarius Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -16,7 +16,7 @@ instantiation ordinal :: plus
 begin
 
 definition
-  plus_ordinal_def: "op + = (\<lambda>x. ordinal_rec x (\<lambda>p. oSuc))"
+  "op + = (\<lambda>x. ordinal_rec x (\<lambda>p. oSuc))"
 
 instance ..
 
@@ -290,10 +290,10 @@ by (rule not_inject, simp add: ordinal_times_eq_0)
 
 subsection {* Exponentiation *}
 
-constdefs
-  exp_ordinal :: "[ordinal, ordinal] \<Rightarrow> ordinal" (infixr "**" 75)
-  "op ** \<equiv> \<lambda>x. if 0 < x then ordinal_rec 1 (\<lambda>p w. w * x)
-                         else (\<lambda>y. if y = 0 then 1 else 0)"
+definition
+  exp_ordinal :: "[ordinal, ordinal] \<Rightarrow> ordinal" (infixr "**" 75) where
+  "op ** = (\<lambda>x. if 0 < x then ordinal_rec 1 (\<lambda>p w. w * x)
+                         else (\<lambda>y. if y = 0 then 1 else 0))"
 
 lemma continuous_exp: "0 < x \<Longrightarrow> continuous (op ** x)"
 by (simp add: exp_ordinal_def continuous_ordinal_rec)

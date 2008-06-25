@@ -21,10 +21,9 @@ primrec
                                    then Some (snd(snd(snd e)))
                                    else match_ex_table P C pc es)"
 
-consts
-  ex_table_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table"
-translations
-  "ex_table_of P C M" == "snd (snd (snd (snd (snd (snd(method P C M))))))"
+abbreviation
+  ex_table_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table" where
+  "ex_table_of P C M == snd (snd (snd (snd (snd (snd(method P C M))))))"
 
 
 consts

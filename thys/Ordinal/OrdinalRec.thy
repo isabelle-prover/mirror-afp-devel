@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalRec.thy,v 1.3 2006-05-18 14:19:24 lsf37 Exp $
+    ID:          $Id: OrdinalRec.thy,v 1.4 2008-06-25 18:29:59 makarius Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -10,8 +10,9 @@ theory OrdinalRec
 imports OrdinalCont
 begin
 
-constdefs oPrec :: "ordinal \<Rightarrow> ordinal"
-  "oPrec x \<equiv> THE p. x = oSuc p"
+definition
+  oPrec :: "ordinal \<Rightarrow> ordinal" where
+  "oPrec x = (THE p. x = oSuc p)"
 
 lemma oPrec_oSuc [simp]: "oPrec (oSuc x) = x"
 by (unfold oPrec_def, rule the_equality, simp_all)
@@ -19,10 +20,9 @@ by (unfold oPrec_def, rule the_equality, simp_all)
 lemma oPrec_less: "\<exists>p. x = oSuc p \<Longrightarrow> oPrec x < x"
 by clarsimp
 
-consts ordinal_rec0 ::
-  "['a, ordinal \<Rightarrow> 'a \<Rightarrow> 'a, (nat \<Rightarrow> 'a) \<Rightarrow> 'a, ordinal] \<Rightarrow> 'a"
-
-defs ordinal_rec0_def:
+definition
+  ordinal_rec0 ::
+    "['a, ordinal \<Rightarrow> 'a \<Rightarrow> 'a, (nat \<Rightarrow> 'a) \<Rightarrow> 'a, ordinal] \<Rightarrow> 'a" where
   "ordinal_rec0 z s l \<equiv> wfrec {(x,y). x < y} (\<lambda>F x.
     if x = 0 then z else
     if (\<exists>p. x = oSuc p) then s (oPrec x) (F (oPrec x)) else
@@ -187,10 +187,10 @@ done
 
 subsection {* Recursive definitions for @{typ "ordinal => ordinal"} *}
 
-constdefs
+definition
   ordinal_rec ::
-    "[ordinal, ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal, ordinal] \<Rightarrow> ordinal"
-  "ordinal_rec z s \<equiv> ordinal_rec0 z s oLimit"
+    "[ordinal, ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal, ordinal] \<Rightarrow> ordinal" where
+  "ordinal_rec z s = ordinal_rec0 z s oLimit"
 
 lemma omega_complete_oLimit: "omega_complete (op \<le>) oLimit"
  apply (rule omega_complete.intro)

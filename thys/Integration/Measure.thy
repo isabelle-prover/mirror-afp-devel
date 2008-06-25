@@ -145,12 +145,10 @@ text {*The case is different for the second theorem. It is only five
   yields disjoint sets. We skip the justification of the lemmata for
   brevity. *} 
 
-consts
-  mkdisjoint:: "(nat \<Rightarrow> 'a set) \<Rightarrow> (nat \<Rightarrow> 'a set)"
-
-primrec
+primrec mkdisjoint:: "(nat \<Rightarrow> 'a set) \<Rightarrow> (nat \<Rightarrow> 'a set)"
+where
   "mkdisjoint A 0 = A 0"
-  "mkdisjoint A (Suc n) = A (Suc n) - A n"
+| "mkdisjoint A (Suc n) = A (Suc n) - A n"
 
 lemma mkdisjoint_un: 
   assumes up: "\<And>n. A n \<subseteq> A (Suc n)"
@@ -373,12 +371,10 @@ qed(*>*)
 
 
 (*<*)
-consts
-trivial_series2:: "'a set \<Rightarrow> 'a set \<Rightarrow> (nat \<Rightarrow> 'a set)"
-
-primrec
+primrec trivial_series2:: "'a set \<Rightarrow> 'a set \<Rightarrow> (nat \<Rightarrow> 'a set)"
+where
   "trivial_series2 a b 0 = a"
-  "trivial_series2 a b (Suc n) = (if (n=0) then b else {})"
+| "trivial_series2 a b (Suc n) = (if (n=0) then b else {})"
 
 lemma measure_additive: assumes ms: "measure_space M"
   and disj: "a \<inter> b = {}" and a: "a \<in> measurable_sets M"

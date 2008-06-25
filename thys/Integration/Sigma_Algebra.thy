@@ -1,5 +1,5 @@
 (*  Title:      Sigma_Algebra.thy
-    ID:         $Id: Sigma_Algebra.thy,v 1.8 2008-06-12 06:57:20 lsf37 Exp $
+    ID:         $Id: Sigma_Algebra.thy,v 1.9 2008-06-25 18:29:56 makarius Exp $
     Author:     Stefan Richter, Markus Wenzel, TU Muenchen
     License:    LGPL
 
@@ -151,14 +151,10 @@ text {* To end this theory we prove a special case of the @{text
   idea must be made precise by exhibiting a concrete sequence of
   sets. *}
 
-consts
-trivial_series:: "'a set \<Rightarrow> 'a set \<Rightarrow> (nat \<Rightarrow> 'a set)"
-
-text "The new constant is only declared but not yet defined."
-
-primrec
+primrec trivial_series:: "'a set \<Rightarrow> 'a set \<Rightarrow> (nat \<Rightarrow> 'a set)"
+where
   "trivial_series a b 0 = a"
-  "trivial_series a b (Suc n) = b"
+| "trivial_series a b (Suc n) = b"
 
 text {*Using $\isacommand {primrec}$, primitive recursive functions over
   inductively defined data types --- the natural numbers in this case ---

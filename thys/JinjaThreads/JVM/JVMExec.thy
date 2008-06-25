@@ -6,8 +6,9 @@ header {* \isaheader{Program Execution in the JVM} *}
 
 theory JVMExec imports JVMExecInstr JVMExceptions begin
 
-syntax instrs_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> instr list"
-translations "instrs_of P C M" == "fst(snd(snd(snd(snd(snd(method P C M))))))"
+abbreviation
+  instrs_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> instr list" where
+  "instrs_of P C M == fst(snd(snd(snd(snd(snd(method P C M))))))"
 
 
 -- "single step execution:"

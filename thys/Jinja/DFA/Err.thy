@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Err.thy
-    ID:         $Id: Err.thy,v 1.8 2008-06-24 22:23:30 makarius Exp $
+    ID:         $Id: Err.thy,v 1.9 2008-06-25 18:29:56 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -46,7 +46,7 @@ constdefs
 
 abbreviation
   err_semilat :: "'a esl \<Rightarrow> bool" where
-  "err_semilat L == semilat(Err.sl L)"
+  "err_semilat L == semilat(sl L)"
 
 consts
   strict  :: "('a \<Rightarrow> 'b err) \<Rightarrow> ('a err \<Rightarrow> 'b err)"

@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Product.thy
-    ID:         $Id: Product.thy,v 1.4 2008-06-14 14:27:12 makarius Exp $
+    ID:         $Id: Product.thy,v 1.5 2008-06-25 18:29:58 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -21,16 +21,17 @@ constdefs
   "esl \<equiv> \<lambda>(A,r\<^isub>A,f\<^isub>A) (B,r\<^isub>B,f\<^isub>B). (A \<times> B, le r\<^isub>A r\<^isub>B, sup f\<^isub>A f\<^isub>B)"
 
 (*<*)
-syntax
-  "@lesubprod" :: "'a \<times> 'b \<Rightarrow> 'a ord \<Rightarrow> 'b ord \<Rightarrow> 'b \<Rightarrow> bool" 
-  ("(_ /<='(_,_') _)" [50, 0, 0, 51] 50)
+abbreviation
+  lesubprod1 :: "'a \<times> 'b \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
+    ("(_ /<='(_,_') _)" [50, 0, 0, 51] 50) where
+  "p <=(rA,rB) q == p \<sqsubseteq>\<^bsub>Product.le rA rB\<^esub> q"
 (*>*)
 
-syntax (xsymbols)
-  "@lesubprod" :: "'a \<times> 'b \<Rightarrow> 'a ord \<Rightarrow> 'b ord \<Rightarrow> 'b \<Rightarrow> bool" 
-  ("(_ /\<sqsubseteq>'(_,_') _)" [50, 0, 0, 51] 50)
+abbreviation (xsymbols)
+  lesubprod :: "'a \<times> 'b \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
+    ("(_ /\<sqsubseteq>'(_,_') _)" [50, 0, 0, 51] 50) where
+  "p \<sqsubseteq>(rA,rB) q == p \<sqsubseteq>\<^bsub>Product.le rA rB\<^esub> q"
 
-translations "p \<sqsubseteq>(rA,rB) q" == "p \<sqsubseteq>\<^bsub>Product.le rA rB\<^esub> q"
 
 lemma unfold_lesub_prod: "x \<sqsubseteq>(r\<^isub>A,r\<^isub>B) y \<equiv> le r\<^isub>A r\<^isub>B x y"
 (*<*) by (simp add: lesub_def) (*>*)
