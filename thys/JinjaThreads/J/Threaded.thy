@@ -2,7 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-theory Threaded imports SmallStep "../Framework/FWLiftingSem" JWellForm "../Common/ConformThreaded" begin
+theory Threaded
+imports SmallStep "../Framework/FWLiftingSem" JWellForm "../Common/ConformThreaded"
+begin
 
 
 abbreviation final_expr :: "expr \<times> locals \<Rightarrow> bool"where
@@ -198,7 +200,7 @@ proof(rule lock_thread_okI)
       by(auto dest: lock_okD1)
     with lsl show ?thesis by simp
   next
-    case (Some a) thus ?thesis by(simp)
+    case (Some a) thus ?thesis by (cases a) simp_all
   qed
 qed
 
