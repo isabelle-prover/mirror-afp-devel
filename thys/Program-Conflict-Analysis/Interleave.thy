@@ -78,7 +78,7 @@ done
 
 (* TODO: Is this wise as default simp ?*)
 lemma interleave_length[rule_format, simp]: "ALL x : a\<otimes>b . length x = length a + length b"
-  apply(induct_tac rule: interleave.induct)
+  apply(induct rule: interleave.induct)
   apply(auto)
 done
 
@@ -91,7 +91,7 @@ lemma interleave_same[simp]: "y\<in>l\<otimes>y = (l=[])"
 done
 
 lemma interleave_comm[simp]: "a\<otimes>b = b\<otimes>a" (is "?P f a b")
-  apply(induct_tac rule: interleave.induct)
+  apply(induct rule: interleave.induct)
   apply(auto)
 done
 
