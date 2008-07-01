@@ -1,7 +1,7 @@
 ## configurables
 
 SESSION-NAME = ClockSynchInst
-BASE-IMAGE = HOL-Complex
+BASE-IMAGE = HOL
 
 ICSCVCFILES = abs_distrib_mult.ics abs_distrib_mult.cvc abs_distrib_mult2.cvc \
         bound_prec_enh4.cvc bound_prec_enh.cvc bound_prec_enh7.cvc \
