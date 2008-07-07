@@ -1,7 +1,7 @@
 ## configurables
 
 SESSION-NAME = Integration
-BASE-IMAGE = HOL
+BASE-IMAGE = HOL-NSA
 
 ## targets
 
