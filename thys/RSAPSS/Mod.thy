@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Mod.thy
-    ID:         $Id: Mod.thy,v 1.5 2008-06-12 06:57:26 lsf37 Exp $
+    ID:         $Id: Mod.thy,v 1.6 2008-07-10 21:20:00 makarius Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -11,37 +11,41 @@ imports Main
 begin
 
 lemma divmultassoc: "a div (b*c) * (b*c) = ((a div (b * c)) * b)*(c::nat)"
-  by (auto)
+  by auto
 
 lemma delmod: "(a::nat) mod (b*c) mod c = a mod c"
-  apply (subst mod_div_equality [THEN sym, of a "b*c"]);
-  back
+  apply (subst (2) mod_div_equality [symmetric, of a "b*c"])
   apply (subst add_commute)
-  apply (subst divmultassoc);
-  by (simp add: mod_mult_self1);
+  apply (subst divmultassoc)
+  apply (simp add: mod_mult_self1)
+  done
 
 lemma timesmod1: "((x::nat)*((y::nat) mod n)) mod (n::nat) = ((x*y) mod n)"
-  apply (subst mod_mult_distrib2);
-  apply (subst delmod);
-  by (auto);
+  apply (subst mod_mult_distrib2)
+  apply (subst delmod)
+  apply auto
+  done
 
 lemma timesmod3: "((a mod (n::nat)) * b) mod n = (a*b) mod n"
-  apply (subst mult_commute);
-  apply (subst timesmod1);
-  apply (subst mult_commute);
-  by (auto)
+  apply (subst mult_commute)
+  apply (subst timesmod1)
+  apply (subst mult_commute)
+  apply auto
+  done
 
 lemma remainderexplemma: "(y mod (a::nat) = z mod a) \<Longrightarrow> (x*y) mod a = (x*z) mod a"
-  apply (subst timesmod1 [THEN sym]);
-  apply (auto);
-  apply (subst timesmod1);
-  by (auto);
+  apply (subst timesmod1 [symmetric])
+  apply auto
+  apply (subst timesmod1)
+  apply auto
+  done
 
 lemma remainderexp: "((a mod (n::nat))^i) mod n = (a^i) mod n"
-  apply (induct_tac i);
-  apply (auto);
-  apply (subst timesmod3);
-  apply (rule remainderexplemma);
-  by (auto)
+  apply (induct i)
+  apply auto
+  apply (subst timesmod3)
+  apply (rule remainderexplemma)
+  apply auto
+  done
 
 end

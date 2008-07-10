@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/RSAPSS.thy
-    ID:         $Id: RSAPSS.thy,v 1.8 2008-06-12 06:57:26 lsf37 Exp $
+    ID:         $Id: RSAPSS.thy,v 1.9 2008-07-10 21:20:00 makarius Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -33,7 +33,9 @@ defs
                             then False
                             else let em = nat_to_bv_length (rsa_crypt (bv_to_nat s) d n) ((roundup (length(nat_to_bv n) - 1) 8) * 8) in emsapss_decode m em (length(nat_to_bv n) - 1)"
 
-lemma length_emsapss_encode [rule_format]: "emsapss_encode m x \<noteq> [] \<longrightarrow> length (emsapss_encode m x) = roundup x 8 * 8"
+lemma length_emsapss_encode:
+  "emsapss_encode m x \<noteq> [] \<Longrightarrow> length (emsapss_encode m x) = roundup x 8 * 8"
+  apply (atomize (full))
   apply (simp add: emsapss_encode)
   apply (simp add: emsapss_encode_help1)
   apply (simp add: emsapss_encode_help2)
@@ -58,8 +60,9 @@ lemma length_emsapss_encode [rule_format]: "emsapss_encode m x \<noteq> [] \<lon
   apply (simp add: BC)
   apply (simp add: max_min)
   apply (insert roundup_ge_emBits [of x 8])
-  apply (safe)
-by (simp)+
+  apply safe
+  apply (simp)+
+  done
 
 lemma bv_to_nat_emsapss_encode_le: "emsapss_encode m x \<noteq> [] \<Longrightarrow> bv_to_nat (emsapss_encode m x) < 2^(roundup x 8 * 8)" 
   apply (insert length_emsapss_encode [of m x])
@@ -95,22 +98,22 @@ proof -
 qed
 
 lemma MGFLen_helper: "MGF z l ~= [] \<Longrightarrow> l <= 2^32*(length (sha1 z))"
-proof (case_tac "2^32*length (sha1 z) < l")
+proof (cases "2^32*length (sha1 z) < l")
   assume x: "MGF z l ~= []"
   assume a: "2 ^ 32 * length (sha1 z) < l" 
-  hence "MGF z l = []" 
-  proof (case_tac "l=0")
+  then have "MGF z l = []" 
+  proof (cases "l=0")
     assume "l=0"
-    thus "MGF z l = []" by (simp add: MGF)
+    then show "MGF z l = []" by (simp add: MGF)
   next
     assume "l~=0"
-    hence "(l = 0 \<or> 2^32*length(sha1 z) < l) = True" using a by fast
-    thus "MGF z l = []" apply (simp only: MGF) by simp
+    then have "(l = 0 \<or> 2^32*length(sha1 z) < l) = True" using a by fast
+    then show "MGF z l = []" apply (simp only: MGF) by simp
   qed
-  thus ?thesis using x by simp
+  then show ?thesis using x by simp
 next
   assume "\<not> 2 ^ 32 * length (sha1 z) < l" 
-  thus ?thesis by simp
+  then show ?thesis by simp
 qed
 
 lemma length_helper2: assumes p: "prime p" and q: "prime q" 
@@ -161,10 +164,10 @@ proof -
       from p have p2: "1<p" by (simp add: prime_def)
       moreover from q have "1<q" by (simp add: prime_def)
       ultimately have "p<p*q" by simp
-      hence "1<p*q" using p2 by arith
-      thus ?thesis using len_nat_to_bv_pos by simp
+      then have "1<p*q" using p2 by arith
+      then show ?thesis using len_nat_to_bv_pos by simp
     qed  
-    thus ?thesis using solve_length_generate_DB using len by simp
+    then show ?thesis using solve_length_generate_DB using len by simp
   qed
   have c: "length (bvxor
     (generate_DB
@@ -201,12 +204,12 @@ proof -
       show "(length (remzero (hd#tl))) <= length (hd#tl)"
       proof (cases hd)
 	assume "hd=\<zero>"
-	hence "remzero (hd#tl) = remzero tl" by simp
-	thus ?thesis using Cons by simp
+	then have "remzero (hd#tl) = remzero tl" by simp
+	then show ?thesis using Cons by simp
       next
 	assume "hd=\<one>"
-	hence "remzero (hd#tl) = hd#tl" by simp
-	thus ?thesis by simp
+	then have "remzero (hd#tl) = hd#tl" by simp
+	then show ?thesis by simp
       qed
     qed
   qed
@@ -220,8 +223,8 @@ proof -
       show ?thesis using length_drop[of "(8-emBits mod 8)" maskedDB] 
       proof (simp)
 	have "0 <= emBits mod 8" by simp
-	hence "8-(emBits mod 8) <= 8" by simp
-	thus  "length maskedDB + emBits mod 8 - 8 + (length a + length b) =
+	then have "8-(emBits mod 8) <= 8" by simp
+	then show  "length maskedDB + emBits mod 8 - 8 + (length a + length b) =
 	  length maskedDB + (length a + length b) + emBits mod 8 - 8" using len by arith
       qed
     qed
@@ -242,7 +245,7 @@ proof -
   have "8 <= length (generate_DB
   (generate_PS (length (nat_to_bv (p * q)) - Suc 0)
   (length (sha1 (generate_M' (sha1 m) salt)))))" by (simp add: generate_DB)
-  thus ?thesis using length_bvxor_bound by simp
+  then show ?thesis using length_bvxor_bound by simp
 qed
 
 lemma length_helper: assumes p: "prime p" and q: "prime q" and x: "(length (nat_to_bv (p * q)) - Suc 0) mod 8 ~= 0" and mgf: "(MGF (sha1 (generate_M' (sha1 m) salt))
@@ -270,22 +273,23 @@ proof -
   from mgf have round: "168 <= roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8"
   proof (simp only: sha1len sLen)
     from len have "160 + sLen +16 \<le> length (nat_to_bv (p * q)) - Suc 0" by (simp add: sha1len)
-    hence len1: "176 <= length (nat_to_bv (p * q)) - Suc 0" by simp
-    have "length (nat_to_bv (p*q)) - Suc 0 <= (roundup (length (nat_to_bv (p * q)) - Suc 0) 8) * 8" apply (simp only: roundup)
-    proof (case_tac "(length (nat_to_bv (p*q)) - Suc 0) mod 8 = 0")
-	assume len2: "(length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0" 
-	hence "(if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8 = (length (nat_to_bv (p * q)) - Suc 0) div 8 * 8" by simp
-	moreover have "(length (nat_to_bv (p * q)) - Suc 0) div 8 * 8 = (length (nat_to_bv (p * q)) - Suc 0)" using len2 by (auto simp add: div_mod_equality[of "length (nat_to_bv (p * q)) - Suc 0" 8 0])
-	ultimately show "length (nat_to_bv (p * q)) - Suc 0
-    \<le> (if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
-      next
-	assume len2: "(length (nat_to_bv (p*q)) - Suc 0) mod 8 ~= 0"
-	hence "(if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8 = ((length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
-	moreover have "length (nat_to_bv (p*q)) - Suc 0 <= ((length (nat_to_bv (p*q)) - Suc 0) div 8 + 1)*8" by auto
-	ultimately show "length (nat_to_bv (p * q)) - Suc 0
-    \<le> (if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
-      qed
-    thus "168 \<le> roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8" using len1 by simp
+    then have len1: "176 <= length (nat_to_bv (p * q)) - Suc 0" by simp
+    have "length (nat_to_bv (p*q)) - Suc 0 <= (roundup (length (nat_to_bv (p * q)) - Suc 0) 8) * 8"
+      unfolding roundup
+    proof (cases "(length (nat_to_bv (p*q)) - Suc 0) mod 8 = 0")
+      assume len2: "(length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0" 
+      then have "(if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8 = (length (nat_to_bv (p * q)) - Suc 0) div 8 * 8" by simp
+      moreover have "(length (nat_to_bv (p * q)) - Suc 0) div 8 * 8 = (length (nat_to_bv (p * q)) - Suc 0)" using len2 by (auto simp add: div_mod_equality[of "length (nat_to_bv (p * q)) - Suc 0" 8 0])
+      ultimately show "length (nat_to_bv (p * q)) - Suc 0
+	\<le> (if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
+    next
+      assume len2: "(length (nat_to_bv (p*q)) - Suc 0) mod 8 ~= 0"
+      then have "(if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8 = ((length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
+      moreover have "length (nat_to_bv (p*q)) - Suc 0 <= ((length (nat_to_bv (p*q)) - Suc 0) div 8 + 1)*8" by auto
+      ultimately show "length (nat_to_bv (p * q)) - Suc 0
+	\<le> (if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
+    qed
+    then show "168 \<le> roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8" using len1 by simp
   qed
   from x have a: "length
     (remzero
@@ -323,7 +327,7 @@ proof -
                         (length (generate_DB (generate_PS (length (nat_to_bv (p * q)) - Suc 0) (length (sha1 (generate_M' (sha1 m) salt))))))))
                     (length (nat_to_bv (p * q)) - Suc 0) @
                    sha1 (generate_M' (sha1 m) salt) @ BC)) <=  roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8 - 168 +168 - (8 - (length (nat_to_bv (p * q)) - Suc 0) mod 8)" by simp 
-  hence "length (remzero (maskedDB_zero
+  then have "length (remzero (maskedDB_zero
                     (bvxor (generate_DB (generate_PS (length (nat_to_bv (p * q)) - Suc 0) (length (sha1 (generate_M' (sha1 m) salt)))))
                       (MGF (sha1 (generate_M' (sha1 m) salt))
                         (length (generate_DB (generate_PS (length (nat_to_bv (p * q)) - Suc 0) (length (sha1 (generate_M' (sha1 m) salt))))))))
@@ -335,8 +339,8 @@ proof -
     from p have s: "1<p" by (simp add: prime_def)
     moreover from q have "1<q" by (simp add: prime_def)
     ultimately have "p<p*q" by simp 
-    hence "1<p*q" using s by arith
-    thus ?thesis using len_nat_to_bv_pos by simp
+    then have "1<p*q" using s by arith
+    then show ?thesis using len_nat_to_bv_pos by simp
   qed
   ultimately show ?thesis by arith
 qed
@@ -360,9 +364,9 @@ proof -
       else (emsapss_encode_help2 (generate_M' (sha1 m) salt)
       (length (nat_to_bv (p * q)) - Suc 0))) = (emsapss_encode_help2 ((generate_M' (sha1 m)) salt) (length (nat_to_bv (p*q)) - Suc 0))" by (auto simp add: emsapss_encode emsapss_encode_help1)
      from d have len: "length (sha1 m) + sLen + 16 <= (length (nat_to_bv (p*q))) - Suc 0"
-     proof (case_tac "length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16")
+     proof (cases "length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16")
        assume "length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16"
-       hence len1: "(if length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16 then []
+       then have len1: "(if length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16 then []
       else emsapss_encode_help2 (generate_M' (sha1 m) salt) (length (nat_to_bv (p * q)) - Suc 0)) = []" by simp
        assume len2:  "(if length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16 then []
       else emsapss_encode_help2 (generate_M' (sha1 m) salt) (length (nat_to_bv (p * q)) - Suc 0)) =
@@ -370,7 +374,7 @@ proof -
        from len1 and len2 and a and b show "length (sha1 m) + sLen + 16 \<le> length (nat_to_bv (p * q)) - Suc 0" by (auto simp add: emsapss_encode emsapss_encode_help1)
      next
        assume "\<not> length (nat_to_bv (p * q)) - Suc 0 < length (sha1 m) + sLen + 16"
-       thus "length (sha1 m) + sLen + 16 \<le> length (nat_to_bv (p * q)) - Suc 0" by simp
+       then show "length (sha1 m) + sLen + 16 \<le> length (nat_to_bv (p * q)) - Suc 0" by simp
      qed
     have e: "length (remzero (emsapss_encode_help2 (generate_M' (sha1 m) salt)
    (length (nat_to_bv (p * q)) - Suc 0))) < length (nat_to_bv (p * q))"
@@ -499,13 +503,13 @@ qed
 lemma bv_to_nat_emsapss_smaller_pq: assumes a: "prime p" and b: "prime q" and pneq: "p ~= q" and c: "emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0) \<noteq> []" shows "bv_to_nat (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)) < p*q"
 proof -
   from a and b and c show ?thesis
-  proof (case_tac "8 dvd ((length (nat_to_bv (p * q))) - Suc 0)")
+  proof (cases "8 dvd ((length (nat_to_bv (p * q))) - Suc 0)")
     assume d: "8 dvd ((length (nat_to_bv (p * q))) - Suc 0)"
-    hence "2 ^ (roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8) < p*q"
+    then have "2 ^ (roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8) < p*q"
     proof -
       from d have e: "roundup (length (nat_to_bv (p * q)) - Suc 0) 8 * 8 = length (nat_to_bv (p * q)) - Suc 0" using rnddvd by simp
       have "p*q = bv_to_nat (nat_to_bv (p*q))" by simp
-      hence "2 ^ (length (nat_to_bv (p * q)) - Suc 0) < p*q"
+      then have "2 ^ (length (nat_to_bv (p * q)) - Suc 0) < p*q"
       proof -
 	have "0<p*q"
 	proof -
@@ -514,29 +518,29 @@ proof -
 	  ultimately show ?thesis by simp
 	qed
 	moreover have "2^(length (nat_to_bv (p*q)) - Suc 0) ~= p*q" 
-	proof (case_tac "2^(length (nat_to_bv (p*q)) - Suc 0) = p*q")
+	proof (cases "2^(length (nat_to_bv (p*q)) - Suc 0) = p*q")
 	  assume "2^(length (nat_to_bv (p*q)) - Suc 0) = p*q"
 	  then have "p=q" using a and b and prime_equal by simp
-	  thus ?thesis using pneq by simp
+	  then show ?thesis using pneq by simp
 	next
 	  assume "2^(length (nat_to_bv (p*q)) - Suc 0) ~= p*q"
-	  thus ?thesis by simp
+	  then show ?thesis by simp
 	qed
 	ultimately show ?thesis using len_lower_bound[of "p*q"] by (simp)
       qed
-      thus ?thesis using e by simp
+      then show ?thesis using e by simp
     qed
     moreover from c have "bv_to_nat (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)) < 2 ^ (roundup (length (nat_to_bv (p * q)) - Suc 0)8 * 8 )" 
       using bv_to_nat_emsapss_encode_le [of m "(length (nat_to_bv (p * q)) - Suc 0)"] by auto
     ultimately show ?thesis by simp
   next
     assume y: "~(8 dvd (length (nat_to_bv (p*q)) - Suc 0))"
-    thus ?thesis
+    then show ?thesis
     proof -
       from y have x: "~((length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0)" by (simp add: dvd_eq_mod_eq_0)
       from remzeroeq have d: "bv_to_nat (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)) = bv_to_nat (remzero (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)))" by simp
       from a and b and c and x and length_emsapss_smaller_pq[of p q m] have "bv_to_nat (remzero (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0))) < bv_to_nat (nat_to_bv (p*q))" using length_lower[of "remzero (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0))" "nat_to_bv (p * q)"] and prime_hd_non_zero[of p q] by (auto)
-      thus "bv_to_nat (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)) < p * q" using d and bv_nat_bv by simp
+      then show "bv_to_nat (emsapss_encode m (length (nat_to_bv (p * q)) - Suc 0)) < p * q" using d and bv_nat_bv by simp
     qed
   qed
 qed

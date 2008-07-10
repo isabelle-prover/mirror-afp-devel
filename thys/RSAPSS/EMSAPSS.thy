@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/EMSAPSS.thy
-    ID:         $Id: EMSAPSS.thy,v 1.4 2006-08-31 12:11:46 webertj Exp $
+    ID:         $Id: EMSAPSS.thy,v 1.5 2008-07-10 21:20:00 makarius Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -177,10 +177,10 @@ primrec
   "MGF2 Z 0 = sha1 (Z@(nat_to_bv_length 0 32))"
   "MGF2 Z (Suc n) = (MGF2 Z n)@(sha1 (Z@(nat_to_bv_length (Suc n) 32)))"
 
-lemma roundup_positiv [rule_format]: "0 < emBits \<longrightarrow> 0 < (roundup emBits 160)"
+lemma roundup_positiv: "0 < emBits \<Longrightarrow> 0 < (roundup emBits 160)"
   by (simp add: roundup, safe, simp)
 
-lemma roundup_ge_emBits [rule_format]:" 0 < emBits \<longrightarrow>  0 < x \<longrightarrow> emBits \<le> (roundup emBits x) * x"
+lemma roundup_ge_emBits:" 0 < emBits \<Longrightarrow> 0 < x \<Longrightarrow> emBits \<le> (roundup emBits x) * x"
   apply (simp add: roundup mult_commute)
   apply (safe)
   apply (simp)
@@ -188,44 +188,51 @@ lemma roundup_ge_emBits [rule_format]:" 0 < emBits \<longrightarrow>  0 < x \<lo
   apply (insert mod_div_equality2 [of x emBits])
   apply (subgoal_tac "emBits mod x < x")
   apply (arith)
-  by (simp only: mod_less_divisor)
+  apply (simp only: mod_less_divisor)
+  done
 
-lemma roundup_ge_0 [rule_format]: "0 < emBits \<longrightarrow> 0 < x \<longrightarrow> 0 \<le> (roundup emBits x) * x - emBits"
+lemma roundup_ge_0: "0 < emBits \<Longrightarrow> 0 < x \<Longrightarrow> 0 \<le> roundup emBits x * x - emBits"
   by (simp add: roundup)
 
-lemma roundup_le_7: "0 < emBits \<longrightarrow> roundup emBits 8 * 8 - emBits \<le>  7"
+lemma roundup_le_7: "0 < emBits \<Longrightarrow> roundup emBits 8 * 8 - emBits \<le>  7"
   apply (simp add: roundup)
   apply (insert  div_mod_equality [of emBits 8 1])
-  by (arith)
+  apply arith
+  done
 
-lemma roundup_nat_ge_8_help [rule_format]: "length (sha1 M) + sLen + 16 \<le> emBits \<longrightarrow>  8 \<le>  ( roundup emBits 8 ) * 8 - (length (sha1 M) +  8)"
+lemma roundup_nat_ge_8_help:
+  "length (sha1 M) + sLen + 16 \<le> emBits \<Longrightarrow> 8 \<le> roundup emBits 8 * 8 - (length (sha1 M) + 8)"
   apply (insert roundup_ge_emBits [of emBits 8])
   apply (simp add: roundup sha1len sLen)
-  apply (safe)
-  by (simp, arith)+
+  done
 
-lemma roundup_nat_ge_8 [rule_format]: "length (sha1 M) + sLen + 16 \<le> emBits \<longrightarrow>  8 \<le> ( roundup emBits 8 ) * 8 - (length (sha1 M) + 8)"
+lemma roundup_nat_ge_8:
+  "length (sha1 M) + sLen + 16 \<le> emBits \<Longrightarrow> 8 \<le> roundup emBits 8 * 8 - (length (sha1 M) + 8)"
   apply (insert roundup_nat_ge_8_help [of M emBits])
-  by (arith)
+  apply arith
+  done
 
-lemma roundup_le_ub: "\<lbrakk> 176 + sLen \<le> emBits; emBits \<le> 2^32 * 160\<rbrakk> \<Longrightarrow> (roundup emBits 8) * 8 - 168 \<le> 2^32 * 160"
+lemma roundup_le_ub:
+  "\<lbrakk> 176 + sLen \<le> emBits; emBits \<le> 2^32 * 160\<rbrakk> \<Longrightarrow> (roundup emBits 8) * 8 - 168 \<le> 2^32 * 160"
   apply (simp add: roundup)
   apply (safe)
   apply (simp)
-  by (arith)+
+  apply (arith)+
+  done
  
 lemma modify_roundup_ge1: "\<lbrakk>8 \<le> roundup emBits 8 * 8 - 168\<rbrakk> \<Longrightarrow> 176 \<le>  roundup emBits 8 * 8"
-  by (arith)
+  by arith
 
 lemma modify_roundup_ge2: "\<lbrakk> 176 \<le> roundup emBits 8 * 8\<rbrakk> \<Longrightarrow> 21 < roundup emBits 8"
-  by (simp)
+  by simp
 
 lemma roundup_help1: "\<lbrakk> 0 < roundup l 160\<rbrakk> \<Longrightarrow> (roundup l 160 - 1) + 1 = (roundup l 160)"
-  by (arith)
+  by arith
 
 lemma roundup_help1_new: "\<lbrakk> 0 < l\<rbrakk> \<Longrightarrow> (roundup l 160 - 1) + 1 = (roundup l 160)"
-  apply (drule roundup_positiv [of "l"])
-  by (arith)
+  apply (drule roundup_positiv [of l])
+  apply arith
+  done
 
 lemma roundup_help2: "\<lbrakk>176 + sLen \<le> emBits\<rbrakk> \<Longrightarrow> roundup emBits 8 * 8 - emBits <=  roundup emBits 8 * 8 - 160 - sLen - 16"
   by (simp add: sLen)
@@ -234,24 +241,23 @@ lemma bv_prepend_equal: "bv_prepend (Suc n) b l = b#bv_prepend n b l"
   by (simp add: bv_prepend)
 
 lemma length_bv_prepend: "length (bv_prepend n b l) = n+length l"
-  by (induct_tac n, simp add: bv_prepend)
+  by (induct n) (simp_all add: bv_prepend)
 
 lemma length_bv_prepend_drop: "a <= length xs \<longrightarrow> length (bv_prepend a b (drop a xs)) = length xs"
   by (simp add:length_bv_prepend)
 
 lemma take_bv_prepend: "take n (bv_prepend n b x) = bv_prepend n b []"
-  apply (induct_tac n)
-  by (simp add: bv_prepend)+
+  by (induct n) (simp add: bv_prepend)+
 
 lemma take_bv_prepend2: "take n (bv_prepend n b xs@ys@zs) = bv_prepend n b []"
-  apply (induct_tac n)
-  by (simp add: bv_prepend)+
+  by (induct n) (simp add: bv_prepend)+
 
 lemma bv_prepend_append: "bv_prepend a b x = bv_prepend a b [] @ x"
-  by (induct_tac a, simp add: bv_prepend, simp add: bv_prepend_equal)
+  by (induct a) (simp add: bv_prepend, simp add: bv_prepend_equal)
 
-lemma bv_prepend_append2: "\<lbrakk> x < y\<rbrakk> \<Longrightarrow> bv_prepend y b xs = (bv_prepend x b [])@(bv_prepend (y-x) b [])@xs"
-  by (simp add: bv_prepend replicate_add [THEN sym])
+lemma bv_prepend_append2:
+  "x < y \<Longrightarrow> bv_prepend y b xs = (bv_prepend x b [])@(bv_prepend (y-x) b [])@xs"
+  by (simp add: bv_prepend replicate_add [symmetric])
 
 lemma drop_bv_prepend_help2: "\<lbrakk>x < y\<rbrakk> \<Longrightarrow> drop x (bv_prepend y b []) = bv_prepend (y-x) b []"
   apply (insert bv_prepend_append2 [of "x" "y" b "[]"])
@@ -266,16 +272,14 @@ lemma drop_bv_prepend_help4: "\<lbrakk>x \<le> y\<rbrakk> \<Longrightarrow> drop
   by (arith)
 
 lemma bv_prepend_add: "bv_prepend x b [] @ bv_prepend y b [] = bv_prepend (x + y) b []"
-  apply (induct_tac x)
-  by (simp add: bv_prepend)+
+  by (induct x) (simp add: bv_prepend)+
 
 lemma bv_prepend_drop: "x \<le> y \<longrightarrow> bv_prepend x b (drop x (bv_prepend y b [])) = bv_prepend y b []"
   apply (simp add: drop_bv_prepend_help4 [of x y b])
   by (simp add: bv_prepend_append [of "x" b "(bv_prepend (y - x) b [])"] bv_prepend_add)
 
 lemma bv_prepend_split: "bv_prepend x b (left @ right) = bv_prepend x b left @ right"
-  apply (induct_tac x)
-  by (simp add: bv_prepend)+
+  by (induct x) (simp add: bv_prepend)+
 
 lemma length_generate_DB: "length (generate_DB PS) = length PS + 8 + sLen"
   by (simp add: generate_DB sLen)
@@ -283,84 +287,96 @@ lemma length_generate_DB: "length (generate_DB PS) = length PS + 8 + sLen"
 lemma length_generate_PS: "length (generate_PS emBits 160) = (roundup emBits 8)*8 - sLen - 160 - 16"
   by (simp add: generate_PS length_bv_prepend)
 
-lemma length_bvxor[rule_format]: "length a = length b \<longrightarrow> length (bvxor a b) = length a"
+lemma length_bvxor: "length a = length b \<Longrightarrow> length (bvxor a b) = length a"
   by (simp add: bvxor)
 
-lemma length_MGF2 [rule_format]: "length (MGF2 Z m) = (Suc m) * length (sha1 (Z@(nat_to_bv_length (m) 32)))"
-  by (induct_tac m, simp+, simp add: sha1len)
+lemma length_MGF2: "length (MGF2 Z m) = Suc m * length (sha1 (Z @ nat_to_bv_length m 32))"
+  by (induct m) (simp+, simp add: sha1len)
 
-lemma length_MGF1 [rule_format]: "l <= (Suc n) * 160 \<longrightarrow> length (MGF1 Z n l) = l"
-  apply (simp add: MGF1 length_MGF2 sha1len)
-  by (arith)
+lemma length_MGF1: "l \<le> (Suc n) * 160 \<Longrightarrow> length (MGF1 Z n l) = l"
+  by (simp add: MGF1 length_MGF2 sha1len)
 
-lemma length_MGF: "\<lbrakk> 0 < l; l \<le>  2^32 * length (sha1 x) \<rbrakk> \<Longrightarrow> length (MGF x l) = l"
+lemma length_MGF: "0 < l \<Longrightarrow> l \<le>  2^32 * length (sha1 x) \<Longrightarrow> length (MGF x l) = l"
   apply (simp add: MGF sha1len)
   apply (insert roundup_help1_new [of l])
   apply (rule length_MGF1)
   apply (simp)
   apply (insert roundup_ge_emBits [of l 160])
-  by (arith)
+  apply (arith)
+  done
 
-lemma solve_length_generate_DB: "\<lbrakk> 0 < emBits; length (sha1 M) + sLen + 16 \<le> emBits\<rbrakk> \<Longrightarrow> length (generate_DB (generate_PS emBits (length (sha1 x)) )) = (roundup emBits 8) * 8 - 168"
+lemma solve_length_generate_DB:
+  "\<lbrakk> 0 < emBits; length (sha1 M) + sLen + 16 \<le> emBits\<rbrakk>
+  \<Longrightarrow> length (generate_DB (generate_PS emBits (length (sha1 x)) )) = (roundup emBits 8) * 8 - 168"
   apply (insert roundup_ge_emBits [of emBits 8])
-  by (simp add: length_generate_DB length_generate_PS sha1len)
+  apply (simp add: length_generate_DB length_generate_PS sha1len)
+  done
 
-lemma length_maskedDB_zero: "\<lbrakk> roundup emBits 8 * 8 - emBits \<le> length maskedDB\<rbrakk> \<Longrightarrow> length (maskedDB_zero maskedDB emBits) = length maskedDB"
+lemma length_maskedDB_zero:
+  "\<lbrakk> roundup emBits 8 * 8 - emBits \<le> length maskedDB\<rbrakk>
+  \<Longrightarrow> length (maskedDB_zero maskedDB emBits) = length maskedDB"
   by (simp add: maskedDB_zero length_bv_prepend)
 
-lemma take_equal_bv_prepend: "\<lbrakk> 176 + sLen \<le> emBits; roundup emBits 8 * 8 - emBits \<le> 7\<rbrakk> \<Longrightarrow> take (roundup emBits 8 * 8 - length (sha1 M) - sLen - 16) (maskedDB_zero (generate_DB (generate_PS emBits 160)) emBits) = bv_prepend (roundup emBits 8 * 8 - length (sha1 M) - sLen - 16) \<zero> []"
+lemma take_equal_bv_prepend:
+  "\<lbrakk> 176 + sLen \<le> emBits; roundup emBits 8 * 8 - emBits \<le> 7\<rbrakk>
+  \<Longrightarrow> take (roundup emBits 8 * 8 - length (sha1 M) - sLen - 16) (maskedDB_zero (generate_DB (generate_PS emBits 160)) emBits) =
+    bv_prepend (roundup emBits 8 * 8 - length (sha1 M) - sLen - 16) \<zero> []"
   apply (insert roundup_help2 [of emBits] length_generate_PS [of emBits])
-  by (simp add: sha1len maskedDB_zero generate_DB generate_PS bv_prepend_split bv_prepend_drop)
+  apply (simp add: sha1len maskedDB_zero generate_DB generate_PS bv_prepend_split bv_prepend_drop)
+  done
 
 lemma lastbits_BC: "BC = show_rightmost_bits (xs @ ys @ BC) 8"
   by (simp add:show_rightmost_bits BC)
 
-lemma equal_zero: "[|176 + sLen \<le> emBits ; roundup emBits 8 * 8 - emBits <= roundup emBits 8 * 8 - (176 + sLen)|] ==>  0 = roundup emBits 8 * 8 - emBits - (roundup emBits 8 * 8 - (176 + sLen))"
-  by (arith)
+lemma equal_zero:
+  "176 + sLen \<le> emBits \<Longrightarrow> roundup emBits 8 * 8 - emBits \<le> roundup emBits 8 * 8 - (176 + sLen)
+  \<Longrightarrow> 0 = roundup emBits 8 * 8 - emBits - (roundup emBits 8 * 8 - (176 + sLen))"
+  by arith
 
 lemma get_salt: "\<lbrakk> 176 + sLen \<le> emBits; roundup emBits 8 * 8 - emBits \<le> 7\<rbrakk> \<Longrightarrow> (generate_salt (maskedDB_zero (generate_DB (generate_PS emBits 160)) emBits)) = salt"
   apply (insert roundup_help2 [of emBits] length_generate_PS [of emBits] equal_zero [of emBits])
   apply (simp add: generate_DB generate_PS maskedDB_zero)
-  by (simp add: bv_prepend_split bv_prepend_drop generate_salt show_rightmost_bits sLen)
+  apply (simp add: bv_prepend_split bv_prepend_drop generate_salt show_rightmost_bits sLen)
+  done
 
 lemma generate_maskedDB_elim: "\<lbrakk>roundup emBits 8 * 8 - emBits \<le> length x; ( roundup emBits 8) * 8 - (length (sha1 M)) - 8 = length (maskedDB_zero x emBits)\<rbrakk> \<Longrightarrow> generate_maskedDB (maskedDB_zero x emBits @ y @ z) emBits (length(sha1 M)) = maskedDB_zero x emBits"
   apply (simp add: maskedDB_zero)
   apply (insert length_bv_prepend_drop [of "(roundup emBits 8 * 8 - emBits)" "x"])
-  by (simp add: generate_maskedDB)
+  apply (simp add: generate_maskedDB)
+  done
 
 lemma generate_H_elim: "\<lbrakk> roundup emBits 8 * 8 - emBits \<le> length x; length (maskedDB_zero x emBits) =  (roundup emBits 8) * 8 - 168; length y = 160\<rbrakk> \<Longrightarrow> generate_H (maskedDB_zero x emBits @ y @ z) emBits 160 = y"
   apply (simp add: maskedDB_zero)
   apply (insert length_bv_prepend_drop [of "roundup emBits 8 * 8 - emBits" "x"])
-  by (simp add: generate_H)
+  apply (simp add: generate_H)
+  done
 
 lemma length_bv_prepend_drop_special: "[|roundup emBits 8 * 8 - emBits <= roundup emBits 8 * 8 - (176 + sLen); length (generate_PS emBits 160) = roundup emBits 8 * 8 - (176 + sLen)|] ==> length ( bv_prepend (roundup emBits 8 * 8 - emBits) \<zero> (drop (roundup emBits 8 * 8 - emBits) (generate_PS emBits 160))) = length (generate_PS emBits 160)"
   by (simp add: length_bv_prepend_drop)
 
 lemma x01_elim: "\<lbrakk>176 + sLen \<le> emBits; roundup emBits 8 * 8 - emBits \<le> 7\<rbrakk> \<Longrightarrow> take 8 (drop (roundup emBits 8 * 8 - (length (sha1 M) + sLen + 16))(maskedDB_zero (generate_DB (generate_PS emBits 160)) emBits)) = [\<zero>, \<zero>, \<zero>, \<zero>, \<zero>, \<zero>, \<zero>, \<one>]"
   apply (insert roundup_help2 [of emBits] length_generate_PS [of emBits] equal_zero [of emBits])
-  by (simp add: sha1len maskedDB_zero generate_DB generate_PS bv_prepend_split bv_prepend_drop)
+  apply (simp add: sha1len maskedDB_zero generate_DB generate_PS bv_prepend_split bv_prepend_drop)
+  done
 
 lemma drop_bv_mapzip:
   assumes "n <= length x" "length x = length y"
   shows "drop n (bv_mapzip f x y) = bv_mapzip f (drop n x) (drop n y)"
 proof -
-  have "!x y. n <= length x --> length x = length y --> drop n 
-    (bv_mapzip f x y) = bv_mapzip f (drop n x) (drop n y)"
+  have "\<And>x y. n <= length x \<Longrightarrow> length x = length y \<Longrightarrow>
+      drop n (bv_mapzip f x y) = bv_mapzip f (drop n x) (drop n y)"
     apply (induct n)
     apply simp
-    apply safe
-    apply (case_tac x,case_tac[!] y,auto)
+    apply (case_tac x, case_tac[!] y, auto)
     done
-  with prems
-  show ?thesis
-    by simp
+  with assms show ?thesis by simp
 qed
 
 lemma [simp]:
   assumes "length a = length b"
   shows "bvxor (bvxor a b) b = a"
 proof -
-  have "!b. length a = length b --> bvxor (bvxor a b) b = a"
+  have "\<And>b. length a = length b \<Longrightarrow> bvxor (bvxor a b) b = a"
     apply (induct a)
     apply (auto simp add: bvxor)
     apply (case_tac b)
@@ -372,19 +388,17 @@ proof -
     apply (case_tac a)
     apply (simp)+
     done
-  with prems
-  show ?thesis
-    by simp
+  with assms show ?thesis by simp
 qed
 
-lemma bvxorxor_elim_help [rule_format]:
-  assumes "x <= length a" "length a = length b"
-  shows "bv_prepend x \<zero> (drop x (bvxor (bv_prepend x \<zero>  (drop x (bvxor a b))) b)) = bv_prepend x \<zero> (drop x a)"
+lemma bvxorxor_elim_help:
+  assumes "x <= length a" and "length a = length b"
+  shows "bv_prepend x \<zero> (drop x (bvxor (bv_prepend x \<zero> (drop x (bvxor a b))) b)) =
+    bv_prepend x \<zero> (drop x a)"
 proof -
-  have "(drop x (bvxor (bv_prepend x \<zero> (drop x (bvxor a b))) b))
-= (drop x a)"
+  have "drop x (bvxor (bv_prepend x \<zero> (drop x (bvxor a b))) b) = drop x a"
     apply (unfold bvxor bv_prepend)
-    apply (cut_tac prems)
+    apply (cut_tac assms)
     apply (insert length_replicate [of x \<zero> ])
     apply (insert length_drop [of x a])
     apply (insert length_drop [of x b])
@@ -398,9 +412,7 @@ proof -
     apply (fold bvxor)
     apply (simp_all)
     done
-  with prems
-  show ?thesis
-    by (simp)
+  with assms show ?thesis by simp
 qed
 
 lemma bvxorxor_elim: "\<lbrakk> roundup emBits 8 * 8 - emBits \<le> length a; length a = length b\<rbrakk> \<Longrightarrow> (maskedDB_zero (bvxor (maskedDB_zero (bvxor a b) emBits)b) emBits) = bv_prepend (roundup emBits 8 * 8 - emBits) \<zero> (drop (roundup emBits 8 * 8 - emBits) a)"
@@ -415,7 +427,7 @@ lemma verify: "\<lbrakk>(emsapss_encode M emBits) \<noteq> []; EM=(emsapss_encod
   apply (safe)
   apply (simp add: emsapss_encode_help3 emsapss_encode_help4 emsapss_encode_help5 emsapss_encode_help6)
   apply (safe)
-  apply (simp add: emsapss_encode_help7 emsapss_encode_help8 lastbits_BC [THEN sym])+
+  apply (simp add: emsapss_encode_help7 emsapss_encode_help8 lastbits_BC [symmetric])+
   apply (simp add: emsapss_decode_help3 emsapss_encode_help3 emsapss_decode_help4 emsapss_encode_help4)
   apply (safe)
   apply (insert roundup_le_7 [of emBits] roundup_ge_0 [of emBits 8] roundup_nat_ge_8 [of M emBits])
@@ -443,6 +455,7 @@ lemma verify: "\<lbrakk>(emsapss_encode M emBits) \<noteq> []; EM=(emsapss_encod
   apply (insert bvxorxor_elim [of emBits "(generate_DB (generate_PS emBits 160))" "(MGF (sha1 (generate_M' (sha1 M) salt)) ((roundup emBits 8) * 8 - 168))"])
   apply (fold maskedDB_zero)
   apply (insert take_equal_bv_prepend [of emBits M] x01_elim [of emBits M] get_salt [of emBits])
-  by (simp add: emsapss_decode_help8 emsapss_decode_help9 emsapss_decode_help10 emsapss_decode_help11) 
+  apply (simp add: emsapss_decode_help8 emsapss_decode_help9 emsapss_decode_help10 emsapss_decode_help11) 
+  done
 
 end

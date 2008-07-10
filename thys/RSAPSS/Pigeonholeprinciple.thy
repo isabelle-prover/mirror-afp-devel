@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pigeonholeprinciple.thy
-    ID:         $Id: Pigeonholeprinciple.thy,v 1.8 2008-06-12 06:57:26 lsf37 Exp $
+    ID:         $Id: Pigeonholeprinciple.thy,v 1.9 2008-07-10 21:20:00 makarius Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -10,53 +10,57 @@ theory Pigeonholeprinciple
 imports Productdivides
 begin
 
-text {* This theory is a formal proof for the pigeon hole principle. The
-  basic principle is, that if you have to put n+1 pigeons in n holes there
-  is at least one hole with more than one pigeon *}
+text {*
+  This theory is a formal proof for the pigeon hole principle. The
+  basic principle is, that if you have to put @{text "n + 1"} pigeons
+  in n holes there is at least one hole with more than one pigeon.
+*}
 
-consts
-  alldistinct:: "nat list \<Rightarrow> bool"
-  alllesseq:: "nat list \<Rightarrow> nat \<Rightarrow> bool"
-  allnonzero:: "nat list \<Rightarrow> bool"
-  positives:: "nat \<Rightarrow> nat list"
-  timeslist:: "nat list \<Rightarrow> nat"
-  fac:: "nat \<Rightarrow> nat"
-  del:: "nat \<Rightarrow> nat list \<Rightarrow> nat list"
-
-primrec 
+primrec alldistinct :: "nat list \<Rightarrow> bool"
+where
   "alldistinct [] = True"
-  "alldistinct (x # xs) =  (\<not> x mem xs \<and> alldistinct xs)"
+| "alldistinct (x # xs) = (\<not> x mem xs \<and> alldistinct xs)"
 
-primrec
-  "alllesseq [] n= True"
-  "alllesseq (x # xs) n = (x \<le> n \<and> (alllesseq xs n))"
+primrec alllesseq :: "nat list \<Rightarrow> nat \<Rightarrow> bool"
+where
+  "alllesseq [] n = True"
+| "alllesseq (x # xs) n = (x \<le> n \<and> alllesseq xs n)"
 
-primrec
+primrec allnonzero :: "nat list \<Rightarrow> bool"
+where
   "allnonzero [] = True"
-  "allnonzero (x # xs) = (x \<noteq> 0 \<and> allnonzero xs)"
+| "allnonzero (x # xs) = (x \<noteq> 0 \<and> allnonzero xs)"
 
-primrec
+primrec positives :: "nat \<Rightarrow> nat list"
+where
   "positives 0 = []"
-  "positives (Suc n) = (Suc n)#(positives n)"
+| "positives (Suc n) = Suc n # positives n"
 
-primrec
+primrec timeslist :: "nat list \<Rightarrow> nat"
+where
   "timeslist [] = 1"
-  "timeslist (x#xs) = x * timeslist (xs)"
+| "timeslist (x # xs) = x * timeslist xs"
 
-primrec
+primrec fac :: "nat \<Rightarrow> nat"
+where
   "fac 0 = 1"
-  "fac (Suc n) = Suc n * fac n"
+| "fac (Suc n) = Suc n * fac n"
 
-primrec
+primrec del :: "nat \<Rightarrow> nat list \<Rightarrow> nat list"
+where
   "del a [] = []"
-  "del a (x#xs) = (if a \<noteq> x then x # (del a xs) else xs)" 
+| "del a (x # xs) = (if a \<noteq> x then x # del a xs else xs)" 
 
 lemma length_del: "x mem xs \<Longrightarrow> length (del x xs) < length xs"
   by (induct xs) auto
 
-function pigeonholeinduction where
+function pigeonholeinduction
+where
   "pigeonholeinduction [] = True"
-  | "pigeonholeinduction (x#xs) = (if ((length (x#xs)) mem xs) then (pigeonholeinduction (del (length (x#xs)) (x#xs))) else (pigeonholeinduction xs))"
+| "pigeonholeinduction (x#xs) =
+    (if ((length (x#xs)) mem xs)
+     then (pigeonholeinduction (del (length (x#xs)) (x#xs)))
+     else (pigeonholeinduction xs))"
 by pat_completeness auto
 
 termination by (relation "measure size") (auto simp add: length_del)
@@ -70,116 +74,137 @@ lemma old_pig_induct:
     P (x # xs))"
   shows "P x"
   apply (rule pigeonholeinduction.induct)
-  using assms apply auto done
+  using assms apply auto
+  done
 
-definition perm:: "nat list \<Rightarrow> nat list \<Rightarrow> bool" where
-  "perm xs ys \<longleftrightarrow> (sort xs = sort ys)"
+definition
+  perm :: "nat list \<Rightarrow> nat list \<Rightarrow> bool" where
+  "perm xs ys \<longleftrightarrow> sort xs = sort ys"
 
-lemma allnonzerodelete[rule_format]: "(allnonzero xs) \<longrightarrow> allnonzero (del x xs)"
-  apply (induct_tac xs)
-  by (auto)
+lemma allnonzerodelete: "allnonzero xs \<Longrightarrow> allnonzero (del x xs)"
+  by (induct xs) auto
 
-lemma notmemnotdelmem [rule_format]: "x \<noteq> a \<longrightarrow> \<not> a mem xs \<longrightarrow> \<not> a mem (del x xs)"
-  apply (induct_tac xs)
-  by (auto)
+lemma notmemnotdelmem: "x \<noteq> a \<Longrightarrow> \<not> a mem xs \<Longrightarrow> \<not> a mem (del x xs)"
+  by (induct xs) auto
 
-lemma alldistinctdelete[rule_format]: "(alldistinct xs) \<longrightarrow> alldistinct (del x xs)"
-  apply (induct_tac xs)
-  apply (auto)
+lemma alldistinctdelete: "alldistinct xs \<Longrightarrow> alldistinct (del x xs)"
+  apply (induct xs)
+   apply auto
   apply (insert notmemnotdelmem)
-  by (auto)
+  apply auto
+  done
 
-lemma pigeonholeprinciple_lemma2[rule_format]: "\<not> (Suc n) mem xs \<longrightarrow> alllesseq xs (Suc n) \<longrightarrow> alllesseq xs n"
-  apply (induct_tac xs)
-  by (auto)
+lemma pigeonholeprinciple_lemma2: "\<not> (Suc n) mem xs \<Longrightarrow> alllesseq xs (Suc n) \<Longrightarrow> alllesseq xs n"
+  apply (atomize (full))
+  apply (induct xs)
+   apply auto
+  done
 
-lemma pigeonholeprinciple_lemma1[rule_format]: "alldistinct xs \<longrightarrow> alllesseq xs (Suc n) \<longrightarrow> alllesseq (del (Suc n) xs) n"
-  apply (induct_tac xs)
-  apply (auto)
+lemma pigeonholeprinciple_lemma1:
+    "alldistinct xs \<Longrightarrow> alllesseq xs (Suc n) \<Longrightarrow> alllesseq (del (Suc n) xs) n"
+  apply (induct xs)
+   apply auto
   apply (rule pigeonholeprinciple_lemma2)
-  by (auto)
+   apply auto
+  done
 
-lemma anotinsort[rule_format]: "a \<noteq> x \<longrightarrow> (a mem b = a mem (insort x b))"
-  apply (induct_tac b)
-  by (auto)
+lemma anotinsort: "a \<noteq> x \<Longrightarrow> a mem b = a mem (insort x b)"
+  by (induct b) auto
 
 lemma ainsort: "a mem (insort a b)"
-  apply (induct_tac b)
-  by (auto)
+  by (induct b) auto
 
 lemma memeqsort: "x mem xs = x mem (sort xs)"
   apply (induct xs)
-  apply simp
+   apply simp
   apply (case_tac "x=a")
-  apply (simp add: ainsort)+
-  by (rule anotinsort, simp)
+   apply (simp add: ainsort)+
+  apply (rule anotinsort, simp)
+  done
 
 lemma permmember: "\<lbrakk>perm xs ys; x mem xs\<rbrakk> \<Longrightarrow> x mem ys"
-  by (simp add:perm_def memeqsort [of x xs] memeqsort [of x ys])
+  by (simp add: perm_def memeqsort [of x xs] memeqsort [of x ys])
 
-lemma alllesseqdelete: "\<lbrakk>alldistinct (x#xs); alllesseq (x#xs) (length(x#xs))\<rbrakk> \<Longrightarrow> alllesseq (del (length(x#xs)) (x#xs)) (length (xs))"
-  apply (insert pigeonholeprinciple_lemma1 [of "x#xs" "length xs" ])
+lemma alllesseqdelete: "\<lbrakk>alldistinct (x#xs); alllesseq (x#xs) (length(x#xs))\<rbrakk>
+    \<Longrightarrow> alllesseq (del (length(x#xs)) (x#xs)) (length (xs))"
+  apply (insert pigeonholeprinciple_lemma1 [of "x#xs" "length xs"])
   apply simp
   done
 
 lemma perminsert: "perm xs ys \<Longrightarrow> perm (a#xs) (a#ys)"
   by (simp add: perm_def)
 
-lemma lengthdel2 [rule_format]: "a  mem xs \<longrightarrow>length(del a (x#xs)) = length xs"
-  apply (induct_tac xs)
-  by (auto)
+lemma lengthdel2: "a  mem xs \<Longrightarrow> length(del a (x#xs)) = length xs"
+  by (induct xs) auto
 
-lemma dellengthinalllesseq: "\<lbrakk>alldistinct (x#xs); alllesseq (x#xs) (length (x#xs)); length (x#xs) mem xs \<rbrakk> \<Longrightarrow> alllesseq (del (length (x#xs)) (x#xs))(length (del (length (x#xs)) (x#xs)))"
+lemma dellengthinalllesseq:
+  "\<lbrakk>alldistinct (x#xs); alllesseq (x#xs) (length (x#xs)); length (x#xs) mem xs \<rbrakk>
+  \<Longrightarrow> alllesseq (del (length (x#xs)) (x#xs))(length (del (length (x#xs)) (x#xs)))"
   apply (drule alllesseqdelete)
-  apply (simp)
+   apply simp
   apply (insert lengthdel2 [of "length (x#xs)" xs x])
-  by (simp)
+  apply simp
+  done
 
 lemma lengthmem: "\<lbrakk>length (x#xs) mem (xs)\<rbrakk> \<Longrightarrow> length (x#xs) mem (x#xs)"
-  by (auto)
+  by auto
 
-lemma permSuclengthdel: "\<lbrakk>Suc (length xs) mem xs; perm (positives (length xs)) (x # del (Suc (length xs)) xs); x \<noteq> Suc (length xs)\<rbrakk> \<Longrightarrow> perm (Suc (length xs) # positives (length xs)) ((Suc (length xs))#(x # del (Suc (length xs)) xs))"
+lemma permSuclengthdel:
+  "\<lbrakk>Suc (length xs) mem xs;
+    perm (positives (length xs)) (x # del (Suc (length xs)) xs);
+    x \<noteq> Suc (length xs)\<rbrakk> \<Longrightarrow>
+  perm (Suc (length xs) # positives (length xs)) ((Suc (length xs))#(x # del (Suc (length xs)) xs))"
   apply (rule perminsert)
-  by (simp)
+  apply simp
+  done
 
 lemma insortsym: "insort a (insort x xs) = insort x (insort a xs)"
-  apply (induct_tac xs)
-  by (auto)
+  by (induct xs) auto
 
-lemma insortsortdel[rule_format]: "x mem xs \<longrightarrow> insort x (sort (del  x xs)) = (sort xs)"
-  apply (induct_tac xs)
-  apply (auto)
+lemma insortsortdel: "x mem xs \<Longrightarrow> insort x (sort (del  x xs)) = (sort xs)"
+  apply (induct xs)
+   apply auto
   apply (subst insortsym)
-  by (auto)
+  apply simp
+  done
 
-lemma permSuclengthdel2: "\<lbrakk>Suc (length xs) mem xs; x \<noteq> Suc (length xs); perm (Suc (length xs) # positives (length xs)) ((Suc (length xs))#(x # del (Suc (length xs)) xs))\<rbrakk> \<Longrightarrow>perm (Suc (length xs) # positives (length xs)) (x # xs)"
+lemma permSuclengthdel2:
+  "\<lbrakk>Suc (length xs) mem xs; x \<noteq> Suc (length xs);
+    perm (Suc (length xs) # positives (length xs)) ((Suc (length xs))#(x # del (Suc (length xs)) xs))\<rbrakk>
+  \<Longrightarrow> perm (Suc (length xs) # positives (length xs)) (x # xs)"
   apply (simp add: perm_def)
   apply (subst insortsym)
-  apply (insert insortsortdel [of "Suc (length xs)" xs, THEN sym])
-  by (auto)
+  apply (insert insortsortdel [of "Suc (length xs)" xs, symmetric])
+  apply auto
+  done
 
-lemma dellengthinperm: "\<lbrakk> length (x # xs) mem (x#xs); perm (positives (length (del (length (x # xs)) (x # xs))))(del (length (x # xs)) (x # xs))\<rbrakk> \<Longrightarrow> perm (positives (length (x # xs))) (x # xs)"
-  apply (case_tac "x =Suc (length xs)")
-  apply (simp)
-  apply (drule perminsert)
-  apply (simp)
-  apply (insert lengthdel2 [of "length (x # xs)" "xs" "x"])
-  apply (simp del:perm_def positives.simps)
+lemma dellengthinperm:
+  "\<lbrakk> length (x # xs) mem (x#xs);
+  perm (positives (length (del (length (x # xs)) (x # xs))))(del (length (x # xs)) (x # xs))\<rbrakk>
+    \<Longrightarrow> perm (positives (length (x # xs))) (x # xs)"
+  apply (cases "x = Suc (length xs)")
+   apply simp
+   apply (drule perminsert)
+   apply simp
+  apply (insert lengthdel2 [of "length (x # xs)" xs x])
+  apply (simp del: perm_def positives.simps)
   apply (simp only: positives.simps)
   apply (frule permSuclengthdel)
-  apply (simp)
-  apply (simp)
+    apply simp
+   apply simp
   apply (rule permSuclengthdel2)
-  by (simp)+
+    apply simp_all
+  done
 
 lemma positiveseq: "positives (length xs) = rev ([1 ..< Suc(length xs)])"
-  apply (induct_tac xs)
-  by (auto)
+  by (induct xs) auto
 
-lemma memsetpositives:"\<lbrakk>perm (positives (length xs)) xs; 0 < x; x \<le> length xs\<rbrakk> \<Longrightarrow> x \<in> set (positives (length xs))"
+lemma memsetpositives:
+  "\<lbrakk>perm (positives (length xs)) xs; 0 < x; x \<le> length xs\<rbrakk> \<Longrightarrow> x \<in> set (positives (length xs))"
   apply (subst positiveseq)
   apply (simp add:set_upt)
-  by (auto)
+  apply auto
+  done
 
 lemma pigeonholeprinciple:
   "allnonzero xs \<Longrightarrow> alldistinct xs \<Longrightarrow> alllesseq xs (length xs) \<Longrightarrow> perm (positives (length xs)) xs"
@@ -192,10 +217,12 @@ next
 
 lemmas seteqmem = mem_iff [symmetric]
 
-lemma pigeonholeprinciple [rule_format]: "allnonzero xs \<longrightarrow> alldistinct xs \<longrightarrow> alllesseq xs (length xs) \<longrightarrow> perm (positives (length xs)) xs"
+lemma pigeonholeprinciple:
+  "allnonzero xs \<Longrightarrow> alldistinct xs \<Longrightarrow> alllesseq xs (length xs) \<Longrightarrow> perm (positives (length xs)) xs"
+  apply (atomize (full))
   apply (induct xs rule: old_pig_induct)
-  apply (simp add:perm_def)
-  apply (safe)
+  apply (simp add: perm_def)
+  apply safe
   apply (erule_tac P="allnonzero (del (length (x # xs)) (x # xs))" in notE)
   apply (rule allnonzerodelete)
   apply (simp)
@@ -223,7 +250,7 @@ lemma pigeonholeprinciple [rule_format]: "allnonzero xs \<longrightarrow> alldis
   apply (drule le_neq_implies_less)
   apply (simp add:less_Suc_eq_le)
   apply (erule_tac P="x mem xs" in notE)
-  apply (simp add:seteqmem [THEN sym])
+  apply (simp add:seteqmem [symmetric])
   apply (frule memsetpositives)
   apply (simp add:seteqmem)+
   apply (rule permmember)
@@ -264,7 +291,7 @@ lemma pigeonholeprinciple [rule_format]: "allnonzero xs \<longrightarrow> alldis
   apply (drule le_neq_implies_less)
   apply (simp add:less_Suc_eq_le)+
   apply (erule_tac P="x mem xs" in notE)
-  apply (simp add:seteqmem [THEN sym])
+  apply (simp add:seteqmem [symmetric])
   apply (frule memsetpositives)
   apply (simp add:seteqmem)+
   apply (rule permmember)
@@ -276,63 +303,68 @@ lemma pigeonholeprinciple [rule_format]: "allnonzero xs \<longrightarrow> alldis
   apply (drule le_neq_implies_less)
   apply (simp add:less_Suc_eq_le)+
   apply (erule_tac P="x mem xs" in notE)
-  apply (simp add:seteqmem [THEN sym])
+  apply (simp add:seteqmem [symmetric])
   apply (frule memsetpositives)
   apply (simp add:seteqmem)+
   apply (rule permmember)
-  by (simp)+
+  apply (simp)+
+  done
 
 lemma equaltimeslist: "\<lbrakk>sort xs = sort ys\<rbrakk> \<Longrightarrow> timeslist (sort xs) = timeslist (sort ys)"
-  by (auto)
+  by auto
 
 lemma timeslistmultkom: "timeslist (xs) * x = x * timeslist (xs)"
-  by (simp)
+  by simp
 
 lemma timeslistinsort: "timeslist (insort a xs) = timeslist (a#xs)" 
-  apply (induct_tac xs)
-  by (auto)
+  by (induct xs) auto
 
 lemma timeslisteq: "timeslist (sort xs) = timeslist xs"
-  apply (induct_tac xs)
-  apply (auto)
-  apply (simp add: timeslistmultkom [THEN sym])
-  by (simp add:timeslistinsort)
+  apply (induct xs)
+   apply auto
+  apply (simp add: timeslistmultkom [symmetric])
+  apply (simp add:timeslistinsort)
+  done
 
 lemma permtimeslist: "perm xs ys \<Longrightarrow> timeslist xs = timeslist ys"
   apply (simp only:perm_def)
   apply (insert equaltimeslist [of xs ys])
-  apply (simplesubst timeslisteq [THEN sym])
-  apply (simplesubst timeslisteq [of xs, THEN sym])
-  by (auto)
+  apply (simplesubst timeslisteq [symmetric])
+  apply (simplesubst timeslisteq [of xs, symmetric])
+  apply auto
+  done
 
 lemma timeslistpositives: "timeslist (positives n) = fac n"
-  apply (induct_tac n)
-  by (auto)
+  by (induct n) auto
 
 lemma pdvdnot: "\<lbrakk>prime p; \<not> p dvd x; \<not> p dvd y\<rbrakk> \<Longrightarrow> \<not> p dvd x*y"
   apply (auto)
   apply (insert prime_dvd_mult [of p x y])
-  by (simp)
+  apply simp
+  done
 
 lemma lessdvdnot: "\<lbrakk>Suc (x::nat) < p\<rbrakk> \<Longrightarrow> \<not> p dvd Suc x"
-  apply (auto)
+  apply auto
   apply (frule mod_less)
   apply (frule dvd_imp_le)
-by (auto)
+  apply auto
+  done
 
 lemma pnotdvdall:"\<lbrakk>prime p; p dvd (Suc n)*(fac n); \<not> p dvd fac n; Suc n < p\<rbrakk> \<Longrightarrow> False"
   apply (insert lessdvdnot [of n p])
   apply (insert pdvdnot [of p "Suc n" "fac n"])
-  by (auto)
+  apply auto
+  done
 
-lemma primefact[rule_format]: "prime p \<longrightarrow>  (n::nat) < p \<longrightarrow> (fac n mod p \<noteq> 0)"
-  apply (induct_tac n rule:fac.induct)
-  apply (simp add:prime_def)
-  apply (simp only: fac.simps dvd_eq_mod_eq_0 [THEN sym] )
-  apply (clarify)
-  apply (drule mp)
-  apply (simp)
+lemma primefact: "prime p \<Longrightarrow> (n::nat) < p \<Longrightarrow> fac n mod p \<noteq> 0"
+  apply (induct n)
+   apply (simp add: prime_def)
+  apply (simp only: fac.simps dvd_eq_mod_eq_0 [symmetric])
+  apply clarify
+  apply (drule meta_mp)
+   apply simp
   apply (insert lessdvdnot pdvdnot [of "p" "fac n" "Suc n"] pnotdvdall)
-  by (auto)
+  apply auto
+  done
 
 end
