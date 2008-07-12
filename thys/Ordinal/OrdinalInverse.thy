@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalInverse.thy,v 1.8 2008-06-25 18:29:59 makarius Exp $
+    ID:          $Id: OrdinalInverse.thy,v 1.9 2008-07-12 10:14:51 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -156,7 +156,7 @@ done
 
 subsection {* Division *}
 
-instantiation ordinal :: "Divides.div"
+instantiation ordinal :: "{Divides.div, Divides.dvd}"
 begin
 
 definition
