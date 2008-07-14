@@ -6,7 +6,7 @@
 header {* Pythagorean triples and Fermat's last theorem, case $n=4$ *}
 
 theory Fermat4
-  imports IntNatAux Parity
+imports IntNatAux Parity
 begin
 
 text {* Proof of Fermat's last theorem for the case $n=4$: $$\forall x,y,z:~x^4 + y^4 = z^4 \Longrightarrow xyz=0.$$ *}
@@ -50,8 +50,8 @@ qed
 subsection {* Parametrisation of Pythagorean triples (over $\mathbb{N}$ and $\mathbb{Z}$) *}
 
 theorem nat_euclid_pyth_triples:
-  assumes abc: "a^2 + b^2 = c^2" and ab_relprime: "gcd(a,b)=1" and aodd: "odd a"
-  shows "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> c = p^2 + q^2 \<and> gcd(p,q)=1"
+  assumes abc: "a^2 + b^2 = c^2" and ab_relprime: "gcd a b=1" and aodd: "odd a"
+  shows "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> c = p^2 + q^2 \<and> gcd p q=1"
 proof -
   have two0: "(2::nat) \<noteq> 0" by simp
   from abc have a2cb: "a^2 = c^2 - b^2" by arith
@@ -82,16 +82,16 @@ proof -
     ultimately show ?thesis by auto
   qed
   hence b2_le_c2: "b^2 \<le> c^2" by (simp add: power_mono)
-  have bc_relprime: "gcd(b,c) = 1"
+  have bc_relprime: "gcd b c = 1"
   proof -
     from b2_le_c2 have cancelb2: "c^2-b^2+b^2 = c^2" by auto
-    let ?g = "gcd(b,c)"
-    have "?g^2 = gcd(b^2,c^2)" by (simp only: gcd_power_distrib)
-    with cancelb2 have "?g^2 = gcd(b^2,c^2-b^2+b^2)" by simp
-    hence "?g^2 = gcd(b^2, c^2-b^2)" by simp
+    let ?g = "gcd b c"
+    have "?g^2 = gcd (b^2) (c^2)" by (simp only: gcd_power_distrib)
+    with cancelb2 have "?g^2 = gcd (b^2) (c^2-b^2+b^2)" by simp
+    hence "?g^2 = gcd (b^2) (c^2-b^2)" by simp
     with a2cb have "?g^2 dvd a^2" by (simp only: gcd_dvd2)
     hence "?g dvd a \<and> ?g dvd b" by (simp add: nat_power_dvd_mono gcd_dvd1)
-    hence "?g dvd gcd(a,b)" by (simp only: gcd_greatest)
+    hence "?g dvd gcd a b" by (simp only: gcd_greatest)
     with ab_relprime show ?thesis by auto
   qed
   have p2: "prime 2" by (rule two_is_prime)
@@ -123,9 +123,9 @@ proof -
     also with b_less_c have " \<dots> = b + (c+b-b)" by (simp only: diff_add_assoc2)
     finally show ?thesis by simp
   qed
-  have factors_relprime: "gcd(c-b,c+b) =1"
+  have factors_relprime: "gcd (c-b) (c+b) =1"
   proof -
-    let ?g = "gcd(c-b,c+b)"
+    let ?g = "gcd (c-b) (c+b)"
     have cb1: "c-b + (c+b) = 2*c"
     proof -
       have "c-b + (c+b) = ((c-b)+b)+c" by simp
@@ -133,13 +133,13 @@ proof -
       also have "\<dots> = c+c" by simp
       finally show ?thesis by simp
     qed
-    have "?g = gcd(c-b + (c+b),c+b)" by simp
-    with cb1 have "?g = gcd(2*c,c+b)" by (rule_tac a="c-b + (c+b)" in back_subst)
+    have "?g = gcd (c-b + (c+b)) (c+b)" by simp
+    with cb1 have "?g = gcd (2*c) (c+b)" by (rule_tac a="c-b + (c+b)" in back_subst)
     hence g2c: "?g dvd 2*c" by (simp only: gcd_dvd1)
-    have "gcd(c-b,2*b + (c-b)) = gcd(c-b,2*b)" by simp
-    with cb2 have "?g = gcd(c-b,2*b)" by (rule_tac a="2*b + (c-b)" in back_subst)
+    have "gcd (c-b) (2*b + (c-b)) = gcd (c-b) (2*b)" by simp
+    with cb2 have "?g = gcd (c-b) (2*b)" by (rule_tac a="2*b + (c-b)" in back_subst)
     hence g2b: "?g dvd 2*b" by (simp only: gcd_dvd2)
-    with g2c have "?g dvd 2*gcd(b, c)" by (simp only: gcd_greatest gcd_mult_distrib2)
+    with g2c have "?g dvd 2 * gcd b c" by (simp only: gcd_greatest gcd_mult_distrib2)
     with bc_relprime have "?g dvd 2" by simp
     with p2 have g1or2: "?g = 2 \<or> ?g = 1" by (unfold prime_def, auto)
     thus ?thesis
@@ -209,13 +209,13 @@ proof -
     finally have "a^2 = (p^2 - q^2)^2" by simp
     with two0 show ?thesis by (rule_tac n="2" in nat_power_inject_base)
   qed
-  moreover have "gcd(p,q)=1"
+  moreover have "gcd p q=1"
   proof -
-    let ?k = "gcd(p,q)"
+    let ?k = "gcd p q"
     have "?k dvd p \<and> ?k dvd q" by (simp add: gcd_dvd1 gcd_dvd2)
     with b and a have "?k dvd a \<and> ?k dvd b" 
       by (simp add: dvd_mult power2_eq_square dvd_diff)
-    hence "?k dvd gcd(a,b)" by (simp only: gcd_greatest)
+    hence "?k dvd gcd a b" by (simp only: gcd_greatest)
     with ab_relprime show ?thesis by auto
   qed
   ultimately show ?thesis by auto
@@ -223,10 +223,10 @@ qed
 
 text {* Now for the case of integers. Based on \textit{nat-euclid-pyth-triples}. *}
   
-corollary int_euclid_pyth_triples: "\<lbrakk> zgcd(a,b) = 1; a \<in> zOdd; a^2 + b^2 = c^2 \<rbrakk>
-  \<Longrightarrow> \<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> zgcd(p,q)=1"
+corollary int_euclid_pyth_triples: "\<lbrakk> zgcd a b = 1; a \<in> zOdd; a^2 + b^2 = c^2 \<rbrakk>
+  \<Longrightarrow> \<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> zgcd p q=1"
 proof -
-  assume ab_rel: "zgcd(a,b) = 1" and aodd: "a \<in> zOdd" and abc: "a^2 + b^2 = c^2"
+  assume ab_rel: "zgcd a b = 1" and aodd: "a \<in> zOdd" and abc: "a^2 + b^2 = c^2"
   let ?a = "nat\<bar>a\<bar>"
   let ?b = "nat\<bar>b\<bar>"
   let ?c = "nat\<bar>c\<bar>"
@@ -238,7 +238,7 @@ proof -
     by (simp add: abs_power2_distrib)
   hence new_abc: "?a^2 + ?b^2 = ?c^2"
     by (simp add: nat_mult_distrib power2_eq_square nat_add_distrib)
-  moreover from ab_rel have new_ab_rel: "gcd(?a,?b)=1" by (simp add: zgcd_def)
+  moreover from ab_rel have new_ab_rel: "gcd ?a ?b = 1" by (simp add: zgcd_def)
   moreover have new_a_odd: "odd ?a" 
   proof -
     from aodd obtain k where k: "a = 2*k+1" by (unfold zOdd_def, auto)
@@ -261,10 +261,10 @@ proof -
     qed
   qed
   ultimately have 
-    "\<exists> p q. ?a = p^2-q^2 \<and> ?b = 2*p*q \<and> ?c = p^2 + q^2 \<and> gcd(p,q) =1" 
+    "\<exists> p q. ?a = p^2-q^2 \<and> ?b = 2*p*q \<and> ?c = p^2 + q^2 \<and> gcd p q =1" 
     by (rule_tac a="?a" and b = "?b" and c="?c" in nat_euclid_pyth_triples)
   then obtain m and n where mn: 
-    "?a = m^2-n^2 \<and> ?b = 2*m*n \<and> ?c = m^2 + n^2 \<and> gcd(m,n) =1" by auto
+    "?a = m^2-n^2 \<and> ?b = 2*m*n \<and> ?c = m^2 + n^2 \<and> gcd m n =1" by auto
   have "n^2 \<le> m^2"
   proof (rule ccontr)
     assume "\<not> n^2 \<le> m^2" hence "n^2 > m^2" by simp 
@@ -277,8 +277,8 @@ proof -
     and "\<bar>c\<bar> = int(m^2) + int(n^2)" by (auto simp only: int_nat_abs_eq_abs zdiff_int)
   hence absabc: "\<bar>a\<bar> = (int m)^2 - (int n)^2 \<and> \<bar>b\<bar> = 2*(int m)*int n
     \<and> \<bar>c\<bar> = (int m)^2 + (int n)^2" by (simp add: power2_eq_square int_mult)
-  from mn have mn_rel: "zgcd(int m,int n)=1" by (simp add: zgcd_def)
-  show "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> zgcd(p,q)=1" 
+  from mn have mn_rel: "zgcd (int m) (int n) = 1" by (simp add: zgcd_def)
+  show "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> zgcd p q=1" 
     (is "\<exists> p q. ?Q p q")
   proof (cases)
     assume apos: "a \<ge> 0" then obtain p where p: "p = int m" by simp
@@ -316,37 +316,37 @@ qed
 
 subsection {* Fermat's last theorem, case $n=4$ *}
 
-text {* Core of the proof. Constructs a smaller solution over $\mathbb{Z}$ of $$a^4+b^4=c^2\,\land\,\gcd(a,b)=1\,\land\,abc\ne 0\,\land\,a~{\rm odd}.$$ *}
+text {* Core of the proof. Constructs a smaller solution over $\mathbb{Z}$ of $$a^4+b^4=c^2\,\land\,\gcd a b=1\,\land\,abc\ne 0\,\land\,a~{\rm odd}.$$ *}
 
 lemma smaller_fermat4:
   assumes abc: "a^4+b^4=c^2" and abc0: "a*b*c \<noteq> 0" and aodd: "a \<in> zOdd" 
-    and ab_relprime: "zgcd(a,b)=1"
+    and ab_relprime: "zgcd a b=1"
   shows 
-  "\<exists> p q r. (p^4+q^4=r^2 \<and> p*q*r \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd(p,q) = 1 \<and> r^2 < c^2)"
+  "\<exists> p q r. (p^4+q^4=r^2 \<and> p*q*r \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd p q = 1 \<and> r^2 < c^2)"
 proof - 
   -- "put equation in shape of a pythagorean triple and obtain $u$ and $v$"
-  from ab_relprime have a2b2relprime: "zgcd(a^2,b^2) = 1" 
+  from ab_relprime have a2b2relprime: "zgcd (a^2) (b^2) = 1" 
     by (simp only: zgcd_1_power_distrib)
   moreover from aodd have "a^2 \<in> zOdd" by (simp only: power_preserves_odd)
   moreover from abc have "(a^2)^2 + (b^2)^2 = c^2" by (simp only: quartic_square_square)
   ultimately obtain u and v where uvabc: 
-    "a^2 = u^2-v^2 \<and> b^2 = 2*u*v \<and> \<bar>c\<bar> = u^2 + v^2 \<and> zgcd(u,v)=1" 
+    "a^2 = u^2-v^2 \<and> b^2 = 2*u*v \<and> \<bar>c\<bar> = u^2 + v^2 \<and> zgcd u v = 1" 
     by (frule_tac a="a^2" in int_euclid_pyth_triples, auto)
   with abc0 have uv0: "u\<noteq>0 \<and> v\<noteq>0" by auto
-  have av_relprime: "zgcd(a,v) = 1" 
+  have av_relprime: "zgcd a v = 1" 
   proof -
-    from uvabc have "zgcd(v,a^2) dvd zgcd(b^2,a^2)" by (simp only: zgcd_zdvd_zgcd_zmult)
-    with a2b2relprime have "zgcd(a^2,v) dvd (1::int)" by (simp only: zgcd_commute)
-    moreover have "zgcd(a,v) dvd zgcd(a^2,v)" 
+    from uvabc have "zgcd v (a^2) dvd zgcd (b^2) (a^2)" by (simp only: zgcd_zdvd_zgcd_zmult)
+    with a2b2relprime have "zgcd (a^2) v dvd (1::int)" by (simp only: zgcd_commute)
+    moreover have "zgcd a v dvd zgcd (a^2) v" 
       by (simp only: zgcd_zdvd_zgcd_zmult power2_eq_square)
-    ultimately have "zgcd(a,v) dvd 1" by (rule_tac m="zgcd(a,v)" in zdvd_trans)
-    hence "\<bar>zgcd(a,v)\<bar>= 1" by auto
+    ultimately have "zgcd a v dvd 1" by (rule_tac m="zgcd a v" in zdvd_trans)
+    hence "\<bar>zgcd a v\<bar>= 1" by auto
     thus ?thesis by (simp add: zgcd_geq_zero)
   qed
   -- "make again a pythagorean triple and obtain $k$ and $l$"
   from uvabc have "a^2 + v^2 = u^2" by simp
   with av_relprime and aodd obtain k l where 
-    klavu: "a = k^2-l^2 \<and> v = 2*k*l \<and> \<bar>u\<bar> = k^2+l^2" and kl_rel: "zgcd(k,l)=1" 
+    klavu: "a = k^2-l^2 \<and> v = 2*k*l \<and> \<bar>u\<bar> = k^2+l^2" and kl_rel: "zgcd k l = 1" 
     by (frule_tac a="a" in int_euclid_pyth_triples, auto)
   --"prove $b=2m$ and $kl(k^2 + l^2) = m^2$, for coprime $k$, $l$ and $k^2+l^2$"
   from uvabc have "b^2 \<in> zEven" by (unfold zEven_def, auto)
@@ -362,20 +362,20 @@ proof -
     finally show ?thesis by simp
   qed
   moreover have "(2::nat) > 1" by auto
-  moreover from kl_rel have "zgcd(\<bar>k\<bar>,\<bar>l\<bar>)=1" by (unfold zgcd_def, auto)
-  moreover have "zgcd(\<bar>l\<bar>,\<bar>k^2+l^2\<bar>)=1"
+  moreover from kl_rel have "zgcd \<bar>k\<bar> \<bar>l\<bar> = 1" by (unfold zgcd_def, auto)
+  moreover have "zgcd \<bar>l\<bar> (\<bar>k^2+l^2\<bar>) = 1"
   proof -
-    from kl_rel have "zgcd(k*k,l)=1" by (simp only: zgcd_zgcd_zmult)
-    hence "zgcd(k*k+l*l,l)=1" by simp
-    hence "zgcd(l,k^2+l^2)=1" by (simp only: power2_eq_square zgcd_commute)
+    from kl_rel have "zgcd (k*k) l = 1" by (simp only: zgcd_zgcd_zmult)
+    hence "zgcd (k*k+l*l) l = 1" by simp
+    hence "zgcd l (k^2+l^2)=1" by (simp only: power2_eq_square zgcd_commute)
     thus ?thesis by (unfold zgcd_def, auto)
   qed
-  moreover have "zgcd(\<bar>k^2+l^2\<bar>,\<bar>k\<bar>)=1"
+  moreover have "zgcd \<bar>k^2+l^2\<bar> \<bar>k\<bar>=1"
   proof -
-    from kl_rel have "zgcd(l,k)=1" by (simp only: zgcd_commute)
-    hence "zgcd(l*l,k)=1" by (simp only: zgcd_zgcd_zmult)
-    hence "zgcd(l*l+k*k,k)=1" by simp
-    hence "zgcd(k^2+l^2,k)=1" by (simp only: add_ac power2_eq_square)
+    from kl_rel have "zgcd l k = 1" by (simp only: zgcd_commute)
+    hence "zgcd (l*l) k = 1" by (simp only: zgcd_zgcd_zmult)
+    hence "zgcd (l*l+k*k) k = 1" by simp
+    hence "zgcd (k^2+l^2) k = 1" by (simp only: add_ac power2_eq_square)
     thus ?thesis by (unfold zgcd_def, auto)
   qed
   ultimately have 
@@ -403,9 +403,9 @@ proof -
   ultimately have newabc: "\<alpha>^4 + \<beta>^4 = \<gamma>^2" by auto 
   from uv0 klavu albega have albega0: "\<alpha> * \<beta> * \<gamma>  \<noteq> 0" by auto
   -- "show the coprimality"
-  have alphabeta_relprime: "zgcd(\<alpha>,\<beta>) = 1"
+  have alphabeta_relprime: "zgcd \<alpha> \<beta> = 1"
   proof (rule classical)
-    let ?g = "zgcd(\<alpha>,\<beta>)"
+    let ?g = "zgcd \<alpha> \<beta>"
     assume gnot1: "?g \<noteq> 1"
     have "?g > 1"
     proof -
@@ -419,7 +419,7 @@ proof -
       hence "?g>0" by (auto simp only: zgcd_geq_zero less_int_def)
       with gnot1 show ?thesis by simp
     qed
-    moreover have "?g dvd zgcd(k,l)"
+    moreover have "?g dvd zgcd k l"
     proof -
       have "?g dvd \<alpha> \<and> ?g dvd \<beta>" by auto
       with albega have "?g dvd \<bar>k\<bar> \<and> ?g dvd \<bar>l\<bar>" 
@@ -427,30 +427,30 @@ proof -
       hence "?g dvd k \<and> ?g dvd l" by (simp add: zdvd_abs2)
       thus ?thesis by (simp add: zgcd_greatest_iff)
     qed
-    ultimately have "zgcd(k,l) \<noteq> 1" by auto
+    ultimately have "zgcd k l \<noteq> 1" by auto
     with kl_rel show ?thesis by auto
   qed
   -- "choose $p$ and $q$ in the right way"
-  have "\<exists> p q. p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma> \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd(p,q)=1"
+  have "\<exists> p q. p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma> \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd p q=1"
   proof -
     have "\<alpha> \<in> zOdd \<or> \<beta> \<in> zOdd"      
     proof (rule ccontr)
       assume "\<not> (\<alpha> \<in> zOdd \<or> \<beta> \<in> zOdd)" 
       hence "\<alpha> \<in> zEven \<and> \<beta> \<in> zEven" by (auto simp add: not_odd_impl_even)
       then have "2 dvd \<alpha> \<and> 2 dvd \<beta>" by (auto simp add: zEven_def)
-      then have "2 dvd zgcd(\<alpha>,\<beta>)" by (simp add: zgcd_greatest_iff)
+      then have "2 dvd zgcd \<alpha> \<beta>" by (simp add: zgcd_greatest_iff)
       with alphabeta_relprime show False by auto
     qed
     moreover
     { assume "\<alpha> \<in> zOdd"
       with newabc albega0 alphabeta_relprime obtain p q where 
-	"p=\<alpha> \<and> q=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd(p,q)=1" 
+	"p=\<alpha> \<and> q=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
 	by auto
       hence ?thesis by auto }
     moreover
     { assume "\<beta> \<in> zOdd"
       with newabc albega0 alphabeta_relprime obtain p q where 
-	"q=\<alpha> \<and> p=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd(p,q)=1" 
+	"q=\<alpha> \<and> p=\<beta> \<and> p^4 + q^4 = \<gamma>^2 \<and> p*q*\<gamma>  \<noteq> 0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
 	by (auto simp add: add_ac zgcd_commute)
       hence ?thesis by auto }
     ultimately show ?thesis by auto
@@ -480,7 +480,7 @@ qed
 text {* Show that no solution exists, by infinite descent of $c^2$. *}
 
 lemma no_rewritten_fermat4:
-  "\<not> (\<exists> a b. (a^4 + b^4 = c^2 \<and> a*b*c \<noteq> 0 \<and> a \<in> zOdd \<and> zgcd(a,b)=1))"
+  "\<not> (\<exists> a b. (a^4 + b^4 = c^2 \<and> a*b*c \<noteq> 0 \<and> a \<in> zOdd \<and> zgcd a b=1))"
 proof (induct c rule: infinite_descent0_measure[where V="\<lambda>c. nat(c^2)"])
   case (0 x)
   have "x^2 \<ge> 0" by (rule zero_le_power2)
@@ -490,11 +490,11 @@ proof (induct c rule: infinite_descent0_measure[where V="\<lambda>c. nat(c^2)"])
 next
   case (smaller x)
   then obtain a b where "a^4 + b^4 = x^2" and "a*b*x \<noteq> 0" 
-    and "a \<in> zOdd" and "zgcd(a,b)=1" by auto
+    and "a \<in> zOdd" and "zgcd a b=1" by auto
   hence "\<exists> p q r. (p^4+q^4=r^2 \<and> p*q*r \<noteq> 0 \<and> p \<in> zOdd 
-    \<and> zgcd(p,q)=1 \<and> r^2 < x^2)" by (rule smaller_fermat4)
+    \<and> zgcd p q=1 \<and> r^2 < x^2)" by (rule smaller_fermat4)
   then obtain p q r where pqr: "p^4 + q^4 = r^2 \<and> p*q*r \<noteq> 0 \<and> p \<in> zOdd 
-    \<and> zgcd(p,q)=1 \<and> r^2 < x^2" by auto
+    \<and> zgcd p q=1 \<and> r^2 < x^2" by auto
   have "r^2 \<ge> 0" and "x^2 \<ge> 0" by (auto simp only: zero_le_power2)
   hence "int(nat(r^2)) = r^2 \<and> int(nat(x^2)) = x^2" by auto
   with pqr have "int(nat(r^2)) < int(nat(x^2))" by auto
@@ -508,12 +508,12 @@ theorem fermat4:
   assumes ass: "(x::int)^4 + y^4 = z^4"
   shows "x*y*z=0"
 proof (rule ccontr)
-  let ?g = "zgcd(x,y)"
+  let ?g = "zgcd x y"
   let ?c = "(z div ?g)^2"
   assume xyz0: "x*y*z \<noteq> 0"
   -- "divide out the g.c.d."
   hence "x \<noteq> 0 \<or> y \<noteq> 0" by simp
-  then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> zgcd(a,b)=1" 
+  then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> zgcd a b=1" 
     by (frule_tac a="x" in make_zrelprime, auto)
   moreover have abc: "a^4 + b^4 = ?c^2 \<and> a*b*?c \<noteq> 0"
   proof -
@@ -548,14 +548,14 @@ proof (rule ccontr)
     ultimately show ?thesis by simp
   qed
   -- "choose the parity right"
-  have "\<exists> p q. p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> p \<in> zOdd \<and> zgcd(p,q)=1"
+  have "\<exists> p q. p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> p \<in> zOdd \<and> zgcd p q=1"
   proof -
     have "a \<in> zOdd \<or> b \<in> zOdd"
     proof (rule ccontr)
       assume "\<not>(a \<in> zOdd \<or> b \<in> zOdd)"
       hence "a \<in> zEven \<and> b \<in> zEven" by (auto simp add: not_odd_impl_even)
       hence "2 dvd a \<and> 2 dvd b" by (auto simp add: zEven_def)
-      hence "2 dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+      hence "2 dvd zgcd a b" by (simp add: zgcd_greatest_iff)
       with ab show False by auto
     qed
     moreover
@@ -566,7 +566,7 @@ proof (rule ccontr)
     { assume "b \<in> zOdd"
       then obtain p q where "p = b" and "q = a" and "p \<in> zOdd" by simp    
       with ab abc have 
-	"p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> p \<in> zOdd \<and> zgcd(p,q)=1" 
+	"p^4 + q^4 = ?c^2 \<and> p*q*?c\<noteq>0 \<and> p \<in> zOdd \<and> zgcd p q=1" 
 	by (auto simp add: zgcd_commute zmult_commute)
       hence ?thesis by auto }
     ultimately show ?thesis by auto

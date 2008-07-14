@@ -6,7 +6,7 @@
 header {* Powers, prime numbers and divisibility *}
 
 theory IntNatAux
-  imports 
+imports 
   "~~/src/HOL/NumberTheory/Factorization" 
   "~~/src/HOL/NumberTheory/EvenOdd"
 begin
@@ -16,15 +16,15 @@ text {* Contains lemmas about divisibility and coprimality of powers, as well as
 subsection {* Auxiliary results *}
 
 lemma make_relprime: 
-  "(a \<noteq> 0 \<or> b \<noteq> 0) \<Longrightarrow> \<exists> c d. a = gcd(a,b)*c \<and> b = gcd(a,b)*d \<and> gcd(c,d) = 1"
+  "(a \<noteq> 0 \<or> b \<noteq> 0) \<Longrightarrow> \<exists> c d. a = gcd a b*c \<and> b = gcd a b*d \<and> gcd c d = 1"
 proof -
   assume ab0: "a\<noteq>0 \<or> b\<noteq>0"
-  let ?g = "gcd(a,b)"
+  let ?g = "gcd a b"
   have "?g dvd a \<and> ?g dvd b" by auto
   then obtain c d where abcd: "a = ?g*c \<and> b = ?g*d" by (auto simp add: dvd_def)
-  moreover have "gcd(c,d)=1"
+  moreover have "gcd c d=1"
   proof -
-    from abcd have "?g*gcd(c,d)=?g" by (auto simp add: gcd_mult_distrib2)
+    from abcd have "?g*gcd c d=?g" by (auto simp add: gcd_mult_distrib2)
     moreover with ab0 have "?g \<noteq> 0" by (simp add: gcd_zero)
     ultimately show ?thesis by simp
   qed
@@ -45,18 +45,18 @@ proof -
 qed
 
 lemma make_zrelprime: "(a \<noteq> 0 \<or> b \<noteq> 0) 
-  \<Longrightarrow> \<exists> c d. a = zgcd(a,b)*c \<and> b = zgcd(a,b)*d \<and> zgcd(c,d)=1"
+  \<Longrightarrow> \<exists> c d. a = zgcd a b*c \<and> b = zgcd a b*d \<and> zgcd c d=1"
 proof -
   assume ab0: "a \<noteq> 0 \<or> b \<noteq> 0"
-  let ?g = "zgcd(a,b)"
+  let ?g = "zgcd a b"
   have "?g dvd a \<and> ?g dvd b" by auto
   then obtain c d where abcd: "a = ?g*c \<and> b = ?g*d" by (auto simp add: dvd_def)
-  moreover have "zgcd(c,d) = 1"
+  moreover have "zgcd c d = 1"
   proof -
-    from abcd have "?g * zgcd(c,d) = ?g" 
+    from abcd have "?g * zgcd c d = ?g" 
       by (auto simp add: zgcd_zmult_distrib2 zgcd_geq_zero)
     moreover with ab0 have "?g \<noteq> 0" by (auto simp add: zgcd_def gcd_zero)
-    ultimately show ?thesis by simp
+    ultimately show ?thesis by auto
   qed
   ultimately show ?thesis by auto
 qed
@@ -161,25 +161,24 @@ lemma zprime_2: "zprime 2"
 done
 
 lemma zgcd1_iff_no_common_primedivisor: 
-  "(zgcd(a,b)=1) = (\<not>(\<exists> p. zprime p \<and> p dvd a \<and> p dvd b))"
+  "(zgcd a b=1) = (\<not>(\<exists> p. zprime p \<and> p dvd a \<and> p dvd b))"
 proof (rule ccontr, auto)
-  fix p assume ab: "zgcd(a,b)=1" and "p dvd a" and "p dvd b" and p: "zprime p"
+  fix p assume ab: "zgcd a b=1" and "p dvd a" and "p dvd b" and p: "zprime p"
   hence "p dvd a \<and> p dvd b" by simp
-  hence "p dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+  hence "p dvd zgcd a b" by (simp add: zgcd_greatest_iff)
   with ab p show False by (unfold zprime_def, auto)
 next
-  let ?g = "zgcd(a,b)"
-  assume g1: "?g \<noteq> 1" and ps: "\<forall> p. zprime p \<longrightarrow> p dvd a \<longrightarrow> \<not> p dvd b"
+  let ?g = "zgcd a b"
+  assume ps: "\<forall> p. zprime p \<longrightarrow> p dvd a \<longrightarrow> \<not> p dvd b"
+  assume g1: "?g \<noteq> 1"
   moreover have "?g \<noteq> 0"
   proof (rule ccontr, simp)
-    assume "?g=0" hence "nat\<bar>a\<bar>=0 \<and> nat\<bar>b\<bar>=0" 
-      by (unfold zgcd_def, auto simp add: gcd_zero)
-    hence "a=0 \<and> b=0" by arith
+    assume "a = 0 \<and> b = 0"
     hence "2 dvd a \<and> 2 dvd b" by simp
     with ps show False by (auto simp add: zprime_2)
   qed
   moreover have "?g \<ge> 0" by (rule zgcd_geq_zero)
-  ultimately have "?g > 1" by auto
+  ultimately have "?g > 1" by arith
   then obtain p where "zprime p \<and> p dvd ?g" 
     by (frule_tac a="?g" in zprime_factor_exists, auto)
   hence "zprime p \<and> p dvd a \<and> p dvd b" by (simp add: zgcd_greatest_iff)
@@ -222,48 +221,48 @@ lemma even_plus_odd_prop2: "a+b \<in> zOdd \<Longrightarrow> a \<in> zEven \<Lon
 
 subsection {* Powers of natural numbers *}
 
-lemma gcd_1_power_left_distrib: "gcd(a,b)=1 \<Longrightarrow> gcd(a^n,b)=1"
+lemma gcd_1_power_left_distrib: "gcd a b = 1 \<Longrightarrow> gcd (a^n) b = 1"
   by (induct n, auto simp add: gcd_mult_cancel)
 
 text {* NB: the next (identical) lemma is just added to illustrate the difference between Isar and Isabelle scripting. *}
-lemma alternative_gcd_1_power_left_distrib: "gcd(a,b)=1 \<Longrightarrow> gcd(a^n,b)=1"
+lemma alternative_gcd_1_power_left_distrib: "gcd a b = 1 \<Longrightarrow> gcd(a^n) b = 1"
 proof -
-  assume ab: "gcd(a,b)=1"
-  thus "gcd(a^n,b)=1"
+  assume ab: "gcd a b=1"
+  thus "gcd (a^n) b = 1"
   proof (induct n)
     case 0
-    show "gcd(a^0,b)=1" by auto
+    show "gcd (a^0) b = 1" by auto
   next
     case (Suc n)
-    hence "gcd(a^n,b)=1" by simp
-    with ab have "gcd(a*a^n,b)=1" by (simp only: gcd_mult_cancel)
-    thus "gcd(a^Suc n,b)=1" by simp
+    hence "gcd (a^n) b = 1" by simp
+    with ab have "gcd (a*a^n) b = 1" by (simp only: gcd_mult_cancel)
+    thus "gcd (a^Suc n) b = 1" by simp
   qed
 qed
 
-lemma gcd_1_power_distrib: "gcd(a,b) = 1 \<Longrightarrow> gcd(a^n,b^n)=1"
+lemma gcd_1_power_distrib: "gcd a b = 1 \<Longrightarrow> gcd(a^n) (b^n) = 1"
 proof -
-  assume "gcd(a,b)=1"
-  hence "gcd(a^n,b)=1" by (rule gcd_1_power_left_distrib)
-  hence "gcd(b,a^n)=1" by (simp only: gcd_commute)
-  hence "gcd(b^n,a^n)=1" by (rule gcd_1_power_left_distrib)
-  thus "gcd(a^n,b^n)=1" by (simp only: gcd_commute)
+  assume "gcd a b=1"
+  hence "gcd (a^n) b = 1" by (rule gcd_1_power_left_distrib)
+  hence "gcd b (a^n) = 1" by (simp only: gcd_commute)
+  hence "gcd (b^n) (a^n) = 1" by (rule gcd_1_power_left_distrib)
+  thus "gcd (a^n) (b^n) = 1" by (simp only: gcd_commute)
 qed
     
-lemma gcd_power_distrib: "gcd(a,b)^n = gcd(a^n,b^n)"
+lemma gcd_power_distrib: "gcd a b ^ n = gcd (a^n) (b^n)"
 proof cases
   assume "a=0 \<and> b=0"
   thus ?thesis by (auto simp add: power_0_left)
 next
-  let ?g = "gcd(a,b)"
+  let ?g = "gcd a b"
   assume "\<not> (a=0 \<and> b=0)"
   hence "a \<noteq> 0 \<or> b \<noteq> 0" by simp
-  then obtain c d where abcd: "a = ?g*c \<and> b = ?g*d \<and> gcd(c,d)=1" 
+  then obtain c d where abcd: "a = ?g*c \<and> b = ?g*d \<and> gcd c d=1" 
     by (frule_tac a="a" in make_relprime, auto)
   moreover have "(?g*c)^n = ?g^n * c^n \<and> (?g*d)^n = ?g^n * d^n" 
     by (simp add: power_mult_distrib)
-  ultimately have "gcd(a^n,b^n) = ?g^n * gcd(c^n,d^n)" by (simp only: gcd_mult_distrib2)
-  moreover from abcd have "gcd(c^n,d^n) = 1" by (simp only: gcd_1_power_distrib)
+  ultimately have "gcd (a^n) (b^n) = ?g^n * gcd (c^n) (d^n)" by (simp only: gcd_mult_distrib2)
+  moreover from abcd have "gcd (c^n) (d^n) = 1" by (simp only: gcd_1_power_distrib)
   ultimately show ?thesis by simp
 qed
 
@@ -315,11 +314,11 @@ proof
     by (frule_tac n="n" in not0_implies_Suc, auto)
   assume "a^n dvd b^n"
   then obtain k where k: "b^n = a^n * k" by (auto simp add: dvd_def)
-  moreover have "gcd(a^n, (a^n)*k) = (a^n) * gcd(1,k)" by (simp add: gcd_mult_distrib2)
-  ultimately have "gcd(a^n,b^n) = a^n" by (auto simp add: gcd_commute gcd_1)
-  hence "gcd(a,b)^n = a^n" by (simp add: gcd_power_distrib)
-  with mn have "a = gcd(a,b)" by (rule_tac n="m" in power_inject_base, auto)
-  moreover have "gcd(a,b) dvd b" by (rule gcd_dvd2)
+  moreover have "gcd (a^n) ((a^n)*k) = (a^n) * gcd 1 k" by (simp add: gcd_mult_distrib2)
+  ultimately have "gcd (a^n) (b^n) = a^n" by (auto simp add: gcd_commute gcd_1)
+  hence "gcd a b^n = a^n" by (simp add: gcd_power_distrib)
+  with mn have "a = gcd a b" by (rule_tac n="m" in power_inject_base, auto)
+  moreover have "gcd a b dvd b" by (rule gcd_dvd2)
   ultimately show "a dvd b" by simp
 next
   assume "a dvd b"
@@ -356,10 +355,10 @@ proof -
   with lzspos show "length xs > length ys" by auto
 qed
 *)
-text {* Theorem: if $n>0$ and $\gcd(a,b)=1$ and $ab=c^n$ then $\exists k: a = k^n$. Proof uses induction on the number of prime factors of $c$. *}
+text {* Theorem: if $n>0$ and $\gcd a b=1$ and $ab=c^n$ then $\exists k: a = k^n$. Proof uses induction on the number of prime factors of $c$. *}
 
 theorem nat_relprime_power_divisors: 
-  assumes npos: "n\<noteq>0" and abcn: "a*b = c^n" and relprime: "gcd(a,b) = 1"
+  assumes npos: "n\<noteq>0" and abcn: "a*b = c^n" and relprime: "gcd a b = 1"
   shows "\<exists> k. a = k^n"
 proof -  
   from npos obtain m where mn: "n = Suc m" 
@@ -379,7 +378,7 @@ proof -
     assume "c\<noteq>0" then obtain xs where xs: "primel xs \<and> prod xs = c" 
       by (frule_tac a="c" in factor_exists_general, auto)
     moreover have 
-      "!!a b. (primel xs \<and> a*b = (prod xs)^n \<and> gcd(a,b)=1) \<Longrightarrow> \<exists>k. a = k^n"
+      "!!a b. (primel xs \<and> a*b = (prod xs)^n \<and> gcd a b=1) \<Longrightarrow> \<exists>k. a = k^n"
     proof (induct xs)
       case Nil hence ass: "a*b=1^n" by simp
       hence "a*b=1" by (simp only: power_one)
@@ -387,8 +386,8 @@ proof -
       with ass show "\<exists> k. a = k^n" by auto
     next
       case (Cons p ps) 
-      hence ass: "primel ps \<and> prime p \<and> a*b=p^n*(prod ps)^n \<and> gcd(a,b)=1 " 
-	and IH: "!!a b. primel ps \<and> a*b = (prod ps)^n \<and> gcd(a,b)=1 \<Longrightarrow> \<exists> k. a = k^n" 
+      hence ass: "primel ps \<and> prime p \<and> a*b=p^n*(prod ps)^n \<and> gcd a b=1 " 
+	and IH: "!!a b. primel ps \<and> a*b = (prod ps)^n \<and> gcd a b=1 \<Longrightarrow> \<exists> k. a = k^n" 
 	by (auto simp add: primel_def power_mult_distrib)
       hence pnab: "p^n dvd a*b" and pn0: "p^n \<noteq> 0" 
 	by (auto simp add: prime_def)
@@ -397,22 +396,22 @@ proof -
 	have "\<not> p dvd b"
 	proof (rule ccontr, simp)
 	  assume "p dvd b"
-	  with pa have "p dvd gcd(a,b)" by (simp add: gcd_greatest_iff)
+	  with pa have "p dvd gcd a b" by (simp add: gcd_greatest_iff)
 	  with ass show "False" by (auto simp add: prime_def)
 	qed
 	with ass pnab have "p^n dvd a" by (simp add: prime_power_dvd_cancel_right)
 	then obtain A where A: "a = p^n * A" by (auto simp add: dvd_def)
 	with ass pn0 have "A*b = (prod ps)^n" by auto
-	moreover have "gcd(A,b)=1"
+	moreover have "gcd A b=1"
 	proof -
-	  let ?g = "gcd(A,b)"
+	  let ?g = "gcd A b"
 	  have "?g dvd A \<and> ?g dvd b" by (simp add: gcd_greatest)
 	  with A have "?g dvd a \<and> ?g dvd b" by (simp add: dvd_mult)
-	  hence "?g dvd gcd(a,b)" by (simp only: gcd_greatest)
+	  hence "?g dvd gcd a b" by (simp only: gcd_greatest)
 	  with ass show "?g = 1" by auto
 	qed
 	moreover from IH ass have 
-	  "A*b = (prod ps)^n \<and> gcd(A,b)=1 \<Longrightarrow> \<exists> k. A = k^n" by auto
+	  "A*b = (prod ps)^n \<and> gcd A b=1 \<Longrightarrow> \<exists> k. A = k^n" by auto
 	ultimately have "\<exists> k. A = k^n" by auto
 	then obtain k where "A = k^n" by auto
 	with A have "a = (p*k)^n" by (auto simp add: power_mult_distrib)
@@ -424,20 +423,20 @@ proof -
 	ultimately have "p^n dvd b" by (simp add: prime_power_dvd_cancel_right)
 	then obtain B where B: "b = p^n * B" by (auto simp add: dvd_def)
 	with ass pn0 have "a*B = (prod ps)^n" by auto
-	moreover have "gcd(a,B)=1"
+	moreover have "gcd a B=1"
 	proof -
-	  let ?g = "gcd(a,B)"
+	  let ?g = "gcd a B"
 	  have "?g dvd a \<and> ?g dvd B" by (simp add: gcd_greatest)
 	  with B have "?g dvd a \<and> ?g dvd b" by (simp add: dvd_mult)
-	  hence "?g dvd gcd(a,b)" by (simp only: gcd_greatest)
+	  hence "?g dvd gcd a b" by (simp only: gcd_greatest)
 	  with ass show "?g = 1" by auto
 	qed
 	moreover from IH ass have 
-	  "a*B = (prod ps)^n \<and> gcd(a,B)=1 \<Longrightarrow> \<exists> k. a = k^n" by auto
+	  "a*B = (prod ps)^n \<and> gcd a B=1 \<Longrightarrow> \<exists> k. a = k^n" by auto
 	ultimately have "\<exists> k. a = k^n" by auto }
       ultimately show "\<exists> k. a = k^n" by auto
     qed
-    moreover from abcn relprime have "gcd(a,b)=1 \<and> a*b=c^n" by simp
+    moreover from abcn relprime have "gcd a b=1 \<and> a*b=c^n" by simp
     ultimately show ?thesis by auto
   qed
 qed
@@ -447,13 +446,13 @@ subsection {* Powers of integers *}
 text {* Now turn to the case of integers. This lemma is based on its equivalent for the natural numbers. *}
 
 corollary int_relprime_power_divisors: 
-  assumes abcn: "a*b = c^n" and n: "n>1" and relprime: "zgcd(a,b) = 1"
+  assumes abcn: "a*b = c^n" and n: "n>1" and relprime: "zgcd a b = 1"
   shows "\<exists> k. \<bar>a\<bar> = k^n"
 proof -
   let ?a1 = "nat\<bar>a\<bar>"
   let ?b1 = "nat\<bar>b\<bar>"
   let ?c1 = "nat\<bar>c\<bar>"
-  from relprime have absrelprime: "gcd(?a1, ?b1)=1" by (auto simp only: zgcd_def)
+  from relprime have absrelprime: "gcd ?a1 ?b1 = 1" by (auto simp only: zgcd_def)
   have "\<bar>a*b\<bar> = \<bar>a\<bar>*\<bar>b\<bar>" by (simp add: abs_mult)
   with abcn have "\<bar>c\<bar>^n = \<bar>a\<bar>*\<bar>b\<bar>" by (simp add: power_abs)
   hence "int(?c1^n) = int(?a1*?b1)" by (simp only: int_nat_abs_eq_abs int_mult int_power)
@@ -467,22 +466,22 @@ proof -
 qed
 
 corollary int_triple_relprime_power_divisors: 
-  "\<lbrakk> a*b*c = d^n; n > 1; zgcd(a,b)=1; zgcd(b,c)=1; zgcd(c,a)=1 \<rbrakk> 
+  "\<lbrakk> a*b*c = d^n; n > 1; zgcd a b = 1; zgcd b c = 1; zgcd c a = 1 \<rbrakk> 
   \<Longrightarrow> \<exists> k l m. \<bar>a\<bar> = k^n \<and> \<bar>b\<bar> = l^n \<and> \<bar>c\<bar> = m^n"
 proof -
   assume abcd: "a*b*c = d^n" and n1: "n > 1"
-    and ab: "zgcd(a,b)=1" and bc: "zgcd(b,c)=1" and ca: "zgcd(c,a)=1"
-  hence ba: "zgcd(b,a)=1" and cb: "zgcd(c,b)=1" and ac: "zgcd(a,c)=1" 
+    and ab: "zgcd a b = 1" and bc: "zgcd b c = 1" and ca: "zgcd c a = 1"
+  hence ba: "zgcd b a = 1" and cb: "zgcd c b = 1" and ac: "zgcd a c = 1" 
     by (auto simp only: zgcd_commute)
-  from ba ca have "zgcd(b*c,a)=1" by (simp only: zgcd_zmult_cancel)
-  with abcd have "a*(b*c) = d^n \<and> zgcd(a,b*c)=1" by (simp add: zgcd_commute)
+  from ba ca have "zgcd (b*c) a = 1" by (simp only: zgcd_zmult_cancel)
+  with abcd have "a*(b*c) = d^n \<and> zgcd a (b*c) = 1" by (simp add: zgcd_commute)
   with n1 have k: "\<exists> k. \<bar>a\<bar> = k^n" by (auto dest: int_relprime_power_divisors)
-  from ab cb have "zgcd(a*c,b)=1" by (simp only: zgcd_zmult_cancel)
-  with abcd have "b*(a*c) = d^n \<and> zgcd(b,a*c)=1" 
+  from ab cb have "zgcd (a*c) b = 1" by (simp only: zgcd_zmult_cancel)
+  with abcd have "b*(a*c) = d^n \<and> zgcd b (a*c) = 1" 
     by (simp add: zgcd_commute mult_ac)
   with n1 have l: "\<exists> l. \<bar>b\<bar> = l^n" by (auto dest: int_relprime_power_divisors)
-  from ac bc have "zgcd(a*b,c)=1" by (simp only: zgcd_zmult_cancel)
-  with abcd have "c*(a*b) = d^n \<and> zgcd(c,a*b)=1" 
+  from ac bc have "zgcd (a*b) c = 1" by (simp only: zgcd_zmult_cancel)
+  with abcd have "c*(a*b) = d^n \<and> zgcd c (a*b) = 1" 
     by (simp add: zgcd_commute mult_ac)
   with n1 have m: "\<exists> m. \<bar>c\<bar> = m^n" by (auto dest: int_relprime_power_divisors)
   from k l m show ?thesis by auto
@@ -505,9 +504,9 @@ proof -
 qed
 
 corollary int_relprime_odd_power_divisors: 
-  "\<lbrakk> a*b = c^(nat x); nat x > 1; x \<in> zOdd; zgcd(a,b) = 1 \<rbrakk> \<Longrightarrow> \<exists> k. a = k^(nat x)"
+  "\<lbrakk> a*b = c^(nat x); nat x > 1; x \<in> zOdd; zgcd a b = 1 \<rbrakk> \<Longrightarrow> \<exists> k. a = k^(nat x)"
 proof -
-  assume "a*b = c^(nat x)" and x1: "nat x > 1" and odd: "x \<in> zOdd" and "zgcd(a,b)=1"
+  assume "a*b = c^(nat x)" and x1: "nat x > 1" and odd: "x \<in> zOdd" and "zgcd a b=1"
   hence "\<exists> k. \<bar>a\<bar> = k^(nat x)" by (simp only: int_relprime_power_divisors)
   then obtain k where k: "\<bar>a\<bar> = k^(nat x)" by blast
   { assume "a \<noteq> k^(nat x)"
@@ -517,65 +516,65 @@ proof -
 qed
 
 corollary int_triple_relprime_odd_power_divisors: 
-  "\<lbrakk> a*b*c = d^(nat x); nat x>1; x\<in>zOdd; zgcd(a,b)=1; zgcd(b,c)=1; zgcd(c,a)=1 \<rbrakk>
+  "\<lbrakk> a*b*c = d^(nat x); nat x>1; x\<in>zOdd; zgcd a b = 1; zgcd b c = 1; zgcd c a = 1 \<rbrakk>
   \<Longrightarrow> \<exists> k l m. a = k^(nat x) \<and> b = l^(nat x) \<and> c = m^(nat x)"
 proof -
   assume abcd: "a*b*c = d^(nat x)" and x1: "nat x > 1" and odd: "x \<in> zOdd" 
-    and ab: "zgcd(a,b)=1" and bc: "zgcd(b,c)=1" and ca: "zgcd(c,a)=1"
-  hence ba: "zgcd(b,a)=1" and cb: "zgcd(c,b)=1" and ac: "zgcd(a,c)=1" 
+    and ab: "zgcd a b = 1" and bc: "zgcd b c = 1" and ca: "zgcd c a = 1"
+  hence ba: "zgcd b a = 1" and cb: "zgcd c b = 1" and ac: "zgcd a c = 1" 
     by (auto simp only: zgcd_commute)
-  { from ba ca have "zgcd(b*c,a)=1" by (simp only: zgcd_zmult_cancel)
-    with abcd have "a*(b*c) = d^(nat x) \<and> zgcd(a,b*c)=1" 
+  { from ba ca have "zgcd (b*c) a = 1" by (simp only: zgcd_zmult_cancel)
+    with abcd have "a*(b*c) = d^(nat x) \<and> zgcd a (b*c) = 1" 
       by (simp add: zgcd_commute)
     with x1 odd have "\<exists> k. a = k^(nat x)" 
       by (auto dest: int_relprime_odd_power_divisors) }
   moreover
-  { from ab cb have "zgcd(a*c,b)=1" by (simp only: zgcd_zmult_cancel)
-    with abcd have "b*(a*c) = d^(nat x) \<and> zgcd(b,a*c)=1" 
+  { from ab cb have "zgcd (a*c) b = 1" by (simp only: zgcd_zmult_cancel)
+    with abcd have "b*(a*c) = d^(nat x) \<and> zgcd b (a*c) = 1" 
       by (simp add: zgcd_commute mult_ac)
     with x1 odd have "\<exists> l. b = l^(nat x)" 
       by (auto dest: int_relprime_odd_power_divisors) }
   moreover
-  { from ac bc have "zgcd(a*b,c)=1" by (simp only: zgcd_zmult_cancel)
-    with abcd have "c*(a*b) = d^(nat x) \<and> zgcd(c,a*b)=1" 
+  { from ac bc have "zgcd (a*b) c = 1" by (simp only: zgcd_zmult_cancel)
+    with abcd have "c*(a*b) = d^(nat x) \<and> zgcd c (a*b) = 1" 
       by (simp add: zgcd_commute mult_ac)
     with x1 odd have m: "\<exists> m. c = m^(nat x)" 
       by (auto dest: int_relprime_odd_power_divisors) }
   ultimately show ?thesis by auto
 qed
 
-lemma zgcd_1_power_left_distrib: "zgcd(a,b)=1 \<Longrightarrow> zgcd(a^n,b)=1"
+lemma zgcd_1_power_left_distrib: "zgcd a b = 1 \<Longrightarrow> zgcd (a^n) b = 1"
   by (induct n, auto simp add: zgcd_zmult_cancel)
 
-lemma zgcd_1_power_distrib: "zgcd(a,b) = 1 \<Longrightarrow> zgcd(a^n,b^n)=1"
+lemma zgcd_1_power_distrib: "zgcd a b = 1 \<Longrightarrow> zgcd (a^n) (b^n) = 1"
 proof -
-  assume "zgcd(a,b)=1"
-  hence "zgcd(a^n,b)=1" by (rule zgcd_1_power_left_distrib)
-  hence "zgcd(b,a^n)=1" by (simp only: zgcd_commute)
-  hence "zgcd(b^n,a^n)=1" by (rule zgcd_1_power_left_distrib)
-  thus "zgcd(a^n,b^n)=1" by (simp only: zgcd_commute)
+  assume "zgcd a b = 1"
+  hence "zgcd (a^n) b = 1" by (rule zgcd_1_power_left_distrib)
+  hence "zgcd b (a^n) = 1" by (simp only: zgcd_commute)
+  hence "zgcd (b^n) (a^n) = 1" by (rule zgcd_1_power_left_distrib)
+  thus "zgcd (a^n) (b^n) = 1" by (simp only: zgcd_commute)
 qed
 
-lemma zgcd_power_distrib: "zgcd(a,b)^n = zgcd(a^n,b^n)"
+lemma zgcd_power_distrib: "zgcd a b ^ n = zgcd (a^n) (b^n)"
 proof cases
   assume "a=0 \<and> b=0"
   thus ?thesis by (auto simp add: power_0_left)
 next
-  let ?g = "zgcd(a,b)"
+  let ?g = "zgcd a b"
   assume "\<not> (a=0 \<and> b=0)"
   hence ab0: "a \<noteq> 0 \<or> b \<noteq> 0" by simp
-  hence non0: "zgcd(a,b) \<noteq> 0 \<and> zgcd(a^n,b^n) \<noteq> 0" 
+  hence non0: "zgcd a b \<noteq> 0" "zgcd (a^n) (b^n) \<noteq> 0"
     by (auto simp add: zgcd_def gcd_zero power_eq_0_iff)
-  moreover have "zgcd(a,b) \<ge> 0 \<and> zgcd(a^n,b^n) \<ge> 0" by (simp add: zgcd_geq_zero)
-  ultimately have "zgcd(a,b)^n > 0 \<and> zgcd(a^n,b^n) > 0" 
-    by (auto simp add: zero_less_power)
-  moreover from ab0 obtain c d where abcd: "a = ?g*c \<and> b = ?g*d \<and> zgcd(c,d)=1"
+  moreover have "zgcd a b \<ge> 0" "zgcd (a^n) (b^n) \<ge> 0" by (simp_all add: zgcd_geq_zero)
+  ultimately have "zgcd a b ^ n > 0" "zgcd (a^n) (b^n) > 0"
+    unfolding less_le by simp_all
+  moreover from ab0 obtain c d where abcd: "a = ?g*c \<and> b = ?g*d \<and> zgcd c d = 1"
     by (frule_tac a="a" in make_zrelprime, auto)
   moreover have "(?g*c)^n = ?g^n * c^n \<and> (?g*d)^n = ?g^n * d^n" 
     by (simp add: power_mult_distrib)
-  ultimately have gabcdn: "zgcd(a^n,b^n) = ?g^n * zgcd(c^n,d^n)" 
+  ultimately have gabcdn: "zgcd (a^n) (b^n) = ?g^n * zgcd (c^n) (d^n)" 
     by (auto simp add: zgcd_zmult_distrib2)
-  moreover from abcd have "zgcd(c^n,d^n) = 1" by (simp only: zgcd_1_power_distrib)
+  moreover from abcd have "zgcd (c^n) (d^n) = 1" by (simp only: zgcd_1_power_distrib)
   ultimately show ?thesis by auto
 qed
 
@@ -600,14 +599,14 @@ proof
     by (frule_tac n="n" in not0_implies_Suc, auto)
   assume "a^n dvd b^n"
   then obtain k where k: "b^n = a^n * k" by (auto simp add: dvd_def)
-  moreover have "zgcd(a^n*1, a^n*k) = \<bar>a^n\<bar> * zgcd(1,k)" 
+  moreover have "zgcd (a^n*1) (a^n*k) = \<bar>a^n\<bar> * zgcd 1 k" 
     by (rule_tac k="a^n" in zgcd_zmult_distrib2_abs)
-  ultimately have "zgcd(a^n,b^n) = \<bar>a^n\<bar>" 
+  ultimately have "zgcd (a^n) (b^n) = \<bar>a^n\<bar>" 
     by (auto simp add: zgcd_commute zgcd_1)
-  hence "zgcd(a,b)^n = \<bar>a\<bar>^n \<and> zgcd(a,b) \<ge> 0 \<and> \<bar>a\<bar> \<ge> 0" 
+  hence "zgcd a b^n = \<bar>a\<bar>^n \<and> zgcd a b \<ge> 0 \<and> \<bar>a\<bar> \<ge> 0" 
     by (simp add: zgcd_power_distrib power_abs zgcd_geq_zero)
-  with mn have "\<bar>a\<bar> = zgcd(a,b)" by (rule_tac n="m" in power_inject_base, auto)
-  moreover have "zgcd(a,b) dvd b" by (rule_tac m="a" in zgcd_zdvd2)
+  with mn have "\<bar>a\<bar> = zgcd a b" by (rule_tac n="m" in power_inject_base, auto)
+  moreover have "zgcd a b dvd b" by (rule_tac m="a" in zgcd_zdvd2)
   ultimately have "\<bar>a\<bar> dvd b" by simp
   thus "a dvd b" by (simp add: zdvd_abs1)
 next

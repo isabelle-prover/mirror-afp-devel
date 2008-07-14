@@ -6,7 +6,7 @@
 header {* The quadratic form $x^2 + Ny^2$ *}
 
 theory QuadForm
-  imports 
+imports 
   "~~/src/HOL/NumberTheory/Quadratic_Reciprocity" 
   IntNatAux
 begin
@@ -44,7 +44,7 @@ proof (auto simp add: zprime_def)
 qed
 
 (*lemma zgcd_not_1_impl_common_primedivisor: 
-  "zgcd(a,b) \<noteq> 1 \<Longrightarrow> \<exists> p. zprime p \<and> p dvd a \<and> p dvd b" 
+  "zgcd a b \<noteq> 1 \<Longrightarrow> \<exists> p. zprime p \<and> p dvd a \<and> p dvd b" 
   by (auto simp add: zgcd1_iff_no_common_primedivisor)
 
 *)
@@ -223,8 +223,8 @@ done
 
 lemma qfN_power_div_prime: 
   assumes ass: "zprime P \<and> P \<in> zOdd \<and> P dvd A \<and> P^n = p^2+N*q^2 
-  \<and> A^n = a^2+N*b^2 \<and> zgcd(a,b)=1 \<and> zgcd(p,N*q)=1 \<and> n>0"
-  shows "\<exists> u v. a^2+N*b^2 = (u^2 + N*v^2)*(p^2+N*q^2) \<and> zgcd(u,v)=1 
+  \<and> A^n = a^2+N*b^2 \<and> zgcd a b=1 \<and> zgcd p (N*q) = 1 \<and> n>0"
+  shows "\<exists> u v. a^2+N*b^2 = (u^2 + N*v^2)*(p^2+N*q^2) \<and> zgcd u v=1 
                 \<and> (\<exists> e. a = p*u+e*N*q*v \<and> b = p*v-e*q*u \<and> \<bar>e\<bar> = 1)" 
 proof -
   from ass have "P dvd A \<and> n>0" by simp
@@ -285,7 +285,7 @@ proof -
 	  with ass have "P dvd N*(q*q)" by (simp add: power2_eq_square)
 	  with ass have "P dvd N \<or> P dvd q" by (auto dest: zprime_zdvd_zmult_general)
 	  hence "P dvd N*q" by (auto simp add: zdvd_zmult zdvd_zmult2)
-	  with Pdvdp have "P dvd zgcd(p,N*q)" by (simp add: zgcd_greatest_iff)
+	  with Pdvdp have "P dvd zgcd p (N*q)" by (simp add: zgcd_greatest_iff)
 	  with ass show False by (auto simp add: zprime_def)
 	next
 	  assume "P dvd q"
@@ -295,11 +295,11 @@ proof -
 	  with PdvdPn have "P dvd P^n-N*q^2" by (simp only: zdvd_zdiff)
 	  with ass have "P dvd p*p" by (simp add: power2_eq_square)
 	  with ass have "P dvd p" by (auto dest: zprime_zdvd_zmult_general)
-	  with PdvdNq have "P dvd zgcd(p,N*q)" by (simp add: zgcd_greatest_iff)
+	  with PdvdNq have "P dvd zgcd p (N*q)" by (simp add: zgcd_greatest_iff)
 	  with ass show False by (auto simp add: zprime_def)
 	qed
 	ultimately have "P dvd a \<and> P dvd b" by auto
-	hence "P dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+	hence "P dvd zgcd a b" by (simp add: zgcd_greatest_iff)
 	with ass show False by (auto simp add: zprime_def)
       qed
       moreover
@@ -385,14 +385,14 @@ proof -
     assume "\<not> e=1" with e have "e=-1" by simp
     with a and b and ass show ?thesis by (simp add: qfN_mult2 zmult_1 mult_ac)
   qed
-  moreover have "zgcd(u,v)=1" 
+  moreover have "zgcd u v=1" 
   proof -
-    let ?g = "zgcd(u,v)"
+    let ?g = "zgcd u v"
     have "?g dvd u \<and> ?g dvd v" by auto
     hence "?g dvd u*p + v*(e*N*q) \<and> ?g dvd v*p - u*(e*q)" 
       by (simp add: zdvd_zmult2 zdvd_zadd zdvd_zdiff)
     with a and b have "?g dvd a \<and> ?g dvd b" by (auto simp only: mult_ac)
-    hence "?g dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+    hence "?g dvd zgcd a b" by (simp add: zgcd_greatest_iff)
     with ass have "?g = 1 \<or> ?g = -1" by simp
     moreover have "?g \<ge> 0" by (rule zgcd_geq_zero)
     ultimately show ?thesis by auto
@@ -450,7 +450,7 @@ qed
 
 lemma qfN_oddprime_cube: 
   "\<lbrakk> zprime (p^2+N*q^2); (p^2+N*q^2) \<in> zOdd; p \<noteq> 0; N \<ge> 1 \<rbrakk>
-  \<Longrightarrow> \<exists> a b. (p^2+N*q^2)^3 = a^2 + N*b^2 \<and> zgcd(a, N*b)=1"
+  \<Longrightarrow> \<exists> a b. (p^2+N*q^2)^3 = a^2 + N*b^2 \<and> zgcd a (N*b)=1"
 proof -
   let ?P = "p^2+N*q^2"
   assume P: "zprime ?P" and Podd: "?P \<in> zOdd" and p0: "p \<noteq> 0" and N1: "N \<ge> 1"
@@ -458,12 +458,12 @@ proof -
   let ?a = "p*(p^2 - 3*N*q^2)"
   let ?b = "q*(3*p^2 - N*q^2)"
   have abP: "?P^3 = ?a^2 + N*?b^2" by (simp add: nat_number ring_simps)
-  have "zgcd(?b,?a) \<noteq>  1 \<Longrightarrow> ?P dvd p"
+  have "zgcd ?b ?a \<noteq>  1 \<Longrightarrow> ?P dvd p"
   proof -
-    let ?h = "zgcd(?b,?a)" 
+    let ?h = "zgcd ?b ?a" 
     assume h1: "?h \<noteq> 1"
     have "?h \<ge> 0" by (rule zgcd_geq_zero)
-    hence "?h = 0 \<or> ?h = 1 \<or> ?h > 1" by auto
+    hence "?h = 0 \<or> ?h = 1 \<or> ?h > 1" by arith
     with h1 have "?h =0 \<or> ?h >1" by auto
     moreover
     { assume "?h = 0" hence "nat\<bar>?b\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0" 
@@ -584,12 +584,12 @@ proof -
       qed }
     ultimately show ?thesis by blast
   qed
-  moreover have "zgcd(N,?a) \<noteq> 1 \<Longrightarrow> ?P dvd p"
+  moreover have "zgcd N ?a \<noteq> 1 \<Longrightarrow> ?P dvd p"
   proof -
-    let ?h = "zgcd(N,?a)" 
+    let ?h = "zgcd N ?a" 
     assume h1: "?h \<noteq> 1"
     have "?h \<ge> 0" by (rule zgcd_geq_zero)
-    hence "?h = 0 \<or> ?h = 1 \<or> ?h > 1" by auto
+    hence "?h = 0 \<or> ?h = 1 \<or> ?h > 1" by arith
     with h1 have "?h =0 \<or> ?h >1" by auto
     moreover
     { assume "?h = 0" hence "nat\<bar>N\<bar> = 0 \<and> nat\<bar>?a\<bar> = 0" 
@@ -638,8 +638,8 @@ proof -
       with neg show False by simp
     qed
   qed
-  ultimately have "zgcd(?b,?a)=1 \<and> zgcd(N,?a)=1" by auto
-  hence "zgcd(N*?b,?a) = 1" by (simp only: zgcd_zmult_cancel)
+  ultimately have "zgcd ?b ?a = 1 \<and> zgcd N ?a = 1" by auto
+  hence "zgcd (N*?b) ?a = 1" by (simp only: zgcd_zmult_cancel)
   with abP show ?thesis by (auto simp only: zgcd_commute)
 qed
 
@@ -711,7 +711,7 @@ qed
 
 lemma qfN_square_prime: 
   assumes ass: 
-  "zprime (p^2+N*q^2) \<and> N>1 \<and> (p^2+N*q^2)^2 = r^2+N*s^2 \<and> zgcd(r,s)=1"
+  "zprime (p^2+N*q^2) \<and> N>1 \<and> (p^2+N*q^2)^2 = r^2+N*s^2 \<and> zgcd r s=1"
   shows "\<bar>r\<bar> = \<bar>p^2-N*q^2\<bar> \<and> \<bar>s\<bar> = \<bar>2*p*q\<bar>"
 proof -
   let ?P = "p^2 + N*q^2"
@@ -733,7 +733,7 @@ proof -
   moreover have "s \<noteq> 0"
   proof (rule ccontr, simp)
     assume s0: "s=0"
-    hence "zgcd(r,s) = \<bar>r\<bar>" by (simp only: zgcd_0)
+    hence "zgcd r s = \<bar>r\<bar>" by (simp only: zgcd_0)
     with ass have "\<bar>r\<bar> = 1" by simp
     hence "r^2 = 1" by (auto simp add: abs_power2_distrib)
     with s0 have "?A = 1" by simp
@@ -759,7 +759,7 @@ qed
 
 lemma qfN_cube_prime: 
   assumes ass: "zprime (p^2 + N*q^2) \<and> N > 1 
-  \<and> (p^2 + N*q^2)^3 = a^2 + N*b^2 \<and> zgcd(a, b)=1"
+  \<and> (p^2 + N*q^2)^3 = a^2 + N*b^2 \<and> zgcd a b=1"
   shows "\<bar>a\<bar> = \<bar>p^3- 3*N*p*q^2\<bar> \<and> \<bar>b\<bar> = \<bar>3*p^2*q-N*q^3\<bar>"
 proof -
   let ?P = "p^2 + N*q^2"
@@ -770,19 +770,19 @@ proof -
   then obtain u v e where uve: 
     "?A = (u^2+N*v^2)*?P \<and> a = p*u+e*N*q*v \<and> b = p*v-e*q*u \<and> \<bar>e\<bar>=1" 
     by (frule_tac p="p" in qfN_div_prime, auto)
-  have "zgcd(u,v)=1"
+  have "zgcd u v=1"
   proof -
-    let ?g = "zgcd(u,v)"
+    let ?g = "zgcd u v"
     have "?g dvd u \<and> ?g dvd v" by (auto simp add: zgcd_greatest_iff)
     with uve have "?g dvd a \<and> ?g dvd b" 
       by (auto simp add: zdvd_zmult zdvd_zadd zdvd_zdiff)
-    hence "?g dvd zgcd(a,b)" by (auto simp add: zgcd_greatest_iff)
+    hence "?g dvd zgcd a b" by (auto simp add: zgcd_greatest_iff)
     with ass have "?g dvd 1" by simp
     moreover have "?g \<ge> 0" by (rule zgcd_geq_zero)
     ultimately show ?thesis by auto
   qed
   with P1 uve APP ass have "zprime ?P \<and> N > 1 \<and> ?P^2 = u^2+N*v^2 
-    \<and> zgcd(u,v)=1" by (auto simp add: mult_ac)
+    \<and> zgcd u v=1" by (auto simp add: mult_ac)
   hence "\<bar>u\<bar> = \<bar>p^2-N*q^2\<bar> \<and> \<bar>v\<bar> = \<bar>2*p*q\<bar>" by (rule qfN_square_prime)
   then obtain f g where f: "u = f*(p^2-N*q^2) \<and> \<bar>f\<bar> = 1" 
     and g: "v = g*(2*p*q) \<and> \<bar>g\<bar> = 1" by (blast dest: abs_eq_impl_unitfactor)
@@ -802,7 +802,7 @@ proof -
     from efg f ab have "b = g*p^2*q+g*N*q*q^2" by (auto simp add: power2_eq_square)
     hence "b = (g*q)*?P" by (auto simp add: zadd_zmult_distrib2 mult_ac)
     hence "?P dvd b" by auto
-    with Pa have "?P dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+    with Pa have "?P dvd zgcd a b" by (simp add: zgcd_greatest_iff)
     with ass have "?P dvd 1" by auto
     with P1 show False by auto
   qed
@@ -950,7 +950,7 @@ proof (rule ccontr, simp)
 qed
 
 lemma qf3_oddprimedivisor: 
-  "\<lbrakk> zprime P; P \<in> zOdd; zgcd(a,b)=1; P dvd (a^2+3*b^2) \<rbrakk> 
+  "\<lbrakk> zprime P; P \<in> zOdd; zgcd a b=1; P dvd (a^2+3*b^2) \<rbrakk> 
   \<Longrightarrow> is_qfN P 3"
 proof(induct P arbitrary:a b rule:infinite_descent0_measure[where V="\<lambda>P. nat\<bar>P\<bar>"])
   case (0 x)
@@ -958,7 +958,7 @@ proof(induct P arbitrary:a b rule:infinite_descent0_measure[where V="\<lambda>P.
   ultimately show ?case by (simp add: zprime_def)
 next
   case (smaller x)
-  then obtain a b where abx: "zprime x \<and> x \<in> zOdd \<and> zgcd(a,b)=1 
+  then obtain a b where abx: "zprime x \<and> x \<in> zOdd \<and> zgcd a b=1 
     \<and> x dvd (a^2+3*b^2) \<and> \<not> is_qfN x 3" by auto
   then obtain M where M: "a^2+3*b^2 = x*M" by (auto simp add: dvd_def)
   let ?A = "a^2 + 3*b^2"
@@ -979,7 +979,7 @@ next
       with hlp have "c=0 \<and> d=0" by (rule qfN_zero)
       with cm dn have "a = m*x \<and> b = n*x" by simp
       hence "x dvd a \<and> x dvd b" by simp
-      hence "x dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+      hence "x dvd zgcd a b" by (simp add: zgcd_greatest_iff)
       with abx have False by (auto simp add: zprime_def) }
     ultimately show ?thesis by blast
   qed
@@ -1033,20 +1033,17 @@ next
     with x0 have "x*y < x*0" by (simp only: zmult_zless_mono2)
     with C0 y show False by simp
   qed
-  let ?g = "zgcd(c,d)"
+  let ?g = "zgcd c d"
   have "c \<noteq> 0 \<or> d \<noteq> 0" 
   proof (rule ccontr)
     assume "\<not> (c\<noteq>0 \<or> d\<noteq>0)" hence "c=0 \<and> d=0" by simp
     with C0 show False by simp
   qed
-  then obtain e f where ef: "c = ?g*e \<and> d = ?g * f \<and> zgcd(e,f)=1" 
+  then obtain e f where ef: "c = ?g*e \<and> d = ?g * f \<and> zgcd e f = 1" 
     by (frule_tac a="c" in make_zrelprime, auto)
   have g2nonzero: "?g^2 \<noteq> 0"
-  proof (rule ccontr, clarsimp)
-    assume "?g =0" 
-    hence "nat\<bar>c\<bar>=0 \<and> nat\<bar>d\<bar>=0" 
-      by (unfold zgcd_def, auto simp add: gcd_zero)
-    hence "c=0 \<and> d=0" by arith
+  proof (rule ccontr, simp)
+    assume "c = 0 \<and> d = 0"
     with C0 show False by simp
   qed
   let ?E = "e^2 + 3*f^2"
@@ -1059,9 +1056,9 @@ next
   qed
   hence "?g^2 dvd ?C" by (simp add: dvd_def)
   with y have g2dvdxy: "?g^2 dvd y*x" by (simp add: mult_ac)
-  moreover have "zgcd(x, ?g^2) = 1"
+  moreover have "zgcd x (?g^2) = 1"
   proof -
-    let ?h = "zgcd(?g, x)"
+    let ?h = "zgcd ?g x"
     have "?h dvd ?g" and "?g dvd c" by auto
     hence "?h dvd c" by (rule zdvd_trans)
     have "?h dvd ?g" and "?g dvd d" by auto
@@ -1073,10 +1070,10 @@ next
     from `?h dvd x` have "?h dvd n*x" by (rule zdvd_zmult)
     with `?h dvd d` have "?h dvd d+n*x" by (rule zdvd_zadd)
     with dn have "?h dvd b" by simp
-    with `?h dvd a` have "?h dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+    with `?h dvd a` have "?h dvd zgcd a b" by (simp add: zgcd_greatest_iff)
     with abx have "?h dvd 1" by simp
     hence "?h = 1" by (simp add: zgcd_geq_zero)
-    hence "zgcd(?g^2,x)=1" by (rule zgcd_1_power_left_distrib)
+    hence "zgcd (?g^2) x = 1" by (rule zgcd_1_power_left_distrib)
     thus ?thesis by (simp only: zgcd_commute)
   qed
   ultimately have "?g^2 dvd y" by (auto dest: zrelprime_zdvd_zmult)
@@ -1121,7 +1118,7 @@ next
     by (frule_tac P="x" in qf3_oddprimedivisor_not, auto)
   from Ewx have "w dvd ?E" by simp
   with z have "z dvd ?E" by (auto dest: zdvd_trans)
-  with z ef have "zprime z \<and> z \<in> zOdd \<and> zgcd(e,f)=1 \<and> z dvd ?E \<and> \<not> is_qfN z 3"
+  with z ef have "zprime z \<and> z \<in> zOdd \<and> zgcd e f = 1 \<and> z dvd ?E \<and> \<not> is_qfN z 3"
     by auto
   moreover have "nat\<bar>z\<bar> < nat\<bar>x\<bar>"
   proof -
@@ -1139,7 +1136,7 @@ next
 qed
   
 lemma qf3_cube_prime_impl_cube_form: 
-  assumes ab_relprime: "zgcd(a,b)=1" and abP: "P^3 = a^2 + 3*b^2" 
+  assumes ab_relprime: "zgcd a b = 1" and abP: "P^3 = a^2 + 3*b^2" 
   and P: "zprime P \<and> P \<in> zOdd"
   shows "is_cube_form a b"
 proof -
@@ -1148,7 +1145,7 @@ proof -
   with abP ab_relprime P have qfP: "is_qfN P 3" by (simp only: qf3_oddprimedivisor)
   then obtain p q where pq: "P = p^2 + 3*q^2" by (auto simp only: is_qfN_def)
   with P abP ab_relprime have "zprime (p^2 + 3*q^2) \<and> (3::int) > 1 
-    \<and> (p^2+3*q^2)^3 = a^2+3*b^2 \<and> zgcd(a,b)=1" by auto
+    \<and> (p^2+3*q^2)^3 = a^2+3*b^2 \<and> zgcd a b=1" by auto
   hence ab: "\<bar>a\<bar> = \<bar>p^3 - 3*3*p*q^2\<bar> \<and> \<bar>b\<bar> = \<bar>3*p^2*q - 3*q^3\<bar>" 
     by (rule qfN_cube_prime)
   hence a: "a = p^3 - 9*p*q^2 \<or> a = -(p^3) + 9*p*q^2" by arith
@@ -1242,7 +1239,7 @@ proof -
 qed
 
 lemma qf3_cube_primelist_impl_cube_form: "\<lbrakk> primel ps; int (prod ps) \<in> zOdd \<rbrakk> \<Longrightarrow> 
-  (!! a b. zgcd(a,b)=1 \<Longrightarrow> a^2 + 3*b^2 = (int(prod ps))^3 \<Longrightarrow> is_cube_form a b)" 
+  (!! a b. zgcd a b=1 \<Longrightarrow> a^2 + 3*b^2 = (int(prod ps))^3 \<Longrightarrow> is_cube_form a b)" 
 proof (induct ps)
   case Nil hence ab1: "a^2 + 3*b^2 = 1" by simp
   have b0: "b=0"
@@ -1259,9 +1256,9 @@ proof (induct ps)
   with a1 and b0 have "a = p^3 - 9*p*q^2 \<and> b = 3*p^2*q - 3*q^3" by auto
   thus "is_cube_form a b" by (auto simp only: is_cube_form_def)
 next
-  case (Cons p ps) hence ass: "zgcd(a,b)=1 \<and> int(prod (p#ps)) \<in> zOdd 
+  case (Cons p ps) hence ass: "zgcd a b=1 \<and> int(prod (p#ps)) \<in> zOdd 
     \<and> a^2+3*b^2 = int(prod (p#ps))^3 \<and> primel ps \<and> zprime (int p)" 
-    and IH: "!! u v. zgcd(u,v)=1 \<and> u^2+3*v^2 = int(prod ps)^3 
+    and IH: "!! u v. zgcd u v=1 \<and> u^2+3*v^2 = int(prod ps)^3 
     \<and> int(prod ps) \<in> zOdd \<Longrightarrow> is_cube_form u v" 
     by (auto simp add: primel_def prime_impl_zprime_int)
   let ?w = "int (prod (p#ps))"
@@ -1280,7 +1277,7 @@ next
   proof -
     from ass have "a^2+3*b^2 = (?p*?X)^3" by (simp add: zmult_int)
     hence "?p dvd a^2+3*b^2" by (simp add: nat_number ring_simps)
-    moreover from ass have "zprime ?p" and "zgcd(a,b)=1" by simp_all
+    moreover from ass have "zprime ?p" and "zgcd a b=1" by simp_all
     moreover from pw have "?p \<in> zOdd" by simp
     ultimately show ?thesis by (simp only: qf3_oddprimedivisor)
   qed
@@ -1302,19 +1299,19 @@ next
     hence "3 dvd b^2" by (unfold dvd_def, blast)
     moreover have "zprime 3" by (rule zprime_3)
     ultimately have "3 dvd b" by (rule_tac p="3" in zprime_zdvd_power)
-    with a3 have "3 dvd zgcd(a,b)" by (simp add: zgcd_greatest_iff)
+    with a3 have "3 dvd zgcd a b" by (simp add: zgcd_greatest_iff)
     with ass show False by simp
   qed
   moreover from alphabeta pw ass have 
     "zprime (\<alpha>^2 + 3*\<beta>^2) \<and> \<alpha>^2+3*\<beta>^2 \<in> zOdd \<and> (3::int) \<ge> 1" by auto 
   ultimately obtain c d where cdp: 
-    "(\<alpha>^2+3*\<beta>^2)^3 = c^2+3*d^2 \<and> zgcd(c, 3*d)=1" 
+    "(\<alpha>^2+3*\<beta>^2)^3 = c^2+3*d^2 \<and> zgcd c (3*d)=1" 
     by (blast dest: qfN_oddprime_cube)
   with ass pw alphabeta have "\<exists> u v. a^2+3*b^2 = (u^2 + 3*v^2)*(c^2+3*d^2)
-    \<and> zgcd(u,v)=1 \<and> (\<exists> e. a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1)" 
+    \<and> zgcd u v=1 \<and> (\<exists> e. a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1)" 
     by (rule_tac A="?w" and n="3" in qfN_power_div_prime, auto)
   then obtain u v e where uve: "a^2+3*b^2 = (u^2+3*v^2)*(c^2+3*d^2)
-    \<and> zgcd(u,v)=1 \<and> a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1" by blast
+    \<and> zgcd u v=1 \<and> a = c*u+e*3*d*v \<and> b = c*v-e*d*u \<and> \<bar>e\<bar> = 1" by blast
   moreover have "is_cube_form u v"
   proof -
     have uvX: "u^2+3*v^2 = ?X^3"
@@ -1331,7 +1328,7 @@ next
   qed
   moreover have "is_cube_form c d"
   proof -
-    have "zgcd(c,d) = 1" 
+    have "zgcd c d = 1" 
     proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
       fix h::int assume "h dvd c" and "h dvd d" and h: "zprime h"
       hence "h dvd c*u + d*(e*3*v) \<and> h dvd c*v-d*(e*u)" 
@@ -1346,7 +1343,7 @@ next
 qed
 
 lemma qf3_cube_impl_cube_form: 
-  assumes ass: "zgcd(a,b)=1 \<and> a^2 + 3*b^2 = w^3 \<and> w \<in> zOdd"
+  assumes ass: "zgcd a b=1 \<and> a^2 + 3*b^2 = w^3 \<and> w \<in> zOdd"
   shows "is_cube_form a b" 
 proof -
   have "\<exists> ps. primel ps \<and> int (prod ps) = w"
@@ -1527,7 +1524,7 @@ proof -
   hence "?p dvd s^2 - (-3::int)" by (unfold zcong_def, simp)
   moreover have "s^2 -(-3::int) = s^2 + 3" by arith
   ultimately have "?p dvd s^2 + 3*1^2" by auto
-  moreover have "zgcd(s,1) = 1" by (unfold zgcd_def, auto)
+  moreover have "zgcd s 1 = 1" by (unfold zgcd_def, auto)
   moreover have "?p \<in> zOdd"
   proof -
     have "?p = 2*(3*m)+1" by simp

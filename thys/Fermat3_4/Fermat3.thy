@@ -6,7 +6,7 @@
 header {* Fermat's last theorem, case $n=3$ *}
 
 theory Fermat3
-  imports QuadForm
+imports QuadForm
 begin
 
 text {* Proof of Fermat's last theorem for the case $n=3$: $$\forall x,y,z:~x^3 + y^3 = z^3 \Longrightarrow xyz=0.$$ *}
@@ -33,7 +33,7 @@ qed
 text {* Shows there exists no solution $v^3+w^3 = x^3$ with $vwx\ne 0$ and $\gcd(v,w)=1$ and $x$ even, by constructing a solution with a smaller $|x^3|$. *}
 
 lemma no_rewritten_fermat3: 
-  "\<not> (\<exists> v w. v^3+w^3 = x^3 \<and> v*w*x \<noteq> 0 \<and> x \<in> zEven \<and> zgcd(v,w)=1)"
+  "\<not> (\<exists> v w. v^3+w^3 = x^3 \<and> v*w*x \<noteq> 0 \<and> x \<in> zEven \<and> zgcd v w=1)"
 proof (induct x rule: infinite_descent0_measure[where V="\<lambda>x. nat\<bar>x^3\<bar>"])
   case (0 x) hence "x^3 = 0" by arith
   hence "x=0" by auto
@@ -41,7 +41,7 @@ proof (induct x rule: infinite_descent0_measure[where V="\<lambda>x. nat\<bar>x^
 next
   case (smaller x)
   then obtain v w where vwx: 
-    "v^3+w^3=x^3 \<and> v*w*x \<noteq> 0 \<and> x \<in> zEven \<and> zgcd(v,w)=1" (is "?P v w x")
+    "v^3+w^3=x^3 \<and> v*w*x \<noteq> 0 \<and> x \<in> zEven \<and> zgcd v w=1" (is "?P v w x")
     by auto
   have "\<exists> \<alpha> \<beta> \<gamma>. ?P \<alpha> \<beta> \<gamma> \<and> nat\<bar>\<gamma>^3\<bar> < nat\<bar>x^3\<bar>"
   proof -
@@ -56,7 +56,7 @@ next
       ultimately have "w^3 \<in> zEven" by simp
       hence "w \<in> zEven" by (simp only: power_preserves_even)
       with ve have "2 dvd v \<and> 2 dvd w" by (auto simp add: zEven_def)
-      hence "2 dvd zgcd(v,w)" by (simp add: zgcd_greatest_iff)
+      hence "2 dvd zgcd v w" by (simp add: zgcd_greatest_iff)
       with vwx show False by simp
     next
       assume vo: "v \<in> zOdd" and "w \<notin> zOdd" 
@@ -85,14 +85,14 @@ next
       also have "\<dots> = 2*(2*p)*(p^2+3*q^2)" by (simp add: power_mult_distrib)
       finally show ?thesis by simp
     qed
-    let ?g = "zgcd(2*p, p^2+3*q^2)"
+    let ?g = "zgcd (2*p) (p^2+3*q^2)"
     have g1: "?g \<ge> 1" 
     proof (rule ccontr)
-      assume "\<not> ?g \<ge> 1" hence "?g < 0 \<or> ?g = 0" by auto
+      assume "\<not> ?g \<ge> 1"
+      then have "?g < 0 \<or> ?g = 0" unfolding not_le by arith
       moreover have "?g \<ge> 0" by (rule zgcd_geq_zero)
-      ultimately have "?g = 0" by simp
-      hence "nat\<bar>2*p\<bar> = 0" by (unfold zgcd_def, simp add: gcd_zero)
-      hence "p = 0" by arith
+      ultimately have "?g = 0" by arith
+      hence "p = 0" by simp
       with vwpq vwx `0 < nat\<bar>x^3\<bar>` show False by auto
     qed
     have gOdd: "\<not> 2 dvd ?g"
@@ -116,7 +116,7 @@ next
 	  by (auto simp only: zprime_3 zprime_zdvd_zmult_general)
 	with p3 show False by arith
       qed
-      have pq_relprime: "zgcd(p,q)=1"
+      have pq_relprime: "zgcd p q=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and zp: "z dvd p" and zq: "z dvd q"
 	hence "z dvd p+q \<and> z dvd p-q" by (auto simp only: zdvd_zadd zdvd_zdiff)
@@ -156,7 +156,7 @@ next
       ultimately have "\<exists> c. 2*p = c^3"
 	by (simp only: int_relprime_odd_power_divisors)
       then obtain c where c: "c^3 = 2*p" by auto
-      from pqx factors_relprime have "zgcd(p^2 + 3*q^2, 2*p) = 1"
+      from pqx factors_relprime have "zgcd (p^2 + 3*q^2) (2*p) = 1"
 	and "(p^2 + 3*q^2)*(2*p) = x^3" by (auto simp add: zgcd_commute mult_ac)
       with triv3 have "\<exists> d. p^2 + 3*q^2 = d^3"
 	by (simp only: int_relprime_odd_power_divisors)
@@ -167,10 +167,10 @@ next
 	hence "d^3 \<in> zEven" by (simp only: power_preserves_even)
 	hence "2 dvd d^3" by (simp add: zEven_def dvd_def)
 	moreover have "2 dvd 2*p" by (rule zdvd_triv_left)
-	ultimately have "2 dvd zgcd(2*p, d^3)" by (simp add: zgcd_greatest_iff)
-	with d factors_relprime show False by auto
+	ultimately have "2 dvd zgcd (2*p) (d^3)" by (simp add: zgcd_greatest_iff)
+	with d factors_relprime show False by simp
       qed
-      with d pq_relprime have "zgcd(p,q)=1 \<and> p^2 + 3*q^2 = d^3 \<and> d \<in> zOdd"
+      with d pq_relprime have "zgcd p q=1 \<and> p^2 + 3*q^2 = d^3 \<and> d \<in> zOdd"
 	by simp
       hence "is_cube_form p q" by (rule qf3_cube_impl_cube_form)
       then obtain a b where "p = a^3 - 9*a*b^2 \<and> q = 3*a^2*b - 3*b^3"
@@ -178,14 +178,14 @@ next
       hence ab: "p = a*(a+3*b)*(a- 3*b) \<and> q = b*(a+b)*(a-b)*3"
 	by (simp add: nat_number ring_simps)
       with c have abc: "(2*a)*(a+3*b)*(a- 3*b) = c^3" by auto
-      have ab_relprime: "zgcd(a,b)=1"
+      have ab_relprime: "zgcd a b=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and za: "z dvd a" and zb: "z dvd b"
 	with ab have "z dvd p \<and> z dvd q" by (simp add: zdvd_zmult2)
 	with z pq_relprime show 
 	  False by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
-      have ab1: "zgcd(2*a, a+3*b) = 1"
+      have ab1: "zgcd (2*a) (a+3*b) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and "z dvd 2*a" and zab: "z dvd a+3*b"
 	hence "z dvd 2 \<or> z dvd a" by (simp add: zprime_zdvd_zmult)
@@ -202,7 +202,7 @@ next
 	  with ab have qEven: "2 dvd q" by (simp only: mult_ac)
 	  from ab2 have "2 dvd (a+3*b)*((a- 3*b)*a)" by (rule zdvd_zmult2)
 	  with ab have "2 dvd p" by (simp only: mult_ac)
-	  with qEven have "2 dvd zgcd(p,q)" by (simp add: zgcd_greatest_iff)
+	  with qEven have "2 dvd zgcd p q" by (simp add: zgcd_greatest_iff)
 	  with pq_relprime show False by auto
 	qed
 	ultimately have za: "z dvd a" by auto
@@ -222,7 +222,7 @@ next
 	with za z ab_relprime show False
 	  by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
-      have ab2: "zgcd(a+3*b, a- 3*b) = 1"
+      have ab2: "zgcd (a+3*b) (a- 3*b) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and zab1: "z dvd a+3*b" and zab2: "z dvd a- 3*b"
 	hence "z dvd (a+3*b)+(a- 3*b)" by (simp only: zdvd_zadd)
@@ -230,7 +230,7 @@ next
 	with zab1 z ab1 show False
 	  by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
-      have "zgcd(a- 3*b, 2*a) = 1"
+      have "zgcd(a- 3*b) (2*a) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and z2a: "z dvd 2*a" and zab: "z dvd a- 3*b"
 	hence "z dvd 2*a-(a- 3*b)" by (simp only: zdvd_zdiff)
@@ -257,7 +257,7 @@ next
 	with albega have "\<gamma>^3 \<in> zEven" by simp
 	thus ?thesis by (simp only: power_preserves_even)
       qed
-      moreover have "zgcd(\<alpha>, \<beta>)=1"
+      moreover have "zgcd \<alpha> \<beta>=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and za: "z dvd \<alpha>" and zb: "z dvd \<beta>"
 	hence "z dvd \<alpha> * \<alpha>^2 \<and> z dvd \<beta> * \<beta>^2" by (simp add: zdvd_zmult2)
@@ -327,15 +327,15 @@ next
       ultimately have pq3: "3 dvd p^2+3*q^2" by (simp add: power_mult_distrib)
       moreover from p3 have "3 dvd 2*p" by (rule zdvd_zmult)
       ultimately have g3: "3 dvd ?g" by (simp add: zgcd_greatest_iff)
-      have qr_relprime: "zgcd(q,r) = 1" 
+      have qr_relprime: "zgcd q r = 1" 
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and zq: "z dvd q" and "z dvd r"
 	with r have "z dvd p" by (simp add: zdvd_zmult)
 	with zq have "z dvd p+q \<and> z dvd p-q" by (simp add: zdvd_zadd zdvd_zdiff)
-	with vw have "z dvd zgcd(v, w)" by (simp add: zgcd_greatest_iff)
+	with vw have "z dvd zgcd v w" by (simp add: zgcd_greatest_iff)
 	with vwx z show False by (auto simp add: zprime_def) 
       qed
-      have factors_relprime: "zgcd(18*r, q^2 + 3*r^2) = 1"
+      have factors_relprime: "zgcd (18*r) (q^2 + 3*r^2) = 1"
       proof -
 	from g3 obtain k where k: "?g = 3*k" by (auto simp add: dvd_def)
 	have "k = 1"
@@ -369,16 +369,16 @@ next
 	  hence "q^2 = h*(s - 3*h*t^2)" by (simp add: zdiff_zmult_distrib2)
 	  hence "h dvd q^2" by simp
 	  with h have "h dvd q" by (auto dest: zprime_zdvd_power)
-	  with hr have "h dvd zgcd(q,r)" by (simp add: zgcd_greatest_iff)
+	  with hr have "h dvd zgcd q r" by (simp add: zgcd_greatest_iff)
 	  with h qr_relprime show False by (unfold zprime_def, auto)
 	qed
-	with k r have "3 = zgcd(2*(3*r), (3*r)^2 + 3*q^2)" by auto
-	also have "\<dots> = zgcd(3*(2*r), 3*(3*r^2 + q^2))" 
+	with k r have "3 = zgcd (2*(3*r)) ((3*r)^2 + 3*q^2)" by auto
+	also have "\<dots> = zgcd (3*(2*r)) (3*(3*r^2 + q^2))" 
 	  by (simp add: power_mult_distrib)
-	also have "\<dots> = 3 * zgcd(2*r, 3*r^2 + q^2)" 
+	also have "\<dots> = 3 * zgcd (2*r) (3*r^2 + q^2)" 
 	  by (simp only: zgcd_zmult_distrib2)
-	finally have "zgcd(2*r, 3*r^2 + q^2) = 1" by auto
-	moreover have "zgcd(3*3, 3*r^2 + q^2) = 1"
+	finally have "zgcd (2*r) (3*r^2 + q^2) = 1" by auto
+	moreover have "zgcd (3*3) (3*r^2 + q^2) = 1"
 	proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	  fix h::int assume "h dvd 3*3" and h: "zprime h" and hrq: "h dvd 3*r^2 + q^2"
 	  hence "h dvd 3 \<or> h dvd 3" by (simp only: zprime_zdvd_zmult_general)
@@ -396,10 +396,10 @@ next
 	  hence "3 dvd q^2" and "zprime 3" by (auto simp only: zdvd_triv_left zprime_3)
 	  hence "3 dvd q" by (rule_tac p="3" in zprime_zdvd_power)
 	  with p3 have "3 dvd p+q \<and> 3 dvd p-q" by (simp add: zdvd_zdiff zdvd_zadd)
-	  with vw have "3 dvd zgcd(v,w)" by (simp add: zgcd_greatest_iff)
+	  with vw have "3 dvd zgcd v w" by (simp add: zgcd_greatest_iff)
 	  with vwx show False by auto
 	qed
-	ultimately have "zgcd((3*3)*(2*r), 3*r^2 + q^2) = 1" 
+	ultimately have "zgcd ((3*3)*(2*r)) (3*r^2 + q^2) = 1" 
 	  by (simp only: zgcd_zmult_cancel)
 	thus ?thesis by (auto simp add: mult_ac add_ac)
       qed
@@ -419,7 +419,7 @@ next
       hence "3 dvd c1" by (rule_tac p="3" in zprime_zdvd_power)
       with c1 obtain c where c: "3*c^3 = 2*r" 
 	by (auto simp add: power_mult_distrib dvd_def)
-      from rqx factors_relprime have "zgcd(q^2 + 3*r^2, 18*r) = 1"
+      from rqx factors_relprime have "zgcd (q^2 + 3*r^2) (18*r) = 1"
 	and "(q^2 + 3*r^2)*(18*r) = x^3" by (auto simp add: zgcd_commute mult_ac)
       with triv3 have "\<exists> d. q^2 + 3*r^2 = d^3" 
 	by (simp only: int_relprime_odd_power_divisors)
@@ -430,10 +430,10 @@ next
 	hence "d^3 \<in> zEven" by (simp only: power_preserves_even)
 	hence "2 dvd d^3" by (simp add: zEven_def dvd_def)
 	moreover have "2 dvd 2*(9*r)" by (rule zdvd_triv_left)
-	ultimately have "2 dvd zgcd(2*(9*r), d^3)" by (simp add: zgcd_greatest_iff)
+	ultimately have "2 dvd zgcd (2*(9*r)) (d^3)" by (simp add: zgcd_greatest_iff)
 	with d factors_relprime show False by auto
       qed
-      with d qr_relprime have "zgcd(q,r)=1 \<and> q^2 + 3*r^2 = d^3 \<and> d \<in> zOdd" 
+      with d qr_relprime have "zgcd q r=1 \<and> q^2 + 3*r^2 = d^3 \<and> d \<in> zOdd" 
 	by simp
       hence "is_cube_form q r" by (rule qf3_cube_impl_cube_form)
       then obtain a b where "q = a^3 - 9*a*b^2 \<and> r = 3*a^2*b - 3*b^3" 
@@ -441,14 +441,14 @@ next
       hence ab: "q = a*(a+3*b)*(a- 3*b) \<and> r = b*(a+b)*(a-b)*3"
 	by (simp add: nat_number ring_simps)
       with c have abc: "(2*b)*(a+b)*(a-b) = c^3" by auto
-      have ab_relprime: "zgcd(a,b)=1"
+      have ab_relprime: "zgcd a b=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and za: "z dvd a" and zb: "z dvd b"
 	with ab have "z dvd q \<and> z dvd r" by (simp add: zdvd_zmult2)
 	with z qr_relprime show False 
 	  by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
-      have ab1: "zgcd(2*b, a+b) = 1"
+      have ab1: "zgcd (2*b) (a+b) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and "z dvd 2*b" and zab: "z dvd a+b"
 	hence "z dvd 2 \<or> z dvd b" by (simp add: zprime_zdvd_zmult)
@@ -464,7 +464,7 @@ next
 	  with ab have qEven: "2 dvd q" by (simp only: mult_ac)
 	  from ab2 have "2 dvd (a+b)*((a-b)*3*b)" by (rule zdvd_zmult2)
 	  with ab have "2 dvd r" by (simp only: mult_ac)
-	  with qEven have "2 dvd zgcd(q,r)" by (simp add: zgcd_greatest_iff)
+	  with qEven have "2 dvd zgcd q r" by (simp add: zgcd_greatest_iff)
 	  with qr_relprime have False by auto }
 	moreover
 	{ assume zb: "z dvd b"
@@ -474,7 +474,7 @@ next
 	    by (auto simp add: zgcd1_iff_no_common_primedivisor) }
 	ultimately show False by auto
       qed
-      have ab2: "zgcd(a+b, a-b) = 1"
+      have ab2: "zgcd (a+b) (a-b) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and zab1: "z dvd a+b" and zab2: "z dvd a-b"
 	hence "z dvd (a+b)-(a-b)" by (simp only: zdvd_zdiff)
@@ -482,7 +482,7 @@ next
 	with zab1 z ab1 show False 
 	  by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
-      have "zgcd(a-b, 2*b) = 1"
+      have "zgcd (a-b) (2*b) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and z2b: "z dvd 2*b" and zab: "z dvd a-b"
 	hence "z dvd a-b+2*b" by (simp only: zdvd_zadd)
@@ -511,7 +511,7 @@ next
 	with a1 have "\<gamma>^3 \<in> zEven" by simp
 	thus ?thesis by (simp only: power_preserves_even)
       qed
-      moreover have "zgcd(\<alpha>, \<beta>)=1"
+      moreover have "zgcd \<alpha> \<beta>=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and za: "z dvd \<alpha>" and zb: "z dvd \<beta>"
 	hence "z dvd \<alpha> * \<alpha>^2 \<and> z dvd \<beta> * \<beta>^2" by (simp add: zdvd_zmult2)
@@ -555,12 +555,12 @@ theorem fermat3:
   assumes ass: "(x::int)^3 + y^3 = z^3"
   shows "x*y*z=0"
 proof (rule ccontr)
-  let ?g = "zgcd(x,y)"
+  let ?g = "zgcd x y"
   let ?c = "z div ?g"
   assume xyz0: "x*y*z\<noteq>0"
   -- "divide out the g.c.d."
   hence "x \<noteq> 0 \<or> y \<noteq> 0" by simp
-  then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> zgcd(a,b)=1"
+  then obtain a b where ab: "x = ?g*a \<and> y = ?g*b \<and> zgcd a b=1"
     by (frule_tac a="x" in make_zrelprime, auto)
   moreover have abc: "?c*?g = z \<and> a^3 + b^3 = ?c^3 \<and> a*b*?c \<noteq> 0"
   proof -
@@ -591,9 +591,9 @@ proof (rule ccontr)
     ultimately show ?thesis by simp
   qed
   -- "make both sides even"
-  have "\<exists> u v w. u^3 + v^3 = w^3 \<and> u*v*w\<noteq>0 \<and> w \<in> zEven \<and> zgcd(u,v)=1"
+  have "\<exists> u v w. u^3 + v^3 = w^3 \<and> u*v*w\<noteq>0 \<and> w \<in> zEven \<and> zgcd u v = 1"
   proof -
-    let "?Q u v w" = "u^3 + v^3 = w^3 \<and> u*v*w\<noteq>0 \<and> w \<in> zEven \<and> zgcd(u,v)=1"
+    let "?Q u v w" = "u^3 + v^3 = w^3 \<and> u*v*w\<noteq>0 \<and> w \<in> zEven \<and> zgcd u v=1"
     have "a \<in> zEven \<or> b \<in> zEven \<or> ?c \<in> zEven"
     proof (rule ccontr)
       assume "\<not>(a \<in> zEven \<or> b \<in> zEven \<or> ?c \<in> zEven)"
@@ -618,7 +618,7 @@ proof (rule ccontr)
 	also with abc and uvwabc have "\<dots> = w^3" by auto
 	finally show ?thesis by simp
       qed
-      moreover have "zgcd(u,v)=1"
+      moreover have "zgcd u v=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix h::int assume hu: "h dvd u" and "h dvd v" and h: "zprime h"
 	with uvwabc have "h dvd ?c*?c^2" by (simp only: zdvd_zmult2)
@@ -643,7 +643,7 @@ proof (rule ccontr)
 	also with abc and uvwabc have "\<dots> = w^3" by auto
 	finally show ?thesis by simp
       qed
-      moreover have "zgcd(u,v)=1"
+      moreover have "zgcd u v=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix h::int assume hu: "h dvd u" and "h dvd v" and h: "zprime h"
 	with uvwabc have "h dvd ?c*?c^2" by (simp only: zdvd_zmult2)
@@ -662,7 +662,7 @@ proof (rule ccontr)
       with abc ab have ?thesis by auto }
     ultimately show ?thesis by auto
   qed
-  hence "\<exists> w. \<exists> u v. u^3 + v^3 = w^3 \<and> u*v*w \<noteq> 0 \<and> w \<in> zEven \<and> zgcd(u,v)=1"
+  hence "\<exists> w. \<exists> u v. u^3 + v^3 = w^3 \<and> u*v*w \<noteq> 0 \<and> w \<in> zEven \<and> zgcd u v=1"
     by auto
   -- "show contradiction using the earlier result"
   thus False by (auto simp only: no_rewritten_fermat3)
