@@ -1,5 +1,5 @@
 (*  Title:       Formalization of Schneider's generalized clock synchronization protocol.
-    ID:          $Id: GenClock.thy,v 1.5 2006-05-18 14:19:22 lsf37 Exp $
+    ID:          $Id: GenClock.thy,v 1.6 2008-07-14 21:30:07 makarius Exp $
     Author:      Alwen Tiu, LORIA, June 11, 2005
     Maintainer:  Alwen Tiu <Alwen.Tiu at loria.fr>
 *)
@@ -65,55 +65,62 @@ types
   time = real
   Clocktime = real
 
-consts
-  \<delta> :: real
-  \<mu> :: real
-  \<rho> :: real
-  rmin :: real
-  rmax :: real
-  \<beta> :: real
-  \<Lambda> :: real
+axiomatization
+  \<delta> :: real and
+  \<mu> :: real and
+  \<rho> :: real and
+  rmin :: real and
+  rmax :: real and
+  \<beta> :: real and
+  \<Lambda> :: real and
   (* Number of processes *)
-  np :: process
-  maxfaults :: process
+  np :: process and
+  maxfaults :: process and
   (* Physical clocks *)
-  PC :: "[process, time] \<Rightarrow> Clocktime"
+  PC :: "[process, time] \<Rightarrow> Clocktime" and
   (* Virtual / Logical clocks *)
-  VC :: "[process, time] \<Rightarrow> Clocktime"
+  VC :: "[process, time] \<Rightarrow> Clocktime" and
   (* Starting (real) time of synchronization rounds *)
-  te :: "[process, event] \<Rightarrow> time"
+  te :: "[process, event] \<Rightarrow> time" and
   (* Clock readings at each round *)
-  \<theta> :: "[process, event] \<Rightarrow> (process \<Rightarrow> Clocktime)"
+  \<theta> :: "[process, event] \<Rightarrow> (process \<Rightarrow> Clocktime)" and
   (* Logical clock in-effect at a time interval *)
-  IC :: "[process, event, time] \<Rightarrow> Clocktime"
+  IC :: "[process, event, time] \<Rightarrow> Clocktime" and
   (* Correct clocks *)
-  correct :: "[process, time] \<Rightarrow> bool"
+  correct :: "[process, time] \<Rightarrow> bool" and
   (* The averaging function to calculate clock adjustment *)
-  cfn :: "[process, (process \<Rightarrow> Clocktime)] \<Rightarrow> Clocktime"
+  cfn :: "[process, (process \<Rightarrow> Clocktime)] \<Rightarrow> Clocktime" and
 
-  \<pi> :: "[Clocktime, Clocktime] \<Rightarrow> Clocktime"
+  \<pi> :: "[Clocktime, Clocktime] \<Rightarrow> Clocktime" and
 
   \<alpha> :: "Clocktime \<Rightarrow> Clocktime"
 
-constdefs
-  count :: "[process \<Rightarrow> bool, process] \<Rightarrow> nat"
-  "count f n \<equiv> card {p. p < n \<and> f p}"
+definition
+  count :: "[process \<Rightarrow> bool, process] \<Rightarrow> nat" where
+  "count f n = card {p. p < n \<and> f p}"
+
+definition
   (* Adjustment to a clock *)
-  Adj :: "[process, event] \<Rightarrow> Clocktime"
-  "Adj \<equiv> (\<lambda> p i. if 0 < i then cfn p (\<theta> p i) - PC p (te p i)
+  Adj :: "[process, event] \<Rightarrow> Clocktime" where
+  "Adj = (\<lambda> p i. if 0 < i then cfn p (\<theta> p i) - PC p (te p i)
                  else 0)" 
+
+definition
   (* Auxilary predicates used in the definition of precision enhancement *)
-  okRead1 :: "[process \<Rightarrow> Clocktime, Clocktime, process \<Rightarrow> bool] \<Rightarrow> bool"
-  "okRead1 f x ppred \<equiv> \<forall> l m. ppred l \<and> ppred m \<longrightarrow> \<bar>f l - f m\<bar> \<le> x"
+  okRead1 :: "[process \<Rightarrow> Clocktime, Clocktime, process \<Rightarrow> bool] \<Rightarrow> bool" where
+  "okRead1 f x ppred \<longleftrightarrow> (\<forall> l m. ppred l \<and> ppred m \<longrightarrow> \<bar>f l - f m\<bar> \<le> x)"
 
+definition
   okRead2 :: "[process \<Rightarrow> Clocktime, process \<Rightarrow> Clocktime, Clocktime, 
-               process \<Rightarrow> bool] \<Rightarrow> bool"
-  "okRead2 f g x ppred \<equiv> \<forall> p. ppred p \<longrightarrow> \<bar>f p - g p\<bar> \<le> x"
+               process \<Rightarrow> bool] \<Rightarrow> bool" where
+  "okRead2 f g x ppred \<longleftrightarrow> (\<forall> p. ppred p \<longrightarrow> \<bar>f p - g p\<bar> \<le> x)"
 
-  rho_bound1 :: "[[process, time] \<Rightarrow> Clocktime] \<Rightarrow> bool"
-  "rho_bound1 C \<equiv> \<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> C p t - C p s \<le> (t - s)*(1 + \<rho>)"
-  rho_bound2 :: "[[process, time] \<Rightarrow> Clocktime] \<Rightarrow> bool"
-  "rho_bound2 C \<equiv> \<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> (t - s)*(1 - \<rho>) \<le> C p t - C p s"
+definition
+  rho_bound1 :: "[[process, time] \<Rightarrow> Clocktime] \<Rightarrow> bool" where
+  "rho_bound1 C \<longleftrightarrow> (\<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> C p t - C p s \<le> (t - s)*(1 + \<rho>))"
+definition
+  rho_bound2 :: "[[process, time] \<Rightarrow> Clocktime] \<Rightarrow> bool" where
+  "rho_bound2 C \<longleftrightarrow> (\<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> (t - s)*(1 - \<rho>) \<le> C p t - C p s)"
 
 subsection{* Clock conditions *}
 
@@ -377,12 +384,12 @@ proof-
   thus ?thesis by (simp add: rho_bound2_def)
 qed
 
-text{* Auxilary function ICf: we introduce this to avoid some unification 
-problem in some tactic of isabelle. *}
+text{* Auxilary function @{text ICf}: we introduce this to avoid some
+unification problem in some tactic of isabelle. *}
 
-constdefs
-ICf :: "nat \<Rightarrow> (process \<Rightarrow> time \<Rightarrow> Clocktime)"
-"ICf i \<equiv> (\<lambda> p t. IC p i t)"
+definition
+  ICf :: "nat \<Rightarrow> (process \<Rightarrow> time \<Rightarrow> Clocktime)" where
+  "ICf i = (\<lambda> p t. IC p i t)"
 
 lemma IC_bd: 
   assumes ie: "s \<le> t"
@@ -495,23 +502,21 @@ qed
 
 subsection{* Agreement property *}
 
-constdefs
-  \<gamma>1 :: "real \<Rightarrow> real"
-  "\<gamma>1 x \<equiv> \<pi> (2*\<rho>*\<beta> + 2*\<Lambda>) (2*\<Lambda> + x + 2*\<rho>*(rmax + \<beta>))" 
-  \<gamma>2 :: "real \<Rightarrow> real"
-  "\<gamma>2 x \<equiv> x + 2*\<rho>*rmax"
-  \<gamma>3 :: "real \<Rightarrow> real"
-  "\<gamma>3 x \<equiv> \<alpha> (2*\<Lambda> + x + 2*\<rho>*(rmax + \<beta>)) + \<Lambda> + 2*\<rho>*\<beta>"
+definition "\<gamma>1 x = \<pi> (2*\<rho>*\<beta> + 2*\<Lambda>) (2*\<Lambda> + x + 2*\<rho>*(rmax + \<beta>))"
+definition "\<gamma>2 x = x + 2*\<rho>*rmax"
+definition "\<gamma>3 x = \<alpha> (2*\<Lambda> + x + 2*\<rho>*(rmax + \<beta>)) + \<Lambda> + 2*\<rho>*\<beta>"
 
-  okmaxsync:: "[nat, Clocktime] \<Rightarrow> bool"
-  "okmaxsync i x \<equiv> \<forall> p q. correct p (max (te p i) (te q i))
+definition
+  okmaxsync :: "[nat, Clocktime] \<Rightarrow> bool" where
+  "okmaxsync i x \<longleftrightarrow> (\<forall> p q. correct p (max (te p i) (te q i))
      \<and> correct q (max (te p i) (te q i)) \<longrightarrow> 
-       \<bar>IC p i (max (te p i) (te q i)) - IC q i (max (te p i) (te q i))\<bar> \<le> x"
+       \<bar>IC p i (max (te p i) (te q i)) - IC q i (max (te p i) (te q i))\<bar> \<le> x)"
 
-  okClocks :: "[process, process, nat] \<Rightarrow> bool"
-  "okClocks p q i \<equiv> \<forall> t. 0 \<le> t \<and> t < max (te p i) (te q i)
+definition
+  okClocks :: "[process, process, nat] \<Rightarrow> bool" where
+  "okClocks p q i \<longleftrightarrow> (\<forall> t. 0 \<le> t \<and> t < max (te p i) (te q i)
         \<and> correct p t \<and> correct q t 
-     \<longrightarrow> \<bar>VC p t - VC q t\<bar> \<le> \<delta>"
+     \<longrightarrow> \<bar>VC p t - VC q t\<bar> \<le> \<delta>)"
 
 lemma okClocks_sym:
 assumes ok_pq: "okClocks p q i"
