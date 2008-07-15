@@ -605,8 +605,8 @@ proof
     by (auto simp add: zgcd_commute zgcd_1)
   hence "zgcd a b^n = \<bar>a\<bar>^n \<and> zgcd a b \<ge> 0 \<and> \<bar>a\<bar> \<ge> 0" 
     by (simp add: zgcd_power_distrib power_abs zgcd_geq_zero)
-  with mn have "\<bar>a\<bar> = zgcd a b" by (rule_tac n="m" in power_inject_base, auto)
-  moreover have "zgcd a b dvd b" by (rule_tac m="a" in zgcd_zdvd2)
+  with mn have "\<bar>a\<bar> = zgcd a b" by (auto intro: power_inject_base [of _ m])
+  moreover have "zgcd a b dvd b" by (rule zgcd_zdvd2 [of a])
   ultimately have "\<bar>a\<bar> dvd b" by simp
   thus "a dvd b" by (simp add: zdvd_abs1)
 next
