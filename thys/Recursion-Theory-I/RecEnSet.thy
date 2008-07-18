@@ -5,7 +5,9 @@
 
 header {* Computably enumerable sets of natural numbers *}
 
-theory RecEnSet imports PRecList PRecFun2 PRecFinSet PRecUnGr begin
+theory RecEnSet
+imports PRecList PRecFun2 PRecFinSet PRecUnGr
+begin
 
 subsection {* Basic definitions *}
 

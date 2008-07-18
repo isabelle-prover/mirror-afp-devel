@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Pdifference.thy
-    ID:         $Id: Pdifference.thy,v 1.9 2008-07-10 21:20:00 makarius Exp $
+    ID:         $Id: Pdifference.thy,v 1.10 2008-07-18 16:27:23 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -66,7 +66,7 @@ lemma equalmodstrick2: "a mod p = b mod p \<Longrightarrow> pdifference a b mod 
   apply (subst diff_add_diff)
    apply (subst mult_commute, subst mult_div_cancel, auto)
   apply (subst diff_mult_distrib [symmetric])
-  apply (simp add: mod_mult_self_is_0)
+  apply simp
   done
 
 lemma primekeyrewrite: "\<lbrakk>prime p; p dvd (a*b);~(p dvd a)\<rbrakk> \<Longrightarrow> p dvd b"

@@ -1,4 +1,4 @@
-(*  ID:         $Id: PresArith.thy,v 1.6 2008-07-14 09:05:06 fhaftmann Exp $
+(*  ID:         $Id: PresArith.thy,v 1.7 2008-07-18 16:27:22 fhaftmann Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -151,7 +151,7 @@ lemma zlcms_pos: "\<forall>i \<in> set is. i\<noteq>0 \<Longrightarrow> zlcms is
 by(induct "is")(auto simp:zlcm_pos)
 
 lemma zlcms0_iff[simp]: "(zlcms is = 0) = (0 : set is)"
-by (metis DIVISION_BY_ZERO Divides.dvd_def_mod dvd_zlcms zlcms_pos zless_le)
+by (metis DIVISION_BY_ZERO dvd_eq_mod_eq_0 dvd_zlcms zlcms_pos zless_le)
 
 lemma elem_le_zlcms: "\<forall>i \<in> set is. i \<noteq> 0 \<Longrightarrow> i : set is \<Longrightarrow> i \<le> zlcms is"
 by (metis dvd_zlcms zdvd_imp_le zlcms_pos)

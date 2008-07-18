@@ -4209,7 +4209,7 @@ lemma  rfn_tool12_2:"\<lbrakk>0 < (s::nat); (i::nat) mod s = s - Suc 0\<rbrakk> 
                                                (Suc i) mod s = 0" 
 apply (insert mod_div_equality [THEN sym, of "i" "s"])
 apply (insert add_Suc_right [THEN sym, of "i div s * s" "i mod s"])
-apply auto
+apply (auto simp add: mod_add_self2)
 done
 
 lemma rfn_tool13:"\<lbrakk> (0::nat) < r; a = b \<rbrakk> \<Longrightarrow> a mod r = b mod r"
@@ -4256,8 +4256,9 @@ apply (cut_tac add_Suc_right [THEN sym, of "l div s * s" "l mod s"])
 apply (cut_tac zero_less_Suc[of "l mod s"],
        frule less_trans[of "0" "Suc (l mod s)" "s"], assumption+)
 apply (frule rfn_tool13_1 [of "s" "Suc (l div s * s + l mod s)" "l div s * s + Suc (l mod s)"], assumption+)
+apply (subgoal_tac "s \<noteq> 0")
 apply (frule div_mult_self1 [of "s" "Suc (l mod s)" "l div s"])
-apply (frule div_if [of "s" "Suc (l mod s)"], simp)
+apply simp_all
 done
 
 lemma mod_div_injTr:"\<lbrakk>(0::nat) < r; x mod r = y mod r; x div r = y div r\<rbrakk>
@@ -4305,12 +4306,7 @@ apply (simp add:rtos_def)
  apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"])
  apply simp apply simp
 apply (subst add_commute)
- apply (frule div_mult_self1 [of "r" "i div s" "i mod s"])
- apply (frule div_Tr2 [of "r" "s" "i"], assumption+) 
- apply (simp add:mult_commute)
-apply (frule le_less_trans [of "i div s" "r - Suc 0" "r"])
- apply simp
- apply (simp add:div_if [of "r" "i div s"])
+apply (auto simp add: div_mult2_eq [symmetric] mult_commute)
 done
 
 lemma rtos_hom3_1:"\<lbrakk>(0::nat) < r; (0::nat) < s; i \<le> (r * s - Suc 0) \<rbrakk> \<Longrightarrow>
@@ -4340,7 +4336,7 @@ apply (simp add: rtos_def)
 apply (frule mult_less_mono2[of "0" "s" "r"],
         simp only:nat_mult_commute,
         simp only:mult_0_right)
-apply (simp add:rfn_tool11 [of "r * s" "i"])
+apply (simp add:rfn_tool11 [of "r * s" "i"] mod_add_self2)
 done
 
 lemma rtos_inj:"\<lbrakk> (0::nat) < r; (0::nat) < s \<rbrakk> \<Longrightarrow> 
@@ -5000,12 +4996,12 @@ apply (insert mod_div_equality [of "i" "s", THEN sym])
 apply simp
  apply (thin_tac "i mod s = s - Suc 0")
 apply (subgoal_tac "Suc i mod s = Suc (i div s * s + s - Suc 0) mod s")
- apply (thin_tac "i = i div s * s + s - Suc 0", simp del:add_Suc)
+ apply (thin_tac "i = i div s * s + s - Suc 0", simp add: mod_add_self2 del: add_Suc)
  apply (subgoal_tac "Suc (i div s * s + s - Suc 0) mod s = (i div s * s + s) mod s") 
- apply (simp del:add_Suc)
+ apply (simp add: mod_add_self2 del: add_Suc)
  apply (subgoal_tac "Suc (i div s * s + s - Suc 0) = i div s * s + s")
- apply (simp del:add_Suc)
-apply (rule Suc_pred [of "i div s * s + s"], simp)
+ apply (simp add: mod_add_self2 del: add_Suc)
+apply (rule Suc_pred [of "i div s * s + s"], simp add: mod_add_self2)
 done
 
 (* same as div_Tr3_2 *)
@@ -5026,6 +5022,8 @@ apply (subgoal_tac "i div s < r")
  apply assumption
  apply (rule le_less_trans, assumption+, simp)
 done
+
+declare mod_add_self2 [simp]
 
 lemma Suc_rtos_i_mod_r_2:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; 
        i div s = r - Suc 0\<rbrakk> \<Longrightarrow> Suc (rtos r s i) mod r = 0"
@@ -5057,9 +5055,8 @@ apply (subst add_Suc_right[THEN sym, of "i mod s * r" "i div s"])
  apply (subst add_commute[of "i mod s * r" "Suc (i div s)"])
  apply (frule less_Suc_le1[of "i div s" "r - Suc 0"])
  apply (frule le_less_trans[of "Suc (i div s)" "r - Suc 0" "r"], simp)
- apply (subst div_mult_self1[of "r" "Suc (i div s)" "i mod s"], assumption)
- apply (subst div_less[of "Suc (i div s)" "r"], assumption)
- apply (simp only:add_0_right) 
+ apply (subst div_mult_self1 [of "r" "Suc (i div s)" "i mod s"])
+ apply auto
 done
 
 lemma r_s_div_s:"\<lbrakk>0 < r; 0 < s\<rbrakk> \<Longrightarrow> (r * s - Suc 0) div s = r - Suc 0"

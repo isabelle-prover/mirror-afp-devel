@@ -1,12 +1,14 @@
 (*  Title:       Defintion and basics facts about Cantor pairing function
-    ID:         $Id: CPair.thy,v 1.7 2008-06-21 17:12:27 makarius Exp $
+    ID:         $Id: CPair.thy,v 1.8 2008-07-18 16:27:23 fhaftmann Exp $
     Author:      Michael Nedzelsky <MichaelNedzelsky at yandex.ru>, 2008
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
 header {* Cantor pairing function *}
 
-theory CPair imports Main begin
+theory CPair
+imports Main
+begin
 
 text {*
   We introduce a particular coding @{text "c_pair"} from ordered pairs
@@ -35,7 +37,7 @@ proof -
   have S2_1: "\<And> x y. x=y \<Longrightarrow> x div 2 = y div 2" by auto
   from S2 have S3: "(x+1)*(x+2) div 2 = (x*(x+1) + 2*(x+1)) div 2" by (rule S2_1)
   have S4: "(0::nat) < 2" by (auto)
-  from S4 have S5: "(x*(x+1) + 2*(x+1)) div 2 = (x+1) + x*(x+1) div 2" by (rule div_mult_self2)
+  from S4 have S5: "(x*(x+1) + 2*(x+1)) div 2 = (x+1) + x*(x+1) div 2" by simp
   from S1 S3 S5 show ?thesis by (simp add: sf_def)
 qed
 
@@ -159,7 +161,7 @@ proof -
   qed
   then have S1: "(s*(s+1) + 2*(s+1)) div 2 \<le>  t*(t+1) div 2" by (rule div_le_mono)
   have "(0::nat) < 2" by (auto)
-  then have "(s*(s+1) + 2*(s+1)) div 2 = (s+1) + (s*(s+1)) div 2" by (rule div_mult_self2)
+  then have "(s*(s+1) + 2*(s+1)) div 2 = (s+1) + (s*(s+1)) div 2" by simp
   with S1 have "(s*(s+1)) div 2 + (s+1) \<le> t*(t+1) div 2" by (auto)
   then have "(s*(s+1)) div 2 + s < t*(t+1) div 2" by (auto)
   thus ?thesis by (simp add: sf_def)  

@@ -5,8 +5,8 @@
 
 header {* Finite sets *}
 
-theory PRecFinSet imports PRecFun
-
+theory PRecFinSet
+imports PRecFun
 begin
 
 text {*
@@ -285,7 +285,7 @@ proof -
   moreover have "(2::nat)^(y +?s) = (2::nat)^y * 2^ ?s" by (rule power_add)
   ultimately have "(2::nat)^x = 2^y * 2^?s" by auto
   then have S4: "u + (2::nat)^x = u + (2::nat)^y * 2^?s" by auto
-  from n_pos have S5: "(u + (2::nat)^y * 2^?s) div 2^y = 2^?s + (u div 2^y)" by (rule div_mult_self2)
+  from n_pos have S5: "(u + (2::nat)^y * 2^?s) div 2^y = 2^?s + (u div 2^y)" by simp
   from S4 S5 have S6: "(u + (2::nat)^x) div 2^y = 2^?s + (u div 2^y)" by auto
   from s_pos have S8: "?s = (?s - 1) + 1" by auto
   have "(2::nat) ^ ((?s - (1::nat)) + (1::nat)) = (2::nat) ^ (?s - (1::nat)) * 2^1" by (rule power_add)
