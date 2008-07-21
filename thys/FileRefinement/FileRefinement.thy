@@ -494,16 +494,10 @@ apply (subgoal_tac "nextFreeBlock cfile1 =
 apply (subgoal_tac "(fileSize cfile1 + blockSize - Suc 0) div blockSize <=
   Suc (indexa div blockSize)", simp_all)
 apply (subgoal_tac "Suc (indexa div blockSize) = 
-  (indexa + blockSize) div blockSize", simp_all) (* 2 subgoals *)
-apply (subgoal_tac "fileSize cfile1 + blockSize - Suc 0 <= indexa + blockSize",
-  simp add: div_le_mono)
-apply (insert diff_le_self [of "fileSize cfile1 + blockSize" "Suc 0"])
-apply (subgoal_tac "fileSize cfile1 + blockSize <= indexa + blockSize")
- (* 3 subgoals *)
-apply (insert le_trans [of "fileSize cfile1 + blockSize - Suc 0" 
-  "fileSize cfile1 + blockSize" _], simp) (* 2 subgoals *)
-apply force (* 1 subgoal *)
-apply (simp add: div_add_self2)
+  (indexa + blockSize) div blockSize")
+apply (simp only:)
+apply (rule div_le_mono)
+apply auto
 done
 
 lemma writeSucceedCorrect:

@@ -4209,7 +4209,7 @@ lemma  rfn_tool12_2:"\<lbrakk>0 < (s::nat); (i::nat) mod s = s - Suc 0\<rbrakk> 
                                                (Suc i) mod s = 0" 
 apply (insert mod_div_equality [THEN sym, of "i" "s"])
 apply (insert add_Suc_right [THEN sym, of "i div s * s" "i mod s"])
-apply (auto simp add: mod_add_self2)
+apply simp
 done
 
 lemma rfn_tool13:"\<lbrakk> (0::nat) < r; a = b \<rbrakk> \<Longrightarrow> a mod r = b mod r"
@@ -4326,7 +4326,7 @@ i div s = r - Suc 0 \<rbrakk> \<Longrightarrow> Suc (rtos r s i) div r = Suc (i 
         simp only:nat_mult_commute,
         simp only:mult_0_right)
  apply (frule rfn_tool11 [of "r * s" "i"], assumption+)
- apply (simp add:rtos_def, simp add:div_add_self2)
+ apply (simp add: rtos_def)
 done
 
 lemma rtos_hom7:"\<lbrakk>(0::nat) < r; (0::nat) < s; i \<le> (r * s - Suc 0); 
@@ -4336,7 +4336,7 @@ apply (simp add: rtos_def)
 apply (frule mult_less_mono2[of "0" "s" "r"],
         simp only:nat_mult_commute,
         simp only:mult_0_right)
-apply (simp add:rfn_tool11 [of "r * s" "i"] mod_add_self2)
+apply (simp add: rfn_tool11 [of "r * s" "i"])
 done
 
 lemma rtos_inj:"\<lbrakk> (0::nat) < r; (0::nat) < s \<rbrakk> \<Longrightarrow> 
@@ -4996,12 +4996,12 @@ apply (insert mod_div_equality [of "i" "s", THEN sym])
 apply simp
  apply (thin_tac "i mod s = s - Suc 0")
 apply (subgoal_tac "Suc i mod s = Suc (i div s * s + s - Suc 0) mod s")
- apply (thin_tac "i = i div s * s + s - Suc 0", simp add: mod_add_self2 del: add_Suc)
+ apply (thin_tac "i = i div s * s + s - Suc 0", simp del: add_Suc)
  apply (subgoal_tac "Suc (i div s * s + s - Suc 0) mod s = (i div s * s + s) mod s") 
- apply (simp add: mod_add_self2 del: add_Suc)
+ apply (simp del: add_Suc)
  apply (subgoal_tac "Suc (i div s * s + s - Suc 0) = i div s * s + s")
- apply (simp add: mod_add_self2 del: add_Suc)
-apply (rule Suc_pred [of "i div s * s + s"], simp add: mod_add_self2)
+ apply (simp del: add_Suc)
+apply (rule Suc_pred [of "i div s * s + s"], simp)
 done
 
 (* same as div_Tr3_2 *)
@@ -5022,8 +5022,6 @@ apply (subgoal_tac "i div s < r")
  apply assumption
  apply (rule le_less_trans, assumption+, simp)
 done
-
-declare mod_add_self2 [simp]
 
 lemma Suc_rtos_i_mod_r_2:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; 
        i div s = r - Suc 0\<rbrakk> \<Longrightarrow> Suc (rtos r s i) mod r = 0"
