@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Semilat.thy
-    ID:         $Id: Abstract_BV.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Abstract_BV.thy,v 1.3 2008-07-24 15:06:24 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   2003 TUM
 

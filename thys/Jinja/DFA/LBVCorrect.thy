@@ -1,5 +1,5 @@
 (*
-    ID:         $Id: LBVCorrect.thy,v 1.5 2007-07-21 15:42:45 makarius Exp $
+    ID:         $Id: LBVCorrect.thy,v 1.6 2008-07-24 15:06:26 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)

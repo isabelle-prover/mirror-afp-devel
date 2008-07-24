@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Product.thy
-    ID:         $Id: Product.thy,v 1.8 2008-06-25 18:29:56 makarius Exp $
+    ID:         $Id: Product.thy,v 1.9 2008-07-24 15:06:28 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 

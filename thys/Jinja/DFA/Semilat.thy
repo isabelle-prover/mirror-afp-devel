@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Semilat.thy
-    ID:         $Id: Semilat.thy,v 1.7 2008-06-12 06:57:20 lsf37 Exp $
+    ID:         $Id: Semilat.thy,v 1.8 2008-07-24 15:06:29 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -311,6 +311,8 @@ constdefs
  exec_lub :: "('a * 'a) set \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a binop"
 "exec_lub r f x y \<equiv> while (\<lambda>z. (x,z) \<notin> r\<^sup>*) f y"
 
+lemma exec_lub_refl [simp]: "exec_lub r f T T = T"
+by (simp add: exec_lub_def while_unfold)
 
 lemma acyclic_single_valued_finite:
  "\<lbrakk>acyclic r; single_valued r; (x,y) \<in> r\<^sup>*\<rbrakk>

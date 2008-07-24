@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Listn.thy
-    ID:         $Id: Listn.thy,v 1.6 2008-06-24 22:23:30 makarius Exp $
+    ID:         $Id: Listn.thy,v 1.7 2008-07-24 15:06:27 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 

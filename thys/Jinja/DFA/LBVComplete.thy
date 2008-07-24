@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/LBVComplete.thy
-    ID:         $Id: LBVComplete.thy,v 1.7 2007-07-21 15:42:45 makarius Exp $
+    ID:         $Id: LBVComplete.thy,v 1.8 2008-07-24 15:06:26 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)

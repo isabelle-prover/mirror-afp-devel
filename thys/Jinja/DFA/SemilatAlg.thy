@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/SemilatAlg.thy
-    ID:         $Id: SemilatAlg.thy,v 1.4 2007-07-19 21:23:11 makarius Exp $
+    ID:         $Id: SemilatAlg.thy,v 1.5 2008-07-24 15:06:29 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)

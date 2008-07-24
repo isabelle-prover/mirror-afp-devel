@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Typing_Framework.thy
-    ID:         $Id: Typing_Framework.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Typing_Framework.thy,v 1.3 2008-07-24 15:06:30 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 *)
