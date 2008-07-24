@@ -7,7 +7,7 @@ imports
   "J/Deadlocked"
   "BV/JVMDeadlocked"
   "BV/TF_JVM"
-  "BV/Abstract_BV"
+  "DFA/Abstract_BV"
 begin
 
 end
