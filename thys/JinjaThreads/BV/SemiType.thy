@@ -613,7 +613,8 @@ proof -
     x \<sqsubseteq>\<^bsub>Err.le (subtype P)\<^esub> z \<and> y \<sqsubseteq>\<^bsub>Err.le (subtype P)\<^esub> z \<longrightarrow> x \<squnion>\<^bsub>lift2 (sup P)\<^esub> y \<sqsubseteq>\<^bsub>Err.le (subtype P)\<^esub> z"
     by (unfold lift2_def plussub_def lesub_def Err.le_def)
        (auto intro: sup_subtype_smallest dest:sup_exists split: err.split)
-  ultimately show ?thesis by (simp add: esl_def semilat_def sl_def Err.sl_def)
+  ultimately show ?thesis
+    unfolding esl_def semilat_def Listn.sl_def Err.sl_def by safe
 qed
 
 end
