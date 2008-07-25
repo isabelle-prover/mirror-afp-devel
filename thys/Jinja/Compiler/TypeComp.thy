@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.9 2007-07-19 21:23:11 makarius Exp $
+    ID:         $Id: TypeComp.thy,v 1.10 2008-07-25 22:11:31 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -14,49 +14,29 @@ begin
 declare nth_append[simp]
 (*>*)
 
-constdefs
-  ty :: "J\<^isub>1_prog \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty"
-  "ty P E e  \<equiv>  THE T. P,E \<turnstile>\<^sub>1 e :: T"
+locale TC0 =
+  fixes P :: "J\<^isub>1_prog" and mxl :: nat
+begin
 
-  ty\<^isub>l:: "nat \<Rightarrow> ty list \<Rightarrow> nat set \<Rightarrow> ty\<^isub>l"
-  "ty\<^isub>l m E A' \<equiv> map (\<lambda>i. if i \<in> A' \<and> i < size E then OK(E!i) else Err) [0..<m]"
+definition "ty E e = (THE T. P,E \<turnstile>\<^sub>1 e :: T)"
 
-  ty\<^isub>i' :: "nat \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> nat set option \<Rightarrow> ty\<^isub>i'"
-  "ty\<^isub>i' m ST E A \<equiv> case A of None \<Rightarrow> None | \<lfloor>A'\<rfloor> \<Rightarrow> Some(ST, ty\<^isub>l m E A')"
+definition "ty\<^isub>l E A' = map (\<lambda>i. if i \<in> A' \<and> i < size E then OK(E!i) else Err) [0..<mxl]"
 
-  after :: "J\<^isub>1_prog \<Rightarrow> nat \<Rightarrow> ty list \<Rightarrow> nat set option \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty\<^isub>i'"
-  "after P m E A ST e  \<equiv> ty\<^isub>i' m (ty P E e # ST) E (A \<squnion> \<A> e)"
+definition "ty\<^isub>i' ST E A = (case A of None \<Rightarrow> None | \<lfloor>A'\<rfloor> \<Rightarrow> Some(ST, ty\<^isub>l E A'))"
 
-locale (open) TC0 =
-  fixes P and mxl
+definition "after E A ST e = ty\<^isub>i' (ty E e # ST) E (A \<squnion> \<A> e)"
 
-  fixes ty :: "ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty"
-  defines "ty E e \<equiv> TypeComp.ty P E e"
-
-  fixes ty\<^isub>l:: "ty list \<Rightarrow> nat set \<Rightarrow> ty\<^isub>l"
-  defines ty\<^isub>l: "ty\<^isub>l E A' \<equiv> TypeComp.ty\<^isub>l mxl E A'"
-
-  fixes ty\<^isub>i' :: "ty list \<Rightarrow> ty list \<Rightarrow> nat set option \<Rightarrow> ty\<^isub>i'"
-  defines ty\<^isub>i': "ty\<^isub>i' ST E A \<equiv> TypeComp.ty\<^isub>i' mxl ST E A"
-
-  fixes after :: "ty list \<Rightarrow> nat set option \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty\<^isub>i'"
-  defines after: "after E A ST e \<equiv> TypeComp.after P mxl E A ST e"
-
-  notes after_def = TypeComp.after_def [of P mxl, folded after ty_def ty\<^isub>i']
-  notes ty\<^isub>i'_def = TypeComp.ty\<^isub>i'_def [of mxl, folded ty\<^isub>l ty\<^isub>i']
-  notes ty\<^isub>l_def = TypeComp.ty\<^isub>l_def [of mxl, folded ty\<^isub>l]
+end
 
 lemma (in TC0) ty_def2 [simp]: "P,E \<turnstile>\<^sub>1 e :: T \<Longrightarrow> ty E e = T"
 (*<*)
-apply(unfold ty_def TypeComp.ty_def)
+apply (unfold ty_def)
 apply(blast intro: the_equality WT\<^isub>1_unique)
 done
 (*>*)
 
-
 lemma (in TC0) [simp]: "ty\<^isub>i' ST E None = None"
-(*<*)by(simp add:ty\<^isub>i'_def)(*>*)
-
+(*<*)by (simp add: ty\<^isub>i'_def)(*>*)
 
 lemma (in TC0) ty\<^isub>l_app_diff[simp]:
  "ty\<^isub>l (E@[T]) (A - {size E}) = ty\<^isub>l E A"
@@ -102,78 +82,62 @@ lemma (in TC0) ty\<^isub>l_in_types:
  "set E \<subseteq> types P \<Longrightarrow> ty\<^isub>l E A \<in> list mxl (err (types P))"
 (*<*)by(auto simp add:ty\<^isub>l_def intro!:listI dest!: nth_mem)(*>*)
 
+locale TC1 = TC0
+begin
 
-consts
- compT :: "J\<^isub>1_prog \<Rightarrow> nat \<Rightarrow> ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty\<^isub>i' list"
- compTs :: "J\<^isub>1_prog \<Rightarrow> nat \<Rightarrow> ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 list \<Rightarrow> ty\<^isub>i' list"
-
-primrec
-"compT P m E A ST (new C) = []"
-"compT P m E A ST (Cast C e) =  
-   compT P m E A ST e @ [after P m E A ST e]"
-"compT P m E A ST (Val v) = []"
-"compT P m E A ST (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) =
-  (let ST\<^isub>1 = ty P E e\<^isub>1#ST; A\<^isub>1 = A \<squnion> \<A> e\<^isub>1 in
-   compT P m E A ST e\<^isub>1 @ [after P m E A ST e\<^isub>1] @
-   compT P m E A\<^isub>1 ST\<^isub>1 e\<^isub>2 @ [after P m E A\<^isub>1 ST\<^isub>1 e\<^isub>2])"
-"compT P m E A ST (Var i) = []"
-"compT P m E A ST (i := e) = compT P m E A ST e @
-   [after P m E A ST e, ty\<^isub>i' m ST E (A \<squnion> \<A> e \<squnion> \<lfloor>{i}\<rfloor>)]"
-"compT P m E A ST (e\<bullet>F{D}) = 
-   compT P m E A ST e @ [after P m E A ST e]"
-"compT P m E A ST (e\<^isub>1\<bullet>F{D} := e\<^isub>2) =
-  (let ST\<^isub>1 = ty P E e\<^isub>1#ST; A\<^isub>1 = A \<squnion> \<A> e\<^isub>1; A\<^isub>2 = A\<^isub>1 \<squnion> \<A> e\<^isub>2 in
-   compT P m E A ST e\<^isub>1 @ [after P m E A ST e\<^isub>1] @
-   compT P m E A\<^isub>1 ST\<^isub>1 e\<^isub>2 @ [after P m E A\<^isub>1 ST\<^isub>1 e\<^isub>2] @
-   [ty\<^isub>i' m ST E A\<^isub>2])"
-"compT P m E A ST {i:T; e} = compT P m (E@[T]) (A\<ominus>i) ST e"
-"compT P m E A ST (e\<^isub>1;;e\<^isub>2) =
+primrec compT :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty\<^isub>i' list" and
+   compTs :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 list \<Rightarrow> ty\<^isub>i' list" where
+"compT E A ST (new C) = []"
+| "compT E A ST (Cast C e) =  
+   compT E A ST e @ [after E A ST e]"
+| "compT E A ST (Val v) = []"
+| "compT E A ST (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) =
+  (let ST\<^isub>1 = ty E e\<^isub>1#ST; A\<^isub>1 = A \<squnion> \<A> e\<^isub>1 in
+   compT E A ST e\<^isub>1 @ [after E A ST e\<^isub>1] @
+   compT E A\<^isub>1 ST\<^isub>1 e\<^isub>2 @ [after E A\<^isub>1 ST\<^isub>1 e\<^isub>2])"
+| "compT E A ST (Var i) = []"
+| "compT E A ST (i := e) = compT E A ST e @
+   [after E A ST e, ty\<^isub>i' ST E (A \<squnion> \<A> e \<squnion> \<lfloor>{i}\<rfloor>)]"
+| "compT E A ST (e\<bullet>F{D}) = 
+   compT E A ST e @ [after E A ST e]"
+| "compT E A ST (e\<^isub>1\<bullet>F{D} := e\<^isub>2) =
+  (let ST\<^isub>1 = ty   E e\<^isub>1#ST; A\<^isub>1 = A \<squnion> \<A> e\<^isub>1; A\<^isub>2 = A\<^isub>1 \<squnion> \<A> e\<^isub>2 in
+   compT E A ST e\<^isub>1 @ [after E A ST e\<^isub>1] @
+   compT E A\<^isub>1 ST\<^isub>1 e\<^isub>2 @ [after E A\<^isub>1 ST\<^isub>1 e\<^isub>2] @
+   [ty\<^isub>i' ST E A\<^isub>2])"
+| "compT E A ST {i:T; e} = compT (E@[T]) (A\<ominus>i) ST e"
+| "compT E A ST (e\<^isub>1;;e\<^isub>2) =
   (let A\<^isub>1 = A \<squnion> \<A> e\<^isub>1 in
-   compT P m E A ST e\<^isub>1 @ [after P m E A ST e\<^isub>1, ty\<^isub>i' m ST E A\<^isub>1] @
-   compT P m E A\<^isub>1 ST e\<^isub>2)"
-"compT P m E A ST (if (e) e\<^isub>1 else e\<^isub>2) =
-   (let A\<^isub>0 = A \<squnion> \<A> e; \<tau> = ty\<^isub>i' m ST E A\<^isub>0 in
-    compT P m E A ST e @ [after P m E A ST e, \<tau>] @
-    compT P m E A\<^isub>0 ST e\<^isub>1 @ [after P m E A\<^isub>0 ST e\<^isub>1, \<tau>] @
-    compT P m E A\<^isub>0 ST e\<^isub>2)"
-"compT P m E A ST (while (e) c) =
-   (let A\<^isub>0 = A \<squnion> \<A> e;  A\<^isub>1 = A\<^isub>0 \<squnion> \<A> c; \<tau> = ty\<^isub>i' m ST E A\<^isub>0 in
-    compT P m E A ST e @ [after P m E A ST e, \<tau>] @
-    compT P m E A\<^isub>0 ST c @ [after P m E A\<^isub>0 ST c, ty\<^isub>i' m ST E A\<^isub>1, ty\<^isub>i' m ST E A\<^isub>0])"
-"compT P m E A ST (throw e) = compT P m E A ST e @ [after P m E A ST e]"
-"compT P m E A ST (e\<bullet>M(es)) =
-   compT P m E A ST e @ [after P m E A ST e] @
-   compTs P m E (A \<squnion> \<A> e) (ty P E e # ST) es"
-"compT P m E A ST (try e\<^isub>1 catch(C i) e\<^isub>2) =
-   compT P m E A ST e\<^isub>1 @ [after P m E A ST e\<^isub>1] @
-   [ty\<^isub>i' m (Class C#ST) E A, ty\<^isub>i' m ST (E@[Class C]) (A \<squnion> \<lfloor>{i}\<rfloor>)] @
-   compT P m (E@[Class C]) (A \<squnion> \<lfloor>{i}\<rfloor>) ST e\<^isub>2"
-"compTs P m E A ST [] = []"
-"compTs P m E A ST (e#es) = compT P m E A ST e @ [after P m E A ST e] @
-                            compTs P m E (A \<squnion> (\<A> e)) (ty P E e # ST) es"
+   compT E A ST e\<^isub>1 @ [after E A ST e\<^isub>1, ty\<^isub>i' ST E A\<^isub>1] @
+   compT E A\<^isub>1 ST e\<^isub>2)"
+| "compT E A ST (if (e) e\<^isub>1 else e\<^isub>2) =
+   (let A\<^isub>0 = A \<squnion> \<A> e; \<tau> = ty\<^isub>i' ST E A\<^isub>0 in
+    compT E A ST e @ [after E A ST e, \<tau>] @
+    compT E A\<^isub>0 ST e\<^isub>1 @ [after E A\<^isub>0 ST e\<^isub>1, \<tau>] @
+    compT E A\<^isub>0 ST e\<^isub>2)"
+| "compT E A ST (while (e) c) =
+   (let A\<^isub>0 = A \<squnion> \<A> e;  A\<^isub>1 = A\<^isub>0 \<squnion> \<A> c; \<tau> = ty\<^isub>i' ST E A\<^isub>0 in
+    compT E A ST e @ [after E A ST e, \<tau>] @
+    compT E A\<^isub>0 ST c @ [after E A\<^isub>0 ST c, ty\<^isub>i' ST E A\<^isub>1, ty\<^isub>i' ST E A\<^isub>0])"
+| "compT E A ST (throw e) = compT E A ST e @ [after E A ST e]"
+| "compT E A ST (e\<bullet>M(es)) =
+   compT E A ST e @ [after E A ST e] @
+   compTs E (A \<squnion> \<A> e) (ty   E e # ST) es"
+| "compT E A ST (try e\<^isub>1 catch(C i) e\<^isub>2) =
+   compT E A ST e\<^isub>1 @ [after E A ST e\<^isub>1] @
+   [ty\<^isub>i' (Class C#ST) E A, ty\<^isub>i' ST (E@[Class C]) (A \<squnion> \<lfloor>{i}\<rfloor>)] @
+   compT (E@[Class C]) (A \<squnion> \<lfloor>{i}\<rfloor>) ST e\<^isub>2"
+| "compTs E A ST [] = []"
+| "compTs  E A ST (e#es) = compT E A ST e @ [after E A ST e] @
+                            compTs E (A \<squnion> (\<A> e)) (ty E e # ST) es"
 
-constdefs
-  compT\<^isub>a :: "J\<^isub>1_prog \<Rightarrow> nat \<Rightarrow> ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty\<^isub>i' list"
-  "compT\<^isub>a P mxl E A ST e \<equiv> compT P mxl E A ST e @ [after P mxl E A ST e]"
+definition compT\<^isub>a :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty\<^isub>i' list" where
+  "compT\<^isub>a E A ST e = compT E A ST e @ [after E A ST e]"
 
-locale (open) TC1 = TC0 +
-  fixes compT :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty\<^isub>i' list"
-  defines compT: "compT E A ST e \<equiv> TypeComp.compT P mxl E A ST e"
-
-  fixes compTs :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 list \<Rightarrow> ty\<^isub>i' list"
-  defines compTs: "compTs E A ST es \<equiv> TypeComp.compTs P mxl E A ST es"
-
-  fixes compT\<^isub>a :: "ty list \<Rightarrow> nat hyperset \<Rightarrow> ty list \<Rightarrow> expr\<^isub>1 \<Rightarrow> ty\<^isub>i' list"
-  defines compT\<^isub>a: "compT\<^isub>a E A ST e \<equiv> TypeComp.compT\<^isub>a P mxl E A ST e"
-
-  notes compT_simps[simp] = TypeComp.compT_compTs.simps [of P mxl,
-        folded compT compTs ty_def ty\<^isub>i' after]
-  notes compT\<^isub>a_def = TypeComp.compT\<^isub>a_def[of P mxl,
-        folded compT\<^isub>a compT after]
+end
 
 lemma compE\<^isub>2_not_Nil[simp]: "compE\<^isub>2 e \<noteq> []"
 (*<*)by(induct e) auto(*>*)
-
 
 lemma (in TC1) compT_sizes[simp]:
 shows "\<And>E A ST. size(compT E A ST e) = size(compE\<^isub>2 e) - 1"
@@ -255,7 +219,7 @@ lemma (in TC0) after_in_states:
  \<Longrightarrow> OK (after E A ST e) \<in> states P mxs mxl"
 (*<*)
 apply(subgoal_tac "size ST + 1 \<le> mxs")
- apply(simp add:after_def ty\<^isub>i'_def JVM_states_unfold ty\<^isub>l_in_types)
+ apply(simp add: after_def ty\<^isub>i'_def JVM_states_unfold ty\<^isub>l_in_types)
  apply(blast intro!:listI WT\<^isub>1_is_type)
 using max_stack1[of e] apply simp
 done
@@ -385,31 +349,27 @@ shows "n \<noteq> 0 \<Longrightarrow> compxE\<^isub>2 e n d = shift n (compxE\<^
 and "n \<noteq> 0 \<Longrightarrow> compxEs\<^isub>2 es n d = shift n (compxEs\<^isub>2 es 0 d)"
 (*<*)by(simp_all add:shift_compxE\<^isub>2)(*>*)
 
+locale TC2 = TC1 +
+  fixes T\<^isub>r :: ty and mxs :: pc
+begin
 
-constdefs
-  wt_instrs :: "'m prog \<Rightarrow> ty \<Rightarrow> pc \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' list \<Rightarrow> bool"
-  ("(_,_,_ \<turnstile>/ _, _ /[::]/ _)" [50,50,50,50,50,51] 50)
-  "P,T,mxs \<turnstile> is,xt [::] \<tau>s \<equiv>
-  size is < size \<tau>s \<and> pcs xt \<subseteq> {0..<size is} \<and>
-  (\<forall>pc< size is. P,T,mxs,size \<tau>s,xt \<turnstile> is!pc,pc :: \<tau>s)"
+definition
+  wt_instrs :: "instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' list \<Rightarrow> bool"
+    ("(\<turnstile> _, _ /[::]/ _)" [0,0,51] 50) where
+  "\<turnstile> is,xt [::] \<tau>s \<longleftrightarrow> size is < size \<tau>s \<and> pcs xt \<subseteq> {0..<size is} \<and>
+  (\<forall>pc< size is. P,T\<^isub>r,mxs,size \<tau>s,xt \<turnstile> is!pc,pc :: \<tau>s)"
 
-locale (open) TC2 = TC1 +
-  fixes T\<^isub>r and mxs
-  fixes wt_instrs :: "instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' list \<Rightarrow> bool"
-                     ("(\<turnstile> _, _ /[::]/ _)" [0,0,51] 50)
-  defines wt_instrs: "\<turnstile> is,xt [::] \<tau>s \<equiv> P,T\<^isub>r,mxs \<turnstile> is,xt [::] \<tau>s"
+end
 
-  notes wt_instrs_def = TypeComp.wt_instrs_def[of P T\<^isub>r mxs, folded wt_instrs]
+notation TC2.wt_instrs ("(_,_,_ \<turnstile>/ _, _ /[::]/ _)" [50,50,50,50,50,51] 50)
 
 (*<*)
 lemmas (in TC2) wt_defs =
   wt_instrs_def wt_instr_def app_def eff_def norm_eff_def
 (*>*)
 
-
 lemma (in TC2) [simp]: "\<tau>s \<noteq> [] \<Longrightarrow> \<turnstile> [],[] [::] \<tau>s"
-(*<*)by(simp add:wt_defs)(*>*)
-
+(*<*) by (simp add: wt_defs) (*>*)
 
 lemma [simp]: "eff i P pc et None = []"
 (*<*)by (simp add: Effect.eff_def)(*>*)
@@ -1264,62 +1224,66 @@ lemma [simp]: "compP f P,T,mpc,mxl,xt \<turnstile> i,pc :: \<tau>s = P,T,mpc,mxl
 
 declare TC1.compT_sizes[simp]  TC0.ty_def2[simp]
 
+context TC2
+begin
+
+abbreviation "T' \<equiv> T\<^isub>r"
+
 lemma compT_method:
-fixes e and A and C and Ts and mxl\<^isub>0
-defines [simp]: "E \<equiv> Class C # Ts"
+  fixes e and A and C and Ts and mxl\<^isub>0
+  defines [simp]: "E \<equiv> Class C # Ts"
     and [simp]: "A \<equiv> \<lfloor>{..size Ts}\<rfloor>"
     and [simp]: "A' \<equiv> A \<squnion> \<A> e"
-    and [simp]: "mxs \<equiv> max_stack e"
     and [simp]: "mxl\<^isub>0 \<equiv> max_vars e"
-    and [simp]: "mxl \<equiv> 1 + size Ts + mxl\<^isub>0"
-shows "\<lbrakk> wf_prog p P; P,E \<turnstile>\<^sub>1 e :: T; \<D> e A; \<B> e (size E); 
-          set E \<subseteq> types P; P \<turnstile> T \<le> T' \<rbrakk> \<Longrightarrow>
-   wt_method (compP\<^isub>2 P) C Ts T' mxs mxl\<^isub>0 (compE\<^isub>2 e @ [Return]) (compxE\<^isub>2 e 0 0)
-      (ty\<^isub>i' mxl [] E A # compT\<^isub>a P mxl E A [] e)"
+  assumes mxs: "mxs = max_stack e"
+    and mxl: "mxl = 1 + size Ts + mxl\<^isub>0"
+  assumes assm: "wf_prog p P" "P,E \<turnstile>\<^sub>1 e :: T" "\<D> e A" "\<B> e (size E)"
+    "set E \<subseteq> types P" "P \<turnstile> T \<le> T'"
+  shows "wt_method (compP\<^isub>2 P) C Ts T' mxs mxl\<^isub>0 (compE\<^isub>2 e @ [Return])
+    (compxE\<^isub>2 e 0 0) (ty\<^isub>i' [] E A # compT\<^isub>a E A [] e)"
 (*<*)
-apply(simp add:wt_method_def compT\<^isub>a_def after_def)
-apply(rule conjI)
-apply(simp add:check_types_def TC0.OK_ty\<^isub>i'_in_statesI)
-apply(rule conjI)
-apply(drule (1) WT\<^isub>1_is_type)
+proof -
+  from mxl have mxl_collapse: "Suc (length Ts + max_vars e) = mxl" by simp
+from assm show ?thesis
+apply (simp add: wt_method_def compT\<^isub>a_def after_def mxl_collapse)
+apply (rule conjI)
+apply (simp add: check_types_def OK_ty\<^isub>i'_in_statesI)
+apply (rule conjI)
+apply (drule (1) WT\<^isub>1_is_type)
 apply simp
-apply(insert max_stack1[of e])
-apply(fastsimp intro!: TC0.OK_ty\<^isub>i'_in_statesI)
-apply(erule (1) TC1.compT_states)
-apply simp
-apply simp
-apply simp
-apply simp
-apply(rule conjI)
-apply(fastsimp simp add:wt_start_def ty\<^isub>i'_def ty\<^isub>l_def list_all2_conv_all_nth nth_Cons split:nat.split dest:less_antisym)
-apply (frule (1) TC2.compT_wt_instrs
- [where ST = "[]" and mxs = "max_stack e" and mxl = "1 + size Ts + max_vars e"])
-apply simp
-apply simp
-apply simp
-apply simp
-apply (clarsimp simp:wt_instrs_def after_def)
-apply(rule conjI)
-apply clarsimp apply (fastsimp)
-apply(clarsimp)
-apply(drule (1) less_antisym)
-apply(thin_tac "\<forall>x. ?P x")
-apply(clarsimp simp:TC2.wt_defs xcpt_app_pcs xcpt_eff_pcs ty\<^isub>i'_def)
-apply(cases "size (compE\<^isub>2 e)")
- apply (simp del: compxE\<^isub>2_size_convs nth_append  add: neq_Nil_conv)
-apply (simp)
+apply (insert max_stack1 [of e])
+apply (rule OK_ty\<^isub>i'_in_statesI) apply (simp_all add: mxs)[3]
+apply (erule compT_states(1))
+apply assumption
+apply (simp_all add: mxs mxl_collapse)[4]
+apply (rule conjI)
+apply (auto simp add: wt_start_def ty\<^isub>i'_def ty\<^isub>l_def list_all2_conv_all_nth
+  nth_Cons mxl_collapse split: nat.split dest: less_antisym)[1]
+
+apply (frule (1) TC2.compT_wt_instrs [of P _ _ _ _ "[]" "max_stack e" "1 + size Ts + max_vars e" T'])
+apply simp_all
+apply (clarsimp simp: after_def)
+apply (rule conjI)
+apply (clarsimp simp:wt_instrs_def after_def mxl_collapse mxs [symmetric])
+apply clarsimp
+apply (drule (1) less_antisym)
+apply (clarsimp simp: wt_defs xcpt_app_pcs xcpt_eff_pcs ty\<^isub>i'_def)
+apply (cases "size (compE\<^isub>2 e)")
+ apply (simp del: compxE\<^isub>2_size_convs nth_append add: neq_Nil_conv)
+apply (simp add: mxl_collapse)
 done
+qed
 (*>*)
 
+end
 
-constdefs
-  compTP :: "J\<^isub>1_prog \<Rightarrow> ty\<^isub>P"
-  "compTP P C M  \<equiv>
+definition compTP :: "J\<^isub>1_prog \<Rightarrow> ty\<^isub>P" where
+  "compTP P C M = (
   let (D,Ts,T,e) = method P C M;
        E = Class C # Ts;
        A = \<lfloor>{..size Ts}\<rfloor>;
        mxl = 1 + size Ts + max_vars e
-  in  (ty\<^isub>i' mxl [] E A # compT\<^isub>a P mxl E A [] e)"
+  in  (TC0.ty\<^isub>i' mxl [] E A # TC1.compT\<^isub>a P mxl E A [] e))"
 
 theorem wt_compP\<^isub>2:
   "wf_J\<^isub>1_prog P \<Longrightarrow> wf_jvm_prog (compP\<^isub>2 P)"
@@ -1330,8 +1294,13 @@ theorem wt_compP\<^isub>2:
    prefer 2 apply assumption
   apply (clarsimp simp add: wf_mdecl_def)
   apply (simp add: compTP_def)
-  apply (rule compT_method [simplified])
-       apply assumption+
+  apply (rule TC2.compT_method [simplified])
+       apply (rule refl)
+       apply (rule refl)
+       apply assumption
+       apply assumption
+       apply assumption
+       apply assumption
     apply (drule (1) sees_wf_mdecl)
     apply (simp add: wf_mdecl_def)
    apply (blast intro: sees_method_is_class)
@@ -1339,14 +1308,11 @@ theorem wt_compP\<^isub>2:
   done
 (*>*)
 
-
 theorem wt_J2JVM:
   "wf_J_prog P \<Longrightarrow> wf_jvm_prog (J2JVM P)"
 (*<*)
 apply(simp only:o_def J2JVM_def)
 apply(blast intro:wt_compP\<^isub>2 compP\<^isub>1_pres_wf)
 done
-(*>*)
-
 
 end
