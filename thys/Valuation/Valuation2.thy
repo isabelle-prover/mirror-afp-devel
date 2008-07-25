@@ -391,7 +391,7 @@ apply (subgoal_tac "0 < m",
 apply (case_tac "x = 1\<^sub>r\<^bsub>K\<^esub>", simp add:aGroup.ag_r_inv1,
        frule_tac n = m in Ring.npZero_sub[of "K"], simp,
        simp add:value_of_zero) 
-apply (cut_tac inf_ge_any[of "1"], simp add:aless_le)
+apply (cut_tac inf_ge_any[of "1"], simp add: less_le)
 apply (rotate_tac -1, drule not_sym,
       frule aGroup.ag_neq_diffnonzero[of "K" "1\<^sub>r" "x"],
       simp add:Ring.ring_one[of "K"], assumption+, simp,

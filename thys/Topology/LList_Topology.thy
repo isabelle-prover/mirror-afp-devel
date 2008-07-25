@@ -1,5 +1,5 @@
 (*  Title:      LList_Topology.thy
-    ID:         $Id: LList_Topology.thy,v 1.6 2007-06-14 12:54:51 makarius Exp $
+    ID:         $Id: LList_Topology.thy,v 1.7 2008-07-25 10:03:48 fhaftmann Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -7,7 +7,9 @@
 
 header {* The topology of llists *}
 
-theory LList_Topology imports Topology "../Lazy-Lists-II/LList2" begin
+theory LList_Topology
+imports Topology "../Lazy-Lists-II/LList2"
+begin
 
 section{*The topology of all llists*}
 
@@ -328,7 +330,11 @@ corollary (in itrace_top) unique_convergence:
      F \<in> Filters ;
      F -\<longrightarrow> x;
      F -\<longrightarrow> y \<rbrakk> \<Longrightarrow> x = y"
-  by (auto intro: T2.unique_convergence)
+  apply (rule T2.unique_convergence)
+  prefer 2
+  apply (rule filter.intro)
+  apply auto
+  done
 
 (*
 lemma safty_closed:

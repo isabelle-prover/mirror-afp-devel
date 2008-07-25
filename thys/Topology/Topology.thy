@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.13 2008-06-12 06:57:28 lsf37 Exp $
+    ID:         $Id: Topology.thy,v 1.14 2008-07-25 10:03:48 fhaftmann Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -7,7 +7,9 @@
 
 header {* A bit of general topology *}
 
-theory Topology imports FuncSet Zorn begin
+theory Topology
+imports FuncSet Zorn
+begin
 
 text{*
   This theory gives a formal account of basic notions of general
@@ -1251,8 +1253,7 @@ lemma filtersD4:
   "\<lbrakk> F \<in> filters T; A \<subseteq> B; B \<subseteq> carr T; A\<in>F \<rbrakk> \<Longrightarrow> B \<in> F"
   by (blast elim: filtersE)
 
-
-locale (open) filter = var F + carrier T +
+locale filter = var F + carrier T +
   assumes F_filter: "F \<in> Filters"
   notes not_empty [iff]       = filtersD1 [OF F_filter]
   and   union_carr [iff]      = filtersD2 [OF F_filter]
@@ -1287,8 +1288,8 @@ lemma nonempty_filter_implies_nonempty_carrier:
   and F_not_empty: "F \<noteq> {}"
   shows "carrier \<noteq> {}"
 proof-
-  from prems have "carrier \<in> F"
-    by (auto dest!: filter.contains_carrier)
+  from assms have "carrier \<in> F"
+    by (auto dest!: filter.contains_carrier [OF filter.intro])
   thus ?thesis using F_filter
     by(auto dest: filtersD1)
 qed
@@ -1464,7 +1465,7 @@ proof-
     fix C let ?M = "\<Union>(C \<union> {F})"
     assume C_in_chain: "C \<in> chain ?FF"
     hence "?M \<in> ?FF" using F_filter
-      by (auto dest: filter_chain_lemma)
+      by (auto dest: filter_chain_lemma [OF filter.intro])
     moreover have "\<forall> x \<in> C. x \<subseteq> ?M" using C_in_chain
       by (auto simp: chain_def)
     ultimately show "\<exists>y\<in>?FF. \<forall>x\<in>C. x \<subseteq> y"
@@ -1475,7 +1476,7 @@ proof-
   hence U_filter: "U \<in> Filters" and F_subset_U: "F \<subseteq> U"
     by auto
   moreover from U_filter carrier_not_empty have "ultra U"
-  proof (rule filter.max_ultra, clarify)
+  proof (rule filter.max_ultra [OF filter.intro], clarify)
     fix E x assume "E \<in> Filters" and  U_subset_E: "U \<subseteq> E" and x_in_E: "x \<in> E"
     with F_subset_U have "E \<in> ?FF" by auto 
     with U_subset_E x_in_E U_max show "x \<in> U" by blast
@@ -1889,7 +1890,7 @@ lemma (in T2) limI [simp]:
   and  converges: "F -\<longrightarrow> x"
   shows "lim F = x"
   using filter converges point
-  by (auto simp: limes_def dest: unique_convergence)
+  by (auto simp: limes_def dest: unique_convergence [OF filter.intro])
 
 lemma (in T2) convergent_limE:
   assumes convergent: "F convergent"
