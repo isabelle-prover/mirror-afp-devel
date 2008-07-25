@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalDef.thy,v 1.9 2008-06-25 18:29:59 makarius Exp $
+    ID:          $Id: OrdinalDef.thy,v 1.10 2008-07-25 10:03:57 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -243,7 +243,7 @@ by (cases x, cases y, cases z, auto elim: ord0_order_trans)
 lemma ordinal_order_antisym: "(x::ordinal) \<le> y \<Longrightarrow> y \<le> x \<Longrightarrow> x = y"
 by (cases x, cases y, simp)
 
-lemma ordinal_order_less_le: "((x::ordinal) < y) = (x \<le> y \<and> x \<noteq> y)"
+lemma ordinal_order_less_le_not_le: "((x::ordinal) < y) = (x \<le> y \<and> \<not> y \<le> x)"
 by (cases x, cases y, auto simp add: ord0_order_less_le)
 
 lemma ordinal_linear: "(x::ordinal) \<le> y \<or> y \<le> x"
@@ -259,7 +259,7 @@ done
 
 instance ordinal :: wellorder
  apply (intro_classes)
-       apply (rule ordinal_order_less_le)
+       apply (rule ordinal_order_less_le_not_le)
       apply (rule ordinal_order_refl)
      apply (rule ordinal_order_trans, assumption+)
     apply (rule ordinal_order_antisym, assumption+)

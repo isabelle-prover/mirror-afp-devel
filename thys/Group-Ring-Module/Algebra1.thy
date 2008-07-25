@@ -23,7 +23,9 @@
    section 1.   Basic Concepts of Ordered Sets
 **)
 
-theory Algebra1 imports Main FuncSet begin
+theory Algebra1
+imports Main FuncSet
+begin
 
 chapter "0. Preliminaries"
 
@@ -3129,7 +3131,7 @@ apply (cut_tac mem_ant[of "i"], cut_tac mem_ant[of "j"],
       (erule disjE)+, simp add:ale_refl, erule disjE, erule exE, simp+,
       (erule disjE)+, simp add:ale_refl, simp add:ale_refl)
 apply ((erule disjE)+, erule exE, simp+,
-       erule exE, simp,
+  erule exE, simp,
        cut_tac x = "ant z" in minf_le_any,
        frule_tac x = "ant z" in ale_antisym[of _ "-\<infinity>"], assumption+,
        simp+,
@@ -3160,14 +3162,14 @@ apply (erule disjE, erule exE,
        cut_tac x = "ant z" in inf_ge_any, simp+) 
 done
 
-(* Axiom 'order_aless_le' of class 'order': *)
-lemma aless_le: "((w::ant) < z) = (w \<le> z \<and> w \<noteq> z)"
-by (simp add: less_ant_def) 
+(* Axiom 'order_aless_le_not_le' of class 'order': *)
+lemma aless_le_not_le: "((w::ant) < z) = (w \<le> z \<and> \<not> z \<le> w)"
+by (auto simp add: less_ant_def) 
 
 instance ant :: order
 proof qed 
  (assumption |
-  rule ale_refl ale_trans ale_antisym aless_le)+
+  rule ale_refl ale_trans ale_antisym aless_le_not_le)+
 
 (* Axiom 'linorder_linear' of class 'linorder': *)
 lemma ale_linear: "(z::ant) \<le> w \<or> w \<le> z"
@@ -3425,10 +3427,10 @@ lemma aadd_less_mono_z:"(x::ant) < y \<Longrightarrow> (x + (ant z)) < (y + (ant
 apply (simp add:less_ant_def, simp add:aadd_le_mono);
 apply (cut_tac mem_ant[of "x"], cut_tac mem_ant[of "y"])
 apply auto
-apply (metis a_inv a_ipi a_ipz a_zpz aadd_minus_r aless_le diff_ant_def minf_less_0)
-apply (metis a_inv a_ipi a_ipz a_zpz aadd_minus_r aless_le diff_ant_def minf_less_0)
+apply (metis a_inv a_ipi a_ipz a_zpz aadd_minus_r less_le diff_ant_def minf_less_0)
+apply (metis a_inv a_ipi a_ipz a_zpz aadd_minus_r less_le diff_ant_def minf_less_0)
 apply (metis a_zpz add_right_cancel aeq_zeq)
-apply (metis a_zpz aless_le z_less_i)
+apply (metis a_zpz less_le z_less_i)
 done
 
 lemma aless_le_suc[simp]:"(a::ant) < b \<Longrightarrow> a + 1 \<le> b" 
@@ -3552,9 +3554,9 @@ done
 lemma aless_diff_poss:"(x::ant) < y \<Longrightarrow> 0 < (y - x)"
 apply (case_tac "y = -\<infinity>", simp,
        cut_tac minf_le_any[of "x"],
-       frule aless_imp_le[of "x" "-\<infinity>"],
-       frule ale_antisym[of "x" "-\<infinity>"], assumption+, 
-       cut_tac aless_le[of "x" "-\<infinity>"], simp) 
+       frule less_imp_le[of "x" "-\<infinity>"],
+       frule antisym[of "x" "-\<infinity>"], assumption+, 
+       cut_tac less_le[of "x" "-\<infinity>"], simp) 
 apply (case_tac "x = -\<infinity>", simp,
        case_tac "y = \<infinity>", simp add:diff_ant_def a_minus_minus,
        simp add:zero_lt_inf,

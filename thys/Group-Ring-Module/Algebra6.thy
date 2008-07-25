@@ -586,7 +586,7 @@ lemma (in PolynRg) lower_deg_part:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero
  apply (case_tac "polyn_expr R X (deg_n R S X p - Suc 0) 
                               (SOME f. cf_sol R S X p f) = \<zero>\<^bsub>R\<^esub>")
  apply (simp add:deg_def, cut_tac minf_le_any[of "an (deg_n R S X p)"])
- apply (subst aless_le, simp, simp add:an_def)
+ apply (subst less_le, simp, simp add:an_def)
  apply (rule not_sym, rule contrapos_pp, simp+)
 
  apply (simp add:deg_def, simp add:aless_natless) 

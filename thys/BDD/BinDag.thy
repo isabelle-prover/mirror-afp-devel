@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: BinDag.thy,v 1.5 2008-06-12 06:57:15 lsf37 Exp $
+    ID:          $Id: BinDag.thy,v 1.6 2008-07-25 10:03:56 fhaftmann Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -48,20 +48,17 @@ lemma [simp]: "rt \<noteq> Node lt a rt"
   by (induct rt) auto
 
 
-consts set_of:: "dag \<Rightarrow> ref set"
-primrec
-set_of_Tip: "set_of Tip = {}"
-set_of_Node: "set_of (Node lt a rt) = {a} \<union> set_of lt \<union> set_of rt"
+primrec set_of:: "dag \<Rightarrow> ref set" where
+  set_of_Tip: "set_of Tip = {}"
+  | set_of_Node: "set_of (Node lt a rt) = {a} \<union> set_of lt \<union> set_of rt"
 
-consts DAG:: "dag \<Rightarrow> bool"
-primrec
-"DAG Tip = True"
-"DAG (Node l a r) = (a \<notin> set_of l \<and> a \<notin> set_of r \<and> DAG l \<and> DAG r)"
+primrec DAG:: "dag \<Rightarrow> bool" where
+  "DAG Tip = True"
+  | "DAG (Node l a r) = (a \<notin> set_of l \<and> a \<notin> set_of r \<and> DAG l \<and> DAG r)"
 
-consts subdag:: "dag \<Rightarrow> dag \<Rightarrow> bool"
-primrec
-"subdag Tip t = False"
-"subdag (Node l a r) t = (t=l \<or> t=r \<or> subdag l t \<or> subdag r t)"
+primrec subdag:: "dag \<Rightarrow> dag \<Rightarrow> bool" where
+  "subdag Tip t = False"
+  | "subdag (Node l a r) t = (t=l \<or> t=r \<or> subdag l t \<or> subdag r t)"
 
 lemma subdag_size: "subdag t s \<Longrightarrow> size s < size t"
   by  (induct t) auto
@@ -79,7 +76,7 @@ lemma subdag_NodeD:
 lemma subdag_not_sym: "\<And>t. \<lbrakk>subdag s t; subdag t s\<rbrakk> \<Longrightarrow> P"
   by (induct s) (auto dest: subdag_NodeD)
 
-instantiation dag:: order
+instantiation dag :: order
 begin
 
 definition
@@ -132,8 +129,8 @@ lemma dag_less_le:
   shows "(x < y) = (x \<le> y \<and> x \<noteq> y)"
   by (auto simp add: less_dag_def le_dag_def dest: subdag_neq)
  
-instance by default
-  (assumption | rule le_dag_refl le_dag_trans le_dag_antisym dag_less_le)+
+instance proof
+qed (auto simp add: dag_less_le le_dag_refl intro: le_dag_trans dest: le_dag_antisym)
 
 end
 
