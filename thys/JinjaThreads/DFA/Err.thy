@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Err.thy
-    ID:         $Id: Err.thy,v 1.5 2008-06-25 18:29:57 makarius Exp $
+    ID:         $Id: Err.thy,v 1.6 2008-07-25 08:22:53 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -8,7 +8,9 @@ The error type
 
 header {* \isaheader{The Error Type} *}
 
-theory Err imports Semilat begin
+theory Err
+imports Semilat
+begin
 
 datatype 'a err = Err | OK 'a
 
@@ -139,7 +141,7 @@ lemma OK_less_conv [rule_format, iff]:
 lemma not_Err_less [rule_format, iff]: "\<not>(Err \<sqsubset>\<^bsub>le r\<^esub> x)"
 (*<*) by (simp add: lesssub_def lesub_def le_def split: err.split) (*>*)
 
-lemma semilat_errI [intro]: includes semilat
+lemma semilat_errI [intro]: includes Semilat
 shows "semilat(err A, le r, lift2(\<lambda>x y. OK(f x y)))"
 (*<*)
 apply(insert semilat)
@@ -150,16 +152,19 @@ done
 (*>*)
 
 lemma err_semilat_eslI_aux:
-includes semilat shows "err_semilat(esl(A,r,f))"
+includes Semilat shows "err_semilat(esl(A,r,f))"
 (*<*)
 apply (unfold sl_def esl_def)
-apply (simp add: semilat_errI[OF semilat])
+apply (simp add: semilat_errI [OF Semilat_axioms])
 done
 (*>*)
 
 lemma err_semilat_eslI [intro, simp]:
- "\<And>L. semilat L \<Longrightarrow> err_semilat(esl L)"
-(*<*) by(simp add: err_semilat_eslI_aux split_tupled_all) (*>*)
+  "semilat L \<Longrightarrow> err_semilat (esl L)"
+(*<*) apply (cases L) apply simp
+apply (drule Semilat.intro)
+apply (simp add: err_semilat_eslI_aux split_tupled_all)
+done (*>*)
 
 lemma acc_err [simp, intro!]:  "acc r \<Longrightarrow> acc(le r)"
 (*<*)
@@ -235,13 +240,13 @@ section {* semilat (err A) (le r) f *}
 
 lemma semilat_le_err_Err_plus [simp]:
   "\<lbrakk> x\<in> err A; semilat(err A, le r, f) \<rbrakk> \<Longrightarrow> Err \<squnion>\<^sub>f x = Err"
-(*<*) by (blast intro: semilat.le_iff_plus_unchanged [THEN iffD1] 
-                   semilat.le_iff_plus_unchanged2 [THEN iffD1]) (*>*)
+(*<*) by (blast intro: Semilat.le_iff_plus_unchanged [THEN iffD1, OF Semilat.intro] 
+                   Semilat.le_iff_plus_unchanged2 [THEN iffD1, OF Semilat.intro]) (*>*)
 
 lemma semilat_le_err_plus_Err [simp]:
   "\<lbrakk> x\<in> err A; semilat(err A, le r, f) \<rbrakk> \<Longrightarrow> x \<squnion>\<^sub>f Err = Err"
-(*<*) by (blast intro: semilat.le_iff_plus_unchanged [THEN iffD1]
-                   semilat.le_iff_plus_unchanged2 [THEN iffD1]) (*>*)
+(*<*) by (blast intro: Semilat.le_iff_plus_unchanged [THEN iffD1, OF Semilat.intro]
+                   Semilat.le_iff_plus_unchanged2 [THEN iffD1, OF Semilat.intro]) (*>*)
 
 lemma semilat_le_err_OK1:
   "\<lbrakk> x\<in>A; y\<in>A; semilat(err A, le r, f); OK x \<squnion>\<^sub>f OK y = OK z \<rbrakk> 
@@ -249,7 +254,7 @@ lemma semilat_le_err_OK1:
 (*<*)
 apply (rule OK_le_err_OK [THEN iffD1])
 apply (erule subst)
-apply (simp add:semilat.ub1)
+apply (simp add: Semilat.ub1 [OF Semilat.intro])
 done
 (*>*)
 
@@ -259,7 +264,7 @@ lemma semilat_le_err_OK2:
 (*<*)
 apply (rule OK_le_err_OK [THEN iffD1])
 apply (erule subst)
-apply (simp add:semilat.ub2)
+apply (simp add: Semilat.ub2 [OF Semilat.intro])
 done
 (*>*)
 
@@ -279,13 +284,13 @@ proof -
   have plus_le_conv3: "\<And>A x y z f r. 
     \<lbrakk> semilat (A,r,f); x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z; x\<in>A; y\<in>A; z\<in>A \<rbrakk> 
     \<Longrightarrow> x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z"
-(*<*) by (rule semilat.plus_le_conv [THEN iffD1]) (*>*)
+(*<*) by (rule Semilat.plus_le_conv [OF Semilat.intro, THEN iffD1]) (*>*)
   from assms show ?thesis
   apply (rule_tac iffI)
    apply clarify
    apply (drule OK_le_err_OK [THEN iffD2])
    apply (drule OK_le_err_OK [THEN iffD2])
-   apply (drule semilat.lub[of _ _ _ "OK x" _ "OK y"])
+   apply (drule Semilat.lub[OF Semilat.intro, of _ _ _ "OK x" _ "OK y"])
         apply assumption
        apply assumption
       apply simp
@@ -297,10 +302,10 @@ proof -
   apply (rename_tac z)
   apply (subgoal_tac "OK z\<in> err A")
   apply (drule eq_order_le)
-    apply (erule semilat.orderI)
+    apply (erule Semilat.orderI [OF Semilat.intro])
    apply (blast dest: plus_le_conv3) 
   apply (erule subst)
-  apply (blast intro: semilat.closedI closedD)
+  apply (blast intro: Semilat.closedI [OF Semilat.intro] closedD)
   done 
 qed
 (*>*)

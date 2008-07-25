@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.4 2008-06-12 06:57:21 lsf37 Exp $
+    ID:         $Id: Kildall.thy,v 1.5 2008-07-25 08:22:53 fhaftmann Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
@@ -8,7 +8,9 @@ Kildall's algorithm
 
 header {* \isaheader{Kildall's Algorithm}\label{sec:Kildall} *}
 
-theory Kildall imports SemilatAlg begin
+theory Kildall
+imports SemilatAlg
+begin
 
 
 consts
@@ -43,10 +45,10 @@ primrec
 "merges f (p'#ps) \<tau>s = (let (p,\<tau>) = p' in merges f ps (\<tau>s[p := \<tau> \<squnion>\<^bsub>f\<^esub> \<tau>s!p]))"
 
 
-lemmas [simp] = Let_def semilat.le_iff_plus_unchanged [symmetric]
+lemmas [simp] = Let_def Semilat.le_iff_plus_unchanged [OF Semilat.intro, symmetric]
 
 
-lemma (in semilat) nth_merges:
+lemma (in Semilat) nth_merges:
  "\<And>ss. \<lbrakk>p < length ss; ss \<in> list n A; \<forall>(p,t)\<in>set ps. p<n \<and> t\<in>A \<rbrakk> \<Longrightarrow>
   (merges f ps ss)!p = map snd [(p',t') \<leftarrow> ps. p'=p] \<Squnion>\<^bsub>f\<^esub> ss!p"
   (is "\<And>ss. \<lbrakk>_; _; ?steptype ps\<rbrakk> \<Longrightarrow> ?P ss ps")
@@ -82,7 +84,7 @@ lemma length_merges [simp]:
   "\<And>ss. size(merges f ps ss) = size ss"
 (*<*) by (induct ps, auto) (*>*)
 
-lemma (in semilat) merges_preserves_type_lemma:
+lemma (in Semilat) merges_preserves_type_lemma:
 shows "\<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>(p,x) \<in> set ps. p<n \<and> x\<in>A)
          \<longrightarrow> merges f ps xs \<in> list n A"
 (*<*)
@@ -94,12 +96,12 @@ apply clarsimp
 done
 (*>*)
 
-lemma (in semilat) merges_preserves_type [simp]:
+lemma (in Semilat) merges_preserves_type [simp]:
  "\<lbrakk> xs \<in> list n A; \<forall>(p,x) \<in> set ps. p<n \<and> x\<in>A \<rbrakk>
   \<Longrightarrow> merges f ps xs \<in> list n A"
 by (simp add: merges_preserves_type_lemma)
 
-lemma (in semilat) merges_incr_lemma:
+lemma (in Semilat) merges_incr_lemma:
  "\<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A) \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
 (*<*)
 apply (induct ps)
@@ -115,13 +117,13 @@ apply (blast intro!: listE_set intro: closedD listE_length [THEN nth_in])
 done
 (*>*)
 
-lemma (in semilat) merges_incr:
+lemma (in Semilat) merges_incr:
  "\<lbrakk> xs \<in> list n A; \<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A \<rbrakk> 
   \<Longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
   by (simp add: merges_incr_lemma)
 
 
-lemma (in semilat) merges_same_conv [rule_format]:
+lemma (in Semilat) merges_same_conv [rule_format]:
  "(\<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x\<in>A) \<longrightarrow> 
      (merges f ps xs = xs) = (\<forall>(p,x)\<in>set ps. x \<sqsubseteq>\<^bsub>r\<^esub> xs!p))"
 (*<*)
@@ -154,7 +156,7 @@ lemma (in semilat) merges_same_conv [rule_format]:
 (*>*)
 
 
-lemma (in semilat) list_update_le_listI [rule_format]:
+lemma (in Semilat) list_update_le_listI [rule_format]:
   "set xs \<subseteq> A \<longrightarrow> set ys \<subseteq> A \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<longrightarrow> p < size xs \<longrightarrow>  
    x \<sqsubseteq>\<^bsub>r\<^esub> ys!p \<longrightarrow> x\<in>A \<longrightarrow> xs[p := x \<squnion>\<^bsub>f\<^esub> xs!p] [\<sqsubseteq>\<^bsub>r\<^esub>] ys"
 (*<*)
@@ -164,7 +166,7 @@ lemma (in semilat) list_update_le_listI [rule_format]:
   done
 (*>*)
 
-lemma (in semilat) merges_pres_le_ub:
+lemma (in Semilat) merges_pres_le_ub:
   assumes "set ts \<subseteq> A"  "set ss \<subseteq> A"
     "\<forall>(p,t)\<in>set ps. t \<sqsubseteq>\<^bsub>r\<^esub> ts!p \<and> t \<in> A \<and> p < size ts"  "ss [\<sqsubseteq>\<^bsub>r\<^esub>] ts"
   shows "merges f ps ss [\<sqsubseteq>\<^bsub>r\<^esub>] ts"
@@ -213,7 +215,7 @@ lemma decomp_propa:
 
 (** iter **)
 
-lemma (in semilat) stable_pres_lemma:
+lemma (in Semilat) stable_pres_lemma:
 shows "\<lbrakk>pres_type step n A; bounded step n; 
      ss \<in> list n A; p \<in> w; \<forall>q\<in>w. q < n; 
      \<forall>q. q < n \<longrightarrow> q \<notin> w \<longrightarrow> stable r step ss q; q < n; 
@@ -262,6 +264,7 @@ apply assumption
  apply (cases "q \<in> w")
   apply simp
   apply (rule ub1')
+     apply (rule Semilat.intro)
      apply (rule semilat)
     apply clarify
     apply (rule pres_typeD)
@@ -293,7 +296,7 @@ apply assumption
 (*>*)
 
 
-lemma (in semilat) merges_bounded_lemma:
+lemma (in Semilat) merges_bounded_lemma:
  "\<lbrakk> mono r step n A; bounded step n; 
     \<forall>(p',s') \<in> set (step p (ss!p)). s' \<in> A; ss \<in> list n A; ts \<in> list n A; p < n; 
     ss [\<sqsubseteq>\<^sub>r] ts; \<forall>p. p < n \<longrightarrow> stable r step ts p \<rbrakk> 
@@ -324,7 +327,7 @@ lemma (in semilat) merges_bounded_lemma:
   done
 (*>*)
 
-lemma termination_lemma: includes semilat
+lemma termination_lemma: includes Semilat
 shows "\<lbrakk> ss \<in> list n A; \<forall>(q,t)\<in>set qs. q<n \<and> t\<in>A; p\<in>w \<rbrakk> \<Longrightarrow> 
       ss [\<sqsubset>\<^sub>r] merges f qs ss \<or> 
   merges f qs ss = ss \<and> {q. \<exists>t. (q,t)\<in>set qs \<and> t \<squnion>\<^bsub>f\<^esub> ss!q \<noteq> ss!q} \<union> (w-{p}) \<subset> w"
@@ -347,7 +350,7 @@ apply(insert semilat)
   done 
 (*>*)
 
-lemma iter_properties[rule_format]: includes semilat
+lemma iter_properties[rule_format]: includes Semilat
 shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
      bounded step n; \<forall>p\<in>w0. p < n; ss0 \<in> list n A;
      \<forall>p<n. p \<notin> w0 \<longrightarrow> stable r step ss0 p \<rbrakk> \<Longrightarrow>
@@ -450,7 +453,7 @@ done
 (*>*)
 
 
-lemma kildall_properties: includes semilat
+lemma kildall_properties: includes Semilat
 shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
      bounded step n; ss0 \<in> list n A \<rbrakk> \<Longrightarrow>
   kildall r f step ss0 \<in> list n A \<and>
@@ -464,15 +467,16 @@ apply(case_tac "iter f step ss0 (unstables r step ss0)")
 apply(simp)
 apply (rule iter_properties)
 apply (simp_all add: unstables_def stable_def)
+apply (rule Semilat.intro)
 apply (rule semilat)
 done
 
 
-lemma is_bcv_kildall: includes semilat
+lemma is_bcv_kildall: includes Semilat
 shows "\<lbrakk> acc r; top r T; pres_type step n A; bounded step n; mono r step n A \<rbrakk>
   \<Longrightarrow> is_bcv r T step n A (kildall r f step)"
 apply(unfold is_bcv_def wt_step_def)
-apply(insert semilat kildall_properties[of A])
+apply(insert Semilat_axioms semilat kildall_properties[of A])
 apply(simp add:stables_def)
 apply clarify
 apply(subgoal_tac "kildall r f step \<tau>s\<^isub>0 \<in> list n A")

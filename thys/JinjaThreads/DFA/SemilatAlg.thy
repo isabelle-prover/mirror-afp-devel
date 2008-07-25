@@ -1,12 +1,14 @@
 (*  Title:      HOL/MicroJava/BV/SemilatAlg.thy
-    ID:         $Id: SemilatAlg.thy,v 1.3 2008-06-12 06:57:22 lsf37 Exp $
+    ID:         $Id: SemilatAlg.thy,v 1.4 2008-07-25 08:22:55 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{More on Semilattices} *}
 
-theory SemilatAlg imports Typing_Framework begin
+theory SemilatAlg
+imports Typing_Framework
+begin
 
 consts 
   lesubstep_type :: "(nat \<times> 's) set \<Rightarrow> 's ord \<Rightarrow> (nat \<times> 's) set \<Rightarrow> bool"
@@ -85,8 +87,7 @@ lemma list_update_le_listI [rule_format]:
   done
 (*>*)
 
-
-lemma plusplus_closed: includes semilat shows
+lemma plusplus_closed: includes Semilat shows
   "\<And>y. \<lbrakk> set x \<subseteq> A; y \<in> A\<rbrakk> \<Longrightarrow> x \<Squnion>\<^bsub>f\<^esub> y \<in> A"
 (*<*)
 proof (induct x)
@@ -101,7 +102,7 @@ proof (induct x)
 qed
 (*>*)
 
-lemma (in semilat) pp_ub2:
+lemma (in Semilat) pp_ub2:
  "\<And>y. \<lbrakk> set x \<subseteq> A; y \<in> A\<rbrakk> \<Longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> x \<Squnion>\<^bsub>f\<^esub> y"
 (*<*)
 proof (induct x)
@@ -121,7 +122,7 @@ qed
 (*>*)
 
 
-lemma (in semilat) pp_ub1:
+lemma (in Semilat) pp_ub1:
 shows "\<And>y. \<lbrakk>set ls \<subseteq> A; y \<in> A; x \<in> set ls\<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^bsub>r\<^esub> ls \<Squnion>\<^bsub>f\<^esub> y"
 (*<*)
 proof (induct ls)
@@ -158,7 +159,7 @@ qed
 (*>*)
 
 
-lemma (in semilat) pp_lub:
+lemma (in Semilat) pp_lub:
   assumes z: "z \<in> A"
   shows 
   "\<And>y. y \<in> A \<Longrightarrow> set xs \<subseteq> A \<Longrightarrow> \<forall>x \<in> set xs. x \<sqsubseteq>\<^bsub>r\<^esub> z \<Longrightarrow> y \<sqsubseteq>\<^bsub>r\<^esub> z \<Longrightarrow> xs \<Squnion>\<^bsub>f\<^esub> y \<sqsubseteq>\<^bsub>r\<^esub> z"
@@ -183,7 +184,7 @@ qed
 (*>*)
 
 
-lemma ub1': includes semilat
+lemma ub1': includes Semilat
 shows "\<lbrakk>\<forall>(p,s) \<in> set S. s \<in> A; y \<in> A; (a,b) \<in> set S\<rbrakk> 
   \<Longrightarrow> b \<sqsubseteq>\<^bsub>r\<^esub> map snd [(p', t') \<leftarrow> S. p' = a] \<Squnion>\<^bsub>f\<^esub> y" 
 (*<*)

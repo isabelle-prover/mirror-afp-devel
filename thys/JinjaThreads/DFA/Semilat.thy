@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Semilat.thy
-    ID:         $Id: Semilat.thy,v 1.5 2008-07-25 07:12:11 fhaftmann Exp $
+    ID:         $Id: Semilat.thy,v 1.6 2008-07-25 08:22:55 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -83,12 +83,11 @@ constdefs
   some_lub :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   "some_lub r x y \<equiv> SOME z. is_lub r x y z"
 
-locale (open) semilat =
+locale Semilat =
   fixes A :: "'a set"
   fixes r :: "'a ord"
   fixes f :: "'a binop"
-  assumes semilat: "semilat(A,r,f)"
-
+  assumes semilat: "semilat (A, r, f)"
 
 lemma order_refl [simp, intro]: "order r \<Longrightarrow> x \<sqsubseteq>\<^sub>r x"
   (*<*) by (unfold order_def) (simp (no_asm_simp)) (*>*)
@@ -118,10 +117,10 @@ lemma semilat_Def:
                  (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z)"
   (*<*) by (unfold semilat_def) clarsimp (*>*)
 
-lemma (in semilat) orderI [simp, intro]: "order r"
+lemma (in Semilat) orderI [simp, intro]: "order r"
   (*<*) using semilat by (simp add: semilat_Def) (*>*)
 
-lemma (in semilat) closedI [simp, intro]: "closed A f"
+lemma (in Semilat) closedI [simp, intro]: "closed A f"
   (*<*) using semilat by (simp add: semilat_Def) (*>*)
 
 lemma closedD: "\<lbrakk> closed A f; x\<in>A; y\<in>A \<rbrakk> \<Longrightarrow> x \<squnion>\<^sub>f y \<in> A"
@@ -130,32 +129,32 @@ lemma closedD: "\<lbrakk> closed A f; x\<in>A; y\<in>A \<rbrakk> \<Longrightarro
 lemma closed_UNIV [simp]: "closed UNIV f"
   (*<*) by (simp add: closed_def) (*>*)
 
-lemma (in semilat) closed_f [simp, intro]: "\<lbrakk>x \<in> A; y \<in> A\<rbrakk>  \<Longrightarrow> x \<squnion>\<^sub>f y \<in> A"
+lemma (in Semilat) closed_f [simp, intro]: "\<lbrakk>x \<in> A; y \<in> A\<rbrakk>  \<Longrightarrow> x \<squnion>\<^sub>f y \<in> A"
   (*<*) by (simp add: closedD [OF closedI]) (*>*)
 
-lemma (in semilat) refl_r [intro, simp]: "x \<sqsubseteq>\<^sub>r x" by simp
+lemma (in Semilat) refl_r [intro, simp]: "x \<sqsubseteq>\<^sub>r x" by simp
 
-lemma (in semilat) antisym_r [intro?]: "\<lbrakk> x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r x \<rbrakk> \<Longrightarrow> x = y"
+lemma (in Semilat) antisym_r [intro?]: "\<lbrakk> x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r x \<rbrakk> \<Longrightarrow> x = y"
   (*<*) by (rule order_antisym) auto (*>*)
   
-lemma (in semilat) trans_r [trans, intro?]: "\<lbrakk>x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r z\<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r z"
+lemma (in Semilat) trans_r [trans, intro?]: "\<lbrakk>x \<sqsubseteq>\<^sub>r y; y \<sqsubseteq>\<^sub>r z\<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r z"
   (*<*) by (auto intro: order_trans) (*>*)
   
-lemma (in semilat) ub1 [simp, intro?]: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f y"
+lemma (in Semilat) ub1 [simp, intro?]: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> x \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f y"
   (*<*) by (insert semilat) (unfold semilat_Def, simp) (*>*)
 
-lemma (in semilat) ub2 [simp, intro?]: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> y \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f y"
+lemma (in Semilat) ub2 [simp, intro?]: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> y \<sqsubseteq>\<^sub>r x \<squnion>\<^sub>f y"
   (*<*) by (insert semilat) (unfold semilat_Def, simp) (*>*)
 
-lemma (in semilat) lub [simp, intro?]:
+lemma (in Semilat) lub [simp, intro?]:
   "\<lbrakk> x \<sqsubseteq>\<^sub>r z; y \<sqsubseteq>\<^sub>r z; x \<in> A; y \<in> A; z \<in> A \<rbrakk> \<Longrightarrow> x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z";
   (*<*) by (insert semilat) (unfold semilat_Def, simp) (*>*)
 
-lemma (in semilat) plus_le_conv [simp]:
+lemma (in Semilat) plus_le_conv [simp]:
   "\<lbrakk> x \<in> A; y \<in> A; z \<in> A \<rbrakk> \<Longrightarrow> (x \<squnion>\<^sub>f y \<sqsubseteq>\<^sub>r z) = (x \<sqsubseteq>\<^sub>r z \<and> y \<sqsubseteq>\<^sub>r z)"
   (*<*) by (blast intro: ub1 ub2 lub order_trans) (*>*)
 
-lemma (in semilat) le_iff_plus_unchanged: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> (x \<sqsubseteq>\<^sub>r y) = (x \<squnion>\<^sub>f y = y)"
+lemma (in Semilat) le_iff_plus_unchanged: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> (x \<sqsubseteq>\<^sub>r y) = (x \<squnion>\<^sub>f y = y)"
 (*<*)
 apply (rule iffI)
  apply (blast intro: antisym_r refl_r lub ub2)
@@ -164,7 +163,7 @@ apply simp
 done
 (*>*)
 
-lemma (in semilat) le_iff_plus_unchanged2: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> (x \<sqsubseteq>\<^sub>r y) = (y \<squnion>\<^sub>f x = y)"
+lemma (in Semilat) le_iff_plus_unchanged2: "\<lbrakk> x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> (x \<sqsubseteq>\<^sub>r y) = (y \<squnion>\<^sub>f x = y)"
 (*<*)
 apply (rule iffI)
  apply (blast intro: order_antisym lub order_refl ub1)
@@ -174,7 +173,7 @@ done
 (*>*)
 
 
-lemma (in semilat) plus_assoc [simp]:
+lemma (in Semilat) plus_assoc [simp]:
   assumes a: "a \<in> A" and b: "b \<in> A" and c: "c \<in> A"
   shows "a \<squnion>\<^sub>f (b \<squnion>\<^sub>f c) = a \<squnion>\<^sub>f b \<squnion>\<^sub>f c"
 (*<*)
@@ -214,7 +213,7 @@ proof -
 qed
 (*>*)
 
-lemma (in semilat) plus_com_lemma:
+lemma (in Semilat) plus_com_lemma:
   "\<lbrakk>a \<in> A; b \<in> A\<rbrakk> \<Longrightarrow> a \<squnion>\<^sub>f b \<sqsubseteq>\<^sub>r b \<squnion>\<^sub>f a"
 (*<*)
 proof -
@@ -227,7 +226,7 @@ proof -
 qed
 (*>*)
 
-lemma (in semilat) plus_commutative:
+lemma (in Semilat) plus_commutative:
   "\<lbrakk>a \<in> A; b \<in> A\<rbrakk> \<Longrightarrow> a \<squnion>\<^sub>f b = b \<squnion>\<^sub>f a"
   (*<*) by(blast intro: order_antisym plus_com_lemma) (*>*)
 

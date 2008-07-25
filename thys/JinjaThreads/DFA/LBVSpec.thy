@@ -1,12 +1,14 @@
 (*  Title:      HOL/MicroJava/BV/LBVSpec.thy
-    ID:         $Id: LBVSpec.thy,v 1.3 2008-06-12 06:57:21 lsf37 Exp $
+    ID:         $Id: LBVSpec.thy,v 1.4 2008-07-25 08:22:54 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{The Lightweight Bytecode Verifier} *}
 
-theory LBVSpec imports SemilatAlg Opt begin
+theory LBVSpec
+imports SemilatAlg Opt
+begin
 
 types
   's certificate = "'s list"   
@@ -51,7 +53,7 @@ constdefs
   "bottom r B \<equiv> \<forall>x. B \<sqsubseteq>\<^sub>r x"
 
 
-locale (open) lbv = semilat +
+locale lbv = Semilat +
   fixes T :: "'a" ("\<top>") 
   fixes B :: "'a" ("\<bottom>") 
   fixes step :: "'a step_type" 
@@ -118,7 +120,7 @@ lemma (in lbv) plusplussup_top [simp, elim]:
   by (induct xs) auto
 
 
-lemma (in semilat) pp_ub1':
+lemma (in Semilat) pp_ub1':
   assumes S: "snd`set S \<subseteq> A" 
   assumes y: "y \<in> A" and ab: "(a, b) \<in> set S" 
   shows "b \<sqsubseteq>\<^sub>r map snd [(p', t') \<leftarrow> S . p' = a] \<Squnion>\<^bsub>f\<^esub> y"
@@ -329,7 +331,7 @@ lemma (in lbv) merge_pres:
 (*<*)
 proof -
   from s0 have "set (map snd [(p', t') \<leftarrow> ss . p'=pc+1]) \<subseteq> A" by auto
-  with x semilat  have "(map snd [(p', t') \<leftarrow> ss . p'=pc+1] \<Squnion>\<^bsub>f\<^esub> x) \<in> A"
+  with x semilat Semilat_axioms  have "(map snd [(p', t') \<leftarrow> ss . p'=pc+1] \<Squnion>\<^bsub>f\<^esub> x) \<in> A"
     by (auto intro!: plusplus_closed)
   with s0 x show ?thesis by (simp add: merge_def T_A)
 qed

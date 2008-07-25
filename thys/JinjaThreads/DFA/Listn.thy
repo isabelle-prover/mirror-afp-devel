@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Listn.thy
-    ID:         $Id: Listn.thy,v 1.4 2008-06-25 18:29:57 makarius Exp $
+    ID:         $Id: Listn.thy,v 1.5 2008-07-25 08:22:54 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -8,7 +8,9 @@ Lists of a fixed length
 
 header {* \isaheader{Fixed Length Lists} *}
 
-theory Listn imports Err begin
+theory Listn
+imports Err
+begin
 
 constdefs
   list :: "nat \<Rightarrow> 'a set \<Rightarrow> 'a list set"
@@ -354,7 +356,7 @@ done
 (*>*)
 
 
-lemma (in semilat) plus_list_ub1 [rule_format]:
+lemma (in Semilat) plus_list_ub1 [rule_format]:
  "\<lbrakk> set xs \<subseteq> A; set ys \<subseteq> A; size xs = size ys \<rbrakk> 
   \<Longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] xs [\<squnion>\<^bsub>f\<^esub>] ys"
 (*<*)
@@ -363,7 +365,7 @@ apply (simp add: Listn.le_def list_all2_conv_all_nth)
 done
 (*>*)
 
-lemma (in semilat) plus_list_ub2:
+lemma (in Semilat) plus_list_ub2:
  "\<lbrakk>set xs \<subseteq> A; set ys \<subseteq> A; size xs = size ys \<rbrakk> \<Longrightarrow> ys [\<sqsubseteq>\<^bsub>r\<^esub>] xs [\<squnion>\<^bsub>f\<^esub>] ys"
 (*<*)
 apply (unfold unfold_lesub_list)
@@ -371,7 +373,7 @@ apply (simp add: Listn.le_def list_all2_conv_all_nth)
 done
 (*>*)
 
-lemma (in semilat) plus_list_lub [rule_format]:
+lemma (in Semilat) plus_list_lub [rule_format]:
 shows "\<forall>xs ys zs. set xs \<subseteq> A \<longrightarrow> set ys \<subseteq> A \<longrightarrow> set zs \<subseteq> A 
   \<longrightarrow> size xs = n \<and> size ys = n \<longrightarrow> 
   xs [\<sqsubseteq>\<^bsub>r\<^esub>] zs \<and> ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs \<longrightarrow> xs [\<squnion>\<^bsub>f\<^esub>] ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
@@ -381,7 +383,7 @@ apply (simp add: Listn.le_def list_all2_conv_all_nth)
 done
 (*>*)
 
-lemma (in semilat) list_update_incr [rule_format]:
+lemma (in Semilat) list_update_incr [rule_format]:
  "x\<in>A \<Longrightarrow> set xs \<subseteq> A \<longrightarrow> 
   (\<forall>i. i<size xs \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] xs[i := x \<squnion>\<^sub>f xs!i])"
 (*<*)
@@ -460,7 +462,7 @@ done
 
 
 lemma Listn_sl_aux:
-includes semilat shows "semilat (Listn.sl n (A,r,f))"
+includes Semilat shows "semilat (Listn.sl n (A,r,f))"
 (*<*)
 apply (unfold Listn.sl_def)
 apply (simp (no_asm) only: semilat_Def split_conv)
@@ -473,8 +475,10 @@ apply (simp (no_asm_simp) add: plus_list_ub1 plus_list_ub2 plus_list_lub)
 done
 (*>*)
 
-lemma Listn_sl: "\<And>L. semilat L \<Longrightarrow> semilat (Listn.sl n L)"
-(*<*) by(simp add: Listn_sl_aux split_tupled_all) (*>*)
+lemma Listn_sl: "semilat L \<Longrightarrow> semilat (Listn.sl n L)"
+(*<*) apply (cases L) apply simp
+apply (drule Semilat.intro)
+by (simp add: Listn_sl_aux split_tupled_all) (*>*)
 
 lemma coalesce_in_err_list [rule_format]:
   "\<forall>xes. xes \<in> list n (err A) \<longrightarrow> coalesce xes \<in> err(list n A)"
@@ -614,9 +618,9 @@ lemma err_semilat_sup:
 apply (unfold Err.sl_def)
 apply (simp only: split_conv)
 apply (simp (no_asm) only: semilat_Def plussub_def)
-apply (simp (no_asm_simp) only: semilat.closedI closed_lift2_sup)
+apply (simp (no_asm_simp) only: Semilat.closedI [OF Semilat.intro] closed_lift2_sup)
 apply (rule conjI)
- apply (drule semilat.orderI)
+ apply (drule Semilat.orderI [OF Semilat.intro])
  apply simp
 apply (simp (no_asm) only: unfold_lesub_err Err.le_def err_def' sup_def lift2_def)
 apply (simp (no_asm_simp) add: coalesce_eq_OK1_D coalesce_eq_OK2_D split: err.split)

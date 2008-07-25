@@ -1,12 +1,14 @@
 (*  Title:      HOL/MicroJava/BV/LBVComplete.thy
-    ID:         $Id: LBVComplete.thy,v 1.3 2008-06-12 06:57:21 lsf37 Exp $
+    ID:         $Id: LBVComplete.thy,v 1.4 2008-07-25 08:22:53 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Completeness of the LBV} *}
 
-theory LBVComplete imports LBVSpec Typing_Framework begin
+theory LBVComplete
+imports LBVSpec Typing_Framework
+begin
 
 constdefs
   is_target :: "['s step_type, 's list, nat] \<Rightarrow> bool" 
@@ -26,7 +28,7 @@ lemma [code]:
   done
 (*>*)
 
-locale (open) lbvc = lbv + 
+locale lbvc = lbv + 
   fixes \<tau>s :: "'a list" 
   fixes c :: "'a list" 
   defines cert_def: "c \<equiv> make_cert step \<tau>s \<bottom>"
@@ -91,7 +93,7 @@ proof-
     from app less have "?app ss\<^isub>2" by (blast dest: trans_r lesub_step_typeD)
     moreover {
       from ss\<^isub>1 have map1: "set (?map ss\<^isub>1) \<subseteq> A" by auto
-      with x and semilat have "?sum ss\<^isub>1 \<in> A" by (auto intro!: plusplus_closed)
+      with x and semilat Semilat_axioms have "?sum ss\<^isub>1 \<in> A" by (auto intro!: plusplus_closed)
       with sum have "?s\<^isub>1 \<in> A" by simp
       moreover    
       have mapD: "\<And>x ss. x \<in> set (?map ss) \<Longrightarrow> \<exists>p. (p,x) \<in> set ss \<and> p=pc+1" by auto
@@ -172,7 +174,7 @@ proof -
   have "merge c pc ?step (c!Suc pc) =
     (if \<forall>(pc',s')\<in>set ?step. pc'\<noteq>pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'
     then map snd [(p',t') \<leftarrow> ?step.p'=pc+1] \<Squnion>\<^bsub>f\<^esub> c!Suc pc
-    else \<top>)" by (rule merge_def)
+    else \<top>)" unfolding merge_def by (rule lbv.merge_def [OF lbvc.axioms(1), OF lbvc_axioms])
   moreover {
     fix pc' s' assume s': "(pc',s') \<in> set ?step" and suc_pc: "pc' \<noteq> pc+1"
     with less have "s' \<sqsubseteq>\<^sub>r \<tau>s!pc'" by auto
