@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: BVExec.thy,v 1.2 2005-08-18 11:05:54 nipkow Exp $
+    ID:         $Id: BVExec.thy,v 1.3 2008-07-25 10:03:40 fhaftmann Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -38,8 +38,9 @@ theorem (in start_context) is_bcv_kiljvm:
   apply (unfold kiljvm_def)
   apply (fold r_def f_def step_def_exec)
   apply (rule is_bcv_kildall)
-       apply simp
-       apply (fold sl_def2, erule semilat_JVM)
+       apply simp apply (rule Semilat.intro)
+       apply (fold sl_def2)
+       apply (erule semilat_JVM)
       apply simp
       apply blast
      apply (simp add: JVM_le_unfold)

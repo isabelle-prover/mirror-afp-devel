@@ -11,7 +11,7 @@ imports
   "BV/LBVJVM"
   "BV/BVNoTypeError"
   "BV/BVExample"
-  "Compiler/TypeComp"
+  (* FIXME "Compiler/TypeComp" *)
 begin
 
 end
