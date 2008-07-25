@@ -2,7 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-theory JVMDeadlocked imports BVProgressThreaded begin
+theory JVMDeadlocked
+imports BVProgressThreaded
+begin
 
 lemma must_lock_implies_MEnter:
   assumes ml: "P \<turnstile> \<langle>(None, h, f # Frs)\<rangle>\<^isub>d \<wrong>" 

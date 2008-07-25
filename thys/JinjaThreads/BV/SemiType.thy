@@ -416,6 +416,7 @@ lemma widen1_rtrancl_into_widen:
 apply(induct rule: rtrancl_induct)
 by(auto dest!: widen1_into_widen elim: widen_trans)
 
+declare exec_lub_refl [simp]
 
 lemma closed_err_types:
   assumes wfP: "wf_prog wf_mb P"
@@ -493,7 +494,7 @@ proof -
     qed }
   with is_class_Object[OF wfP] show ?thesis
     apply (unfold closed_def plussub_def lift2_def sup_def)
-    apply(auto split: err.split ty.splits)
+    apply (auto split: err.split ty.splits)
     done
 qed
 
