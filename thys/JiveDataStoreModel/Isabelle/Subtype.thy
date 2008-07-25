@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Subtype.thy,v 1.9 2008-06-12 06:57:24 lsf37 Exp $
+    ID:          $Id: Subtype.thy,v 1.10 2008-07-25 17:11:23 fhaftmann Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -189,7 +189,7 @@ definition
   le_Javatype_def:   "A \<le> B \<equiv> A \<preceq> B"
 
 definition
-  less_Javatype_def: "A < B \<equiv> A \<le> B \<and> A\<noteq>(B::Javatype)"
+  less_Javatype_def: "A < B \<equiv> A \<le> B \<and> \<not> B \<le> (A::Javatype)"
   
 instance proof
   fix x y z:: "Javatype"
@@ -208,7 +208,7 @@ instance proof
       apply assumption +
       done
   next
-    show "(x < y) = (x \<le> y \<and> x \<noteq> y)"
+    show "(x < y) = (x \<le> y \<and> \<not> y \<le> x)"
       by (simp add: less_Javatype_def)
   }
 qed

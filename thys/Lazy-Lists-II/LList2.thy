@@ -1,5 +1,5 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.11 2008-06-12 06:57:24 lsf37 Exp $
+    ID:         $Id: LList2.thy,v 1.12 2008-07-25 17:11:23 fhaftmann Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -982,14 +982,14 @@ proof-
   qed
 qed
 
-lemma llist_less_le:
+lemma llist_less_le_not_le:
   fixes s :: "'a llist"
-  shows "(s < t) = (s \<le> t \<and> s \<noteq> t)"
-  by (unfold llist_less_def) auto
+  shows "(s < t) = (s \<le> t \<and> \<not> t \<le> s)"
+  by (auto simp add: llist_less_def dest: llist_le_anti_sym)
 
 instance by default
   (assumption | rule llist_le_refl
-    llist_le_trans llist_le_anti_sym llist_less_le)+
+    llist_le_trans llist_le_anti_sym llist_less_le_not_le)+
 
 end
 
@@ -1016,21 +1016,21 @@ qed
 
 lemma llist_less_finT [rule_format, iff]:
  "r<s \<Longrightarrow> s \<in> A\<^sup>\<star> \<Longrightarrow> r \<in> A\<^sup>\<star>"
-  by (auto simp: llist_less_le)
+  by (auto simp: less_le)
 
 
 subsection{*More simplification rules*}
 
 lemma LNil_less_LCons [iff]: "LNil < a ## t"
-  by (simp add: llist_less_le)
+  by (simp add: less_le)
 
 lemma not_less_LNil [iff]:
   "\<not> r < LNil"
-  by (auto simp: llist_less_le)
+  by (auto simp: less_le)
 
 lemma less_LCons [iff]:
   " (a ## r < b ## t) = (a = b \<and> r < t)"
-  by (auto simp: llist_less_le)
+  by (auto simp: less_le)
 
 lemma llength_mono [rule_format, iff]:
   assumes"r \<in> A\<^sup>\<star>"

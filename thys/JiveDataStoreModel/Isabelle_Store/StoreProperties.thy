@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: StoreProperties.thy,v 1.12 2008-06-12 06:57:24 lsf37 Exp $
+    ID:          $Id: StoreProperties.thy,v 1.13 2008-07-25 17:11:23 fhaftmann Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -869,7 +869,7 @@ definition
   le_Store_def: "s \<le> t \<longleftrightarrow> s \<lless> t"
 
 definition
-  less_Store_def: "(s::Store) < t \<longleftrightarrow> s \<le> t \<and> s \<noteq> t"
+  less_Store_def: "(s::Store) < t \<longleftrightarrow> s \<le> t \<and> \<not> t \<le> s"
 
 text {* We prove Lemma 3.5 of \cite[p. 56]{Poetzsch-Heffter97specification} for this relation.
 *}
@@ -890,7 +890,7 @@ instance  proof
     then show "s = t"
       by (unfold le_Store_def) (rule lessalive_antisym) 
   next
-    show "(s < t) = (s \<le> t \<and> s \<noteq> t)"
+    show "(s < t) = (s \<le> t \<and> \<not> t \<le> s)"
       by (simp add: less_Store_def)
   }
 qed

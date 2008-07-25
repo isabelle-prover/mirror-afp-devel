@@ -238,7 +238,7 @@ lemma azmult_less:"\<lbrakk>a \<noteq> \<infinity>; na a < m; 0 < x\<rbrakk>
 apply (cut_tac mem_ant[of "a"])
  apply (erule disjE)
  apply (case_tac "x = \<infinity>") apply simp
- apply (subst aless_le[of "-\<infinity>" "\<infinity>"]) apply simp
+ apply (subst less_le[of "-\<infinity>" "\<infinity>"]) apply simp
  apply (frule aless_imp_le[of "0" "x"], frule apos_neq_minf[of "x"])
  apply (cut_tac mem_ant[of "x"], simp, erule exE, simp)
  apply (simp add:asprod_amult a_z_z)
@@ -1235,7 +1235,7 @@ done
 
 lemma (in Corps) val_poss_n_val_poss:"\<lbrakk>valuation K v; x \<in> carrier K\<rbrakk>  \<Longrightarrow> 
            (0 < v x) = (0 < n_val K v x)"
-apply (simp add:aless_le,
+apply (simp add:less_le,
        frule val_pos_n_val_pos[of v x], assumption+,
        rule iffI, erule conjE, simp,
        simp add:value_n0_n_val_n0[of v x])
@@ -1447,7 +1447,7 @@ apply (simp add:r_apow_def)
 apply (case_tac "n = 0", simp add:an_0)
 apply (simp add: aless_nat_less[THEN sym],
        cut_tac an_neq_inf[of n],
-       simp add: aless_le[of 0 "an n"] na_an) 
+       simp add: less_le[of 0 "an n"] na_an) 
 done
 
 lemma (in Corps) Vr_ring:"valuation K v \<Longrightarrow> Ring (Vr K v)"
@@ -1621,7 +1621,7 @@ apply ((rule ballI)+,
         (simp add:Vr_mem_f_mem)+,
        (frule_tac z = 0 and x = "v x" and y = "v y" in amin_gt, assumption+),
        rule_tac x = 0 and y = "amin (v x) (v y)" and z = "v (x \<plusminus> y)" in
-       aless_le_trans, assumption+) 
+       less_le_trans, assumption+) 
 apply ((rule ballI)+, 
        frule_tac x1 = r in val_pos_mem_Vr[THEN sym, of v], 
        simp add:Vr_mem_f_mem, simp,
@@ -1969,7 +1969,7 @@ apply (simp add:Rxa_def, erule bexE,
        cut_tac field_is_ring, simp add:val_t2p,
        simp add:val_pos_mem_Vr[THEN sym, of v],
        rule contrapos_pp, simp+, 
-       cut_tac aless_le[THEN sym, of "0" "v x"], drule not_sym, simp,
+       cut_tac less_le[THEN sym, of "0" "v x"], drule not_sym, simp,
        frule_tac x = "v r" and y = "v x" in aadd_pos_poss, assumption+,
        simp)
 done
@@ -2025,7 +2025,7 @@ done
 
 lemma (in Corps) LI_poss:"\<lbrakk>valuation K v; ideal (Vr K v) I; 
                  I \<noteq> carrier (Vr K v)\<rbrakk> \<Longrightarrow> 0 < LI K v I"
-apply (subst aless_le)
+apply (subst less_le)
 apply (simp add:LI_pos)
 apply (rule contrapos_pp, simp+)
 
@@ -2234,7 +2234,7 @@ apply (thin_tac "ideal (Vr K v) (vp K v)", thin_tac "Pg K v \<in> carrier K",
 
 apply (rule subsetI, simp add:image_def vp_def, erule conjE, erule bexE, simp,
        frule_tac x = xa in val_poss_mem_Vr[of v], assumption+,
-       cut_tac z = "v xa" in aless_le[of "0"], simp, blast, simp)
+       cut_tac y = "v xa" in less_le[of "0"], simp, blast, simp)
 done
 
 lemma (in Corps) vp_gen_t:"valuation K v  \<Longrightarrow> 
@@ -2285,7 +2285,7 @@ apply (frule val_Pg[of v], erule conjE,
 apply (frule zero_val_gen_whole[THEN sym, of v "Ig K v I"],
        simp add:Ring.ideal_subset,
        simp, rotate_tac -1, drule not_sym,
-       cut_tac aless_le[THEN sym, of "0" "v (Ig K v I)"], simp,
+       cut_tac less_le[THEN sym, of "0" "v (Ig K v I)"], simp,
               thin_tac "0 \<le> v (Ig K v I)",
        frule Ring.ideal_subset[of "Vr K v" I "Ig K v I"], assumption+,
        frule Vr_mem_f_mem[of v "Ig K v I"], assumption+,
@@ -2571,7 +2571,7 @@ apply (simp add:Vr_exp_f_exp[of v "Pg K v"],
        simp add:n_val[THEN sym, of v x],
        frule val_nonzero_z[of v "Pg K v"], assumption+,
          erule exE, simp,
-       frule aposs_na_poss[of "n"], simp add:aless_le,
+       frule aposs_na_poss[of "n"], simp add: less_le,
        simp add:asprod_amult,
 
        frule_tac w = z in amult_pos_mono_r[of _ "ant (int (na n))" 
@@ -2585,9 +2585,14 @@ apply (cut_tac an_nat_pos[of "n"])
 apply( frule n_value_x_1[of  "v" "an n" "x"], assumption+)
 apply (simp add:r_apow_def)
 apply (case_tac "n = 0", simp, simp)
-apply (cut_tac aless_nat_less[THEN sym, of "0" "n"], simp,
-       simp add:aless_le, cut_tac an_neq_inf[of "n"], simp,
-       simp add:na_an, assumption)
+apply (cut_tac aless_nat_less[THEN sym, of "0" "n"])
+apply simp
+unfolding less_le
+apply simp
+apply (cut_tac an_neq_inf [of "n"])
+apply simp
+apply (simp add: na_an)
+apply assumption
 done
 
 lemma (in Corps) n_value_x_2:"\<lbrakk>valuation K v; x \<in> carrier (Vr K v);
@@ -2623,7 +2628,7 @@ apply (simp add:Vr_exp_f_exp,
       simp add:val_exp_ring[THEN sym, of v],
       rotate_tac -5, drule sym, 
       frule Lv_z[of v], erule exE, simp,
-      frule aposs_na_poss[of "n"], simp add:aless_le,
+      frule aposs_na_poss[of "n"], simp add: less_le,
       simp add:asprod_amult, subst n_val[THEN sym, of v x], 
       assumption+,
       simp add:Vr_mem_f_mem, simp,
@@ -2856,8 +2861,8 @@ apply (case_tac "n = \<infinity>", simp,
        frule vp_potent_zero[THEN sym, of v "m"], assumption+, simp,
        thin_tac "vp K v\<^bsup> (Vr K v) m\<^esup> \<noteq> {\<zero>\<^bsub>Vr K v\<^esub>}")
 
-apply (frule aposs_na_poss[of "n"], subst aless_le, simp,
-       frule aposs_na_poss[of "m"], subst aless_le, simp,
+apply (frule aposs_na_poss[of "n"], subst less_le, simp,
+       frule aposs_na_poss[of "m"], subst less_le, simp,
        simp add:r_apow_def,
        frule Vr_potent_eqTr2[of  "v" "na n" "na m"], assumption+,
        thin_tac "vp K v \<^bsup>\<diamondsuit>(Vr K v) (na n)\<^esup> = vp K v \<^bsup>\<diamondsuit>(Vr K v) (na m)\<^esup>",
