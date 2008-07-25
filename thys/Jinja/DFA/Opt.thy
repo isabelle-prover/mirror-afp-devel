@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Opt.thy
-    ID:         $Id: Opt.thy,v 1.5 2008-07-24 15:06:28 fhaftmann Exp $
+    ID:         $Id: Opt.thy,v 1.6 2008-07-25 15:07:16 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
