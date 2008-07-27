@@ -1,0 +1,82 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+%\usepackage[latin1]{inputenc}
+  %for \<onesuperior>, \<onequarter>, \<twosuperior>, \<onehalf>,
+  %\<threesuperior>, \<threequarters>, \<degree>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+%make a bit more space
+\addtolength{\hoffset}{-1,5cm}
+\addtolength{\textwidth}{3cm}
+\addtolength{\voffset}{-1cm}
+\addtolength{\textheight}{2cm}
+
+\begin{document}
+
+\title{SAT Solver verification}
+\author{By Filip Mari\' c}
+\maketitle
+\abstract{
+This document contains formal correctness proofs of modern SAT solvers. 
+Following \cite{KrsticGoel,NieuwenhuisOliverasTinelli}, solvers are described 
+using state-transition systems. Several different SAT solver descriptions are given
+and their partial correctness and termination is proved. These include:
+\begin{enumerate}
+\item a solver based on classical DPLL procedure (based on backtrack-search with unit propagation), 
+\item a very general solver with backjumping and learning (similar to the description given in 
+      \cite{NieuwenhuisOliverasTinelli}), and 
+\item a solver with a specific conflict analysis algorithm (similar to the description given 
+      in \cite{KrsticGoel}). 
+\end{enumerate}
+Within the SAT solver correctness proofs, a large number of lemmas
+about propositional logic and CNF formulae are proved. This theory is
+self-contained and could be used for further exploring of properties of
+CNF based SAT algorithms.  
+}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

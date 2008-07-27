@@ -67,6 +67,13 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2008-07-23:
+<a href="entries/SATSolverVerification.shtml">Formal Verification of Modern SAT Solvers</a>
+<br>Author:
+<a href="http://www.matf.bg.ac.yu/~filip">Filip Maric</a>
+</td></tr>
+
+<tr><td class="entry">
 2008-04-05:
 <a href="entries/Recursion-Theory-I.shtml">Recursion Theory I</a>
 <br>Author:
