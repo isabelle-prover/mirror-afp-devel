@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/TypeComp.thy
-    ID:         $Id: TypeComp.thy,v 1.10 2008-07-25 22:11:31 fhaftmann Exp $
+    ID:         $Id: TypeComp.thy,v 1.11 2008-07-28 08:55:13 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -1227,25 +1227,20 @@ declare TC1.compT_sizes[simp]  TC0.ty_def2[simp]
 context TC2
 begin
 
-abbreviation "T' \<equiv> T\<^isub>r"
-
 lemma compT_method:
   fixes e and A and C and Ts and mxl\<^isub>0
   defines [simp]: "E \<equiv> Class C # Ts"
     and [simp]: "A \<equiv> \<lfloor>{..size Ts}\<rfloor>"
     and [simp]: "A' \<equiv> A \<squnion> \<A> e"
     and [simp]: "mxl\<^isub>0 \<equiv> max_vars e"
-  assumes mxs: "mxs = max_stack e"
-    and mxl: "mxl = 1 + size Ts + mxl\<^isub>0"
+  assumes mxs: "max_stack e = mxs"
+    and mxl: "Suc (length Ts + max_vars e) = mxl"
   assumes assm: "wf_prog p P" "P,E \<turnstile>\<^sub>1 e :: T" "\<D> e A" "\<B> e (size E)"
-    "set E \<subseteq> types P" "P \<turnstile> T \<le> T'"
-  shows "wt_method (compP\<^isub>2 P) C Ts T' mxs mxl\<^isub>0 (compE\<^isub>2 e @ [Return])
+    "set E \<subseteq> types P" "P \<turnstile> T \<le> T\<^isub>r"
+  shows "wt_method (compP\<^isub>2 P) C Ts T\<^isub>r mxs mxl\<^isub>0 (compE\<^isub>2 e @ [Return])
     (compxE\<^isub>2 e 0 0) (ty\<^isub>i' [] E A # compT\<^isub>a E A [] e)"
 (*<*)
-proof -
-  from mxl have mxl_collapse: "Suc (length Ts + max_vars e) = mxl" by simp
-from assm show ?thesis
-apply (simp add: wt_method_def compT\<^isub>a_def after_def mxl_collapse)
+using assms apply (simp add: wt_method_def compT\<^isub>a_def after_def mxl)
 apply (rule conjI)
 apply (simp add: check_types_def OK_ty\<^isub>i'_in_statesI)
 apply (rule conjI)
@@ -1255,24 +1250,22 @@ apply (insert max_stack1 [of e])
 apply (rule OK_ty\<^isub>i'_in_statesI) apply (simp_all add: mxs)[3]
 apply (erule compT_states(1))
 apply assumption
-apply (simp_all add: mxs mxl_collapse)[4]
+apply (simp_all add: mxs mxl)[4]
 apply (rule conjI)
 apply (auto simp add: wt_start_def ty\<^isub>i'_def ty\<^isub>l_def list_all2_conv_all_nth
-  nth_Cons mxl_collapse split: nat.split dest: less_antisym)[1]
-
-apply (frule (1) TC2.compT_wt_instrs [of P _ _ _ _ "[]" "max_stack e" "1 + size Ts + max_vars e" T'])
+  nth_Cons mxl split: nat.split dest: less_antisym)[1]
+apply (frule (1) TC2.compT_wt_instrs [of P _ _ _ _ "[]" "max_stack e" "Suc (length Ts + max_vars e)" T\<^isub>r])
 apply simp_all
 apply (clarsimp simp: after_def)
 apply (rule conjI)
-apply (clarsimp simp:wt_instrs_def after_def mxl_collapse mxs [symmetric])
+apply (clarsimp simp: wt_instrs_def after_def mxl mxs)
 apply clarsimp
 apply (drule (1) less_antisym)
 apply (clarsimp simp: wt_defs xcpt_app_pcs xcpt_eff_pcs ty\<^isub>i'_def)
 apply (cases "size (compE\<^isub>2 e)")
  apply (simp del: compxE\<^isub>2_size_convs nth_append add: neq_Nil_conv)
-apply (simp add: mxl_collapse)
+apply (simp add: mxl)
 done
-qed
 (*>*)
 
 end
