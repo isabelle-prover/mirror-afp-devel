@@ -1,4 +1,4 @@
-(*  ID:         $Id: Arch.thy,v 1.5 2008-06-12 06:57:17 lsf37 Exp $
+(*  ID:         $Id: Arch.thy,v 1.6 2008-07-30 08:54:11 fhaftmann Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -31,7 +31,7 @@ setup {* fn thy =>
       in ((c, T'), (Thm.def_name c, Logic.mk_equals (lhs, rhs))) end;
     fun add_defs defs =
       Sign.add_consts_i (map (fn ((c, T), _) => (c, T, Syntax.NoSyn)) defs)
-      #> PureThy.add_defs_i false (map (fn (_, (name, prop)) => ((name, prop), [])) defs)
+      #> PureThy.add_defs false (map (fn (_, (name, prop)) => ((name, prop), [])) defs)
   in
     thy
     |> add_defs (map (mk_def HOLogic.natT) data)
