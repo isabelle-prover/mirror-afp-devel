@@ -1,11 +1,12 @@
 (*    Title:              SatSolverVerification/BasicDPLL.thy
-      ID:                 $Id: BasicDPLL.thy,v 1.3 2008-08-06 15:27:20 filipmaric Exp $
+      ID:                 $Id: BasicDPLL.thy,v 1.4 2008-08-06 15:42:01 filipmaric Exp $
       Author:             Filip Maric
+      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header{* BasicDPLL *}
 theory BasicDPLL
-imports Main MoreList CNF Trail SatSolverVerification
+imports SatSolverVerification
 begin
 
 text{* This theory formalizes the transition rule system BasicDPLL

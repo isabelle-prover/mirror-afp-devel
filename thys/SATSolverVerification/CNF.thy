@@ -1,11 +1,12 @@
 (*    Title:              SATSolver/CNF.thy
-      ID:                 $Id: CNF.thy,v 1.3 2008-08-06 15:27:20 filipmaric Exp $
+      ID:                 $Id: CNF.thy,v 1.4 2008-08-06 15:42:01 filipmaric Exp $
       Author:             Filip Maric
+      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header {* CNF *}
 theory CNF
-imports Main MoreList
+imports MoreList
 begin
 text{* Theory describing formulae in Conjunctive Normal Form. *}
 

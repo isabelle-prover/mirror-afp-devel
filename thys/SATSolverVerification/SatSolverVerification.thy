@@ -1,11 +1,12 @@
 (*    Title:              SatSolverVerification/SatSolverVerification.thy
-      ID:                 $Id: SatSolverVerification.thy,v 1.3 2008-08-06 15:27:21 filipmaric Exp $
+      ID:                 $Id: SatSolverVerification.thy,v 1.4 2008-08-06 15:42:05 filipmaric Exp $
       Author:             Filip Maric
+      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header{* Verification of DPLL based SAT solvers. *}
 theory SatSolverVerification
-imports Main MoreList CNF Trail
+imports CNF Trail
 begin
 
 text{* This theory contains a number of lemmas used in verification of

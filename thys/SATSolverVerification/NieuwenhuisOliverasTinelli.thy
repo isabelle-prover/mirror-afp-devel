@@ -1,11 +1,12 @@
 (*    Title:              SatSolverVerification/NieuwenhuisOliverasTinelli.thy
-      ID:                 $Id: NieuwenhuisOliverasTinelli.thy,v 1.3 2008-08-06 15:27:21 filipmaric Exp $
+      ID:                 $Id: NieuwenhuisOliverasTinelli.thy,v 1.4 2008-08-06 15:42:05 filipmaric Exp $
       Author:             Filip Maric
+      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header{* Transition system of Nieuwenhuis, Oliveras and Tinelli. *}
 theory NieuwenhuisOliverasTinelli
-imports Main MoreList CNF Trail SatSolverVerification
+imports SatSolverVerification
 begin
 
 text{* This theory formalizes the transition rule system given by

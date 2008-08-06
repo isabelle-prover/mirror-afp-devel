@@ -1,12 +1,13 @@
 (*    Title:              SATSolverVerification/Trail.thy
-      ID:                 $Id: Trail.thy,v 1.3 2008-08-06 15:27:22 filipmaric Exp $
+      ID:                 $Id: Trail.thy,v 1.4 2008-08-06 15:42:06 filipmaric Exp $
       Author:             Filip Maric
+      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header{*  Trail datatype definition and its properties *}
 
 theory Trail
-imports Main MoreList
+imports MoreList
 begin
 
 text{*   Trail is a list in which some elements can be marked. *}
