@@ -1,13 +1,12 @@
 (*    Title:              SATSolverVerification/Trail.thy
-      ID:                 $Id: Trail.thy,v 1.2 2008-07-27 14:23:35 lsf37 Exp $
+      ID:                 $Id: Trail.thy,v 1.3 2008-08-06 15:27:22 filipmaric Exp $
       Author:             Filip Maric
-      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header{*  Trail datatype definition and its properties *}
 
 theory Trail
-imports MoreList
+imports Main MoreList
 begin
 
 text{*   Trail is a list in which some elements can be marked. *}
@@ -18,8 +17,8 @@ element :: "('a*bool) \<Rightarrow> 'a"
 marked  :: "('a*bool) \<Rightarrow> bool"
 
 translations
-"element x" == "fst x"
-"marked  x" == "snd x"
+"(element x)" == "(fst x)"
+"(marked  x)" == "(snd x)"
 
 
 (*--------------------------------------------------------------------------------*)
@@ -36,8 +35,8 @@ lemma eitherMarkedOrNotMarkedElement:
 by (cases a) auto
 
 lemma eitherMarkedOrNotMarked:
-  assumes "e mem (elements M)"
-  shows "(e, True) mem M \<or> (e, False) mem M"
+  assumes "e \<in> set (elements M)"
+  shows "(e, True) \<in> set M \<or> (e, False) \<in> set M"
 using assms
 proof (induct M)
   case (Cons m M')
@@ -51,13 +50,13 @@ proof (induct M)
       case False
       with Cons
       show ?thesis
-	by simp
+	by auto
     qed
 qed simp
 
 lemma elementMemElements [simp]:
-  assumes "x mem M"
-  shows "element x mem (elements M)"
+  assumes "x \<in> set M"
+  shows "element x \<in> set (elements M)"
 using assms
 by (induct M) (auto split: split_if_asm)
 
@@ -86,14 +85,14 @@ using assms
 unfolding isPrefix_def
 by auto
 
-lemma memElementsPrefixImpliesMemElementsTrail:
+lemma prefixElementsAreTrailElements:
   assumes 
-  "isPrefix p M" and "x mem elements p"
+  "isPrefix p M" 
   shows 
-  "x mem (elements M)"
+  "set (elements p) \<subseteq> set (elements M)"
 using assms
 unfolding isPrefix_def
-by (auto simp add: memAppend)
+by auto
 
 lemma uniqElementsTrailImpliesUniqElementsPrefix:
   assumes 
@@ -113,16 +112,16 @@ proof-
 qed
 
 lemma [simp]: 
-  assumes "(e, d) mem M"
-  shows "e mem elements M"
+  assumes "(e, d) \<in> set M"
+  shows "e \<in> set (elements M)"
   using assms
   by (induct M) auto
 
 lemma uniqImpliesExclusiveTrueOrFalse:
   assumes
-  "(e, d) mem M" and "uniq (elements M)"
+  "(e, d) \<in> set M" and "uniq (elements M)"
   shows
-  "\<not> (e, \<not> d) mem M"
+  "\<not> (e, \<not> d) \<in> set M"
 using assms
 proof (induct M)
   case (Cons m M')
@@ -131,7 +130,7 @@ proof (induct M)
     hence "(e, \<not> d) \<noteq> m"
       by auto
     from `(e, d) = m` `uniq (elements (m # M'))`
-    have "\<not> (e, d) mem M'"
+    have "\<not> (e, d) \<in> set M'"
       by (auto simp add: uniqAppendIff)
     with Cons
     have ?case
@@ -143,7 +142,7 @@ proof (induct M)
     hence "(e, d) \<noteq> m"
       by auto
     from `(e, \<not> d) = m` `uniq (elements (m # M'))`
-    have "\<not> (e, \<not> d) mem M'"
+    have "\<not> (e, \<not> d) \<in> set M'"
       by (auto simp add: uniqAppendIff)
     with Cons
     have ?case
@@ -152,11 +151,11 @@ proof (induct M)
   moreover
   {
     assume "(e, d) \<noteq> m" "(e, \<not> d) \<noteq> m"
-    from `(e, d) \<noteq> m` `(e, d) mem m # M'` have 
-      "(e, d) mem M'"
+    from `(e, d) \<noteq> m` `(e, d) \<in> set (m # M')` have 
+      "(e, d) \<in> set M'"
       by simp
     with `uniq (elements (m # M'))` Cons(1)
-    have "\<not> (e, \<not> d) mem M'"
+    have "\<not> (e, \<not> d) \<in> set M'"
       by simp
     with `(e, \<not> d) \<noteq> m`
     have ?case
@@ -181,7 +180,7 @@ primrec
 "markedElements (h#t) =  (if (marked h) then (element h) # (markedElements t) else (markedElements t))"
 
 lemma markedElementIsMarkedTrue: 
-  shows "m mem (markedElements M) = (m, True) mem M"
+  shows "(m \<in> set (markedElements M)) = ((m, True) \<in> set M)"
 using assms
 by (induct M) (auto split: split_if_asm)
 
@@ -190,22 +189,22 @@ lemma markedElementsAppend:
 by (induct M1) auto
 
 lemma markedElementsAreElements:
-  assumes "m mem (markedElements M)"
-  shows   "m mem (elements M)"
+  assumes "m \<in> set (markedElements M)"
+  shows   "m \<in> set (elements M)"
 using assms markedElementIsMarkedTrue[of "m" "M"]
 by auto
 
 lemma markedAndMemberImpliesIsMarkedElement:
-  assumes "marked m" "m mem M"
-  shows "(element m) mem markedElements M"
+  assumes "marked m" "m \<in> set M"
+  shows "(element m) \<in> set (markedElements M)"
 proof-
   have "m = (element m, marked m)"
     by auto
   with `marked m` 
   have "m = (element m, True)"
     by simp
-  with `m mem M` have
-    "(element m, True) mem M"
+  with `m \<in> set M` have
+    "(element m, True) \<in> set M"
     by simp
   thus ?thesis
     using markedElementIsMarkedTrue [of "element m" "M"]
@@ -213,16 +212,16 @@ proof-
 qed
 
 lemma markedElementsPrefixAreMarkedElementsTrail:
-  assumes "isPrefix p M" "m mem markedElements p"
-  shows "m mem (markedElements M)"
+  assumes "isPrefix p M" "m \<in> set (markedElements p)"
+  shows "m \<in> set (markedElements M)"
 proof-
-  from `m mem markedElements p` 
-  have "(m, True) mem p"
+  from `m \<in> set (markedElements p)` 
+  have "(m, True) \<in> set p"
     by (simp add: markedElementIsMarkedTrue)
   with `isPrefix p M`
-  have "(m, True) mem M"
-    using memPrefixImpliesMemList[of "p" "M" "(m, True)"]
-    by simp
+  have "(m, True) \<in> set M"
+    using prefixIsSubset[of "p" "M"]
+    by auto
   thus ?thesis
     by (simp add: markedElementIsMarkedTrue)
 qed
@@ -231,28 +230,28 @@ lemma markedElementsTrailMemPrefixAreMarkedElementsPrefix:
   assumes 
   "uniq (elements M)" and
   "isPrefix p M" and
-  "m mem (elements p)" and
-  "m mem (markedElements M)" 
+  "m \<in> set (elements p)" and
+  "m \<in> set (markedElements M)" 
   shows
-  "m mem (markedElements p)"
+  "m \<in> set (markedElements p)"
 proof-
-  from `m mem (markedElements M)` have "(m, True) mem M"
+  from `m \<in> set (markedElements M)` have "(m, True) \<in> set M"
     by (simp add: markedElementIsMarkedTrue)
-  with `uniq (elements M)` `m mem (elements p)`
-  have "(m, True) mem p"
+  with `uniq (elements M)` `m \<in> set (elements p)`
+  have "(m, True) \<in> set p"
   proof-
     {
-      assume "(m, False) mem p"
+      assume "(m, False) \<in> set p"
       with `isPrefix p M`
-      have "(m, False) mem M"
-	using memPrefixImpliesMemList[of "p" "M" "(m, False)"]
-	by simp
-      with `(m, True) mem M` `uniq (elements M)`
+      have "(m, False) \<in> set M"
+	using prefixIsSubset[of "p" "M"]
+	by auto
+      with `(m, True) \<in> set M` `uniq (elements M)`
       have False
 	using uniqImpliesExclusiveTrueOrFalse[of "m" "True" "M"]
 	by simp
     }
-    with `m mem (elements p)`
+    with `m \<in> set (elements p)`
     show ?thesis
       using eitherMarkedOrNotMarked[of "m" "p"]
       by auto
@@ -298,20 +297,20 @@ unfolding isPrefix_def
 by (induct t) auto
 
 lemma prefixToElementContainsTrailElement:
-  assumes "e mem elements M"
-  shows "e mem elements (prefixToElement e M)"
+  assumes "e \<in> set (elements M)"
+  shows "e \<in> set (elements (prefixToElement e M))"
 using assms
 by (induct M) auto
 
 lemma prefixBeforeElementDoesNotContainTrailElement:
-  assumes "e mem elements M"
-  shows "\<not> e mem (elements (prefixBeforeElement e M))"
+  assumes "e \<in> set (elements M)"
+  shows "e \<notin> set (elements (prefixBeforeElement e M))"
 using assms
 by (induct M) auto
 
 lemma prefixToElementAppend: 
   shows "prefixToElement e (M1 @ M2) = 
-            (if e mem elements M1 then 
+            (if e \<in> set (elements M1) then 
                 prefixToElement e M1
              else   
                 M1 @ prefixToElement e M2
@@ -321,7 +320,7 @@ by (induct M1) auto
 
 lemma prefixToElementToPrefixElement:
   assumes
-  "isPrefix p M" and "e mem (elements p)"
+  "isPrefix p M" and "e \<in> set (elements p)"
   shows
   "prefixToElement e M = prefixToElement e p"
 using assms
@@ -350,11 +349,11 @@ proof (induct p arbitrary: M)
     from False have "prefixToElement e (a # p') = a # prefixToElement e p'"
       by simp
     moreover
-    from False `e mem elements (a # p')` have "e mem elements p'"
+    from False `e \<in> set (elements (a # p'))` have "e \<in> set (elements p')"
       by simp
     have "? s . (p' @ s = p' @ s)"
       by simp
-    from `e mem elements p'`  `? s. (p' @ s = p' @ s)` 
+    from `e \<in> set (elements p')`  `? s. (p' @ s = p' @ s)` 
       have "prefixToElement e (p' @ s) = prefixToElement e p'"
       using Cons(1) [of "p' @ s"]
       by simp
@@ -379,15 +378,15 @@ unfolding markedElementsTo_def
 by (induct M) auto
 
 lemma markedElementsToAreMarkedElements: 
-  assumes "m mem (markedElementsTo e M)"
-  shows "m mem (markedElements M)"
+  assumes "m \<in> set (markedElementsTo e M)"
+  shows "m \<in> set (markedElements M)"
 using assms
 using markedElementsToArePrefixOfMarkedElements[of "e" "M"]
-using memPrefixImpliesMemList[of "markedElementsTo e M" "markedElements M" "m"]
-by simp
+using prefixIsSubset
+by auto
 
 lemma markedElementsToNonMemberAreAllMarkedElements:
-  assumes "\<not> e mem (elements M)"
+  assumes "e \<notin> set (elements M)"
   shows "markedElementsTo e M = markedElements M" 
 using assms
 unfolding markedElementsTo_def
@@ -395,7 +394,7 @@ by (induct M) auto
 
 lemma markedElementsToAppend: 
   shows "markedElementsTo e (M1 @ M2) = 
-          (if e mem elements M1 then 
+          (if e \<in> set (elements M1) then 
                  markedElementsTo e M1
            else 
                  markedElements M1 @ markedElementsTo e M2
@@ -413,15 +412,15 @@ by auto
 
 lemma markedElementIsMemberOfItsMarkedElementsTo: 
   assumes
-  "uniq (elements M)" and "marked e" and "e mem M"
+  "uniq (elements M)" and "marked e" and "e \<in> set M"
   shows 
-  "element e mem markedElementsTo (element e) M"
+  "element e \<in> set (markedElementsTo (element e) M)"
 using assms
 unfolding markedElementsTo_def
 by (induct M) (auto split: split_if_asm)
 
 lemma markedElementsToPrefixElement: 
-  assumes "isPrefix p M" and "e mem (elements p)"
+  assumes "isPrefix p M" and "e \<in> set (elements p)"
   shows "markedElementsTo e M = markedElementsTo e p"
 unfolding markedElementsTo_def
 using assms
@@ -438,7 +437,7 @@ lastMarked_def: "lastMarked t == last (markedElements t)"
 
 lemma lastMarkedIsMarkedElement: 
   assumes "markedElements M \<noteq> []" 
-  shows "lastMarked M mem (markedElements M)"
+  shows "lastMarked M \<in> set (markedElements M)"
 using assms
 unfolding lastMarked_def
 by simp
@@ -447,7 +446,7 @@ lemma removeLastMarkedFromMarkedElementsToLastMarkedAreAllMarkedElementsInPrefix
   assumes
   "markedElements M \<noteq> []"
   shows
-  "remove (lastMarked M) (markedElementsTo (lastMarked M) M) = markedElements (prefixBeforeElement (lastMarked M) M)"
+  "removeAll (lastMarked M) (markedElementsTo (lastMarked M) M) = markedElements (prefixBeforeElement (lastMarked M) M)"
 using assms
 unfolding lastMarked_def
 unfolding markedElementsTo_def
@@ -465,7 +464,7 @@ by (induct M) (auto simp add: markedElementsAreElements)
 
 lemma lastTrailElementMarkedImpliesMarkedElementsToLastElementAreAllMarkedElements:
   assumes
-  "marked (last M)" and "~(last (elements M)) mem (butlast (elements M))"
+  "marked (last M)" and "last (elements M) \<notin> set (butlast (elements M))"
   shows
   "markedElementsTo (last (elements M)) M = markedElements M"
 using assms
@@ -476,7 +475,7 @@ lemma lastMarkedIsMemberOfItsMarkedElementsTo:
   assumes
   "uniq (elements M)" and "markedElements M \<noteq> []"
   shows
-  "lastMarked M mem (markedElementsTo (lastMarked M) M)"
+  "lastMarked M \<in> set (markedElementsTo (lastMarked M) M)"
 using assms
 using markedElementsToLastMarkedAreAllMarkedElements [of "M"]
 using lastMarkedIsMarkedElement [of "M"]
@@ -496,46 +495,42 @@ subsection{* Level of a trail element *}
 text{* Level of an element is the number of marked elements that precede it *}
 
 consts
-elementLevel :: "'a \<Rightarrow> 'a Trail \<Rightarrow> int"
+elementLevel :: "'a \<Rightarrow> 'a Trail \<Rightarrow> nat"
 defs
-elementLevel_def: "elementLevel e t == intLength (markedElementsTo e t)"
-
-lemma elementLevelGeqZero:
-  shows "elementLevel e trail >= 0"
-unfolding elementLevel_def
-by (simp add:intLengthGeqZero)
+elementLevel_def: "elementLevel e t == length (markedElementsTo e t)"
 
 lemma elementLevelMarkedGeq1:
   assumes
-  "uniq (elements M)" and "e mem (markedElements M)"
+  "uniq (elements M)" and "e \<in> set (markedElements M)"
   shows
   "elementLevel e M >= 1"
 proof-
-  from `e mem (markedElements M)` have "(e, True) mem M"
+  from `e \<in> set (markedElements M)` have "(e, True) \<in> set M"
     by (simp add: markedElementIsMarkedTrue)
-  with `uniq (elements M)`  have "e mem (markedElementsTo e M)"
+  with `uniq (elements M)`  have "e \<in> set (markedElementsTo e M)"
     using markedElementIsMemberOfItsMarkedElementsTo[of "M" "(e, True)"]
     by simp
   hence "markedElementsTo e M \<noteq> []"
     by auto
   thus ?thesis
     unfolding elementLevel_def
-    by (simp add: intLengthNonEmptyGeq1)
+    using length_greater_0_conv[of "markedElementsTo e M"]
+    by arith
 qed
 
 lemma elementLevelAppend:
-  assumes "a mem (elements M)"
+  assumes "a \<in> set (elements M)"
   shows "elementLevel a M = elementLevel a (M @ M')"
 using assms
 unfolding elementLevel_def
-by (simp add: intLengthAppend markedElementsToAppend)
+by (simp add: markedElementsToAppend)
 
 
 lemma elementLevelPreceedsLeq: 
   assumes
   "preceeds a b (elements M)" 
   shows
-  "elementLevel a M <= elementLevel b M"
+  "elementLevel a M \<le> elementLevel b M"
 using assms
 proof (induct M)
   case (Cons m M')
@@ -544,7 +539,7 @@ proof (induct M)
     hence ?case
       unfolding elementLevel_def
       unfolding markedElementsTo_def
-      by (auto simp add: intLengthGeqZero)
+      by simp
   }
   moreover
   {
@@ -567,21 +562,20 @@ proof (induct M)
     assume "a \<noteq> element m" "b \<noteq> element m"
     moreover
     from `preceeds a b (elements (m # M'))`
-    have "a mem (elements (m # M'))" "b mem (elements (m # M'))"
+    have "a \<in> set (elements (m # M'))" "b \<in> set (elements (m # M'))"
       unfolding preceeds_def
       by (auto split: split_if_asm)
-    from `a \<noteq> element m` `a mem (elements (m # M'))`
-    have "a mem elements M'"
+    from `a \<noteq> element m` `a \<in> set (elements (m # M'))`
+    have "a \<in> set (elements M')"
       by simp
     moreover
-    from `b \<noteq> element m` `b mem (elements (m # M'))`
-    have "b mem elements M'"
+    from `b \<noteq> element m` `b \<in> set (elements (m # M'))`
+    have "b \<in> set (elements M')"
       by simp
     ultimately
     have "elementLevel a M' \<le> elementLevel b M'"
       using Cons
       unfolding preceeds_def
-      unfolding firstPos_def
       by auto
     hence ?case
       using `a \<noteq> element m` `b \<noteq> element m`
@@ -596,7 +590,6 @@ next
   case Nil
   thus ?case
     unfolding preceeds_def
-    unfolding firstPos_def
     by simp
 qed
 
@@ -605,7 +598,7 @@ lemma elementLevelPreceedsMarkedElementLt:
   assumes
   "uniq (elements M)" and
   "e \<noteq> d" and
-  "d mem (markedElements M)" and
+  "d \<in> set (markedElements M)" and
   "preceeds e d (elements M)"
   shows
   "elementLevel e M < elementLevel d M"
@@ -618,15 +611,15 @@ proof (induct M)
     with `e \<noteq> d` have "d \<noteq> element m"
       by simp
     moreover
-    from `uniq (elements (m # M'))` `d mem markedElements (m # M')`
+    from `uniq (elements (m # M'))` `d \<in> set (markedElements (m # M'))`
     have "1 \<le> elementLevel d (m # M')"
       using elementLevelMarkedGeq1[of "m # M'" "d"]
       by auto
     moreover
-    from `d \<noteq> element m` `d mem markedElements (m # M')`
-    have "d mem markedElements M'"
+    from `d \<noteq> element m` `d \<in> set (markedElements (m # M'))`
+    have "d \<in> set (markedElements M')"
       by (simp split: split_if_asm)
-    from `uniq (elements (m # M'))` `d mem markedElements M'`
+    from `uniq (elements (m # M'))` `d \<in> set (markedElements M')`
     have "1 \<le> elementLevel d M'"
       using elementLevelMarkedGeq1[of "M'" "d"]
       by auto
@@ -634,7 +627,7 @@ proof (induct M)
     have ?case
       unfolding elementLevel_def
       unfolding markedElementsTo_def
-      by (simp split: split_if_asm)
+      by (auto split: split_if_asm)
   }
   moreover
   {
@@ -653,25 +646,24 @@ proof (induct M)
     assume "e \<noteq> element m" "d \<noteq> element m"    
     moreover
     from `preceeds e d (elements (m # M'))`
-    have "e mem (elements (m # M'))" "d mem (elements (m # M'))"
+    have "e \<in> set (elements (m # M'))" "d \<in> set (elements (m # M'))"
       unfolding preceeds_def
       by (auto split: split_if_asm)
-    from `e \<noteq> element m` `e mem (elements (m # M'))`
-    have "e mem elements M'"
+    from `e \<noteq> element m` `e \<in> set (elements (m # M'))`
+    have "e \<in> set (elements M')"
       by simp
     moreover
-    from `d \<noteq> element m` `d mem (elements (m # M'))`
-    have "d mem elements M'"
+    from `d \<noteq> element m` `d \<in> set (elements (m # M'))`
+    have "d \<in> set (elements M')"
       by simp
     moreover
-    from `d \<noteq> element m` `d mem markedElements (m # M')`
-    have "d mem markedElements M'"
+    from `d \<noteq> element m` `d \<in> set (markedElements (m # M'))`
+    have "d \<in> set (markedElements M')"
       by (simp split: split_if_asm)
     ultimately
     have "elementLevel e M' < elementLevel d M'"
       using `uniq (elements (m # M'))` Cons
       unfolding preceeds_def
-      unfolding firstPos_def
       by auto
     hence ?case
       using `e \<noteq> element m` `d \<noteq> element m`
@@ -687,17 +679,17 @@ qed simp
 lemma differentMarkedElementsHaveDifferentLevels:
   assumes
   "uniq (elements M)" and
-  "a mem (markedElements M)" and
-  "b mem (markedElements M)" and
+  "a \<in> set (markedElements M)" and
+  "b \<in> set (markedElements M)" and
   "a \<noteq> b" 
   shows "elementLevel a M \<noteq> elementLevel b M"
 proof-
-  from `a mem (markedElements M)`
-  have "a mem (elements M)"
+  from `a \<in> set (markedElements M)`
+  have "a \<in> set (elements M)"
     by (simp add: markedElementsAreElements)
   moreover
-  from `b mem (markedElements M)`
-  have "b mem (elements M)"
+  from `b \<in> set (markedElements M)`
+  have "b \<in> set (elements M)"
     by (simp add: markedElementsAreElements)
   ultimately
   have "preceeds a b (elements M) \<or> preceeds b a (elements M)"
@@ -732,10 +724,10 @@ subsection{* Current trail level *}
 text{* Current level is the number of marked elements in the trail *}
 
 consts
-currentLevel :: "'a Trail \<Rightarrow> int"
+currentLevel :: "'a Trail \<Rightarrow> nat"
 defs
 currentLevel_def:
-"currentLevel t == intLength (markedElements t)"
+"currentLevel t == length (markedElements t)"
 
 lemma currentLevelNonMarked: 
   shows "currentLevel M = currentLevel (M @ [(l, False)])"
@@ -747,10 +739,10 @@ lemma currentLevelPrefix:
 using assms
 unfolding isPrefix_def
 unfolding currentLevel_def
-by (auto simp add: intLengthAppend intLengthGeqZero markedElementsAppend)
+by (auto simp add: markedElementsAppend)
 
 lemma elementLevelLeqCurrentLevel:
-  shows "elementLevel a M <= currentLevel M"
+  shows "elementLevel a M \<le> currentLevel M"
 proof-
   have "isPrefix (prefixToElement a M) M"
     using isPrefixPrefixToElement[of "a" "M"]
@@ -763,31 +755,31 @@ proof-
     by (rule sym)
   hence "currentLevel M = currentLevel (prefixToElement a M @ s)"
     by simp
-  hence "currentLevel M = intLength (markedElements (prefixToElement a M)) + intLength (markedElements s)"
+  hence "currentLevel M = length (markedElements (prefixToElement a M)) + length (markedElements s)"
     unfolding currentLevel_def
-    by (simp add: intLengthAppend markedElementsAppend)
+    by (simp add: markedElementsAppend)
   thus ?thesis
     unfolding elementLevel_def
     unfolding markedElementsTo_def
-    by (simp add: intLengthGeqZero)
+    by simp
 qed
 
 lemma elementOnCurrentLevel:
-  assumes "\<not> a mem (elements M)"
+  assumes "a \<notin> set (elements M)"
   shows "elementLevel a (M @ [(a, d)]) = currentLevel  (M @ [(a, d)])"
 using assms
 unfolding currentLevel_def
 unfolding elementLevel_def
 unfolding markedElementsTo_def 
-by (auto simp add: prefixToElementAppend intLengthAppend)
+by (auto simp add: prefixToElementAppend)
 
 (*--------------------------------------------------------------------------------*)
 subsection{* Prefix to a given trail level *}
 
 text{* Prefix is made or elements of the trail up to a given element level *}
 consts
-prefixToLevel :: "int \<Rightarrow> 'a Trail \<Rightarrow> 'a Trail"
-prefixToLevel_aux :: "'a Trail \<Rightarrow> int \<Rightarrow> int \<Rightarrow> 'a Trail"
+prefixToLevel :: "nat \<Rightarrow> 'a Trail \<Rightarrow> 'a Trail"
+prefixToLevel_aux :: "'a Trail \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a Trail"
 
 defs
 prefixToLevel_def: "(prefixToLevel l t) == (prefixToLevel_aux t l 0)"
@@ -813,7 +805,7 @@ unfolding prefixToLevel_def
 by simp
 
 lemma currentLevelPrefixToLevel_aux: 
-  assumes "l >= i"
+  assumes "l \<ge> i"
   shows "currentLevel (prefixToLevel_aux M l i) <= l - i"
 using assms
 proof (induct M arbitrary: i)
@@ -852,8 +844,8 @@ next
 qed
 
 lemma currentLevelPrefixToLevel: 
-  assumes "level >= 0"
-  shows "currentLevel (prefixToLevel level M) <= level"
+  assumes "level \<ge> 0"
+  shows "currentLevel (prefixToLevel level M) \<le> level"
 using assms
 using currentLevelPrefixToLevel_aux[of "0" "level" "M"]
 unfolding prefixToLevel_def
@@ -861,7 +853,7 @@ by simp
 
 
 lemma prefixToLevel_auxIncreaseAuxilaryCounter: 
-  assumes "k >= i"
+  assumes "k \<ge> i"
   shows "prefixToLevel_aux M l i = prefixToLevel_aux M (l + (k - i)) k"
 using assms
 proof (induct M arbitrary: i k)
@@ -874,8 +866,9 @@ proof (induct M arbitrary: i k)
   }
   moreover
   {
-    assume "i >= l" "marked m"
+    assume "i \<ge> l" "marked m"
     hence ?case
+      using `k \<ge> i`
       by simp
   }
   moreover
@@ -887,24 +880,24 @@ proof (induct M arbitrary: i k)
   }
   ultimately
   show ?case
-    by auto
+    by (auto split: split_if_asm)
 qed simp
 
 lemma isPrefixPrefixToLevel_auxLowerLevel:
-  assumes "i <= j"
+  assumes "i \<le> j"
   shows "isPrefix (prefixToLevel_aux M i k) (prefixToLevel_aux M j k)"
 using assms
 by (induct M arbitrary: k) (auto simp add:isPrefix_def)
 
 lemma prefixToLevel_auxPrefixToLevel_auxHigherLevel: 
-  assumes "i <= j"
+  assumes "i \<le> j"
   shows "prefixToLevel_aux a i k = prefixToLevel_aux (prefixToLevel_aux a j k) i k"
 using assms
 by (induct a arbitrary: k) auto
 
 lemma prefixToLevelAppend_aux1:
   assumes
-  "l >= i" and "l - i < currentLevel a"
+  "l \<ge> i" and "l - i < currentLevel a"
   shows 
   "prefixToLevel_aux (a @ b) l i = prefixToLevel_aux a l i"
 using assms
@@ -933,7 +926,7 @@ proof (induct a arbitrary: i)
   }
   ultimately
   show ?case
-    using `i <= l`
+    using `i \<le> l`
     by auto
 next
   case Nil
@@ -945,7 +938,7 @@ qed
 
 lemma prefixToLevelAppend_aux2: 
   assumes 
-  "i <= l" and "currentLevel a + i <= l"
+  "i \<le> l" and "currentLevel a + i \<le> l"
   shows "prefixToLevel_aux (a @ b) l i = a @ prefixToLevel_aux b l (i + (currentLevel a))"
 using assms
 proof (induct a arbitrary: i)
@@ -961,20 +954,19 @@ proof (induct a arbitrary: i)
   {
     assume "marked a" "l = i"
     hence ?case
-      using `(currentLevel (a # a')) + i <= l`
+      using `(currentLevel (a # a')) + i \<le> l`
       unfolding currentLevel_def
-      using intLengthGeqZero[of "markedElements a'"]
       by simp
   }
   moreover
   {
     assume "marked a" "l > i"
     hence "prefixToLevel_aux (a' @ b) l (i + 1) = a' @ prefixToLevel_aux b l (i + 1 + currentLevel a')"
-      using Cons(1) [of "i + 1"] `(currentLevel (a # a')) + i <= l`
+      using Cons(1) [of "i + 1"] `(currentLevel (a # a')) + i \<le> l`
       unfolding currentLevel_def
       by simp
     moreover
-    have "i + 1 + intLength (markedElements a') = i + (1 + intLength (markedElements a'))"
+    have "i + 1 + length (markedElements a') = i + (1 + length (markedElements a'))"
       by simp
     ultimately
     have ?case
@@ -984,7 +976,7 @@ proof (induct a arbitrary: i)
   }
   ultimately
   show ?case
-    using `l >= i`
+    using `l \<ge> i`
     by auto
 next
   case Nil
@@ -994,7 +986,7 @@ next
 qed
 
 lemma prefixToLevelAppend:
-  assumes "level >= 0"
+  assumes "level \<ge> 0"
   shows "prefixToLevel level (a @ b) = 
   (if level < currentLevel a then 
       prefixToLevel level a
@@ -1005,18 +997,18 @@ proof (cases "level < currentLevel a")
   case True
   thus ?thesis
     unfolding prefixToLevel_def
-    using prefixToLevelAppend_aux1[of "0" "level" "a"] `level >= 0`
+    using prefixToLevelAppend_aux1[of "0" "level" "a"] `level \<ge> 0`
     by simp
 next
   case False
   thus ?thesis
     unfolding prefixToLevel_def
-    using prefixToLevelAppend_aux2[of "0" "level" "a"] `level >= 0`
+    using prefixToLevelAppend_aux2[of "0" "level" "a"] `level \<ge> 0`
     by simp
 qed
 
 lemma isProperPrefixPrefixToLevel:
-  assumes "l < currentLevel t" "l >= 0"
+  assumes "l < currentLevel t" "l \<ge> 0"
   shows "\<exists> s. (prefixToLevel l t) @ s = t \<and> s \<noteq> [] \<and> (marked (hd s))"
 proof-
   have "isPrefix (prefixToLevel l t) t"
@@ -1033,10 +1025,10 @@ proof-
       with `(prefixToLevel l t) @ s = t` 
       have "prefixToLevel l t = t"
 	by simp
-      with `l >= 0` have "currentLevel (prefixToLevel l t) <= l"
+      with `l \<ge> 0` have "currentLevel (prefixToLevel l t) \<le> l"
 	using currentLevelPrefixToLevel[of "l" "t"]
 	by simp
-      with `prefixToLevel l t = t` have "currentLevel t <= l"
+      with `prefixToLevel l t = t` have "currentLevel t \<le> l"
 	by simp
       with `l < currentLevel t` have False
 	by simp
@@ -1049,7 +1041,7 @@ proof-
   proof-
     {
       assume "\<not> marked (hd s)"
-      from `l >= 0` have "currentLevel (prefixToLevel l t) <= l"
+      from `l \<ge> 0` have "currentLevel (prefixToLevel l t) \<le> l"
 	by (simp add:currentLevelPrefixToLevel)
       from `s \<noteq> []` have "s = [hd s] @ (tl s)"
 	by simp
@@ -1059,7 +1051,7 @@ proof-
       hence "(prefixToLevel l t) = (prefixToLevel l ((prefixToLevel l t) @ [hd s] @ (tl s)))"
 	by simp
       also
-      with `l >= 0` `currentLevel (prefixToLevel l t) <= l` 
+      with `l \<ge> 0` `currentLevel (prefixToLevel l t) \<le> l` 
       have "\<dots> = ((prefixToLevel l t) @ (prefixToLevel_aux ([hd s] @ (tl s)) l (currentLevel (prefixToLevel l t))))"
 	by (auto simp add: prefixToLevelAppend)
       also
@@ -1089,18 +1081,18 @@ qed
 
 lemma prefixToLevelElementsElementLevel: 
   assumes 
-  "level >= 0" and
-  "e mem (elements (prefixToLevel level M))"
+  "level \<ge> 0" and
+  "e  \<in> set (elements (prefixToLevel level M))"
   shows
-  "elementLevel e M <= level"
+  "elementLevel e M \<le> level"
 proof -
-  have "elementLevel e (prefixToLevel level M) <= currentLevel (prefixToLevel  level M)"
+  have "elementLevel e (prefixToLevel level M) \<le> currentLevel (prefixToLevel  level M)"
     by (simp add: elementLevelLeqCurrentLevel)
   moreover
-  with `level >= 0` have "currentLevel (prefixToLevel level M) <= level"
+  with `level \<ge> 0` have "currentLevel (prefixToLevel level M) \<le> level"
     using currentLevelPrefixToLevel[of "level" "M"]
     by simp
-  ultimately have "elementLevel e (prefixToLevel level M) <= level"
+  ultimately have "elementLevel e (prefixToLevel level M) \<le> level"
     by simp
   moreover
   have "isPrefix (prefixToLevel level M) M"
@@ -1109,7 +1101,7 @@ proof -
     where "(prefixToLevel level M) @ s = M"
     unfolding isPrefix_def
     by auto
-  with `e mem (elements (prefixToLevel level M))` 
+  with `e  \<in> set (elements (prefixToLevel level M))` 
   have "elementLevel e (prefixToLevel level M) = elementLevel e M"
     using elementLevelAppend [of "e" "prefixToLevel level M" "s"]
     by simp
@@ -1118,14 +1110,13 @@ proof -
     by simp
 qed
 
-
 lemma elementLevelLtLevelImpliesMemberPrefixToLevel_aux:
   assumes
-  "e mem (elements M)" and
-  "elementLevel e M + i <= level" and
-  "i <= level"
+  "e  \<in> set(elements M)" and
+  "elementLevel e M + i \<le> level" and
+  "i \<le> level"
   shows 
-  "e mem elements (prefixToLevel_aux M level i)"
+  "e  \<in> set (elements (prefixToLevel_aux M level i))"
 using assms
 proof (induct M arbitrary: i)
   case (Cons m M')
@@ -1140,8 +1131,8 @@ proof (induct M arbitrary: i)
       by (simp split: split_if_asm)
   next
     case False
-    with `e mem (elements (m # M'))`
-    have "e mem elements M'"
+    with `e \<in> set (elements (m # M'))`
+    have "e \<in> set (elements M')"
       by simp
 
     show ?thesis
@@ -1153,15 +1144,16 @@ proof (induct M arbitrary: i)
 	unfolding markedElementsTo_def
 	by (simp split: split_if_asm)
       moreover
-      have "elementLevel e M' >= 0"
-	by (simp add:elementLevelGeqZero)
+      have "elementLevel e M' \<ge> 0"
+	by auto
       ultimately
-      have "i + 1 <= level"
+      have "i + 1 \<le> level"
 	by simp
-      with `e mem (elements M')` `(elementLevel e M') + i + 1 \<le> level` Cons(1)[of "i+1"]
-      have "e mem elements (prefixToLevel_aux M' level (i + 1))"
+      with `e \<in> set (elements M')` `(elementLevel e M') + i + 1 \<le> level` Cons(1)[of "i+1"]
+      have "e \<in> set (elements (prefixToLevel_aux M' level (i + 1)))"
 	by simp
-      with `e \<noteq> element m` `i + 1 <= level` True show ?thesis
+      with `e \<noteq> element m` `i + 1 \<le> level` True 
+      show ?thesis
 	by simp
     next
       case False
@@ -1169,7 +1161,7 @@ proof (induct M arbitrary: i)
 	unfolding elementLevel_def
 	unfolding markedElementsTo_def
 	by (simp split: split_if_asm)
-      with `e mem elements M'` have "e mem elements (prefixToLevel_aux M' level i)"
+      with `e \<in> set (elements M')` have "e \<in> set (elements (prefixToLevel_aux M' level i))"
 	using Cons
 	by (auto split: split_if_asm)
       with `e \<noteq> element m` False show ?thesis
@@ -1180,26 +1172,25 @@ qed simp
 
 lemma elementLevelLtLevelImpliesMemberPrefixToLevel:
   assumes
-  "e mem (elements M)" and
-  "elementLevel e M <= level"
+  "e \<in> set (elements M)" and
+  "elementLevel e M \<le> level"
   shows 
-  "e mem elements (prefixToLevel level M)"
+  "e \<in> set (elements (prefixToLevel level M))"
 using assms
-using elementLevelGeqZero[of "e" "M"]
 using elementLevelLtLevelImpliesMemberPrefixToLevel_aux[of "e" "M" "0" "level"]
 unfolding prefixToLevel_def
 by simp
 
 lemma literalNotInEarlierLevelsThanItsLevel: 
   assumes
-  "level >= 0" and
+  "level \<ge> 0" and
   "level < elementLevel e M" 
   shows 
-  "\<not> e mem (elements (prefixToLevel level M))"
+  "e \<notin> set (elements (prefixToLevel level M))"
 proof-
   {
     assume "\<not> ?thesis"
-    with `level >= 0` have "level >= elementLevel e M"
+    with `level \<ge> 0` have "level \<ge> elementLevel e M"
       by (simp add: prefixToLevelElementsElementLevel)
     with `level < elementLevel e M`
     have False
@@ -1210,7 +1201,7 @@ proof-
 qed
 
 lemma elementLevelPrefixElement: 
-  assumes "e mem elements (prefixToLevel level M)"
+  assumes "e \<in> set (elements (prefixToLevel level M))"
   shows "elementLevel e (prefixToLevel level M) = elementLevel e M"
 using assms
 proof-
@@ -1308,7 +1299,7 @@ qed
 
 lemma levelsCounterPrefix:
   assumes "(isPrefix p a)"
-  shows "? rest. rest \<noteq> [] \<and> levelsCounter a = butlast (levelsCounter p) @ rest \<and> last (levelsCounter p) <= hd rest"
+  shows "? rest. rest \<noteq> [] \<and> levelsCounter a = butlast (levelsCounter p) @ rest \<and> last (levelsCounter p) \<le> hd rest"
 proof-
   from assms
   obtain s :: "'a Trail" where "p @ s = a"
@@ -1396,7 +1387,7 @@ proof-
 	then obtain h t where "(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) = h # t"
 	  using neq_Nil_conv[of "(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))])"]
 	  by auto
-	hence "h >= Suc (last (levelsCounter_aux p [0]))"
+	hence "h \<ge> Suc (last (levelsCounter_aux p [0]))"
 	  using levelsCounter_auxIncreasesFirst[of "tl s"]
 	  by auto
 	with `(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) = h # t` 
@@ -1405,7 +1396,7 @@ proof-
       qed
       ultimately
       have "levelsCounter a = butlast (levelsCounter p) @ (levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) \<and> 
-	last (levelsCounter p) <= hd (levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))])"
+	last (levelsCounter p) \<le> hd (levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))])"
 	unfolding levelsCounter_def
 	by simp
       thus ?thesis
@@ -1416,7 +1407,7 @@ proof-
 qed
   
 lemma levelsCounterPrefixToLevel:
-  assumes "p = prefixToLevel level a" "level >= 0" "level < currentLevel a" 
+  assumes "p = prefixToLevel level a" "level \<ge> 0" "level < currentLevel a" 
   shows "? rest . rest \<noteq> [] \<and> (levelsCounter a) = (levelsCounter p) @ rest"
 proof-
   from assms
@@ -1477,11 +1468,9 @@ next
   proof (cases "marked a")
     case True
     hence "currentLevel (a # M') \<ge> 1"
-      using intLengthNonEmptyGeq1[of "markedElements (a#M')"]
       unfolding currentLevel_def
       by simp
     with True Cons show ?thesis
-      using intLengthNonEmptyGeq1[of "markedElements M'"]
       using prefixToLevel_auxIncreaseAuxilaryCounter[of "0" "1" "M'" "currentLevel M' - 1"]
       unfolding prefixToLevel_def
       unfolding currentLevel_def
@@ -1502,13 +1491,13 @@ by (induct M) auto
 
 lemma lastMarkedNotInPrefixBeforeLastMarked:
   assumes "uniq (elements M)" and "markedElements M \<noteq> []"
-  shows "\<not> (lastMarked M) mem (elements (prefixBeforeLastMarked M))"
+  shows "\<not> (lastMarked M) \<in> set (elements (prefixBeforeLastMarked M))"
 using assms
 unfolding lastMarked_def
 by (induct M) (auto split: split_if_asm simp add: markedElementsAreElements)
 
 lemma uniqImpliesPrefixBeforeLastMarkedIsPrefixBeforeLastMarked:
-  assumes "markedElements M \<noteq> []" and "\<not> (lastMarked M) mem (elements M)"
+  assumes "markedElements M \<noteq> []" and "(lastMarked M) \<notin> set (elements M)"
   shows "prefixBeforeLastMarked M = prefixBeforeElement (lastMarked M) M"
 using assms
 unfolding lastMarked_def

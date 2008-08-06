@@ -1,7 +1,6 @@
 (*    Title:              SatSolverVerification/BasicDPLL.thy
-      ID:                 $Id: BasicDPLL.thy,v 1.2 2008-07-27 14:23:30 lsf37 Exp $
+      ID:                 $Id: BasicDPLL.thy,v 1.3 2008-08-06 15:27:20 filipmaric Exp $
       Author:             Filip Maric
-      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header{* BasicDPLL *}

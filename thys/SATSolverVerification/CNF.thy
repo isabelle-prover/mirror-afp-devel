@@ -1,12 +1,11 @@
 (*    Title:              SATSolver/CNF.thy
-      ID:                 $Id: CNF.thy,v 1.2 2008-07-27 14:23:30 lsf37 Exp $
+      ID:                 $Id: CNF.thy,v 1.3 2008-08-06 15:27:20 filipmaric Exp $
       Author:             Filip Maric
-      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header {* CNF *}
 theory CNF
-imports MoreList
+imports Main MoreList
 begin
 text{* Theory describing formulae in Conjunctive Normal Form. *}
 
@@ -34,9 +33,9 @@ text{* Check if the literal is member of a clause, clause is a member
   of a formula or the literal is a member of a formula *}
 consts member  :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (infixl "el" 55)
 defs (overloaded)
-literalElClause_def [simp]: "((literal::Literal) el (clause::Clause)) == literal mem clause"
+literalElClause_def [simp]: "((literal::Literal) el (clause::Clause)) == literal \<in> set clause"
 defs (overloaded)
-clauseElFormula_def [simp]: "((clause::Clause) el (formula::Formula)) == clause mem formula"
+clauseElFormula_def [simp]: "((clause::Clause) el (formula::Formula)) == clause \<in> set formula"
 primrec
 "(literal::Literal) el ([]::Formula) = False"
 "((literal::Literal) el ((clause # formula)::Formula)) = ((literal el clause) \<or> (literal el formula))"
@@ -54,7 +53,7 @@ proof (cases clause)
   case (Cons literal' clause')
   with assms 
   show ?thesis 
-    by (auto simp add:mem_iff)
+    by auto
 qed simp
 
 (*------------------------------------------------------------------*)
@@ -84,7 +83,7 @@ lemma clauseContainsItsLiteralsVariable:
   assumes "literal el clause"
   shows "var literal \<in> vars clause"
 using assms
-by (induct clause) (auto iff: mem_iff)
+by (induct clause) auto
 
 lemma formulaContainsItsLiteralsVariable:
   fixes literal :: Literal and formula::Formula
@@ -118,7 +117,7 @@ lemma formulaContainsItsClausesVariables:
   assumes "clause el formula"
   shows "vars clause \<subseteq> vars formula"
 using assms
-by (induct formula) (auto iff:mem_iff)
+by (induct formula) auto
 
 lemma varsAppendFormulae:
   fixes formula1 :: Formula and formula2 :: Formula
@@ -132,22 +131,22 @@ by (induct clause1) auto
 
 lemma varsRemoveLiteral:
   fixes literal :: Literal and clause :: Clause
-  shows "vars (remove literal clause) \<subseteq> vars clause"
+  shows "vars (removeAll literal clause) \<subseteq> vars clause"
 by (induct clause) auto
 
 lemma varsRemoveLiteralSuperset:
   fixes literal :: Literal and clause :: Clause
-  shows "vars clause - {var literal}  \<subseteq> vars (remove literal clause)"
+  shows "vars clause - {var literal}  \<subseteq> vars (removeAll literal clause)"
 by (induct clause) auto
 
-lemma varsRemoveClause:
+lemma varsRemoveAllClause:
   fixes clause :: Clause and formula :: Formula
-  shows "vars (remove clause formula) \<subseteq> vars formula"
+  shows "vars (removeAll clause formula) \<subseteq> vars formula"
 by (induct formula) auto
 
-lemma varsRemoveClauseSuperset:
+lemma varsRemoveAllClauseSuperset:
   fixes clause :: Clause and formula :: Formula
-  shows "vars formula - vars clause \<subseteq> vars (remove clause formula)"
+  shows "vars formula - vars clause \<subseteq> vars (removeAll clause formula)"
 by (induct formula) auto
 
 lemma varInClauseVars:
@@ -281,7 +280,7 @@ oppositeLiteralList :: "Literal list \<Rightarrow> Literal list"
 where
 "oppositeLiteralList clause == map opposite clause"
 
-lemma literalMemListIffOppositeLiteralMemOppositeLiteralList: 
+lemma literalElListIffOppositeLiteralElOppositeLiteralList: 
   fixes literal :: Literal and literalList :: "Literal list"
   shows "literal el literalList = (opposite literal) el (oppositeLiteralList literalList)"
 unfolding oppositeLiteralList_def
@@ -295,7 +294,7 @@ by (induct literalList) auto
 
 lemma oppositeLiteralListRemove: 
   fixes literal :: Literal and literalList :: "Literal list"
-  shows "oppositeLiteralList (remove literal literalList) = remove (opposite literal) (oppositeLiteralList literalList)"
+  shows "oppositeLiteralList (removeAll literal literalList) = removeAll (opposite literal) (oppositeLiteralList literalList)"
 unfolding oppositeLiteralList_def
 by (induct literalList) auto
 
@@ -334,7 +333,7 @@ lemma valuationContainsItsLiteralsVariable:
   assumes "literal el valuation"
   shows "var literal \<in> vars valuation"
 using assms
-by (induct valuation) (auto iff: mem_iff)
+by (induct valuation) auto
 
 lemma varsSubsetValuation: 
   fixes valuation1 :: Valuation and valuation2 :: Valuation
@@ -349,7 +348,7 @@ next
   case (Cons literal valuation)
   note caseCons = this
   hence "literal el valuation2" 
-    by (auto iff: mem_iff)
+    by auto
   with valuationContainsItsLiteralsVariable [of "literal" "valuation2"]
   have "var literal \<in> vars valuation2" .
   with caseCons 
@@ -424,7 +423,7 @@ next
       case True
       with ih 
       show "?rhs (literal' # valuation')" 
-	by simp
+	by auto
     next
       case False
       with ih 
@@ -466,14 +465,13 @@ by (induct clause) auto
 
 lemma clauseFalseRemove:
   assumes "clauseFalse clause valuation"
-  shows "clauseFalse (remove literal clause) valuation"
+  shows "clauseFalse (removeAll literal clause) valuation"
 proof-
   {
     fix l::Literal
-    assume "l el remove literal clause"
+    assume "l el removeAll literal clause"
     hence "l el clause"
-      using memRemoveImpliesMemList[of "l" "literal" "clause"]
-      by simp
+      by (auto simp add: removeAll_set)
    with `clauseFalse clause valuation` 
    have "literalFalse l valuation"
      by (simp add:clauseFalseIffAllLiteralsAreFalse)
@@ -487,14 +485,14 @@ lemma clauseFalseAppendValuation:
   assumes "clauseFalse clause valuation"
   shows "clauseFalse clause (valuation @ valuation')"
 using assms
-by (induct clause) (auto simp add:memAppend)
+by (induct clause) auto
 
 lemma clauseTrueAppendValuation:
   fixes clause :: Clause and valuation :: Valuation and valuation' :: Valuation
   assumes "clauseTrue clause valuation"
   shows "clauseTrue clause (valuation @ valuation')"
 using assms
-by (induct clause) (auto simp add:memAppend)
+by (induct clause) auto
 
 lemma emptyClauseIsFalse:
   fixes valuation :: Valuation
@@ -565,7 +563,7 @@ by (auto simp add:formulaTrueIffAllClausesAreTrue)
 lemma formulaTrueCommutativity:
   fixes f1 :: Formula and f2 :: Formula and valuation :: Valuation
   shows "formulaTrue (f1 @ f2) valuation = formulaTrue (f2 @ f1) valuation"
-by (auto simp add:formulaTrueIffAllClausesAreTrue memAppend)
+by (auto simp add:formulaTrueIffAllClausesAreTrue)
 
 lemma formulaTrueSubset:
   fixes formula :: Formula and formula' :: Formula and valuation :: Valuation
@@ -590,10 +588,10 @@ lemma formulaTrueAppend:
   shows "formulaTrue (formula1 @ formula2) valuation = (formulaTrue formula1 valuation \<and> formulaTrue formula2 valuation)"
 by (induct formula1) auto
 
-lemma formulaTrueRemove:
+lemma formulaTrueRemoveAll:
   fixes formula :: Formula and clause :: Clause and valuation :: Valuation    
   assumes "formulaTrue formula valuation"
-  shows "formulaTrue (remove clause formula) valuation"
+  shows "formulaTrue (removeAll clause formula) valuation"
 using assms
 by (induct formula) auto
 
@@ -620,7 +618,7 @@ by (induct formula) (auto simp add:clauseFalseAppendValuation)
 
 lemma trueFormulaWithSingleLiteralClause:
   fixes formula :: Formula and literal :: Literal and valuation :: Valuation
-  assumes "formulaTrue (remove [literal] formula) (valuation @ [literal])"
+  assumes "formulaTrue (removeAll [literal] formula) (valuation @ [literal])"
   shows "formulaTrue formula (valuation @ [literal])"
 proof -
   {
@@ -631,12 +629,15 @@ proof -
     proof (cases "clause = [literal]")
       case True
       thus ?thesis
-	by (simp add:memAppend)
+	by simp
     next
       case False
-      with `clause el formula` and `formulaTrue (remove [literal] formula) (valuation @ [literal])` 
+      with `clause el formula`
+      have "clause el (removeAll [literal] formula)"
+	by (simp add: removeAll_set)
+      with `formulaTrue (removeAll [literal] formula) (valuation @ [literal])` 
       show ?thesis
-	by (simp add:memRemoveIffMemListAndNotRemoved formulaTrueIffAllClausesAreTrue)
+	by (simp add: formulaTrueIffAllClausesAreTrue)
     qed
   }
   thus ?thesis
@@ -652,7 +653,6 @@ primrec
 "val2form [] = []"
 "val2form (literal # valuation) = [literal] # val2form valuation"
 
-
 lemma val2FormEl: 
   fixes literal :: Literal and valuation :: Valuation 
   shows "literal el valuation = [literal] el val2form valuation"
@@ -660,12 +660,12 @@ by (induct valuation) auto
 
 lemma val2FormAreSingleLiteralClauses: 
   fixes clause :: Clause and valuation :: Valuation
-  shows "clause el val2form valuation \<longrightarrow> (\<exists> literal. clause = [literal] \<and> literal mem valuation)"
+  shows "clause el val2form valuation \<longrightarrow> (\<exists> literal. clause = [literal] \<and> literal el valuation)"
 by (induct valuation) auto
 
-lemma val2FormRemove: 
+lemma val2FormRemoveAll: 
   fixes literal :: Literal and valuation :: Valuation 
-  shows "remove [literal] (val2form valuation) = val2form (remove literal valuation)"
+  shows "removeAll [literal] (val2form valuation) = val2form (removeAll literal valuation)"
 by (induct valuation) auto
 
 lemma val2formAppend: 
@@ -754,7 +754,7 @@ next
 	by (auto simp add:inconsistentCharacterization)
       with `literalFalse literal (valuation1 @ valuation2)` 
       have "literalFalse literal valuation2" 
-	by (auto simp add:memAppend)
+	by auto
       with True 
       show ?thesis 
 	by auto
@@ -762,13 +762,13 @@ next
       case False
       with `literalTrue literal (valuation1 @ valuation2)` 
       have "literalTrue literal valuation2"
-	by (auto simp add:memAppend)
+	by auto
       with `\<not> inconsistent valuation2` 
       have "\<not> literalFalse literal valuation2"
 	by (auto simp add:inconsistentCharacterization)
       with `literalFalse literal (valuation1 @ valuation2)` 
       have "literalFalse literal valuation1"
-	by (auto simp add:memAppend)
+	by auto
       with `literalTrue literal valuation2`
       show ?thesis 
 	by auto
@@ -778,22 +778,22 @@ next
   qed
 qed
 
-lemma inconsistentRemove:
+lemma inconsistentRemoveAll:
   fixes literal :: Literal and valuation :: Valuation
-  assumes "inconsistent (remove literal valuation)" 
+  assumes "inconsistent (removeAll literal valuation)" 
   shows "inconsistent valuation"
 using assms
 proof -
-  from `inconsistent (remove literal valuation)` obtain literal' :: Literal 
-    where l'True: "literalTrue literal' (remove literal valuation)" and l'False: "literalFalse literal' (remove literal valuation)"
+  from `inconsistent (removeAll literal valuation)` obtain literal' :: Literal 
+    where l'True: "literalTrue literal' (removeAll literal valuation)" and l'False: "literalFalse literal' (removeAll literal valuation)"
     by (auto simp add:inconsistentCharacterization)
   from l'True 
   have "literalTrue literal' valuation"
-    by (simp add:memRemoveIffMemListAndNotRemoved)
+    by (auto simp add: removeAll_set)
   moreover
   from l'False 
-  have "literalFalse literal' valuation" 
-    by (simp add:memRemoveIffMemListAndNotRemoved)
+  have "literalFalse literal' valuation"
+    by (auto simp add: removeAll_set)
   ultimately
   show ?thesis 
     by (auto simp add:inconsistentCharacterization)
@@ -803,13 +803,13 @@ lemma inconsistentPrefix:
   assumes "isPrefix valuation1 valuation2" and "inconsistent valuation1"
   shows "inconsistent valuation2"
 using assms
-by (auto simp add:inconsistentCharacterization isPrefix_def memAppend)
+by (auto simp add:inconsistentCharacterization isPrefix_def)
 
 lemma consistentPrefix:
   assumes "isPrefix valuation1 valuation2" and "consistent valuation2"
   shows "consistent valuation1"
 using assms
-by (auto simp add:inconsistentCharacterization isPrefix_def memAppend)
+by (auto simp add:inconsistentCharacterization isPrefix_def)
 
 lemma tautologyNotFalse:
   fixes clause :: Clause and valuation :: Valuation
@@ -838,10 +838,10 @@ by auto
 
 lemma totalFormulaImpliesTotalClause:
   fixes clause :: Clause and formula :: Formula and valuation :: Valuation
-  assumes clauseMem: "clause el formula" and totalFormula: "total valuation (vars formula)"
+  assumes clauseEl: "clause el formula" and totalFormula: "total valuation (vars formula)"
   shows totalClause: "total valuation (vars clause)"
 proof -
-  from clauseMem 
+  from clauseEl 
   have "vars clause \<subseteq> vars formula" 
     using formulaContainsItsClausesVariables [of "clause" "formula"] 
     by simp
@@ -952,13 +952,13 @@ next
     by (auto simp add:formulaFalseIffContainsFalseClause)
 qed
 
-lemma totalRemoveSingleLiteralClause:
+lemma totalRemoveAllSingleLiteralClause:
   fixes literal :: Literal and valuation :: Valuation and formula :: Formula
-  assumes varLiteral: "var literal \<in> vars valuation" and totalRemove: "total valuation (vars (remove [literal] formula))"
+  assumes varLiteral: "var literal \<in> vars valuation" and totalRemoveAll: "total valuation (vars (removeAll [literal] formula))"
   shows "total valuation (vars formula)"
 proof -
-  have "vars formula - vars [literal] \<subseteq> vars (remove [literal] formula)"
-    by (rule varsRemoveClauseSuperset)
+  have "vars formula - vars [literal] \<subseteq> vars (removeAll [literal] formula)"
+    by (rule varsRemoveAllClauseSuperset)
   with assms 
   show ?thesis 
     by auto
@@ -1046,7 +1046,7 @@ proof -
     have "\<exists> l. literalTrue l valuation \<and> literalFalse l [literal]"
       by auto
     hence "literalFalse literal valuation" 
-      by (auto simp add:mem_iff)
+      by auto
     hence "var (opposite literal) \<in> (vars valuation)"
       using valuationContainsItsLiteralsVariable [of "opposite literal" "valuation"]
       by simp
@@ -1165,17 +1165,17 @@ proof -
 qed
 
 
-lemma formulaEntailsLiteralRemove:
+lemma formulaEntailsLiteralRemoveAll:
   fixes formula :: Formula and clause :: Clause and literal :: Literal
-  assumes "formulaEntailsLiteral (remove clause formula) literal"
+  assumes "formulaEntailsLiteral (removeAll clause formula) literal"
   shows "formulaEntailsLiteral formula literal"
 proof -
   {
     fix valuation :: Valuation
     assume modelF: "model valuation formula"
-    hence "formulaTrue (remove clause formula) valuation" 
-      by (auto simp add:formulaTrueRemove)
-    with modelF `formulaEntailsLiteral (remove clause formula) literal` 
+    hence "formulaTrue (removeAll clause formula) valuation" 
+      by (auto simp add:formulaTrueRemoveAll)
+    with modelF `formulaEntailsLiteral (removeAll clause formula) literal` 
     have "literalTrue literal valuation"
       by (auto simp add:formulaEntailsLiteral_def)
   }
@@ -1183,17 +1183,17 @@ proof -
     by (simp add:formulaEntailsLiteral_def)
 qed
 
-lemma formulaEntailsLiteralRemoveAppend:
+lemma formulaEntailsLiteralRemoveAllAppend:
   fixes formula1 :: Formula and formula2 :: Formula and clause :: Clause and valuation :: Valuation
-  assumes "formulaEntailsLiteral ((remove clause formula1) @ formula2) literal" 
+  assumes "formulaEntailsLiteral ((removeAll clause formula1) @ formula2) literal" 
   shows "formulaEntailsLiteral (formula1 @ formula2) literal"
 proof -
   {
     fix valuation :: Valuation
     assume modelF: "model valuation (formula1 @ formula2)"
-    hence "formulaTrue ((remove clause formula1) @ formula2) valuation" 
-      by (auto simp add:formulaTrueRemove formulaTrueAppend)
-    with modelF `formulaEntailsLiteral ((remove clause formula1) @ formula2) literal` 
+    hence "formulaTrue ((removeAll clause formula1) @ formula2) valuation" 
+      by (auto simp add:formulaTrueRemoveAll formulaTrueAppend)
+    with modelF `formulaEntailsLiteral ((removeAll clause formula1) @ formula2) literal` 
     have "literalTrue literal valuation"
       by (auto simp add:formulaEntailsLiteral_def)
   }
@@ -1421,19 +1421,19 @@ qed
 lemma unsatisfiableFormulaWithSingleLiteralClause:
   fixes formula :: Formula and literal :: Literal
   assumes "\<not> satisfiable formula" and "[literal] el formula"
-  shows "formulaEntailsLiteral (remove [literal] formula) (opposite literal)"
+  shows "formulaEntailsLiteral (removeAll [literal] formula) (opposite literal)"
 proof -
   {
     fix valuation :: Valuation
-    assume "model valuation (remove [literal] formula)"
+    assume "model valuation (removeAll [literal] formula)"
     hence "literalFalse literal valuation"
     proof (cases "var literal \<in> vars valuation")
       case True
       {
 	assume "literalTrue literal valuation"
-	with `model valuation (remove [literal] formula)` 
+	with `model valuation (removeAll [literal] formula)` 
 	have "model valuation formula"
-	  by (auto simp add:formulaTrueIffAllClausesAreTrue memRemoveIffMemListAndNotRemoved)
+	  by (auto simp add:formulaTrueIffAllClausesAreTrue removeAll_set)
 	with `\<not> satisfiable formula` 
 	have "False"
 	  by (auto simp add:satisfiable_def)
@@ -1444,13 +1444,13 @@ proof -
 	by auto
     next
       case False
-      with `model valuation (remove [literal] formula)` 
-      have "model (valuation @ [literal]) (remove [literal] formula)"
+      with `model valuation (removeAll [literal] formula)` 
+      have "model (valuation @ [literal]) (removeAll [literal] formula)"
 	by (rule modelExpand)
       hence 
-	"formulaTrue (remove [literal] formula) (valuation @ [literal])" and "consistent (valuation @ [literal])"
+	"formulaTrue (removeAll [literal] formula) (valuation @ [literal])" and "consistent (valuation @ [literal])"
 	by auto
-      from `formulaTrue (remove [literal] formula) (valuation @ [literal])` 
+      from `formulaTrue (removeAll [literal] formula) (valuation @ [literal])` 
       have "formulaTrue formula (valuation @ [literal])"
 	by (rule trueFormulaWithSingleLiteralClause)
       with `consistent (valuation @ [literal])` 
@@ -1497,8 +1497,8 @@ proof-
 	    using inconsistentCharacterization [of "oppositeLiteralList c"]
 	    by auto
 	  hence "(opposite l) el c" "l el c"
-	    using literalMemListIffOppositeLiteralMemOppositeLiteralList[of "l" "c"]
-	    using literalMemListIffOppositeLiteralMemOppositeLiteralList[of "opposite l" "c"]
+	    using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "c"]
+	    using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite l" "c"]
 	    by auto
 	  hence "clauseTautology c"
 	    using clauseTautologyCharacterization[of "c"]
@@ -1514,7 +1514,7 @@ proof-
       have "consistent ?v'"
 	using inconsistentAppend[of "v" "oppositeLiteralList c"]
 	unfolding consistent_def
-	using literalMemListIffOppositeLiteralMemOppositeLiteralList
+	using literalElListIffOppositeLiteralElOppositeLiteralList
 	by auto
       moreover
       from `model v F`
@@ -1524,7 +1524,7 @@ proof-
       moreover
       have "formulaTrue (val2form (oppositeLiteralList c)) ?v'"
 	using val2formFormulaTrue[of "oppositeLiteralList c" "v @ oppositeLiteralList c"]
-	by (simp add: memAppend)
+	by simp
       ultimately
       have "model ?v' (F @ val2form (oppositeLiteralList c))"
 	by (simp add: formulaTrueAppend)
@@ -1700,7 +1700,7 @@ qed
 subsubsection{* Resolution *}
 
 definition
-"resolve clause1 clause2 literal == remove literal clause1 @ remove (opposite literal) clause2"
+"resolve clause1 clause2 literal == removeAll literal clause1 @ removeAll (opposite literal) clause2"
 
 lemma resolventIsEntailed: 
   fixes clause1 :: Clause and clause2 :: Clause and literal :: Literal
@@ -1711,19 +1711,19 @@ proof -
     assume "model valuation [clause1, clause2]"
     from `model valuation [clause1, clause2]` obtain l1 :: Literal
       where "l1 el clause1" and "literalTrue l1 valuation"
-      by (auto simp add: formulaTrueIffAllClausesAreTrue clauseTrueIffContainsTrueLiteral mem_iff)
+      by (auto simp add: formulaTrueIffAllClausesAreTrue clauseTrueIffContainsTrueLiteral)
     from `model valuation [clause1, clause2]` obtain l2 :: Literal
       where "l2 el clause2" and "literalTrue l2 valuation"
-      by (auto simp add: formulaTrueIffAllClausesAreTrue clauseTrueIffContainsTrueLiteral mem_iff)
+      by (auto simp add: formulaTrueIffAllClausesAreTrue clauseTrueIffContainsTrueLiteral)
     have "clauseTrue (resolve clause1 clause2 literal) valuation"
     proof (cases "literal = l1")
       case False
       with `l1 el clause1` 
       have "l1 el (resolve clause1 clause2 literal)" 
-	by (auto simp add:resolve_def memAppend memRemoveIffMemListAndNotRemoved)
+	by (auto simp add:resolve_def removeAll_set)
       with `literalTrue l1 valuation` 
       show ?thesis 
-	by (auto simp add: clauseTrueIffContainsTrueLiteral mem_iff)
+	by (auto simp add: clauseTrueIffContainsTrueLiteral)
     next
       case True
       from `model valuation [clause1, clause2]` 
@@ -1734,10 +1734,10 @@ proof -
 	by (auto simp add:inconsistentCharacterization)
       with `l2 el clause2` 
       have "l2 el (resolve clause1 clause2 literal)"
-	by (auto simp add:resolve_def memAppend memRemoveIffMemListAndNotRemoved)
+	by (auto simp add:resolve_def removeAll_set)
       with `literalTrue l2 valuation` 
       show ?thesis
-	by (auto simp add: clauseTrueIffContainsTrueLiteral mem_iff)
+	by (auto simp add: clauseTrueIffContainsTrueLiteral)
     qed
   } 
   thus ?thesis 
@@ -1775,8 +1775,8 @@ qed
 lemma resolveFalseClauses:
   fixes literal :: Literal and clause1 :: Clause and clause2 :: Clause and valuation :: Valuation
   assumes 
-  "clauseFalse (remove literal clause1) valuation" and
-  "clauseFalse (remove (opposite literal) clause2) valuation"
+  "clauseFalse (removeAll literal clause1) valuation" and
+  "clauseFalse (removeAll (opposite literal) clause2) valuation"
   shows "clauseFalse (resolve clause1 clause2 literal) valuation"
 proof -
   {
@@ -1785,19 +1785,19 @@ proof -
     have "literalFalse l valuation"
     proof-
       from `l el (resolve clause1 clause2 literal)` 
-      have "l el (remove literal clause1) \<or> l el (remove (opposite literal) clause2)"
+      have "l el (removeAll literal clause1) \<or> l el (removeAll (opposite literal) clause2)"
 	unfolding resolve_def
-	by (simp add: memAppend)
+	by simp
       thus ?thesis 
       proof
-	assume "l el (remove literal clause1)"
+	assume "l el (removeAll literal clause1)"
 	thus "literalFalse l valuation"
-	  using `clauseFalse (remove literal clause1) valuation`
+	  using `clauseFalse (removeAll literal clause1) valuation`
 	  by (simp add: clauseFalseIffAllLiteralsAreFalse)
       next
-	assume "l el (remove (opposite literal) clause2)"
+	assume "l el (removeAll (opposite literal) clause2)"
 	thus "literalFalse l valuation"
-	  using `clauseFalse (remove (opposite literal) clause2) valuation`
+	  using `clauseFalse (removeAll (opposite literal) clause2) valuation`
 	  by (simp add: clauseFalseIffAllLiteralsAreFalse)
       qed
     qed
@@ -1866,16 +1866,16 @@ proof -
     by (simp add: formulaEntailsLiteral_def)
 qed
 
-lemma isUnitClauseRemoveUnitLiteralIsFalse: 
+lemma isUnitClauseRemoveAllUnitLiteralIsFalse: 
   fixes uClause :: Clause and uLiteral :: Literal and valuation :: Valuation
   assumes "isUnitClause uClause uLiteral valuation"
-  shows "clauseFalse (remove uLiteral uClause) valuation"
+  shows "clauseFalse (removeAll uLiteral uClause) valuation"
 proof -
   {
     fix literal :: Literal
-    assume "literal el (remove uLiteral uClause)"
+    assume "literal el (removeAll uLiteral uClause)"
     hence "literal el uClause" and "literal \<noteq> uLiteral"
-      by (auto simp add:memRemoveIffMemListAndNotRemoved)
+      by (auto simp add:removeAll_set)
     with `isUnitClause uClause uLiteral valuation` 
     have "literalFalse literal valuation"
       by (simp add: isUnitClause_def)
@@ -1895,8 +1895,8 @@ isReason::"Clause \<Rightarrow> Literal \<Rightarrow> Valuation \<Rightarrow> bo
 where
 "(isReason clause literal valuation) ==
   (literal el clause) \<and> 
-  (clauseFalse (remove literal clause) valuation) \<and>
-  (\<forall> literal'. literal' el (remove literal clause) 
+  (clauseFalse (removeAll literal clause) valuation) \<and>
+  (\<forall> literal'. literal' el (removeAll literal clause) 
        \<longrightarrow> preceeds (opposite literal') literal valuation \<and> opposite literal' \<noteq> literal)"
 
 lemma isReasonAppend: 
@@ -1906,8 +1906,8 @@ lemma isReasonAppend:
 proof -
   from assms 
   have "literal el clause" and 
-    "clauseFalse (remove literal clause) valuation" (is "?false valuation") and
-    "\<forall> literal'. literal' el (remove literal clause) \<longrightarrow> 
+    "clauseFalse (removeAll literal clause) valuation" (is "?false valuation") and
+    "\<forall> literal'. literal' el (removeAll literal clause) \<longrightarrow> 
           preceeds (opposite literal') literal valuation \<and> opposite literal' \<noteq> literal" (is "?preceeds valuation")
     unfolding isReason_def
     by auto
@@ -1935,18 +1935,18 @@ proof -
     and "\<forall> literal. literal el uClause \<and> literal \<noteq> uLiteral \<longrightarrow> literalFalse literal valuation"
     unfolding isUnitClause_def
     by auto
-  hence "clauseFalse (remove uLiteral uClause) valuation" 
-    by (simp add: memRemoveIffMemListAndNotRemoved clauseFalseIffAllLiteralsAreFalse)
-  hence "clauseFalse (remove uLiteral uClause) (valuation @ [uLiteral])"
+  hence "clauseFalse (removeAll uLiteral uClause) valuation" 
+    by (simp add: removeAll_set clauseFalseIffAllLiteralsAreFalse)
+  hence "clauseFalse (removeAll uLiteral uClause) (valuation @ [uLiteral])"
     by (simp add: clauseFalseAppendValuation)
   moreover
-  have "\<forall> literal'. literal' el (remove uLiteral uClause) \<longrightarrow> 
+  have "\<forall> literal'. literal' el (removeAll uLiteral uClause) \<longrightarrow> 
     preceeds (opposite literal') uLiteral (valuation @ [uLiteral]) \<and> (opposite literal') \<noteq> uLiteral"
   proof -
     {
       fix literal' :: Literal
-      assume "literal' el (remove uLiteral uClause)"
-      with `clauseFalse (remove uLiteral uClause) valuation` 
+      assume "literal' el (removeAll uLiteral uClause)"
+      with `clauseFalse (removeAll uLiteral uClause) valuation` 
       have "literalFalse literal' valuation"
 	by (simp add:clauseFalseIffAllLiteralsAreFalse)
       with `\<not> literalTrue uLiteral valuation` `\<not> literalFalse uLiteral valuation`
@@ -1965,7 +1965,7 @@ qed
 lemma isReasonHoldsInPrefix: 
   fixes prefix :: Valuation and valuation :: Valuation and clause :: Clause and literal :: Literal
   assumes 
-  "literal mem prefix" and 
+  "literal el prefix" and 
   "isPrefix prefix valuation" and 
   "isReason clause literal valuation"
   shows 
@@ -1974,18 +1974,18 @@ proof -
   from `isReason clause literal valuation` 
   have
     "literal el clause" and 
-    "clauseFalse (remove literal clause) valuation" (is "?false valuation") and
-    "\<forall> literal'. literal' el (remove literal clause) \<longrightarrow> 
+    "clauseFalse (removeAll literal clause) valuation" (is "?false valuation") and
+    "\<forall> literal'. literal' el (removeAll literal clause) \<longrightarrow> 
          preceeds (opposite literal') literal valuation \<and> opposite literal' \<noteq> literal" (is "?preceeds valuation")
     unfolding isReason_def
     by auto
   {
     fix literal' :: Literal
-    assume "literal' el (remove literal clause)"
+    assume "literal' el (removeAll literal clause)"
     with `?preceeds valuation` 
     have "preceeds (opposite literal') literal valuation" "(opposite literal') \<noteq> literal"
       by auto
-    with `literal mem prefix` `isPrefix prefix valuation`
+    with `literal el prefix` `isPrefix prefix valuation`
     have "preceeds (opposite literal') literal prefix \<and> (opposite literal') \<noteq> literal" 
       using laterInPrefixRetainsPreceeds [of "prefix" "valuation" "opposite literal'" "literal"]
       by auto
@@ -1998,11 +1998,11 @@ proof -
   proof -
     {
       fix literal' :: Literal
-      assume "literal' el (remove literal clause)"
-      from `literal' el (remove literal clause)` * 
+      assume "literal' el (removeAll literal clause)"
+      from `literal' el (removeAll literal clause)` * 
       have "preceeds (opposite literal') literal prefix"
 	by simp
-      with `literal mem prefix` 
+      with `literal el prefix` 
       have "literalFalse literal' prefix"
 	unfolding preceeds_def
 	by (auto split: split_if_asm)
@@ -2081,7 +2081,7 @@ proof -
     *: "literal el (oppositeLiteralList literalList)" and **: "literalTrue literal valuation"  
     by (auto simp add: isLastAssertedLiteral_def)
   from * show "opposite literal el literalList"
-    using literalMemListIffOppositeLiteralMemOppositeLiteralList [of "literal" "oppositeLiteralList literalList"]
+    using literalElListIffOppositeLiteralElOppositeLiteralList [of "literal" "oppositeLiteralList literalList"]
     by simp
   from ** show "literalTrue literal valuation" 
     by simp
@@ -2095,7 +2095,7 @@ proof -
   have "literalTrue literal [literal]" 
     by simp
   hence "literalTrue literal (valuation @ [literal])"
-    by (simp add:memAppend)
+    by simp
   moreover
   have "\<forall> l. l el literalList \<and> l \<noteq> literal \<longrightarrow> \<not>  preceeds literal l (valuation @ [literal])"
   proof -
@@ -2108,7 +2108,7 @@ proof -
 	with `l \<noteq> literal` 
 	show ?thesis
 	  unfolding preceeds_def
-	  by (simp add: memAppend)
+	  by simp
       next
 	case True
 	from `\<not> literalTrue literal valuation` `literalTrue literal [literal]` `literalTrue l valuation` 

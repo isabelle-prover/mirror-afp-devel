@@ -1,12 +1,11 @@
 (*    Title:              SatSolverVerification/KrsticGoel.thy
-      ID:                 $Id: KrsticGoel.thy,v 1.2 2008-07-27 14:23:32 lsf37 Exp $
+      ID:                 $Id: KrsticGoel.thy,v 1.3 2008-08-06 15:27:21 filipmaric Exp $
       Author:             Filip Maric
-      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header{* Transition system of Krsti\' c and Goel. *}
 theory KrsticGoel
-imports CNF Trail SatSolverVerification
+imports Main MoreList CNF Trail SatSolverVerification
 begin
 
 text{* This theory formalizes the transition rule system given by
@@ -867,7 +866,7 @@ proof-
   moreover
   {
     assume "appliedBackjump stateA stateB"
-    then obtain l::Literal and level::int
+    then obtain l::Literal and level::nat
       where 
       "getConflictFlag stateA = True"
       "isBackjumpLevel level l (getC stateA) (getM stateA)"
@@ -897,7 +896,7 @@ proof-
       by simp
     hence "l el getC stateA"
       unfolding isLastAssertedLiteral_def
-      using literalMemListIffOppositeLiteralMemOppositeLiteralList[of "l" "getC stateA"]
+      using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "getC stateA"]
       by simp
 
     have "isPrefix (prefixToLevel level (getM stateA)) (getM stateA)"
@@ -1194,7 +1193,7 @@ proof-
   moreover
   {
     assume "appliedBackjump stateA stateB"
-    then obtain l::Literal and level::int
+    then obtain l::Literal and level::nat
       where 
       "getConflictFlag stateA = True"
       "isBackjumpLevel level l (getC stateA) (getM stateA)"
@@ -1300,7 +1299,7 @@ proof-
     "getC stateA = getC stateB"
     "(getF stateB, getF stateA) \<in> learnLess (getC stateA)"
     unfolding learnLess_def
-    by (auto simp add: memAppend)
+    by auto
 qed
 
 
@@ -2027,7 +2026,7 @@ lemma finalConflictingState:
   "getConflictFlag state"
   shows
   "getC state = []"
-proof (cases "\<forall> l. l el getC state \<longrightarrow> opposite l mem decisions (getM state)")
+proof (cases "\<forall> l. l el getC state \<longrightarrow> opposite l el decisions (getM state)")
   case True
   {
     assume "getC state \<noteq> []"
@@ -2053,7 +2052,7 @@ proof (cases "\<forall> l. l el getC state \<longrightarrow> opposite l mem deci
       using allDecisionsThenExistsBackjumpLevel [of "getM state" "getC state" "opposite ?l"]
       by simp
     then
-    obtain level::int where
+    obtain level::nat where
       "isBackjumpLevel level (opposite ?l) (getC state) (getM state)"
       by auto
     with `getConflictFlag state`

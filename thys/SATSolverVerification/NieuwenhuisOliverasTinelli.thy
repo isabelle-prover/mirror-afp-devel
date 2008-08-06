@@ -1,12 +1,11 @@
 (*    Title:              SatSolverVerification/NieuwenhuisOliverasTinelli.thy
-      ID:                 $Id: NieuwenhuisOliverasTinelli.thy,v 1.2 2008-07-27 14:23:33 lsf37 Exp $
+      ID:                 $Id: NieuwenhuisOliverasTinelli.thy,v 1.3 2008-08-06 15:27:21 filipmaric Exp $
       Author:             Filip Maric
-      Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
 header{* Transition system of Nieuwenhuis, Oliveras and Tinelli. *}
 theory NieuwenhuisOliverasTinelli
-imports CNF Trail SatSolverVerification
+imports Main MoreList CNF Trail SatSolverVerification
 begin
 
 text{* This theory formalizes the transition rule system given by
@@ -524,7 +523,7 @@ proof-
   moreover
   {
     assume "appliedBackjump stateA stateB"
-    then obtain bc::Clause and bl::Literal and level::int
+    then obtain bc::Clause and bl::Literal and level::nat
       where 
       "isUnitClause bc bl (elements (prefixToLevel level (getM stateA)))"
       "formulaEntailsClause (getF stateA) bc"
@@ -793,7 +792,7 @@ proof-
   moreover
   {
     assume "appliedBackjump stateA stateB"
-    then obtain bc::Clause and bl::Literal and level::int
+    then obtain bc::Clause and bl::Literal and level::nat
       where 
       "isUnitClause bc bl (elements (prefixToLevel level (getM stateA)))"
       "formulaEntailsClause (getF stateA) bc"
@@ -1351,7 +1350,7 @@ proof-
 	fix l::Literal
 	assume "l el ?c"
 	hence "opposite l el decisions (getM state)"
-	  using literalMemListIffOppositeLiteralMemOppositeLiteralList [of "l" "?c"]
+	  using literalElListIffOppositeLiteralElOppositeLiteralList [of "l" "?c"]
 	  by simp
 	hence "literalFalse l (elements (getM state))"
 	  using markedElementsAreElements[of "opposite l" "getM state"]
@@ -1374,7 +1373,7 @@ proof-
 	fix l::Literal
 	assume "l el ?c"
 	hence "(opposite l) el (oppositeLiteralList ?c)"
-	  using literalMemListIffOppositeLiteralMemOppositeLiteralList[of "l" "?c"]
+	  using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "?c"]
 	  by simp
       }
       thus ?thesis
@@ -1385,7 +1384,7 @@ proof-
       using `uniq (elements (getM state))`
       using allDecisionsThenExistsBackjumpLevel[of "getM state" "?c" "opposite ?l"]
       by simp
-    then obtain level::int
+    then obtain level::nat
       where "isBackjumpLevel level (opposite ?l) ?c (getM state)"
       by auto
     with `consistent (elements (getM state))` `uniq (elements (getM state))` `clauseFalse ?c (elements (getM state))`

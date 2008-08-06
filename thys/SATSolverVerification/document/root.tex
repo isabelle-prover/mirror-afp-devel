@@ -33,11 +33,6 @@
 \urlstyle{rm}
 \isabellestyle{it}
 
-%make a bit more space
-\addtolength{\hoffset}{-1,5cm}
-\addtolength{\textwidth}{3cm}
-\addtolength{\voffset}{-1cm}
-\addtolength{\textheight}{2cm}
 
 \begin{document}
 
@@ -45,15 +40,15 @@
 \author{By Filip Mari\' c}
 \maketitle
 \abstract{
-This document contains formal correctness proofs of modern SAT solvers. 
+This document contains formall correctness proofs of modern SAT solvers. 
 Following \cite{KrsticGoel,NieuwenhuisOliverasTinelli}, solvers are described 
 using state-transition systems. Several different SAT solver descriptions are given
 and their partial correctness and termination is proved. These include:
 \begin{enumerate}
 \item a solver based on classical DPLL procedure (based on backtrack-search with unit propagation), 
-\item a very general solver with backjumping and learning (similar to the description given in 
+\item a very general solver with backjumping and learning (similiar to the description given in 
       \cite{NieuwenhuisOliverasTinelli}), and 
-\item a solver with a specific conflict analysis algorithm (similar to the description given 
+\item a solver with a specific conflict analysis algorithm (similiar to the description given 
       in \cite{KrsticGoel}). 
 \end{enumerate}
 Within the SAT solver correctness proofs, a large number of lemmas
