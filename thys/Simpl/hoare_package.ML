@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.21 2008-07-25 10:03:48 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.22 2008-08-07 21:55:59 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -1385,7 +1385,7 @@ local structure P = OuterParse and S = SpecParse and K = OuterKeyword in
 val valuePar = "val"
 val resultPar = "res"
 
-val var_declP  = P.name -- (P.$$$ "::" |-- P.!!! P.typ); (* bstring * string *)
+val var_declP  = P.name -- (P.$$$ "::" |-- P.!!! P.typ_group); (* bstring * string *)
 val var_declP' = P.name >> (fn n => (n,""));
 
 val localsP = Scan.repeat var_declP; (* (bstring * string) list *)
@@ -1409,12 +1409,12 @@ val proc_decl = proc_decl_statespace >> pair Function || proc_decl_record >> pai
 
 val loc_decl = Scan.optional (P.$$$ "where" |-- localsP --| P.$$$ "in") []
 
-val proc_body = (P.term) (*>> BodyTerm*)
+val proc_body = (P.term_group) (*>> BodyTerm*)
 
-val proc_type = (P.$$$ "::" |-- P.typ) >> BodyTyp
+val proc_type = (P.$$$ "::" |-- P.typ_group) >> BodyTyp
 
 
-fun proc_specs x = (P.!!! (Scan.repeat (S.thm_name ":" --  (P.prop )))
+fun proc_specs x = (P.!!! (Scan.repeat (S.thm_name ":" --  (P.prop_group)))
     >> map (fn (assumes as ((thm_name,thm_attribs),prop)) 
                  => (thm_name,prop))) x
  (* written fun instead of val because of sml value restriction *)
