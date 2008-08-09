@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.22 2008-08-07 21:55:59 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.23 2008-08-09 20:42:07 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -1380,7 +1380,9 @@ fun procedures_definition locname procs thy =
 
 (* outer syntax *)
 
-local structure P = OuterParse and S = SpecParse and K = OuterKeyword in
+structure P = OuterParse
+
+local structure S = SpecParse and K = OuterKeyword in
 
 val valuePar = "val"
 val resultPar = "res"
@@ -1393,7 +1395,7 @@ val localsP = Scan.repeat var_declP; (* (bstring * string) list *)
 val argP = var_declP;
 val argP' = var_declP';
 
-val not_eqP = Scan.ahead (Scan.one (fn t => OuterLex.val_of t <> "="));
+val not_eqP = Scan.ahead (Scan.unless (P.$$$ "=") (Scan.one (K true)))
 
 val proc_decl_statespace =
   (P.short_ident --| P.$$$ "(") -- 
@@ -3659,7 +3661,6 @@ fun hoare_rule_tac ctxt thms i st =
 
 (*** Methods ***)
 
-
 fun gen_inst _ tac ctxt (quant, ([], thms)) =
       Method.METHOD (fn facts => 
         quant (Method.insert_tac facts THEN' tac ctxt thms))
@@ -3672,8 +3673,8 @@ val hoare_rule_meth = gen_inst HoareRuleTac hoare_rule_tac;
 
 val insts_var =
   Scan.optional
-    (Args.and_list1 (Scan.lift (Args.var -- (Args.$$$ "=" |-- Args.!!! Args.name))) --|
-      Scan.lift (Args.$$$ "in")) [] -- Attrib.thms;
+    (Scan.lift (P.and_list1 (Args.var -- (Args.$$$ "=" |-- P.!!! Args.name)) --| Args.$$$ "in")) []
+    -- Attrib.thms;
 
 fun inst_args_var f src ctxt = f ctxt (#1 (Method.syntax (Args.goal_spec HEADGOAL -- insts_var) src ctxt));
 
