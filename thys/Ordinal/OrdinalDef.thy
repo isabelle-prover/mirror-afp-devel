@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalDef.thy,v 1.10 2008-07-25 10:03:57 fhaftmann Exp $
+    ID:          $Id: OrdinalDef.thy,v 1.11 2008-08-11 12:50:47 fhaftmann Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -258,13 +258,14 @@ lemma ordinal_wf: "wf {(x,y::ordinal). x < y}"
 done
 
 instance ordinal :: wellorder
+ apply (rule wf_wellorderI)
+ apply (rule ordinal_wf)
  apply (intro_classes)
        apply (rule ordinal_order_less_le_not_le)
       apply (rule ordinal_order_refl)
      apply (rule ordinal_order_trans, assumption+)
     apply (rule ordinal_order_antisym, assumption+)
   apply (rule ordinal_linear)
- apply (rule ordinal_wf)
 done
 
 
