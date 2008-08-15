@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.23 2008-08-09 20:42:07 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.24 2008-08-15 13:51:41 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -3673,12 +3673,12 @@ val hoare_rule_meth = gen_inst HoareRuleTac hoare_rule_tac;
 
 val insts_var =
   Scan.optional
-    (Scan.lift (P.and_list1 (Args.var -- (Args.$$$ "=" |-- P.!!! Args.name)) --| Args.$$$ "in")) []
+    (Scan.lift (P.and_list1 (Args.var -- (P.$$$ "=" |-- P.!!! Args.name)) --| P.$$$ "in")) []
     -- Attrib.thms;
 
 fun inst_args_var f src ctxt = f ctxt (#1 (Method.syntax (Args.goal_spec HEADGOAL -- insts_var) src ctxt));
 
-val argP = Args.name --| Args.$$$ "=" -- Args.name 
+val argP = Args.name --| P.$$$ "=" -- Args.name 
 val argsP = Scan.repeat argP
 val default_args = [("spec","spec"),("strip_guards","false")]
 
