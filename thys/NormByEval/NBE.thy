@@ -1,4 +1,4 @@
-(*  ID:         $Id: NBE.thy,v 1.7 2008-08-26 13:49:09 nipkow Exp $
+(*  ID:         $Id: NBE.thy,v 1.8 2008-08-26 14:09:34 nipkow Exp $
     Author:     Klaus Aehlig, Tobias Nipkow
     Normalization by Evaluation
 *)
@@ -442,25 +442,6 @@ where
 
 text{* Reduction of ML-terms: *}
 
-declare conj_cong[fundef_cong]
-
-function no_match_ML ("no'_match\<^bsub>ML\<^esub>") where
-"no_match_ML ps os = (\<exists>i < min (size os) (size ps).
-   \<exists>nm nm' vs vs'. ps!i = C\<^isub>U nm vs \<and> os!i = C\<^isub>U nm' vs' \<and>
-      (nm=nm' \<longrightarrow> no_match_ML vs vs'))"
-by pat_completeness auto
-termination
-apply(relation "measure(%(vs::ml list,_). \<Sum>v\<leftarrow>vs. size v)")
-apply auto
-sorry
-
-abbreviation
-"no_match_compR nm os == (\<forall>(nm',ps,v)\<in> compR. nm=nm' \<longrightarrow> no_match_ML ps os)"
-
-declare no_match_ML.simps[simp del]
-
-declare conj_cong[fundef_cong del]
-
 inductive_set
   Red :: "(ml * ml)set"
   and Redl :: "(ml list * ml list)set"
@@ -476,11 +457,6 @@ where
  -- "Execution of a compiled rewrite rule"
 | "(nm,vs,v) : compR \<Longrightarrow> \<forall> i. closed\<^bsub>ML\<^esub> 0 (\<sigma> i) \<Longrightarrow>
    A_ML (C_ML nm) (map (subst\<^bsub>ML\<^esub> \<sigma>) vs) \<Rightarrow> subst\<^bsub>ML\<^esub> \<sigma> v"
--- {* default rule: *}
-| "\<forall>i. closed\<^bsub>ML\<^esub> 0 (\<sigma> i)
-   \<Longrightarrow> vs = map V\<^bsub>ML\<^esub> [0..<arity nm] \<Longrightarrow> ls = map (subst\<^bsub>ML\<^esub> \<sigma>) vs
-   \<Longrightarrow> \<forall>(nm',vs',v') \<in> compR. nm=nm' \<longrightarrow> no_match\<^bsub>ML\<^esub> vs' ls
-   \<Longrightarrow> A_ML (C_ML nm) ls \<Rightarrow> subst\<^bsub>ML\<^esub> \<sigma> (C\<^isub>U nm vs)"
  -- {* Equations for function \texttt{apply}*}
 | apply_Clo1: "apply (Clo f vs (Suc 0)) v \<Rightarrow> A_ML f (v # vs)"
 | apply_Clo2: "n > 0 \<Longrightarrow>
@@ -941,7 +917,8 @@ abbreviation "comp_fixed t \<equiv> compile t (\<lambda>i. V\<^isub>U i [])"
 text{* Compiled rules: *}
 
 defs compR_def:
- "compR \<equiv> (\<lambda>(nm,ts,t). (nm, map comp_open (rev ts), comp_open t)) ` R"
+ "compR \<equiv> (\<lambda>(nm,ts,t). (nm, map comp_open (rev ts), comp_open t)) ` R \<union>
+     (\<lambda>(nm,ts,t). let vs = map V\<^bsub>ML\<^esub> [0..<arity nm] in (nm, vs, C\<^isub>U nm vs)) ` R"
 
 text{* Axioms about @{text R}: *}
 
@@ -1122,125 +1099,6 @@ proof -
   ultimately have "t \<rightarrow>* t'!" by simp
   thus ?thesis using kernel_pure[OF `pure t'`] by simp
 qed
-
-inductive normal :: "tm \<Rightarrow> bool" where
-"ALL t:set ts. normal t \<Longrightarrow> normal(V x \<bullet>\<bullet> ts)" |
-"normal t \<Longrightarrow> normal(\<Lambda> t)" |
-"ALL t:set ts. normal t \<Longrightarrow>
- ALL \<sigma>. ALL (nm',ls,r):R. \<not>(nm = nm' \<and> take (size ls) ts = map (subst \<sigma>) ls)
- \<Longrightarrow> normal(C nm \<bullet>\<bullet> ts)"
-
-fun C_normal where
-"C_normal(C\<^isub>U nm vs) = ((\<forall>v \<in> set vs. C_normal v) \<and> no_match_compR nm vs)" |
-"C_normal (C\<^bsub>ML\<^esub> _) = True" |
-"C_normal (V\<^bsub>ML\<^esub> _) = True" |
-"C_normal (A\<^bsub>ML\<^esub> v vs) = (C_normal v \<and> (\<forall>v \<in> set vs. C_normal v))" |
-"C_normal (Lam\<^bsub>ML\<^esub> v) = C_normal v" |
-"C_normal (V\<^isub>U x vs) = (\<forall>v \<in> set vs. C_normal v)" |
-"C_normal (Clo v vs _) = (C_normal v \<and> (\<forall>v \<in> set vs. C_normal v))" |
-"C_normal (apply u v) = (C_normal u \<and> C_normal v)"
-
-lemma C_normal_inv: "v \<Rightarrow> v' \<Longrightarrow> C_normal v \<Longrightarrow> C_normal v'" and
-      "vs \<Rightarrow> vs' \<Longrightarrow> \<forall>v\<in>set vs. C_normal v \<Longrightarrow> \<forall>v'\<in>set vs. C_normal v'"
-apply(induct rule:Red_Redl.inducts)
-apply(simp_all)
-sorry
-
-lemma not_pure_term[simp]: "~ pure(term v)"
-proof
-  assume "pure(term v)" thus False
-  proof cases qed auto
-qed
-
-abbreviation RedMLs :: "tm list \<Rightarrow> tm list \<Rightarrow> bool" (infix "[\<Rightarrow>*]" 50) where
-"ss [\<Rightarrow>*] ts == size ss = size ts \<and> (\<forall>i<size ss. ss!i \<Rightarrow>* ts!i)"
-
-lemma includes Vars
-assumes "no_match_compR nm vs" "map term (rev vs) [\<Rightarrow>*] ts" "C nm \<bullet>\<bullet> ts \<Rightarrow>* s"
-shows "EX ss. s = C nm \<bullet>\<bullet> ss \<and> ts [\<Rightarrow>*] ss"
-sorry
-
-lemma nbe_C_normal: includes Vars
-assumes "term v \<Rightarrow>* t'" "C_normal v" "pure t'" shows "normal t'"
-proof -
-  { fix t t' i v
-    assume "(t,t') : Redt^i"
-    hence "t = term v \<Longrightarrow> C_normal v \<Longrightarrow> pure t' \<Longrightarrow> normal t'"
-    proof(induct i arbitrary: t t' v)
-      case 0 thus ?case by auto
-    next
-      case (Suc i)
-      then obtain s where "t \<Rightarrow> s" "(s,t') : Redt^i"
-	by(blast dest:rel_pow_Suc_D2)
-      hence "term v \<Rightarrow> s" using Suc by simp
-      thus ?case
-      proof cases
-	case (term_C nm vs)
-	have "\<forall>(nm',vs',v') \<in> compR. nm=nm' \<longrightarrow> no_match\<^bsub>ML\<^esub> vs' vs" sorry
-	show ?thesis using Suc term_C
-
-  next
-    case term_V show ?thesis sorry
-  next
-    case term_Clo show ?thesis sorry
-  next
-    case ctxt_term
-    thus ?thesis using 2 C_normal_inv by auto
-  qed auto
-qed
-
-    }
-    thus ?thesis using assms unfolding rtrancl_is_UN_rel_pow by blast
-qed
-
-  case (2 t s v)
-  hence "term v \<Rightarrow> s" by simp
-  thus ?case
-  proof cases
-    case (term_C nm vs)
-    have "\<forall>(nm',vs',v') \<in> compR. nm=nm' \<longrightarrow> no_match\<^bsub>ML\<^esub> vs' vs" sorry
-    show ?thesis using 2 term_C
-"
-
-  next
-    case term_V show ?thesis sorry
-  next
-    case term_Clo show ?thesis sorry
-  next
-    case ctxt_term
-    thus ?thesis using 2 C_normal_inv by auto
-  qed auto
-qed
-
-using `t \<Rightarrow>* t'`
-proof(induct arbitrary: v rule:converse_rtrancl_induct)
-  case 1 thus ?case by simp
-next
-  case (2 t s v)
-  hence "term v \<Rightarrow> s" by simp
-  thus ?case
-  proof cases
-    case (term_C nm vs)
-    have "\<forall>(nm',vs',v') \<in> compR. nm=nm' \<longrightarrow> no_match\<^bsub>ML\<^esub> vs' vs" sorry
-    show ?thesis using 2 term_C
-"
-
-  next
-    case term_V show ?thesis sorry
-  next
-    case term_Clo show ?thesis sorry
-  next
-    case ctxt_term
-    thus ?thesis using 2 C_normal_inv by auto
-  qed auto
-qed
-
-theorem nbe_normal: includes Vars
-assumes "pure t" and "pure t'"
-and "term (comp_fixed t) \<Rightarrow>* t'" shows "normal t'"
-
-
-
 (*<*)
 end
 (*>*)
