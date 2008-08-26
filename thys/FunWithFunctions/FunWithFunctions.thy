@@ -1,9 +1,9 @@
 (*  Title:      Fun With Functions
-    ID:         $Id: FunWithFunctions.thy,v 1.1 2008-08-26 15:05:12 nipkow Exp $
+    ID:         $Id: FunWithFunctions.thy,v 1.2 2008-08-26 16:37:19 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
-theory FunWithFunctions imports Complex begin
+theory FunWithFunctions imports Complex_Main begin
 
 text{* See \cite{Tao2006}. Was first brought to our attention by Herbert
 Ehler who provided a similar proof. *}
