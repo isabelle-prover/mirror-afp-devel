@@ -73,7 +73,7 @@ logics.
 <!-- entry directory name: -->
 <!--#set var="name" value="BDD" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOL/Simpl/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL-Plain/HOL/Simpl/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -107,6 +107,6 @@ logics.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-06-12 06:57:28 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-09-01 09:15:43 $, $Revision: 1.1 
 $</div></body>
 </html>

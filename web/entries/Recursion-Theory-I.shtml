@@ -72,7 +72,7 @@
 <!-- entry directory name: -->
 <!--#set var="name" value="Recursion-Theory-I" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL-Plain/HOL/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -105,6 +105,6 @@
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-06-12 06:57:30 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-09-01 09:15:43 $, $Revision: 1.1 
 $</div></body>
 </html>

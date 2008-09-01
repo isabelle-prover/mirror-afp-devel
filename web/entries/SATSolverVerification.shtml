@@ -85,7 +85,7 @@ CNF based SAT algorithms.
 <!-- entry directory name: -->
 <!--#set var="name" value="SATSolverVerification" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL-Plain/HOL/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -117,6 +117,6 @@ CNF based SAT algorithms.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-07-27 14:23:37 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-09-01 09:15:43 $, $Revision: 1.1 
 $</div></body>
 </html>

@@ -64,9 +64,9 @@ rules.
 <!-- entry directory name: -->
 <!--#set var="name" value="MiniML" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="doc" value="../browser_info/current/HOL-Plain/HOL/${name}/document.pdf" -->
+<!--#set var="outline" value="../browser_info/current/HOL-Plain/HOL/${name}/outline.pdf" -->
+<!--#set var="browse" value="../browser_info/current/HOL-Plain/HOL/${name}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -100,6 +100,6 @@ rules.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-06-12 06:57:29 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-09-01 09:15:43 $, $Revision: 1.1 
 $</div></body>
 </html>
