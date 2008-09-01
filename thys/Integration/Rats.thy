@@ -9,7 +9,7 @@ Real/Rational.thy. Any volunteers? (TN) *)
 header {*The Rational Numbers*}
 
 theory Rats
-imports Complex_Main Hypercomplex
+imports Complex_Main NatPair
 begin
 
 text{*A dense and countable subset of the @{text real} type was needed for
@@ -30,7 +30,7 @@ then a surjective
   them countable, without even defining this concept. Much to my
 delight, these functions could be reused for the simple
   function integral properties.*}
-
+(*
 definition
   n2_to_n:: "(nat * nat) \<Rightarrow> nat" where
   "n2_to_n pair = (let (n,m) = pair in (n+m) * Suc (n+m) div 2 + n)"
@@ -38,184 +38,50 @@ definition
 definition
   n_to_n2::  "nat \<Rightarrow> (nat * nat)" where
   "n_to_n2 = inv n2_to_n"
-
+*)
 definition
   n3_to_rat:: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> real" where
   "n3_to_rat a b c = (if 2 dvd a then real b / real c else - real b /real c)"
 
 definition
-  n_to_rat:: "nat \<Rightarrow> real" where
-  "n_to_rat n = (let (a,x) = n_to_n2 n ;  (b,c) = n_to_n2 x in
+  nat_to_rat:: "nat \<Rightarrow> real" where
+  "nat_to_rat n = (let (a,x) = nat_to_nat2 n ;  (b,c) = nat_to_nat2 x in
     n3_to_rat a b c)"
+
+(* FIXME use the Rats provided already! *)
+no_notation    Rats ("\<rat>")
 
 definition
   Rats:: "real set" ("\<rat>") where
-  "\<rat> = range n_to_rat"
-
-lemma dvd2_a_x_suc_a: "2 dvd a * (Suc a)" 
-(*<*)proof (cases "2 dvd a") 
-  case True
-  thus ?thesis by (rule dvd_mult2)
-next
-  case False 
-  hence "Suc (a mod 2) = 2" by (simp add: dvd_eq_mod_eq_0)
-  hence "Suc a mod 2 = 0" by (simp add: mod_Suc) 
-  hence "2 dvd Suc a" by (simp only:dvd_eq_mod_eq_0) 
-  thus ?thesis by (rule dvd_mult)
-qed(*>*)
-
-lemma assumes eq: "n2_to_n (u,v) = n2_to_n (x,y)" 
-  shows n2_to_n_help: "u+v \<le> x+y"
-proof (rule classical)
-  assume "\<not> ?thesis"
-  hence contrapos: "x+y < u+v" 
-    by simp
-  have "n2_to_n (x,y) < (x+y) * Suc (x+y) div 2 + Suc (x + y)" 
-    by (unfold n2_to_n_def) (simp add: Let_def)
-  also have "\<dots> = (x+y)*Suc(x+y) div 2 + 2 * Suc(x+y) div 2" 
-    by (simp only: div_mult_self1_is_m) 
-  also have "\<dots> = (x+y)*Suc(x+y) div 2 + 2 * Suc(x+y) div 2 
-    + ((x+y)*Suc(x+y) mod 2 + 2 * Suc(x+y) mod 2) div 2" 
-  proof -
-    have "2 dvd (x+y)*Suc(x+y)" 
-      by (rule dvd2_a_x_suc_a)
-    hence "(x+y)*Suc(x+y) mod 2 = 0" 
-      by (simp only: dvd_eq_mod_eq_0)
-    also
-    have "2 * Suc(x+y) mod 2 = 0" 
-      by (rule mod_mult_self1_is_0)
-    ultimately have 
-      "((x+y)*Suc(x+y) mod 2 + 2 * Suc(x+y) mod 2) div 2 = 0" 
-      by simp 
-    thus ?thesis 
-      by simp
-  qed 
-  also have "\<dots> = ((x+y)*Suc(x+y) + 2*Suc(x+y)) div 2" 
-    by (rule div_add1_eq[THEN sym])
-  also have "\<dots> = ((x+y+2)*Suc(x+y)) div 2" 
-    by (simp only: add_mult_distrib[THEN sym])
-  also from contrapos have "\<dots> \<le> ((Suc(u+v))*(u+v)) div 2" 
-    by (simp only: mult_le_mono div_le_mono) 
-  also have "\<dots> \<le> n2_to_n (u,v)" 
-    by (unfold n2_to_n_def) (simp add: Let_def)
-  finally show ?thesis 
-    by (simp only: eq)
-qed
-    
-lemma n2_to_n_inj: "inj n2_to_n"
-proof -
-  {fix u v x y assume "n2_to_n (u,v) = n2_to_n (x,y)"
-    hence "u+v \<le> x+y" by (rule n2_to_n_help)
-    also from prems[THEN sym] have "x+y \<le> u+v" 
-      by (rule n2_to_n_help)
-    finally have eq: "u+v = x+y" .
-    with prems have ux: "u=x" 
-      by (simp add: n2_to_n_def Let_def)
-    with eq have vy: "v=y" 
-      by simp
-    with ux have "(u,v) = (x,y)" 
-      by simp
-  }
-  hence "\<And>x y. n2_to_n x = n2_to_n y \<Longrightarrow> x=y" 
-    by fast
-  thus ?thesis 
-    by (unfold inj_on_def) simp
-qed
-  
-lemma n_to_n2_surj: "surj n_to_n2" 
-  by (simp only: n_to_n2_def n2_to_n_inj inj_imp_surj_inv)
+  "\<rat> = range nat_to_rat"
 
 theorem nat_nat_rats: "real (a::nat)/real (b::nat) \<in> \<rat>"
 proof -
-  from n_to_n2_surj obtain x where "(a,b) = n_to_n2 x" 
+  from nat_to_nat2_surj obtain x where "(a,b) = nat_to_nat2 x" 
     by (auto simp only: surj_def) 
-  also from n_to_n2_surj obtain n where "(0,x) = n_to_n2 n" 
+  also from nat_to_nat2_surj obtain n where "(0,x) = nat_to_nat2 n" 
     by (auto simp only: surj_def)
   moreover have "n3_to_rat 0 a b = real a/real b" 
     by (simp add: n3_to_rat_def) 
-  ultimately have "real a/real b = n_to_rat n" 
-    by (auto simp add: n_to_rat_def Let_def split: split_split)
-  hence "real a/real b \<in> range n_to_rat" 
+  ultimately have "real a/real b = nat_to_rat n" 
+    by (auto simp add: nat_to_rat_def Let_def split: split_split)
+  hence "real a/real b \<in> range nat_to_rat" 
     by (auto simp add: image_def) 
   thus ?thesis 
     by (simp add: Rats_def)
 qed
 
-(*<*)
-theorem sum_of_naturals: (*Stolen from Isar_examples/Summation.thy by Markus Wenzel*)
-  "2 * (\<Sum>i < Suc n. i) = n * (n + 1)"
-  (is "?P n" is "?S n = _")
-proof (induct n)
-  show "?P 0" by (simp add: lessThan_Suc) 
-next
-  fix n have "?S (n + 1) = ?S n + 2 * (n + 1)" by (simp add: lessThan_Suc)
-  also assume "?S n = n * (n + 1)"
-  also have "... + 2 * (n + 1) = (n + 1) * (n + 2)" by simp
-  finally show "?P (Suc n)" by simp
-qed(*>*)
-
-
-lemma n2_to_n_surj: "surj n2_to_n"(*<*)
-proof (unfold surj_def)
-  {
-    fix z::nat 
-    def r \<equiv> "Max {r. (\<Sum>i < Suc r. i) \<le> z}" 
-    def x \<equiv> "z - (\<Sum>i < Suc r. i)"
-    
-    have "\<forall>r. r \<le>  (\<Sum>i < Suc r. i)"
-      by (simp add: lessThan_Suc) 
-    hence "finite  {r. (\<Sum>i < Suc r. i) \<le> z}"
-      by (rule NSLIMSEQ_finite_set)
-    also have "0 \<in> {r. (\<Sum>i < Suc r. i) \<le> z}"
-      by (simp add: lessThan_Suc) 
-    hence "{r. (\<Sum>i < Suc r. i) \<le> z} \<noteq> {}"
-      by fast
-    ultimately have a: "r \<in> {r. (\<Sum>i < Suc r. i) \<le> z} \<and> (\<forall>s \<in> {r. (\<Sum>i < Suc r. i) \<le> z}. s \<le> r)"
-      by (simp add: r_def del:mem_Collect_eq)
-    {
-      assume "r<x"
-      hence "r+1\<le>x"
-	by simp
-      hence "(\<Sum>i < Suc r. i)+(r+1)\<le>z"
-	using x_def by arith
-      hence "(r+1) \<in>  {r. (\<Sum>i < Suc r. i) \<le> z}"
-	by (simp add: lessThan_Suc) 
-      with a have "(r+1)\<le>r"
-	by simp
-    }
-    hence b: "x\<le>r" 
-      by force
-    
-    def y \<equiv> "r-x"
-    have "2*z=2*(\<Sum>i < r + 1. i)+2*x"
-      using x_def a by simp arith
-    also have "\<dots> = r * (r+1) + 2*x"
-      using sum_of_naturals by simp
-    also have "\<dots> = (x+y)*(x+y+1)+2*x"
-      using y_def b by simp
-    also { have "2 dvd ((x+y)*(x+y+1))"
-	using dvd2_a_x_suc_a by simp }
-    hence "\<dots> = 2 * n2_to_n(x,y)"
-      using n2_to_n_def by (simp add: Let_def dvd_mult_div_cancel)
-    finally have "z=n2_to_n (x, y)"
-      by simp
-  }
-  thus "\<forall>y. \<exists>x. y = n2_to_n x"
-    by fast
-qed(*>*)
-
-
 theorem minus_nat_nat_rats: "- real (a::nat)/real (b::nat) \<in> \<rat>"
 proof -
-  from n_to_n2_surj obtain x where "(a,b) = n_to_n2 x" 
+  from nat_to_nat2_surj obtain x where "(a,b) = nat_to_nat2 x" 
     by (auto simp only: surj_def) 
-  also from n_to_n2_surj obtain n where "(1,x) = n_to_n2 n" 
+  also from nat_to_nat2_surj obtain n where "(1,x) = nat_to_nat2 n" 
     by (auto simp only: surj_def)
   moreover have "n3_to_rat 1 a b = - real a/real b" 
     by (simp add: n3_to_rat_def) 
-  ultimately have "- real a/real b = n_to_rat n" 
-    by (auto simp add: n_to_rat_def Let_def split: split_split)
-  hence "- real a/real b \<in> range n_to_rat" 
+  ultimately have "- real a/real b = nat_to_rat n" 
+    by (auto simp add: nat_to_rat_def Let_def split: split_split)
+  hence "- real a/real b \<in> range nat_to_rat" 
     by (auto simp add: image_def) 
   thus ?thesis 
     by (simp add: Rats_def)
@@ -249,11 +115,11 @@ qed
 theorem assumes a: "z \<in> \<rat>"
 shows rats_int_int: "\<exists> x y. z = real (x::int)/real (y::int)"
 (*<*)proof -
-  from a obtain n where "z=n_to_rat n" 
+  from a obtain n where "z=nat_to_rat n" 
     by (auto simp only: Rats_def)
-  also  have "\<dots> =  (let (a,x) = n_to_n2 n ;  (b,c) = n_to_n2 x in
-  n3_to_rat a b c)" by (simp only: n_to_rat_def)
-  also have "\<dots> = n3_to_rat (fst (n_to_n2 n)) (fst (n_to_n2 (snd (n_to_n2 n)))) (snd (n_to_n2 (snd (n_to_n2 n))))"
+  also  have "\<dots> =  (let (a,x) = nat_to_nat2 n ;  (b,c) = nat_to_nat2 x in
+  n3_to_rat a b c)" by (simp only: nat_to_rat_def)
+  also have "\<dots> = n3_to_rat (fst (nat_to_nat2 n)) (fst (nat_to_nat2 (snd (nat_to_nat2 n)))) (snd (nat_to_nat2 (snd (nat_to_nat2 n))))"
     by (simp add: Let_def split: split_split)
   also obtain a b c where "\<dots> = n3_to_rat a b c" by blast
   also have "\<exists> x y. \<dots> = real (x::int)/real (y::int)"

@@ -222,10 +222,10 @@ lemma assumes ms: "measure_space M" and un: "(\<Union>i\<in>R. B i) = UNIV" and
 qed(*>*)
 
 
-lemma n2_to_n_fst_inj: "inj (\<lambda>i. n2_to_n(i,j))" using n2_to_n_inj
+lemma nat2_to_nat_fst_inj: "inj (\<lambda>i. nat2_to_nat(i,j))" using nat2_to_nat_inj
   by (unfold inj_on_def) blast
 
-lemma n2_to_n_snd_inj: "inj (\<lambda>j. n2_to_n(i,j))" using n2_to_n_inj
+lemma nat2_to_nat_snd_inj: "inj (\<lambda>j. nat2_to_nat(i,j))" using nat2_to_nat_inj
   by (unfold inj_on_def) blast
 
 (*>*)
@@ -258,12 +258,12 @@ proof cases
       and x: "nonnegative x" and y: "nonnegative y"
       by simp_all
 txt{*\nopagebreak*}
-    def "C" \<equiv> "(\<lambda>(i,j). A i \<inter> B j) \<circ> n_to_n2"
-    def "z1" \<equiv> "(\<lambda>k. x (fst (n_to_n2 k)))"
-    def "z2" \<equiv> "(\<lambda>k. y (snd (n_to_n2 k)))"
-    def "K" \<equiv> "{k. \<exists>i\<in>R. \<exists>j\<in>S. k = n2_to_n (i,j)}"
-    def "G" \<equiv> "(\<lambda>i. (\<lambda>j. n2_to_n (i,j)) ` S)"                                            
-    def "H" \<equiv> "(\<lambda>j. (\<lambda>i. n2_to_n (i,j)) ` R)"
+    def "C" \<equiv> "(\<lambda>(i,j). A i \<inter> B j) \<circ> nat_to_nat2"
+    def "z1" \<equiv> "(\<lambda>k. x (fst (nat_to_nat2 k)))"
+    def "z2" \<equiv> "(\<lambda>k. y (snd (nat_to_nat2 k)))"
+    def "K" \<equiv> "{k. \<exists>i\<in>R. \<exists>j\<in>S. k = nat2_to_nat (i,j)}"
+    def "G" \<equiv> "(\<lambda>i. (\<lambda>j. nat2_to_nat (i,j)) ` S)"                                            
+    def "H" \<equiv> "(\<lambda>j. (\<lambda>i. nat2_to_nat (i,j)) ` R)"
 
     { fix t
       { fix i
@@ -274,15 +274,15 @@ txt{*\nopagebreak*}
 	also 
 	{ fix j
 	  have "S=S" and 
-	    "x i * \<chi> (A i \<inter> B j) t = (let k=n2_to_n(i,j) in z1 k * \<chi> (C k) t)"
-	    by (auto simp add: C_def z1_def Let_def n2_to_n_inj n_to_n2_def)
+	    "x i * \<chi> (A i \<inter> B j) t = (let k=nat2_to_nat(i,j) in z1 k * \<chi> (C k) t)"
+	    by (auto simp add: C_def z1_def Let_def nat2_to_nat_inj nat_to_nat2_def)
 	}
-	hence "\<dots> = (\<Sum>j\<in>S. let k=n2_to_n (i,j) in z1 k * \<chi> (C k) t)"
+	hence "\<dots> = (\<Sum>j\<in>S. let k=nat2_to_nat (i,j) in z1 k * \<chi> (C k) t)"
 	  by (rule setsum_cong)
 
 	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * \<chi> (C k) t)"
 	  by (simp add: G_def Let_def o_def
-                setsum_reindex[OF subset_inj_on[OF n2_to_n_snd_inj]])
+                setsum_reindex[OF subset_inj_on[OF nat2_to_nat_snd_inj]])
 
 	finally have eq: "x i * \<chi> (A i) t = (\<Sum>k\<in> G i. z1 k * \<chi> (C k) t)" .
 	  (*Repeat with measure instead of char*)
@@ -291,18 +291,18 @@ txt{*\nopagebreak*}
 	  by (simp add: G_def)	
 	
 	{ fix k assume "k \<in> G i"
-	  then obtain j where kij: "k=n2_to_n (i,j)" 
+	  then obtain j where kij: "k=nat2_to_nat (i,j)" 
 	    by (auto simp only: G_def)
 	  { 
 	    fix i2 assume i2: "i2 \<noteq> i" 
 	    
 	    { fix k2 assume "k2 \<in> G i2"
-	      then obtain j2 where kij2: "k2=n2_to_n (i2,j2)" 
+	      then obtain j2 where kij2: "k2=nat2_to_nat (i2,j2)" 
 		by (auto simp only: G_def)
 	      
 	      from i2 have "(i2,j2) \<noteq> (i,j)" and "(i2,j2) \<in> UNIV" 
 		and "(i,j) \<in> UNIV" by auto
-	      with n2_to_n_inj have  "n2_to_n (i2,j2) \<noteq> n2_to_n (i,j)"
+	      with nat2_to_nat_inj have  "nat2_to_nat (i2,j2) \<noteq> nat2_to_nat (i,j)"
 		by (rule inj_on_contraD)
 	      with kij kij2 have "k2 \<noteq> k" 
 		by fast
@@ -330,16 +330,16 @@ txt{*\nopagebreak*}
 	also 
 	{ fix j 
 	  have "S=S" and "x i * measure M (A i \<inter> B j) = 
-	    (let k=n2_to_n(i,j) in z1 k * measure M (C k))"
-	    by (auto simp add: C_def z1_def Let_def n2_to_n_inj n_to_n2_def)
+	    (let k=nat2_to_nat(i,j) in z1 k * measure M (C k))"
+	    by (auto simp add: C_def z1_def Let_def nat2_to_nat_inj nat_to_nat2_def)
 	}
 	
-	hence "\<dots> = (\<Sum>j\<in>S. let k=n2_to_n (i,j) in z1 k * measure M (C k))"
+	hence "\<dots> = (\<Sum>j\<in>S. let k=nat2_to_nat (i,j) in z1 k * measure M (C k))"
 	  by (rule setsum_cong)
 	
 	also from S have "\<dots> = (\<Sum>k\<in>(G i). z1 k * measure M (C k))"
 	  by (simp add: G_def Let_def o_def
-                setsum_reindex[OF subset_inj_on[OF n2_to_n_snd_inj]])
+                setsum_reindex[OF subset_inj_on[OF nat2_to_nat_snd_inj]])
 	
 	finally have 
 	  "x i * measure M (A i) = (\<Sum>k\<in>(G i). z1 k * measure M (C k))" .
@@ -366,29 +366,29 @@ txt{*\nopagebreak*}
 	also 
 	{ fix i
 	  have "R=R" and 
-	    "y j * \<chi> (A i \<inter> B j) t = (let k=n2_to_n(i,j) in z2 k * \<chi> (C k) t)"
-	    by (auto simp add: C_def z2_def Let_def n2_to_n_inj n_to_n2_def)
+	    "y j * \<chi> (A i \<inter> B j) t = (let k=nat2_to_nat(i,j) in z2 k * \<chi> (C k) t)"
+	    by (auto simp add: C_def z2_def Let_def nat2_to_nat_inj nat_to_nat2_def)
 	}
-	hence "\<dots> = (\<Sum>i\<in>R. let k=n2_to_n (i,j) in z2 k * \<chi> (C k) t)"
+	hence "\<dots> = (\<Sum>i\<in>R. let k=nat2_to_nat (i,j) in z2 k * \<chi> (C k) t)"
 	  by (rule setsum_cong)
 	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * \<chi> (C k) t)" 
 	  by (simp add: H_def Let_def o_def
-                setsum_reindex[OF subset_inj_on[OF n2_to_n_fst_inj]])
+                setsum_reindex[OF subset_inj_on[OF nat2_to_nat_fst_inj]])
 	finally have eq: "y j * \<chi> (B j) t = (\<Sum>k\<in> H j. z2 k * \<chi> (C k) t)" .
 		
 	from R have H: "finite (H j)"  by (simp add: H_def)
 	
 	{ fix k assume "k \<in> H j"
-	  then obtain i where kij: "k=n2_to_n (i,j)" 
+	  then obtain i where kij: "k=nat2_to_nat (i,j)" 
 	    by (auto simp only: H_def)
 	  { fix j2 assume j2: "j2 \<noteq> j" 
 	    { fix k2 assume "k2 \<in> H j2"
-	      then obtain i2 where kij2: "k2=n2_to_n (i2,j2)" 
+	      then obtain i2 where kij2: "k2=nat2_to_nat (i2,j2)" 
 		by (auto simp only: H_def)
 	      
 	      from j2 have "(i2,j2) \<noteq> (i,j)" and "(i2,j2) \<in> UNIV" and "(i,j) \<in> UNIV" 
 		by auto
-	      with n2_to_n_inj have  "n2_to_n (i2,j2) \<noteq> n2_to_n (i,j)"
+	      with nat2_to_nat_inj have  "nat2_to_nat (i2,j2) \<noteq> nat2_to_nat (i,j)"
 		by (rule inj_on_contraD)
 	      with kij kij2 have "k2 \<noteq> k" 
 		by fast
@@ -416,14 +416,14 @@ txt{*\nopagebreak*}
 	also 
 	{ fix i 
 	  have "R=R" and "y j * measure M (A i \<inter> B j) = 
-	    (let k=n2_to_n(i,j) in z2 k * measure M (C k))"
-	    by (auto simp add: C_def z2_def Let_def n2_to_n_inj n_to_n2_def)
+	    (let k=nat2_to_nat(i,j) in z2 k * measure M (C k))"
+	    by (auto simp add: C_def z2_def Let_def nat2_to_nat_inj nat_to_nat2_def)
 	}
-	hence "\<dots> = (\<Sum>i\<in>R. let k=n2_to_n(i,j) in z2 k * measure M (C k))"
+	hence "\<dots> = (\<Sum>i\<in>R. let k=nat2_to_nat(i,j) in z2 k * measure M (C k))"
 	  by (rule setsum_cong)
 	also from R have "\<dots> = (\<Sum>k\<in>(H j). z2 k * measure M (C k))"
 	  by (simp add: H_def Let_def o_def
-                setsum_reindex[OF subset_inj_on[OF n2_to_n_fst_inj]])
+                setsum_reindex[OF subset_inj_on[OF nat2_to_nat_fst_inj]])
 	finally have eq2: 
 	  "y j * measure M (B j) = (\<Sum>k\<in>(H j). z2 k * measure M (C k))" .
       }
@@ -440,7 +440,7 @@ txt{*\nopagebreak*}
       
       { fix i 
 	from Bun have "(\<Union>k\<in>G i. C k) = A i" 
-	  by (simp add: G_def C_def n_to_n2_def n2_to_n_inj)
+	  by (simp add: G_def C_def nat_to_nat2_def nat2_to_nat_inj)
       }
       with Aun have "(\<Union>i\<in>R. (\<Union>k\<in>G i. C k)) = UNIV" 
 	by simp
@@ -463,26 +463,26 @@ txt{*\nopagebreak*}
     { fix k1 k2 assume "k1\<in>K" and "k2\<in>K" and diff: "k1 \<noteq> k2"
       with K_def obtain i1 j1 i2 j2 where 
 	RS: "i1 \<in> R \<and> i2 \<in> R \<and> j1 \<in> S \<and> j2 \<in> S"
-	and k1: "k1 = n2_to_n (i1,j1)" and k2: "k2 = n2_to_n (i2,j2)" 
+	and k1: "k1 = nat2_to_nat (i1,j1)" and k2: "k2 = nat2_to_nat (i2,j2)" 
 	by auto
       
       with diff have "(i1,j1) \<noteq> (i2,j2)" 
 	by auto
       
       with RS Adis Bdis k1 k2 have "C k1 \<inter> C k2 = {}" 
-	by (simp add: C_def n_to_n2_def n2_to_n_inj) fast
+	by (simp add: C_def nat_to_nat2_def nat2_to_nat_inj) fast
     }	
     moreover
     { fix k assume "k \<in> K"
       with K_def obtain i j where R: "i \<in> R" and S: "j \<in> S"
-	and k: "k = n2_to_n (i,j)" 
+	and k: "k = nat2_to_nat (i,j)" 
 	by auto
       with Ams Bms have "A i \<in> measurable_sets M" and "B j \<in> measurable_sets M"
 	by auto
       with ms have "A i \<inter> B j \<in> measurable_sets M" 
 	by (simp add: measure_space_def sigma_algebra_inter)
       with k have "C k \<in> measurable_sets M" 
-	by (simp add: C_def n_to_n2_def n2_to_n_inj) 
+	by (simp add: C_def nat_to_nat2_def nat2_to_nat_inj) 
     }
     moreover note Kun
     
@@ -1181,7 +1181,7 @@ lemma sf_norm_help:
 (*<*)proof -
   from jK have "K = insert j (K-{j})"  by blast
   moreover
-  from fin have fin2: "finite (K-{j})" and "j \<notin> (K-{j})"  by simp_all
+  from fin have finat2: "finite (K-{j})" and "j \<notin> (K-{j})"  by simp_all
   hence "(\<Sum>i\<in>insert j (K-{j}). (z i) * \<chi> (C i) t) = (z j * \<chi> (C j) t) + (\<Sum>i\<in>K-{j}. (z i) * \<chi> (C i) t)"
     by (rule setsum_insert)
   moreover from tj have "\<dots> = z j + (\<Sum>i\<in>K-{j}. (z i) * \<chi> (C i) t)"

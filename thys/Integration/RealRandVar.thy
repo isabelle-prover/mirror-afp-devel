@@ -434,7 +434,7 @@ lemma assumes f: "f \<in> rv M" and g: "g \<in> rv M"
 proof -
   from g have ms: "measure_space M" 
     by (simp add: rv_def)           
-  have "{w. f w < g w} = (\<Union>i. let s = n_to_rat i in {w. f w < s} \<inter> {w. s < g w})"
+  have "{w. f w < g w} = (\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w})"
   proof
     { fix w assume "w \<in> {w. f w < g w}"
       hence "f w < g w" ..
@@ -442,22 +442,22 @@ proof -
 	by (rule rats_dense_in_real)
       hence "\<exists>s\<in>\<rat>. w \<in> {w. f w < s} \<inter> {w. s < g w}" 
 	by simp                                          
-      hence "\<exists>i. w \<in> (let s = n_to_rat i in {w. f w < s} \<inter> {w. s < g w})" 
+      hence "\<exists>i. w \<in> (let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w})" 
 	by (simp add: Rats_def Let_def)
-      hence "w \<in> (\<Union>i. let s = n_to_rat i in {w. f w < s} \<inter> {w. s < g w})" 
+      hence "w \<in> (\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w})" 
 	by simp
     }
     thus 
-      "{w. f w < g w} \<subseteq> (\<Union>i. let s = n_to_rat i in {w. f w < s} \<inter> {w. s < g w})" ..
+      "{w. f w < g w} \<subseteq> (\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w})" ..
     
     show 
-      "(\<Union>i. let s = n_to_rat i in {w. f w < s} \<inter> {w. s < g w}) \<subseteq> {w. f w < g w}" 
+      "(\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w}) \<subseteq> {w. f w < g w}" 
       by (force simp add: Let_def)
 txt{*\nopagebreak*}
   qed
   
   moreover have 
-    "(\<Union>i. let s = n_to_rat i in {w. f w < s} \<inter> {w. s < g w}) \<in> measurable_sets M"
+    "(\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w}) \<in> measurable_sets M"
   proof -
     from ms have sig: "sigma_algebra (measurable_sets M)" 
       by (simp only: measure_space_def)
@@ -473,7 +473,7 @@ txt{*\nopagebreak*}
 	by (rule sigma_algebra_inter)
     }
     hence 
-      "\<forall>i. let s = n_to_rat i in {w. f w < s} \<inter> {w. s < g w} \<in> measurable_sets M" 
+      "\<forall>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w} \<in> measurable_sets M" 
       by (simp add: Let_def)
     with sig show ?thesis 
       by (auto simp only: sigma_algebra_def Let_def)

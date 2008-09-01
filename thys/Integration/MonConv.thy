@@ -2,6 +2,9 @@ header {*Monotone Convergence*}
 
 theory MonConv imports Complex_Main begin
 
+(* FIXME use the Rats provided already! *)
+no_notation    Rats ("\<rat>")
+
 text {* A sensible requirement for an integral operator is that it be
   ``well-behaved'' with respect to limit functions. To become just a
   little more
