@@ -1,7 +1,7 @@
 header {*Real-Valued Random Variables*}
 
 theory RealRandVar
-imports Measure Rats
+imports Measure
 begin
 
 text {*While most of the above material was modeled after Hurd's work
@@ -423,62 +423,50 @@ text {*For the general case of addition, we need one more set to be
   mind. They were not available in Isabelle/HOL\footnote{At least not
   as a subset of the reals, to the definition of which a type of
   positive rational numbers contributed \cite{Fleuriot:2000:MNR}.}, so
-  I built a theory with the necessary properties on my own. It can be
-  found in the appendix \ref{sec:rationals}.*}
+  I built a theory with the necessary properties on my own. [Meanwhile
+  Isabelle has proper rationals and SR's development of the rationals has been
+  moved to and merged with Isabelle's rationals.*}
 
 (*For this theorem, we need some properties of the rational numbers
 (or any other dense and countable set in the reals - so why not use
-the rationals?). These are made available in the Rats-Theory.*)
+the rationals?).*)
+
+
 lemma assumes f: "f \<in> rv M" and g: "g \<in> rv M"
   shows rv_less_rv_measurable: "{w. f w < g w} \<in> measurable_sets M"
 proof -
-  from g have ms: "measure_space M" 
-    by (simp add: rv_def)           
-  have "{w. f w < g w} = (\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w})"
+  let "?I i" = "let s::real = of_rat(nat_to_rat_surj i) in {w. f w < s} \<inter> {w. s < g w}"
+  from g have ms: "measure_space M" by (simp add: rv_def)
+  have "{w. f w < g w} = (\<Union>i. ?I i)"
   proof
     { fix w assume "w \<in> {w. f w < g w}"
       hence "f w < g w" ..
-      hence "\<exists>s\<in>\<rat>. f w < s \<and> s < g w" 
-	by (rule rats_dense_in_real)
-      hence "\<exists>s\<in>\<rat>. w \<in> {w. f w < s} \<inter> {w. s < g w}" 
-	by simp                                          
-      hence "\<exists>i. w \<in> (let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w})" 
-	by (simp add: Rats_def Let_def)
-      hence "w \<in> (\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w})" 
-	by simp
+      hence "\<exists>s\<in>\<rat>. f w < s \<and> s < g w" by (rule Rats_dense_in_real)
+      hence "\<exists>s\<in>\<rat>. w \<in> {w. f w < s} \<inter> {w. s < g w}" by simp
+      hence "\<exists>i. w \<in> ?I i"
+(* FIXME metis fails if [where \<dots>] is dropped *)
+	by(simp add:Let_def)(metis surj_of_rat_nat_to_rat_surj[where 'a=real])
+      hence "w \<in> (\<Union>i. ?I i)" by simp
     }
-    thus 
-      "{w. f w < g w} \<subseteq> (\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w})" ..
+    thus "{w. f w < g w} \<subseteq> (\<Union>i. ?I i)" ..
     
-    show 
-      "(\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w}) \<subseteq> {w. f w < g w}" 
-      by (force simp add: Let_def)
-txt{*\nopagebreak*}
+    show "(\<Union>i. ?I i) \<subseteq> {w. f w < g w}" by (force simp add: Let_def)
   qed
-  
-  moreover have 
-    "(\<Union>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w}) \<in> measurable_sets M"
+  moreover have "(\<Union>i. ?I i) \<in> measurable_sets M"
   proof -
     from ms have sig: "sigma_algebra (measurable_sets M)" 
-      by (simp only: measure_space_def)
-    
+      by (simp only: measure_space_def)    
     { fix s
       note sig
       also from ms f have "{w. f w < s} \<in> measurable_sets M" (is "?a\<in>?M") 
 	by (simp add: rv_less_iff)
       moreover from ms g have "{w. s < g w} \<in> ?M" (is "?b \<in> ?M") 
 	by (simp add: rv_gr_iff)
-      
-      ultimately have "?a \<inter> ?b \<in> ?M" 
-	by (rule sigma_algebra_inter)
+      ultimately have "?a \<inter> ?b \<in> ?M" by (rule sigma_algebra_inter)
     }
-    hence 
-      "\<forall>i. let s = nat_to_rat i in {w. f w < s} \<inter> {w. s < g w} \<in> measurable_sets M" 
-      by (simp add: Let_def)
-    with sig show ?thesis 
-      by (auto simp only: sigma_algebra_def Let_def)
+    hence "\<forall>i. ?I i \<in> measurable_sets M" by (simp add: Let_def)
+    with sig show ?thesis by (auto simp only: sigma_algebra_def Let_def)
   qed
-  
   ultimately show ?thesis by simp
 qed
 

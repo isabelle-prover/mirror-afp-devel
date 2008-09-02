@@ -70,8 +70,8 @@ text{*As you can see we require two extra conditions, and they amount
   for a pair of indices. This change has to be rectified in formal
   reasoning. Luckily, the task is eased by an injective function from
   $\mathbb{N}^2$ into $\mathbb{N}$, which was developed for the
-  rationals mentioned in \ref{sec:realrandvar} and relegated
-  to the appendix \ref{sec:rationals}. It might have been still easier if index sets were
+  rationals mentioned in \ref{sec:realrandvar}.
+  It might have been still easier if index sets were
   polymorphic in our integral definition, permitting pairs to be
   formed when necessary, but the logic doesn't allow for this.*}
   
