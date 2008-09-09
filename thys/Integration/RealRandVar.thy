@@ -444,8 +444,7 @@ proof -
       hence "\<exists>s\<in>\<rat>. f w < s \<and> s < g w" by (rule Rats_dense_in_real)
       hence "\<exists>s\<in>\<rat>. w \<in> {w. f w < s} \<inter> {w. s < g w}" by simp
       hence "\<exists>i. w \<in> ?I i"
-(* FIXME metis fails if [where \<dots>] is dropped *)
-	by(simp add:Let_def)(metis surj_of_rat_nat_to_rat_surj[where 'a=real])
+	by(simp add:Let_def)(metis surj_of_rat_nat_to_rat_surj)
       hence "w \<in> (\<Union>i. ?I i)" by simp
     }
     thus "{w. f w < g w} \<subseteq> (\<Union>i. ?I i)" ..
