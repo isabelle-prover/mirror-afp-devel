@@ -47,7 +47,7 @@
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"> 
 <!-- Abstract: -->	
-Slicing is a widely-used technique with applications in e.g. compiler
+<p>Slicing is a widely-used technique with applications in e.g. compiler
 technology and software security. Thus verification of
 algorithms in these areas is often based on the correctness of slicing,
 which should ideally be proven independent of concrete programming
@@ -58,14 +58,15 @@ based on control flow and program dependence graphs.
 Abstracting from concrete syntax we base the framework on a graph
 representation of the program fulfilling certain structural
 and well-formedness properties.
+</p>
 
-The formalization consists of the basic framework (in subdirectory Basic/), the
+<p>The formalization consists of the basic framework (in subdirectory Basic/), the
 correctness proof for dynamic slicing (in subdirectory Dynamic/), the
 correctness proof for static intraprocedural slicing (in subdirectory
 StaticIntra/) and an instantiation of the framework with a simple While language
 (in subdirectory While/). For more information on the framework and dynamic
 slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler.
-   </td></tr>
+</p></td></tr>
 
 <!-- uncomment for entries significantly updated in devel version:
 <tr>
@@ -118,6 +119,6 @@ slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-09-16 14:09:56 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-09-16 14:17:22 $, $Revision: 1.1 
 $</div></body>
 </html>
