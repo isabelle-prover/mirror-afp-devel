@@ -1,8 +1,6 @@
 structure DFS =
 struct
 
-fun wfrec f x = f (wfrec f) x;
-
 fun snd (a, b) = b;
 
 fun fst (a, b) = a;
@@ -14,34 +12,18 @@ fun nexts [] n = []
 fun member x [] = false
   | member x (y :: ys) = (if (y = x) then true else member x ys);
 
-fun dfs2 x =
-  wfrec (fn dfs2 => fn a =>
-          (case a of
-            (x, xa) =>
-              (case xa of
-                (xa, xb) =>
-                  (case xa of [] => xb
-                    | (xa :: xc) =>
-                        (if member xa xb then dfs2 (x, (xc, xb))
-                          else dfs2 (x, (xc,
-  dfs2 (x, (nexts x xa, (xa :: xb))))))))))
-    x;
+fun dfs2 g [] ys = ys
+  | dfs2 g (x :: xs) ys =
+    (if member x ys then dfs2 g xs ys
+      else dfs2 g xs (dfs2 g (nexts g x) (x :: ys)));
 
 fun append [] ys = ys
   | append (x :: xs) ys = (x :: append xs ys);
 
-fun dfs x =
-  wfrec (fn dfs => fn a =>
-          (case a of
-            (x, xa) =>
-              (case xa of
-                (xa, xb) =>
-                  (case xa of [] => xb
-                    | (xa :: xc) =>
-                        (if member xa xb then dfs (x, (xc, xb))
-                          else dfs (x, (append (nexts x xa) xc,
- (xa :: xb))))))))
-    x;
+fun dfs g [] ys = ys
+  | dfs g (x :: xs) ys =
+    (if member x ys then dfs g xs ys
+      else dfs g (append (nexts g x) xs) (x :: ys));
 
 val dfs = (fn x => dfs x);
 
