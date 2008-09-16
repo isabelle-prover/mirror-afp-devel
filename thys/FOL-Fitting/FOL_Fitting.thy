@@ -1,4 +1,4 @@
-(*  ID:         $Id: FOL_Fitting.thy,v 1.6 2008-09-16 07:23:16 fhaftmann Exp $
+(*  ID:         $Id: FOL_Fitting.thy,v 1.7 2008-09-16 14:19:22 fhaftmann Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2003
 *)
 
@@ -1362,7 +1362,6 @@ theorem diag_undiag_list [simp]:
 
 subsubsection {* Enumerating terms *}
 
-setup {* Sign.add_path "term" *} -- FIXME
 fun
   term_of_btree :: "(nat \<Rightarrow> 'a) \<Rightarrow> btree \<Rightarrow> 'a term"
   and term_list_of_btree :: "(nat \<Rightarrow> 'a) \<Rightarrow> btree \<Rightarrow> 'a term list"
@@ -1373,7 +1372,6 @@ where
 | "term_list_of_btree f (Leaf m) = []"
 | "term_list_of_btree f (Branch t1 t2) =
      term_of_btree f t1 # term_list_of_btree f t2"
-setup {* Sign.add_path ".." *} -- FIXME
 
 primrec
   btree_of_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a term \<Rightarrow> btree"
@@ -1741,7 +1739,6 @@ closed terms and Herbrand terms.
 
 datatype 'a hterm = HApp 'a "'a hterm list"
 
-setup {* Sign.add_path "term" *} -- FIXME
 primrec
   term_of_hterm :: "'a hterm \<Rightarrow> 'a term"
   and terms_of_hterms :: "'a hterm list \<Rightarrow> 'a term list"
@@ -1749,7 +1746,6 @@ where
   "term_of_hterm (HApp a hts) = App a (terms_of_hterms hts)"
 | "terms_of_hterms [] = []"
 | "terms_of_hterms (ht # hts) = term_of_hterm ht # terms_of_hterms hts"
-setup {* Sign.add_path ".." *} -- FIXME
 
 theorem herbrand_evalt [simp]:
   "closedt 0 t \<Longrightarrow> term_of_hterm (evalt e HApp t) = t"
