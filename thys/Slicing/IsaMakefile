@@ -1,0 +1,53 @@
+## configurables
+
+SESSION-NAME = Slicing
+BASE-IMAGE = HOL
+
+## targets
+
+default: Slicing
+# usually empty:
+images:
+test: $(SESSION-NAME)
+
+all: test
+
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+# turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
+ifeq ($(ISABELLE_IMAGE_PATH),)
+IMAGE=$(OUT)/$(BASE-IMAGE)
+else
+IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
+endif
+
+USEDIR = $(ISATOOL) usedir -v true -i true -V outline=/proof,/ML -g true -d pdf -P "http://isabelle.in.tum.de/library/"
+BUILD = $(ISATOOL) usedir -b -v true -i false -g false -d false
+
+# time limit (in sec)
+MAXTIME = 5400
+
+
+## dependencies
+
+
+# test run and proof document
+
+$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML \
+  Basic/*.thy Dynamic/*.thy StaticIntra/*.thy While/*.thy \
+  document/root.tex 
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+
+
+## clean
+
+clean:
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -f $(OUT)/$(SESSION-NAME)

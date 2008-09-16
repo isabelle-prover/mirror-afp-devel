@@ -1,0 +1,73 @@
+\documentclass[11pt,a4paper,notitlepage]{report}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also isabellesym.sty)
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{wasysym}
+\usepackage{graphicx}
+
+\usepackage{isabelle,isabellesym} 
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand{\isachapter}[1]
+{\markright{\isabellecontext}\chapter{#1}}
+
+\newcommand{\isaheader}[1]
+{\markright{\isabellecontext}\section{#1}}
+\renewcommand{\isamarkupheader}[1]{#1}
+\renewcommand{\isamarkupsection}[1]{\subsection{#1}}
+
+
+\begin{document}
+
+\title{Towards Certified Slicing}
+\author{Daniel Wasserrab}
+\maketitle
+
+\begin{abstract}
+Slicing is a widely-used technique with applications in e.g. compiler
+technology and software security. Thus verification of
+algorithms in these areas is often based on the correctness of slicing,
+which should ideally be proven independent of concrete programming
+languages and with the help of well-known verifying techniques such as
+proof assistants. As a first step in this direction, this contribution
+presents a framework for dynamic and static intraprocedural slicing 
+based on control flow and program dependence graphs.
+Abstracting from concrete syntax we base the framework on a graph
+representation of the program fulfilling certain structural
+and well-formedness properties.
+\end{abstract}
+
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+\begin{thebibliography}{10}
+
+\bibitem{WasserrabL:08}
+Daniel Wasserrab and Andreas Lochbihler.
+\newblock Formalizing a framework for dynamic slicing of program dependence
+  graphs in {Isabelle/HOL}.
+\newblock In {\em Proc. of TPHOLS'08}, pages 294--309. Springer-Verlag, 2008.
+
+\end{thebibliography}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
