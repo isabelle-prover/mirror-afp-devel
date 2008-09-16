@@ -1,4 +1,4 @@
-(*  ID:         $Id: FOL_Fitting.thy,v 1.5 2008-06-12 06:57:16 lsf37 Exp $
+(*  ID:         $Id: FOL_Fitting.thy,v 1.6 2008-09-16 07:23:16 fhaftmann Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2003
 *)
 
@@ -73,29 +73,27 @@ level @{text i}}, if it only contains ``loose'' bound variables with
 indices smaller than @{text i}.
 *}
 
-consts
-  closedt  :: "nat \<Rightarrow> 'a term \<Rightarrow> bool"
-  closedts :: "nat \<Rightarrow> 'a term list \<Rightarrow> bool"
-
 primrec
+  closedt :: "nat \<Rightarrow> 'a term \<Rightarrow> bool"
+  and closedts :: "nat \<Rightarrow> 'a term list \<Rightarrow> bool"
+where
   "closedt m (Var n) = (n < m)"
-  "closedt m (App a ts) = closedts m ts"
-  "closedts m [] = True"
-  "closedts m (t # ts) = (closedt m t \<and> closedts m ts)"
-
-consts
-  closed :: "nat \<Rightarrow> ('a, 'b) form \<Rightarrow> bool"
+| "closedt m (App a ts) = closedts m ts"
+| "closedts m [] = True"
+| "closedts m (t # ts) = (closedt m t \<and> closedts m ts)"
 
 primrec
+  closed :: "nat \<Rightarrow> ('a, 'b) form \<Rightarrow> bool"
+where
   "closed m FF = True"
-  "closed m TT = True"
-  "closed m (Pred b ts) = closedts m ts"
-  "closed m (And p q) = (closed m p \<and> closed m q)"
-  "closed m (Or p q) = (closed m p \<and> closed m q)"
-  "closed m (Impl p q) = (closed m p \<and> closed m q)"
-  "closed m (Neg p) = closed m p"
-  "closed m (Forall p) = closed (Suc m) p"
-  "closed m (Exists p) = closed (Suc m) p"
+| "closed m TT = True"
+| "closed m (Pred b ts) = closedts m ts"
+| "closed m (And p q) = (closed m p \<and> closed m q)"
+| "closed m (Or p q) = (closed m p \<and> closed m q)"
+| "closed m (Impl p q) = (closed m p \<and> closed m q)"
+| "closed m (Neg p) = closed m p"
+| "closed m (Forall p) = closed (Suc m) p"
+| "closed m (Exists p) = closed (Suc m) p"
 
 theorem closedt_mono: assumes le: "i \<le> j"
   shows "closedt i (t::'a term) \<Longrightarrow> closedt j t"
@@ -112,37 +110,36 @@ for variables, in order for the ``loose'' bound variables to point to the right
 position.
 *}
 
-consts
+primrec
   substt :: "'a term \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> 'a term" ("_[_'/_]" [300, 0, 0] 300)
-  substts :: "'a term list \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> 'a term list" ("_[_'/_]" [300, 0, 0] 300)
-  liftt :: "'a term \<Rightarrow> 'a term"
-  liftts :: "'a term list \<Rightarrow> 'a term list"
-
-primrec
+  and substts :: "'a term list \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> 'a term list" ("_[_'/_]" [300, 0, 0] 300)
+where
   "(Var i)[s/k] = (if k < i then Var (i - 1) else if i = k then s else Var i)"
-  "(App a ts)[s/k] = App a (ts[s/k])"
-  "[][s/k] = []"
-  "(t # ts)[s/k] = t[s/k] # ts[s/k]"
+| "(App a ts)[s/k] = App a (ts[s/k])"
+| "[][s/k] = []"
+| "(t # ts)[s/k] = t[s/k] # ts[s/k]"
 
 primrec
+  liftt :: "'a term \<Rightarrow> 'a term"
+  and liftts :: "'a term list \<Rightarrow> 'a term list"
+where
   "liftt (Var i) = Var (Suc i)"
-  "liftt (App a ts) = App a (liftts ts)"
-  "liftts [] = []"
-  "liftts (t # ts) = liftt t # liftts ts"
-
-consts
-  subst :: "('a, 'b) form \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> ('a, 'b) form" ("_[_'/_]" [300, 0, 0] 300)
+| "liftt (App a ts) = App a (liftts ts)"
+| "liftts [] = []"
+| "liftts (t # ts) = liftt t # liftts ts"
 
 primrec
+  subst :: "('a, 'b) form \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> ('a, 'b) form" ("_[_'/_]" [300, 0, 0] 300)
+where
   "FF[s/k] = FF"
-  "TT[s/k] = TT"
-  "(Pred b ts)[s/k] = Pred b (ts[s/k])"
-  "(And p q)[s/k] = And (p[s/k]) (q[s/k])"
-  "(Or p q)[s/k] = Or (p[s/k]) (q[s/k])"
-  "(Impl p q)[s/k] = Impl (p[s/k]) (q[s/k])"
-  "(Neg p)[s/k] = Neg (p[s/k])"
-  "(Forall p)[s/k] = Forall (p[liftt s/Suc k])"
-  "(Exists p)[s/k] = Exists (p[liftt s/Suc k])"
+| "TT[s/k] = TT"
+| "(Pred b ts)[s/k] = Pred b (ts[s/k])"
+| "(And p q)[s/k] = And (p[s/k]) (q[s/k])"
+| "(Or p q)[s/k] = Or (p[s/k]) (q[s/k])"
+| "(Impl p q)[s/k] = Impl (p[s/k]) (q[s/k])"
+| "(Neg p)[s/k] = Neg (p[s/k])"
+| "(Forall p)[s/k] = Forall (p[liftt s/Suc k])"
+| "(Exists p)[s/k] = Exists (p[liftt s/Suc k])"
 
 theorem lift_closed [simp]:
   "closedt 0 (t::'a term) \<Longrightarrow> closedt 0 (liftt t)"
@@ -179,58 +176,54 @@ To express that a function symbol is ``fresh'', we introduce functions
 for collecting all function symbols occurring in a term or formula.
 *}
 
-consts
+primrec
   paramst  :: "'a term \<Rightarrow> 'a set"
-  paramsts :: "'a term list \<Rightarrow> 'a set"
-
-primrec
+  and paramsts :: "'a term list \<Rightarrow> 'a set"
+where
   "paramst (Var n) = {}"
-  "paramst (App a ts) = {a} \<union> paramsts ts"
-  "paramsts [] = {}"
-  "paramsts (t # ts) = (paramst t \<union> paramsts ts)"
-
-consts
-  params :: "('a, 'b) form \<Rightarrow> 'a set"
+| "paramst (App a ts) = {a} \<union> paramsts ts"
+| "paramsts [] = {}"
+| "paramsts (t # ts) = (paramst t \<union> paramsts ts)"
 
 primrec
+  params :: "('a, 'b) form \<Rightarrow> 'a set"
+where
   "params FF = {}"
-  "params TT = {}"
-  "params (Pred b ts) = paramsts ts"
-  "params (And p q) = params p \<union> params q"
-  "params (Or p q) = params p \<union> params q"
-  "params (Impl p q) = params p \<union> params q"
-  "params (Neg p) = params p"
-  "params (Forall p) = params p"
-  "params (Exists p) = params p"
+| "params TT = {}"
+| "params (Pred b ts) = paramsts ts"
+| "params (And p q) = params p \<union> params q"
+| "params (Or p q) = params p \<union> params q"
+| "params (Impl p q) = params p \<union> params q"
+| "params (Neg p) = params p"
+| "params (Forall p) = params p"
+| "params (Exists p) = params p"
 
 text{*
 We also define parameter substitution functions on terms and formulae
 that apply a function @{text f} to all function symbols.
 *}
 
-consts
+primrec
   psubstt :: "('a \<Rightarrow> 'c) \<Rightarrow> 'a term \<Rightarrow> 'c term"
-  psubstts :: "('a \<Rightarrow> 'c) \<Rightarrow> 'a term list \<Rightarrow> 'c term list"
-
-primrec
+  and psubstts :: "('a \<Rightarrow> 'c) \<Rightarrow> 'a term list \<Rightarrow> 'c term list"
+where
   "psubstt f (Var i) = Var i"
-  "psubstt f (App x ts) = App (f x) (psubstts f ts)"
-  "psubstts f [] = []"
-  "psubstts f (t # ts) = psubstt f t # psubstts f ts"
-
-consts
-  psubst :: "('a \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) form \<Rightarrow> ('c, 'b) form"
+| "psubstt f (App x ts) = App (f x) (psubstts f ts)"
+| "psubstts f [] = []"
+| "psubstts f (t # ts) = psubstt f t # psubstts f ts"
 
 primrec
+  psubst :: "('a \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) form \<Rightarrow> ('c, 'b) form"
+where
   "psubst f FF = FF"
-  "psubst f TT = TT"
-  "psubst f (Pred b ts) = Pred b (psubstts f ts)"
-  "psubst f (And p q) = And (psubst f p) (psubst f q)"
-  "psubst f (Or p q) = Or (psubst f p) (psubst f q)"
-  "psubst f (Impl p q) = Impl (psubst f p) (psubst f q)"
-  "psubst f (Neg p) = Neg (psubst f p)"
-  "psubst f (Forall p) = Forall (psubst f p)"
-  "psubst f (Exists p) = Exists (psubst f p)"
+| "psubst f TT = TT"
+| "psubst f (Pred b ts) = Pred b (psubstts f ts)"
+| "psubst f (And p q) = And (psubst f p) (psubst f q)"
+| "psubst f (Or p q) = Or (psubst f p) (psubst f q)"
+| "psubst f (Impl p q) = Impl (psubst f p) (psubst f q)"
+| "psubst f (Neg p) = Neg (psubst f p)"
+| "psubst f (Forall p) = Forall (psubst f p)"
+| "psubst f (Exists p) = Exists (psubst f p)"
 
 theorem psubstt_closed [simp]:
   "closedt i (psubstt f t) = closedt i t"
@@ -316,30 +309,28 @@ lemma shift_commute [simp]: "e\<langle>i:U\<rangle>\<langle>0:T\<rangle> = e\<la
    apply (simp_all add: shift_def)
   done
 
-consts
-  evalt  :: "(nat \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c list \<Rightarrow> 'c) \<Rightarrow> 'a term \<Rightarrow> 'c"
-  evalts :: "(nat \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c list \<Rightarrow> 'c) \<Rightarrow> 'a term list \<Rightarrow> 'c list"
-
 primrec
+  evalt :: "(nat \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c list \<Rightarrow> 'c) \<Rightarrow> 'a term \<Rightarrow> 'c"
+  and evalts :: "(nat \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c list \<Rightarrow> 'c) \<Rightarrow> 'a term list \<Rightarrow> 'c list"
+where
   "evalt e f (Var n) = e n"
-  "evalt e f (App a ts) = f a (evalts e f ts)"
-  "evalts e f [] = []"
-  "evalts e f (t # ts) = evalt e f t # evalts e f ts"
-
-consts
-  eval :: "(nat \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c list \<Rightarrow> 'c) \<Rightarrow>
-             ('b \<Rightarrow> 'c list \<Rightarrow> bool) \<Rightarrow> ('a, 'b) form \<Rightarrow> bool"
+| "evalt e f (App a ts) = f a (evalts e f ts)"
+| "evalts e f [] = []"
+| "evalts e f (t # ts) = evalt e f t # evalts e f ts"
 
 primrec
+  eval :: "(nat \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c list \<Rightarrow> 'c) \<Rightarrow>
+    ('b \<Rightarrow> 'c list \<Rightarrow> bool) \<Rightarrow> ('a, 'b) form \<Rightarrow> bool"
+where
   "eval e f g FF = False"
-  "eval e f g TT = True"
-  "eval e f g (Pred a ts) = g a (evalts e f ts)"
-  "eval e f g (And p q) = ((eval e f g p) \<and> (eval e f g q))"
-  "eval e f g (Or p q) = ((eval e f g p) \<or> (eval e f g q))"
-  "eval e f g (Impl p q) = ((eval e f g p) \<longrightarrow> (eval e f g q))"
-  "eval e f g (Neg p) = (\<not> (eval e f g p))"
-  "eval e f g (Forall p) = (\<forall>z. eval (e\<langle>0:z\<rangle>) f g p)"
-  "eval e f g (Exists p) = (\<exists>z. eval (e\<langle>0:z\<rangle>) f g p)"
+| "eval e f g TT = True"
+| "eval e f g (Pred a ts) = g a (evalts e f ts)"
+| "eval e f g (And p q) = ((eval e f g p) \<and> (eval e f g q))"
+| "eval e f g (Or p q) = ((eval e f g p) \<or> (eval e f g q))"
+| "eval e f g (Impl p q) = ((eval e f g p) \<longrightarrow> (eval e f g q))"
+| "eval e f g (Neg p) = (\<not> (eval e f g p))"
+| "eval e f g (Forall p) = (\<forall>z. eval (e\<langle>0:z\<rangle>) f g p)"
+| "eval e f g (Exists p) = (\<exists>z. eval (e\<langle>0:z\<rangle>) f g p)"
 
 text {*
 We write @{text "e,f,g,ps \<Turnstile> p"} to mean that the formula @{text p} is a
@@ -1247,10 +1238,11 @@ For this purpose, we use a method due to Cantor, which is illustrated in
 natural numbers can be characterized recursively as follows:
 *}
 
-consts diag :: "nat \<Rightarrow> (nat \<times> nat)"
 primrec
+  diag :: "nat \<Rightarrow> (nat \<times> nat)"
+where
   "diag 0 = (0, 0)"
-  "diag (Suc n) =
+| "diag (Suc n) =
      (let (x, y) = diag n
       in case y of
           0 \<Rightarrow> (0, Suc x)
@@ -1290,7 +1282,8 @@ theorem diag_le4: "fst (diag n) = Suc x \<Longrightarrow> x < n"
   apply simp
   done
 
-function undiag :: "nat \<times> nat \<Rightarrow> nat"
+function
+  undiag :: "nat \<times> nat \<Rightarrow> nat"
 where
   "undiag (0, 0) = 0"
 | "undiag (0, Suc y) = Suc (undiag (y, 0))"
@@ -1316,7 +1309,8 @@ functions for converting between trees and concrete datatypes.
 
 datatype btree = Leaf nat | Branch btree btree
 
-function diag_btree :: "nat \<Rightarrow> btree"
+function
+  diag_btree :: "nat \<Rightarrow> btree"
 where
   "diag_btree n = (case fst (diag n) of
        0 \<Rightarrow> Leaf (snd (diag n))
@@ -1326,10 +1320,11 @@ where
 termination
   by (relation "measure (\<lambda>x. x)") (auto intro: diag_le3 diag_le4)
 
-consts undiag_btree :: "btree \<Rightarrow> nat"
 primrec
+  undiag_btree :: "btree \<Rightarrow> nat"
+where
   "undiag_btree (Leaf n) = undiag (0, n)"
-  "undiag_btree (Branch t1 t2) =
+| "undiag_btree (Branch t1 t2) =
      undiag (Suc (undiag_btree t1), undiag_btree t2)"
 
 theorem diag_undiag_btree [simp]: "diag_btree (undiag_btree t) = t"
@@ -1340,15 +1335,17 @@ declare diag_btree.simps [simp del] undiag_btree.simps [simp del]
 
 subsubsection {* Enumerating lists *}
 
-fun list_of_btree :: "(nat \<Rightarrow> 'a) \<Rightarrow> btree \<Rightarrow> 'a list"
+fun
+  list_of_btree :: "(nat \<Rightarrow> 'a) \<Rightarrow> btree \<Rightarrow> 'a list"
 where
   "list_of_btree f (Leaf x) = []"
 | "list_of_btree f (Branch (Leaf n) t) = f n # list_of_btree f t"
 
-consts btree_of_list :: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> btree"
 primrec
+  btree_of_list :: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> btree"
+where
   "btree_of_list f [] = Leaf 0"
-  "btree_of_list f (x # xs) = Branch (Leaf (f x)) (btree_of_list f xs)"
+| "btree_of_list f (x # xs) = Branch (Leaf (f x)) (btree_of_list f xs)"
 
 definition
   diag_list :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a list" where
@@ -1365,6 +1362,7 @@ theorem diag_undiag_list [simp]:
 
 subsubsection {* Enumerating terms *}
 
+setup {* Sign.add_path "term" *} -- FIXME
 fun
   term_of_btree :: "(nat \<Rightarrow> 'a) \<Rightarrow> btree \<Rightarrow> 'a term"
   and term_list_of_btree :: "(nat \<Rightarrow> 'a) \<Rightarrow> btree \<Rightarrow> 'a term list"
@@ -1375,16 +1373,16 @@ where
 | "term_list_of_btree f (Leaf m) = []"
 | "term_list_of_btree f (Branch t1 t2) =
      term_of_btree f t1 # term_list_of_btree f t2"
-
-consts
-  btree_of_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a term \<Rightarrow> btree"
-  btree_of_term_list :: "('a \<Rightarrow> nat) \<Rightarrow> 'a term list \<Rightarrow> btree"
+setup {* Sign.add_path ".." *} -- FIXME
 
 primrec
+  btree_of_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a term \<Rightarrow> btree"
+  and btree_of_term_list :: "('a \<Rightarrow> nat) \<Rightarrow> 'a term list \<Rightarrow> btree"
+where
   "btree_of_term f (Var m) = Leaf m"
-  "btree_of_term f (App m ts) = Branch (Leaf (f m)) (btree_of_term_list f ts)"
-  "btree_of_term_list f [] = Leaf 0"
-  "btree_of_term_list f (t # ts) = Branch (btree_of_term f t) (btree_of_term_list f ts)"
+| "btree_of_term f (App m ts) = Branch (Leaf (f m)) (btree_of_term_list f ts)"
+| "btree_of_term_list f [] = Leaf 0"
+| "btree_of_term_list f (t # ts) = Branch (btree_of_term f t) (btree_of_term_list f ts)"
 
 theorem term_btree: assumes du: "\<And>x. d (u x) = x"
   shows "term_of_btree d (btree_of_term u t) = t"
@@ -1403,7 +1401,8 @@ theorem diag_undiag_term [simp]:
   "(\<And>x. d (u x) = x) \<Longrightarrow> diag_term d (undiag_term u t) = t"
   by (simp add: diag_term_def undiag_term_def term_btree)
 
-fun form_of_btree :: "(nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'b) \<Rightarrow> btree \<Rightarrow> ('a, 'b) form"
+fun
+  form_of_btree :: "(nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'b) \<Rightarrow> btree \<Rightarrow> ('a, 'b) form"
 where
   "form_of_btree f g (Leaf 0) = FF"
 | "form_of_btree f g (Leaf (Suc 0)) = TT"
@@ -1422,23 +1421,24 @@ where
 | "form_of_btree f g (Branch (Leaf (Suc (Suc (Suc (Suc (Suc (Suc 0))))))) t) =
      Exists (form_of_btree f g t)"
 
-consts btree_of_form :: "('a \<Rightarrow> nat) \<Rightarrow> ('b \<Rightarrow> nat) \<Rightarrow> ('a, 'b) form \<Rightarrow> btree"
 primrec
+  btree_of_form :: "('a \<Rightarrow> nat) \<Rightarrow> ('b \<Rightarrow> nat) \<Rightarrow> ('a, 'b) form \<Rightarrow> btree"
+where
   "btree_of_form f g FF = Leaf 0"
-  "btree_of_form f g TT = Leaf (Suc 0)"
-  "btree_of_form f g (Pred b ts) = Branch (Leaf 0)
+| "btree_of_form f g TT = Leaf (Suc 0)"
+| "btree_of_form f g (Pred b ts) = Branch (Leaf 0)
      (Branch (Leaf (g b)) (Leaf (undiag_list (undiag_term f) ts)))"
-  "btree_of_form f g (And a b) = Branch (Leaf (Suc 0))
+| "btree_of_form f g (And a b) = Branch (Leaf (Suc 0))
      (Branch (btree_of_form f g a) (btree_of_form f g b))"
-  "btree_of_form f g (Or a b) = Branch (Leaf (Suc (Suc 0)))
+| "btree_of_form f g (Or a b) = Branch (Leaf (Suc (Suc 0)))
      (Branch (btree_of_form f g a) (btree_of_form f g b))"
-  "btree_of_form f g (Impl a b) = Branch (Leaf (Suc (Suc (Suc 0))))
+| "btree_of_form f g (Impl a b) = Branch (Leaf (Suc (Suc (Suc 0))))
      (Branch (btree_of_form f g a) (btree_of_form f g b))"
-  "btree_of_form f g (Neg a) = Branch (Leaf (Suc (Suc (Suc (Suc 0)))))
+| "btree_of_form f g (Neg a) = Branch (Leaf (Suc (Suc (Suc (Suc 0)))))
      (btree_of_form f g a)"
-  "btree_of_form f g (Forall a) = Branch (Leaf (Suc (Suc (Suc (Suc (Suc 0))))))
+| "btree_of_form f g (Forall a) = Branch (Leaf (Suc (Suc (Suc (Suc (Suc 0))))))
      (btree_of_form f g a)"
-  "btree_of_form f g (Exists a) = Branch
+| "btree_of_form f g (Exists a) = Branch
      (Leaf (Suc (Suc (Suc (Suc (Suc (Suc 0)))))))
      (btree_of_form f g a)"
 
@@ -1531,20 +1531,27 @@ function @{text extend} that produces the elements of an ascending chain of
 consistent sets.
 *}
 
-consts
-  extend :: "(nat, 'b) form set \<Rightarrow> (nat, 'b) form set set \<Rightarrow>
-    (nat \<Rightarrow> (nat, 'b) form) \<Rightarrow> nat \<Rightarrow> (nat, 'b) form set"
+primrec
   dest_Neg :: "('a, 'b) form \<Rightarrow> ('a, 'b) form"
-  dest_Forall :: "('a, 'b) form \<Rightarrow> ('a, 'b) form"
-  dest_Exists :: "('a, 'b) form \<Rightarrow> ('a, 'b) form"
-
-primrec "dest_Neg (Neg p) = p"
-primrec "dest_Forall (Forall p) = p"
-primrec "dest_Exists (Exists p) = p"
+where
+  "dest_Neg (Neg p) = p"
 
 primrec
+  dest_Forall :: "('a, 'b) form \<Rightarrow> ('a, 'b) form"
+where
+  "dest_Forall (Forall p) = p"
+
+primrec
+  dest_Exists :: "('a, 'b) form \<Rightarrow> ('a, 'b) form"
+where
+  "dest_Exists (Exists p) = p"
+
+primrec
+  extend :: "(nat, 'b) form set \<Rightarrow> (nat, 'b) form set set \<Rightarrow>
+    (nat \<Rightarrow> (nat, 'b) form) \<Rightarrow> nat \<Rightarrow> (nat, 'b) form set"
+where
   "extend S C f 0 = S"
-  "extend S C f (Suc n) = (if extend S C f n \<union> {f n} \<in> C
+  | "extend S C f (Suc n) = (if extend S C f n \<union> {f n} \<in> C
      then
        (if (\<exists>p. f n = Exists p)
         then extend S C f n \<union> {f n} \<union> {subst (dest_Exists (f n))
@@ -1734,20 +1741,20 @@ closed terms and Herbrand terms.
 
 datatype 'a hterm = HApp 'a "'a hterm list"
 
-consts
-  term_of_hterm :: "'a hterm \<Rightarrow> 'a term"
-  terms_of_hterms :: "'a hterm list \<Rightarrow> 'a term list"
-
+setup {* Sign.add_path "term" *} -- FIXME
 primrec
+  term_of_hterm :: "'a hterm \<Rightarrow> 'a term"
+  and terms_of_hterms :: "'a hterm list \<Rightarrow> 'a term list"
+where
   "term_of_hterm (HApp a hts) = App a (terms_of_hterms hts)"
-  "terms_of_hterms [] = []"
-  "terms_of_hterms (ht # hts) = term_of_hterm ht # terms_of_hterms hts"
+| "terms_of_hterms [] = []"
+| "terms_of_hterms (ht # hts) = term_of_hterm ht # terms_of_hterms hts"
+setup {* Sign.add_path ".." *} -- FIXME
 
 theorem herbrand_evalt [simp]:
   "closedt 0 t \<Longrightarrow> term_of_hterm (evalt e HApp t) = t"
   "closedts 0 ts \<Longrightarrow> terms_of_hterms (evalts e HApp ts) = ts"
   by (induct t and ts) simp_all
-
 
 theorem herbrand_evalt' [simp]:
   "evalt e HApp (term_of_hterm ht) = ht"
