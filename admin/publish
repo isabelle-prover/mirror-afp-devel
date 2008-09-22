@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: publish,v 1.9 2006-08-08 14:19:16 lsf37 Exp $
+# $Id: publish,v 1.10 2008-09-22 09:36:32 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # publishes archive entry + main web pages on SF
@@ -9,11 +9,13 @@
 ## settings
 
 REPOS=afp.cvs.sourceforge.net:/cvsroot/afp
-DEST=shell.sf.net:/home/groups/a/af/afp/htdocs/
+DEST=afp@web.sourceforge.net:htdocs/
 
 if [ -n "$SF_LOGIN" ]; then
     REPOS=$SF_LOGIN@$REPOS
-    DEST=$SF_LOGIN@$DEST
+    DEST="$SF_LOGIN,$DEST"
+else
+    DEST="$LOGNAME,$DEST"
 fi
 
 EXPORT_PRE=afp

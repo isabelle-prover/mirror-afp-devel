@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: devel-copy,v 1.4 2007-09-10 21:39:26 lsf37 Exp $
+# $Id: devel-copy,v 1.5 2008-09-22 09:36:32 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Cron job that copies development snapshot to SF.
@@ -8,6 +8,6 @@
 # 
 
 SOURCE=~isatest/html-data/afp/
-TARGET=lsf37@shell.sf.net:afp-web/htdocs/
+TARGET=lsf37,afp@web.sourceforge.net:htdocs/
 
 /usr/local/bin/rsync -rplqz $SOURCE $TARGET
