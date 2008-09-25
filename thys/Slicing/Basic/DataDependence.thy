@@ -2,21 +2,23 @@ header {* \isaheader{Dynamic and static data dependence} *}
 
 theory DataDependence imports CFGExit_wf begin
 
-subsection {* Dynamic data dependence *} 
+subsection {* Dynamic data dependence *}
 
-definition (in CFG_wf) dyn_data_dependence :: 
+context CFG_wf begin 
+
+definition dyn_data_dependence :: 
   "'node \<Rightarrow> 'var \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool" ("_ influences _ in _ via _" [51,0,0])
 where "n influences V in n' via as \<equiv>
     ((V \<in> Def n) \<and> (V \<in> Use n') \<and> (n -as\<rightarrow>* n') \<and> 
      (\<exists>a' as'. (as = a'#as') \<and> (\<forall>n'' \<in> set (sourcenodes as'). V \<notin> Def n'')))"
 
 
-lemma (in CFG_wf) dyn_influence_Cons_source:
+lemma dyn_influence_Cons_source:
   "n influences V in n' via a#as \<Longrightarrow> sourcenode a = n"
   by(simp add:dyn_data_dependence_def,auto elim:path.cases)
 
 
-lemma (in CFG_wf) dyn_influence_source_notin_tl_edges: 
+lemma dyn_influence_source_notin_tl_edges: 
   assumes ddep:"n influences V in n' via a#as"
   shows "n \<notin> set (sourcenodes as)"
 proof(rule ccontr)
@@ -29,7 +31,7 @@ proof(rule ccontr)
 qed
 
 
-lemma (in CFG_wf) dyn_influence_only_first_edge:
+lemma dyn_influence_only_first_edge:
   assumes ddep:"n influences V in n' via a#as"
   shows "state_val (transfers (kinds (a#as)) s) V = 
          state_val (transfer (kind a) s) V"
@@ -59,13 +61,15 @@ qed
 subsection {* Static data dependence *}
 
 
-definition (in CFG_wf) data_dependence :: "'node \<Rightarrow> 'var \<Rightarrow> 'node \<Rightarrow> bool"
+definition data_dependence :: "'node \<Rightarrow> 'var \<Rightarrow> 'node \<Rightarrow> bool"
     ("_ influences _ in _" [51,0])
 where data_dependences_eq:"n influences V in n' \<equiv> \<exists>as. n influences V in n' via as"
 
-lemma (in CFG_wf) data_dependence_def: "n influences V in n' = 
+lemma data_dependence_def: "n influences V in n' = 
   (\<exists>as a' as'. (as = a'#as') \<and> (V \<in> Def n) \<and> (V \<in> Use n') \<and>
                  (n -as\<rightarrow>* n') \<and> (\<forall>n'' \<in> set (sourcenodes as'). V \<notin> Def n''))"
 by(auto simp:data_dependences_eq dyn_data_dependence_def)
+
+end
 
 end

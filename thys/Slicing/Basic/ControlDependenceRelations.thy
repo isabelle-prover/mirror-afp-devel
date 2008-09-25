@@ -1,13 +1,13 @@
+header {* \isaheader{Relations between control dependences} *}
+
 theory ControlDependenceRelations 
   imports WeakOrderDependence StandardControlDependence 
 begin
 
-locale CDepRelations = StandardControlDependence + WeakOrderDependence
-
-begin
+context StrongPostdomination begin
 
 lemma standard_control_implies_weak_order: 
-  assumes "n controls\<^isub>s n'" and "n \<noteq> n'" shows "n \<longrightarrow>\<^bsub>wod\<^esub> n',(_Exit_)"
+  assumes "n controls\<^isub>s n'" shows "n \<longrightarrow>\<^bsub>wod\<^esub> n',(_Exit_)"
 proof -
   from `n controls\<^isub>s n'` obtain as a a' as' where "as = a#as'"
     and "n' \<notin> set(sourcenodes as)" and "n -as\<rightarrow>* n'"
@@ -15,6 +15,8 @@ proof -
     and "valid_edge a'" and "sourcenode a' = n"
     and "\<not> n' postdominates (targetnode a')" 
     by(auto simp:standard_control_dependence_def)
+  from `n -as\<rightarrow>* n'` `as = a#as'` `n' \<notin> set(sourcenodes as)` have "n \<noteq> n'"
+    by(induct rule:path.induct,auto simp:sourcenodes_def)
   from `n -as\<rightarrow>* n'` `as = a#as'` have "valid_edge a"
     by(auto elim:path.cases)
   from `n controls\<^isub>s n'` have "n' \<noteq> (_Exit_)"
