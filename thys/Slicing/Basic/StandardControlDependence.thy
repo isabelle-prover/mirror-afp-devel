@@ -6,7 +6,9 @@ subsection {* Dynamic standard control dependence *}
 
 subsubsection {* Definition and some lemmas *}
 
-definition (in Postdomination)
+context Postdomination begin
+
+definition
   dyn_standard_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool"
   ("_ controls\<^isub>s _ via _" [51,0,0])
 where dyn_standard_control_dependence_def:"n controls\<^isub>s n' via as \<equiv> 
@@ -17,7 +19,7 @@ where dyn_standard_control_dependence_def:"n controls\<^isub>s n' via as \<equiv
                 (\<not> n' postdominates (targetnode a'))))"
 
 
-lemma (in Postdomination) Exit_not_dyn_standard_control_dependent:
+lemma Exit_not_dyn_standard_control_dependent:
   assumes control:"n controls\<^isub>s (_Exit_) via as" shows "False"
 proof -
   from control obtain a as' where path:"n -as\<rightarrow>* (_Exit_)" and as:"as = a#as'"
@@ -29,7 +31,7 @@ proof -
 qed
 
 
-lemma (in Postdomination) dyn_standard_control_dependence_def_variant:
+lemma dyn_standard_control_dependence_def_variant:
   "n controls\<^isub>s n' via as = ((n -as\<rightarrow>* n') \<and> (n \<noteq> n') \<and>
     (\<not> n' postdominates n) \<and> (n' \<notin> set(sourcenodes as)) \<and>
   (\<forall>n'' \<in> set(targetnodes as). n' postdominates n''))"
@@ -215,7 +217,7 @@ next
 qed
 
 
-lemma (in Postdomination) which_node_dyn_standard_control_dependence_source:
+lemma which_node_dyn_standard_control_dependence_source:
   assumes path:"(_Entry_) -as@a#as'\<rightarrow>* n"
   and Exit_path:"n -as''\<rightarrow>* (_Exit_)" and source:"sourcenode a = n'" 
   and source':"sourcenode a' = n'"
@@ -347,7 +349,7 @@ proof -
 qed
 
 
-lemma (in Postdomination) inner_node_dyn_standard_control_dependence_predecessor:
+lemma inner_node_dyn_standard_control_dependence_predecessor:
   assumes inner_node:"inner_node n"
   obtains n' as where "n' controls\<^isub>s n via as"
 proof -
@@ -438,6 +440,7 @@ proof -
   with that show ?thesis by blast
 qed
 
+end
 
 subsubsection {* Instantiate dynamic PDG *}
 
@@ -466,30 +469,31 @@ qed
 
 end
 
-
 subsection {* Static standard control dependence *}
+
+context Postdomination begin
 
 subsubsection {* Definition and some lemmas *}
 
-definition (in Postdomination) standard_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
+definition standard_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
   ("_ controls\<^isub>s _" [51,0])
 where standard_control_dependences_eq:"n controls\<^isub>s n' \<equiv> \<exists>as. n controls\<^isub>s n' via as"
 
-lemma (in Postdomination) standard_control_dependence_def:"n controls\<^isub>s n' =
-    (\<exists>as a a' as'. (as = a#as') \<and> (n' \<notin> set(sourcenodes as)) \<and> (n -as\<rightarrow>* n') \<and>
+lemma standard_control_dependence_def:"n controls\<^isub>s n' =
+    (\<exists>a a' as. (n' \<notin> set(sourcenodes (a#as))) \<and> (n -a#as\<rightarrow>* n') \<and>
                    (sourcenode a = n) \<and> (n' postdominates (targetnode a)) \<and>
                    (valid_edge a') \<and> (sourcenode a' = n) \<and> 
                    (\<not> n' postdominates (targetnode a')))"
 by(auto simp:standard_control_dependences_eq dyn_standard_control_dependence_def)
 
 
-lemma (in Postdomination) Exit_not_standard_control_dependent:
+lemma Exit_not_standard_control_dependent:
   "n controls\<^isub>s (_Exit_) \<Longrightarrow> False"
 by(auto simp:standard_control_dependences_eq 
         intro:Exit_not_dyn_standard_control_dependent)
              
 
-lemma (in Postdomination) standard_control_dependence_def_variant:
+lemma standard_control_dependence_def_variant:
   "n controls\<^isub>s n' = (\<exists>as. (n -as\<rightarrow>* n') \<and> (n \<noteq> n') \<and>
     (\<not> n' postdominates n) \<and> (n' \<notin> set(sourcenodes as)) \<and>
   (\<forall>n'' \<in> set(targetnodes as). n' postdominates n''))"
@@ -497,13 +501,15 @@ by(auto simp:standard_control_dependences_eq
              dyn_standard_control_dependence_def_variant)
 
 
-lemma (in Postdomination) inner_node_standard_control_dependence_predecessor:
+lemma inner_node_standard_control_dependence_predecessor:
   assumes "inner_node n" "(_Entry_) -as\<rightarrow>* n" "n -as'\<rightarrow>* (_Exit_)"
   obtains n' where "n' controls\<^isub>s n"
 using assms
 by(auto elim!:inner_node_dyn_standard_control_dependence_predecessor
         simp:standard_control_dependences_eq)
 
+
+end
 
 subsubsection {* Instantiate static PDG *}
 

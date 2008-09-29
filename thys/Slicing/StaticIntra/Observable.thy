@@ -2,13 +2,15 @@ header {* \isaheader{Observable Sets of Nodes} *}
 
 theory Observable imports Distance begin
 
-inductive_set (in CFG) obs :: "'node \<Rightarrow> 'node set \<Rightarrow> 'node set" 
+context CFG begin
+
+inductive_set obs :: "'node \<Rightarrow> 'node set \<Rightarrow> 'node set" 
 for n::"'node" and S::"'node set"
 where obs_elem: 
   "\<lbrakk>n -as\<rightarrow>* n'; \<forall>nx \<in> set(sourcenodes as). nx \<notin> S; n' \<in> S\<rbrakk> \<Longrightarrow> n' \<in> obs n S"
 
 
-lemma (in CFG) obsE:
+lemma obsE:
   assumes "n' \<in> obs n S"
   obtains as where "n -as\<rightarrow>* n'" and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S"
   and "n' \<in> S"
@@ -20,7 +22,7 @@ proof -
 qed
 
 
-lemma (in CFG) n_in_obs:
+lemma n_in_obs:
   assumes "valid_node n" and "n \<in> S" shows "obs n S = {n}"
 proof -
   from `valid_node n` have "n -[]\<rightarrow>* n" by(rule empty_path)
@@ -45,12 +47,12 @@ proof -
 qed
 
 
-lemma (in CFG) in_obs_valid:
+lemma in_obs_valid:
   "n' \<in> obs n S \<Longrightarrow> valid_node n \<and> valid_node n'"
 by(induct rule:obs.induct,rule path_valid_node)
 
 
-lemma (in CFG) edge_obs_subset:
+lemma edge_obs_subset:
   assumes"valid_edge a" and notin_S:"sourcenode a \<notin> S"
   shows "obs (targetnode a) S \<subseteq> obs (sourcenode a) S"
 proof
@@ -67,7 +69,7 @@ proof
 qed
 
 
-lemma (in CFG) path_obs_subset:
+lemma path_obs_subset:
   "\<lbrakk>n -as\<rightarrow>* n'; \<forall>n' \<in> set(sourcenodes as). n' \<notin> S\<rbrakk>
   \<Longrightarrow> obs n' S \<subseteq> obs n S"
 proof(induct rule:path.induct)
@@ -83,7 +85,7 @@ proof(induct rule:path.induct)
 qed simp
 
 
-lemma (in CFG) path_ex_obs:
+lemma path_ex_obs:
   assumes "n -as\<rightarrow>* n'" and "n' \<in> S"
   obtains m where "m \<in> obs n S"
 proof -
@@ -110,6 +112,7 @@ proof -
   with that show ?thesis by blast
 qed
 
+end
 
 end
 

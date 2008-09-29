@@ -11,7 +11,7 @@ locale CFG_wf = CFG +
   (*>*)
   fixes Def::"'node \<Rightarrow> 'var set"
   fixes Use::"'node \<Rightarrow> 'var set"
-  fixes state_val::"'state \<Rightarrow> 'var \<Rightarrow> 'val option"
+  fixes state_val::"'state \<Rightarrow> 'var \<Rightarrow> 'val"
   assumes Entry_empty:"Def (_Entry_) = {} \<and> Use (_Entry_) = {}"
   and CFG_edge_no_Def_equal:
     "\<lbrakk>valid_edge a; V \<notin> Def (sourcenode a)\<rbrakk>

@@ -8,7 +8,7 @@ locale BackwardSlice = CFG_wf +
   constrains sourcenode::"'edge \<Rightarrow> 'node"
   and Def :: "'node \<Rightarrow> 'var set" 
   and kind :: "'edge \<Rightarrow> 'state edge_kind"
-  and state_val :: "'state \<Rightarrow> 'var \<rightharpoonup> 'val"
+  and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
   (*>*)
   fixes backward_slice :: "'node \<Rightarrow> 'node set"
   assumes valid_nodes:"n \<in> backward_slice n\<^isub>c
@@ -964,8 +964,6 @@ proof -
     by(fastsimp elim:observable_moves.cases)
   from `n\<^isub>c,kind \<turnstile> (n',s') -a'\<rightarrow> (n\<^isub>1',s\<^isub>1')` have "obs n' (backward_slice n\<^isub>c) = {n'}"
     by(fastsimp elim:observable_move.cases intro!:n_in_obs)
-  from `n\<^isub>c,kind \<turnstile> (n',s') -a'\<rightarrow> (n\<^isub>1',s\<^isub>1')` have "obs n' (backward_slice n\<^isub>c) = {n'}"
-    by(fastsimp elim:observable_move.cases intro!:n_in_obs)
   hence "obs n' (backward_slice n\<^isub>c) \<noteq> {}" by fast
   with `n\<^isub>c,kind \<turnstile> (n\<^isub>1,s\<^isub>1) =as'\<Rightarrow>\<^isub>\<tau> (n',s')` `((n\<^isub>1,s\<^isub>1),(n\<^isub>2,s\<^isub>2)) \<in> WS n\<^isub>c` 
   have "((n',s'),(n\<^isub>2,s\<^isub>2)) \<in> WS n\<^isub>c"
@@ -981,9 +979,10 @@ proof -
            (n\<^isub>1',transfer (slice_kind n\<^isub>c (last as)) s\<^isub>2))" by simp blast
 qed
 
+text {* The following lemma states the correctness of static intraprocedural slicing:\\
+  the simulation @{text "WS n\<^isub>c"} is a desired weak simulation *}
 
-
-lemma WS_is_weak_sim:"is_weak_sim (WS n\<^isub>c) n\<^isub>c"
+theorem WS_is_weak_sim:"is_weak_sim (WS n\<^isub>c) n\<^isub>c"
 by(fastsimp dest:WS_weak_sim simp:is_weak_sim_def)
 
 
@@ -1401,7 +1400,7 @@ proof -
 qed
 
 
-lemma fundamental_property_of_static_slicing:
+theorem fundamental_property_of_static_slicing:
   assumes path:"n -as\<rightarrow>* n'" and preds:"preds (kinds as) s"
   obtains as' where "preds (slice_kinds n' as') s"
   and "(\<forall>V \<in> Use n'. state_val (transfers (slice_kinds n' as') s) V = 

@@ -6,7 +6,9 @@ subsection {* Dynamic standard control dependence *}
 
 subsubsection {* Definition and some lemmas *}
 
-definition (in StrongPostdomination)
+context StrongPostdomination begin
+
+definition
   dyn_weak_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool" 
   ("_ weakly controls _ via _" [51,0,0])
 where dyn_weak_control_dependence_def:"n weakly controls n' via as \<equiv> 
@@ -16,7 +18,7 @@ where dyn_weak_control_dependence_def:"n weakly controls n' via as \<equiv>
                    (\<not> n' strongly-postdominates (targetnode a')))"
 
 
-lemma (in StrongPostdomination) Exit_not_dyn_weak_control_dependent:
+lemma Exit_not_dyn_weak_control_dependent:
   assumes control:"n weakly controls (_Exit_) via as" shows "False"
 proof -
   from control obtain as a as' where path:"n -as\<rightarrow>* (_Exit_)" and as:"as = a#as'"
@@ -26,6 +28,8 @@ proof -
   hence "targetnode a -as'\<rightarrow>* (_Exit_)" by(fastsimp dest:path_split)
   with pd show False by -(erule Exit_no_postdominator)
 qed
+
+end
 
 subsubsection {* Instantiate dynamic PDG *}
 
@@ -59,25 +63,29 @@ subsection {* Static weak control dependence *}
 
 subsubsection {* Definition and some lemmas *}
 
-definition (in StrongPostdomination) 
+context StrongPostdomination begin
+
+definition 
   weak_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
   ("_ weakly controls _" [51,0])
 where weak_control_dependences_eq:
     "n weakly controls n' \<equiv> \<exists>as. n weakly controls n' via as"
 
-lemma (in StrongPostdomination) 
+lemma 
   weak_control_dependence_def:"n weakly controls n' = 
-    (\<exists>as a a' as'. (as = a#as') \<and> (n' \<notin> set(sourcenodes as)) \<and> (n -as\<rightarrow>* n') \<and>
+    (\<exists>a a' as. (n' \<notin> set(sourcenodes (a#as))) \<and> (n -a#as\<rightarrow>* n') \<and>
                    (sourcenode a = n) \<and> (n' strongly-postdominates (targetnode a)) \<and>
                    (valid_edge a') \<and> (sourcenode a' = n) \<and> 
                    (\<not> n' strongly-postdominates (targetnode a')))"
 by(auto simp:weak_control_dependences_eq dyn_weak_control_dependence_def)
 
 
-lemma (in StrongPostdomination) Exit_not_weak_control_dependent:
+lemma Exit_not_weak_control_dependent:
   "n weakly controls (_Exit_) \<Longrightarrow> False"
 by(auto simp:weak_control_dependences_eq 
         intro:Exit_not_dyn_weak_control_dependent)
+
+end
 
 
 subsubsection {* Instantiate static PDG *}

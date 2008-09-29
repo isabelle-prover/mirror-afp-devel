@@ -5,12 +5,13 @@ theory CDepInstantiations imports Slice "../Basic/StandardControlDependence"
 
 subsection{* Standard control dependence *}
 
-lemma (in StandardControlDependencePDG)
-  Exit_in_obs_slice_node:"(_Exit_) \<in> obs n' (PDG_BS n\<^isub>c) \<Longrightarrow> n\<^isub>c = (_Exit_)"
+context StandardControlDependencePDG begin
+
+lemma Exit_in_obs_slice_node:"(_Exit_) \<in> obs n' (PDG_BS n\<^isub>c) \<Longrightarrow> n\<^isub>c = (_Exit_)"
   by(auto elim:obsE PDG_path_CFG_path simp:PDG_BS_def split:split_if_asm)
 
 
-lemma (in StandardControlDependencePDG) cd_closed:
+lemma cd_closed:
   assumes isin:"n' \<in> PDG_BS n\<^isub>c" and controls:"n controls\<^isub>s n'"
   shows "n \<in> PDG_BS n\<^isub>c"
 proof(cases "valid_node n\<^isub>c")
@@ -45,7 +46,7 @@ next
 qed
 
 
-lemma (in StandardControlDependencePDG) obs_postdominate:
+lemma obs_postdominate:
   assumes isin:"n \<in> obs n' (PDG_BS n\<^isub>c)" and sliceNotExit:"n\<^isub>c \<noteq> (_Exit_)"
   shows "n postdominates n'"
 proof(rule ccontr)
@@ -93,7 +94,7 @@ qed
 
 
 
-lemma (in StandardControlDependencePDG) obs_singleton: 
+lemma obs_singleton: 
   assumes valid:"valid_node n"
   shows "(\<exists>m. obs n (PDG_BS n\<^isub>c) = {m}) \<or> obs n (PDG_BS n\<^isub>c) = {}"
 proof(rule ccontr)
@@ -247,8 +248,7 @@ proof(rule ccontr)
   qed
 qed
 
-
-lemma (in StandardControlDependencePDG) PDGBackwardSliceCorrect:
+lemma PDGBackwardSliceCorrect:
   "BackwardSlice sourcenode targetnode kind valid_edge
         (_Entry_) Def Use state_val PDG_BS"
 proof(unfold_locales)
@@ -275,17 +275,18 @@ next
   thus "card (obs n (PDG_BS n\<^isub>c)) \<le> 1" by fastsimp
 qed
 
-
+end
 
 
 subsection{* Weak control dependence *}
 
-lemma (in WeakControlDependencePDG)
-  Exit_in_obs_slice_node:"(_Exit_) \<in> obs n' (PDG_BS n\<^isub>c) \<Longrightarrow> n\<^isub>c = (_Exit_)"
+context WeakControlDependencePDG begin
+
+lemma Exit_in_obs_slice_node:"(_Exit_) \<in> obs n' (PDG_BS n\<^isub>c) \<Longrightarrow> n\<^isub>c = (_Exit_)"
   by(auto elim:obsE PDG_path_CFG_path simp:PDG_BS_def split:split_if_asm)
 
 
-lemma (in WeakControlDependencePDG) cd_closed:
+lemma cd_closed:
   assumes isin:"n' \<in> PDG_BS n\<^isub>c" and controls:"n weakly controls n'"
   shows "n \<in> PDG_BS n\<^isub>c"
 proof(cases "valid_node n\<^isub>c")
@@ -319,7 +320,7 @@ next
 qed
 
 
-lemma (in WeakControlDependencePDG) obs_strong_postdominate:
+lemma obs_strong_postdominate:
   assumes isin:"n \<in> obs n' (PDG_BS n\<^isub>c)" and sliceNotExit:"n\<^isub>c \<noteq> (_Exit_)"
   shows "n strongly-postdominates n'"
 proof(rule ccontr)
@@ -353,7 +354,7 @@ qed
 
 
 
-lemma (in WeakControlDependencePDG) obs_singleton: 
+lemma obs_singleton: 
   assumes valid:"valid_node n"
   shows "(\<exists>m. obs n (PDG_BS n\<^isub>c) = {m}) \<or> obs n (PDG_BS n\<^isub>c) = {}"
 proof(rule ccontr)
@@ -508,7 +509,7 @@ qed
 
 
 
-lemma (in WeakControlDependencePDG)WeakPDGBackwardSliceCorrect:
+lemma WeakPDGBackwardSliceCorrect:
   "BackwardSlice sourcenode targetnode kind valid_edge
         (_Entry_) Def Use state_val PDG_BS"
 proof(unfold_locales)
@@ -534,10 +535,14 @@ next
   thus "card (obs n (PDG_BS n\<^isub>c)) \<le> 1" by fastsimp
 qed
 
+end
+
 
 subsection{* Weak order dependence *}
 
-lemma (in CFG_wf) obs_singleton: 
+context CFG_wf begin
+
+lemma obs_singleton: 
   assumes valid:"valid_node n"
   shows "(\<exists>m. obs n (wod_backward_slice n\<^isub>c) = {m}) \<or>
          obs n (wod_backward_slice n\<^isub>c) = {}"
@@ -692,7 +697,7 @@ proof(rule ccontr)
 qed
 
 
-lemma (in CFG_wf) "BackwardSlice sourcenode targetnode kind valid_edge
+lemma "BackwardSlice sourcenode targetnode kind valid_edge
         (_Entry_) Def Use state_val wod_backward_slice"
 proof(unfold_locales)
   fix n n\<^isub>c assume "n \<in> wod_backward_slice n\<^isub>c"
@@ -718,5 +723,6 @@ next
   thus "card (obs n (wod_backward_slice n\<^isub>c)) \<le> 1" by fastsimp
 qed
 
+end
 
 end
