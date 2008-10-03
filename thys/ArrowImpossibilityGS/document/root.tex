@@ -1,0 +1,59 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+%\usepackage[latin1]{inputenc}
+  %for \<onesuperior>, \<onequarter>, \<twosuperior>, \<onehalf>,
+  %\<threesuperior>, \<threequarters>, \<degree>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Arrow and Gibbard-Satterthwaite}
+\author{Tobias Nipkow}
+\maketitle
+
+\begin{abstract}
+This article formalizes two proofs of Arrow's impossibility theorem
+due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a
+corollary. One formalization is based on utility functions, the other
+one on strict partial orders.
+
+An article about these proofs has been submitted to the \emph{Journal of
+Automated Reasoning.}
+\end{abstract}
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
