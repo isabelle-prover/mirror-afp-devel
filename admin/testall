@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.8 2008-10-04 14:29:42 makarius Exp $
+# $Id: testall,v 1.9 2008-10-04 15:50:10 makarius Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Tests all entries in Archive of Formal Proofs
@@ -13,28 +13,28 @@ function usage()
   echo
   echo "Usage: $PRG OPTIONS [entries]"
   echo
-  echo "  Runs isatool make on specified entries in the Archive of Formal Proofs"
+  echo "  Runs isabelle make on specified entries in the Archive of Formal Proofs"
   echo 
   echo "Options:"
-  echo "-t <path/to/isatool>   use isatool at specified path"     
+  echo "-t <path/to/isabelle>  use isabelle tool wrapper at specified path"     
   echo "-c                     include target clean (rebuild session)"
   echo "-d <path>              use specified path as base for archive entries"
-  echo "-r                     use env variable ISABELLE_RELEASES to find isatool"
+  echo "-r                     use env variable ISABELLE_RELEASES to find isabelle"
   echo "-f                     only test entries marked as frequent"
   echo 
   echo "Examples:"
   echo
   echo "$PRG"
-  echo   "uses isatool in your normal path to run all tests (usually = devel version)"
+  echo   "uses isabelle in your normal path to run all tests (usually = devel version)"
   echo
   echo "$PRG Example-Submission"
   echo   "same as above, but only test Example-Submission"
   echo
-  echo "$PRG -t /usr/proj/isabelle/Isabelle2003/bin/isatool Example-Submission"
-  echo   "uses the Isabelle 2003 release version to run the test"
+  echo "$PRG -t /usr/proj/isabelle/Isabelle2009/bin/isabelle Example-Submission"
+  echo   "uses the Isabelle2009 release version to run the test"
   echo
-  echo "$PRG -r Isabelle2003 Example-Submission"
-  echo   "uses the distribution $ISABELLE_RELEASES/Isabelle2003 to test Example-Submission"
+  echo "$PRG -r Isabelle2009 Example-Submission"
+  echo   "uses the distribution $ISABELLE_RELEASES/Isabelle2009 to test Example-Submission"
   exit 1
 }
 
@@ -44,9 +44,9 @@ function fail()
   exit 2
 }
 
-function check_isatool()
+function check_isabelle()
 {
-  [ -x $ISABELLE_TOOL ] || fail "No isatool found at [$ISABELLE_TOOL]."
+  [ -x $ISABELLE_TOOL ] || fail "No isabelle tool wrapper found at [$ISABELLE_TOOL]."
   ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   ISABELLE_HOME=`$ISABELLE_TOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
   [ -n "$ISABELLE_IMAGE_PATH" ] || export ISABELLE_IMAGE_PATH="$ISABELLE_HOME/heaps/$ML_IDENTIFIER/"
@@ -59,7 +59,7 @@ THYS="$(dirname "$0")/../thys"
 
 [ "$1" = "-?" ] && usage
 
-ISABELLE_TOOL=isatool
+ISABELLE_TOOL=isabelle
 FRQONLY="no"
 
 while getopts "t:cfr:d:" OPT
@@ -67,8 +67,8 @@ do
     case "$OPT" in
       r)
         [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
-        ISABELLE_TOOL="$ISABELLE_RELEASES/$OPTARG/bin/isatool"
-        check_isatool
+        ISABELLE_TOOL="$ISABELLE_RELEASES/$OPTARG/bin/isabelle"
+        check_isabelle
         ;;
       c)
         CLEAN="clean"
@@ -78,7 +78,7 @@ do
         ;;
       t)
         ISABELLE_TOOL="$OPTARG"
-        check_isatool
+        check_isabelle
         ;;
       f) 
         FRQONLY="yes"

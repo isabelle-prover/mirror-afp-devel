@@ -1,8 +1,6 @@
 This folder contains works related to the formalization of
 clock synchronization algorithms in Isabelle/HOL.
 
-Compile with Isabelle 2005: isatool make
-
 Here is the description for each file:
 
 - ICAInstance.thy: this theory file formalizes the proof that

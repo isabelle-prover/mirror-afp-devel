@@ -1,4 +1,4 @@
-(*  ID:          $Id: UserGuide.thy,v 1.7 2008-06-12 06:57:27 lsf37 Exp $
+(*  ID:          $Id: UserGuide.thy,v 1.8 2008-10-04 15:50:10 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -58,7 +58,7 @@ To start proving Hoare triples import the theory @{term "Vcg"}.
 To avoid rebuilding all the background theory you can precompile a proper heap image by
 invoking the following command in the \texttt{simpl} directory:
 \begin{verbatim}
-  isatool usedir -b HOL simpl
+  isabelle usedir -b HOL simpl
 \end{verbatim}
 
 Then startup Isabelle with \texttt{Isabelle -l simpl -k simpl} to
