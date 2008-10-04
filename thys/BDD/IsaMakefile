@@ -23,7 +23,7 @@ LOG = $(OUT)/log
 IMAGE=$(OUT)/$(BASE-IMAGE)
 
 
-USEDIR = $(ISATOOL) usedir -v true -g true -i true -V outline=/proof,/ML -d pdf # -D generated
+USEDIR = $(ISABELLE_TOOL) usedir -v true -g true -i true -V outline=/proof,/ML -d pdf # -D generated
 
 # time limit (in sec)
 MAXTIME = 3600
@@ -34,7 +34,7 @@ MAXTIME = 3600
 $(SESSION-NAME): Simpl $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
 Simpl:
-	cd ../Simpl; $(ISATOOL) make Simpl 
+	cd ../Simpl; $(ISABELLE_TOOL) make Simpl 
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)

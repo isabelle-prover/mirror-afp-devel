@@ -27,7 +27,7 @@ IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
 
-USEDIR = $(ISATOOL) usedir -g true -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
+USEDIR = $(ISABELLE_TOOL) usedir -g true -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
 # time limit (in sec)
 MAXTIME = 3600
@@ -44,7 +44,7 @@ $(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib ex/
 keywords: $(LOG)/Simpl.gz $(LOG)/Pure.gz $(LOG)/Pure-ProofGeneral.gz $(LOG)/HOL.gz \
 	  $(LOG)/HOLCF.gz $(LOG)/IOA.gz \
 	  $(LOG)/HOL-Nominal.gz $(LOG)/HOL-Statespace.gz
-	$(ISATOOL) keywords -t emacs -k simpl \
+	$(ISABELLE_TOOL) keywords -t emacs -k simpl \
 	  $(LOG)/Pure.gz $(LOG)/Pure-ProofGeneral.gz $(LOG)/HOL.gz $(LOG)/HOLCF.gz \
 	  $(LOG)/IOA.gz $(LOG)/HOL-Nominal.gz $(LOG)/HOL-Statespace.gz \
 	  $(LOG)/Simpl.gz

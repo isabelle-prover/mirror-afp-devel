@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: publish,v 1.10 2008-09-22 09:36:32 lsf37 Exp $
+# $Id: publish,v 1.11 2008-10-04 14:29:42 makarius Exp $
 # Author: Gerwin Klein, NICTA
 #
 # publishes archive entry + main web pages on SF
@@ -58,9 +58,9 @@ function fail()
 
 function check_isatool()
 {
-  [ -x $ISATOOL ] || fail "No isatool found at [$ISATOOL]."
-  ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
-  ISABELLE_HOME=`$ISATOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
+  [ -x $ISABELLE_TOOL ] || fail "No isatool found at [$ISABELLE_TOOL]."
+  ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
+  ISABELLE_HOME=`$ISABELLE_TOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
   export ISABELLE_IMAGE_PATH="$ISABELLE_HOME/heaps/$ML_IDENTIFIER/"
 }
 
@@ -68,7 +68,7 @@ function check_isatool()
 
 [ "$#" -lt "2" -o "$1" = "-?" ] && usage
 
-ISATOOL=isatool
+ISABELLE_TOOL=isatool
 INTERACTIVE="yes"
 
 while getopts "t:rf" OPT
@@ -82,7 +82,7 @@ do
         INTERACTIVE="no"
         ;;
       t)
-        ISATOOL="$OPTARG"
+        ISABELLE_TOOL="$OPTARG"
         check_isatool
         ;;
     esac
@@ -94,7 +94,7 @@ TAG="$1"
 shift
 
 if [ "$USE_RELEASE" == "1" ]; then
-    ISATOOL="$ISABELLE_RELEASES/$TAG/bin/isatool"
+    ISABELLE_TOOL="$ISABELLE_RELEASES/$TAG/bin/isatool"
     check_isatool
 fi
 
@@ -132,7 +132,7 @@ if [ "$1" != "-" ]; then
         if [ -d $DIR -a "$DIR" != "CVS" ]; then
             echo "Generating HTML for [$DIR]"
             cd $DIR
-            $ISATOOL make clean all || fail "isatool make all failed on [$DIR]"
+            $ISABELLE_TOOL make clean all || fail "isatool make all failed on [$DIR]"
             cd ..
             echo "Tarring [$DIR]"
             $TAR -cf $EXPORT_PRE-$DIR-$DATE.tar $DIR

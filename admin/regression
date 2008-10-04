@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.29 2008-06-12 06:57:14 lsf37 Exp $
+# $Id: regression,v 1.30 2008-10-04 14:29:42 makarius Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -64,7 +64,7 @@ if [ "$1" == "-" ]; then
   TAG="-A"
   AFP_VER="development"
   WORKING_COPY=$WORKING_COPY/devel
-  ISATOOL=$ISABELLE_DEVEL/bin/isatool
+  ISABELLE_TOOL=$ISABELLE_DEVEL/bin/isatool
     
   ERRORDIR=$HOME/var
   RUNNING=$HOME/var/running
@@ -73,21 +73,21 @@ if [ "$1" == "-" ]; then
     exit 1
   fi
   cat $SETTINGS >> $ISABELLE_DEVEL/etc/settings
-  ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
+  ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
   LOG=$LOG-devel-$DATE.log
   SNAPSHOT=1;
   REPORT=$REPORT-devel
 
-  BROWSER_INFO=`$ISATOOL getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
+  BROWSER_INFO=`$ISABELLE_TOOL getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
   [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
 
 else
   TAG="-r $1"
   AFP_VER="release ($1)"
   WORKING_COPY=$WORKING_COPY/release
-  ISATOOL=$ISABELLE_RELEASES/$1/bin/isatool
-  ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
+  ISABELLE_TOOL=$ISABELLE_RELEASES/$1/bin/isatool
+  ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$ISABELLE_RELEASES/$1/heaps/$ML_IDENTIFIER/"
   LOG=$LOG-$1-$DATE.log
   REPORT=$REPORT-$1
@@ -108,7 +108,7 @@ echo "end cvs update" >> $LOG
 echo >> $LOG
 
 # run test
-nice $WORKING_COPY/admin/testall $FRQ -t $ISATOOL -c >> $LOG 2>&1
+nice $WORKING_COPY/admin/testall $FRQ -t $ISABELLE_TOOL -c >> $LOG 2>&1
 FAILURE=$?
 
 ELAPSED=$("$HOME/bin/showtime" "$SECONDS")

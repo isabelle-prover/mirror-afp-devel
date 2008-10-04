@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.7 2006-06-20 22:22:30 lsf37 Exp $
+# $Id: testall,v 1.8 2008-10-04 14:29:42 makarius Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Tests all entries in Archive of Formal Proofs
@@ -46,9 +46,9 @@ function fail()
 
 function check_isatool()
 {
-  [ -x $ISATOOL ] || fail "No isatool found at [$ISATOOL]."
-  ML_IDENTIFIER=`$ISATOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
-  ISABELLE_HOME=`$ISATOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
+  [ -x $ISABELLE_TOOL ] || fail "No isatool found at [$ISABELLE_TOOL]."
+  ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
+  ISABELLE_HOME=`$ISABELLE_TOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
   [ -n "$ISABELLE_IMAGE_PATH" ] || export ISABELLE_IMAGE_PATH="$ISABELLE_HOME/heaps/$ML_IDENTIFIER/"
 }
 
@@ -59,7 +59,7 @@ THYS="$(dirname "$0")/../thys"
 
 [ "$1" = "-?" ] && usage
 
-ISATOOL=isatool
+ISABELLE_TOOL=isatool
 FRQONLY="no"
 
 while getopts "t:cfr:d:" OPT
@@ -67,7 +67,7 @@ do
     case "$OPT" in
       r)
         [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
-        ISATOOL="$ISABELLE_RELEASES/$OPTARG/bin/isatool"
+        ISABELLE_TOOL="$ISABELLE_RELEASES/$OPTARG/bin/isatool"
         check_isatool
         ;;
       c)
@@ -77,7 +77,7 @@ do
         THYS="$OPTARG"
         ;;
       t)
-        ISATOOL="$OPTARG"
+        ISABELLE_TOOL="$OPTARG"
         check_isatool
         ;;
       f) 
@@ -101,7 +101,7 @@ for DIR in $DIRS; do
         cd $DIR
         if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
           echo "Testing [$DIR]"
-          $ISATOOL make $CLEAN all $@ || FAIL="${FAIL}${DIR} "
+          $ISABELLE_TOOL make $CLEAN all $@ || FAIL="${FAIL}${DIR} "
           echo "Finished [$DIR]"
         fi
         cd ..
