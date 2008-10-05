@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 #
-# $Id: publish,v 1.11 2008-10-04 14:29:42 makarius Exp $
+# $Id: publish,v 1.12 2008-10-05 11:35:27 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # publishes archive entry + main web pages on SF
 # 
+# This script expects Isabelle version >= 2008-10-05 
+# (uses isballe instead of isatool)
 
 ## settings
 
@@ -40,13 +42,13 @@ function usage()
   echo
   echo "Options:"
   echo "  -f             do not ask before publishing"
-  echo "  -t <isatool>   use specified path to isatool"
-  echo "  -r             use env variable ISABELLE_RELEASES to find isatool"
+  echo "  -t <isabelle>  use specified path to isabelle tool script"
+  echo "  -r             use env variable ISABELLE_RELEASES to find isabelle"
   echo
   echo "Examples:"
-  echo "  $PRG -t /usr/proj/Isabelle2003/bin/isatool Isabelle2003 Example-Submission"  
+  echo "  $PRG -t /usr/proj/Isabelle2003/bin/isabelle Isabelle2009 Example-Submission"  
   echo
-  echo "  $PRG -r Isabelle2003 Example-Submission"  
+  echo "  $PRG -r Isabelle2009 Example-Submission"  
   exit 1
 }
 
@@ -56,9 +58,9 @@ function fail()
   exit 2
 }
 
-function check_isatool()
+function check_isabelle_tool()
 {
-  [ -x $ISABELLE_TOOL ] || fail "No isatool found at [$ISABELLE_TOOL]."
+  [ -x $ISABELLE_TOOL ] || fail "No isabelle found at [$ISABELLE_TOOL]."
   ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   ISABELLE_HOME=`$ISABELLE_TOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
   export ISABELLE_IMAGE_PATH="$ISABELLE_HOME/heaps/$ML_IDENTIFIER/"
@@ -68,7 +70,7 @@ function check_isatool()
 
 [ "$#" -lt "2" -o "$1" = "-?" ] && usage
 
-ISABELLE_TOOL=isatool
+ISABELLE_TOOL=isabelle
 INTERACTIVE="yes"
 
 while getopts "t:rf" OPT
@@ -83,7 +85,7 @@ do
         ;;
       t)
         ISABELLE_TOOL="$OPTARG"
-        check_isatool
+        check_isabelle_tool
         ;;
     esac
 done
@@ -94,8 +96,8 @@ TAG="$1"
 shift
 
 if [ "$USE_RELEASE" == "1" ]; then
-    ISABELLE_TOOL="$ISABELLE_RELEASES/$TAG/bin/isatool"
-    check_isatool
+    ISABELLE_TOOL="$ISABELLE_RELEASES/$TAG/bin/isabelle"
+    check_isabelle_tool
 fi
 
 
@@ -104,14 +106,14 @@ EXPORT=$EXPORT_PRE-$DATE
 ###
 
 echo "Exporting from CVS"
-[ -e "afp-export-$DATE" ] && fail "Export directory [afp-export-$DATE] exists. Please remove before running this script."
+rm -rf "afp-export-$DATE"
 $CVS -q -d $REPOS export -r $TAG -d afp-export-$DATE thys web || fail "CVS export failed."
 cd afp-export-$DATE
 mv thys $EXPORT
 
 if [ "$1" != "-" ]; then
     echo "Cleaning up browser_info directory"
-    BROWSER_INFO=`isatool getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
+    BROWSER_INFO=`isabelle getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
     [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
 
     HTML_THYS=web/browser_info/$TAG
@@ -132,7 +134,7 @@ if [ "$1" != "-" ]; then
         if [ -d $DIR -a "$DIR" != "CVS" ]; then
             echo "Generating HTML for [$DIR]"
             cd $DIR
-            $ISABELLE_TOOL make clean all || fail "isatool make all failed on [$DIR]"
+            $ISABELLE_TOOL make clean all || fail "isabelle make all failed on [$DIR]"
             cd ..
             echo "Tarring [$DIR]"
             $TAR -cf $EXPORT_PRE-$DIR-$DATE.tar $DIR
