@@ -67,6 +67,13 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2008-09-01:
+<a href="entries/ArrowImpossibilityGS.shtml">Arrow and Gibbard-Satterthwaite</a>
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
 2008-09-16:
 <a href="entries/Slicing.shtml">Towards Certified Slicing</a>
 <br>Author:
