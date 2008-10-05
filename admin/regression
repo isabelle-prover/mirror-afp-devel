@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.30 2008-10-04 14:29:42 makarius Exp $
+# $Id: regression,v 1.31 2008-10-05 11:17:06 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -64,7 +64,7 @@ if [ "$1" == "-" ]; then
   TAG="-A"
   AFP_VER="development"
   WORKING_COPY=$WORKING_COPY/devel
-  ISABELLE_TOOL=$ISABELLE_DEVEL/bin/isatool
+  ISABELLE_TOOL=$ISABELLE_DEVEL/bin/isabelle
     
   ERRORDIR=$HOME/var
   RUNNING=$HOME/var/running
@@ -151,7 +151,7 @@ Tested version: $AFP_VER
 Test ended on: $HOSTNAME, `date`.
 
 To reproduce the error, check out the $AFP_VER version of the
-archive from sourceforge and run "isatool make" on your session.
+archive from sourceforge and run "isabelle make" on your session.
 
 This is an automatically generated email. To switch off these 
 notifications, edit thys/$E/config and cvs commit the changes.
