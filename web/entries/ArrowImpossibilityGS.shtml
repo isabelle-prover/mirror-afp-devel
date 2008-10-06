@@ -75,7 +75,7 @@ Automated Reasoning.</i>
 <!-- entry directory name: -->
 <!--#set var="name" value="ArrowImpossibilityGS" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOL-Plain/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -107,6 +107,6 @@ Automated Reasoning.</i>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-10-06 14:29:59 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-10-06 20:55:28 $, $Revision: 1.1 
 $</div></body>
 </html>
