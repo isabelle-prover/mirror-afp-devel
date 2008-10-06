@@ -37,7 +37,7 @@
     <tr><td class="datahead">Author:</td>
 <td class="data">
 <!-- Author: --><a
-href="???">Tobias Nipkow</a>
+href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>		
     
 	<tr><td class="datahead">Submission date:</td>
@@ -107,6 +107,6 @@ Automated Reasoning.</i>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-10-05 16:52:45 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-10-06 14:29:59 $, $Revision: 1.1 
 $</div></body>
 </html>
