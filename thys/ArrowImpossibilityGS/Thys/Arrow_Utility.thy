@@ -1,4 +1,4 @@
-(*  ID:         $Id: Arrow_Utility.thy,v 1.1 2008-10-03 09:26:59 nipkow Exp $
+(*  ID:         $Id: Arrow_Utility.thy,v 1.2 2008-10-06 18:44:26 nipkow Exp $
     Author:     Tobias Nipkow, 2002
 *)
 
@@ -29,7 +29,7 @@ lemma alt2: "\<exists>b::alt. b \<noteq> a"
 using alt3 by simp metis
 
 types pref = "alt \<Rightarrow> real"
-      profile = "indi \<Rightarrow> pref"
+      prof = "indi \<Rightarrow> pref"
 
 definition
  top :: "pref \<Rightarrow> alt \<Rightarrow> bool" (infixr "<\<cdot>" 60) where
@@ -139,7 +139,7 @@ qed
 text{* The proof starts here. *}
 
 locale arrow =
-fixes F :: "profile \<Rightarrow> pref"
+fixes F :: "prof \<Rightarrow> pref"
 assumes unanimity: "(\<And>i. P i a < P i b) \<Longrightarrow> F P a < F P b"
 and IIA:
 "(\<And>i. (P i a < P i b) = (P' i a < P' i b)) \<Longrightarrow>
@@ -252,7 +252,7 @@ qed
 
 lemma pivotal_exists: "\<exists>i. pivotal i b"
 proof -
-  let ?P = "(\<lambda>_ a. if a=b then 0 else 1)::profile"
+  let ?P = "(\<lambda>_ a. if a=b then 0 else 1)::prof"
   have "Extreme ?P b" by(simp add:extreme_def bot_def)
   moreover have "b \<cdot>< F ?P"
     by(simp add:bot_def unanimity del: less_if_bot not_less_if_bot)
@@ -266,7 +266,7 @@ lemma pivotal_xdictates: assumes pivo: "pivotal i b"
 proof -
   have "\<And>a c. \<lbrakk> a \<noteq> b; b \<noteq> c \<rbrakk> \<Longrightarrow> i dictates a < c"
   proof (unfold dictates_def, intro allI impI)
-    fix a c and P::profile
+    fix a c and P::prof
     assume abc: "a \<noteq> b" "b \<noteq> c" and
            ac: "P i a < P i c"
     show "F P a < F P c"
