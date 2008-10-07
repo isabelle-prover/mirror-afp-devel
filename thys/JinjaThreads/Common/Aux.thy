@@ -191,8 +191,8 @@ lemma disjE3: "\<lbrakk> P \<or> Q \<or> R; P \<Longrightarrow> S; Q \<Longright
 by auto
 
 consts_code (* code for code generator setup *)
-  "arbitrary :: nat" ("{* (0::nat) *}")
-  "arbitrary :: string" ("{* ''''Arbitrary'''' *}")
+  "undefined :: nat" ("{* (0::nat) *}")
+  "undefined :: string" ("{* ''''undefined'''' *}")
 
 lemma Plus_eq_empty_conv: "A <+> B = {} \<longleftrightarrow> A = {} \<and> B = {}"
 by(auto)

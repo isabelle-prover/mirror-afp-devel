@@ -1046,9 +1046,9 @@ proof -
                                             t2 = c_pair (c_pair y2 t1) x1
                                                  in c_pair (c_pair n x)
                                                      ((if ((n, c_pair y2 x1), n, x) \<in> measure (\<lambda>m. m) <*lex*> measure (\<lambda>n. n)
-                                                       then loc_upb (n, c_pair y2 x1) else arbitrary) +
+                                                       then loc_upb (n, c_pair y2 x1) else undefined) +
                                                       (if ((m2, t2), n, x) \<in> measure (\<lambda>m. m) <*lex*> measure (\<lambda>n. n)
-                                                       then loc_upb (m2, t2) else arbitrary)) +
+                                                       then loc_upb (m2, t2) else undefined)) +
                                                     1)"
   by(simp add: Let_def)
   with S1 S2 show "loc_upb (n,x) = (

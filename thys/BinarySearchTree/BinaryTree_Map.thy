@@ -1,5 +1,5 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree_Map.thy,v 1.5 2007-06-22 15:53:54 makarius Exp $
+    ID:          $Id: BinaryTree_Map.thy,v 1.6 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL
@@ -229,23 +229,23 @@ section {* Map Remove Operation *}
 
 constdefs
   mremove :: "index => 'a tarray => 'a tarray"
-  "mremove i t == remove fst (i, arbitrary) t"
+  "mremove i t == remove fst (i, undefined) t"
 
 lemma assumes v: "valid_tmap t"
       shows mremove_valid: "valid_tmap (mremove i t)"
 proof (simp add: mremove_def)
   from v remove_sort 
-  show "sortedTree fst (remove fst (i,arbitrary) t)" by fastsimp
+  show "sortedTree fst (remove fst (i, undefined) t)" by fastsimp
 qed
 
 lemma assumes v: "valid_tmap t"
       shows mremove_map: "mapOf (mremove i t) i = None"
 proof (simp add: mremove_def)
-  let ?tr = "remove fst (i,arbitrary) t"
+  let ?tr = "remove fst (i, undefined) t"
   show "mapOf ?tr i = None"
   proof -
     from v remove_spec 
-    have remSet: "setOf ?tr = setOf t - eqs fst (i,arbitrary)"
+    have remSet: "setOf ?tr = setOf t - eqs fst (i, undefined)"
     by fastsimp
     have noneIn: "ALL a. (i,a) ~: setOf ?tr"
     proof 

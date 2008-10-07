@@ -1038,7 +1038,7 @@ apply (case_tac "l = Suc n", simp)
         subgoal_tac "{h. h \<le> (Suc n)} - {Suc n} = {h. h \<le> n}", simp,
         subgoal_tac "\<forall>j. j \<le> n \<longrightarrow> j \<le> (Suc n)",
         frule_tac f = "\<lambda>u. if u \<le> Suc n then (x u) \<cdot>\<^sub>r (1\<^sub>r \<plusminus> -\<^sub>a (b u)) else 
-        arbitrary" and n = n in aGroup.nsum_eq[of "K" _ _ "g"])
+        undefined" and n = n in aGroup.nsum_eq[of "K" _ _ "g"])
  apply (rule allI, rule impI, simp,
         rule allI, simp, rule allI, rule impI, simp, simp)
 
@@ -1106,8 +1106,8 @@ defer
          rule aGroup.ag_pOp_closed, assumption+, simp add:Ring.ring_one,
          rule aGroup.ag_mOp_closed, assumption, simp)
   apply (subgoal_tac "\<Sigma>\<^sub>e K (\<lambda>a. if a \<le> (Suc n) then x a \<cdot>\<^sub>r (1\<^sub>r \<plusminus> -\<^sub>a (b a)) 
-         else arbitrary) n \<plusminus> -\<^sub>a (x l) = 
-         \<Sigma>\<^sub>e K (\<lambda>a. if a \<le> n then x a \<cdot>\<^sub>r (1\<^sub>r \<plusminus> -\<^sub>a (b a)) else arbitrary) n \<plusminus>
+         else undefined) n \<plusminus> -\<^sub>a (x l) = 
+         \<Sigma>\<^sub>e K (\<lambda>a. if a \<le> n then x a \<cdot>\<^sub>r (1\<^sub>r \<plusminus> -\<^sub>a (b a)) else undefined) n \<plusminus>
          -\<^sub>a (x l)", simp,
          rule aGroup.ag_pOp_add_r[of K _ _ "-\<^sub>a (x l)"], assumption+,
          rule aGroup.nsum_mem, assumption+,

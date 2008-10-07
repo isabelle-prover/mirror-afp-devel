@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Value.thy,v 1.4 2006-05-18 14:19:23 lsf37 Exp $
+    ID:          $Id: Value.thy,v 1.5 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>  and  
                  Nicole Rauch <rauch at informatik.uni-kl.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
@@ -241,13 +241,13 @@ aid   :: "Value \<Rightarrow> ObjectId"
 
 defs aI_def:
 "aI v \<equiv>  case v of  
-            boolV  b   \<Rightarrow> arbitrary
+            boolV  b   \<Rightarrow> undefined
           | intgV  i   \<Rightarrow> i
-          | shortV sh  \<Rightarrow> arbitrary
-          | byteV  by  \<Rightarrow> arbitrary
-          | objV   C a \<Rightarrow> arbitrary
-          | arrV  T a  \<Rightarrow> arbitrary
-          | nullV      \<Rightarrow> arbitrary"
+          | shortV sh  \<Rightarrow> undefined
+          | byteV  by  \<Rightarrow> undefined
+          | objV   C a \<Rightarrow> undefined
+          | arrV  T a  \<Rightarrow> undefined
+          | nullV      \<Rightarrow> undefined"
 lemma aI_simps [simp]:
 "aI (intgV i) = i"
 by (simp add: aI_def)
@@ -256,12 +256,12 @@ by (simp add: aI_def)
 defs aB_def:
 "aB v \<equiv>  case v of  
             boolV  b   \<Rightarrow> b
-          | intgV  i   \<Rightarrow> arbitrary
-          | shortV sh  \<Rightarrow> arbitrary
-          | byteV  by  \<Rightarrow> arbitrary
-          | objV   C a \<Rightarrow> arbitrary
-          | arrV  T a  \<Rightarrow> arbitrary
-          | nullV      \<Rightarrow> arbitrary"
+          | intgV  i   \<Rightarrow> undefined
+          | shortV sh  \<Rightarrow> undefined
+          | byteV  by  \<Rightarrow> undefined
+          | objV   C a \<Rightarrow> undefined
+          | arrV  T a  \<Rightarrow> undefined
+          | nullV      \<Rightarrow> undefined"
 lemma aB_simps [simp]:
 "aB (boolV b) = b"
 by (simp add: aB_def)
@@ -269,13 +269,13 @@ by (simp add: aB_def)
 
 defs aSh_def:
 "aSh v \<equiv>  case v of  
-            boolV  b   \<Rightarrow> arbitrary
-          | intgV  i   \<Rightarrow> arbitrary
+            boolV  b   \<Rightarrow> undefined
+          | intgV  i   \<Rightarrow> undefined
           | shortV sh  \<Rightarrow> sh
-          | byteV  by  \<Rightarrow> arbitrary
-          | objV   C a \<Rightarrow> arbitrary
-          | arrV  T a  \<Rightarrow> arbitrary
-          | nullV      \<Rightarrow> arbitrary"
+          | byteV  by  \<Rightarrow> undefined
+          | objV   C a \<Rightarrow> undefined
+          | arrV  T a  \<Rightarrow> undefined
+          | nullV      \<Rightarrow> undefined"
 lemma aSh_simps [simp]:
 "aSh (shortV sh) = sh"
 by (simp add: aSh_def)
@@ -283,26 +283,26 @@ by (simp add: aSh_def)
 
 defs aBy_def:
 "aBy v \<equiv>  case v of  
-            boolV  b   \<Rightarrow> arbitrary
-          | intgV  i   \<Rightarrow> arbitrary
-          | shortV s   \<Rightarrow> arbitrary
+            boolV  b   \<Rightarrow> undefined
+          | intgV  i   \<Rightarrow> undefined
+          | shortV s   \<Rightarrow> undefined
           | byteV  by  \<Rightarrow> by
-          | objV   C a \<Rightarrow> arbitrary
-          | arrV  T a  \<Rightarrow> arbitrary
-          | nullV      \<Rightarrow> arbitrary"
+          | objV   C a \<Rightarrow> undefined
+          | arrV  T a  \<Rightarrow> undefined
+          | nullV      \<Rightarrow> undefined"
 lemma aBy_simps [simp]:
 "aBy (byteV by) = by"
 by (simp add: aBy_def)
 
 defs tid_def:
 "tid v \<equiv> case v of
-            boolV  b   \<Rightarrow> arbitrary
-          | intgV  i   \<Rightarrow> arbitrary
-          | shortV s   \<Rightarrow> arbitrary
-          | byteV  by  \<Rightarrow> arbitrary
+            boolV  b   \<Rightarrow> undefined
+          | intgV  i   \<Rightarrow> undefined
+          | shortV s   \<Rightarrow> undefined
+          | byteV  by  \<Rightarrow> undefined
           | objV   C a \<Rightarrow> C
-          | arrV  T a  \<Rightarrow> arbitrary
-          | nullV      \<Rightarrow> arbitrary"
+          | arrV  T a  \<Rightarrow> undefined
+          | nullV      \<Rightarrow> undefined"
 
 lemma tid_simps [simp]:
 "tid (objV C a) = C"
@@ -311,13 +311,13 @@ by (simp add: tid_def)
 
 defs oid_def:
 "oid v \<equiv> case v of
-            boolV  b   \<Rightarrow> arbitrary
-          | intgV  i   \<Rightarrow> arbitrary
-          | shortV s   \<Rightarrow> arbitrary
-          | byteV  by  \<Rightarrow> arbitrary
+            boolV  b   \<Rightarrow> undefined
+          | intgV  i   \<Rightarrow> undefined
+          | shortV s   \<Rightarrow> undefined
+          | byteV  by  \<Rightarrow> undefined
           | objV   C a \<Rightarrow> a
-          | arrV  T a  \<Rightarrow> arbitrary
-          | nullV      \<Rightarrow> arbitrary"
+          | arrV  T a  \<Rightarrow> undefined
+          | nullV      \<Rightarrow> undefined"
 
 lemma oid_simps [simp]:
 "oid (objV C a) = a"
@@ -327,13 +327,13 @@ by (simp add: oid_def)
 
 defs jt_def:
 "jt v \<equiv> case v of
-            boolV  b   \<Rightarrow> arbitrary
-          | intgV  i   \<Rightarrow> arbitrary
-          | shortV s   \<Rightarrow> arbitrary
-          | byteV  by  \<Rightarrow> arbitrary
-          | objV   C a \<Rightarrow> arbitrary
+            boolV  b   \<Rightarrow> undefined
+          | intgV  i   \<Rightarrow> undefined
+          | shortV s   \<Rightarrow> undefined
+          | byteV  by  \<Rightarrow> undefined
+          | objV   C a \<Rightarrow> undefined
           | arrV  T a  \<Rightarrow> at2jt T
-          | nullV      \<Rightarrow> arbitrary"
+          | nullV      \<Rightarrow> undefined"
 
 lemma jt_simps [simp]:
 "jt (arrV T a) = at2jt T"
@@ -342,13 +342,13 @@ by (simp add: jt_def)
 
 defs aid_def:
 "aid v \<equiv> case v of
-            boolV  b   \<Rightarrow> arbitrary
-          | intgV  i   \<Rightarrow> arbitrary
-          | shortV s   \<Rightarrow> arbitrary
-          | byteV  by  \<Rightarrow> arbitrary
-          | objV   C a \<Rightarrow> arbitrary
+            boolV  b   \<Rightarrow> undefined
+          | intgV  i   \<Rightarrow> undefined
+          | shortV s   \<Rightarrow> undefined
+          | byteV  by  \<Rightarrow> undefined
+          | objV   C a \<Rightarrow> undefined
           | arrV  T a  \<Rightarrow> a
-          | nullV      \<Rightarrow> arbitrary"
+          | nullV      \<Rightarrow> undefined"
 
 lemma aid_simps [simp]:
 "aid (arrV T a) = a"

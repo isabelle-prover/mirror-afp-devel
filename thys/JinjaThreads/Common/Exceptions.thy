@@ -44,7 +44,7 @@ constdefs
                         if s = ArrayStore then 4 else
                         if s = NegativeArraySize then 5 else 
                         if s = IllegalMonitorState then 6 else 
-                        if s = IllegalThreadState then 7 else arbitrary"
+                        if s = IllegalThreadState then 7 else undefined"
 
   start_heap :: "'c prog \<Rightarrow> heap"
   "start_heap G \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer)

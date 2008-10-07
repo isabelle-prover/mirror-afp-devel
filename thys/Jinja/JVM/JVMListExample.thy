@@ -1,5 +1,5 @@
 (*  Title:      Jinja/JVM/JVMListExample.thy
-    ID:         $Id: JVMListExample.thy,v 1.8 2008-06-12 06:57:20 lsf37 Exp $
+    ID:         $Id: JVMListExample.thy,v 1.9 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Stefan Berghofer, Gerwin Klein
 *)
 
@@ -99,9 +99,9 @@ fun new_addr z s alloc some hp =
   in nr z end;
 *}
 
-  "arbitrary" ("(error \"arbitrary\")")
-  "arbitrary :: val" ("{* Unit *}")
-  "arbitrary :: cname" ("Object")
+  "undefined" ("(error \"undefined\")")
+  "undefined :: val" ("{* Unit *}")
+  "undefined :: cname" ("Object")
 
 declare method_def2 [unfolded Method_def, OF exI, OF conjI, code ind]
 declare fields_def2 [code ind]

@@ -87,6 +87,6 @@ constdefs
   start_state :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> jvm_state"
   "start_state P C M \<equiv>
   let (D,Ts,T,mxs,mxl\<^isub>0,b) = method P C M in
-    (None, start_heap P, [([], Null # replicate mxl\<^isub>0 arbitrary, C, M, 0)])"
+    (None, start_heap P, [([], Null # replicate mxl\<^isub>0 undefined, C, M, 0)])"
 
 end

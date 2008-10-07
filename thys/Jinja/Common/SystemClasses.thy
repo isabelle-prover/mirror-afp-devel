@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/SystemClasses.thy
-    ID:         $Id: SystemClasses.thy,v 1.3 2007-05-10 08:22:56 fhaftmann Exp $
+    ID:         $Id: SystemClasses.thy,v 1.4 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)
@@ -17,7 +17,7 @@ text {*
 
 constdefs
   ObjectC :: "'m cdecl"
-  "ObjectC \<equiv> (Object, (arbitrary,[],[]))"
+  "ObjectC \<equiv> (Object, (undefined,[],[]))"
 
   NullPointerC :: "'m cdecl"
   "NullPointerC \<equiv> (NullPointer, (Object,[],[]))"

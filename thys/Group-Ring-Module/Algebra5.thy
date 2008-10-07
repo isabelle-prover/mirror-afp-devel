@@ -391,7 +391,7 @@ abbreviation
 definition
   augm_func :: "[nat, nat \<Rightarrow> 'a,'a set, nat, nat \<Rightarrow> 'a, 'a set] \<Rightarrow> nat \<Rightarrow> 'a" where
   "augm_func n f A m g B = (\<lambda>i\<in>{j. j \<le> (n + m)}. if i \<le> n then f i else
-    if (Suc n) \<le> i \<and> i \<le> n + m then g ((sliden (Suc n)) i) else arbitrary)"
+    if (Suc n) \<le> i \<and> i \<le> n + m then g ((sliden (Suc n)) i) else undefined)"
  (* Remark. g is a function of Nset (m - 1) \<rightarrow> B *)  
 
 definition    
@@ -415,7 +415,7 @@ definition
   prodB1 :: "[('a, 'm) Ring_scheme, ('a, 'm) Ring_scheme] \<Rightarrow>
                  (nat \<Rightarrow> ('a, 'm) Ring_scheme)" where
   "prodB1 R S = (\<lambda>k. if k=0 then R else if k=Suc 0 then S else
-                 arbitrary)"
+                 undefined)"
 
 definition
   Prod2Rg :: "[('a, 'm) Ring_scheme, ('a, 'm) Ring_scheme]
@@ -2106,7 +2106,7 @@ apply (rule impI)
  apply (rule_tac n = n in nsum_mem [of _ f],
         rule allI, simp, simp)
  apply (subgoal_tac "\<forall>j\<le>n. f j \<in> carrier A", simp)
- apply (rule_tac a = "\<Sigma>\<^sub>e A (\<lambda>u. if u \<le> n then  -\<^sub>a (f u) else arbitrary) n"
+ apply (rule_tac a = "\<Sigma>\<^sub>e A (\<lambda>u. if u \<le> n then  -\<^sub>a (f u) else undefined) n"
      and b = "\<Sigma>\<^sub>e A (\<lambda>x\<in>{j. j \<le> (Suc n)}. -\<^sub>a (f x)) n" and c = "-\<^sub>a (f (Suc n))"
      in ag_pOp_add_r,
      rule_tac n = n in nsum_mem,
@@ -2116,7 +2116,7 @@ apply (rule impI)
         rule allI, rule impI, simp,
         rule ag_mOp_closed, simp,
         rule ag_mOp_closed, simp) 
- apply (rule_tac f = "\<lambda>u. if u \<le> n then -\<^sub>a (f u) else arbitrary" and 
+ apply (rule_tac f = "\<lambda>u. if u \<le> n then -\<^sub>a (f u) else undefined" and 
         n = n and g = "\<lambda>x\<in>{j. j \<le> (Suc n)}. -\<^sub>a (f x)" in nsum_eq,
         rule allI, rule impI,
         simp, rule ag_mOp_closed, simp,

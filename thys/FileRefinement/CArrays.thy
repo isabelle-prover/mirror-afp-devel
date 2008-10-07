@@ -10,7 +10,7 @@ types
 constdefs
   makeCArray :: "nat => 'a => 'a cArray"
   "makeCArray arraySize fillValue index == 
-   if index < arraySize then fillValue else arbitrary"
+   if index < arraySize then fillValue else undefined"
 
 constdefs
   readCArray :: "'a cArray => nat => 'a"

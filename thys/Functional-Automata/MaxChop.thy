@@ -1,4 +1,4 @@
-(*  ID:         $Id: MaxChop.thy,v 1.9 2008-06-12 06:57:17 lsf37 Exp $
+(*  ID:         $Id: MaxChop.thy,v 1.10 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -32,7 +32,7 @@ function chop :: "'a splitter \<Rightarrow> 'a list \<Rightarrow> 'a list list \
                            in if fst pp = [] then ([], xs)
                            else let qq = chop splitf (snd pp)
                                 in (fst pp # fst qq, snd qq)
-                      else arbitrary)"
+                      else undefined)"
 by pat_completeness auto
 
 termination apply (relation "measure (length o snd)")

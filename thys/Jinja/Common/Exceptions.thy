@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/J/Exceptions.thy
-    ID:         $Id: Exceptions.thy,v 1.2 2005-09-06 15:06:08 makarius Exp $
+    ID:         $Id: Exceptions.thy,v 1.3 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Gerwin Klein, Martin Strecker
     Copyright   2002 Technische Universitaet Muenchen
 *)
@@ -24,7 +24,7 @@ constdefs
   addr_of_sys_xcpt :: "cname \<Rightarrow> addr"
   "addr_of_sys_xcpt s \<equiv> if s = NullPointer then 0 else
                         if s = ClassCast then 1 else
-                        if s = OutOfMemory then 2 else arbitrary"
+                        if s = OutOfMemory then 2 else undefined"
 
   start_heap :: "'c prog \<Rightarrow> heap"
   "start_heap G \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer)

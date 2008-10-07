@@ -93,7 +93,7 @@ lemma invoke_new_thread:
   and "h a = \<lfloor>Obj D fs\<rfloor>"
   and "P \<turnstile> D \<preceq>\<^sup>* Thread"
   and "P \<turnstile> D sees run:[]\<rightarrow>Void=(mxs', mxl0', ins',xt') in D'"
-  shows "P,\<Phi> \<turnstile> (None, h, [([], Addr a # replicate mxl0' arbitrary, D', run, 0)]) \<surd>"
+  shows "P,\<Phi> \<turnstile> (None, h, [([], Addr a # replicate mxl0' undefined, D', run, 0)]) \<surd>"
 proof -
   from `P,\<Phi> \<turnstile> (None, h, (stk, loc, C, M, pc) # frs) \<surd>`
   have "P \<turnstile> h \<surd>" by(simp add: correct_state_def)
@@ -107,18 +107,18 @@ proof -
   then obtain LT' where LT': "\<Phi> D' run ! 0 = Some ([], LT')"
     by (clarsimp simp add: wt_start_def defs1 sup_state_opt_any_Some)
   moreover
-  have "conf_f P h ([], LT') ins' ([], Addr a # replicate mxl0' arbitrary, D', run, 0)"
+  have "conf_f P h ([], LT') ins' ([], Addr a # replicate mxl0' undefined, D', run, 0)"
   proof -
     let ?LT = "OK (Class D') # (replicate mxl0' Err)"
-    have "P,h \<turnstile> replicate mxl' arbitrary [:\<le>\<^sub>\<top>] replicate mxl' Err" by simp
+    have "P,h \<turnstile> replicate mxl' undefined [:\<le>\<^sub>\<top>] replicate mxl' Err" by simp
     also from `P \<turnstile> D sees run:[]\<rightarrow>Void=(mxs', mxl0', ins',xt') in D'`
     have "P \<turnstile> D \<preceq>\<^sup>* D'" by(rule sees_method_decl_above)
     with `h a = \<lfloor>Obj D fs\<rfloor>` have "P,h \<turnstile> Addr a :\<le> Class D'"
       by(simp add: conf_def)
-    ultimately have "P,h \<turnstile> Addr a # replicate mxl0' arbitrary [:\<le>\<^sub>\<top>] ?LT" by(simp)
+    ultimately have "P,h \<turnstile> Addr a # replicate mxl0' undefined [:\<le>\<^sub>\<top>] ?LT" by(simp)
     also from `wt_start P D' [] mxl0' (\<Phi> D' run)` LT'
     have "P \<turnstile> \<dots> [\<le>\<^sub>\<top>] LT'" by(simp add: wt_start_def)
-    finally have "P,h \<turnstile> Addr a # replicate mxl0' arbitrary [:\<le>\<^sub>\<top>] LT'" .
+    finally have "P,h \<turnstile> Addr a # replicate mxl0' undefined [:\<le>\<^sub>\<top>] LT'" .
     with `ins' \<noteq> []` show ?thesis by(simp add: conf_f_def)
   qed
   ultimately show ?thesis using `P \<turnstile> D' sees run:[]\<rightarrow>Void=(mxs', mxl0', ins',xt') in D'`
@@ -214,10 +214,10 @@ proof -
   have execi: "(ta, \<sigma>') \<in> set (exec_instr (Invoke Type.start 0) P h (Addr a # stk) loc C M pc Frs)"
     by(auto split: split_if_asm simp add: split_beta)
   with seesrun nt have "xcp = None" "h' = h" 
-    "frs = [([],Addr a # replicate mxl0' arbitrary,D',run,0)]"
+    "frs = [([],Addr a # replicate mxl0' undefined,D',run,0)]"
     by(auto split: split_if_asm)
   moreover
-  have "P,\<Phi> \<turnstile> (None, h, [([], Addr a # replicate mxl0' arbitrary, D', run, 0)]) \<surd>"
+  have "P,\<Phi> \<turnstile> (None, h, [([], Addr a # replicate mxl0' undefined, D', run, 0)]) \<surd>"
   proof -
     from cs have "P \<turnstile> h \<surd>" by(simp add: correct_state_def)
     moreover from seesrun
@@ -229,15 +229,15 @@ proof -
     then obtain LT' where "\<Phi> D' run ! 0 = Some ([], LT')"
       by (clarsimp simp add: wt_start_def defs1 sup_state_opt_any_Some)
     moreover
-    have "conf_f P h ([], LT') ins' ([], Addr a # replicate mxl0' arbitrary, D', run, 0)"
+    have "conf_f P h ([], LT') ins' ([], Addr a # replicate mxl0' undefined, D', run, 0)"
     proof -
       let ?LT = "OK (Class D') # (replicate mxl0' Err)"
       from seesrun have "P \<turnstile> D \<preceq>\<^sup>* D'" by(rule sees_method_decl_above)
-      hence "P,h \<turnstile> Addr a # replicate mxl0' arbitrary [:\<le>\<^sub>\<top>] ?LT"
+      hence "P,h \<turnstile> Addr a # replicate mxl0' undefined [:\<le>\<^sub>\<top>] ?LT"
 	by(simp add: conf_def)
       also from `wt_start P D' [] mxl0' (\<Phi> D' run)` `\<Phi> D' run ! 0 = Some ([], LT')`
       have "P \<turnstile> ?LT [\<le>\<^sub>\<top>] LT'" by(simp add: wt_start_def)
-      finally have "P,h \<turnstile> Addr a # replicate mxl0' arbitrary [:\<le>\<^sub>\<top>] LT'" .
+      finally have "P,h \<turnstile> Addr a # replicate mxl0' undefined [:\<le>\<^sub>\<top>] LT'" .
       with `ins' \<noteq> []` show ?thesis
 	by(simp add: conf_f_def)
     qed
@@ -547,7 +547,7 @@ proof(unfold_locales)
     proof(cases TA)
       case (NewThread t' X H)
       from NewThread exec' sees seesrun `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> = xs @ TA # ys`
-      have [simp]: "X = (None, [([], Addr a # replicate mxl0' arbitrary, D', run, 0)])"
+      have [simp]: "X = (None, [([], Addr a # replicate mxl0' undefined, D', run, 0)])"
 	"H = h" "xcp' = None" "m' = h" "frs' = (Unit # stk, loc, C, M, Suc pc) # Frs" "t' = a"
 	by(auto simp add: split_beta Cons_eq_append_conv split: split_if_asm)
       let ?ta' = "\<epsilon>\<lbrace>\<^bsub>t\<^esub> ThreadExists t'\<rbrace>"
@@ -574,7 +574,7 @@ proof(unfold_locales)
       thus ?thesis ..
     next
       case (ThreadExists t')
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread a (None, [([], Addr a # replicate mxl0' arbitrary, D', run, 0)]) h\<rbrace>"
+      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread a (None, [([], Addr a # replicate mxl0' undefined, D', run, 0)]) h\<rbrace>"
       let ?\<sigma>' = "(None, h, (Unit # stk, loc, C, M, Suc pc) # Frs)"
       from ThreadExists exec' sees `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> = xs @ TA # ys`
       have [simp]: "t' = a" by(auto split: split_if_asm simp add: split_beta)

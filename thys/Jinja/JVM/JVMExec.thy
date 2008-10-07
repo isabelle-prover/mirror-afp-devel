@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExec.thy
-    ID:         $Id: JVMExec.thy,v 1.7 2008-06-24 22:23:37 makarius Exp $
+    ID:         $Id: JVMExec.thy,v 1.8 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -116,6 +116,6 @@ constdefs
   start_state :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> jvm_state"
   "start_state P C M \<equiv>
   let (D,Ts,T,mxs,mxl\<^isub>0,b) = method P C M in
-    (None, start_heap P, [([], Null # replicate mxl\<^isub>0 arbitrary, C, M, 0)])"
+    (None, start_heap P, [([], Null # replicate mxl\<^isub>0 undefined, C, M, 0)])"
 
 end

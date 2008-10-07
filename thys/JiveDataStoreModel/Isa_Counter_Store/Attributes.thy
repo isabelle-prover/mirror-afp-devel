@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Attributes.thy,v 1.7 2008-06-12 06:57:24 lsf37 Exp $
+    ID:          $Id: Attributes.thy,v 1.8 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -55,21 +55,21 @@ constdefs cDTypeId :: "AttId \<Rightarrow> CTypeId"
 "cDTypeId f \<equiv> (case f of 
               CounterImpl'value \<Rightarrow> CounterImpl
             | UndoCounter'save \<Rightarrow> UndoCounter
-            | Dummy'dummy \<Rightarrow> arbitrary
-            | Counter'dummy \<Rightarrow> arbitrary )"
+            | Dummy'dummy \<Rightarrow> undefined
+            | Counter'dummy \<Rightarrow> undefined )"
 
 constdefs aDTypeId:: "AttId \<Rightarrow> ATypeId"
 "aDTypeId f \<equiv> (case f of 
-              CounterImpl'value \<Rightarrow> arbitrary
-            | UndoCounter'save \<Rightarrow> arbitrary
+              CounterImpl'value \<Rightarrow> undefined
+            | UndoCounter'save \<Rightarrow> undefined
             | Dummy'dummy \<Rightarrow> Dummy
-            | Counter'dummy \<Rightarrow> arbitrary )"
+            | Counter'dummy \<Rightarrow> undefined )"
 
 constdefs iDTypeId:: "AttId \<Rightarrow> ITypeId"
 "iDTypeId f \<equiv> (case f of 
-              CounterImpl'value \<Rightarrow> arbitrary
-            | UndoCounter'save \<Rightarrow> arbitrary
-            | Dummy'dummy \<Rightarrow> arbitrary
+              CounterImpl'value \<Rightarrow> undefined
+            | UndoCounter'save \<Rightarrow> undefined
+            | Dummy'dummy \<Rightarrow> undefined
             | Counter'dummy \<Rightarrow> Counter )"
 
 lemma DTypeId_simps [simp]:
@@ -130,7 +130,7 @@ thus only instance fields of concrete classes can occupy memory.  *}
 
 text {* Function @{text "catt"} builds a @{text "CAttId"} from a class name
 and a field name. In case of the illegal combinations we just return
-@{text "arbitrary"}. We can also filter out static fields in 
+@{text "undefined"}. We can also filter out static fields in 
 @{text "catt"}.*}
   
 constdefs catt:: "CTypeId \<Rightarrow> AttId \<Rightarrow> CAttId"
@@ -138,18 +138,18 @@ constdefs catt:: "CTypeId \<Rightarrow> AttId \<Rightarrow> CAttId"
   (case C of
      CounterImpl \<Rightarrow> (case f of 
                 CounterImpl'value \<Rightarrow> CounterImpl'CounterImpl'value
-              | UndoCounter'save \<Rightarrow> arbitrary
-              | Dummy'dummy \<Rightarrow> arbitrary
+              | UndoCounter'save \<Rightarrow> undefined
+              | Dummy'dummy \<Rightarrow> undefined
               | Counter'dummy \<Rightarrow> CounterImpl'Counter'dummy)
    | UndoCounter \<Rightarrow> (case f of 
                      CounterImpl'value \<Rightarrow> UndoCounter'CounterImpl'value
                    | UndoCounter'save \<Rightarrow> UndoCounter'UndoCounter'save
-                   | Dummy'dummy \<Rightarrow> arbitrary
+                   | Dummy'dummy \<Rightarrow> undefined
                    | Counter'dummy \<Rightarrow> UndoCounter'Counter'dummy)
-   | Object \<Rightarrow> arbitrary
-   | Exception \<Rightarrow> arbitrary
-   | ClassCastException \<Rightarrow> arbitrary
-   | NullPointerException \<Rightarrow> arbitrary
+   | Object \<Rightarrow> undefined
+   | Exception \<Rightarrow> undefined
+   | ClassCastException \<Rightarrow> undefined
+   | NullPointerException \<Rightarrow> undefined
 )"
 
 

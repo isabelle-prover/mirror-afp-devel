@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExecInstr.thy
-    ID:         $Id: JVMExecInstr.thy,v 1.3 2005-10-08 04:54:30 nipkow Exp $
+    ID:         $Id: JVMExecInstr.thy,v 1.4 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -58,7 +58,7 @@ exec_instr_Invoke:
        xp' = if r=Null then \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> else None;
        C   = fst(the(h(the_Addr r)));
        (D,M',Ts,mxs,mxl\<^isub>0,ins,xt)= method P C M;
-       f'  = ([],[r]@(rev ps)@(replicate mxl\<^isub>0 arbitrary),D,M,0)
+       f'  = ([],[r]@(rev ps)@(replicate mxl\<^isub>0 undefined),D,M,0)
    in (xp', h, f'#(stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs))" 
 
  "exec_instr Return P h stk\<^isub>0 loc\<^isub>0 C\<^isub>0 M\<^isub>0 pc frs =

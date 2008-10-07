@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/J1.thy
-    ID:         $Id: J1.thy,v 1.7 2007-07-19 21:23:10 makarius Exp $
+    ID:         $Id: J1.thy,v 1.8 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -124,7 +124,7 @@ where
 | Call\<^isub>1:
   "\<lbrakk> P \<turnstile>\<^sub>1 \<langle>e,s\<^isub>0\<rangle> \<Rightarrow> \<langle>addr a,s\<^isub>1\<rangle>; P \<turnstile>\<^sub>1 \<langle>es,s\<^isub>1\<rangle> [\<Rightarrow>] \<langle>map Val vs,(h\<^isub>2,ls\<^isub>2)\<rangle>;
     h\<^isub>2 a = Some(C,fs); P \<turnstile> C sees M:Ts\<rightarrow>T = body in D;
-    size vs = size Ts; ls\<^isub>2' = (Addr a) # vs @ replicate (max_vars body) arbitrary;
+    size vs = size Ts; ls\<^isub>2' = (Addr a) # vs @ replicate (max_vars body) undefined;
     P \<turnstile>\<^sub>1 \<langle>body,(h\<^isub>2,ls\<^isub>2')\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,ls\<^isub>3)\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile>\<^sub>1 \<langle>e\<bullet>M(es),s\<^isub>0\<rangle> \<Rightarrow> \<langle>e',(h\<^isub>3,ls\<^isub>2)\<rangle>"
 | CallParamsThrow\<^isub>1:

@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/execute_Bigstep.thy
-    ID:         $Id: execute_Bigstep.thy,v 1.6 2007-08-28 16:29:19 stefanberghofer Exp $
+    ID:         $Id: execute_Bigstep.thy,v 1.7 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2004 Technische Universitaet Muenchen
 *)
@@ -18,7 +18,7 @@ fun new_addr z s alloc some hp =
   in nr z end;
 *}
 
-  "arbitrary" ("(error \"arbitrary\")")
+  "undefined" ("(error \"undefined\")")
 
 
 inductive map_val :: "expr list \<Rightarrow> val list \<Rightarrow> bool"

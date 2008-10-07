@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: UnivSpec.thy,v 1.4 2006-05-18 14:19:23 lsf37 Exp $
+    ID:          $Id: UnivSpec.thy,v 1.5 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Nicole Rauch <rauch at informatik.uni-kl.de>, 2005
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -20,6 +20,6 @@ aCounter :: "Value \<Rightarrow> Store \<Rightarrow> JavaInt"
 
 "aCounter x s == if x ~= nullV & (alive x s) & typeof x = CClassT CounterImpl then
   aI ( s@@(x..CounterImpl'value) )
- else arbitrary"
+ else undefined"
 
 end

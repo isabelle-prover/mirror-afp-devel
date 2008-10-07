@@ -98,7 +98,7 @@ exec_instr_Invoke:
              in (if P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M = start \<and> n = 0
                  then (let (D,M',Ts,mxs,mxl0,ins,xt) = method P C run;
                            stk' = Unit # tl stk
-                       in [(\<epsilon>\<lbrace>\<^bsub>t\<^esub> ThreadExists (the_Addr r)\<rbrace>, \<lfloor>addr_of_sys_xcpt IllegalThreadState\<rfloor>, h, (stk', loc, C0, M0, pc) # frs), (\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread (the_Addr r) (None, [([],r # replicate mxl0 arbitrary,D,run,0)]) h\<rbrace>, None, h, (stk', loc, C0, M0, pc+1) # frs)])
+                       in [(\<epsilon>\<lbrace>\<^bsub>t\<^esub> ThreadExists (the_Addr r)\<rbrace>, \<lfloor>addr_of_sys_xcpt IllegalThreadState\<rfloor>, h, (stk', loc, C0, M0, pc) # frs), (\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread (the_Addr r) (None, [([],r # replicate mxl0 undefined,D,run,0)]) h\<rbrace>, None, h, (stk', loc, C0, M0, pc+1) # frs)])
                  else if P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M = join \<and> n = 0
                  then [(\<epsilon>\<lbrace>\<^bsub>c\<^esub> Join (the_Addr r)\<rbrace>, None, h, (Unit # tl stk, loc, C0, M0, pc + 1) # frs)]
                  else if M = wait \<and> n = 0
@@ -118,7 +118,7 @@ exec_instr_Invoke:
                            (\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, (stk', loc, C0, M0, pc) # frs) ])
                  else [(\<epsilon>, (let xp' = if r=Null then \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> else None;
                                (D,M',Ts,mxs,mxl\<^isub>0,ins,xt)= method P C M;
-                               f'  = ([],[r]@(rev ps)@(replicate mxl\<^isub>0 arbitrary),D,M,0)
+                               f'  = ([],[r]@(rev ps)@(replicate mxl\<^isub>0 undefined),D,M,0)
                             in (xp', h, f'#(stk, loc, C0, M0, pc)#frs)) )]))))"
 
  "exec_instr Return P h stk\<^isub>0 loc\<^isub>0 C\<^isub>0 M\<^isub>0 pc frs =

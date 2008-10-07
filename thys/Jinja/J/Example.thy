@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/Example.thy
-    ID:         $Id: Example.thy,v 1.5 2008-06-24 22:23:36 makarius Exp $
+    ID:         $Id: Example.thy,v 1.6 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     David von Oheimb
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -128,7 +128,7 @@ done
 (*>*)
 declare map_of_Cons [simp del] -- "sic!"
 
-lemma class_tprg_Object [simp]: "class tprg Object = Some (arbitrary, [], [])"
+lemma class_tprg_Object [simp]: "class tprg Object = Some (undefined, [], [])"
 (*<*)
 apply (unfold ObjectC_def class_def)
 apply (simp (no_asm))

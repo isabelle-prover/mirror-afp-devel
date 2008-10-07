@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.18 2007-08-28 16:30:31 stefanberghofer Exp $
+    ID:          $Id: Execute.thy,v 1.19 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -733,7 +733,7 @@ fun new_addr z s alloc some hp =
   in nr z end;
 *}
 
-  "arbitrary" ("(raise ERROR \"arbitrary\")")
+  "undefined" ("(raise ERROR \"undefined\")")
 
 
 text{* Definition of program examples *}

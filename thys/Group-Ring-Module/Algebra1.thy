@@ -2054,7 +2054,7 @@ definition
                  else if (snd x + snd y) = 1 then (0, 1)
                  else if (snd x + snd y) = 0 then (fst x + fst y, 0)
                  else if (snd x + snd y) = -1 then (0, -1)
-                 else if (snd x + snd y) = -2 then (0, -1) else arbitrary"
+                 else if (snd x + snd y) = -2 then (0, -1) else undefined"
 
 definition
   zag_t :: "[(int * int), (int * int)] \<Rightarrow> (int * int)" where
@@ -2076,7 +2076,7 @@ definition
 definition
   tna :: "ant \<Rightarrow> int" where
   "tna z = (if Rep_Ainteg(z) \<noteq> (0,1) \<and> Rep_Ainteg(z) \<noteq> (0,-1) then
-            fst (Rep_Ainteg(z)) else arbitrary)"
+            fst (Rep_Ainteg(z)) else undefined)"
 
 instantiation ant :: "{zero, one, plus, uminus, minus, times, ord}"
 begin
@@ -2130,7 +2130,7 @@ definition
 definition
   na :: "ant \<Rightarrow> nat" where
   "na x = (if (x < 0) then 0 else 
-           if x \<noteq> \<infinity> then (nat (tna x)) else arbitrary)" 
+           if x \<noteq> \<infinity> then (nat (tna x)) else undefined)" 
 
 definition
   UBset :: "ant \<Rightarrow> ant set" where
@@ -2935,10 +2935,10 @@ definition
   asprod :: "[int, ant] \<Rightarrow> ant" (infixl "*\<^sub>a" 200) where
   "m *\<^sub>a x == 
   if x = \<infinity> then (if 0 < m then \<infinity> else (if m < 0 then -\<infinity> else 
-                 if m = 0 then 0 else arbitrary))
+                 if m = 0 then 0 else undefined))
     else (if x = -\<infinity> then 
                     (if 0 < m then -\<infinity> else (if m < 0 then \<infinity> else 
-                 if m = 0 then 0 else arbitrary))
+                 if m = 0 then 0 else undefined))
           else (ant m) * x)"
 
 lemma asprod_pos_inf[simp]:"0 < m \<Longrightarrow> m *\<^sub>a \<infinity> = \<infinity>"

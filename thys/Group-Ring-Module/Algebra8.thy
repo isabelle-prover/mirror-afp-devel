@@ -2401,7 +2401,7 @@ apply (cut_tac Ring, simp add:Module.sc_l_distr)
          simp add:prod_pOp_def prodM_sprod_def,
          drule_tac b = i in forball_spec1, assumption,
          thin_tac "(\<lambda>x\<in>I. m x \<plusminus>\<^bsub>M x\<^esub> n x) \<in> carr_prodag I M",
-         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then m j \<plusminus>\<^bsub>M j\<^esub> n j else arbitrary))
+         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then m j \<plusminus>\<^bsub>M j\<^esub> n j else undefined))
         \<in> carr_prodag I M",
          thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
          thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> n j) \<in> carr_prodag I M")
@@ -2424,7 +2424,7 @@ apply (cut_tac Ring, simp add:Module.sc_l_distr)
   apply (rule ballI, simp add:prodM_sprod_def,
          drule_tac b = i in forball_spec1, assumption,
          thin_tac "(\<lambda>j\<in>I. b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
-         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j else arbitrary))
+         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j else undefined))
         \<in> carr_prodag I M",
          thin_tac "(\<lambda>j\<in>I. (a \<cdot>\<^sub>r b) \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
          simp add:carr_prodag_def, (erule conjE)+,
@@ -2554,8 +2554,8 @@ apply (rule Module_axioms.intro)
         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
         thin_tac "(\<lambda>j\<in>I. b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
         thin_tac "(\<lambda>j\<in>I. (a \<plusminus> b) \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
-        thin_tac "(\<lambda>x\<in>I. (if x \<in> I then a \<cdot>\<^sub>s\<^bsub>M x\<^esub> m x else arbitrary) \<plusminus>\<^bsub>M x\<^esub>
-               (if x \<in> I then b \<cdot>\<^sub>s\<^bsub>M x\<^esub> m x else arbitrary))
+        thin_tac "(\<lambda>x\<in>I. (if x \<in> I then a \<cdot>\<^sub>s\<^bsub>M x\<^esub> m x else undefined) \<plusminus>\<^bsub>M x\<^esub>
+               (if x \<in> I then b \<cdot>\<^sub>s\<^bsub>M x\<^esub> m x else undefined))
         \<in> carr_prodag I M")
    apply (frule_tac a = m in forall_spec, assumption,
                thin_tac "\<forall>x. x \<in> carr_dsumag I M \<longrightarrow> x \<in> carr_prodag I M",
@@ -2597,10 +2597,10 @@ apply (rule Module_axioms.intro)
  apply (frule_tac a = a and m = m in prodM_sprod_mem[of I M], assumption+, 
         frule_tac a = a and m = n in prodM_sprod_mem[of I M], assumption+)
  apply (simp add:prodM_sprod_def prod_pOp_def,
-        thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then m j \<plusminus>\<^bsub>M j\<^esub> n j else arbitrary))
+        thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then m j \<plusminus>\<^bsub>M j\<^esub> n j else undefined))
         \<in> carr_prodag I M",
-        thin_tac "(\<lambda>x\<in>I. (if x \<in> I then a \<cdot>\<^sub>s\<^bsub>M x\<^esub> m x else arbitrary) \<plusminus>\<^bsub>M x\<^esub>
-               (if x \<in> I then a \<cdot>\<^sub>s\<^bsub>M x\<^esub> n x else arbitrary))
+        thin_tac "(\<lambda>x\<in>I. (if x \<in> I then a \<cdot>\<^sub>s\<^bsub>M x\<^esub> m x else undefined) \<plusminus>\<^bsub>M x\<^esub>
+               (if x \<in> I then a \<cdot>\<^sub>s\<^bsub>M x\<^esub> n x else undefined))
         \<in> carr_prodag I M",
         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> n j) \<in> carr_prodag I M",
@@ -2628,7 +2628,7 @@ apply (rule Module_axioms.intro)
         frule_tac b = i in forball_spec1, assumption,
         thin_tac "\<forall>i\<in>I. R module M i",
         thin_tac "(\<lambda>j\<in>I. b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
-        thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j else arbitrary))
+        thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j else undefined))
         \<in> carr_dsumag I M",
         thin_tac "(\<lambda>j\<in>I. (a \<cdot>\<^sub>r b) \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
         frule_tac a = m in forall_spec, assumption,
@@ -2798,10 +2798,10 @@ apply (rule ballI)+
          assumption)
  apply (simp add:dsumMhom_def prodM_sprod_def)
   apply (thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
-         thin_tac "(\<lambda>k\<in>I. S k (if k \<in> I then a \<cdot>\<^sub>s\<^bsub>M k\<^esub> m k else arbitrary))
+         thin_tac "(\<lambda>k\<in>I. S k (if k \<in> I then a \<cdot>\<^sub>s\<^bsub>M k\<^esub> m k else undefined))
         \<in> carr_dsumag I N",
          thin_tac "(\<lambda>k\<in>I. S k (m k)) \<in> carr_dsumag I N",
-         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>N j\<^esub> (if j \<in> I then S j (m j) else arbitrary))
+         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>N j\<^esub> (if j \<in> I then S j (m j) else undefined))
         \<in> carr_dsumag I N",
          thin_tac "\<forall>x. x \<in> carr_dsumag I N \<longrightarrow> x \<in> carr_prodag I N")
   apply (drule_tac b = j in forball_spec1, assumption,

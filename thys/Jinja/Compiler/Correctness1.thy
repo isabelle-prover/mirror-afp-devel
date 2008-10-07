@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/Correctness1.thy
-    ID:         $Id: Correctness1.thy,v 1.7 2007-08-12 16:28:15 makarius Exp $
+    ID:         $Id: Correctness1.thy,v 1.8 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -439,7 +439,7 @@ next
   obtain ls\<^isub>2 where 2: "?Posts es h\<^isub>1 l\<^isub>1 (map Val vs) h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2"
     "size ls\<^isub>1 = size ls\<^isub>2"    by(auto intro!:evals\<^isub>1_preserves_len)
   let ?Vs = "this#pns"
-  let ?ls = "Addr a # vs @ replicate (max_vars body) arbitrary"
+  let ?ls = "Addr a # vs @ replicate (max_vars body) undefined"
   have mdecl: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by fact
   have fv_body: "fv body \<subseteq> set ?Vs" and wf_size: "size Ts = size pns"
     using wf mdecl by(auto dest!:sees_wf_mdecl simp:wf_mdecl_def)

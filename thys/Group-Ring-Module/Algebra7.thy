@@ -3040,7 +3040,7 @@ apply (induct_tac n)
  apply (frule func_pre[of f], frule func_pre[of s], frule func_pre[of t],
         simp)
  apply (simp add:l_comb_def, cut_tac sc_Ring)
- apply (cut_tac n = n and f = "\<lambda>j. (if j \<le> n then s j \<plusminus>\<^bsub>R\<^esub> t j else arbitrary) \<cdot>\<^sub>s f j" and g = "\<lambda>j. (if j \<le> Suc n then s j \<plusminus>\<^bsub>R\<^esub> t j else arbitrary) \<cdot>\<^sub>s
+ apply (cut_tac n = n and f = "\<lambda>j. (if j \<le> n then s j \<plusminus>\<^bsub>R\<^esub> t j else undefined) \<cdot>\<^sub>s f j" and g = "\<lambda>j. (if j \<le> Suc n then s j \<plusminus>\<^bsub>R\<^esub> t j else undefined) \<cdot>\<^sub>s
                      f j" in nsum_eq)
  apply (rule allI, rule impI, simp,
          rule sc_mem, frule Ring.ring_is_ag,
@@ -3056,9 +3056,9 @@ apply (induct_tac n)
          simp add:funcset_mem[of f _ H] subsetD)
  apply (rule allI, simp)
  apply simp
- apply (thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> n then s j \<plusminus>\<^bsub>R\<^esub> t j else arbitrary) \<cdot>\<^sub>s f j)
+ apply (thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> n then s j \<plusminus>\<^bsub>R\<^esub> t j else undefined) \<cdot>\<^sub>s f j)
         n =  \<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s f j) n \<plusminus> \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s f j) n",
-        thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> Suc n then s j \<plusminus>\<^bsub>R\<^esub> t j else arbitrary) \<cdot>\<^sub>s 
+        thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> Suc n then s j \<plusminus>\<^bsub>R\<^esub> t j else undefined) \<cdot>\<^sub>s 
         f j) n = \<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s f j) n \<plusminus> \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s f j) n")
  apply (frule_tac x = "Suc n" and A = "{j. j \<le> Suc n}" in 
         funcset_mem[of s _ A], simp,
@@ -3113,7 +3113,7 @@ apply (cut_tac linear_comb0_1[of H "\<lambda>x\<in>{j. j \<le> n}. s x \<plusmin
                   (\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a\<^bsub>R\<^esub> (s x)) x" n f])
  apply (simp,
        thin_tac "l_comb R M n
- (\<lambda>x\<in>{j. j \<le> n}. s x \<plusminus>\<^bsub>R\<^esub> (if x \<le> n then -\<^sub>a\<^bsub>R\<^esub> (s x) else arbitrary)) f = \<zero>")
+ (\<lambda>x\<in>{j. j \<le> n}. s x \<plusminus>\<^bsub>R\<^esub> (if x \<le> n then -\<^sub>a\<^bsub>R\<^esub> (s x) else undefined)) f = \<zero>")
  apply (frule l_comb_mem[of A H s n f], assumption+,
         frule l_comb_mem[of A H "\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a\<^bsub>R\<^esub> (s x)" n f], assumption+)
  apply (frule ag_mOp_closed[of "l_comb R M n s f"])
@@ -3348,7 +3348,7 @@ apply (cut_tac n = n and f = "\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s
          blast)
   apply (rule univar_func_test, simp)
 apply (thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j) \<cdot>\<^sub>s f j) n =
-        \<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> n then r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j else arbitrary) \<cdot>\<^sub>s f j) n",
+        \<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> n then r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j else undefined) \<cdot>\<^sub>s f j) n",
         rule allI, rule impI, cut_tac sc_Ring,
         rule Ring.ideal_ring_multiple, assumption+, simp add:funcset_mem,
         assumption)
@@ -5817,7 +5817,7 @@ apply (cut_tac sc_Ring, frule Ring.whole_ideal)
        apply (simp add:funcset_mem)
        apply simp
  apply (frule_tac s = "\<lambda>x\<in>{x. x \<le> n}. s x \<plusminus>\<^bsub>R\<^esub> (if x \<le> n then -\<^sub>a\<^bsub>R\<^esub> (t x) else 
-        arbitrary)" in unique_expression1[of H _ n f], assumption+)
+        undefined)" in unique_expression1[of H _ n f], assumption+)
   apply (rule univar_func_test, rule ballI, simp)
   apply (frule Ring.ring_is_ag[of R], rule aGroup.ag_pOp_closed, assumption,
          simp add:funcset_mem,

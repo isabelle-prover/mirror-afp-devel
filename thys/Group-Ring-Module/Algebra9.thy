@@ -851,7 +851,7 @@ apply (rule equalityI)
  apply (simp add:compos_def compose_def mzeromap_def)
  apply (thin_tac " x = (\<lambda>x\<in>carrier N. f (xa x))")
  apply (thin_tac "(\<lambda>x\<in>carrier N. f (xa x)) \<in> mHom R N M2")
- apply (thin_tac "(\<lambda>x\<in>carrier N. g (if x \<in> carrier N then f (xa x) else arbitrary)) \<in> mHom R N M3")
+ apply (thin_tac "(\<lambda>x\<in>carrier N. g (if x \<in> carrier N then f (xa x) else undefined)) \<in> mHom R N M3")
  apply (frule_tac M = N and f = xa and m = m in Module.mHom_mem [of _ R M1], 
         assumption+) 
  apply (simp add:exact4_def) apply (frule conjunct2)

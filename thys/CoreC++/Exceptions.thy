@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Exceptions.thy,v 1.8 2007-02-07 17:24:54 stefanberghofer Exp $
+    ID:          $Id: Exceptions.thy,v 1.9 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Gerwin Klein, Martin Strecker, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -28,7 +28,7 @@ constdefs
   addr_of_sys_xcpt :: "cname \<Rightarrow> addr"
   "addr_of_sys_xcpt s \<equiv> if s = NullPointer then 0 else
                         if s = ClassCast then 1 else
-                        if s = OutOfMemory then 2 else arbitrary"
+                        if s = OutOfMemory then 2 else undefined"
 
   start_heap :: "prog \<Rightarrow> heap"
   "start_heap P \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank P NullPointer)

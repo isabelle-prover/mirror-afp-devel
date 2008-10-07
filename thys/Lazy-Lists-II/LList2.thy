@@ -1,5 +1,5 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.12 2008-07-25 17:11:23 fhaftmann Exp $
+    ID:         $Id: LList2.thy,v 1.13 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -186,7 +186,7 @@ constdefs
   finlsts_rec :: "['b, ['a, 'a llist, 'b] \<Rightarrow> 'b] \<Rightarrow> 'a llist \<Rightarrow> 'b"
   "finlsts_rec c d r \<equiv> if r \<in> UNIV\<^sup>\<star>
   then (wfrec finlsts_pred (%f. llist_case c (%a r. d a r (f r))) r)
-  else arbitrary"
+  else undefined"
 
 lemma finlsts_predI: "r \<in> A\<^sup>\<star> \<Longrightarrow> (r, a##r) \<in> finlsts_pred"
   by (auto simp: finlsts_pred_def)
@@ -483,7 +483,7 @@ constdefs
   "llength \<equiv> finlsts_rec 0 (\<lambda> a r n. Suc n)"
 
   llast :: "'a llist \<Rightarrow> 'a"
-  "llast \<equiv> finlsts_rec arbitrary (\<lambda> x xs l. if xs = LNil then x else l)"
+  "llast \<equiv> finlsts_rec undefined (\<lambda> x xs l. if xs = LNil then x else l)"
 
   lbutlast :: "'a llist \<Rightarrow> 'a llist"
   "lbutlast \<equiv> finlsts_rec LNil (\<lambda> x xs l. if xs = LNil then LNil else x##l)"
