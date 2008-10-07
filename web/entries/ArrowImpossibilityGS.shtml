@@ -52,8 +52,8 @@ due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a
 corollary. One formalization is based on utility functions, the other
 one on strict partial orders.
 <p>
-An article about these proofs has been submitted to the <i>Journal of
-Automated Reasoning.</i>
+An article about these proofs is found
+<a href="http://www.in.tum.de/~nipkow/pubs/arrow.html">here</a>.
    </td></tr>
 
 <!-- uncomment for entries significantly updated in devel version:
@@ -107,6 +107,6 @@ Automated Reasoning.</i>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-10-06 20:55:28 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-10-07 05:51:35 $, $Revision: 1.1 
 $</div></body>
 </html>
