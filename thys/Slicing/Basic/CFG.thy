@@ -43,7 +43,7 @@ where
 lemma path_valid_node:"n -as\<rightarrow>* n' \<Longrightarrow> valid_node n \<and> valid_node n'"
   by(induct rule:path.induct,auto)
 
-lemma empty_path_nodes [simp]:"n -[]\<rightarrow>* n' \<Longrightarrow> n = n'"
+lemma empty_path_nodes [dest]:"n -[]\<rightarrow>* n' \<Longrightarrow> n = n'"
 by(fastsimp elim:path.cases)
 
 lemma path_edge:"valid_edge a \<Longrightarrow> sourcenode a -[a]\<rightarrow>* targetnode a"
@@ -197,7 +197,7 @@ next
     from path have "n -[]@a'#as'\<rightarrow>* n'" by simp
     with False have "n -[]\<rightarrow>* sourcenode a'" and "targetnode a' -as'\<rightarrow>* n'"
       by(fastsimp dest:path_split)+
-    from `n -[]\<rightarrow>* sourcenode a'` have "n = sourcenode a'" by simp
+    from `n -[]\<rightarrow>* sourcenode a'` have "n = sourcenode a'" by fastsimp
     from IH[OF `targetnode a' -as'\<rightarrow>* n'` False] 
     have "sourcenodes as' = targetnode a' # butlast (targetnodes as')" .
     with `n = sourcenode a'` False 
@@ -226,7 +226,7 @@ next
     with False have "n -as'\<rightarrow>* sourcenode a'"
       and "targetnode a' -[]\<rightarrow>* n'"
       by(fastsimp dest:path_split)+
-    from `targetnode a' -[]\<rightarrow>* n'` have "targetnode a' = n'" by simp
+    from `targetnode a' -[]\<rightarrow>* n'` have "targetnode a' = n'" by fastsimp
     from IH[OF `n -as'\<rightarrow>* sourcenode a'` False]
     have "targetnodes as' = tl (sourcenodes as') @ [sourcenode a']" .
     with `targetnode a' = n'` False 
