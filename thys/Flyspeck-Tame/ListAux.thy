@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.12 2008-06-12 06:57:17 lsf37 Exp $
+(*  ID:         $Id: ListAux.thy,v 1.13 2008-10-07 14:07:29 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -20,13 +20,15 @@ by auto
 
 lemmas conj_aci = conj_comms conj_assoc conj_absorb conj_left_absorb
 
+definition enum :: "nat \<Rightarrow> nat set" where
+  [code del]: "enum n = {..<n}"
 
-lemma [code unfold]: "max x y == (let u = x; v = y in if u <= v then v else u)"
-by(simp add:max_def)
-lemma [code unfold]: "min x y == (let u = x; v = y in if u <= v then u else v)"
-by(simp add:min_def)
+declare enum_def [symmetric, code unfold]
 
-lemmas[code] = lessThan_0 lessThan_Suc
+lemma [code]:
+  "enum 0 = {}"
+  "enum (Suc n) = insert n (enum n)"
+  unfolding enum_def lessThan_0 lessThan_Suc by rule+
 
 
 subsection {* Lists *}
