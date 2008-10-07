@@ -1,12 +1,12 @@
 (*  Title:      Jinja/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.7 2008-06-24 22:23:28 makarius Exp $
+    ID:         $Id: BVExample.thy,v 1.8 2008-10-07 12:15:15 fhaftmann Exp $
     Author:     Gerwin Klein
 *)
 
 header {* \isaheader{Example Welltypings}\label{sec:BVExample} *}
 
 theory BVExample
-imports JVMListExample BVSpecTypeSafe BVExec Executable_Set
+imports "../JVM/JVMListExample" BVSpecTypeSafe BVExec Executable_Set Efficient_Nat
 begin
 
 text {*
@@ -55,7 +55,7 @@ text {* These auxiliary proofs are for efficiency: class lookup,
 subclass relation, method and field lookup are computed only once:
 *}
 lemma class_Object [simp]:
-  "class E Object = Some (arbitrary, [],[])"
+  "class E Object = Some (undefined, [],[])"
   by (simp add: class_def system_defs E_def)
 
 lemma class_NullPointer [simp]:
@@ -491,34 +491,44 @@ lemma [code]:
   done
 (*>*)
 
-constdefs
-  some_elem :: "'a set \<Rightarrow> 'a"
-  "some_elem == (%S. SOME x. x : S)"
-
-lemma [code]:
-"iter f step ss w =
- while (%(ss,w). w \<noteq> {})
-       (%(ss,w). let p = some_elem w
-                 in propa f (step p (ss!p)) ss (w-{p}))
-       (ss,w)"
-  by (unfold iter_def some_elem_def, rule refl)
+definition some_elem :: "'a set \<Rightarrow> 'a" where
+  "some_elem = (%S. SOME x. x : S)"
 
 consts_code
   "some_elem" ("hd")
 
+(*<*)
+text {* This code setup is just a demonstration and \emph{not} sound! *}
+
+lemma False
+proof -
+  have "some_elem (set [False, True]) = False"
+    by evaluation
+  moreover have "some_elem (set [True, False]) = True"
+    by evaluation
+  ultimately show False
+    by (simp add: some_elem_def)
+qed
+(*>*)
+
+lemma [code]:
+  "iter f step ss w = while (\<lambda>(ss, w). \<not> (is_empty w))
+    (\<lambda>(ss, w).
+        let p = some_elem w in propa f (step p (ss ! p)) ss (w - {p}))
+    (ss, w)"
+  unfolding iter_def is_empty_def some_elem_def ..
+
 lemma JVM_sup_unfold [code]:
  "JVM_SemiType.sup S m n = lift2 (Opt.sup
        (Product.sup (Listn.sup (SemiType.sup S))
-         (\<lambda>x y. OK (map2 (lift2 (SemiType.sup S)) x y))))" 
-(*<*)
-  apply (unfold JVM_SemiType.sup_def JVM_SemiType.sl_def Opt.esl_def Err.sl_def
+         (\<lambda>x y. OK (map2 (lift2 (SemiType.sup S)) x y))))"
+(*<*) 
+apply (unfold JVM_SemiType.sup_def JVM_SemiType.sl_def Opt.esl_def Err.sl_def
          stk_esl_def loc_sl_def Product.esl_def  
-         Listn.sl_def upto_esl_def SemiType.esl_def Err.esl_def) 
+         Listn.sl_def upto_esl_def SemiType.esl_def Err.esl_def)
   by simp
 
-lemmas [code] =
-  meta_eq_to_obj_eq [OF SemiType.sup_def [unfolded exec_lub_def]]
-  meta_eq_to_obj_eq [OF JVM_le_unfold]
+lemmas [code] = SemiType.sup_def [unfolded exec_lub_def] JVM_le_unfold
 (*>*)
 
 lemmas [code ind_set] = rtrancl_refl converse_rtrancl_into_rtrancl
@@ -534,6 +544,8 @@ lemma [code ind params: 1]: "P \<turnstile> C has_fields FDTs  \<Longrightarrow>
 lemma [code ind params: 1]: "P \<turnstile> C sees_methods Mm \<Longrightarrow>
   Mm M = \<lfloor>((Ts, T, m), D)\<rfloor> \<Longrightarrow> P \<turnstile> C sees M: Ts\<rightarrow>T = m in D"
   by (auto simp add: Method_def)
+
+declare app\<^isub>i.simps [code]
 
 lemma [code]:
   "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
@@ -555,6 +567,8 @@ lemma [code]:
   by (fastsimp split add: ty.split_asm)
 
 declare field_def2 [code ind]
+
+declare minus_nat_code [code]
 
 code_module BV
 contains

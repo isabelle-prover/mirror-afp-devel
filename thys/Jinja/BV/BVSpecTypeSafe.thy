@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/BVSpecTypeSafe.thy
-    ID:         $Id: BVSpecTypeSafe.thy,v 1.6 2007-08-12 16:28:15 makarius Exp $
+    ID:         $Id: BVSpecTypeSafe.thy,v 1.7 2008-10-07 12:15:15 fhaftmann Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -416,7 +416,7 @@ proof -
       Ts':  "P \<turnstile> Ts [\<le>] Ts'" 
       by (auto dest: sees_method_mono)
 
-    let ?loc' = "Addr a # rev (take n stk) @ replicate mxl' arbitrary"
+    let ?loc' = "Addr a # rev (take n stk) @ replicate mxl' undefined"
     let ?f' = "([], ?loc', D'', M', 0)"
     let ?f  = "(stk, loc, C, M, pc)"
 
@@ -447,7 +447,7 @@ proof -
       also note Ts also note Ts' finally
       have "P,h \<turnstile> rev (take n stk) [:\<le>\<^sub>\<top>] map OK Ts'" by simp 
       also
-      have "P,h \<turnstile> replicate mxl' arbitrary [:\<le>\<^sub>\<top>] replicate mxl' Err" 
+      have "P,h \<turnstile> replicate mxl' undefined [:\<le>\<^sub>\<top>] replicate mxl' Err" 
         by simp
       also from m_C' have "P \<turnstile> C' \<preceq>\<^sup>* D''" by (rule sees_method_decl_above)
       with obj have "P,h \<turnstile> Addr a :\<le> Class D''" by (simp add: conf_def)
