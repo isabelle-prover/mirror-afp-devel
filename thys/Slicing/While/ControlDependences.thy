@@ -469,7 +469,7 @@ next
 	apply -
 	apply(drule While_CFG.path_split,auto)
 	apply(rotate_tac 1,erule While_CFG.cases,auto simp:valid_edge_def)
-	by(rotate_tac 1,erule While_CFG.cases,auto)
+        done
       hence "targetnode ax = (_0_)" by(fastsimp dest:WCFG_EntryD)
       with conj[THEN conjunct2]
       have "if (b) prog1 else prog2 \<turnstile> (_0_) \<oplus> 1 -asx \<oplus>s 1\<rightarrow>* (_ l' _) \<oplus> 1"
@@ -509,7 +509,7 @@ next
 	apply -
 	apply(drule While_CFG.path_split,auto)
 	apply(rotate_tac 1,erule While_CFG.cases,auto simp:valid_edge_def)
-	by(rotate_tac 1,erule While_CFG.cases,auto)
+        done
       hence "targetnode ax = (_0_)" by(fastsimp dest:WCFG_EntryD)
       with conj[THEN conjunct2]
       have "if (b) prog1 else prog2 \<turnstile> (_0_) \<oplus> (#:prog1 + 1) -asx \<oplus>s (#:prog1 + 1)\<rightarrow>*
