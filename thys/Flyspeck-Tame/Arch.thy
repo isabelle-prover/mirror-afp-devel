@@ -1,4 +1,4 @@
-(*  ID:         $Id: Arch.thy,v 1.6 2008-07-30 08:54:11 fhaftmann Exp $
+(*  ID:         $Id: Arch.thy,v 1.7 2008-10-09 13:27:33 fhaftmann Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -15,27 +15,31 @@ uses
   "Archives/Oct.ML"
 begin
 
-setup {* fn thy =>
+setup {*
   let
-    val data = [("Tri", Tri), ("Quad", Quad), ("Pent", Pent),
-      ("Hex", Hex), ("Hept", Hept), ("Oct", Oct)];
     fun mk_list T f = HOLogic.mk_list T o map f;
-    fun mk_def T (c, l) =
+    fun add_def (c, l) =
       let
-        val T' = HOLogic.listT (HOLogic.listT (HOLogic.listT T))
-        val term_of = mk_list (HOLogic.listT (HOLogic.listT T))
-         (mk_list (HOLogic.listT T)
-           (mk_list T (HOLogic.mk_number T)));
-        val lhs = Const (Sign.full_name thy c, T');
-        val rhs = term_of l;
-      in ((c, T'), (Thm.def_name c, Logic.mk_equals (lhs, rhs))) end;
-    fun add_defs defs =
-      Sign.add_consts_i (map (fn ((c, T), _) => (c, T, Syntax.NoSyn)) defs)
-      #> PureThy.add_defs false (map (fn (_, (name, prop)) => ((name, prop), [])) defs)
+        val term_of = mk_list @{typ "nat list list"}
+          (mk_list @{typ "nat list"}
+            (mk_list @{typ "nat"} (HOLogic.mk_number @{typ "nat"})));
+        val eq = (HOLogic.mk_Trueprop o HOLogic.mk_eq)
+          (Free (c, @{typ "nat list list list"}), term_of l);
+      in
+        tap (fn _ => writeln ("Defining archive " ^ c))
+        #> Specification.definition (SOME (Name.binding c, SOME @{typ "nat list list list"}, NoSyn),
+          (Attrib.no_binding, eq))
+        #> snd
+      end;
   in
-    thy
-    |> add_defs (map (mk_def HOLogic.natT) data)
-    |> snd
+    TheoryTarget.init NONE
+    #> add_def ("Tri", Tri)
+    #> add_def ("Quad", Quad)
+    #> add_def ("Pent", Pent)
+    #> add_def ("Hex", Hex)
+    #> add_def ("Hept", Hept)
+    #> add_def ("Oct", Oct)
+    #> LocalTheory.exit_global
   end;
 *}
 

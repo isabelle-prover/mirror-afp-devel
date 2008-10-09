@@ -1,4 +1,4 @@
-(*  ID:         $Id: Vector.thy,v 1.3 2007-08-20 16:09:23 fhaftmann Exp $
+(*  ID:         $Id: Vector.thy,v 1.4 2008-10-09 13:27:33 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -14,7 +14,7 @@ subsection {* Tabulation *}
 
 constdefs
   tabulate' :: "nat \<times> (nat \<Rightarrow> 'a) \<Rightarrow> 'a vector"
-  "tabulate' p \<equiv> Vector (map (snd p) [0 ..< fst p])"
+  [code del]: "tabulate' p \<equiv> Vector (map (snd p) [0 ..< fst p])"
         (* map int [0..nat (fst p)])])*)
   tabulate :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a vector"
   "tabulate n f \<equiv> tabulate' (n, f)"
@@ -44,7 +44,7 @@ subsection {* Access *}
 
 constdefs 
  sub1 :: "'a vector \<times> nat \<Rightarrow> 'a"
- "sub1 p \<equiv> let (a, n) = p in case a of (Vector as) \<Rightarrow> as ! n"
+ [code del]: "sub1 p \<equiv> let (a, n) = p in case a of (Vector as) \<Rightarrow> as ! n"
  sub :: "'a vector \<Rightarrow> nat \<Rightarrow> 'a" 
  "sub a n \<equiv> sub1 (a, n)"
 
@@ -58,15 +58,6 @@ translations
   "(as\<lbrakk>m, n\<rbrakk>)" == "sub (sub as m) n"
   "(as\<lbrakk>l, m, n\<rbrakk>)" == "sub (sub (sub as l) m) n"
 
-
-types_code
-  vector  ("_ vector")
-
-consts_code
-  "tabulate'"  ("Vector.tabulate")
-  "sub1"       ("Vector.sub")
-
-
 text {* examples:  @{term "\<lbrakk>0. i < 5\<rbrakk>"}, @{term "\<lbrakk>i. i < 5, j < 3\<rbrakk>"}  *}
 
 lemma sub_tabulate: "0 \<le> i ==> i < u ==>
@@ -79,5 +70,27 @@ lemma sub_tabulate3: "0 \<le> i ==> 0 \<le> j ==> 0 \<le> k ==>
   by (simp add: tabulate3_def tabulate_def tabulate'_def 
   sub_def sub1_def Let_def  Vector.inject 
   split: Vector.split)
+
+
+subsection {* Code generator setup *}
+
+declare vector.cases [code del]
+code_abort vector_case
+
+code_type vector
+  (SML "_/ vector")
+
+code_const Vector and tabulate' and sub1
+  (SML "Vector.fromList" and "Vector.tabulate" and "Vector.sub")
+
+code_reserved SML Vector
+
+
+types_code
+  vector  ("_ vector")
+
+consts_code
+  "tabulate'"  ("Vector.tabulate")
+  "sub1"       ("Vector.sub")
 
 end

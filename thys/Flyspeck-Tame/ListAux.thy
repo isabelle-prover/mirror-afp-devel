@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.13 2008-10-07 14:07:29 fhaftmann Exp $
+(*  ID:         $Id: ListAux.thy,v 1.14 2008-10-09 13:27:33 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -10,7 +10,7 @@ begin
 
 declare Let_def[simp]
 
-declare comp_def[code unfold]
+declare comp_def[code unfold, code inline del]
 
 subsection {* HOL *}
 
