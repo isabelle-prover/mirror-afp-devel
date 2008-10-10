@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEdlo.thy,v 1.2 2008-01-11 15:22:19 lsf37 Exp $
+(*  ID:         $Id: QEdlo.thy,v 1.3 2008-10-10 04:47:12 fhaftmann Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -104,9 +104,9 @@ by auto
 
 (*<*)
 (* needed for code generation *)
-definition [code func del]: "lift_dnfeq_qe = ATOM_EQ.lift_dnfeq_qe neg\<^isub>d\<^isub>l\<^isub>o depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o (\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)
+definition [code del]: "lift_dnfeq_qe = ATOM_EQ.lift_dnfeq_qe neg\<^isub>d\<^isub>l\<^isub>o depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o (\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)
           (\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False) subst\<^isub>0"
-definition [code func del]:
+definition [code del]:
   "lift_eq_qe = ATOM_EQ.lift_eq_qe (\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)
                                    (\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False) subst\<^isub>0"
 

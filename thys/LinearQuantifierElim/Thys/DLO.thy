@@ -1,4 +1,4 @@
-(*  ID:         $Id: DLO.thy,v 1.2 2008-01-11 15:22:15 lsf37 Exp $
+(*  ID:         $Id: DLO.thy,v 1.3 2008-10-10 04:47:12 fhaftmann Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -65,10 +65,10 @@ fun decr\<^isub>d\<^isub>l\<^isub>o :: "atom \<Rightarrow> atom" where
 "decr\<^isub>d\<^isub>l\<^isub>o (Eq i j) = Eq (i - 1) (j - 1)"
 
 (* needed for code generation *)
-definition [code func del]: "nnf = ATOM.nnf neg\<^isub>d\<^isub>l\<^isub>o"
-definition [code func del]: "qelim = ATOM.qelim depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o"
-definition [code func del]: "lift_dnf_qe = ATOM.lift_dnf_qe neg\<^isub>d\<^isub>l\<^isub>o depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o"
-definition [code func del]: "lift_nnf_qe = ATOM.lift_nnf_qe neg\<^isub>d\<^isub>l\<^isub>o"
+definition [code del]: "nnf = ATOM.nnf neg\<^isub>d\<^isub>l\<^isub>o"
+definition [code del]: "qelim = ATOM.qelim depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o"
+definition [code del]: "lift_dnf_qe = ATOM.lift_dnf_qe neg\<^isub>d\<^isub>l\<^isub>o depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o"
+definition [code del]: "lift_nnf_qe = ATOM.lift_nnf_qe neg\<^isub>d\<^isub>l\<^isub>o"
 
 hide const nnf qelim lift_dnf_qe lift_nnf_qe
 
