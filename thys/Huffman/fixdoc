@@ -1,0 +1,25 @@
+#!/bin/bash
+export HUFFMAN_TEX=Huffman.tex
+sed -ibak 's/{\\isacharprime}a/\$\\alpha\$/g' $HUFFMAN_TEX
+sed -ibak 's/{\\isacharprime}b/\$\\beta\$/g' $HUFFMAN_TEX
+sed -ibak 's/{\\isacharbraceleft}{\\isacharbraceright}/{\\ensuremath{\\emptyset}}/g' $HUFFMAN_TEX
+sed -ibak 's/{\\isacharunderscore}{\\isadigit{\([0-9]\)}}/{\\isacharunderscore}{\1}/g' $HUFFMAN_TEX
+sed -ibak 's/\([a-z]\|{\\isacharparenright}\){\\isacharplus}/\1${}^+$/g' $HUFFMAN_TEX
+sed -ibak -r 's/\<(if|then|else(\\ if)?)\\( |isanewline)/\\ensuremath{\\mathrm{\1}}\\vthinspace\\\3/g' $HUFFMAN_TEX
+sed -ibak 's/\\isactrlisub F/\\isactrlisub{\\ensuremath{\\mathsf{\\scriptscriptstyle F}}}/g' $HUFFMAN_TEX
+sed -ibak 's/mergeSibling/merge\\-Sibling/g' $HUFFMAN_TEX
+sed -ibak 's/swapFourSyms/swap\\-Four\\-Syms/g' $HUFFMAN_TEX
+sed -ibak 's/{\\isasymSum}\(.*\)\\ {\\isasymin}\\ \(.*\){\\isachardot}/\\ensuremath{\\sum_{\1\\in\2}}/g' $HUFFMAN_TEX
+sed -ibak 's/\\sum\(.*\)\\ {\\isasymunion}\\ /\\sum\1\\isasymunion/g' $HUFFMAN_TEX
+sed -ibak 's/\\isacommand{by}/\\nopagebreak\\isacommand{by}/g' $HUFFMAN_TEX
+sed -ibak 's/\({assumes}\)\\ /\1\\ \\ /g' $HUFFMAN_TEX
+sed -ibak 's/\({shows}\)\\ /\1\\ \\ /g' $HUFFMAN_TEX
+sed -ibak 's/\(\\isachardoublequoteclose}\)\\ \({\\isachardoublequoteopen}\)/\1\\ \\ \\,\2/g' $HUFFMAN_TEX
+sed -ibak 's/\({\\isacharparenright}{\\isachardoublequoteclose}\\ \)\\ \\,\({\\isachardoublequoteopen}{\\isacharparenleft}\)/\1\2/g' $HUFFMAN_TEX
+sed -ibak 's/\\isactrlisub u\\isactrlisub *{\\isacharprime}/\\isactrlisub{u\\isacharprime}/g' $HUFFMAN_TEX
+sed -ibak 's/\\isanewline$/%\
+&/' $HUFFMAN_TEX
+sed -ibak '/\\isanewline$/,// s/^\(\(\\ \)*\)/\1\1/' $HUFFMAN_TEX
+sed -ibak 's/{\\isacharcolon}%/{\\isacharcolon}\\nopagebreak%/g' $HUFFMAN_TEX
+sed -ibak 's/\\isakeyword{where}/\\isakeyword{where}\\nopagebreak/' $HUFFMAN_TEX
+sed -ibak 's/\({\\isacharbrackleft}\)\({\\isacharbrackright}\)/\1\\vthinspace\2/g' $HUFFMAN_TEX

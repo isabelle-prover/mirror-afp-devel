@@ -1,0 +1,22 @@
+default: Huffman
+images: 
+test: Huffman
+
+all: images test
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+USEDIR = $(ISATOOL) usedir -v true -i true -D generated
+FIXDOC = Huffman/fixdoc
+DOCUMENT = $(ISATOOL) document -o pdf
+DOCUMENT_OUTLINE = $(ISATOOL) document -n outline -o pdf -t "/proof,/ML"
+
+Huffman: $(LOG)/HOL-Huffman.gz
+
+$(LOG)/HOL-Huffman.gz: ROOT.ML document/root.tex Huffman.thy
+	cd ..; $(USEDIR) HOL Huffman; $(FIXDOC); $(DOCUMENT) Huffman/generated; $(DOCUMENT_OUTLINE) Huffman/generated
+
+clean:
+	@rm -f $(LOG)/HOL-Huffman.gz

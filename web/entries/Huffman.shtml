@@ -1,0 +1,106 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p> </p>
+
+<!-- begin entry data: -->
+<h1><!-- Title: -->The Textbook Proof of Huffman's Algorithm</h1>
+<p> </p>
+
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+    <td class="data" width="80%">
+<!-- Title: -->The Textbook Proof of Huffman's Algorithm
+    </td></tr>
+		
+    <tr><td class="datahead">Author:</td>
+<td class="data">
+<!-- Author: --><a
+href="http://www4.in.tum.de/~blanchet">Jasmin Christian Blanchette</a>
+</td></tr>		
+    
+	<tr><td class="datahead">Submission date:</td>
+	
+<td class="data"><!-- Submission date: -->2008-10-15</td></tr>
+
+	<tr><td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract"> 
+<!-- Abstract: -->	
+Huffman's algorithm is a procedure for constructing a binary tree with minimum weighted path length. This report presents a formal proof of the correctness of Huffman's algorithm written using Isabelle/HOL. Our proof closely follows the sketches found in standard algorithms textbooks, uncovering a few snags in the process. Another distinguishing feature of our formalization is the use of custom induction rules to help Isabelle's automatic tactics, leading to very short proofs for most of the lemmas.
+   </td></tr>
+
+<!-- uncomment for entries significantly updated in devel version:
+<tr>
+<td class="datahead"> </td>
+<td class="data">An updated version of this entry is available in the 
+    <a href="../download.shtml">development version</a> of AFP.</td>
+</tr> 
+-->
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+</tbody>
+</table>
+
+<p> </p>
+
+<!-- entry directory name: -->
+<!--#set var="name" value="Huffman" -->
+
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+	None
+	</td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+<div align="right" class="date">$Date: 2008-10-16 22:32:51 $, $Revision: 1.1 
+$</div></body>
+</html>
