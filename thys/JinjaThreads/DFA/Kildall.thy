@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.5 2008-07-25 08:22:53 fhaftmann Exp $
+    ID:         $Id: Kildall.thy,v 1.6 2008-10-16 07:59:46 ballarin Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
@@ -327,30 +327,34 @@ lemma (in Semilat) merges_bounded_lemma:
   done
 (*>*)
 
-lemma termination_lemma: includes Semilat
+lemma termination_lemma: assumes "Semilat A r f"
 shows "\<lbrakk> ss \<in> list n A; \<forall>(q,t)\<in>set qs. q<n \<and> t\<in>A; p\<in>w \<rbrakk> \<Longrightarrow> 
       ss [\<sqsubset>\<^sub>r] merges f qs ss \<or> 
   merges f qs ss = ss \<and> {q. \<exists>t. (q,t)\<in>set qs \<and> t \<squnion>\<^bsub>f\<^esub> ss!q \<noteq> ss!q} \<union> (w-{p}) \<subset> w"
-(*<*)
-apply(insert semilat)
-  apply (unfold lesssub_def)
-  apply (simp (no_asm_simp) add: merges_incr)
-  apply (rule impI)
-  apply (rule merges_same_conv [THEN iffD1, elim_format]) 
-  apply assumption+
-    defer
-    apply (rule sym, assumption)
-   defer apply simp
-   apply (subgoal_tac "\<forall>q t. \<not>((q, t) \<in> set qs \<and> t \<squnion>\<^bsub>f\<^esub> ss ! q \<noteq> ss ! q)")
-   apply (blast intro!: psubsetI elim: equalityE)
-   apply clarsimp
-   apply (drule bspec, assumption) 
-   apply (drule bspec, assumption)
-   apply clarsimp
-  done 
+(*<*) (is "PROP ?P")
+proof -
+  interpret Semilat [A r f] by fact
+  show "PROP ?P"
+  apply(insert semilat)
+    apply (unfold lesssub_def)
+    apply (simp (no_asm_simp) add: merges_incr)
+    apply (rule impI)
+    apply (rule merges_same_conv [THEN iffD1, elim_format]) 
+    apply assumption+
+      defer
+      apply (rule sym, assumption)
+     defer apply simp
+     apply (subgoal_tac "\<forall>q t. \<not>((q, t) \<in> set qs \<and> t \<squnion>\<^bsub>f\<^esub> ss ! q \<noteq> ss ! q)")
+     apply (blast intro!: psubsetI elim: equalityE)
+     apply clarsimp
+     apply (drule bspec, assumption) 
+     apply (drule bspec, assumption)
+     apply clarsimp
+    done 
+qed
 (*>*)
 
-lemma iter_properties[rule_format]: includes Semilat
+lemma iter_properties[rule_format]: assumes "Semilat A r f"
 shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
      bounded step n; \<forall>p\<in>w0. p < n; ss0 \<in> list n A;
      \<forall>p<n. p \<notin> w0 \<longrightarrow> stable r step ss0 p \<rbrakk> \<Longrightarrow>
@@ -358,102 +362,106 @@ shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
    \<longrightarrow>
    ss' \<in> list n A \<and> stables r step ss' \<and> ss0 [\<sqsubseteq>\<^sub>r] ss' \<and>
    (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
-(*<*)
-apply(insert semilat)
-apply (unfold iter_def stables_def)
-apply (rule_tac P = "\<lambda>(ss,w).
- ss \<in> list n A \<and> (\<forall>p<n. p \<notin> w \<longrightarrow> stable r step ss p) \<and> ss0 [\<sqsubseteq>\<^sub>r] ss \<and>
- (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts) \<and>
- (\<forall>p\<in>w. p < n)" and
- r = "{(ss',ss) . ss [\<sqsubset>\<^sub>r] ss'} <*lex*> finite_psubset"
-       in while_rule)
+(*<*) (is "PROP ?P")
+proof -
+  interpret Semilat [A r f] by fact
+  show "PROP ?P"
+  apply(insert semilat)
+  apply (unfold iter_def stables_def)
+  apply (rule_tac P = "\<lambda>(ss,w).
+   ss \<in> list n A \<and> (\<forall>p<n. p \<notin> w \<longrightarrow> stable r step ss p) \<and> ss0 [\<sqsubseteq>\<^sub>r] ss \<and>
+   (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts) \<and>
+   (\<forall>p\<in>w. p < n)" and
+   r = "{(ss',ss) . ss [\<sqsubset>\<^sub>r] ss'} <*lex*> finite_psubset"
+	 in while_rule)
 
--- "Invariant holds initially:"
-apply (simp add:stables_def)
+  -- "Invariant holds initially:"
+  apply (simp add:stables_def)
 
--- "Invariant is preserved:"
-apply(simp add: stables_def split_paired_all)
-apply(rename_tac ss w)
-apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
- prefer 2; apply (fast intro: someI)
-apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
- prefer 2
- apply clarify
- apply (rule conjI)
-  apply(clarsimp, blast dest!: boundedD)
- apply (erule pres_typeD)
-  prefer 3
+  -- "Invariant is preserved:"
+  apply(simp add: stables_def split_paired_all)
+  apply(rename_tac ss w)
+  apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
+   prefer 2; apply (fast intro: someI)
+  apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
+   prefer 2
+   apply clarify
+   apply (rule conjI)
+    apply(clarsimp, blast dest!: boundedD)
+   apply (erule pres_typeD)
+    prefer 3
+    apply assumption
+    apply (erule listE_nth_in)
+    apply blast
+   apply blast
+  apply (subst decomp_propa)
+   apply blast
+  apply simp
+  apply (rule conjI)
+   apply (rule merges_preserves_type)
+   apply blast
+   apply clarify
+   apply (rule conjI)
+    apply(clarsimp, blast dest!: boundedD)
+   apply (erule pres_typeD)
+    prefer 3
+    apply assumption
+    apply (erule listE_nth_in)
+    apply blast
+   apply blast
+  apply (rule conjI)
+   apply clarify
+   apply (blast intro!: stable_pres_lemma)
+  apply (rule conjI)
+   apply (blast intro!: merges_incr intro: le_list_trans)
+  apply (rule conjI)
+   apply clarsimp
+   apply (blast intro!: merges_bounded_lemma)
+  apply (blast dest!: boundedD)
+
+
+  -- "Postcondition holds upon termination:"
+  apply(clarsimp simp add: stables_def split_paired_all)
+
+  -- "Well-foundedness of the termination relation:"
+  apply (rule wf_lex_prod)
+   apply (insert orderI [THEN acc_le_listI])
+   apply (simp only: acc_def lesssub_def)
+  apply (rule wf_finite_psubset) 
+
+  -- "Loop decreases along termination relation:"
+  apply(simp add: stables_def split_paired_all)
+  apply(rename_tac ss w)
+  apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
+   prefer 2; apply (fast intro: someI)
+  apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
+   prefer 2
+   apply clarify
+   apply (rule conjI)
+    apply(clarsimp, blast dest!: boundedD)
+   apply (erule pres_typeD)
+    prefer 3
+    apply assumption
+    apply (erule listE_nth_in)
+    apply blast
+   apply blast
+  apply (subst decomp_propa)
+   apply blast
+  apply clarify
+  apply (simp del: listE_length
+      add: lex_prod_def finite_psubset_def 
+	   bounded_nat_set_is_finite)
+  apply (rule termination_lemma)
+  apply assumption+
+  defer
   apply assumption
-  apply (erule listE_nth_in)
-  apply blast
- apply blast
-apply (subst decomp_propa)
- apply blast
-apply simp
-apply (rule conjI)
- apply (rule merges_preserves_type)
- apply blast
- apply clarify
- apply (rule conjI)
-  apply(clarsimp, blast dest!: boundedD)
- apply (erule pres_typeD)
-  prefer 3
-  apply assumption
-  apply (erule listE_nth_in)
-  apply blast
- apply blast
-apply (rule conjI)
- apply clarify
- apply (blast intro!: stable_pres_lemma)
-apply (rule conjI)
- apply (blast intro!: merges_incr intro: le_list_trans)
-apply (rule conjI)
- apply clarsimp
- apply (blast intro!: merges_bounded_lemma)
-apply (blast dest!: boundedD)
-
-
--- "Postcondition holds upon termination:"
-apply(clarsimp simp add: stables_def split_paired_all)
-
--- "Well-foundedness of the termination relation:"
-apply (rule wf_lex_prod)
- apply (insert orderI [THEN acc_le_listI])
- apply (simp only: acc_def lesssub_def)
-apply (rule wf_finite_psubset) 
-
--- "Loop decreases along termination relation:"
-apply(simp add: stables_def split_paired_all)
-apply(rename_tac ss w)
-apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
- prefer 2; apply (fast intro: someI)
-apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
- prefer 2
- apply clarify
- apply (rule conjI)
-  apply(clarsimp, blast dest!: boundedD)
- apply (erule pres_typeD)
-  prefer 3
-  apply assumption
-  apply (erule listE_nth_in)
-  apply blast
- apply blast
-apply (subst decomp_propa)
- apply blast
-apply clarify
-apply (simp del: listE_length
-    add: lex_prod_def finite_psubset_def 
-         bounded_nat_set_is_finite)
-apply (rule termination_lemma)
-apply assumption+
-defer
-apply assumption
-apply clarsimp
-done
+  apply clarsimp
+  done
+qed
 (*>*)
 
 
-lemma kildall_properties: includes Semilat
+lemma kildall_properties: assumes "Semilat A r f"
 shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
      bounded step n; ss0 \<in> list n A \<rbrakk> \<Longrightarrow>
   kildall r f step ss0 \<in> list n A \<and>
@@ -461,37 +469,45 @@ shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
   ss0 [\<sqsubseteq>\<^sub>r] kildall r f step ss0 \<and>
   (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow>
                  kildall r f step ss0 [\<sqsubseteq>\<^sub>r] ts)"
-(*<*)
-apply (unfold kildall_def)
-apply(case_tac "iter f step ss0 (unstables r step ss0)")
-apply(simp)
-apply (rule iter_properties)
-apply (simp_all add: unstables_def stable_def)
-apply (rule Semilat.intro)
-apply (rule semilat)
-done
+(*<*) (is "PROP ?P")
+proof -
+  interpret Semilat [A r f] by fact
+  show "PROP ?P"
+  apply (unfold kildall_def)
+  apply(case_tac "iter f step ss0 (unstables r step ss0)")
+  apply(simp)
+  apply (rule iter_properties)
+  apply (simp_all add: unstables_def stable_def)
+  apply (rule Semilat.intro)
+  apply (rule semilat)
+  done
+qed
 
 
-lemma is_bcv_kildall: includes Semilat
+lemma is_bcv_kildall: assumes "Semilat A r f"
 shows "\<lbrakk> acc r; top r T; pres_type step n A; bounded step n; mono r step n A \<rbrakk>
-  \<Longrightarrow> is_bcv r T step n A (kildall r f step)"
-apply(unfold is_bcv_def wt_step_def)
-apply(insert Semilat_axioms semilat kildall_properties[of A])
-apply(simp add:stables_def)
-apply clarify
-apply(subgoal_tac "kildall r f step \<tau>s\<^isub>0 \<in> list n A")
- prefer 2 apply (simp(no_asm_simp))
-apply (rule iffI)
- apply (rule_tac x = "kildall r f step \<tau>s\<^isub>0" in bexI) 
-  apply (rule conjI)
-   apply (blast)
-  apply (simp  (no_asm_simp))
- apply(assumption)
-apply clarify
-apply(subgoal_tac "kildall r f step \<tau>s\<^isub>0!p <=_r \<tau>s!p")
- apply simp
-apply (blast intro!: le_listD less_lengthI)
-done
+  \<Longrightarrow> is_bcv r T step n A (kildall r f step)" (is "PROP ?P")
+proof -
+  interpret Semilat [A r f] by fact
+  show "PROP ?P"
+  apply(unfold is_bcv_def wt_step_def)
+  apply(insert `Semilat A r f` semilat kildall_properties[of A])
+  apply(simp add:stables_def)
+  apply clarify
+  apply(subgoal_tac "kildall r f step \<tau>s\<^isub>0 \<in> list n A")
+   prefer 2 apply (simp(no_asm_simp))
+  apply (rule iffI)
+   apply (rule_tac x = "kildall r f step \<tau>s\<^isub>0" in bexI) 
+    apply (rule conjI)
+     apply (blast)
+    apply (simp  (no_asm_simp))
+   apply(assumption)
+  apply clarify
+  apply(subgoal_tac "kildall r f step \<tau>s\<^isub>0!p <=_r \<tau>s!p")
+   apply simp
+  apply (blast intro!: le_listD less_lengthI)
+  done
+qed
 (*>*)
 
 end

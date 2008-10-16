@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Listn.thy
-    ID:         $Id: Listn.thy,v 1.8 2008-07-25 15:07:16 fhaftmann Exp $
+    ID:         $Id: Listn.thy,v 1.9 2008-10-16 07:59:46 ballarin Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -462,17 +462,21 @@ done
 
 
 lemma Listn_sl_aux:
-includes Semilat shows "semilat (Listn.sl n (A,r,f))"
+assumes "Semilat A r f" shows "semilat (Listn.sl n (A,r,f))"
 (*<*)
-apply (unfold Listn.sl_def)
-apply (simp (no_asm) only: semilat_Def split_conv)
-apply (rule conjI)
- apply simp
-apply (rule conjI)
- apply (simp only: closedI closed_listI)
-apply (simp (no_asm) only: list_def)
-apply (simp (no_asm_simp) add: plus_list_ub1 plus_list_ub2 plus_list_lub)
-done
+proof -
+  interpret Semilat [A r f] by fact
+  show ?thesis
+  apply (unfold Listn.sl_def)
+  apply (simp (no_asm) only: semilat_Def split_conv)
+  apply (rule conjI)
+   apply simp
+  apply (rule conjI)
+   apply (simp only: closedI closed_listI)
+  apply (simp (no_asm) only: list_def)
+  apply (simp (no_asm_simp) add: plus_list_ub1 plus_list_ub2 plus_list_lub)
+  done
+qed
 (*>*)
 
 lemma Listn_sl: "semilat L \<Longrightarrow> semilat (Listn.sl n L)"

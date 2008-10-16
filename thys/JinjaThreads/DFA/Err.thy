@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Err.thy
-    ID:         $Id: Err.thy,v 1.6 2008-07-25 08:22:53 fhaftmann Exp $
+    ID:         $Id: Err.thy,v 1.7 2008-10-16 07:59:46 ballarin Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -141,22 +141,30 @@ lemma OK_less_conv [rule_format, iff]:
 lemma not_Err_less [rule_format, iff]: "\<not>(Err \<sqsubset>\<^bsub>le r\<^esub> x)"
 (*<*) by (simp add: lesssub_def lesub_def le_def split: err.split) (*>*)
 
-lemma semilat_errI [intro]: includes Semilat
+lemma semilat_errI [intro]: assumes "Semilat A r f"
 shows "semilat(err A, le r, lift2(\<lambda>x y. OK(f x y)))"
 (*<*)
-apply(insert semilat)
-apply (unfold semilat_Def closed_def plussub_def lesub_def 
+proof -
+  interpret Semilat [A r f] .
+  show ?thesis
+    apply(insert semilat)
+    apply (unfold semilat_Def closed_def plussub_def lesub_def 
               lift2_def le_def)
-apply (simp add: err_def' split: err.split)
-done
+    apply (simp add: err_def' split: err.split)
+    done
+qed
 (*>*)
 
 lemma err_semilat_eslI_aux:
-includes Semilat shows "err_semilat(esl(A,r,f))"
+assumes "Semilat A r f" shows "err_semilat(esl(A,r,f))"
 (*<*)
-apply (unfold sl_def esl_def)
-apply (simp add: semilat_errI [OF Semilat_axioms])
-done
+proof -
+  interpret Semilat [A r f] .
+  show ?thesis
+    apply (unfold sl_def esl_def)
+    apply (simp add: semilat_errI [OF `Semilat A r f`])
+    done
+qed
 (*>*)
 
 lemma err_semilat_eslI [intro, simp]:
