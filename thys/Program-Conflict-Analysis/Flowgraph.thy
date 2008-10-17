@@ -19,7 +19,7 @@ text {*
   model as an atomic step, which would be an unrealistic assumption for practical problems. Technically, our model would become strictly more powerful without this assumption.
 
 
-  If we would allow this, our model would become strictly more powerful, 
+  If we allowed this, our model would become strictly more powerful, 
 *}
 
 subsection "Definitions"
@@ -41,7 +41,7 @@ definition
 lemma main_is_initial[simp]: "initialproc fg (main fg)"
   by (unfold initialproc_def) simp
 
-locale flowgraph = (struct fg) +
+locale flowgraph = struct fg +
   constrains fg :: "('n,'p,'ba,'m,'more) flowgraph_rec_scheme" (* Unnecessary, but perhaps makes it more readable for the unaware reader ;) *)
   -- "Edges are inside procedures only"
   assumes edges_part: "(u,a,v)\<in>edges fg \<Longrightarrow> proc_of fg u = proc_of fg v" 
