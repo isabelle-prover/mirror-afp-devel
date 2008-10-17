@@ -14,10 +14,11 @@ locale CFG_wf = CFG +
   fixes state_val::"'state \<Rightarrow> 'var \<Rightarrow> 'val"
   assumes Entry_empty:"Def (_Entry_) = {} \<and> Use (_Entry_) = {}"
   and CFG_edge_no_Def_equal:
-    "\<lbrakk>valid_edge a; V \<notin> Def (sourcenode a)\<rbrakk>
+    "\<lbrakk>valid_edge a; V \<notin> Def (sourcenode a); pred (kind a) s\<rbrakk>
      \<Longrightarrow> state_val (transfer (kind a) s) V = state_val s V"
   and CFG_edge_transfer_uses_only_Use:
-    "\<lbrakk>valid_edge a; \<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V\<rbrakk>
+    "\<lbrakk>valid_edge a; \<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V;
+      pred (kind a) s; pred (kind a) s'\<rbrakk>
       \<Longrightarrow> \<forall>V \<in> Def (sourcenode a). state_val (transfer (kind a) s) V =
                                      state_val (transfer (kind a) s') V"
   and CFG_edge_Uses_pred_equal:
@@ -39,22 +40,25 @@ by(simp add:Entry_empty)
 
 
 lemma CFG_path_no_Def_equal:
-  "\<lbrakk>n -as\<rightarrow>* n'; \<forall>n \<in> set (sourcenodes as). V \<notin> Def n\<rbrakk> 
+  "\<lbrakk>n -as\<rightarrow>* n'; \<forall>n \<in> set (sourcenodes as). V \<notin> Def n; preds (kinds as) s\<rbrakk> 
     \<Longrightarrow> state_val (transfers (kinds as) s) V = state_val s V"
 proof(induct arbitrary:s rule:path.induct)
   case (empty_path n)
   thus ?case by(simp add:sourcenodes_def kinds_def)
 next
   case (Cons_path n'' as n' a n)
-  note IH = `\<And>s. \<forall>n\<in>set (sourcenodes as). V \<notin> Def n \<Longrightarrow>
+  note IH = `\<And>s. \<lbrakk>\<forall>n\<in>set (sourcenodes as). V \<notin> Def n; preds (kinds as) s\<rbrakk> \<Longrightarrow>
             state_val (transfers (kinds as) s) V = state_val s V`
+  from `preds (kinds (a#as)) s` have "pred (kind a) s"
+    and "preds (kinds as) (transfer (kind a) s)" by(simp_all add:kinds_def)
   from `\<forall>n\<in>set (sourcenodes (a#as)). V \<notin> Def n`
     have noDef:"V \<notin> Def (sourcenode a)" 
     and all:"\<forall>n\<in>set (sourcenodes as). V \<notin> Def n"
     by(auto simp:sourcenodes_def)
-  from `valid_edge a` noDef have "state_val (transfer (kind a) s) V = state_val s V"
+  from `valid_edge a` noDef `pred (kind a) s`
+  have "state_val (transfer (kind a) s) V = state_val s V"
     by(rule CFG_edge_no_Def_equal)
-  with IH[OF all,of "transfer (kind a) s"] show ?case
+  with IH[OF all `preds (kinds as) (transfer (kind a) s)`] show ?case
     by(simp add:kinds_def)
 qed
 

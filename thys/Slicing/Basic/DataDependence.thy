@@ -32,10 +32,12 @@ qed
 
 
 lemma dyn_influence_only_first_edge:
-  assumes ddep:"n influences V in n' via a#as"
+  assumes ddep:"n influences V in n' via a#as" and "preds (kinds (a#as)) s"
   shows "state_val (transfers (kinds (a#as)) s) V = 
          state_val (transfer (kind a) s) V"
 proof -
+  from `preds (kinds (a#as)) s` have "preds (kinds as) (transfer (kind a) s)"
+    by(simp add:kinds_def)
   from ddep have Def:"V \<in> Def n" and Use:"V \<in> Use n'"
     and path:"n -a#as\<rightarrow>* n'"
     and noDefs:"\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''"
@@ -51,9 +53,10 @@ proof -
     with tail source have "n'' \<noteq> n" by(fastsimp simp:sourcenodes_def)
     with noDefs isin have "V \<notin> Def n''" by(auto simp:sourcenodes_def) }
   hence "\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''" by simp
-  with path2 have "state_val (transfers (kinds as) (transfer (kind a) s)) V = 
-                   state_val (transfer (kind a) s) V"
-    by(rule CFG_path_no_Def_equal)
+  with path2 `preds (kinds as) (transfer (kind a) s)`
+  have "state_val (transfers (kinds as) (transfer (kind a) s)) V = 
+        state_val (transfer (kind a) s) V"
+    by -(rule CFG_path_no_Def_equal)
   thus ?thesis by(auto simp:kinds_def)
 qed
 
@@ -66,8 +69,8 @@ definition data_dependence :: "'node \<Rightarrow> 'var \<Rightarrow> 'node \<Ri
 where data_dependences_eq:"n influences V in n' \<equiv> \<exists>as. n influences V in n' via as"
 
 lemma data_dependence_def: "n influences V in n' = 
-  (\<exists>as a' as'. (as = a'#as') \<and> (V \<in> Def n) \<and> (V \<in> Use n') \<and>
-                 (n -as\<rightarrow>* n') \<and> (\<forall>n'' \<in> set (sourcenodes as'). V \<notin> Def n''))"
+  (\<exists>a' as'. (V \<in> Def n) \<and> (V \<in> Use n') \<and>
+                 (n -a'#as'\<rightarrow>* n') \<and> (\<forall>n'' \<in> set (sourcenodes as'). V \<notin> Def n''))"
 by(auto simp:data_dependences_eq dyn_data_dependence_def)
 
 end

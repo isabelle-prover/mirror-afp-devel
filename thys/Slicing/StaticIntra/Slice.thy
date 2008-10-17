@@ -755,7 +755,7 @@ proof -
     by(auto dest:WSD)
   from `n\<^isub>c,kind \<turnstile> (n\<^isub>1,s\<^isub>1) -a\<rightarrow>\<^isub>\<tau> (n\<^isub>1',s\<^isub>1')` have "sourcenode a = n\<^isub>1"
     and "targetnode a = n\<^isub>1'" and "transfer (kind a) s\<^isub>1 = s\<^isub>1'"
-    and "n\<^isub>1 \<notin> backward_slice n\<^isub>c" and "valid_edge a"
+    and "n\<^isub>1 \<notin> backward_slice n\<^isub>c" and "valid_edge a" and "pred (kind a) s\<^isub>1"
     by(auto elim:silent_move.cases)
   from `targetnode a = n\<^isub>1'` `valid_edge a` have "valid_node n\<^isub>1'"
     by(auto simp:valid_node_def)
@@ -797,7 +797,7 @@ proof -
       by(erule rvE)
     with `n\<^isub>1 \<notin> backward_slice n\<^isub>c` have "V \<notin> Def n\<^isub>1"
       by(auto elim:path.cases simp:sourcenodes_def)
-    with `valid_edge a` `sourcenode a = n\<^isub>1` 
+    with `valid_edge a` `sourcenode a = n\<^isub>1` `pred (kind a) s\<^isub>1`
     have "state_val (transfer (kind a) s\<^isub>1) V = state_val s\<^isub>1 V"
       by(fastsimp intro:CFG_edge_no_Def_equal)
     with `transfer (kind a) s\<^isub>1 = s\<^isub>1'` have "state_val s\<^isub>1' V = state_val s\<^isub>1 V" by simp
@@ -843,7 +843,7 @@ proof -
     from `n\<^isub>c,kind \<turnstile> (n\<^isub>1,s\<^isub>1) -a\<rightarrow> (n\<^isub>1',s\<^isub>1')` have [simp]:"n\<^isub>1 = sourcenode a" 
       and [simp]:"n\<^isub>1' = targetnode a" and "pred (kind a) s\<^isub>1"
       and "transfer (kind a) s\<^isub>1 = s\<^isub>1'" and "n\<^isub>1 \<in> (backward_slice n\<^isub>c)" 
-      and "valid_edge a"
+      and "valid_edge a" and "pred (kind a) s\<^isub>1"
       by(auto elim:observable_move.cases)
     from  `valid_edge a` have "valid_node n\<^isub>1'" by(auto simp:valid_node_def)
     from `valid_node n\<^isub>1` `n\<^isub>1 \<in> (backward_slice n\<^isub>c)` 
@@ -896,12 +896,13 @@ proof -
 	    by(fastsimp intro:slice_kind_in_slice)
 	  with `transfer (slice_kind n\<^isub>c a) s\<^isub>2 = s\<^isub>2'` have "s\<^isub>2' = s\<^isub>2" by simp
 	  with `valid_edge a` `\<forall>V \<in> Use n\<^isub>1. state_val s\<^isub>1 V = state_val s\<^isub>2 V` 
-	    True Predicate `s\<^isub>1' = s\<^isub>1` show ?thesis
-	    by(fastsimp dest:CFG_edge_transfer_uses_only_Use)
+	    True Predicate `s\<^isub>1' = s\<^isub>1` `pred (kind a) s\<^isub>1` `pred (kind a) s\<^isub>2`
+	  show ?thesis by(auto dest:CFG_edge_transfer_uses_only_Use)
 	qed
       next
 	case False
 	with `valid_edge a` `transfer (kind a) s\<^isub>1 = s\<^isub>1'`[THEN sym] 
+	  `pred (kind a) s\<^isub>1` `pred (kind a) s\<^isub>2`
 	have "state_val s\<^isub>1' V = state_val s\<^isub>1 V"
 	  by(fastsimp intro:CFG_edge_no_Def_equal)
 	have "state_val s\<^isub>2' V = state_val s\<^isub>2 V"
@@ -909,7 +910,8 @@ proof -
 	  case (Update f)
 	  with  `n\<^isub>1 \<in> (backward_slice n\<^isub>c)` have "slice_kind n\<^isub>c a = kind a"
 	    by(fastsimp intro:slice_kind_in_slice)
-	  with `valid_edge a` `transfer (slice_kind n\<^isub>c a) s\<^isub>2 = s\<^isub>2'`[THEN sym] False
+	  with `valid_edge a` `transfer (slice_kind n\<^isub>c a) s\<^isub>2 = s\<^isub>2'`[THEN sym] 
+	    False `pred (kind a) s\<^isub>2`
 	  show ?thesis by(fastsimp intro:CFG_edge_no_Def_equal)
 	next
 	  case (Predicate Q)

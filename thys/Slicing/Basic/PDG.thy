@@ -1,6 +1,6 @@
 header {* \isaheader{PDG} *}
 
-theory PDG imports DataDependence "../Basic/CFGExit_wf" begin
+theory PDG imports DataDependence CFGExit_wf begin
 
 subsection {* The dynamic PDG *}
 
@@ -264,7 +264,7 @@ qed
 
 
 lemma no_ddep_same_state:
-  assumes path:"n -as\<rightarrow>* n'" and Uses:"V \<in> Use n'"
+  assumes path:"n -as\<rightarrow>* n'" and Uses:"V \<in> Use n'" and preds:"preds (kinds as) s"
   and no_dep:"\<forall>as' a as''. as = as'@a#as'' \<longrightarrow> \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'"
   shows "state_val (transfers (kinds as) s) V = state_val s V"
 proof -
@@ -293,12 +293,12 @@ proof -
       by(fastsimp intro:DynPDG_ddep_edge)
     with nodes no_dep as have False by(auto simp:sourcenodes_def) }
   hence "\<forall>n \<in> set (sourcenodes as). V \<notin> Def n" by auto
-  with wf path show ?thesis by(fastsimp intro:CFG_path_no_Def_equal)
+  with wf path preds show ?thesis by(fastsimp intro:CFG_path_no_Def_equal)
 qed
 
 
 lemma DynPDG_ddep_edge_only_first_edge:
-  "n -{V}a#as\<rightarrow>\<^bsub>dd\<^esub> n' \<Longrightarrow> 
+  "\<lbrakk>n -{V}a#as\<rightarrow>\<^bsub>dd\<^esub> n'; preds (kinds (a#as)) s\<rbrakk> \<Longrightarrow> 
     state_val (transfers (kinds (a#as)) s) V = state_val (transfer (kind a) s) V"
   apply -
   apply(erule DynPDG_edge.cases)
@@ -310,6 +310,7 @@ lemma DynPDG_ddep_edge_only_first_edge:
 
 lemma Use_value_change_implies_DynPDG_ddep_edge:
   assumes path:"n -as\<rightarrow>* n'" and Use:"V \<in> Use n'"
+  and preds:"preds (kinds as) s" and preds':"preds (kinds as) s'"
   and before:"state_val s V = state_val s' V"
   and after:"state_val (transfers (kinds as) s) V \<noteq> 
              state_val (transfers (kinds as) s') V"
@@ -329,7 +330,8 @@ proof -
   proof(cases "\<forall>as' a as''. as = as'@a#as'' \<longrightarrow>
                  \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'")
     case True
-    with path Use have "state_val (transfers (kinds as) s) V = state_val s V"
+    with path Use preds preds'
+    have "state_val (transfers (kinds as) s) V = state_val s V"
       and "state_val (transfers (kinds as) s') V = state_val s' V"
       by(auto intro:no_ddep_same_state)
     with before after show ?thesis by simp
@@ -337,20 +339,27 @@ proof -
     case False
     then obtain as' a as'' where as:"as = as'@a#as''"
       and dep:"sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'" by auto
-    with dep have all:"\<And>s. state_val (transfers (kinds (a#as'')) s) V = 
-                            state_val (transfer (kind a) s) V"
+    from as preds have "preds (kinds (a#as'')) (transfers (kinds as') s)"
+      by(simp add:kinds_def preds_split)
+    with dep as have all:
+      "state_val (transfers (kinds (a#as'')) (transfers (kinds as') s)) V = 
+       state_val (transfer (kind a) (transfers (kinds as') s)) V"
+      by(auto dest!:DynPDG_ddep_edge_only_first_edge)
+    from as preds' have "preds (kinds (a#as'')) (transfers (kinds as') s')"
+      by(simp add:kinds_def preds_split)
+    with dep as have all':
+      "state_val (transfers (kinds (a#as'')) (transfers (kinds as') s')) V = 
+       state_val (transfer (kind a) (transfers (kinds as') s')) V"
       by(auto dest!:DynPDG_ddep_edge_only_first_edge)
     from as have eq:"\<And>s. transfers (kinds as) s =
       transfers (kinds (a#as'')) (transfers (kinds as') s)"
       by(simp add:transfers_split[THEN sym] kinds_def)
-    with all[of "transfers (kinds as') s"] 
-    have "state_val (transfers (kinds as) s) V = 
-          state_val (transfers (kinds (as'@[a])) s) V"
+    with all have "state_val (transfers (kinds as) s) V = 
+                   state_val (transfers (kinds (as'@[a])) s) V"
       by(simp add:transfers_split kinds_def)
     moreover
-    from eq all[of "transfers (kinds as') s'"] 
-    have "state_val (transfers (kinds as) s') V = 
-          state_val (transfers (kinds (as'@[a])) s') V"
+    from eq all' have "state_val (transfers (kinds as) s') V = 
+                       state_val (transfers (kinds (as'@[a])) s') V"
       by(simp add:transfers_split kinds_def)
     ultimately show ?thesis using as dep by blast
   qed
