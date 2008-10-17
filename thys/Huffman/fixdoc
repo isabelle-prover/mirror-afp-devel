@@ -1,5 +1,5 @@
 #!/bin/bash
-export HUFFMAN_TEX=Huffman.tex
+export HUFFMAN_TEX=Huffman/generated/Huffman.tex
 sed -ibak 's/{\\isacharprime}a/\$\\alpha\$/g' $HUFFMAN_TEX
 sed -ibak 's/{\\isacharprime}b/\$\\beta\$/g' $HUFFMAN_TEX
 sed -ibak 's/{\\isacharbraceleft}{\\isacharbraceright}/{\\ensuremath{\\emptyset}}/g' $HUFFMAN_TEX

@@ -1,5 +1,5 @@
 (*  Title:       An Isabelle/HOL Formalization of the Textbook Proof of Huffman's Algorithm
-    ID:          $Id: Huffman.thy,v 1.2 2008-10-16 22:32:50 lsf37 Exp $
+    ID:          $Id: Huffman.thy,v 1.3 2008-10-17 14:54:17 stefanberghofer Exp $
     Author:      Jasmin Christian Blanchette <blanchette at in.tum.de>, 2008
     Maintainer:  Jasmin Christian Blanchette <blanchette at in.tum.de>
 *)
@@ -458,10 +458,6 @@ a standard structural induction on @{term t} and proceed by cases.
 
 apply induct_scheme
        apply atomize_elim
-       apply (rename_tac p)
-       apply (case_tac p, simp)
-       apply clarify
-       apply (rename_tac t a)
        apply (case_tac t)
         apply fastsimp
        apply fastsimp
@@ -1089,9 +1085,7 @@ lemma sibling_induct_consistent:
  P t a"
 apply induct_scheme
    apply atomize_elim
-   apply (rename_tac p)
-   apply (case_tac p, simp)
-   apply (case_tac a, simp)
+   apply (case_tac t, simp)
    apply clarsimp
    apply (rename_tac a t\<^isub>1 t\<^isub>2)
    apply (case_tac "height t\<^isub>1 = 0 \<and> height t\<^isub>2 = 0")
