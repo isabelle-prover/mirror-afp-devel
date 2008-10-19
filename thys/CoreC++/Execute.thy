@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.19 2008-10-07 14:07:44 fhaftmann Exp $
+    ID:          $Id: Execute.thy,v 1.20 2008-10-19 19:21:47 stefanberghofer Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -740,7 +740,8 @@ text{* Definition of program examples *}
 
 
 
-declare ListMem_iff [symmetric, THEN eq_reflection, code unfold]
+lemma [code unfold]: "x mem xs = ListMem x xs"
+  by (simp add: mem_iff ListMem_iff)
 
 
 text{* {\ldots}and off we go *}
