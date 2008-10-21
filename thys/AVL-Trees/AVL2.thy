@@ -1,5 +1,5 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL2.thy,v 1.7 2008-06-12 06:57:14 lsf37 Exp $
+    ID:         $Id: AVL2.thy,v 1.8 2008-10-21 10:59:11 fhaftmann Exp $
     Author:     Tobias Nipkow and Cornelia Pusch,
                 converted to Isar by Gerwin Klein
                 contributions by Achim Brucker, Burkhart Wolff and Jan Smaus
@@ -34,73 +34,63 @@ datatype 'a tree\<^isub>0 = ET\<^isub>0 |  MKT\<^isub>0 'a "'a tree\<^isub>0" "'
 
 subsubsection "Auxiliary functions"
 
-consts
-  height :: "'a tree\<^isub>0 \<Rightarrow> nat"
-  set_of :: "'a tree\<^isub>0 \<Rightarrow> 'a set" 
-  is_ord :: "('a::order) tree\<^isub>0 \<Rightarrow> bool" 
-  is_bal :: "'a tree\<^isub>0 \<Rightarrow> bool"
+primrec height :: "'a tree\<^isub>0 \<Rightarrow> nat" where
+  "height ET\<^isub>0 = 0"
+  | "height (MKT\<^isub>0 n l r) = 1 + max (height l) (height r)"
 
-primrec
-"height ET\<^isub>0 = 0"
-"height (MKT\<^isub>0 n l r) = 1 + max (height l) (height r)"
+primrec set_of :: "'a tree\<^isub>0 \<Rightarrow> 'a set"  where
+  "set_of ET\<^isub>0 = {}"
+  | "set_of (MKT\<^isub>0 n l r) = insert n (set_of l \<union> set_of r)"
 
-primrec
-"set_of ET\<^isub>0 = {}"
-"set_of (MKT\<^isub>0 n l r) = insert n (set_of l \<union> set_of r)"
+primrec is_ord :: "('a::order) tree\<^isub>0 \<Rightarrow> bool" where
+  "is_ord ET\<^isub>0 = True"
+  | "is_ord (MKT\<^isub>0 n l r) =
+     ((\<forall>n'\<in> set_of l. n' < n) \<and> (\<forall>n'\<in> set_of r. n < n') \<and> is_ord l \<and> is_ord r)"
 
-primrec
-"is_ord ET\<^isub>0 = True"
-"is_ord (MKT\<^isub>0 n l r) =
-   ((\<forall>n'\<in> set_of l. n' < n) \<and> (\<forall>n'\<in> set_of r. n < n') \<and> is_ord l \<and> is_ord r)"
-
-primrec
-"is_bal ET\<^isub>0 = True"
-"is_bal (MKT\<^isub>0 n l r) =
- ((height l = height r \<or> height l = 1+height r \<or> height r = 1+height l) \<and>
-  is_bal l \<and> is_bal r)"
+primrec is_bal :: "'a tree\<^isub>0 \<Rightarrow> bool" where
+  "is_bal ET\<^isub>0 = True"
+  | "is_bal (MKT\<^isub>0 n l r) =
+   ((height l = height r \<or> height l = 1+height r \<or> height r = 1+height l) \<and>
+     is_bal l \<and> is_bal r)"
 
 
 subsubsection "AVL interface and simple implementation"
 
-consts
-  is_in\<^isub>0 :: "('a::order) \<Rightarrow> 'a tree\<^isub>0 \<Rightarrow> bool"
-  insrt\<^isub>0 :: "'a::order \<Rightarrow> 'a tree\<^isub>0 \<Rightarrow> 'a tree\<^isub>0"
-
-
-primrec
- "is_in\<^isub>0 k ET\<^isub>0 = False"
- "is_in\<^isub>0 k (MKT\<^isub>0 n l r) = (if k = n then True else
+primrec is_in\<^isub>0 :: "('a::order) \<Rightarrow> 'a tree\<^isub>0 \<Rightarrow> bool" where
+  "is_in\<^isub>0 k ET\<^isub>0 = False"
+  | "is_in\<^isub>0 k (MKT\<^isub>0 n l r) = (if k = n then True else
                          if k<n then (is_in\<^isub>0 k l)
                          else (is_in\<^isub>0 k r))"
 
-fun l_bal\<^isub>0 where
-"l_bal\<^isub>0(n, MKT\<^isub>0 ln ll lr, r) =
- (if height ll < height lr
-  then case lr of ET\<^isub>0 \<Rightarrow> ET\<^isub>0 (* impossible *)
-                | MKT\<^isub>0 lrn lrl lrr \<Rightarrow> MKT\<^isub>0 lrn (MKT\<^isub>0 ln ll lrl) (MKT\<^isub>0 n lrr r)
-  else MKT\<^isub>0 ln ll (MKT\<^isub>0 n lr r))"
+primrec l_bal\<^isub>0 :: "'a \<Rightarrow> 'a tree\<^isub>0 \<Rightarrow> 'a tree\<^isub>0 \<Rightarrow> 'a tree\<^isub>0" where
+  "l_bal\<^isub>0 n (MKT\<^isub>0 ln ll lr) r =
+   (if height ll < height lr
+    then case lr of ET\<^isub>0 \<Rightarrow> ET\<^isub>0 (* impossible *)
+                  | MKT\<^isub>0 lrn lrl lrr \<Rightarrow> MKT\<^isub>0 lrn (MKT\<^isub>0 ln ll lrl) (MKT\<^isub>0 n lrr r)
+    else MKT\<^isub>0 ln ll (MKT\<^isub>0 n lr r))"
 
-fun r_bal\<^isub>0 where
-"r_bal\<^isub>0(n, l, MKT\<^isub>0 rn rl rr) =
- (if height rl > height rr
-  then case rl of ET\<^isub>0 \<Rightarrow> ET\<^isub>0 (* impossible *)
-                | MKT\<^isub>0 rln rll rlr \<Rightarrow> MKT\<^isub>0 rln (MKT\<^isub>0 n l rll) (MKT\<^isub>0 rn rlr rr)
-  else MKT\<^isub>0 rn (MKT\<^isub>0 n l rl) rr)"
 
-primrec
-"insrt\<^isub>0 x ET\<^isub>0 = MKT\<^isub>0 x ET\<^isub>0 ET\<^isub>0"
-"insrt\<^isub>0 x (MKT\<^isub>0 n l r) = 
-   (if x=n
-    then MKT\<^isub>0 n l r
-    else if x<n
-         then let l' = insrt\<^isub>0 x l
-              in if height l' = 2+height r
-                 then l_bal\<^isub>0(n, l', r)
-                 else MKT\<^isub>0 n l' r
-         else let r' = insrt\<^isub>0 x r
-              in if height r' = 2+height l
-                 then r_bal\<^isub>0( n, l, r')
-                 else MKT\<^isub>0 n l r')"
+primrec r_bal\<^isub>0 :: "'a \<Rightarrow> 'a tree\<^isub>0 \<Rightarrow> 'a tree\<^isub>0 \<Rightarrow> 'a tree\<^isub>0" where
+  "r_bal\<^isub>0 n l (MKT\<^isub>0 rn rl rr) =
+   (if height rl > height rr
+    then case rl of ET\<^isub>0 \<Rightarrow> ET\<^isub>0 (* impossible *)
+                  | MKT\<^isub>0 rln rll rlr \<Rightarrow> MKT\<^isub>0 rln (MKT\<^isub>0 n l rll) (MKT\<^isub>0 rn rlr rr)
+    else MKT\<^isub>0 rn (MKT\<^isub>0 n l rl) rr)"
+
+primrec insrt\<^isub>0 :: "'a::order \<Rightarrow> 'a tree\<^isub>0 \<Rightarrow> 'a tree\<^isub>0" where
+  "insrt\<^isub>0 x ET\<^isub>0 = MKT\<^isub>0 x ET\<^isub>0 ET\<^isub>0"
+  | "insrt\<^isub>0 x (MKT\<^isub>0 n l r) = 
+     (if x=n
+      then MKT\<^isub>0 n l r
+      else if x<n
+           then let l' = insrt\<^isub>0 x l
+                in if height l' = 2+height r
+                   then l_bal\<^isub>0 n l' r
+                   else MKT\<^isub>0 n l' r
+           else let r' = insrt\<^isub>0 x r
+                in if height r' = 2+height l
+                   then r_bal\<^isub>0 n l r'
+                   else MKT\<^isub>0 n l r')"
 
 
 subsubsection {* Insertion maintains AVL balance *}
@@ -109,22 +99,22 @@ declare Let_def [simp]
 
 lemma height_l_bal:
  "height l = height r + 2
-  \<Longrightarrow> height (l_bal\<^isub>0(n,l,r)) = height r + 2 \<or>
-      height (l_bal\<^isub>0(n,l,r))  = height r + 3"
+  \<Longrightarrow> height (l_bal\<^isub>0 n l r) = height r + 2 \<or>
+      height (l_bal\<^isub>0 n l r)  = height r + 3"
 apply(cases l)
 apply (auto simp add:max_def split:tree\<^isub>0.split split_if_asm)
 done
 
 lemma height_r_bal:
  "height r = height l + 2
-  \<Longrightarrow> height (r_bal\<^isub>0(n,l,r)) = height l + 2 \<or>
-      height (r_bal\<^isub>0(n,l,r)) = height l + 3"
+  \<Longrightarrow> height (r_bal\<^isub>0 n l r) = height l + 2 \<or>
+      height (r_bal\<^isub>0 n l r) = height l + 3"
 apply(cases r)
 apply (auto simp add:max_def split:tree\<^isub>0.split split_if_asm)
 done
 
 lemma height_insrt:
-"is_bal t \<longrightarrow>
+"is_bal t \<Longrightarrow>
  height (insrt\<^isub>0 x t) = height t \<or> height (insrt\<^isub>0 x t) = height t + 1"
 apply (induct "t")
  apply simp
@@ -142,10 +132,9 @@ apply (case_tac "height (insrt\<^isub>0 x t2) = height t1 + 2")
 apply (simp add: max_def) apply arith
 done
 
-
 lemma is_bal_l_bal:
 "\<lbrakk>is_bal l; is_bal r; height l = height r + 2\<rbrakk>
- \<Longrightarrow> is_bal (l_bal\<^isub>0 (n, l, r))"
+ \<Longrightarrow> is_bal (l_bal\<^isub>0 n l r)"
 apply(cases l)
  (* separating the two auto's is just for speed *)
 apply (auto simp add:max_def)
@@ -154,7 +143,7 @@ done
 
 lemma is_bal_r_bal:
 "\<lbrakk>is_bal l; is_bal r; height r = height l + 2\<rbrakk>
- \<Longrightarrow> is_bal (r_bal\<^isub>0 (n, l, r))"
+ \<Longrightarrow> is_bal (r_bal\<^isub>0 n l r)"
 apply(cases r)
  (* separating the two auto's is just for speed *)
 apply (auto simp add:max_def)
@@ -162,40 +151,48 @@ apply (auto simp:max_def split:tree\<^isub>0.split)
 done
 
 theorem is_bal_insrt: 
-"is_bal t \<Longrightarrow> is_bal(insrt\<^isub>0 x t)"
-apply (induct "t")
- apply simp
-apply (rename_tac n t1 t2)
-apply (case_tac "x=n")
- apply simp
-apply (case_tac "x<n")
- apply (case_tac "height (insrt\<^isub>0 x t1) = height t2 + 2")
-  apply (simp add:is_bal_l_bal)
- apply (cut_tac x = "x" and t = "t1" in height_insrt)
- apply  fastsimp
-apply (case_tac "height (insrt\<^isub>0 x t2) = height t1 + 2")
- apply (simp add:is_bal_r_bal)
-apply (cut_tac x = "x" and t = "t2" in height_insrt)
-apply  fastsimp
-done
+  "is_bal t \<Longrightarrow> is_bal(insrt\<^isub>0 x t)"
+proof (induct t)
+  case ET\<^isub>0 show ?case by simp
+next
+  case (MKT\<^isub>0 n t1 t2) show ?case proof (cases "x < n")
+    case True show ?thesis
+    proof (cases "height (insrt\<^isub>0 x t1) = height t2 + 2")
+      case True with `x < n` MKT\<^isub>0 show ?thesis
+        by (simp add: is_bal_l_bal)
+    next
+      case False with `x < n` MKT\<^isub>0 show ?thesis
+        using height_insrt [of t1 x] by auto
+    qed
+  next
+    case False show ?thesis
+    proof (cases "height (insrt\<^isub>0 x t2) = height t1 + 2")
+      case True with `\<not> x < n` MKT\<^isub>0 show ?thesis
+        by (simp add: is_bal_r_bal)
+    next
+      case False with `\<not> x < n` MKT\<^isub>0 show ?thesis
+        using height_insrt [of t2 x] by auto
+    qed
+  qed
+qed
 
 
 subsubsection "Correctness of insertion"
 
 lemma set_of_l_bal: "height l = height r + 2 \<Longrightarrow>
- set_of (l_bal\<^isub>0 (x, l, r)) = insert x (set_of l \<union> set_of r)"
+ set_of (l_bal\<^isub>0 x l r) = insert x (set_of l \<union> set_of r)"
 apply(cases l)
 apply (auto simp:max_def split:tree\<^isub>0.splits)
 done
 
 lemma set_of_r_bal: "height r = height l + 2 \<Longrightarrow>
- set_of (r_bal\<^isub>0 (x, l, r)) = insert x (set_of l \<union> set_of r)"
+ set_of (r_bal\<^isub>0 x l r) = insert x (set_of l \<union> set_of r)"
 apply(cases r)
 apply (auto simp:max_def split:tree\<^isub>0.splits)
 done
 
 theorem set_of_insrt: 
- "set_of(insrt\<^isub>0 x t) = insert x (set_of t)"
+ "set_of (insrt\<^isub>0 x t) = insert x (set_of t)"
 apply (induct t)
  apply simp
 apply(simp add:set_of_l_bal set_of_r_bal)
@@ -213,14 +210,14 @@ subsubsection {* Insertion maintains order *}
 
 lemma is_ord_l_bal:
  "\<lbrakk> is_ord(MKT\<^isub>0 x l r); height l = Suc (Suc (height r)) \<rbrakk> \<Longrightarrow>
-  is_ord (l_bal\<^isub>0 (x, l, r))"
+  is_ord (l_bal\<^isub>0 x l r)"
 apply (cases l)
 apply (auto split:tree\<^isub>0.splits intro: order_less_trans)
 done
 
 lemma is_ord_r_bal:
  "\<lbrakk> is_ord(MKT\<^isub>0 x l r); height r = height l + 2 \<rbrakk> \<Longrightarrow>
-  is_ord (r_bal\<^isub>0 (x, l, r))"
+  is_ord (r_bal\<^isub>0 x l r)"
 apply (cases r)
 apply (auto split:tree\<^isub>0.splits intro: order_less_trans)
 done
@@ -228,7 +225,7 @@ done
 text{* If the order is linear, @{const insrt\<^isub>0} maintains the order: *}
 
 theorem is_ord_insrt:
-"is_ord t \<Longrightarrow> is_ord(insrt\<^isub>0 (x::'a::linorder) t)"
+"is_ord t \<Longrightarrow> is_ord (insrt\<^isub>0 (x::'a::linorder) t)"
 apply (induct t)
  apply simp
 apply (simp add:is_ord_l_bal is_ord_r_bal set_of_insrt
@@ -243,70 +240,60 @@ datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
 
 subsubsection"Auxiliary functions"
 
-consts erase :: "'a tree \<Rightarrow> 'a tree\<^isub>0"
-primrec
-"erase ET = ET\<^isub>0"
-"erase (MKT x l r h) = MKT\<^isub>0 x (erase l) (erase r)"
+primrec erase :: "'a tree \<Rightarrow> 'a tree\<^isub>0" where
+  "erase ET = ET\<^isub>0"
+  | "erase (MKT x l r h) = MKT\<^isub>0 x (erase l) (erase r)"
 
-consts hinv :: "'a tree \<Rightarrow> bool"
-primrec
-"hinv ET = True"
-"hinv (MKT x l r h) = (h = 1 + max (height(erase l)) (height(erase r))
+primrec hinv :: "'a tree \<Rightarrow> bool" where
+  "hinv ET = True"
+  | "hinv (MKT x l r h) = (h = 1 + max (height(erase l)) (height(erase r))
                         & hinv l & hinv r)"
 
-definition
- avl :: "'a tree \<Rightarrow> bool" where
-"avl t = (is_bal(erase t) \<and> hinv t)"
+definition avl :: "'a tree \<Rightarrow> bool" where
+  "avl t \<longleftrightarrow> is_bal (erase t) \<and> hinv t"
 
 subsubsection "AVL interface and efficient implementation"
 
-consts
-  is_in :: "('a::order) \<Rightarrow> 'a tree \<Rightarrow> bool"
-  insrt :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
+primrec is_in :: "('a::order) \<Rightarrow> 'a tree \<Rightarrow> bool" where
+  "is_in k ET = False"
+  | "is_in k (MKT n l r h) = (if k = n then True else
+                            if k < n then (is_in k l)
+                            else (is_in k r))"
 
+primrec ht :: "'a tree \<Rightarrow> nat" where
+  "ht ET = 0"
+  | "ht (MKT x l r h) = h"
 
-primrec
-"is_in k ET = False"
-"is_in k (MKT n l r h) = (if k = n then True else
-                          if k < n then (is_in k l)
-                          else (is_in k r))"
+definition  mkt :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+  "mkt x l r = MKT x l r (max (ht l) (ht r) + 1)"
 
-consts ht :: "'a tree \<Rightarrow> nat"
-primrec
-"ht ET = 0"
-"ht (MKT x l r h) = h"
+primrec l_bal :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+  "l_bal n (MKT ln ll lr h) r =
+   (if ht ll < ht lr
+    then case lr of ET \<Rightarrow> ET (* impossible *)
+                  | MKT lrn lrl lrr lrh \<Rightarrow>
+                    mkt lrn (mkt ln ll lrl) (mkt n lrr r)
+    else mkt ln ll (mkt n lr r))"
 
-definition
- mkt :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"mkt x l r = MKT x l r (max (ht l) (ht r) + 1)"
+primrec r_bal :: "'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+ "r_bal n l (MKT rn rl rr h) =
+   (if ht rl > ht rr
+    then case rl of ET \<Rightarrow> ET (* impossible *)
+                  | MKT rln rll rlr h \<Rightarrow> mkt rln (mkt n l rll) (mkt rn rlr rr)
+    else mkt rn (mkt n l rl) rr)"
 
-fun l_bal where
-"l_bal(n, MKT ln ll lr h, r) =
- (if ht ll < ht lr
-  then case lr of ET \<Rightarrow> ET (* impossible *)
-                | MKT lrn lrl lrr lrh \<Rightarrow>
-                  mkt lrn (mkt ln ll lrl) (mkt n lrr r)
-  else mkt ln ll (mkt n lr r))"
-
-fun r_bal where
-"r_bal(n, l, MKT rn rl rr h) =
- (if ht rl > ht rr
-  then case rl of ET \<Rightarrow> ET (* impossible *)
-                | MKT rln rll rlr h \<Rightarrow> mkt rln (mkt n l rll) (mkt rn rlr rr)
-  else mkt rn (mkt n l rl) rr)"
-
-primrec
-"insrt x ET = MKT x ET ET 1"
-"insrt x (MKT n l r h) = 
-   (if x=n
-    then MKT n l r h
-    else if x<n
-         then let l' = insrt x l; hl' = ht l'; hr = ht r
-              in if hl' = 2+hr then l_bal(n,l',r)
-                 else MKT n l' r (1 + max hl' hr)
-         else let r' = insrt x r; hl = ht l; hr' = ht r'
-              in if hr' = 2+hl then r_bal(n,l,r')
-                 else MKT n l r' (1 + max hl hr'))"
+primrec insrt :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+  "insrt x ET = MKT x ET ET 1"
+  | "insrt x (MKT n l r h) = 
+     (if x=n
+      then MKT n l r h
+      else if x<n
+           then let l' = insrt x l; hl' = ht l'; hr = ht r
+                in if hl' = 2+hr then l_bal n l' r
+                   else MKT n l' r (1 + max hl' hr)
+           else let r' = insrt x r; hl = ht l; hr' = ht r'
+                in if hr' = 2+hl then r_bal n l r'
+                   else MKT n l r' (1 + max hl hr'))"
 
 
 subsubsection "Correctness proof"
@@ -314,21 +301,21 @@ subsubsection "Correctness proof"
 text{* The auxiliary functions are implemented correctly: *}
 
 lemma [simp]: "hinv t \<Longrightarrow> ht t = height(erase t)"
-by (induct t) simp_all
+  by (induct t) simp_all
 
 lemma erase_mkt: "erase(mkt n l r) = MKT\<^isub>0 n (erase l) (erase r)"
-by(simp add:mkt_def)
+  by (simp add:mkt_def)
 
 lemma erase_l_bal:
  "\<lbrakk> hinv l; hinv r; height(erase l) = height(erase r) + 2 \<rbrakk> \<Longrightarrow>
- erase(l_bal(n,l,r)) = l_bal\<^isub>0(n, erase l, erase r)"
-apply(cases l) apply simp
-apply(simp add: erase_mkt split:tree.split)
+ erase (l_bal n l r) = l_bal\<^isub>0 n (erase l) (erase r)"
+apply (cases l) apply simp
+apply (simp add: erase_mkt split:tree.split)
 done
 
 lemma erase_r_bal:
  "\<lbrakk> hinv l; hinv r; height(erase r) = height(erase l) + 2 \<rbrakk> \<Longrightarrow>
- erase(r_bal(n,l,r)) = r_bal\<^isub>0(n, erase l, erase r)"
+ erase (r_bal n l r) = r_bal\<^isub>0 n (erase l) (erase r)"
 apply(cases r) apply simp
 apply(simp add: erase_mkt split:tree.split)
 done
@@ -340,14 +327,14 @@ by (simp add:mkt_def)
 
 lemma hinv_l_bal:
  "\<lbrakk> hinv l; hinv r; height(erase l) = height(erase r) + 2 \<rbrakk> \<Longrightarrow>
- hinv(l_bal(n,l,r))"
+ hinv (l_bal n l r)"
 apply(cases l)
 apply(auto simp:hinv_mkt split:tree.splits)
 done
 
 lemma hinv_r_bal:
  "\<lbrakk> hinv l; hinv r; height(erase r) = height(erase l) + 2 \<rbrakk> \<Longrightarrow>
- hinv(r_bal(n,l,r))"
+ hinv (r_bal n l r)"
 apply(cases r)
 apply(auto simp:hinv_mkt split:tree.splits)
 done
@@ -390,5 +377,8 @@ text{* Function @{const is_in} meets its spec: *}
 
 corollary "is_ord(erase t) \<Longrightarrow> is_in x t = (x : set_of(erase t))"
 by(simp add:is_in is_in_correct)
+
+
+declare Let_def [simp del]
 
 end
