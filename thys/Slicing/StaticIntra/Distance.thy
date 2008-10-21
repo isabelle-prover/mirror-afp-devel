@@ -28,13 +28,15 @@ header {* \isachapter{Static Intraprocedural Slicing}
 
 theory Distance imports "../Basic/CFG" begin
 
-inductive (in CFG) distance :: "'node \<Rightarrow> 'node \<Rightarrow> nat \<Rightarrow> bool"
+context CFG begin
+
+inductive distance :: "'node \<Rightarrow> 'node \<Rightarrow> nat \<Rightarrow> bool"
 where distanceI: 
   "\<lbrakk>n -as\<rightarrow>* n'; length as = x; \<forall>as'. n -as'\<rightarrow>* n' \<longrightarrow> x \<le> length as'\<rbrakk>
   \<Longrightarrow> distance n n' x"
 
 
-lemma (in CFG) every_path_distance:
+lemma every_path_distance:
   assumes "n -as\<rightarrow>* n'"
   obtains x where "distance n n' x" and "x \<le> length as"
 proof -
@@ -72,14 +74,14 @@ proof -
 qed
 
 
-lemma (in CFG) distance_det:
+lemma distance_det:
   "\<lbrakk>distance n n' x; distance n n' x'\<rbrakk> \<Longrightarrow> x = x'"
 apply(erule distance.cases)+ apply clarsimp
 apply(erule_tac x="asa" in allE) apply(erule_tac x="as" in allE)
 by simp
 
 
-lemma (in CFG) only_one_SOME_dist_edge:
+lemma only_one_SOME_dist_edge:
   assumes valid:"valid_edge a" and dist:"distance (targetnode a) n' x"
   shows "\<exists>!a'. sourcenode a = sourcenode a' \<and> distance (targetnode a') n' x \<and>
                valid_edge a' \<and>
@@ -122,7 +124,7 @@ next
 qed
 
 
-lemma (in CFG) distance_successor_distance:
+lemma distance_successor_distance:
   assumes "distance n n' x" and "x \<noteq> 0" 
   obtains a where "valid_edge a" and "n = sourcenode a" 
   and "distance (targetnode a) n' (x - 1)"
@@ -191,6 +193,7 @@ proof -
   with that show ?thesis by blast
 qed
 
+end
 
 end
 
