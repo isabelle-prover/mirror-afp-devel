@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: LBVJVM.thy,v 1.3 2008-06-12 06:57:21 lsf37 Exp $
+    ID:         $Id: LBVJVM.thy,v 1.4 2008-10-21 06:26:24 alochbihler Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -7,7 +7,7 @@
 header {* \isaheader{LBV for the JVM}\label{sec:JVM} *}
 
 theory LBVJVM
-imports "../DFA/Abstract_BV" TF_JVM
+imports "../../Jinja/DFA/Abstract_BV" TF_JVM
 begin
 
 types prog_cert = "cname \<Rightarrow> mname \<Rightarrow> ty\<^isub>i' err list"
@@ -70,7 +70,8 @@ proof -
     by (simp add: wt_lbv_def lbvjvm_def step_def_exec [symmetric])    
   moreover note first_in_A
   moreover from lbv have "0 < size is" by (simp add: wt_lbv_def)
-  ultimately show ?thesis by (rule lbvs.wtl_sound_strong)
+  ultimately show ?thesis
+    by(rule lbvs.wtl_sound_strong[OF lbvs.intro[OF lbv.intro[OF _ lbv_axioms.intro] lbvs_axioms.intro, unfolded Semilat_def]])
 qed
 (*>*)
 
@@ -167,7 +168,7 @@ proof -
   moreover note size 
   ultimately
   have "wtl_inst_list is ?cert f r Err (OK None) step 0 (OK first) \<noteq> Err"
-    by (rule lbvc.wtl_complete) 
+    by(rule lbvc.wtl_complete[OF lbvc.intro[OF lbv.intro[OF _ lbv_axioms.intro, unfolded Semilat_def] lbvc_axioms.intro]])
   moreover from 0 size have "\<tau>s \<noteq> []" by auto
   moreover from ck_types have "check_types P mxs mxl ?cert"
     by (auto simp add: make_cert_def check_types_def JVM_states_unfold)

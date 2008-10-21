@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: TF_JVM.thy,v 1.3 2008-06-12 06:57:21 lsf37 Exp $
+    ID:         $Id: TF_JVM.thy,v 1.4 2008-10-21 06:26:24 alochbihler Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -7,7 +7,7 @@
 header {* \isaheader{The Typing Framework for the JVM}\label{sec:JVM} *}
 
 theory TF_JVM
-imports "../DFA/Typing_Framework_err" EffectMono BVSpec
+imports "../../Jinja/DFA/Typing_Framework_err" EffectMono BVSpec
 begin
 
 constdefs

@@ -6,7 +6,7 @@ imports
   "Framework/FWLiftingSem"
   "J/Deadlocked"
   "BV/JVMDeadlocked"
-  "BV/TF_JVM"
+  "BV/LBVJVM"
   "DFA/Abstract_BV"
 begin
 

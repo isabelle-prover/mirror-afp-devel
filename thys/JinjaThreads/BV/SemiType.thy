@@ -5,7 +5,7 @@
 header {* \isaheader{The Jinja Type System as a Semilattice} *}
 
 theory SemiType
-imports "../Common/WellForm" "../DFA/Semilattices"
+imports "../Common/WellForm" "../../Jinja/DFA/Semilattices"
 begin
 
 inductive_set
