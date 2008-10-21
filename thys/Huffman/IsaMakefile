@@ -1,22 +1,57 @@
-default: Huffman
-images: 
-test: Huffman
+## configurables
+
+SESSION-NAME = Huffman
+BASE-IMAGE = HOL
+
+## targets
+
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images:  
 
 all: images test
+
+
+## global settings
 
 SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
-USEDIR = $(ISATOOL) usedir -v true -i true -D generated
-FIXDOC = Huffman/fixdoc
+# turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
+ifeq ($(ISABELLE_IMAGE_PATH),)
+IMAGE=$(OUT)/$(BASE-IMAGE)
+else
+IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
+endif
+
+
+USEDIR = $(ISATOOL) usedir -v true -i true -d false -P "http://isabelle.in.tum.de/library/" -D generated
+FIXDOC = fixdoc
 DOCUMENT = $(ISATOOL) document -o pdf
 DOCUMENT_OUTLINE = $(ISATOOL) document -n outline -o pdf -t "/proof,/ML"
 
-Huffman: $(LOG)/HOL-Huffman.gz
+# time limit (in sec)
+MAXTIME = 3600
 
-$(LOG)/HOL-Huffman.gz: ROOT.ML document/root.tex Huffman.thy
-	cd ..; $(USEDIR) HOL Huffman; $(FIXDOC); $(DOCUMENT) Huffman/generated; $(DOCUMENT_OUTLINE) Huffman/generated
+
+## dependencies
+
+$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Huffman.thy document/root.tex 
+	(cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME))
+	./$(FIXDOC)
+	$(DOCUMENT) generated
+	mv document.pdf $(ISABELLE_BROWSER_INFO)/$(BASE-IMAGE)/$(SESSION-NAME)
+	$(DOCUMENT_OUTLINE) generated
+	mv outline.pdf $(ISABELLE_BROWSER_INFO)/$(BASE-IMAGE)/$(SESSION-NAME)
+
+
+## clean
 
 clean:
-	@rm -f $(LOG)/HOL-Huffman.gz
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -rf generated
+
