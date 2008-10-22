@@ -43,9 +43,9 @@ $(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Huffman.thy document/root.tex 
 	(cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME))
 	./$(FIXDOC)
-	$(DOCUMENT) generated
+	$(DOCUMENT) generated > /dev/null
 	mv document.pdf $(ISABELLE_BROWSER_INFO)/$(BASE-IMAGE)/$(SESSION-NAME)
-	$(DOCUMENT_OUTLINE) generated
+	$(DOCUMENT_OUTLINE) generated > /dev/null
 	mv outline.pdf $(ISABELLE_BROWSER_INFO)/$(BASE-IMAGE)/$(SESSION-NAME)
 
 
