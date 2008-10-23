@@ -56,7 +56,7 @@ qed
 lemma obs_singleton_element:
   "m \<in> obs n (backward_slice n\<^isub>c) \<Longrightarrow> obs n (backward_slice n\<^isub>c) = {m}"
 apply -
-apply(frule in_obs_valid) apply clarsimp
+apply(frule in_obs_valid)
 apply(drule obs_singleton_disj) apply auto
 done
 
@@ -452,7 +452,7 @@ proof -
       and IH:"\<And>n s. \<lbrakk>distance n n' x; n' \<in> obs n (backward_slice n\<^isub>c)\<rbrakk> 
               \<Longrightarrow> \<exists>as. n\<^isub>c,slice_kind n\<^isub>c \<turnstile> (n,s) =as\<Rightarrow>\<^isub>\<tau> (n',s)"
     from `n' \<in> obs n (backward_slice n\<^isub>c)`
-    have "valid_node n" by(rule in_obs_valid[THEN conjunct1])
+    have "valid_node n" by(rule in_obs_valid)
     with `distance n n' (Suc x)`
     have "n \<noteq> n'" by(fastsimp elim:distance.cases dest:empty_path)
     have "n \<notin> backward_slice n\<^isub>c"

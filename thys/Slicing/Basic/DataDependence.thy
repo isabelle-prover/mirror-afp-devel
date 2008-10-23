@@ -19,41 +19,41 @@ lemma dyn_influence_Cons_source:
 
 
 lemma dyn_influence_source_notin_tl_edges: 
-  assumes ddep:"n influences V in n' via a#as"
+  assumes "n influences V in n' via a#as"
   shows "n \<notin> set (sourcenodes as)"
 proof(rule ccontr)
   assume "\<not> n \<notin> set (sourcenodes as)"
-  hence isin:"n \<in> set (sourcenodes as)" by simp
-  from ddep have all:"\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''"
-    and Def:"V \<in> Def n" by(simp_all add:dyn_data_dependence_def)
-  from all isin have "V \<notin> Def n" by simp
-  with Def show False by simp
+  hence "n \<in> set (sourcenodes as)" by simp
+  from `n influences V in n' via a#as` have "\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''"
+    and "V \<in> Def n" by(simp_all add:dyn_data_dependence_def)
+  from `\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''` 
+    `n \<in> set (sourcenodes as)` have "V \<notin> Def n" by simp
+  with `V \<in> Def n` show False by simp
 qed
 
 
 lemma dyn_influence_only_first_edge:
-  assumes ddep:"n influences V in n' via a#as" and "preds (kinds (a#as)) s"
+  assumes "n influences V in n' via a#as" and "preds (kinds (a#as)) s"
   shows "state_val (transfers (kinds (a#as)) s) V = 
          state_val (transfer (kind a) s) V"
 proof -
   from `preds (kinds (a#as)) s` have "preds (kinds as) (transfer (kind a) s)"
     by(simp add:kinds_def)
-  from ddep have Def:"V \<in> Def n" and Use:"V \<in> Use n'"
-    and path:"n -a#as\<rightarrow>* n'"
-    and noDefs:"\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''"
+  from `n influences V in n' via a#as` have "n -a#as\<rightarrow>* n'"
+    and "\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''"
     by(simp_all add:dyn_data_dependence_def)
-  from path have "n -[]@a#as\<rightarrow>* n'" by simp
-  hence source:"n = sourcenode a"
-    and edge:"sourcenode a -[a]\<rightarrow>* targetnode a"
-    and path2:"targetnode a -as\<rightarrow>* n'"
-    by(fastsimp dest:path_split elim:path.cases)+
-  from ddep source have tail:"sourcenode a \<notin> set (sourcenodes as)"
+  from `n -a#as\<rightarrow>* n'` have "n = sourcenode a" and "targetnode a -as\<rightarrow>* n'"
+    by(auto elim:path_split_Cons)
+  from `n influences V in n' via a#as` `n = sourcenode a` 
+  have "sourcenode a \<notin> set (sourcenodes as)"
     by(fastsimp intro!:dyn_influence_source_notin_tl_edges)
-  { fix n'' assume isin:"n'' \<in> set (sourcenodes as)"
-    with tail source have "n'' \<noteq> n" by(fastsimp simp:sourcenodes_def)
-    with noDefs isin have "V \<notin> Def n''" by(auto simp:sourcenodes_def) }
+  { fix n'' assume "n'' \<in> set (sourcenodes as)"
+    with `sourcenode a \<notin> set (sourcenodes as)` `n = sourcenode a` 
+    have "n'' \<noteq> n" by(fastsimp simp:sourcenodes_def)
+    with `\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''` `n'' \<in> set (sourcenodes as)`
+    have "V \<notin> Def n''" by(auto simp:sourcenodes_def) }
   hence "\<forall>n'' \<in> set (sourcenodes as). V \<notin> Def n''" by simp
-  with path2 `preds (kinds as) (transfer (kind a) s)`
+  with `targetnode a -as\<rightarrow>* n'` `preds (kinds as) (transfer (kind a) s)`
   have "state_val (transfers (kinds as) (transfer (kind a) s)) V = 
         state_val (transfer (kind a) s) V"
     by -(rule CFG_path_no_Def_equal)

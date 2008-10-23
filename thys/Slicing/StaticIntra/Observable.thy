@@ -48,12 +48,13 @@ qed
 
 
 lemma in_obs_valid:
-  "n' \<in> obs n S \<Longrightarrow> valid_node n \<and> valid_node n'"
-by(induct rule:obs.induct,rule path_valid_node)
+  assumes "n' \<in> obs n S" shows "valid_node n" and "valid_node n'"
+  using `n' \<in> obs n S`
+  by(auto elim:obsE intro:path_valid_node)
 
 
 lemma edge_obs_subset:
-  assumes"valid_edge a" and notin_S:"sourcenode a \<notin> S"
+  assumes"valid_edge a" and "sourcenode a \<notin> S"
   shows "obs (targetnode a) S \<subseteq> obs (sourcenode a) S"
 proof
   fix n assume "n \<in> obs (targetnode a) S"

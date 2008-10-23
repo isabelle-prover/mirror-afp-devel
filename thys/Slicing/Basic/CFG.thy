@@ -40,28 +40,42 @@ where
     \<Longrightarrow> n -a#as\<rightarrow>* n'"
 
 
-lemma path_valid_node:"n -as\<rightarrow>* n' \<Longrightarrow> valid_node n \<and> valid_node n'"
+lemma path_valid_node:
+  assumes "n -as\<rightarrow>* n'" shows "valid_node n" and "valid_node n'"
+  using `n -as\<rightarrow>* n'`
   by(induct rule:path.induct,auto)
 
 lemma empty_path_nodes [dest]:"n -[]\<rightarrow>* n' \<Longrightarrow> n = n'"
-by(fastsimp elim:path.cases)
+  by(fastsimp elim:path.cases)
+
+lemma path_valid_edges:"n -as\<rightarrow>* n' \<Longrightarrow> \<forall>a \<in> set as. valid_edge a"
+by(induct rule:path.induct) auto
+
 
 lemma path_edge:"valid_edge a \<Longrightarrow> sourcenode a -[a]\<rightarrow>* targetnode a"
   by(fastsimp intro:Cons_path empty_path)
 
-lemma path_Entry_target:
-  "\<lbrakk>n -as\<rightarrow>* n'; n' = (_Entry_)\<rbrakk> \<Longrightarrow> n = (_Entry_) \<and> as = []"
-proof(induct rule:path.induct)
-  case (Cons_path n'' as n' a n)
-  from `n' = (_Entry_)` `n' = (_Entry_) \<Longrightarrow> n'' = (_Entry_) \<and> as = []`
-  have "n'' = (_Entry_)" by simp
-  with `targetnode a = n''` `valid_edge a` have False
-    by -(rule Entry_target,simp_all)
-  thus ?case by simp
-qed simp
 
-lemma [dest]:"n -as\<rightarrow>* (_Entry_) \<Longrightarrow> n = (_Entry_) \<and> as = []"
-  by(fastsimp elim!:path_Entry_target)
+lemma path_Entry_target [dest]:
+  assumes "n -as\<rightarrow>* (_Entry_)"
+  shows "n = (_Entry_)" and "as = []"
+using `n -as\<rightarrow>* (_Entry_)`
+proof(induct n as n'\<equiv>"(_Entry_)" rule:path.induct)
+  case (Cons_path n'' as n' a n)
+  { assume "n' = (_Entry_)"
+    with `n' = (_Entry_) \<Longrightarrow> n'' = (_Entry_)`
+    have "n'' = (_Entry_)" by simp
+    with `targetnode a = n''` `valid_edge a` have False
+      by -(rule Entry_target,simp_all) }
+  hence "n' = (_Entry_) \<Longrightarrow> False" .
+  { case 1
+    with `n' = (_Entry_) \<Longrightarrow> False` show ?case by simp
+  next
+    case 2
+    with `n' = (_Entry_) \<Longrightarrow> False` show ?case by simp
+  }
+qed simp_all
+
 
 
 lemma path_Append:"\<lbrakk>n -as\<rightarrow>* n''; n'' -as'\<rightarrow>* n'\<rbrakk> 
@@ -69,57 +83,90 @@ lemma path_Append:"\<lbrakk>n -as\<rightarrow>* n''; n'' -as'\<rightarrow>* n'\<
 by(induct rule:path.induct,auto intro:Cons_path)
 
 
-lemma path_split:"n -as@a#as'\<rightarrow>* n'
-  \<Longrightarrow> (n -as\<rightarrow>* sourcenode a) \<and> (sourcenode a -[a]\<rightarrow>* targetnode a) \<and>
-      (valid_edge a) \<and> (targetnode a -as'\<rightarrow>* n')"
+lemma path_split:
+  assumes "n -as@a#as'\<rightarrow>* n'"
+  shows "n -as\<rightarrow>* sourcenode a" and "valid_edge a" and "targetnode a -as'\<rightarrow>* n'"
+  using `n -as@a#as'\<rightarrow>* n'`
 proof(induct as arbitrary:n)
-  case Nil
-  thus ?case by(auto elim:path.cases intro!:empty_path path_edge)
+  case Nil case 1
+  thus ?case by(fastsimp elim:path.cases intro:empty_path)
 next
-  case (Cons ax asx)
-  note IH = `\<And>n. n -asx@a#as'\<rightarrow>* n' \<Longrightarrow>
-    (n -asx\<rightarrow>* sourcenode a) \<and> (sourcenode a -[a]\<rightarrow>* targetnode a) \<and>
-    (valid_edge a) \<and> (targetnode a -as'\<rightarrow>* n')`
-  from `n -(ax#asx)@a#as'\<rightarrow>* n'` have "sourcenode ax = n"
-    and path:"targetnode ax -asx@a#as'\<rightarrow>* n'"
-    and "valid_edge ax"
-    by(auto elim:path.cases)
-  from IH[OF path] have path1:"targetnode ax -asx\<rightarrow>* sourcenode a"
-    and rest:"sourcenode a -[a]\<rightarrow>* targetnode a" "valid_edge a" 
-             "targetnode a -as'\<rightarrow>* n'"
-    by simp_all
-  from path1 `sourcenode ax = n` `valid_edge ax` have "n -ax#asx\<rightarrow>* sourcenode a"
-    by(fastsimp intro:Cons_path)
-  with rest show ?case by fastsimp
+  case Nil case 2
+  thus ?case by(fastsimp elim:path.cases intro:path_edge)
+next
+  case Nil case 3
+  thus ?case by(fastsimp elim:path.cases)
+next
+  case (Cons ax asx) 
+  note IH1 = `\<And>n. n -asx@a#as'\<rightarrow>* n' \<Longrightarrow> n -asx\<rightarrow>* sourcenode a`
+  note IH2 = `\<And>n. n -asx@a#as'\<rightarrow>* n' \<Longrightarrow> valid_edge a`
+  note IH3 = `\<And>n. n -asx@a#as'\<rightarrow>* n' \<Longrightarrow> targetnode a -as'\<rightarrow>* n'`
+  { case 1 
+    hence "sourcenode ax = n" and "targetnode ax -asx@a#as'\<rightarrow>* n'" and "valid_edge ax"
+      by(auto elim:path.cases)
+    from IH1[OF ` targetnode ax -asx@a#as'\<rightarrow>* n'`] 
+    have "targetnode ax -asx\<rightarrow>* sourcenode a" .
+    with `sourcenode ax = n` `valid_edge ax` show ?case by(fastsimp intro:Cons_path)
+  next
+    case 2 hence "targetnode ax -asx@a#as'\<rightarrow>* n'" by(auto elim:path.cases)
+    from IH2[OF this] show ?case .
+  next
+    case 3 hence "targetnode ax -asx@a#as'\<rightarrow>* n'" by(auto elim:path.cases)
+    from IH3[OF this] show ?case .
+  }
+qed
+
+
+lemma path_split_Cons:
+  assumes "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  obtains a' as' where "as = a'#as'" and "n = sourcenode a'"
+  and "valid_edge a'" and "targetnode a' -as'\<rightarrow>* n'"
+proof -
+  from `as \<noteq> []` obtain a' as' where "as = a'#as'" by(cases as) auto
+  with `n -as\<rightarrow>* n'` have "n -[]@a'#as'\<rightarrow>* n'" by simp
+  hence "n -[]\<rightarrow>* sourcenode a'" and "valid_edge a'" and "targetnode a' -as'\<rightarrow>* n'"
+    by(rule path_split)+
+  from `n -[]\<rightarrow>* sourcenode a'` have "n = sourcenode a'" by fast
+  with `as = a'#as'` `valid_edge a'` `targetnode a' -as'\<rightarrow>* n'` that show ?thesis 
+    by fastsimp
+qed
+
+
+lemma path_split_snoc:
+  assumes "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  obtains a' as' where "as = as'@[a']" and "n -as'\<rightarrow>* sourcenode a'"
+  and "valid_edge a'" and "n' = targetnode a'"
+proof -
+  from `as \<noteq> []` obtain a' as' where "as = as'@[a']" by(cases as rule:rev_cases) auto
+  with `n -as\<rightarrow>* n'` have "n -as'@a'#[]\<rightarrow>* n'" by simp
+  hence "n -as'\<rightarrow>* sourcenode a'" and "valid_edge a'" and "targetnode a' -[]\<rightarrow>* n'"
+    by(rule path_split)+
+  from `targetnode a' -[]\<rightarrow>* n'` have "n' = targetnode a'" by fast
+  with `as = as'@[a']` `valid_edge a'` `n -as'\<rightarrow>* sourcenode a'` that show ?thesis 
+    by fastsimp
 qed
 
 
 lemma path_split_second:
-  assumes path:"n -as@a#as'\<rightarrow>* n'"
-  shows "sourcenode a -a#as'\<rightarrow>* n'"
+  assumes "n -as@a#as'\<rightarrow>* n'" shows "sourcenode a -a#as'\<rightarrow>* n'"
 proof -
-  from path have "sourcenode a -[a]\<rightarrow>* targetnode a" 
-    and "targetnode a -as'\<rightarrow>* n'"
-    by(auto dest:path_split)
-  thus ?thesis by(auto dest:path_Append)
+  from `n -as@a#as'\<rightarrow>* n'` have "valid_edge a" and "targetnode a -as'\<rightarrow>* n'"
+    by(auto intro:path_split)
+  thus ?thesis by(fastsimp intro:Cons_path)
 qed
 
 
 lemma path_Entry_Cons:
-  assumes path:"(_Entry_) -as\<rightarrow>* n'" and notEntry:"n' \<noteq> (_Entry_)"
-  shows "\<exists>n a. sourcenode a = (_Entry_) \<and> targetnode a = n \<and> 
-               n -tl as\<rightarrow>* n' \<and> valid_edge a \<and> a = hd as"
+  assumes "(_Entry_) -as\<rightarrow>* n'" and "n' \<noteq> (_Entry_)"
+  obtains n a where "sourcenode a = (_Entry_)" and "targetnode a = n"
+  and "n -tl as\<rightarrow>* n'" and "valid_edge a" and "a = hd as"
 proof -
-  from path notEntry have notempty:"as \<noteq> []"
+  from `(_Entry_) -as\<rightarrow>* n'` `n' \<noteq> (_Entry_)` have "as \<noteq> []"
     by(cases as,auto elim:path.cases)
-  then obtain a as' where as:"as = a#as'" by(cases as) auto
-  with path have "(_Entry_) -[]@a#as'\<rightarrow>* n'" by simp
-  hence "(_Entry_) = sourcenode a"
-    and "sourcenode a -[a]\<rightarrow>* targetnode a"
-    and "valid_edge a" 
-    and "targetnode a -as'\<rightarrow>* n'"
-    by(fastsimp dest:path_split)+
-  with as show ?thesis by auto
+  with `(_Entry_) -as\<rightarrow>* n'` obtain a' as' where "as = a'#as'" 
+    and "(_Entry_) = sourcenode a'" and "valid_edge a'" and "targetnode a' -as'\<rightarrow>* n'"
+    by(erule path_split_Cons)
+  with that show ?thesis by fastsimp
 qed
 
 
@@ -129,17 +176,13 @@ proof(induct as arbitrary:n)
   case Nil thus ?case by(auto elim:path.cases)
 next
   case (Cons a' as')
-  note IH = `\<And>n. \<lbrakk>n -as'\<rightarrow>* n'; n -as'\<rightarrow>* n''\<rbrakk> \<Longrightarrow> n' = n''`
-  from `n -a'#as'\<rightarrow>* n'` have "n -[]@a'#as'\<rightarrow>* n'" by simp
-  hence "targetnode a' -as'\<rightarrow>* n'"
-    by(fastsimp dest:path_split)+
-  from `n -a'#as'\<rightarrow>* n''` have "n -[]@a'#as'\<rightarrow>* n''" by simp
-  hence "targetnode a' -as'\<rightarrow>* n''" by(fastsimp dest:path_split)+
+  have path1:"n -a'#as'\<rightarrow>* n'" and path2:"n -a'#as'\<rightarrow>* n''"
+    and IH:"\<And>n. \<lbrakk>n -as'\<rightarrow>* n'; n -as'\<rightarrow>* n''\<rbrakk> \<Longrightarrow> n' = n''" .
+  from path1 have "targetnode a' -as'\<rightarrow>* n'" by(fastsimp elim:path_split_Cons)
+  from path2 have "targetnode a' -as'\<rightarrow>* n''" by(fastsimp elim:path_split_Cons)
   from IH[OF `targetnode a' -as'\<rightarrow>* n'` this] show ?thesis .
 qed
 
-
-subsection {* Some lemmas concerning source- and targetnodes of CFG paths *}
 
 definition
   sourcenodes :: "'edge list \<Rightarrow> 'node list"
@@ -155,25 +198,15 @@ definition
 
 
 lemma path_sourcenode:
-  assumes "n -as\<rightarrow>* n'" and "as \<noteq> []" shows "hd (sourcenodes as) = n"
-proof -
-  from `as \<noteq> []` obtain a' as' where "as = a'#as'" by(cases as) auto
-  with `n -as\<rightarrow>* n'` have "n -[]@a'#as'\<rightarrow>* n'" by simp
-  hence "sourcenode a' = n" by(auto elim:path.cases)
-  with `as = a'#as'` show ?thesis by(simp add:sourcenodes_def)
-qed
+  "\<lbrakk>n -as\<rightarrow>* n'; as \<noteq> []\<rbrakk> \<Longrightarrow> hd (sourcenodes as) = n"
+by(fastsimp elim:path_split_Cons simp:sourcenodes_def)
+
 
 
 lemma path_targetnode:
-  assumes "n -as\<rightarrow>* n'" and "as \<noteq> []" shows "last (targetnodes as) = n'"
-proof -
-  from `as \<noteq> []` obtain a' as' where "as = as'@[a']"
-    by(induct as rule:rev_induct,auto)
-  with `n -as\<rightarrow>* n'` have "n -as'@a'#[]\<rightarrow>* n'" by simp
-  hence "sourcenode a' -a'#[]\<rightarrow>* n'" by(fastsimp dest:path_split intro:Cons_path)
-  hence "targetnode a' = n'" by(auto elim:path.cases)
-  with `as = as'@[a']` show ?thesis by(simp add:targetnodes_def)
-qed
+  "\<lbrakk>n -as\<rightarrow>* n'; as \<noteq> []\<rbrakk> \<Longrightarrow> last (targetnodes as) = n'"
+by(fastsimp elim:path_split_snoc simp:targetnodes_def)
+
 
 
 lemma sourcenodes_is_n_Cons_butlast_targetnodes:
@@ -183,81 +216,83 @@ proof(induct as arbitrary:n)
   case Nil thus ?case by simp
 next
   case (Cons a' as')
-  note path = `n -a' # as'\<rightarrow>* n'`
   note IH = `\<And>n. \<lbrakk>n -as'\<rightarrow>* n'; as' \<noteq> []\<rbrakk>
             \<Longrightarrow> sourcenodes as' = n#(butlast (targetnodes as'))`
+  from `n -a'#as'\<rightarrow>* n'` have "n = sourcenode a'" and "targetnode a' -as'\<rightarrow>* n'"
+    by(auto elim:path_split_Cons)
   show ?case
   proof(cases "as' = []")
     case True
-    with path have "sourcenode a' = n \<and> targetnode a' = n'" 
-      by(auto elim:path.cases)
-    with True show ?thesis by(simp add:sourcenodes_def targetnodes_def)
+    with `targetnode a' -as'\<rightarrow>* n'` have "targetnode a' = n'" by fast
+    with True `n = sourcenode a'` show ?thesis
+      by(simp add:sourcenodes_def targetnodes_def)
   next
     case False
-    from path have "n -[]@a'#as'\<rightarrow>* n'" by simp
-    with False have "n -[]\<rightarrow>* sourcenode a'" and "targetnode a' -as'\<rightarrow>* n'"
-      by(fastsimp dest:path_split)+
-    from `n -[]\<rightarrow>* sourcenode a'` have "n = sourcenode a'" by fastsimp
-    from IH[OF `targetnode a' -as'\<rightarrow>* n'` False] 
+    from IH[OF `targetnode a' -as'\<rightarrow>* n'` this] 
     have "sourcenodes as' = targetnode a' # butlast (targetnodes as')" .
-    with `n = sourcenode a'` False 
-    show ?thesis by(simp add:sourcenodes_def targetnodes_def)
+    with `n = sourcenode a'` False show ?thesis
+      by(simp add:sourcenodes_def targetnodes_def)
   qed
 qed
 
 
+
 lemma targetnodes_is_tl_sourcenodes_App_n':
-  "\<lbrakk>n -as\<rightarrow>* n'; as \<noteq> []\<rbrakk> \<Longrightarrow> targetnodes as = (tl (sourcenodes as))@[n']"
+  "\<lbrakk>n -as\<rightarrow>* n'; as \<noteq> []\<rbrakk> \<Longrightarrow> 
+    targetnodes as = (tl (sourcenodes as))@[n']"
 proof(induct as arbitrary:n' rule:rev_induct)
   case Nil thus ?case by simp
 next
   case (snoc a' as')
   note IH = `\<And>n'. \<lbrakk>n -as'\<rightarrow>* n'; as' \<noteq> []\<rbrakk>
-            \<Longrightarrow> targetnodes as' = tl (sourcenodes as') @ [n']`
+    \<Longrightarrow> targetnodes as' = tl (sourcenodes as') @ [n']`
+  from `n -as'@[a']\<rightarrow>* n'` have "n -as'\<rightarrow>* sourcenode a'" and "n' = targetnode a'"
+    by(auto elim:path_split_snoc)
   show ?case
   proof(cases "as' = []")
     case True
-    with `n -as' @ [a']\<rightarrow>* n'` have "sourcenode a' = n \<and> targetnode a' = n'"
-      by(auto elim:path.cases)
-    with True show ?thesis by(simp add:sourcenodes_def targetnodes_def)
+    with `n -as'\<rightarrow>* sourcenode a'` have "n = sourcenode a'" by fast
+    with True `n' = targetnode a'` show ?thesis
+      by(simp add:sourcenodes_def targetnodes_def)
   next
     case False
-    from `n -as' @ [a']\<rightarrow>* n'` have "n -as'@a'#[]\<rightarrow>* n'" by simp
-    with False have "n -as'\<rightarrow>* sourcenode a'"
-      and "targetnode a' -[]\<rightarrow>* n'"
-      by(fastsimp dest:path_split)+
-    from `targetnode a' -[]\<rightarrow>* n'` have "targetnode a' = n'" by fastsimp
-    from IH[OF `n -as'\<rightarrow>* sourcenode a'` False]
-    have "targetnodes as' = tl (sourcenodes as') @ [sourcenode a']" .
-    with `targetnode a' = n'` False 
-    show ?thesis by(simp add:sourcenodes_def targetnodes_def)
+    from IH[OF `n -as'\<rightarrow>* sourcenode a'` this]
+    have "targetnodes as' = tl (sourcenodes as')@[sourcenode a']" .
+    with `n' = targetnode a'` False show ?thesis
+      by(simp add:sourcenodes_def targetnodes_def)
   qed
 qed
 
-
 lemma Entry_sourcenode_hd:
-  "\<lbrakk>n -as\<rightarrow>* n';(_Entry_) \<in> set (sourcenodes as)\<rbrakk>
-  \<Longrightarrow> n = (_Entry_) \<and> (_Entry_) \<notin> set (sourcenodes (tl as))"
+  assumes "n -as\<rightarrow>* n'" and "(_Entry_) \<in> set (sourcenodes as)"
+  shows "n = (_Entry_)" and "(_Entry_) \<notin> set (sourcenodes (tl as))"
+  using `n -as\<rightarrow>* n'` `(_Entry_) \<in> set (sourcenodes as)`
 proof(induct rule:path.induct)
-  case (empty_path n)
-  from `(_Entry_) \<in> set (sourcenodes [])` have False by(simp add:sourcenodes_def)
-  thus ?case by simp
+  case (empty_path n) case 1
+  thus ?case by(simp add:sourcenodes_def)
+next
+  case (empty_path n) case 2
+  thus ?case by(simp add:sourcenodes_def)
 next
   case (Cons_path n'' as n' a n)
-  note IH = `(_Entry_) \<in> set (sourcenodes as) \<Longrightarrow>
-            n'' = (_Entry_) \<and> (_Entry_) \<notin> set (sourcenodes (tl as))`
-  from `(_Entry_) \<in> set (sourcenodes (a#as))`
-  have or:"(_Entry_) = sourcenode a \<or> (_Entry_) \<in> set (sourcenodes as)"
-    by(simp add:sourcenodes_def)
+  note IH1 = `(_Entry_) \<in> set(sourcenodes as) \<Longrightarrow> n'' = (_Entry_)`
+  note IH2 = `(_Entry_) \<in> set(sourcenodes as) \<Longrightarrow> (_Entry_) \<notin> set(sourcenodes(tl as))`
   have "(_Entry_) \<notin> set (sourcenodes(tl(a#as)))"
   proof(rule ccontr)
     assume "\<not> (_Entry_) \<notin> set (sourcenodes (tl (a#as)))"
     hence "(_Entry_) \<in> set (sourcenodes as)" by simp
-    from IH[OF this] have "n'' = (_Entry_)" by simp
+    from IH1[OF this] have "n'' = (_Entry_)" by simp
     with `targetnode a = n''` `valid_edge a` show False by -(erule Entry_target,simp)
   qed
   hence "(_Entry_) \<notin> set (sourcenodes(tl(a#as)))" by fastsimp
-  with or `sourcenode a = n` show ?case by fastsimp
+  { case 1
+    with `(_Entry_) \<notin> set (sourcenodes(tl(a#as)))` `sourcenode a = n`
+    show ?case by(simp add:sourcenodes_def)
+  next
+    case 2
+    with `(_Entry_) \<notin> set (sourcenodes(tl(a#as)))` `sourcenode a = n`
+    show ?case by(simp add:sourcenodes_def)
+  }
 qed
 
 end

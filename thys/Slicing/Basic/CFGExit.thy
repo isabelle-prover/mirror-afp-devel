@@ -71,18 +71,20 @@ apply(auto simp:valid_node_def)
 apply(case_tac "targetnode a = (_Exit_)") apply auto
 done
 
-lemma path_Exit_source:
-  "\<lbrakk>n -as\<rightarrow>* n'; n = (_Exit_)\<rbrakk> \<Longrightarrow> n' = (_Exit_) \<and> as = []"
-proof(induct rule:path.induct)
+lemma path_Exit_source [dest]:
+  assumes "(_Exit_) -as\<rightarrow>* n'" shows "n' = (_Exit_)" and "as = []"
+  using `(_Exit_) -as\<rightarrow>* n'`
+proof(induct n\<equiv>"(_Exit_)" as n' rule:path.induct)
   case (Cons_path n'' as n' a n)
-  from `n = (_Exit_)` `sourcenode a = n` `valid_edge a` have False 
-    by -(rule Exit_source,simp_all)
-  thus ?case by simp
-qed simp
-
-lemma [dest]:"(_Exit_) -as\<rightarrow>* n' \<Longrightarrow> n' = (_Exit_) \<and> as = []"
-  by(fastsimp elim!:path_Exit_source)
-
+  { assume "n = (_Exit_)"
+    with `sourcenode a = n` `valid_edge a` have False 
+      by -(rule Exit_source,simp_all) }
+  hence "n = (_Exit_) \<Longrightarrow> False" .
+  { case 1 with `n = (_Exit_) \<Longrightarrow> False` show ?case by simp
+  next
+    case 2 with `n = (_Exit_) \<Longrightarrow> False` show ?case by simp
+  }
+qed simp_all
 lemma Exit_no_sourcenode[dest]:
   assumes isin:"(_Exit_) \<in> set (sourcenodes as)" and path:"n -as\<rightarrow>* n'"
   shows False

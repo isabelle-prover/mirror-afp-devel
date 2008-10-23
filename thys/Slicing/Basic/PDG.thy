@@ -105,11 +105,13 @@ qed
 
 
 lemma DynPDG_cdep_edge_CFG_path:
-  "n -as\<rightarrow>\<^bsub>cd\<^esub> n' \<Longrightarrow> n -as\<rightarrow>* n' \<and> as \<noteq> []"
+  assumes "n -as\<rightarrow>\<^bsub>cd\<^esub> n'" shows "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  using `n -as\<rightarrow>\<^bsub>cd\<^esub> n'`
   by(auto elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
 
 lemma DynPDG_ddep_edge_CFG_path:
-  "n -{V}as\<rightarrow>\<^bsub>dd\<^esub> n' \<Longrightarrow> n -as\<rightarrow>* n' \<and> as \<noteq> []"
+  assumes "n -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'" shows "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  using `n -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'`
   by(auto elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
 
 lemma DynPDG_path_CFG_path:
@@ -119,12 +121,12 @@ proof(induct rule:DynPDG_path.induct)
 next
   case (DynPDG_path_Append_cdep n as n'' as' n')
   from `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "n'' -as'\<rightarrow>* n'"
-    by(rule DynPDG_cdep_edge_CFG_path[THEN conjunct1])
+    by(rule DynPDG_cdep_edge_CFG_path(1))
   with `n -as\<rightarrow>* n''` show ?case by(rule path_Append)
 next
   case (DynPDG_path_Append_ddep n as n'' V as' n')
   from `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "n'' -as'\<rightarrow>* n'"
-    by(rule DynPDG_ddep_edge_CFG_path[THEN conjunct1])
+    by(rule DynPDG_ddep_edge_CFG_path(1))
   with `n -as\<rightarrow>* n''` show ?case by(rule path_Append)
 qed
 
@@ -147,7 +149,7 @@ next
   proof
     assume "as = [] \<and> n = n''"
     with `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'` have "valid_node n'"
-      by(fastsimp intro:path_valid_node[THEN conjunct2] DynPDG_path_CFG_path 
+      by(fastsimp intro:path_valid_node(2) DynPDG_path_CFG_path 
 	                DynPDG_path_cdep)
     with `as = [] \<and> n = n''` `n'' -as'\<rightarrow>\<^bsub>cd\<^esub> n'`
     have "\<exists>n'' asx asx'. n -asx\<rightarrow>\<^bsub>cd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
@@ -190,7 +192,7 @@ next
   proof
     assume "as = [] \<and> n = n''"
     with `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'` have "valid_node n'"
-      by(fastsimp intro:path_valid_node[THEN conjunct2] DynPDG_path_CFG_path 
+      by(fastsimp intro:path_valid_node(2) DynPDG_path_CFG_path 
 	                DynPDG_path_ddep)
     with `as = [] \<and> n = n''` `n'' -{V}as'\<rightarrow>\<^bsub>dd\<^esub> n'`
     have "\<exists>n'' V asx asx'. n -{V}asx\<rightarrow>\<^bsub>dd\<^esub> n'' \<and> n'' -asx'\<rightarrow>\<^isub>d* n' \<and> as@as' = asx@asx'"
@@ -432,19 +434,19 @@ by(induct rule:PDG_path.induct,auto intro:PDG_path.intros)
 
 
 lemma PDG_cdep_edge_CFG_path:
-  assumes cdep:"n \<longrightarrow>\<^bsub>cd\<^esub> n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
-  using cdep
+  assumes "n \<longrightarrow>\<^bsub>cd\<^esub> n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  using `n \<longrightarrow>\<^bsub>cd\<^esub> n'`
   by(auto elim:PDG_edge.cases dest:control_dependence_path)
 
 lemma PDG_ddep_edge_CFG_path:
-  assumes ddep:"n -V\<rightarrow>\<^bsub>dd\<^esub> n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
-  using ddep
+  assumes "n -V\<rightarrow>\<^bsub>dd\<^esub> n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
+  using `n -V\<rightarrow>\<^bsub>dd\<^esub> n'`
   by(auto elim!:PDG_edge.cases simp:data_dependence_def)
 
 lemma PDG_path_CFG_path:
-  assumes path:"n \<longrightarrow>\<^isub>d* n'" obtains as where "n -as\<rightarrow>* n'"
+  assumes "n \<longrightarrow>\<^isub>d* n'" obtains as where "n -as\<rightarrow>* n'"
 proof -
-  from path have "\<exists>as. n -as\<rightarrow>* n'"
+  from `n \<longrightarrow>\<^isub>d* n'` have "\<exists>as. n -as\<rightarrow>* n'"
   proof(induct rule:PDG_path.induct)
     case (PDG_path_Nil n)
     hence "n -[]\<rightarrow>* n" by(rule empty_path)

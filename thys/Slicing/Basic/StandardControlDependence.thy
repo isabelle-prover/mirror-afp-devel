@@ -63,11 +63,9 @@ proof
     case (Cons ax asx)
     with all have pd:"n' postdominates targetnode ax"
       by(auto simp:targetnodes_def)
-    from path Cons have "n -[]@ax#asx\<rightarrow>* n'" by simp
-    hence source:"n = sourcenode ax" 
-      and edge:"sourcenode ax -[ax]\<rightarrow>* targetnode ax"
+    from path Cons have source:"n = sourcenode ax" 
       and path2:"targetnode ax -asx\<rightarrow>* n'"
-      by(fastsimp dest:path_split)+
+      by(auto intro:path_split_Cons)
     show ?thesis
     proof(cases "\<exists>as'. n -as'\<rightarrow>* (_Exit_)")
       case True
@@ -133,15 +131,14 @@ next
       with noteq show ?thesis by simp
     next
       assume isin:"n' \<in> set (sourcenodes as')"
-      from path' have "n -[]@a'#as'\<rightarrow>* (_Exit_)" by simp
-      hence edge:"sourcenode a' -[a']\<rightarrow>* targetnode a'"
-	and path2:"targetnode a' -as'\<rightarrow>* (_Exit_)"
-	by(fastsimp dest:path_split)+
+      from path' have path2:"targetnode a' -as'\<rightarrow>* (_Exit_)"
+	by(fastsimp elim:path_split_Cons)
       thus ?thesis
       proof(cases "as' = []")
 	case True
 	with path2 have "targetnode a' = (_Exit_)" by(auto elim:path.cases)
-	with edge all source' have "n' = n" by(fastsimp simp:sourcenodes_def)
+	with valid_edge all source' have "n' = n"
+	  by(fastsimp dest:path_edge simp:sourcenodes_def)
 	with noteq show ?thesis by simp
       next
 	case False
@@ -149,8 +146,8 @@ next
 	  where path'':"targetnode a' -as''\<rightarrow>* (_Exit_)"
 	  and notin:"n' \<notin> set (sourcenodes as'')"
 	  by(auto simp:postdominate_def)
-	from edge path'' have "sourcenode a' -[a']@as''\<rightarrow>* (_Exit_)"
-	  by(rule path_Append)
+	from valid_edge path'' have "sourcenode a' -a'#as''\<rightarrow>* (_Exit_)"
+	  by(fastsimp intro:Cons_path)
 	with all source' have "n' \<in> set (sourcenodes ([a']@as''))" by simp
 	with source' have "n' = n \<or> n' \<in> set (sourcenodes as'')"
 	  by(auto simp:sourcenodes_def)
@@ -159,7 +156,7 @@ next
 	  assume "n' = n"
 	  with noteq show ?thesis by simp
 	next
-	  assume isin:"n' \<in> set (sourcenodes as'')"
+	  assume "n' \<in> set (sourcenodes as'')"
 	  with notin show ?thesis by simp
 	qed
       qed
@@ -189,12 +186,12 @@ next
       with isin have path':"targetnode a -as'\<rightarrow>* n'"
 	by(fastsimp split:split_if_asm simp:targetnodes_def)
       with as' target'' have path1:"targetnode a -xs\<rightarrow>* sourcenode ax"
-	and edge:"sourcenode ax -[ax]\<rightarrow>* n''"
 	and valid_edge':"valid_edge ax"
 	and path2:"n'' -ys\<rightarrow>* n'"
-	by(fastsimp dest:path_split)+
-      from path1 edge have path_n'':"targetnode a -xs@[ax]\<rightarrow>* n''"
-	by(cases xs,auto dest:path_Append)
+	by(auto intro:path_split)
+      from valid_edge' have "sourcenode ax -[ax]\<rightarrow>* targetnode ax" by(rule path_edge)
+      with path1 target'' have path_n'':"targetnode a -xs@[ax]\<rightarrow>* n''"
+	by(fastsimp intro:path_Append)
       from notin as as' have notin':"n'\<notin> set (sourcenodes (xs@[ax]))"
 	by(simp add:sourcenodes_def)
       show ?thesis
@@ -242,9 +239,7 @@ proof -
     with source show ?thesis by(fastsimp dest:path_split_second)
   qed
   hence path_n'n:"n' -a#as'\<rightarrow>* n" by simp
-  from path have edge':"sourcenode a -[a]\<rightarrow>* targetnode a"
-    and valid_edge:"valid_edge a"
-    by(fastsimp dest:path_split)+
+  from path have valid_edge:"valid_edge a" by(fastsimp intro:path_split)
   show ?thesis
   proof(cases "n postdominates (targetnode a)")
     case True
@@ -307,12 +302,10 @@ proof -
 	  with asx as' have "as' = asx@a1#as'2" by simp
 	  with path_n'n have "n' -(a#asx)@a1#as'2\<rightarrow>* n"
 	    by simp
-	  hence path:"n' -[]@a#asx\<rightarrow>* sourcenode a1"
-	    and edge:"sourcenode a1 -[a1]\<rightarrow>* targetnode a1"
-	    and valid_edge1:"valid_edge a1"
-	    by(fastsimp dest:path_split)+
-	  from path have "targetnode a -asx\<rightarrow>* sourcenode a1"
-	    by(fastsimp dest:path_split)
+	  hence "n' -a#asx\<rightarrow>* sourcenode a1"
+	    and valid_edge1:"valid_edge a1" by(fastsimp elim:path_split)+
+	  hence "targetnode a -asx\<rightarrow>* sourcenode a1"
+	    by(fastsimp intro:path_split_Cons)
 	  with path_Exit have "(_Exit_) = sourcenode a1" by(rule path_det)
 	  from this[THEN sym] valid_edge1 have False by -(rule Exit_source,simp_all)
 	  thus ?thesis by simp
@@ -321,18 +314,15 @@ proof -
 	  where asx:"asx = as'1@a2#asx'1"
 	  and asx':"asx' = a2#asx'1" by(cases asx') auto
 	from path_n'n as' have "n' -(a#as'1)@a1#as'2\<rightarrow>* n" by simp
-	hence "n' -[]@a#as'1\<rightarrow>* sourcenode a1" 
-	  and edge1':"sourcenode a1 -[a1]\<rightarrow>* targetnode a1"
-	  and valid_edge1:"valid_edge a1"
-	  by(fastsimp dest:path_split)+
+	hence "n' -a#as'1\<rightarrow>* sourcenode a1" and valid_edge1:"valid_edge a1"
+	  by(fastsimp elim:path_split)+
 	hence path1:"targetnode a -as'1\<rightarrow>* sourcenode a1"
-	  by(fastsimp dest:path_split)
+	  by(fastsimp intro:path_split_Cons)
 	from path_Exit asx
 	have "targetnode a -as'1\<rightarrow>* sourcenode a2"
-	  and edge2':"sourcenode a2 -[a2]\<rightarrow>* targetnode a2"
 	  and valid_edge2:"valid_edge a2"
 	  and path2:"targetnode a2 -asx'1\<rightarrow>* (_Exit_)"
-	  by(fastsimp dest:path_split)+
+	  by(auto intro:path_split)
 	with path1 have eq12:"sourcenode a1 = sourcenode a2"
 	  by(cases as'1,auto dest:path_det)
 	from asx notin have "n \<notin> set (sourcenodes asx'1)"

@@ -69,7 +69,7 @@ lemma dependent_live_vars_lastnode:
 proof(induct rule:dependent_live_vars.induct)
   case (dep_vars_Cons_cdep V a as' n'' as'')
   from `sourcenode a -a#as'\<rightarrow>\<^bsub>cd\<^esub> n''` have "sourcenode a -a#as'\<rightarrow>* n''"
-    by(rule DynPDG_cdep_edge_CFG_path[THEN conjunct1])
+    by(rule DynPDG_cdep_edge_CFG_path(1))
   from `n'' -as''\<rightarrow>\<^isub>d* n'` have "n'' -as''\<rightarrow>* n'" by(rule DynPDG_path_CFG_path)
   show ?case
   proof(cases "as'' = []")
@@ -92,7 +92,7 @@ lemma dependent_live_vars_Use_cases:
                (\<forall>n'' \<in> set (sourcenodes as'). V \<notin> Def n'')"
 proof(induct arbitrary:n rule:dependent_live_vars.induct)
   case (dep_vars_Use V)
-  from `n -[]\<rightarrow>* n'` have "valid_node n'" by(rule path_valid_node[THEN conjunct2])
+  from `n -[]\<rightarrow>* n'` have "valid_node n'" by(rule path_valid_node(2))
   hence "n' -[]\<rightarrow>\<^isub>d* n'" by(rule DynPDG_path_Nil)
   with `V \<in> Use n'` `n -[]\<rightarrow>* n'` show ?case 
     by(auto simp:sourcenodes_def)
@@ -101,7 +101,7 @@ next
   from `n -a#as'@as''\<rightarrow>* n'` have "sourcenode a = n"
     by(auto elim:path.cases)
   from `sourcenode a -a#as'\<rightarrow>\<^bsub>cd\<^esub> n''` have "sourcenode a -a#as'\<rightarrow>* n''"
-    by(rule DynPDG_cdep_edge_CFG_path[THEN conjunct1])
+    by(rule DynPDG_cdep_edge_CFG_path(1))
   hence "valid_edge a" by(auto elim:path.cases) 
   hence "sourcenode a -[]\<rightarrow>* sourcenode a" by(fastsimp intro:empty_path)
   from `sourcenode a -a#as'\<rightarrow>\<^bsub>cd\<^esub> n''` have "sourcenode a -a#as'\<rightarrow>\<^isub>d* n''"
@@ -151,19 +151,16 @@ next
   note IH = `\<And>n. n -as\<rightarrow>* n'
     \<Longrightarrow> \<exists>nx as''. (as = as'@as'') \<and> (n -as'\<rightarrow>* nx) \<and> (nx -as''\<rightarrow>\<^isub>d* n') \<and> 
                    V \<in> Use nx \<and> (\<forall>n''\<in>set (sourcenodes as'). V \<notin> Def n'')`
-  from `n -a#as\<rightarrow>* n'` have "n -[]@a#as\<rightarrow>* n'" by simp
-  hence "n = sourcenode a" and "sourcenode a -[a]\<rightarrow>* targetnode a"
-    and "targetnode a -as\<rightarrow>* n'"
-    by(fastsimp dest:path_split)+
+  from `n -a#as\<rightarrow>* n'` have "n = sourcenode a" and "valid_edge a"
+    and "targetnode a -as\<rightarrow>* n'" by(auto elim:path_split_Cons)
   from IH[OF `targetnode a -as\<rightarrow>* n'`]
   have "\<exists>nx as''. as = as'@as'' \<and> targetnode a -as'\<rightarrow>* nx \<and> nx -as''\<rightarrow>\<^isub>d* n' \<and> 
                V \<in> Use nx \<and> (\<forall>n''\<in>set (sourcenodes as'). V \<notin> Def n'')" .
   then obtain nx'' as'' where "V \<in> Use nx''"
     and "\<forall>n''\<in>set (sourcenodes as'). V \<notin> Def n''" and "targetnode a -as'\<rightarrow>* nx''"
     and "nx'' -as''\<rightarrow>\<^isub>d* n'" and "as = as'@as''" by blast
-  from `sourcenode a -[a]\<rightarrow>* targetnode a` `targetnode a -as'\<rightarrow>* nx''`
-  have "sourcenode a -a#as'\<rightarrow>* nx''"
-    by(fastsimp dest:path_Append)
+  from `valid_edge a` `targetnode a -as'\<rightarrow>* nx''` have "sourcenode a -a#as'\<rightarrow>* nx''"
+    by(fastsimp intro:Cons_path)
   hence "last(targetnodes (a#as')) = nx''" by(fastsimp dest:path_targetnode)
   { assume "V \<in> Def (sourcenode a)"
     with `V \<in> Use nx''` `sourcenode a -a#as'\<rightarrow>* nx''`
@@ -320,8 +317,7 @@ next
   with `n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'` have "sourcenode ax = n''"
     by(auto dest:DynPDG_cdep_edge_CFG_path elim:path.cases)
   from `n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'` have "valid_node n'"
-    by(fastsimp intro:path_valid_node[THEN conjunct2]
-                      DynPDG_cdep_edge_CFG_path[THEN conjunct1])
+    by(fastsimp intro:path_valid_node(2) DynPDG_cdep_edge_CFG_path(1))
   from Cons `n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'` have "last(targetnodes as) = n'"
     by(fastsimp intro:path_targetnode dest:DynPDG_cdep_edge_CFG_path)
   with Cons `n'' -as\<rightarrow>\<^bsub>cd\<^esub> n'` `V' \<in> Use n''` `sourcenode ax = n''` `valid_node n'`
@@ -343,7 +339,7 @@ next
   with `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` have "sourcenode ax = n''"
     by(auto dest:DynPDG_ddep_edge_CFG_path elim:path.cases)
   from Cons `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` have "last(targetnodes as) = n'"
-    by(fastsimp intro:path_targetnode elim:DynPDG_ddep_edge_CFG_path[THEN conjunct1])
+    by(fastsimp intro:path_targetnode elim:DynPDG_ddep_edge_CFG_path(1))
   from Cons `n'' -{V}as\<rightarrow>\<^bsub>dd\<^esub> n'` have all:"\<forall>as' a as''. asx = as'@a#as'' \<longrightarrow>
                              \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'"
     by(fastsimp dest:DynPDG_ddep_edge_no_shorter_ddep_edge)
@@ -413,7 +409,7 @@ proof -
   from `n'' -as''\<rightarrow>\<^bsub>cd\<^esub> n'` have "as'' \<noteq> []"
     by(fastsimp elim:DynPDG_edge.cases dest:dyn_control_dependence_path)
   with `n'' -as''\<rightarrow>\<^bsub>cd\<^esub> n'` have "last(targetnodes as'') = n'"
-    by(fastsimp intro:path_targetnode elim:DynPDG_cdep_edge_CFG_path[THEN conjunct1])
+    by(fastsimp intro:path_targetnode elim:DynPDG_cdep_edge_CFG_path(1))
   from `(V',as',as) \<in> dependent_live_vars n''` show ?thesis
   proof(induct rule:dependent_live_vars.induct)
     case (dep_vars_Use V')
@@ -449,9 +445,9 @@ lemma dependent_live_vars_ddep_dependent_live_vars:
   shows "(V',as',as@as'') \<in> dependent_live_vars n'"
 proof -
   from `n'' -{V}as''\<rightarrow>\<^bsub>dd\<^esub> n'` have "as'' \<noteq> []"
-    by(rule DynPDG_ddep_edge_CFG_path[THEN conjunct2])
+    by(rule DynPDG_ddep_edge_CFG_path(2))
   with `n'' -{V}as''\<rightarrow>\<^bsub>dd\<^esub> n'` have "last(targetnodes as'') = n'"
-    by(fastsimp intro:path_targetnode elim:DynPDG_ddep_edge_CFG_path[THEN conjunct1])
+    by(fastsimp intro:path_targetnode elim:DynPDG_ddep_edge_CFG_path(1))
   from `n'' -{V}as''\<rightarrow>\<^bsub>dd\<^esub> n'` have notExit:"n' \<noteq> (_Exit_)" 
     by(fastsimp elim:DynPDG_edge.cases simp:dyn_data_dependence_def)
   from `(V',as',as) \<in> dependent_live_vars n''` show ?thesis
@@ -513,3 +509,4 @@ end
 
 
 end
+

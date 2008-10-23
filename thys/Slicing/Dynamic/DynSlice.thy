@@ -87,10 +87,9 @@ next
     and ex':"ex' = (if y then kind a'
                     else (case kind a' of \<Up>f \<Rightarrow> \<Up>id | (Q)\<^isub>\<surd> \<Rightarrow> (\<lambda>s. True)\<^isub>\<surd>))"
     and "select_edge_kinds as' ys = esx'" by auto
-  from `n -as\<rightarrow>* n'` `as = a'#as'` have "n -[]@a'#as'\<rightarrow>* n'" by simp
-  hence [simp]:"n = sourcenode a'" and "sourcenode a' -[a']\<rightarrow>* targetnode a'"
+  from `n -as\<rightarrow>* n'` `as = a'#as'` have [simp]:"n = sourcenode a'" 
     and "valid_edge a'" and "targetnode a' -as'\<rightarrow>* n'"
-    by(fastsimp dest:path_split elim:path.cases)+
+    by(auto elim:path_split_Cons)
   from `n -as\<rightarrow>* n'` `as = a'#as'` have "last(targetnodes as) = n'"
     by(fastsimp intro:path_targetnode)
   from `preds es' s'` `es' = ex'#esx'` have "pred ex' s'"
@@ -125,9 +124,8 @@ next
 		          simp:targetnodes_def)
 	    with all `as = a'#as'` have "state_val s V' = state_val s' V'"
 	      by fastsimp }
-	  with `sourcenode a' -[a']\<rightarrow>* targetnode a'` `pred ex' s'` `valid_edge a'`
-	  show ?thesis
-	    by(fastsimp elim:CFG_edge_Uses_pred_equal)
+	  with `pred ex' s'` `valid_edge a'`
+	  show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
 	next
 	  case False
 	  from ex True Predicate have "kind a' = (Q)\<^isub>\<surd>" by(auto split:split_if_asm)
@@ -204,8 +202,7 @@ next
 	      by(fastsimp intro:dep_vars_Cons_ddep simp:targetnodes_def)
 	    with all `as = a'#as'` show "state_val s V' = state_val s' V'" by auto
 	  qed
-	  with `sourcenode a' -[a']\<rightarrow>* targetnode a'` 
-	    `valid_edge a'` `pred ex' s'` `pred ex s`
+	  with `valid_edge a'` `pred ex' s'` `pred ex s`
 	  have "\<forall>V \<in> Def n. state_val (transfer (kind a') s) V =
                               state_val (transfer (kind a') s') V"
 	    by simp(rule CFG_edge_transfer_uses_only_Use,auto)
@@ -222,19 +219,18 @@ next
 	  from `(V,[a'],[a']) \<in> dependent_live_vars n'` all `as = a'#as'`
 	  have states_eq:"state_val s V = state_val s' V"
 	    by auto
-	  from `sourcenode a' -[a']\<rightarrow>* targetnode a'` `V \<in> Use n'` False `pred ex s`
+	  from `valid_edge a'` `V \<in> Use n'` False `pred ex s`
 	  have "state_val (transfers (kinds [a']) s) V = state_val s V"
-	    apply(auto intro!:no_ddep_same_state simp:targetnodes_def)
+	    apply(auto intro!:no_ddep_same_state path_edge simp:targetnodes_def)
 	    apply(simp add:kinds_def)
 	    by(case_tac as',auto)
 	  moreover
-	  from `sourcenode a' -[a']\<rightarrow>* targetnode a'` `V \<in> Use n'` False `pred ex' s'`
+	  from `valid_edge a'` `V \<in> Use n'` False `pred ex' s'`
 	  have "state_val (transfers (kinds [a']) s') V = state_val s' V"
-	    apply(auto intro!:no_ddep_same_state simp:targetnodes_def)
+	    apply(auto intro!:no_ddep_same_state path_edge simp:targetnodes_def)
 	    apply(simp add:kinds_def)
 	    by(case_tac as',auto)
-	  ultimately show ?thesis using states_eq
-	    by(auto simp:kinds_def)
+	  ultimately show ?thesis using states_eq by(auto simp:kinds_def)
 	qed }
       hence "\<forall>V \<in> Use n'. state_val (transfer ex s) V = 
 	                        state_val (transfer ex' s') V" by simp
@@ -259,10 +255,10 @@ next
 	  have "(V,[a'],[a']) \<in> dependent_live_vars n'"
 	    by(fastsimp intro:dep_vars_Cons_keep)
 	  with all `as = a'#as'` have "state_val s V = state_val s' V" by auto
-	  from `sourcenode a' -[a']\<rightarrow>* targetnode a'` `V \<in> Use n'` `pred ex' s'`
+	  from `valid_edge a'` `V \<in> Use n'` `pred ex' s'`
 	    `\<not> n -{V}[a']\<rightarrow>\<^bsub>dd\<^esub> n'` `last(targetnodes as) = n'` `as = a'#as'`
 	  have "state_val (transfers (kinds [a']) s') V = state_val s' V"
-	    apply(auto intro!:no_ddep_same_state)
+	    apply(auto intro!:no_ddep_same_state path_edge)
 	    apply(simp add:kinds_def)
 	    by(case_tac as',auto)
 	  with `state_val s V = state_val s' V` cases_x
@@ -339,8 +335,7 @@ next
 	      have "(V,[],as) \<in> dependent_live_vars n'"
 		by(fastsimp intro:dep_vars_Cons_cdep)
 	      with all have "state_val s V = state_val s' V" by blast }
-	    with `sourcenode a' -[a']\<rightarrow>* targetnode a'` `valid_edge a'` 
-	      `pred ex' s'`
+	    with `valid_edge a'` `pred ex' s'`
 	    show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
 	  next
 	    case (DynPDG_path_ddep_Append V n'' asx asx')
@@ -382,9 +377,8 @@ next
 		show ?thesis by simp
 	      qed
 	      with all have "state_val s V' = state_val s' V'" by blast }
-	    with `sourcenode a' -[a']\<rightarrow>* targetnode a'` `pred ex' s'` `valid_edge a'`
-	    show ?thesis
-	      by(fastsimp elim:CFG_edge_Uses_pred_equal)
+	    with `pred ex' s'` `valid_edge a'`
+	    show ?thesis by(fastsimp elim:CFG_edge_Uses_pred_equal)
 	  qed
 	qed
       qed simp
@@ -461,7 +455,7 @@ next
 	case False
 	{ assume "V' \<in> Def n"
 	  with `(V',xs',as') \<in> dependent_live_vars n'` `targetnode a' -as'\<rightarrow>* n'`
-	    `valid_edge a'` `sourcenode a' -[a']\<rightarrow>* targetnode a'`
+	    `valid_edge a'`
 	  have "n -a'#as'\<rightarrow>\<^isub>d* n'"
 	    by -(drule dependent_live_vars_dependent_edge,
 	      auto dest:DynPDG_path_ddep DynPDG_path_Append)
@@ -513,8 +507,8 @@ qed simp_all
 theorem fundamental_property_of_path_slicing:
   assumes "n -as\<rightarrow>* n'" and "preds (kinds as) s"
   shows "(\<forall>V \<in> Use n'. state_val (transfers (slice_kinds as) s) V = 
-                         state_val (transfers (kinds as) s) V) \<and> 
-         preds (slice_kinds as) s"
+                         state_val (transfers (kinds as) s) V)" 
+  and "preds (slice_kinds as) s"
 proof -
   have "length as = length (slice_path as)" by(simp add:slice_path_length)
   hence "slice_path as \<preceq>\<^isub>b replicate (length as) True"
@@ -522,8 +516,13 @@ proof -
   have "select_edge_kinds as (replicate (length as) True) = kinds as"
     by(rule select_edge_kinds_max_bv)
   with `n -as\<rightarrow>* n'` `slice_path as \<preceq>\<^isub>b replicate (length as) True`
-    `preds (kinds as) s` show ?thesis
+    `preds (kinds as) s` 
+  have "(\<forall>V\<in>Use n'. state_val (transfers (slice_kinds as) s) V =
+       state_val (transfers (kinds as) s) V) \<and> preds (slice_kinds as) s"
     by -(rule slice_path_leqs_information_same_Uses,simp_all add:slice_kinds_def)
+  thus "\<forall>V\<in>Use n'. state_val (transfers (slice_kinds as) s) V =
+    state_val (transfers (kinds as) s) V" and "preds (slice_kinds as) s"
+    by simp_all
 qed
 
 end
@@ -535,27 +534,27 @@ locale BackwardPathSlice_wf = DynPDG + CFG_semantics_wf
 
 begin
 
-
 theorem fundamental_property_of_path_slicing_semantically:
   assumes "n identifies c" and "\<langle>c,s\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>"
-  shows "\<exists>n' as. n -as\<rightarrow>* n' \<and> preds (slice_kinds as) s \<and> n' identifies c' \<and>
-  (\<forall>V \<in> Use n'. state_val (transfers (slice_kinds as) s) V = 
-                  state_val s' V)"
+  obtains n' as where "n -as\<rightarrow>* n'" and "preds (slice_kinds as) s" 
+  and "n' identifies c'" 
+  and "\<forall>V \<in> Use n'. state_val (transfers (slice_kinds as) s) V = 
+                     state_val s' V"
 proof -
   from `n identifies c` `\<langle>c,s\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>` obtain n' as where "n -as\<rightarrow>* n'"
     and "transfers (kinds as) s = s'"
     and "preds (kinds as) s"
     and "n' identifies c'"
     by(fastsimp dest:fundamental_property)
-  with `n -as\<rightarrow>* n'` `preds (kinds as) s` have conj:"(\<forall>V \<in> Use n'. 
-    state_val (transfers (slice_kinds as) s) V =
-    state_val (transfers (kinds as) s) V) \<and>
-    preds (slice_kinds as) s"
-    by -(rule fundamental_property_of_path_slicing,simp_all)
+  with `n -as\<rightarrow>* n'` `preds (kinds as) s` 
+  have "\<forall>V \<in> Use n'. state_val (transfers (slice_kinds as) s) V =
+    state_val (transfers (kinds as) s) V" and "preds (slice_kinds as) s"
+    by -(rule fundamental_property_of_path_slicing,simp_all)+
   with `transfers (kinds as) s = s'` have "\<forall>V \<in> Use n'. 
     state_val (transfers (slice_kinds as) s) V =
     state_val s' V" by simp
-  with `n -as\<rightarrow>* n'` conj[THEN conjunct2] `n' identifies c'` show ?thesis by blast
+  with `n -as\<rightarrow>* n'` `preds (slice_kinds as) s` `n' identifies c'` that
+  show ?thesis by blast
 qed
 
 
