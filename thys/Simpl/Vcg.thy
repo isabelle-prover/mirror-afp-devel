@@ -1,4 +1,4 @@
-(*  ID:          $Id: Vcg.thy,v 1.6 2008-06-12 06:57:27 lsf37 Exp $
+(*  ID:          $Id: Vcg.thy,v 1.7 2008-10-25 12:59:18 fhaftmann Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -272,16 +272,16 @@ translations
 
   "_While_inv_var b I V c"          => "whileAnno {|b|} I V c"
   "_While_inv_var b I V (_DoPre c)" <= "whileAnno {|b|} I V c"
-  "_While_inv b I c"                 == "_While_inv_var b I arbitrary c"
-  "_While b c"                       == "_While_inv b {|arbitrary|} c"
+  "_While_inv b I c"                 == "_While_inv_var b I CONST undefined c"
+  "_While b c"                       == "_While_inv b {|CONST undefined|} c"
 
   "_While_guard_inv_var gs b I V c"          => "whileAnnoG gs {|b|} I V c"
 (*  "_While_guard_inv_var gs b I V (_DoPre c)" <= "whileAnnoG gs {|b|} I V c"*)
-  "_While_guard_inv gs b I c"       == "_While_guard_inv_var gs b I arbitrary c"
-  "_While_guard gs b c"             == "_While_guard_inv gs b {|arbitrary|} c"
+  "_While_guard_inv gs b I c"       == "_While_guard_inv_var gs b I CONST undefined c"
+  "_While_guard gs b c"             == "_While_guard_inv gs b {|CONST undefined|} c"
 
-  "_GuardedWhile_inv b I c"  == "_GuardedWhile_inv_var b I arbitrary c "
-  "_GuardedWhile b c"        == "_GuardedWhile_inv b {|arbitrary|} c"
+  "_GuardedWhile_inv b I c"  == "_GuardedWhile_inv_var b I CONST undefined c "
+  "_GuardedWhile b c"        == "_GuardedWhile_inv b {|CONST undefined|} c"
 (*  "\<^bsup>s\<^esup>A"                      => "A s"*)
   "TRY c1 CATCH c2 END"     == "Catch c1 c2"
   "ANNO s. P c Q,A" => "specAnno (\<lambda>s. P) (\<lambda>s. c) (\<lambda>s. Q) (\<lambda>s. A)"
@@ -289,9 +289,9 @@ translations
 
   "_WhileFix_inv_var b z I V c" => "whileAnnoFix {|b|} (\<lambda>z. I) (\<lambda>z. V) (\<lambda>z. c)"
   "_WhileFix_inv_var b z I V (_DoPre c)" <= "_WhileFix_inv_var {|b|} z I V c"
-  "_WhileFix_inv b z I c" == "_WhileFix_inv_var b z I arbitrary c"
+  "_WhileFix_inv b z I c" == "_WhileFix_inv_var b z I CONST undefined c"
 
-  "_GuardedWhileFix_inv b z I c" == "_GuardedWhileFix_inv_var b z I arbitrary c"
+  "_GuardedWhileFix_inv b z I c" == "_GuardedWhileFix_inv_var b z I CONST undefined c"
 
   "_GuardedWhileFix_inv_var b z I V c" =>
                          "_GuardedWhileFix_inv_var_hook {|b|} (\<lambda>z. I) (\<lambda>z. V) (\<lambda>z. c)"
@@ -300,7 +300,7 @@ translations
                                       "whileAnnoGFix gs {|b|} (\<lambda>z. I) (\<lambda>z. V) (\<lambda>z. c)"
   "_WhileFix_guard_inv_var gs b z I V (_DoPre c)" <= 
                                       "_WhileFix_guard_inv_var gs {|b|} z I V c"
-  "_WhileFix_guard_inv gs b z I c" == "_WhileFix_guard_inv_var gs b z I arbitrary c"
+  "_WhileFix_guard_inv gs b z I c" == "_WhileFix_guard_inv_var gs b z I CONST undefined c"
   "LEMMA x c END" == "lem x c"
 translations
  "(_switchcase V c)" => "(V,c)"

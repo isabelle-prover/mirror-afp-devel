@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.25 2008-09-02 12:11:59 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.26 2008-10-25 12:59:18 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -3269,7 +3269,7 @@ fun lookup' _ [] _ = NONE
  * Implementation:
  * 1. Eliminate existential quantifiers in premise
  * 2. Instantiate s with:
-       (%x. arbitrary)("x_1" := constr_1 x_1, ..., "x_n" := constr_n x_n)
+       (%x. undefined)("x_1" := constr_1 x_1, ..., "x_n" := constr_n x_n)
  * 3. Simplify
  *)
 
@@ -3291,7 +3291,7 @@ fun ex_tac vs st =
     val sT = domain_type (domain_type exT);
     val flds = fst (RecordPackage.get_recT_fields thy sT);
 
-    val s0 = Const ("arbitrary",sT);
+    val s0 = Const (@{const_name undefined},sT);
 
     fun streq (s1:string,s2) = s1=s2 ;
     fun mk_init []      = []

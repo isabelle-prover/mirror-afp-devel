@@ -1,4 +1,4 @@
-(*  ID:          $Id: Language.thy,v 1.6 2008-06-12 06:57:27 lsf37 Exp $
+(*  ID:          $Id: Language.thy,v 1.7 2008-10-25 12:59:18 fhaftmann Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -125,17 +125,17 @@ constdefs
  
   specAnno::  "('a \<Rightarrow> 's assn) \<Rightarrow> ('a \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> 
                          ('a \<Rightarrow> 's assn) \<Rightarrow> ('a \<Rightarrow> 's assn) \<Rightarrow> ('s,'p,'f) com"
-  "specAnno P c Q A \<equiv> (c arbitrary)"
+  "specAnno P c Q A \<equiv> (c undefined)"
 
   whileAnnoFix:: 
   "'s bexp \<Rightarrow> ('a \<Rightarrow> 's assn) \<Rightarrow> ('a \<Rightarrow> ('s \<times> 's) assn) \<Rightarrow> ('a \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> 
      ('s,'p,'f) com"
-  "whileAnnoFix b I V c \<equiv> While b (c arbitrary)"
+  "whileAnnoFix b I V c \<equiv> While b (c undefined)"
 
   whileAnnoGFix:: 
   "('f \<times> 's set) list \<Rightarrow> 's bexp \<Rightarrow> ('a \<Rightarrow> 's assn) \<Rightarrow> ('a \<Rightarrow> ('s \<times> 's) assn) \<Rightarrow> 
      ('a \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> ('s,'p,'f) com"
-  "whileAnnoGFix gs b I V c \<equiv> while gs b (c arbitrary)"
+  "whileAnnoGFix gs b I V c \<equiv> while gs b (c undefined)"
 
 constdefs if_rel::"('s \<Rightarrow> bool) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<times> 's) set" 
 "if_rel b f g h \<equiv> {(s,t). if b s then t = f s else t = g s \<or> t = h s}"
@@ -335,7 +335,7 @@ lemma flatten_whileAnnoG [simp]:
   by (simp add: whileAnnoG_def)
 
 lemma flatten_specAnno [simp]:
-  "flatten (specAnno P c Q A) = flatten (c arbitrary)"
+  "flatten (specAnno P c Q A) = flatten (c undefined)"
   by (simp add: specAnno_def)
 
 lemmas flatten_simps = flatten.simps flatten_raise flatten_condCatch flatten_bind
@@ -429,7 +429,7 @@ lemma normalize_whileAnnoG [simp]:
   by (simp add: whileAnnoG_def)
 
 lemma normalize_specAnno [simp]:
-  "normalize (specAnno P c Q A) = specAnno P (\<lambda>s. normalize (c arbitrary)) Q A"
+  "normalize (specAnno P c Q A) = specAnno P (\<lambda>s. normalize (c undefined)) Q A"
   by (simp add: specAnno_def)
 
 lemmas normalize_simps = 
@@ -547,7 +547,7 @@ lemma strip_guards_whileAnnoG [simp]:
 
 lemma strip_guards_specAnno [simp]:
   "strip_guards F (specAnno P c Q A) = 
-    specAnno P (\<lambda>s. strip_guards F (c arbitrary)) Q A"
+    specAnno P (\<lambda>s. strip_guards F (c undefined)) Q A"
   by (simp add: specAnno_def)
 
 lemmas strip_guards_simps = strip_guards.simps strip_guards_raise 
@@ -638,7 +638,7 @@ lemma mark_guards_whileAnnoG [simp]:
 
 lemma mark_guards_specAnno [simp]:
   "mark_guards f (specAnno P c Q A) = 
-    specAnno P (\<lambda>s. mark_guards f (c arbitrary)) Q A"
+    specAnno P (\<lambda>s. mark_guards f (c undefined)) Q A"
   by (simp add: specAnno_def)
 
 lemmas mark_guards_simps = mark_guards.simps mark_guards_raise 
@@ -821,7 +821,7 @@ lemma merge_guards_whileAnno [simp]:
 
 lemma merge_guards_specAnno [simp]:
   "merge_guards (specAnno P c Q A) = 
-    specAnno P (\<lambda>s. merge_guards (c arbitrary)) Q A"
+    specAnno P (\<lambda>s. merge_guards (c undefined)) Q A"
   by (simp add: specAnno_def)
 
 text {* @{term "merge_guards"} for guard-lists as in @{const guards}, @{const while}

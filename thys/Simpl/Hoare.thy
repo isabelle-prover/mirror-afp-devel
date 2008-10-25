@@ -1,4 +1,4 @@
-(*  ID:          $Id: Hoare.thy,v 1.6 2008-06-12 06:57:26 lsf37 Exp $
+(*  ID:          $Id: Hoare.thy,v 1.7 2008-10-25 12:59:18 fhaftmann Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -220,7 +220,7 @@ locale hoare =
 
 consts assoc:: "('a \<times>'b) list \<Rightarrow> 'a \<Rightarrow> 'b "
 primrec
-"assoc [] x = arbitrary"
+"assoc [] x = undefined"
 "assoc (p#ps) x = (if fst p = x then (snd p) else assoc ps x)"
 
 lemma conjE_simp: "(P \<and> Q \<Longrightarrow> PROP R) \<equiv> (P \<Longrightarrow> Q \<Longrightarrow> PROP R)"

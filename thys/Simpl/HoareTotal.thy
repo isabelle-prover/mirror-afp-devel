@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoareTotal.thy,v 1.7 2008-06-12 06:57:26 lsf37 Exp $
+(*  ID:          $Id: HoareTotal.thy,v 1.8 2008-10-25 12:59:18 fhaftmann Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -116,11 +116,11 @@ lemma DynComConseq:
 lemma SpecAnno: 
  assumes consequence: "P \<subseteq> {s. (\<exists> Z. s\<in>P' Z \<and> (Q' Z \<subseteq> Q) \<and> (A' Z \<subseteq> A))}"
  assumes spec: "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' Z) (c Z) (Q' Z),(A' Z)"
- assumes bdy_constant:  "\<forall>Z. c Z = c arbitrary"
+ assumes bdy_constant:  "\<forall>Z. c Z = c undefined"
  shows   "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P (specAnno P' c Q' A') Q,A"
 proof -
   from spec bdy_constant
-  have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' Z) (c arbitrary) (Q' Z),(A' Z)"
+  have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' Z) (c undefined) (Q' Z),(A' Z)"
     apply - 
     apply (rule allI)
     apply (erule_tac x=Z in allE)
@@ -140,7 +140,7 @@ lemma SpecAnno':
  "\<lbrakk>P \<subseteq> {s.  \<exists> Z. s\<in>P' Z \<and> 
             (\<forall>t. t \<in> Q' Z \<longrightarrow>  t \<in> Q) \<and> (\<forall>t. t \<in> A' Z \<longrightarrow> t \<in>  A)};
    \<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' Z) (c Z) (Q' Z),(A' Z);
-   \<forall>Z. c Z = c arbitrary
+   \<forall>Z. c Z = c undefined
   \<rbrakk> \<Longrightarrow>
     \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P (specAnno P' c Q' A') Q,A"
 apply (simp only: subset_iff [THEN sym])
@@ -152,7 +152,7 @@ lemma SpecAnnoNoAbrupt:
  "\<lbrakk>P \<subseteq> {s.  \<exists> Z. s\<in>P' Z \<and> 
             (\<forall>t. t \<in> Q' Z \<longrightarrow>  t \<in> Q)};
    \<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' Z) (c Z) (Q' Z),{};
-   \<forall>Z. c Z = c arbitrary
+   \<forall>Z. c Z = c undefined
   \<rbrakk> \<Longrightarrow>
     \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P (specAnno P' c Q' (\<lambda>s. {})) Q,A"
 apply (rule SpecAnno')
@@ -413,12 +413,12 @@ lemma WhileNoGuard':
 lemma WhileAnnoFix:
 assumes consequence: "P \<subseteq> {s. (\<exists> Z. s\<in>I Z \<and> (I Z \<inter> -b \<subseteq> Q)) }"
 assumes bdy: "\<forall>Z \<sigma>. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> I Z \<inter> b) (c Z) ({t. (t, \<sigma>) \<in> V Z} \<inter> I Z),A"
-assumes bdy_constant:  "\<forall>Z. c Z = c arbitrary"
+assumes bdy_constant:  "\<forall>Z. c Z = c undefined"
 assumes wf: "\<forall>Z. wf (V Z)"
 shows "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P (whileAnnoFix b I V c) Q,A"
 proof -
   from bdy bdy_constant
-  have bdy': "\<And>Z. \<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> I Z \<inter> b) (c arbitrary) 
+  have bdy': "\<And>Z. \<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> I Z \<inter> b) (c undefined) 
                ({t. (t, \<sigma>) \<in> V Z} \<inter> I Z),A"
     apply - 
     apply (erule_tac x=Z in allE)
@@ -443,7 +443,7 @@ lemma WhileAnnoFix':
 assumes consequence: "P \<subseteq> {s. (\<exists> Z. s\<in>I Z \<and> 
                                (\<forall>t. t \<in> I Z \<inter> -b \<longrightarrow> t \<in> Q)) }"
 assumes bdy: "\<forall>Z \<sigma>. \<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> ({\<sigma>} \<inter> I Z \<inter> b) (c Z) ({t. (t, \<sigma>) \<in> V Z} \<inter> I Z),A"
-assumes bdy_constant:  "\<forall>Z. c Z = c arbitrary"
+assumes bdy_constant:  "\<forall>Z. c Z = c undefined"
 assumes wf: "\<forall>Z. wf (V Z)"
 shows "\<Gamma>,\<Theta>\<turnstile>\<^sub>t\<^bsub>/F\<^esub> P (whileAnnoFix b I V c) Q,A"
   apply (rule WhileAnnoFix [OF _ bdy bdy_constant wf])

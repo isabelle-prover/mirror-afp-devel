@@ -1,4 +1,4 @@
-(*  ID:          $Id: UserGuide.thy,v 1.8 2008-10-04 15:50:10 makarius Exp $
+(*  ID:          $Id: UserGuide.thy,v 1.9 2008-10-25 12:59:18 fhaftmann Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -1162,7 +1162,7 @@ a Hoare tuple (inclusive auxiliary variables) in the program text:
 
 @{thm specAnno_def [no_vars]}
 
-The whole annotation reduces to the body @{term "c arbitrary"}. The
+The whole annotation reduces to the body @{term "c undefined"}. The
 type of the assertions @{term "P"}, @{term "Q"} and @{term "A"} is
 @{typ "'a \<Rightarrow> 's set"} and the type of command @{term c} is @{typ "'a \<Rightarrow> ('s,'p,'f) com"}.
 All entities formally depend on an auxiliary (logical) variable of type @{typ "'a"}.
@@ -1177,7 +1177,7 @@ The Hoare rule for @{text "specAnno"} is mainly an instance of the consequence r
 
 @{thm [mode=Rule,mode=ParenStmt] HoarePartial.SpecAnno [no_vars]}
 
-The side-condition @{term "\<forall>Z. c Z = c arbitrary"} expresses the intention of body @{term c}
+The side-condition @{term "\<forall>Z. c Z = c undefined"} expresses the intention of body @{term c}
 explained above: The raw body is independent of the auxiliary variable. This
 side-condition is solved automatically by the @{text "vcg"}. The concrete syntax for 
 this specification annotation is shown in the following example: 

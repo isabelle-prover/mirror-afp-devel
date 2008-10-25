@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartial.thy,v 1.6 2008-06-12 06:57:26 lsf37 Exp $
+(*  ID:          $Id: HoarePartial.thy,v 1.7 2008-10-25 12:59:18 fhaftmann Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -128,11 +128,11 @@ lemma DynComConseq:
 lemma SpecAnno: 
  assumes consequence: "P \<subseteq> {s. (\<exists> Z. s\<in>P' Z \<and> (Q' Z \<subseteq> Q) \<and> (A' Z \<subseteq> A))}"
  assumes spec: "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P' Z) (c Z) (Q' Z),(A' Z)"
- assumes bdy_constant:  "\<forall>Z. c Z = c arbitrary"
+ assumes bdy_constant:  "\<forall>Z. c Z = c undefined"
  shows   "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (specAnno P' c Q' A') Q,A"
 proof -
   from spec bdy_constant
-  have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> ((P' Z)) (c arbitrary) (Q' Z),(A' Z)"
+  have "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> ((P' Z)) (c undefined) (Q' Z),(A' Z)"
     apply - 
     apply (rule allI)
     apply (erule_tac x=Z in allE)
@@ -150,7 +150,7 @@ lemma SpecAnno':
  "\<lbrakk>P \<subseteq> {s.  \<exists> Z. s\<in>P' Z \<and> 
             (\<forall>t. t \<in> Q' Z \<longrightarrow>  t \<in> Q) \<and> (\<forall>t. t \<in> A' Z \<longrightarrow> t \<in>  A)};
    \<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P' Z) (c Z) (Q' Z),(A' Z);
-   \<forall>Z. c Z = c arbitrary
+   \<forall>Z. c Z = c undefined
   \<rbrakk> \<Longrightarrow>
     \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (specAnno P' c Q' A') Q,A"
 apply (simp only: subset_iff [THEN sym])
@@ -163,7 +163,7 @@ lemma SpecAnnoNoAbrupt:
  "\<lbrakk>P \<subseteq> {s.  \<exists> Z. s\<in>P' Z \<and> 
             (\<forall>t. t \<in> Q' Z \<longrightarrow>  t \<in> Q)};
    \<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P' Z) (c Z) (Q' Z),{};
-   \<forall>Z. c Z = c arbitrary
+   \<forall>Z. c Z = c undefined
   \<rbrakk> \<Longrightarrow>
     \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (specAnno P' c Q' (\<lambda>s. {})) Q,A"
 apply (rule SpecAnno')
@@ -393,11 +393,11 @@ lemma WhileNoGuard':
 lemma WhileAnnoFix:
 assumes consequence: "P \<subseteq> {s. (\<exists> Z. s\<in>I Z \<and> (I Z \<inter> -b \<subseteq> Q)) }"
 assumes bdy: "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (I Z \<inter> b) (c Z) (I Z),A"
-assumes bdy_constant:  "\<forall>Z. c Z = c arbitrary"
+assumes bdy_constant:  "\<forall>Z. c Z = c undefined"
 shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (whileAnnoFix b I V c) Q,A"
 proof -
   from bdy bdy_constant
-  have bdy': "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (I Z \<inter> b) (c arbitrary) (I Z),A"
+  have bdy': "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (I Z \<inter> b) (c undefined) (I Z),A"
     apply - 
     apply (rule allI)
     apply (erule_tac x=Z in allE)
@@ -421,7 +421,7 @@ lemma WhileAnnoFix':
 assumes consequence: "P \<subseteq> {s. (\<exists> Z. s\<in>I Z \<and> 
                                (\<forall>t. t \<in> I Z \<inter> -b \<longrightarrow> t \<in> Q)) }"
 assumes bdy: "\<forall>Z. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (I Z \<inter> b) (c Z) (I Z),A"
-assumes bdy_constant:  "\<forall>Z. c Z = c arbitrary"
+assumes bdy_constant:  "\<forall>Z. c Z = c undefined"
 shows "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (whileAnnoFix b I V c) Q,A"
   apply (rule WhileAnnoFix [OF _ bdy bdy_constant])
   using consequence by blast
@@ -1190,7 +1190,7 @@ lemma WhileInvInt [intro?]:
 lemma WhileInt [intro?]:
     "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (P \<inter> b) c P,A 
     \<Longrightarrow> 
-    \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (whileAnno b {s. arbitrary} V c) (P \<inter> -b),A"
+    \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> P (whileAnno b {s. undefined} V c) (P \<inter> -b),A"
   by (unfold whileAnno_def) 
      (rule HoarePartialDef.While [THEN conseqPrePost],auto)
 
@@ -1202,7 +1202,7 @@ lemma WhileInvConj [intro?]:
 lemma WhileConj [intro?]:
   "\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. P s \<and> b s} c {s. P s},A
     \<Longrightarrow> 
-\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. P s} (whileAnno {s. b s} {s. arbitrary} V c) {s. P s \<and> \<not> b s},A"
+\<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> {s. P s} (whileAnno {s. b s} {s. undefined} V c) {s. P s \<and> \<not> b s},A"
   by (unfold whileAnno_def) 
      (simp add: HoarePartialDef.While [THEN conseqPrePost] 
       Collect_conj_eq Collect_neg_eq)
