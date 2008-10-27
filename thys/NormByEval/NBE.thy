@@ -1,4 +1,4 @@
-(*  ID:         $Id: NBE.thy,v 1.8 2008-08-26 14:09:34 nipkow Exp $
+(*  ID:         $Id: NBE.thy,v 1.9 2008-10-27 17:45:37 ballarin Exp $
     Author:     Klaus Aehlig, Tobias Nipkow
     Normalization by Evaluation
 *)
@@ -41,6 +41,9 @@ text{* Lambda-terms: *}
 
 datatype tm = C cname | V vname | \<Lambda> tm | At tm tm (infix "\<bullet>" 100)
             | "term" ml   -- {*ML function \texttt{term}*}
+
+text {* The following locale captures type conventions for variables.
+  It is not actually used, merely a formal comment. *}
 
 locale Vars =
  fixes r s t:: tm
@@ -192,20 +195,20 @@ lemma lift_foldl_At[simp]:
   "lift k (s \<bullet>\<bullet> ts) = (lift k s) \<bullet>\<bullet> (map (lift k) ts)"
 by(induct ts arbitrary:s) simp_all
 
-lemma lift_lift_ml: includes Vars shows
+lemma lift_lift_ml: fixes v :: ml shows
   "i < k+1 \<Longrightarrow> lift (Suc k) (lift i v) = lift i (lift k v)"
 by(induct i v rule:lift_ml.induct)
   (simp_all add:map_compose[symmetric])
-lemma lift_lift_tm: includes Vars shows
+lemma lift_lift_tm: fixes t :: tm shows
     "i < k+1 \<Longrightarrow> lift (Suc k) (lift i t) = lift i (lift k t)"
 by(induct t arbitrary: i rule:lift_tm.induct)(simp_all add:lift_lift_ml)
 
-lemma lift_lift_ML: includes Vars shows
+lemma lift_lift_ML:
   "i < k+1 \<Longrightarrow> lift\<^bsub>ML\<^esub> (Suc k) (lift\<^bsub>ML\<^esub> i v) = lift\<^bsub>ML\<^esub> i (lift\<^bsub>ML\<^esub> k v)"
 by(induct v arbitrary: i rule:lift_ML.induct)
   (simp_all add:map_compose[symmetric])
 
-lemma lift_lift_ML_comm: includes Vars shows
+lemma lift_lift_ML_comm:
   "lift j (lift\<^bsub>ML\<^esub> i v) = lift\<^bsub>ML\<^esub> i (lift j v)"
 by(induct v arbitrary: i j rule:lift_ML.induct)
   (simp_all add:map_compose[symmetric])
@@ -264,7 +267,7 @@ apply(simp_all add:lift_lift_ml map_compose[symmetric] lift_subst_ML)
 apply(subst lift_lift_ML_comm)apply simp
 done
 
-lemma lift_ML_subst_ML: includes Vars shows
+lemma lift_ML_subst_ML:
  "lift\<^bsub>ML\<^esub> k (subst\<^bsub>ML\<^esub> \<sigma> v) =
   subst\<^bsub>ML\<^esub> (\<lambda>i. if i<k then lift\<^bsub>ML\<^esub> k (\<sigma> i) else if i=k then V_ML k else lift\<^bsub>ML\<^esub> k (\<sigma>(i - 1))) (lift\<^bsub>ML\<^esub> k v)"
   (is "_ = subst\<^bsub>ML\<^esub> (?insrt k \<sigma>) (lift\<^bsub>ML\<^esub> k v)")
@@ -275,7 +278,7 @@ apply(subgoal_tac "V_ML 0 ## ?insrt k \<sigma> = ?insrt (Suc k) (V_ML 0 ## \<sig
 apply (simp add:expand_fun_eq lift_lift_ML cons_ML_def split:nat.split)
 done
 
-corollary subst_cons_lift: includes Vars shows
+corollary subst_cons_lift:
  "subst\<^bsub>ML\<^esub> (V_ML 0 ## \<sigma>) o (lift\<^bsub>ML\<^esub> 0) = lift\<^bsub>ML\<^esub> 0 o (subst\<^bsub>ML\<^esub> \<sigma>)"
 apply(rule ext)
 apply(simp add: cons_ML_def lift_ML_subst_ML)
@@ -284,10 +287,10 @@ apply(subgoal_tac "nat_case (V_ML 0) (\<lambda>j. lift\<^bsub>ML\<^esub> 0 (\<si
 apply(rule ext, simp split:nat.split)
 done
 
-lemma lift_ML_id[simp]: includes Vars shows "closed\<^bsub>ML\<^esub> k v \<Longrightarrow> lift\<^bsub>ML\<^esub> k v = v"
+lemma lift_ML_id[simp]: "closed\<^bsub>ML\<^esub> k v \<Longrightarrow> lift\<^bsub>ML\<^esub> k v = v"
 by(induct k v rule: lift_ML.induct)(simp_all add:list_eq_iff_nth_eq)
 
-lemma subst_ML_id: includes Vars shows
+lemma subst_ML_id:
   "closed\<^bsub>ML\<^esub> k v \<Longrightarrow> \<forall>i<k. \<sigma> i = V_ML i \<Longrightarrow> subst\<^bsub>ML\<^esub> \<sigma> v = v"
 apply (induct \<sigma> v arbitrary: k rule: subst_ML.induct)
 apply (auto simp add: list_eq_iff_nth_eq)
@@ -318,7 +321,7 @@ lemma subst_ML_coincidence:
 by (induct \<sigma> v arbitrary: k \<sigma>' rule: subst_ML.induct)
    (auto simp:cons_ML_def split:nat.split)
 
-lemma subst_ML_comp: includes Vars shows
+lemma subst_ML_comp:
   "subst\<^bsub>ML\<^esub> \<sigma> (subst\<^bsub>ML\<^esub> \<sigma>' v) = subst\<^bsub>ML\<^esub> (subst\<^bsub>ML\<^esub> \<sigma>  \<circ> \<sigma>') v"
 apply (induct \<sigma>' v arbitrary: \<sigma> rule: subst_ML.induct)
 apply (simp_all add: list_eq_iff_nth_eq)
@@ -327,16 +330,16 @@ apply(auto simp:cons_ML_def split:nat.split)
 apply (metis cons_ML_def o_apply subst_cons_lift)
 done
 
-lemma subst_ML_comp2: includes Vars shows
+lemma subst_ML_comp2:
   "\<forall>i. \<sigma>'' i = subst\<^bsub>ML\<^esub> \<sigma> (\<sigma>' i) \<Longrightarrow> subst\<^bsub>ML\<^esub> \<sigma> (subst\<^bsub>ML\<^esub> \<sigma>' v) = subst\<^bsub>ML\<^esub> \<sigma>'' v"
 by(simp add:subst_ML_comp subst_ML_ext)
 
-lemma closed_tm_ML_foldl_At: includes Vars shows
+lemma closed_tm_ML_foldl_At:
   "closed\<^bsub>ML\<^esub> k (t \<bullet>\<bullet> ts) \<longleftrightarrow> closed\<^bsub>ML\<^esub> k t \<and> (\<forall>t \<in> set ts. closed\<^bsub>ML\<^esub> k t)"
 by(induct ts arbitrary: t) simp_all
 
 lemma closed_ML_lift[simp]:
-  includes Vars shows "closed\<^bsub>ML\<^esub> k v \<Longrightarrow> closed\<^bsub>ML\<^esub> k (lift m v)"
+  fixes v :: ml shows "closed\<^bsub>ML\<^esub> k v \<Longrightarrow> closed\<^bsub>ML\<^esub> k (lift m v)"
 by(induct k v arbitrary: m rule: lift_ML.induct)
   (simp_all add:list_eq_iff_nth_eq)
 
@@ -380,7 +383,7 @@ corollary lift_subst:
   "pure t \<Longrightarrow> lift 0 (subst \<sigma> t) = subst (V 0 ## \<sigma>) (lift 0 t)"
 by (simp add: lift_subst_aux cons_def lift_lift_ml split:nat.split)
 
-lemma subst_comp: includes Vars shows
+lemma subst_comp:
   "pure t \<Longrightarrow> \<forall>i. pure(\<sigma>' i) \<Longrightarrow>
    \<sigma>'' = (\<lambda>i. subst \<sigma> (\<sigma>' i)) \<Longrightarrow> subst \<sigma> (subst \<sigma>' t) = subst \<sigma>'' t"
 apply(induct arbitrary:\<sigma> \<sigma>' \<sigma>'' pred:pure)
@@ -494,7 +497,7 @@ where
 
 declare tRed_list.intros[simp]
 
-lemma tRed_list_refl[simp]: includes Vars shows "ts \<rightarrow>* ts"
+lemma tRed_list_refl[simp]: fixes ts :: "tm list" shows "ts \<rightarrow>* ts"
 by(induct ts) auto
 
 lemma tRed_append: "rs \<rightarrow>* rs' \<Longrightarrow> ts \<rightarrow>* ts' \<Longrightarrow> rs @ ts \<rightarrow>* rs' @ ts'"
@@ -503,19 +506,19 @@ by(induct set: tRed_list) auto
 lemma tRed_rev: "ts \<rightarrow>* ts' \<Longrightarrow> rev ts \<rightarrow>* rev ts'"
 by(induct set: tRed_list) (auto simp:tRed_append)
 
-lemma red_Lam[simp]: includes Vars shows "t \<rightarrow>* t' \<Longrightarrow> \<Lambda> t \<rightarrow>* \<Lambda> t'"
+lemma red_Lam[simp]: "t \<rightarrow>* t' \<Longrightarrow> \<Lambda> t \<rightarrow>* \<Lambda> t'"
 apply(induct rule:rtrancl_induct)
 apply(simp_all)
 apply(blast intro: rtrancl_into_rtrancl tRed.intros)
 done
 
-lemma red_At1[simp]: includes Vars shows "t \<rightarrow>* t' \<Longrightarrow> t \<bullet> s \<rightarrow>* t' \<bullet> s"
+lemma red_At1[simp]: "t \<rightarrow>* t' \<Longrightarrow> t \<bullet> s \<rightarrow>* t' \<bullet> s"
 apply(induct rule:rtrancl_induct)
 apply(simp_all)
 apply(blast intro: rtrancl_into_rtrancl tRed.intros)
 done
 
-lemma red_At2[simp]: includes Vars shows "t \<rightarrow>* t' \<Longrightarrow> s \<bullet> t \<rightarrow>* s \<bullet> t'"
+lemma red_At2[simp]: "t \<rightarrow>* t' \<Longrightarrow> s \<bullet> t \<rightarrow>* s \<bullet> t'"
 apply(induct rule:rtrancl_induct)
 apply(simp_all)
 apply(blast intro:rtrancl_into_rtrancl tRed.intros)
@@ -631,7 +634,7 @@ abbreviation
   kernels :: "ml list \<Rightarrow> tm list" ("_!" 300) where
   "vs! \<equiv> map kernel vs"
 
-lemma kernel_pure: includes Vars assumes "pure t" shows "t! = t"
+lemma kernel_pure: assumes "pure t" shows "t! = t"
 using assms by (induct) simp_all
 
 lemma kernel_foldl_At[simp]: "(s \<bullet>\<bullet> ts)! = (s!) \<bullet>\<bullet> (map kernelt ts)"
@@ -640,13 +643,13 @@ by (induct ts arbitrary: s) simp_all
 lemma kernelt_o_term[simp]: "(kernelt \<circ> term) = kernel"
 by(rule ext) simp
 
-lemma includes Vars shows pure_foldl:
+lemma pure_foldl:
  "pure t \<Longrightarrow> \<forall>t\<in>set ts. pure t \<Longrightarrow> 
  (!!s t. pure s \<Longrightarrow> pure t \<Longrightarrow> pure(f s t)) \<Longrightarrow>
  pure(foldl f t ts)"
 by(induct ts arbitrary: t) simp_all
 
-lemma pure_kernel: includes Vars shows "closed\<^bsub>ML\<^esub> 0 v \<Longrightarrow> pure(v!)"
+lemma pure_kernel: fixes v :: ml shows "closed\<^bsub>ML\<^esub> 0 v \<Longrightarrow> pure(v!)"
 apply(induct v rule:kernel.induct)
 apply (auto simp:pure_foldl)
 apply(rule pure.intros)
@@ -661,11 +664,11 @@ apply(rule closed_ML_subst_ML)
 apply simp+
 done
 
-corollary subst_V_kernel: includes Vars shows
+corollary subst_V_kernel: fixes v :: ml shows
   "closed\<^bsub>ML\<^esub> 0 v \<Longrightarrow> subst V (v!) = v!"
 by (metis pure_kernel subst_V)
 
-lemma kernel_lift_tm: includes Vars shows
+lemma kernel_lift_tm: fixes v :: ml shows
   "closed\<^bsub>ML\<^esub> 0 v \<Longrightarrow> (lift i v)! = lift i (v!)"
 apply(induct v arbitrary: i rule: kernel.induct)
 apply (simp_all add:list_eq_iff_nth_eq)
@@ -709,7 +712,7 @@ apply (induct \<sigma> v arbitrary: k rule:subst_ml.induct)
 apply (simp_all add:list_eq_iff_nth_eq)
 done
 
-lemma subst_ml_subst_ML: includes Vars shows
+lemma subst_ml_subst_ML:
   "subst_ml \<sigma> (subst\<^bsub>ML\<^esub> \<sigma>' v) = subst\<^bsub>ML\<^esub> (subst_ml \<sigma> o \<sigma>') (subst_ml \<sigma> v)"
 apply (induct \<sigma>' v arbitrary: \<sigma> rule: subst_ML.induct)
 apply(simp_all add:list_eq_iff_nth_eq)
@@ -946,7 +949,7 @@ apply(rule ext)
 apply (auto simp add:subst_ML_ext cons_ML_def lift_ML_subst_ML split:nat.split)
 done
 
-theorem kernel_compile: includes Vars shows
+theorem kernel_compile:
  "pure t \<Longrightarrow> \<forall>i. \<sigma> i = V\<^isub>U i [] \<Longrightarrow> (compile t \<sigma>)! = t"
 apply(induct arbitrary: \<sigma> pred:pure)
 apply simp_all
@@ -959,7 +962,7 @@ apply(rule ext)
 apply(simp add:cons_ML_def split:nat.split)
 done
 
-lemma kernel_subst_ML: includes Vars shows
+lemma kernel_subst_ML:
   "pure t \<Longrightarrow> \<forall>i. closed\<^bsub>ML\<^esub> 0 (\<sigma> i) \<Longrightarrow>
    (subst\<^bsub>ML\<^esub> \<sigma> (comp_open t))! = subst (kernel \<circ> \<sigma>) t"
 proof(induct arbitrary: \<sigma> pred:pure)
@@ -975,7 +978,7 @@ proof(induct arbitrary: \<sigma> pred:pure)
   finally show ?case .
 qed (simp_all add:comp_open_def)
 
-lemma kernel_subst_ML_map: includes Vars shows
+lemma kernel_subst_ML_map:
   "\<forall>t \<in> set ts. pure t \<Longrightarrow> \<forall>i. closed\<^bsub>ML\<^esub> 0 (\<sigma> i) \<Longrightarrow>
    map kernel (map (subst\<^bsub>ML\<^esub> \<sigma>) (map comp_open ts)) =
    map (subst (kernel \<circ> \<sigma>)) ts"
@@ -999,7 +1002,7 @@ lemma eq_tRed_trans: "s = t \<Longrightarrow> t \<rightarrow> t' \<Longrightarro
 by simp
 
 text{* Soundness of reduction: *}
-theorem includes Vars shows Red_sound:
+theorem fixes v :: ml shows Red_sound:
   "v \<Rightarrow> v' \<Longrightarrow> closed\<^bsub>ML\<^esub> 0 v \<Longrightarrow> v! \<rightarrow>* v'! \<and> closed\<^bsub>ML\<^esub> 0 v'" and
   "vs \<Rightarrow> vs' \<Longrightarrow> \<forall>v\<in>set vs. closed\<^bsub>ML\<^esub> 0 v \<Longrightarrow>
    vs! \<rightarrow>* vs'! \<and> (\<forall>v'\<in>set vs'. closed\<^bsub>ML\<^esub> 0 v')"
@@ -1043,8 +1046,8 @@ next
   ultimately show "?A \<and> ?C" ..
 qed (auto simp:tRed_list_foldl_At tRed_rev rev_map[symmetric])
 
-theorem Redt_sound: includes Vars
- shows "t \<Rightarrow> t' \<Longrightarrow> closed\<^bsub>ML\<^esub> 0 t \<Longrightarrow> kernelt t \<rightarrow>* kernelt t'  \<and> closed\<^bsub>ML\<^esub> 0 t'"
+theorem Redt_sound:
+  "t \<Rightarrow> t' \<Longrightarrow> closed\<^bsub>ML\<^esub> 0 t \<Longrightarrow> kernelt t \<rightarrow>* kernelt t'  \<and> closed\<^bsub>ML\<^esub> 0 t'"
 proof(induct rule:Redt.inducts)
   case term_C thus ?case
     by (auto simp:closed_tm_ML_foldl_At map_compose[symmetric])
@@ -1070,7 +1073,7 @@ next
   case ctxt_term thus ?case by simp (metis Red_sound)
 qed auto
 
-corollary kernel_inv: includes Vars shows
+corollary kernel_inv:
  "(t :: tm) \<Rightarrow>* t' \<Longrightarrow> closed\<^bsub>ML\<^esub> 0 t \<Longrightarrow> t! \<rightarrow>* t'! \<and> closed\<^bsub>ML\<^esub> 0 t' "
 apply(induct rule: rtrancl.induct)
 apply (metis rtrancl_eq_or_trancl)
@@ -1086,7 +1089,7 @@ proof(induct arbitrary:n \<sigma> pred:pure)
     show ?case using Lam(2)[OF 1] by simp
 qed simp_all
 
-theorem nbe_correct: includes Vars
+theorem nbe_correct: fixes t :: tm
 assumes "pure t" and "pure t'"
 and "term (comp_fixed t) \<Rightarrow>* t'" shows "t \<rightarrow>* t'"
 proof -
