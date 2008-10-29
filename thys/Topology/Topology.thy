@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.14 2008-07-25 10:03:48 fhaftmann Exp $
+    ID:         $Id: Topology.thy,v 1.15 2008-10-29 23:56:20 ballarin Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -97,7 +97,7 @@ lemma (in carrier) subM:
   by (auto simp: is_open_def)
 
 lemma (in carrier) topeqI [intro!]:
-  includes carrier S
+  fixes S (structure)
   shows "\<lbrakk> \<And>m. m open\<^sub>1 \<Longrightarrow> m open\<^sub>2;
            \<And>m. m open\<^sub>2 \<Longrightarrow> m open\<^sub>1 \<rbrakk>
          \<Longrightarrow> T = S"
@@ -205,10 +205,14 @@ proof
 qed
 
 lemma topo_open_imp:
-  includes topobase A S
-  includes topobase B T
-  shows "\<lbrakk> A \<subseteq> B; x open\<^sub>1 \<rbrakk> \<Longrightarrow> x open\<^sub>2"
-  by (auto dest: topo_mono iff: A_S.topo_open topo_open)
+  fixes A and S (structure) defines "S \<equiv> topo A"
+  fixes B and T (structure) defines "T \<equiv> topo B"
+  shows "\<lbrakk> A \<subseteq> B; x open\<^sub>1 \<rbrakk> \<Longrightarrow> x open\<^sub>2" (is "PROP ?P")
+proof -
+  interpret A_S: topobase [A S] by fact
+  interpret topobase [B T] by fact
+  show "PROP ?P" by (auto dest: topo_mono iff: A_S.topo_open topo_open)
+qed
 
 lemma (in topobase) carrier_topo: "carrier = \<Union>B"
 proof
@@ -228,8 +232,8 @@ locale subtopology = carrier S + carrier T +
   assumes subtop[iff]: "s open = (\<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier)"
 
 lemma subtopologyI:
-  includes carrier S
-  includes carrier T
+  fixes S (structure)
+  fixes T (structure)
   assumes H1: "\<And>s. s open \<Longrightarrow> \<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier"
   and     H2: "\<And>t. t open\<^sub>2 \<Longrightarrow> t \<inter> carrier open"
   shows "subtopology S T"
@@ -250,76 +254,84 @@ lemma (in subtopology) carrier_subset:
   by auto
 
 lemma (in subtopology) subtop_sub:
-  includes topology T
+  assumes "topology T"
   assumes carrSopen: "carrier\<^sub>1 open\<^sub>2"
   and s_open: "s open\<^sub>1"
   shows "s open\<^sub>2"
-  using prems by auto
-
-
-lemma (in subtopology) subtop_topology [iff]:
-  includes topology T
-  shows "topology S"
-proof (rule topologyI)
-  fix u v assume uopen: "u open" and vopen: "v open"
-  thus "u \<inter> v open"  by (auto simp add: Int_ac)
-next
-  fix M assume msub: "\<forall>m\<in>M. m open"
-  let ?N = "{x. x open\<^sub>2 \<and> x \<inter> carrier \<in> M}"
-  have "\<Union>?N open\<^sub>2" by auto
-  hence "\<Union>?N \<inter> carrier open" ..
-  moreover have "\<Union>?N  \<inter> carrier = \<Union>M"
-  proof
-    show "\<Union>M \<subseteq> \<Union>?N \<inter> carrier"
-    proof
-      fix x assume "x \<in> \<Union>M"
-      then obtain s where sinM: "s \<in> M" and xins: "x \<in> s"
-	by auto
-      from msub sinM have s_open: "s open" ..
-      then obtain t
-	where t_open: "t open\<^sub>2" and s_inter: "s = t \<inter> carrier" by auto
-      with xins have xint: "x\<in>t" and xpoint: "x \<in> carrier" by auto
-      moreover
-      from t_open s_inter sinM have "t \<in> ?N" by auto
-      ultimately show "x \<in> \<Union>?N \<inter> carrier"
-	by auto
-    qed
-  qed auto
-  finally show "\<Union>M open" .
+proof -
+  interpret topology [T] by fact
+  show ?thesis using prems by auto
 qed
 
+lemma (in subtopology) subtop_topology [iff]:
+  assumes "topology T"
+  shows "topology S"
+proof -
+  interpret topology [T] by fact
+  show ?thesis proof (rule topologyI)
+    fix u v assume uopen: "u open" and vopen: "v open"
+    thus "u \<inter> v open"  by (auto simp add: Int_ac)
+  next
+    fix M assume msub: "\<forall>m\<in>M. m open"
+    let ?N = "{x. x open\<^sub>2 \<and> x \<inter> carrier \<in> M}"
+    have "\<Union>?N open\<^sub>2" by auto
+    hence "\<Union>?N \<inter> carrier open" ..
+    moreover have "\<Union>?N  \<inter> carrier = \<Union>M"
+    proof
+      show "\<Union>M \<subseteq> \<Union>?N \<inter> carrier"
+      proof
+	fix x assume "x \<in> \<Union>M"
+	then obtain s where sinM: "s \<in> M" and xins: "x \<in> s"
+	  by auto
+	from msub sinM have s_open: "s open" ..
+	then obtain t
+	  where t_open: "t open\<^sub>2" and s_inter: "s = t \<inter> carrier" by auto
+	with xins have xint: "x\<in>t" and xpoint: "x \<in> carrier" by auto
+	moreover
+	from t_open s_inter sinM have "t \<in> ?N" by auto
+	ultimately show "x \<in> \<Union>?N \<inter> carrier"
+	  by auto
+      qed
+    qed auto
+    finally show "\<Union>M open" .
+  qed
+qed
 
 lemma  subtop_lemma:
-  includes topobase A S
-  includes topobase B T
+  fixes A and S (structure) defines "S \<equiv> topo A"
+  fixes B and T (structure) defines "T \<equiv> topo B"
   assumes  Asub: "A = (\<Union>t\<in>B. { t \<inter> \<Union>A })"
   shows   "subtopology S T"
-proof (rule subtopologyI)
-  fix s assume "s open\<^sub>1"
-  thus "\<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier"
-  proof induct
-    case (basic s) with Asub
-    obtain t where tB: "t \<in> B" and stA: "s = t \<inter> \<Union>A" by blast
-    thus ?case by (auto simp: A_S.carrier_topo)
-  next case (inter s t) thus ?case by auto
-  next case (union M)
-    let ?N = "\<Union>{u. u open\<^sub>2 \<and> (\<exists>m\<in>M. m = u \<inter> carrier)}"
-    have "?N open\<^sub>2" and "\<Union>M = ?N \<inter> carrier" using union by auto
-    thus ?case by auto
-  qed
-next
-  fix t assume "t open\<^sub>2"
-  thus "t \<inter> carrier open"
-  proof induct
-    case (basic u) with Asub show ?case
-      by (auto simp: A_S.carrier_topo)
-  next case (inter u v)
-    hence "(u \<inter> carrier) \<inter> (v \<inter> carrier) open" by auto
-    thus ?case  by (simp add: Int_ac)
-  next case (union M)
-    let ?N = "\<Union>{s. \<exists>m\<in>M. s = m \<inter> carrier}"
-    from union have "?N open" and "?N = \<Union>M \<inter> carrier" by auto
-    thus ?case by auto
+proof -
+  interpret A_S: topobase [A S] by fact
+  interpret topobase [B T] by fact
+  show ?thesis proof (rule subtopologyI)
+    fix s assume "s open\<^sub>1"
+    thus "\<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier"
+    proof induct
+      case (basic s) with Asub
+      obtain t where tB: "t \<in> B" and stA: "s = t \<inter> \<Union>A" by blast
+      thus ?case by (auto simp: A_S.carrier_topo)
+    next case (inter s t) thus ?case by auto
+    next case (union M)
+      let ?N = "\<Union>{u. u open\<^sub>2 \<and> (\<exists>m\<in>M. m = u \<inter> carrier)}"
+      have "?N open\<^sub>2" and "\<Union>M = ?N \<inter> carrier" using union by auto
+      thus ?case by auto
+    qed
+  next
+    fix t assume "t open\<^sub>2"
+    thus "t \<inter> carrier open"
+    proof induct
+      case (basic u) with Asub show ?case
+	by (auto simp: A_S.carrier_topo)
+    next case (inter u v)
+      hence "(u \<inter> carrier) \<inter> (v \<inter> carrier) open" by auto
+      thus ?case  by (simp add: Int_ac)
+    next case (union M)
+      let ?N = "\<Union>{s. \<exists>m\<in>M. s = m \<inter> carrier}"
+      from union have "?N open" and "?N = \<Union>M \<inter> carrier" by auto
+      thus ?case by auto
+    qed
   qed
 qed
 
@@ -353,15 +365,22 @@ lemma (in trivial) open_iff [iff]:
   by (auto simp: T_def is_open_def)
 
 lemma trivial_topology:
-  includes trivial
+  fixes T (structure) defines "T \<equiv> {{}}"
   shows "topology T"
-  by (auto intro: topologyI)
+proof -
+  interpret trivial [T] by fact
+  show ?thesis by (auto intro: topologyI)
+qed
 
 lemma empty_carrier_implies_trivial:
-  includes topology S
-  includes trivial  T
-  shows "carrier = {} \<Longrightarrow> S = T"
-  by (auto intro!: topeqI)
+  fixes S (structure) assumes "topology S"
+  fixes T (structure) defines "T \<equiv> {{}}"
+  shows "carrier = {} \<Longrightarrow> S = T" (is "PROP ?P")
+proof -
+  interpret topology [S] by fact
+  interpret trivial [T] by fact
+  show "PROP ?P" by (auto intro!: topeqI)
+qed
 
 locale discrete = var X + carrier T +
   defines "T \<equiv> discrete_top X"
@@ -771,11 +790,11 @@ example. By the way: could the counter example be prooved using an
 instantiation?*}
 
 lemma counter_example_core_frontier:
-  includes var X
-  defines [simp]: "X \<equiv> (UNIV::nat set)"
-  includes indiscrete X
+  fixes X defines [simp]: "X \<equiv> (UNIV::nat set)"
+  fixes T (structure) defines "T \<equiv> indiscrete_top X"
   shows "core (frontier {0}) = X"
 proof -
+  interpret indiscrete [X T] by fact
   have "core {0} = {}"
     by (auto simp add: carrier [symmetric] cor_def)
   moreover have "closure {0} = UNIV"
@@ -1095,8 +1114,8 @@ locale continuous = func f +
   "m open\<^sub>2 \<Longrightarrow> carrier \<inter> (f -` m) open"
 
 lemma continuousI:
-  includes carrier S
-  includes carrier T
+  fixes S (structure)
+  fixes T (structure)
   assumes  "f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2"
            "\<And>m. m open\<^sub>2 \<Longrightarrow> carrier \<inter> (f -` m) open"
   shows "continuous f S T"
@@ -1104,8 +1123,8 @@ lemma continuousI:
     simp: continuous_def func_def continuous_axioms_def)
 
 lemma continuousE:
-  includes carrier S
-  includes carrier T
+  fixes S (structure)
+  fixes T (structure)
   shows
   "\<lbrakk> continuous f S T;
      \<lbrakk> f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2;
@@ -1114,8 +1133,8 @@ lemma continuousE:
   by (auto simp: continuous_def func_def continuous_axioms_def)
 
 lemma continuousCE:
-  includes carrier S
-  includes carrier T
+  fixes S (structure)
+  fixes T (structure)
   shows
   "\<lbrakk> continuous f S T;
      \<lbrakk> \<not> m open\<^sub>2; f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2 \<rbrakk> \<Longrightarrow> P;
@@ -1135,14 +1154,16 @@ proof-
 qed
 
 lemma continuousI2:
-  includes carrier S
-  includes carrier T
+  fixes S (structure)
+  fixes T (structure)
   assumes func: "f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2"
   assumes R: "\<And>c. \<lbrakk> c \<subseteq> carrier\<^sub>2; c closed\<^sub>2 \<rbrakk> \<Longrightarrow> f -` c closed"
   shows "continuous f S T"
 proof (rule continuous.intro)
   from func show "func f S T" by (auto simp: func_def)
 next
+  interpret S: carrier [S] .
+  interpret T: carrier [T] .
   show "continuous_axioms f S T"
   proof (rule continuous_axioms.intro)
     fix m let ?c = "carrier\<^sub>2 - m" assume "m open\<^sub>2"
@@ -1167,12 +1188,13 @@ lemma continuous_compose:
 
 
 lemma id_continuous:
-  includes carrier
+  fixes T (structure)
   shows "continuous id T T"
 proof(rule continuousI)
   show "id \<in> carrier \<rightarrow> carrier"
     by (auto intro: funcsetI)
 next
+  interpret T: carrier [T] .
   fix m assume mopen: "m open"
   hence "m \<subseteq> carrier" by auto
   hence "carrier \<inter> m = m" by auto
@@ -1181,15 +1203,25 @@ next
 qed
 
 lemma (in discrete) continuous:
-  includes func f T S
+  fixes f and S (structure) and fimage
+  assumes "func f T S" defines "fimage \<equiv> fimg S f"
   shows "continuous f T S"
-  by (auto intro!: continuousI)
+proof -
+  interpret func [f T S fimage] by fact fact
+  show ?thesis by (auto intro!: continuousI)
+qed
 
 lemma (in indiscrete) continuous:
-  includes topology S
-  includes func f S T
+  fixes S (structure)
+  assumes "topology S"
+  fixes f and fimage
+  assumes "func f S T" defines "fimage \<equiv> fimg T f"
   shows "continuous f S T"
-  by (auto del: S.Int_open intro!: continuousI)
+proof -
+  interpret S: topology [S] by fact
+  interpret func [f S T fimage] by fact fact
+  show ?thesis by (auto del: S.Int_open intro!: continuousI)
+qed
 
 section{*Filters*}
 
@@ -1209,7 +1241,7 @@ definition
   "ultr T F \<longleftrightarrow> (\<forall> A. A \<subseteq> carr T \<longrightarrow> A \<in> F \<or> (carr T - A) \<in> F)"
 
 lemma filtersI [intro]:
-  includes carrier
+  fixes T (structure)
   assumes a1: "{} \<notin> F"
   and a2: "\<Union>F \<subseteq> carrier"
   and a3: "\<And> A B. \<lbrakk> A \<in> F; B \<in> F \<rbrakk> \<Longrightarrow> A \<inter> B \<in> F"
@@ -1283,7 +1315,7 @@ proof-
 qed
 
 lemma nonempty_filter_implies_nonempty_carrier:
-  includes carrier
+  fixes T (structure)
   assumes F_filter: "F \<in> Filters"
   and F_not_empty: "F \<noteq> {}"
   shows "carrier \<noteq> {}"
@@ -1295,7 +1327,7 @@ proof-
 qed
 
 lemma carrier_singleton_filter:
-  includes carrier
+  fixes T (structure)
   shows "carrier \<noteq> {} \<Longrightarrow> {carrier} \<in> Filters"
   by auto
 
@@ -1304,37 +1336,45 @@ lemma (in topology) nhds_filter:
   "nhds x \<in> Filters"
   by (auto dest: nhds_greater intro!: filtersI nhds_inter)
 
-
 lemma fimage_filter:
-  includes func f S T
-  includes filter F S
+  fixes f and S (structure) and T (structure) and fimage
+  assumes "func f S T" defines "fimage \<equiv> fimg T f"
+  fixes F assumes "filter F S"
   shows "fimage F \<in> Filters\<^sub>2"
-proof
-  fix A B assume "A \<in> fimage F" "B \<in> fimage F"
-  then obtain a b where
-    AY: "A\<subseteq>carrier\<^sub>2" and aF: "a\<in>F" and fa: "f ` a \<subseteq> A" and
-    BY: "B\<subseteq>carrier\<^sub>2" and bF: "b\<in>F" and fb: "f ` b \<subseteq> B"
-    by (auto)
-  from AY BY have "A\<inter>B \<subseteq> carrier\<^sub>2" by auto
-  moreover from aF bF have "a \<inter> b \<in> F" by auto
-  moreover from aF bF fa fb have "f`(a \<inter> b) \<subseteq> A \<inter> B" by auto
-  ultimately show "A\<inter>B \<in> fimage F" by auto
-qed auto
+proof -
+  interpret func [f S T fimage] by fact fact
+  interpret filter [F S] by fact
+  show ?thesis proof
+    fix A B assume "A \<in> fimage F" "B \<in> fimage F"
+    then obtain a b where
+      AY: "A\<subseteq>carrier\<^sub>2" and aF: "a\<in>F" and fa: "f ` a \<subseteq> A" and
+      BY: "B\<subseteq>carrier\<^sub>2" and bF: "b\<in>F" and fb: "f ` b \<subseteq> B"
+      by (auto)
+    from AY BY have "A\<inter>B \<subseteq> carrier\<^sub>2" by auto
+    moreover from aF bF have "a \<inter> b \<in> F" by auto
+    moreover from aF bF fa fb have "f`(a \<inter> b) \<subseteq> A \<inter> B" by auto
+    ultimately show "A\<inter>B \<in> fimage F" by auto
+  qed auto
+qed
 
 lemma Int_filters:
-  includes filter F
-  includes filter E
+  fixes F and T (structure) assumes "filter F T"
+  fixes E assumes "filter E T"
   shows "F \<inter> E \<in> Filters"
-  by auto
+proof -
+  interpret filter [F T] by fact
+  interpret filter [E T] by fact
+  show ?thesis by auto
+qed
 
 lemma ultraCI [intro!]:
-  includes carrier
+  fixes T (structure)
   shows "(\<And>A. \<lbrakk> A \<subseteq> carrier; carrier - A \<notin> F \<rbrakk> \<Longrightarrow> A \<in> F) \<Longrightarrow> ultra F"
   by (auto simp: ultr_def)
 
 
 lemma ultraE:
-  includes carrier
+  fixes T (structure)
   shows "\<lbrakk> ultra F; A \<subseteq> carrier;
      A \<in> F \<Longrightarrow> R;
      carrier - A \<in> F \<Longrightarrow> R
@@ -1342,7 +1382,7 @@ lemma ultraE:
 by (auto simp: ultr_def)
 
 lemma ultraD:
-  includes carrier
+  fixes T (structure)
   shows "\<lbrakk> ultra F; A \<subseteq> carrier; A \<notin> F \<rbrakk> \<Longrightarrow> (carrier - A) \<in> F"
   by (erule ultraE) auto
 
@@ -1353,20 +1393,23 @@ locale ultra_filter = filter +
 
 
 lemma (in ultra_filter) max:
-  includes filter E
+  fixes E assumes "filter E T"
   assumes fsube: "F \<subseteq> E"
   shows "E \<subseteq> F"
-proof
-  fix x assume xinE: "x \<in> E"
-  hence "x \<subseteq> carrier" ..
-  hence "x \<in> F \<or> carrier - x \<in> F" by auto
-  thus "x \<in> F"
-  proof clarify
-    assume "carrier - x \<in> F"
-    hence "carrier - x \<in> E" using fsube ..
-    with xinE have "x \<inter> (carrier - x) \<in> E" ..
-    hence False by auto
-    thus "x \<in> F" ..
+proof -
+  interpret filter [E T] by fact
+  show ?thesis proof
+    fix x assume xinE: "x \<in> E"
+    hence "x \<subseteq> carrier" ..
+    hence "x \<in> F \<or> carrier - x \<in> F" by auto
+    thus "x \<in> F"
+    proof clarify
+      assume "carrier - x \<in> F"
+      hence "carrier - x \<in> E" using fsube ..
+      with xinE have "x \<inter> (carrier - x) \<in> E" ..
+      hence False by auto
+      thus "x \<in> F" ..
+    qed
   qed
 qed
 
@@ -1413,11 +1456,12 @@ proof
 qed
 
 lemma filter_chain_lemma:
-  includes carrier
-  includes filter F
+  fixes T (structure) and F
+  assumes "filter F T"
   assumes C_chain: "C \<in> chain {V. V \<in> Filters \<and> F \<subseteq> V}" (is "C \<in> chain ?FF")
   shows "\<Union>(C \<union> {F}) \<in> Filters" (is "?E \<in> Filters")
 proof-
+  interpret filter [F T] by fact
   from C_chain have C_subset_FF[dest]: "\<And> x. x\<in>C \<Longrightarrow> x \<in> ?FF" and
     C_ordered: "\<forall> A \<in> C. \<forall> B \<in> C. A \<subseteq> B \<or> B \<subseteq> A"
     by (auto simp: chain_def chain_subset_def)
@@ -1453,7 +1497,7 @@ proof-
 qed
 
 lemma expand_filter_ultra:
-  includes carrier
+  fixes T (structure)
   assumes carrier_not_empty: "carrier \<noteq> {}"
   and     F_filter: "F \<in> Filters"
   and     R: "\<And>U.  \<lbrakk> U \<in> Filters;  F \<subseteq> U; ultra U \<rbrakk> \<Longrightarrow> R"
@@ -1590,12 +1634,14 @@ qed
 
 
 lemma convergent_filter_closure:
-  includes filter F
+  fixes F and T (structure)
+  assumes "filter F T"
   assumes converge: "F -\<longrightarrow> x"
   and   xpoint: "x \<in> carrier"
   and   AF: "A \<in> F"
   shows "x \<in> closure A"
 proof-
+  interpret filter [F T] by fact
   have "x adh A"
   proof
     fix u assume unhd: "u \<in> nhds x"
@@ -1712,7 +1758,7 @@ locale T2 = T1 +
   \<longrightarrow> (\<exists> u \<in> nhds x. \<exists> v \<in> nhds y. u \<inter> v = {})"
 
 lemma T2_axiomsI:
-  includes carrier
+  fixes T (structure)
   shows
   "(\<And>x y. \<lbrakk> x \<in> carrier; y \<in> carrier; x \<noteq> y \<rbrakk> \<Longrightarrow> 
            \<exists> u \<in> nhds x. \<exists> v \<in> nhds y. u \<inter> v = {})
@@ -1744,11 +1790,12 @@ proof-
 qed
 
 lemma T2_axiom_implies_T1_axiom:
-  includes carrier
+  fixes T (structure)
   assumes T2: "\<forall> x \<in> carrier. \<forall> y \<in> carrier. x \<noteq> y
   \<longrightarrow> (\<exists> u \<in> nhds x. \<exists> v \<in> nhds y. u \<inter> v = {})"
   shows "T1_axioms T"
 proof (rule T1_axioms.intro, clarify)
+  interpret carrier [T] .
   fix x y assume neq: "x \<noteq> y" and
     points: "x \<in> carrier" "y \<in> carrier"
   with T2 obtain u v
@@ -1772,11 +1819,12 @@ proof (rule T1_axioms.intro, clarify)
 qed
 
 lemma T2_axiom_implies_T0_axiom:
-  includes carrier
+  fixes T (structure)
   assumes T2: "\<forall> x \<in> carrier. \<forall> y \<in> carrier. x \<noteq> y
   \<longrightarrow> (\<exists> u \<in> nhds x. \<exists> v \<in> nhds y. u \<inter> v = {})"
   shows "T0_axioms T"
 proof (rule T0_axioms.intro, clarify)
+  interpret carrier [T] .
   fix x y assume neq: "x \<noteq> y" and
     points: "x \<in> carrier" "y \<in> carrier"
   with T2 obtain u v
@@ -1792,37 +1840,43 @@ qed
 
 
 lemma T2I:
-  includes topology T
+  fixes T (structure) assumes "topology T"
   assumes I: "\<And>x y. \<lbrakk> x \<in> carrier; y \<in> carrier; x \<noteq> y \<rbrakk> \<Longrightarrow> 
            \<exists> u \<in> nhds x. \<exists> v \<in> nhds y. u \<inter> v = {}"
   shows "T2 T"
-  apply intro_locales
-  apply (rule T2_axiom_implies_T0_axiom)
-  using I apply simp
-  apply (rule T2_axiom_implies_T1_axiom)
-  using I apply simp
-  apply unfold_locales
-  using I apply simp
-  done
+proof -
+  interpret topology [T] by fact
+  show ?thesis apply intro_locales
+    apply (rule T2_axiom_implies_T0_axiom)
+    using I apply simp
+    apply (rule T2_axiom_implies_T1_axiom)
+    using I apply simp
+    apply unfold_locales
+    using I apply simp
+    done
+qed
 
 lemmas T2E = T2.neqE
 lemmas T2E2 = T2.neqE2
 
 lemma (in T2) unique_convergence:
-includes filter F
+fixes F assumes "filter F T"
 assumes points: "x \<in> carrier" "y \<in> carrier"
   and   Fx:    "F -\<longrightarrow> x"
   and   Fy:    "F -\<longrightarrow> y"
   shows "x = y"
-proof (rule ccontr)
-  assume "x \<noteq> y" then obtain u v
-    where unhdx: "u \<in> nhds x"
-    and   vnhdy: "v \<in> nhds y"
-    and   inter: "u \<inter> v = {}"
-    using points ..
-  hence "u \<in> F" and "v \<in> F" using Fx Fy by auto
-  hence "u \<inter> v \<in> F" ..
-  with inter show "False" by auto
+proof -
+  interpret filter [F T] by fact
+  show ?thesis proof (rule ccontr)
+    assume "x \<noteq> y" then obtain u v
+      where unhdx: "u \<in> nhds x"
+      and   vnhdy: "v \<in> nhds y"
+      and   inter: "u \<inter> v = {}"
+      using points ..
+    hence "u \<in> F" and "v \<in> F" using Fx Fy by auto
+    hence "u \<inter> v \<in> F" ..
+    with inter show "False" by auto
+  qed
 qed
 
 lemma (in topology) unique_convergence_implies_T2 [rule_format]:
@@ -1901,9 +1955,14 @@ lemma (in T2) convergent_limE:
   by (force intro!: R)
 
 lemma image_lim_subset_lim_fimage:
-  includes continuous f S T
+  fixes f and S (structure) and T (structure) and fimage
+  defines "fimage \<equiv> fimg T f"
+  assumes "continuous f S T"
   shows "F \<in> Filters\<^sub>1 \<Longrightarrow> f`(lims F) \<subseteq> lims\<^sub>2 (fimage F)"
-  by (auto simp: limites_def intro: fimage_converges)
+proof -
+  interpret continuous [f S T fimage] by fact fact
+  show ?thesis by (auto simp: limites_def intro: fimage_converges)
+qed
 
 subsection{*T3 axiom and regular spaces*}
 
@@ -1922,11 +1981,14 @@ lemma (in T3) T3E:
 locale regular = T1 + T3
 
 lemma regular_implies_T2:
-  includes regular T
+  fixes T (structure)
+  assumes "regular T"
   shows "T2 T"
 proof (rule T2I)
+  interpret regular [T] by fact
   show "topology T" by unfold_locales
 next
+  interpret regular [T] by fact
   fix x y assume "x \<in> carrier" "y \<in> carrier" "x \<noteq> y"
   hence "{y} \<subseteq> carrier" "{y} closed" "x \<in> carrier" "x \<notin> {y}" by auto
   then obtain B U where B: "{y} \<subseteq> B" "B open" and U: "U \<in> nhds x" "B \<inter> U = {}"
@@ -1959,16 +2021,21 @@ qed
 locale normal = T1 + T4
 
 lemma normal_implies_regular:
-  includes normal T
+  fixes T (structure)
+  assumes "normal T"
   shows  "regular T"
-proof intro_locales
-  show "T3_axioms T"
-  proof (rule T3_axioms.intro, clarify)
-    fix A x assume x: "x \<in> carrier" "x \<notin> A" and A: "A closed" "A \<subseteq> carrier"
-    from x have "{x} closed" "{x} \<subseteq> carrier" "A \<inter> {x} = {}" by auto
-    with A obtain U V
-      where "U open" "A \<subseteq> U" "V open" "{x} \<subseteq> V" "U \<inter> V = {}" by (rule T4E)
-    thus "\<exists>B. \<exists>U\<in>nhds x. B open \<and> A \<subseteq> B \<and> B \<inter> U = {}" by auto
+proof -
+  interpret normal [T] by fact
+  show ?thesis
+  proof intro_locales
+    show "T3_axioms T"
+    proof (rule T3_axioms.intro, clarify)
+      fix A x assume x: "x \<in> carrier" "x \<notin> A" and A: "A closed" "A \<subseteq> carrier"
+      from x have "{x} closed" "{x} \<subseteq> carrier" "A \<inter> {x} = {}" by auto
+      with A obtain U V
+	where "U open" "A \<subseteq> U" "V open" "{x} \<subseteq> V" "U \<inter> V = {}" by (rule T4E)
+      thus "\<exists>B. \<exists>U\<in>nhds x. B open \<and> A \<subseteq> B \<and> B \<inter> U = {}" by auto
+    qed
   qed
 qed
 

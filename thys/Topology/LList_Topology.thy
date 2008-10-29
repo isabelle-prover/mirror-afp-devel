@@ -1,5 +1,5 @@
 (*  Title:      LList_Topology.thy
-    ID:         $Id: LList_Topology.thy,v 1.7 2008-07-25 10:03:48 fhaftmann Exp $
+    ID:         $Id: LList_Topology.thy,v 1.8 2008-10-29 23:56:20 ballarin Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -233,16 +233,25 @@ lemma (in itrace_top) itop_carrier: "carrier = A\<^sup>\<omega>"
   by (auto simp: carrier_topo B_def infsuff_def)
 
 lemma itop_sub_ttop_base:
-  includes suffixes A B
-  includes infsuffixes A C
+  fixes A :: "'a \<Rightarrow> bool" 
+    and B :: "('a llist \<Rightarrow> bool) \<Rightarrow> bool" 
+    and C :: "('a llist \<Rightarrow> bool) \<Rightarrow> bool"
+  defines [simp]: "B \<equiv> \<Union>s\<in>A\<^sup>\<star>. {suff A s}" and [simp]: "C \<equiv> \<Union>s\<in>A\<^sup>\<star>. {infsuff A s}"
   shows "C = (\<Union> t\<in>B. {t \<inter> \<Union>C})"
   by (auto simp: infsuff_def suff_def)
 
 lemma itop_sub_ttop [folded ttop_def itop_def]:
-  includes itrace_top A C S
-  includes trace_top A B T
+  fixes A and C and S (structure)
+  defines "C \<equiv> \<Union>s\<in>A\<^sup>\<star>. {infsuff A s}" and "S \<equiv> topo C"
+  fixes B and T (structure)
+  defines "B \<equiv> \<Union>s\<in>A\<^sup>\<star>. {suff A s}" and "T \<equiv> topo B"
   shows "subtopology S T"
-  by (auto intro: itop_sub_ttop_base [THEN subtop_lemma] simp: S_def T_def)
+proof -
+  interpret itrace_top [A C S] by fact
+  interpret trace_top [A B T] by fact
+  show ?thesis
+    by (auto intro: itop_sub_ttop_base [THEN subtop_lemma] simp: S_def T_def)
+qed
 
 lemma (in itrace_top) infsuff_nhd_base:
   assumes unhd: "u \<in> nhds t"
@@ -517,24 +526,31 @@ by (auto simp add: carrier_topo suff_def)
    (auto elim: alllsts.cases)
 
 lemma pptop_subtop_ttop:
-  includes carrier S
-  includes trace_top A B T
+  fixes S (structure)
+  fixes A and B and T (structure)
+  defines "B \<equiv> \<Union>s\<in>A\<^sup>\<star>. {suff A s}" and "T \<equiv> topo B"
   defines "S \<equiv> \<Union> t \<in> T. {t - {LNil}}"
   shows "subtopology S T"
 by (rule subtopology.intro, auto simp add: is_open_def S_def carr_def)
   
 lemma pptop_top:
-  includes carrier S
-  includes trace_top A B T
+  fixes S (structure)
+  fixes A and B and T (structure)
+  defines "B \<equiv> \<Union>s\<in>A\<^sup>\<star>. {suff A s}" and "T \<equiv> topo B"
+  defines "S \<equiv> \<Union> t \<in> T. {t - {LNil}}"
   shows  "topology (\<Union> t \<in> T. {t - {LNil}})"
-  by (auto intro!: subtopology.subtop_topology [OF pptop_subtop_ttop]
-    trace_top.topology simp: T_def)
+proof -
+  interpret trace_top [A B T] by fact
+  show ?thesis
+    by (auto intro!: subtopology.subtop_topology [OF pptop_subtop_ttop]
+      trace_top.topology simp: T_def)
+qed
 
 (*
 lemma
   includes ptrace_top A B S
   includes trace_top  A C T
-  includes carrier S'
+  fixes S' (structure)
   defines  "S' \<equiv> (\<Union> t \<in> T. {t - {LNil}})" 
   shows "S = S'"
 proof-
