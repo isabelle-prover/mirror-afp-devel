@@ -1,4 +1,4 @@
-(*  ID:          $Id: VcgEx.thy,v 1.6 2008-06-12 06:57:28 lsf37 Exp $
+(*  ID:          $Id: VcgEx.thy,v 1.7 2008-10-29 10:22:51 ballarin Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -867,7 +867,7 @@ lemma "{t. t may_only_modify_globals Z in [next]}
   done
 
 text {* If the verification condition generator works on a procedure call
-it checks whether it can find a modifies clause in the context. If one
+it checks whether it can find a modified clause in the context. If one
 is present the procedure call is simplified before the Hoare rule 
 @{thm [source] HoarePartial.ProcSpec} is applied. Simplification of the procedure call means,
 that the ``copy back'' of the global components is simplified. Only those
@@ -1080,8 +1080,12 @@ record 'g list_vars' = "'g list_vars" +
 
 constdefs "sz \<equiv> 2::nat"
 
-lemma includes hoare
- shows  
+text {* Restrict locale @{text hoare} to the required type. *}
+
+locale hoare_ex = hoare +
+  constrains \<Gamma> :: "'c ~=> (('a globals_list_alloc_scheme, 'b) list_vars'_scheme, 'c, 'd) com"
+
+lemma (in hoare_ex)
   "\<Gamma>\<turnstile> \<lbrace>\<acute>i = 0 \<and> \<acute>first = Null \<and> n*sz \<le> \<acute>free\<rbrace>
        WHILE \<acute>i < n 
        INV \<lbrace>\<exists>Ps. List \<acute>first \<acute>next Ps \<and> length Ps = \<acute>i \<and> \<acute>i \<le> n \<and> 
@@ -1109,8 +1113,7 @@ apply fastsimp
 done
 
 
-lemma includes hoare
- shows  
+lemma (in hoare_ex)
   "\<Gamma>\<turnstile> \<lbrace>\<acute>i = 0 \<and> \<acute>first = Null \<and> n*sz \<le> \<acute>free\<rbrace>
        WHILE \<acute>i < n 
        INV \<lbrace>\<exists>Ps. List \<acute>first \<acute>next Ps \<and> length Ps = \<acute>i \<and> \<acute>i \<le> n \<and> 
@@ -1158,9 +1161,7 @@ done
 text {* Let us consider this small program that reverts a list. At
 first without guards. 
 *}
-lemma rev_strip:  
-  includes hoare
-  shows 
+lemma (in hoare_ex) rev_strip:
   "\<Gamma>\<turnstile> \<lbrace>List \<acute>p \<acute>next Ps \<and> List \<acute>q \<acute>next Qs \<and> set Ps \<inter> set Qs = {} \<and>
        set Ps \<subseteq> set \<acute>alloc \<and> set Qs \<subseteq> set \<acute>alloc\<rbrace>
   WHILE \<acute>p \<noteq> Null
@@ -1179,9 +1180,12 @@ done
 text {* If we want to ensure that we do not dereference @{term "Null"} or
 access unallocated memory, we have to add some guards.
 *}
+
+locale hoare_ex_guard = hoare +
+  constrains \<Gamma> :: "'c ~=> (('a globals_list_alloc_scheme, 'b) list_vars'_scheme, 'c, bool) com"
+
 lemma 
-  includes hoare
-  shows 
+  (in hoare_ex_guard)
   "\<Gamma>\<turnstile> \<lbrace>List \<acute>p \<acute>next Ps \<and> List \<acute>q \<acute>next Qs \<and> set Ps \<inter> set Qs = {} \<and>
        set Ps \<subseteq> set \<acute>alloc \<and> set Qs \<subseteq> set \<acute>alloc\<rbrace>
   WHILE \<acute>p \<noteq> Null
@@ -1201,9 +1205,7 @@ done
 text {* We can also just prove that no faults will occur, by giving the
 trivial postcondition.
 *}
-lemma rev_noFault:   
-  includes hoare
-  shows 
+lemma (in hoare_ex_guard) rev_noFault:   
   "\<Gamma>\<turnstile> \<lbrace>List \<acute>p \<acute>next Ps \<and> List \<acute>q \<acute>next Qs \<and> set Ps \<inter> set Qs = {} \<and>
        set Ps \<subseteq> set \<acute>alloc \<and> set Qs \<subseteq> set \<acute>alloc\<rbrace>
   WHILE \<acute>p \<noteq> Null
@@ -1219,9 +1221,7 @@ apply (vcg)
 apply fastsimp+
 done
 
-lemma rev_moduloGuards: 
-  includes hoare
-  shows 
+lemma (in hoare_ex_guard) rev_moduloGuards: 
   "\<Gamma>\<turnstile>\<^bsub>/{True}\<^esub> \<lbrace>List \<acute>p \<acute>next Ps \<and> List \<acute>q \<acute>next Qs \<and> set Ps \<inter> set Qs = {} \<and>
        set Ps \<subseteq> set \<acute>alloc \<and> set Qs \<subseteq> set \<acute>alloc\<rbrace>
   WHILE \<acute>p \<noteq> Null
@@ -1267,8 +1267,7 @@ the rule @{thm HoarePartialProps.CombineStrip}
 
 
 lemma 
-  includes hoare
-  shows 
+  (in hoare_ex_guard)
   "\<Gamma>\<turnstile> \<lbrace>List \<acute>p \<acute>next Ps \<and> List \<acute>q \<acute>next Qs \<and> set Ps \<inter> set Qs = {} \<and>
        set Ps \<subseteq> set \<acute>alloc \<and> set Qs \<subseteq> set \<acute>alloc\<rbrace>
   WHILE \<acute>p \<noteq> Null
