@@ -11,10 +11,11 @@ lemma standard_control_implies_weak_order:
 proof -
   from `n controls\<^isub>s n'` obtain as a a' as' where "as = a#as'"
     and "n' \<notin> set(sourcenodes as)" and "n -as\<rightarrow>* n'"
-    and "sourcenode a = n" and "n' postdominates (targetnode a)"
+    and "n' postdominates (targetnode a)"
     and "valid_edge a'" and "sourcenode a' = n"
     and "\<not> n' postdominates (targetnode a')" 
     by(auto simp:standard_control_dependence_def)
+  from `n -as\<rightarrow>* n'` `as = a#as'` have "sourcenode a = n" by(auto elim:path.cases)
   from `n -as\<rightarrow>* n'` `as = a#as'` `n' \<notin> set(sourcenodes as)` have "n \<noteq> n'"
     by(induct rule:path.induct,auto simp:sourcenodes_def)
   from `n -as\<rightarrow>* n'` `as = a#as'` have "valid_edge a"

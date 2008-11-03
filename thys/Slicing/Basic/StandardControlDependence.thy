@@ -12,11 +12,10 @@ definition
   dyn_standard_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool"
   ("_ controls\<^isub>s _ via _" [51,0,0])
 where dyn_standard_control_dependence_def:"n controls\<^isub>s n' via as \<equiv> 
-    (n' \<notin> set(sourcenodes as) \<and> (n -as\<rightarrow>* n') \<and>
-    (\<exists>a a' as'. (as = a#as') \<and> (sourcenode a = n) \<and> 
-	        (n' postdominates (targetnode a)) \<and>
-                (valid_edge a') \<and> (sourcenode a' = n) \<and> 
-                (\<not> n' postdominates (targetnode a'))))"
+    (\<exists>a a' as'. (as = a#as') \<and> (n' \<notin> set(sourcenodes as)) \<and> (n -as\<rightarrow>* n') \<and>
+                   (n' postdominates (targetnode a)) \<and>
+                   (valid_edge a') \<and> (sourcenode a' = n) \<and> 
+                   (\<not> n' postdominates (targetnode a')))"
 
 
 lemma Exit_not_dyn_standard_control_dependent:
@@ -102,11 +101,11 @@ next
   assume "n controls\<^isub>s n' via as"
   then obtain a nx a' nx' as' where notin:"n' \<notin> set(sourcenodes as)"
     and path:"n -as\<rightarrow>* n'" and as:"as = a#as'" and valid_edge:"valid_edge a'"
-    and source:"sourcenode a = n"
     and pd:"n' postdominates (targetnode a)"
     and source':"sourcenode a' = n"
     and not_pd:"\<not> n' postdominates (targetnode a')"
     by(auto simp:dyn_standard_control_dependence_def)
+  from path as have source:"sourcenode a = n" by(auto elim:path.cases)
   from path as have notExit:"n \<noteq> (_Exit_)" by(auto elim:path.cases)
   from path have valid:"valid_node n" and valid':"valid_node n'"
     by(auto dest:path_valid_node)
@@ -471,7 +470,7 @@ where standard_control_dependences_eq:"n controls\<^isub>s n' \<equiv> \<exists>
 
 lemma standard_control_dependence_def:"n controls\<^isub>s n' =
     (\<exists>a a' as. (n' \<notin> set(sourcenodes (a#as))) \<and> (n -a#as\<rightarrow>* n') \<and>
-                   (sourcenode a = n) \<and> (n' postdominates (targetnode a)) \<and>
+                   (n' postdominates (targetnode a)) \<and>
                    (valid_edge a') \<and> (sourcenode a' = n) \<and> 
                    (\<not> n' postdominates (targetnode a')))"
 by(auto simp:standard_control_dependences_eq dyn_standard_control_dependence_def)

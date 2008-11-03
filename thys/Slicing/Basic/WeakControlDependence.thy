@@ -13,7 +13,7 @@ definition
   ("_ weakly controls _ via _" [51,0,0])
 where dyn_weak_control_dependence_def:"n weakly controls n' via as \<equiv> 
     (\<exists>a a' as'. (as = a#as') \<and> (n' \<notin> set(sourcenodes as)) \<and> (n -as\<rightarrow>* n') \<and>
-                   (sourcenode a = n) \<and> (n' strongly-postdominates (targetnode a)) \<and>
+                   (n' strongly-postdominates (targetnode a)) \<and>
                    (valid_edge a') \<and> (sourcenode a' = n) \<and> 
                    (\<not> n' strongly-postdominates (targetnode a')))"
 
@@ -74,7 +74,7 @@ where weak_control_dependences_eq:
 lemma 
   weak_control_dependence_def:"n weakly controls n' = 
     (\<exists>a a' as. (n' \<notin> set(sourcenodes (a#as))) \<and> (n -a#as\<rightarrow>* n') \<and>
-                   (sourcenode a = n) \<and> (n' strongly-postdominates (targetnode a)) \<and>
+                   (n' strongly-postdominates (targetnode a)) \<and>
                    (valid_edge a') \<and> (sourcenode a' = n) \<and> 
                    (\<not> n' strongly-postdominates (targetnode a')))"
 by(auto simp:weak_control_dependences_eq dyn_weak_control_dependence_def)
