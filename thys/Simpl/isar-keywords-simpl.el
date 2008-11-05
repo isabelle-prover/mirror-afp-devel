@@ -3,7 +3,7 @@
 ;; Generated from Pure + Pure-ProofGeneral + HOL + HOLCF + IOA + HOL-Nominal + HOL-Statespace + Simpl.
 ;; *** DO NOT EDIT *** DO NOT EDIT *** DO NOT EDIT ***
 ;;
-;; $Id: isar-keywords-simpl.el,v 1.5 2008-06-12 06:57:28 lsf37 Exp $
+;; $Id: isar-keywords-simpl.el,v 1.6 2008-11-05 16:27:10 ballarin Exp $
 ;;
 
 (defconst isar-keywords-major
@@ -272,7 +272,6 @@
     "if"
     "imports"
     "in"
-    "includes"
     "induction"
     "infix"
     "infixl"
