@@ -67,6 +67,14 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2008-11-07:
+<a href="entries/FunWithTilings.shtml">Fun With Tilings</a>
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a> and
+<a href="http://www.cl.cam.ac.uk/users/lcp/">Lawrence Paulson</a>
+</td></tr>
+
+<tr><td class="entry">
 2008-10-15:
 <a href="entries/Huffman.shtml">The Textbook Proof of Huffman's Algorithm</a>
 <br>Author:
@@ -120,7 +128,7 @@ Michael Nedzelsky
 <tr><td class="entry">
 2008-02-29:
 <a href="entries/BDD.shtml">BDD Normalisation</a>
-<br>Veronika Ortner and <a
+<br>Author: Veronika Ortner and <a
 href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
 </td></tr>
 
