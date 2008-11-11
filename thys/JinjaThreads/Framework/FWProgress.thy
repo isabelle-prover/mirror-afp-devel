@@ -412,7 +412,7 @@ lemma (in final_thread_wf) progress_deadlock:
   and wf_red: "wf_red final r start_state"
   and lto: "preserves_lock_thread_ok final r start_state"
   shows "progress final r start_state deadlock"
-proof(rule progress.intro[OF final_r.final_thread_wf_axioms wf_progress wf_red lto progress_axioms.intro])
+proof (rule progress.intro [OF final_thread_wf_axioms wf_progress wf_red lto progress_axioms.intro])
   fix ttas s t
   assume Red: "start_state -\<triangleright>ttas\<rightarrow>* s"
     and tst: "not_final_thread s t"
@@ -425,15 +425,12 @@ proof(rule progress.intro[OF final_r.final_thread_wf_axioms wf_progress wf_red l
     by-(rule all_waiting_implies_deadlock,(blast dest: lock_thread_ok_must_wait_thread_exists[OF lok])+)
 qed
 
-
-
-
 lemma (in final_thread_wf) progress_deadlocked':
   assumes wf_progress: "wf_progress final r start_state"
   and wf_red: "wf_red final r start_state"
   and lto: "preserves_lock_thread_ok final r start_state"
   shows "progress final r start_state deadlocked'"
-proof(rule progress.intro[OF final_r.final_thread_wf_axioms wf_progress wf_red lto progress_axioms.intro])
+proof (rule progress.intro [OF final_thread_wf_axioms wf_progress wf_red lto progress_axioms.intro])
   fix ttas s t x ln
   assume Red: "start_state -\<triangleright>ttas\<rightarrow>* s"
     and tst: "not_final_thread s t"
