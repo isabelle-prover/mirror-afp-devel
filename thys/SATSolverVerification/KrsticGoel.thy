@@ -1,5 +1,5 @@
 (*    Title:              SatSolverVerification/KrsticGoel.thy
-      ID:                 $Id: KrsticGoel.thy,v 1.4 2008-08-06 15:42:01 filipmaric Exp $
+      ID:                 $Id: KrsticGoel.thy,v 1.5 2008-11-13 16:09:44 filipmaric Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -10,7 +10,7 @@ imports SatSolverVerification
 begin
 
 text{* This theory formalizes the transition rule system given by
-Krsti\' c et al. in \cite{KrsticGoel}. Some rules of the system are 
+Krsti\' c and Goel in \cite{KrsticGoel}. Some rules of the system are 
 generalized a bit, so that the system can model some more general solvers 
 (e.g., SMT solvers). *}
 
@@ -2044,8 +2044,10 @@ proof (cases "\<forall> l. l el getC state \<longrightarrow> opposite l el decis
       by simp
 
     with `getC state \<noteq> []`
+    `InvariantUniq (getM state)`
     have "isLastAssertedLiteral ?l (oppositeLiteralList (getC state)) (elements (getM state))"
-      using getLastAssertedLiteral_def
+      unfolding InvariantUniq_def
+      using getLastAssertedLiteralCharacterization
       by simp
 
     with True `uniq (elements (getM state))`

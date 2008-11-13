@@ -1,5 +1,5 @@
 (*    Title:              SatSolverVerification/NieuwenhuisOliverasTinelli.thy
-      ID:                 $Id: NieuwenhuisOliverasTinelli.thy,v 1.4 2008-08-06 15:42:05 filipmaric Exp $
+      ID:                 $Id: NieuwenhuisOliverasTinelli.thy,v 1.5 2008-11-13 16:09:44 filipmaric Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -1364,8 +1364,10 @@ proof-
     moreover
     let ?l = "getLastAssertedLiteral (oppositeLiteralList ?c) (elements (getM state))"
     have "isLastAssertedLiteral ?l (oppositeLiteralList ?c) (elements (getM state))"
-      using getLastAssertedLiteral_def[of "?c" "elements (getM state)"]
+      using `InvariantUniq (getM state)`
+      using getLastAssertedLiteralCharacterization[of "?c" "elements (getM state)"]
 	`?c \<noteq> []` `clauseFalse ?c (elements (getM state))`
+      unfolding InvariantUniq_def
       by simp
     moreover
     have "\<forall> l. l el ?c \<longrightarrow> (opposite l) el (decisions (getM state))"

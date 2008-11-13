@@ -1,5 +1,5 @@
 (*    Title:              SatSolverVerification/SatSolverVerification.thy
-      ID:                 $Id: SatSolverVerification.thy,v 1.4 2008-08-06 15:42:05 filipmaric Exp $
+      ID:                 $Id: SatSolverVerification.thy,v 1.5 2008-11-13 16:09:44 filipmaric Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -26,13 +26,13 @@ types LiteralTrail = "Literal Trail"
 consts isDecision :: "(Literal \<times> bool) \<Rightarrow> bool"
 translations "(isDecision l)" == "(marked l)"
 consts lastDecision :: "LiteralTrail \<Rightarrow> Literal"
-translations "(lastDecision M)" == "(lastMarked M)"
+translations "(lastDecision M)" == "(Trail.lastMarked M)"
 consts decisions :: "LiteralTrail \<Rightarrow> Literal list"
-translations "(decisions M)" == "(markedElements M)"
+translations "(decisions M)" == "(Trail.markedElements M)"
 consts decisionsTo :: "LiteralTrail \<Rightarrow> Literal \<Rightarrow> Literal list"
-translations "(decisionsTo M l)" == "(markedElementsTo M l)"
+translations "(decisionsTo M l)" == "(Trail.markedElementsTo M l)"
 consts prefixBeforeLastDecision :: "LiteralTrail \<Rightarrow> LiteralTrail"
-translations "(prefixBeforeLastDecision M)" == "(prefixBeforeLastMarked M)"
+translations "(prefixBeforeLastDecision M)" == "(Trail.prefixBeforeLastMarked M)"
 
 (*--------------------------------------------------------------------------*)
 (*                            I N V A R I A N T S                           *)
@@ -160,7 +160,8 @@ proof -
     by (simp add: formulaFalseAppend)
   moreover
   from `InvariantImpliedLiterals F M`
-  have "\<forall> literal'::Literal. literal' el (elements M) \<longrightarrow> formulaEntailsLiteral (F @ val2form (decisions M)) literal'"
+  have "formulaEntailsValuation (F @ val2form (decisions M)) (elements M)"
+    unfolding formulaEntailsValuation_def
     unfolding InvariantImpliedLiterals_def
     using InvariantImpliedLiteralsWeakerVariant[of "M" "F"]
     by simp
@@ -1114,8 +1115,9 @@ lemma InvariantVarsFAfterLearn:
   "F' = F @ [C]"
   shows "InvariantVarsF F' F0 Vbl"
 using assms
+using varsAppendFormulae[of "F" "[C]"]
 unfolding InvariantVarsF_def
-by (auto simp add: varsAppendFormulae)
+by auto
   
 
 lemma InvariantEquivalentAfterLearn: 
@@ -1167,7 +1169,7 @@ proof
     unfolding InvariantCFalse_def
     by simp
   hence "clauseFalse (removeAll (opposite literal) C) (elements M)"
-    by (simp add: clauseFalseIffAllLiteralsAreFalse removeAll_set)
+    by (simp add: clauseFalseIffAllLiteralsAreFalse)
   moreover
   from `isReason reason literal (elements M)`
   have "clauseFalse (removeAll literal reason) (elements M)"
@@ -1244,17 +1246,23 @@ lemma unsatReport:
   "decisions M = []" and "formulaFalse F (elements M)"
   shows "\<not> satisfiable F0"
 proof-
-  {
-    fix literal::Literal
-    assume "literal el (elements M)"
-    from `decisions M = []`
-    have "decisionsTo literal M = []"
-      by (simp add:markedElementsEmptyImpliesMarkedElementsToEmpty)
-    with `literal el (elements M)` `InvariantImpliedLiterals F M`
-    have "formulaEntailsLiteral F literal"
-      unfolding InvariantImpliedLiterals_def
-      by auto
-  }
+  have "formulaEntailsValuation F (elements M)"
+  proof-
+    {
+      fix literal::Literal
+      assume "literal el (elements M)"
+      from `decisions M = []`
+      have "decisionsTo literal M = []"
+	by (simp add:markedElementsEmptyImpliesMarkedElementsToEmpty)
+      with `literal el (elements M)` `InvariantImpliedLiterals F M`
+      have "formulaEntailsLiteral F literal"
+	unfolding InvariantImpliedLiterals_def
+	by auto
+    }
+    thus ?thesis
+      unfolding formulaEntailsValuation_def
+      by simp
+  qed
   with `formulaFalse F (elements M)`
   have "\<not> satisfiable F"
     by (simp add:formulaFalseInEntailedValuationIsUnsatisfiable)
@@ -1364,18 +1372,18 @@ proof -
       case False
       from `isLastAssertedLiteral literal clause (elements M)` 
       have "literalTrue literal (elements M)" 
-	"\<forall> l. l el clause \<and> l \<noteq> literal \<longrightarrow> \<not>  preceeds literal l (elements M)"
+	"\<forall> l. l el clause \<and> l \<noteq> literal \<longrightarrow> \<not>  precedes literal l (elements M)"
 	by (auto simp add:isLastAssertedLiteral_def)
       with `l' el clause` False 
-      have "\<not> preceeds literal l' (elements M)"
+      have "\<not> precedes literal l' (elements M)"
 	by simp
       with False `l' el (elements M)` `literalTrue literal (elements M)`
-      have "preceeds l' literal (elements M)"
-	using preceedsTotalOrder [of "l'"  "elements M" "literal"]
+      have "precedes l' literal (elements M)"
+	using precedesTotalOrder [of "l'"  "elements M" "literal"]
 	by simp
       with `uniq (elements M)`
       show ?thesis
-	using elementLevelPreceedsLeq [of "l'" "literal" "M"]
+	using elementLevelPrecedesLeq [of "l'" "literal" "M"]
 	by auto
     qed
   }
@@ -1460,7 +1468,7 @@ proof-
 	using literalElListIffOppositeLiteralElOppositeLiteralList
 	by auto
       hence "opposite l' el (removeAll (opposite l) (oppositeLiteralList C))"
-	by (simp add: removeAll_set)
+	by simp
       
       from `opposite l' el (oppositeLiteralList C)`
 	`\<forall> l'. l' el (oppositeLiteralList C) \<longrightarrow> literalTrue l' (elements M)`
@@ -1485,7 +1493,7 @@ proof-
   from `(opposite ll) el (removeAll (opposite l) (oppositeLiteralList C))`
   have "ll el C" and "ll \<noteq> l"
     using literalElListIffOppositeLiteralElOppositeLiteralList[of "ll" "C"]
-    by (auto simp add: removeAll_set)
+    by auto
   from `isUIP l C M` 
   have "\<forall> l'. l' el C \<and> l' \<noteq> l \<longrightarrow> elementLevel (opposite l') M < elementLevel (opposite l) M"
     unfolding isUIP_def
@@ -1538,7 +1546,7 @@ proof-
       have "removeAll l c \<noteq> []"
       proof-
 	have "(set c) \<subseteq> {l} \<union> set (removeAll l c)"
-	  by (auto simp add: removeAll_set)
+	  by auto
 	
 	from `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)` 
 	have "(opposite l) el oppositeLiteralList c"
@@ -1568,7 +1576,8 @@ proof-
       qed
       ultimately
       have "isLastAssertedLiteral ?ll (oppositeLiteralList (removeAll l c)) (elements M)"
-	using getLastAssertedLiteral_def [of "removeAll l c" "elements M"] 
+	using `uniq (elements M)`
+	using getLastAssertedLiteralCharacterization [of "removeAll l c" "elements M"] 
 	by simp
       hence "isLastAssertedLiteral ?ll (removeAll (opposite l) (oppositeLiteralList c)) (elements M)"
 	using oppositeLiteralListRemove[of "l" "c"]
@@ -1657,6 +1666,261 @@ proof -
     by simp
 qed
 
+text{* Backjump level is minimal if there is no smaller level which
+       satisfies the backjump level condition. The following definition gives
+       operative characterization of this notion. *}
+definition 
+"isMinimalBackjumpLevel level l c M ==
+     isBackjumpLevel level l c M \<and> 
+     (if set c \<noteq> {l} then 
+         (\<exists> ll. ll el c \<and> elementLevel (opposite ll) M = level) 
+      else 
+         level = 0
+     )"
+
+lemma isMinimalBackjumpLevelCharacterization:
+assumes
+"isUIP l c M"
+"clauseFalse c (elements M)"
+"uniq (elements M)"
+shows
+"isMinimalBackjumpLevel level l c M = 
+  (isBackjumpLevel level l c M \<and> 
+   (\<forall> level'. level' < level \<longrightarrow> \<not> isBackjumpLevel level' l c M))" (is "?lhs = ?rhs")
+proof
+  assume "?lhs"
+  show "?rhs"
+  proof (cases "set c = {l}")
+    case True
+    thus ?thesis
+      using `?lhs`
+      unfolding isMinimalBackjumpLevel_def
+      by auto
+  next
+    case False
+    with `?lhs`
+    obtain ll 
+      where "ll el c" "elementLevel (opposite ll) M = level" "isBackjumpLevel level l c M"
+      unfolding isMinimalBackjumpLevel_def
+      by auto
+    have "l \<noteq> ll"
+      using `isMinimalBackjumpLevel level l c M`
+      using `elementLevel (opposite ll) M = level`
+      unfolding isMinimalBackjumpLevel_def
+      unfolding isBackjumpLevel_def
+      by auto
+    
+    show ?thesis
+      using `isBackjumpLevel level l c M`
+      using `elementLevel (opposite ll) M = level`
+      using `ll el c` `l \<noteq> ll` 
+      unfolding isBackjumpLevel_def
+      by force
+  qed
+next
+  assume "?rhs"
+  show "?lhs"
+  proof (cases "set c = {l}")
+    case True
+    thus ?thesis
+      using `?rhs`
+      using backjumpLevelZero[of "l" "c" "M"]
+      unfolding isMinimalBackjumpLevel_def
+      unfolding isBackjumpLevel_def
+      by auto
+  next
+    case False
+    from `?rhs`
+    have "l el c"
+      unfolding isBackjumpLevel_def
+      using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "c"]
+      unfolding isLastAssertedLiteral_def
+      by simp
+
+    let ?oll = "getLastAssertedLiteral (removeAll (opposite l) (oppositeLiteralList c)) (elements M)"
+
+    have "clauseFalse (removeAll l c) (elements M)"
+      using `clauseFalse c (elements M)`
+      by (simp add: clauseFalseIffAllLiteralsAreFalse)
+    moreover
+    have "removeAll l c \<noteq> []"
+    proof-
+      {
+	assume "\<not> ?thesis"
+	hence "set (removeAll l c) = {}"
+	  by simp
+	hence "set c \<subseteq> {l}"
+	  by simp
+	hence False
+	  using `set c \<noteq> {l}`
+	  using `l el c`
+	  by auto
+      } thus ?thesis
+	by auto
+    qed
+    ultimately
+    have "isLastAssertedLiteral ?oll (removeAll (opposite l) (oppositeLiteralList c)) (elements M)"
+      using `uniq (elements M)`
+      using getLastAssertedLiteralCharacterization[of "removeAll l c" "elements M"]
+      using oppositeLiteralListRemove[of "l" "c"]
+      by simp
+    hence  "isBackjumpLevel  (elementLevel ?oll M) l c M"
+      using assms
+      using backjumpLevelLastLast[of "l" "c" "M" "opposite ?oll"]
+      by auto
+
+    have "?oll el (removeAll (opposite l) (oppositeLiteralList c))"
+      using `isLastAssertedLiteral ?oll (removeAll (opposite l) (oppositeLiteralList c)) (elements M)`
+      unfolding isLastAssertedLiteral_def
+      by simp
+    hence "?oll el (oppositeLiteralList c)" "?oll \<noteq> opposite l"
+      by auto
+    hence "opposite ?oll el c"
+      using literalElListIffOppositeLiteralElOppositeLiteralList[of "?oll" "oppositeLiteralList c"]
+      by simp
+    from `?oll \<noteq> opposite l`
+    have "opposite ?oll \<noteq> l"
+      using oppositeSymmetry[of "?oll" "l"]
+      by simp
+
+    have "elementLevel ?oll M \<ge> level"
+    proof-
+      {
+	assume "elementLevel ?oll M < level"
+	hence "\<not> isBackjumpLevel  (elementLevel ?oll M) l c M"
+	  using `?rhs`
+	  by simp
+	with `isBackjumpLevel  (elementLevel ?oll M) l c M`
+	have False
+	  by simp
+      } thus ?thesis
+	by force
+    qed
+    moreover
+    from `?rhs`
+    have "elementLevel ?oll M \<le> level"
+      using `opposite ?oll el c`
+      using `opposite ?oll \<noteq> l`
+      unfolding isBackjumpLevel_def
+      by auto
+    ultimately
+    have "elementLevel ?oll M = level"
+      by simp
+    show ?thesis
+      using `opposite ?oll el c`
+      using `elementLevel ?oll M = level`
+      using `?rhs`
+      using `set c \<noteq> {l}`
+      unfolding isMinimalBackjumpLevel_def
+      by (auto simp del: set_removeAll)
+  qed
+qed
+
+lemma isMinimalBackjumpLevelEnsuresIsNotUnitBeforePrefix:
+  fixes M :: LiteralTrail and conflictFlag :: bool and c :: Clause and l :: Literal
+  assumes "consistent (elements M)" and "uniq (elements M)" and 
+  "clauseFalse c (elements M)" "isMinimalBackjumpLevel level l c M" and
+  "level' < level"
+  shows "\<not> (\<exists> l'. isUnitClause c l' (elements (prefixToLevel level' M)))"
+proof-
+  from `isMinimalBackjumpLevel level l c M`
+  have "isUnitClause c l (elements (prefixToLevel level M))"
+    using assms
+    using isBackjumpLevelEnsuresIsUnitInPrefix[of "M" "c" "level" "l"]
+    unfolding isMinimalBackjumpLevel_def
+    by simp
+  hence "\<not> literalFalse l (elements (prefixToLevel level M))"
+    unfolding isUnitClause_def
+    by auto
+  hence "\<not> literalFalse  l (elements M) \<or> elementLevel (opposite l) M > level"
+    using elementLevelLtLevelImpliesMemberPrefixToLevel[of "l" "M" "level"]
+    using elementLevelLtLevelImpliesMemberPrefixToLevel[of "opposite l" "M" "level"]
+    by (force)+
+
+  have "\<not> literalFalse l (elements (prefixToLevel level' M))"
+  proof (cases "\<not> literalFalse l (elements M)")
+    case True
+    thus ?thesis
+      using prefixIsSubset[of "elements (prefixToLevel level' M)" "elements M"]
+      using isPrefixPrefixToLevel[of "level'" "M"]
+      using isPrefixElements[of "prefixToLevel level' M" "M"]
+      by auto
+  next
+    case False
+    with `\<not> literalFalse l (elements M) \<or> elementLevel (opposite l) M > level`
+    have "level < elementLevel (opposite l) M"
+      by simp
+    thus ?thesis
+      using prefixToLevelElementsElementLevel[of "opposite l" "level'" "M"]
+      using `level' < level`
+      by auto
+  qed
+
+  show ?thesis
+  proof (cases "set c \<noteq> {l}")
+    case True
+    from `isMinimalBackjumpLevel level l c M`
+    obtain ll 
+      where "ll el c" "elementLevel (opposite ll) M = level"
+      using `set c \<noteq> {l}`
+      unfolding isMinimalBackjumpLevel_def
+      by auto
+    hence "\<not> literalFalse ll (elements (prefixToLevel level' M))"
+      using literalNotInEarlierLevelsThanItsLevel[of "level'" "opposite ll" "M"]
+      using `level' < level`
+      by simp
+
+    have "l \<noteq> ll"
+      using `isMinimalBackjumpLevel level l c M`
+      using `elementLevel (opposite ll) M = level`
+      unfolding isMinimalBackjumpLevel_def
+      unfolding isBackjumpLevel_def
+      by auto
+    
+    {
+      assume "\<not> ?thesis"
+      then obtain l'
+	where "isUnitClause c l' (elements (prefixToLevel level' M))"
+	by auto
+      have "False"
+      proof (cases "l = l'")
+	case True
+	thus ?thesis
+	  using `l \<noteq> ll` `ll el c`
+	  using `\<not> literalFalse ll (elements (prefixToLevel level' M))`
+	  using `isUnitClause c l' (elements (prefixToLevel level' M))`
+	  unfolding isUnitClause_def
+	  by auto
+      next
+	case False
+	have "l el c"
+	  using `isMinimalBackjumpLevel level l c M`
+	  unfolding isMinimalBackjumpLevel_def
+	  unfolding isBackjumpLevel_def
+	  unfolding isLastAssertedLiteral_def
+	  using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "c"]
+	  by simp
+	thus ?thesis
+	  using False
+	  using `\<not> literalFalse l (elements (prefixToLevel level' M))`
+	  using `isUnitClause c l' (elements (prefixToLevel level' M))`
+	  unfolding isUnitClause_def
+	  by auto
+      qed
+    } thus ?thesis
+      by auto
+  next
+    case False
+    with `isMinimalBackjumpLevel level l c M`
+    have "level = 0"
+      unfolding isMinimalBackjumpLevel_def
+      by simp
+    with `level' < level`
+    show ?thesis
+      by simp
+  qed
+qed
+
 text{* If all literals in a clause are decision literals, then UIP is reached. *}
 lemma allDecisionsThenUIP:
   fixes M :: LiteralTrail and c:: Clause
@@ -1667,7 +1931,7 @@ lemma allDecisionsThenUIP:
 proof-
   from `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
   have "l el c" "(opposite l) el (elements M)"
-    and *: "\<forall>l'. l' el (oppositeLiteralList c) \<and> l' \<noteq> opposite l \<longrightarrow> \<not> preceeds (opposite l) l' (elements M)"
+    and *: "\<forall>l'. l' el (oppositeLiteralList c) \<and> l' \<noteq> opposite l \<longrightarrow> \<not> precedes (opposite l) l' (elements M)"
     unfolding isLastAssertedLiteral_def
     using "literalElListIffOppositeLiteralElOppositeLiteralList"
     by auto
@@ -1681,7 +1945,7 @@ proof-
       using literalElListIffOppositeLiteralElOppositeLiteralList[of "l'" "c"]
       by auto
     with * 
-    have "\<not> preceeds (opposite l) (opposite l') (elements M)"
+    have "\<not> precedes (opposite l) (opposite l') (elements M)"
       by simp
 
     from `l' el c` `\<forall> l. l el c \<longrightarrow> (opposite l) el (decisions M)`
@@ -1691,13 +1955,13 @@ proof-
       by (simp add:markedElementsAreElements)
 
     from `(opposite l) el (elements M)` `(opposite l') el (elements M)` `l' \<noteq> l` 
-      `\<not> preceeds (opposite l) (opposite l') (elements M)` 
-    have "preceeds (opposite l') (opposite l) (elements M)"
-      using preceedsTotalOrder [of "opposite l" "elements M" "opposite l'"]
+      `\<not> precedes (opposite l) (opposite l') (elements M)` 
+    have "precedes (opposite l') (opposite l) (elements M)"
+      using precedesTotalOrder [of "opposite l" "elements M" "opposite l'"]
       by simp
     with `uniq (elements M)`
     have "elementLevel (opposite l') M <= elementLevel (opposite l) M"
-      by (auto simp add:elementLevelPreceedsLeq)
+      by (auto simp add:elementLevelPrecedesLeq)
     moreover
     from `uniq (elements M)` `(opposite l) el (decisions M)` `(opposite l') el (decisions M)` `l' \<noteq> l`
     have "elementLevel (opposite l) M \<noteq> elementLevel (opposite l') M"
@@ -1710,6 +1974,54 @@ proof-
   thus ?thesis
     using `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
     unfolding isUIP_def
+    by simp
+qed
+
+text{* If last asserted literal of a clause is a decision literal, then UIP is reached. *}
+lemma lastDecisionThenUIP:
+  fixes M :: LiteralTrail and c:: Clause
+  assumes "(uniq (elements M))" and
+  "(opposite l) el (decisions M)"
+  "clauseFalse c (elements M)"
+  "isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)"
+  shows "isUIP l c M"
+proof-
+  from `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
+  have "l el c" "(opposite l) el (elements M)"
+    and *: "\<forall>l'. l' el (oppositeLiteralList c) \<and> l' \<noteq> opposite l \<longrightarrow> \<not> precedes (opposite l) l' (elements M)"
+    unfolding isLastAssertedLiteral_def
+    using "literalElListIffOppositeLiteralElOppositeLiteralList"
+    by auto
+  {
+    fix l' :: Literal
+    assume "l' el c" "l' \<noteq> l"
+    hence "opposite l' el (oppositeLiteralList c)" and "opposite l' \<noteq> opposite l"
+      using literalElListIffOppositeLiteralElOppositeLiteralList[of "l'" "c"]
+      by auto
+    with * 
+    have "\<not> precedes (opposite l) (opposite l') (elements M)"
+      by simp
+
+    have "(opposite l') el (elements M)"
+      using `l' el c` `clauseFalse c (elements M)`
+      by (simp add: clauseFalseIffAllLiteralsAreFalse)
+
+    from `(opposite l) el (elements M)` `(opposite l') el (elements M)` `l' \<noteq> l` 
+      `\<not> precedes (opposite l) (opposite l') (elements M)` 
+    have "precedes (opposite l') (opposite l) (elements M)"
+      using precedesTotalOrder [of "opposite l" "elements M" "opposite l'"]
+      by simp
+
+    hence "elementLevel (opposite l') M < elementLevel (opposite l) M"
+      using elementLevelPrecedesMarkedElementLt[of "M" "opposite l'" "opposite l"]
+      using `uniq (elements M)`
+      using `opposite l el (decisions M)`
+      using `l' \<noteq> l`
+      by simp
+  }
+  thus ?thesis
+    using `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
+    unfolding SatSolverVerification.isUIP_def
     by simp
 qed
 
@@ -2327,7 +2639,7 @@ next
 	    `vars (elements M) = insert v V'` 
 	    `\<not> v \<in> V'`
 	  have "vars (elements (M' @ M'')) = V'"
-	    by (auto simp del: vars_def)
+	    by (auto simp del: vars_def_clause)
 	  ultimately
 	  show ?thesis
 	    by simp
@@ -2359,7 +2671,7 @@ next
 	  by simp
 	from * ** `vars (elements (M' @ M'')) = V'`
 	have "vars (elements M) = insert v V'"
-	  by (auto simp del: vars_def)
+	  by (auto simp del: vars_def_clause)
 	moreover
 	from *
 	  `var l = v` 
@@ -2452,7 +2764,7 @@ next
 	next
 	  from P
 	  show "((M', M''), l, d) \<in> ?Mset \<times> ?lSet \<times> ?dSet"
-	    by simp
+	    by auto
 	qed
       qed
     next
@@ -2583,6 +2895,24 @@ next
   qed
 qed
 
+text{* @{term lexLessRestricted} is also transitive. *}
+lemma transLexLessRestricted:
+  shows "trans (lexLessRestricted Vbl)"
+proof-
+  {
+    fix x::LiteralTrail and y::LiteralTrail and z::LiteralTrail
+    assume "(x, y) \<in> lexLessRestricted Vbl" "(y, z) \<in> lexLessRestricted Vbl"
+    hence "(x, z) \<in> lexLessRestricted Vbl"
+      unfolding lexLessRestricted_def
+      using translexLess
+      unfolding trans_def
+      by auto
+  }
+  thus ?thesis
+    unfolding trans_def
+    by blast
+qed
+
 
 (*-----------------------------------------------------------------------*)
 subsubsection{* Conflict clause ordering *}
@@ -2593,7 +2923,7 @@ Since, resolution operator is defined so that it removes all occurences of clash
 to remove duplicate literals before comparison. *}
 
 definition
-"multLess M = inv_image  (mult (preceedsOrder (elements M))) (\<lambda> x. multiset_of (remdups (oppositeLiteralList x)))"
+"multLess M = inv_image  (mult (precedesOrder (elements M))) (\<lambda> x. multiset_of (remdups (oppositeLiteralList x)))"
 
 text{* The following lemma will help prove that application of the
 $Explain$ DPLL transition rule decreases the conflict clause in the
@@ -2607,7 +2937,7 @@ lemma multLessResolve:
 proof-
   let ?X = "multiset_of (remdups (oppositeLiteralList C))"
   let ?Y = "multiset_of (remdups (oppositeLiteralList (resolve C reason (opposite l))))"
-  let ?ord = "preceedsOrder (elements M)"
+  let ?ord = "precedesOrder (elements M)"
   have "(?Y, ?X) \<in> (mult1 ?ord)"
   proof-
     let ?Z = "multiset_of (remdups (oppositeLiteralList (removeAll (opposite l) C)))"
@@ -2665,12 +2995,12 @@ proof-
 	    by simp
 	qed
 	with `isReason reason l (elements M)`
-	have "preceeds b l (elements M)" "b \<noteq> l"
+	have "precedes b l (elements M)" "b \<noteq> l"
 	  unfolding isReason_def
-	  unfolding preceeds_def
+	  unfolding precedes_def
 	  by auto
 	hence "(b, ?a) \<in> ?ord"
-	  unfolding preceedsOrder_def
+	  unfolding precedesOrder_def
 	  by simp
       }
       thus ?thesis
@@ -2692,17 +3022,73 @@ proof-
     by auto
 qed
 
+lemma multLessListDiff:
+assumes 
+  "(a, b) \<in> multLess M"
+shows
+  "(list_diff a x, b) \<in> multLess M"
+proof-
+  let ?pOrd = "precedesOrder (elements M)"
+  let ?f = "\<lambda> l. remdups (map opposite l)"
+  have "trans ?pOrd"
+    using transPrecedesOrder[of "elements M"]
+    by simp
+
+  have  "(multiset_of (?f a), multiset_of (?f b)) \<in> mult ?pOrd"
+    using assms
+    unfolding multLess_def
+    unfolding oppositeLiteralList_def
+    by simp
+  moreover
+  have "multiset_le (multiset_of (list_diff (?f a) (?f x)))
+                    (multiset_of (?f a))
+                    ?pOrd"
+    using `trans ?pOrd`
+    using multisetLeListDiff[of "?pOrd" "?f a" "?f x"]
+    by simp
+  ultimately
+  have "(multiset_of (list_diff (?f a) (?f x)), multiset_of (?f b)) \<in> mult ?pOrd"
+    unfolding multiset_le_def
+    unfolding mult_def
+    by auto
+
+  thus ?thesis
+    unfolding multLess_def
+    unfolding oppositeLiteralList_def
+    by (simp add: listDiffMap remdupsListDiff)
+qed
+
+lemma multLessRemdups:
+assumes 
+  "(a, b) \<in> multLess M"
+shows
+  "(remdups a, remdups b) \<in> multLess M \<and> 
+   (remdups a, b) \<in> multLess M \<and> 
+   (a, remdups b) \<in> multLess M"
+proof-
+  {
+    fix l
+    have "remdups (map opposite l) = remdups (map opposite (remdups l))"
+      by (induct l) auto
+  }
+  thus ?thesis
+    using assms
+    unfolding multLess_def
+    unfolding oppositeLiteralList_def
+    by simp
+qed
+
 text{* Now we show that @{term multLess} is well-founded. *}
 lemma wfMultLess: 
   shows "wf (multLess M)"
 proof-
-  have "wf (preceedsOrder (elements M))"
-    by (simp add: wellFoundedPreceedsOrder)
-  hence "wf (mult (preceedsOrder (elements M)))"
+  have "wf (precedesOrder (elements M))"
+    by (simp add: wellFoundedPrecedesOrder)
+  hence "wf (mult (precedesOrder (elements M)))"
     by (simp add: wf_mult)
   thus ?thesis
     unfolding multLess_def
-    using wf_inv_image[of "(mult (preceedsOrder (elements M)))"]
+    using wf_inv_image[of "(mult (precedesOrder (elements M)))"]
     by auto
 qed
 
