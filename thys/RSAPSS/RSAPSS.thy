@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/RSAPSS.thy
-    ID:         $Id: RSAPSS.thy,v 1.9 2008-07-10 21:20:00 makarius Exp $
+    ID:         $Id: RSAPSS.thy,v 1.10 2008-11-13 16:52:51 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -550,8 +550,7 @@ lemma rsa_pss_verify: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; e*d mo
   apply (simp only: rsapss_sign_help1)
   apply (auto)
   apply (simp add: length_nat_to_bv_length)
-  apply (simp add: Let_def)
-  apply (simp add:  bv_to_nat_nat_to_bv_length)
+  apply (simp add: bv_to_nat_nat_to_bv_length)
   apply (insert length_emsapss_encode [of m "(length (nat_to_bv (p * q)) - Suc 0)"])
   apply (insert bv_to_nat_emsapss_smaller_pq [of p q m])
   apply (simp add: cryptinverts)
