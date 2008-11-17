@@ -1,5 +1,5 @@
 (*  Title:      AVL Trees
-    ID:         $Id: AVL2.thy,v 1.9 2008-11-01 10:10:40 fhaftmann Exp $
+    ID:         $Id: AVL2.thy,v 1.10 2008-11-17 16:01:18 fhaftmann Exp $
     Author:     Tobias Nipkow and Cornelia Pusch,
                 converted to Isar by Gerwin Klein
                 contributions by Achim Brucker, Burkhart Wolff and Jan Smaus
@@ -36,25 +36,6 @@ text {*
 datatype 'a tree\<^isub>0 = ET\<^isub>0 |  MKT\<^isub>0 'a "'a tree\<^isub>0" "'a tree\<^isub>0"
 
 subsubsection {* Auxiliary functions *}
-
-text {* A simproc for trivial lets - move to HOL? *}
-
-setup {*
-let
-  fun count_loose (Bound i) k = if i >= k then 1 else 0
-    | count_loose (s $ t) k = count_loose s k + count_loose t k
-    | count_loose (Abs (_, _, t)) k = count_loose  t (k + 1)
-    | count_loose _ _ = 0;
-  fun is_trivial_let (Const (@{const_name Let}, _) $ x $ t) =
-   case t
-    of Abs (_, _, t') => count_loose t' 0 <= 1
-     | _ => true;
-  val trivial_let_proc = Simplifier.simproc_i @{theory} "trivial_let" [@{term "Let x f"}]
-    (fn thy => fn ss => fn t => if is_trivial_let t then SOME @{thm Let_def} else NONE)
-in
-  Simplifier.map_simpset (fn simpset => simpset addsimprocs [trivial_let_proc])
-end
-*}
 
 primrec height :: "'a tree\<^isub>0 \<Rightarrow> nat" where
   "height ET\<^isub>0 = 0"
