@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Yoneda.thy,v 1.8 2007-06-13 19:37:50 makarius Exp $
+    ID:          $Id: Yoneda.thy,v 1.9 2008-11-17 16:01:28 fhaftmann Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -25,8 +25,7 @@ locale Yoneda = functor + into_set +
 lemma (in Yoneda) F_into_set: 
   "Functor F : AA \<longrightarrow> Set"
 proof-
-  from F_axioms have "Functor F : AA \<longrightarrow> BB" 
-    by unfold_locales
+  from F_axioms have "Functor F : AA \<longrightarrow> BB" by intro_locales
   thus ?thesis
     by (simp only: BB_Set)
 qed
@@ -172,7 +171,7 @@ lemma (in Yoneda) sandwich_natural:
   and "a \<in> F\<^sub>\<o> A"
   shows "\<sigma>(A,a) : Hom(A,_) \<Rightarrow> F in Func(AA,Set)"
 proof (intro natural_transformation.intro natural_transformation_axioms.intro two_cats.intro)
-  show "category AA" by unfold_locales
+  show "category AA" ..
   show "category Set" 
     by (simp only: Set_def)(rule set_cat_cat)
   show "Functor Hom(A,_) : AA \<longrightarrow> Set"

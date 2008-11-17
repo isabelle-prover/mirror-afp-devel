@@ -132,8 +132,7 @@ by(fastsimp elim: redT_preserves)
 
 end
 
-lemma lifting_wf_Const [intro!]: "lifting_wf r (\<lambda>x m. k)"
-by(unfold_locales)
+lemma lifting_wf_Const [intro!]: "lifting_wf r (\<lambda>x m. k)" ..
 
 locale lifting_inv = lifting_wf final r Q +
   fixes P :: "'i \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"

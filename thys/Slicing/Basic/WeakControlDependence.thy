@@ -40,7 +40,7 @@ begin
 lemma DynPDG_wcd:
   "DynPDG sourcenode targetnode kind valid_edge (_Entry_) 
           Def Use state_val (_Exit_) dyn_weak_control_dependence"
-proof(unfold_locales)
+proof
   fix n n' as assume "n weakly controls n' via as"
   show "n' \<noteq> (_Exit_)"
   proof(rule ccontr)
@@ -97,7 +97,7 @@ begin
 lemma PDG_wcd:
   "PDG sourcenode targetnode kind valid_edge (_Entry_) 
        Def Use state_val (_Exit_) weak_control_dependence"
-proof(unfold_locales)
+proof
   fix n n' assume "n weakly controls n'"
   show "n' \<noteq> (_Exit_)"
   proof(rule ccontr)

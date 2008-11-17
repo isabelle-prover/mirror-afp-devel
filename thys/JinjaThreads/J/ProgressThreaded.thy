@@ -34,7 +34,7 @@ lemma final_locks: "final e \<Longrightarrow> expr_locks e l = 0"
 by(auto elim: finalE)
 
 lemma final_thread_wf_interp: "final_thread_wf final_expr (mred P)"
-proof(unfold_locales)
+proof
   fix x m ta x' m'
   assume "final_expr x" "mred P (x, m) ta (x', m')"
   moreover obtain e l where e: "x = (e, l)" by (cases x, auto)
@@ -83,9 +83,7 @@ apply(simp add: hyper_isin_def)
 done
 
 lemma lifting_wf_def_ass: "wf_J_prog P \<Longrightarrow> lifting_wf (mred P) (\<lambda>(e, x) m. \<D> e \<lfloor>dom x\<rfloor>)"
-apply(unfold_locales)
-apply(auto dest: red_preserves_defass red_def_ass_new_thread)
-done
+proof qed (auto dest: red_preserves_defass red_def_ass_new_thread)
 
 lemmas redT_preserves_defass = lifting_wf.redT_preserves[OF lifting_wf_def_ass]
 lemmas RedT_preserves_defass = lifting_wf.RedT_preserves[OF lifting_wf_def_ass]
@@ -218,7 +216,7 @@ lemma lifting_inv_sconf_subject_ok:
   assumes wf: "wf_J_prog P"
   shows "lifting_inv (mred P) (\<lambda>x m. True) (\<lambda>ET (e, x) m. sconf_type_ok P ET e m x)"
 proof(rule lifting_inv.intro[OF _ lifting_inv_axioms.intro])
-  show "lifting_wf (mred P) (\<lambda>x m. True)" by(unfold_locales)
+  show "lifting_wf (mred P) (\<lambda>x m. True)" ..
 next
   fix x m ta x' m' i
   assume "mred P (x, m) ta (x', m')"
@@ -577,7 +575,7 @@ lemma red_wf_red:
   and "lock_ok (locks S) (thr S)"
   and "sconf_type_ts_ok P Es (thr S) (shr S)"
   shows "wf_red final_expr (mred P) S"
-proof(unfold_locales)
+proof
   fix tta s t ex ta e'x' m'
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
     and "thr s t = \<lfloor>(ex, no_wait_locks)\<rfloor>"
@@ -785,7 +783,7 @@ lemma wf_progress:
   and "sconf_type_ts_ok P Es (thr S) (shr S)"
   and "def_ass_ts_ok (thr S) (shr S)"
   shows "wf_progress final_expr (mred P) S"
-proof(unfold_locales)
+proof
   fix tta s t ex ln
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
     and "thr s t = \<lfloor>(ex, ln)\<rfloor>"

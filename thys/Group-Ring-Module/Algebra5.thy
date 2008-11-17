@@ -3437,8 +3437,7 @@ apply (frule_tac n = n in Ring.npClose[of S x], assumption+)
 apply (simp add:Subring_tOp_ring_tOp)
 done
 
-lemma (in PolynRg) is_Ring:"Ring R"
-by unfold_locales
+lemma (in PolynRg) is_Ring: "Ring R" ..
 
 lemma (in PolynRg) polyn_ring_nonzero:"1\<^sub>r \<noteq> \<zero>"
 apply (cut_tac Ring, cut_tac subring)

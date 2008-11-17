@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.15 2008-10-29 23:56:20 ballarin Exp $
+    ID:         $Id: Topology.thy,v 1.16 2008-11-17 16:01:28 fhaftmann Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -1986,7 +1986,7 @@ lemma regular_implies_T2:
   shows "T2 T"
 proof (rule T2I)
   interpret regular [T] by fact
-  show "topology T" by unfold_locales
+  show "topology T" ..
 next
   interpret regular [T] by fact
   fix x y assume "x \<in> carrier" "y \<in> carrier" "x \<noteq> y"

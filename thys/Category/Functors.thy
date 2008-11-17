@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Functors.thy,v 1.8 2007-06-13 19:37:50 makarius Exp $
+    ID:          $Id: Functors.thy,v 1.9 2008-11-17 16:01:28 fhaftmann Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 
 Functors: Define functors and prove a trivial example.
@@ -63,8 +63,7 @@ subsection {* Simple Lemmas *}
 
 text {* For example: *}
 
-lemma (in functor) "Functor F : AA \<longrightarrow> BB"
-  by unfold_locales
+lemma (in functor) "Functor F : AA \<longrightarrow> BB" ..
 
 
 lemma functors_preserve_arrows [intro]:

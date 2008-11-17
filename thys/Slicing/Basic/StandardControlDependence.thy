@@ -440,7 +440,7 @@ begin
 lemma DynPDG_scd:
   "DynPDG sourcenode targetnode kind valid_edge (_Entry_) 
           Def Use state_val (_Exit_) dyn_standard_control_dependence"
-proof(unfold_locales)
+proof
   fix n n' as assume "n controls\<^isub>s n' via as"
   show "n' \<noteq> (_Exit_)"
   proof(rule ccontr)
@@ -509,7 +509,7 @@ begin
 lemma PDG_scd:
   "PDG sourcenode targetnode kind valid_edge (_Entry_) 
        Def Use state_val (_Exit_) standard_control_dependence"
-proof(unfold_locales)
+proof
   fix n n' assume "n controls\<^isub>s n'"
   show "n' \<noteq> (_Exit_)"
   proof(rule ccontr)

@@ -251,7 +251,7 @@ qed
 lemma PDGBackwardSliceCorrect:
   "BackwardSlice sourcenode targetnode kind valid_edge
         (_Entry_) Def Use state_val PDG_BS"
-proof(unfold_locales)
+proof
   fix n n\<^isub>c assume "n \<in> PDG_BS n\<^isub>c"
   thus "valid_node n" by(rule PDG_BS_valid_node)
 next
@@ -512,7 +512,7 @@ qed
 lemma WeakPDGBackwardSliceCorrect:
   "BackwardSlice sourcenode targetnode kind valid_edge
         (_Entry_) Def Use state_val PDG_BS"
-proof(unfold_locales)
+proof
   fix n n\<^isub>c assume "n \<in> PDG_BS n\<^isub>c"
   thus "valid_node n" by(rule PDG_BS_valid_node)
 next
@@ -699,7 +699,7 @@ qed
 
 lemma "BackwardSlice sourcenode targetnode kind valid_edge
         (_Entry_) Def Use state_val wod_backward_slice"
-proof(unfold_locales)
+proof
   fix n n\<^isub>c assume "n \<in> wod_backward_slice n\<^isub>c"
   thus "valid_node n" by(rule wod_backward_slice_valid_node)
 next

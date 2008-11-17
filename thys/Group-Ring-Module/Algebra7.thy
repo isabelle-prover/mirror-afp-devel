@@ -56,9 +56,7 @@ abbreviation
  "R module M == Module M R"
  
 
-lemma (in Module) module_is_ag:"aGroup M"
-apply unfold_locales
-done
+lemma (in Module) module_is_ag: "aGroup M" ..
 
 lemma (in Module) module_inc_zero:" \<zero>\<^bsub>M\<^esub> \<in> carrier M"
 apply (simp add:ag_inc_zero) (** type of M is ('c, 'a, 'd) Module_scheme **)

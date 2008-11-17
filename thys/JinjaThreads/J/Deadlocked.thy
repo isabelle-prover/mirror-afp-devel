@@ -699,7 +699,7 @@ proof -
       hence "\<exists>L'\<subseteq>L. multithreaded.can_sync (mred P) x (shr s) L'"
 	by(auto) }
     note this ml }
-  thus ?thesis by(unfold_locales)
+  then show ?thesis by unfold_locales
 qed
 
 end

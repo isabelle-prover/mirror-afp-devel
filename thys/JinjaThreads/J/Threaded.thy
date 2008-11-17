@@ -148,7 +148,7 @@ where
   "sync_es_ok \<equiv> ts_ok (\<lambda>(e, x) m. sync_ok e)"
 
 lemma lifting_wf_sync_ok: "wf_J_prog P \<Longrightarrow> lifting_wf (mred P) (\<lambda>(e, x) m. sync_ok e)"
-by(unfold_locales)(auto intro: red_preserve_sync_ok red_new_thread_sync_ok)
+proof qed (auto intro: red_preserve_sync_ok red_new_thread_sync_ok)
 
 lemma redT_preserve_sync_ok:
   assumes red: "P \<turnstile> s -t\<triangleright>ta\<rightarrow> s'"

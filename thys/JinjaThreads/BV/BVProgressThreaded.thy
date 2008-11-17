@@ -7,7 +7,7 @@ begin
 
 
 lemma final_interp: "final_thread_wf final (mexec P)"
-proof(unfold_locales)
+proof
   fix x m ta x' m'
   assume "final x" "mexec P (x, m) ta (x', m')"
   moreover obtain xcp frs tls where x: "x = (xcp, frs)" by (cases x, auto)
@@ -21,7 +21,7 @@ interpretation exec_mthr_final: final_thread_wf [final "mexec P"]
 by(rule final_interp)
 
 lemma final_interp_d: "final_thread_wf final (mexecd P)"
-proof(unfold_locales)
+proof
   fix x m ta x' m'
   assume "final x" "mexecd P (x, m) ta (x', m')"
   moreover obtain xcp frs where x: "x = (xcp, frs)" by (cases x, auto)
@@ -346,13 +346,12 @@ qed
 
 
 lemma lifting_wf_correct_state_d: "wf_jvm_prog\<^sub>\<Phi> P \<Longrightarrow> lifting_wf (mexecd P) (\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>)"
-apply(unfold_locales)
-by(auto intro: BV_correct_d_1 correct_state_new_thread correct_state_heap_change)
+proof qed (auto intro: BV_correct_d_1 correct_state_new_thread correct_state_heap_change)
 
 lemma lifting_wf_correct_state:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   shows "lifting_wf (mexec P) (\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>)"
-proof(unfold_locales)
+proof
   fix x m ta x' m'
   assume "mexec P (x, m) ta (x', m')"
     and "(\<lambda>(xcp, frs) h. P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>) x m"
@@ -489,7 +488,7 @@ lemma execd_wf_red:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and "correct_state_ts P \<Phi> (thr S) (shr S)"
   shows "wf_red final (mexecd P) S"
-proof(unfold_locales)
+proof
   fix tta s t x ta x' m'
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>\<^bsub>jvmd\<^esub>* s"
     and "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
@@ -982,7 +981,7 @@ lemma exec_wf_red:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and csS: "correct_state_ts P \<Phi> (thr S) (shr S)"
   shows "wf_red final (mexec P) S"
-proof(unfold_locales)
+proof
   fix tta s t x ta x' m'
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>\<^bsub>jvm\<^esub>* s"
     and "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
@@ -1028,7 +1027,7 @@ lemma execd_wf_progress:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
   and "correct_state_ts P \<Phi> (thr S) (shr S)"
   shows "wf_progress final (mexecd P) S"
-proof(unfold_locales)
+proof
   fix tta s t x ln
   assume "thr s t = \<lfloor>(x, ln)\<rfloor>"
     and "\<not> final x"
@@ -1062,7 +1061,7 @@ lemma exec_wf_progress:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P" 
   and cs: "correct_state_ts P \<Phi> (thr S) (shr S)"
   shows "wf_progress final (mexec P) S"
-proof(unfold_locales)
+proof
   fix tta s t x ln
   assume "thr s t = \<lfloor>(x, ln)\<rfloor>" "\<not> final x"
     and Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>\<^bsub>jvm\<^esub>* s"

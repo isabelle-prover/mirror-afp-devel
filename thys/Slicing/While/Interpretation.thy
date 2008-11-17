@@ -24,7 +24,7 @@ definition valid_node ::"cmd \<Rightarrow> w_node \<Rightarrow> bool"
 
 interpretation While_CFG:
   CFG ["sourcenode" "targetnode" "kind" "valid_edge prog" "Entry"]
-proof(unfold_locales)
+proof
   fix a assume "valid_edge prog a" and "targetnode a = (_Entry_)"
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
   with `valid_edge prog a` `targetnode a = (_Entry_)` 
@@ -44,7 +44,7 @@ qed
 
 interpretation While_CFGExit:CFGExit ["sourcenode" "targetnode" "kind" 
   "valid_edge prog" "Entry" "Exit"]
-proof(unfold_locales)
+proof
   fix a assume "valid_edge prog a" and "sourcenode a = (_Exit_)"
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
   with `valid_edge prog a` `sourcenode a = (_Exit_)` 

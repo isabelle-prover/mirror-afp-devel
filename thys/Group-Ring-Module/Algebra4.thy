@@ -2209,8 +2209,7 @@ definition
      **)
 
 
-lemma (in Ring) Ring:"Ring R"
-by (unfold_locales)
+lemma (in Ring) Ring: "Ring R" ..
 
 lemma (in Ring) ring_is_ag:"aGroup R"
 apply (rule aGroup.intro,
@@ -6090,8 +6089,7 @@ abbreviation
   IOP :: "['a, _] \<Rightarrow> 'a" ("(_\<^bsup>\<hyphen> _\<^esup>)" [87,88]87) where
   "a\<^bsup>\<hyphen>K\<^esup> == invf K a"
 
-lemma (in Idomain) idom_is_ring:"Ring R"
-by unfold_locales
+lemma (in Idomain) idom_is_ring: "Ring R" ..
 
 lemma (in Idomain) idom_tOp_nonzeros:"\<lbrakk>x \<in> carrier R; 
        y \<in> carrier R; x \<noteq> \<zero>;  y \<noteq> \<zero>\<rbrakk> \<Longrightarrow> x \<cdot>\<^sub>r y \<noteq> \<zero>"

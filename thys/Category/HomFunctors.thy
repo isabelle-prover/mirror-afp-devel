@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: HomFunctors.thy,v 1.12 2008-06-12 06:57:16 lsf37 Exp $
+    ID:          $Id: HomFunctors.thy,v 1.13 2008-11-17 16:01:28 fhaftmann Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 
 Define homfunctors, prove that they are functors.
@@ -192,7 +192,7 @@ proof (intro functor.intro functor_axioms.intro)
     show "category Set" 
       by (unfold Set_def, rule set_cat_cat)
     show "two_cats_axioms AA Set"
-      by unfold_locales rule+
+      proof qed rule+
   qed
 qed
 

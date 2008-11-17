@@ -10,7 +10,7 @@ where "empty_control_dependence n n' as \<equiv> False"
 lemma (in CFGExit_wf) DynPDG_scd:
   "DynPDG sourcenode targetnode kind valid_edge (_Entry_) (_Exit_) 
           Def Use state_val empty_control_dependence"
-proof(unfold_locales)
+proof
   fix n n' as assume "empty_control_dependence n n' as"
   thus "n' \<noteq> (_Exit_)" by(simp add:empty_control_dependence_def)
 next

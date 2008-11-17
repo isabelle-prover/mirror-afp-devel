@@ -336,7 +336,7 @@ lemma execd_preserve_deadlocked:
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   and cs: "correct_state_ts P \<Phi> (thr S) (shr S)"
   shows "preserve_deadlocked final (mexecd P) S"
-proof(unfold_locales)
+proof
   fix tta s t' ta' s' t x ln
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>\<^bsub>jvmd\<^esub>* s"
     and red: "P \<turnstile> s -t'\<triangleright>ta'\<rightarrow>\<^bsub>jvmd\<^esub> s'"
@@ -463,7 +463,7 @@ proof -
       with L' have "\<exists>L' \<subseteq> L. multithreaded.can_sync (mexec P) x (shr s) L'"
 	by(blast) }
     note this ml }
-  thus ?thesis by(unfold_locales)
+  thus ?thesis by unfold_locales
 qed
 
 

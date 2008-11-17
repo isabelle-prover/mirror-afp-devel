@@ -104,8 +104,7 @@ definition bv_less :: "bit_vector \<Rightarrow> bit_vector \<Rightarrow> bool" (
 
 
 interpretation order ["bv_leqs" "bv_less"]
-by(unfold_locales,
-   auto intro:bv_leqs_refl bv_leqs_trans bv_leqs_antisym simp:bv_less_def)
+proof qed (auto intro: bv_leqs_refl bv_leqs_trans bv_leqs_antisym simp: bv_less_def)
 
 
 end
