@@ -20,7 +20,9 @@
 
   **)
 
-theory Algebra2 imports Algebra1 begin
+theory Algebra2
+imports Algebra1
+begin
 
 lemma (in Order) less_and_segment:"b \<in> carrier D \<Longrightarrow>
       (\<forall>a.((a \<prec> b \<and> a \<in> carrier D) \<longrightarrow> (Q a))) = 
@@ -1612,8 +1614,8 @@ lemma (in Worder) Sup_mem:"\<lbrakk>X \<subseteq> carrier D; \<exists>b. ub X b\
 apply (frule upper_bounds_sub[of "X"],
        frule minimum_elem_mem[of "upper_bounds D X" "Sup D X"],
        simp add:Sup_def, rule theI')
- apply (rule ex_ex1I);
-apply (cut_tac local.D.ex_minimum);
+ apply (rule ex_ex1I)
+apply (cut_tac ex_minimum)
 apply (frule_tac a = "upper_bounds D X" in forall_spec,
         thin_tac "\<forall>X. X \<subseteq> carrier D \<and> X \<noteq> {} \<longrightarrow> (\<exists>x. minimum_elem D X x)",
         simp, erule exE)
