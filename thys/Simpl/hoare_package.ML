@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.26 2008-10-25 12:59:18 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.27 2008-11-17 16:01:21 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1014,8 +1014,8 @@ fun add_variable_statespaces prep_typ (cname,(inpars,outpars,locvars)) thy =
   in if null inpars' andalso null outpars' andalso null locvars
      then
        thy
-       |> Locale.add_locale "" parSP Locale.empty [] |> #2 |> ProofContext.theory_of
-       |> Locale.add_locale "" varSP Locale.empty [] |> #2 |> ProofContext.theory_of
+       |> Locale.add_locale_cmd parSP Locale.empty [] |> #2 |> ProofContext.theory_of
+       |> Locale.add_locale_cmd varSP Locale.empty [] |> #2 |> ProofContext.theory_of
      else
        thy
        |> StateSpace.define_statespace_i (SOME statetypeN) in_out_args parSP [] in_outs'
@@ -1031,7 +1031,7 @@ fun apply_in_context thy lexp f t =
   in
     thy
     |> Theory.copy (* Create a dummy locale in dummy theory just to read the term *)
-    |> Locale.add_locale "" (name_variant "foo") lexp []
+    |> Locale.add_locale_cmd (name_variant "foo") lexp []
     |> snd (* get the proof-context *)
     |> (fn ctxt => f ctxt t)
   end;
@@ -1189,7 +1189,7 @@ fun procedures_definition locname procs thy =
         val pE = mk_loc_exp [Locale.intern thy (suffix parametersN cname)];
         val sN = suffix signatureN  name';
       in thy
-         |> Locale.add_locale_i "" sN pE fixes
+         |> Locale.add_locale "" sN pE fixes
          |> #2
          |> ProofContext.theory_of
          |> (fn thy => add_declaration (SOME (Locale.intern thy sN)) parameter_info_decl thy)
@@ -1237,7 +1237,7 @@ fun procedures_definition locname procs thy =
             |> ProofContext.theory_of;
 
       in thy
-         |> Locale.add_locale_i "" (suffix bodyN  name') pE fixes
+         |> Locale.add_locale "" (suffix bodyN  name') pE fixes
          |> add_decl_and_def
       end;
 
@@ -1291,7 +1291,7 @@ fun procedures_definition locname procs thy =
             val parentN = Locale.intern thy cliqN
             val parent = mk_loc_exp [parentN];
           in thy
-             |> Locale.add_locale "" implN parent []
+             |> Locale.add_locale_cmd implN parent []
              |> #2 |> ProofContext.theory_of
              |> Locale.interpretation_in_locale I
                       (parentN,Locale.Locale implN)
@@ -1305,7 +1305,7 @@ fun procedures_definition locname procs thy =
          |> add_distinct_procs_namespace
          |> Theory.checkpoint
          |> (fn thy =>
-              Locale.add_locale "" cliqN (pE thy) (elems thy) thy)
+              Locale.add_locale_cmd cliqN (pE thy) (elems thy) thy)
          |> #2
          |> ProofContext.theory_of
          |> fold add_impl_locale clique
@@ -1342,7 +1342,7 @@ fun procedures_definition locname procs thy =
             val st    = read' thy spec;
             val elem = Element.Assumes [((Name.binding thm_name, []), [(spec', [])])];
           in thy
-             |> Locale.add_locale_i "" thm_name pE' [elem]
+             |> Locale.add_locale "" thm_name pE' [elem]
              |> #2 |> ProofContext.theory_of
              |> (fn thy =>
                   add_declaration (SOME (Locale.intern thy thm_name)) proc_declaration thy)
