@@ -90,7 +90,7 @@ all potential breaks of confidentiality are discovered.
 <!-- entry directory name: -->
 <!--#set var="name" value="VolpanoSmith" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOL-Plain/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -122,6 +122,6 @@ all potential breaks of confidentiality are discovered.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-09-07 02:56:14 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-11-19 11:06:22 $, $Revision: 1.1 
 $</div></body>
 </html>
