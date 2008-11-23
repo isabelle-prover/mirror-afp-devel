@@ -1,12 +1,4 @@
-(*
-  no_document use_thy "ThisTheory";
-  use_thy "ThatTheory";
-*)
-
 set quick_and_dirty;
 
-no_document use_thy "Multiset";
-no_document use_thy "Permutation";
-
+no_document use_thys ["Multiset", "Permutation"];
 use_thy "MuchAdoAboutTwo";
-

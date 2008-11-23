@@ -1,2 +1,1 @@
-use_thy "WellForm";
-use_thy "Conform";
+use_thys ["WellForm", "Conform"];

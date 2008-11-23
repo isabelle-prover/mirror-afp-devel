@@ -1,3 +1,2 @@
-no_document use_thy "FuncSet";
-no_document use_thy "Zorn";
+no_document use_thys ["FuncSet", "Zorn"];
 use_thys ["Thys/Arrow_Utility", "Thys/GS"];

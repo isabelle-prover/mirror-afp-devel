@@ -1,3 +1,1 @@
-use_thy "BVExec";
-use_thy "LBVJVM";
-use_thy "BVNoTypeError";
+use_thys ["BVExec", "LBVJVM", "BVNoTypeError"];

@@ -1,10 +1,2 @@
-(*
-*)
-  no_document use_thy "Multiset";
-  no_document use_thy "Code_Integer";
-  no_document use_thy "Code_Index";
-  no_document use_thy "Efficient_Nat";
-  use_thy "BasicDPLL";
-  use_thy "NieuwenhuisOliverasTinelli";
-  use_thy "KrsticGoel"; 
-  use_thy "FunctionalImplementation";
+no_document use_thys ["Multiset", "Code_Integer", "Code_Index", "Efficient_Nat"];
+use_thys ["BasicDPLL", "NieuwenhuisOliverasTinelli", "KrsticGoel", "FunctionalImplementation"];
