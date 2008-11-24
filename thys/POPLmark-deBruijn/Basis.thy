@@ -1,4 +1,4 @@
-(*  ID:         $Id: Basis.thy,v 1.7 2008-06-21 18:13:20 makarius Exp $
+(*  ID:         $Id: Basis.thy,v 1.8 2008-11-24 09:16:05 makarius Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -120,7 +120,7 @@ lemma map_assoc_None [simp]:
 
 no_syntax
   "_ofsort" :: "[tid, sort] => type"  ("_\<Colon>_" [1000, 0] 1000)
-  "_constrain" :: "['a, type] => 'a"  ("_\<Colon>_" [4, 0] 3)
+  "_constrain" :: "[logic, type] => 'a"  ("_\<Colon>_" [4, 0] 3)
   "_idtyp" :: "[id, type] => idt"  ("_\<Colon>_" [] 0)
   "_idtypdummy" :: "type => idt"  ("'_()\<Colon>_" [] 0)
   "_Map" :: "maplets => 'a ~=> 'b"  ("(1[_])")
