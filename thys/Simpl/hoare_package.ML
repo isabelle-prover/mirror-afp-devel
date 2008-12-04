@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.27 2008-11-17 16:01:21 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.28 2008-12-04 14:49:15 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1184,7 +1184,7 @@ fun procedures_definition locname procs thy =
     fun add_signature_locale (cname, name) thy =
       let
         val name' = unsuffix proc_deco name;
-        val fixes = [Element.Fixes [(Name.binding name, SOME proc_nameT, NoSyn)]];
+        val fixes = [Element.Fixes [(Binding.name name, SOME proc_nameT, NoSyn)]];
         (* FIXME: may use HOLogic.typeT as soon as locale type-inference works porperly *)
         val pE = mk_loc_exp [Locale.intern thy (suffix parametersN cname)];
         val sN = suffix signatureN  name';
@@ -1201,14 +1201,14 @@ fun procedures_definition locname procs thy =
         val name' = unsuffix proc_deco name;
         val bdy = read_term (the (assoc_string (name_body, name)));
         val bdy_defN = suffix body_def_sfx name';
-      in ((Name.binding bdy_defN, NoSyn), ((Name.no_binding, []), bdy)) end;
+      in ((Binding.name bdy_defN, NoSyn), ((Binding.empty, []), bdy)) end;
 
    fun add_body_locale (name,pars) thy =
       let
         val name' = unsuffix proc_deco name;
         val callees = filter_out (fn n => n = name) (get_calls name)
 
-        val fixes = [Element.Fixes [(Name.binding name, SOME proc_nameT, NoSyn)]];
+        val fixes = [Element.Fixes [(Binding.name name, SOME proc_nameT, NoSyn)]];
             (* FIXME: may use HOLogic.typeT as soon as locale type-inference works porperly *)
         val pE = mk_loc_exp
                   (map (Locale.intern thy)
@@ -1258,7 +1258,7 @@ fun procedures_definition locname procs thy =
                      HOLogic.mk_eq (Free (gamma,fastype_of nt --> fastype_of rhs)$nt,rhs)
            val ct = cterm_of thy eq;
            val eqs = print_cterm ct;
-           val assms = Element.Assumes [((Name.binding (suffix bodyP name'), []),[(eqs,[])])]
+           val assms = Element.Assumes [((Binding.name (suffix bodyP name'), []),[(eqs,[])])]
          in [assms]
          end
       else [];
@@ -1340,7 +1340,7 @@ fun procedures_definition locname procs thy =
           let
             val spec' = read thy spec;
             val st    = read' thy spec;
-            val elem = Element.Assumes [((Name.binding thm_name, []), [(spec', [])])];
+            val elem = Element.Assumes [((Binding.name thm_name, []), [(spec', [])])];
           in thy
              |> Locale.add_locale "" thm_name pE' [elem]
              |> #2 |> ProofContext.theory_of
@@ -1349,7 +1349,7 @@ fun procedures_definition locname procs thy =
              |> error_to_warning ("abbreviation: '" ^ thm_name  ^ "' not added")
                   (add_abbrev (SOME (Locale.intern thy (suffix cliqueN (cname name))))
                     Syntax.mode_input
-                    ((Name.binding thm_name (*^ "'"*),NoSyn),st))
+                    ((Binding.name thm_name (*^ "'"*),NoSyn),st))
           end;
       in thy
          |> Theory.checkpoint

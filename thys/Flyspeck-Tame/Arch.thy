@@ -1,4 +1,4 @@
-(*  ID:         $Id: Arch.thy,v 1.7 2008-10-09 13:27:33 fhaftmann Exp $
+(*  ID:         $Id: Arch.thy,v 1.8 2008-12-04 14:49:15 fhaftmann Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -27,8 +27,8 @@ setup {*
           (Free (c, @{typ "nat list list list"}), term_of l);
       in
         tap (fn _ => writeln ("Defining archive " ^ c))
-        #> Specification.definition (SOME (Name.binding c, SOME @{typ "nat list list list"}, NoSyn),
-          (Attrib.no_binding, eq))
+        #> Specification.definition (SOME (Binding.name c, SOME @{typ "nat list list list"}, NoSyn),
+          (Attrib.empty_binding, eq))
         #> snd
       end;
   in
@@ -40,7 +40,7 @@ setup {*
     #> add_def ("Hept", Hept)
     #> add_def ("Oct", Oct)
     #> LocalTheory.exit_global
-  end;
+  end
 *}
 
 text {* First the ML values are loaded.  Then they are turned into
