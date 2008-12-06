@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.28 2008-12-04 14:49:15 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.29 2008-12-06 07:46:52 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1417,7 +1417,7 @@ val proc_type = P.$$$ "::" |-- P.typ_group >> BodyTyp
 
 
 fun proc_specs x = (P.!!! (Scan.repeat (S.thm_name ":" -- P.prop_group))
-    >> map (fn ((thm_name, thm_attribs), prop) => (Name.name_of thm_name, prop))) x
+    >> map (fn ((thm_name, thm_attribs), prop) => (Binding.base_name thm_name, prop))) x
 
 val par_loc = Scan.option (P.$$$ "(" |-- P.$$$ "imports" |-- P.name --| P.$$$ ")");
 
