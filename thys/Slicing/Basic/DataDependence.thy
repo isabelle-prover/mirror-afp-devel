@@ -1,6 +1,6 @@
 header {* \isaheader{Dynamic and static data dependence} *}
 
-theory DataDependence imports CFGExit_wf begin
+theory DataDependence imports CFG_wf begin
 
 subsection {* Dynamic data dependence *}
 
