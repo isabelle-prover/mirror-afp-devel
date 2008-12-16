@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.9 2008-10-04 15:50:10 makarius Exp $
+# $Id: testall,v 1.10 2008-12-16 21:06:50 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Tests all entries in Archive of Formal Proofs
@@ -99,11 +99,13 @@ FAIL="";
 for DIR in $DIRS; do
     if [ -d $DIR -a "$DIR" != "CVS" ]; then
         cd $DIR
-        if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
-          echo "Testing [$DIR]"
-          $ISABELLE_TOOL make $CLEAN all $@ || FAIL="${FAIL}${DIR} "
-          echo "Finished [$DIR]"
-        fi
+	if [ "$(ls .)" != "CVS" ]; then
+	        if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
+        	  echo "Testing [$DIR]"
+	          $ISABELLE_TOOL make $CLEAN all $@ || FAIL="${FAIL}${DIR} "
+        	  echo "Finished [$DIR]"
+	        fi
+	fi
         cd ..
     fi
 done
