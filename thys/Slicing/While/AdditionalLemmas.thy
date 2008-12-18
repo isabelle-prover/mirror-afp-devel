@@ -1,12 +1,9 @@
-header {* \isaheader{Interpretations of the various Control Dependences} *}
+header {* \isaheader{Lemmas for the control dependences} *}
 
-theory ControlDependences imports WellFormed "../Basic/StandardControlDependence"
-  "../Basic/WeakControlDependence" "../Basic/WeakOrderDependence" 
+theory AdditionalLemmas imports WellFormed
 begin
 
-subsection{* Some basic lemmas *}
-
-subsubsection {* Paths to @{term "(_Exit_)"} and from @{term "(_Entry_)"} exist *}
+subsection {* Paths to @{term "(_Exit_)"} and from @{term "(_Entry_)"} exist *}
 
 abbreviation path :: "cmd \<Rightarrow> w_node \<Rightarrow> w_edge list \<Rightarrow> w_node \<Rightarrow> bool" 
 ("_ \<turnstile> _ -_\<rightarrow>* _")
@@ -672,7 +669,7 @@ next
 qed
 
 
-subsubsection {* Some finiteness considerations *}
+subsection {* Some finiteness considerations *}
 
 lemma finite_labels:"finite {l. \<exists>c. labels prog l c}"
 proof -
@@ -715,33 +712,6 @@ proof -
                   targetnode a' = n'} \<subseteq> {n. valid_node prog n}"
     by(auto simp:valid_edge_def valid_node_def)
   thus ?thesis by(fastsimp elim:finite_subset intro:finite_valid_nodes)
-qed
-
-
-subsection {* Interpretation of the Control Dependence Locales *}
-
-interpretation WStandardControlDependence:
-  StandardControlDependencePDG["sourcenode" "targetnode" "kind" "valid_edge prog"
-                    "Entry" "Exit" "Defs prog" "Uses prog" "id"]
-proof
-  fix n assume "CFG.valid_node sourcenode targetnode (valid_edge prog) n"
-  hence "valid_node prog n" by(simp add:valid_node_def While_CFG.valid_node_def)
-  thus "\<exists>as. prog \<turnstile> (_Entry_) -as\<rightarrow>* n" by(rule valid_node_Entry_path)
-next
-  fix n assume "CFG.valid_node sourcenode targetnode (valid_edge prog) n"
-  hence "valid_node prog n" by(simp add:valid_node_def While_CFG.valid_node_def)
-  thus "\<exists>as. prog \<turnstile> n -as\<rightarrow>* (_Exit_)" by(rule valid_node_Exit_path)
-qed
-
-interpretation WWeakControlDependence:
-  WeakControlDependencePDG["sourcenode" "targetnode" "kind" "valid_edge prog"
-                    "Entry" "Exit" "Defs prog" "Uses prog" "id"]
-proof
-  fix n assume "CFG.valid_node sourcenode targetnode (valid_edge prog) n"
-  hence "valid_node prog n" by(simp add:valid_node_def While_CFG.valid_node_def)
-  show "finite {n'. \<exists>a'. valid_edge prog a' \<and> sourcenode a' = n \<and>
-                         targetnode a' = n'}"
-    by(rule finite_successors)
 qed
 
 
