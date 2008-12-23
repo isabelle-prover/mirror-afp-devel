@@ -36,7 +36,6 @@
 		
     <tr><td class="datahead">Author:</td>
 <td class="data">
-<td class="data">
 <a href="http://www.tcs.informatik.uni-muenchen.de/~beringer">Lennart
 Beringer</a> and <a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">Martin Hofmann</a>
 </td></tr>		
@@ -129,6 +128,6 @@ Beringer</a> and <a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">M
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-12-22 15:19:54 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2008-12-23 15:20:01 $, $Revision: 1.1 
 $</div></body>
 </html>
