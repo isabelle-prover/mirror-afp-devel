@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.16 2008-11-17 16:01:28 fhaftmann Exp $
+    ID:         $Id: Topology.thy,v 1.17 2008-12-30 15:30:13 ballarin Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -103,7 +103,7 @@ lemma (in carrier) topeqI [intro!]:
          \<Longrightarrow> T = S"
 by (auto simp: is_open_def)
 
-locale topology = carrier T +
+locale topology = carrier T for T (structure) +
   assumes Int_open [intro!]:   "\<lbrakk> x open; y open\<rbrakk> \<Longrightarrow> x \<inter> y open"
   and     union_open [intro]: "\<forall>m \<in> M. m open \<Longrightarrow> \<Union> M open"
 
@@ -162,7 +162,7 @@ where
 | inter [intro]: "\<lbrakk> x \<in> topo B; y \<in> topo B \<rbrakk> \<Longrightarrow> x \<inter> y \<in> topo B"
 | union [intro]: "(\<And>x. x \<in> M \<Longrightarrow> x \<in> topo B) \<Longrightarrow> \<Union>M \<in> topo B"
 
-locale topobase = var B + carrier T +
+locale topobase = carrier T for B and T (structure) +
   defines "T \<equiv> topo B"
 
 lemma (in topobase) topo_open:
@@ -209,8 +209,8 @@ lemma topo_open_imp:
   fixes B and T (structure) defines "T \<equiv> topo B"
   shows "\<lbrakk> A \<subseteq> B; x open\<^sub>1 \<rbrakk> \<Longrightarrow> x open\<^sub>2" (is "PROP ?P")
 proof -
-  interpret A_S: topobase [A S] by fact
-  interpret topobase [B T] by fact
+  interpret A_S: topobase A S by fact
+  interpret topobase B T by fact
   show "PROP ?P" by (auto dest: topo_mono iff: A_S.topo_open topo_open)
 qed
 
@@ -228,7 +228,7 @@ qed (auto iff: topo_open)
 text{* Topological subspace *}
 
 
-locale subtopology = carrier S + carrier T +
+locale subtopology = carrier S + carrier T for S (structure) and T (structure) +
   assumes subtop[iff]: "s open = (\<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier)"
 
 lemma subtopologyI:
@@ -259,7 +259,7 @@ lemma (in subtopology) subtop_sub:
   and s_open: "s open\<^sub>1"
   shows "s open\<^sub>2"
 proof -
-  interpret topology [T] by fact
+  interpret topology T by fact
   show ?thesis using prems by auto
 qed
 
@@ -267,7 +267,7 @@ lemma (in subtopology) subtop_topology [iff]:
   assumes "topology T"
   shows "topology S"
 proof -
-  interpret topology [T] by fact
+  interpret topology T by fact
   show ?thesis proof (rule topologyI)
     fix u v assume uopen: "u open" and vopen: "v open"
     thus "u \<inter> v open"  by (auto simp add: Int_ac)
@@ -303,8 +303,8 @@ lemma  subtop_lemma:
   assumes  Asub: "A = (\<Union>t\<in>B. { t \<inter> \<Union>A })"
   shows   "subtopology S T"
 proof -
-  interpret A_S: topobase [A S] by fact
-  interpret topobase [B T] by fact
+  interpret A_S: topobase A S by fact
+  interpret topobase B T by fact
   show ?thesis proof (rule subtopologyI)
     fix s assume "s open\<^sub>1"
     thus "\<exists>t. t open\<^sub>2 \<and> s = t \<inter> carrier"
@@ -368,7 +368,7 @@ lemma trivial_topology:
   fixes T (structure) defines "T \<equiv> {{}}"
   shows "topology T"
 proof -
-  interpret trivial [T] by fact
+  interpret trivial T by fact
   show ?thesis by (auto intro: topologyI)
 qed
 
@@ -377,12 +377,12 @@ lemma empty_carrier_implies_trivial:
   fixes T (structure) defines "T \<equiv> {{}}"
   shows "carrier = {} \<Longrightarrow> S = T" (is "PROP ?P")
 proof -
-  interpret topology [S] by fact
-  interpret trivial [T] by fact
+  interpret topology S by fact
+  interpret trivial T by fact
   show "PROP ?P" by (auto intro!: topeqI)
 qed
 
-locale discrete = var X + carrier T +
+locale discrete = carrier T for X and T (structure) +
   defines "T \<equiv> discrete_top X"
 
 lemma (in discrete) carrier:
@@ -402,7 +402,7 @@ lemma discrete_topology: "topology (discrete_top X)"
   by (auto intro!: topologyI simp: is_open_def discrete_top_def)
    blast
 
-locale indiscrete = var X + carrier T +
+locale indiscrete = carrier T for X and T (structure) +
   defines "T \<equiv> indiscrete_top X"
 
 lemma (in indiscrete) carrier:
@@ -421,12 +421,13 @@ qed
 lemma indiscrete_topology: "topology (indiscrete_top X)"
   by (rule topologyI) (auto simp: is_open_def indiscrete_top_def)
 
-locale orderbase = var X + var B +
+locale orderbase =
+  fixes X and B
   defines "B \<equiv> order_base X"
 
-locale ordertop1 =  orderbase X B + topobase B T
+locale ordertop1 =  orderbase X B + topobase B T for X and B and T (structure)
 
-locale ordertop = var X + carrier T +
+locale ordertop = carrier T for X and T (structure) +
   defines "T \<equiv> order_top X"
 
 lemma (in ordertop) ordertop_open:
@@ -794,7 +795,7 @@ lemma counter_example_core_frontier:
   fixes T (structure) defines "T \<equiv> indiscrete_top X"
   shows "core (frontier {0}) = X"
 proof -
-  interpret indiscrete [X T] by fact
+  interpret indiscrete X T by fact
   have "core {0} = {}"
     by (auto simp add: carrier [symmetric] cor_def)
   moreover have "closure {0} = UNIV"
@@ -1060,7 +1061,8 @@ lemma funcset_vimage_diff:
   "f : A \<rightarrow> B \<Longrightarrow> A - f-`(B - C) = A \<inter> f-`C"
   by (auto intro: funcset_mem)
 
-locale func = var f + carrier S + carrier T + var fimage +
+locale func = S: carrier S + T: carrier T
+  for f and S (structure) and T (structure) and fimage +
   assumes func [iff]: "f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2"
   defines "fimage \<equiv> fimg T f"
   notes func_mem [simp, intro] = funcset_mem [OF func]
@@ -1109,7 +1111,7 @@ lemma cntD2:
   by (auto simp: cnt_def)
 
 
-locale continuous = func f +
+locale continuous = func +
   assumes continuous [dest, simp]:
   "m open\<^sub>2 \<Longrightarrow> carrier \<inter> (f -` m) open"
 
@@ -1162,8 +1164,8 @@ lemma continuousI2:
 proof (rule continuous.intro)
   from func show "func f S T" by (auto simp: func_def)
 next
-  interpret S: carrier [S] .
-  interpret T: carrier [T] .
+  interpret S: carrier S .
+  interpret T: carrier T .
   show "continuous_axioms f S T"
   proof (rule continuous_axioms.intro)
     fix m let ?c = "carrier\<^sub>2 - m" assume "m open\<^sub>2"
@@ -1194,7 +1196,7 @@ proof(rule continuousI)
   show "id \<in> carrier \<rightarrow> carrier"
     by (auto intro: funcsetI)
 next
-  interpret T: carrier [T] .
+  interpret T: carrier T .
   fix m assume mopen: "m open"
   hence "m \<subseteq> carrier" by auto
   hence "carrier \<inter> m = m" by auto
@@ -1207,7 +1209,7 @@ lemma (in discrete) continuous:
   assumes "func f T S" defines "fimage \<equiv> fimg S f"
   shows "continuous f T S"
 proof -
-  interpret func [f T S fimage] by fact fact
+  interpret func f T S fimage by fact fact
   show ?thesis by (auto intro!: continuousI)
 qed
 
@@ -1218,8 +1220,8 @@ lemma (in indiscrete) continuous:
   assumes "func f S T" defines "fimage \<equiv> fimg T f"
   shows "continuous f S T"
 proof -
-  interpret S: topology [S] by fact
-  interpret func [f S T fimage] by fact fact
+  interpret S: topology S by fact
+  interpret func f S T fimage by fact fact
   show ?thesis by (auto del: S.Int_open intro!: continuousI)
 qed
 
@@ -1285,7 +1287,7 @@ lemma filtersD4:
   "\<lbrakk> F \<in> filters T; A \<subseteq> B; B \<subseteq> carr T; A\<in>F \<rbrakk> \<Longrightarrow> B \<in> F"
   by (blast elim: filtersE)
 
-locale filter = var F + carrier T +
+locale filter = carrier T for F and T (structure) +
   assumes F_filter: "F \<in> Filters"
   notes not_empty [iff]       = filtersD1 [OF F_filter]
   and   union_carr [iff]      = filtersD2 [OF F_filter]
@@ -1342,8 +1344,8 @@ lemma fimage_filter:
   fixes F assumes "filter F S"
   shows "fimage F \<in> Filters\<^sub>2"
 proof -
-  interpret func [f S T fimage] by fact fact
-  interpret filter [F S] by fact
+  interpret func f S T fimage by fact fact
+  interpret filter F S by fact
   show ?thesis proof
     fix A B assume "A \<in> fimage F" "B \<in> fimage F"
     then obtain a b where
@@ -1362,8 +1364,8 @@ lemma Int_filters:
   fixes E assumes "filter E T"
   shows "F \<inter> E \<in> Filters"
 proof -
-  interpret filter [F T] by fact
-  interpret filter [E T] by fact
+  interpret filter F T by fact
+  interpret filter E T by fact
   show ?thesis by auto
 qed
 
@@ -1397,7 +1399,7 @@ lemma (in ultra_filter) max:
   assumes fsube: "F \<subseteq> E"
   shows "E \<subseteq> F"
 proof -
-  interpret filter [E T] by fact
+  interpret filter E T by fact
   show ?thesis proof
     fix x assume xinE: "x \<in> E"
     hence "x \<subseteq> carrier" ..
@@ -1461,7 +1463,7 @@ lemma filter_chain_lemma:
   assumes C_chain: "C \<in> chain {V. V \<in> Filters \<and> F \<subseteq> V}" (is "C \<in> chain ?FF")
   shows "\<Union>(C \<union> {F}) \<in> Filters" (is "?E \<in> Filters")
 proof-
-  interpret filter [F T] by fact
+  interpret filter F T by fact
   from C_chain have C_subset_FF[dest]: "\<And> x. x\<in>C \<Longrightarrow> x \<in> ?FF" and
     C_ordered: "\<forall> A \<in> C. \<forall> B \<in> C. A \<subseteq> B \<or> B \<subseteq> A"
     by (auto simp: chain_def chain_subset_def)
@@ -1641,7 +1643,7 @@ lemma convergent_filter_closure:
   and   AF: "A \<in> F"
   shows "x \<in> closure A"
 proof-
-  interpret filter [F T] by fact
+  interpret filter F T by fact
   have "x adh A"
   proof
     fix u assume unhd: "u \<in> nhds x"
@@ -1795,7 +1797,7 @@ lemma T2_axiom_implies_T1_axiom:
   \<longrightarrow> (\<exists> u \<in> nhds x. \<exists> v \<in> nhds y. u \<inter> v = {})"
   shows "T1_axioms T"
 proof (rule T1_axioms.intro, clarify)
-  interpret carrier [T] .
+  interpret carrier T .
   fix x y assume neq: "x \<noteq> y" and
     points: "x \<in> carrier" "y \<in> carrier"
   with T2 obtain u v
@@ -1824,7 +1826,7 @@ lemma T2_axiom_implies_T0_axiom:
   \<longrightarrow> (\<exists> u \<in> nhds x. \<exists> v \<in> nhds y. u \<inter> v = {})"
   shows "T0_axioms T"
 proof (rule T0_axioms.intro, clarify)
-  interpret carrier [T] .
+  interpret carrier T .
   fix x y assume neq: "x \<noteq> y" and
     points: "x \<in> carrier" "y \<in> carrier"
   with T2 obtain u v
@@ -1845,7 +1847,7 @@ lemma T2I:
            \<exists> u \<in> nhds x. \<exists> v \<in> nhds y. u \<inter> v = {}"
   shows "T2 T"
 proof -
-  interpret topology [T] by fact
+  interpret topology T by fact
   show ?thesis apply intro_locales
     apply (rule T2_axiom_implies_T0_axiom)
     using I apply simp
@@ -1866,7 +1868,7 @@ assumes points: "x \<in> carrier" "y \<in> carrier"
   and   Fy:    "F -\<longrightarrow> y"
   shows "x = y"
 proof -
-  interpret filter [F T] by fact
+  interpret filter F T by fact
   show ?thesis proof (rule ccontr)
     assume "x \<noteq> y" then obtain u v
       where unhdx: "u \<in> nhds x"
@@ -1960,7 +1962,7 @@ lemma image_lim_subset_lim_fimage:
   assumes "continuous f S T"
   shows "F \<in> Filters\<^sub>1 \<Longrightarrow> f`(lims F) \<subseteq> lims\<^sub>2 (fimage F)"
 proof -
-  interpret continuous [f S T fimage] by fact fact
+  interpret continuous f S T fimage by fact fact
   show ?thesis by (auto simp: limites_def intro: fimage_converges)
 qed
 
@@ -1985,10 +1987,10 @@ lemma regular_implies_T2:
   assumes "regular T"
   shows "T2 T"
 proof (rule T2I)
-  interpret regular [T] by fact
+  interpret regular T by fact
   show "topology T" ..
 next
-  interpret regular [T] by fact
+  interpret regular T by fact
   fix x y assume "x \<in> carrier" "y \<in> carrier" "x \<noteq> y"
   hence "{y} \<subseteq> carrier" "{y} closed" "x \<in> carrier" "x \<notin> {y}" by auto
   then obtain B U where B: "{y} \<subseteq> B" "B open" and U: "U \<in> nhds x" "B \<inter> U = {}"
@@ -2025,7 +2027,7 @@ lemma normal_implies_regular:
   assumes "normal T"
   shows  "regular T"
 proof -
-  interpret normal [T] by fact
+  interpret normal T by fact
   show ?thesis
   proof intro_locales
     show "T3_axioms T"

@@ -275,7 +275,7 @@ end
 
 
 locale progress = final_thread_wf + wf_progress + wf_red + preserves_lock_thread_ok +
-  fixes deadlock :: "('l,'t,'x,'m,'w) state \<Rightarrow> bool"
+  fixes deadlock (* :: "('l,'t,'x,'m,'w) state \<Rightarrow> bool" *)
   assumes waiting_deadlock:
     "\<lbrakk> multithreaded.RedT final r start_state ttas s; final_thread_wf.not_final_thread final s t;
        \<And>t x. \<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; \<not> final x; wset s t = None \<rbrakk> 

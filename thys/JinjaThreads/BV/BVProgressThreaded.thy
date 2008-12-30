@@ -17,7 +17,7 @@ proof
   ultimately show False using `mexec P (x, m) ta (x', m')` x by(auto)
 qed
 
-interpretation exec_mthr_final: final_thread_wf [final "mexec P"]
+interpretation exec_mthr_final!: final_thread_wf final "mexec P"
 by(rule final_interp)
 
 lemma final_interp_d: "final_thread_wf final (mexecd P)"
@@ -31,7 +31,7 @@ proof
   ultimately show False using `mexecd P (x, m) ta (x', m')` x by(auto)
 qed
 
-interpretation execd_mthr_final: final_thread_wf [final "mexecd P"]
+interpretation execd_mthr_final!: final_thread_wf final "mexecd P"
 by(rule final_interp_d)
 
 lemma mexec_eq_mexecd: "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P,\<Phi> \<turnstile> (xcp, h, frs) \<surd> \<rbrakk> \<Longrightarrow> mexec P ((xcp, frs), h) = mexecd P ((xcp, frs), h)"

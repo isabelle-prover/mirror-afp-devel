@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Kildall.thy
-    ID:         $Id: Kildall.thy,v 1.12 2008-10-16 07:59:46 ballarin Exp $
+    ID:         $Id: Kildall.thy,v 1.13 2008-12-30 15:30:13 ballarin Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 
@@ -333,7 +333,7 @@ shows "\<lbrakk> ss \<in> list n A; \<forall>(q,t)\<in>set qs. q<n \<and> t\<in>
   merges f qs ss = ss \<and> {q. \<exists>t. (q,t)\<in>set qs \<and> t \<squnion>\<^bsub>f\<^esub> ss!q \<noteq> ss!q} \<union> (w-{p}) \<subset> w"
 (*<*) (is "PROP ?P")
 proof -
-  interpret Semilat [A r f] by fact
+  interpret Semilat A r f by fact
   show "PROP ?P"
   apply(insert semilat)
     apply (unfold lesssub_def)
@@ -364,7 +364,7 @@ shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
    (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
 (*<*) (is "PROP ?P")
 proof -
-  interpret Semilat [A r f] by fact
+  interpret Semilat A r f by fact
   show "PROP ?P"
   apply(insert semilat)
   apply (unfold iter_def stables_def)
@@ -471,7 +471,7 @@ shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
                  kildall r f step ss0 [\<sqsubseteq>\<^sub>r] ts)"
 (*<*) (is "PROP ?P")
 proof -
-  interpret Semilat [A r f] by fact
+  interpret Semilat A r f by fact
   show "PROP ?P"
   apply (unfold kildall_def)
   apply(case_tac "iter f step ss0 (unstables r step ss0)")
@@ -488,7 +488,7 @@ lemma is_bcv_kildall: assumes "Semilat A r f"
 shows "\<lbrakk> acc r; top r T; pres_type step n A; bounded step n; mono r step n A \<rbrakk>
   \<Longrightarrow> is_bcv r T step n A (kildall r f step)" (is "PROP ?P")
 proof -
-  interpret Semilat [A r f] by fact
+  interpret Semilat A r f by fact
   show "PROP ?P"
   apply(unfold is_bcv_def wt_step_def)
   apply(insert `Semilat A r f` semilat kildall_properties[of A])

@@ -1,4 +1,4 @@
-(*  ID:          $Id: VcgEx.thy,v 1.7 2008-10-29 10:22:51 ballarin Exp $
+(*  ID:          $Id: VcgEx.thy,v 1.8 2008-12-30 15:30:13 ballarin Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -701,7 +701,7 @@ and
 print_theorems
 thm odd_body.odd_body_def
 thm even_body.even_body_def
-print_locale odd_even_clique
+print_locale odd_even_clique 
 
 
 text {* To prove the procedure calls to @{term "odd"} respectively 

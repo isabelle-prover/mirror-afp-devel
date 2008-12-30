@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/SemilatAlg.thy
-    ID:         $Id: SemilatAlg.thy,v 1.7 2008-10-16 07:59:46 ballarin Exp $
+    ID:         $Id: SemilatAlg.thy,v 1.8 2008-12-30 15:30:13 ballarin Exp $
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)
@@ -91,7 +91,7 @@ lemma plusplus_closed: assumes "Semilat A r f" shows
   "\<And>y. \<lbrakk> set x \<subseteq> A; y \<in> A\<rbrakk> \<Longrightarrow> x \<Squnion>\<^bsub>f\<^esub> y \<in> A"
 (*<*)
 proof (induct x)
-  interpret Semilat [A r f] by fact
+  interpret Semilat A r f by fact
   show "\<And>y. y \<in> A \<Longrightarrow> [] \<Squnion>\<^bsub>f\<^esub> y \<in> A" by simp
   fix y x xs
   assume y: "y \<in> A" and xxs: "set (x#xs) \<subseteq> A"
@@ -190,7 +190,7 @@ shows "\<lbrakk>\<forall>(p,s) \<in> set S. s \<in> A; y \<in> A; (a,b) \<in> se
   \<Longrightarrow> b \<sqsubseteq>\<^bsub>r\<^esub> map snd [(p', t') \<leftarrow> S. p' = a] \<Squnion>\<^bsub>f\<^esub> y" 
 (*<*)
 proof -
-  interpret Semilat [A r f] by fact
+  interpret Semilat A r f by fact
   let "b \<sqsubseteq>\<^bsub>r\<^esub> ?map \<Squnion>\<^bsub>f\<^esub> y" = ?thesis
 
   assume "y \<in> A"

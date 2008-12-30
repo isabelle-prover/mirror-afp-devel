@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Functors.thy,v 1.9 2008-11-17 16:01:28 fhaftmann Exp $
+    ID:          $Id: Functors.thy,v 1.10 2008-12-30 15:30:12 ballarin Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 
 Functors: Define functors and prove a trivial example.
@@ -25,7 +25,8 @@ abbreviation
   am_syn  ("_ \<^sub>\<a>" [81]) where
   "F\<^sub>\<a> \<equiv> am F"
 
-locale two_cats = category AA + category BB + 
+locale two_cats = AA: category AA + BB: category BB
+    for AA (structure) and BB (structure) + 
   assumes "AA = (AA :: ('o1,'a1,'m1)category_scheme)"
   assumes "BB = (BB :: ('o2,'a2,'m2)category_scheme)"
   fixes preserves_dom  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
@@ -41,7 +42,8 @@ locale two_cats = category AA + category BB +
   and "preserves_comp G \<equiv> 
   \<forall>f\<in>Ar\<^sub>1. \<forall>g\<in>Ar\<^sub>1. Cod\<^sub>1 f = Dom\<^sub>1 g \<longrightarrow> G\<^sub>\<a> (g \<bullet>\<^sub>1 f) = (G\<^sub>\<a> g) \<bullet>\<^sub>2 (G\<^sub>\<a> f)"
 
-locale functor = two_cats + struct F +
+locale functor = two_cats +
+  fixes F (structure)
   assumes F_preserves_arrows: "F\<^sub>\<a> : Ar\<^sub>1 \<rightarrow> Ar\<^sub>2"
   and F_preserves_objects: "F\<^sub>\<o> : Ob\<^sub>1 \<rightarrow> Ob\<^sub>2"
   and F_preserves_dom: "preserves_dom F"

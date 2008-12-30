@@ -639,7 +639,7 @@ definition
   "f `# A == (THE B. (A,B)\<in>mset_map_Set f)"
 
 
-interpretation mset_map: su_rel_fun["mset_map_Set f" "op `# f"]
+interpretation mset_map: su_rel_fun "mset_map_Set f" "op `# f"
   apply (rule su_rel_fun.intro)
   apply (erule mset_map_Set_unique, assumption)
   apply (erule mset_map_Set_surjective)

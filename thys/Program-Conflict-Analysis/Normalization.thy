@@ -119,7 +119,7 @@ inductive_set
 abbreviation ntr where "ntr fg == gtr (ntrs fg)"
 abbreviation ntrp where "ntrp fg == gtrp (ntrs fg)"
 
-interpretation ntrs: env_no_step["ntrs fg"]
+interpretation ntrs: env_no_step "ntrs fg"
   apply (rule env_no_step.intro)
   apply (erule ntrs.cases)
   apply clarsimp

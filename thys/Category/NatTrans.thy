@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: NatTrans.thy,v 1.8 2007-06-13 19:37:50 makarius Exp $
+    ID:          $Id: NatTrans.thy,v 1.9 2008-12-30 15:30:12 ballarin Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 
 Define natural transformation, prove that the identity arrow function is one.
@@ -12,7 +12,8 @@ imports Functors
 begin
 
 (* guess the third axiom is implied by the fifth *)
-locale natural_transformation = two_cats + var F + var G + var u +
+locale natural_transformation = two_cats +
+  fixes F and G and u
   assumes "Functor F : AA \<longrightarrow> BB"
   and "Functor G : AA \<longrightarrow> BB"
   and "u : ob AA \<rightarrow> ar BB"

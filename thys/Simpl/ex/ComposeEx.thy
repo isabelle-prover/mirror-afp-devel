@@ -1,4 +1,4 @@
-(*  ID:          $Id: ComposeEx.thy,v 1.6 2008-06-12 06:57:28 lsf37 Exp $
+(*  ID:          $Id: ComposeEx.thy,v 1.7 2008-12-30 15:30:13 ballarin Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -132,26 +132,42 @@ lemma inject_str_last:
 constdefs 
   "lift\<^isub>e  \<equiv> \<lambda>\<Gamma> p. option_map (lift\<^isub>c project_str inject_str) (\<Gamma> p)"
 print_locale lift_state_space
-interpretation ex: lift_state_space [project_str "inject_str" _ lift\<^isub>e]
+interpretation ex!: lift_state_space project_str inject_str
+  "xstate_map project_str" lift\<^isub>e "lift\<^isub>c project_str inject_str"
+  "lift\<^isub>f project_str inject_str" "lift\<^isub>s project_str"
+  "lift\<^isub>r project_str inject_str"
   apply -
-  apply       (simp)
+  apply       (rule lift_state_space.intro)
+  apply       (rule project_inject_str_commutes)
   apply      simp
-  apply     (simp add: lift\<^isub>e_def)
   apply     simp
-  apply    simp
+  apply    (simp add: lift\<^isub>e_def)
   apply   simp
-  apply (rule lift_state_space.intro)
-  apply (rule project_inject_str_commutes)
-  done 
+  apply  simp
+  apply simp
+  done
 
+interpretation ex!: lift_state_space_ext project_str inject_str
+  "xstate_map project_str" lift\<^isub>e "lift\<^isub>c project_str inject_str"
+  "lift\<^isub>f project_str inject_str" "lift\<^isub>s project_str"
+  "lift\<^isub>r project_str inject_str"
 
-interpretation ex: lift_state_space_ext [project_str "inject_str" _ lift\<^isub>e]
+(*  project_str "inject_str" _ lift\<^isub>e *)
+apply -
+apply intro_locales [1]
+  apply (rule lift_state_space_ext_axioms.intro)
+  apply  (rule inject_project_str_commutes) 
+  apply (rule inject_str_last)
+apply (simp_all add: lift\<^isub>e_def)
+  done
+
+(*
   apply (intro_locales)
   apply (rule lift_state_space_ext_axioms.intro)
   apply  (rule inject_project_str_commutes) 
   apply (rule inject_str_last)
   done
-
+*)
 
 (*
 declare lift_set_def [simp] project_def [simp] project_globals_def [simp]

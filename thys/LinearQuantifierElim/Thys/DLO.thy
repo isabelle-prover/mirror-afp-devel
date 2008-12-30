@@ -1,4 +1,4 @@
-(*  ID:         $Id: DLO.thy,v 1.3 2008-10-10 04:47:12 fhaftmann Exp $
+(*  ID:         $Id: DLO.thy,v 1.4 2008-12-30 15:30:13 ballarin Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -74,8 +74,8 @@ hide const nnf qelim lift_dnf_qe lift_nnf_qe
 
 lemmas DLO_code_lemmas = nnf_def qelim_def lift_dnf_qe_def lift_nnf_qe_def
 
-interpretation DLO:
-  ATOM[neg\<^isub>d\<^isub>l\<^isub>o "(\<lambda>a. True)" I\<^isub>d\<^isub>l\<^isub>o depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o]
+interpretation DLO!:
+  ATOM neg\<^isub>d\<^isub>l\<^isub>o "(\<lambda>a. True)" I\<^isub>d\<^isub>l\<^isub>o depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o
 apply(unfold_locales)
 apply(case_tac a)
 apply simp_all

@@ -4,11 +4,10 @@ theory CFG_wf imports CFG begin
 
 subsection {* Well-formedness of the abstract CFG *}
 
-locale CFG_wf = CFG +
-  (*<*)
-  constrains kind :: "'edge \<Rightarrow> 'state edge_kind"
-  and valid_edge :: "'edge \<Rightarrow> bool"
-  (*>*)
+locale CFG_wf = CFG _ _ kind valid_edge "(_Entry_)"
+  for kind :: "'edge \<Rightarrow> 'state edge_kind"
+    and valid_edge :: "'edge \<Rightarrow> bool"
+    and Entry :: 'node ("'('_Entry'_')") +
   fixes Def::"'node \<Rightarrow> 'var set"
   fixes Use::"'node \<Rightarrow> 'var set"
   fixes state_val::"'state \<Rightarrow> 'var \<Rightarrow> 'val"

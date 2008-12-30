@@ -1,4 +1,4 @@
-(*  ID:         $Id: QElin.thy,v 1.2 2008-01-11 15:22:26 lsf37 Exp $
+(*  ID:         $Id: QElin.thy,v 1.3 2008-12-30 15:30:13 ballarin Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -112,10 +112,10 @@ lemma I_subst\<^isub>0: "depends\<^isub>R a \<Longrightarrow> c \<noteq> 0 \<Lon
 apply(cases a)
 by (auto simp add: depends\<^isub>R_def iprod_assoc iprod_left_diff_distrib ring_simps diff_divide_distrib split:list.splits)
 
-interpretation R\<^isub>e:
-  ATOM_EQ[neg\<^isub>R "(\<lambda>a. True)" I\<^isub>R depends\<^isub>R decr\<^isub>R
+interpretation R\<^isub>e!:
+  ATOM_EQ neg\<^isub>R "(\<lambda>a. True)" I\<^isub>R depends\<^isub>R decr\<^isub>R
           "(\<lambda>Eq _ (c#_) \<Rightarrow> c \<noteq> 0 | _ \<Rightarrow> False)"
-          "(\<lambda>Eq r cs \<Rightarrow> r=0 \<and> (\<forall>c\<in> set cs. c=0) | _ \<Rightarrow> False)" subst\<^isub>0]
+          "(\<lambda>Eq r cs \<Rightarrow> r=0 \<and> (\<forall>c\<in> set cs. c=0) | _ \<Rightarrow> False)" subst\<^isub>0
 apply(unfold_locales)
    apply(simp del:subst\<^isub>0.simps add:I_subst\<^isub>0 split:atom.splits list.splits)
   apply(simp add: iprod0_if_coeffs0 split:atom.splits)

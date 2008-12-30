@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Cat.thy,v 1.5 2007-06-13 19:37:50 makarius Exp $
+    ID:          $Id: Cat.thy,v 1.6 2008-12-30 15:30:12 ballarin Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -23,7 +23,8 @@ definition
   hom :: "[('o,'a,'m) category_scheme, 'o, 'o] \<Rightarrow> 'a set"  ("Hom\<index> _ _") where
   "hom CC A B = { f. f\<in>ar CC & dom CC f = A & cod CC f = B }"
 
-locale category = struct CC +
+locale category =
+  fixes CC (structure)
   assumes dom_object [intro]:
   "f \<in> Ar \<Longrightarrow> Dom f \<in> Ob"
   and cod_object [intro]:

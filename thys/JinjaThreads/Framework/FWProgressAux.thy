@@ -50,16 +50,17 @@ by(clarsimp simp add: can_sync_def)
 end
 
 
-locale final_thread_wf = multithreaded +
-  constrains final :: "'x \<Rightarrow> bool"
-  constrains r :: "('l,'t,'x,'m,'w) semantics"
+locale final_thread_wf = multithreaded _ r 
+  for r :: "('l,'t,'x,'m,'w) semantics" +
+(*  constrains final :: "'x \<Rightarrow> bool" *)
+(*  constrains r :: "('l,'t,'x,'m,'w) semantics" *)
   assumes final_no_red [dest]: "\<lbrakk> final x; r (x, m) ta (x', m') \<rbrakk> \<Longrightarrow> False" begin
 
 lemma final_no_redT: 
   "\<lbrakk> s -t\<triangleright>ta\<rightarrow> s'; thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<rbrakk> \<Longrightarrow> \<not> final x"
 by(auto elim!: redT_elims dest: final_no_red)
 
-definition final_thread :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> bool" where
+definition final_thread (* :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> bool" *) where
   "final_thread s t \<equiv> (case thr s t of None \<Rightarrow> False | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> final x \<and> ln = no_wait_locks \<and> wset s t = None)"
 
 lemma final_threadI:
@@ -71,8 +72,8 @@ lemma final_threadE:
   obtains x where "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "final x" "wset s t = None"
 using assms by(auto simp add: final_thread_def)
 
-inductive not_final_thread :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> bool"
-for s :: "('l,'t,'x,'m,'w) state" and t :: "'t" where
+inductive not_final_thread (* :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> bool" *)
+for s (* :: "('l,'t,'x,'m,'w) state" *) and t (* :: "'t" *) where
   not_final_thread_final: "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> final x \<rbrakk> \<Longrightarrow> not_final_thread s t"
 | not_final_thread_wait_locks: "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; ln \<noteq> no_wait_locks \<rbrakk> \<Longrightarrow> not_final_thread s t"
 | not_final_thread_wait_set: "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; wset s t = \<lfloor>w\<rfloor> \<rbrakk> \<Longrightarrow> not_final_thread s t"

@@ -23,7 +23,7 @@ text {* @{text dependent_live_vars} calculates variables which
 context DynPDG begin
 
 inductive_set
-  dependent_live_vars :: "'node \<Rightarrow> ('b \<times> 'edge list \<times> 'edge list) set"
+  dependent_live_vars :: "'node \<Rightarrow> ('var \<times> 'edge list \<times> 'edge list) set"
   for n' :: "'node"
   where dep_vars_Use: 
   "V \<in> Use n' \<Longrightarrow> (V,[],[]) \<in> dependent_live_vars n'"

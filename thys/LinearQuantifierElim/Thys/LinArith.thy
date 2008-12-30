@@ -1,4 +1,4 @@
-(*  ID:         $Id: LinArith.thy,v 1.5 2008-06-12 06:57:24 lsf37 Exp $
+(*  ID:         $Id: LinArith.thy,v 1.6 2008-12-30 15:30:13 ballarin Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -47,7 +47,7 @@ fun I\<^isub>R :: "atom \<Rightarrow> real list \<Rightarrow> bool" where
 definition "atoms\<^isub>0 = ATOM.atoms\<^isub>0 depends\<^isub>R"
 (* FIXME !!! (incl: display should hide params)*)
 
-interpretation R: ATOM [neg\<^isub>R "(\<lambda>a. True)" I\<^isub>R depends\<^isub>R decr\<^isub>R]
+interpretation R!: ATOM neg\<^isub>R "(\<lambda>a. True)" I\<^isub>R depends\<^isub>R decr\<^isub>R
   where "ATOM.atoms\<^isub>0 depends\<^isub>R = atoms\<^isub>0"
 proof -
   case goal1

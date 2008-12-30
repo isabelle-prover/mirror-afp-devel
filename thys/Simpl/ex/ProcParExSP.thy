@@ -1,4 +1,4 @@
-(*  ID:          $Id: ProcParExSP.thy,v 1.7 2008-06-12 06:57:28 lsf37 Exp $
+(*  ID:          $Id: ProcParExSP.thy,v 1.8 2008-12-30 15:30:13 ballarin Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -91,10 +91,11 @@ ML "HoareSyntax.use_call_tr' := true"
 end
 
 
-
+(* FIXME: typing issue with modifies locale*)
 procedures
   LEQ (i::nat,j::nat | r::bool) "\<acute>r :== \<acute>i \<le> \<acute>j"
   LEQ_spec: "\<forall>\<sigma>. \<Gamma>\<turnstile> {\<sigma>}  PROC LEQ(\<acute>i,\<acute>j,\<acute>r) \<lbrace>\<acute>r = (\<^bsup>\<sigma>\<^esup>i \<le> \<^bsup>\<sigma>\<^esup>j)\<rbrace>"
+
   LEQ_modifies: "\<forall>\<sigma>. \<Gamma>\<turnstile> {\<sigma>} PROC LEQ(\<acute>i,\<acute>j,\<acute>r) {t. t may_only_modify_globals \<sigma> in []}"
 
 
@@ -217,6 +218,8 @@ locale Max_test = Max_spec \<Gamma> compare_'Max_' n_'Max_' m_'Max_' k_'Max_' pr
         Max_'proc i_'LEQ_' j_'LEQ_' r_'LEQ_' project_bool
         inject_bool compare_'proc
        + LEQ_spec + LEQ_modifies
+for Max_'proc inject_List_char_List_list project_List_char_List_list k_'Max_'
+    m_'Max_' n_'Max_' compare_'Max_'
 
 lemma (in Max_test) 
   shows
@@ -267,6 +270,8 @@ locale Max_test' = Max_impl \<Gamma> compare_'Max_' n_'Max_' m_'Max_' k_'Max_' b
         inject_nat project_bool inject_bool
         project_List_char_List_list inject_List_char_List_list StateType
         i_'LEQ_' j_'LEQ_' r_'LEQ_' compare_'proc Max_'proc + LEQ_impl
+for Max_'proc inject_List_char_List_list project_List_char_List_list b_'Max_' 
+n_'Max_' k_'Max_' compare_'Max_' m_'Max_'
 lemma (in Max_test') 
   shows
   "\<forall>n m. \<Gamma>\<turnstile> \<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace> \<acute>k :== CALL Max(LEQ_'proc,\<acute>n,\<acute>m) \<lbrace>\<acute>k = mx (op \<le>) n m\<rbrace>"

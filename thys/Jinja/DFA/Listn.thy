@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Listn.thy
-    ID:         $Id: Listn.thy,v 1.9 2008-10-16 07:59:46 ballarin Exp $
+    ID:         $Id: Listn.thy,v 1.10 2008-12-30 15:30:13 ballarin Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -465,7 +465,7 @@ lemma Listn_sl_aux:
 assumes "Semilat A r f" shows "semilat (Listn.sl n (A,r,f))"
 (*<*)
 proof -
-  interpret Semilat [A r f] by fact
+  interpret Semilat A r f by fact
   show ?thesis
   apply (unfold Listn.sl_def)
   apply (simp (no_asm) only: semilat_Def split_conv)

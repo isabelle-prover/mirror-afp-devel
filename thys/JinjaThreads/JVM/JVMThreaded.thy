@@ -16,7 +16,7 @@ abbreviation
 where
   "mexec P \<equiv> (\<lambda>((xcp, frstls), h) ta  ((xcp', frstls'), h'). P \<turnstile> (xcp, h, frstls) -ta-jvm\<rightarrow> (xcp', h', frstls'))"
 
-interpretation exec_mthr: multithreaded[final "mexec P"] .
+interpretation exec_mthr!: multithreaded final "mexec P" .
 
 abbreviation
   mexecT :: "jvm_prog
@@ -51,7 +51,7 @@ abbreviation
 where
   "mexecd P \<equiv> (\<lambda>((xcp, frstls), h) ta ((xcp', frstls'), h'). P \<turnstile> Normal (xcp, h, frstls) -ta-jvmd\<rightarrow> Normal (xcp', h', frstls'))"
 
-interpretation execd_mthr: multithreaded[final "mexecd P"] .
+interpretation execd_mthr!: multithreaded final "mexecd P" .
 
 abbreviation
   mexecdT :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state

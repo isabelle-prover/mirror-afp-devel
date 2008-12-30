@@ -43,7 +43,8 @@ qed
 
 end
 
-locale lifting_wf = multithreaded +
+locale lifting_wf = multithreaded _ r
+  for r :: "('l,'t,'x,'m,'w) semantics" +
   fixes P :: "'x \<Rightarrow> 'm \<Rightarrow> bool"
   assumes preserves_red: "\<lbrakk> r (x, m) ta (x', m'); P x m \<rbrakk> \<Longrightarrow> P x' m'"
   assumes preserves_NewThread: "\<lbrakk> r (x, m) ta (x', m'); P x m; NewThread t'' x'' m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> P x'' m'"
@@ -134,7 +135,10 @@ end
 
 lemma lifting_wf_Const [intro!]: "lifting_wf r (\<lambda>x m. k)" ..
 
-locale lifting_inv = lifting_wf final r Q +
+locale lifting_inv = lifting_wf final r Q
+    for final :: "'x \<Rightarrow> bool" and
+      r :: "('l,'t,'x,'m,'w) semantics" and
+      Q :: "'x \<Rightarrow> 'm \<Rightarrow> bool" +
   fixes P :: "'i \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
   assumes invariant_red: "\<lbrakk> r (x, m) ta (x', m'); P i x m; Q x m \<rbrakk> \<Longrightarrow> P i x' m'"
   assumes invariant_NewThread: "\<lbrakk> r (x, m) ta (x', m'); P i x m; Q x m; NewThread t'' x'' m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> \<exists>i''. P i'' x'' m'"

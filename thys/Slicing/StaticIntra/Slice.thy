@@ -3,25 +3,31 @@ header {* \isaheader{Static backward slice} *}
 theory Slice imports Observable "../Basic/SemanticsCFG" "../Basic/DataDependence" 
 begin
 
-locale BackwardSlice = CFG_wf + 
-  (*<*)
-  constrains sourcenode::"'edge \<Rightarrow> 'node"
-  and Def :: "'node \<Rightarrow> 'var set" 
-  and kind :: "'edge \<Rightarrow> 'state edge_kind"
-  and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
-  (*>*)
+locale BackwardSlice = CFG_wf
+  (* Reorder parameters *)
+  where sourcenode = sourcenode and targetnode = targetnode and kind = kind
+    and valid_edge = valid_edge and Entry = "(_Entry_)" and Def = Def
+    and Use = Use and  state_val = state_val
+  for sourcenode::"'edge \<Rightarrow> 'node"
+    and targetnode :: "'edge \<Rightarrow> 'node"
+    and kind :: "'edge \<Rightarrow> 'state edge_kind"
+    and valid_edge :: "'edge \<Rightarrow> bool"
+    and Entry :: "'node" ("'('_Entry'_')")
+    and Def :: "'node \<Rightarrow> 'var set" 
+    and Use :: "'node \<Rightarrow> 'var set"
+    and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
+  +
   fixes backward_slice :: "'node \<Rightarrow> 'node set"
   assumes valid_nodes:"n \<in> backward_slice n\<^isub>c
-  \<Longrightarrow> CFG.valid_node sourcenode targetnode valid_edge n"
-  and refl:"CFG.valid_node sourcenode targetnode valid_edge n 
-  \<Longrightarrow> n \<in> backward_slice n"
+  \<Longrightarrow> valid_node n"
+  and refl:"valid_node n \<Longrightarrow> n \<in> backward_slice n"
   and dd_closed:"\<lbrakk>n' \<in> backward_slice n\<^isub>c; 
-    CFG_wf.data_dependence sourcenode targetnode valid_edge Def Use n V n'\<rbrakk> 
+      n influences V in n'\<rbrakk> 
   \<Longrightarrow> n \<in> backward_slice n\<^isub>c"
-  and obs_finite:"CFG.valid_node sourcenode targetnode valid_edge n 
-  \<Longrightarrow> finite (CFG.obs sourcenode targetnode valid_edge n (backward_slice n\<^isub>c))"
-  and obs_singleton:"CFG.valid_node sourcenode targetnode valid_edge n 
-  \<Longrightarrow> card(CFG.obs sourcenode targetnode valid_edge n (backward_slice n\<^isub>c)) \<le> 1"
+  and obs_finite:"valid_node n
+  \<Longrightarrow> finite (obs n (backward_slice n\<^isub>c))"
+  and obs_singleton:"valid_node n 
+  \<Longrightarrow> card(obs n (backward_slice n\<^isub>c)) \<le> 1"
 
 begin
 
@@ -692,7 +698,7 @@ proof -
 	`n' -ax'#asx'@as''\<rightarrow>* m` `n' = sourcenode ax'` 
       have "n' influences x in m"
 	by(auto simp:data_dependence_def)
-      with `m \<in> backward_slice n\<^isub>c` dd_closed have "n' \<in> backward_slice n\<^isub>c" 
+      with `m \<in> backward_slice n\<^isub>c` dd_closed have "n' \<in> backward_slice n\<^isub>c"
 	by(auto simp:dd_closed)
       with `n' = sourcenode ax'` `sourcenode ax' \<notin> backward_slice n\<^isub>c`
       show False by simp
@@ -1536,6 +1542,9 @@ end
 subsection {* The fundamental property of (static) slicing related to the semantics *}
 
 locale BackwardSlice_wf = BackwardSlice + CFG_semantics_wf
+  where identifies = "%x y. x identifies y"
+  for identifies ("_ identifies _" [51, 0] 80)
+  (* FIXME unfortunate syntax *)
 
 begin
 

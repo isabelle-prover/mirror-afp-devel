@@ -43,7 +43,7 @@ proof
   ultimately show "False" using e `mred P (x, m) ta (x', m')` by(auto)
 qed
 
-interpretation red_mthr_final: final_thread_wf ["final_expr" "mred P"]
+interpretation red_mthr_final!: final_thread_wf "final_expr" "mred P"
 by(rule final_thread_wf_interp)
 
 lemma lock_ok_ls_Some_ex_ts_not_final:

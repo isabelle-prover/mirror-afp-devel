@@ -19,9 +19,9 @@ declare must_wait.intros [intro]
 lemma must_wait_elims [consumes 1, case_names lock thread]:
   "\<lbrakk> must_wait s t lt t'; \<And>l. \<lbrakk>lt = Inl l; 
      has_lock (locks s l) t'; t' \<noteq> t\<rbrakk> \<Longrightarrow> thesis;
-     \<lbrakk>lt = Inr t'; not_final_thread ?s t'\<rbrakk> \<Longrightarrow> thesis \<rbrakk>
+     \<lbrakk>lt = Inr t'; not_final_thread s t'\<rbrakk> \<Longrightarrow> thesis \<rbrakk>
   \<Longrightarrow> thesis"
-by(auto)
+by (auto)
 
 inductive_cases must_wait_elims2 [elim!]:
   "must_wait s t (Inl l) t'"

@@ -7,9 +7,10 @@ header {* \isaheader{Wellformedness properties for the instantiating semantics a
 theory FWWellformSem imports FWProgressAux begin
 
 text {* This locale simple fixes a start state *}
-locale multithreaded_start = multithreaded +
-  constrains final :: "'x \<Rightarrow> bool"
-  constrains r :: "('l,'t,'x,'m,'w) semantics"
+locale multithreaded_start = multithreaded _ r
+  for r :: "('l,'t,'x,'m,'w) semantics" +
+(*  constrains final :: "'x \<Rightarrow> bool"
+  constrains r :: "('l,'t,'x,'m,'w) semantics" *)
   fixes start_state :: "('l,'t,'x,'m,'w) state"
 
 locale wf_red = multithreaded_start +
@@ -38,8 +39,8 @@ by(blast dest: wf_red)
 end
 
 
-locale preserve_lock_behav = multithreaded_start +
-  constrains r :: "('l,'t,'x,'m,'w) semantics"
+locale preserve_lock_behav = multithreaded_start _ r
+  for r :: "('l,'t,'x,'m,'w) semantics" +
   assumes must_lock_preserved: 
     "\<lbrakk> multithreaded.RedT final r start_state tta s; multithreaded.redT final r s (t', ta') s';
        thr s t = \<lfloor>(x, ln)\<rfloor>; multithreaded.must_sync r x (shr s) \<rbrakk>

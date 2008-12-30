@@ -4,10 +4,12 @@ theory Postdomination imports CFGExit begin
 
 subsection {* Standard Postdomination *}
 
-locale Postdomination = CFGExit +
-  constrains Entry::"'node"
-  constrains sourcenode :: "'edge \<Rightarrow> 'node"
-  constrains kind::"'edge \<Rightarrow> 'state edge_kind"
+locale Postdomination = CFGExit _ _ kind valid_edge "(_Entry_)" "(_Exit_)"
+  for kind :: "'edge \<Rightarrow> 'state edge_kind"
+    and valid_edge :: "'edge \<Rightarrow> bool"
+    and Entry :: "'node" ("'('_Entry'_')")
+    and Exit :: "'node" ("'('_Exit'_')")
+  +
   assumes Entry_path:"CFG.valid_node sourcenode targetnode valid_edge n \<Longrightarrow> 
   \<exists>as. CFG.path sourcenode targetnode valid_edge (_Entry_) as n"
   and Exit_path:"CFG.valid_node sourcenode targetnode valid_edge n \<Longrightarrow>
@@ -257,10 +259,12 @@ end
 subsection {* Strong Postdomination *}
 
 
-locale StrongPostdomination = Postdomination +
-  constrains Entry::"'node"
-  constrains sourcenode :: "'edge \<Rightarrow> 'node"
-  constrains kind::"'edge \<Rightarrow> 'state edge_kind"
+locale StrongPostdomination = Postdomination _ _ kind valid_edge "(_Entry_)" "(_Exit_)"
+  for kind :: "'edge \<Rightarrow> 'state edge_kind"
+    and valid_edge :: "'edge \<Rightarrow> bool"
+    and Entry :: "'node" ("'('_Entry'_')")
+    and Exit :: "'node" ("'('_Exit'_')")
+  +
   assumes successor_set_finite:
   "CFG.valid_node sourcenode targetnode valid_edge n 
    \<Longrightarrow> finite {n'. \<exists>a'. valid_edge a' \<and> sourcenode a' = n \<and>

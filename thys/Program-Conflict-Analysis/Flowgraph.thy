@@ -41,8 +41,10 @@ definition
 lemma main_is_initial[simp]: "initialproc fg (main fg)"
   by (unfold initialproc_def) simp
 
-locale flowgraph = struct fg +
-  constrains fg :: "('n,'p,'ba,'m,'more) flowgraph_rec_scheme" (* Unnecessary, but perhaps makes it more readable for the unaware reader ;) *)
+locale flowgraph =
+  fixes fg :: "('n,'p,'ba,'m,'more) flowgraph_rec_scheme" (structure)
+  (* Type annotation unnecessary, but perhaps makes it more readable
+     for the unaware reader ;) *)
   -- "Edges are inside procedures only"
   assumes edges_part: "(u,a,v)\<in>edges fg \<Longrightarrow> proc_of fg u = proc_of fg v" 
   -- "The entry point of a procedure must be in that procedure"
@@ -94,7 +96,7 @@ definition
     (\<forall>u l. \<not>(u,l,return fg p)\<in>edges fg) \<and> entry fg p \<noteq> return fg p"
 
 text {* The following syntactic restrictions guarantee that each thread's execution starts with a non-returning call. See Section~\ref{sec:Normalization:eflowgraph} for a proof of this. *}
-locale eflowgraph = flowgraph fg +
+locale eflowgraph = flowgraph +
   -- "Initial procedure's entry node isn't equal to its return node"
   assumes initial_no_ret: "initialproc fg p \<Longrightarrow> entry fg p \<noteq> return fg p" 
   -- "The only outgoing edges of initial procedures' entry nodes are call edges to procedures with isolated return node"

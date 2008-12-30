@@ -4,7 +4,22 @@ theory PDG imports DataDependence CFGExit_wf begin
 
 subsection {* The dynamic PDG *}
 
-locale DynPDG = CFGExit_wf +
+locale DynPDG = CFGExit_wf
+  (* Reorder parameters to order imposed by
+     lemma StandardControlDependence.DynPDG_scd. *)
+  where sourcenode = sourcenode and targetnode = targetnode and kind = kind
+    and valid_edge = valid_edge and Entry = "(_Entry_)" and Def = Def
+    and Use = Use and state_val = state_val and Exit = "(_Exit_)"
+  for sourcenode :: "'edge \<Rightarrow> 'node"
+    and targetnode :: "'edge \<Rightarrow> 'node"
+    and kind :: "'edge \<Rightarrow> 'state edge_kind"
+    and valid_edge :: "'edge \<Rightarrow> bool"
+    and Entry :: "'node" ("'('_Entry'_')")
+    and Def::"'node \<Rightarrow> 'var set"
+    and Use::"'node \<Rightarrow> 'var set"
+    and state_val::"'state \<Rightarrow> 'var \<Rightarrow> 'val"
+    and Exit :: "'node" ("'('_Exit'_')")
+ +
   fixes dyn_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool" 
 ("_ controls _ via _" [51,0,0])
   assumes Exit_not_dyn_control_dependent:"n controls n' via as \<Longrightarrow> n' \<noteq> (_Exit_)"
@@ -16,9 +31,9 @@ begin
 
 inductive cdep_edge :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool" 
     ("_ -_\<rightarrow>\<^bsub>cd\<^esub> _" [51,0,0] 80)
-  and ddep_edge :: "'node \<Rightarrow> 'b \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
+  and ddep_edge :: "'node \<Rightarrow> 'var \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
     ("_ -'{_'}_\<rightarrow>\<^bsub>dd\<^esub> _" [51,0,0,0] 80)
-  and DynPDG_edge :: "'node \<Rightarrow> 'b option \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
+  and DynPDG_edge :: "'node \<Rightarrow> 'var option \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
 
 where
       -- "Syntax"
@@ -374,8 +389,22 @@ end
 
 subsection {* The static PDG *}
 
-locale PDG = CFGExit_wf +
-
+locale PDG = CFGExit_wf
+  (* Reorder parameters to order imposed by
+     lemma StandardControlDependence.PDG_scd. *)
+  where sourcenode = sourcenode and targetnode = targetnode and kind = kind
+    and valid_edge = valid_edge and Entry = "(_Entry_)" and Def = Def
+    and Use = Use and state_val = state_val and Exit = "(_Exit_)"
+  for sourcenode :: "'edge \<Rightarrow> 'node"
+    and targetnode :: "'edge \<Rightarrow> 'node"
+    and kind :: "'edge \<Rightarrow> 'state edge_kind"
+    and valid_edge :: "'edge \<Rightarrow> bool"
+    and Entry :: "'node" ("'('_Entry'_')")
+    and Def::"'node \<Rightarrow> 'var set"
+    and Use::"'node \<Rightarrow> 'var set"
+    and state_val::"'state \<Rightarrow> 'var \<Rightarrow> 'val"
+    and Exit :: "'node" ("'('_Exit'_')")
+ +
   fixes control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
 ("_ controls _ " [51,0])
   assumes Exit_not_control_dependent:"n controls n' \<Longrightarrow> n' \<noteq> (_Exit_)"
@@ -388,9 +417,9 @@ begin
 
 inductive cdep_edge :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
     ("_ \<longrightarrow>\<^bsub>cd\<^esub> _" [51,0] 80)
-  and ddep_edge :: "'node \<Rightarrow> 'c \<Rightarrow> 'node \<Rightarrow> bool"
+  and ddep_edge :: "'node \<Rightarrow> 'var \<Rightarrow> 'node \<Rightarrow> bool"
     ("_ -_\<rightarrow>\<^bsub>dd\<^esub> _" [51,0,0] 80)
-  and PDG_edge :: "'node \<Rightarrow> 'c option \<Rightarrow> 'node \<Rightarrow> bool"
+  and PDG_edge :: "'node \<Rightarrow> 'var option \<Rightarrow> 'node \<Rightarrow> bool"
 
 where
     (* Syntax *)

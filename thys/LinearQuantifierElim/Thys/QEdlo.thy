@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEdlo.thy,v 1.3 2008-10-10 04:47:12 fhaftmann Exp $
+(*  ID:         $Id: QEdlo.thy,v 1.4 2008-12-30 15:30:13 ballarin Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -115,10 +115,10 @@ lemmas DLOe_code_lemmas = DLO_code_lemmas lift_dnfeq_qe_def lift_eq_qe_def
 hide const lift_dnfeq_qe lift_eq_qe
 (*>*)
 
-interpretation DLO\<^isub>e:
-  ATOM_EQ[neg\<^isub>d\<^isub>l\<^isub>o "(\<lambda>a. True)" I\<^isub>d\<^isub>l\<^isub>o depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o
+interpretation DLO\<^isub>e!:
+  ATOM_EQ neg\<^isub>d\<^isub>l\<^isub>o "(\<lambda>a. True)" I\<^isub>d\<^isub>l\<^isub>o depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o
           "(\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)"
-          "(\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False)" subst\<^isub>0]
+          "(\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False)" subst\<^isub>0
 apply(unfold_locales)
 apply(fastsimp simp:subst_def nth_Cons' split:atom.splits split_if_asm)
 apply(simp add:subst_def split:atom.splits)

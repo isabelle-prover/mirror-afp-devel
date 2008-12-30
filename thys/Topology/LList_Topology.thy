@@ -1,5 +1,5 @@
 (*  Title:      LList_Topology.thy
-    ID:         $Id: LList_Topology.thy,v 1.8 2008-10-29 23:56:20 ballarin Exp $
+    ID:         $Id: LList_Topology.thy,v 1.9 2008-12-30 15:30:13 ballarin Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -31,7 +31,8 @@ lemma ttop_topology [iff]: "topology (ttop A)"
   by (auto simp: ttop_def)
 
 
-locale suffixes = var A + var B +
+locale suffixes =
+  fixes A and B
   defines [simp]: "B \<equiv> (\<Union> s\<in>A\<^sup>\<star>. {suff A s})"
 
 locale trace_top = suffixes + topobase
@@ -212,7 +213,8 @@ definition
   "itop A = topo (\<Union> s\<in>A\<^sup>\<star>. {infsuff A s})"
 
 
-locale infsuffixes = var A + var B +
+locale infsuffixes =
+  fixes A and B
   defines [simp]: "B \<equiv> (\<Union> s\<in>A\<^sup>\<star>. {infsuff A s})"
 
 locale itrace_top = infsuffixes + topobase
@@ -247,8 +249,8 @@ lemma itop_sub_ttop [folded ttop_def itop_def]:
   defines "B \<equiv> \<Union>s\<in>A\<^sup>\<star>. {suff A s}" and "T \<equiv> topo B"
   shows "subtopology S T"
 proof -
-  interpret itrace_top [A C S] by fact
-  interpret trace_top [A B T] by fact
+  interpret itrace_top A C S by fact
+  interpret trace_top A B T by fact
   show ?thesis
     by (auto intro: itop_sub_ttop_base [THEN subtop_lemma] simp: S_def T_def)
 qed
@@ -508,7 +510,8 @@ definition
   "ptop A \<equiv> topo (\<Union> s\<in>A\<^sup>\<clubsuit>. {suff A s})"
 
 
-locale possuffixes = var A + var B +
+locale possuffixes =
+  fixes A and B
   defines [simp]: "B \<equiv> (\<Union> s\<in>A\<^sup>\<clubsuit>. {suff A s})"
 
 locale ptrace_top = possuffixes + topobase
@@ -540,7 +543,7 @@ lemma pptop_top:
   defines "S \<equiv> \<Union> t \<in> T. {t - {LNil}}"
   shows  "topology (\<Union> t \<in> T. {t - {LNil}})"
 proof -
-  interpret trace_top [A B T] by fact
+  interpret trace_top A B T by fact
   show ?thesis
     by (auto intro!: subtopology.subtop_topology [OF pptop_subtop_ttop]
       trace_top.topology simp: T_def)

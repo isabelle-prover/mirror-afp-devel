@@ -30,13 +30,13 @@ qed
 
 subsection {* The proof of the fundamental property of (dynamic) slicing *}
 
-fun select_edge_kinds :: "'edge list \<Rightarrow> bit_vector \<Rightarrow> 'a edge_kind list"
+fun select_edge_kinds :: "'edge list \<Rightarrow> bit_vector \<Rightarrow> 'state edge_kind list"
 where "select_edge_kinds [] [] = []"
   | "select_edge_kinds (a#as) (b#bs) = (if b then kind a
       else (case kind a of \<Up>f \<Rightarrow> \<Up>id | (Q)\<^isub>\<surd> \<Rightarrow> (\<lambda>s. True)\<^isub>\<surd>))#select_edge_kinds as bs"
 
 
-definition slice_kinds :: "'edge list \<Rightarrow> 'a edge_kind list"
+definition slice_kinds :: "'edge list \<Rightarrow> 'state edge_kind list"
   where "slice_kinds as = select_edge_kinds as (slice_path as)"
 
 
@@ -531,6 +531,9 @@ end
 subsection {* The fundamental property of (dynamic) slicing related to the semantics *}
 
 locale BackwardPathSlice_wf = DynPDG + CFG_semantics_wf
+  where identifies = "%x y. x identifies y"
+  for identifies ("_ identifies _" [51, 0] 80)
+  (* FIXME unfortunate syntax *)
 
 begin
 

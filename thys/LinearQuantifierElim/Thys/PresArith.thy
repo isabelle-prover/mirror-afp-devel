@@ -1,4 +1,4 @@
-(*  ID:         $Id: PresArith.thy,v 1.7 2008-07-18 16:27:22 fhaftmann Exp $
+(*  ID:         $Id: PresArith.thy,v 1.8 2008-12-30 15:30:13 ballarin Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -41,8 +41,8 @@ fun I\<^isub>Z :: "atom \<Rightarrow> int list \<Rightarrow> bool" where
 definition "atoms\<^isub>0 = ATOM.atoms\<^isub>0 (\<lambda>a. hd_coeff a \<noteq> 0)"
 (* FIXME !!! (incl: display should hide params)*)
 
-interpretation Z:
-  ATOM[neg\<^isub>Z "(\<lambda>a. divisor a \<noteq> 0)" I\<^isub>Z "(\<lambda>a. hd_coeff a \<noteq> 0)" decr\<^isub>Z]
+interpretation Z!:
+  ATOM neg\<^isub>Z "(\<lambda>a. divisor a \<noteq> 0)" I\<^isub>Z "(\<lambda>a. hd_coeff a \<noteq> 0)" decr\<^isub>Z
   where "ATOM.atoms\<^isub>0 (\<lambda>a. hd_coeff a \<noteq> 0) = atoms\<^isub>0"
 proof-
   case goal1

@@ -412,8 +412,8 @@ qed simp_all
 
 (*<*)declare One_nat_def [simp](*>*)
 
-interpretation While_CFG_wf: CFG_wf ["sourcenode" "targetnode" "kind" 
-  "valid_edge prog" "Entry" "Defs prog" "Uses prog" "id"]
+interpretation While_CFG_wf!: CFG_wf "sourcenode" "targetnode" "kind" 
+  "valid_edge prog" "Entry" "Defs prog" "Uses prog" "id"
 proof
   show "Defs prog (_Entry_) = {} \<and> Uses prog (_Entry_) = {}"
     by(simp add:Defs.simps Uses.simps)
@@ -452,8 +452,8 @@ next
 qed
 
 
-interpretation While_CFGExit_wf: CFGExit_wf ["sourcenode" "targetnode" "kind" 
-  "valid_edge prog" "Entry" "Defs prog" "Uses prog" "id" "Exit"]
+interpretation While_CFGExit_wf!: CFGExit_wf "sourcenode" "targetnode" "kind" 
+  "valid_edge prog" "Entry" "Defs prog" "Uses prog" "id" "Exit"
 proof
   show "Defs prog (_Exit_) = {} \<and> Uses prog (_Exit_) = {}"
     by(simp add:Defs.simps Uses.simps)

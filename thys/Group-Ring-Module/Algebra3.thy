@@ -2427,7 +2427,7 @@ done
 lemma (in Group) d_gchainTr2:"\<lbrakk>0 < n; d_gchain G n f; l \<le> n; j \<le> n; l \<le> j \<rbrakk>
                                \<Longrightarrow> f j \<subseteq> f l"
 apply (case_tac "l = j", simp)
-apply (metis Group.d_gchainTr1 Group_axioms linorder_antisym_conv2)
+apply (metis Group.d_gchainTr1 [OF Group_axioms] linorder_antisym_conv2)
 done
 
 lemma (in Group) im_d_gchainTr1:"\<lbrakk>d_gchain G n f;

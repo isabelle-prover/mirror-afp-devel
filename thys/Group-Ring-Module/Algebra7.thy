@@ -23,7 +23,7 @@ section "1. Basic properties of Modules"
 record ('a, 'b) Module = "'a aGroup" +
   sprod  :: "'b \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>\<^sub>s\<index>" 76)
 
-locale Module = aGroup M +
+locale Module = aGroup M for M (structure) +
   fixes R (structure)
   assumes  sc_Ring: "Ring R" 
   and  sprod_closed :

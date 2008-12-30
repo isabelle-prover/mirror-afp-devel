@@ -2,7 +2,11 @@ header {* \isaheader{CFG and semantics conform} *}
 
 theory SemanticsCFG imports CFG begin
 
-locale CFG_semantics_wf = CFG +
+locale CFG_semantics_wf = CFG _ _ kind valid_edge Entry
+  for kind :: "'edge \<Rightarrow> 'state edge_kind"
+    and valid_edge :: "'edge \<Rightarrow> bool"
+    and Entry :: 'node ("'('_Entry'_')")
+  +
   fixes sem::"'com \<Rightarrow> 'state \<Rightarrow> 'com \<Rightarrow> 'state \<Rightarrow> bool" 
     ("((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
   fixes identifies::"'node \<Rightarrow> 'com \<Rightarrow> bool"

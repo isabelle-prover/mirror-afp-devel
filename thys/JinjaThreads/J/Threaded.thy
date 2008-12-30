@@ -17,7 +17,7 @@ where
   "mred P \<equiv> (\<lambda>((e, l), h)  ta ((e', l'), h'). P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>)"
 
 
-interpretation red_mthr: multithreaded["final_expr" "mred P"] .
+interpretation red_mthr!: multithreaded "final_expr" "mred P" .
 
 lemmas red_mthr_redT_elims4 = multithreaded.redT_elims4[where r="mred P", consumes 1, case_names normal acquire]
 
@@ -616,6 +616,7 @@ proof(rule thread_confI)
     with tc obtain T where "typeof\<^bsub>shr s\<^esub> (Addr t) = \<lfloor>T\<rfloor>" "P \<turnstile> T \<le> Class Thread"
       by(rule thread_confDE)
     moreover from red have "hext (shr s) (shr s')"
+      apply -
       by(cases s, cases s')(auto intro: redT_hext_incr)
     ultimately have "typeof\<^bsub>shr s'\<^esub> (Addr t) = \<lfloor>T\<rfloor>"
       by(blast dest: type_of_hext_type_of hext_objarrD)
