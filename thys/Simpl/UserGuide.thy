@@ -1,4 +1,4 @@
-(*  ID:          $Id: UserGuide.thy,v 1.9 2008-10-25 12:59:18 fhaftmann Exp $
+(*  ID:          $Id: UserGuide.thy,v 1.10 2008-12-30 22:41:37 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -52,7 +52,7 @@ subsection {* Installation *}
 text {*
 To use the verification environment with ProofGeneral you have to install
 the provided keywords file first. Copy \texttt{isabelle-keywords-simpl.el}
-to \texttt{\~/isabelle/etc}. Invoke Isabelle with \texttt{Isabelle -k simpl} to
+to \texttt{\~/.isabelle/etc}. Invoke Isabelle with \texttt{Isabelle -k simpl} to
 select the keywords file.
 To start proving Hoare triples import the theory @{term "Vcg"}. 
 To avoid rebuilding all the background theory you can precompile a proper heap image by
