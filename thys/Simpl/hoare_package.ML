@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.30 2008-12-30 15:30:13 ballarin Exp $
+    ID:         $Id: hoare_package.ML,v 1.31 2008-12-31 12:04:54 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1784,7 +1784,7 @@ fun gen_call_rec_rule specs_name n rule =
   let
     val thy = theory_of_thm rule;
     val maxidx = #maxidx (rep_cterm (cprop_of rule));
-    val vars = map (dest_Var) (term_vars (prop_of rule));
+    val vars = map (dest_Var) (OldTerm.term_vars (prop_of rule));
     fun get_type n = valOf (assoc (vars,(n,0)));
     val specsT as (Type ("fun", [Type (_,[assT,Type (_,[pT,_])]), Type ("bool", [])])) = get_type specs_name;
     val zT = TVar (("z",maxidx+1),Sign.defaultS thy)
