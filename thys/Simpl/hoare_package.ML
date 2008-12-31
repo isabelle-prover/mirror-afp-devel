@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.32 2008-12-31 17:55:30 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.33 2008-12-31 19:41:06 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1634,8 +1634,7 @@ fun split_pair_apps thm =
                 val idxs = (len - 1) downto 0;
                 val (argTs, bdyTs) = chop len (binder_types vT);
                 val bdyT = bdyTs ---> body_type vT;
-                val used = foldr OldTerm.add_term_free_names (args,[]);
-                val z = Name.variant used ("z");
+                val z = Name.variant (fold Term.add_free_names args []) "z";
                 val frees = map (apfst (fn i => z^string_of_int i))
                                 (0 upto (len - 1) ~~ argTs);
                 fun splitT (Type ("*", [T1, T2])) = T1::splitT T2
