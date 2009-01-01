@@ -6,8 +6,8 @@ theory DynamicControlDependences imports AdditionalLemmas
 begin
 
 interpretation WDynStandardControlDependence:
-  DynStandardControlDependencePDG["sourcenode" "targetnode" "kind" "valid_edge prog"
-                    "Entry" "Exit" "Defs prog" "Uses prog" "id"]
+  StandardControlDependencePDG "sourcenode" "targetnode" "kind" "valid_edge prog"
+                    "Entry" "Exit" "Defs prog" "Uses prog" "id"
 proof
   fix n assume "CFG.valid_node sourcenode targetnode (valid_edge prog) n"
   hence "valid_node prog n" by(simp add:valid_node_def While_CFG.valid_node_def)
@@ -19,8 +19,8 @@ next
 qed
 
 interpretation WDynWeakControlDependence:
-  DynWeakControlDependencePDG["sourcenode" "targetnode" "kind" "valid_edge prog"
-                    "Entry" "Exit" "Defs prog" "Uses prog" "id"]
+  DynWeakControlDependencePDG "sourcenode" "targetnode" "kind" "valid_edge prog"
+                    "Entry" "Exit" "Defs prog" "Uses prog" "id"
 proof
   fix n assume "CFG.valid_node sourcenode targetnode (valid_edge prog) n"
   hence "valid_node prog n" by(simp add:valid_node_def While_CFG.valid_node_def)
