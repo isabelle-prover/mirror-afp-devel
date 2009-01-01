@@ -1,4 +1,4 @@
-(*  ID:         $Id: FRE.thy,v 1.2 2008-01-11 15:22:15 lsf37 Exp $
+(*  ID:         $Id: FRE.thy,v 1.3 2009-01-01 22:24:32 makarius Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -127,7 +127,7 @@ proof
     hence ?EX using `?FR` min_inf[OF `nqfree \<phi>`, where xs=xs]
       by(auto simp add:FR\<^isub>1_def)
   } moreover
-  { assume  "R.I (inf\<^isub>+ \<phi>) xs"
+  { assume "R.I (inf\<^isub>+ \<phi>) xs"
     hence ?EX using `?FR` plus_inf[OF `nqfree \<phi>`, where xs=xs]
       by(auto simp add:FR\<^isub>1_def)
   } moreover
@@ -161,7 +161,7 @@ next
     obtain l where "l : LB \<phi> xs" "l < x"
       using LBex[OF `nqfree \<phi>` x `\<not> R.I (inf\<^isub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     obtain u where "u : UB \<phi> xs" "x < u"
-      using UBex[OF `nqfree \<phi>` x `\<not> R.I (inf\<^isub>+ \<phi>) xs`] ..
+      using UBex[OF `nqfree \<phi>` x `\<not> R.I (inf\<^isub>+ \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     have "\<exists>l\<in>LB \<phi> xs. \<exists>u\<in>UB \<phi> xs. l<u \<and> (\<forall>y. l < y \<and> y < u \<longrightarrow> R.I \<phi> (y#xs))"
       using dense_interval[where P = "\<lambda>x. R.I \<phi> (x#xs)", OF finite_LB finite_UB `l:LB \<phi> xs` `u:UB \<phi> xs` `l<x` `x<u` x] x dense[OF `nqfree \<phi>` _ _ _ _ `x \<notin> EQ \<phi> xs`] by simp
     then obtain r c cs s d ds

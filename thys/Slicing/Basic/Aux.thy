@@ -15,7 +15,7 @@ proof -
     case (Cons x' xs')
     have isin:"\<exists>y\<in>set (x' # xs'). P y"
       and IH:"\<exists>y\<in>set xs'. P y 
-              \<Longrightarrow> \<exists>x' zs ys. xs' = zs@x'#ys \<and> P x' \<and> (\<forall>z\<in>set zs. \<not> P z)" .
+              \<Longrightarrow> \<exists>x' zs ys. xs' = zs@x'#ys \<and> P x' \<and> (\<forall>z\<in>set zs. \<not> P z)" by fact+
     show ?case
     proof(cases "P x'")
       case True
@@ -46,7 +46,7 @@ proof -
     case (Cons x' xs')
     have isin:"\<exists>y\<in>set (x' # xs'). P y"
       and IH:"\<exists>y\<in>set xs'. P y 
-              \<Longrightarrow> \<exists>x' ys zs. xs' = ys @ x' # zs \<and> P x' \<and> (\<forall>z\<in>set zs. \<not> P z)" .
+              \<Longrightarrow> \<exists>x' ys zs. xs' = ys @ x' # zs \<and> P x' \<and> (\<forall>z\<in>set zs. \<not> P z)" by fact+
     show ?case
     proof(cases "\<exists>y\<in>set xs'. P y")
       case True
@@ -82,14 +82,14 @@ proof -
                         (\<forall>k > j. \<forall>zs'. xs \<noteq> (take k ys)@zs')"
   proof(induct ys arbitrary:xs)
     case Nil
-    have "\<forall>zs. xs \<noteq> [] @ zs" .
+    have "\<forall>zs. xs \<noteq> [] @ zs" by fact
     thus ?case by auto
   next
     case (Cons y' ys')
     have all:"\<forall>zs. xs \<noteq> (y' # ys') @ zs"
       and IH:"\<And>xs. \<forall>zs. xs \<noteq> ys' @ zs \<Longrightarrow>
       \<exists>j zs. xs = take j ys' @ zs \<and> j < length ys' \<and> 
-           (\<forall>k. j < k \<longrightarrow> (\<forall>zs'. xs \<noteq> take k ys' @ zs'))" .
+           (\<forall>k. j < k \<longrightarrow> (\<forall>zs'. xs \<noteq> take k ys' @ zs'))" by fact+
     show ?case
     proof(cases xs)
       case Nil thus ?thesis by simp

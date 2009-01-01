@@ -3487,7 +3487,7 @@ apply (simp add:fag_gen_by_def fgmodule_def, simp add:aGroup_def)
  apply (simp add:zeroA_def)
 
 apply (rule Module_axioms.intro)
- apply assumption
+ apply (rule Ring_axioms)
 
  apply (simp add:fgmodule_carr, subst fgmodule_def, simp,
         simp add:sop_closed)

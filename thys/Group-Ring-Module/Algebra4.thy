@@ -5954,7 +5954,7 @@ apply (simp add:rad_ideal_def)
 apply (rule subsetI, simp,
        simp add:ideal_subset)
 apply (simp add:nilpotent_def)
-apply (subst pj_mem, assumption+,
+apply (subst pj_mem, rule Ring_axioms, assumption+,
        simp add:ideal_subset) (* thm npQring *)
 
  apply (frule_tac h = x in ideal_subset[of "I"], assumption,

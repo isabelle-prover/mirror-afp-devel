@@ -1,4 +1,4 @@
-(*  ID:         $Id: Arrow_Order.thy,v 1.1 2008-10-03 09:26:59 nipkow Exp $
+(*  ID:         $Id: Arrow_Order.thy,v 1.2 2009-01-01 22:24:32 makarius Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -280,7 +280,7 @@ proof -
   then obtain n where n: "n<N" "\<forall>m\<le>n. (b,a) : F(?Pi m)" "(a,b) : F(?Pi(n+1))"
     by blast
   have "dictator F (inv h n)"
-  proof (rule dictatorI, auto)
+  proof (rule dictatorI [OF `F : SWF`], auto)
     fix P c d assume "P \<in> Prof" "c\<noteq>d" "(c,d) \<in> P(inv h n)"
     then obtain e where dist: "distinct[c,d,e]" using third_alt by metis
     let ?W = "%i. if h i < n then mktop (P i) e else

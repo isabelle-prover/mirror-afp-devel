@@ -246,7 +246,7 @@ proof -
       by(auto simp:dyn_standard_control_dependence_def)
   next
     case False
-    have not_pd':"\<not> n postdominates (targetnode a)" .
+    have not_pd':"\<not> n postdominates (targetnode a)" by fact
     show ?thesis
     proof(cases "as' = []")
       case True

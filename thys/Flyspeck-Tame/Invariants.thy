@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.18 2008-06-12 06:57:17 lsf37 Exp $
+(*  ID:         $Id: Invariants.thy,v 1.19 2009-01-01 22:24:32 makarius Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2011,14 +2011,14 @@ proof -
   from min have "minGraphProps' g'" by (simp add: minGraphProps_def)
   then show ?thesis apply (simp add: minGraphProps_def) apply safe
     apply (rule splitFace_holds_minGraphProps') apply (rule precond) apply assumption
-    apply (rule splitFace_holds_facesAt_eq) apply (rule precond) apply assumption apply simp
-    apply (rule splitFace_holds_faceListAt_len) apply (rule precond) apply assumption
-    apply (rule splitFace_holds_facesAt_distinct) apply (rule precond) apply assumption
-    apply (rule splitFace_holds_faces_distinct) apply (rule precond) apply assumption
-    apply (rule splitFace_holds_faces_subset) apply (rule precond) apply assumption
-    apply (rule splitFace_holds_edges_sym) apply (rule precond) apply assumption
-    apply (rule splitFace_edges_disj2) apply assumption apply (rule precond)
-    apply (rule splitFace_face_face_op2) apply assumption apply (rule precond)
+    apply (rule splitFace_holds_facesAt_eq) apply (rule precond) apply (rule min) apply simp
+    apply (rule splitFace_holds_faceListAt_len) apply (rule precond) apply (rule min)
+    apply (rule splitFace_holds_facesAt_distinct) apply (rule precond) apply (rule min)
+    apply (rule splitFace_holds_faces_distinct) apply (rule precond) apply (rule min)
+    apply (rule splitFace_holds_faces_subset) apply (rule precond) apply (rule min)
+    apply (rule splitFace_holds_edges_sym) apply (rule precond) apply (rule min)
+    apply (rule splitFace_edges_disj2) apply (rule min) apply (rule precond)
+    apply (rule splitFace_face_face_op2) apply (rule min) apply (rule precond)
     done
 qed
 

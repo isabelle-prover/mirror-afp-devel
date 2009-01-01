@@ -1,5 +1,5 @@
 (*  Title:      LList_Topology.thy
-    ID:         $Id: LList_Topology.thy,v 1.9 2008-12-30 15:30:13 ballarin Exp $
+    ID:         $Id: LList_Topology.thy,v 1.10 2009-01-01 22:24:34 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -249,8 +249,8 @@ lemma itop_sub_ttop [folded ttop_def itop_def]:
   defines "B \<equiv> \<Union>s\<in>A\<^sup>\<star>. {suff A s}" and "T \<equiv> topo B"
   shows "subtopology S T"
 proof -
-  interpret itrace_top A C S by fact
-  interpret trace_top A B T by fact
+  interpret itrace_top A C S by fact+
+  interpret trace_top A B T by fact+
   show ?thesis
     by (auto intro: itop_sub_ttop_base [THEN subtop_lemma] simp: S_def T_def)
 qed
@@ -543,7 +543,7 @@ lemma pptop_top:
   defines "S \<equiv> \<Union> t \<in> T. {t - {LNil}}"
   shows  "topology (\<Union> t \<in> T. {t - {LNil}})"
 proof -
-  interpret trace_top A B T by fact
+  interpret trace_top A B T by fact+
   show ?thesis
     by (auto intro!: subtopology.subtop_topology [OF pptop_subtop_ttop]
       trace_top.topology simp: T_def)

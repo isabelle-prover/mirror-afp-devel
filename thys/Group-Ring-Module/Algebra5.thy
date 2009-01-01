@@ -1086,7 +1086,7 @@ apply (rule ballI)
  apply (erule disjE) 
  apply (simp add:prodB1_def, rule pj_Hom, rule Ring_axioms, assumption)
  apply (simp, simp add:prodB1_def)
- apply (rule pj_Hom, assumption+)
+ apply (rule pj_Hom, rule Ring_axioms, assumption+)
 done
 
 lemma (in Ring) A2coprime_rsurjecTr:"\<lbrakk>ideal R A; ideal R B; S 0 = pj R A; 
@@ -1375,7 +1375,7 @@ apply (simp add:imset, rule Ring_axioms, assumption+)
 apply (rule A_to_prodag_rHom, rule Ring_axioms)
  apply (rule ballI)
  apply (simp add:qring_ring)
- apply (rule ballI, simp, rule pj_Hom, assumption, simp)
+ apply (rule ballI, simp, rule pj_Hom, rule Ring_axioms, simp)
  apply assumption
 done
 

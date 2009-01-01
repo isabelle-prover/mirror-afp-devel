@@ -984,24 +984,26 @@ lemma exec_wf_red:
 proof
   fix tta s t x ta x' m'
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>\<^bsub>jvm\<^esub>* s"
-    and "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
+    and thr: "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
     and "mexec P (x, shr s) ta (x', m')"
   moreover obtain ls ts h ws where s [simp]: "s = (ls, (ts, h), ws)" by(cases s, auto)
   moreover obtain xcp frs m where x [simp]: "x = (xcp, frs)" by(cases x, auto)
   ultimately have "ts t = \<lfloor>((xcp, frs), no_wait_locks)\<rfloor>" "mexec P ((xcp, frs), h) ta (x', m')" by auto
   from wf `correct_state_ts P \<Phi> (thr S) (shr S)` have "wf_red final (mexecd P) S" by(rule execd_wf_red)
+  moreover from Red have "P \<turnstile> S -\<triangleright>tta\<rightarrow>\<^bsub>jvmd\<^esub>* s" by(unfold mExecT_eq_mExecdT[OF wf csS])
+  moreover note thr
   moreover from Red `correct_state_ts P \<Phi> (thr S) (shr S)` have css: "correct_state_ts P \<Phi> (thr s) (shr s)"
     by(auto dest: preserves_correct_state[OF wf])
   with `ts t = \<lfloor>((xcp, frs), no_wait_locks)\<rfloor>` have "P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>"
     by(auto dest: ts_okD)
   from `mexec P (x, shr s) ta (x', m')` have "mexecd P (x, shr s) ta (x', m')"
     by(simp add: mexec_eq_mexecd[OF wf `P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>`, simplified])
-  moreover from Red have "P \<turnstile> S -\<triangleright>tta\<rightarrow>\<^bsub>jvmd\<^esub>* s" by(unfold mExecT_eq_mExecdT[OF wf csS])
-  ultimately have "\<exists>ta' x' m'. mexecd P (x, shr s) ta' (x', m') \<and> thread_oks (thr s) m' \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub> \<and>
+  ultimately
+  have "\<exists>ta' x' m'. mexecd P (x, shr s) ta' (x', m') \<and> thread_oks (thr s) m' \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub> \<and>
                             lock_ok_las' (locks s) t \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<and> collect_locks' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and>
                             final_thread.cond_action_oks' s t \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<and>
                             final_thread.collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> final_thread.collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
-    using Red by-(rule wf_red.wf_red)
+    by (rule wf_red.wf_red)
   then obtain ta' x' m'
     where "mexecd P (x, shr s) ta' (x', m')"
     and ta': "thread_oks (thr s) m' \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>" "lock_ok_las' (locks s) t \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>"

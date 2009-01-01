@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/LBVSpec.thy
-    ID:         $Id: LBVSpec.thy,v 1.7 2008-07-25 15:07:16 fhaftmann Exp $
+    ID:         $Id: LBVSpec.thy,v 1.8 2009-01-01 22:24:32 makarius Exp $
     Author:     Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
@@ -127,7 +127,7 @@ lemma (in Semilat) pp_ub1':
 (*<*)
 proof -
   from S have "\<forall>(x,y) \<in> set S. y \<in> A" by auto
-  with semilat y ab show ?thesis by - (rule ub1')
+  with Semilat_axioms show ?thesis using y ab by (rule ub1')
 qed 
 (*>*)
 

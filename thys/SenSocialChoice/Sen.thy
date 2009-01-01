@@ -295,7 +295,7 @@ proof -
   from i j ij have twoIs: "hasw [i,j] Is" by simp
   {
     assume xu: "x = u" and yv: "y = v"
-    from xy have twoA: "hasw [x,y] A" by auto
+    from xy x y have twoA: "hasw [x,y] A" by simp
     obtain P
       where "profile A Is P" "x \<^bsub>(P i)\<^esub>\<prec> y" "y \<^bsub>(P j)\<^esub>\<prec> x"
       using liberal_witness_two[OF twoA twoIs] by blast
@@ -305,7 +305,7 @@ proof -
   moreover
   {
     assume xu: "x = u" and yv: "y \<noteq> v"
-    with xy uv xu have threeA: "hasw [x,y,v] A" by auto
+    with xy uv xu x y v have threeA: "hasw [x,y,v] A" by simp
     obtain P
       where profileP: "profile A Is P"
         and xPiy: "x \<^bsub>(P i)\<^esub>\<prec> y"
@@ -326,7 +326,7 @@ proof -
   moreover
   {
     assume xv: "x = v" and yu: "y = u"
-    from xy have twoA: "hasw [x,y] A" by auto
+    from xy x y have twoA: "hasw [x,y] A" by auto
     obtain P
       where "profile A Is P" "x \<^bsub>(P i)\<^esub>\<prec> y" "y \<^bsub>(P j)\<^esub>\<prec> x"
       using liberal_witness_two[OF twoA twoIs] by blast

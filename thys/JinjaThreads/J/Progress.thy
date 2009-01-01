@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallProgress.thy
-    ID:         $Id: Progress.thy,v 1.6 2008-06-12 06:57:22 lsf37 Exp $
+    ID:         $Id: Progress.thy,v 1.7 2009-01-01 22:24:32 makarius Exp $
     Author:     Tobias Nipkow, Andreas Lochbihler
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -1058,7 +1058,7 @@ next
   show ?case
   proof(cases "final e")
     case True
-    have fine: "final e" .
+    have fine: "final e" by fact
     with wt refT show ?thesis
     proof (rule finalRefE)
       assume enull: "e = null"
@@ -1180,7 +1180,7 @@ next
   case (WTrtInitBlock v T\<^isub>1 T E V e\<^isub>2 T\<^isub>2 l)
   have IH2: "\<And>l. \<lbrakk>\<D> e\<^isub>2 \<lfloor>dom l\<rfloor>; \<not> final e\<^isub>2\<rbrakk>
                   \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e\<^isub>2,(h,l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
-   and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" by fact
+   and D: "\<D> {V:T := Val v; e\<^isub>2} \<lfloor>dom l\<rfloor>" by fact+
   show ?case
   proof cases
     assume "final e\<^isub>2"

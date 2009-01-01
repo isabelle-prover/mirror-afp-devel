@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Err.thy
-    ID:         $Id: Err.thy,v 1.13 2008-12-30 15:30:13 ballarin Exp $
+    ID:         $Id: Err.thy,v 1.14 2009-01-01 22:24:32 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -145,7 +145,7 @@ lemma semilat_errI [intro]: assumes "Semilat A r f"
 shows "semilat(err A, le r, lift2(\<lambda>x y. OK(f x y)))"
 (*<*)
 proof -
-  interpret Semilat A r f .
+  interpret Semilat A r f by fact
   show ?thesis
     apply(insert semilat)
     apply (unfold semilat_Def closed_def plussub_def lesub_def 
@@ -159,7 +159,7 @@ lemma err_semilat_eslI_aux:
 assumes "Semilat A r f" shows "err_semilat(esl(A,r,f))"
 (*<*)
 proof -
-  interpret Semilat A r f .
+  interpret Semilat A r f by fact
   show ?thesis
     apply (unfold sl_def esl_def)
     apply (simp add: semilat_errI [OF `Semilat A r f`])
