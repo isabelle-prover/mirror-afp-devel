@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.33 2008-12-31 19:41:06 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.34 2009-01-06 07:50:43 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -994,22 +994,18 @@ val proc_nameT = HOLogic.stringT;
 fun add_locale name expr elems thy =
   thy 
   |> Expression.add_locale name name expr elems
-  |> (fn ((target, notes), ctxt) => TheoryTarget.begin target ctxt |>
-           fold (fn (kind, facts) => LocalTheory.notes kind facts #> snd) notes)
+  |> snd
   |> LocalTheory.exit;
 
 fun add_locale' name expr elems thy =
   thy 
   |> Expression.add_locale name name expr elems
-  |> (fn ((target, notes), ctxt) => TheoryTarget.begin target ctxt 
-           |> fold (fn (kind, facts) => LocalTheory.notes kind facts #> snd) notes
-           |> LocalTheory.exit |> (fn ctxt => (target,ctxt)))
+  ||> LocalTheory.exit;
 
 fun add_locale_cmd name expr elems thy =
   thy 
   |> Expression.add_locale_cmd name name expr elems
-  |> (fn ((target, notes), ctxt) => TheoryTarget.begin target ctxt |>
-           fold (fn (kind, facts) => LocalTheory.notes kind facts #> snd) notes)
+  |> snd
   |> LocalTheory.exit;
 
 fun add_variable_statespaces prep_typ (cname,(inpars,outpars,locvars)) thy =
@@ -1184,10 +1180,10 @@ fun procedures_definition locname procs thy =
 
     fun parent_locales thy sfx clique =
       let
-        val calls = distinct (op =) (List.concat
-                     (List.mapPartial (curry assoc_string (names ~~ all_callss)) clique));
-      in map (NewLocale.intern thy)
-            (distinct (op =) (List.mapPartial (get_loc sfx clique) calls))
+        val calls = distinct (op =) (flat
+                     (map_filter (curry assoc_string (names ~~ all_callss)) clique));
+      in map (Locale.intern thy)
+            (distinct (op =) (map_filter (get_loc sfx clique) calls))
       end;
 
     val names_all_callss = names ~~ map (distinct (op =)) all_callss;
@@ -1206,12 +1202,12 @@ fun procedures_definition locname procs thy =
         val name' = unsuffix proc_deco name;
         val fixes = [Element.Fixes [(Binding.name name, SOME proc_nameT, NoSyn)]];
         (* FIXME: may use HOLogic.typeT as soon as locale type-inference works porperly *)
-        val pE = mk_loc_exp [NewLocale.intern thy (suffix parametersN cname)];
+        val pE = mk_loc_exp [Locale.intern thy (suffix parametersN cname)];
         val sN = suffix signatureN  name';
       in thy
          |> add_locale sN pE fixes
          |> ProofContext.theory_of
-         |> (fn thy => add_declaration (SOME (NewLocale.intern thy sN)) parameter_info_decl thy)
+         |> (fn thy => add_declaration (SOME (Locale.intern thy sN)) parameter_info_decl thy)
       end;
 
 
@@ -1230,7 +1226,7 @@ fun procedures_definition locname procs thy =
         val fixes = [Element.Fixes [(Binding.name name, SOME proc_nameT, NoSyn)]];
             (* FIXME: may use HOLogic.typeT as soon as locale type-inference works porperly *)
         val pE = mk_loc_exp
-                  (map (NewLocale.intern thy)
+                  (map (Locale.intern thy)
                     ([lname variablesN (the (my_clique name))]@
                      the_list locname@
                      map (resuffix proc_deco signatureN) callees));
@@ -1292,9 +1288,9 @@ fun procedures_definition locname procs thy =
             then StateSpace.namespace_definition cnamesN proc_nameT ([],[]) [] clique
             else I;
         val bodyLs = map (suffix bodyN o unsuffix proc_deco) clique;
-        fun pE thy = mk_loc_exp (map (NewLocale.intern thy) (hoare_ctxtL::bodyLs)
+        fun pE thy = mk_loc_exp (map (Locale.intern thy) (hoare_ctxtL::bodyLs)
                               @ (parent_locales thy implementationN clique)
-                              @ (if multiple_procs then [NewLocale.intern thy cnamesN] else []));
+                              @ (if multiple_procs then [Locale.intern thy cnamesN] else []));
         fun read_term thy = apply_in_context thy (pE thy) Syntax.read_term;
         fun elems thy = List.concat (map (mk_def_eq thy (read_term thy)) clique);
         fun add_recursive_info phi name =
@@ -1307,15 +1303,15 @@ fun procedures_definition locname procs thy =
         fun add_impl_locale name thy =
           let
             val implN = suffix implementationN (unsuffix proc_deco name);
-            val parentN = NewLocale.intern thy cliqN
+            val parentN = Locale.intern thy cliqN
             val parent = mk_loc_exp [parentN];
           in thy
              |> add_locale_cmd implN parent []
              |> ProofContext.theory_of
-             |> (fn thy => Expression.sublocale parentN (mk_loc_exp [NewLocale.intern thy implN]) thy)
+             |> (fn thy => Expression.sublocale parentN (mk_loc_exp [Locale.intern thy implN]) thy)
              |> Proof.global_terminal_proof
                  (Method.Basic (fn ctxt => Method.SIMPLE_METHOD
-                                 (NewLocale.intro_locales_tac false ctxt []), Position.none),NONE)
+                                 (Locale.intro_locales_tac false ctxt []), Position.none),NONE)
              |> ProofContext.theory_of
           end;
 
@@ -1326,8 +1322,8 @@ fun procedures_definition locname procs thy =
               add_locale_cmd cliqN (pE thy) (elems thy) thy)
          |> ProofContext.theory_of
          |> fold add_impl_locale clique
-         |> (fn thy => add_declaration (SOME (NewLocale.intern thy cliqN)) proc_declaration thy)
-         |> (fn thy => add_declaration (SOME (NewLocale.intern thy cliqN))
+         |> (fn thy => add_declaration (SOME (Locale.intern thy cliqN)) proc_declaration thy)
+         |> (fn thy => add_declaration (SOME (Locale.intern thy cliqN))
                 recursive_declaration thy)
       end;
 
@@ -1336,12 +1332,12 @@ fun procedures_definition locname procs thy =
         val name' = unsuffix proc_deco name;
         val ps = (suffix signatureN name' :: the_list locname);
         val ps' = hoare_ctxtL :: ps ;
-        val pE = mk_loc_exp (map (NewLocale.intern thy) ps)
-        val pE' = mk_loc_exp (map (NewLocale.intern thy) ps')
+        val pE = mk_loc_exp (map (Locale.intern thy) ps)
+        val pE' = mk_loc_exp (map (Locale.intern thy) ps')
 
         fun read thy =
          apply_in_context thy
-            (mk_loc_exp [NewLocale.intern thy (suffix cliqueN (cname name))])
+            (mk_loc_exp [Locale.intern thy (suffix cliqueN (cname name))])
             (Syntax.read_prop);
 
         fun proc_declaration phi =
@@ -1356,9 +1352,9 @@ fun procedures_definition locname procs thy =
              |> add_locale thm_name pE' [elem]
              |> ProofContext.theory_of
              |> (fn thy =>
-                  add_declaration (SOME (NewLocale.intern thy thm_name)) proc_declaration thy)
+                  add_declaration (SOME (Locale.intern thy thm_name)) proc_declaration thy)
              |> error_to_warning ("abbreviation: '" ^ thm_name  ^ "' not added")
-                  (add_abbrev (SOME (NewLocale.intern thy (suffix cliqueN (cname name))))                   Syntax.mode_input thm_name spec)
+                  (add_abbrev (SOME (Locale.intern thy (suffix cliqueN (cname name))))                   Syntax.mode_input thm_name spec)
           end;
       in thy
          |> Theory.checkpoint
