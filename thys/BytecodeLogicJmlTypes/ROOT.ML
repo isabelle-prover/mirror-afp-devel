@@ -1,2 +1,1 @@
-use_thy "../Sound";
-use_thy "../Cachera";
+use_thys ["../Sound", "../Cachera"];
