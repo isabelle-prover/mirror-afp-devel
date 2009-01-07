@@ -1,5 +1,5 @@
 (*  Title:       An Isabelle/HOL Formalization of the Textbook Proof of Huffman's Algorithm
-    ID:          $Id: Huffman.thy,v 1.4 2009-01-07 09:49:46 blanchette Exp $
+    ID:          $Id: Huffman.thy,v 1.5 2009-01-07 11:01:33 blanchette Exp $
     Author:      Jasmin Christian Blanchette <blanchette at in.tum.de>, 2008
     Maintainer:  Jasmin Christian Blanchette <blanchette at in.tum.de>
 *)
@@ -946,9 +946,9 @@ fun huffman :: "'a forest \<Rightarrow> 'a tree" where
 
 text {*
 The time complexity of the algorithm is quadratic in the size of the forest.
-If we eliminated the cached weight component of the inner node, and instead
+If we eliminated the inner node's cached weight component, and instead
 recomputed the weight each time it is needed, the complexity would remain
-quadratic, but with a larger constant. Using binary search in @{const
+quadratic, but with a larger constant. Using a binary search in @{const
 insortTree}, the corresponding imperative algorithm is $O(n \log n)$ if we keep
 the weight cache and $O(n^2)$ if we drop it. An $O(n)$ imperative implementation
 is possible by maintaining two queues, one containing the unprocessed leaf nodes
