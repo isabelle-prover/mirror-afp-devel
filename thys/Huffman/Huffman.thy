@@ -1,5 +1,5 @@
 (*  Title:       An Isabelle/HOL Formalization of the Textbook Proof of Huffman's Algorithm
-    ID:          $Id: Huffman.thy,v 1.3 2008-10-17 14:54:17 stefanberghofer Exp $
+    ID:          $Id: Huffman.thy,v 1.4 2009-01-07 09:49:46 blanchette Exp $
     Author:      Jasmin Christian Blanchette <blanchette at in.tum.de>, 2008
     Maintainer:  Jasmin Christian Blanchette <blanchette at in.tum.de>
 *)
@@ -12,23 +12,24 @@ begin
 
 section {* Introduction *}
 
-subsection {* Binary Codes *}
+subsection {* Binary Codes
+              \label{binary-codes} *}
 
 text {*
 Suppose we want to encode strings over a finite source alphabet to sequences
 of bits. The approach used by ASCII and most other charsets is to map each
-source symbol to a distinct $k$-bit codeword, where $k$ is fixed and is
+source symbol to a distinct $k$-bit code word, where $k$ is fixed and is
 typically 8 or 16. To encode a string of symbols, we simply encode each symbol
 in turn. Decoding involves mapping each $k$-bit block back to the symbol it
 represents.
 
 Fixed-length codes are simple and fast, but they generally waste space. If
-we know the frequency $w_a$ of each source symbol $a$, we can save some
-bits by using shorter codewords for the most frequent symbols. We
+we know the frequency $w_a$ of each source symbol $a$, we can save space
+by using shorter code words for the most frequent symbols. We
 say that a (variable-length) code is {\sl optimum\/} if it minimizes the sum
 $\sum_a w_a \vthinspace\delta_a$, where $\delta_a$ is the length of the binary
-codeword for $a$. Information theory tells us that a code is optimum if
-for each source symbol $c$ the codeword representing $c$ has length
+code word for $a$. Information theory tells us that a code is optimum if
+for each source symbol $c$ the code word representing $c$ has length
 $$\textstyle \delta_c = \log_2 {1 \over p_c}, \qquad
   \hbox{where}\enskip p_c = {w_c \over \sum_a w_a}.$$
 This number is generally not an integer, so we cannot use it directly.
@@ -40,13 +41,13 @@ presented here.
 As an example, consider the source string `$\xabacabad$'. We have
 $$p_{\xa} = \tfrac{1}{2},\,\; p_{\xb} = \tfrac{1}{4},\,\;
   p_{\xc} = \tfrac{1}{8},\,\; p_{\xd} = \tfrac{1}{8}.$$
-The optimum lengths for the binary codewords are all integers, namely
+The optimum lengths for the binary code words are all integers, namely
 $$\delta_{\xa} = 1,\,\; \delta_{\xb} = 2,\,\; \delta_{\xc} = 3,\,\;
   \delta_{\xd} = 3,$$
 and they are realized by the code
 $$C_1 = \{ \xa \mapsto 0,\, \xb \mapsto 10,\, \xc \mapsto 110,\,
            \xd \mapsto 111 \}.$$
-Encoding `$\xabacabad$' produces the 14-bit codeword 01001100100111. The code
+Encoding `$\xabacabad$' produces the 14-bit code word 01001100100111. The code
 $C_1$ is optimum: No code that unambiguously encodes source symbols one at a
 time could do better than $C_1$ on the input `$\xa\xb\xa\xc\xa\xb\xa\xd$'. In
 particular, with a fixed-length code such as
@@ -63,16 +64,18 @@ binary trees. For example, the trees\strut
 $$\vcenter{\hbox{\includegraphics[scale=1.25]{tree-abcd-unbalanced.pdf}}}
   \qquad \hbox{and} \qquad
   \vcenter{\hbox{\includegraphics[scale=1.25]{tree-abcd-balanced.pdf}}}$$
-correspond to $C_1$ and $C_2$, respectively. The codeword for a symbol is given
-along the path from the root to that symbol, with 0 meaning ``left child'' and
-1 meaning ``right child''.
+correspond to $C_1$ and $C_2$. The code word for a given
+symbol can be obtained as follows: Start at the root and descend toward the leaf
+node associated with the symbol one node at a time; generate a 0 whenever the
+left child of the current node is chosen and a 1 whenever the right child is
+chosen. The generated sequence of 0s and 1s is the code word.
 
 To avoid ambiguities, we require that only leaf nodes are labeled with symbols.
-This ensures that no codeword is a prefix of another, thereby eliminating the
+This ensures that no code word is a prefix of another, thereby eliminating the
 source of all ambiguities.%
 \footnote{Strictly speaking, there is another potential source of ambiguity.
 If the alphabet consists of a single symbol $a$, that symbol could be mapped
-to the empty codeword, and then any string $aa\ldots a$ would map to the
+to the empty code word, and then any string $aa\ldots a$ would map to the
 empty bit sequence, giving the decoder no way to recover the original string's
 length. This scenario can be ruled out by requiring that the alphabet has
 cardinality 2 or more.}
@@ -81,7 +84,7 @@ code that doesn't have this property, consider the code associated with the
 tree\strut
 $$\vcenter{\hbox{\includegraphics[scale=1.25]{tree-abcd-non-prefix.pdf}}}$$
 and observe that `$\xb\xb\xb$', `$\xb\xd$', and `$\xd\xb$' all map to the
-codeword 111.
+code word 111.
 
 Each node in a code tree is assigned a {\sl weight}. For a leaf node, the
 weight is the frequency of its symbol; for an inner node, it is the sum of the
@@ -103,9 +106,10 @@ subsection {* Huffman's Algorithm *}
 
 text {*
 David Huffman \cite{huffman-1952} discovered a simple algorithm for
-constructing an optimum prefix code tree for specified symbol frequencies:
+constructing an optimum code tree for specified symbol frequencies:
 Create a forest consisting of only leaf nodes, one for each symbol in the
-alphabet. Then take the two trees
+alphabet, taking the given symbol frequencies as initial weights for the nodes.
+Then pick the two trees
 $$\vcenter{\hbox{\includegraphics[scale=1.25]{tree-w1.pdf}}}
   \qquad \hbox{and} \qquad
   \vcenter{\hbox{\includegraphics[scale=1.25]{tree-w2.pdf}}}$$
@@ -174,7 +178,7 @@ has minimum path length for the weights $w_1 + w_2$, $w_3$, $\ldots\,$, $w_m$.
 There is, however, a small oddity in this proof: It is not clear why we must
 assert the existence of an optimum tree that contains the subtree
 $$\vcenter{\hbox{\includegraphics[scale=1.25]{tree-w1-w2-leaves.pdf}}}$$
-(The formalization works without it.)
+Indeed, the formalization works without it.
 
 Cormen et al.\ \cite[p.~385--391]{cormen-et-al-2001} provide a very similar
 proof, articulated around the following propositions:
@@ -213,7 +217,7 @@ written using Isabelle/HOL \cite{nipkow-et-al-2008}. Our proof is based on the
 informal proofs given by Knuth and Cormen et al. The development was done
 independently of Laurent Th\'ery's Coq proof \cite{thery-2003,thery-2004},
 which through its ``cover'' concept represents a considerable departure from
-the standard proof.
+the textbook proof.
 
 The development consists of 90 lemmas and 5 theorems. Most of them have very
 short proofs thanks to the extensive use of simplification rules and custom
@@ -241,9 +245,10 @@ readers not familiar with the system can at least understand the lemmas and
 theorems, if not the proofs. Readers who already know Isabelle are encouraged
 to skip this section.
 
-Isabelle is a generic theorem prover whose built-in metalogic is a fragment
-of higher-order logic \cite{gordon-melham-1994,nipkow-et-al-2008}. The
-metalogical operators are material implication, written
+Isabelle is a generic theorem prover whose built-in metalogic is an
+intuitionistic fragment of higher-order logic
+\cite{gordon-melham-1994,nipkow-et-al-2008}. The metalogical operators are
+material implication, written
 \vthinspace@{text "\<lbrakk>\<phi>\<^isub>1; \<dots>; \<phi>\<^isub>n\<rbrakk> \<Longrightarrow> \<psi>"}\vthinspace{} (``if @{term \<phi>\<^isub>1} and
 $\ldots$ and @{term \<phi>\<^isub>n}, then @{term \<psi>}''), universal quantification,
 written \vthinspace@{text "\<And>x\<^isub>1 \<dots> x\<^isub>n. \<psi>"}\vthinspace{} (``for all $@{term x\<^isub>1},
@@ -261,14 +266,14 @@ addition, $=$ expresses equivalence. The formulas
 Isabelle's proof tactics.
 
 The term language consists of simply typed $\lambda$-terms written in an
-ML-like syntax \cite{milner-et-al-1997}. In particular, function application
-expects no parentheses around the argument list and no commas between the
-arguments, as in @{term "f x y"}. Syntactic sugar provides an infix syntax for
-common operators, such as $x = y$ and $x + y$. Types are inferred
-automatically in most cases, but they can always be supplied using an
-annotation @{text "t::\<tau>"}, where @{term t} is a term and @{text \<tau>} is its type.
-The type of total functions from @{typ 'a} to @{typ 'b} is written
-@{typ "'a \<Rightarrow> 'b"}. Variables may range over functions.
+ML-like syntax \cite{milner-et-al-1997}. Function application expects no
+parentheses around the argument list and no commas between the arguments, as in
+@{term "f x y"}. Syntactic sugar provides an infix syntax for common operators,
+such as $x = y$ and $x + y$. Types are inferred automatically in most cases, but
+they can always be supplied using an annotation @{text "t::\<tau>"}, where @{term t}
+is a term and @{text \<tau>} is its type. The type of total functions from
+@{typ 'a} to @{typ 'b} is written @{typ "'a \<Rightarrow> 'b"}. Variables may range
+over functions.
 
 The type of natural numbers is called @{typ nat}. The type of lists over type
 @{text 'a}, written @{typ "'a list"}, features the empty list @{term "[]"},
@@ -276,7 +281,7 @@ the infix constructor @{term "x # xs"} (where @{term x} is an element of type
 @{text 'a} and @{term xs} is a list over @{text 'a}), and the conversion
 function @{term set} from lists to sets. The type of sets over @{text 'a} is
 written @{typ "'a set"}. Operations on sets are written using traditional
-mathematical notations.
+mathematical notation.
 *}
 
 subsection {* Head of the Theory File *}
@@ -342,7 +347,7 @@ primrec alphabet :: "'a tree \<Rightarrow> 'a set" where
 "alphabet (InnerNode w t\<^isub>1 t\<^isub>2) = alphabet t\<^isub>1 \<union> alphabet t\<^isub>2"
 
 text {*
-For set and predicates, Isabelle gives us the choice between inductive
+For sets and predicates, Isabelle gives us the choice between inductive
 definitions (\isakeyword{inductive\_set} and \isakeyword{inductive}) and
 recursive functions (\isakeyword{primrec}, \isakeyword{fun}, and
 \isakeyword{function}). In this development, we consistently favor recursion
@@ -355,9 +360,9 @@ predicates involves introduction and elimination rules, which are more clumsy
 than simplification rules.
 
 \item Isabelle's counterexample generator \isakeyword{quickcheck}
-\cite{berghofer-nipkow-2004}, which is very useful when developing proofs top
-down (together with \isakeyword{sorry}), has limited support for inductive
-definitions.
+\cite{berghofer-nipkow-2004}, which we used extensively during the top-down
+development of the proof (together with \isakeyword{sorry}), has better support
+for recursive definitions.
 \end{myitemize}
 
 The alphabet of a forest is defined as the union of the alphabets of the trees
@@ -387,12 +392,13 @@ by (induct t) auto
 subsection {* Consistency *}
 
 text {*
-A tree is {\sl consistent\/} if for each inner node the alphabet of the two
+A tree is {\sl consistent\/} if for each inner node the alphabets of the two
 subtrees are disjoint. Intuitively, this means that every symbol in the
-alphabet occurs in exactly one leaf node. Although this well-formedness
-property isn't mentioned in algorithms textbooks
-\cite{aho-et-al-1983,cormen-et-al-2001,knuth-1997}, it is essential and appears
-as an assumption in many of our lemmas.
+alphabet occurs in exactly one leaf node. Consistency is a sufficient condition
+for $\delta_a$ (the length of the {\sl unique\/} code word for $a$) to be
+defined. Although this well-formedness property isn't mentioned in algorithms
+textbooks \cite{aho-et-al-1983,cormen-et-al-2001,knuth-1997}, it is essential
+and appears as an assumption in many of our lemmas.
 *}
 
 primrec consistent :: "'a tree \<Rightarrow> bool" where
@@ -450,10 +456,11 @@ lemma tree_induct_consistent:
  P t a"
 
 txt {*
-The proof relies on the \isakeyword{induct\_scheme} and
-\isakeyword{lexicographic\_order} tactics, which automate the most tedious
-aspects of deriving induction rules. An alternative would have been to perform
-a standard structural induction on @{term t} and proceed by cases.
+The proof relies on the \textit{induct\_scheme} and
+\textit{lexicographic\_order} tactics, which automate the most tedious
+aspects of deriving induction rules. The alternative would have been to perform
+a standard structural induction on @{term t} and proceed by cases, which is
+straightforward but long-winded.
 *}
 
 apply induct_scheme
@@ -466,11 +473,13 @@ by lexicographic_order
 subsection {* Symbol Depths *}
 
 text {*
-The {\sl depth\/} of a symbol is the length of the path from the root to the
-leaf node labeled with that symbol. Symbols that don't occur in the tree or
-that occur at the root of a one-node tree have depth 0. If a symbol occurs in
-several leaf nodes (which may happen with inconsistent trees), the depth is
-arbitrarily defined in terms of the leftmost node labeled with that symbol.
+The {\sl depth\/} of a symbol (which we denoted by $\delta_a$ in
+Section~\ref{binary-codes}) is the length of the path from the root to the
+leaf node labeled with that symbol, or equivalently the length of the code word
+for the symbol. Symbols that don't occur in the tree or that occur at the root
+of a one-node tree have depth 0. If a symbol occurs in several leaf nodes (which
+may happen with inconsistent trees), the depth is arbitrarily defined in terms
+of the leftmost node labeled with that symbol.
 *}
 
 primrec depth :: "'a tree \<Rightarrow> 'a \<Rightarrow> nat" where
@@ -479,6 +488,13 @@ primrec depth :: "'a tree \<Rightarrow> 'a \<Rightarrow> nat" where
      (if a \<in> alphabet t\<^isub>1 then depth t\<^isub>1 a + 1
       else if a \<in> alphabet t\<^isub>2 then depth t\<^isub>2 a + 1
       else 0)"
+
+text {*
+The definition may seem very inefficient from a functional programming
+point of view, but it does not matter, because unlike Huffman's algorithm, the
+@{const depth} function is merely a reasoning tool and is never actually
+executed.
+*}
 
 subsection {* Height *}
 
@@ -525,7 +541,7 @@ qed
 
 text {*
 The following elimination rules help Isabelle's classical prover, notably the
-\isakeyword{auto} tactic. They are easy consequences of the inequation
+\textit{auto} tactic. They are easy consequences of the inequation
 @{thm depth_le_height [no_vars]}.
 *}
 
@@ -567,11 +583,12 @@ qed
 subsection {* Symbol Frequencies *}
 
 text {*
-The {\sl frequency\/} of a symbol is the sum of the weights attached to the
+The {\sl frequency\/} of a symbol (which we denoted by $w_a$ in
+Section~\ref{binary-codes}) is the sum of the weights attached to the
 leaf nodes labeled with that symbol. If the tree is consistent, the sum
-comprises at most one nonzero term. The generalization to forests is
-straightforward. If two trees have the same alphabet and symbol frequencies, we
-say that they are {\sl compatible}.
+comprises at most one nonzero term. The frequency is then the weight of the leaf
+node labeled with the symbol, or 0 if there is no such node. The generalization
+to forests is straightforward.
 *}
 
 primrec freq :: "'a tree \<Rightarrow> 'a \<Rightarrow> nat" where
@@ -605,6 +622,11 @@ lemma freq_0_left [simp]:
 by (auto simp: disjoint_iff_not_equal)
 
 text {*
+Two trees are {\em comparable} if they have the same alphabet and symbol
+frequencies. This is an important concept, because it allows us to state that
+the tree constructed by Huffman's algorithm not only is optimal but also that it
+has the expected alphabet and frequencies.
+
 We close this section with a more technical lemma.
 *}
 
@@ -627,8 +649,8 @@ subsection {* Weight *}
 text {*
 The @{term weight} function returns the weight of a tree. In the
 @{const InnerNode} case, we ignore the weight cached in the node and instead
-compute the tree's weight recursively. This is more robust than relying on the
-cache and simplifies reasoning.
+compute the tree's weight recursively. This makes reasoning simpler because we
+can then avoid specifying cache correctness as an assumption in our lemmas.
 *}
 
 primrec weight :: "'a tree \<Rightarrow> nat" where
@@ -666,10 +688,11 @@ $$@{text "\<lbrakk>finite A; finite B; A \<inter> B = {}\<rbrakk> \<Longrightarr
 subsection {* Cost *}
 
 text {*
-The {\sl cost\/} of a consistent tree (sometimes called the {\sl weighted path
-length\/}) is given by the sum $\sum_{a \in @{term "alphabet t"}\,}
-@{term "freq t a"} \mathbin{@{text "*"}} @{term "depth t a"}$. It obeys a
-simple recursive law.
+The {\sl cost\/} of a consistent tree, sometimes called the {\sl weighted path
+length}, is given by the sum $\sum_{a \in @{term "alphabet t"}\,}
+@{term "freq t a"} \mathbin{@{text "*"}} @{term "depth t a"}$
+(which we denoted by $\sum_a w_a \vthinspace\delta_a$ in
+Section~\ref{binary-codes}). It obeys a simple recursive law.
 *}
 
 primrec cost :: "'a tree \<Rightarrow> nat" where
@@ -790,8 +813,8 @@ by (case_tac t) simp+
 subsection {* Optimality *}
 
 text {*
-A tree is optimum if and only if its cost is not greater than the cost of any
-compatible tree. We can ignore inconsistent trees without loss of generality.
+A tree is optimum if and only if its cost is not greater than that of any
+comparable tree. We can ignore inconsistent trees without loss of generality.
 *}
 
 definition optimum :: "'a tree \<Rightarrow> bool" where
@@ -913,7 +936,8 @@ subsection {* The Main Algorithm *}
 text {*
 Huffman's algorithm repeatedly unites the first two trees of the forest it
 receives as argument until a single tree is left. It should initially be
-invoked with a list of leaf nodes sorted by weight.
+invoked with a list of leaf nodes sorted by weight. Note that it is not defined
+for the empty list.
 *}
 
 fun huffman :: "'a forest \<Rightarrow> 'a tree" where
@@ -921,6 +945,15 @@ fun huffman :: "'a forest \<Rightarrow> 'a tree" where
 "huffman (t\<^isub>1 # t\<^isub>2 # ts) = huffman (insortTree (uniteTrees t\<^isub>1 t\<^isub>2) ts)"
 
 text {*
+The time complexity of the algorithm is quadratic in the size of the forest.
+If we eliminated the cached weight component of the inner node, and instead
+recomputed the weight each time it is needed, the complexity would remain
+quadratic, but with a larger constant. Using binary search in @{const
+insortTree}, the corresponding imperative algorithm is $O(n \log n)$ if we keep
+the weight cache and $O(n^2)$ if we drop it. An $O(n)$ imperative implementation
+is possible by maintaining two queues, one containing the unprocessed leaf nodes
+and the other containing the combined trees \cite[p.~404]{knuth-1997}.
+
 The tree returned by the algorithm preserves the alphabet, consistency, and
 symbol frequencies of the original forest.
 *}
@@ -946,7 +979,9 @@ text {*
 The {\sl sibling\/} of a symbol $a$ in a tree $t$ is the label of the node that
 is the (left or right) sibling of the node labeled with $a$ in $t$. If the
 symbol $a$ is not in $t$'s alphabet or it occurs in a node with no sibling
-leaf, we define the sibling as being $a$ itself. Thus, we have
+leaf, we define the sibling as being $a$ itself; this gives us the nice property
+that if $t$ is consistent, then $@{term "sibling t a"} \not= a$ if and only if
+$a$ has a sibling. As an illustration, we have
 $@{term "sibling t a"} = b$,\vthinspace{} $@{term "sibling t b"} = a$,
 and $@{term "sibling t c"} = c$ for the tree\strut
 $$t \,= \vcenter{\hbox{\includegraphics[scale=1.25]{tree-sibling.pdf}}}$$
@@ -1033,7 +1068,6 @@ nested @{text InnerNode} constructors in the last two cases reduce readability.
 Third, under the assumption that $t$ is consistent, we would like to perform
 the same case distinction on $a$ as we did for
 @{thm [source] tree_induct_consistent}, with the same benefits for automation.
-
 These observations lead us to develop a custom induction rule that
 distinguishes the following cases.
 
@@ -1128,7 +1162,7 @@ $t$ in which the leaf nodes labeled with $a$ and $b$ are exchanged. When
 invoking @{text swapLeaves}, we normally pass @{term "freq t a"} and
 @{term "freq t b"} for @{term w\<^isub>a} and @{term w\<^isub>b}.
 
-Notice that we do not bother updating the cached weight of the ancestor nodes
+Note that we do not bother updating the cached weight of the ancestor nodes
 when performing the interchange. The cached weight is used only in the
 implementation of Huffman's algorithm, which doesn't invoke @{text swapLeaves}.
 *}
@@ -1199,9 +1233,9 @@ $$@{prop "weight (swapLeaves t w\<^isub>a a w\<^isub>b b) = weight t + w\<^isub>
 In Isabelle/HOL, these two equations are not equivalent, because by definition
 $m - n = 0$ if $n > m$. We could use the second equation and additionally
 assert that @{prop "weight t \<ge> freq t a"} (an easy consequence of
-@{thm [source] weight_eq_Sum_freq}), and then apply the \isakeyword{arith}
+@{thm [source] weight_eq_Sum_freq}), and then apply the \textit{arith}
 tactic, but it is much simpler to use the first equation and stay with
-\isakeyword{simp} and \isakeyword{auto}. Another option would be to use
+\textit{simp} and \textit{auto}. Another option would be to use
 integers instead of natural numbers.
 *}
 
@@ -1565,10 +1599,10 @@ A naive definition of this function would be
 $$@{prop "swapFourSyms t a b c d \<equiv> swapSyms (swapSyms t a c) b d"}.$$
 This definition fails in the face of aliasing: If $a = d$, but
 $b \ne c$, then @{text "swapFourSyms a b c d"} would leave $a$ in $b$'s
-position. Incidentally, Cormen et al.\ \cite[p.~390]{cormen-et-al-2001}
-forgot to consider this case in their proof.%
-\footnote{Thomas Cormen indicated in a personal communication that this will be
-corrected in the next edition of the book.}
+position.%
+\footnote{Cormen et al.\ \cite[p.~390]{cormen-et-al-2001} forgot to consider
+this case in their proof. Thomas Cormen indicated in a personal communication
+that this will be corrected in the next edition of the book.}
 *}
 
 definition swapFourSyms :: "'a tree \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a tree" where
@@ -1943,7 +1977,7 @@ has minimum path length for the weights $w_1 + w_2$, $w_3$, $\ldots\,$, $w_m$.
 \end{quote}
 
 \noindent
-(We only need the ``if'' direction of Knuth's equivalence.) Lemma~16.3 in
+We only need the ``if'' direction of Knuth's equivalence. Lemma~16.3 in
 Cormen et al.~\cite[p.~391]{cormen-et-al-2001} expresses essentially the same
 property:
 
@@ -1960,9 +1994,9 @@ $y$ as children, represents an optimal prefix code for the alphabet $C$.
 
 \noindent
 The proof is as follows: We assume that $t$ has a cost less than or equal to
-that of any other compatible tree~$v$ and show that
+that of any other comparable tree~$v$ and show that
 @{term "splitLeaf t w\<^isub>a a w\<^isub>b b"} has a cost less than or equal to that of any
-other compatible tree $u$. By @{thm [source] exists_at_height} and
+other comparable tree $u$. By @{thm [source] exists_at_height} and
 @{thm [source] depth_height_imp_sibling_ne}, we know that some symbols $c$ and
 $d$ appear in sibling nodes at the very bottom of~$u$:
 $$\includegraphics[scale=1.25]{tree-splitLeaf-cd.pdf}$$
@@ -1970,7 +2004,7 @@ $$\includegraphics[scale=1.25]{tree-splitLeaf-cd.pdf}$$
 $u$'s structure.) From $u$ we construct a new tree
 @{term "swapFourSyms u a b c d"} in which the minima $a$ and $b$ are siblings:
 $$\includegraphics[scale=1.25]{tree-splitLeaf-abcd.pdf}$$
-Merging $a$ and $b$ gives a tree compatible with $t$, which we can use to
+Merging $a$ and $b$ gives a tree comparable with $t$, which we can use to
 instantiate $v$ in the assumption:
 $$\includegraphics[scale=1.25]{tree-splitLeaf-abcd-aba.pdf}$$
 With this instantiation, the proof is easy:
@@ -1991,12 +2025,12 @@ $$\begin{tabularx}{\textwidth}{@%
 \end{tabularx}$$
 
 \noindent
-The proof in Cormen et al.\ is by contradiction: Essentially, they assume that
-there exists a tree $u$ with a lower cost than @{term "splitLeaf t a w\<^isub>a b w\<^isub>b"}
-and show that there exists a tree $v$ with a lower cost than $t$, contradicting
-the hypothesis that $t$ is optimum. In place of
-@{thm [source] cost_swapFourSyms_le}, they invoke their lemma~16.2, which is
-questionable since $u$ is not necessarily optimum.%
+In contrast, the proof in Cormen et al.\ is by contradiction: Essentially, they
+assume that there exists a tree $u$ with a lower cost than
+@{term "splitLeaf t a w\<^isub>a b w\<^isub>b"} and show that there exists a tree~$v$
+with a lower cost than~$t$, contradicting the hypothesis that $t$ is optimum. In
+place of @{thm [source] cost_swapFourSyms_le}, they invoke their lemma~16.2,
+which is questionable since $u$ is not necessarily optimum.%
 \footnote{Thomas Cormen commented that this step will be clarified in the
 next edition of the book.}
 
@@ -2203,9 +2237,9 @@ $$\vcenter{\hbox{\includegraphics[scale=1.25]{forest-uniteTrees.pdf}}}$$
 gives the same result as applying the algorithm on the ``flat'' forest
 $$\vcenter{\hbox{\includegraphics[scale=1.25]{forest-uniteTrees-flat.pdf}}}$$
 followed by splitting the leaf node $a$ into two nodes $a$, $b$ with
-frequencies $@{term w\<^isub>a}$, $@{term w\<^isub>b}$. This effectively provides a way to
-flatten the forest at each step of the algorithm. Its invocation is implicit
-in the textbook proof.
+frequencies $@{term w\<^isub>a}$, $@{term w\<^isub>b}$. The lemma effectively
+provides a way to flatten the forest at each step of the algorithm. Its
+invocation is implicit in the textbook proof.
 *}
 
 subsection {* Optimality Theorem *}
@@ -2233,8 +2267,8 @@ of a single leaf node, the node has cost 0 and is therefore optimum. If
 the term
 $${\it huffman\/}\enskip\; \vcenter{\hbox{\includegraphics[scale=1.25]%
     {forest-uniteTrees.pdf}}}$$
-(In the diagram, we put the newly created tree at position 2 in the forest. In
-general, it could be anywhere.) By @{thm [source] splitLeaf_huffman_commute},
+In the diagram, we put the newly created tree at position 2 in the forest; in
+general, it could be anywhere. By @{thm [source] splitLeaf_huffman_commute},
 the above tree equals\strut
 $${\it splitLeaf\/}\;\left({\it huffman\/}\enskip\;
   \vcenter{\hbox{\includegraphics[scale=1.25]{forest-uniteTrees-flat.pdf}}}
@@ -2306,10 +2340,19 @@ text {*
 \myskip
 
 \noindent
-Theorem @{thm [source] optimum_huffman} assumes that the forest @{term ts}
-passed to @{const huffman} consists exclusively of leaf nodes. It is tempting
-to relax this restriction, by requiring instead that the forest @{term ts} is
-optimum. We would define optimality of a forest as follows:
+So what have we achieved? Assuming that our definitions really mean what we
+intend them to mean, we established that our functional implementation of
+Huffman's algorithm, when invoked properly, constructs a binary tree that
+represents an optimal prefix code for the specified alphabet and frequencies.
+Using Isabelle's code generator \cite{haftmann-nipkow-2007}, we can convert the
+Isabelle code into Standard ML, OCaml, or Haskell and use it in a real
+application.
+
+As a side note, the @{thm [source] optimum_huffman} theorem assumes that the
+forest @{term ts} passed to @{const huffman} consists exclusively of leaf nodes.
+It is tempting to relax this restriction, by requiring instead that the forest
+@{term ts} has the lowest cost among forests of the same size. We would define
+optimality of a forest as follows:
 $$\begin{aligned}[t]
   @{prop "optimum\<^isub>F ts"}\,\;@{text "\<equiv>"}\;\,
   (@{text "\<forall>us."}\
@@ -2333,7 +2376,7 @@ section {* Related Work
 text {*
 Laurent Th\'ery's Coq formalization of Huffman's algorithm \cite{thery-2003,%
 thery-2004} is an obvious yardstick for our work. It has a somewhat wider
-scope, proving among others the isomorphism between prefix codes and binary
+scope, proving among others the isomorphism between prefix codes and full binary
 trees. With 291 theorems, it is also much larger.
 
 Th\'ery identified the following difficulties in formalizing the textbook
@@ -2358,10 +2401,10 @@ proof:
 
 To circumvent these difficulties, Th\'ery introduced the ingenious concept of
 cover. A forest @{term ts} is a {\em cover\/} of a tree~$t$ if $t$ can be built
-from @{term ts} by adding inner nodes on top of the trees in @{term ts}. (The
+from @{term ts} by adding inner nodes on top of the trees in @{term ts}. The
 term ``cover'' is easier to understand if the binary trees are drawn with the
-root at the bottom of the page, like natural trees.) Huffman's algorithm is
-then a refinement of the cover concept. The main proof consists in showing that
+root at the bottom of the page, like natural trees. Huffman's algorithm is
+a refinement of the cover concept. The main proof consists in showing that
 the cost of @{term "huffman ts"} is less than or equal to that of any other
 tree for which @{term ts} is a cover. It relies on a few auxiliary definitions,
 notably an ``ordered cover'' concept that facilitates structural induction
@@ -2369,7 +2412,8 @@ and a four-argument depth predicate (confusingly called @{term height}).
 Permutations also play a central role.
 
 Incidentally, our experience suggests that the potential problems identified
-by Th\'ery can be overcome without too much work:
+by Th\'ery can be overcome more directly without too much work, leading to a
+simpler proof:
 
 \begin{enumerate}
 \item Formalizing the leaf interchange did not prove overly tedious. Among our
@@ -2399,20 +2443,24 @@ gone unnoticed for the 56 years since its publication, under the scrutiny of
 leading computer scientists, seem extremely low; and the existence of a Coq
 proof should be sufficient to remove any remaining doubts.
 
-The main contribution of this report was to demonstrate that the textbook proof
-of Huffman's algorithm can be formalized in a straightforward manner using a
-state-of-the-art theorem prover such as Isabelle/HOL. In the process, we
+The main contribution of this report has been to demonstrate that the textbook
+proof of Huffman's algorithm can be formalized in a straightforward manner using
+a state-of-the-art theorem prover such as Isabelle/HOL. In the process, we
 uncovered a few minor snags in the proof given in Cormen et
-al.~\cite{cormen-et-al-2001}. Concerning Isabelle, the main lesson to draw from
-the Huffman proof is that custom induction rules, in combination with suitable
+al.~\cite{cormen-et-al-2001}.
+
+We also found that custom induction rules, in combination with suitable
 simplification rules, greatly help the automatic proof tactics, sometimes
 reducing 30-line proof scripts to one-liners. We successfully applied this
 approach for handling both the ubiquitous ``datatype + well-formedness
 predicate'' combination (@{typ "'a tree"} + @{const consistent}) and functions
 defined by sequential pattern matching (@{const sibling} and
-@{const mergeSibling}).
+@{const mergeSibling}). Our experience suggests that such rules, which are
+uncommon in formalizations, are highly valuable and versatile. Moreover,
+Isabelle's \textit{induct\_scheme} and \textit{lexicographic\_order} tactics
+make these easy to prove.
 
-In addition, formalizing the proof of Huffman's algorithm led to a deeper
+Formalizing the proof of Huffman's algorithm also led to a deeper
 understanding of this classic algorithm. Many of the lemmas, notably the leaf
 split commutativity lemma of Section~\ref{leaf-split-commutativity}, have not
 been found in the literature and express fundamental properties of the
@@ -2428,10 +2476,12 @@ remains a suggestion for future work.
 
 A few other directions for future work suggest themselves. First, we could
 formalize some of our hypotheses, notably our restriction to full and
-consistent binary trees. The next step could be to extend the proof's scope to
-to cover @{term encode}/@{term decode} functions and connect prefix code trees
-to prefix codes, as done in the Coq development. Independently, we could
-generalize the development to $n$-ary trees.
+consistent binary trees. The current formalization says nothing about the
+algorithm's application for data compression, so the next step could be to
+extend the proof's scope to cover @{term encode}/@{term decode} functions
+and show that full binary trees are isomorphic to prefix codes, as done in the
+Coq development. Independently, we could generalize the development to $n$-ary
+trees.
 *}
 
 (*<*)
