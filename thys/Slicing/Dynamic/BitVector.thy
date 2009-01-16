@@ -103,7 +103,7 @@ definition bv_less :: "bit_vector \<Rightarrow> bit_vector \<Rightarrow> bool" (
   where "xs \<prec>\<^isub>b ys \<equiv> xs \<preceq>\<^isub>b ys \<and> xs \<noteq> ys"
 
 
-class_interpretation order ["bv_leqs" "bv_less"]
+interpretation order "bv_leqs" "bv_less"
 proof qed (auto intro: bv_leqs_refl bv_leqs_trans bv_leqs_antisym simp: bv_less_def)
 
 
