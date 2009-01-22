@@ -1,5 +1,5 @@
 (*  Title:       An Isabelle/HOL Formalization of the Textbook Proof of Huffman's Algorithm
-    ID:          $Id: Huffman.thy,v 1.5 2009-01-07 11:01:33 blanchette Exp $
+    ID:          $Id: Huffman.thy,v 1.6 2009-01-22 13:03:46 blanchette Exp $
     Author:      Jasmin Christian Blanchette <blanchette at in.tum.de>, 2008
     Maintainer:  Jasmin Christian Blanchette <blanchette at in.tum.de>
 *)
@@ -469,6 +469,21 @@ apply induct_scheme
         apply fastsimp
        apply fastsimp
 by lexicographic_order
+
+text {*
+The \textit{induct\_scheme} tactic reduces the putative induction rule to
+simpler proof obligations.
+Internally, it reuses the machinery that constructs the default induction
+rules. The resulting proof obligations concern (a)~case completeness,
+(b)~invariant preservation (in our case, tree consistency), and
+(c)~wellfoundedness. For @{thm [source] tree_induct_consistent}, the obligations
+(a)~and (b) can be discharged using
+Isabelle's simplifier and classical reasoner, whereas (c) requires a single
+invocation of \textit{lexicographic\_order}, a tactic that was originally
+designed to prove termination of recursive functions
+\cite{bulwahn-et-al-2007,krauss-2007,krauss-2009}.
+
+*}
 
 subsection {* Symbol Depths *}
 
@@ -998,8 +1013,8 @@ fun sibling :: "'a tree \<Rightarrow> 'a \<Rightarrow> 'a" where
 
 text {*
 Because @{const sibling} is defined using sequential pattern matching
-\cite{krauss-2007}, reasoning about it can become tedious. Simplification rules
-therefore play an important role.
+\cite{krauss-2007,krauss-2009}, reasoning about it can become tedious.
+Simplification rules therefore play an important role.
 *}
 
 lemma notin_alphabet_imp_sibling_id [simp]:
@@ -2444,7 +2459,7 @@ leading computer scientists, seem extremely low; and the existence of a Coq
 proof should be sufficient to remove any remaining doubts.
 
 The main contribution of this report has been to demonstrate that the textbook
-proof of Huffman's algorithm can be formalized in a straightforward manner using
+proof of Huffman's algorithm can be elegantly formalized using
 a state-of-the-art theorem prover such as Isabelle/HOL. In the process, we
 uncovered a few minor snags in the proof given in Cormen et
 al.~\cite{cormen-et-al-2001}.
