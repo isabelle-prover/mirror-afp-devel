@@ -1,5 +1,5 @@
 (*  Title:       An Isabelle/HOL Formalization of the Textbook Proof of Huffman's Algorithm
-    ID:          $Id: Huffman.thy,v 1.6 2009-01-22 13:03:46 blanchette Exp $
+    ID:          $Id: Huffman.thy,v 1.7 2009-01-23 09:30:38 blanchette Exp $
     Author:      Jasmin Christian Blanchette <blanchette at in.tum.de>, 2008
     Maintainer:  Jasmin Christian Blanchette <blanchette at in.tum.de>
 *)
@@ -59,8 +59,8 @@ we need at least 16~bits to encode `$\xabacabad$'.
 subsection {* Binary Trees *}
 
 text {*
-Inside a program, binary codes like $C_1$ and $C_2$ can be represented by
-binary trees. For example, the trees\strut
+Inside a program, binary codes can be represented by binary trees. For example,
+the trees\strut
 $$\vcenter{\hbox{\includegraphics[scale=1.25]{tree-abcd-unbalanced.pdf}}}
   \qquad \hbox{and} \qquad
   \vcenter{\hbox{\includegraphics[scale=1.25]{tree-abcd-balanced.pdf}}}$$
@@ -396,7 +396,7 @@ A tree is {\sl consistent\/} if for each inner node the alphabets of the two
 subtrees are disjoint. Intuitively, this means that every symbol in the
 alphabet occurs in exactly one leaf node. Consistency is a sufficient condition
 for $\delta_a$ (the length of the {\sl unique\/} code word for $a$) to be
-defined. Although this well-formedness property isn't mentioned in algorithms
+defined. Although this well\-formed\-ness property isn't mentioned in algorithms
 textbooks \cite{aho-et-al-1983,cormen-et-al-2001,knuth-1997}, it is essential
 and appears as an assumption in many of our lemmas.
 *}
@@ -515,10 +515,10 @@ subsection {* Height *}
 
 text {*
 The {\sl height\/} of a tree is the length of the longest path from the root to
-a leaf node. This is readily generalized to forests by taking the maximum of
-the trees' heights. Note that a tree has height 0 if and only if it is a leaf
-node, and that a forest has height 0 if and only if all its trees are leaf
-nodes.
+a leaf node, or equivalently the length of the longest code word. This is
+readily generalized to forests by taking the maximum of the trees' heights. Note
+that a tree has height 0 if and only if it is a leaf node, and that a forest has
+height 0 if and only if all its trees are leaf nodes.
 *}
 
 primrec height :: "'a tree \<Rightarrow> nat" where
@@ -638,9 +638,9 @@ by (auto simp: disjoint_iff_not_equal)
 
 text {*
 Two trees are {\em comparable} if they have the same alphabet and symbol
-frequencies. This is an important concept, because it allows us to state that
-the tree constructed by Huffman's algorithm not only is optimal but also that it
-has the expected alphabet and frequencies.
+frequencies. This is an important concept, because it allows us to state not
+only that the tree constructed by Huffman's algorithm is optimal but also that
+it has the expected alphabet and frequencies.
 
 We close this section with a more technical lemma.
 *}
@@ -2411,7 +2411,7 @@ proof:
 
 \item The informal proof relies on the notion of depth of a node. Defining this
       notion formally is problematic, because the depth can only be seen as a
-      function if the tree is composed of distinct subtrees.
+      function if the tree is composed of distinct nodes.
 \end{enumerate}
 
 To circumvent these difficulties, Th\'ery introduced the ingenious concept of
@@ -2467,7 +2467,7 @@ al.~\cite{cormen-et-al-2001}.
 We also found that custom induction rules, in combination with suitable
 simplification rules, greatly help the automatic proof tactics, sometimes
 reducing 30-line proof scripts to one-liners. We successfully applied this
-approach for handling both the ubiquitous ``datatype + well-formedness
+approach for handling both the ubiquitous ``datatype + well\-formed\-ness
 predicate'' combination (@{typ "'a tree"} + @{const consistent}) and functions
 defined by sequential pattern matching (@{const sibling} and
 @{const mergeSibling}). Our experience suggests that such rules, which are
