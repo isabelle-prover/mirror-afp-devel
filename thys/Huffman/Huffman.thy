@@ -1,5 +1,5 @@
 (*  Title:       An Isabelle/HOL Formalization of the Textbook Proof of Huffman's Algorithm
-    ID:          $Id: Huffman.thy,v 1.7 2009-01-23 09:30:38 blanchette Exp $
+    ID:          $Id: Huffman.thy,v 1.8 2009-01-23 14:15:07 blanchette Exp $
     Author:      Jasmin Christian Blanchette <blanchette at in.tum.de>, 2008
     Maintainer:  Jasmin Christian Blanchette <blanchette at in.tum.de>
 *)
@@ -438,8 +438,8 @@ custom induction rule. This saves us from writing repetitive proof scripts and
 helps Isabelle's automatic proof tactics.
 *}
 
-lemma tree_induct_consistent:
-"\<lbrakk>\<And>t a. \<not> consistent t \<Longrightarrow> P t a;
+lemma tree_induct_consistent [consumes 1, case_names base step\<^isub>1 step\<^isub>2 step\<^isub>3]:
+"\<lbrakk>consistent t;
   \<And>w\<^isub>b b a. P (Leaf w\<^isub>b b) a;
   \<And>w t\<^isub>1 t\<^isub>2 a.
      \<lbrakk>consistent t\<^isub>1; consistent t\<^isub>2; alphabet t\<^isub>1 \<inter> alphabet t\<^isub>2 = {};
@@ -463,6 +463,7 @@ a standard structural induction on @{term t} and proceed by cases, which is
 straightforward but long-winded.
 *}
 
+apply rotate_tac
 apply induct_scheme
        apply atomize_elim
        apply (case_tac t)
@@ -482,7 +483,6 @@ Isabelle's simplifier and classical reasoner, whereas (c) requires a single
 invocation of \textit{lexicographic\_order}, a tactic that was originally
 designed to prove termination of recursive functions
 \cite{bulwahn-et-al-2007,krauss-2007,krauss-2009}.
-
 *}
 
 subsection {* Symbol Depths *}
@@ -1111,8 +1111,9 @@ consistent trees, the main difference being that we now have two induction
 steps instead of one.
 *}
 
-lemma sibling_induct_consistent:
-"\<lbrakk>\<And>t a. \<not> consistent t \<Longrightarrow> P t a;
+lemma sibling_induct_consistent
+          [consumes 1, case_names base step\<^isub>1 step\<^isub>2\<^isub>1 step\<^isub>2\<^isub>2 step\<^isub>2\<^isub>3]:
+"\<lbrakk>consistent t;
   \<And>w b a. P (Leaf w b) a;
   \<And>w w\<^isub>b b w\<^isub>c c a. b \<noteq> c \<Longrightarrow> P (InnerNode w (Leaf w\<^isub>b b) (Leaf w\<^isub>c c)) a;
   \<And>w t\<^isub>1 t\<^isub>2 a.
@@ -1132,6 +1133,7 @@ lemma sibling_induct_consistent:
       height t\<^isub>1 > 0 \<or> height t\<^isub>2 > 0; a \<notin> alphabet t\<^isub>1; a \<notin> alphabet t\<^isub>2\<rbrakk> \<Longrightarrow>
      P (InnerNode w t\<^isub>1 t\<^isub>2) a\<rbrakk> \<Longrightarrow>
  P t a"
+apply rotate_tac
 apply induct_scheme
    apply atomize_elim
    apply (case_tac t, simp)
@@ -1160,7 +1162,7 @@ lemma sibling_reciprocal:
 by auto
 
 lemma depth_height_imp_sibling_ne:
-"\<lbrakk>depth t a = height t; consistent t; height t > 0; a \<in> alphabet t\<rbrakk> \<Longrightarrow>
+"\<lbrakk>consistent t; depth t a = height t; height t > 0; a \<in> alphabet t\<rbrakk> \<Longrightarrow>
  sibling t a \<noteq> a"
 by (induct t a rule: sibling_induct_consistent) auto
 
@@ -1268,44 +1270,41 @@ lemma weight_swapLeaves:
    else
      weight (swapLeaves t w\<^isub>a a w\<^isub>b b) = weight t"
 proof (induct t a rule: tree_induct_consistent)
-  -- {* \sc Consistency check *}
-  case 1 thus ?case by simp
-next
   -- {* {\sc Base case:}\enspace $t = @{term "Leaf w b"}$ *}
-  case 2 thus ?case by clarsimp
+  case base thus ?case by clarsimp
 next
   -- {* {\sc Induction step:}\enspace $t = @{term "InnerNode w t\<^isub>1 t\<^isub>2"}$ *}
   -- {* {\sc Subcase 1:}\enspace $a$ belongs to @{term t\<^isub>1} but not to
         @{term t\<^isub>2} *}
-  case (3 w t\<^isub>1 t\<^isub>2 a) show ?case
+  case (step\<^isub>1 w t\<^isub>1 t\<^isub>2 a) show ?case
   proof cases
     assume "b \<in> alphabet t\<^isub>1"
-    moreover hence "b \<notin> alphabet t\<^isub>2" using 3 by auto
-    ultimately show ?case using 3 by simp
+    moreover hence "b \<notin> alphabet t\<^isub>2" using step\<^isub>1 by auto
+    ultimately show ?case using step\<^isub>1 by simp
   next
-    assume "b \<notin> alphabet t\<^isub>1" thus ?case using 3 by auto
+    assume "b \<notin> alphabet t\<^isub>1" thus ?case using step\<^isub>1 by auto
   qed
 next
   -- {* {\sc Subcase 2:}\enspace $a$ belongs to @{term t\<^isub>2} but not to
         @{term t\<^isub>1} *}
-  case (4 w t\<^isub>1 t\<^isub>2 a) show ?case
+  case (step\<^isub>2 w t\<^isub>1 t\<^isub>2 a) show ?case
   proof cases
     assume "b \<in> alphabet t\<^isub>1"
-    moreover hence "b \<notin> alphabet t\<^isub>2" using 4 by auto
-    ultimately show ?case using 4 by simp
+    moreover hence "b \<notin> alphabet t\<^isub>2" using step\<^isub>2 by auto
+    ultimately show ?case using step\<^isub>2 by simp
   next
-    assume "b \<notin> alphabet t\<^isub>1" thus ?case using 4 by auto
+    assume "b \<notin> alphabet t\<^isub>1" thus ?case using step\<^isub>2 by auto
   qed
 next
   -- {* {\sc Subcase 3:}\enspace $a$ belongs to neither @{term t\<^isub>1} nor
         @{term t\<^isub>2} *}
-  case (5 w t\<^isub>1 t\<^isub>2 a) show ?case
+  case (step\<^isub>3 w t\<^isub>1 t\<^isub>2 a) show ?case
   proof cases
     assume "b \<in> alphabet t\<^isub>1"
-    moreover hence "b \<notin> alphabet t\<^isub>2" using 5 by auto
-    ultimately show ?case using 5 by simp
+    moreover hence "b \<notin> alphabet t\<^isub>2" using step\<^isub>3 by auto
+    ultimately show ?case using step\<^isub>3 by simp
   next
-    assume "b \<notin> alphabet t\<^isub>1" thus ?case using 5 by auto
+    assume "b \<notin> alphabet t\<^isub>1" thus ?case using step\<^isub>3 by auto
   qed
 qed
 
@@ -1751,9 +1750,8 @@ lemma freq_mergeSibling:
      (\<lambda>c. if c = a then freq t a + freq t (sibling t a)
           else if c = sibling t a then 0
           else freq t c)"
-apply (rule ext)
-apply (induct t a rule: mergeSibling_induct_consistent)
-by auto
+by (induct t a rule: mergeSibling_induct_consistent)
+   (auto simp: expand_fun_eq)
 
 lemma weight_mergeSibling [simp]:
 "weight (mergeSibling t a) = weight t"
@@ -1825,9 +1823,7 @@ lemma freq_splitLeaf [simp]:
         (\<lambda>c. if c = a then w\<^isub>a else if c = b then w\<^isub>b else freq t c)
       else
         freq t)"
-apply (rule ext)
-apply (induct t b rule: tree_induct_consistent)
-by auto
+by (induct t b rule: tree_induct_consistent) (rule ext, auto)+
 
 lemma weight_splitLeaf [simp]:
 "\<lbrakk>consistent t; a \<in> alphabet t; freq t a = w\<^isub>a + w\<^isub>b\<rbrakk> \<Longrightarrow>
@@ -2089,7 +2085,7 @@ proof (unfold optimum_def, clarify)
     from exists_at_height [OF c\<^isub>u]
     obtain c where a\<^isub>c: "c \<in> alphabet u" and d\<^isub>c: "depth u c = height u" ..
     let ?d = "sibling u c"
-    have dc: "?d \<noteq> c" using d\<^isub>c c\<^isub>u h\<^isub>u a\<^isub>c by (rule depth_height_imp_sibling_ne)
+    have dc: "?d \<noteq> c" using d\<^isub>c c\<^isub>u h\<^isub>u a\<^isub>c by (metis depth_height_imp_sibling_ne)
     have a\<^isub>d: "?d \<in> alphabet u" using dc
       by (rule sibling_ne_imp_sibling_in_alphabet)
     have d\<^isub>d: "depth u ?d = height u" using d\<^isub>c c\<^isub>u by simp
