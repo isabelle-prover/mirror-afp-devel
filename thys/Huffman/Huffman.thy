@@ -1,5 +1,5 @@
 (*  Title:       An Isabelle/HOL Formalization of the Textbook Proof of Huffman's Algorithm
-    ID:          $Id: Huffman.thy,v 1.8 2009-01-23 14:15:07 blanchette Exp $
+    ID:          $Id: Huffman.thy,v 1.9 2009-01-23 14:17:27 blanchette Exp $
     Author:      Jasmin Christian Blanchette <blanchette at in.tum.de>, 2008
     Maintainer:  Jasmin Christian Blanchette <blanchette at in.tum.de>
 *)
@@ -416,9 +416,6 @@ Several of our proofs are by structural induction on consistent trees $t$ and
 involve one symbol $a$. These proofs typically distinguish the following cases.
 
 \begin{myitemize}
-\item[] {\sc Consistency check:}\enspace The property holds if $t$ is
-        inconsistent. (This is always the case when @{prop "consistent t"}
-        occurs among the property's assumptions.)
 \item[] {\sc Base case:}\enspace $t = @{term "Leaf w b"}$.
 \item[] {\sc Induction step:}\enspace $t = @{term "InnerNode w t\<^isub>1 t\<^isub>2"}$.
 \item[] \noindent\kern\leftmargin {\sc Subcase 1:}\enspace $a$ belongs to
@@ -430,8 +427,8 @@ involve one symbol $a$. These proofs typically distinguish the following cases.
 \end{myitemize}
 
 \noindent
-Thanks to the consistency check, we can rule out the subcase where $a$ belongs
-to both subtrees.
+Thanks to the consistency assumption, we can rule out the subcase where $a$
+belongs to both subtrees.
 
 Instead of performing the above case distinction manually, we encode it in a
 custom induction rule. This saves us from writing repetitive proof scripts and
@@ -1087,8 +1084,6 @@ These observations lead us to develop a custom induction rule that
 distinguishes the following cases.
 
 \begin{myitemize}
-\item[] {\sc Consistency check:}\enspace The property holds if $t$ is
-        inconsistent.
 \item[] {\sc Base case:}\enskip $t = @{term "Leaf w b"}$.
 \item[] {\sc Induction step 1:}\enskip
         $t = @{term "InnerNode w (Leaf w\<^isub>b b) (Leaf w\<^isub>c c)"}$ with
