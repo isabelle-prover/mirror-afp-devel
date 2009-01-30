@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEpres.thy,v 1.6 2008-06-12 06:57:24 lsf37 Exp $
+(*  ID:         $Id: QEpres.thy,v 1.7 2009-01-30 14:15:31 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -15,6 +15,21 @@ fun hd_coeff1 :: "int \<Rightarrow> atom \<Rightarrow> atom" where
    (let m' = m div k in Dvd (m'*d) (m'*i) (1 # (m' *\<^sub>s ks)))" |
 "hd_coeff1 m (NDvd d i (k#ks)) =
    (let m' = m div k in NDvd (m'*d) (m'*i) (1 # (m' *\<^sub>s ks)))"
+
+text{* The def of @{const hd_coeff1} on @{const Dvd} and @{const NDvd} is
+different from the @{const Le} because it allows the resulting head
+coefficient to be 1 rather than 1 or -1. We show that the other version has
+the same semantics: *}
+
+lemma "\<lbrakk> k \<noteq> 0; k dvd m \<rbrakk> \<Longrightarrow>
+  I\<^isub>Z (hd_coeff1 m (Dvd d i (k#ks))) (x#e) = (let m' = m div (abs k) in
+  I\<^isub>Z (Dvd (m'*d) (m'*i) (sgn k # (m' *\<^sub>s ks))) (x#e))"
+apply(auto simp:algebra_simps abs_if sgn_if)
+ apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
+ apply (metis diff_minus comm_monoid_add.mult_left_commute dvd_minus_iff minus_add_distrib)
+apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
+apply (metis diff_minus comm_monoid_add.mult_left_commute dvd_minus_iff minus_add_distrib)
+done
 
 (* all hd-coeffs are nonzero! *)
 definition
@@ -36,14 +51,14 @@ proof(induct a)
     have "k*(x*?d) = (sgn k * abs k) * (x * ?d)" by(simp only: mult_sgn_abs)
     also have "\<dots> = sgn k * x * (abs k * ?d)" by simp
     also have "\<dots> = sgn k * x * m" using zdvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`]
-      by(simp add:ring_simps)
+      by(simp add:algebra_simps)
     finally show ?thesis .
   qed
   have "I\<^isub>Z (hd_coeff1 m (Le i ks)) (m*x#e) \<longleftrightarrow>
        (i*?d \<le> sgn k * m*x + ?d * \<langle>js,e\<rangle>)"
-    by(simp add: ring_simps iprod_assoc)
+    by(simp add: algebra_simps)
   also have "\<dots> \<longleftrightarrow> ?d*i \<le> ?d * (k*x + \<langle>js,e\<rangle>)" using 1
-    by(simp (no_asm_simp) add:ring_simps)
+    by(simp (no_asm_simp) add:algebra_simps)
   also have "\<dots> \<longleftrightarrow> i \<le> k*x + \<langle>js,e\<rangle>" using `?d>0`
     by(simp add: mult_compare_simps)
   finally show ?case by(simp)
@@ -56,18 +71,18 @@ next
     by(simp add:linorder_not_less zdvd_imp_le)
   have 1: "k*(x*?m') = x * m"
   proof -
-    have "k*(x*?m') = x*(k*?m')" by(simp add:ring_simps)
+    have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
     also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-      by(simp add:ring_simps)
+      by(simp add:algebra_simps)
     finally show ?thesis .
   qed
   have "I\<^isub>Z (hd_coeff1 m (Dvd d i ks)) (m*x#e) \<longleftrightarrow>
        (?m'*d dvd ?m'*i + m*x + ?m' * \<langle>js,e\<rangle>)"
-    by(simp add: ring_simps iprod_assoc)
+    by(simp add: algebra_simps)
   also have "\<dots> \<longleftrightarrow> ?m'*d dvd ?m' * (i + k*x + \<langle>js,e\<rangle>)" using 1
-    by(simp (no_asm_simp) add:ring_simps)
+    by(simp (no_asm_simp) add:algebra_simps)
   also have "\<dots> \<longleftrightarrow> d dvd i + k*x + \<langle>js,e\<rangle>" using `?m'\<noteq>0` by(simp)
-  finally show ?case by(simp add:ring_simps)
+  finally show ?case by(simp add:algebra_simps)
 next
   case (NDvd d i ks)
   then obtain k js where [simp]: "ks = k#js" by(auto split:list.splits)
@@ -77,18 +92,18 @@ next
     by(simp add:linorder_not_less zdvd_imp_le)
   have 1: "k*(x*?m') = x * m"
   proof -
-    have "k*(x*?m') = x*(k*?m')" by(simp add:ring_simps)
+    have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
     also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-      by(simp add:ring_simps)
+      by(simp add:algebra_simps)
     finally show ?thesis .
   qed
   have "I\<^isub>Z (hd_coeff1 m (NDvd d i ks)) (m*x#e) \<longleftrightarrow>
        \<not>(?m'*d dvd ?m'*i + m*x + ?m' * \<langle>js,e\<rangle>)"
-    by(simp add: ring_simps iprod_assoc)
+    by(simp add: algebra_simps)
   also have "\<dots> \<longleftrightarrow> \<not> ?m'*d dvd ?m' * (i + k*x + \<langle>js,e\<rangle>)" using 1
-    by(simp (no_asm_simp) add:ring_simps)
+    by(simp (no_asm_simp) add:algebra_simps)
   also have "\<dots> \<longleftrightarrow> \<not> d dvd i + k*x + \<langle>js,e\<rangle>" using `?m'\<noteq>0` by(simp)
-  finally show ?case by(simp add:ring_simps)
+  finally show ?case by(simp add:algebra_simps)
 qed
 
 lemma I_hd_coeffs1:
@@ -248,7 +263,7 @@ proof -
 	  moreover have "(n - ?m) mod ?lcm < ?lcm"
 	    by(simp add: pos_mod_bound[OF zlcms_pos] norm)
 	  ultimately show "I\<^isub>Z a (?x#xs)"
-	    by(simp add:zmult_div_cancel ring_simps)
+	    by(simp add:zmult_div_cancel algebra_simps)
 	qed
 	moreover
 	have "set as = ?Ds \<union> ?Us" using as `?Ls = {}`

@@ -1,4 +1,4 @@
-(*  ID:         $Id: Cooper.thy,v 1.2 2008-01-11 15:22:14 lsf37 Exp $
+(*  ID:         $Id: Cooper.thy,v 1.3 2009-01-30 14:15:31 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -59,14 +59,14 @@ proof(induct \<phi>)
 	    by(simp only: mult_sgn_abs)
 	  also have "\<dots> = sgn k * x * (abs k * ?m')" by simp
 	  also have "\<dots> = sgn k * x * m"
-	    using zdvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:ring_simps)
+	    using zdvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:algebra_simps)
 	  finally show ?thesis .
 	qed
 	have "I\<^isub>Z (hd_coeff1 m a) (m*x#xs) \<longleftrightarrow>
               (i*?m' \<le> sgn k * m*x + ?m' * \<langle>ks',xs\<rangle>)"
-	  using `k\<noteq>0` by(simp add: ring_simps iprod_assoc)
+	  using `k\<noteq>0` by(simp add: algebra_simps)
 	also have "\<dots> \<longleftrightarrow> ?m'*i \<le> ?m' * (k*x + \<langle>ks',xs\<rangle>)" using 1
-	  by(simp (no_asm_simp) add:ring_simps)
+	  by(simp (no_asm_simp) add:algebra_simps)
 	also have "\<dots> \<longleftrightarrow> i \<le> k*x + \<langle>ks',xs\<rangle>" using `?m'>0`
 	  by(simp add: mult_compare_simps)
 	finally show ?thesis by(simp)
@@ -90,18 +90,18 @@ proof(induct \<phi>)
 	  by(simp add:linorder_not_less zdvd_imp_le)
 	have 1: "k*(x*?m') = x * m"
 	proof -
-	  have "k*(x*?m') = x*(k*?m')" by(simp add:ring_simps)
+	  have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
 	  also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-	    by(simp add:ring_simps)
+	    by(simp add:algebra_simps)
 	  finally show ?thesis .
 	qed
 	have "I\<^isub>Z (hd_coeff1 m a) (m*x#xs) \<longleftrightarrow>
               (?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
-	  using `k\<noteq>0` by(simp add: ring_simps iprod_assoc)
+	  using `k\<noteq>0` by(simp add: algebra_simps)
 	also have "\<dots> \<longleftrightarrow> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
-	  by(simp (no_asm_simp) add:ring_simps)
+	  by(simp (no_asm_simp) add:algebra_simps)
 	also have "\<dots> \<longleftrightarrow> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
-	finally show ?thesis by(simp add:ring_simps)
+	finally show ?thesis by(simp add:algebra_simps)
       qed
     qed
   next
@@ -122,18 +122,18 @@ proof(induct \<phi>)
 	  by(simp add:linorder_not_less zdvd_imp_le)
 	have 1: "k*(x*?m') = x * m"
 	proof -
-	  have "k*(x*?m') = x*(k*?m')" by(simp add:ring_simps)
+	  have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
 	  also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-	    by(simp add:ring_simps)
+	    by(simp add:algebra_simps)
 	  finally show ?thesis .
 	qed
 	have "I\<^isub>Z (hd_coeff1 m a) (m*x#xs) \<longleftrightarrow>
               \<not>(?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
-	  using `k\<noteq>0` by(simp add: ring_simps iprod_assoc)
+	  using `k\<noteq>0` by(simp add: algebra_simps)
 	also have "\<dots> \<longleftrightarrow> \<not> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
-	  by(simp (no_asm_simp) add:ring_simps)
+	  by(simp (no_asm_simp) add:algebra_simps)
 	also have "\<dots> \<longleftrightarrow> \<not> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
-	finally show ?thesis by(simp add:ring_simps)
+	finally show ?thesis by(simp add:algebra_simps)
       qed
     qed
   qed
@@ -221,11 +221,11 @@ proof(induct \<phi> rule:min_inf.induct)
       proof -
 	have "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
-	  by(simp add: ring_simps)
+	  by(simp add: algebra_simps)
 	also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
 	  by (metis zdvd_zdiff zdvd_zdiffD zdvd_zmult zmult_commute)
 	also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
-	  by(simp add: ring_simps)
+	  by(simp add: algebra_simps)
 	finally show ?thesis .
       qed
       then show ?thesis using Cons by (simp add:ring_distribs)
@@ -249,11 +249,11 @@ next
       proof -
 	have "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
-	  by(simp add: ring_simps)
+	  by(simp add: algebra_simps)
 	also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
 	  by (metis zdvd_zdiff zdvd_zdiffD zdvd_zmult zmult_commute)
 	also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
-	  by(simp add: ring_simps)
+	  by(simp add: algebra_simps)
 	finally show ?thesis .
       qed
       then show ?thesis using Cons by (simp add:ring_distribs)
@@ -303,7 +303,7 @@ proof(induct \<phi>)
 	  assume ?L
 	  hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d"
 	    by (metis `m dvd d` zdvd_zdiff)
-	  thus ?thesis by(simp add:ring_simps)
+	  thus ?thesis by(simp add:algebra_simps)
 	qed
 	thus ?thesis using Atom Dvd Cons by(auto split:split_if_asm)
       qed
@@ -325,7 +325,7 @@ proof(induct \<phi>)
 	  (is "?L \<Longrightarrow> _")
 	proof -
 	  assume ?L
-	  hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d" by(simp add:ring_simps)
+	  hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d" by(simp add:algebra_simps)
 	  thus ?thesis by (metis `m dvd d` zdvd_zdiffD)
 	qed
 	thus ?thesis using Atom NDvd Cons by(auto split:split_if_asm)
@@ -410,7 +410,7 @@ proof -
   have alld: "\<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). divisor a dvd ?d" by(simp add:dvd_zlcms)
   from cp_thm[OF `nqfree \<phi>` hd alld `?d>0`]
   show ?thesis using `nqfree \<phi>`
-    by (simp add:cooper\<^isub>1_def I_subst[symmetric] split_def ring_simps) blast
+    by (simp add:cooper\<^isub>1_def I_subst[symmetric] split_def algebra_simps) blast
 qed
 
 lemma divisor_hd_coeff1_neq0:

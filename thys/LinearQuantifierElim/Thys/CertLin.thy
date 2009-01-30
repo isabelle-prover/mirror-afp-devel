@@ -1,4 +1,4 @@
-(*  ID:         $Id: CertLin.thy,v 1.3 2008-06-10 13:31:19 fhaftmann Exp $
+(*  ID:         $Id: CertLin.thy,v 1.4 2009-01-30 14:15:31 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 
 A simple certificate checker for q-free linear arithmetic:
@@ -80,11 +80,11 @@ by simp
 
 lemma I_R_mult_atom: "c \<ge> 0 \<Longrightarrow> I\<^isub>R a xs \<Longrightarrow> I\<^isub>R (c *\<^sub>a a) xs"
 apply(cases a)
- apply(clarsimp simp:iprod_assoc)
+ apply(clarsimp)
  apply(rule real_mult_less_mono2)
   apply arith
  apply simp
-apply(simp add:iprod_assoc)
+apply(simp)
 done
 
 lemma I_R_iprod_a:

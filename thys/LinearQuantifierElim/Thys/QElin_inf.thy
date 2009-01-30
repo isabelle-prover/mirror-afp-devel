@@ -1,4 +1,4 @@
-(*  ID:         $Id: QElin_inf.thy,v 1.8 2008-06-12 06:57:24 lsf37 Exp $
+(*  ID:         $Id: QElin_inf.thy,v 1.9 2009-01-30 14:15:31 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -127,9 +127,9 @@ next
       have "s < d*x + \<langle>ds,xs\<rangle>" using Atom 1 by simp
       moreover have "d*x < d*(r + \<langle>cs,xs\<rangle>)" using `d<0` Atom 1
 	by (simp add: mult_strict_left_mono_neg)
-      ultimately have "s < d * (r + \<langle>cs,xs\<rangle>) + \<langle>ds,xs\<rangle>" by(simp add:ring_simps)
+      ultimately have "s < d * (r + \<langle>cs,xs\<rangle>) + \<langle>ds,xs\<rangle>" by(simp add:algebra_simps)
       hence ?thesis using 1
-	by (auto simp add: iprod_left_add_distrib iprod_assoc ring_simps)
+	by (auto simp add: iprod_left_add_distrib algebra_simps)
     } moreover
     { let ?L = "(s - \<langle>ds,xs\<rangle>) / d" let ?U = "r + \<langle>cs,xs\<rangle>"
       assume "d>0"
@@ -139,7 +139,7 @@ next
       hence "?L < ?U \<or> ?L = ?U"
 	by(metis linorder_neqE_ordered_idom real_le_refl)
       hence ?thesis using Atom 1 `d>0`
-	by (simp add: iprod_left_add_distrib iprod_assoc field_simps)
+	by (simp add: iprod_left_add_distrib field_simps)
     } ultimately show ?thesis by force
   next
     case 2 thus ?thesis using Atom
@@ -164,7 +164,7 @@ next
     moreover
     { assume "d<0"
       with Atom 1 have "r + \<langle>cs,xs\<rangle> < (s - \<langle>ds,xs\<rangle>)/d" (is "?a < ?b")
-	by(simp add:field_simps iprod_left_add_distrib iprod_assoc)
+	by(simp add:field_simps iprod_left_add_distrib)
       then obtain x where "?a < x" "x < ?b" by(metis dense)
       hence " \<forall>y. ?a < y \<and> y \<le> x \<longrightarrow> s < d*y + \<langle>ds,xs\<rangle>"
 	using `d<0` by (simp add:field_simps)
@@ -178,19 +178,18 @@ next
       proof
 	assume "?a = ?b"
 	thus ?thesis using `d>0` Atom 1
-	  by(simp add:field_simps iprod_left_add_distrib iprod_assoc)
-	    (metis ordered_semidom_class.less_add_one real_mult_commute
-	      real_mult_less_mono2 ring_class.ring_simps(12))
+	  by(simp add:field_simps iprod_left_add_distrib)
+            (metis add_0_left add_less_cancel_right right_distrib real_mult_commute real_mult_less_mono2)
       next
 	assume "?a < ?b"
 	{ fix x assume "r+\<langle>cs,xs\<rangle> < x \<and> x \<le> r+\<langle>cs,xs\<rangle> + 1"
 	  hence "d*(r + \<langle>cs,xs\<rangle>) < d*x"
 	    using `d>0` by(metis real_mult_less_mono2)
 	  hence "s < d*x + \<langle>ds,xs\<rangle>" using `d>0` `?a < ?b`
-	    by (simp add:ring_simps iprod_left_add_distrib iprod_assoc)
+	    by (simp add:algebra_simps iprod_left_add_distrib)
 	}
 	thus ?thesis using 1 `d>0`
-	  by(force simp: iprod_left_add_distrib iprod_assoc)
+	  by(force simp: iprod_left_add_distrib)
       qed
     } ultimately show ?thesis by (metis less_linear)
   qed (insert Atom, auto split:split_if_asm intro: ordered_semidom_class.less_add_one)
@@ -242,7 +241,7 @@ proof
            "\<not> R.I (inf\<^isub>- f) xs"
     with `?QE` `nqfree f` obtain r cs where "R.I (subst\<^isub>+ f (r,cs)) xs"
       by(fastsimp simp:eps\<^isub>1_def set_ebounds diff_divide_distrib eval_def
-	iprod_assoc diff_minus[symmetric] I_subst `nqfree f`)
+	diff_minus[symmetric] I_subst `nqfree f`)
     then obtain leps where "R.I f (leps#xs)"
       using I_subst_peps[OF `nqfree f`] by fastsimp
     hence ?EX .. }
@@ -260,7 +259,7 @@ next
     and "\<forall>rcs \<in> set ?ebs. \<not> R.I (subst f rcs) xs"
     hence noE: "\<forall>e \<in> EQ f xs. \<not> R.I f (e#xs)" using `nqfree f`
       by (force simp:set_ebounds I_subst diff_divide_distrib eval_def
-	iprod_assoc diff_minus[symmetric] split:split_if_asm)
+	diff_minus[symmetric] split:split_if_asm)
     hence "x \<notin> EQ f xs" using x by fastsimp
     obtain l where "l \<in> LB f xs" "l < x"
       using LBex[OF `nqfree f` x `\<not> R.I(inf\<^isub>- f) xs` `x \<notin> EQ f xs`] ..
@@ -275,7 +274,7 @@ next
       by blast
     then moreover have "R.I (subst\<^isub>+ f (r/c, (-1/c) *\<^sub>s cs)) xs" using noE
       by(auto intro!: I_subst_peps2[OF `nqfree f`]
-	simp:EQ2_def diff_divide_distrib iprod_assoc ring_simps)
+	simp:EQ2_def diff_divide_distrib algebra_simps)
     ultimately have ?QE
       by(simp add:eps\<^isub>1_def bex_Un set_lbounds) metis
   } ultimately show ?QE by blast

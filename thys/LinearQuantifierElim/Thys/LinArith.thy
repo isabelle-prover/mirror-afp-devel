@@ -1,4 +1,4 @@
-(*  ID:         $Id: LinArith.thy,v 1.6 2008-12-30 15:30:13 ballarin Exp $
+(*  ID:         $Id: LinArith.thy,v 1.7 2009-01-30 14:15:31 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -7,6 +7,8 @@ header{* Linear real arithmetic *}
 theory LinArith
 imports QE ListVector Complex_Main
 begin
+
+declare iprod_assoc[simp]
 
 subsection{*Basics*}
 
@@ -128,12 +130,12 @@ lemma I_asubst:
 proof(cases a)
   case (Less r cs)
   thus ?thesis by(cases t, cases cs,
-    simp_all add:eval_def right_distrib iprod_left_add_distrib iprod_assoc)
+    simp_all add:eval_def right_distrib iprod_left_add_distrib)
     arith
 next
   case (Eq r cs)
   thus ?thesis
-    by(cases t, cases cs, simp_all add:eval_def right_distrib iprod_left_add_distrib iprod_assoc)
+    by(cases t, cases cs, simp_all add:eval_def right_distrib iprod_left_add_distrib)
       arith
 qed
 
@@ -326,14 +328,14 @@ declare [[simp_depth_limit = 50]]
 lemma finite_LB: "finite(LB f xs)"
 proof -
   have "LB f xs = (\<lambda>(r,cs). r + \<langle>cs,xs\<rangle>) ` set(lbounds(R.atoms\<^isub>0 f))"
-    by (force simp:set_lbounds image_def field_simps iprod_assoc)
+    by (force simp:set_lbounds image_def field_simps)
   thus ?thesis by simp
 qed
 
 lemma finite_UB: "finite(UB f xs)"
 proof -
   have "UB f xs = (\<lambda>(r,cs). r + \<langle>cs,xs\<rangle>) ` set(ubounds(R.atoms\<^isub>0 f))"
-    by (force simp:set_ubounds image_def field_simps iprod_assoc)
+    by (force simp:set_ubounds image_def field_simps)
   thus ?thesis by simp
 qed
 

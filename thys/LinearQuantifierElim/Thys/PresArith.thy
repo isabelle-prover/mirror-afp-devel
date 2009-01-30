@@ -1,4 +1,4 @@
-(*  ID:         $Id: PresArith.thy,v 1.8 2008-12-30 15:30:13 ballarin Exp $
+(*  ID:         $Id: PresArith.thy,v 1.9 2009-01-30 14:15:31 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -7,6 +7,8 @@ header{* Presburger arithmetic *}
 theory PresArith
 imports GCD QE ListVector
 begin
+
+declare iprod_assoc[simp]
 
 subsection{*Syntax*}
 
@@ -88,11 +90,11 @@ where "subst i ks \<equiv> map\<^bsub>fm\<^esub> (asubst i ks)"
 lemma IZ_asubst: "I\<^isub>Z (asubst i ks a) xs = I\<^isub>Z a ((i + \<langle>ks,xs\<rangle>) # xs)"
 apply (cases a)
 apply (case_tac list)
-apply (simp_all add:ring_simps iprod_assoc iprod_left_add_distrib)
+apply (simp_all add:algebra_simps iprod_left_add_distrib)
 apply (case_tac list)
-apply (simp_all add:ring_simps iprod_assoc iprod_left_add_distrib)
+apply (simp_all add:algebra_simps iprod_left_add_distrib)
 apply (case_tac list)
-apply (simp_all add:ring_simps iprod_assoc iprod_left_add_distrib)
+apply (simp_all add:algebra_simps iprod_left_add_distrib)
 done
 
 lemma I_subst:

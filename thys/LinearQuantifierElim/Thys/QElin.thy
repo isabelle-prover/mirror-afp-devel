@@ -1,4 +1,4 @@
-(*  ID:         $Id: QElin.thy,v 1.3 2008-12-30 15:30:13 ballarin Exp $
+(*  ID:         $Id: QElin.thy,v 1.4 2009-01-30 14:15:31 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -33,7 +33,7 @@ proof
     moreover from `y\<in>?ubs` obtain s ds
       where "(s,ds) \<in> ?Us \<and> y = s + \<langle>ds,xs\<rangle>" by fastsimp
     ultimately show "x<y" using `?L`
-      by(fastsimp simp:qe_less_def ring_simps iprod_left_diff_distrib)
+      by(fastsimp simp:qe_less_def algebra_simps iprod_left_diff_distrib)
   qed
   { assume nonempty: "?lbs \<noteq> {} \<and> ?ubs \<noteq> {}"
     hence "Max ?lbs < Min ?ubs" using fins 1
@@ -41,7 +41,7 @@ proof
     then obtain m where "Max ?lbs < m \<and> m < Min ?ubs"
       using dense[where 'a = real] by blast
     hence "\<forall>a \<in> set as. I\<^isub>R a (m#xs)" using 2 nonempty
-      by (auto simp:Ball_def Bex_def)(fastsimp simp:field_simps iprod_assoc)
+      by (auto simp:Ball_def Bex_def)(fastsimp simp:field_simps)
     hence ?R .. }
   moreover
   { assume asm: "?lbs \<noteq> {} \<and> ?ubs = {}"
@@ -54,7 +54,7 @@ proof
       moreover hence "(r - \<langle>cs,xs\<rangle>)/c \<le> Max ?lbs"
 	using asm fins
 	by(auto intro!: Max_ge_iff[THEN iffD2])
-          (force simp add:field_simps iprod_assoc)
+          (force simp add:field_simps)
       ultimately show "I\<^isub>R a ((Max ?lbs + 1) # xs)" by (simp add: field_simps)
     qed
     hence ?R .. }
@@ -69,7 +69,7 @@ proof
       moreover hence "Min ?ubs \<le> (r - \<langle>cs,xs\<rangle>)/c"
 	using asm fins
 	by(auto intro!: Min_le_iff[THEN iffD2])
-          (force simp add:field_simps iprod_assoc)
+          (force simp add:field_simps)
       ultimately show "I\<^isub>R a ((Min ?ubs - 1) # xs)" by (simp add: field_simps)
     qed
     hence ?R .. }
@@ -89,7 +89,7 @@ next
     hence "(r - \<langle>cs,xs\<rangle>)/c < x" "x < (s - \<langle>ds,xs\<rangle>)/d" by(simp add:field_simps)+
     hence "(r - \<langle>cs,xs\<rangle>)/c < (s - \<langle>ds,xs\<rangle>)/d" by arith
   }
-  thus ?L by (auto simp: qe_less_def iprod_left_diff_distrib iprod_assoc less field_simps set_lbounds set_ubounds)
+  thus ?L by (auto simp: qe_less_def iprod_left_diff_distrib less field_simps set_lbounds set_ubounds)
 qed
 
 corollary I_qe_less_pretty:
@@ -110,7 +110,7 @@ by auto
 lemma I_subst\<^isub>0: "depends\<^isub>R a \<Longrightarrow> c \<noteq> 0 \<Longrightarrow>
        I\<^isub>R (subst\<^isub>0 (Eq r (c#cs)) a) xs = I\<^isub>R a ((r - \<langle>cs,xs\<rangle>)/c # xs)"
 apply(cases a)
-by (auto simp add: depends\<^isub>R_def iprod_assoc iprod_left_diff_distrib ring_simps diff_divide_distrib split:list.splits)
+by (auto simp add: depends\<^isub>R_def iprod_left_diff_distrib algebra_simps diff_divide_distrib split:list.splits)
 
 interpretation R\<^isub>e!:
   ATOM_EQ neg\<^isub>R "(\<lambda>a. True)" I\<^isub>R depends\<^isub>R decr\<^isub>R
@@ -122,7 +122,7 @@ apply(unfold_locales)
  apply(simp split:atom.splits list.splits)
  apply(rename_tac r ds c cs)
  apply(rule_tac x= "(r - \<langle>cs,xs\<rangle>)/c" in exI)
- apply (simp add: ring_simps diff_divide_distrib)
+ apply (simp add: algebra_simps diff_divide_distrib)
 apply(simp add: self_list_diff set_replicate_conv_if
         split:atom.splits list.splits)
 done

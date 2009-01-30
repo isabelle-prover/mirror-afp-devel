@@ -1,4 +1,4 @@
-(*  ID:         $Id: FRE.thy,v 1.3 2009-01-01 22:24:32 makarius Exp $
+(*  ID:         $Id: FRE.thy,v 1.4 2009-01-30 14:15:31 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -138,7 +138,7 @@ proof
             (\<forall>x\<in>EQ \<phi> xs. \<not>R.I \<phi> (x#xs))"
     with `?FR` obtain r cs s ds
       where "R.I (subst \<phi> (between (r,cs) (s,ds))) xs"
-      by(auto simp: FR\<^isub>1_def eval_def iprod_assoc diff_minus[symmetric]
+      by(auto simp: FR\<^isub>1_def eval_def diff_minus[symmetric]
 	diff_divide_distrib set_ebounds	I_subst `nqfree \<phi>`) blast
     hence "R.I \<phi> (eval (between (r,cs) (s,ds)) xs # xs)"
       by(simp add:I_subst `nqfree \<phi>`)
@@ -153,7 +153,7 @@ next
   { assume "x : EQ \<phi> xs"
     then obtain r cs
       where "(r,cs) : set(ebounds(R.atoms\<^isub>0 \<phi>)) \<and> x = r + \<langle>cs,xs\<rangle>"
-      by(force simp:set_ebounds field_simps iprod_assoc)
+      by(force simp:set_ebounds field_simps)
     moreover hence "R.I (subst \<phi> (r,cs)) xs" using x
       by(auto simp: I_subst `nqfree \<phi>` eval_def)
     ultimately have ?FR by(force simp:FR\<^isub>1_def) } moreover
@@ -171,7 +171,7 @@ next
             (\<forall>y. (r - \<langle>cs,xs\<rangle>)/c < y \<and> y < (s - \<langle>ds,xs\<rangle>)/d \<longrightarrow> R.I \<phi> (y#xs))"
       by blast
     moreover hence "(r - \<langle>cs,xs\<rangle>) / c < eval (between (r/c,(-1/c) *\<^sub>s cs) (s/d,(-1/d) *\<^sub>s ds)) xs \<and> eval (between (r/c,(-1/c) *\<^sub>s cs) (s/d,(-1/d) *\<^sub>s ds)) xs < (s - \<langle>ds,xs\<rangle>) / d"
-      apply(auto simp add: field_simps eval_def iprod_left_add_distrib iprod_assoc)
+      apply(auto simp add: field_simps eval_def iprod_left_add_distrib)
        apply(rule real_mult_less_iff1[of 2, THEN iffD1]) apply simp
        apply simp
        apply(rule real_mult_less_iff1[of "-d", THEN iffD1]) apply simp
@@ -179,7 +179,7 @@ next
       apply(rule real_mult_less_iff1[of 2, THEN iffD1]) apply simp
       apply simp
       apply(rule real_mult_less_iff1[of "c", THEN iffD1]) apply simp
-      apply (simp add:ring_simps add_divide_distrib diff_divide_distrib)
+      apply (simp add:algebra_simps add_divide_distrib diff_divide_distrib)
       done
     ultimately have ?FR
       by(fastsimp simp:FR\<^isub>1_def bex_Un set_lbounds set_ubounds set_ebounds I_subst `nqfree \<phi>`)
