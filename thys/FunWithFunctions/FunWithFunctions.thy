@@ -1,5 +1,5 @@
 (*  Title:      Fun With Functions
-    ID:         $Id: FunWithFunctions.thy,v 1.2 2008-08-26 16:37:19 nipkow Exp $
+    ID:         $Id: FunWithFunctions.thy,v 1.3 2009-01-31 11:09:39 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -151,7 +151,7 @@ proof -
   have "real(n)*f(real i/real n) = f(real i + real(n - 1))"
     using `n\<noteq>0` by(simp add:f_mult[symmetric])
   also have "\<dots> = f(real(i + int n - 1))" using `n\<noteq>0`[simplified]
-    by (metis One_nat_def Suc_leI int_1 real_of_int_add real_of_int_of_nat_eq ring_class.ring_simps(4) zdiff_int)
+    by (metis One_nat_def Suc_leI int_1 add_diff_eq real_of_int_add real_of_int_of_nat_eq zdiff_int)
   also have "\<dots> = real(i + int n - 1) + 1" by(rule f_int)
   also have "\<dots> = real i + real n" by arith
   finally show ?thesis using `n\<noteq>0` unfolding r by (simp add:field_simps)
