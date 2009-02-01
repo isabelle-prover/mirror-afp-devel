@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEpres.thy,v 1.7 2009-01-30 14:15:31 nipkow Exp $
+(*  ID:         $Id: QEpres.thy,v 1.8 2009-02-01 12:38:08 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -333,10 +333,9 @@ proof -
 	    have "Le li (1#lks) \<in> set as" using `(li,lks) \<in> set ?lbs` hd
 	      by(auto simp:set_lbounds)
 	    hence "li - \<langle>lks,xs\<rangle> \<le> x" using x by auto
-            moreover hence "(x - ?lm) mod ?lcm \<le> x - ?lm"
+            hence "(x - ?lm) mod ?lcm \<le> x - ?lm"
 	      using lm by(simp add: zmod_le_nonneg_dividend)
-	    ultimately
-	    have ?thesis using `I\<^isub>Z a (x # xs)` lm by auto }
+	    hence ?thesis using `I\<^isub>Z a (x # xs)` lm by auto }
 	  moreover
 	  { assume "a \<in> ?Ds"
 	    have ?thesis
