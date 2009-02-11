@@ -54,7 +54,7 @@ The bibtext entry for this would be:
   publisher =    {\url{http://afp.sf.net/entries/DiskPaxos.shtml}},
   month =        Jun,
   year =         2005,
-  note =         {Formal proof development},
+  note =         {Formal proof development}
 }
 </pre>
 
