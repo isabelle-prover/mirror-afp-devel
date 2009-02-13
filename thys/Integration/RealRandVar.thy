@@ -1,7 +1,7 @@
 header {*Real-Valued Random Variables*}
 
 theory RealRandVar
-imports Measure
+imports Measure Countable
 begin
 
 text {*While most of the above material was modeled after Hurd's work
