@@ -466,8 +466,7 @@ proof -
     obtain k where k:"k = Max ?N'" by simp
     have eq:"{x \<in> ?M. (\<lambda>n'. n strongly-postdominates n') x} = ?M'" by auto
     from valid_edge have "finite ?M" by(simp add:successor_set_finite)
-    hence "finite {x \<in> ?M. (\<lambda>n'. n strongly-postdominates n') x}"
-      by(fastsimp intro:finite_Collect_subset)
+    hence "finite {x \<in> ?M. (\<lambda>n'. n strongly-postdominates n') x}" by simp
     with eq have finM':"finite ?M'" by simp
     from all have "N \<subseteq> ?M'" by auto
     with finM' have "finite N" by(auto intro:finite_subset)
