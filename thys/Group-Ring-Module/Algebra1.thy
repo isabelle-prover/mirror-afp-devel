@@ -4231,18 +4231,7 @@ done
 
 lemma Nset2finite_inj:"\<lbrakk>finite A; card A = Suc n; surj_to f {i. i \<le> n} A \<rbrakk> \<Longrightarrow> 
         inj_on f {i. i \<le> n}"
-apply (rule contrapos_pp, simp+, simp add:inj_on_def,
-       (erule exE)+, erule conjE, erule exE,
-       (erule conjE)+, rename_tac i j)
-apply (frule_tac i = i and n = n and j = j and f = f in Nset2finite_inj_tr1,
-       assumption+,
-       subgoal_tac "f ` ({k. k \<le> n} - {j}) = f ` {k. k \<le> n}", 
-       cut_tac finite_Nset [of "n"],
-       frule_tac Ba = "{j}" in finite_Diff [of "{k. k \<le> n}" ],
-       frule_tac A = "{k. k \<le> n} - {j}" and f = f in card_image_le,
-       simp, simp add:surj_to_def,
-       cut_tac j = j and n = n in Nset2finite_inj_tr0, simp+) 
-done
+by (metis Collect_def card_Nset eq_card_imp_inj_on finite_Nset surj_to_def)
 
 definition
   zmax :: "[int, int] \<Rightarrow> int" where

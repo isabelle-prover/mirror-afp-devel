@@ -1,5 +1,4 @@
-
-(* $Id: Prover.thy,v 1.18 2008-06-21 18:13:21 makarius Exp $ *)
+(* $Id: Prover.thy,v 1.19 2009-02-14 11:06:35 nipkow Exp $ *)
 
 theory Prover imports Main Infinite_Set begin
 
@@ -552,12 +551,8 @@ lemma finite_inc: "finite (inc ` X) = finite X"
   apply(auto) 
   done
 
-lemma finite_deriv_deriv[rule_format]: "finite (deriv s) --> finite  (deriv ` {w. ~is_axiom (s_of_ns s) & w : set (subs s)})"
-  apply(subst deriv) 
-  apply(simp)
-  apply(simp add: finite_inc)
-  apply(cut_tac y=s in finite_subs) apply(force simp: finite_UN)
-  done
+lemma finite_deriv_deriv: "finite (deriv s) ==> finite  (deriv ` {w. ~is_axiom (s_of_ns s) & w : set (subs s)})"
+unfolding deriv by(simp)
 
 definition
   init :: "nseq => bool" where

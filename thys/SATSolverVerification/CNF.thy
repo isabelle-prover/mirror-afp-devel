@@ -1,5 +1,5 @@
 (*    Title:              SATSolver/CNF.thy
-      ID:                 $Id: CNF.thy,v 1.5 2008-11-13 16:09:44 filipmaric Exp $
+      ID:                 $Id: CNF.thy,v 1.6 2009-02-14 11:04:27 nipkow Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -894,8 +894,8 @@ by (auto simp add:inconsistentCharacterization isPrefix_def)
 subsubsection{* Totality of valuations *}
 
 text{* Checks if the valuation contains all the variables from the given set of variables *}
-definition [simp]:
-"total valuation variables == variables \<subseteq> vars valuation"
+definition total where
+[simp]: "total valuation variables == variables \<subseteq> vars valuation"
 
 lemma totalSubset: 
   fixes A :: "Variable set" and B :: "Variable set" and valuation :: "Valuation"
