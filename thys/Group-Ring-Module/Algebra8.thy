@@ -2012,19 +2012,18 @@ apply (cut_tac sc_Ring)
            (\<exists>f. f \<in> {j. j \<le> k} \<rightarrow> A \<and> surj_to f {j. j \<le> k} A)")
  apply (erule exE)
  apply (simp add:surj_to_def, erule conjE) apply (rotate_tac -1) 
- apply (frule sym)
- apply (thin_tac "h ` {j. j \<le> k} = H")
+ apply (drule sym)
 apply (frule_tac f = h and A = "{j. j \<le> k}" and B = "H" and x = k in 
        funcset_mem)
- apply simp 
- apply (simp add:finite_generator_def, (erule conjE)+,
+ apply simp
+ apply (simp add:finite_generator_def,
         simp add:generator_def, erule conjE)
  apply (cut_tac A = "h ` {j. j \<le> k}" and B = "carrier M" and c = "h k" in
    subsetD, assumption, simp)
  apply (frule_tac h = h and n = k and m = "h k" in finite_gen_over_ideal [of 
        "A"]) 
  apply (rule extend_fun, assumption+, simp add:generator_def)
- apply assumption+  
+ apply assumption+
  apply (erule bexE)
  apply (frule_tac f = s and A = "{j. j \<le> k}" and B = A and x = k in 
            funcset_mem, simp, simp add:subsetD)

@@ -1,4 +1,4 @@
-(* $Id: Prover.thy,v 1.19 2009-02-14 11:06:35 nipkow Exp $ *)
+(* $Id: Prover.thy,v 1.20 2009-02-15 15:53:22 nipkow Exp $ *)
 
 theory Prover imports Main Infinite_Set begin
 
@@ -1175,10 +1175,7 @@ lemma finite_deriv: "finite (deriv s) = (\<exists>m. f [s] m = [])"
   apply(subgoal_tac "(UNIV::nat set) = {y. y < m} Un {y. m \<le> y}")
    prefer 2 apply force
   apply(erule_tac t="UNIV::nat set" in ssubst) 
-  apply(simp add: UN_Un)
-  apply(rule)
-   apply(rule finite_UN_I) apply(rule finite_lessThan[simplified lessThan_def])
-   apply(subgoal_tac "finite (set (f [s] x))") apply(force) apply(rule finite_f)
+  apply(simp)
   apply(subgoal_tac "(UN x:Collect (op \<le> m). Pair x ` set (f [s] x)) =  (UN x:Collect (op \<le> m). {})") apply(simp only:) apply(force)
   apply(rule UN_cong) apply(force) apply(drule_tac x="x-m" in spec) apply(force)
   done

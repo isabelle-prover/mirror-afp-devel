@@ -4696,14 +4696,14 @@ apply (rule_tac A = "f ` {j. j \<le> n1}" and n = "card (f `{j. j \<le> n1}) - S
 apply (subgoal_tac "finite (h ` {j. j \<le> (Suc n)})")
 apply (frule_tac f = f and A = "{j. j \<le> n1}" and B = "h ` {j. j \<le> (Suc n)}" 
        in image_sub0, simp)
- apply (frule_tac B = "h ` {j. j \<le> (Suc n)}" and A = "f ` {j. j \<le> n1}" in 
-        card_mono,  assumption+,
+ apply (cut_tac B = "h ` {j. j \<le> (Suc n)}" and A = "f ` {j. j \<le> n1}" in 
+        card_mono, simp,  assumption+,
         insert finite_Nset [of "Suc n"],
         frule card_image_le [of "{j. j \<le> (Suc n)}" "h"],
         frule_tac i = "card (f ` {j. j \<le> n1})" and 
          j = "card (h ` {j. j \<le> (Suc n)})" and k = "card {j. j \<le> (Suc n)}" in
         le_trans, assumption+)
- apply (simp add:card_Nset[of "Suc n"]) 
+ apply (simp add:card_Nset[of "Suc n"])
  apply (rule finite_imageI, simp add:finite_Nset)
 done
 

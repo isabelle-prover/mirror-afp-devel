@@ -3657,12 +3657,6 @@ apply (subst isom_gch_units_transpTr8_1 [of "E" "n" "h" "i" "j"], assumption+)
                                                               assumption+)
  apply (rule isom_gch_unitsTr4 [of "g j" "h i" "E"], assumption+)
  apply simp apply simp
- apply (subst card_insert_disjoint)
-  apply (rule isom_gch_units_transpTr4, assumption+)
-  apply simp apply simp
- apply (subst card_insert_disjoint)
-  apply (rule isom_gch_units_transpTr4, assumption+)
-  apply simp  apply simp apply simp
  apply (subst isom_gch_units_transpTr8_2 [of "E" "n" "g" "i" "j"], assumption+)
  apply (subst isom_gch_units_transpTr8_2 [of "E" "n" "h" "i" "j"], assumption+)
  apply (rule isom_gch_units_transpTr7[of "E" "i" "n" "j" "g" "h"], assumption+)
@@ -5502,35 +5496,11 @@ apply (subgoal_tac "f ` {i. i \<le> (Suc (Suc n))} = f ` {i. i \<le> (Suc n)}")
          simp, thin_tac "f (Suc (Suc n)) = f (Suc n)")
  apply (cut_tac n_in_Nsetn[of "Suc n"], blast)
   apply (frule_tac m = xa and n = "Suc (Suc n)" in noteq_le_less, assumption,
-         frule_tac x = xa in Suc_less_le[of _ "Suc n"], blast) 
+         frule_tac x = xa in Suc_less_le[of _ "Suc n"], blast)
 apply (subgoal_tac "{i. i \<le> (Suc n) \<and> Qw_cmpser G f i \<cong> E} =
               insert (Suc n) {i. i \<le> n \<and> Qw_cmpser G f i \<cong> E}")
-apply simp
-apply (subgoal_tac "(Suc n) \<notin> {i. i \<le> n \<and> Qw_cmpser G f i \<cong> E}")
-apply (subgoal_tac "finite {i. i \<le> n \<and> Qw_cmpser G  f i \<cong> E}")
-apply (subst card_insert_disjoint)
- apply (assumption+, simp)
- apply (cut_tac finite_Nset [of "n"])
- apply (subgoal_tac "{i. i \<le> n \<and> Qw_cmpser G f i \<cong> E} \<subseteq> {i. i \<le> n}")
-
-apply (rule finite_subset, assumption+)
-apply (rule subsetI, simp add:CollectI)
-apply simp
-apply (rule equalityI)
- apply (rule subsetI, simp add:CollectI) 
- apply (thin_tac "card (f ` {i. i \<le> (Suc n)}) - Suc 0 =
-          Suc n - card {i. i \<le> n \<and> Qw_cmpser G f i \<cong> E}")
- apply (thin_tac "f ` {i. i \<le> (Suc (Suc n))} = f ` {i. i \<le> (Suc n)}")
- apply (erule conjE) 
- apply (case_tac "x = Suc n", simp) 
- apply (frule_tac m = x and n = "Suc n" in noteq_le_less, assumption+)
- apply (frule_tac x = x and n = "Suc n" in less_le_diff, simp) 
- apply (rule subsetI) 
- apply (thin_tac "card (f ` {i. i \<le> (Suc n)}) - Suc 0 =
-          Suc n - card {i. i \<le> n \<and> Qw_cmpser G f i \<cong> E}")
- apply (thin_tac "f ` {i. i \<le> (Suc (Suc n))} = f ` {i. i \<le> (Suc n)}")
  apply simp
- apply (case_tac "x = Suc n") apply simp+
+apply fastsimp
 done
 
 lemma length_wcmpser0_6:"\<lbrakk>Group G; w_cmpser G (Suc (Suc n)) f\<rbrakk> \<Longrightarrow> 
@@ -5601,7 +5571,6 @@ apply (frule_tac n = "Suc n" and f = f and i = "Suc n" in
              card {i. i \<le> n \<and> Qw_cmpser G f i \<cong> E}",
         thin_tac "\<not> Qw_cmpser G f (Suc n) \<cong> E",
         thin_tac "f (Suc n) \<noteq> f (Suc (Suc n))",
-        thin_tac "finite (f ` {i. i \<le> (Suc n)})",
         thin_tac "f (Suc (Suc n)) \<notin> f ` {i. i \<le> (Suc n)}")
  apply (frule_tac n = n and f = f in length_wcmpser0_6 [of "G"], assumption+,
         frule_tac n = n and f = f in length_wcmpser0_7 [of "G"], assumption+)

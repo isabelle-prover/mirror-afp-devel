@@ -4321,9 +4321,7 @@ lemma card_image_Nsetn_Suc
        card (f ` {j. j \<le> Suc n}) - Suc 0 = 
                      Suc (card (f ` {j. j \<le> n}) - Suc 0)"
 apply (simp add:image_Nset_Suc)
-apply (subst card_insert_disjoint)
- apply (rule finite_imageI, rule finite_Nset, assumption)
- apply (cut_tac image_Nsetn_card_pos[of f n], simp)
+apply (cut_tac image_Nsetn_card_pos[of f n], simp)
 done
 
 lemma slide_surj:"i < (j::nat) \<Longrightarrow> 
