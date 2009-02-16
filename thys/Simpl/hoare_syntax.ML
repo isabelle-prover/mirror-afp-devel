@@ -1,5 +1,5 @@
 (*  Title:      hoare_syntax.ML
-    ID:         $Id: hoare_syntax.ML,v 1.6 2008-06-12 06:57:28 lsf37 Exp $
+    ID:         $Id: hoare_syntax.ML,v 1.7 2009-02-16 10:18:05 norbertschirmer Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -23,7 +23,6 @@ USA
 (* FIXME: Adapt guard generation to new syntax of op + etc. *)
 
 (* FIXME: make all parse/print-translation dependent on ProofContext not GenericContext*)
-
 
 structure HoareSyntax =
 struct
@@ -336,6 +335,10 @@ fun get_arr_var (Const ("nth",_)$arr$i) =
       (case  get_arr_var arr of 
          SOME (name,p,is) => SOME (name,p,i::is) 
        | NONE => NONE)
+fun get_arr_var (Const ("\\<^const>List.nth",_)$arr$i) = 
+      (case  get_arr_var arr of 
+         SOME (name,p,is) => SOME (name,p,i::is) 
+       | NONE => NONE) 
   | get_arr_var (Const ("_antiquoteCur",_)$Free (var,_)) = 
      if is_state_var var then SOME (var,NONE,[]) else NONE  
   | get_arr_var (Const ("_antiquoteCur",_)$Const (var,_)) = 

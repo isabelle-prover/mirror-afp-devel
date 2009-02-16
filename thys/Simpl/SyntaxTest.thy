@@ -1,4 +1,4 @@
-(*  ID:          $Id: SyntaxTest.thy,v 1.3 2008-03-07 15:23:44 lsf37 Exp $
+(*  ID:          $Id: SyntaxTest.thy,v 1.4 2009-02-16 10:18:05 norbertschirmer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -37,6 +37,7 @@ record "globals" =
 
 record 'g vars = "'g state" +
   A_' :: "nat list"
+  AA_' :: "nat list list"
   I_' :: nat
   M_' :: nat
   N_' :: nat
@@ -49,10 +50,12 @@ record 'g vars = "'g state" +
 
 procedures Foo (p,I|p) = "\<acute>p :== \<acute>p"
 
-
 term "\<acute>I :==\<^sub>g 3 - 1"
 term "\<acute>R :==\<^sub>g 3 - 1"
 term "\<acute>I :==\<^sub>g \<acute>A!i"
+term " \<acute>A!i :== j"
+term " \<acute>AA :== \<acute>AA!![i,j]"
+term " \<acute>AA!![i,j] :== \<acute>AA"
 term "\<acute>A!i :==\<^sub>g j"
 term "\<acute>p :==\<^sub>g \<acute>GA!i!j"
 term "\<acute>GA!i!j :==\<^sub>g \<acute>p"
