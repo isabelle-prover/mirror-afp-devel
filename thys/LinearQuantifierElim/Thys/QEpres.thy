@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEpres.thy,v 1.8 2009-02-01 12:38:08 nipkow Exp $
+(*  ID:         $Id: QEpres.thy,v 1.9 2009-02-17 20:30:37 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -146,15 +146,15 @@ proof (cases a)
   have "(l + (i + \<langle>ks',e\<rangle>)) mod d = (l + (j + \<langle>ks',e\<rangle>)) mod d" (is "?l=?r")
   proof -
     have "?l = (l mod d + (i + \<langle>ks',e\<rangle>) mod d) mod d"
-      by(rule zmod_zadd1_eq)
+      by(rule mod_add_eq)
     also have "(i + \<langle>ks',e\<rangle>) mod d = (i mod d + \<langle>ks',e\<rangle> mod d) mod d"
-      by(rule zmod_zadd1_eq)
+      by(rule mod_add_eq)
     also have "i mod d = j mod d"
       using `i mod divisor a = j mod divisor a` Dvd by simp
     also have "(j mod d + \<langle>ks',e\<rangle> mod d) mod d = (j + \<langle>ks',e\<rangle>) mod d"
-      by(rule zmod_zadd1_eq[symmetric])
+      by(rule mod_add_eq[symmetric])
     also have "(l mod d + (j + \<langle>ks',e\<rangle>) mod d) mod d = ?r"
-      by(rule zmod_zadd1_eq[symmetric])
+      by(rule mod_add_eq[symmetric])
     finally show ?thesis .
   qed               
   thus ?thesis using Dvd by (simp add:zdvd_iff_zmod_eq_0)
@@ -165,15 +165,15 @@ next
   have "(l + (i + \<langle>ks',e\<rangle>)) mod d = (l + (j + \<langle>ks',e\<rangle>)) mod d" (is "?l=?r")
   proof -
     have "?l = (l mod d + (i + \<langle>ks',e\<rangle>) mod d) mod d"
-      by(rule zmod_zadd1_eq)
+      by(rule mod_add_eq)
     also have "(i + \<langle>ks',e\<rangle>) mod d = (i mod d + \<langle>ks',e\<rangle> mod d) mod d"
-      by(rule zmod_zadd1_eq)
+      by(rule mod_add_eq)
     also have "i mod d = j mod d"
       using `i mod divisor a = j mod divisor a` NDvd by simp
     also have "(j mod d + \<langle>ks',e\<rangle> mod d) mod d = (j + \<langle>ks',e\<rangle>) mod d"
-      by(rule zmod_zadd1_eq[symmetric])
+      by(rule mod_add_eq[symmetric])
     also have "(l mod d + (j + \<langle>ks',e\<rangle>) mod d) mod d = ?r"
-      by(rule zmod_zadd1_eq[symmetric])
+      by(rule mod_add_eq[symmetric])
     finally show ?thesis .
   qed
   thus ?thesis using NDvd by (simp add:zdvd_iff_zmod_eq_0)
@@ -349,13 +349,13 @@ proof -
 		     (?lm + (x-?lm) mod ?lcm) mod divisor a" by (simp only:)
 	      also have "\<dots> =
 	(?lm mod divisor a + (x-?lm) mod ?lcm mod divisor a) mod divisor a"
-		by(rule zmod_zadd1_eq)
+		by(rule mod_add_eq)
 	      also have
 	"\<dots> = (?lm mod divisor a + (x-?lm) mod divisor a) mod divisor a"
 		using `is_dvd a` `a\<in> set as`
 		by(simp add: zmod_zmod_cancel dvd_zlcms)
 	      also have "\<dots> = (?lm + (x-?lm)) mod divisor a"
-		by(rule zmod_zadd1_eq[symmetric])
+		by(rule mod_add_eq[symmetric])
 	      also have "\<dots> = x mod divisor a" by simp
 	      finally
 	      show "(li + ?n - \<langle>lks,xs\<rangle>) mod divisor a = x mod divisor a"
