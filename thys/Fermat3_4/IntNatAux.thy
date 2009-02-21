@@ -608,7 +608,7 @@ proof
   with mn have "\<bar>a\<bar> = zgcd a b" by (auto intro: power_inject_base [of _ m])
   moreover have "zgcd a b dvd b" by (rule zgcd_zdvd2 [of a])
   ultimately have "\<bar>a\<bar> dvd b" by simp
-  thus "a dvd b" by (simp add: zdvd_abs1)
+  thus "a dvd b" by simp
 next
   assume "a dvd b"
   then obtain k where k: "b = a * k" by (auto simp add: dvd_def)
@@ -636,7 +636,7 @@ proof -
       with ppnab have "p*p^n dvd p*(k*b)" by (auto simp add: mult_ac)
       with p1 have "p^n dvd k*b" by (auto dest: zdvd_mult_cancel)
       with IH have "p^n dvd k" ..
-      with apk show "p*p^n dvd a" by (simp add: zdvd_zmult_mono)
+      with apk show "p*p^n dvd a" by (simp add: mult_dvd_mono)
     qed
   qed
   thus "p^n dvd a*b \<Longrightarrow> p^n dvd a" ..

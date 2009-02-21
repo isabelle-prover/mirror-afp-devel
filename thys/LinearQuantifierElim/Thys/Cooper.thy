@@ -1,4 +1,4 @@
-(*  ID:         $Id: Cooper.thy,v 1.3 2009-01-30 14:15:31 nipkow Exp $
+(*  ID:         $Id: Cooper.thy,v 1.4 2009-02-21 22:30:57 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -49,7 +49,7 @@ proof(induct \<phi>)
 	assume "k=0" thus ?thesis by simp
       next
 	assume "k\<noteq>0"
-	with Atom have "\<bar>k\<bar> dvd m" by(simp add:IntDiv.zdvd_abs1)
+	with Atom have "\<bar>k\<bar> dvd m" by simp
 	let ?m' = "m div \<bar>k\<bar>"
 	have "?m' > 0" using `\<bar>k\<bar> dvd m` pos_imp_zdiv_pos_iff `m>0` `k\<noteq>0`
 	  by(simp add:zdvd_imp_le)
@@ -223,7 +223,7 @@ proof(induct \<phi> rule:min_inf.induct)
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
 	  by(simp add: algebra_simps)
 	also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
-	  by (metis zdvd_zdiff zdvd_zdiffD zdvd_zmult zmult_commute)
+	  by (metis dvd_diff zdvd_zdiffD dvd_mult zmult_commute)
 	also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
 	  by(simp add: algebra_simps)
 	finally show ?thesis .
@@ -251,7 +251,7 @@ next
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
 	  by(simp add: algebra_simps)
 	also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
-	  by (metis zdvd_zdiff zdvd_zdiffD zdvd_zmult zmult_commute)
+	  by (metis dvd_diff zdvd_zdiffD dvd_mult zmult_commute)
 	also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
 	  by(simp add: algebra_simps)
 	finally show ?thesis .
@@ -302,7 +302,7 @@ proof(induct \<phi>)
 	proof -
 	  assume ?L
 	  hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d"
-	    by (metis `m dvd d` zdvd_zdiff)
+	    by (metis `m dvd d` dvd_diff)
 	  thus ?thesis by(simp add:algebra_simps)
 	qed
 	thus ?thesis using Atom Dvd Cons by(auto split:split_if_asm)

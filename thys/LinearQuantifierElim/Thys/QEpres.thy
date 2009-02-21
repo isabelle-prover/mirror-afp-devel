@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEpres.thy,v 1.9 2009-02-17 20:30:37 nipkow Exp $
+(*  ID:         $Id: QEpres.thy,v 1.10 2009-02-21 22:30:57 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -44,7 +44,7 @@ proof(induct a)
   case (Le i ks)
   then obtain k js where [simp]: "ks = k#js" by(auto simp: split:list.splits)
   let ?d = "m div \<bar>k\<bar>"
-  from Le have "\<bar>k\<bar> dvd m" by(simp add: IntDiv.zdvd_abs1)
+  from Le have "\<bar>k\<bar> dvd m" by simp
   hence "?d > 0" using pos_imp_zdiv_pos_iff Le `m>0` by(simp add:zdvd_imp_le)
   have 1: "k*(x*?d) = sgn k * x * m"
   proof -
@@ -157,7 +157,7 @@ proof (cases a)
       by(rule mod_add_eq[symmetric])
     finally show ?thesis .
   qed               
-  thus ?thesis using Dvd by (simp add:zdvd_iff_zmod_eq_0)
+  thus ?thesis using Dvd by (simp add:dvd_eq_mod_eq_0)
 next
   case (NDvd d l ks)
   with `hd_coeff a = 1` obtain ks' where [simp]: "ks = 1#ks'"
@@ -176,7 +176,7 @@ next
       by(rule mod_add_eq[symmetric])
     finally show ?thesis .
   qed
-  thus ?thesis using NDvd by (simp add:zdvd_iff_zmod_eq_0)
+  thus ?thesis using NDvd by (simp add:dvd_eq_mod_eq_0)
 next
   case Le thus ?thesis using `is_dvd a` by simp
 qed
@@ -245,9 +245,9 @@ proof -
 	  have "?x mod ?d = n mod ?d" (is "?l = ?r")
 	  proof -
 	    have "?l = (?r - ((?k * ?lcm) mod ?d)) mod ?d"
-	      by(rule zmod_zdiff1_eq)
+	      by(rule mod_diff_eq)
 	    also have "(?k * ?lcm) mod ?d = 0"
-	      by(simp add: zdvd_iff_zmod_eq_0[symmetric] zdvd_zmult[OF 2])
+	      by(simp add: dvd_eq_mod_eq_0[symmetric] dvd_mult[OF 2])
 	    finally show ?thesis by simp
 	  qed
 	  thus "I\<^isub>Z a (?x#xs)" using A I_cyclic[of a n ?x] `a \<in> ?Ds` 1 by auto
@@ -291,7 +291,7 @@ proof -
 	{ fix a assume "a \<in> ?Ds"
 	  hence "I\<^isub>Z a ((x mod ?lcm) # xs) = I\<^isub>Z a (x # xs)" using 1
 	    by (fastsimp del:iffI intro: I_cyclic
-	        simp: zmod_zmod_cancel dvd_zlcms) }
+	        simp: mod_mod_cancel dvd_zlcms) }
 	thus "?P(x mod ?lcm)" using x norm by(simp add: zlcms_pos)
       qed
       ultimately show ?thesis by (auto simp:qe_pres_def IZ_asubst)
@@ -353,7 +353,7 @@ proof -
 	      also have
 	"\<dots> = (?lm mod divisor a + (x-?lm) mod divisor a) mod divisor a"
 		using `is_dvd a` `a\<in> set as`
-		by(simp add: zmod_zmod_cancel dvd_zlcms)
+		by(simp add: mod_mod_cancel dvd_zlcms)
 	      also have "\<dots> = (?lm + (x-?lm)) mod divisor a"
 		by(rule mod_add_eq[symmetric])
 	      also have "\<dots> = x mod divisor a" by simp

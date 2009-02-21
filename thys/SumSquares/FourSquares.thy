@@ -83,7 +83,7 @@ proof -
 	  assume "\<not> 0 \<le> x-y" hence "y-x > 0" by auto
 	  moreover from x0 yn n p0 have "y-x < p" by auto
 	  ultimately have "\<not> p dvd y-x" by (auto simp add: zdvd_not_zless)
-	  moreover from ass have "p dvd -(x-y)" by (simp only: zdvd_zminus_iff)
+	  moreover from ass have "p dvd -(x-y)" by (simp only: dvd_minus_iff)
 	  ultimately show "False" by auto
 	qed }
       ultimately show "x=y" by auto
@@ -119,7 +119,7 @@ proof -
 	  assume "\<not> 0 \<le> x-y" hence "y-x > 0" by auto
 	  moreover from x0 yn n p0 have "y-x < p" by auto
 	  ultimately have "\<not> p dvd y-x" by (auto simp add: zdvd_not_zless)
-	  moreover from ass have "p dvd -(x-y)" by (simp only: zdvd_zminus_iff)
+	  moreover from ass have "p dvd -(x-y)" by (simp only: dvd_minus_iff)
 	  ultimately show "False" by auto
 	qed }
       ultimately show "x=y" by auto
@@ -410,10 +410,10 @@ next
 	    with b2pos have  "b1^2 = 0 \<and> b2^2 = 0 \<and> b3^2 = 0 \<and> b4^2 = 0" by arith
 	    hence "b1 = 0 \<and> b2 = 0 \<and> b3 = 0 \<and> b4 = 0" by auto
 	    with bc_def have "x dvd a1 \<and> x dvd a2 \<and> x dvd a3 \<and> x dvd a4" 
-	      by (auto simp add: zdvd_triv_right)
+	      by auto
 	    hence "x^2 dvd a1^2 \<and> x^2 dvd a2^2 \<and> x^2 dvd a3^2 \<and> x^2 dvd a4^2" 
 	      by (auto simp only: zpower_zdvd_mono)
-	    hence "x^2 dvd a1^2+a2^2+a3^2+a4^2" by (simp only: zdvd_zadd)
+	    hence "x^2 dvd a1^2+a2^2+a3^2+a4^2" by (simp only: dvd_add)
 	    with ass have "x^2 dvd p*x" by (auto simp only: sum4sq_def)
 	    hence "x*x dvd x*p" by (simp only: power2_eq_square mult_ac)
 	    with ass have "x dvd p" by (auto dest: zdvd_mult_cancel)

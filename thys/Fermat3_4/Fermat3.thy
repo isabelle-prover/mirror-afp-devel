@@ -119,7 +119,7 @@ next
       have pq_relprime: "zgcd p q=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and zp: "z dvd p" and zq: "z dvd q"
-	hence "z dvd p+q \<and> z dvd p-q" by (auto simp only: zdvd_zadd zdvd_zdiff)
+	hence "z dvd p+q \<and> z dvd p-q" by (auto simp only: dvd_add dvd_diff)
 	with vw have "z dvd v \<and> z dvd w" by simp
 	with z vwx show False
 	  by (auto simp add: zgcd1_iff_no_common_primedivisor)
@@ -136,8 +136,8 @@ next
 	  hence "z \<le> 2" by (auto simp add: zdvd_imp_le)
 	  with zg2 have False by simp }
 	ultimately have zp: "z dvd p" by auto
-	hence "z dvd p^2" by (auto simp add: power2_eq_square zdvd_zmult2)
-	with zpq have "z dvd p^2+3*q^2-p^2" by (simp only: zdvd_zdiff)
+	hence "z dvd p^2" by (auto simp add: power2_eq_square)
+	with zpq have "z dvd p^2+3*q^2-p^2" by (simp only: dvd_diff)
 	hence "z dvd 3*q^2" by auto
 	with z have "z dvd 3 \<or> z dvd q^2" by (simp only: zprime_zdvd_zmult_general)
 	moreover
@@ -166,7 +166,7 @@ next
 	assume "d \<notin> zOdd" hence "d \<in> zEven" by (rule not_odd_impl_even)
 	hence "d^3 \<in> zEven" by (simp only: power_preserves_even)
 	hence "2 dvd d^3" by (simp add: zEven_def dvd_def)
-	moreover have "2 dvd 2*p" by (rule zdvd_triv_left)
+	moreover have "2 dvd 2*p" by (rule dvd_triv_left)
 	ultimately have "2 dvd zgcd (2*p) (d^3)" by (simp add: zgcd_greatest_iff)
 	with d factors_relprime show False by simp
       qed
@@ -181,7 +181,7 @@ next
       have ab_relprime: "zgcd a b=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and za: "z dvd a" and zb: "z dvd b"
-	with ab have "z dvd p \<and> z dvd q" by (simp add: zdvd_zmult2)
+	with ab have "z dvd p \<and> z dvd q" by simp
 	with z pq_relprime show 
 	  False by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
@@ -195,18 +195,18 @@ next
 	  hence "z \<le> 2" by (simp only: zdvd_imp_le)
 	  with z have "z = 2" by (unfold zprime_def, auto)
 	  with zab have ab2: "2 dvd a+3*b" by simp
-	  moreover have "2 dvd 2*b" by (rule zdvd_triv_left)
-	  ultimately have "2 dvd a+3*b- 2*b" by (rule zdvd_zdiff)
+	  moreover have "2 dvd 2*b" by (rule dvd_triv_left)
+	  ultimately have "2 dvd a+3*b- 2*b" by (rule dvd_diff)
 	  hence "2 dvd a+b" by arith
-	  hence "2 dvd (a+b)*((a-b)*b*3)" by (rule zdvd_zmult2)
+	  hence "2 dvd (a+b)*((a-b)*b*3)" by (rule dvd_mult2)
 	  with ab have qEven: "2 dvd q" by (simp only: mult_ac)
-	  from ab2 have "2 dvd (a+3*b)*((a- 3*b)*a)" by (rule zdvd_zmult2)
+	  from ab2 have "2 dvd (a+3*b)*((a- 3*b)*a)" by (rule dvd_mult2)
 	  with ab have "2 dvd p" by (simp only: mult_ac)
 	  with qEven have "2 dvd zgcd p q" by (simp add: zgcd_greatest_iff)
 	  with pq_relprime show False by auto
 	qed
 	ultimately have za: "z dvd a" by auto
-	with zab have "z dvd a+3*b-a" by (simp only: zdvd_zdiff)
+	with zab have "z dvd a+3*b-a" by (simp only: dvd_diff)
 	hence "z dvd 3*b" by simp
 	with z have "z dvd 3 \<or> z dvd b" by (simp only: zprime_zdvd_zmult_general)
 	moreover
@@ -216,7 +216,7 @@ next
 	  moreover from z have "z > 1" by (simp add: zprime_def)
 	  ultimately have "z=3" by auto
 	  with za have "3 dvd a" by simp
-	  with ab have "3 dvd p" by (auto simp add: zdvd_zmult2)
+	  with ab have "3 dvd p" by auto
 	  with p3 have False by auto }
 	ultimately have "z dvd b" by auto
 	with za z ab_relprime show False
@@ -225,7 +225,7 @@ next
       have ab2: "zgcd (a+3*b) (a- 3*b) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and zab1: "z dvd a+3*b" and zab2: "z dvd a- 3*b"
-	hence "z dvd (a+3*b)+(a- 3*b)" by (simp only: zdvd_zadd)
+	hence "z dvd (a+3*b)+(a- 3*b)" by (simp only: dvd_add)
 	hence "z dvd 2*a" by simp
 	with zab1 z ab1 show False
 	  by (auto simp add: zgcd1_iff_no_common_primedivisor)
@@ -233,7 +233,7 @@ next
       have "zgcd(a- 3*b) (2*a) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and z2a: "z dvd 2*a" and zab: "z dvd a- 3*b"
-	hence "z dvd 2*a-(a- 3*b)" by (simp only: zdvd_zdiff)
+	hence "z dvd 2*a-(a- 3*b)" by (simp only: dvd_diff)
 	moreover have "2*a-(a- 3*b) = a+3*b" by simp
 	ultimately have "z dvd a+3*b" by simp
 	with z2a z ab1 show False
@@ -260,7 +260,7 @@ next
       moreover have "zgcd \<alpha> \<beta>=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and za: "z dvd \<alpha>" and zb: "z dvd \<beta>"
-	hence "z dvd \<alpha> * \<alpha>^2 \<and> z dvd \<beta> * \<beta>^2" by (simp add: zdvd_zmult2)
+	hence "z dvd \<alpha> * \<alpha>^2 \<and> z dvd \<beta> * \<beta>^2" by simp
 	hence "z dvd \<alpha>^Suc 2 \<and> z dvd \<beta>^Suc 2" by (auto simp only: power_Suc)
 	with albega have "z dvd a- 3*b \<and> z dvd a+3*b" by auto 
 	with ab2 z show False
@@ -323,15 +323,15 @@ next
     -- "factors are coprime; hence both are cubes" 
     { assume p3: "3 dvd p"
       then obtain r where r: "p = 3*r" by (auto simp add: dvd_def)
-      moreover have "3 dvd 3*(3*r^2 + q^2)" by (rule zdvd_triv_left)
+      moreover have "3 dvd 3*(3*r^2 + q^2)" by (rule dvd_triv_left)
       ultimately have pq3: "3 dvd p^2+3*q^2" by (simp add: power_mult_distrib)
-      moreover from p3 have "3 dvd 2*p" by (rule zdvd_zmult)
+      moreover from p3 have "3 dvd 2*p" by (rule dvd_mult)
       ultimately have g3: "3 dvd ?g" by (simp add: zgcd_greatest_iff)
       have qr_relprime: "zgcd q r = 1" 
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and zq: "z dvd q" and "z dvd r"
-	with r have "z dvd p" by (simp add: zdvd_zmult)
-	with zq have "z dvd p+q \<and> z dvd p-q" by (simp add: zdvd_zadd zdvd_zdiff)
+	with r have "z dvd p" by simp
+	with zq have "z dvd p+q \<and> z dvd p-q" by simp
 	with vw have "z dvd zgcd v w" by (simp add: zgcd_greatest_iff)
 	with vwx z show False by (auto simp add: zprime_def) 
       qed
@@ -344,7 +344,7 @@ next
 	  with g1 k have "k > 1" by auto
 	  then obtain h where h: "zprime h \<and> h dvd k" 
 	    by (frule_tac a="k" in zprime_factor_exists, blast)
-	  with k have hg: "3*h dvd ?g" by (auto simp add: zdvd_zmult_mono)
+	  with k have hg: "3*h dvd ?g" by (auto simp add: mult_dvd_mono)
 	  hence "3*h dvd p^2 + 3*q^2" and hp: "3*h dvd 2*p" 
 	    by (auto simp only: zgcd_greatest_iff)
 	  then obtain s where s: "p^2 + 3*q^2 = (3*h)*s" 
@@ -359,7 +359,7 @@ next
 	    assume "h dvd 2" 
 	    with h have "h=2" by (auto simp add: zdvd_not_zless zprime_def)
 	    with hg have "2*3 dvd ?g" by auto
-	    hence "2 dvd ?g" by (rule zdvd_zmultD2)
+	    hence "2 dvd ?g" by (rule dvd_mult_left)
 	    with gOdd show False by simp
 	  qed
 	  ultimately have hr: "h dvd r" by simp
@@ -393,9 +393,9 @@ next
 	  hence "h=3" by arith
 	  with hrq obtain s where "3*r^2+q^2 = 3*s" by (auto simp add: dvd_def)
 	  hence "q^2 = 3*(s- r^2)" by auto
-	  hence "3 dvd q^2" and "zprime 3" by (auto simp only: zdvd_triv_left zprime_3)
+	  hence "3 dvd q^2" and "zprime 3" by (auto simp only: dvd_triv_left zprime_3)
 	  hence "3 dvd q" by (rule_tac p="3" in zprime_zdvd_power)
-	  with p3 have "3 dvd p+q \<and> 3 dvd p-q" by (simp add: zdvd_zdiff zdvd_zadd)
+	  with p3 have "3 dvd p+q \<and> 3 dvd p-q" by simp
 	  with vw have "3 dvd zgcd v w" by (simp add: zgcd_greatest_iff)
 	  with vwx show False by auto
 	qed
@@ -415,7 +415,7 @@ next
       ultimately have "\<exists> c. 18*r = c^3" 
 	by (simp only: int_relprime_odd_power_divisors)
       then obtain c1 where c1: "c1^3 = 3*(6*r)" by auto
-      hence "3 dvd c1^3" and "zprime 3" by (auto simp only: zdvd_triv_left zprime_3)
+      hence "3 dvd c1^3" and "zprime 3" by (auto simp only: dvd_triv_left zprime_3)
       hence "3 dvd c1" by (rule_tac p="3" in zprime_zdvd_power)
       with c1 obtain c where c: "3*c^3 = 2*r" 
 	by (auto simp add: power_mult_distrib dvd_def)
@@ -429,7 +429,7 @@ next
 	assume "d \<notin> zOdd" hence "d \<in> zEven" by (rule not_odd_impl_even)
 	hence "d^3 \<in> zEven" by (simp only: power_preserves_even)
 	hence "2 dvd d^3" by (simp add: zEven_def dvd_def)
-	moreover have "2 dvd 2*(9*r)" by (rule zdvd_triv_left)
+	moreover have "2 dvd 2*(9*r)" by (rule dvd_triv_left)
 	ultimately have "2 dvd zgcd (2*(9*r)) (d^3)" by (simp add: zgcd_greatest_iff)
 	with d factors_relprime show False by auto
       qed
@@ -444,7 +444,7 @@ next
       have ab_relprime: "zgcd a b=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and za: "z dvd a" and zb: "z dvd b"
-	with ab have "z dvd q \<and> z dvd r" by (simp add: zdvd_zmult2)
+	with ab have "z dvd q \<and> z dvd r" by simp
 	with z qr_relprime show False 
 	  by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
@@ -457,18 +457,18 @@ next
 	  hence "z \<le> 2" by (simp only: zdvd_imp_le)
 	  with z have "z = 2" by (unfold zprime_def, auto)
 	  with zab have ab2: "2 dvd a+b" by simp
-	  moreover have "2 dvd 2*b" by (rule zdvd_triv_left)
-	  ultimately have "2 dvd a+b+2*b" by (rule zdvd_zadd)
+	  moreover have "2 dvd 2*b" by (rule dvd_triv_left)
+	  ultimately have "2 dvd a+b+2*b" by (rule dvd_add)
 	  hence "2 dvd a+3*b" by arith
-	  hence "2 dvd (a+3*b)*((a- 3*b)*a)" by (rule zdvd_zmult2)
+	  hence "2 dvd (a+3*b)*((a- 3*b)*a)" by (rule dvd_mult2)
 	  with ab have qEven: "2 dvd q" by (simp only: mult_ac)
-	  from ab2 have "2 dvd (a+b)*((a-b)*3*b)" by (rule zdvd_zmult2)
+	  from ab2 have "2 dvd (a+b)*((a-b)*3*b)" by (rule dvd_mult2)
 	  with ab have "2 dvd r" by (simp only: mult_ac)
 	  with qEven have "2 dvd zgcd q r" by (simp add: zgcd_greatest_iff)
 	  with qr_relprime have False by auto }
 	moreover
 	{ assume zb: "z dvd b"
-	  with zab have "z dvd a+b-b" by (simp only: zdvd_zdiff)
+	  with zab have "z dvd a+b-b" by (simp only: dvd_diff)
 	  hence "z dvd a" by simp
 	  with zb ab_relprime z have False 
 	    by (auto simp add: zgcd1_iff_no_common_primedivisor) }
@@ -477,7 +477,7 @@ next
       have ab2: "zgcd (a+b) (a-b) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and zab1: "z dvd a+b" and zab2: "z dvd a-b"
-	hence "z dvd (a+b)-(a-b)" by (simp only: zdvd_zdiff)
+	hence "z dvd (a+b)-(a-b)" by (simp only: dvd_diff)
 	hence "z dvd 2*b" by simp
 	with zab1 z ab1 show False 
 	  by (auto simp add: zgcd1_iff_no_common_primedivisor)
@@ -485,7 +485,7 @@ next
       have "zgcd (a-b) (2*b) = 1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and z2b: "z dvd 2*b" and zab: "z dvd a-b"
-	hence "z dvd a-b+2*b" by (simp only: zdvd_zadd)
+	hence "z dvd a-b+2*b" by (simp only: dvd_add)
 	moreover have "a-b+2*b = a+b" by simp
 	ultimately have "z dvd a+b" by simp
 	with z2b z ab1 show False 
@@ -514,10 +514,10 @@ next
       moreover have "zgcd \<alpha> \<beta>=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix z assume z: "zprime z" and za: "z dvd \<alpha>" and zb: "z dvd \<beta>"
-	hence "z dvd \<alpha> * \<alpha>^2 \<and> z dvd \<beta> * \<beta>^2" by (simp add: zdvd_zmult2)
+	hence "z dvd \<alpha> * \<alpha>^2 \<and> z dvd \<beta> * \<beta>^2" by simp
 	hence "z dvd \<alpha>^Suc 2 \<and> z dvd \<beta>^Suc 2" by (auto simp only: power_Suc)
 	with a1 a2 have "z dvd b-a \<and> z dvd a+b" by auto 
-	hence "z dvd -(b-a) \<and> z dvd a+b" by (auto simp only: zdvd_zminus_iff)
+	hence "z dvd -(b-a) \<and> z dvd a+b" by (auto simp only: dvd_minus_iff)
 	with ab2 z show False 
 	  by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
@@ -621,10 +621,10 @@ proof (rule ccontr)
       moreover have "zgcd u v=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix h::int assume hu: "h dvd u" and "h dvd v" and h: "zprime h"
-	with uvwabc have "h dvd ?c*?c^2" by (simp only: zdvd_zmult2)
+	with uvwabc have "h dvd ?c*?c^2" by (simp only: dvd_mult2)
 	with abc have "h dvd a^3+b^3" by (simp only: cube_square)
-	moreover from hu uvwabc have "h dvd b*b^2" by (simp add: zdvd_zmult2)
-	ultimately have "h dvd a^3+b^3-b^3" by (simp only: cube_square zdvd_zdiff)
+	moreover from hu uvwabc have "h dvd b*b^2" by simp
+	ultimately have "h dvd a^3+b^3-b^3" by (simp only: cube_square dvd_diff)
 	with h hu uvwabc have "h dvd a \<and> h dvd b" by (auto dest: zprime_zdvd_power)
 	with h ab show False by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed
@@ -646,10 +646,10 @@ proof (rule ccontr)
       moreover have "zgcd u v=1"
       proof (simp only: zgcd1_iff_no_common_primedivisor, clarify)
 	fix h::int assume hu: "h dvd u" and "h dvd v" and h: "zprime h"
-	with uvwabc have "h dvd ?c*?c^2" by (simp only: zdvd_zmult2)
+	with uvwabc have "h dvd ?c*?c^2" by (simp only: dvd_mult2)
 	with abc have "h dvd a^3+b^3" by (simp only: cube_square)
-	moreover from hu uvwabc have "h dvd a*a^2" by (simp add: zdvd_zmult2)
-	ultimately have "h dvd a^3+b^3-a^3" by (simp only: cube_square zdvd_zdiff)
+	moreover from hu uvwabc have "h dvd a*a^2" by simp
+	ultimately have "h dvd a^3+b^3-a^3" by (simp only: cube_square dvd_diff)
 	with h hu uvwabc have "h dvd a \<and> h dvd b" by (auto dest: zprime_zdvd_power)
 	with h ab show False by (auto simp add: zgcd1_iff_no_common_primedivisor)
       qed

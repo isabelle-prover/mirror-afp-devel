@@ -211,7 +211,7 @@ proof -
 	    ultimately have "v = 0 \<and> w = 0" by auto
 	    with rv sw have "?n1 dvd x \<and> ?n1 dvd y" by (unfold dvd_def, auto)
 	    hence "?n1^2 dvd x^2 \<and> ?n1^2 dvd y^2" by (simp add: zpower_zdvd_mono)
-	    hence "?n1^2 dvd x^2 + y^2" by (simp only: zdvd_zadd)
+	    hence "?n1^2 dvd x^2 + y^2" by (simp only: dvd_add)
 	    with xy have "?n1*?n1 dvd ?n1*?p" 
 	      by (simp only: power2_eq_square mult_ac)
 	    moreover from n1pos have "?n1 \<noteq> 0" by simp

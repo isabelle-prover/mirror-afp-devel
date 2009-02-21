@@ -335,11 +335,12 @@ proof -
   with abc0 have uv0: "u\<noteq>0 \<and> v\<noteq>0" by auto
   have av_relprime: "zgcd a v = 1" 
   proof -
+    have "zgcd a v dvd zgcd (a^2) v" 
+      by (simp only: zgcd_zdvd_zgcd_zmult power2_eq_square)
+    moreover
     from uvabc have "zgcd v (a^2) dvd zgcd (b^2) (a^2)" by (simp only: zgcd_zdvd_zgcd_zmult)
     with a2b2relprime have "zgcd (a^2) v dvd (1::int)" by (simp only: zgcd_commute)
-    moreover have "zgcd a v dvd zgcd (a^2) v" 
-      by (simp only: zgcd_zdvd_zgcd_zmult power2_eq_square)
-    ultimately have "zgcd a v dvd 1" by (rule_tac m="zgcd a v" in zdvd_trans)
+    ultimately have "zgcd a v dvd 1" by (rule dvd_trans)
     hence "\<bar>zgcd a v\<bar>= 1" by auto
     thus ?thesis by (simp add: zgcd_geq_zero)
   qed
@@ -423,8 +424,8 @@ proof -
     proof -
       have "?g dvd \<alpha> \<and> ?g dvd \<beta>" by auto
       with albega have "?g dvd \<bar>k\<bar> \<and> ?g dvd \<bar>l\<bar>" 
-	by (simp add: zdvd_zmult power2_eq_square zmult_commute)  
-      hence "?g dvd k \<and> ?g dvd l" by (simp add: zdvd_abs2)
+	by (simp add: power2_eq_square zmult_commute)  
+      hence "?g dvd k \<and> ?g dvd l" by simp
       thus ?thesis by (simp add: zgcd_greatest_iff)
     qed
     ultimately have "zgcd k l \<noteq> 1" by auto
