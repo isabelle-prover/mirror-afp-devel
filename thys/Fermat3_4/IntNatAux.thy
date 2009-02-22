@@ -380,10 +380,9 @@ proof -
     moreover have 
       "!!a b. (primel xs \<and> a*b = (prod xs)^n \<and> gcd a b=1) \<Longrightarrow> \<exists>k. a = k^n"
     proof (induct xs)
-      case Nil hence ass: "a*b=1^n" by simp
-      hence "a*b=1" by (simp only: power_one)
-      hence "b=1" by simp
-      with ass show "\<exists> k. a = k^n" by auto
+      case Nil
+      hence "a = 1^n" by simp
+      thus "\<exists> k. a = k^n" ..
     next
       case (Cons p ps) 
       hence ass: "primel ps \<and> prime p \<and> a*b=p^n*(prod ps)^n \<and> gcd a b=1 " 
