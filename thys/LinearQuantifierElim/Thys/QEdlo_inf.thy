@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEdlo_inf.thy,v 1.6 2008-06-12 06:57:24 lsf37 Exp $
+(*  ID:         $Id: QEdlo_inf.thy,v 1.7 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -152,24 +152,24 @@ qed simp_all
 
 
 definition
-"eps\<^isub>1(\<phi>) =
+"qe_eps\<^isub>1(\<phi>) =
 (let as = DLO.atoms\<^isub>0 \<phi>; lbs = lbounds as; ebs = ebounds as
  in list_disj (inf\<^isub>- \<phi> # map (subst\<^isub>+ \<phi>) lbs @ map (subst \<phi>) ebs))"
 
-theorem I_eps1:
-assumes "nqfree \<phi>" shows "DLO.I (eps\<^isub>1 \<phi>) xs = (\<exists>x. DLO.I \<phi> (x#xs))"
+theorem I_qe_eps1:
+assumes "nqfree \<phi>" shows "DLO.I (qe_eps\<^isub>1 \<phi>) xs = (\<exists>x. DLO.I \<phi> (x#xs))"
   (is "?QE = ?EX")
 proof
   let ?as = "DLO.atoms\<^isub>0 \<phi>" let ?ebs = "ebounds ?as"
   assume ?QE
   { assume "DLO.I (inf\<^isub>- \<phi>) xs"
     hence ?EX using `?QE` min_inf[of \<phi> xs] `nqfree \<phi>`
-      by(auto simp add:eps\<^isub>1_def amap_fm_list_disj)
+      by(auto simp add:qe_eps\<^isub>1_def amap_fm_list_disj)
   } moreover
   { assume "\<forall>i \<in> set ?ebs. \<not>DLO.I \<phi> (xs!i # xs)"
            "\<not> DLO.I (inf\<^isub>- \<phi>) xs"
     with `?QE` `nqfree \<phi>` obtain l where "DLO.I (subst\<^isub>+ \<phi> l) xs"
-      by(fastsimp simp: I_subst eps\<^isub>1_def set_ebounds set_lbounds)
+      by(fastsimp simp: I_subst qe_eps\<^isub>1_def set_ebounds set_lbounds)
     then obtain leps where "DLO.I \<phi> (leps#xs)"
       using I_subst_peps[OF `nqfree \<phi>`] by fastsimp
     hence ?EX .. }
@@ -179,10 +179,10 @@ next
   assume ?EX
   then obtain x where x: "DLO.I \<phi> (x#xs)" ..
   { assume "DLO.I (inf\<^isub>- \<phi>) xs"
-    hence ?QE using `nqfree \<phi>` by(auto simp:eps\<^isub>1_def)
+    hence ?QE using `nqfree \<phi>` by(auto simp:qe_eps\<^isub>1_def)
   } moreover
   { assume "\<exists>k \<in> set ?ebs. DLO.I (subst \<phi> k) xs"
-    hence ?QE by(auto simp:eps\<^isub>1_def) } moreover
+    hence ?QE by(auto simp:qe_eps\<^isub>1_def) } moreover
   { assume "\<not> DLO.I (inf\<^isub>- \<phi>) xs"
     and "\<forall>k \<in> set ?ebs. \<not> DLO.I (subst \<phi> k) xs"
     hence noE: "\<forall>e \<in> EQ \<phi> xs. \<not> DLO.I \<phi> (e#xs)" using `nqfree \<phi>`
@@ -201,7 +201,7 @@ next
     then moreover have "DLO.I (subst\<^isub>+ \<phi> m) xs"
       using noE by(auto intro!: I_subst_peps2[OF `nqfree \<phi>`])
     ultimately have ?QE
-      by(simp add:eps\<^isub>1_def bex_Un set_lbounds set_ebounds) metis
+      by(simp add:qe_eps\<^isub>1_def bex_Un set_lbounds set_ebounds) metis
   } ultimately show ?QE by blast
 qed
 
@@ -211,18 +211,18 @@ by(cases "(k,a)" rule:asubst_peps.cases) simp_all
 lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>+ \<phi> k)"
 by(induct \<phi>) (simp_all add:qfree_asubst_peps)
 
-lemma qfree_eps\<^isub>1: "nqfree \<phi> \<Longrightarrow> qfree(eps\<^isub>1 \<phi>)"
-apply(simp add:eps\<^isub>1_def)
+lemma qfree_qe_eps\<^isub>1: "nqfree \<phi> \<Longrightarrow> qfree(qe_eps\<^isub>1 \<phi>)"
+apply(simp add:qe_eps\<^isub>1_def)
 apply(rule qfree_list_disj)
 apply (auto simp:qfree_min_inf qfree_subst_peps qfree_map_fm)
 done
 
-definition "eps = DLO.lift_nnf_qe eps\<^isub>1"
+definition "qe_eps = DLO.lift_nnf_qe qe_eps\<^isub>1"
 
-lemma qfree_eps: "qfree(eps \<phi>)"
-by(simp add: eps_def DLO.qfree_lift_nnf_qe qfree_eps\<^isub>1)
+lemma qfree_qe_eps: "qfree(qe_eps \<phi>)"
+by(simp add: qe_eps_def DLO.qfree_lift_nnf_qe qfree_qe_eps\<^isub>1)
 
-lemma I_eps: "DLO.I (eps \<phi>) xs = DLO.I \<phi> xs"
-by(simp add:eps_def DLO.I_lift_nnf_qe qfree_eps\<^isub>1 I_eps1)
+lemma I_qe_eps: "DLO.I (qe_eps \<phi>) xs = DLO.I \<phi> xs"
+by(simp add:qe_eps_def DLO.I_lift_nnf_qe qfree_qe_eps\<^isub>1 I_qe_eps1)
 
 end

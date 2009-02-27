@@ -1,4 +1,4 @@
-(*  ID:         $Id: QElin_inf.thy,v 1.9 2009-01-30 14:15:31 nipkow Exp $
+(*  ID:         $Id: QElin_inf.thy,v 1.10 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -223,24 +223,24 @@ proof -
 qed
 
 definition
-"eps\<^isub>1(f) =
+"qe_eps\<^isub>1(f) =
 (let as = R.atoms\<^isub>0 f; lbs = lbounds as; ebs = ebounds as
  in list_disj (inf\<^isub>- f # map (subst\<^isub>+ f) lbs @ map (subst f) ebs))"
 
 theorem I_eps1:
-assumes "nqfree f" shows "R.I (eps\<^isub>1 f) xs = (\<exists>x. R.I f (x#xs))"
+assumes "nqfree f" shows "R.I (qe_eps\<^isub>1 f) xs = (\<exists>x. R.I f (x#xs))"
   (is "?QE = ?EX")
 proof
   let ?as = "R.atoms\<^isub>0 f" let ?ebs = "ebounds ?as"
   assume ?QE
   { assume "R.I (inf\<^isub>- f) xs"
     hence ?EX using `?QE` min_inf[of f xs] `nqfree f`
-      by(auto simp add:eps\<^isub>1_def amap_fm_list_disj)
+      by(auto simp add:qe_eps\<^isub>1_def amap_fm_list_disj)
   } moreover
   { assume "\<forall>x \<in> EQ f xs. \<not>R.I f (x#xs)"
            "\<not> R.I (inf\<^isub>- f) xs"
     with `?QE` `nqfree f` obtain r cs where "R.I (subst\<^isub>+ f (r,cs)) xs"
-      by(fastsimp simp:eps\<^isub>1_def set_ebounds diff_divide_distrib eval_def
+      by(fastsimp simp:qe_eps\<^isub>1_def set_ebounds diff_divide_distrib eval_def
 	diff_minus[symmetric] I_subst `nqfree f`)
     then obtain leps where "R.I f (leps#xs)"
       using I_subst_peps[OF `nqfree f`] by fastsimp
@@ -251,10 +251,10 @@ next
   assume ?EX
   then obtain x where x: "R.I f (x#xs)" ..
   { assume "R.I (inf\<^isub>- f) xs"
-    hence ?QE using `nqfree f` by(auto simp:eps\<^isub>1_def)
+    hence ?QE using `nqfree f` by(auto simp:qe_eps\<^isub>1_def)
   } moreover
   { assume "\<exists>rcs \<in> set ?ebs. R.I (subst f rcs) xs"
-    hence ?QE by(auto simp:eps\<^isub>1_def) } moreover
+    hence ?QE by(auto simp:qe_eps\<^isub>1_def) } moreover
   { assume "\<not> R.I (inf\<^isub>- f) xs"
     and "\<forall>rcs \<in> set ?ebs. \<not> R.I (subst f rcs) xs"
     hence noE: "\<forall>e \<in> EQ f xs. \<not> R.I f (e#xs)" using `nqfree f`
@@ -276,7 +276,7 @@ next
       by(auto intro!: I_subst_peps2[OF `nqfree f`]
 	simp:EQ2_def diff_divide_distrib algebra_simps)
     ultimately have ?QE
-      by(simp add:eps\<^isub>1_def bex_Un set_lbounds) metis
+      by(simp add:qe_eps\<^isub>1_def bex_Un set_lbounds) metis
   } ultimately show ?QE by blast
 qed
 
@@ -286,18 +286,18 @@ by(cases "(rcs,a)" rule:asubst_peps.cases) simp_all
 lemma qfree_subst_peps: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>+ \<phi> rcs)"
 by(induct \<phi>) (simp_all add:qfree_asubst_peps)
 
-lemma qfree_eps\<^isub>1: "nqfree \<phi> \<Longrightarrow> qfree(eps\<^isub>1 \<phi>)"
-apply(simp add:eps\<^isub>1_def)
+lemma qfree_qe_eps\<^isub>1: "nqfree \<phi> \<Longrightarrow> qfree(qe_eps\<^isub>1 \<phi>)"
+apply(simp add:qe_eps\<^isub>1_def)
 apply(rule qfree_list_disj)
 apply (auto simp:qfree_min_inf qfree_subst_peps qfree_map_fm)
 done
 
-definition "eps = R.lift_nnf_qe eps\<^isub>1"
+definition "qe_eps = R.lift_nnf_qe qe_eps\<^isub>1"
 
-lemma qfree_eps: "qfree(eps \<phi>)"
-by(simp add: eps_def R.qfree_lift_nnf_qe qfree_eps\<^isub>1)
+lemma qfree_qe_eps: "qfree(qe_eps \<phi>)"
+by(simp add: qe_eps_def R.qfree_lift_nnf_qe qfree_qe_eps\<^isub>1)
 
-lemma I_eps: "R.I (eps \<phi>) xs = R.I \<phi> xs"
-by(simp add:eps_def R.I_lift_nnf_qe qfree_eps\<^isub>1 I_eps1)
+lemma I_qe_eps: "R.I (qe_eps \<phi>) xs = R.I \<phi> xs"
+by(simp add:qe_eps_def R.I_lift_nnf_qe qfree_qe_eps\<^isub>1 I_eps1)
 
 end

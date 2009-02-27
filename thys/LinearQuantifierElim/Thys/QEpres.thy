@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEpres.thy,v 1.10 2009-02-21 22:30:57 nipkow Exp $
+(*  ID:         $Id: QEpres.thy,v 1.11 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -8,114 +8,22 @@ begin
 
 subsection{*DNF-based quantifier elimination*}
 
-fun hd_coeff1 :: "int \<Rightarrow> atom \<Rightarrow> atom" where
-"hd_coeff1 m (Le i (k#ks)) =
-   (let m' = m div (abs k) in Le (m'*i) (sgn k # (m' *\<^sub>s ks)))" |
-"hd_coeff1 m (Dvd d i (k#ks)) =
-   (let m' = m div k in Dvd (m'*d) (m'*i) (1 # (m' *\<^sub>s ks)))" |
-"hd_coeff1 m (NDvd d i (k#ks)) =
-   (let m' = m div k in NDvd (m'*d) (m'*i) (1 # (m' *\<^sub>s ks)))"
-
-text{* The def of @{const hd_coeff1} on @{const Dvd} and @{const NDvd} is
-different from the @{const Le} because it allows the resulting head
-coefficient to be 1 rather than 1 or -1. We show that the other version has
-the same semantics: *}
-
-lemma "\<lbrakk> k \<noteq> 0; k dvd m \<rbrakk> \<Longrightarrow>
-  I\<^isub>Z (hd_coeff1 m (Dvd d i (k#ks))) (x#e) = (let m' = m div (abs k) in
-  I\<^isub>Z (Dvd (m'*d) (m'*i) (sgn k # (m' *\<^sub>s ks))) (x#e))"
-apply(auto simp:algebra_simps abs_if sgn_if)
- apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
- apply (metis diff_minus comm_monoid_add.mult_left_commute dvd_minus_iff minus_add_distrib)
-apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
-apply (metis diff_minus comm_monoid_add.mult_left_commute dvd_minus_iff minus_add_distrib)
-done
-
 (* all hd-coeffs are nonzero! *)
 definition
 "hd_coeffs1 as =
  (let m = zlcms(map hd_coeff as)
   in Dvd m 0 [1] # map (hd_coeff1 m) as)"
 
-lemma I_hd_coeff1_mult: assumes "m>0"
-shows "\<lbrakk> hd_coeff a \<noteq> 0; hd_coeff a dvd m \<rbrakk> \<Longrightarrow>
- I\<^isub>Z (hd_coeff1 m a) (m*x#e) = I\<^isub>Z a (x#e)"
-proof(induct a)
-  case (Le i ks)
-  then obtain k js where [simp]: "ks = k#js" by(auto simp: split:list.splits)
-  let ?d = "m div \<bar>k\<bar>"
-  from Le have "\<bar>k\<bar> dvd m" by simp
-  hence "?d > 0" using pos_imp_zdiv_pos_iff Le `m>0` by(simp add:zdvd_imp_le)
-  have 1: "k*(x*?d) = sgn k * x * m"
-  proof -
-    have "k*(x*?d) = (sgn k * abs k) * (x * ?d)" by(simp only: mult_sgn_abs)
-    also have "\<dots> = sgn k * x * (abs k * ?d)" by simp
-    also have "\<dots> = sgn k * x * m" using zdvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`]
-      by(simp add:algebra_simps)
-    finally show ?thesis .
-  qed
-  have "I\<^isub>Z (hd_coeff1 m (Le i ks)) (m*x#e) \<longleftrightarrow>
-       (i*?d \<le> sgn k * m*x + ?d * \<langle>js,e\<rangle>)"
-    by(simp add: algebra_simps)
-  also have "\<dots> \<longleftrightarrow> ?d*i \<le> ?d * (k*x + \<langle>js,e\<rangle>)" using 1
-    by(simp (no_asm_simp) add:algebra_simps)
-  also have "\<dots> \<longleftrightarrow> i \<le> k*x + \<langle>js,e\<rangle>" using `?d>0`
-    by(simp add: mult_compare_simps)
-  finally show ?case by(simp)
-next
-  case (Dvd d i ks)
-  then obtain k js where [simp]: "ks = k#js" by(auto split:list.splits)
-  let ?m' = "m div k"
-  from Dvd have "k dvd m" by simp
-  hence "?m' \<noteq> 0" using zdiv_eq_0_iff Dvd `m>0`
-    by(simp add:linorder_not_less zdvd_imp_le)
-  have 1: "k*(x*?m') = x * m"
-  proof -
-    have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-    also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-      by(simp add:algebra_simps)
-    finally show ?thesis .
-  qed
-  have "I\<^isub>Z (hd_coeff1 m (Dvd d i ks)) (m*x#e) \<longleftrightarrow>
-       (?m'*d dvd ?m'*i + m*x + ?m' * \<langle>js,e\<rangle>)"
-    by(simp add: algebra_simps)
-  also have "\<dots> \<longleftrightarrow> ?m'*d dvd ?m' * (i + k*x + \<langle>js,e\<rangle>)" using 1
-    by(simp (no_asm_simp) add:algebra_simps)
-  also have "\<dots> \<longleftrightarrow> d dvd i + k*x + \<langle>js,e\<rangle>" using `?m'\<noteq>0` by(simp)
-  finally show ?case by(simp add:algebra_simps)
-next
-  case (NDvd d i ks)
-  then obtain k js where [simp]: "ks = k#js" by(auto split:list.splits)
-  let ?m' = "m div k"
-  from NDvd have "k dvd m" by simp
-  hence "?m' \<noteq> 0" using zdiv_eq_0_iff NDvd `m>0`
-    by(simp add:linorder_not_less zdvd_imp_le)
-  have 1: "k*(x*?m') = x * m"
-  proof -
-    have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-    also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-      by(simp add:algebra_simps)
-    finally show ?thesis .
-  qed
-  have "I\<^isub>Z (hd_coeff1 m (NDvd d i ks)) (m*x#e) \<longleftrightarrow>
-       \<not>(?m'*d dvd ?m'*i + m*x + ?m' * \<langle>js,e\<rangle>)"
-    by(simp add: algebra_simps)
-  also have "\<dots> \<longleftrightarrow> \<not> ?m'*d dvd ?m' * (i + k*x + \<langle>js,e\<rangle>)" using 1
-    by(simp (no_asm_simp) add:algebra_simps)
-  also have "\<dots> \<longleftrightarrow> \<not> d dvd i + k*x + \<langle>js,e\<rangle>" using `?m'\<noteq>0` by(simp)
-  finally show ?case by(simp add:algebra_simps)
-qed
-
 lemma I_hd_coeffs1:
 assumes 0: "\<forall>a\<in>set as. hd_coeff a \<noteq> 0" shows
-  "(\<exists>x. \<forall>a \<in> set(hd_coeffs1 as). I\<^isub>Z a (x#e)) =
-   (\<exists>x. \<forall>a \<in> set as. I\<^isub>Z a (x#e))" (is "?B = ?A")
+  "(\<exists>x. \<forall>a \<in> set(hd_coeffs1 as). I\<^isub>Z a (x#xs)) =
+   (\<exists>x. \<forall>a \<in> set as. I\<^isub>Z a (x#xs))" (is "?B = ?A")
 proof -
   let ?m = "zlcms(map hd_coeff as)"
   have "?m>0" using 0 by(simp add:zlcms_pos)
-  have "?A = (\<exists>x. \<forall>a \<in> set as. I\<^isub>Z (hd_coeff1 ?m a) (?m*x#e))"
-    by (simp add:I_hd_coeff1_mult[OF `?m>0`] dvd_zlcms 0)
-  also have "\<dots> = (\<exists>x. ?m dvd x+0 \<and> (\<forall>a \<in> set as. I\<^isub>Z (hd_coeff1 ?m a) (x#e)))"
+  have "?A = (\<exists>x. \<forall>a \<in> set as. I\<^isub>Z (hd_coeff1 ?m a) (?m*x#xs))"
+    by (simp add:I_hd_coeff1_mult_a[OF `?m>0`] dvd_zlcms 0)
+  also have "\<dots> = (\<exists>x. ?m dvd x+0 \<and> (\<forall>a \<in> set as. I\<^isub>Z (hd_coeff1 ?m a) (x#xs)))"
     by(rule unity_coeff_ex[THEN meta_eq_to_obj_eq])
   finally show ?thesis by(simp add:hd_coeffs1_def)
 qed
@@ -124,7 +32,7 @@ qed
 abbreviation "is_dvd a \<equiv> case a of Le _ _ \<Rightarrow> False | _ \<Rightarrow> True"
 
 definition
-"qe_pres as =
+"qe_pres\<^isub>1 as =
  (let ds = filter is_dvd as; (d::int) = zlcms(map divisor ds); ls = lbounds as
   in if ls = []
      then Disj [0..d - 1] (\<lambda>n. list_conj(map (Atom \<circ> asubst n []) ds))
@@ -181,10 +89,10 @@ next
   case Le thus ?thesis using `is_dvd a` by simp
 qed
 
-lemma I_qe_pres:
+lemma I_qe_pres\<^isub>1:
 assumes norm: "\<forall>a \<in> set as. divisor a \<noteq> 0"
 and hd: "\<forall>a \<in> set as. hd_coeff_is1 a"
-shows "Z.I (qe_pres as) xs = (\<exists>x. \<forall>a\<in> set as. I\<^isub>Z a (x#xs))"
+shows "Z.I (qe_pres\<^isub>1 as) xs = (\<exists>x. \<forall>a\<in> set as. I\<^isub>Z a (x#xs))"
 proof -
   let ?lbs = "lbounds as"
   let ?ds = "filter is_dvd as"
@@ -208,7 +116,7 @@ proof -
     { assume "?lbs = []"
       with `?QE` obtain n where "n < ?lcm" and
 	A: "\<forall>a \<in> ?Ds. I\<^isub>Z a (n#xs)" using 1
-	by(auto simp:IZ_asubst qe_pres_def)
+	by(auto simp:IZ_asubst qe_pres\<^isub>1_def)
       have "?Ls = {}" using `?lbs = []` set_lbounds[of as]
 	by (auto simp add:filter_empty_conv split:atom.split list.split)
       have "\<exists>x. ?P x"
@@ -275,7 +183,7 @@ proof -
     { assume "?lbs \<noteq> []"
       with `?QE` obtain il ksl m
 	where "\<forall>a\<in>set as. I\<^isub>Z (asubst (il + m) ksl a) xs"
-	by(auto simp:qe_pres_def)
+	by(auto simp:qe_pres\<^isub>1_def)
       hence "?P(il + m + \<langle>ksl,xs\<rangle>)" by(simp add:IZ_asubst)
       hence "\<exists>x. ?P x" .. }
     ultimately show "\<exists>x. ?P x" by blast
@@ -294,7 +202,7 @@ proof -
 	        simp: mod_mod_cancel dvd_zlcms) }
 	thus "?P(x mod ?lcm)" using x norm by(simp add: zlcms_pos)
       qed
-      ultimately show ?thesis by (auto simp:qe_pres_def IZ_asubst)
+      ultimately show ?thesis by (auto simp:qe_pres\<^isub>1_def IZ_asubst)
     next
       assume "?lbs \<noteq> []"
       let ?L = "{i - \<langle>ks,xs\<rangle> |ks i. (i,ks) \<in> set(lbounds as)}"
@@ -365,7 +273,7 @@ proof -
 	qed
       }
       ultimately show ?thesis using `?lbs \<noteq> []`
-	by (simp (no_asm_simp) add:qe_pres_def IZ_asubst split_def)
+	by (simp (no_asm_simp) add:qe_pres\<^isub>1_def IZ_asubst split_def)
            (force simp del:int_nat_eq)
     qed
   qed
@@ -432,89 +340,87 @@ proof -
 qed
 
 
-lemma I_qe_pres_o:
+lemma I_qe_pres\<^isub>1_o:
  "\<lbrakk> \<forall>a \<in> set as. divisor a \<noteq> 0; \<forall>a\<in>set as. hd_coeff a \<noteq> 0 \<rbrakk> \<Longrightarrow>
-  Z.I ((qe_pres \<circ> hd_coeffs1) as) e = (\<exists>x. \<forall>a\<in> set as. I\<^isub>Z a (x#e))"
+  Z.I ((qe_pres\<^isub>1 \<circ> hd_coeffs1) as) e = (\<exists>x. \<forall>a\<in> set as. I\<^isub>Z a (x#e))"
 apply(simp)
-apply(subst I_qe_pres)
+apply(subst I_qe_pres\<^isub>1)
   apply(simp add: divisors_hd_coeffs1)
  apply(simp add: hd_coeff_is1_hd_coeffs1)
 using I_hd_coeffs1 apply(simp)
 done
 
-definition "pres_qe = Z.lift_dnf_qe (qe_pres \<circ> hd_coeffs1)"
+definition "qe_pres = Z.lift_dnf_qe (qe_pres\<^isub>1 \<circ> hd_coeffs1)"
 
-lemma qfree_qe_pres_o: "qfree ((qe_pres \<circ> hd_coeffs1) as)"
-by(auto simp:qe_pres_def intro!:qfree_list_disj)
+lemma qfree_qe_pres_o: "qfree ((qe_pres\<^isub>1 \<circ> hd_coeffs1) as)"
+by(auto simp:qe_pres\<^isub>1_def intro!:qfree_list_disj)
 
 
-lemma normal_qe_pres_o:
+lemma normal_qe_pres\<^isub>1_o:
   "\<forall>a \<in> set as. hd_coeff a \<noteq> 0 \<and> divisor a \<noteq> 0 \<Longrightarrow>
-   Z.normal ((qe_pres \<circ> hd_coeffs1) as)"
-apply(auto simp:qe_pres_def Z.normal_def
+   Z.normal ((qe_pres\<^isub>1 \<circ> hd_coeffs1) as)"
+apply(auto simp:qe_pres\<^isub>1_def Z.normal_def
    dest!:atoms_list_disjE atoms_list_conjE)
 
 apply(simp add: hd_coeffs1_def)
  apply(erule disjE) apply fastsimp
 apply (clarsimp)
 apply(case_tac xa)
-  apply(case_tac list) apply fastsimp apply simp
+  apply(case_tac list) apply fastsimp apply (simp split:split_if_asm)
  apply(case_tac list) apply fastsimp
- apply simp
+ apply (simp split:split_if_asm) apply fastsimp
  apply(erule disjE) prefer 2 apply fastsimp
  apply(simp add:zdiv_eq_0_iff)
- apply(erule disjE) apply fastsimp
- apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
-  prefer 2 apply simp
- apply(erule disjE) prefer 2 apply (metis linorder_not_le zlcms_pos)
  apply(subgoal_tac "a \<in> set(map hd_coeff as)")
   prefer 2 apply force
- apply (metis elem_le_zlcms linorder_not_le)
+ apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
+  prefer 2 apply simp
+ apply (metis elem_le_zlcms linorder_not_le zlcms_pos)
 apply(case_tac list) apply fastsimp
-apply simp
-apply(erule disjE) prefer 2 apply fastsimp
+apply (simp split:split_if_asm) apply fastsimp
 apply(simp add:zdiv_eq_0_iff)
-apply(erule disjE) apply fastsimp
 apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
  prefer 2 apply simp
-apply(erule disjE) prefer 2 apply (metis linorder_not_le zlcms_pos)
 apply(subgoal_tac "a \<in> set(map hd_coeff as)")
  prefer 2 apply force
-apply (metis elem_le_zlcms linorder_not_le)
+apply(erule disjE)
+ apply (metis elem_le_zlcms linorder_not_le)
+apply(erule disjE)
+ apply (metis linorder_not_le zlcms_pos)
+apply fastsimp
 
 apply(simp add: hd_coeffs1_def)
-apply(erule disjE) apply fastsimp
+ apply(erule disjE) apply fastsimp
 apply (clarsimp)
 apply(case_tac xa)
-  apply(case_tac list) apply fastsimp apply simp
+  apply(case_tac list) apply fastsimp apply (simp split:split_if_asm)
  apply(case_tac list) apply fastsimp
- apply simp
+ apply (simp split:split_if_asm) apply fastsimp
  apply(erule disjE) prefer 2 apply fastsimp
  apply(simp add:zdiv_eq_0_iff)
- apply(erule disjE) apply fastsimp
- apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
-  prefer 2 apply simp
- apply(erule disjE) prefer 2 apply (metis linorder_not_le zlcms_pos)
  apply(subgoal_tac "a \<in> set(map hd_coeff as)")
   prefer 2 apply force
- apply (metis elem_le_zlcms linorder_not_le)
+ apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
+  prefer 2 apply simp
+ apply (metis elem_le_zlcms linorder_not_le zlcms_pos)
 apply(case_tac list) apply fastsimp
-apply simp
-apply(erule disjE) prefer 2 apply fastsimp
+apply (simp split:split_if_asm) apply fastsimp
 apply(simp add:zdiv_eq_0_iff)
-apply(erule disjE) apply fastsimp
 apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
  prefer 2 apply simp
-apply(erule disjE) prefer 2 apply (metis linorder_not_le zlcms_pos)
 apply(subgoal_tac "a \<in> set(map hd_coeff as)")
  prefer 2 apply force
-apply (metis elem_le_zlcms linorder_not_le)
+apply(erule disjE)
+ apply (metis elem_le_zlcms linorder_not_le)
+apply(erule disjE)
+ apply (metis linorder_not_le zlcms_pos)
+apply fastsimp
 done
 
-theorem I_pres_qe: "Z.normal \<phi> \<Longrightarrow>  Z.I (pres_qe \<phi>) xs = Z.I \<phi> xs"
-by(simp add:pres_qe_def Z.I_lift_dnf_qe_anormal I_qe_pres_o qfree_qe_pres_o normal_qe_pres_o del:o_apply)
+theorem I_pres_qe: "Z.normal \<phi> \<Longrightarrow>  Z.I (qe_pres \<phi>) xs = Z.I \<phi> xs"
+by(simp add:qe_pres_def Z.I_lift_dnf_qe_anormal I_qe_pres\<^isub>1_o qfree_qe_pres_o normal_qe_pres\<^isub>1_o del:o_apply)
 
-theorem qfree_pres_qe: "qfree (pres_qe f)"
-by(simp add:pres_qe_def Z.qfree_lift_dnf_qe qfree_qe_pres_o del:o_apply)
+theorem qfree_pres_qe: "qfree (qe_pres f)"
+by(simp add:qe_pres_def Z.qfree_lift_dnf_qe qfree_qe_pres_o del:o_apply)
 
 end

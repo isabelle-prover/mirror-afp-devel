@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEdlo_ex.thy,v 1.2 2008-01-11 15:22:20 lsf37 Exp $
+(*  ID:         $Id: QEdlo_ex.thy,v 1.3 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -26,8 +26,8 @@ lemmas reify_eqs[reify] =
   Logic.interpret.simps(1,2,4-7)[of I\<^isub>d\<^isub>l\<^isub>o, folded interpret_def]
   interpret_others interpret_Atoms
 
-corollary [reflection]: "interpret (dlo_qe f) xs = interpret f xs"
-by(simp add:I_dlo_qe interpret_def)
+corollary [reflection]: "interpret (qe_dlo f) xs = interpret f xs"
+by(simp add:I_qe_dlo interpret_def)
 
 method_setup reify = {*
   fn src =>
@@ -46,12 +46,12 @@ subsection{* Examples *}
 
 lemma "\<forall>x::real. \<not> x < x"
 apply reify
-apply(subst I_dlo_qe[symmetric])
+apply(subst I_qe_dlo[symmetric])
 by eval
 
 lemma "\<forall>x y::real. \<exists>z. x < y \<longrightarrow> x < z & z < y"
 apply reify
-apply(subst I_dlo_qe[symmetric])
+apply(subst I_qe_dlo[symmetric])
 by eval
 
 (* FIXME
@@ -65,40 +65,40 @@ oops
 
 lemma "\<forall>x::real. \<not> x < x"
 apply reify
-apply(subst I_dlo_qe[symmetric])
+apply(subst I_qe_dlo[symmetric])
 by eval
 
 lemma "\<forall>x y::real. \<exists>z. x < y \<longrightarrow> x < z & z < y"
 apply reify
-apply(subst I_dlo_qe[symmetric])
+apply(subst I_qe_dlo[symmetric])
 by eval
 
 (* 160 secs *)
 lemma "\<not>(\<exists>x y z. \<forall>u::real. x < x | \<not> x<u | x<y & y<z & \<not> x<z)"
 apply reify
-apply(subst I_dlo_qe[symmetric])
+apply(subst I_qe_dlo[symmetric])
 by eval
 
-lemma "dlo_qe(AllQ (Imp (Atom(Less 0 1)) (Atom(Less 1 0)))) = FalseF"
+lemma "qe_dlo(AllQ (Imp (Atom(Less 0 1)) (Atom(Less 1 0)))) = FalseF"
 by eval
 
-lemma "dlo_qe(AllQ(AllQ (Imp (Atom(Less 0 1)) (Atom(Less 0 1))))) = TrueF"
-by eval
-
-lemma
-  "dlo_qe(AllQ(ExQ(AllQ (And (Atom(Less 2 1)) (Atom(Less 1 0)))))) = FalseF"
-by eval
-
-lemma "dlo_qe(AllQ(ExQ(ExQ (And (Atom(Less 1 2)) (Atom(Less 2 0)))))) = TrueF"
+lemma "qe_dlo(AllQ(AllQ (Imp (Atom(Less 0 1)) (Atom(Less 0 1))))) = TrueF"
 by eval
 
 lemma
-  "dlo_qe(AllQ(AllQ(ExQ (And (Atom(Less 1 0)) (Atom(Less 0 2)))))) = FalseF"
+  "qe_dlo(AllQ(ExQ(AllQ (And (Atom(Less 2 1)) (Atom(Less 1 0)))))) = FalseF"
 by eval
 
-lemma "dlo_qe(AllQ(AllQ(ExQ (Imp (Atom(Less 1 2)) (And (Atom(Less 1 0)) (Atom(Less 0 2))))))) = TrueF"
+lemma "qe_dlo(AllQ(ExQ(ExQ (And (Atom(Less 1 2)) (Atom(Less 2 0)))))) = TrueF"
 by eval
 
-normal_form "dlo_qe(AllQ (Imp (Atom(Less 0 1)) (Atom(Less 0 2))))"
+lemma
+  "qe_dlo(AllQ(AllQ(ExQ (And (Atom(Less 1 0)) (Atom(Less 0 2)))))) = FalseF"
+by eval
+
+lemma "qe_dlo(AllQ(AllQ(ExQ (Imp (Atom(Less 1 2)) (And (Atom(Less 1 0)) (Atom(Less 0 2))))))) = TrueF"
+by eval
+
+normal_form "qe_dlo(AllQ (Imp (Atom(Less 0 1)) (Atom(Less 0 2))))"
 
 end

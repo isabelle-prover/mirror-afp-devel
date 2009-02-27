@@ -1,4 +1,4 @@
-(*  ID:         $Id: PresArith.thy,v 1.9 2009-01-30 14:15:31 nipkow Exp $
+(*  ID:         $Id: PresArith.thy,v 1.10 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -157,5 +157,148 @@ by (metis DIVISION_BY_ZERO dvd_eq_mod_eq_0 dvd_zlcms zlcms_pos zless_le)
 
 lemma elem_le_zlcms: "\<forall>i \<in> set is. i \<noteq> 0 \<Longrightarrow> i : set is \<Longrightarrow> i \<le> zlcms is"
 by (metis dvd_zlcms zdvd_imp_le zlcms_pos)
+
+
+subsection{* Setting coeffiencients to 1 or -1 *}
+
+fun hd_coeff1 :: "int \<Rightarrow> atom \<Rightarrow> atom" where
+"hd_coeff1 m (Le i (k#ks)) =
+   (if k=0 then Le i (k#ks)
+    else let m' = m div (abs k) in Le (m'*i) (sgn k # (m' *\<^sub>s ks)))" |
+"hd_coeff1 m (Dvd d i (k#ks)) =
+   (if k=0 then Dvd d i (k#ks)
+    else let m' = m div k in Dvd (m'*d) (m'*i) (1 # (m' *\<^sub>s ks)))" |
+"hd_coeff1 m (NDvd d i (k#ks)) =
+   (if k=0 then NDvd d i (k#ks)
+    else let m' = m div k in NDvd (m'*d) (m'*i) (1 # (m' *\<^sub>s ks)))" |
+"hd_coeff1 _ a = a"
+
+text{* The def of @{const hd_coeff1} on @{const Dvd} and @{const NDvd} is
+different from the @{const Le} because it allows the resulting head
+coefficient to be 1 rather than 1 or -1. We show that the other version has
+the same semantics: *}
+
+lemma "\<lbrakk> k \<noteq> 0; k dvd m \<rbrakk> \<Longrightarrow>
+  I\<^isub>Z (hd_coeff1 m (Dvd d i (k#ks))) (x#e) = (let m' = m div (abs k) in
+  I\<^isub>Z (Dvd (m'*d) (m'*i) (sgn k # (m' *\<^sub>s ks))) (x#e))"
+apply(auto simp:algebra_simps abs_if sgn_if)
+ apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
+ apply (metis diff_minus comm_monoid_add.mult_left_commute dvd_minus_iff minus_add_distrib)
+apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
+apply (metis diff_minus comm_monoid_add.mult_left_commute dvd_minus_iff minus_add_distrib)
+done
+
+
+lemma I_hd_coeff1_mult_a: assumes "m>0"
+shows "hd_coeff a dvd m | hd_coeff a = 0 \<Longrightarrow> I\<^isub>Z (hd_coeff1 m a) (m*x#xs) = I\<^isub>Z a (x#xs)"
+proof(induct a)
+  case (Le i ks)[simp]
+  show ?case
+  proof(cases ks)
+    case Nil thus ?thesis by simp
+  next
+    case (Cons k ks')[simp]
+    show ?thesis
+    proof cases
+      assume "k=0" thus ?thesis by simp
+    next
+      assume "k\<noteq>0"
+      with Le have "\<bar>k\<bar> dvd m" by simp
+      let ?m' = "m div \<bar>k\<bar>"
+      have "?m' > 0" using `\<bar>k\<bar> dvd m` pos_imp_zdiv_pos_iff `m>0` `k\<noteq>0`
+	by(simp add:zdvd_imp_le)
+      have 1: "k*(x*?m') = sgn k * x * m"
+      proof -
+	have "k*(x*?m') = (sgn k * abs k) * (x * ?m')"
+	  by(simp only: mult_sgn_abs)
+	also have "\<dots> = sgn k * x * (abs k * ?m')" by simp
+	also have "\<dots> = sgn k * x * m"
+	  using zdvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:algebra_simps)
+	finally show ?thesis .
+      qed
+      have "I\<^isub>Z (hd_coeff1 m (Le i ks)) (m*x#xs) \<longleftrightarrow>
+            (i*?m' \<le> sgn k * m*x + ?m' * \<langle>ks',xs\<rangle>)"
+	using `k\<noteq>0` by(simp add: algebra_simps)
+      also have "\<dots> \<longleftrightarrow> ?m'*i \<le> ?m' * (k*x + \<langle>ks',xs\<rangle>)" using 1
+	by(simp (no_asm_simp) add:algebra_simps)
+      also have "\<dots> \<longleftrightarrow> i \<le> k*x + \<langle>ks',xs\<rangle>" using `?m'>0`
+	by(simp add: mult_compare_simps)
+      finally show ?thesis by(simp)
+    qed
+  qed
+next
+  case (Dvd d i ks)[simp]
+  show ?case
+  proof(cases ks)
+    case Nil thus ?thesis by simp
+  next
+    case (Cons k ks')[simp]
+    show ?thesis
+    proof cases
+      assume "k=0" thus ?thesis by simp
+    next
+      assume "k\<noteq>0"
+      with Dvd have "k dvd m" by simp
+      let ?m' = "m div k"
+      have "?m' \<noteq> 0" using `k dvd m` zdiv_eq_0_iff `m>0` `k\<noteq>0`
+	by(simp add:linorder_not_less zdvd_imp_le)
+      have 1: "k*(x*?m') = x * m"
+      proof -
+	have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
+	also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
+	  by(simp add:algebra_simps)
+	finally show ?thesis .
+      qed
+      have "I\<^isub>Z (hd_coeff1 m (Dvd d i ks)) (m*x#xs) \<longleftrightarrow>
+            (?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
+	using `k\<noteq>0` by(simp add: algebra_simps)
+      also have "\<dots> \<longleftrightarrow> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
+	by(simp (no_asm_simp) add:algebra_simps)
+      also have "\<dots> \<longleftrightarrow> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
+      finally show ?thesis by(simp add:algebra_simps)
+    qed
+  qed
+next
+  case (NDvd d i ks)[simp]
+  show ?case
+  proof(cases ks)
+    case Nil thus ?thesis by simp
+  next
+    case (Cons k ks')[simp]
+    show ?thesis
+    proof cases
+      assume "k=0" thus ?thesis by simp
+    next
+      assume "k\<noteq>0"
+      with NDvd have "k dvd m" by simp
+      let ?m' = "m div k"
+      have "?m' \<noteq> 0" using `k dvd m` zdiv_eq_0_iff `m>0` `k\<noteq>0`
+	by(simp add:linorder_not_less zdvd_imp_le)
+      have 1: "k*(x*?m') = x * m"
+      proof -
+	have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
+	also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
+	  by(simp add:algebra_simps)
+	finally show ?thesis .
+      qed
+      have "I\<^isub>Z (hd_coeff1 m (NDvd d i ks)) (m*x#xs) \<longleftrightarrow>
+            \<not>(?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
+	using `k\<noteq>0` by(simp add: algebra_simps)
+      also have "\<dots> \<longleftrightarrow> \<not> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
+	by(simp (no_asm_simp) add:algebra_simps)
+      also have "\<dots> \<longleftrightarrow> \<not> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
+      finally show ?thesis by(simp add:algebra_simps)
+    qed
+  qed
+qed
+
+
+lemma I_hd_coeff1_mult: assumes "m>0"
+shows "qfree \<phi> \<Longrightarrow> \<forall> a \<in> set(Z.atoms\<^isub>0 \<phi>). hd_coeff a dvd m \<Longrightarrow>
+ Z.I (map\<^bsub>fm\<^esub> (hd_coeff1 m) \<phi>) (m*x#xs) = Z.I \<phi> (x#xs)"
+proof(induct \<phi>)
+  case (Atom a)
+  thus ?case using I_hd_coeff1_mult_a[OF `m>0`] by(simp split:split_if_asm)
+qed simp_all
 
 end

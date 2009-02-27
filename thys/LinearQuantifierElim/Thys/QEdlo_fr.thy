@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEdlo_fr.thy,v 1.2 2008-01-11 15:22:20 lsf37 Exp $
+(*  ID:         $Id: QEdlo_fr.thy,v 1.3 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -102,7 +102,7 @@ qed auto
 declare[[simp_depth_limit=50]]
 
 definition
-"interior\<^isub>1 \<phi> =
+"qe_interior\<^isub>1 \<phi> =
 (let as = DLO.atoms\<^isub>0 \<phi>; lbs = lbounds as; ubs = ubounds as; ebs = ebounds as;
      intrs = [And (Atom(Less l u)) (subst\<^isub>2 l u \<phi>). l\<leftarrow>lbs, u\<leftarrow>ubs]
  in list_disj (inf\<^isub>- \<phi> # inf\<^isub>+ \<phi> # intrs @ map (subst \<phi>) ebs))"
@@ -139,23 +139,23 @@ qed
 
 
 theorem I_interior1:
-assumes "nqfree \<phi>" shows "DLO.I (interior\<^isub>1 \<phi>) xs = (EX x. DLO.I \<phi> (x#xs))"
+assumes "nqfree \<phi>" shows "DLO.I (qe_interior\<^isub>1 \<phi>) xs = (EX x. DLO.I \<phi> (x#xs))"
   (is "?QE = ?EX")
 proof
   assume ?QE
   { assume "DLO.I (inf\<^isub>- \<phi>) xs"
     hence ?EX using `?QE` min_inf[of \<phi> xs] `nqfree \<phi>`
-      by(auto simp add:interior\<^isub>1_def amap_fm_list_disj)
+      by(auto simp add:qe_interior\<^isub>1_def amap_fm_list_disj)
   } moreover
   { assume  "DLO.I (inf\<^isub>+ \<phi>) xs"
     hence ?EX using `?QE` plus_inf[of \<phi> xs] `nqfree \<phi>`
-      by(auto simp add:interior\<^isub>1_def amap_fm_list_disj)
+      by(auto simp add:qe_interior\<^isub>1_def amap_fm_list_disj)
   } moreover
   { assume "\<not>DLO.I (inf\<^isub>- \<phi>) xs \<and> \<not>DLO.I (inf\<^isub>+ \<phi>) xs \<and>
             (\<forall>x\<in>EQ \<phi> xs. \<not>DLO.I \<phi> (x#xs))"
     with `?QE` `nqfree \<phi>` obtain l u
       where "DLO.I (subst\<^isub>2 l u \<phi>) xs" and "xs!l < xs!u"
-      by(fastsimp simp: interior\<^isub>1_def set_lbounds set_ubounds I_subst EQ_conv_set_ebounds)
+      by(fastsimp simp: qe_interior\<^isub>1_def set_lbounds set_ubounds I_subst EQ_conv_set_ebounds)
     moreover then obtain x where "xs!l < x \<and> x < xs!u" by(metis dense)
     ultimately have "DLO.I \<phi> (x # xs)"
       using `nqfree \<phi>` I_subst\<^isub>21[OF `nqfree \<phi>` `xs!l < xs!u`] by simp
@@ -166,10 +166,10 @@ next
   assume ?EX
   then obtain x where x: "DLO.I \<phi> (x#xs)" ..
   { assume "DLO.I (inf\<^isub>- \<phi>) xs \<or> DLO.I (inf\<^isub>+ \<phi>) xs"
-    hence ?QE using `nqfree \<phi>` by(auto simp:interior\<^isub>1_def)
+    hence ?QE using `nqfree \<phi>` by(auto simp:qe_interior\<^isub>1_def)
   } moreover
   { assume "EX k : ?E. DLO.I (subst \<phi> k) xs"
-    hence ?QE by(force simp:interior\<^isub>1_def) } moreover
+    hence ?QE by(force simp:qe_interior\<^isub>1_def) } moreover
   { assume "\<not> DLO.I (inf\<^isub>- \<phi>) xs" and "\<not> DLO.I (inf\<^isub>+ \<phi>) xs"
     and "\<forall>k \<in> ?E. \<not> DLO.I (subst \<phi> k) xs"
     hence noE: "\<forall>e \<in> EQ \<phi> xs. \<not> DLO.I \<phi> (e#xs)"
@@ -192,7 +192,7 @@ next
     hence "DLO.I (subst\<^isub>2 m n \<phi>) xs" using noE
       by(force intro!: I_subst\<^isub>22[OF `nqfree \<phi>`])
     ultimately have ?QE
-      by(fastsimp simp add:interior\<^isub>1_def bex_Un set_lbounds set_ubounds)
+      by(fastsimp simp add:qe_interior\<^isub>1_def bex_Un set_lbounds set_ubounds)
   } ultimately show ?QE by blast
 qed
 
@@ -202,19 +202,19 @@ by(cases "(l,u,a)" rule:asubst\<^isub>2.cases) simp_all
 lemma qfree_subst\<^isub>2: "nqfree \<phi> \<Longrightarrow> qfree (subst\<^isub>2 l u \<phi>)"
 by(induct \<phi>) (simp_all add:qfree_asubst\<^isub>2)
 
-lemma qfree_interior1: "nqfree \<phi> \<Longrightarrow> qfree(interior\<^isub>1 \<phi>)"
-apply(simp add:interior\<^isub>1_def)
+lemma qfree_interior1: "nqfree \<phi> \<Longrightarrow> qfree(qe_interior\<^isub>1 \<phi>)"
+apply(simp add:qe_interior\<^isub>1_def)
 apply(rule qfree_list_disj)
 apply (auto simp:qfree_min_inf qfree_plus_inf qfree_subst\<^isub>2 qfree_map_fm)
 done
 
 
-definition "interior = DLO.lift_nnf_qe interior\<^isub>1"
+definition "qe_interior = DLO.lift_nnf_qe qe_interior\<^isub>1"
 
-lemma qfree_interior: "qfree(interior \<phi>)"
-by(simp add: interior_def DLO.qfree_lift_nnf_qe qfree_interior1)
+lemma qfree_qe_interior: "qfree(qe_interior \<phi>)"
+by(simp add: qe_interior_def DLO.qfree_lift_nnf_qe qfree_interior1)
 
-lemma I_interior: "DLO.I (interior \<phi>) xs = DLO.I \<phi> xs"
-by(simp add:interior_def DLO.I_lift_nnf_qe qfree_interior1 I_interior1)
+lemma I_qe_interior: "DLO.I (qe_interior \<phi>) xs = DLO.I \<phi> xs"
+by(simp add:qe_interior_def DLO.I_lift_nnf_qe qfree_interior1 I_interior1)
 
 end

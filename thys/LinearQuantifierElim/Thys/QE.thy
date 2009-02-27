@@ -1,4 +1,4 @@
-(*  ID:         $Id: QE.thy,v 1.7 2008-06-12 06:57:24 lsf37 Exp $
+(*  ID:         $Id: QE.thy,v 1.8 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -11,10 +11,10 @@ begin
 text{* \noindent
 The generic, i.e.\ theory-independent part of quantifier elimination.
 Both DNF and an NNF-based procedures are defined and proved correct. *}
-
+(*
 abbreviation set_of_pred :: "('a \<Rightarrow> bool) \<Rightarrow> 'a set" ("|_|")
 where "|P| \<equiv> {x. P x}"
-
+*)
 
 subsection{*No Equality*}
 
@@ -76,9 +76,10 @@ lemma qfree_lift_dnf_qe: "(\<And>as. (\<forall>a\<in>set as. depends\<^isub>0 a)
  \<Longrightarrow> qfree(lift_dnf_qe qe \<phi>)"
 by (induct \<phi>) (simp_all add:qelim_def)
 
-lemma qfree_lift_dnf_qe2: "qe : lists |depends\<^isub>0| \<rightarrow> |qfree|
+lemma qfree_lift_dnf_qe2: "qe : lists depends\<^isub>0 \<rightarrow> qfree
  \<Longrightarrow> qfree(lift_dnf_qe qe \<phi>)"
-by (simp add:Pi_def in_lists_conv_set qfree_lift_dnf_qe)
+using in_lists_conv_set[where ?'a = 'a]
+by (simp add:Pi_def qfree_lift_dnf_qe mem_def Collect_def)
 
 lemma lem: "\<forall>P A. (\<exists>x\<in>A. \<exists>y. P x y) = (\<exists>y. \<exists>x\<in>A. P x y)" by blast
 
@@ -93,10 +94,11 @@ proof(induct \<phi> arbitrary:xs)
 qed simp_all
 
 lemma I_lift_dnf_qe2:
-assumes  "qe : lists |depends\<^isub>0| \<rightarrow> |qfree|"
-and "\<forall>as \<in> lists |depends\<^isub>0|. is_dnf_qe qe as"
+assumes  "qe : lists depends\<^isub>0 \<rightarrow> qfree"
+and "\<forall>as \<in> lists depends\<^isub>0. is_dnf_qe qe as"
 shows "I (lift_dnf_qe qe \<phi>) xs = I \<phi> xs"
-using assms by(simp add:Pi_def in_lists_conv_set I_lift_dnf_qe)
+using assms in_lists_conv_set[where ?'a = 'a]
+by(simp add:Pi_def I_lift_dnf_qe mem_def Collect_def)
 
 text{*\noindent Quantifier elimination with invariant (needed for Presburger): *}
 
@@ -165,11 +167,13 @@ qed (simp_all add:normal_def)
 declare [[simp_depth_limit = 50]]
 
 lemma I_lift_dnf_qe_anormal2:
-assumes "qe : lists |depends\<^isub>0| \<rightarrow> |qfree|"
-and "qe : lists( |depends\<^isub>0| \<inter> |anormal| ) \<rightarrow> |normal|"
-and "\<forall>as \<in> lists( |depends\<^isub>0| \<inter> |anormal| ). is_dnf_qe qe as"
+assumes "qe : lists depends\<^isub>0 \<rightarrow> qfree"
+and "qe : lists(depends\<^isub>0 \<inter> anormal) \<rightarrow> normal"
+and "\<forall>as \<in> lists(depends\<^isub>0 \<inter> anormal). is_dnf_qe qe as"
 shows "normal f \<Longrightarrow> I (lift_dnf_qe qe f) xs = I f xs"
-using assms by(simp add: Pi_def in_lists_conv_set I_lift_dnf_qe_anormal)
+using assms in_lists_conv_set[where ?'a = 'a]
+by(simp add:Pi_def mem_def I_lift_dnf_qe_anormal Int_def Collect_def)
+
 
 subsubsection{*NNF-based*}
 
@@ -185,8 +189,8 @@ lemma qfree_lift_nnf_qe: "(\<And>\<phi>. nqfree \<phi> \<Longrightarrow> qfree(q
 by (induct \<phi>) (simp_all add:nqfree_nnf)
 
 lemma qfree_lift_nnf_qe2:
-  "qe : |nqfree| \<rightarrow> |qfree| \<Longrightarrow> qfree(lift_nnf_qe qe \<phi>)"
-by(simp add:Pi_def qfree_lift_nnf_qe)
+  "qe : nqfree \<rightarrow> qfree \<Longrightarrow> qfree(lift_nnf_qe qe \<phi>)"
+by(simp add:Pi_def qfree_lift_nnf_qe mem_def Collect_def)
 
 lemma I_lift_nnf_qe:
 assumes  "\<And>\<phi>. nqfree \<phi> \<Longrightarrow> qfree(qe \<phi>)"
@@ -198,10 +202,10 @@ proof(induct "\<phi>" arbitrary:xs)
 qed simp_all
 
 lemma I_lift_nnf_qe2:
-assumes  "qe : |nqfree| \<rightarrow> |qfree|"
-and "\<And>xs \<phi>. nqfree \<phi> \<Longrightarrow> I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
+assumes  "qe : nqfree \<rightarrow> qfree"
+and "ALL \<phi> : nqfree. ALL xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
 shows "I (lift_nnf_qe qe \<phi>) xs = I \<phi> xs"
-using assms by(simp add:Pi_def I_lift_nnf_qe)
+using assms by(simp add:Pi_def I_lift_nnf_qe mem_def Collect_def)
 
 lemma normal_lift_nnf_qe:
 assumes "\<And>\<phi>. nqfree \<phi> \<Longrightarrow> qfree(qe \<phi>)"
@@ -223,11 +227,11 @@ proof(induct "\<phi>" arbitrary:xs)
 qed auto
 
 lemma I_lift_nnf_qe_normal2:
-assumes  "qe : |nqfree| \<rightarrow> |qfree|"
-and "qe : |nqfree| \<inter> |normal| \<rightarrow> |normal|"
-and "\<And>xs \<phi>. normal \<phi> \<Longrightarrow> nqfree \<phi> \<Longrightarrow> I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
+assumes  "qe : nqfree \<rightarrow> qfree"
+and "qe : nqfree \<inter> normal \<rightarrow> normal"
+and "ALL \<phi> : normal Int nqfree. ALL xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
 shows "normal \<phi> \<Longrightarrow> I (lift_nnf_qe qe \<phi>) xs = I \<phi> xs"
-using assms by(simp add:Pi_def I_lift_nnf_qe_normal)
+using assms by(simp add:Pi_def I_lift_nnf_qe_normal mem_def Int_def Collect_def)
 
 end
 
@@ -309,10 +313,11 @@ lemma I_lift_dnfeq_qe:
 by(simp add:lift_dnfeq_qe_def I_lift_dnf_qe qfree_lift_eq_qe I_lift_eq_qe)
 
 lemma I_lift_dnfeq_qe2:
-  "qe : lists |depends\<^isub>0| \<rightarrow> |qfree| \<Longrightarrow>
-   (\<forall>as \<in> lists( |depends\<^isub>0| \<inter> -|solvable\<^isub>0| ). is_dnf_qe qe as) \<Longrightarrow>
+  "qe : lists depends\<^isub>0 \<rightarrow> qfree \<Longrightarrow>
+   (\<forall>as \<in> lists(depends\<^isub>0 \<inter> -solvable\<^isub>0). is_dnf_qe qe as) \<Longrightarrow>
    I (lift_dnfeq_qe qe \<phi>) xs = I \<phi> xs"
-by(simp add:Pi_def in_lists_conv_set I_lift_dnfeq_qe)
+using in_lists_conv_set[where ?'a = 'a]
+by(simp add:Pi_def I_lift_dnfeq_qe mem_def Int_def Compl_eq Collect_def)
 
 end
 

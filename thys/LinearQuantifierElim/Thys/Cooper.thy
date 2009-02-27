@@ -1,4 +1,4 @@
-(*  ID:         $Id: Cooper.thy,v 1.4 2009-02-21 22:30:57 nipkow Exp $
+(*  ID:         $Id: Cooper.thy,v 1.5 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -14,130 +14,10 @@ lemma set_atoms0_iff:
  "qfree \<phi> \<Longrightarrow> a : set(Z.atoms\<^isub>0 \<phi>) \<longleftrightarrow> a : atoms \<phi> \<and> hd_coeff a \<noteq> 0"
 by(induct \<phi>) (auto split:split_if_asm)
 
-fun hd_coeff1 :: "int \<Rightarrow> atom \<Rightarrow> atom" where
-"hd_coeff1 m (Le i (k#ks)) =
-   (if k=0 then Le i (k#ks)
-    else let m' = m div (abs k) in Le (m'*i) (sgn k # (m' *\<^sub>s ks)))" |
-"hd_coeff1 m (Dvd d i (k#ks)) =
-   (if k=0 then Dvd d i (k#ks)
-    else let m' = m div k in Dvd (m'*d) (m'*i) (1 # (m' *\<^sub>s ks)))" |
-"hd_coeff1 m (NDvd d i (k#ks)) =
-   (if k=0 then NDvd d i (k#ks)
-    else let m' = m div k in NDvd (m'*d) (m'*i) (1 # (m' *\<^sub>s ks)))" |
-"hd_coeff1 _ a = a"
-
 definition
 "hd_coeffs1 \<phi> =
  (let m = zlcms(map hd_coeff (Z.atoms\<^isub>0 \<phi>))
   in And (Atom(Dvd m 0 [1])) (map\<^bsub>fm\<^esub> (hd_coeff1 m) \<phi>))"
-
-lemma I_hd_coeff1_mult: assumes "m>0"
-shows "qfree \<phi> \<Longrightarrow> \<forall> a \<in> set(Z.atoms\<^isub>0 \<phi>). hd_coeff a dvd m \<Longrightarrow>
- Z.I (map\<^bsub>fm\<^esub> (hd_coeff1 m) \<phi>) (m*x#xs) = Z.I \<phi> (x#xs)"
-proof(induct \<phi>)
-  case (Atom a)
-  show ?case
-  proof (cases a)
-    case (Le i ks)[simp]
-    show ?thesis
-    proof(cases ks)
-      case Nil thus ?thesis by simp
-    next
-      case (Cons k ks')[simp]
-      show ?thesis
-      proof cases
-	assume "k=0" thus ?thesis by simp
-      next
-	assume "k\<noteq>0"
-	with Atom have "\<bar>k\<bar> dvd m" by simp
-	let ?m' = "m div \<bar>k\<bar>"
-	have "?m' > 0" using `\<bar>k\<bar> dvd m` pos_imp_zdiv_pos_iff `m>0` `k\<noteq>0`
-	  by(simp add:zdvd_imp_le)
-	have 1: "k*(x*?m') = sgn k * x * m"
-	proof -
-	  have "k*(x*?m') = (sgn k * abs k) * (x * ?m')"
-	    by(simp only: mult_sgn_abs)
-	  also have "\<dots> = sgn k * x * (abs k * ?m')" by simp
-	  also have "\<dots> = sgn k * x * m"
-	    using zdvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:algebra_simps)
-	  finally show ?thesis .
-	qed
-	have "I\<^isub>Z (hd_coeff1 m a) (m*x#xs) \<longleftrightarrow>
-              (i*?m' \<le> sgn k * m*x + ?m' * \<langle>ks',xs\<rangle>)"
-	  using `k\<noteq>0` by(simp add: algebra_simps)
-	also have "\<dots> \<longleftrightarrow> ?m'*i \<le> ?m' * (k*x + \<langle>ks',xs\<rangle>)" using 1
-	  by(simp (no_asm_simp) add:algebra_simps)
-	also have "\<dots> \<longleftrightarrow> i \<le> k*x + \<langle>ks',xs\<rangle>" using `?m'>0`
-	  by(simp add: mult_compare_simps)
-	finally show ?thesis by(simp)
-      qed
-    qed
-  next
-    case (Dvd d i ks)[simp]
-    show ?thesis
-    proof(cases ks)
-      case Nil thus ?thesis by simp
-    next
-      case (Cons k ks')[simp]
-      show ?thesis
-      proof cases
-	assume "k=0" thus ?thesis by simp
-      next
-	assume "k\<noteq>0"
-	with Atom have "k dvd m" by simp
-	let ?m' = "m div k"
-	have "?m' \<noteq> 0" using `k dvd m` zdiv_eq_0_iff `m>0` `k\<noteq>0`
-	  by(simp add:linorder_not_less zdvd_imp_le)
-	have 1: "k*(x*?m') = x * m"
-	proof -
-	  have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-	  also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-	    by(simp add:algebra_simps)
-	  finally show ?thesis .
-	qed
-	have "I\<^isub>Z (hd_coeff1 m a) (m*x#xs) \<longleftrightarrow>
-              (?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
-	  using `k\<noteq>0` by(simp add: algebra_simps)
-	also have "\<dots> \<longleftrightarrow> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
-	  by(simp (no_asm_simp) add:algebra_simps)
-	also have "\<dots> \<longleftrightarrow> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
-	finally show ?thesis by(simp add:algebra_simps)
-      qed
-    qed
-  next
-    case (NDvd d i ks)[simp]
-    show ?thesis
-    proof(cases ks)
-      case Nil thus ?thesis by simp
-    next
-      case (Cons k ks')[simp]
-      show ?thesis
-      proof cases
-	assume "k=0" thus ?thesis by simp
-      next
-	assume "k\<noteq>0"
-	with Atom have "k dvd m" by simp
-	let ?m' = "m div k"
-	have "?m' \<noteq> 0" using `k dvd m` zdiv_eq_0_iff `m>0` `k\<noteq>0`
-	  by(simp add:linorder_not_less zdvd_imp_le)
-	have 1: "k*(x*?m') = x * m"
-	proof -
-	  have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-	  also have "\<dots> = x*m" using zdvd_mult_div_cancel[OF `k dvd m`]
-	    by(simp add:algebra_simps)
-	  finally show ?thesis .
-	qed
-	have "I\<^isub>Z (hd_coeff1 m a) (m*x#xs) \<longleftrightarrow>
-              \<not>(?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
-	  using `k\<noteq>0` by(simp add: algebra_simps)
-	also have "\<dots> \<longleftrightarrow> \<not> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
-	  by(simp (no_asm_simp) add:algebra_simps)
-	also have "\<dots> \<longleftrightarrow> \<not> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
-	finally show ?thesis by(simp add:algebra_simps)
-      qed
-    qed
-  qed
-qed simp_all
 
 lemma I_hd_coeffs1:
 assumes "qfree \<phi>"
@@ -164,7 +44,7 @@ fun min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^isub>-") where
 
 
 definition
-"cooper\<^isub>1 \<phi> =
+"qe_cooper\<^isub>1 \<phi> =
  (let as = Z.atoms\<^isub>0 \<phi>; d = zlcms(map divisor as); ls = lbounds as
   in or (Disj [0..d - 1] (\<lambda>n. subst n [] (inf\<^isub>- \<phi>)))
         (Disj ls (\<lambda>(i,ks).
@@ -398,10 +278,10 @@ qed
 lemma qfree_min_inf[simp]: "qfree \<phi> \<Longrightarrow> qfree (inf\<^isub>- \<phi>)"
 by (induct \<phi> rule:min_inf.induct) simp_all
 
-lemma I_cooper\<^isub>1:
+lemma I_qe_cooper\<^isub>1:
 assumes norm: "\<forall>a\<in>atoms \<phi>. divisor a \<noteq> 0"
 and hd: "\<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). hd_coeff_is1 a" and "nqfree \<phi>"
-shows "Z.I (cooper\<^isub>1 \<phi>) xs = (\<exists>x. Z.I \<phi> (x#xs))"
+shows "Z.I (qe_cooper\<^isub>1 \<phi>) xs = (\<exists>x. Z.I \<phi> (x#xs))"
 proof -
   let ?as = "Z.atoms\<^isub>0 \<phi>"
   let ?d = "zlcms(map divisor ?as)"
@@ -410,7 +290,7 @@ proof -
   have alld: "\<forall>a\<in>set(Z.atoms\<^isub>0 \<phi>). divisor a dvd ?d" by(simp add:dvd_zlcms)
   from cp_thm[OF `nqfree \<phi>` hd alld `?d>0`]
   show ?thesis using `nqfree \<phi>`
-    by (simp add:cooper\<^isub>1_def I_subst[symmetric] split_def algebra_simps) blast
+    by (simp add:qe_cooper\<^isub>1_def I_subst[symmetric] split_def algebra_simps) blast
 qed
 
 lemma divisor_hd_coeff1_neq0:
@@ -445,9 +325,9 @@ lemma hd_coeff_is1_hd_coeff1:
 by (induct a rule: hd_coeff1.induct) (simp_all add:zsgn_def)
 
 lemma I_cooper1_hd_coeffs1: "Z.normal \<phi> \<Longrightarrow> nqfree \<phi>
-       \<Longrightarrow> Z.I (cooper\<^isub>1(hd_coeffs1 \<phi>)) xs = (\<exists>x. Z.I \<phi> (x # xs))"
+       \<Longrightarrow> Z.I (qe_cooper\<^isub>1(hd_coeffs1 \<phi>)) xs = (\<exists>x. Z.I \<phi> (x # xs))"
 apply(simp add:Z.normal_def)
-apply(subst I_cooper\<^isub>1)
+apply(subst I_qe_cooper\<^isub>1)
    apply(clarsimp simp:hd_coeffs1_def image_def set_atoms0_iff divisor_hd_coeff1_neq0)
   apply (clarsimp simp:hd_coeffs1_def qfree_map_fm set_atoms0_iff
                      hd_coeff_is1_hd_coeff1)
@@ -455,27 +335,27 @@ apply(subst I_cooper\<^isub>1)
 apply(simp add: I_hd_coeffs1)
 done
 
-definition "cooper = Z.lift_nnf_qe (cooper\<^isub>1 \<circ> hd_coeffs1)"
+definition "qe_cooper = Z.lift_nnf_qe (qe_cooper\<^isub>1 \<circ> hd_coeffs1)"
 
-lemma qfree_cooper1_hd_coeffs1: "qfree \<phi> \<Longrightarrow> qfree (cooper\<^isub>1 ( hd_coeffs1 \<phi>))"
-by(auto simp:cooper\<^isub>1_def hd_coeffs1_def qfree_map_fm
+lemma qfree_cooper1_hd_coeffs1: "qfree \<phi> \<Longrightarrow> qfree (qe_cooper\<^isub>1 (hd_coeffs1 \<phi>))"
+by(auto simp:qe_cooper\<^isub>1_def hd_coeffs1_def qfree_map_fm
         intro!: qfree_or qfree_and qfree_list_disj qfree_min_inf)
 
 
 lemma normal_min_inf: "Z.normal \<phi> \<Longrightarrow> Z.normal(inf\<^isub>- \<phi>)"
 by(induct \<phi> rule:min_inf.induct) simp_all
 
-lemma normal_cooper1: "Z.normal \<phi> \<Longrightarrow> Z.normal(cooper\<^isub>1 \<phi>)"
-by(simp add:cooper\<^isub>1_def Logic.or_def Z.normal_map_fm normal_min_inf split_def)
+lemma normal_cooper1: "Z.normal \<phi> \<Longrightarrow> Z.normal(qe_cooper\<^isub>1 \<phi>)"
+by(simp add:qe_cooper\<^isub>1_def Logic.or_def Z.normal_map_fm normal_min_inf split_def)
 
 lemma normal_hd_coeffs1: "qfree \<phi> \<Longrightarrow> Z.normal \<phi> \<Longrightarrow> Z.normal(hd_coeffs1 \<phi>)"
 by(auto simp: hd_coeffs1_def image_def set_atoms0_iff
               divisor_hd_coeff1_neq0 Z.normal_def)
 
-theorem I_cooper: "Z.normal \<phi> \<Longrightarrow>  Z.I (cooper \<phi>) xs = Z.I \<phi> xs"
-by(simp add:cooper_def Z.I_lift_nnf_qe_normal qfree_cooper1_hd_coeffs1 I_cooper1_hd_coeffs1 normal_cooper1 normal_hd_coeffs1)
+theorem I_cooper: "Z.normal \<phi> \<Longrightarrow>  Z.I (qe_cooper \<phi>) xs = Z.I \<phi> xs"
+by(simp add:qe_cooper_def Z.I_lift_nnf_qe_normal qfree_cooper1_hd_coeffs1 I_cooper1_hd_coeffs1 normal_cooper1 normal_hd_coeffs1)
 
-theorem qfree_cooper: "qfree (cooper \<phi>)"
-by(simp add:cooper_def Z.qfree_lift_nnf_qe qfree_cooper1_hd_coeffs1)
+theorem qfree_cooper: "qfree (qe_cooper \<phi>)"
+by(simp add:qe_cooper_def Z.qfree_lift_nnf_qe qfree_cooper1_hd_coeffs1)
 
 end

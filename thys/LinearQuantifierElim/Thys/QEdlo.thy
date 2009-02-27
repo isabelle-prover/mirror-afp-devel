@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEdlo.thy,v 1.4 2008-12-30 15:30:13 ballarin Exp $
+(*  ID:         $Id: QEdlo.thy,v 1.5 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -8,16 +8,16 @@ begin
 
 subsection "DNF-based quantifier elimination"
 
-definition qe_less :: "atom list \<Rightarrow> atom fm" where
-"qe_less as =
+definition qe_dlo\<^isub>1 :: "atom list \<Rightarrow> atom fm" where
+"qe_dlo\<^isub>1 as =
  (if Less 0 0 \<in> set as then FalseF else
   let lbs = [i. Less (Suc i) 0 \<leftarrow> as]; ubs = [j. Less 0 (Suc j) \<leftarrow> as];
       pairs = [Atom(Less i j). i \<leftarrow> lbs, j \<leftarrow> ubs]
   in list_conj pairs)"
 
-theorem I_qe_less:
+theorem I_qe_dlo\<^isub>1:
 assumes less: "\<forall>a \<in> set as. is_Less a" and dep: "\<forall>a \<in> set as. depends\<^isub>d\<^isub>l\<^isub>o a"
-shows "DLO.I (qe_less as) xs = (\<exists>x. \<forall>a \<in> set as. I\<^isub>d\<^isub>l\<^isub>o a (x#xs))"
+shows "DLO.I (qe_dlo\<^isub>1 as) xs = (\<exists>x. \<forall>a \<in> set as. I\<^isub>d\<^isub>l\<^isub>o a (x#xs))"
   (is "?L = ?R")
 proof
   let ?lbs = "[i. Less (Suc i) 0 \<leftarrow> as]"
@@ -40,9 +40,9 @@ proof
       by force
   qed
   assume qe1: ?L
-  hence 0: "Less 0 0 \<notin> set as" by (auto simp:qe_less_def)
+  hence 0: "Less 0 0 \<notin> set as" by (auto simp:qe_dlo\<^isub>1_def)
   with qe1 have 1: "\<forall>x\<in>?Ls. \<forall>y\<in>?Us. xs ! x < xs ! y"
-    by (fastsimp simp:qe_less_def)
+    by (fastsimp simp:qe_dlo\<^isub>1_def)
   { fix i x
     assume "Less i 0 \<in> set as | Less 0 i \<in> set as"
     moreover hence "i \<noteq> 0" using 0 by iprover
@@ -83,12 +83,12 @@ next
     ultimately have "xs ! (i - 1) < xs ! (j - 1)" by (simp add: nth_Cons')
   }
   thus ?L using 0 less
-    by (fastsimp simp: qe_less_def is_Less_iff split:atom.splits nat.splits)
+    by (fastsimp simp: qe_dlo\<^isub>1_def is_Less_iff split:atom.splits nat.splits)
 qed
 
-lemma I_qe_less_pretty:
-  "\<forall>a \<in> set as. is_Less a \<and> depends\<^isub>d\<^isub>l\<^isub>o a \<Longrightarrow> DLO.is_dnf_qe _ qe_less as"
-by(metis I_qe_less)
+lemma I_qe_dlo\<^isub>1_pretty:
+  "\<forall>a \<in> set as. is_Less a \<and> depends\<^isub>d\<^isub>l\<^isub>o a \<Longrightarrow> DLO.is_dnf_qe _ qe_dlo\<^isub>1 as"
+by(metis I_qe_dlo\<^isub>1)
 
 definition subst :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
 "subst i j k = (if k=0 then if i=0 then j else i else k) - 1"
@@ -133,20 +133,20 @@ lemmas [folded DLOe_code_lemmas, code] =
 
 setup {* Sign.revert_abbrev "" @{const_name DLO\<^isub>e.lift_dnfeq_qe} *}
 
-definition "dlo_qe = DLO\<^isub>e.lift_dnfeq_qe qe_less"
+definition "qe_dlo = DLO\<^isub>e.lift_dnfeq_qe qe_dlo\<^isub>1"
 (*<*)
-lemmas [folded DLOe_code_lemmas, code] = dlo_qe_def 
+lemmas [folded DLOe_code_lemmas, code] = qe_dlo_def 
 (*>*)
 
-lemma qfree_qe_less: "qfree (qe_less as)"
-by(auto simp:qe_less_def intro!:qfree_list_conj)
+lemma qfree_qe_dlo\<^isub>1: "qfree (qe_dlo\<^isub>1 as)"
+by(auto simp:qe_dlo\<^isub>1_def intro!:qfree_list_conj)
 
-theorem I_dlo_qe: "DLO.I (dlo_qe \<phi>) xs = DLO.I \<phi> xs"
-unfolding dlo_qe_def
-by(fastsimp intro!: I_qe_less qfree_qe_less DLO\<^isub>e.I_lift_dnfeq_qe
+theorem I_qe_dlo: "DLO.I (qe_dlo \<phi>) xs = DLO.I \<phi> xs"
+unfolding qe_dlo_def
+by(fastsimp intro!: I_qe_dlo\<^isub>1 qfree_qe_dlo\<^isub>1 DLO\<^isub>e.I_lift_dnfeq_qe
         simp: is_Less_iff not_is_Eq_iff split:atom.splits cong:conj_cong)
 
-theorem qfree_dlo_qe: "qfree (dlo_qe \<phi>)"
-by(simp add:dlo_qe_def DLO\<^isub>e.qfree_lift_dnfeq_qe qfree_qe_less)
+theorem qfree_qe_dlo: "qfree (qe_dlo \<phi>)"
+by(simp add:qe_dlo_def DLO\<^isub>e.qfree_lift_dnfeq_qe qfree_qe_dlo\<^isub>1)
 
 end

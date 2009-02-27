@@ -1,4 +1,4 @@
-(*  ID:         $Id: QElin.thy,v 1.4 2009-01-30 14:15:31 nipkow Exp $
+(*  ID:         $Id: QElin.thy,v 1.5 2009-02-27 17:46:41 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -8,12 +8,12 @@ begin
 
 subsection{* Fourier *}
 
-definition qe_less :: "atom list \<Rightarrow> atom fm" where
-"qe_less as = list_conj [Atom(combine p q). p\<leftarrow>lbounds as, q\<leftarrow>ubounds as]"
+definition qe_FM\<^isub>1 :: "atom list \<Rightarrow> atom fm" where
+"qe_FM\<^isub>1 as = list_conj [Atom(combine p q). p\<leftarrow>lbounds as, q\<leftarrow>ubounds as]"
 
-theorem I_qe_less:
+theorem I_qe_FM\<^isub>1:
 assumes less: "\<forall>a \<in> set as. is_Less a" and dep: "\<forall>a \<in> set as. depends\<^isub>R a"
-shows "R.I (qe_less as) xs = (\<exists>x. \<forall>a \<in> set as. I\<^isub>R a (x#xs))"  (is "?L = ?R")
+shows "R.I (qe_FM\<^isub>1 as) xs = (\<exists>x. \<forall>a \<in> set as. I\<^isub>R a (x#xs))"  (is "?L = ?R")
 proof
   let ?Ls = "set(lbounds as)" let ?Us = "set(ubounds as)"
   let ?lbs = "UN (r,cs):?Ls. {r + \<langle>cs,xs\<rangle>}"
@@ -33,7 +33,7 @@ proof
     moreover from `y\<in>?ubs` obtain s ds
       where "(s,ds) \<in> ?Us \<and> y = s + \<langle>ds,xs\<rangle>" by fastsimp
     ultimately show "x<y" using `?L`
-      by(fastsimp simp:qe_less_def algebra_simps iprod_left_diff_distrib)
+      by(fastsimp simp:qe_FM\<^isub>1_def algebra_simps iprod_left_diff_distrib)
   qed
   { assume nonempty: "?lbs \<noteq> {} \<and> ?ubs \<noteq> {}"
     hence "Max ?lbs < Min ?ubs" using fins 1
@@ -89,12 +89,12 @@ next
     hence "(r - \<langle>cs,xs\<rangle>)/c < x" "x < (s - \<langle>ds,xs\<rangle>)/d" by(simp add:field_simps)+
     hence "(r - \<langle>cs,xs\<rangle>)/c < (s - \<langle>ds,xs\<rangle>)/d" by arith
   }
-  thus ?L by (auto simp: qe_less_def iprod_left_diff_distrib less field_simps set_lbounds set_ubounds)
+  thus ?L by (auto simp: qe_FM\<^isub>1_def iprod_left_diff_distrib less field_simps set_lbounds set_ubounds)
 qed
 
-corollary I_qe_less_pretty:
-  "\<forall>a \<in> set as. is_Less a \<and> depends\<^isub>R a \<Longrightarrow> R.is_dnf_qe qe_less as"
-by(metis I_qe_less)
+corollary I_qe_FM\<^isub>1_pretty:
+  "\<forall>a \<in> set as. is_Less a \<and> depends\<^isub>R a \<Longrightarrow> R.is_dnf_qe qe_FM\<^isub>1 as"
+by(metis I_qe_FM\<^isub>1)
 
 
 fun subst\<^isub>0 :: "atom \<Rightarrow> atom \<Rightarrow> atom" where
@@ -131,39 +131,39 @@ done
 setup {* Sign.revert_abbrev "" @{const_name R\<^isub>e.lift_dnfeq_qe} *}
 *)
 
-definition "lin_qe = R\<^isub>e.lift_dnfeq_qe qe_less"
+definition "qe_FM = R\<^isub>e.lift_dnfeq_qe qe_FM\<^isub>1"
 
-lemma qfree_qe_less: "qfree (qe_less as)"
-by(auto simp:qe_less_def intro!:qfree_list_conj)
+lemma qfree_qe_FM\<^isub>1: "qfree (qe_FM\<^isub>1 as)"
+by(auto simp:qe_FM\<^isub>1_def intro!:qfree_list_conj)
 
-corollary I_lin_qe: "R.I (lin_qe \<phi>) xs = R.I \<phi> xs"
-unfolding lin_qe_def
+corollary I_qe_FM: "R.I (qe_FM \<phi>) xs = R.I \<phi> xs"
+unfolding qe_FM_def
 apply(rule R\<^isub>e.I_lift_dnfeq_qe)
- apply(rule qfree_qe_less)
+ apply(rule qfree_qe_FM\<^isub>1)
 apply(rule allI)
-apply(rule I_qe_less)
+apply(rule I_qe_FM\<^isub>1)
  prefer 2 apply blast
 apply(clarify)
 apply(drule_tac x=a in bspec) apply simp
 apply(simp add: depends\<^isub>R_def split:atom.splits list.splits)
 done
 
-theorem qfree_lin_qe: "qfree (lin_qe f)"
-by(simp add:lin_qe_def R\<^isub>e.qfree_lift_dnfeq_qe qfree_qe_less)
+theorem qfree_qe_FM: "qfree (qe_FM f)"
+by(simp add:qe_FM_def R\<^isub>e.qfree_lift_dnfeq_qe qfree_qe_FM\<^isub>1)
 
 subsubsection{* Tests *}
 
-lemmas qesimps = lin_qe_def R\<^isub>e.lift_dnfeq_qe_def R\<^isub>e.lift_eq_qe_def R.qelim_def qe_less_def lbounds_def ubounds_def list_conj_def list_disj_def and_def or_def depends\<^isub>R_def
+lemmas qesimps = qe_FM_def R\<^isub>e.lift_dnfeq_qe_def R\<^isub>e.lift_eq_qe_def R.qelim_def qe_FM\<^isub>1_def lbounds_def ubounds_def list_conj_def list_disj_def and_def or_def depends\<^isub>R_def
 
-lemma "lin_qe(TrueF) = TrueF"
+lemma "qe_FM(TrueF) = TrueF"
 by(simp add:qesimps)
 
 lemma
-  "lin_qe(ExQ (And (Atom(Less 0 [1])) (Atom(Less 0 [-1])))) = Atom(Less 0 [])"
+  "qe_FM(ExQ (And (Atom(Less 0 [1])) (Atom(Less 0 [-1])))) = Atom(Less 0 [])"
 by(simp add:qesimps)
 
 lemma
- "lin_qe(ExQ (And (Atom(Less 0 [1])) (Atom(Less -1 [-1])))) = Atom(Less -1 [])"
+ "qe_FM(ExQ (And (Atom(Less 0 [1])) (Atom(Less -1 [-1])))) = Atom(Less -1 [])"
 by(simp add:qesimps)
 
 end
