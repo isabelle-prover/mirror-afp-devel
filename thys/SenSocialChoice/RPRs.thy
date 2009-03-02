@@ -115,10 +115,10 @@ analogously to how @{term "refl"} is defined in the standard library.
 
 *}
 
-declare reflI[intro] reflD[dest]
+declare refl_onI[intro] refl_onD[dest]
 
-lemma complete_refl:
-  "\<lbrakk> complete A r; refl A r; x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> x \<^bsub>r\<^esub>\<preceq> y \<or> y \<^bsub>r\<^esub>\<preceq> x"
+lemma complete_refl_on:
+  "\<lbrakk> complete A r; refl_on A r; x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> x \<^bsub>r\<^esub>\<preceq> y \<or> y \<^bsub>r\<^esub>\<preceq> x"
   unfolding complete_def by auto
 
 definition irrefl :: "'a set \<Rightarrow> 'a RPR \<Rightarrow> bool" where
@@ -138,16 +138,16 @@ text{* Rational preference relations, also known as weak orders and (I
 guess) complete pre-orders. *}
 
 definition rpr :: "'a set \<Rightarrow> 'a RPR \<Rightarrow> bool" where
-  "rpr A r \<equiv> complete A r \<and> refl A r \<and> trans r"
+  "rpr A r \<equiv> complete A r \<and> refl_on A r \<and> trans r"
 
-lemma rprI[intro]: "\<lbrakk> complete A r; refl A r; trans r \<rbrakk> \<Longrightarrow> rpr A r"
+lemma rprI[intro]: "\<lbrakk> complete A r; refl_on A r; trans r \<rbrakk> \<Longrightarrow> rpr A r"
   unfolding rpr_def by simp
 
-lemma rprD: "rpr A r \<Longrightarrow> complete A r \<and> refl A r \<and> trans r"
+lemma rprD: "rpr A r \<Longrightarrow> complete A r \<and> refl_on A r \<and> trans r"
   unfolding rpr_def by simp
 
 lemma rpr_in_set[dest]: "\<lbrakk> rpr A r; x \<^bsub>r\<^esub>\<preceq> y \<rbrakk> \<Longrightarrow> {x,y} \<subseteq> A"
-  unfolding rpr_def refl_def by auto
+  unfolding rpr_def refl_on_def by auto
 
 lemma rpr_refl[dest]: "\<lbrakk> rpr A r; x \<in> A \<rbrakk> \<Longrightarrow> x \<^bsub>r\<^esub>\<preceq> x"
   unfolding rpr_def by blast
@@ -174,7 +174,7 @@ lemma rpr_less_le_trans[trans]: "\<lbrakk> x \<^bsub>r\<^esub>\<prec> y; y \<^bs
   unfolding rpr_def strict_pref_def trans_def by blast
 
 lemma rpr_complete: "\<lbrakk> rpr A r; x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> x \<^bsub>r\<^esub>\<preceq> y \<or> y \<^bsub>r\<^esub>\<preceq> x"
-  unfolding rpr_def by (blast dest: complete_refl)
+  unfolding rpr_def by (blast dest: complete_refl_on)
 
 (* **************************************** *)
 

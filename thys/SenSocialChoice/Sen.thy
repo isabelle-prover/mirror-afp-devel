@@ -115,7 +115,7 @@ proof -
     fix P assume ud: "universal_domain A Is P"
     show "choiceFn A (?sdf P)"
     proof(rule r_c_qt_imp_cf[OF finiteA])
-      show "complete A (?sdf P)" and "refl A (?sdf P)"
+      show "complete A (?sdf P)" and "refl_on A (?sdf P)"
 	unfolding strict_pref_def by auto
       show "quasi_trans (?sdf P)"
       proof
@@ -225,7 +225,7 @@ proof -
     show "rpr A (?P i)"
     proof
       show "complete A (?P i)" by (simp, blast)
-      from threeA iis show "refl A (?P i)" by (simp, blast)
+      from threeA iis show "refl_on A (?P i)" by (simp, blast)
       from threeA iis show "trans (?P i)" by (clarsimp simp add: trans_def)
     qed
   next
@@ -261,7 +261,7 @@ proof -
     show "rpr A (?P i)"
     proof
       show "complete A (?P i)" by (simp, blast)
-      from fourA iis show "refl A (?P i)" by (simp, blast)
+      from fourA iis show "refl_on A (?P i)" by (simp, blast)
       from fourA iis show "trans (?P i)" by (clarsimp simp add: trans_def)
     qed
   next

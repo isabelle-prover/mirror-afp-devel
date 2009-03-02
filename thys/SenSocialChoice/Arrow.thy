@@ -80,8 +80,8 @@ proof
       proof
 	from iIs profileP have "complete A (P i)" by (blast dest: rpr_complete)
 	with ij show "complete A (?P' i)" by (simp add: complete_def, blast)
-	from iIs profileP have "refl A (P i)" by (auto simp add: rpr_def)
-	with has3A ij show "refl A (?P' i)" by (simp, blast)
+	from iIs profileP have "refl_on A (P i)" by (auto simp add: rpr_def)
+	with has3A ij show "refl_on A (?P' i)" by (simp, blast)
 	from ij has3A show "trans (?P' i)" by (clarsimp simp add: trans_def)
       qed
     qed
@@ -185,8 +185,8 @@ proof
       proof
 	from iIs profileP have "complete A (P i)" by (auto simp add: rpr_def)
 	with ij show "complete A (?P' i)" by (simp add: complete_def, blast)
-	from iIs profileP have "refl A (P i)" by (auto simp add: rpr_def)
-	with has3A ij show "refl A (?P' i)" by (simp, blast)
+	from iIs profileP have "refl_on A (P i)" by (auto simp add: rpr_def)
+	with has3A ij show "refl_on A (?P' i)" by (simp, blast)
 	from ij has3A show "trans (?P' i)" by (clarsimp simp add: trans_def)
       qed
     qed
@@ -445,7 +445,7 @@ proof
     show "rpr A (?P i)"
     proof
       show "complete A (?P i)" by (simp add: complete_def, blast)
-      from has3A iIs show "refl A (?P i)" by - (simp, blast)
+      from has3A iIs show "refl_on A (?P i)" by - (simp, blast)
       from has3A iIs show "trans (?P i)" by (clarsimp simp add: trans_def)
     qed
   next

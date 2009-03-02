@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalDef.thy,v 1.11 2008-08-11 12:50:47 fhaftmann Exp $
+    ID:          $Id: OrdinalDef.thy,v 1.12 2009-03-02 22:01:43 nipkow Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -208,7 +208,7 @@ lemma mem_ord0rel_Image [simp, intro!]: "x \<in> ord0rel `` {x}"
 by (simp add: ord0rel_def)
 
 lemma equiv_ord0rel: "equiv UNIV ord0rel"
- apply (unfold equiv_def refl_def sym_def trans_def ord0rel_def)
+ apply (unfold equiv_def refl_on_def sym_def trans_def ord0rel_def)
  apply (auto elim: ord0_order_trans)
 done
 

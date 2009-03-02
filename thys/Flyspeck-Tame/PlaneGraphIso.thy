@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneGraphIso.thy,v 1.2 2007-06-06 18:15:27 nipkow Exp $
+(*  ID:         $Id: PlaneGraphIso.thy,v 1.3 2009-03-02 22:00:14 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -80,7 +80,7 @@ apply (simp add:funpow_add)
 done
 
 lemma equiv_EqF: "equiv (UNIV::'a list set) {\<cong>}"
-apply(unfold equiv_def sym_def trans_def refl_def)
+apply(unfold equiv_def sym_def trans_def refl_on_def)
 apply(rule conjI)
  apply simp
 apply(rule conjI)

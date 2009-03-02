@@ -265,8 +265,8 @@ next
   fix i assume iIs: "i \<in> Is"
   show "rpr A (swapAltsP P a b i)"
   proof(rule rprI)
-    show "refl A (swapAltsP P a b i)"
-    proof(rule reflI)
+    show "refl_on A (swapAltsP P a b i)"
+    proof(rule refl_onI)
       from profileP iIs abA show "swapAltsP P a b i \<subseteq> A \<times> A"
 	unfolding swapAltsP_def by (blast dest: swapAlts_in_set_iff)
       from profileP iIs abA show "\<And>x. x \<in> A \<Longrightarrow> x \<^bsub>(swapAltsP P a b i)\<^esub>\<preceq> x"
@@ -436,8 +436,8 @@ proof -
     proof
       from profileP iIs show "complete A (?P' i)"
 	unfolding complete_def by (simp, blast dest: rpr_complete)
-      from profileP iIs xyA show "refl A (?P' i)"
-	by - (rule reflI, auto)
+      from profileP iIs xyA show "refl_on A (?P' i)"
+	by - (rule refl_onI, auto)
       show "trans (?P' i)"
       proof(cases "i \<in> C")
 	case False with profileP iIs show ?thesis

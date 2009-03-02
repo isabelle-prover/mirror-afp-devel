@@ -55,7 +55,7 @@ lemma r_c_qt_imp_cf:
   assumes finiteA: "finite A"
       and c: "complete A r"
       and qt: "quasi_trans r"
-      and r: "refl A r"
+      and r: "refl_on A r"
   shows "choiceFn A r"
 proof
   fix B assume B: "B \<subseteq> A" "B \<noteq> {}"
@@ -77,7 +77,7 @@ proof
     next
       case False
       with cF obtain b where bCF: "b \<in> choiceSet B r" by blast
-      from AB aA bCF complete_refl[OF c r]
+      from AB aA bCF complete_refl_on[OF c r]
       have "a \<^bsub>r\<^esub>\<prec> b \<or> b \<^bsub>r\<^esub>\<preceq> a" unfolding choiceSet_def strict_pref_def by blast
       thus ?thesis
       proof
