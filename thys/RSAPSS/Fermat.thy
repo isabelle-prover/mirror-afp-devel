@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Fermat.thy
-    ID:         $Id: Fermat.thy,v 1.9 2008-07-10 21:20:00 makarius Exp $
+    ID:         $Id: Fermat.thy,v 1.10 2009-03-03 21:42:26 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -35,7 +35,7 @@ next
     apply (simp add: mult_assoc)
     apply (subst mult_left_commute)
     apply (simp add: mult_commute [of M])
-    apply (subst mod_mult1_eq' [of "M + n * M"])
+    apply (subst mod_mult_left_eq [of "M + n * M"])
     apply (erule remainderexplemma)
     done
 qed

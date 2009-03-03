@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.14 2008-06-12 06:57:17 lsf37 Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.15 2009-03-03 21:42:04 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -559,7 +559,7 @@ proof -
   from l_def lls vors have "ls!l = (rotate n ls)!(j mod (length ls))"  by (simp add: nth_rotate)
   with vors have lsl: "ls!l = y" by auto
   have mod_add1_eq': "\<And> a b c. (a mod c + b mod c) mod c = (a+b) mod (c::nat)"
-    apply (rule sym)  by (rule mod_add1_eq)
+    apply (rule sym)  by (rule mod_add_eq)
   from vors k_def l_def
   have "(Suc i) mod length ls = j " by auto
   then have "(Suc i) mod length ls = j mod length ls" by auto

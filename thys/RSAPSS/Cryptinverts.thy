@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Cryptinverts.thy
-    ID:         $Id: Cryptinverts.thy,v 1.7 2009-02-22 17:16:00 nipkow Exp $
+    ID:         $Id: Cryptinverts.thy,v 1.8 2009-03-03 21:42:26 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -16,9 +16,9 @@ text {*
 
 lemma cryptinverts_hilf1: "prime p \<Longrightarrow> (m * m ^(k * pred p)) mod p = m mod p"
   apply (cases "m mod p = 0")
-  apply (simp add: mod_mult1_eq')
+  apply (simp add: mod_mult_left_eq)
   apply (simp only: mult_commute [of k "pred p"]
-    power_mult mod_mult1_eq [of "m" "(m^pred p)^k" "p"]
+    power_mult mod_mult_right_eq [of "m" "(m^pred p)^k" "p"]
     remainderexp [of "m^pred p" "p" "k", symmetric])
   apply (insert fermat [of p m])
   apply (simp add: predd)

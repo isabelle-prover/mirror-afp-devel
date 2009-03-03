@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Wordarith.thy
-    ID:         $Id: Wordarith.thy,v 1.7 2008-07-10 21:20:00 makarius Exp $
+    ID:         $Id: Wordarith.thy,v 1.8 2009-03-03 21:42:26 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)
@@ -289,7 +289,7 @@ qed
 
 lemma odd_mul_odd: "\<lbrakk>~(2::nat) dvd p; ~2 dvd q\<rbrakk> \<Longrightarrow> ~2 dvd p*q"
   apply (simp add: dvd_eq_mod_eq_0)
-  apply (simp add: mod_mult1_eq)
+  apply (simp add: mod_mult_right_eq)
   done
 
 lemma prime_equal: "\<lbrakk>prime p; prime q; 2^x=p*q\<rbrakk> \<Longrightarrow> (p=q)"
