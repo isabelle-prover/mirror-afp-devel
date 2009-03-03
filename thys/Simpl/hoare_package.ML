@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.34 2009-01-06 07:50:43 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.35 2009-03-03 17:41:27 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1060,7 +1060,7 @@ fun add_abbrev loc mode name spec thy =
   thy
   |> TheoryTarget.init loc
   |> (fn lthy => let val t = Syntax.read_term (LocalTheory.target_of lthy) spec;
-      in LocalTheory.abbrev mode ((Binding.name name ,NoSyn),t) lthy end)
+      in LocalTheory.abbrev mode ((Binding.name name, NoSyn), t) lthy end)
   |> #2
   |> LocalTheory.exit
   |> ProofContext.theory_of;
@@ -1216,7 +1216,7 @@ fun procedures_definition locname procs thy =
         val name' = unsuffix proc_deco name;
         val bdy = read_term (the (assoc_string (name_body, name)));
         val bdy_defN = suffix body_def_sfx name';
-      in ((Binding.name bdy_defN, NoSyn), ((Binding.empty, []), bdy)) end;
+      in ((Binding.name bdy_defN, NoSyn), (Attrib.empty_binding, bdy)) end;
 
    fun add_body_locale (name,pars) thy =
       let
@@ -1422,7 +1422,7 @@ val proc_type = P.$$$ "::" |-- P.typ_group >> BodyTyp
 
 
 fun proc_specs x = (P.!!! (Scan.repeat (S.thm_name ":" -- P.prop_group))
-    >> map (fn ((thm_name, thm_attribs), prop) => (Binding.base_name thm_name, prop))) x
+    >> map (fn ((thm_name, thm_attribs), prop) => (Binding.name_of thm_name, prop))) x
 
 val par_loc = Scan.option (P.$$$ "(" |-- P.$$$ "imports" |-- P.name --| P.$$$ ")");
 
