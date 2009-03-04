@@ -1,5 +1,5 @@
 (*  Title:      Jinja/Compiler/PCompiler.thy
-    ID:         $Id: PCompiler.thy,v 1.2 2007-02-07 17:19:08 stefanberghofer Exp $
+    ID:         $Id: PCompiler.thy,v 1.3 2009-03-04 14:00:59 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -26,7 +26,7 @@ preserved by it (like the subclass relation). *}
 
 lemma map_of_map4:
   "map_of (map (\<lambda>(x,a,b,c).(x,a,b,f c)) ts) =
-  option_map (\<lambda>(a,b,c).(a,b,f c)) \<circ> (map_of ts)"
+  Option.map (\<lambda>(a,b,c).(a,b,f c)) \<circ> (map_of ts)"
 (*<*)
 apply(induct ts)
  apply simp
@@ -52,7 +52,7 @@ lemma [simp]: "is_class (compP f P) C = is_class P C"
 (*<*)by(auto simp:is_class_def dest: class_compP class_compPD)(*>*)
 
 
-lemma [simp]: "class (compP f P) C = option_map (\<lambda>c. snd(compC f (C,c))) (class P C)"
+lemma [simp]: "class (compP f P) C = Option.map (\<lambda>c. snd(compC f (C,c))) (class P C)"
 (*<*)
 apply(simp add:compP_def compC_def class_def map_of_map4)
 apply(simp add:split_def)
@@ -62,7 +62,7 @@ done
 
 lemma sees_methods_compP:
   "P \<turnstile> C sees_methods Mm \<Longrightarrow>
-  compP f P \<turnstile> C sees_methods (option_map (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
+  compP f P \<turnstile> C sees_methods (Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
 (*<*)
 apply(erule Methods.induct)
  apply(rule sees_methods_Object)
@@ -104,7 +104,7 @@ done
 lemma sees_methods_compPD:
   "\<lbrakk> cP \<turnstile> C sees_methods Mm'; cP = compP f P \<rbrakk> \<Longrightarrow>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and>
-        Mm' = (option_map (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
+        Mm' = (Option.map (\<lambda>((Ts,T,m),D). ((Ts,T,f m),D)) \<circ> Mm)"
 (*<*)
 apply(erule Methods.induct)
  apply(clarsimp simp:compC_def)

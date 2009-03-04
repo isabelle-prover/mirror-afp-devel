@@ -1,5 +1,5 @@
 (*  Title:      POPLmark/POPLmark.thy
-    ID:         $Id: POPLmark.thy,v 1.6 2008-06-21 18:13:20 makarius Exp $
+    ID:         $Id: POPLmark.thy,v 1.7 2009-03-04 14:00:59 nipkow Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -179,7 +179,7 @@ lemma substE_length [simp]: "\<parallel>\<Gamma>[k \<mapsto>\<^isub>\<tau> U]\<^
   by (induct \<Gamma>) simp_all
 
 lemma liftE_nth [simp]:
-  "(\<up>\<^isub>e n k \<Gamma>)\<langle>i\<rangle> = option_map (mapB (\<up>\<^isub>\<tau> n (k + \<parallel>\<Gamma>\<parallel> - i - 1))) (\<Gamma>\<langle>i\<rangle>)"
+  "(\<up>\<^isub>e n k \<Gamma>)\<langle>i\<rangle> = Option.map (mapB (\<up>\<^isub>\<tau> n (k + \<parallel>\<Gamma>\<parallel> - i - 1))) (\<Gamma>\<langle>i\<rangle>)"
   apply (induct \<Gamma> arbitrary: i)
   apply simp
   apply simp
@@ -189,7 +189,7 @@ lemma liftE_nth [simp]:
   done
 
 lemma substE_nth [simp]:
-  "(\<Gamma>[0 \<mapsto>\<^isub>\<tau> T]\<^isub>e)\<langle>i\<rangle> = option_map (mapB (\<lambda>U. U[\<parallel>\<Gamma>\<parallel> - i - 1 \<mapsto>\<^isub>\<tau> T]\<^isub>\<tau>)) (\<Gamma>\<langle>i\<rangle>)"
+  "(\<Gamma>[0 \<mapsto>\<^isub>\<tau> T]\<^isub>e)\<langle>i\<rangle> = Option.map (mapB (\<lambda>U. U[\<parallel>\<Gamma>\<parallel> - i - 1 \<mapsto>\<^isub>\<tau> T]\<^isub>\<tau>)) (\<Gamma>\<langle>i\<rangle>)"
   apply (induct \<Gamma> arbitrary: i)
   apply simp
   apply simp

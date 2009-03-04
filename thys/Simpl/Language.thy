@@ -1,4 +1,4 @@
-(*  ID:          $Id: Language.thy,v 1.7 2008-10-25 12:59:18 fhaftmann Exp $
+(*  ID:          $Id: Language.thy,v 1.8 2009-03-04 14:00:59 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -458,10 +458,10 @@ primrec
 
 constdefs strip:: "'f set \<Rightarrow> 
                    ('p \<Rightarrow> ('s,'p,'f) com option) \<Rightarrow> ('p \<Rightarrow> ('s,'p,'f) com option)"
- "strip F \<Gamma> \<equiv> (\<lambda>p. option_map (strip_guards F) (\<Gamma> p))"
+ "strip F \<Gamma> \<equiv> (\<lambda>p. Option.map (strip_guards F) (\<Gamma> p))"
 
 
-lemma strip_simp [simp]: "(strip F \<Gamma>) p = option_map (strip_guards F) (\<Gamma> p)"
+lemma strip_simp [simp]: "(strip F \<Gamma>) p = Option.map (strip_guards F) (\<Gamma> p)"
   by (simp add: strip_def)
 
 lemma dom_strip: "dom (strip F \<Gamma>) = dom \<Gamma>"

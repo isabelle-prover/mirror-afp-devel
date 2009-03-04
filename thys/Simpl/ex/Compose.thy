@@ -1,4 +1,4 @@
-(*  ID:          $Id: Compose.thy,v 1.6 2008-06-12 06:57:28 lsf37 Exp $
+(*  ID:          $Id: Compose.thy,v 1.7 2009-03-04 14:00:59 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -190,7 +190,7 @@ locale lift_state_space =
   assumes proj_inj_commute: "\<And>S s.  project (inject S s) = s"
   defines "lift\<^isub>c \<equiv> Compose.lift\<^isub>c project inject"
   defines "project\<^isub>x \<equiv> xstate_map project"
-  defines "lift\<^isub>e \<equiv> (\<lambda>\<Gamma> p. option_map lift\<^isub>c (\<Gamma> p))"
+  defines "lift\<^isub>e \<equiv> (\<lambda>\<Gamma> p. Option.map lift\<^isub>c (\<Gamma> p))"
   defines "lift\<^isub>f \<equiv> Compose.lift\<^isub>f project inject"
   defines "lift\<^isub>s \<equiv> Compose.lift\<^isub>s project"
   defines "lift\<^isub>r \<equiv> Compose.lift\<^isub>r project inject"
@@ -264,7 +264,7 @@ lemma (in lift_state_space) project\<^isub>x_def':
 
 lemma (in lift_state_space) lift\<^isub>e_def': 
   "lift\<^isub>e \<Gamma> p \<equiv> (case \<Gamma> p of Some bdy \<Rightarrow> Some (lift\<^isub>c bdy) | None \<Rightarrow> None)"  
-  by (simp add: lift\<^isub>e_def option_map_def)
+  by (simp add: lift\<^isub>e_def Option.map_def)
 
 
 

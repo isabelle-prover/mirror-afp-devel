@@ -1,4 +1,4 @@
-(*  ID:         $Id: QE.thy,v 1.8 2009-02-27 17:46:41 nipkow Exp $
+(*  ID:         $Id: QE.thy,v 1.9 2009-03-04 14:00:59 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -249,7 +249,7 @@ assumes subst\<^isub>0:
   "\<lbrakk> solvable\<^isub>0 eq;  \<not>trivial eq;  I\<^isub>a eq (x#xs);  depends\<^isub>0 a \<rbrakk>
    \<Longrightarrow> I\<^isub>a (subst\<^isub>0 eq a) xs = I\<^isub>a a (x#xs)"
 and trivial: "trivial eq \<Longrightarrow> I\<^isub>a eq xs"
-and solvable: "solvable\<^isub>0 eq \<Longrightarrow> \<exists>e. I\<^isub>a eq (e#xs)"
+and solvable: "solvable\<^isub>0 eq \<Longrightarrow> \<exists>x. I\<^isub>a eq (x#xs)"
 and is_triv_self_subst: "solvable\<^isub>0 eq \<Longrightarrow> trivial (subst\<^isub>0 eq eq)"
 
 begin

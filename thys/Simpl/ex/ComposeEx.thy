@@ -1,4 +1,4 @@
-(*  ID:          $Id: ComposeEx.thy,v 1.7 2008-12-30 15:30:13 ballarin Exp $
+(*  ID:          $Id: ComposeEx.thy,v 1.8 2009-03-04 14:00:59 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -130,7 +130,7 @@ lemma inject_str_last:
   by (simp add: inject_str_def globals_inject_str_last)
 
 constdefs 
-  "lift\<^isub>e  \<equiv> \<lambda>\<Gamma> p. option_map (lift\<^isub>c project_str inject_str) (\<Gamma> p)"
+  "lift\<^isub>e  \<equiv> \<lambda>\<Gamma> p. Option.map (lift\<^isub>c project_str inject_str) (\<Gamma> p)"
 print_locale lift_state_space
 interpretation ex!: lift_state_space project_str inject_str
   "xstate_map project_str" lift\<^isub>e "lift\<^isub>c project_str inject_str"

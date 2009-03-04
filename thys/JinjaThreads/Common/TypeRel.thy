@@ -356,11 +356,11 @@ inductive Methods :: "'m prog \<Rightarrow> cname \<Rightarrow> (mname \<rightha
   for P :: "'m prog"
 where 
 sees_methods_Object:
- "\<lbrakk> class P Object = Some(D,fs,ms); Mm = option_map (\<lambda>m. (m,Object)) \<circ> map_of ms \<rbrakk>
+ "\<lbrakk> class P Object = Some(D,fs,ms); Mm = Option.map (\<lambda>m. (m,Object)) \<circ> map_of ms \<rbrakk>
   \<Longrightarrow> P \<turnstile> Object sees_methods Mm"
 | sees_methods_rec:
  "\<lbrakk> class P C = Some(D,fs,ms); C \<noteq> Object; P \<turnstile> D sees_methods Mm;
-    Mm' = Mm ++ (option_map (\<lambda>m. (m,C)) \<circ> map_of ms) \<rbrakk>
+    Mm' = Mm ++ (Option.map (\<lambda>m. (m,C)) \<circ> map_of ms) \<rbrakk>
   \<Longrightarrow> P \<turnstile> C sees_methods Mm'"
 
 
@@ -376,11 +376,11 @@ next
   have "class": "class P C = Some (D, fs, ms)"
    and notObj: "C \<noteq> Object" and Dmethods: "P \<turnstile> D sees_methods Dres"
    and IH: "\<And>Dres'. P \<turnstile> D sees_methods Dres' \<Longrightarrow> Dres' = Dres"
-   and Cres: "Cres = Dres ++ (option_map (\<lambda>m. (m,C)) \<circ> map_of ms)"
+   and Cres: "Cres = Dres ++ (Option.map (\<lambda>m. (m,C)) \<circ> map_of ms)"
    and Cmethods': "P \<turnstile> C sees_methods Cres'" by fact+
   from Cmethods' notObj "class" obtain Dres'
     where Dmethods': "P \<turnstile> D sees_methods Dres'"
-     and Cres': "Cres' = Dres' ++ (option_map (\<lambda>m. (m,C)) \<circ> map_of ms)"
+     and Cres': "Cres' = Dres' ++ (Option.map (\<lambda>m. (m,C)) \<circ> map_of ms)"
     by(auto elim: Methods.cases)
   from Cres Cres' IH[OF Dmethods'] show "Cres' = Cres" by simp
 qed
@@ -400,7 +400,7 @@ proof induct
   case sees_methods_Object thus ?case by auto
 next
   case sees_methods_rec thus ?case
-    by(fastsimp simp:option_map_def split:option.splits
+    by(fastsimp simp:Option.map_def split:option.splits
                 elim:converse_rtranclp_into_rtranclp[where r = "subcls1 P", standard, OF subcls1I])
 qed
 (*>*)
@@ -447,7 +447,7 @@ next
     and subC:"\<forall>M m D. Mm2 M = Some(m,D) \<longrightarrow> P \<turnstile> D \<preceq>\<^sup>* C" by blast
   obtain fs ms where "class": "class P C'' = Some(C',fs,ms)" "C'' \<noteq> Object"
     using subcls1D[OF sub1] by blast
-  let ?Mm3 = "option_map (\<lambda>m. (m,C'')) \<circ> map_of ms"
+  let ?Mm3 = "Option.map (\<lambda>m. (m,C'')) \<circ> map_of ms"
   have "P \<turnstile> C'' sees_methods (Mm ++ Mm2) ++ ?Mm3"
     using sees_methods_rec[OF "class" C'sees refl] Mm' by simp
   hence "?Q C'' C ((Mm ++ Mm2) ++ ?Mm3) (Mm2++?Mm3)"

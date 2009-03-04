@@ -453,7 +453,7 @@ lemma Thread_no_sees_method_start:
 proof(induct rule: Methods.induct)
   case (sees_methods_Object D' fs ms Mm) 
   have classO: "class P Object = \<lfloor>(D', fs, ms)\<rfloor>" by fact
-  have Mm: "Mm = option_map (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
+  have Mm: "Mm = Option.map (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
   have Mmstart: "Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
   have "P \<turnstile> Object \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* Object" by fact
   hence PTO: "P \<turnstile> Thread \<preceq>\<^sup>* Object" by(auto)
@@ -470,14 +470,14 @@ next
   have CnObject: "C \<noteq> Object" by fact
   have PD'Mm: "P \<turnstile> D' sees_methods Mm" by fact
   have IH: "\<lbrakk>Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> D' \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* D'\<rbrakk> \<Longrightarrow> False" by fact
-  have Mm': "Mm' = Mm ++ (option_map (\<lambda>m. (m, C)) \<circ> map_of ms)" by fact
+  have Mm': "Mm' = Mm ++ (Option.map (\<lambda>m. (m, C)) \<circ> map_of ms)" by fact
   have Mm'start: "Mm' start = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
   have "P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C" by fact
   thus ?case
   proof(rule disjE)
     assume PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
     show ?thesis
-    proof(cases "(option_map (\<lambda>m. (m, C)) \<circ> map_of ms) start")
+    proof(cases "(Option.map (\<lambda>m. (m, C)) \<circ> map_of ms) start")
       case None
       with Mm' Mm'start have Mmstart: "Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>"
 	by(auto)
@@ -514,7 +514,7 @@ next
   next
     assume PThreadC: "P \<turnstile> Thread \<preceq>\<^sup>* C"
     show ?thesis
-    proof(cases "(option_map (\<lambda>m. (m, C)) \<circ> map_of ms) start")
+    proof(cases "(Option.map (\<lambda>m. (m, C)) \<circ> map_of ms) start")
       case None
       with Mm' Mm'start have Mmstart: "Mm start = \<lfloor>((Ts, T, mthd), D)\<rfloor>"
 	by(auto)
@@ -550,7 +550,7 @@ lemma Thread_no_sees_method_join:
 proof(induct rule: Methods.induct)
   case (sees_methods_Object D' fs ms Mm) 
   have classO: "class P Object = \<lfloor>(D', fs, ms)\<rfloor>" by fact
-  have Mm: "Mm = option_map (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
+  have Mm: "Mm = Option.map (\<lambda>m. (m, Object)) \<circ> map_of ms" by fact
   have Mmstart: "Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
   have "P \<turnstile> Object \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* Object" by fact
   hence PTO: "P \<turnstile> Thread \<preceq>\<^sup>* Object" by(auto)
@@ -567,14 +567,14 @@ next
   have CnObject: "C \<noteq> Object" by fact
   have PD'Mm: "P \<turnstile> D' sees_methods Mm" by fact
   have IH: "\<lbrakk>Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>; P \<turnstile> D' \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* D'\<rbrakk> \<Longrightarrow> False" by fact
-  have Mm': "Mm' = Mm ++ (option_map (\<lambda>m. (m, C)) \<circ> map_of ms)" by fact
+  have Mm': "Mm' = Mm ++ (Option.map (\<lambda>m. (m, C)) \<circ> map_of ms)" by fact
   have Mm'start: "Mm' join = \<lfloor>((Ts, T, mthd), D)\<rfloor>" by fact
   have "P \<turnstile> C \<preceq>\<^sup>* Thread \<or> P \<turnstile> Thread \<preceq>\<^sup>* C" by fact
   thus ?case
   proof(rule disjE)
     assume PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
     show ?thesis
-    proof(cases "(option_map (\<lambda>m. (m, C)) \<circ> map_of ms) join")
+    proof(cases "(Option.map (\<lambda>m. (m, C)) \<circ> map_of ms) join")
       case None
       with Mm' Mm'start have Mmstart: "Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>"
 	by(auto)
@@ -611,7 +611,7 @@ next
   next
     assume PThreadC: "P \<turnstile> Thread \<preceq>\<^sup>* C"
     show ?thesis
-    proof(cases "(option_map (\<lambda>m. (m, C)) \<circ> map_of ms) join")
+    proof(cases "(Option.map (\<lambda>m. (m, C)) \<circ> map_of ms) join")
       case None
       with Mm' Mm'start have Mmstart: "Mm join = \<lfloor>((Ts, T, mthd), D)\<rfloor>"
 	by(auto)

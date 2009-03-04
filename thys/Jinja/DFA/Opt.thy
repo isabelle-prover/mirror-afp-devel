@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Opt.thy
-    ID:         $Id: Opt.thy,v 1.6 2008-07-25 15:07:16 fhaftmann Exp $
+    ID:         $Id: Opt.thy,v 1.7 2009-03-04 14:00:59 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -226,9 +226,9 @@ done
 
 lemma option_map_in_optionI:
   "\<lbrakk> ox \<in> opt S; \<forall>x\<in>S. ox = Some x \<longrightarrow> f x \<in> S \<rbrakk> 
-  \<Longrightarrow> option_map f ox \<in> opt S";
+  \<Longrightarrow> Option.map f ox \<in> opt S";
 (*<*)
-apply (unfold option_map_def)
+apply (unfold Option.map_def)
 apply (simp split: option.split)
 apply blast
 done 
