@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.35 2009-03-03 17:41:27 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.36 2009-03-05 13:39:45 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -671,15 +671,15 @@ fun is_state_space_var Tids t =
 
 datatype callMode = Static | Parameter
 
-fun proc_name Static (Const (p,_)$_) = resuffix deco proc_deco (NameSpace.base p)
+fun proc_name Static (Const (p,_)$_) = resuffix deco proc_deco (NameSpace.base_name p)
   | proc_name Static (Const ("StateFun.lookup",_)$_$Free (p,_)$_) =
-       suffix proc_deco (remdeco (NameSpace.base p))
+       suffix proc_deco (remdeco (NameSpace.base_name p))
   | proc_name Static p = dest_string' p
-  | proc_name Parameter (Const (p,_)) = resuffix deco proc_deco (NameSpace.base p)
+  | proc_name Parameter (Const (p,_)) = resuffix deco proc_deco (NameSpace.base_name p)
   | proc_name Parameter (Abs (_,_,Const (p,_)$Bound 0)) =
-      resuffix deco proc_deco (NameSpace.base p)
+      resuffix deco proc_deco (NameSpace.base_name p)
   | proc_name Parameter (Abs (_,_,Const ("StateFun.lookup",_)$_$Free (p,_)$_)) =
-      suffix proc_deco (remdeco (NameSpace.base p))
+      suffix proc_deco (remdeco (NameSpace.base_name p))
   | proc_name _ t = raise TERM ("proc_name",[t]);
 
 
@@ -2788,7 +2788,7 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
       | dest_name t = raise TERM ("dest_name",[t]);
 
     fun dest_lemAnno ctxt (Const ("Language.lem",_)$n$c) =
-      let val x = NameSpace.base (dest_name n);
+      let val x = NameSpace.base_name (dest_name n);
       in
          (case try (ProofContext.get_thm ctxt) x of
             NONE => error ("No lemma: '" ^ x ^ "' found.")
@@ -3051,7 +3051,7 @@ fun bound xs (t as (Const (x,_)$_)) =
   | bound xs t = raise TERM ("RecordSplitState.bound",[t]);
 
 fun abs_var _ (Const (x,T)$_) =
-     (remdeco (NameSpace.base x),range_type T)
+     (remdeco (NameSpace.base_name x),range_type T)
   | abs_var _ t = raise TERM ("RecordSplitState.abs_var",[t]);
 
 fun fld_eq (x,_) y = (x=y)
@@ -3585,7 +3585,7 @@ fun is_funtype (Type ("fun", _)) = true
 
 fun state_kind_of thy T =
      let val (s,sT) = nth (fst (RecordPackage.get_recT_fields thy T)) 1;
-     in if NameSpace.base s = "locals" andalso is_funtype sT then Function else Record end
+     in if NameSpace.base_name s = "locals" andalso is_funtype sT then Function else Record end
      handle Subscript => Record;
 
 fun find_state_space_in_triple thy t =

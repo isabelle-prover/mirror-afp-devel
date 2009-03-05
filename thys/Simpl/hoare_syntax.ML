@@ -1,5 +1,5 @@
 (*  Title:      hoare_syntax.ML
-    ID:         $Id: hoare_syntax.ML,v 1.7 2009-02-16 10:18:05 norbertschirmer Exp $
+    ID:         $Id: hoare_syntax.ML,v 1.8 2009-03-05 13:39:47 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -87,7 +87,7 @@ fun is_prefix_or_suffix s t =
 
 fun is_global_comp ctxt name =
      (case (StateSpace.get_comp ctxt name) of
-       SOME (_,ln) => is_prefix_or_suffix "globals" (NameSpace.base ln)
+       SOME (_,ln) => is_prefix_or_suffix "globals" (NameSpace.base_name ln)
       | NONE => false)
 (** parsing and printing **)
 
@@ -100,7 +100,7 @@ fun is_global ctxt name =
   (case (Sign.const_type (Context.theory_of ctxt) 
            (Sign.intern_const (Context.theory_of ctxt) name)) of
      NONE => is_global_comp ctxt name
-   | SOME T => String.isPrefix globalsN (NameSpace.base (fst (dest_Type (domain_type T)))))
+   | SOME T => String.isPrefix globalsN (NameSpace.base_name (fst (dest_Type (domain_type T)))))
   handle Match => false;
 
 exception UNDEFINED of string
@@ -248,7 +248,7 @@ fun antiquote_tr' name =
     fun isState i t = (case t of 
                          Bound j => i=j
                        | Const (g,_)$Bound j => i=j andalso 
-                                                NameSpace.base g mem_string [globalsN,localsN]  
+                                                NameSpace.base_name g mem_string [globalsN,localsN]  
                        | _ => false);
     fun tr' i (t $ u) =
        if isState i u then Syntax.const name $ tr' i (undeco t)
@@ -266,7 +266,7 @@ fun quote_tr' name (Abs (_, _, t)) = Term.incr_boundvars ~1 (antiquote_tr' name 
 
 local
 fun state_test (t as Const (g,_)$u) f  = 
-      if (NameSpace.base g) mem_string [localsN,globalsN] then f u else f t
+      if (NameSpace.base_name g) mem_string [localsN,globalsN] then f u else f t
   | state_test u f = f u;
 in
 
@@ -1014,25 +1014,25 @@ local
 fun uncover (upd,v) =
  (case (upd,v) of 
      (Const (cupd,_),upd'$dest$constr$n$(Const ("K_statefun",_)$v')$s) =>
-       if NameSpace.base cupd mem_string [globals_updateN, locals_updateN]
+       if NameSpace.base_name cupd mem_string [globals_updateN, locals_updateN]
        then (case s of (Const (g,_)$_) =>
-               if NameSpace.base g mem_string [globalsN, localsN]
+               if NameSpace.base_name g mem_string [globalsN, localsN]
                then (n,v')
                else raise Match
              | _ => raise Match)
        else (upd,v)
     |(Const (gupd,_),upd'$k$s) =>
         (case dest_K_rec k of SOME v' =>
-           (if NameSpace.base gupd = suffix updateN globalsN
+           (if NameSpace.base_name gupd = suffix updateN globalsN
             then (case s of (Const (gl,_)$_) =>
-	           if NameSpace.base gl = globalsN (* assignment *)
+	           if NameSpace.base_name gl = globalsN (* assignment *)
 		   then (upd',v')
                    else raise Match
                   | _ => raise Match)
              else (upd,v))
         | _ => (upd,v))
     |(Const (upd_glob,_),upd'$v') =>
-        if NameSpace.base upd_glob = upd_globalsN (* result parameter *)
+        if NameSpace.base_name upd_glob = upd_globalsN (* result parameter *)
         then (upd',v') else (upd,v)
     | _ => (upd,v));
 in
@@ -1047,23 +1047,23 @@ end;
 fun dest_updates (t as (upd as Const (u,_))$k$state) =
      (case dest_K_rec k of 
         SOME value =>
-          if NameSpace.base u mem_string [globals_updateN,locals_updateN]
+          if NameSpace.base_name u mem_string [globals_updateN,locals_updateN]
 	  then dest_updates value
-	  else if has_suffix updateN u orelse NameSpace.base u = upd_globalsN 
+	  else if has_suffix updateN u orelse NameSpace.base_name u = upd_globalsN 
 	  then (upd,value)::dest_updates state 
 	  else raise Match
       | NONE => raise Match)
   | dest_updates (t as (upd as Const (u,_))$k) = 
      (case dest_K_rec k of 
         SOME value =>
-          if NameSpace.base u mem_string [globals_updateN,locals_updateN]
+          if NameSpace.base_name u mem_string [globals_updateN,locals_updateN]
 	  then dest_updates value
-	  else if has_suffix updateN u orelse NameSpace.base u = upd_globalsN 
+	  else if has_suffix updateN u orelse NameSpace.base_name u = upd_globalsN 
 	  then [(upd,value)] 
-	  else if NameSpace.base u = globalsN then [] else raise Match
+	  else if NameSpace.base_name u = globalsN then [] else raise Match
       | NONE => []) (* t could be just (globals$s) *)
   | dest_updates ((Const (u,_))$_$_$n$(Const ("K_statefun",_)$value)$state) =
-     if NameSpace.base u = NameSpace.base StateFun.updateN
+     if NameSpace.base_name u = NameSpace.base_name StateFun.updateN
      then (n,value)::dest_updates state
      else raise Match
   | dest_updates t = [];
@@ -1080,7 +1080,7 @@ fun init_tr' [Abs (_,_,t)] =
     val _ = print "starting init_tr'"
     val upds  = case dest_updates t of
                  us as [(Const (gupd,_),v)] => 
-                     if NameSpace.base gupd = suffix updateN globalsN 
+                     if NameSpace.base_name gupd = suffix updateN globalsN 
                      then dest_updates v else us
                 | us => us;   
 
@@ -1166,8 +1166,8 @@ fun loc_tr' [init,bdy,return,c] =
       | mk_init ((f as Const ("_free",_))$Free (c,_),v) =
          (case v of 
            (Const (lookup,_)$_$(Const ("_free",_)$Free (c',_))$(Const (locals,_)$Bound 0)) 
-           => if NameSpace.base lookup = NameSpace.base StateFun.lookupN 
-              andalso NameSpace.base locals = localsN
+           => if NameSpace.base_name lookup = NameSpace.base_name StateFun.lookupN 
+              andalso NameSpace.base_name locals = localsN
               then init_or_not c c' v
               else mk_locinit (remdeco c) v
            | _ => mk_locinit (remdeco c) v)
@@ -1295,7 +1295,7 @@ fun proc_tr' ctxt [p] =
   in if not ("NoProc" mem_string (!print_mode))
      then (case res_formals of
             [r] => Syntax.const "_ProcAss"$
-                       (Syntax.const antiquoteCur$Syntax.const (remdeco (NameSpace.base r)))$
+                       (Syntax.const antiquoteCur$Syntax.const (remdeco (NameSpace.base_name r)))$
                        p'$actuals_tr' (map mkpar val_formals)
            | _ => Syntax.const "_Proc"$p'$
                    actuals_tr' (map mkpar (val_formals @ res_formals)))
@@ -1312,7 +1312,7 @@ fun fcall_tr' [init,p,return,result,c] =
 
 fun assert_tr' ((t as (Abs (_,_,p)))::ts) =
   let fun selector (Const (c,T)) = is_state_var c
-        | selector (Const (l,_)$_$_) = NameSpace.base l = NameSpace.base StateFun.lookupN
+        | selector (Const (l,_)$_$_) = NameSpace.base_name l = NameSpace.base_name StateFun.lookupN
         | selector t = false;
 
       fun fix_state (Const ("op =",_)$(Const ("_free",_)$_)) = true
