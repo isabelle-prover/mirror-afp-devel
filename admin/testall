@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.10 2008-12-16 21:06:50 lsf37 Exp $
+# $Id: testall,v 1.11 2009-03-06 14:57:37 fhaftmann Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Tests all entries in Archive of Formal Proofs
@@ -91,7 +91,17 @@ shift $(($OPTIND - 1))
 [ -d $THYS ] || fail "Could not find archive directory. Tried [$THYS]."
 cd $THYS
 
-DIRS=$@
+DIRS=""
+OPTS=""
+for ARG in "$@"
+do
+  if [ $(expr index "$ARG" "=") -gt 0 ]
+  then
+    OPTS="$OPTS $ARG"
+  else
+    DIRS="$DIRS $ARG"
+  fi
+done
 if [ "$DIRS" == "" ]; then DIRS=*; fi
 
 FAIL="";
@@ -102,7 +112,7 @@ for DIR in $DIRS; do
 	if [ "$(ls .)" != "CVS" ]; then
 	        if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
         	  echo "Testing [$DIR]"
-	          $ISABELLE_TOOL make $CLEAN all $@ || FAIL="${FAIL}${DIR} "
+	          $ISABELLE_TOOL make $CLEAN all "$OPTS" || FAIL="${FAIL}${DIR} "
         	  echo "Finished [$DIR]"
 	        fi
 	fi
