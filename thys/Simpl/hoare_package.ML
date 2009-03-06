@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.36 2009-03-05 13:39:45 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.37 2009-03-06 14:57:40 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1675,8 +1675,8 @@ infix 0 ===;
 val (op ===) = Trueprop o HOLogic.mk_eq;
 
 
-fun UN_const (dT as (Type ("fun", [dT', Type ("bool", [])]))) rT =
-      Const ("UNION",[dT, dT' --> rT] ---> rT) $ Const ("UNIV",dT)
+fun UN_const (dT as (Type ("fun", [dT', @{typ bool}]))) rT =
+      Const (@{const_name UNION}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name UNIV}, dT)
   | UN_const _ _ = raise Match;
 
 fun mk_UN (x,T,P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x,T,P);
@@ -1797,14 +1797,14 @@ fun gen_call_rec_rule specs_name n rule =
                  mk_var i "p" pT,
                  mk_var i "Q" (zT --> assT)$Bound 0,
                  mk_var i "A" (zT --> assT)$Bound 0];
-         val single = Const ("insert",quadT --> quadT_set --> quadT_set)$
-                       quadruple$Const ("{}",quadT_set)
-     in Const ("UNION", HOLogic.mk_setT zT --> (zT --> quadT_set) --> quadT_set)$
-         Const ("UNIV", HOLogic.mk_setT zT) $
+         val single = Const (@{const_name insert}, quadT --> quadT_set --> quadT_set) $
+                       quadruple $ Const (@{const_name Set.empty}, quadT_set)
+     in Const (@{const_name UNION}, HOLogic.mk_setT zT --> (zT --> quadT_set) --> quadT_set)$
+         Const (@{const_name UNIV}, HOLogic.mk_setT zT) $
           Abs("Z",zT,single)
      end;
 
-     fun mk_Un T (A,B) = Const ("op Un", T --> T --> T)$A$B;
+     fun mk_Un T (A,B) = Const (@{const_name Un}, T --> T --> T)$A$B;
 
 
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
@@ -2045,20 +2045,21 @@ fun gen_context_thms ctxt thy mode params G T F =
   let
     val Type (_,[comT]) = range_type (fastype_of G);
 
-    fun destUn (Const ("op Un",_)$t1$t2) = destUn t1 @ destUn t2
+    fun destUn (Const (@{const_name Un}, _) $ t1 $ t2) = destUn t1 @ destUn t2
       | destUn t = [t]
 
-    fun destUNION (Const ("UNION",_)$Const ("UNIV",_)$Abs (x,T,t)) =
+    fun destUNION (Const (@{const_name UNION}, _) $ Const (@{const_name UNIV}, _) $ Abs (x, T, t)) =
          let val (vars,body) = destUNION t
-         in ((x,T)::vars,body) end
+         in ((x, T) :: vars, body) end
       | destUNION t = ([],t)
 
-    fun destQuadruple (Const ("insert",_)$PpQA$Const ("{}",_)) = PpQA
+    fun destQuadruple (Const (@{const_name insert},_) $ PpQA $ Const (@{const_name Set.empty}, _)) = PpQA
       | destQuadruple t = raise Match;
 
-    fun mkCallQuadruple (Const("Pair",_)$P$(Const("Pair",_)$p$(Const("Pair",_)$Q$A))) =
-      let val Call_p = Const ("Language.com.Call",fastype_of p --> comT)$p;
-      in (P,Call_p,Q,A) end;
+    fun mkCallQuadruple (Const (@{const_name Pair}, _) $ P $ (Const (@{const_name Pair}, _)
+        $ p $ (Const(@{const_name Pair}, _) $ Q $ A))) =
+      let val Call_p = Const (@{const_name Language.com.Call}, fastype_of p --> comT) $ p;
+      in (P, Call_p, Q, A) end;
 
     fun mkHoare mode G T F (vars,PpQA) =
       let
@@ -2186,7 +2187,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                  SOME s => SOME s
                | NONE =>  try (ProofContext.get_thm ctxt) (suffix spec_sfx pname'));
 
-    fun dest_UN (Const ("UNION",_)$Const ("UNIV",_)$t) = SOME t
+    fun dest_UN (Const (@{const_name UNION}, _) $ Const (@{const_name UNIV}, _) $ t) = SOME t
       | dest_UN _ = NONE;
 
     fun auxvars_for p t =
@@ -2317,7 +2318,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                               then if (mode=Total andalso spec_mode=Partial)
                                    then (warning msg;(true,NONE,NONE,false))
                                    else case spec_abr of
-                                          (Const ("{}",_)) =>
+                                          (Const (@{const_name Set.empty}, _)) =>
                                             (false,SOME spec_mode,
                                               SOME (spec' s spec_mode false),spec_has_args)
                                         | _ => (true,SOME spec_mode,
@@ -2436,9 +2437,9 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
         let
           val (_,call,modif_spec_nrm,modif_spec_abr,modif_spec_mode,G,Theta,_) =
                 dest_hoare (concl_of modifies_thm);
-          val is_abr = case modif_spec_abr of (Const ("{}",_)) => false | _ => true;
-          val emptyTheta = case Theta of (Const ("{}",_)) => true | _ => false;
-          (*val emptyFaults = case F of (Const ("{}",_)) => true | _ => false;*)
+          val is_abr = case modif_spec_abr of (Const (@{const_name Set.empty},_)) => false | _ => true;
+          val emptyTheta = case Theta of (Const (@{const_name Set.empty},_)) => true | _ => false;
+          (*val emptyFaults = case F of (Const (@{const_name Set.empty}, _)) => true | _ => false;*)
           val spec_has_args = #6 (dest_call call);
           val () = if spec_has_args
               then error "procedure call in modifies-specification must be parameterless!"
@@ -2624,7 +2625,7 @@ fun guard_tac strip cont_tac mode (t,i) =
                  triv_simp i]
   in
       case F of
-       (Const ("{}",_)) => EVERY [trace_tac "Guard: basic_tac", basic_tac i]
+       (Const (@{const_name Set.empty},_)) => EVERY [trace_tac "Guard: basic_tac", basic_tac i]
       | _ => EVERY [trace_tac "Guard: trying guarantee_tac",
                     guarantee_tac i ORELSE basic_tac i]
 
@@ -2695,7 +2696,7 @@ fun while_tac ctxt state_kind inv cont_tac tac mode t i=
     handle TERM _ => no_tac
 
 fun mkIntersect Ts A B =
-  let val T = fastype_of1 (Ts,A) in Const ("op Int",T --> T --> T)$A$B end;
+  let val T = fastype_of1 (Ts, A) in Const (@{const_name Int}, T --> T --> T) $ A $ B end;
 
 fun dest_split (Abs (x,T,t)) =
      let val (vs,recomb,bdy) = dest_split t;

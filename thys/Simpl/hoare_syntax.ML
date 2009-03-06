@@ -1,5 +1,5 @@
 (*  Title:      hoare_syntax.ML
-    ID:         $Id: hoare_syntax.ML,v 1.8 2009-03-05 13:39:47 makarius Exp $
+    ID:         $Id: hoare_syntax.ML,v 1.9 2009-03-06 14:57:40 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -458,8 +458,8 @@ fun init_tr ctxt [Const (var,_),comp,value] =
       | dest_list (Const ("Cons",_)$Free (x,_)$xs) = x::dest_list xs
       | dest_list _ = raise Match;
 
-    fun dest_set (Const ("{}",_)) = []
-      | dest_set (Const ("insert",_)$x$xs) = x::dest_set xs
+    fun dest_set (Const (@{const_name Set.empty}, _)) = []
+      | dest_set (Const (@{const_name insert}, _) $ x $ xs) = x :: dest_set xs
       | dest_set t = [t];
 
     fun dest_val_list (Const ("Nil",_)) = []
@@ -1074,8 +1074,8 @@ fun init_tr' [Abs (_,_,t)] =
       | dest_list (Const ("Cons",_)$x$xs) = x::dest_list xs
       | dest_list t = [t];
 
-    fun mk_set [] = Syntax.const "{}"
-      | mk_set (x::xs) = Syntax.const "insert"$x$mk_set xs;
+    fun mk_set [] = Syntax.const "Set.empty"
+      | mk_set (x::xs) = Syntax.const "insert" $ x $ mk_set xs;
  
     val _ = print "starting init_tr'"
     val upds  = case dest_updates t of
