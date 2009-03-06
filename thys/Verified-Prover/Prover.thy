@@ -1,4 +1,4 @@
-(* $Id: Prover.thy,v 1.20 2009-02-15 15:53:22 nipkow Exp $ *)
+(* $Id: Prover.thy,v 1.21 2009-03-06 14:57:44 fhaftmann Exp $ *)
 
 theory Prover imports Main Infinite_Set begin
 
@@ -547,7 +547,7 @@ lemma inj_finite_image_eq_finite: "inj_on f Z ==> finite (f ` Z) = finite Z"
 
 lemma finite_inc: "finite (inc ` X) = finite X"
   apply(rule inj_finite_image_eq_finite)
-  apply(rule_tac B="UNIV" in subset_inj_on)
+  apply(rule_tac B=UNIV in subset_inj_on)
   apply(auto) 
   done
 
