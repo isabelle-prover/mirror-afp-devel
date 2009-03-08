@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.37 2009-03-06 14:57:40 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.38 2009-03-08 17:57:10 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -671,15 +671,15 @@ fun is_state_space_var Tids t =
 
 datatype callMode = Static | Parameter
 
-fun proc_name Static (Const (p,_)$_) = resuffix deco proc_deco (NameSpace.base_name p)
+fun proc_name Static (Const (p,_)$_) = resuffix deco proc_deco (Long_Name.base_name p)
   | proc_name Static (Const ("StateFun.lookup",_)$_$Free (p,_)$_) =
-       suffix proc_deco (remdeco (NameSpace.base_name p))
+       suffix proc_deco (remdeco (Long_Name.base_name p))
   | proc_name Static p = dest_string' p
-  | proc_name Parameter (Const (p,_)) = resuffix deco proc_deco (NameSpace.base_name p)
+  | proc_name Parameter (Const (p,_)) = resuffix deco proc_deco (Long_Name.base_name p)
   | proc_name Parameter (Abs (_,_,Const (p,_)$Bound 0)) =
-      resuffix deco proc_deco (NameSpace.base_name p)
+      resuffix deco proc_deco (Long_Name.base_name p)
   | proc_name Parameter (Abs (_,_,Const ("StateFun.lookup",_)$_$Free (p,_)$_)) =
-      suffix proc_deco (remdeco (NameSpace.base_name p))
+      suffix proc_deco (remdeco (Long_Name.base_name p))
   | proc_name _ t = raise TERM ("proc_name",[t]);
 
 
@@ -993,18 +993,18 @@ val proc_nameT = HOLogic.stringT;
 
 fun add_locale name expr elems thy =
   thy 
-  |> Expression.add_locale name name expr elems
+  |> Expression.add_locale (Binding.name name) (Binding.name name) expr elems
   |> snd
   |> LocalTheory.exit;
 
 fun add_locale' name expr elems thy =
   thy 
-  |> Expression.add_locale name name expr elems
+  |> Expression.add_locale (Binding.name name) (Binding.name name) expr elems
   ||> LocalTheory.exit;
 
 fun add_locale_cmd name expr elems thy =
   thy 
-  |> Expression.add_locale_cmd name name expr elems
+  |> Expression.add_locale_cmd (Binding.name name) (Binding.name name) expr elems
   |> snd
   |> LocalTheory.exit;
 
@@ -2162,8 +2162,8 @@ val constr_to_destr =
     let
       fun convert c =
         let
-            val (path,base) = split_last (NameSpace.explode c);
-        in NameSpace.implode (fst (split_last path) @ ["the_" ^ base]) end;
+            val (path,base) = split_last (Long_Name.explode c);
+        in Long_Name.implode (fst (split_last path) @ ["the_" ^ base]) end;
     in  swap_constr_destr convert end;
 
 (* FIXME: unused? *)
@@ -2171,8 +2171,8 @@ val destr_to_constr =
     let
       fun convert c =
         let
-          val (path,base) = split_last (NameSpace.explode c);
-        in NameSpace.implode (path @ ["val",unprefix "the_" base]) end;
+          val (path,base) = split_last (Long_Name.explode c);
+        in Long_Name.implode (path @ ["val",unprefix "the_" base]) end;
     in  swap_constr_destr convert end;
 
 local
@@ -2789,7 +2789,7 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
       | dest_name t = raise TERM ("dest_name",[t]);
 
     fun dest_lemAnno ctxt (Const ("Language.lem",_)$n$c) =
-      let val x = NameSpace.base_name (dest_name n);
+      let val x = Long_Name.base_name (dest_name n);
       in
          (case try (ProofContext.get_thm ctxt) x of
             NONE => error ("No lemma: '" ^ x ^ "' found.")
@@ -3052,7 +3052,7 @@ fun bound xs (t as (Const (x,_)$_)) =
   | bound xs t = raise TERM ("RecordSplitState.bound",[t]);
 
 fun abs_var _ (Const (x,T)$_) =
-     (remdeco (NameSpace.base_name x),range_type T)
+     (remdeco (Long_Name.base_name x),range_type T)
   | abs_var _ t = raise TERM ("RecordSplitState.abs_var",[t]);
 
 fun fld_eq (x,_) y = (x=y)
@@ -3586,7 +3586,7 @@ fun is_funtype (Type ("fun", _)) = true
 
 fun state_kind_of thy T =
      let val (s,sT) = nth (fst (RecordPackage.get_recT_fields thy T)) 1;
-     in if NameSpace.base_name s = "locals" andalso is_funtype sT then Function else Record end
+     in if Long_Name.base_name s = "locals" andalso is_funtype sT then Function else Record end
      handle Subscript => Record;
 
 fun find_state_space_in_triple thy t =
