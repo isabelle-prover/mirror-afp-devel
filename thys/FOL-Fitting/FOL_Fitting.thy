@@ -1,4 +1,4 @@
-(*  ID:         $Id: FOL_Fitting.thy,v 1.7 2008-09-16 14:19:22 fhaftmann Exp $
+(*  ID:         $Id: FOL_Fitting.thy,v 1.8 2009-03-10 10:26:14 fhaftmann Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2003
 *)
 
@@ -2408,13 +2408,15 @@ theorem doublep_eval: "\<And>e. eval e f g (psubst (\<lambda>n::nat. 2 * n) p) =
 
 theorem doublep_infinite_params:
   "\<not> finite (- (\<Union>p \<in> psubst (\<lambda>n::nat. 2 * n) ` S. params p))"
-  apply (rule infinite_super
-    [OF _ range_inj_infinite [where f="\<lambda>n::nat. 2 * n + 1"]])
-  apply auto
-  apply arith
-  apply (rule inj_onI)
-  apply simp
-  done
+proof (rule infinite_super)
+  show "infinite (range (\<lambda>n::nat. 2 * n + 1))"
+    by (auto intro!: range_inj_infinite inj_onI)
+next
+  have "\<And>m n. Suc (2 * m) \<noteq> 2 * n" by arith
+  then show "range (\<lambda>n\<Colon>nat. (2\<Colon>nat) * n + (1\<Colon>nat))
+    \<subseteq> - (\<Union>p\<Colon>(nat, 'a) form\<in>psubst (op * (2\<Colon>nat)) ` S. params p)"
+    by auto
+qed
 
 text {*
 When applying the model existence theorem, there is a technical
