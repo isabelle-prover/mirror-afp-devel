@@ -1,5 +1,5 @@
 (*  Title:      hoare_syntax.ML
-    ID:         $Id: hoare_syntax.ML,v 1.10 2009-03-08 17:57:11 makarius Exp $
+    ID:         $Id: hoare_syntax.ML,v 1.11 2009-03-13 11:28:56 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -454,33 +454,33 @@ fun basic_tr ctxt [t] =
 
 fun init_tr ctxt [Const (var,_),comp,value] = 
   let  
-    fun dest_list (Const ("Nil",_)) = []
-      | dest_list (Const ("Cons",_)$Free (x,_)$xs) = x::dest_list xs
-      | dest_list _ = raise Match;
 
-    fun dest_set (Const (@{const_name Set.empty}, _)) = []
-      | dest_set (Const (@{const_name insert}, _) $ x $ xs) = x :: dest_set xs
-      | dest_set t = [t];
+    fun dest_set (Const (@{const_syntax Set.empty}, _)) = []
+      | dest_set (Const (@{const_syntax insert}, _) $ x $ xs) = x :: dest_set xs;
 
-    fun dest_val_list (Const ("Nil",_)) = []
-      | dest_val_list (Const ("Cons",_)$x$xs) = dest_set x::dest_val_list xs
+    fun dest_list (Const (@{const_syntax Nil}, _)) = []
+      | dest_list (Const (@{const_syntax Cons}, _) $ Free (x, _) $ xs) = x :: dest_list xs;
+
+    fun dest_val_list (Const (@{const_syntax Nil}, _)) = []
+      | dest_val_list (Const (@{const_syntax Cons},_) $ x $ xs) =
+          dest_set x :: dest_val_list xs
       | dest_val_list t = [dest_set t];
 
-    val values = (case value of
-                    (Const ("Cons",_)$_$_) => map mk_list 
-                                                 (transpose (dest_val_list value))
-                  | (Const ("insert",_)$_$_) => dest_set value
-                  | _ => raise TERM ("unknown variable initialization",[]))
-    val comps = dest_list comp
-    fun mk_upd var (c,v) =
-           Syntax.free 
-            (suffix updateN (varname (suffix ("_"^c) var)))$v
-    val upds = map (mk_upd var) (comps ~~ values)
+    val values = case value
+     of Const (@{const_syntax Cons}, _) $ _ $ _ =>
+          map mk_list (transpose (dest_val_list value))
+      | Const (@{const_syntax insert}, _) $ _ $ _ =>
+          dest_set value
+      | _ => raise TERM ("unknown variable initialization", [])
+    val comps = dest_list comp;
+    fun mk_upd var c v =
+      Syntax.free (suffix updateN (varname (suffix ("_" ^ c) var))) $ v;
+    val upds = map2 (mk_upd var) comps values;
     fun app_upds s = foldl (fn (s,upd) => upd$s) (s,upds)
-    val upd = if is_global (Context.Proof ctxt) (varname (suffix ("_"^hd comps) var)) 
-	      then Syntax.free (suffix updateN globalsN)$
-			       app_upds (Syntax.free globalsN$Bound 0)$Bound 0       
-	      else app_upds (Bound 0)  
+    val upd = if is_global (Context.Proof ctxt) (varname (suffix ("_" ^ hd comps) var))
+      then Syntax.free (suffix updateN globalsN)
+        $ app_upds (Syntax.free globalsN $ Bound 0) $ Bound 0
+      else app_upds (Bound 0)
     
   in Syntax.free "Basic"$(Abs ("s",dummyT,upd)) end
     | init_tr ctxt (ts:term list) = raise Match
@@ -1070,13 +1070,7 @@ fun dest_updates (t as (upd as Const (u,_))$k$state) =
 
 fun init_tr' [Abs (_,_,t)] =
   let  
-    fun dest_list (Const ("Nil",_)) = []
-      | dest_list (Const ("Cons",_)$x$xs) = x::dest_list xs
-      | dest_list t = [t];
 
-    fun mk_set [] = Syntax.const "Set.empty"
-      | mk_set (x::xs) = Syntax.const "insert" $ x $ mk_set xs;
- 
     val _ = print "starting init_tr'"
     val upds  = case dest_updates t of
                  us as [(Const (gupd,_),v)] => 
@@ -1087,6 +1081,12 @@ fun init_tr' [Abs (_,_,t)] =
     val comps = map (fn (Const (u,_)) => explode (unsuffix (deco^updateN) u)) (map fst upds);
     val prfx = maxprefixs (op =) comps;
 
+    fun dest_list (Const (@{const_syntax Nil}, _)) = []
+      | dest_list (Const (@{const_syntax Cons}, _) $ x $ xs) = x :: dest_list xs
+      | dest_list t = [t];
+
+    fun mk_set [] = Syntax.const "Set.empty"
+      | mk_set (x::xs) = Syntax.const "insert" $ x $ mk_set xs;
 
     val l= length prfx;
     val _ = if l <= 1 then raise Match else ();
