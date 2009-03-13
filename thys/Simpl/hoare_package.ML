@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.38 2009-03-08 17:57:10 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.39 2009-03-13 11:28:52 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1797,8 +1797,7 @@ fun gen_call_rec_rule specs_name n rule =
                  mk_var i "p" pT,
                  mk_var i "Q" (zT --> assT)$Bound 0,
                  mk_var i "A" (zT --> assT)$Bound 0];
-         val single = Const (@{const_name insert}, quadT --> quadT_set --> quadT_set) $
-                       quadruple $ Const (@{const_name Set.empty}, quadT_set)
+         val single = HOLogic.mk_set quadT [quadruple];
      in Const (@{const_name UNION}, HOLogic.mk_setT zT --> (zT --> quadT_set) --> quadT_set)$
          Const (@{const_name UNIV}, HOLogic.mk_setT zT) $
           Abs("Z",zT,single)
@@ -2471,7 +2470,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                         else return;*)
 
           val cret    = cterm_of thy return';
-          val (_,_,return'_var,_,_,_)=(List.nth(prems_of ModRet,to_prove_prem))
+          val (_,_,return'_var,_,_,_) = nth (prems_of ModRet) to_prove_prem
                                                   |> dest_hoare |> #2 |> dest_call;
           val creturn'_var  = cterm_of thy return'_var;
 
@@ -2810,7 +2809,7 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
   end
   handle (TERM _) => no_tac st;
 
-fun prems_tac ctxt i = TRY (resolve_tac (Assumption.prems_of ctxt) i);
+fun prems_tac ctxt i = TRY (resolve_tac (Assumption.all_prems_of ctxt) i);
 
 
 
