@@ -1,4 +1,4 @@
-(*  ID:          $Id: Vcg.thy,v 1.7 2008-10-25 12:59:18 fhaftmann Exp $
+(*  ID:          $Id: Vcg.thy,v 1.8 2009-03-13 11:28:49 fhaftmann Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -27,9 +27,10 @@ USA
 *)
 
 header {* Facilitating the Hoare Logic *}
-theory Vcg imports StateSpace "$ISABELLE_HOME/src/HOL/Statespace/StateSpaceLocale" Generalise
-uses "hoare_package.ML" "hoare_syntax.ML" begin 
-
+theory Vcg
+imports StateSpace "$ISABELLE_HOME/src/HOL/Statespace/StateSpaceLocale" Generalise
+uses "hoare_package.ML" "hoare_syntax.ML"
+begin 
 
 setup HoarePackage.setup
 setup {* Context.theory_map 
