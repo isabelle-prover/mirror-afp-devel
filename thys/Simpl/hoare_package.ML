@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.39 2009-03-13 11:28:52 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.40 2009-03-14 00:08:40 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -3678,15 +3678,13 @@ val insts_var =
     (Scan.lift (P.and_list1 (Args.var -- (P.$$$ "=" |-- P.!!! Args.name)) --| P.$$$ "in")) []
     -- Attrib.thms;
 
-fun inst_args_var f src ctxt = f ctxt (#1 (Method.syntax (Args.goal_spec HEADGOAL -- insts_var) src ctxt));
+fun inst_args_var f src ctxt = f ctxt (#1 (Method.syntax (Args.goal_spec -- insts_var) src ctxt));
 
 val argP = Args.name --| P.$$$ "=" -- Args.name
 val argsP = Scan.repeat argP
 val default_args = [("spec","spec"),("strip_guards","false")]
 
-val vcg_simp_modifiers:
-       (Args.T list ->
-       ((Proof.context -> Proof.context) * Thm.attribute) * Args.T list) list =
+val vcg_simp_modifiers: Method.modifier parser list =
   [Args.add -- Args.colon >> K (I,vcg_simp_add),
    Args.del -- Args.colon >> K (I,vcg_simp_del)];
 
