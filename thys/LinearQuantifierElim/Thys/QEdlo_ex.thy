@@ -1,4 +1,4 @@
-(*  ID:         $Id: QEdlo_ex.thy,v 1.3 2009-02-27 17:46:41 nipkow Exp $
+(*  ID:         $Id: QEdlo_ex.thy,v 1.4 2009-03-16 19:27:44 makarius Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -30,10 +30,10 @@ corollary [reflection]: "interpret (qe_dlo f) xs = interpret f xs"
 by(simp add:I_qe_dlo interpret_def)
 
 method_setup reify = {*
-  fn src =>
-    Method.syntax (Attrib.thms --
-      Scan.option (Scan.lift (Args.$$$ "(") |-- Args.term --| Scan.lift (Args.$$$ ")") )) src #>
-  (fn ((eqs, to), ctxt) => Method.SIMPLE_METHOD' (Reflection.genreify_tac ctxt (eqs @ (fst (Reify_Data.get ctxt))) to
+  Attrib.thms --
+    Scan.option (Scan.lift (Args.$$$ "(") |-- Args.term --| Scan.lift (Args.$$$ ")")) >>
+  (fn (eqs, to) => fn ctxt =>
+    Method.SIMPLE_METHOD' (Reflection.genreify_tac ctxt (eqs @ (fst (Reify_Data.get ctxt))) to
      THEN' simp_tac (HOL_basic_ss addsimps [@{thm"interpret_def"}])))
 *} "dlo reification"
 

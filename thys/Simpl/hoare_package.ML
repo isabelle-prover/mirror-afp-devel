@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.40 2009-03-14 00:08:40 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.41 2009-03-16 19:27:51 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -3661,24 +3661,10 @@ fun hoare_rule_tac ctxt thms i st =
        SOME (Tids,_,kind) => HoareCallRuleTac kind (is_state_space_var Tids) ctxt thms i st
      | NONE => error "could not find proper state space type (structure or record) in goal")
 
+
 (*** Methods ***)
 
-fun gen_inst _ tac ctxt (quant, ([], thms)) =
-      Method.METHOD (fn facts =>
-        quant (Method.insert_tac facts THEN' tac ctxt thms))
-  | gen_inst inst_tac _ ctxt (quant, (insts, [thm])) =
-      Method.METHOD (fn facts =>
-        quant (Method.insert_tac facts THEN' inst_tac ctxt insts thm))
-  | gen_inst _ _ _ _ = error "Cannot have instantiations with multiple rules";
-
-val hoare_rule_meth = gen_inst HoareRuleTac hoare_rule_tac;
-
-val insts_var =
-  Scan.optional
-    (Scan.lift (P.and_list1 (Args.var -- (P.$$$ "=" |-- P.!!! Args.name)) --| P.$$$ "in")) []
-    -- Attrib.thms;
-
-fun inst_args_var f src ctxt = f ctxt (#1 (Method.syntax (Args.goal_spec -- insts_var) src ctxt));
+val hoare_rule = RuleInsts.method HoareRuleTac hoare_rule_tac;
 
 val argP = Args.name --| P.$$$ "=" -- Args.name
 val argsP = Scan.repeat argP
@@ -3688,41 +3674,17 @@ val vcg_simp_modifiers: Method.modifier parser list =
   [Args.add -- Args.colon >> K (I,vcg_simp_add),
    Args.del -- Args.colon >> K (I,vcg_simp_del)];
 
-val gen_args_simp_args_method:
-       ((string * string) list -> Proof.context -> Method.method) ->
-       Method.src -> Proof.context -> Method.method =
-     Method.sectioned_args (Scan.lift (argsP >> (fn args => args@default_args)))
-      vcg_simp_modifiers;
-
-val hoare_rule = inst_args_var hoare_rule_meth;
-val hoare =
-  gen_args_simp_args_method
-    (fn args => fn ctxt
-      => (Method.SIMPLE_METHOD''
-           HEADGOAL (hoare_tac  ("_" ^ valOf (assoc_string (args,"spec")))
-                        (valOf (assoc_string (args,"strip_guards"))) ctxt)));
-
-val hoare_raw =
-  gen_args_simp_args_method
-    (fn args => fn ctxt
-      => (Method.SIMPLE_METHOD''
-           HEADGOAL(hoare_raw_tac ("_" ^ valOf (assoc_string (args,"spec")))
-                       (valOf (assoc_string (args,"strip_guards"))) ctxt)));
-
-
-val vcg =
-  gen_args_simp_args_method
-    (fn args => fn ctxt
-      => (Method.SIMPLE_METHOD'' HEADGOAL
-          (vcg_tac  ("_" ^ valOf (assoc_string (args,"spec")))
-            (valOf (assoc_string (args,"strip_guards")))  ctxt)));
-
-val vcg_step =
-  gen_args_simp_args_method
-    (fn args => fn ctxt
-      => (Method.SIMPLE_METHOD'' HEADGOAL
-             (hoare_step_tac ("_" ^ valOf (assoc_string (args,"spec")))
-                (valOf (assoc_string (args,"strip_guards"))) ctxt)));
+fun gen_simp_method tac =
+  Scan.lift (argsP >> (fn args => args @ default_args)) --|
+  Method.sections vcg_simp_modifiers >>
+    (fn args => fn ctxt => Method.SIMPLE_METHOD'
+      (tac ("_" ^ valOf (assoc_string (args, "spec")))
+        (valOf (assoc_string (args, "strip_guards"))) ctxt));
+ 
+val hoare = gen_simp_method hoare_tac;
+val hoare_raw = gen_simp_method hoare_raw_tac;
+val vcg = gen_simp_method vcg_tac;
+val vcg_step = gen_simp_method hoare_step_tac;
 
 
 (* setup theory *)

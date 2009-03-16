@@ -86,7 +86,7 @@ structure PRec = NamedThmsFun(val name = "prec" val description = "fact for prec
 setup PRec.setup
 
 method_setup prec0 = {*
-  Method.thms_ctxt_args (fn ths => fn ctxt => Method.METHOD (fn facts =>
+  Attrib.thms >> (fn ths => fn ctxt => Method.METHOD (fn facts =>
     HEADGOAL (prec0_tac ctxt (facts @ PRec.get ctxt))))
 *} "apply primitive recursive functions"
 
@@ -465,7 +465,7 @@ fun prec_tac ctxt facts i =
 *}
 
 method_setup prec = {*
-  Method.thms_ctxt_args (fn ths => fn ctxt => Method.METHOD (fn facts =>
+  Attrib.thms >> (fn ths => fn ctxt => Method.METHOD (fn facts =>
     HEADGOAL (prec_tac ctxt (facts @ PRec.get ctxt))))
 *} "apply primitive recursive functions"
 
