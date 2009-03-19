@@ -1,5 +1,5 @@
 (*  Title:      hoare_syntax.ML
-    ID:         $Id: hoare_syntax.ML,v 1.11 2009-03-13 11:28:56 fhaftmann Exp $
+    ID:         $Id: hoare_syntax.ML,v 1.12 2009-03-19 22:21:08 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -335,7 +335,7 @@ fun get_arr_var (Const ("nth",_)$arr$i) =
       (case  get_arr_var arr of 
          SOME (name,p,is) => SOME (name,p,i::is) 
        | NONE => NONE)
-fun get_arr_var (Const ("\\<^const>List.nth",_)$arr$i) = 
+fun get_arr_var (Const (@{const_syntax List.nth},_)$arr$i) = 
       (case  get_arr_var arr of 
          SOME (name,p,is) => SOME (name,p,i::is) 
        | NONE => NONE) 
@@ -1342,7 +1342,7 @@ fun hd_name (Const ("_free",_)$Free (x,_)) = x
 
 
 fun new_tr' [(trm as (Abs (s,_, 
-       Const ("If",_)$(Const ("\<^const>HOL.ord_class.less_eq",_)$size$free)$
+       Const ("If",_)$(Const (@{const_syntax HOL.ord_class.less_eq},_)$size$free)$
          (upd$new$(gupd$(Abs (_,_,inits_free_alloc))$Bound 0))$
          (upd'$null$Bound 0))))] =
   let
@@ -1371,7 +1371,7 @@ fun new_tr' [(trm as (Abs (s,_,
   | new_tr' ts = raise Match;
 
 fun nnew_tr' [(trm as  
-       Const ("if_rel",_)$(Abs (s,_,Const ("\<^const>HOL.ord_class.less_eq",_)$size$free))$
+       Const ("if_rel",_)$(Abs (s,_,Const (@{const_syntax HOL.ord_class.less_eq},_)$size$free))$
          (Abs (_,_,upd$new$(gupd$(Abs (_,_,free_inits_alloc))$Bound 0)))$
          (Abs (_,_,(upd'$null$Bound 0)))$_)] =
   let
