@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Equivalence.thy,v 1.19 2008-06-12 06:57:16 lsf37 Exp $
+    ID:          $Id: Equivalence.thy,v 1.20 2009-03-20 17:56:16 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -2065,10 +2065,9 @@ qed
 abschalten. Wieder anschalten siehe nach dem Beweis. *)
 
 declare split_paired_All [simp del] split_paired_Ex [simp del]
-ML {*
-change_simpset (fn ss => ss delloop "split_all_tac");
-change_claset (fn cs => cs delSWrapper "split_all_tac");
-*}
+
+declaration {* K (Simplifier.map_ss (fn ss => ss delloop "split_all_tac")) *}
+declaration {* K (Classical.map_cs (fn cs => cs delSWrapper "split_all_tac")) *}
 
 
 lemma list_eval_Throw: 
@@ -2763,10 +2762,8 @@ qed
 
 (* ... und wieder anschalten: *)
 declare split_paired_All [simp] split_paired_Ex [simp]
-ML {*
-change_claset (fn cs => cs addSbefore ("split_all_tac", split_all_tac));
-change_simpset (fn ss => ss addloop ("split_all_tac", split_all_tac));
-*}
+declaration {* K (Classical.map_cs (fn cs => cs addSbefore ("split_all_tac", split_all_tac))) *}
+declaration {* K (Simplifier.map_ss (fn ss => ss addloop ("split_all_tac", split_all_tac))) *}
 
 
 text {* Its extension to @{text"\<rightarrow>*"}: *} 

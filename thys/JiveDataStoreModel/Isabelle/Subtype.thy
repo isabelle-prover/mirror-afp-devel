@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Subtype.thy,v 1.10 2008-07-25 17:11:23 fhaftmann Exp $
+    ID:          $Id: Subtype.thy,v 1.11 2009-03-20 17:56:17 makarius Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -242,7 +242,7 @@ local
   val widen_lemmas = thms "direct_subtype_widened";
   val ss = (simpset_of (theory "Transitive_Closure"));
   val widen_tac = rtac widen_asm 
-      THEN' simp_tac (simpset() addsimps [thm "le_Javatype_def"])
+      THEN' simp_tac (@{simpset} addsimps [thm "le_Javatype_def"])
       THEN' Method.insert_tac widen_lemmas THEN' simp_tac ss;
 in
   fun widenSolver prems = widen_tac
