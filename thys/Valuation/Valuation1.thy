@@ -276,15 +276,7 @@ apply (frule_tac x = 0 and y = "ant z" in aless_imp_le)
 done
 
 lemma  zmult_gt_one:"\<lbrakk>2 \<le> m; 0 < xa\<rbrakk> \<Longrightarrow> 1 < int m * xa"
- apply (subgoal_tac "1 < int m") prefer 2
- apply (rule contrapos_pp, simp+,
-        frule_tac k = xa in zmult_zless_mono2[of "1" "int m"], assumption+,
-        simp add:zmult_1_right)
- apply (subgoal_tac "1 \<le> xa",
-        subst zmult_commute,
-        rule_tac i = 1 and j = xa and k = "xa * int m" in zle_less_trans,
-        assumption, assumption, simp)
-done
+by (metis ge2_zmult_pos zmult_commute)
 
 lemma zmult_pos:"\<lbrakk> 0 < m; 0 < (a::int)\<rbrakk> \<Longrightarrow> 0 < (int m) * a" 
 by (frule zmult_zless_mono2[of "0" "a" "int m"], simp, simp)
@@ -2900,36 +2892,26 @@ apply (frule vp_mem_Vr_mem[of v x], assumption,
 apply (cut_tac field_is_ring,
        cut_tac field_is_idom,
        frule Vr_mem_f_mem[of v x], assumption+,
-       frule Idomain.idom_potent_nonzero[of K x n], assumption+)
-   
+       frule Idomain.idom_potent_nonzero[of K x n], assumption+)   
 apply (rule conjI) 
  apply (rule contrapos_pp, simp+)
  apply (frule val_Rxa_gt_a[of v "x^\<^bsup>K n\<^esup>" x],
         simp, simp add:Vr_exp_f_exp, assumption+)
-apply (simp add:val_exp_ring[THEN sym, of v x n])
+ apply (simp add:val_exp_ring[THEN sym, of v x n])
  apply (frule val_nonzero_z[of v x], assumption+, erule exE,
         simp add:asprod_amult a_z_z)
-
  apply (simp only:zless_int[THEN sym, of "Suc 0" "n"], simp)
  apply (simp add:vp_mem_val_poss[of v x])
- apply (frule_tac k = z in int_mult_mono[of "1" "int n"], assumption+)
- apply (simp add:zmult_commute[of "int n"])
-
- apply (rule contrapos_pp, simp+)
- apply (frule val_Rxa_gt_a[of v "x^\<^bsup>K n\<^esup>" "x^\<^bsup>K (n - Suc 0)\<^esup>"])
-apply (simp, frule Ring.npClose[of "Vr K v" "x" "n - Suc 0"], assumption+)
- apply (simp add:Vr_exp_f_exp)
-apply (frule Ring.npClose[of "Vr K v" "x" "n - Suc 0"], assumption+,
+apply (rule contrapos_pp, simp+)
+apply (frule val_Rxa_gt_a[of v "x^\<^bsup>K n\<^esup>" "x^\<^bsup>K (n - Suc 0)\<^esup>"])
+   apply (simp, frule Ring.npClose[of "Vr K v" "x" "n - Suc 0"], assumption+)
+   apply (simp add:Vr_exp_f_exp)
+  apply (frule Ring.npClose[of "Vr K v" "x" "n - Suc 0"], assumption+,
         simp add:Vr_exp_f_exp, assumption) 
- 
 apply (simp add:val_exp_ring[THEN sym, of v x]) 
- apply (simp add:vp_mem_val_poss[of "v" "x"])
- apply (frule val_nonzero_z[of  "v" "x"], assumption+, erule exE,
+apply (simp add:vp_mem_val_poss[of "v" "x"])
+apply (frule val_nonzero_z[of  "v" "x"], assumption+, erule exE,
         simp add:asprod_amult a_z_z)
-
-apply (frule_tac w = z in zmult_pos_mono_r[of _ "int n" "int(n - Suc 0)"],
-              assumption+)
- apply (simp add:Suc_le_mono[THEN sym, of "n" "n - Suc 0"])
 done 
   
 lemma (in Corps) Vring_prime_maximal:"\<lbrakk>valuation K v; prime_ideal (Vr K v) I; 

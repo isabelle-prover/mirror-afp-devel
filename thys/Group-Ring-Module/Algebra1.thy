@@ -275,18 +275,10 @@ lemma pos_zmult_pos:"\<lbrakk> 0 \<le> (a::int); 0 < (b::int)\<rbrakk> \<Longrig
 apply (case_tac "a = 0") apply simp
 apply (frule zle_imp_zless_or_eq[of "0" "a"]) apply (thin_tac "0 \<le> a")
 apply simp
-apply (subgoal_tac "1 \<le> b") prefer 2 apply simp
-apply (frule zmult_zle_mono[of "1" "b" "a"], assumption+)
- apply (simp add:zmult_1_right)
 done 
 
 lemma pos_mult_l_gt:"\<lbrakk>(0::int) < w; i \<le> j; 0 \<le> i\<rbrakk> \<Longrightarrow> i \<le> w * j"
-apply (subgoal_tac "1 \<le> w") prefer 2 apply simp
- apply (frule zless_imp_zle[of "0" "w"])
- apply (frule int_mult_le[of "i" "j" "w"], assumption+)
- apply (frule int_mult_le[of "1" "w" "i"], assumption+)
- apply (simp add:zmult_commute[of "w" "i"])
-done 
+by (metis not_zless pos_zmult_pos zle_trans zmult_commute)
 
 lemma  pos_mult_r_gt:"\<lbrakk>(0::int) < w; i \<le> j; 0 \<le> i\<rbrakk> \<Longrightarrow> i \<le> j * w"
 apply (frule pos_mult_l_gt[of "w" "i" "j"], assumption+)
@@ -3367,8 +3359,7 @@ lemma gt_a0_ge_aN:"\<lbrakk>0 < x; N \<noteq> 0\<rbrakk>  \<Longrightarrow> (ant
         cut_tac minf_le_any[of "0"], 
       frule ale_antisym[of "0" "-\<infinity>"], simp,
       simp only: Zero_ant_def, simp)
- apply (erule disjE, erule exE, simp add:asprod_mult)
- apply (rule_tac b = z in pos_zmult_pos[of "int N"], simp+)
+ apply (erule disjE, erule exE, simp add:asprod_mult, simp)
 done
 
 lemma aless_le_trans:"\<lbrakk>(x::ant) < y; y \<le> z\<rbrakk> \<Longrightarrow> x < z"
