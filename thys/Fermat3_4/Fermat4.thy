@@ -237,7 +237,7 @@ proof -
   hence "nat(\<bar>a\<bar>^2) + nat(\<bar>b\<bar>^2) = nat(\<bar>c\<bar>^2)"
     by (simp add: abs_power2_distrib)
   hence new_abc: "?a^2 + ?b^2 = ?c^2"
-    by (simp add: nat_mult_distrib power2_eq_square nat_add_distrib)
+    by (simp only: nat_mult_distrib power2_eq_square nat_add_distrib)
   moreover from ab_rel have new_ab_rel: "gcd ?a ?b = 1" by (simp add: zgcd_def)
   moreover have new_a_odd: "odd ?a" 
   proof -
