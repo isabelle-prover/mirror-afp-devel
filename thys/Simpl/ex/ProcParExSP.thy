@@ -1,4 +1,4 @@
-(*  ID:          $Id: ProcParExSP.thy,v 1.8 2008-12-30 15:30:13 ballarin Exp $
+(*  ID:          $Id: ProcParExSP.thy,v 1.9 2009-03-30 15:02:40 makarius Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -213,13 +213,11 @@ done
 print_locale Max_spec
 
 (* We have to rename the parameters of the compare procedure to match the LEQ procedure *)
-locale Max_test = Max_spec \<Gamma> compare_'Max_' n_'Max_' m_'Max_' k_'Max_' project_nat
-        inject_nat project_List_char_List_list inject_List_char_List_list StateType
-        Max_'proc i_'LEQ_' j_'LEQ_' r_'LEQ_' project_bool
-        inject_bool compare_'proc
+locale Max_test = Max_spec where
+        i_'compare_' = i_'LEQ_' and
+        j_'compare_' = j_'LEQ_' and
+        r_'compare_' = r_'LEQ_'
        + LEQ_spec + LEQ_modifies
-for Max_'proc inject_List_char_List_list project_List_char_List_list k_'Max_'
-    m_'Max_' n_'Max_' compare_'Max_'
 
 lemma (in Max_test) 
   shows
@@ -266,12 +264,11 @@ lemma (in LEQ_impl)
 
 
 print_locale Max_impl
-locale Max_test' = Max_impl \<Gamma> compare_'Max_' n_'Max_' m_'Max_' k_'Max_' b_'Max_' project_nat
-        inject_nat project_bool inject_bool
-        project_List_char_List_list inject_List_char_List_list StateType
-        i_'LEQ_' j_'LEQ_' r_'LEQ_' compare_'proc Max_'proc + LEQ_impl
-for Max_'proc inject_List_char_List_list project_List_char_List_list b_'Max_' 
-n_'Max_' k_'Max_' compare_'Max_' m_'Max_'
+locale Max_test' = Max_impl where
+        i_'compare_' = i_'LEQ_' and
+        j_'compare_' = j_'LEQ_' and
+        r_'compare_' = r_'LEQ_'
+        + LEQ_impl
 lemma (in Max_test') 
   shows
   "\<forall>n m. \<Gamma>\<turnstile> \<lbrace>\<acute>n=n \<and> \<acute>m=m\<rbrace> \<acute>k :== CALL Max(LEQ_'proc,\<acute>n,\<acute>m) \<lbrace>\<acute>k = mx (op \<le>) n m\<rbrace>"
