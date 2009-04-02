@@ -34,7 +34,7 @@ lemma c_in_upper_bound: "c_in x u = 1 \<Longrightarrow> 2 ^ x \<le> u"
 proof -
   assume A: "c_in x u = 1"
   then have S1: "(u div (2^x)) mod 2 = 1" by (unfold c_in_def)
-  then have S2: "u div (2^x) > 0" by auto
+  then have S2: "u div (2^x) > 0" by arith
   show ?thesis
   proof (rule ccontr)
     assume "\<not> 2 ^ x \<le> u"
