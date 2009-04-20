@@ -4,28 +4,18 @@ theory PDG imports DataDependence CFGExit_wf begin
 
 subsection {* The dynamic PDG *}
 
-locale DynPDG = CFGExit_wf
-  (* Reorder parameters to order imposed by
-     lemma StandardControlDependence.DynPDG_scd. *)
-  where sourcenode = sourcenode and targetnode = targetnode and kind = kind
-    and valid_edge = valid_edge and Entry = "(_Entry_)" and Def = Def
-    and Use = Use and state_val = state_val and Exit = "(_Exit_)"
-  for sourcenode :: "'edge \<Rightarrow> 'node"
-    and targetnode :: "'edge \<Rightarrow> 'node"
-    and kind :: "'edge \<Rightarrow> 'state edge_kind"
-    and valid_edge :: "'edge \<Rightarrow> bool"
-    and Entry :: "'node" ("'('_Entry'_')")
-    and Def::"'node \<Rightarrow> 'var set"
-    and Use::"'node \<Rightarrow> 'var set"
-    and state_val::"'state \<Rightarrow> 'var \<Rightarrow> 'val"
-    and Exit :: "'node" ("'('_Exit'_')")
- +
+locale DynPDG = 
+  CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
+  for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
+  and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
+  and Exit :: "'node" ("'('_Exit'_')") +
   fixes dyn_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool" 
 ("_ controls _ via _" [51,0,0])
   assumes Exit_not_dyn_control_dependent:"n controls n' via as \<Longrightarrow> n' \<noteq> (_Exit_)"
   assumes dyn_control_dependence_path:
-  "n controls n' via as 
-  \<Longrightarrow> CFG.path sourcenode targetnode valid_edge n as n' \<and> as \<noteq> []"
+  "n controls n' via as  \<Longrightarrow> n -as\<rightarrow>* n' \<and> as \<noteq> []"
 
 begin
 
@@ -326,10 +316,9 @@ lemma DynPDG_ddep_edge_only_first_edge:
 
 
 lemma Use_value_change_implies_DynPDG_ddep_edge:
-  assumes path:"n -as\<rightarrow>* n'" and Use:"V \<in> Use n'"
-  and preds:"preds (kinds as) s" and preds':"preds (kinds as) s'"
-  and before:"state_val s V = state_val s' V"
-  and after:"state_val (transfers (kinds as) s) V \<noteq> 
+  assumes "n -as\<rightarrow>* n'" and "V \<in> Use n'" and "preds (kinds as) s" 
+  and "preds (kinds as) s'" and "state_val s V = state_val s' V"
+  and "state_val (transfers (kinds as) s) V \<noteq> 
              state_val (transfers (kinds as) s') V"
   obtains as' a as'' where "as = as'@a#as''"
   and "sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'"
@@ -337,8 +326,8 @@ lemma Use_value_change_implies_DynPDG_ddep_edge:
        state_val (transfers (kinds (as'@[a])) s) V"
   and "state_val (transfers (kinds as) s') V = 
        state_val (transfers (kinds (as'@[a])) s') V"
-proof -
-  have "\<exists>as' a as''. as = as'@a#as'' \<and>
+proof(atomize_elim)
+  show "\<exists>as' a as''. as = as'@a#as'' \<and>
                      sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n' \<and>
              state_val (transfers (kinds as) s) V = 
              state_val (transfers (kinds (as'@[a])) s) V \<and>
@@ -347,28 +336,31 @@ proof -
   proof(cases "\<forall>as' a as''. as = as'@a#as'' \<longrightarrow>
                  \<not> sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'")
     case True
-    with path Use preds preds'
+    with `n -as\<rightarrow>* n'` `V \<in> Use n'` `preds (kinds as) s` `preds (kinds as) s'`
     have "state_val (transfers (kinds as) s) V = state_val s V"
       and "state_val (transfers (kinds as) s') V = state_val s' V"
       by(auto intro:no_ddep_same_state)
-    with before after show ?thesis by simp
+    with `state_val s V = state_val s' V` 
+      `state_val (transfers (kinds as) s) V \<noteq> state_val (transfers (kinds as) s') V`
+    show ?thesis by simp
   next
     case False
-    then obtain as' a as'' where as:"as = as'@a#as''"
-      and dep:"sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'" by auto
-    from as preds have "preds (kinds (a#as'')) (transfers (kinds as') s)"
+    then obtain as' a as'' where [simp]:"as = as'@a#as''"
+      and "sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'" by auto
+    from `preds (kinds as) s` have "preds (kinds (a#as'')) (transfers (kinds as') s)"
       by(simp add:kinds_def preds_split)
-    with dep as have all:
+    with `sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'` have all:
       "state_val (transfers (kinds (a#as'')) (transfers (kinds as') s)) V = 
        state_val (transfer (kind a) (transfers (kinds as') s)) V"
       by(auto dest!:DynPDG_ddep_edge_only_first_edge)
-    from as preds' have "preds (kinds (a#as'')) (transfers (kinds as') s')"
+    from `preds (kinds as) s'` 
+    have "preds (kinds (a#as'')) (transfers (kinds as') s')"
       by(simp add:kinds_def preds_split)
-    with dep as have all':
+    with `sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'` have all':
       "state_val (transfers (kinds (a#as'')) (transfers (kinds as') s')) V = 
        state_val (transfer (kind a) (transfers (kinds as') s')) V"
       by(auto dest!:DynPDG_ddep_edge_only_first_edge)
-    from as have eq:"\<And>s. transfers (kinds as) s =
+    hence eq:"\<And>s. transfers (kinds as) s =
       transfers (kinds (a#as'')) (transfers (kinds as') s)"
       by(simp add:transfers_split[THEN sym] kinds_def)
     with all have "state_val (transfers (kinds as) s) V = 
@@ -378,9 +370,8 @@ proof -
     from eq all' have "state_val (transfers (kinds as) s') V = 
                        state_val (transfers (kinds (as'@[a])) s') V"
       by(simp add:transfers_split kinds_def)
-    ultimately show ?thesis using as dep by blast
+    ultimately show ?thesis using `sourcenode a -{V}a#as''\<rightarrow>\<^bsub>dd\<^esub> n'` by simp blast
   qed
-  with that show ?thesis by blast
 qed
 
 
@@ -389,22 +380,13 @@ end
 
 subsection {* The static PDG *}
 
-locale PDG = CFGExit_wf
-  (* Reorder parameters to order imposed by
-     lemma StandardControlDependence.PDG_scd. *)
-  where sourcenode = sourcenode and targetnode = targetnode and kind = kind
-    and valid_edge = valid_edge and Entry = "(_Entry_)" and Def = Def
-    and Use = Use and state_val = state_val and Exit = "(_Exit_)"
-  for sourcenode :: "'edge \<Rightarrow> 'node"
-    and targetnode :: "'edge \<Rightarrow> 'node"
-    and kind :: "'edge \<Rightarrow> 'state edge_kind"
-    and valid_edge :: "'edge \<Rightarrow> bool"
-    and Entry :: "'node" ("'('_Entry'_')")
-    and Def::"'node \<Rightarrow> 'var set"
-    and Use::"'node \<Rightarrow> 'var set"
-    and state_val::"'state \<Rightarrow> 'var \<Rightarrow> 'val"
-    and Exit :: "'node" ("'('_Exit'_')")
- +
+locale PDG = 
+  CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
+  for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
+  and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
+  and Exit :: "'node" ("'('_Exit'_')") +
   fixes control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
 ("_ controls _ " [51,0])
   assumes Exit_not_control_dependent:"n controls n' \<Longrightarrow> n' \<noteq> (_Exit_)"
@@ -474,8 +456,8 @@ lemma PDG_ddep_edge_CFG_path:
 
 lemma PDG_path_CFG_path:
   assumes "n \<longrightarrow>\<^isub>d* n'" obtains as where "n -as\<rightarrow>* n'"
-proof -
-  from `n \<longrightarrow>\<^isub>d* n'` have "\<exists>as. n -as\<rightarrow>* n'"
+proof(atomize_elim)
+  from `n \<longrightarrow>\<^isub>d* n'` show "\<exists>as. n -as\<rightarrow>* n'"
   proof(induct rule:PDG_path.induct)
     case (PDG_path_Nil n)
     hence "n -[]\<rightarrow>* n" by(rule empty_path)
@@ -495,7 +477,6 @@ proof -
       by(auto dest:path_Append)
     thus ?case by blast
   qed
-  with that show ?thesis by blast
 qed
 
 

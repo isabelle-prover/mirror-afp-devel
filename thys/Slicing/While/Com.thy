@@ -1,12 +1,4 @@
 header {* \isachapter{Instantiating the Framework with a simple While-Language}
-
-  In this chapter we show how to instantiate the framework with a simple While 
-  language without procedures. To this end, we show how to construct a CFG
-  for a given program and the semantics of the language. With the help of a so 
-  called \emph{label semantics}, a simulation between statements and nodes,
-  we show that the CFG fulfills all the structural and (semantical) well-formedness
-  properties. Details of this instantiation can be found in \cite{WasserrabL:08}.
-
   \isaheader{Commands} *}
 
 theory Com imports Main begin

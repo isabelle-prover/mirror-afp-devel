@@ -164,9 +164,8 @@ proof(induct arbitrary:c' rule:Labels.induct)
     with `V:=e \<turnstile> \<langle>V:=e,s,0\<rangle> \<leadsto> \<langle>Skip,s(V:=(interpret e s)),1\<rangle>` show ?case by blast
   next
     case (SeqRed c\<^isub>1 s c\<^isub>1' s' c\<^isub>2)
-    have "\<exists>l'. c\<^isub>1 \<turnstile> \<langle>c\<^isub>1,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1',s',l'\<rangle> \<and> labels c\<^isub>1 l' c\<^isub>1'" by fact
-    then obtain l' where "c\<^isub>1 \<turnstile> \<langle>c\<^isub>1,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1',s',l'\<rangle>"
-      and "labels c\<^isub>1 l' c\<^isub>1'" by blast
+    from `\<exists>l'. c\<^isub>1 \<turnstile> \<langle>c\<^isub>1,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1',s',l'\<rangle> \<and> labels c\<^isub>1 l' c\<^isub>1'`
+    obtain l' where "c\<^isub>1 \<turnstile> \<langle>c\<^isub>1,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1',s',l'\<rangle>" and "labels c\<^isub>1 l' c\<^isub>1'" by blast
     from `c\<^isub>1 \<turnstile> \<langle>c\<^isub>1,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1',s',l'\<rangle>` have "c\<^isub>1;;c\<^isub>2 \<turnstile> \<langle>c\<^isub>1;;c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1';;c\<^isub>2,s',l'\<rangle>"
       by(rule StepRecSeq1)
     moreover
@@ -183,16 +182,16 @@ proof(induct arbitrary:c' rule:Labels.induct)
     with `labels (Skip;;c\<^isub>2) (0 + #:Skip) c\<^isub>2` show ?case by auto
   next
     case (RedCondTrue b s c\<^isub>1 c\<^isub>2)
-    have "interpret b s = Some true" by fact
-    hence "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1,s,1\<rangle>"
+    from `interpret b s = Some true`
+    have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1,s,1\<rangle>"
       by(rule StepCondTrue)
     have "labels (if (b) c\<^isub>1 else c\<^isub>2) (0 + 1) c\<^isub>1"
       by(rule Labels_CondTrue,rule Labels.Labels_Base)
     with `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>1,s,1\<rangle>` show ?case by auto
   next
     case (RedCondFalse b s c\<^isub>1 c\<^isub>2)
-    have "interpret b s = Some false" by fact
-    hence "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:c\<^isub>1 + 1\<rangle>"
+    from `interpret b s = Some false` 
+    have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>if (b) c\<^isub>1 else c\<^isub>2,s,0\<rangle> \<leadsto> \<langle>c\<^isub>2,s,#:c\<^isub>1 + 1\<rangle>"
       by(rule StepCondFalse)
     have "labels (if (b) c\<^isub>1 else c\<^isub>2) (0 + #:c\<^isub>1 + 1) c\<^isub>2"
       by(rule Labels_CondFalse,rule Labels.Labels_Base)
@@ -200,8 +199,8 @@ proof(induct arbitrary:c' rule:Labels.induct)
     show ?case by auto
   next
     case (RedWhileTrue b s c)
-    have "interpret b s = Some true" by fact
-    hence "while (b) c \<turnstile> \<langle>while (b) c,s,0\<rangle> \<leadsto> \<langle>c;; while (b) c,s,2\<rangle>"
+    from `interpret b s = Some true`
+    have "while (b) c \<turnstile> \<langle>while (b) c,s,0\<rangle> \<leadsto> \<langle>c;; while (b) c,s,2\<rangle>"
       by(rule StepWhileTrue)
     have "labels (while (b) c) (0 + 2) (c;; while (b) c)"
       by(rule Labels_WhileBody,rule Labels.Labels_Base)
@@ -209,16 +208,15 @@ proof(induct arbitrary:c' rule:Labels.induct)
     show ?case by(auto simp del:add_2_eq_Suc')
   next
     case (RedWhileFalse b s c)
-    have "interpret b s = Some false" by fact
-    hence "while (b) c \<turnstile> \<langle>while (b) c,s,0\<rangle> \<leadsto> \<langle>Skip,s,1\<rangle>"
+    from `interpret b s = Some false`
+    have "while (b) c \<turnstile> \<langle>while (b) c,s,0\<rangle> \<leadsto> \<langle>Skip,s,1\<rangle>"
       by(rule StepWhileFalse)
     have "labels (while (b) c) 1 Skip" by(rule Labels_WhileExit)
     with `while (b) c \<turnstile> \<langle>while (b) c,s,0\<rangle> \<leadsto> \<langle>Skip,s,1\<rangle>` show ?case by auto
   qed
 next
   case (Labels_LAss V e)
-  have "\<langle>Skip,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>" by fact
-  hence False by(auto elim:red.cases)
+  from `\<langle>Skip,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>` have False by(auto elim:red.cases)
   thus ?case by simp
 next
   case (Labels_Seq1 c\<^isub>1 l c c\<^isub>2)
@@ -267,9 +265,9 @@ next
   ultimately show ?case by blast
 next
   case (Labels_CondTrue c\<^isub>1 l c b c\<^isub>2 c')
-  have label:"labels c\<^isub>1 l c" and red:"\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>"
-    and IH:"\<And>c'. \<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle> \<Longrightarrow>
-            \<exists>l'. c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>1 l' c'" by fact+
+  note label = `labels c\<^isub>1 l c` and red = `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`
+    and IH = `\<And>c'. \<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle> \<Longrightarrow>
+                   \<exists>l'. c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>1 l' c'`
   from IH[OF `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>`] obtain l' where "c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
     and "labels c\<^isub>1 l' c'" by blast
   from `c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>`

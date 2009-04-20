@@ -25,8 +25,8 @@ proof -
     and pd:"(_Exit_) postdominates (targetnode a)" 
     by(auto simp:dyn_standard_control_dependence_def)
   from path as have "n -[]@a#as'\<rightarrow>* (_Exit_)" by simp
-  hence "targetnode a -as'\<rightarrow>* (_Exit_)" by(fastsimp dest:path_split)
-  with pd show False by -(erule Exit_no_postdominator)
+  hence "valid_edge a" by(fastsimp dest:path_split)
+  with pd show False by -(rule Exit_no_postdominator,auto)
 qed
 
 
@@ -223,21 +223,7 @@ lemma which_node_dyn_standard_control_dependence_source:
     valid_edge ax' \<longrightarrow> n postdominates targetnode ax'"
   shows "n' controls\<^isub>s n via a#as'"
 proof -
-  have "n' -a#as'\<rightarrow>* n"
-  proof(cases "as = []")
-    case True
-    with path have path':"(_Entry_) -a#as'\<rightarrow>* n" by simp
-    with inner_node have "sourcenode a = (_Entry_)"
-      by(fastsimp dest:path_Entry_Cons elim:path.cases)
-    with path' source show ?thesis by simp
-  next
-    case False
-    with path have path':"(_Entry_) -as@a#as'\<rightarrow>* n" by simp
-    with inner_node False obtain m where path':"m -(tl as)@a#as'\<rightarrow>* n"
-      by(auto dest:path_Entry_Cons)
-    with source show ?thesis by(fastsimp dest:path_split_second)
-  qed
-  hence path_n'n:"n' -a#as'\<rightarrow>* n" by simp
+  from path source have path_n'n:"n' -a#as'\<rightarrow>* n" by(fastsimp dest:path_split_second)
   from path have valid_edge:"valid_edge a" by(fastsimp intro:path_split)
   show ?thesis
   proof(cases "n postdominates (targetnode a)")
@@ -246,7 +232,7 @@ proof -
       by(auto simp:dyn_standard_control_dependence_def)
   next
     case False
-    have not_pd':"\<not> n postdominates (targetnode a)" by fact
+    hence not_pd':"\<not> n postdominates (targetnode a)" .
     show ?thesis
     proof(cases "as' = []")
       case True
@@ -341,106 +327,110 @@ qed
 lemma inner_node_dyn_standard_control_dependence_predecessor:
   assumes inner_node:"inner_node n"
   obtains n' as where "n' controls\<^isub>s n via as"
-proof -
-  have "\<exists>n' as. n' controls\<^isub>s n via as"
-  proof -
-    from inner_node obtain as' where pathExit:"n -as'\<rightarrow>* (_Exit_)"
-      by(fastsimp dest:inner_is_valid Exit_path)
-    from inner_node obtain as where pathEntry:"(_Entry_) -as\<rightarrow>* n"
-      by(fastsimp dest:inner_is_valid Entry_path)
-    with inner_node have notEmpty:"as \<noteq> []" 
-      by(auto elim:path.cases simp:inner_node_def)
-    have "\<exists>a asx. (_Entry_) -a#asx\<rightarrow>* n \<and> n \<notin> set (sourcenodes (a#asx))"
-    proof(cases "n \<in> set (sourcenodes as)")
-      case True
-      hence "\<exists>n'' \<in> set(sourcenodes as). n = n''" by simp
-      then obtain ns' ns'' where nodes:"sourcenodes as = ns'@n#ns''"
-	and notin:"\<forall>n'' \<in> set ns'. n \<noteq> n''"
-	by(fastsimp elim!:leftmost_element_property)
-      from nodes obtain xs ys a'
-	where xs:"sourcenodes xs = ns'" and as:"as = xs@a'#ys"
-	and source:"sourcenode a' = n"
-	by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
-      from pathEntry as have "(_Entry_) -xs@a'#ys\<rightarrow>* n" by simp
-      hence path2:"(_Entry_) -xs\<rightarrow>* sourcenode a'"
-	by(fastsimp dest:path_split)
-      show ?thesis
-      proof(cases "xs = []")
-	case True
-	with path2 have "(_Entry_) = sourcenode a'" by(auto elim:path.cases)
-	with pathEntry source notEmpty have "(_Entry_) -as\<rightarrow>* (_Entry_) \<and> as \<noteq> []"
-	  by(auto elim:path.cases)
-	hence False by(fastsimp dest:path_Entry_target)
-	thus ?thesis by simp
-      next
-	case False
-	then obtain n a'' xs' where "xs = a''#xs'" by(cases xs) auto
-	with False path2 notin xs source show ?thesis by simp blast
-      qed
-    next
-      case False
-      from notEmpty obtain a as' where "as = a#as'" by (cases as) auto
-      with False pathEntry show ?thesis by auto
-    qed
-    then obtain a asx where pathEntry':"(_Entry_) -a#asx\<rightarrow>* n"
-      and notin:"n \<notin> set (sourcenodes (a#asx))" by blast
+proof(atomize_elim)
+  from inner_node obtain as' where pathExit:"n -as'\<rightarrow>* (_Exit_)"
+    by(fastsimp dest:inner_is_valid Exit_path)
+  from inner_node obtain as where pathEntry:"(_Entry_) -as\<rightarrow>* n"
+    by(fastsimp dest:inner_is_valid Entry_path)
+  with inner_node have notEmpty:"as \<noteq> []" 
+    by(auto elim:path.cases simp:inner_node_def)
+  have "\<exists>a asx. (_Entry_) -a#asx\<rightarrow>* n \<and> n \<notin> set (sourcenodes (a#asx))"
+  proof(cases "n \<in> set (sourcenodes as)")
+    case True
+    hence "\<exists>n'' \<in> set(sourcenodes as). n = n''" by simp
+    then obtain ns' ns'' where nodes:"sourcenodes as = ns'@n#ns''"
+      and notin:"\<forall>n'' \<in> set ns'. n \<noteq> n''"
+      by(fastsimp elim!:leftmost_element_property)
+    from nodes obtain xs ys a'
+      where xs:"sourcenodes xs = ns'" and as:"as = xs@a'#ys"
+      and source:"sourcenode a' = n"
+      by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)
+    from pathEntry as have "(_Entry_) -xs@a'#ys\<rightarrow>* n" by simp
+    hence path2:"(_Entry_) -xs\<rightarrow>* sourcenode a'"
+      by(fastsimp dest:path_split)
     show ?thesis
-    proof(cases "\<forall>a' a''. a' \<in> set asx \<and> sourcenode a' = sourcenode a'' \<and> 
-	valid_edge a'' \<longrightarrow> n postdominates targetnode a''")
+    proof(cases "xs = []")
       case True
-      from inner_node have not_pd:"\<not> n postdominates (_Exit_)" 
-	by(fastsimp intro:empty_path simp:postdominate_def sourcenodes_def)
-      from pathEntry' have path':"(_Entry_) -[]@a#asx\<rightarrow>* n" by simp
-      hence eq:"sourcenode a = (_Entry_)"
-	by(fastsimp dest:path_split elim:path.cases)
-      from Entry_Exit_edge obtain a' where "sourcenode a' = (_Entry_)"
-	and "targetnode a' = (_Exit_)" and "valid_edge a'" by auto
-      with path' inner_node not_pd True eq notin pathExit
-      have "sourcenode a controls\<^isub>s n via a#asx"
-	by -(erule which_node_dyn_standard_control_dependence_source,auto)
-      thus ?thesis by blast
+      with path2 have "(_Entry_) = sourcenode a'" by(auto elim:path.cases)
+      with pathEntry source notEmpty have "(_Entry_) -as\<rightarrow>* (_Entry_) \<and> as \<noteq> []"
+	by(auto elim:path.cases)
+      hence False by(fastsimp dest:path_Entry_target)
+      thus ?thesis by simp
     next
       case False
-      hence "\<exists>a' \<in> set asx. \<exists>a''. sourcenode a' = sourcenode a'' \<and> valid_edge a'' \<and>
-	\<not> n postdominates targetnode a''"
-	by fastsimp
-      then obtain ax asx' asx'' where "asx = asx'@ax#asx'' \<and>
-	(\<exists>a''. sourcenode ax = sourcenode a'' \<and> valid_edge a'' \<and>
-	\<not> n postdominates targetnode a'') \<and>
-	(\<forall>z \<in> set asx''. \<not> (\<exists>a''. sourcenode z = sourcenode a'' \<and> valid_edge a'' \<and>
-	\<not> n postdominates targetnode a''))"
-	by(blast elim!:rightmost_element_property)
-      then obtain a'' where as':"asx = asx'@ax#asx''"
-	and eq:"sourcenode ax = sourcenode a''"
-	and valid_edge:"valid_edge a''"
-	and not_pd:"\<not> n postdominates targetnode a''"
-	and last:"\<forall>z \<in> set asx''. \<not> (\<exists>a''. sourcenode z = sourcenode a'' \<and> 
-                                  valid_edge a'' \<and> \<not> n postdominates targetnode a'')"
-	by blast
-      from notin as' have notin':"n \<notin> set (sourcenodes (ax#asx''))"
-	by(auto simp:sourcenodes_def)
-      from as' pathEntry' have "(_Entry_) -(a#asx')@ax#asx''\<rightarrow>* n" by simp
-      with inner_node not_pd notin' eq last pathExit valid_edge
-      have "sourcenode ax controls\<^isub>s n via ax#asx''"
-	by(fastsimp elim!:which_node_dyn_standard_control_dependence_source)
-      thus ?thesis by blast
+      then obtain n a'' xs' where "xs = a''#xs'" by(cases xs) auto
+      with False path2 notin xs source show ?thesis by simp blast
     qed
+  next
+    case False
+    from notEmpty obtain a as' where "as = a#as'" by (cases as) auto
+    with False pathEntry show ?thesis by auto
   qed
-  with that show ?thesis by blast
+  then obtain a asx where pathEntry':"(_Entry_) -a#asx\<rightarrow>* n"
+    and notin:"n \<notin> set (sourcenodes (a#asx))" by blast
+  show "\<exists>n' as. n' controls\<^isub>s n via as"
+  proof(cases "\<forall>a' a''. a' \<in> set asx \<and> sourcenode a' = sourcenode a'' \<and> 
+      valid_edge a'' \<longrightarrow> n postdominates targetnode a''")
+    case True
+    from inner_node have not_pd:"\<not> n postdominates (_Exit_)" 
+      by(fastsimp intro:empty_path simp:postdominate_def sourcenodes_def)
+    from pathEntry' have path':"(_Entry_) -[]@a#asx\<rightarrow>* n" by simp
+    hence eq:"sourcenode a = (_Entry_)"
+      by(fastsimp dest:path_split elim:path.cases)
+    from Entry_Exit_edge obtain a' where "sourcenode a' = (_Entry_)"
+      and "targetnode a' = (_Exit_)" and "valid_edge a'" by auto
+    with path' inner_node not_pd True eq notin pathExit
+    have "sourcenode a controls\<^isub>s n via a#asx"
+      by -(erule which_node_dyn_standard_control_dependence_source,auto)
+    thus ?thesis by blast
+  next
+    case False
+    hence "\<exists>a' \<in> set asx. \<exists>a''. sourcenode a' = sourcenode a'' \<and> valid_edge a'' \<and>
+      \<not> n postdominates targetnode a''"
+      by fastsimp
+    then obtain ax asx' asx'' where "asx = asx'@ax#asx'' \<and>
+      (\<exists>a''. sourcenode ax = sourcenode a'' \<and> valid_edge a'' \<and>
+      \<not> n postdominates targetnode a'') \<and>
+      (\<forall>z \<in> set asx''. \<not> (\<exists>a''. sourcenode z = sourcenode a'' \<and> valid_edge a'' \<and>
+      \<not> n postdominates targetnode a''))"
+      by(blast elim!:rightmost_element_property)
+    then obtain a'' where as':"asx = asx'@ax#asx''"
+      and eq:"sourcenode ax = sourcenode a''"
+      and valid_edge:"valid_edge a''"
+      and not_pd:"\<not> n postdominates targetnode a''"
+      and last:"\<forall>z \<in> set asx''. \<not> (\<exists>a''. sourcenode z = sourcenode a'' \<and> 
+        valid_edge a'' \<and> \<not> n postdominates targetnode a'')"
+      by blast
+    from notin as' have notin':"n \<notin> set (sourcenodes (ax#asx''))"
+      by(auto simp:sourcenodes_def)
+    from as' pathEntry' have "(_Entry_) -(a#asx')@ax#asx''\<rightarrow>* n" by simp
+    with inner_node not_pd notin' eq last pathExit valid_edge
+    have "sourcenode ax controls\<^isub>s n via ax#asx''"
+      by(fastsimp elim!:which_node_dyn_standard_control_dependence_source)
+    thus ?thesis by blast
+  qed
 qed
+
 
 end
 
 subsubsection {* Instantiate dynamic PDG *}
 
-locale DynamicControlDependencePDG = Postdomination + CFGExit_wf
+locale DynStandardControlDependencePDG =
+  Postdomination sourcenode targetnode kind valid_edge Entry Exit +
+  CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
+  for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
+  and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
+  and Exit :: "'node" ("'('_Exit'_')")
 
 begin
 
 lemma DynPDG_scd:
   "DynPDG sourcenode targetnode kind valid_edge (_Entry_) 
           Def Use state_val (_Exit_) dyn_standard_control_dependence"
-proof
+proof(unfold_locales)
   fix n n' as assume "n controls\<^isub>s n' via as"
   show "n' \<noteq> (_Exit_)"
   proof(rule ccontr)
@@ -502,14 +492,21 @@ end
 
 subsubsection {* Instantiate static PDG *}
 
-locale StandardControlDependencePDG = Postdomination + CFGExit_wf
+locale StandardControlDependencePDG = 
+  Postdomination sourcenode targetnode kind valid_edge Entry Exit +
+  CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
+  for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
+  and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
+  and Exit :: "'node" ("'('_Exit'_')")
 
 begin
 
 lemma PDG_scd:
   "PDG sourcenode targetnode kind valid_edge (_Entry_) 
        Def Use state_val (_Exit_) standard_control_dependence"
-proof
+proof(unfold_locales)
   fix n n' assume "n controls\<^isub>s n'"
   show "n' \<noteq> (_Exit_)"
   proof(rule ccontr)
@@ -536,7 +533,7 @@ lemmas PDG_path_not_inner = PDG.PDG_path_not_inner[OF PDG_scd]
 lemmas PDG_path_Exit = PDG.PDG_path_Exit[OF PDG_scd]
 
 
-definition PDG_BS_s :: "'b \<Rightarrow> 'b set" ("PDG'_BS")
+definition PDG_BS_s :: "'node \<Rightarrow> 'node set" ("PDG'_BS")
   where "PDG_BS n \<equiv> 
   PDG.PDG_BS sourcenode targetnode valid_edge Def Use standard_control_dependence n"
 

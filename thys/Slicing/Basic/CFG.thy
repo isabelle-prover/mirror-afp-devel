@@ -176,10 +176,11 @@ proof(induct as arbitrary:n)
   case Nil thus ?case by(auto elim:path.cases)
 next
   case (Cons a' as')
-  have path1:"n -a'#as'\<rightarrow>* n'" and path2:"n -a'#as'\<rightarrow>* n''"
-    and IH:"\<And>n. \<lbrakk>n -as'\<rightarrow>* n'; n -as'\<rightarrow>* n''\<rbrakk> \<Longrightarrow> n' = n''" by fact+
-  from path1 have "targetnode a' -as'\<rightarrow>* n'" by(fastsimp elim:path_split_Cons)
-  from path2 have "targetnode a' -as'\<rightarrow>* n''" by(fastsimp elim:path_split_Cons)
+  note IH = `\<And>n. \<lbrakk>n -as'\<rightarrow>* n'; n -as'\<rightarrow>* n''\<rbrakk> \<Longrightarrow> n' = n''`
+  from `n -a'#as'\<rightarrow>* n'` have "targetnode a' -as'\<rightarrow>* n'" 
+    by(fastsimp elim:path_split_Cons)
+  from `n -a'#as'\<rightarrow>* n''` have "targetnode a' -as'\<rightarrow>* n''" 
+    by(fastsimp elim:path_split_Cons)
   from IH[OF `targetnode a' -as'\<rightarrow>* n'` this] show ?thesis .
 qed
 

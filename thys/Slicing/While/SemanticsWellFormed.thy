@@ -12,10 +12,9 @@ fun labels_nodes :: "cmd \<Rightarrow> w_node \<Rightarrow> cmd \<Rightarrow> bo
   | "labels_nodes prog (_Exit_) c  = False"
 
 
-interpretation While_semantics_CFG_wf!: CFG_semantics_wf 
-  "sourcenode" "targetnode" "kind" "valid_edge prog" "Entry"
-   "reds" "labels_nodes prog"
-proof
+interpretation While_semantics_CFG_wf: CFG_semantics_wf 
+  sourcenode targetnode kind "valid_edge prog" Entry reds "labels_nodes prog"
+proof(unfold_locales)
   fix n c s c' s' n'
   assume "labels_nodes prog n c" and "\<langle>c,s\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>"
   then obtain l l' where [simp]:"n = (_ l _)" and "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto>* \<langle>c',s',l'\<rangle>"

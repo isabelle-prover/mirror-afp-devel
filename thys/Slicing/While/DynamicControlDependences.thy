@@ -6,9 +6,9 @@ theory DynamicControlDependences imports AdditionalLemmas
 begin
 
 interpretation WDynStandardControlDependence:
-  StandardControlDependencePDG "sourcenode" "targetnode" "kind" "valid_edge prog"
-                    "Entry" "Exit" "Defs prog" "Uses prog" "id"
-proof
+  DynStandardControlDependencePDG sourcenode targetnode kind "valid_edge prog"
+                    Entry "Defs prog" "Uses prog" id Exit
+proof(unfold_locales)
   fix n assume "CFG.valid_node sourcenode targetnode (valid_edge prog) n"
   hence "valid_node prog n" by(simp add:valid_node_def While_CFG.valid_node_def)
   thus "\<exists>as. prog \<turnstile> (_Entry_) -as\<rightarrow>* n" by(rule valid_node_Entry_path)
@@ -19,9 +19,9 @@ next
 qed
 
 interpretation WDynWeakControlDependence:
-  DynWeakControlDependencePDG "sourcenode" "targetnode" "kind" "valid_edge prog"
-                    "Entry" "Exit" "Defs prog" "Uses prog" "id"
-proof
+  DynWeakControlDependencePDG sourcenode targetnode kind "valid_edge prog"
+                    Entry "Defs prog" "Uses prog" id Exit
+proof(unfold_locales)
   fix n assume "CFG.valid_node sourcenode targetnode (valid_edge prog) n"
   hence "valid_node prog n" by(simp add:valid_node_def While_CFG.valid_node_def)
   show "finite {n'. \<exists>a'. valid_edge prog a' \<and> sourcenode a' = n \<and>

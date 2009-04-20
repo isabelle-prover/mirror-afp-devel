@@ -21,10 +21,9 @@ by(induct as) auto
 lemma slice_path_right_Cons:
   assumes slice:"slice_path as = x#xs"
   obtains a' as' where "as = a'#as'" and "slice_path as' = xs"
-proof -
-  from slice have "\<exists>a' as'. as = a'#as' \<and> slice_path as' = xs"
+proof(atomize_elim)
+  from slice show "\<exists>a' as'. as = a'#as' \<and> slice_path as' = xs"
     by(induct as) auto
-  with that show ?thesis by blast
 qed
 
 
@@ -530,24 +529,34 @@ end
 
 subsection {* The fundamental property of (dynamic) slicing related to the semantics *}
 
-locale BackwardPathSlice_wf = DynPDG + CFG_semantics_wf
-  where identifies = "%x y. x identifies y"
-  for identifies ("_ identifies _" [51, 0] 80)
-  (* FIXME unfortunate syntax *)
+locale BackwardPathSlice_wf = 
+  DynPDG sourcenode targetnode kind valid_edge Entry Def Use state_val Exit 
+    dyn_control_dependence +
+  CFG_semantics_wf sourcenode targetnode kind valid_edge Entry sem identifies
+  for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
+  and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
+  and dyn_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool" 
+    ("_ controls _ via _" [51, 0, 0] 1000)
+  and Exit :: "'node" ("'('_Exit'_')") 
+  and sem :: "'com \<Rightarrow> 'state \<Rightarrow> 'com \<Rightarrow> 'state \<Rightarrow> bool" 
+    ("((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
+  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" ("_ \<triangleq> _" [51, 0] 80) 
 
 begin
 
 theorem fundamental_property_of_path_slicing_semantically:
-  assumes "n identifies c" and "\<langle>c,s\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>"
+  assumes "n \<triangleq> c" and "\<langle>c,s\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>"
   obtains n' as where "n -as\<rightarrow>* n'" and "preds (slice_kinds as) s" 
-  and "n' identifies c'" 
+  and "n' \<triangleq> c'" 
   and "\<forall>V \<in> Use n'. state_val (transfers (slice_kinds as) s) V = 
                      state_val s' V"
-proof -
-  from `n identifies c` `\<langle>c,s\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>` obtain n' as where "n -as\<rightarrow>* n'"
+proof(atomize_elim)
+  from `n \<triangleq> c` `\<langle>c,s\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>` obtain n' as where "n -as\<rightarrow>* n'"
     and "transfers (kinds as) s = s'"
     and "preds (kinds as) s"
-    and "n' identifies c'"
+    and "n' \<triangleq> c'"
     by(fastsimp dest:fundamental_property)
   with `n -as\<rightarrow>* n'` `preds (kinds as) s` 
   have "\<forall>V \<in> Use n'. state_val (transfers (slice_kinds as) s) V =
@@ -556,8 +565,10 @@ proof -
   with `transfers (kinds as) s = s'` have "\<forall>V \<in> Use n'. 
     state_val (transfers (slice_kinds as) s) V =
     state_val s' V" by simp
-  with `n -as\<rightarrow>* n'` `preds (slice_kinds as) s` `n' identifies c'` that
-  show ?thesis by blast
+  with `n -as\<rightarrow>* n'` `preds (slice_kinds as) s` `n' \<triangleq> c'`
+  show "\<exists>as n'. n -as\<rightarrow>* n' \<and> preds (slice_kinds as) s \<and> n' \<triangleq> c' \<and>
+       (\<forall>V\<in>Use n'. state_val (transfers (slice_kinds as) s) V = state_val s' V)"
+    by blast
 qed
 
 

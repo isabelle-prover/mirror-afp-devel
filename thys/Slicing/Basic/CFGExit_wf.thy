@@ -2,7 +2,15 @@ theory CFGExit_wf imports CFGExit CFG_wf begin
 
 subsection {* New well-formedness lemmas using @{text "(_Exit_)"} *}
 
-locale CFGExit_wf = CFG_wf + CFGExit + 
+
+locale CFGExit_wf = 
+  CFG_wf sourcenode targetnode kind valid_edge Entry Def Use state_val +
+  CFGExit sourcenode targetnode kind valid_edge Entry Exit 
+  for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
+  and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
+  and Exit :: "'node" ("'('_Exit'_')") +
   assumes Exit_empty:"Def (_Exit_) = {} \<and> Use (_Exit_) = {}"
 
 begin

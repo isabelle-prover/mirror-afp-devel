@@ -1,18 +1,4 @@
 header {* \isachapter{Dynamic Slicing} 
-
-  Dynamic slicing means slicing of program traces. In our framework, the
-  traces are the abstract CFG paths, which we obtain by inlining method
-  calls (but not unfolding loops etc.), thus potentially being
-  infinite. Thus, dynamic slicing needs a path to a certain node and a
-  initial state as inputs, where all predicates on the path must be
-  satisfiable when traversing the path beginning in the initial
-  state. The correctness of dynamic slicing can be stated as follows:
-  the value of a variable used in the target node of the path has the
-  same value regardless of traversing the original or the sliced path in
-  a initial state and all the predicates are satisfiable when traversing
-  the sliced path beginning in the stating state. Details of this
-  proof can be found in \cite{WasserrabL:08}.
-
   \isaheader{Dependent live variables} *}
 
 theory DependentLiveVariables imports "../Basic/PDG" begin
@@ -184,28 +170,25 @@ lemma dependent_live_vars_dependent_edge:
   and "V \<in> Def (sourcenode a)" and "valid_edge a"
   obtains nx as'' where "as = as'@as''" and "sourcenode a -{V}a#as'\<rightarrow>\<^bsub>dd\<^esub> nx"
   and "nx -as''\<rightarrow>\<^isub>d* n'"
-proof -
-  have "\<exists>nx as''. (as = as'@as'') \<and> (sourcenode a -{V}a#as'\<rightarrow>\<^bsub>dd\<^esub> nx) \<and> 
-                    (nx -as''\<rightarrow>\<^isub>d* n')"
-  proof -
-    from `(V,as',as) \<in> dependent_live_vars n'` `targetnode a -as\<rightarrow>* n'`
-    have "\<exists>nx as''. as = as'@as'' \<and> targetnode a -as'\<rightarrow>* nx \<and> nx -as''\<rightarrow>\<^isub>d* n' \<and> 
-      V \<in> Use nx \<and> (\<forall>n'' \<in> set (sourcenodes as'). V \<notin> Def n'')"
-      by(rule dependent_live_vars_Use_cases)
-    then obtain nx as'' where "V \<in> Use nx"
-      and "\<forall>n''\<in> set(sourcenodes as'). V \<notin> Def n''"
-      and "targetnode a -as'\<rightarrow>* nx" and "nx -as''\<rightarrow>\<^isub>d* n'"
-      and "as = as'@as''" by blast
-    from `targetnode a -as'\<rightarrow>* nx` `valid_edge a` have "sourcenode a -a#as'\<rightarrow>* nx"
-      by(fastsimp intro:Cons_path)
-    with `V \<in> Def (sourcenode a)` `V \<in> Use nx` 
-      `\<forall>n''\<in> set(sourcenodes as'). V \<notin> Def n''` 
-    have "sourcenode a influences V in nx via a#as'"
-      by(auto simp:dyn_data_dependence_def sourcenodes_def)
-    hence "sourcenode a -{V}a#as'\<rightarrow>\<^bsub>dd\<^esub> nx" by(rule DynPDG_ddep_edge)
-    with `nx -as''\<rightarrow>\<^isub>d* n'` `as = as'@as''` show ?thesis by fastsimp
-  qed
-  with that show ?thesis by blast
+proof(atomize_elim)
+  from `(V,as',as) \<in> dependent_live_vars n'` `targetnode a -as\<rightarrow>* n'`
+  have "\<exists>nx as''. as = as'@as'' \<and> targetnode a -as'\<rightarrow>* nx \<and> nx -as''\<rightarrow>\<^isub>d* n' \<and> 
+    V \<in> Use nx \<and> (\<forall>n'' \<in> set (sourcenodes as'). V \<notin> Def n'')"
+    by(rule dependent_live_vars_Use_cases)
+  then obtain nx as'' where "V \<in> Use nx"
+    and "\<forall>n''\<in> set(sourcenodes as'). V \<notin> Def n''"
+    and "targetnode a -as'\<rightarrow>* nx" and "nx -as''\<rightarrow>\<^isub>d* n'"
+    and "as = as'@as''" by blast
+  from `targetnode a -as'\<rightarrow>* nx` `valid_edge a` have "sourcenode a -a#as'\<rightarrow>* nx"
+    by(fastsimp intro:Cons_path)
+  with `V \<in> Def (sourcenode a)` `V \<in> Use nx` 
+    `\<forall>n''\<in> set(sourcenodes as'). V \<notin> Def n''` 
+  have "sourcenode a influences V in nx via a#as'"
+    by(auto simp:dyn_data_dependence_def sourcenodes_def)
+  hence "sourcenode a -{V}a#as'\<rightarrow>\<^bsub>dd\<^esub> nx" by(rule DynPDG_ddep_edge)
+  with `nx -as''\<rightarrow>\<^isub>d* n'` `as = as'@as''` 
+  show "\<exists>as'' nx. (as = as'@as'') \<and> (sourcenode a -{V}a#as'\<rightarrow>\<^bsub>dd\<^esub> nx) \<and> 
+    (nx -as''\<rightarrow>\<^isub>d* n')" by fastsimp
 qed
 
 
@@ -509,4 +492,3 @@ end
 
 
 end
-

@@ -25,22 +25,29 @@ proof -
     and pd:"(_Exit_) postdominates (targetnode a)"
     by(auto simp:dyn_weak_control_dependence_def strong_postdominate_def)
   from path as have "n -[]@a#as'\<rightarrow>* (_Exit_)" by simp
-  hence "targetnode a -as'\<rightarrow>* (_Exit_)" by(fastsimp dest:path_split)
-  with pd show False by -(erule Exit_no_postdominator)
+  hence "valid_edge a" by(fastsimp dest:path_split)
+  with pd show False by -(rule Exit_no_postdominator,auto)
 qed
 
 end
 
 subsubsection {* Instantiate dynamic PDG *}
 
-locale DynWeakControlDependencePDG = StrongPostdomination + CFGExit_wf
+locale DynWeakControlDependencePDG = 
+  StrongPostdomination sourcenode targetnode kind valid_edge Entry Exit +
+  CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
+  for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
+  and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
+  and Exit :: "'node" ("'('_Exit'_')")
 
 begin
 
 lemma DynPDG_wcd:
   "DynPDG sourcenode targetnode kind valid_edge (_Entry_) 
           Def Use state_val (_Exit_) dyn_weak_control_dependence"
-proof
+proof(unfold_locales)
   fix n n' as assume "n weakly controls n' via as"
   show "n' \<noteq> (_Exit_)"
   proof(rule ccontr)
@@ -90,14 +97,21 @@ end
 
 subsubsection {* Instantiate static PDG *}
 
-locale WeakControlDependencePDG = StrongPostdomination + CFGExit_wf
+locale WeakControlDependencePDG = 
+  StrongPostdomination sourcenode targetnode kind valid_edge Entry Exit +
+  CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
+  for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
+  and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
+  and Exit :: "'node" ("'('_Exit'_')")
 
 begin
 
 lemma PDG_wcd:
   "PDG sourcenode targetnode kind valid_edge (_Entry_) 
        Def Use state_val (_Exit_) weak_control_dependence"
-proof
+proof(unfold_locales)
   fix n n' assume "n weakly controls n'"
   show "n' \<noteq> (_Exit_)"
   proof(rule ccontr)
@@ -123,7 +137,7 @@ lemmas PDG_path_not_inner = PDG.PDG_path_not_inner[OF PDG_wcd]
 lemmas PDG_path_Exit = PDG.PDG_path_Exit[OF PDG_wcd]
 
 
-definition PDG_BS_w :: "'b \<Rightarrow> 'b set" ("PDG'_BS")
+definition PDG_BS_w :: "'node \<Rightarrow> 'node set" ("PDG'_BS")
   where "PDG_BS n \<equiv> 
   PDG.PDG_BS sourcenode targetnode valid_edge Def Use weak_control_dependence n"
 

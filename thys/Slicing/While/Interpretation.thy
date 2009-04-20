@@ -22,9 +22,9 @@ definition valid_node ::"cmd \<Rightarrow> w_node \<Rightarrow> bool"
     (\<exists>a. valid_edge prog a \<and> (n = sourcenode a \<or> n = targetnode a))"
 
 
-interpretation While_CFG!:
-  CFG "sourcenode" "targetnode" "kind" "valid_edge prog" "Entry"
-proof
+interpretation While_CFG:
+  CFG sourcenode targetnode kind "valid_edge prog" Entry
+proof(unfold_locales)
   fix a assume "valid_edge prog a" and "targetnode a = (_Entry_)"
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
   with `valid_edge prog a` `targetnode a = (_Entry_)` 
@@ -42,9 +42,9 @@ next
   show "a = a'" by simp
 qed
 
-interpretation While_CFGExit!:
-  CFGExit "sourcenode" "targetnode" "kind" "valid_edge prog" "Entry" "Exit"
-proof
+interpretation While_CFGExit:CFGExit sourcenode targetnode kind 
+  "valid_edge prog" Entry Exit
+proof(unfold_locales)
   fix a assume "valid_edge prog a" and "sourcenode a = (_Exit_)"
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
   with `valid_edge prog a` `sourcenode a = (_Exit_)` 
