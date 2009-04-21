@@ -1,4 +1,18 @@
 header {* \isachapter{Dynamic Slicing} 
+
+  Dynamic slicing means slicing of program traces. In our framework, the
+  traces are the abstract CFG paths, which we obtain by inlining method
+  calls (but not unfolding loops etc.), thus potentially being
+  infinite. Thus, dynamic slicing needs a path to a certain node and a
+  initial state as inputs, where all predicates on the path must be
+  satisfiable when traversing the path beginning in the initial
+  state. The correctness of dynamic slicing can be stated as follows:
+  the value of a variable used in the target node of the path has the
+  same value regardless of traversing the original or the sliced path in
+  a initial state and all the predicates are satisfiable when traversing
+  the sliced path beginning in the stating state. Details of this
+  proof can be found in \cite{WasserrabL:08}.
+
   \isaheader{Dependent live variables} *}
 
 theory DependentLiveVariables imports "../Basic/PDG" begin

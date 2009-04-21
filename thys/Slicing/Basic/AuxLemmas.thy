@@ -1,6 +1,6 @@
 header {* \isaheader{Auxiliary lemmas} *}
 
-theory Aux imports Main begin
+theory AuxLemmas imports Main begin
 
 text {* Lemmas about left- and rightmost elements in lists *}
 

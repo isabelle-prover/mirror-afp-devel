@@ -1,7 +1,20 @@
-header {* \isachapter{The Framework} 
+header {* \isachapter{The Framework}
+
+  As slicing is a program analysis that can be completely based on the
+  information given in the CFG, we want to provide a framework which
+  allows us to formalize and prove properties of slicing regardless of
+  the actual programming language. So the starting point for the formalization 
+  is the definition of an abstract CFG, i.e.\ without considering features 
+  specific for certain languages. By doing so we ensure that our framework 
+  is as generic as possible since all proofs hold for every language whose 
+  CFG conforms to this abstract CFG.  This abstract CFG can be used as a 
+  basis for static intraprocedural slicing as well as for dynamic slicing, 
+  if in the dynamic case all method calls are inlined (i.e., abstract CFG 
+  paths conform to traces).
+
   \isaheader{Basic Definitions} *}
 
-theory BasicDefs imports Aux begin
+theory BasicDefs imports AuxLemmas begin
 
 subsection{* Edge kinds *}
 
