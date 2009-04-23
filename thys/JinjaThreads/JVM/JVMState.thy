@@ -29,5 +29,9 @@ types
 types
   jvm_thread_state = "addr option \<times> frame list"
   -- "exception flag, frames, thread lock state"
+
+types
+  jvm_thread_action = "(addr,thread_id,jvm_thread_state,heap,addr) thread_action"
+  jvm_ta_state = "jvm_thread_action \<times> jvm_state"
   
 end

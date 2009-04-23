@@ -16,6 +16,7 @@ datatype
         | NewArray ty               -- "create array for elements of given type"
         | ALoad                     -- "Load array element from heap to stack"
         | AStore                    -- "Set element in array"
+        | ALength                   -- "Return the length of the array"
         | Getfield vname cname      -- "Fetch field from object"
         | Putfield vname cname      -- "Set field in object    "
         | Checkcast ty              -- "Check whether object is of given type"

@@ -21,29 +21,9 @@ primrec
                                    then Some (snd(snd(snd e)))
                                    else match_ex_table P C pc es)"
 
-abbreviation
-  ex_table_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table" where
-  "ex_table_of P C M == snd (snd (snd (snd (snd (snd(method P C M))))))"
-
-
 consts
-  find_handler :: "jvm_prog \<Rightarrow> addr \<Rightarrow> heap \<Rightarrow> frame list \<Rightarrow> jvm_state"
-primrec
-  "find_handler P a h [] = (Some a, h, [])"
-  "find_handler P a h (fr#frs) = 
-       (let (stk,loc,C,M,pc) = fr in
-        case match_ex_table P (cname_of h a) pc (ex_table_of P C M) of
-          None \<Rightarrow> find_handler P a h frs
-        | Some pc_d \<Rightarrow> (None, h, (Addr a # drop (size stk - snd pc_d) stk, loc, C, M, fst pc_d)#frs))"
-
-lemma find_handler_preserves_heap:
-  "fst (snd (find_handler P a h frs)) = h"
-by(induct frs, auto)
-
-lemma find_handler_preserves_heapD:
-  "(xcp, h', frstls') = find_handler P a h frs \<Longrightarrow> h = h'"
-apply(subgoal_tac "fst (snd (find_handler P a h frs)) = h")
-apply(drule sym, simp)
-by(rule find_handler_preserves_heap)
+  ex_table_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table"
+translations
+  "ex_table_of P C M" == "snd (snd (snd (snd (snd (snd(method P C M))))))"
 
 end

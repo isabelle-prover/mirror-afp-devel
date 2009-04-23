@@ -4,7 +4,10 @@
     Based on the Jinja theory Common/Type.thy by David von Oheimb and Tobias Nipkow
 *)
 
-header {* \isaheader{Jinja types} *}
+header {*
+  \chapter{Jinja Source Language}\label{cha:j}
+  \isaheader{Jinja types}
+*}
 
 theory Type imports Aux begin
 
@@ -18,6 +21,8 @@ constdefs
   "Object \<equiv> ''Object''"
   Thread :: cname
   "Thread \<equiv> ''Thread''"
+  Throwable :: cname
+  "Throwable \<equiv> ''Throwable''"
   this :: vname
   "this \<equiv> ''this''"
   run :: mname
@@ -33,10 +38,11 @@ constdefs
   join :: mname
   "join \<equiv> ''join''"
 
-lemma thread_neq_object [simp]: "Thread \<noteq> Object"
-by(simp add: Thread_def Object_def)
-
-lemmas object_neq_thread [simp] = thread_neq_object[symmetric]
+lemma Object_Thread_Throwable_neq [simp]:
+  "Thread \<noteq> Object" "Object \<noteq> Thread"
+  "Object \<noteq> Throwable" "Throwable \<noteq> Object"
+  "Thread \<noteq> Throwable" "Throwable \<noteq> Thread"
+by(auto simp add: Thread_def Object_def Throwable_def)
 
 lemma synth_method_names_neq_aux:
   "start \<noteq> wait" "start \<noteq> notify" "start \<noteq> notifyAll" "start \<noteq> join"
@@ -66,19 +72,6 @@ lemmas refTE [consumes 1, case_names NT Class Array] = is_refT.cases
 
 lemma not_refTE [consumes 1, case_names Void Boolean Integer]:
   "\<lbrakk> \<not>is_refT T; T = Void \<Longrightarrow> P; T = Boolean \<Longrightarrow> P; T = Integer \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-by (cases T, auto)
-
-
-inductive is_refT_class :: "ty \<Rightarrow> bool" where
-  "is_refT_class NT"
-| "is_refT_class (Class C)"
-
-declare is_refT_class.intros[iff]
-
-lemmas refT_classE [consumes 1, case_names NT Class] = is_refT_class.cases
-
-lemma not_refT_classE [consumes 1, case_names Void Boolean Integer Array]:
-  "\<lbrakk> \<not>is_refT_class T; T = Void \<Longrightarrow> P; T = Boolean \<Longrightarrow> P; T = Integer \<Longrightarrow> P; \<And>A. T = Array A \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
 by (cases T, auto)
 
 fun ground_type :: "ty \<Rightarrow> ty" where

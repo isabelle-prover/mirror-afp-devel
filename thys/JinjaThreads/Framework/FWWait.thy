@@ -6,7 +6,7 @@ header {* \isaheader{Semantics of the thread actions for wait and notify} *}
 
 theory FWWait imports FWState begin
 
-(* Update functions for the wait sets in the multithreaded state *)
+text {* Update functions for the wait sets in the multithreaded state *}
 
 fun redT_updW :: "('w,'t) wait_sets \<Rightarrow> 't \<Rightarrow> 'w wait_set_action \<Rightarrow> ('w,'t) wait_sets"
 where

@@ -5,11 +5,10 @@
 *)
 
 header {* 
-  \chapter{Jinja Source Language}\label{cha:j}
   \isaheader{Auxiliary Definitions}
 *}
 
-theory Aux imports Main begin
+theory Aux imports FinFun begin
 (* FIXME move and possibly turn into a general simproc *)
 lemma nat_add_max_le[simp]:
   "((n::nat) + max i j \<le> m) = (n + i \<le> m \<and> n + j \<le> m)"
@@ -19,8 +18,12 @@ lemma Suc_add_max_le[simp]:
   "(Suc(n + max i j) \<le> m) = (Suc(n + i) \<le> m \<and> Suc(n + j) \<le> m)"
 (*<*)by arith(*>*)
 
-notation Some  ("(\<lfloor>_\<rfloor>)")
+(*<*)
+syntax "_Some" :: "'a \<Rightarrow> 'a option" ("(\<lfloor>_\<rfloor>)")
+(*>*)
 
+
+translations "\<lfloor>x\<rfloor>" == "Some x"
 (*<*)
 declare
  option.splits[split]
@@ -52,6 +55,9 @@ apply (unfold distinct_fst_def)
 apply (auto simp:image_def)
 done
 (*>*)
+
+lemma distinct_fstD: "\<lbrakk> distinct_fst xs; (x, y) \<in> set xs; (x, z) \<in> set xs \<rbrakk> \<Longrightarrow> y = z"
+by(induct xs) auto
 
 lemma map_of_SomeI:
   "\<lbrakk> distinct_fst kxs; (k,x) \<in> set kxs \<rbrakk> \<Longrightarrow> map_of kxs k = Some x"
@@ -177,6 +183,49 @@ next
   qed
 qed
 
+lemma map_eq_append_conv:
+  "map f xs = ys @ zs \<longleftrightarrow> (\<exists>ys' zs'. map f ys' = ys \<and> map f zs' = zs \<and> xs = ys' @ zs')"
+apply(rule iffI)
+ apply(metis append_eq_conv_conj append_take_drop_id assms drop_map take_map)
+by(clarsimp)
+
+lemma append_eq_map_conv:
+  "ys @ zs = map f xs \<longleftrightarrow> (\<exists>ys' zs'. map f ys' = ys \<and> map f zs' = zs \<and> xs = ys' @ zs')"
+unfolding map_eq_append_conv[symmetric]
+by auto
+
+lemma map_eq_map_conv:
+  "map f xs = map g ys \<longleftrightarrow> list_all2 (\<lambda>x y. f x = g y) xs ys"
+apply(induct xs arbitrary: ys)
+apply(auto simp add: list_all2_Cons1 Cons_eq_map_conv)
+done
+
+lemma map_upd_map_add: "X(V \<mapsto> v) = (X ++ [V \<mapsto> v])"
+by(simp)
+
+lemma dom_eq_empty_conv [simp]: "dom f = {} \<longleftrightarrow> f = empty"
+proof(rule iffI)
+  assume "dom f = {}"
+  thus "f = empty" by-(rule ext, auto)
+qed(auto)
+
+lemma Collect_eq_singleton_conv:
+  "{a. P a} = {a} \<longleftrightarrow> P a \<and> (\<forall>a'. P a' \<longrightarrow> a = a')"
+by(auto)
+
+lemma dom_eq_singleton_conv: "dom f = {x} \<longleftrightarrow> (\<exists>v. f = [x \<mapsto> v])"
+proof(rule iffI)
+  assume "\<exists>v. f = [x \<mapsto> v]"
+  thus "dom f = {x}" by(auto split: split_if_asm)
+next
+  assume "dom f = {x}"
+  then obtain v where "f x = \<lfloor>v\<rfloor>" by auto
+  hence "[x \<mapsto> v] \<subseteq>\<^sub>m f" by(auto simp add: map_le_def)
+  moreover have "f \<subseteq>\<^sub>m [x \<mapsto> v]" using `dom f = {x}` `f x = \<lfloor>v\<rfloor>`
+    by(auto simp add: map_le_def)
+  ultimately have "f = [x \<mapsto> v]" by-(rule map_le_antisym)
+  thus "\<exists>v. f = [x \<mapsto> v]" by blast
+qed
 
 lemma filter_replicate_conv:
   "filter P (replicate n x) = (if P x then replicate n x else [])"
@@ -191,11 +240,33 @@ lemma disjE3: "\<lbrakk> P \<or> Q \<or> R; P \<Longrightarrow> S; Q \<Longright
 by auto
 
 consts_code (* code for code generator setup *)
-  "undefined :: nat" ("{* (0::nat) *}")
-  "undefined :: string" ("{* ''''undefined'''' *}")
+  "arbitrary :: nat" ("{* (0::nat) *}")
+  "arbitrary :: string" ("{* ''''Arbitrary'''' *}")
 
 lemma Plus_eq_empty_conv: "A <+> B = {} \<longleftrightarrow> A = {} \<and> B = {}"
 by(auto)
+
+lemma length_greater_Suc_0_conv: "Suc 0 < length xs \<longleftrightarrow> (\<exists>x x' xs'. xs = x # x' # xs')"
+by(cases xs, auto simp add: neq_Nil_conv)
+
+lemma zip_same_conv: "zip xs xs = map (\<lambda>x. (x, x)) xs"
+by(induct xs) auto
+
+lemma map_eq_all_nth_conv:
+  "map f xs = ys \<longleftrightarrow> length xs = length ys \<and> (\<forall>n < length xs. f (xs ! n) = ys ! n)"
+apply(induct xs arbitrary: ys)
+apply(fastsimp simp add: nth_Cons Suc_length_conv split: nat.splits)+
+done
+
+lemma nth_Cons_subtract: "0 < n \<Longrightarrow> (x # xs) ! n = xs ! (n - 1)"
+by(auto simp add: nth_Cons split: nat.split)
+
+lemma prod_rec_split [simp]: "prod_rec = split"
+by(simp add: expand_fun_eq)
+
+lemma update_zip: "(zip xs ys)[i := xy] = zip (xs[i := fst xy]) (ys[i := snd xy])"
+  by(induct xs arbitrary: ys i)(auto,case_tac ys,auto split: nat.split)
+(* generalizes update_zip in List *)
 
 
 end

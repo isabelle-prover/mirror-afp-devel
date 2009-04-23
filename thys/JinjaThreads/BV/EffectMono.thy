@@ -1,4 +1,4 @@
-(*  Title:      JinjaThreads/BV/EffMono.thy
+(*  Title:      JinjaThreads/BV/EffectMono.thy
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
@@ -7,22 +7,6 @@ header {* \isaheader{Monotonicity of eff and app} *}
 theory EffectMono imports Effect begin
 
 declare not_Err_eq [iff]
-
-lemma wf_method_Object_empty:
-  assumes wf: "wf_prog wf_md P"
-  shows "\<not> P \<turnstile> C sees M: Ts\<rightarrow>T = m in Object"
-proof
-  assume sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = m in Object"
-  from wf obtain O' fs ms where classO: "class P Object = \<lfloor>(O', fs, ms)\<rfloor>"
-    apply -
-    apply(drule is_class_Object)
-    by(unfold is_class_def, auto)
-  from wf classO have "ms = []"
-    by(auto simp add: wf_prog_def wf_cdecl_def class_def dest: map_of_is_SomeD bspec)
-  with classO sees show False
-    apply(clarsimp simp add: Method_def)
-    by(drule visible_methods_exist, auto)
-qed
 
 declare widens_trans[trans]
 
@@ -58,16 +42,14 @@ proof -
       assume "ST'!n = NT"
       moreover with n less have "ST!n = NT" 
         by (auto dest: list_all2_nthD)
-      ultimately have ?thesis using n app Invoke by simp
-    }
+      ultimately have ?thesis using n app Invoke by simp }
     moreover {
       assume ST: "ST!n \<noteq> NT" and ST': "ST'!n \<noteq> NT" 
 
       from ST' app Invoke
       have  "(\<exists>D Ts T m C'. ST' ! n = Class D \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts) \<or>
-	     (\<exists>D. ST' ! n = Class D \<and> P \<turnstile> D \<preceq>\<^sup>* Thread \<and> (M = start \<or> M = join) \<and> n = 0 \<and> is_class P Thread) \<or>
-	     (is_refT (ST' ! n) \<and> (M = wait \<or> M = notify \<or> M = notifyAll) \<and> n = 0)"
-	by(simp, blast)
+             (is_external_call P (ST' ! n) M n \<and> (\<exists>U. P \<turnstile> ST' ! n\<bullet>M(rev (take n ST')) :: U))"
+	by fastsimp
       moreover
       from less have "P \<turnstile> ST!n \<le> ST'!n"
 	by(auto dest: list_all2_nthD2[OF _ n])
@@ -91,24 +73,16 @@ proof -
 	also note Ts also note Ts' 
 	finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
 	with D'_M D' app less Invoke D have ?thesis by fastsimp }
-      moreover
-      { fix D
-	assume D: "ST' ! n = Class D"
-	  and "P \<turnstile> D \<preceq>\<^sup>* Thread" "M = start \<or> M = join" "n = 0" "is_class P Thread"
-	with `P \<turnstile> ST!n \<le> ST'!n`
-	obtain D' where
-          D': "ST!n = Class D'" and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
-	  using D ST by auto
-	with `P \<turnstile> D \<preceq>\<^sup>* Thread` have "P \<turnstile> D' \<preceq>\<^sup>* Thread" by auto
-	with app less Invoke `M = start \<or> M = join` `n = 0` D' `is_class P Thread`
-	have ?thesis by auto }
-      moreover
-      { assume "is_refT (ST' ! n)"
-	and [simp]: "M = wait \<or> M = notify \<or> M = notifyAll" "n = 0"
-	with `P \<turnstile> ST!n \<le> ST'!n`
-	have "is_refT (ST ! n)"
-	  by(auto elim!: refTE simp add: widen_Array)
-	with app less Invoke ST have ?thesis by(simp) }
+      moreover {
+	fix U
+	assume exc: "is_external_call P (ST' ! n) M n"
+	  and wtext: "P \<turnstile> ST' ! n\<bullet>M(rev (take n ST')) :: U"
+	from exc have "is_external_call P (ST ! n) M n"
+	  using `P \<turnstile> ST!n \<le> ST'!n` ST by(rule is_external_call_widen_mono)
+	moreover from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
+	with wtext `P \<turnstile> ST!n \<le> ST'!n` ST obtain U' where "P \<turnstile> ST ! n\<bullet>M(rev (take n ST)) :: U'" 
+	  and "P \<turnstile> U' \<le> U" by(auto dest: external_WTrt_widen_mono)
+	ultimately have ?thesis using app Invoke by auto }
       ultimately have ?thesis by blast }
     ultimately show ?thesis by blast
   next 
@@ -132,6 +106,9 @@ proof -
     with app less show ?thesis
       apply(clarsimp)
       by(case_tac "U = NT", auto simp add: widen_Array)
+  next
+    case ALength
+    with app less show ?thesis by(auto simp add: widen_Array)
   next
     case (Checkcast T)
     with app less show ?thesis
@@ -186,6 +163,16 @@ next
   ultimately
   have "P \<turnstile> ST!2 \<le> ST'!2" by (auto simp add: fun_of_def dest: list_all2_nthD)
   with AStore show ?thesis by auto
+next
+  case ALength
+  obtain ST LT ST' LT' where 
+    [simp]: "\<tau> = (ST,LT)" and [simp]: "\<tau>' = (ST',LT')" by (cases \<tau>, cases \<tau>') 
+  assume "P \<turnstile> \<tau> \<le>\<^sub>i \<tau>'"
+  moreover
+  with app\<^isub>i ALength have "0 < size ST" by (auto dest: list_all2_lengthD)
+  ultimately
+  have "P \<turnstile> ST!0 \<le> ST'!0" by (auto simp add: fun_of_def dest: list_all2_nthD)
+  with ALength show ?thesis by auto
 next
   case MEnter
   obtain ST LT ST' LT' where 
@@ -247,7 +234,6 @@ next
 qed
 (*>*)
 
-
 lemma eff\<^isub>i_mono:
   assumes wf: "wf_prog p P"
   assumes less: "P \<turnstile> \<tau> \<le>\<^sub>i \<tau>'"
@@ -299,9 +285,7 @@ proof -
     
     from ST' app\<^isub>i Invoke
     have  "(\<exists>D Ts T m C'. ST' ! n = Class D \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts) \<or>
-           (\<exists>D. ST' ! n = Class D \<and> P \<turnstile> D \<preceq>\<^sup>* Thread \<and> (M = start \<or> M = join) \<and> n = 0 \<and> is_class P Thread) \<or>
-	    (is_refT (ST' ! n) \<and> (M = wait \<or> M = notify \<or> M = notifyAll) \<and> n = 0)"
-      by(simp, blast)
+           (is_external_call P (ST' ! n) M n \<and> (\<exists>U. P \<turnstile> ST' ! n\<bullet>M(rev (take n ST')) :: U))" by fastsimp
     moreover
     from less have "P \<turnstile> ST!n \<le> ST'!n"
       by(auto dest: list_all2_nthD2[OF _ n])
@@ -313,40 +297,26 @@ proof -
       with `P \<turnstile> ST!n \<le> ST'!n` obtain D' where
 	D': "ST!n = Class D'" and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
 	using D ST by(auto simp: widen_Class)
-
-      from D_M have "\<lbrakk> M = start \<or> M = join; P \<turnstile> D \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> False"
-	by(auto dest: Thread_not_sees_method_start[OF wf] Thread_not_sees_method_join[OF wf])
-      moreover
+      from D_M `P \<turnstile> ST!n \<le> ST'!n` D ST D'
+      have nexc: "\<not> is_external_call P (ST ! n) M n" "\<not> is_external_call P (ST' ! n) M n"
+	by(auto dest!: external_call_not_sees_method[OF wf])
       from wf D_M DsubC obtain Ts' T' m' C'' where
 	D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
-	Ts': "P \<turnstile> T' \<le> T"
-	by (blast dest: sees_method_mono)
-      moreover
-      hence "\<lbrakk> M = start \<or> M = join; P \<turnstile> D' \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> False"
-	by(auto dest: Thread_not_sees_method_start[OF wf] Thread_not_sees_method_join[OF wf])
-      ultimately have ?thesis using Invoke n D D' D_M less
-	by(auto intro: list_all2_dropI) }
+	Ts': "P \<turnstile> T' \<le> T" by (blast dest: sees_method_mono)
+
+      with Invoke n D D' D_M less nexc
+      have ?thesis by(auto intro: list_all2_dropI) }
     moreover
-    { fix D
-      assume D: "ST' ! n = Class D" 
-	and "P \<turnstile> D \<preceq>\<^sup>* Thread" "M = start \<or> M = join" "n = 0"
-      with `P \<turnstile> ST!n \<le> ST'!n` obtain D' where
-	D': "ST!n = Class D'" and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
-	using D ST by(auto simp: widen_Class)
-      with `P \<turnstile> D \<preceq>\<^sup>* Thread` have "P \<turnstile> D' \<preceq>\<^sup>* Thread" by auto
-      with Invoke D ST less `P \<turnstile> D \<preceq>\<^sup>* Thread` `M = start \<or> M = join` `n = 0`
-      have ?thesis
-	apply(cases ST, simp)
-	apply(cases ST', simp)
-	apply(auto simp add: widen_Class)
- 	 apply(erule notE)
-	 apply(erule rtranclp_trans, assumption)
-	apply(erule notE)
-	by(rule rtranclp_trans) }
-    moreover
-    { assume "is_refT (ST' ! n)"
-      and "M = wait \<or> M = notify \<or> M = notifyAll" "n = 0"
-      with app less Invoke ST have ?thesis by simp }
+    { fix U
+      assume nexc': "is_external_call P (ST' ! n) M n"
+	and wtext: "P \<turnstile> ST' ! n\<bullet>M(rev (take n ST')) :: U"
+      moreover with `P \<turnstile> ST!n \<le> ST'!n` ST
+      have "is_external_call P (ST ! n) M n"
+	by-(rule is_external_call_widen_mono)
+      moreover from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
+      with wtext `P \<turnstile> ST!n \<le> ST'!n` ST obtain U' where "P \<turnstile> ST ! n\<bullet>M(rev (take n ST)) :: U'"
+	and "P \<turnstile> U' \<le> U" by(auto dest: external_WTrt_widen_mono)
+      ultimately have ?thesis using Invoke ST less by(auto dest: external_WT_The_conv) }
     ultimately show ?thesis by blast
   next
     case ALoad with less app app\<^isub>i succs

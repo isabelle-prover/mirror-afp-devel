@@ -5,8 +5,26 @@
 header {* \isaheader{JVM Instruction Semantics} *}
 
 theory JVMExecInstr
-imports JVMInstructions JVMState "../Common/Exceptions"
+imports JVMInstructions JVMState "../Common/ExternalCall"
 begin
+
+primrec extRet2JVM :: "nat \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> val list \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> pc \<Rightarrow> frame list \<Rightarrow> (val + addr) \<Rightarrow> jvm_state"
+where
+  "extRet2JVM n h stk loc C M pc frs (Inl v) = (None, h, (v # drop (Suc n) stk, loc, C, M, pc + 1) # frs)"
+| "extRet2JVM n h stk loc C M pc frs (Inr a) = (\<lfloor>a\<rfloor>, h, (stk, loc, C, M, pc) # frs)"
+
+lemma eq_extRet2JVM_conv [simp]:
+  "(xcp, h', frs') = extRet2JVM n h stk loc C M pc frs va \<longleftrightarrow> 
+   h' = h \<and> (case va of Inl v \<Rightarrow> xcp = None \<and> frs' = (v # drop (Suc n) stk, loc, C, M, pc + 1) # frs
+                      | Inr a \<Rightarrow> xcp = \<lfloor>a\<rfloor> \<and> frs' = (stk, loc, C, M, pc) # frs)"
+by(cases va) auto
+
+definition extNTA2JVM :: "jvm_prog \<Rightarrow> (cname \<times> mname \<times> addr) \<Rightarrow> jvm_thread_state"
+where "extNTA2JVM P \<equiv> (\<lambda>(C, M, a). let (D,M',Ts,mxs,mxl0,ins,xt) = method P C M
+                                   in (None, [([],Addr a # replicate mxl0 arbitrary, D, M, 0)]))"
+
+abbreviation extTA2JVM :: "jvm_prog \<Rightarrow> external_thread_action \<Rightarrow> jvm_thread_action"
+where "extTA2JVM P \<equiv> convert_extTA (extNTA2JVM P)"
 
 consts
   exec_instr :: "instr \<Rightarrow> jvm_prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> val list \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> pc \<Rightarrow> frame list \<Rightarrow>
@@ -37,17 +55,16 @@ exec_instr_NewArray:
             then (\<lfloor>addr_of_sys_xcpt NegativeArraySize\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
             else (case new_Addr h of
                     None \<Rightarrow> (\<lfloor>addr_of_sys_xcpt OutOfMemory\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
-                  | \<lfloor>a\<rfloor>  \<Rightarrow> (None, h(a \<mapsto> Arr T si (\<lambda>i. default_val T)), (Addr a # tl stk, loc, C0, M0, pc + 1) # frs)))) )]"
+                  | \<lfloor>a\<rfloor>  \<Rightarrow> (None, h(a \<mapsto> Arr T (replicate (nat si) (default_val T))), (Addr a # tl stk, loc, C0, M0, pc + 1) # frs)))) )]"
 
 exec_instr_ALoad:
   "exec_instr ALoad P h stk loc C0 M0 pc frs =
    [(\<epsilon>, (let i = the_Intg (hd stk);
              va = hd (tl stk);
-             (T, si, el) = the_arr (the (h (the_Addr va)));
-             xp = if va = Null then \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> 
-                  else if i < 0 \<or> si \<le> i then \<lfloor>addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>
-                  else None
-         in (xp, h, (el i # tl (tl stk), loc, C0, M0, pc + 1) # frs)) )]"
+             (T, el) = the_arr (the (h (the_Addr va)))
+         in if va = Null then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
+            else if i < 0 \<or> int (length el) \<le> i then (\<lfloor>addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
+            else (None, h, (el ! nat i # tl (tl stk), loc, C0, M0, pc + 1) # frs)) )]"
 
 exec_instr_AStore:
   "exec_instr AStore P h stk loc C0 M0 pc frs =
@@ -57,69 +74,58 @@ exec_instr_AStore:
         in (if va = Null
             then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
             else (let i = the_Intg vi;
-                      (T, si, el) = the_arr (the (h (the_Addr va)));
-                      h' = h((the_Addr va) \<mapsto> Arr T si (el(i := ve)))
-                 in (if i < 0 \<or> si \<le> i
+                      (T, el) = the_arr (the (h (the_Addr va)));
+                      h' = h((the_Addr va) \<mapsto> Arr T (el[nat i := ve]))
+                 in (if i < 0 \<or> int (length el) \<le> i
                      then (\<lfloor>addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
                      else if cast_ok P T h ve
                           then (None, h', (tl (tl (tl stk)), loc, C0, M0, pc+1) # frs)
                           else (\<lfloor>addr_of_sys_xcpt ArrayStore\<rfloor>, h, (stk, loc, C0, M0, pc) # frs))))) )]"
 
+exec_instr_ALength:
+  "exec_instr ALength P h stk loc C0 M0 pc frs =
+   [(\<epsilon>, (let va = hd stk
+         in if va = Null
+            then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)
+            else let (T, elem) = the_arr (the (h (the_Addr va)))
+                 in (None, h, (Intg (int (length elem)) # tl stk, loc, C0, M0, pc+1) # frs)))]"
+
 
  "exec_instr (Getfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
   [(\<epsilon>, (let v      = hd stk;
-            xp'    = if v=Null then \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> else None;
             (D,fs) = the_obj(the(h(the_Addr v)))
-        in (xp', h, (the(fs(F,C))#(tl stk), loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
+        in if v=Null then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
+           else (None, h, (the(fs(F,C))#(tl stk), loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
 
  "exec_instr (Putfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
   [(\<epsilon>, (let v    = hd stk;
             r    = hd (tl stk);
-            xp'  = if r=Null then \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> else None;
             a    = the_Addr r;
             (D,fs) = the_obj (the (h a));
             h'  = h(a \<mapsto> (Obj D (fs((F,C) \<mapsto> v))))
-       in (xp', h', (tl (tl stk), loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
+        in if r=Null then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
+           else (None, h', (tl (tl stk), loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
 
  "exec_instr (Checkcast T) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
-  [(\<epsilon>, (let v   = hd stk;
-            xp' = if \<not>cast_ok P T h v then \<lfloor>addr_of_sys_xcpt ClassCast\<rfloor> else None
-        in (xp', h, (stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
-
-
+  [(\<epsilon>, (let v   = hd stk
+        in if \<not> cast_ok P T h v then (\<lfloor>addr_of_sys_xcpt ClassCast\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
+           else (None, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
 
 exec_instr_Invoke:
  "exec_instr (Invoke M n) P h stk loc C0 M0 pc frs =
-  (let ps = take n stk;
-       r = stk ! n
-   in (if r = Null
-       then [(\<epsilon>, \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C0, M0, pc) # frs)]
-       else (let C = fst(the_obj(the(h(the_Addr r))))
-             in (if P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M = start \<and> n = 0
-                 then (let (D,M',Ts,mxs,mxl0,ins,xt) = method P C run;
-                           stk' = Unit # tl stk
-                       in [(\<epsilon>\<lbrace>\<^bsub>t\<^esub> ThreadExists (the_Addr r)\<rbrace>, \<lfloor>addr_of_sys_xcpt IllegalThreadState\<rfloor>, h, (stk', loc, C0, M0, pc) # frs), (\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread (the_Addr r) (None, [([],r # replicate mxl0 undefined,D,run,0)]) h\<rbrace>, None, h, (stk', loc, C0, M0, pc+1) # frs)])
-                 else if P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M = join \<and> n = 0
-                 then [(\<epsilon>\<lbrace>\<^bsub>c\<^esub> Join (the_Addr r)\<rbrace>, None, h, (Unit # tl stk, loc, C0, M0, pc + 1) # frs)]
-                 else if M = wait \<and> n = 0
-                 then (let stk' = Unit # tl stk;
-                           a = the_Addr r
-                       in [(\<epsilon>\<lbrace>\<^bsub>w\<^esub> Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>, None, h, (stk', loc, C0, M0, pc + 1) # frs),
-                           (\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, (stk', loc, C0, M0, pc) # frs) ])
-                 else if M = notify \<and> n = 0
-                 then (let stk' = Unit # tl stk;
-                           a = the_Addr r
-                       in [(\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>, None, h, (stk', loc, C0, M0, pc + 1) # frs),
-                           (\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, (stk', loc, C0, M0, pc) # frs) ])
-                 else if M = notifyAll \<and> n = 0
-                 then (let stk' = Unit # tl stk;
-                           a = the_Addr r
-                       in [(\<epsilon>\<lbrace>\<^bsub>w\<^esub> NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>, None, h, (stk', loc, C0, M0, pc + 1) # frs),
-                           (\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>, \<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, (stk', loc, C0, M0, pc) # frs) ])
-                 else [(\<epsilon>, (let xp' = if r=Null then \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> else None;
-                               (D,M',Ts,mxs,mxl\<^isub>0,ins,xt)= method P C M;
-                               f'  = ([],[r]@(rev ps)@(replicate mxl\<^isub>0 undefined),D,M,0)
-                            in (xp', h, f'#(stk, loc, C0, M0, pc)#frs)) )]))))"
+  (let ps = rev (take n stk);
+       r = stk ! n;
+       a = the_Addr r;
+       T = the(typeof\<^bsub>h\<^esub> (Addr a));
+       C = fst(the_obj(the(h a)));
+       old_frs = (stk, loc, C0, M0, pc) # frs
+   in (if r = Null then [(\<epsilon>, \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, old_frs)]
+       else if is_external_call P T M (length ps)
+            then map (\<lambda>(ta, va, h). (extTA2JVM P ta, extRet2JVM n h stk loc C0 M0 pc frs va)) (red_external_list P a M ps h)
+       else let (D,M',Ts,mxs,mxl\<^isub>0,ins,xt)= method P C M;
+                f'  = ([],[r]@ps@(replicate mxl\<^isub>0 arbitrary),D,M,0)
+            in [(\<epsilon>, None, h, f' # old_frs)]))"
+
 
  "exec_instr Return P h stk\<^isub>0 loc\<^isub>0 C\<^isub>0 M\<^isub>0 pc frs =
   [(\<epsilon>, (if frs=[] then (None, h, []) else 
@@ -157,21 +163,27 @@ exec_instr_MEnter:
  "exec_instr MEnter P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
   [ let v = hd stk
     in if v = Null
-       then (\<epsilon>, (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (tl stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs))
+       then (\<epsilon>, (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs))
        else (\<epsilon>\<lbrace>\<^bsub>l\<^esub>Lock\<rightarrow>the_Addr v\<rbrace>, (None, h, (tl stk, loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs)) ]"
 
 exec_instr_MExit:
  "exec_instr MExit P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
   (let v = hd stk
    in if v = Null
-      then [(\<epsilon>, (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (tl stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs) )]
+      then [(\<epsilon>, (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs) )]
       else [(\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>the_Addr v\<rbrace>, (None, h, (tl stk, loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs)),
-            (\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>the_Addr v\<rbrace>, (\<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, (tl stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)) ])"
+            (\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>the_Addr v\<rbrace>, (\<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)) ])"
 
 lemma exec_instr_not_empty:
   "exec_instr I P h stk loc C0 M0 pc frs \<noteq> []"
-by(cases I, auto simp add: split_beta)
-
+proof(cases I)
+  case (Invoke M n)
+  moreover {
+    assume "is_external_call P (the (typeof\<^bsub>h\<^esub> (Addr (the_Addr (stk ! n))))) M (length (rev (take n stk)))"
+    hence "red_external_list P (the_Addr (stk ! n)) M (rev (take n stk)) h \<noteq> []"
+      by(rule is_external_call_red_external_list_not_Nil) }
+  ultimately show ?thesis by(clarsimp simp add: split_beta)
+qed(auto simp add: split_beta)
 
 lemma exec_instr_Store:
   "exec_instr (Store n) P h (v#stk) loc C\<^isub>0 M\<^isub>0 pc frs= 
@@ -183,52 +195,60 @@ lemma exec_instr_NewArray:
    [(\<epsilon>, (if (si < 0) then (\<lfloor>addr_of_sys_xcpt NegativeArraySize\<rfloor>, h, (Intg si # stk, loc, C0, M0, pc) # frs)
          else (case new_Addr h of
                  None \<Rightarrow> (\<lfloor>addr_of_sys_xcpt OutOfMemory\<rfloor>, h, (Intg si # stk, loc, C0, M0, pc) # frs)
-               | \<lfloor>a\<rfloor>  \<Rightarrow> (None, h(a \<mapsto> Arr T si (\<lambda>i. default_val T)), (Addr a # stk, loc, C0, M0, pc + 1) # frs))) )]"
+               | \<lfloor>a\<rfloor>  \<Rightarrow> (None, h(a \<mapsto> Arr T (replicate (nat si) (default_val T))), (Addr a # stk, loc, C0, M0, pc + 1) # frs))) )]"
   by simp
 
 lemma exec_instr_ALoad:
   "exec_instr ALoad P h (Intg i # va # stk) loc C0 M0 pc frs =
-   [(\<epsilon>, (let (T, si, el) = the_arr (the (h (the_Addr va)));
-             xp = if va = Null then \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> 
-                  else if i < 0 \<or> si \<le> i then \<lfloor>addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>
-                  else None
-        in (xp, h, (el i # stk, loc, C0, M0, pc + 1) # frs)) )]"
-  by simp
+   [(\<epsilon>, (let (T, el) = the_arr (the (h (the_Addr va)))
+         in if va = Null then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (Intg i # va # stk, loc, C0, M0, pc) # frs)
+            else if i < 0 \<or> int (length el) \<le> i
+                 then (\<lfloor>addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (Intg i # va # stk, loc, C0, M0, pc) # frs)
+            else (None, h, (el ! nat i # stk, loc, C0, M0, pc + 1) # frs)) )]"
+  by(simp add: split_beta)
 
 lemma exec_instr_AStore:
-  "exec_instr AStore P h (ve # vi # va # stk) loc C0 M0 pc frs =
+  "exec_instr AStore P h (ve # Intg i # va # stk) loc C0 M0 pc frs =
    [(\<epsilon>, (if va = Null
-         then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (ve # vi # va # stk, loc, C0, M0, pc) # frs)
-         else (let i = the_Intg vi;
-                   (T, si, el) = the_arr (the (h (the_Addr va)));
-                   h' = h((the_Addr va) \<mapsto> Arr T si (el(i := ve)))
-               in (if i < 0 \<or> si \<le> i
-                   then (\<lfloor>addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (ve # vi # va # stk, loc, C0, M0, pc) # frs)
+         then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (ve # Intg i # va # stk, loc, C0, M0, pc) # frs)
+         else (let (T, el) = the_arr (the (h (the_Addr va)));
+                   h' = h((the_Addr va) \<mapsto> Arr T (el[nat i := ve]))
+               in (if i < 0 \<or> int (length el) \<le> i
+                   then (\<lfloor>addr_of_sys_xcpt ArrayIndexOutOfBounds\<rfloor>, h, (ve # Intg i # va # stk, loc, C0, M0, pc) # frs)
                    else if cast_ok P T h ve
                         then (None, h', (stk, loc, C0, M0, pc+1) # frs)
-                        else (\<lfloor>addr_of_sys_xcpt ArrayStore\<rfloor>, h, (ve # vi # va # stk, loc, C0, M0, pc) # frs)))) )]"
-  by(simp only: exec_instr_AStore Let_def hd.simps tl.simps)
+                        else (\<lfloor>addr_of_sys_xcpt ArrayStore\<rfloor>, h, (ve # Intg i # va # stk, loc, C0, M0, pc) # frs)))) )]"
+  by(simp add: exec_instr_AStore split_beta)
+
+lemma exec_instr_ALength:
+  "exec_instr ALength P h (va # stk) loc C0 M0 pc frs =
+   [(\<epsilon>, if va = Null
+        then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (va # stk, loc, C0, M0, pc) # frs)
+        else let (T, elem) = the_arr (the (h (the_Addr va)))
+             in (None, h, (Intg (int (length elem)) # stk, loc, C0, M0, pc+1) # frs))]"
+  by(simp only: exec_instr_ALength Let_def hd.simps tl.simps)
+
 
 lemma exec_instr_Getfield:
  "exec_instr (Getfield F C) P h (v#stk) loc C\<^isub>0 M\<^isub>0 pc frs = 
-  [(\<epsilon>, (let xp'    = if v=Null then \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> else None;
-            (D,fs) = the_obj(the(h(the_Addr v)))
-        in (xp', h, (the(fs(F,C))#stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
-  by simp
+  [(\<epsilon>, let (D,fs) = the_obj(the(h(the_Addr v)))
+       in if v=Null then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (v # stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
+          else (None, h, (the(fs(F,C))#stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs))]"
+  by(simp add: split_beta)
 
 lemma exec_instr_Putfield:
  "exec_instr (Putfield F C) P h (v#r#stk) loc C\<^isub>0 M\<^isub>0 pc frs = 
-  [(\<epsilon>, (let xp'  = if r=Null then \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> else None;
-            a    = the_Addr r;
+  [(\<epsilon>, (let  a    = the_Addr r;
             (D,fs) = the_obj(the (h a));
-            h'  = h(a \<mapsto> (Obj D (fs((F,C) \<mapsto> v))))
-        in (xp', h', (stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
-  by simp
+            h'  = if r=Null then h else h(a \<mapsto> (Obj D (fs((F,C) \<mapsto> v))))
+        in if r=Null then (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (v # r # stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)
+           else (None, h', (stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)))]"
+  by(simp add: split_beta)
 
 lemma exec_instr_Checkcast:
  "exec_instr (Checkcast T) P h (v#stk) loc C\<^isub>0 M\<^isub>0 pc frs =
-  [(\<epsilon>, (let xp' = if \<not>cast_ok P T h v then \<lfloor>addr_of_sys_xcpt ClassCast\<rfloor> else None
-        in (xp', h, (v#stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
+  [(\<epsilon>, (if \<not> cast_ok P T h v then (\<lfloor>addr_of_sys_xcpt ClassCast\<rfloor>, h, (v # stk, loc,  C\<^isub>0, M\<^isub>0, pc) # frs)
+        else (None, h, (v#stk, loc, C\<^isub>0, M\<^isub>0, pc+1)#frs)) )]"
   by simp
 
 lemma exec_instr_Return:
@@ -269,16 +289,24 @@ lemma exec_instr_Throw:
 lemma exec_instr_MEnter:
  "exec_instr MEnter P h (v#stk) loc C\<^isub>0 M\<^isub>0 pc frs =
   [ if v = Null
-    then (\<epsilon>, (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs))
+    then (\<epsilon>, (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (v # stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs))
     else (\<epsilon>\<lbrace>\<^bsub>l\<^esub>Lock\<rightarrow>the_Addr v\<rbrace>, (None, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs)) ]"
   by simp
 
 lemma exec_instr_MExit:
  "exec_instr MExit P h (v#stk) loc C\<^isub>0 M\<^isub>0 pc frs =
   (if v = Null
-  then [(\<epsilon>, (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs) )]
+  then [(\<epsilon>, (\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>, h, (v # stk, loc, C\<^isub>0, M\<^isub>0, pc)#frs) )]
   else [(\<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>the_Addr v\<rbrace>, (None, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc + 1) # frs)),
-        (\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>the_Addr v\<rbrace>, (\<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, (stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)) ])"
+        (\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>the_Addr v\<rbrace>, (\<lfloor>addr_of_sys_xcpt IllegalMonitorState\<rfloor>, h, (v # stk, loc, C\<^isub>0, M\<^isub>0, pc) # frs)) ])"
   by simp
+
+lemma exec_instr_xcp_unchanged:
+  "(ta, \<lfloor>xcp\<rfloor>, h', frs') \<in> set (exec_instr (ins ! pc) P h stk loc C M pc frs)
+  \<Longrightarrow> h' = h \<and> frs' = (stk, loc, C, M, pc) # frs"
+apply(cases "ins ! pc")
+apply(simp_all split: split_if_asm add: split_beta)
+apply(auto split: sum.split_asm dest: red_external_list_xcp_heap_unchanged)
+done
 
 end

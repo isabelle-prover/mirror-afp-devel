@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: LBVJVM.thy,v 1.4 2008-10-21 06:26:24 alochbihler Exp $
+    ID:         $Id: LBVJVM.thy,v 1.5 2009-04-23 13:54:29 alochbihler Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -70,8 +70,7 @@ proof -
     by (simp add: wt_lbv_def lbvjvm_def step_def_exec [symmetric])    
   moreover note first_in_A
   moreover from lbv have "0 < size is" by (simp add: wt_lbv_def)
-  ultimately show ?thesis
-    by(rule lbvs.wtl_sound_strong[OF lbvs.intro[OF lbv.intro[OF _ lbv_axioms.intro] lbvs_axioms.intro, unfolded Semilat_def]])
+  ultimately show ?thesis by (rule lbvs.wtl_sound_strong [OF lbvs.intro, OF lbv.intro lbvs_axioms.intro, OF Semilat.intro lbv_axioms.intro])
 qed
 (*>*)
 
@@ -168,7 +167,7 @@ proof -
   moreover note size 
   ultimately
   have "wtl_inst_list is ?cert f r Err (OK None) step 0 (OK first) \<noteq> Err"
-    by(rule lbvc.wtl_complete[OF lbvc.intro[OF lbv.intro[OF _ lbv_axioms.intro, unfolded Semilat_def] lbvc_axioms.intro]])
+    by (rule lbvc.wtl_complete [OF lbvc.intro, OF lbv.intro lbvc_axioms.intro, OF Semilat.intro lbv_axioms.intro])
   moreover from 0 size have "\<tau>s \<noteq> []" by auto
   moreover from ck_types have "check_types P mxs mxl ?cert"
     by (auto simp add: make_cert_def check_types_def JVM_states_unfold)

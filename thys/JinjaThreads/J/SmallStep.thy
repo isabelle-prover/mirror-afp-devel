@@ -1,16 +1,14 @@
-(*  Title:      Jinja/J/SmallStep.thy
-    ID:         $Id: SmallStep.thy,v 1.6 2008-06-12 06:57:23 lsf37 Exp $
+(*  Title:      JinjaThreads/J/SmallStep.thy
     Author:     Tobias Nipkow, Andreas Lochbihler
-    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Small Step Semantics} *}
 
-theory SmallStep imports Expr State "../Framework/FWState" "../Common/Exceptions" begin
+theory SmallStep imports Expr State "../Common/ExternalCall" "../Framework/FWState" begin
 
-consts blocks :: "vname list * ty list * val list * expr \<Rightarrow> expr"
+consts blocks :: "'a list * ty list * val list * ('a,'b) exp \<Rightarrow> ('a,'b) exp"
 recdef blocks "measure(\<lambda>(Vs,Ts,vs,e). size Vs)"
- "blocks(V#Vs, T#Ts, v#vs, e) = {V:T := Val v; blocks(Vs,Ts,vs,e)}"
+ "blocks(V#Vs, T#Ts, v#vs, e) = {V:T=\<lfloor>v\<rfloor>; blocks(Vs,Ts,vs,e)}\<^bsub>False\<^esub>"
  "blocks([],[],[],e) = e"
 
 
@@ -24,202 +22,30 @@ done
 (*>*)
 
 lemma expr_locks_blocks:
-  "\<lbrakk> expr_locks e = (\<lambda>ad. 0); length vs = length pns; length Ts = length pns \<rbrakk>
-  \<Longrightarrow> expr_locks (blocks (pns, Ts, vs, e)) = (\<lambda>ad. 0)"
+  "\<lbrakk> length vs = length pns; length Ts = length pns \<rbrakk>
+  \<Longrightarrow> expr_locks (blocks (pns, Ts, vs, e)) = expr_locks e"
 by(induct pns Ts vs e rule: blocks.induct)(auto)
 
+types
+  J_thread_action = "(addr,thread_id,expr \<times> locals,heap,addr) thread_action"
 
-constdefs
-  assigned :: "vname \<Rightarrow> expr \<Rightarrow> bool"
-  "assigned V e  \<equiv>  \<exists>v e'. e = (V := Val v;; e')"
+definition extNTA2J :: "J_prog \<Rightarrow> (cname \<times> mname \<times> addr) \<Rightarrow> expr \<times> locals"
+where "extNTA2J P = (\<lambda>(C, M, a). let (D,Ts,T,pns,body) = method P C M
+                                 in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}\<^bsub>True\<^esub>, empty))"
 
-inductive red :: "J_prog \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) thread_action \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
-          ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0] 81)
-for P :: J_prog
+lemma extNTA2J_iff [simp]:
+  "extNTA2J P (C, M, a) = ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (snd (snd (snd (method P C M))))}\<^bsub>True\<^esub>, empty)"
+by(simp add: extNTA2J_def split_beta)
+
+abbreviation extTA2J :: "J_prog \<Rightarrow> external_thread_action \<Rightarrow> J_thread_action"
+where "extTA2J P \<equiv> convert_extTA (extNTA2J P)"
+
+primrec extRet2J :: "val + addr \<Rightarrow> ('a, 'b) exp"
 where
-  RedNew:
-  "\<lbrakk> new_Addr h = Some a; P \<turnstile> C has_fields FDTs; h' = h(a\<mapsto>(Obj C (init_fields FDTs))) \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>new C, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
+  "extRet2J (Inl v) = Val v"
+| "extRet2J (Inr a) = Throw a"
 
-| RedNewFail:
-  "new_Addr (hp s) = None \<Longrightarrow>
-  P \<turnstile> \<langle>new C, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, s\<rangle>"
-
-| NewArrayRed:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>newA T\<lfloor>e\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>newA T\<lfloor>e'\<rceil>, s'\<rangle>"
-
-| RedNewArray:
-  "\<lbrakk> new_Addr h = Some a; i \<ge> 0; h' = h(a \<mapsto> (Arr T i (\<lambda>i. default_val T))) \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
-
-| RedNewArrayNegative:
-  "i < 0 \<Longrightarrow> P \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize, s\<rangle>"
-
-| RedNewArrayFail:
-  "\<lbrakk> new_Addr h = None; i \<ge> 0 \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h, l)\<rangle>"
-
-| CastRed:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Cast C e, s\<rangle> -ta\<rightarrow> \<langle>Cast C e', s'\<rangle>"
-
-| RedCast:
- "\<lbrakk> typeof\<^bsub>hp s\<^esub> v = \<lfloor>U\<rfloor>; P \<turnstile> U \<le> T \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>Cast T (Val v), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
-
-| RedCastFail:
-  "\<lbrakk> typeof\<^bsub>hp s\<^esub> v = \<lfloor>U\<rfloor>; \<not> P \<turnstile> U \<le> T \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>Cast T (Val v), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ClassCast, s\<rangle>"
-
-| BinOpRed1:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e2, s\<rangle> -ta\<rightarrow> \<langle>e' \<guillemotleft>bop\<guillemotright> e2, s'\<rangle>"
-
-| BinOpRed2:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e, s\<rangle> -ta\<rightarrow> \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e', s'\<rangle>"
-
-| RedBinOp:
-  "binop(bop, v1, v2) = Some v \<Longrightarrow>
-  P \<turnstile> \<langle>(Val v1) \<guillemotleft>bop\<guillemotright> (Val v2), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
-
-| RedVar:
-  "lcl s V = Some v \<Longrightarrow>
-  P \<turnstile> \<langle>Var V, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
-
-| LAssRed:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>V:=e, s\<rangle> -ta\<rightarrow> \<langle>V:=e', s'\<rangle>"
-
-| RedLAss:
-  "P \<turnstile> \<langle>V:=(Val v), (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>unit, (h, l(V \<mapsto> v))\<rangle>"
-
-| AAccRed1:
-  "P \<turnstile> \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>a\<lfloor>i\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>a'\<lfloor>i\<rceil>, s'\<rangle>"
-
-| AAccRed2:
-  "P \<turnstile> \<langle>i, s\<rangle> -ta\<rightarrow> \<langle>i', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>(Val a)\<lfloor>i\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>(Val a)\<lfloor>i'\<rceil>, s'\<rangle>"
-
-| RedAAccNull:
-  "P \<turnstile> \<langle>null\<lfloor>Val i\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
-
-| RedAAccBounds:
-  "\<lbrakk> hp s a = Some(Arr T si el); i < 0 \<or> i \<ge> si \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayIndexOutOfBounds, s\<rangle>"
-
-| RedAAcc:
-  "\<lbrakk> hp s a = Some(Arr T si el); i \<ge> 0; i < si \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (el i), s\<rangle>"
-
-| AAssRed1:
-  "P \<turnstile> \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>a\<lfloor>i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>a'\<lfloor>i\<rceil> := e, s'\<rangle>"
-
-| AAssRed2:
-  "P \<turnstile> \<langle>i, s\<rangle> -ta\<rightarrow> \<langle>i', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>(Val a)\<lfloor>i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>(Val a)\<lfloor>i'\<rceil> := e, s'\<rangle>"
-
-| AAssRed3:
-  "P \<turnstile> \<langle>(e::expr), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>(Val a)\<lfloor>Val i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>(Val a)\<lfloor>Val i\<rceil> := e', s'\<rangle>"
-
-| RedAAssNull:
-  "P \<turnstile> \<langle>null\<lfloor>Val i\<rceil> := (Val e::expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
-
-| RedAAssBounds:
-  "\<lbrakk> hp s a = Some(Arr T si el); i < 0 \<or> i \<ge> si \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil> := (Val e::expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayIndexOutOfBounds, s\<rangle>"
-
-| RedAAssStore:
-  "\<lbrakk> hp s a = Some(Arr T si el); i \<ge> 0; i < si; typeof\<^bsub>hp s\<^esub> w = \<lfloor>U\<rfloor>; \<not>(P \<turnstile> U \<le> T) \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil> := (Val w::expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayStore, s\<rangle>"
-
-| RedAAss:
-  "\<lbrakk> h a = Some(Arr T s el); i \<ge> 0; i < s; typeof\<^bsub>h\<^esub> w = Some U; P \<turnstile> U \<le> T;
-    h' = h(a \<mapsto> (Arr T s (el(i := w)))) \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil> := Val w::expr, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>unit, (h', l)\<rangle>"
-
-| FAccRed:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>F{D}, s'\<rangle>"
-
-| RedFAcc:
-  "\<lbrakk> hp s a = Some(Obj C fs); fs(F,D) = Some v \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
-
-| RedFAccNull:
-  "P \<turnstile> \<langle>null\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
-
-| FAssRed1:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>F{D}:=e2, s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>F{D}:=e2, s'\<rangle>"
-
-| FAssRed2:
-  "P \<turnstile> \<langle>(e::expr), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>Val v\<bullet>F{D}:=e, s\<rangle> -ta\<rightarrow> \<langle>Val v\<bullet>F{D}:=e', s'\<rangle>"
-
-| RedFAss:
-  "h a = Some(Obj C fs) \<Longrightarrow>
-  P \<turnstile> \<langle>(addr a)\<bullet>F{D}:=(Val v :: expr), (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>unit, (h(a \<mapsto> (Obj C (fs((F,D) \<mapsto> v)))), l)\<rangle>"
-
-| RedFAssNull:
-  "P \<turnstile> \<langle>null\<bullet>F{D}:=Val v::expr, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
-
-| CallObj:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>M(es), s'\<rangle>"
-
-| CallParams:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow>
-  P \<turnstile> \<langle>(Val v)\<bullet>M((map Val vs) @ e # es), s\<rangle> -ta\<rightarrow> \<langle>(Val v)\<bullet>M((map Val vs) @ e' # es), s'\<rangle>"
-
-| RedCall:
-  "\<lbrakk> hp s a = Some(Obj C fs); P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D; size vs = size pns; size Ts = size pns (*; \<not> threadstart P C M*) \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -\<epsilon>\<rightarrow> \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), s\<rangle>"
-
-| RedNewThread:
-  "\<lbrakk> hp s a = Some(Obj C fs); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>start([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread a (((Var this)\<bullet>run([])), [this \<mapsto> Addr a]) (hp s)\<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
-
-| RedNewThreadFail:
-  "\<lbrakk> hp s a = Some(Obj C fs); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow>
-  P \<turnstile> \<langle>(addr a)\<bullet>start([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> ThreadExists a \<rbrace>\<rightarrow> \<langle>THROW IllegalThreadState, s\<rangle>"
-
-| RedWait:
-  "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>wait([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Suspend a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a \<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
-
-| RedWaitFail:
-  "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>wait([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, s\<rangle>"
-
-| RedNotify:
-  "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>notify([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notify a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
-
-| RedNotifyFail:
-  "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>notify([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, s\<rangle>"
-
-| RedNotifyAll:
-  "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>notifyAll([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> NotifyAll a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
-
-| RedNotifyAllFail:
-  "\<lbrakk> hp s a = \<lfloor>arrobj\<rfloor> \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>notifyAll([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState, s\<rangle>"
-
-| RedJoin:
-  "\<lbrakk> hp s a = Some(Obj C fs); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>(addr a)\<bullet>join([]), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub> Join a\<rbrace>\<rightarrow> \<langle>unit, s\<rangle>"
-
-| RedCallNull:
-  "P \<turnstile> \<langle>null\<bullet>M(map Val vs), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
-
-| BlockRedNone:
-  "\<lbrakk> P \<turnstile> \<langle>e, (h, l(V:=None))\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>;
-     l' V = None; \<not> assigned V e \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>{V:T; e}, (h, l)\<rangle> -ta\<rightarrow> \<langle>{V:T; e'}, (h', l'(V := l V))\<rangle>"
-
-| BlockRedSome:
-  "\<lbrakk> P \<turnstile> \<langle>e, (h, l(V:=None))\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>;
-     l' V = Some v; \<not> assigned V e \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>{V:T; e}, (h, l)\<rangle> -ta\<rightarrow> \<langle>{V:T := Val v; e'}, (h', l'(V := l V))\<rangle>"
-
-| InitBlockRed:
-  "\<lbrakk> P \<turnstile> \<langle>e, (h, l(V \<mapsto> v))\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>; l' V = Some v' \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>{V:T := Val v; e}, (h, l)\<rangle> -ta\<rightarrow> \<langle>{V:T := Val v'; e'}, (h', l'(V := l V))\<rangle>"
-
-| RedBlock:
-  "P \<turnstile> \<langle>{V:T; Val u}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val u, s\<rangle>"
-
-| RedInitBlock:
-  "P \<turnstile> \<langle>{V:T := Val v; Val u}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val u, s\<rangle>"
-
-(* Locking mechanism:
+text{* Locking mechanism:
   The expression on which the thread is synchronized is evaluated first to a value.
   If this expression evaluates to null, a null pointer expression is thrown.
   If this expression evaluates to an address, a lock must be obtained on this address, the
@@ -231,139 +57,319 @@ where
   the expression on which the thread synchronized is evaluated except for the last step.
   If the thread can obtain the lock on the object immediately after the last evaluation step, the evaluation is
   done and the lock acquired. If the lock cannot be obtained, the evaluation step is discarded. If another thread
-  changes the evaluation result of this last step, the thread then will try to synchronize on the new object. *)
+  changes the evaluation result of this last step, the thread then will try to synchronize on the new object. *}
+
+inductive red :: "(external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action) \<Rightarrow> J_prog \<Rightarrow> 
+                 expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
+                ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0] 81)
+ and reds ::  "(external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action) \<Rightarrow> J_prog \<Rightarrow>
+                 expr list \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action \<Rightarrow> expr list \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
+               ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0] 81)
+for extTA :: "external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action" and P :: J_prog
+where
+  RedNew:
+  "\<lbrakk> new_Addr h = Some a; P \<turnstile> C has_fields FDTs; h' = h(a\<mapsto>(Obj C (init_fields FDTs))) \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>new C, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
+
+| RedNewFail:
+  "new_Addr (hp s) = None \<Longrightarrow>
+  extTA,P \<turnstile> \<langle>new C, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, s\<rangle>"
+
+| NewArrayRed:
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>newA T\<lfloor>e\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>newA T\<lfloor>e'\<rceil>, s'\<rangle>"
+
+| RedNewArray:
+  "\<lbrakk> new_Addr h = Some a; i \<ge> 0; h' = h(a \<mapsto> (Arr T (replicate (nat i) (default_val T)))) \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>addr a, (h', l)\<rangle>"
+
+| RedNewArrayNegative:
+  "i < 0 \<Longrightarrow> extTA,P \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NegativeArraySize, s\<rangle>"
+
+| RedNewArrayFail:
+  "\<lbrakk> new_Addr h = None; i \<ge> 0 \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>newA T\<lfloor>Val (Intg i)\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW OutOfMemory, (h, l)\<rangle>"
+
+| CastRed:
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>Cast C e, s\<rangle> -ta\<rightarrow> \<langle>Cast C e', s'\<rangle>"
+
+| RedCast:
+ "\<lbrakk> typeof\<^bsub>hp s\<^esub> v = \<lfloor>U\<rfloor>; P \<turnstile> U \<le> T \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>Cast T (Val v), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
+
+| RedCastFail:
+  "\<lbrakk> typeof\<^bsub>hp s\<^esub> v = \<lfloor>U\<rfloor>; \<not> P \<turnstile> U \<le> T \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>Cast T (Val v), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ClassCast, s\<rangle>"
+
+| BinOpRed1:
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e2, s\<rangle> -ta\<rightarrow> \<langle>e' \<guillemotleft>bop\<guillemotright> e2, s'\<rangle>"
+
+| BinOpRed2:
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e, s\<rangle> -ta\<rightarrow> \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e', s'\<rangle>"
+
+| RedBinOp:
+  "binop(bop, v1, v2) = Some v \<Longrightarrow>
+  extTA,P \<turnstile> \<langle>(Val v1) \<guillemotleft>bop\<guillemotright> (Val v2), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
+
+| RedVar:
+  "lcl s V = Some v \<Longrightarrow>
+  extTA,P \<turnstile> \<langle>Var V, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
+
+| LAssRed:
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>V:=e, s\<rangle> -ta\<rightarrow> \<langle>V:=e', s'\<rangle>"
+
+| RedLAss:
+  "extTA,P \<turnstile> \<langle>V:=(Val v), (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>unit, (h, l(V \<mapsto> v))\<rangle>"
+
+| AAccRed1:
+  "extTA,P \<turnstile> \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>a\<lfloor>i\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>a'\<lfloor>i\<rceil>, s'\<rangle>"
+
+| AAccRed2:
+  "extTA,P \<turnstile> \<langle>i, s\<rangle> -ta\<rightarrow> \<langle>i', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>(Val a)\<lfloor>i\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>(Val a)\<lfloor>i'\<rceil>, s'\<rangle>"
+
+| RedAAccNull:
+  "extTA,P \<turnstile> \<langle>null\<lfloor>Val i\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+
+| RedAAccBounds:
+  "\<lbrakk> hp s a = Some(Arr T el); i < 0 \<or> i \<ge> int (length el) \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayIndexOutOfBounds, s\<rangle>"
+
+| RedAAcc:
+  "\<lbrakk> hp s a = Some(Arr T el); i \<ge> 0; i < int (length el) \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (el ! nat i), s\<rangle>"
+
+| AAssRed1:
+  "extTA,P \<turnstile> \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>a\<lfloor>i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>a'\<lfloor>i\<rceil> := e, s'\<rangle>"
+
+| AAssRed2:
+  "extTA,P \<turnstile> \<langle>i, s\<rangle> -ta\<rightarrow> \<langle>i', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>(Val a)\<lfloor>i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>(Val a)\<lfloor>i'\<rceil> := e, s'\<rangle>"
+
+| AAssRed3:
+  "extTA,P \<turnstile> \<langle>(e::expr), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>(Val a)\<lfloor>Val i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>(Val a)\<lfloor>Val i\<rceil> := e', s'\<rangle>"
+
+| RedAAssNull:
+  "extTA,P \<turnstile> \<langle>null\<lfloor>Val i\<rceil> := (Val e::expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+
+| RedAAssBounds:
+  "\<lbrakk> hp s a = Some(Arr T el); i < 0 \<or> i \<ge> int (length el) \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil> := (Val e::expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayIndexOutOfBounds, s\<rangle>"
+
+| RedAAssStore:
+  "\<lbrakk> hp s a = Some(Arr T el); i \<ge> 0; i < int (length el); typeof\<^bsub>hp s\<^esub> w = \<lfloor>U\<rfloor>; \<not> (P \<turnstile> U \<le> T) \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil> := (Val w::expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW ArrayStore, s\<rangle>"
+
+| RedAAss:
+  "\<lbrakk> h a = Some(Arr T el); i \<ge> 0; i < int (length el); typeof\<^bsub>h\<^esub> w = Some U; P \<turnstile> U \<le> T;
+    h' = h(a \<mapsto> (Arr T (el[nat i := w]))) \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<lfloor>Val (Intg i)\<rceil> := Val w::expr, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>unit, (h', l)\<rangle>"
+
+| ALengthRed:
+  "extTA,P \<turnstile> \<langle>a, s\<rangle> -ta\<rightarrow> \<langle>a', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>a\<bullet>length, s\<rangle> -ta\<rightarrow> \<langle>a'\<bullet>length, s'\<rangle>"
+
+| RedALength:
+  "hp s a = \<lfloor>Arr T el\<rfloor> \<Longrightarrow> extTA,P \<turnstile> \<langle>addr a\<bullet>length, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val (Intg (int (length el))), s\<rangle>"
+
+| RedALengthNull:
+  "extTA,P \<turnstile> \<langle>null\<bullet>length, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+
+| FAccRed:
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>F{D}, s'\<rangle>"
+
+| RedFAcc:
+  "\<lbrakk> hp s a = Some(Obj C fs); fs(F,D) = Some v \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
+
+| RedFAccNull:
+  "extTA,P \<turnstile> \<langle>null\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+
+| FAssRed1:
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>e\<bullet>F{D}:=e2, s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>F{D}:=e2, s'\<rangle>"
+
+| FAssRed2:
+  "extTA,P \<turnstile> \<langle>(e::expr), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>Val v\<bullet>F{D}:=e, s\<rangle> -ta\<rightarrow> \<langle>Val v\<bullet>F{D}:=e', s'\<rangle>"
+
+| RedFAss:
+  "h a = Some(Obj C fs) \<Longrightarrow>
+  extTA,P \<turnstile> \<langle>(addr a)\<bullet>F{D}:=(Val v :: expr), (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>unit, (h(a \<mapsto> (Obj C (fs((F,D) \<mapsto> v)))), l)\<rangle>"
+
+| RedFAssNull:
+  "extTA,P \<turnstile> \<langle>null\<bullet>F{D}:=Val v::expr, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+
+| CallObj:
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e'\<bullet>M(es), s'\<rangle>"
+
+| CallParams:
+  "extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow>
+  extTA,P \<turnstile> \<langle>(Val v)\<bullet>M(es),s\<rangle> -ta\<rightarrow> \<langle>(Val v)\<bullet>M(es'),s'\<rangle>"
+
+| RedCall:
+  "\<lbrakk> hp s a = \<lfloor>Obj C fs\<rfloor>; \<not> is_external_call P (Class C) M (length vs); P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D; 
+    size vs = size pns; size Ts = size pns \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -\<epsilon>\<rightarrow> \<langle>{this:Class D=\<lfloor>Addr a\<rfloor>; blocks(pns, Ts, vs, body)}\<^bsub>True\<^esub>, s\<rangle>"
+
+| RedCallExternal:
+  "\<lbrakk> typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>T\<rfloor>; is_external_call P T M (length vs); P \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>;
+     ta' = extTA ta; e' = extRet2J va; s' = (h', lcl s) \<rbrakk>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -ta'\<rightarrow> \<langle>e', s'\<rangle>"
+
+| RedCallNull:
+  "extTA,P \<turnstile> \<langle>null\<bullet>M(map Val vs), s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+
+| BlockRed:
+  "extTA,P \<turnstile> \<langle>e, (h, l(V:=vo))\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>{V:T=vo; e}\<^bsub>cr\<^esub>, (h, l)\<rangle> -ta\<rightarrow> \<langle>{V:T=l' V; e'}\<^bsub>cr\<^esub>, (h', l'(V := l V))\<rangle>"
+
+| RedBlock:
+  "extTA,P \<turnstile> \<langle>{V:T=vo; Val u}\<^bsub>cr\<^esub>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val u, s\<rangle>"
 
 | SynchronizedRed1:
-  "P \<turnstile> \<langle>o', s\<rangle> -ta\<rightarrow> \<langle>o'', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>sync(o'') e, s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>o', s\<rangle> -ta\<rightarrow> \<langle>o'', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>sync(o'') e, s'\<rangle>"
 
 | SynchronizedNull:
-  "P \<turnstile> \<langle>sync(null) e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>sync(null) e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
 | LockSynchronized:
-  "hp s a = \<lfloor>arrobj\<rfloor> \<Longrightarrow> P \<turnstile> \<langle>sync(addr a) e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>insync(a) e, s\<rangle>"
+  "hp s a = \<lfloor>arrobj\<rfloor> \<Longrightarrow> extTA,P \<turnstile> \<langle>sync(addr a) e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>insync(a) e, s\<rangle>"
 
 | SynchronizedRed2:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>insync(a) e, s\<rangle> -ta\<rightarrow> \<langle>insync(a) e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>insync(a) e, s\<rangle> -ta\<rightarrow> \<langle>insync(a) e', s'\<rangle>"
 
 | UnlockSynchronized:
-  "P \<turnstile> \<langle>insync(a) (Val v), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>insync(a) (Val v), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
 
 | SeqRed:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e;;e2, s\<rangle> -ta\<rightarrow> \<langle>e';;e2, s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>e;;e2, s\<rangle> -ta\<rightarrow> \<langle>e';;e2, s'\<rangle>"
 
 | RedSeq:
-  "P \<turnstile> \<langle>(Val v);;e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>e, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>(Val v);;e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>e, s\<rangle>"
 
 | CondRed:
-  "P \<turnstile> \<langle>b, s\<rangle> -ta\<rightarrow> \<langle>b', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>if (b) e1 else e2, s\<rangle> -ta\<rightarrow> \<langle>if (b') e1 else e2, s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>b, s\<rangle> -ta\<rightarrow> \<langle>b', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>if (b) e1 else e2, s\<rangle> -ta\<rightarrow> \<langle>if (b') e1 else e2, s'\<rangle>"
 
 | RedCondT:
-  "P \<turnstile> \<langle>if (true) e1 else e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>e1, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>if (true) e1 else e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>e1, s\<rangle>"
 
 | RedCondF:
-  "P \<turnstile> \<langle>if (false) e1 else e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>e2, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>if (false) e1 else e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>e2, s\<rangle>"
 
 | RedWhile:
-  "P \<turnstile> \<langle>while(b) c, s\<rangle> -\<epsilon>\<rightarrow> \<langle>if (b) (c;;while(b) c) else unit, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>while(b) c, s\<rangle> -\<epsilon>\<rightarrow> \<langle>if (b) (c;;while(b) c) else unit, s\<rangle>"
 
 | ThrowRed:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>throw e, s\<rangle> -ta\<rightarrow> \<langle>throw e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>throw e, s\<rangle> -ta\<rightarrow> \<langle>throw e', s'\<rangle>"
 
 | RedThrowNull:
-  "P \<turnstile> \<langle>throw null, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>throw null, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
 | TryRed:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>try e catch(C V) e2, s\<rangle> -ta\<rightarrow> \<langle>try e' catch(C V) e2, s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>try e catch(C V) e2, s\<rangle> -ta\<rightarrow> \<langle>try e' catch(C V) e2, s'\<rangle>"
 
 | RedTry:
-  "P \<turnstile> \<langle>try (Val v) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>try (Val v) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
 
 | RedTryCatch:
   "\<lbrakk> hp s a = Some(Obj D fs); P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>try (Throw a) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>{V:Class C := addr a; e2}, s\<rangle>"
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>try (Throw a) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>{V:Class C=\<lfloor>Addr a\<rfloor>; e2}\<^bsub>False\<^esub>, s\<rangle>"
 
 | RedTryFail:
   "\<lbrakk> hp s a = Some(Obj D fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
-  \<Longrightarrow> P \<turnstile> \<langle>try (Throw a) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>try (Throw a) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+
+| ListRed1:
+  "extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow>
+  extTA,P \<turnstile> \<langle>e#es,s\<rangle> [-ta\<rightarrow>] \<langle>e'#es,s'\<rangle>"
+
+| ListRed2:
+  "extTA,P \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow>
+  extTA,P \<turnstile> \<langle>Val v # es,s\<rangle> [-ta\<rightarrow>] \<langle>Val v # es',s'\<rangle>"
 
 -- "Exception propagation"
 
-| NewArrayThrow: "P \<turnstile> \<langle>newA T\<lfloor>throw a\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| CastThrow: "P \<turnstile> \<langle>Cast C (throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| BinOpThrow1: "P \<turnstile> \<langle>(throw a) \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| BinOpThrow2: "P \<turnstile> \<langle>(Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> (throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| LAssThrow: "P \<turnstile> \<langle>V:=(throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| AAccThrow1: "P \<turnstile> \<langle>(throw a)\<lfloor>i\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| AAccThrow2: "P \<turnstile> \<langle>(Val v)\<lfloor>throw a\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| AAssThrow1: "P \<turnstile> \<langle>(throw a)\<lfloor>i\<rceil> := e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| AAssThrow2: "P \<turnstile> \<langle>(Val v)\<lfloor>throw a\<rceil> := e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| AAssThrow3: "P \<turnstile> \<langle>(Val v)\<lfloor>Val i\<rceil> := throw a :: expr, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| FAccThrow: "P \<turnstile> \<langle>(throw a)\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| FAssThrow1: "P \<turnstile> \<langle>(throw a)\<bullet>F{D}:=e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| FAssThrow2: "P \<turnstile> \<langle>Val v\<bullet>F{D}:=(throw a::expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| CallThrowObj: "P \<turnstile> \<langle>(throw a)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| CallThrowParams: "\<lbrakk> es = map Val vs @ throw a # es' \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>(Val v)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| BlockThrow: "P \<turnstile> \<langle>{V:T; Throw a}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
-| InitBlockThrow: "P \<turnstile> \<langle>{V:T := Val v; Throw a}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
-| SynchronizedThrow1: "P \<turnstile> \<langle>sync(throw a) e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| SynchronizedThrow2: "P \<turnstile> \<langle>insync(a) throw ad, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>throw ad, s\<rangle>"
-| SeqThrow: "P \<turnstile> \<langle>(throw a);;e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| CondThrow: "P \<turnstile> \<langle>if (throw a) e\<^isub>1 else e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
-| ThrowThrow: "P \<turnstile> \<langle>throw(throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>throw a, s\<rangle>"
+| NewArrayThrow: "extTA,P \<turnstile> \<langle>newA T\<lfloor>Throw a\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CastThrow: "extTA,P \<turnstile> \<langle>Cast C (Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| BinOpThrow1: "extTA,P \<turnstile> \<langle>(Throw a) \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| BinOpThrow2: "extTA,P \<turnstile> \<langle>(Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> (Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| LAssThrow: "extTA,P \<turnstile> \<langle>V:=(Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| AAccThrow1: "extTA,P \<turnstile> \<langle>(Throw a)\<lfloor>i\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| AAccThrow2: "extTA,P \<turnstile> \<langle>(Val v)\<lfloor>Throw a\<rceil>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| AAssThrow1: "extTA,P \<turnstile> \<langle>(Throw a)\<lfloor>i\<rceil> := e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| AAssThrow2: "extTA,P \<turnstile> \<langle>(Val v)\<lfloor>Throw a\<rceil> := e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| AAssThrow3: "extTA,P \<turnstile> \<langle>(Val v)\<lfloor>Val i\<rceil> := Throw a :: expr, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| ALengthThrow: "extTA,P \<turnstile> \<langle>(Throw a)\<bullet>length, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| FAccThrow: "extTA,P \<turnstile> \<langle>(Throw a)\<bullet>F{D}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| FAssThrow1: "extTA,P \<turnstile> \<langle>(Throw a)\<bullet>F{D}:=e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| FAssThrow2: "extTA,P \<turnstile> \<langle>Val v\<bullet>F{D}:=(Throw a::expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CallThrowObj: "extTA,P \<turnstile> \<langle>(Throw a)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CallThrowParams: "\<lbrakk> es = map Val vs @ Throw a # es' \<rbrakk> \<Longrightarrow> extTA,P \<turnstile> \<langle>(Val v)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| BlockThrow: "extTA,P \<turnstile> \<langle>{V:T=vo; Throw a}\<^bsub>cr\<^esub>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| SynchronizedThrow1: "extTA,P \<turnstile> \<langle>sync(Throw a) e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| SynchronizedThrow2: "extTA,P \<turnstile> \<langle>insync(a) Throw ad, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>Throw ad, s\<rangle>"
+| SeqThrow: "extTA,P \<turnstile> \<langle>(Throw a);;e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| CondThrow: "extTA,P \<turnstile> \<langle>if (Throw a) e\<^isub>1 else e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| ThrowThrow: "extTA,P \<turnstile> \<langle>throw(Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 
 inductive_cases red_cases:
-  "P \<turnstile> \<langle>new C, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>newA T\<lfloor>e\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>Cast T e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
-  "P \<turnstile> \<langle>Var V, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>V:=e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>a\<lfloor>i\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>a\<lfloor>i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>e\<bullet>F{D} := e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
-  "P \<turnstile> \<langle>e\<bullet>start([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
-  "P \<turnstile> \<langle>e\<bullet>wait([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
-  "P \<turnstile> \<langle>e\<bullet>notify([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
-  "P \<turnstile> \<langle>e\<bullet>notifyAll([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
-  "P \<turnstile> \<langle>e\<bullet>join([]), s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
-  "P \<turnstile> \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>{V:T; e}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>insync(a) e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>e;;e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
-  "P \<turnstile> \<langle>if (b) e1 else e2, s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>while (b) e, s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>throw e, s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "P \<turnstile> \<langle>try e catch(C V) e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>new C, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>newA T\<lfloor>e\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>Cast T e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>e \<guillemotleft>bop\<guillemotright> e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>Var V, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>V:=e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>a\<lfloor>i\<rceil>, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>a\<lfloor>i\<rceil> := e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>a\<bullet>length, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>e\<bullet>F{D} := e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>{V:T=vo; e}\<^bsub>cr\<^esub>, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>insync(a) e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>e;;e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>if (b) e1 else e2, s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>while (b) e, s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>throw e, s \<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>try e catch(C V) e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
+
+inductive_cases reds_cases:
+  "extTA,P \<turnstile> \<langle>e # es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>"
+
+
+abbreviation red' :: "J_prog \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> J_thread_action \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
+                ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0] 81)
+where "red' P \<equiv> red (extTA2J P) P"
+
+abbreviation reds' :: "J_prog \<Rightarrow> expr list \<Rightarrow> (heap \<times> locals) \<Rightarrow> J_thread_action \<Rightarrow> expr list \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
+               ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0] 81)
+where "reds' P \<equiv> reds (extTA2J P) P"
+
 
 subsection{* The reflexive transitive closure *}
 
 abbreviation
-  Step :: "J_prog \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) thread_action list \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
-          ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0] 81)
+  Step :: "(external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action) \<Rightarrow> J_prog \<Rightarrow>
+           expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> ((addr,thread_id,'x,heap,addr) thread_action) list \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
+          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0] 81)
 where
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow>* \<langle>e', s'\<rangle> == stepify_pred (\<lambda>(e, s) ta (e', s'). red P e s ta e' s') (e,s) ta (e',s')"
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow>* \<langle>e', s'\<rangle> == rtrancl3p (\<lambda>(e, s) ta (e', s'). extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>) (e,s) ta (e',s')"
 
-lemmas Step_induct = stepify_pred.induct[where r = "\<lambda>(e, s) ta (e', s'). red P e s ta e' s'", split_format (complete), simplified, consumes 1, case_names refl step]
+lemmas Step_induct = rtrancl3p.induct[where r = "\<lambda>(e, s) ta (e', s'). extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>", split_format (complete), simplified, consumes 1, case_names refl step]
 
 subsection{*Some easy lemmas*}
 
 lemma [iff]:
-  "\<not> P \<turnstile> \<langle>Val v, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "\<not> extTA,P \<turnstile> \<langle>Val v, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 by(fastsimp elim:red.cases)
 
 lemma red_no_val [dest]:
-  "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow> \<langle>e', s'\<rangle>; is_val e \<rbrakk> \<Longrightarrow> False"
+  "\<lbrakk> extTA,P \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow> \<langle>e', s'\<rangle>; is_val e \<rbrakk> \<Longrightarrow> False"
 by(auto)
 
 
-lemma [iff]: "\<not> P \<turnstile> \<langle>Throw a, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-by(fastsimp elim: red.cases)
+lemma [iff]: "\<not> extTA,P \<turnstile> \<langle>Throw a, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+by(fastsimp elim: red_cases)
 
-lemma red_hext_incr:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> hp s \<unlhd> hp s'"
-proof(induct rule:red.induct)
+lemma red_hext_incr: "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> hp s \<unlhd> hp s'"
+  and reds_hext_incr: "extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> hp s \<unlhd> hp s'"
+proof(induct rule:red_reds.inducts)
   case (RedNew C FDTs a h h' l) thus ?case by(auto dest: new_Addr_SomeD intro: hext_new simp del: fun_upd_apply)
 next
   case RedNewArray thus ?case by(auto dest: new_Addr_SomeD intro: hext_new simp del: fun_upd_apply)
@@ -371,90 +377,130 @@ next
   case RedAAss thus ?case by(fastsimp dest:new_Addr_SomeD simp:hext_def split:if_splits)
 next
   case RedFAss thus ?case by(fastsimp simp add:hext_def split:if_splits)
+next
+  case RedCallExternal thus ?case by(auto intro: red_external_hext)
 qed fastsimp+
 
-lemma red_lcl_incr:
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> dom (lcl s) \<subseteq> dom (lcl s')"
-apply(induct rule:red.induct)
-by(auto simp del: fun_upd_apply)
+lemma red_lcl_incr: "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> dom (lcl s) \<subseteq> dom (lcl s')"
+  and reds_lcl_incr: "extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> dom (lcl s) \<subseteq> dom (lcl s')"
+apply(induct rule:red_reds.inducts)
+apply(auto simp del: fun_upd_apply split: split_if_asm)
+done
 
-lemma red_lcl_add_aux: 
-  "P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e, (hp s, l0 ++ lcl s)\<rangle> -ta\<rightarrow> \<langle>e', (hp s', l0 ++ lcl s')\<rangle>"
-proof (induct arbitrary: l0 rule:red.induct) prefer 38
-  case (RedNewThread s a C fs l0)
-  hence "P \<turnstile> \<langle>addr a\<bullet>start([]),(hp s, l0 ++ lcl s)\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub> NewThread a ((Var this\<bullet>run([])), [this \<mapsto> Addr a]) (hp (hp s, l0 ++ lcl s))\<rbrace>\<rightarrow> \<langle>unit,(hp s, l0 ++ lcl s)\<rangle>"
-    by(fastsimp intro: red.RedNewThread)
-  thus ?case by(simp)
-next prefer 46
-  case (BlockRedNone E H L V TA E' H' L' T L0)
-  have red: "P \<turnstile> \<langle>E, (H, L(V := None))\<rangle> -TA\<rightarrow> \<langle>E', (H', L')\<rangle>" by fact
-  have IH: "\<And>l0. P \<turnstile> \<langle>E,(hp (H, L(V := None)), l0 ++ lcl (H, L(V := None)))\<rangle> -TA\<rightarrow> \<langle>E',(hp (H', L'), l0 ++ lcl (H', L'))\<rangle>" by fact
-  have l'V: "L' V = None"
-   and unass: "\<not> assigned V E" by fact+
-  have lrew: "\<And>l l'. l(V := None) ++ l'(V := None) = (l ++ l')(V := None)" 
+lemma red_lcl_add_aux:
+  "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>e, (hp s, l0 ++ lcl s)\<rangle> -ta\<rightarrow> \<langle>e', (hp s', l0 ++ lcl s')\<rangle>"
+  and reds_lcl_add_aux:
+  "extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>es, (hp s, l0 ++ lcl s)\<rangle> [-ta\<rightarrow>] \<langle>es', (hp s', l0 ++ lcl s')\<rangle>"
+proof (induct arbitrary: l0 and l0 rule:red_reds.inducts)
+  case (BlockRed e h x V vo ta e' h' x' T cr l0)
+  note IH = `\<And>l0. extTA,P \<turnstile> \<langle>e,(hp (h, x(V := vo)), l0 ++ lcl (h, x(V := vo)))\<rangle> -ta\<rightarrow> \<langle>e',(hp (h', x'), l0 ++ lcl (h', x'))\<rangle>`[simplified]
+  have lrew: "\<And>x x'. x(V := vo) ++ x'(V := vo) = (x ++ x')(V := vo)" 
     by(simp add:expand_fun_eq map_add_def)
-  have lrew1: "(L0(V := None) ++ L')(V := (L0 ++ L) V) = L0 ++ L'(V := L V)"
-    by(simp add:expand_fun_eq map_add_def)
-  from IH[of "L0(V := None)"] have "P \<turnstile> \<langle>E,(H, (L0 ++ L)(V := None))\<rangle> -TA\<rightarrow> \<langle>E',(H', L0(V := None) ++ L')\<rangle>" by(simp add: lrew)
-  with l'V red unass
+  have lrew1: "\<And>X X' X'' vo. (X(V := vo) ++ X')(V := (X ++ X'') V) = X ++ X'(V := X'' V)"
+    by(simp add: expand_fun_eq map_add_def)
+  have lrew2: "\<And>X X'. (X(V := None) ++ X') V = X' V"
+    by(simp add: map_add_def) 
   show ?case
-    apply(clarsimp simp del:fun_upd_apply)
-    apply(simp only: lrew1[THEN sym])
-    apply(erule red.BlockRedNone)
-    by(simp)+
-next prefer 46
-  case (BlockRedSome E H L V TA E' H' L' v T L0)
-  have IH: "\<And>l0. P \<turnstile> \<langle>E,(hp (H, L(V := None)), l0 ++ lcl (H, L(V := None)))\<rangle> -TA\<rightarrow> \<langle>E',(hp (H', L'), l0 ++ lcl (H', L'))\<rangle>" by fact
-  have l'V: "L' V = Some v"
-   and unass: "\<not> assigned V E" by fact+
-  have red: "P \<turnstile> \<langle>E,(H, L(V := None))\<rangle> -TA\<rightarrow> \<langle>E',(H', L')\<rangle>" by fact
-  have lrew: "\<And>l l'. l(V := None) ++ l'(V := None) = (l ++ l')(V := None)" 
-    by(simp add:expand_fun_eq map_add_def)
-  have lrew1: "(L0(V := None) ++ L')(V := (L0 ++ L) V) = L0 ++ L'(V := L V)"
-    by(simp add:expand_fun_eq map_add_def)
-  from IH[of "L0(V := None)"] 
-  have "P \<turnstile> \<langle>E,(H, (L0 ++ L)(V := None))\<rangle> -TA\<rightarrow> \<langle>E',(H', L0(V := None) ++ L')\<rangle>" by (simp add: lrew)
-  with l'V red unass
-  show ?case
-    apply(clarsimp simp del:fun_upd_apply)
-    apply(simp only: lrew1[THEN sym])
-    apply(erule red.BlockRedSome)
-    by(simp)+
-next prefer 46
-  case (InitBlockRed E H L V v TA E' H' L' v' T L0)
-  have red: "P \<turnstile> \<langle>E,(H, L(V \<mapsto> v))\<rangle> -TA\<rightarrow> \<langle>E',(H', L')\<rangle>" by fact
-  have IH: "\<And>l0. P \<turnstile> \<langle>E,(hp (H, L(V \<mapsto> v)), l0 ++ lcl (H, L(V \<mapsto> v)))\<rangle> -TA\<rightarrow> \<langle>E',(hp (H', L'), l0 ++ lcl (H', L'))\<rangle>" by fact
-  have l'V: "L' V = \<lfloor>v'\<rfloor>" by fact
-  have lrew: "(L0 ++ L')(V := (L0 ++ L) V) = L0 ++ L'(V := L V)" by (rule ext)(simp add: map_add_def)
-  from IH[of "L0"] l'V show ?case
-    apply(clarsimp simp del:fun_upd_apply)
-    apply(simp only: lrew[THEN sym])
-    apply(rule red.InitBlockRed)
-    by(simp_all)
+  proof(cases vo)
+    case None
+    from IH[of "l0(V := vo)"]
+    show ?thesis
+      apply(simp del: fun_upd_apply add: lrew)
+      apply(drule red_reds.BlockRed)
+      by(simp only: lrew1 None lrew2)
+  next
+    case (Some v)
+    with `extTA,P \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
+    have "x' V \<noteq> None"
+      by -(drule red_lcl_incr, auto split: split_if_asm)
+    with IH[of "l0(V := vo)"]
+    show ?thesis
+      apply(clarsimp simp del: fun_upd_apply simp add: lrew)
+      apply(drule red_reds.BlockRed)
+      by(simp add: lrew1 Some del: fun_upd_apply)
+  qed
 next
   case (RedTryFail s a D fs C V e2 l0) thus ?case
-    by(auto intro: red.RedTryFail)
-qed (fastsimp intro:red.intros simp del: fun_upd_apply)+
+    by(auto intro: red_reds.RedTryFail)
+qed(fastsimp intro:red_reds.intros simp del: fun_upd_apply)+
 
-lemma red_lcl_add:
-  "P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e, (h, l0 ++ l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l0 ++ l')\<rangle>"
-by(auto dest:red_lcl_add_aux
-)
+lemma red_lcl_add: "extTA,P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>e, (h, l0 ++ l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l0 ++ l')\<rangle>"
+  and reds_lcl_add: "extTA,P \<turnstile> \<langle>es, (h, l)\<rangle> [-ta\<rightarrow>] \<langle>es', (h', l')\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>es, (h, l0 ++ l)\<rangle> [-ta\<rightarrow>] \<langle>es', (h', l0 ++ l')\<rangle>"
+by(auto dest:red_lcl_add_aux reds_lcl_add_aux)
+
 lemma Step_lcl_add:
-  "P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow>* \<langle>e', (h', l')\<rangle> \<Longrightarrow>  P \<turnstile> \<langle>e, (h, l0 ++ l)\<rangle> -ta\<rightarrow>* \<langle>e', (h', l0 ++ l')\<rangle>"
+  "extTA,P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow>* \<langle>e', (h', l')\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>e, (h, l0 ++ l)\<rangle> -ta\<rightarrow>* \<langle>e', (h', l0 ++ l')\<rangle>"
 proof(induct rule: Step_induct)
-  case refl thus ?case by(auto intro: stepify_pred.intros)
+  case refl thus ?case by(auto intro: rtrancl3p.intros)
 next
   case (step e h l ta e' h' l' las tas cas was e'' h'' l'')
-  have IH: "P \<turnstile> \<langle>e,(h, l0 ++ l)\<rangle> -ta\<rightarrow>* \<langle>e',(h', l0 ++ l')\<rangle>"
-   and red: "P \<turnstile> \<langle>e',(h', l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l'')\<rangle>" by fact+
-  from red have "P \<turnstile> \<langle>e',(h', l0 ++ l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l0 ++ l'')\<rangle>" by - (rule red_lcl_add)
-  with IH show ?case
-    by(auto elim: stepify_pred_step)
+  have IH: "extTA,P \<turnstile> \<langle>e,(h, l0 ++ l)\<rangle> -ta\<rightarrow>* \<langle>e',(h', l0 ++ l')\<rangle>"
+   and red: "extTA,P \<turnstile> \<langle>e',(h', l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l'')\<rangle>" by fact+
+  from red have "extTA,P \<turnstile> \<langle>e',(h', l0 ++ l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l0 ++ l'')\<rangle>" by - (rule red_lcl_add)
+  with IH show ?case by(auto elim: rtrancl3p_step)
 qed
 
+lemma reds_no_val [dest]:
+  "\<lbrakk> extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; is_vals es \<rbrakk> \<Longrightarrow> False"
+apply(induct es arbitrary: s ta es' s')
+ apply(blast elim: reds.cases)
+apply(erule reds.cases)
+apply(auto, blast)
+done
 
-inductive final :: "expr \<Rightarrow> bool" where
+lemma red_no_Throw [dest!]:
+  "extTA,P \<turnstile> \<langle>Throw a, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> False"
+by(auto elim!: red_cases)
+
+lemma red_lcl_sub:
+  "\<lbrakk> extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; fv e \<subseteq> W \<rbrakk> \<Longrightarrow> extTA,P \<turnstile> \<langle>e, (hp s, (lcl s)|`W)\<rangle> -ta\<rightarrow> \<langle>e', (hp s', (lcl s')|`W)\<rangle>"
+
+  and reds_lcl_sub:
+  "\<lbrakk> extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; fvs es \<subseteq> W \<rbrakk> \<Longrightarrow> extTA,P \<turnstile> \<langle>es, (hp s, (lcl s)|`W)\<rangle> [-ta\<rightarrow>] \<langle>es', (hp s', (lcl s')|`W)\<rangle>"
+proof(induct arbitrary: W and W rule: red_reds.inducts)
+  case (RedLAss V v h l W)
+  have "extTA,P \<turnstile> \<langle>V:=Val v,(h, l |` W)\<rangle> -\<epsilon>\<rightarrow> \<langle>unit,(h, (l |`W)(V \<mapsto> v))\<rangle>"
+    by(rule red_reds.RedLAss)
+  with RedLAss show ?case by(simp del: fun_upd_apply)
+next
+  case (BlockRed e h x V vo ta e' h' x' T cr W)
+  have IH: "\<And>W. fv e \<subseteq> W \<Longrightarrow> extTA,P \<turnstile> \<langle>e,(hp (h, x(V := vo)), lcl (h, x(V := vo)) |` W)\<rangle> -ta\<rightarrow> \<langle>e',(hp (h', x'), lcl (h', x') |` W)\<rangle>" by fact
+  from `fv {V:T=vo; e}\<^bsub>cr\<^esub> \<subseteq> W` have fve: "fv e \<subseteq> insert V W" by auto
+  show ?case
+  proof(cases "V \<in> W")
+    case True
+    with fve have "fv e \<subseteq> W" by auto
+    from True IH[OF this] have "extTA,P \<turnstile> \<langle>e,(h, (x |` W )(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x' |` W)\<rangle>" by(simp)
+    with True have "extTA,P \<turnstile> \<langle>{V:T=vo; e}\<^bsub>cr\<^esub>,(h, x |` W)\<rangle> -ta\<rightarrow> \<langle>{V:T=x' V; e'}\<^bsub>cr\<^esub>,(h', (x' |` W)(V := x V))\<rangle>"
+      by -(drule red_reds.BlockRed[where T=T], simp)
+    with True show ?thesis by(simp del: fun_upd_apply)
+  next
+    case False
+    with IH[OF fve] have "extTA,P \<turnstile> \<langle>e,(h, (x |` W)(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x' |` insert V W)\<rangle>" by(simp)
+    with False have "extTA,P \<turnstile> \<langle>{V:T=vo; e}\<^bsub>cr\<^esub>,(h, x |` W)\<rangle> -ta\<rightarrow> \<langle>{V:T=x' V; e'}\<^bsub>cr\<^esub>,(h', (x' |` W))\<rangle>"
+      by -(drule red_reds.BlockRed[where T=T],simp)
+    with False show ?thesis by(simp del: fun_upd_apply)
+  qed
+next
+  case RedTryFail thus ?case by(auto intro: red_reds.RedTryFail)
+qed(fastsimp intro: red_reds.intros)+
+
+lemma red_notfree_unchanged: "\<lbrakk> extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; V \<notin> fv e \<rbrakk> \<Longrightarrow> lcl s' V = lcl s V"
+  and reds_notfree_unchanged: "\<lbrakk> extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; V \<notin> fvs es \<rbrakk> \<Longrightarrow> lcl s' V = lcl s V"
+apply(induct rule: red_reds.inducts)
+apply(fastsimp)+
+done
+
+lemma red_dom_lcl: "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> dom (lcl s') \<subseteq> dom (lcl s) \<union> fv e"
+  and reds_dom_lcl: "extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> dom (lcl s') \<subseteq> dom (lcl s) \<union> fvs es"
+proof (induct rule:red_reds.inducts)
+  case (BlockRed e h x V vo ta e' h' x' T)
+  thus ?case by(clarsimp)(fastsimp split:split_if_asm)
+qed auto
+
+
+
+inductive final :: "('a,'b) exp \<Rightarrow> bool" where
   "final (Val v)"
 | "final (Throw a)"
 
@@ -468,5 +514,68 @@ by(auto)
 
 lemma final_locks: "final e \<Longrightarrow> expr_locks e l = 0"
 by(auto elim: finalE)
+
+constdefs
+  finals:: "('a,'b) exp list \<Rightarrow> bool"
+  "finals es  \<equiv>  (\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
+
+lemma [iff]: "finals []"
+by(simp add:finals_def)
+
+lemma [iff]: "finals (Val v # es) = finals es"
+apply(clarsimp simp add: finals_def)
+apply(rule iffI)
+ apply(erule disjE)
+  apply fastsimp
+ apply(rule disjI2)
+ apply clarsimp
+ apply(case_tac vs)
+  apply simp
+ apply fastsimp
+apply(erule disjE)
+ apply clarsimp
+ apply(rule_tac x="v#vs" in exI)
+ apply(simp)
+apply(rule disjI2)
+apply clarsimp
+apply(rule_tac x = "v#vs" in exI)
+apply simp
+done
+
+lemma finals_app_map[iff]: "finals (map Val vs @ es) = finals es"
+(*<*)by(induct_tac vs, auto)(*>*)
+
+lemma [iff]: "finals (map Val vs)"
+(*<*)using finals_app_map[of vs "[]"]by(simp)(*>*)
+
+lemma [iff]: "finals (throw e # es) = (\<exists>a. e = addr a)"
+(*<*)
+apply(simp add:finals_def)
+apply(rule iffI)
+ apply(erule disjE)
+  apply(fastsimp)
+ apply clarsimp
+ apply(case_tac vs)
+  apply simp
+ apply fastsimp
+apply clarsimp
+apply(rule_tac x = "[]" in exI)
+apply simp
+apply(erule_tac x="[]" in allE)
+apply(fastsimp)
+done
+(*>*)
+
+lemma not_finals_ConsI: "\<not> final e \<Longrightarrow> \<not> finals(e#es)"
+ (*<*)
+apply(clarsimp simp add:finals_def final_iff)
+apply(rule conjI)
+ apply(fastsimp)
+apply(clarsimp)
+apply(case_tac vs)
+apply auto
+done
+(*>*)
+
 
 end

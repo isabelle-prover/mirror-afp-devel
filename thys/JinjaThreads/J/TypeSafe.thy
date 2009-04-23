@@ -1,21 +1,20 @@
-(*  Title:      Jinja/J/SmallTypeSafe.thy
-    ID:         $Id: TypeSafe.thy,v 1.6 2008-06-12 06:57:23 lsf37 Exp $
+(*  Title:      JinjaThreads/J/SmallTypeSafe.thy
     Author:     Tobias Nipkow, Andreas Lochbihler
-    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Type Safety Proof} *}
 
 theory TypeSafe
-imports Progress JWellForm
+imports Progress JWellForm DefAssPreservation "../Common/ExternalCallWF"
 begin
+
 subsection{*Basic preservation lemmas*}
 
 text{* First two easy preservation lemmas. *}
 
-theorem red_preserves_hconf:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e : T; P \<turnstile> hp s \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> hp s' \<surd>"
-proof (induct arbitrary: T E rule: red.induct)
+theorem red_preserves_hconf: "\<lbrakk> extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e : T; P \<turnstile> hp s \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> hp s' \<surd>"
+  and reds_preserves_hconf: "\<lbrakk> extTA,P \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; P,E,hp s \<turnstile> es [:] Ts; P \<turnstile> hp s \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> hp s' \<surd>"
+proof (induct arbitrary: T E and Ts E rule: red_reds.inducts)
   case (RedNew h a C FDTs h' l T E)
   have new: "new_Addr h = Some a" and fields: "P \<turnstile> C has_fields FDTs" by fact+
   have h': "h' = h(a\<mapsto>(Obj C (init_fields FDTs)))" by fact
@@ -23,39 +22,36 @@ proof (induct arbitrary: T E rule: red.induct)
   from new have None: "h a = None" by(rule new_Addr_SomeD)
   moreover have "P,h \<turnstile> (Obj C (init_fields FDTs)) \<surd>"
     using fields by(rule oconf_init_fields)
-  ultimately show "P \<turnstile> hp (h', l) \<surd>" using h' hconf apply(simp) by(rule hconf_new)
+  ultimately show "P \<turnstile> hp (h', l) \<surd>" using h' hconf by(simp)(rule hconf_new)
 next
   case (RedNewArray h a i h' T l T' E)
   have new: "new_Addr h = Some a"
     and isize: "0 \<le> i"
-    and h': "h' = h(a \<mapsto> Arr T i (\<lambda>i. default_val T))"
+    and h': "h' = h(a \<mapsto> Arr T (replicate (nat i) (default_val T)))"
     and hconf: "P \<turnstile> hp (h, l) \<surd>" by fact+
   have wt: "P,E,hp (h, l) \<turnstile> newA T\<lfloor>Val (Intg i)\<rceil> : T'" by fact
   from new have None: "h a = None" by(rule new_Addr_SomeD)
   moreover 
   from wt have "is_type P T" by(auto)
-  hence "P,h \<turnstile> (Arr T i (\<lambda>i. default_val T)) \<surd>"
+  hence "P,h \<turnstile> (Arr T (replicate (nat i) (default_val T))) \<surd>"
     by -(rule oconf_init_arr)
   ultimately show "P \<turnstile> hp (h', l) \<surd>" using h' hconf apply(simp) by(rule hconf_new)
 next
-  case (RedAAss h a T s el i w U h' l T' E)
-  let ?el' = "el(i := w)"
-  have hconf: "P \<turnstile> hp (h, l) \<surd>" and ha: "h a = Some(Arr T s el)"
-    and "0 \<le> i" and "i < s"
+  case (RedAAss h a T el i w U h' l T' E)
+  let ?el' = "el[nat i := w]"
+  have hconf: "P \<turnstile> hp (h, l) \<surd>" and ha: "h a = Some(Arr T el)"
+    and "0 \<le> i" and "i < int (length el)"
     and "typeof\<^bsub>h\<^esub> w = \<lfloor>U\<rfloor>" and "P \<turnstile> U \<le> T"
-    and h': "h' = h(a \<mapsto> Arr T s (el(i := w)))"
-    and wt: "P,E,hp (h,l) \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'" by fact+
-  have "P,h \<turnstile> (Arr T s ?el') \<surd>"
+    and h': "h' = h(a \<mapsto> Arr T (el[nat i := w]))"
+    and wt: "P,E,hp (h,l) \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'"  by fact+
+  have "P,h \<turnstile> (Arr T ?el') \<surd>"
   proof (rule oconf_fupd_arr)
-    from prems show "0 \<le> i" by simp
+    from `typeof\<^bsub>h\<^esub> w = \<lfloor>U\<rfloor>` `P \<turnstile> U \<le> T` show "P,h \<turnstile> w :\<le> T" by (simp add: conf_def)
   next
-    from prems show "i < s" by simp
-  next
-    from prems show "P,h \<turnstile> w :\<le> T" by (simp add: conf_def)
-  next
-    from prems show "P,h \<turnstile> Arr T s el \<surd>" by (simp add: hconf_def)
+    from `h a = \<lfloor>Arr T el\<rfloor>` `P \<turnstile> hp (h, l) \<surd>`
+    show "P,h \<turnstile> Arr T el \<surd>" by (simp add: hconf_def)
   qed
-  with hconf ha h' have "P \<turnstile> h(a\<mapsto>(Arr T s (el(i := w)))) \<surd>" by - (rule hconf_upd_arr, auto)
+  with hconf ha h' have "P \<turnstile> h(a\<mapsto>(Arr T (el[nat i := w]))) \<surd>" by - (rule hconf_upd_arr, auto)
   with h' show ?case by(simp del: fun_upd_apply)
 next
   case (RedFAss h a C fs F D v l T E)
@@ -70,196 +66,54 @@ next
     show "P,h \<turnstile> (Obj C fs) \<surd>" using hconf ha by(simp add:hconf_def)
     show "P,h \<turnstile> v :\<le> TF" using sub typeofv by(simp add:conf_def)
   qed
-  with hconf ha show ?case  apply (simp del: fun_upd_apply) by(rule hconf_upd_obj)
+  with hconf ha show ?case by(simp del: fun_upd_apply)(rule hconf_upd_obj)
 next
-  case (CallParams e s ta e' s' v M vs es T E)
-  have IH: "\<And>T E. \<lbrakk>P,E,hp s \<turnstile> e : T; P \<turnstile> hp s \<surd>\<rbrakk> \<Longrightarrow> P \<turnstile> hp s' \<surd>" by fact
-  have wte: "P,E,hp s \<turnstile> Val v\<bullet>M(map Val vs @ e # es) : T" by fact
-  have hconf: "P \<turnstile> hp s \<surd>" by fact
-  from hconf wte show ?case
-    apply -
-    apply(erule WTrt_elim_cases)
-       apply(clarsimp simp add: list_all2_append1 list_all2_Cons1 simp del: hp_def)
-       apply(erule IH, assumption)
-      apply(clarsimp simp add: list_all2_append1 list_all2_Cons1 simp del: hp_def)
-      apply(erule IH, assumption)
-     apply(auto)
-    done
+  case (RedCallExternal s a U M vs ta va h' ta' e' s')
+  thus ?case by(auto split: heapobj.split_asm dest: external_call_hconf)
 qed auto
-(*>*)
 
 
 theorem red_preserves_lconf:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e:T; P,hp s \<turnstile> lcl s (:\<le>) E \<rbrakk> \<Longrightarrow> P,hp s' \<turnstile> lcl s' (:\<le>) E"
-proof(induct arbitrary: T E rule:red.induct)
+  "\<lbrakk> extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e:T; P,hp s \<turnstile> lcl s (:\<le>) E \<rbrakk> \<Longrightarrow> P,hp s' \<turnstile> lcl s' (:\<le>) E"
+  and reds_preserves_lconf:
+  "\<lbrakk> extTA,P \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; P,E,hp s \<turnstile> es[:]Ts; P,hp s \<turnstile> lcl s (:\<le>) E \<rbrakk> \<Longrightarrow> P,hp s' \<turnstile> lcl s' (:\<le>) E"
+proof(induct arbitrary: T E and Ts E rule:red_reds.inducts)
   case RedNew thus ?case
-    by(fastsimp intro:lconf_hext red_hext_incr[OF red.RedNew, simplified] simp del: fun_upd_apply)
+    by(fastsimp intro:lconf_hext red_hext_incr[OF red_reds.RedNew, simplified] simp del: fun_upd_apply)
 next
   case RedNewArray thus ?case
-    by(fastsimp intro:lconf_hext red_hext_incr[OF red.RedNewArray, simplified] simp del: fun_upd_apply)
+    by(fastsimp intro:lconf_hext red_hext_incr[OF red_reds.RedNewArray, simplified] simp del: fun_upd_apply)
 next
   case RedLAss thus ?case 
     by(fastsimp elim: lconf_upd simp add: conf_def simp del: fun_upd_apply )
 next
   case RedAAss thus ?case
-    by(fastsimp intro:lconf_hext red_hext_incr[OF red.RedAAss, simplified] simp del: fun_upd_apply)
+    by(fastsimp intro:lconf_hext red_hext_incr[OF red_reds.RedAAss, simplified] simp del: fun_upd_apply)
 next
   case RedFAss thus ?case
-    by(fastsimp intro:lconf_hext red_hext_incr[OF red.RedFAss, simplified] simp del: fun_upd_apply)
+    by(fastsimp intro:lconf_hext red_hext_incr[OF red_reds.RedFAss, simplified] simp del: fun_upd_apply)
 next
-  case CallParams
-  thus ?case by(auto simp add: list_all2_append1 list_all2_Cons1)
-next
-  case (InitBlockRed  e h l V v ta e' h' l' v' T T' E)
-  have red: "P \<turnstile> \<langle>e, (h, l(V\<mapsto>v))\<rangle> -ta\<rightarrow> \<langle>e',(h', l')\<rangle>"
-   and IH: " \<And>T E. \<lbrakk>P,E,hp (h, l(V \<mapsto> v)) \<turnstile> e : T; P,hp (h, l(V \<mapsto> v)) \<turnstile> lcl (h, l(V \<mapsto> v)) (:\<le>) E\<rbrakk>
-              \<Longrightarrow> P,hp (h', l') \<turnstile> lcl (h', l') (:\<le>) E"
-   and l'V: "l' V = Some v'" and lconf: "P,hp (h, l) \<turnstile> lcl (h, l) (:\<le>) E"
-   and wt: "P,E,hp (h, l) \<turnstile> {V:T := Val v; e} : T'" by fact+
+  case (BlockRed e h x V vo ta e' h' x' T cr T' E)
+  note red = `extTA,P \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
+  note IH = `\<And>T E. \<lbrakk>P,E,hp (h, x(V := vo)) \<turnstile> e : T;
+               P,hp (h, x(V := vo)) \<turnstile> lcl (h, x(V := vo)) (:\<le>) E\<rbrakk>
+              \<Longrightarrow> P,hp (h', x') \<turnstile> lcl (h', x') (:\<le>) E`
+  note wt = `P,E,hp (h, x) \<turnstile> {V:T=vo; e}\<^bsub>cr\<^esub> : T'`
+  note lconf = `P,hp (h, x) \<turnstile> lcl (h, x) (:\<le>) E`
   from lconf_hext[OF lconf[simplified] red_hext_incr[OF red, simplified]]
-  have "P,h' \<turnstile> l (:\<le>) E" .
-  moreover from IH lconf wt have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)"
-    by(auto simp del: fun_upd_apply simp: fun_upd_same lconf_upd2 conf_def)
-  ultimately show ?case
-    by (fastsimp simp:lconf_def split:split_if_asm)
+  have "P,h' \<turnstile> x (:\<le>) E" .
+  moreover from wt have "P,E(V\<mapsto>T),h \<turnstile> e : T'" by(cases vo, auto)
+  moreover from lconf wt have "P,h \<turnstile> x(V := vo) (:\<le>) E(V \<mapsto> T)"
+    by(cases vo)(simp add: lconf_def,auto intro: lconf_upd2 simp add: conf_def)
+  ultimately have "P,h' \<turnstile> x' (:\<le>) E(V\<mapsto>T)" 
+    by(auto intro: IH[simplified])
+  with `P,h' \<turnstile> x (:\<le>) E` show ?case
+    by(auto simp add: lconf_def split: split_if_asm)
 next
-  case (BlockRedNone e h l V ta e' h' l' T T' E)
-  have red: "P \<turnstile> \<langle>e,(h, l(V := None))\<rangle> -ta\<rightarrow> \<langle>e',(h', l')\<rangle>"
-   and IH: "\<And>E T. \<lbrakk> P,E,hp (h, l(V := None)) \<turnstile> e : T; P,hp (h, l(V := None)) \<turnstile> lcl (h, l(V:=None)) (:\<le>) E \<rbrakk>
-                   \<Longrightarrow> P,hp (h', l') \<turnstile> lcl (h', l') (:\<le>) E"
-   and lconf: "P,hp (h, l) \<turnstile> lcl (h, l) (:\<le>) E" and wt: "P,E,hp (h, l) \<turnstile> {V:T; e} : T'" by fact+
-  from lconf_hext[OF lconf[simplified] red_hext_incr[OF red, simplified]]
-  have "P,h' \<turnstile> l (:\<le>) E" .
-  moreover have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)"
-    by(rule IH[simplified], insert lconf wt, auto simp:lconf_def)
-  ultimately show ?case
-    by (fastsimp simp:lconf_def split:split_if_asm)
-next
-  case (BlockRedSome e h l V ta e' h' l' v T T' E)
-  have red: "P \<turnstile> \<langle>e,(h, l(V := None))\<rangle> -ta\<rightarrow> \<langle>e',(h', l')\<rangle>"
-   and IH: "\<And>T E. \<lbrakk>P,E,hp (h, l(V := None)) \<turnstile> e : T; P,hp (h, l(V := None)) \<turnstile> lcl (h, l(V := None)) (:\<le>) E\<rbrakk>
-              \<Longrightarrow> P,hp (h', l') \<turnstile> lcl (h', l') (:\<le>) E"
-   and lconf: "P,hp (h, l) \<turnstile> lcl (h, l) (:\<le>) E" and wt: "P,E,hp (h, l) \<turnstile> {V:T; e} : T'" by fact+
-  from lconf_hext[OF lconf[simplified] red_hext_incr[OF red, simplified]]
-  have "P,h' \<turnstile> l (:\<le>) E" .
-  moreover have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)"
-    by(rule IH[simplified], insert lconf wt, auto simp:lconf_def)
-  ultimately show ?case
-    by (fastsimp simp:lconf_def split:split_if_asm)
+  case (RedCallExternal s a U M vs ta va h' ta' e' s')
+  from `P \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` have "hp s \<unlhd> h'" by(rule red_external_hext)
+  with `s' = (h', lcl s)` `P,hp s \<turnstile> lcl s (:\<le>) E` show ?case by(auto intro: lconf_hext)
 qed auto
-
-
-
-text{* Preservation of definite assignment more complex and requires a
-few lemmas first. *}
-
-lemma [iff]: "\<And>A. \<lbrakk> length Vs = length Ts; length vs = length Ts\<rbrakk> \<Longrightarrow>
- \<D> (blocks (Vs,Ts,vs,e)) A = \<D> e (A \<squnion> \<lfloor>set Vs\<rfloor>)"
-(*<*)
-apply(induct Vs Ts vs e rule:blocks.induct)
-apply(simp_all add:hyperset_defs)
-done
-(*>*)
-
-lemma red_lA_incr: "P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> \<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> e \<sqsubseteq>  \<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> e'"
-(*<*)
-apply(induct rule:red.inducts)
-apply(simp_all del:fun_upd_apply add:hyperset_defs)
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply force
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-  apply(fastsimp dest:red_lcl_incr)
- apply(clarsimp)
- apply(rule conjI)
-  apply(frule red_lcl_incr)
-  apply(fastsimp)
- apply(rule subsetI)
- apply(clarsimp)
- apply(drule_tac A=aca in subsetD)
-  apply(assumption)
- apply(fastsimp)
-apply(fastsimp dest: red_lcl_incr)
-done
-(*>*)
-
-text{* Now preservation of definite assignment. *}
-
-lemma assumes wf: "wf_J_prog P"
-shows red_preserves_defass: "P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> \<D> e \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom (lcl s')\<rfloor>"
-proof (induct rule:red.induct)
-  case BinOpRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
-next
-  case AAccRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
-next
-  case (AAssRed1 a s ta a' s' i e)
-  have ss: "P \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>"
-    and IH: "\<D> a \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D> a' \<lfloor>dom (lcl s')\<rfloor>"
-    and D: "\<D> (a\<lfloor>i\<rceil> := e) \<lfloor>dom (lcl s)\<rfloor>" by fact+
-  from D have "\<D> a \<lfloor>dom (lcl s)\<rfloor>" by simp
-  with IH have Da: "\<D> a' \<lfloor>dom (lcl s')\<rfloor>" by simp
-  from ss have domgrow: "\<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> a \<sqsubseteq>  \<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> a'" by - (erule red_lA_incr)
-  from D have "\<D> i (\<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> a)" by simp
-  with domgrow have Di: "\<D> i (\<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> a')" by - (erule D_mono)
-  from domgrow have domgrow2: "\<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> a \<squnion> \<A> i \<sqsubseteq> \<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> a' \<squnion> \<A> i" by - (rule sqUn_lem)
-  from D have "\<D> e (\<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> a \<squnion> \<A> i)" by simp
-  with domgrow2 have De: "\<D> e (\<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> a' \<squnion> \<A> i)" by - (erule D_mono)
-  from Da Di De show ?case by simp
-next
-  case AAssRed2 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
-next
-  case FAssRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
-next
-  case CallObj thus ?case by (auto elim!: Ds_mono[OF red_lA_incr])
-next
-  case CallParams thus ?case by(auto elim!: Ds_mono[OF red_lA_incr])
-next
-  case RedCall thus ?case
-    apply (auto dest!:sees_wf_mdecl[OF wf] simp:wf_mdecl_def elim!:D_mono')
-    by(auto simp:hyperset_defs)
-next
-  case InitBlockRed thus ?case
-    by(auto simp:hyperset_defs elim!:D_mono' simp del:fun_upd_apply)
-next
-  case BlockRedNone thus ?case
-    by(auto simp:hyperset_defs elim!:D_mono' simp del:fun_upd_apply)
-next
-  case BlockRedSome thus ?case
-    by(auto simp:hyperset_defs elim!:D_mono' simp del:fun_upd_apply)
-next
-  case SynchronizedRed1 thus ?case by(auto elim!: D_mono[OF red_lA_incr])
-next
-  case SeqRed thus ?case by (auto elim!: D_mono[OF red_lA_incr])
-next
-  case CondRed thus ?case by (auto elim!: D_mono[OF red_lA_incr])
-next
-  case TryRed thus ?case
-    by (fastsimp dest:red_lcl_incr intro:D_mono' simp:hyperset_defs)
-next
-  case RedWhile thus ?case by(auto simp:hyperset_defs elim!:D_mono')
-qed (auto simp:hyperset_defs)
-
-
 
 text{* Combining conformance of heap and local variables: *}
 
@@ -268,11 +122,19 @@ constdefs
   "P,E \<turnstile> s \<surd>  \<equiv>  let (h,l) = s in P \<turnstile> h \<surd> \<and> P,h \<turnstile> l (:\<le>) E"
 
 lemma red_preserves_sconf:
-  "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
+  "\<lbrakk> extTA,P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
 (*<*)
-by(fastsimp dest:red_preserves_hconf red_preserves_lconf
+by(auto dest:red_preserves_hconf red_preserves_lconf
             simp add:sconf_def)
 (*>*)
+
+lemma reds_preserves_sconf:
+  "\<lbrakk> extTA,P \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; P,E,hp s \<turnstile> es [:] Ts; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
+(*<*)
+by(auto dest:reds_preserves_hconf reds_preserves_lconf
+            simp add:sconf_def)
+(*>*)
+
 
 
 subsection "Subject reduction"
@@ -286,15 +148,25 @@ prefer 5 apply (force)
 apply simp_all
 done
 
+lemma wt_external_call:
+  "conf_extRet P h va T \<Longrightarrow> \<exists>T'. P,E,h \<turnstile> extRet2J va : T' \<and> P \<turnstile> T' \<le> T"
+by(cases va)(auto simp add: conf_def)
+
+lemma reds_preserves_len: (* Move to SmallStep *)
+  "extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> length es' = length es"
+by(induct es arbitrary: es')(auto elim: reds.cases)
+
 theorem assumes wf: "wf_J_prog P"
-shows subject_reduction: "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e:T \<rbrakk>
-           \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e':T' \<and> P \<turnstile> T' \<le> T"
-proof (induct arbitrary: T E rule:red.induct)
+  shows subject_reduction:
+  "\<lbrakk> extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e:T \<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e':T' \<and> P \<turnstile> T' \<le> T"
+  and subjects_reduction:
+  "\<lbrakk> extTA,P \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> es[:]Ts \<rbrakk> \<Longrightarrow> \<exists>Ts'. P,E,hp s' \<turnstile> es'[:]Ts' \<and> P \<turnstile> Ts' [\<le>] Ts"
+proof (induct arbitrary: T E and Ts E rule:red_reds.inducts)
   case RedNew
   thus ?case by fastsimp
 next
   case RedNewFail thus ?case
-  by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_OutOfMemory)
+  by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_OutOfMemory simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case NewArrayRed
   thus ?case by fastsimp
@@ -303,23 +175,23 @@ next
   thus ?case by fastsimp
 next
   case RedNewArrayNegative thus ?case
-    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NegativeArraySize)
+    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NegativeArraySize simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedNewArrayFail thus ?case
-    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_OutOfMemory)
+    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_OutOfMemory simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (CastRed e s ta e' s' C T E)
-  have esse: "P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" 
+  have esse: "extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" 
     and IH: "\<And>T E. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T"
     and hconf: "P,E \<turnstile> s \<surd>"
     and wtc: "P,E,hp s \<turnstile> Cast C e : T" by fact+
   thus ?case
-  proof(clarsimp simp del: hp_def)
+  proof(clarsimp)
     fix T'
-    assume wte: "P,E,hp s \<turnstile> e : T'"
+    assume wte: "P,E,hp s \<turnstile> e : T'" "is_type P T"
     from wte and hconf and IH have "\<exists>U. P,E,hp s' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T'" by simp
     then obtain U where wtee: "P,E,hp s' \<turnstile> e' : U" and UsTT: "P \<turnstile> U \<le> T'" by blast
-    from wtee have "P,E,hp s' \<turnstile> Cast T e' : T" by - (rule WTrtCast)
+    from wtee `is_type P T` have "P,E,hp s' \<turnstile> Cast T e' : T" by(rule WTrtCast)
     thus "\<exists>T'. P,E,hp s' \<turnstile> Cast T e' : T' \<and> P \<turnstile> T' \<le> T" by blast
   qed
 next
@@ -327,10 +199,10 @@ next
     by(clarsimp simp add: is_refT_def)
 next
   case RedCastFail thus ?case
-    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_ClassCast)
+    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_ClassCast simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (BinOpRed1 e\<^isub>1 s ta e\<^isub>1' s' bop e\<^isub>2 T E)
-  have red: "P \<turnstile> \<langle>e\<^isub>1, s\<rangle> -ta\<rightarrow> \<langle>e\<^isub>1', s'\<rangle>"
+  have red: "extTA,P \<turnstile> \<langle>e\<^isub>1, s\<rangle> -ta\<rightarrow> \<langle>e\<^isub>1', s'\<rangle>"
    and IH: "\<And>T E. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e\<^isub>1:T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e\<^isub>1' : U \<and> P \<turnstile> U \<le> T"
    and conf: "P,E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T" by fact+
@@ -354,7 +226,7 @@ next
   thus ?case by auto
 next
   case (BinOpRed2 e\<^isub>2 s ta e\<^isub>2' s' v\<^isub>1 bop T E)
-  have red: "P \<turnstile> \<langle>e\<^isub>2,s\<rangle> -ta\<rightarrow> \<langle>e\<^isub>2',s'\<rangle>" by fact
+  have red: "extTA,P \<turnstile> \<langle>e\<^isub>2,s\<rangle> -ta\<rightarrow> \<langle>e\<^isub>2',s'\<rangle>" by fact
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e\<^isub>2:T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e\<^isub>2' : U \<and> P \<turnstile> U \<le> T" by fact
   have conf: "P,E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> (Val v\<^isub>1) \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T" by fact+
@@ -392,7 +264,7 @@ next
 next
   case (AAccRed1 a s ta a' s' i T E)
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> a : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> a' : T' \<and> P \<turnstile> T' \<le> T"
-    and assa: "P \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>"
+    and assa: "extTA,P \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>"
     and wt: "P,E,hp s \<turnstile> a\<lfloor>i\<rceil> : T"
     and hconf: "P,E \<turnstile> s \<surd>" by fact+
   from wt have wti: "P,E,hp s \<turnstile> i : Integer" by auto
@@ -416,7 +288,7 @@ next
 next
   case (AAccRed2 i s ta i' s' a T E)
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> i : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> i' : T' \<and> P \<turnstile> T' \<le> T"
-    and issi: "P \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>"
+    and issi: "extTA,P \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>"
     and wt: "P,E,hp s \<turnstile> Val a\<lfloor>i\<rceil> : T"
     and hconf: "P,E \<turnstile> s \<surd>" by fact+
   from wt have wti: "P,E,hp s \<turnstile> i : Integer" by auto
@@ -440,20 +312,22 @@ next
   qed
 next
   case RedAAccNull thus ?case
-    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer)
+    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedAAccBounds thus ?case
-    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_ArrayIndexOutOfBounds)
+    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_ArrayIndexOutOfBounds simp add: xcpt_subcls_Throwable[OF _ wf])
 next
-  case (RedAAcc s a T si el i T' E)
-  with prems have "P,hp s \<turnstile> Arr T si el \<surd>" by (auto simp add: sconf_def hconf_def)
-  with prems obtain U where "typeof\<^bsub>hp s\<^esub> (el i) = \<lfloor>U\<rfloor>" and "P \<turnstile> U \<le> T'"
-    by(auto simp add: oconf_def conf_def simp del: hp_def)
-  with prems show ?case by(auto simp del:fun_upd_apply)
+  case (RedAAcc s a T el i T' E)
+  hence "P,hp s \<turnstile> Arr T el \<surd>" by (auto simp add: sconf_def hconf_def)
+  moreover from `0 \<le> i` `i < int (length el)` have "el ! nat i \<in> set el" by auto
+  ultimately obtain U where "typeof\<^bsub>hp s\<^esub> (el ! nat i) = \<lfloor>U\<rfloor>" and "P \<turnstile> U \<le> T'"
+    using `P,E,hp s \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'` `hp s a = \<lfloor>Arr T el\<rfloor>`
+    by(auto simp add: oconf_def conf_def split: heapobj.split_asm)
+  with RedAAcc show ?case by(auto simp del:fun_upd_apply)
 next
   case (AAssRed1 a s ta a' s' i e T E)
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> a : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> a' : T' \<and> P \<turnstile> T' \<le> T"
-    and assa: "P \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>"
+    and assa: "extTA,P \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>"
     and wt: "P,E,hp s \<turnstile> a\<lfloor>i\<rceil> := e : T"
     and hconf: "P,E \<turnstile> s \<surd>" by fact+
   from wt have void: "T = Void" by blast
@@ -501,7 +375,7 @@ next
 next
   case (AAssRed2 i s ta i' s' a e T E)
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> i : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> i' : T' \<and> P \<turnstile> T' \<le> T" 
-    and issi: "P \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>" 
+    and issi: "extTA,P \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>" 
     and wt: "P,E,hp s \<turnstile> Val a\<lfloor>i\<rceil> := e : T" 
     and hconf: "P,E \<turnstile> s \<surd>" by fact+
   from wt have void: "T = Void" by blast
@@ -526,7 +400,7 @@ next
 next
   case (AAssRed3 e s ta e' s' a i T E)
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T" 
-    and issi: "P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" 
+    and issi: "extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" 
     and wt: "P,E,hp s \<turnstile> Val a\<lfloor>Val i\<rceil> := e : T" 
     and hconf: "P,E \<turnstile> s \<surd>" by fact+
   from wt have void: "T = Void" by blast
@@ -552,16 +426,60 @@ next
   qed
 next
   case RedAAssNull thus ?case
-    by (unfold sconf_def hconf_def) (auto elim!:typeof_NullPointer)
+    by (unfold sconf_def hconf_def) (auto elim!:typeof_NullPointer simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedAAssBounds thus ?case
-    by (unfold sconf_def hconf_def) (auto elim!:typeof_ArrayIndexOutOfBounds)
+    by (unfold sconf_def hconf_def) (auto elim!:typeof_ArrayIndexOutOfBounds simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedAAssStore thus ?case
-    by (unfold sconf_def hconf_def) (auto elim!:typeof_ArrayStore)
+    by (unfold sconf_def hconf_def) (auto elim!:typeof_ArrayStore simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case RedAAss thus ?case
     by(auto simp del:fun_upd_apply)
+next
+  case (ALengthRed a s ta a' s' T E)
+  note IH = `\<And>T'. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> a : T'\<rbrakk>
+      \<Longrightarrow> \<exists>T''. P,E,hp s' \<turnstile> a' : T'' \<and> P \<turnstile> T'' \<le> T'`
+  from `P,E,hp s \<turnstile> a\<bullet>length : T`
+  show ?case
+  proof(rule WTrt_elim_cases)
+    fix T'
+    assume [simp]: "T = Integer"
+      and wta: "P,E,hp s \<turnstile> a : T'\<lfloor>\<rceil>"
+    from wta `P,E \<turnstile> s \<surd>` IH
+    obtain T'' where wta': "P,E,hp s' \<turnstile> a' : T''" 
+      and sub: "P \<turnstile> T'' \<le> T'\<lfloor>\<rceil>" by blast
+    from sub have "P,E,hp s' \<turnstile> a'\<bullet>length : Integer"
+      unfolding widen_Array
+    proof(rule disjE)
+      assume "T'' = NT"
+      with wta' show ?thesis by(auto)
+    next
+      assume "\<exists>V. T'' = V\<lfloor>\<rceil> \<and> P \<turnstile> V \<le> T' \<and> (is_NT_Array V \<longrightarrow> V = T')"
+      then obtain V where "T'' = V\<lfloor>\<rceil>" "P \<turnstile> V \<le> T'" by blast
+      with wta' show ?thesis by -(rule WTrtALength, simp)
+    qed
+    thus ?thesis by(simp)
+  next
+    assume "P,E,hp s \<turnstile> a : NT"
+    with `P,E \<turnstile> s \<surd>` IH
+    obtain T'' where wta': "P,E,hp s' \<turnstile> a' : T''" 
+      and sub: "P \<turnstile> T'' \<le> NT" by blast
+    from sub have "T'' = NT" by auto
+    with wta' show ?thesis by(auto)
+  qed
+next
+  case (RedALength s a T elem T' E)
+  from `hp s a = \<lfloor>Arr T elem\<rfloor>` `P,E,hp s \<turnstile> addr a\<bullet>length : T'`
+  have [simp]: "T' = Integer" by(auto)
+  thus ?case by(auto)
+next
+  case (RedALengthNull s T E)
+  from `P,E \<turnstile> s \<surd>` have "preallocated (hp s)"
+    by(clarsimp simp add: hconf_def sconf_def)
+  hence "P,E,hp s \<turnstile> THROW NullPointer : T"
+    by(auto elim:typeof_NullPointer simp add: xcpt_subcls_Throwable[OF _ wf])
+  thus ?case by blast
 next
   case (FAccRed e s ta e' s' F D T E)
   have IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk>
@@ -616,10 +534,10 @@ next
                 dest:has_fields_fun)
 next
   case RedFAccNull thus ?case
-    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer)
+    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (FAssRed1 e s ta e' s' F D e\<^isub>2)
-  have red: "P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>"
+  have red: "extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "P,E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>F{D}:=e\<^isub>2 : T" by fact+
@@ -659,7 +577,7 @@ next
   ultimately show ?case using wt by blast
 next
   case (FAssRed2 e\<^isub>2 s ta e\<^isub>2' s' v F D T E)
-  have red: "P \<turnstile> \<langle>e\<^isub>2,s\<rangle> -ta\<rightarrow> \<langle>e\<^isub>2',s'\<rangle>"
+  have red: "extTA,P \<turnstile> \<langle>e\<^isub>2,s\<rangle> -ta\<rightarrow> \<langle>e\<^isub>2',s'\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e\<^isub>2 : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e\<^isub>2' : U \<and> P \<turnstile> U \<le> T"
    and conf: "P,E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> Val v\<bullet>F{D}:=e\<^isub>2 : T" by fact+
@@ -689,32 +607,29 @@ next
   case RedFAss thus ?case by(auto simp del:fun_upd_apply)
 next
   case RedFAssNull thus ?case
-    by (unfold sconf_def hconf_def) (auto elim!:typeof_NullPointer)
+    by (unfold sconf_def hconf_def) (auto elim!:typeof_NullPointer simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (CallObj e s ta e' s' M es T E)
-  have red: "P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>"
+  have red: "extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>"
    and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk>
                  \<Longrightarrow> \<exists>U. P,E,hp s' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
    and conf: "P,E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> e\<bullet>M(es) : T" by fact+
   -- "We distinguish if @{term e} has type @{term NT} or a Class type"
   -- "Remember ?case = @{term ?case}"
-  from wt
-  show ?case
+  from wt show ?case
   proof(rule WTrt_elim_cases)
-    fix C D Ts Us body pns
+    fix C Ts pns body D Us
     assume wte: "P,E,hp s \<turnstile> e : Class C"
       and method: "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
-      and wtes: "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) es Us" and subs: "P \<turnstile> Us [\<le>] Ts"
+      and wtes: "P,E,hp s \<turnstile> es [:] Us" and subs: "P \<turnstile> Us [\<le>] Ts"
+      and nexc: "\<not> is_external_call P (Class C) M (length es)"
     obtain U where wte': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> Class C"
       using IH[OF conf wte] by blast
     -- "Is @{term U} the null type or a class type?"
     { assume "U = NT"
-      moreover from wtes have "list_all2 (\<lambda>e T. P,E,hp s' \<turnstile> e : T) es Us"
-	apply(induct es arbitrary: Us)
-	 apply(simp)
-	apply(clarsimp simp add: list_all2_Cons1 list_all2_Cons2 simp del: hp_def)
-	by(rule WTrt_hext_mono[OF _ red_hext_incr[OF red]])
-      ultimately have ?thesis using wte' by(blast intro!:WTrtCallNT) }
+      moreover have "P,E,hp s' \<turnstile> es [:] Us"
+	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+      ultimately have ?case using wte' by(blast intro!:WTrtCallNT) }
     moreover
     { fix C' assume UClass: "U = Class C'" and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C"
       have "P,E,hp s' \<turnstile> e' : Class C'" using wte' UClass by auto
@@ -722,11 +637,10 @@ next
 	where method': "P \<turnstile> C' sees M:Ts'\<rightarrow>T' = (pns',body') in D'"
 	and subs': "P \<turnstile> Ts [\<le>] Ts'" and sub': "P \<turnstile> T' \<le> T"
 	using Call_lemma[OF method "subclass" wf] by fast
-      moreover from wtes have "list_all2 (\<lambda>e T. P,E,hp s' \<turnstile> e : T) es Us"
-	apply(induct es arbitrary: Us)
-	 apply(simp)
-	apply(clarsimp simp add: list_all2_Cons1 list_all2_Cons2 simp del: hp_def)
-	by(rule WTrt_hext_mono[OF _ red_hext_incr[OF red]])
+      moreover have "P,E,hp s' \<turnstile> es [:] Us"
+	by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
+      moreover from method' "subclass" have "\<not> is_external_call P (Class C') M (length es)"
+	by(blast dest: external_call_not_sees_method[OF wf])
       ultimately have ?thesis
 	using subs by(blast intro:WTrtCall rtrancl_trans widens_trans) }
     moreover
@@ -739,229 +653,87 @@ next
     assume "P,E,hp s \<turnstile> e:NT"
     hence "P,E,hp s' \<turnstile> e' : NT" using IH[OF conf] by fastsimp
     moreover
-    fix Ts assume wtes: "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) es Ts"
-    hence "list_all2 (\<lambda>e T. P,E,hp s' \<turnstile> e : T) es Ts"
-      apply(induct es arbitrary: Ts)
-       apply(simp)
-      apply(clarsimp simp add: list_all2_Cons1 list_all2_Cons2 simp del: hp_def)
-      by(rule WTrt_hext_mono[OF _ red_hext_incr[OF red]])
+    fix Ts assume wtes: "P,E,hp s \<turnstile> es [:] Ts"
+    have "P,E,hp s' \<turnstile> es [:] Ts"
+      by(rule WTrts_hext_mono[OF wtes red_hext_incr[OF red]])
     ultimately show ?thesis by(blast intro!:WTrtCallNT)
   next
-    fix C
-    assume wte: "P,E,hp s \<turnstile> e : Class C"
-    and PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
-    and TVoid: "T = Void"
-    and Mstart: "M = start"
-    and es: "es = []"
-    obtain U where wte': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> Class C"
-      using IH[OF conf wte] by blast
-    -- "Is @{term U} the null type or a class type?"
-    { assume "U = NT"
-      hence ?thesis using wte' TVoid Mstart es
-	apply(simp del: hp_def)
-	by(fastsimp elim: WTrtCallNT) }
-    moreover
-    { fix C' assume UClass: "U = Class C'" and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C"
-      have "P,E,hp s' \<turnstile> e' : Class C'" using wte' UClass by auto
-      hence ?thesis using TVoid Mstart es PCThread "subclass"
-	apply(simp)
-	apply(erule WTrtNewThread)
-	by(auto) }
-    moreover
-    { fix A assume "U = A\<lfloor>\<rceil>"
-      with UsubC have "C = Object" by(auto dest: Array_widen)
-      with PCThread have False by(auto simp: Object_widen) }
-    ultimately show ?thesis using UsubC by(auto simp add:widen_Class)
-  next
-    fix T'
-    assume wte: "P,E,hp s \<turnstile> e : T'"
-      and refT: "is_refT T'"
-      and TVoid: "T = Void"
-      and M: "M = wait"
-      and es: "es = []"
-    from IH[OF conf wte] obtain U where U: "P,E,hp s' \<turnstile> e' : U" and sub: "P \<turnstile> U \<le> T'" by blast
+    fix U Ts
+    assume wte: "P,E,hp s \<turnstile> e : U" and wtes: "P,E,hp s \<turnstile> es [:] Ts"
+      and wtext: "P \<turnstile> U\<bullet>M(Ts) :: T"
+    from IH[OF conf wte] obtain U' where wte': "P,E,hp s' \<turnstile> e' : U'" 
+      and U': "P \<turnstile> U' \<le> U" by(blast)
+    note wtes' = WTrts_hext_mono[OF wtes red_hext_incr[OF red]]
     show ?thesis
-    proof(cases "U = NT")
+    proof(cases "U' = NT")
       case True
-      thus ?thesis using U M es
-	by(auto intro: WTrtCallNT simp del: hp_def)
+      with wte' wtes' show ?thesis by(blast intro: WTrtCallNT)
     next
-      case False 
-      from refT sub have "is_refT U"
-	by(auto elim: widen_refT)
-      with U M es False TVoid show ?thesis
-	by(fastsimp intro: WTrtWait simp del: hp_def)
+      case False
+      with wtext U' have "\<exists>T'. P \<turnstile> U'\<bullet>M(Ts) :: T' \<and> P \<turnstile> T' \<le> T"
+	by(blast intro: external_WTrt_widen_mono widens_refl)
+      with wte' wtes' show ?thesis by(blast intro: WTrtCallExternal)
     qed
-  next
-    fix T'
-    assume wte: "P,E,hp s \<turnstile> e : T'"
-      and refT: "is_refT T'"
-      and TVoid: "T = Void"
-      and M: "M = notify"
-      and es: "es = []"
-    from IH[OF conf wte] obtain U where U: "P,E,hp s' \<turnstile> e' : U" and sub: "P \<turnstile> U \<le> T'" by blast
-    show ?thesis
-    proof(cases "U = NT")
-      case True
-      thus ?thesis using U M es
-	by(auto intro: WTrtCallNT simp del: hp_def)
-    next
-      case False 
-      from refT sub have "is_refT U"
-	by(auto elim: widen_refT)
-      with U M es False TVoid show ?thesis
-	by(fastsimp intro: WTrtNotify simp del: hp_def)
-    qed
-  next
-    fix T'
-    assume wte: "P,E,hp s \<turnstile> e : T'"
-      and refT: "is_refT T'"
-      and TVoid: "T = Void"
-      and M: "M = notifyAll"
-      and es: "es = []"
-    from IH[OF conf wte] obtain U where U: "P,E,hp s' \<turnstile> e' : U" and sub: "P \<turnstile> U \<le> T'" by blast
-    show ?thesis
-    proof(cases "U = NT")
-      case True
-      thus ?thesis using U M es
-	by(auto intro: WTrtCallNT simp del: hp_def)
-    next
-      case False 
-      from refT sub have "is_refT U"
-	by(auto elim: widen_refT)
-      with U M es False TVoid show ?thesis
-	by(fastsimp intro: WTrtNotifyAll simp del: hp_def)
-    qed
-  next
-    fix C
-    assume wte: "P,E,hp s \<turnstile> e : Class C"
-    and PCThread: "P \<turnstile> C \<preceq>\<^sup>* Thread"
-    and TVoid: "T = Void"
-    and Mstart: "M = join"
-    and es: "es = []"
-    obtain U where wte': "P,E,hp s' \<turnstile> e' : U" and UsubC: "P \<turnstile> U \<le> Class C"
-      using IH[OF conf wte] by blast
-    -- "Is @{term U} the null type or a class type?"
-    { assume "U = NT"
-      hence ?thesis using wte' TVoid Mstart es
-	apply(simp del: hp_def)
-	by(fastsimp elim: WTrtCallNT) }
-    moreover
-    { fix C' assume UClass: "U = Class C'" and "subclass": "P \<turnstile> C' \<preceq>\<^sup>* C"
-      have "P,E,hp s' \<turnstile> e' : Class C'" using wte' UClass by auto
-      hence ?thesis using TVoid Mstart es PCThread "subclass"
-	apply(simp)
-	apply(erule WTrtJoin)
-	by(auto) }
-    moreover
-    { fix A assume "U = A\<lfloor>\<rceil>"
-      with UsubC have "C = Object" by(auto dest: Array_widen)
-      with PCThread have False by(auto simp: Object_widen) }
-    ultimately show ?thesis using UsubC by(auto simp add:widen_Class)
   qed
 next
-  case (CallParams e s ta e' s' v M vs es T E)
-  have red: "P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by fact
-  have IH: "\<And>T E. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T" by fact
-  have sconf: "P,E \<turnstile> s \<surd>" by fact
-  have wt: "P,E,hp s \<turnstile> Val v\<bullet>M(map Val vs @ e # es) : T" by fact
+  case (CallParams es s ta es' s' v M T E)
+  have reds: "extTA,P \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>"
+   and IH: "\<And>Ts E. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> es [:] Ts\<rbrakk>
+           \<Longrightarrow> \<exists>Ts'. P,E,hp s' \<turnstile> es' [:] Ts' \<and> P \<turnstile> Ts' [\<le>] Ts"
+   and conf: "P,E \<turnstile> s \<surd>" and wt: "P,E,hp s \<turnstile> Val v\<bullet>M(es) : T" by fact+
   from wt show ?case
   proof (rule WTrt_elim_cases)
-    fix C D Ts Us pns body
+    fix C Ts pns body D Us
     assume wte: "P,E,hp s \<turnstile> Val v : Class C"
       and "P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D"
-      and wtes: "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) (map Val vs @ e # es) Us" and UsSubTs: "P \<turnstile> Us [\<le>] Ts"
+      and wtes: "P,E,hp s \<turnstile> es [:] Us" and "P \<turnstile> Us [\<le>] Ts"
+      and nexc: "\<not> is_external_call P (Class C) M (length es)"
     moreover have "P,E,hp s' \<turnstile> Val v : Class C"
-      by(rule WTrt_hext_mono[OF wte red_hext_incr[OF red]])
-    moreover
-    from wtes obtain Uvs Ue Ues
-      where wtvs: "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) (map Val vs) Uvs"
-      and wtee: "P,E,hp s \<turnstile> e : Ue"
-      and wtes: "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) es Ues"
-      and Us: "Us = Uvs @ Ue # Ues"
-      and lUs: "length vs = length Uvs"
-      by(clarsimp simp add: list_all2_append1 list_all2_Cons1)
-    from wtvs have wtvs': "list_all2 (\<lambda>e T. P,E,hp s' \<turnstile> e : T) (map Val vs) Uvs"
-      apply(induct vs arbitrary: Uvs)
-       apply(simp)
-      apply(clarsimp simp add: list_all2_Cons1 list_all2_Cons2 simp del: hp_def)
-      by(rule  hext_typeof_mono[OF red_hext_incr[OF red]])
-    from IH[OF sconf wtee] obtain T' where wte': "P,E,hp s' \<turnstile> e' : T'" and T'subUe: "P \<turnstile> T' \<le> Ue" by(clarsimp)
-    from wtes have wtes': "list_all2 (\<lambda>e T. P,E,hp s' \<turnstile> e : T) es Ues"
-      apply(induct es arbitrary: Ues)
-       apply(simp)
-      apply(clarsimp simp add: list_all2_Cons1 list_all2_Cons2 simp del: hp_def)
-      by(rule WTrt_hext_mono[OF _ red_hext_incr[OF red]])
-    from Us UsSubTs T'subUe have uvstuessubts: "P \<turnstile> (Uvs @ T' # Ues) [\<le>] Ts"
-      apply(clarsimp simp add: widen_append1)
-      apply(rule_tac x="Ts1" in exI)
-      apply(rule_tac x="z # zs" in exI)
-      by(auto intro: widen_trans)
-    moreover have "list_all2 (\<lambda>e T. P,E,hp s' \<turnstile> e : T) (map Val vs @ e' # es) (Uvs @ T' # Ues)"
-      using wtvs' wte' wtes' lUs
-      by(simp add: list_all2_append)
-    ultimately show ?thesis by(blast intro:WTrtCall widens_trans)
+      by(rule WTrt_hext_mono[OF wte reds_hext_incr[OF reds]])
+    moreover obtain Us' where "P,E,hp s' \<turnstile> es' [:] Us'" "P \<turnstile> Us' [\<le>] Us"
+      using IH[OF conf wtes] by blast
+    moreover from reds have "length es' = length es" by(rule reds_preserves_len)
+    ultimately show ?thesis using nexc by(fastsimp intro:WTrtCall widens_trans)
   next
     fix Us
-    assume null: "P,E,hp s \<turnstile> Val v : NT"
-      and wtes: "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) (map Val vs @ e # es) Us"
+    assume null: "P,E,hp s \<turnstile> Val v : NT" and wtes: "P,E,hp s \<turnstile> es [:] Us"
     from null have "v = Null" by simp
     moreover
-    from wtes obtain Uvs Ue Ues
-      where wtvs: "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) (map Val vs) Uvs"
-      and wtee: "P,E,hp s \<turnstile> e : Ue"
-      and wtes: "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) es Ues"
-      and Us: "Us = Uvs @ Ue # Ues"
-      and lUs: "length vs = length Uvs"
-      by(clarsimp simp add: list_all2_append1 list_all2_Cons1)
-    from wtvs have wtvs': "list_all2 (\<lambda>e T. P,E,hp s' \<turnstile> e : T) (map Val vs) Uvs"
-      apply(induct vs arbitrary: Uvs)
-       apply(simp)
-      apply(clarsimp simp add: list_all2_Cons1 list_all2_Cons2 simp del: hp_def)
-      by(rule  hext_typeof_mono[OF red_hext_incr[OF red]])
-    from IH[OF sconf wtee] obtain T' where wte': "P,E,hp s' \<turnstile> e' : T'" and T'subUe: "P \<turnstile> T' \<le> Ue" by(clarsimp)
-    from wtes have wtes': "list_all2 (\<lambda>e T. P,E,hp s' \<turnstile> e : T) es Ues"
-      apply(induct es arbitrary: Ues)
-       apply(simp)
-      apply(clarsimp simp add: list_all2_Cons1 list_all2_Cons2 simp del: hp_def)
-      by(rule WTrt_hext_mono[OF _ red_hext_incr[OF red]])
-    have "list_all2 (\<lambda>e T. P,E,hp s' \<turnstile> e : T) (map Val vs @ e' # es) (Uvs @ T' # Ues)"
-      using wtvs' wte' wtes' lUs
-      by(simp add: list_all2_append)
-    ultimately show ?thesis 
-      by(fastsimp intro:WTrtCallNT widens_refl)
+    obtain Us' where "P,E,hp s' \<turnstile> es' [:] Us' \<and> P \<turnstile> Us' [\<le>] Us"
+      using IH[OF conf wtes] by blast
+    ultimately show ?thesis by(fastsimp intro:WTrtCallNT)
   next
-    fix C
-    assume "map Val vs @ e # es = []"
-    thus ?thesis by simp
-  next
-    assume "map Val vs @ e # es = []"
-    thus ?thesis by simp
-  qed(simp_all)
+    fix U Ts
+    assume wte: "P,E,hp s \<turnstile> Val v : U" 
+      and wtes: "P,E,hp s \<turnstile> es [:] Ts"
+      and wtext: "P \<turnstile> U\<bullet>M(Ts) :: T"
+    from IH[OF conf wtes] obtain Ts' where wtes': "P,E,hp s' \<turnstile> es' [:] Ts'"
+      and sub: "P \<turnstile> Ts' [\<le>] Ts" by blast
+    from wte reds_hext_incr[OF reds] have wte': "P,E,hp s' \<turnstile> Val v : U"
+      by(rule WTrt_hext_mono)
+    show ?thesis
+    proof(cases "U = NT")
+      case True
+      with wtes' wte' show ?thesis by(fastsimp intro: WTrtCallNT)
+    next
+      case False
+      with wtext sub wtes' wte' have "\<exists>T'. P \<turnstile> U\<bullet>M(Ts') :: T' \<and> P \<turnstile> T' \<le> T"
+	by(blast intro: external_WTrt_widen_mono)
+      with wtes' wte' show ?thesis by(auto intro: WTrtCallExternal)
+    qed
+  qed
 next
-  case (RedCall s a C fs M Ts T pns body D vs T' E)
+  case (RedCall s a C fs M vs Ts T pns body D T' E)
   have hp: "hp s a = Some(Obj C fs)"
-   and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns,body) in D"
-   and wt: "P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T'" by fact+
-  obtain Ts' where wtes: "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) (map Val vs) Ts'"
+    and method: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns,body) in D"
+    and wt: "P,E,hp s \<turnstile> addr a\<bullet>M(map Val vs) : T'" 
+    and nexc: "\<not> is_external_call P (Class C) M (length vs)" by fact+
+  obtain Ts' where wtes: "P,E,hp s \<turnstile> map Val vs [:] Ts'"
     and subs: "P \<turnstile> Ts' [\<le>] Ts" and T'isT: "T' = T"
-    using wt method hp wf
-    apply -
-    apply(erule WTrt_elim_cases)
-          apply(fastsimp dest: sees_method_fun)
-         apply(fastsimp dest: sees_method_fun)
-        apply(fastsimp dest: Thread_not_sees_method_start[OF wf])
-       apply(fastsimp dest: visible_method_exists class_wf map_of_SomeD simp add: wf_cdecl_def)
-      apply(fastsimp dest: visible_method_exists class_wf map_of_SomeD simp add: wf_cdecl_def)
-     apply(fastsimp dest: visible_method_exists class_wf map_of_SomeD simp add: wf_cdecl_def)
-    apply(fastsimp dest: Thread_not_sees_method_join[OF wf])
-    done
+    using wt method hp wf nexc
+    by(fastsimp elim!: WTrt_elim_cases dest: sees_method_fun external_WT_is_external_call map_eq_imp_length_eq' intro: widens_refl)
   from wtes subs have length_vs: "length vs = length Ts"
-    apply -
-    apply(drule list_all2_lengthD)
-    apply(drule widens_lengthD)
-    apply(simp)
-    done
+    by(auto simp add: WTrts_conv_list_all2 dest!: list_all2_lengthD)
   from sees_wf_mdecl[OF wf method] obtain T''
     where wtabody: "P,[this#pns [\<mapsto>] Class D#Ts] \<turnstile> body :: T''"
     and T''subT: "P \<turnstile> T'' \<le> T" and length_pns: "length pns = length Ts"
@@ -970,102 +742,44 @@ next
     by(rule WT_implies_WTrt)
   hence "P,E(this#pns [\<mapsto>] Class D#Ts),hp s \<turnstile> body : T''"
     by(rule WTrt_env_mono) simp
-  hence "P,E,hp s \<turnstile> blocks(this#pns, Class D#Ts, Addr a#vs, body) : T''"
+  hence "P,E,hp s \<turnstile> {this:Class D=\<lfloor>Addr a\<rfloor>; blocks(pns, Ts, vs, body)}\<^bsub>False\<^esub> : T''"
   using wtes subs hp sees_method_decl_above[OF method] length_vs length_pns
     by(fastsimp simp add:wt_blocks rel_list_all2_Cons2)
   with T''subT T'isT show ?case by blast
 next
-  case RedNewThread thus ?case 
-    by(auto dest: Thread_not_sees_method_start[OF wf])
-next
-  case RedNewThreadFail thus ?case using wf
-    apply(simp add: sconf_def hconf_def) 
-    apply(rule exI)
-    apply(rule conjI)
-     apply(rule WTrtThrow)
-       apply(fastsimp intro: typeof_IllegalThreadState)
-      apply(simp)
-     apply(simp)
-    by(rule widen_refl)
-next
-  case (RedWait s a arrobj T E) thus ?case using wf
-    apply -
-    apply(erule WTrt_elim_cases)
-    apply(fastsimp dest: visible_method_exists class_wf map_of_SomeD simp add: wf_cdecl_def)
-    by(cases arrobj, auto)+
-next
-  case RedWaitFail thus ?case using wf
-    by(fastsimp intro: WTrtThrow typeof_IllegalMonitorState widen_refl simp add: sconf_def hconf_def)
-next
-  case (RedNotify s a arrobj T E) thus ?case using wf
-    apply -
-    apply(erule WTrt_elim_cases)
-    apply(fastsimp dest: visible_method_exists class_wf map_of_SomeD simp add: wf_cdecl_def)
-    by(cases arrobj, auto)+
-next
-  case RedNotifyFail thus ?case using wf
-    by(fastsimp intro: WTrtThrow typeof_IllegalMonitorState widen_refl simp add: sconf_def hconf_def)
-next
-  case (RedNotifyAll s a arrobj T E) thus ?case using wf
-    apply -
-    apply(erule WTrt_elim_cases)
-    apply(fastsimp dest: visible_method_exists class_wf map_of_SomeD simp add: wf_cdecl_def)
-    by(cases arrobj, auto)+
-next
-  case RedNotifyAllFail thus ?case using wf
-    by(fastsimp intro: WTrtThrow typeof_IllegalMonitorState widen_refl simp add: sconf_def hconf_def)
-next
-  case RedJoin thus ?case
-    by(auto dest: Thread_not_sees_method_join[OF wf])
+  case RedCallExternal thus ?case
+    by(auto split: heapobj.split_asm dest: red_external_conf_extRet[OF wf] intro: wt_external_call simp add: sconf_def hconf_def)
 next
   case RedCallNull thus ?case
-    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer)
+    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer simp add: xcpt_subcls_Throwable[OF _ wf])
 next
-  case BlockRedNone thus ?case
-    by(auto simp del:fun_upd_apply)(fastsimp simp:sconf_def lconf_def)
-next
-  case (BlockRedSome e h l V ta e' h' l' v T Te E)
-  have red: "P \<turnstile> \<langle>e,(h,l(V:=None))\<rangle> -ta\<rightarrow> \<langle>e',(h',l')\<rangle>" 
-   and IH: "\<And>T E. \<lbrakk>P,E \<turnstile> (h, l(V := None)) \<surd>; P,E,hp (h, l(V := None)) \<turnstile> e : T\<rbrakk>
-            \<Longrightarrow> \<exists>T'. P,E,hp (h', l') \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T"
-   and Some: "l' V = Some v"
-   and conf: "P,E \<turnstile> (h,l) \<surd>"
-   and wt: "P,E,hp (h, l) \<turnstile> {V:T; e} : Te" by fact+
-  obtain Te' where IH': "P,E(V\<mapsto>T),h' \<turnstile> e' : Te' \<and> P \<turnstile> Te' \<le> Te"
-    using IH conf wt by(fastsimp simp:sconf_def lconf_def)
-  have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)" using conf wt
-    apply -
-    apply(simp)
-    apply(erule red_preserves_lconf[OF red, simplified])
-    by(simp add: sconf_def lconf_def)
-  hence "P,h' \<turnstile> v :\<le> T" using Some by(fastsimp simp:lconf_def)
-  with IH' show ?case
-    by(fastsimp simp:sconf_def conf_def fun_upd_same simp del:fun_upd_apply)
-next
-  case (InitBlockRed e h l V v ta e' h' l' v' T T' E)
-  have red: "P \<turnstile> \<langle>e, (h,l(V\<mapsto>v))\<rangle> -ta\<rightarrow> \<langle>e',(h',l')\<rangle>"
-   and IH: "\<And>E T. \<lbrakk>P,E \<turnstile> (h,l(V\<mapsto>v)) \<surd>; P,E,hp (h, l(V \<mapsto> v)) \<turnstile> e : T\<rbrakk>
-                    \<Longrightarrow> \<exists>U. P,E,hp (h', l') \<turnstile> e' : U \<and> P \<turnstile> U \<le> T"
-   and v': "l' V = Some v'" and conf: "P,E \<turnstile> (h,l) \<surd>"
-   and wt: "P,E,hp (h, l) \<turnstile> {V:T := Val v; e} : T'" by fact+
-  from wt obtain T\<^isub>1 where wt\<^isub>1: "typeof\<^bsub>h\<^esub> v = Some T\<^isub>1"
-    and T1subT: "P \<turnstile> T\<^isub>1 \<le> T" and wt\<^isub>2: "P,E(V\<mapsto>T),h \<turnstile> e : T'" by auto
-  have lconf\<^isub>2: "P,h \<turnstile> l(V\<mapsto>v) (:\<le>) E(V\<mapsto>T)" using conf wt\<^isub>1 T1subT
-    by(simp add:sconf_def lconf_upd2 conf_def)
-  have "\<exists>T\<^isub>1'. typeof\<^bsub>h'\<^esub> v' = Some T\<^isub>1' \<and> P \<turnstile> T\<^isub>1' \<le> T"
-    using v' red_preserves_lconf[OF red] wt\<^isub>2 lconf\<^isub>2
-    by(fastsimp simp:lconf_def conf_def)
-  with IH conf lconf\<^isub>2 wt\<^isub>2 show ?case by (fastsimp simp add:sconf_def)
-next
+  case (BlockRed e h x V vo ta e' h' x' T cr T' E)
+  note IH = `\<And>T E. \<lbrakk>P,E \<turnstile> (h, x(V := vo)) \<surd>; P,E,hp (h, x(V := vo)) \<turnstile> e : T\<rbrakk>
+             \<Longrightarrow> \<exists>T'. P,E,hp (h', x') \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T`[simplified]
+  from `P,E,hp (h, x) \<turnstile> {V:T=vo; e}\<^bsub>cr\<^esub> : T'` have "P,E(V\<mapsto>T),h \<turnstile> e : T'" by(cases vo, auto)
+  moreover from `P,E \<turnstile> (h, x) \<surd>` `P,E,hp (h, x) \<turnstile> {V:T=vo; e}\<^bsub>cr\<^esub> : T'`
+  have "P,(E(V \<mapsto> T)) \<turnstile> (h, x(V := vo)) \<surd>"
+    by(cases vo)(simp add: lconf_def sconf_def,auto simp add: sconf_def conf_def intro: lconf_upd2)
+  ultimately obtain T'' where wt': "P,E(V\<mapsto>T),h' \<turnstile> e' : T''" "P \<turnstile> T'' \<le> T'"
+    by(auto dest: IH)
+  { fix v
+    assume vo: "x' V = \<lfloor>v\<rfloor>"
+    from `P,(E(V \<mapsto> T)) \<turnstile> (h, x(V := vo)) \<surd>` `extTA,P \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>` `P,E(V\<mapsto>T),h \<turnstile> e : T'`
+    have "P,(E(V \<mapsto> T)) \<turnstile> (h', x') \<surd>" by(auto simp add: sconf_def dest: red_preserves_hconf red_preserves_lconf)
+    with vo have "\<exists>T'. typeof\<^bsub>h'\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T" by(fastsimp simp add: sconf_def lconf_def conf_def)
+    then obtain T' where "typeof\<^bsub>h'\<^esub> v = \<lfloor>T'\<rfloor>" "P \<turnstile> T' \<le> T" by blast
+    hence ?case using wt' vo by(auto) }
+  moreover
+  { assume "x' V = None" with wt' have ?case by(auto) }
+  ultimately show ?case by blast
+next 
   case RedBlock thus ?case by auto
 next
-  case RedInitBlock thus ?case by auto
-next
   case (SynchronizedRed1 o' s ta o'' s' e T E)
-  have red: "P \<turnstile> \<langle>o',s\<rangle> -ta\<rightarrow> \<langle>o'',s'\<rangle>" by fact
+  have red: "extTA,P \<turnstile> \<langle>o',s\<rangle> -ta\<rightarrow> \<langle>o'',s'\<rangle>" by fact
   have IH: "\<And>T E. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> o' : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> o'' : T' \<and> P \<turnstile> T' \<le> T" by fact
   have conf: "P,E \<turnstile> s \<surd>" by fact
-  have wt: "P,E,hp s \<turnstile> sync(o') e : T" by fact
+  have wt: "P,E,hp s \<turnstile> sync(o') e : T" by fact+
   thus ?case
   proof(rule WTrt_elim_cases)
     fix To
@@ -1093,13 +807,13 @@ next
   qed
 next
   case SynchronizedNull thus ?case
-    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer)
+    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (LockSynchronized s a arrobj e T E) thus ?case 
     by(cases arrobj)(auto)
 next
   case (SynchronizedRed2 e s ta e' s' a T E)
-  have red: "P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have red: "extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by fact
   have IH: "\<And>T E. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T" by fact
   have conf: "P,E \<turnstile> s \<surd>" by fact
   have wt: "P,E,hp s \<turnstile> insync(a) e : T" by fact
@@ -1108,7 +822,7 @@ next
     fix Ta arrobj
     assume "P,E,hp s \<turnstile> e : T"
       and hpa: "hp s a = \<lfloor>arrobj\<rfloor>"
-      and arrobj: "(case arrobj of Obj C fs \<Rightarrow> \<lfloor>Class C\<rfloor> | Arr t s e \<Rightarrow> \<lfloor>t\<lfloor>\<rceil>\<rfloor>) = \<lfloor>Ta\<rfloor>"
+      and arrobj: "(case arrobj of Obj C fs \<Rightarrow> \<lfloor>Class C\<rfloor> | Arr t e \<Rightarrow> \<lfloor>t\<lfloor>\<rceil>\<rfloor>) = \<lfloor>Ta\<rfloor>"
     from `P,E,hp s \<turnstile> e : T` conf obtain T'
       where "P,E,hp s' \<turnstile> e' : T'" "P \<turnstile> T' \<le> T" by(blast dest: IH)
     moreover from conf red have hext: "hp s \<unlhd> hp s'" by(auto dest: red_hext_incr)
@@ -1126,7 +840,7 @@ next
     by auto
 next
   case (CondRed b s ta b' s' e1 e2 T E)
-  have red: "P \<turnstile> \<langle>b,s\<rangle> -ta\<rightarrow> \<langle>b',s'\<rangle>" by fact
+  have red: "extTA,P \<turnstile> \<langle>b,s\<rangle> -ta\<rightarrow> \<langle>b',s'\<rangle>" by fact
   have IH: "\<And>T E. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> b : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> b' : T' \<and> P \<turnstile> T' \<le> T" by fact
   have conf: "P,E \<turnstile> s \<surd>" by fact
   have wt: "P,E,hp s \<turnstile> if (b) e1 else e2 : T" by fact
@@ -1153,24 +867,21 @@ next
   have wt: "P,E,hp s \<turnstile> throw e : T" by fact
   then obtain T'
     where wte: "P,E,hp s \<turnstile> e : T'" 
-    and nobject: "T' \<noteq> Class Object"
-    and refT: "is_refT_class T'" by(auto)
+    and nobject: "P \<turnstile> T' \<le> Class Throwable" by auto
   from IH[OF conf wte] obtain T'' 
     where wte': "P,E,hp s' \<turnstile> e' : T''"
     and PT'T'': "P \<turnstile> T'' \<le> T'" by blast
-  from nobject PT'T'' have "T'' \<noteq> Class Object"
-    by(auto dest: Object_widen)
-  moreover from refT PT'T'' nobject have "is_refT_class T''" 
-    by(auto simp add: widen_Class elim: is_refT_class.cases)
-  ultimately have "P,E,hp s' \<turnstile> throw e' : T" using wte' PT'T''
+  from nobject PT'T'' have "P \<turnstile> T'' \<le> Class Throwable"
+    by(auto simp add: widen_Class)(erule notE, rule rtranclp_trans)
+  hence "P,E,hp s' \<turnstile> throw e' : T" using wte' PT'T''
     by -(erule WTrtThrow)
   thus ?case by(auto)
 next
   case RedThrowNull thus ?case
-    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer)
+    by (unfold sconf_def hconf_def) (fastsimp elim!:typeof_NullPointer simp add: xcpt_subcls_Throwable[OF _ wf])
 next
   case (TryRed e s ta e' s' C V e2 T E)
-  have red: "P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by fact
+  have red: "extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by fact
   have IH: "\<And>T E. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T" by fact
   have conf: "P,E \<turnstile> s \<surd>" by fact
   have wt: "P,E,hp s \<turnstile> try e catch(C V) e2 : T" by fact
@@ -1201,24 +912,15 @@ next
 next
   case RedTryCatch thus ?case by(fastsimp)
 next
-  case (CallThrowParams es vs a es' v M s T E)
-  have es: "es = map Val vs @ throw a # es'"
-    and conf: "P,E \<turnstile> s \<surd>" by fact+
-  have wt: "P,E,hp s \<turnstile> Val v\<bullet>M(es) : T" by fact
-  thus ?case
-  proof(rule WTrt_elim_cases)
-    fix C D Ts Ts' body pns
-    assume "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) es Ts'"
-    with es obtain Ta where "P,E,hp s \<turnstile> throw a : Ta" by(auto simp add: list_all2_append1 list_all2_Cons1)
-    thus ?thesis by(auto)
-  next
-    fix Ts
-    assume "list_all2 (\<lambda>e T. P,E,hp s \<turnstile> e : T) es Ts"
-    with es obtain Ta where "P,E,hp s \<turnstile> throw a : Ta" by(auto simp add: list_all2_append1 list_all2_Cons1)
-    thus ?thesis by(auto)
-  qed(simp_all add: es)
-qed fastsimp+ (* esp all Throw propagation rules are dealt with here *)
-(*>*)
+  case (ListRed1 e s ta e' s' es Ts E)
+  note IH = `\<And>T E. \<lbrakk>P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e : T\<rbrakk> \<Longrightarrow> \<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T`
+  from `P,E,hp s \<turnstile> e # es [:] Ts` obtain T Ts' where "Ts = T # Ts'" "P,E,hp s \<turnstile> e : T" "P,E,hp s \<turnstile> es [:] Ts'" by auto
+  with IH[of E T] `P,E \<turnstile> s \<surd>` WTrts_hext_mono[OF `P,E,hp s \<turnstile> es [:] Ts'` red_hext_incr[OF `extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`]]
+  show ?case by(auto simp add: list_all2_Cons2 intro: widens_refl)
+next
+  case ListRed2 thus ?case
+    by(fastsimp dest: hext_typeof_mono[OF reds_hext_incr])
+qed(fastsimp)+
 
 subsection {* Lifting to @{text"\<rightarrow>*"} *}
 
@@ -1226,29 +928,29 @@ text{* Now all these preservation lemmas are first lifted to the transitive
 closure \dots *}
 
 lemma Step_induct' [consumes 1, case_names refl step]:
-  assumes red: "P \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow>* \<langle>e', s'\<rangle>"
+  assumes red: "extTA,P \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow>* \<langle>e', s'\<rangle>"
   and refl: "\<And>e s. Q e s [] e s"
-  and step: "\<And>e s tas e' s' ta e'' s''. \<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow>* \<langle>e', s'\<rangle>; Q e s tas e' s'; P \<turnstile> \<langle>e', s'\<rangle> -ta\<rightarrow> \<langle>e'', s''\<rangle> \<rbrakk> \<Longrightarrow> Q e s (tas @ [ta]) e'' s''"
+  and step: "\<And>e s tas e' s' ta e'' s''. \<lbrakk> extTA,P \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow>* \<langle>e', s'\<rangle>; Q e s tas e' s'; extTA,P \<turnstile> \<langle>e', s'\<rangle> -ta\<rightarrow> \<langle>e'', s''\<rangle> \<rbrakk> \<Longrightarrow> Q e s (tas @ [ta]) e'' s''"
   shows "Q e s tas e' s'"
 using red
 apply -
-apply(drule stepify_pred.induct[where P="\<lambda>(e, s) ta (e', s'). Q e s ta e' s'"])
+apply(drule rtrancl3p.induct[where P="\<lambda>(e, s) ta (e', s'). Q e s ta e' s'"])
  apply(case_tac a, fastsimp intro: refl)
 by(auto intro: step)
 
 
 lemma Red_preserves_sconf_and_WT:
 assumes wf: "wf_J_prog P"
-shows "\<lbrakk> P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow>* \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd> \<rbrakk> 
+shows "\<lbrakk> extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow>* \<langle>e',s'\<rangle>; P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd> \<rbrakk> 
        \<Longrightarrow> P,E \<turnstile> s' \<surd> \<and> (\<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T)"
 (*<*)
 proof(induct arbitrary: T rule: Step_induct')
   case refl thus ?case by blast
 next
   case (step e s tas e' s' ta e'' s'' T)
-  have Red: "P \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow>* \<langle>e', s'\<rangle>" by fact
+  have Red: "extTA,P \<turnstile> \<langle>e, s\<rangle> -tas\<rightarrow>* \<langle>e', s'\<rangle>" by fact
   have IH: "\<And>T. \<lbrakk>P,E,hp s \<turnstile> e : T; P,E \<turnstile> s \<surd>\<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd> \<and> (\<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T)" by fact
-  have red: "P \<turnstile> \<langle>e',s'\<rangle> -ta\<rightarrow> \<langle>e'',s''\<rangle>" by fact
+  have red: "extTA,P \<turnstile> \<langle>e',s'\<rangle> -ta\<rightarrow> \<langle>e'',s''\<rangle>" by fact
   have wt: "P,E,hp s \<turnstile> e : T" by fact
   have conf: "P,E \<turnstile> s \<surd>" by fact
   from IH[OF wt conf] have conf': "P,E \<turnstile> s' \<surd>" and "\<exists>T'. P,E,hp s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T " by(auto)
@@ -1258,7 +960,7 @@ next
 qed
 
 lemma Red_preserves_defass:
-assumes wf: "wf_J_prog P" and reds: "P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow>* \<langle>e',s'\<rangle>"
+assumes wf: "wf_J_prog P" and reds: "extTA,P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow>* \<langle>e',s'\<rangle>"
 shows "\<D> e \<lfloor>dom(lcl s)\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom(lcl s')\<rfloor>"
 using reds
 proof (induct rule:Step_induct')
@@ -1270,7 +972,7 @@ next
 qed
 
 lemma Red_preserves_type:
-  "\<lbrakk> wf_J_prog P; P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow>* \<langle>e',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e:T \<rbrakk>
+  "\<lbrakk> wf_J_prog P; extTA,P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow>* \<langle>e',s'\<rangle>; P,E \<turnstile> s \<surd>; P,E,hp s \<turnstile> e:T \<rbrakk>
     \<Longrightarrow> \<exists>T'. P \<turnstile> T' \<le> T \<and> P,E,hp s' \<turnstile> e':T'"
 by(auto dest!: Red_preserves_sconf_and_WT)
 
@@ -1284,7 +986,7 @@ constdefs
   "P,E,s \<turnstile> e:T \<surd>  \<equiv>  P,E \<turnstile> s \<surd> \<and> P,E,hp s \<turnstile> e:T"
 
 theorem Subject_reduction: assumes wf: "wf_J_prog P"
-shows "P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> P,E,s \<turnstile> e : T \<surd>
+shows "extTA,P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> P,E,s \<turnstile> e : T \<surd>
        \<Longrightarrow> \<exists>T'. P,E,s' \<turnstile> e' : T' \<surd> \<and> P \<turnstile> T' \<le> T"
 (*<*)
 by(force simp add: wf_config_def
@@ -1293,7 +995,7 @@ by(force simp add: wf_config_def
 
 
 theorem Subject_reductions:
-assumes wf: "wf_J_prog P" and reds: "P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow>* \<langle>e',s'\<rangle>"
+assumes wf: "wf_J_prog P" and reds: "extTA,P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow>* \<langle>e',s'\<rangle>"
 shows "\<And>T. P,E,s \<turnstile> e:T \<surd> \<Longrightarrow> \<exists>T'. P,E,s' \<turnstile> e':T' \<surd> \<and> P \<turnstile> T' \<le> T"
 (*<*)
 using reds
@@ -1307,7 +1009,7 @@ qed
 
 
 corollary Progress: assumes wf: "wf_J_prog P"
-shows "\<lbrakk> P,E,s  \<turnstile> e : T \<surd>; \<D> e \<lfloor>dom(lcl s)\<rfloor>; \<not> final e \<rbrakk> \<Longrightarrow> \<exists>e' s' tas. P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
+shows "\<lbrakk> P,E,s  \<turnstile> e : T \<surd>; \<D> e \<lfloor>dom(lcl s)\<rfloor>; \<not> final e \<rbrakk> \<Longrightarrow> \<exists>e' s' tas. extTA,P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>"
 (*<*)
 using progress[OF wf_prog_wwf_prog[OF wf]]
 by(auto simp:wf_config_def sconf_def)
@@ -1316,7 +1018,7 @@ by(auto simp:wf_config_def sconf_def)
 
 corollary TypeSafety:
   "\<lbrakk> wf_J_prog P; P,E \<turnstile> s \<surd>; P,E \<turnstile> e::T; \<D> e \<lfloor>dom(lcl s)\<rfloor>;
-     P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow>* \<langle>e',s'\<rangle>; \<not>(\<exists>e'' s'' ta. P \<turnstile> \<langle>e',s'\<rangle> -ta\<rightarrow> \<langle>e'',s''\<rangle>) \<rbrakk>
+     extTA,P \<turnstile> \<langle>e,s\<rangle> -tas\<rightarrow>* \<langle>e',s'\<rangle>; \<not>(\<exists>e'' s'' ta. extTA,P \<turnstile> \<langle>e',s'\<rangle> -ta\<rightarrow> \<langle>e'',s''\<rangle>) \<rbrakk>
  \<Longrightarrow> (\<exists>v. e' = Val v \<and> P,hp s' \<turnstile> v :\<le> T) \<or>
       (\<exists>a. e' = Throw a \<and> a \<in> dom(hp s'))"
 (*<*)

@@ -1,7 +1,5 @@
-(*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: TF_JVM.thy,v 1.4 2008-10-21 06:26:24 alochbihler Exp $
-    Author:     Tobias Nipkow, Gerwin Klein
-    Copyright   2000 TUM
+(*  Title:      JinjaThreads/BV/TF_JVM.thy
+    Author:     Tobias Nipkow, Gerwin Klein, Andreas Lochbihler
 *)
 
 header {* \isaheader{The Typing Framework for the JVM}\label{sec:JVM} *}
@@ -35,7 +33,7 @@ locale start_context = JVM_sl +
   fixes p and C
   assumes wf: "wf_prog p P"
   assumes C:  "is_class P C"
-  assumes Ts: "set Ts \<subseteq> types P"
+  assumes Ts: "set Ts \<subseteq> is_type P"
 
   fixes first :: ty\<^isub>i' and start
   defines [simp]: 
@@ -60,8 +58,8 @@ lemma ex_in_list [iff]:
   by (unfold list_def) auto
 
 lemma singleton_list: 
-  "(\<exists>n. [Class C] \<in> list n (types P) \<and> n \<le> mxs) = (is_class P C \<and> 0 < mxs)"
-  by auto
+  "(\<exists>n. [Class C] \<in> list n (is_type P) \<and> n \<le> mxs) = (is_class P C \<and> 0 < mxs)"
+  by(auto)(auto simp add: mem_def)
 
 lemma set_drop_subset:
   "set xs \<subseteq> A \<Longrightarrow> set (drop n xs) \<subseteq> A"
@@ -77,6 +75,9 @@ lemma in_listE:
 
 declare is_relevant_entry_def [simp]
 declare set_drop_subset [simp]
+
+lemma [simp]: "x \<in> is_type P \<longleftrightarrow> is_type P x"
+by(simp add: mem_def)
 
 theorem (in start_context) exec_pres_type:
   "pres_type step (size is) A"
@@ -104,7 +105,7 @@ theorem (in start_context) exec_pres_type:
   apply fastsimp
 
   -- Push
-  apply (fastsimp simp add: typeof_lit_is_type)
+  apply(fastsimp simp add: typeof_lit_is_type)
 
   -- New
   apply clarsimp
@@ -139,7 +140,14 @@ theorem (in start_context) exec_pres_type:
   apply(erule disjE)
    apply(fastsimp)
   apply(fastsimp)
-  
+
+  -- ALength
+  apply(clarsimp split: split_if_asm)
+   apply(fastsimp)
+  apply(erule disjE)
+   apply(fastsimp)
+  apply(fastsimp)
+
   -- Getfield
   apply (fastsimp dest: sees_field_is_type)
 
@@ -181,85 +189,45 @@ theorem (in start_context) exec_pres_type:
   -- Invoke
   apply(rename_tac the_s M n)
   apply (clarsimp split: split_if_asm)
-     apply fastsimp
-    apply (erule disjE)
-     apply(clarsimp)
-     apply(erule disjE)
-      apply(fastsimp dest: no_sees_wait[OF wf])
-     apply(erule disjE)
-      apply(clarsimp)
-     apply(clarsimp)
-     apply(erule allE)+
-     apply(erule impE, blast)
-     apply(erule impE, blast)
-     apply(clarsimp)
-    apply(erule_tac P="M=notify" in disjE)
-     apply(erule disjE)
-      apply(fastsimp dest: no_sees_notify[OF wf])
-     apply(erule disjE)
-      apply(clarsimp)
-     apply(clarsimp)
-     apply(erule allE)+
-     apply(erule impE, blast)
-     apply(erule impE, blast)
-     apply(clarsimp)
+    apply fastsimp
+   apply (erule disjE)
+    apply(clarsimp)
     apply(erule disjE)
-     apply(fastsimp dest: no_sees_notifyAll[OF wf])
-    apply(erule disjE)
-     apply(clarsimp)
+     apply(fastsimp dest: external_call_not_sees_method[OF wf])
     apply(clarsimp)
     apply(erule allE)+
     apply(erule impE, blast)
     apply(erule impE, blast)
     apply(clarsimp)
-   apply(erule_tac P="M=Type.start" in disjE)
-    apply(erule disjE)
-     apply(erule disjE)
-      apply(clarsimp)
-     apply(clarsimp)
-     apply(erule allE)+
-     apply(erule impE, blast)
-     apply(erule impE, blast)
-     apply(clarsimp)
-    apply(erule disjE)
-     apply(clarsimp)
-    apply(clarsimp)
-    apply(erule allE)+
-    apply(erule impE, blast)
-    apply(erule impE, blast)
-    apply(clarsimp)
-   apply(erule disjE)
-    apply(fastsimp dest: Thread_not_sees_method_join[OF wf])
-   apply(clarsimp)
+   apply clarsimp
    apply(erule disjE)
     apply(clarsimp)
-   apply(clarsimp)
-   apply(erule allE)+
-   apply(erule impE, blast)
-   apply(erule impE, blast)
-   apply(clarsimp)
-  apply(erule disjE)
-   apply(clarsimp)
-   apply(erule disjE)
-    apply(clarsimp)
+    apply(simp add: external_WT_The_conv)
     apply(rule conjI)
-     apply(drule (1) sees_wf_mdecl)
-     apply(clarsimp simp add: wf_mdecl_def)
-    apply(arith)
-   apply(clarsimp)
-   apply(erule allE)+
-   apply(rotate_tac -2)
-   apply(erule impE, blast)
-   apply(erule impE, blast)
-   apply(clarsimp)
+     apply(erule in_listE)+
+     apply(erule WT_external_is_type)
+      apply simp
+      apply(drule_tac c="a!n" in subsetD, simp)
+      apply simp
+     apply simp
+     apply(blast intro: set_take_subset subset_trans del: subsetI)
+    apply simp
+   apply clarsimp
+   apply(rule conjI)
+    apply blast
+   apply fastsimp
+  apply clarsimp
   apply(erule disjE)
-   apply(clarsimp)
-   apply(erule disjE)
-    apply(clarsimp)
-   apply(clarsimp)
+   apply clarsimp
+   apply(rule conjI)
+    apply(drule (1) sees_wf_mdecl)
+    apply(clarsimp simp add: wf_mdecl_def)
+   apply(arith)
   apply(clarsimp)
-  apply(erule disjE)
-   apply(clarsimp)
+  apply(erule allE)+
+  apply(rotate_tac -2)
+  apply(erule impE, blast)
+  apply(erule impE, blast)
   apply(clarsimp)
   done
 (*>*)

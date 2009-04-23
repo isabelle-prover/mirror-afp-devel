@@ -6,30 +6,42 @@ header {* \isaheader{Wellformedness properties for the instantiating semantics a
 
 theory FWWellformSem imports FWProgressAux begin
 
-text {* This locale simple fixes a start state *}
+text {* This locale simply fixes a start state *}
 locale multithreaded_start = multithreaded _ r
   for r :: "('l,'t,'x,'m,'w) semantics" +
-(*  constrains final :: "'x \<Rightarrow> bool"
-  constrains r :: "('l,'t,'x,'m,'w) semantics" *)
   fixes start_state :: "('l,'t,'x,'m,'w) state"
+  assumes lock_thread_ok_start_state: "lock_thread_ok (locks start_state) (thr start_state)"
+begin
 
-locale wf_red = multithreaded_start +
+lemma preserves_lock_thread_ok: 
+  "start_state -\<triangleright>tta\<rightarrow>* s \<Longrightarrow> lock_thread_ok (locks s) (thr s)"
+  by(erule RedT_preserves_lock_thread_ok[OF _ lock_thread_ok_start_state])
+
+end
+
+
+locale wf_red = multithreaded_start _ r start_state
+  for r :: "('l,'t,'x,'m,'w) semantics" and start_state :: "('l,'t,'x,'m,'w) state" +
   assumes wf_red:
     "\<lbrakk> multithreaded.RedT final r start_state tta s; thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>;
        r (x, shr s) ta (x', m') \<rbrakk>
-     \<Longrightarrow> \<exists>ta' x' m'. r (x, shr s) ta' (x', m') \<and> thread_oks (thr s) m' \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub> \<and>
-                    lock_ok_las' (locks s) t \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<and>
-                    collect_locks' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and>
-                    final_thread.cond_action_oks' s t \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<and>
-                    final_thread.collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> final_thread.collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
+     \<Longrightarrow> \<exists>ta' x' m'. r (x, shr s) ta' (x', m') \<and> final_thread.actions_ok' s t ta' \<and> final_thread.actions_subset ta' ta"
 begin
 
 lemmas wf_red_refl = wf_red[OF RedT_refl]
 
+
 lemma wf_redE:
   assumes "start_state -\<triangleright>ttas\<rightarrow>* s" "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "\<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x'', m''\<rangle>"
   obtains ta' x' m'
-  where "\<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>" "thread_oks (thr s) m' \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>"
+  where "\<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>" "actions_ok' s t ta'" "actions_subset ta' ta"
+using assms
+by(blast dest: wf_red)
+
+lemma wf_redE':
+  assumes "start_state -\<triangleright>ttas\<rightarrow>* s" "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "\<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x'', m''\<rangle>"
+  obtains ta' x' m'
+  where "\<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>" "thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>"
   and "lock_ok_las' (locks s) t \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>" "collect_locks' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
   and "cond_action_oks' s t \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>"
   and "collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
@@ -41,18 +53,17 @@ end
 
 locale preserve_lock_behav = multithreaded_start _ r
   for r :: "('l,'t,'x,'m,'w) semantics" +
-  assumes must_lock_preserved: 
+  assumes can_lock_preserved: 
     "\<lbrakk> multithreaded.RedT final r start_state tta s; multithreaded.redT final r s (t', ta') s';
-       thr s t = \<lfloor>(x, ln)\<rfloor>; multithreaded.must_sync r x (shr s) \<rbrakk>
+       thr s t = \<lfloor>(x, ln)\<rfloor>; multithreaded.can_sync r x (shr s) L; L \<noteq> {} \<rbrakk>
     \<Longrightarrow> multithreaded.must_sync r x (shr s')"
   and can_lock_devreserp:
     "\<lbrakk> multithreaded.RedT final r start_state tta s; multithreaded.redT final r s (t', ta') s';
-       thr s t = \<lfloor>(x, ln)\<rfloor>; multithreaded.can_sync r x (shr s') L; L \<noteq> {} \<rbrakk>
+       thr s t = \<lfloor>(x, ln)\<rfloor>; multithreaded.can_sync r x (shr s') L (*; L \<noteq> {}*) \<rbrakk>
     \<Longrightarrow> \<exists>L'\<subseteq>L. multithreaded.can_sync r x (shr s) L'"
 
-
-
-locale wf_progress = final_thread + multithreaded_start +
+locale wf_progress = final_thread final + multithreaded_start final r start_state 
+  for final :: "'x \<Rightarrow> bool" and r :: "('l,'t,'x,'m,'w) semantics" and start_state :: "('l,'t,'x,'m,'w) state" +
   assumes wf_progress: "\<lbrakk> multithreaded.RedT final r start_state tta s; thr s t = \<lfloor>(x, ln)\<rfloor>; \<not> final x \<rbrakk>
                         \<Longrightarrow> \<exists>ta x' m'. r (x, shr s) ta (x', m')"
 begin
@@ -70,8 +81,5 @@ lemmas wf_progress_reflE = wf_progressE[OF RedT_refl]
 
 end
 
-
-locale preserves_lock_thread_ok = multithreaded_start +
-  assumes lock_thread_ok: "multithreaded.RedT final r start_state ttas s \<Longrightarrow> lock_thread_ok (locks s) (thr s)"
 
 end

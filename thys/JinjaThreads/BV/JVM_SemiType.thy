@@ -1,5 +1,5 @@
 (*  Title:      JinjaThreads/BV/JVM_SemiType.thy
-    Author:     Gerwin Klein
+    Author:     Gerwin Klein, Andreas Lochbihler
 
     Based on the theory Jinja/BV/JVM_SemiType
 *)
@@ -42,11 +42,11 @@ constdefs
 constdefs
   sup_ty_opt :: "['c prog,ty err,ty err] \<Rightarrow> bool" 
                  ("_ |- _ <=T _" [71,71,71] 70)
-  "sup_ty_opt P \<equiv> Err.le (subtype P)"
+  "sup_ty_opt P \<equiv> Err.le (widen P)"
 
   sup_state :: "['c prog,ty\<^isub>i,ty\<^isub>i] \<Rightarrow> bool"   
                  ("_ |- _ <=i _"  [71,71,71] 70)
-  "sup_state P \<equiv> Product.le (Listn.le (subtype P)) (Listn.le (sup_ty_opt P))"
+  "sup_state P \<equiv> Product.le (Listn.le (widen P)) (Listn.le (sup_ty_opt P))"
 
   sup_state_opt :: "['c prog,ty\<^isub>i',ty\<^isub>i'] \<Rightarrow> bool" 
                  ("_ |- _ <=' _"  [71,71,71] 70)
@@ -74,8 +74,8 @@ abbreviation (xsymbols)
 section "Unfolding"
 
 lemma JVM_states_unfold: 
-  "states P mxs mxl \<equiv> err(opt((Union {list n (types P) |n. n <= mxs}) <*>
-                                 list mxl (err(types P))))"
+  "states P mxs mxl \<equiv> err(opt((Union {list n (is_type P) |n. n <= mxs}) <*>
+                                 list mxl (err(is_type P))))"
 (*<*)
   apply (unfold states_def sl_def Opt.esl_def Err.sl_def
          stk_esl_def loc_sl_def Product.esl_def
@@ -86,7 +86,7 @@ lemma JVM_states_unfold:
 
 lemma JVM_le_unfold:
  "le P m n \<equiv> 
-  Err.le(Opt.le(Product.le(Listn.le(subtype P))(Listn.le(Err.le(subtype P)))))" 
+  Err.le(Opt.le(Product.le(Listn.le(widen P))(Listn.le(Err.le(widen P)))))" 
 (*<*)
   apply (unfold le_def sl_def Opt.esl_def Err.sl_def
          stk_esl_def loc_sl_def Product.esl_def  
@@ -138,7 +138,7 @@ lemma acc_JVM [intro]:
 
 section {* Widening with @{text "\<top>"} *}
 
-lemma subtype_refl[iff]: "subtype P t t" (*<*) by (simp add: fun_of_def) (*>*)
+lemma widen_refl[iff]: "widen P t t" (*<*) by (simp add: fun_of_def) (*>*)
 
 lemma sup_ty_opt_refl [iff]: "P \<turnstile> T \<le>\<^sub>\<top> T"
 (*<*)
@@ -185,7 +185,7 @@ lemma sup_ty_opt_trans [intro?, trans]:
 section "Stack and Registers"
 
 lemma stk_convert:
-  "P \<turnstile> ST [\<le>] ST' = Listn.le (subtype P) ST ST'"
+  "P \<turnstile> ST [\<le>] ST' = Listn.le (widen P) ST ST'"
 (*<*) by (simp add: Listn.le_def lesub_def) (*>*)
 
 lemma sup_loc_refl [iff]: "P \<turnstile> LT [\<le>\<^sub>\<top>] LT"

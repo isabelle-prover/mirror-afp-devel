@@ -11,7 +11,9 @@ context multithreaded begin
 lemma redT_preserves_ts_inv_ok:
   "\<lbrakk> s -t\<triangleright>ta\<rightarrow> s'; ts_inv_ok (thr s) I \<rbrakk>
   \<Longrightarrow> ts_inv_ok (thr s') (upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)"
-by(erule redT.cases)(auto intro: ts_inv_ok_upd_invs ts_inv_ok_upd_ts redT_updTs_Some)
+apply(erule redT.cases)
+apply(auto intro: ts_inv_ok_upd_invs ts_inv_ok_upd_ts redT_updTs_Some)
+done
 
 lemma RedT_preserves_ts_inv_ok:
   "\<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; ts_inv_ok (thr s) I \<rbrakk>
@@ -69,7 +71,7 @@ proof(rule ts_okI)
     with ta have red: "\<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>"
       and est: "ts t = \<lfloor>(x, no_wait_locks)\<rfloor>"
       and lota: "lock_ok_las ls t las"
-      and cctta: "thread_oks ts m' tas"
+      and cctta: "thread_oks ts tas"
       and cdta: "cond_action_oks (ls, (ts, m), ws) t cas"
       and wst: "ws t = None"
       and ls': "ls' = redT_updLs ls t las"
@@ -133,10 +135,11 @@ by(fastsimp elim: redT_preserves)
 
 end
 
-lemma lifting_wf_Const [intro!]: "lifting_wf r (\<lambda>x m. k)" ..
+lemma lifting_wf_Const [intro!]: "multithreaded r \<Longrightarrow> lifting_wf r (\<lambda>x m. k)"
+by(unfold_locales)(rule multithreaded.new_thread_memory)
 
-locale lifting_inv = lifting_wf final r Q
-    for final :: "'x \<Rightarrow> bool" and
+locale lifting_inv = lifting_wf final r Q 
+  for final :: "'x \<Rightarrow> bool" and
       r :: "('l,'t,'x,'m,'w) semantics" and
       Q :: "'x \<Rightarrow> 'm \<Rightarrow> bool" +
   fixes P :: "'i \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
@@ -163,7 +166,7 @@ proof(rule ts_invI)
     with ta have red: "\<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>"
       and est: "ts t = \<lfloor>(x, no_wait_locks)\<rfloor>"
       and lota: "lock_ok_las ls t las"
-      and cctta: "thread_oks ts m' tas"
+      and cctta: "thread_oks ts tas"
       and cdta: "cond_action_oks (ls, (ts, m), ws) t cas"
       and wst: "ws t = None"
       and ls': "ls' = redT_updLs ls t las"

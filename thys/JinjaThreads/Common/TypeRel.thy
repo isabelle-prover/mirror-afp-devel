@@ -18,11 +18,7 @@ where subcls1I: "\<lbrakk> class P C = Some (D, rest); C \<noteq> Object \<rbrak
 abbreviation subcls :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" ("_ \<turnstile> _ \<preceq>\<^sup>* _"  [71,71,71] 70)
 where "P \<turnstile> C \<preceq>\<^sup>* D \<equiv> (subcls1 P)\<^sup>*\<^sup>* C D"
 
-lemma subcls1_iff [code]:
-  "P \<turnstile> C \<prec>\<^sup>1 D \<longleftrightarrow> C \<noteq> Object \<and>
-                 (case class P C of None \<Rightarrow> False | \<lfloor>(D', rest)\<rfloor> \<Rightarrow> D = D')"
-apply(auto intro: subcls1I elim: subcls1.cases)
-done
+lemmas [code ind] = rtranclp.intros(1) converse_rtranclp_into_rtranclp
 
 lemma subcls1D:
   "P \<turnstile> C \<prec>\<^sup>1 D \<Longrightarrow> C \<noteq> Object \<and> (\<exists>fs ms. class P C = Some (D,fs,ms))"
@@ -71,8 +67,6 @@ apply (erule rtranclp_induct)
 apply  (drule_tac [2] subcls1D)
 apply  auto
 done
-
-
 
 subsection{* The subtype relations *}
 
@@ -133,7 +127,6 @@ proof -
       from AT BU `P \<turnstile> A \<le> B` have sub: "P \<turnstile> T \<le> U" by simp
       hence "is_NT_Array U \<Longrightarrow> T = U"
       proof(rule widen.cases)
-	prefer 6
 	fix A' B'
 	assume ntU: "is_NT_Array U"
 	  and T: "T = A'\<lfloor>\<rceil>"
@@ -202,7 +195,6 @@ done
 
 lemma widen_Class: "(P \<turnstile> T \<le> Class C) = (T = NT \<or> (\<exists>D. T = Class D \<and> P \<turnstile> D \<preceq>\<^sup>* C) \<or> (C = Object \<and> (\<exists>A. T = Array A \<and> is_type P A)))"
 proof(induct T)
-  prefer 6
   case (Array T)
   have "P \<turnstile> T\<lfloor>\<rceil> \<le> Class C = (C = Object \<and> is_type P T)" 
   proof(rule iffI)
@@ -648,7 +640,10 @@ lemma has_field_is_class:
   "\<lbrakk> P \<turnstile> C has M:T in D \<rbrakk> \<Longrightarrow> is_class P C"
 (*<*)by (auto simp add: is_class_def has_field_def elim: Fields.induct)(*>*)
 
-
+lemma has_field_decl_above:
+  "P \<turnstile> C has F:T in D \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* D"
+unfolding has_field_def
+by(auto dest: map_of_SomeD has_fields_decl_above)
 
 constdefs
   sees_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"

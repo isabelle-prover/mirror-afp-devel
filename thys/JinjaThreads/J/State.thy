@@ -1,21 +1,19 @@
-(*  Title:      Jinja/J/State.thy
-    ID:         $Id: State.thy,v 1.5 2008-06-12 06:57:23 lsf37 Exp $
+(*  Title:      JinjaThreads/J/State.thy
     Author:     Tobias Nipkow, Andreas Lochbihler
-    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Program State} *}
 
-theory State imports "../Objects" begin
+theory State imports "../Common/Objects" begin
 
 
 types
   locals = "vname \<rightharpoonup> val"      -- "local vars, incl. params and ``this''"
   Jstate = "heap \<times> locals"     -- "the heap and the local vars"
 
-definition hp :: "Jstate \<Rightarrow> heap" where "hp \<equiv> fst"
+definition hp :: "heap \<times> 'x \<Rightarrow> heap" where "hp \<equiv> fst"
 
-definition lcl :: "Jstate \<Rightarrow> locals" where "lcl \<equiv> snd"
+definition lcl :: "heap \<times> 'x \<Rightarrow> 'x" where "lcl \<equiv> snd"
 
 lemma hp_conv [simp]: "hp (h, l) = h"
 by(simp add: hp_def)

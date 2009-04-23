@@ -11,7 +11,7 @@ locale final_thread =
 begin
 
 fun cond_action_ok :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action \<Rightarrow> bool" where
-  "cond_action_ok s t (Join T) = (case thr s T of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> final x \<and> ln = no_wait_locks \<and> wset s T = None)"
+  "cond_action_ok s t (Join T) = (case thr s T of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> t \<noteq> T \<and> final x \<and> ln = no_wait_locks \<and> wset s T = None)"
 
 fun cond_action_oks :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action list \<Rightarrow> bool" where
   "cond_action_oks s t [] = True"
@@ -26,9 +26,21 @@ lemma cond_action_ok_Join:
 by(auto)
 
 lemma cond_action_oks_Join:
-  "\<lbrakk> cond_action_oks s t cas; Join T \<in> set cas; thr s T = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> final x \<and> ln = no_wait_locks \<and> wset s T = None"
+  "\<lbrakk> cond_action_oks s t cas; Join T \<in> set cas; thr s T = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> final x \<and> ln = no_wait_locks \<and> wset s T = None \<and> t \<noteq> T"
 by(induct cas)(auto)
 
+
+lemma cond_action_oks_upd:
+  assumes tst: "thr s t = \<lfloor>xln\<rfloor>"
+  shows "cond_action_oks (locks s, (thr s(t \<mapsto> xln'), shr s), wset s) t cas = cond_action_oks s t cas"
+proof(induct cas)
+  case Nil thus ?case by simp
+next
+  case (Cons ca cas)
+  from tst have eq: "cond_action_ok (locks s, (thr s(t \<mapsto> xln'), shr s), wset s) t ca = cond_action_ok s t ca"
+    by(cases ca) auto
+  with Cons show ?case by(auto simp del: fun_upd_apply)
+qed
 
 fun cond_action_ok' :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action \<Rightarrow> bool" where
   "cond_action_ok' _ _ _ = True"
@@ -44,6 +56,10 @@ by(induct cts, auto)
 lemma cond_action_oks'_True [simp]:
   "cond_action_oks' s t cts"
 by(induct cts, auto)
+
+lemma cond_action_oks'_iff:
+  "cond_action_oks' s t cas = True"
+by(auto)
 
 
 definition collect_cond_actions :: "'t conditional_action list \<Rightarrow> 't set" where

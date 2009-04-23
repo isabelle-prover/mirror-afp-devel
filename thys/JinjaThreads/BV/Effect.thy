@@ -36,6 +36,7 @@ primrec
   "succs (NewArray T) \<tau> pc   = [pc+1]"
   "succs ALoad \<tau> pc          = (if (fst \<tau>)!1 = NT then [] else [pc+1])"
   "succs AStore \<tau> pc         = (if (fst \<tau>)!2 = NT then [] else [pc+1])"
+  "succs ALength \<tau> pc        = (if (fst \<tau>)!0 = NT then [] else [pc+1])"
   "succs (Checkcast C) \<tau> pc  = [pc+1]"
   "succs Pop \<tau> pc            = [pc+1]"
   "succs IAdd \<tau> pc           = [pc+1]"
@@ -78,6 +79,8 @@ eff\<^isub>i_ALoad:
 "eff\<^isub>i (ALoad, P, (T1#T2#ST,LT))       = (the_Array T2# ST,LT)"
 eff\<^isub>i_AStore:
 "eff\<^isub>i (AStore, P, (T1#T2#T3#ST,LT))  = (ST,LT)"
+eff\<^isub>i_ALength:
+"eff\<^isub>i (ALength, P, (T1#ST,LT))  = (Integer#ST,LT)"
 eff\<^isub>i_Checkcast:
 "eff\<^isub>i (Checkcast Ty, P, (T#ST,LT))       = (Ty # ST,LT)"
 eff\<^isub>i_Pop:
@@ -90,12 +93,11 @@ eff\<^isub>i_IfFalse:
 "eff\<^isub>i (IfFalse b, P, (T\<^isub>1#ST,LT))        = (ST,LT)"
 eff\<^isub>i_Invoke:
 "eff\<^isub>i (Invoke M n, P, (ST,LT))          =
-  (if M = wait \<or> M = notify \<or> M = notifyAll then (Void # drop 1 ST, LT)
-   else (let C = the_Class (ST!n)
-         in (if P \<turnstile> C \<preceq>\<^sup>* Thread \<and> (M = start \<or> M = join)
-             then (Void # drop 1 ST, LT)
-             else (let (D,Ts,T\<^isub>r,b) = method P C M
-                   in (T\<^isub>r # drop (n+1) ST, LT)))))"
+  (let T = ST ! n;
+       C = the_Class T;
+       Ts = rev(take n ST);
+       U = if is_external_call P T M n then (THE U. P \<turnstile> T\<bullet>M(Ts) :: U) else fst (snd (snd (method P C M)))
+   in (U # drop (n+1) ST, LT))"
 eff\<^isub>i_Goto:
 "eff\<^isub>i (Goto n, P, s)                    = s"
 eff\<^isub>i_MEnter:
@@ -125,6 +127,8 @@ rel_ALoad:
   "is_relevant_class ALoad          = (\<lambda>P C. P \<turnstile> ArrayIndexOutOfBounds \<preceq>\<^sup>* C \<or> P \<turnstile> NullPointer \<preceq>\<^sup>* C)"
 rel_AStore:
   "is_relevant_class AStore         = (\<lambda>P C. P \<turnstile> ArrayIndexOutOfBounds \<preceq>\<^sup>* C \<or> P \<turnstile> ArrayStore \<preceq>\<^sup>* C \<or> P \<turnstile> NullPointer \<preceq>\<^sup>* C)"
+rel_ALength:
+  "is_relevant_class ALength        = (\<lambda>P C. P \<turnstile> NullPointer \<preceq>\<^sup>* C)"
 rel_MEnter:
   "is_relevant_class MEnter         = (\<lambda>P C. P \<turnstile> IllegalMonitorState \<preceq>\<^sup>* C \<or> P \<turnstile> NullPointer \<preceq>\<^sup>* C)"
 rel_MExit:
@@ -195,9 +199,12 @@ where
 | app\<^isub>i_AStore:
   "app\<^isub>i (AStore, P, pc, mxs, T\<^isub>r, (T1#T2#T3#ST,LT)) = 
     (T2 = Integer \<and> (T3 \<noteq> NT \<longrightarrow> (\<exists>Ty. T3 = Ty\<lfloor>\<rceil>)))"
+| app\<^isub>i_ALength:
+  "app\<^isub>i (ALength, P, pc, mxs, T\<^isub>r, (T1#ST,LT)) = 
+    (T1 = NT \<or> (\<exists>Ty. T1 = Ty\<lfloor>\<rceil>))"
 | app\<^isub>i_Checkcast:
   "app\<^isub>i (Checkcast Ty, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
-    (is_type P Ty \<and> is_refT T)"
+    (is_type P Ty (* \<and> is_refT T *) )"
 | app\<^isub>i_Pop:
   "app\<^isub>i (Pop, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
     True"
@@ -215,15 +222,13 @@ where
   "app\<^isub>i (Return, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = (P \<turnstile> T \<le> T\<^isub>r)"
 | app\<^isub>i_Throw:
   "app\<^isub>i (Throw, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
-    (T = NT \<or> (\<exists>C. T = Class C \<and> C \<noteq> Object))"
+    (T = NT \<or> (\<exists>C. T = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable))"
 | app\<^isub>i_Invoke:
   "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
     (n < length ST \<and> 
     (ST!n \<noteq> NT \<longrightarrow>
       (\<exists>C D Ts T m. ST!n = Class C \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and> P \<turnstile> rev (take n ST) [\<le>] Ts) \<or>
-      (\<exists>C. ST!n = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M = start \<and> n = 0 \<and> is_class P Thread) \<or>
-      (\<exists>C. ST!n = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M = join \<and> n = 0 \<and> is_class P Thread) \<or>
-      (is_refT (ST ! n) \<and> (M = wait \<or> M = notify \<or> M = notifyAll) \<and> n = 0)))"
+      (is_external_call P (ST ! n) M n) \<and> (\<exists>U. P \<turnstile> ST ! n\<bullet>M(rev (take n ST)) :: U)))"
 | app\<^isub>i_MEnter:
   "app\<^isub>i (MEnter,P, pc,mxs,T\<^isub>r,(T#ST,LT)) = (is_refT T)"
 | app\<^isub>i_MExit:
@@ -407,9 +412,14 @@ proof -
   ultimately show ?thesis by blast
 qed
 
+lemma appALength[simp]:
+  "app\<^isub>i (ALength,P,pc,mxs,T\<^isub>r,s) = 
+  (\<exists>T ST LT. s=(T#ST,LT) \<and> (T \<noteq> NT \<longrightarrow> (\<exists>T'.  T = T'\<lfloor>\<rceil>)))"
+  by (cases s, cases "fst s", simp add: app_def) (cases "hd (fst s)", auto)
+
 lemma appCheckcast[simp]: 
   "app\<^isub>i (Checkcast Ty,P,pc,mxs,T\<^isub>r,s) =  
-  (\<exists>T ST LT. s = (T#ST,LT) \<and> is_type P Ty \<and> is_refT T)"
+  (\<exists>T ST LT. s = (T#ST,LT) \<and> is_type P Ty (* \<and> is_refT T *))"
   by (cases s, cases "fst s", simp add: app_def) (cases "hd (fst s)", auto)
 
 lemma app\<^isub>iPop[simp]: 
@@ -457,7 +467,7 @@ lemma appReturn[simp]:
   by (rule length_cases2, auto)
 
 lemma appThrow[simp]:
-  "app\<^isub>i (Throw,P,pc,mxs,T\<^isub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> (T = NT \<or> (\<exists>C. T = Class C \<and> C \<noteq> Object)))"
+  "app\<^isub>i (Throw,P,pc,mxs,T\<^isub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> (T = NT \<or> (\<exists>C. T = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable)))"
   by (rule length_cases2, auto)  
 
 lemma appMEnter[simp]:

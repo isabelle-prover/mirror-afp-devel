@@ -15,34 +15,37 @@ text {*
 
 constdefs
   ObjectC :: "'m cdecl"
-  "ObjectC \<equiv> (Object, (undefined,[],[]))"
+  "ObjectC \<equiv> (Object, (arbitrary,[],[]))"
+
+  ThrowableC :: "'m cdecl"
+  "ThrowableC \<equiv> (Throwable, (Object, [], []))"
 
   NullPointerC :: "'m cdecl"
-  "NullPointerC \<equiv> (NullPointer, (Object,[],[]))"
+  "NullPointerC \<equiv> (NullPointer, (Throwable,[],[]))"
 
   ClassCastC :: "'m cdecl"
-  "ClassCastC \<equiv> (ClassCast, (Object,[],[]))"
+  "ClassCastC \<equiv> (ClassCast, (Throwable,[],[]))"
 
   OutOfMemoryC :: "'m cdecl"
-  "OutOfMemoryC \<equiv> (OutOfMemory, (Object,[],[]))"
+  "OutOfMemoryC \<equiv> (OutOfMemory, (Throwable,[],[]))"
 
   ArrayIndexOutOfBoundsC :: "'m cdecl"
-  "ArrayIndexOutOfBoundsC \<equiv> (ArrayIndexOutOfBounds, (Object,[],[]))"
+  "ArrayIndexOutOfBoundsC \<equiv> (ArrayIndexOutOfBounds, (Throwable,[],[]))"
 
   ArrayStoreC :: "'m cdecl"
-  "ArrayStoreC \<equiv> (ArrayStore, (Object, [], []))"
+  "ArrayStoreC \<equiv> (ArrayStore, (Throwable, [], []))"
 
   NegativeArraySizeC :: "'m cdecl"
-  "NegativeArraySizeC \<equiv> (NegativeArraySize, (Object,[],[]))"
+  "NegativeArraySizeC \<equiv> (NegativeArraySize, (Throwable,[],[]))"
 
   IllegalMonitorStateC :: "'m cdecl"
-  "IllegalMonitorStateC \<equiv> (IllegalMonitorState, (Object,[],[]))"
+  "IllegalMonitorStateC \<equiv> (IllegalMonitorState, (Throwable,[],[]))"
 
   IllegalThreadStateC :: "'m cdecl"
-  "IllegalThreadStateC \<equiv> (IllegalThreadState, (Object,[],[]))"
+  "IllegalThreadStateC \<equiv> (IllegalThreadState, (Throwable,[],[]))"
 
   SystemClasses :: "'m cdecl list"
-  "SystemClasses \<equiv> [ObjectC, NullPointerC, ClassCastC, OutOfMemoryC,
+  "SystemClasses \<equiv> [ObjectC, ThrowableC, NullPointerC, ClassCastC, OutOfMemoryC,
                     ArrayIndexOutOfBoundsC, ArrayStoreC, NegativeArraySizeC,
                     IllegalMonitorStateC, IllegalThreadStateC]"
 

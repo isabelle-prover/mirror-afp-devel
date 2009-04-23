@@ -54,10 +54,6 @@ is_type_class:  "is_type P (Class C) = is_class P C"
 is_type_array:  "is_type P (A\<lfloor>\<rceil>) = is_type P A"
 
 lemma NT_Array_is_type: "is_NT_Array A \<Longrightarrow> is_type P A"
-by(induct A) auto
-
-
-abbreviation
-  "types P == Collect (is_type P)"
+by(induct A, auto)
 
 end

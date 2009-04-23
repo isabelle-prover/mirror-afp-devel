@@ -1,4 +1,4 @@
-(*  Title:      Jinjathreads/BV/BVConform.thy
+(*  Title:      JinjaThreads/BV/BVConform.thy
     Author:     Cornelia Pusch, Gerwin Klein, Andreas Lochbihler
 
 The invariant for the type safety proof.
@@ -57,21 +57,23 @@ primrec
        P \<turnstile> D sees M\<^isub>0:Ts' \<rightarrow> T' = m in D' \<and> P \<turnstile> T\<^isub>0 \<le> T') \<and>
     conf_f P h (ST, LT) is f \<and> conf_fs P h \<Phi> M (size Ts) T frs))"
 
+primrec conf_xcp :: "jvm_prog \<Rightarrow> heap \<Rightarrow> addr option \<Rightarrow> instr \<Rightarrow> bool" where
+  "conf_xcp P h None i = True"
+| "conf_xcp P h \<lfloor>a\<rfloor> i = (\<exists>D fs. h a = \<lfloor>Obj D fs\<rfloor> \<and> (\<forall>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<longrightarrow> is_relevant_class i P D'))"
 
 constdefs
  correct_state :: "[jvm_prog,ty\<^isub>P,jvm_state] \<Rightarrow> bool"
                   ("_,_ |- _ [ok]"  [61,0,0] 61)
 "correct_state P \<Phi> \<equiv> \<lambda>(xp,h,frs).
-  case xp of
-     None \<Rightarrow> (case frs of
+	case frs of
              [] \<Rightarrow> True
              | (f#fs) \<Rightarrow> P\<turnstile> h\<surd> \<and> 
              (let (stk,loc,C,M,pc) = f
               in \<exists>Ts T mxs mxl\<^isub>0 is xt \<tau>.
                     (P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs,mxl\<^isub>0,is,xt) in C) \<and>
                     \<Phi> C M ! pc = Some \<tau> \<and>
-                    conf_f P h \<tau> is f \<and> conf_fs P h \<Phi> M (size Ts) T fs))
-  | Some x \<Rightarrow> frs = []" 
+                    conf_f P h \<tau> is f \<and> conf_fs P h \<Phi> M (size Ts) T fs \<and>
+                    conf_xcp P h xp (is ! pc) )"
 
 syntax (xsymbols)
  correct_state :: "[jvm_prog,ty\<^isub>P,jvm_state] \<Rightarrow> bool"

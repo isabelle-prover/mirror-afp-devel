@@ -32,7 +32,7 @@ USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -P "http://isabe
 
 $(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Common/*.thy J/*.thy Framework/*.thy document/*.tex BV/*.thy JVM/*.thy
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Common/*.thy J/*.thy Framework/*.thy document/*.tex BV/*.thy JVM/*.thy Compiler/*.thy
 	cd ..; $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 ## clean

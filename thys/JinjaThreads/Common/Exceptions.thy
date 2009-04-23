@@ -44,7 +44,7 @@ constdefs
                         if s = ArrayStore then 4 else
                         if s = NegativeArraySize then 5 else 
                         if s = IllegalMonitorState then 6 else 
-                        if s = IllegalThreadState then 7 else undefined"
+                        if s = IllegalThreadState then 7 else arbitrary"
 
   start_heap :: "'c prog \<Rightarrow> heap"
   "start_heap G \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer)
@@ -169,9 +169,12 @@ lemma preallocated_hext:
 
 (*<*)
 lemmas preallocated_upd_obj = preallocated_hext [OF _ hext_upd_obj]
-lemmas preallocated_upd_arr = preallocated_hext [OF _ hext_upd_arr]
 lemmas preallocated_new  = preallocated_hext [OF _ hext_new]
 (*>*)
+
+lemma preallocated_upd_arr:
+  "\<lbrakk> preallocated h; h a = \<lfloor>Arr T el\<rfloor> \<rbrakk> \<Longrightarrow> preallocated (h(a \<mapsto> Arr T el'))"
+by(auto simp add: preallocated_def)
 
 
 lemma addrNullPointer: "addr_of_sys_xcpt NullPointer = 0"

@@ -1,7 +1,5 @@
-(*  Title:      Jinja/J/WellTypeRT.thy
-    ID:         $Id: WellTypeRT.thy,v 1.5 2008-06-12 06:57:23 lsf37 Exp $
+(*  Title:      JinjaThreads/J/WellTypeRT.thy
     Author:     Tobias Nipkow, Andreas Lochbihler
-    Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Runtime Well-typedness} *}
@@ -10,15 +8,11 @@ theory WellTypeRT
 imports WellType
 begin
 
-lemma WTrtCall_mono:
-  "(\<And>E e T. A E e T \<longrightarrow> B E e T) \<Longrightarrow> list_all2 (\<lambda>e T. A E e T) es Ts' \<longrightarrow> list_all2 (\<lambda>e T. B E e T) es Ts'"
-apply(rule impI)
-apply(erule list_all2_mono)
-apply(auto)
-done
-
 inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"
-  for P :: "J_prog" and h :: "heap" where
+  and WTrts :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool"
+  for P :: "J_prog" and h :: "heap"
+  where
+
   WTrtNew:
     "is_class P C  \<Longrightarrow> WTrt P h E (new C) (Class C)"
 
@@ -27,7 +21,7 @@ inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> exp
     \<Longrightarrow> WTrt P h E (newA T\<lfloor>e\<rceil>) (T\<lfloor>\<rceil>)"
 
 | WTrtCast:
-    "WTrt P h E e  T \<Longrightarrow> WTrt P h E (Cast U e) U"
+    "\<lbrakk> WTrt P h E e T; is_type P U \<rbrakk> \<Longrightarrow> WTrt P h E (Cast U e) U"
 
 | WTrtVal:
     "typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow> WTrt P h E (Val v) T"
@@ -63,6 +57,12 @@ inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> exp
     "\<lbrakk>  WTrt P h E a NT; WTrt P h E i Integer; WTrt P h E e T' \<rbrakk>
     \<Longrightarrow> WTrt P h E (a\<lfloor>i\<rceil> := e) Void"
 
+| WTrtALength:
+  "WTrt P h E a (T\<lfloor>\<rceil>) \<Longrightarrow> WTrt P h E (a\<bullet>length) Integer"
+
+| WTrtALengthNT:
+  "WTrt P h E a NT \<Longrightarrow> WTrt P h E (a\<bullet>length) T"
+
 | WTrtFAcc:
     "\<lbrakk> WTrt P h E e (Class C); P \<turnstile> C has F:T in D \<rbrakk> \<Longrightarrow>
     WTrt P h E (e\<bullet>F{D}) T"
@@ -79,36 +79,21 @@ inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> exp
     \<Longrightarrow> WTrt P h E (e1\<bullet>F{D}:=e2) Void"
 
 | WTrtCall:
-    "\<lbrakk> WTrt P h E e (Class C); P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
-       list_all2 (WTrt P h E) es Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
+    "\<lbrakk> WTrt P h E e (Class C); \<not> is_external_call P (Class C) M (length es); P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
+       WTrts P h E es Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
     \<Longrightarrow> WTrt P h E (e\<bullet>M(es)) T"
 
 | WTrtCallNT:
-    "\<lbrakk> WTrt P h E e NT; list_all2 (WTrt P h E) es Ts \<rbrakk>
+    "\<lbrakk> WTrt P h E e NT; WTrts P h E es Ts \<rbrakk>
     \<Longrightarrow> WTrt P h E (e\<bullet>M(es)) T"
 
-| WTrtNewThread:
-    "\<lbrakk> WTrt P h E e (Class C); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
-    \<Longrightarrow> WTrt P h E (e\<bullet>start([])) Void"
-
-| WTrtWait:
-    "\<lbrakk> WTrt P h E e T; is_refT T; T \<noteq> NT \<rbrakk>
-    \<Longrightarrow> WTrt P h E (e\<bullet>wait([])) Void"
-
-| WTrtNotify:
-    "\<lbrakk> WTrt P h E e T; is_refT T; T \<noteq> NT \<rbrakk>
-    \<Longrightarrow> WTrt P h E (e\<bullet>notify([])) Void"
-
-| WTrtNotifyAll:
-    "\<lbrakk> WTrt P h E e T; is_refT T; T \<noteq> NT \<rbrakk>
-    \<Longrightarrow> WTrt P h E (e\<bullet>notifyAll([])) Void"
-
-| WTrtJoin:
-    "\<lbrakk> WTrt P h E e (Class C); P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk>
-    \<Longrightarrow> WTrt P h E (e\<bullet>join([])) Void"
+| WTrtCallExternal:
+    "\<lbrakk> WTrt P h E e T; WTrts P h E es Ts; P \<turnstile> T\<bullet>M(Ts) :: U \<rbrakk>
+    \<Longrightarrow> WTrt P h E (e\<bullet>M(es)) U"
 
 | WTrtBlock:
-    "WTrt P h (E(V\<mapsto>T)) e T' \<Longrightarrow> WTrt P h E {V:T; e} T'"
+    "\<lbrakk> WTrt P h (E(V\<mapsto>T)) e T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof\<^bsub>h\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
+  \<Longrightarrow> WTrt P h E {V:T=vo; e}\<^bsub>cr\<^esub> T'"
 
 | WTrtSynchronized:
     "\<lbrakk> WTrt P h E o' T; is_refT T; T \<noteq> NT; WTrt P h E e T' \<rbrakk>
@@ -136,31 +121,56 @@ inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> exp
     \<Longrightarrow> WTrt P h E (while(e) c) Void"
 
 | WTrtThrow:
-    "\<lbrakk> WTrt P h E e T; is_refT_class T; T \<noteq> Class Object \<rbrakk>
+    "\<lbrakk> WTrt P h E e T; P \<turnstile> T \<le> Class Throwable \<rbrakk>
     \<Longrightarrow> WTrt P h E (throw e) T'"
 
 | WTrtTry:
     "\<lbrakk> WTrt P h E e1 T1; WTrt P h (E(V \<mapsto> Class C)) e2 T2; P \<turnstile> T1 \<le> T2 \<rbrakk>
     \<Longrightarrow> WTrt P h E (try e1 catch(C V) e2) T2"
-monos WTrtCall_mono
+
+| WTrtNil: "WTrts P h E [] []"
+
+| WTrtCons: "\<lbrakk> WTrt P h E e T; WTrts P h E es Ts \<rbrakk> \<Longrightarrow> WTrts P h E (e # es) (T # Ts)"
 
 abbreviation
   WTrt_syntax :: "J_prog \<Rightarrow> env \<Rightarrow> heap \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile> _ : _"   [51,51,51]50)
 where
   "P,E,h \<turnstile> e : T \<equiv> WTrt P h E e T"
 
-declare WTrt.intros[intro!]
+abbreviation
+  WTrts_syntax :: "J_prog \<Rightarrow> env \<Rightarrow> heap \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_,_ \<turnstile> _ [:] _"   [51,51,51]50)
+where
+  "P,E,h \<turnstile> es [:] Ts \<equiv> WTrts P h E es Ts"
+
+declare WTrt_WTrts.intros[intro!]
 declare
   WTrtFAcc[rule del] WTrtFAccNT[rule del]
   WTrtFAss[rule del] WTrtFAssNT[rule del]
   WTrtCall[rule del] WTrtCallNT[rule del]
-  WTrtNewThread[rule del]
-  WTrtWait[rule del]
-  WTrtNotify[rule del]
-  WTrtNotifyAll[rule del]
-  WTrtJoin[rule del]
+  WTrtCallExternal[rule del]
+  WTrtAAcc[rule del, intro] WTrtAAccNT[rule del, intro]
+  WTrtAAss[rule del, intro] WTrtAAssNT[rule del, intro]
+  WTrtALength[rule del, intro] WTrtALengthNT[rule del, intro]
+  WTrtSynchronized[rule del, intro] WTrtSynchronizedNT[rule del, intro]
 
 subsection{*Easy consequences*}
+
+lemma [iff]: "(P,E,h \<turnstile> [] [:] Ts) = (Ts = [])"
+by (auto elim: WTrts.cases)
+
+lemma [iff]: "(P,E,h \<turnstile> e#es [:] T#Ts) = (P,E,h \<turnstile> e : T \<and> P,E,h \<turnstile> es [:] Ts)"
+by (auto elim: WTrts.cases)
+
+lemma WTrts_conv_list_all2: "P,E,h \<turnstile> es [:] Ts = list_all2 (WTrt P h E) es Ts"
+by(induct es arbitrary: Ts)(auto simp add: list_all2_Cons1 elim: WTrts.cases)
+
+lemma [iff]: "(P,E,h \<turnstile> (e#es) [:] Ts) =
+  (\<exists>U Us. Ts = U#Us \<and> P,E,h \<turnstile> e : U \<and> P,E,h \<turnstile> es [:] Us)"
+by(auto simp add: WTrts_conv_list_all2 list_all2_Cons1)
+
+lemma [simp]: "(P,E,h \<turnstile> es\<^isub>1 @ es\<^isub>2 [:] Ts) =
+  (\<exists>Ts\<^isub>1 Ts\<^isub>2. Ts = Ts\<^isub>1 @ Ts\<^isub>2 \<and> P,E,h \<turnstile> es\<^isub>1 [:] Ts\<^isub>1 & P,E,h \<turnstile> es\<^isub>2[:]Ts\<^isub>2)"
+by(auto simp add: WTrts_conv_list_all2 list_all2_append1 dest: list_all2_lengthD[symmetric])
 
 lemma [iff]: "P,E,h \<turnstile> Val v : T = (typeof\<^bsub>h\<^esub> v = Some T)"
 proof
@@ -172,25 +182,13 @@ next
 qed
 
 lemma [iff]: "P,E,h \<turnstile> Var v : T = (E v = Some T)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-(*>*)
+by (auto elim: WTrt.cases)
 
 lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:T\<^isub>2)"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-(*>*)
+by (auto elim: WTrt.cases)
 
-lemma [iff]: "P,E,h \<turnstile> {V:T; e} : T'  =  (P,E(V\<mapsto>T),h \<turnstile> e : T')"
-(*<*)
-apply(rule iffI)
-apply (auto elim: WTrt.cases)
-done
-(*>*)
+lemma [iff]: "P,E,h \<turnstile> {V:T=vo; e}\<^bsub>cr\<^esub> : T'  =  (P,E(V\<mapsto>T),h \<turnstile> e : T' \<and> (case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof\<^bsub>h\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T))"
+by (auto elim: WTrt.cases)
 
 inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> newA T\<lfloor>i\<rceil> : U"
@@ -202,15 +200,11 @@ inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> Cast D e : T"
   "P,E,h \<turnstile> a\<lfloor>i\<rceil> : T"
   "P,E,h \<turnstile> a\<lfloor>i\<rceil> := e : T"
+  "P,E,h \<turnstile> a\<bullet>length : T"
   "P,E,h \<turnstile> e\<bullet>F{D} : T"
   "P,E,h \<turnstile> e\<bullet>F{D} := v : T"
   "P,E,h \<turnstile> e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2 : T"
   "P,E,h \<turnstile> new C : T"
-  "P,E,h \<turnstile> e\<bullet>start([]) : T"
-  "P,E,h \<turnstile> e\<bullet>wait([]) : T"
-  "P,E,h \<turnstile> e\<bullet>notify([]) : T"
-  "P,E,h \<turnstile> e\<bullet>notifyAll([]) : T"
-  "P,E,h \<turnstile> e\<bullet>join([]) : T"
   "P,E,h \<turnstile> e\<bullet>M(es) : T"
   "P,E,h \<turnstile> sync(o') e : T"
   "P,E,h \<turnstile> insync(a) e : T"
@@ -218,7 +212,7 @@ inductive_cases WTrt_elim_cases[elim!]:
 subsection{*Some interesting lemmas*}
 
 lemma WTrts_Val[simp]:
- "(list_all2 (\<lambda>e T. P,E,h \<turnstile> e : T) (map Val vs) Ts) = (map (typeof\<^bsub>h\<^esub>) vs = map Some Ts)"
+ "P,E,h \<turnstile> map Val vs [:] Ts \<longleftrightarrow> map (typeof\<^bsub>h\<^esub>) vs = map Some Ts"
 apply(induct vs arbitrary: Ts)
  apply simp
 apply(case_tac Ts)
@@ -226,9 +220,9 @@ apply(case_tac Ts)
 apply simp
 done
 
-lemma WTrt_env_mono:
-  "P,E,h \<turnstile> e : T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> e : T)"
-apply(induct rule: WTrt.induct)
+lemma WTrt_env_mono: "P,E,h \<turnstile> e : T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> e : T)"
+  and WTrts_env_mono: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E',h \<turnstile> es [:] Ts)"
+apply(induct rule: WTrt_WTrts.inducts)
 apply(simp add: WTrtNew)
 apply(fastsimp simp: WTrtNewArray)
 apply(fastsimp simp: WTrtCast)
@@ -239,27 +233,17 @@ apply(fastsimp simp add: WTrtBinOpAdd)
 apply(force simp: map_le_def)
 apply(force simp: WTrtAAcc)
 apply(force simp: WTrtAAccNT)
-apply(rule WTrtAAss)
-apply(fastsimp)+
+apply(rule WTrtAAss, fastsimp, blast, blast)
+apply(fastsimp)
+apply(rule WTrtALength, blast)
+apply(blast)
 apply(fastsimp simp: WTrtFAcc)
 apply(simp add: WTrtFAccNT)
 apply(fastsimp simp: WTrtFAss)
 apply(fastsimp simp: WTrtFAssNT)
-apply(rule WTrtCall)
-   apply(blast)
-  apply(assumption)
- apply(erule list_all2_mono)
- apply(blast)
-apply(assumption)
-apply(rule WTrtCallNT)
- apply(blast)
-apply(erule list_all2_mono)
-apply(blast)
-apply(fastsimp intro: WTrtNewThread)
-apply(fastsimp intro: WTrtWait)
-apply(fastsimp intro: WTrtNotify)
-apply(fastsimp intro: WTrtNotifyAll)
-apply(fastsimp intro: WTrtJoin)
+apply(fastsimp simp: WTrtCall)
+apply(fastsimp simp: WTrtCallNT)
+apply(fastsimp intro: WTrtCallExternal)
 apply(fastsimp simp: map_le_def)
 apply(rule WTrtSynchronized)
   apply(blast)
@@ -278,7 +262,8 @@ done
 
 
 lemma WTrt_hext_mono: "P,E,h \<turnstile> e : T \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> e : T"
-apply(induct rule: WTrt.induct)
+  and WTrts_hext_mono: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,E,h' \<turnstile> es [:] Ts"
+apply(induct rule: WTrt_WTrts.inducts)
 apply(simp add: WTrtNew)
 apply(fastsimp simp: WTrtNewArray)
 apply(fastsimp simp: WTrtCast)
@@ -302,26 +287,16 @@ apply(rule WTrtAAssNT)
   apply(simp)
  apply(simp)
 apply(simp)
+apply(rule WTrtALength, blast)
+apply(rule WTrtALengthNT, blast)
 apply(fast intro: WTrtFAcc)
 apply(simp add: WTrtFAccNT)
-apply(fastsimp simp: WTrtFAss del:WTrt.intros WTrt_elim_cases)
+apply(fastsimp simp: WTrtFAss del:WTrt_WTrts.intros WTrt_elim_cases)
 apply(fastsimp simp: WTrtFAssNT)
-apply(rule WTrtCall)
-   apply(blast)
-  apply(assumption)
- apply(erule list_all2_mono)
- apply(blast)
-apply(assumption) 
-apply(rule WTrtCallNT)
- apply(blast)
-apply(erule list_all2_mono)
-apply(blast)
-apply(fastsimp intro: WTrtNewThread)
-apply(fastsimp intro: WTrtWait)
-apply(fastsimp intro: WTrtNotify)
-apply(fastsimp intro: WTrtNotifyAll)
-apply(fastsimp intro: WTrtJoin)
-apply(fastsimp)
+apply(fastsimp simp: WTrtCall)
+apply(fastsimp simp: WTrtCallNT)
+apply(fastsimp intro: WTrtCallExternal)
+apply(fastsimp intro: hext_typeof_mono)
 apply(rule WTrtSynchronized)
   apply(blast)
  apply(assumption)
@@ -334,11 +309,13 @@ apply(fastsimp simp add: WTrtCond)
 apply(fastsimp simp add: WTrtWhile)
 apply(fastsimp simp add: WTrtThrow)
 apply(fastsimp simp: WTrtTry)
+apply(fastsimp)+
 done
-(*>*)
+
 
 lemma WT_implies_WTrt: "P,E \<turnstile> e :: T \<Longrightarrow> P,E,h \<turnstile> e : T"
-apply(induct rule: WT.induct)
+  and WTs_implies_WTrts: "P,E \<turnstile> es [::] Ts \<Longrightarrow> P,E,h \<turnstile> es [:] Ts"
+apply(induct rule: WT_WTs.inducts)
 apply fast
 apply fast
 apply fast
@@ -351,19 +328,12 @@ apply(erule WTrtAAcc)
 apply(assumption)
 apply(erule WTrtAAss)
 apply(assumption)+
+apply(erule WTrtALength)
 apply(fastsimp simp: WTrtFAcc has_visible_field)
 apply(fastsimp simp: WTrtFAss dest: has_visible_field)
-apply(erule WTrtCall)
-  apply(assumption)
- apply(erule list_all2_mono)
- apply(clarify)
-apply(assumption)
-apply(fastsimp intro: WTrtNewThread)
-apply(fastsimp intro: WTrtWait)
-apply(fastsimp intro: WTrtNotify)
-apply(fastsimp intro: WTrtNotifyAll)
-apply(fastsimp intro: WTrtJoin)
-apply(fastsimp)
+apply(fastsimp simp: WTrtCall)
+apply(fastsimp intro: WTrtCallExternal)
+apply(clarsimp simp del: fun_upd_apply, blast intro: typeof_lit_typeof)
 apply(erule WTrtSynchronized)
  apply(assumption)+
 apply(fastsimp)
@@ -371,8 +341,10 @@ apply(fastsimp)
 apply(fastsimp)
 apply(fastsimp)
 apply(fastsimp)
+apply(fastsimp)
+apply(fastsimp)
 done
-(*>*)
+
 
 
 end

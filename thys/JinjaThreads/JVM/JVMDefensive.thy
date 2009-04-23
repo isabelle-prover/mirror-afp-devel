@@ -13,6 +13,11 @@ text {*
   other abnormal termination) *}
 datatype 'a type_error = TypeError | Normal 'a
 
+definition is_Array_ref :: "val \<Rightarrow> heap \<Rightarrow> bool" where
+  "is_Array_ref v h \<equiv> is_Ref v \<and> (v \<noteq> Null \<longrightarrow> h (the_Addr v) \<noteq> None \<and> is_Arr (the (h (the_Addr v))))"
+
+declare is_Array_ref_def[simp]
+
 consts
   check_instr :: "[instr, jvm_prog, heap, val list, val list, 
                   cname, mname, pc, frame list] \<Rightarrow> bool"
@@ -39,17 +44,15 @@ check_instr_NewArray:
 
 check_instr_ALoad:
   "check_instr ALoad P h stk loc C0 M0 pc frs =
-  (1 < length stk \<and> is_Intg (hd stk) \<and>
-  (let ref = hd (tl stk)
-   in is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow> 
-        h (the_Addr ref) \<noteq> None \<and> is_Arr (the (h (the_Addr ref))))))"
+  (1 < length stk \<and> is_Intg (hd stk) \<and> is_Array_ref (hd (tl stk)) h)"
 
 check_instr_AStore:
   "check_instr AStore P h stk loc C0 M0 pc frs =
-  (2 < length stk \<and> is_Intg (hd (tl stk)) \<and>
-  (let ref = hd (tl (tl stk))
-   in is_Ref ref \<and> (ref \<noteq> Null \<longrightarrow>
-        h (the_Addr ref) \<noteq> None \<and> is_Arr (the (h (the_Addr ref))))))"
+  (2 < length stk \<and> is_Intg (hd (tl stk)) \<and> is_Array_ref (hd (tl (tl stk))) h)"
+
+check_instr_ALength:
+  "check_instr ALength P h stk loc C0 M0 pc frs =
+  (0 < length stk \<and> is_Array_ref (hd stk) h)"
 
 check_instr_Getfield:
   "check_instr (Getfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
@@ -71,22 +74,19 @@ check_instr_Putfield:
 
 check_instr_Checkcast:
   "check_instr (Checkcast T) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
-  (0 < length stk \<and> is_type P T \<and> is_Ref (hd stk))"
+  (0 < length stk \<and> is_type P T (* \<and> is_Ref (hd stk) *))"
 
 check_instr_Invoke:
   "check_instr (Invoke M n) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
   (n < length stk \<and> is_Ref (stk!n) \<and>  
   (stk!n \<noteq> Null \<longrightarrow> 
     (let a = the_Addr (stk!n); 
+         T = the (typeof\<^bsub>h\<^esub> (Addr a));
          C = cname_of h a;
          Ts = fst (snd (method P C M))
     in h a \<noteq> None \<and>  
        (\<not> is_Arr (the (h a)) \<and> P \<turnstile> C has M \<and> P,h \<turnstile> rev (take n stk) [:\<le>] Ts \<or> 
-        \<not> is_Arr (the (h a)) \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M = start \<and> n = 0 \<and> is_class P Thread \<or>
-        \<not> is_Arr (the (h a)) \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M = join \<and> n = 0 \<and> is_class P Thread \<or>
-        M = wait \<and> n = 0 \<or>
-        M = notify \<and> n = 0 \<or>
-        M = notifyAll \<and> n =0))))" 
+        is_external_call P T M n \<and> (\<exists>Ts U. P \<turnstile> T\<bullet>M(Ts) :: U \<and> map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Ts)))))"
 
 check_instr_Return:
   "check_instr Return P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
@@ -137,15 +137,15 @@ constdefs
                 P \<turnstile> C has M \<and>
                 (let (C',Ts,T,mxs,mxl\<^isub>0,ins,xt) = method P C M; i = ins!pc in
                  pc < size ins \<and> size stk \<le> mxs \<and>
-                 check_instr i P h stk loc C M pc frs'))"
+                 (xcpt = None \<longrightarrow> check_instr i P h stk loc C M pc frs')))"
 
 
-  exec_d :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> ((addr,thread_id,jvm_thread_state,heap,addr) thread_action \<times> jvm_state) list type_error"
-  "exec_d P \<sigma> \<equiv> if check P \<sigma> then Normal (exec (P, \<sigma>)) else TypeError"
-
+constdefs
+  exec_d :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_ta_state list type_error"
+  "exec_d P \<sigma> \<equiv> if check P \<sigma> then Normal (exec P \<sigma>) else TypeError"
 
 inductive
-  exec_1_d :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
+  exec_1_d :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_thread_action \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
        ("_ \<turnstile> _ -_-jvmd\<rightarrow> _" [61,61,0,61] 60)
   for P :: jvm_prog
 where
@@ -153,20 +153,23 @@ where
 | exec_1_d_NormalI: "\<lbrakk> exec_d P \<sigma> = Normal \<Sigma>; (tas, \<sigma>') \<in> set \<Sigma> \<rbrakk>  \<Longrightarrow> P \<turnstile> Normal \<sigma> -tas-jvmd\<rightarrow> Normal \<sigma>'"
 
 lemma jvmd_NormalD:
-  "P \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>' \<Longrightarrow> check P \<sigma> \<and> (ta, \<sigma>') \<in> set (exec (P, \<sigma>)) \<and> (\<exists>h f frs. \<sigma> = (None, h, f # frs))"
+  "P \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>' \<Longrightarrow> check P \<sigma> \<and> (ta, \<sigma>') \<in> set (exec P \<sigma>) \<and> (\<exists>xcp h f frs. \<sigma> = (xcp, h, f # frs))"
 apply(erule exec_1_d.cases, auto simp add: exec_d_def split: split_if_asm)
- apply(case_tac a, auto)
- apply(case_tac b, auto)
-apply(case_tac a, auto)
- apply(case_tac b, auto)
 apply(case_tac b, auto)
 done
 
 lemma jvmd_NormalE:
   assumes "P \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>'"
-  obtains h f frs where "check P \<sigma>" "(ta, \<sigma>') \<in> set (exec (P, \<sigma>))" "\<sigma> = (None, h, f # frs)"
+  obtains xcp h f frs where "check P \<sigma>" "(ta, \<sigma>') \<in> set (exec P \<sigma>)" "\<sigma> = (xcp, h, f # frs)"
 using assms
 by(auto dest: jvmd_NormalD)
+
+lemma exec_d_eq_TypeError: "exec_d P \<sigma> = TypeError \<longleftrightarrow> \<not> check P \<sigma>"
+by(simp add: exec_d_def)
+
+lemma exec_d_eq_Normal: "exec_d P \<sigma> = Normal (exec P \<sigma>) \<longleftrightarrow> check P \<sigma>"
+by(auto simp add: exec_d_def)
+
 
 
 -- "reflexive transitive closure:"
@@ -175,7 +178,7 @@ definition
   exec_star_d :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action list \<Rightarrow> jvm_state type_error \<Rightarrow> bool"
                  ("_ \<turnstile>/ _ -_-jvmd\<rightarrow>*/ _" [61,61,0,61] 60)
 where
-  "P \<turnstile> \<sigma> -tas-jvmd\<rightarrow>* \<sigma>' \<equiv> stepify_pred (exec_1_d P) \<sigma> tas \<sigma>'"
+  "P \<turnstile> \<sigma> -tas-jvmd\<rightarrow>* \<sigma>' \<equiv> rtrancl3p (exec_1_d P) \<sigma> tas \<sigma>'"
 
 declare split_paired_All [simp del]
 declare split_paired_Ex [simp del]
@@ -189,7 +192,7 @@ lemma exec_d_no_errorI [intro]:
   by (unfold exec_d_def) simp
 
 theorem no_type_error_commutes:
-  "exec_d P \<sigma> \<noteq> TypeError \<Longrightarrow> exec_d P \<sigma> = Normal (exec (P, \<sigma>))"
+  "exec_d P \<sigma> \<noteq> TypeError \<Longrightarrow> exec_d P \<sigma> = Normal (exec P \<sigma>)"
   by (unfold exec_d_def, auto)
 
 
@@ -204,9 +207,9 @@ lemma defensive_imp_aggressive:
 proof -
   have "\<And>x y. P \<turnstile> x -tas-jvmd\<rightarrow>* y \<Longrightarrow> \<forall>\<sigma> \<sigma>'. x = Normal \<sigma> \<longrightarrow> y = Normal \<sigma>' \<longrightarrow>  P \<turnstile> \<sigma> -tas-jvm\<rightarrow>* \<sigma>'"
     apply(unfold exec_star_d_def)
-    apply(erule stepify_pred.induct)
+    apply(erule rtrancl3p.induct)
      apply(unfold exec_star_def)
-     apply(fastsimp intro: stepify_pred_refl)
+     apply(fastsimp intro: rtrancl3p_refl)
     apply(fold exec_star_d_def)
     apply(simp split: type_error.splits)
     apply(case_tac a, simp, simp)
@@ -217,7 +220,7 @@ proof -
     apply(simp)
     apply(case_tac a'', simp, simp)
     apply(drule defensive_imp_aggressive_1)
-    by(rule stepify_pred_step)
+    by(rule rtrancl3p_step)
   with `P \<turnstile> (Normal \<sigma>) -tas-jvmd\<rightarrow>* (Normal \<sigma>')`
   show ?thesis
     by blast
@@ -225,8 +228,8 @@ qed
 
 
 lemma check_exec_hext:
-  assumes exec: "(ta, xcp', h', frs') \<in> set (exec (P, None, h, frs))"
-  and check: "check P (None, h, frs)"
+  assumes exec: "(ta, xcp', h', frs') \<in> set (exec P (xcp, h, frs))"
+  and check: "check P (xcp, h, frs)"
   shows "h \<unlhd> h'"
 proof -
   from exec have "frs \<noteq> []" by(auto)
@@ -234,83 +237,66 @@ proof -
     by(fastsimp simp add: neq_Nil_conv)
   obtain stk loc C0 M0 pc where f [simp]: "f = (stk, loc, C0, M0, pc)"
     by(cases f, blast)
-  from check obtain C' Ts T mxs mxl0 ins xt
-    where mthd: "method P C0 M0 = (C', Ts, T, mxs, mxl0, ins, xt)"
-    and check_ins: "check_instr (ins ! pc) P h stk loc C0 M0 pc Frs"
-    and "pc < length ins"
-    and "length stk \<le> mxs"
-    by(auto simp add: check_def, blast)
   show ?thesis
-  proof(cases xcp')
+  proof(cases xcp)
     case None
-    with exec mthd
-    have "(ta, None, h', frs') \<in> (\<lambda>(tas, xcpt', h', frs'). (tas, case xcpt' of None \<Rightarrow> (None, h', frs') | \<lfloor>a\<rfloor> \<Rightarrow> find_handler P a h ((stk, loc, C0, M0, pc) # Frs))) ` 
-                                 set (exec_instr (ins ! pc) P h stk loc C0 M0 pc Frs)" by(auto)
-    thus ?thesis
-    proof(rule imageE)
-      fix x
-      assume xexec: "x \<in> set (exec_instr (ins ! pc) P h stk loc C0 M0 pc Frs)"
-	and imagex: "(ta, None, h', frs') = (\<lambda>(tas, xcpt', h', frs').
-                      (tas, case xcpt' of None \<Rightarrow> (None, h', frs')
-                                         | \<lfloor>a\<rfloor> \<Rightarrow> find_handler P a h ((stk, loc, C0, M0, pc) # Frs))) x"
-      obtain ta'' xcpt'' h'' frs'' where x: "x = (ta'', xcpt'', h'', frs'')"
-	by(cases x, blast)
-      with imagex have xexec': "(None, h', frs') = (case xcpt'' of None \<Rightarrow> (None, h'', frs'')
-                                                                  | \<lfloor>a\<rfloor> \<Rightarrow> find_handler P a h ((stk, loc, C0, M0, pc) # Frs))"
-	and "ta = ta''" by(auto)
-      show ?thesis
-      proof(cases xcpt'')
-	case None
-	with xexec' have "h' = h''" "frs' = frs''" by auto
-	with `ta = ta''` x xexec None
-	have taexec: "(ta, None, h', frs') \<in> set (exec_instr (ins ! pc) P h stk loc C0 M0 pc Frs)" by simp
-	thus ?thesis
-	proof(cases "ins ! pc")
-	  case (New C)
-	  moreover with check_ins taexec obtain a where "new_Addr h = \<lfloor>a\<rfloor>" by(auto)
-	  moreover hence "h a = None" by(auto dest: new_Addr_SomeD)
-	  moreover note taexec
-	  ultimately show ?thesis by(auto intro!: hext_new)
-	next
-	  case (NewArray T)
-	  moreover with check_ins taexec
-	  obtain a where "new_Addr h = \<lfloor>a\<rfloor>"
-	    by(simp split: if_splits)
-	  moreover hence "h a = None"
-	    by(auto dest: new_Addr_SomeD)
-	  ultimately show ?thesis using taexec
-	    by(auto intro!: hext_new split: split_if_asm)
-	next
-	  case AStore
-	  with taexec check_ins show ?thesis
-	    by(auto intro: hext_upd_arr elim!: is_ArrE simp add: split_beta split: split_if_asm)
-	next
-	  case Putfield
-	  with taexec check_ins show ?thesis
-	    by(auto intro: hext_upd_obj elim!: is_ArrE simp add: split_beta is_Ref_def split: split_if_asm)
-	qed(auto simp add: split_beta split: split_if_asm)
+    with check obtain C' Ts T mxs mxl0 ins xt
+      where mthd: "P \<turnstile> C0 sees M0 : Ts \<rightarrow> T = (mxs, mxl0, ins, xt) in C'"
+                  "method P C0 M0 = (C', Ts, T, mxs, mxl0, ins, xt)"
+      and check_ins: "check_instr (ins ! pc) P h stk loc C0 M0 pc Frs"
+      and "pc < length ins"
+      and "length stk \<le> mxs"
+      by(auto simp add: check_def has_method_def)
+    from None exec mthd
+    have xexec: "(ta, xcp', h', frs') \<in> set (exec_instr (ins ! pc) P h stk loc C0 M0 pc Frs)" by(clarsimp)
+    show ?thesis
+    proof(cases xcp')
+      case None
+      with xexec have xexec': "(ta, None, h', frs') \<in> set (exec_instr (ins ! pc) P h stk loc C0 M0 pc Frs)" by simp
+      thus ?thesis
+      proof(cases "ins ! pc")
+	case (New C)
+	moreover with check_ins xexec' obtain a where "new_Addr h = \<lfloor>a\<rfloor>" by(auto)
+	moreover hence "h a = None" by(auto dest: new_Addr_SomeD)
+	ultimately show ?thesis using xexec' by(auto intro!: hext_new)
       next
-	case (Some a)
-	with xexec' `frs = f # Frs` `f = (stk, loc, C0, M0, pc)`
-	have "(None, h', frs') = find_handler P a h frs" by(simp)
-	hence "h' = fst (snd (find_handler P a h frs))"
-	  by - (drule sym, simp)
-	hence "h = h'"
-	  by(auto intro: find_handler_preserves_heap[symmetric])
-	thus ?thesis by auto
-      qed
+	case (NewArray T)
+	moreover with check_ins xexec' obtain a where "new_Addr h = \<lfloor>a\<rfloor>"
+	  by(simp split: if_splits)
+	moreover hence "h a = None" by(auto dest: new_Addr_SomeD)
+	ultimately show ?thesis using xexec'
+	  by(auto intro!: hext_new split: split_if_asm)
+      next
+	case AStore
+	with xexec' check_ins show ?thesis
+	  by(auto intro: hext_upd_arr elim!: is_ArrE simp add: split_beta split: split_if_asm)
+      next
+	case Putfield
+	with xexec' check_ins show ?thesis
+	  by(auto intro: hext_upd_obj elim!: is_ArrE simp add: split_beta is_Ref_def split: split_if_asm)
+      next
+	case (Invoke M n)
+	with xexec' check_ins show ?thesis
+	  by(auto intro: hext_upd_obj elim!: is_ArrE
+                  simp add: min_def split_beta is_Ref_def red_external_list_conv[symmetric]
+                            extRet2JVM_def[folded Datatype.sum_case_def]
+                  split: split_if_asm sum.split_asm dest: red_external_hext)
+      qed(auto simp add: split_beta split: split_if_asm)
+    next
+      case (Some a)
+      with xexec `frs = f # Frs` `f = (stk, loc, C0, M0, pc)` have "h' = h"
+	by(auto dest: exec_instr_xcp_unchanged)
+      thus ?thesis by auto
     qed
   next
     case (Some a)
-    with exec mthd obtain ad where "(\<lfloor>a\<rfloor>, h', frs') = find_handler P ad h Frs" by(auto)
-    hence "h' = fst (snd (find_handler P ad h Frs))" by - (drule sym, simp)
-    hence "h = h'" by(auto intro: find_handler_preserves_heap[symmetric])
+    with exec have "h' = h" by auto
     thus ?thesis by auto
   qed
 qed
 
 lemma exec_1_d_hext:
-  "\<lbrakk> P \<turnstile> Normal (None, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', h', frs') \<rbrakk> \<Longrightarrow> h \<unlhd> h'"
+  "\<lbrakk> P \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', h', frs') \<rbrakk> \<Longrightarrow> h \<unlhd> h'"
 apply(auto elim!: exec_1_d.cases simp add: exec_d_def split: split_if_asm intro: check_exec_hext)
 done
 

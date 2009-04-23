@@ -6,9 +6,85 @@ header {* \isaheader{The multithreaded semantics} *}
 
 theory FWSemantics imports FWWellform FWLockingThread FWWait FWCondAction begin
 
+context final_thread begin
+
+inductive actions_ok :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l,'t,'x','m,'w) thread_action \<Rightarrow> bool"
+  for s :: "('l,'t,'x,'m,'w) state" and t :: 't and ta :: "('l,'t,'x','m,'w) thread_action"
+  where
+  "\<lbrakk> lock_ok_las (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>; thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; cond_action_oks s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> \<rbrakk> \<Longrightarrow> actions_ok s t ta"
+
+declare actions_ok.intros [intro!]
+declare actions_ok.cases [elim!]
+
+lemma actions_ok_iff [simp]:
+  "actions_ok s t ta \<longleftrightarrow> lock_ok_las (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<and> cond_action_oks s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
+by(auto)
+
+definition redT_upd :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w) thread_action \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> ('l,'t,'x,'m,'w) state" where 
+  "redT_upd s t ta x' m' =
+   (redT_updLs (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>,
+    ((redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t (snd (the (thr s t))) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)), m'),
+    redT_updWs (wset s) t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
+
+declare redT_upd_def [simp]
+
+lemma actions_ok_upd_empty_inv:
+  "thr s t = \<lfloor>xln\<rfloor> \<Longrightarrow> actions_ok (redT_upd s t \<epsilon> x' (shr s)) t ta = actions_ok s t ta"
+by(auto simp add: redT_updLns_def redT_updLs_def cond_action_oks_upd thread_oks_upd)
+
+inductive actions_ok' :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l,'t,'x','m,'w) thread_action \<Rightarrow> bool" where
+  "\<lbrakk> lock_ok_las' (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>; thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; cond_action_oks' s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> \<rbrakk> \<Longrightarrow> actions_ok' s t ta"
+
+declare actions_ok'.intros [intro!]
+declare actions_ok'.cases [elim!]
+
+lemma actions_ok'_iff:
+  "actions_ok' s t ta \<longleftrightarrow> lock_ok_las' (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<and> cond_action_oks' s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
+by auto
+
+inductive actions_subset :: "('l,'t,'x,'m,'w) thread_action \<Rightarrow> ('l,'t,'x','m,'w) thread_action \<Rightarrow> bool"
+where
+ "\<lbrakk> collect_locks' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>; collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> \<rbrakk> 
+  \<Longrightarrow> actions_subset ta' ta"
+
+declare actions_subset.intros [intro!]
+declare actions_subset.cases [elim!]
+
+lemma actions_subset_iff:
+  "actions_subset ta' ta \<longleftrightarrow> collect_locks' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and>
+                             collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
+by auto
+
+lemma actions_subset_conv: 
+  "actions_subset ta' ta \<longleftrightarrow> (\<forall>l. must_acquire_lock (\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>\<^sub>f l) \<longrightarrow> Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)) \<and>
+                             set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
+apply(auto simp add: collect_locks_def collect_locks'_def)
+apply(case_tac x)
+apply(auto)
+done
+
+lemma actions_subset_intro:
+  "\<lbrakk> \<forall>l. must_acquire_lock (\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>\<^sub>f l) \<longrightarrow> Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l); set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> \<rbrakk> \<Longrightarrow> actions_subset ta' ta"
+  unfolding actions_subset_conv
+  by blast
+
+lemma actions_subset_refl [intro]:
+  "actions_subset ta ta"
+by(auto intro: actions_subset.intros collect_locks'_subset_collect_locks del: subsetI)
+
+lemma actions_ok'_empty: "actions_ok' s t \<epsilon>"
+by(simp add: actions_ok'_iff lock_ok_las'_def)
+
+lemma (in final_thread) actions_ok'_convert_extTA:
+  "actions_ok' s t (convert_extTA f ta) = actions_ok' s t ta"
+by(auto simp add: actions_ok'_iff)
+
+end
+
 locale multithreaded = final_thread +
   constrains final :: "'x \<Rightarrow> bool"
   fixes r :: "('l,'t,'x,'m,'w) semantics" ("_ -_\<rightarrow> _" [50,0,50] 80)
+  assumes new_thread_memory: "\<lbrakk> s -ta\<rightarrow> s'; NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> m = snd s'"
 begin
 
 abbreviation
@@ -24,15 +100,13 @@ where
 |  redT_normal:
   "\<lbrakk> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>;
      thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; wset s t = None;
-     lock_ok_las (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>; thread_oks (thr s) m' \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; cond_action_oks s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>;
-     s' = (redT_updLs (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>,
-           ((redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)), m'),
-           redT_updWs (wset s) t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>) \<rbrakk>
+     actions_ok s t ta;
+     s' = redT_upd s t ta x' m' \<rbrakk>
   \<Longrightarrow> s -t\<triangleright>ta\<rightarrow> s'"
 
 | redT_acquire:
   "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; wset s t = None;
-     may_acquire_all (locks s) t ln; ln n > 0;
+     may_acquire_all (locks s) t ln; ln\<^sub>f n > 0;
      s' = (acquire_all (locks s) t ln, (thr s(t \<mapsto> (x, no_wait_locks)), shr s), wset s) \<rbrakk>
   \<Longrightarrow> s -t\<triangleright>\<epsilon>\<rightarrow> s'"
 
@@ -47,12 +121,12 @@ where
 lemma redT_elims [consumes 1, case_names normal acquire]:
   assumes red: "s -t\<triangleright>ta\<rightarrow> s'"
   and normal: "\<And>x x'. \<lbrakk> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', shr s'\<rangle>; thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>;
-                        lock_ok_las (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>; thread_oks (thr s) (shr s') \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; wset s t = None;
+                        lock_ok_las (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>; thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; wset s t = None;
                         cond_action_oks s t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>;
                         locks s' = redT_updLs (locks s) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>;
                         thr s' = (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>));
                         wset s' = redT_updWs (wset s) t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> thesis"
-  and acquire: "\<And>x ln n. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; ta = \<epsilon>; wset s t = None; may_acquire_all (locks s) t ln; ln n > 0;
+  and acquire: "\<And>x ln n. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; ta = \<epsilon>; wset s t = None; may_acquire_all (locks s) t ln; ln\<^sub>f n > 0;
                            locks s' = acquire_all (locks s) t ln;
                            thr s' = thr s(t \<mapsto> (x, no_wait_locks));
                            wset s' = wset s; shr s' = shr s \<rbrakk> \<Longrightarrow> thesis"
@@ -67,11 +141,11 @@ done
 lemma redT_elims4 [consumes 1, case_names normal acquire]:
   assumes red: "\<langle>ls, (ts, m), ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws'\<rangle>"
   and normal: "\<And>x x'. \<lbrakk> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>; ts t = \<lfloor>(x, no_wait_locks)\<rfloor>;
-                        lock_ok_las ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>; thread_oks ts m' \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; ws t = None; cond_action_oks (ls, (ts, m), ws) t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>;
+                        lock_ok_las ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>; thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>; ws t = None; cond_action_oks (ls, (ts, m), ws) t \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>;
                         ls' = redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>;
                         ts' = (redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (x', redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>));
                         ws' = redT_updWs ws t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> thesis"
-  and acquire: "\<And>x ln n. \<lbrakk> ts t = \<lfloor>(x, ln)\<rfloor>; ta = \<epsilon>; ws t = None; may_acquire_all ls t ln; ln n > 0;
+  and acquire: "\<And>x ln n. \<lbrakk> ts t = \<lfloor>(x, ln)\<rfloor>; ta = \<epsilon>; ws t = None; may_acquire_all ls t ln; ln\<^sub>f n > 0;
                            ls' = acquire_all ls t ln;
                            ts' = ts(t \<mapsto> (x, no_wait_locks));
                            ws' = ws; m' = m \<rbrakk> \<Longrightarrow> thesis"
@@ -87,7 +161,7 @@ definition
   RedT :: "('l,'t,'x,'m,'w) state \<Rightarrow> ('t \<times> ('l,'t,'x,'m,'w) thread_action) list \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> bool"
           ("_ -\<triangleright>_\<rightarrow>* _" [50,0,50] 80)
 where
-  "RedT \<equiv> stepify_pred redT"
+  "RedT \<equiv> rtrancl3p redT"
 
 abbreviation
   RedT_syntax :: "('l,'t) locks \<Rightarrow> ('l,'t,'x) thread_info \<times> 'm \<Rightarrow> ('w,'t) wait_sets
@@ -98,15 +172,15 @@ where
   "\<langle>ls, tsm, ws\<rangle> -\<triangleright>ttas\<rightarrow>* \<langle>ls', tsm', ws'\<rangle> \<equiv> (ls, tsm, ws) -\<triangleright>ttas\<rightarrow>* (ls', tsm', ws')"
 
 lemma RedTI:
-  "stepify_pred redT s ttas s' \<Longrightarrow> RedT s ttas s'"
+  "rtrancl3p redT s ttas s' \<Longrightarrow> RedT s ttas s'"
 by(simp add: RedT_def)
 
 lemma RedTE:
-  "\<lbrakk> RedT s ttas s'; stepify_pred redT s ttas s' \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  "\<lbrakk> RedT s ttas s'; rtrancl3p redT s ttas s' \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
 by(auto simp add: RedT_def)
 
 lemma RedTD:
-  "RedT s ttas s' \<Longrightarrow> stepify_pred redT s ttas s'"
+  "RedT s ttas s' \<Longrightarrow> rtrancl3p redT s ttas s'"
 by(simp add: RedT_def)
 
 lemma RedT_induct [consumes 1, case_names refl step]:
@@ -114,7 +188,7 @@ lemma RedT_induct [consumes 1, case_names refl step]:
      \<And>s. P s [] s;
      \<And>s ttas s' t ta s''. \<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; P s ttas s'; s' -t\<triangleright>ta\<rightarrow> s'' \<rbrakk> \<Longrightarrow> P s (ttas @ [(t, ta)]) s''\<rbrakk>
   \<Longrightarrow> P s ttas s'"
-by(auto intro: stepify_pred.induct simp add: RedT_def)
+by(auto intro: rtrancl3p.induct simp add: RedT_def)
 
 lemma RedT_induct4 [consumes 1, case_names refl step]:
   "\<lbrakk> \<langle>ls, (ts, m), ws\<rangle> -\<triangleright>ttas\<rightarrow>* \<langle>ls', (ts', m'), ws'\<rangle>;
@@ -126,7 +200,7 @@ lemma RedT_induct4 [consumes 1, case_names refl step]:
        \<Longrightarrow> P ls ts m ws (ttas @ [(t, ta)]) ls'' ts'' m'' ws'' \<rbrakk>
   \<Longrightarrow> P ls ts m ws ttas ls' ts' m' ws'"
 unfolding RedT_def
-by(erule stepify_pred_induct4', auto)
+by(erule rtrancl3p_induct4', auto)
 
 lemma RedT_induct' [consumes 1, case_names refl step]:
   "\<lbrakk> s -\<triangleright>ttas\<rightarrow>* s';
@@ -134,7 +208,7 @@ lemma RedT_induct' [consumes 1, case_names refl step]:
      \<And>ttas s' t ta s''. \<lbrakk> s -\<triangleright>ttas\<rightarrow>* s'; P s ttas s'; s' -t\<triangleright>ta\<rightarrow> s'' \<rbrakk> \<Longrightarrow> P s (ttas @ [(t, ta)]) s''\<rbrakk>
   \<Longrightarrow> P s ttas s'"
   unfolding RedT_def
-apply(erule stepify_pred_induct', blast)
+apply(erule rtrancl3p_induct', blast)
 apply(case_tac b, blast)
 done
 
@@ -156,16 +230,16 @@ by(auto)
 
 lemma RedT_refl [intro, simp]:
   "s -\<triangleright>[]\<rightarrow>* s"
-by(rule RedTI)(rule stepify_pred_refl)
+by(rule RedTI)(rule rtrancl3p_refl)
 
 lemma redT_has_locks_inv:
   "\<lbrakk> \<langle>ls, (ts, m), ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws'\<rangle>; t \<noteq> t' \<rbrakk> \<Longrightarrow>
-  has_locks (ls l) t' = has_locks (ls' l) t'"
+  has_locks (ls\<^sub>f l) t' = has_locks (ls'\<^sub>f l) t'"
 by(auto elim!: redT.cases intro: redT_updLs_has_locks[THEN sym, simplified] may_acquire_all_has_locks_acquire_locks[symmetric])
 
 lemma redT_has_lock_inv:
   "\<lbrakk> \<langle>ls, (ts, m), ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws'\<rangle>; t \<noteq> t' \<rbrakk>
-  \<Longrightarrow> has_lock (ls' l) t' = has_lock (ls l) t'"
+  \<Longrightarrow> has_lock (ls'\<^sub>f l) t' = has_lock (ls\<^sub>f l) t'"
 by(auto simp add: redT_has_locks_inv)
 
 lemma redT_ts_Some_inv:
@@ -174,7 +248,7 @@ by(auto elim!: redT.cases simp: redT_updTs_upd[THEN sym] intro: redT_updTs_Some)
 
 lemma redT_new_thread_common:
   "\<lbrakk> \<langle>ls, (ts, m), ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws'\<rangle>; NewThread t' x m'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> m'' = m'"
-by(auto elim!: redT.cases elim: thread_oks_commonD[THEN sym])
+by(auto elim!: redT_elims4 dest: new_thread_memory)
 
 lemma redT_new_thread:
   "\<lbrakk> s -t'\<triangleright>ta\<rightarrow> s'; thr s' t = \<lfloor>(x, w)\<rfloor>; thr s t = None \<rbrakk>
@@ -186,9 +260,11 @@ proof(induct rule: redT_elims)
   with `thr s' = redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t' \<mapsto> (X', redT_updLns (locks s) t' no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))`
     `thr s' t = \<lfloor>(x, w)\<rfloor>`
   have "redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> t = \<lfloor>(x, w)\<rfloor>" by(auto)
-  thm redT_updTs_new_thread
-  with `thr s t = None` `thread_oks (thr s) (shr s') \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>`
-  show ?case by -(rule redT_updTs_new_thread)
+  with `thr s t = None` `thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>`
+  obtain m where "NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" "w = no_wait_locks"
+    by(auto dest: redT_updTs_new_thread)
+  with `\<langle>X, shr s\<rangle> -ta\<rightarrow> \<langle>X', shr s'\<rangle>`
+  show ?case by(auto dest: new_thread_memory)
 next
   case acquire
   thus ?thesis by(auto split: split_if_asm)
@@ -263,7 +339,7 @@ lemma RedT_newThread_unique:
   and ts't: "ts' t = \<lfloor>(x, w)\<rfloor>"
   and tst: "ts t = None"
   shows "\<exists>!n. n < length ttas \<and> (\<exists>x' m'. NewThread t x' m' \<in> set (thr_a (snd (ttas!n))))"
-using prems
+using assms
 proof(induct arbitrary: x w rule: RedT_induct4)
   case refl thus ?case by auto
 next
@@ -348,6 +424,6 @@ next
   qed
 qed
 
-end (* locale multithreaded *)
+end
 
 end 
