@@ -1,4 +1,4 @@
-(*  ID:         $Id: Graph.thy,v 1.8 2008-10-09 13:27:33 fhaftmann Exp $
+(*  ID:         $Id: Graph.thy,v 1.9 2009-04-24 19:28:46 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -66,14 +66,14 @@ primrec
     (if x=a then (case as of [] \<Rightarrow> b | (a'#as') \<Rightarrow> a') else nextElem as b x)"
 
 constdefs nextVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*) ("_ \<bullet>")(*>*) (* *)
- "f \<bullet> v \<equiv> let vs = vertices f in nextElem vs (hd vs) v"
+ "f \<bullet> \<equiv> let vs = vertices f in nextElem vs (hd vs)"
 
 
 text {* @{text nextVertices} is $n$-fold application of
 @{text nextvertex}. *}
 
 constdefs nextVertices :: "face \<Rightarrow> nat \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_\<^bsup>_\<^esup> \<bullet> _")(*>*) (* *)
-  "f\<^bsup>n\<^esup> \<bullet> v \<equiv> ((f \<bullet>)^n) v"
+  "f\<^bsup>n\<^esup> \<bullet> v \<equiv> (f \<bullet> ^^ n) v"
 
 lemma nextV2: "f\<^bsup>2\<^esup>\<bullet>v = f\<bullet> (f\<bullet> v)"
 by (simp add: nextVertices_def nat_number)
