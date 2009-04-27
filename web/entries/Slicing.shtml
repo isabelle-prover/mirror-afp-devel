@@ -63,8 +63,9 @@ and well-formedness properties.
 <p>The formalization consists of the basic framework (in subdirectory Basic/), the
 correctness proof for dynamic slicing (in subdirectory Dynamic/), the
 correctness proof for static intraprocedural slicing (in subdirectory
-StaticIntra/) and an instantiation of the framework with a simple While language
-(in subdirectory While/). For more information on the framework and dynamic
+StaticIntra/) and instantiations of the framework with a simple While language
+(in subdirectory While/) and the sophisticated object-oriented bytecode language
+of Jinja (in subdirectory JinjaVM/). For more information on the framework and dynamic
 slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler.
 </p></td></tr>
 
@@ -119,6 +120,6 @@ slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-11-19 11:06:22 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2009-04-27 09:27:06 $, $Revision: 1.1 
 $</div></body>
 </html>
