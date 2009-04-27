@@ -1,6 +1,6 @@
 header {* \isaheader{Equivalence} *}
 
-theory Equivalence imports Semantics WCFG begin
+theory WEquivalence imports Semantics WCFG begin
 
 
 subsection {* From @{term "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"} to\\

@@ -1,7 +1,7 @@
 header {* \isaheader{Semantic well-formedness of While CFG} *}
 
 theory SemanticsWellFormed 
-  imports WellFormed Equivalence "../Basic/SemanticsCFG" 
+  imports WellFormed WEquivalence "../Basic/SemanticsCFG" 
 begin
 
 subsection {* Instatiation of the @{text CFG_semantics_wf} locale *}

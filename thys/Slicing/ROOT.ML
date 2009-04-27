@@ -7,4 +7,7 @@ use_thys [
   "StaticIntra/CDepInstantiations",
   "While/SemanticsWellFormed",
   "While/DynamicControlDependences",
-  "While/StaticControlDependences"];
+  "While/StaticControlDependences",
+  "JinjaVM/JVMCFG_wf", 
+  "JinjaVM/JVMPostdomination", 
+  "JinjaVM/SemanticsWF"];

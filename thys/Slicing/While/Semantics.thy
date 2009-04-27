@@ -4,6 +4,7 @@ theory Semantics imports Labels Com begin
 
 subsection {* Small Step Semantics *}
 
+
 inductive red :: "cmd * state \<Rightarrow> cmd * state \<Rightarrow> bool"
 and red' :: "cmd \<Rightarrow> state \<Rightarrow> cmd \<Rightarrow> state \<Rightarrow> bool"
   ("((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
