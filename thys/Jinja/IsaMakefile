@@ -5,12 +5,12 @@ BASE-IMAGE = HOL
 
 ## targets
 
-default: test
+default: $(SESSION-NAME)
 test: $(SESSION-NAME)-test
 # usually empty:
 images: $(SESSION-NAME) 
 
-all: test
+all: images
 
 
 ## global settings
@@ -26,8 +26,10 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -g true -d pdf -P "http://isabelle.in.tum.de/library/" 
-BUILD = $(ISABELLE_TOOL) usedir -b -v true -i false -g false -d false
+DOCFLAGS = -v true -i true -V outline=/proof,/ML -g true -d pdf -P "http://isabelle.in.tum.de/library/"
+USEDIR = $(ISABELLE_TOOL) usedir  $(DOCFLAGS)
+BUILD = $(ISABELLE_TOOL) usedir -b $(DOCFLAGS)
+BUILD_PART = $(ISABELLE_TOOL) usedir -b -v true -i false -g false -d false
 
 # time limit (in sec)
 MAXTIME = 5400
@@ -51,7 +53,18 @@ $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML \
 
 Jinja: $(OUT)/Jinja
 
-$(OUT)/Jinja: $(OUT)/Jinja-BV ROOT-Comp.ML Compiler/*.thy
+$(OUT)/Jinja: $(IMAGE) ROOT.ML \
+	  Common/*.thy J/*.thy JVM/*.thy DFA/*.thy BV/*.thy \
+	  Compiler/*.thy document/root.bib document/root.tex \
+	  document/introduction.tex
+		ulimit -t $(MAXTIME); $(BUILD) $(IMAGE) $(SESSION-NAME)
+
+
+# build partial images
+
+Jinja-ALL: $(OUT)/Jinja-ALL
+
+$(OUT)/Jinja-ALL: $(OUT)/Jinja-BV ROOT-Comp.ML Compiler/*.thy
 	ulimit -t $(MAXTIME); $(BUILD) -f ROOT-Comp.ML Jinja-BV Jinja
 
 $(OUT)/Jinja-BV: $(OUT)/Jinja-J ROOT-BV.ML DFA/*.thy BV/*.thy 
