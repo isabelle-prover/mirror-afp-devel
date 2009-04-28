@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.14 2009-03-17 07:56:25 fhaftmann Exp $
+# $Id: testall,v 1.15 2009-04-28 23:20:48 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Tests all entries in Archive of Formal Proofs
@@ -95,11 +95,11 @@ DIRS=""
 OPTS=""
 for ARG in "$@"
 do
-  if [ $(expr index "$ARG" "=") -gt 0 ]
+  if [ "${ARG#=}" == "$ARG" ]
   then
-    OPTS="$OPTS $ARG"
-  else
     DIRS="$DIRS $ARG"
+  else
+    OPTS="$OPTS $ARG"
   fi
 done
 if [ "$DIRS" == "" ]; then DIRS=*; fi
@@ -109,7 +109,7 @@ FAIL="";
 for DIR in $DIRS; do
     if [ -d $DIR -a "$DIR" != "CVS" ]; then
         cd $DIR
-	if [ "$(ls .)" != "CVS" ]; then
+		if [ "$(ls .)" != "CVS" ]; then
 	        if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
         	  echo "Testing [$DIR]"
                   if [ "$OPTS" == "" ]
@@ -120,7 +120,7 @@ for DIR in $DIRS; do
                   fi
         	  echo "Finished [$DIR]"
 	        fi
-	fi
+		fi
         cd ..
     fi
 done

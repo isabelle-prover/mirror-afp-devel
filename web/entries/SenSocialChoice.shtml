@@ -97,13 +97,15 @@ as the Gibbard-Satterthwaite and Duggan-Schwartz theorems.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
+	<ul>
+	    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-11-17.tar.gz">afp-<!--#echo var="name" -->-2008-11-17.tar.gz</a></li>
+	</ul>
 	</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-11-17 15:20:01 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2009-04-28 23:20:48 $, $Revision: 1.1 
 $</div></body>
 </html>
