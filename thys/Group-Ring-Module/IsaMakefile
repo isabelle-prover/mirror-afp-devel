@@ -35,13 +35,23 @@ MAXTIME = 3600
 
 ## dependencies
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+# image by default:
+
+$(SESSION-NAME): $(OUT)/$(SESSION-NAME)
+
+# session only
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy 
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+
+# image
+
+$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy 
+	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
 
 ## clean
 
 clean:
 	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -f $(OUT)-$(SESSION-NAME)
