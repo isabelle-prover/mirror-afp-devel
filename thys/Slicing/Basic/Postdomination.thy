@@ -179,7 +179,7 @@ qed
 
 
 lemma Exit_no_postdominator:
-  "\<lbrakk>valid_node n; (_Exit_) postdominates n\<rbrakk> \<Longrightarrow> False"
+  "(_Exit_) postdominates n \<Longrightarrow> False"
 by(fastsimp dest:Exit_path simp:postdominate_def)
 
 
