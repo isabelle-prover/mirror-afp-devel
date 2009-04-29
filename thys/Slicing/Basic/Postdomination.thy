@@ -461,7 +461,7 @@ qed
 
 
 lemma Exit_no_strong_postdominator:
-  "\<lbrakk>(_Exit_) strongly-postdominates n; n -as\<rightarrow>* (_Exit_)\<rbrakk> \<Longrightarrow> False"
+  "(_Exit_) strongly-postdominates n \<Longrightarrow> False"
 by(fastsimp intro:Exit_no_postdominator path_valid_node simp:strong_postdominate_def)
 
 
