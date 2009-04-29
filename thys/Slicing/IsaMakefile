@@ -39,20 +39,11 @@ $(SESSION-NAME): Jinja $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 Jinja:
 	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(OUT)/Jinja ROOT.ML \
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: Jinja ROOT.ML \
   Basic/*.thy Dynamic/*.thy StaticIntra/*.thy While/*.thy JinjaVM/*.thy \
   document/root.tex 
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) Jinja $(SESSION-NAME)
 
-
-$(OUT)/Jinja: $(OUT)/Jinja-BV ../Jinja/ROOT-Comp.ML ../Jinja/Compiler/*.thy
-	ulimit -t $(MAXTIME); cd ../Jinja; $(BUILD) -f ROOT-Comp.ML Jinja-BV Jinja
-
-$(OUT)/Jinja-BV: $(OUT)/Jinja-J ../Jinja/ROOT-BV.ML ../Jinja/DFA/*.thy ../Jinja/BV/*.thy 
-	ulimit -t $(MAXTIME); cd ../Jinja; $(BUILD) -f ROOT-BV.ML Jinja-J Jinja-BV
-
-$(OUT)/Jinja-J: $(IMAGE) ../Jinja/ROOT-J.ML ../Jinja/Common/*.thy ../Jinja/J/*.thy ../Jinja/JVM/*.thy
-	ulimit -t $(MAXTIME); cd ../Jinja; $(BUILD) -f ROOT-J.ML $(IMAGE) Jinja-J
 
 
 ## clean
