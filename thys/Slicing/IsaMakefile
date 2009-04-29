@@ -1,7 +1,7 @@
 ## configurables
 
 SESSION-NAME = Slicing
-BASE-IMAGE = HOL
+BASE-IMAGE = Jinja
 
 ## targets
 
@@ -20,11 +20,7 @@ OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
 # turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
-ifeq ($(ISABELLE_IMAGE_PATH),)
 IMAGE=$(OUT)/$(BASE-IMAGE)
-else
-IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
-endif
 
 USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -g true -d pdf -P "http://isabelle.in.tum.de/library/"
 BUILD = $(ISABELLE_TOOL) usedir -b -v true -i false -g false -d false
@@ -38,14 +34,16 @@ MAXTIME = 5400
 
 # test run and proof document
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): Jinja $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+Jinja:
+	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(OUT)/Jinja ROOT.ML \
   Basic/*.thy Dynamic/*.thy StaticIntra/*.thy While/*.thy JinjaVM/*.thy \
   document/root.tex 
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) Jinja $(SESSION-NAME)
 
-Jinja: $(OUT)/Jinja
 
 $(OUT)/Jinja: $(OUT)/Jinja-BV ../Jinja/ROOT-Comp.ML ../Jinja/Compiler/*.thy
 	ulimit -t $(MAXTIME); cd ../Jinja; $(BUILD) -f ROOT-Comp.ML Jinja-BV Jinja
