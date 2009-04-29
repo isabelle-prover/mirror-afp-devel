@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.16 2009-04-24 19:28:46 fhaftmann Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.16.2.1 2009-04-29 05:06:16 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -4142,7 +4142,7 @@ proof -
 qed
 
 lemma a: "distinct (vertices f) \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> (\<forall>i \<in> set is. i < length (vertices f)) \<Longrightarrow>
- (\<And>a. a < length (vertices f) \<Longrightarrow> hideDupsRec ((f \<bullet> ^^ a) v) [(f \<bullet> ^^ k) v. k \<leftarrow> is] = natToVertexListRec a v f is)"
+ (\<And>a. a < length (vertices f) \<Longrightarrow> hideDupsRec ((f \<bullet> ^ a) v) [(f \<bullet> ^ k) v. k \<leftarrow> is] = natToVertexListRec a v f is)"
 proof (induct "is")
   case Nil then show ?case by simp
 next

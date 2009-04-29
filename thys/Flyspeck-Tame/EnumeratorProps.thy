@@ -1,4 +1,4 @@
-(*  ID:         $Id: EnumeratorProps.thy,v 1.7 2009-04-24 19:28:46 fhaftmann Exp $
+(*  ID:         $Id: EnumeratorProps.thy,v 1.7.2.1 2009-04-29 05:06:16 lsf37 Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -87,15 +87,15 @@ lemma enumAppend_length: "(\<forall> ls \<in> set lss. length ls = k) \<Longrigh
 by (auto simp: enumAppend_def)
 
 lemma enumAppend_length_rec: "(\<forall> ls \<in> set lss. length ls = k) \<Longrightarrow>
-  (\<forall> ls2 \<in> set (((enumAppend nmax) ^^ n) lss).  length ls2 = k + n)"
+  (\<forall> ls2 \<in> set (((enumAppend nmax)^n) lss).  length ls2 = k + n)"
 apply (induct n) by (auto intro!: enumAppend_length)
 
 lemma enumAppend_length_rec2: "(\<forall> ls \<in> set lss. length ls = k)
-  \<Longrightarrow> ls2 \<in> set (((enumAppend nmax) ^^ n) lss) \<Longrightarrow>  length ls2 = k + n"
+  \<Longrightarrow> ls2 \<in> set (((enumAppend nmax)^n) lss) \<Longrightarrow>  length ls2 = k + n"
 by (auto dest: enumAppend_length_rec)
 
 lemma enumAppend_length_rec3: "(\<forall> ls \<in> set lss. length ls = 1)
-  \<Longrightarrow> ls2 \<in> set (((enumAppend nmax) ^^ n) lss) \<Longrightarrow>  length ls2 = Suc n"
+  \<Longrightarrow> ls2 \<in> set (((enumAppend nmax)^n) lss) \<Longrightarrow>  length ls2 = Suc n"
 by (auto dest: enumAppend_length_rec2)
 
 lemma enumAppend_bound: "ls \<in> set ((enumAppend nmax) lss) \<Longrightarrow>
@@ -103,33 +103,33 @@ lemma enumAppend_bound: "ls \<in> set ((enumAppend nmax) lss) \<Longrightarrow>
 by (auto simp add: enumAppend_def split: split_if_asm)
 
 
-lemma enumAppend_bound_rec: "ls \<in> set (((enumAppend nmax) ^^ n) lss) \<Longrightarrow>
+lemma enumAppend_bound_rec: "ls \<in> set (((enumAppend nmax)^n) lss) \<Longrightarrow>
   \<forall> y \<in> set lss. \<forall> z \<in> set y. z \<le> nmax \<Longrightarrow> x \<in> set ls \<Longrightarrow> x \<le>  nmax"
 proof -
-  assume ls: "ls \<in> set ((enumAppend nmax ^^ n) lss)" and lss: "\<forall>y\<in>set lss. \<forall>z\<in>set y. z \<le> nmax" and x: "x \<in> set ls"
-  have ind:"\<And> lss. \<forall>y\<in>set lss. \<forall>z\<in>set y. z \<le> nmax \<Longrightarrow> \<forall> y \<in> set (((enumAppend nmax) ^^ n) lss). \<forall> z \<in> set y. z \<le> nmax"
+  assume ls: "ls \<in> set ((enumAppend nmax ^ n) lss)" and lss: "\<forall>y\<in>set lss. \<forall>z\<in>set y. z \<le> nmax" and x: "x \<in> set ls"
+  have ind:"\<And> lss. \<forall>y\<in>set lss. \<forall>z\<in>set y. z \<le> nmax \<Longrightarrow> \<forall> y \<in> set (((enumAppend nmax)^n) lss). \<forall> z \<in> set y. z \<le> nmax"
   proof (induct n)
     case 0 then show ?case by auto
   next
     case (Suc n) show ?case apply (intro ballI) apply (rule enumAppend_bound) by (auto intro!: Suc)
   qed
-  with lss have "\<forall> y \<in> set (((enumAppend nmax) ^^ n) lss). \<forall> z \<in> set y. z \<le> nmax" apply (rule_tac ind) .
+  with lss have "\<forall> y \<in> set (((enumAppend nmax)^n) lss). \<forall> z \<in> set y. z \<le> nmax" apply (rule_tac ind) .
   with ls x show ?thesis by auto
 qed
 
 lemma enumAppend_increase_rec:
-  "\<And> m as bs. ls \<in> set (((enumAppend nmax) ^^ m) (enumBase nmax)) \<Longrightarrow>
+  "\<And> m as bs. ls \<in> set (((enumAppend nmax) ^ m) (enumBase nmax)) \<Longrightarrow>
   as @ bs = ls \<Longrightarrow>  \<forall> x \<in> set as. \<forall> y \<in> set bs. x \<le> y"
 apply (induct ls rule: rev_induct) apply force apply auto apply (case_tac "m") apply simp  apply (drule_tac enumBase_length)
 apply (case_tac as) apply simp_all
 proof -
   fix x xs m as bs xa xb n
   assume ih: "\<And>m as bs.
-           \<lbrakk>xs \<in> set ((enumAppend nmax ^^ m) (enumBase nmax)); as @ bs = xs\<rbrakk>
+           \<lbrakk>xs \<in> set ((enumAppend nmax ^ m) (enumBase nmax)); as @ bs = xs\<rbrakk>
            \<Longrightarrow> \<forall>x\<in>set as. \<forall>xa\<in>set bs. x \<le> xa"
-    and xs:"xs @ [x] \<in> set (enumAppend nmax ((enumAppend nmax ^^ n) (enumBase nmax)))"
+    and xs:"xs @ [x] \<in> set (enumAppend nmax ((enumAppend nmax ^ n) (enumBase nmax)))"
     and asbs: "as @ bs = xs @ [x]" and xa:"xa \<in> set as" and xb: "xb \<in> set bs" and m: "m = Suc n"
-  from ih have ih2: "\<And> as bs x y. \<lbrakk>xs \<in> set ((enumAppend nmax ^^ n) (enumBase nmax)); as @ bs = xs; x \<in> set as; y \<in> set bs\<rbrakk>
+  from ih have ih2: "\<And> as bs x y. \<lbrakk>xs \<in> set ((enumAppend nmax ^ n) (enumBase nmax)); as @ bs = xs; x \<in> set as; y \<in> set bs\<rbrakk>
            \<Longrightarrow> x \<le> y" by auto
 
   from xb have "bs \<noteq> []"  by auto
@@ -157,7 +157,7 @@ proof -
   then show "xa \<le> xb" apply (cases "xb = b") apply (simp add: beq)
   proof (rule_tac ih2)
     from xs
-    show "xs \<in> set ((enumAppend nmax ^^ n) (enumBase nmax))"
+    show "xs \<in> set ((enumAppend nmax ^ n) (enumBase nmax))"
     by (auto simp: enumAppend_def)
   next
     from xs' show "as @ bs' = xs" by auto
@@ -169,13 +169,13 @@ proof -
   qed
 qed
 
-lemma enumAppend_length1: "\<And>ls. ls \<in> set ((enumAppend nmax ^^ n) lss) \<Longrightarrow>
+lemma enumAppend_length1: "\<And>ls. ls \<in> set (((enumAppend nmax)^n) lss) \<Longrightarrow>
  (\<forall>l \<in> set lss. |l| = k) \<Longrightarrow> |ls| = k + n"
 apply (induct n)
 apply simp
 by (auto simp add:enumAppend_def split: split_if_asm)
 
-lemma enumAppend_length2: "\<And>ls. ls \<in> set ((enumAppend nmax ^^ n) lss) \<Longrightarrow>
+lemma enumAppend_length2: "\<And>ls. ls \<in> set (((enumAppend nmax)^n) lss) \<Longrightarrow>
  (\<And>l. l \<in> set lss \<Longrightarrow> |l| = k) \<Longrightarrow> K = k + n \<Longrightarrow> |ls| = K"
  by (auto simp add: enumAppend_length1)
 
@@ -339,7 +339,7 @@ proof -
   with m nmax show ?thesis by (unfold incrIndexList_def) auto
 qed
 
-lemma enumerator_completeness_help: "\<And> ls. increasing ls \<Longrightarrow> ls \<noteq> [] \<Longrightarrow> length ls = Suc ks \<Longrightarrow> list_all (\<lambda>x. x < Suc nmax) ls \<Longrightarrow> ls \<in> set ((enumAppend nmax ^^ ks) (enumBase nmax))"
+lemma enumerator_completeness_help: "\<And> ls. increasing ls \<Longrightarrow> ls \<noteq> [] \<Longrightarrow> length ls = Suc ks \<Longrightarrow> list_all (\<lambda>x. x < Suc nmax) ls \<Longrightarrow> ls \<in> set ((enumAppend nmax ^ ks) (enumBase nmax))"
 proof (induct ks)
   case 0
   assume "increasing ls" "ls \<noteq> []" "length ls = Suc 0" "list_all (\<lambda>x. x < Suc nmax) ls"
@@ -354,8 +354,8 @@ next
   def l \<equiv> "last ls"
   def ll \<equiv> "last ls'"
   def bl \<equiv> "butlast ls'"
-  def ls'list \<equiv> "(enumAppend nmax ^^ n) (enumBase nmax)"
-  then have short: "(enumAppend nmax ^^ n) (enumBase nmax) = ls'list" by simp
+  def ls'list \<equiv> "(enumAppend nmax ^ n) (enumBase nmax)"
+  then have short: "(enumAppend nmax ^ n) (enumBase nmax) = ls'list" by simp
   from Suc have "ls \<noteq> []" by auto
   then have "ls = butlast ls @ [last ls]" by auto
   with ls'_def l_def have ls1: "ls = ls' @ [l]" by auto
@@ -376,7 +376,7 @@ next
   then have "ll \<le>  l" by (rule increasing2) auto
   with ll_def have lu: "last ls' \<le> l" by simp
 
-  from Suc ls1 have vors: "ls' \<in> set ((enumAppend nmax ^^ n) (enumBase nmax))"
+  from Suc ls1 have vors: "ls' \<in> set ((enumAppend nmax ^ n) (enumBase nmax))"
     by (rule_tac Suc) (auto intro: increasing4)
   with short have "ls' \<in> set ls'list"  by  auto
   with short llsmall ls1 lo lu show ?case  apply simp  apply (simp add: enumAppend_def)
@@ -414,7 +414,7 @@ proof -
       from props  ls' have z': "\<And> z. z \<in> set ks \<Longrightarrow> z \<le> (nmax - 2)" by auto
 
       have "ks \<in> set ((enumAppend (nmax - 2)
-         ^^ (length ks - Suc 0)) (enumBase (nmax - 2)))"
+         ^ (length ks - Suc 0)) (enumBase (nmax - 2)))"
       proof (cases "ks = []")	
 	case True with ms_ne show ?thesis by simp
       next
@@ -430,7 +430,7 @@ proof -
 	  apply (rule_tac enumerator_completeness_help) by auto
       qed
       with lks props' have
-	"ks \<in> set ((enumAppend (nmax - 2) ^^ (m - 3)) (enumBase (nmax - 2)))" by auto
+	"ks \<in> set ((enumAppend (nmax - 2) ^ (m - 3)) (enumBase (nmax - 2)))" by auto
       with m ls' show ?thesis by (simp add: enumerator_def)
     qed
   qed

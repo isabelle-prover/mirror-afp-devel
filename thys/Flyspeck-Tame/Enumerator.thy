@@ -1,4 +1,4 @@
-(*  ID:         $Id: Enumerator.thy,v 1.4 2009-04-24 19:28:46 fhaftmann Exp $
+(*  ID:         $Id: Enumerator.thy,v 1.4.2.1 2009-04-29 05:06:16 lsf37 Exp $
     Author:     Gertrud Bauer
 *)
 
@@ -51,7 +51,7 @@ constdefs enumAppend :: "nat \<Rightarrow> nat list list \<Rightarrow> nat list 
 constdefs enumerator :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" (* precondition inner >= 3 *)
  "enumerator inner outer \<equiv>
      let nmax = outer - 2; k = inner - 3 in 
-     [[0] @ is @ [outer - 1]. is \<leftarrow> (enumAppend nmax ^^ k) (enumBase nmax)]"    
+     [[0] @ is @ [outer - 1]. is \<leftarrow> ((enumAppend nmax)^k) (enumBase nmax)]"    
 
  enumTab :: "nat list list vector vector"
 "enumTab \<equiv> \<lbrakk> enumerator inner outer. inner < 9, outer < 9 \<rbrakk>"
