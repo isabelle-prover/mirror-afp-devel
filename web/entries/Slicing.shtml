@@ -88,7 +88,7 @@ slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler.
 <!-- entry directory name: -->
 <!--#set var="name" value="Slicing" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/Jinja/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -122,6 +122,6 @@ slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2009-04-28 23:20:48 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2009-04-29 14:19:34 $, $Revision: 1.1 
 $</div></body>
 </html>
