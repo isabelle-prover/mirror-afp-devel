@@ -1,10 +1,10 @@
-(*  Title:      JinjaThreads/Compiler/Index.thy
+(*  Title:      JinjaThreads/Compiler/ListIndex.thy
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
 header {* \isaheader{Indexing variables in variable lists} *}
 
-theory Index imports Main begin
+theory ListIndex imports Main begin
 
 text{* In order to support local variables and arbitrarily nested
 blocks, the local variables are arranged as an indexed list. The
