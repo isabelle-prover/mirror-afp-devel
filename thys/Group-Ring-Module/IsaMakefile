@@ -54,4 +54,4 @@ $(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy
 
 clean:
 	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
-	@rm -f $(OUT)-$(SESSION-NAME)
+	@rm -f $(OUT)/$(SESSION-NAME)
