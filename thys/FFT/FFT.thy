@@ -1,5 +1,5 @@
 (*  Title:       Fast Fourier Transform
-    ID:          $Id: FFT.thy,v 1.8 2009-04-27 11:34:28 fhaftmann Exp $
+    ID:          $Id: FFT.thy,v 1.9 2009-05-10 11:53:46 fhaftmann Exp $
     Author:      Clemens Ballarin <ballarin at in.tum.de>, started 12 April 2005
     Maintainer:  Clemens Ballarin <ballarin at in.tum.de>
 *)
@@ -422,7 +422,7 @@ lemma power_divides_special:
 theorem DFT_inverse:
   assumes i_less: "i < n"
   shows  "IDFT n (DFT n a) i = of_nat n * a i"
-  using [[fast_arith_split_limit = 0]]
+  using [[linarith_split_limit = 0]]
   apply (unfold DFT_def IDFT_def)
   apply (simp add: setsum_divide_distrib)
   apply (subst setsum_commute)
