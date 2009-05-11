@@ -44,9 +44,8 @@ proof
     and all:"\<forall>n''\<in>set (targetnodes as). n' postdominates n''"
     by auto
   have notExit:"n \<noteq> (_Exit_)"
-  proof(rule ccontr)
-    assume "\<not> n \<noteq> (_Exit_)"
-    hence "n = (_Exit_)" by simp
+  proof
+    assume "n = (_Exit_)"
     with path have "n = n'" by(fastsimp dest:path_Exit_source)
     with noteq show False by simp
   qed
@@ -72,8 +71,8 @@ proof
 	and not_isin:"n' \<notin> set (sourcenodes as')"
 	by(auto simp:postdominate_def)
       have "as' \<noteq> []"
-      proof(rule ccontr)
-	assume "\<not> as' \<noteq> []"
+      proof
+	assume "as' = []"
 	with path' have "n = (_Exit_)" by(auto elim:path.cases)
 	with notExit show False by simp
       qed
@@ -340,7 +339,7 @@ proof(atomize_elim)
     hence "\<exists>n'' \<in> set(sourcenodes as). n = n''" by simp
     then obtain ns' ns'' where nodes:"sourcenodes as = ns'@n#ns''"
       and notin:"\<forall>n'' \<in> set ns'. n \<noteq> n''"
-      by(fastsimp elim!:leftmost_element_property)
+      by(fastsimp elim!:split_list_first_propE)
     from nodes obtain xs ys a'
       where xs:"sourcenodes xs = ns'" and as:"as = xs@a'#ys"
       and source:"sourcenode a' = n"
@@ -433,9 +432,8 @@ lemma DynPDG_scd:
 proof(unfold_locales)
   fix n n' as assume "n controls\<^isub>s n' via as"
   show "n' \<noteq> (_Exit_)"
-  proof(rule ccontr)
-    assume "\<not> n' \<noteq> (_Exit_)"
-    hence "n' = (_Exit_)" by simp
+  proof
+    assume "n' = (_Exit_)"
     with `n controls\<^isub>s n' via as` show False
       by(fastsimp intro:Exit_not_dyn_standard_control_dependent)
   qed
@@ -509,9 +507,8 @@ lemma PDG_scd:
 proof(unfold_locales)
   fix n n' assume "n controls\<^isub>s n'"
   show "n' \<noteq> (_Exit_)"
-  proof(rule ccontr)
-    assume "\<not> n' \<noteq> (_Exit_)"
-    hence "n' = (_Exit_)" by simp
+  proof
+    assume "n' = (_Exit_)"
     with `n controls\<^isub>s n'` show False
       by(fastsimp intro:Exit_not_standard_control_dependent)
   qed

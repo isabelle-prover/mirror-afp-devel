@@ -50,9 +50,8 @@ lemma DynPDG_wcd:
 proof(unfold_locales)
   fix n n' as assume "n weakly controls n' via as"
   show "n' \<noteq> (_Exit_)"
-  proof(rule ccontr)
-    assume "\<not> n' \<noteq> (_Exit_)"
-    hence "n' = (_Exit_)" by simp
+  proof
+    assume "n' = (_Exit_)"
     with `n weakly controls n' via as` show False
       by(fastsimp intro:Exit_not_dyn_weak_control_dependent)
   qed
@@ -114,9 +113,8 @@ lemma PDG_wcd:
 proof(unfold_locales)
   fix n n' assume "n weakly controls n'"
   show "n' \<noteq> (_Exit_)"
-  proof(rule ccontr)
-    assume "\<not> n' \<noteq> (_Exit_)"
-    hence "n' = (_Exit_)" by simp
+  proof
+    assume "n' = (_Exit_)"
     with `n weakly controls n'` show False
       by(fastsimp intro:Exit_not_weak_control_dependent)
   qed
