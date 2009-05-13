@@ -1,4 +1,4 @@
-(*  ID:         $Id: TrieList.thy,v 1.1 2006-05-22 09:54:04 nipkow Exp $
+(*  ID:         $Id: TrieList.thy,v 1.2 2009-05-13 06:13:17 fhaftmann Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -60,7 +60,7 @@ subsection {* Trie *}
 
 datatype ('a,'v)trie = Trie  "'v list"  "('a * ('a,'v)trie)list"
 
-consts values :: "('a,'v)trie \<Rightarrow> 'v list"
+consts "values" :: "('a,'v)trie \<Rightarrow> 'v list"
        alist :: "('a,'v)trie \<Rightarrow> ('a * ('a,'v)trie)list"
 primrec "values(Trie vs al) = vs"
 primrec "alist(Trie vs al) = al"
