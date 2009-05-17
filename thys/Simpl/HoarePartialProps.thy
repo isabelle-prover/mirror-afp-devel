@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartialProps.thy,v 1.7 2008-06-12 06:57:26 lsf37 Exp $
+(*  ID:          $Id: HoarePartialProps.thy,v 1.8 2009-05-17 12:46:53 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -423,9 +423,7 @@ proof (rule validI)
          "t \<notin> Fault ` F"
   thus "t \<in> Normal ` {t. \<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Normal t} \<union> 
             Abrupt ` {t. \<Gamma>\<turnstile>\<langle>c,Normal Z\<rangle> \<Rightarrow> Abrupt t}"
-    apply (cases t)
-    apply (auto simp add: final_notin_def)
-    done
+    by (cases t) (auto simp add: final_notin_def)
 qed
 
 text {* The consequence rule where the existential @{term Z} is instantiated
@@ -541,15 +539,9 @@ lemma
   done
 
 lemma valid_to_valid_involved:
-  assumes valid: "\<Gamma> \<Turnstile>\<^bsub>/F\<^esub> P c Q,A"
-  shows "\<Gamma>\<Turnstile>\<^bsub>/F\<^esub> {s. s=Z \<and> s \<in> P} c {t. Z \<in> P \<longrightarrow> t \<in> Q},{t. Z \<in> P \<longrightarrow> t \<in> A}" 
-  using valid
-  apply (simp add: valid_def)
-  apply clarsimp
-  apply (erule_tac x="Normal Z" in allE)
-  apply (erule_tac x="t" in allE)
-  apply fastsimp
-  done
+  "\<Gamma> \<Turnstile>\<^bsub>/F\<^esub> P c Q,A \<Longrightarrow>
+   \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> {s. s=Z \<and> s \<in> P} c {t. Z \<in> P \<longrightarrow> t \<in> Q},{t. Z \<in> P \<longrightarrow> t \<in> A}"
+by (simp add: valid_def singleton_conj_conv)
 
 lemma
   assumes deriv: "\<Gamma>,{} \<turnstile>\<^bsub>/F\<^esub> P c Q,A"
@@ -756,7 +748,7 @@ next
     fix s
     assume P: "s \<in> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>While b c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))}"
     hence WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-      by auto
+      by (auto simp del:singleton_conj_conv)
     show "s \<in> ?P' s \<and> 
     (\<forall>t. t\<in>(?P' s \<inter> - b)\<longrightarrow>
          t\<in>{t. \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t})\<and>
@@ -852,7 +844,7 @@ next
 	by blast
     next
       from P show "\<forall>t. t\<in>?A' s \<longrightarrow> t\<in>?A' Z"
-	by simp
+	by (simp del:singleton_conj_conv)
     qed
   qed
 next

@@ -4058,23 +4058,13 @@ lemma isom_gch_unitsTr1:"Ugp E \<Longrightarrow> \<forall>g. \<forall>h. \<foral
       Gchain n h \<and> Gch_bridge n g h f \<longrightarrow>  card {i. i \<le> n \<and> g i \<cong> E} = 
            card {i. i \<le> n \<and> h i \<cong> E}"
 apply (induct_tac n)
- apply (rule allI)+ apply (rule impI) apply (erule conjE)+
- apply (rule card_eq)
- apply (simp add:Gch_bridge_def)
- apply (erule conjE)+
- apply (simp add:isom_Gchains_def)
-apply (rule equalityI)
-apply (rule subsetI) apply (simp add:CollectI) apply (erule conjE)
- apply simp
+ apply (clarify)
+ apply (simp add:Gch_bridge_def isom_Gchains_def)
+ apply rule
+  apply (simp add:Gchain_def)
+  apply(metis isom_gch_unitsTr4)
  apply (simp add:Gchain_def)
-apply (rule_tac F = "g 0" and G = "h 0" in isom_gch_unitsTr4 [of _ _ "E"],
-                                                  assumption+)
-apply (rule subsetI) apply (simp add:CollectI) apply (erule conjE)
- apply simp
-apply (simp add:Gchain_def)
-apply (frule_tac F = "g 0" and G = "h 0" in isomTr1, assumption+)
-apply (rule_tac F = "h 0" and G = "g 0" in isom_gch_unitsTr4 [of _ _ "E"],
-                                                  assumption+)
+ apply (metis Ugp_def isomTr2)
 (***** n ******)
  apply (rule allI)+  apply (rule impI)
  (** n ** case f (Suc n) = Suc n **)
@@ -4116,7 +4106,7 @@ apply simp
 apply (erule conjE)+
 apply (rule isom_gch_unitsTr1_7, assumption+)
 apply (simp add:Gch_bridge_def)
-done  
+done
  
 lemma isom_gch_units:"\<lbrakk>Ugp E; Gchain n g; Gchain n h; Gch_bridge n g h f\<rbrakk> \<Longrightarrow>  
       card {i. i \<le> n \<and> g i \<cong> E} = card {i. i \<le> n \<and> h i \<cong> E}"
@@ -5449,30 +5439,10 @@ lemma length_wcmpser0_4:"\<lbrakk>Group G; Ugp E; w_cmpser G (Suc 0) f\<rbrakk> 
                                                 Qw_cmpser G f i \<cong> E}"
  (* card (f ` Nset (Suc 0)) - 1 =
            Suc 0 - card {i. i \<in> Nset 0 \<and> Qw_cmpser G f i \<cong> E}" *)
-apply (subst length_wcmpser0_0, assumption+)
-apply (case_tac "Qw_cmpser G f 0 \<cong> E")
+apply (auto simp add: length_wcmpser0_0)
  apply (frule_tac n = 0 and f = f and i = 0 in length_wcmpser0_1 [of "G" "E"],         assumption+, simp+)
- apply (rule nonempty_card_pos1[of "{i. i = 0 \<and> Qw_cmpser G f i \<cong> E}"])
- apply (cut_tac finite1[of "(0::nat)"])
- apply (rule finite_subset[of "{i. i = 0 \<and> Qw_cmpser G f i \<cong> E}" "{0}"])
-  apply (rule subsetI) apply simp apply assumption
-  apply blast
-
- apply (frule_tac f = f and i = 0 in length_wcmpser0_2 [of "G" "E" "0"], 
-                                                        assumption+)
- apply (simp add:Nset_inc_0, assumption)
- apply (cut_tac finite1[of "f (Suc 0)"])
- apply (simp only:singleton_iff[THEN sym, of "f 0" "f (Suc 0)"])
- apply (simp add: card_insert_disjoint [of "{f (Suc 0)}" "f 0"])
- apply (rule diff_zero_eq[of "card {i. i = 0 \<and> Qw_cmpser G f i \<cong> E}" 
-        "Suc 0"]) 
- apply (rule sym)
- apply (subst card0[THEN sym])
- apply (rule_tac A = "{}" and B = "{i. i = 0 \<and> Qw_cmpser G f i \<cong> E}" in 
-        card_eq) 
- apply (rule equalityI, rule subsetI) 
- apply simp
-apply (rule subsetI, simp, erule conjE, simp)
+apply (frule_tac f = f and i = 0 in length_wcmpser0_2 [of "G" "E" "0"], 
+       (assumption | simp)+)
 done
 
 lemma length_wcmpser0_5:" \<lbrakk>Group G; Ugp E; w_cmpser G (Suc (Suc n)) f; 

@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: LevellistProof.thy,v 1.7 2008-06-12 06:57:15 lsf37 Exp $
+    ID:          $Id: LevellistProof.thy,v 1.8 2009-05-17 12:46:52 nipkow Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -1318,7 +1318,7 @@ apply (intro allI impI)
 apply (rule_tac x=\<sigma> in exI)
 apply (rule_tac x=t in exI)
 apply (rule conjI)
-apply  clarsimp
+apply  (clarsimp split:split_if_asm)
 apply  (frule replicate_spec [symmetric])
 apply   simp
 apply   (rule conjI)
@@ -1329,8 +1329,7 @@ apply    simp
 apply  clarsimp
 apply  (drule in_set_replicateD)
 apply  simp
-apply (simp add: mem_Collect_eq)
-apply (elim conjE)
+apply (simp add: mem_Collect_eq split:split_if_asm)
 apply (tactic "hyp_subst_tac 1")
 apply vcg_step
 apply (elim exE conjE)

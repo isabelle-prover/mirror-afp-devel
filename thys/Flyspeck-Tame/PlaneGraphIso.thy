@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneGraphIso.thy,v 1.3 2009-03-02 22:00:14 nipkow Exp $
+(*  ID:         $Id: PlaneGraphIso.thy,v 1.4 2009-05-17 12:46:52 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -623,7 +623,6 @@ lemma image_map_of_conv_Image:
  \<Longrightarrow> map_of xys ` A = Some ` (set xys `` A) \<union> (if A \<subseteq> fst ` set xys then {} else {None})"
 apply (induct xys)
  apply (simp add:image_def Image_def)
- apply blast
 apply (simp add:image_map_upd dom_map_of_conv_image_fst)
 apply(erule thin_rl)
 apply (clarsimp simp:image_def Image_def)
