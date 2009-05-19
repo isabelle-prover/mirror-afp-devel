@@ -1,4 +1,4 @@
-(*  ID:          $Id: Language.thy,v 1.9 2009-05-17 12:46:53 nipkow Exp $
+(*  ID:          $Id: Language.thy,v 1.10 2009-05-19 11:25:43 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -29,9 +29,6 @@ USA
 header {* The Simpl Syntax *}
 
 theory Language imports Main begin
-
-declare singleton_conj_conv[simp del]
-
 
 subsection {* The Core Language *}
 

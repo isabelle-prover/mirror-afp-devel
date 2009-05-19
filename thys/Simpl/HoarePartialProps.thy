@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartialProps.thy,v 1.8 2009-05-17 12:46:53 nipkow Exp $
+(*  ID:          $Id: HoarePartialProps.thy,v 1.9 2009-05-19 11:25:43 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -541,7 +541,7 @@ lemma
 lemma valid_to_valid_involved:
   "\<Gamma> \<Turnstile>\<^bsub>/F\<^esub> P c Q,A \<Longrightarrow>
    \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> {s. s=Z \<and> s \<in> P} c {t. Z \<in> P \<longrightarrow> t \<in> Q},{t. Z \<in> P \<longrightarrow> t \<in> A}"
-by (simp add: valid_def singleton_conj_conv)
+by (simp add: valid_def Collect_conv_if)
 
 lemma
   assumes deriv: "\<Gamma>,{} \<turnstile>\<^bsub>/F\<^esub> P c Q,A"
@@ -748,7 +748,7 @@ next
     fix s
     assume P: "s \<in> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>While b c,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))}"
     hence WhileNoFault: "\<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F))"
-      by (auto simp del:singleton_conj_conv)
+      by auto
     show "s \<in> ?P' s \<and> 
     (\<forall>t. t\<in>(?P' s \<inter> - b)\<longrightarrow>
          t\<in>{t. \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t})\<and>
@@ -843,8 +843,7 @@ next
             \<longrightarrow>t\<in>{t. \<Gamma>\<turnstile>\<langle>While b c,Normal Z\<rangle> \<Rightarrow> Normal t})"
 	by blast
     next
-      from P show "\<forall>t. t\<in>?A' s \<longrightarrow> t\<in>?A' Z"
-	by (simp del:singleton_conj_conv)
+      from P show "\<forall>t. t\<in>?A' s \<longrightarrow> t\<in>?A' Z" by simp
     qed
   qed
 next

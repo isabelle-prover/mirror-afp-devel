@@ -4059,7 +4059,7 @@ lemma isom_gch_unitsTr1:"Ugp E \<Longrightarrow> \<forall>g. \<forall>h. \<foral
            card {i. i \<le> n \<and> h i \<cong> E}"
 apply (induct_tac n)
  apply (clarify)
- apply (simp add:Gch_bridge_def isom_Gchains_def)
+ apply (simp add:Gch_bridge_def isom_Gchains_def Collect_conv_if)
  apply rule
   apply (simp add:Gchain_def)
   apply(metis isom_gch_unitsTr4)
@@ -5439,7 +5439,7 @@ lemma length_wcmpser0_4:"\<lbrakk>Group G; Ugp E; w_cmpser G (Suc 0) f\<rbrakk> 
                                                 Qw_cmpser G f i \<cong> E}"
  (* card (f ` Nset (Suc 0)) - 1 =
            Suc 0 - card {i. i \<in> Nset 0 \<and> Qw_cmpser G f i \<cong> E}" *)
-apply (auto simp add: length_wcmpser0_0)
+apply (auto simp add: length_wcmpser0_0 Collect_conv_if)
  apply (frule_tac n = 0 and f = f and i = 0 in length_wcmpser0_1 [of "G" "E"],         assumption+, simp+)
 apply (frule_tac f = f and i = 0 in length_wcmpser0_2 [of "G" "E" "0"], 
        (assumption | simp)+)

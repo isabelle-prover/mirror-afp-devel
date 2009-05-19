@@ -919,7 +919,7 @@ proof -
 	have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y}"
         proof -
           have "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y} \<union> {z \<in> nat_to_set (c_snd x). z = y}"
-	    by(auto simp del:singleton_conj_conv)
+	    by auto
 	  with S1 show ?thesis by auto
         qed
         from nat_to_set_is_finite have S4: "finite ((nat_to_set (c_fst x)) \<union> {z \<in> nat_to_set (c_snd x). z < y})" by auto
@@ -992,7 +992,7 @@ proof -
 	have S3: "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y}"
         proof -
           have "{z \<in> nat_to_set (c_snd x). z < Suc y} = {z \<in> nat_to_set (c_snd x). z < y} \<union> {z \<in> nat_to_set (c_snd x). z = y}"
-	    by(auto simp del:singleton_conj_conv)
+	    by auto
 	  with S1 show ?thesis by auto
         qed
         from nat_to_set_is_finite have S4: "finite ((nat_to_set (c_fst x)) - {z \<in> nat_to_set (c_snd x). z < y})" by auto

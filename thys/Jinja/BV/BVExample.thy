@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.9 2009-05-17 12:46:52 nipkow Exp $
+    ID:         $Id: BVExample.thy,v 1.10 2009-05-19 11:25:43 nipkow Exp $
     Author:     Gerwin Klein
 *)
 
@@ -88,7 +88,7 @@ lemma subcls1:
   "subcls1 E = {(list_name,Object), (test_name,Object), (NullPointer, Object),
                 (ClassCast, Object), (OutOfMemory, Object)}"
 (*<*)
-  apply (simp add: subcls1_def2 del:singleton_conj_conv2)
+  apply (simp add: subcls1_def2)
   apply (simp add: class_defs system_defs E_def class_def)
   (* FIXME: cannot simply expand class names, since
      inequality proofs on strings are too inefficient *)

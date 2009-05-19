@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartial.thy,v 1.8 2009-05-17 12:46:53 nipkow Exp $
+(*  ID:          $Id: HoarePartial.thy,v 1.9 2009-05-19 11:25:43 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -444,7 +444,7 @@ apply  (rule allI)
 apply  (unfold bind_def)
 apply  (rule DynCom)
 apply  (rule ballI)
-apply  (simp del:singleton_conj_conv)
+apply  simp
 apply  (rule conseqPre)
 apply   (rule c [rule_format])
 apply  blast

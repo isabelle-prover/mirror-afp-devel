@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoareTotalProps.thy,v 1.6 2008-06-12 06:57:26 lsf37 Exp $
+(*  ID:          $Id: HoareTotalProps.thy,v 1.7 2009-05-19 11:25:43 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -3494,5 +3494,3 @@ proof -
 qed
  
 end
-
-

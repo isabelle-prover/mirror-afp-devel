@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: LevellistProof.thy,v 1.8 2009-05-17 12:46:52 nipkow Exp $
+    ID:          $Id: LevellistProof.thy,v 1.9 2009-05-19 11:25:43 nipkow Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -1301,7 +1301,6 @@ apply  simp
 apply force
 done
 
-
 lemma (in Levellist_impl) Levellist_spec_total:
 shows "\<forall>\<sigma> t. \<Gamma>,\<Theta>\<turnstile>\<^sub>t
         \<lbrace>\<sigma>. Dag \<acute>p \<acute>low \<acute>high t \<and> (\<forall>i < length \<acute>levellist. \<acute>levellist ! i = Null) \<and> 
@@ -1329,8 +1328,7 @@ apply    simp
 apply  clarsimp
 apply  (drule in_set_replicateD)
 apply  simp
-apply (simp add: mem_Collect_eq split:split_if_asm)
-apply (tactic "hyp_subst_tac 1")
+apply (simp add: mem_Collect_eq Collect_conv_if split:split_if_asm)
 apply vcg_step
 apply (elim exE conjE)
 apply (rule_tac x=ll' in exI)

@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneGraphIso.thy,v 1.4 2009-05-17 12:46:52 nipkow Exp $
+(*  ID:         $Id: PlaneGraphIso.thy,v 1.5 2009-05-19 11:25:43 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -622,7 +622,7 @@ lemma image_map_of_conv_Image:
  "!!A. \<lbrakk> distinct(map fst xys) \<rbrakk>
  \<Longrightarrow> map_of xys ` A = Some ` (set xys `` A) \<union> (if A \<subseteq> fst ` set xys then {} else {None})"
 apply (induct xys)
- apply (simp add:image_def Image_def)
+ apply (simp add:image_def Image_def Collect_conv_if)
 apply (simp add:image_map_upd dom_map_of_conv_image_fst)
 apply(erule thin_rl)
 apply (clarsimp simp:image_def Image_def)
