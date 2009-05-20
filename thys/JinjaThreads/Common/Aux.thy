@@ -21,7 +21,6 @@ lemma Suc_add_max_le[simp]:
   "(Suc(n + max i j) \<le> m) = (Suc(n + i) \<le> m \<and> Suc(n + j) \<le> m)"
 (*<*)by arith(*>*)
 
-no_notation (xsymbols) floor  ("\<lfloor>_\<rfloor>")
 notation Some ("(\<lfloor>_\<rfloor>)")
 
 (*<*)
