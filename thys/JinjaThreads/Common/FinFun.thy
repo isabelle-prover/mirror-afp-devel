@@ -6,7 +6,7 @@ header{* \chapter{Auxiliary definitions}
          \isaheader{Almost everywhere constant functions } *}
 
 theory FinFun
-imports Main Infinite_Set Enum State_Monad Quickcheck
+imports Main Infinite_Set Enum State_Monad
 begin
 
 text {*
@@ -379,12 +379,12 @@ definition collapse :: "('a \<Rightarrow> ('a \<Rightarrow> 'b \<times> 'a) \<ti
 instantiation finfun :: (random, random) random
 begin
 
-primrec random_finfun' :: "Code_Index.index \<Rightarrow> Code_Index.index \<Rightarrow> Random.seed \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b \<times> (unit \<Rightarrow> Code_Eval.term)) \<times> Random.seed" where
+primrec random_finfun' :: "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b \<times> (unit \<Rightarrow> Code_Eval.term)) \<times> Random.seed" where
   "random_finfun' 0 j = (do
      y \<leftarrow> random j;
      return (valtermify_finfun_const y)
    done)"
-  | "random_finfun' (Suc_index i) j = collapse (Random.select_default i (do
+  | "random_finfun' (Suc_code_numeral i) j = collapse (Random.select_default i (do
        x \<leftarrow> random j;
        y \<leftarrow> random j;
        f \<leftarrow> random_finfun' i j;
@@ -402,11 +402,11 @@ instance ..
 end
 
 lemma random'_if:
-  fixes random' :: "Code_Index.index \<Rightarrow> Code_Index.index \<Rightarrow> Random.seed \<Rightarrow> ('a \<times> (unit \<Rightarrow> term)) \<times> Random.seed"
+  fixes random' :: "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> ('a \<times> (unit \<Rightarrow> term)) \<times> Random.seed"
   assumes "random' 0 j = rhs1"
-    and "\<And>i. random' (Suc_index i) j = rhs2 i"
+    and "\<And>i. random' (Suc_code_numeral i) j = rhs2 i"
   shows "random' i j = (if i = 0 then rhs1 else rhs2 (i - 1))"
-  by (cases i rule: index.exhaust) (insert assms, simp_all)
+  by (cases i rule: code_numeral.exhaust) (insert assms, simp_all)
 
 lemma random_finfun'_code [code]:
   "random_finfun' i j = (if i = 0 then do
@@ -424,7 +424,6 @@ lemma random_finfun'_code [code]:
   by (rule random'_if) (simp_all only: random_finfun'.simps)
 
 text {* \subsection{@{text "finfun_update"} as instance of @{text "fun_left_comm"}} *}
-
 
 declare finfun_simp [simp] finfun_iff [iff] finfun_intro [intro]
 
