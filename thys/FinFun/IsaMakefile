@@ -26,14 +26,19 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -P "http://isabelle.in.tum.de/library/" -D generated
 
-## threads
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
+
+# time limit (in sec)
+MAXTIME = 3600
+
+
+## dependencies
 
 $(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex
-	cd ..; $(USEDIR) $(IMAGE) $(SESSION-NAME)
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 ## clean
 
