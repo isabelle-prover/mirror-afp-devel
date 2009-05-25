@@ -69,8 +69,9 @@ href="???">???</a>
 
 <!-- entry directory name: -->
 <!--#set var="name" value="???" -->
+<!--#set var="name" base="HOL" --> <!--- ??? could be HOLCF etc --->
 
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -102,6 +103,6 @@ href="???">???</a>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2008-11-19 11:06:22 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2009-05-25 05:39:54 $, $Revision: 1.1 
 $</div></body>
 </html>
