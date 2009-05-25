@@ -1,0 +1,11 @@
+# -*- shell-script -*-
+
+# $Id: config,v 1.1.2.1 2009-05-25 09:13:53 lsf37 Exp $
+
+# Get email when automated build fails. May be empty.
+# values: "email1 email2 .. emailn"
+NOTIFY="kleing@cse.unsw.edu.au"
+
+# Participate in frequent (nightly) build (only for small submissions)
+# values: "yes" "no"
+FREQUENT="yes"
