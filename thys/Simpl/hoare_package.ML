@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.41 2009-03-16 19:27:51 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.42 2009-05-30 19:33:00 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -3690,9 +3690,8 @@ val vcg_step = gen_simp_method hoare_step_tac;
 (* setup theory *)
 
 val setup =
-  Attrib.add_attributes
-   [("vcg_simp",Attrib.add_del_args vcg_simp_add vcg_simp_del,
-     "declaration of Simplifier rule for vcg")]
+  Attrib.setup @{binding vcg_simp} (Attrib.add_del vcg_simp_add vcg_simp_del)
+    "declaration of Simplifier rule for vcg"
  (*#> add_wp_tacs initial_wp_tacs*)
 
 
