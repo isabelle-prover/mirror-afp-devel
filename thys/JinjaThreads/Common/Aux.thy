@@ -9,7 +9,7 @@ header {*
 *}
 
 theory Aux
-imports FinFun
+imports Fin_Fun
 begin
 
 (* FIXME move and possibly turn into a general simproc *)
