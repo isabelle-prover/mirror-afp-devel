@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.42 2009-05-30 19:33:00 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.43 2009-06-05 11:37:42 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -2710,24 +2710,22 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
     val (_,c,_,_,_,_,_,F) = dest_hoare (Logic.strip_assums_concl t);
     val (SOME grds,_,I,_,_,fix) = dest_whileAnno c;
     val Rule = if fix then WhileAnnoGFix mode else WhileAnnoG mode;
-    fun extract_faults  (Const ("insert",_) $ t $ _) = [t]
+    fun extract_faults (Const (@{const_name insert}, _) $ t $ _) = [t]
       | extract_faults _ = [];
-    fun leave_grd fs (Const ("Pair",_)$f$g) =
-          if f mem fs andalso strip_guards then NONE else SOME g
-      | leave_grd fs (Const ("Language.guaranteeStripPair",_)$f$g) =
-          if f mem fs then NONE else SOME g
+    fun leave_grd fs (Const (@{const_name Pair}, _) $ f $ g) =
+          if member (op =) fs f andalso strip_guards then NONE else SOME g
+      | leave_grd fs (Const (@{const_name Language.guaranteeStripPair}, _) $ f $ g) =
+          if member (op =) fs f then NONE else SOME g
       | leave_grd fs _ = NONE;
     val (I_vs,I_recomb,I') = dest_split I;
-    fun nth i xs = List.nth (xs,i);
-    val grds' = List.mapPartial (leave_grd (extract_faults F)) (HOLogic.dest_list grds);
+    val grds' = map_filter (leave_grd (extract_faults F)) (HOLogic.dest_list grds);
     val pars = (Logic.strip_params (Logic.get_goal (prop_of st) i));
     val J = list_abs (pars,I_recomb (fold_rev (mkIntersect (map snd (pars@I_vs))) grds' I'));
-    val thy = ProofContext.theory_of ctxt;
+    val cterm = Thm.cterm_of (ProofContext.theory_of ctxt);
     val WhileG = Thm.lift_rule (Thm.cprem_of st i) Rule;
-    val invVar =
-         (fst o strip_comb o #3 o dest_whileAnno o nth 1 o snd o strip_comb o #2 o dest_hoare)
-            (List.last (prems_of WhileG));
-    val WhileGInst = cterm_instantiate [(cterm_of thy invVar,cterm_of thy J)] WhileG;
+    val invVar = (fst o strip_comb o #3 o dest_whileAnno o (fn xs => nth xs 1) o snd
+      o strip_comb o #2 o dest_hoare) (List.last (prems_of WhileG));
+    val WhileGInst = cterm_instantiate [(cterm invVar, cterm J)] WhileG;
   in ((trace_tac ("WhileAnnoG, adding guards to invariant: "^ Syntax.string_of_term ctxt J))
       THEN compose_tac (false,WhileGInst,1) i) st
   end
