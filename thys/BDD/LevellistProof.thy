@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: LevellistProof.thy,v 1.9 2009-05-19 11:25:43 nipkow Exp $
+    ID:          $Id: LevellistProof.thy,v 1.10 2009-06-08 19:16:06 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -1317,9 +1317,9 @@ apply (intro allI impI)
 apply (rule_tac x=\<sigma> in exI)
 apply (rule_tac x=t in exI)
 apply (rule conjI)
-apply  (clarsimp split:split_if_asm)
+apply  (clarsimp split:split_if_asm simp del: concat_replicate_trivial)
 apply  (frule replicate_spec [symmetric])
-apply   simp
+apply   (simp)
 apply   (rule conjI)
 apply   (clarsimp simp add: Levellist_def )
 apply    (case_tac i)
