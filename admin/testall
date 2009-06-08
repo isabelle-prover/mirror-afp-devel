@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.15 2009-04-28 23:20:48 lsf37 Exp $
+# $Id: testall,v 1.16 2009-06-08 08:50:55 fhaftmann Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Tests all entries in Archive of Formal Proofs
@@ -95,7 +95,7 @@ DIRS=""
 OPTS=""
 for ARG in "$@"
 do
-  if [ "${ARG#=}" == "$ARG" ]
+  if [ "${ARG#*=}" == "$ARG" ]
   then
     DIRS="$DIRS $ARG"
   else
@@ -109,18 +109,17 @@ FAIL="";
 for DIR in $DIRS; do
     if [ -d $DIR -a "$DIR" != "CVS" ]; then
         cd $DIR
-		if [ "$(ls .)" != "CVS" ]; then
-	        if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
-        	  echo "Testing [$DIR]"
-                  if [ "$OPTS" == "" ]
-                  then
-	            "$ISABELLE_TOOL" make $CLEAN all || FAIL="${FAIL}${DIR} "
-                  else
+        if [ "$(ls .)" != "CVS" ]; then
+            if [ "$FRQONLY" == "no" ] || (unset FREQUENT; . ./config; [ "$FREQUENT" == "yes" ]); then
+                echo "Testing [$DIR]"
+                if [ "$OPTS" == "" ]; then
+                    "$ISABELLE_TOOL" make $CLEAN all || FAIL="${FAIL}${DIR} "
+                else
                     "$ISABELLE_TOOL" make $CLEAN all "$OPTS" || FAIL="${FAIL}${DIR} "
-                  fi
-        	  echo "Finished [$DIR]"
-	        fi
-		fi
+                fi
+                echo "Finished [$DIR]"
+            fi
+        fi
         cd ..
     fi
 done
