@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.44 2009-06-11 13:03:22 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.45 2009-06-11 14:05:53 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1812,7 +1812,7 @@ fun gen_call_rec_rule specs_name n rule =
            |> full_simplify ((simpset_of Main_thy)
                   addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
                             image_Un,image_Un_single_simp] )
-           |> rename_bvars (fn s => if s mem_string ["s","\\<sigma>"] then s else "Z")
+           |> rename_bvars (fn s => if s mem_string ["s","\<sigma>"] then s else "Z")
   in rule'
   end;
 
