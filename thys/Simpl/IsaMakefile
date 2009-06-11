@@ -37,7 +37,7 @@ MAXTIME = 3600
 
 $(SESSION-NAME): $(OUT)/$(SESSION-NAME)
 
-$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib ex/*.thy
+$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.ML *.thy document/*.tex document/*.bib ex/*.thy
 	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
 
