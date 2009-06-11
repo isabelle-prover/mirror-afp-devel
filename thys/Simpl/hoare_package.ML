@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.43 2009-06-05 11:37:42 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.44 2009-06-11 13:03:22 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -37,7 +37,7 @@ val body_def_sfx = "_body";
 val actualsT  = Type ("Vcg.actuals",[]);
 val callT     = dummyT (* Type ("Vcg.call",[]) *);
 
-val programN = "\\<Gamma>";
+val programN = "\<Gamma>";
 val hoareL = "hoare";
 val hoare_ctxtL = "hoare";
 val specL = "_spec";
