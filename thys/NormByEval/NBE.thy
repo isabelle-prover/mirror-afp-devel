@@ -1,4 +1,4 @@
-(*  ID:         $Id: NBE.thy,v 1.10 2009-06-12 06:15:26 nipkow Exp $
+(*  ID:         $Id: NBE.thy,v 1.11 2009-06-14 18:25:19 nipkow Exp $
     Author:     Klaus Aehlig, Tobias Nipkow
     Normalization by Evaluation
 *)
@@ -637,7 +637,8 @@ text{* The compiled rule set: *}
 
 consts compR :: "(cname * ml list * ml)set"
 
-text{* The actual definition is given later. *}
+text{* \noindent
+The actual definition is given in \S\ref{sec:Compiler} below. *}
 
 text{* Now we characterize ML values that cannot possibly be rewritten by a
 rule in @{const compR}. *}
@@ -1091,7 +1092,7 @@ qed
 qed (simp_all add:list_eq_iff_nth_eq, (simp_all add:rev_nth)?)
 
 
-section "Compiler"
+section {*Compiler \label{sec:Compiler}*}
 
 axiomatization arity :: "cname \<Rightarrow> nat"
 
