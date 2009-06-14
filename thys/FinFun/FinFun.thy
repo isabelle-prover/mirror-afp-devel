@@ -5,7 +5,7 @@
 header {* Almost everywhere constant functions *}
 
 theory FinFun
-imports Complex_Main Infinite_Set Enum State_Monad
+imports Complex_Main Infinite_Set Enum
 begin
 
 text {*
@@ -19,67 +19,6 @@ text {*
 *}
 
 text {* \subsection{Auxiliary definitions and lemmas} *}
-
-(*FIXME move these to Finite_Set.thy*)
-lemma card_ge_0_finite:
-  "card A > 0 \<Longrightarrow> finite A"
-by(rule ccontr, drule card_infinite, simp)
-
-lemma finite_UNIV_card_ge_0:
-  "finite (UNIV :: 'a set) \<Longrightarrow> card (UNIV :: 'a set) > 0"
-by(rule ccontr) simp
-
-lemma card_eq_UNIV_imp_eq_UNIV:
-  assumes fin: "finite (UNIV :: 'a set)"
-  and card: "card A = card (UNIV :: 'a set)"
-  shows "A = (UNIV :: 'a set)"
-apply -
-  proof
-  show "A \<subseteq> UNIV" by simp
-  show "UNIV \<subseteq> A"
-  proof
-    fix x
-    show "x \<in> A"
-    proof(rule ccontr)
-      assume "x \<notin> A"
-      hence "A \<subset> UNIV" by auto
-      from psubset_card_mono[OF fin this] card show False by simp
-    qed
-  qed
-qed
-
-lemma finite_fun_UNIVD2: assumes fin: "finite (UNIV :: ('a \<Rightarrow> 'b) set)"
-  shows "finite (UNIV :: 'b set)"
-proof -
-  from fin have "finite (range (\<lambda>f :: 'a \<Rightarrow> 'b. f arbitrary))"
-    by(rule finite_imageI)
-  moreover have "UNIV = range (\<lambda>f :: 'a \<Rightarrow> 'b. f arbitrary)"
-    by(rule UNIV_eq_I) auto
-  ultimately show "finite (UNIV :: 'b set)" by simp
-qed
-
-lemma finite_fun_UNIVD1: assumes fin: "finite (UNIV :: ('a \<Rightarrow> 'b) set)"
-  and card: "card (UNIV :: 'b set) \<noteq> Suc 0"
-  shows "finite (UNIV :: 'a set)"
-proof -
-  from fin have finb: "finite (UNIV :: 'b set)" by(rule finite_fun_UNIVD2)
-  with card have "card (UNIV :: 'b set) \<ge> Suc (Suc 0)"
-    by(cases "card (UNIV :: 'b set)")(auto simp add: card_eq_0_iff)
-  then obtain n where "card (UNIV :: 'b set) = Suc (Suc n)" "n = card (UNIV :: 'b set) - 2" by(auto)
-  then obtain b1 b2 where b1b2: "(b1 :: 'b) \<noteq> (b2 :: 'b)" by(auto simp add: card_Suc_eq)
-  from fin have "finite (range (\<lambda>f :: 'a \<Rightarrow> 'b. inv f b1))" by(rule finite_imageI)
-  moreover have "UNIV = range (\<lambda>f :: 'a \<Rightarrow> 'b. inv f b1)"
-  proof(rule UNIV_eq_I)
-    fix x :: 'a
-    from b1b2 have "x = inv (\<lambda>y. if y = x then b1 else b2) b1" by(simp add: inv_def)
-    thus "x \<in> range (\<lambda>f\<Colon>'a \<Rightarrow> 'b. inv f b1)" by blast
-  qed
-  ultimately show "finite (UNIV :: 'a set)" by simp
-qed
-
-(*FIXME move to Map.thy*)
-lemma restrict_map_insert: "f |` (insert a A) = (f |` A)(a := f a)"
-by(auto simp add: restrict_map_def intro: ext)
 
 definition map_default :: "'b \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> 'a \<Rightarrow> 'b"
 where "map_default b f a \<equiv> case f a of None \<Rightarrow> b | Some b' \<Rightarrow> b'"
@@ -364,6 +303,9 @@ by(simp add: finfun_update_twist)
 
 text {* \subsection{Setup for quickcheck} *}
 
+notation fcomp (infixl "o>" 60)
+notation scomp (infixl "o\<rightarrow>" 60)
+
 definition (in term_syntax) valtermify_finfun_const ::
   "'b\<Colon>typerep \<times> (unit \<Rightarrow> Code_Eval.term) \<Rightarrow> ('a\<Colon>typerep \<Rightarrow>\<^isub>f 'b) \<times> (unit \<Rightarrow> Code_Eval.term)" where
   "valtermify_finfun_const y = Code_Eval.valtermify finfun_const {\<cdot>} y"
@@ -372,55 +314,35 @@ definition (in term_syntax) valtermify_finfun_update_code ::
   "'a\<Colon>typerep \<times> (unit \<Rightarrow> Code_Eval.term) \<Rightarrow> 'b\<Colon>typerep \<times> (unit \<Rightarrow> Code_Eval.term) \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b) \<times> (unit \<Rightarrow> Code_Eval.term) \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b) \<times> (unit \<Rightarrow> Code_Eval.term)" where
   "valtermify_finfun_update_code x y f = Code_Eval.valtermify finfun_update_code {\<cdot>} f {\<cdot>} x {\<cdot>} y"
 
-definition collapse :: "('a \<Rightarrow> ('a \<Rightarrow> 'b \<times> 'a) \<times> 'a) \<Rightarrow> 'a \<Rightarrow> 'b \<times> 'a" where
-  "collapse f = (do g \<leftarrow> f; g done)"
-
 instantiation finfun :: (random, random) random
 begin
 
-primrec random_finfun' :: "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b \<times> (unit \<Rightarrow> Code_Eval.term)) \<times> Random.seed" where
-  "random_finfun' 0 j = (do
-     y \<leftarrow> random j;
-     return (valtermify_finfun_const y)
-   done)"
-  | "random_finfun' (Suc_code_numeral i) j = collapse (Random.select_default i (do
-       x \<leftarrow> random j;
-       y \<leftarrow> random j;
-       f \<leftarrow> random_finfun' i j;
-       return (valtermify_finfun_update_code x y f)
-     done) (do
-       y \<leftarrow> random j;
-       return (valtermify_finfun_const y)
-     done))"
-                         
+primrec random_finfun_aux :: "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b \<times> (unit \<Rightarrow> Code_Eval.term)) \<times> Random.seed" where
+    "random_finfun_aux 0 j = Quickcheck.collapse (Random.select_weight
+       [(1, random j o\<rightarrow> (\<lambda>y. Pair (valtermify_finfun_const y)))])"
+  | "random_finfun_aux (Suc_code_numeral i) j = Quickcheck.collapse (Random.select_weight
+       [(Suc_code_numeral i, random j o\<rightarrow> (\<lambda>x. random j o\<rightarrow> (\<lambda>y. random_finfun_aux i j o\<rightarrow> (\<lambda>f. Pair (valtermify_finfun_update_code x y f))))),
+         (1, random j o\<rightarrow> (\<lambda>y. Pair (valtermify_finfun_const y)))])"
+
 definition 
-  "random n = random_finfun' n n"
+  "random i = random_finfun_aux i i"
 
 instance ..
 
 end
 
-lemma random'_if:
-  fixes random' :: "code_numeral \<Rightarrow> code_numeral \<Rightarrow> Random.seed \<Rightarrow> ('a \<times> (unit \<Rightarrow> term)) \<times> Random.seed"
-  assumes "random' 0 j = rhs1"
-    and "\<And>i. random' (Suc_code_numeral i) j = rhs2 i"
-  shows "random' i j = (if i = 0 then rhs1 else rhs2 (i - 1))"
-  by (cases i rule: code_numeral.exhaust) (insert assms, simp_all)
+lemma random_finfun_aux_code [code]:
+  "random_finfun_aux i j = Quickcheck.collapse (Random.select_weight
+     [(i, random j o\<rightarrow> (\<lambda>x. random j o\<rightarrow> (\<lambda>y. random_finfun_aux (i - 1) j o\<rightarrow> (\<lambda>f. Pair (valtermify_finfun_update_code x y f))))),
+       (1, random j o\<rightarrow> (\<lambda>y. Pair (valtermify_finfun_const y)))])"
+  apply (cases i rule: code_numeral.exhaust)
+  apply (simp_all only: random_finfun_aux.simps code_numeral_zero_minus_one Suc_code_numeral_minus_one)
+  apply (subst select_weight_cons_zero) apply (simp only:)
+  done
 
-lemma random_finfun'_code [code]:
-  "random_finfun' i j = (if i = 0 then do
-       y \<leftarrow> random j;
-       return (valtermify_finfun_const y)
-     done else collapse (Random.select_default (i - 1) (do
-       x \<leftarrow> random j;
-       y \<leftarrow> random j;
-       f \<leftarrow> random_finfun' (i - 1) j;
-       return (valtermify_finfun_update_code x y f)
-     done) (do
-       y \<leftarrow> random j;
-       return (valtermify_finfun_const y)
-     done)))"
-  by (rule random'_if) (simp_all only: random_finfun'.simps)
+no_notation fcomp (infixl "o>" 60)
+no_notation scomp (infixl "o\<rightarrow>" 60)
+
 
 text {* \subsection{@{text "finfun_update"} as instance of @{text "fun_left_comm"}} *}
 
