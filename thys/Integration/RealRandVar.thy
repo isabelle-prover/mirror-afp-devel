@@ -240,7 +240,7 @@ proof
      
       ultimately have 
 	"\<exists>n0. \<forall>n. n0 \<le> n \<longrightarrow> abs (inverse (real (Suc n))) < a - f w" 
-	by (auto simp add: LIMSEQ_def) 
+	by (auto simp add: LIMSEQ_def dist_real_def) 
       then obtain n where  "abs (inverse (real (Suc n))) < a - f w" 
 	by blast
       hence "f w \<le> a - inverse (real (Suc n))" 
@@ -287,7 +287,7 @@ lemma assumes sigma: "sigma_algebra A" and ge: "\<forall>a. {w. a \<le> f w} \<i
       hence "0 < f w - a" by simp
 
       ultimately have "\<exists>n0. \<forall>n. n0 \<le> n \<longrightarrow> abs (inverse (real (Suc n))) < f w - a" 
-	by (auto simp add: LIMSEQ_def) 
+	by (auto simp add: LIMSEQ_def dist_real_def) 
       then obtain n where  "abs (inverse (real (Suc n))) < f w - a" by blast      
       hence "a + inverse (real (Suc n)) \<le> f w" by arith
       hence "\<exists>n. a + inverse (real (Suc n)) \<le> f w" ..
