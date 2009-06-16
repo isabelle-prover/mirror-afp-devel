@@ -1,4 +1,4 @@
-(*  ID:         $Id: NBE.thy,v 1.11 2009-06-14 18:25:19 nipkow Exp $
+(*  ID:         $Id: NBE.thy,v 1.12 2009-06-16 19:32:37 nipkow Exp $
     Author:     Klaus Aehlig, Tobias Nipkow
     Normalization by Evaluation
 *)
@@ -522,9 +522,11 @@ section "Reduction"
 
 subsection "Patterns"
 
-inductive pattern :: "tm \<Rightarrow> bool" where
+inductive pattern :: "tm \<Rightarrow> bool"
+      and patterns :: "tm list \<Rightarrow> bool" where
+       "patterns ts \<equiv> \<forall>t\<in>set ts. pattern t" |
 pat_V: "pattern(V X)" |
-pat_C: "\<forall>t\<in>set ts. pattern t \<Longrightarrow> pattern(C nm \<bullet>\<bullet> ts)"
+pat_C: "patterns ts \<Longrightarrow> pattern(C nm \<bullet>\<bullet> ts)"
 
 lemma pattern_Lam[simp]: "\<not> pattern(\<Lambda> t)"
 by(auto elim!: pattern.cases)
@@ -541,7 +543,7 @@ qed
 lemma pattern_AtD12: "pattern(s \<bullet> t) \<Longrightarrow> pattern s \<and> pattern t"
 by(metis pattern_At'D12)
 
-lemma pattern_At_vecD: "pattern(s \<bullet>\<bullet> ts) \<Longrightarrow> \<forall>t \<in> set ts. pattern t"
+lemma pattern_At_vecD: "pattern(s \<bullet>\<bullet> ts) \<Longrightarrow> patterns ts"
 apply(induct ts rule:rev_induct)
  apply simp
 apply (fastsimp dest!:pattern_AtD12)
@@ -563,7 +565,7 @@ text{* The source program: *}
 axiomatization R :: "(cname * tm list * tm)set" where
 pure_R: "(nm,ts,t) : R \<Longrightarrow> (\<forall>t \<in> set ts. pure t) \<and> pure t" and
 fv_R:   "(nm,ts,t) : R \<Longrightarrow> X : fv t \<Longrightarrow> \<exists>t' \<in> set ts. X : fv t'" and
-pattern_R: "(nm,ts,t') : R \<Longrightarrow> \<forall>t \<in> set ts. pattern t"
+pattern_R: "(nm,ts,t') : R \<Longrightarrow> patterns ts"
 
 inductive_set
   Red_tm :: "(tm * tm)set"
@@ -1220,7 +1222,7 @@ proof(induct arbitrary: \<sigma> pred:pure)
 qed (simp_all add:comp_open_def)
 
 lemma kernel_subst_ML_pat_map:
-  "\<forall>t \<in> set ts. pure t \<and> pattern t \<Longrightarrow> \<forall>i. closed\<^bsub>ML\<^esub> 0 (\<sigma> i) \<Longrightarrow>
+  "\<forall>t \<in> set ts. pure t \<Longrightarrow> patterns ts \<Longrightarrow> \<forall>i. closed\<^bsub>ML\<^esub> 0 (\<sigma> i) \<Longrightarrow>
    map kernel (map (subst\<^bsub>ML\<^esub> \<sigma>) (map comp_pat ts)) =
    map (subst (kernel \<circ> \<sigma>)) ts"
 by(simp add:list_eq_iff_nth_eq kernel_subst_ML_pat)
@@ -1231,6 +1233,7 @@ apply(auto simp add:compR_def rev_map)
 apply(frule pure_R)
 apply(subst kernel_subst_ML) apply fast+
 apply(subst kernel_subst_ML_pat_map)
+ apply fast
  apply(fast dest:pattern_R)
  apply assumption
 apply(rule r_into_rtrancl)
@@ -1479,7 +1482,7 @@ lemma dterm_ML_comp_patD:
   "pattern t \<Longrightarrow> dterm\<^bsub>ML\<^esub> (comp_pat t) = C nm \<bullet>\<bullet> rs \<Longrightarrow> \<exists>ts. t = C nm \<bullet>\<bullet> ts"
 by(induct pred:pattern) simp_all
 
-lemma no_match_R_coincide_aux[rule_format]: "\<forall>t\<in>set ts. pattern t \<Longrightarrow>
+lemma no_match_R_coincide_aux[rule_format]: "patterns ts \<Longrightarrow>
   no_match (map (dterm\<^bsub>ML\<^esub> \<circ> comp_pat) ts) rs \<longrightarrow> no_match ts rs"
 apply(induct ts rs rule:no_match.induct)
 apply(subst (1 2) no_match.simps)
@@ -1883,6 +1886,8 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
 qed
 
 declare [[simp_depth_limit = 50]]
+
+(* FIXME move *)
 
 lemma listsimps_eq_0_iff: "listsum ns = (0::nat) \<longleftrightarrow> (\<forall> n \<in> set ns. n = 0)"
 by(metis listsum sum_eq_0_conv)
@@ -2343,6 +2348,147 @@ apply(erule nbe_C_normal_ML)
 apply(simp add: C_normal_ML_compile)
 apply assumption
 done
+
+section{* Refinements *}
+
+text{* We ensure that all occurrences of @{term "C\<^isub>U nm vs"} satisfy
+the invariant @{prop"size vs = arity nm"}. *}
+
+text{* A constructor value: *}
+
+fun C\<^isub>Us :: "ml \<Rightarrow> bool" where
+"C\<^isub>Us(C\<^isub>U nm vs) = (size vs = arity nm \<and> (\<forall>v\<in>set vs. C\<^isub>Us v))" |
+"C\<^isub>Us _ = False"
+
+lemma size_foldl_At: "size(C nm \<bullet>\<bullet> ts) = size ts + listsum(map size ts)"
+by(induct ts rule:rev_induct) auto
+
+
+lemma termination_linpats:
+  "i < length ts \<Longrightarrow> ts!i = C nm \<bullet>\<bullet> ts'
+   \<Longrightarrow> length ts' + listsum (map size ts') < length ts + listsum (map size ts)"
+apply(subgoal_tac "C nm \<bullet>\<bullet> ts' : set ts")
+ prefer 2 apply (metis in_set_conv_nth)
+apply(drule listsum_map_remove1[of _ _ size])
+apply(simp add:size_foldl_At)
+apply (metis gr_implies_not0 length_0_conv)
+done
+
+text{* Linear patterns: *}
+
+function linpats :: "tm list \<Rightarrow> bool" where
+"linpats ts \<longleftrightarrow>
+ (ALL i<size ts. (EX x. ts!i = V x) |
+    (EX nm ts'. ts!i = C nm \<bullet>\<bullet> ts' \<and> arity nm = size ts' \<and> linpats ts')) &
+ (ALL i<size ts. ALL j<size ts. i\<noteq>j \<longrightarrow> fv(ts!i) \<inter> fv(ts!j) = {})"
+by pat_completeness auto
+termination
+apply(relation "measure(%ts. size ts + (SUM t<-ts. size t))")
+apply (auto simp:termination_linpats)
+done
+
+declare linpats.simps[simp del]
+
+(* FIXME move *)
+lemma eq_lists_iff_eq_nth:
+  "size xs = size ys \<Longrightarrow> (xs=ys) = (ALL i<size xs. xs!i = ys!i)"
+by (metis nth_equalityI)
+
+lemma pattern_subst_ML_coincidence:
+ "pattern t \<Longrightarrow> ALL i:fv t. \<sigma> i = \<sigma>' i
+  \<Longrightarrow> subst_ML \<sigma> (comp_pat t) = subst_ML \<sigma>' (comp_pat t)"
+by(induct pred:pattern) auto
+
+lemma linpats_pattern: "linpats ts \<Longrightarrow> patterns ts"
+proof(induct ts rule:linpats.induct)
+  case (1 ts)
+  show ?case
+  proof
+    fix t assume "t : set ts"
+    then obtain i where "i < size ts" and [simp]: "t = ts!i"
+      by (auto simp: in_set_conv_nth)
+    hence "(EX x. t = V x) | (EX nm ts'. t = C nm \<bullet>\<bullet> ts' \<and> arity nm = size ts' & linpats ts')"
+      (is "?V | ?C")
+      using 1(2) by(simp add:linpats.simps[of ts])
+    thus "pattern t"
+    proof
+      assume "?V" thus ?thesis by(auto simp:pat_V)
+    next
+      assume "?C" thus ?thesis using 1(1) `i < size ts`
+	by auto (metis pat_C)
+    qed
+  qed
+qed
+
+lemma no_match_ML_swap_rev:
+  "length ps = length vs \<Longrightarrow> no_match\<^bsub>ML\<^esub> ps (rev vs) \<Longrightarrow> no_match\<^bsub>ML\<^esub> (rev ps) vs"
+apply(clarsimp simp: no_match_ML.simps[of ps] no_match_ML.simps[of _ vs])
+apply(rule_tac x="size ps - i - 1" in exI)
+apply (fastsimp simp:rev_nth)
+done
+
+lemma no_match_ML_aux:
+  "ALL v : set cvs. C\<^isub>Us v \<Longrightarrow> linpats ps \<Longrightarrow> size ps = size cvs \<Longrightarrow>
+  \<forall>\<sigma>. map (subst\<^bsub>ML\<^esub> \<sigma>) (map comp_pat ps) \<noteq> cvs \<Longrightarrow>
+  no_match\<^bsub>ML\<^esub> (map comp_pat ps) cvs"
+apply(induct ps arbitrary: cvs rule:linpats.induct)
+apply(frule linpats_pattern)
+apply(subst (asm) linpats.simps) back
+apply auto
+apply(case_tac "ALL i<size ts. EX \<sigma>. subst\<^bsub>ML\<^esub> \<sigma> (comp_pat (ts!i)) = cvs!i")
+ apply(clarsimp simp:Skolem_list_nth)
+ apply(rename_tac "\<sigma>s")
+ apply(erule_tac x="%x. (\<sigma>s!(THE i. i<size ts & x : fv(ts!i)))x" in allE)
+ apply(clarsimp simp:eq_lists_iff_eq_nth)
+ apply(rotate_tac -3)
+ apply(erule_tac x=i in allE)
+ apply simp
+ apply(rotate_tac -1)
+ apply(drule sym)
+ apply simp
+ apply(erule contrapos_np)
+ apply(rule pattern_subst_ML_coincidence)
+  apply (metis in_set_conv_nth)
+ apply clarsimp
+ apply(rule_tac a=i in theI2)
+   apply simp
+  apply (metis disjoint_iff_not_equal)
+ apply (metis disjoint_iff_not_equal)
+apply clarsimp
+apply(subst no_match_ML.simps)
+apply(rule_tac x="size ts - i - 1" in exI)
+apply simp
+apply rule
+ apply simp
+apply(subgoal_tac "~(EX x. ts!i = V x)")
+ prefer 2
+ apply fastsimp
+apply(subgoal_tac "EX nm ts'. ts!i = C nm \<bullet>\<bullet> ts' & size ts' = arity nm & linpats ts'")
+ prefer 2
+ apply fastsimp
+apply clarsimp
+apply(rule_tac x=nm in exI)
+apply(subgoal_tac "EX nm' vs'. cvs!i = C\<^isub>U nm' vs' & size vs' = arity nm' & (ALL v' : set vs'. C\<^isub>Us v')")
+ prefer 2
+ apply(drule_tac x="cvs!i" in bspec)
+  apply simp
+   apply(case_tac "cvs!i")
+apply simp_all
+apply (clarsimp simp:rev_nth rev_map[symmetric])
+apply(erule_tac x=i in meta_allE)
+apply(erule_tac x=nm' in meta_allE)
+apply(erule_tac x="ts'" in meta_allE)
+apply(erule_tac x="rev vs'" in meta_allE)
+apply simp
+apply(subgoal_tac "no_match\<^bsub>ML\<^esub> (map comp_pat ts') (rev vs')")
+ apply(rule no_match_ML_swap_rev)
+  apply simp
+ apply assumption
+apply(erule_tac meta_mp)
+apply (metis rev_map rev_rev_ident)
+done
+
+
 
 (*<*)
 end
