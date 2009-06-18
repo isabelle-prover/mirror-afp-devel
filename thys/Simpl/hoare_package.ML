@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.45 2009-06-11 14:05:53 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.46 2009-06-18 18:57:58 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1846,14 +1846,9 @@ fun in_assertion_simp_tac ctxt state_kind thms i =
  end;
 
 
-fun raw_assertion_simp_tac ctxt state_kind thms i =
+fun assertion_simp_tac ctxt state_kind thms i =
     merge_assertion_simp_tac [] i
     THEN_MAYBE in_assertion_simp_tac ctxt state_kind thms i
-
-fun assertion_simp_tac_timer ctxt = time_accumulator "assertion_simp_tac" ctxt;
-(*fun assertion_simp_tac thms i st = assertion_simp_tac_timer
-                                    (fn () => raw_assertion_simp_tac thms i st) ();*)
-fun assertion_simp_tac ctxt = raw_assertion_simp_tac ctxt;
 
 (* simplify equality test on strings (and datatype-constructors) and propagate result*)
 fun string_eq_simp_tac ctxt =
@@ -3368,7 +3363,7 @@ fun generalise Record = GeneraliseRecord.GENERALISE
    Bevore splitting the gaol we can simplifiy the goal with state_simproc this may leed
    to better performance...
 *)
-fun raw_record_vanish_tac ctxt state_kind state_space i =
+fun record_vanish_tac ctxt state_kind state_space i =
     let
         val rem_useless_vars_simps = [triv_forall_equality,triv_All_eq,triv_Ex_eq];
         val rem_useless_vars_ss = (empty_ss setmksimps single)
@@ -3395,11 +3390,6 @@ fun raw_record_vanish_tac ctxt state_kind state_space i =
                      trace_tac "record_vanish_tac -- STOP --"]*)
               ]
     end;
-
-val record_vanish_tac_timer = time_accumulator "record_vanish_tac";
-(*fun record_vanish_tac state_space i st
-    = record_vanish_tac_timer (fn () => raw_record_vanish_tac state_space i st) ();*)
-val record_vanish_tac = raw_record_vanish_tac;
 
 (* solve_modifies_tac tries to solve modifies-clauses automatically;
  * The following strategy is followed:
