@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.46 2009-06-18 18:57:58 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.47 2009-06-19 19:08:29 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -558,17 +558,17 @@ fun resuffix sfx1 sfx2 s =
 (* state space representation dependent functions *)
 
 datatype state_kind = Record | Function
-fun state_simprocs Record   = [RecordPackage.record_simproc]
-  | state_simprocs Function = [RecordPackage.record_simproc,StateFun.lookup_simproc];
+fun state_simprocs Record   = [Record.record_simproc]
+  | state_simprocs Function = [Record.record_simproc,StateFun.lookup_simproc];
 
-fun state_upd_simproc Record   = RecordPackage.record_upd_simproc
+fun state_upd_simproc Record   = Record.record_upd_simproc
   | state_upd_simproc Function = StateFun.update_simproc;
 
-fun state_ex_sel_eq_simproc Record   = RecordPackage.record_ex_sel_eq_simproc
+fun state_ex_sel_eq_simproc Record   = Record.record_ex_sel_eq_simproc
   | state_ex_sel_eq_simproc Function = StateFun.ex_lookup_eq_simproc;
 
-val state_split_simp_tac = RecordPackage.record_split_simp_tac
-val state_hierarchy = RecordPackage.dest_recTs
+val state_split_simp_tac = Record.record_split_simp_tac
+val state_hierarchy = Record.dest_recTs
 
 
 fun stateT_id T = case (state_hierarchy T) of [] => NONE | Ts => SOME (last Ts);
@@ -587,11 +587,11 @@ fun stateT_ids T =
 
 
 fun extension_id thy stateN =
-  (case RecordPackage.get_extension thy stateN of
-     SOME (e,_) => SOME (unsuffix RecordPackage.ext_typeN e)
+  (case Record.get_extension thy stateN of
+     SOME (e,_) => SOME (unsuffix Record.ext_typeN e)
    | NONE => NONE);
 
-val updateN = RecordPackage.updateN
+val updateN = Record.updateN
 
 datatype par_kind = In | Out
 
@@ -1366,7 +1366,7 @@ fun procedures_definition locname procs thy =
 
    val sp_thy =
         thy
-        |> fold (add_variable_statespaces RecordPackage.read_typ) (map clique_vars cliques)
+        |> fold (add_variable_statespaces Record.read_typ) (map clique_vars cliques)
         |> fold add_signature_locale
                         (List.concat (map (fn c => map (fn n => (lname "" c,n)) c) cliques))
         |> fold add_body_locale name_pars
@@ -1854,7 +1854,7 @@ fun assertion_simp_tac ctxt state_kind thms i =
 fun string_eq_simp_tac ctxt =
      simp_tac ((Simplifier.context ctxt HOL_basic_ss)
                  addsimps (list_injects@char_injects@simp_thms)
-                 addsimprocs [DatatypePackage.distinct_simproc])
+                 addsimprocs [Datatype.distinct_simproc])
 
 
 fun assertion_string_eq_simp_tac ctxt state_kind thms i =
@@ -3055,9 +3055,9 @@ fun fld_idx xs x = idx fld_eq xs x;
 fun sort_vars ctxt T vars =
   let
     val thy = ProofContext.theory_of ctxt;
-    val (flds,_) = RecordPackage.get_recT_fields thy T;
+    val (flds,_) = Record.get_recT_fields thy T;
     val gT = the (AList.lookup (fn (x:string,y) => x=y) flds globals);
-    val (gflds,_) = (RecordPackage.get_recT_fields thy gT
+    val (gflds,_) = (Record.get_recT_fields thy gT
                      handle TYPE _ => ([],("",dummyT)));
 
     fun compare (Const _$Free _, Const _$(Const _$Free _)) = GREATER
@@ -3128,7 +3128,7 @@ fun split_state ctxt s T t =
     val vars' = if !sort_variables then sort_vars ctxt T vars else vars;
   in (abstract_vars vars' s t,rev vars') end;
 
-fun ex_tac vs st = RecordPackage.record_split_simp_tac simp_thms (K ~1) 1 st;
+fun ex_tac vs st = Record.record_split_simp_tac simp_thms (K ~1) 1 st;
 
 end;
 
@@ -3276,7 +3276,7 @@ local
           (thm "StateFun.lookup_def"::thm "StateFun.id_id_cancel"::
            thms "list.inject"@thms "char.inject"@simp_thms)
           addsimprocs
-          [RecordPackage.record_simproc,DatatypePackage.distinct_simproc,StateFun.lazy_conj_simproc]
+          [Record.record_simproc,Datatype.distinct_simproc,StateFun.lazy_conj_simproc]
           addcongs [thm "block_conj_cong"];
 in
 fun ex_tac vs st =
@@ -3286,7 +3286,7 @@ fun ex_tac vs st =
     val (Const (_,exT)$_) = HOLogic.dest_Trueprop
                              (Logic.strip_imp_concl (Logic.get_goal (prop_of st) 1));
     val sT = domain_type (domain_type exT);
-    val flds = fst (RecordPackage.get_recT_fields thy sT);
+    val flds = fst (Record.get_recT_fields thy sT);
 
     val s0 = Const (@{const_name undefined},sT);
 
@@ -3318,7 +3318,7 @@ fun ex_tac vs st =
     val upds = fold_index mk_upd vs' (mk_init vs');
 
     val upd = fold (fn (n,(T,upd)) => fn s =>
-                      Const (n ^ RecordPackage.updateN, T --> sT --> sT)$upd$s)
+                      Const (n ^ Record.updateN, T --> sT --> sT)$upd$s)
                 upds
                 s0;
 
@@ -3415,7 +3415,7 @@ local
                            @{thms list.inject} @ @{thms char.inject} @ @{thms simp_thms} @ K_fun_convs)
                 addcongs ([imp_cong] (* @ K_fun_congs  FIXME: Stefan fragen*))
                 addsplits [split_if]
-                addsimprocs [DatatypePackage.distinct_simproc,
+                addsimprocs [Datatype.distinct_simproc,
                              DistinctTreeProver.distinct_simproc
                                    ["distinct_fields","distinct_fields_globals"]])
 in
@@ -3438,7 +3438,7 @@ fun solve_modifies_tac ctxt state_kind state_space i =
         handle _ => 0)
       else 0
       | is_split_state t = 0;
-    val ss = HOL_ss addsimps (Ex_True::Ex_False::RecordPackage.get_extinjects thy);
+    val ss = HOL_ss addsimps (Ex_True::Ex_False::Record.get_extinjects thy);
       fun try_solve Record i = (*(SOLVE*)
           (((fn k => (TRY (REPEAT_ALL_NEW (resolve_tac [conjI, impI, allI]) k)))
             THEN_ALL_NEW
@@ -3572,7 +3572,7 @@ fun is_funtype (Type ("fun", _)) = true
   | is_funtype _ = false;
 
 fun state_kind_of thy T =
-     let val (s,sT) = nth (fst (RecordPackage.get_recT_fields thy T)) 1;
+     let val (s,sT) = nth (fst (Record.get_recT_fields thy T)) 1;
      in if Long_Name.base_name s = "locals" andalso is_funtype sT then Function else Record end
      handle Subscript => Record;
 
