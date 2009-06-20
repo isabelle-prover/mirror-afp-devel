@@ -821,7 +821,7 @@ done
 lemma gHom_mem:"\<lbrakk>Group F; Group G; f \<in> gHom F G ; x \<in> carrier F\<rbrakk> \<Longrightarrow>
                              (f x) \<in> carrier G" 
 apply (simp add:gHom_def, (erule conjE)+)
-apply (simp add:funcset_mem)
+apply (simp add:Pi_def)
 done
 
 lemma gHom_func:"\<lbrakk>Group F; Group G; f \<in> gHom F G\<rbrakk> \<Longrightarrow>
@@ -840,7 +840,7 @@ apply (rule ballI)+
                                               assumption+) 
 apply (frule_tac x = y in funcset_mem [of "f" "carrier F" "carrier G"],
                                               assumption+)
-apply (simp add:Group.mult_closed[of "F"]) 
+apply (simp add:Group.mult_closed[of "F"])
 done
 
 lemma gHom_comp_gsurjec:"\<lbrakk>Group F; Group G; Group H; gsurj\<^bsub>F,G\<^esub> f; 
@@ -941,13 +941,10 @@ apply (rule conjI)
   apply (simp add:gsurjec_def)
       apply (rule conjI)
         apply (simp add:idmap_def gHom_def Group.mult_closed)
-      apply (rule univar_func_test, simp add:idmap_def)
-      apply (simp add:surj_to_def)
-      apply (simp add:image_def idmap_def)
+      apply (simp add:surj_to_def image_def idmap_def)
   (* ginjec *)
   apply (simp add:ginjec_def)
      apply (simp add:idmap_def gHom_def Group.mult_closed)
-     apply (rule univar_func_test, simp add:idmap_def)
 done
 
 lemma Id_l_unit:"\<lbrakk>Group G; gbij\<^bsub>G,G\<^esub> f\<rbrakk> \<Longrightarrow> I\<^bsub>G\<^esub> \<circ>\<^bsub>G\<^esub> f = f"
@@ -1251,10 +1248,7 @@ lemma Img_carrier:"\<lbrakk>Group F; Group G; f \<in> gHom F G \<rbrakk> \<Longr
 by (simp add:Gimage_def Gp_def)
 
 lemma hom_to_Img:"\<lbrakk>Group F; Group G; f \<in> gHom F G\<rbrakk> \<Longrightarrow> f \<in> gHom F (Img\<^bsub>F,G\<^esub> f)"
-apply (simp add:gHom_def Gimage_def Gp_def,
-       (erule conjE)+)
-apply (simp add:Pi_def restrict_def)
-done
+by (simp add:gHom_def Gimage_def Gp_def)
 
 lemma gker_hom_to_img:"\<lbrakk>Group F; Group G; f \<in> gHom F G \<rbrakk> \<Longrightarrow>
                                gker\<^bsub>F,(Img\<^bsub>F,G\<^esub> f)\<^esub> f = gker\<^bsub>F,G\<^esub> f" 
@@ -1409,7 +1403,6 @@ apply (simp add:inducedHom)
 apply (rule ballI)
  apply (simp add:surj_to_def[of "f" "carrier F" "carrier G"],
         frule sym, thin_tac "f ` carrier F = carrier G", simp,
-        thin_tac "f \<in> carrier F \<rightarrow> f ` carrier F",
         thin_tac "carrier G = f ` carrier F")
  apply (simp add:image_def, erule bexE, simp,
         thin_tac "b = f x")
@@ -2021,10 +2014,7 @@ apply (frule nsg_sg[of "N"],
           "(gcsrp_map G N) ` (set_rcs G N)" "a"], assumption+)
 apply (simp add:gcsrp_top_def gcsrp_one_def)
  apply (frule Qg_unit_closed[of "N"])
- apply (simp add:funcset_mem)
- apply (simp add:invfun_l1)
- apply (simp add:Qg_unit)
- apply (simp add:invfun_r1)
+ apply (simp add:Pi_def invfun_l1 Qg_unit invfun_r1)
 done
 
 lemma (in Group) gcsrp_l_i:"\<lbrakk>G \<triangleright> N; a \<in> ((gcsrp_map G N) `(set_rcs G N))\<rbrakk> \<Longrightarrow>
@@ -2080,9 +2070,7 @@ done
 
 lemma (in Group) gcsrp_map_gbijec:"G \<triangleright> N \<Longrightarrow> 
                   gbij\<^bsub>(G/N), (Gcsrp G N)\<^esub> (gcsrp_map G N)"
-apply (simp add:gbijec_def)
-apply (simp add:gsurjec_def ginjec_def)
-apply (simp add:Qg_carrier Gcsrp_def) 
+apply (simp add:gbijec_def gsurjec_def ginjec_def Qg_carrier Gcsrp_def) 
 apply (frule nsg_sg[of "N"],
        frule gcsrp_map_bij[of "N"], simp add:bij_to_def)
 apply (fold Gcsrp_def)
@@ -2092,12 +2080,11 @@ apply (rule conjI)
  apply (simp add:Qg_carrier gcsrp_map_def)
 apply (rule conjI)
  apply (simp add:Qg_carrier Gcsrp_def) 
- apply (simp add:gcsrp_func1)
- apply (fold bij_to_def)
+apply (fold bij_to_def)
 apply (rule ballI)+
- apply (simp add:Qg_def Gcsrp_def gcsrp_top_def)
- apply (frule gcsrp_func1[of "N"])
- apply (simp add:invfun_l1[of "gcsrp_map G N" "set_rcs G N" 
+apply (simp add:Qg_def Gcsrp_def gcsrp_top_def)
+apply (frule gcsrp_func1[of "N"])
+apply (simp add:invfun_l1[of "gcsrp_map G N" "set_rcs G N" 
                                  "gcsrp_map G N ` set_rcs G N"])
 done
 

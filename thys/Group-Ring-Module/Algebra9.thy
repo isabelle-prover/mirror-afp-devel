@@ -1096,8 +1096,7 @@ apply (erule ex1E,
  apply (simp add:compose_def restrict_def extensional_def,
         simp add:universal_property_def bilinear_map_def)
 apply (rule ballI)
- apply (simp add:compose_def mId_def,
-        simp add:funcset_mem) 
+ apply (simp add:compose_def mId_def funcset_mem del:Pi_I)
  apply (rotate_tac -4)
  apply (frule sym,
         thin_tac "f = compose (M \<times>\<^sub>c N) (compose (carrier MN) k h) f")
@@ -1119,7 +1118,7 @@ apply (frule  composition [of "g" "M \<times>\<^sub>c N" "carrier MN1" "mId\<^bs
       simp add:universal_property_def bilinear_map_def)
 apply (rule ballI,
        simp add:compose_def mId_def,
-       simp add:funcset_mem,
+       simp add:funcset_mem del:Pi_I,
        frule sym,
        thin_tac "g = compose (M \<times>\<^sub>c N) (compose (carrier MN1) h k) g",
        frule tensor_prod_uniqueTr [of R M N MN1 MN1 g g], assumption+)
@@ -3714,7 +3713,7 @@ apply ((rule allI)+, rule impI, erule conjE)
         frule_tac x = x and f = fa and A = "{j. j \<le> Suc n}" and B = A
                in funcset_mem, simp+) 
  apply (frule_tac  x = "Suc n" and f = fa and A = "{j. j \<le> Suc n}" and B = A
-               in funcset_mem, simp+, simp add:cmp_def) 
+               in funcset_mem, simp+, simp add:cmp_def)
 done
 
 lemma (in Ring) fg_freeTr:"\<lbrakk>R module M; free_generator R M A;
@@ -4253,7 +4252,7 @@ apply (rule impI)
  apply (frule_tac func_pre, simp)
  apply (frule Module.module_is_ag [of M R])
  apply (frule_tac n = n in aGroup.nsum_mem [of M _ f],
-        rule allI, simp add:funcset_mem,
+        rule allI, simp add:Pi_def,
         frule_tac x = "Suc n" and A = "{j. j \<le> Suc n}" and f = f and
         B = "carrier M" in funcset_mem, simp)
  apply (simp add:Module.mHom_add cmp_def)
@@ -4363,7 +4362,7 @@ apply (induct_tac n)
  apply ((rule allI)+, rule impI, (erule conjE)+)
  apply (simp add:l_comb_def) 
  apply (rule Module.submodule_sc_closed, assumption+)
- apply (simp add:funcset_mem, simp add:funcset_mem subsetD)
+ apply (simp add:Pi_def, simp add:Pi_def subsetD)
 
 apply ((rule allI)+, rule impI, erule conjE)
  apply (frule_tac f = f and n = n and A = T in func_pre)
@@ -4381,7 +4380,7 @@ apply ((rule allI)+, rule impI, erule conjE)
  apply (rule Module.submodule_pOp_closed[of M R N], assumption+,
         rule_tac a = "s (Suc n)" and h = "f (Suc n)" in 
          Module.submodule_sc_closed[of M R N], assumption+,
-        simp add:funcset_mem, simp add:funcset_mem subsetD)
+        simp add:Pi_def, simp add:Pi_def subsetD)
 done
 
 lemma (in Ring) linear_comb_mem:"\<lbrakk>R module M; submodule R M N; T \<subseteq> N; 

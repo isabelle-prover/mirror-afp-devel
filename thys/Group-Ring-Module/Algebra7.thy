@@ -229,7 +229,7 @@ done
 lemma (in Module) mHom_mem:"\<lbrakk>R module N; f \<in> mHom R M N; m \<in> carrier M\<rbrakk>
  \<Longrightarrow> f m \<in> carrier N"
 apply (simp add:mHom_def aHom_def) apply (erule conjE)+
-apply (simp add:funcset_mem)
+apply (simp add:Pi_def)
 done
 
 lemma (in Module) mHom_add:"\<lbrakk>R module N; f \<in> mHom R M N; m \<in> carrier M; 
@@ -1724,8 +1724,6 @@ apply (subst mHom_def, simp add:CollectI)
  apply (simp add:aHom_def)
  apply (rule conjI)
  apply (simp add:mimg_def mdl_def)
- apply (rule univar_func_test, rule ballI)
- apply (simp add:image_def, blast)
 apply (rule conjI)
  apply (simp add:mHom_def aHom_def extensional_def)
 apply (rule ballI)+
@@ -2244,7 +2242,7 @@ apply ((erule exE)+, erule conjE)
           and ?B1.0 = "carrier M" in extend_fun, assumption+)
   apply (frule sym, thin_tac "a = \<Sigma>\<^sub>e M g n")
   apply (cut_tac n = n and f = g in nsum_minus,
-         rule allI, simp add:funcset_mem, simp)
+         rule allI, simp add:Pi_def, simp)
 	
  apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a (g x)) \<in> {j. j \<le> n} \<rightarrow> 
                                                  finitesum_base M I f")
@@ -2299,7 +2297,7 @@ apply (frule finitesumbase_sub_carrier [of f I])
         thin_tac "g \<in> {j. j \<le> n} \<rightarrow> finitesum_base M I f",
         frule func_pre)
  apply (cut_tac n = n in nsum_mem [of _ g])
- apply (rule allI, simp add:funcset_mem)
+ apply (rule allI, simp add:Pi_def)
  apply (frule_tac x = "Suc n" in funcset_mem [of "g" _ "carrier M"], simp)
  apply (subst sc_r_distr, assumption+)
  apply simp
@@ -2715,12 +2713,12 @@ apply (cut_tac sc_Ring)
 apply (rule nsum_eq)
  apply (rule allI, rule impI, simp add:jointfun_def,
         rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (rule allI, rule impI, 
         rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (rule allI, simp add:jointfun_def)
 done
 
@@ -2740,12 +2738,12 @@ apply (cut_tac sc_Ring)
 apply (rule nsum_eq)
  apply (rule allI, rule impI, simp add:jointfun_def,
         rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
   apply (rule allI, rule impI, 
         rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
   apply (rule allI, simp add:jointfun_def)
 done
 
@@ -2764,12 +2762,12 @@ apply (cut_tac sc_Ring)
 apply (rule nsum_eq)
  apply (rule allI, rule impI, simp add:jointfun_def,
         rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
   apply (rule allI, rule impI, 
         rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
     apply (rule allI, simp add:jointfun_def)
 done
 
@@ -2869,8 +2867,8 @@ apply (simp add:l_comb_def)
  apply (rule ag_pOp_closed, assumption+)
  apply (rule sc_mem)
  apply (cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset subsetD)
- apply (simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset subsetD)
+ apply (simp add:Pi_def subsetD)
 done
 
 lemma (in Module) l_comb_mem:"\<lbrakk>ideal R A; H \<subseteq> carrier M; 
@@ -2891,15 +2889,15 @@ apply (rule nsum_eq)
  apply (cut_tac l = ja in transpos_mem[of j "Suc n" "Suc n"],
         simp add:less_imp_le, simp, simp, assumption)
  apply (rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (rule allI, rule impI, simp add:cmp_def)
  apply (frule less_imp_le[of j "Suc n"],
         frule_tac l = ja in transpos_mem[of j "Suc n" "Suc n"], simp,
         simp, assumption+)
  apply (rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (rule allI, rule impI,
         simp add:cmp_def)
 done
@@ -2917,8 +2915,8 @@ apply (frule l_comb_transpos[THEN sym, of A H s n f j], assumption+)
  apply (cut_tac addition2[of "\<lambda>j. s j \<cdot>\<^sub>s f j" n "transpos j (Suc n)"],
          simp)
  apply (rule univar_func_test, rule ballI, rule sc_mem,
-          simp add:funcset_mem Ring.ideal_subset,
-          simp add:funcset_mem subsetD)
+          simp add:Pi_def Ring.ideal_subset,
+          simp add:Pi_def subsetD)
  apply (rule_tac i = j and n = "Suc n" and j = "Suc n" in transpos_hom,
         simp add:less_imp_le, simp, simp)
  apply (rule_tac i = j and n = "Suc n" and j = "Suc n" in transpos_inj,
@@ -2971,7 +2969,7 @@ apply (rule univar_func_test) apply (rule ballI)
  apply simp
  apply (cut_tac sc_Ring,
         rule Ring.ideal_inv1_closed, assumption+)
- apply (simp add:funcset_mem)
+ apply (simp add:Pi_def)
 done
 
 lemma (in Module) l_span_gen_mono:"\<lbrakk>K \<subseteq> H; H \<subseteq> carrier M; ideal R A\<rbrakk> \<Longrightarrow>
@@ -2998,24 +2996,24 @@ apply (simp del:nsum_suc add:l_comb_def)
  apply (subst nsum_split)
  apply (rule allI, rule impI)
  apply (case_tac "j \<le> n", simp add:jointfun_def,
-        rule sc_mem, simp add:funcset_mem Ring.ideal_subset,
-       simp add:funcset_mem subsetD)
+        rule sc_mem, simp add:Pi_def Ring.ideal_subset,
+       simp add:Pi_def subsetD)
  apply (simp add:jointfun_def sliden_def) 
  apply (frule_tac m = j and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono,
         thin_tac "j \<le> Suc (n + m)", simp,
-        rule sc_mem, simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD) 
+        rule sc_mem, simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD) 
  apply (simp add:l_comb_jointfun_jj[of H A s n f t m g])
  apply (cut_tac nsum_eq[of m "cmp (\<lambda>j. jointfun n s m t j \<cdot>\<^sub>s 
         jointfun n f m g j) (slide (Suc n))" "\<lambda>j. t j \<cdot>\<^sub>s g j"], simp)
  apply (rule allI, rule impI, simp add:cmp_def,
         simp add:jointfun_def sliden_def slide_def,
-        rule sc_mem, simp add:funcset_mem Ring.ideal_subset,
-       simp add:funcset_mem subsetD)
+        rule sc_mem, simp add:Pi_def Ring.ideal_subset,
+       simp add:Pi_def subsetD)
  apply (rule allI, rule impI,
-        rule sc_mem, simp add:funcset_mem Ring.ideal_subset,
-       simp add:funcset_mem subsetD)
- apply (rule allI, simp add:cmp_def jointfun_def sliden_def slide_def)
+        rule sc_mem, simp add:Pi_def Ring.ideal_subset,
+       simp add:Pi_def subsetD)
+ apply (simp add:cmp_def jointfun_def sliden_def slide_def)
 done
        
 lemma (in Module) l_comb_add1Tr:"\<lbrakk>ideal R A; H \<subseteq> carrier M\<rbrakk> \<Longrightarrow>
@@ -3043,16 +3041,16 @@ apply (induct_tac n)
  apply (rule allI, rule impI, simp,
          rule sc_mem, frule Ring.ring_is_ag,
          rule aGroup.ag_pOp_closed[of R], assumption,
-         simp add:funcset_mem[of s _ A] Ring.ideal_subset,
-         simp add:funcset_mem[of t _ A] Ring.ideal_subset,
-         simp add:funcset_mem[of f _ H] subsetD)
+         simp add:Pi_def Ring.ideal_subset,
+         simp add:Pi_def Ring.ideal_subset,
+         simp add:Pi_def subsetD)
  apply (rule allI, rule impI, simp,
          rule sc_mem, frule Ring.ring_is_ag,
          rule aGroup.ag_pOp_closed[of R], assumption,
-         simp add:funcset_mem[of s _ A] Ring.ideal_subset,
-         simp add:funcset_mem[of t _ A] Ring.ideal_subset,
-         simp add:funcset_mem[of f _ H] subsetD)
- apply (rule allI, simp)
+         simp add:Pi_def Ring.ideal_subset,
+         simp add:Pi_def Ring.ideal_subset,
+         simp add:Pi_def subsetD)
+ apply (simp)
  apply simp
  apply (thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> n then s j \<plusminus>\<^bsub>R\<^esub> t j else undefined) \<cdot>\<^sub>s f j)
         n =  \<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s f j) n \<plusminus> \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s f j) n",
@@ -3071,18 +3069,18 @@ apply (induct_tac n)
  apply (simp add:sc_l_distr)
  apply (cut_tac n = n and f = "\<lambda>j. s j \<cdot>\<^sub>s f j" in nsum_mem,
         rule allI, rule impI,  rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (cut_tac n = n and f = "\<lambda>j. t j \<cdot>\<^sub>s f j" in nsum_mem,
         rule allI, rule impI,  rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (cut_tac a = "s (Suc n)" and m = "f (Suc n)" in sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (cut_tac a = "t (Suc n)" and m = "f (Suc n)" in sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (subst pOp_assocTr41[THEN sym], assumption+,
         subst pOp_assocTr42, assumption+)
  apply (frule_tac x = "\<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s f j) n" and 
@@ -3141,7 +3139,7 @@ apply blast
 apply (rule univar_func_test, rule ballI, simp)
 apply(cut_tac sc_Ring,
       rule Ring.ideal_inv1_closed, assumption+,
-      simp add:funcset_mem)
+      simp add:Pi_def)
 done
 
 lemma (in Module) linear_span_pOp_closed:
@@ -3158,12 +3156,12 @@ apply (simp add:linear_span_def)
                 g = "\<lambda>j. t j \<cdot>\<^sub>s g j" in nsum_add_nm)
  apply (rule allI, rule impI, rule sc_mem,
         cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (rule allI, rule impI, rule sc_mem,
         cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (rotate_tac -1, frule sym, 
         thin_tac "\<Sigma>\<^sub>e M (jointfun n (\<lambda>j. s j \<cdot>\<^sub>s f j) m (\<lambda>j. t j \<cdot>\<^sub>s g j)) 
                      (Suc (n + m)) =
@@ -3177,36 +3175,36 @@ apply (simp add:linear_span_def)
   apply (case_tac "j \<le> n", simp)
   apply (rule sc_mem,
          cut_tac sc_Ring,
-         simp add:funcset_mem Ring.ideal_subset,
-         simp add:funcset_mem subsetD)  
+         simp add:Pi_def Ring.ideal_subset,
+         simp add:Pi_def subsetD)  
   apply (simp, rule sc_mem)
   apply (simp add:sliden_def,
          frule_tac m = j and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono,
          thin_tac "j \<le> Suc (n + m)", simp,
          cut_tac sc_Ring,
-         simp add:funcset_mem Ring.ideal_subset) 
+         simp add:Pi_def Ring.ideal_subset) 
   apply (simp add:sliden_def,
          frule_tac m = j and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono,
          thin_tac "j \<le> Suc (n + m)", simp,
          cut_tac sc_Ring,
-         simp add:funcset_mem subsetD) 
+         simp add:Pi_def subsetD) 
  apply (rule allI, rule impI)
   apply (simp add:jointfun_def)
   apply (case_tac "j \<le> n", simp)
   apply (rule sc_mem,
          cut_tac sc_Ring,
-         simp add:funcset_mem Ring.ideal_subset,
-         simp add:funcset_mem subsetD)  
+         simp add:Pi_def Ring.ideal_subset,
+         simp add:Pi_def subsetD)  
   apply (simp, simp add:sliden_def,
          rule sc_mem,
          frule_tac m = j and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono,
          thin_tac "j \<le> Suc (n + m)", simp,
          cut_tac sc_Ring,
-         simp add:funcset_mem Ring.ideal_subset) 
+         simp add:Pi_def Ring.ideal_subset) 
   apply (frule_tac m = j and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono,
          thin_tac "j \<le> Suc (n + m)", simp,
          cut_tac sc_Ring,
-         simp add:funcset_mem subsetD)
+         simp add:Pi_def subsetD)
   apply (rule allI, rule impI,
          simp add:jointfun_def)
 apply (simp del:nsum_suc,
@@ -3235,12 +3233,12 @@ apply (rule impI) apply (erule conjE)
  apply (cut_tac n = n and f = "\<lambda>k. s k \<cdot>\<^sub>s g k" in nsum_mem,
         rule allI, rule impI,
         cut_tac sc_Ring, rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)  
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)  
  apply (cut_tac a = "s (Suc n)" and m = "g (Suc n)" in sc_mem,
         cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)  
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)  
  apply (simp add:sc_r_distr)
 done
 
@@ -3252,8 +3250,8 @@ apply (cut_tac sc_Ring)
 apply (induct_tac n)
  apply (rule impI, (erule conjE)+, simp)
  apply (subst sc_assoc, assumption+,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD, simp)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD, simp)
 
 apply (rule impI) apply (erule conjE)
  apply (frule func_pre [of _ _ "A"], frule func_pre [of _ _ "H"])
@@ -3261,16 +3259,16 @@ apply (rule impI) apply (erule conjE)
  apply (cut_tac n = n and f = "\<lambda>k. s k \<cdot>\<^sub>s g k" in nsum_mem,
         rule allI, rule impI,
         cut_tac sc_Ring, rule sc_mem,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)  
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)  
  apply (cut_tac a = "s (Suc n)" and m = "g (Suc n)" in sc_mem,
         cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)  
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)  
  apply (simp add:sc_r_distr)
  apply (subst  sc_assoc, assumption+,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD, simp)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD, simp)
 done
 
 lemma (in Module) l_comb_sc:"\<lbrakk>ideal R A; H \<subseteq> carrier M; r \<in> carrier R; 
@@ -3308,19 +3306,19 @@ apply (cut_tac n = n and f = "\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s
  apply (rule allI, rule impI,
         rule sc_mem, assumption, rule sc_mem,
         cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (rule allI, rule impI,
         rule sc_mem,
         cut_tac sc_Ring,
         rule Ring.ring_tOp_closed, assumption+,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (rule allI, rule impI,
         subst sc_assoc, assumption,
         cut_tac sc_Ring, 
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD, simp,
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD, simp,
         simp,
     thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s f j)) n = 
                                 \<Sigma>\<^sub>e M (\<lambda>j. (r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j) \<cdot>\<^sub>s f j) n",
@@ -3332,14 +3330,14 @@ apply (cut_tac n = n and f = "\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s
         rule sc_mem,
         cut_tac sc_Ring,
         rule Ring.ring_tOp_closed, assumption+,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
    apply (rule allI, rule impI,
          rule sc_mem, simp) apply (
           cut_tac sc_Ring,
         rule Ring.ring_tOp_closed, assumption+,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
   apply (rule allI, rule impI)
          apply simp
   apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. r \<cdot>\<^sub>r\<^bsub>R\<^esub> s x) \<in> {j. j \<le> n} \<rightarrow> A",
@@ -3348,7 +3346,7 @@ apply (cut_tac n = n and f = "\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s
 apply (thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j) \<cdot>\<^sub>s f j) n =
         \<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> n then r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j else undefined) \<cdot>\<^sub>s f j) n",
         rule allI, rule impI, cut_tac sc_Ring,
-        rule Ring.ideal_ring_multiple, assumption+, simp add:funcset_mem,
+        rule Ring.ideal_ring_multiple, assumption+, simp add:Pi_def,
         assumption)
 done
     
@@ -3458,8 +3456,8 @@ apply (cut_tac sc_Ring)
  apply (subgoal_tac "\<forall>j\<le>n. s j \<cdot>\<^sub>s f j \<in> N", simp)
  apply (rule allI, rule impI)
  apply (rule submodule_sc_closed[of N], assumption,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
 done
 
 lemma (in Module) linear_span_sub:"\<lbrakk>ideal R A; H \<subseteq> carrier M\<rbrakk>  \<Longrightarrow> 
@@ -3524,7 +3522,7 @@ apply (rule subsetI)
         simp add:Ring.ring_times_x_0,
         rule sc_0_m) apply (
         frule submodule_subset[of Q],
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def subsetD)
  apply (simp add:submodule_inc_0)
 done
  
@@ -3588,14 +3586,14 @@ apply (subst linear_span_def)
          frule_tac a = x in Ring.principal_ideal[of R], assumption+,
          frule_tac A = "R \<diamondsuit>\<^sub>p x" and H = Q and a = "r \<cdot>\<^sub>r\<^bsub>R\<^esub> x" and h = "f j" in
          sc_linear_span, assumption+, simp add:Rxa_def, blast,
-         simp add:funcset_mem)
+         simp add:Pi_def)
   apply (frule_tac x = r in aGroup.ag_mOp_closed[of R], assumption+,
          frule_tac a = y in Ring.principal_ideal[of R], assumption+,
          frule_tac a = y in Ring.principal_ideal[of R], assumption+,
          frule_tac A = "R \<diamondsuit>\<^sub>p y" and H = Q and a = "(-\<^sub>a\<^bsub>R\<^esub> r) \<cdot>\<^sub>r\<^bsub>R\<^esub> y" and
          h = "f j" in sc_linear_span, assumption+, simp add:Rxa_def,
          blast,
-         simp add:funcset_mem)
+         simp add:Pi_def)
   apply (frule_tac c = "(r \<cdot>\<^sub>r\<^bsub>R\<^esub> x) \<cdot>\<^sub>s f j" and A = "linear_span R M (R \<diamondsuit>\<^sub>p x) Q" 
          and B = P in subsetD, assumption+) apply (
          frule_tac c = "((-\<^sub>a\<^bsub>R\<^esub> r) \<cdot>\<^sub>r\<^bsub>R\<^esub> y) \<cdot>\<^sub>s f j" and 
@@ -3638,9 +3636,9 @@ apply (induct_tac n)
  apply (simp add:l_comb_def)
  apply (cut_tac m = "g 0" and f = f and a = "s 0" in mHom_lin [of N],
         assumption+,
-        simp add:funcset_mem subsetD, assumption,
+        simp add:Pi_def subsetD, assumption,
         cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset, simp add:cmp_def)
+        simp add:Pi_def Ring.ideal_subset, simp add:cmp_def)
 
 apply (rule impI, erule conjE)
  apply (frule_tac f = s in func_pre,
@@ -3650,12 +3648,12 @@ apply (rule impI, erule conjE)
  apply (rule nsum_mem,
         rule allI, rule impI, rule sc_mem,
         cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
  apply (rule sc_mem,
          cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD, simp,
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD, simp,
         frule_tac x = "Suc n" and A = "{j. j \<le> Suc n}" and f = s and 
                   B = A in funcset_mem, simp,
         cut_tac sc_Ring,
@@ -3913,8 +3911,8 @@ apply (simp add:l_comb_def)
 apply (rule_tac n = n in nsum_mem) 
  apply (rule allI, rule impI)
  apply (rule sc_mem)
- apply (simp add:funcset_mem Ring.ideal_subset)
- apply (simp add:funcset_mem subsetD)
+ apply (simp add:Pi_def Ring.ideal_subset)
+ apply (simp add:Pi_def subsetD)
 done
 
 lemma (in Module) lin_span_coeff_mono:"\<lbrakk>ideal R A; H \<subseteq> carrier M\<rbrakk>\<Longrightarrow>  
@@ -3938,8 +3936,8 @@ apply (induct_tac n)
  apply ((rule allI)+, rule impI, simp) 
  apply (erule conjE)
  apply (rule linear_span_sc_closed, assumption+)
- apply (simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem)
+ apply (simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def)
 
 apply ((rule allI)+, rule impI, erule conjE)
  apply (frule func_pre [of _ _ "A"],
@@ -3950,8 +3948,8 @@ apply ((rule allI)+, rule impI, erule conjE)
  apply simp
  apply (rule linear_span_pOp_closed, assumption+)
  apply (rule linear_span_sc_closed, assumption+,
-        simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem subsetD)
+        simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def subsetD)
 done
 
 lemma (in Module) l_span_closed:"\<lbrakk>ideal R A; H \<subseteq> carrier M; 
@@ -3980,7 +3978,7 @@ apply (case_tac "H = {}")
  apply (simp add:linear_span_def)
  apply (rule sc_a_0,
         cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset) 
+        simp add:Pi_def Ring.ideal_subset) 
 
  apply (simp add:linear_span_def) 
  apply (erule exE, (erule bexE)+, simp,
@@ -3995,13 +3993,13 @@ apply (case_tac "H = {}")
         g = "\<lambda>j. ((\<lambda>x\<in>{j. j \<le> n}. (s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa x)) j) \<cdot>\<^sub>s f j" in nsum_eq)
         apply (rule allI, rule impI, rule sc_mem,
                rule Ring.ring_tOp_closed, assumption+,
-               simp add:funcset_mem,
-               simp add:funcset_mem subsetD)
+               simp add:Pi_def,
+               simp add:Pi_def subsetD)
         apply (rule allI, rule impI, simp,
                 rule sc_mem,
                rule Ring.ring_tOp_closed, assumption+,
-               simp add:funcset_mem,
-               simp add:funcset_mem subsetD)
+               simp add:Pi_def,
+               simp add:Pi_def subsetD)
         apply (rule allI, rule impI, simp)
  apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. (s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa x)) \<in> {j. j \<le> n} \<rightarrow> A",
         blast,
@@ -4010,7 +4008,7 @@ apply (case_tac "H = {}")
         apply (rule univar_func_test, rule ballI, simp,
                rule_tac x = s and r = "sa x" in 
                Ring.ideal_ring_multiple1[of R A], assumption+)
-               apply (simp add:funcset_mem)
+               apply (simp add:Pi_def)
 done
 
 lemma (in Module) l_span_closed2Tr:"\<lbrakk>ideal R A; H \<subseteq> carrier M\<rbrakk> \<Longrightarrow> 
@@ -4027,10 +4025,10 @@ apply (case_tac "H = {}")
           funcset_mem, simp+)
  apply (rule sc_a_0,
         cut_tac sc_Ring,
-        simp add:funcset_mem Ring.ideal_subset) 
+        simp add:Pi_def Ring.ideal_subset) 
  apply (simp add:l_comb_def) 
  apply (rule l_span_closed2Tr0[of A H "s 0" "f 0"], assumption+,
-        simp add:funcset_mem, simp add:funcset_mem)
+        simp add:Pi_def, simp add:Pi_def)
 
 apply (rule impI, erule conjE,
        frule func_pre[of s], frule func_pre[of f], simp)
@@ -4038,7 +4036,7 @@ apply (rule impI, erule conjE,
  apply (rule linear_span_pOp_closed, assumption+) 
  apply (rule_tac s = "s (Suc n)" and f = "f (Suc n)" in 
                  l_span_closed2Tr0[of A H], assumption+,
-       (simp add:funcset_mem)+)
+       (simp add:Pi_def)+)
 done
 
 lemma (in Module) l_span_closed2:"\<lbrakk>ideal R A; H \<subseteq> carrier M;
@@ -4182,7 +4180,7 @@ apply (rule impI)
  apply (frule_tac H = "f ` {j. j \<le> Suc n}" and ?H1.0 = "f ` {j. j \<le> n}"
         in generator_generator,
         rule subsetI, simp add:image_def, erule exE, erule conjE, simp,
-        simp add:funcset_mem)
+        simp add:Pi_def)
  apply assumption+
  apply (rule subsetI, simp add:image_def, erule exE, erule conjE)
  apply (case_tac "xa = Suc n", simp)
@@ -4193,7 +4191,7 @@ apply (rule impI)
  apply (rule_tac H = "{y. \<exists>x\<le>n. y = f x}" and h = "f xa" in 
                        h_in_linear_span,
         rule subsetI, simp add:image_def, erule exE, erule conjE,
-        simp add:funcset_mem)
+        simp add:Pi_def)
  apply (simp, blast)
 done
 
@@ -4296,7 +4294,7 @@ apply ((rule allI)+, rule impI, (erule conjE)+)
         B = "carrier M" in funcset_mem, simp,
         frule_tac a = "s (Suc n)" and m = "f (Suc n)" in sc_mem, assumption+,
         cut_tac a = a and m = m in sc_mem,
-        simp add:Ring.ideal_subset, erule exE, simp add:funcset_mem,
+        simp add:Ring.ideal_subset, erule exE, simp add:Pi_def,
         erule exE, erule conjE)
  apply (case_tac "x = Suc n", simp)  (***** case x = Suc n ********)
  apply (subst ag_pOp_assoc, assumption+)
@@ -4329,11 +4327,11 @@ apply ((rule allI)+, rule impI, (erule conjE)+)
         else (\<lambda>k\<in>{0}. s (Suc n) \<plusminus>\<^bsub>R\<^esub> a) (sliden (Suc n) j)) \<cdot>\<^sub>s f j" in
         nsum_eq)
         apply (rule allI, rule impI, rule sc_mem,
-               simp add:funcset_mem Ring.ideal_subset,
-               simp add:funcset_mem)
+               simp add:Pi_def Ring.ideal_subset,
+               simp add:Pi_def)
         apply (rule allI, rule impI, simp, rule sc_mem,
-               simp add:funcset_mem Ring.ideal_subset,
-               simp add:funcset_mem)
+               simp add:Pi_def Ring.ideal_subset,
+               simp add:Pi_def)
         apply (rule allI, rule impI, simp)
   apply simp
   
@@ -4368,11 +4366,11 @@ apply ((rule allI)+, rule impI, (erule conjE)+)
           g = "\<lambda>j. (if j \<le> n then t j  else (\<lambda>k\<in>{0}. s (Suc n)) 
                 (sliden (Suc n) j)) \<cdot>\<^sub>s f j" in nsum_eq)
    apply (rule allI, rule impI, rule sc_mem,
-          simp add:funcset_mem Ring.ideal_subset,
-          simp add:funcset_mem)
+          simp add:Pi_def Ring.ideal_subset,
+          simp add:Pi_def)
    apply (rule allI, rule impI, simp, rule sc_mem,
-          simp add:funcset_mem Ring.ideal_subset,
-          simp add:funcset_mem)   
+          simp add:Pi_def Ring.ideal_subset,
+          simp add:Pi_def)   
    apply (rule allI, rule impI, simp, simp)
    apply blast
 done
@@ -4411,7 +4409,7 @@ apply (case_tac "f (Suc n) \<in> f ` {j. j \<le> n}")
  apply (frule_tac a = "s (Suc n)" and s = t and 
         n = "card (f ` {j. j \<le> n}) - Suc 0" and f = g and m = "f (Suc n)" in 
         similar_term1[of A],
-        simp add:funcset_mem,
+        simp add:Pi_def,
         assumption,
         frule_tac f = f and A = "{j. j \<le> n}" and B = H in image_sub0,
         frule_tac A = "f ` {j. j \<le> n}" and B = H and C = "carrier M" 
@@ -4429,12 +4427,12 @@ apply (case_tac "f (Suc n) \<in> f ` {j. j \<le> n}")
   
   apply (frule_tac f = t and n = "card (f ` {j. j \<le> n}) - Suc 0" and A = A and
         g = "\<lambda>k\<in>{0::nat}. s (Suc n)" and m = 0 and B = A in jointfun_hom0)
-        apply (rule univar_func_test, rule ballI, simp add:funcset_mem,
+        apply (rule univar_func_test, rule ballI, simp add:Pi_def,
                simp)
   apply (frule_tac f = g and n = "card (f ` {j. j \<le> n}) - Suc 0" and 
          A = "f ` {j. j \<le> n}" and g = "\<lambda>k\<in>{0::nat}. f (Suc n)" and m = 0 and 
          B = "{f (Suc n)}" in jointfun_hom0)
-        apply (rule univar_func_test, rule ballI, simp add:funcset_mem,
+        apply (rule univar_func_test, rule ballI, simp add:Pi_def,
                simp)
   apply (subgoal_tac "\<Sigma>\<^sub>e M (\<lambda>k. t k \<cdot>\<^sub>s g k) (card (f ` {j. j \<le> n}) - Suc 0) \<plusminus>
                 s (Suc n) \<cdot>\<^sub>s f (Suc n) =
@@ -4457,7 +4455,7 @@ apply (case_tac "f (Suc n) \<in> f ` {j. j \<le> n}")
    apply (simp add:surj_to_def)
    apply (frule_tac f = g and n = "card (f ` {j. j \<le> n}) - Suc 0" and A = "f ` {j. j \<le> n}" and g = "\<lambda>k\<in>{0}. f (Suc n)" and m = 0 and B = "{f (Suc n)}" in
   im_jointfun)
-   apply (rule univar_func_test, rule ballI, simp add:funcset_mem)
+   apply (rule univar_func_test, rule ballI, simp add:Pi_def)
    apply simp
    apply (simp add:image_Nset_Suc[THEN sym])
    apply (simp add:card_image_Nsetn_Suc)
@@ -4473,8 +4471,8 @@ apply (case_tac "f (Suc n) \<in> f ` {j. j \<le> n}")
    apply (frule_tac f = f and A = "{j. j \<le> n}" and B = H in image_sub0)
    apply (rule_tac f = g and A = "{j. j \<le> card (f ` {j. j \<le> n}) - Suc 0}" and
           B = "f ` {j. j \<le> n}" in extend_fun[of _ _ _ H], assumption+,
-          rule univar_func_test, simp add:funcset_mem,
-          rule univar_func_test, simp add:funcset_mem)
+          rule univar_func_test, simp add:Pi_def,
+          rule univar_func_test, simp add:Pi_def)
    apply simp
    apply (simp add:jointfun_def sliden_def)
 done
@@ -4505,8 +4503,8 @@ apply (frule transpos_hom[of j "Suc n" "Suc n"], simp, assumption,
        simp del:nsum_suc)
 prefer 2  
     apply (rule univar_func_test, rule ballI, rule sc_mem,
-           simp add:funcset_mem Ring.ideal_subset,
-           simp add:funcset_mem subsetD)
+           simp add:Pi_def Ring.ideal_subset,
+           simp add:Pi_def subsetD)
  apply (frule cmp_fun[of "transpos j (Suc n)" "{j. j \<le> Suc n}" 
                          "{j. j \<le> Suc n}" s A], assumption+,
         frule cmp_fun[of "transpos j (Suc n)" "{j. j \<le> Suc n}" 
@@ -4787,14 +4785,14 @@ apply (
       apply (rotate_tac -4, frule sym, thin_tac "h (Suc n) = g l", simp)
    apply (frule_tac f = t and n = n and A = A and g = "\<lambda>k\<in>{0::nat}. sa l"
           and m = 0 and B = A in jointfun_hom0,
-          rule univar_func_test, rule ballI, simp add:funcset_mem, simp)
+          rule univar_func_test, rule ballI, simp add:Pi_def, simp)
    apply (subgoal_tac " \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s h j) n \<plusminus> sa l \<cdot>\<^sub>s h (Suc n) =
            \<Sigma>\<^sub>e M (\<lambda>j. (jointfun n t 0 (\<lambda>k\<in>{0}. sa l)) j \<cdot>\<^sub>s h j) (Suc n)",
           simp, blast) 
    apply (cut_tac H = "carrier M" and A = A and s = t and f = h and n = n and
           m = 0 and t = "\<lambda>k\<in>{0}. sa l" in l_comb_jointfun_jf)
           apply simp+ 
-          apply (rule univar_func_test, rule ballI, simp add:funcset_mem)
+          apply (rule univar_func_test, rule ballI, simp add:Pi_def)
           apply simp
    apply (simp add:jointfun_def sliden_def, simp)
 done
@@ -4811,7 +4809,7 @@ apply (induct_tac n)
  apply (simp add:l_comb_def)
  apply (frule_tac z = "h 0" and h = f and t = s and n = na in 
           single_span [of A])
- apply (simp add:funcset_mem)
+ apply (simp add:Pi_def)
  apply assumption+
 (********** n = 0 done ***********)
 apply (rule impI, rule allI, (rule ballI)+) 
@@ -4842,11 +4840,11 @@ apply (simp add:l_comb_def)
        thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. jointfun n t 0 (zeroi R) j \<cdot>\<^sub>s h j) n =
         \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s h j) n",
         simp add:jointfun_def sliden_def zeroi_def,
-        subst sc_0_m, simp add:funcset_mem,
+        subst sc_0_m, simp add:Pi_def,
         subst ag_r_zero,
         rule nsum_mem, rule allI, rule impI, rule sc_mem,
-               simp add:funcset_mem Ring.ideal_subset,
-               simp add:funcset_mem,
+               simp add:Pi_def Ring.ideal_subset,
+               simp add:Pi_def,
          simp)
 
 (*** case h (Suc n) \<notin>  f ` (Nset na) done ***)
@@ -4867,7 +4865,7 @@ apply (erule bexE)+
          A = A and B = A in jointfun_hom0)
         apply (rule univar_func_test, rule ballI, 
                       simp add:zeroi_def Ring.ideal_zero)
-        apply (rule univar_func_test, rule ballI, simp add:funcset_mem)
+        apply (rule univar_func_test, rule ballI, simp add:Pi_def)
         apply simp
  apply (subgoal_tac "sa 0 \<cdot>\<^sub>s h (Suc n) = nsum M (\<lambda>j. (jointfun n (zeroi R) 0 
          (\<lambda>j. sa 0) j \<cdot>\<^sub>s h j)) (Suc n)", simp,
@@ -4880,12 +4878,12 @@ apply (erule bexE)+
         in nsum_zeroA)
  apply (rule allI, rule impI,
         simp add:jointfun_def zeroi_def,
-        rule sc_0_m, simp add:funcset_mem, simp,
+        rule sc_0_m, simp add:Pi_def, simp,
        thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. jointfun n (zeroi R) 0 (\<lambda>j. sa 0) j \<cdot>\<^sub>s h j) n = \<zero>")
  apply (simp add:jointfun_def sliden_def,
         subst ag_l_zero,
-        rule sc_mem, simp add:funcset_mem Ring.ideal_subset,
-        simp add:funcset_mem, simp)
+        rule sc_mem, simp add:Pi_def Ring.ideal_subset,
+        simp add:Pi_def, simp)
  (**** l = 0 done ***)
 apply (simp)
  apply (thin_tac "l_comb R M na s f = l_comb R M l sa g")
@@ -4913,7 +4911,7 @@ apply (subgoal_tac "l_comb R M l sa g = l_comb R M (Suc (l - Suc 0)) sa g")
                       \<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s f j) na = \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s h j) n",
               rule univar_func_test, rule ballI, simp)
        apply (rule sc_mem, 
-              simp add:funcset_mem Ring.ideal_subset,
+              simp add:Pi_def Ring.ideal_subset,
               frule_tac f = h and A = "{j. j \<le> Suc n}" and B = "carrier M" in
               image_sub0,
               frule_tac x = xa and f = g and A = "{j. j \<le> l}" and 
@@ -4972,13 +4970,13 @@ apply (cut_tac g = "cmp g (transpos x l)" and l = l and A = A and
    apply (cut_tac n = l in Nat.le_refl,
           frule_tac i = x and n = l and j = l and l = xa in transpos_mem,
           assumption+,
-          simp add:funcset_mem)
+          simp add:Pi_def)
    apply (rule univar_func_test, rule ballI,
           simp add:cmp_def,
           cut_tac n = l in Nat.le_refl,
           frule_tac i = x and n = l and j = l and l = xa in transpos_mem,
           assumption+,
-          simp add:funcset_mem)
+          simp add:Pi_def)
    apply simp
    
    apply (cut_tac n = l in Nat.le_refl,
@@ -5058,12 +5056,9 @@ apply simp
            (\<exists>f. f \<in> {j. j \<le> n} \<rightarrow> H \<and>
                 inj_on f {j. j \<le> n} \<and> l_comb R M n s f = \<zero>) \<longrightarrow>
            s \<in> {j. j \<le> n} \<rightarrow> {\<zero>\<^bsub>R\<^esub>}")
- apply (rule conjI)
- apply (rule univar_func_test, rule ballI, simp)
  apply (simp add:l_comb_def)
  apply (rule sc_a_0)
  apply (simp add:Ring.ring_one)
-apply (rule univar_func_test, rule ballI)
  apply (simp add:Ring.ring_one)
 done
 
@@ -5155,11 +5150,11 @@ apply (simp add:Nset_pre1)
         thin_tac "l_comb R M n s f = l_comb R M m t g")
  apply (frule_tac f = g and n = m and A = H and g = "\<lambda>k\<in>{0::nat}. f (Suc n)"
          and m = 0 and B = H in jointfun_hom0,
-        rule univar_func_test, rule ballI, simp add:funcset_mem, simp)
+        rule univar_func_test, rule ballI, simp add:Pi_def, simp)
  apply (frule_tac f = t and n = m and A = "carrier R" and 
         g = "\<lambda>k\<in>{0::nat}. s (Suc n)"  and m = 0 and B = "carrier R" in 
         jointfun_hom0,
-        rule univar_func_test, rule ballI, simp add:funcset_mem, simp)
+        rule univar_func_test, rule ballI, simp add:Pi_def, simp)
  apply (subgoal_tac "inj_on (jointfun m g 0 (\<lambda>k\<in>{0}. f (Suc n))) 
                        {l. l \<le> Suc m}",
     subgoal_tac "l_comb R M m t g \<plusminus> s (Suc n) \<cdot>\<^sub>s f (Suc n) =
@@ -5172,8 +5167,8 @@ apply (simp add:Nset_pre1)
   apply (frule_tac s = t and n = m and f = g and t = "\<lambda>k\<in>{0}. s (Suc n)" and
          m = 0 and g = "\<lambda>k\<in>{0}. f (Suc n)" in l_comb_jointfun_jj[of H 
         "carrier R"], assumption+,
-         rule univar_func_test, rule ballI, simp add:funcset_mem, simp,
-         rule univar_func_test, rule ballI, simp add:funcset_mem)
+         rule univar_func_test, rule ballI, simp add:Pi_def, simp,
+         rule univar_func_test, rule ballI, simp add:Pi_def)
   apply (simp add:l_comb_def, simp add:jointfun_def sliden_def)
   apply (thin_tac "jointfun m g 0 (\<lambda>k\<in>{0}. f (Suc n)) \<in> {l. l \<le> Suc m} \<rightarrow> H",
   thin_tac "jointfun m t 0 (\<lambda>k\<in>{0}. s (Suc n)) \<in> {l. l \<le> Suc m} \<rightarrow> carrier R",
@@ -5256,10 +5251,10 @@ apply (cut_tac sc_Ring,
         subst transpos_ij_2[of l "Suc n" "Suc n"], simp+) 
  apply (rule univar_func_test, rule ballI, simp add:cmp_def,
         frule_tac l = x in transpos_mem[of l "Suc n" "Suc n"], simp,
-         assumption+, simp add:funcset_mem)
+         assumption+, simp add:Pi_def)
  apply (rule univar_func_test, rule ballI, simp add:cmp_def,
         frule_tac l = x in transpos_mem[of l "Suc n" "Suc n"], simp,
-         assumption+, simp add:funcset_mem)
+         assumption+, simp add:Pi_def)
  apply (frule_tac i = l and n = "Suc n" and j = "Suc n" in transpos_hom,
            simp, assumption)
  apply (frule cmp_fun_sub_image[of "transpos l (Suc n)" "{i. i \<le> Suc n}" 
@@ -5360,7 +5355,7 @@ apply (induct_tac n)
  apply simp
  apply (rule contrapos_pp, simp+)
  apply (cut_tac m = "f 0" in sc_0_m,
-           simp add:funcset_mem subsetD, simp)
+           simp add:Pi_def subsetD, simp)
 
 apply (rule impI) apply (erule conjE)+
  apply (frule func_pre[of _ _ H],
@@ -5414,10 +5409,10 @@ apply (rule impI) apply (erule conjE)+
         thin_tac "l_comb R M n s f = l_comb R M m t g")
  apply (frule_tac f = g and n = m and A = H and g = "\<lambda>j\<in>{0::nat}. f (Suc n)"
         and m = 0 and B = H in jointfun_hom,
-        rule univar_func_test, simp add:funcset_mem,
+        rule univar_func_test, simp add:Pi_def,
         frule_tac f = t and n = m and A = "carrier R" and 
          g = "\<lambda>j\<in>{0::nat}. s (Suc n)" and m = 0 and B = "carrier R" in 
-         jointfun_hom, rule univar_func_test, simp add:funcset_mem, simp)
+         jointfun_hom, rule univar_func_test, simp add:Pi_def, simp)
  apply (subgoal_tac "inj_on (jointfun m g 0 (\<lambda>j\<in>{0}. f (Suc n)))
     {k. k \<le> Suc m} \<and> 
  (jointfun m g 0 (\<lambda>j\<in>{0}. f (Suc n))) ` {k. k \<le> Suc m} \<subseteq> f ` {k. k \<le> Suc n} \<and>
@@ -5472,8 +5467,8 @@ apply (rule impI) apply (erule conjE)+
    simp add:jointfun_def)  
   apply (simp add:l_comb_def,
         subst l_comb_jointfun_jj[of H "carrier R"], assumption+,
-        rule univar_func_test, rule ballI, simp add:funcset_mem,
-        rule univar_func_test, rule ballI, simp add:funcset_mem)
+        rule univar_func_test, rule ballI, simp add:Pi_def,
+        rule univar_func_test, rule ballI, simp add:Pi_def)
   apply (simp add:jointfun_def sliden_def)
 done
 
@@ -5532,14 +5527,14 @@ apply (cut_tac sc_Ring,
   m t) 0 (\<lambda>x\<in>{0::nat}. -\<^sub>a\<^bsub>R\<^esub> (s n))"])
  apply (rule univar_func_test, rule ballI,
         case_tac "x \<le> (n + m)", simp,
-        simp add:jointfun_def[of "n+m"], simp add:funcset_mem,
-        simp add:jointfun_def[of "n+m"] sliden_def, simp add:funcset_mem)
+        simp add:jointfun_def[of "n+m"], simp add:Pi_def,
+        simp add:jointfun_def[of "n+m"] sliden_def, simp add:Pi_def)
   apply (rule univar_func_test, rule ballI,
         case_tac "x \<le> (n + m)", simp,
-        simp add:jointfun_def[of "n+m"], simp add:funcset_mem)
+        simp add:jointfun_def[of "n+m"], simp add:Pi_def)
   apply (simp add:jointfun_def[of "n+m"] sliden_def,
          frule Ring.ring_is_ag[of R], rule aGroup.ag_mOp_closed, assumption,
-         simp add:funcset_mem)
+         simp add:Pi_def)
   apply (thin_tac "s \<in> {j. j \<le> n} \<rightarrow> carrier R",
          thin_tac "t \<in> {j. j \<le> m} \<rightarrow> carrier R",
          thin_tac "\<forall>j\<le>n. s j \<noteq> \<zero>\<^bsub>R\<^esub>",
@@ -5576,9 +5571,9 @@ defer
         rule aGroup.ag_mOp_closed, assumption,
         cut_tac  i = x and j = "n - Suc 0" and k = n in Nat.le_trans,
         assumption, subst Suc_le_mono[THEN sym], simp,
-        simp add:funcset_mem, simp, simp, simp add:funcset_mem,
-        simp add:funcset_mem,
-        simp add:funcset_mem subsetD, assumption+, simp, simp)
+        simp add:Pi_def, simp, simp, simp add:Pi_def,
+        simp add:Pi_def,
+        simp add:Pi_def subsetD, assumption+, simp, simp)
  apply ((erule exE)+, (erule conjE)+, erule exE, (erule conjE)+) 
  apply (cut_tac l_comb_Suc[of H "carrier R" "jointfun (n + m)
            (jointfun (n - Suc 0) (\<lambda>x\<in>{j. j \<le> n - Suc 0}. -\<^sub>a\<^bsub>R\<^esub> (s x)) m t) 0
@@ -5651,8 +5646,8 @@ defer
          (\<lambda>x\<in>{0}. -\<^sub>a\<^bsub>R\<^esub> (s n)) (Suc (n + m))")
   apply (subst l_comb_jointfun_jj1[of H "carrier R"], assumption+,
          rule univar_func_test, rule ballI, simp,
-         rule aGroup.ag_mOp_closed, assumption, simp add:funcset_mem,
-         rule univar_func_test, rule ballI, simp add:funcset_mem)
+         rule aGroup.ag_mOp_closed, assumption, simp add:Pi_def,
+         rule univar_func_test, rule ballI, simp add:Pi_def)
   apply (simp,
         thin_tac "l_comb R M (n + m) (jointfun (n - Suc 0) 
        (\<lambda>x\<in>{j. j \<le> n - Suc 0}. -\<^sub>a\<^bsub>R\<^esub> (s x)) m t) (jointfun (n - Suc 0) f m g) =
@@ -5664,19 +5659,19 @@ defer
         f ` {j. j \<le> n - Suc 0} \<union> g ` {j. j \<le> m}")
   apply (simp add:jointfun_def[of "n+m"] sliden_def,
          subst sc_minus_am1[THEN sym],
-         simp add:funcset_mem, simp add:funcset_mem subsetD,
+         simp add:Pi_def, simp add:Pi_def subsetD,
          simp add:ag_r_inv1,  simp add:free_generator_sub) 
   apply (assumption+,
          rule univar_func_test, rule ballI,
          case_tac "x \<le> n + m", simp add:jointfun_def[of "n+m"],
-         simp add:funcset_mem,
+         simp add:Pi_def,
          simp add:jointfun_def[of "n+m"] sliden_def,
-         rule aGroup.ag_mOp_closed, assumption, simp add:funcset_mem,
+         rule aGroup.ag_mOp_closed, assumption, simp add:Pi_def,
          rule univar_func_test, rule ballI, simp,
           case_tac "x \<le> n+m", simp add:jointfun_def[of "n+m"],
-          simp add:funcset_mem, 
+          simp add:Pi_def, 
           simp add:jointfun_def[of "n+m"] sliden_def,
-          simp add:funcset_mem)
+          simp add:Pi_def)
 done
    
 lemma (in Module) unique_expression5:"\<lbrakk>free_generator R M H; 
@@ -5695,12 +5690,12 @@ apply (rule contrapos_pp, simp+, simp add:subset_eq)
   apply (frule_tac f = t and n = m and A = "carrier R" and 
         g = "\<lambda>k\<in>{0::nat}. -\<^sub>a\<^bsub>R\<^esub> (s 0)"  and m = 0 and B = "carrier R" in 
         jointfun_hom0,
-        rule univar_func_test, rule ballI, simp add:funcset_mem,
-        rule aGroup.ag_mOp_closed, assumption, simp add:funcset_mem,
+        rule univar_func_test, rule ballI, simp add:Pi_def,
+        rule aGroup.ag_mOp_closed, assumption, simp add:Pi_def,
         frule_tac f = g and n = m and A = H and 
         g = "\<lambda>k\<in>{0::nat}. (f 0)" and m = 0 and B = H in 
         jointfun_hom0,
-        rule univar_func_test, rule ballI, simp add:funcset_mem subsetD,
+        rule univar_func_test, rule ballI, simp add:Pi_def subsetD,
         simp)
   apply (frule sym, thin_tac "l_comb R M 0 s f = l_comb R M m t g")
   apply (frule_tac n = 0 in l_comb_mem[of "carrier R" H s _ f],
@@ -5811,20 +5806,20 @@ apply (cut_tac sc_Ring, frule Ring.whole_ideal)
             assumption+)
        apply (rule univar_func_test, rule ballI) 
        apply (simp, frule Ring.ring_is_ag[of R],
-              rule aGroup.ag_mOp_closed[of R], simp add:funcset_mem)
-       apply (simp add:funcset_mem)
+              rule aGroup.ag_mOp_closed[of R], simp add:Pi_def)
+       apply (simp add:Pi_def)
        apply simp
  apply (frule_tac s = "\<lambda>x\<in>{x. x \<le> n}. s x \<plusminus>\<^bsub>R\<^esub> (if x \<le> n then -\<^sub>a\<^bsub>R\<^esub> (t x) else 
         undefined)" in unique_expression1[of H _ n f], assumption+)
   apply (rule univar_func_test, rule ballI, simp)
   apply (frule Ring.ring_is_ag[of R], rule aGroup.ag_pOp_closed, assumption,
-         simp add:funcset_mem,
+         simp add:Pi_def,
          rule aGroup.ag_mOp_closed, assumption,
-         simp add:funcset_mem, assumption+)
+         simp add:Pi_def, assumption+)
   apply (rule allI, rule impI)
   apply (subst aGroup.ag_eq_diffzero[of R],
          simp add:Ring.ring_is_ag,
-         simp add:funcset_mem, simp add:funcset_mem)
+         simp add:Pi_def, simp add:Pi_def)
  apply (drule_tac b = l in forball_spec1, simp)
   apply simp
 done

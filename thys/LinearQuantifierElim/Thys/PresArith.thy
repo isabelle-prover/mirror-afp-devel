@@ -1,4 +1,4 @@
-(*  ID:         $Id: PresArith.thy,v 1.10 2009-02-27 17:46:41 nipkow Exp $
+(*  ID:         $Id: PresArith.thy,v 1.11 2009-06-20 00:10:18 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -141,16 +141,16 @@ by(metis linorder_not_le mod_pos_pos_trivial neg_mod_conj pos_mod_conj zle_refl 
 
 fun zlcms :: "int list \<Rightarrow> int" where
 "zlcms [] = 1" |
-"zlcms (i#is) = zlcm i (zlcms is)"
+"zlcms (i#is) = lcm i (zlcms is)"
 
 lemma dvd_zlcms: "i : set is \<Longrightarrow> i dvd zlcms is"
 apply(induct "is")
  apply simp
-apply(auto simp add:dvd_imp_dvd_zlcm2)
+apply(auto simp add:dvd_lcm_if_dvd2_int)
 done
 
 lemma zlcms_pos: "\<forall>i \<in> set is. i\<noteq>0 \<Longrightarrow> zlcms is > 0"
-by(induct "is")(auto simp:zlcm_pos)
+by(induct "is")(auto simp:int_lcm_pos)
 
 lemma zlcms0_iff[simp]: "(zlcms is = 0) = (0 : set is)"
 by (metis DIVISION_BY_ZERO dvd_eq_mod_eq_0 dvd_zlcms zlcms_pos zless_le)

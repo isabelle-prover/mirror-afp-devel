@@ -25,7 +25,7 @@
  **)   
 
 theory Algebra4
-imports Algebra3 Binomial Zorn
+imports Algebra3 "~~/src/HOL/Library/Binomial" Zorn
 begin
 
 (*<*)hide const ring(*>*)
@@ -422,7 +422,7 @@ apply (simp add:Ag_ind_def)
                   y = "invfun (carrier A) D f b" in ag_pOp_closed, assumption+,
         frule_tac x = "invfun (carrier A) D f b" and 
                   y = "invfun (carrier A) D f c" in ag_pOp_closed, assumption+)
- apply (simp add:funcset_mem[of "f" "carrier A" "D"])
+ apply (simp add:Pi_def)
  apply (unfold bij_to_def, frule conjunct1, fold bij_to_def)
  apply (simp add:invfun_l) 
  apply (subst injective_iff[of "f" "carrier A", THEN sym], assumption) 
@@ -465,15 +465,14 @@ apply (rule conjI)
  apply (frule_tac b = a in invfun_mem1[of "f" "carrier A" "D"], assumption+)
            
  apply (frule_tac x = "invfun (carrier A) D f a" in ag_mOp_closed)
- apply (simp add:funcset_mem[of "f" "carrier A" "D"])
+ apply (simp add:Pi_def)
  apply (subst injective_iff[of "f" "carrier A", THEN sym], assumption)
  apply (unfold bij_to_def, frule conjunct1, fold bij_to_def)
  apply (simp add:invfun_l)
  apply (simp add:ag_pOp_closed)
  apply (simp add:ag_inc_zero)
  apply (unfold bij_to_def, frule conjunct1, fold bij_to_def)
- apply (simp add:invfun_l)
- apply (simp add:l_m)
+ apply (simp add:invfun_l l_m)
 
 apply (rule conjI)
  apply (simp add:Ag_ind_def surj_to_def)
@@ -482,13 +481,13 @@ apply (rule conjI)
 
 apply (rule allI, rule impI)
   apply (simp add:Ag_ind_def surj_to_def)
-  apply (cut_tac ag_inc_zero, simp add:funcset_mem)
+  apply (cut_tac ag_inc_zero, simp add:funcset_mem del:Pi_I)
   apply (unfold bij_to_def, frule conjunct1, fold bij_to_def)
   apply (simp add:invfun_l)
  apply (frule_tac b = a in invfun_mem1[of "f" "carrier A" "D"], assumption+)   
  apply (simp add:l_zero)
  apply (simp add:invfun_r)
-done 
+done
 
 subsection "20-1. Homomorphism of abelian groups"
 
@@ -529,7 +528,7 @@ definition
 lemma aHom_mem:"\<lbrakk>aGroup F; aGroup G; f \<in> aHom F G; a \<in> carrier F\<rbrakk> \<Longrightarrow>
                        f a \<in> carrier G"
 apply (simp add:aHom_def) apply (erule conjE)+
-apply (simp add:funcset_mem)
+apply (simp add:Pi_def)
 done
 
 lemma aHom_func:"f \<in> aHom F G \<Longrightarrow> f \<in> carrier F \<rightarrow> carrier G"
@@ -790,12 +789,11 @@ apply (simp add:aHom_def)
  apply (simp add:Ag_ind_carrier surj_to_def)
 apply (rule conjI)
  apply (rule univar_func_test)
- apply (rule ballI, simp add:Agii_def funcset_mem)
+ apply (rule ballI, simp add:Agii_def Pi_def)
  apply (simp add:Agii_def)
  apply (rule ballI)+
- apply (simp add:Ag_ind_def)
- apply (simp add:funcset_mem)+
- apply (unfold bij_to_def, frule conjunct1, fold bij_to_def) 
+ apply (simp add:Ag_ind_def Pi_def)
+ apply (unfold bij_to_def, frule conjunct1, fold bij_to_def)
  apply (simp add:invfun_l)
  apply (simp add:ag_pOp_closed)
 done
@@ -1130,7 +1128,7 @@ done
 lemma prod_mOp_mem:"\<lbrakk>\<forall>j\<in>I. aGroup (A j); X \<in> carr_prodag I A\<rbrakk> \<Longrightarrow>
                          prod_mOp I A X \<in> carr_prodag I A"
 apply (frule prod_mOp_func)
-apply (simp add:funcset_mem)
+apply (simp add:Pi_def)
 done
 
 lemma prod_mOp_mem_i:"\<lbrakk>\<forall>j\<in>I. aGroup (A j); X \<in> carr_prodag I A; i \<in> I\<rbrakk> \<Longrightarrow>
@@ -1386,7 +1384,7 @@ apply (rule ballI)
         frule_tac b = i in forball_spec1, assumption,
         thin_tac "\<forall>k\<in>I. S k \<in> aHom A (B k)")
  apply (simp add:aHom_def) apply (erule conjE)+
- apply (simp add:funcset_mem)
+ apply (simp add:Pi_def)
 done
  
 lemma A_to_prodag_aHom:"\<lbrakk>aGroup A; \<forall>k\<in>I. aGroup (B k); \<forall>k\<in>I. (S k) \<in> 
@@ -1513,7 +1511,7 @@ done
 lemma dsum_iOp_mem:"\<lbrakk>\<forall>j\<in>I. aGroup (A j); X \<in> carr_dsumag I A\<rbrakk> \<Longrightarrow>
                          prod_mOp I A X \<in> carr_dsumag I A"
 apply (frule dsum_iOp_func)
-apply (simp add:funcset_mem)
+apply (simp add:Pi_def)
 done
 
 lemma dsum_zero_func:"\<forall>k\<in>I. aGroup (A k) \<Longrightarrow>
@@ -2182,7 +2180,7 @@ abbreviation
   "\<Sigma>\<^sub>f G f n m == fSum G f n m"
 
 lemma (in aGroup) nsum_zeroGTr:"(\<forall>j \<le> n. f j = \<zero>) \<longrightarrow> nsum A f n = \<zero>"
-apply (induct_tac n) 
+apply (induct_tac n)
  apply (rule impI, simp)
 
 apply (rule impI)
@@ -2593,7 +2591,7 @@ lemma (in Ring) nsZero:
   
   apply simp
    apply (cut_tac ring_zero, simp add:aGroup.ag_l_zero)
-  done  
+  done
 
 lemma (in Ring) nsZeroI: "\<And> n.  x = \<zero>  \<Longrightarrow> nscal R x n = \<zero>";
   by (simp only:nsZero)
@@ -2760,7 +2758,7 @@ lemma (in aGroup) nsum_memTr: "(\<forall>j \<le> n. f j \<in> carrier A) \<longr
   apply (frule_tac a = "Suc n" in forall_spec, simp,
          thin_tac "\<forall>j\<le>Suc n. f j \<in> carrier A")
    apply (rule ag_pOp_closed, assumption+)
-   done 
+   done
 
 lemma (in aGroup) nsum_mem:"\<forall>j \<le> n. f j \<in> carrier A \<Longrightarrow>
                                  nsum A f n \<in> carrier A"
@@ -2890,9 +2888,9 @@ lemma (in aGroup) nsumTailTr:
   apply (rule impI, 
          rule ag_pOp_commute)
   apply (cut_tac Nset_inc_0[of "Suc 0"],
-         simp add:funcset_mem,
+         simp add:Pi_def,
          cut_tac n_in_Nsetn[of "Suc 0"],
-         simp add:funcset_mem)
+         simp add:Pi_def)
 
   apply (rule impI)
    apply (cut_tac n = "Suc n" in Nsetn_sub_mem1, simp)
