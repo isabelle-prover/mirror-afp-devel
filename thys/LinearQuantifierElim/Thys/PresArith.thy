@@ -1,4 +1,4 @@
-(*  ID:         $Id: PresArith.thy,v 1.11 2009-06-20 00:10:18 nipkow Exp $
+(*  ID:         $Id: PresArith.thy,v 1.12 2009-06-21 00:57:56 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -144,10 +144,7 @@ fun zlcms :: "int list \<Rightarrow> int" where
 "zlcms (i#is) = lcm i (zlcms is)"
 
 lemma dvd_zlcms: "i : set is \<Longrightarrow> i dvd zlcms is"
-apply(induct "is")
- apply simp
-apply(auto simp add:dvd_lcm_if_dvd2_int)
-done
+by(induct "is") auto
 
 lemma zlcms_pos: "\<forall>i \<in> set is. i\<noteq>0 \<Longrightarrow> zlcms is > 0"
 by(induct "is")(auto simp:int_lcm_pos)
