@@ -789,7 +789,7 @@ lemma restict_ODNmap_func:"\<lbrakk>Worder D; x = ordinal_number D\<rbrakk> \<Lo
 apply (cut_tac Order_ODnods,
        frule Order.Iod_carr_segment[of "ODnods" "ordinal_number D"],
        frule Order.segment_sub[of "ODnods" "ordinal_number D"])
-apply (rule univar_func_test, rule ballI, simp,
+apply (rule Pi_I, simp,
         (frule Order.Iod_carr_segment[of ODnods "ordinal_number D"], 
          simp,
          thin_tac "carrier (Iod ODnods (segment ODnods (ordinal_number D))) =
@@ -3414,10 +3414,7 @@ apply (rule someI2_ex, assumption+,
 done
 
 lemma (in Order) maxl_fun_func:"maxl_fun D \<in> carrier D \<rightarrow> carrier D"
-apply (rule univar_func_test, rule ballI)
- apply (simp add:maxl_fun_def, rule impI,
-        rule maxl_funTr, assumption+)
-done
+by (simp add:maxl_fun_def maxl_funTr)
 
 lemma (in Order) maxl_fun_gt:"\<lbrakk>x \<in> carrier D; 
       \<exists>y\<in> carrier D.  x \<preceq> y \<and> x \<noteq> y \<rbrakk> \<Longrightarrow> 
@@ -4444,11 +4441,8 @@ abbreviation
 
 lemma (in Group) Group_Gp:"G \<guillemotright> H \<Longrightarrow> Group (\<natural> H)" 
 apply (simp add:Group_def Gp_def)
-apply (simp add:sg_tassoc sg_l_i sg_unit_closed sg_l_unit)
-apply (rule conjI,
-       rule univar_func_test, rule ballI, rule univar_func_test, rule ballI,
-       simp add:sg_mult_closed)
-apply (rule univar_func_test, rule ballI, simp add:sg_i_closed)
+apply (simp add:sg_tassoc sg_l_i sg_unit_closed sg_l_unit
+         sg_mult_closed sg_i_closed)
 done
  
 lemma (in Group) Gp_carrier:"G \<guillemotright> H \<Longrightarrow> carrier (Gp G H) = H" 
@@ -4491,7 +4485,7 @@ done
 lemma Ugp_const_gHom:"\<lbrakk>Ugp G; Ugp E\<rbrakk> \<Longrightarrow> (\<lambda>x\<in>carrier G. \<one>\<^bsub>E\<^esub>) \<in> gHom G E"
 apply (simp add:gHom_def)
  apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:Group.unit_closed[of "E"] Ugp_def) 
  apply (simp add:Ugp_def, (erule conjE)+)
  apply (cut_tac Group.unit_closed[of "G"], cut_tac Group.unit_closed[of "E"])
@@ -5320,10 +5314,9 @@ done
 
 lemma (in Group) Qg_top:"G \<triangleright> N \<Longrightarrow> 
                  c_top G N : set_rcs G N \<rightarrow> set_rcs G N \<rightarrow> set_rcs G N"
-apply (rule bivar_func_test,
-       (rule ballI)+, simp add:set_rcs_def, (erule bexE)+,
+apply (rule Pi_I, rule Pi_I, simp add:set_rcs_def, (erule bexE)+,
        simp add:c_top_welldef[THEN sym])
- apply (frule_tac a = aa and b = ab in mult_closed, assumption+, blast)
+ apply (metis mult_closed)
 done
 
 lemma (in Group) Qg_top_closed:"\<lbrakk>G \<triangleright> N; A \<in> set_rcs G N; B \<in> set_rcs G N\<rbrakk> \<Longrightarrow>
@@ -5336,8 +5329,7 @@ done
 
 lemma (in Group) Qg_iop: "G \<triangleright> N \<Longrightarrow>
                c_iop G N :set_rcs G N \<rightarrow> set_rcs G N"
-apply (rule univar_func_test)
- apply (rule ballI)
+apply (rule Pi_I)
  apply (simp add:set_rcs_def, erule bexE)
  apply (simp add:c_iop_welldef)
 apply (frule_tac a = a in i_closed, blast)

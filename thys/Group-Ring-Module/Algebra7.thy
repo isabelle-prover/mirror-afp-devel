@@ -322,10 +322,7 @@ lemma (in Module) mdl_is_ag:"submodule R M H \<Longrightarrow> aGroup (mdl M H)"
 apply (cut_tac module_is_ag)
 apply (rule aGroup.intro)
  apply (simp add:mdl_def)
- apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:submodule_def, (erule conjE)+)
- apply (simp add:asubg_pOp_closed)
+ apply (clarsimp simp: submodule_def asubg_pOp_closed)
 
  apply (simp add:mdl_def)
  apply (simp add:submodule_def, (erule conjE)+,
@@ -341,8 +338,7 @@ apply (rule aGroup.intro)
         simp add:aGroup.ag_pOp_commute)
 
  apply (simp add:mdl_def)
- apply (rule univar_func_test, rule ballI,
-        simp add:submodule_def aGroup.asubg_mOp_closed)
+ apply (simp add:submodule_def aGroup.asubg_mOp_closed)
 
  apply (simp add:mdl_def,
         simp add:submodule_def, (erule conjE)+,
@@ -450,7 +446,7 @@ apply (simp add:surjec_def)
 apply (rule conjI)
  apply (simp add:aHom_def)
  apply (rule conjI)
- apply (rule univar_func_test, rule ballI, simp add:mimg_def mdl_def)
+ apply (simp add:mimg_def mdl_def)
  apply (rule conjI)
  apply (simp add:mHom_def aHom_def restrict_def extensional_def)
  apply ((rule ballI)+, simp add:mimg_def mdl_def, simp add:mHom_add)
@@ -489,7 +485,7 @@ lemma (in Module) tOp_mHom_closed:"\<lbrakk>R module N; f \<in> mHom R M N; g \<
       \<Longrightarrow> tOp_mHom R M N f g \<in> mHom R M N"
 apply (rule mHom_test, assumption+)
 apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:tOp_mHom_def)
  apply (frule_tac f = f and m = x in mHom_mem [of N], assumption+,
         frule_tac f = g and m = x in mHom_mem [of N], assumption+,
@@ -528,8 +524,8 @@ done
 lemma (in Module) iOp_mHom_closed:"\<lbrakk>R module N; f \<in> mHom R M N\<rbrakk>
                                      \<Longrightarrow> iOp_mHom R M N f \<in> mHom R M N"
 apply (rule mHom_test, assumption+)
-apply (rule conjI) 
- apply (rule univar_func_test, rule ballI)
+apply (rule conjI)
+ apply (rule Pi_I)
  apply (simp add:iOp_mHom_def)
  apply (frule_tac f = f and m = x in mHom_mem [of N], assumption+)
  apply (frule Module.module_is_ag [of N])
@@ -557,7 +553,7 @@ lemma (in Module) mHom_ex_zero:"R module N \<Longrightarrow>  mzeromap M N \<in>
 apply (simp add:mHom_def)
 apply (rule conjI)
  apply (simp add:aHom_def,
-        rule conjI, rule univar_func_test, rule ballI,
+        rule conjI,
         simp add:mzeromap_def, simp add:Module.module_inc_zero)
 
  apply (simp add:mzeromap_def extensional_def)
@@ -646,8 +642,6 @@ done
 lemma  (in Module) HOM_is_ag:"R module N \<Longrightarrow> aGroup (HOM\<^bsub>R\<^esub> M N)"
 apply (rule aGroup.intro)
  apply (simp add:HOM_def)
- apply (rule bivar_func_test)
- apply (rule ballI)+
  apply (simp add:tOp_mHom_closed)
 
 apply (simp add:HOM_def)
@@ -657,7 +651,6 @@ apply (simp add:HOM_def)
  apply (simp add:mHom_tOp_commute)
 
 apply (simp add:HOM_def)
- apply (rule univar_func_test, rule ballI)
  apply (simp add:iOp_mHom_closed)
 
 apply (simp add:HOM_def,
@@ -957,7 +950,6 @@ apply (simp add:mHom_def)
 apply (rule conjI)
  apply (simp add:aHom_def)
  apply (rule conjI)
- apply (rule univar_func_test) apply (rule ballI)
  apply (simp add:mId_def)
 apply (simp add:mId_def extensional_def)
 apply (rule ballI)+
@@ -1029,9 +1021,7 @@ apply (simp add:mHom_def [of "R" "HOM\<^bsub>R\<^esub> N L"])
 apply (rule conjI) 
  apply (simp add:aHom_def) 
  apply (rule conjI)
- apply (rule univar_func_test) apply (rule ballI)
- apply (simp add:HOM_def)
- apply (simp add:sup_sharp_homTr)
+ apply (simp add:HOM_def sup_sharp_homTr)
 
  apply (rule conjI)
  apply (simp add:sup_sharp_def extensional_def,
@@ -1081,7 +1071,6 @@ apply (rule conjI)
  apply (simp add:aHom_def)
  apply (rule conjI)
  apply (simp add:HOM_def)
- apply (rule univar_func_test) apply (rule ballI)
  apply (simp add:sub_sharp_homTr)
 
 apply (rule conjI)
@@ -1480,8 +1469,7 @@ lemma (in Module) qmodule_is_ag:"submodule R M H \<Longrightarrow> aGroup (M /\<
 apply (cut_tac sc_Ring)
 apply (rule aGroup.intro) 
  apply (simp add:qmodule_def)
- apply (rule bivar_func_test)
- apply (rule ballI)+
+ apply (rule Pi_I)+
  apply (rename_tac X Y)
  apply (simp add:set_mr_cos_def, (erule bexE)+, rename_tac n m, simp)
  apply (subst mr_cospOpTr, assumption+,
@@ -1500,7 +1488,7 @@ apply (rule aGroup.intro)
          simp add:ag_pOp_commute)
 
  apply (simp add:qmodule_def,
-        rule univar_func_test, rule ballI,
+        rule Pi_I,
         simp add:set_mr_cos_def, erule bexE, simp)
  apply (subst mr_cosmOpTr, assumption+,
          frule_tac x = a in ag_mOp_closed, blast)
@@ -1627,8 +1615,7 @@ done
 
 lemma (in Module) indmhomTr2:"\<lbrakk>R module N; f \<in> mHom R M N\<rbrakk> 
       \<Longrightarrow> (f\<^sup>\<flat>\<^bsub>R M,N\<^esub>) \<in> set_mr_cos M (ker\<^bsub>M,N\<^esub> f) \<rightarrow> carrier N" 
-apply (rule univar_func_test) 
- apply (rule ballI)
+ apply (rule Pi_I)
  apply (simp add:set_mr_cos_def)
  apply (erule bexE)
  apply (frule_tac m = a in indmhomTr1 [of N f], assumption+)
@@ -1787,9 +1774,7 @@ apply (simp add:mHom_def)
 apply (rule conjI)
  apply (simp add:aHom_def)
  apply (rule conjI)
- apply (rule univar_func_test) apply (rule ballI)
- apply (simp add:mpj_def qmodule_carr)
- apply (simp add:set_mr_cos_mem)
+ apply (simp add:mpj_def qmodule_carr set_mr_cos_mem)
 apply (rule conjI)
  apply (simp add:mpj_def extensional_def)
 apply (rule ballI)+
@@ -1862,7 +1847,7 @@ apply blast
  apply (rule Module.mHom_test)
  apply (simp add:qmodule_module, assumption+)
  apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:qmodule_def, simp add:set_mr_cos_def, erule bexE, simp)
  apply (simp add:indmhom_someTr2, simp add:mHom_mem)
 
@@ -1892,9 +1877,8 @@ apply blast
  apply (rule Module.mHom_test,
         simp add:qmodule_module, assumption)
  apply (rule conjI,
-        rule univar_func_test, rule ballI, simp add:qmodule_def, 
-        simp add:set_mr_cos_def, erule bexE, simp add:indmhom_someTr2,
-        simp add:mHom_mem)
+        rule Pi_I,
+        clarsimp simp: qmodule_def set_mr_cos_def indmhom_someTr2 mHom_mem)
  apply (rule conjI,
        simp add:qmodule_def)
  apply (rule conjI,
@@ -1995,9 +1979,7 @@ done
 
 lemma (in Module) mQmpTr2_1:"\<lbrakk>submodule R M H; submodule R M N; H \<subseteq> N \<rbrakk>
  \<Longrightarrow> mQmp M H N \<in> carrier (M /\<^sub>m H) \<rightarrow> carrier (M /\<^sub>m N)"
-apply (rule univar_func_test, rule ballI)
-apply (simp add:mQmpTr2)
-done
+by (simp add:mQmpTr2)
 
 lemma (in Module) mQmpTr3:"\<lbrakk>submodule R M H; submodule R M N; H \<subseteq> N ; 
 X \<in> carrier (M /\<^sub>m H); Y \<in> carrier (M /\<^sub>m H)\<rbrakk> \<Longrightarrow> (mQmp M H N) (mr_cospOp M H X Y) = mr_cospOp M N ((mQmp M H N) X) ((mQmp M H N) Y)" 
@@ -2219,8 +2201,7 @@ apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> (0::nat)}. \<zero>) \<in>
                     \<zero>\<^bsub>M\<^esub> = \<Sigma>\<^sub>e M (\<lambda>x\<in>{j. j \<le> (0::nat)}. \<zero>) 0")
 apply blast
 apply (rule conjI)
-apply (rule univar_func_test)
-apply (rule ballI) 
+apply (rule Pi_I) 
  apply (simp add:finitesum_base_def, thin_tac "\<exists>x. x \<in> I")
  apply (frule_tac x = i in funcset_mem[of f I "{X. submodule R M X}"], 
         assumption+)
@@ -2247,8 +2228,7 @@ apply ((erule exE)+, erule conjE)
  apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a (g x)) \<in> {j. j \<le> n} \<rightarrow> 
                                                  finitesum_base M I f")
  apply blast
-apply (rule univar_func_test)
- apply (rule ballI, simp)
+ apply (rule Pi_I, simp)
  apply (frule_tac f = g and A = "{j. j \<le> n}" and B = "finitesum_base M I f" 
         and  x = x in funcset_mem, simp)
  apply (simp add:finitesum_base_def)
@@ -2327,7 +2307,7 @@ apply (rule conjI)
  apply (simp add:finitesum_sprod)
  apply (subgoal_tac "(\<lambda>x. a \<cdot>\<^sub>s g x) \<in> {j. j \<le> n} \<rightarrow> finitesum_base M I f",
         blast)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (frule_tac x = x and f = g and A = "{j. j \<le> n}" in 
                   funcset_mem[of _ _ "finitesum_base M I f"], assumption+,
         thin_tac "g \<in> {j. j \<le> n} \<rightarrow> finitesum_base M I f",
@@ -2452,8 +2432,7 @@ apply (rule conjI)
  apply (simp add:aHom_def)
  apply (simp add:mdl_def)
  apply (rule conjI)
- apply (rule univar_func_test)
- apply (rule ballI)
+ apply (rule Pi_I)
  apply (simp add:iotam_def)
  apply (frule submodule_subset[of H], frule submodule_subset[of K],
         simp add:set_sum)
@@ -2914,7 +2893,7 @@ apply (frule l_comb_transpos[THEN sym, of A H s n f j], assumption+)
      \<Sigma>\<^sub>e M (cmp (\<lambda>k. s k \<cdot>\<^sub>s f k) (transpos j (Suc n))) (Suc n)")
  apply (cut_tac addition2[of "\<lambda>j. s j \<cdot>\<^sub>s f j" n "transpos j (Suc n)"],
          simp)
- apply (rule univar_func_test, rule ballI, rule sc_mem,
+ apply (rule Pi_I, rule sc_mem,
           simp add:Pi_def Ring.ideal_subset,
           simp add:Pi_def subsetD)
  apply (rule_tac i = j and n = "Suc n" and j = "Suc n" in transpos_hom,
@@ -2933,9 +2912,7 @@ apply (simp add:linear_span_def)
  apply (subgoal_tac "a \<cdot>\<^sub>s h = 
  \<Sigma>\<^sub>e M (\<lambda>j. (\<lambda>k\<in>{j. j \<le> (0::nat)}. a) j \<cdot>\<^sub>s (\<lambda>k\<in>{j. j \<le> (0::nat)}. h) j) 0")
  apply blast
- apply simp 
-apply (rule univar_func_test, rule ballI, simp) 
-apply (rule univar_func_test, rule ballI, simp) 
+ apply simp+
 done
 
 lemma (in Module) l_span_cont_H:"H \<subseteq> carrier M \<Longrightarrow> 
@@ -2965,7 +2942,7 @@ done
 lemma (in Module) linear_span_iOp_closedTr1:"\<lbrakk>ideal R A;
        s \<in> {j. j \<le> (n::nat)} \<rightarrow> A\<rbrakk> \<Longrightarrow>
                (\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a\<^bsub>R\<^esub> (s x)) \<in> {j. j \<le> n} \<rightarrow> A"
-apply (rule univar_func_test) apply (rule ballI)
+apply (rule Pi_I)
  apply simp
  apply (cut_tac sc_Ring,
         rule Ring.ideal_inv1_closed, assumption+)
@@ -3116,7 +3093,7 @@ apply (cut_tac linear_comb0_1[of H "\<lambda>x\<in>{j. j \<le> n}. s x \<plusmin
  apply (frule ag_pOp_assoc[of "-\<^sub>a (l_comb R M n s f)" "l_comb R M n s f" "l_comb R M n (\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a\<^bsub>R\<^esub> (s x)) f"], assumption+)
  apply (simp, simp add:ag_l_inv1, simp add:ag_l_zero, simp add:ag_r_zero)
  apply assumption+
- apply (rule univar_func_test, rule ballI, simp)
+ apply (rule Pi_I, simp)
  apply (frule_tac x = x in funcset_mem[of s "{j. j \<le> n}" A], simp,
         cut_tac sc_Ring,
         frule_tac h = "s x" in Ring.ideal_subset[of R A], assumption+)
@@ -3136,7 +3113,7 @@ apply (frule_tac f = f and n = n and s = s in
                  linear_span_iOp_closedTr2[of A H], assumption+)
 apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. -\<^sub>a\<^bsub>R\<^esub> (s x)) \<in> {j. j \<le> n} \<rightarrow> A")
 apply blast
-apply (rule univar_func_test, rule ballI, simp)
+apply (rule Pi_I, simp)
 apply(cut_tac sc_Ring,
       rule Ring.ideal_inv1_closed, assumption+,
       simp add:Pi_def)
@@ -3342,10 +3319,10 @@ apply (cut_tac n = n and f = "\<lambda>j. r \<cdot>\<^sub>s (s j \<cdot>\<^sub>s
          apply simp
   apply (subgoal_tac "(\<lambda>x\<in>{j. j \<le> n}. r \<cdot>\<^sub>r\<^bsub>R\<^esub> s x) \<in> {j. j \<le> n} \<rightarrow> A",
          blast)
-  apply (rule univar_func_test, simp)
+  apply (rule Pi_I, simp)
 apply (thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j) \<cdot>\<^sub>s f j) n =
         \<Sigma>\<^sub>e M (\<lambda>j. (if j \<le> n then r \<cdot>\<^sub>r\<^bsub>R\<^esub> s j else undefined) \<cdot>\<^sub>s f j) n",
-        rule allI, rule impI, cut_tac sc_Ring,
+        cut_tac sc_Ring,
         rule Ring.ideal_ring_multiple, assumption+, simp add:Pi_def,
         assumption)
 done
@@ -3681,7 +3658,7 @@ apply (frule l_comb_mem_linear_span[of A H s n g], assumption+)
         simp add:image_def, erule bexE, simp,
         frule_tac c = xa in subsetD[of H "carrier M"], assumption+,
         simp add:mHom_mem[of N f], assumption+)
- apply (rule univar_func_test, rule ballI, simp add:cmp_def)
+ apply (rule Pi_I, simp add:cmp_def)
  apply (frule_tac f = g and A = "{j. j \<le> n}" and B = H and x = x in 
         funcset_mem, simp, simp add:image_def) 
  apply blast
@@ -4005,7 +3982,7 @@ apply (case_tac "H = {}")
         blast,
         thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. (s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa j) \<cdot>\<^sub>s f j) n =
         \<Sigma>\<^sub>e M (\<lambda>j. (\<lambda>x\<in>{j. j \<le> n}. s \<cdot>\<^sub>r\<^bsub>R\<^esub> sa x) j \<cdot>\<^sub>s f j) n")
-        apply (rule univar_func_test, rule ballI, simp,
+        apply (rule Pi_I, simp,
                rule_tac x = s and r = "sa x" in 
                Ring.ideal_ring_multiple1[of R A], assumption+)
                apply (simp add:Pi_def)
@@ -4277,8 +4254,7 @@ apply (induct_tac n)
    apply (subgoal_tac "(\<lambda>k\<in>{0::nat}. (s 0 \<plusminus>\<^bsub>R\<^esub> a)) \<in> {0} \<rightarrow> A")
    apply (subgoal_tac "(s 0 \<plusminus>\<^bsub>R\<^esub> a) \<cdot>\<^sub>s f 0 = (\<lambda>k\<in>{0::nat}. s 0 \<plusminus>\<^bsub>R\<^esub> a) 0 \<cdot>\<^sub>s f 0")
    apply blast
-   apply (simp, rule univar_func_test, rule ballI, 
-                            simp add:Ring.ideal_pOp_closed)
+   apply (simp, simp add:Ring.ideal_pOp_closed)
 
 (** n **)
 apply ((rule allI)+, rule impI, (erule conjE)+)
@@ -4312,8 +4288,7 @@ apply ((rule allI)+, rule impI, (erule conjE)+)
  apply (frule func_pre[of _ _ A],
         frule_tac f = s and n = n and g = "\<lambda>k\<in>{0::nat}. (s (Suc n) \<plusminus>\<^bsub>R\<^esub> a)" and
         m = 0 and A = A and B = A in jointfun_hom0,
-        rule univar_func_test, rule ballI, simp,
-        rule Ring.ideal_pOp_closed, assumption+, simp)
+        simp add: Ring.ideal_pOp_closed)
  apply (subgoal_tac "\<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s f j) n \<plusminus> (s (Suc n) \<plusminus>\<^bsub>R\<^esub> a) \<cdot>\<^sub>s f (Suc n) =
       \<Sigma>\<^sub>e M (\<lambda>j. (jointfun n s 0 (\<lambda>k\<in>{0}. s (Suc n) \<plusminus>\<^bsub>R\<^esub> a)) j \<cdot>\<^sub>s f j) (Suc n)",
       simp,
@@ -4353,7 +4328,7 @@ apply ((rule allI)+, rule impI, (erule conjE)+)
     thin_tac "\<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s f j) n \<plusminus> a \<cdot>\<^sub>s f x = \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s f j) n")
   apply (frule_tac f = t and n = n and g = "\<lambda>k\<in>{0::nat}. s (Suc n)" and
          m = 0 and A = A and B = A in jointfun_hom0,
-         rule univar_func_test, rule ballI, simp, simp) 
+         simp, simp)
   apply (subgoal_tac "\<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s f j) n \<plusminus> s (Suc n) \<cdot>\<^sub>s f (Suc n) =
          \<Sigma>\<^sub>e M (\<lambda>j. (jointfun n t 0 (\<lambda>k\<in>{0}. s (Suc n))) j \<cdot>\<^sub>s f j) (Suc n)",
          simp,
@@ -4392,10 +4367,10 @@ lemma (in Module) same_togetherTr:"\<lbrakk>ideal R A; H \<subseteq> carrier M \
        (card (f ` {j. j \<le> n}) - Suc 0))"  
 apply (induct_tac n)
  apply ((rule allI)+, rule impI, erule conjE)
- apply simp
+ apply (simp)
  apply (frule_tac f = f and A = "{0}" and B= H in func_to_img,
         frule_tac f = f and A = "{0}" and B= H in surj_to_image,
-        simp add:image_def, blast)
+        fastsimp simp add:image_def)
 
 apply ((rule allI)+, rule impI, erule conjE)
  apply (frule func_pre [of _ _ "A"], frule func_pre [of _ _ "H"])
@@ -4427,12 +4402,12 @@ apply (case_tac "f (Suc n) \<in> f ` {j. j \<le> n}")
   
   apply (frule_tac f = t and n = "card (f ` {j. j \<le> n}) - Suc 0" and A = A and
         g = "\<lambda>k\<in>{0::nat}. s (Suc n)" and m = 0 and B = A in jointfun_hom0)
-        apply (rule univar_func_test, rule ballI, simp add:Pi_def,
+        apply (simp add:Pi_def,
                simp)
   apply (frule_tac f = g and n = "card (f ` {j. j \<le> n}) - Suc 0" and 
          A = "f ` {j. j \<le> n}" and g = "\<lambda>k\<in>{0::nat}. f (Suc n)" and m = 0 and 
          B = "{f (Suc n)}" in jointfun_hom0)
-        apply (rule univar_func_test, rule ballI, simp add:Pi_def,
+        apply (simp add:Pi_def,
                simp)
   apply (subgoal_tac "\<Sigma>\<^sub>e M (\<lambda>k. t k \<cdot>\<^sub>s g k) (card (f ` {j. j \<le> n}) - Suc 0) \<plusminus>
                 s (Suc n) \<cdot>\<^sub>s f (Suc n) =
@@ -4455,7 +4430,7 @@ apply (case_tac "f (Suc n) \<in> f ` {j. j \<le> n}")
    apply (simp add:surj_to_def)
    apply (frule_tac f = g and n = "card (f ` {j. j \<le> n}) - Suc 0" and A = "f ` {j. j \<le> n}" and g = "\<lambda>k\<in>{0}. f (Suc n)" and m = 0 and B = "{f (Suc n)}" in
   im_jointfun)
-   apply (rule univar_func_test, rule ballI, simp add:Pi_def)
+   apply (simp add:Pi_def)
    apply simp
    apply (simp add:image_Nset_Suc[THEN sym])
    apply (simp add:card_image_Nsetn_Suc)
@@ -4471,8 +4446,7 @@ apply (case_tac "f (Suc n) \<in> f ` {j. j \<le> n}")
    apply (frule_tac f = f and A = "{j. j \<le> n}" and B = H in image_sub0)
    apply (rule_tac f = g and A = "{j. j \<le> card (f ` {j. j \<le> n}) - Suc 0}" and
           B = "f ` {j. j \<le> n}" in extend_fun[of _ _ _ H], assumption+,
-          rule univar_func_test, simp add:Pi_def,
-          rule univar_func_test, simp add:Pi_def)
+          simp add:Pi_def, simp add:Pi_def)
    apply simp
    apply (simp add:jointfun_def sliden_def)
 done
@@ -4502,7 +4476,7 @@ apply (frule transpos_hom[of j "Suc n" "Suc n"], simp, assumption,
          "transpos j (Suc n)" in addition2 [THEN sym], assumption+,
        simp del:nsum_suc)
 prefer 2  
-    apply (rule univar_func_test, rule ballI, rule sc_mem,
+    apply (rule Pi_I, rule sc_mem,
            simp add:Pi_def Ring.ideal_subset,
            simp add:Pi_def subsetD)
  apply (frule cmp_fun[of "transpos j (Suc n)" "{j. j \<le> Suc n}" 
@@ -4549,7 +4523,7 @@ apply (simp del:nsum_suc, erule bexE, simp,
  apply (subgoal_tac "(\<lambda>l\<in>{0::nat}. (s 0 \<plusminus>\<^bsub>R\<^esub> (t (Suc n)))) \<in> {0} \<rightarrow> A")
 apply (subgoal_tac "(s 0 \<plusminus>\<^bsub>R\<^esub> t (Suc n)) \<cdot>\<^sub>s z = (\<lambda>l\<in>{0::nat}. (s 0 \<plusminus>\<^bsub>R\<^esub> (t (Suc n)))) 0 \<cdot>\<^sub>s z ") apply blast
  apply simp 
- apply (rule univar_func_test) apply (rule ballI) apply simp
+ apply (rule Pi_I) apply simp
  apply (rule Ring.ideal_pOp_closed, assumption+)
 done
 
@@ -4659,9 +4633,7 @@ definition
   "zeroi R = (\<lambda>j. \<zero>\<^bsub>R\<^esub>)" 
 
 lemma zeroi_func:"\<lbrakk>Ring R; ideal R A\<rbrakk> \<Longrightarrow>  zeroi R \<in> {j. j \<le> 0} \<rightarrow> A"
-apply (rule univar_func_test, rule ballI)
-    apply (simp add:zeroi_def Ring.ideal_zero)
-done
+by (simp add:zeroi_def Ring.ideal_zero)
 
 lemma (in Module) prep_arrTr1:"\<lbrakk>ideal R A; h \<in> {j. j \<le> (Suc n)} \<rightarrow> carrier M;
  f \<in> {j. j \<le> (n1::nat)} \<rightarrow> h ` {j. j \<le> (Suc n)}; s \<in> {j. j \<le> n1}\<rightarrow> A; 
@@ -4708,7 +4680,7 @@ done
 lemma two_func_imageTr:"\<lbrakk> h \<in> {j. j \<le> Suc n} \<rightarrow> B; 
    f \<in> {j. j \<le> (m::nat)} \<rightarrow> h ` {j. j \<le> Suc n};  h (Suc n) \<notin> f ` {j. j \<le> m}\<rbrakk>
        \<Longrightarrow> f \<in> {j. j \<le> m} \<rightarrow> h ` {j. j \<le> n}" 
-apply (rule univar_func_test, rule ballI)
+apply (rule Pi_I)
     apply (frule_tac x = x and f = f and A = "{j. j \<le> m}" and 
            B = "h ` {j. j \<le> Suc n}" in funcset_mem, assumption)
    apply (thin_tac "h \<in> {j. j \<le> Suc n} \<rightarrow> B")
@@ -4748,7 +4720,7 @@ lemma (in Module) finite_lin_spanTr3_0:"\<lbrakk>bij_to g {j. j \<le> l} (g `{j.
   apply (drule_tac a = "l - Suc 0" in forall_spec1,
          drule_tac b = sa in forball_spec1)
         
-  apply (rule univar_func_test, rule ballI, simp)
+  apply (rule Pi_I, simp)
         apply (rule_tac x = x and f = sa and A = "{j. j \<le> l}"and B = A
                in funcset_mem, assumption, simp) (*
         apply (rule_tac i = x and j = "l - Suc 0" and k = l in le_trans)
@@ -4758,7 +4730,7 @@ apply (
          thin_tac "f \<in> {j. j \<le> m} \<rightarrow> h ` {j. j \<le> Suc n}",
          thin_tac "sa \<in> {j. j \<le> l} \<rightarrow> A",
          thin_tac "f ` {j. j \<le> m} = g ` {j. j \<le> l}")
-      apply (rule univar_func_test, rule ballI, simp)
+      apply (rule Pi_I, simp)
       apply (frule_tac x = x and f = g and A = "{j. j \<le> l}" and 
          B = "h ` {j. j \<le> Suc n}" in funcset_mem)
       apply simp (*
@@ -4785,14 +4757,14 @@ apply (
       apply (rotate_tac -4, frule sym, thin_tac "h (Suc n) = g l", simp)
    apply (frule_tac f = t and n = n and A = A and g = "\<lambda>k\<in>{0::nat}. sa l"
           and m = 0 and B = A in jointfun_hom0,
-          rule univar_func_test, rule ballI, simp add:Pi_def, simp)
+          simp add:Pi_def, simp)
    apply (subgoal_tac " \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s h j) n \<plusminus> sa l \<cdot>\<^sub>s h (Suc n) =
            \<Sigma>\<^sub>e M (\<lambda>j. (jointfun n t 0 (\<lambda>k\<in>{0}. sa l)) j \<cdot>\<^sub>s h j) (Suc n)",
           simp, blast) 
    apply (cut_tac H = "carrier M" and A = A and s = t and f = h and n = n and
           m = 0 and t = "\<lambda>k\<in>{0}. sa l" in l_comb_jointfun_jf)
           apply simp+ 
-          apply (rule univar_func_test, rule ballI, simp add:Pi_def)
+          apply (simp add:Pi_def)
           apply simp
    apply (simp add:jointfun_def sliden_def, simp)
 done
@@ -4863,9 +4835,8 @@ apply (erule bexE)+
         rotate_tac -6, frule sym, thin_tac "h (Suc n) = g 0", simp)
  apply (cut_tac f = "zeroi R" and n = n and g = "\<lambda>j. sa 0" and m = 0 and 
          A = A and B = A in jointfun_hom0)
-        apply (rule univar_func_test, rule ballI, 
-                      simp add:zeroi_def Ring.ideal_zero)
-        apply (rule univar_func_test, rule ballI, simp add:Pi_def)
+        apply (simp add:zeroi_def Ring.ideal_zero)
+        apply (simp add:Pi_def)
         apply simp
  apply (subgoal_tac "sa 0 \<cdot>\<^sub>s h (Suc n) = nsum M (\<lambda>j. (jointfun n (zeroi R) 0 
          (\<lambda>j. sa 0) j \<cdot>\<^sub>s h j)) (Suc n)", simp,
@@ -4909,7 +4880,7 @@ apply (subgoal_tac "l_comb R M l sa g = l_comb R M (Suc (l - Suc 0)) sa g")
                 \<forall>f\<in>{j. j \<le> na} \<rightarrow> h ` {j. j \<le> n}.
                    \<exists>t\<in>{j. j \<le> n} \<rightarrow> A.
                       \<Sigma>\<^sub>e M (\<lambda>j. s j \<cdot>\<^sub>s f j) na = \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s h j) n",
-              rule univar_func_test, rule ballI, simp)
+              rule Pi_I, simp)
        apply (rule sc_mem, 
               simp add:Pi_def Ring.ideal_subset,
               frule_tac f = h and A = "{j. j \<le> Suc n}" and B = "carrier M" in
@@ -4925,7 +4896,7 @@ apply (subgoal_tac "l_comb R M l sa g = l_comb R M (Suc (l - Suc 0)) sa g")
     apply (simp del:Suc_pred nsum_suc)
     apply (subst l_comb_transpos[of A "carrier M"], assumption, simp,
            simp, simp,
-           rule univar_func_test, rule ballI,
+           rule Pi_I,
            frule_tac f = h and A = "{j. j \<le> Suc n}" and B = "carrier M" in
               image_sub0,
               frule_tac x = xa and f = g and A = "{j. j \<le> l}" and 
@@ -4965,13 +4936,13 @@ apply (cut_tac g = "cmp g (transpos x l)" and l = l and A = A and
    apply (simp add:l_comb_def)
    apply assumption+
    
-   apply (rule univar_func_test, rule ballI)
+   apply (rule Pi_I)
    apply (simp add:cmp_def)
    apply (cut_tac n = l in Nat.le_refl,
           frule_tac i = x and n = l and j = l and l = xa in transpos_mem,
           assumption+,
           simp add:Pi_def)
-   apply (rule univar_func_test, rule ballI,
+   apply (rule Pi_I,
           simp add:cmp_def,
           cut_tac n = l in Nat.le_refl,
           frule_tac i = x and n = l and j = l and l = xa in transpos_mem,
@@ -5099,8 +5070,8 @@ lemma (in Module) free_gen_coeff_zero:"\<lbrakk>H \<subseteq> carrier M; free_ge
        h \<in> H; a \<in> carrier R; a \<cdot>\<^sub>s h = \<zero>\<rbrakk> \<Longrightarrow> a = \<zero>\<^bsub>R\<^esub>"
 apply (frule unique_expression1[of H "\<lambda>x\<in>{0::nat}. a" 0 "\<lambda>x\<in>{0::nat}. h"],
         assumption+,
-       rule univar_func_test, rule ballI, simp,
-       rule univar_func_test, rule ballI, simp,
+       simp,
+       simp,
        simp add:inj_on_def,
        simp add:l_comb_def,
        simp)
@@ -5150,11 +5121,11 @@ apply (simp add:Nset_pre1)
         thin_tac "l_comb R M n s f = l_comb R M m t g")
  apply (frule_tac f = g and n = m and A = H and g = "\<lambda>k\<in>{0::nat}. f (Suc n)"
          and m = 0 and B = H in jointfun_hom0,
-        rule univar_func_test, rule ballI, simp add:Pi_def, simp)
+        simp add:Pi_def, simp)
  apply (frule_tac f = t and n = m and A = "carrier R" and 
         g = "\<lambda>k\<in>{0::nat}. s (Suc n)"  and m = 0 and B = "carrier R" in 
         jointfun_hom0,
-        rule univar_func_test, rule ballI, simp add:Pi_def, simp)
+        simp add:Pi_def, simp)
  apply (subgoal_tac "inj_on (jointfun m g 0 (\<lambda>k\<in>{0}. f (Suc n))) 
                        {l. l \<le> Suc m}",
     subgoal_tac "l_comb R M m t g \<plusminus> s (Suc n) \<cdot>\<^sub>s f (Suc n) =
@@ -5167,8 +5138,8 @@ apply (simp add:Nset_pre1)
   apply (frule_tac s = t and n = m and f = g and t = "\<lambda>k\<in>{0}. s (Suc n)" and
          m = 0 and g = "\<lambda>k\<in>{0}. f (Suc n)" in l_comb_jointfun_jj[of H 
         "carrier R"], assumption+,
-         rule univar_func_test, rule ballI, simp add:Pi_def, simp,
-         rule univar_func_test, rule ballI, simp add:Pi_def)
+         simp add:Pi_def, simp,
+         simp add:Pi_def)
   apply (simp add:l_comb_def, simp add:jointfun_def sliden_def)
   apply (thin_tac "jointfun m g 0 (\<lambda>k\<in>{0}. f (Suc n)) \<in> {l. l \<le> Suc m} \<rightarrow> H",
   thin_tac "jointfun m t 0 (\<lambda>k\<in>{0}. s (Suc n)) \<in> {l. l \<le> Suc m} \<rightarrow> carrier R",
@@ -5249,10 +5220,10 @@ apply (cut_tac sc_Ring,
  apply (simp add:cmp_def)
  apply (subst transpos_ij_2[of l "Suc n" "Suc n"], simp+,
         subst transpos_ij_2[of l "Suc n" "Suc n"], simp+) 
- apply (rule univar_func_test, rule ballI, simp add:cmp_def,
+ apply (rule Pi_I, simp add:cmp_def,
         frule_tac l = x in transpos_mem[of l "Suc n" "Suc n"], simp,
          assumption+, simp add:Pi_def)
- apply (rule univar_func_test, rule ballI, simp add:cmp_def,
+ apply (rule Pi_I, simp add:cmp_def,
         frule_tac l = x in transpos_mem[of l "Suc n" "Suc n"], simp,
          assumption+, simp add:Pi_def)
  apply (frule_tac i = l and n = "Suc n" and j = "Suc n" in transpos_hom,
@@ -5398,8 +5369,6 @@ apply (rule impI) apply (erule conjE)+
            l_comb R M 0 (\<lambda>j\<in>{0::nat}. s (Suc n)) (\<lambda>j\<in>{0::nat}. f (Suc n))")
  apply ((erule conjE)+, blast) 
  apply simp
- apply (rule conjI, rule univar_func_test, simp)
- apply (rule conjI, rule univar_func_test, simp)
  apply (simp add:l_comb_def)
  
  apply simp
@@ -5409,10 +5378,10 @@ apply (rule impI) apply (erule conjE)+
         thin_tac "l_comb R M n s f = l_comb R M m t g")
  apply (frule_tac f = g and n = m and A = H and g = "\<lambda>j\<in>{0::nat}. f (Suc n)"
         and m = 0 and B = H in jointfun_hom,
-        rule univar_func_test, simp add:Pi_def,
+        rule Pi_I, simp add:Pi_def,
         frule_tac f = t and n = m and A = "carrier R" and 
          g = "\<lambda>j\<in>{0::nat}. s (Suc n)" and m = 0 and B = "carrier R" in 
-         jointfun_hom, rule univar_func_test, simp add:Pi_def, simp)
+         jointfun_hom, simp add:Pi_def, simp)
  apply (subgoal_tac "inj_on (jointfun m g 0 (\<lambda>j\<in>{0}. f (Suc n)))
     {k. k \<le> Suc m} \<and> 
  (jointfun m g 0 (\<lambda>j\<in>{0}. f (Suc n))) ` {k. k \<le> Suc m} \<subseteq> f ` {k. k \<le> Suc n} \<and>
@@ -5467,8 +5436,8 @@ apply (rule impI) apply (erule conjE)+
    simp add:jointfun_def)  
   apply (simp add:l_comb_def,
         subst l_comb_jointfun_jj[of H "carrier R"], assumption+,
-        rule univar_func_test, rule ballI, simp add:Pi_def,
-        rule univar_func_test, rule ballI, simp add:Pi_def)
+        simp add:Pi_def,
+        simp add:Pi_def)
   apply (simp add:jointfun_def sliden_def)
 done
 
@@ -5525,11 +5494,11 @@ apply (cut_tac sc_Ring,
   "n + m"
   "jointfun (n + m) (jointfun (n - Suc 0) (\<lambda>x\<in>{j. j \<le> n - Suc 0}. -\<^sub>a\<^bsub>R\<^esub> (s x)) 
   m t) 0 (\<lambda>x\<in>{0::nat}. -\<^sub>a\<^bsub>R\<^esub> (s n))"])
- apply (rule univar_func_test, rule ballI,
+ apply (rule Pi_I,
         case_tac "x \<le> (n + m)", simp,
         simp add:jointfun_def[of "n+m"], simp add:Pi_def,
         simp add:jointfun_def[of "n+m"] sliden_def, simp add:Pi_def)
-  apply (rule univar_func_test, rule ballI,
+  apply (rule Pi_I,
         case_tac "x \<le> (n + m)", simp,
         simp add:jointfun_def[of "n+m"], simp add:Pi_def)
   apply (simp add:jointfun_def[of "n+m"] sliden_def,
@@ -5567,7 +5536,7 @@ apply (cut_tac sc_Ring,
                Suc_le_mono[THEN sym], simp)
 
 defer
- apply (rule univar_func_test, rule ballI, simp,
+ apply (rule Pi_I, simp,
         rule aGroup.ag_mOp_closed, assumption,
         cut_tac  i = x and j = "n - Suc 0" and k = n in Nat.le_trans,
         assumption, subst Suc_le_mono[THEN sym], simp,
@@ -5645,9 +5614,9 @@ defer
          (jointfun (n - Suc 0) (\<lambda>x\<in>{j. j \<le> n - Suc 0}. -\<^sub>a\<^bsub>R\<^esub> (s x)) m t) 0
          (\<lambda>x\<in>{0}. -\<^sub>a\<^bsub>R\<^esub> (s n)) (Suc (n + m))")
   apply (subst l_comb_jointfun_jj1[of H "carrier R"], assumption+,
-         rule univar_func_test, rule ballI, simp,
+         rule Pi_I, simp,
          rule aGroup.ag_mOp_closed, assumption, simp add:Pi_def,
-         rule univar_func_test, rule ballI, simp add:Pi_def)
+         simp add:Pi_def)
   apply (simp,
         thin_tac "l_comb R M (n + m) (jointfun (n - Suc 0) 
        (\<lambda>x\<in>{j. j \<le> n - Suc 0}. -\<^sub>a\<^bsub>R\<^esub> (s x)) m t) (jointfun (n - Suc 0) f m g) =
@@ -5662,12 +5631,12 @@ defer
          simp add:Pi_def, simp add:Pi_def subsetD,
          simp add:ag_r_inv1,  simp add:free_generator_sub) 
   apply (assumption+,
-         rule univar_func_test, rule ballI,
+         rule Pi_I,
          case_tac "x \<le> n + m", simp add:jointfun_def[of "n+m"],
          simp add:Pi_def,
          simp add:jointfun_def[of "n+m"] sliden_def,
          rule aGroup.ag_mOp_closed, assumption, simp add:Pi_def,
-         rule univar_func_test, rule ballI, simp,
+         rule Pi_I, simp,
           case_tac "x \<le> n+m", simp add:jointfun_def[of "n+m"],
           simp add:Pi_def, 
           simp add:jointfun_def[of "n+m"] sliden_def,
@@ -5690,12 +5659,12 @@ apply (rule contrapos_pp, simp+, simp add:subset_eq)
   apply (frule_tac f = t and n = m and A = "carrier R" and 
         g = "\<lambda>k\<in>{0::nat}. -\<^sub>a\<^bsub>R\<^esub> (s 0)"  and m = 0 and B = "carrier R" in 
         jointfun_hom0,
-        rule univar_func_test, rule ballI, simp add:Pi_def,
+        simp add:Pi_def,
         rule aGroup.ag_mOp_closed, assumption, simp add:Pi_def,
         frule_tac f = g and n = m and A = H and 
         g = "\<lambda>k\<in>{0::nat}. (f 0)" and m = 0 and B = H in 
         jointfun_hom0,
-        rule univar_func_test, rule ballI, simp add:Pi_def subsetD,
+        simp add:Pi_def subsetD,
         simp)
   apply (frule sym, thin_tac "l_comb R M 0 s f = l_comb R M m t g")
   apply (frule_tac n = 0 in l_comb_mem[of "carrier R" H s _ f],
@@ -5732,9 +5701,9 @@ apply (rule contrapos_pp, simp+, simp add:subset_eq)
          \<Sigma>\<^sub>e M (\<lambda>j. t j \<cdot>\<^sub>s g j) m",
          simp add:jointfun_def sliden_def, simp add:free_generator_sub,
          assumption+,
-         rule univar_func_test, rule ballI, simp,
+         rule Pi_I, simp,
          rule aGroup.ag_mOp_closed, assumption+,
-         rule univar_func_test, rule ballI, simp)
+         simp)
  apply (case_tac "x = n", simp,
         rule unique_prepression5_0[of H f n s g m t], assumption+)
  apply (frule_tac j = x in l_comb_transpos1[of "carrier R" H s "n - Suc 0" f],
@@ -5804,14 +5773,14 @@ apply (cut_tac sc_Ring, frule Ring.whole_ideal)
  apply (simp add:linear_span_iOp_closedTr2[of "carrier R" H f n t])
  apply (frule l_comb_add1[THEN sym, of "carrier R" H f n s "\<lambda>j\<in>{k. k \<le> n}. -\<^sub>a\<^bsub>R\<^esub> (t j)"],
             assumption+)
-       apply (rule univar_func_test, rule ballI) 
+       apply (rule Pi_I)
        apply (simp, frule Ring.ring_is_ag[of R],
               rule aGroup.ag_mOp_closed[of R], simp add:Pi_def)
        apply (simp add:Pi_def)
        apply simp
  apply (frule_tac s = "\<lambda>x\<in>{x. x \<le> n}. s x \<plusminus>\<^bsub>R\<^esub> (if x \<le> n then -\<^sub>a\<^bsub>R\<^esub> (t x) else 
         undefined)" in unique_expression1[of H _ n f], assumption+)
-  apply (rule univar_func_test, rule ballI, simp)
+  apply (rule Pi_I, simp)
   apply (frule Ring.ring_is_ag[of R], rule aGroup.ag_pOp_closed, assumption,
          simp add:Pi_def,
          rule aGroup.ag_mOp_closed, assumption,

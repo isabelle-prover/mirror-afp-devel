@@ -618,8 +618,7 @@ definition
 
 lemma (in Corps) Ostrowski_base_hom:"vals_nonequiv K (Suc n) vv \<Longrightarrow> 
       Ostrowski_base K vv (Suc n) \<in> {h. h \<le> (Suc n)} \<rightarrow> carrier K"
-apply (rule univar_func_test, 
-       rule ballI, rename_tac l,
+apply (rule Pi_I, rename_tac l,
        simp add:Ostrowski_base_def,
        frule_tac j = l in transpos_vals_nonequiv[of n vv], simp,
        cut_tac Ostrowski[of n]) 
@@ -631,7 +630,7 @@ lemma (in Corps) Ostrowski_base_mem:"vals_nonequiv K (Suc n) vv \<Longrightarrow
          \<forall>j \<le> (Suc n). Ostrowski_base K vv (Suc n) j \<in> carrier K"
 by (rule allI, rule impI,
        frule Ostrowski_base_hom[of "n" "vv"],
-       simp add:funcset_mem)
+       simp add:funcset_mem del:Pi_I')
 
 lemma (in Corps)  Ostrowski_base_mem_1:"\<lbrakk>vals_nonequiv K (Suc n) vv; 
        j \<le> (Suc n)\<rbrakk> \<Longrightarrow> Ostrowski_base K vv (Suc n) j \<in> carrier K"
@@ -2015,11 +2014,8 @@ apply simp
 done
 
 lemma (in Corps) Kbase_hom1:"distinct_pds K n P \<Longrightarrow> 
-                    \<forall>j \<le> n. (Kb\<^bsub>K n P\<^esub>) j \<in> carrier K - {\<zero>}"   
-apply (rule allI, rule impI)
-apply (frule Kbase_hom[of n P])
- apply (simp add:funcset_mem Kbase_nonzero)
-done
+                    \<forall>j \<le> n. (Kb\<^bsub>K n P\<^esub>) j \<in> carrier K - {\<zero>}"
+by(simp add:Kbase_nonzero Kbase_hom)
 
 definition
   Zl_mI :: "[_, nat \<Rightarrow> ('b \<Rightarrow> ant) set, 'b set]
@@ -2093,8 +2089,8 @@ apply (induct_tac n)
 apply (rule impI) 
  apply simp
  apply (subst Ring.mprodR_Suc, assumption+)
- apply (rule univar_func_test, rule ballI, simp)
- apply (rule univar_func_test, rule ballI, simp)
+ apply (simp)
+ apply (simp)
  apply (rule Ring.ring_tOp_closed[of K], assumption+)
  apply (rule Ring.npClose, assumption+) 
  apply simp 
@@ -2106,8 +2102,6 @@ apply (cut_tac field_is_ring)
 apply (cut_tac Ring.mprod_expR_memTr[of K e n f])
 apply simp
 apply (subgoal_tac "f \<in> {j. j \<le> n} \<rightarrow> carrier K", simp+)
-apply (rule univar_func_test, rule ballI, simp)
-apply assumption
 done 
 
 lemma (in Corps) mprod_Suc:"\<lbrakk> \<forall>j\<le>(Suc n). e j \<in> Zset; 
@@ -2168,15 +2162,15 @@ apply (rule impI, (erule conjE)+, simp)
         simp add:mem_ring_n_pd_mem_K,
         simp add:zero_in_ring_n_pd_zero_K)
   apply (subst Ring.mprodR_Suc, assumption+,
-         rule univar_func_test, rule ballI, simp add:cmp_def,
-         rule univar_func_test, rule ballI, simp)
+         simp add:cmp_def,
+         simp)
   apply (simp add:ring_n_pd, simp add:npowf_def, 
          simp add:ring_n_exp_K_exp) 
  apply (subst ring_n_tOp_K_tOp, assumption+,
         rule Ring.mprod_expR_mem, simp add:ring_n_pd,
-        rule univar_func_test, rule ballI, simp,
-        rule univar_func_test, rule ballI, simp)
- apply (rule Ring.npClose, simp add:ring_n_pd, simp, simp) 
+        simp,
+        simp)
+ apply (rule Ring.npClose, simp add:ring_n_pd, simp, simp)
 done
 
 lemma (in Corps) ring_n_mprod_mprodR:"\<lbrakk>distinct_pds K n P; \<forall>j \<le> m. e j \<in> Zset;
@@ -2810,9 +2804,9 @@ apply (frule ring_n_pd[of "n" "P"])
 apply (frule Ring.prod_n_principal_ideal[of "O\<^bsub>K P n\<^esub>" "nat o (mL K P I)" "n" 
        "Kb\<^bsub>K n P\<^esub>" "J"])
  apply (frule Kbase_hom[of "n" "P"])
- apply (rule univar_func_test) apply (rule ballI) apply (simp add:nat_def)
+ apply (simp add:nat_def)
  apply (subst ring_n_pd_def) apply (simp add:Sr_def) 
- apply (rule univar_func_test, rule ballI, simp)
+ apply (rule Pi_I, simp)
  apply (simp add:Kbase_Kronecker[of  "n" "P"])
  apply (simp add:Kronecker_delta_def) 
   apply (simp only:ant_1[THEN sym], simp only:ant_0[THEN sym])

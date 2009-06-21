@@ -787,10 +787,6 @@ lemma bivar_fun_mem: "\<lbrakk> f \<in> A \<rightarrow> (B \<rightarrow> C); a \
  apply (rule funcset_mem[of "f a" "B" "C"], assumption+)
  done
 
-lemma bivar_func_test:"\<forall>a\<in>A. \<forall>b\<in>B. f a b \<in> C \<Longrightarrow> f \<in> A \<rightarrow> B \<rightarrow> C"
-apply (simp add:Pi_def)
-done
-
 lemma bivar_func_eq:"\<lbrakk>\<forall>a\<in>A. \<forall>b\<in>B. f a b = g a b \<rbrakk> \<Longrightarrow>
                          (\<lambda>x\<in>A. \<lambda>y\<in>B. f x y) =  (\<lambda>x\<in>A. \<lambda>y\<in>B. g x y)"
 apply (subgoal_tac "\<forall>x\<in>A. (\<lambda>y\<in>B. f x y) = (\<lambda>y\<in>B. g x y)")
@@ -806,10 +802,6 @@ apply (rule ballI)
 apply (rule ballI) apply simp
 done
  
-lemma univar_func_test: "\<forall>x \<in> A. f x \<in> B \<Longrightarrow> f \<in> A \<rightarrow> B"
- apply (simp add:Pi_def)
- done
-
 lemma set_image: "\<lbrakk> f \<in> A \<rightarrow> B; A1 \<subseteq> A; A2 \<subseteq> A \<rbrakk> \<Longrightarrow> 
             f`(A1 \<inter> A2) \<subseteq> (f` A1) \<inter> (f` A2)"
  apply (simp add: image_def) 
@@ -1402,7 +1394,7 @@ apply (simp add:skip_def)
 done
 
 lemma skip_fun:"(skip i) \<in> {i. i \<le> n} \<rightarrow> {i. i \<le> (Suc n)}"
-apply (rule univar_func_test, rule ballI)
+apply (rule Pi_I)
 apply (rule skip_mem, assumption)
 done
 
@@ -1513,26 +1505,14 @@ lemma le_imp_add_int:" i \<le> (j::nat) \<Longrightarrow> \<exists>k. j = i + k"
 
 lemma jointfun_hom0:"\<lbrakk> f \<in> {j. j \<le> n} \<rightarrow> A; g \<in> {k. k \<le> m} \<rightarrow> B \<rbrakk> \<Longrightarrow> 
         (jointfun n f m g) \<in> {l. l \<le> (Suc (n + m))} \<rightarrow>  (A \<union> B)"
-apply (rule univar_func_test, rule ballI)
-apply (simp add:jointfun_def)
-apply (rule conjI)
-apply (simp add: Pi_def)
-apply (rule impI, simp add: not_less [symmetric])
-apply (frule_tac x = n and n = x in less_Suc_le1)
- apply (thin_tac "n < x")
- apply (simp add: nat_not_le_less [THEN sym, of "Suc (n + m)"])
- apply (frule_tac m = x and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
- apply simp
- apply (simp add:sliden_def Pi_def)
-done
+by (simp add:jointfun_def sliden_def Pi_def)
 
 lemma jointfun_mem:"\<lbrakk>\<forall>j \<le> (n::nat). f j \<in> A; \<forall>j \<le> m. g j \<in> B; 
              l \<le> (Suc (n + m))\<rbrakk> \<Longrightarrow> (jointfun n f m g) l \<in> (A \<union> B)"
 apply (rule funcset_mem[of "jointfun n f m g" "{j. j \<le> Suc (n + m)}" "A \<union> B"
        l])
 apply (rule jointfun_hom0)
-apply (rule univar_func_test, rule ballI, simp)+
-apply simp
+apply simp+
 done
 
 lemma jointfun_inj:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow> B; inj_on f {j. j \<le> n};
@@ -1585,23 +1565,7 @@ done
 
 lemma jointfun_hom:"\<lbrakk> f \<in> {i. i \<le> n} \<rightarrow> A; g \<in> {j. j \<le> m} \<rightarrow> B \<rbrakk> \<Longrightarrow> 
                    (jointfun n f m g) \<in> {j. j \<le> (Suc (n + m))} \<rightarrow> A \<union> B"
-apply (rule univar_func_test)
- apply (rule ballI)
-  apply (simp add:jointfun_def)
-  apply (rule conjI) 
-  apply (rule impI) 
-  apply (frule_tac x = x in funcset_mem[of "f" " {i. i \<le> n}" "A"])
-  apply simp apply simp
-apply (rule impI)
-  apply (simp add:sliden_def)
-  apply (thin_tac "f \<in> {i. i \<le> n} \<rightarrow> A")
-  apply (simp add: not_less [symmetric, of _ "n"])
-  apply (frule_tac x = n and n = x in less_Suc_le1)
-  apply (frule_tac m = x and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
-  apply simp
-  apply (frule_tac x = "x - Suc n" in funcset_mem[of "g" "{i. i \<le> m}" "B"])
-  apply simp+
- done
+by (simp add:sliden_def Pi_def jointfun_def)
 
 lemma im_jointfunTr1:"(jointfun n f m g) ` {i. i \<le> n} = f ` {i. i \<le> n}"
 apply auto
@@ -1742,9 +1706,7 @@ apply (induct_tac n)
 done
 
 lemma func_pre:"f \<in> {j. j \<le> (Suc n)} \<rightarrow> A \<Longrightarrow> f \<in> {j. j \<le> n} \<rightarrow> A"
-apply (rule univar_func_test, rule ballI)
-apply (simp add:Pi_def)
-done
+by (simp add:Pi_def)
 
 lemma image_Nset_Suc:"f ` ({j. j \<le> (Suc n)}) =
                              insert (f (Suc n)) (f ` {j. j \<le> n})"
@@ -3766,10 +3728,10 @@ apply (simp add:Amax_memTr)
 done
 
 lemma Amin_mem_mem:"\<forall>j\<le> n. f j \<in> Z\<^sub>\<infinity> \<Longrightarrow> Amin n f \<in> Z\<^sub>\<infinity>"
-by (rule Amin_mem, rule univar_func_test, rule ballI, simp)
+by (rule Amin_mem, simp)
 
 lemma Amax_mem_mem:"\<forall>j \<le> n. f j \<in> Z\<^bsub>-\<infinity>\<^esub> \<Longrightarrow> Amax n f \<in> Z\<^bsub>-\<infinity>\<^esub>"
-by (rule Amax_mem, rule univar_func_test, rule ballI, simp)
+by (rule Amax_mem, simp)
 
 lemma Amin_leTr:"f \<in> {i. i \<le> n} \<rightarrow>  Z\<^sub>\<infinity> \<longrightarrow> (\<forall>j\<in>{i. i \<le> n}. Amin n f \<le> (f j))"
 apply (induct_tac n,
@@ -3811,21 +3773,14 @@ done
 
 lemma Amin_mem_le:"\<lbrakk>\<forall>j \<le> n. (f j) \<in>  Z\<^sub>\<infinity>; j \<in> {j. j \<le> n}\<rbrakk> \<Longrightarrow> 
                                            (Amin n f) \<le> (f j)"
-apply (rule Amin_le,
-       rule univar_func_test, rule ballI, simp,
-       simp)
-done
+by (rule Amin_le, simp, simp)
 
 lemma Amax_mem_le:"\<lbrakk>\<forall>j \<le> n. (f j) \<in>  Z\<^bsub>-\<infinity>\<^esub>; j \<in> {j. j \<le> n}\<rbrakk> \<Longrightarrow> 
                                            (f j) \<le> (Amax n f)"
-apply (rule Amax_ge,
-       rule univar_func_test, rule ballI,
-       simp, simp)
-done
+by (rule Amax_ge, simp, simp)
 
 lemma amin_ge1:"\<lbrakk>(z::ant) \<le> x; z \<le> y \<rbrakk> \<Longrightarrow> z \<le> amin x y"
-apply (simp add:amin_def)
-done
+by (simp add:amin_def)
 
 lemma amin_gt:"\<lbrakk>(z::ant) < x; z < y\<rbrakk> \<Longrightarrow> z < amin x y"
 apply (simp add:less_ant_def, (erule conjE)+,
@@ -3983,7 +3938,7 @@ lemma rev_map_nonempty:"A \<noteq> {} \<Longrightarrow> rev_o ` A \<noteq> {}"
 by (rule contrapos_pp, simp+)
 
 lemma rev_map:"rev_o \<in> LBset (ant (-z)) \<rightarrow> UBset (ant z)"
-by  (rule univar_func_test, rule ballI, simp add:UBset_def LBset_def rev_o_def,
+by  (rule Pi_I, simp add:UBset_def LBset_def rev_o_def,
      frule_tac x = "ant (-z)" and y = x in ale_minus, simp add:aminus)
 
 lemma albs_ex_AMin:"\<lbrakk>A \<subseteq> LBset (ant z); A \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>!m. m\<in>A \<and> (\<forall>x\<in>A. m \<le> x)"
@@ -4573,15 +4528,13 @@ done
 
 lemma Nset_injTr1:"\<lbrakk> \<forall>l \<le>(Suc n). f l \<le> (Suc n); inj_on f {i. i \<le> (Suc n)};
                     f (Suc n) = Suc n \<rbrakk> \<Longrightarrow> inj_on f {i. i \<le> n}"
-by (cut_tac Nset_injTr0[of f n],
-       simp, 
-       rule univar_func_test, rule ballI, simp, assumption+) 
+by (cut_tac Nset_injTr0[of f n], simp, simp)
 
 lemma Nset_injTr2:"\<lbrakk>\<forall>l\<le> (Suc n). f l \<le> (Suc n); inj_on f {i. i \<le> (Suc n)}; 
                     f (Suc n) = Suc n\<rbrakk> \<Longrightarrow> \<forall>l \<le> n. f l \<le> n"
 apply (rule allI, rule impI)
 apply (cut_tac k = l in Nset_pre_mem[of f n])
- apply (rule univar_func_test, rule ballI, simp+)
+ apply (simp+)
 done
 
 lemma TR_inj_inj:"\<lbrakk>\<forall>l\<le> (Suc n). f l \<le> (Suc n); inj_on f {i. i \<le> (Suc n)};
@@ -4591,7 +4544,7 @@ apply (frule transpos_inj[of i "Suc n" j], assumption+,
        simp )
 apply (rule  comp_inj [of f "{i. i \<le> (Suc n)}" "{i. i \<le> (Suc n)}"
              "transpos i j" "{i. i \<le> (Suc n)}"])
- apply (rule univar_func_test, rule ballI, simp, assumption,
+ apply (simp, assumption,
         rule transpos_hom[of i "Suc n" j], simp+)
 done
 
@@ -4624,7 +4577,7 @@ definition
 
 lemma ninv_hom:"\<lbrakk>f \<in> {i. i \<le> n} \<rightarrow> {i. i \<le> n}; inj_on f {i. i \<le> n}\<rbrakk> \<Longrightarrow>
                         ninv n f \<in> {i. i \<le> n} \<rightarrow> {i. i \<le> n}"
-apply (rule univar_func_test, rule ballI)
+apply (rule Pi_I)
 apply (simp add:ninv_def)
 apply (frule inj_surj[of f n], assumption+,
        frule_tac x = x in funcset_mem[of f "{i. i \<le> n}" "{i. i \<le> n}"],
@@ -6355,7 +6308,6 @@ apply (subst ord_isom_def, subst ord_inj_def)
  apply (subgoal_tac "restrict f (segment D a) \<in> 
                               segment D a \<rightarrow> segment E (f a)", simp)
  defer
- apply (rule univar_func_test, rule ballI, simp)
  apply (simp add:ord_isom_segment_mem)
 
  apply (rule conjI)
@@ -6399,7 +6351,7 @@ apply (cut_tac Ssegment_sub[of D a],
 
 apply (subst ord_isom_def, simp add:ord_inj_def)
 apply (rule conjI) 
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:SIod_carrier)
  apply (frule_tac c = x in subsetD[of "Ssegment D a" "carrier D"], assumption+)
   apply (frule_tac a = x in Order.ord_isom_mem[of D E f], assumption+)
@@ -6663,11 +6615,7 @@ definition
   "segmap D = (\<lambda>x\<in>(carrier D). segment D x)"
 
 lemma segmap_func:"segmap D \<in> carrier D \<rightarrow> carrier (SS D)"
- apply (rule univar_func_test)
- apply (rule ballI)
- apply (simp add:SS_def) apply (simp add:segmap_def)
- apply blast
-done
+by (simp add:SS_def segmap_def Pi_def) blast
 
 lemma (in Worder) ord_isom_segmap:" ord_isom D (SS D) (segmap D)"
 apply (simp add:ord_isom_def)
@@ -7020,11 +6968,10 @@ definition
 lemma (in Worder) Tw_func:"\<lbrakk>Worder T; 
      \<forall>a\<in>carrier D. \<exists>b\<in>carrier T. ord_equiv (Iod D (segment D a)) 
          (Iod T (segment T b))\<rbrakk> \<Longrightarrow> Tw\<^bsub>D,T\<^esub> \<in> carrier D \<rightarrow> carrier T" 
-apply (rule univar_func_test)
- apply (rule ballI)
+apply (rule Pi_I)
  apply (simp add:Tw_def)
  apply (rule someI2_ex) apply blast apply simp
-done  
+done
 
 lemma (in Worder) Tw_mem:"\<lbrakk>Worder E; x \<in> carrier D;
      \<forall>a\<in>carrier D. \<exists>b\<in>carrier E. ord_equiv (Iod D (segment D a)) 

@@ -30,19 +30,7 @@ definition
     \<lambda>x\<in>{e}. e, zero = e, sprod = \<lambda>r\<in>carrier R. \<lambda>x\<in>{e}. e\<rparr>"
 
 lemma (in Ring) Zm_Module:"R module (Zm R e)"
-apply (simp add:Module_def)
-apply (rule conjI)
- apply (simp add:aGroup_def)
- apply (simp add:Zm_def)
- apply (rule conjI)+
- apply (rule bivar_func_test)
- apply (rule ballI)+
- apply simp
- apply (rule univar_func_test)
- apply (rule ballI)
- apply simp
-apply (simp add:Module_axioms_def)
-apply (simp add:Zm_def)
+apply (simp add:Module_def aGroup_def Zm_def Module_axioms_def)
  apply (simp add:ring_one, cut_tac Ring, simp)
  apply (rule conjI)
  apply (rule allI, rule impI, rule allI, rule impI, rule impI)
@@ -86,8 +74,7 @@ lemma (in Ring) mzeromap_mHom:"\<lbrakk>R module M; R module N\<rbrakk> \<Longri
                                      mzeromap M N \<in> mHom R M N"  
 apply (simp add:mHom_def aHom_def)
 apply (rule conjI)
- apply (rule univar_func_test, rule ballI,
-        simp add:mzeromap_def, simp add:Module_def aGroup_def)
+ apply (simp add:mzeromap_def, simp add:Module_def aGroup_def)
 apply (rule conjI)
  apply (simp add:mzeromap_def extensional_def)
 apply (rule conjI)
@@ -137,7 +124,6 @@ apply (simp add:mHom_def aHom_def)
         frule aGroup.ag_inc_zero[of N],
         simp add:aGroup.ag_l_zero[of N])
  apply (simp add:sc_a_0 Module.sc_a_0)
-apply (rule univar_func_test, rule ballI, simp)
 done
 
 lemma (in Ring) Zm_isom:"(Zm R (e::'a)) \<cong>\<^bsub>R\<^esub> (Zm R (u::'b))"
@@ -336,7 +322,7 @@ apply (rule Module.mHom_eq, assumption+)
 
 apply (simp add:mHom_def[of R N M1] aHom_def)
  apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (cut_tac mHom_func[of x N M2],
         frule_tac a = xa in mem_in_image[of x "carrier N" "carrier M2"], 
         assumption+,
@@ -464,10 +450,9 @@ apply (subst mHom_def, simp)
 apply (rule conjI)
  apply (simp add:aHom_def)
  apply (rule conjI)
- apply (rule univar_func_test)
- apply (rule ballI)
- apply simp 
-apply (subgoal_tac "exact3 R M g N z1 (Zm R e)") 
+ apply (rule Pi_I)
+ apply simp
+apply (subgoal_tac "exact3 R M g N z1 (Zm R e)")
 prefer 2 apply (simp add:exact4_def exact3_def)
 apply (frule right_exact_surjec [of M N g z1], assumption+)
  apply (simp add:surjec_def, frule conjunct2)
@@ -1095,8 +1080,7 @@ apply (erule ex1E,
         rule funcset_eq [of _ "M \<times>\<^sub>c N"] )
  apply (simp add:compose_def restrict_def extensional_def,
         simp add:universal_property_def bilinear_map_def)
-apply (rule ballI)
- apply (simp add:compose_def mId_def funcset_mem del:Pi_I)
+ apply (simp add:compose_def mId_def funcset_mem del:Pi_I')
  apply (rotate_tac -4)
  apply (frule sym,
         thin_tac "f = compose (M \<times>\<^sub>c N) (compose (carrier MN) k h) f")
@@ -1116,9 +1100,8 @@ apply (frule  composition [of "g" "M \<times>\<^sub>c N" "carrier MN1" "mId\<^bs
       rule funcset_eq [of _ "M \<times>\<^sub>c N"],
       simp add:compose_def restrict_def extensional_def,
       simp add:universal_property_def bilinear_map_def)
-apply (rule ballI,
-       simp add:compose_def mId_def,
-       simp add:funcset_mem del:Pi_I,
+apply (simp add:compose_def mId_def,
+       simp add:funcset_mem del:Pi_I',
        frule sym,
        thin_tac "g = compose (M \<times>\<^sub>c N) (compose (carrier MN1) h k) g",
        frule tensor_prod_uniqueTr [of R M N MN1 MN1 g g], assumption+)
@@ -1524,10 +1507,7 @@ lemma fag_aGroup:"\<lbrakk>commute_bpp f (aug_pm_set z i A);
       ipp_cond3 z i; inv_ipp z i f A; commute_bpp f (aug_pm_set z i A); 
       zeroA z i f A z\<rbrakk> \<Longrightarrow> aGroup (fag_gen_by A f i z)"
 apply (rule aGroup.intro)
- apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:fag_gen_by_def)
- apply (simp add:aug_bpp_closed)
+ apply (simp add:fag_gen_by_def aug_bpp_closed)
  
 apply (simp add:fag_gen_by_def)
  apply (simp add:aug_bpp_closed)
@@ -1536,7 +1516,6 @@ apply (simp add:fag_gen_by_def)
  apply (simp add:fag_gen_by_def)
  apply (simp add:aug_commute)
 
- apply (rule univar_func_test, rule ballI)
  apply (simp add:fag_gen_by_def aug_ipp_closed)
 
  apply (simp add:fag_gen_by_def inv_aug_addition aug_ipp_closed)
@@ -2591,10 +2570,8 @@ definition
 
 lemma fags_ag:"fags_cond f z i a \<Longrightarrow> aGroup (fags f z i a)"
 apply (rule aGroup.intro)
- apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:fags_def)
- apply (simp add:fags_carr_def)
+ apply (rule Pi_I)+
+ apply (simp add:fags_def fags_carr_def)
  apply ((erule exE)+, simp)
   apply (simp add:fags_bppTr)
   apply blast
@@ -2607,7 +2584,7 @@ apply (rule aGroup.intro)
         (erule exE)+, simp)
  apply (simp add:fags_bppTr, simp add:zadd_commute)
 
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:fags_def, simp add:fags_carr_def, erule exE, simp)
  apply (simp add:fags_ippTr, blast)
 
@@ -3554,8 +3531,8 @@ lemma (in Ring) fg_genTr0:"\<lbrakk>fgmodule_condition R f i s A z;
   apply (frule_tac a = xa in a_in_carr_fgmodule [of _ A z i f s])
   apply (frule fgmodule_is_module [of f i s A z])
   apply (cut_tac ring_zero, simp add:fgmodule_def)
-  apply (rule univar_func_test, rule ballI, simp add:ring_zero) 
-  apply (rule univar_func_test, rule ballI, simp)
+  apply (simp add:ring_zero) 
+  apply (simp)
  apply (case_tac "x \<in> A",
         frule_tac x = x and A = A in nonempty,
         simp add:linear_span_def)
@@ -3572,8 +3549,8 @@ lemma (in Ring) fg_genTr0:"\<lbrakk>fgmodule_condition R f i s A z;
          simp add:ring_one, simp add:fgmodule_condition_def,
          (erule conjE)+, simp add:sop_one)
 
-  apply (rule univar_func_test, rule ballI, simp add:ring_one)
-  apply (rule univar_func_test, rule ballI, simp)
+  apply (simp add:ring_one)
+  apply (simp)
 
 apply (case_tac "\<exists>r\<in>carrier R. \<exists>a\<in>A. x = r \<^sub>s\<cdot> a")
   apply ((erule bexE)+, simp)
@@ -3586,8 +3563,8 @@ apply (case_tac "\<exists>r\<in>carrier R. \<exists>a\<in>A. x = r \<^sub>s\<cdo
   apply blast
   apply (frule_tac a = a in a_in_carr_fgmodule[of _ A z i f s]) 
   apply (simp add:l_comb_def fgmodule_def)
-  apply (rule univar_func_test, rule ballI, simp)
-  apply (rule univar_func_test, rule ballI, simp)
+  apply (simp)
+  apply (simp)
 
 apply (simp add:minus_set_def,
       thin_tac "x \<noteq> z", thin_tac "x \<notin> A", 
@@ -3614,8 +3591,8 @@ apply (frule fgmodule_is_module [of f i s A z])
                  (\<lambda>k\<in>{j. j \<le> (0::nat)}. (-\<^sub>a r)) (\<lambda>j\<in>{j. j \<le> (0::nat)}. a)") 
   apply blast
   apply (simp add:l_comb_def fgmodule_def)
-  apply (rule univar_func_test, rule ballI, simp)
-  apply (rule univar_func_test, rule ballI, simp)
+  apply (simp)
+  apply (simp)
 
 apply (frule_tac x = y and A = A in nonempty, simp add:linear_span_def)
   apply (subgoal_tac "(\<lambda>j\<in>{j. j \<le> (0::nat)}. y) \<in> {j. j \<le> (0::nat)} \<rightarrow> A")
@@ -3632,10 +3609,10 @@ apply (frule_tac x = y and A = A in nonempty, simp add:linear_span_def)
   apply (simp add:Module.sc_minus_am1[THEN sym, of "fgmodule R A z i f s" R])
   apply (simp add:Module.sprod_one)
   apply (simp add:fgmodule_def)
-  apply (rule univar_func_test, rule ballI, simp,
+  apply (rule Pi_I, simp,
          cut_tac ring_one, cut_tac ring_is_ag,
          simp add:aGroup.ag_mOp_closed[of R])
-    apply (rule univar_func_test, rule ballI, simp)
+    apply (simp)
 done
 
 lemma (in Ring) fg_genTr:"fgmodule_condition R f i s A z \<Longrightarrow>
@@ -3709,7 +3686,7 @@ apply ((rule allI)+, rule impI, erule conjE)
          "fgmodule R A z i f s" R A "carrier R"],
         rule subsetI,simp add:a_in_carr_fgmodule,
         cut_tac whole_ideal, simp, simp,
-        rule univar_func_test, rule ballI, simp add:cmp_def,
+        rule Pi_I, simp add:cmp_def,
         frule_tac x = x and f = fa and A = "{j. j \<le> Suc n}" and B = A
                in funcset_mem, simp+) 
  apply (frule_tac  x = "Suc n" and f = fa and A = "{j. j \<le> Suc n}" and B = A
@@ -3731,7 +3708,7 @@ lemma (in Ring) fg_free1:"\<lbrakk> A \<noteq> {}; fgmodule_condition R f i s A 
       free_generator R M A\<rbrakk> \<Longrightarrow> M \<cong>\<^bsub>R\<^esub> (fgmodule R A z i f s)" 
 apply (subgoal_tac "(\<lambda>x\<in>A. x) \<in> A \<rightarrow> carrier (fgmodule R A z i f s)") 
  prefer 2 
-   apply (rule univar_func_test, rule ballI, simp, simp add:a_in_carr_fgmodule)
+   apply (rule Pi_I, simp, simp add:a_in_carr_fgmodule)
  apply (frule fgmodule_is_module [of f i s A z])
  apply (frule Module.exist_extension_mhom[of M R "fgmodule R A z i f s" A 
          "\<lambda>x\<in>A. x"], assumption+)
@@ -3799,7 +3776,7 @@ apply (rule conjI)
         and B = "fa ` {j. j \<le> n}" and ?B1.0 = A in extend_fun, assumption+)
  apply (rule_tac s = t and n = "card (fa ` {j. j \<le> n}) - Suc 0" and
         m = ga in Module.linear_comb0_1[of M R A], assumption+,
-        rule univar_func_test, rule ballI, simp)
+        simp)
     apply (frule_tac f = fa and A = "{j. j \<le> n}" in img_subset[of _ _ A],
         rule_tac f = ga and A = "{j. j \<le> card (fa ` {j. j \<le> n}) - Suc 0}"
         and B = "fa ` {j. j \<le> n}" and ?B1.0 = A in extend_fun, assumption+)
@@ -4116,7 +4093,7 @@ apply (simp add:mHom_def)
 apply (rule conjI)
  apply (simp add:aHom_def)
  apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:mproj1_def)
  apply (frule_tac a = x in ds2_components1[of M1 M2 M], assumption+,
         erule bexE,
@@ -4767,8 +4744,7 @@ definition
 
 lemma (in Ring) tau_func:"\<lbrakk>R module M; R module N; FM\<^bsub>R\<^esub> P M N\<rbrakk> \<Longrightarrow>
                                  tau R M N P \<in> M \<times>\<^sub>c N \<rightarrow> carrier P"
-apply (rule univar_func_test)
- apply (rule ballI)
+ apply (rule Pi_I)
  apply (frule_tac x = x in cartesianTr [of M N], assumption+)
  apply ((erule exE)+, (erule conjE)+, simp add:tau_def)
 apply (simp add:free_module_mem)
@@ -4811,10 +4787,8 @@ lemma (in Ring) tau_mpj_bilinear:"\<lbrakk>R module M; R module N; FM\<^bsub>R\<
                      R M N (M \<^bsub>P\<^esub>\<Otimes>\<^bsub>R\<^esub> N)"
 apply (simp add:bilinear_map_def)
 apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
- apply (simp add:compose_def)
- apply (simp add:tau_def)
- apply (simp add:tensor_product_def)
+ apply (rule Pi_I)
+ apply (simp add:compose_def tau_def tensor_product_def)
  apply (frule TR_submodule [of M N P], assumption+)
  apply (frule FM_P_module[of M N P], assumption+,
         frule Module.mpj_mHom[of P R "TR\<^bsub>R\<^esub> M N P"], assumption+)
@@ -5024,8 +4998,8 @@ apply (subst Module.mHom_add[of P R Z], assumption+,
  apply (cut_tac h = ga in compose_assoc[of "tau R M N P" "M \<times>\<^sub>c N" 
         "carrier P" "mpj P (TR\<^bsub>R\<^esub> M N P)" "carrier (P /\<^sub>m (TR\<^bsub>R\<^esub> M N P))" _  
         "carrier Z"], simp add:tau_func,
-        rule univar_func_test, rule ballI, simp add:Module.mpj_mem,
-        rule univar_func_test, rule ballI,
+        simp add:Module.mpj_mem,
+        rule Pi_I,
         rule_tac f = ga and m = x in
                  Module.mHom_mem[of "P /\<^sub>m (TR\<^bsub>R\<^esub> M N P)" R Z], assumption+,
         simp add:compos_def, blast) 

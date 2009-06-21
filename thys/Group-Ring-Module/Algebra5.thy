@@ -435,17 +435,10 @@ apply (subst carr_prodag_def, simp)
 apply (rule conjI)
  apply (simp add:prod_tOp_def restrict_def extensional_def)
 apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:Un_carrier_def prod_tOp_def)
  apply (simp add:carr_prodag_def, (erule conjE)+)
- apply (frule_tac b = x in forball_spec1, assumption,
-        thin_tac "\<forall>k\<in>I. Ring (A k)",
-        frule_tac b = x in forball_spec1, assumption,
-        thin_tac "\<forall>i\<in>I. X i \<in> carrier (A i)",
-        frule_tac b = x in forball_spec1, assumption,
-        thin_tac "\<forall>i\<in>I. Y i \<in> carrier (A i)")
- apply (frule_tac R = "A x" and x = "X x" and y = "Y x" in 
-        Ring.ring_tOp_closed, assumption+, blast)
+ apply (blast dest: Ring.ring_tOp_closed)
  
  apply (rule ballI)
  apply (simp add:prod_tOp_def)
@@ -456,23 +449,16 @@ done
  
 lemma prod_tOp_func:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow>
     prod_tOp I A \<in> carr_prodag I A \<rightarrow> carr_prodag I A \<rightarrow> carr_prodag I A"
-apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:prod_tOp_mem)
-done
+by (simp add:prod_tOp_mem)
 
 lemma prod_one_func:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow>
                            prod_one I A \<in> carr_prodag I A"
 apply (simp add:prod_one_def carr_prodag_def)
 apply (rule conjI)
-apply (rule univar_func_test) apply (rule ballI) 
+apply (rule Pi_I)
  apply (simp add:Un_carrier_def)
- apply (frule_tac b = x in forball_spec1, assumption,
-        thin_tac "\<forall>k\<in>I. Ring (A k)",
-        frule_tac R = "A x" in Ring.ring_one)
- apply blast
-apply (rule ballI)
- apply (rule Ring.ring_one, simp)
+ apply (blast dest: Ring.ring_one)
+ apply (simp add: Ring.ring_one)
 done
 
 lemma prodrg_carrier:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow>
@@ -664,7 +650,7 @@ apply (simp add:rHom_def)
 apply (rule conjI)
  apply (simp add:aHom_def)
  apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:prodrg_carrier)
  apply (cut_tac prodag_carrier[of I A], simp)
 
@@ -672,9 +658,8 @@ apply (rule conjI)
  apply (cut_tac prodag_carrier[of I A], simp,
         thin_tac "carrier (a\<Pi>\<^bsub>I\<^esub> A) = carr_prodag I A")
  apply (simp add:prodag_comp_i) 
- apply (rule ballI, simp add:Ring.ring_is_ag) 
- apply (rule ballI, simp add:Ring.ring_is_ag) 
-
+ apply (simp add:Ring.ring_is_ag)
+ apply (simp add:Ring.ring_is_ag)
 
  apply (subgoal_tac "\<forall>k\<in>I. aGroup (A k)") 
  apply (frule project_aHom [of "I" "A" "j"], assumption+) 
@@ -724,8 +709,7 @@ apply (rule carr_prodag_mem_eq [of "{i. i \<le> (Suc n)}" "B" "f"
  apply (rule conjI)
  apply (simp add:augm_func_def)
  apply (rule conjI)
- apply (rule univar_func_test)
- apply (rule ballI)
+ apply (rule Pi_I)
  apply (simp add:augm_func_def sliden_def) 
  apply (erule conjE)+
  apply (frule_tac x = x in funcset_mem[of f "{i. i \<le> Suc n}" 
@@ -757,7 +741,7 @@ apply (simp add:carr_prodag_def)
 apply (rule conjI)
 apply (simp add:A_to_prodag_def extensional_def) 
 apply (rule conjI)
- apply (rule univar_func_test) apply (rule ballI)
+ apply (rule Pi_I)
  apply (simp add: A_to_prodag_def)
  apply (subgoal_tac "(S xa) \<in> rHom A (B xa)") prefer 2 apply simp
  apply (thin_tac "\<forall>k\<in>I. S k \<in> rHom A (B k)") 
@@ -1166,13 +1150,13 @@ apply (cut_tac Nsetn_sub_mem1[of "Suc n"])
  apply (simp add:prodrg_def) 
  apply (simp add:carr_prodag_def, (erule conjE)+)
  apply (simp add:Un_carrier_def)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply simp
  apply (frule_tac x = x in funcset_mem[of f "{j. j \<le> (Suc (Suc n))}"
         "\<Union>{X. \<exists>i \<le> (Suc (Suc n)). X = carrier (R /\<^sub>r J i)}"],
         simp)
  apply simp
- apply (erule exE, erule conjE, erule exE, erule conjE, simp) 
+ apply (erule exE, erule conjE, erule exE, erule conjE, simp)
  
  apply (rotate_tac -5) 
  apply (frule_tac a = x in forall_spec) apply simp
@@ -1549,8 +1533,7 @@ apply (frule prime_ideal_cont1Tr[of A n])
 apply (frule_tac a = P in forall_spec,
        thin_tac "\<forall>P. P \<in> {j. j \<le> n} \<rightarrow> {X. prime_ideal R X} \<and> 
        A \<subseteq> \<Union>P ` {j. j \<le> n} \<longrightarrow> (\<exists>i\<le>n. A \<subseteq> P i)")
-apply (rule conjI,
-       rule univar_func_test, rule ballI, simp,
+apply (rule conjI, simp,
        rule subsetI, simp,
        frule_tac c = x in subsetD[of A "\<Union>{X. \<exists>i\<le>n. X = P i}"], assumption+,
        simp, blast)
@@ -1890,18 +1873,18 @@ apply (case_tac "i = Suc n")
  apply (subst nsum_cmp_eq [of "f" "Suc (Suc n)"  
         "cmp (transpos (Suc n) (Suc(Suc n))) (transpos i (Suc n))" 
         "transpos i (Suc n)" "Suc (Suc n)"], assumption+,
-        rule univar_func_test, rule ballI, simp add:cmp_def,
+        rule Pi_I, simp add:cmp_def,
         rule transpos_mem, (simp del:nsum_suc)+,
         rule transpos_mem, (simp del:nsum_suc)+,
-        rule univar_func_test, rule ballI, simp,
+        rule Pi_I, simp,
         rule transpos_mem, (simp del:nsum_suc)+)
 apply (subst nsum_cmp_eq [of "cmp f (transpos i (Suc n))" "Suc (Suc n)"  
        "(transpos i (Suc n))" "transpos (Suc n) (Suc (Suc n))" "Suc (Suc n)"],
-       rule univar_func_test, rule ballI, simp add:cmp_def,
+       rule Pi_I, simp add:cmp_def,
        rule funcset_mem[of f "{j. j \<le> Suc (Suc n)}" "carrier A"], assumption,
        simp,
        rule transpos_mem, (simp del:nsum_suc)+,
-       (rule univar_func_test, rule ballI, simp,
+       (rule Pi_I, simp,
         rule transpos_mem, (simp del:nsum_suc)+)+)
 
 apply (subst additionTr1_1 [of "n" "cmp (cmp f (transpos i (Suc n)))
@@ -2001,7 +1984,7 @@ apply (subst nsum_cmp_assoc,
          h \<in> {j. j \<le> Suc n} \<rightarrow> {j. j \<le> Suc n} \<and> inj_on h {j. j \<le> Suc n} \<longrightarrow>
          \<Sigma>\<^sub>e A (cmp f h) (Suc n) = \<Sigma>\<^sub>e A f (Suc n)")
  apply simp
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:cmp_def)
  apply (case_tac "xa = x", simp)
  apply (cut_tac i = x and n = "Suc (Suc n)" and j = "Suc (Suc n)" in 
@@ -2050,7 +2033,7 @@ done
 lemma (in aGroup) addition3:"\<lbrakk>\<forall>j \<le> (Suc n). f j \<in> carrier A; j \<le> (Suc n);
 j \<noteq> Suc n\<rbrakk> \<Longrightarrow> nsum A f (Suc n) = nsum A (cmp f (transpos j (Suc n))) (Suc n)"
 apply (rule addition2 [THEN sym,of "f" "n" "transpos j (Suc n)"])
-apply (rule univar_func_test, rule ballI, simp)
+apply (simp)
 apply (rule transpos_hom, assumption+, simp, assumption)
 apply (rule transpos_inj, simp+)
 done
@@ -2244,9 +2227,8 @@ apply (simp add:sum_mult_def)
 apply (subgoal_tac "(\<lambda>i\<in>{j. j \<le> (0::nat)}. a \<cdot>\<^sub>r b) \<in> {j. j \<le> 0} \<rightarrow> set_mult R A B") 
 apply (subgoal_tac "nsum R (\<lambda>i\<in>{j. j \<le> (0::nat)}. a \<cdot>\<^sub>r b) 0 = a \<cdot>\<^sub>r b") 
 apply blast
- apply simp 
- apply (rule univar_func_test, rule ballI,
-        simp add:set_mult_def, blast)
+ apply simp
+ apply (rule Pi_I, simp add:set_mult_def, blast)
 done
 
 lemma (in Ring) mem_minus_sum_multTr2:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R; 
@@ -2340,9 +2322,9 @@ apply (rule subsetI)
  apply (cut_tac f = "(\<lambda>i\<in>{j. j \<le> (0::nat)}. x)" in nsum_0[of R]) 
  apply (cut_tac n_in_Nsetn[of 0],
         simp del:nsum_0)
- apply (cut_tac f = "\<lambda>i\<in>{j. j \<le> (0::nat)}. x" and B = "set_mult R A B" in 
-                univar_func_test[of "{j. j \<le> 0}"],
-       rule ballI, simp)
+ apply (cut_tac f = "\<lambda>i\<in>{j. j \<le> (0::nat)}. x" and B = "%_. set_mult R A B" in 
+                Pi_I[of "{j. j \<le> 0}"],
+       simp)
  apply (subgoal_tac "\<Sigma>\<^sub>e R (\<lambda>i\<in>{j. j \<le> 0}. x) 0 = x")
  apply blast
  apply simp
@@ -2586,7 +2568,7 @@ apply (induct_tac n)
        frule_tac b = f in forball_spec1,
        thin_tac "\<forall>f\<in>{j. j \<le> n} \<rightarrow> set_mult R A B.
             \<Sigma>\<^sub>e R f n \<cdot>\<^sub>r y \<in> sum_mult R A (B \<diamondsuit>\<^sub>r C)",
-       rule univar_func_test, rule ballI, simp,
+       rule Pi_I, simp,
        frule_tac f = f and A = "{j. j \<le> Suc n}" and B = "set_mult R A B" and
                  x = x in funcset_mem, simp, assumption)
  apply simp
@@ -2600,7 +2582,7 @@ apply (induct_tac n)
         simp add:ideal_subset)
  apply (rule aGroup.nsum_mem, assumption)
  apply (simp add:Pi_def)
- apply (simp add:funcset_mem del:Pi_I,
+ apply (simp add:funcset_mem del:Pi_I',
         frule_tac f = f and A = "{j. j \<le> Suc n}" and B = "set_mult R A B" and
         x =  "Suc n" in funcset_mem, simp)
 apply (frule ideal_subset1[of A],
@@ -2699,8 +2681,7 @@ apply (subgoal_tac "\<forall>x\<in>(A \<diamondsuit>\<^sub>r B). \<forall>y\<in>
 apply (induct_tac n)
   apply (rule allI) apply (rule impI)
   apply (frule_tac f = f and A = "{j. j \<le> 0}" and B = "set_mult R (A \<diamondsuit>\<^sub>r B) C"
-        and x = 0 in funcset_mem, simp, simp) 
-  apply (thin_tac "f \<in> {0} \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>r B) C")
+        and x = 0 in funcset_mem, simp, simp)
   apply (simp add:set_mult_def)
   apply ((erule bexE)+, frule sym, thin_tac "x \<cdot>\<^sub>r y = f 0", simp)
 apply (rule allI, rule impI)
@@ -2863,11 +2844,6 @@ lemma (in Ring) nprod_eq:"\<lbrakk>\<forall>j \<le> n. f j \<in> carrier R; \<fo
 (\<forall>j \<le> (n::nat). f j = g j)\<rbrakk> \<Longrightarrow> nprod R f n = nprod R g n"
 apply (cut_tac nprod_eqTr[of f n g])
 apply simp
-apply (cut_tac univar_func_test[of "{j. j \<le> n}" f "carrier R"],
-       cut_tac univar_func_test[of "{j. j \<le> n}" g "carrier R"])
-apply simp
-apply (rule ballI, simp)
-apply (rule ballI) apply simp
 done
 
 definition

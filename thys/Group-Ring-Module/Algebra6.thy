@@ -2449,7 +2449,6 @@ apply (subst rHom_def, simp,
 apply (rule conjI)
  apply (subst aHom_def, simp)
  apply (rule conjI)
-  apply (rule univar_func_test, rule ballI)
   apply (simp add:erH_mem)
   apply (rule conjI, simp add:erH_def erh_def extensional_def)
   apply (rule ballI)+

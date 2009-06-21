@@ -1343,15 +1343,15 @@ done
 
 lemma inducedHOMTr0_1:"\<lbrakk>Group F; Group G; f \<in> gHom F G\<rbrakk> \<Longrightarrow>
                         (f\<dieresis>\<^bsub>F,G\<^esub>) \<in>  set_rcs F (gker\<^bsub>F,G\<^esub> f) \<rightarrow> carrier G" 
-apply (rule univar_func_test)
- apply (rule ballI, simp add:set_rcs_def, erule bexE, simp)
+apply (rule Pi_I)
+ apply (simp add:set_rcs_def, erule bexE, simp)
  apply (subst inducedHOMTr0[of "F" "G" "f"], assumption+)
  apply (simp add:gHom_mem)
 done
 
 lemma inducedHOMTr0_2:"\<lbrakk>Group F; Group G; f \<in> gHom F G\<rbrakk> \<Longrightarrow>
     (f\<dieresis>\<^bsub>F,G\<^esub>) \<in> set_rcs F (gker\<^bsub>F,G\<^esub> f) \<rightarrow> f ` (carrier F)"
-apply (rule univar_func_test, rule ballI)
+apply (rule Pi_I)
  apply (simp add:set_rcs_def, erule bexE, simp)
  apply (subst inducedHOMTr0[of "F" "G" "f"], assumption+)
  apply (simp add:image_def, blast)
@@ -1421,7 +1421,7 @@ apply (rule conjI)
 apply (simp add:induced_ghom_def extensional_def)
  apply (rule allI, (rule impI)+, simp add:Qg_def)
 apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:Gimage_def Qg_def Gp_def, simp add:set_rcs_def, erule bexE)
  apply simp
  apply (simp add:inducedHOMTr0)
@@ -1697,7 +1697,7 @@ by (simp add:Qg_carrier[of "H"] set_rcs_def, erule bexE, simp add: QmpTr0,
 
 lemma (in Group) QmpTr2_1:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> N; H \<subseteq> N \<rbrakk> \<Longrightarrow> 
                            Qmp G H N \<in> carrier (G/H) \<rightarrow> carrier (G/N)"
-by (rule univar_func_test, rule ballI, simp add:QmpTr2 [of "H" "N"])
+by (simp add:QmpTr2 [of "H" "N"])
 
 lemma (in Group) QmpTr3:"\<lbrakk>G \<triangleright> H; G \<triangleright> N; H \<subseteq> N; X \<in> carrier (G/H); 
        Y \<in> carrier (G/H)\<rbrakk> \<Longrightarrow> 
@@ -1893,24 +1893,18 @@ definition
   gcsrp_map::"_ \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> 'a" where
   "gcsrp_map G H == \<lambda>X\<in>(set_rcs G H). SOME x. x \<in> X"
 
-lemma (in Group) gcsrp_func:"G \<guillemotright> H \<Longrightarrow> gcsrp_map G H \<in> set_rcs G H \<rightarrow> UNIV"  
-apply (rule univar_func_test)
-apply (rule ballI)
-apply (simp add:set_rcs_def)
-done
+lemma (in Group) gcsrp_func:"G \<guillemotright> H \<Longrightarrow> gcsrp_map G H \<in> set_rcs G H \<rightarrow> UNIV"
+by (simp add:set_rcs_def)
 
 lemma (in Group) gcsrp_func1:"G \<guillemotright> H \<Longrightarrow> 
-       gcsrp_map G H \<in> set_rcs G H \<rightarrow> (gcsrp_map G H) ` (set_rcs G H)"  
-apply (rule univar_func_test)
-apply (rule ballI)
-apply (simp add:set_rcs_def)
-done
+       gcsrp_map G H \<in> set_rcs G H \<rightarrow> (gcsrp_map G H) ` (set_rcs G H)"
+by (simp add:set_rcs_def)
 
 lemma (in Group) gcsrp_map_bij:"G \<guillemotright> H \<Longrightarrow>
          bij_to (gcsrp_map G H) (set_rcs G H) ((gcsrp_map G H) `(set_rcs G H))"
 apply (simp add:bij_to_def, rule conjI)
  apply (rule surj_to_test)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:image_def, blast)
 apply (rule ballI, simp add:image_def, erule bexE, simp, blast)
 
@@ -2045,16 +2039,16 @@ done
 lemma (in Group) Group_Gcsrp:"G \<triangleright> N \<Longrightarrow> Group (Gcsrp G N)"
 apply (simp add:Group_def)
  apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:Gcsrp_def)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (rule_tac a = x and b = xa in gcsrp_top_closed[of "N"], rule Group_axioms, assumption+)
 apply (rule conjI)
  apply (rule allI, rule impI)+
  apply (simp add:Gcsrp_def)
  apply (rule_tac a = a and b = b and c = c in gcsrp_tassoc[of "N"], rule Group_axioms, assumption+)
 apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:Gcsrp_def, rule gcsrp_i_closed[of "N"], assumption+)
 apply (rule conjI)
  apply (rule allI, rule impI)
@@ -3785,8 +3779,6 @@ apply (cut_tac transpos_inj [of "f (Suc n)" "Suc n" "Suc n"])
 apply (cut_tac cmp_inj_1 [of f "{i. i \<le> (Suc n)}" "{i. i \<le> (Suc n)}"
        "transpos (f (Suc n)) (Suc n)" "{i. i \<le> (Suc n)}"])
 apply simp+
-apply (rule univar_func_test, rule ballI, simp)
-apply assumption+ apply simp+
 done
 
 lemma isom_gch_unitsTr1_4:"\<lbrakk>Ugp E; f (Suc n) \<noteq> Suc n; inj_on f {i. i\<le>(Suc n)};

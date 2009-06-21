@@ -1296,7 +1296,7 @@ apply (cut_tac field_is_ring, frule Ring.ring_is_ag)
 apply (frule Lv_z[of v], erule exE, frule Lv_pos[of v], simp,
        subst valuation_def)
 apply (rule conjI, simp add:n_val_def restrict_def extensional_def) 
-apply (rule conjI, rule univar_func_test, simp add:n_val_valuationTr1) 
+apply (rule conjI, simp add:n_val_valuationTr1)
 apply (rule conjI, frule n_val[of v \<zero>],
        simp add:Ring.ring_zero,
        frule Lv_z[of v], erule exE, frule Lv_pos[of v],
@@ -3039,11 +3039,11 @@ lemma (in Corps) ridmap_rhom:"\<lbrakk> valuation K v; valuation K v';
 apply (frule Vr_ring[of "v"], frule Vr_ring[of "v'"], 
        subst rHom_def, simp, rule conjI)
 apply (simp add:aHom_def, rule conjI,
-       rule univar_func_test, rule ballI, simp add:ridmap_def subsetD,
+       rule Pi_I, simp add:ridmap_def subsetD,
        simp add:ridmap_def restrict_def extensional_def,
        (rule ballI)+,
        frule Ring.ring_is_ag[of "Vr K v"], simp add:aGroup.ag_pOp_closed,
-        simp add:Vr_pOp_f_pOp subsetD) 
+        simp add:Vr_pOp_f_pOp subsetD)
 apply (rule conjI, (rule ballI)+, simp add:ridmap_def,
        simp add:Ring.ring_tOp_closed, simp add:Vr_tOp_f_tOp subsetD,
       frule Ring.ring_one[of "Vr K v"], frule Ring.ring_one[of "Vr K v'"],

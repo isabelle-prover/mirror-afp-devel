@@ -1023,7 +1023,7 @@ apply (frule completion_Vring_sub[of  "K'" "v" "v'"],
 apply (simp add:rHom_def)
 apply (rule conjI) 
  apply (simp add:aHom_def,
-        rule conjI, rule univar_func_test, rule ballI, 
+        rule conjI,
         simp add:idmap_def, simp add:subsetD)
 apply (rule conjI)
  apply (simp add:idmap_def extensional_def)
@@ -1169,7 +1169,7 @@ apply (rule ballI)+
   apply (frule_tac a = a and b = b in aHom_add[of K K' "I\<^bsub>K\<^esub>"], assumption+,
          frule_tac x = a and y = b in aGroup.ag_pOp_closed[of K], assumption+,
          simp add:idmap_def)
-apply (rule univar_func_test, rule ballI,
+apply (rule Pi_I,
        drule_tac b = x in forball_spec1, simp add:Vr_mem_f_mem)
 apply (simp add:idmap_def)
  apply (frule_tac x1 = x in val_pos_mem_Vr[THEN sym, of v],
