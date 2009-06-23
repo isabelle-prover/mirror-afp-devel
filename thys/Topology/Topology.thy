@@ -1,5 +1,5 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.17 2008-12-30 15:30:13 ballarin Exp $
+    ID:         $Id: Topology.thy,v 1.18 2009-06-23 05:36:14 nipkow Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -1121,8 +1121,7 @@ lemma continuousI:
   assumes  "f : carrier\<^sub>1 \<rightarrow> carrier\<^sub>2"
            "\<And>m. m open\<^sub>2 \<Longrightarrow> carrier \<inter> (f -` m) open"
   shows "continuous f S T"
-  by (auto intro: prems
-    simp: continuous_def func_def continuous_axioms_def)
+using assms by (auto simp: continuous_def func_def continuous_axioms_def)
 
 lemma continuousE:
   fixes S (structure)
