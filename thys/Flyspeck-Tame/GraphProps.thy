@@ -1,4 +1,4 @@
-(*  ID:         $Id: GraphProps.thy,v 1.4 2009-05-10 11:53:47 fhaftmann Exp $
+(*  ID:         $Id: GraphProps.thy,v 1.5 2009-06-23 15:18:09 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -179,12 +179,7 @@ done
 subsection {* @{text"\<E>"} *}
 
 lemma finite_edges: "finite(\<E>(f::face))"
-apply(simp add:edges_face_def)
-apply(rule finite_surj[of "\<V> f" _ "%v. (v, f \<bullet> v)"])
- apply simp
-apply blast
-done
-
+  by (simp add:edges_face_def)
 
 lemma edges_face_eq:
  "((a,b) \<in> \<E> (f::face)) = ((f \<bullet> a = b) \<and> a \<in> \<V> f)"
