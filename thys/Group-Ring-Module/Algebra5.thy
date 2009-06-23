@@ -438,7 +438,7 @@ apply (rule conjI)
  apply (rule Pi_I)
  apply (simp add:Un_carrier_def prod_tOp_def)
  apply (simp add:carr_prodag_def, (erule conjE)+)
- apply (blast dest: Ring.ring_tOp_closed)
+ apply (blast dest: Ring.ring_tOp_closed del:PiE)
  
  apply (rule ballI)
  apply (simp add:prod_tOp_def)

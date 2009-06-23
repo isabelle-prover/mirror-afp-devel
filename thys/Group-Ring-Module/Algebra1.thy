@@ -540,9 +540,7 @@ lemma eq_elems_eq_val:"x = y \<Longrightarrow> f x = f y"
 by simp
 
 lemma cmp_fun:"\<lbrakk>f \<in> A \<rightarrow> B; g \<in> B \<rightarrow> C \<rbrakk> \<Longrightarrow> cmp g f \<in> A \<rightarrow> C"
-apply (simp add:Pi_def, rule allI) 
-apply (rule impI, simp add:cmp_def)
-done
+by (auto simp add:cmp_def)
 
 lemma cmp_fun_image:"\<lbrakk>f \<in> A \<rightarrow> B; g \<in> B \<rightarrow> C \<rbrakk> \<Longrightarrow> 
                           (cmp g f) ` A =  g ` (f ` A)"
@@ -602,11 +600,7 @@ by simp
 
 lemma restriction_of_domain:"\<lbrakk> f \<in> A \<rightarrow> B; A1 \<subseteq> A \<rbrakk> \<Longrightarrow> 
   restrict f A1 \<in> A1 \<rightarrow> B"
-apply (simp add:Pi_def [of "A1" _])
- apply (rule allI) apply (rule impI)
- apply (frule subsetD, assumption+)
- apply (simp add:funcset_mem)
-done
+by blast
 
 lemma restrict_restrict:"\<lbrakk> restrict f A \<in> A \<rightarrow> B; A1 \<subseteq> A \<rbrakk> \<Longrightarrow>
       restrict (restrict f A) A1 = restrict f A1"
@@ -809,11 +803,7 @@ lemma set_image: "\<lbrakk> f \<in> A \<rightarrow> B; A1 \<subseteq> A; A2 \<su
  done
 
 lemma image_sub: "\<lbrakk>f \<in> A \<rightarrow> B; A1 \<subseteq> A \<rbrakk> \<Longrightarrow> (f`A1) \<subseteq> B"
- apply (simp add:image_def)
- apply auto 
- apply (frule subsetD, assumption+)
- apply (simp add:funcset_mem)
- done
+by (auto simp add:image_def)
 
 lemma image_sub0: "f \<in> A \<rightarrow> B \<Longrightarrow> (f`A) \<subseteq> B"
 by (simp add:image_sub[of "f" "A" "B" "A"])
@@ -871,11 +861,8 @@ definition
   "surj_to f A B \<longleftrightarrow> f`A = B"
 
 lemma surj_to_test:"\<lbrakk> f \<in> A \<rightarrow> B; \<forall>b\<in>B. \<exists>a\<in>A. f a = b \<rbrakk> \<Longrightarrow>
-                                                  surj_to f A B" 
-apply (simp add:surj_to_def image_def)
- apply auto
- apply (simp add:funcset_mem)
- done
+                                                  surj_to f A B"
+by (auto simp add:surj_to_def image_def)
 
 lemma surj_to_image:"f \<in> A \<rightarrow> B \<Longrightarrow> surj_to f A (f ` A)"
 apply (rule surj_to_test[of "f" "A" "f ` A"])
