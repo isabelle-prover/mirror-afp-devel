@@ -40,16 +40,7 @@ by simp
 lemma ex_conjI:"\<lbrakk>P c; Q c\<rbrakk> \<Longrightarrow> \<exists>c. P c \<and> Q c"
 by blast
 
-lemma nat_forall_spec:"\<forall>(n::nat). P n \<Longrightarrow> P (m::nat)"
-by simp
-
 lemma forall_spec:"\<lbrakk> \<forall>b. P b \<longrightarrow> Q b; P a\<rbrakk> \<Longrightarrow> Q a" 
-by simp
-
-lemma forall_spec1:"\<forall>x. P x \<Longrightarrow> P a"
-by simp
-
-lemma forball_spec1:"\<lbrakk>\<forall>x\<in>A. P x; b \<in> A\<rbrakk> \<Longrightarrow> P b"
 by simp
 
 lemma a_b_exchange:"\<lbrakk>a; a = b\<rbrakk> \<Longrightarrow> b"
@@ -93,9 +84,6 @@ by auto
 lemma ineq_conv1:"\<lbrakk>a = b; a < c\<rbrakk> \<Longrightarrow> b < c"
 by simp
 
-lemma nat_diff_le:"(a::nat) - x \<le> a" 
-by simp
-
 lemma diff_Suc_pos:"0 < a - Suc 0 \<Longrightarrow>  0 < a"
 by simp
 
@@ -109,12 +97,6 @@ lemma Suc_Suc_less:"Suc 0 < a \<Longrightarrow> Suc (a - Suc (Suc 0)) < a"
 by arith
 
 lemma diff_zero_eq:"n = (0::nat) \<Longrightarrow> m = m - n"
-by simp
-
-lemma nat_not_le:"\<not>(m::nat) \<le> n \<Longrightarrow> n < m"
-by (simp add: not_le)
-
-lemma less_Suc_le1:"x < n \<Longrightarrow> Suc x \<le> n"
 by simp
 
 lemma Suc_less_le:"x < Suc n \<Longrightarrow> x \<le> n"
@@ -138,7 +120,7 @@ by arith
 lemma nat_not_less1:"n \<noteq> 0 \<Longrightarrow> (\<not> (m::nat) < n) = (\<not> m \<le> (n - Suc 0))"
 by arith
 
-lemma nat_eq_le:"m = (n::nat) \<Longrightarrow> m \<le> n" 
+lemma nat_eq_le:"m = (n::nat) \<Longrightarrow> m \<le> n"
 by simp
 
 
@@ -147,7 +129,7 @@ subsection "integers"
 lemma non_zero_int:" (n::int) \<noteq> 0 \<Longrightarrow> 0 < n \<or> n < 0"
 by arith
 
-lemma zgt_0_zge_1:"(0::int) < z \<Longrightarrow> 1 \<le> z" 
+lemma zgt_0_zge_1:"(0::int) < z \<Longrightarrow> 1 \<le> z"
 by arith
 
 lemma not_zle:"(\<not> (n::int) \<le> m) =  (m < n)"
@@ -752,7 +734,7 @@ apply (rule equalityI)
  
  apply (rule subsetI, simp add:image_def)
  apply (rule contrapos_pp, simp+, erule conjE, erule bexE)
- apply (frule_tac b = xaa in forball_spec1)
+ apply (frule_tac x = xaa in bspec)
  apply (simp, rule contrapos_pp, simp+)
 done
 
@@ -1343,9 +1325,9 @@ apply (rename_tac a)
 apply (rule ex_ex1I)
 prefer 2
  apply (erule conjE)+
- apply (frule_tac b = y in forball_spec1, assumption+,
+ apply (frule_tac x = y in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. x \<le> m",
-        frule_tac b = m in forball_spec1, assumption+,
+        frule_tac x = m in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. x \<le> y", simp)
 
 apply (rule contrapos_pp, simp+)
@@ -3731,7 +3713,7 @@ apply (case_tac "j = Suc n", simp, rule amin_le_r)
 apply (cut_tac x = j and n = n in Nset_pre, simp, assumption,
        cut_tac x = "Amin n f" and y = "f (Suc n)" in amin_le_l,
        thin_tac "j \<le> Suc n", simp) 
-apply (frule_tac a = j in forall_spec1,
+apply (frule_tac x = j in spec,
        thin_tac "\<forall>j\<le>n. Amin n f \<le> f j", simp) 
 done
 
@@ -3780,8 +3762,8 @@ lemma Amin_ge1Tr:"(\<forall>j\<le>(Suc n). (f j) \<in> Z\<^sub>\<infinity> \<and
                                             z \<le> (Amin (Suc n) f)"
 apply (induct_tac n)
  apply (rule impI)
- apply (frule_tac a = 0 in forall_spec1,
-        frule_tac a = "Suc 0" in forall_spec1,
+ apply (frule_tac x = 0 in spec,
+        frule_tac x = "Suc 0" in spec,
         thin_tac "\<forall>j\<le>Suc 0. f j \<in> Z\<^sub>\<infinity> \<and> z \<le> f j", simp, (erule conjE)+,
         simp add:amin_ge1)
 
@@ -3867,9 +3849,9 @@ apply (case_tac "A = {-\<infinity>}", simp,
       erule exE, erule conjE, simp, rename_tac a, rule ex_ex1I)
 prefer 2
  apply ((erule conjE)+, 
-        frule_tac b = y in forball_spec1, assumption+,
+        frule_tac x = y in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. x \<le> m",
-        frule_tac b = m in forball_spec1, assumption+,
+        frule_tac x = m in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. x \<le> y", simp)
 apply (rule contrapos_pp, simp,
        subgoal_tac "\<exists>w. a = ant w", erule exE,
@@ -3931,9 +3913,9 @@ by  (rule Pi_I, simp add:UBset_def LBset_def rev_o_def,
 lemma albs_ex_AMin:"\<lbrakk>A \<subseteq> LBset (ant z); A \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>!m. m\<in>A \<and> (\<forall>x\<in>A. m \<le> x)"
 apply (rule ex_ex1I)
 prefer 2 apply ((erule conjE)+, 
-        frule_tac b = y in forball_spec1, assumption+,
+        frule_tac x = y in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. m \<le> x",
-        frule_tac b = m in forball_spec1, assumption+,
+        frule_tac x = m in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. y \<le> x", simp)
 apply (subgoal_tac "- AMax (rev_o ` A) \<in> A \<and> 
                        (\<forall>x \<in> A. (- AMax (rev_o ` A)) \<le> x)", blast,
@@ -3949,7 +3931,7 @@ apply (subgoal_tac "- AMax (rev_o ` A) \<in> A \<and>
 apply (simp add:image_def rev_o_def,
        erule bexE, simp add:a_minus_minus, rule ballI,
        subgoal_tac "rev_o x \<in> rev_o ` A",
-        frule_tac b = "rev_o x" in forball_spec1, assumption+,
+        frule_tac x = "rev_o x" in bspec, assumption+,
         thin_tac "\<forall>x\<in>rev_o ` A. x \<le> AMax (rev_o ` A)",
         thin_tac "rev_o \<in> LBset (ant z) \<rightarrow> UBset (ant (- z))", 
         thin_tac "rev_o ` A \<noteq> {}",
@@ -4204,7 +4186,7 @@ apply (rule impI, rule ballI,
        simp)
 
 apply (cut_tac x = "Zmax n f" and y = "f (Suc n)" in zmax_ge_l,
-       frule_tac a = j in forall_spec1,
+       frule_tac x = j in spec,
        thin_tac "\<forall>j\<le>n. f j \<le> Zmax n f")
 apply  simp 
 done
@@ -4477,9 +4459,9 @@ proof -
   apply (frule_tac n = "f x" in Suc_leI[of n], thin_tac "n < (f x)")
   apply (frule_tac m = "Suc n" and n = "f x" in le_anti_sym, assumption)
   apply(unfold inj_on_def)
-  apply (frule_tac b = x in forball_spec1, simp,
+  apply (frule_tac x = x in bspec, simp,
        thin_tac "\<forall>x\<in>{i. i \<le> Suc n}. \<forall>y\<in>{i. i \<le> Suc n}. f x = f y \<longrightarrow> x = y",
-        frule_tac b = "Suc n" in forball_spec1, simp)
+        frule_tac x = "Suc n" in bspec, simp)
   apply (frule_tac r = "f (Suc n)" and s = "Suc n" and t = "f x" in trans,
          assumption,
          thin_tac "f (Suc n) = Suc n", thin_tac "Suc n = f x",
@@ -4895,7 +4877,7 @@ done
 lemma (in Order) gt_than_any_outside:"\<lbrakk>A \<subseteq> carrier D; b \<in> carrier D;
        \<forall>x\<in>A. x \<prec> b\<rbrakk> \<Longrightarrow> b \<notin> A"
 apply (rule contrapos_pp, simp+)
-apply (frule_tac b = b in forball_spec1)
+apply (frule_tac x = b in bspec)
 apply  (assumption,
        thin_tac "\<forall>x\<in>A. x \<prec> b", simp add:oless_def)
 done
@@ -5490,8 +5472,8 @@ lemma (in Order) minimum_elem_unique:"\<lbrakk>X \<subseteq> carrier D; minimum_
 apply (frule minimum_elem_mem[of "X" "a1"], assumption+,
        frule minimum_elem_mem[of "X" "a2"], assumption+)
 apply (simp add:minimum_elem_def) 
-apply (drule_tac b = a2 in forball_spec1, assumption)
-apply (drule_tac b = a1 in forball_spec1, assumption)
+apply (drule_tac x = a2 in bspec, assumption)
+apply (drule_tac x = a1 in bspec, assumption)
 apply (rule le_antisym[of a1 a2])
 apply (simp add:subsetD)+
 done 
@@ -5524,7 +5506,7 @@ apply (simp add:minimum_elem_def)
 apply (rule iffI)
  apply simp
  apply (rule ballI, erule conjE)
- apply (drule_tac b = x in forball_spec1, assumption)
+ apply (drule_tac x = x in bspec, assumption)
 
  apply (frule_tac c = x in subsetD[of "X" "T"], assumption+,
         frule_tac c = a in subsetD[of "X" "T"], assumption+)
@@ -5532,7 +5514,7 @@ apply (rule iffI)
 
 apply simp
  apply (rule ballI, erule conjE)
- apply (drule_tac b = x in forball_spec1, assumption)
+ apply (drule_tac x = x in bspec, assumption)
 
 apply (frule_tac c = x in subsetD[of "X" "T"], assumption+,
         frule_tac c = a in subsetD[of "X" "T"], assumption+)
@@ -5579,7 +5561,7 @@ apply (subst minimum_elem_def,
 apply (simp add:ord_isom_mem)
 apply (rule ballI)
 apply (simp add:minimum_elem_def)
-apply (frule_tac b = x in forball_spec1, assumption,
+apply (frule_tac x = x in bspec, assumption,
        thin_tac "Ball S (op \<preceq> a)")
 apply (frule_tac b = x in ord_isom_le[of E f a], assumption+)
 apply (simp add:subsetD)
@@ -5590,7 +5572,7 @@ lemma (in Worder) pre_minimum:"\<lbrakk>T \<subseteq> carrier D; minimum_elem D 
 s \<in> carrier D; s \<prec>\<^bsub>D\<^esub> t \<rbrakk> \<Longrightarrow> \<not> s \<in> T"
 apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def, (erule conjE)+)
- apply (frule_tac b = s in forball_spec1, assumption+,
+ apply (frule_tac x = s in bspec, assumption+,
         thin_tac "\<forall>x\<in>T. t \<preceq>\<^bsub>D\<^esub> x")
  apply (simp add:oless_def, erule conjE)
 apply (frule le_antisym[of s t])
@@ -6013,7 +5995,7 @@ apply (cut_tac Int_lower1[of X "segment D d"],
 apply (rule ballI)
 apply (case_tac "x \<in> segment D d")
  apply (simp add:minimum_elem_def)
- apply (drule_tac b = x in forball_spec1,
+ apply (drule_tac x = x in bspec,
      (* thin_tac "Ball (X \<inter> segment D d) (op \<preceq>\<^bsub>Iod D (segment D d)\<^esub> m)", *)
         simp) apply (
         simp add:Iod_le)
@@ -6309,7 +6291,7 @@ apply (subst ord_isom_def, subst ord_inj_def)
         frule_tac c = b in subsetD[of "segment E (f a)" "carrier E"],
         assumption+,
  
-        drule_tac b = b in forball_spec1, assumption, (*
+        drule_tac x = b in bspec, assumption, (*
         thin_tac "\<forall>b\<in>carrier E. \<exists>a\<in>carrier D. f a = b", *)
         erule bexE)
  apply (simp add:Order.segment_inc[THEN sym, of E _ "f a"],
@@ -6801,7 +6783,7 @@ apply (rule equalityI)
  apply (rule subsetI)
  apply (frule_tac c = x in subsetD[of T "carrier D"], assumption+)
  apply (subst segment_inc[THEN sym], assumption+)
-  apply (frule_tac b = x in forball_spec1, assumption,
+  apply (frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
   apply (rule contrapos_pp, simp+)
  apply (frule_tac a = x and b = a in not_less_le, assumption+)
@@ -6818,7 +6800,7 @@ apply (rule equalityI)
  apply (thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
  apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def)
- apply (frule_tac b = x in forball_spec1, simp)
+ apply (frule_tac x = x in bspec, simp)
  apply (simp add:segment_inc[THEN sym])
  apply (simp add:not_le_less[THEN sym])
 done
@@ -6835,7 +6817,7 @@ apply (rule equalityI)
  apply (rule subsetI)
  apply (frule_tac c = x in subsetD[of T "carrier D"], assumption+)
  apply (subst Ssegment_inc[THEN sym], assumption+)
-  apply (frule_tac b = x in forball_spec1, assumption,
+  apply (frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec>\<^bsub>D\<^esub> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
   apply (rule contrapos_pp, simp+)
  apply (frule_tac a = x and b = a in Torder.not_less_le, assumption+)
@@ -6852,7 +6834,7 @@ apply (rule equalityI)
  apply (thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec>\<^bsub>D\<^esub> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
  apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def)
- apply (frule_tac b = x in forball_spec1, simp,
+ apply (frule_tac x = x in bspec, simp,
         thin_tac "Ball (carrier D - T) (op \<preceq>\<^bsub>D\<^esub> a)")
  apply (simp add:Ssegment_inc[THEN sym])
  apply (simp add:Torder.not_le_less[THEN sym])
@@ -6914,7 +6896,7 @@ apply (rule equalityI)
  apply (rule subsetI)
  apply (frule_tac c = x in subsetD[of T "carrier D"], assumption+)
  apply (subst Ssegment_inc[THEN sym], assumption+)
-  apply (frule_tac b = x in forball_spec1, assumption,
+  apply (frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec>\<^bsub>D\<^esub> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
   apply (rule contrapos_pp, simp+)
  apply (frule Worder.Torder[of D],
@@ -6934,7 +6916,7 @@ apply (rule equalityI)
  apply (thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec>\<^bsub>D\<^esub> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
  apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def)
- apply (frule_tac b = x in forball_spec1, simp)
+ apply (frule_tac x = x in bspec, simp)
  apply (simp add:Ssegment_inc[THEN sym])
  apply (simp add:Torder.not_le_less[THEN sym])
 apply assumption
@@ -6970,7 +6952,7 @@ lemma (in Worder) Tw_equiv:"\<lbrakk>Worder T;
       \<forall>a\<in>carrier D. \<exists>b\<in>carrier T. ord_equiv (Iod D (segment D a)) 
                          (Iod T (segment T b)); x \<in> carrier D \<rbrakk> \<Longrightarrow> 
       ord_equiv (Iod D (segment D x)) (Iod T (segment T ((Tw\<^bsub>D,T\<^esub>) x)))"
-apply (frule_tac b = x in forball_spec1, assumption+,
+apply (frule_tac x = x in bspec, assumption+,
       thin_tac "\<forall>a\<in>carrier D.
       \<exists>b\<in>carrier T. ord_equiv (Iod D (segment D a)) (Iod T (segment T b))")
 
@@ -7297,7 +7279,7 @@ apply (simp add:segment_def,
        simp add:Iod_carrier, erule conjE,
        simp add:Iod_less[of "X"])
 apply (simp add:minimum_elem_def,
-       frule_tac b = x in forball_spec1, assumption,
+       frule_tac x = x in bspec, assumption,
        frule_tac c = x in subsetD[of "X" "carrier D"], assumption+,
        frule_tac a1 = x and b1 = d in not_less_le[THEN sym], assumption+)
 apply simp

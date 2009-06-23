@@ -1411,7 +1411,7 @@ apply (rule allI, rule impI)
  apply (case_tac "j = 0", simp add:cf_h_def cmp_def ext_cf_def sliden_def)
  apply (simp add:rHom_0_0)
  apply (simp)
- apply (frule_tac n = j in less_Suc_le1[of 0],
+ apply (frule_tac n = j in Suc_leI[of 0],
         frule_tac m = j and n = "Suc 0" in le_anti_sym, assumption+,
         thin_tac "j \<le> Suc 0", thin_tac "Suc 0 \<le> j",
         simp add:cf_h_def cmp_def ext_cf_def sliden_def special_cf_def,
@@ -1775,8 +1775,8 @@ apply ((rule allI)+, (rule impI), (erule conjE)+)
         assumption+, erule exE, (erule conjE)+,
         rotate_tac -1, drule sym)
 
- apply (drule_tac a = f in forall_spec1,
-        drule_tac a = e in forall_spec1, simp,
+ apply (drule_tac x = f in spec,
+        drule_tac x = e in spec, simp,
         frule_tac n = n and f = f in polyn_Suc_split,
         simp del:npow_suc,
         thin_tac "polyn_expr R X (Suc n) (Suc n, f) =
@@ -2282,7 +2282,7 @@ apply (erule conjE,
        thin_tac "\<forall>j\<le>fst (s_cf R S X (a \<plusminus> b)). snd (s_cf R S X (a \<plusminus> b)) j =
         snd (add_cf S (s_cf R S X a) (s_cf R S X b)) j")
   apply (rule ballI,
-         drule_tac b = j in forball_spec1, assumption,
+         drule_tac x = j in bspec, assumption,
          simp add:add_cf_def cf_h_len,
          simp add:cf_h_def cmp_def,
          frule_tac j = j in pol_coeff_mem[of "s_cf R S X a"], 
@@ -2694,8 +2694,8 @@ lemma (in PolynRg) erH_rHom_unique1:"\<lbrakk>Idomain S; PolynRg A B Y; h \<in> 
        f = (erH R S X A B Y h)"
 apply (frule erH_rHom_unique[of A B Y h], assumption+,
        erule ex1E,
-       frule_tac a = f in forall_spec1,
-       drule_tac a = "erH R S X A B Y h" in forall_spec1)
+       frule_tac x = f in spec,
+       drule_tac x = "erH R S X A B Y h" in spec)
  apply (frule erH_rHom[of A B Y h], assumption+,
         simp add:erH_rHom_cf[THEN sym])
 done
@@ -3012,10 +3012,10 @@ apply (frule_tac x = "lcf R S X f" and y = "lcf R S X g\<^bsup>\<hyphen> S\<^esu
           lcf R S X g\<^bsup>\<hyphen> S\<^esup> \<cdot>\<^sub>r X^\<^bsup>R (deg_n R S X f - deg_n R S X g)\<^esup> \<cdot>\<^sub>r g))" in
           forall_spec, simp)
  apply (simp add:div_condn_def)
- apply (drule_tac a = "f \<plusminus>
+ apply (drule_tac x = "f \<plusminus>
              -\<^sub>a (lcf R S X f \<cdot>\<^sub>r\<^bsub>S\<^esub> lcf R S X g\<^bsup>\<hyphen> S\<^esup> \<cdot>\<^sub>r
                  X^\<^bsup>R (deg_n R S X f - deg_n R S X g)\<^esup> \<cdot>\<^sub>r
-                 g)" in forall_spec1)
+                 g)" in spec)
  apply (frule_tac x = "lcf R S X f \<cdot>\<^sub>r\<^bsub>S\<^esub> lcf R S X g\<^bsup>\<hyphen> S\<^esup> \<cdot>\<^sub>r
            X^\<^bsup>R (deg_n R S X f - deg_n R S X g)\<^esup> \<cdot>\<^sub>r g" in aGroup.ag_mOp_closed,
            assumption)
@@ -3046,7 +3046,7 @@ lemma (in PolynRg) divisionTr3:"\<lbrakk>Corps S; g \<in> carrier R; g \<noteq> 
      \<exists>q\<in>carrier R. (f \<plusminus> -\<^sub>a (q \<cdot>\<^sub>r  g) = \<zero>) \<or> ( f \<plusminus> -\<^sub>a (q \<cdot>\<^sub>r g) \<noteq> \<zero> \<and>
       deg_n R S X (f \<plusminus> -\<^sub>a (q \<cdot>\<^sub>r g)) < (deg_n R S X g))"
 apply (frule divisionTr2[of g "deg_n R S X f"], assumption+) 
- apply (drule_tac a = f in forall_spec1)
+ apply (drule_tac x = f in spec)
 apply (simp add:div_condn_def, blast) 
 done
 
@@ -3299,7 +3299,7 @@ apply (frule polyn_c_max[of c])
  apply (rule iffI, rule allI, rule impI)
  apply (rotate_tac 10,
         drule_tac a = j in forall_spec,
-        drule_tac a = j in forall_spec1, assumption,
+        drule_tac x = j in spec, assumption,
         frule_tac i = j and j = "fst (s_cf R S X p)" and k = "fst c" in 
                   le_trans, assumption+, 
         drule_tac a = j in forall_spec, assumption, simp)
@@ -3332,7 +3332,7 @@ apply (subst P_mod_mod[THEN sym, of I p "ext_cf S d (0, \<lambda>j. c)"],
           simp add:ext_cf_def)
 apply (rule iffI)
    apply (simp add:Ring.ideal_zero,
-          drule_tac a = d in forall_spec1,
+          drule_tac x = d in spec,
           simp, simp add:pol_coeff_def)
 done
 
@@ -3374,7 +3374,7 @@ apply (erule disjE)
         subst add_cf_def, simp,
        (rule impI, 
         drule_tac a = j in forall_spec, assumption,
-        drule_tac a = j in forall_spec1,
+        drule_tac x = j in spec,
         frule_tac x = j and y = "fst (s_cf R S X p)" and 
            z = "fst (s_cf R S X q)" in le_less_trans, assumption+,
         frule_tac x = j and y = "fst (s_cf R S X q)" in less_imp_le, simp))
@@ -3388,7 +3388,7 @@ apply (erule disjE)
 
  apply (simp add:max_def, 
         subst add_cf_def, simp, rule impI,
-        drule_tac a = j in forall_spec1, 
+        drule_tac x = j in spec, 
         drule_tac a = j in forall_spec, assumption,
         frule_tac x = j and y = "fst (s_cf R S X q)" and 
            z = "fst (s_cf R S X p)" in le_less_trans, assumption+,
@@ -3559,7 +3559,7 @@ apply (subst P_mod_mod[THEN sym, of I p "s_cf R S X p"], assumption+,
        rule allI, rule impI,
        thin_tac "pol_coeff S (ext_cf S m (s_cf R S X p))",
        simp add:ext_cf_len, simp add:ext_cf_def)
-apply (drule_tac a = "m + j" in forall_spec1,
+apply (drule_tac x = "m + j" in spec,
        frule_tac i = j and j = "fst (s_cf R S X p)" and k = m and l = m in 
        add_le_mono, simp, simp only:add_commute[of _ m],
        thin_tac "j \<le> fst (s_cf R S X p)", simp,
@@ -3992,7 +3992,7 @@ apply (rule allI, rule impI, erule conjE,
        erule exE, erule conjE,
        frule_tac c = "(Suc n, f)" and j = "Suc n" in 
         pol_coeff_mem, simp, simp,
-        drule_tac a = "Suc n" in forall_spec1, simp,
+        drule_tac x = "Suc n" in spec, simp,
         simp add:Rxa_def,
         erule bexE, simp add:Ring.ring_tOp_commute[of "S" _ "t"])
   apply (subgoal_tac "pol_coeff S ((Suc n), (\<lambda>j. if j \<le> n then (f' j) else r))
@@ -4003,8 +4003,8 @@ apply (rule allI, rule impI, erule conjE,
          rule allI, rule impI, 
          case_tac "j \<le> n", simp)
   apply simp
-  apply (drule_tac m = j and n = n in nat_not_le,
-         drule_tac x = n and n = j in less_Suc_le1)
+  apply (drule_tac y = j and x = n in not_leE,
+         drule_tac m = n and n = j in Suc_leI)
   apply (frule_tac m = j and n = "Suc n" in le_anti_sym, assumption, simp,
          thin_tac "\<forall>f. pol_coeff S (n, f) \<and> (\<forall>j\<le>n. f j \<in> S \<diamondsuit>\<^sub>p t) \<longrightarrow>
                   (\<exists>f'. pol_coeff S (n, f') \<and> (\<forall>j\<le>n. f j = t \<cdot>\<^sub>r\<^bsub>S\<^esub> f' j))")
@@ -4784,19 +4784,19 @@ lemma (in PolynRg) fst_xxx:" \<lbrakk>t \<in> carrier S; t \<noteq> \<zero>\<^bs
 apply (cut_tac subring, frule subring_Ring,
        cut_tac ring_is_ag) 
 apply (induct_tac n)
-apply (drule_tac m = 0 in nat_forall_spec)
+apply (drule_tac x = 0 in spec)
  apply (frule cart_prod_fst[of "F 0" "carrier R" "carrier R"])
 apply (simp add:aGroup.ag_r_inv1) apply (simp add:P_mod_def)
 
-apply (frule_tac m = 0 in nat_forall_spec,
-       frule_tac m = n in nat_forall_spec,
-       drule_tac m = "Suc n" in nat_forall_spec) 
+apply (frule_tac x = 0 in spec,
+       frule_tac x = n in spec,
+       drule_tac x = "Suc n" in spec) 
         
  apply (frule_tac x = "F 0" in cart_prod_fst[of _ "carrier R" "carrier R"],
         frule_tac x = "F n" in cart_prod_fst[of _ "carrier R" "carrier R"],
         frule_tac x = "F (Suc n)" in cart_prod_fst[of _ "carrier R" 
                                                              "carrier R"])
-apply (drule_tac m = n in nat_forall_spec)
+apply (drule_tac x = n in spec)
 apply (frule_tac p = "fst (F 0) \<plusminus> -\<^sub>a (fst (F n))" and 
                  q = "fst (F n) \<plusminus> -\<^sub>a (fst (F (Suc n)))" in 
        P_mod_add[of  "S \<diamondsuit>\<^sub>p t"])
@@ -4817,19 +4817,19 @@ lemma (in PolynRg) snd_xxx:"\<lbrakk>t \<in> carrier S; t \<noteq> \<zero>\<^bsu
 apply (cut_tac subring, frule subring_Ring,
        cut_tac ring_is_ag) 
 apply (induct_tac n)
-apply (drule_tac m = 0 in nat_forall_spec)
+apply (drule_tac x = 0 in spec)
  apply (frule cart_prod_snd[of "F 0" "carrier R" "carrier R"])
 apply (simp add:aGroup.ag_r_inv1) apply (simp add:P_mod_def)
 
-apply (frule_tac m = 0 in nat_forall_spec,
-       frule_tac m = n in nat_forall_spec,
-       drule_tac m = "Suc n" in nat_forall_spec) 
+apply (frule_tac x = 0 in spec,
+       frule_tac x = n in spec,
+       drule_tac x = "Suc n" in spec) 
         
  apply (frule_tac x = "F 0" in cart_prod_snd[of _ "carrier R" "carrier R"],
         frule_tac x = "F n" in cart_prod_snd[of _ "carrier R" "carrier R"],
         frule_tac x = "F (Suc n)" in cart_prod_snd[of _ "carrier R" 
                                                              "carrier R"])
-apply (drule_tac m = n in nat_forall_spec)
+apply (drule_tac x = n in spec)
 apply (frule_tac p = "snd (F 0) \<plusminus> -\<^sub>a (snd (F n))" and 
                  q = "snd (F n) \<plusminus> -\<^sub>a (snd (F (Suc n)))" in 
        P_mod_add[of  "S \<diamondsuit>\<^sub>p t"])

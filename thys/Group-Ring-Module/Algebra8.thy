@@ -98,7 +98,7 @@ apply (thin_tac " (-\<^sub>a\<^bsub>R\<^esub> (t (Suc n))) \<cdot>\<^sub>s g (Su
  apply ((erule exE)+, (erule conjE)+, erule exE, (erule conjE)+)
    apply (frule_tac s = ta and n = m and m = ga in unique_expression1[of H],
           assumption+, simp)
-   apply (drule_tac b = m in forball_spec1, simp)
+   apply (drule_tac x = m in bspec, simp)
     apply (simp add:jointfun_def[of "Suc (n + n)"] sliden_def,
           thin_tac "\<zero> = l_comb R M m ta ga",
           thin_tac "ta m = s (Suc n) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (t (Suc n))",
@@ -189,13 +189,13 @@ apply (cut_tac sc_Ring, frule Ring.whole_ideal,
          simp add:ag_pOp_assoc, simp add:ag_r_inv1 ag_r_zero,
          rotate_tac -2, frule sym,
                 thin_tac "l_comb R M n t g = l_comb R M n s f")
-  apply (drule_tac a = f in forall_spec1,
+  apply (drule_tac x = f in spec,
   rotate_tac -1,
-  drule_tac a = s in forall_spec1,
+  drule_tac x = s in spec,
   rotate_tac -1,
-  drule_tac a = g in forall_spec1,
-  rotate_tac -1, drule_tac a = t in forall_spec1,
-  rotate_tac -1, drule_tac a = n in forall_spec1)
+  drule_tac x = g in spec,
+  rotate_tac -1, drule_tac x = t in spec,
+  rotate_tac -1, drule_tac x = n in spec)
   apply (cut_tac n = n in Nsetn_sub_mem1, simp)
   apply (erule exE, erule conjE)
   apply (subgoal_tac "(jointfun n h 0 (\<lambda>j. (Suc n))) \<in> 
@@ -213,8 +213,8 @@ apply (cut_tac sc_Ring, frule Ring.whole_ideal,
   apply (rule allI, rule impI, case_tac "l \<le> n", 
                                 simp add:cmp_def jointfun_def,
          simp add:cmp_def, simp add:jointfun_def sliden_def,
-         frule_tac m = l and n = n in nat_not_le, thin_tac "\<not> l \<le> n",
-         frule_tac x = n and n = l in less_Suc_le1,
+         frule_tac y = l and x = n in not_leE, thin_tac "\<not> l \<le> n",
+         frule_tac m = n and n = l in Suc_leI,
          frule_tac m = l and n = "Suc n" in Nat.le_anti_sym, assumption,
          simp)
   apply (rule Pi_I,
@@ -480,8 +480,8 @@ apply (rule impI)
 
  apply ((erule exE)+, erule conjE, erule exE, erule conjE, erule exE)
  apply (erule bexE)
- apply (drule_tac b = "(xa, ba)" in forball_spec1, assumption, 
-        drule_tac b = xb in forball_spec1, assumption+)
+ apply (drule_tac x = "(xa, ba)" in bspec, assumption, 
+        drule_tac x = xb in bspec, assumption+)
  apply (erule disjE, simp)
  apply (subgoal_tac "(\<lambda>(c, d). fa ` {j. j \<le> Suc n} \<subseteq> c) xb", blast)
 
@@ -746,23 +746,23 @@ apply (cut_tac sc_Ring, frule Ring.whole_ideal, frule free_generator_sub)
         rule l_span_cont_H,
         frule subset_trans[of a aa H], assumption+,
         rule subset_trans[of a H "carrier M"], assumption+,
-        drule_tac b = "fa xa" in forball_spec1, assumption,
+        drule_tac x = "fa xa" in bspec, assumption,
         frule_tac c = "fa xa" in subsetD[of a H], assumption+,
         rotate_tac -2, frule sym, thin_tac "f (fa xa) = b (fa xa)", simp)
   apply (rule Pi_I, simp add:cmp_def,
         frule_tac x = xa and f = fa and A = "{j. j \<le> n}" and B = aa in 
         funcset_mem, simp,
         frule_tac c = "fa xa" in subsetD[of aa H], assumption+,
-        drule_tac b = "fa xa" in forball_spec1, assumption,
+        drule_tac x = "fa xa" in bspec, assumption,
         rotate_tac -1, frule sym, thin_tac "f (fa xa) = ba (fa xa)",
         simp)
   apply (rule ballI, simp add:cmp_def,
         frule_tac x = j and f = fa and A = "{j. j \<le> n}" and B = a in 
         funcset_mem, simp)
-  apply (frule_tac b = "fa j" in forball_spec1, assumption,
+  apply (frule_tac x = "fa j" in bspec, assumption,
                thin_tac "\<forall>z\<in>a. f z = b z",
                frule_tac c = "fa j" in subsetD[of a aa], assumption+,
-               frule_tac b = "fa j" in forball_spec1, assumption,
+               frule_tac x = "fa j" in bspec, assumption,
                thin_tac "\<forall>z\<in>aa. f z = ba z")
   apply (rotate_tac -3, frule sym, 
                thin_tac "f (fa j) = b (fa j)", frule sym,
@@ -776,9 +776,9 @@ lemma (in Module) fsps_chain_boundTr2_2:"\<lbrakk>R module N; free_generator R M
        f \<in> H \<rightarrow> carrier N; C \<subseteq> fsps R M N f H; 
        \<forall>a\<in>C. \<forall>b\<in>C. fst a \<subseteq> fst b \<or> fst b \<subseteq> fst a; C \<noteq> {}; (a, b) \<in> C; 
        x \<in> fgs R M a; (a1, b1) \<in> C; x \<in> fgs R M a1\<rbrakk> \<Longrightarrow> b x = b1 x"
- apply (frule_tac b = "(a, b)" in forball_spec1, assumption,
+ apply (frule_tac x = "(a, b)" in bspec, assumption,
         thin_tac "\<forall>a\<in>C. \<forall>b\<in>C. fst a \<subseteq> fst b \<or> fst b \<subseteq> fst a",
-        frule_tac b = "(a1, b1)" in forball_spec1, assumption,
+        frule_tac x = "(a1, b1)" in bspec, assumption,
         thin_tac "\<forall>ba\<in>C. fst (a, b) \<subseteq> fst ba \<or> fst ba \<subseteq> fst (a, b)", simp)
  apply (erule disjE)
  apply (rule fsps_chain_boundTr2_1[of N H f C a b a1 b1], assumption+)  
@@ -895,9 +895,9 @@ apply (rename_tac a b a1 b1)
                 f = y and m = x in Module.mHom_mem, assumption+,
           simp add:mdl_carrier, simp, blast)
  apply ((erule conjE)+, (erule exE)+, (erule conjE)+) 
-  apply (frule_tac b = "(a, b)" in forball_spec1, assumption,
+  apply (frule_tac x = "(a, b)" in bspec, assumption,
          rotate_tac -1,
-         frule_tac b = "(aa, ba)" in forball_spec1, assumption,
+         frule_tac x = "(aa, ba)" in bspec, assumption,
          thin_tac "\<forall>ba\<in>C. fst (a, b) \<subseteq> fst ba \<or> fst ba \<subseteq> fst (a, b)",
          simp)
  apply (rule_tac a = a and b = b and ?a1.0 = aa and ?b1.0 = ba and x = x in 
@@ -940,13 +940,13 @@ lemma (in Module) Chain_3_supset:"\<lbrakk>R module N; free_generator R M H;
     f \<in> H \<rightarrow> carrier N; C \<subseteq> fsps R M N f H; C \<noteq> {};
    \<forall>a\<in>C. \<forall>b\<in>C. fst a \<subseteq> fst b \<or> fst b \<subseteq> fst a; (a1, b1) \<in> C; (a2, b2) \<in> C;
    (a3, b3) \<in> C\<rbrakk> \<Longrightarrow> \<exists>(g, h)\<in>C. a1 \<subseteq> g \<and> a2 \<subseteq> g \<and> a3 \<subseteq> g"
-apply (frule_tac b = "(a1, b1)" in forball_spec1, assumption,
+apply (frule_tac x = "(a1, b1)" in bspec, assumption,
        rotate_tac -1,
-       frule_tac b = "(a2, b2)" in forball_spec1, assumption,
-       drule_tac b = "(a3, b3)" in forball_spec1, assumption)
+       frule_tac x = "(a2, b2)" in bspec, assumption,
+       drule_tac x = "(a3, b3)" in bspec, assumption)
       
-apply (drule_tac b = "(a2, b2)" in forball_spec1, assumption,
-       drule_tac b = "(a3, b3)" in forball_spec1, assumption)
+apply (drule_tac x = "(a2, b2)" in bspec, assumption,
+       drule_tac x = "(a3, b3)" in bspec, assumption)
 
 apply simp
 apply ((erule disjE)+, blast+)
@@ -1082,9 +1082,9 @@ apply (rule ballI)+
   apply (simp add:mdl_def,
         thin_tac "m \<in> fgs R M (\<Union>{a. \<exists>b. (a, b) \<in> C})",
         thin_tac "b1 m \<in> carrier N")
-  apply (frule_tac b = "(a1, b1)" in forball_spec1, assumption,
+  apply (frule_tac x = "(a1, b1)" in bspec, assumption,
          rotate_tac -1,
-         drule_tac b = "(a1a, b1a)" in forball_spec1, assumption,
+         drule_tac x = "(a1a, b1a)" in bspec, assumption,
          simp)
   apply (erule disjE,
         frule_tac J = a1 and K = a1a in fgs_mono[of H], assumption+,
@@ -1197,8 +1197,8 @@ apply (rule conjI)
  apply (simp add:od_fm_fun_inPr0[of N H f C])
  apply (frule fsps_chain_bound2[of N H f C], assumption+,
         simp add:Algebra2.Chain_def od_fm_fun_def, assumption)
- apply (simp add:od_fm_fun_Chain) 
- apply (drule_tac b = z in forball_spec1)
+ apply (simp add:od_fm_fun_Chain)
+ apply (drule_tac x = z in bspec)
   apply (simp, blast) 
  apply (simp add:od_fm_fun_inPr0)
 apply (rule subsetI, simp, erule exE, erule conjE, erule exE)
@@ -1892,7 +1892,7 @@ apply (rule contrapos_pp, simp+)
         rename_tac m H1 g h)
  apply (frule_tac ?H1.0 = H1 and h = h and g = g in ex_extension[of N H f],
         assumption+, erule exE)
- apply (drule_tac b = "(H1 \<union> {h}, k)" in forball_spec1, assumption)
+ apply (drule_tac x = "(H1 \<union> {h}, k)" in bspec, assumption)
  apply (simp add:od_fm_fun_def ole_def, fold od_fm_fun_def,
         simp add:insert_inc1, (erule conjE)+,
         cut_tac a = h and A = H1 in insert_inc2,
@@ -1905,7 +1905,7 @@ apply (rule contrapos_pp, simp+)
                (\<exists>f. f \<in> {j. j \<le> n} \<rightarrow> H \<and>
                     inj_on f {j. j \<le> n} \<and> l_comb R M n s f = \<zero>) \<longrightarrow>
                s \<in> {j. j \<le> n} \<rightarrow> {\<zero>\<^bsub>R\<^esub>}")
- apply (drule_tac b = y in forball_spec1, assumption+,
+ apply (drule_tac x = y in bspec, assumption+,
         simp add:fsps_def fsp_def)
 done
 
@@ -2149,7 +2149,7 @@ apply (frule Ring.ring_one[of R],
        rule subsetI, simp+)
  apply (erule conjE)
    apply (cut_tac f = h and n = "card H - Suc (Suc 0)" in image_Nset_Suc)
-   apply (frule_tac x = "Suc 0" and n = "card H" in less_Suc_le1)
+   apply (frule_tac m = "Suc 0" and n = "card H" in Suc_leI)
    apply (simp add:Suc_Suc_Tr)
    apply (frule_tac f = h and A = "{j. j \<le> card H - Suc 0}" and 
           B = "carrier M" and ?A1.0 = "{j. j \<le> card H - Suc 0 - Suc 0}" in 
@@ -2291,7 +2291,7 @@ lemma (in Ring) prodM_mem_eq:"\<lbrakk>\<forall>i\<in>I. (R module (M i));
       \<forall>i\<in>I. m1 i = m2 i \<rbrakk> \<Longrightarrow> m1 = m2" 
 apply (simp add:prodM_carr [of I M])
 apply (rule carr_prodag_mem_eq [of I M])
-apply (rule ballI, drule_tac b = k in forball_spec1, assumption,
+apply (rule ballI, drule_tac x = k in bspec, assumption,
        simp add:Module.module_is_ag)
 apply assumption+
 done
@@ -2303,14 +2303,14 @@ apply (erule conjE)+
 apply (rule conjI)
  apply (rule Pi_I)
  apply (simp add:Un_carrier_def)
- apply (drule_tac b = x in forball_spec1, assumption,
-        drule_tac b = x in forball_spec1, assumption+)
+ apply (drule_tac x = x in bspec, assumption,
+        drule_tac x = x in bspec, assumption+)
 
  apply (frule_tac R = R and M = "M x" and a = a and m = "m x" in
         Module.sc_mem, assumption+, blast)
  apply (rule ballI, 
-        drule_tac b = i in forball_spec1, assumption,
-        drule_tac b = i in forball_spec1, assumption+)
+        drule_tac x = i in bspec, assumption,
+        drule_tac x = i in bspec, assumption+)
        
  apply (frule_tac M = "M i" and a = a and m = "m i" in 
             Module.sc_mem [of _ "R"], assumption+)
@@ -2344,7 +2344,7 @@ apply (erule conjE)+
         frule_tac a = a in forall_spec, assumption,
         thin_tac "\<forall>b. b \<in> carr_prodag I M \<longrightarrow> prod_pOp I M (prod_zero I M) b =
              prod_pOp I M b (prod_zero I M)", simp)
- apply (rule ballI, drule_tac b = k in forball_spec1, assumption,
+ apply (rule ballI, drule_tac x = k in bspec, assumption,
         simp add:Module.module_is_ag)
  apply (rule Module_axioms.intro)
  apply (cut_tac Ring, assumption)
@@ -2360,24 +2360,24 @@ apply (erule conjE)+
  apply (simp add:prodM_carr,
         rule_tac X = "prodM_sprod R I M a m" and Y = "prodM_sprod R I M b m" 
         in prod_pOp_mem[of I M],
-        (rule ballI, drule_tac b = k in forball_spec1, assumption,
+        (rule ballI, drule_tac x = k in bspec, assumption,
         simp add:Module.module_is_ag),
         assumption+)      
  apply (rule ballI,
         simp add:prodM_sprod_def prod_pOp_def,
-        frule_tac b = i in forball_spec1, assumption,
+        frule_tac x = i in bspec, assumption,
         thin_tac "\<forall>i\<in>I. R module M i",
         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
         thin_tac "(\<lambda>j\<in>I. b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
         thin_tac "(\<lambda>j\<in>I. (a \<plusminus> b) \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
         simp add:carr_prodag_def, (erule conjE)+,
-        drule_tac b = i in forball_spec1, assumption+)
+        drule_tac x = i in bspec, assumption+)
 
 apply (cut_tac Ring, simp add:Module.sc_l_distr)
   apply (simp add:prodM_carr)
   apply (simp add:prodM_def)
   apply (cut_tac X = m and Y = n in prod_pOp_mem[of I M],
-         (rule ballI, frule_tac b = k in forball_spec1, assumption,
+         (rule ballI, frule_tac x = k in bspec, assumption,
           thin_tac "\<forall>i\<in>I. R module M i", simp add:Module.module_is_ag),
           assumption+)
   apply (frule_tac a = a and m = "prod_pOp I M m n" in prodM_sprod_mem[of I M],
@@ -2389,22 +2389,22 @@ apply (cut_tac Ring, simp add:Module.sc_l_distr)
          frule_tac a = a and m = n in prodM_sprod_mem[of I M], assumption+,
          rule_tac X = "prodM_sprod R I M a m" and Y = "prodM_sprod R I M a n" 
         in prod_pOp_mem[of I M],
-        (rule ballI, drule_tac b = k in forball_spec1, assumption,
+        (rule ballI, drule_tac x = k in bspec, assumption,
         simp add:Module.module_is_ag),
         assumption+)
   apply (rule ballI)
   apply (frule_tac a = a and m = m in prodM_sprod_mem[of I M], assumption+,
          frule_tac a = a and m = n in prodM_sprod_mem[of I M], assumption+,
          simp add:prod_pOp_def prodM_sprod_def,
-         drule_tac b = i in forball_spec1, assumption,
+         drule_tac x = i in bspec, assumption,
          thin_tac "(\<lambda>x\<in>I. m x \<plusminus>\<^bsub>M x\<^esub> n x) \<in> carr_prodag I M",
          thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then m j \<plusminus>\<^bsub>M j\<^esub> n j else undefined))
         \<in> carr_prodag I M",
          thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
          thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> n j) \<in> carr_prodag I M")
    apply (simp add:carr_prodag_def, (erule conjE)+,
-          drule_tac b = i in forball_spec1, assumption,
-          drule_tac b = i in forball_spec1, assumption)
+          drule_tac x = i in bspec, assumption,
+          drule_tac x = i in bspec, assumption)
     
    apply (simp add:Module.sc_r_distr)
 
@@ -2419,13 +2419,13 @@ apply (cut_tac Ring, simp add:Module.sc_l_distr)
          rule prodM_mem_eq, assumption+, simp add:prodM_carr,
          simp add:prodM_carr)
   apply (rule ballI, simp add:prodM_sprod_def,
-         drule_tac b = i in forball_spec1, assumption,
+         drule_tac x = i in bspec, assumption,
          thin_tac "(\<lambda>j\<in>I. b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
          thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j else undefined))
         \<in> carr_prodag I M",
          thin_tac "(\<lambda>j\<in>I. (a \<cdot>\<^sub>r b) \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M",
          simp add:carr_prodag_def, (erule conjE)+,
-         drule_tac b = i in forball_spec1, assumption)
+         drule_tac x = i in bspec, assumption)
      
    apply (simp add:Module.sc_assoc)
 
@@ -2436,9 +2436,9 @@ apply (cut_tac Ring, simp add:Module.sc_l_distr)
   apply (rule ballI, simp add:prodM_def,
          thin_tac "prodM_sprod R I M 1\<^sub>r m \<in> carr_prodag I M",
          simp add:prodM_sprod_def,
-         drule_tac b = i in forball_spec1, assumption,
+         drule_tac x = i in bspec, assumption,
          simp add:carr_prodag_def, (erule conjE)+,
-         drule_tac b = i in forball_spec1, assumption,
+         drule_tac x = i in bspec, assumption,
          simp add:Module.sprod_one)
 done
          
@@ -2468,8 +2468,8 @@ apply (simp add:carr_dsumag_def)
         frule_tac a = a and m = b in prodM_sprod_mem[of I M], assumption+)
  apply (subgoal_tac "\<forall>j\<in>I - H. prodM_sprod R I M a b j = \<zero>\<^bsub>M j\<^esub>", blast)
  apply (rule ballI, 
-        drule_tac b = j in forball_spec1, assumption,
-        drule_tac b = j in forball_spec1, simp)
+        drule_tac x = j in bspec, assumption,
+        drule_tac x = j in bspec, simp)
       
  apply (subst prodM_sprod_def, simp)
  apply (simp add:Module.sc_a_0)
@@ -2494,7 +2494,7 @@ apply (frule subsetD [of "carr_dsumag I M" "carr_prodag I M" "x"], assumption+,
 apply (subgoal_tac "\<forall>i\<in>I. aGroup (M i)")
 apply (rule carr_prodag_mem_eq [of "I" "M"], assumption+)
 apply (rule ballI) 
-apply (drule_tac b = i in forball_spec1, assumption,
+apply (drule_tac x = i in bspec, assumption,
        simp add:Module.module_is_ag)
 done
 
@@ -2520,11 +2520,11 @@ apply (simp add:dsumM_def prodag_def aGroup_def,
          rotate_tac -1,
          drule_tac a = "prod_zero I M" in forall_spec, assumption, simp)
 
-  apply (rule ballI, drule_tac b = k in forball_spec1, assumption,
+  apply (rule ballI, drule_tac x = k in bspec, assumption,
          simp add:Module.module_is_ag) 
-  apply (rule ballI, drule_tac b = k in forball_spec1, assumption,
+  apply (rule ballI, drule_tac x = k in bspec, assumption,
          (simp add:Module.module_is_ag)+)
-  apply (rule ballI, drule_tac b = k in forball_spec1, assumption+,
+  apply (rule ballI, drule_tac x = k in bspec, assumption+,
          simp add:Module.module_is_ag)+
 
 apply (rule Module_axioms.intro)
@@ -2542,7 +2542,7 @@ apply (rule Module_axioms.intro)
         simp add:dsumM_def,
         cut_tac X = "prodM_sprod R I M a m" and Y = "prodM_sprod R I M b m" in
         prod_pOp_mem[of I M],
-        (rule ballI, frule_tac b = k in forball_spec1, assumption,
+        (rule ballI, frule_tac x = k in bspec, assumption,
         thin_tac "\<forall>i\<in>I. R module M i", simp add:Module.module_is_ag),
         (cut_tac carr_dsum_prod[of I M], simp add:subsetD)+)
    apply(cut_tac carr_dsum_prod1[of I M],
@@ -2556,11 +2556,11 @@ apply (rule Module_axioms.intro)
         \<in> carr_prodag I M")
    apply (frule_tac a = m in forall_spec, assumption,
                thin_tac "\<forall>x. x \<in> carr_dsumag I M \<longrightarrow> x \<in> carr_prodag I M",
-               frule_tac b = i in forball_spec1, assumption,
+               frule_tac x = i in bspec, assumption,
                thin_tac "\<forall>i\<in>I. R module M i",
                thin_tac "m \<in> carr_dsumag I M",
                simp add:carr_prodag_def, (erule conjE)+,
-               frule_tac b = i in forball_spec1, assumption,
+               frule_tac x = i in bspec, assumption,
                thin_tac "\<forall>i\<in>I. m i \<in> carrier (M i)")
     apply (simp add:Module.sc_l_distr)
 
@@ -2570,19 +2570,19 @@ apply (rule Module_axioms.intro)
         frule_tac a = a and b = n in dsum_sprod_mem[of I M], assumption+)
  apply (simp add:dsumM_def, cut_tac carr_dsum_prod1[of I M],
         cut_tac X = m and Y = n in prod_pOp_mem[of I M],
-        (rule ballI, frule_tac b = k in forball_spec1, assumption,
+        (rule ballI, frule_tac x = k in bspec, assumption,
         thin_tac "\<forall>i\<in>I. R module M i", simp add:Module.module_is_ag), simp+,
         frule_tac a = a and m = "prod_pOp I M m n" in prodM_sprod_mem[of I M],
         assumption, simp)
  apply (cut_tac X = "prodM_sprod R I M a m" and Y = "prodM_sprod R I M a n" in
         prod_pOp_mem[of I M],
-        (rule ballI, frule_tac b = k in forball_spec1, assumption,
+        (rule ballI, frule_tac x = k in bspec, assumption,
         thin_tac "\<forall>i\<in>I. R module M i", simp add:Module.module_is_ag), simp+,
         rule_tac ?m1.0 = "prodM_sprod R I M a (prod_pOp I M m n)" and 
         ?m2.0 = "prod_pOp I M (prodM_sprod R I M a m) (prodM_sprod R I M a n)"
         in prodM_mem_eq[of I M], assumption, (simp add:prodM_carr)+)
  apply (rule ballI,
-        frule_tac b = i in forball_spec1, assumption,
+        frule_tac x = i in bspec, assumption,
         thin_tac "prodM_sprod R I M a m \<in> carr_dsumag I M",
         thin_tac "prodM_sprod R I M a n \<in> carr_dsumag I M")
  apply (rotate_tac 1,
@@ -2603,11 +2603,11 @@ apply (rule Module_axioms.intro)
         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> n j) \<in> carr_prodag I M",
         thin_tac "(\<lambda>x\<in>I. m x \<plusminus>\<^bsub>M x\<^esub> n x) \<in> carr_prodag I M")
   apply (simp add:carr_prodag_def, (erule conjE)+,
-        frule_tac b = i in forball_spec1, assumption,
+        frule_tac x = i in bspec, assumption,
         thin_tac "\<forall>i\<in>I. R module M i",
-        frule_tac b = i in forball_spec1, assumption,
+        frule_tac x = i in bspec, assumption,
         thin_tac "\<forall>i\<in>I. m i \<in> carrier (M i)",
-        frule_tac b = i in forball_spec1, assumption,
+        frule_tac x = i in bspec, assumption,
         simp add:Module.sc_r_distr)
 
   apply (frule_tac x = a and y = b in ring_tOp_closed, assumption+,
@@ -2622,7 +2622,7 @@ apply (rule Module_axioms.intro)
         ?m2.0 = "prodM_sprod R I M a (prodM_sprod R I M b m)"
         in prodM_mem_eq[of I M], assumption, (simp add:prodM_carr)+)
  apply (rule ballI, simp add:prodM_sprod_def,
-        frule_tac b = i in forball_spec1, assumption,
+        frule_tac x = i in bspec, assumption,
         thin_tac "\<forall>i\<in>I. R module M i",
         thin_tac "(\<lambda>j\<in>I. b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
         thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>M j\<^esub> (if j \<in> I then b \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j else undefined))
@@ -2632,7 +2632,7 @@ apply (rule Module_axioms.intro)
         thin_tac "\<forall>x. x \<in> carr_dsumag I M \<longrightarrow> x \<in> carr_prodag I M",
         thin_tac "m \<in> carr_dsumag I M",
         simp add:carr_prodag_def, (erule conjE)+,
-        frule_tac b = i in forball_spec1, assumption,
+        frule_tac x = i in bspec, assumption,
         thin_tac "\<forall>i\<in>I. m i \<in> carrier (M i)",
         simp add:Module.sc_assoc)
 
@@ -2647,13 +2647,13 @@ apply (rule Module_axioms.intro)
          frule_tac a = "prodM_sprod R I M 1\<^sub>r m" in forall_spec, assumption,
          thin_tac "\<forall>x. x \<in> carr_dsumag I M \<longrightarrow> x \<in> carr_prodag I M")
   apply (rule ballI,
-        frule_tac b = i in forball_spec1, assumption,
+        frule_tac x = i in bspec, assumption,
         thin_tac "\<forall>i\<in>I. R module M i")
  apply (simp add:prodM_sprod_def)
   apply (thin_tac "(\<lambda>j\<in>I. 1\<^sub>r \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_dsumag I M",
          thin_tac "(\<lambda>j\<in>I. 1\<^sub>r \<cdot>\<^sub>s\<^bsub>M j\<^esub> m j) \<in> carr_prodag I M")
   apply (simp add:carr_prodag_def, (erule conjE)+,
-         frule_tac b = i in forball_spec1, assumption,
+         frule_tac x = i in bspec, assumption,
          simp add:Module.sprod_one)
 done
   
@@ -2706,21 +2706,21 @@ apply (rule conjI)
           rule Pi_I,
           thin_tac "x \<in> carr_dsumag I M", simp,
           simp add:Un_carrier_def,
-          drule_tac b = xa in forball_spec1, assumption,
-          drule_tac b = xa in forball_spec1, assumption,
-          drule_tac b = xa in forball_spec1, assumption,
+          drule_tac x = xa in bspec, assumption,
+          drule_tac x = xa in bspec, assumption,
+          drule_tac x = xa in bspec, assumption,
           simp add:carr_prodag_def, (erule conjE)+,
-          drule_tac b = xa in forball_spec1, assumption)
+          drule_tac x = xa in bspec, assumption)
 
    apply (frule_tac R = R and M = "M xa" and N = "N xa" and f = "S xa" and 
           m = "x xa" in Module.mHom_mem, assumption+, blast)
 
   apply (rule ballI,
-         drule_tac b = i in forball_spec1, assumption,
-         drule_tac b = i in forball_spec1, assumption,
-         drule_tac b = i in forball_spec1, assumption,
+         drule_tac x = i in bspec, assumption,
+         drule_tac x = i in bspec, assumption,
+         drule_tac x = i in bspec, assumption,
          simp add:carr_prodag_def, (erule conjE)+,
-         drule_tac b = i in forball_spec1, assumption)
+         drule_tac x = i in bspec, assumption)
   apply (simp add:Module.mHom_mem)
    apply (cut_tac carr_dsum_prod1[of I M],
          drule_tac a = x in forall_spec, assumption)
@@ -2731,11 +2731,11 @@ apply (rule conjI)
   apply (erule conjE, erule exE)
   apply (subgoal_tac "\<forall>j\<in>I - H. S j (x j) = \<zero>\<^bsub>N j\<^esub>", blast)
   apply (rule ballI,
-         drule_tac b = j in forball_spec1, simp,
-         drule_tac b = j in forball_spec1, simp,
-         drule_tac b = j in forball_spec1, simp,
+         drule_tac x = j in bspec, simp,
+         drule_tac x = j in bspec, simp,
+         drule_tac x = j in bspec, simp,
          simp add:carr_prodag_def, (erule conjE)+,
-         drule_tac b = j in forball_spec1, simp)
+         drule_tac x = j in bspec, simp)
   apply (simp add:Module.mHom_0)
 done
 
@@ -2770,9 +2770,9 @@ apply (rule ballI)+
   apply (simp add:carr_dsumag_def carr_prodag_def finiteHom_def,
          simp add:carr_dsumag_def carr_prodag_def finiteHom_def,
          rule ballI, rotate_tac 1,
-         drule_tac b = i in forball_spec1, assumption,
+         drule_tac x = i in bspec, assumption,
          simp add:Module.module_is_ag,
-         rule ballI, drule_tac b = i in forball_spec1, assumption, 
+         rule ballI, drule_tac x = i in bspec, assumption, 
          simp add:Module.module_is_ag)
 apply (rule ballI)+
  apply (simp add:dsumM_def)
@@ -2798,11 +2798,11 @@ apply (rule ballI)+
          thin_tac "(\<lambda>j\<in>I. a \<cdot>\<^sub>s\<^bsub>N j\<^esub> (if j \<in> I then S j (m j) else undefined))
         \<in> carr_dsumag I N",
          thin_tac "\<forall>x. x \<in> carr_dsumag I N \<longrightarrow> x \<in> carr_prodag I N")
-  apply (drule_tac b = j in forball_spec1, assumption,
-         drule_tac b = j in forball_spec1, assumption,
-         drule_tac b = j in forball_spec1, assumption,
+  apply (drule_tac x = j in bspec, assumption,
+         drule_tac x = j in bspec, assumption,
+         drule_tac x = j in bspec, assumption,
          simp add:carr_prodag_def, (erule conjE)+,
-         drule_tac b = j in forball_spec1, assumption)
+         drule_tac x = j in bspec, assumption)
   apply (simp add:Module.mHom_lin)
 done
 

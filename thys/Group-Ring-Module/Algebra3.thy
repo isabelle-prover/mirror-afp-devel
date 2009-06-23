@@ -3306,7 +3306,7 @@ apply (frule_tac n = "card (f ` {i. i \<le> n}) - Suc 0" and f = g and
  apply (simp add:constmap_def Nset_inc_0,
         thin_tac "d_gchain G n f", simp add:d_gchain_def) 
  apply (cut_tac n = "Suc n" in n_in_Nsetn,
-        frule_tac a = "Suc n" in forall_spec1, simp,
+        frule_tac x = "Suc n" in spec, simp,
         simp add:psubset_eq)
  apply (cut_tac f = f and n = n in image_Nsetn_card_pos,
         cut_tac n = n in finite_Nset, 
@@ -3550,7 +3550,7 @@ done
 lemma isom_gch_units_transpTr5_2:"\<lbrakk>Ugp E; Gchain n g; Gchain n h; i \<le> n; 
       j \<le> n; i < j; isom_Gchains n (transpos i j) g h\<rbrakk> \<Longrightarrow> g j \<cong> h i"
 apply (simp add:isom_Gchains_def)
-apply (frule_tac a = j in forall_spec1,
+apply (frule_tac x = j in spec,
        thin_tac "\<forall>ia\<le> n. g ia \<cong> h (transpos i j ia)")
 apply (simp add:transpos_ij_2 [of "i" "n" "j"]) 
 done
@@ -3827,7 +3827,7 @@ apply (cut_tac l = "f l" in transpos_mem[of "f (Suc n)" "Suc n" "Suc n"])
                cmp (transpos (f (Suc n)) (Suc n)) f y \<longrightarrow>
                x = y") apply (
         rotate_tac -1,
-        frule_tac a = l in forall_spec1) apply (
+        frule_tac x = l in spec) apply (
         thin_tac "\<forall>y\<le>Suc n.
             cmp (transpos (f (Suc n)) (Suc n)) f (Suc n) =
             cmp (transpos (f (Suc n)) (Suc n)) f y \<longrightarrow>
@@ -4487,7 +4487,7 @@ apply (frule compseriesTr0 [of "n" "f" "i"])
  apply (frule compseriesTr4[of "n" "f"])
  apply (frule w_cmpser_ns[of "n" "f" "i"], simp+) 
  apply (unfold compseries_def, frule conjunct2, fold compseries_def, simp)
- apply (frule_tac a = i in forall_spec1, 
+ apply (frule_tac x = i in spec, 
         thin_tac "\<forall>i\<le>n - Suc 0. simple_Group ((\<natural>f i) / f (Suc i))",
         simp)
  apply (frule Group.simple_grouptr0 [of "Gp G (f i)" "H" "f (Suc i)"])
@@ -5000,7 +5000,7 @@ apply (subst add_Suc_right[THEN sym, of "i mod s * r" "i div s"])
  apply (subst add_commute[of "i mod s * r" "Suc (i div s)"])
  apply (subst mod_mult_self1[of "Suc (i div s)" "i mod s" "r"])
  apply (cut_tac lessI[of "r - Suc 0"], simp only:Suc_pred)
- apply (frule less_Suc_le1[of "i div s" "r - Suc 0"])
+ apply (frule Suc_leI[of "i div s" "r - Suc 0"])
  apply (frule le_less_trans[of "Suc (i div s)" "r - Suc 0" "r"], assumption+)
  apply (simp only:mod_less) 
 done
@@ -5014,7 +5014,7 @@ apply simp
 apply simp
 apply (subst add_Suc_right[THEN sym, of "i mod s * r" "i div s"])
  apply (subst add_commute[of "i mod s * r" "Suc (i div s)"])
- apply (frule less_Suc_le1[of "i div s" "r - Suc 0"])
+ apply (frule Suc_leI[of "i div s" "r - Suc 0"])
  apply (frule le_less_trans[of "Suc (i div s)" "r - Suc 0" "r"], simp)
  apply (subst div_mult_self1 [of "r" "Suc (i div s)" "i mod s"])
  apply auto

@@ -1326,7 +1326,7 @@ apply (induct_tac m, simp, blast)
  apply (cut_tac addition_inc_add[of f A n],
         cut_tac n = na in addition_inc_add[of f A],
         cut_tac addition_inc_add0[of A f])
- apply (drule_tac a = x in forall_spec1,
+ apply (drule_tac x = x in spec,
         drule_tac a = s in forall_spec, simp)
 
  apply ((erule bexE)+, simp)
@@ -1422,8 +1422,8 @@ apply (rule allI, rule impI, simp)
         cut_tac addition_inc_add0[of "aug_pm_set z i A" f],
         frule_tac c = t in subsetD[of "aug_pm_set z i A"
          "addition_set f (aug_pm_set z i A)"], assumption+)
- apply (drule_tac b = s in forball_spec1, assumption,
-        drule_tac b = t in forball_spec1, assumption)
+ apply (drule_tac x = s in bspec, assumption,
+        drule_tac x = t in bspec, assumption)
         
  apply (frule_tac x = t in aug_ipp_closed0[of f z i A], assumption+,
         simp, assumption+, simp, simp,
@@ -1456,7 +1456,7 @@ lemma aug_zero_unique:"\<lbrakk>commute_bpp f (aug_pm_set z i A);
       z1 \<in> addition_set f (aug_pm_set z i A); zeroA z i f A z; 
       zeroA z i f A z1\<rbrakk> \<Longrightarrow> z = z1"
 apply (simp add:zeroA_def[of "z" _ _ _ "z"])
-apply (drule_tac b = z1 in forball_spec1, assumption)
+apply (drule_tac x = z1 in bspec, assumption)
        
 apply (cut_tac addition_set_inc_z [of z f i A])
 apply (frule aug_commute [of f z i A z z1], assumption+)
@@ -1471,7 +1471,7 @@ lemma inv_aug_addition:"\<lbrakk>commute_bpp f (aug_pm_set z i A);
      \<forall>a\<in>addition_set f (aug_pm_set z i A). (\<^sub>i-a) \<^sub>f+ a = z"   
 apply (simp add:inv_ipp_def)
 apply (rule ballI) 
-apply (drule_tac b = a in forball_spec1, assumption)
+apply (drule_tac x = a in bspec, assumption)
  apply (frule_tac ?z1.0 = "(\<^sub>i- a \<^sub>f+ a)" in aug_zero_unique [of f z i A])
  apply (frule_tac x = a in aug_ipp_closed [of f z i A], assumption+)
  apply (rule_tac x = "\<^sub>i- a" and y = a in aug_bpp_closed [of z i A f],
@@ -1732,7 +1732,7 @@ apply (rule allI, rule impI)
          frule subsetD[of "addition_set f {\<^sub>i- a}"
               "addition_set f (aug_pm_set z i {a})"], assumption+)
   apply (frule inv_aug_addition[of f z i "{a}"], assumption+)
-  apply (drule_tac b = a in forball_spec1, assumption,
+  apply (drule_tac x = a in bspec, assumption,
          simp, assumption+)
 
   apply (case_tac "t = z", simp,
@@ -1806,7 +1806,7 @@ apply (induct_tac n)
  apply ((rule allI)+, rule impI, erule conjE)
  apply simp
 apply ((rule allI)+, rule impI, erule conjE, simp, (erule bexE)+)
- apply (drule_tac a = s in forall_spec1,
+ apply (drule_tac x = s in spec,
         drule_tac a = sa in forall_spec, simp)
        
 apply simp
@@ -1876,7 +1876,7 @@ apply ((rule allI)+, rule impI, erule conjE)
  apply (erule bexE)+
  apply (frule aug_ipp_closed [of "f" "z" "i" "{a}" "a"], assumption+)
  apply simp
- apply (drule_tac a = sa in forall_spec1, 
+ apply (drule_tac x = sa in spec, 
         drule_tac a = sb in forall_spec, simp)
  apply (cut_tac n = n in addition_inc_add[of f "{a}"],
         cut_tac addition_set_mono[of "{a}" "aug_pm_set z i {a}" f],
@@ -1916,7 +1916,7 @@ apply ((rule allI)+, rule impI, erule conjE)
  apply (thin_tac "sa \<^sub>f+ a \<^sub>f+ (sb \<^sub>f+ \<^sub>i- a) = sa \<^sub>f+ (a \<^sub>f+ (sb \<^sub>f+ \<^sub>i- a))")
  apply (thin_tac "a \<^sub>f+ \<^sub>i- a = \<^sub>i- a \<^sub>f+ a")
  apply (frule inv_aug_addition [of "f" "z" "i" "{a}" ], assumption+)
- apply (drule_tac b = a in forball_spec1, assumption, simp)
+ apply (drule_tac x = a in bspec, assumption, simp)
         
  apply (frule_tac x = sb and y = z in aug_commute [of "f" "z" "i" "{a}"], 
              assumption+) 
@@ -3150,9 +3150,9 @@ apply (case_tac "x \<in> s_set R s A", simp add:s_set_def, fold s_set_def)
 apply simp
 apply ((erule bexE)+, simp)
  apply (simp add:sop_assoc_def)
- apply (drule_tac b = r in forball_spec1, assumption,
-        drule_tac b = ra in forball_spec1, assumption,
-        frule_tac b = a in forball_spec1,
+ apply (drule_tac x = r in bspec, assumption,
+        drule_tac x = ra in bspec, assumption,
+        frule_tac x = a in bspec,
         subst in_aug_pm_set, simp add:a_in_s_set)
  apply (rotate_tac -1, frule sym, thin_tac "r \<cdot>\<^sub>r ra \<^sub>s\<cdot> a = r \<^sub>s\<cdot> (ra \<^sub>s\<cdot> a)",
         simp)
@@ -3170,10 +3170,10 @@ apply (simp add:minus_set_def, erule bexE, simp)
 
 apply simp apply ((erule bexE)+, simp)
  apply (simp add:sop_assoc_def)
- apply (drule_tac b = "-\<^sub>a r" in forball_spec1, assumption,
+ apply (drule_tac x = "-\<^sub>a r" in bspec, assumption,
         thin_tac "\<forall>r\<in>carrier R. \<forall>x\<in>s_set R s A. r \<^sub>s\<cdot> (\<^sub>i- x) = (-\<^sub>a r) \<^sub>s\<cdot> x",
-        drule_tac b = ra in forball_spec1, assumption,
-        drule_tac b = a in forball_spec1,
+        drule_tac x = ra in bspec, assumption,
+        drule_tac x = a in bspec,
                 simp add:aug_pm_set_def, simp add:a_in_s_set) 
  apply (rotate_tac -1, frule sym, 
               thin_tac "(-\<^sub>a r) \<cdot>\<^sub>r ra \<^sub>s\<cdot> a = (-\<^sub>a r) \<^sub>s\<cdot> (ra \<^sub>s\<cdot> a)", simp,
@@ -3224,8 +3224,8 @@ apply (subst addition_set_def)
  apply (rule ballI) apply simp
  apply (thin_tac "y = add_set f (aug_pm_set z i (s_set R s A)) n")
  apply (frule_tac n = n in sop_closedTr[of s A i z f], assumption+)
- apply (drule_tac b = r in forball_spec1, assumption,
-        drule_tac b = x in forball_spec1, assumption)
+ apply (drule_tac x = r in bspec, assumption,
+        drule_tac x = x in bspec, assumption)
 
  apply (cut_tac n = n in addition_inc_add [of f
                                   "aug_pm_set z i (s_set R s A)"],
@@ -3286,9 +3286,9 @@ apply (rule ballI)+
 apply (simp add:sop_assoc_def)
 apply (rule ballI)+ apply simp
 apply (erule bexE)+
- apply (drule_tac b = a in forball_spec1, assumption,
-        drule_tac b = b in forball_spec1, assumption,
-        drule_tac b = sa in forball_spec1, assumption)
+ apply (drule_tac x = a in bspec, assumption,
+        drule_tac x = b in bspec, assumption,
+        drule_tac x = sa in bspec, assumption)
       
  apply simp
  apply (cut_tac n = n in addition_inc_add[of f
@@ -3303,10 +3303,10 @@ apply (erule bexE)+
  apply (simp add:sop_distr2_def[of R s f i "s_set R s A" z]) 
  apply (frule sop_closed[of s A i z f], assumption+, simp add:sop_distr2_def,
         assumption+, rotate_tac -1)
- apply (drule_tac b = b in forball_spec1, assumption,
+ apply (drule_tac x = b in bspec, assumption,
         rotate_tac -1,
-        frule_tac b = sa in forball_spec1, assumption,
-        drule_tac b = t in forball_spec1, assumption)
+        frule_tac x = sa in bspec, assumption,
+        drule_tac x = t in bspec, assumption)
   apply (simp, 
         thin_tac "\<forall>a\<in>carrier R.
            \<forall>x\<in>addition_set f (aug_pm_set z i (s_set R s A)).
@@ -3384,14 +3384,14 @@ apply (rule ballI)+ apply simp
  apply (frule sop_closed[of s A i z f], assumption+,
         simp add:sop_distr2_def, simp add:sop_assoc_def, assumption+)
  apply (rotate_tac -1,
-        frule_tac b = a in forball_spec1, assumption,
+        frule_tac x = a in bspec, assumption,
         rotate_tac -1,
-        frule_tac b = sa in forball_spec1, assumption,
-        drule_tac b = t in forball_spec1, assumption)
-  apply (frule_tac b = b in forball_spec1, assumption,
+        frule_tac x = sa in bspec, assumption,
+        drule_tac x = t in bspec, assumption)
+  apply (frule_tac x = b in bspec, assumption,
         rotate_tac -1,
-        frule_tac b = sa in forball_spec1, assumption,
-        drule_tac b = t in forball_spec1, assumption, 
+        frule_tac x = sa in bspec, assumption,
+        drule_tac x = t in bspec, assumption, 
         thin_tac "\<forall>r\<in>carrier R.
            \<forall>x\<in>addition_set f (aug_pm_set z i (s_set R s A)).
               r \<^sub>s\<cdot> x \<in> addition_set f (aug_pm_set z i (s_set R s A))")
@@ -3623,7 +3623,7 @@ apply (rule allI, rule impI, simp)
 apply (simp add:fg_genTr0)
 apply (rule allI, rule impI, simp)
  apply (erule bexE)+
- apply (drule_tac a = sa in forall_spec1)
+ apply (drule_tac x = sa in spec)
  apply simp
  apply (frule_tac x = t in fg_genTr0[of f i s A z], assumption+)
  apply (cut_tac whole_ideal)
@@ -3675,8 +3675,8 @@ apply (induct_tac n, (rule allI)+, rule impI, erule conjE)
 apply ((rule allI)+, rule impI, erule conjE)
  apply (frule_tac f = fa and n = n and A = A in func_pre,
         frule_tac f = sa and n = n and A = "carrier R" in func_pre) 
- apply (drule_tac a = fa in forall_spec1,
-        drule_tac a = sa in forall_spec1, simp)
+ apply (drule_tac x = fa in spec,
+        drule_tac x = sa in spec, simp)
       
  apply (frule_tac s = sa and f = fa and n = n in Module.l_comb_Suc[of 
          "fgmodule R A z i f s" R A "carrier R"], 
@@ -3861,7 +3861,7 @@ apply (simp add:ds2_def)
  apply (erule conjE)+
  apply (subst Int_commute, simp) 
  apply (rule ballI, 
-       drule_tac b = x in forball_spec1, assumption,
+       drule_tac x = x in bspec, assumption,
        (erule bexE)+)
  apply (simp add:msubmodule_def, (erule conjE)+,
         frule_tac c = m1 in subsetD[of "carrier M1" "carrier M"], assumption+,
@@ -4285,7 +4285,7 @@ lemma (in Ring) LSM_sub_M:"\<lbrakk>R module M; T \<subseteq> carrier M\<rbrakk>
                               (LSM\<^bsub>R\<^esub> M T) \<subseteq> carrier M"
 apply (rule subsetI, simp add:Least_submodule_def)
 apply (frule Module.submodule_whole[of M R])
-apply (drule_tac a = "carrier M" in forall_spec1,
+apply (drule_tac x = "carrier M" in spec,
        simp)
 done
 
@@ -4324,8 +4324,8 @@ apply (frule Module.module_is_ag [of M R])
         frule_tac H = x in aGroup.asubg_inc_zero[of M], assumption+)
 
 apply ((rule ballI)+, simp, rule allI, rule impI)
- apply (drule_tac a = x in forall_spec1,
-        drule_tac a = x in forall_spec1)
+ apply (drule_tac x = x in spec,
+        drule_tac x = x in spec)
  apply simp
  apply (frule_tac H = x and x = b in aGroup.asubg_mOp_closed[of M], simp+)
  apply (rule_tac H = x and x = a and y = "-\<^sub>a\<^bsub>M\<^esub> b" in 
@@ -4344,8 +4344,8 @@ apply (induct_tac n)
 apply ((rule allI)+, rule impI, erule conjE)
  apply (frule_tac f = f and n = n and A = T in func_pre)
  apply (frule_tac f = s and n = n and A = "carrier R" in func_pre) 
- apply (drule_tac a = f in forall_spec1,
-        drule_tac a = s in forall_spec1, simp)
+ apply (drule_tac x = f in spec,
+        drule_tac x = s in spec, simp)
        
  apply (cut_tac whole_ideal,
         frule_tac s = s and n = n and f = f in 

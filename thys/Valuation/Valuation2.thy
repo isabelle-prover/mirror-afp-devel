@@ -303,13 +303,13 @@ apply (simp add:Ostrowski_elem_def, (erule conjE)+,
        simp add:nset_def, simp add:Ostrowski_elem_def, (erule conjE)+)
  (** case * * * **)
  apply (case_tac "j = Suc 0", simp,
-        drule_tac b = "Suc 0" in forball_spec1,
+        drule_tac x = "Suc 0" in bspec,
         simp add:nset_def,
         simp add:compose_def skip_def,
         rule_tac v = "vv (Suc 0)" and x = t in 
          OstrowskiTr9, assumption+,
         frule_tac j = j and n = n in nset_Tr51, assumption+,
-        drule_tac b = "j - Suc 0" in forball_spec1, assumption+,
+        drule_tac x = "j - Suc 0" in bspec, assumption+,
         simp add:compose_def skip_def)
  (** case * * * **) 
  apply (case_tac "j = Suc (Suc 0)", simp) apply (
@@ -352,7 +352,7 @@ apply (rule_tac v = "vv 0" and x = s in OstrowskiTr8,
      simp add:vals_nonequiv_valuation nset_def, assumption,
      (erule conjE)+, simp add:compose_def skip_def,
      frule_tac j = j in nset_Tr51, assumption+,
-     drule_tac b = "j - Suc 0" in forball_spec1, assumption+)
+     drule_tac x = "j - Suc 0" in bspec, assumption+)
  apply (simp add:nset_def)
 done
 
@@ -468,7 +468,7 @@ apply (frule_tac m = j in vals_nonequiv_valuation[of "Suc n" "vv"],
        frule val_nonzero_z[of "vv j" "a"], assumption+, erule exE,
        simp add:Ostrowski_elem_def,
        frule conjunct2, fold Ostrowski_elem_def,
-       drule_tac b = j in forball_spec1, assumption) 
+       drule_tac x = j in bspec, assumption) 
 apply (frule Ostrowski_elem_nonzero[of "n" "vv" "x"], assumption+,
        frule val_nonzero_z[of "vv j" "x"], assumption+, erule exE, simp,
        frule_tac a = za and x = z in zmult_pos_bignumTr,
@@ -664,9 +664,9 @@ apply (case_tac "ja = 0", simp, cut_tac transpos_eq[of "j"],
        simp add:nset_def, frule Suc_leI[of "0" "j"],
        frule_tac a = j in forall_spec, simp, simp)
 apply (case_tac "j = 0", simp,
-       frule_tac b = ja in forball_spec1, simp add:nset_def,
+       frule_tac x = ja in bspec, simp add:nset_def,
        cut_tac  transpos_ij_2[of "0" "Suc n" "ja"], simp, simp+) 
-apply (frule_tac b = j in forball_spec1, simp add:nset_def,
+apply (frule_tac x = j in bspec, simp add:nset_def,
        cut_tac transpos_id[of "0" "Suc n" "ja" "j"], simp+) 
 done
 
@@ -695,7 +695,7 @@ apply (case_tac "j = 0", simp add:transpos_eq,
        rule someI2_ex,
        frule Approximation1_5P[of "n" "vv"], simp , blast,
        simp add:Kronecker_delta_def, rule impI, (erule conjE)+,
-       frule_tac b = i in forball_spec1, simp add:nset_def, assumption) 
+       frule_tac x = i in bspec, simp add:nset_def, assumption) 
 
 apply (frule_tac j = j in transpos_vals_nonequiv[of "n" "vv"], simp,
        frule Approximation1_5P[of "n" "vv \<circ> \<tau>\<^bsub>0 j\<^esub>"],
@@ -708,7 +708,7 @@ apply (simp add:cmp_def,
          thin_tac "\<exists>x\<in>carrier K.
             vv j x = 1 \<and> (\<forall>ja\<in>nset (Suc 0) (Suc n). vv ((\<tau>\<^bsub>0 j\<^esub>) ja) x = 0)",
         (erule conjE)+,
-         drule_tac b = j in forball_spec1, simp add:nset_def,
+         drule_tac x = j in bspec, simp add:nset_def,
          simp add:transpos_ij_2)
 
 apply (simp add:Kronecker_delta_def,
@@ -718,7 +718,7 @@ apply (simp, rule someI2_ex, blast,
        thin_tac "\<exists>x\<in>carrier K. vv ((\<tau>\<^bsub>0 j\<^esub>) 0) x = 1 \<and> 
                      (\<forall>ja\<in>nset (Suc 0) (Suc n). vv ((\<tau>\<^bsub>0 j\<^esub>) ja) x = 0)",
        (erule conjE)+,
-       drule_tac b = i in forball_spec1, simp add:nset_def,
+       drule_tac x = i in bspec, simp add:nset_def,
        cut_tac transpos_id[of 0 "Suc n" j i], simp+)
 done
 
@@ -769,9 +769,9 @@ apply (rule ballI, erule conjE,
        (erule conjE)+)
 
 apply (case_tac "m = 0", simp,
-       drule_tac b = l in forball_spec1, simp add:nset_def,
+       drule_tac x = l in bspec, simp add:nset_def,
        simp add:transpos_ij_2,
-       drule_tac b = m in forball_spec1, simp add:nset_def,
+       drule_tac x = m in bspec, simp add:nset_def,
        simp add:transpos_id)
 done  
 
@@ -1327,7 +1327,7 @@ apply (case_tac "ja = j", simp)
  apply (thin_tac "\<forall>N. 1\<^sub>r \<plusminus> -\<^sub>a (1\<^sub>r \<plusminus> -\<^sub>a (\<Omega>\<^bsub>K vv (Suc n)\<^esub>) j^\<^bsup>K N\<^esup>)^\<^bsup>K N\<^esup> \<plusminus> -\<^sub>a 1\<^sub>r \<in> 
         carrier K")
  apply (thin_tac "\<forall>l\<le>Suc n. x l \<in> carrier K")
- apply (drule_tac m = N in nat_forall_spec)
+ apply (drule_tac x = N in spec)
  apply (drule_tac a = j in forall_spec, assumption,
         thin_tac "\<forall>ja\<le>Suc n. 1\<^sub>r \<plusminus> -\<^sub>a (1\<^sub>r \<plusminus> -\<^sub>a (\<Omega>\<^bsub>K vv (Suc n)\<^esub>) ja^\<^bsup>K N\<^esup>)^\<^bsup>K N\<^esup> 
         \<in> carrier K")
@@ -1369,7 +1369,7 @@ apply (frule_tac aa = "(\<Omega>\<^bsub>K vv (Suc n)\<^esub>) ja" and N = N in
 apply (frule_tac l = ja in Ostrowski_baseTr0[of "n" "vv"], assumption+,
        erule conjE) 
  apply (rotate_tac -1, frule_tac a = j in forall_spec) apply assumption
- apply (frule_tac b = j in forball_spec1, simp)
+ apply (frule_tac x = j in bspec, simp)
  apply (rule aless_imp_le) apply blast
  apply (rotate_tac -5, 
         drule_tac a = N in forall_spec, assumption)
@@ -1761,7 +1761,7 @@ apply (frule ring_n_pd[of n P])
         cut_tac invf_closed1[of x], simp, erule conjE)
  apply (subst val_t2p [where v="\<nu>\<^bsub>K P j\<^esub>"], simp,
         rule mem_ring_n_pd_mem_K[of "n" "P" "y"], assumption+,
-        frule_tac a = j in forall_spec1, simp,
+        frule_tac x = j in spec, simp,
         simp add:zero_in_ring_n_pd_zero_K)
  apply (subst value_of_inv [where v="\<nu>\<^bsub>K P j\<^esub>"], simp,
         simp add:ring_n_pd_def Sr_def, assumption+)
@@ -1866,7 +1866,7 @@ lemma (in Corps) val_LI_noninf:"\<lbrakk>distinct_pds K n P; ideal (O\<^bsub>K P
  apply (simp add:zero_in_ring_n_pd_zero_K)
  apply (subgoal_tac "\<exists>x\<in>I. AMin ((\<nu>\<^bsub>K (P j)\<^esub>) ` I) = (\<nu>\<^bsub>K (P j)\<^esub>) x",
         erule bexE) apply simp
- apply (drule_tac b = a in forball_spec1, assumption)
+ apply (drule_tac x = a in bspec, assumption)
  apply (thin_tac "AMin ((\<nu>\<^bsub>K (P j)\<^esub>) ` I) = (\<nu>\<^bsub>K (P j)\<^esub>) x")
 
  apply (frule_tac h = a in Ring.ideal_subset[of "O\<^bsub>K P n\<^esub>" "I"], assumption+)

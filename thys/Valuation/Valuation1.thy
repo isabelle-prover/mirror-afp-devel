@@ -168,7 +168,7 @@ apply (induct_tac n)
  apply (rule impI, erule conjE, simp)
 apply (rule impI, (erule conjE)+,
        cut_tac Nsetn_sub_mem1[of n], simp,
-       drule_tac a = "Suc n" in forall_spec1, simp,
+       drule_tac x = "Suc n" in spec, simp,
        rule_tac z = z and x = "Amin n f" and y = "f(Suc n)" in amin_ge1,
        simp+) 
 done 
@@ -468,7 +468,7 @@ apply (induct_tac n)
  apply (simp add:aadd_0_r)
  apply simp
  apply (simp add:nat_not_le_less[of j])
- apply (frule_tac x = n and n = j in less_Suc_le1)
+ apply (frule_tac m = n and n = j in Suc_leI)
  apply (frule_tac m = j and n = "Suc n" in le_anti_sym, assumption+, simp)
  apply (cut_tac n = n in ASum_zero [of _ "f"])
  apply (subgoal_tac "(\<forall>j\<le>n. f j \<in> Z\<^sub>\<infinity>) \<and> (\<forall>l\<le>n. f l = 0)")
@@ -1039,7 +1039,7 @@ lemma (in Corps) val_principalTr1:"\<lbrakk> valuation K v\<rbrakk>  \<Longright
         cut_tac a = w in mem_ant, simp, erule disjE, erule exE,
         frule_tac x = x in value_noninf_nonzero[of v], assumption+,
         simp, frule amin_generateTr[of v])
- apply (drule_tac b = x in forball_spec1, simp,
+ apply (drule_tac x = x in bspec, simp,
         erule exE,
         frule AMin_z[of v], erule exE, simp add:Lv_def,
         simp add:asprod_mult, frule sym, thin_tac "za * a = z",
@@ -1057,9 +1057,9 @@ lemma (in Corps) val_principalTr2:"\<lbrakk>valuation K v;
   d \<in> v ` (carrier K - {\<zero>}) \<and> (\<forall>w\<in>v ` carrier K. \<exists>a. w = a * d) \<and> 0 < d\<rbrakk>
        \<Longrightarrow> c = d" 
 apply ((erule conjE)+, 
-       drule_tac b = d in forball_spec1,
+       drule_tac x = d in bspec,
        simp add:image_def, erule bexE, blast,
-       drule_tac b = c in forball_spec1,
+       drule_tac x = c in bspec,
        simp add:image_def, erule bexE, blast)
 
 apply ((erule exE)+,
@@ -1111,7 +1111,7 @@ apply (rule ex_ex1I,
 apply (case_tac "w = \<zero>\<^bsub>K\<^esub>", simp add:value_of_zero,
        frule_tac m = z in a_i_pos, blast)
 apply (frule amin_generateTr[of v],
-       drule_tac b = w in forball_spec1, simp, simp) 
+       drule_tac x = w in bspec, simp, simp) 
 apply (
        erule exE, simp add:asprod_mult,
        subst a_z_z[THEN sym], blast)
@@ -2062,7 +2062,7 @@ apply (simp add:LI_def,
        frule I_vals_nonempty[of v], assumption+,
        frule AMin[of "v ` I" "0"], assumption, erule conjE)
 apply (frule_tac x = a in val_in_image[of v I], assumption+,
-       drule_tac b = "v a" in forball_spec1, simp,
+       drule_tac x = "v a" in bspec, simp,
        simp add:Vr_0_f_0,
        frule_tac x = a in val_nonzero_z[of v],
        simp add:Ring.ideal_subset Vr_mem_f_mem, assumption+,
@@ -2101,7 +2101,7 @@ apply (rule contrapos_pp, simp+,
        frule AMin[of "v ` I" "0"], assumption, erule conjE)
 apply (frule_tac h = a in Ring.ideal_subset[of "Vr K v" "I"], assumption+,
        frule_tac x = a in val_in_image[of v I], assumption+,
-       drule_tac b = "v a" in forball_spec1, simp) 
+       drule_tac x = "v a" in bspec, simp) 
  apply (frule_tac x = a in val_nonzero_z[of v], assumption+,
        erule exE, simp,
        cut_tac x = "ant z" in inf_ge_any, frule_tac x = "ant z" in 
@@ -2154,7 +2154,7 @@ apply (case_tac "I = carrier (Vr K v)",
    frule AMin[of "v ` I" "0"], assumption, erule conjE,
 
    frule val_in_image[of v I "1\<^sub>r"], assumption+,
-   drule_tac b = "v (1\<^sub>r)" in forball_spec1, assumption+,
+   drule_tac x = "v (1\<^sub>r)" in bspec, assumption+,
    simp add:value_of_one ant_0,
    simp add:zero_val_gen_whole[of v "Ig K v I"])
 
@@ -2181,10 +2181,10 @@ apply (simp add:LI_def,
        simp only:ant_0[THEN sym], 
        frule I_vals_nonempty[of v], assumption+,
        frule AMin[of "v ` I" "0"], assumption, erule conjE,
-       frule_tac b = "v x" in forball_spec1,
+       frule_tac x = "v x" in bspec,
        frule_tac x = x in val_in_image[of v I], assumption+,
        simp)
-apply (drule_tac b =  x in forball_spec1, assumption,
+apply (drule_tac x =  x in bspec, assumption,
        frule_tac y = x in eq_val_eq_idealTr[of v "Ig K v I"],
            simp add:Ring.ideal_subset,
        rule contrapos_pp, simp+, simp add:value_of_zero,
@@ -2972,8 +2972,8 @@ apply (thin_tac "I \<noteq> carrier (Vr K v)",
    
 
 apply (simp add:prime_ideal_def, erule conjE,
-      drule_tac b = "Pg K v" in forball_spec1, assumption,
-      drule_tac b = "Pg K v^\<^bsup>K (na (n_val K v (Ig K v I)) - Suc 0)\<^esup> " in forball_spec1)
+      drule_tac x = "Pg K v" in bspec, assumption,
+      drule_tac x = "Pg K v^\<^bsup>K (na (n_val K v (Ig K v I)) - Suc 0)\<^esup> " in bspec)
       apply (simp add:Vr_exp_f_exp[THEN sym, of v]) 
 apply (rule Ring.npClose[of "Vr K v" "Pg K v"], assumption+) 
 apply simp
@@ -3156,7 +3156,7 @@ apply (rule subsetI,
        frule_tac x1 = x in val_pos_mem_Vr[THEN sym, of "v"], 
        frule_tac x = x in Vr_mem_f_mem[of "v"], 
        simp, frule_tac x = x in Vr_mem_f_mem[of "v"], assumption+)
-apply (drule_tac b = x in forball_spec1, simp add:Vr_mem_f_mem) 
+apply (drule_tac x = x in bspec, simp add:Vr_mem_f_mem) 
 apply simp
 apply (subst val_pos_mem_Vr[THEN sym, of v'], assumption+,
        simp add:Vr_mem_f_mem, assumption+)

@@ -69,7 +69,7 @@ apply  (insert ex_minimum,
  apply (frule_tac D = "Iod D (segment D d)" in  Worder.well_ord_compare1 [of _ 
        "E"], assumption+)
  apply (rule ballI)
- apply (frule_tac b = a in forball_spec1, assumption+) 
+ apply (frule_tac x = a in bspec, assumption+) 
  apply (simp add:Iod_segment_segment)
 
  apply (erule disjE) apply blast
@@ -87,7 +87,7 @@ apply (frule well_ord_compare1 [of "E"], assumption+,
        erule disjE, assumption)
 apply (erule bexE,
        insert Worder,
-       frule_tac b = c in forball_spec1, assumption+,
+       frule_tac x = c in bspec, assumption+,
         thin_tac "\<forall>c\<in>carrier E. \<exists>d\<in>carrier D.
                ord_equiv (Iod E (segment E c)) (Iod D (segment D d))",
        erule bexE)
@@ -603,7 +603,7 @@ lemma ODnum_segmentTr1:"\<lbrakk>Worder D; x = ordinal_number D; y \<in> ODnums;
         \<Longrightarrow> \<exists>c. c \<in> carrier D \<and> (y = ordinal_number (Iod D (segment D c)))"
 apply (frule ODnum_segmentTr[of D x y], assumption+, erule exE, erule conjE)
 apply (frule mem_ODnums_nonempty[of y], erule exE,
-       frule_tac b = xa in forball_spec1, assumption,
+       frule_tac x = xa in bspec, assumption,
        thin_tac "\<forall>Y\<in>y. ord_equiv Y (Iod D (segment D c))")
  (** going to apply ordinal_number_eq **)
  apply (frule_tac D = xa in ordinal_numberTr5[of y], assumption, simp,
@@ -728,7 +728,7 @@ apply (frule ODNmap_mem [of "D" "x" "y"], assumption+, erule conjE,
         cut_tac D = D and a = c in Worder.segment_Worder, assumption+,
         frule_tac D = "Iod D (segment D c)" and x = y in ordinal_numberTr2,
             assumption+,
-        frule_tac b = "Iod D (segment D c)" in forball_spec1, assumption,
+        frule_tac x = "Iod D (segment D c)" in bspec, assumption,
          thin_tac "\<forall>Y\<in>y. ord_equiv Y (Iod D (segment D (ODNmap D y)))",
         cut_tac a = "ODNmap D y" in Worder.segment_Worder[of "D"],
          assumption+)
@@ -747,7 +747,7 @@ apply (rule someI2_ex, rule ex_conjI, simp)
  apply (erule conjE)
  apply (cut_tac Worder.segment_Worder[of "D" "c"], 
         frule ordinal_inc_self[of "Iod D (segment D c)"],
-        frule_tac b = "Iod D (segment D c)" in forball_spec1, assumption)
+        frule_tac x = "Iod D (segment D c)" in bspec, assumption)
  apply (frule_tac b = x in Worder.segment_unique[of "D" "c" _], assumption+,
         rule sym, assumption, assumption)
 done
@@ -934,10 +934,10 @@ apply (frule_tac d = x and m = xa and X = X in
         assumption+)
  apply (simp add:Order.segment_inc[THEN sym, of ODnods])
  apply (rule contrapos_pp, simp+)
- apply (frule_tac a = x in forall_spec1,
+ apply (frule_tac x = x in spec,
         thin_tac "\<forall>x. \<not> minimum_elem (Iod ODnods S) X x")
  apply (simp add:minimum_elem_def, erule bexE)
- apply (frule_tac b = xa in forball_spec1, assumption,
+ apply (frule_tac x = xa in bspec, assumption,
         thin_tac "\<forall>a\<in>X. a \<notin> segment ODnods x",
         frule_tac c = xa and A = X and B = "carrier ODnods" in subsetD,
         assumption+)
@@ -990,11 +990,11 @@ apply (erule conjE)+
         simp)
  apply (erule disjE)
  apply (rotate_tac -4,
-        frule_tac b = a1 in forball_spec1, assumption+,
+        frule_tac x = a1 in bspec, assumption+,
         thin_tac "\<forall>y\<in>carrier D. z \<prec> y \<longrightarrow> \<not> y \<prec> a",
         thin_tac "\<forall>y\<in>carrier D. a1 \<prec> y \<longrightarrow> \<not> y \<prec> a", simp)
 
- apply (frule_tac b = z in forball_spec1, assumption+, simp)
+ apply (frule_tac x = z in bspec, assumption+, simp)
 done
 
 lemma (in Order) Pre_element:"\<lbrakk>a \<in> carrier D; ExPre D a\<rbrakk> \<Longrightarrow> 
@@ -1017,7 +1017,7 @@ lemma (in Worder) segment_forall:"\<lbrakk>a \<in> segment D b; b \<in> carrier 
 apply (cut_tac segment_sub[of b])
 apply (rule ballI, rule impI) 
  apply (case_tac "y \<in> segment D b",
-         frule_tac b = y in forball_spec1, assumption+, simp)
+         frule_tac x = y in bspec, assumption+, simp)
 (***  
         ------------------a---------------b---------------y----------
 ***)
@@ -1049,7 +1049,7 @@ apply (rule iffI)
  apply (simp add:ExPre_def, erule exE, (erule conjE)+)
   apply (frule_tac a = a in segment_inc[of _ b], assumption, simp)
   apply (rule contrapos_pp, simp+)  
-  apply (frule_tac a = x in forall_spec1,
+  apply (frule_tac x = x in spec,
          thin_tac "\<forall>x. x \<prec>\<^bsub>Iod D (segment D b)\<^esub> a \<longrightarrow>
              x \<in> carrier (Iod D (segment D b)) \<longrightarrow>
              (\<exists>y\<in>carrier (Iod D (segment D b)).
@@ -1059,7 +1059,7 @@ apply (rule iffI)
   apply (simp add:Iod_carrier Iod_less)
   apply (erule bexE, erule conjE,
        frule_tac c = y in subsetD[of "segment D b" "carrier D"], assumption+) 
-  apply (frule_tac b = y in forball_spec1, assumption,
+  apply (frule_tac x = y in bspec, assumption,
          thin_tac "\<forall>y\<in>carrier D. x \<prec> y \<longrightarrow> \<not> y \<prec> a", simp)
 done
 
@@ -1083,7 +1083,7 @@ apply (cut_tac segment_sub[of "b"],
         simp add:Iod_carrier, simp add:subsetD, simp add:Iod_less)
  apply (erule conjE, rule ballI)
  apply (case_tac "y \<in> segment D b",
-        frule_tac b = y in forball_spec1, assumption,
+        frule_tac x = y in bspec, assumption,
         thin_tac "\<forall>y\<in>segment D b. Pre (Iod D (segment D b)) a \<prec> y 
                   \<longrightarrow> \<not> y \<prec> a",
         simp)
@@ -1164,7 +1164,7 @@ apply (rule contrapos_pp, simp+)
          assumption+)
   apply (frule_tac c = x and A = "{x \<in> carrier D. \<not> P x}" and B = "carrier D"
           in subsetD, assumption+) 
-  apply (frule_tac b = x in forball_spec1, assumption+,
+  apply (frule_tac x = x in bspec, assumption+,
          thin_tac "\<forall>t\<in>carrier D. (\<forall>u\<in>segment D t. P u) \<longrightarrow> P t")
   apply (simp add:minimum_elem_def, (erule conjE)+) 
   apply (erule bexE, simp add:segment_def)
@@ -1387,7 +1387,7 @@ apply (frule Order_adjunct_ord[of "a"],
  apply (simp add:carrier_adjunct_ord)
  apply (cut_tac adjunct_ord_large_a[of a],
         rule ballI, 
-        frule_tac b = x in forball_spec1, assumption,
+        frule_tac x = x in bspec, assumption,
               thin_tac "\<forall>x\<in>carrier D. x \<prec>\<^bsub>adjunct_ord D a\<^esub> a",
         cut_tac insertI1[of a "carrier D"], simp,
         frule_tac c = x in subsetD[of "carrier D" "carrier (adjunct_ord D a)"],
@@ -1521,7 +1521,7 @@ apply (frule Torder_adjunct_ord[of a])
         simp)
  apply (cut_tac adjunct_ord_large_a[of a],
         rule ballI, 
-        frule_tac b = x in forball_spec1, assumption,
+        frule_tac x = x in bspec, assumption,
               thin_tac "\<forall>x\<in>carrier D. x \<prec>\<^bsub>adjunct_ord D a\<^esub> a",
         cut_tac insertI1[of a "carrier D"], simp,
         frule_tac c = x in subsetD[of "carrier D" "carrier (adjunct_ord D a)"],
@@ -1656,7 +1656,7 @@ lemma (in Order) S_inductive_Sup_min_bounds:"\<lbrakk>S_inductive_set D; Chain D
        ub X b\<rbrakk> \<Longrightarrow>  Sup D X \<preceq> b"
 apply (frule S_inductive_sup[of "X"], assumption+,
        simp add:minimum_elem_def, erule conjE)
-apply (frule_tac b = b in forball_spec1,
+apply (frule_tac x = b in bspec,
        simp add:upper_bounds_def, assumption)
 done
 
@@ -1689,10 +1689,10 @@ apply (rule ballI)
  apply (simp add:Iod_carrier, (erule conjE)+,
         frule S_inductive_sup_bound[of X], assumption+)
  apply (erule disjE, simp)
- apply (frule_tac b = s in forball_spec1, assumption,
+ apply (frule_tac x = s in bspec, assumption,
         thin_tac "\<forall>y\<in>X. c \<prec>\<^bsub>Iod D (insert (Sup D X) X)\<^esub> y \<longrightarrow>
                \<not> y \<prec>\<^bsub>Iod D (insert (Sup D X) X)\<^esub> Sup D X",
-        frule_tac b = s in forball_spec1, assumption,
+        frule_tac x = s in bspec, assumption,
         thin_tac "\<forall>x\<in>X. x \<preceq> Sup D X") 
  apply (frule insert_sub[of X "carrier D" "Sup D X"], assumption+,
         cut_tac subset_insertI[of X "Sup D X"],
@@ -1914,7 +1914,7 @@ apply (frule S_inductive_sup_mem[of "X"], assumption+,
        frule_tac c = x in subsetD[of "X" "insert (Sup D X) X"], assumption+)
 apply (simp add:Iod_less[of "insert (Sup D X) X"],
        frule S_inductive_sup_bound[of "X"], assumption+,
-       frule_tac b = x in forball_spec1, assumption+,
+       frule_tac x = x in bspec, assumption+,
        thin_tac "\<forall>x\<in>X. x \<preceq> Sup D X",
        simp add:oless_def)
 apply (rule contrapos_pp, simp+)
@@ -2050,7 +2050,7 @@ apply (frule Worder.Order[of "Iod D W2"],
        simp add:Iod_carrier, assumption+)
   apply (frule_tac a = t in Order.Pre_in_segment[of "Iod D W1"],
         simp add:Iod_carrier, assumption)
-  apply (frule_tac b = "Pre (Iod D W1) t" in forball_spec1, assumption,
+  apply (frule_tac x = "Pre (Iod D W1) t" in bspec, assumption,
         thin_tac "\<forall>u\<in>segment (Iod D W1) t. fixp g u") 
        apply (simp add:fixp_def)
   apply (frule_tac a = "g t" in Worder.Pre_segment[of "Iod D W2" _ "b"],
@@ -2064,11 +2064,11 @@ apply (frule Worder.Order[of "Iod D W2"],
  apply (simp add:WWa_def Wa_def, (erule conjE)+,
         thin_tac "\<forall>x\<in>W1. a \<preceq> x", thin_tac "\<forall>x\<in>W2. a \<preceq> x",
         thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x")
- apply (frule_tac b = t in forball_spec1, assumption+,
+ apply (frule_tac x = t in bspec, assumption+,
         thin_tac "\<forall>x\<in>W1.
             if ExPre (Iod D W1) x then f (Pre (Iod D W1) x) = x
             else if a \<noteq> x then Sup D (segment (Iod D W1) x) = x else a = a",
-        frule_tac b = "g t" in forball_spec1, assumption+,
+        frule_tac x = "g t" in bspec, assumption+,
         thin_tac "\<forall>x\<in>W2.
             if ExPre (Iod D W2) x then f (Pre (Iod D W2) x) = x
             else if a \<noteq> x then Sup D (segment (Iod D W2) x) = x else a = a")
@@ -2082,12 +2082,12 @@ apply (frule Worder.Order[of "Iod D W2"],
         thin_tac "\<not> ExPre (Iod (Iod D W2) (segment (Iod D W2) b)) (g t)")
  apply (simp add:WWa_def Wa_def, (erule conjE)+)
  apply (rotate_tac -3,
-        frule_tac b = t in forball_spec1, assumption,
+        frule_tac x = t in bspec, assumption,
         thin_tac "\<forall>x\<in>W1.
             if ExPre (Iod D W1) x then f (Pre (Iod D W1) x) = x
             else if a \<noteq> x then Sup D (segment (Iod D W1) x) = x else a = a")
  apply (rotate_tac 1,
-        frule_tac b = "g t" in forball_spec1, assumption,
+        frule_tac x = "g t" in bspec, assumption,
         thin_tac "\<forall>x\<in>W2.
             if ExPre (Iod D W2) x then f (Pre (Iod D W2) x) = x
             else if a \<noteq> x then Sup D (segment (Iod D W2) x) = x else a = a",
@@ -2099,7 +2099,7 @@ apply (frule Worder.Order[of "Iod D W2"],
  apply (frule_tac t1 = t in fixp_same[THEN sym, of "W1" "W2" _ "b" "g"], 
         assumption+, simp, simp add:fixp_def)
  apply (rule ballI,
-        frule_tac b = x in forball_spec1,
+        frule_tac x = x in bspec,
         simp add:subsetD[of "W1" "carrier D"], 
         simp add:Iod_carrier fixp_def)
  apply (simp add:Worder.Order, assumption)
@@ -2327,7 +2327,7 @@ apply (simp only:ExPre_def)
  apply (simp only:Iod_carrier)
  apply (frule_tac X = W and C = "WWa D f a" and A = x in UnionI, assumption+)
  apply (simp del:Union_iff)
- apply (frule_tac b = W in forball_spec1, assumption,
+ apply (frule_tac x = W in bspec, assumption,
         thin_tac "\<forall>y\<in>WWa D f a.
            \<forall>y\<in>y. xa \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> x")
  apply (frule_tac W = W and xa = xa in BNTr7_1[of "f" "a" "x"], assumption+,
@@ -2339,7 +2339,7 @@ apply (simp only:ExPre_def)
  apply (simp add:Iod_less)
 
  apply (rule ballI, rule impI)
- apply (frule_tac b = y in forball_spec1, assumption,
+ apply (frule_tac x = y in bspec, assumption,
         thin_tac "\<forall>y\<in>W. xa \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> x",
         frule_tac X = W and C = "WWa D f a" and A = y in UnionI, assumption+)
  apply (simp add:Iod_less)
@@ -2355,7 +2355,7 @@ apply (rule impI)
         frule_tac W = W in mem_wwa_Worder,
         frule_tac W = W in mem_WWa_sub_carrier,
         frule BNTr7_2[of "f" "a" "x"], assumption+,
-        frule_tac b = W in forball_spec1, assumption,
+        frule_tac x = W in bspec, assumption,
         thin_tac "\<forall>W\<in>WWa D f a. x \<in> W \<longrightarrow> ExPre (Iod D W) x",
         simp) 
  
@@ -2384,7 +2384,7 @@ apply (rule conjI,
        frule_tac X = W and A = y in UnionI[of _ "WWa D f a"], assumption+,
        thin_tac "\<forall>y\<in>W. Pre (Iod D W) x \<prec>\<^bsub>Iod D W\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D W\<^esub> x")
  apply (simp only:Iod_carrier,
-        frule_tac b = y in forball_spec1, assumption,
+        frule_tac x = y in bspec, assumption,
         thin_tac "\<forall>y\<in>\<Union>WWa D f a.
               Pre (Iod D (\<Union>WWa D f a)) x \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> y \<longrightarrow>
               \<not> y \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> x")
@@ -2417,7 +2417,7 @@ apply (frule_tac X = W and A = xa in UnionI[of _ "WWa D f a"], assumption+,
  apply (erule bexE, rename_tac xa W', erule bexE, erule conjE,
         frule_tac X = W' and A = y in UnionI[of _ "WWa D f a"], assumption+)
  apply (frule_tac xa = y in BNTr7_1[of "f" "a" "x" "W"], assumption+)
- apply (frule_tac b = y in forball_spec1, assumption+,
+ apply (frule_tac x = y in bspec, assumption+,
         thin_tac "\<forall>y\<in>W. xa \<prec>\<^bsub>Iod D W\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D W\<^esub> x")
  apply (simp add:Iod_less)
 done
@@ -2519,7 +2519,7 @@ apply (frule well_ord_adjunction[of "W" "Sup D W"], assumption+,
        apply (simp only:Iod_carrier)
 apply (rule ballI)
 apply (rotate_tac -2,
-       frule_tac b = y in forball_spec1, assumption+,
+       frule_tac x = y in bspec, assumption+,
        thin_tac "\<forall>x\<in>insert (Sup D W) W. x \<preceq> Sup D (insert (Sup D W) W)",
        cut_tac insertI1[of "Sup D W" "W"],
        simp only:Iod_less)
@@ -2553,7 +2553,7 @@ apply (rule ballI)
  apply (rule ballI)
  apply (thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
         thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W")
- apply (frule_tac b = s in forball_spec1, assumption+,
+ apply (frule_tac x = s in bspec, assumption+,
         thin_tac "\<forall>y\<in>W. \<not> x \<prec>\<^bsub>Iod D (insert (Sup D W) W)\<^esub> y")
  apply (frule_tac c = x in subsetD[of "W" "insert (Sup D W) W"], assumption+,
         frule_tac c = s in subsetD[of "W" "insert (Sup D W) W"], assumption+)
@@ -2603,7 +2603,7 @@ apply (rule iffI)
  apply (simp del:insert_subset) apply (cut_tac insertI1[of "b" "W"])
  apply (erule disjE) apply (simp del:insert_iff insert_subset)
  apply (thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x")
- apply (frule_tac b = x in forball_spec1, assumption,
+ apply (frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>x\<in>W. x \<preceq> b")
  apply (frule subsetD[of "W" "insert b W" "x"], assumption+,
         frule Iod_carrier[THEN sym, of "insert b W"], 
@@ -2630,7 +2630,7 @@ apply (rule iffI)
   apply (simp del:insert_iff insert_subset add:Torder.not_le_less[THEN sym, 
            of "Iod D (insert b W)" "x" "b"])
   apply (rotate_tac 5,
-         frule_tac b = x in forball_spec1, assumption,
+         frule_tac x = x in bspec, assumption,
          thin_tac "\<forall>x\<in>W. x \<preceq> b", simp add:Iod_le)
   apply (thin_tac "xa \<in> insert b W", erule conjE,
          simp del:insert_iff insert_subset,
@@ -2639,7 +2639,7 @@ apply (rule iffI)
   apply (erule bexE, erule conjE)
   apply (thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
          thin_tac "\<forall>x\<in>W. x \<preceq> b",
-         frule_tac b = y in forball_spec1, assumption,
+         frule_tac x = y in bspec, assumption,
          thin_tac "\<forall>y\<in>W. xa \<prec>\<^bsub>Iod D (insert b W)\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D (insert b W)\<^esub> x",
          frule_tac c = xa in subsetD[of "W" "insert b W"], assumption+,
          frule_tac c = y in subsetD[of "W" "insert b W"], assumption+)
@@ -2660,7 +2660,7 @@ apply (erule exE, (erule conjE)+)
         thin_tac "\<forall>xa. xa \<prec>\<^bsub>Iod D (insert b W)\<^esub> x \<longrightarrow> xa \<in> insert b W \<longrightarrow>
        xa \<prec> b \<and> b \<prec>\<^bsub>Iod D (insert b W)\<^esub> x \<or> (\<exists>y\<in>W. xa \<prec> y \<and> y \<prec>\<^bsub>Iod D (insert b W)\<^esub> x)")
  apply (thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
-        frule_tac b = x in forball_spec1, assumption,
+        frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>x\<in>W. x \<preceq> b",
         frule_tac c = xa in subsetD[of "W" "insert b W"], assumption+, 
         frule_tac c = x in subsetD[of "W" "insert b W"], assumption+,
@@ -2669,7 +2669,7 @@ apply (erule exE, (erule conjE)+)
        xa \<prec> b \<and> b \<prec>\<^bsub>Iod D (insert b W)\<^esub> x \<or> (\<exists>y\<in>W. xa \<prec> y \<and> y \<prec>\<^bsub>Iod D (insert b W)\<^esub> x)")
  apply (simp del:insert_iff insert_subset)
  apply (thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
-        frule_tac b = x in forball_spec1, assumption,
+        frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>x\<in>W. x \<preceq> b",
         frule_tac subsetD[of "W" "insert b W" "x"], assumption+,
         frule_tac c = xa in subsetD[of "W" "insert b W"], assumption+,
@@ -2686,7 +2686,7 @@ apply (erule exE, (erule conjE)+)
       xa \<prec> b \<and> b \<prec>\<^bsub>Iod D (insert b W)\<^esub> x \<or> (\<exists>y\<in>W. xa \<prec> y \<and> y \<prec>\<^bsub>Iod D (insert b W)\<^esub> x)")
  apply (erule bexE, erule conjE,
         thin_tac "\<forall>x\<in>W. x \<preceq> b",
-        frule_tac b = y in forball_spec1, assumption,
+        frule_tac x = y in bspec, assumption,
         thin_tac "\<forall>y\<in>W. xa \<prec> y \<longrightarrow> \<not> y \<prec> x",
         frule_tac c = y in subsetD[of "W" "insert b W"], assumption+,
         frule_tac c = x in subsetD[of "W" "insert b W"], assumption+,
@@ -2735,7 +2735,7 @@ apply (rule contrapos_pp, (simp del:insert_iff insert_subset)+)
         thin_tac "y \<in> insert b W")
  apply (erule disjE,
         thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
-        frule_tac b = x in forball_spec1, assumption,
+        frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>x\<in>W. x \<preceq> b", erule conjE,
         frule Iod_carrier[THEN sym, of "insert b W"],
         frule eq_set_inc[of "x" "insert b W" "carrier (Iod D (insert b W))"],
@@ -2748,7 +2748,7 @@ apply (rule contrapos_pp, (simp del:insert_iff insert_subset)+)
          frule Torder.not_le_less[THEN sym, of "Iod D (insert b W)" "x" "b"], 
                       assumption+, simp add:Iod_le)
  apply (rotate_tac -4,
-        frule_tac b = y in forball_spec1, assumption,
+        frule_tac x = y in bspec, assumption,
         thin_tac "\<forall>y\<in>W. Pre (Iod D W) x \<prec>\<^bsub>Iod D W\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D W\<^esub> x",
         frule_tac c = y in subsetD[of "W" "insert b W"], assumption,
         simp add:Iod_less) 
@@ -2828,7 +2828,7 @@ apply (rule ballI)
  apply (frule mem_WWa_inc_a[of "W" "f" "a"])
  apply (frule not_eq_outside [of "Sup D W" "W"])
  apply (rotate_tac -1, 
-       frule_tac b = a in forball_spec1, assumption+,
+       frule_tac x = a in bspec, assumption+,
        thin_tac "\<forall>b\<in>W. b \<noteq> Sup D W")
  apply (frule BNTr7_10[of "f" "a" "W"], assumption+)
  apply (simp del:insert_iff insert_subset add:Adjunct_segment_eq)
@@ -2864,10 +2864,10 @@ apply (frule well_ord_adjunction[of "insert (Sup D W) W" "f (Sup D W)"],
        assumption+,
        rule ballI,
        simp only:insert_iff, erule disjE, simp del:insert_iff insert_subset)
-apply (frule_tac b = "Sup D W" in forball_spec1, assumption,
+apply (frule_tac x = "Sup D W" in bspec, assumption,
        thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x") apply (
        rotate_tac -3,
-       frule_tac b = x in forball_spec1, assumption,
+       frule_tac x = x in bspec, assumption,
        thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W") apply (
        frule mem_WWa_sub_carrier[of "W"],
        frule_tac c = x in subsetD[of "W" "carrier D"], assumption+,
@@ -2878,7 +2878,7 @@ apply (frule_tac b = "Sup D W" in forball_spec1, assumption,
        frule subsetD[of "insert (Sup D W) W" "insert (f (Sup D W)) 
                (insert (Sup D W) W)" "Sup D W"], assumption+)
 apply (frule_tac a = "Sup D W" in forall_spec)
-apply (frule_tac b = "Sup D W" in forball_spec1, assumption,
+apply (frule_tac x = "Sup D W" in bspec, assumption,
        thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
        frule not_sym, 
        thin_tac "f (Sup D W) \<noteq> Sup D W",
@@ -2915,9 +2915,9 @@ apply (cut_tac a = y in insert_iff[of _ "Sup D W" "W"],
        thin_tac "y \<in> insert (Sup D W) W = (y = (Sup D W) \<or> y \<in> W)",
        erule disjE, simp add:oless_def,
        simp del:insert_iff insert_subset)
-apply (frule_tac b = y in forball_spec1, assumption,
+apply (frule_tac x = y in bspec, assumption,
        thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W")
-apply (frule_tac b = "Sup D W" in forball_spec1, assumption,
+apply (frule_tac x = "Sup D W" in bspec, assumption,
        thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
        cut_tac subset_insertI[of "W" "Sup D W"],
        frule_tac c = y in subsetD[of "W" "insert (Sup D W) W"], assumption+,
@@ -2949,10 +2949,10 @@ apply (frule BNTr7_14[of "f" "a" "W"], assumption+,
       frule well_ord_adjunction[of "insert (Sup D W) W" "f (Sup D W)"], 
       assumption+, rule ballI,
       simp only:insert_iff, erule disjE, simp del:insert_iff insert_subset,
-      frule_tac b = "Sup D W" in forball_spec1, assumption,
+      frule_tac x = "Sup D W" in bspec, assumption,
       thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
       rotate_tac -3,
-      frule_tac b = x in forball_spec1, assumption,
+      frule_tac x = x in bspec, assumption,
       thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W",
       frule mem_WWa_sub_carrier[of "W"],
       frule_tac c = x in subsetD[of "W" "carrier D"], assumption+,
@@ -2969,7 +2969,7 @@ apply (rule Worder.UniquePre[of "Iod D (insert (f (Sup D W))
        simp only:Iod_carrier,
        rule BNTr7_15, assumption+,
        rule conjI, simp only:Iod_carrier, rule conjI, simp only:Iod_less,
-       frule_tac b = "Sup D W" in forball_spec1, assumption,
+       frule_tac x = "Sup D W" in bspec, assumption,
        thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x", frule not_sym, 
        thin_tac "f (Sup D W) \<noteq> Sup D W", simp add:oless_def) 
 apply (rule contrapos_pp, (simp del:insert_iff insert_subset)+,
@@ -2989,7 +2989,7 @@ apply (rule contrapos_pp, (simp del:insert_iff insert_subset)+,
        thin_tac "y \<in> insert (Sup D W) W",
        thin_tac "y \<in> (insert (Sup D W) W) = (y = (Sup D W) \<or> y \<in> W)",
        erule disjE, simp add:oless_def)
-apply (frule_tac b = y in forball_spec1, assumption,
+apply (frule_tac x = y in bspec, assumption,
        thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W",
        cut_tac subset_insertI[of "W" "Sup D W"],
        frule_tac c = y in subsetD[of "W" "insert (Sup D W) W"], assumption,
@@ -3027,9 +3027,9 @@ apply (frule well_ord_adjunction[of "insert (Sup D W) W" "f (Sup D W)"],
        frule S_inductive_sup_bound[of "W"], assumption+,
              rule ballI, 
              simp only:insert_iff, erule disjE, simp,
-       frule_tac b = x in forball_spec1, assumption,
+       frule_tac x = x in bspec, assumption,
              thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W",
-       frule_tac b = "Sup D W" in forball_spec1, assumption,
+       frule_tac x = "Sup D W" in bspec, assumption,
              thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
        frule mem_WWa_sub_carrier[of "W"],
        frule_tac c = x in subsetD[of "W" "carrier D"], assumption+,
@@ -3047,13 +3047,13 @@ apply (rule ballI)
         thin_tac "(x \<in> insert (f (Sup D W)) (insert (Sup D W) W)) =
          (x = f (Sup D W) \<or> x \<in> insert (Sup D W) W)",
         erule disjE)
- apply (frule_tac b = "Sup D W" in forball_spec1, assumption,
+ apply (frule_tac x = "Sup D W" in bspec, assumption,
         thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
-        frule_tac b = "Sup D W" in forball_spec1, simp) 
+        frule_tac x = "Sup D W" in bspec, simp) 
 apply (
         thin_tac "\<forall>x\<in>insert (Sup D W) W. a \<preceq> x",
         simp add:le_trans[of "a" "Sup D W" "f (Sup D W)"])
-apply (frule_tac b = x in forball_spec1, assumption,
+apply (frule_tac x = x in bspec, assumption,
        thin_tac "\<forall>x\<in>insert (Sup D W) W. a \<preceq> x",
        simp)
 apply (rule ballI)          
@@ -3075,12 +3075,12 @@ apply (subst BNTr7_11[of "f" "a" "f (Sup D W)"
        rule ballI,
        thin_tac "x \<in> insert (Sup D W) W", simp only:insert_iff,
        erule disjE,
-       frule_tac b = "Sup D W" in forball_spec1, assumption,
+       frule_tac x = "Sup D W" in bspec, assumption,
        thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
        simp add:le_antisym,
-       frule_tac b = xa in forball_spec1, assumption+,
+       frule_tac x = xa in bspec, assumption+,
        thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W",
-       frule_tac b = "Sup D W" in forball_spec1, assumption,
+       frule_tac x = "Sup D W" in bspec, assumption,
        thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
        frule mem_WWa_sub_carrier[of "W"],
        frule_tac c = xa in subsetD[of "W" "carrier D"], assumption+,
@@ -3092,12 +3092,12 @@ apply (case_tac "ExPre (Iod D (insert (Sup D W) W)) x",
                 assumption+,
        rule ballI, thin_tac "x \<in> insert (Sup D W) W",
               simp only:insert_iff, erule disjE,
-         frule_tac b = "Sup D W" in forball_spec1, assumption,
+         frule_tac x = "Sup D W" in bspec, assumption,
          thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
          simp add:le_antisym,
-         frule_tac b = xa in forball_spec1, assumption+,
+         frule_tac x = xa in bspec, assumption+,
               thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W",
-         frule_tac b = "Sup D W" in forball_spec1, assumption,
+         frule_tac x = "Sup D W" in bspec, assumption,
               thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
          frule mem_WWa_sub_carrier[of "W"],
          frule_tac c = xa in subsetD[of "W" "carrier D"], assumption+,
@@ -3106,7 +3106,7 @@ apply (case_tac "ExPre (Iod D (insert (Sup D W) W)) x",
        apply (frule mem_WWa_then[of "insert (Sup D W) W" "f" "a"],
               (erule conjE)+,
               thin_tac "\<forall>x\<in>insert (Sup D W) W. a \<preceq> x",
-              frule_tac b = x in forball_spec1, assumption,
+              frule_tac x = x in bspec, assumption,
               thin_tac "\<forall>x\<in>insert (Sup D W) W.
             if ExPre (Iod D (insert (Sup D W) W)) x
             then f (Pre (Iod D (insert (Sup D W) W)) x) = x
@@ -3119,12 +3119,12 @@ apply (case_tac "ExPre (Iod D (insert (Sup D W) W)) x",
          rule ballI, thin_tac "x \<in> insert (Sup D W) W",
               simp only:insert_iff,
          erule disjE,
-         frule_tac b = "Sup D W" in forball_spec1, assumption,
+         frule_tac x = "Sup D W" in bspec, assumption,
               thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
          simp add:le_antisym,
-         frule_tac b = xa in forball_spec1, assumption+,
+         frule_tac x = xa in bspec, assumption+,
               thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W",
-         frule_tac b = "Sup D W" in forball_spec1, assumption,
+         frule_tac x = "Sup D W" in bspec, assumption,
               thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x",
               frule mem_WWa_sub_carrier[of "W"],
               frule_tac c = xa in subsetD[of "W" "carrier D"], assumption+,
@@ -3133,7 +3133,7 @@ apply (case_tac "ExPre (Iod D (insert (Sup D W) W)) x",
        apply (frule mem_WWa_then[of "insert (Sup D W) W" "f" "a"],
               (erule conjE)+,
               thin_tac "\<forall>x\<in>insert (Sup D W) W. a \<preceq> x",
-             frule_tac b = x in forball_spec1, assumption,
+             frule_tac x = x in bspec, assumption,
               thin_tac "\<forall>x\<in>insert (Sup D W) W.
             if ExPre (Iod D (insert (Sup D W) W)) x
             then f (Pre (Iod D (insert (Sup D W) W)) x) = x
@@ -3223,7 +3223,7 @@ apply (cut_tac A = xb and C = "WWa D f a" in Union_iff, simp del:Union_iff,
  apply (case_tac "W' \<subseteq> W",
         frule_tac c = xb and A = W' and B = W in subsetD, assumption+,
         rotate_tac 4,
-        frule_tac b = xb in forball_spec1, simp,
+        frule_tac x = xb in bspec, simp,
         thin_tac "\<forall>x\<in>X \<inter> W. xa \<preceq>\<^bsub>Iod D W\<^esub> x")
  apply (frule Iod_Order[of "\<Union>WWa D f a"], 
         frule_tac X = W and A = xa in UnionI[of _ "WWa D f a"], assumption+,
@@ -3267,11 +3267,11 @@ apply (case_tac "ExPre (Iod D (\<Union>WWa D f a)) x", simp,
        erule bexE, rename_tac x W,
        frule_tac X = W and A = x in UnionI[of _ "WWa D f a"], assumption+,
        frule_tac x = x in BNTr7_2[of "f" "a"], assumption+,
-       frule_tac b = W in forball_spec1, assumption,
+       frule_tac x = W in bspec, assumption,
          thin_tac "\<forall>W\<in>WWa D f a. x \<in> W \<longrightarrow> ExPre (Iod D W) x",
          simp del:Union_iff)
   apply (frule_tac x = x in BNTr7_3[of "f" "a"], assumption+,
-         frule_tac b = W in forball_spec1, assumption,
+         frule_tac x = W in bspec, assumption,
          thin_tac "\<forall>W\<in>WWa D f a.
               x \<in> W \<longrightarrow> Pre (Iod D (\<Union>WWa D f a)) x = Pre (Iod D W) x",
          simp del:Union_iff)
@@ -3304,7 +3304,7 @@ lemma (in Order) S_inductive_postSup_outside:" \<lbrakk>S_inductive_set D;
 apply (frule S_inductive_sup_mem[of "X"], assumption+)
 apply (rule contrapos_pp, simp+)
 apply (frule S_inductive_sup_bound[of "X"], assumption,
-       frule_tac a = b in forball_spec1, assumption,
+       frule_tac a = b in bspec, assumption,
        thin_tac "\<forall>x\<in>X. x \<preceq> Sup D X",
        frule less_imp_le[of "Sup D X" "b"], assumption+)
 apply (frule le_antisym[of "Sup D X" "b"], assumption+, simp add:oless_def)
@@ -3325,7 +3325,7 @@ apply (frule S_inductive_sup_bound[of "W"], assumption+,
 apply (frule well_ord_adjunction[of "W" "Sup D W"], assumption+)
 apply (frule well_ord_adjunction[of "insert (Sup D W) W" "b"], assumption+)
    apply (rule ballI, simp, erule disjE, simp add:less_imp_le,
-          frule_tac a = x in forball_spec1, assumption,
+          frule_tac a = x in bspec, assumption,
           thin_tac "\<forall>x\<in>W. x \<preceq> Sup D W")
    apply (frule_tac c = x in subsetD[of "W" "carrier D"], assumption+,
           frule less_imp_le[of "Sup D W" "b"], assumption+,
@@ -3343,7 +3343,7 @@ apply (frule well_ord_adjunction[of "insert (Sup D W) W" "b"], assumption+)
         frule less_imp_le[of "Sup D W" "b"], assumption+,
         frule S_inductive_sup_bound[of "W"], assumption,
         frule mem_WWa_inc_a[of "W"], 
-        frule_tac a = a in forball_spec1, assumption,
+        frule_tac a = a in bspec, assumption,
         frule subsetD[of "W" "carrier D" "a"], assumption+,
         rule le_trans[of "a" "Sup D W" "b"], assumption+)
  apply (erule disjE, simp,
@@ -3380,10 +3380,10 @@ apply (frule subsetD[of "insert (f (Sup D (\<Union>WWa D f a)))
         (insert (Sup D (\<Union>WWa D f a)) (\<Union>WWa D f a))" "\<Union>WWa D f a" "f (Sup D (\<Union>WWa D f a))"],
          assumption+)
 apply (frule S_inductive_sup_bound[of "\<Union>WWa D f a"], assumption) 
-apply (frule_tac b = "f (Sup D (\<Union>WWa D f a))" in forball_spec1,
+apply (frule_tac x = "f (Sup D (\<Union>WWa D f a))" in bspec,
        assumption,
        thin_tac "\<forall>x\<in>\<Union>WWa D f a. x \<preceq> Sup D (\<Union>WWa D f a)")
-apply (frule_tac b = "Sup D (\<Union>WWa D f a)" in forball_spec1, assumption,
+apply (frule_tac x = "Sup D (\<Union>WWa D f a)" in bspec, assumption,
        thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x")
 apply (frule funcset_mem[of "f" "carrier D" "carrier D" "Sup D (\<Union>WWa D f a)"],
        assumption+,
@@ -3639,7 +3639,7 @@ apply (rule ballI)
          rule_tac C = Ca and B = x in family_subset_Un_sub)
   apply (rule ballI)
   apply (thin_tac "\<forall>s\<in>Ca. s \<preceq>\<^bsub>Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S}\<^esub> \<Union>Ca",
-         frule_tac b = A in forball_spec1, assumption,
+         frule_tac x = A in bspec, assumption,
          thin_tac "\<forall>s\<in>Ca. s \<preceq>\<^bsub>Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S}\<^esub> x")
   apply (frule Order.Iod_Order[of "fTo D" "{S \<in> carrier fTo D. C \<subseteq> S}"],
                       assumption,
@@ -3684,7 +3684,7 @@ apply (simp add:S_inductive_set_def,
 apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def,
         frule_tac CC = C in Un_fTo_Chain_mem_fTo,
-        frule_tac b = "\<Union>C" in forball_spec1, assumption,
+        frule_tac x = "\<Union>C" in bspec, assumption,
          thin_tac "\<forall>x\<in>carrier (fTo D).
             x \<in> upper_bounds (fTo D) C \<longrightarrow>
             (\<exists>xa\<in>upper_bounds (fTo D) C. \<not> x \<preceq>\<^bsub>(fTo D)\<^esub> xa)")
@@ -3695,7 +3695,7 @@ apply (rule contrapos_pp, simp+)
         erule conjE)
  apply (cut_tac C = C and B = x in family_subset_Un_sub)
  apply (rule ballI)
- apply (frule_tac b = A in forball_spec1, assumption,
+ apply (frule_tac x = A in bspec, assumption,
         thin_tac "\<forall>s\<in>C. s \<preceq>\<^bsub>fTo D\<^esub> x",
         cut_tac fTOrder,
         frule_tac X = C in Order.Chain_sub[of "fTo D"], assumption+,
@@ -3804,7 +3804,7 @@ prefer 2
  apply (frule_tac X = M in mem_fTo_Chain,
         frule_tac X = M and b = ba in adjunct_Chain, assumption+,
         rule ballI)
- apply (frule_tac b = x in forball_spec1, assumption+,
+ apply (frule_tac x = x in bspec, assumption+,
         thin_tac "\<forall>s\<in>M. s \<preceq> b",
         frule_tac X = M in Chain_sub,
         frule_tac c = x in subsetD[of "M" "carrier D"], assumption+,
@@ -3812,10 +3812,10 @@ prefer 2
  apply (cut_tac B = M and a = ba in subset_insertI,
         cut_tac a = ba in insertI1[of _ "M"], 
         cut_tac C = "insert ba M" in Chain_mem_fTo, assumption)
- apply (frule_tac b = "insert ba M" in forball_spec1, assumption,
+ apply (frule_tac x = "insert ba M" in bspec, assumption,
         thin_tac "\<forall>b\<in>carrier fTo D. M \<preceq>\<^bsub>fTo D\<^esub> b \<longrightarrow> M = b",
         simp del:insert_iff insert_subset add:fTo_Order_sub)
- apply (frule_tac b = ba in forball_spec1, assumption,
+ apply (frule_tac x = ba in bspec, assumption,
         thin_tac "\<forall>s\<in>M. s \<preceq> b")
  apply (frule_tac a = b and b = ba in le_antisym, assumption+, simp)
 done
@@ -4191,9 +4191,9 @@ done
 lemma (in Group) sg_condTr1:"\<lbrakk>H \<subseteq> carrier G; H \<noteq> {};
                   \<forall>a. \<forall>b. a \<in> H \<and> b \<in> H \<longrightarrow>  a \<cdot> (\<rho> b) \<in> H\<rbrakk> \<Longrightarrow> \<one> \<in> H"
 apply (frule  nonempty_ex [of "H"], erule exE)
-apply (frule_tac a = x in forall_spec1,
+apply (frule_tac x = x in spec,
        thin_tac "\<forall>a b. a \<in> H \<and> b \<in> H \<longrightarrow> a \<cdot> \<rho> b \<in> H",
-       frule_tac a = x in forall_spec1,
+       frule_tac x = x in spec,
        thin_tac "\<forall>b. x \<in> H \<and> b \<in> H \<longrightarrow> x \<cdot> \<rho> b \<in> H")
 apply (frule_tac c = x in subsetD[of "H" "carrier G"], assumption+,
        simp add:r_i)
@@ -4208,9 +4208,9 @@ lemma (in Group) sg_i_closed:"\<lbrakk>G \<guillemotright> H; x \<in> H\<rbrakk>
 apply (frule sg_unit_closed,
        frule sg_subset_elem[of "H" "x"], assumption,
        simp add:sg_def, (erule conjE)+)
-apply (frule_tac b = \<one> in forball_spec1, assumption,
+apply (frule_tac x = \<one> in bspec, assumption,
        rotate_tac -1,
-       frule_tac b = x in forball_spec1, assumption,
+       frule_tac x = x in bspec, assumption,
        thin_tac "\<forall>b\<in>H. \<one> \<cdot> \<rho> b \<in> H",
        thin_tac "\<forall>a\<in>H. \<forall>b\<in>H. a \<cdot> \<rho> b \<in> H")
 apply (frule i_closed[of "x"],
@@ -4221,9 +4221,9 @@ lemma (in Group) sg_mult_closed:"\<lbrakk>G \<guillemotright> H; x \<in> H; y \<
                                        x \<cdot> y \<in> H" 
 apply (frule sg_i_closed[of "H" "y"], assumption,
        simp add:sg_def, (erule conjE)+)
-apply (frule_tac b = x in forball_spec1, assumption,
+apply (frule_tac x = x in bspec, assumption,
        rotate_tac -1,
-       frule_tac b = "\<rho> y" in forball_spec1, assumption,
+       frule_tac x = "\<rho> y" in bspec, assumption,
        thin_tac "\<forall>b\<in>H. x \<cdot> \<rho> b \<in> H",
        thin_tac "\<forall>a\<in>H. \<forall>b\<in>H. a \<cdot> \<rho> b \<in> H")
 apply (frule subsetD[of "H" "carrier G"], assumption+,
@@ -4288,7 +4288,7 @@ apply (rule conjI,
        simp add:sg_gen_def,
        rule ex_nonempty, simp)
  apply (rule contrapos_pp, simp+,
-        frule_tac a = \<one> in forall_spec1,
+        frule_tac x = \<one> in spec,
         thin_tac "\<forall>x. \<exists>xa. G \<guillemotright> xa  \<and> A \<subseteq> xa \<and> x \<notin> xa",
         erule exE, (erule conjE)+,
         frule_tac H = x in sg_unit_closed, simp)
@@ -4944,9 +4944,9 @@ by blast
 lemma (in Group) nsg2:"\<lbrakk>G \<guillemotright> H; b \<in> carrier G; h \<in> H;  
        \<forall>a\<in>carrier G. \<forall>h\<in>H. (a \<cdot> h) \<cdot> (\<rho> a) \<in> H\<rbrakk> \<Longrightarrow>  (\<rho> b) \<cdot> h \<cdot> b \<in> H"
 apply (frule i_closed[of "b"], 
-       frule_tac b = "\<rho> b" in forball_spec1, assumption,
+       frule_tac x = "\<rho> b" in bspec, assumption,
        thin_tac "\<forall>a\<in>carrier G. \<forall>h\<in>H. a \<cdot> h \<cdot> \<rho> a \<in> H",
-       frule_tac b = h in forball_spec1, assumption,
+       frule_tac x = h in bspec, assumption,
        thin_tac "\<forall>h\<in>H. \<rho> b \<cdot> h \<cdot> \<rho> (\<rho> b) \<in> H")
 apply (simp add:iop_i_i)
 done
@@ -4962,9 +4962,9 @@ lemma (in Group) sg_nsg1:"\<lbrakk>G \<guillemotright> H; \<forall>a\<in> carrie
 apply (rule equalityI)
  (* H \<bullet> b \<subseteq> b \<diamondsuit> H  *)
   apply (rule subsetI, simp add:rcs_def, erule bexE, frule i_closed[of "b"])
-  apply (frule_tac b = "\<rho> b" in forball_spec1, assumption,
+  apply (frule_tac x = "\<rho> b" in bspec, assumption,
          thin_tac "\<forall>a\<in>carrier G. \<forall>h\<in>H. a \<cdot> h \<cdot> \<rho> a \<in> H",
-         frule_tac b = h in forball_spec1, assumption,
+         frule_tac x = h in bspec, assumption,
          thin_tac "\<forall>h\<in>H. \<rho> b \<cdot> h \<cdot> \<rho> (\<rho> b) \<in> H",
          simp add:iop_i_i)
   apply (frule_tac h = h in sg_mult_closedl[of "H" "b"], assumption+, simp,
@@ -4973,9 +4973,9 @@ apply (rule equalityI)
   apply (subst lcs_mem_ldiv[of "H" _ "b"], assumption+)
 
   apply (rule subsetI, simp add:lcs_def, erule bexE)
-  apply (frule_tac b = b in forball_spec1, assumption,
+  apply (frule_tac x = b in bspec, assumption,
          thin_tac "\<forall>a\<in>carrier G. \<forall>h\<in>H. a \<cdot> h \<cdot> \<rho> a \<in> H",
-         frule_tac b = h in forball_spec1, assumption,
+         frule_tac x = h in bspec, assumption,
          thin_tac "\<forall>h\<in>H.  b \<cdot> h \<cdot> (\<rho> b) \<in> H",
          simp add:iop_i_i)
   apply (frule_tac h = h in sg_mult_closedr[of "H" "b"], assumption+, simp)
