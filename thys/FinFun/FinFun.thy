@@ -77,7 +77,7 @@ text {* \subsection{The finfun type} *}
 
 typedef ('a,'b) finfun = "{f::'a\<Rightarrow>'b. \<exists>b. finite {a. f a \<noteq> b}}"
 apply(auto)
-apply(rule_tac x="\<lambda>x. arbitrary" in exI)
+apply(rule_tac x="\<lambda>x. undefined" in exI)
 apply(auto)
 done
 
@@ -379,7 +379,7 @@ qed
 text {* \subsection{Default value for FinFuns} *}
 
 definition finfun_default_aux :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b"
-where [code del]: "finfun_default_aux f = (if finite (UNIV :: 'a set) then arbitrary else THE b. finite {a. f a \<noteq> b})"
+where [code del]: "finfun_default_aux f = (if finite (UNIV :: 'a set) then undefined else THE b. finite {a. f a \<noteq> b})"
 
 lemma finfun_default_aux_infinite:
   fixes f :: "'a \<Rightarrow> 'b"
@@ -449,7 +449,7 @@ definition finfun_default :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'b"
 lemma finite_finfun_default: "finite {a. Rep_finfun f a \<noteq> finfun_default f}"
 unfolding finfun_default_def by(simp add: finite_finfun_default_aux)
 
-lemma finfun_default_const: "finfun_default ((\<lambda>\<^isup>f b) :: 'a \<Rightarrow>\<^isub>f 'b) = (if finite (UNIV :: 'a set) then arbitrary else b)"
+lemma finfun_default_const: "finfun_default ((\<lambda>\<^isup>f b) :: 'a \<Rightarrow>\<^isub>f 'b) = (if finite (UNIV :: 'a set) then undefined else b)"
 apply(auto simp add: finfun_default_def finfun_const_def finfun_default_aux_infinite)
 apply(simp add: finfun_default_aux_def)
 done
@@ -786,10 +786,10 @@ proof(cases "finite (UNIV :: 'a set)")
   ultimately show ?thesis by(simp add: finfun_rec_def)
 next
   case True
-  hence default: "finfun_default ((\<lambda>\<^isup>f c) :: 'a \<Rightarrow>\<^isub>f 'b) = arbitrary" by(simp add: finfun_default_const)
-  let ?the = "\<lambda>g :: 'a \<rightharpoonup> 'b. (\<lambda>\<^isup>f c) = Abs_finfun (map_default arbitrary g) \<and> finite (dom g) \<and> arbitrary \<notin> ran g"
+  hence default: "finfun_default ((\<lambda>\<^isup>f c) :: 'a \<Rightarrow>\<^isub>f 'b) = undefined" by(simp add: finfun_default_const)
+  let ?the = "\<lambda>g :: 'a \<rightharpoonup> 'b. (\<lambda>\<^isup>f c) = Abs_finfun (map_default undefined g) \<and> finite (dom g) \<and> undefined \<notin> ran g"
   show ?thesis
-  proof(cases "c = arbitrary")
+  proof(cases "c = undefined")
     case True
     have the: "The ?the = empty"
     proof
@@ -797,10 +797,10 @@ next
     next
       fix g'
       assume "?the g'"
-      hence fg: "(\<lambda>\<^isup>f c) = Abs_finfun (map_default arbitrary g')"
-        and fin: "finite (dom g')" and g: "arbitrary \<notin> ran g'" by simp_all
-      from fin have "map_default arbitrary g' \<in> finfun" by(rule map_default_in_finfun)
-      with fg have "map_default arbitrary g' = (\<lambda>a. c)"
+      hence fg: "(\<lambda>\<^isup>f c) = Abs_finfun (map_default undefined g')"
+        and fin: "finite (dom g')" and g: "undefined \<notin> ran g'" by simp_all
+      from fin have "map_default undefined g' \<in> finfun" by(rule map_default_in_finfun)
+      with fg have "map_default undefined g' = (\<lambda>a. c)"
         by(auto simp add: finfun_const_def intro: Abs_finfun_inject[THEN iffD1])
       with True show "g' = empty"
         by -(rule map_default_inject(2)[OF _ fin g], auto)
@@ -816,10 +816,10 @@ next
     next
       fix g' :: "'a \<rightharpoonup> 'b"
       assume "?the g'"
-      hence fg: "(\<lambda>\<^isup>f c) = Abs_finfun (map_default arbitrary g')"
-        and fin: "finite (dom g')" and g: "arbitrary \<notin> ran g'" by simp_all
-      from fin have "map_default arbitrary g' \<in> finfun" by(rule map_default_in_finfun)
-      with fg have "map_default arbitrary g' = (\<lambda>a. c)"
+      hence fg: "(\<lambda>\<^isup>f c) = Abs_finfun (map_default undefined g')"
+        and fin: "finite (dom g')" and g: "undefined \<notin> ran g'" by simp_all
+      from fin have "map_default undefined g' \<in> finfun" by(rule map_default_in_finfun)
+      with fg have "map_default undefined g' = (\<lambda>a. c)"
         by(auto simp add: finfun_const_def intro: Abs_finfun_inject[THEN iffD1])
       with True False show "g' = (\<lambda>a::'a. Some c)"
         by -(rule map_default_inject(2)[OF _ fin g], auto simp add: dom_def ran_def map_default_def_raw)
