@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.10 2009-05-19 11:25:43 nipkow Exp $
+    ID:         $Id: BVExample.thy,v 1.11 2009-06-29 12:55:45 fhaftmann Exp $
     Author:     Gerwin Klein
 *)
 
@@ -495,7 +495,7 @@ definition some_elem :: "'a set \<Rightarrow> 'a" where
   "some_elem = (%S. SOME x. x : S)"
 
 consts_code
-  "some_elem" ("hd")
+  "some_elem" ("(case/ _ of/ {*Set*}/ xs/ =>/ hd/ xs)")
 
 (*<*)
 text {* This code setup is just a demonstration and \emph{not} sound! *}
@@ -516,7 +516,7 @@ lemma [code]:
     (\<lambda>(ss, w).
         let p = some_elem w in propa f (step p (ss ! p)) ss (w - {p}))
     (ss, w)"
-  unfolding iter_def is_empty_def some_elem_def ..
+  unfolding iter_def List_Set.is_empty_def some_elem_def ..
 
 lemma JVM_sup_unfold [code]:
  "JVM_SemiType.sup S m n = lift2 (Opt.sup
@@ -567,8 +567,6 @@ lemma [code]:
   by (fastsimp split add: ty.split_asm)
 
 declare field_def2 [code ind]
-
-declare minus_nat_code [code]
 
 code_module BV
 contains

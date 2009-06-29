@@ -1,4 +1,4 @@
-(*  ID:         $Id: Execute.thy,v 1.4 2008-06-25 18:29:59 makarius Exp $
+(*  ID:         $Id: Execute.thy,v 1.5 2009-06-29 12:55:45 fhaftmann Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -66,11 +66,11 @@ definition
 value "normal_forms fact2"
 
 code_module EvalF
-contains normal_forms
+  contains normal_forms Set
 
 code_module Test
-imports EvalF
-contains "fact2"
+  imports EvalF
+  contains "fact2"
 
 ML "EvalF.normal_forms Test.fact2"
 

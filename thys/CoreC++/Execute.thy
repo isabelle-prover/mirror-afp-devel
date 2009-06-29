@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.20 2008-10-19 19:21:47 stefanberghofer Exp $
+    ID:          $Id: Execute.thy,v 1.21 2009-06-29 12:55:45 fhaftmann Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -711,17 +711,11 @@ lemmas [code ind_set] = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl
 
 consts_code
   "insert :: ('a \<times> ('b \<Rightarrow> 'c)) \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
-    ("insert (op = o pairself fst)")
+    ("(fn x => fn {*Set*} xs => {*Set*} (Library.insert (eq'_fst (op =)) x xs))")
+  "op Un :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set => ('a \<times> ('b \<Rightarrow> 'c)) set"
+    ("(fn {*Set*} xs => fn {*Set*} ys => {*Set*} (Library.gen'_union (eq'_fst (op =)) (xs, ys)))")
   "minus :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
-    ("(subtract (op = o pairself fst)/ (_)/ (_))")
-  "op Un :: ('a * ('b => 'c)) set => ('a * ('b => 'c)) set => ('a * ('b => 'c)) set"
-    ("(gen'_union (op = o pairself fst)/ (_,/ _))")
-
-consts_code
-  "card"   ("\<module>card")
-attach {*
-fun card S = length (distinct op = S);
-*}
+    ("(fn {*Set*} xs => fn {*Set*} ys => {*Set*} (Library.subtract (eq'_fst (op =)) ys xs))")
 
 consts_code
   "new_Addr"
@@ -739,10 +733,8 @@ fun new_addr z s alloc some hp =
 text{* Definition of program examples *}
 
 
-
 lemma [code unfold]: "x mem xs = ListMem x xs"
   by (simp add: mem_iff ListMem_iff)
-
 
 text{* {\ldots}and off we go *}
 
