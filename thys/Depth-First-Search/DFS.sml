@@ -3,7 +3,7 @@ struct
 
 fun snd (a, b) = b;
 
-fun fst (ba, b) = ba;
+fun fst (a, b) = a;
 
 fun nexts [] n = []
   | nexts (e :: es) n =
@@ -12,15 +12,15 @@ fun nexts [] n = []
 fun member x [] = false
   | member x (y :: ys) = ((x = y) orelse member x ys);
 
-fun dfs2 g [] b = b
+fun dfs2 g [] ys = ys
   | dfs2 g (x :: xs) ys =
     (if member x ys then dfs2 g xs ys
       else dfs2 g xs (dfs2 g (nexts g x) (x :: ys)));
 
-fun append [] b = b
+fun append [] ys = ys
   | append (x :: xs) ys = (x :: append xs ys);
 
-fun dfs g [] b = b
+fun dfs g [] ys = ys
   | dfs g (x :: xs) ys =
     (if member x ys then dfs g xs ys
       else dfs g (append (nexts g x) xs) (x :: ys));
