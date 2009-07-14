@@ -1,5 +1,5 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.21 2009-06-29 12:55:45 fhaftmann Exp $
+    ID:          $Id: Execute.thy,v 1.22 2009-07-14 09:00:10 fhaftmann Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -151,17 +151,17 @@ constdefs
   MinimalMethodDefs' :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool"
   "MinimalMethodDefs' P C M Cs mthd \<equiv> (Cs, mthd) \<in> MinimalMethodDefs P C M"
 
-lemma [code ind params: 3]:
+lemma [code_ind params: 3]:
   "Subobjs P C Cs \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of ms M =  \<lfloor>mthd\<rfloor> \<Longrightarrow>
    MethodDefs' P C M Cs mthd"
  by (simp add: MethodDefs_def MethodDefs'_def)
 
-lemma [code ind params: 3]:
+lemma [code_ind params: 3]:
   "Subobjs P C Cs \<Longrightarrow> class P (last Cs) = \<lfloor>(Bs,fs,ms)\<rfloor> \<Longrightarrow> map_of fs F =  \<lfloor>T\<rfloor> \<Longrightarrow>
    FieldDecls' P C F Cs T"
  by (simp add: FieldDecls_def FieldDecls'_def)
 
-lemma [code ind params: 3]:
+lemma [code_ind params: 3]:
   "MethodDefs' P C M Cs mthd \<Longrightarrow> 
    \<forall>(Cs', mthd)\<in>{(Cs', mthd). MethodDefs' P C M Cs' mthd}. P,C \<turnstile> Cs' \<sqsubseteq> Cs \<longrightarrow> Cs' = Cs \<Longrightarrow>
    MinimalMethodDefs' P C M Cs mthd"
@@ -642,19 +642,19 @@ lemma WTStaticCall_new:
   apply(auto simp:path_unique_def)
   done
 
-lemma [code ind]:
+lemma [code_ind]:
   "\<lbrakk>Subobjs P C Cs'; last Cs' = D;
     \<forall>Cs''\<in>{Cs''. Subobjs P C Cs''}. last Cs'' = D \<longrightarrow> Cs' = Cs'' \<rbrakk> 
 \<Longrightarrow> P \<turnstile> Class C \<le> Class D"
 by(rule widen_subcls,auto simp:path_unique_def)
 
-lemmas [code ind] = widen_refl widen_null
+lemmas [code_ind] = widen_refl widen_null
 
 
 
 section{* Code generation *}
 
-lemmas [code ind] = 
+lemmas [code_ind] = 
  Overrider1[simplified LeastMethodDef_def codegen_simps, OF conjI]
  Overrider2[simplified LeastMethodDef_def codegen_simps, OF conjI]
 
@@ -705,7 +705,7 @@ lemmas [code ind] =
 
 
 
-lemmas [code ind_set] = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl
+lemmas [code_ind_set] = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl
 
 (* A hack to make set operations work on sets with function types *)
 
@@ -733,7 +733,7 @@ fun new_addr z s alloc some hp =
 text{* Definition of program examples *}
 
 
-lemma [code unfold]: "x mem xs = ListMem x xs"
+lemma [code_unfold]: "x mem xs = ListMem x xs"
   by (simp add: mem_iff ListMem_iff)
 
 text{* {\ldots}and off we go *}

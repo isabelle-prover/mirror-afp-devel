@@ -1,5 +1,5 @@
 (*  Title:       A theory of Featherweight Java in Isabelle/HOL
-    ID:          $Id: FJDefs.thy,v 1.11 2008-06-25 18:29:54 makarius Exp $
+    ID:          $Id: FJDefs.thy,v 1.12 2009-07-14 09:00:10 fhaftmann Exp $
     Author:      Nate Foster <jnfoster at cis.upenn.edu>, 
                  Dimitrios Vytiniotis <dimitriv at cis.upenn.edu>, 2006
     Maintainer:  Nate Foster <jnfoster at cis.upenn.edu>,
@@ -13,7 +13,7 @@ theory FJDefs imports Main
 
 begin
 
-lemmas in_set_code[code unfold] = mem_iff[symmetric, THEN eq_reflection]
+lemmas in_set_code[code_unfold] = mem_iff[symmetric, THEN eq_reflection]
 
 subsection {* Syntax *}
 

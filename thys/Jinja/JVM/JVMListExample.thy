@@ -1,5 +1,5 @@
 (*  Title:      Jinja/JVM/JVMListExample.thy
-    ID:         $Id: JVMListExample.thy,v 1.9 2008-10-07 14:07:44 fhaftmann Exp $
+    ID:         $Id: JVMListExample.thy,v 1.10 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Stefan Berghofer, Gerwin Klein
 *)
 
@@ -103,9 +103,9 @@ fun new_addr z s alloc some hp =
   "undefined :: val" ("{* Unit *}")
   "undefined :: cname" ("Object")
 
-declare method_def2 [unfolded Method_def, OF exI, OF conjI, code ind]
-declare fields_def2 [code ind]
-lemmas [code unfold] = SystemClasses_def [unfolded ObjectC_def NullPointerC_def ClassCastC_def OutOfMemoryC_def]
+declare method_def2 [unfolded Method_def, OF exI, OF conjI, code_ind]
+declare fields_def2 [code_ind]
+lemmas [code_unfold] = SystemClasses_def [unfolded ObjectC_def NullPointerC_def ClassCastC_def OutOfMemoryC_def]
 
 subsection {* Single step execution *}
 

@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListSum.thy,v 1.6 2008-10-09 13:27:33 fhaftmann Exp $
+(*  ID:         $Id: ListSum.thy,v 1.7 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -33,10 +33,10 @@ primrec
 
 
 
-lemma [code unfold, code inline del]: "((ListSum ls f)::nat) = natListSum ls f"
+lemma [code_unfold, code_inline del]: "((ListSum ls f)::nat) = natListSum ls f"
  by (induct ls) simp_all
 
-lemma [code unfold, code inline del]: "((ListSum ls f)::int) = intListSum ls f"
+lemma [code_unfold, code_inline del]: "((ListSum ls f)::int) = intListSum ls f"
  by (induct ls) simp_all
 
 

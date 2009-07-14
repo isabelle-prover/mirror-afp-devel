@@ -1,4 +1,4 @@
-(*  ID:         $Id: Execute.thy,v 1.5 2009-06-29 12:55:45 fhaftmann Exp $
+(*  ID:         $Id: Execute.thy,v 1.6 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -31,16 +31,16 @@ where
 definition normal_forms where
   "normal_forms t \<equiv> {u. t \<Down> u}"
 
-lemma [code ind_set]: "Rcd [] \<in> value"
+lemma [code_ind_set]: "Rcd [] \<in> value"
   by (rule value.Rcd) simp
 
-lemma [code ind_set]: "t \<in> value \<Longrightarrow> Rcd fs \<in> value \<Longrightarrow> Rcd ((l, t) # fs) \<in> value"
+lemma [code_ind_set]: "t \<in> value \<Longrightarrow> Rcd fs \<in> value \<Longrightarrow> Rcd ((l, t) # fs) \<in> value"
   apply (rule value.Rcd)
   apply (ind_cases "Rcd fs \<in> value")
   apply simp
   done
 
-lemmas [code ind_set] = value.Abs value.TAbs
+lemmas [code_ind_set] = value.Abs value.TAbs
 
 definition
   natT :: type where
