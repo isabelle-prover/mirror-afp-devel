@@ -1,4 +1,4 @@
-(*  ID:         $Id: PresArith.thy,v 1.12 2009-06-21 00:57:56 nipkow Exp $
+(*  ID:         $Id: PresArith.thy,v 1.13 2009-07-15 09:26:53 makarius Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -147,7 +147,7 @@ lemma dvd_zlcms: "i : set is \<Longrightarrow> i dvd zlcms is"
 by(induct "is") auto
 
 lemma zlcms_pos: "\<forall>i \<in> set is. i\<noteq>0 \<Longrightarrow> zlcms is > 0"
-by(induct "is")(auto simp:int_lcm_pos)
+by(induct "is")(auto simp:lcm_pos_int)
 
 lemma zlcms0_iff[simp]: "(zlcms is = 0) = (0 : set is)"
 by (metis DIVISION_BY_ZERO dvd_eq_mod_eq_0 dvd_zlcms zlcms_pos zless_le)
