@@ -50,6 +50,7 @@ where "\<tau>MOVE2 P \<equiv> \<lambda>((xcp, frs), h) ta s. \<tau>Move2 P (xcp,
 
 interpretation Red1_exec1_wbase:
   weak_bisimulation_base "mred1 P" "mexec_1' (compP2 P)" "wbisim1 P" "ta_bisim (wbisim1 P)" \<tau>MOVE1 "\<tau>MOVE2 P"
+  for P
 .
 
 lemma Red1_exec1_weak_bisim:

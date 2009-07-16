@@ -71,6 +71,7 @@ lemma red_red0_FWbase:
 ..
 
 interpretation red_red0_FWbase: FWbisimulation_base f1 "mred P" f2 "mred0 P" "bisim_red_red0 P"
+  for f1 f2
 by(rule red_red0_FWbase)
 
 lemma red_red0_FWbisim:
