@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.47 2009-06-19 19:08:29 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.48 2009-07-22 12:21:37 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1803,7 +1803,7 @@ fun gen_call_rec_rule specs_name n rule =
           Abs("Z",zT,single)
      end;
 
-     fun mk_Un T (A,B) = Const (@{const_name Un}, T --> T --> T)$A$B;
+     fun mk_Un T (A,B) = Const (@{const_name union}, T --> T --> T)$A$B;
 
 
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
@@ -2039,7 +2039,7 @@ fun gen_context_thms ctxt thy mode params G T F =
   let
     val Type (_,[comT]) = range_type (fastype_of G);
 
-    fun destUn (Const (@{const_name Un}, _) $ t1 $ t2) = destUn t1 @ destUn t2
+    fun destUn (Const (@{const_name union}, _) $ t1 $ t2) = destUn t1 @ destUn t2
       | destUn t = [t]
 
     fun destUNION (Const (@{const_name UNION}, _) $ Const (@{const_name UNIV}, _) $ Abs (x, T, t)) =
@@ -2690,7 +2690,7 @@ fun while_tac ctxt state_kind inv cont_tac tac mode t i=
     handle TERM _ => no_tac
 
 fun mkIntersect Ts A B =
-  let val T = fastype_of1 (Ts, A) in Const (@{const_name Int}, T --> T --> T) $ A $ B end;
+  let val T = fastype_of1 (Ts, A) in Const (@{const_name inter}, T --> T --> T) $ A $ B end;
 
 fun dest_split (Abs (x,T,t)) =
      let val (vs,recomb,bdy) = dest_split t;
