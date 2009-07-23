@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.48 2009-07-22 12:21:37 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.49 2009-07-23 16:46:20 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1809,7 +1809,7 @@ fun gen_call_rec_rule specs_name n rule =
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
      val rule' =
            instantiate' [] [SOME (cterm_of thy Specs)] rule
-           |> full_simplify ((simpset_of Main_thy)
+           |> full_simplify ((global_simpset_of Main_thy)
                   addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
                             image_Un,image_Un_single_simp] )
            |> rename_bvars (fn s => if s mem_string ["s","\<sigma>"] then s else "Z")
@@ -2475,8 +2475,8 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
 
           fun solve_modifies_tac i =
                 (clarsimp_tac
-                  (claset_of Set_thy,
-                     (Simplifier.context ctxt (simpset_of Set_thy))
+                  (global_claset_of Set_thy,
+                     (Simplifier.context ctxt (global_simpset_of Set_thy))
                      addsimps ([mex_def,meq_def,upd_globals_def]@K_convs)
                      addsimprocs (state_upd_simproc Record::(state_simprocs state_kind))
                      addcongs K_congs) i)
@@ -2588,7 +2588,7 @@ fun call_tac cont_tac mode state_kind state_space ctxt asms spec_sfx t =
 fun solve_in_Faults_tac i =
     resolve_tac [UNIV_I, in_insert_hd] i
     ORELSE
-    SELECT_GOAL (SOLVE (simp_tac (simpset_of Set_thy) 1)) i;
+    SELECT_GOAL (SOLVE (simp_tac (global_simpset_of Set_thy) 1)) i;
 
 local
 val triv_simp = merge_assertion_simp_tac [mem_Collect_eq] THEN'
@@ -3271,7 +3271,7 @@ fun lookup' _ [] _ = NONE
  *)
 
 local
- val ss = (simpset_of (theory "Fun"))
+ val ss = (global_simpset_of (theory "Fun"))
           addsimps
           (thm "StateFun.lookup_def"::thm "StateFun.id_id_cancel"::
            thms "list.inject"@thms "char.inject"@simp_thms)
@@ -3455,8 +3455,8 @@ fun solve_modifies_tac ctxt state_kind state_space i =
                      (REPEAT_ALL_NEW (resolve_tac [conjI,impI,refl]) k))) i
   in
     (trace_tac "solve_modifies_tac" THEN
-     clarsimp_tac (claset_of HOL.thy,
-                        (Simplifier.context ctxt (simpset_of Set_thy))
+     clarsimp_tac (global_claset_of HOL.thy,
+                        (Simplifier.context ctxt (global_simpset_of Set_thy))
                          addsimps ([mex_def,meq_def]@K_convs)
                          addsimprocs (state_upd_simproc Record::(state_simprocs Record))
                          addcongs K_congs) i)
