@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.49 2009-07-23 16:46:20 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.50 2009-07-26 17:48:03 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1311,7 +1311,7 @@ fun procedures_definition locname procs thy =
              |> (fn thy => Expression.sublocale parentN (mk_loc_exp [Locale.intern thy implN]) thy)
              |> Proof.global_terminal_proof
                  (Method.Basic (fn ctxt => Method.SIMPLE_METHOD
-                                 (Locale.intro_locales_tac false ctxt []), Position.none),NONE)
+                                 (Locale.intro_locales_tac false ctxt [])),NONE)
              |> ProofContext.theory_of
           end;
 
