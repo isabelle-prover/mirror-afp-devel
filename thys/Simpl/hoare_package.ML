@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.50 2009-07-26 17:48:03 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.51 2009-07-27 20:28:14 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -2255,7 +2255,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                  => solve_spec augment_rule asmUN_rule augment_emptyFaults mode Parameter
                        (SOME spec_mode) (SOME spec) 1
                | _ => all_tac)
-         in METAHYPS tac i end
+         in OldGoals.METAHYPS tac i end
 
     val strip_spec_vars = (strip_qnt_vars "All") o HOLogic.dest_Trueprop;
 
@@ -2566,13 +2566,13 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                  else test_modify_in_ctxt_tac
      | Parameter =>
          (case spec of
-            NONE => (tracing "no spec found!";METAHYPS specs_of_assms_tac)
+            NONE => (tracing "no spec found!"; OldGoals.METAHYPS specs_of_assms_tac)
           | SOME spec =>
               (tracing "found spec!"; case check_spec pname is_spec_clause spec of
                  SOME _ => test_modify_in_ctxt_tac
                | NONE => (warning ("ignoring theorem " ^ (suffix spec_sfx pname') ^
                           "; no proper specification for procedure " ^pname');
-                          METAHYPS specs_of_assms_tac))))
+                          OldGoals.METAHYPS specs_of_assms_tac))))
   end;
 end;
 
