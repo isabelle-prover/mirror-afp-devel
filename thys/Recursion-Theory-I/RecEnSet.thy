@@ -677,7 +677,7 @@ proof -
   then show "r \<in> ce_rels" by (rule ce_rel_lm_7)
 qed
 
-lemma ce_rel_lm_24: "\<lbrakk> r \<in> ce_rels; s \<in> ce_rels \<rbrakk> \<Longrightarrow> r O s \<in> ce_rels"
+lemma ce_rel_lm_24: "\<lbrakk> r \<in> ce_rels; s \<in> ce_rels \<rbrakk> \<Longrightarrow> s O r \<in> ce_rels"
 proof -
   assume r_ce: "r \<in> ce_rels"
   assume s_ce: "s \<in> ce_rels"
@@ -687,12 +687,12 @@ proof -
   then obtain p_s where p_s_is_pr: "p_s \<in> PrimRec3" and S1: "\<forall> x y. ((x,y) \<in> s)=(\<exists> u. p_s x y u = 0)" by auto
   def p_def: p \<equiv> "\<lambda> x z u. (p_s x (c_fst u) (c_fst (c_snd u))) + (p_r (c_fst u) z (c_snd (c_snd u)))"
   from p_r_is_pr p_s_is_pr have p_is_pr: "p \<in> PrimRec3" unfolding p_def by prec
-  def rs_def: rs \<equiv> "r O s"
-  have main: "\<forall> x z. ((x,z) \<in> rs) = (\<exists> u. p x z u = 0)"
-  proof (rule allI, rule allI) fix x z show "((x, z) \<in> rs) = (\<exists>u. p x z u = 0)"
-    proof assume A: "(x, z) \<in> rs" show "\<exists>u. p x z u = 0"
+  def sr_def: sr \<equiv> "s O r"
+  have main: "\<forall> x z. ((x,z) \<in> sr) = (\<exists> u. p x z u = 0)"
+  proof (rule allI, rule allI) fix x z show "((x, z) \<in> sr) = (\<exists>u. p x z u = 0)"
+    proof assume A: "(x, z) \<in> sr" show "\<exists>u. p x z u = 0"
       proof -
-	from A rs_def obtain y where L1: "(x,y) \<in> s" and L2: "(y,z) \<in> r" by auto
+	from A sr_def obtain y where L1: "(x,y) \<in> s" and L2: "(y,z) \<in> r" by auto
 	from L1 S1 obtain u_s where L3: "p_s x y u_s = 0" by auto
 	from L2 R1 obtain u_r where L4: "p_r y z u_r = 0" by auto
 	def u_def: u \<equiv> "c_pair y (c_pair u_s u_r)"
@@ -700,7 +700,7 @@ proof -
 	then show ?thesis by auto
       qed
     next
-      assume A: "\<exists>u. p x z u = 0" show "(x, z) \<in> rs"
+      assume A: "\<exists>u. p x z u = 0" show "(x, z) \<in> sr"
       proof -
 	from A obtain u where L1: "p x z u = 0" by auto
 	then have L2: "(p_s x (c_fst u) (c_fst (c_snd u))) + (p_r (c_fst u) z (c_snd (c_snd u))) = 0" by (unfold p_def)
@@ -708,13 +708,13 @@ proof -
 	from L2 have L4: "p_r (c_fst u) z (c_snd (c_snd u)) = 0" by auto
 	from L3 S1 have L5: "(x,(c_fst u)) \<in> s" by auto
         from L4 R1 have L6: "((c_fst u),z) \<in> r" by auto
-	from L5 L6 have "(x,z) \<in> r O s" by auto
-	with rs_def show ?thesis by auto
+	from L5 L6 have "(x,z) \<in> s O r" by auto
+	with sr_def show ?thesis by auto
       qed
     qed
   qed
-  from p_is_pr main have "rs \<in> ce_rels" by (rule ce_rel_lm_23)
-  then show ?thesis by (unfold rs_def)
+  from p_is_pr main have "sr \<in> ce_rels" by (rule ce_rel_lm_23)
+  then show ?thesis by (unfold sr_def)
 qed
 
 lemma ce_rel_lm_25: "r \<in> ce_rels \<Longrightarrow> r^-1 \<in> ce_rels"
@@ -787,7 +787,7 @@ proof -
   assume B_ce: "B \<in> ce_sets"
   def r_a_def: r_a \<equiv> "{ (x,(0::nat)) | x. x \<in> A}"
   def r_b_def: r_b \<equiv> "{ ((0::nat),z) | z. z \<in> B}"
-  have L1: "r_b O r_a = A \<times> B" by (unfold r_a_def, unfold r_b_def, auto)
+  have L1: "r_a O r_b = A \<times> B" by (unfold r_a_def, unfold r_b_def, auto)
   have r_a_ce: "r_a \<in> ce_rels"
   proof -
     have loc1: "ce_rel_to_set r_a = { c_pair x 0 | x. x \<in> A}" by (unfold r_a_def, unfold ce_rel_to_set_def, auto)
@@ -806,7 +806,7 @@ proof -
     with loc1 have "ce_rel_to_set r_b \<in> ce_sets" by auto
     then show ?thesis by (rule ce_rel_lm_7)
   qed
-  from r_b_ce r_a_ce have "r_b O r_a \<in> ce_rels" by (rule ce_rel_lm_24)
+  from r_b_ce r_a_ce have "r_a O r_b \<in> ce_rels" by (rule ce_rel_lm_24)
   with L1 show ?thesis by auto
 qed
 
@@ -918,7 +918,7 @@ lemma graph_lm_2: "y = f x \<Longrightarrow> (x,y) \<in> graph f" by (unfold gra
 
 lemma graph_lm_3: "((x,y) \<in> graph f) = (y = f x)" by (unfold graph_def, auto)
 
-lemma graph_lm_4: "graph (f o g) = (graph f) O (graph g)" by (unfold graph_def, auto)
+lemma graph_lm_4: "graph (f o g) = (graph g) O (graph f)" by (unfold graph_def, auto)
 
 definition
   c_graph :: "(nat \<Rightarrow> nat) \<Rightarrow> nat set" where
@@ -985,7 +985,7 @@ proof -
   then have f_ce: "graph f \<in> ce_rels" by (unfold total_recursive_def)
   assume "total_recursive g"
   then have g_ce: "graph g \<in> ce_rels" by (unfold total_recursive_def)
-  from f_ce g_ce have "graph f O graph g \<in> ce_rels" by (rule ce_rel_lm_24)
+  from f_ce g_ce have "graph g O graph f \<in> ce_rels" by (rule ce_rel_lm_24)
   then have "graph (f o g) \<in> ce_rels" by (simp add: graph_lm_4)
   then show ?thesis by (unfold total_recursive_def)
 qed

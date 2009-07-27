@@ -1,4 +1,4 @@
-(*  ID:         $Id: NAe.thy,v 1.6 2007-07-22 20:44:19 makarius Exp $
+(*  ID:         $Id: NAe.thy,v 1.7 2009-07-27 20:02:15 alexkrauss Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -18,7 +18,7 @@ abbreviation
 consts steps :: "('a,'s)nae => 'a list =>   ('s * 's)set"
 primrec
 "steps A [] = (eps A)^*"
-"steps A (a#w) = steps A w  O  step A (Some a)  O  (eps A)^*"
+"steps A (a#w) = (eps A)^* O step A (Some a) O steps A w"
 
 definition
  accepts :: "('a,'s)nae => 'a list => bool" where
@@ -31,8 +31,8 @@ primrec
 "delta A (a#w) s = lift(delta A w) (lift(next A (Some a)) ((eps A)^* `` {s}))"
 *)
 
-lemma steps_epsclosure[simp]: "steps A w O (eps A)^* = steps A w"
-by(cases w)(simp_all add:O_assoc)
+lemma steps_epsclosure[simp]: "(eps A)^* O steps A w = steps A w"
+by (cases w) (simp_all add: O_assoc[symmetric])
 
 lemma in_steps_epsclosure:
   "[| (p,q) : (eps A)^*; (q,r) : steps A w |] ==> (p,r) : steps A w"
@@ -40,10 +40,10 @@ apply(rule steps_epsclosure[THEN equalityE])
 apply blast
 done
 
-lemma epsclosure_steps: "(eps A)^* O steps A w = steps A w";
+lemma epsclosure_steps: "steps A w O (eps A)^* = steps A w";
 apply(induct w)
  apply simp
-apply(simp add:O_assoc[symmetric])
+apply(simp add:O_assoc)
 done
 
 lemma in_epsclosure_steps:
@@ -52,11 +52,11 @@ apply(rule epsclosure_steps[THEN equalityE])
 apply blast
 done
 
-lemma steps_append[simp]:  "steps A (v@w) = steps A w  O  steps A v"
-by(induct v)(simp_all add:O_assoc)
+lemma steps_append[simp]:  "steps A (v@w) = steps A v  O  steps A w"
+by(induct v)(simp_all add:O_assoc[symmetric])
 
 lemma in_steps_append[iff]:
-  "(p,r) : steps A (v@w) = ((p,r) : (steps A w O steps A v))"
+  "(p,r) : steps A (v@w) = ((p,r) : (steps A v O steps A w))"
 apply(rule steps_append[THEN equalityE])
 apply blast
 done

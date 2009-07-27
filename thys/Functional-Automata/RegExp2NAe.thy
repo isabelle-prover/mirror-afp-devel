@@ -1,4 +1,4 @@
-(*  ID:         $Id: RegExp2NAe.thy,v 1.8 2007-07-22 20:44:19 makarius Exp $
+(*  ID:         $Id: RegExp2NAe.thy,v 1.9 2009-07-27 20:02:15 alexkrauss Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -193,7 +193,7 @@ done
 (***** Epsilon closure of start state *****)
 
 lemma unfold_rtrancl2:
- "R^* = Id Un (R^* O R)"
+ "R^* = Id Un (R O R^*)"
 apply (rule set_ext)
 apply (simp)
 apply (rule iffI)
@@ -510,14 +510,14 @@ apply (induct w rule: rev_induct)
   apply (simp)
  apply (clarify)
  apply (simp)
-apply (simp add: O_assoc epsclosure_steps)
+apply (simp add: O_assoc[symmetric] epsclosure_steps)
 apply (clarify)
 apply (erule allE, erule impE, assumption)
 apply (clarify)
 apply (erule disjE)
  apply (rule_tac x = "us" in exI)
  apply (rule_tac x = "v@[x]" in exI)
- apply (simp add: O_assoc epsclosure_steps)
+ apply (simp add: O_assoc[symmetric] epsclosure_steps)
  apply (blast)
 apply (clarify)
 apply (rule_tac x = "us@[v@[x]]" in exI)
