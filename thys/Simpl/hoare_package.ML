@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.51 2009-07-27 20:28:14 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.52 2009-07-28 17:53:57 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -364,7 +364,7 @@ val triv_Ex_eq = thm "Hoare.triv_Ex_eq";
 val mex_def = thm "Hoare.mex_def";
 val meq_def = thm "Hoare.meq_def";
 val wf_measure = @{thm "Wellfounded.wf_measure"};
-val wf_same_fst = @{thm "Wellfounded.wf_same_fst"};
+val wf_same_fst = @{thm "Recdef.wf_same_fst"};
 val wf_inv_image = @{thm "Wellfounded.wf_inv_image"};
 val wf_lex_prod = @{thm "Wellfounded.wf_lex_prod"};
 val wf_measure_lex_prod = thm "Hoare.wf_measure_lex_prod";
