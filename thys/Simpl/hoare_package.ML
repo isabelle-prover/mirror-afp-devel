@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.52 2009-07-28 17:53:57 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.53 2009-07-29 08:26:58 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1676,7 +1676,7 @@ val (op ===) = Trueprop o HOLogic.mk_eq;
 
 
 fun UN_const (dT as (Type ("fun", [dT', @{typ bool}]))) rT =
-      Const (@{const_name UNION}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name UNIV}, dT)
+      Const (@{const_name UNION}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name Orderings.top}, dT)
   | UN_const _ _ = raise Match;
 
 fun mk_UN (x,T,P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x,T,P);
@@ -1799,7 +1799,7 @@ fun gen_call_rec_rule specs_name n rule =
                  mk_var i "A" (zT --> assT)$Bound 0];
          val single = HOLogic.mk_set quadT [quadruple];
      in Const (@{const_name UNION}, HOLogic.mk_setT zT --> (zT --> quadT_set) --> quadT_set)$
-         Const (@{const_name UNIV}, HOLogic.mk_setT zT) $
+         Const (@{const_name Orderings.top}, HOLogic.mk_setT zT) $
           Abs("Z",zT,single)
      end;
 
@@ -2042,12 +2042,12 @@ fun gen_context_thms ctxt thy mode params G T F =
     fun destUn (Const (@{const_name union}, _) $ t1 $ t2) = destUn t1 @ destUn t2
       | destUn t = [t]
 
-    fun destUNION (Const (@{const_name UNION}, _) $ Const (@{const_name UNIV}, _) $ Abs (x, T, t)) =
+    fun destUNION (Const (@{const_name UNION}, _) $ Const (@{const_name Orderings.top}, _) $ Abs (x, T, t)) =
          let val (vars,body) = destUNION t
          in ((x, T) :: vars, body) end
       | destUNION t = ([],t)
 
-    fun destQuadruple (Const (@{const_name insert},_) $ PpQA $ Const (@{const_name Set.empty}, _)) = PpQA
+    fun destQuadruple (Const (@{const_name insert},_) $ PpQA $ Const (@{const_name Orderings.bot}, _)) = PpQA
       | destQuadruple t = raise Match;
 
     fun mkCallQuadruple (Const (@{const_name Pair}, _) $ P $ (Const (@{const_name Pair}, _)
@@ -2181,7 +2181,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                  SOME s => SOME s
                | NONE =>  try (ProofContext.get_thm ctxt) (suffix spec_sfx pname'));
 
-    fun dest_UN (Const (@{const_name UNION}, _) $ Const (@{const_name UNIV}, _) $ t) = SOME t
+    fun dest_UN (Const (@{const_name UNION}, _) $ Const (@{const_name Orderings.top}, _) $ t) = SOME t
       | dest_UN _ = NONE;
 
     fun auxvars_for p t =
@@ -2312,7 +2312,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                               then if (mode=Total andalso spec_mode=Partial)
                                    then (warning msg;(true,NONE,NONE,false))
                                    else case spec_abr of
-                                          (Const (@{const_name Set.empty}, _)) =>
+                                          (Const (@{const_name Orderings.bot}, _)) =>
                                             (false,SOME spec_mode,
                                               SOME (spec' s spec_mode false),spec_has_args)
                                         | _ => (true,SOME spec_mode,
@@ -2431,9 +2431,9 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
         let
           val (_,call,modif_spec_nrm,modif_spec_abr,modif_spec_mode,G,Theta,_) =
                 dest_hoare (concl_of modifies_thm);
-          val is_abr = case modif_spec_abr of (Const (@{const_name Set.empty},_)) => false | _ => true;
-          val emptyTheta = case Theta of (Const (@{const_name Set.empty},_)) => true | _ => false;
-          (*val emptyFaults = case F of (Const (@{const_name Set.empty}, _)) => true | _ => false;*)
+          val is_abr = case modif_spec_abr of (Const (@{const_name Orderings.bot},_)) => false | _ => true;
+          val emptyTheta = case Theta of (Const (@{const_name Orderings.bot},_)) => true | _ => false;
+          (*val emptyFaults = case F of (Const (@{const_name Orderings.bot}, _)) => true | _ => false;*)
           val spec_has_args = #6 (dest_call call);
           val () = if spec_has_args
               then error "procedure call in modifies-specification must be parameterless!"
@@ -2619,7 +2619,7 @@ fun guard_tac strip cont_tac mode (t,i) =
                  triv_simp i]
   in
       case F of
-       (Const (@{const_name Set.empty},_)) => EVERY [trace_tac "Guard: basic_tac", basic_tac i]
+       (Const (@{const_name Orderings.bot},_)) => EVERY [trace_tac "Guard: basic_tac", basic_tac i]
       | _ => EVERY [trace_tac "Guard: trying guarantee_tac",
                     guarantee_tac i ORELSE basic_tac i]
 
