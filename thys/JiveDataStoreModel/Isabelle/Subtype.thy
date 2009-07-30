@@ -1,5 +1,5 @@
 (*  Title:       Jive Data and Store Model
-    ID:          $Id: Subtype.thy,v 1.12 2009-07-23 16:46:19 makarius Exp $
+    ID:          $Id: Subtype.thy,v 1.13 2009-07-30 16:42:10 makarius Exp $
     Author:      Norbert Schirmer <schirmer at informatik.tu-muenchen.de>, 2003
     Maintainer:  Nicole Rauch <rauch at informatik.uni-kl.de>
     License:     LGPL
@@ -237,17 +237,17 @@ lemma widen_asm: "(a::Javatype) \<le> b \<Longrightarrow> a \<le> b"
 lemmas direct_subtype_widened = direct_subtype[THEN r_into_rtrancl]
 
 ML {*
-local
-  val widen_asm = thm "widen_asm";
-  val widen_lemmas = thms "direct_subtype_widened";
-  val ss = (global_simpset_of (theory "Transitive_Closure"));
-  val widen_tac = rtac widen_asm 
-      THEN' simp_tac (@{simpset} addsimps [thm "le_Javatype_def"])
-      THEN' Method.insert_tac widen_lemmas THEN' simp_tac ss;
-in
-  fun widenSolver prems = widen_tac
-end
+fun widen_tac ss =
+  rtac @{thm widen_asm} THEN'
+  simp_tac (Simplifier.inherit_context ss @{simpset} addsimps @{thms le_Javatype_def}) THEN'
+  Method.insert_tac @{thms direct_subtype_widened} THEN'
+  simp_tac (Simplifier.inherit_context ss (global_simpset_of @{theory Transitive_Closure}))
 *}
+
+declaration {* fn _ =>
+  Simplifier.map_ss (fn ss => ss addSolver (mk_solver' "widen" widen_tac))
+*}
+
 
 text {* In this solver-tactic, we first try the trivial resolution with @{text "widen_asm"} to
 check if the actual subgaol really is a request to solve a subtyping problem.
@@ -255,9 +255,6 @@ If so, we unfold the comparison operator, insert the direct subtype
 relations and call the simplifier.
 *}
 
-ML {*
-  change_simpset (fn ss => ss addSolver (mk_solver "widenSolver" widenSolver));
-*}
 
 subsection {* Properties of the Subtype Relation *}
 
