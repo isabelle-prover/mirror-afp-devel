@@ -1,3 +1,11 @@
+(*  Title:       An Example of a Cofinitary Group in Isabelle/HOL
+    ID:          $Id: CofGroups.thy,v 1.1.2.2 2009-08-08 10:39:25 lsf37 Exp $
+    Author:      Bart.Kastermans at colorado.edu, 2009
+    Maintainer:  Bart.Kastermans at colorado.edu
+
+    License:     LGPL
+*)
+
 theory CofGroups
 imports Main
 begin;

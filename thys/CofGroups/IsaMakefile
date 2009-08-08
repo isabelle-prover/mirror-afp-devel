@@ -1,9 +1,14 @@
+## configurables
+
+SESSION-NAME = CofGroups
+BASE-IMAGE = HOL
 
 ## targets
 
-default: CofGroups
-images: 
-test: CofGroups
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
+# usually empty:
+images:  
 
 all: images test
 
@@ -14,18 +19,29 @@ SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf  ## -D generated
+# turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
+ifeq ($(ISABELLE_IMAGE_PATH),)
+IMAGE=$(OUT)/$(BASE-IMAGE)
+else
+IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
+endif
 
 
-## CofGroups
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
-CofGroups: $(LOG)/HOL-CofGroups.gz
+# time limit (in sec)
+MAXTIME = 3600
 
-$(LOG)/HOL-CofGroups.gz: ## CofGroups/ROOT.ML CofGroups/document/root.tex CofGroups/*.thy
-	@$(USEDIR) HOL CofGroups
+
+## dependencies
+
+$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/HOL-CofGroups.gz
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
