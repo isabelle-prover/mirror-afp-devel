@@ -67,6 +67,13 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2009-08-04:
+<a href="entries/CofGroups.shtml">An Example of a Cofinitary Group in Isabelle/HOL</a>
+<br>Author:
+<a href="http://www.bartk.nl">Bart Kastermans</a>
+</td></tr>
+
+<tr><td class="entry">
 2009-05-11:
 <a href="entries/Stream-Fusion.shtml">Stream Fusion</a>
 <br>Author:
