@@ -1,0 +1,31 @@
+
+## targets
+
+default: CofGroups
+images: 
+test: CofGroups
+
+all: images test
+
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf  ## -D generated
+
+
+## CofGroups
+
+CofGroups: $(LOG)/HOL-CofGroups.gz
+
+$(LOG)/HOL-CofGroups.gz: ## CofGroups/ROOT.ML CofGroups/document/root.tex CofGroups/*.thy
+	@$(USEDIR) HOL CofGroups
+
+
+## clean
+
+clean:
+	@rm -f $(LOG)/HOL-CofGroups.gz
