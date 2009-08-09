@@ -1,5 +1,5 @@
 (*  Title:       An Example of a Cofinitary Group in Isabelle/HOL
-    ID:          $Id: CofGroups.thy,v 1.1.2.2 2009-08-08 10:39:25 lsf37 Exp $
+    ID:          $Id: CofGroups.thy,v 1.1.2.3 2009-08-09 03:24:17 lsf37 Exp $
     Author:      Bart.Kastermans at colorado.edu, 2009
     Maintainer:  Bart.Kastermans at colorado.edu
 
@@ -48,9 +48,9 @@ this group by any bijection $\mathbb {Z} \rightarrow \N$ gives a
 cofinitary group.
 
 We will develop a workable definition of a cofinitary group (Section
-\ref {sect:mainnotions} and show that the group as described in the
+\ref {sect:mainnotions}) and show that the group as described in the
 previous paragraph is indeed cofinitary (this takes the whole paper,
-but is all pulled together in Section \ref {sect:concl}.  Note:
+but is all pulled together in Section \ref {sect:concl}).  Note:
 formalizing the previous paragraph is all that is completed in this
 note.
 
@@ -100,10 +100,11 @@ definition S_inf :: "(nat \<Rightarrow> nat) set"
 where
 "S_inf = {f::(nat \<Rightarrow> nat). bij f}"
 
-text {* Note here that $bij f$ is the predicate that @{term f} is
-a bijection.  This is common notation in Isabelle, a predicate applied
-to an object.  Related to thsi $inj f$ means @{term f} is injective,
-and @{term surj} @{term f} means @{term f} is surjective.
+text {* Note here that @{term bij} @{term f} is the predicate that
+@{term f} is a bijection.  This is common notation in Isabelle, a
+predicate applied to an object.  Related to this @{term inj} @{term f}
+means @{term f} is injective, and @{term surj} @{term f} means @{term
+f} is surjective.
 
 The same notation is used for functionn application.  Next we define a
 function @{term Fix}, applying it to an object is also written by
@@ -191,9 +192,9 @@ proof -
 qed;
 
 text {* Finally we derive the equation for the inverse of @{term
-upOne}.  The rule we use references $Hilbert-Choice$ since the @{term
+upOne}.  The rule we use references @{text Hilbert_Choice} since the @{term
 inv} operator, the operator that gives an inverse of a function, is
-defined using Hilbert's choice operator.; *}
+defined using Hilbert's choice operator. *}
 
 lemma inv_upOne_eq: "(inv upOne) (n::int) = n - 1"
 proof -
@@ -264,8 +265,8 @@ the induction hypothesis.  Then @{term f} is obtained from this by
 adding or subtracting one pointwise. 
 
 In this proof we use some pattern matching to save on writing.  In the
-statement of the theorem, we match the theorem against $?P k$ thereby
-defining the predicate $?P$. *}
+statement of the theorem, we match the theorem against @{text "?P k"} thereby
+defining the predicate @{text "?P"}. *}
 
 lemma Ex1_Normal_form_part2: 
   "(\<forall>f. ((\<forall>n. f n = n + k) \<longrightarrow> f \<in> Ex1))" (is "?P k");
@@ -543,9 +544,9 @@ qed;
 
 section {* Move onto the Natural Numbers *}
 
-text {* \label {sect:moveNN} We define a bijection from the natural to
-the integers.  This will be used to coerce the functions above to be
-on the natural numbers. *}
+text {* \label {sect:moveNN} We define a bijection from the natural
+numbers to the integers.  This will be used to coerce the functions
+above to be on the natural numbers. *}
 
 definition ni_bij:: "nat \<Rightarrow> int"
 where
@@ -556,15 +557,9 @@ where
 declare ni_bij_def [simp] -- "automated tools can use the definition";
 
 text {* Under this bijection the even natural numbers map to the
-positive integers, e.g. @{term "ni_bij 0"} is $0$ *}
-(*value "ni_bij 0"; *)
-text {* and @{term "ni_bij 4"} is $2$ *}
-(*value "ni_bij 4";*)
-text {*The odd natural numbers map to the negative integers, e.g.
-@{term "ni_bij 1"} is $-1$ *}
-(*value "ni_bij 1";*)
-text {* and @{term "ni_bij 3"} is $-3$. *}
-(*value "ni_bij 3";*)
+positive integers, e.g. @{term "ni_bij 0"} is $0$, @{term "ni_bij 4"}
+is $2$.  The odd natural numbers map to the negative integers, e.g.
+@{term "ni_bij 1"} is $-1$, and @{term "ni_bij 3"} is $-3$. *}
 
 text {* We prove a couple of simple facts on modular arithmetic that
 we'll use to prove properties of @{term ni_bij}. *}
@@ -622,9 +617,9 @@ proof -
   thus "(k - 1) mod 2 = 1" by arith;
 qed;
 
-text {* With these facts we can show @{term ni_bij} is a bijetion.
+text {* With these facts we can show @{term ni_bij} is a bijection.
 The proof is really just a matter of (un)folding definitions, and some
-computatons. *}
+computations. *}
 
 theorem ni_bij_bij: "bij ni_bij";
 proof (unfold bij_def, rule conjI);
@@ -979,5 +974,5 @@ next;
   with Ex2_cofinitary have "Fix f = {}" by auto;
   thus "finite (Fix f)" using finite_def by auto;
 qed;
-  
+
 end;
