@@ -70,7 +70,7 @@ group.
 
 <!-- entry directory name: -->
 <!--#set var="name" value="CofGroups" -->
-<!--#set var="name" base="HOL" -->
+<!--#set var="base" value="HOL" -->
 
 <!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -102,6 +102,6 @@ group.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2009-08-08 14:19:59 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2009-08-09 03:50:48 $, $Revision: 1.1 
 $</div></body>
 </html>
