@@ -1,5 +1,5 @@
 (*  Title:       An Example of a Cofinitary Group in Isabelle/HOL
-    ID:          $Id: CofGroups.thy,v 1.3 2009-08-09 03:28:26 lsf37 Exp $
+    ID:          $Id: CofGroups.thy,v 1.4 2009-08-10 14:59:53 nipkow Exp $
     Author:      Bart.Kastermans at colorado.edu, 2009
     Maintainer:  Bart.Kastermans at colorado.edu
 
@@ -640,11 +640,11 @@ proof (unfold bij_def, rule conjI);
       ultimately
       have "x div 2 = y div 2" using eq_ass by auto;
       moreover
-      from x_mod and y_mod have "x mod 2 = y mod 2" by auto;
-      ultimately show "x = y" by arith;
+      from x_mod and y_mod have "x mod 2 = y mod 2" by auto
+      ultimately show "x = y" by arith
     next
       assume "\<not>(ni_bij x < 0)"
-      hence im_x_notneg: "ni_bij x \<ge> 0" by auto;
+      hence im_x_notneg: "ni_bij x \<ge> 0" by auto
       with eq_ass have "ni_bij y \<ge> 0" by auto;
       with im_notneg_mod have y_mod: "(y mod 2) = 0" .;
       from im_notneg_mod and im_x_notneg have x_mod: "x mod 2 = 0" .;
@@ -696,14 +696,7 @@ text {* The following lemma turned out easier to prove than to
 find. *}
 
 lemma bij_f_o_inf_f: "bij f \<Longrightarrow> f \<circ> inv f = id"
-proof -
-  assume bij_f: "bij f"
-  with bij_imp_bij_inv have bij_inv_f: "bij (inv f)" by auto;
-  with bij_def have  "inj (inv f)" by auto;
-  hence iif_if_id: "inv (inv f) \<circ> inv f = id" by auto;
-  from bij_f and inv_inv_eq have "inv (inv f) = f" by auto;
-  with iif_if_id show "f \<circ> inv f = id" by auto;
-qed;
+by(simp add: bij_def surj_iff)
 
 text {* The following theorem is a key theorem is showing that the
 group we are interested in is cofinitary.  It states that when you
@@ -766,34 +759,7 @@ text {* \label {sect:bijN} In this section we define the subset @{term
 Ex2} of @{term S_inf} that is the conjugate of @{term Ex1} bij @{term
 ni_bij}, and show its basic properties. 
 
-First we prove a simple lemma that again was easier to prove than to
-find. *};
-
-lemma comp_bij: "(bij (g::'a \<Rightarrow> 'b) \<and> bij (h::'b \<Rightarrow> 'c)) \<Longrightarrow> bij (h \<circ> g)"
-proof -
-  assume "bij g \<and> bij h"
-  hence "bij g" and "bij h" by auto;
-  with bij_is_inj and bij_is_surj
-    have inj_g: "inj g" and surj_g: "surj g" and inj_h: "inj h" 
-      and surj_h: "surj h" by auto;
-  show "bij (h \<circ> g)"
-  proof (rule bijI)
-    show "inj (h \<circ> g)"
-    proof (rule injI)
-      fix x y
-      assume "(h \<circ> g) x = (h \<circ> g) y"
-      hence "h(g(x)) = h(g(y))" by auto;
-      with inj_h and inj_eq[of h] have "g(x) = g(y)" by auto;
-      with inj_g and inj_eq[of g] show "x = y" by auto;
-    qed;
-
-    from surj_h and surj_g and comp_surj show "surj (h \<circ> g)" by auto;
-  qed;
-qed;
-
-
-text {* @{term CONJ} is the function that will conjugate @{term Ex1}
-to @{term Ex2}. *}
+@{term CONJ} is the function that will conjugate @{term Ex1} to @{term Ex2}. *}
 
 definition CONJ :: "(int \<Rightarrow> int) \<Rightarrow> (nat \<Rightarrow> nat)"
 where
@@ -809,10 +775,10 @@ lemma type_CONJ: "f \<in> Ex1 \<Longrightarrow> (inv ni_bij) \<circ> f \<circ> n
 proof -
   assume f_Ex1: "f \<in> Ex1"
   with all_bij have "bij f" by auto;
-  with ni_bij_bij and comp_bij 
+  with ni_bij_bij and bij_comp 
     have bij_f_nibij: "bij (f \<circ> ni_bij)" by auto;
   with ni_bij_bij and bij_imp_bij_inv have "bij (inv ni_bij)" by auto;
-  with bij_f_nibij and comp_bij[of  "f \<circ> ni_bij" "inv ni_bij"] 
+  with bij_f_nibij and bij_comp[of  "f \<circ> ni_bij" "inv ni_bij"] 
     and o_assoc[of "inv ni_bij" "f" "ni_bij"]
     have "bij ((inv ni_bij) \<circ> f \<circ> ni_bij)" by auto;
   with S_inf_def show "((inv ni_bij) \<circ> f \<circ> ni_bij) \<in> S_inf"; by auto;
@@ -827,7 +793,7 @@ proof -
     using CONJ_def by auto;
   from ni_bij_bij and bij_imp_bij_inv 
     have inv_ni_bij_bij: "bij (inv ni_bij)" by auto;
-  with bij_f and comp_bij have "bij (inv ni_bij \<circ> f)" by auto;
+  with bij_f and bij_comp have "bij (inv ni_bij \<circ> f)" by auto;
   with o_inv_distrib[of "inv ni_bij \<circ> f" ni_bij] and ni_bij_bij
   have "inv ((inv ni_bij) \<circ> f \<circ>  ni_bij) = 
     (inv ni_bij) \<circ> (inv ((inv ni_bij) \<circ> f))" by auto;
