@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.54 2009-07-30 06:20:39 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.55 2009-08-11 08:06:22 fhaftmann Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1792,7 +1792,7 @@ fun gen_call_rec_rule specs_name n rule =
     val quadT_set = HOLogic.mk_setT quadT;
     fun mk_spec i =
       let
-         val quadruple = HOLogic.mk_tuple (HOLogic.flat_tupleT_paths quadT) quadT
+         val quadruple = HOLogic.mk_ptuple (HOLogic.flat_tupleT_paths quadT) quadT
                 [mk_var i "P" (zT --> assT)$Bound 0,
                  mk_var i "p" pT,
                  mk_var i "Q" (zT --> assT)$Bound 0,
