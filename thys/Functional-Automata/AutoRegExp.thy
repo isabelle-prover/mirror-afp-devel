@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoRegExp.thy,v 1.12 2008-06-12 06:57:17 lsf37 Exp $
+(*  ID:         $Id: AutoRegExp.thy,v 1.13 2009-08-11 08:06:26 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -18,6 +18,9 @@ by (simp add: NAe_DA_equiv accepts_rexp2nae)
 (* Testing code generation: *)
 
 declare RegExp2NA.star_def [unfolded epsilon_def, code]
+declare RegExp2NA.or_def [THEN fun_cong, code]
+declare RegExp2NA.plus_def [THEN fun_cong, code]
+declare RegExp2NA.conc_def [THEN fun_cong, code]
 
 code_module Generated
 contains
