@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.17 2009-05-10 11:53:47 fhaftmann Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.18 2009-08-27 17:49:29 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -5585,9 +5585,9 @@ proof -
    apply (subgoal_tac "verticesFrom f v' = (as @ [u]) @ v # bs") apply assumption
    apply simp apply (subgoal_tac "distinct (a @ v # b @ u # c)") apply force by simp
   note pre_add f
-  moreover
+  moreover(*
   have "\<And> m. {k. k < m} \<inter> {k. m \<le> k \<and> k < (m + n)} = {}" by auto
-  moreover
+  moreover*)
 
   from pre_add f help2 help1 "help" have "[countVertices g..<countVertices g + n] = [] \<Longrightarrow> (v, u) \<notin> edges f \<and> (u, v) \<notin> edges f"
     apply (cases "0 < n") apply (induct g) apply simp+
@@ -5618,11 +5618,9 @@ proof -
     apply (simp add: pre_subdivFace'_def)
     apply (unfold pre_splitFace_def)
     apply simp
-    apply (cases "0 < n") apply (induct g) apply simp+
-
-    apply (rule conjI) apply (induct g) apply simp
-    apply (rule ccontr) apply (elim conjE)
-    by (simp add: invalidVertexList_def is_duplicateEdge_def)
+    apply (cases "0 < n") apply (induct g) apply (simp add: ivl_disj_int)
+    apply (auto simp: invalidVertexList_def is_duplicateEdge_def)
+    done
 qed
 
 

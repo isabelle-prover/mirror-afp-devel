@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.19 2009-01-01 22:24:32 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.20 2009-08-27 17:49:29 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2085,8 +2085,7 @@ lemma normFaces_makeFaceFinalFaceList: "(normFaces (makeFaceFinalFaceList f fs))
 lemma MakeFaceFinal_facesAt_distinct:
  "f \<in> \<F> g \<Longrightarrow>  minGraphProps g \<Longrightarrow> facesAt_distinct (makeFaceFinal f g)"
   apply (simp add: facesAt_distinct_def makeFaceFinal_def)
-  apply (rule allI) apply (rule impI)
-  apply (simp add: facesAt_def)
+  apply (clarsimp simp: facesAt_def)
   apply (subgoal_tac "v < | (faceListAt g) |") apply (simp add: normFaces_makeFaceFinalFaceList)
   apply (rule minGraphProps8a') apply simp apply simp by (simp add: minGraphProps4)
 

@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneGraphIso.thy,v 1.5 2009-05-19 11:25:43 nipkow Exp $
+(*  ID:         $Id: PlaneGraphIso.thy,v 1.6 2009-08-27 17:49:29 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -763,7 +763,7 @@ lemma pr_iso_test3_conv_2:
   "!!I Fs\<^isub>2. pr_iso_test3 I Fs\<^isub>1 Fs\<^isub>2 = pr_iso_test2 test merge I Fs\<^isub>1 Fs\<^isub>2"
 apply(induct Fs\<^isub>1)
  apply simp
-apply(simp add:test2_conv_test merge2_conv_merge list_ex_iff)
+apply(simp add:test2_conv_test merge2_conv_merge list_ex_iff Bex_def)
 done
 
 corollary pr_iso_test3_corr:

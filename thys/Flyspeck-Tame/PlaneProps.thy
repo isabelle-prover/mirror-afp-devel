@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneProps.thy,v 1.12 2008-06-12 06:57:17 lsf37 Exp $
+(*  ID:         $Id: PlaneProps.thy,v 1.13 2009-08-27 17:49:29 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -108,7 +108,7 @@ shows "g' \<in> set (next_plane0\<^bsub>p\<^esub> g)"
 proof -
   have "\<not> final g" using prems(2)
     by(auto simp: nonFinals_def finalGraph_def filter_empty_conv)
-  thus ?thesis using prems by(auto simp:next_plane0_def)
+  thus ?thesis using prems by(auto simp:next_plane0_def Bex_def)
 qed
 
 
@@ -279,6 +279,9 @@ subsection{* Increasing final vertices *}
 This should really be proved via the (unproven) invariant
 v : f \<Longrightarrow> ((g,v).f).(f.v) = v
 *)
+
+declare  atLeastLessThan_iff[iff]
+
 lemma next_plane0_incr_finV:
  "\<lbrakk>g' \<in> set (next_plane0\<^bsub>p\<^esub> g); minGraphProps g \<rbrakk>
   \<Longrightarrow> \<forall>v \<in> \<V> g. v \<in> \<V> g' \<and>
@@ -290,12 +293,12 @@ prefer 4 apply assumption
   apply fast
  apply(clarsimp simp:makeFaceFinal_def vertices_graph makeFaceFinalFaceList_def)
  apply(drule replace5)
- apply(erule disjE)apply blast apply simp
-apply(simp add:setFinal_def)
+ apply(erule disjE)apply blast
+ apply(simp add:setFinal_def)
 apply(unfold pre_splitFace_def)
 apply(clarsimp simp:splitFace_def split_def vertices_graph)
 apply(rule conjI)
- apply(clarsimp simp:split_face_def vertices_graph)
+ apply(clarsimp simp:split_face_def vertices_graph atLeastLessThan_def)
  apply(blast dest:inbetween_inset)
 apply(clarsimp)
 apply(erule disjE[OF replace5]) apply blast
