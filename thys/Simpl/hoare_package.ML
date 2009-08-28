@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.55 2009-08-11 08:06:22 fhaftmann Exp $
+    ID:         $Id: hoare_package.ML,v 1.56 2009-08-28 09:33:52 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -2255,7 +2255,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                  => solve_spec augment_rule asmUN_rule augment_emptyFaults mode Parameter
                        (SOME spec_mode) (SOME spec) 1
                | _ => all_tac)
-         in OldGoals.METAHYPS tac i end
+         in Subgoal.FOCUS (tac o #prems) ctxt i end
 
     val strip_spec_vars = (strip_qnt_vars "All") o HOLogic.dest_Trueprop;
 
@@ -2349,7 +2349,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
      * for all m in the modifies list.
      *)
      fun mk_subst gT meqT =
-       fst (Type.unify (Sign.tsig_of thy) (gT,domain_type meqT) (Vartab.empty,0));
+       fst (Sign.typ_unify thy (gT,domain_type meqT) (Vartab.empty,0));
 
      fun mk_selR subst gT (upd,uT) =
        let val vT = range_type (hd (binder_types uT));
@@ -2566,13 +2566,13 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                  else test_modify_in_ctxt_tac
      | Parameter =>
          (case spec of
-            NONE => (tracing "no spec found!"; OldGoals.METAHYPS specs_of_assms_tac)
+            NONE => (tracing "no spec found!"; Subgoal.FOCUS (specs_of_assms_tac o #prems) ctxt)
           | SOME spec =>
               (tracing "found spec!"; case check_spec pname is_spec_clause spec of
                  SOME _ => test_modify_in_ctxt_tac
                | NONE => (warning ("ignoring theorem " ^ (suffix spec_sfx pname') ^
                           "; no proper specification for procedure " ^pname');
-                          OldGoals.METAHYPS specs_of_assms_tac))))
+                          Subgoal.FOCUS (specs_of_assms_tac o #prems) ctxt))))
   end;
 end;
 
