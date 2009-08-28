@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.56 2009-08-28 09:33:52 makarius Exp $
+    ID:         $Id: hoare_package.ML,v 1.57 2009-08-28 16:22:59 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -1052,9 +1052,9 @@ fun apply_in_context thy lexp f t =
     |> (fn ctxt => f ctxt t)
   end;
 
-fun print_cterm ct =
-      setmp show_sorts false
-       (setmp show_types false (setmp print_mode [] Display.string_of_cterm)) ct;
+fun print_term thy t =
+  setmp show_sorts false
+    (setmp show_types false (setmp print_mode [] (Syntax.string_of_term_global thy))) t;
 
 fun add_abbrev loc mode name spec thy =
   thy
@@ -1271,8 +1271,7 @@ fun procedures_definition locname procs thy =
            val Free (gamma,_) = read_term programN;
            val eq = HOLogic.Trueprop$
                      HOLogic.mk_eq (Free (gamma,fastype_of nt --> fastype_of rhs)$nt,rhs)
-           val ct = cterm_of thy eq;
-           val eqs = print_cterm ct;
+           val eqs = print_term thy eq;
            val assms = Element.Assumes [((Binding.name (suffix bodyP name'), []),[(eqs,[])])]
          in [assms]
          end
