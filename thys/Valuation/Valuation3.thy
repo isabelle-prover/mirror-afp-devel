@@ -1338,8 +1338,7 @@ apply (cut_tac n = N in an_nat_pos)
 done
 
 lemma max_gtTr:"(n::nat) < max (Suc n) (Suc m) \<and> m < max (Suc n) (Suc m)"
-apply (simp add:max_def)
-done
+by (simp add:max_def)
 
 lemma (in Corps) completion_approx:"\<lbrakk>Corps K'; valuation K v; valuation K' v'; 
       Completion\<^bsub>v v'\<^esub> K K'; x \<in> carrier (Vr K' v')\<rbrakk> \<Longrightarrow> 
@@ -2438,7 +2437,7 @@ apply (frule PolynRg.polyn_minus[of R "Vr K v" X "s_cf R (Vr K v) X p"
       erule exE, (erule conjE)+,
    frule_tac c = f in PolynRg.polyn_add1[of "R" "Vr K v" "X" _ 
     "(fst (s_cf R (Vr K v) X p), \<lambda>j. -\<^sub>a\<^bsub>Vr K v\<^esub> snd (s_cf R (Vr K v) X p) j)"],
-    assumption+, simp add:max_def,
+    assumption+, simp,
    thin_tac "-\<^sub>a\<^bsub>R\<^esub> p = polyn_expr R X (fst (s_cf R (Vr K v) X p))
     (fst (s_cf R (Vr K v) X p), \<lambda>j. -\<^sub>a\<^bsub>Vr K v\<^esub> snd (s_cf R (Vr K v) X p) j)",
    thin_tac "polyn_expr R X (fst (s_cf R (Vr K v) X p))

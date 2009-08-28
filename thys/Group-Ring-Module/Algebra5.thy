@@ -1,4 +1,3 @@
-
 (**       Algebra5  
                             author Hidetsune Kobayashi
                             Group You Santo
@@ -3533,7 +3532,7 @@ lemma (in PolynRg) polyn_expr_short:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rb
          polyn_expr R X k c = polyn_expr R X k (k, snd c)"
 apply (rule polyn_exprs_eq[of c "(k, snd c)" k], assumption+)
  apply (simp add:pol_coeff_def)
- apply (simp add:min_def)
+ apply (simp)
  apply simp
 done
 
@@ -3724,7 +3723,7 @@ done
 
 lemma (in PolynRg) add_cf_len:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
       \<Longrightarrow> fst (add_cf S c d) = (max (fst c) (fst d))" 
-by (simp add:max_def add_cf_def)
+by (simp add: add_cf_def)
 
 lemma (in PolynRg) polyn_expr_restrict1:"\<lbrakk>pol_coeff S (n, f);
     pol_coeff S (Suc (m + n), g)\<rbrakk> \<Longrightarrow> 
@@ -3736,8 +3735,8 @@ apply (frule add_cf_pol_coeff[of "(n, f)" "(Suc (m + n), g)"], assumption+,
 apply (rule polyn_exprs_eq[of "add_cf S (n, f) (m + n, g)" 
        "(m + n, snd (add_cf S (n, f) (Suc (m + n), g)))" "m + n"], assumption+)
  apply (rule split_pol_coeff[of "add_cf S (n, f) (Suc (m + n), g)" "m + n"],
-         assumption, simp add:add_cf_len max_def)
- apply (simp add:add_cf_len max_def)
+         assumption, simp add:add_cf_len)
+ apply (simp add:add_cf_len)
 
 apply (rule allI, rule impI)
  apply (simp add:add_cf_def)
@@ -3765,8 +3764,8 @@ apply (case_tac "(fst c) = (fst d)", simp add:pol_coeff_def)
         rule aGroup.ag_pOp_commute[of S], simp+)
 
 apply (case_tac "(fst d) < (fst c)", simp,
-       rule allI, rule impI, rule impI,
-       rule aGroup.ag_pOp_commute, assumption+) 
+       rule allI, rule impI,
+       rule aGroup.ag_pOp_commute, assumption+)
 apply (frule_tac x = j and y = "fst d" and z = "fst c" in le_less_trans, 
           assumption+, frule_tac x = j and y = "fst c" in less_imp_le,
           thin_tac "j < fst c", simp add:pol_coeff_mem, simp add:pol_coeff_mem)
@@ -3774,8 +3773,8 @@ apply (frule_tac x = j and y = "fst d" and z = "fst c" in le_less_trans,
 apply simp
 apply (frule leI[of "fst d" "fst c"],
        frule noteq_le_less[of "fst c" "fst d"], assumption,
-       rule allI, rule impI, rule impI,
-       simp add:max_def)
+       rule allI, rule impI,
+       simp)
 
 apply (rule aGroup.ag_pOp_commute, assumption+,
        simp add:pol_coeff_mem,
@@ -3815,11 +3814,11 @@ apply (simp add:add_commute[of n])
          add_cf_pol_coeff, assumption+) 
   apply (frule_tac c = "add_cf S (n, f) (Suc (na + n), g)" and 
            n = "na + n" and m = "Suc (na + n)" in polyn_n_m, simp,
-         subst add_cf_len, assumption+, simp add:max_def) 
+         subst add_cf_len, assumption+, simp) 
   apply (cut_tac k = "Suc (na + n)" and f = "add_cf S (n, f) (Suc (na + n), g)"
           in polyn_expr_split)
   apply (frule_tac c = "(n, f)" and d = "(Suc (na + n), g)" in 
-          add_cf_len, assumption+, simp del:npow_suc add:max_def)
+          add_cf_len, assumption+, simp del:npow_suc)
   apply (thin_tac "polyn_expr R X (Suc (na + n))
          (Suc (na + n), snd (add_cf S (n, f) (Suc (na + n), g))) =
         polyn_expr R X (na + n)
@@ -3841,8 +3840,7 @@ apply (simp add:add_commute[of n])
          polyn_mem, simp,
          frule_tac c = "add_cf S (n, f) (na + n, g)" and k = "na + n" in
          polyn_mem, simp )
-  apply (subst add_cf_len, assumption+, simp del:npow_suc 
-          add:max_def)
+  apply (subst add_cf_len, assumption+, simp del:npow_suc)
  apply (frule_tac a = "polyn_expr R X (na + n) (add_cf S (n, f) (na + n, g))" 
         and b = "polyn_expr R X (na + n) (add_cf S (n, f) (Suc (na + n), g))"
         and c = "g (Suc (na + n)) \<cdot>\<^sub>r  X^\<^bsup>R (Suc (na + n))\<^esup>" in 
@@ -3851,7 +3849,7 @@ apply (simp add:add_commute[of n])
         d = "add_cf S (n, f) (Suc (na + n), g)" and k = "na + n" in 
         polyn_exprs_eq, assumption+, simp,
         subst add_cf_len, assumption+) 
-  apply (simp add:max_def)
+  apply (simp)
 
 apply (rule allI, rule impI,
         (subst add_cf_def)+, simp,
@@ -3865,7 +3863,7 @@ lemma (in PolynRg) polyn_add:"\<lbrakk>pol_coeff S (n, f); pol_coeff S (m, g)\<r
 apply (cut_tac less_linear[of n m])
  apply (erule disjE,
         frule polyn_addTr1[of n f "m - n"],
-        drule_tac a = g in forall_spec, simp, simp add:max_def)
+        drule_tac a = g in forall_spec, simp, simp)
 
  apply (erule disjE,
         simp add:polyn_add_n1) 
@@ -3874,14 +3872,14 @@ apply (frule polyn_mem[of "(n, f)" n], simp,
  apply (cut_tac ring_is_ag, simp add:aGroup.ag_pOp_commute)
 
  apply (frule polyn_addTr1[of m g "n - m"],
-        drule_tac a = f in forall_spec, simp, simp add:max_def,
+        drule_tac a = f in forall_spec, simp, simp,
         frule add_cf_commute[of "(m, g)" "(n, f)"], assumption+, 
         simp add:max_def,
         frule add_cf_pol_coeff[of "(n, f)" "(m, g)"], assumption+,
         frule add_cf_pol_coeff[of "(m, g)" "(n, f)"], assumption+)
  apply (rule polyn_exprs_eq[of "add_cf S (m, g) (n, f)" 
                  "add_cf S (n, f) (m, g)" n], assumption+)
-  apply (simp add:add_cf_len, simp add:max_def)
+  apply (simp add:add_cf_len, simp)
 done
 
 lemma (in PolynRg) polyn_add1:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
@@ -4337,6 +4335,7 @@ lemma (in PolynRg) low_deg_terms_zero1:"pol_coeff S c \<Longrightarrow>
                             (X^\<^bsup>R j\<^esup>) \<cdot>\<^sub>r (polyn_expr R X (fst c) c)"
 by (cases c) (simp add: low_deg_terms_zeroTr)
 
+declare min_max.sup_absorb2[simp del]
 lemma (in PolynRg) polyn_expr_tOpTr:"pol_coeff S (n, f) \<Longrightarrow> 
       \<forall>g. (pol_coeff S (m, g) \<longrightarrow> (\<exists>h. pol_coeff S ((n + m), h) \<and>
            h (n + m) = (f n) \<cdot>\<^sub>r\<^bsub>S\<^esub> (g m) \<and>
@@ -4453,6 +4452,7 @@ apply (cut_tac k = "Suc (n + na)" and f = "add_cf S (n + na, h)
         frule pol_coeff_mem[of "(n, f)" n], simp, 
         simp add:Ring.ring_tOp_commute)
 done
+declare min_max.sup_absorb2[simp]
 
 lemma (in PolynRg) polyn_expr_tOp:"\<lbrakk>
   pol_coeff S (n, f); pol_coeff S (m, g)\<rbrakk> \<Longrightarrow> \<exists>e. pol_coeff S ((n + m), e) \<and>
@@ -4535,7 +4535,7 @@ apply (case_tac "fst c = fst d", simp)
             frule_tac j = j in  pol_coeff_mem[of d], simp)
    apply (subst aGroup.ag_eq_diffzero[of S], assumption+)
 
- apply (simp add:add_cf_def max_def)
+ apply (simp add:add_cf_def)
  apply (case_tac "\<not> (fst c) \<le> (fst d)", simp)
    apply (simp add:m_cf_len)
   apply (drule_tac a = "fst c" in forall_spec, simp, simp)
@@ -4592,8 +4592,10 @@ apply (frule m_cf_pol_coeff[of d])
 
  apply simp
  apply (rule polyn_exprs_eq[of c d "fst d"], assumption+)
-        apply (simp add:min_def, assumption+)
+        apply (simp, assumption+)
 done
+
+declare min_max.sup_absorb2[simp del]
 
 lemma (in PolynRg) pol_expr_unique3:"\<lbrakk>pol_coeff S c; pol_coeff S d; 
       fst c < fst d\<rbrakk> \<Longrightarrow>
@@ -4657,7 +4659,7 @@ apply (frule m_cf_pol_coeff[of d])
         subst polyn_expr_short[THEN sym, of d "fst c"], assumption+,
         simp add:less_imp_le)
  apply (rule polyn_exprs_eq[of c d "fst c"], assumption+)
-        apply (simp add:min_def, assumption+)
+        apply (simp, assumption+)
  apply (simp add:less_imp_le)
 done
 
@@ -4786,6 +4788,7 @@ apply (rule subsetI, simp)
  apply blast
  apply simp+
 done
+declare min_max.sup_absorb2[simp]
 
 lemma (in PolynRg) ex_polyn_expr:"p \<in> carrier R \<Longrightarrow>
          \<exists>c. pol_coeff S c \<and> p = polyn_expr R X (fst c) c"

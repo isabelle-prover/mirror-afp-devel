@@ -432,7 +432,7 @@ apply (induct_tac n)
 
 apply (rule allI, rule impI) 
  apply simp
- apply (case_tac "l = Suc n", simp add:max_def)
+ apply (case_tac "l = Suc n", simp)
  apply (cut_tac m = l and n = "Suc n" in noteq_le_less, assumption+,
         thin_tac "l \<le> Suc n", thin_tac "l \<noteq> Suc n",
         frule_tac x = l and n = "Suc n" in less_le_diff,

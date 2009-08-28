@@ -192,7 +192,7 @@ apply (subst polyn_exprs_eq[of "(d, \<lambda>j. if j \<le> fst (s_cf R S X p) th
        snd (s_cf R S X p) j else \<zero>\<^bsub>S\<^esub>)" "s_cf R S X p" "fst (s_cf R S X p)"])
   apply (simp add:pol_coeff_def, rule allI, rule impI, rule impI,
          cut_tac subring, simp add:subring_Ring, simp add:subring_Ring[of S]
-         Ring.ring_zero, assumption+) apply (simp add:min_def)
+         Ring.ring_zero, assumption+) apply (simp)
   apply (rule allI, rule impI, simp)
   apply (frule polyn_mem[of "s_cf R S X p" "fst (s_cf R S X p)"], simp+)
   apply (cut_tac ring_is_ag, simp add:aGroup.ag_r_zero)
@@ -414,14 +414,14 @@ apply (subst polyn_c_max, assumption,
        thin_tac "deg_n R S X (polyn_expr R X (fst c) c) = c_max S c",
        thin_tac "deg_n R S X (polyn_expr R X (fst d) d) = c_max S d")
  
-  apply (subst polyn_add, assumption+, simp add:max_def) 
+  apply (subst polyn_add, assumption+, simp)
          
   apply (rule contrapos_pp, simp+,
          frule_tac c = "(c_max S c, snd c)" and d = "(c_max S d, snd d)" in 
          add_cf_pol_coeff, assumption+,
          frule_tac c1 = "add_cf S (c_max S c, snd c) (c_max S d, snd d)" and 
          k1 = "c_max S d" in coeff_0_pol_0[THEN sym],
-         simp add:add_cf_len max_def, simp,
+         simp add:add_cf_len, simp,
        thin_tac "pol_coeff S (add_cf S (c_max S c, snd c) (c_max S d, snd d))",
        thin_tac "polyn_expr R X (c_max S d)
             (add_cf S (c_max S c, snd c) (c_max S d, snd d)) = \<zero>")
@@ -455,20 +455,16 @@ apply (frule_tac c = c and k = "c_max S c" in polyn_expr_short, simp,
         thin_tac "polyn_expr R X (c_max S c) c =
            polyn_expr R X (c_max S c) (c_max S c, snd c)",
         thin_tac "polyn_expr R X (c_max S d) d =
-           polyn_expr R X (c_max S d) (c_max S d, snd d)",
-        thin_tac "polyn_expr R X (c_max S c) (c_max S c, snd c) \<plusminus>
-           polyn_expr R X (c_max S d) (c_max S d, snd d) =
-           polyn_expr R X (max (c_max S c) (c_max S d))
-            (add_cf S (c_max S c, snd c) (c_max S d, snd d))")
+           polyn_expr R X (c_max S d) (c_max S d, snd d)")
   apply (frule_tac c = "(c_max S c, snd c)" and d = "(c_max S d, snd d)" in 
-                  add_cf_pol_coeff, assumption+, simp add:max_def,
+                  add_cf_pol_coeff, assumption+,
          rule_tac p = "polyn_expr R X (c_max S d)
             (add_cf S (c_max S c, snd c) (c_max S d, snd d))" and
           c = "add_cf S (c_max S c, snd c) (c_max S d, snd d)" and 
           n = "c_max S d" in pol_deg_n)
-  apply (rule_tac polyn_mem, simp, simp add:add_cf_len max_def,
+  apply (rule_tac polyn_mem, simp, simp add:add_cf_len,
          assumption,
-         simp add:add_cf_len max_def, simp,
+         simp add:add_cf_len, simp,
          subst add_cf_def, simp)
 
   apply (frule_tac c1 = "(c_max S d, snd d)" and k1 = "c_max S d" in 
@@ -513,7 +509,7 @@ apply (frule_tac c = c and k = "c_max S c" in polyn_expr_short, simp,
         and c = "add_cf S (c_max S d, snd c) (c_max S d, snd d)" in
         pol_deg_eq_c_max)
    apply (rule_tac polyn_mem, simp) 
-      apply (simp add:add_cf_len max_def,
+      apply (simp add:add_cf_len,
               assumption,
              simp add:add_cf_len, simp)
       apply (thin_tac "deg_n R S X
@@ -1849,7 +1845,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
            f (Suc n)) (l, u))" in polyn_add1, assumption+,
           simp del:npow_suc add:ext_cf_len sp_cf_len,
           cut_tac a = l and b = n in add_commute,
-          simp del:npow_suc add:max_def,
+          simp del:npow_suc,
          thin_tac "polyn_expr R X (n + l) (n + l, e) \<plusminus>
          polyn_expr R X (Suc (n + l))
          (ext_cf S (Suc n) (sp_cf S (f (Suc n)) (l, u))) =
@@ -1919,7 +1915,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
          d = "ext_cf B (Suc n) (sp_cf B (cmp h f (Suc n)) (l, cmp h u))" in
          PolynRg.add_cf_pol_coeff[of A B Y]) 
   apply (frule_tac c = "(l + n, e)" in cf_h_coeff[of A B Y h], assumption+)
-       apply (simp add:cf_h_pol_coeff) apply simp apply (simp add:max_def)
+       apply (simp add:cf_h_pol_coeff) apply simp
    apply (thin_tac "polyn_expr A Y l (l, cmp h u) \<cdot>\<^sub>r\<^bsub>A\<^esub> polyn_expr A Y n 
          (n, cmp h f) = polyn_expr A Y (l + n) (l + n, cmp h e)",
         thin_tac "polyn_expr A Y l (l, cmp h u) \<in> carrier A",
@@ -1939,8 +1935,8 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
   apply (frule_tac c = "(Suc (l + n), g)" and d = "add_cf S (l + n, e)
          (ext_cf S (Suc n) (sp_cf S (f (Suc n)) (l, u)))" in pol_expr_unique2)
      apply assumption apply (simp add:add_cf_len) 
-     apply (simp add:ext_cf_len sp_cf_len max_def)
-      apply (simp add:add_cf_len ext_cf_len sp_cf_len max_def)
+     apply (simp add:ext_cf_len sp_cf_len)
+      apply (simp add:add_cf_len ext_cf_len sp_cf_len)
       apply (cut_tac a = n and b = l in add_commute, simp,
      thin_tac "pol_coeff B
          (add_cf B (l + n, cmp h e)
@@ -1981,7 +1977,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
            PolynRg.ext_cf_pol_coeff[of A B Y], assumption+)
     apply (simp add:PolynRg.add_cf_len)
            apply (simp add:PolynRg.ext_cf_len)
-           apply (simp add:PolynRg.sp_cf_len max_def)
+           apply (simp add:PolynRg.sp_cf_len)
     apply (simp add:PolynRg.add_cf_len)
     apply (frule_tac c = "sp_cf B (cmp h f (Suc n)) (l, cmp h u)" and 
            n = "Suc n" in PolynRg.ext_cf_pol_coeff[of A B Y],
@@ -1994,7 +1990,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
   apply (simp add:cf_h_pol_coeff)  
     apply (simp add:PolynRg.add_cf_len) 
     apply (simp add:PolynRg.ext_cf_len)
-    apply (simp add:PolynRg.sp_cf_len max_def)
+    apply (simp add:PolynRg.sp_cf_len)
     apply (cut_tac a = n and b = l in add_commute, simp)
   (* we got 
      \<forall>j\<le>Suc (l + n).
@@ -2327,14 +2323,14 @@ apply (cut_tac a = "a \<plusminus> b" and
        thin_tac "b = polyn_expr R X (fst (s_cf R S X b)) (s_cf R S X b)",
        thin_tac "a \<plusminus> b = polyn_expr R X (fst (s_cf R S X b)) 
                             (s_cf R S X (a \<plusminus> b))",
-       simp add:max_def)
+       simp)
 
 apply (frule cf_h_coeff[of A B Y h "s_cf R S X a"], assumption+,
        frule cf_h_coeff[of A B Y h "s_cf R S X b"], assumption+,
        frule cf_h_coeff[of A B Y h "s_cf R S X (a \<plusminus> b)"], assumption+)
 apply (frule PolynRg.polyn_add1[of A B Y "cf_h h (s_cf R S X a)" 
                                 "cf_h h (s_cf R S X b)"], assumption+,
-       simp add:cf_h_len, simp add:max_def)
+       simp add:cf_h_len)
 apply (thin_tac "polyn_expr A Y (fst (s_cf R S X a)) (cf_h h (s_cf R S X a))
         \<plusminus>\<^bsub>A\<^esub> polyn_expr A Y (fst (s_cf R S X b)) (cf_h h (s_cf R S X b)) =
         polyn_expr A Y (fst (s_cf R S X b))
@@ -2345,8 +2341,8 @@ apply (frule PolynRg.pol_expr_unique2[of A B Y "cf_h h (s_cf R S X (a \<plusminu
               "add_cf B (cf_h h (s_cf R S X a)) (cf_h h (s_cf R S X b))"],
        assumption+,
        simp add:cf_h_len add_cf_len,
-       simp add:PolynRg.add_cf_len cf_h_len max_def,
-       simp add:PolynRg.add_cf_len cf_h_len max_def,
+       simp add:PolynRg.add_cf_len cf_h_len,
+       simp add:PolynRg.add_cf_len cf_h_len,
        thin_tac "(polyn_expr A Y (fst (s_cf R S X b)) 
         (cf_h h (s_cf R S X (a \<plusminus> b))) = polyn_expr A Y (fst (s_cf R S X b))
         (add_cf B (cf_h h (s_cf R S X a)) (cf_h h (s_cf R S X b)))) =
@@ -2357,7 +2353,7 @@ apply (frule PolynRg.pol_expr_unique2[of A B Y "cf_h h (s_cf R S X (a \<plusminu
 apply (frule pol_expr_unique2[of "s_cf R S X (a \<plusminus> b)" 
               "add_cf S (s_cf R S X a) (s_cf R S X b)"],
        simp add:add_cf_pol_coeff,
-       simp add:add_cf_len max_def, simp add:add_cf_len max_def) 
+       simp add:add_cf_len, simp add:add_cf_len) 
 apply (thin_tac "polyn_expr R X (fst (s_cf R S X b)) (s_cf R S X (a \<plusminus> b)) =
         polyn_expr R X (fst (s_cf R S X b))
        (add_cf S (s_cf R S X a) (s_cf R S X b))")
@@ -3370,8 +3366,7 @@ apply (rule allI, rule impI)
 apply (cut_tac x = "fst (s_cf R S X p)" and y = "fst (s_cf R S X q)" in 
        less_linear)
 apply (erule disjE)
- apply (simp add:max_def, 
-        subst add_cf_def, simp,
+ apply (simp, subst add_cf_def, simp,
        (rule impI, 
         drule_tac a = j in forall_spec, assumption,
         drule_tac x = j in spec,
@@ -3380,14 +3375,12 @@ apply (erule disjE)
         frule_tac x = j and y = "fst (s_cf R S X q)" in less_imp_le, simp))
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 apply (erule disjE)
- apply (simp add:max_def, 
-        subst add_cf_def, simp,
+ apply (simp, subst add_cf_def, simp,
         drule_tac a = j in forall_spec, assumption,
         drule_tac a = j in forall_spec, assumption)
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 
- apply (simp add:max_def, 
-        subst add_cf_def, simp, rule impI,
+ apply (simp, subst add_cf_def, simp, rule impI,
         drule_tac x = j in spec, 
         drule_tac a = j in forall_spec, assumption,
         frule_tac x = j and y = "fst (s_cf R S X q)" and 
