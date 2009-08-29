@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Wordarith.thy
-    ID:         $Id: Wordarith.thy,v 1.8 2009-03-03 21:42:26 nipkow Exp $
+    ID:         $Id: Wordarith.thy,v 1.9 2009-08-29 12:36:18 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)
@@ -26,8 +26,6 @@ lemma bv_to_nat_nat_to_bv_length:
   "nat_to_bv_length x y \<noteq> [] \<Longrightarrow> bv_to_nat (nat_to_bv_length x y) = x"
   unfolding nat_to_bv_length by auto
 
-lemma max_min: "max (a::nat) (min b a) = a"
-  by (cases "a < b") (simp_all add: min_def max_def)
 
 definition
   roundup :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
@@ -87,7 +85,7 @@ next
     assume c: "a = length (bvxor l l2)"
     show "Suc a \<le> length (bvxor l l2)"
     proof (simp add: bvxor)
-      have "length l <= max (length l) (length l2)" by (simp add: max_def)
+      have "length l <= max (length l) (length l2)" by simp
       then show "Suc a \<le> max (length l) (length l2)" using a by simp
     qed
   next
