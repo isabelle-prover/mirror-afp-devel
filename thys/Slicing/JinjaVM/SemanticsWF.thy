@@ -342,12 +342,9 @@ lemma locs_rev_stks:
   stk (y, x - Suc (z))
   # rev (take z (stks x (\<lambda>a. stk(y, a))))"
 apply (rule nth_equalityI)
- apply (simp add: min_def)
+ apply (simp)
 apply (auto simp: nth_append nth_Cons' (* nth_locs *) less_Suc_eq)
-apply (case_tac "i - Suc 0 < length (take z (stks x (\<lambda>a. stk(y,a))))")
- apply (simp only: rev_nth)
- apply (auto simp: min_def)
-by (case_tac "x = z", auto)
+done
 
 lemma locs_invoke_purge:
   "(z::nat) > c \<Longrightarrow>
@@ -457,7 +454,6 @@ proof -
     stkLength P C M pc' = length (fst (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT))) \<and>
     locLength P C M pc' = length (snd (eff\<^isub>i (is ! pc, (P\<^bsub>wf\<^esub>), ST, LT)))"
     unfolding wt_method_def
-    apply (cases "is ! pc")
     by (cases "is ! pc", (fastsimp dest!: list_all2_lengthD)+)
   have [simp]: "\<exists>x. x" by auto
   have [simp]: "Ex Not" by auto
@@ -573,7 +569,7 @@ proof -
 	   apply (rule nth_equalityI)
 	    apply simp
 	   apply (cases ST,
-	          auto simp: nth_Cons' nth_append min_def)
+	          auto simp: nth_Cons' nth_append)
 	  apply (rule nth_equalityI)
 	   apply simp
 	  by (auto simp: (* nth_locs *) (* nth_stks *) rev_nth nth_Cons' nth_append min_def)
@@ -709,11 +705,11 @@ proof -
       apply (auto simp: bv_conform_def correct_state_def not_less_eq less_Suc_eq)
        apply (drule sees_method_fun, fastsimp, clarsimp)
        apply (drule sees_method_fun, fastsimp, clarsimp)
-      apply (auto simp: wt_start_def min_def)
+      apply (auto simp: wt_start_def)
       apply (auto dest!: list_all2_lengthD)
       apply (drule sees_method_fun, fastsimp, clarsimp)
       apply (drule sees_method_fun, fastsimp, clarsimp)
-      by (auto simp: min_def)
+      by (auto)
     from `wt_method (P\<^bsub>wf\<^esub>) C' Ts' T' mxs' mxl' is' xt' (P\<^bsub>\<Phi>\<^esub> C' M')`
       `(pc' - 1) < length is'` `P\<^bsub>\<Phi>\<^esub> C' M' ! (pc' - 1) \<noteq> None`
       `is' ! (pc' - 1) = Invoke M (length Ts)`
@@ -734,7 +730,7 @@ proof -
       using sees_M'
       apply (auto simp: wt_method_def)
       apply (erule_tac x="pc'" in allE)
-      apply (auto simp: wt_start_def min_def)
+      apply (auto simp: wt_start_def)
        apply (clarsimp simp: bv_conform_def correct_state_def)
        apply (drule sees_method_fun, fastsimp, clarsimp)
        apply (drule sees_method_fun, fastsimp, clarsimp)
@@ -2076,7 +2072,7 @@ proof(unfold_locales)
                 else arbitrary)"
 	  by (auto intro!: ext
 	             simp: (* nth_locs *) nth_locss nth_Cons' nth_append rev_nth (* nth_stks *) 
-	                   not_less_eq_eq min_def Suc_le_eq less_Suc_eq add_commute)
+	                   not_less_eq_eq Suc_le_eq less_Suc_eq add_commute)
 	from frs' jvm_exec sem_step prog
 	have c': "c' = (D,M',0)#c"
 	  by (auto elim!: sem.cases)
