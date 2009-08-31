@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.20 2009-08-27 17:49:29 nipkow Exp $
+(*  ID:         $Id: Invariants.thy,v 1.21 2009-08-31 15:34:44 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -1279,7 +1279,7 @@ proof -
 		     apply (rule impI) apply simp
 		     apply (subgoal_tac "set (faceListAt g ! x) = {f \<in> \<F> g. x \<in> \<V> f}")
 		      apply (subgoal_tac "\<F> g \<inter> {f12} = {}")
-		       apply (simp add: f12_def ws_def) apply blast
+		       apply (simp add: f12_def ws_def)
 		      apply (simp add: new_f12)
 		     apply (frule minGraphProps_facesAt_eq)
 		      apply (subgoal_tac "x \<in> \<V> g") apply assumption
@@ -1298,7 +1298,7 @@ proof -
 		     apply (rule impI) apply simp
 		     apply (subgoal_tac "set (faceListAt g ! x) = {f \<in> \<F> g. x \<in> \<V> f}")
 		      apply (subgoal_tac "\<F> g \<inter> {f12} = {}")
-		       apply (simp add: f12_def ws_def) apply blast
+		       apply (simp add: f12_def ws_def)
 		      apply (simp add: new_f12)
 		     apply (frule minGraphProps_facesAt_eq)
 		      apply (subgoal_tac "x \<in> \<V> g") apply assumption

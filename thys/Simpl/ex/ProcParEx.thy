@@ -1,4 +1,4 @@
-(*  ID:          $Id: ProcParEx.thy,v 1.7 2008-06-12 06:57:28 lsf37 Exp $
+(*  ID:          $Id: ProcParEx.thy,v 1.8 2009-08-31 15:34:44 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -51,10 +51,7 @@ lemma conseq_exploit_pre':
               \<Gamma>,\<Theta>\<turnstile> (P \<inter> S)c Q,A"
   apply (rule HoarePartialDef.Conseq)
   apply clarify
-  apply (rule_tac x="{s} \<inter> P" in exI)  
-  apply (rule_tac x="Q" in exI)  
-  apply (rule_tac x="A" in exI)  
-  by simp
+  by (metis IntI insertI1 subset_refl)
 
 
 lemma conseq_exploit_pre'':
