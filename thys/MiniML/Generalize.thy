@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/Generalize.thy
-   ID:        $Id: Generalize.thy,v 1.10 2008-06-10 13:31:26 fhaftmann Exp $
+   ID:        $Id: Generalize.thy,v 1.11 2009-08-31 14:50:55 nipkow Exp $
    Author:    Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -46,14 +46,7 @@ lemma gen_without_effect [simp]:
 
 lemma free_tv_gen [simp]: 
   "free_tv (gen ($ S A) t) = free_tv t Int free_tv ($ S A)"
-apply (induct t)
-apply simp
-apply (case_tac "nat : free_tv ($ S A) ")
-apply fastsimp
-apply simp
-apply simp
-apply fast
-done
+by (induct t) auto
 
 lemma free_tv_gen_cons [simp]: 
   "free_tv (gen ($ S A) t # $ S A) = free_tv ($ S A)"
