@@ -1,12 +1,12 @@
 (*  Title:      RSAPSS/Pdifference.thy
-    ID:         $Id: Pdifference.thy,v 1.10 2008-07-18 16:27:23 fhaftmann Exp $
+    ID:         $Id: Pdifference.thy,v 1.11 2009-09-01 19:44:51 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
 header "Positive differences"
 
 theory Pdifference
-imports Primes Mod
+imports "~~/src/HOL/Old_Number_Theory/Primes" Mod
 begin
 
 definition

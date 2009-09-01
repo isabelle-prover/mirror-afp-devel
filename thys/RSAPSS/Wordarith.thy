@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/Wordarith.thy
-    ID:         $Id: Wordarith.thy,v 1.9 2009-08-29 12:36:18 nipkow Exp $
+    ID:         $Id: Wordarith.thy,v 1.10 2009-09-01 19:44:51 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)
@@ -8,7 +8,7 @@
 header "Extensions to the Word theory required for PSS" 
 
 theory Wordarith
-imports WordOperations Primes
+imports WordOperations "~~/src/HOL/Old_Number_Theory/Primes"
 begin
 
 definition
