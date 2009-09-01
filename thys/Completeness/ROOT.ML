@@ -1,4 +1,3 @@
-
 no_document use_thys ["Permutation", "Multiset"];
 
 use_thys [
