@@ -73,7 +73,7 @@ guarantees are given as to the suitability of the rules.
 
 <!-- entry directory name: -->
 <!--#set var="name" value="SequentInvertibility" -->
-<!--#set var="base" value="HOL-Nominal" --> <!--- ??? could be HOLCF etc --->
+<!--#set var="base" value="HOL/HOL-Nominal" --> <!--- ??? could be HOLCF etc --->
 
 <!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -107,6 +107,6 @@ guarantees are given as to the suitability of the rules.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2009-09-01 17:10:32 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2009-09-01 19:55:28 $, $Revision: 1.1 
 $</div></body>
 </html>
