@@ -1,0 +1,112 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p> </p>
+
+<!-- begin entry data: -->
+<h1><!-- Title: -->Invertibility in Sequent Calculi</h1>
+<p> </p>
+
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+    <td class="data" width="80%">
+<!-- Title: -->Invertibility in Sequent Calculi
+    </td></tr>
+		
+    <tr><td class="datahead">Author:</td>
+<td class="data">
+<!-- Author: --><a
+href="http://www.cs.st-andrews.ac.uk/~pc">Peter Chapman</a>
+</td></tr>		
+    
+	<tr><td class="datahead">Submission date:</td>
+	
+<td class="data"><!-- Submission date: -->2009-08-28</td></tr>
+
+	<tr><td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract"> 
+<!-- Abstract: -->	
+The invertibility of the rules of a sequent calculus is important for
+guiding proof search and can be used in some formalised proofs of Cut
+admissibility.  We present sufficient conditions for when a rule is
+invertible with respect to a calculus.  We illustrate the conditions
+with examples.  It must be noted we give purely syntactic criteria; no
+guarantees are given as to the suitability of the rules.
+   </td></tr>
+
+<!-- uncomment for entries significantly updated in devel version:
+<tr>
+<td class="datahead"> </td>
+<td class="data">An updated version of this entry is available in the 
+    <a href="../download.shtml">development version</a> of AFP.</td>
+</tr> 
+-->
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+</tbody>
+</table>
+
+<p> </p>
+
+<!-- entry directory name: -->
+<!--#set var="name" value="SequentInvertibility" -->
+<!--#set var="base" value="HOL/HOL-Nominal" --> <!--- ??? could be HOLCF etc --->
+
+<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+	None
+	</td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+<div align="right" class="date">$Date: 2009-09-02 14:20:24 $, $Revision: 1.1 
+$</div></body>
+</html>
