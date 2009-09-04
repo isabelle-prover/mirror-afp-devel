@@ -1,0 +1,118 @@
+<h2>Policies</h2>
+
+<p>
+Submission by email to afp-submit@in.tum.de
+which is distributed to the archive committee (currently GK, TN and LCP). One member will assume responsibility. This includes refereeing
+the submission, communicating with the authors, and installing it in the
+archive. Once it has been installed, it will be announced on isabelle-users.
+</p>
+
+<b>Contents of submission:</b>
+<ol>
+<li>Title, authors, abstract, keywords in plain text (maybe html).</li>
+<li>A short name, will become the directory name.</li>
+<li>URL or email address of author to display on the web page</li>
+<li>A tar file with the theory files, IsaMakefile,
+    ROOT.ML and README or document/.
+   The theories should work with the current release.</li>
+<li>A notice whether submission is LGPL</li>
+</ol>
+
+<b>Submission procedure:</b>
+<ol>
+<li>Referee for content and form</li>
+<li>Check if submission works with current released version of Isabelle.</li>
+<li>Make sure submitter agrees to BSD or LGPL and potentially maintenance.</li>
+<li>Check submission into cvs (as release and development,
+   we do this, not the submitters)</li>
+<li>Make available on web page</li>
+<li>Give out maintenance access to submitter on development version</li>
+<li>Announce on isabelle-users</li>
+</ol>
+
+<p><b>The archive:</b> Will initially contain an unstructured collection of
+submissions. For each submission there is a page with title, authors,
+abstract, keywords, tar.file, and link to the generated html-files for
+browsing. If it takes off, we can have fun imposing some structure on
+it. But right from the beginning it will be encouraged and possible to
+build on other contributions in the archive. The current released
+archive should work with the current released Isabelle version. For
+later: older archive versions should remain accessible (but maybe not
+on the main page).
+</p>
+
+<b>Roles:</b>
+<ul>
+  
+<li>PC / archive admins (TN, GK, LCP, more)
+<ul>
+  <li>responsibility:refereeing and initial setup of submissions, releases</li>
+  <li>access:everything</li>
+</ul></li>
+<li>submitters (everybody)
+<ul>
+  <li>responsibility: new submissions, become maintainer if accepted</li>
+  <li>access: email only</li>
+</ul></li>
+<li>maintainters (former submitters, Isabelle team)
+<ul>
+  <li>responsibility: keep development branch up to date with Isabelle</li>
+  <li>access: cvs read/write on own submission (more if active)</li>
+</ul>
+</li>
+<li>user (everybody)
+  <ul>
+  <li>responsibility: use archive</li>
+  <li>access: download via web page,
+              anonymous cvs read only of devel version available</li>
+</ul>
+</li>
+</ul>
+
+<p><b>Maintenance:</b> Usually only on development version of archive (in
+CVS). Released version of existing submissions should be stable.
+</p>
+
+<p><b>Maintenance responsibility:</b> Mixed. Simple fixes by us, anything else
+by the maintainer of the contribution. We would give the maintainers
+advanced warning of a new release (after feature freeze) so they have
+time to update their contributions.
+</p>
+
+<ul>
+<li>there should be an automated build. Important libraries nightly,
+  larger developments less often (weekly?). Maintainers should be able to
+  opt in to get email when Isabelle developement version breaks archive
+  development version.
+</li>
+<li>there should be a simple build script so we can test if something
+  breaks when we change Isabelle (before we check in)</li>
+</ul>
+
+<b>Sync between Isabelle and archive:</b>
+<ul>
+<li>there is a current release version of the archive (eg. for
+  Isabelle2003, it lives from release of Isabelle2003 until
+  Isabelle2004)
+</li>
+<li>the current release version of the archive will be updated multiple
+  times in its live: for each submission and each time a maintainer
+  fixes a broken submission (broken e.g. because they did not make the
+  Isabelle release deadline). It would be nice to have some automation
+  here (step 5 of submission procedure should be as simple as a cvs tag
+  or make or similar).
+</li>
+<li>submissions that do not work at release time are dropped from the
+  archive (only temporarily until fixed, but things that don't work are
+  never visible on the web page).
+</li>
+<li>there is a development version of the archive that is not visible on
+  the web (or only in the form of a development snapshot). It is in CVS
+  and this is where the maintainers work. It becomes the release version
+  when a new Isabelle version is released. How closely it is in sync with
+  the Isabelle development version is the choice of each maintainer in a
+  spectrum from very loose (only fix archive submission after Isabelle
+  feature freeze) to very close (always fix archive submission after each
+  Isabelle change). Very close should be the case for widely used base
+  libraries, very loose is ok for standalone developments.
+</li></ul>
