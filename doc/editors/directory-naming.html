@@ -1,0 +1,47 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Directory Naming</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+
+<h2>Thoughts on directory/submission naming</h2>
+  
+<p>
+<b>Problem: naming submissions, have name hierarchy? which?</b>
+<ul>
+<li>flat name space without policy will lead to clashes over time</li>
+<li>submission names are direcory names which are inflexible in CVS (no renaming/moving of dirs). If we decide on a hierarchy now, we haveto stick with it.</li>
+</ul>
+<p>
+<b>Hierarchy/policy options:</b>
+<ul>
+<li>encode hierarachy in subdirectory or long dir name? (/a/b vs /a-b/)</li>
+<li>what to use as classifier? (name, author, volume, year, ...?)</li>
+</ul>
+<p>
+<b>Examples:</b>
+<ul>
+<li>name only: /Algebra</li>
+<li>subdirectory per year / name only: /2003/Algebra</li>
+<li>subdirectory per "volume": /1/Algebra</li>
+<li>subdirectory per author/ name: /Klein/Algebra</li>
+<li>name + author + year: /Algebra-GK04</li>
+</ul>
+<b>Decision:</b>
+<ul>
+<li>have flat namespace in CVS (we don't know yet what hierarchy will be good in 2 years time, and we don't want deep hierarchy without content)</li>
+<li>submission-year based CVS structure might confuse people (might get mixed up with archive release years)</li>
+<li>have chronological order on web page</li>
+<li>have policy of reasonable, not too general names (not Algebra, but Ring)</li>
+<li>in case of conflict (new submitter wants an existing name):
+  <ul>
+  <li>try to resolve by suggesting another reasonable name</li>
+  <li>if that fails append author/year or similar</li>
+</ul>
+</ul>
+
+</body>
+</html>
