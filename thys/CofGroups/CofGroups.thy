@@ -1,9 +1,7 @@
 (*  Title:       An Example of a Cofinitary Group in Isabelle/HOL
-    ID:          $Id: CofGroups.thy,v 1.5 2009-08-10 16:26:40 nipkow Exp $
+    ID:          $Id: CofGroups.thy,v 1.6 2009-09-05 14:20:05 lsf37 Exp $
     Author:      Bart.Kastermans at colorado.edu, 2009
     Maintainer:  Bart.Kastermans at colorado.edu
-
-    License:     LGPL
 *)
 
 theory CofGroups
