@@ -1,0 +1,11 @@
+# -*- shell-script -*-
+
+# $Id: config,v 1.2 2009-09-07 14:20:56 lsf37 Exp $
+
+# Get email when automated build fails. May be empty.
+# values: "email1 email2 .. emailn"
+NOTIFY="uuomul@yahoo.com nipkow@in.tum.de"
+
+# Participate in frequent (nightly) build (only for small submissions)
+# values: "yes" "no"
+FREQUENT="yes"
