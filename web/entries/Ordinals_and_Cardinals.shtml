@@ -51,7 +51,7 @@ up to the point where some cardinality facts relevant for the
 ``working mathematician" become available.  Unlike in set theory, here
 we do not have at hand canonical notions of ordinal and cardinal.
 Therefore, here an ordinal is merely a well-order relation and a
-cardinal is an ordinal minimal w.r.t. order embedding on its field.
+cardinal is an ordinal minim w.r.t. order embedding on its field.
    </td></tr>
 
 <!-- uncomment for entries significantly updated in devel version:
@@ -106,6 +106,6 @@ cardinal is an ordinal minimal w.r.t. order embedding on its field.
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2009-09-07 12:58:34 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2009-09-09 16:29:01 $, $Revision: 1.1 
 $</div></body>
 </html>
