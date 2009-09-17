@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: cvs-sync,v 1.12 2008-06-11 22:07:59 lsf37 Exp $
+# $Id: cvs-sync,v 1.12.2.2 2009-09-06 15:20:46 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Cron job that synchronizes HEAD with release branch.
@@ -10,10 +10,10 @@
 . ~/.bashrc
 
 HEAD=~/afp/devel
-BRANCH_TAG=Isabelle2008
+BRANCH_TAG=Isabelle2009
 SYNC_TAG=last_autosync
 SYNC_MSG="auto sync with $BRANCH_TAG"
-MODULES="thys web admin"
+MODULES="thys web admin doc"
 
 function fail()
 {

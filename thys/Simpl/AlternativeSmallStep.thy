@@ -1,4 +1,4 @@
-(*  ID:          $Id: AlternativeSmallStep.thy,v 1.10 2009-04-24 19:28:46 fhaftmann Exp $
+(*  ID:          $Id: AlternativeSmallStep.thy,v 1.10.2.1 2009-04-29 04:43:02 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -1158,21 +1158,21 @@ apply (rule not_infI)
 apply (rule_tac f=f in not_inf_Stuck')
 by auto
 
-lemma rtrancl_imp_rel_pow: "p \<in> R\<^sup>* \<Longrightarrow> \<exists>n. p \<in> R^^n"
+lemma rtrancl_imp_rel_pow: "p \<in> R\<^sup>* \<Longrightarrow> \<exists>n. p \<in> R^n"
 proof -
   assume "p \<in> R\<^sup>*"
   moreover obtain x y where p: "p = (x,y)" by (cases p)
   ultimately have "(x,y) \<in> R\<^sup>*" by hypsubst
-  hence "\<exists>n. (x,y) \<in> R^^n"
+  hence "\<exists>n. (x,y) \<in> R^n"
   proof (induct rule: rtrancl_induct)
-    fix a have "(a,a) \<in> R^^0" by simp
-    thus "\<exists>n. (a,a) \<in> R ^^ n" ..
+    fix a have "(a,a) \<in> R^0" by simp
+    thus "\<exists>n. (a,a) \<in> R ^ n" ..
   next
-    fix a b c assume "\<exists>n. (a,b) \<in> R ^^ n"
-    then obtain n where "(a,b) \<in> R^^n" ..
+    fix a b c assume "\<exists>n. (a,b) \<in> R ^ n"
+    then obtain n where "(a,b) \<in> R^n" ..
     moreover assume "(b,c) \<in> R"
-    ultimately have "(a,c) \<in> R^^(Suc n)" by auto
-    thus "\<exists>n. (a,c) \<in> R^^n" ..
+    ultimately have "(a,c) \<in> R^(Suc n)" by auto
+    thus "\<exists>n. (a,c) \<in> R^n" ..
   qed
   with p show ?thesis by hypsubst
 qed  

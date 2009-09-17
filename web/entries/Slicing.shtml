@@ -88,7 +88,7 @@ slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler.
 <!-- entry directory name: -->
 <!--#set var="name" value="Slicing" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/Jinja/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -113,13 +113,15 @@ slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
+	<ul>
+	    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-09-22.tar.gz">afp-<!--#echo var="name" -->-2008-09-22.tar.gz</a></li>
+	</ul>
 	</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2009-04-27 09:27:06 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2009-04-29 14:10:39 $, $Revision: 1.1 
 $</div></body>
 </html>

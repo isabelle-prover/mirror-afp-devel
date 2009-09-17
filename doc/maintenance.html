@@ -1,0 +1,108 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Entry Maintenance</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+
+<h2>Maintaining an Entry in the AFP</h2>
+
+To maintain an entry, you must have CVS access to the archive at sourceforge. To 
+get access, <a href="http://sourceforge.net/account/register.php">register with sourceforge</a>, and ask one of the 
+<a href="http://afp.sourceforge.net/about.shtml#editors">editors</a> to add you to 
+the AFP project.
+
+<p>
+<b>Setup:</b><br>
+Check out the archive from the CVS repository with:
+
+<pre>cvs -d &lt;login&gt;@afp.cvs.sf.net:/cvsroot/afp co -d afp-devel .</pre>
+
+where <code>&lt;login&gt;</code> is your sourceforge login. CVS at
+sourceforge assumes that <code>CVS_RSH=ssh</code> and <code>CVS_SERVER</code>
+ is unset. The command above will create a directory <code>afp-devel</code> 
+ where theories and additional files are located.
+More documentation about CVS at sourceforge is available
+<a href="http://sourceforge.net/cvs/?group_id=101909">here
+[afp]</a> and <a 
+href="http://sourceforge.net/docman/display_doc.php?docid=761&group_id=1">here
+[ssh keys]</a>.
+</p>
+
+<p>
+<b>Maintenance:</b><br>
+Maintaining an entry means making sure that this entry 
+works with the current Isabelle development version.
+Maintainers are not supposed to check in new entries. 
+New entries must be reviewed and formally accepted. 
+They are created on the release branch by the editors.
+</p>
+<p>
+Depending on the type of the entry, you might want to 
+work in close lock step with Isabelle development, i.e. 
+fix the entry immediately each time it breaks, or loosely, 
+i.e. only shortly before a new Isabelle release. The former
+is useful for libraries and base entries that are used by 
+others, the latter is Ok for larger developments and 
+leaf entries. 
+</p>
+<p>
+Small changes might be done by the Isabelle development team for 
+you as the change is introduced to Isabelle (don't be surprised 
+when your entry changes slightly over time). You will be notified 
+when an Isabelle release nears and your entry is broken. 
+You can also choose to receive an automatic email notification 
+each time your entry breaks (see below).
+</p>
+<p>
+<b>Technicalities:</b>
+<ul>
+<li>To get the current Isabelle development version, download 
+    and install it from the
+    <a href="http://isabelle.in.tum.de/devel/">Isabelle web site</a>.</li>
+<li>For experienced users there is anonymous CVS access to the Isabelle sources. Use
+<pre>
+cvs -d :pserver:anonymous@cvsbroy.informatik.tu-muenchen.de:/usr/proj/isabelle-repository/archive login
+cvs -d :pserver:anonymous@cvsbroy.informatik.tu-muenchen.de:/usr/proj/isabelle-repository/archive co isabelle
+</pre>
+to check them out. The directory structure in the Isabelle repository is 
+different from the distribution. It is explained in <code>isabelle/Admin/README.repos</code>.
+</li> 
+<li>To check if entry <code>x</code> works, go 
+    to <code>afp-devel/thys/x</code> and execute 
+    <code>isatool make</code>. This assumes that 
+    the command <code>Isabelle</code> would start 
+    up the current Isabelle development version.</li>
+<li>To test all entries, or a number of them, 
+    run <code>afp-devel/admin/testall</code>. 
+    (Running the script with <code>-?</code> will 
+    show options and usage information)</li>
+<li>The changes you make to the CVS repository will 
+    not show up on the AFP web pages immediately. 
+    This only happens 
+    when a new version of the archive is released 
+    (usually together with Isabelle). Please contact 
+    one of the editors if you feel there is something 
+    that should be made available immediately.</li>
+</ul>
+</p>
+
+<p>
+<b>Email Notification:</b><br>
+You can receive an automatic email notification if entry <code>x</code> 
+breaks by editing the file <code>afp-devel/thys/x/config</code>:
+<ul>
+<li>To switch on: add your email address to <code>NOTIFY</code> and cvs commit the file.
+    <code>NOTIFY</code> is a space separated list. If the entry 
+    is marked as <code>FREQUENT</code>, the test will run daily.</li>
+<li>To switch off: remove your email address from <code>NOTIFY</code> and cvs commit the file.</li>
+</ul>
+You can also choose to receive email when the status of any entry in 
+AFP changes. This is controlled by <code>MAIN-NOTIFY</code> 
+in <code>afp-devel/admin/main-config</code>.
+</p>
+
+</body>
+</html>

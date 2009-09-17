@@ -1,4 +1,4 @@
-(*  ID:          $Id: UserGuide.thy,v 1.10 2008-12-30 22:41:37 makarius Exp $
+(*  ID:          $Id: UserGuide.thy,v 1.10.2.1 2009-09-11 21:42:00 lsf37 Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -51,8 +51,8 @@ subsection {* Installation *}
 
 text {*
 To use the verification environment with ProofGeneral you have to install
-the provided keywords file first. Copy \texttt{isabelle-keywords-simpl.el}
-to \texttt{\~/.isabelle/etc}. Invoke Isabelle with \texttt{Isabelle -k simpl} to
+the provided keywords file first. Copy \texttt{isar-keywords-simpl.el}
+to \texttt{\~/.isabelle/etc}. Invoke Isabelle with \texttt{isabelle emacs -k simpl} to
 select the keywords file.
 To start proving Hoare triples import the theory @{term "Vcg"}. 
 To avoid rebuilding all the background theory you can precompile a proper heap image by
@@ -61,7 +61,7 @@ invoking the following command in the \texttt{simpl} directory:
   isabelle usedir -b HOL simpl
 \end{verbatim}
 
-Then startup Isabelle with \texttt{Isabelle -l simpl -k simpl} to
+Then startup Isabelle with \texttt{isabelle emacs -l simpl -k simpl} or \texttt{isabelle emacs -L simpl} to
 select the heap-image and the keywords file, or start Isabelle as explained above and
 select the \texttt{simpl} logic in the ProofGeneral menu \texttt{Isabelle -> Logics}.
 
