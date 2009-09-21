@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Author: Gerwin Klein, NICTA
+#
+# Cron job that synchronizes head with release branch.
+# Needs fetch hg extension. 
+# Add "hgext.fetch=" to [extensions] section of ~/.hgrc
+# 
+
+. ~/.bashrc
+
+HEAD=~/afp/devel
+BRANCH=~/afp-hg/Isabelle2009
+SYNC_MSG="auto merge from release branch"
+
+function fail()
+{
+  echo "$1" >&2
+  exit 2
+}
+
+cd $HEAD || fail "Could not cd to $HEAD"
+# update
+hg pull -q -u || fail "Error updating from master; aborting sync"
+# sync
+hg fetch -q --switch-parent -m "$SYNC_MSG" $BRANCH || fail "Error pulling or merging branch changes; aborting sync"
+# push to master verbosely, but only if there is something to push
+hg outgoing -q > /dev/null && hg outgoing && hg push -q

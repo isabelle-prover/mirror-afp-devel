@@ -1,7 +1,5 @@
 # -*- shell-script -*-
 
-# $Id: main-config,v 1.4 2006-10-24 06:25:11 fhaftmann Exp $
-
 # Get email when automated build fails. May be empty.
 # values: "email1 email2 .. emailn"
 MAIN_NOTIFY="kleing@cse.unsw.edu.au nipkow@in.tum.de lp15@cam.ac.uk haftmann@in.tum.de"

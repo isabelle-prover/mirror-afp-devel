@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #
-# $Id: publish,v 1.13 2008-11-13 22:17:33 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # publishes archive entry + main web pages on SF
@@ -10,26 +9,22 @@
 
 ## settings
 
-REPOS=afp.cvs.sourceforge.net:/cvsroot/afp
 DEST=afp@web.sourceforge.net:htdocs/
 
 if [ -n "$SF_LOGIN" ]; then
-    REPOS=$SF_LOGIN@$REPOS
     DEST="$SF_LOGIN,$DEST"
 else
     DEST="$LOGNAME,$DEST"
 fi
 
 EXPORT_PRE=afp
-CVS=cvs
+HG=hg
 DATE=`date '+%Y-%m-%d'`
 THYS=thys
 
 TAR=tar
 
 PRG="$(basename "$0")"
-
-export CVS_RSH=ssh
 
 ## functions
 
@@ -46,7 +41,7 @@ function usage()
   echo "  -r             use env variable ISABELLE_RELEASES to find isabelle"
   echo
   echo "Examples:"
-  echo "  $PRG -t /usr/proj/Isabelle2003/bin/isabelle Isabelle2009 Example-Submission"  
+  echo "  $PRG -t /usr/proj/Isabelle2009/bin/isabelle Isabelle2009 Example-Submission"  
   echo
   echo "  $PRG -r Isabelle2009 Example-Submission"  
   exit 1
@@ -105,9 +100,10 @@ EXPORT=$EXPORT_PRE-$DATE
 
 ###
 
-echo "Exporting from CVS"
+echo "Exporting from working copy."
 rm -rf "afp-export-$DATE"
-$CVS -q -d $REPOS export -r $TAG -d afp-export-$DATE thys web || fail "CVS export failed."
+$HG outgoing && fail "Push changes to SF first."
+$HG archive -I thys -I web afp-export-$DATE || fail "hg archive failed."
 cd afp-export-$DATE
 mv thys $EXPORT
 
@@ -131,7 +127,7 @@ if [ "$1" != "-" ]; then
 
     cd $EXPORT
     for DIR in $@; do
-        if [ -d $DIR -a "$DIR" != "CVS" ]; then
+        if [ -d $DIR ]; then
             echo "Generating HTML for [$DIR]"
             cd $DIR
             $ISABELLE_TOOL make clean all || fail "isabelle make all failed on [$DIR]"

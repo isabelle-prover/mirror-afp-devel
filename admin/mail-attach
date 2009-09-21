@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #
-# $Id: mail-attach,v 1.4 2006-03-14 20:51:52 lsf37 Exp $
 # Author: Gerwin Klein, TU Muenchen
 #
 # DESCRIPTION: send email with text attachments.

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #
-# $Id: devel-copy,v 1.5 2008-09-22 09:36:32 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Cron job that copies development snapshot to SF.
