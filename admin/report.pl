@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 #
-# $Id: report.pl,v 1.6 2008-06-12 06:57:14 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Parses log file and generates report of entry status.
