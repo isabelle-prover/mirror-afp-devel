@@ -59,7 +59,7 @@ constdefs
   preallocated :: "heap \<Rightarrow> bool"
   "preallocated h \<equiv> \<forall>C \<in> sys_xcpts. \<exists>fs. h(addr_of_sys_xcpt C) = Some (Obj C fs)"
 
-lemma [code unfold]:
+lemma [code_unfold]:
   "sys_xcpts = set [NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds, ArrayStore, NegativeArraySize, IllegalMonitorState, IllegalThreadState]"
 by(simp add: sys_xcpts_def)
 

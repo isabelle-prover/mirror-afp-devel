@@ -179,7 +179,7 @@ qed
 
 
 lemma Exit_no_postdominator:
-  "\<lbrakk>valid_node n; (_Exit_) postdominates n\<rbrakk> \<Longrightarrow> False"
+  "(_Exit_) postdominates n \<Longrightarrow> False"
 by(fastsimp dest:Exit_path simp:postdominate_def)
 
 
@@ -354,7 +354,7 @@ proof(atomize_elim)
       by fastsimp
     then obtain ns ns' where "sourcenodes as = ns@n'#ns'"
       and "\<forall>nx \<in> set ns. nx \<noteq> n'"
-      by(fastsimp elim!: leftmost_element_property)
+      by(fastsimp elim!:split_list_first_propE)
     then obtain asx a asx' where [simp]:"ns = sourcenodes asx"
       and [simp]:"as = asx@a#asx'" and "sourcenode a = n'"
       by(fastsimp elim:map_append_append_maps simp:sourcenodes_def)

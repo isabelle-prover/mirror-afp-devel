@@ -279,8 +279,8 @@ next
   note IH1 = `(_Entry_) \<in> set(sourcenodes as) \<Longrightarrow> n'' = (_Entry_)`
   note IH2 = `(_Entry_) \<in> set(sourcenodes as) \<Longrightarrow> (_Entry_) \<notin> set(sourcenodes(tl as))`
   have "(_Entry_) \<notin> set (sourcenodes(tl(a#as)))"
-  proof(rule ccontr)
-    assume "\<not> (_Entry_) \<notin> set (sourcenodes (tl (a#as)))"
+  proof
+    assume "(_Entry_) \<in> set (sourcenodes (tl (a#as)))"
     hence "(_Entry_) \<in> set (sourcenodes as)" by simp
     from IH1[OF this] have "n'' = (_Entry_)" by simp
     with `targetnode a = n''` `valid_edge a` show False by -(erule Entry_target,simp)

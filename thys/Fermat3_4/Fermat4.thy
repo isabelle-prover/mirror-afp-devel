@@ -162,7 +162,7 @@ proof -
     assume "even r" hence "2 dvd r"by presburger
     with r have  "2 dvd (c-b)" by (simp only: power2_eq_square dvd_mult)
     hence "even (c-b)" by (simp only: even_eq_two_dvd)
-    with factors_odd show False by simp
+    with factors_odd show False by auto
   next
     assume "even s" hence "2 dvd s" by presburger
     with s have "2 dvd (c+b)" by (simp only: power2_eq_square dvd_mult)

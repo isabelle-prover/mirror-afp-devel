@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/execute_Bigstep.thy
-    ID:         $Id: execute_Bigstep.thy,v 1.7 2008-10-07 14:07:44 fhaftmann Exp $
+    ID:         $Id: execute_Bigstep.thy,v 1.8 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2004 Technische Universitaet Muenchen
 *)
@@ -107,7 +107,7 @@ apply assumption+
 done
 
 
-lemmas [code ind] =
+lemmas [code_ind] =
  eval_evals.New eval_evals.NewFail
  eval_evals.Cast eval_evals.CastNull eval_evals.CastFail eval_evals.CastThrow
  eval_evals.Val eval_evals.Var

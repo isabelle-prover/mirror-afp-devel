@@ -1,4 +1,4 @@
-(*  ID:         $Id: Execute.thy,v 1.4 2008-06-25 18:29:59 makarius Exp $
+(*  ID:         $Id: Execute.thy,v 1.6 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Stefan Berghofer, TU Muenchen, 2005
 *)
 
@@ -31,16 +31,16 @@ where
 definition normal_forms where
   "normal_forms t \<equiv> {u. t \<Down> u}"
 
-lemma [code ind_set]: "Rcd [] \<in> value"
+lemma [code_ind_set]: "Rcd [] \<in> value"
   by (rule value.Rcd) simp
 
-lemma [code ind_set]: "t \<in> value \<Longrightarrow> Rcd fs \<in> value \<Longrightarrow> Rcd ((l, t) # fs) \<in> value"
+lemma [code_ind_set]: "t \<in> value \<Longrightarrow> Rcd fs \<in> value \<Longrightarrow> Rcd ((l, t) # fs) \<in> value"
   apply (rule value.Rcd)
   apply (ind_cases "Rcd fs \<in> value")
   apply simp
   done
 
-lemmas [code ind_set] = value.Abs value.TAbs
+lemmas [code_ind_set] = value.Abs value.TAbs
 
 definition
   natT :: type where
@@ -66,11 +66,11 @@ definition
 value "normal_forms fact2"
 
 code_module EvalF
-contains normal_forms
+  contains normal_forms Set
 
 code_module Test
-imports EvalF
-contains "fact2"
+  imports EvalF
+  contains "fact2"
 
 ML "EvalF.normal_forms Test.fact2"
 

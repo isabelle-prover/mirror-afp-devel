@@ -1,5 +1,5 @@
 (*  Title:       Fast Fourier Transform
-    ID:          $Id: FFT.thy,v 1.8.2.1 2009-04-29 05:06:16 lsf37 Exp $
+    ID:          $Id: FFT.thy,v 1.9 2009-05-10 11:53:46 fhaftmann Exp $
     Author:      Clemens Ballarin <ballarin at in.tum.de>, started 12 April 2005
     Maintainer:  Clemens Ballarin <ballarin at in.tum.de>
 *)
@@ -394,7 +394,7 @@ declare divide_divide_eq_right [simp del]
   divide_divide_eq_left [simp del]
 
 lemma power_diff_inverse:
-  assumes nz: "(a::'a::{recpower, field}) ~= 0"
+  assumes nz: "(a::'a::field) ~= 0"
   shows "m <= n ==> (inverse a) ^ (n-m) = (a^m) / (a^n)"
   apply (induct n m rule: diff_induct)
     apply (simp add: nonzero_power_inverse
@@ -404,7 +404,7 @@ lemma power_diff_inverse:
   done
 
 lemma power_diff_rev_if:
-  assumes nz: "(a::'a::{recpower, field}) ~= 0"
+  assumes nz: "(a::'a::field) ~= 0"
   shows "(a^m) / (a^n) = (if n <= m then a ^ (m-n) else (1/a) ^ (n-m))"
 proof (cases "n <= m")
   case True with nz show ?thesis
@@ -415,14 +415,14 @@ next
 qed
 
 lemma power_divides_special:
-  "(a::'a::{field, recpower}) ~= 0 ==>
+  "(a::'a::field) ~= 0 ==>
   a ^ (i * j) / a ^ (k * i) = (a ^ j / a ^ k) ^ i"
   by (simp add: nonzero_power_divide power_mult [THEN sym] mult_ac)
 
 theorem DFT_inverse:
   assumes i_less: "i < n"
   shows  "IDFT n (DFT n a) i = of_nat n * a i"
-  using [[fast_arith_split_limit = 0]]
+  using [[linarith_split_limit = 0]]
   apply (unfold DFT_def IDFT_def)
   apply (simp add: setsum_divide_distrib)
   apply (subst setsum_commute)

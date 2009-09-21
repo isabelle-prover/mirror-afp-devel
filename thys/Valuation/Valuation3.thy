@@ -73,7 +73,7 @@ apply (rule subsetI, simp)
  apply (rule contrapos_pp, simp+)
  apply (subgoal_tac "x \<in> vp K v")
  prefer 2 
- apply (drule_tac a = "vp K v\<^bsup> (Vr K v) (an 1)\<^esup>" in forall_spec1)
+ apply (drule_tac x = "vp K v\<^bsup> (Vr K v) (an 1)\<^esup>" in spec)
  apply (subgoal_tac "\<exists>n. vp K v\<^bsup> (Vr K v) (an (Suc 0))\<^esup> = vp K v\<^bsup> (Vr K v) (an n)\<^esup>", 
         simp,
         thin_tac " \<exists>n. vp K v\<^bsup> (Vr K v) (an (Suc 0))\<^esup> = vp K v\<^bsup> (Vr K v) (an n)\<^esup>")
@@ -119,28 +119,28 @@ lemma (in Corps) limit_diff_n_val:"\<lbrakk>b \<in> carrier K; \<forall>j. f j \
 apply (rule iffI)
 apply (rule allI)
 apply (simp add:limit_def) apply (rotate_tac -1)
- apply (drule_tac m = N in nat_forall_spec)
+ apply (drule_tac x = N in spec)
  apply (erule exE)
 apply (subgoal_tac "\<forall>n>M. (an N) \<le> (n_val K v (f n \<plusminus> (-\<^sub>a b)))")
 apply blast
  apply (rule allI, rule impI) apply (rotate_tac -2)
- apply (drule_tac m = n in nat_forall_spec, simp) 
+ apply (drule_tac x = n in spec, simp) 
  apply (rule n_value_x_1[of v], assumption+,
         simp add:an_nat_pos, assumption)
 
 apply (simp add:limit_def)
- apply (rule allI, rotate_tac -1, drule_tac m = N in nat_forall_spec)
+ apply (rule allI, rotate_tac -1, drule_tac x = N in spec)
 
  apply (erule exE)
  apply (subgoal_tac "\<forall>n>M. f n \<plusminus> (-\<^sub>a b) \<in> vp K v \<^bsup>(Vr K v) (an N)\<^esup>")
  apply blast
 apply (rule allI, rule impI)
-apply (rotate_tac -2, drule_tac m = n in nat_forall_spec, simp)
+apply (rotate_tac -2, drule_tac x = n in spec, simp)
  apply (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"])
  apply (rule_tac x = "f n \<plusminus> -\<^sub>a b" and n = "an N" in n_value_x_2[of "v"],
         assumption+) 
  apply (subst val_pos_mem_Vr[THEN sym, of "v"], assumption+)
- apply (drule_tac m = n in nat_forall_spec)
+ apply (drule_tac x = n in spec)
  apply (rule aGroup.ag_pOp_closed[of "K"], assumption+)
  apply (simp add:aGroup.ag_mOp_closed)
  apply (subst val_pos_n_val_pos[of  "v"], assumption+)
@@ -167,11 +167,11 @@ apply (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
        simp add:limit_diff_n_val[of "b" "f" "v"])
 apply (rule iffI)
  apply (rule allI,
-   rotate_tac -1, drule_tac m = N in nat_forall_spec, erule exE) 
+   rotate_tac -1, drule_tac x = N in spec, erule exE) 
  apply (subgoal_tac "\<forall>n > M. an N \<le> v( f n \<plusminus> -\<^sub>a b)", blast)
  apply (rule allI, rule impI)
- apply (drule_tac m = n in nat_forall_spec,
-        drule_tac m = n in nat_forall_spec, simp) 
+ apply (drule_tac x = n in spec,
+        drule_tac x = n in spec, simp) 
  apply (frule aGroup.ag_mOp_closed[of "K" "b"], assumption+,
      frule_tac x = "f n" and y = "-\<^sub>a b" in aGroup.ag_pOp_closed, assumption+)
  apply (frule_tac x = "f n \<plusminus> -\<^sub>a b" in n_val_le_val[of "v"], 
@@ -183,13 +183,13 @@ apply (rule iffI)
  apply (rule_tac i = "an N" and j = "n_val K v ( f n \<plusminus> -\<^sub>a b)" and 
         k = "v ( f n \<plusminus> -\<^sub>a b)" in ale_trans, assumption+)
  apply (rule allI)
- apply (rotate_tac 3, drule_tac m = "N * (na (Lv K v))" in nat_forall_spec)
+ apply (rotate_tac 3, drule_tac x = "N * (na (Lv K v))" in spec)
  apply (erule exE)
  apply (subgoal_tac "\<forall>n. M < n \<longrightarrow> (an N) \<le> n_val K v (f n \<plusminus> -\<^sub>a b)", blast)
  apply (rule allI, rule impI)
- apply (rotate_tac -2, drule_tac m = n in nat_forall_spec, simp)
+ apply (rotate_tac -2, drule_tac x = n in spec, simp)
 
-  apply (drule_tac m = n in nat_forall_spec)
+  apply (drule_tac x = n in spec)
   apply (frule aGroup.ag_mOp_closed[of "K" "b"], assumption+,
       frule_tac x = "f n" and y = "-\<^sub>a b" in aGroup.ag_pOp_closed, assumption+)
  apply (cut_tac n = "N * na (Lv K v)" in an_nat_pos)
@@ -214,16 +214,16 @@ apply (rule contrapos_pp, simp+, simp add:limit_def,
 apply simp
 apply (rotate_tac -1, erule exE, erule conjE)
 apply (erule exE, simp, thin_tac "x = (vp K v)\<^bsup>(Vr K v) (an n)\<^esup>")
-apply (rotate_tac 3, drule_tac m = n in nat_forall_spec,
+apply (rotate_tac 3, drule_tac x = n in spec,
        erule exE,
-       drule_tac m = n in nat_forall_spec,
+       drule_tac x = n in spec,
        erule exE)
 apply (rename_tac x N M1 M2)
 apply (subgoal_tac "M1 < Suc (max M1 M2)",
        subgoal_tac "M2 < Suc (max M1 M2)",
-       drule_tac m = "Suc (max M1 M2)" in nat_forall_spec,
-       drule_tac m = "Suc (max M1 M2)" in nat_forall_spec,
-       drule_tac m = "Suc (max M1 M2)" in nat_forall_spec)
+       drule_tac x = "Suc (max M1 M2)" in spec,
+       drule_tac x = "Suc (max M1 M2)" in spec,
+       drule_tac x = "Suc (max M1 M2)" in spec)
  apply simp
 
 (* We see (f (Suc (max xb xc)) +\<^sub>K -\<^sub>K b) +\<^sub>K (-\<^sub>K (f (Suc (max xb xc)) +\<^sub>K -\<^sub>K c)) \<in> vpr K G a i v \<^bsup>\<diamondsuit>Vr K G a i v xa\<^esup>" *) 
@@ -280,14 +280,14 @@ apply (simp add:limit_def)
 apply (frule n_val_valuation[of "v"])
 apply (frule val_nonzero_z[of "n_val K v" "b"], assumption+, erule exE,
        rename_tac L)
-apply (rotate_tac -3, drule_tac m = "nat (abs L + 1)" in nat_forall_spec)
+apply (rotate_tac -3, drule_tac x = "nat (abs L + 1)" in spec)
 apply (erule exE, rename_tac M)
 
     (* |L| + 1 \<le> (n_val K v ( f n +\<^sub>K -\<^sub>K b)). *) 
  apply (subgoal_tac "\<forall>n. M < n \<longrightarrow> n_val K v (f n) = n_val K v b", blast)
  apply (rule allI, rule impI) 
  apply (rotate_tac -2, 
-        drule_tac m = n in nat_forall_spec,
+        drule_tac x = n in spec,
         simp)
 apply (frule_tac x = "f n \<plusminus> -\<^sub>a b" and n = "an (nat (\<bar>L\<bar> + 1))" in 
        n_value_x_1[of "v"],
@@ -299,7 +299,7 @@ apply (simp add:an_def)
  apply (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"])
  apply (frule aGroup.ag_mOp_closed[of "K" "b"], assumption+)
  
- apply (drule_tac m = n in nat_forall_spec, 
+ apply (drule_tac x = n in spec, 
         frule_tac x = "f n" in aGroup.ag_pOp_closed[of "K" _ "-\<^sub>a b"], 
         assumption+,  
         frule_tac x = "b" and y = "(f n) \<plusminus> (-\<^sub>a b)" in value_less_eq[of 
@@ -321,8 +321,8 @@ apply (frule limit_n_val[of "b" "v" "f"], assumption+)
  apply (subgoal_tac "\<forall>m. N < m \<longrightarrow> v (f m) = v b")
  apply blast
 apply (rule allI, rule impI)
- apply (drule_tac m = m in nat_forall_spec)
- apply (drule_tac m = m in nat_forall_spec)
+ apply (drule_tac x = m in spec)
+ apply (drule_tac x = m in spec)
   apply simp
  apply (frule Lv_pos[of "v"])
  apply (simp add:n_val[THEN sym, of "v"])
@@ -332,7 +332,7 @@ lemma (in Corps) limit_val_infinity:"\<lbrakk>valuation K v; \<forall>j. f j \<i
       lim\<^bsub>K v\<^esub> f \<zero>\<rbrakk> \<Longrightarrow> \<forall>N.(\<exists>M. (\<forall>m. M < m \<longrightarrow> (an N) \<le> (n_val K v (f m))))"
 apply (simp add:limit_def)
  apply (rule allI)
- apply (drule_tac m = N in nat_forall_spec, 
+ apply (drule_tac x = N in spec, 
         erule exE)
        
  apply (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
@@ -340,8 +340,8 @@ apply (simp add:limit_def)
 apply (subgoal_tac "\<forall>n. M < n \<longrightarrow> an N \<le> n_val K v (f n)", blast)
 
  apply (rule allI, rule impI)
- apply (drule_tac m = n in nat_forall_spec,
-        drule_tac m = n in nat_forall_spec, simp)
+ apply (drule_tac x = n in spec,
+        drule_tac x = n in spec, simp)
  apply (simp add:n_value_x_1)
 done
 
@@ -355,7 +355,7 @@ apply (erule exE)
  apply (case_tac "N = 0", simp add:r_apow_def) 
  apply (subgoal_tac "\<forall>M. \<exists>n. M < n \<and> n_val K v (f n) < (an 0)") apply blast
  apply (rule allI, 
-        rotate_tac 4, frule_tac m = M in nat_forall_spec,
+        rotate_tac 4, frule_tac x = M in spec,
         erule exE, erule conjE)
  apply (frule_tac x1 = "f n" in val_pos_mem_Vr[THEN sym, of "v"]) apply simp 
  apply simp
@@ -391,8 +391,8 @@ lemma (in Corps) limit_p:"\<lbrakk>valuation K v; \<forall>j. f j  \<in> carrier
    \<Longrightarrow> lim\<^bsub>K v\<^esub> (\<lambda>j. (f j) \<plusminus> (g j)) (b \<plusminus> c)"
 apply (simp add:limit_def)
  apply (rule allI) apply (rotate_tac 3,
-       drule_tac m = N in nat_forall_spec,
-       drule_tac m = N in nat_forall_spec,
+       drule_tac x = N in spec,
+       drule_tac x = N in spec,
        (erule exE)+) 
  apply (frule_tac x = M and y = Ma in two_inequalities, simp,
         subgoal_tac "\<forall>n > (max M  Ma). (f n) \<plusminus> (g n) \<plusminus> -\<^sub>a (b \<plusminus> c)
@@ -447,8 +447,8 @@ apply (cut_tac field_is_ring, simp add:limit_def, rule allI)
         frule val_nonzero_z[of "n_val K v" "c"], assumption+,
         rotate_tac -1, erule exE, rename_tac N bz cz)
  apply (rotate_tac 5, 
-  drule_tac m = "N + nat (abs cz)" in nat_forall_spec, 
-  drule_tac m = "N + nat (abs bz)" in nat_forall_spec)
+  drule_tac x = "N + nat (abs cz)" in spec, 
+  drule_tac x = "N + nat (abs bz)" in spec)
   apply (erule exE)+ 
   apply (rename_tac N bz cz M M1 M2)
 (** three inequalities together **)
@@ -456,9 +456,9 @@ apply (subgoal_tac "\<forall>n. (max (max M1 M2) M) < n \<longrightarrow>
  (f n) \<cdot>\<^sub>r (g n) \<plusminus> (f n) \<cdot>\<^sub>r (-\<^sub>a c) \<plusminus> ((f n) \<cdot>\<^sub>r c \<plusminus> (-\<^sub>a (b \<cdot>\<^sub>r c)))
                   \<in> vp K v \<^bsup>(Vr K v) (an N)\<^esup>",  blast)
 apply (rule allI, rule impI) apply (simp, (erule conjE)+) 
- apply (rotate_tac 11, drule_tac m = n in nat_forall_spec,
-      drule_tac m = n in nat_forall_spec, simp,
-      drule_tac m = n in nat_forall_spec, simp)
+ apply (rotate_tac 11, drule_tac x = n in spec,
+      drule_tac x = n in spec, simp,
+      drule_tac x = n in spec, simp)
  apply (frule_tac b = "g n \<plusminus> -\<^sub>a c" and n = "an N" and x = "f n" in 
         convergenceTr1[of v])
  apply simp apply simp apply (simp add:an_def a_zpz[THEN sym]) apply simp
@@ -466,8 +466,8 @@ apply (rule allI, rule impI) apply (simp, (erule conjE)+)
   "v" "c"], assumption+, simp) apply (simp add:an_def)
    apply (simp add:a_zpz[THEN sym]) apply simp
 
- apply (drule_tac m = n in nat_forall_spec, 
-        drule_tac m = n in nat_forall_spec)
+ apply (drule_tac x = n in spec, 
+        drule_tac x = n in spec)
  apply (simp add:Ring.ring_inv1_1[of "K" "b" "c"],
         cut_tac Ring.ring_is_ag, frule aGroup.ag_mOp_closed[of "K" "c"], 
         assumption+,
@@ -491,8 +491,8 @@ apply (simp add:Vr_pOp_f_pOp, assumption+)
 apply (rule allI)
  apply (thin_tac "\<forall>N. \<exists>M. \<forall>n>M. f n \<plusminus> -\<^sub>a b \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>",
         thin_tac "\<forall>N. \<exists>M. \<forall>n>M. g n \<plusminus> -\<^sub>a c \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>")
- apply (drule_tac m = j in nat_forall_spec,
-        drule_tac m = j in nat_forall_spec,
+ apply (drule_tac x = j in spec,
+        drule_tac x = j in spec,
         cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
        frule_tac x = "f j" and y = "g j" in Ring.ring_tOp_closed, assumption+,
        frule_tac x = "b" and y = "c" in Ring.ring_tOp_closed, assumption+,
@@ -526,8 +526,8 @@ apply (case_tac "c = \<zero>\<^bsub>K\<^esub>")
  apply (simp add:aGroup.ag_inv_zero, simp add:aGroup.ag_r_zero)
  apply (rule allI,
         rotate_tac 4,
-        drule_tac m = N in nat_forall_spec,
-        drule_tac m = N in nat_forall_spec, (erule exE)+,
+        drule_tac x = N in spec,
+        drule_tac x = N in spec, (erule exE)+,
         rename_tac N M1 M2)
  apply (subgoal_tac "\<forall>n>(max M1 M2). (f n) \<cdot>\<^sub>r (g n) \<in> (vp K v)\<^bsup>(Vr K v) (an N)\<^esup>", 
         blast) 
@@ -537,7 +537,7 @@ apply (case_tac "c = \<zero>\<^bsub>K\<^esub>")
 apply (thin_tac "\<forall>j. f j \<cdot>\<^sub>r g j \<in> carrier K",
        thin_tac "\<forall>j. f j \<in> carrier K",
        thin_tac "\<forall>j. g j \<in> carrier K",
-       drule_tac m = n in nat_forall_spec, simp, erule conjE,
+       drule_tac x = n in spec, simp, erule conjE,
        erule conjE,
        frule Vr_ring[of v])
  apply (cut_tac n = N in an_nat_pos) 
@@ -557,15 +557,15 @@ apply (thin_tac "\<forall>j. f j \<cdot>\<^sub>r g j \<in> carrier K",
         (f j) \<cdot>\<^sub>r ((g j) \<plusminus> (-\<^sub>a c)) \<plusminus> (f j) \<cdot>\<^sub>r c",
         thin_tac "\<forall>j.  (f j) \<cdot>\<^sub>r ( g j \<plusminus> -\<^sub>a c) \<plusminus> (f j) \<cdot>\<^sub>r c \<in> carrier K")
 apply (rotate_tac 4,
-       drule_tac m = "N + na (Abs (n_val K v c))" in  nat_forall_spec,
-       drule_tac m = N in nat_forall_spec)
+       drule_tac x = "N + na (Abs (n_val K v c))" in  spec,
+       drule_tac x = N in spec)
  apply (erule exE)+ apply (rename_tac N M1 M2)
 apply (subgoal_tac "\<forall>n. (max M1 M2) < n \<longrightarrow> (f n) \<cdot>\<^sub>r (g n \<plusminus> -\<^sub>a c) \<plusminus> 
                      (f n) \<cdot>\<^sub>r  c \<in> vp K v\<^bsup>(Vr K v) (an N)\<^esup>", blast)
 apply (rule allI, rule impI, simp, erule conjE,
-      drule_tac m = n in nat_forall_spec,
-      drule_tac m = n in nat_forall_spec,
-      drule_tac m = n in nat_forall_spec) 
+      drule_tac x = n in spec,
+      drule_tac x = n in spec,
+      drule_tac x = n in spec) 
 apply (frule n_val_valuation[of "v"])
 apply (frule value_in_aug_inf[of "n_val K v" "c"], assumption+, 
        simp add:aug_inf_def)
@@ -573,7 +573,7 @@ apply (frule val_nonzero_noninf[of "n_val K v" "c"], assumption+)
 apply (cut_tac Abs_noninf[of "n_val K v c"])
 apply (cut_tac Abs_pos[of "n_val K v c"]) apply (simp add:an_na)
 
-apply (drule_tac m = n in nat_forall_spec, simp)
+apply (drule_tac x = n in spec, simp)
  apply (frule_tac b = "f n" and n = "an N" in convergenceTr1[of 
                                    "v" "c"], assumption+)
  apply simp
@@ -608,9 +608,9 @@ apply (frule_tac I = "vp K v\<^bsup>(Vr K v) (an N)\<^esup>" and
  apply (thin_tac "\<forall>N. \<exists>M. \<forall>n>M. f n \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>",
         thin_tac "\<forall>N. \<exists>M. \<forall>n>M. g n \<plusminus> -\<^sub>a c \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>",
         rule allI)
- apply (drule_tac m = j in nat_forall_spec, 
-    drule_tac m = j in nat_forall_spec,
-    drule_tac m = j in nat_forall_spec,
+ apply (drule_tac x = j in spec, 
+    drule_tac x = j in spec,
+    drule_tac x = j in spec,
     frule  aGroup.ag_mOp_closed[of "K" "c"], assumption+,
     frule_tac x = "f j" in Ring.ring_tOp_closed[of "K" _ "c"], assumption+,
     frule_tac x = "f j" in Ring.ring_tOp_closed[of "K" _ "-\<^sub>a c"], assumption+)
@@ -624,7 +624,7 @@ lemma (in Corps) limit_minus:"\<lbrakk>valuation K v; \<forall>j. f j \<in> carr
       b \<in> carrier K; lim\<^bsub>K v\<^esub> f b\<rbrakk> \<Longrightarrow> lim\<^bsub>K v\<^esub> (\<lambda>j. (-\<^sub>a (f j))) (-\<^sub>a b)"
 apply (simp add:limit_def)
  apply (rule allI,
-       rotate_tac -1, frule_tac m = N in nat_forall_spec,
+       rotate_tac -1, frule_tac x = N in spec,
         thin_tac "\<forall>N. \<exists>M. \<forall>n. M < n \<longrightarrow>  
                    f n \<plusminus> -\<^sub>a b \<in> (vp K v)\<^bsup>(Vr K v) (an N)\<^esup>",
        erule exE,
@@ -632,8 +632,8 @@ apply (simp add:limit_def)
            (-\<^sub>a (f n)) \<plusminus> (-\<^sub>a (-\<^sub>a b)) \<in> (vp K v)\<^bsup>(Vr K v) (an N)\<^esup>",
       blast) 
  apply (rule allI, rule impI,
-        frule_tac m = n in nat_forall_spec,
-        frule_tac m = n in nat_forall_spec, simp) 
+        frule_tac x = n in spec,
+        frule_tac x = n in spec, simp) 
 
 apply (frule Vr_ring[of "v"],
        frule_tac n = "an N" in vp_apow_ideal[of "v"], simp)
@@ -687,14 +687,14 @@ apply (subst limit_def)
  apply (subgoal_tac "\<forall>m>Na. f m \<noteq> \<zero>") 
  prefer 2
  apply (rule allI, rule impI, rotate_tac -2,
-        drule_tac m = m in nat_forall_spec, simp)
+        drule_tac x = m in spec, simp)
  apply (frule n_val_valuation[of v]) 
  apply (frule val_nonzero_noninf[of "n_val K v" b], assumption+)
  apply (rule contrapos_pp, simp+, simp add:value_of_zero)
  apply (unfold limit_def)
   apply (rotate_tac 2,
-         frule_tac m = "N + 2*(na (Abs (n_val K v b)))" in 
-         nat_forall_spec)
+         frule_tac x = "N + 2*(na (Abs (n_val K v b)))" in 
+         spec)
   apply (erule exE)
   apply (subgoal_tac "\<forall>n>(max Na M).
           (if f n = \<zero> then \<zero> else f n\<^bsup>\<hyphen>K\<^esup>) \<plusminus> -\<^sub>a b\<^bsup>\<hyphen>K\<^esup> \<in> vp K v\<^bsup>(Vr K v) (an N)\<^esup>", 
@@ -704,10 +704,10 @@ apply (subst limit_def)
          in le_less_trans)
   apply simp+
   apply (thin_tac "\<forall>N. \<exists>M. \<forall>n>M. f n \<plusminus> -\<^sub>a b \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>")
- apply (drule_tac m = n in nat_forall_spec,
-        drule_tac m = n in nat_forall_spec,
-        drule_tac m = n in nat_forall_spec,
-        drule_tac m = n in nat_forall_spec, simp)
+ apply (drule_tac x = n in spec,
+        drule_tac x = n in spec,
+        drule_tac x = n in spec,
+        drule_tac x = n in spec, simp)
  apply (subst inv_diff, assumption+)
  apply (cut_tac x = "f n" in invf_closed1, simp,
         cut_tac x = b in invf_closed1, simp, simp, (erule conjE)+)
@@ -807,17 +807,17 @@ apply (simp add:Cauchy_seq_def)
 apply (rule allI)
 apply (simp add:limit_def)
  apply (rotate_tac -1)
- apply (drule_tac m = N in nat_forall_spec)
+ apply (drule_tac x = N in spec)
  apply (erule exE)
  apply (subgoal_tac "\<forall>n m. M < n \<and> M < m \<longrightarrow>
                         f n \<plusminus> -\<^sub>a (f m) \<in> vp K v\<^bsup>(Vr K v) (an N)\<^esup>")
  apply blast
  apply ((rule allI)+, rule impI, erule conjE)
- apply (frule_tac m = n in nat_forall_spec,
-        frule_tac m = m in nat_forall_spec,
+ apply (frule_tac x = n in spec,
+        frule_tac x = m in spec,
         thin_tac "\<forall>j. f j \<in> carrier K",
-        frule_tac m = n in nat_forall_spec,
-        frule_tac m = m in nat_forall_spec,
+        frule_tac x = n in spec,
+        frule_tac x = m in spec,
         thin_tac "\<forall>n. M < n \<longrightarrow>  f n \<plusminus> -\<^sub>a b \<in> vp K v\<^bsup>(Vr K v) (an N)\<^esup>",
         simp)
  apply (frule_tac n = "an N" in vp_apow_ideal[of v], simp)
@@ -857,13 +857,13 @@ apply (simp add:Cauchy_seq_def, assumption) apply (erule exE)
 apply (rename_tac L)
 apply (simp add:Cauchy_seq_def, erule conjE,
        rotate_tac -1,
-       frule_tac m = L in nat_forall_spec, thin_tac "\<forall>N. \<exists>M. \<forall>n m. 
+       frule_tac x = L in spec, thin_tac "\<forall>N. \<exists>M. \<forall>n m. 
        M < n \<and> M < m \<longrightarrow> f n \<plusminus> -\<^sub>a (f m) \<in> vp K v\<^bsup>(Vr K v) (an N)\<^esup>")
 apply (erule exE)
-apply (drule_tac m = M in nat_forall_spec)
+apply (drule_tac x = M in spec)
 apply (erule exE, erule conjE)
 apply (rotate_tac -3,
-       frule_tac m = m in nat_forall_spec)
+       frule_tac x = m in spec)
     apply (thin_tac "\<forall>n m. M < n \<and> M < m \<longrightarrow>
                f n \<plusminus> -\<^sub>a (f m) \<in> (vp K v)\<^bsup>(Vr K v) (an L)\<^esup>")
    apply (subgoal_tac "M < m \<and> (\<forall>ma. M < ma \<longrightarrow> 
@@ -873,7 +873,7 @@ apply (rotate_tac -3,
  
  apply (rule allI, rule impI)
  apply (rotate_tac -2)
- apply (drule_tac m = ma in nat_forall_spec)
+ apply (drule_tac x = ma in spec)
  apply simp
  (** we have f ma \<plusminus> -\<^sub>a f m \<in> vpr K G a i v \<^bsup>\<diamondsuit>Vr K G a i v L\<^esup> as **) 
  apply (frule Vr_ring[of "v"], 
@@ -883,8 +883,8 @@ apply (frule_tac I = "vp K v\<^bsup>(Vr K v) (an L)\<^esup>" and x = "f m \<plus
         frule_tac I = "vp K v\<^bsup>(Vr K v) (an L)\<^esup>" and 
         h = "f m \<plusminus> -\<^sub>a (f ma)" in Ring.ideal_subset[of "Vr K v"], 
         assumption+, simp add:Vr_mOp_f_mOp)
-   apply (frule_tac m = m in nat_forall_spec,
-          drule_tac m = ma in nat_forall_spec)  apply (
+   apply (frule_tac x = m in spec,
+          drule_tac x = ma in spec)  apply (
          
           cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
           frule_tac x = "f ma" in aGroup.ag_mOp_closed[of "K"], assumption+,
@@ -919,9 +919,9 @@ apply (frule no_limit_zero_Cauchy[of "v" "f"], assumption+)
  apply (erule exE)+
  apply (subgoal_tac "\<forall>m. N < m \<longrightarrow> v (f M) = v (f m)") apply blast
  apply (rule allI, rule impI)
- apply (frule_tac m = M in nat_forall_spec,
-        drule_tac m = m in nat_forall_spec,
-        drule_tac m = m in nat_forall_spec, simp)
+ apply (frule_tac x = M in spec,
+        drule_tac x = m in spec,
+        drule_tac x = m in spec, simp)
  apply (simp add:n_val[THEN sym, of "v"])
 done
  
@@ -1023,7 +1023,7 @@ apply (frule completion_Vring_sub[of  "K'" "v" "v'"],
 apply (simp add:rHom_def)
 apply (rule conjI) 
  apply (simp add:aHom_def,
-        rule conjI, rule univar_func_test, rule ballI, 
+        rule conjI,
         simp add:idmap_def, simp add:subsetD)
 apply (rule conjI)
  apply (simp add:idmap_def extensional_def)
@@ -1084,14 +1084,14 @@ lemma (in Corps) val_v_completion:"\<lbrakk>Corps K'; valuation K v; valuation K
       x \<in> carrier K'; x \<noteq> \<zero>\<^bsub>K'\<^esub>; Completion\<^bsub>v v'\<^esub> K K'\<rbrakk> \<Longrightarrow>
    \<exists>f. (Cauchy\<^bsub>K v\<^esub> f) \<and> (\<exists>N. (\<forall>m. N < m \<longrightarrow> v (f m) = v' x))"
 apply (simp add:v_completion_def, erule conjE, (erule conjE)+)
- apply (rotate_tac -1, drule_tac b = x in forball_spec1, assumption+,
+ apply (rotate_tac -1, drule_tac x = x in bspec, assumption+,
         erule exE, erule conjE,
         subgoal_tac "\<exists>N. \<forall>m. N < m \<longrightarrow> v (f m) = v' x", blast) 
     thm Corps.limit_val
  apply (frule_tac f = f and v = v' in  Corps.limit_val[of "K'" "x"],
         assumption+,
         unfold Cauchy_seq_def, frule conjunct1, fold Cauchy_seq_def) 
-apply (rule allI, drule_tac m = j in nat_forall_spec,
+apply (rule allI, drule_tac x = j in spec,
        simp add:subfield_def, erule conjE, simp add:subsetD, assumption+)
  apply (simp add:Cauchy_seq_def)
 done
@@ -1108,12 +1108,12 @@ apply (frule subsetD[of "carrier K" "carrier K'" "x"], assumption+,
        subgoal_tac "\<forall>n. f n \<plusminus>\<^bsub>K'\<^esub> -\<^sub>a\<^bsub>K'\<^esub> x = f n \<plusminus> -\<^sub>a x")
  apply (rule allI)
  apply (simp add:limit_def)
- apply (rotate_tac 6, drule_tac m = N in nat_forall_spec,
+ apply (rotate_tac 6, drule_tac x = N in spec,
         erule exE)
  apply (subgoal_tac "\<forall>n>M. an N \<le> v'(f n \<plusminus> -\<^sub>a x)",
         subgoal_tac "\<forall>n. (v' (f n \<plusminus> -\<^sub>a x) = v (f n \<plusminus> -\<^sub>a x))", simp, blast)
  apply (rule allI)
- apply (frule_tac b = "f n \<plusminus> -\<^sub>a x" in forball_spec1,
+ apply (frule_tac x = "f n \<plusminus> -\<^sub>a x" in bspec,
         rule aGroup.ag_pOp_closed, assumption+, simp,
         rule aGroup.ag_mOp_closed, assumption+) apply simp
  apply (rule allI, rule impI)
@@ -1169,8 +1169,8 @@ apply (rule ballI)+
   apply (frule_tac a = a and b = b in aHom_add[of K K' "I\<^bsub>K\<^esub>"], assumption+,
          frule_tac x = a and y = b in aGroup.ag_pOp_closed[of K], assumption+,
          simp add:idmap_def)
-apply (rule univar_func_test, rule ballI,
-       drule_tac b = x in forball_spec1, simp add:Vr_mem_f_mem)
+apply (rule Pi_I,
+       drule_tac x = x in bspec, simp add:Vr_mem_f_mem)
 apply (simp add:idmap_def)
  apply (frule_tac x1 = x in val_pos_mem_Vr[THEN sym, of v],
          simp add:Vr_mem_f_mem, simp)
@@ -1204,18 +1204,18 @@ lemma (in Corps) Cauchy_down:"\<lbrakk>Corps K'; valuation K v; valuation K' v';
   \<Longrightarrow>  Cauchy\<^bsub>K v \<^esub>f" 
 apply (simp add:Cauchy_seq_def, rule allI, erule conjE) 
 apply (rotate_tac -1, drule_tac 
-  m = "na (Lv K v) * N" in nat_forall_spec,
+  x = "na (Lv K v) * N" in spec,
   erule exE,
   subgoal_tac "\<forall>n m. M < n \<and> M < m \<longrightarrow>
       f n \<plusminus> (-\<^sub>a (f m)) \<in> vp K v\<^bsup>(Vr K v) (an N)\<^esup>", blast)
  apply (simp add:amult_an_an) apply (simp add:an_na_Lv)
  apply ((rule allI)+, rule impI, erule conjE) apply (
-      rotate_tac -3, drule_tac m = n in nat_forall_spec,
-      rotate_tac -1, drule_tac m = m in nat_forall_spec,
+      rotate_tac -3, drule_tac x = n in spec,
+      rotate_tac -1, drule_tac x = m in spec,
       simp)
  apply (rotate_tac 7,
-        frule_tac m = n in nat_forall_spec,
-        drule_tac m = m in nat_forall_spec)
+        frule_tac x = n in spec,
+        drule_tac x = m in spec)
  apply (simp add:subfield_mOp[THEN sym],
         cut_tac field_is_ring, frule Ring.ring_is_ag[of K],
         frule_tac x = "f m" in aGroup.ag_mOp_closed[of K], assumption+)
@@ -1239,7 +1239,7 @@ apply (rotate_tac -1, drule_tac
         thin_tac "n_val K' v' (f n \<plusminus> -\<^sub>a f m) \<le> v' (f n \<plusminus> -\<^sub>a f m)",
         thin_tac "Lv K v * an N \<le> n_val K' v' (f n \<plusminus> -\<^sub>a f m)")
  apply (rotate_tac 1,
-        drule_tac b = "f n \<plusminus> -\<^sub>a f m" in forball_spec1, assumption,
+        drule_tac x = "f n \<plusminus> -\<^sub>a f m" in bspec, assumption,
         rotate_tac -1, drule sym, simp)
  apply (frule_tac v1 = v and x1 = "f n \<plusminus> -\<^sub>a f m" in n_val[THEN sym],
         assumption)
@@ -1269,16 +1269,16 @@ apply (simp add:Cauchy_seq_def,
 apply (simp add:subsetD) 
 
 apply (rule allI)
-apply (rotate_tac -1, drule_tac m = "na (Lv K' v') * N" 
-      in nat_forall_spec, erule exE) 
+apply (rotate_tac -1, drule_tac x = "na (Lv K' v') * N" 
+      in spec, erule exE) 
 apply (subgoal_tac "\<forall>n m. M < n \<and> M < m \<longrightarrow>
          f n \<plusminus>\<^bsub>K'\<^esub> (-\<^sub>a\<^bsub>K'\<^esub> (f m)) \<in> vp K' v'\<^bsup>(Vr K' v') (an N)\<^esup>", blast,
        (rule allI)+, rule impI, erule conjE)
-apply (rotate_tac -3, drule_tac m = n in nat_forall_spec,
+apply (rotate_tac -3, drule_tac x = n in spec,
        rotate_tac -1, 
-       drule_tac m = m in nat_forall_spec, simp,
-       frule_tac m = n in nat_forall_spec,
-       drule_tac m = m in nat_forall_spec)
+       drule_tac x = m in spec, simp,
+       frule_tac x = n in spec,
+       drule_tac x = m in spec)
  apply(unfold v_completion_def, frule conjunct1, fold v_completion_def,
        cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
        frule_tac x = "f m" in aGroup.ag_mOp_closed[of "K"], assumption+,
@@ -1338,8 +1338,7 @@ apply (cut_tac n = N in an_nat_pos)
 done
 
 lemma max_gtTr:"(n::nat) < max (Suc n) (Suc m) \<and> m < max (Suc n) (Suc m)"
-apply (simp add:max_def)
-done
+by (simp add:max_def)
 
 lemma (in Corps) completion_approx:"\<lbrakk>Corps K'; valuation K v; valuation K' v'; 
       Completion\<^bsub>v v'\<^esub> K K'; x \<in> carrier (Vr K' v')\<rbrakk> \<Longrightarrow> 
@@ -1348,7 +1347,7 @@ lemma (in Corps) completion_approx:"\<lbrakk>Corps K'; valuation K v; valuation 
 apply (frule Corps.Vr_mem_f_mem [of "K'" "v'" "x"], assumption+,
        frule Corps.val_pos_mem_Vr[THEN sym, of "K'" "v'" "x"], assumption+,
        simp add:v_completion_def, (erule conjE)+,
-       rotate_tac -1, drule_tac b = x in forball_spec1, assumption+, 
+       rotate_tac -1, drule_tac x = x in bspec, assumption+, 
        erule exE, erule conjE)
 apply (unfold Cauchy_seq_def, frule conjunct1, fold Cauchy_seq_def)
 apply (case_tac "x = \<zero>\<^bsub>K'\<^esub>", 
@@ -1368,23 +1367,23 @@ apply (case_tac "x = \<zero>\<^bsub>K'\<^esub>",
        frule Vr_ring[of "v"],simp add:Ring.ring_zero)
       apply (frule_tac f = f in Corps.limit_val[of "K'" "x" _ "v'"], 
                          assumption+)
-      apply (rule allI, rotate_tac -2, frule_tac m = j in nat_forall_spec,
+      apply (rule allI, rotate_tac -2, frule_tac x = j in spec,
              frule subfield_sub[of K'], simp add:subsetD, assumption+)
 apply (erule exE)
  apply (simp add:limit_def,
         frule Corps.Vr_ring[of K' v'], assumption+,
         rotate_tac 10,
-              drule_tac m = "Suc 0" in nat_forall_spec, erule exE,
+              drule_tac x = "Suc 0" in spec, erule exE,
        rotate_tac 1,
               frule_tac x = N and y = M in two_inequalities, assumption+,
               thin_tac "\<forall>n>N. v' (f n) = v' x",
               thin_tac "\<forall>n>M. f n \<plusminus>\<^bsub>K'\<^esub> -\<^sub>a\<^bsub>K'\<^esub> x \<in> vp K' v'\<^bsup> (Vr K' v') (an (Suc 0))\<^esup>")
        apply (frule Corps.vp_ideal[of K' v'], assumption+,
               simp add:Ring.r_apow_Suc[of "Vr K' v'" "vp K' v'"])
-       apply (drule_tac m = "N + M + 1" in nat_forall_spec, simp,
-              drule_tac m = "N + M + 1" in nat_forall_spec, simp,
+       apply (drule_tac x = "N + M + 1" in spec, simp,
+              drule_tac x = "N + M + 1" in spec, simp,
               erule conjE)
- apply (drule_tac b = "f (Suc (N + M))" in forball_spec1, assumption+)
+ apply (drule_tac x = "f (Suc (N + M))" in bspec, assumption+)
  apply simp 
  apply (cut_tac x = "f (Suc (N + M))" in val_pos_mem_Vr[of v], assumption+)
  apply simp apply blast
@@ -2214,13 +2213,13 @@ apply (thin_tac "\<forall>n. F n = f n \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsu
 apply (simp add:limit_def)
  apply (rule allI)
 (* apply (simp add:t_vp_apow[of "K" "v" "t"]) *) 
- apply (rotate_tac -2, drule_tac m = N in nat_forall_spec) 
+ apply (rotate_tac -2, drule_tac x = N in spec) 
  apply (erule exE)
  apply (subgoal_tac "\<forall>n> M. P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>)
                    ((f n)\<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R d\<^esup>) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (b \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R d\<^esup>)))", blast) 
  apply (rule allI, rule impI)
- apply (rotate_tac -2, drule_tac m = n in nat_forall_spec, simp)
- apply (drule_tac m = n in nat_forall_spec)
+ apply (rotate_tac -2, drule_tac x = n in spec, simp)
+ apply (drule_tac x = n in spec)
 
 apply (frule_tac x = "f n" in Ring.mem_subring_mem_ring[of "R" "Vr K v"], 
        assumption+,
@@ -2261,26 +2260,26 @@ apply (frule PolynRg.X_mem_R[of "R" "Vr K v" "X"])
         simp add:Ring.ring_zero)
  apply (frule_tac b = b in limit_val[of  _ "f" "v"], assumption+,
         rule allI,
-        frule_tac m = j in nat_forall_spec, simp add:Vr_mem_f_mem,
+        frule_tac x = j in spec, simp add:Vr_mem_f_mem,
         assumption+, erule exE)
  apply (thin_tac "\<forall>n. F n = f n \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsup>R d\<^esup>",
         thin_tac "\<forall>N. \<exists>M. \<forall>n m. M < n \<and> M < m \<longrightarrow>
                          P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>)
                           (f n \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsup>R d\<^esup> \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> f m \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsup>R d\<^esup>)")  
- apply (rotate_tac -1, drule_tac m = "Suc N" in nat_forall_spec, simp)
- apply (drule_tac m = "Suc N" in nat_forall_spec)
+ apply (rotate_tac -1, drule_tac x = "Suc N" in spec, simp)
+ apply (drule_tac x = "Suc N" in spec)
  apply (frule_tac x1 = "f (Suc N)" in val_pos_mem_Vr[THEN sym, of v],
         simp add:Vr_mem_f_mem, simp, simp add:val_pos_mem_Vr[of v]) 
 
 apply (simp add:Cauchy_seq_def)
  apply (simp add:Vr_mem_f_mem)
  apply (rule allI)
- apply (rotate_tac -3, frule_tac m = N in nat_forall_spec)
+ apply (rotate_tac -3, frule_tac x = N in spec)
 
  apply (thin_tac "\<forall>n. F n = f n \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsup>R d\<^esup>")
  (*apply (simp add:t_vp_apow[of "K" "v" "t"]) *) 
  apply (frule_tac n = "an N" in vp_apow_ideal[of "v"], simp)
- apply (drule_tac m = N in nat_forall_spec, erule exE) 
+ apply (drule_tac x = N in spec, erule exE) 
  apply (subgoal_tac "\<forall>n m. M < n \<and> M < m \<longrightarrow>
                       f n \<plusminus> -\<^sub>a (f m) \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>", blast)
  apply (rule allI)+
@@ -2289,8 +2288,8 @@ apply (simp add:Cauchy_seq_def)
    p = "(f n \<plusminus> -\<^sub>a (f m)) \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R d\<^esup>)" in
    PolynRg.monomial_P_mod_mod[of "R" "Vr K v" "X" _ _ _ "d"], assumption+)
  
- apply (frule_tac m = n in nat_forall_spec,
-        drule_tac m = m in nat_forall_spec)
+ apply (frule_tac x = n in spec,
+        drule_tac x = m in spec)
  apply (frule Ring.ring_is_ag[of "Vr K v"],
         simp add:Vr_mOp_f_mOp[THEN sym],
         frule_tac x = "f m" in aGroup.ag_mOp_closed[of "Vr K v"], assumption+,
@@ -2299,10 +2298,10 @@ apply (simp add:Cauchy_seq_def)
  apply simp 
  apply (thin_tac "(f n \<plusminus> -\<^sub>a f m \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>) =
         P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>) ((f n \<plusminus> -\<^sub>a f m) \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsup>R d\<^esup>)")
- apply (rotate_tac -3, drule_tac m = n in nat_forall_spec,
-        rotate_tac -1, drule_tac m = m in nat_forall_spec, simp)
- apply (frule_tac m = n in nat_forall_spec,
-        drule_tac m = m in nat_forall_spec)
+ apply (rotate_tac -3, drule_tac x = n in spec,
+        rotate_tac -1, drule_tac x = m in spec, simp)
+ apply (frule_tac x = n in spec,
+        drule_tac x = m in spec)
  apply (frule_tac x = "f n" in Ring.mem_subring_mem_ring[of R "Vr K v"],
          assumption+,
         frule_tac x = "f m" in Ring.mem_subring_mem_ring[of R "Vr K v"],
@@ -2332,13 +2331,13 @@ apply (frule PolynRg.is_Ring,
        simp add:pol_limit_def limit_def,
        rule allI,
        erule conjE,
-       rotate_tac -1, drule_tac m = N in nat_forall_spec,
+       rotate_tac -1, drule_tac x = N in spec,
        erule exE)
 apply (subgoal_tac "\<forall>n. M < n \<longrightarrow> f n \<plusminus> -\<^sub>a c \<in> vp K v\<^bsup> (Vr K v) (an N)\<^esup>", blast)
 apply (rule allI, rule impI,
-       rotate_tac -2, drule_tac m = n in nat_forall_spec, simp,
-       drule_tac m = n in nat_forall_spec,
-       drule_tac m = n in nat_forall_spec,
+       rotate_tac -2, drule_tac x = n in spec, simp,
+       drule_tac x = n in spec,
+       drule_tac x = n in spec,
        thin_tac "\<forall>n. f n \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsup>R d\<^esup> \<in> carrier R")
 apply (frule Vr_ring[of v],
        frule PolynRg.X_mem_R[of "R" "Vr K v" "X"],
@@ -2411,12 +2410,12 @@ apply (frule val_nonzero_noninf[of "v"
 
 (* show that the leading coefficient of p shoule be 0. contradiction *)
 apply (simp add:pol_limit_def)
-apply (rotate_tac 5, drule_tac m = "Suc n" in nat_forall_spec) 
+apply (rotate_tac 5, drule_tac x = "Suc n" in spec) 
 apply (erule exE)
 apply (rotate_tac -1, 
-       drule_tac m = "Suc M" in nat_forall_spec, simp del:npow_suc,
-       drule_tac m = "Suc M" in nat_forall_spec, 
-       drule_tac m = "Suc M" in nat_forall_spec)
+       drule_tac x = "Suc M" in spec, simp del:npow_suc,
+       drule_tac x = "Suc M" in spec, 
+       drule_tac x = "Suc M" in spec)
 
   (**** Only formula manipulation to obtain
         P_mod R (Vr K v) X (vp K v\<^bsup> Vr K v an (Suc n)\<^esup>)
@@ -2438,7 +2437,7 @@ apply (frule PolynRg.polyn_minus[of R "Vr K v" X "s_cf R (Vr K v) X p"
       erule exE, (erule conjE)+,
    frule_tac c = f in PolynRg.polyn_add1[of "R" "Vr K v" "X" _ 
     "(fst (s_cf R (Vr K v) X p), \<lambda>j. -\<^sub>a\<^bsub>Vr K v\<^esub> snd (s_cf R (Vr K v) X p) j)"],
-    assumption+, simp add:max_def,
+    assumption+, simp,
    thin_tac "-\<^sub>a\<^bsub>R\<^esub> p = polyn_expr R X (fst (s_cf R (Vr K v) X p))
     (fst (s_cf R (Vr K v) X p), \<lambda>j. -\<^sub>a\<^bsub>Vr K v\<^esub> snd (s_cf R (Vr K v) X p) j)",
    thin_tac "polyn_expr R X (fst (s_cf R (Vr K v) X p))
@@ -2463,7 +2462,7 @@ apply (frule PolynRg.polyn_minus[of R "Vr K v" X "s_cf R (Vr K v) X p"
   rule PolynRg.add_cf_pol_coeff[of R "Vr K v" X], assumption+,
   simp add:PolynRg.add_cf_len,
   simp add:PolynRg.add_cf_len)
- apply (drule_tac m = "fst (s_cf R (Vr K v) X p)" in nat_forall_spec, simp,
+ apply (drule_tac x = "fst (s_cf R (Vr K v) X p)" in spec, simp,
         thin_tac "P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an (Suc n))\<^esup>)
          (polyn_expr R X (fst (s_cf R (Vr K v) X p)) (add_cf (Vr K v) f
       (fst (s_cf R (Vr K v) X p), \<lambda>j. -\<^sub>a\<^bsub>Vr K v\<^esub> snd (s_cf R (Vr K v) X p) j)))",
@@ -2525,7 +2524,7 @@ apply (frule val_nonzero_z[of "n_val K v" "p"])
  apply (simp add:ant_0[THEN sym])
 apply (frule_tac z = z in zpos_nat, erule exE)
 apply (unfold pol_limit_def, erule conjE)
- apply (rotate_tac -1, drule_tac m = "Suc n" in nat_forall_spec)
+ apply (rotate_tac -1, drule_tac x = "Suc n" in spec)
  apply (subgoal_tac "\<not> (\<exists>M. \<forall>m. M < m \<longrightarrow>
              P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an (Suc n))\<^esup>) ( F m \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> p))")
  apply blast
@@ -2561,8 +2560,8 @@ apply simp apply (erule exE)
 apply (subgoal_tac "0 \<le> ad")
 apply (frule Plimit_deg[of "v" "R" "X" "F" "na ad" "p"], assumption+)
  apply (simp add:an_na)+
-apply (drule_tac m = n in nat_forall_spec,
-       drule_tac m = n in nat_forall_spec)
+apply (drule_tac x = n in spec,
+       drule_tac x = n in spec)
 
 apply (frule_tac p = "F n" in PolynRg.nonzero_deg_pos[of "R" "Vr K v" "X"],
            assumption+)
@@ -2582,13 +2581,13 @@ apply (simp add:Pseql_def, simp add:pol_limit_def)
 apply (rule conjI, rule allI)
  apply (rule PolynRg.ldeg_p_mem, assumption+, simp+)
  apply (rule allI)
- apply (rotate_tac -5, drule_tac m = N in nat_forall_spec, erule exE)
+ apply (rotate_tac -5, drule_tac x = N in spec, erule exE)
  apply (subgoal_tac "\<forall>m > M. P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>)
               (ldeg_p R (Vr K v) X d (F m) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (ldeg_p R (Vr K v) X d p))",
         blast)
  apply (rule allI, rule impI)
  apply (rotate_tac -2, 
-        frule_tac m = m in nat_forall_spec,
+        frule_tac x = m in spec,
         thin_tac "\<forall>m. M < m \<longrightarrow>
             P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>) ( F m \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> p)",
         simp)
@@ -2620,14 +2619,14 @@ apply (simp add:Pseqh_def, simp add:pol_limit_def)
 apply (rule conjI, rule allI)
  apply (rule PolynRg.hdeg_p_mem, assumption+, simp+)
  apply (rule allI)
- apply (rotate_tac -5, drule_tac m = N in nat_forall_spec)
+ apply (rotate_tac -5, drule_tac x = N in spec)
  apply (erule exE) 
  apply (subgoal_tac "\<forall>m>M. P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>)
   (hdeg_p R (Vr K v) X (Suc d) (F m) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (hdeg_p R (Vr K v) X (Suc d) p))",
     blast)
  apply (rule allI, rule impI)
  apply (rotate_tac -2, 
-        drule_tac m = m in nat_forall_spec, simp)
+        drule_tac x = m in spec, simp)
  apply (subst v_hdeg_p_mOp[of v R X _ d], assumption+)
  apply (subst v_hdeg_p_pOp[of v R X _ "-\<^sub>a\<^bsub>R\<^esub> p"], assumption+)
  apply (simp, rule aGroup.ag_mOp_closed, assumption, simp, simp)
@@ -2657,7 +2656,7 @@ apply (frule Vr_ring[of "v"])
 apply (frule PolynRg.X_mem_R[of "R" "Vr K v" "X"])
 apply (frule_tac f = F and F = F and d = 0 and b = p1 and c = p2 in 
         mono_P_limt_unique[of v R X], assumption+)
-apply (rule allI, drule_tac m = n in nat_forall_spec, 
+apply (rule allI, drule_tac x = n in spec, 
        simp add:Ring.ring_r_one)
 apply (frule_tac F = F and p = p1 in Plimit_deg[of v R X _ 0],
        assumption+, simp add:deg_0_const,
@@ -2748,9 +2747,9 @@ apply (frule_tac p = p2 and d = "Suc d" in PolynRg.scf_d_pol[of R "Vr K v" X],
         j = "Suc d" in PolynRg.pol_coeff_mem[of R "Vr K v" X], assumption+,
    simp, simp) apply simp apply simp 
  apply (rotate_tac -4,
-        drule_tac a = "ldeg_p R (Vr K v) X d p1" in forall_spec1,
+        drule_tac x = "ldeg_p R (Vr K v) X d p1" in spec,
         rotate_tac -1,
-        drule_tac a = "ldeg_p R (Vr K v) X d p2" in forall_spec1) 
+        drule_tac x = "ldeg_p R (Vr K v) X d p2" in spec) 
  apply (simp add:PolynRg.ldeg_p_mem)
 done
 
@@ -2776,10 +2775,10 @@ apply (frule Vr_ring[of v])
  apply (frule_tac F = F and f = F in monomial_P_limt[of v R X  _ _ 0], 
         assumption+)
  apply (rule allI)
- apply (rotate_tac 5, drule_tac m = n in nat_forall_spec) 
+ apply (rotate_tac 5, drule_tac x = n in spec) 
  apply (simp add:deg_0_const)
  apply (rule allI)
-  apply (drule_tac m = n in nat_forall_spec,
+  apply (drule_tac x = n in spec,
          thin_tac "\<forall>n. deg R (Vr K v) X (F n) \<le> 0")
   apply (frule PolynRg.X_mem_R[of "R" "Vr K v" "X"],
          frule PolynRg.is_Ring,
@@ -2817,8 +2816,8 @@ apply (erule conjE)+
   and  F = "Pseqh\<^bsub> R X K v d \<^esub>F" and d = "Suc d" in monomial_P_limt[of v R X], 
        assumption+)
  apply (rule allI)
- apply (drule_tac m = n in nat_forall_spec,
-        drule_tac m = n in nat_forall_spec,
+ apply (drule_tac x = n in spec,
+        drule_tac x = n in spec,
         frule_tac p = "F n" and d = "Suc d" in PolynRg.scf_d_pol[of R "Vr K v" 
        "X"], assumption+, (erule conjE)+)
  apply (rule_tac c = "scf_d R (Vr K v) X (F n) (Suc d)" and j = "Suc d" in 
@@ -2861,9 +2860,9 @@ apply (thin_tac "\<forall>m. (Pseql\<^bsub>R  X K v d \<^esub>F) m \<plusminus>\
      ((Pseqh\<^bsub> R X K v d \<^esub>F) m \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> b \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsup>R (Suc d)\<^esup>)")
 apply (erule conjE)+
 apply (rotate_tac -3, 
-       drule_tac m = N in nat_forall_spec, erule exE)
+       drule_tac x = N in spec, erule exE)
 apply (rotate_tac 1, 
-       drule_tac m = N in nat_forall_spec, erule exE)
+       drule_tac x = N in spec, erule exE)
 apply (rename_tac d F p b N M1 M2)
 apply (subgoal_tac "\<forall>m. (max M1 M2) < m \<longrightarrow>
            P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>)
@@ -2871,10 +2870,10 @@ apply (subgoal_tac "\<forall>m. (max M1 M2) < m \<longrightarrow>
             ((Pseqh\<^bsub> R X K v d \<^esub>F) m \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (b \<cdot>\<^sub>r\<^bsub>R\<^esub> (X^\<^bsup>R (Suc d)\<^esup>))))", blast)
 apply (rule allI, rule impI)
 apply (rotate_tac -2, 
-       drule_tac m = m in nat_forall_spec, simp del:npow_suc)
+       drule_tac x = m in spec, simp del:npow_suc)
 apply (erule conjE)
 apply (rotate_tac -5,
-       drule_tac m = m in nat_forall_spec, simp del:npow_suc)
+       drule_tac x = m in spec, simp del:npow_suc)
  apply (frule_tac n = "an N" in vp_apow_ideal[of v], simp del:npow_suc)
  apply (frule Ring.ring_is_ag[of "R"])
  apply (rule_tac I = "vp K v\<^bsup> (Vr K v) (an N)\<^esup>" and 
@@ -2903,8 +2902,8 @@ apply (rule allI)
         thin_tac "\<forall>N. \<exists>M. \<forall>m>M. P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>)
                        ((Pseqh\<^bsub> R X K v d \<^esub>F) m \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> b \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsup>R (Suc d)\<^esup>)",
         thin_tac "\<forall>n. F n = (Pseql\<^bsub> R X K v d \<^esub>F) n \<plusminus>\<^bsub>R\<^esub> ((Pseqh\<^bsub> R X K v d \<^esub>F) n)") 
- apply (drule_tac m = m in nat_forall_spec,
-        drule_tac m = m in nat_forall_spec)
+ apply (drule_tac x = m in spec,
+        drule_tac x = m in spec)
  apply (subgoal_tac "b \<cdot>\<^sub>r\<^bsub>R\<^esub> X^\<^bsup>R (Suc d)\<^esup> \<in> carrier R")
  apply (frule Ring.ring_is_ag[of "R"])
  apply (frule_tac x = p in aGroup.ag_mOp_closed[of "R"], assumption+)
@@ -2930,7 +2929,7 @@ apply (rule allI)
 apply (rule_tac F = F and n = n and d = d in Pseq_decompos[of "v" "R" "X"],
        assumption+, simp, simp)
 apply (rule allI)
-apply (rotate_tac -3, drule_tac m = N in nat_forall_spec)
+apply (rotate_tac -3, drule_tac x = N in spec)
 apply (erule exE)
  apply (subgoal_tac "\<forall>n m. M < n \<and> M < m \<longrightarrow>
                     P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>)
@@ -2938,9 +2937,9 @@ apply (erule exE)
  apply blast
  apply ((rule allI)+, rule impI)
  apply (rotate_tac -2,
-        drule_tac m = n in nat_forall_spec, 
+        drule_tac x = n in spec, 
         rotate_tac -1,
-        drule_tac m = m in nat_forall_spec,
+        drule_tac x = m in spec,
         simp) 
  
 apply (simp only: Pseqh_def)
@@ -2982,15 +2981,15 @@ apply (rule conjI, rule allI)
 
 apply (simp only: Pseql_def)
  apply (rule allI)
- apply (rotate_tac -1, drule_tac m = N in nat_forall_spec)
+ apply (rotate_tac -1, drule_tac x = N in spec)
  apply (erule exE)
  apply (subgoal_tac "\<forall>n m. M < n \<and> M < m \<longrightarrow>
         P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>) 
           (ldeg_p R (Vr K v) X d (F n) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> (ldeg_p R (Vr K v) X d (F m)))")
  apply blast
  apply ((rule allI)+, rule impI, erule conjE)
- apply (rotate_tac -3, drule_tac m = n in nat_forall_spec,
-        rotate_tac -1, drule_tac m = m in nat_forall_spec, simp) 
+ apply (rotate_tac -3, drule_tac x = n in spec,
+        rotate_tac -1, drule_tac x = m in spec, simp) 
 
 apply (subst v_ldeg_p_mOp[of v R X], assumption+, simp+)
 
@@ -3030,15 +3029,15 @@ apply (frule Vr_ring[of v],
 apply (simp add:pol_limit_def)
 apply (rule conjI)
 apply (rule allI)
- apply (drule_tac m = n in nat_forall_spec,
-        drule_tac m = n in nat_forall_spec)
+ apply (drule_tac x = n in spec,
+        drule_tac x = n in spec)
 
  apply (simp add:Ring.ring_tOp_closed[of "R"])
 
 apply (rule allI)
  apply (rotate_tac 6,
-        drule_tac m = N in nat_forall_spec,
-        drule_tac m = N in nat_forall_spec)
+        drule_tac x = N in spec,
+        drule_tac x = N in spec)
  apply (erule exE, erule exE, rename_tac N M1 M2) 
  apply (subgoal_tac "\<forall>m. (max M1 M2) < m \<longrightarrow>
           P_mod R (Vr K v) X (vp K v\<^bsup> (Vr K v) (an N)\<^esup>)
@@ -3047,8 +3046,8 @@ apply (rule allI)
  
 apply (rule allI, rule impI, simp, erule conjE)
  apply (rotate_tac -4, 
-        drule_tac m = m in nat_forall_spec,
-        drule_tac m = m in nat_forall_spec, simp)
+        drule_tac x = m in spec,
+        drule_tac x = m in spec, simp)
  apply (subgoal_tac "(F m) \<cdot>\<^sub>r\<^bsub>R\<^esub> (G m) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> p1 \<cdot>\<^sub>r\<^bsub>R\<^esub> p2 =
              ((F m) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> p1) \<cdot>\<^sub>r\<^bsub>R\<^esub> (G m) \<plusminus>\<^bsub>R\<^esub>  p1 \<cdot>\<^sub>r\<^bsub>R\<^esub> ((G m) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> p2)", simp) 
  apply (frule_tac n = "an N" in vp_apow_ideal[of v])
@@ -3070,7 +3069,7 @@ apply (frule_tac I = "vp K v\<^bsup> (Vr K v) (an N)\<^esup>" and J = "carrier (
    rule aGroup.ag_pOp_closed, assumption+, simp, rule aGroup.ag_mOp_closed,
       assumption+) apply simp apply assumption
 apply (rotate_tac 8,
-       drule_tac m = m in nat_forall_spec)
+       drule_tac x = m in spec)
 apply (case_tac "G m = \<zero>\<^bsub>R\<^esub>", simp add:P_mod_def)
 apply (frule_tac p = "G m" in PolynRg.s_cf_expr[of R "Vr K v" X], assumption+,
        (erule conjE)+)
@@ -3105,8 +3104,8 @@ apply (simp, simp, simp, (erule conjE)+,
  apply (rule allI, rule impI)
  apply (simp add:PolynRg.pol_coeff_mem, assumption)  
 apply (simp add:Ring.idealprod_whole_l[of "Vr K v"]) 
-apply (drule_tac m = m in nat_forall_spec,
-       drule_tac m = m in nat_forall_spec)
+apply (drule_tac x = m in spec,
+       drule_tac x = m in spec)
 apply (frule aGroup.ag_mOp_closed[of R p1], assumption,
        frule aGroup.ag_mOp_closed[of R p2], assumption )
 apply (simp add:Ring.ring_distrib1 Ring.ring_distrib2)

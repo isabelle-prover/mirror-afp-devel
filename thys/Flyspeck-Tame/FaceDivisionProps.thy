@@ -1,4 +1,4 @@
-(*  ID:         $Id: FaceDivisionProps.thy,v 1.16.2.1 2009-04-29 05:06:16 lsf37 Exp $
+(*  ID:         $Id: FaceDivisionProps.thy,v 1.18 2009-08-27 17:49:29 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -2267,7 +2267,7 @@ done
 lemma rotate_before_vFrom:
   "\<lbrakk> distinct(vertices f); r \<in> \<V> f; r\<noteq>u \<rbrakk> \<Longrightarrow>
    before (verticesFrom f r) u v \<Longrightarrow> before (verticesFrom f v) r u"
-using [[fast_arith_neq_limit = 1]]
+using [[linarith_neq_limit = 1]]
 apply(frule split_list)
 apply(clarsimp simp:verticesFrom_Def)
 apply(rename_tac as bs)
@@ -2733,7 +2733,7 @@ done
 lemma Edges_compl:
  "\<lbrakk> distinct vs; x \<in> set vs; y \<in> set vs; x \<noteq> y \<rbrakk> \<Longrightarrow>
  Edges(x # between vs x y @ [y]) \<inter> Edges(y # between vs y x @ [x]) = {}"
-using [[fast_arith_neq_limit = 1]]
+using [[linarith_neq_limit = 1]]
 apply(subgoal_tac
  "!!xs (ys::vertex list). xs \<noteq> [] \<Longrightarrow> set xs \<inter> set ys = {} \<Longrightarrow> hd xs \<notin> set ys")
  prefer 2 apply(drule hd_in_set) apply(blast)
@@ -2885,7 +2885,7 @@ lemma triangle_if_3circular:
  "\<lbrakk> distinct[a,b,c]; distinct(vertices(f::face));
     (a,b) \<in> \<E> f; (b,c) \<in> \<E> f; (c,a) \<in> \<E> f \<rbrakk>
   \<Longrightarrow> \<E> f = {(a,b),(b,c),(c,a)}"
-using [[fast_arith_neq_limit = 10]]
+using [[linarith_neq_limit = 10]]
 apply(rule card_seteq[OF finite_edges, symmetric])
  apply simp
 apply(simp add:card_edges)
@@ -4142,7 +4142,7 @@ proof -
 qed
 
 lemma a: "distinct (vertices f) \<Longrightarrow> v \<in> \<V> f \<Longrightarrow> (\<forall>i \<in> set is. i < length (vertices f)) \<Longrightarrow>
- (\<And>a. a < length (vertices f) \<Longrightarrow> hideDupsRec ((f \<bullet> ^ a) v) [(f \<bullet> ^ k) v. k \<leftarrow> is] = natToVertexListRec a v f is)"
+ (\<And>a. a < length (vertices f) \<Longrightarrow> hideDupsRec ((f \<bullet> ^^ a) v) [(f \<bullet> ^^ k) v. k \<leftarrow> is] = natToVertexListRec a v f is)"
 proof (induct "is")
   case Nil then show ?case by simp
 next
@@ -5585,9 +5585,9 @@ proof -
    apply (subgoal_tac "verticesFrom f v' = (as @ [u]) @ v # bs") apply assumption
    apply simp apply (subgoal_tac "distinct (a @ v # b @ u # c)") apply force by simp
   note pre_add f
-  moreover
+  moreover(*
   have "\<And> m. {k. k < m} \<inter> {k. m \<le> k \<and> k < (m + n)} = {}" by auto
-  moreover
+  moreover*)
 
   from pre_add f help2 help1 "help" have "[countVertices g..<countVertices g + n] = [] \<Longrightarrow> (v, u) \<notin> edges f \<and> (u, v) \<notin> edges f"
     apply (cases "0 < n") apply (induct g) apply simp+
@@ -5618,11 +5618,9 @@ proof -
     apply (simp add: pre_subdivFace'_def)
     apply (unfold pre_splitFace_def)
     apply simp
-    apply (cases "0 < n") apply (induct g) apply simp+
-
-    apply (rule conjI) apply (induct g) apply simp
-    apply (rule ccontr) apply (elim conjE)
-    by (simp add: invalidVertexList_def is_duplicateEdge_def)
+    apply (cases "0 < n") apply (induct g) apply (simp add: ivl_disj_int)
+    apply (auto simp: invalidVertexList_def is_duplicateEdge_def)
+    done
 qed
 
 

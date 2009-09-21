@@ -1,5 +1,5 @@
 (*  Title:      Jinja/BV/BVExample.thy
-    ID:         $Id: BVExample.thy,v 1.8 2008-10-07 12:15:15 fhaftmann Exp $
+    ID:         $Id: BVExample.thy,v 1.12 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Gerwin Klein
 *)
 
@@ -495,7 +495,7 @@ definition some_elem :: "'a set \<Rightarrow> 'a" where
   "some_elem = (%S. SOME x. x : S)"
 
 consts_code
-  "some_elem" ("hd")
+  "some_elem" ("(case/ _ of/ {*Set*}/ xs/ =>/ hd/ xs)")
 
 (*<*)
 text {* This code setup is just a demonstration and \emph{not} sound! *}
@@ -516,7 +516,7 @@ lemma [code]:
     (\<lambda>(ss, w).
         let p = some_elem w in propa f (step p (ss ! p)) ss (w - {p}))
     (ss, w)"
-  unfolding iter_def is_empty_def some_elem_def ..
+  unfolding iter_def List_Set.is_empty_def some_elem_def ..
 
 lemma JVM_sup_unfold [code]:
  "JVM_SemiType.sup S m n = lift2 (Opt.sup
@@ -531,17 +531,17 @@ apply (unfold JVM_SemiType.sup_def JVM_SemiType.sl_def Opt.esl_def Err.sl_def
 lemmas [code] = SemiType.sup_def [unfolded exec_lub_def] JVM_le_unfold
 (*>*)
 
-lemmas [code ind_set] = rtrancl_refl converse_rtrancl_into_rtrancl
+lemmas [code_ind_set] = rtrancl_refl converse_rtrancl_into_rtrancl
 
 lemma [code]:
   "is_refT T = (case T of NT \<Rightarrow> True | Class C \<Rightarrow> True | _ \<Rightarrow> False)"
   by (simp add: is_refT_def split add: ty.split)
 
-lemma [code ind params: 1]: "P \<turnstile> C has_fields FDTs  \<Longrightarrow>
+lemma [code_ind params: 1]: "P \<turnstile> C has_fields FDTs  \<Longrightarrow>
   map_of (map (\<lambda>((F, D), T). (F, D, T)) FDTs) F = \<lfloor>(D, T)\<rfloor> \<Longrightarrow> P \<turnstile> C sees F:T in D"
   by (auto simp add: sees_field_def)
 
-lemma [code ind params: 1]: "P \<turnstile> C sees_methods Mm \<Longrightarrow>
+lemma [code_ind params: 1]: "P \<turnstile> C sees_methods Mm \<Longrightarrow>
   Mm M = \<lfloor>((Ts, T, m), D)\<rfloor> \<Longrightarrow> P \<turnstile> C sees M: Ts\<rightarrow>T = m in D"
   by (auto simp add: Method_def)
 
@@ -566,9 +566,7 @@ lemma [code]:
        | _ \<Rightarrow> False)))"
   by (fastsimp split add: ty.split_asm)
 
-declare field_def2 [code ind]
-
-declare minus_nat_code [code]
+declare field_def2 [code_ind]
 
 code_module BV
 contains

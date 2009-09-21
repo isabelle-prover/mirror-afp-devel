@@ -1,5 +1,5 @@
 (*  Title:       Countable Ordinals
-    ID:          $Id: OrdinalDef.thy,v 1.12 2009-03-02 22:01:43 nipkow Exp $
+    ID:          $Id: OrdinalDef.thy,v 1.13 2009-07-27 20:02:15 alexkrauss Exp $
     Author:      Brian Huffman, 2005
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
@@ -37,12 +37,12 @@ inductive_set ord0_leq :: "(ord0 \<times> ord0) set" where
   \<Longrightarrow> (x,y) \<in> ord0_leq"
 
 lemma ord0_leqI:
-"\<lbrakk>\<forall>a. (a,x) \<in> ord0_prec\<^sup>+ \<longrightarrow> (a,y) \<in> ord0_prec\<^sup>+ O ord0_leq\<rbrakk>
+"\<lbrakk>\<forall>a. (a,x) \<in> ord0_prec\<^sup>+ \<longrightarrow> (a,y) \<in> ord0_leq O ord0_prec\<^sup>+\<rbrakk>
  \<Longrightarrow> (x,y) \<in> ord0_leq"
 by (rule ord0_leq.intros, auto)
 
 lemma ord0_leqD:
-"\<lbrakk>(x,y) \<in> ord0_leq; (a,x) \<in> ord0_prec\<^sup>+\<rbrakk> \<Longrightarrow> (a,y) \<in> ord0_prec\<^sup>+ O ord0_leq"
+"\<lbrakk>(x,y) \<in> ord0_leq; (a,x) \<in> ord0_prec\<^sup>+\<rbrakk> \<Longrightarrow> (a,y) \<in> ord0_leq O ord0_prec\<^sup>+"
 by (ind_cases "(x,y) \<in> ord0_leq", auto)
 
 lemma ord0_leq_refl: "(x, x) \<in> ord0_leq"
@@ -61,7 +61,7 @@ lemma ord0_leq_trans[rule_format]:
  apply auto
 done
 
-lemma wf_ord0_leq: "wf (ord0_prec\<^sup>+ O ord0_leq)"
+lemma wf_ord0_leq: "wf (ord0_leq O ord0_prec\<^sup>+)"
  apply (unfold wf_def, clarify)
  apply (subgoal_tac "\<forall>z. (z,x) \<in> ord0_leq \<longrightarrow> P z")
   apply (drule spec, erule mp, rule ord0_leq_refl)
@@ -80,7 +80,7 @@ instantiation ord0 :: ord
 begin
 
 definition
-  ord0_less_def: "x < y \<longleftrightarrow> (x,y) \<in> ord0_prec\<^sup>+ O ord0_leq"
+  ord0_less_def: "x < y \<longleftrightarrow> (x,y) \<in> ord0_leq O ord0_prec\<^sup>+"
 
 definition
   ord0_le_def:   "x \<le> y \<longleftrightarrow> (x,y) \<in> ord0_leq"
@@ -96,7 +96,7 @@ lemma ord0_order_trans: "\<lbrakk>(x::ord0) \<le> y; y \<le> z\<rbrakk> \<Longri
 by (unfold ord0_le_def, rule ord0_leq_trans)
 
 lemma ord0_wf: "wf {(x,y::ord0). x < y}"
- apply (subgoal_tac "{(x,y). x < y} = ord0_prec\<^sup>+ O ord0_leq")
+ apply (subgoal_tac "{(x,y). x < y} = ord0_leq O ord0_prec\<^sup>+")
   apply (simp add: wf_ord0_leq)
  apply (auto simp add: ord0_less_def)
 done

@@ -1,58 +1,10 @@
 (*  Title:       Formalization of Schneider's generalized clock synchronization protocol.
-    ID:          $Id: GenClock.thy,v 1.6 2008-07-14 21:30:07 makarius Exp $
+    ID:          $Id: GenClock.thy,v 1.7 2009-04-29 20:01:46 nipkow Exp $
     Author:      Alwen Tiu, LORIA, June 11, 2005
     Maintainer:  Alwen Tiu <Alwen.Tiu at loria.fr>
 *)
 
 theory GenClock imports Complex_Main begin
-
-subsection {* Preliminary lemmas *}
-
-lemma AddMin: "\<forall> (x::real) (y::real). x + -y = x - y" by (simp)
-
-lemma AbsSym: "abs ( (x::real) - (y::real)) = abs (y - x)"
-by(simp add: real_abs_def)
-
-lemma Factor1: "(x :: real)*(y::real) - y = y*(x - 1)"
-proof-
-  have "(x + -1)*y = y*(x - 1)"
-    by (simp add: real_mult_commute AddMin)
-  thus "x*y - y = y*(x - 1)"
-    by (simp add: real_add_mult_distrib)
-qed
-
-lemma Factor2: "(x::real)*(1 - (y::real)) = x - x*y"
-proof-
-  from real_add_mult_distrib have "x*(1 + -y) = x + -x*y" 
-    by(auto simp add: real_mult_commute)
-  thus ?thesis by (simp add: AddMin)
-qed
-
-lemma obvious: "(x :: real)*(1 + y) - x*(1 - y) = 2*x*y"
-proof-
-  have "x*(1 + y) = x + x*y" 
-  proof-
-    have "x*(1 + y) = (1 + y)*x" 
-      by(simp add: real_mult_commute)
-    moreover
-    have "(1 + y)*x = x + y*x" 
-      by (simp add: real_add_mult_distrib)
-    moreover
-    have "x + y*x = x + x*y" by simp 
-    ultimately show ?thesis by simp
-  qed
-  moreover
-  have "x*(1 - y) = x - x*y"
-  proof-
-    have "x*(1 - y) = (1 - y)*x" by simp
-    moreover
-    have "(1 - y)*x = (1 + -y)*x" by simp
-    moreover
-    have "(1 + -y)*x = x - y*x" by (simp add: real_add_mult_distrib)
-    ultimately show ?thesis by simp
-  qed
-  ultimately show ?thesis by simp
-qed
 
 subsection{* Types and constants definitions *}
 
@@ -286,13 +238,13 @@ proof-
   proof-
     from PC_ie have Eq1: "\<bar> ?Bp - ?Bq \<bar> = ?Bp - ?Bq" by (simp add: real_abs_def)
     from corr_p ie rb1 have Eq2: "?Bp - ?Bq \<le> ?I*(1+\<rho>) - ?Bq" (is "?E1 \<le> ?E2")
-      by(simp add: AddMin rho_bound1_def)
+      by(simp add: diff_minus[symmetric] rho_bound1_def)
     from corr_q ie rb2 have "?I*(1 - \<rho>) \<le> ?Bq"
       by(simp add: rho_bound2_def)
     from this have Eq3: "?E2 \<le> ?I*(1+\<rho>) - ?I*(1 - \<rho>)"
       by(simp)
     have Eq4: "?I*(1+\<rho>) - ?I*(1 - \<rho>) = 2*\<rho>*?I"
-      by(simp add: obvious)
+      by(simp add: algebra_simps)
     from Eq1 Eq2 Eq3 Eq4 show ?thesis by simp
   qed
   moreover
@@ -324,7 +276,7 @@ proof-
     from this ie rb2 rb3 corr_p corr_q bd 
     have "\<bar>D q t - C p t\<bar>  \<le> \<bar>D q s - C p s\<bar> + 2*\<rho>*(t - s)"
       by simp
-    from this show ?thesis by (simp add: AbsSym)
+    from this show ?thesis by (simp add: abs_minus_commute)
   qed
 qed
 
@@ -533,7 +485,7 @@ proof-
       by (simp add: max_def)
     from this ok_pq ie1 ie2 corr_p corr_q 
     have "\<bar>VC q t - VC p t\<bar> \<le> \<delta>"
-      by(simp add: AbsSym okClocks_def)
+      by(simp add: abs_minus_commute okClocks_def)
   }
   thus ?thesis by (simp add: okClocks_def)
 qed
@@ -600,7 +552,7 @@ proof-
     from this have absEq2: "\<bar>?X - ?D\<bar> = ?D - ?X"
       by(simp add: real_abs_def)
     from ie corr_l rate_2 have bound3: "?D*(1 - \<rho>) \<le> ?X" by simp
-    from this have "?D - ?X \<le> ?D*\<rho>" by (simp add: Factor2)
+    from this have "?D - ?X \<le> ?D*\<rho>" by (simp add: algebra_simps)
     from this absEq2 D_beta show ?thesis by simp
   qed
 qed
@@ -791,11 +743,11 @@ proof-
       by(simp add: max_def)
 
     hence "\<bar>IC m i (te m i) - IC l i (te m i)\<bar> \<le> \<delta>S"
-      by (simp add: AbsSym)
+      by (simp add: abs_minus_commute)
     from this Eq1 corr_p corr_l corr_m pe_cond2 
     have "\<bar>\<theta> p (i+1) m - \<theta> p (i+1) l\<bar> \<le> ?Y"
       by(simp)
-    thus ?thesis by (simp add: AbsSym)
+    thus ?thesis by (simp add: abs_minus_commute)
   qed
 qed
 
@@ -1012,7 +964,7 @@ next
         from notA 
         have Eq2: "?E1 = \<bar>IC q (i+1) (te q (i+1)) - IC p (i+1) (te q (i+1))\<bar>" 
                   (is "?E1  = ?E3")
-          by (simp add: max_def AbsSym)
+          by (simp add: max_def abs_minus_commute)
         from notA have "?tp \<le> ?tq" by simp
         from this cp2 cq2 ind_hyp ie1 ie2 ie3 four_one_ind_half
         have "?E3 \<le> \<delta>S"
@@ -1361,7 +1313,7 @@ next
               ind_hyp1 t_bound1 t_bound21 
               corr_p corr_q tpq_bound four_two_ind
             have "\<bar>VC q t - VC p t\<bar> \<le> \<delta>" by(simp)
-            thus ?thesis by (simp add: AbsSym)
+            thus ?thesis by (simp add: abs_minus_commute)
           qed
 
         qed

@@ -1,4 +1,4 @@
-(*  ID:         $Id: DLO.thy,v 1.4 2008-12-30 15:30:13 ballarin Exp $
+(*  ID:         $Id: DLO.thy,v 1.5 2009-07-01 05:47:54 nipkow Exp $
     Author:     Tobias Nipkow, 2007
 *)
 
@@ -170,9 +170,7 @@ proof(induct f)
   case (Atom a)
   show ?case
   proof (cases a rule: amin_inf.cases)
-    case 1 thus ?thesis
-      by(simp add:nth_Cons')
-        (metis no_lb linorder_not_less antisym order_less_trans)
+    case 1 thus ?thesis by(auto simp add:nth_Cons' linorder_not_less)
   next
     case 2 thus ?thesis
       by (simp) (metis no_lb linorder_not_less order_less_le_trans)

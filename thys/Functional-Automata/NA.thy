@@ -1,4 +1,4 @@
-(*  ID:         $Id: NA.thy,v 1.6 2007-07-22 20:44:19 makarius Exp $
+(*  ID:         $Id: NA.thy,v 1.7 2009-07-27 20:02:15 alexkrauss Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
@@ -27,14 +27,14 @@ definition
 consts steps :: "('a,'s)na => 'a list => ('s * 's)set"
 primrec
 "steps A [] = Id"
-"steps A (a#w) = steps A w  O  step A a"
+"steps A (a#w) = step A a  O  steps A w"
 
 lemma steps_append[simp]:
- "steps A (v@w) = steps A w  O  steps A v";
+ "steps A (v@w) = steps A v  O  steps A w";
 by(induct v, simp_all add:O_assoc)
 
 lemma in_steps_append[iff]:
-  "(p,r) : steps A (v@w) = ((p,r) : (steps A w O steps A v))"
+  "(p,r) : steps A (v@w) = ((p,r) : (steps A v O steps A w))"
 apply(rule steps_append[THEN equalityE])
 apply blast
 done

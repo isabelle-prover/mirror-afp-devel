@@ -1,5 +1,5 @@
 (*  Title:       Binary Search Trees, Tactic-Style
-    ID:          $Id: BinaryTree_TacticStyle.thy,v 1.6 2008-06-21 18:13:20 makarius Exp $
+    ID:          $Id: BinaryTree_TacticStyle.thy,v 1.7 2009-06-19 19:08:25 fhaftmann Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL
@@ -144,9 +144,10 @@ lemma "t ~= Tip ==> remrm t = (rem t, rm t)"
 by (induct t) (auto simp:Let_def)
 
 text {* We can test this implementation by generating code. *}
-code_module Generated
-file "BinaryTree_TacticStyle_Code.ML"
-contains
-  test = "memb 4 (remove (3::nat) (binsert 4 (binsert 3 Tip)))"
+
+definition "test = memb 4 (remove (3::nat) (binsert 4 (binsert 3 Tip)))"
+
+export_code test
+  in SML module_name BinaryTree_TacticStyle_Code file "BinaryTree_TacticStyle_Code.ML"
 
 end

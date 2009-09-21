@@ -6,7 +6,7 @@
 
 header {* \isaheader{Compilation Stage 1} *}
 
-theory Compiler1 imports PCompiler J1 Index begin
+theory Compiler1 imports PCompiler J1 ListIndex begin
 
 definition fresh_var :: "vname list \<Rightarrow> vname"
 where "fresh_var Vs \<equiv> foldr op @ Vs ''V''"

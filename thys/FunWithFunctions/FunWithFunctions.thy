@@ -1,5 +1,5 @@
 (*  Title:      Fun With Functions
-    ID:         $Id: FunWithFunctions.thy,v 1.3 2009-01-31 11:09:39 nipkow Exp $
+    ID:         $Id: FunWithFunctions.thy,v 1.4 2009-06-24 11:23:55 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -26,7 +26,7 @@ proof -
     qed }
   hence "\<And>n. n \<le> f(n)" by simp
   hence "\<And>n. f(n) < f(Suc n)" by(metis fff order_le_less_trans)
-  hence "f(n) < n+1" by (metis fff lift_Suc_mono_less_iff[of f] Suc_plus1)
+  hence "f(n) < n+1" by (metis fff lift_Suc_mono_less_iff[of f] Suc_eq_plus1)
   with `n \<le> f(n)` show "f n = n" by arith
 qed
 

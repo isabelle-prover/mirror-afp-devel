@@ -1,4 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.14 2008-10-09 13:27:33 fhaftmann Exp $
+(*  ID:         $Id: ListAux.thy,v 1.15 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -10,7 +10,7 @@ begin
 
 declare Let_def[simp]
 
-declare comp_def[code unfold, code inline del]
+declare comp_def[code_unfold, code_inline del]
 
 subsection {* HOL *}
 
@@ -23,7 +23,7 @@ lemmas conj_aci = conj_comms conj_assoc conj_absorb conj_left_absorb
 definition enum :: "nat \<Rightarrow> nat set" where
   [code del]: "enum n = {..<n}"
 
-declare enum_def [symmetric, code unfold]
+declare enum_def [symmetric, code_unfold]
 
 lemma [code]:
   "enum 0 = {}"

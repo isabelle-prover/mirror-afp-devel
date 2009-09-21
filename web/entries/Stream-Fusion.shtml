@@ -79,7 +79,7 @@
 <!-- entry directory name: -->
 <!--#set var="name" value="Stream-Fusion" -->
 
-<!--#set var="binfo" value="../browser_info/current/HOLCF/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -111,6 +111,6 @@
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2009-05-13 07:01:55 $, $Revision: 1.1 
+<div align="right" class="date">$Date: 2009-05-25 01:23:57 $, $Revision: 1.1 
 $</div></body>
 </html>

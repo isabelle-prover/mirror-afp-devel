@@ -1,4 +1,4 @@
-(*  ID:         $Id: AutoRegExp.thy,v 1.12 2008-06-12 06:57:17 lsf37 Exp $
+(*  ID:         $Id: AutoRegExp.thy,v 1.14 2009-08-11 09:46:50 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
