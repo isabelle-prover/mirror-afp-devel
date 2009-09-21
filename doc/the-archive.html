@@ -32,7 +32,7 @@ archive. Once it has been installed, it will be announced on isabelle-users.
 <li>Referee for content and form</li>
 <li>Check if submission works with current released version of Isabelle.</li>
 <li>Make sure submitter agrees to BSD or LGPL and potentially maintenance.</li>
-<li>Check submission into cvs (as release and development,
+<li>Check submission into repository (as release and development,
    we do this, not the submitters)</li>
 <li>Make available on web page</li>
 <li>Give out maintenance access to submitter on development version</li>
@@ -66,20 +66,20 @@ on the main page).
 <li>maintainters (former submitters, Isabelle team)
 <ul>
   <li>responsibility: keep development branch up to date with Isabelle</li>
-  <li>access: cvs read/write on own submission (more if active)</li>
+  <li>access: repository read/write</li>
 </ul>
 </li>
 <li>user (everybody)
   <ul>
   <li>responsibility: use archive</li>
   <li>access: download via web page,
-              anonymous cvs read only of devel version available</li>
+              anonymous hg read only of devel version available</li>
 </ul>
 </li>
 </ul>
 
 <p><b>Maintenance:</b> Usually only on development version of archive (in
-CVS). Released version of existing submissions should be stable.
+mercurial default branch). Released version of existing submissions should be stable.
 </p>
 
 <p><b>Maintenance responsibility:</b> Mixed. Simple fixes by us, anything else
@@ -107,24 +107,21 @@ time to update their contributions.
 <li>the current release version of the archive will be updated multiple
   times in its live: for each submission and each time a maintainer
   fixes a broken submission (broken e.g. because they did not make the
-  Isabelle release deadline). It would be nice to have some automation
-  here (step 5 of submission procedure should be as simple as a cvs tag
-  or make or similar).
+  Isabelle release deadline). 
 </li>
 <li>submissions that do not work at release time are dropped from the
   archive (only temporarily until fixed, but things that don't work are
   never visible on the web page).
 </li>
-<li>there is a development version of the archive that is not visible on
-  the web (or only in the form of a development snapshot). It is in CVS
-  and this is where the maintainers work. It becomes the release version
-  when a new Isabelle version is released. How closely it is in sync with
-  the Isabelle development version is the choice of each maintainer in a
-  spectrum from very loose (only fix archive submission after Isabelle
-  feature freeze) to very close (always fix archive submission after each
-  Isabelle change). Very close should be the case for widely used base
-  libraries, very loose is ok for standalone developments.
+<li>there is a development version of the archive that is not visible on the
+web (or only in the form of a development snapshot). It is in the repository
+and this is where the maintainers work. It becomes the release version when a
+new Isabelle version is released. How closely it is in sync with the Isabelle
+development version is the choice of each maintainer in a spectrum from very
+loose (only fix archive submission after Isabelle feature freeze) to very
+close (always fix archive submission after each Isabelle change). Very close
+should be the case for widely used base libraries, very loose is ok for
+standalone developments. 
 </li></ul>
-
 </body>
 </html>
