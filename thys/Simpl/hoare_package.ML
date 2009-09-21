@@ -1,5 +1,5 @@
 (*  Title:      hoare_package.ML
-    ID:         $Id: hoare_package.ML,v 1.57 2009-08-28 16:22:59 makarius Exp $
+    ID:         $Id$
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -23,11 +23,17 @@ USA
 structure HoarePackage =
 struct
 
+(* Misc *)
+
 val use_generalise = ref false;
 val sort_variables = ref true;
 val use_cond_inv_modifies = ref true;
+val trace_hoare = ref false;
 
-open Library
+val foldl = Library.foldl;
+val foldr = Library.foldr;
+val take = Library.take;
+val drop = Library.drop;
 
 val call_prfx = "_Call_";
 val call_ass_prfx = "_CallAss_";
@@ -55,7 +61,6 @@ val modifysfx = "_modifies";
 val modexN = "Hoare.mex";
 val modeqN = "Hoare.meq";
 
-
 val updatesfx = "_update";
 val hoarePartialN = "HoarePartial";
 val hoareTotalN = "HoareTotal";
@@ -64,12 +69,43 @@ val modretN = "return'";
 val KNF = "StateFun.K_statefun"
 
 
-val trace_hoare = ref false;
+(* Some abstract syntax operations *)
+
+val Trueprop = HOLogic.mk_Trueprop;
+fun All xs t = Term.list_all_free (xs, t);
+
+infix 0 ===;
+val (op ===) = Trueprop o HOLogic.mk_eq;
+
+fun is_empty_set (Const (@{const_name Orderings.bot}, _)) = true
+  | is_empty_set _ = false;
+
+fun mk_Int Ts A B = let val T = fastype_of1 (Ts, A)
+  in Const (@{const_name Set.inter}, T --> T --> T) $ A $ B end;
+
+fun mk_Un T (A, B) = Const (@{const_name Set.union}, T --> T --> T) $ A $ B;
+
+fun dest_Un (Const (@{const_name Set.union}, _) $ t1 $ t2) = dest_Un t1 @ dest_Un t2
+  | dest_Un t = [t]
+
+fun UN_const (dT as (Type ("fun", [dT', @{typ bool}]))) rT =
+      Const (@{const_name Complete_Lattice.SUPR}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name Orderings.top}, dT)
+  | UN_const _ _ = raise Match;
+
+fun mk_UN (x, T, P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x, T, P);
+
+fun dest_UN (Const (@{const_name Complete_Lattice.SUPR}, _) $ Const (@{const_name Orderings.top}, _) $ Abs (x, T, t)) =
+      let val (vars, body) = dest_UN t
+      in ((x, T) :: vars, body) end
+  | dest_UN t = ([], t);
+
+fun tap_UN (Const (@{const_name Complete_Lattice.SUPR}, _) $ Const (@{const_name Orderings.top}, _) $ t) = SOME t
+  | tap_UN _ = NONE;
+
 
 (* Fetching the rules *)
 
 datatype hoareMode = Partial | Total
-
 
 fun get_rule p t Partial = p
   | get_rule p t Total   = t
@@ -1666,20 +1702,6 @@ fun split_pair_apps thm =
        (instantiate ([],subst) thm)
   end;
 
-val Trueprop = HOLogic.mk_Trueprop;
-fun All xs t = Term.list_all_free (xs, t);
-
-
-infix 0 ===;
-val (op ===) = Trueprop o HOLogic.mk_eq;
-
-
-fun UN_const (dT as (Type ("fun", [dT', @{typ bool}]))) rT =
-      Const (@{const_name UNION}, dT --> (dT' --> rT) --> rT) $ Const (@{const_name Orderings.top}, dT)
-  | UN_const _ _ = raise Match;
-
-fun mk_UN (x,T,P) = UN_const (HOLogic.mk_setT T) (fastype_of P) $ absfree (x,T,P);
-
 fun prove_standard thy xs asms prop tac
  = Drule.standard (Goal.prove_global thy xs asms prop tac);
 
@@ -1797,13 +1819,7 @@ fun gen_call_rec_rule specs_name n rule =
                  mk_var i "Q" (zT --> assT)$Bound 0,
                  mk_var i "A" (zT --> assT)$Bound 0];
          val single = HOLogic.mk_set quadT [quadruple];
-     in Const (@{const_name UNION}, HOLogic.mk_setT zT --> (zT --> quadT_set) --> quadT_set)$
-         Const (@{const_name Orderings.top}, HOLogic.mk_setT zT) $
-          Abs("Z",zT,single)
-     end;
-
-     fun mk_Un T (A,B) = Const (@{const_name union}, T --> T --> T)$A$B;
-
+     in UN_const (HOLogic.mk_setT zT) quadT_set $ Abs("Z", zT, single) end;
 
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
      val rule' =
@@ -2038,15 +2054,7 @@ fun gen_context_thms ctxt thy mode params G T F =
   let
     val Type (_,[comT]) = range_type (fastype_of G);
 
-    fun destUn (Const (@{const_name union}, _) $ t1 $ t2) = destUn t1 @ destUn t2
-      | destUn t = [t]
-
-    fun destUNION (Const (@{const_name UNION}, _) $ Const (@{const_name Orderings.top}, _) $ Abs (x, T, t)) =
-         let val (vars,body) = destUNION t
-         in ((x, T) :: vars, body) end
-      | destUNION t = ([],t)
-
-    fun destQuadruple (Const (@{const_name insert},_) $ PpQA $ Const (@{const_name Orderings.bot}, _)) = PpQA
+    fun destQuadruple (Const (@{const_name Set.insert},_) $ PpQA $ Const (@{const_name Orderings.bot}, _)) = PpQA
       | destQuadruple t = raise Match;
 
     fun mkCallQuadruple (Const (@{const_name Pair}, _) $ P $ (Const (@{const_name Pair}, _)
@@ -2078,9 +2086,9 @@ fun gen_context_thms ctxt thy mode params G T F =
       end;
 
     fun hoare_context_specs thy mode G T F =
-      let fun mk t = (SOME o mkHoare mode G T F o apsnd destQuadruple o destUNION) t
+      let fun mk t = (SOME o mkHoare mode G T F o apsnd destQuadruple o dest_UN) t
                      handle _ => NONE
-      in List.mapPartial mk (destUn T) end;
+      in List.mapPartial mk (dest_Un T) end;
 
 
     fun mk_prove ctxt mode (prop,params) =
@@ -2180,9 +2188,6 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                  SOME s => SOME s
                | NONE =>  try (ProofContext.get_thm ctxt) (suffix spec_sfx pname'));
 
-    fun dest_UN (Const (@{const_name UNION}, _) $ Const (@{const_name Orderings.top}, _) $ t) = SOME t
-      | dest_UN _ = NONE;
-
     fun auxvars_for p t =
          (case first_subterm_dest (try dest_call) t of
            SOME (vars,(_,p',_,_,m,_)) => (if m=Static andalso
@@ -2192,7 +2197,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
           | NONE => NONE);
 
     fun get_auxvars_for p t =
-          (case (List.mapPartial ((auxvars_for p) o snd) (max_subterms_dest dest_UN t)) of
+          (case (List.mapPartial ((auxvars_for p) o snd) (max_subterms_dest tap_UN t)) of
             (vars::_) => vars
            | _ => []);
 
@@ -2310,11 +2315,10 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                            => if proc_name m p = pname
                               then if (mode=Total andalso spec_mode=Partial)
                                    then (warning msg;(true,NONE,NONE,false))
-                                   else case spec_abr of
-                                          (Const (@{const_name Orderings.bot}, _)) =>
+                                   else if is_empty_set spec_abr then
                                             (false,SOME spec_mode,
                                               SOME (spec' s spec_mode false),spec_has_args)
-                                        | _ => (true,SOME spec_mode,
+                                        else (true,SOME spec_mode,
                                                  SOME (spec' s spec_mode true),spec_has_args)
                               else (warning msg;(true,NONE,NONE,false));
 
@@ -2430,9 +2434,9 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
         let
           val (_,call,modif_spec_nrm,modif_spec_abr,modif_spec_mode,G,Theta,_) =
                 dest_hoare (concl_of modifies_thm);
-          val is_abr = case modif_spec_abr of (Const (@{const_name Orderings.bot},_)) => false | _ => true;
-          val emptyTheta = case Theta of (Const (@{const_name Orderings.bot},_)) => true | _ => false;
-          (*val emptyFaults = case F of (Const (@{const_name Orderings.bot}, _)) => true | _ => false;*)
+          val is_abr = not (is_empty_set modif_spec_abr);
+          val emptyTheta = is_empty_set Theta;
+          (*val emptyFaults = is_empty_set F;*)
           val spec_has_args = #6 (dest_call call);
           val () = if spec_has_args
               then error "procedure call in modifies-specification must be parameterless!"
@@ -2616,14 +2620,9 @@ fun guard_tac strip cont_tac mode (t,i) =
                  solve_in_Faults_tac (i+2),
                  cont_tac (i+1),
                  triv_simp i]
-  in
-      case F of
-       (Const (@{const_name Orderings.bot},_)) => EVERY [trace_tac "Guard: basic_tac", basic_tac i]
-      | _ => EVERY [trace_tac "Guard: trying guarantee_tac",
-                    guarantee_tac i ORELSE basic_tac i]
-
-  end
-  handle TERM _ => no_tac
+  in if is_empty_set F then EVERY [trace_tac "Guard: basic_tac", basic_tac i]
+    else EVERY [trace_tac "Guard: trying guarantee_tac", guarantee_tac i ORELSE basic_tac i]
+  end handle TERM _ => no_tac
 end;
 
 val wf_tac = simp_tac (HOL_basic_ss addsimps [wf_measure,wf_lex_prod,wf_same_fst,
@@ -2688,9 +2687,6 @@ fun while_tac ctxt state_kind inv cont_tac tac mode t i=
     end
     handle TERM _ => no_tac
 
-fun mkIntersect Ts A B =
-  let val T = fastype_of1 (Ts, A) in Const (@{const_name inter}, T --> T --> T) $ A $ B end;
-
 fun dest_split (Abs (x,T,t)) =
      let val (vs,recomb,bdy) = dest_split t;
      in ((x,T)::vs,fn t' => Abs (x,T,recomb t'),bdy) end
@@ -2704,7 +2700,7 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
     val (_,c,_,_,_,_,_,F) = dest_hoare (Logic.strip_assums_concl t);
     val (SOME grds,_,I,_,_,fix) = dest_whileAnno c;
     val Rule = if fix then WhileAnnoGFix mode else WhileAnnoG mode;
-    fun extract_faults (Const (@{const_name insert}, _) $ t $ _) = [t]
+    fun extract_faults (Const (@{const_name Set.insert}, _) $ t $ _) = [t]
       | extract_faults _ = [];
     fun leave_grd fs (Const (@{const_name Pair}, _) $ f $ g) =
           if member (op =) fs f andalso strip_guards then NONE else SOME g
@@ -2714,7 +2710,7 @@ fun whileAnnoG_tac ctxt strip_guards mode t i st =
     val (I_vs,I_recomb,I') = dest_split I;
     val grds' = map_filter (leave_grd (extract_faults F)) (HOLogic.dest_list grds);
     val pars = (Logic.strip_params (Logic.get_goal (prop_of st) i));
-    val J = list_abs (pars,I_recomb (fold_rev (mkIntersect (map snd (pars@I_vs))) grds' I'));
+    val J = list_abs (pars,I_recomb (fold_rev (mk_Int (map snd (pars@I_vs))) grds' I'));
     val cterm = Thm.cterm_of (ProofContext.theory_of ctxt);
     val WhileG = Thm.lift_rule (Thm.cprem_of st i) Rule;
     val invVar = (fst o strip_comb o #3 o dest_whileAnno o (fn xs => nth xs 1) o snd
@@ -3287,7 +3283,7 @@ fun ex_tac vs st =
     val sT = domain_type (domain_type exT);
     val flds = fst (Record.get_recT_fields thy sT);
 
-    val s0 = Const (@{const_name undefined},sT);
+    val s0 = Const (@{const_name HOL.undefined},sT);
 
     fun streq (s1:string,s2) = s1=s2 ;
     fun mk_init []      = []
