@@ -56,8 +56,8 @@
     be up to date with the current Isabelle development
     version. Authors can contribute changes to this version which is
     available over <a
-    href="http://sourceforge.net/cvs/?group_id=101909">sourceforge
-    cvs</a> or as tar.gz package on the <a
+    href="http://sourceforge.net/projects/afp/develop">sourceforge
+    mercurial</a> or as tar.gz package on the <a
     href="download.shtml">download page</a>.
     </li>
     <li>
@@ -77,13 +77,15 @@
     </p>
     <p>
     To achieve this, you should base your changes on the <a
-    href="http://sourceforge.net/cvs/?group_id=101909">cvs version</a>
+    href="http://sourceforge.net/projects/afp/develop">mercurial 
+    development version</a>
     of your AFP entry and test it against the current <a
     href="http://isabelle.in.tum.de/devel/">Isabelle development
     version</a>.
     </p>
     <p>
-    If you would like to get cvs write access to you entry or need
+    If you would like to get write access to your entry in the 
+    mercurial repository or if you need
     assistance, please contact the <a href="about.shtml#editors">editors</a>.
     </p>
 
