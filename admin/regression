@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.32.2.1 2009-08-09 12:01:55 lsf37 Exp $
+# $Id: regression,v 1.32 2008/10/13 14:19:30 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
@@ -25,10 +25,17 @@ REPORT=~/afp-log/report
 SHORT=at-poly
 SETTINGS=~/settings/$SHORT
 
-TMP=/tmp/regression.mail.tmp
-while [ -e $TMP ]; do TMP=$TMP.x; done
+function fail()
+{
+  echo "$1" >&2
+  exit 2
+}
+
+TMP=`mktemp -q /tmp/afp-regression.mail.XXXXXX` \
+ || fail "could not make tmp file"
 
 #
+
 PRG="$(basename "$0")"
 
 ## functions
@@ -45,12 +52,6 @@ function usage()
   exit 1
 }
 
-function fail()
-{
-  echo "$1" >&2
-  exit 2
-}
-
 ## 
 
 if [ "$1" == "-f" ]; then
@@ -61,7 +62,6 @@ fi
 [ "$#" != "1" -o "$1" = "-?" ] && usage
 
 if [ "$1" == "-" ]; then
-  TAG="-A"
   AFP_VER="development"
   WORKING_COPY=$WORKING_COPY/devel
   ISABELLE_TOOL=$ISABELLE_DEVEL/bin/isabelle
@@ -83,10 +83,9 @@ if [ "$1" == "-" ]; then
   [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
 
 else
-  TAG="-r $1"
   AFP_VER="release ($1)"
   WORKING_COPY=$WORKING_COPY/release
-  ISABELLE_TOOL=$ISABELLE_RELEASES/$1/bin/isabelle
+  ISABELLE_TOOL=$ISABELLE_RELEASES/$1/bin/isatool
   ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$ISABELLE_RELEASES/$1/heaps/$ML_IDENTIFIER/"
   LOG=$LOG-$1-$DATE.log
@@ -96,15 +95,15 @@ fi
 . $WORKING_COPY/admin/main-config || fail "could not read main-config."
 MAIL=$WORKING_COPY/admin/mail-attach
 
-echo "Start test at `date`, $HOSTNAME" > $LOG
+echo "Start test for $WORKING_COPY at `date`, $HOSTNAME" > $LOG
 echo >> $LOG
-echo "begin cvs update" >> $LOG
+echo "begin hg pull/update" >> $LOG
 
-# cvs update to newest version of archive 
+# hg pull -u to newest version of archive 
 cd $WORKING_COPY || fail "could not cd to $WORKING_COPY"
-cvs -q up -P -d $TAG >> $LOG 2>&1 || fail "could not CVS update."
+hg pull -u -q >> $LOG 2>&1 || fail "could not hg pull."
 
-echo "end cvs update" >> $LOG
+echo "end hg pull/update" >> $LOG
 echo >> $LOG
 
 # run test
@@ -154,7 +153,7 @@ To reproduce the error, check out the $AFP_VER version of the
 archive from sourceforge and run "isabelle make" on your session.
 
 This is an automatically generated email. To switch off these 
-notifications, edit thys/$E/config and cvs commit the changes.
+notifications, edit thys/$E/config and hg commit and push the changes.
 
 Have a nice day,
   isatest
@@ -182,7 +181,7 @@ if [ "$SNAPSHOT" == "1" ]; then
     AFPRELEASE=$WEB/release
     mkdir -p $AFPRELEASE
     cp $REPORT $AFPRELEASE/$STATUS
-    cvs -Q export -D now -d $EXPORT thys web
+    hg archive -q -I thys -I web $EXPORT
     
     # update status report
     cp $REPORT $EXPORT/$STATUS
@@ -196,7 +195,7 @@ if [ "$SNAPSHOT" == "1" ]; then
 
     cd $EXPORT/thys
     for DIR in `ls -d *`; do
-        if [ -d $DIR -a "$DIR" != "CVS" ]; then
+        if [ -d $DIR ]; then
             TF=afp-$DIR-devel.tar
             tar -cf $TF $DIR
             gzip --best -f $TF
