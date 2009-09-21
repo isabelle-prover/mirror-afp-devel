@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #
-# $Id: testall,v 1.16 2009/06/08 08:50:55 fhaftmann Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Tests all entries in Archive of Formal Proofs

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #
-# $Id: regression,v 1.32 2008/10/13 14:19:30 lsf37 Exp $
 # Author: Gerwin Klein, NICTA
 #
 # Automated regression test to be run from cron.
