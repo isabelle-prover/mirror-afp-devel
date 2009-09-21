@@ -1,5 +1,5 @@
 (*  Title:       Binary Search Trees, Isar-Style
-    ID:          $Id: BinaryTree.thy,v 1.9 2008-06-21 18:13:19 makarius Exp $
+    ID:          $Id: BinaryTree.thy,v 1.10 2009-06-19 19:08:24 fhaftmann Exp $
     Author:      Viktor Kuncak, MIT CSAIL, November 2003
     Maintainer:  Larry Paulson <Larry.Paulson at cl.cam.ac.uk>
     License:     LGPL
@@ -794,9 +794,9 @@ corollary remove_spec: "sortedTree h t -->
      setOf (remove h e t) = setOf t - eqs h e"
 by (simp add: remove_sort remove_set)
 
-code_module Generated
-file "BinaryTree_Code.ML"
-contains
-  test = "tlookup id 4 (remove id 3 (binsert id 4 (binsert id 3 Tip)))"
+definition "test = tlookup id 4 (remove id 3 (binsert id 4 (binsert id 3 Tip)))"
+
+export_code test
+  in SML module_name BinaryTree_Code file "BinaryTree_Code.ML"
 
 end

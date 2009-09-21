@@ -1,11 +1,11 @@
 (*  Title:       An Example of a Cofinitary Group in Isabelle/HOL
-    ID:          $Id: CofGroups.thy,v 1.1.2.4 2009-09-05 10:00:30 lsf37 Exp $
+    ID:          $Id: CofGroups.thy,v 1.6 2009-09-05 14:20:05 lsf37 Exp $
     Author:      Bart.Kastermans at colorado.edu, 2009
     Maintainer:  Bart.Kastermans at colorado.edu
 *)
 
 theory CofGroups
-imports Main
+imports Main Nat_Int_Bij
 begin;
 
 section {* Introduction *}
@@ -72,12 +72,10 @@ finitely many fixed points).  In Section \ref {sect:Ex1Closed} we show
 this set is closed under composition and inverse, in effect showing
 that it is a ``cofinitary group'' (cofinitary group here is in quotes,
 since we only define it for sets of permutations on the natural
-numbers).  In Section \ref {sect:moveNN} we define a bijection @{term
-ni_bij} from the natural numbers to the integers and show some of its
-general properties.  We also show there the general theorem that
+numbers).  In Section \ref {sect:moveNN} we show the general theorem that
 conjugating a permutation by a bijection does the expected thing to
 the set of fixed points.  In Section \ref {sect:bijN} we define the
-functino @{term CONJ} that is conjugation by @{term ni_bij}, show that
+function @{term CONJ} that is conjugation by @{term ni_bij} (a bijection from @{typ nat} to @{typ int}), show that
 is acts well with respect to the group operations, use it to define
 @{term Ex2} which is the underlying set of the cofinitary group we are
 construction, and show the basic properties of @{term Ex2}.  Finally
@@ -540,170 +538,18 @@ qed;
 
 
 
-section {* Move onto the Natural Numbers *}
+section {* Conjugation with a Bijection *}
 
-text {* \label {sect:moveNN} We define a bijection from the natural
-numbers to the integers.  This will be used to coerce the functions
-above to be on the natural numbers. *}
+text {* \label {sect:moveNN} An abbreviation of the bijection from the
+natural numbers to the integers defined in the library.  This will be
+used to coerce the functions above to be on the natural numbers. *}
 
-definition ni_bij:: "nat \<Rightarrow> int"
-where
-"ni_bij n = (if ((n mod (2)) = 0) 
-              then int (n div 2)  
-              else -int (n div 2) - 1)"
-
-declare ni_bij_def [simp] -- "automated tools can use the definition";
-
-text {* Under this bijection the even natural numbers map to the
-positive integers, e.g. @{term "ni_bij 0"} is $0$, @{term "ni_bij 4"}
-is $2$.  The odd natural numbers map to the negative integers, e.g.
-@{term "ni_bij 1"} is $-1$, and @{term "ni_bij 3"} is $-3$. *}
-
-text {* We prove a couple of simple facts on modular arithmetic that
-we'll use to prove properties of @{term ni_bij}. *}
-
-lemma mod_cases: "(n::nat) mod 2 = 1 \<or> n mod 2 = 0" by arith;
-
-lemma mod_neg: "n mod 2 = 1 \<Longrightarrow> ni_bij n < 0"
-proof -
-  assume "n mod 2 = 1"
-  with ni_bij_def 
-    have eq: "ni_bij n = -int (n div 2) - 1" by auto;
-  moreover
-  have "-int (n div 2) - 1 < 0" by arith;
-  ultimately
-  show "ni_bij n < 0" by auto;
-qed;
-
-lemma mod_pos: "n mod 2 = 0 \<Longrightarrow> ni_bij n \<ge> 0"
-proof -
-  assume "n mod 2 = 0"
-  with ni_bij_def
-    have "ni_bij n = int(n div 2)" by auto;
-  moreover
-  have "int(n div 2) \<ge> 0" by auto;
-  ultimately show "ni_bij n \<ge> 0" by auto;
-qed;
-
-lemma im_neg_mod: "ni_bij n < 0 \<Longrightarrow> n mod 2 = 1"; 
-proof -
-  assume output_neg: "ni_bij n < 0";
-  have "n mod 2 \<noteq> 0"
-  proof (rule contrapos_nn [of "ni_bij n \<ge> 0"]);
-    from mod_pos and output_neg show "\<not>(0 \<le> ni_bij n)" by arith;
-  next
-    from mod_pos show "n mod 2 = 0 \<Longrightarrow> ni_bij n \<ge> 0" .;
-  qed;
-  with mod_cases show "n mod 2 = 1" by auto;
-qed;
-
-lemma im_notneg_mod: "ni_bij n \<ge> 0 \<Longrightarrow> n mod 2 = 0";
-proof -
-  assume output_notneg: "ni_bij n \<ge> 0"
-  have "n mod 2 \<noteq> 1"
-  proof (rule contrapos_nn [of "ni_bij n < 0"])
-    from mod_neg and output_notneg show "\<not>( ni_bij n < 0)" by arith;
-  next
-    from mod_neg show "n mod 2 = 1 \<Longrightarrow> ni_bij n < 0" .;
-  qed;
-  with mod_cases show "n mod 2 = 0" by auto;
-qed;
-
-lemma mod_rule_needed: "(k::nat) mod 2 = 0 \<and> k > 0 \<Longrightarrow> (k - 1) mod 2 = 1"
-proof -
-  assume "(k::nat) mod 2 = 0 \<and> k > 0";
-  thus "(k - 1) mod 2 = 1" by arith;
-qed;
-
-text {* With these facts we can show @{term ni_bij} is a bijection.
-The proof is really just a matter of (un)folding definitions, and some
-computations. *}
-
-theorem ni_bij_bij: "bij ni_bij";
-proof (unfold bij_def, rule conjI);
-
-  show INJ: "inj ni_bij"
-  proof (rule injI)
-    fix x::nat and y::nat
-    assume eq_ass: "ni_bij x = ni_bij y";
-    show "x = y"
-    proof cases
-      assume "ni_bij x < 0"
-      with im_neg_mod have x_mod: "x mod 2 = 1" .;
-      hence x_eq: "ni_bij x = -int(x div 2) - 1" by simp;
-      moreover
-      with eq_ass have "ni_bij y < 0" by auto;
-      with im_neg_mod have y_mod: "y mod 2 = 1" .;
-      hence "ni_bij y = -int(y div 2) - 1" by simp;
-      ultimately
-      have "x div 2 = y div 2" using eq_ass by auto;
-      moreover
-      from x_mod and y_mod have "x mod 2 = y mod 2" by auto;
-      ultimately show "x = y" by arith;
-    next
-      assume "\<not>(ni_bij x < 0)"
-      hence im_x_notneg: "ni_bij x \<ge> 0" by auto;
-      with eq_ass have "ni_bij y \<ge> 0" by auto;
-      with im_notneg_mod have y_mod: "(y mod 2) = 0" .;
-      from im_notneg_mod and im_x_notneg have x_mod: "x mod 2 = 0" .;
-      hence ni_bij_x_ex: "ni_bij x = int(x div 2)" by auto;
-      from y_mod
-        have "ni_bij y = int(y div 2)" by auto;
-      with eq_ass and ni_bij_x_ex 
-        have "x div 2 = y div 2" by auto;
-      moreover
-      from x_mod and y_mod have "x mod 2 = y mod 2" by auto;
-      ultimately show "x = y" by arith;
-    qed;
-  qed;
-
-next
-
-  show SURJ: "surj ni_bij"
-  proof (unfold Fun.surj_def, rule allI)
-    fix y::int
-    show "\<exists>x. y = ni_bij x"
-    proof (cases)
-      assume y_pos: "y \<ge> 0"
-      let ?x = "2*nat(y)"
-      have "?x mod 2 = 0" by auto;
-      hence "int (2 * nat y div 2) = ni_bij ?x" by auto;
-      with y_pos have "y = ni_bij ?x" by arith; 
-      thus "\<exists>x. y = ni_bij x" by (rule exI[of _ ?x]);
-    next
-      assume "\<not>(0 \<le> y)"
-      hence ne_y: "y < 0" by auto;
-      let ?x = "(2*nat(-y))- 1"
-      have pos_x: "?x > 0"
-      proof -
-	from ne_y have "-y > 0" by auto;
-	hence "nat(-y) > 0" by auto;
-	hence "2*nat(-y) > 1" by auto;
-	thus "?x > 0" by auto;
-      qed;
-      have "(2* nat(-y)) mod (2::nat) = (0::nat)" by auto;
-      with mod_rule_needed and pos_x
-        have "(2*nat(-y) - 1)  mod (2::nat) = (1::nat)" by auto;
-      hence "y = ni_bij ?x" by auto;
-      thus "\<exists>x. y = ni_bij x" by (rule exI);
-    qed;
-  qed;
-qed;
-
-text {* The following lemma turned out easier to prove than to
-find. *}
+abbreviation "ni_bij == nat_to_int_bij"
 
 lemma bij_f_o_inf_f: "bij f \<Longrightarrow> f \<circ> inv f = id"
-proof -
-  assume bij_f: "bij f"
-  with bij_imp_bij_inv have bij_inv_f: "bij (inv f)" by auto;
-  with bij_def have  "inj (inv f)" by auto;
-  hence iif_if_id: "inv (inv f) \<circ> inv f = id" by auto;
-  from bij_f and inv_inv_eq have "inv (inv f) = f" by auto;
-  with iif_if_id show "f \<circ> inv f = id" by auto;
-qed;
+by(simp add: bij_def surj_iff)
 
-text {* The following theorem is a key theorem is showing that the
+text {* The following theorem is a key theorem in showing that the
 group we are interested in is cofinitary.  It states that when you
 conjugate a function with a bijection the fixed points get mapped
 over. *}
@@ -764,34 +610,7 @@ text {* \label {sect:bijN} In this section we define the subset @{term
 Ex2} of @{term S_inf} that is the conjugate of @{term Ex1} bij @{term
 ni_bij}, and show its basic properties. 
 
-First we prove a simple lemma that again was easier to prove than to
-find. *};
-
-lemma comp_bij: "(bij (g::'a \<Rightarrow> 'b) \<and> bij (h::'b \<Rightarrow> 'c)) \<Longrightarrow> bij (h \<circ> g)"
-proof -
-  assume "bij g \<and> bij h"
-  hence "bij g" and "bij h" by auto;
-  with bij_is_inj and bij_is_surj
-    have inj_g: "inj g" and surj_g: "surj g" and inj_h: "inj h" 
-      and surj_h: "surj h" by auto;
-  show "bij (h \<circ> g)"
-  proof (rule bijI)
-    show "inj (h \<circ> g)"
-    proof (rule injI)
-      fix x y
-      assume "(h \<circ> g) x = (h \<circ> g) y"
-      hence "h(g(x)) = h(g(y))" by auto;
-      with inj_h and inj_eq[of h] have "g(x) = g(y)" by auto;
-      with inj_g and inj_eq[of g] show "x = y" by auto;
-    qed;
-
-    from surj_h and surj_g and comp_surj show "surj (h \<circ> g)" by auto;
-  qed;
-qed;
-
-
-text {* @{term CONJ} is the function that will conjugate @{term Ex1}
-to @{term Ex2}. *}
+@{term CONJ} is the function that will conjugate @{term Ex1} to @{term Ex2}. *}
 
 definition CONJ :: "(int \<Rightarrow> int) \<Rightarrow> (nat \<Rightarrow> nat)"
 where
@@ -807,10 +626,10 @@ lemma type_CONJ: "f \<in> Ex1 \<Longrightarrow> (inv ni_bij) \<circ> f \<circ> n
 proof -
   assume f_Ex1: "f \<in> Ex1"
   with all_bij have "bij f" by auto;
-  with ni_bij_bij and comp_bij 
+  with bij_nat_to_int_bij and bij_comp 
     have bij_f_nibij: "bij (f \<circ> ni_bij)" by auto;
-  with ni_bij_bij and bij_imp_bij_inv have "bij (inv ni_bij)" by auto;
-  with bij_f_nibij and comp_bij[of  "f \<circ> ni_bij" "inv ni_bij"] 
+  with bij_nat_to_int_bij and bij_imp_bij_inv have "bij (inv ni_bij)" by auto;
+  with bij_f_nibij and bij_comp[of  "f \<circ> ni_bij" "inv ni_bij"] 
     and o_assoc[of "inv ni_bij" "f" "ni_bij"]
     have "bij ((inv ni_bij) \<circ> f \<circ> ni_bij)" by auto;
   with S_inf_def show "((inv ni_bij) \<circ> f \<circ> ni_bij) \<in> S_inf"; by auto;
@@ -823,17 +642,17 @@ lemma inv_CONJ:
 proof -
   have st1: "?left = inv ((inv ni_bij) \<circ> f \<circ> ni_bij)" 
     using CONJ_def by auto;
-  from ni_bij_bij and bij_imp_bij_inv 
+  from bij_nat_to_int_bij and bij_imp_bij_inv 
     have inv_ni_bij_bij: "bij (inv ni_bij)" by auto;
-  with bij_f and comp_bij have "bij (inv ni_bij \<circ> f)" by auto;
-  with o_inv_distrib[of "inv ni_bij \<circ> f" ni_bij] and ni_bij_bij
+  with bij_f and bij_comp have "bij (inv ni_bij \<circ> f)" by auto;
+  with o_inv_distrib[of "inv ni_bij \<circ> f" ni_bij] and bij_nat_to_int_bij
   have "inv ((inv ni_bij) \<circ> f \<circ>  ni_bij) = 
     (inv ni_bij) \<circ> (inv ((inv ni_bij) \<circ> f))" by auto;
   with st1 have st2: "?left =
     (inv ni_bij) \<circ> (inv ((inv ni_bij) \<circ> f))" by auto;
   from inv_ni_bij_bij and `bij f` and o_inv_distrib
     have h1: "inv (inv ni_bij \<circ> f) = inv f \<circ> inv (inv (ni_bij))" by auto;
-  from ni_bij_bij and inv_inv_eq[of ni_bij] 
+  from bij_nat_to_int_bij and inv_inv_eq[of ni_bij] 
     have "inv (inv ni_bij) = ni_bij" by auto;
   with st2 and h1 have "?left = (inv ni_bij \<circ> (inv f \<circ> ( ni_bij)))" by auto;
   with o_assoc have "?left = inv ni_bij \<circ> inv f \<circ> ni_bij" by auto;
@@ -843,7 +662,7 @@ qed;
 lemma comp_CONJ:
   "CONJ (f \<circ> g) = (CONJ f) \<circ> (CONJ g)" (is "?left = ?right")
 proof -;
-  from ni_bij_bij have "surj ni_bij" using bij_def by auto;
+  from bij_nat_to_int_bij have "surj ni_bij" using bij_def by auto;
   with surj_iff have "ni_bij \<circ> (inv ni_bij) = id" by auto;
   moreover
   have "?left = (inv ni_bij) \<circ> (f \<circ> g) \<circ> ni_bij" by simp;
@@ -859,7 +678,7 @@ qed;
 
 lemma id_CONJ: "CONJ id = id";
 proof (unfold CONJ_def)
-  from ni_bij_bij have "inj ni_bij" using bij_def by auto;
+  from bij_nat_to_int_bij have "inj ni_bij" using bij_def by auto;
   hence "inv ni_bij \<circ> ni_bij = id" by auto;
   thus "(inv ni_bij \<circ> id) \<circ> ni_bij = id" by auto;
 qed;
@@ -891,7 +710,7 @@ proof -
   obtain g where g_Ex1: "g \<in> Ex1" and f_cg: "f = CONJ g" by auto;
   with id_CONJ and f_nid have "g \<noteq> id" by auto;
   with g_Ex1 and no_fixed_pt[of g] have fg_empty: "Fix g = {}" by auto;
-  from conj_fix_pt[of ni_bij g] and ni_bij_bij 
+  from conj_fix_pt[of ni_bij g] and bij_nat_to_int_bij
   have "(inv ni_bij)`(Fix g) = Fix(CONJ g)" by auto;
   with fg_empty have "{} = Fix (CONJ g)" by auto;
   with f_cg show "Fix f = {}" by auto;

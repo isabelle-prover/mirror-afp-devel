@@ -1,4 +1,4 @@
-(*  ID:          $Id: UserGuide.thy,v 1.10.2.1 2009-09-11 21:42:00 lsf37 Exp $
+(*  ID:          $Id: UserGuide.thy,v 1.11 2009-09-11 07:50:00 norbertschirmer Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

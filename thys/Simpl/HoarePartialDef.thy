@@ -1,4 +1,4 @@
-(*  ID:          $Id: HoarePartialDef.thy,v 1.8 2008-06-12 06:57:26 lsf37 Exp $
+(*  ID:          $Id: HoarePartialDef.thy,v 1.9 2009-05-17 12:46:53 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -28,7 +28,6 @@ USA
 
 header {* Hoare Logic for Partial Correctness *}
 theory HoarePartialDef imports Semantic begin
-
 
 types 
   ('s,'p) quadruple = "('s assn \<times> 'p \<times> 's assn \<times> 's assn)"

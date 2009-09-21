@@ -1,5 +1,5 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Yoneda.thy,v 1.9 2008-11-17 16:01:28 fhaftmann Exp $
+    ID:          $Id: Yoneda.thy,v 1.10 2009-06-20 00:10:18 nipkow Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 
@@ -153,7 +153,7 @@ proof-
   have " \<dots> = (\<lambda>g\<in>Hom A B. set_func (F \<^sub>\<a> (f \<bullet> g)) a)"
     apply (simp add: sandwich_def)
     apply (rule extensionalityI, rule restrict_extensional, rule restrict_extensional)
-    by (simp add: funcset_mem)
+    by (simp add:Pi_def)
   finally have set_func_rhs:
     "set_func ((\<sigma>(A,a) C) \<odot> (Hom(A,_) \<^sub>\<a> f)) =
     (\<lambda>g\<in>Hom A B. set_func (F \<^sub>\<a> (f \<bullet> g)) a)" .

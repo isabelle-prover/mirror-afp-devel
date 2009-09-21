@@ -1,5 +1,5 @@
 (*  Title:      RSAPSS/EMSAPSS.thy
-    ID:         $Id: EMSAPSS.thy,v 1.5 2008-07-10 21:20:00 makarius Exp $
+    ID:         $Id: EMSAPSS.thy,v 1.6 2009-08-29 12:36:18 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -431,7 +431,7 @@ lemma verify: "\<lbrakk>(emsapss_encode M emBits) \<noteq> []; EM=(emsapss_encod
   apply (simp add: emsapss_decode_help3 emsapss_encode_help3 emsapss_decode_help4 emsapss_encode_help4)
   apply (safe)
   apply (insert roundup_le_7 [of emBits] roundup_ge_0 [of emBits 8] roundup_nat_ge_8 [of M emBits])
-  apply (simp add: generate_maskedDB min_def emsapss_encode_help5 emsapss_encode_help6)
+  apply (simp add: generate_maskedDB emsapss_encode_help5 emsapss_encode_help6)
   apply (safe)
   apply (simp)
   apply (simp add: emsapss_encode_help7)

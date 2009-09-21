@@ -1,4 +1,3 @@
-
 (**       Algebra5  
                             author Hidetsune Kobayashi
                             Group You Santo
@@ -435,17 +434,10 @@ apply (subst carr_prodag_def, simp)
 apply (rule conjI)
  apply (simp add:prod_tOp_def restrict_def extensional_def)
 apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:Un_carrier_def prod_tOp_def)
  apply (simp add:carr_prodag_def, (erule conjE)+)
- apply (frule_tac b = x in forball_spec1, assumption,
-        thin_tac "\<forall>k\<in>I. Ring (A k)",
-        frule_tac b = x in forball_spec1, assumption,
-        thin_tac "\<forall>i\<in>I. X i \<in> carrier (A i)",
-        frule_tac b = x in forball_spec1, assumption,
-        thin_tac "\<forall>i\<in>I. Y i \<in> carrier (A i)")
- apply (frule_tac R = "A x" and x = "X x" and y = "Y x" in 
-        Ring.ring_tOp_closed, assumption+, blast)
+ apply (blast dest: Ring.ring_tOp_closed del:PiE)
  
  apply (rule ballI)
  apply (simp add:prod_tOp_def)
@@ -456,23 +448,16 @@ done
  
 lemma prod_tOp_func:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow>
     prod_tOp I A \<in> carr_prodag I A \<rightarrow> carr_prodag I A \<rightarrow> carr_prodag I A"
-apply (rule bivar_func_test)
- apply (rule ballI)+
- apply (simp add:prod_tOp_mem)
-done
+by (simp add:prod_tOp_mem)
 
 lemma prod_one_func:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow>
                            prod_one I A \<in> carr_prodag I A"
 apply (simp add:prod_one_def carr_prodag_def)
 apply (rule conjI)
-apply (rule univar_func_test) apply (rule ballI) 
+apply (rule Pi_I)
  apply (simp add:Un_carrier_def)
- apply (frule_tac b = x in forball_spec1, assumption,
-        thin_tac "\<forall>k\<in>I. Ring (A k)",
-        frule_tac R = "A x" in Ring.ring_one)
- apply blast
-apply (rule ballI)
- apply (rule Ring.ring_one, simp)
+ apply (blast dest: Ring.ring_one)
+ apply (simp add: Ring.ring_one)
 done
 
 lemma prodrg_carrier:"\<forall>k\<in>I. Ring (A k) \<Longrightarrow>
@@ -664,7 +649,7 @@ apply (simp add:rHom_def)
 apply (rule conjI)
  apply (simp add:aHom_def)
  apply (rule conjI)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:prodrg_carrier)
  apply (cut_tac prodag_carrier[of I A], simp)
 
@@ -672,9 +657,8 @@ apply (rule conjI)
  apply (cut_tac prodag_carrier[of I A], simp,
         thin_tac "carrier (a\<Pi>\<^bsub>I\<^esub> A) = carr_prodag I A")
  apply (simp add:prodag_comp_i) 
- apply (rule ballI, simp add:Ring.ring_is_ag) 
- apply (rule ballI, simp add:Ring.ring_is_ag) 
-
+ apply (simp add:Ring.ring_is_ag)
+ apply (simp add:Ring.ring_is_ag)
 
  apply (subgoal_tac "\<forall>k\<in>I. aGroup (A k)") 
  apply (frule project_aHom [of "I" "A" "j"], assumption+) 
@@ -724,8 +708,7 @@ apply (rule carr_prodag_mem_eq [of "{i. i \<le> (Suc n)}" "B" "f"
  apply (rule conjI)
  apply (simp add:augm_func_def)
  apply (rule conjI)
- apply (rule univar_func_test)
- apply (rule ballI)
+ apply (rule Pi_I)
  apply (simp add:augm_func_def sliden_def) 
  apply (erule conjE)+
  apply (frule_tac x = x in funcset_mem[of f "{i. i \<le> Suc n}" 
@@ -757,7 +740,7 @@ apply (simp add:carr_prodag_def)
 apply (rule conjI)
 apply (simp add:A_to_prodag_def extensional_def) 
 apply (rule conjI)
- apply (rule univar_func_test) apply (rule ballI)
+ apply (rule Pi_I)
  apply (simp add: A_to_prodag_def)
  apply (subgoal_tac "(S xa) \<in> rHom A (B xa)") prefer 2 apply simp
  apply (thin_tac "\<forall>k\<in>I. S k \<in> rHom A (B k)") 
@@ -800,9 +783,9 @@ apply (rule conjI)
 apply (cut_tac X = "A_to_prodag A I S B (x \<cdot>\<^sub>r\<^bsub>A\<^esub> y)" and Y = "prod_tOp I B (A_to_prodag A I S B x) (A_to_prodag A I S B y)" in carr_prodag_mem_eq[of I B])
  apply (rule ballI, simp add:Ring.ring_is_ag) apply assumption+
  apply (rule ballI, simp add:prod_tOp_def A_to_prodag_def)
- apply (frule_tac b = l in forball_spec1, assumption,
+ apply (frule_tac x = l in bspec, assumption,
         thin_tac "\<forall>k\<in>I. Ring (B k)",
-        frule_tac b = l in forball_spec1, assumption,
+        frule_tac x = l in bspec, assumption,
         thin_tac "\<forall>k\<in>I. S k \<in> rHom A (B k)")
  apply (simp add:rHom_tOp) apply simp
 
@@ -816,9 +799,9 @@ apply (cut_tac X = "A_to_prodag A I S B (x \<cdot>\<^sub>r\<^bsub>A\<^esub> y)" 
  apply assumption+
  apply (rule ballI)
  apply (subst A_to_prodag_def, simp add:prod_one_def)
- apply (frule_tac b = l in forball_spec1, assumption,
+ apply (frule_tac x = l in bspec, assumption,
         thin_tac "\<forall>k\<in>I. Ring (B k)",
-        frule_tac b = l in forball_spec1, assumption,
+        frule_tac x = l in bspec, assumption,
         thin_tac "\<forall>k\<in>I. S k \<in> rHom A (B k)")
  apply (simp add:rHom_one)
  apply assumption
@@ -977,7 +960,7 @@ apply (rule subsetI)
 
  apply (cut_tac Nset_inc_0[of n]) 
  apply (frule_tac a = "J 0" in forall_spec, blast)
- apply (frule_tac a = 0 in forall_spec1, simp)
+ apply (frule_tac x = 0 in spec, simp)
  apply (frule_tac h = x in Ring.ideal_subset [of "A" "J 0"], simp+)
  apply (thin_tac "x \<in> J 0")
  apply (simp add:A_to_prodag_def prodrg_def)
@@ -1166,13 +1149,13 @@ apply (cut_tac Nsetn_sub_mem1[of "Suc n"])
  apply (simp add:prodrg_def) 
  apply (simp add:carr_prodag_def, (erule conjE)+)
  apply (simp add:Un_carrier_def)
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply simp
  apply (frule_tac x = x in funcset_mem[of f "{j. j \<le> (Suc (Suc n))}"
         "\<Union>{X. \<exists>i \<le> (Suc (Suc n)). X = carrier (R /\<^sub>r J i)}"],
         simp)
  apply simp
- apply (erule exE, erule conjE, erule exE, erule conjE, simp) 
+ apply (erule exE, erule conjE, erule exE, erule conjE, simp)
  
  apply (rotate_tac -5) 
  apply (frule_tac a = x in forall_spec) apply simp
@@ -1325,8 +1308,8 @@ apply (frule_tac f = "A_to_prodag R {j. j \<le> (Suc (Suc n))} S B
           g = "restrict f {j. j \<le> (Suc n)}" and x = i in eq_fun_eq_val,
     thin_tac "A_to_prodag R {j. j\<le>(Suc n)} S B u = restrict f {j. j\<le>(Suc n)}")
   apply (simp add:A_to_prodag_def) 
-  apply simp 
-  apply (frule_tac m = i and n = "Suc n" in nat_not_le, 
+  apply simp
+  apply (frule_tac y = i and x = "Suc n" in not_leE, 
          frule_tac m = "Suc n" and n = i in Suc_leI,
          frule_tac m = i and n = "Suc (Suc n)" in Nat.le_anti_sym, assumption+,
          simp)
@@ -1423,7 +1406,7 @@ apply (frule_tac n = n and f = "ppa R P A i" and A = "P l" in ideal_nprod_inc)
                  ppa R P A i l \<in> P (skip i l) \<and> ppa R P A i l \<notin> P i",
          thin_tac "l < Suc n")
   apply (simp only:skip_im_Tr1_2, blast)
-  apply (frule_tac m = l and n = i in nat_not_less,
+  apply (frule_tac x = l and y = i in leI,
          thin_tac "\<not> l < i",
          cut_tac x = l and A = "{j. j \<le> (Suc n)}" and a = i in in_diff1)
          apply simp  
@@ -1549,8 +1532,7 @@ apply (frule prime_ideal_cont1Tr[of A n])
 apply (frule_tac a = P in forall_spec,
        thin_tac "\<forall>P. P \<in> {j. j \<le> n} \<rightarrow> {X. prime_ideal R X} \<and> 
        A \<subseteq> \<Union>P ` {j. j \<le> n} \<longrightarrow> (\<exists>i\<le>n. A \<subseteq> P i)")
-apply (rule conjI,
-       rule univar_func_test, rule ballI, simp,
+apply (rule conjI, simp,
        rule subsetI, simp,
        frule_tac c = x in subsetD[of A "\<Union>{X. \<exists>i\<le>n. X = P i}"], assumption+,
        simp, blast)
@@ -1690,7 +1672,7 @@ apply (simp add:fSum_def)
 apply (rule nsum_mem)
 apply (rule allI, simp add:cmp_def slide_def)
 apply (rule impI)
-apply (frule_tac b = "Suc (n + j)" in forball_spec1)
+apply (frule_tac x = "Suc (n + j)" in bspec)
  apply (simp add:nset_def, arith)
 done
 
@@ -1761,7 +1743,7 @@ apply (case_tac "n \<le> 1")
  apply (subst transpos_ij_1[of 0 "Suc 0"], simp+)
  apply (subst transpos_ij_2[of 0 "Suc 0"], simp+)
  apply (rule ag_pOp_commute, simp+)
- apply (frule nat_not_le[of n "Suc 0"])
+ apply (frule not_leE[of n "Suc 0"])
 apply (frule_tac Suc_leI [of "Suc 0" "n"],
        thin_tac "\<not> n \<le> Suc 0")
  apply (cut_tac nsum_suc[of A f "n - Suc 0"], simp)
@@ -1854,14 +1836,7 @@ apply simp
            \<Sigma>\<^sub>e A (cmp f h) (Suc n) = \<Sigma>\<^sub>e A f (Suc n)")
  apply (frule Nset_injTr0 [of "h" "Suc n"], assumption+, simp) 
  apply (frule Nset_injTr0 [of "h" "Suc n"], assumption+, simp)
-apply (thin_tac "\<forall>f h. f \<in> {j. j \<le> Suc n} \<rightarrow> carrier A \<and>
-           h \<in> {j. j \<le> Suc n} \<rightarrow> {j. j \<le> Suc n} \<and> inj_on h {j. j \<le> Suc n} \<longrightarrow>
-           \<Sigma>\<^sub>e A (cmp f h) (Suc n) = \<Sigma>\<^sub>e A f (Suc n)")
-apply (thin_tac "h \<in> {j. j \<le> Suc (Suc n)} \<rightarrow> {j. j \<le> Suc (Suc n)}")
-apply (simp add:Pi_def [of "{j. j \<le> (Suc n)}"])
-apply (rule allI, rule impI)
-apply (subgoal_tac "x \<in> {j. j \<le> (Suc (Suc n))}", simp add:funcset_mem)
-apply simp
+apply (simp add:Pi_def)
 done
 
 lemma (in aGroup) additionTr1_1:"\<lbrakk>\<forall>f. \<forall>h. f \<in> {j. j\<le>Suc n} \<rightarrow> carrier A \<and>
@@ -1897,18 +1872,18 @@ apply (case_tac "i = Suc n")
  apply (subst nsum_cmp_eq [of "f" "Suc (Suc n)"  
         "cmp (transpos (Suc n) (Suc(Suc n))) (transpos i (Suc n))" 
         "transpos i (Suc n)" "Suc (Suc n)"], assumption+,
-        rule univar_func_test, rule ballI, simp add:cmp_def,
+        rule Pi_I, simp add:cmp_def,
         rule transpos_mem, (simp del:nsum_suc)+,
         rule transpos_mem, (simp del:nsum_suc)+,
-        rule univar_func_test, rule ballI, simp,
+        rule Pi_I, simp,
         rule transpos_mem, (simp del:nsum_suc)+)
 apply (subst nsum_cmp_eq [of "cmp f (transpos i (Suc n))" "Suc (Suc n)"  
        "(transpos i (Suc n))" "transpos (Suc n) (Suc (Suc n))" "Suc (Suc n)"],
-       rule univar_func_test, rule ballI, simp add:cmp_def,
+       rule Pi_I, simp add:cmp_def,
        rule funcset_mem[of f "{j. j \<le> Suc (Suc n)}" "carrier A"], assumption,
        simp,
        rule transpos_mem, (simp del:nsum_suc)+,
-       (rule univar_func_test, rule ballI, simp,
+       (rule Pi_I, simp,
         rule transpos_mem, (simp del:nsum_suc)+)+)
 
 apply (subst additionTr1_1 [of "n" "cmp (cmp f (transpos i (Suc n)))
@@ -1991,14 +1966,14 @@ apply (frule_tac f = h and n = "Suc (Suc n)" in inj_surj, assumption+)
   rule transpos_inj, simp, simp, assumption+,
   rule subsetI, simp)
 apply (subst nsum_cmp_assoc,
-       rule allI, rule impI, simp add:funcset_mem,
+       rule allI, rule impI, simp add:Pi_def,
        rule transpos_hom, assumption, simp, assumption+)
  apply (cut_tac f = "cmp f (cmp h (transpos x (Suc (Suc n))))" and n = "Suc n"
         in nsum_suc[of A ], simp del:nsum_suc,
    thin_tac "\<Sigma>\<^sub>e A (cmp f (cmp h (transpos x (Suc (Suc n))))) (Suc (Suc n)) =
         \<Sigma>\<^sub>e A (cmp f (cmp h (transpos x (Suc (Suc n))))) (Suc n) \<plusminus>
         cmp f (cmp h (transpos x (Suc (Suc n)))) (Suc (Suc n))")
- apply (frule_tac a = f in forall_spec1,
+ apply (frule_tac x = f in spec,
         thin_tac "\<forall>f h. f \<in> {j. j \<le> Suc n} \<rightarrow> carrier A \<and>
               h \<in> {j. j \<le> Suc n} \<rightarrow> {j. j \<le> Suc n} \<and>
               inj_on h {j. j \<le> Suc n} \<longrightarrow>
@@ -2008,7 +1983,7 @@ apply (subst nsum_cmp_assoc,
          h \<in> {j. j \<le> Suc n} \<rightarrow> {j. j \<le> Suc n} \<and> inj_on h {j. j \<le> Suc n} \<longrightarrow>
          \<Sigma>\<^sub>e A (cmp f h) (Suc n) = \<Sigma>\<^sub>e A f (Suc n)")
  apply simp
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:cmp_def)
  apply (case_tac "xa = x", simp)
  apply (cut_tac i = x and n = "Suc (Suc n)" and j = "Suc (Suc n)" in 
@@ -2057,7 +2032,7 @@ done
 lemma (in aGroup) addition3:"\<lbrakk>\<forall>j \<le> (Suc n). f j \<in> carrier A; j \<le> (Suc n);
 j \<noteq> Suc n\<rbrakk> \<Longrightarrow> nsum A f (Suc n) = nsum A (cmp f (transpos j (Suc n))) (Suc n)"
 apply (rule addition2 [THEN sym,of "f" "n" "transpos j (Suc n)"])
-apply (rule univar_func_test, rule ballI, simp)
+apply (simp)
 apply (rule transpos_hom, assumption+, simp, assumption)
 apply (rule transpos_inj, simp+)
 done
@@ -2251,9 +2226,8 @@ apply (simp add:sum_mult_def)
 apply (subgoal_tac "(\<lambda>i\<in>{j. j \<le> (0::nat)}. a \<cdot>\<^sub>r b) \<in> {j. j \<le> 0} \<rightarrow> set_mult R A B") 
 apply (subgoal_tac "nsum R (\<lambda>i\<in>{j. j \<le> (0::nat)}. a \<cdot>\<^sub>r b) 0 = a \<cdot>\<^sub>r b") 
 apply blast
- apply simp 
- apply (rule univar_func_test, rule ballI,
-        simp add:set_mult_def, blast)
+ apply simp
+ apply (rule Pi_I, simp add:set_mult_def, blast)
 done
 
 lemma (in Ring) mem_minus_sum_multTr2:"\<lbrakk>A \<subseteq> carrier R; B \<subseteq> carrier R; 
@@ -2347,9 +2321,9 @@ apply (rule subsetI)
  apply (cut_tac f = "(\<lambda>i\<in>{j. j \<le> (0::nat)}. x)" in nsum_0[of R]) 
  apply (cut_tac n_in_Nsetn[of 0],
         simp del:nsum_0)
- apply (cut_tac f = "\<lambda>i\<in>{j. j \<le> (0::nat)}. x" and B = "set_mult R A B" in 
-                univar_func_test[of "{j. j \<le> 0}"],
-       rule ballI, simp)
+ apply (cut_tac f = "\<lambda>i\<in>{j. j \<le> (0::nat)}. x" and B = "%_. set_mult R A B" in 
+                Pi_I[of "{j. j \<le> 0}"],
+       simp)
  apply (subgoal_tac "\<Sigma>\<^sub>e R (\<lambda>i\<in>{j. j \<le> 0}. x) 0 = x")
  apply blast
  apply simp
@@ -2410,9 +2384,8 @@ apply (frule sum_mult_mem1 [of A B x],
 apply (erule exE, erule bexE, frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x")
 apply simp
 apply (frule_tac n = n and f = f in mem_minus_sum_multTr4[of A B], 
-        assumption+) 
-apply (subgoal_tac "\<forall>j\<le>n. f j \<in> set_mult R A B", simp)
-apply (rule allI, simp add:funcset_mem)
+        assumption+)
+apply (simp add:Pi_def)
 done
 
 lemma (in Ring) sum_mult_ring_multiplicationTr:
@@ -2460,9 +2433,9 @@ apply (frule sum_mult_mem1[of A B a],
        simp add:ideal_subset1, assumption)
 apply (erule exE, erule bexE, frule sym, thin_tac "\<Sigma>\<^sub>e R f n = a", simp)
 apply (subgoal_tac "\<forall>j \<le> n. f j \<in> set_mult R A B")
-apply (simp add:sum_mult_ring_multiplicationTr)       
-apply (rule allI, rule impI, simp add:funcset_mem)
-done 
+apply (simp add:sum_mult_ring_multiplicationTr)
+apply (simp add:Pi_def)
+done
 
 lemma (in Ring) ideal_sum_mult:"\<lbrakk>A \<subseteq> carrier R; A \<noteq> {}; ideal R B\<rbrakk> \<Longrightarrow>
                 ideal R (sum_mult R A B)"
@@ -2476,7 +2449,7 @@ apply (rule subsetI)
         erule exE, erule bexE, frule sym, thin_tac "\<Sigma>\<^sub>e R f n = x", simp)
  apply (rule_tac f = f and n = n in sum_mult_mem[of A B _ _], assumption+)
  apply (simp add:ideal_subset1)
- apply (rule allI, simp add:funcset_mem)
+ apply (simp add:Pi_def)
  apply (frule nonempty_ex[of A], erule exE)
  apply (frule ideal_zero[of B])
  apply (frule_tac a = x and b = \<zero> in times_mem_sum_mult[of A B],
@@ -2506,8 +2479,8 @@ apply (rule ballI)
        assumption+, simp)
  apply (rule ideal_pOp_closed[of C], assumption+,
         cut_tac n = n in Nsetn_sub_mem1, 
-        frule_tac b = f in forball_spec1, simp)
- apply (rule univar_func_test, rule ballI, simp add:funcset_mem, assumption+)
+        frule_tac x = f in bspec, simp)
+ apply (simp add:Pi_def, assumption+)
 done
 
 lemma (in Ring) ideal_inc_set_mult:"\<lbrakk>A \<subseteq> carrier R; ideal R B; ideal R C; 
@@ -2591,10 +2564,10 @@ apply (induct_tac n)
         simp)
  apply (simp add:ideal_prod_assocTr0)
  apply (rule ballI,
-       frule_tac b = f in forball_spec1,
+       frule_tac x = f in bspec,
        thin_tac "\<forall>f\<in>{j. j \<le> n} \<rightarrow> set_mult R A B.
             \<Sigma>\<^sub>e R f n \<cdot>\<^sub>r y \<in> sum_mult R A (B \<diamondsuit>\<^sub>r C)",
-       rule univar_func_test, rule ballI, simp,
+       rule Pi_I, simp,
        frule_tac f = f and A = "{j. j \<le> Suc n}" and B = "set_mult R A B" and
                  x = x in funcset_mem, simp, assumption)
  apply simp
@@ -2606,8 +2579,9 @@ apply (induct_tac n)
          "carrier R"], assumption,
         subst ring_distrib2,
         simp add:ideal_subset)
- apply (rule aGroup.nsum_mem, assumption) apply (rule allI, 
-        simp add:funcset_mem) apply (simp add:funcset_mem,
+ apply (rule aGroup.nsum_mem, assumption)
+ apply (simp add:Pi_def)
+ apply (simp add:funcset_mem del:Pi_I',
         frule_tac f = f and A = "{j. j \<le> Suc n}" and B = "set_mult R A B" and
         x =  "Suc n" in funcset_mem, simp)
 apply (frule ideal_subset1[of A],
@@ -2636,7 +2610,7 @@ apply (induct_tac n)
  apply (frule_tac x = xa and y = y in ring_tOp_commute, assumption+,
         simp)
  apply (subst ring_tOp_assoc[THEN sym], assumption+)
- apply (frule_tac b = y in forball_spec1, assumption,
+ apply (frule_tac x = y in bspec, assumption,
         thin_tac "\<forall>c\<in>C. x \<cdot>\<^sub>r c \<in> A \<dagger>\<^sub>R B")
  apply (simp add:ideal_quotient_def)
 (****** n ********)
@@ -2706,8 +2680,7 @@ apply (subgoal_tac "\<forall>x\<in>(A \<diamondsuit>\<^sub>r B). \<forall>y\<in>
 apply (induct_tac n)
   apply (rule allI) apply (rule impI)
   apply (frule_tac f = f and A = "{j. j \<le> 0}" and B = "set_mult R (A \<diamondsuit>\<^sub>r B) C"
-        and x = 0 in funcset_mem, simp, simp) 
-  apply (thin_tac "f \<in> {0} \<rightarrow> set_mult R (A \<diamondsuit>\<^sub>r B) C")
+        and x = 0 in funcset_mem, simp, simp)
   apply (simp add:set_mult_def)
   apply ((erule bexE)+, frule sym, thin_tac "x \<cdot>\<^sub>r y = f 0", simp)
 apply (rule allI, rule impI)
@@ -2796,7 +2769,7 @@ apply (induct_tac n)
  apply (simp add:prod_principal_idealTr0)
 apply (rule ballI,
        frule func_pre,
-       frule_tac b = f in forball_spec1, assumption,
+       frule_tac x = f in bspec, assumption,
        thin_tac "\<forall>f\<in>{j. j \<le> n} \<rightarrow> set_mult R (R \<diamondsuit>\<^sub>p a) (R \<diamondsuit>\<^sub>p b).
                                        \<Sigma>\<^sub>e R f n \<in> R \<diamondsuit>\<^sub>p (a \<cdot>\<^sub>r b)")
  apply (frule ring_tOp_closed[of a b], assumption)
@@ -2870,11 +2843,6 @@ lemma (in Ring) nprod_eq:"\<lbrakk>\<forall>j \<le> n. f j \<in> carrier R; \<fo
 (\<forall>j \<le> (n::nat). f j = g j)\<rbrakk> \<Longrightarrow> nprod R f n = nprod R g n"
 apply (cut_tac nprod_eqTr[of f n g])
 apply simp
-apply (cut_tac univar_func_test[of "{j. j \<le> n}" f "carrier R"],
-       cut_tac univar_func_test[of "{j. j \<le> n}" g "carrier R"])
-apply simp
-apply (rule ballI, simp)
-apply (rule ballI) apply simp
 done
 
 definition
@@ -2897,7 +2865,7 @@ apply (induct_tac n)
  apply (cut_tac n_in_Nsetn[of 0], 
         simp add: mprod_expR_def)
  apply (rule npClose,
-        simp add:funcset_mem)
+        simp add:Pi_def)
 
 apply (rule impI, (erule conjE)+)
  apply (frule func_pre[of "e"], frule func_pre[of "f"])
@@ -2905,7 +2873,7 @@ apply (rule impI, (erule conjE)+)
  apply (simp add:mprodR_Suc)
  apply (rule ring_tOp_closed, assumption+)
  apply (rule npClose, cut_tac n = "Suc n" in n_in_Nsetn)
- apply (simp add:funcset_mem) 
+ apply (simp add:Pi_def)
 done
 
 lemma (in Ring) mprod_expR_mem:"\<lbrakk> e \<in> {j. j \<le> n} \<rightarrow> {j. (0::nat) \<le> j};
@@ -2922,7 +2890,7 @@ apply (induct_tac n)
  apply (subgoal_tac "J 0 = R \<diamondsuit>\<^sub>p (f 0) \<^bsup>\<diamondsuit>R (e 0)\<^esup>")
  apply simp
  apply (rule principal_ideal_n_pow[of "f 0" "R \<diamondsuit>\<^sub>p (f 0)"])
- apply (cut_tac n_in_Nsetn[of 0], simp add:funcset_mem) apply simp
+ apply (cut_tac n_in_Nsetn[of 0], simp add:Pi_def) apply simp
  apply (cut_tac n_in_Nsetn[of 0], simp)
 
 apply (rule impI, (erule conjE)+)
@@ -3261,7 +3229,7 @@ apply (case_tac "a \<uplus>\<^bsub>R\<^esub> I = I") apply simp
  apply (simp add:ideal_zero)
  apply (rule impI)
  apply (cut_tac ring_zero)
- apply (frule_tac b = \<zero>  in forball_spec1, assumption+)
+ apply (frule_tac x = \<zero>  in bspec, assumption+)
  apply (thin_tac "\<forall>a\<in>carrier R. a \<uplus>\<^bsub>R\<^esub> I \<noteq> I")
  apply (frule ideal_zero[of "I"])
  apply (frule ar_coset_same4[of "I" "\<zero>"], assumption+, simp)
@@ -3270,7 +3238,7 @@ apply simp
  apply (rule impI, rule someI2_ex)
  apply (frule a_in_ar_coset[of "I" "a"], assumption+, blast, assumption+)
 apply (rule impI)
- apply (frule_tac b = a in forball_spec1, assumption+,
+ apply (frule_tac x = a in bspec, assumption+,
         thin_tac "\<forall>aa\<in>carrier R. aa \<uplus>\<^bsub>R\<^esub> I \<noteq> a \<uplus>\<^bsub>R\<^esub> I", simp)
 done
 
@@ -3458,11 +3426,11 @@ apply (cut_tac algfree,
        cut_tac subring)
 apply (simp add:algfree_cond_def)
 apply (rule contrapos_pp, simp+)
-apply (drule_tac m = "Suc 0" in nat_forall_spec)
+apply (drule_tac x = "Suc 0" in spec)
  apply (subgoal_tac "pol_coeff S ((Suc 0), 
           (\<lambda>j\<in>{l. l \<le> (Suc 0)}. if j = 0 then \<zero>\<^bsub>S\<^esub> else 1\<^sub>r\<^bsub>S\<^esub>))")
- apply (drule_tac a = "\<lambda>j\<in>{l. l \<le> (Suc 0)}. if j = 0 then \<zero>\<^bsub>S\<^esub> else 1\<^sub>r\<^bsub>S\<^esub>" in 
-        forall_spec1) 
+ apply (drule_tac x = "\<lambda>j\<in>{l. l \<le> (Suc 0)}. if j = 0 then \<zero>\<^bsub>S\<^esub> else 1\<^sub>r\<^bsub>S\<^esub>" in 
+        spec) 
  apply (erule conjE, simp)
  apply (simp only:Nset_1)
  apply (drule_tac a = "Suc 0" in forall_spec, simp)
@@ -3564,7 +3532,7 @@ lemma (in PolynRg) polyn_expr_short:"\<lbrakk>pol_coeff S c; k \<le> (fst c)\<rb
          polyn_expr R X k c = polyn_expr R X k (k, snd c)"
 apply (rule polyn_exprs_eq[of c "(k, snd c)" k], assumption+)
  apply (simp add:pol_coeff_def)
- apply (simp add:min_def)
+ apply (simp)
  apply simp
 done
 
@@ -3741,7 +3709,7 @@ apply (cut_tac subring,
  
 apply (case_tac "(fst c) < (fst d)", simp add:add_cf_def)
  apply (rule impI, rule aGroup.ag_pOp_closed, assumption+, simp+)
- apply (drule nat_not_less[of "fst c" "fst d"],
+ apply (drule leI[of "fst c" "fst d"],
               drule le_imp_less_or_eq[of "fst d" "fst c"])
 apply (erule disjE)
  apply (simp add:add_cf_def, rule impI)
@@ -3755,7 +3723,7 @@ done
 
 lemma (in PolynRg) add_cf_len:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
       \<Longrightarrow> fst (add_cf S c d) = (max (fst c) (fst d))" 
-by (simp add:max_def add_cf_def)
+by (simp add: add_cf_def)
 
 lemma (in PolynRg) polyn_expr_restrict1:"\<lbrakk>pol_coeff S (n, f);
     pol_coeff S (Suc (m + n), g)\<rbrakk> \<Longrightarrow> 
@@ -3767,8 +3735,8 @@ apply (frule add_cf_pol_coeff[of "(n, f)" "(Suc (m + n), g)"], assumption+,
 apply (rule polyn_exprs_eq[of "add_cf S (n, f) (m + n, g)" 
        "(m + n, snd (add_cf S (n, f) (Suc (m + n), g)))" "m + n"], assumption+)
  apply (rule split_pol_coeff[of "add_cf S (n, f) (Suc (m + n), g)" "m + n"],
-         assumption, simp add:add_cf_len max_def)
- apply (simp add:add_cf_len max_def)
+         assumption, simp add:add_cf_len)
+ apply (simp add:add_cf_len)
 
 apply (rule allI, rule impI)
  apply (simp add:add_cf_def)
@@ -3796,17 +3764,17 @@ apply (case_tac "(fst c) = (fst d)", simp add:pol_coeff_def)
         rule aGroup.ag_pOp_commute[of S], simp+)
 
 apply (case_tac "(fst d) < (fst c)", simp,
-       rule allI, rule impI, rule impI,
-       rule aGroup.ag_pOp_commute, assumption+) 
+       rule allI, rule impI,
+       rule aGroup.ag_pOp_commute, assumption+)
 apply (frule_tac x = j and y = "fst d" and z = "fst c" in le_less_trans, 
           assumption+, frule_tac x = j and y = "fst c" in less_imp_le,
           thin_tac "j < fst c", simp add:pol_coeff_mem, simp add:pol_coeff_mem)
 
 apply simp
-apply (frule nat_not_less[of "fst d" "fst c"],
+apply (frule leI[of "fst d" "fst c"],
        frule noteq_le_less[of "fst c" "fst d"], assumption,
-       rule allI, rule impI, rule impI,
-       simp add:max_def)
+       rule allI, rule impI,
+       simp)
 
 apply (rule aGroup.ag_pOp_commute, assumption+,
        simp add:pol_coeff_mem,
@@ -3846,11 +3814,11 @@ apply (simp add:add_commute[of n])
          add_cf_pol_coeff, assumption+) 
   apply (frule_tac c = "add_cf S (n, f) (Suc (na + n), g)" and 
            n = "na + n" and m = "Suc (na + n)" in polyn_n_m, simp,
-         subst add_cf_len, assumption+, simp add:max_def) 
+         subst add_cf_len, assumption+, simp) 
   apply (cut_tac k = "Suc (na + n)" and f = "add_cf S (n, f) (Suc (na + n), g)"
           in polyn_expr_split)
   apply (frule_tac c = "(n, f)" and d = "(Suc (na + n), g)" in 
-          add_cf_len, assumption+, simp del:npow_suc add:max_def)
+          add_cf_len, assumption+, simp del:npow_suc)
   apply (thin_tac "polyn_expr R X (Suc (na + n))
          (Suc (na + n), snd (add_cf S (n, f) (Suc (na + n), g))) =
         polyn_expr R X (na + n)
@@ -3872,8 +3840,7 @@ apply (simp add:add_commute[of n])
          polyn_mem, simp,
          frule_tac c = "add_cf S (n, f) (na + n, g)" and k = "na + n" in
          polyn_mem, simp )
-  apply (subst add_cf_len, assumption+, simp del:npow_suc 
-          add:max_def)
+  apply (subst add_cf_len, assumption+, simp del:npow_suc)
  apply (frule_tac a = "polyn_expr R X (na + n) (add_cf S (n, f) (na + n, g))" 
         and b = "polyn_expr R X (na + n) (add_cf S (n, f) (Suc (na + n), g))"
         and c = "g (Suc (na + n)) \<cdot>\<^sub>r  X^\<^bsup>R (Suc (na + n))\<^esup>" in 
@@ -3882,7 +3849,7 @@ apply (simp add:add_commute[of n])
         d = "add_cf S (n, f) (Suc (na + n), g)" and k = "na + n" in 
         polyn_exprs_eq, assumption+, simp,
         subst add_cf_len, assumption+) 
-  apply (simp add:max_def)
+  apply (simp)
 
 apply (rule allI, rule impI,
         (subst add_cf_def)+, simp,
@@ -3896,7 +3863,7 @@ lemma (in PolynRg) polyn_add:"\<lbrakk>pol_coeff S (n, f); pol_coeff S (m, g)\<r
 apply (cut_tac less_linear[of n m])
  apply (erule disjE,
         frule polyn_addTr1[of n f "m - n"],
-        drule_tac a = g in forall_spec, simp, simp add:max_def)
+        drule_tac a = g in forall_spec, simp, simp)
 
  apply (erule disjE,
         simp add:polyn_add_n1) 
@@ -3905,14 +3872,14 @@ apply (frule polyn_mem[of "(n, f)" n], simp,
  apply (cut_tac ring_is_ag, simp add:aGroup.ag_pOp_commute)
 
  apply (frule polyn_addTr1[of m g "n - m"],
-        drule_tac a = f in forall_spec, simp, simp add:max_def,
+        drule_tac a = f in forall_spec, simp, simp,
         frule add_cf_commute[of "(m, g)" "(n, f)"], assumption+, 
         simp add:max_def,
         frule add_cf_pol_coeff[of "(n, f)" "(m, g)"], assumption+,
         frule add_cf_pol_coeff[of "(m, g)" "(n, f)"], assumption+)
  apply (rule polyn_exprs_eq[of "add_cf S (m, g) (n, f)" 
                  "add_cf S (n, f) (m, g)" n], assumption+)
-  apply (simp add:add_cf_len, simp add:max_def)
+  apply (simp add:add_cf_len, simp)
 done
 
 lemma (in PolynRg) polyn_add1:"\<lbrakk>pol_coeff S c; pol_coeff S d\<rbrakk>
@@ -4195,7 +4162,7 @@ apply (       simp add:Subring_tOp_ring_tOp,
 apply (rule allI, rule impI,
        frule subring_Ring,
        frule_tac n = n and f = f in pol_coeff_pre,
-       drule_tac a = f in forall_spec1, simp) 
+       drule_tac x = f in spec, simp) 
  apply (cut_tac n = n and c = "(Suc n, f)" in polyn_Suc, simp,
          simp del:npow_suc,
         thin_tac "polyn_expr R X (Suc n) (Suc n, f) =
@@ -4252,7 +4219,7 @@ apply (thin_tac "c = (m, g)")
 apply (frule_tac c = "(m, g)" and k = n in polyn_expr_short, simp,
        simp)
 apply (frule scalar_times_polynTr[of a n],
-       drule_tac a = g in forall_spec1)
+       drule_tac x = g in spec)
  apply (frule_tac c = "(m, g)" and n = n in pol_coeff_le, simp, simp,
         thin_tac "polyn_expr R X n (m, g) = polyn_expr R X n (n, g)",
         thin_tac "a \<cdot>\<^sub>r polyn_expr R X n (n, g) =
@@ -4272,7 +4239,7 @@ lemma (in PolynRg) sp_coeff_nonzero:"\<lbrakk>Idomain S; a \<in> carrier S; a \<
 apply (simp add:sp_cf_def)
 apply (frule_tac y = "(snd c) j" in Idomain.idom_tOp_nonzeros[of S a], 
        assumption+,
-       simp add:pol_coeff_def, simp add:funcset_mem, assumption+)
+       simp add:pol_coeff_def, simp add:Pi_def, assumption+)
 done
 
 lemma (in PolynRg) ext_cf_inductTl:"pol_coeff S (Suc n, f) \<Longrightarrow>
@@ -4368,6 +4335,7 @@ lemma (in PolynRg) low_deg_terms_zero1:"pol_coeff S c \<Longrightarrow>
                             (X^\<^bsup>R j\<^esup>) \<cdot>\<^sub>r (polyn_expr R X (fst c) c)"
 by (cases c) (simp add: low_deg_terms_zeroTr)
 
+declare min_max.sup_absorb2[simp del]
 lemma (in PolynRg) polyn_expr_tOpTr:"pol_coeff S (n, f) \<Longrightarrow> 
       \<forall>g. (pol_coeff S (m, g) \<longrightarrow> (\<exists>h. pol_coeff S ((n + m), h) \<and>
            h (n + m) = (f n) \<cdot>\<^sub>r\<^bsub>S\<^esub> (g m) \<and>
@@ -4484,6 +4452,7 @@ apply (cut_tac k = "Suc (n + na)" and f = "add_cf S (n + na, h)
         frule pol_coeff_mem[of "(n, f)" n], simp, 
         simp add:Ring.ring_tOp_commute)
 done
+declare min_max.sup_absorb2[simp]
 
 lemma (in PolynRg) polyn_expr_tOp:"\<lbrakk>
   pol_coeff S (n, f); pol_coeff S (m, g)\<rbrakk> \<Longrightarrow> \<exists>e. pol_coeff S ((n + m), e) \<and>
@@ -4515,7 +4484,7 @@ apply (cut_tac ring_is_ag,
        rule aGroup.fSum_zero1[of R k "fst c" "\<lambda>j. snd c j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup>"],
        assumption+) 
 apply (rule ballI, 
-       drule_tac b = j in forball_spec1, assumption, simp)
+       drule_tac x = j in bspec, assumption, simp)
 apply (cut_tac subring, 
        simp add:Subring_zero_ring_zero,
        cut_tac X_mem_R,
@@ -4566,7 +4535,7 @@ apply (case_tac "fst c = fst d", simp)
             frule_tac j = j in  pol_coeff_mem[of d], simp)
    apply (subst aGroup.ag_eq_diffzero[of S], assumption+)
 
- apply (simp add:add_cf_def max_def)
+ apply (simp add:add_cf_def)
  apply (case_tac "\<not> (fst c) \<le> (fst d)", simp)
    apply (simp add:m_cf_len)
   apply (drule_tac a = "fst c" in forall_spec, simp, simp)
@@ -4623,8 +4592,10 @@ apply (frule m_cf_pol_coeff[of d])
 
  apply simp
  apply (rule polyn_exprs_eq[of c d "fst d"], assumption+)
-        apply (simp add:min_def, assumption+)
+        apply (simp, assumption+)
 done
+
+declare min_max.sup_absorb2[simp del]
 
 lemma (in PolynRg) pol_expr_unique3:"\<lbrakk>pol_coeff S c; pol_coeff S d; 
       fst c < fst d\<rbrakk> \<Longrightarrow>
@@ -4688,7 +4659,7 @@ apply (frule m_cf_pol_coeff[of d])
         subst polyn_expr_short[THEN sym, of d "fst c"], assumption+,
         simp add:less_imp_le)
  apply (rule polyn_exprs_eq[of c d "fst c"], assumption+)
-        apply (simp add:min_def, assumption+)
+        apply (simp, assumption+)
  apply (simp add:less_imp_le)
 done
 
@@ -4754,11 +4725,11 @@ apply (rule subsetI, simp)
                simp add:nat_not_le_less,
                frule_tac x = "fst d" and y = x and z = "fst c" in 
                less_le_trans, assumption+,
-               drule_tac a = x in forall_spec1, simp add:max_def,
+               drule_tac x = x in spec, simp add:max_def,
                simp add:add_cf_def m_cf_len m_cf_def)
 
         apply (simp,
-               drule_tac a = x in forall_spec1, simp add:max_def,
+               drule_tac x = x in spec, simp add:max_def,
                rule contrapos_pp, simp+,
                simp add:add_cf_def m_cf_len m_cf_def,
                frule_tac j = x in pol_coeff_mem[of c],
@@ -4770,7 +4741,7 @@ apply (rule subsetI, simp)
         case_tac "fst d \<le> fst c",
         frule_tac i = x and j = "fst d" and k = "fst c" in le_trans,
         assumption+, simp,
-        drule_tac a = x in forall_spec1, simp add:max_def,
+        drule_tac x = x in spec, simp add:max_def,
         rule contrapos_pp, simp+,
         simp add:add_cf_def m_cf_len m_cf_def)
    apply (case_tac "fst d = fst c", simp, rotate_tac -1, drule sym, simp,
@@ -4791,7 +4762,7 @@ apply (rule subsetI, simp)
    apply (simp add:nat_not_le_less,
           case_tac "\<not> x \<le> fst c", simp,
           simp add:nat_not_le_less,
-          drule_tac a = x in forall_spec1, simp add:max_def,
+          drule_tac x = x in spec, simp add:max_def,
           simp add:add_cf_def m_cf_len m_cf_def,
           frule_tac j = x in pol_coeff_mem[of d], assumption,
           frule_tac x = "snd d x" in aGroup.ag_mOp_closed, assumption+,
@@ -4800,7 +4771,7 @@ apply (rule subsetI, simp)
                  assumption, simp add:aGroup.ag_inv_zero)
 
    apply (simp,
-          drule_tac a = x in forall_spec1, simp add:max_def,
+          drule_tac x = x in spec, simp add:max_def,
           rule contrapos_pp, simp+,
           simp add:add_cf_def m_cf_len m_cf_def,
           frule_tac x = x and y = "fst c" and z = "fst d" in le_less_trans,
@@ -4817,6 +4788,7 @@ apply (rule subsetI, simp)
  apply blast
  apply simp+
 done
+declare min_max.sup_absorb2[simp]
 
 lemma (in PolynRg) ex_polyn_expr:"p \<in> carrier R \<Longrightarrow>
          \<exists>c. pol_coeff S c \<and> p = polyn_expr R X (fst c) c"
@@ -5069,7 +5041,7 @@ apply (simp add:polyn_expr_short[of c n])
         drule_tac a = n in forall_spec, assumption, simp)
  apply (rule impI)
  apply (cut_tac n_max[of "{j. j \<le> n \<and> snd c j \<noteq> \<zero>\<^bsub>S\<^esub>}" n], erule conjE,
-        drule_tac b = n in forball_spec1, simp, simp)
+        drule_tac x = n in bspec, simp, simp)
  apply (rule subsetI, simp, blast,
         drule sym, simp, assumption)
 apply simp

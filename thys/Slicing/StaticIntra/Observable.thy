@@ -1,6 +1,6 @@
 header {* \isaheader{Observable Sets of Nodes} *}
 
-theory Observable imports Distance begin
+theory Observable imports "../Basic/CFG" begin
 
 context CFG begin
 
@@ -14,11 +14,11 @@ lemma obsE:
   assumes "n' \<in> obs n S"
   obtains as where "n -as\<rightarrow>* n'" and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S"
   and "n' \<in> S"
-proof -
+proof(atomize_elim)
   from `n' \<in> obs n S` 
   have "\<exists>as. n -as\<rightarrow>* n' \<and> (\<forall>nx \<in> set(sourcenodes as). nx \<notin> S) \<and> n' \<in> S"
     by(auto elim:obs.cases)
-  with that show ?thesis by blast
+  thus "\<exists>as. n -as\<rightarrow>* n' \<and> (\<forall>nx\<in>set (sourcenodes as). nx \<notin> S) \<and> n' \<in> S" by blast
 qed
 
 
@@ -89,8 +89,8 @@ qed simp
 lemma path_ex_obs:
   assumes "n -as\<rightarrow>* n'" and "n' \<in> S"
   obtains m where "m \<in> obs n S"
-proof -
-  have "\<exists>m. m \<in> obs n S"
+proof(atomize_elim)
+  show "\<exists>m. m \<in> obs n S"
   proof(cases "\<forall>nx \<in> set(sourcenodes as). nx \<notin> S")
     case True
     with `n -as\<rightarrow>* n'` `n' \<in> S` have "n' \<in> obs n S" by -(rule obs_elem)
@@ -100,7 +100,7 @@ proof -
     hence "\<exists>nx \<in> set(sourcenodes as). nx \<in> S" by fastsimp
     then obtain nx ns ns' where "sourcenodes as = ns@nx#ns'"
       and "nx \<in> S" and "\<forall>n' \<in> set ns. n' \<notin> S"
-      by(fastsimp elim!:leftmost_element_property)
+      by(fastsimp elim!:split_list_first_propE)
     from `sourcenodes as = ns@nx#ns'` obtain as' a as'' 
       where "ns = sourcenodes as'"
       and "as = as'@a#as''" and "sourcenode a = nx"
@@ -110,7 +110,6 @@ proof -
       by(fastsimp intro:obs_elem)
     thus ?thesis by fastsimp
   qed
-  with that show ?thesis by blast
 qed
 
 end

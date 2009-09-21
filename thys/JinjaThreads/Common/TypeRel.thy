@@ -18,7 +18,7 @@ where subcls1I: "\<lbrakk> class P C = Some (D, rest); C \<noteq> Object \<rbrak
 abbreviation subcls :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" ("_ \<turnstile> _ \<preceq>\<^sup>* _"  [71,71,71] 70)
 where "P \<turnstile> C \<preceq>\<^sup>* D \<equiv> (subcls1 P)\<^sup>*\<^sup>* C D"
 
-lemmas [code ind] = rtranclp.intros(1) converse_rtranclp_into_rtranclp
+lemmas [code_ind] = rtranclp.intros(1) converse_rtranclp_into_rtranclp
 
 lemma subcls1D:
   "P \<turnstile> C \<prec>\<^sup>1 D \<Longrightarrow> C \<noteq> Object \<and> (\<exists>fs ms. class P C = Some (D,fs,ms))"

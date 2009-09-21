@@ -1,4 +1,4 @@
-(*  ID:          $Id: Language.thy,v 1.8 2009-03-04 14:00:59 nipkow Exp $
+(*  ID:          $Id: Language.thy,v 1.10 2009-05-19 11:25:43 nipkow Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL

@@ -40,16 +40,7 @@ by simp
 lemma ex_conjI:"\<lbrakk>P c; Q c\<rbrakk> \<Longrightarrow> \<exists>c. P c \<and> Q c"
 by blast
 
-lemma nat_forall_spec:"\<forall>(n::nat). P n \<Longrightarrow> P (m::nat)"
-by simp
-
 lemma forall_spec:"\<lbrakk> \<forall>b. P b \<longrightarrow> Q b; P a\<rbrakk> \<Longrightarrow> Q a" 
-by simp
-
-lemma forall_spec1:"\<forall>x. P x \<Longrightarrow> P a"
-by simp
-
-lemma forball_spec1:"\<lbrakk>\<forall>x\<in>A. P x; b \<in> A\<rbrakk> \<Longrightarrow> P b"
 by simp
 
 lemma a_b_exchange:"\<lbrakk>a; a = b\<rbrakk> \<Longrightarrow> b"
@@ -93,9 +84,6 @@ by auto
 lemma ineq_conv1:"\<lbrakk>a = b; a < c\<rbrakk> \<Longrightarrow> b < c"
 by simp
 
-lemma nat_diff_le:"(a::nat) - x \<le> a" 
-by simp
-
 lemma diff_Suc_pos:"0 < a - Suc 0 \<Longrightarrow>  0 < a"
 by simp
 
@@ -109,12 +97,6 @@ lemma Suc_Suc_less:"Suc 0 < a \<Longrightarrow> Suc (a - Suc (Suc 0)) < a"
 by arith
 
 lemma diff_zero_eq:"n = (0::nat) \<Longrightarrow> m = m - n"
-by simp
-
-lemma nat_not_le:"\<not>(m::nat) \<le> n \<Longrightarrow> n < m"
-by (simp add: not_le)
-
-lemma less_Suc_le1:"x < n \<Longrightarrow> Suc x \<le> n"
 by simp
 
 lemma Suc_less_le:"x < Suc n \<Longrightarrow> x \<le> n"
@@ -138,7 +120,7 @@ by arith
 lemma nat_not_less1:"n \<noteq> 0 \<Longrightarrow> (\<not> (m::nat) < n) = (\<not> m \<le> (n - Suc 0))"
 by arith
 
-lemma nat_eq_le:"m = (n::nat) \<Longrightarrow> m \<le> n" 
+lemma nat_eq_le:"m = (n::nat) \<Longrightarrow> m \<le> n"
 by simp
 
 
@@ -147,7 +129,7 @@ subsection "integers"
 lemma non_zero_int:" (n::int) \<noteq> 0 \<Longrightarrow> 0 < n \<or> n < 0"
 by arith
 
-lemma zgt_0_zge_1:"(0::int) < z \<Longrightarrow> 1 \<le> z" 
+lemma zgt_0_zge_1:"(0::int) < z \<Longrightarrow> 1 \<le> z"
 by arith
 
 lemma not_zle:"(\<not> (n::int) \<le> m) =  (m < n)"
@@ -540,9 +522,7 @@ lemma eq_elems_eq_val:"x = y \<Longrightarrow> f x = f y"
 by simp
 
 lemma cmp_fun:"\<lbrakk>f \<in> A \<rightarrow> B; g \<in> B \<rightarrow> C \<rbrakk> \<Longrightarrow> cmp g f \<in> A \<rightarrow> C"
-apply (simp add:Pi_def, rule allI) 
-apply (rule impI, simp add:cmp_def)
-done
+by (auto simp add:cmp_def)
 
 lemma cmp_fun_image:"\<lbrakk>f \<in> A \<rightarrow> B; g \<in> B \<rightarrow> C \<rbrakk> \<Longrightarrow> 
                           (cmp g f) ` A =  g ` (f ` A)"
@@ -602,11 +582,7 @@ by simp
 
 lemma restriction_of_domain:"\<lbrakk> f \<in> A \<rightarrow> B; A1 \<subseteq> A \<rbrakk> \<Longrightarrow> 
   restrict f A1 \<in> A1 \<rightarrow> B"
-apply (simp add:Pi_def [of "A1" _])
- apply (rule allI) apply (rule impI)
- apply (frule subsetD, assumption+)
- apply (simp add:funcset_mem)
-done
+by blast
 
 lemma restrict_restrict:"\<lbrakk> restrict f A \<in> A \<rightarrow> B; A1 \<subseteq> A \<rbrakk> \<Longrightarrow>
       restrict (restrict f A) A1 = restrict f A1"
@@ -758,7 +734,7 @@ apply (rule equalityI)
  
  apply (rule subsetI, simp add:image_def)
  apply (rule contrapos_pp, simp+, erule conjE, erule bexE)
- apply (frule_tac b = xaa in forball_spec1)
+ apply (frule_tac x = xaa in bspec)
  apply (simp, rule contrapos_pp, simp+)
 done
 
@@ -780,17 +756,12 @@ apply (simp add:cmp_def)
 done
 
 lemma bivar_fun: "\<lbrakk> f \<in> A \<rightarrow> (B \<rightarrow> C); a \<in> A \<rbrakk> \<Longrightarrow> f a \<in> B \<rightarrow> C"
- apply (simp add:funcset_mem)
-done
+by (simp add:Pi_def)
 
 lemma bivar_fun_mem: "\<lbrakk> f \<in> A \<rightarrow> (B \<rightarrow> C); a \<in> A; b \<in> B \<rbrakk> \<Longrightarrow> f a b \<in> C"
  apply (frule funcset_mem[of "f" "A" "B \<rightarrow> C"], assumption+) 
  apply (rule funcset_mem[of "f a" "B" "C"], assumption+)
  done
-
-lemma bivar_func_test:"\<forall>a\<in>A. \<forall>b\<in>B. f a b \<in> C \<Longrightarrow> f \<in> A \<rightarrow> B \<rightarrow> C"
-apply (simp add:Pi_def)
-done
 
 lemma bivar_func_eq:"\<lbrakk>\<forall>a\<in>A. \<forall>b\<in>B. f a b = g a b \<rbrakk> \<Longrightarrow>
                          (\<lambda>x\<in>A. \<lambda>y\<in>B. f x y) =  (\<lambda>x\<in>A. \<lambda>y\<in>B. g x y)"
@@ -807,10 +778,6 @@ apply (rule ballI)
 apply (rule ballI) apply simp
 done
  
-lemma univar_func_test: "\<forall>x \<in> A. f x \<in> B \<Longrightarrow> f \<in> A \<rightarrow> B"
- apply (simp add:Pi_def)
- done
-
 lemma set_image: "\<lbrakk> f \<in> A \<rightarrow> B; A1 \<subseteq> A; A2 \<subseteq> A \<rbrakk> \<Longrightarrow> 
             f`(A1 \<inter> A2) \<subseteq> (f` A1) \<inter> (f` A2)"
  apply (simp add: image_def) 
@@ -818,11 +785,7 @@ lemma set_image: "\<lbrakk> f \<in> A \<rightarrow> B; A1 \<subseteq> A; A2 \<su
  done
 
 lemma image_sub: "\<lbrakk>f \<in> A \<rightarrow> B; A1 \<subseteq> A \<rbrakk> \<Longrightarrow> (f`A1) \<subseteq> B"
- apply (simp add:image_def)
- apply auto 
- apply (frule subsetD, assumption+)
- apply (simp add:funcset_mem)
- done
+by (auto simp add:image_def)
 
 lemma image_sub0: "f \<in> A \<rightarrow> B \<Longrightarrow> (f`A) \<subseteq> B"
 by (simp add:image_sub[of "f" "A" "B" "A"])
@@ -880,11 +843,8 @@ definition
   "surj_to f A B \<longleftrightarrow> f`A = B"
 
 lemma surj_to_test:"\<lbrakk> f \<in> A \<rightarrow> B; \<forall>b\<in>B. \<exists>a\<in>A. f a = b \<rbrakk> \<Longrightarrow>
-                                                  surj_to f A B" 
-apply (simp add:surj_to_def image_def)
- apply auto
- apply (simp add:funcset_mem)
- done
+                                                  surj_to f A B"
+by (auto simp add:surj_to_def image_def)
 
 lemma surj_to_image:"f \<in> A \<rightarrow> B \<Longrightarrow> surj_to f A (f ` A)"
 apply (rule surj_to_test[of "f" "A" "f ` A"])
@@ -1082,8 +1042,7 @@ apply (rule funcset_eq[of g A "compose A h f"], assumption)
  apply (simp add:compose_def extensional_def)
  apply (rule ballI)
  apply (frule sym, thin_tac "compose B g (invfun A B f) = h", simp)
- apply (simp add:compose_def funcset_mem)
- apply (simp add:invfun_l1)
+ apply (simp add:compose_def Pi_def invfun_l1)
 done
 
 lemma compos_invfun_l:"\<lbrakk>f \<in> A \<rightarrow> B; bij_to f A B; g \<in> C \<rightarrow> B; h \<in> C \<rightarrow> A;
@@ -1366,9 +1325,9 @@ apply (rename_tac a)
 apply (rule ex_ex1I)
 prefer 2
  apply (erule conjE)+
- apply (frule_tac b = y in forball_spec1, assumption+,
+ apply (frule_tac x = y in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. x \<le> m",
-        frule_tac b = m in forball_spec1, assumption+,
+        frule_tac x = m in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. x \<le> y", simp)
 
 apply (rule contrapos_pp, simp+)
@@ -1404,7 +1363,7 @@ apply (simp add:skip_def)
 done
 
 lemma skip_fun:"(skip i) \<in> {i. i \<le> n} \<rightarrow> {i. i \<le> (Suc n)}"
-apply (rule univar_func_test, rule ballI)
+apply (rule Pi_I)
 apply (rule skip_mem, assumption)
 done
 
@@ -1515,26 +1474,14 @@ lemma le_imp_add_int:" i \<le> (j::nat) \<Longrightarrow> \<exists>k. j = i + k"
 
 lemma jointfun_hom0:"\<lbrakk> f \<in> {j. j \<le> n} \<rightarrow> A; g \<in> {k. k \<le> m} \<rightarrow> B \<rbrakk> \<Longrightarrow> 
         (jointfun n f m g) \<in> {l. l \<le> (Suc (n + m))} \<rightarrow>  (A \<union> B)"
-apply (rule univar_func_test, rule ballI)
-apply (simp add:jointfun_def)
-apply (rule conjI)
-apply (rule impI, simp add:funcset_mem)
-apply (rule impI, simp add: not_less [symmetric])
-apply (frule_tac x = n and n = x in less_Suc_le1)
- apply (thin_tac "n < x")
- apply (simp add: nat_not_le_less [THEN sym, of "Suc (n + m)"])
- apply (frule_tac m = x and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
- apply simp
- apply (simp add:sliden_def funcset_mem)
-done
+by (simp add:jointfun_def sliden_def Pi_def)
 
 lemma jointfun_mem:"\<lbrakk>\<forall>j \<le> (n::nat). f j \<in> A; \<forall>j \<le> m. g j \<in> B; 
              l \<le> (Suc (n + m))\<rbrakk> \<Longrightarrow> (jointfun n f m g) l \<in> (A \<union> B)"
 apply (rule funcset_mem[of "jointfun n f m g" "{j. j \<le> Suc (n + m)}" "A \<union> B"
        l])
 apply (rule jointfun_hom0)
-apply (rule univar_func_test, rule ballI, simp)+
-apply simp
+apply simp+
 done
 
 lemma jointfun_inj:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow> B; inj_on f {j. j \<le> n};
@@ -1587,23 +1534,7 @@ done
 
 lemma jointfun_hom:"\<lbrakk> f \<in> {i. i \<le> n} \<rightarrow> A; g \<in> {j. j \<le> m} \<rightarrow> B \<rbrakk> \<Longrightarrow> 
                    (jointfun n f m g) \<in> {j. j \<le> (Suc (n + m))} \<rightarrow> A \<union> B"
-apply (rule univar_func_test)
- apply (rule ballI)
-  apply (simp add:jointfun_def)
-  apply (rule conjI) 
-  apply (rule impI) 
-  apply (frule_tac x = x in funcset_mem[of "f" " {i. i \<le> n}" "A"])
-  apply simp apply simp
-apply (rule impI)
-  apply (simp add:sliden_def)
-  apply (thin_tac "f \<in> {i. i \<le> n} \<rightarrow> A")
-  apply (simp add: not_less [symmetric, of _ "n"])
-  apply (frule_tac x = n and n = x in less_Suc_le1)
-  apply (frule_tac m = x and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono)
-  apply simp
-  apply (frule_tac x = "x - Suc n" in funcset_mem[of "g" "{i. i \<le> m}" "B"])
-  apply simp+
- done
+by (simp add:sliden_def Pi_def jointfun_def)
 
 lemma im_jointfunTr1:"(jointfun n f m g) ` {i. i \<le> n} = f ` {i. i \<le> n}"
 apply auto
@@ -1645,13 +1576,13 @@ lemma im_jointfun:"\<lbrakk>f \<in> {j. j \<le> n} \<rightarrow> A; g \<in> {j. 
         simp add:im_jointfunTr2[of n f m g])
  apply (rule ballI)
  apply (simp add:jointfun_def,
-        case_tac "l \<le> n", simp add:funcset_mem,
+        case_tac "l \<le> n", simp add:Pi_def,
         simp add:sliden_def,
         simp add:nat_not_le_less,
         frule_tac m = n and n = l in Suc_leI,
         frule_tac m = l and n = "Suc (n + m)" and l = "Suc n" in diff_le_mono,
         thin_tac "l \<le> Suc (n + m)", simp,
-        simp add:funcset_mem)
+        simp add:Pi_def)
 apply (simp add:Nset_nset[of n m])
 done
         
@@ -1744,9 +1675,7 @@ apply (induct_tac n)
 done
 
 lemma func_pre:"f \<in> {j. j \<le> (Suc n)} \<rightarrow> A \<Longrightarrow> f \<in> {j. j \<le> n} \<rightarrow> A"
-apply (rule univar_func_test, rule ballI)
-apply (simp add:funcset_mem)
-done
+by (simp add:Pi_def)
 
 lemma image_Nset_Suc:"f ` ({j. j \<le> (Suc n)}) =
                              insert (f (Suc n)) (f ` {j. j \<le> n})"
@@ -3743,12 +3672,11 @@ by (frule amin_mult_pos[of "a" "x" "y"], simp add:asprod_amult,
 
 lemma Amin_memTr:"f \<in> {i. i \<le> n} \<rightarrow> Z\<^sub>\<infinity>  \<longrightarrow> Amin n f \<in>  Z\<^sub>\<infinity>" 
 apply (induct_tac n,
-       simp, rule impI,
-       simp add:funcset_mem)
+       simp add:Pi_def)
 apply (rule impI,
        frule_tac func_pre[of "f" _ "Z\<^sub>\<infinity>"],
        simp, rule amin_mem_i, assumption+,
-       simp add:funcset_mem)
+       simp add:Pi_def)
 done
 
 lemma Amin_mem:"f \<in> {i. i \<le> n} \<rightarrow>  Z\<^sub>\<infinity> \<Longrightarrow> Amin n f \<in>  Z\<^sub>\<infinity>" 
@@ -3757,12 +3685,11 @@ done
 
 lemma Amax_memTr:"f \<in> {i. i \<le> n} \<rightarrow> Z\<^bsub>-\<infinity>\<^esub>  \<longrightarrow> Amax n f \<in>  Z\<^bsub>-\<infinity>\<^esub>" 
 apply (induct_tac n,
-       simp, rule impI,
-       simp add:funcset_mem)
+       simp add:Pi_def)
 apply (rule impI,
        frule_tac func_pre[of "f" _ "Z\<^bsub>-\<infinity>\<^esub>"],
        simp, rule amax_mem_m, assumption+,
-       simp add:funcset_mem)
+       simp add:Pi_def)
 done
 
 lemma Amax_mem:"f \<in> {i. i \<le> n} \<rightarrow>  Z\<^bsub>-\<infinity>\<^esub> \<Longrightarrow> Amax n f \<in>  Z\<^bsub>-\<infinity>\<^esub>" 
@@ -3770,10 +3697,10 @@ apply (simp add:Amax_memTr)
 done
 
 lemma Amin_mem_mem:"\<forall>j\<le> n. f j \<in> Z\<^sub>\<infinity> \<Longrightarrow> Amin n f \<in> Z\<^sub>\<infinity>"
-by (rule Amin_mem, rule univar_func_test, rule ballI, simp)
+by (rule Amin_mem, simp)
 
 lemma Amax_mem_mem:"\<forall>j \<le> n. f j \<in> Z\<^bsub>-\<infinity>\<^esub> \<Longrightarrow> Amax n f \<in> Z\<^bsub>-\<infinity>\<^esub>"
-by (rule Amax_mem, rule univar_func_test, rule ballI, simp)
+by (rule Amax_mem, simp)
 
 lemma Amin_leTr:"f \<in> {i. i \<le> n} \<rightarrow>  Z\<^sub>\<infinity> \<longrightarrow> (\<forall>j\<in>{i. i \<le> n}. Amin n f \<le> (f j))"
 apply (induct_tac n,
@@ -3786,7 +3713,7 @@ apply (case_tac "j = Suc n", simp, rule amin_le_r)
 apply (cut_tac x = j and n = n in Nset_pre, simp, assumption,
        cut_tac x = "Amin n f" and y = "f (Suc n)" in amin_le_l,
        thin_tac "j \<le> Suc n", simp) 
-apply (frule_tac a = j in forall_spec1,
+apply (frule_tac x = j in spec,
        thin_tac "\<forall>j\<le>n. Amin n f \<le> f j", simp) 
 done
 
@@ -3815,21 +3742,14 @@ done
 
 lemma Amin_mem_le:"\<lbrakk>\<forall>j \<le> n. (f j) \<in>  Z\<^sub>\<infinity>; j \<in> {j. j \<le> n}\<rbrakk> \<Longrightarrow> 
                                            (Amin n f) \<le> (f j)"
-apply (rule Amin_le,
-       rule univar_func_test, rule ballI, simp,
-       simp)
-done
+by (rule Amin_le, simp, simp)
 
 lemma Amax_mem_le:"\<lbrakk>\<forall>j \<le> n. (f j) \<in>  Z\<^bsub>-\<infinity>\<^esub>; j \<in> {j. j \<le> n}\<rbrakk> \<Longrightarrow> 
                                            (f j) \<le> (Amax n f)"
-apply (rule Amax_ge,
-       rule univar_func_test, rule ballI,
-       simp, simp)
-done
+by (rule Amax_ge, simp, simp)
 
 lemma amin_ge1:"\<lbrakk>(z::ant) \<le> x; z \<le> y \<rbrakk> \<Longrightarrow> z \<le> amin x y"
-apply (simp add:amin_def)
-done
+by (simp add:amin_def)
 
 lemma amin_gt:"\<lbrakk>(z::ant) < x; z < y\<rbrakk> \<Longrightarrow> z < amin x y"
 apply (simp add:less_ant_def, (erule conjE)+,
@@ -3842,8 +3762,8 @@ lemma Amin_ge1Tr:"(\<forall>j\<le>(Suc n). (f j) \<in> Z\<^sub>\<infinity> \<and
                                             z \<le> (Amin (Suc n) f)"
 apply (induct_tac n)
  apply (rule impI)
- apply (frule_tac a = 0 in forall_spec1,
-        frule_tac a = "Suc 0" in forall_spec1,
+ apply (frule_tac x = 0 in spec,
+        frule_tac x = "Suc 0" in spec,
         thin_tac "\<forall>j\<le>Suc 0. f j \<in> Z\<^sub>\<infinity> \<and> z \<le> f j", simp, (erule conjE)+,
         simp add:amin_ge1)
 
@@ -3929,9 +3849,9 @@ apply (case_tac "A = {-\<infinity>}", simp,
       erule exE, erule conjE, simp, rename_tac a, rule ex_ex1I)
 prefer 2
  apply ((erule conjE)+, 
-        frule_tac b = y in forball_spec1, assumption+,
+        frule_tac x = y in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. x \<le> m",
-        frule_tac b = m in forball_spec1, assumption+,
+        frule_tac x = m in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. x \<le> y", simp)
 apply (rule contrapos_pp, simp,
        subgoal_tac "\<exists>w. a = ant w", erule exE,
@@ -3987,15 +3907,15 @@ lemma rev_map_nonempty:"A \<noteq> {} \<Longrightarrow> rev_o ` A \<noteq> {}"
 by (rule contrapos_pp, simp+)
 
 lemma rev_map:"rev_o \<in> LBset (ant (-z)) \<rightarrow> UBset (ant z)"
-by  (rule univar_func_test, rule ballI, simp add:UBset_def LBset_def rev_o_def,
+by  (rule Pi_I, simp add:UBset_def LBset_def rev_o_def,
      frule_tac x = "ant (-z)" and y = x in ale_minus, simp add:aminus)
 
 lemma albs_ex_AMin:"\<lbrakk>A \<subseteq> LBset (ant z); A \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>!m. m\<in>A \<and> (\<forall>x\<in>A. m \<le> x)"
 apply (rule ex_ex1I)
 prefer 2 apply ((erule conjE)+, 
-        frule_tac b = y in forball_spec1, assumption+,
+        frule_tac x = y in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. m \<le> x",
-        frule_tac b = m in forball_spec1, assumption+,
+        frule_tac x = m in bspec, assumption+,
         thin_tac "\<forall>x\<in>A. y \<le> x", simp)
 apply (subgoal_tac "- AMax (rev_o ` A) \<in> A \<and> 
                        (\<forall>x \<in> A. (- AMax (rev_o ` A)) \<le> x)", blast,
@@ -4011,7 +3931,7 @@ apply (subgoal_tac "- AMax (rev_o ` A) \<in> A \<and>
 apply (simp add:image_def rev_o_def,
        erule bexE, simp add:a_minus_minus, rule ballI,
        subgoal_tac "rev_o x \<in> rev_o ` A",
-        frule_tac b = "rev_o x" in forball_spec1, assumption+,
+        frule_tac x = "rev_o x" in bspec, assumption+,
         thin_tac "\<forall>x\<in>rev_o ` A. x \<le> AMax (rev_o ` A)",
         thin_tac "rev_o \<in> LBset (ant z) \<rightarrow> UBset (ant (- z))", 
         thin_tac "rev_o ` A \<noteq> {}",
@@ -4266,7 +4186,7 @@ apply (rule impI, rule ballI,
        simp)
 
 apply (cut_tac x = "Zmax n f" and y = "f (Suc n)" in zmax_ge_l,
-       frule_tac a = j in forall_spec1,
+       frule_tac x = j in spec,
        thin_tac "\<forall>j\<le>n. f j \<le> Zmax n f")
 apply  simp 
 done
@@ -4539,9 +4459,9 @@ proof -
   apply (frule_tac n = "f x" in Suc_leI[of n], thin_tac "n < (f x)")
   apply (frule_tac m = "Suc n" and n = "f x" in le_anti_sym, assumption)
   apply(unfold inj_on_def)
-  apply (frule_tac b = x in forball_spec1, simp,
+  apply (frule_tac x = x in bspec, simp,
        thin_tac "\<forall>x\<in>{i. i \<le> Suc n}. \<forall>y\<in>{i. i \<le> Suc n}. f x = f y \<longrightarrow> x = y",
-        frule_tac b = "Suc n" in forball_spec1, simp)
+        frule_tac x = "Suc n" in bspec, simp)
   apply (frule_tac r = "f (Suc n)" and s = "Suc n" and t = "f x" in trans,
          assumption,
          thin_tac "f (Suc n) = Suc n", thin_tac "Suc n = f x",
@@ -4577,15 +4497,13 @@ done
 
 lemma Nset_injTr1:"\<lbrakk> \<forall>l \<le>(Suc n). f l \<le> (Suc n); inj_on f {i. i \<le> (Suc n)};
                     f (Suc n) = Suc n \<rbrakk> \<Longrightarrow> inj_on f {i. i \<le> n}"
-by (cut_tac Nset_injTr0[of f n],
-       simp, 
-       rule univar_func_test, rule ballI, simp, assumption+) 
+by (cut_tac Nset_injTr0[of f n], simp, simp)
 
 lemma Nset_injTr2:"\<lbrakk>\<forall>l\<le> (Suc n). f l \<le> (Suc n); inj_on f {i. i \<le> (Suc n)}; 
                     f (Suc n) = Suc n\<rbrakk> \<Longrightarrow> \<forall>l \<le> n. f l \<le> n"
 apply (rule allI, rule impI)
 apply (cut_tac k = l in Nset_pre_mem[of f n])
- apply (rule univar_func_test, rule ballI, simp+)
+ apply (simp+)
 done
 
 lemma TR_inj_inj:"\<lbrakk>\<forall>l\<le> (Suc n). f l \<le> (Suc n); inj_on f {i. i \<le> (Suc n)};
@@ -4595,7 +4513,7 @@ apply (frule transpos_inj[of i "Suc n" j], assumption+,
        simp )
 apply (rule  comp_inj [of f "{i. i \<le> (Suc n)}" "{i. i \<le> (Suc n)}"
              "transpos i j" "{i. i \<le> (Suc n)}"])
- apply (rule univar_func_test, rule ballI, simp, assumption,
+ apply (simp, assumption,
         rule transpos_hom[of i "Suc n" j], simp+)
 done
 
@@ -4628,7 +4546,7 @@ definition
 
 lemma ninv_hom:"\<lbrakk>f \<in> {i. i \<le> n} \<rightarrow> {i. i \<le> n}; inj_on f {i. i \<le> n}\<rbrakk> \<Longrightarrow>
                         ninv n f \<in> {i. i \<le> n} \<rightarrow> {i. i \<le> n}"
-apply (rule univar_func_test, rule ballI)
+apply (rule Pi_I)
 apply (simp add:ninv_def)
 apply (frule inj_surj[of f n], assumption+,
        frule_tac x = x in funcset_mem[of f "{i. i \<le> n}" "{i. i \<le> n}"],
@@ -4959,7 +4877,7 @@ done
 lemma (in Order) gt_than_any_outside:"\<lbrakk>A \<subseteq> carrier D; b \<in> carrier D;
        \<forall>x\<in>A. x \<prec> b\<rbrakk> \<Longrightarrow> b \<notin> A"
 apply (rule contrapos_pp, simp+)
-apply (frule_tac b = b in forball_spec1)
+apply (frule_tac x = b in bspec)
 apply  (assumption,
        thin_tac "\<forall>x\<in>A. x \<prec> b", simp add:oless_def)
 done
@@ -5271,9 +5189,6 @@ apply (subst ord_isom_def) (*  The following two lemmas are preliminaries. *)
  apply (simp add:Iod_carrier Order.Iod_carrier)
 
  apply (rule conjI)
-    apply (rule univar_func_test, rule ballI)
-    apply simp
- apply (rule conjI)
     apply (rule restrict_inj[of f "carrier D" "T"])
  apply (simp add:ord_inj_def, assumption+)
 
@@ -5302,9 +5217,6 @@ apply (subst ord_isom_def)
  apply (simp add:SIod_carrier)
 
  apply (rule conjI)
-    apply (rule univar_func_test, rule ballI)
-    apply simp
- apply (rule conjI)
     apply (rule restrict_inj[of f "carrier D" "T"])
  apply (simp add:ord_inj_def, assumption+)
 
@@ -5328,9 +5240,7 @@ apply (cut_tac idmap_bij[of "carrier D"])
 apply (simp add:bij_to_def)
 apply (simp add:ord_inj_def)
 apply (simp add:idmap_def[of "carrier D"])
-apply (fold idmap_def) 
-apply (simp add:idmap_funcs)
-done  
+done
 
 lemma (in Order) ord_isom_bij_to:"\<lbrakk>Order E; ord_isom D E f\<rbrakk> \<Longrightarrow>
                             bij_to f (carrier D) (carrier E)"
@@ -5340,7 +5250,7 @@ by (simp add:bij_to_def ord_isom_def,
 lemma (in Order) ord_inj_mem:"\<lbrakk>Order E; ord_inj D E f; a \<in> carrier D\<rbrakk> \<Longrightarrow>
         (f a) \<in> carrier E"
 apply (simp add:ord_inj_def, (erule conjE)+)
- apply (simp add:funcset_mem)
+ apply (simp add:Pi_def)
 done
 
 lemma (in Order) ord_isom_mem:"\<lbrakk>Order E; ord_isom D E f; a \<in> carrier D\<rbrakk> \<Longrightarrow>
@@ -5522,8 +5432,7 @@ lemma SIod_isom_Iod:"\<lbrakk>Order D; T \<subseteq> carrier D \<rbrakk> \<Longr
 apply (simp add:ord_isom_def ord_inj_def)
 apply (simp add:SIod_carrier Order.Iod_carrier)
 apply (rule conjI)
- apply (fold idmap_def[of T],
-        simp add:idmap_funcs)
+ apply (fold idmap_def[of T])
 
  apply (simp add:SIod_less Order.Iod_less)
 
@@ -5563,8 +5472,8 @@ lemma (in Order) minimum_elem_unique:"\<lbrakk>X \<subseteq> carrier D; minimum_
 apply (frule minimum_elem_mem[of "X" "a1"], assumption+,
        frule minimum_elem_mem[of "X" "a2"], assumption+)
 apply (simp add:minimum_elem_def) 
-apply (drule_tac b = a2 in forball_spec1, assumption)
-apply (drule_tac b = a1 in forball_spec1, assumption)
+apply (drule_tac x = a2 in bspec, assumption)
+apply (drule_tac x = a1 in bspec, assumption)
 apply (rule le_antisym[of a1 a2])
 apply (simp add:subsetD)+
 done 
@@ -5597,7 +5506,7 @@ apply (simp add:minimum_elem_def)
 apply (rule iffI)
  apply simp
  apply (rule ballI, erule conjE)
- apply (drule_tac b = x in forball_spec1, assumption)
+ apply (drule_tac x = x in bspec, assumption)
 
  apply (frule_tac c = x in subsetD[of "X" "T"], assumption+,
         frule_tac c = a in subsetD[of "X" "T"], assumption+)
@@ -5605,7 +5514,7 @@ apply (rule iffI)
 
 apply simp
  apply (rule ballI, erule conjE)
- apply (drule_tac b = x in forball_spec1, assumption)
+ apply (drule_tac x = x in bspec, assumption)
 
 apply (frule_tac c = x in subsetD[of "X" "T"], assumption+,
         frule_tac c = a in subsetD[of "X" "T"], assumption+)
@@ -5652,7 +5561,7 @@ apply (subst minimum_elem_def,
 apply (simp add:ord_isom_mem)
 apply (rule ballI)
 apply (simp add:minimum_elem_def)
-apply (frule_tac b = x in forball_spec1, assumption,
+apply (frule_tac x = x in bspec, assumption,
        thin_tac "Ball S (op \<preceq> a)")
 apply (frule_tac b = x in ord_isom_le[of E f a], assumption+)
 apply (simp add:subsetD)
@@ -5663,7 +5572,7 @@ lemma (in Worder) pre_minimum:"\<lbrakk>T \<subseteq> carrier D; minimum_elem D 
 s \<in> carrier D; s \<prec>\<^bsub>D\<^esub> t \<rbrakk> \<Longrightarrow> \<not> s \<in> T"
 apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def, (erule conjE)+)
- apply (frule_tac b = s in forball_spec1, assumption+,
+ apply (frule_tac x = s in bspec, assumption+,
         thin_tac "\<forall>x\<in>T. t \<preceq>\<^bsub>D\<^esub> x")
  apply (simp add:oless_def, erule conjE)
 apply (frule le_antisym[of s t])
@@ -6086,7 +5995,7 @@ apply (cut_tac Int_lower1[of X "segment D d"],
 apply (rule ballI)
 apply (case_tac "x \<in> segment D d")
  apply (simp add:minimum_elem_def)
- apply (drule_tac b = x in forball_spec1,
+ apply (drule_tac x = x in bspec,
      (* thin_tac "Ball (X \<inter> segment D d) (op \<preceq>\<^bsub>Iod D (segment D d)\<^esub> m)", *)
         simp) apply (
         simp add:Iod_le)
@@ -6368,7 +6277,6 @@ apply (subst ord_isom_def, subst ord_inj_def)
  apply (subgoal_tac "restrict f (segment D a) \<in> 
                               segment D a \<rightarrow> segment E (f a)", simp)
  defer
- apply (rule univar_func_test, rule ballI, simp)
  apply (simp add:ord_isom_segment_mem)
 
  apply (rule conjI)
@@ -6383,7 +6291,7 @@ apply (subst ord_isom_def, subst ord_inj_def)
         frule_tac c = b in subsetD[of "segment E (f a)" "carrier E"],
         assumption+,
  
-        drule_tac b = b in forball_spec1, assumption, (*
+        drule_tac x = b in bspec, assumption, (*
         thin_tac "\<forall>b\<in>carrier E. \<exists>a\<in>carrier D. f a = b", *)
         erule bexE)
  apply (simp add:Order.segment_inc[THEN sym, of E _ "f a"],
@@ -6412,7 +6320,7 @@ apply (cut_tac Ssegment_sub[of D a],
 
 apply (subst ord_isom_def, simp add:ord_inj_def)
 apply (rule conjI) 
- apply (rule univar_func_test, rule ballI)
+ apply (rule Pi_I)
  apply (simp add:SIod_carrier)
  apply (frule_tac c = x in subsetD[of "Ssegment D a" "carrier D"], assumption+)
   apply (frule_tac a = x in Order.ord_isom_mem[of D E f], assumption+)
@@ -6676,11 +6584,7 @@ definition
   "segmap D = (\<lambda>x\<in>(carrier D). segment D x)"
 
 lemma segmap_func:"segmap D \<in> carrier D \<rightarrow> carrier (SS D)"
- apply (rule univar_func_test)
- apply (rule ballI)
- apply (simp add:SS_def) apply (simp add:segmap_def)
- apply blast
-done
+by (simp add:SS_def segmap_def Pi_def) blast
 
 lemma (in Worder) ord_isom_segmap:" ord_isom D (SS D) (segmap D)"
 apply (simp add:ord_isom_def)
@@ -6879,7 +6783,7 @@ apply (rule equalityI)
  apply (rule subsetI)
  apply (frule_tac c = x in subsetD[of T "carrier D"], assumption+)
  apply (subst segment_inc[THEN sym], assumption+)
-  apply (frule_tac b = x in forball_spec1, assumption,
+  apply (frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
   apply (rule contrapos_pp, simp+)
  apply (frule_tac a = x and b = a in not_less_le, assumption+)
@@ -6896,7 +6800,7 @@ apply (rule equalityI)
  apply (thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
  apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def)
- apply (frule_tac b = x in forball_spec1, simp)
+ apply (frule_tac x = x in bspec, simp)
  apply (simp add:segment_inc[THEN sym])
  apply (simp add:not_le_less[THEN sym])
 done
@@ -6913,7 +6817,7 @@ apply (rule equalityI)
  apply (rule subsetI)
  apply (frule_tac c = x in subsetD[of T "carrier D"], assumption+)
  apply (subst Ssegment_inc[THEN sym], assumption+)
-  apply (frule_tac b = x in forball_spec1, assumption,
+  apply (frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec>\<^bsub>D\<^esub> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
   apply (rule contrapos_pp, simp+)
  apply (frule_tac a = x and b = a in Torder.not_less_le, assumption+)
@@ -6930,7 +6834,7 @@ apply (rule equalityI)
  apply (thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec>\<^bsub>D\<^esub> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
  apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def)
- apply (frule_tac b = x in forball_spec1, simp,
+ apply (frule_tac x = x in bspec, simp,
         thin_tac "Ball (carrier D - T) (op \<preceq>\<^bsub>D\<^esub> a)")
  apply (simp add:Ssegment_inc[THEN sym])
  apply (simp add:Torder.not_le_less[THEN sym])
@@ -6992,7 +6896,7 @@ apply (rule equalityI)
  apply (rule subsetI)
  apply (frule_tac c = x in subsetD[of T "carrier D"], assumption+)
  apply (subst Ssegment_inc[THEN sym], assumption+)
-  apply (frule_tac b = x in forball_spec1, assumption,
+  apply (frule_tac x = x in bspec, assumption,
         thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec>\<^bsub>D\<^esub> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
   apply (rule contrapos_pp, simp+)
  apply (frule Worder.Torder[of D],
@@ -7012,7 +6916,7 @@ apply (rule equalityI)
  apply (thin_tac "\<forall>b\<in>T. \<forall>x. x \<prec>\<^bsub>D\<^esub> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T")
  apply (rule contrapos_pp, simp+)
  apply (simp add:minimum_elem_def)
- apply (frule_tac b = x in forball_spec1, simp)
+ apply (frule_tac x = x in bspec, simp)
  apply (simp add:Ssegment_inc[THEN sym])
  apply (simp add:Torder.not_le_less[THEN sym])
 apply assumption
@@ -7033,23 +6937,22 @@ definition
 lemma (in Worder) Tw_func:"\<lbrakk>Worder T; 
      \<forall>a\<in>carrier D. \<exists>b\<in>carrier T. ord_equiv (Iod D (segment D a)) 
          (Iod T (segment T b))\<rbrakk> \<Longrightarrow> Tw\<^bsub>D,T\<^esub> \<in> carrier D \<rightarrow> carrier T" 
-apply (rule univar_func_test)
- apply (rule ballI)
+apply (rule Pi_I)
  apply (simp add:Tw_def)
  apply (rule someI2_ex) apply blast apply simp
-done  
+done
 
 lemma (in Worder) Tw_mem:"\<lbrakk>Worder E; x \<in> carrier D;
      \<forall>a\<in>carrier D. \<exists>b\<in>carrier E. ord_equiv (Iod D (segment D a)) 
          (Iod E (segment E b))\<rbrakk> \<Longrightarrow> (Tw\<^bsub>D,E\<^esub>) x \<in> carrier E" 
 by (frule Tw_func[of E], assumption,
-       simp add:funcset_mem)
+       simp add:Pi_def)
 
 lemma (in Worder) Tw_equiv:"\<lbrakk>Worder T; 
       \<forall>a\<in>carrier D. \<exists>b\<in>carrier T. ord_equiv (Iod D (segment D a)) 
                          (Iod T (segment T b)); x \<in> carrier D \<rbrakk> \<Longrightarrow> 
       ord_equiv (Iod D (segment D x)) (Iod T (segment T ((Tw\<^bsub>D,T\<^esub>) x)))"
-apply (frule_tac b = x in forball_spec1, assumption+,
+apply (frule_tac x = x in bspec, assumption+,
       thin_tac "\<forall>a\<in>carrier D.
       \<exists>b\<in>carrier T. ord_equiv (Iod D (segment D a)) (Iod T (segment T b))")
 
@@ -7376,7 +7279,7 @@ apply (simp add:segment_def,
        simp add:Iod_carrier, erule conjE,
        simp add:Iod_less[of "X"])
 apply (simp add:minimum_elem_def,
-       frule_tac b = x in forball_spec1, assumption,
+       frule_tac x = x in bspec, assumption,
        frule_tac c = x in subsetD[of "X" "carrier D"], assumption+,
        frule_tac a1 = x and b1 = d in not_less_le[THEN sym], assumption+)
 apply simp

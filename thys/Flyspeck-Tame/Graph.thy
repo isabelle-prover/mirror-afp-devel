@@ -1,4 +1,4 @@
-(*  ID:         $Id: Graph.thy,v 1.9.2.1 2009-04-29 05:06:16 lsf37 Exp $
+(*  ID:         $Id: Graph.thy,v 1.10 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -66,14 +66,14 @@ primrec
     (if x=a then (case as of [] \<Rightarrow> b | (a'#as') \<Rightarrow> a') else nextElem as b x)"
 
 constdefs nextVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*) ("_ \<bullet>")(*>*) (* *)
- "f \<bullet> v \<equiv> let vs = vertices f in nextElem vs (hd vs) v"
+ "f \<bullet> \<equiv> let vs = vertices f in nextElem vs (hd vs)"
 
 
 text {* @{text nextVertices} is $n$-fold application of
 @{text nextvertex}. *}
 
 constdefs nextVertices :: "face \<Rightarrow> nat \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_\<^bsup>_\<^esup> \<bullet> _")(*>*) (* *)
-  "f\<^bsup>n\<^esup> \<bullet> v \<equiv> ((f \<bullet>)^n) v"
+  "f\<^bsup>n\<^esup> \<bullet> v \<equiv> (f \<bullet> ^^ n) v"
 
 lemma nextV2: "f\<^bsup>2\<^esup>\<bullet>v = f\<bullet> (f\<bullet> v)"
 by (simp add: nextVertices_def nat_number)
@@ -90,7 +90,7 @@ lemma [simp]: "vertices ((f::face)\<^bsup>op\<^esup>) = (vertices f)\<^bsup>op\<
   by (induct f) (simp add: op_vertices_def)
 lemma [simp]: "xs \<noteq> [] \<Longrightarrow> hd (rev xs)= last xs"
   by(induct xs) simp_all
-lemma [code unfold, code inline del]: "f\<^bsup>op\<^esup>\<bullet>v = (if
+lemma [code_unfold, code_inline del]: "f\<^bsup>op\<^esup>\<bullet>v = (if
       vertices f = [] then hd (vertices f)
       else (let vs = vertices f in nextElem (rev vs) (last vs) v))"
  by (simp add: nextVertex_def op_vertices_def) (*>*) (* *)
@@ -125,11 +125,11 @@ primrec
 lemma vertices_graph: "vertices g = [0 ..< countVertices g]"
 by (induct g) simp
 
-lemma in_vertices_graph [code unfold, code inline del]:
+lemma in_vertices_graph [code_unfold, code_inline del]:
   "v \<in> set (vertices g) = (v < countVertices g)"
 by (simp add:vertices_graph)
 
-lemma len_vertices_graph [code unfold, code inline del]:
+lemma len_vertices_graph [code_unfold, code_inline del]:
   "|vertices g| = countVertices g"
 by (simp add:vertices_graph)
 
@@ -277,7 +277,7 @@ subsection {* Code generator setup *}
 
 definition final_face :: "face \<Rightarrow> bool" where
   [code del]: "final_face = final"
-declare final_face_def [symmetric, code unfold]
+declare final_face_def [symmetric, code_unfold]
 
 lemma final_face_code [code]:
   "final_face (Face vs Final) \<longleftrightarrow> True"
@@ -286,21 +286,21 @@ lemma final_face_code [code]:
 
 definition final_graph :: "graph \<Rightarrow> bool" where
   [code del]: "final_graph = final"
-declare final_graph_def [symmetric, code unfold]
+declare final_graph_def [symmetric, code_unfold]
 
 lemma final_graph_code [code]: "final_graph g = null (nonFinals g)"
   unfolding final_graph_def finalGraph_def null_empty ..
 
 definition vertices_face :: "face \<Rightarrow> vertex list" where
   [code del]: "vertices_face = vertices"
-declare vertices_face_def [symmetric, code unfold]
+declare vertices_face_def [symmetric, code_unfold]
 
 lemma vertices_face_code [code]: "vertices_face (Face vs f) = vs"
   unfolding vertices_face_def by simp
 
 definition vertices_graph :: "graph \<Rightarrow> vertex list" where
   [code del]: "vertices_graph = vertices"
-declare vertices_graph_def [symmetric, code unfold]
+declare vertices_graph_def [symmetric, code_unfold]
 
 lemma vertices_graph_code [code]:
   "vertices_graph (Graph fs n f h) = [0 ..< n]"

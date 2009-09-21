@@ -1,4 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.19 2009-01-01 22:24:32 makarius Exp $
+(*  ID:         $Id: Invariants.thy,v 1.21 2009-08-31 15:34:44 nipkow Exp $
     Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
@@ -1279,7 +1279,7 @@ proof -
 		     apply (rule impI) apply simp
 		     apply (subgoal_tac "set (faceListAt g ! x) = {f \<in> \<F> g. x \<in> \<V> f}")
 		      apply (subgoal_tac "\<F> g \<inter> {f12} = {}")
-		       apply (simp add: f12_def ws_def) apply blast
+		       apply (simp add: f12_def ws_def)
 		      apply (simp add: new_f12)
 		     apply (frule minGraphProps_facesAt_eq)
 		      apply (subgoal_tac "x \<in> \<V> g") apply assumption
@@ -1298,7 +1298,7 @@ proof -
 		     apply (rule impI) apply simp
 		     apply (subgoal_tac "set (faceListAt g ! x) = {f \<in> \<F> g. x \<in> \<V> f}")
 		      apply (subgoal_tac "\<F> g \<inter> {f12} = {}")
-		       apply (simp add: f12_def ws_def) apply blast
+		       apply (simp add: f12_def ws_def)
 		      apply (simp add: new_f12)
 		     apply (frule minGraphProps_facesAt_eq)
 		      apply (subgoal_tac "x \<in> \<V> g") apply assumption
@@ -2085,8 +2085,7 @@ lemma normFaces_makeFaceFinalFaceList: "(normFaces (makeFaceFinalFaceList f fs))
 lemma MakeFaceFinal_facesAt_distinct:
  "f \<in> \<F> g \<Longrightarrow>  minGraphProps g \<Longrightarrow> facesAt_distinct (makeFaceFinal f g)"
   apply (simp add: facesAt_distinct_def makeFaceFinal_def)
-  apply (rule allI) apply (rule impI)
-  apply (simp add: facesAt_def)
+  apply (clarsimp simp: facesAt_def)
   apply (subgoal_tac "v < | (faceListAt g) |") apply (simp add: normFaces_makeFaceFinalFaceList)
   apply (rule minGraphProps8a') apply simp apply simp by (simp add: minGraphProps4)
 

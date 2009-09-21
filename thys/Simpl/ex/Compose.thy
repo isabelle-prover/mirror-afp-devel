@@ -1,4 +1,4 @@
-(*  ID:          $Id: Compose.thy,v 1.7 2009-03-04 14:00:59 nipkow Exp $
+(*  ID:          $Id: Compose.thy,v 1.8 2009-06-25 13:42:08 fhaftmann Exp $
     Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
@@ -169,8 +169,8 @@ constdefs state:: "('s,'f) xstate \<Rightarrow> 's"
 "state x \<equiv> (case x of
                Normal s \<Rightarrow> s
              | Abrupt s \<Rightarrow> s
-             | Fault g \<Rightarrow> arbitrary
-             | Stuck \<Rightarrow> arbitrary)"
+             | Fault g \<Rightarrow> undefined
+             | Stuck \<Rightarrow> undefined)"
 
 lemma state_simps [simp]:
 "state (Normal s) = s"

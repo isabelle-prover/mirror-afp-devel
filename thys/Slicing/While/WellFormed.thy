@@ -86,8 +86,8 @@ next
   case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
   note IH = `V \<notin> Defs c\<^isub>1 n \<Longrightarrow> transfer et s V = s V`
   have "V \<notin> Defs c\<^isub>1 n"
-  proof(rule ccontr)
-    assume "\<not> V \<notin> Defs c\<^isub>1 n"
+  proof
+    assume "V \<in> Defs c\<^isub>1 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>1 l c"
       and "V \<in> lhs c" by fastsimp
     from `labels c\<^isub>1 l c` have "labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)"
@@ -101,8 +101,8 @@ next
   case (WCFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
   note IH = `V \<notin> Defs c\<^isub>1 n \<Longrightarrow> transfer et s V = s V`
   have "V \<notin> Defs c\<^isub>1 n"
-  proof(rule ccontr)
-    assume "\<not> V \<notin> Defs c\<^isub>1 n"
+  proof
+    assume "V \<in> Defs c\<^isub>1 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>1 l c"
       and "V \<in> lhs c" by fastsimp
     from `labels c\<^isub>1 l c` have "labels (c\<^isub>1;;c\<^isub>2) l (c;;c\<^isub>2)"
@@ -116,8 +116,8 @@ next
   case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
   note IH = `V \<notin> Defs c\<^isub>2 n \<Longrightarrow> transfer et s V = s V`
   have "V \<notin> Defs c\<^isub>2 n"
-  proof(rule ccontr)
-    assume "\<not> V \<notin> Defs c\<^isub>2 n"
+  proof
+    assume "V \<in> Defs c\<^isub>2 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>2 l c"
       and "V \<in> lhs c" by fastsimp
     from `labels c\<^isub>2 l c` have "labels (c\<^isub>1;;c\<^isub>2) (l + #:c\<^isub>1) c"
@@ -130,8 +130,8 @@ next
   case (WCFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
   note IH = `V \<notin> Defs c\<^isub>1 n \<Longrightarrow> transfer et s V = s V`
   have "V \<notin> Defs c\<^isub>1 n"
-  proof(rule ccontr)
-    assume "\<not> V \<notin> Defs c\<^isub>1 n"
+  proof
+    assume "V \<in> Defs c\<^isub>1 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>1 l c"
       and "V \<in> lhs c" by fastsimp
     from `labels c\<^isub>1 l c` have "labels (if (b) c\<^isub>1 else c\<^isub>2) (l + 1) c"
@@ -144,8 +144,8 @@ next
   case (WCFG_CondElse c\<^isub>2 n et n' b c\<^isub>1)
   note IH = `V \<notin> Defs c\<^isub>2 n \<Longrightarrow> transfer et s V = s V`
   have "V \<notin> Defs c\<^isub>2 n"
-  proof(rule ccontr)
-    assume "\<not> V \<notin> Defs c\<^isub>2 n"
+  proof
+    assume "V \<in> Defs c\<^isub>2 n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c\<^isub>2 l c"
       and "V \<in> lhs c" by fastsimp
     from `labels c\<^isub>2 l c` have "labels (if (b) c\<^isub>1 else c\<^isub>2) (l + #:c\<^isub>1 + 1) c"
@@ -159,8 +159,8 @@ next
   case (WCFG_WhileBody c' n et n' b)
   note IH = `V \<notin> Defs c' n \<Longrightarrow> transfer et s V = s V`
   have "V \<notin> Defs c' n"
-  proof(rule ccontr)
-    assume "\<not> V \<notin> Defs c' n"
+  proof
+    assume "V \<in> Defs c' n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c' l c"
       and "V \<in> lhs c" by fastsimp
     from `labels c' l c` have "labels (while (b) c') (l + 2) (c;;while (b) c')"
@@ -175,8 +175,8 @@ next
   case (WCFG_WhileBodyExit c' n et b)
   note IH = `V \<notin> Defs c' n \<Longrightarrow> transfer et s V = s V`
   have "V \<notin> Defs c' n"
-  proof(rule ccontr)
-    assume "\<not> V \<notin> Defs c' n"
+  proof
+    assume "V \<in> Defs c' n"
     then obtain c l where [simp]:"n = (_ l _)" and "labels c' l c"
       and "V \<in> lhs c" by fastsimp
     from `labels c' l c` have "labels (while (b) c') (l + 2) (c;;while (b) c')"

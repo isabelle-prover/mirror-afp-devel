@@ -1718,7 +1718,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 	    have "(2::real) \<noteq> 0"
 	      by simp
 	    hence "real (2*(Suc i)) / ((2::real)^(Suc n)) = real (Suc i) / (2::real)^n"
-	      by (simp only: real_of_nat_mult power_real.simps) (simp add: mult_div_cancel)
+	      by (simp only: real_of_nat_mult power.simps) (simp add: mult_div_cancel)
 	    with ai2 have "f t < real (2*(Suc i)) / (2::real)^(n+1)"
 	     by simp 
 	    with False have tA2: "t \<in> A (n+1) (2*i+1)"	  

@@ -1,4 +1,4 @@
-(*  ID:         $Id: PlaneGraphIso.thy,v 1.3 2009-03-02 22:00:14 nipkow Exp $
+(*  ID:         $Id: PlaneGraphIso.thy,v 1.6 2009-08-27 17:49:29 nipkow Exp $
     Author:     Tobias Nipkow
 *)
 
@@ -622,8 +622,7 @@ lemma image_map_of_conv_Image:
  "!!A. \<lbrakk> distinct(map fst xys) \<rbrakk>
  \<Longrightarrow> map_of xys ` A = Some ` (set xys `` A) \<union> (if A \<subseteq> fst ` set xys then {} else {None})"
 apply (induct xys)
- apply (simp add:image_def Image_def)
- apply blast
+ apply (simp add:image_def Image_def Collect_conv_if)
 apply (simp add:image_map_upd dom_map_of_conv_image_fst)
 apply(erule thin_rl)
 apply (clarsimp simp:image_def Image_def)
@@ -764,7 +763,7 @@ lemma pr_iso_test3_conv_2:
   "!!I Fs\<^isub>2. pr_iso_test3 I Fs\<^isub>1 Fs\<^isub>2 = pr_iso_test2 test merge I Fs\<^isub>1 Fs\<^isub>2"
 apply(induct Fs\<^isub>1)
  apply simp
-apply(simp add:test2_conv_test merge2_conv_merge list_ex_iff)
+apply(simp add:test2_conv_test merge2_conv_merge list_ex_iff Bex_def)
 done
 
 corollary pr_iso_test3_corr:

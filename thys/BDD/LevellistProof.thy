@@ -1,5 +1,5 @@
 (*  Title:       BDD
-    ID:          $Id: LevellistProof.thy,v 1.7 2008-06-12 06:57:15 lsf37 Exp $
+    ID:          $Id: LevellistProof.thy,v 1.10 2009-06-08 19:16:06 makarius Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -1301,7 +1301,6 @@ apply  simp
 apply force
 done
 
-
 lemma (in Levellist_impl) Levellist_spec_total:
 shows "\<forall>\<sigma> t. \<Gamma>,\<Theta>\<turnstile>\<^sub>t
         \<lbrace>\<sigma>. Dag \<acute>p \<acute>low \<acute>high t \<and> (\<forall>i < length \<acute>levellist. \<acute>levellist ! i = Null) \<and> 
@@ -1318,9 +1317,9 @@ apply (intro allI impI)
 apply (rule_tac x=\<sigma> in exI)
 apply (rule_tac x=t in exI)
 apply (rule conjI)
-apply  clarsimp
+apply  (clarsimp split:split_if_asm simp del: concat_replicate_trivial)
 apply  (frule replicate_spec [symmetric])
-apply   simp
+apply   (simp)
 apply   (rule conjI)
 apply   (clarsimp simp add: Levellist_def )
 apply    (case_tac i)
@@ -1329,9 +1328,7 @@ apply    simp
 apply  clarsimp
 apply  (drule in_set_replicateD)
 apply  simp
-apply (simp add: mem_Collect_eq)
-apply (elim conjE)
-apply (tactic "hyp_subst_tac 1")
+apply (simp add: mem_Collect_eq Collect_conv_if split:split_if_asm)
 apply vcg_step
 apply (elim exE conjE)
 apply (rule_tac x=ll' in exI)

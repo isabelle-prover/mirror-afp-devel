@@ -152,7 +152,7 @@ no checkin, no enter in s1
 (*
 defs initk_def:  "initk == %r. if r then 1 else 0"
 
-lemma [code unfold]: "(UNIV::bool set) == {True,False}"
+lemma [code_unfold]: "(UNIV::bool set) == {True,False}"
 sorry
 
 lemma "let s\<^isub>2 = [Checkin g r c'',Checkin g' r c'];

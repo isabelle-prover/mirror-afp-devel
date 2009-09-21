@@ -205,48 +205,48 @@ by(auto intro!: ext simp add: finfun_Bex_except_def finfun_Bex_def)
 
 text {* Automatically replace set operations by finfun set operations where possible *}
 
-lemma iso_finfun_mem_mem [code inline]: "x \<in> A\<^sub>f \<longleftrightarrow> x \<in>\<^isub>f A"
+lemma iso_finfun_mem_mem [code_inline]: "x \<in> A\<^sub>f \<longleftrightarrow> x \<in>\<^isub>f A"
 by(auto simp add: mem_def finfun_mem_def)
 
 declare iso_finfun_mem_mem [simp]
 
-lemma iso_finfun_subset_subset [code inline]:
+lemma iso_finfun_subset_subset [code_inline]:
   "A\<^sub>f \<subseteq> B\<^sub>f \<longleftrightarrow> A \<subseteq>\<^isub>f B"
 by(auto)
 
-lemma iso_finfun_eq [code inline]:
+lemma iso_finfun_eq [code_inline]:
   fixes A :: "'a \<Rightarrow>\<^isub>f bool"
   shows "A\<^sub>f = B\<^sub>f \<longleftrightarrow> A = B"
 by(simp add: expand_finfun_eq)
 
-lemma iso_finfun_Un_Un [code inline]:
+lemma iso_finfun_Un_Un [code_inline]:
   "A\<^sub>f \<union> B\<^sub>f = (A \<union>\<^isub>f B)\<^sub>f"
 by(auto)
 
-lemma iso_finfun_Int_Int [code inline]:
+lemma iso_finfun_Int_Int [code_inline]:
   "A\<^sub>f \<inter> B\<^sub>f = (A \<inter>\<^isub>f B)\<^sub>f"
 by(auto)
 
-lemma iso_finfun_empty_conv [code inline]:
+lemma iso_finfun_empty_conv [code_inline]:
   "{} = {}\<^isub>f\<^sub>f"
 by(auto)
 
-lemma iso_finfun_insert_insert [code inline]:
+lemma iso_finfun_insert_insert [code_inline]:
   "insert a A\<^sub>f = (insert\<^isub>f a A)\<^sub>f"
 by(auto)
 
-lemma iso_finfun_Compl_Compl [code inline]:
+lemma iso_finfun_Compl_Compl [code_inline]:
   fixes A :: "'a set\<^isub>f"
   shows "- A\<^sub>f = (- A)\<^sub>f"
 by(auto)
 
-lemma iso_finfun_diff_diff [code inline]:
+lemma iso_finfun_diff_diff [code_inline]:
   fixes A :: "'a set\<^isub>f"
   shows "A\<^sub>f - B\<^sub>f = (A - B)\<^sub>f"
 by(auto)
 
 text {*
-  Do not declare the following two theorems as [code inline], because this causes quickcheck to loop frequently when bounded quantification is used.
+  Do not declare the following two theorems as @{text "[code_inline]"}, because this causes quickcheck to loop frequently when bounded quantification is used.
   For code generation, the same problems occur, but then, no randomly generated FinFun is usually around.
 *}
 

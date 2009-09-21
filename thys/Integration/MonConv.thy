@@ -1,6 +1,8 @@
 header {*Monotone Convergence*}
 
-theory MonConv imports Complex_Main begin
+theory MonConv
+imports Complex_Main
+begin
 
 text {* A sensible requirement for an integral operator is that it be
   ``well-behaved'' with respect to limit functions. To become just a
@@ -118,7 +120,7 @@ proof -
   unfolding diff_minus [symmetric]
   proof -
     from mon_conv have aux: "\<And>r. r > 0 \<Longrightarrow> \<exists>n. \<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < r"
-    unfolding real_mon_conv LIMSEQ_def by auto
+    unfolding real_mon_conv LIMSEQ_def dist_real_def by auto
     with less' show "\<exists>n. \<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < y - z" by auto
   qed
   also

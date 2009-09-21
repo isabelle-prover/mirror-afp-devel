@@ -2,6 +2,8 @@ header {* \isaheader{Auxiliary lemmas} *}
 
 theory AuxLemmas imports Main begin
 
+abbreviation "arbitrary == undefined"
+
 text {* Lemmas about left- and rightmost elements in lists *}
 
 lemma leftmost_element_property:

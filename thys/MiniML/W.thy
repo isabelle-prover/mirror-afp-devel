@@ -1,5 +1,5 @@
 (* Title:     HOL/MiniML/W.thy
-   ID:        $Id: W.thy,v 1.13 2008-06-12 06:57:24 lsf37 Exp $
+   ID:        $Id: W.thy,v 1.14 2009-07-23 16:46:20 makarius Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -524,7 +524,7 @@ apply (frule_tac [2] n = "m" in new_tv_W) prefer 2 apply assumption
 apply (erule_tac [2] conjE)
 apply (drule_tac [2] free_tv_app_subst_scheme_list [THEN subsetD])
  apply (tactic {* 
-   (fast_tac (claset_of @{theory Fun} addDs [sym RS thm "W_var_geD", thm "new_scheme_list_le", thm "codD",
+   (fast_tac (global_claset_of @{theory Fun} addDs [sym RS thm "W_var_geD", thm "new_scheme_list_le", thm "codD",
    thm "new_tv_not_free_tv"]) 2) *})
 apply (case_tac "na: free_tv t - free_tv Sa")
 (* case na ~: free_tv t - free_tv Sa *)

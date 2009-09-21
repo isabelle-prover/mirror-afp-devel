@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/execute_WellType.thy
-    ID:         $Id: execute_WellType.thy,v 1.3 2007-08-28 16:29:19 stefanberghofer Exp $
+    ID:         $Id: execute_WellType.thy,v 1.4 2009-07-14 09:00:10 fhaftmann Exp $
     Author:     Christoph Petzinger
     Copyright   2004 Technische Universitaet Muenchen
 *)
@@ -86,7 +86,7 @@ lemma WTCond2:
     P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<longrightarrow> T\<^isub>1 = T\<^isub>2 \<rbrakk> \<Longrightarrow> P,E \<turnstile> if (e) e\<^isub>1 else e\<^isub>2 :: T\<^isub>1"
 by (fastsimp)
 
-lemmas [code ind] =
+lemmas [code_ind] =
   WT_WTs.WTNew
   WT_WTs.WTCast
   WT_WTs.WTVal

@@ -1,5 +1,5 @@
 (*  Title:      hoare_syntax.ML
-    ID:         $Id: hoare_syntax.ML,v 1.12 2009-03-19 22:21:08 makarius Exp $
+    ID:         $Id: hoare_syntax.ML,v 1.13 2009-06-02 19:13:33 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -1071,7 +1071,6 @@ fun dest_updates (t as (upd as Const (u,_))$k$state) =
 fun init_tr' [Abs (_,_,t)] =
   let  
 
-    val _ = print "starting init_tr'"
     val upds  = case dest_updates t of
                  us as [(Const (gupd,_),v)] => 
                      if Long_Name.base_name gupd = suffix updateN globalsN 

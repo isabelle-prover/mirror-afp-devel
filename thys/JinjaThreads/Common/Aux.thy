@@ -8,7 +8,12 @@ header {*
   \isaheader{Auxiliary Definitions}
 *}
 
-theory Aux imports FinFun begin
+theory Aux
+imports Fin_Fun
+begin
+
+abbreviation "arbitrary == undefined"
+
 (* FIXME move and possibly turn into a general simproc *)
 lemma nat_add_max_le[simp]:
   "((n::nat) + max i j \<le> m) = (n + i \<le> m \<and> n + j \<le> m)"
@@ -18,12 +23,8 @@ lemma Suc_add_max_le[simp]:
   "(Suc(n + max i j) \<le> m) = (Suc(n + i) \<le> m \<and> Suc(n + j) \<le> m)"
 (*<*)by arith(*>*)
 
-(*<*)
-syntax "_Some" :: "'a \<Rightarrow> 'a option" ("(\<lfloor>_\<rfloor>)")
-(*>*)
+notation Some ("(\<lfloor>_\<rfloor>)")
 
-
-translations "\<lfloor>x\<rfloor>" == "Some x"
 (*<*)
 declare
  option.splits[split]

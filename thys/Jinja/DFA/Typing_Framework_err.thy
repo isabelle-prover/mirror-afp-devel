@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/Typing_Framework_err.thy
-    ID:         $Id: Typing_Framework_err.thy,v 1.4 2008-07-25 15:07:17 fhaftmann Exp $
+    ID:         $Id: Typing_Framework_err.thy,v 1.5 2009-08-27 17:49:29 nipkow Exp $
     Author:     Gerwin Klein
     Copyright   2000 TUM
 
@@ -63,15 +63,9 @@ lemma bounded_err_stepI:
   "\<forall>p. p < n \<longrightarrow> (\<forall>s. ap p s \<longrightarrow> (\<forall>(q,s') \<in> set (step p s). q < n))
   \<Longrightarrow> bounded (err_step n ap step) n"
 (*<*)
-apply (unfold bounded_def)
-apply clarify
-apply (simp add: err_step_def split: err.splits)
-apply (simp add: error_def)
- apply blast
-apply (simp split: split_if_asm) 
- apply (blast dest: in_map_sndD)
-apply (simp add: error_def)
-apply blast
+apply (clarsimp simp: bounded_def err_step_def split: err.splits)
+apply (simp add: error_def image_def)
+apply (blast dest: in_map_sndD)
 done
 (*>*)
 
