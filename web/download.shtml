@@ -53,13 +53,13 @@
       [<a href="release/entry-status.txt">entry status</a>]
   </td></tr></tr>
 
-	<tr><td class="head">CVS access:</td></tr>	
+	<tr><td class="head">Mercurial access:</td></tr>	
 
 	<tr><td class="entry">Please refer to 
-	the <a href="http://sourceforge.net/cvs/?group_id=101909">description</a> on 
-	sourceforge. Use <tt>thys</tt> as module name. You can also <a 
-	href="http://afp.cvs.sourceforge.net/afp/">browse</a> the repository 
-	online </td></tr>
+	the <a href="http://sourceforge.net/projects/afp/develop">description</a>
+	on sourceforge. You can also <a 
+	href="http://afp.hg.sourceforge.net/hgweb/afp/afp/">browse</a> the
+	development repository online.</td></tr>
 
 	</tbody></table></td> </tr> </table>
 </body>
