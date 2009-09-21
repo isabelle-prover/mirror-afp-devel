@@ -1,5 +1,5 @@
 (*  Title:      Jinja/J/SmallTypeSafe.thy
-    ID:         $Id: TypeSafe.thy,v 1.6 2007-10-09 07:19:16 fhaftmann Exp $
+    ID:         $Id$
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -119,28 +119,8 @@ and reds_lA_incr: "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<l
 (*<*)
 apply(induct rule:red_reds_inducts)
 apply(simp_all del:fun_upd_apply add:hyperset_defs)
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply force
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply(blast dest:red_lcl_incr)
-apply(blast dest:red_lcl_incr)
-apply blast
-apply blast
-apply blast
+apply auto
+apply(blast dest:red_lcl_incr)+
 done
 (*>*)
 
