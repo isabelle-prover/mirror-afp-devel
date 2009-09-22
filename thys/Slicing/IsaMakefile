@@ -39,7 +39,7 @@ $(SESSION-NAME): Jinja $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 Jinja:
 	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(OUT)/Jinja ROOT.ML \
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(OUT)/Jinja ROOT.ML Slicing.thy \
   Basic/*.thy Dynamic/*.thy StaticIntra/*.thy While/*.thy JinjaVM/*.thy \
   document/root.tex 
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) Jinja $(SESSION-NAME)
