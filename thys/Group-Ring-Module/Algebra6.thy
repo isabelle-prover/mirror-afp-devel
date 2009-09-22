@@ -414,7 +414,7 @@ apply (subst polyn_c_max, assumption,
        thin_tac "deg_n R S X (polyn_expr R X (fst c) c) = c_max S c",
        thin_tac "deg_n R S X (polyn_expr R X (fst d) d) = c_max S d")
  
-  apply (subst polyn_add, assumption+, simp)
+  apply (subst polyn_add, assumption+, simp add: min_max.sup_absorb1 min_max.sup_absorb2)
          
   apply (rule contrapos_pp, simp+,
          frule_tac c = "(c_max S c, snd c)" and d = "(c_max S d, snd d)" in 
@@ -456,6 +456,7 @@ apply (frule_tac c = c and k = "c_max S c" in polyn_expr_short, simp,
            polyn_expr R X (c_max S c) (c_max S c, snd c)",
         thin_tac "polyn_expr R X (c_max S d) d =
            polyn_expr R X (c_max S d) (c_max S d, snd d)")
+  apply (simp add: min_max.sup_absorb1 min_max.sup_absorb2)
   apply (frule_tac c = "(c_max S c, snd c)" and d = "(c_max S d, snd d)" in 
                   add_cf_pol_coeff, assumption+,
          rule_tac p = "polyn_expr R X (c_max S d)
@@ -1700,6 +1701,8 @@ apply (frule s_cf_expr[of "1\<^sub>r"], assumption+, (erule conjE)+)
  apply simp apply assumption
 done
 
+declare min_max.sup_absorb1 [simp] min_max.sup_absorb2 [simp]
+
 lemma (in PolynRg) erH_multTr:"\<lbrakk>PolynRg A B Y; h \<in> rHom S B; 
       pol_coeff S c\<rbrakk> \<Longrightarrow> 
  \<forall>f g. pol_coeff S (m, f) \<and> pol_coeff S (((fst c) + m), g) \<and> 
@@ -1838,7 +1841,7 @@ apply (frule_tac x1 = "polyn_expr R X l (l, u)" and y1 = "f (Suc n)" and
          simp add:sp_cf_len, simp only:ring_tOp_commute,
          frule_tac c1 = "sp_cf S (f (Suc n)) (l, u)" and j1 = "Suc n" in 
          low_deg_terms_zero1[THEN sym],
-         simp only:sp_cf_len, simp del:npow_suc)
+         simp only:sp_cf_len, simp del: npow_suc)
    apply (frule_tac c = "sp_cf S (f (Suc n)) (l, u)" and n = "Suc n" in 
           ext_cf_pol_coeff,
           frule_tac c = "(l + n, e)" and d = "ext_cf S (Suc n) (sp_cf S (
@@ -3380,7 +3383,7 @@ apply (erule disjE)
         drule_tac a = j in forall_spec, assumption)
         apply (rule Ring.ideal_pOp_closed[of S I], assumption+)
 
- apply (simp, subst add_cf_def, simp, rule impI,
+ apply (simp add: min_max.sup_absorb1 min_max.sup_absorb2, subst add_cf_def, simp, rule impI,
         drule_tac x = j in spec, 
         drule_tac a = j in forall_spec, assumption,
         frule_tac x = j and y = "fst (s_cf R S X q)" and 
@@ -5217,5 +5220,7 @@ apply (frule aadd_le_mono[of "0" "deg R' (S /\<^sub>r (S \<diamondsuit>\<^sub>p 
 apply (simp add:aadd_0_l, simp add:aadd_commute[of  _ 
                 "deg R S X (snd (Hpr\<^bsub> R S X t R' Y f g h\<^esub> m))"])
 done
+
+declare min_max.sup_absorb1 [simp del] min_max.sup_absorb2 [simp del]
 
 end

@@ -60,7 +60,7 @@ lemma length_emsapss_encode:
   apply (simp add: BC)
   apply (insert roundup_ge_emBits [of x 8])
   apply safe
-  apply (simp)+
+  apply (simp add: min_max.sup_absorb1)
   done
 
 lemma bv_to_nat_emsapss_encode_le: "emsapss_encode m x \<noteq> [] \<Longrightarrow> bv_to_nat (emsapss_encode m x) < 2^(roundup x 8 * 8)" 
@@ -558,3 +558,4 @@ lemma rsa_pss_verify: "\<lbrakk> prime p; prime q; p \<noteq> q; n = p*q; e*d mo
 by (simp add: verify)
 
 end
+
