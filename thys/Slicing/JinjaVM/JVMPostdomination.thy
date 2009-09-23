@@ -169,7 +169,7 @@ by (fastsimp dest: mdecl_visible simp: wf_jvm_prog_phi_def EP_def)
 lemma C_sees_M_in_EP [simp]:
   "EP \<turnstile> ''C'' sees ''M'': []\<rightarrow>Void = (1, 0, [Push Unit, Return], []) in ''C''"
 apply (auto simp: Method_def EP_def)
-apply (rule_tac x="empty(''M'' \<mapsto> (([], Void, 1, 0, [Push Unit, Return], []),''C''))" in exI)
+apply (rule_tac x="Map.empty(''M'' \<mapsto> (([], Void, 1, 0, [Push Unit, Return], []),''C''))" in exI)
 apply auto
 apply (rule Methods.intros(2))
    apply (fastsimp simp: class_def)

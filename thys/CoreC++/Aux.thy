@@ -1,19 +1,18 @@
 (*  Title:       CoreC++
-    ID:          $Id: Aux.thy,v 1.10 2008-06-23 21:24:36 makarius Exp $
     Author:      David von Oheimb, Tobias Nipkow, Daniel Wasserrab  
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
 header {* \isaheader{Auxiliary Definitions} *}
 
-theory Aux imports Main While_Combinator begin
-
+theory Aux
+imports Main While_Combinator
+begin
 
 declare
  option.splits[split]
  Let_def[simp]
  subset_insertI2 [simp]
- Un_subset_iff[simp]
  Cons_eq_map_conv [iff]
 
 (* FIXME move and possibly turn into a general simproc *)
@@ -25,16 +24,7 @@ lemma Suc_add_max_le[simp]:
   "(Suc(n + max i j) \<le> m) = (Suc(n + i) \<le> m \<and> Suc(n + j) \<le> m)"
 by arith
 
-
 notation Some  ("(\<lfloor>_\<rfloor>)")
-
-declare
- option.splits[split]
- Let_def[simp]
- subset_insertI2 [simp]
- Un_subset_iff[simp]
-
-
 
 lemma butlast_tail:
   "butlast (Xs@[X,Y]) = Xs@[X]"

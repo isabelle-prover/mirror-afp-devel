@@ -81,11 +81,11 @@ fun is_empty_set (Const (@{const_name Orderings.bot}, _)) = true
   | is_empty_set _ = false;
 
 fun mk_Int Ts A B = let val T = fastype_of1 (Ts, A)
-  in Const (@{const_name Set.inter}, T --> T --> T) $ A $ B end;
+  in Const (@{const_name Lattices.inf}, T --> T --> T) $ A $ B end;
 
-fun mk_Un T (A, B) = Const (@{const_name Set.union}, T --> T --> T) $ A $ B;
+fun mk_Un T (A, B) = Const (@{const_name Lattices.sup}, T --> T --> T) $ A $ B;
 
-fun dest_Un (Const (@{const_name Set.union}, _) $ t1 $ t2) = dest_Un t1 @ dest_Un t2
+fun dest_Un (Const (@{const_name Lattices.sup}, _) $ t1 $ t2) = dest_Un t1 @ dest_Un t2
   | dest_Un t = [t]
 
 fun UN_const (dT as (Type ("fun", [dT', @{typ bool}]))) rT =
