@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
   <table width="100%">
@@ -45,7 +44,7 @@ border="0" ALT="Google"></A>
 </FORM>
 <!-- SiteSearch Google -->
 <p>&nbsp;</p>
-<p>Google may take some time to index new pages. New Submissions might be missed.</p>
+<p>Google may take some time to index new pages. Very new Submissions might be missed.</p>
 </div>
 
 </td> </tr> </table>
