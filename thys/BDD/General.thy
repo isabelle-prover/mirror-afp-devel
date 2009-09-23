@@ -1,5 +1,4 @@
 (*  Title:       BDD
-    ID:          $Id: General.thy,v 1.7 2008-06-12 06:57:15 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -1388,8 +1387,7 @@ lemma reduced_children_parent:
 (*Die allgemeine Form mit i <=j \<Longrightarrow> Nodes i levellista \<subseteq> Nodes j levellista wäre schöner, aber wie beweist man das? *)
 lemma Nodes_subset: "Nodes i levellista \<subseteq> Nodes (Suc i) levellista"
   apply (simp add: Nodes_def)
-  apply (simp add: UN_Un set_split)
-  apply blast
+  apply (simp add: set_split)
   done
 
 lemma Nodes_levellist: 

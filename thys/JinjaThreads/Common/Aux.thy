@@ -30,7 +30,6 @@ declare
  option.splits[split]
  Let_def[simp]
  subset_insertI2 [simp]
- Un_subset_iff[simp]
 (*>*)
 
 
