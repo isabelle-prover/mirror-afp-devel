@@ -804,9 +804,8 @@ apply (frule Group_Gp [of "H"],
        frule Group.sg_subset[of "\<natural>H" "H1"], assumption,
        frule Group.sg_subset[of "\<natural>H" "H \<inter> K"], assumption+,
        frule Group.smult_nsg_sg[of "\<natural>H" "H \<inter> K" "H1"], assumption+,
-       frule Group.s_top_sub[of "\<natural>H" "H1" "H \<inter> K"], assumption+,
-       simp add:Gp_carrier,
-       simp only:s_top_induced[of "H" "H1" "H \<inter> K"])
+       frule Group.s_top_sub[of "\<natural>H" "H1" "H \<inter> K"], assumption+)
+apply (simp only: Gp_carrier s_top_induced [of "H" "H1" "H \<inter> K"])
 apply (frule subg_sg_sg[of "H" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"], assumption+,
        simp add:Gp_inherited[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K" "H"])
 done

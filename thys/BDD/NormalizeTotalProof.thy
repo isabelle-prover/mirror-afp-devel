@@ -1,5 +1,4 @@
 (*  Title:       BDD
-    ID:          $Id: NormalizeTotalProof.thy,v 1.8 2008-06-12 06:57:15 lsf37 Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -1287,10 +1286,7 @@ next
             have "set_of nort \<subseteq> repc `(Nodes (n + 1) ll)"
             proof -
               have Nodesn_in_NodesSucn: "Nodes n ll \<subseteq> Nodes (n + 1) ll"
-		apply (simp add: Nodes_def)
-		apply (simp add: UN_Un set_split)
-		apply blast
-		done
+		by (simp add: Nodes_def set_split)
               then have repbNodesn_in_repbNodesSucn: 
 		"repb `(Nodes n ll) \<subseteq> repb `(Nodes (n + 1) ll)"
 		by blast
@@ -1782,10 +1778,7 @@ next
                   fix rnort
                   assume rnort_in_Nodes: " set_of rnort \<subseteq> repb ` Nodes n ll"
                   have "Nodes n ll \<subseteq> Nodes (n + 1) ll" 
-                    apply (simp add: Nodes_def) 
-                    apply (simp add: set_split UN_Un) 
-                    apply blast
-                    done
+                    by (simp add: Nodes_def set_split) 
                   then have "repc ` Nodes n ll \<subseteq> repc ` Nodes (n + 1) ll"
                     by blast
                   with rnort_in_Nodes repbNodes_repcNodes 

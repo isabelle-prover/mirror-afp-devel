@@ -1047,7 +1047,7 @@ proof(induct rule:eval_evals_inducts)
   case (Block e\<^isub>0 h\<^isub>0 l\<^isub>0 V e\<^isub>1 h\<^isub>1 l\<^isub>1 T)
   have IH: "\<And>W. fv e\<^isub>0 \<subseteq> W \<Longrightarrow> P \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0,l\<^isub>0(V:=None)|`W)\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1,l\<^isub>1|`W)\<rangle>" by fact
   have "fv({V:T; e\<^isub>0}) \<subseteq> W" by fact+
-  hence "fv e\<^isub>0 - {V} \<subseteq> W" by (simp_all add:Un_subset_iff)
+  hence "fv e\<^isub>0 - {V} \<subseteq> W" by simp_all
   hence "fv e\<^isub>0 \<subseteq> insert V W" by fast
   from IH[OF this]
   have "P \<turnstile> \<langle>e\<^isub>0,(h\<^isub>0, (l\<^isub>0|`W)(V := None))\<rangle> \<Rightarrow> \<langle>e\<^isub>1,(h\<^isub>1, l\<^isub>1|`insert V W)\<rangle>"

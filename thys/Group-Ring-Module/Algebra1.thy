@@ -6010,7 +6010,6 @@ apply (case_tac "x \<in> segment D d")
 apply (simp add:Iod_Order)
  apply (simp add:Iod_carrier)
  apply (simp add:Int_lower2)
- apply assumption
 done
 
 lemma (in Torder) segment_mono:"\<lbrakk>a \<in> carrier D; b \<in> carrier D\<rbrakk> \<Longrightarrow>
