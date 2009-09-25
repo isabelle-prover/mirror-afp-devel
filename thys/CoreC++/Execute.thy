@@ -712,7 +712,7 @@ lemmas [code_ind_set] = rtrancl.rtrancl_refl converse_rtrancl_into_rtrancl
 consts_code
   "insert :: ('a \<times> ('b \<Rightarrow> 'c)) \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("(fn x => fn {*Set*} xs => {*Set*} (Library.insert (eq'_fst (op =)) x xs))")
-  "op Un :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set => ('a \<times> ('b \<Rightarrow> 'c)) set"
+  "Executable_Set.union :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set => ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("(fn {*Set*} xs => fn {*Set*} ys => {*Set*} (Library.gen'_union (eq'_fst (op =)) (xs, ys)))")
   "minus :: ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set \<Rightarrow> ('a \<times> ('b \<Rightarrow> 'c)) set"
     ("(fn {*Set*} xs => fn {*Set*} ys => {*Set*} (Library.subtract (eq'_fst (op =)) ys xs))")
