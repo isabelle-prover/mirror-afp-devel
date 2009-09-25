@@ -10,6 +10,7 @@
 ## settings
 
 DEST=afp@web.sourceforge.net:htdocs/
+SRC=ssh://macbroy23.informatik.tu-muenchen.de//home/kleing/afp-hg/release
 
 if [ -n "$SF_LOGIN" ]; then
     DEST="$SF_LOGIN,$DEST"
@@ -25,6 +26,7 @@ THYS=thys
 TAR=tar
 
 PRG="$(basename "$0")"
+DIR="$(dirname "$0")"
 
 ## functions
 
@@ -100,9 +102,16 @@ EXPORT=$EXPORT_PRE-$DATE
 
 ###
 
-echo "Exporting from working copy."
+WD="$(pwd)"
+cd "$DIR"
+ROOT="$(hg root)" || fail "could not obtain repos root"
+cd "$ROOT" || fail "could not cd to repos root"
+
+echo "Checking sync with $SRC"
+$HG outgoing $SRC && fail "Push changes to SF first."
+
+echo "Exporting from working copy $ROOT"
 rm -rf "afp-export-$DATE"
-$HG outgoing && fail "Push changes to SF first."
 $HG archive -I thys -I web afp-export-$DATE || fail "hg archive failed."
 cd afp-export-$DATE
 mv thys $EXPORT
