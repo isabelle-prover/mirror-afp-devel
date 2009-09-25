@@ -911,8 +911,8 @@ apply intro_locales
  apply (frule_tac D = "Iod ODnods (segment ODnods x)" in Worder.ex_minimum)
  apply (case_tac "(segment ODnods x) \<inter> X \<noteq> {}")
  apply (frule_tac a = "segment ODnods x \<inter> X" in forall_spec)
-  apply (simp add:Order.Iod_carr_segment, simp add:Int_lower1,
-        thin_tac "\<forall>X. X \<subseteq> carrier (Iod ODnods (segment ODnods x)) \<and> X \<noteq> {}
+  apply (simp add:Order.Iod_carr_segment)
+  apply (thin_tac "\<forall>X. X \<subseteq> carrier (Iod ODnods (segment ODnods x)) \<and> X \<noteq> {}
          \<longrightarrow>  (\<exists>xa. minimum_elem (Iod ODnods (segment ODnods x)) X xa)")
   apply (erule exE)
  
@@ -3206,10 +3206,11 @@ apply (subst Worder_axioms_def)
         simp only:Iod_carrier, simp add:Int_lower2, blast,
         thin_tac "\<forall>X. X \<subseteq> carrier (Iod D W) \<and> X \<noteq> {} \<longrightarrow>
             (\<exists>x. minimum_elem (Iod D W) X x)", erule exE)
- apply (frule_tac W = W in mem_WWa_sub_carrier,
-        frule_tac D = "Iod D W" and X = "X \<inter> W" and a = xa in 
-                      Order.minimum_elem_mem,
-        simp add:Iod_carrier, rule subsetI, simp, assumption+)
+ apply (frule_tac W = W in mem_WWa_sub_carrier)
+ apply (frule_tac D = "Iod D W" and X = "X \<inter> W" and a = xa in 
+                      Order.minimum_elem_mem)
+ apply (simp add:Iod_carrier)
+ apply simp
 apply (rule contrapos_pp, (simp del:Union_iff)+, erule conjE)
  apply (simp add:minimum_elem_def)
  apply (frule_tac a = xa in forall_spec, assumption+,

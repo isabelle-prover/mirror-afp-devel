@@ -226,24 +226,19 @@ apply(simp_all add:hyperset_defs)
 done
 
 
-
 lemma red_lA_incr: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> \<lfloor>dom l\<rfloor> \<squnion> \<A> e \<sqsubseteq>  \<lfloor>dom l'\<rfloor> \<squnion> \<A> e'"
-and reds_lA_incr: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> \<lfloor>dom l\<rfloor> \<squnion> \<A>s es \<sqsubseteq>  \<lfloor>dom l'\<rfloor> \<squnion> \<A>s es'"
-
-apply(induct rule:red_reds_inducts)
-apply(simp_all del:fun_upd_apply add:hyperset_defs)
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply blast
-apply force
-apply blast+
-done
+  and reds_lA_incr: "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<rightarrow>] \<langle>es',(h',l')\<rangle> \<Longrightarrow> \<lfloor>dom l\<rfloor> \<squnion> \<A>s es \<sqsubseteq>  \<lfloor>dom l'\<rfloor> \<squnion> \<A>s es'"
+  apply (induct rule:red_reds_inducts)
+  apply (simp_all del: fun_upd_apply add: hyperset_defs)
+  apply blast
+  apply blast
+  apply blast
+  apply blast
+  apply blast
+  apply blast
+  apply blast
+  apply auto
+  done
 
 
 

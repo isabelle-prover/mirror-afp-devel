@@ -35,12 +35,7 @@ apply blast
 apply blast
 apply blast
 apply blast
-apply blast
-apply blast
 apply(force split: split_if_asm)
-apply blast
-apply blast
-apply blast
 apply blast
 apply blast
 apply blast
