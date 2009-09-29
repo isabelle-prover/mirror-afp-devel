@@ -489,7 +489,7 @@ proof -
     qed
   qed
 qed
-  from P_at_0 P_at_Suc have main: "\<And> n. ?P n" by (rule Nat.nat.induct)
+  from P_at_0 P_at_Suc have main: "\<And> n. ?P n" by (rule nat.induct)
   def D_def: D \<equiv> "nat_to_set u"
   from D_def A have P1: "nat_to_set u = D" by auto
   from D_def A have P2: "nat_to_set v = D" by auto
@@ -634,7 +634,7 @@ proof -
       qed
     qed
   qed
-  from P_at_0 P_at_Suc have main: "\<And> n. ?P n" by (rule Nat.nat.induct)
+  from P_at_0 P_at_Suc have main: "\<And> n. ?P n" by (rule nat.induct)
   from A main show ?thesis by auto
 qed
 
