@@ -26,8 +26,6 @@ by eval
 lemma pre_iso_test8: "\<forall>g \<in> set Oct. pre_iso_test g"
 by eval
 
-ML "set Toplevel.timing"
-
 lemma same3: "same (tameEnum 0 800000) Tri"
 by eval
 
@@ -45,7 +43,5 @@ by eval
 
 lemma same8: "same (tameEnum 5 2000000) Oct"
 by eval
-
-ML "reset Toplevel.timing"
 
 end

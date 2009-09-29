@@ -28,8 +28,8 @@ structure HoareSyntax =
 struct
 open HoarePackage
 
-val use_call_tr' = ref true;
-val hide_guards = ref false
+val use_call_tr' = Unsynchronized.ref true;
+val hide_guards = Unsynchronized.ref false
 
 val globalsN = "globals";
 val localsN = "locals";
@@ -105,7 +105,7 @@ fun is_global ctxt name =
 
 exception UNDEFINED of string
 
-val component_name_as_string = ref false;
+val component_name_as_string = Unsynchronized.ref false;
 fun mk_component_name s = if !component_name_as_string
                           then mk_string (String.explode s)
                           else Syntax.free ((*varname*) s);

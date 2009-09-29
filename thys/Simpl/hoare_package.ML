@@ -25,10 +25,10 @@ struct
 
 (* Misc *)
 
-val use_generalise = ref false;
-val sort_variables = ref true;
-val use_cond_inv_modifies = ref true;
-val trace_hoare = ref false;
+val use_generalise = Unsynchronized.ref false;
+val sort_variables = Unsynchronized.ref true;
+val use_cond_inv_modifies = Unsynchronized.ref true;
+val trace_hoare = Unsynchronized.ref false;
 
 val foldl = Library.foldl;
 val foldr = Library.foldr;
