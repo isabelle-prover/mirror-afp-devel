@@ -618,17 +618,17 @@ next
 next
   case WCFG_Skip
   from `Skip \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_0_) = n\<^isub>2` `(_Exit_) \<noteq> n\<^isub>2'`
-  have False by(fastsimp elim:WCFG.cases)
+  have False by(fastsimp elim:WCFG.While_CFG.cases)
   thus ?case by simp
 next
   case (WCFG_LAss V e)
   from `V:=e \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_0_) = n\<^isub>2` `(_1_) \<noteq> n\<^isub>2'`
-  have False by -(erule WCFG.cases,auto)
+  have False by -(erule WCFG.While_CFG.cases,auto)
   thus ?case by simp
 next
   case (WCFG_LAssSkip V e)
   from `V:=e \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_1_) = n\<^isub>2` `(_Exit_) \<noteq> n\<^isub>2'`
-  have False by -(erule WCFG.cases,auto)
+  have False by -(erule WCFG.While_CFG.cases,auto)
   thus ?case by simp
 next
   case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
@@ -636,8 +636,8 @@ next
   \<Longrightarrow> \<exists>Q Q'. et = (Q)\<^isub>\<surd> \<and> et\<^isub>2 = (Q')\<^isub>\<surd> \<and> (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
   from `c\<^isub>1;;c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `c\<^isub>1 \<turnstile> n -et\<rightarrow> n'` `n = n\<^isub>2` `n' \<noteq> n\<^isub>2'`
   have "c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2' \<or> (c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> (_Exit_) \<and> n\<^isub>2' = (_0_) \<oplus> #:c\<^isub>1)"
-    apply - apply(erule WCFG.cases)
-    apply(auto intro:WCFG.intros)
+    apply - apply(erule WCFG.While_CFG.cases)
+    apply(auto intro:WCFG.While_CFG.intros)
     by(case_tac n,auto dest:WCFG_sourcelabel_less_num_nodes)+
   thus ?case
   proof
@@ -654,8 +654,8 @@ next
   \<Longrightarrow> \<exists>Q Q'. et = (Q)\<^isub>\<surd> \<and> et\<^isub>2 = (Q')\<^isub>\<surd> \<and> (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))`
   from `c\<^isub>1;;c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `c\<^isub>1 \<turnstile> n -et\<rightarrow> (_Exit_)` `n = n\<^isub>2` `n \<noteq> (_Entry_)`
     `(_0_) \<oplus> #:c\<^isub>1 \<noteq> n\<^isub>2'` have "c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2' \<and> (_Exit_) \<noteq> n\<^isub>2'"
-    apply - apply(erule WCFG.cases)
-    apply(auto intro:WCFG.intros)
+    apply - apply(erule WCFG.While_CFG.cases)
+    apply(auto intro:WCFG.While_CFG.intros)
     by(case_tac n,auto dest:WCFG_sourcelabel_less_num_nodes)+
   from IH[OF this[THEN conjunct1] `n = n\<^isub>2` this[THEN conjunct2]]
   show ?case .
@@ -666,8 +666,8 @@ next
   from `c\<^isub>1;;c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `c\<^isub>2 \<turnstile> n -et\<rightarrow> n'` `n \<oplus> #:c\<^isub>1 = n\<^isub>2`
     `n' \<oplus> #:c\<^isub>1 \<noteq> n\<^isub>2'` `n \<noteq> (_Entry_)`
   obtain nx where "c\<^isub>2 \<turnstile> n -et\<^isub>2\<rightarrow> nx \<and> nx \<oplus> #:c\<^isub>1 = n\<^isub>2'"
-    apply - apply(erule WCFG.cases)
-    apply(auto intro:WCFG.intros)
+    apply - apply(erule WCFG.While_CFG.cases)
+    apply(auto intro:WCFG.While_CFG.intros)
       apply(cases n,auto dest:WCFG_sourcelabel_less_num_nodes)
      apply(cases n,auto dest:WCFG_sourcelabel_less_num_nodes)
     by(fastsimp dest:label_incr_inj)
@@ -677,11 +677,11 @@ next
 next
   case (WCFG_CondTrue b c\<^isub>1 c\<^isub>2)
   from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_0_) = n\<^isub>2` `(_0_) \<oplus> 1 \<noteq> n\<^isub>2'`
-  show ?case by -(erule WCFG.cases,auto)
+  show ?case by -(erule WCFG.While_CFG.cases,auto)
 next
   case (WCFG_CondFalse b c\<^isub>1 c\<^isub>2)
   from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_0_) = n\<^isub>2` `(_0_) \<oplus> #:c\<^isub>1 + 1 \<noteq> n\<^isub>2'`
-  show ?case by -(erule WCFG.cases,auto)
+  show ?case by -(erule WCFG.While_CFG.cases,auto)
 next
   case (WCFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
   note IH = `\<And>n\<^isub>2 n\<^isub>2'. \<lbrakk>c\<^isub>1 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'; n = n\<^isub>2; n' \<noteq> n\<^isub>2'\<rbrakk>
@@ -689,8 +689,8 @@ next
   from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `c\<^isub>1 \<turnstile> n -et\<rightarrow> n'` `n \<noteq> (_Entry_)` 
     `n \<oplus> 1 = n\<^isub>2` `n' \<oplus> 1 \<noteq> n\<^isub>2'`
   obtain nx where "c\<^isub>1 \<turnstile> n -et\<^isub>2\<rightarrow> nx \<and> n' \<noteq> nx"
-    apply - apply(erule WCFG.cases)
-    apply(auto intro:WCFG.intros)
+    apply - apply(erule WCFG.While_CFG.cases)
+    apply(auto intro:WCFG.While_CFG.intros)
      apply(drule label_incr_inj) apply auto
     apply(drule label_incr_simp_rev[OF sym])
     by(case_tac na,auto dest:WCFG_sourcelabel_less_num_nodes)
@@ -702,8 +702,8 @@ next
   from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `c\<^isub>2 \<turnstile> n -et\<rightarrow> n'` `n \<noteq> (_Entry_)` 
     `n \<oplus> #:c\<^isub>1 + 1 = n\<^isub>2` `n' \<oplus> #:c\<^isub>1 + 1 \<noteq> n\<^isub>2'`
   obtain nx where "c\<^isub>2 \<turnstile> n -et\<^isub>2\<rightarrow> nx \<and> n' \<noteq> nx"
-    apply - apply(erule WCFG.cases)
-    apply(auto intro:WCFG.intros)
+    apply - apply(erule WCFG.While_CFG.cases)
+    apply(auto intro:WCFG.While_CFG.intros)
      apply(drule label_incr_simp_rev)
      apply(case_tac na,auto,cases n,auto dest:WCFG_sourcelabel_less_num_nodes)
     by(fastsimp dest:label_incr_inj)
@@ -711,15 +711,15 @@ next
 next
   case (WCFG_WhileTrue b c')
   from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_0_) = n\<^isub>2` `(_0_) \<oplus> 2 \<noteq> n\<^isub>2'`
-  show ?case by -(erule WCFG.cases,auto)
+  show ?case by -(erule WCFG.While_CFG.cases,auto)
 next
   case (WCFG_WhileFalse b c')
   from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_0_) = n\<^isub>2` `(_1_) \<noteq> n\<^isub>2'`
-  show ?case by -(erule WCFG.cases,auto)
+  show ?case by -(erule WCFG.While_CFG.cases,auto)
 next
   case (WCFG_WhileFalseSkip b c')
   from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(_1_) = n\<^isub>2` `(_Exit_) \<noteq> n\<^isub>2'`
-  show ?case by -(erule WCFG.cases,auto dest:label_incr_ge)
+  show ?case by -(erule WCFG.While_CFG.cases,auto dest:label_incr_ge)
 next
   case (WCFG_WhileBody c' n et n' b)
   note IH = `\<And>n\<^isub>2 n\<^isub>2'. \<lbrakk>c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'; n = n\<^isub>2; n' \<noteq> n\<^isub>2'\<rbrakk>
@@ -727,8 +727,8 @@ next
   from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `c' \<turnstile> n -et\<rightarrow> n'` `n \<noteq> (_Entry_)`
     `n' \<noteq> (_Exit_)` `n \<oplus> 2 = n\<^isub>2` `n' \<oplus> 2 \<noteq> n\<^isub>2'`
   obtain nx where "c' \<turnstile> n -et\<^isub>2\<rightarrow> nx \<and> n' \<noteq> nx"
-    apply - apply(erule WCFG.cases)
-    apply(auto intro:WCFG.intros)
+    apply - apply(erule WCFG.While_CFG.cases)
+    apply(auto intro:WCFG.While_CFG.intros)
       apply(fastsimp dest:label_incr_ge[OF sym])
      apply(fastsimp dest:label_incr_inj)
     by(fastsimp dest:label_incr_inj)
@@ -740,8 +740,8 @@ next
   from `while (b) c' \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `c' \<turnstile> n -et\<rightarrow> (_Exit_)` `n \<noteq> (_Entry_)`
     `n \<oplus> 2 = n\<^isub>2` `(_0_) \<noteq> n\<^isub>2'`
   obtain nx where "c' \<turnstile> n -et\<^isub>2\<rightarrow> nx \<and> (_Exit_) \<noteq> nx"
-    apply - apply(erule WCFG.cases)
-    apply(auto intro:WCFG.intros)
+    apply - apply(erule WCFG.While_CFG.cases)
+    apply(auto intro:WCFG.While_CFG.intros)
      apply(fastsimp dest:label_incr_ge[OF sym])
     by(fastsimp dest:label_incr_inj)
   from IH[OF this[THEN conjunct1] _ this[THEN conjunct2]] show ?case by simp

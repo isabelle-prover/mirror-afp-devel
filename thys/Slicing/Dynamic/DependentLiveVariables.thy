@@ -60,7 +60,7 @@ proof(induct rule:dependent_live_vars.induct)
   show ?case
   proof(cases "as'' = []")
     case True
-    with `n'' -as''\<rightarrow>* n'` have "n'' = n'" by(auto elim:DynPDG.cases)
+    with `n'' -as''\<rightarrow>* n'` have "n'' = n'" by (auto elim: DynPDG.dependent_live_vars.cases)
     with `sourcenode a -a#as'\<rightarrow>* n''` True
     show ?thesis by(fastsimp intro:path_targetnode[THEN sym])
   next

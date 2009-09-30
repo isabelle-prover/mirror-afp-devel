@@ -155,7 +155,7 @@ subsubsection {* From @{term "\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'
 lemma red_step:
   "\<lbrakk>labels prog l c; \<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>\<rbrakk>
   \<Longrightarrow> \<exists>l'. prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels prog l' c'"
-proof(induct arbitrary:c' rule:Labels.induct)
+proof(induct arbitrary:c' rule:labels.induct)
   case (Labels_Base c)
   from `\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>` show ?case
   proof(induct rule:red_induct)

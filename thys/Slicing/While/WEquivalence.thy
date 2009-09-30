@@ -8,7 +8,7 @@ subsection {* From @{term "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> 
 
 lemma Skip_WCFG_edge_Exit:
   "\<lbrakk>labels prog l Skip\<rbrakk> \<Longrightarrow> prog \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)"
-proof(induct prog l c\<equiv>Skip rule:Labels.induct)
+proof(induct prog l c\<equiv>Skip rule:labels.induct)
   case (Labels_Base c)
   from `c = Skip` show ?case by(fastsimp intro:WCFG_Skip)
 next
@@ -59,7 +59,7 @@ proof -
   next
     case (StepSeq c\<^isub>1 c\<^isub>2 l s)
     from `labels (c\<^isub>1;;c\<^isub>2) l (Skip;;c\<^isub>2)` `l < #:c\<^isub>1` have "labels c\<^isub>1 l Skip"
-      by(auto elim:Labels.cases intro:Labels_Base)
+      by(auto elim:labels.cases intro:Labels_Base)
     hence "c\<^isub>1 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" 
       by(fastsimp intro:Skip_WCFG_edge_Exit)
     hence "c\<^isub>1;;c\<^isub>2 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_0_) \<oplus> #:c\<^isub>1" 
@@ -69,7 +69,7 @@ proof -
     case (StepSeqWhile b cx l s)
     from `labels (while (b) cx) l (Skip;;while (b) cx)`
     obtain lx where "labels cx lx Skip" 
-      and [simp]:"l = lx + 2" by(auto elim:Labels.cases)
+      and [simp]:"l = lx + 2" by(auto elim:labels.cases)
     hence "cx \<turnstile> (_ lx _) -\<Up>id\<rightarrow> (_Exit_)" 
       by(fastsimp intro:Skip_WCFG_edge_Exit)
     hence "while (b) cx \<turnstile> (_ lx _) \<oplus> 2 -\<Up>id\<rightarrow> (_0_)"

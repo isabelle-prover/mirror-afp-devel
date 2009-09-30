@@ -253,10 +253,10 @@ proof(induct prog arbitrary:l)
   from `l < #:Skip` have [simp]:"l = 0" by simp
   hence "Skip \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" by(simp add:WCFG_Skip)
   hence "Skip \<turnstile> (_ l _) -[((_ l _),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)"
-    by(fastsimp intro:While_CFG.intros simp:valid_edge_def)
+    by (fastsimp intro: While_CFG.path.intros simp: valid_edge_def)
   have "Skip \<turnstile> (_Entry_) -(\<lambda>s. True)\<^isub>\<surd>\<rightarrow> (_ l _)" by(simp add:WCFG_Entry)
   hence "Skip \<turnstile> (_Entry_) -[((_Entry_),(\<lambda>s. True)\<^isub>\<surd>,(_ l _))]\<rightarrow>* (_ l _)"
-    by(fastsimp intro:While_CFG.intros simp:valid_edge_def While_CFG.valid_node_def)
+    by(fastsimp intro:While_CFG.path.intros simp:valid_edge_def While_CFG.valid_node_def)
   with `Skip \<turnstile> (_ l _) -[((_ l _),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)` show ?case by fastsimp
 next
   case (LAss V e)
@@ -266,28 +266,28 @@ next
     assume [simp]:"l = 0"
     hence "V:=e \<turnstile> (_Entry_) -(\<lambda>s. True)\<^isub>\<surd>\<rightarrow> (_ l _)" by(simp add:WCFG_Entry)
     hence "V:=e \<turnstile> (_Entry_) -[((_Entry_),(\<lambda>s. True)\<^isub>\<surd>,(_ l _))]\<rightarrow>* (_ l _)"
-      by(fastsimp intro:While_CFG.intros simp:valid_edge_def While_CFG.valid_node_def)
+      by(fastsimp intro:While_CFG.path.intros simp:valid_edge_def While_CFG.valid_node_def)
     have "V:=e \<turnstile> (_1_) -\<Up>id\<rightarrow> (_Exit_)" by(rule WCFG_LAssSkip)
     hence "V:=e \<turnstile> (_1_) -[((_1_),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)"
-      by(fastsimp intro:While_CFG.intros simp:valid_edge_def)
+      by(fastsimp intro:While_CFG.path.intros simp:valid_edge_def)
     with WCFG_LAss have "V:=e \<turnstile> (_ l _) -
       [((_ l _),\<Up>(\<lambda>s. s(V:=(interpret e s))),(_1_)),((_1_),\<Up>id,(_Exit_))]\<rightarrow>*
       (_Exit_)"
-      by(fastsimp intro:While_CFG.intros simp:valid_edge_def)
+      by(fastsimp intro:While_CFG.path.intros simp:valid_edge_def)
     with `V:=e \<turnstile> (_Entry_) -[((_Entry_),(\<lambda>s. True)\<^isub>\<surd>,(_ l _))]\<rightarrow>* (_ l _)`
     show ?case by fastsimp
   next
     assume [simp]:"l = 1"
     hence "V:=e \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" by(simp add:WCFG_LAssSkip)
     hence "V:=e \<turnstile> (_ l _) -[((_ l _),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)"
-      by(fastsimp intro:While_CFG.intros simp:valid_edge_def)
+      by(fastsimp intro:While_CFG.path.intros simp:valid_edge_def)
     have "V:=e \<turnstile> (_0_) -\<Up>(\<lambda>s. s(V:=(interpret e s)))\<rightarrow> (_ l _)"
       by(simp add:WCFG_LAss)
     hence "V:=e \<turnstile> (_0_) -[((_0_),\<Up>(\<lambda>s. s(V:=(interpret e s))),(_ l _))]\<rightarrow>* (_ l _)"
-      by(fastsimp intro:While_CFG.intros simp:valid_edge_def While_CFG.valid_node_def)
+      by(fastsimp intro:While_CFG.path.intros simp:valid_edge_def While_CFG.valid_node_def)
     with WCFG_Entry[of "V:=e"] have "V:=e \<turnstile> (_Entry_) -[((_Entry_),(\<lambda>s. True)\<^isub>\<surd>,(_0_))
       ,((_0_),\<Up>(\<lambda>s. s(V:=(interpret e s))),(_ l _))]\<rightarrow>* (_ l _)"
-      by(fastsimp intro:While_CFG.intros simp:valid_edge_def)
+      by(fastsimp intro:While_CFG.path.intros simp:valid_edge_def)
     with `V:=e \<turnstile> (_ l _) -[((_ l _),\<Up>id,(_Exit_))]\<rightarrow>* (_Exit_)` show ?case by fastsimp
   qed
 next
