@@ -234,7 +234,7 @@ lemma tm_vector_cases:
    (\<exists>v ts. t = term v \<bullet>\<bullet> ts)"
 apply(induct t)
 apply simp_all
-apply (metis butlast_snoc last_snoc list.simps(1) rotate1_is_Nil_conv rotate_simps)
+apply (metis append_is_Nil_conv args_tm.simps(2) args_tm.simps(5) args_tm_foldl_At butlast.simps(2) butlast_append butlast_snoc eta_head_args head_tm.simps(2) head_tm.simps(4) head_tm.simps(5) head_tm_foldl_At last_snoc list.simps(2) not_Cons_self rotate1_is_Nil_conv rotate_simps self_append_conv self_append_conv2 tm.simps(12) tm.simps(22))
 done
 
 lemma fv_head_C[simp]: "fv (t \<bullet>\<bullet> ts) = fv t \<union> (\<Union>t\<in>set ts. fv t)"
@@ -2328,7 +2328,8 @@ proof -
       next
 	case (ctxt_term u u')
 	have "i' < k" using `k = Suc i` by arith
-	have "C_normal\<^bsub>ML\<^esub> u'" by (metis C_normal_ML_inv ctxt_term less tm.simps(25))
+	have "C_normal\<^bsub>ML\<^esub> u'" by (rule C_normal_ML_inv)
+          (insert less ctxt_term, simp_all)
 	have "(term u', t') \<in> Red_term ^^ i'" using prems by auto
 	from less(1)[OF `i' < k` refl `C_normal\<^bsub>ML\<^esub> u'` `pure t'` this] show ?thesis .
       qed auto
