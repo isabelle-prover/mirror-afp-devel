@@ -14,8 +14,6 @@ typedecl state
 
 types bexp = "state \<Rightarrow> bool"
 
-declare [[datatype_distinctness_limit = 8]]
-
 datatype com = Do "(state \<Rightarrow> state set)"
                     | Semi  com com            ("_; _"  [60, 60] 10)
                     | Cond  bexp com com     ("IF _ THEN _ ELSE _"  60)
