@@ -413,8 +413,6 @@ val subset_unI2 = thm "Hoare.subset_unI2";
 val Un_empty_left = thm "Un_empty_left";
 val Un_empty_right = thm "Un_empty_right";
 val in_insert_hd = thm "in_insert_hd";
-val list_injects = thms "list.inject";
-val char_injects = thms "char.inject";
 val singleton_conv2 = thm "Set.singleton_conv2";
 val singleton_conv_sym = singleton_conv2 RS sym;
 val empty_iff = thm "Set.empty_iff";
@@ -1866,10 +1864,10 @@ fun assertion_simp_tac ctxt state_kind thms i =
     THEN_MAYBE in_assertion_simp_tac ctxt state_kind thms i
 
 (* simplify equality test on strings (and datatype-constructors) and propagate result*)
-fun string_eq_simp_tac ctxt =
-     simp_tac ((Simplifier.context ctxt HOL_basic_ss)
-                 addsimps (list_injects@char_injects@simp_thms)
-                 addsimprocs [Datatype.distinct_simproc])
+fun string_eq_simp_tac ctxt = simp_tac (Simplifier.context ctxt HOL_basic_ss
+  addsimps (@{thms list.inject} @ @{thms char.inject}
+    @ @{thms list.distinct} @ @{thms char.distinct} @ simp_thms));
+    
 
 
 fun assertion_string_eq_simp_tac ctxt state_kind thms i =
@@ -3266,14 +3264,16 @@ fun lookup' _ [] _ = NONE
  *)
 
 local
- val ss = (global_simpset_of (theory "Fun"))
-          addsimps
-          (thm "StateFun.lookup_def"::thm "StateFun.id_id_cancel"::
-           thms "list.inject"@thms "char.inject"@simp_thms)
-          addsimprocs
-          [Record.record_simproc,Datatype.distinct_simproc,StateFun.lazy_conj_simproc]
-          addcongs [thm "block_conj_cong"];
+
+val ss = global_simpset_of @{theory Fun}
+  addsimps (@{thm StateFun.lookup_def} :: @{thm StateFun.id_id_cancel}
+    :: @{thms list.inject} @ @{thms char.inject}
+    @ @{thms list.distinct} @ @{thms char.distinct} @ simp_thms)
+  addsimprocs [Record.record_simproc, StateFun.lazy_conj_simproc]
+  addcongs @{thms block_conj_cong};
+
 in
+
 fun ex_tac vs st =
   let
     val vs' = rev vs;
@@ -3404,16 +3404,17 @@ fun record_vanish_tac ctxt state_kind state_space i =
 
 
 local
- val state_fun_update_ss =
-    (HOL_basic_ss
-                addsimps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}] @
-                           @{thms list.inject} @ @{thms char.inject} @ @{thms simp_thms} @ K_fun_convs)
-                addcongs ([imp_cong] (* @ K_fun_congs  FIXME: Stefan fragen*))
-                addsplits [split_if]
-                addsimprocs [Datatype.distinct_simproc,
-                             DistinctTreeProver.distinct_simproc
-                                   ["distinct_fields","distinct_fields_globals"]])
+
+val state_fun_update_ss = HOL_basic_ss
+  addsimps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}]
+    @ @{thms list.inject} @ @{thms char.inject}
+    @ @{thms list.distinct} @ @{thms char.distinct} @ simp_thms @ K_fun_convs)
+    addcongs ([imp_cong] (* @ K_fun_congs  FIXME: Stefan fragen*))
+    addsplits [split_if]
+    addsimprocs [DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"]]
+
 in
+
 fun solve_modifies_tac ctxt state_kind state_space i =
   let
     val thy = ProofContext.theory_of ctxt;
