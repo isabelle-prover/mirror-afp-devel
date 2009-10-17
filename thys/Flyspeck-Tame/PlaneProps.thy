@@ -702,13 +702,13 @@ next
       let ?g' = "snd(snd ?fdg)" and ?f\<^isub>2 = "fst(snd ?fdg)"
       have False': "f \<bullet> u = v \<longrightarrow> n \<noteq> 0" using False by auto
       have VfVg: "\<V> f \<subseteq> \<V> g" using mgp fg
-	  by (simp add: minGraphProps_def faces_subset_def)
+        by (simp add: minGraphProps_def faces_subset_def)
       note pre_fdg = pre_subdivFace'_preFaceDiv[OF pre fg False' VfVg]
       note mgp' = splitFace_holds_minGraphProps[OF pre_fdg mgp]
       note f2g = splitFace_add_f21'[OF fg]
       note pre' = pre_subdivFace'_Some1[OF pre fg False' VfVg HOL.refl HOL.refl]
       from pre_fdg have "v \<in> \<V> f" and disj: "\<V> f \<inter> set ?vs = {}"
-    by(unfold pre_splitFace_def, simp)+
+        by(unfold pre_splitFace_def, simp)+
       from IH[OF mgp' pre' f2g] obtain f' :: face where
 	"f' \<in> \<F> (subdivFace' ?g' ?f\<^isub>2 v 0 ovs)" and
 	"final f'" and "(?f\<^isub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> f'"

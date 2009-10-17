@@ -55,7 +55,7 @@ fun bdt_fn :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bdt optio
     (\<lambda>bdtvar . 
           (if (bdtvar vref = 0) 
            then Some Zero 
-	         else (if (bdtvar vref = 1) 
+           else (if (bdtvar vref = 1) 
                  then Some One
                  else None)))"  
 | "bdt_fn (Node Tip vref (Node l vref1 r)) = (\<lambda>bdtvar . None)"

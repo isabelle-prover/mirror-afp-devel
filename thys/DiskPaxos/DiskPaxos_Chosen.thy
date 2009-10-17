@@ -61,7 +61,7 @@ proof -
     by(auto simp add: nonInitBlks_def blocksSeen_def)
   hence "\<exists>p. maxBlk s q \<in> blocksOf s p"
     by(auto simp add: blocksOf_def blocksSeen_def 
-	    allBlocksRead_def allRdBlks_def rdBy_def, force)
+      allBlocksRead_def allRdBlks_def rdBy_def, force)
   with maxBlk_b asm3
   have "inp(maxBlk s q) = v"
     by(auto simp add: maxBalInp_def allBlocks_def)
@@ -94,15 +94,15 @@ proof(cases "b \<le> mbal(dblock s q)")
     proof -
       from act
       have "IsMajority({d. d\<in> disksWritten s q \<and> (\<forall>r\<in>UNIV-{q}. hasRead s q d r)})" (is "IsMajority(?M)") 
-	      by(auto simp add: EndPhase1_def)  
+        by(auto simp add: EndPhase1_def)  
       with majorities_intersect asm2
       have "D \<inter> ?M \<noteq> {}"
-	      by(auto simp add: MajoritySet_def)
+        by(auto simp add: MajoritySet_def)
       hence "\<exists>d\<in>D. (\<forall>r\<in>UNIV-{q}. hasRead s q d r)"
-	      by auto
+        by auto
       with pnq
       show ?thesis
-	      by auto
+        by auto
     qed
     then obtain d where p41: "d\<in>D \<and> hasRead s q d p" by auto
     with asm4 asm3 act True
@@ -116,13 +116,13 @@ proof(cases "b \<le> mbal(dblock s q)")
     proof auto
       fix br
       assume br: "br \<in> blocksRead s q d"
-	      and b_bal: " b \<le> bal (block br)"
+        and b_bal: " b \<le> bal (block br)"
       hence br_rdBy: "br \<in> (UN q d. rdBy s (proc br) q d)"
-	      by(auto simp add:  rdBy_def)
+        by(auto simp add:  rdBy_def)
       hence br_blksof: "block br \<in> blocksOf s (proc br)"
-	      by(auto simp add: blocksOf_def)
+        by(auto simp add: blocksOf_def)
       from br have br_bseen: "block br\<in> blocksSeen s q"
-	      by(auto simp add: blocksSeen_def allBlocksRead_def allRdBlks_def)
+        by(auto simp add: blocksSeen_def allBlocksRead_def allRdBlks_def)
       from HEndPhase1_valueChosen_inp[OF act inv2a asm1 br_blksof br_bseen b_bal asm3 inv1]
       show ?thesis .
     qed
@@ -138,24 +138,24 @@ proof(cases "b \<le> mbal(dblock s q)")
     proof -
       from act
       have "IsMajority {d. d\<in>disksWritten s q \<and> (\<forall>p\<in>UNIV-{q}. hasRead s q d p)}" (is "IsMajority ?S")
-	      by(auto simp add: EndPhase1_def)
+        by(auto simp add: EndPhase1_def)
       with majorities_intersect asm2
       have "D \<inter> ?S \<noteq> {}"
-	      by(auto simp add: MajoritySet_def)
+        by(auto simp add: MajoritySet_def)
       hence "\<exists>d\<in>D. d\<in>disksWritten s q"
-	      by auto
+        by auto
       with inv2b False
       show ?thesis
-	      by(auto simp add: Inv2b_def Inv2b_inner_def)
+        by(auto simp add: Inv2b_def Inv2b_inner_def)
     qed
     have "inp(dblock s' q) = v"
     proof -
       from p42 p41 False
       have b_bal: "b \<le> bal(dblock s q)" by auto
       have db_blksof: "(dblock s q) \<in> blocksOf s q"
-	      by(auto simp add: blocksOf_def)
+        by(auto simp add: blocksOf_def)
       have db_bseen: "(dblock s q) \<in> blocksSeen s q"
-	      by(auto simp add: blocksSeen_def)
+        by(auto simp add: blocksSeen_def)
       from HEndPhase1_valueChosen_inp[OF act inv2a asm1 db_blksof db_bseen b_bal asm3 inv1]
       show ?thesis .
     qed
@@ -178,15 +178,15 @@ next
       assume bk: "bk \<in> allBlocks s"
       with asm3 b_bal 
       show ?thesis
-	      by(auto simp add: maxBalInp_def)
+        by(auto simp add: maxBalInp_def)
     next
       assume bk: "bk \<in>  {dblock s' q}"
       from act False
       have " \<not> b \<le> bal (dblock s' q)"
-	      by(auto simp add: EndPhase1_def)
+        by(auto simp add: EndPhase1_def)
       with bk b_bal
       show ?thesis
-	      by(auto)
+        by(auto)
     qed
   qed
 qed
@@ -510,7 +510,7 @@ proof(auto)
     from act hasRead False
     have "hasRead s qq dd p"
       by(auto simp add: Phase1or2ReadThen_def 
-	hasRead_def split: split_if_asm)
+  hasRead_def split: split_if_asm)
     ultimately
     have "\<exists>br\<in>blocksRead s qq dd. b\<le> bal(block br)"
       using p31 asm4 d

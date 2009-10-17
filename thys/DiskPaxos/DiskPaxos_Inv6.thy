@@ -48,24 +48,24 @@ proof(cases "chosen s=NotAnInput")
       from ep2_maj Dmaj majorities_intersect
       have "\<exists>d\<in>D. d \<in> disksWritten s p
         \<and> (\<forall>q \<in> UNIV - {p}. hasRead s p d q)"
-	      by(auto simp add: MajoritySet_def, blast)
+        by(auto simp add: MajoritySet_def, blast)
       then obtain d 
 	where dinD: "d\<in>D" 
 	and ddisk: "d \<in> disksWritten s p"
 	and dhasR: "\<forall>q \<in> UNIV - {p}. hasRead s p d q"
-	      by auto
+        by auto
       from inv2b
       have "Inv2b_inner s p d"
-	      by(auto simp add: Inv2b_def)
+        by(auto simp add: Inv2b_def)
       with ddisk
       have "disk s d p = dblock s p"
-	      by(auto simp add: Inv2b_inner_def)
+        by(auto simp add: Inv2b_inner_def)
       with inv2c phase
       have "bal (dblock s p) = mbal(disk s d p)"
-	      by(auto simp add: Inv2c_def Inv2c_inner_def)
+        by(auto simp add: Inv2c_def Inv2c_inner_def)
       with dhasR dinD
       show "\<exists>d\<in>D. bal (dblock s p) < mbal (disk s d q) \<longrightarrow> hasRead s p d q"
-	      by auto
+        by auto
     qed
     with inv5R
     show ?thesis
@@ -82,10 +82,10 @@ proof(cases "chosen s=NotAnInput")
       assume pnq: "p\<noteq>q"
       from outpt' pnq
       have "outpt s' q= outpt s q"
-	      by(auto simp add: EndPhase2_def)
+        by(auto simp add: EndPhase2_def)
       with True inv2c
       show "outpt s' q= NotAnInput"
-	      by(auto simp add: Inv2c_def Inv2c_inner_def)
+        by(auto simp add: Inv2c_def Inv2c_inner_def)
     qed
     from True act chosen'
     have "chosen s' = inp (dblock s p)"
@@ -94,15 +94,15 @@ proof(cases "chosen s=NotAnInput")
       assume outpt'_pa: "outpt s' pa \<noteq> NotAnInput"
       from outpt'_q
       have someeq2: "\<And>pa. outpt s' pa \<noteq> NotAnInput \<Longrightarrow> pa=p"
-	      by auto
+        by auto
       with outpt'_pa
       have "outpt s' p \<noteq> NotAnInput"
-	      by auto
+        by auto
       from some_equality[of "\<lambda>p. outpt s' p \<noteq> NotAnInput", OF this someeq2]
       have "(SOME p. outpt s' p \<noteq> NotAnInput) = p" .
       with outpt'
       show  "outpt s' (SOME p. outpt s' p \<noteq> NotAnInput) = inp (dblock s p)"
-	      by auto
+        by auto
     qed
     moreover
     from act
@@ -370,18 +370,18 @@ next
     have "\<exists>bk\<in>allBlocks s. \<exists>b\<in>(UN p. Ballot p). (maxBalInp s b (chosen s)) \<and> b\<le> bal bk"
     proof -
       have disk_allblks: "\<forall>d p. disk s d p \<in> allBlocks s"
-	      by(auto simp add: allBlocks_def blocksOf_def)
+        by(auto simp add: allBlocks_def blocksOf_def)
       from p31
       have "\<exists>b\<in> (UN p. Ballot p). maxBalInp s b (chosen s) \<and> 
       (\<exists>p. \<exists>D\<in>MajoritySet.(\<forall>d\<in>D.  b \<le> bal(disk s d p)))"
-	      by(auto simp add: valueChosen_def, force)
+        by(auto simp add: valueChosen_def, force)
       with majority_nonempty obtain b p D d
 	where "IsMajority D \<and> b\<in> (UN p. Ballot p) \<and>  
 	       maxBalInp s b (chosen s) \<and> d\<in>D \<and> b \<le> bal(disk s d p)"
-	      by(auto simp add: MajoritySet_def, blast)
+        by(auto simp add: MajoritySet_def, blast)
       with disk_allblks
       show ?thesis
-	      by(auto)
+        by(auto)
     qed
     then obtain bk b
       where p45_bk: "bk\<in>allBlocks s \<and> b\<le> bal bk" 
@@ -391,18 +391,18 @@ next
     proof(cases "b \<le> bal(dblock s p)")
       case True
       have "dblock s p \<in> allBlocks s"
-	      by(auto simp add: allBlocks_def blocksOf_def)
+        by(auto simp add: allBlocks_def blocksOf_def)
       with p45_b True
       show ?thesis
-	      by(auto simp add: maxBalInp_def)
+        by(auto simp add: maxBalInp_def)
     next
       case False
       from p44 p45_bk False
       have "inp bk = inp(dblock s p)"
-	      by(auto simp add: maxBalInp_def)
+        by(auto simp add: maxBalInp_def)
       with p45_b p45_bk
       show ?thesis
-	      by(auto simp add: maxBalInp_def)
+        by(auto simp add: maxBalInp_def)
     qed
     with p41 p33 act
     show ?thesis

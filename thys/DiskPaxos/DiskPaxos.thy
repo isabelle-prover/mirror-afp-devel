@@ -92,30 +92,30 @@ proof(auto)
     proof -
       from fail srel
       have "ioutput is' = (ioutput is) (p:= NotAnInput)"
-				by(auto simp add: Fail_def s2is_def)
-			moreover
-			from nxt 
-			have all_nxt: "allInput s'= allInput s \<union> (range (inpt s'))"
-	      by(auto simp add: HNext_def HNextPart_def)
-			from fail srel
-			have "\<exists>ip \<in> Inputs.	 iinput is' = (iinput is)(p:= ip)"
-				by(auto simp add: Fail_def s2is_def)
-			then obtain ip where ip_Input: "ip\<in>Inputs" and "iinput is' = (iinput is)(p:= ip)"
-	      by auto
-			with inv2c5 srel all_nxt
-			have "	iinput is' = (iinput is)(p:= ip)
-				\<and> iallInput is' = iallInput is \<union> {ip}"
-	      by(auto simp add: s2is_def)
-			moreover
-			from outpt srel nxt inv2c
-			have "ichosen is' = ichosen is"
-	      by(auto simp add: HNext_def HNextPart_def s2is_def Inv2c_inner_def)
-			ultimately
-			show ?thesis
-	      using ip_Input
-	      by(auto simp add: IFail_def)
-		qed
-		thus ?thesis
+        by(auto simp add: Fail_def s2is_def)
+      moreover
+      from nxt 
+      have all_nxt: "allInput s'= allInput s \<union> (range (inpt s'))"
+        by(auto simp add: HNext_def HNextPart_def)
+      from fail srel
+      have "\<exists>ip \<in> Inputs.  iinput is' = (iinput is)(p:= ip)"
+        by(auto simp add: Fail_def s2is_def)
+      then obtain ip where ip_Input: "ip\<in>Inputs" and "iinput is' = (iinput is)(p:= ip)"
+        by auto
+      with inv2c5 srel all_nxt
+      have "  iinput is' = (iinput is)(p:= ip)
+        \<and> iallInput is' = iallInput is \<union> {ip}"
+        by(auto simp add: s2is_def)
+      moreover
+      from outpt srel nxt inv2c
+      have "ichosen is' = ichosen is"
+        by(auto simp add: HNext_def HNextPart_def s2is_def Inv2c_inner_def)
+      ultimately
+      show ?thesis
+        using ip_Input
+        by(auto simp add: IFail_def)
+    qed
+    thus ?thesis
       by auto
   next
     assume endphase2: "EndPhase2 s s' p"
@@ -143,77 +143,77 @@ proof(auto)
       case True
       with inv2c5
       have p31: "\<forall>q. outpt s q = NotAnInput"
-	      by auto
+        by auto
       with endphase2
       have p32: "\<forall>q \<in> UNIV -{p}. outpt s' q = NotAnInput"
-	      by(auto simp add: EndPhase2_def)
+        by(auto simp add: EndPhase2_def)
       hence some_eq: "(\<And>x. outpt s' x \<noteq> NotAnInput \<Longrightarrow> x = p)"
-	      by auto
+        by auto
       from p32 True nxt some_equality[of "\<lambda>p. outpt s' p \<noteq> NotAnInput", OF outpt_nni some_eq]
       have p33: "chosen s' = outpt s' p"
-	      by(auto simp add: HNext_def HNextPart_def)
+        by(auto simp add: HNext_def HNextPart_def)
       with endphase2
       have "chosen s' = inp(dblock s p) \<and> outpt s' = (outpt s)(p:=inp(dblock s p))"
-	      by(auto simp add: EndPhase2_def)
+        by(auto simp add: EndPhase2_def)
       with True p22 
       have "if (chosen s = NotAnInput)
                         then (\<exists>ip \<in> allInput s.  chosen s' = ip
                                             \<and> outpt s' = (outpt s) (p := ip))
                         else (  outpt s' = (outpt s) (p:= chosen s)
                                \<and> chosen s' = chosen s)"
-	      by auto
+        by auto
       moreover
       from endphase2 inv2c5 nxt
       have "inpt s' = inpt s \<and> allInput s'= allInput s"
-	      by(auto simp add: EndPhase2_def HNext_def HNextPart_def)
+        by(auto simp add: EndPhase2_def HNext_def HNextPart_def)
       ultimately
       show ?thesis
-	      using srel p31
-	      by(auto simp add: IChoose_def s2is_def)
+        using srel p31
+        by(auto simp add: IChoose_def s2is_def)
     next
       case False
       with nxt
       have p31: "chosen s' = chosen s"
-	      by(auto simp add: HNext_def HNextPart_def)
+        by(auto simp add: HNext_def HNextPart_def)
       from inv'
       have inv6: "HInv6 s'"
-	      by(auto simp add: HInv_def)
+        by(auto simp add: HInv_def)
       have p32: "outpt s' p = chosen s"
       proof-
-	      from endphase2
-	      have "outpt s' p  = inp(dblock s p)"
-	        by(auto simp add: EndPhase2_def)
-	      moreover
-	      from inv6 p31
-	      have "outpt s' p \<in> {chosen s, NotAnInput}"
-	        by(auto simp add: HInv6_def)
-	      ultimately
-	      show ?thesis
-	        using outpt_nni
-	        by auto
+        from endphase2
+        have "outpt s' p  = inp(dblock s p)"
+          by(auto simp add: EndPhase2_def)
+        moreover
+        from inv6 p31
+        have "outpt s' p \<in> {chosen s, NotAnInput}"
+          by(auto simp add: HInv6_def)
+        ultimately
+        show ?thesis
+          using outpt_nni
+          by auto
       qed
       from srel False
       have "IChoose is is' p"
       proof(clarsimp simp add: IChoose_def s2is_def)
-	      from endphase2 inv2c
-	      have "outpt s p = NotAnInput"
-	        by(auto simp add: EndPhase2_def Inv2c_inner_def)
-	      moreover
-	      from endphase2 p31 p32 False
-	      have "outpt s' = (outpt s) (p:= chosen s) \<and> chosen s' = chosen s"
-	        by(auto simp add: EndPhase2_def)
-	      moreover
-	      from endphase2 nxt inv2c5
-	      have "inpt s' = inpt s \<and> allInput s'= allInput s"
-	        by(auto simp add: EndPhase2_def HNext_def HNextPart_def)
-	      ultimately
-	      show "  outpt s p = NotAnInput 
+        from endphase2 inv2c
+        have "outpt s p = NotAnInput"
+          by(auto simp add: EndPhase2_def Inv2c_inner_def)
+        moreover
+        from endphase2 p31 p32 False
+        have "outpt s' = (outpt s) (p:= chosen s) \<and> chosen s' = chosen s"
+          by(auto simp add: EndPhase2_def)
+        moreover
+        from endphase2 nxt inv2c5
+        have "inpt s' = inpt s \<and> allInput s'= allInput s"
+          by(auto simp add: EndPhase2_def HNext_def HNextPart_def)
+        ultimately
+        show "  outpt s p = NotAnInput 
               \<and> outpt s' = (outpt s)(p := chosen s) \<and> chosen s' = chosen s 
               \<and> inpt s' = inpt s \<and> allInput s' = allInput s"
-	        by auto
+          by auto
       qed
       thus ?thesis
-	      by auto
+        by auto
     qed
   qed
   thus "\<exists>p. IFail is is' p \<or> IChoose is is' p"
@@ -221,5 +221,4 @@ proof(auto)
 qed
 
 end
-
 

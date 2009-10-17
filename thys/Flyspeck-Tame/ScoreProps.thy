@@ -127,7 +127,7 @@ proof -
 	"b \<in> set (map fst (deleteAround g a ps))" by auto
       from mgp f have d: "distinct (vertices f)" by(blast intro:minGraphProps)
       with a 4 have "\<V> f = {a, f \<bullet> a, f \<bullet> (f \<bullet> a), f \<bullet> (f \<bullet> (f \<bullet> a))}"
-	  by (rule_tac vertices_quad)
+        by (rule_tac vertices_quad)
       also from d a 4 have "f \<bullet> (f \<bullet> (f \<bullet> a)) = f\<^bsup>-1\<^esup> \<bullet> a"
         by (simp add: quad_nextVertex_prevVertex)
       finally have "b \<in> {f \<bullet> a, f \<bullet> (f \<bullet> a), f\<^bsup>-1\<^esup> \<bullet> a}"

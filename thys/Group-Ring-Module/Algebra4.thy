@@ -2286,7 +2286,7 @@ apply (simp add:ring_times_0_x)
 done 
 
 lemma (in Ring) rMulZeroDiv:
-     "\<lbrakk> x \<in> carrier R; y \<in> carrier R; x = \<zero> \<or> y = \<zero> \<rbrakk> 	\<Longrightarrow> x  \<cdot>\<^sub>r  y = \<zero>";
+     "\<lbrakk> x \<in> carrier R; y \<in> carrier R; x = \<zero> \<or> y = \<zero> \<rbrakk> \<Longrightarrow> x  \<cdot>\<^sub>r  y = \<zero>";
 apply (erule disjE, simp)
 apply (rule ring_times_0_x, assumption+)
 apply (simp, rule ring_times_x_0, assumption+)

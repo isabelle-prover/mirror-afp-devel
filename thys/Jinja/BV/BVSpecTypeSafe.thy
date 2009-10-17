@@ -130,7 +130,7 @@ next
     proof -
       from wf less loc have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" by simp blast
       moreover from D h have "P,h \<turnstile> Addr xcp :\<le> Class D" 
-	      by (simp add: conf_def obj_ty_def prod_case_unfold)
+        by (simp add: conf_def obj_ty_def prod_case_unfold)
       with less stk
       have "P,h \<turnstile> Addr xcp # drop (length stk - d') stk  [:\<le>] ST'" 
         by (auto intro!: list_all2_dropI)
