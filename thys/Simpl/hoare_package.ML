@@ -1087,8 +1087,9 @@ fun apply_in_context thy lexp f t =
   end;
 
 fun print_term thy t =
-  setmp show_sorts false
-    (setmp show_types false (setmp print_mode [] (Syntax.string_of_term_global thy))) t;
+  setmp_CRITICAL show_sorts false
+    (setmp_CRITICAL show_types false
+      (setmp_CRITICAL print_mode [] (Syntax.string_of_term_global thy))) t;
 
 fun add_abbrev loc mode name spec thy =
   thy
