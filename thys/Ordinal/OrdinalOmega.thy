@@ -414,7 +414,7 @@ by (case_tac "x = 0", simp, simp add: to_cnf2_not_0)
 
 lemma ordinal_of_nat_of_ordinal:
 "x < \<omega> \<Longrightarrow> ordinal_of_nat (inv ordinal_of_nat x) = x"
- apply (rule f_inv_f)
+ apply (rule f_inv_onto_f)
  apply (simp add: image_def)
  apply (erule less_omegaD)
 done

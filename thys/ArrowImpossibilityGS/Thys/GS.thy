@@ -86,7 +86,7 @@ proof-
       case (Suc n)
       let ?up = "(?M n)(inv h n := P' (inv h n))"
       have 1: "?M(Suc n) = ?up" using surjh Suc(2)
-	by(simp (no_asm_simp) add:expand_fun_eq f_inv_f)
+	by(simp (no_asm_simp) add:expand_fun_eq f_inv_onto_f)
 	  (metis injh inv_f_f less_antisym)
       show ?case
       proof(rule ccontr)
@@ -94,7 +94,7 @@ proof-
 	with `?M(Suc n) = ?up` Suc have 0: "f ?up \<noteq> f(?M n)" by simp
  	from nonmanip[OF MProf P'Lin 0] assms(3) show False
 	  using N surjh Suc Lin_irrefl[OF P'Lin]
-	  by(fastsimp simp: f_inv_f)
+	  by(fastsimp simp: f_inv_onto_f)
       qed
     qed
   }
@@ -108,7 +108,7 @@ proof -
     by(metis ex_bij_betw_finite_nat[OF finite_indi] bij_betw_def)
   from assms obtain a where "a:S" by blast
   from onto obtain Pa where "Pa:Prof" "f Pa = a"
-    by(metis Inv_mem UNIV_I f_Inv_f)
+    by(metis inv_onto_into UNIV_I f_inv_onto_f)
   let ?M = "%n i. if h i < n then Top S (P i) else Pa i"
   have N: "!!i. h i < N" using surjh by auto
   have MProf: "!!n. ?M n : Prof" using `P:Prof` `Pa:Prof`
@@ -126,7 +126,7 @@ proof -
 	let ?up = "(?M n)(inv h n := Top S (P(inv h n)))"
 	assume "f(?M n) \<noteq> f(?M(Suc n))"
 	also have eq: "?M(Suc n) = ?up" using surjh Suc
-	  by(simp (no_asm_simp) add:expand_fun_eq f_inv_f)
+	  by(simp (no_asm_simp) add:expand_fun_eq f_inv_onto_f)
 	    (metis injh inv_f_eq less_antisym)
 	finally have n: "f(?M n) \<noteq> f(?up)" .
 	with nonmanip[OF MProf Top_in_Lin n[symmetric]] Suc eq `P:Prof`
