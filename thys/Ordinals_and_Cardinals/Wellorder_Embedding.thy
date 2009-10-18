@@ -439,11 +439,11 @@ proof(auto simp add: embed_compat embed_inj_on embed_Field_ofilter,
 qed
 
 
-lemma Inv_ofilter_embed:
+lemma inv_onto_ofilter_embed:
 assumes WELL: "Well_order r" and OF: "ofilter r A" and 
         BIJ: "\<forall>b \<in> A. bij_betw f (under r b) (under r' (f b))" and  
         IMAGE: "f ` A = Field r'"
-shows "embed r' r (Inv A f)"
+shows "embed r' r (inv_onto A f)"
 proof-
   (* Preliminary facts *)
   have Well: "wo_rel r" 
@@ -481,7 +481,7 @@ proof-
     using Total by (auto simp add: total_on_def)
   qed
   (*  *)
-  let ?f' = "(Inv A f)"
+  let ?f' = "(inv_onto A f)"
   (*  *)
   have 2: "\<forall>b \<in> A. bij_betw ?f' (under r' (f b)) (under r b)"
   proof(clarify)
@@ -493,17 +493,17 @@ proof-
     using * BIJ by (auto simp add: bij_betw_def)
     ultimately 
     show "bij_betw ?f' (under r' (f b)) (under r b)"
-    using 1 by (auto simp add: bij_betw_Inv_subset)
+    using 1 by (auto simp add: bij_betw_inv_onto_subset)
   qed 
   (*  *)
   have 3: "\<forall>b' \<in> Field r'. bij_betw ?f' (under r' b') (under r (?f' b'))"
   proof(clarify)
     fix b' assume *: "b' \<in> Field r'"
     have "b' = f (?f' b')" using * 1 
-    by (auto simp add: bij_betw_Inv_right)
+    by (auto simp add: bij_betw_inv_onto_right)
     moreover 
     {obtain b where 31: "b \<in> A" and "f b = b'" using IMAGE * by force
-     hence "?f' b' = b" using 1 by (auto simp add: bij_betw_Inv_left)
+     hence "?f' b' = b" using 1 by (auto simp add: bij_betw_inv_onto_left)
      with 31 have "?f' b' \<in> A" by auto
     }
     ultimately 
@@ -515,20 +515,20 @@ proof-
 qed
 
 
-lemma Inv_underS_embed:
+lemma inv_onto_underS_embed:
 assumes WELL: "Well_order r" and 
         BIJ: "\<forall>b \<in> underS r a. bij_betw f (under r b) (under r' (f b))" and 
         IN: "a \<in> Field r" and 
         IMAGE: "f ` (underS r a) = Field r'"
-shows "embed r' r (Inv (underS r a) f)"
+shows "embed r' r (inv_onto (underS r a) f)"
 using assms 
-by(auto simp add: wo_rel_def wo_rel.underS_ofilter Inv_ofilter_embed)
+by(auto simp add: wo_rel_def wo_rel.underS_ofilter inv_onto_ofilter_embed)
 
 
-lemma Inv_Field_embed:
+lemma inv_onto_Field_embed:
 assumes WELL: "Well_order r" and EMB: "embed r r' f" and 
         IMAGE: "Field r' \<le> f ` (Field r)"
-shows "embed r' r (Inv (Field r) f)"
+shows "embed r' r (inv_onto (Field r) f)"
 proof-
   have "(\<forall>b \<in> Field r. bij_betw f (under r b) (under r' (f b)))" 
   using EMB by (auto simp add: embed_def)
@@ -537,19 +537,19 @@ proof-
   using EMB WELL by (auto simp add: embed_Field)
   ultimately 
   show ?thesis using assms 
-  by(auto simp add: wo_rel_def wo_rel.Field_ofilter Inv_ofilter_embed)
+  by(auto simp add: wo_rel_def wo_rel.Field_ofilter inv_onto_ofilter_embed)
 qed
 
 
-lemma Inv_Field_embed_bij_betw:
+lemma inv_onto_Field_embed_bij_betw:
 assumes WELL: "Well_order r" and 
         EMB: "embed r r' f" and BIJ: "bij_betw f (Field r) (Field r')" 
-shows "embed r' r (Inv (Field r) f)"
+shows "embed r' r (inv_onto (Field r) f)"
 proof- 
   have "Field r' \<le> f ` (Field r)" 
   using BIJ by (auto simp add: bij_betw_def)
   thus ?thesis using assms 
-  by(auto simp add: Inv_Field_embed)
+  by(auto simp add: inv_onto_Field_embed)
 qed
 
 
@@ -762,8 +762,8 @@ proof-
     using MAIN2 by auto
   qed
   (*  *)
-  have "embed r' r (Inv (underS r ?a) f)"
-  using WELL WELL' 7 4 6 Inv_underS_embed[of r ?a f r'] by auto
+  have "embed r' r (inv_onto (underS r ?a) f)"
+  using WELL WELL' 7 4 6 inv_onto_underS_embed[of r ?a f r'] by auto
   thus ?thesis
   unfolding embed_def by blast
 qed
@@ -997,7 +997,7 @@ assumes WELL: "Well_order r" and WELL': "Well_order r'" and WELL'': "Well_order 
         and  EMB: "embedS r r' f" and EMB': "embed r' r'' f'"
 shows "embedS r r'' (f' o f)"
 proof-
-  let ?g = "(f' o f)"  let ?h = "Inv (Field r) ?g"
+  let ?g = "(f' o f)"  let ?h = "inv_onto (Field r) ?g"
   have 1: "embed r r' f \<and> \<not> (bij_betw f (Field r) (Field r'))" 
   using EMB by (auto simp add: embedS_def)
   hence 2: "embed r r'' ?g" 
@@ -1005,7 +1005,7 @@ proof-
   moreover
   {assume "bij_betw ?g (Field r) (Field r'')"
    hence "embed r'' r ?h" using 2 WELL
-   by (auto simp add: Inv_Field_embed_bij_betw)
+   by (auto simp add: inv_onto_Field_embed_bij_betw)
    hence "embed r' r (?h o f')" using WELL' EMB'
    by (auto simp add: comp_embed)
    hence "bij_betw f (Field r) (Field r')" using WELL WELL' 1 
@@ -1021,7 +1021,7 @@ assumes WELL: "Well_order r" and WELL': "Well_order r'" and WELL'': "Well_order 
         and  EMB: "embed r r' f" and EMB': "embedS r' r'' f'"
 shows "embedS r r'' (f' o f)"
 proof-
-  let ?g = "(f' o f)"  let ?h = "Inv (Field r) ?g"
+  let ?g = "(f' o f)"  let ?h = "inv_onto (Field r) ?g"
   have 1: "embed r' r'' f' \<and> \<not> (bij_betw f' (Field r') (Field r''))" 
   using EMB' by (auto simp add: embedS_def)
   hence 2: "embed r r'' ?g" 
@@ -1029,7 +1029,7 @@ proof-
   moreover
   {assume "bij_betw ?g (Field r) (Field r'')"
    hence "embed r'' r ?h" using 2 WELL
-   by (auto simp add: Inv_Field_embed_bij_betw)
+   by (auto simp add: inv_onto_Field_embed_bij_betw)
    hence "embed r'' r' (f o ?h)" using WELL'' EMB
    by (auto simp add: comp_embed)
    hence "bij_betw f' (Field r') (Field r'')" using WELL' WELL'' 1
@@ -1148,14 +1148,14 @@ proof(auto simp add: iso_def)
   moreover assume "(a,b) \<in> r"
   ultimately show "(f a, f b) \<in> r'" using compat_def[of r] by auto
 next
-  let ?f' = "Inv (Field r) f"
+  let ?f' = "inv_onto (Field r) f"
   assume "embed r r' f" and 1: "bij_betw f (Field r) (Field r')" 
   hence "embed r' r ?f'" using assms 
-  by (auto simp add: Inv_Field_embed_bij_betw)
+  by (auto simp add: inv_onto_Field_embed_bij_betw)
   hence 2: "compat r' r ?f'" using embed_compat[of r'] by auto
   fix a b assume *: "a \<in> Field r" "b \<in> Field r" and **: "(f a,f b) \<in> r'"
   hence "?f'(f a) = a \<and> ?f'(f b) = b" using 1
-  by (auto simp add: bij_betw_Inv_left)
+  by (auto simp add: bij_betw_inv_onto_left)
   thus "(a,b) \<in> r" using ** 2 compat_def[of r' r ?f'] by fastsimp
 next
   assume *: "bij_betw f (Field r) (Field r')" and 
@@ -1255,9 +1255,9 @@ unfolding iso_def using assms by (auto simp add: embed_bothWays_bij_betw)
 
 lemma iso_iff4:
 assumes WELL: "Well_order r"  and WELL': "Well_order r'"
-shows "iso r r' f = (embed r r' f \<and> embed r' r (Inv (Field r) f))"
+shows "iso r r' f = (embed r r' f \<and> embed r' r (inv_onto (Field r) f))"
 using assms embed_bothWays_iso
-by(unfold iso_def, auto simp add: Inv_Field_embed_bij_betw)
+by(unfold iso_def, auto simp add: inv_onto_Field_embed_bij_betw)
   
 
 lemma embed_embedS_iso:
@@ -1276,11 +1276,11 @@ shows "embedS r r' f = (\<not> iso r r' f)"
 using assms unfolding embedS_def iso_def by blast
 
 
-lemma iso_Inv:
+lemma iso_inv_onto:
 assumes WELL: "Well_order r" and ISO: "iso r r' f"
-shows "iso r' r (Inv (Field r) f)"
+shows "iso r' r (inv_onto (Field r) f)"
 using assms unfolding iso_def
-using bij_betw_Inv Inv_Field_embed_bij_betw by blast
+using bij_betw_inv_onto inv_onto_Field_embed_bij_betw by blast
 
 
 lemma embedS_or_iso: 
@@ -1301,8 +1301,8 @@ proof-
   {fix f assume *: "embed r' r f"
    {assume "bij_betw f (Field r') (Field r)"
     hence "iso r' r f" using * by (auto simp add: iso_def)
-    hence "iso r r' (Inv (Field r') f)"
-    using WELL' by (auto simp add: iso_Inv)
+    hence "iso r r' (inv_onto (Field r') f)"
+    using WELL' by (auto simp add: iso_inv_onto)
     hence ?thesis by blast 
    }
    moreover 

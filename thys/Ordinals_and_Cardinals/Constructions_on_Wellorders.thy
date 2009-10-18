@@ -524,9 +524,9 @@ proof-
   obtain f where 1: "Well_order r \<and> Well_order r'" and 
                  2: "embed r r' f \<and> bij_betw f (Field r) (Field r')" 
   using * unfolding ordIso_def by (auto simp add: iso_def)
-  let ?f' = "Inv (Field r) f"
+  let ?f' = "inv_onto (Field r) f"
   have "embed r' r ?f' \<and> bij_betw ?f' (Field r') (Field r)" 
-  using 1 2 by (auto simp add: bij_betw_Inv Inv_Field_embed_bij_betw)
+  using 1 2 by (auto simp add: bij_betw_inv_onto inv_onto_Field_embed_bij_betw)
   thus "r' =o r" unfolding ordIso_def using 1 by (auto simp add: iso_def) 
 qed
 
@@ -655,8 +655,8 @@ next
   using wellorders_totally_ordered[of r r'] by blast
   moreover 
   {assume "bij_betw f (Field r) (Field r')"
-   with * 1 have "embed r' r (Inv (Field r) f) "  
-   using Inv_Field_embed_bij_betw[of r r' f] by auto
+   with * 1 have "embed r' r (inv_onto (Field r) f) "  
+   using inv_onto_Field_embed_bij_betw[of r r' f] by auto
    with * have False by blast
   }
   ultimately show "(r,r') \<in> ordLess" 
@@ -702,8 +702,8 @@ proof
   then obtain f where 1: "Well_order r \<and> Well_order r' \<and> 
                      embed r r' f \<and> bij_betw f (Field r) (Field r')"
   unfolding ordIso_def iso_defs by auto
-  hence "embed r r' f \<and> embed r' r (Inv (Field r) f)"
-  by (auto simp add: Inv_Field_embed_bij_betw)
+  hence "embed r r' f \<and> embed r' r (inv_onto (Field r) f)"
+  by (auto simp add: inv_onto_Field_embed_bij_betw)
   thus  "r \<le>o r' \<and> r' \<le>o r"
   unfolding ordLeq_def using 1 by auto
 next
