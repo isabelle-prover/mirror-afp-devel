@@ -85,8 +85,8 @@ fun tha SIMPLE_OF_RAW thb = tha SIMPLE_OF [thb];
 
 datatype qantifier = Meta_all | Hol_all | Hol_ex
 
-fun list_exists (vs,x) = 
-       foldr (fn ((x, T), P) => HOLogic.exists_const T $ Abs (x, T, P)) x vs;
+fun list_exists (vs, x) =
+  fold_rev (fn (x, T) => fn P => HOLogic.exists_const T $ Abs (x, T, P)) vs x;
 
 fun spec' cv thm =
   let (* thm = prop ((all x. P x) ==> Q), where "all" is meta or HOL *) 
