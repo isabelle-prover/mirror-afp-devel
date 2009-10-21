@@ -989,8 +989,8 @@ proof -
   def D3: upb == "loc_upb (n, x)"
   from D3 S10 have S11: "upb = ?s + 1" by auto
   from S11 have S12: "pr_gr upb = g_step (pr_gr ?s) (c_fst ?s)" by (simp add: pr_gr_at_Suc)
-  from S8 S10 D3 have S13: "upb1 \<le> upb" by auto
-  from S9 S10 D3 have S14: "upb2 \<le> upb" by auto
+  from S8 S10 D3 have S13: "upb1 \<le> upb" by (simp only:)
+  from S9 S10 D3 have S14: "upb2 \<le> upb" by (simp only:)
   from S3 S13 have S15: "c_assoc_have_key (pr_gr upb) (c_pair ?m1 x) = 0" by (rule lm5)
   from S4 S14 have S16: "c_assoc_have_key (pr_gr upb) (c_pair ?m2 x) = 0" by (rule lm5)
   from A2 have S17: "g_step ?ls ?key = g_pair ?ls ?key" by (simp add: g_step_def)
