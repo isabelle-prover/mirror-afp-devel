@@ -1192,10 +1192,8 @@ fun procedures_definition locname procs thy =
              SOME (Const (c,_)) => c <> NoBodyN
            | _ => true)
 
-        fun clique_less c1 c2 =
-          let
-            val calls_c1 = distinct (op =) (List.concat (map my_calls c1))
-          in (calls_c1 inter c2) = [] end;
+        fun clique_less c1 c2 = null
+          (inter (op =) (distinct (op =) (maps my_calls c1), c2));
 
         val cliques'' = topsort clique_less cliques';
       in (all_callss,cliques'',is_recursive,has_body) end;
