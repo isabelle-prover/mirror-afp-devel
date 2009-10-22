@@ -1193,7 +1193,7 @@ fun procedures_definition locname procs thy =
            | _ => true)
 
         fun clique_less c1 c2 = null
-          (inter (op =) (distinct (op =) (maps my_calls c1), c2));
+          (inter (op =) (distinct (op =) (maps my_calls c1)) c2);
 
         val cliques'' = topsort clique_less cliques';
       in (all_callss,cliques'',is_recursive,has_body) end;
