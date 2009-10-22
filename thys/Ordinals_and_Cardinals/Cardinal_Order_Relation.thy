@@ -162,8 +162,8 @@ proof(auto)
   hence "|B| \<le>o |A|" using card_of_least 
   ordLeq_ordIso_trans ordIso_symmetric by blast
   moreover 
-  {let ?g = "inv_onto A f" 
-   have "bij_betw ?g B A" using * bij_betw_inv_onto by blast
+  {let ?g = "inv_into A f" 
+   have "bij_betw ?g B A" using * bij_betw_inv_into by blast
    then obtain r where "well_order_on A r \<and> |B| =o r"
    using Well_order_iso_copy card_of_well_order_on by blast
    hence "|A| \<le>o |B|" using card_of_least 

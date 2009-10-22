@@ -950,7 +950,7 @@ lemma map_uton_ntou[simp]: "map uton (map ntou xs) = xs"
 
 lemma ntou_uton: "x \<in> range ntou ==> ntou (uton x) = x"
   apply(simp add: uton_def)
-  apply(simp add: f_inv_onto_f) done
+  apply(simp add: f_inv_into_f) done
 
 
 subsection "Falsifying Model From Failing Path"

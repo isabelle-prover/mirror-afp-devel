@@ -377,7 +377,7 @@ next
   qed
   hence 4: "bij_betw g UNIV A' \<and> a \<in> A' \<and> A' \<le> A" 
   using inj_on_imp_bij_betw[of g] unfolding A'_def by auto
-  hence 5: "bij_betw (inv g) A' UNIV" by (auto simp add: bij_betw_inv_onto)
+  hence 5: "bij_betw (inv g) A' UNIV" by (auto simp add: bij_betw_inv_into)
   (*  *)
   obtain n where "g n = a" using 3 by auto
   hence 6: "bij_betw g (UNIV - {n}) (A' - {a})" 
@@ -437,7 +437,7 @@ next
   moreover have "infinite ?A'" using INF by auto
   ultimately obtain f where "bij_betw f ?A' A"  
   using infinite_imp_bij_betw[of ?A' a] by auto
-  hence "bij_betw(inv_onto ?A' f) A ?A'" using bij_betw_inv_onto by blast
+  hence "bij_betw(inv_into ?A' f) A ?A'" using bij_betw_inv_into by blast
   thus ?thesis by auto
 qed
 
@@ -565,10 +565,10 @@ by (auto simp add: inj_on_image_Pow image_Pow_surjective)
 subsection {* Properties involving Hilbert choice *}
 
 
-(*2*)lemma bij_betw_inv_onto_left:
+(*2*)lemma bij_betw_inv_into_left:
 assumes BIJ: "bij_betw f A A'" and IN: "a \<in> A"
-shows "(inv_onto A f) (f a) = a"
-proof(unfold inv_onto_def)
+shows "(inv_into A f) (f a) = a"
+proof(unfold inv_into_def)
   let ?phi = "(\<lambda> b. b \<in> A \<and> f b = f a)"
   have "?phi a" using IN by auto
   moreover 
@@ -580,17 +580,17 @@ proof(unfold inv_onto_def)
 qed
 
 
-(*2*)lemma bij_betw_inv_onto_right:
+(*2*)lemma bij_betw_inv_into_right:
 assumes BIJ: "bij_betw f A A'" and IN: "a' \<in> A'"
-shows "f(inv_onto A f a') = a'"
+shows "f(inv_into A f a') = a'"
 proof-
-  let ?f' = "(inv_onto A f)"
+  let ?f' = "(inv_into A f)"
   have 1: "bij_betw ?f' A' A"
-  using BIJ by (auto simp add: bij_betw_inv_onto)
+  using BIJ by (auto simp add: bij_betw_inv_into)
   hence 2: "?f' a' \<in> A"
   using IN by (auto simp add: bij_betw_def)
   hence "?f'(f(?f' a')) = ?f' a'"
-  using BIJ by (auto simp add: bij_betw_inv_onto_left)
+  using BIJ by (auto simp add: bij_betw_inv_into_left)
   moreover 
   have "f(?f' a') \<in> A'"
   using BIJ 2 by (auto simp add: bij_betw_def)
@@ -599,67 +599,67 @@ proof-
 qed
 
 
-(*1*)lemma bij_betw_inv_onto_LEFT:
+(*1*)lemma bij_betw_inv_into_LEFT:
 assumes BIJ: "bij_betw f A A'" and SUB: "B \<le> A"
-shows "(inv_onto A f)`(f ` B) = B"
+shows "(inv_into A f)`(f ` B) = B"
 using assms  
-proof(auto simp add: bij_betw_inv_onto_left) 
-  let ?f' = "(inv_onto A f)"
+proof(auto simp add: bij_betw_inv_into_left) 
+  let ?f' = "(inv_into A f)"
   fix a assume *: "a \<in> B"
   hence "a \<in> A" using SUB by auto
   hence "a = ?f' (f a)" 
-  using BIJ by (auto simp add: bij_betw_inv_onto_left)
+  using BIJ by (auto simp add: bij_betw_inv_into_left)
   thus "a \<in> ?f' ` (f ` B)" using * by blast
 qed
 
 
-(*1*)lemma bij_betw_inv_onto_RIGHT:
+(*1*)lemma bij_betw_inv_into_RIGHT:
 assumes BIJ: "bij_betw f A A'" and SUB: "B' \<le> A'"
-shows "f `((inv_onto A f)`B') = B'"
+shows "f `((inv_into A f)`B') = B'"
 using assms  
-proof(auto simp add: bij_betw_inv_onto_right) 
-  let ?f' = "(inv_onto A f)"
+proof(auto simp add: bij_betw_inv_into_right) 
+  let ?f' = "(inv_into A f)"
   fix a' assume *: "a' \<in> B'"
   hence "a' \<in> A'" using SUB by auto
   hence "a' = f (?f' a')" 
-  using BIJ by (auto simp add: bij_betw_inv_onto_right)
+  using BIJ by (auto simp add: bij_betw_inv_into_right)
   thus "a' \<in> f ` (?f' ` B')" using * by blast
 qed
 
 
-(*1*)lemma bij_betw_inv_onto_LEFT_RIGHT: 
+(*1*)lemma bij_betw_inv_into_LEFT_RIGHT: 
 assumes BIJ: "bij_betw f A A'" and SUB: "B \<le> A" and 
         IM: "f ` B = B'"
-shows "(inv_onto A f) ` B' = B"
+shows "(inv_into A f) ` B' = B"
 proof-
-  have "(inv_onto A f)`(f ` B) = B"
-  using assms bij_betw_inv_onto_LEFT[of f A A' B] by auto
+  have "(inv_into A f)`(f ` B) = B"
+  using assms bij_betw_inv_into_LEFT[of f A A' B] by auto
   thus ?thesis using IM by auto
 qed
 
 
-(*1*)lemma bij_betw_inv_onto_RIGHT_LEFT: 
+(*1*)lemma bij_betw_inv_into_RIGHT_LEFT: 
 assumes BIJ: "bij_betw f A A'" and SUB: "B' \<le> A'" and 
-        IM: "(inv_onto A f) ` B' = B"
+        IM: "(inv_into A f) ` B' = B"
 shows "f ` B = B'"
 proof-
-  have "f`((inv_onto A f)` B') = B'"
-  using assms bij_betw_inv_onto_RIGHT[of f A A' B'] by auto
+  have "f`((inv_into A f)` B') = B'"
+  using assms bij_betw_inv_into_RIGHT[of f A A' B'] by auto
   thus ?thesis using IM by auto
 qed
 
 
-(*1*)lemma bij_betw_inv_onto_subset:
+(*1*)lemma bij_betw_inv_into_subset:
 assumes BIJ: "bij_betw f A A'" and 
         SUB: "B \<le> A" and IM: "f ` B = B'"
-shows "bij_betw (inv_onto A f) B' B"
+shows "bij_betw (inv_into A f) B' B"
 proof-
-  let ?f' = "(inv_onto A f)"
+  let ?f' = "(inv_into A f)"
   have "?f' ` B' = B " using assms 
-  by (auto simp add: bij_betw_inv_onto_LEFT_RIGHT)
+  by (auto simp add: bij_betw_inv_into_LEFT_RIGHT)
   moreover 
   {have "bij_betw ?f' A' A"
-   using BIJ by (auto simp add: bij_betw_inv_onto)
+   using BIJ by (auto simp add: bij_betw_inv_into)
    hence "inj_on ?f' A'" unfolding bij_betw_def by auto
    moreover have "B' \<le> A'" 
    using SUB IM BIJ by (auto simp add: bij_betw_def)
@@ -671,20 +671,20 @@ proof-
 qed
 
 
-(*2*)lemma bij_betw_inv_onto_twice:
+(*2*)lemma bij_betw_inv_into_twice:
 assumes "bij_betw f A A'"
-shows "\<forall>a \<in> A. inv_onto A' (inv_onto A f) a = f a"
+shows "\<forall>a \<in> A. inv_into A' (inv_into A f) a = f a"
 proof
-  let ?f' = "inv_onto A f"   let ?f'' = "inv_onto A' ?f'"
+  let ?f' = "inv_into A f"   let ?f'' = "inv_into A' ?f'"
   have 1: "bij_betw ?f' A' A" using assms 
-  by (auto simp add: bij_betw_inv_onto)
+  by (auto simp add: bij_betw_inv_into)
   fix a assume *: "a \<in> A"
   then obtain a' where 2: "a' \<in> A'" and 3: "?f' a' = a"
   using 1 unfolding bij_betw_def by force
   hence "?f'' a = a'"
-  using * 1 3 by (auto simp add: bij_betw_inv_onto_left)
+  using * 1 3 by (auto simp add: bij_betw_inv_into_left)
   moreover have "f a = a'" using assms 2 3 
-  by (auto simp add: bij_betw_inv_onto_right)
+  by (auto simp add: bij_betw_inv_into_right)
   ultimately show "?f'' a = f a" by simp
 qed
 
@@ -730,15 +730,15 @@ proof(safe)
   qed
   thus "\<exists>g. g ` A' = A" by blast
 next
-  fix g  let ?f = "inv_onto A' g"
+  fix g  let ?f = "inv_into A' g"
   have "inj_on ?f (g ` A')"
-  by (auto simp add: inj_on_inv_onto)
+  by (auto simp add: inj_on_inv_into)
   moreover 
   {fix a' assume *: "a' \<in> A'"
    let ?phi = "\<lambda> b'. b' \<in> A' \<and> g b' = g a'"
    have "?phi a'" using * by auto
    hence "?phi(SOME b'. ?phi b')" using someI[of ?phi] by blast
-   hence "?f(g a') \<in> A'" unfolding inv_onto_def by auto
+   hence "?f(g a') \<in> A'" unfolding inv_into_def by auto
   }
   ultimately show "\<exists>f. inj_on f (g ` A') \<and> f ` g ` A' \<subseteq> A'" by auto
 qed
