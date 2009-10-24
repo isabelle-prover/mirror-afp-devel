@@ -99,13 +99,13 @@ notation (HTML output)
 lemma finfun_mem_empty [simp]: "a \<in>\<^isub>f {}\<^isub>f = False"
 by(simp add: finfun_mem_def finfun_empty_def)
 
-lemma finfun_subsetI [atp,intro!]: "(!!x. x \<in>\<^isub>f A ==> x \<in>\<^isub>f B) ==> A \<subseteq>\<^isub>f B"
+lemma finfun_subsetI [intro!]: "(!!x. x \<in>\<^isub>f A ==> x \<in>\<^isub>f B) ==> A \<subseteq>\<^isub>f B"
 by(auto simp add: finfun_mem_def le_finfun_def le_bool_def)
 
 lemma finfun_subsetD [elim]: "A \<subseteq>\<^isub>f B ==> c \<in>\<^isub>f A ==> c \<in>\<^isub>f B"
 by(simp add: finfun_mem_def le_finfun_def le_bool_def)
 
-lemma finfun_subset_refl [simp,atp]: "A \<subseteq>\<^isub>f A"
+lemma finfun_subset_refl [simp]: "A \<subseteq>\<^isub>f A"
   by fast
 
 lemma finfun_set_ext: "(!!x. (x \<in>\<^isub>f A) = (x \<in>\<^isub>f B)) \<Longrightarrow> A = B"
