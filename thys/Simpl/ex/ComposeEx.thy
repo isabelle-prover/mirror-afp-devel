@@ -74,7 +74,7 @@ apply  fastsimp
 apply clarsimp
 done
 
-ML "NameSpace.unique_names := false"
+ML "unique_names := false"
 
 record globals = 
   strnext_'   :: "ref \<Rightarrow> ref"

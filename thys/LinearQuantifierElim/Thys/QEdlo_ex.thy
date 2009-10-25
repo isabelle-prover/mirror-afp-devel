@@ -5,7 +5,7 @@
 theory QEdlo_ex imports QEdlo
 begin
 
-(* ML"set NameSpace.short_names" *)
+(* ML "set short_names" *)
 
 (* tweaking the reflection setup *)
 
