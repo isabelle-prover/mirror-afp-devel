@@ -9,7 +9,7 @@ header {*
 *}
 
 theory Aux
-imports Fin_Fun
+imports "../../FinFun/FinFun"
 begin
 
 abbreviation "arbitrary == undefined"
