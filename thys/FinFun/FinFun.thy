@@ -1,11 +1,10 @@
-(*  Title:      FinFun/FinFun.thy
-    Author:     Andreas Lochbihler
-*)
+
+(* Author: Andreas Lochbihler, Uni Karlsruhe *)
 
 header {* Almost everywhere constant functions *}
 
 theory FinFun
-imports Complex_Main Infinite_Set Enum
+imports Main Infinite_Set Enum
 begin
 
 text {*
@@ -18,7 +17,8 @@ text {*
   For details, see Formalising FinFuns - Generating Code for Functions as Data by A. Lochbihler in TPHOLs 2009.
 *}
 
-text {* \subsection{Auxiliary definitions and lemmas} *}
+
+subsection {* The @{text "map_default"} operation *}
 
 definition map_default :: "'b \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> 'a \<Rightarrow> 'b"
 where "map_default b f a \<equiv> case f a of None \<Rightarrow> b | Some b' \<Rightarrow> b'"
@@ -73,13 +73,16 @@ proof -
   qed
 qed
 
-text {* \subsection{The finfun type} *}
+subsection {* The finfun type *}
 
 typedef ('a,'b) finfun = "{f::'a\<Rightarrow>'b. \<exists>b. finite {a. f a \<noteq> b}}"
-apply(auto)
-apply(rule_tac x="\<lambda>x. undefined" in exI)
-apply(auto)
-done
+proof -
+  have "\<exists>f. finite {x. f x \<noteq> undefined}"
+  proof
+    show "finite {x. (\<lambda>y. undefined) x \<noteq> undefined}" by auto
+  qed
+  then show ?thesis by auto
+qed
 
 syntax
   "finfun"      :: "type \<Rightarrow> type \<Rightarrow> type"         ("(_ \<Rightarrow>\<^isub>f /_)" [22, 21] 21)
@@ -264,7 +267,7 @@ proof -
 qed
 
 
-text {* \subsection{Kernel functions for type @{typ "'a \<Rightarrow>\<^isub>f 'b" }} *}
+subsection {* Kernel functions for type @{typ "'a \<Rightarrow>\<^isub>f 'b"} *}
 
 definition finfun_const :: "'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b" ("\<lambda>\<^isup>f/ _" [0] 1)
 where [code del]: "(\<lambda>\<^isup>f b) = Abs_finfun (\<lambda>x. b)"
@@ -286,7 +289,7 @@ by(simp add: finfun_update_def finfun_const_def expand_fun_eq)
 
 declare finfun_simp [simp del] finfun_iff [iff del] finfun_intro [rule del]
 
-text {* \subsection{Code generator setup} *}
+subsection {* Code generator setup *}
 
 definition finfun_update_code :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b" ("_'(\<^sup>f\<^sup>c/ _ := _')" [1000,0,0] 1000)
 where [simp, code del]: "finfun_update_code = finfun_update"
@@ -301,7 +304,8 @@ lemma finfun_update_update_code [code]:
   "(finfun_update_code f a b)(\<^sup>f a' := b') = (if a = a' then f(\<^sup>f a := b') else finfun_update_code (f(\<^sup>f a' := b')) a b)"
 by(simp add: finfun_update_twist)
 
-text {* \subsection{Setup for quickcheck} *}
+
+subsection {* Setup for quickcheck *}
 
 notation fcomp (infixl "o>" 60)
 notation scomp (infixl "o\<rightarrow>" 60)
@@ -344,12 +348,12 @@ no_notation fcomp (infixl "o>" 60)
 no_notation scomp (infixl "o\<rightarrow>" 60)
 
 
-text {* \subsection{@{text "finfun_update"} as instance of @{text "fun_left_comm"}} *}
+subsection {* @{text "finfun_update"} as instance of @{text "fun_left_comm"} *}
 
 declare finfun_simp [simp] finfun_iff [iff] finfun_intro [intro]
 
 interpretation finfun_update: fun_left_comm "\<lambda>a f. f(\<^sup>f a :: 'a := b')"
-proof(unfold_locales)
+proof
   fix a' a :: 'a
   fix b
   have "(Rep_finfun b)(a := b', a' := b') = (Rep_finfun b)(a' := b', a := b')"
@@ -376,7 +380,7 @@ proof -
 qed
 
 
-text {* \subsection{Default value for FinFuns} *}
+subsection {* Default value for FinFuns *}
 
 definition finfun_default_aux :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b"
 where [code del]: "finfun_default_aux f = (if finite (UNIV :: 'a set) then undefined else THE b. finite {a. f a \<noteq> b})"
@@ -459,7 +463,7 @@ lemma finfun_default_update_const:
 unfolding finfun_default_def finfun_update_def
 by(simp add: finfun_default_aux_update_const)
 
-text {* \subsection{Recursion combinator and well-formedness conditions} *}
+subsection {* Recursion combinator and well-formedness conditions *}
 
 definition finfun_rec :: "('b \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow>\<^isub>f 'b) \<Rightarrow> 'c"
 where [code del]:
@@ -833,7 +837,7 @@ declare finfun_simp [simp del] finfun_iff [iff del] finfun_intro [rule del]
 
 end
 
-text {* \subsection{Weak induction rule and case analysis for FinFuns} *}
+subsection {* Weak induction rule and case analysis for FinFuns *}
 
 declare finfun_simp [simp] finfun_iff [iff] finfun_intro [intro]
 
@@ -886,7 +890,7 @@ proof
 qed
 
 
-text {* \subsection{Function application} *}
+subsection {* Function application *}
 
 definition finfun_apply :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a \<Rightarrow> 'b" ("_\<^sub>f" [1000] 1000)
 where [code del]: "finfun_apply = (\<lambda>f a. finfun_rec (\<lambda>b. b) (\<lambda>a' b c. if (a = a') then b else c) f)"
@@ -947,7 +951,7 @@ lemma finfun_const_eq_update:
   "((\<lambda>\<^isup>f b) = f(\<^sup>f a := b')) = (b = b' \<and> (\<forall>a'. a \<noteq> a' \<longrightarrow> f\<^sub>f a' = b))"
 by(auto simp add: expand_finfun_eq expand_fun_eq finfun_upd_apply)
 
-text {* \subsection{Function composition} *}
+subsection {* Function composition *}
 
 definition finfun_comp :: "('a \<Rightarrow> 'b) \<Rightarrow> 'c \<Rightarrow>\<^isub>f 'a \<Rightarrow> 'c \<Rightarrow>\<^isub>f 'b" (infixr "\<circ>\<^isub>f" 55)
 where [code del]: "g \<circ>\<^isub>f f  = finfun_rec (\<lambda>b. (\<lambda>\<^isup>f g b)) (\<lambda>a b c. c(\<^sup>f a := g b)) f"
@@ -1035,7 +1039,7 @@ qed
 
 declare finfun_simp [simp del] finfun_iff [iff del] finfun_intro [rule del]
 
-text {* \subsection{A type class for computing the cardinality of a type's universe} *}
+subsection {* A type class for computing the cardinality of a type's universe *}
 
 class card_UNIV = 
   fixes card_UNIV :: "'a itself \<Rightarrow> nat"
@@ -1091,9 +1095,9 @@ qed
 
 end
 
-text {* \subsection{Instantiations for @{text "card_UNIV"}} *}
+subsection {* Instantiations for @{text "card_UNIV"} *}
 
-text {* \subsubsection{@{typ "nat"}} *}
+subsubsection {* @{typ "nat"} *}
 
 instantiation nat :: card_UNIV begin
 
@@ -1108,7 +1112,7 @@ qed
 
 end
 
-text {* \subsubsection{@{typ "int"}} *}
+subsubsection {* @{typ "int"} *}
 
 instantiation int :: card_UNIV begin
 
@@ -1123,7 +1127,7 @@ qed
 
 end
 
-text {* \subsubsection{@{typ "'a list"}} *}
+subsubsection {* @{typ "'a list"} *}
 
 instantiation list :: (type) card_UNIV begin
 
@@ -1138,7 +1142,7 @@ qed
 
 end
 
-text {* \subsubsection{@{typ "unit"}} *}
+subsubsection {* @{typ "unit"} *}
 
 lemma card_UNIV_unit: "card (UNIV :: unit set) = 1"
   unfolding UNIV_unit by simp
@@ -1156,7 +1160,7 @@ qed
 
 end
 
-text {* \subsubsection{@{typ "bool"}} *}
+subsubsection {* @{typ "bool"} *}
 
 lemma card_UNIV_bool: "card (UNIV :: bool set) = 2"
   unfolding UNIV_bool by simp
@@ -1174,13 +1178,13 @@ qed
 
 end
 
-text {* \subsubsection{@{typ "char"}} *}
+subsubsection {* @{typ "char"} *}
 
 lemma card_UNIV_char: "card (UNIV :: char set) = 256"
 proof -
   from enum_distinct
   have "card (set (enum :: char list)) = length (enum :: char list)"
-    by -(rule distinct_card)
+    by - (rule distinct_card)
   also have "set enum = (UNIV :: char set)" by auto
   also note enum_chars
   finally show ?thesis by (simp add: chars_def)
@@ -1199,7 +1203,7 @@ qed
 
 end
 
-text {* \subsubsection{@{typ "'a \<times> 'b"}} *}
+subsubsection {* @{typ "'a \<times> 'b"} *}
 
 instantiation * :: (card_UNIV, card_UNIV) card_UNIV begin
 
@@ -1214,7 +1218,7 @@ qed
 
 end
 
-text {* \subsubsection{@{typ "'a + 'b"}} *}
+subsubsection {* @{typ "'a + 'b"} *}
 
 instantiation "+" :: (card_UNIV, card_UNIV) card_UNIV begin
 
@@ -1230,7 +1234,7 @@ qed
 
 end
 
-text {* \subsubsection{@{typ "'a \<Rightarrow> 'b"}} *}
+subsubsection {* @{typ "'a \<Rightarrow> 'b"} *}
 
 instantiation "fun" :: (card_UNIV, card_UNIV) card_UNIV begin
 
@@ -1302,7 +1306,7 @@ qed
 
 end
 
-text {* \subsubsection{@{typ "'a option"}} *}
+subsubsection {* @{typ "'a option"} *}
 
 instantiation option :: (card_UNIV) card_UNIV
 begin
@@ -1322,7 +1326,7 @@ qed
 end
 
 
-text {* \subsection{Universal quantification} *}
+subsection {* Universal quantification *}
 
 definition finfun_All_except :: "'a list \<Rightarrow> 'a \<Rightarrow>\<^isub>f bool \<Rightarrow> bool"
 where [code del]: "finfun_All_except A P \<equiv> \<forall>a. a \<in> set A \<or> P\<^sub>f a"
@@ -1366,7 +1370,7 @@ lemma finfun_Ex_const [simp]: "finfun_Ex (\<lambda>\<^isup>f b) = b"
 by(simp add: finfun_Ex_def)
 
 
-text {* \subsection{A diagonal operator for FinFuns} *}
+subsection {* A diagonal operator for FinFuns *}
 
 definition finfun_Diag :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'c \<Rightarrow> 'a \<Rightarrow>\<^isub>f ('b \<times> 'c)" ("(1'(_,/ _')\<^sup>f)" [0, 0] 1000)
 where [code del]: "finfun_Diag f g = finfun_rec (\<lambda>b. Pair b \<circ>\<^isub>f g) (\<lambda>a b c. c(\<^sup>f a := (b, g\<^sub>f a))) f"
@@ -1495,7 +1499,7 @@ by(simp add: finfun_snd_def_raw finfun_comp_conv_comp finfun_apply_Rep_finfun)
 lemma finfun_Diag_collapse [simp]: "(finfun_fst f, finfun_snd f)\<^sup>f = f"
 by(induct f rule: finfun_weak_induct)(simp_all add: finfun_fst_const finfun_snd_const finfun_fst_update finfun_snd_update finfun_Diag_update_update)
 
-text {* \subsection{Currying for FinFuns} *}
+subsection {* Currying for FinFuns *}
 
 definition finfun_curry :: "('a \<times> 'b) \<Rightarrow>\<^isub>f 'c \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b \<Rightarrow>\<^isub>f 'c"
 where [code del]: "finfun_curry = finfun_rec (finfun_const \<circ> finfun_const) (\<lambda>(a, b) c f. f(\<^sup>f a := (f\<^sub>f a)(\<^sup>f b := c)))"
@@ -1571,7 +1575,7 @@ proof -
   thus ?thesis by(auto simp add: expand_fun_eq)
 qed
 
-text {* \subsection{Executable equality for FinFuns} *}
+subsection {* Executable equality for FinFuns *}
 
 lemma eq_finfun_All_ext: "(f = g) \<longleftrightarrow> finfun_All ((\<lambda>(x, y). x = y) \<circ>\<^isub>f (f, g)\<^sup>f)"
 by(simp add: expand_finfun_eq expand_fun_eq finfun_All_All o_def)
@@ -1581,7 +1585,7 @@ definition eq_finfun_def: "eq_class.eq f g \<longleftrightarrow> finfun_All ((\<
 instance by(intro_classes)(simp add: eq_finfun_All_ext eq_finfun_def)
 end
 
-text {* \subsection{Operator that explicitly removes all redundant updates in the generated representations} *}
+subsection {* Operator that explicitly removes all redundant updates in the generated representations *}
 
 definition finfun_clearjunk :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b"
 where [simp, code del]: "finfun_clearjunk = id"
