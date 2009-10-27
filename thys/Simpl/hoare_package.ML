@@ -968,7 +968,7 @@ fun check_procedures_definition procs thy =
             then ["procedure " ^ quote name ^ " already defined"]
             else []
 
-        val err_already_defined = List.concat (map (already_defined o #1) procs);
+        val err_already_defined = maps (already_defined o #1) procs;
 
         fun duplicate_procs names =
             (case duplicates (op =) names of
@@ -984,9 +984,9 @@ fun check_procedures_definition procs thy =
                         ^ quote name ^ ": " ^ commas_quote dups]);
 
         val err_duplicate_pars =
-             List.concat (map (fn (name,inpars,outpars,locals,_,_,_) =>
+             maps (fn (name,inpars,outpars,locals,_,_,_) =>
                       duplicate_pars name (inpars @ locals) @
-                      duplicate_pars name (outpars @ locals)) procs);
+                      duplicate_pars name (outpars @ locals)) procs;
         (* FIXME: Check that no global variables are used as result parameters *)
         val errs = err_already_defined @ err_duplicate_procs @ err_duplicate_pars;
     in if null errs then () else error (cat_lines errs)
@@ -1168,7 +1168,7 @@ fun procedures_definition locname procs thy =
         fun add_edges (g,(n,es)) = foldl (fn (g,x) => Graph.add_edge (n,x) g) (g,es);
 
         val all_callss = map (map snd o max_subterms_dest dcall) bodies;
-        val callss = map (List.mapPartial in_names) all_callss;
+        val callss = map (map_filter in_names) all_callss;
         val graph = foldl (fn (g,n) => Graph.new_node (n,()) g) (Graph.empty,names);
         val graph' = foldl add_edges (graph,(names ~~ callss));
         fun idx x = find_index (fn y => x=y) names;
@@ -1320,7 +1320,7 @@ fun procedures_definition locname procs thy =
                               @ (parent_locales thy implementationN clique)
                               @ (if multiple_procs then [Locale.intern thy cnamesN] else []));
         fun read_term thy = apply_in_context thy (pE thy) Syntax.read_term;
-        fun elems thy = List.concat (map (mk_def_eq thy (read_term thy)) clique);
+        fun elems thy = maps (mk_def_eq thy (read_term thy)) clique;
         fun add_recursive_info phi name =
             if is_recursive name then (add_recursive phi name) else I;
         fun proc_declaration phi = add_active_procs phi clique;
@@ -1392,15 +1392,14 @@ fun procedures_definition locname procs thy =
       fun add_recursive_info name =
         if is_recursive name then Context.theory_map (add_recursive Morphism.identity name) else I;
 
-   val sp_thy =
-        thy
-        |> fold (add_variable_statespaces Record.read_typ) (map clique_vars cliques)
-        |> fold add_signature_locale
-                        (List.concat (map (fn c => map (fn n => (lname "" c,n)) c) cliques))
-        |> fold add_body_locale name_pars
-        |> fold add_impl_locales cliques
-        |> fold add_spec_locales name_pars_specs
-  in sp_thy end;
+  in
+    thy
+    |> fold (add_variable_statespaces Record.read_typ o clique_vars) cliques
+    |> fold (fn c => fold (fn n => add_signature_locale (lname "" c, n)) c) cliques
+    |> fold add_body_locale name_pars
+    |> fold add_impl_locales cliques
+    |> fold add_spec_locales name_pars_specs
+  end;
 
 
 
@@ -1498,7 +1497,7 @@ fun split_guards gs =
     fun norm_guard ((c as Const ("Pair",_))$f$g) = norm c f g
       | norm_guard ((c as Const ("Language.guaranteeStripPair",_))$f$g) = norm c f g
       | norm_guard t = [t];
-  in List.concat (map norm_guard (HOLogic.dest_list gs))
+  in maps norm_guard (HOLogic.dest_list gs)
   end
 
 fun guard_of_pair (Const ("Pair",_)$_$g) = g
@@ -1680,8 +1679,8 @@ fun split_pair_apps thm =
                   end;
 
 
-                val args' = List.concat (map split (frees ~~ (args )));
-                val argTs' = List.concat (map splitT argTs);
+                val args' = maps split (frees ~~ args);
+                val argTs' = maps splitT argTs;
                 val inst = list_abs_free (frees, list_comb (Var (v,argTs' ---> bdyT),args'))
               in subst@[(var,inst)]
               end
@@ -2081,7 +2080,7 @@ fun gen_context_thms ctxt thy mode params G T F =
     fun hoare_context_specs thy mode G T F =
       let fun mk t = (SOME o mkHoare mode G T F o apsnd destQuadruple o dest_UN) t
                      handle _ => NONE
-      in List.mapPartial mk (dest_Un T) end;
+      in map_filter mk (dest_Un T) end;
 
 
     fun mk_prove ctxt mode (prop,params) =
@@ -2190,7 +2189,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
           | NONE => NONE);
 
     fun get_auxvars_for p t =
-          (case (List.mapPartial ((auxvars_for p) o snd) (max_subterms_dest tap_UN t)) of
+          (case (map_filter ((auxvars_for p) o snd) (max_subterms_dest tap_UN t)) of
             (vars::_) => vars
            | _ => []);
 
@@ -2215,7 +2214,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                             | _ => NONE)
              | _ => NONE)
 
-    fun find_dyn_specs name P thms = List.mapPartial (check_spec name P) thms;
+    fun find_dyn_specs name P thms = map_filter (check_spec name P) thms;
 
     fun get_spec name P thms =
          case find_dyn_specs name P thms of
@@ -3003,8 +3002,7 @@ val globals = "StateSpace.state.globals";
 
 fun isState (Const _$Abs (s,T,t)) = (case (state_hierarchy T) of
                       ((n,_)::_) =>  n="StateSpace.state.state" andalso
-                                     not (is_some
-                                           (try dest_hoare_raw (strip_qnt_body "All" t)))
+                                     is_none (try dest_hoare_raw (strip_qnt_body "All" t))
                      | _ => false)
   | isState _ = false;
 
@@ -3130,8 +3128,7 @@ struct
 
 fun isState (Const _$Abs (s,T,t)) = (case (state_hierarchy T) of
                       ((n,_)::_) =>  n="StateSpace.state.state" andalso
-                                     not (is_some
-                                           (try dest_hoare_raw (strip_qnt_body "All" t)))
+                                     is_none (try dest_hoare_raw (strip_qnt_body "All" t))
                      | _ => false)
   | isState _ = false;
 
@@ -3359,7 +3356,7 @@ fun record_vanish_tac ctxt state_kind state_space i =
         val rem_useless_vars_ss = (empty_ss setmksimps single)
                                    addsimps rem_useless_vars_simps;
         fun no_spec (t as (Const ("All",_)$_)) =
-              not (is_some (try dest_hoare_raw (strip_qnt_body "All" t)))
+              is_none (try dest_hoare_raw (strip_qnt_body "All" t))
           | no_spec _ = true;
         fun state_space_no_spec t = if state_space t <> 0 andalso no_spec t then
                                     ~1 else 0;
@@ -3462,7 +3459,7 @@ fun proc_lookup_simp_tac ctxt i st =
           |> dest_hoare |> #2 |> strip_comb |> #2 |> last |> strip_comb |> #2 |> last;
           (* the$(Gamma$name) or the$(strip$Gamma$name) *)
     val pname = (unsuffix proc_deco (dest_string' name));
-    val thms =  List.mapPartial I (map (try (ProofContext.get_thm ctxt))
+    val thms =  map_filter I (map (try (ProofContext.get_thm ctxt))
                             [suffix bodyP pname,
                              suffix (body_def_sfx^"_def") pname,
                              suffix procL pname^"."^ (suffix (body_def_sfx^"_def") pname)]);
@@ -3474,7 +3471,7 @@ fun proc_lookup_in_dom_simp_tac ctxt i st =
     val _$name$_  = (HOLogic.dest_Trueprop (Logic.concl_of_goal (prop_of st) i));
         (* name : Gamma *)
     val pname = (unsuffix proc_deco (dest_string' name));
-    val thms =  List.mapPartial I (map (try (ProofContext.get_thm ctxt))
+    val thms =  map_filter I (map (try (ProofContext.get_thm ctxt))
                                [suffix bodyP pname]);
   in simp_tac (HOL_basic_ss addsimps (lookup_Some_in_dom::dom_strip::thms)) i st end
   handle _ => all_tac st;
@@ -3504,7 +3501,7 @@ fun HoareCallRuleTac state_kind state_space ctxt thms i st =
       | dest_All _ = NONE;
 
     fun auxvars t =
-         (case (List.mapPartial ((first_subterm is_hoare) o snd) (max_subterms_dest dest_All t)) of
+         (case (map_filter ((first_subterm is_hoare) o snd) (max_subterms_dest dest_All t)) of
              ((vars,_)::_) => vars
            | _ => []);
 
@@ -3518,7 +3515,7 @@ fun HoareCallRuleTac state_kind state_space ctxt thms i st =
     val thy = theory_of_thm st;
     val thms' =
       let val auxvs = map fst (auxvars (Logic.concl_of_goal (prop_of st) i));
-          val tvar_thms = List.mapPartial auxtype thms
+          val tvar_thms = map_filter auxtype thms
       in if length thms = length tvar_thms
          then adapt_aux_var ctxt true auxvs tvar_thms
          else thms
@@ -3658,7 +3655,7 @@ fun gen_simp_method tac =
   Method.sections vcg_simp_modifiers >>
     (fn args => fn ctxt => Method.SIMPLE_METHOD'
       (tac ("_" ^ the (AList.lookup (op =) args "spec"))
-        (the (uncurry (AList.lookup (op =)) (args, "strip_guards"))) ctxt));
+        (the (AList.lookup (op =) args "strip_guards")) ctxt));
  
 val hoare = gen_simp_method hoare_tac;
 val hoare_raw = gen_simp_method hoare_raw_tac;
