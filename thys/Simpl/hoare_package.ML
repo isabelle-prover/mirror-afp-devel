@@ -575,10 +575,6 @@ fun pairs []  = []
   | pairs [x] = error "pairs: odd number of elements"
   | pairs (x::y::xs) = (x,y)::pairs xs;
 
-fun assocs l = (these oo AList.lookup ((op =):(string * string) -> bool)) l;
-fun assoc_string l = uncurry (AList.lookup ((op =):(string * string) -> bool)) l;
-fun assoc l = uncurry (AList.lookup (op =)) l;
-
 fun idx eq [] x = ~1
   | idx eq (x::rs) y =
       if eq x y then 0
@@ -968,7 +964,7 @@ fun check_procedures_definition procs thy =
     let
         val _ = Theory.requires thy "Hoare" "Hoare definitions";
         fun already_defined name =
-            if isSome (get_params name (Context.Theory thy))
+            if is_some (get_params name (Context.Theory thy))
             then ["procedure " ^ quote name ^ " already defined"]
             else []
 
@@ -1180,8 +1176,8 @@ fun procedures_definition locname procs thy =
         val cliques = Graph.strong_conn graph';
         val cliques' = map (sort name_ord) cliques;
 
-        fun my_calls n = assocs (names ~~ (map (distinct (op =)) callss)) n;
-        fun my_body n = assoc_string (names ~~ bodies, n);
+        val my_calls = these o AList.lookup (op =) (names ~~ map (distinct (op =)) callss);
+        val my_body = AList.lookup (op =) (names ~~ bodies);
 
         fun is_recursive n =
           let val pths = Graph.all_paths graph' (n,n)
@@ -1214,13 +1210,13 @@ fun procedures_definition locname procs thy =
     fun parent_locales thy sfx clique =
       let
         val calls = distinct (op =) (flat
-                     (map_filter (curry assoc_string (names ~~ all_callss)) clique));
+                     (map_filter (AList.lookup (op =) (names ~~ all_callss)) clique));
       in map (Locale.intern thy)
             (distinct (op =) (map_filter (get_loc sfx clique) calls))
       end;
 
     val names_all_callss = names ~~ map (distinct (op =)) all_callss;
-    fun get_calls n = the (assoc_string (names_all_callss,n));
+    val get_calls = the o AList.lookup (op =) names_all_callss;
 
     fun clique_vars clique =
       let
@@ -1247,7 +1243,7 @@ fun procedures_definition locname procs thy =
    fun mk_bdy_def read_term name =
       let
         val name' = unsuffix proc_deco name;
-        val bdy = read_term (the (assoc_string (name_body, name)));
+        val bdy = read_term (the (AList.lookup (op =) name_body name));
         val bdy_defN = suffix body_def_sfx name';
       in ((Binding.name bdy_defN, NoSyn), (Attrib.empty_binding, bdy)) end;
 
@@ -1655,7 +1651,7 @@ fun split_pair_apps thm =
       | mk_subst subst (t as (t1$t2)) =
          (case strip_comb t of
             (var as Var (v,vT),args) =>
-            (if is_none (assoc (subst,var))
+            (if not (AList.defined (op =) subst var)
              then
               let
                 val len = length args;
@@ -1798,7 +1794,7 @@ fun gen_call_rec_rule specs_name n rule =
     val thy = theory_of_thm rule;
     val maxidx = #maxidx (rep_cterm (cprop_of rule));
     val vars = map (dest_Var) (OldTerm.term_vars (prop_of rule));
-    fun get_type n = valOf (assoc (vars,(n,0)));
+    fun get_type n = the (AList.lookup (op =) vars (n, 0));
     val specsT as (Type ("fun", [Type (_,[assT,Type (_,[pT,_])]), Type ("bool", [])])) = get_type specs_name;
     val zT = TVar (("z",maxidx+1),Sign.defaultS thy)
 
@@ -2181,7 +2177,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
   let
     val thy = ProofContext.theory_of ctxt;
     val pname' = unsuffix proc_deco pname;
-    val spec = (case assoc_string (asms,pname) of
+    val spec = (case AList.lookup (op =) asms pname of
                  SOME s => SOME s
                | NONE =>  try (ProofContext.get_thm ctxt) (suffix spec_sfx pname'));
 
@@ -2518,7 +2514,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
     let val mname = (suffix modifysfx pname');
         val mspec = (case try (ProofContext.get_thm ctxt) mname of
                       SOME s => SOME s
-                     | NONE => (case assoc_string (asms,pname) of
+                     | NONE => (case AList.lookup (op =) asms pname of
                                  SOME s => if is_modifies_clause (concl_of s)
                                            then SOME s else NONE
                                 | NONE => NONE));
@@ -3007,7 +3003,7 @@ val globals = "StateSpace.state.globals";
 
 fun isState (Const _$Abs (s,T,t)) = (case (state_hierarchy T) of
                       ((n,_)::_) =>  n="StateSpace.state.state" andalso
-                                     not (isSome
+                                     not (is_some
                                            (try dest_hoare_raw (strip_qnt_body "All" t)))
                      | _ => false)
   | isState _ = false;
@@ -3134,7 +3130,7 @@ struct
 
 fun isState (Const _$Abs (s,T,t)) = (case (state_hierarchy T) of
                       ((n,_)::_) =>  n="StateSpace.state.state" andalso
-                                     not (isSome
+                                     not (is_some
                                            (try dest_hoare_raw (strip_qnt_body "All" t)))
                      | _ => false)
   | isState _ = false;
@@ -3363,7 +3359,7 @@ fun record_vanish_tac ctxt state_kind state_space i =
         val rem_useless_vars_ss = (empty_ss setmksimps single)
                                    addsimps rem_useless_vars_simps;
         fun no_spec (t as (Const ("All",_)$_)) =
-              not (isSome (try dest_hoare_raw (strip_qnt_body "All" t)))
+              not (is_some (try dest_hoare_raw (strip_qnt_body "All" t)))
           | no_spec _ = true;
         fun state_space_no_spec t = if state_space t <> 0 andalso no_spec t then
                                     ~1 else 0;
@@ -3661,8 +3657,8 @@ fun gen_simp_method tac =
   Scan.lift (argsP >> (fn args => args @ default_args)) --|
   Method.sections vcg_simp_modifiers >>
     (fn args => fn ctxt => Method.SIMPLE_METHOD'
-      (tac ("_" ^ valOf (assoc_string (args, "spec")))
-        (valOf (assoc_string (args, "strip_guards"))) ctxt));
+      (tac ("_" ^ the (AList.lookup (op =) args "spec"))
+        (the (uncurry (AList.lookup (op =)) (args, "strip_guards"))) ctxt));
  
 val hoare = gen_simp_method hoare_tac;
 val hoare_raw = gen_simp_method hoare_raw_tac;
