@@ -45,7 +45,7 @@ lemma arg_le_sf: "x \<le> sf x"
 proof -
   have "x + x \<le> x*(x + 1)" by simp
   hence "(x + x) div 2 \<le> x*(x+1) div 2" by (rule div_le_mono)
-  hence "x \<le> x*(x+1) div 2" by (simp add: div_def)
+  hence "x \<le> x*(x+1) div 2" by simp
   thus ?thesis by (simp add: sf_def)
 qed
 
