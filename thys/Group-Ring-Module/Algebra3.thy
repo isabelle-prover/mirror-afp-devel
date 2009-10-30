@@ -2488,7 +2488,7 @@ lemma (in Group) im_d_gchains1:"\<lbrakk>0 < n; d_gchain G n f; i \<le> n;
 apply (frule im_d_gchainTr1_0 [of "n" "f" "i"], assumption+,
        frule im_d_gchainsTr1_2 [of "n" "f" "i"], assumption+,
        frule Nset_nset_1 [of "n" "j - Suc 0"])
-apply simp;
+apply simp
 apply (subst im_set_un2, simp)
 apply (subst im_d_gchainsTr1_5[of "n" "f" "i" "j"]) 
 apply (simp, assumption, simp+)
@@ -2621,7 +2621,7 @@ apply (simp add:W_cmpser_def)
         simp add:D_gchain_def, erule conjE,
         rule d_gchain_pre, assumption+, simp)
 
-apply (frule D_gchain_pre, simp);
+apply (frule D_gchain_pre, simp)
 done
 
 lemma (in Group) td_gchain_n:"\<lbrakk>td_gchain G n f; carrier G \<noteq> {\<one>}\<rbrakk> \<Longrightarrow> 0 < n"
@@ -4277,9 +4277,6 @@ apply (simp add:rtos_def)
 apply (simp add:rfn_tool11 [of "r * s" "i"])
  apply (frule rtos_hom0 [of "r" "s" "i"], assumption+)
  apply (simp add:mem_of_Nset)
- apply (subst add_commute)
- apply (subst mod_mult_self1 [of "i div s" "i mod s" "r"])
-apply (subst mod_less, assumption+) apply simp 
 done
 
 lemma rtos_hom5:"\<lbrakk>(0::nat) < r; (0::nat) < s; i \<le> (r *s - Suc 0); 
@@ -4645,7 +4642,7 @@ apply (rule ZassenhausTr2_1[of "f i" "f (Suc i)" "g j"], simp,
        rule compseriesTr0[of "r" "f" "i"], assumption+,
        frule_tac le_less_trans[of i "r - Suc 0" r], simp+)
  apply (rule compseriesTr0[of "r" "f" "Suc i"], assumption+, arith) 
- apply(rule compseriesTr0[of "s" "g" "j"], assumption+, simp);
+ apply(rule compseriesTr0[of "s" "g" "j"], assumption+, simp)
 apply (frule compseries_is_tW_cmpser[of "r" "f"], assumption+,
        simp add:tW_cmpser_def)
 done
@@ -4775,7 +4772,7 @@ apply (rule allI, rule impI)
 apply (rule rfn_tool16 [of "r" "s" _], simp+,
        cut_tac x = "Suc i" and y = "s * r" and z = "Suc (s *r)" in 
        less_trans, assumption, simp,
-       thin_tac "Suc i < s * r", simp);
+       thin_tac "Suc i < s * r", simp)
 apply (rule compser_nsg[of r f], simp+) 
  apply (rule_tac  H = "f (i div s) \<inter> g (s - Suc 0)" and K = "f (i div s)" in 
         sg_sg, assumption+,
@@ -4791,7 +4788,7 @@ apply (rule compser_nsg[of r f], simp+)
         simp, 
         frule_tac m = "i mod s" in noteq_le_less [of _ "s - Suc 0"], 
         assumption+,
-        thin_tac "i mod s \<noteq> s - Suc 0", thin_tac "i mod s \<le> s - Suc 0");
+        thin_tac "i mod s \<noteq> s - Suc 0", thin_tac "i mod s \<le> s - Suc 0")
      apply (frule_tac x = "i mod s" and y = "s - Suc 0" and z = s in 
             less_trans, simp,
         frule_tac k = "i mod s" in nat_pos2 [of _ s],
@@ -4914,16 +4911,6 @@ done
 lemma Suc_rtos_mod_r_1:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; Suc (rtos r s i) < r * s; i mod s = s - Suc 0; i  div s < r - Suc 0\<rbrakk>
          \<Longrightarrow> Suc (rtos r s i) mod r = Suc (i div s)"
 apply (simp add:rtos_def)
- apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"], simp)
- apply simp
- apply (subgoal_tac "Suc ((s - Suc 0) * r + i div s) mod r =
-   ((s - Suc 0) * r + Suc (i div s)) mod r")
-  apply (simp del:add_Suc add_Suc_right)
-  apply (subgoal_tac "Suc (i div s) < r")
- apply (subst rfn_tool20 [of "r" _ "(s - Suc 0)" "Suc (i div s)"], assumption+)
- apply (simp, assumption, simp)
- apply (subgoal_tac "Suc (i div s) < Suc (r - Suc 0)", simp)
- apply (simp del:Suc_pred, simp)
 done
 
 lemma i_div_s_less:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0; Suc (rtos r s i) < r * s;
@@ -4995,13 +4982,6 @@ lemma Suc_rtos_i_mod_r_3:"\<lbrakk>0 < r; 0 < s; i \<le> r * s - Suc 0;
       i div s < r - Suc 0\<rbrakk> \<Longrightarrow> Suc (rtos r s i) mod r = Suc (i div s)"
 apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"], simp)
 apply (simp add:rtos_def)
-apply (subst add_Suc_right[THEN sym, of "i mod s * r" "i div s"])
- apply (subst add_commute[of "i mod s * r" "Suc (i div s)"])
- apply (subst mod_mult_self1[of "Suc (i div s)" "i mod s" "r"])
- apply (cut_tac lessI[of "r - Suc 0"], simp only:Suc_pred)
- apply (frule Suc_leI[of "i div s" "r - Suc 0"])
- apply (frule le_less_trans[of "Suc (i div s)" "r - Suc 0" "r"], assumption+)
- apply (simp only:mod_less) 
 done
 
 lemma Suc_rtos_div_r_3:"\<lbrakk>0 < r; 0 < s; i mod s < s - Suc 0; i \<le> r * s - Suc 0; 

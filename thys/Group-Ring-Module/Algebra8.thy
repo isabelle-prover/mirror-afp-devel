@@ -2034,7 +2034,7 @@ apply (cut_tac s = s and n = "k - Suc 0" and f = h and H = "h ` {j. j \<le> k}"
        simp add:extend_fun, simp)
 apply (rotate_tac -3, frule sym, 
        thin_tac "h k = l_comb R M (Suc (k - Suc 0)) s h", simp)
-apply (frule_tac h = h and k = k and s = s in NAKTr4[of A]);
+apply (frule_tac h = h and k = k and s = s in NAKTr4[of A])
  apply (fastsimp simp add:Pi_def image_def)
  apply(assumption+, rule sym, simp add:l_comb_def)
 apply (cut_tac H = "h ` {j. j \<le> (k - Suc 0)}" and s = s and n = "k - Suc 0" 
