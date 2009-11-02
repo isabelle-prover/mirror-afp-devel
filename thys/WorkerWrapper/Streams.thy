@@ -219,7 +219,8 @@ lemma fib_work_final_fib_work_eq: "fib_work_final = fib_work" (is "?lhs = ?rhs")
 proof -
   let ?wb = "\<Lambda> r. Nat_case\<cdot>1\<cdot>(Nat_case\<cdot>1\<cdot>(\<Lambda> n'. r !! n' + r !! (n' + 1)))"
   let ?mr = "\<Lambda> \<langle>fwf :: Nat Stream, fff\<rangle>. \<langle>smap\<cdot>fff\<cdot>nats, ?wb\<cdot>fwf\<rangle>"
-  have "?lhs = cfst\<cdot>(fix\<cdot>?mr)" by (simp add: fib_work_final_def)
+  have "?lhs = cfst\<cdot>(fix\<cdot>?mr)"
+    by (simp add: fib_work_final_def split_def csplit_def cfst_def csnd_def cpair_def)
   also have "\<dots> = (\<mu> fwf. cfst\<cdot>(?mr\<cdot>\<langle>fwf, \<mu> fff. csnd\<cdot>(?mr\<cdot>\<langle>fwf, fff\<rangle>)\<rangle>))"
     using fix_cprod[where F="?mr"] by simp
   also have "\<dots> = (\<mu> fwf. smap\<cdot>(\<mu> fff. ?wb\<cdot>fwf)\<cdot>nats)" by simp
