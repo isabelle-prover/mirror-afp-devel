@@ -28,7 +28,7 @@ lemma mon_pl_unconc: "!!b. mon_pl (a@b) = mon_pl a \<union> mon_pl b"
   by (induct a) auto
 
 lemma mon_pl_ileq: "w\<preceq>w' \<Longrightarrow> mon_pl w \<subseteq> mon_pl w'"
-  by (induct rule: ileq_induct) auto
+  by (induct rule: less_eq_list.induct) auto
 
 lemma mon_pl_set: "mon_pl w = \<Union>{ fst e \<union> snd e | e. e\<in>set w }"
   by (unfold mon_pl_def) (safe, auto simp add: Bex_def foldl_set)

@@ -303,8 +303,8 @@ lemma interleave_filter: "w\<in>w1\<otimes>w2 \<Longrightarrow> filter f w \<in>
 subsubsection "Relation to sublist order"
 
 lemma ileq_interleave_alt: "l'\<preceq>l == \<exists>lb. l\<in>lb \<otimes> l'" proof (rule eq_reflection)
-  {fix l' l have "l'\<preceq>l \<Longrightarrow> \<exists>lb. l\<in>lb \<otimes> l'" by (induct rule: ileq_induct) (simp, (blast intro: interleave_cons)+)}
-  moreover {fix l have "!!lb l'. l\<in>lb\<otimes>l' \<Longrightarrow> l'\<preceq>l" by (induct l) (auto intro: ileq_intros elim!: cons_interleave_cases)}
+  {fix l' l have "l'\<preceq>l \<Longrightarrow> \<exists>lb. l\<in>lb \<otimes> l'" by (induct rule: less_eq_list.induct) (simp, (blast intro: interleave_cons)+)}
+  moreover {fix l have "!!lb l'. l\<in>lb\<otimes>l' \<Longrightarrow> l'\<preceq>l" by (induct l) (auto intro: less_eq_list.drop elim!: cons_interleave_cases)}
   ultimately show "(l'\<preceq>l) = (\<exists>lb. l\<in>lb \<otimes> l')" by blast
 qed
 

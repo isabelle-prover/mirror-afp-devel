@@ -387,7 +387,7 @@ next
   from Cons.prems(2) LESPLIT(2) have "atU U (({#s'#}+c1') + c2')" by (auto simp add: union_ac)
   thus ?case proof (cases rule: atU_union_cases) 
     case left -- {* @{term U} was reached from the local thread *}
-    from cil_ileq[OF LESPLIT(1)] have ILEQ: "w1\<preceq>wwl" and LEN: "length w1 \<le> length wwl" by (auto simp add: ileq_length)
+    from cil_ileq[OF LESPLIT(1)] have ILEQ: "w1\<preceq>wwl" and LEN: "length w1 \<le> length wwl" by (auto simp add: le_list_length)
     -- "We can cut off the bottom stack symbol from the reaching path (as always possible for normalized paths)"
     from FS_FMT(3) LESPLIT(3) ntrp_stack_decomp[of v "[]" "[u']" "{#}" w1 s' c1' fg, simplified] obtain v' rr where DECOMP: "s'=v'#rr@[u']" "(([v],{#}),w1,(v'#rr,c1'))\<in>trcl (ntrp fg)" by auto
     -- "This does not affect the configuration being at @{term U}"
@@ -407,26 +407,26 @@ next
     moreover have "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> \<alpha>ah (map (\<alpha>nl fg) (eel#wwl))" proof (simp add: ah_update_cons)
       show "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> ah_update (\<alpha>ah (map (\<alpha>nl fg) wwl)) (\<alpha>nl fg eel) (mon_pl (map (\<alpha>nl fg) wwl))" proof (rule ah_update_mono)
         from IHAPP(4) have "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" .
-        also from \<alpha>ah_ileq[OF ileq_map[OF ILEQ]] have "\<alpha>ah (map (\<alpha>nl fg) w1) \<le> \<alpha>ah (map (\<alpha>nl fg) wwl)" .
+        also from \<alpha>ah_ileq[OF le_list_map[OF ILEQ]] have "\<alpha>ah (map (\<alpha>nl fg) w1) \<le> \<alpha>ah (map (\<alpha>nl fg) wwl)" .
         finally show "h \<le> \<alpha>ah (map (\<alpha>nl fg) wwl)" .
       next
         from FS_FMT(1) show "(mon fg p, mon_w fg w) = \<alpha>nl fg eel" by auto
       next
         from IHAPP(2,3) have "(Ml \<union> Me) \<subseteq> mon_pl (map (\<alpha>nl fg) w1)" by (auto simp add: mon_pl_of_\<alpha>nl)
-        also from mon_pl_ileq[OF ileq_map[OF ILEQ]] have "\<dots> \<subseteq> mon_pl (map (\<alpha>nl fg) wwl)" .
+        also from mon_pl_ileq[OF le_list_map[OF ILEQ]] have "\<dots> \<subseteq> mon_pl (map (\<alpha>nl fg) wwl)" .
         finally show "(Ml \<union> Me) \<subseteq> mon_pl (map (\<alpha>nl fg) wwl)" .
       qed
     qed
     ultimately show ?thesis by blast
   next
     case right -- {* @{term U} was reached from the spawned threads *}
-    from cil_ileq[OF LESPLIT(1)] ileq_length[of "map ENV w2" "wwl"] have ILEQ: "map ENV w2\<preceq>wwl" and LEN: "length w2 \<le> length wwl" by (auto)
+    from cil_ileq[OF LESPLIT(1)] le_list_length[of "map ENV w2" "wwl"] have ILEQ: "map ENV w2\<preceq>wwl" and LEN: "length w2 \<le> length wwl" by (auto)
     from HVALID have CHVALID: "valid fg ch" "mon_s fg sh \<inter> mon_c fg ch = {}" by (auto simp add: valid_unconc)
       -- {* We first identify the actual thread from that @{term U} was reached *}
     from ntr_reverse_split_atU[OF CHVALID(1) right LESPLIT(4)] obtain q wr cr' where RI: "[entry fg q] :# ch" "wr\<preceq>w2" "cr'\<le>#c2'" "atU U cr'" "({#[entry fg q]#},wr,cr')\<in>trcl (ntr fg)" by (blast dest: CHFMT) 
       -- "In order to apply the induction hypothesis, we have to convert the reaching path to loc/env semantics"
     from ntrs.gtr2gtrp[where c="{#}", simplified, OF RI(5)] obtain sr' cre' wwr where RI_NTRP: "cr'={#sr'#}+cre'" "wr=map le_rem_s wwr" "(([entry fg q],{#}),wwr,(sr',cre'))\<in>trcl (ntrp fg)" by blast
-    from LEN ileq_length[OF RI(2)] RI_NTRP(2) have LEN': "length wwr \<le> length wwl" by simp
+    from LEN le_list_length[OF RI(2)] RI_NTRP(2) have LEN': "length wwr \<le> length wwl" by simp
     -- "The induction hypothesis yields a constraint system entry"
     from Cons.hyps[OF LEN' RI_NTRP(3)] RI_NTRP(1) RI(4) obtain Ml Me h where IHAPP: "(entry fg q, Ml, Me, h)\<in>RU_cs fg U" "Ml \<subseteq> mon_loc fg wwr" "Me \<subseteq> mon_env fg wwr" "h \<le> \<alpha>ah (map (\<alpha>nl fg) wwr)" by auto 
     -- {* We also have an entry in the same-level path constraint system that contains the thread from that @{term U} was reached *}
@@ -451,9 +451,9 @@ next
     proof (simp add: ah_update_cons)
       have MAP_HELPER: "map (\<alpha>nl fg) wwr \<preceq> map (\<alpha>nl fg) wwl" proof -
         from RI_NTRP(2) have "map (\<alpha>nl fg) wwr = map (\<alpha>n fg) wr" by (simp add: \<alpha>n_map2_\<alpha>nl)
-        also from ileq_map[OF RI(2)] have "\<dots> \<preceq> map (\<alpha>n fg) w2" .
+        also from le_list_map[OF RI(2)] have "\<dots> \<preceq> map (\<alpha>n fg) w2" .
         also have "\<dots> = map (\<alpha>nl fg) (map ENV w2)" by simp
-        also from ileq_map[OF ILEQ] have "\<dots> \<preceq> map (\<alpha>nl fg) wwl" .
+        also from le_list_map[OF ILEQ] have "\<dots> \<preceq> map (\<alpha>nl fg) wwl" .
         finally show "?thesis" .
       qed
       show "ah_update h (mon fg p, mon_w fg w) (Ml \<union> Me) \<le> ah_update (\<alpha>ah (map (\<alpha>nl fg) wwl)) (\<alpha>nl fg eel) (mon_pl (map (\<alpha>nl fg) wwl))" proof (rule ah_update_mono)
@@ -717,7 +717,7 @@ next
           finally show "h \<le> \<alpha>ah (map (\<alpha>n fg) w21)" .
         next
           note RV(4)
-          also have "map (\<alpha>nl fg) ww22' \<preceq> map (\<alpha>n fg) w22" using R_CONV'(2) REVSPLIT'(2) by (simp add: \<alpha>n_map2_\<alpha>nl[symmetric] ileq_map)
+          also have "map (\<alpha>nl fg) ww22' \<preceq> map (\<alpha>n fg) w22" using R_CONV'(2) REVSPLIT'(2) by (simp add: \<alpha>n_map2_\<alpha>nl[symmetric] le_list_map)
           hence "\<alpha>ah (map (\<alpha>nl fg) ww22') \<le> \<alpha>ah (map (\<alpha>n fg) w22)" by (rule \<alpha>ah_ileq)
           finally show "h' \<le> \<alpha>ah (map (\<alpha>n fg) w22)" .
         qed
@@ -737,7 +737,7 @@ next
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT(5)] obtain s2i' c2ie' ww2' where R_CONV: "c2i'={#s2i'#}+c2ie'" "w2'=map le_rem_s ww2'" "(([entry fg q'], {#}), ww2', s2i', c2ie') \<in> trcl (ntrp fg)" .
       from RU_sound[OF R_CONV(3), of V] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RV: "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto
       moreover have "mon_loc fg ww2' \<subseteq> mon_ww fg w2" "mon_env fg ww2' \<subseteq> mon_ww fg w2" using mon_ww_ileq[OF REVSPLIT(2), of fg] R_CONV(2) by (auto simp add: mon_ww_of_le_rem)
-      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_map2_\<alpha>nl[symmetric] ileq_map intro: \<alpha>ah_ileq del: predicate2I)
+      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_map2_\<alpha>nl[symmetric] le_list_map intro: \<alpha>ah_ileq del: predicate2I)
       ultimately show ?thesis using goal1 REVSPLIT(1) by (blast intro: order_trans)
     qed
     from S_ENTRY_PAT[of "{#q'#}", simplified] RV(1) have S_ENTRY: "(v, mon_w fg w, {#q'#}) \<in> S_cs fg 1" by simp
@@ -761,7 +761,7 @@ next
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT(5)] obtain s2i' c2ie' ww2' where R_CONV: "c2i'={#s2i'#}+c2ie'" "w2'=map le_rem_s ww2'" "(([entry fg q'], {#}), ww2', s2i', c2ie') \<in> trcl (ntrp fg)" .
       from RU_sound[OF R_CONV(3), of U] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RU: "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto
       moreover have "mon_loc fg ww2' \<subseteq> mon_ww fg w2" "mon_env fg ww2' \<subseteq> mon_ww fg w2" using mon_ww_ileq[OF REVSPLIT(2), of fg] R_CONV(2) by (auto simp add: mon_ww_of_le_rem)
-      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_map2_\<alpha>nl[symmetric] ileq_map intro: \<alpha>ah_ileq del: predicate2I)
+      moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_map2_\<alpha>nl[symmetric] le_list_map intro: \<alpha>ah_ileq del: predicate2I)
       ultimately show ?thesis using goal1 REVSPLIT(1) by (blast intro: order_trans)
     qed
     from S_ENTRY_PAT[of "{#q'#}", simplified] RU(1) have S_ENTRY: "(v, mon_w fg w, {#q'#}) \<in> S_cs fg 1" by simp

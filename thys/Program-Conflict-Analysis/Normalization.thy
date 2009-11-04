@@ -439,7 +439,7 @@ lemma mon_ww_of_foldl[simp]: "mon_w fg (foldl (op @) [] ww) = mon_ww fg ww"
 done
 
 lemma mon_ww_ileq: "w\<preceq>w' \<Longrightarrow> mon_ww fg w \<subseteq> mon_ww fg w'"
-  by (induct rule: ileq_induct) auto
+  by (induct rule: less_eq_list.induct) auto
 
   (* TODO: Find some general statement about the property that monitors are computed element-wise and pslit this lemma and move the essential part to ConsInterleave.thy. Maybe the essential part is cil_set ?*)
 lemma mon_ww_cil: 
@@ -457,9 +457,9 @@ lemma mon_ww_of_le_rem:
   by (induct w) (auto split: el_step.split)
 
 lemma mon_env_ileq: "w\<preceq>w' \<Longrightarrow> mon_env fg w \<subseteq> mon_env fg w'"
-  by (induct rule: ileq_induct) auto
+  by (induct rule: less_eq_list.induct) auto
 lemma mon_loc_ileq: "w\<preceq>w' \<Longrightarrow> mon_loc fg w \<subseteq> mon_loc fg w'"
-  by (induct rule: ileq_induct) auto
+  by (induct rule: less_eq_list.induct) auto
 
 lemma mon_loc_map_loc[simp]: "mon_loc fg (map LOC w) = mon_ww fg w"
   by (unfold mon_loc_def) simp
@@ -1015,9 +1015,9 @@ next
       from ntrp_mon_env_w_no_ctx[OF SPLIT(2), unfolded mon_env_def] have "mon_ww fg (map le_rem_s (env w)) \<inter> mon_s fg sh = {}" .
       moreover have "mon_ww fg w2 \<subseteq> mon_ww fg (map le_rem_s (env w))" proof - (* TODO: This proof should be shorter and more straightforward *)
         from cil_subset_il IHAPP(1) ileq_interleave have "map ENV w2 \<preceq> w" by blast
-        from ileq_filter[OF this] have "env (map ENV w2) \<preceq> env w" by (unfold env_def) blast
+        from le_list_filter[OF this] have "env (map ENV w2) \<preceq> env w" by (unfold env_def) blast
         hence "map ENV w2 \<preceq> env w" by (unfold env_def) simp
-        from ileq_map[OF this, of le_rem_s] have "w2 \<preceq> map le_rem_s (env w)" by simp
+        from le_list_map[OF this, of le_rem_s] have "w2 \<preceq> map le_rem_s (env w)" by simp
         thus ?thesis by (rule mon_ww_ileq)
       qed
       ultimately have "mon_ww fg w2 \<inter> mon_s fg sh = {}" by blast

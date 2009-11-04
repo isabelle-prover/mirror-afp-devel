@@ -111,10 +111,10 @@ lemma mon_ah_subset: "mon_ah (\<alpha>ah w) \<subseteq> mon_pl w"
 
 -- {* Subwords generate smaller acquisition histories *}
 lemma \<alpha>ah_ileq: "w1\<preceq>w2 \<Longrightarrow> \<alpha>ah w1 \<le> \<alpha>ah w2" 
-proof (induct rule: ileq_induct)
+proof (induct rule: less_eq_list.induct)
   case empty thus ?case by (unfold le_fun_def [where 'b="'a \<Rightarrow> bool"], simp)
 next
-  case (drop a l l') show ?case
+  case (drop l' l a) show ?case
   proof (unfold le_fun_def  [where 'b="'a \<Rightarrow> bool"], intro allI subsetI)
     fix m x
     assume A: "x \<in> \<alpha>ah l' m"
@@ -123,7 +123,7 @@ next
     ultimately show "x\<in>\<alpha>ah (a # l) m" by auto
   qed
 next
-  case (take a l l') show ?case
+  case (take l' l a) show ?case
   proof (unfold le_fun_def [where 'b="'a \<Rightarrow> bool"], intro allI subsetI)
     fix m x
     assume A: "x\<in>\<alpha>ah (a#l') m"
@@ -211,7 +211,7 @@ proof -
             case True -- "The first step of the first word can safely be executed"
             -- "From the induction hypothesis, we get that there is a consistent interleaving of the rest of the first word and the second word"
             have "w1'\<otimes>\<^bsub>\<alpha>\<^esub>w2 \<noteq> {}" proof -
-              from I.prems(1) CONS1 ah_leq_il_left[OF _ \<alpha>ah_ileq[OF ileq_map, OF ileq_drop[OF order_refl]]] have "\<alpha>ah (map \<alpha> w1') [*] \<alpha>ah (map \<alpha> w2)" by fast
+              from I.prems(1) CONS1 ah_leq_il_left[OF _ \<alpha>ah_ileq[OF le_list_map, OF less_eq_list.drop[OF order_refl]]] have "\<alpha>ah (map \<alpha> w1') [*] \<alpha>ah (map \<alpha> w2)" by fast
               moreover from CONS1 I.prems(2) have "length w1'+length w2 < n" by simp
               ultimately show ?thesis using I.hyps by blast
             qed
@@ -223,7 +223,7 @@ proof -
               case True -- "The first step of the second word can safely be executed"
               -- "This case is shown analogously to the latter one"
               have "w1\<otimes>\<^bsub>\<alpha>\<^esub>w2' \<noteq> {}" proof -
-                from I.prems(1) CONS2 ah_leq_il_right[OF _ \<alpha>ah_ileq[OF ileq_map, OF ileq_drop[OF order_refl]]] have "\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2')" by fast
+                from I.prems(1) CONS2 ah_leq_il_right[OF _ \<alpha>ah_ileq[OF le_list_map, OF less_eq_list.drop[OF order_refl]]] have "\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2')" by fast
                 moreover from CONS2 I.prems(2) have "length w1+length w2' < n" by simp
                 ultimately show ?thesis using I.hyps by blast
               qed

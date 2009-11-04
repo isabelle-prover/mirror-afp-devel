@@ -114,7 +114,7 @@ lemma mon_w_unconc: "mon_w fg (wa@wb) = mon_w fg wa \<union> mon_w fg wb"
 lemma mon_w_uncons[simp]: "mon_w fg (e#w) = mon_e fg e \<union> mon_w fg w"
   by (rule mon_w_unconc[where wa="[e]", simplified])
 lemma mon_w_ileq: "w\<preceq>w' \<Longrightarrow> mon_w fg w \<subseteq> mon_w fg w'"
-  by (induct rule: ileq_induct) auto
+  by (induct rule: less_eq_list.induct) auto
 
 
 
