@@ -86,9 +86,7 @@ AFP.</td>
   <tbody>
     <tr>
   <td class="links">
-	<a href="<!--#echo var="outline" -->">Proof
-outline</a><br>
-	<a href="<!--#echo var="doc" -->">Proof document</a>
+	[No proof document]
   </td>
 	<!-- link to README.hmtl if no document exists
 -->	
