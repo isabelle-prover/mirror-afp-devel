@@ -461,7 +461,7 @@ straightforward but long-winded.
 *}
 
 apply rotate_tac
-apply induct_scheme
+apply induction_schema
        apply atomize_elim
        apply (case_tac t)
         apply fastsimp
@@ -1129,7 +1129,7 @@ lemma sibling_induct_consistent
      P (InnerNode w t\<^isub>1 t\<^isub>2) a\<rbrakk> \<Longrightarrow>
  P t a"
 apply rotate_tac
-apply induct_scheme
+apply induction_schema
    apply atomize_elim
    apply (case_tac t, simp)
    apply clarsimp
