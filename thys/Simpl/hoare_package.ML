@@ -739,7 +739,7 @@ fun dest_Guard (Const ("Language.com.Guard",_)$f$g$c) = (f,g,c,false)
 fun add_declaration name decl thy =
   thy
   |> TheoryTarget.init name
-  |> LocalTheory.declaration decl
+  |> LocalTheory.declaration false decl
   |> LocalTheory.exit
   |> ProofContext.theory_of;
 
@@ -1273,7 +1273,7 @@ fun procedures_definition locname procs thy =
             ctxt
             |> ProofContext.theory_of
             |> TheoryTarget.init (SOME lname)
-            |> LocalTheory.declaration parameter_info_decl
+            |> LocalTheory.declaration false parameter_info_decl
             |> (fn lthy => if has_body name
                            then snd (LocalTheory.define Thm.definitionK (def lthy) lthy)
                            else lthy)
