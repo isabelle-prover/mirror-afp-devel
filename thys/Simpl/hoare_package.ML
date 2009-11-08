@@ -767,8 +767,8 @@ fun make_hoare_data proc_info active_procs default_state_kind generate_guard
    generate_guard = generate_guard,
    wp_tacs = wp_tacs, hoare_tacs = hoare_tacs, vcg_simps = vcg_simps};
 
-structure HoareArgs =
-struct
+structure HoareData = Generic_Data
+(
   type T = hoare_data;
 
   val empty = make_hoare_data
@@ -782,27 +782,26 @@ struct
 
   val extend = I;
 
-
-  fun merge pp ({proc_info = proc_info1, active_procs = active_procs1,
+  (* FIXME exponential blowup due to append !? *)
+  fun merge ({proc_info = proc_info1, active_procs = active_procs1,
                  default_state_kind = default_state_kind1,
                   generate_guard = (stmp1,generate_gaurd1),
                  wp_tacs = wp_tacs1, hoare_tacs = hoare_tacs1, vcg_simps = vcg_simps1},
                 {proc_info = proc_info2, active_procs = active_procs2,
                  default_state_kind = default_state_kind2,
                  generate_guard = (stmp2,generate_guard2),
-                 wp_tacs = wp_tacs2, hoare_tacs = hoare_tacs2, vcg_simps=vcg_simps2}) =
+                 wp_tacs = wp_tacs2, hoare_tacs = hoare_tacs2, vcg_simps=vcg_simps2}) : T =
       if stmp1=stmp2 then
           make_hoare_data (Symtab.merge (K true) (proc_info1,proc_info2))
-                          (active_procs1@active_procs2)
+                          (active_procs1 @ active_procs2)
                           (default_state_kind2)
                           (stmp1,generate_gaurd1)
-                          (wp_tacs1@wp_tacs2)
-                          (hoare_tacs1@hoare_tacs2)
+                          (wp_tacs1 @ wp_tacs2)
+                          (hoare_tacs1 @ hoare_tacs2)
                           (Thm.merge_thms (vcg_simps1,vcg_simps2))
       else error ("Theories have different aux. functions to generate guards")
-end;
+);
 
-structure HoareData = GenericDataFun(HoareArgs);
 
 (* access 'params' *)
 
