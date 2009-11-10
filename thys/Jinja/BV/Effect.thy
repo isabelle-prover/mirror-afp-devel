@@ -257,13 +257,13 @@ lemma length_cases3:
   shows "P s"
 (*<*)
 proof -
-  obtain xs LT where "s = (xs,LT)" by (cases s)
+  obtain xs LT where s: "s = (xs,LT)" by (cases s)
   show ?thesis
   proof (cases xs)
-    case Nil thus ?thesis by (simp!)
+    case Nil with assms s show ?thesis by simp
   next
     fix l xs' assume "xs = l#xs'"
-    thus ?thesis by (simp!)
+    with assms s show ?thesis by simp
   qed
 qed
 (*>*)
@@ -276,18 +276,18 @@ lemma length_cases4:
   shows "P s"
 (*<*)
 proof -
-  obtain xs LT where "s = (xs,LT)" by (cases s)
+  obtain xs LT where s: "s = (xs,LT)" by (cases s)
   show ?thesis
   proof (cases xs)
-    case Nil thus ?thesis by (simp!)
+    case Nil with assms s show ?thesis by simp
   next
-    fix l xs' assume "xs = l#xs'"
+    fix l xs' assume xs: "xs = l#xs'"
     thus ?thesis
     proof (cases xs')
-      case Nil thus ?thesis by (simp!)
+      case Nil with assms s xs show ?thesis by simp
     next
       fix l' ST assume "xs' = l'#ST"
-      thus ?thesis by (simp!)
+     with assms s xs show ?thesis by simp
     qed
   qed
 qed

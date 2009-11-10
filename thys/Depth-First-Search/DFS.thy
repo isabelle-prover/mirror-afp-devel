@@ -145,14 +145,14 @@ proof(induct g xs ys rule:dfs.induct)
     case True
     have "set ys \<subseteq> set (dfs g xs ys)"
       by (rule visit_subset_dfs)
-    thus ?thesis
-      by (auto! simp add: mem_iff)
+    with 2 and True show ?thesis
+      by (auto simp add: mem_iff)
   next
     case False
     have "set (x#ys) \<subseteq> set (dfs g (nexts g x @ xs) (x#ys))"
       by(rule visit_subset_dfs)
-    thus ?thesis
-      by (auto! simp add: mem_iff)
+    with 2 and False show ?thesis
+      by (auto simp add: mem_iff)
   qed
 qed(simp)
 
@@ -169,10 +169,10 @@ proof
   show "r\<^sup>* `` X \<subseteq> X"
   proof(unfold Image_def, auto)
     fix x y
-    assume "y \<in> X"
+    assume y: "y \<in> X"
     assume "(y,x) \<in> r\<^sup>*"
     thus "x \<in> X"
-      by (induct, auto! simp add: Image_def)
+      by (induct) (insert assms y, auto simp add: Image_def)
   qed
 qed auto
 
@@ -202,8 +202,8 @@ proof(induct g xs ys rule: dfs.induct)
   show ?case
   proof(cases "x \<in> set ys")
     case True
-    show "set (dfs g (x#xs) ys) \<subseteq> reachable g (x#xs) \<union> set ys"
-      by (auto! simp add:reachable_def mem_iff)
+    with 2 show "set (dfs g (x#xs) ys) \<subseteq> reachable g (x#xs) \<union> set ys"
+      by (auto simp add:reachable_def mem_iff)
   next
     case False
     have "reachable g (nexts g x) \<subseteq> reachable g [x]" 

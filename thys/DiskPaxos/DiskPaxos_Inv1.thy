@@ -193,7 +193,8 @@ lemma I2a:
   assumes nxt: "HNext s s'"
   and inv: "HInv1 s"
   shows "HInv1 s'"
-  by(auto! 
+  using assms
+  by(auto
     simp add: HNext_def Next_def,
     auto intro: HStartBallot_HInv1,
     auto intro: HPhase0Read_HInv1,

@@ -58,14 +58,14 @@ some cases, included in the old $allBlocks$ union the new $dblock$.
 lemma HStartBallot_HInv5_p:
   assumes act: "HStartBallot s s' p"
   and inv: "HInv5_inner s p"
-  shows "HInv5_inner s' p"
-  by(auto! simp add: StartBallot_def HInv5_inner_def)
+  shows "HInv5_inner s' p" using assms
+  by(auto simp add: StartBallot_def HInv5_inner_def)
 
 lemma  HStartBallot_blocksOf_q:
   assumes act: "HStartBallot s s' p"
   and pnq: "p\<noteq>q"
-  shows "blocksOf s' q \<subseteq> blocksOf s q"
-by(auto! simp add: StartBallot_def InitializePhase_def blocksOf_def rdBy_def)
+  shows "blocksOf s' q \<subseteq> blocksOf s q" using assms
+  by(auto simp add: StartBallot_def InitializePhase_def blocksOf_def rdBy_def)
 
 lemma HStartBallot_allBlocks:
   assumes act: "HStartBallot s s' p"
@@ -143,8 +143,8 @@ lemma HStartBallot_HInv5_q:
   and inv: "HInv5_inner s q"
   and pnq: "p\<noteq>q"
   shows "HInv5_inner s' q"
-using HStartBallot_HInv5_q1[OF act pnq] HStartBallot_HInv5_q2[OF act pnq]
-by(auto! simp add: HInv5_inner_def HInv5_inner_R_def StartBallot_def)
+  using assms and HStartBallot_HInv5_q1[OF act pnq] HStartBallot_HInv5_q2[OF act pnq]
+  by(auto simp add: HInv5_inner_def HInv5_inner_R_def StartBallot_def)
 
 theorem HStartBallot_HInv5:
   "\<lbrakk> HStartBallot s s' p; HInv5_inner s q \<rbrakk> \<Longrightarrow> HInv5_inner s' q"
@@ -155,8 +155,8 @@ lemma HPhase1or2Write_HInv5_1:
   assumes act: "HPhase1or2Write s s' p d"
   and inv5_1: "maxBalInp s (bal(dblock s q)) (inp(dblock s q))"
   shows "maxBalInp s' (bal(dblock s' q)) (inp(dblock s' q))"
-  using HPhase1or2Write_blocksOf[OF act]
-  by(auto! simp add: Phase1or2Write_def maxBalInp_def allBlocks_def)
+  using assms and HPhase1or2Write_blocksOf[OF act]
+  by(auto simp add: Phase1or2Write_def maxBalInp_def allBlocks_def)
 
 lemma HPhase1or2Write_HInv5_p2:
   assumes act: "HPhase1or2Write s s' p d"
@@ -301,8 +301,8 @@ lemma HPhase1or2ReadThen_HInv5_1:
   assumes act: "HPhase1or2ReadThen s s' p d r"
   and inv5_1: "maxBalInp s (bal(dblock s q)) (inp(dblock s q))"
   shows "maxBalInp s' (bal(dblock s' q)) (inp(dblock s' q))"
-  using HPhase1or2ReadThen_blocksOf[OF act]
-  by(auto! simp add: Phase1or2ReadThen_def maxBalInp_def allBlocks_def)
+  using assms and HPhase1or2ReadThen_blocksOf[OF act]
+  by(auto simp add: Phase1or2ReadThen_def maxBalInp_def allBlocks_def)
 
 lemma HPhase1or2ReadThen_HInv5_p2:
   assumes act: "HPhase1or2ReadThen s s' p d r"
@@ -494,8 +494,8 @@ lemma HEndPhase2_HInv5_q:
   and inv: "HInv5_inner s q"
   and pnq: "p\<noteq>q"
   shows "HInv5_inner s' q"
-using HEndPhase2_HInv5_q1[OF act pnq] HEndPhase2_HInv5_q2[OF act pnq]
-by(auto! simp add: HInv5_inner_def HInv5_inner_R_def EndPhase2_def)
+  using assms and HEndPhase2_HInv5_q1[OF act pnq] HEndPhase2_HInv5_q2[OF act pnq]
+  by(auto simp add: HInv5_inner_def HInv5_inner_R_def EndPhase2_def)
 
 theorem HEndPhase2_HInv5:
   "\<lbrakk> HEndPhase2 s s' p; HInv5_inner s q \<rbrakk> \<Longrightarrow> HInv5_inner s' q"
@@ -854,7 +854,8 @@ lemma  HFail_blocksOf_q:
   assumes act: "HFail s s' p"
   and pnq: "p\<noteq>q"
   shows "blocksOf s' q \<subseteq> blocksOf s q"
-by(auto! simp add: Fail_def InitializePhase_def blocksOf_def rdBy_def)
+  using assms
+  by(auto simp add: Fail_def InitializePhase_def blocksOf_def rdBy_def)
 
 lemma HFail_allBlocks:
   assumes act: "HFail s s' p"
@@ -979,8 +980,8 @@ lemma HPhase0Read_HInv5_1:
   assumes act: "HPhase0Read s s' p d"
   and inv5_1: "maxBalInp s (bal(dblock s q)) (inp(dblock s q))"
   shows "maxBalInp s' (bal(dblock s' q)) (inp(dblock s' q))"
-  using HPhase0Read_blocksOf[OF act]
-  by(auto! simp add: Phase0Read_def maxBalInp_def allBlocks_def)
+  using assms and HPhase0Read_blocksOf[OF act]
+  by(auto simp add: Phase0Read_def maxBalInp_def allBlocks_def)
 
 lemma HPhase0Read_HInv5_q2:
   assumes act: "HPhase0Read s s' p d"
@@ -1139,9 +1140,10 @@ lemma HEndPhase0_HInv5_q:
   and inv1: "Inv1 s"
   and pnq: "p\<noteq>q"
   shows "HInv5_inner s' q"
-using HEndPhase0_HInv5_q1[OF act pnq inv1] 
-      HEndPhase0_HInv5_q2[OF act pnq]
-by(auto! simp add: HInv5_inner_def HInv5_inner_R_def EndPhase0_def)
+  using assms and
+    HEndPhase0_HInv5_q1[OF act pnq inv1] 
+    HEndPhase0_HInv5_q2[OF act pnq]
+  by(auto simp add: HInv5_inner_def HInv5_inner_R_def EndPhase0_def)
 
 theorem HEndPhase0_HInv5:
   "\<lbrakk> HEndPhase0 s s' p; HInv5_inner s q; Inv1 s \<rbrakk> \<Longrightarrow> HInv5_inner s' q"
@@ -1156,7 +1158,8 @@ lemma I2e:
   assumes nxt: "HNext s s'"
   and inv: "HInv1 s \<and> HInv2 s \<and> HInv2 s' \<and> HInv3 s \<and> HInv4 s \<and> HInv5 s"
   shows "HInv5 s'"
-  by(auto! simp add: HInv5_def HNext_def Next_def,
+  using assms
+  by(auto simp add: HInv5_def HNext_def Next_def,
        auto simp add: HInv2_def intro: HStartBallot_HInv5,
        auto intro: HPhase0Read_HInv5,
         auto simp add: HInv4_def intro: HPhase1or2Write_HInv5,

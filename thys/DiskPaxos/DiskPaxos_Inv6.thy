@@ -248,8 +248,8 @@ qed
 lemma valueChosen_equal:
   assumes v: "valueChosen s v"
   and w: "valueChosen s w"
-  shows "v=w"
-proof (auto! simp add: valueChosen_def)
+  shows "v=w" using assms
+proof (auto simp add: valueChosen_def)
   fix a b aa ba p D pa Da
   assume max_v: "maxBalInp s b v"
     and Dmaj: "D \<in> MajoritySet"
@@ -458,8 +458,8 @@ qed
 lemma outpt_Inv6: 
   "\<lbrakk> outpt s = outpt s'; \<forall>p. outpt s p \<in> {chosen s, NotAnInput};
      Inv2c s; HNextPart s s' \<rbrakk> \<Longrightarrow> \<forall>p. outpt s' p \<in> {chosen s', NotAnInput}"
-  using outpt_chosen
-  by (auto!)
+  using assms and outpt_chosen
+  by auto
 
 theorem HStartBallot_Inv6:
   assumes act: "HStartBallot s s' p"
@@ -536,8 +536,8 @@ theorem HPhase1or2ReadElse_Inv6:
   and inv: "HInv6 s"
   and inv2c: "Inv2c s"
   shows "HInv6 s'"
-  using HStartBallot_Inv6
-  by(auto! simp add: Phase1or2ReadElse_def)
+  using assms and HStartBallot_Inv6
+  by(auto simp add: Phase1or2ReadElse_def)
 
 theorem HEndPhase1_Inv6:
   assumes act: "HEndPhase1 s s' p"
@@ -671,8 +671,8 @@ text{*
 lemma I2f:
   assumes nxt: "HNext s s'"
   and inv: "HInv1 s \<and> HInv2 s \<and> HInv2 s' \<and> HInv3 s \<and> HInv4 s \<and> HInv5 s \<and> HInv6 s"
-  shows "HInv6 s'"
-  by(auto! simp add: HNext_def Next_def,
+  shows "HInv6 s'" using assms
+  by(auto simp add: HNext_def Next_def,
      auto simp add: HInv2_def intro: HStartBallot_Inv6,
      auto intro: HPhase0Read_Inv6,
      auto simp add: HInv4_def intro: HPhase1or2Write_Inv6,

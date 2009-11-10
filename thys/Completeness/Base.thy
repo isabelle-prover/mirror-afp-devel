@@ -17,7 +17,7 @@ proof (cases "A = {}")
   thus ?thesis by auto
 next
   case False
-  hence "Max A \<in> A \<and> (\<forall>s \<in> A. s \<le> Max A)" by(simp!)
+  with a have "Max A \<in> A \<and> (\<forall>s \<in> A. s \<le> Max A)" by simp
   thus ?thesis by auto
 qed
 

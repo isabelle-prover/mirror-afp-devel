@@ -838,8 +838,8 @@ lemma HPhase1or2ReadThen_HInv4b_q:
   and inv: "HInv4b s q"
   and pnq: "p\<noteq>q"
   shows "HInv4b s' q"
-  using HPhase1or2ReadThen_blocksOf[OF act]
-  by(auto! simp add: Phase1or2ReadThen_def HInv4b_def)
+  using assms HPhase1or2ReadThen_blocksOf[OF act]
+  by(auto simp add: Phase1or2ReadThen_def HInv4b_def)
 
 theorem HPhase1or2ReadThen_HInv4b:
   "\<lbrakk> HPhase1or2ReadThen s s' p d q; HInv4b s r\<rbrakk> \<Longrightarrow> HInv4b s' r"
@@ -1710,10 +1710,10 @@ lemma I2d:
   assumes nxt: "HNext s s'"
   and inv: "HInv1 s \<and> HInv2 s \<and> HInv2 s' \<and> HInv4 s"
   shows "HInv4 s'"
- proof(auto! simp add: HInv4_def)
+ proof(auto simp add: HInv4_def)
    fix p
-   show "HInv4a s' p"
-     by(auto! simp add: HInv4_def HNext_def Next_def,
+   show "HInv4a s' p" using assms
+     by(auto simp add: HInv4_def HNext_def Next_def,
         auto simp add: HInv2_def intro: HStartBallot_HInv4a,
         auto intro: HPhase0Read_HInv4a,
         auto intro: HPhase1or2Write_HInv4a,
@@ -1725,8 +1725,8 @@ lemma I2d:
                     HEndPhase2_HInv4a,
         auto intro: HFail_HInv4a,
         auto intro: HEndPhase0_HInv4a simp add: HInv1_def)
-   show "HInv4b s' p"
-     by(auto! simp add: HInv4_def HNext_def Next_def,
+   show "HInv4b s' p" using assms
+     by(auto simp add: HInv4_def HNext_def Next_def,
         auto simp add: HInv2_def 
              intro: HStartBallot_HInv4b,
         auto intro: HPhase0Read_HInv4b,
@@ -1739,8 +1739,8 @@ lemma I2d:
                     HEndPhase2_HInv4b,
         auto intro: HFail_HInv4b,
         auto intro: HEndPhase0_HInv4b simp add: HInv1_def Inv2c_def)
-   show "HInv4c s' p"
-     by(auto! simp add: HInv4_def HNext_def Next_def,
+   show "HInv4c s' p" using assms
+     by(auto simp add: HInv4_def HNext_def Next_def,
         auto simp add: HInv2_def 
              intro: HStartBallot_HInv4c,
         auto intro: HPhase0Read_HInv4c,
@@ -1753,8 +1753,8 @@ lemma I2d:
                     HEndPhase2_HInv4c,
         auto intro: HFail_HInv4c,
         auto intro: HEndPhase0_HInv4c simp add: HInv1_def)
-   show "HInv4d s' p "
-     by(auto! simp add: HInv4_def HNext_def Next_def,
+   show "HInv4d s' p " using assms
+     by(auto simp add: HInv4_def HNext_def Next_def,
         auto simp add: HInv2_def 
              intro: HStartBallot_HInv4d,
         auto intro: HPhase0Read_HInv4d,

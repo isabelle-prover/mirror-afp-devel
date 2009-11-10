@@ -147,7 +147,8 @@ lemma inheritedPropagateEq[rule_format]: assumes a: "inherited subs P"
   shows "P(tree subs delta) = (!sigma:subs delta. P(tree subs sigma))"
   apply(insert fansD[OF b])
   apply(subst treeEquation [of _ delta])
-  apply(simp! add: inheritedInsertEq inheritedUNEq[symmetric] inheritedIncLevelEq)
+  using assms
+  apply(simp add: inheritedInsertEq inheritedUNEq[symmetric] inheritedIncLevelEq)
   done
 
 lemma inheritedPropagate:

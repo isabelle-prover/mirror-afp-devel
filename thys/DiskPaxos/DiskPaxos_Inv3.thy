@@ -422,8 +422,8 @@ text{* $HInv1 \wedge HInv2 \wedge HInv3$ is an invariant of $HNext$. *}
 lemma I2c:
   assumes nxt: "HNext s s'"
   and inv: "HInv1 s \<and> HInv2 s \<and> HInv3 s"
-  shows "HInv3 s'"
-  by(auto! simp add: HNext_def Next_def,
+  shows "HInv3 s'" using assms
+  by(auto simp add: HNext_def Next_def,
      auto intro: HStartBallot_HInv3,
      auto intro: HPhase0Read_HInv3,
      auto intro: HPhase1or2Write_HInv3,

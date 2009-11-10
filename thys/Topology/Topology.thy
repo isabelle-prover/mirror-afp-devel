@@ -1887,7 +1887,7 @@ lemma (in topology) unique_convergence_implies_T2 [rule_format]:
   shows "T2 T"
 
 proof (rule T2I)
-  show "topology T" by (simp!)
+  show "topology T" ..
 next
   fix x y assume points: "x \<in> carrier" "y \<in> carrier"
     and neq: "x \<noteq> y"

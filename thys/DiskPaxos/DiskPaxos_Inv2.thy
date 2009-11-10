@@ -1114,9 +1114,9 @@ lemma I2b:
   assumes nxt: "HNext s s'"
   and inv: "HInv1 s \<and> HInv2 s"
   shows "HInv2 s'"
-proof(auto! simp add: HInv2_def)
-  show "Inv2a s'"
-    by  (auto! simp add: HInv2_def HNext_def Next_def,
+proof(auto simp add: HInv2_def)
+  show "Inv2a s'" using assms
+    by  (auto simp add: HInv2_def HNext_def Next_def,
          auto intro: HStartBallot_Inv2a,
          auto intro: HPhase1or2Write_Inv2a,
          auto simp add: Phase1or2Read_def
@@ -1129,8 +1129,8 @@ proof(auto! simp add: HInv2_def)
          auto intro: HFail_Inv2a,
          auto simp add: HInv1_def
               intro: HEndPhase0_Inv2a)
-  show "Inv2b s'"
-    by(auto! simp add: HInv2_def HNext_def Next_def,
+  show "Inv2b s'" using assms
+    by(auto simp add: HInv2_def HNext_def Next_def,
        auto intro: HStartBallot_Inv2b,
        auto intro: HPhase0Read_Inv2b,
        auto intro: HPhase1or2Write_Inv2b,
@@ -1140,8 +1140,8 @@ proof(auto! simp add: HInv2_def)
        auto simp add: EndPhase1or2_def
             intro: HEndPhase1_Inv2b HEndPhase2_Inv2b,
        auto intro:  HFail_Inv2b HEndPhase0_Inv2b)
-  show "Inv2c s'"
-    by(auto! simp add: HInv2_def HNext_def Next_def,
+  show "Inv2c s'" using assms
+    by(auto simp add: HInv2_def HNext_def Next_def,
        auto intro: HStartBallot_Inv2c,
        auto intro: HPhase0Read_Inv2c,
        auto intro: HPhase1or2Write_Inv2c,
