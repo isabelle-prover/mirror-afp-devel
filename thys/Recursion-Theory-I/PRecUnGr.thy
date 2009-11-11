@@ -5,7 +5,8 @@
 
 header {* The function which is universal for primitive recursive functions of one variable *}
 
-theory PRecUnGr imports PRecFun2 PRecList
+theory PRecUnGr
+imports PRecFun2 PRecList
 begin
 
 text {*

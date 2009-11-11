@@ -5,7 +5,8 @@
 
 header {* Primitive recursive functions of one variable *}
 
-theory PRecFun2 imports PRecFun
+theory PRecFun2
+imports PRecFun
 begin
 
 subsection {* Alternative definition of primitive recursive functions of one variable *}
@@ -265,7 +266,7 @@ definition
   mod7 :: "nat \<Rightarrow> nat" where
   "mod7 = (\<lambda> x. x mod 7)"
 
-lemma c_snd_snd_lt: "c_snd (c_snd (Suc (Suc x))) < Suc (Suc x)"
+lemma c_snd_snd_lt [termination_simp]: "c_snd (c_snd (Suc (Suc x))) < Suc (Suc x)"
 proof -
   let ?y = "Suc (Suc x)"
   have "?y > 1" by simp
@@ -274,7 +275,7 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-lemma c_fst_snd_lt: "c_fst (c_snd (Suc (Suc x))) < Suc (Suc x)"
+lemma c_fst_snd_lt [termination_simp]: "c_fst (c_snd (Suc (Suc x))) < Suc (Suc x)"
 proof -
   let ?y = "Suc (Suc x)"
   have "?y > 1" by simp
@@ -283,17 +284,12 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-consts
-  nat_to_sch :: "nat \<Rightarrow> PrimScheme"
-recdef nat_to_sch "measure (%x. x)"
+fun nat_to_sch :: "nat \<Rightarrow> PrimScheme" where
   "nat_to_sch 0 = Base_zero"
-  "nat_to_sch (Suc 0) = Base_zero"
-  "nat_to_sch x = (let u=mod7 (c_fst x); v=c_snd x; v1=c_fst v; v2 = c_snd v; sch1=nat_to_sch v1; sch2=nat_to_sch v2 in loc_f u sch1 sch2)"
-(hints recdef_simp: c_snd_snd_lt c_fst_snd_lt)
+| "nat_to_sch (Suc 0) = Base_zero"
+| "nat_to_sch x = (let u=mod7 (c_fst x); v=c_snd x; v1=c_fst v; v2 = c_snd v; sch1=nat_to_sch v1; sch2=nat_to_sch v2 in loc_f u sch1 sch2)"
 
-primrec
-  sch_to_nat :: "PrimScheme \<Rightarrow> nat"
-where
+primrec sch_to_nat :: "PrimScheme \<Rightarrow> nat" where
   "sch_to_nat Base_zero = 0"
 | "sch_to_nat Base_suc = c_pair 1 0"
 | "sch_to_nat Base_fst = c_pair 2 0"

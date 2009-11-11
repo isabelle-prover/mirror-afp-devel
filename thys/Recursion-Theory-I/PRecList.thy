@@ -5,7 +5,8 @@
 
 header {* Primitive recursive coding of lists of natural numbers *}
 
-theory PRecList imports PRecFun
+theory PRecList
+imports PRecFun
 begin
 
 text {*
@@ -47,12 +48,10 @@ next
   from A1 show "u>0" by simp
 qed
 
-consts
-  c_fold :: "nat list \<Rightarrow> nat"
-recdef c_fold "measure (\<lambda> u. length u)"
-  "c_fold [] = 0"
-  "c_fold [x] = x"
-  "c_fold (x#ls) = c_pair x (c_fold ls)"
+fun c_fold :: "nat list \<Rightarrow> nat" where
+    "c_fold [] = 0"
+  | "c_fold [x] = x"
+  | "c_fold (x#ls) = c_pair x (c_fold ls)"
 
 lemma c_fold_0: "ls \<noteq> [] \<Longrightarrow> c_fold (x#ls) = c_pair x (c_fold ls)"
 proof -
@@ -765,16 +764,11 @@ proof -
   then show "f \<in> PrimRec2" by (rule c_f_list_f_is_pr)
 qed
 
-consts
-  c_assoc_have_key :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-recdef c_assoc_have_key "measure (%x. x)"
-  "c_assoc_have_key 0 = (\<lambda> x. 1)"
-  "c_assoc_have_key y = (\<lambda> x. (if c_fst (c_hd y) = x then 0 else c_assoc_have_key (c_tl y) x))"
-(hints recdef_simp: c_tl_less)
+declare c_tl_less [termination_simp]
 
-lemma c_assoc_have_key_df: "c_assoc_have_key y x = (if y = 0 then 1 else (if c_fst (c_hd y) = x then 0 else c_assoc_have_key (c_tl y) x))" by (cases y) auto
-
-declare c_assoc_have_key.simps [simp del]
+fun c_assoc_have_key :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  c_assoc_have_key_df [simp del]: "c_assoc_have_key y x = (if y = 0 then 1 else
+    (if c_fst (c_hd y) = x then 0 else c_assoc_have_key (c_tl y) x))"
 
 lemma c_assoc_have_key_lm_1: "y \<noteq> 0 \<Longrightarrow> c_assoc_have_key y x = (if c_fst (c_hd y) = x then 0 else c_assoc_have_key (c_tl y) x)" by (simp add: c_assoc_have_key_df)
 
@@ -809,16 +803,9 @@ proof -
   from g_is_pr a_is_pr h_is_pr a_le f_0 f_1 show ?thesis by (rule th_rec)
 qed
 
-consts
-  c_assoc_value :: "nat \<Rightarrow> nat \<Rightarrow> nat"
-recdef c_assoc_value "measure (%x. x)"
-  "c_assoc_value 0 = (\<lambda> x. 0)"
-  "c_assoc_value y = (\<lambda> x. (if c_fst (c_hd y) = x then c_snd (c_hd y) else c_assoc_value (c_tl y) x))"
-(hints recdef_simp: c_tl_less)
-
-lemma c_assoc_value_df: "c_assoc_value y x = (if y = 0 then 0 else (if c_fst (c_hd y) = x then c_snd (c_hd y) else c_assoc_value (c_tl y) x))" by (cases y) auto
-
-declare c_assoc_value.simps [simp del]
+fun c_assoc_value :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
+  c_assoc_value_df [simp del]: "c_assoc_value y x = (if y = 0 then 0 else
+    (if c_fst (c_hd y) = x then c_snd (c_hd y) else c_assoc_value (c_tl y) x))"
 
 lemma c_assoc_value_lm_1: "y \<noteq> 0 \<Longrightarrow> c_assoc_value y x = (if c_fst (c_hd y) = x then c_snd (c_hd y) else c_assoc_value (c_tl y) x)" by (simp add: c_assoc_value_df)
 
