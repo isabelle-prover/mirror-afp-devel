@@ -3,12 +3,12 @@ add_path "../Example";
 *)
 
 (* to suppress document generation of some theories, use:
-no_document use_thy "ThisTheory";
+no_document use_thys ["ThisTheory1", "ThisTheory2"];
 *)
 
 (* for normal theory loading, use:
-use_thy "ThatTheory";
+use_thys ["ThatTheory1", "ThatTheory2", "ThatTheory3"];
 *)
 
-use_thy "Submission";
+use_thys ["Submission"];
 

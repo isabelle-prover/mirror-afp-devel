@@ -1,3 +1,2 @@
-no_document use_thy "Enum";
-no_document use_thy "Infinite_Set";
-use_thy "FinFunSet";
+no_document use_thys ["Enum", "Infinite_Set"];
+use_thys ["FinFunSet"];
