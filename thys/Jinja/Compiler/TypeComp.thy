@@ -402,7 +402,7 @@ lemma [simp]:
 (*<*)
 apply(simp add: xcpt_eff_def)
 apply(cases \<tau>)
-apply(auto simp add: shift_def map_compose [symmetric])
+apply(auto simp add: shift_def)
 done
 (*>*)
 

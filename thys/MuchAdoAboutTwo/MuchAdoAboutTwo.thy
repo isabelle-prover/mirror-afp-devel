@@ -89,8 +89,8 @@ an element of the three-valued type to an arbitrary type are denoted by
 \end{itemize}
 
 Whenever we use lemmas from already existing Isabelle theories, we qualify
-them by their theory name. For example, instead of @{text map_compose}, we
-write @{text List.map_compose} to point out that this lemma is taken from
+them by their theory name. For example, instead of @{text map_map}, we
+write @{text List.map_map} to point out that this lemma is taken from
 Isabelle's list theory.
 
 
@@ -382,26 +382,26 @@ proof -
    = map h (candidate f (map (n2l \<circ> l2n) zs))"
       using n2l_l2n_map_id [where zs=zs] and A3 by simp
   also have 
-  "\<dots> = map h (candidate f (map n2l (map l2n zs)))" 
-      using List.map_compose [where f=n2l and g=l2n and xs=zs] by simp 
+  "\<dots> = map h (candidate f (map n2l (map l2n zs)))"
+      using List.map_map [where f=n2l and g=l2n and xs=zs] by simp 
   also have 
   "\<dots>= map h (map n2l (candidate ?fn (map l2n zs)))"
       using n2l_candidate by auto
   also have 
   "\<dots> = map ?hn (candidate ?fn (map l2n zs))"
-      using List.map_compose [symmetric] by auto
+      using List.map_map by auto
   also have
   "\<dots> = candidate g (map ?hn (map l2n zs))"
       using ne_free_theorem by simp
   also have 
   "\<dots> = candidate g (map ((h \<circ> n2l) \<circ> l2n) zs)" 
-      using List.map_compose [where f="h \<circ> n2l" and g=l2n] by simp
+      using List.map_map [where f="h \<circ> n2l" and g=l2n] by simp
   also have 
   "\<dots> = candidate g (map (h \<circ> (n2l \<circ> l2n)) zs)" 
       using Fun.o_assoc [symmetric, where f=h and g=n2l and h=l2n] by simp
   also have 
   "\<dots> = candidate g (map h (map (n2l \<circ> l2n) zs))"
-      using List.map_compose [where f=h and g="n2l \<circ> l2n"] by simp
+      using List.map_map [where f=h and g="n2l \<circ> l2n"] by simp
   also have 
   "\<dots> = candidate g (map h zs)" 
       using n2l_l2n_map_id [where zs=zs] and A3 by auto
@@ -535,7 +535,7 @@ existing results.
 *}
 
 lemma L1: "map g (map f xs) = map (g \<circ> f) xs"
-using List.map_compose [symmetric] by auto
+using List.map_map by auto
 
 lemma L2: "length (map f xs) = length xs"
 using List.length_map by simp

@@ -126,7 +126,7 @@ lemma shift_append [simp]: "shift n (xt\<^isub>1 @ xt\<^isub>2) = shift n xt\<^i
 by(simp add:shift_def)
 
 lemma shift_shift [simp]: "shift m (shift n xt) = shift (m+n) xt"
-by(simp add: shift_def map_compose[symmetric] split_def)
+by(simp add: shift_def split_def)
 
 lemma shift_compxE2: "shift pc (compxE2 e pc' d) = compxE2 e (pc' + pc) d"
  and  shift_compxEs2: "shift pc (compxEs2 es pc' d) = compxEs2 es (pc' + pc) d"
@@ -197,7 +197,7 @@ lemma stack_xlift_append [simp]: "stack_xlift n (xt @ xt') = stack_xlift n xt @ 
 by(simp add: stack_xlift_def)
 
 lemma stack_xlift_stack_xlift [simp]: "stack_xlift n (stack_xlift m xt) = stack_xlift (n + m) xt"
-by(simp add: stack_xlift_def map_compose[symmetric] split_def)
+by(simp add: stack_xlift_def split_def)
 
 lemma stack_xlift_compxE2: "stack_xlift n (compxE2 e pc d) = compxE2 e pc (n + d)"
   and stack_xlift_compxEs2: "stack_xlift n (compxEs2 es pc d) = compxEs2 es pc (n + d)"

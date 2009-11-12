@@ -389,8 +389,8 @@ lemma fold_compose1: "(% x. f (g x)) = (f o g)"
 
 lemma FEval_subst: "\<forall>e f. (FEval MI e (subst f A)) = (FEval MI (e o f) A)"
   apply(induct A)
-       apply(simp add: Let_def) apply(simp only: fold_compose1 map_compose[symmetric]) apply(blast) 
-      apply(simp add: Let_def) apply(simp only: fold_compose1 map_compose[symmetric]) apply(blast) 
+       apply(simp add: Let_def) apply(simp only: fold_compose1 map_map) apply(blast) 
+      apply(simp add: Let_def) apply(simp only: fold_compose1 map_map) apply(blast) 
      apply(simp)
     apply(simp)
    apply(simp (no_asm_use)) apply(simp) apply(rule,rule) apply(rule ball_eq_ball) apply(rule) apply(simp add: bump_def)
@@ -980,11 +980,11 @@ lemma (in loc2) model':
   shows "infinite (deriv s) ==> init s ==> \<forall>A. size A = h --> (\<forall>m n. contains f n (m,A) --> ~ (FEval mo ntou A))"
 
   apply(rule_tac nat_less_induct) apply(rule, rule) apply(case_tac A) 
-       apply(rule,rule,rule) apply(simp add: mo Let_def) apply(simp add: model_def Let_def) apply(simp only: f[symmetric]) apply(force)
+       apply(rule,rule,rule) apply(simp add: mo Let_def) apply(simp add: model_def Let_def del: map_map) apply(simp only: f[symmetric]) apply(force)
 
-      apply(rule,rule,rule) apply(simp add: mo Let_def) apply(simp add: model_def Let_def) apply(simp only: f[symmetric]) apply(rule ccontr) apply(simp) apply(elim exE)
-      apply(subgoal_tac "m = 0 & ma = 0") prefer 2 apply(simp)
-      apply(simp)
+      apply(rule,rule,rule) apply(simp add: mo Let_def) apply(simp add: model_def Let_def del: map_map) apply(simp only: f[symmetric]) apply(rule ccontr) apply(simp del: map_map) apply(elim exE)
+      apply(subgoal_tac "m = 0 & ma = 0") prefer 2 apply(simp del: map_map)
+      apply(simp del: map_map)
       apply(subgoal_tac "? y. considers f (nb+na+y) (0, PAtom nat list)") prefer 2 apply(rule contains_considers) apply(assumption) 
        apply(rule contains_propagates_patoms) apply(assumption) apply(assumption)
       apply(erule exE)

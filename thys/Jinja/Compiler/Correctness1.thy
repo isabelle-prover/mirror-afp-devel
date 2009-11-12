@@ -413,7 +413,7 @@ next
   with 1 CallNull.prems
   obtain ls\<^isub>2 where 2: "?Posts es h\<^isub>1 l\<^isub>1 (map Val vs) h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2" by(auto)
   from 1 2 CallNull show ?case
-    by (auto simp add: map_compose[symmetric] comp_def elim!: CallNull\<^isub>1)
+    by (auto simp add: comp_def elim!: CallNull\<^isub>1)
 next
   case CallObjThrow thus ?case  by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
 next
@@ -426,7 +426,7 @@ next
   with 1 CallParamsThrow.prems
   obtain ls\<^isub>2 where 2: "?Posts es h\<^isub>1 l\<^isub>1 (map Val vs @ throw ex # es') h\<^isub>2 l\<^isub>2 Vs ls\<^isub>1 ls\<^isub>2" by(auto)
   from 1 2 CallParamsThrow show ?case
-    by (auto simp add: map_compose[symmetric] comp_def
+    by (auto simp add: comp_def
              elim!: CallParamsThrow\<^isub>1 dest!:evals_final)
 next
   case (Call e h l a h\<^isub>1 l\<^isub>1 es vs h\<^isub>2 l\<^isub>2 C fs M Ts T pns body D l\<^isub>2' b' h\<^isub>3 l\<^isub>3)
@@ -453,7 +453,7 @@ next
   obtain ls\<^isub>3 where 3: "?Post body h\<^isub>2 l\<^isub>2' b' h\<^isub>3 l\<^isub>3 ?Vs ?ls ls\<^isub>3"  by(auto)
   have hp: "h\<^isub>2 a = Some (C, fs)" by fact
   from 1 2 3 hp mdecl\<^isub>1 wf_size Call_size show ?case
-    by(fastsimp simp add: map_compose[symmetric] comp_def
+    by(fastsimp simp add: comp_def
                 intro!: Call\<^isub>1 dest!:evals_final)
 qed
 (*>*)

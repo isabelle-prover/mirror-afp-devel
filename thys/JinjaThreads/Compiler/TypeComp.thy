@@ -515,7 +515,7 @@ lemma xcpt_eff_shift [simp]:
    map (\<lambda>(pc,\<tau>). (pc + n, \<tau>)) (xcpt_eff i P pc \<tau> xt)"
 apply(simp add: xcpt_eff_def)
 apply(cases \<tau>)
-apply(auto simp add: shift_def map_compose [symmetric])
+apply(auto simp add: shift_def)
 done
 
 

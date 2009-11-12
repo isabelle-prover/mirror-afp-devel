@@ -503,7 +503,7 @@ case (Suc n')
  with b have as: "(r \<in> Ax \<or> r \<in> upRules) \<and> extendRule S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta>)" by auto
  then have eq:"map (extend (\<Gamma>' \<Rightarrow>* \<Delta>')) Ps = fst (extendRule (extend S (\<Gamma>' \<Rightarrow>* \<Delta>')) r)"
        using mapCommute[where S="\<Gamma>'\<Rightarrow>*\<Delta>'" and R=S and c="fst r"]
-       by (auto simp add:extendRule_def extend_def mapAssoc)
+       by (auto simp add:extendRule_def extend_def mapAssoc simp del: map_map)
  from as have eq2: "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') = snd (extendRule (extend S (\<Gamma>' \<Rightarrow>* \<Delta>')) r)"
        by (auto simp add:extendRule_def extend_def union_ac)
  from as f have "fst r \<noteq> []" by (auto simp add:extendRule_def map_is_Nil_conv)

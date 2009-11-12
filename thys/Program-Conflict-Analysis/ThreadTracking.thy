@@ -219,7 +219,7 @@ lemma le_rem_id_simps[simp]:
 lemma le_rem_id_map[simp]: 
   "map le_rem_s (map LOC w) = w" 
   "map le_rem_s (map ENV w) = w"
-  by (auto simp add: map_compose[symmetric])
+  by auto
 
 lemma env_map_env [simp]: "env (map ENV w) = map ENV w"
   by (unfold env_def) simp

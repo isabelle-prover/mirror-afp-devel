@@ -329,7 +329,7 @@ by(induct ts arbitrary:s) simp_all
 lemma lift_lift_ml: fixes v :: ml shows
   "i < k+1 \<Longrightarrow> lift (Suc k) (lift i v) = lift i (lift k v)"
 by(induct i v rule:lift_ml.induct)
-  (simp_all add:map_compose[symmetric])
+  simp_all
 lemma lift_lift_tm: fixes t :: tm shows
     "i < k+1 \<Longrightarrow> lift (Suc k) (lift i t) = lift i (lift k t)"
 by(induct t arbitrary: i rule:lift_tm.induct)(simp_all add:lift_lift_ml)
@@ -337,12 +337,12 @@ by(induct t arbitrary: i rule:lift_tm.induct)(simp_all add:lift_lift_ml)
 lemma lift_lift_ML:
   "i < k+1 \<Longrightarrow> lift\<^bsub>ML\<^esub> (Suc k) (lift\<^bsub>ML\<^esub> i v) = lift\<^bsub>ML\<^esub> i (lift\<^bsub>ML\<^esub> k v)"
 by(induct v arbitrary: i rule:lift_ML.induct)
-  (simp_all add:map_compose[symmetric])
+  simp_all
 
 lemma lift_lift_ML_comm:
   "lift j (lift\<^bsub>ML\<^esub> i v) = lift\<^bsub>ML\<^esub> i (lift j v)"
 by(induct v arbitrary: i j rule:lift_ML.induct)
-  (simp_all add:map_compose[symmetric])
+  simp_all
 
 lemma V_ML_cons_ML_subst_decr[simp]:
   "V\<^bsub>ML\<^esub> 0 ## subst_decr_ML k v = subst_decr_ML (Suc k) (lift\<^bsub>ML\<^esub> 0 v)"
@@ -377,14 +377,14 @@ by(rule ext)(simp add: lift_lift_ML_comm)
 lemma lift_subst_ML:
  "lift k (subst\<^bsub>ML\<^esub> \<sigma> v) = subst\<^bsub>ML\<^esub> (lift k \<circ> \<sigma>) (lift k v)"
 apply(induct \<sigma> v rule:subst_ML.induct)
-apply(simp_all add:map_compose[symmetric] o_assoc lift_o_shift del:apply_cons_ML)
+apply(simp_all add: o_assoc lift_o_shift del:apply_cons_ML)
 apply(simp add:o_def)
 done
 
 corollary lift_subst_ML1:
   "\<forall>v k. lift_ml 0 (u[v/k]) = (lift_ml 0 u)[lift 0 v/k]"
 apply(induct u rule:ml_induct)
-apply(simp_all add:lift_lift_ml map_compose[symmetric] lift_subst_ML)
+apply(simp_all add:lift_lift_ml lift_subst_ML)
 apply(subst lift_lift_ML_comm)apply simp
 done
 
@@ -393,7 +393,7 @@ lemma lift_ML_subst_ML:
   subst\<^bsub>ML\<^esub> (\<lambda>i. if i<k then lift\<^bsub>ML\<^esub> k (\<sigma> i) else if i=k then V\<^bsub>ML\<^esub> k else lift\<^bsub>ML\<^esub> k (\<sigma>(i - 1))) (lift\<^bsub>ML\<^esub> k v)"
   (is "_ = subst\<^bsub>ML\<^esub> (?insrt k \<sigma>) (lift\<^bsub>ML\<^esub> k v)")
 apply (induct k v arbitrary: \<sigma> k rule: lift_ML.induct)
-apply (simp_all add:map_compose[symmetric] o_assoc lift_o_shift)
+apply (simp_all add: o_assoc lift_o_shift)
 apply(subgoal_tac "V\<^bsub>ML\<^esub> 0 ## ?insrt k \<sigma> = ?insrt (Suc k) (V\<^bsub>ML\<^esub> 0 ## \<sigma>)")
  apply simp
 apply (simp add:expand_fun_eq lift_lift_ML cons_ML_def split:nat.split)
@@ -755,7 +755,7 @@ using listsum_size'[of v vs] by arith
 
 lemma size'_lift_ML: "size' (lift\<^bsub>ML\<^esub> k v) = size' v"
 apply(induct v arbitrary:k rule:size'.induct)
-apply (simp_all add:map_compose[symmetric])
+apply simp_all
    apply(rule arg_cong[where f = listsum])
    apply(rule map_ext)
    apply simp
@@ -773,7 +773,7 @@ done
 lemma size'_subst_ML[simp]:
  "\<forall>i j. size'(\<sigma> i) = 1 \<Longrightarrow> size' (subst\<^bsub>ML\<^esub> \<sigma> v) = size' v"
 apply(induct v arbitrary:\<sigma> rule:size'.induct)
-apply (simp_all add:map_compose[symmetric])
+apply simp_all
     apply(rule arg_cong[where f = listsum])
     apply(rule map_ext)
     apply simp
@@ -793,7 +793,7 @@ done
 
 lemma size'_lift[simp]: "size' (lift i v) = size' v"
 apply(induct v arbitrary:i rule:size'.induct)
-apply (simp_all add:map_compose[symmetric])
+apply simp_all
    apply(rule arg_cong[where f = listsum])
    apply(rule map_ext)
    apply simp
@@ -1229,7 +1229,7 @@ by(simp add:list_eq_iff_nth_eq kernel_subst_ML_pat)
 
 lemma compR_Red_tm: "(nm, vs, v) : compR \<Longrightarrow> \<forall> i. closed\<^bsub>ML\<^esub> 0 (\<sigma> i)
   \<Longrightarrow> C nm \<bullet>\<bullet> (map (subst\<^bsub>ML\<^esub> \<sigma>) (rev vs))! \<rightarrow>* (subst\<^bsub>ML\<^esub> \<sigma> v)!"
-apply(auto simp add:compR_def rev_map)
+apply(auto simp add:compR_def rev_map simp del: map_map)
 apply(frule pure_R)
 apply(subst kernel_subst_ML) apply fast+
 apply(subst kernel_subst_ML_pat_map)
@@ -1297,10 +1297,10 @@ theorem Red_term_sound:
   "t \<Rightarrow> t' \<Longrightarrow> closed\<^bsub>ML\<^esub> 0 t \<Longrightarrow> kernelt t \<rightarrow>* kernelt t'  \<and> closed\<^bsub>ML\<^esub> 0 t'"
 proof(induct rule:Red_term.inducts)
   case term_C thus ?case
-    by (auto simp:closed_tm_ML_foldl_At map_compose[symmetric])
+    by (auto simp:closed_tm_ML_foldl_At)
 next
   case term_V thus ?case
-    by (auto simp:map_compose[symmetric]closed_tm_ML_foldl_At)
+    by (auto simp:closed_tm_ML_foldl_At)
 next
   case (term_Clo vf vs n)
   hence "(lift 0 vf!) \<bullet>\<bullet> map kernel (rev (map (lift 0) vs))
@@ -1497,7 +1497,7 @@ apply(erule_tac x = nm' in meta_allE)
 apply(erule_tac x = nm' in meta_allE)
 apply(erule_tac x = tsa in meta_allE)
 apply(erule_tac x = rs' in meta_allE)
-apply (simp add:rev_map map_compose[symmetric])
+apply (simp add:rev_map)
 apply (metis in_set_conv_nth pattern_At_vecD)
 done
 
@@ -1517,7 +1517,7 @@ apply(rule_tac x=i in exI)
 apply simp
 apply(cut_tac t = "aa!i" in dterm_ML_comp_patD, simp, assumption)
 apply clarsimp
-apply(auto simp: rev_map map_compose[symmetric])
+apply(auto simp: rev_map)
 apply(rule no_match_R_coincide_aux)
 prefer 2 apply assumption
 apply (metis in_set_conv_nth pattern_At_vecD)
@@ -1551,7 +1551,7 @@ by simp
 
 lemma [simp]: "dterm (dterm\<^bsub>ML\<^esub> v) = dterm\<^bsub>ML\<^esub> v"
 apply(induct v rule:dterm_ML.induct)
-apply (simp_all add: map_compose[symmetric])
+apply simp_all
 done
 
 lemma "u\<Rightarrow>(v::ml) \<Longrightarrow> True" and
@@ -1845,7 +1845,7 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
 	      apply rule
 	      apply(rule "1.hyps"[OF _ ob(3)])
 	      using "1.prems" 5 ob
-	      apply (auto simp:nth_append rev_nth ctxt_term[OF `vs!k \<Rightarrow> v'`])
+	      apply (auto simp:nth_append rev_nth ctxt_term[OF `vs!k \<Rightarrow> v'`] simp del: map_map)
 	      done
 	    ultimately show "?P ?rs' \<and> ?Q ?rs'" ..
 	  qed
@@ -1871,10 +1871,10 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
 	    moreover have "?Q ?rs'"
 	      apply rule
 	      apply(rule "1.hyps"[OF _ ob(3)])
-	      using 9 "1.prems" ob by (auto simp:nth_append)
+	      using 9 "1.prems" ob by (auto simp:nth_append simp del: map_map)
 	    ultimately show "?P ?rs' \<and> ?Q ?rs'" ..
 	  qed
-	qed (insert ob, auto)
+	qed (insert ob, auto simp del: map_map)
       }
       hence "\<exists>rs'. dterm (ts[i := t'] ! j) = C nm' \<bullet>\<bullet> rs' \<and> (nm = nm' \<longrightarrow> no_match rs rs')"
 	using `i < size ts` ob by(simp add:nth_list_update)
@@ -1988,10 +1988,10 @@ lemma C_Red_term_ML:
       ts = map dterm (C\<^isub>U_args(term v))" and
   "(vs:: ml list) \<Rightarrow> vs' \<Longrightarrow> i < length vs \<Longrightarrow> vs ! i \<Rightarrow>* vs' ! i"
 apply(induct arbitrary: nm ts and i rule:Red_ml_Red_ml_list.inducts)
-apply(simp_all add:Red_ml_list_length)
+apply(simp_all add:Red_ml_list_length del: map_map)
   apply(frule Red_ml_list_length)
-  apply(simp add: redts_term_cong rev_nth)
- apply(simp add:nth_Cons' r_into_rtrancl)
+  apply(simp add: redts_term_cong rev_nth del: map_map)
+ apply(simp add:nth_Cons' r_into_rtrancl del: map_map)
 apply(simp add:nth_Cons')
 done
 
@@ -2001,7 +2001,7 @@ lemma C_redt: "t \<Rightarrow> t' \<Longrightarrow> C_normal t \<Longrightarrow>
      (\<forall>t\<in>set(C\<^isub>U_args t). C_normal t) \<and>
      C\<^isub>U_args t [\<Rightarrow>*] C\<^isub>U_args t' \<and> ts = map dterm (C\<^isub>U_args t)))"
 apply(induct arbitrary: ts nm rule:Red_term_hnf_induct)
-apply simp_all
+apply (simp_all del: map_map)
 apply (metis no_match_R_coincide rev_rev_ident)
 apply clarsimp
 apply rule
@@ -2054,8 +2054,8 @@ apply simp
 apply simp
 apply simp
 apply clarsimp
-apply (simp add:map_compose[symmetric])
-apply (simp add:map_compose[symmetric])
+apply simp
+apply simp
 apply simp
 apply simp
 apply(frule_tac nm=nm and ts="ts" in C_redt)

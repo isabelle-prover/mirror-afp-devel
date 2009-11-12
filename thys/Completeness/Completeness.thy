@@ -179,11 +179,7 @@ lemma snd_o_Pair: "(snd o (Pair x)) = (% x. x)"
   by simp
 
 lemma sequent_pseq: "sequent (pseq fs) = fs"
-  apply(simp add: pseq_def sequent_def)
-  apply(simp add: map_compose[symmetric])
-  apply(simp add: snd_o_Pair) 
-  done
-
+  by (simp add: pseq_def sequent_def snd_o_Pair)
 
 subsection "SATAxiom: proofTree"
     
@@ -818,7 +814,7 @@ lemma inv_obj_obj: "inv obj (obj n) = n"
   using inj_obj apply simp done
 
 lemma map_X_map_counterAssign: "map X (map (inv obj) (map counterAssign xs)) = xs"
-  apply(simp add: map_compose[symmetric])
+  apply(simp)
   apply(subgoal_tac "(X \<circ> (inv obj \<circ> counterAssign)) = (% x . x)")
   apply simp
   apply(rule ext)
@@ -847,7 +843,7 @@ lemma evalPCounterModel: "M = counterModel f ==> evalP M = counterEvalP f"
 subsection "counterModel: all path formula value false - step by step"
 
 lemma path_evalF': 
-  notes ss = evalPCounterModel counterEvalP_def map_X_map_counterAssign map_compose
+  notes ss = evalPCounterModel counterEvalP_def map_X_map_counterAssign map_map[symmetric]
   and ss1 = instanceF_def evalF_subF_eq comp_vblcase id_def[symmetric]
   shows "[| branch subs (pseq fs) f; 
   !n . ~ proofTree (tree subs (f n))
@@ -855,9 +851,9 @@ lemma path_evalF':
   apply (rule_tac strong_formula_induct, rule) 
   apply(rule formula_signs_cases)
        -- "atom"
-       apply(simp add: ss)
+       apply(simp add: ss del: map_map)
       apply(rule, rule)
-      apply(simp add: ss)
+      apply(simp add: ss del: map_map)
       apply(force dest: notEvContainsBothAtoms)
      -- "conj"
      apply(force dest: evContainsConj)

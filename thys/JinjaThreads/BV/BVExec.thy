@@ -107,7 +107,7 @@ proof -
     also from w have "\<forall>x \<in> set \<tau>s'. x \<noteq> Err" 
       by (auto simp add: wt_step_def all_set_conv_all_nth)
     hence [symmetric]: "map OK (map ok_val \<tau>s') = \<tau>s'" 
-      by (auto intro!: map_idI simp add: wt_step_def map_compose [symmetric])
+      by (auto intro!: map_idI simp add: wt_step_def)
     finally  have "check_types P mxs mxl (map OK (map ok_val \<tau>s'))" .
   } 
   moreover {  
@@ -128,7 +128,7 @@ proof -
     by (auto intro: wt_err_imp_wt_app_eff simp add: l)
   ultimately
   have "wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (map ok_val \<tau>s')"
-    using instrs by (simp add: wt_method_def2 check_types_def)
+    using instrs by (simp add: wt_method_def2 check_types_def image_compose)
   thus ?thesis by blast
 qed
 (*>*)

@@ -74,7 +74,7 @@ apply(rule conjI) apply(blast dest: mgp_vertices_nonempty[symmetric])
 apply(rule conjI) apply(blast intro:minGraphProps)
 apply(drule minGraphProps11)
 apply(simp add:normFaces_def normFace_def verticesFrom_def minVertex_def
-               rotate_min_def map_compose[symmetric] o_def)
+               rotate_min_def o_def)
 done
 
 theorem combine_evals:

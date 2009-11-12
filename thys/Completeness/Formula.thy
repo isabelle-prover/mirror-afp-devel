@@ -369,9 +369,6 @@ lemma evalF_equiv[rule_format]: "! f g. (equalOn (freeVarsF A) f g) \<longrighta
 lemma evalF_subF_eq: "!phi theta. evalF M phi (subF theta A) = evalF M (phi o theta) A"
   apply(induct_tac A)
     apply(simp del: o_apply)
-    apply(intro allI)
-    apply(rule_tac f="sign signs" in arg_cong) 
-    apply(simp add: map_compose)
    apply(simp del: o_apply)
   apply(intro allI)
   apply(simp del: o_apply)

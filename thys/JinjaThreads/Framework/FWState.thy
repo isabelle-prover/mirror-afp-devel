@@ -221,7 +221,7 @@ done
 
 lemma convert_extTA_compose [simp]:
   "convert_extTA f (convert_extTA g ta) = convert_extTA (f o g) ta"
-by(simp add: convert_extTA_def map_compose[symmetric])
+by(simp add: convert_extTA_def)
 
 
 inductive

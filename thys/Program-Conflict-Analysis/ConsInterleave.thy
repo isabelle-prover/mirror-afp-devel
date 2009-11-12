@@ -246,14 +246,14 @@ proof (induct rule: cil_set_induct_fix\<alpha>)
 next
   case (left e w' w1' w2) 
   have "f e # map f w' \<in> f e # map f w1' \<otimes>\<^bsub>\<alpha>\<^esub> map f w2" proof (rule cil_cons1)
-    from left(2) have "fst ((\<alpha>\<circ>f) e) \<inter> mon_pl (map \<alpha> (map f w2)) = {}" by (simp only: map_compose)
+    from left(2) have "fst ((\<alpha>\<circ>f) e) \<inter> mon_pl (map \<alpha> (map f w2)) = {}" by (simp only: map_map[symmetric])
     thus "fst (\<alpha> (f e)) \<inter> mon_pl (map \<alpha> (map f w2)) = {}" by (simp only: o_apply)
   qed (rule left(3))
   thus ?case by simp
 next
   case (right e w' w2' w1) 
   have "f e # map f w' \<in> map f w1 \<otimes>\<^bsub>\<alpha>\<^esub> f e # map f w2'" proof (rule cil_cons2)
-    from right(2) have "fst ((\<alpha>\<circ>f) e) \<inter> mon_pl (map \<alpha> (map f w1)) = {}" by (simp only: map_compose)
+    from right(2) have "fst ((\<alpha>\<circ>f) e) \<inter> mon_pl (map \<alpha> (map f w1)) = {}" by (simp only: map_map[symmetric])
     thus "fst (\<alpha> (f e)) \<inter> mon_pl (map \<alpha> (map f w1)) = {}" by (simp only: o_apply)
   qed (rule right(3))
   thus ?case by simp

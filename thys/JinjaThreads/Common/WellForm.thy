@@ -684,8 +684,8 @@ done
 
 lemma map_of_remap_conv:
   "\<lbrakk> distinct_fst fs; map_of (map (\<lambda>(F, y). ((F, D), y)) fs) (F, D) = \<lfloor>T\<rfloor> \<rbrakk>
-  \<Longrightarrow> map_of (map (\<lambda>((F, D), T). (F, D, T)) (map (\<lambda>(F, y). ((F, D), y)) fs)) F = \<lfloor>(D, T)\<rfloor>"
-apply(induct fs)
+  \<Longrightarrow> map_of (map ((\<lambda>((F, D), T). (F, D, T)) \<circ> (\<lambda>(F, y). ((F, D), y))) fs) F = \<lfloor>(D, T)\<rfloor>"
+apply(induct fs) 
 apply auto
 done
 

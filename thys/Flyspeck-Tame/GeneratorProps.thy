@@ -334,7 +334,7 @@ qed
 
 
 lemma dist_ExcessTab: "distinct (map fst (ExcessTable g (vertices g)))"
-by(simp add:ExcessTable_def vertices_graph map_compose[symmetric] o_def)
+by(simp add:ExcessTable_def vertices_graph o_def)
 
 
 
