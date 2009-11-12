@@ -66,7 +66,7 @@ correctness proof for static intraprocedural slicing (in subdirectory
 StaticIntra/) and instantiations of the framework with a simple While language
 (in subdirectory While/) and the sophisticated object-oriented bytecode language
 of Jinja (in subdirectory JinjaVM/). For more information on the framework and dynamic
-slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler.
+slicing, see the TPHOLS 2008 paper by Wasserrab and Lochbihler and the PLAS 2009 paper by Wasserrab et al.
 </p></td></tr>
 
 <!-- uncomment for entries significantly updated in devel version:
