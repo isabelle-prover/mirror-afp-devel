@@ -469,7 +469,7 @@ apply (induct_tac n)
  apply simp
  apply (simp add:nat_not_le_less[of j])
  apply (frule_tac m = n and n = j in Suc_leI)
- apply (frule_tac m = j and n = "Suc n" in le_anti_sym, assumption+, simp)
+ apply (frule_tac m = j and n = "Suc n" in le_antisym, assumption+, simp)
  apply (cut_tac n = n in ASum_zero [of _ "f"])
  apply (subgoal_tac "(\<forall>j\<le>n. f j \<in> Z\<^sub>\<infinity>) \<and> (\<forall>l\<le>n. f l = 0)")
  apply (thin_tac "\<forall>j\<le>Suc n. f j \<in> Z\<^sub>\<infinity>", 

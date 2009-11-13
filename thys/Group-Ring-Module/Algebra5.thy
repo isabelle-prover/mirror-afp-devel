@@ -723,14 +723,14 @@ apply (rule carr_prodag_mem_eq [of "{i. i \<le> (Suc n)}" "B" "f"
  apply (simp add:sliden_def, rule impI) 
  apply (simp add:nat_not_le_less,
         frule_tac m = n and n = i in Suc_leI,
-        frule_tac m = i and n = "Suc n" in Nat.le_anti_sym, assumption+,
+        frule_tac m = i and n = "Suc n" in Nat.le_antisym, assumption+,
         simp)
  
  apply (rule ballI, simp) 
  apply (simp add:augm_func_def sliden_def)
  apply (rule impI, simp add:nat_not_le_less)
   apply (frule_tac n = l in Suc_leI[of n _])
-  apply (frule_tac m = l and n = "Suc n" in Nat.le_anti_sym, assumption+,
+  apply (frule_tac m = l and n = "Suc n" in Nat.le_antisym, assumption+,
          simp)
 done
 
@@ -847,7 +847,7 @@ apply (rule conjI)
  apply simp apply (thin_tac "g \<in> carr_prodag {i. i \<le> n} B")
  apply (simp add: not_less [symmetric, of _ n],
         frule_tac n = i in Suc_leI[of n],
-        frule_tac m = i and n = "Suc n" in le_anti_sym, assumption+, simp)
+        frule_tac m = i and n = "Suc n" in le_antisym, assumption+, simp)
  apply (simp add:carr_prodag_def compose_def slide_def sliden_def)
 done
 
@@ -1061,7 +1061,7 @@ apply (simp add:prodB1_def)
 apply (simp add:qring_ring)
 apply (simp)
  apply (frule_tac n = k in Suc_leI[of 0], thin_tac "0 < k")
- apply (frule_tac m = k and n = "Suc 0" in le_anti_sym, assumption)
+ apply (frule_tac m = k and n = "Suc 0" in le_antisym, assumption)
  apply (simp, simp add:prodB1_def, simp add:qring_ring)
 
 apply (rule ballI)
@@ -1311,7 +1311,7 @@ apply (frule_tac f = "A_to_prodag R {j. j \<le> (Suc (Suc n))} S B
   apply simp
   apply (frule_tac y = i and x = "Suc n" in not_leE, 
          frule_tac m = "Suc n" and n = i in Suc_leI,
-         frule_tac m = i and n = "Suc (Suc n)" in Nat.le_anti_sym, assumption+,
+         frule_tac m = i and n = "Suc (Suc n)" in Nat.le_antisym, assumption+,
          simp)
   apply (frule_tac I1 = "J (Suc (Suc n))" and x1 = b in pj_zero[THEN sym, of
           R ],  assumption+, simp add:Ring.ring_times_0_x) 
@@ -1738,7 +1738,7 @@ lemma (in aGroup) additionTr0:"\<lbrakk>0 < n; \<forall>j \<le> n. f j \<in> car
 apply (case_tac "n \<le> 1")
  apply simp
  apply (frule Suc_leI [of "0" "n"])
- apply (frule le_anti_sym [of "n" "Suc 0"], assumption+, simp)
+ apply (frule le_antisym [of "n" "Suc 0"], assumption+, simp)
  apply (simp add:cmp_def)
  apply (subst transpos_ij_1[of 0 "Suc 0"], simp+)
  apply (subst transpos_ij_2[of 0 "Suc 0"], simp+)

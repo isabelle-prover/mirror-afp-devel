@@ -4457,7 +4457,7 @@ proof -
   apply (rule contrapos_pp, simp+)
   apply (simp add:nat_not_le_less)
   apply (frule_tac n = "f x" in Suc_leI[of n], thin_tac "n < (f x)")
-  apply (frule_tac m = "Suc n" and n = "f x" in le_anti_sym, assumption)
+  apply (frule_tac m = "Suc n" and n = "f x" in le_antisym, assumption)
   apply(unfold inj_on_def)
   apply (frule_tac x = x in bspec, simp,
        thin_tac "\<forall>x\<in>{i. i \<le> Suc n}. \<forall>y\<in>{i. i \<le> Suc n}. f x = f y \<longrightarrow> x = y",

@@ -957,7 +957,7 @@ lemma llist_le_trans [trans]:
   shows "r \<le> s \<Longrightarrow> s \<le> t \<Longrightarrow> r \<le> t"
   by (auto simp: llist_le_def lappend_assoc)
 
-lemma llist_le_anti_sym:
+lemma llist_le_antisym:
   fixes s:: "'a llist"
   assumes st: "s \<le> t"
   and ts: "t \<le> s"
@@ -985,11 +985,11 @@ qed
 lemma llist_less_le_not_le:
   fixes s :: "'a llist"
   shows "(s < t) = (s \<le> t \<and> \<not> t \<le> s)"
-  by (auto simp add: llist_less_def dest: llist_le_anti_sym)
+  by (auto simp add: llist_less_def dest: llist_le_antisym)
 
 instance by default
   (assumption | rule llist_le_refl
-    llist_le_trans llist_le_anti_sym llist_less_le_not_le)+
+    llist_le_trans llist_le_antisym llist_less_le_not_le)+
 
 end
 

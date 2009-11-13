@@ -215,7 +215,7 @@ apply (cut_tac sc_Ring, frule Ring.whole_ideal,
          simp add:cmp_def, simp add:jointfun_def sliden_def,
          frule_tac y = l and x = n in not_leE, thin_tac "\<not> l \<le> n",
          frule_tac m = n and n = l in Suc_leI,
-         frule_tac m = l and n = "Suc n" in Nat.le_anti_sym, assumption,
+         frule_tac m = l and n = "Suc n" in Nat.le_antisym, assumption,
          simp)
   apply (rule Pi_I,
          case_tac "xa \<le> n", simp add:jointfun_def, rule impI,

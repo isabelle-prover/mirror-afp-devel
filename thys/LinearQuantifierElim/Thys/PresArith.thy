@@ -125,8 +125,8 @@ subsection{*LCM and lemmas*}
 lemma zdiv_eq_0_iff:
  "(i::int) div k = 0 \<longleftrightarrow> k=0 \<or> 0\<le>i \<and> i<k \<or> i\<le>0 \<and> k<i"
 apply(auto simp: div_pos_pos_trivial div_neg_neg_trivial)
-  apply (metis int_0_neq_1 linorder_not_less neg_imp_zdiv_nonneg_iff zdiv_mono1 zdiv_self zero_le_one zle_anti_sym zle_refl zless_linear)
-  apply (metis int_0_neq_1 linorder_not_less pos_imp_zdiv_nonneg_iff zdiv_mono1_neg zdiv_self zero_le_one zle_anti_sym zle_refl zless_linear)
+  apply (metis int_0_neq_1 linorder_not_less neg_imp_zdiv_nonneg_iff zdiv_mono1 zdiv_self zero_le_one zle_antisym zle_refl zless_linear)
+  apply (metis int_0_neq_1 linorder_not_less pos_imp_zdiv_nonneg_iff zdiv_mono1_neg zdiv_self zero_le_one zle_antisym zle_refl zless_linear)
 apply (metis int_0_neq_1 zdiv_self zless_linear)
 done
 

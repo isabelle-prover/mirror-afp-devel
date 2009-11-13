@@ -168,7 +168,7 @@ next
       then obtain x where "?a < x" "x < ?b" by(metis dense)
       hence " \<forall>y. ?a < y \<and> y \<le> x \<longrightarrow> s < d*y + \<langle>ds,xs\<rangle>"
 	using `d<0` by (simp add:field_simps)
-      (metis add_le_cancel_right mult_le_cancel_left real_le_anti_sym real_le_linear real_mult_commute xt1(8))
+      (metis add_le_cancel_right mult_le_cancel_left real_le_antisym real_le_linear real_mult_commute xt1(8))
       hence ?thesis using 1 `?a<x` by auto
     } moreover
     { let ?a = "s - d * r" let ?b = "\<langle>d *\<^sub>s cs + ds,xs\<rangle>"

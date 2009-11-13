@@ -3022,7 +3022,7 @@ apply (erule exE)
         frule_tac i = "(LEAST k. g k \<noteq> f k)" in 
            Nfunc_LeastTr2_2_1 [of _ n f g], assumption+,
            rule not_sym, simp)  
- apply (rule le_anti_sym, assumption+)
+ apply (rule le_antisym, assumption+)
 done
 
 lemma Nfunc_iNJTr:"\<lbrakk>inj_on g {i. i \<le> (n::nat)}; i \<le> n; j \<le> n; i < j \<rbrakk> \<Longrightarrow> g i \<noteq> g j"

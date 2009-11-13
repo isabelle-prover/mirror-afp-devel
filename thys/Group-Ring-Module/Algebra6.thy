@@ -1409,7 +1409,7 @@ apply (rule allI, rule impI)
  apply (simp add:rHom_0_0)
  apply (simp)
  apply (frule_tac n = j in Suc_leI[of 0],
-        frule_tac m = j and n = "Suc 0" in le_anti_sym, assumption+,
+        frule_tac m = j and n = "Suc 0" in le_antisym, assumption+,
         thin_tac "j \<le> Suc 0", thin_tac "Suc 0 \<le> j",
         simp add:cf_h_def cmp_def ext_cf_def sliden_def special_cf_def,
         simp add:rHom_one)
@@ -4001,7 +4001,7 @@ apply (rule allI, rule impI, erule conjE,
   apply simp
   apply (drule_tac y = j and x = n in not_leE,
          drule_tac m = n and n = j in Suc_leI)
-  apply (frule_tac m = j and n = "Suc n" in le_anti_sym, assumption, simp,
+  apply (frule_tac m = j and n = "Suc n" in le_antisym, assumption, simp,
          thin_tac "\<forall>f. pol_coeff S (n, f) \<and> (\<forall>j\<le>n. f j \<in> S \<diamondsuit>\<^sub>p t) \<longrightarrow>
                   (\<exists>f'. pol_coeff S (n, f') \<and> (\<forall>j\<le>n. f j = t \<cdot>\<^sub>r\<^bsub>S\<^esub> f' j))")
   apply (rule allI, rule impI, 
