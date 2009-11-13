@@ -7,7 +7,7 @@ header {* Sums of two squares *}
 
 theory TwoSquares
   imports "../Fermat3_4/IntNatAux"
-  "~~/src/HOL/NumberTheory/Euler"
+  "~~/src/HOL/Number_Theory/Euler"
 begin
 
 text {* Show that $(\frac{-1}{p}) = +1$ for primes $p \equiv 1 \bmod 4$. *}

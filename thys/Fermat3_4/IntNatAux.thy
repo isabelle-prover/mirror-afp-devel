@@ -7,8 +7,8 @@ header {* Powers, prime numbers and divisibility *}
 
 theory IntNatAux
 imports 
-  "~~/src/HOL/NumberTheory/Factorization" 
-  "~~/src/HOL/NumberTheory/EvenOdd"
+  "~~/src/HOL/Number_Theory/Factorization" 
+  "~~/src/HOL/Number_Theory/EvenOdd"
 begin
 
 text {* Contains lemmas about divisibility and coprimality of powers, as well as some results about parities and small powers. Most lemmas are developed for the integers as well as for the natural numbers. *}

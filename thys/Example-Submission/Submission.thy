@@ -125,7 +125,7 @@ one of the standard images like HOL, use something like the following:
 
 \begin{verbatim}
 theory MyTheory
-  imports "~~/src/HOL/NumberTheory"
+  imports "~~/src/HOL/Number_Theory/Number_Theory"
 begin
 \end{verbatim}
 *}
