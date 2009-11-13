@@ -739,8 +739,8 @@ fun dest_Guard (Const ("Language.com.Guard",_)$f$g$c) = (f,g,c,false)
 fun add_declaration name decl thy =
   thy
   |> Theory_Target.init name
-  |> LocalTheory.declaration false decl
-  |> LocalTheory.exit
+  |> Local_Theory.declaration false decl
+  |> Local_Theory.exit
   |> ProofContext.theory_of;
 
 (* data kind 'HOL/hoare' *)
@@ -1024,18 +1024,18 @@ fun add_locale name expr elems thy =
   thy 
   |> Expression.add_locale (Binding.name name) (Binding.name name) expr elems
   |> snd
-  |> LocalTheory.exit;
+  |> Local_Theory.exit;
 
 fun add_locale' name expr elems thy =
   thy 
   |> Expression.add_locale (Binding.name name) (Binding.name name) expr elems
-  ||> LocalTheory.exit;
+  ||> Local_Theory.exit;
 
 fun add_locale_cmd name expr elems thy =
   thy 
   |> Expression.add_locale_cmd (Binding.name name) (Binding.name name) expr elems
   |> snd
-  |> LocalTheory.exit;
+  |> Local_Theory.exit;
 
 fun add_variable_statespaces prep_typ (cname,(inpars,outpars,locvars)) thy =
   let
@@ -1089,10 +1089,10 @@ fun print_term thy t =
 fun add_abbrev loc mode name spec thy =
   thy
   |> Theory_Target.init loc
-  |> (fn lthy => let val t = Syntax.read_term (LocalTheory.target_of lthy) spec;
-      in LocalTheory.abbrev mode ((Binding.name name, NoSyn), t) lthy end)
+  |> (fn lthy => let val t = Syntax.read_term (Local_Theory.target_of lthy) spec;
+      in Local_Theory.abbrev mode ((Binding.name name, NoSyn), t) lthy end)
   |> #2
-  |> LocalTheory.exit
+  |> Local_Theory.exit
   |> ProofContext.theory_of;
 
 
@@ -1264,7 +1264,7 @@ fun procedures_definition locname procs thy =
           let val read = Syntax.read_term
                           (Context.proof_map (add_active_procs Morphism.identity
                              (the (my_clique name)))
-                           (LocalTheory.target_of lthy))
+                           (Local_Theory.target_of lthy))
           in mk_bdy_def read name
           end;
 
@@ -1272,11 +1272,11 @@ fun procedures_definition locname procs thy =
             ctxt
             |> ProofContext.theory_of
             |> Theory_Target.init (SOME lname)
-            |> LocalTheory.declaration false parameter_info_decl
+            |> Local_Theory.declaration false parameter_info_decl
             |> (fn lthy => if has_body name
-                           then snd (LocalTheory.define Thm.definitionK (def lthy) lthy)
+                           then snd (Local_Theory.define Thm.definitionK (def lthy) lthy)
                            else lthy)
-            |> LocalTheory.exit
+            |> Local_Theory.exit
             |> ProofContext.theory_of;
 
       in thy
