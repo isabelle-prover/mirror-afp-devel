@@ -1,2 +1,2 @@
-no_document use_thy "~~/src/HOL/Induct/LList";
+no_document use_thy "LFilter";
 use_thy "LList2";

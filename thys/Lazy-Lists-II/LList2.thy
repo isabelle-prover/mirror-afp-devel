@@ -13,7 +13,7 @@ Safety and liveness.
 header{* More on llists *}
 
 theory LList2
-imports "~~/src/HOL/Induct/LList"
+imports LList
 begin
 
 section{*Preliminaries*}
