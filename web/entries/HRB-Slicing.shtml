@@ -1,0 +1,118 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR" content="Quanta Plus">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p> </p>
+
+<!-- begin entry data: -->
+<h1><!-- Title: -->Verifying the Interprocedural Horwitz-Reps-Binkley Slicer</h1>
+<p> </p>
+
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+    <td class="data" width="80%">
+<!-- Title: -->Backing up Slicing: Verifying the Interprocedural
+Two-Phase Horwitz-Reps-Binkley Slicer
+    </td></tr>
+		
+    <tr><td class="datahead">Author:</td>
+<td class="data">
+<!-- Author: --><a
+href="http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php">Daniel Wasserrab</a>
+</td></tr>		
+    
+	<tr><td class="datahead">Submission date:</td>
+	
+<td class="data"><!-- Submission date: -->2009-11-13</td></tr>
+
+	<tr><td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract"> 
+<!-- Abstract: -->	
+After verifying <a href="./Slicing.shtml">dynamic and static interprocedural slicing</a>,
+we present a modular framework for static interprocedural slicing. To this end, we formalized the
+standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together
+with summary edges as presented by Reps et al. (see FSE 1994).
+
+The framework is again modular in the programming language by using an abstract CFG, defined via
+structural and well-formedness properties. Using a weak simulation between the original and sliced
+graph, we were able to prove the correctness of static interprocedural slicing.
+
+We also instantiate our framework with a simple While language with procedures. This shows that the
+chosen abstractions are indeed valid.
+   </td></tr>
+
+<!-- uncomment for entries significantly updated in devel version:
+<tr>
+<td class="datahead"> </td>
+<td class="data">An updated version of this entry is available in the 
+    <a href="../download.shtml">development version</a> of AFP.</td>
+</tr> 
+-->
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+</tbody>
+</table>
+
+<p> </p>
+
+<!-- entry directory name: -->
+<!--#set var="name" value="HRB-Slicing" -->
+<!--#set var="base" value="HOL" --> <!--- ??? could be HOLCF etc --->
+
+<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+	None
+	</td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+<div align="right" class="date">$Date: 2009-08-09 03:44:35 $, $Revision: 1.1 
+$</div></body>
+</html>

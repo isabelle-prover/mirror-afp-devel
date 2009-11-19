@@ -66,6 +66,14 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2009-11-19:
+<a href="entries/HRB-Slicing.shtml">Backing up Slicing: Verifying the Interprocedural
+Two-Phase Horwitz-Reps-Binkley Slicer</a>
+<br>Author:
+<a href="http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php">Daniel Wasserrab</a>
+</td></tr>
+
+<tr><td class="entry">
 2009-10-30:
 <a href="entries/WorkerWrapper.shtml">The Worker/Wrapper Transformation</a>
 <br>Author:
