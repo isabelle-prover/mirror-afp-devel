@@ -1274,7 +1274,7 @@ fun procedures_definition locname procs thy =
             |> Theory_Target.init (SOME lname)
             |> Local_Theory.declaration false parameter_info_decl
             |> (fn lthy => if has_body name
-                           then snd (Local_Theory.define Thm.definitionK (def lthy) lthy)
+                           then snd (Local_Theory.define (def lthy) lthy)
                            else lthy)
             |> Local_Theory.exit
             |> ProofContext.theory_of;
