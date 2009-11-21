@@ -872,7 +872,7 @@ proof -
     thus "targetnode a = targetnode a'" by(auto elim!:PCFG.cases simp:valid_edge_def)
   next
     from wf show "distinct_fst (lift_procs wfp)"
-      by(fastsimp simp:well_formed_def distinct_fst_def map_compose[symmetric] o_def)
+      by(fastsimp simp:well_formed_def distinct_fst_def o_def)
   next
     fix p ins outs assume "(p, ins, outs) \<in> set (lift_procs wfp)"
     from `(p, ins, outs) \<in> set (lift_procs wfp)` wf

@@ -181,7 +181,7 @@ lemma labels_det:
 proof(induct rule:labels.induct)
   case (Labels_Base c c'') 
   from `labels c 0 c''` obtain l where "labels c l c''" and "l = 0" by auto
-  thus ?case by(induct rule:Labels.induct,auto)
+  thus ?case by(induct rule:labels.induct,auto)
 next
   case (Labels_Seq1 c\<^isub>1 l c c\<^isub>2)
   note IH = `\<And>c''. labels c\<^isub>1 l c'' \<Longrightarrow> c = c''`
