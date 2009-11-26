@@ -61,8 +61,11 @@ by(cases n) auto
 
 subsubsection {* The edges of the procedure CFG *}
 
+text {* Control flow information in this language is the node, to which we return
+  after the calles procedure is finished. *}
+
 datatype p_edge_kind = 
-  IEdge "(lift_var,val) edge_kind"
+  IEdge "(vname,val,pname \<times> label) edge_kind"
 | CEdge "pname \<times> expr list \<times> vname list"
 
 
@@ -151,7 +154,7 @@ lemma Proc_CFG_IEdge_intra_kind:
 by(induct prog n x\<equiv>"IEdge et" n' rule:Proc_CFG.induct,auto simp:intra_kind_def)
 
 
-lemma [dest]:"prog \<turnstile> n -IEdge (Q\<hookrightarrow>\<^bsub>p\<^esub>fs)\<rightarrow>\<^isub>p n' \<Longrightarrow> False"
+lemma [dest]:"prog \<turnstile> n -IEdge (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)\<rightarrow>\<^isub>p n' \<Longrightarrow> False"
 by(fastsimp dest:Proc_CFG_IEdge_intra_kind simp:intra_kind_def)
 
 lemma [dest]:"prog \<turnstile> n -IEdge (Q\<^bsub>p\<^esub>\<hookleftarrow>f)\<rightarrow>\<^isub>p n' \<Longrightarrow> False"
@@ -1045,7 +1048,7 @@ subsubsection {* Statements containing calls *}
 text {* A procedure is a tuple composed of its name, its input and output variables
   and its method body *}
 
-types proc = "(pname \<times> lift_var list \<times> lift_var list \<times> cmd)"
+types proc = "(pname \<times> vname list \<times> vname list \<times> cmd)"
 types procs = "proc list"
 
 
@@ -1239,14 +1242,14 @@ qed
 subsubsection{* The edges of the combined CFG *}
 
 types node = "(pname \<times> label)"
-types edge = "(node \<times> (lift_var,val) edge_kind \<times> node)"
+types edge = "(node \<times> (vname,val,node) edge_kind \<times> node)"
 
 fun get_proc :: "node \<Rightarrow> pname"
   where "get_proc (p,l) = p"
 
 
 inductive PCFG :: 
-  "cmd \<Rightarrow> procs \<Rightarrow> node \<Rightarrow> (lift_var,val) edge_kind \<Rightarrow> node \<Rightarrow> bool" 
+  "cmd \<Rightarrow> procs \<Rightarrow> node \<Rightarrow> (vname,val,node) edge_kind \<Rightarrow> node \<Rightarrow> bool" 
 ("_,_ \<turnstile> _ -_\<rightarrow> _" [51,51,0,0,0] 81)
 for prog::cmd and procs::procs
 where
@@ -1262,32 +1265,32 @@ where
 
 | MainCall:
   "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; (p,ins,outs,c) \<in> set procs;
-    distinct rets; length rets = length outs; length es + 2 = length ins\<rbrakk>
-  \<Longrightarrow> prog,procs \<turnstile> (Main,Label l) -(\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc l) es\<rightarrow> 
-                  (p,Entry)"
+    distinct rets; length rets = length outs; length es = length ins\<rbrakk>
+  \<Longrightarrow> prog,procs \<turnstile> (Main,Label l) 
+                  -(\<lambda>s. True):(Main,n')\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es\<rightarrow> (p,Entry)"
 
 | ProcCall:
   "\<lbrakk>i < length procs; procs!i = (p,ins,outs,c); 
     c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label l';
     (p',ins',outs',c') \<in> set procs; distinct rets'; 
-    length rets' = length outs'; length es' + 2 = length ins'; 
+    length rets' = length outs'; length es' = length ins'; 
     containsCall procs prog ps p es rets\<rbrakk>
   \<Longrightarrow> prog,procs \<turnstile> (p,Label l) 
-                  -(\<lambda>s. True)\<hookrightarrow>\<^bsub>p'\<^esub>set_params (Suc i) (Suc l) es'\<rightarrow> (p',Entry)"
+               -(\<lambda>s. True):(p,Label l')\<hookrightarrow>\<^bsub>p'\<^esub>map (\<lambda>e cf. interpret e cf) es'\<rightarrow> (p',Entry)"
 
 | MainReturn:
   "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'; (p,ins,outs,c) \<in> set procs;
-    distinct rets; length rets = length outs; length es + 2 = length ins\<rbrakk>
-  \<Longrightarrow> prog,procs \<turnstile> (p,Exit) -(correct_return 0 l')\<^bsub>p\<^esub>\<hookleftarrow>
-                  (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs))\<rightarrow> (Main,Label l')"
+    distinct rets; length rets = length outs; length es = length ins\<rbrakk>
+  \<Longrightarrow> prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<^bsub>p\<^esub>\<hookleftarrow>
+       (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label l')"
 
 | ProcReturn:
   "\<lbrakk>i < length procs; procs!i = (p,ins,outs,c);
     c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label l'; (p',ins',outs',c') \<in> set procs; 
-    distinct rets'; length rets' = length outs'; length es' + 2 = length ins'; 
+    distinct rets'; length rets' = length outs'; length es' = length ins'; 
     containsCall procs prog ps p es rets\<rbrakk>
-  \<Longrightarrow> prog,procs \<turnstile> (p',Exit) -(correct_return (Suc i) l')\<^bsub>p'\<^esub>\<hookleftarrow>
-                  (\<lambda>cf cf'. cf'(map Loc rets' [:=] map cf outs'))\<rightarrow> (p,Label l')"
+  \<Longrightarrow> prog,procs \<turnstile> (p',Exit) -(\<lambda>cf. snd cf = (p,Label l'))\<^bsub>p'\<^esub>\<hookleftarrow>
+       (\<lambda>cf cf'. cf'(rets' [:=] map cf outs'))\<rightarrow> (p,Label l')"
 
 | MainCallReturn:
   "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; distinct rets\<rbrakk>
@@ -1297,20 +1300,6 @@ where
   "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'; distinct rets';
     containsCall procs prog ps p es rets\<rbrakk> 
   \<Longrightarrow> prog,procs \<turnstile> (p,n) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (p,n')"
-
-
-lemma PCFG_CallEdge_set_params:
-  "prog,procs \<turnstile> n -Q\<hookrightarrow>\<^bsub>p\<^esub>fs\<rightarrow> n' 
-  \<Longrightarrow> \<exists>i l es. fs = set_params i (Suc l) es \<and> i < Suc(length procs)"
-apply(induct n et\<equiv>"Q\<hookrightarrow>\<^bsub>p\<^esub>fs" n' rule:PCFG.induct,auto)
- apply(rule_tac x="0" in exI) apply fastsimp
-apply(rule_tac x="Suc i" in exI) by fastsimp
-
-
-lemma PCFG_CallEdge_THE_set_params:
-  "\<lbrakk>prog,procs \<turnstile> n -Q\<hookrightarrow>\<^bsub>p\<^esub>fs\<rightarrow> n'; fs = set_params i (Suc l) es\<rbrakk>
-  \<Longrightarrow> (THE (i',l'). \<exists>es'. fs = set_params i' (Suc l') es') = (i,l)"
-by(fastsimp intro:the_equality dest:PCFG_CallEdge_set_params fun_cong)
 
 
 end

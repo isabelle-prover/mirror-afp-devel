@@ -109,27 +109,38 @@ text {* Every procedure has a unique name, e.g. in object oriented languages
 
 types pname = "string"
 
-text {* Update and predicate edges manipulate or check only the top stack element.
-  A call edge checks the top stack element and pops a new one onto the stack.
-  A return edge checks a stack element, pops the top element and changes the 
-  new top element according to that one. *}
 
-datatype ('var,'val) edge_kind =
-    UpdateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)" ("\<Up>_")
-  | PredicateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool"        ("'(_')\<^isub>\<surd>")
-  | CallEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool" pname "(('var \<rightharpoonup> 'val) \<Rightarrow> 'val option) list"
-                                                 ("_\<hookrightarrow>\<^bsub>_\<^esub>_" 70)
-  | ReturnEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool" pname 
-               "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)"
-                                                 ("_\<^bsub>_\<^esub>\<hookleftarrow>_" 70)
+text {* A state is a call stack of tuples, which consists of:
+  \begin{enumerate}
+  \item data information, i.e.\ a mapping from the local variables in the call 
+  frame to their values, and
+  \item control flow information, e.g.\ which node called the current procedure.
+  \end{enumerate}
+
+  Update and predicate edges check and manipulate only the data information
+  of the top call stack element. Call and return edges however may use the data and
+  control flow information present in the top stack element to state if this edge is
+  traversable. The call edge additionally has a list of functions to determine what
+  values the parameters have in a certain call frame and control flow information for
+  the return. The return edge is concerned with passing the values 
+  of the return parameter values to the underlying stack frame. See the funtions 
+  @{text transfer} and @{text pred} in locale @{text CFG}. *}
+
+datatype ('var,'val,'ret) edge_kind =
+    UpdateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)"                  ("\<Up>_")
+  | PredicateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool"                         ("'(_')\<^isub>\<surd>")
+  | CallEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'ret" pname  
+             "(('var \<rightharpoonup> 'val) \<rightharpoonup> 'val) list"                       ("_:_\<hookrightarrow>\<^bsub>_\<^esub>_" 70)
+  | ReturnEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" pname 
+               "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)" ("_\<^bsub>_\<^esub>\<hookleftarrow>_" 70)
 
 
-definition intra_kind :: "('var,'val) edge_kind \<Rightarrow> bool"
+definition intra_kind :: "('var,'val,'ret) edge_kind \<Rightarrow> bool"
 where "intra_kind et \<equiv> (\<exists>f. et = \<Up>f) \<or> (\<exists>Q. et = (Q)\<^isub>\<surd>)"
 
 
 lemma edge_kind_cases [case_names Intra Call Return]:
-  "\<lbrakk>intra_kind et \<Longrightarrow> P; \<And>Q p fs. et = Q\<hookrightarrow>\<^bsub>p\<^esub>fs \<Longrightarrow> P;
+  "\<lbrakk>intra_kind et \<Longrightarrow> P; \<And>Q r p fs. et = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Longrightarrow> P;
     \<And>Q p f. et = Q\<^bsub>p\<^esub>\<hookleftarrow>f \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
 by(cases et,auto simp:intra_kind_def)
 

@@ -6,9 +6,7 @@ subsection {* Well-formedness of procedure lists. *}
 
 definition wf_proc :: "proc \<Rightarrow> bool"
   where "wf_proc x \<equiv> let (p,ins,outs,c) = x in 
-  p \<noteq> Main \<and> length ins \<ge> 2 \<and> hd ins = ReturnProc \<and> hd(tl ins) = ReturnLabel \<and>
-  distinct ins \<and> distinct outs \<and> 
-  (\<forall>out \<in> set outs. out \<noteq> ReturnProc \<and> out \<noteq> ReturnLabel)"
+  p \<noteq> Main \<and> distinct ins \<and> distinct outs"
 
 definition well_formed :: "procs \<Rightarrow> bool"
   where "well_formed procs \<equiv> distinct_fst procs \<and> 
@@ -150,7 +148,7 @@ next
   obtain es' rets' n'' ins' outs' c' 
     where "prog \<turnstile> Label l -CEdge (p,es',rets')\<rightarrow>\<^isub>p n''" 
     and "(p,ins',outs',c') \<in> set procs" 
-    and "et' = (\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc l) es'"
+    and "et' = (\<lambda>s. True):(Main,n'')\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es'"
     by(auto elim:PCFG.cases)
   from `(p,ins,outs,c) \<in> set procs` `(p,ins',outs',c') \<in> set procs`
     `well_formed procs`
@@ -158,7 +156,7 @@ next
   from `prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
     `prog \<turnstile> Label l -CEdge (p,es',rets')\<rightarrow>\<^isub>p n''`
   have "es = es'" and "n' = n''" by(auto dest:Proc_CFG_Call_nodes_eq)
-  with `et' = (\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc l) es'` `ins = ins'`
+  with `et' = (\<lambda>s. True):(Main,n'')\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es'` `ins = ins'`
   show ?case by simp
 next
   case (ProcCall i p ins outs c l p' es' rets' l' ins' outs' c' es rets)
@@ -177,7 +175,7 @@ next
     have [simp]:"ix = i" "cx = c" by(auto dest:well_formed_same_procs_nth_nth)
     from `cx \<turnstile> Label lx -CEdge (p'x, es'x, rets'x)\<rightarrow>\<^isub>p Label l'x`
       `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
-    have [simp]:"es'x = es'" by(fastsimp dest:Proc_CFG_Call_nodes_eq)
+    have [simp]:"es'x = es'" "l'x = l'" by(auto dest:Proc_CFG_Call_nodes_eq)
     show ?case by simp
   qed auto
 next
@@ -313,7 +311,7 @@ definition wf :: "cmd \<Rightarrow> procs \<Rightarrow> bool"
   (\<forall>ps p es rets. containsCall procs prog ps p es rets 
    \<longrightarrow> (distinct rets \<and> 
       (\<exists>ins outs c. (p,ins,outs,c) \<in> set procs \<and> length rets = length outs \<and>
-                    length es + 2 = length ins)))"
+                    length es = length ins)))"
 
 
 lemma wf_well_formed [intro]:"wf prog procs \<Longrightarrow> well_formed procs"
@@ -329,17 +327,17 @@ lemma
   assumes "wf prog procs" and "containsCall procs prog ps p es rets"
   and "(p,ins,outs,c) \<in> set procs"
   shows wf_length_retsI:"length rets = length outs"
-  and wf_length_esI:"length es + 2 = length ins"
+  and wf_length_esI:"length es = length ins"
 proof -
   from `wf prog procs` have "well_formed procs" by fastsimp
   from `wf prog procs` `containsCall procs prog ps p es rets`
   obtain ins' outs' c' where "(p,ins',outs',c') \<in> set procs"
-    and lengths:"length rets = length outs'" "length es + 2 = length ins'"
+    and lengths:"length rets = length outs'" "length es = length ins'"
     by(simp add:wf_def) blast
   from `(p,ins,outs,c) \<in> set procs` `(p,ins',outs',c') \<in> set procs`
     `well_formed procs`
   have "ins' = ins" "outs' = outs" "c' = c" by auto
-  with lengths show "length rets = length outs" "length es + 2 = length ins"
+  with lengths show "length rets = length outs" "length es = length ins"
     by simp_all
 qed
 

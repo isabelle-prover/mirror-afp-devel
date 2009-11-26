@@ -5,7 +5,7 @@ subsection {* Adds an exit node to the abstract CFG *}
 locale CFGExit = CFG sourcenode targetnode kind valid_edge Entry 
     get_proc get_return_edges procs Main
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
-  and kind :: "'edge \<Rightarrow> ('var,'val) edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and kind :: "'edge \<Rightarrow> ('var,'val,'ret) edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
   and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
   and procs :: "(pname \<times> 'var list \<times> 'var list) list" and Main :: "pname" +
@@ -159,30 +159,30 @@ qed
 lemma vpa_no_slpa:
   "\<lbrakk>valid_path_aux cs as; n -as\<rightarrow>* n'; valid_call_list cs n; cs \<noteq> [];
     \<forall>xs ys. as = xs@ys \<longrightarrow> (\<not> same_level_path_aux cs xs \<or> upd_cs cs xs \<noteq> [])\<rbrakk>
-  \<Longrightarrow> \<exists>a Q f. valid_edge a \<and> kind a = Q\<hookrightarrow>\<^bsub>get_proc n'\<^esub>f"
+  \<Longrightarrow> \<exists>a Q r fs. valid_edge a \<and> kind a = Q:r\<hookrightarrow>\<^bsub>get_proc n'\<^esub>fs"
 proof(induct arbitrary:n rule:vpa_induct)
   case (vpa_empty cs)
-  from `valid_call_list cs n` `cs \<noteq> []` obtain Q f where "valid_edge (hd cs)"
-    and "kind (hd cs) = Q\<hookrightarrow>\<^bsub>get_proc n\<^esub>f"
+  from `valid_call_list cs n` `cs \<noteq> []` obtain Q r fs where "valid_edge (hd cs)"
+    and "kind (hd cs) = Q:r\<hookrightarrow>\<^bsub>get_proc n\<^esub>fs"
     apply(unfold valid_call_list_def)
     apply(drule hd_Cons_tl[THEN sym])
     apply(erule_tac x="[]" in allE) 
     apply(erule_tac x="hd cs" in allE)
     by auto
   from `n -[]\<rightarrow>* n'` have "n = n'" by fastsimp
-  with `valid_edge (hd cs)` `kind (hd cs) = Q\<hookrightarrow>\<^bsub>get_proc n\<^esub>f` show ?case by blast
+  with `valid_edge (hd cs)` `kind (hd cs) = Q:r\<hookrightarrow>\<^bsub>get_proc n\<^esub>fs` show ?case by blast
 next
   case (vpa_intra cs a as)
   note IH = `\<And>n. \<lbrakk>n -as\<rightarrow>* n'; valid_call_list cs n; cs \<noteq> [];
     \<forall>xs ys. as = xs@ys \<longrightarrow> \<not> same_level_path_aux cs xs \<or> upd_cs cs xs \<noteq> []\<rbrakk>
-    \<Longrightarrow> \<exists>a' Q' f'. valid_edge a' \<and> kind a' = Q'\<hookrightarrow>\<^bsub>get_proc n'\<^esub>f'`
+    \<Longrightarrow> \<exists>a' Q' r' fs'. valid_edge a' \<and> kind a' = Q':r'\<hookrightarrow>\<^bsub>get_proc n'\<^esub>fs'`
   note all = `\<forall>xs ys. a#as = xs@ys 
     \<longrightarrow> \<not> same_level_path_aux cs xs \<or> upd_cs cs xs \<noteq> []`
   from `n -a#as\<rightarrow>* n'` have "sourcenode a = n" and "valid_edge a" 
     and "targetnode a -as\<rightarrow>* n'"
     by(auto intro:path_split_Cons)
-  from `valid_call_list cs n` `cs \<noteq> []` obtain Q f where "valid_edge (hd cs)"
-    and "kind (hd cs) = Q\<hookrightarrow>\<^bsub>get_proc n\<^esub>f"
+  from `valid_call_list cs n` `cs \<noteq> []` obtain Q r fs where "valid_edge (hd cs)"
+    and "kind (hd cs) = Q:r\<hookrightarrow>\<^bsub>get_proc n\<^esub>fs"
     apply(unfold valid_call_list_def)
     apply(drule hd_Cons_tl[THEN sym])
     apply(erule_tac x="[]" in allE) 
@@ -190,8 +190,8 @@ next
     by auto
   from `valid_edge a` `intra_kind (kind a)`
   have "get_proc (sourcenode a) = get_proc (targetnode a)" by(rule get_proc_intra)
-  with `kind (hd cs) = Q\<hookrightarrow>\<^bsub>get_proc n\<^esub>f` `sourcenode a = n`
-  have "kind (hd cs) = Q\<hookrightarrow>\<^bsub>get_proc (targetnode a)\<^esub>f" by simp
+  with `kind (hd cs) = Q:r\<hookrightarrow>\<^bsub>get_proc n\<^esub>fs` `sourcenode a = n`
+  have "kind (hd cs) = Q:r\<hookrightarrow>\<^bsub>get_proc (targetnode a)\<^esub>fs" by simp
   from `valid_call_list cs n` `sourcenode a = n`
     `get_proc (sourcenode a) = get_proc (targetnode a)`
   have "valid_call_list cs (targetnode a)"
@@ -206,18 +206,18 @@ next
   from IH[OF `targetnode a -as\<rightarrow>* n'` `valid_call_list cs (targetnode a)`
     `cs \<noteq> []` this] show ?case .
 next
-  case (vpa_Call cs a as Q p f)
+  case (vpa_Call cs a as Q r p fs)
   note IH = `\<And>n. \<lbrakk>n -as\<rightarrow>* n'; valid_call_list (a#cs) n; a#cs \<noteq> [];
     \<forall>xs ys. as = xs@ys \<longrightarrow> \<not> same_level_path_aux (a#cs) xs \<or> upd_cs (a#cs) xs \<noteq> []\<rbrakk>
-    \<Longrightarrow> \<exists>a' Q' f'. valid_edge a' \<and> kind a' = Q'\<hookrightarrow>\<^bsub>get_proc n'\<^esub>f'`
+    \<Longrightarrow> \<exists>a' Q' r' fs'. valid_edge a' \<and> kind a' = Q':r'\<hookrightarrow>\<^bsub>get_proc n'\<^esub>fs'`
   note all = `\<forall>xs ys.
     a#as = xs@ys \<longrightarrow> \<not> same_level_path_aux cs xs \<or> upd_cs cs xs \<noteq> []`
   from `n -a#as\<rightarrow>* n'` have "sourcenode a = n" and "valid_edge a" 
     and "targetnode a -as\<rightarrow>* n'"
     by(auto intro:path_split_Cons)
-  from `valid_edge a` `kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>f` have "get_proc (targetnode a) = p"
+  from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` have "get_proc (targetnode a) = p"
     by(rule get_proc_call)
-  with `kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>f` have "kind a = Q\<hookrightarrow>\<^bsub>get_proc (targetnode a)\<^esub>f" by simp
+  with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` have "kind a = Q:r\<hookrightarrow>\<^bsub>get_proc (targetnode a)\<^esub>fs" by simp
   with `valid_call_list cs n` `valid_edge a` `sourcenode a = n`
   have "valid_call_list (a#cs) (targetnode a)"
     apply(clarsimp simp:valid_call_list_def)
@@ -225,7 +225,7 @@ next
     apply(erule_tac x="list" in allE)
     apply(erule_tac x="c" in allE)
     by(auto split:list.split simp:sourcenodes_def)
-  from all `kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>f`
+  from all `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
   have "\<forall>xs ys. as = xs@ys 
     \<longrightarrow> \<not> same_level_path_aux (a#cs) xs \<or> upd_cs (a#cs) xs \<noteq> []"
     apply clarsimp apply(erule_tac x="a#xs" in allE)
@@ -240,7 +240,7 @@ next
   case (vpa_ReturnCons cs a as Q p f c' cs')
   note IH = `\<And>n. \<lbrakk>n -as\<rightarrow>* n'; valid_call_list cs' n; cs' \<noteq> [];
     \<forall>xs ys. as = xs@ys \<longrightarrow> \<not> same_level_path_aux cs' xs \<or> upd_cs cs' xs \<noteq> []\<rbrakk>
-    \<Longrightarrow> \<exists>a' Q' f'. valid_edge a' \<and> kind a' = Q'\<hookrightarrow>\<^bsub>get_proc n'\<^esub>f'`
+    \<Longrightarrow> \<exists>a' Q' r' fs'. valid_edge a' \<and> kind a' = Q':r'\<hookrightarrow>\<^bsub>get_proc n'\<^esub>fs'`
   note all = `\<forall>xs ys. a#as = xs@ys 
     \<longrightarrow> \<not> same_level_path_aux cs xs \<or> upd_cs cs xs \<noteq> []`
   from `n -a#as\<rightarrow>* n'` have "sourcenode a = n" and "valid_edge a" 
@@ -298,7 +298,7 @@ proof -
   next
     case Return with `as = a'#as'` show ?thesis by simp
   next
-    case (Call Q p f)
+    case (Call Q r p f)
     from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` have "n -as\<rightarrow>* (_Exit_)" and "valid_path_aux [] as"
       by(simp_all add:vp_def valid_path_def)
     from `n -as\<rightarrow>* (_Exit_)` `as = a'#as'`
@@ -317,7 +317,7 @@ proof -
       case True
       with `valid_path_aux [a'] as'` `targetnode a' -as'\<rightarrow>* (_Exit_)`
 	`valid_call_list [a'] (targetnode a')`
-      obtain ax Qx fx where "valid_edge ax" and "kind ax = Qx\<hookrightarrow>\<^bsub>get_proc (_Exit_)\<^esub>fx"
+      obtain ax Qx rx fsx where "valid_edge ax" and "kind ax = Qx:rx\<hookrightarrow>\<^bsub>get_proc (_Exit_)\<^esub>fsx"
 	by(fastsimp dest!:vpa_no_slpa)
       hence False by(fastsimp intro:Main_no_call_target simp:get_proc_Exit)
       thus ?thesis by simp

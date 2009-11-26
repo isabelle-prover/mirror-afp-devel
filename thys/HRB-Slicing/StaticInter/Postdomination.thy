@@ -8,7 +8,7 @@ text {* For static interprocedural slicing, we only consider standard control
 locale Postdomination = CFGExit sourcenode targetnode kind valid_edge Entry 
     get_proc get_return_edges procs Main Exit
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
-  and kind :: "'edge \<Rightarrow> ('var,'val) edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
+  and kind :: "'edge \<Rightarrow> ('var,'val,'ret) edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
   and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
   and procs :: "(pname \<times> 'var list \<times> 'var list) list" and Main :: "pname"
@@ -24,7 +24,8 @@ lemma get_return_edges_unique:
   assumes "valid_edge a" and "a' \<in> get_return_edges a" and "a'' \<in> get_return_edges a"
   shows "a' = a''"
 proof -
-  from `valid_edge a` `a' \<in> get_return_edges a` obtain Q p fs where "kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs"
+  from `valid_edge a` `a' \<in> get_return_edges a` 
+  obtain Q r p fs where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
     by(fastsimp dest!:only_call_get_return_edges)
   with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' f' where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
     by(fastsimp dest!:call_return_edges)
@@ -34,7 +35,7 @@ proof -
     by(rule get_proc_return)
   from `valid_edge a'` `kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have "method_exit (sourcenode a')"
     by(fastsimp simp:method_exit_def)
-  from `valid_edge a` `a'' \<in> get_return_edges a` `kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs`
+  from `valid_edge a` `a'' \<in> get_return_edges a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
   obtain Q'' f'' where "kind a'' = Q''\<^bsub>p\<^esub>\<hookleftarrow>f''" by(fastsimp dest!:call_return_edges)
   from `valid_edge a` `a'' \<in> get_return_edges a` have "valid_edge a''" 
     by(rule get_return_edges_valid)
@@ -53,7 +54,7 @@ proof -
   obtain ax'' where "valid_edge ax''" and "sourcenode ax'' = sourcenode a"
     and "targetnode ax'' = targetnode a''" and "intra_kind(kind ax'')"
     by -(drule call_return_node_edge,auto simp:intra_kind_def)
-  from `valid_edge a` `kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs` `valid_edge ax'` 
+  from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `valid_edge ax'` 
     `sourcenode ax' = sourcenode a` `intra_kind(kind ax')`
     `valid_edge ax''` `sourcenode ax'' = sourcenode a` `intra_kind(kind ax'')`
   have "ax' = ax''" by -(drule call_only_one_intra_edge,auto)
@@ -438,10 +439,10 @@ proof(atomize_elim)
       proof(cases "kind a'" rule:edge_kind_cases)
 	case Intra thus ?thesis by simp
       next
-	case (Call Q p fs)
+	case (Call Q r p fs)
 	with `valid_edge a'` have "get_proc(targetnode a') = p" by(rule get_proc_call)
 	with `(_Exit_) = targetnode a'` get_proc_Exit have "p = Main" by simp
-	with `kind a' = Q\<hookrightarrow>\<^bsub>p\<^esub>fs` have "kind a' = Q\<hookrightarrow>\<^bsub>Main\<^esub>fs" by simp
+	with `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` have "kind a' = Q:r\<hookrightarrow>\<^bsub>Main\<^esub>fs" by simp
 	with `valid_edge a'` have False by(rule Main_no_call_target)
 	thus ?thesis by simp
       next
@@ -494,8 +495,9 @@ proof(atomize_elim)
       proof(cases "kind a'" rule:edge_kind_cases)
 	case Intra thus ?thesis by simp
       next
-	case (Call Q p fs)
-	from `valid_edge a'` `kind a' = Q\<hookrightarrow>\<^bsub>p\<^esub>fs` `(_Entry_) = sourcenode a'`[THEN sym]
+	case (Call Q r p fs)
+	from `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
+	  `(_Entry_) = sourcenode a'`[THEN sym]
 	have False by(rule Entry_no_call_source)
 	thus ?thesis by simp
       next

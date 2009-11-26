@@ -89,7 +89,7 @@ qed
 subsection {* Defining the sliced edge kinds *}
 
 primrec slice_kind_aux :: "'node \<Rightarrow> 'node \<Rightarrow> 'node SDG_node set \<Rightarrow> 
-  ('var,'val) edge_kind \<Rightarrow> ('var,'val) edge_kind"
+  ('var,'val,'ret) edge_kind \<Rightarrow> ('var,'val,'ret) edge_kind"
 where "slice_kind_aux m m' S \<Up>f = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then \<Up>f else \<Up>id)"
   | "slice_kind_aux m m' S (Q)\<^isub>\<surd> = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then (Q)\<^isub>\<surd> else
   (if obs_intra m \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> = {} then 
@@ -107,18 +107,19 @@ where "slice_kind_aux m m' S \<Up>f = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG
                                   valid_edge a' \<and> intra_kind(kind a') \<and>
                                   targetnode a' = mx'))) 
           then (\<lambda>cf. True)\<^isub>\<surd> else (\<lambda>cf. False)\<^isub>\<surd>))))"
-  | "slice_kind_aux m m' S (Q\<hookrightarrow>\<^bsub>p\<^esub>fs) = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then (Q\<hookrightarrow>\<^bsub>p\<^esub>(cspp m' S fs))
-                           else ((\<lambda>cf. False)\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty))"
+  | "slice_kind_aux m m' S (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then (Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp m' S fs))
+                           else ((\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty))"
   | "slice_kind_aux m m' S (Q\<^bsub>p\<^esub>\<hookleftarrow>f) = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then 
       (let outs = THE outs. \<exists>ins. (p,ins,outs) \<in> set procs in
          (Q\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. rspp m' S outs cf' cf)))
     else ((\<lambda>cf. True)\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. cf')))"
 
-definition slice_kind :: "'node SDG_node \<Rightarrow> 'edge \<Rightarrow> ('var,'val) edge_kind"
+definition slice_kind :: "'node SDG_node \<Rightarrow> 'edge \<Rightarrow> ('var,'val,'ret) edge_kind"
   where "slice_kind n\<^isub>c a \<equiv> 
   slice_kind_aux (sourcenode a) (targetnode a) (HRB_slice n\<^isub>c) (kind a)"
 
-definition slice_kinds :: "'node SDG_node \<Rightarrow> 'edge list \<Rightarrow> ('var,'val) edge_kind list"
+definition slice_kinds :: "'node SDG_node \<Rightarrow> 'edge list \<Rightarrow> 
+  ('var,'val,'ret) edge_kind list"
   where "slice_kinds n\<^isub>c as \<equiv> map (slice_kind n\<^isub>c) as"
 
 
@@ -364,62 +365,63 @@ qed
 
 
 lemma slice_kind_Call:
-  "\<lbrakk>sourcenode a \<notin> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>; kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> 
-  \<Longrightarrow> slice_kind n' a = (\<lambda>cf. False)\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
+  "\<lbrakk>sourcenode a \<notin> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> 
+  \<Longrightarrow> slice_kind n' a = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
 by(simp add:slice_kind_def)
 
 
 lemma slice_kind_Call_in_slice:
-  "\<lbrakk>sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>; kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> 
-  \<Longrightarrow> slice_kind n' a = Q\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)"
+  "\<lbrakk>sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> 
+  \<Longrightarrow> slice_kind n' a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)"
 by(simp add:slice_kind_def)
 
 
 lemma slice_kind_Call_in_slice_Formal_in_not:
-  assumes "sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs"
+  assumes "sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
   and "\<forall>x < length fs. Formal_in(targetnode a,x) \<notin> HRB_slice n'" 
-  shows "slice_kind n' a = Q\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
+  shows "slice_kind n' a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
 proof -
-  from `sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs`
-  have "slice_kind n' a = Q\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)"
+  from `sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+  have "slice_kind n' a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)"
     by(simp add:slice_kind_def)
   from `\<forall>x < length fs. Formal_in(targetnode a,x) \<notin> HRB_slice n'`
   have "cspp (targetnode a) (HRB_slice n') fs = replicate (length fs) empty"
     by(fastsimp intro:nth_equalityI csppa_Formal_in_notin_slice simp:cspp_def)
-  with `slice_kind n' a = Q\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)`
+  with `slice_kind n' a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)`
   show ?thesis by simp
 qed
 
 
 lemma slice_kind_Call_in_slice_Formal_in_also:
-  assumes "sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs"
+  assumes "sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
   and "\<forall>x < length fs. Formal_in(targetnode a,x) \<in> HRB_slice n'" 
-  shows "slice_kind n' a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs"
+  shows "slice_kind n' a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
 proof -
-  from `sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs`
-  have "slice_kind n' a = Q\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)"
+  from `sourcenode a \<in> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+  have "slice_kind n' a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)"
     by(simp add:slice_kind_def)
   from `\<forall>x < length fs. Formal_in(targetnode a,x) \<in> HRB_slice n'`
   have "cspp (targetnode a) (HRB_slice n') fs = fs"
     by(fastsimp intro:nth_equalityI csppa_Formal_in_in_slice simp:cspp_def)
-  with `slice_kind n' a = Q\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)`
+  with `slice_kind n' a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice n') fs)`
   show ?thesis by simp
 qed
 
 
 lemma slice_kind_Call_intra_notin_slice:
   assumes "sourcenode a \<notin> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>" and "valid_edge a" 
-  and "intra_kind (kind a)" and "valid_edge a'" and "kind a' = Q\<hookrightarrow>\<^bsub>p\<^esub>fs"
+  and "intra_kind (kind a)" and "valid_edge a'" and "kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
   and "sourcenode a' = sourcenode a"
   shows "slice_kind n' a = (\<lambda>s. True)\<^isub>\<surd>"
 proof -
-  from `valid_edge a'` `kind a' = Q\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain a'' where "a'' \<in> get_return_edges a'"
+  from `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain a'' 
+    where "a'' \<in> get_return_edges a'"
     by(fastsimp dest:get_return_edge_call)
   with `valid_edge a'` obtain ax where "valid_edge ax" 
     and "sourcenode ax = sourcenode a'" and " targetnode ax = targetnode a''"
     and "kind ax = (\<lambda>cf. False)\<^isub>\<surd>"
     by(fastsimp dest:call_return_node_edge)
-  from `valid_edge a'` `kind a' = Q\<hookrightarrow>\<^bsub>p\<^esub>fs`
+  from `valid_edge a'` `kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
   have "\<exists>!a''. valid_edge a'' \<and> sourcenode a'' = sourcenode a' \<and> 
     intra_kind(kind a'')"
     by(rule call_only_one_intra_edge)
@@ -544,7 +546,7 @@ proof(cases "kind a" rule:edge_kind_cases)
 	elim:kind_Predicate_notin_slice_slice_kind_Predicate simp:intra_kind_def)+
   qed
 next
-  case (Call Q p fs)
+  case (Call Q r p fs)
   show ?thesis
   proof(cases "sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>")
     case True
@@ -560,8 +562,8 @@ next
   show ?thesis
   proof(cases "sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>")
     case True
-    from Return `valid_edge a` obtain a' Q' fs 
-      where "valid_edge a'" and "kind a' = Q'\<hookrightarrow>\<^bsub>p\<^esub>fs"
+    from Return `valid_edge a` obtain a' Q' r fs 
+      where "valid_edge a'" and "kind a' = Q':r\<hookrightarrow>\<^bsub>p\<^esub>fs"
       by -(drule return_needs_call,auto)
     then obtain ins outs where "(p,ins,outs) \<in> set procs"
       by(fastsimp dest!:callee_in_procs)

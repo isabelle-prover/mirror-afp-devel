@@ -289,13 +289,13 @@ qed
 
 lemma call_return_nodes_in_slice:
   assumes "valid_edge a" and "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
-  and "valid_edge a'" and "kind a' = Q'\<hookrightarrow>\<^bsub>p\<^esub>f'" and "a \<in> get_return_edges a'"
+  and "valid_edge a'" and "kind a' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'" and "a \<in> get_return_edges a'"
   and "CFG_node (targetnode a) \<in> HRB_slice n\<^isub>c" and "parent_node n\<^isub>c \<noteq> sourcenode a"
   shows "CFG_node (sourcenode a) \<in> HRB_slice n\<^isub>c"
   and "CFG_node (sourcenode a') \<in> HRB_slice n\<^isub>c" 
   and "CFG_node (targetnode a') \<in> HRB_slice n\<^isub>c"
 proof -
-  from `valid_edge a'` `kind a' = Q'\<hookrightarrow>\<^bsub>p\<^esub>f'` `a \<in> get_return_edges a'`
+  from `valid_edge a'` `kind a' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'` `a \<in> get_return_edges a'`
   have "CFG_node (sourcenode a') s-p\<rightarrow>\<^bsub>sum\<^esub> CFG_node (targetnode a)"
     by(fastsimp intro:sum_SDG_call_summary_edge)
   with `CFG_node (targetnode a) \<in> HRB_slice n\<^isub>c`
@@ -330,7 +330,7 @@ proof -
     show ?case by(fastsimp intro:combine_SDG_slices.combSlice_Return_parent_node 
                             simp:HRB_slice_def)
   qed
-  from `valid_edge a'` `kind a' = Q'\<hookrightarrow>\<^bsub>p\<^esub>f'` `a \<in> get_return_edges a'`
+  from `valid_edge a'` `kind a' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'` `a \<in> get_return_edges a'`
   have "CFG_node (targetnode a') s\<longrightarrow>\<^bsub>cd\<^esub> CFG_node (sourcenode a)"
     by(fastsimp intro:sum_SDG_proc_entry_exit_cdep)
   with `CFG_node (sourcenode a) \<in> HRB_slice n\<^isub>c`

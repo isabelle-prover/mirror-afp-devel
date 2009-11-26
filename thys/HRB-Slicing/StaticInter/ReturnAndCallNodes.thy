@@ -42,7 +42,8 @@ next
     where intra_edge2:"valid_edge ax''" "sourcenode ax'' = sourcenode ax"
     "targetnode ax'' = targetnode ax'" "kind ax'' = (\<lambda>cf. False)\<^isub>\<surd>"
     by(fastsimp dest:call_return_node_edge)
-  from `valid_edge a` `a' \<in> get_return_edges a` obtain Q p fs where "kind a = Q\<hookrightarrow>\<^bsub>p\<^esub>fs"
+  from `valid_edge a` `a' \<in> get_return_edges a` 
+  obtain Q r p fs where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
     by(fastsimp dest!:only_call_get_return_edges)
   with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' p f' 
     where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" by(fastsimp dest!:call_return_edges)

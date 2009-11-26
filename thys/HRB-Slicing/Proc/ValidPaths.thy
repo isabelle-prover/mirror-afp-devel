@@ -19,6 +19,37 @@ declare One_nat_def [simp del]
 
 subsubsection {* From @{text prog} to @{text "prog;;c\<^isub>2"} *}
 
+
+lemma Proc_CFG_edge_SeqFirst_nodes_Label:
+  "prog \<turnstile> Label l -et\<rightarrow>\<^isub>p Label l' \<Longrightarrow> prog;;c\<^isub>2 \<turnstile> Label l -et\<rightarrow>\<^isub>p Label l'"
+proof(induct prog n\<equiv>"Label l" et n'\<equiv>"Label l'" rule:Proc_CFG.induct)
+  case (Proc_CFG_SeqSecond c\<^isub>2' n et n' c\<^isub>1)
+  hence "(c\<^isub>1;; c\<^isub>2');; c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>1 -et\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1"
+    by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_SeqSecond)
+  with `n \<oplus> #:c\<^isub>1 = Label l` `n' \<oplus> #:c\<^isub>1 = Label l'` show ?case by fastsimp
+next
+  case (Proc_CFG_CondThen c\<^isub>1 n et n' b c\<^isub>2')
+  hence "if (b) c\<^isub>1 else c\<^isub>2';; c\<^isub>2 \<turnstile> n \<oplus> 1 -et\<rightarrow>\<^isub>p n' \<oplus> 1"
+    by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_CondThen)
+  with `n \<oplus> 1 = Label l` `n' \<oplus> 1 = Label l'` show ?case by fastsimp
+next
+  case (Proc_CFG_CondElse c\<^isub>1 n et n' b c\<^isub>2')
+  hence "if (b) c\<^isub>2' else c\<^isub>1 ;; c\<^isub>2 \<turnstile> n \<oplus> #:c\<^isub>2' + 1 -et\<rightarrow>\<^isub>p n' \<oplus> (#:c\<^isub>2' + 1)"   
+    by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_CondElse)
+  with `n \<oplus> #:c\<^isub>2' + 1 = Label l` `n' \<oplus> #:c\<^isub>2' + 1 = Label l'` show ?case by fastsimp
+next
+  case (Proc_CFG_WhileBody c' n et n' b)
+  hence "while (b) c';; c\<^isub>2 \<turnstile> n \<oplus> 2 -et\<rightarrow>\<^isub>p n' \<oplus> 2"
+    by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_WhileBody)
+  with `n \<oplus> 2 = Label l` `n' \<oplus> 2 = Label l'` show ?case by fastsimp
+next
+  case (Proc_CFG_WhileBodyExit c' n et b)
+  hence "while (b) c';; c\<^isub>2 \<turnstile> n \<oplus> 2 -et\<rightarrow>\<^isub>p Label 0"
+    by(fastsimp intro:Proc_CFG_SeqFirst Proc_CFG.Proc_CFG_WhileBodyExit)
+  with `n \<oplus> 2 = Label l` `Label 0 = Label l'` show ?case by fastsimp
+qed (auto intro:Proc_CFG.intros)
+
+
 lemma Proc_CFG_edge_SeqFirst_source_Label:
   assumes "prog \<turnstile> Label l -et\<rightarrow>\<^isub>p n'"
   obtains nx where "prog;;c\<^isub>2 \<turnstile> Label l -et\<rightarrow>\<^isub>p nx"
@@ -91,6 +122,7 @@ proof(atomize_elim)
   qed (auto intro:Proc_CFG.intros)
 qed
 
+
 lemma Proc_CFG_edge_SeqFirst_target_Label:
   "\<lbrakk>prog \<turnstile> n -et\<rightarrow>\<^isub>p n'; Label l' = n'\<rbrakk> \<Longrightarrow> prog;;c\<^isub>2 \<turnstile> n -et\<rightarrow>\<^isub>p Label l'"
 proof(induct prog n et n' rule:Proc_CFG.induct)
@@ -127,8 +159,10 @@ proof(atomize_elim)
   next
     case (MainCall lx px es rets nx ins outs c)
     from `prog \<turnstile> Label lx -CEdge (px, es, rets)\<rightarrow>\<^isub>p nx`
-    obtain nx' where "prog;;c\<^isub>2 \<turnstile> Label lx -CEdge (px, es, rets)\<rightarrow>\<^isub>p nx'"
-      by(auto elim:Proc_CFG_edge_SeqFirst_source_Label)
+    obtain lx' where [simp]:"nx = Label lx'" by(fastsimp dest:Proc_CFG_Call_Labels)
+    with `prog \<turnstile> Label lx -CEdge (px, es, rets)\<rightarrow>\<^isub>p nx`
+    have "prog;;c\<^isub>2 \<turnstile> Label lx -CEdge (px, es, rets)\<rightarrow>\<^isub>p Label lx'"
+      by(auto intro:Proc_CFG_edge_SeqFirst_nodes_Label)
     with MainCall show ?case by(fastsimp dest:PCFG.MainCall)
   next
     case (ProcCall i px ins outs c lx px' es' rets' l' ins' outs' c' ps es rets)
@@ -355,9 +389,9 @@ proof -
     have "c\<^isub>1;;prog \<turnstile> Label l \<oplus> #:c\<^isub>1 -CEdge (p, es, rets)\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1"
       by -(rule Proc_CFG_edge_SeqSecond_source_not_Entry,auto)
     with `(p, ins, outs, c) \<in> set procs` `distinct rets`
-      `length rets = length outs` `length es + 2 = length ins`
+      `length rets = length outs` `length es = length ins`
     have "c\<^isub>1;;prog,procs \<turnstile> (Main,Label (l + #:c\<^isub>1)) 
-      -(\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc (l + #:c\<^isub>1)) es\<rightarrow> (p,Entry)"
+      -(\<lambda>s. True):(Main,n' \<oplus> #:c\<^isub>1)\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es\<rightarrow> (p,Entry)"
       by(fastsimp intro:PCFG.MainCall)
     thus ?case by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
   next
@@ -375,9 +409,9 @@ proof -
     have "c\<^isub>1;;prog \<turnstile> Label l \<oplus> #:c\<^isub>1 -CEdge (p, es, rets)\<rightarrow>\<^isub>p Label l' \<oplus> #:c\<^isub>1"
       by -(rule Proc_CFG_edge_SeqSecond_source_not_Entry,auto)
     with `(p, ins, outs, c) \<in> set procs` `distinct rets`
-      `length rets = length outs` `length es + 2 = length ins`
-    have "c\<^isub>1;;prog,procs \<turnstile> (p,Exit) -(correct_return 0 (l' + #:c\<^isub>1))\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs))\<rightarrow> (Main,Label (l' + #:c\<^isub>1))"
+      `length rets = length outs` `length es = length ins`
+    have "c\<^isub>1;;prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l' \<oplus> #:c\<^isub>1))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label (l' + #:c\<^isub>1))"
       by(fastsimp intro:PCFG.MainReturn)
     thus ?case by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
   next
@@ -560,9 +594,9 @@ proof -
     have "if (b) prog else c\<^isub>2 \<turnstile> Label l \<oplus> 1 -CEdge (p, es, rets)\<rightarrow>\<^isub>p n' \<oplus> 1"
       by -(rule Proc_CFG_edge_CondTrue_source_not_Entry,auto)
     with `(p, ins, outs, c) \<in> set procs` `distinct rets`
-      `length rets = length outs` `length es + 2 = length ins`
+      `length rets = length outs` `length es = length ins`
     have "if (b) prog else c\<^isub>2,procs \<turnstile> (Main,Label (l + 1)) 
-      -(\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc (l + 1)) es\<rightarrow> (p,Entry)"
+      -(\<lambda>s. True):(Main,n' \<oplus> 1)\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es\<rightarrow> (p,Entry)"
       by(fastsimp intro:PCFG.MainCall)
     thus ?case by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
   next
@@ -580,9 +614,9 @@ proof -
     have "if (b) prog else c\<^isub>2 \<turnstile> Label l \<oplus> 1 -CEdge (p, es, rets)\<rightarrow>\<^isub>p Label l' \<oplus> 1"
       by -(rule Proc_CFG_edge_CondTrue_source_not_Entry,auto)
     with `(p, ins, outs, c) \<in> set procs` `distinct rets`
-      `length rets = length outs` `length es + 2 = length ins`
-    have "if (b) prog else c\<^isub>2,procs \<turnstile> (p,Exit) -(correct_return 0 (l' + 1))\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs))\<rightarrow> (Main,Label (l' + 1))"
+      `length rets = length outs` `length es = length ins`
+    have "if (b) prog else c\<^isub>2,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l' \<oplus> 1))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label (l' + 1))"
       by(fastsimp intro:PCFG.MainReturn)
     thus ?case by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
   next
@@ -769,9 +803,9 @@ proof -
     have "if (b) c\<^isub>1 else prog \<turnstile> Label l \<oplus> (#:c\<^isub>1 + 1) -CEdge (p, es, rets)\<rightarrow>\<^isub>p 
       n' \<oplus> (#:c\<^isub>1 + 1)" by -(rule Proc_CFG_edge_CondFalse_source_not_Entry,auto)
     with `(p, ins, outs, c) \<in> set procs` `distinct rets`
-      `length rets = length outs` `length es + 2 = length ins`
+      `length rets = length outs` `length es = length ins`
     have "if (b) c\<^isub>1 else prog,procs \<turnstile> (Main,Label (l + (#:c\<^isub>1 + 1))) 
-      -(\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc (l + (#:c\<^isub>1 + 1))) es\<rightarrow> (p,Entry)"
+      -(\<lambda>s. True):(Main,n' \<oplus> (#:c\<^isub>1 + 1))\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es\<rightarrow> (p,Entry)"
       by(fastsimp intro:PCFG.MainCall)
     thus ?case by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
   next
@@ -789,10 +823,10 @@ proof -
     have "if (b) c\<^isub>1 else prog \<turnstile> Label l \<oplus> (#:c\<^isub>1 + 1) -CEdge (p, es, rets)\<rightarrow>\<^isub>p 
       Label l' \<oplus> (#:c\<^isub>1 + 1)" by -(rule Proc_CFG_edge_CondFalse_source_not_Entry,auto)
     with `(p, ins, outs, c) \<in> set procs` `distinct rets`
-      `length rets = length outs` `length es + 2 = length ins`
+      `length rets = length outs` `length es = length ins`
     have "if (b) c\<^isub>1 else prog,procs \<turnstile> (p,Exit) 
-      -(correct_return 0 (l' + (#:c\<^isub>1 + 1)))\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs))\<rightarrow> (Main,Label (l' + (#:c\<^isub>1 + 1)))"
+      -(\<lambda>cf. snd cf = (Main,Label l' \<oplus> (#:c\<^isub>1 + 1)))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label (l' + (#:c\<^isub>1 + 1)))"
       by(fastsimp intro:PCFG.MainReturn)
     thus ?case by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
   next
@@ -1004,9 +1038,9 @@ proof -
     have "while (b) prog \<turnstile> Label l \<oplus> 2 -CEdge (p, es, rets)\<rightarrow>\<^isub>p 
       n' \<oplus> 2" by -(rule Proc_CFG_edge_WhileBody_source_not_Entry,auto)
     with `(p, ins, outs, c) \<in> set procs` `distinct rets`
-      `length rets = length outs` `length es + 2 = length ins`
-    have "while (b) prog,procs \<turnstile> (Main,Label (l + 2)) 
-      -(\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc (l + 2)) es\<rightarrow> (p,Entry)"
+      `length rets = length outs` `length es = length ins`
+    have "while (b) prog,procs \<turnstile> (Main,Label l \<oplus> 2) 
+      -(\<lambda>s. True):(Main,n' \<oplus> 2)\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es\<rightarrow> (p,Entry)"
       by(fastsimp intro:PCFG.MainCall)
     thus ?case by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
   next
@@ -1024,9 +1058,9 @@ proof -
     have "while (b) prog \<turnstile> Label l \<oplus> 2 -CEdge (p, es, rets)\<rightarrow>\<^isub>p 
       Label l' \<oplus> 2" by -(rule Proc_CFG_edge_WhileBody_source_not_Entry,auto)
     with `(p, ins, outs, c) \<in> set procs` `distinct rets`
-      `length rets = length outs` `length es + 2 = length ins`
-    have "while (b) prog,procs \<turnstile> (p,Exit) -(correct_return 0 (l' + 2))\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs))\<rightarrow> (Main,Label (l' + 2))"
+      `length rets = length outs` `length es = length ins`
+    have "while (b) prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l' \<oplus> 2))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label l' \<oplus> 2)"
       by(fastsimp intro:PCFG.MainReturn)
     thus ?case by(simp add:ProcCFG.valid_node_def)(fastsimp simp:valid_edge_def)
   next
@@ -1590,7 +1624,7 @@ proof(induct x\<equiv>"(Main,n)" et x'\<equiv>"(q,n')" rule:PCFG.induct)
   from `(p, ins, outs, c) \<in> set procs` obtain i where "i < length procs"
     and "procs!i = (p, ins, outs, c)" by(auto simp:set_conv_nth)
   with MainCall(1-9) have "prog,procs \<turnstile> (p, Label l) 
-    -(\<lambda>s. True)\<hookrightarrow>\<^bsub>q\<^esub>set_params (Suc i) (Suc l) esx\<rightarrow> (q, Entry)"
+    -(\<lambda>s. True):(p,n'x)\<hookrightarrow>\<^bsub>q\<^esub>map (\<lambda>e cf. interpret e cf) esx\<rightarrow> (q, Entry)"
     by(fastsimp intro!:ProcCall)
   thus ?case by fastsimp
 qed auto
@@ -1605,8 +1639,8 @@ proof(induct x\<equiv>"(q,n)" et x'\<equiv>"(Main,n')" rule:PCFG.induct)
   have [simp]:"n = Exit" "n' = Label l'" "px = q" by simp_all
   from `(p, ins, outs, c) \<in> set procs` obtain i where "i < length procs"
     and "procs!i = (p, ins, outs, c)" by(auto simp:set_conv_nth)
-  with MainReturn(1-9) have "prog,procs \<turnstile> (q,Exit) -(correct_return (Suc i) l')\<^bsub>q\<^esub>\<hookleftarrow>
-    (\<lambda>cf cf'. cf'(map Loc retsx [:=] map cf outsx))\<rightarrow> (p,Label l')"
+  with MainReturn(1-9) have "prog,procs \<turnstile> (q,Exit) -(\<lambda>cf. snd cf = (p,Label l'))\<^bsub>q\<^esub>\<hookleftarrow>
+    (\<lambda>cf cf'. cf'(retsx [:=] map cf outsx))\<rightarrow> (p,Label l')"
     by(fastsimp intro!:ProcReturn)
   thus ?case by fastsimp
 qed auto
@@ -1730,20 +1764,21 @@ proof(atomize_elim)
     moreover
     from `Rep_wf_prog wfp = (prog,procs)` `containsCall procs prog [] p es rets`
       `(p, ins, outs, c) \<in> set procs`
-    have "length rets = length outs" and "length es + 2 = length ins"
+    have "length rets = length outs" and "length es = length ins"
       by(auto intro:wf_length_retsI wf_length_esI wf_wf_prog simp del:add_2_eq_Suc')
     ultimately
-    have "prog,procs \<turnstile> (Main,Label lx) -(\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc lx) es\<rightarrow> 
-      (p,Entry)" and "prog,procs \<turnstile> (p,Exit) -(correct_return 0 lx')\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs))\<rightarrow> (Main,Label lx')"
+    have "prog,procs \<turnstile> (Main,Label lx) -(\<lambda>s. True):(Main,Label lx')\<hookrightarrow>\<^bsub>p\<^esub>
+      map (\<lambda>e cf. interpret e cf) es\<rightarrow>  (p,Entry)" 
+      and "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label lx'))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label lx')"
       using `(p, ins, outs, c) \<in> set procs`
       by -(rule MainCall,assumption+,rule MainReturn)
     with `Rep_wf_prog wfp = (prog,procs)`
     have "wfp \<turnstile> (Main,Label lx) -[((Main,Label lx),
-      (\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc lx) es,(p,Entry))]\<rightarrow>* (p,Entry)"
-      and "wfp \<turnstile> (p,Exit) -[((p,Exit),(correct_return 0 lx')\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs)),(Main,Label lx'))]\<rightarrow>* 
-      (Main,Label lx')"
+      (\<lambda>s. True):(Main,Label lx')\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es,(p,Entry))]\<rightarrow>* 
+      (p,Entry)"
+      and "wfp \<turnstile> (p,Exit) -[((p,Exit),(\<lambda>cf. snd cf = (Main,Label lx'))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs)),(Main,Label lx'))]\<rightarrow>* (Main,Label lx')"
       by(fastsimp intro:ProcCFG.path.intros 
 	simp:ProcCFG.valid_node_def valid_edge_def)+
     moreover
@@ -1763,14 +1798,15 @@ proof(atomize_elim)
     moreover
     from `\<forall>a \<in> set as. intra_kind (kind a)` 
     have "CFG.valid_path kind (get_return_edges wfp) 
-      (as@[((Main,Label lx),(\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params 0 (Suc lx) es,(p,Entry))])"
+      (as@[((Main,Label lx),(\<lambda>s. True):(Main,Label lx')\<hookrightarrow>\<^bsub>p\<^esub>
+      map (\<lambda>e cf. interpret e cf) es,(p,Entry))])"
       by(fastsimp intro:ProcCFG.same_level_path_valid_path_Append 
 	ProcCFG.intras_same_level_path simp:ProcCFG.valid_path_def)
     moreover
     from `\<forall>a \<in> set as'. intra_kind (kind a)` 
     have "CFG.valid_path kind (get_return_edges wfp) 
-      ([((p,Exit),(correct_return 0 lx')\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs)),(Main,Label lx'))]@as')"
+      ([((p,Exit),(\<lambda>cf. snd cf = (Main,Label lx'))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs)),(Main,Label lx'))]@as')"
       by(fastsimp intro:ProcCFG.valid_path_same_level_path_Append 
 	ProcCFG.intras_same_level_path simp:ProcCFG.valid_path_def)
     ultimately show ?case by(fastsimp intro:ProcCFG.path_Append simp:ProcCFG.vp_def)
@@ -1827,36 +1863,36 @@ proof(atomize_elim)
     moreover
     from `Rep_wf_prog wfp' = (c',procs)` `containsCall procs c' [] p es rets`
       `(p,ins,outs,c) \<in> set procs`
-    have "length rets = length outs" and "length es + 2 = length ins"
+    have "length rets = length outs" and "length es = length ins"
       by(auto intro:wf_length_retsI wf_length_esI wf_wf_prog simp del:add_2_eq_Suc')
     ultimately
-    have "prog,procs \<turnstile> (p',Label lx) -(\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params (Suc i) (Suc lx) es\<rightarrow> 
-      (p,Entry)"
-      and "prog,procs \<turnstile> (p,Exit) -(correct_return (Suc i) lx')\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs))\<rightarrow> (p',Label lx')"
+    have "prog,procs \<turnstile> (p',Label lx) -(\<lambda>s. True):(p',Label lx')\<hookrightarrow>\<^bsub>p\<^esub>
+      map (\<lambda>e cf. interpret e cf) es\<rightarrow> (p,Entry)"
+      and "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (p',Label lx'))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (p',Label lx')"
       using edge `(p,ins,outs,c) \<in> set procs`
 	`containsCall procs prog ps' p' es' rets'`
       by(fastsimp intro:ProcCall ProcReturn)+
     with `Rep_wf_prog wfp = (prog,procs)`
-    have path:"wfp \<turnstile> (p',Label lx) -[((p',Label lx),
-      (\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params (Suc i) (Suc lx) es,(p,Entry))]\<rightarrow>* (p,Entry)"
-      and path':"wfp \<turnstile> (p,Exit) -[((p,Exit),(correct_return (Suc i) lx')\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs)),(p',Label lx'))]\<rightarrow>* 
+    have path:"wfp \<turnstile> (p',Label lx) -[((p',Label lx),(\<lambda>s. True):(p',Label lx')\<hookrightarrow>\<^bsub>p\<^esub>
+      map (\<lambda>e cf. interpret e cf) es,(p,Entry))]\<rightarrow>* (p,Entry)"
+      and path':"wfp \<turnstile> (p,Exit) -[((p,Exit),(\<lambda>cf. snd cf = (p',Label lx'))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs)),(p',Label lx'))]\<rightarrow>* 
       (p',Label lx')"
       by(fastsimp intro:ProcCFG.path.intros 
 	          simp:ProcCFG.valid_node_def valid_edge_def)+
     from path pathE2 have "CFG.valid_path' sourcenode targetnode kind (valid_edge wfp)
       (get_return_edges wfp) (Main, Entry) ((as@asx)@[((p',Label lx),
-      (\<lambda>s. True)\<hookrightarrow>\<^bsub>p\<^esub>set_params (Suc i) (Suc lx) es,(p,Entry))]) (p,Entry)"
+      (\<lambda>s. True):(p',Label lx')\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es,(p,Entry))])
+      (p,Entry)"
       apply(unfold ProcCFG.vp_def) apply(rule conjI)
        apply(fastsimp intro:ProcCFG.path_Append)
       by(unfold ProcCFG.valid_path_def,fastsimp intro:ProcCFG.vpa_snoc_Call)
     moreover
     from path' pathX2 have "CFG.valid_path' sourcenode targetnode kind 
       (valid_edge wfp) (get_return_edges wfp) (p,Exit)
-      ([((p,Exit),(correct_return (Suc i) lx')\<^bsub>p\<^esub>\<hookleftarrow>
-      (\<lambda>cf cf'. cf'(map Loc rets [:=] map cf outs)),(p',Label lx'))]@(asx'@as'))
-      (Main, Exit)"
+      ([((p,Exit),(\<lambda>cf. snd cf = (p',Label lx'))\<^bsub>p\<^esub>\<hookleftarrow>
+      (\<lambda>cf cf'. cf'(rets [:=] map cf outs)),(p',Label lx'))]@(asx'@as')) (Main, Exit)"
       apply(unfold ProcCFG.vp_def) apply(rule conjI)
        apply(fastsimp intro:ProcCFG.path_Append)
       by(simp add:ProcCFG.valid_path_def ProcCFG.valid_path_def)
@@ -2339,3 +2375,4 @@ qed
 
 
 end
+
