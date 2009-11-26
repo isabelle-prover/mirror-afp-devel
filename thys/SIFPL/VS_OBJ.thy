@@ -33,10 +33,8 @@ constdefs twiddleStore::"PBij \<Rightarrow> Store \<Rightarrow> Store \<Rightarr
 "twiddleStore \<beta> s1 s2 \<equiv> 
   \<forall> x. CONTEXT x = low \<longrightarrow> (\<beta>, s1 x, s2 x) : twiddleVal"
 
-(*For some reason I can't get abbreviation-where to work here*)
-syntax twiddleStore_ :: "[PBij, Store, Store] \<Rightarrow> bool" 
-                   ("_  \<approx>\<^sub>_ _" [100,100] 50)
-translations "s \<approx>\<^sub>\<beta> t" == "twiddleStore \<beta> s t"
+abbreviation twiddleStore_syntax  ("_  \<approx>\<^sub>_ _" [100,100] 50)
+  where "s \<approx>\<^sub>\<beta> t == twiddleStore \<beta> s t"
 
 text{*On objects, we require the values in low fields to be related,
 and the sets of defined low fields to be equal.*}
@@ -97,8 +95,8 @@ constdefs twiddle::"PBij \<Rightarrow> State \<Rightarrow> State \<Rightarrow> b
 "twiddle \<beta> s t \<equiv> noLowDPs s \<and> noLowDPs t \<and> 
                  (fst s) \<approx>\<^sub>\<beta> (fst t) \<and> twiddleHeap \<beta> (snd s) (snd t)"
 
-syntax twiddle_ :: "[PBij, State, State] \<Rightarrow> bool" ("_ \<equiv>\<^sub>_ _" [100,100] 50)
-translations "s \<equiv>\<^sub>\<beta> t" == "twiddle \<beta> s t"
+abbreviation twiddle_syntax  ("_ \<equiv>\<^sub>_ _" [100,100] 50)
+  where "s \<equiv>\<^sub>\<beta> t == twiddle \<beta> s t"
 
 text{*The following properties are easily proven by unfolding the
 definitions.*}
