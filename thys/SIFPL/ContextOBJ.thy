@@ -23,44 +23,44 @@ consts Ctxt_Body::CtxtProg
 
 text{*Next, the substitution of a command into a context:*}
 
-consts Fill::"CtxtProg \<Rightarrow> OBJ \<Rightarrow> OBJ"
-primrec
-"Fill Ctxt_Here J = J"
-"Fill Ctxt_Skip J = Skip"
-"Fill (Ctxt_Assign x e) J = Assign x e"
-"Fill (Ctxt_New x c) J = New x c"
-"Fill (Ctxt_Get x y f) J = Get x y f"
-"Fill (Ctxt_Put x f e) J = Put x f e"
-"Fill (Ctxt_Comp C D) J = Comp (Fill C J) (Fill D J)"
-"Fill (Ctxt_If b C D) J = Iff b (Fill C J) (Fill D J)"
-"Fill (Ctxt_While b C) J = While b (Fill C J)"
+primrec Fill::"CtxtProg \<Rightarrow> OBJ \<Rightarrow> OBJ"
+where
+"Fill Ctxt_Here J = J" |
+"Fill Ctxt_Skip J = Skip" |
+"Fill (Ctxt_Assign x e) J = Assign x e" |
+"Fill (Ctxt_New x c) J = New x c" |
+"Fill (Ctxt_Get x y f) J = Get x y f" |
+"Fill (Ctxt_Put x f e) J = Put x f e" |
+"Fill (Ctxt_Comp C D) J = Comp (Fill C J) (Fill D J)" |
+"Fill (Ctxt_If b C D) J = Iff b (Fill C J) (Fill D J)" |
+"Fill (Ctxt_While b C) J = While b (Fill C J)" |
 "Fill Ctxt_Call J = Call"
 
 text{*The variables mentioned by an expression:*}
 
-consts EVars::"Expr \<Rightarrow> Var set"
-primrec
-"EVars (varE x) = {x}"
-"EVars (valE v) = {}"
+primrec EVars::"Expr \<Rightarrow> Var set"
+where
+"EVars (varE x) = {x}" |
+"EVars (valE v) = {}" |
 "EVars (opE f e1 e2) = EVars e1 \<union> EVars e2"
 
-consts BVars::"BExpr \<Rightarrow> Var set"
-primrec
+primrec BVars::"BExpr \<Rightarrow> Var set"
+where
 "BVars (compB f e1 e2) = EVars e1 \<union> EVars e2"
 
 text{*The variables possibly read from during the evaluation of $I$
 are denoted by $\mathit{Vars\; I}$.*}
 
-consts Vars::"OBJ \<Rightarrow> Var set"
-primrec
-"Vars Skip = {}"
-"Vars (Assign x e) = EVars e"
-"Vars (New x C) = {}"
-"Vars (Get x y f) = {y}"
-"Vars (Put x f e) = EVars e"
-"Vars (Comp I J) = Vars I \<union> Vars J"
-"Vars (While b I) = BVars b \<union> Vars I"
-"Vars (Iff b I J) = BVars b \<union> Vars I \<union> Vars J"
+primrec Vars::"OBJ \<Rightarrow> Var set"
+where
+"Vars Skip = {}" |
+"Vars (Assign x e) = EVars e" |
+"Vars (New x C) = {}" |
+"Vars (Get x y f) = {y}" |
+"Vars (Put x f e) = EVars e" |
+"Vars (Comp I J) = Vars I \<union> Vars J" |
+"Vars (While b I) = BVars b \<union> Vars I" |
+"Vars (Iff b I J) = BVars b \<union> Vars I \<union> Vars J" |
 "Vars Call = {}"
 
 (*<*)
@@ -196,21 +196,21 @@ done
 text{*An abbreviating definition saying when a value is not a constant
 location.*}
 
-constdefs ValIsNoLoc ::"Val => bool"
-"ValIsNoLoc v \<equiv> (v = RVal Nullref \<or> (\<exists> i . v = IVal i))"
+definition ValIsNoLoc ::"Val => bool"
+where "ValIsNoLoc v = (v = RVal Nullref \<or> (\<exists> i . v = IVal i))"
 
 text{*Expressions satisfying the following predicate are guaranteed
 not to return a state-independent location.*}
 
-consts Expr_noLoc::"Expr \<Rightarrow> bool"
-primrec
-"Expr_noLoc (varE x) = True" 
-"Expr_noLoc (valE v) = ValIsNoLoc v" 
+primrec Expr_noLoc::"Expr \<Rightarrow> bool"
+where
+"Expr_noLoc (varE x) = True" |
+"Expr_noLoc (valE v) = ValIsNoLoc v" |
 "Expr_noLoc (opE f e1 e2) =
    (Expr_noLoc e1 \<and> Expr_noLoc e2 \<and> opEGood f)"
 
-consts BExpr_noLoc::"BExpr \<Rightarrow> bool"
-primrec
+primrec BExpr_noLoc::"BExpr \<Rightarrow> bool"
+where
 "BExpr_noLoc (compB f e1 e2) =
    (Expr_noLoc e1 \<and> Expr_noLoc e2 \<and> compBGood f)"
 
@@ -343,27 +343,27 @@ modifications in order to express that if these expressions evaluate
 to locations then these must stem from lookup operations in the
 state.*}
 
-consts CtxtVars::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
-primrec
-"CtxtVars X Ctxt_Here = True"
-"CtxtVars X Ctxt_Skip = True"
-"CtxtVars X (Ctxt_Assign x e) = (EVars e \<subseteq> X \<and> Expr_noLoc e)"
-"CtxtVars X (Ctxt_New x c) = True"
-"CtxtVars X (Ctxt_Get x y f) = (y : X \<and> GAMMA f = low)"
-"CtxtVars X (Ctxt_Put x f e) = 
-   (EVars e \<subseteq> X \<and> CONTEXT x = low \<and> Expr_noLoc e)"
-"CtxtVars X (Ctxt_Comp C D) = (CtxtVars X C \<and> CtxtVars X D)"
+primrec CtxtVars::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
+where
+"CtxtVars X Ctxt_Here = True" |
+"CtxtVars X Ctxt_Skip = True" |
+"CtxtVars X (Ctxt_Assign x e) = (EVars e \<subseteq> X \<and> Expr_noLoc e)" |
+"CtxtVars X (Ctxt_New x c) = True" |
+"CtxtVars X (Ctxt_Get x y f) = (y : X \<and> GAMMA f = low)" |
+"CtxtVars X (Ctxt_Put x f e) =
+   (EVars e \<subseteq> X \<and> CONTEXT x = low \<and> Expr_noLoc e)" |
+"CtxtVars X (Ctxt_Comp C D) = (CtxtVars X C \<and> CtxtVars X D)" |
 "CtxtVars X (Ctxt_If b C D) =
-   (BVars b \<subseteq> X \<and> CtxtVars X C \<and> CtxtVars X D \<and> BExpr_noLoc b)"
+   (BVars b \<subseteq> X \<and> CtxtVars X C \<and> CtxtVars X D \<and> BExpr_noLoc b)" |
 "CtxtVars X (Ctxt_While b C) =
-   (BVars b \<subseteq> X \<and> CtxtVars X C \<and> BExpr_noLoc b)"
+   (BVars b \<subseteq> X \<and> CtxtVars X C \<and> BExpr_noLoc b)" |
 "CtxtVars X Ctxt_Call = True"
 
 text{*A context is "obviously" low if all accessed variables are
 (contained in a set $X$ whose members are) low.*}
 
-constdefs LOW::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
-"LOW X C \<equiv> CtxtVars X C \<and> (\<forall> x . x : X \<longrightarrow> CONTEXT x = low)"
+definition LOW::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
+where "LOW X C = (CtxtVars X C \<and> (\<forall> x . x : X \<longrightarrow> CONTEXT x = low))"
 
 (*<*)
 lemma secureI_secureFillI_Aux[rule_format]:

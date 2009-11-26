@@ -24,22 +24,22 @@ consts CONTEXT :: "Var \<Rightarrow> TP"
 text{*Next, we define when two states are considered (low)
 equivalent.*}
 
-constdefs twiddle::"State \<Rightarrow> State \<Rightarrow> bool" (" _ \<approx> _ " [100,100] 100)
-"s \<approx> ss \<equiv> \<forall> x. CONTEXT x = low \<longrightarrow> s x = ss x"
+definition twiddle::"State \<Rightarrow> State \<Rightarrow> bool" (" _ \<approx> _ " [100,100] 100)
+where "s \<approx> ss = (\<forall> x. CONTEXT x = low \<longrightarrow> s x = ss x)"
 
 text{*A command $c$ is \emph{secure} if the low equivalence of any two
 initial states entails the equivalence of the corresponding final
 states.*}
 
-constdefs secure::"IMP \<Rightarrow> bool"
-"secure c \<equiv> \<forall> s t ss tt . s \<approx> t \<longrightarrow> (s,c \<Down> ss) \<longrightarrow> 
-                          (t,c \<Down> tt) \<longrightarrow> ss \<approx> tt"
+definition secure::"IMP \<Rightarrow> bool"
+where "secure c = (\<forall> s t ss tt . s \<approx> t \<longrightarrow> (s,c \<Down> ss) \<longrightarrow> 
+                          (t,c \<Down> tt) \<longrightarrow> ss \<approx> tt)"
 
 text {*Here is the definition of the assertion transformer
 that is called $\mathit{Sec}$ in the paper \ldots*}
 
-constdefs Sec :: "((State \<times> State) \<Rightarrow> bool) \<Rightarrow> VDMAssn"
-"Sec \<Phi> s t \<equiv> (\<forall> r . s \<approx> r \<longrightarrow> \<Phi>(t, r)) \<and> (\<forall> r . \<Phi>(r ,s) \<longrightarrow> r \<approx> t)"
+definition Sec :: "((State \<times> State) \<Rightarrow> bool) \<Rightarrow> VDMAssn"
+where "Sec \<Phi> s t = ((\<forall> r . s \<approx> r \<longrightarrow> \<Phi>(t, r)) \<and> (\<forall> r . \<Phi>(r ,s) \<longrightarrow> r \<approx> t))"
 
 text{*\ldots and the proofs of two directions of its characteristic
 property, Proposition 1.*}
@@ -149,13 +149,13 @@ particular, in the generalisation for objects in Section
 \ref{sec:Objects} the type of invariants will differ from the
 type of program logic assertions.*}
 
-constdefs FIX::"(TT \<Rightarrow> TT) \<Rightarrow> TT"
-"FIX \<phi> \<equiv> \<lambda> (s,t). \<forall> \<Phi>. (\<forall> ss tt . \<phi> \<Phi> (ss,tt) \<longrightarrow> \<Phi> (ss,tt)) 
-         \<longrightarrow> \<Phi> (s,t)" 
+definition FIX::"(TT \<Rightarrow> TT) \<Rightarrow> TT"
+where "FIX \<phi> = (\<lambda> (s,t). \<forall> \<Phi>. (\<forall> ss tt . \<phi> \<Phi> (ss,tt) \<longrightarrow> \<Phi> (ss,tt)) 
+         \<longrightarrow> \<Phi> (s,t))" 
 
-constdefs Monotone::"(TT \<Rightarrow> TT) \<Rightarrow> bool"
-"Monotone \<phi> \<equiv> \<forall> \<Phi> \<Psi> . (\<forall> s t . \<Phi>(s,t) \<longrightarrow> \<Psi>(s,t)) \<longrightarrow> 
-                        (\<forall> s t . \<phi> \<Phi> (s,t) \<longrightarrow> \<phi> \<Psi> (s,t))"
+definition Monotone::"(TT \<Rightarrow> TT) \<Rightarrow> bool"
+where "Monotone \<phi> = (\<forall> \<Phi> \<Psi> . (\<forall> s t . \<Phi>(s,t) \<longrightarrow> \<Psi>(s,t)) \<longrightarrow> 
+                        (\<forall> s t . \<phi> \<Phi> (s,t) \<longrightarrow> \<phi> \<Psi> (s,t)))"
 
 (*<*)
 lemma Fix2: "\<lbrakk>Monotone \<phi>; \<phi> (FIX \<phi>) (s, t)\<rbrakk> \<Longrightarrow> FIX \<phi> (s,t)"
@@ -197,12 +197,12 @@ done
 text{*In order to derive the while rule we define the following
 transfomer.*}
 
-constdefs PhiWhileOp::"BExpr \<Rightarrow> TT \<Rightarrow> TT \<Rightarrow> TT"
-"PhiWhileOp b \<Phi> \<equiv> 
-     \<lambda> \<Psi> . (\<lambda>(s, t).
+definition PhiWhileOp::"BExpr \<Rightarrow> TT \<Rightarrow> TT \<Rightarrow> TT"
+where "PhiWhileOp b \<Phi> =
+     (\<lambda> \<Psi> . (\<lambda>(s, t).
              (evalB b t \<longrightarrow> (\<exists>r. \<Phi> (r, t) \<and> 
                                  (\<forall>w. r \<approx> w \<longrightarrow> \<Psi> (s, w)))) \<and> 
-             (\<not> evalB b t \<longrightarrow> s \<approx> t))"
+             (\<not> evalB b t \<longrightarrow> s \<approx> t)))"
 
 text{*Since this operator is monotone, \ldots*}
 
@@ -215,8 +215,8 @@ done
 
 text{*we may define its fixed point, *}
 
-constdefs PhiWhile::"BExpr \<Rightarrow> TT \<Rightarrow> TT"
-"PhiWhile b \<Phi> \<equiv> FIX (PhiWhileOp b \<Phi>)"
+definition PhiWhile::"BExpr \<Rightarrow> TT \<Rightarrow> TT"
+where "PhiWhile b \<Phi> = FIX (PhiWhileOp b \<Phi>)"
 
 text{*which we can use to derive the following rule.*}
 
@@ -505,9 +505,9 @@ VS_comSkip: "(pc,Skip) : VS_com"
 
 text{*We define the interpretation of expression typings\ldots *}
 
-consts SemExpr::"Expr \<Rightarrow> TP \<Rightarrow> bool" 
-primrec
-"SemExpr e low = (\<forall> s ss. s \<approx> ss \<longrightarrow> evalE e s = evalE e ss)"
+primrec SemExpr::"Expr \<Rightarrow> TP \<Rightarrow> bool"
+where
+"SemExpr e low = (\<forall> s ss. s \<approx> ss \<longrightarrow> evalE e s = evalE e ss)" |
 "SemExpr e high = True"
 
 text{*\ldots and show the soundness of the typing rules.*}
@@ -523,9 +523,9 @@ done
 
 text{*Likewise for the boolean expressions.*}
 
-consts SemBExpr::"BExpr \<Rightarrow> TP \<Rightarrow> bool"
-primrec
-"SemBExpr b low = (\<forall> s ss. s \<approx> ss \<longrightarrow> evalB b s = evalB b ss)"
+primrec SemBExpr::"BExpr \<Rightarrow> TP \<Rightarrow> bool"
+where
+"SemBExpr b low = (\<forall> s ss. s \<approx> ss \<longrightarrow> evalB b s = evalB b ss)" |
 "SemBExpr b high = True"
 
 lemma BExprSound: "(e,tp):VS_Bexpr \<Longrightarrow> SemBExpr e tp"
@@ -594,10 +594,10 @@ equivalent (i.e.~the low variables in the final state can't depend on
 the high variables of the initial state), while LOW commands must
 respect the above mentioned security property.*}
 
-consts SemCom::"TP \<Rightarrow> IMP \<Rightarrow> bool"
-primrec
+primrec SemCom::"TP \<Rightarrow> IMP \<Rightarrow> bool"
+where
 "SemCom low c = (\<forall> s ss t tt. s \<approx> ss \<longrightarrow> (s,c \<Down> t) \<longrightarrow>
-                               (ss,c \<Down> tt) \<longrightarrow> t \<approx> tt)"
+                               (ss,c \<Down> tt) \<longrightarrow> t \<approx> tt)" |
 "SemCom high c = (\<forall> s t . (s,c \<Down> t) \<longrightarrow> s \<approx> t)"
 
 text{*Combining theorem @{text VS_com_VDM} with the soundness result
@@ -670,8 +670,8 @@ D_CAST:
   "({twiddle} \<union> G, body, twiddle):Deriv \<Longrightarrow> (G, Call, twiddle):Deriv"
 
 (*<*)
-constdefs DProp :: "VDMAssn \<Rightarrow> bool"
-"DProp A \<equiv> (\<exists> \<phi> . A =  Sec (\<phi> (FIX \<phi>)) \<and> Monotone \<phi>)"
+definition DProp :: "VDMAssn \<Rightarrow> bool"
+where "DProp A = (\<exists> \<phi> . A =  Sec (\<phi> (FIX \<phi>)) \<and> Monotone \<phi>)"
 
 lemma DerivProp_Aux: "(X,c,A):Deriv \<Longrightarrow> DProp A"
 apply (erule Deriv.induct)

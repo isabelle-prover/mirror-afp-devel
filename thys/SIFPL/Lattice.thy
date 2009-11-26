@@ -10,17 +10,17 @@ axioms.*}
 
 typedecl L (*The lattice*)
 
-consts bottom :: L
-consts LEQ :: "L \<Rightarrow> L \<Rightarrow> bool"
-consts LUB :: "L \<Rightarrow> L \<Rightarrow> L"
-
-axioms LAT1[rule_format]:"LEQ bottom p"
-axioms LAT2[rule_format]:
-  "LEQ p1 p2 \<longrightarrow> LEQ p2 p3 \<longrightarrow> LEQ p1 p3"
-axioms LAT3[rule_format]:"LEQ p (LUB p q)"
-axioms LAT4[rule_format]:"LUB p q = LUB q p"
-axioms LAT5[rule_format]:"LUB p (LUB q r) = LUB (LUB p q) r"
-axioms LAT6[rule_format]:"LEQ x x"
-axioms LAT7:"p = LUB p p"
+axiomatization
+  bottom :: L and
+  LEQ :: "L \<Rightarrow> L \<Rightarrow> bool" and
+  LUB :: "L \<Rightarrow> L \<Rightarrow> L"
+where
+  LAT1: "LEQ bottom p" and
+  LAT2: "LEQ p1 p2 \<Longrightarrow> LEQ p2 p3 \<Longrightarrow> LEQ p1 p3" and
+  LAT3: "LEQ p (LUB p q)" and
+  LAT4: "LUB p q = LUB q p" and
+  LAT5: "LUB p (LUB q r) = LUB (LUB p q) r" and
+  LAT6: "LEQ x x" and
+  LAT7: "p = LUB p p"
 text{*End of theory Lattice*}
 end

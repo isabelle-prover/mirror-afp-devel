@@ -17,16 +17,16 @@ types "VDMAssn" = "State \<Rightarrow> State \<Rightarrow> bool"
 text{*Command $c$ satisfies assertion $A$ if all (terminating)
 operational behaviours are covered by the assertion.*}
 
-constdefs VDM_valid :: "IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
+definition VDM_valid :: "IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
                        (" \<Turnstile> _ : _ " [100,100] 100)
-"\<Turnstile> c : A \<equiv> (\<forall> s t . (s,c \<Down> t) \<longrightarrow> A s t)"
+where "\<Turnstile> c : A = (\<forall> s t . (s,c \<Down> t) \<longrightarrow> A s t)"
 
 text{*A variation of this property for the height-indexed operational
 semantics,\ldots*}
 
-constdefs VDM_validn :: "nat \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
+definition VDM_validn :: "nat \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
                         (" \<Turnstile>\<^sub>_ _ : _ " [100,100,100] 100)
-"\<Turnstile>\<^sub>n c : A \<equiv> (\<forall> m . m \<le> n --> (\<forall> s t . (s,c \<rightarrow>\<^sub>m t) --> A s t))"
+where "\<Turnstile>\<^sub>n c : A = (\<forall> m . m \<le> n --> (\<forall> s t . (s,c \<rightarrow>\<^sub>m t) --> A s t))"
 
 text{*\ldots plus the obvious relationships.*}
 lemma VDM_valid_validn: "\<Turnstile> c:A \<Longrightarrow> \<Turnstile>\<^sub>n c:A"
@@ -51,14 +51,14 @@ represents an assumption for the unnamed procedure. In particular, a
 context is valid if each entry is satisfied by the method call
 instruction.*}
 
-constdefs Ctxt_valid :: "VDMAssn set \<Rightarrow> bool" (" \<Turnstile> _ " [100] 100)
-"\<Turnstile> G \<equiv> \<forall> A . A \<in> G \<longrightarrow> (\<Turnstile> Call : A)"
+definition Ctxt_valid :: "VDMAssn set \<Rightarrow> bool" (" \<Turnstile> _ " [100] 100)
+where "\<Turnstile> G = (\<forall> A . A \<in> G \<longrightarrow> (\<Turnstile> Call : A))"
 
 text{*Again, a relativised sibling \ldots*}
 
-constdefs Ctxt_validn :: "nat \<Rightarrow> (VDMAssn set) \<Rightarrow> bool"
+definition Ctxt_validn :: "nat \<Rightarrow> (VDMAssn set) \<Rightarrow> bool"
                          (" \<Turnstile>\<^sub>_ _  " [100,100] 100)
-"\<Turnstile>\<^sub>n G \<equiv> \<forall> m . m \<le> n \<longrightarrow> (\<forall> A. A \<in> G \<longrightarrow> ( \<Turnstile>\<^sub>m Call : A) )"
+where "\<Turnstile>\<^sub>n G = (\<forall> m . m \<le> n \<longrightarrow> (\<forall> A. A \<in> G \<longrightarrow> ( \<Turnstile>\<^sub>m Call : A)))"
 
 text{*satisfies the obvious properties.*}
 
@@ -84,16 +84,16 @@ by (simp add: Ctxt_validn_def)
 text{*A judgement is valid if the validity of the context implies that
 of the commmand-assertion pair.*}
 
-constdefs valid :: "(VDMAssn set) \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
+definition valid :: "(VDMAssn set) \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
                     ("_ \<Turnstile> _ : _ " [100,100,100] 100)
-"G \<Turnstile> c : A \<equiv>  (\<Turnstile> G \<longrightarrow> \<Turnstile> c : A)"
+where "G \<Turnstile> c : A = (\<Turnstile> G \<longrightarrow> \<Turnstile> c : A)"
 
 text{*And, again, a relatived notion of judgement validity.*}
 
-constdefs validn :: 
+definition validn :: 
  "(VDMAssn set) \<Rightarrow> nat \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
   ("_ \<Turnstile>\<^sub>_ _ : _" [100,100,100,100] 100)
- "G \<Turnstile>\<^sub>n c : A \<equiv>  (\<Turnstile>\<^sub>n G \<longrightarrow> \<Turnstile>\<^sub>n c : A)"
+where "G \<Turnstile>\<^sub>n c : A = (\<Turnstile>\<^sub>n G \<longrightarrow> \<Turnstile>\<^sub>n c : A)"
 
 lemma validn_valid: "(\<forall> n . G \<Turnstile>\<^sub>n c : A) \<Longrightarrow> G \<Turnstile> c : A"
 (*<*)
@@ -114,11 +114,6 @@ done
 
 subsection{*Proof system*}
 
-(*
-text{*The type of the judgements, plus some pretty-printing stuff.*}
-
-consts VDM_proof :: "(VDMAssn set \<times> IMP \<times> VDMAssn) set"
-*)
 inductive_set
   VDM_proof :: "(VDMAssn set \<times> IMP \<times> VDMAssn) set"
 where
@@ -207,11 +202,11 @@ by (simp add: max_def, case_tac "k \<le> m", simp+)
 (*>*)
 
 (*<*)
-constdefs SoundWhileProp::"nat \<Rightarrow> (VDMAssn set) \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> BExpr \<Rightarrow> VDMAssn \<Rightarrow> bool"
-"SoundWhileProp n G c B b A \<equiv>
-   (\<forall>m. G \<Turnstile>\<^sub>m c : B) \<longrightarrow> (\<forall>s. (\<not> evalB b s) \<longrightarrow> A s s) \<longrightarrow>
+definition SoundWhileProp::"nat \<Rightarrow> (VDMAssn set) \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> BExpr \<Rightarrow> VDMAssn \<Rightarrow> bool"
+where "SoundWhileProp n G c B b A =
+   ((\<forall>m. G \<Turnstile>\<^sub>m c : B) \<longrightarrow> (\<forall>s. (\<not> evalB b s) \<longrightarrow> A s s) \<longrightarrow>
     (\<forall>s. evalB b s \<longrightarrow> (\<forall>r. B s r \<longrightarrow> (\<forall>t. A r t \<longrightarrow> A s t))) \<longrightarrow>
-   G \<Turnstile>\<^sub>n (While b c) : (\<lambda>s t. A s t \<and> \<not> evalB b t)"
+   G \<Turnstile>\<^sub>n (While b c) : (\<lambda>s t. A s t \<and> \<not> evalB b t))"
 
 lemma SoundWhileAux[rule_format]: "SoundWhileProp n G c B b A"
 apply (induct n)
@@ -331,9 +326,9 @@ done
 (*>*)
 
 (*<*)
-constdefs CutAuxProp::"VDMAssn set \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
-"CutAuxProp H c A \<equiv> 
-  \<forall> G P D . (H = (insert P D) \<longrightarrow> G \<rhd> Call :P \<longrightarrow> (G \<subseteq> D) \<longrightarrow> D \<rhd> c:A)"
+definition CutAuxProp::"VDMAssn set \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
+where "CutAuxProp H c A =
+  (\<forall> G P D . (H = (insert P D) \<longrightarrow> G \<rhd> Call :P \<longrightarrow> (G \<subseteq> D) \<longrightarrow> D \<rhd> c:A))"
 
 lemma CutAux1:"(H \<rhd> c : A) \<Longrightarrow> CutAuxProp H c A"
 apply (erule VDM_proof.induct)
@@ -390,8 +385,8 @@ done
 text{*We call context $G$ verified if all entries are justified by
 derivations for the procedure body.*}
 
-constdefs verified::"VDMAssn set \<Rightarrow> bool"
-"verified G \<equiv> (\<forall> A . A:G \<longrightarrow> G \<rhd> body : A)"
+definition verified::"VDMAssn set \<Rightarrow> bool"
+where "verified G = (\<forall> A . A:G \<longrightarrow> G \<rhd> body : A)"
 
 text{*The property is preserved by sub-contexts*}
 
@@ -473,8 +468,8 @@ subsection{*Completeness*}
 text{*Strongest specifications, given precisely by the operational
 behaviour.*}
 
-constdefs SSpec::"IMP \<Rightarrow> VDMAssn"
-"SSpec c s t \<equiv> s,c \<Down> t"
+definition SSpec::"IMP \<Rightarrow> VDMAssn"
+where "SSpec c s t = s,c \<Down> t"
 
 text{*Strongest specifications are valid \ldots*}
 lemma SSpec_valid: "\<Turnstile> c : (SSpec c)"
@@ -520,8 +515,8 @@ done
 text{*The (singleton) strong context contains the strongest
 specification of the procedure.*}
 
-constdefs StrongG :: "VDMAssn set"
-  "StrongG \<equiv> {SSpec Call}"
+definition StrongG :: "VDMAssn set"
+where "StrongG = {SSpec Call}"
 
 text{*By construction, the strongest specification of the procedure's
 body can be verified with respect to this context.*}

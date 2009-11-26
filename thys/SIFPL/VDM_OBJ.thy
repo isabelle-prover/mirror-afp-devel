@@ -14,13 +14,13 @@ text{*Assertions are binary state predicates, as before.*}
 
 types "Assn" = "State \<Rightarrow> State \<Rightarrow> bool"
 
-constdefs VDM_validn :: "nat \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool" 
+definition VDM_validn :: "nat \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool" 
                          (" \<Turnstile>\<^sub>_ _ : _ " 50)
-"\<Turnstile>\<^sub>n c : A \<equiv> (\<forall> m . m \<le> n \<longrightarrow> (\<forall> s t . (s,c \<rightarrow>\<^sub>m t) \<longrightarrow> A s t))"
+where "(\<Turnstile>\<^sub>n c : A) = (\<forall> m . m \<le> n \<longrightarrow> (\<forall> s t . (s,c \<rightarrow>\<^sub>m t) \<longrightarrow> A s t))"
 
-constdefs  VDM_valid :: "OBJ \<Rightarrow> Assn \<Rightarrow> bool"
+definition VDM_valid :: "OBJ \<Rightarrow> Assn \<Rightarrow> bool"
                          (" \<Turnstile> _ : _ " 50)
-"\<Turnstile> c : A \<equiv> (\<forall> s t . (s,c \<Down> t) \<longrightarrow> A s t)"
+where "(\<Turnstile> c : A) = (\<forall> s t . (s,c \<Down> t) \<longrightarrow> A s t)"
 
 lemma VDM_valid_validn: "\<Turnstile> c:A \<Longrightarrow> \<Turnstile>\<^sub>n c:A"
 (*<*)
@@ -39,12 +39,12 @@ apply (erule_tac x="ma" in allE, simp)
 done
 (*>*)
 
-constdefs Ctxt_validn :: "nat \<Rightarrow> (Assn set) \<Rightarrow> bool"
+definition Ctxt_validn :: "nat \<Rightarrow> (Assn set) \<Rightarrow> bool"
                        (" \<Turnstile>\<^sub>_ _  " 50)
-"\<Turnstile>\<^sub>n G \<equiv> (\<forall> m . m \<le> n \<longrightarrow> (\<forall> A. A \<in> G \<longrightarrow> \<Turnstile>\<^sub>n Call : A))"
+where "(\<Turnstile>\<^sub>n G) = (\<forall> m . m \<le> n \<longrightarrow> (\<forall> A. A \<in> G \<longrightarrow> \<Turnstile>\<^sub>n Call : A))"
 
-constdefs Ctxt_valid :: "Assn set \<Rightarrow> bool" (" \<Turnstile> _ " 50)
-"\<Turnstile> G \<equiv> \<forall> A . A \<in> G \<longrightarrow>  \<Turnstile> Call : A"
+definition Ctxt_valid :: "Assn set \<Rightarrow> bool" (" \<Turnstile> _ " 50)
+where "(\<Turnstile> G) = (\<forall> A . A \<in> G \<longrightarrow> \<Turnstile> Call : A)"
 
 lemma Ctxt_valid_validn: "\<Turnstile> G \<Longrightarrow> \<Turnstile>\<^sub>n G"
 (*<*)
@@ -67,13 +67,13 @@ apply (rule VDM_lowerm) prefer 2 apply assumption apply fast
 done
 (*>*)
 
-constdefs valid :: "(Assn set) \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool"
+definition valid :: "(Assn set) \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool"
                       ("_ \<Turnstile> _ : _ " 50)
-"G \<Turnstile> c : A \<equiv>  (Ctxt_valid G \<longrightarrow> VDM_valid c A)"
+where "(G \<Turnstile> c : A) = (Ctxt_valid G \<longrightarrow> VDM_valid c A)"
 
-constdefs validn :: "(Assn set) \<Rightarrow> nat \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool"
+definition validn :: "(Assn set) \<Rightarrow> nat \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool"
                      ("_ \<Turnstile>\<^sub>_ _ : _" 50)
-"G \<Turnstile>\<^sub>n c : A \<equiv>  (\<Turnstile>\<^sub>n G \<longrightarrow> \<Turnstile>\<^sub>n c : A)"
+where "(G \<Turnstile>\<^sub>n c : A) = (\<Turnstile>\<^sub>n G \<longrightarrow> \<Turnstile>\<^sub>n c : A)"
 
 lemma validn_valid: "(\<forall> n . G \<Turnstile>\<^sub>n c : A) \<Longrightarrow> G \<Turnstile> c : A"
 (*<*)
@@ -402,8 +402,8 @@ done
 lemma Cut:"\<lbrakk> G \<rhd> Call : P ; (insert P G) \<rhd> c : A \<rbrakk> \<Longrightarrow> G \<rhd> c : A"
 (*<*)by (drule CutAux , simp)(*>*)
 
-constdefs verified::"Assn set \<Rightarrow> bool"
-"verified G \<equiv> (\<forall> A . A:G \<longrightarrow> G \<rhd> body : A)"
+definition verified::"Assn set \<Rightarrow> bool"
+where "verified G = (\<forall> A . A:G \<longrightarrow> G \<rhd> body : A)"
 
 lemma verified_preserved: "\<lbrakk>verified G; A:G\<rbrakk> \<Longrightarrow> verified (G - {A})"
 (*<*)
@@ -460,8 +460,8 @@ by (rule MutrecAux, fast)
 (*>*)
 
 subsubsection{*Completeness*}
-constdefs SSpec::"OBJ \<Rightarrow> Assn"
-"SSpec c s t \<equiv> s,c \<Down> t"
+definition SSpec::"OBJ \<Rightarrow> Assn"
+where "SSpec c s t = (s,c \<Down> t)"
 
 lemma SSpec_valid: "\<Turnstile> c : (SSpec c)"
 (*<*)by (simp add: VDM_valid_def SSpec_def)(*>*)
@@ -514,8 +514,8 @@ apply (rule VDMConseq)
 done
 (*>*)
 
-constdefs StrongG :: "Assn set"
-  "StrongG \<equiv> {SSpec Call}"
+definition StrongG :: "Assn set"
+where "StrongG = {SSpec Call}"
 
 lemma StrongG_Body: "StrongG \<rhd> body : SSpec Call"
 (*<*)

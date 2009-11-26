@@ -57,20 +57,20 @@ mapping program variables to values.*}
 
 types State = "Var \<Rightarrow> Val"
 
-constdefs update :: "State \<Rightarrow> Var \<Rightarrow> Val \<Rightarrow> State"
-"update s x v == (\<lambda> y . if x=y then v else s y)"
+definition update :: "State \<Rightarrow> Var \<Rightarrow> Val \<Rightarrow> State"
+where "update s x v = (\<lambda> y . if x=y then v else s y)"
 
 text{*The evaluation of expressions is defined inductively, as
 standard.*}
 
-consts evalE::"Expr \<Rightarrow> State \<Rightarrow> Val"
-primrec
-"evalE (varE x) s = s x" 
-"evalE (valE v) s = v"
+primrec evalE::"Expr \<Rightarrow> State \<Rightarrow> Val"
+where
+"evalE (varE x) s = s x" |
+"evalE (valE v) s = v" |
 "evalE (opE f e1 e2) s = f (evalE e1 s) (evalE e2 s)"
 
-consts evalB::"BExpr \<Rightarrow> State \<Rightarrow> bool"
-primrec
+primrec evalB::"BExpr \<Rightarrow> State \<Rightarrow> bool"
+where
 "evalB (compB f e1 e2) s = f (evalE e1 s) (evalE e2 s)"
 
 text{*The operational semantics is a standard big-step relation, with
@@ -131,8 +131,8 @@ where
 text{*Often, the height index does not matter, so we define a notion
 hiding it.*}
 
-constdefs Sem :: "[State, IMP, State] \<Rightarrow> bool" ("_ , _ \<Down> _ " 1000)
- "s,c \<Down> t \<equiv> (\<exists> n. s,c \<rightarrow>\<^sub>n t)"
+definition Sem :: "[State, IMP, State] \<Rightarrow> bool" ("_ , _ \<Down> _ " 1000)
+where "s,c \<Down> t = (\<exists> n. s,c \<rightarrow>\<^sub>n t)"
 
 text{*Inductive elimination rules for the (indexed) dynamic semantics:*}
 

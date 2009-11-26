@@ -29,9 +29,9 @@ twiddleVal_Null: "(\<beta>, RVal Nullref, RVal Nullref) : twiddleVal"
 
 text{*For stores, indistinguishability is as follows.*}
 
-constdefs twiddleStore::"PBij \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool"
-"twiddleStore \<beta> s1 s2 \<equiv> 
-  \<forall> x. CONTEXT x = low \<longrightarrow> (\<beta>, s1 x, s2 x) : twiddleVal"
+definition twiddleStore::"PBij \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool"
+where "twiddleStore \<beta> s1 s2 =
+  (\<forall> x. CONTEXT x = low \<longrightarrow> (\<beta>, s1 x, s2 x) : twiddleVal)"
 
 abbreviation twiddleStore_syntax  ("_  \<approx>\<^sub>_ _" [100,100] 50)
   where "s \<approx>\<^sub>\<beta> t == twiddleStore \<beta> s t"
@@ -39,46 +39,46 @@ abbreviation twiddleStore_syntax  ("_  \<approx>\<^sub>_ _" [100,100] 50)
 text{*On objects, we require the values in low fields to be related,
 and the sets of defined low fields to be equal.*}
 
-constdefs LowDom::"((Field \<times> Val) list) \<Rightarrow> Field set"
-"LowDom F \<equiv> {f . \<exists> v . lookup F f = Some v \<and> GAMMA f = low}"
+definition LowDom::"((Field \<times> Val) list) \<Rightarrow> Field set"
+where "LowDom F = {f . \<exists> v . lookup F f = Some v \<and> GAMMA f = low}"
 
-constdefs twiddleObj::"PBij \<Rightarrow> Object \<Rightarrow> Object \<Rightarrow> bool"
-"twiddleObj \<beta> o1 o2 \<equiv> (fst o1 = fst o2) \<and> 
+definition twiddleObj::"PBij \<Rightarrow> Object \<Rightarrow> Object \<Rightarrow> bool"
+where "twiddleObj \<beta> o1 o2 = ((fst o1 = fst o2) \<and> 
                           LowDom (snd o1) = LowDom (snd o2) \<and>
                          (\<forall> f v w . lookup (snd o1) f = Some v \<longrightarrow>
                                      lookup (snd o2) f = Some w \<longrightarrow>
                                      GAMMA f = low \<longrightarrow>
-                                     (\<beta>, v, w) : twiddleVal)"
+                                     (\<beta>, v, w) : twiddleVal))"
 
 text{*On heaps, we require locations related by $\beta$ to contain
 indistinguishable objects. Domain and codomain of the bijection
 should be subsets of the domains of the heaps, of course.*}
 
-constdefs twiddleHeap::"PBij \<Rightarrow> Heap \<Rightarrow> Heap \<Rightarrow> bool"
-"twiddleHeap \<beta> h1 h2 \<equiv> \<beta>:Pbij \<and>
+definition twiddleHeap::"PBij \<Rightarrow> Heap \<Rightarrow> Heap \<Rightarrow> bool"
+where "twiddleHeap \<beta> h1 h2 = (\<beta>:Pbij \<and>
                           Pbij_Dom \<beta> \<subseteq> Dom h1 \<and> 
                           Pbij_Rng \<beta> \<subseteq> Dom h2 \<and>
                           (\<forall> l ll v w . (l,ll):\<beta> \<longrightarrow>
                                         lookup h1 l = Some v \<longrightarrow>
                                         lookup h2 ll = Some w \<longrightarrow>
-                                        twiddleObj \<beta> v w)"
+                                        twiddleObj \<beta> v w))"
 
 text{*We also define a predicate which expresses when a state does not
 contain dangling pointers.*}
 
 (*The notion used in our paper:
-constdefs noDPs::"State \<Rightarrow> bool"
-"noDPs S \<equiv> case S of (s,h) \<Rightarrow>  ((\<forall> x l . s x = RVal(Loc l) \<longrightarrow> l:Dom h) \<and>
+definition noDPs::"State \<Rightarrow> bool"
+where "noDPs S = (case S of (s,h) \<Rightarrow>  ((\<forall> x l . s x = RVal(Loc l) \<longrightarrow> l:Dom h) \<and>
                 (\<forall> ll c F f l . lookup h ll = Some(c,F) \<longrightarrow>
                                lookup F f = Some(RVal(Loc l))
-                                 \<longrightarrow> l:Dom h))"
+                                 \<longrightarrow> l:Dom h)))"
 *)
 
-constdefs noLowDPs::"State \<Rightarrow> bool"
-"noLowDPs S \<equiv> case S of (s,h) \<Rightarrow> 
+definition noLowDPs::"State \<Rightarrow> bool"
+where "noLowDPs S = (case S of (s,h) \<Rightarrow> 
    ((\<forall> x l . CONTEXT x = low \<longrightarrow> s x = RVal(Loc l) \<longrightarrow> l:Dom h) \<and>
     (\<forall> ll c F f l . lookup h ll = Some(c,F) \<longrightarrow> GAMMA f = low \<longrightarrow>
-                    lookup F f = Some(RVal(Loc l)) \<longrightarrow> l:Dom h))"
+                    lookup F f = Some(RVal(Loc l)) \<longrightarrow> l:Dom h)))"
 
 text{*The motivation for introducing this notion stems from the
 intended interpretation of the proof rule for skip, where the initial
@@ -91,9 +91,9 @@ following definition), reflexivity indeed holds, as proven in lemma
 our paper, we now allow dangling pointers in high variables and high
 fields since these are harmless.*}
 
-constdefs twiddle::"PBij \<Rightarrow> State \<Rightarrow> State \<Rightarrow> bool"
-"twiddle \<beta> s t \<equiv> noLowDPs s \<and> noLowDPs t \<and> 
-                 (fst s) \<approx>\<^sub>\<beta> (fst t) \<and> twiddleHeap \<beta> (snd s) (snd t)"
+definition twiddle::"PBij \<Rightarrow> State \<Rightarrow> State \<Rightarrow> bool"
+where "twiddle \<beta> s t = (noLowDPs s \<and> noLowDPs t \<and> 
+                 (fst s) \<approx>\<^sub>\<beta> (fst t) \<and> twiddleHeap \<beta> (snd s) (snd t))"
 
 abbreviation twiddle_syntax  ("_ \<equiv>\<^sub>_ _" [100,100] 50)
   where "s \<equiv>\<^sub>\<beta> t == twiddle \<beta> s t"
@@ -281,15 +281,15 @@ predicate is satisfied. In particular, this means that if $e$
 evaluates in $s$ (respecitvely, $t$) to some location $l$, then $l
 \in Pbij\_dom(\beta)$ ($l \in Pbij\_cod(\beta)$) holds.*}
 
-constdefs Expr_low::"Expr \<Rightarrow> bool"
-"Expr_low e \<equiv> \<forall> s t \<beta>. s \<approx>\<^sub>\<beta> t \<longrightarrow> (\<beta>, evalE e s, evalE e t):twiddleVal"
+definition Expr_low::"Expr \<Rightarrow> bool"
+where "Expr_low e = (\<forall> s t \<beta>. s \<approx>\<^sub>\<beta> t \<longrightarrow> (\<beta>, evalE e s, evalE e t):twiddleVal)"
 
 text{*A similar notion is defined for boolean expressions, but the
 fact that these evaluate to (meta-logical) boolean values allows us to
 replace indistinguishability by equality.*}
 
-constdefs BExpr_low::"BExpr \<Rightarrow> bool"
-"BExpr_low b \<equiv> \<forall> s t \<beta> . s \<approx>\<^sub>\<beta> t \<longrightarrow> evalB b s = evalB b t"
+definition BExpr_low::"BExpr \<Rightarrow> bool"
+where "BExpr_low b = (\<forall> s t \<beta> . s \<approx>\<^sub>\<beta> t \<longrightarrow> evalB b s = evalB b t)"
 
 subsubsection{*Definition and characterisation of security*}
 
@@ -298,10 +298,10 @@ and Naumann's paper~\cite{DBLP:journals/jfp/BanerjeeN05} and the
 Mobius Deliverable 2.3~\cite{MobiusDeliverable2.3} contain similar
 notions.*}
 
-constdefs secure::"OBJ \<Rightarrow> bool"
-"secure c \<equiv> \<forall> s ss t tt \<beta> . 
+definition secure::"OBJ \<Rightarrow> bool"
+where "secure c = (\<forall> s ss t tt \<beta> . 
                s \<equiv>\<^sub>\<beta> ss \<longrightarrow> (s,c \<Down> t) \<longrightarrow> (ss,c \<Down> tt) \<longrightarrow>
-               (\<exists> \<gamma> . t \<equiv>\<^sub>\<gamma> tt \<and> Pbij_extends \<gamma> \<beta>)"
+               (\<exists> \<gamma> . t \<equiv>\<^sub>\<gamma> tt \<and> Pbij_extends \<gamma> \<beta>))"
 
 (*<*)
 lemma Skip1: "secure Skip"
@@ -438,10 +438,10 @@ types TT = "(State \<times> State \<times> PBij) \<Rightarrow> bool"
 
 text{*The operator constructing an assertion from an invariant.*}
 
-constdefs Sec :: "TT \<Rightarrow> Assn"
-"Sec \<Phi> s t \<equiv>
-   (\<forall> r \<beta>. s \<equiv>\<^sub>\<beta> r \<longrightarrow> \<Phi>(t,r,\<beta>)) \<and>
-   (\<forall> r \<beta> . \<Phi> (r,s,\<beta>) \<longrightarrow> (\<exists> \<gamma> . r \<equiv>\<^sub>\<gamma> t \<and> Pbij_extends \<gamma> \<beta>))"
+definition Sec :: "TT \<Rightarrow> Assn"
+where "Sec \<Phi> s t =
+   ((\<forall> r \<beta>. s \<equiv>\<^sub>\<beta> r \<longrightarrow> \<Phi>(t,r,\<beta>)) \<and>
+    (\<forall> r \<beta> . \<Phi> (r,s,\<beta>) \<longrightarrow> (\<exists> \<gamma> . r \<equiv>\<^sub>\<gamma> t \<and> Pbij_extends \<gamma> \<beta>)))"
 
 text{*The lemmas proving that the operator ensures security, and that
 secure programs satisfy an assertion formed by the operator, are
@@ -950,14 +950,14 @@ done
 
 text{*Again, we define a fixed point operator over invariants.*}
 
-constdefs FIX::"(TT \<Rightarrow> TT) \<Rightarrow> TT"
-"FIX \<phi> \<equiv> \<lambda> (s,t,\<beta>). 
-      \<forall> \<Phi> . (\<forall> ss tt \<gamma>. \<phi> \<Phi> (ss, tt,\<gamma>) \<longrightarrow> \<Phi> (ss, tt,\<gamma>)) \<longrightarrow> \<Phi> (s, t,\<beta>)" 
+definition FIX::"(TT \<Rightarrow> TT) \<Rightarrow> TT"
+where "FIX \<phi> = (\<lambda> (s,t,\<beta>). 
+      \<forall> \<Phi> . (\<forall> ss tt \<gamma>. \<phi> \<Phi> (ss, tt,\<gamma>) \<longrightarrow> \<Phi> (ss, tt,\<gamma>)) \<longrightarrow> \<Phi> (s, t,\<beta>))"
 
-constdefs Monotone::"(TT \<Rightarrow> TT) \<Rightarrow> bool"
-"Monotone \<phi> \<equiv>
-   \<forall> \<Phi> \<Psi> . (\<forall> s t \<beta>. \<Phi>(s,t,\<beta>) \<longrightarrow> \<Psi>(s,t,\<beta>)) \<longrightarrow> 
-               (\<forall> s t \<beta>. \<phi> \<Phi> (s,t,\<beta>) \<longrightarrow> \<phi> \<Psi> (s,t,\<beta>))"
+definition Monotone::"(TT \<Rightarrow> TT) \<Rightarrow> bool"
+where "Monotone \<phi> =
+   (\<forall> \<Phi> \<Psi> . (\<forall> s t \<beta>. \<Phi>(s,t,\<beta>) \<longrightarrow> \<Psi>(s,t,\<beta>)) \<longrightarrow> 
+               (\<forall> s t \<beta>. \<phi> \<Phi> (s,t,\<beta>) \<longrightarrow> \<phi> \<Psi> (s,t,\<beta>)))"
 
 (*<*)
 lemma Fix2: "\<lbrakk>Monotone \<phi>; \<phi> (FIX \<phi>) (s, t,\<beta>)\<rbrakk> \<Longrightarrow> FIX \<phi> (s,t,\<beta>)"
@@ -1000,11 +1000,11 @@ done
 
 text{*The operator used in the while rule is defined by*}
 
-constdefs PhiWhileOp::"BExpr \<Rightarrow> TT \<Rightarrow> TT \<Rightarrow> TT"
-"PhiWhileOp b \<Phi> \<equiv> \<lambda> \<Psi> . (\<lambda> (s, t, \<beta>).
+definition PhiWhileOp::"BExpr \<Rightarrow> TT \<Rightarrow> TT \<Rightarrow> TT"
+where "PhiWhileOp b \<Phi> = (\<lambda> \<Psi> . (\<lambda> (s, t, \<beta>).
   (evalB b (fst t) \<longrightarrow>
       (\<exists> r. \<Phi> (r, t, \<beta>) \<and> (\<forall> w \<gamma>. r \<equiv>\<^sub>\<gamma> w \<longrightarrow> \<Psi>(s, w, \<gamma>)))) \<and>
-  (\<not> evalB b (fst t) \<longrightarrow> s\<equiv>\<^sub>\<beta> t))"
+  (\<not> evalB b (fst t) \<longrightarrow> s\<equiv>\<^sub>\<beta> t)))"
 
 text{*and is monotone:*}
 
@@ -1017,8 +1017,8 @@ done
 
 text{*Hence, we can define its fixed point:*}
 
-constdefs PhiWhile::"BExpr \<Rightarrow> TT \<Rightarrow> TT"
-"PhiWhile b \<Phi> \<equiv> FIX (PhiWhileOp b \<Phi>)"
+definition PhiWhile::"BExpr \<Rightarrow> TT \<Rightarrow> TT"
+where "PhiWhile b \<Phi> = FIX (PhiWhileOp b \<Phi>)"
 
 text{*The while rule may now be given as follows:*}
 
@@ -1250,8 +1250,8 @@ done
 
 subsubsection{*High proof rules*}
 
-constdefs HighSec::Assn
-"HighSec \<equiv> (\<lambda> s t . noLowDPs s \<longrightarrow> s \<equiv>\<^sub>(mkId (snd s)) t)"
+definition HighSec::Assn
+where "HighSec = (\<lambda> s t . noLowDPs s \<longrightarrow> s \<equiv>\<^sub>(mkId (snd s)) t)"
 
 lemma CAST[rule_format]:
   "G \<rhd> c : HighSec \<Longrightarrow> G \<rhd> c : Sec (\<lambda> (s, t, \<beta>) . s \<equiv>\<^sub>\<beta> t)"
@@ -1362,8 +1362,8 @@ done
 text{*We define a predicate expressing when locations obtained by
 evaluating an expression are non-dangling.*}
 
-constdefs Expr_good::"Expr \<Rightarrow> State \<Rightarrow> bool"
-"Expr_good e s \<equiv>
+definition Expr_good::"Expr \<Rightarrow> State \<Rightarrow> bool"
+where "Expr_good e s =
   (\<forall> l . evalE e (fst s) = RVal(Loc l) \<longrightarrow> l : Dom (snd s))"
 
 lemma AssignHigh: 
@@ -1791,13 +1791,13 @@ systems for expressions and boolean expressions. These are similar to
 the ones in Section \ref{sec:BaseLineNI} but require some side
 conditions regarding the (semantically modelled) operators.*}
 
-constdefs opEGood::"(Val \<Rightarrow> Val \<Rightarrow> Val) \<Rightarrow> bool"
-"opEGood f \<equiv> \<forall> \<beta> v v' w w' . (\<beta>, v, v') \<in> twiddleVal\<longrightarrow>
-        (\<beta>, w, w') \<in> twiddleVal \<longrightarrow> (\<beta>, f v w, f v' w') \<in> twiddleVal"
+definition opEGood::"(Val \<Rightarrow> Val \<Rightarrow> Val) \<Rightarrow> bool"
+where "opEGood f = (\<forall> \<beta> v v' w w' . (\<beta>, v, v') \<in> twiddleVal\<longrightarrow>
+        (\<beta>, w, w') \<in> twiddleVal \<longrightarrow> (\<beta>, f v w, f v' w') \<in> twiddleVal)"
 
-constdefs compBGood::"(Val \<Rightarrow> Val \<Rightarrow> bool) \<Rightarrow> bool"
-"compBGood f \<equiv> \<forall> \<beta> v v' w w' . (\<beta>, v, v') \<in> twiddleVal\<longrightarrow>
-        (\<beta>, w, w') \<in> twiddleVal \<longrightarrow> f v w = f v' w'"
+definition compBGood::"(Val \<Rightarrow> Val \<Rightarrow> bool) \<Rightarrow> bool"
+where "compBGood f = (\<forall> \<beta> v v' w w' . (\<beta>, v, v') \<in> twiddleVal\<longrightarrow>
+        (\<beta>, w, w') \<in> twiddleVal \<longrightarrow> f v w = f v' w')"
 
 inductive_set VS_expr:: "(Expr \<times> TP) set"
 where
@@ -1872,9 +1872,9 @@ VS_comGetL:
 text{*In order to prove the type system sound, we first define the
 interpretation of expression typings\ldots *}
 
-consts SemExpr::"Expr \<Rightarrow> TP \<Rightarrow> bool" 
-primrec
-"SemExpr e low = Expr_low e"
+primrec SemExpr::"Expr \<Rightarrow> TP \<Rightarrow> bool"
+where
+"SemExpr e low = Expr_low e" |
 "SemExpr e high = True"
 
 text{*\ldots and show the soundness of the typing rules.*}
@@ -1900,9 +1900,9 @@ done
 
 text{*Likewise for the boolean expressions.*}
 
-consts SemBExpr::"BExpr \<Rightarrow> TP \<Rightarrow> bool"
-primrec
-"SemBExpr b low = BExpr_low b"
+primrec SemBExpr::"BExpr \<Rightarrow> TP \<Rightarrow> bool"
+where
+"SemBExpr b low = BExpr_low b" |
 "SemBExpr b high = True"
 
 lemma BExprSound: "(e,tp):VS_Bexpr \<Longrightarrow> SemBExpr e tp"

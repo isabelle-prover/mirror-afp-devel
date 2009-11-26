@@ -10,23 +10,23 @@ such bijections as sets of pairs which satisfy the obvious
 condition.*}
 
 types PBij = "(Location \<times> Location) set"
-constdefs Pbij :: "PBij set"
-"Pbij \<equiv> { \<beta> . \<forall> l1 l2 l3 l4. (l1,l2):\<beta> \<longrightarrow> (l3,l4):\<beta> \<longrightarrow> 
+definition Pbij :: "PBij set"
+where "Pbij = { \<beta> . \<forall> l1 l2 l3 l4. (l1,l2):\<beta> \<longrightarrow> (l3,l4):\<beta> \<longrightarrow> 
                               ((l1 = l3) = (l2 = l4))}"
 
 text{*Domain and codomain are defined as expected.*}
 
-constdefs Pbij_Dom::"PBij \<Rightarrow> (Location set)"
-"Pbij_Dom \<beta> \<equiv> {l . \<exists> ll .(l,ll):\<beta>}"
+definition Pbij_Dom::"PBij \<Rightarrow> (Location set)"
+where "Pbij_Dom \<beta> = {l . \<exists> ll .(l,ll):\<beta>}"
 
-constdefs Pbij_Rng::"PBij \<Rightarrow> (Location set)"
-"Pbij_Rng \<beta> \<equiv> {ll . \<exists> l .(l,ll):\<beta>}"
+definition Pbij_Rng::"PBij \<Rightarrow> (Location set)"
+where "Pbij_Rng \<beta> = {ll . \<exists> l .(l,ll):\<beta>}"
 
 text{*We also define the inverse operation, the composition, and a
 test deciding when one bijection extends another.*}
 
-constdefs Pbij_inverse::"PBij \<Rightarrow> PBij"
-"Pbij_inverse \<beta> \<equiv> {(l,ll) . (ll,l):\<beta>}"
+definition Pbij_inverse::"PBij \<Rightarrow> PBij"
+where "Pbij_inverse \<beta> = {(l,ll) . (ll,l):\<beta>}"
 (*<*)
 lemma Pbij_inverseI:"(l1,l2):\<beta> \<Longrightarrow> (l2,l1):Pbij_inverse \<beta>"
 by (simp add: Pbij_inverse_def)
@@ -34,8 +34,8 @@ lemma Pbij_inverseD:"(l1,l2):Pbij_inverse \<beta> \<Longrightarrow> (l2,l1):\<be
 by (simp add: Pbij_inverse_def) 
 (*>*)
 
-constdefs Pbij_compose::"PBij \<Rightarrow> PBij \<Rightarrow> PBij"
-"Pbij_compose \<beta> \<gamma> \<equiv> {(l,ll) . \<exists> l1 . (l,l1):\<beta> \<and> (l1,ll):\<gamma>}"
+definition Pbij_compose::"PBij \<Rightarrow> PBij \<Rightarrow> PBij"
+where "Pbij_compose \<beta> \<gamma> = {(l,ll) . \<exists> l1 . (l,l1):\<beta> \<and> (l1,ll):\<gamma>}"
 (*<*)
 lemma Pbij_composeI: "\<lbrakk>(l1, l2) \<in> \<beta>; (l2, l3) \<in> \<gamma>\<rbrakk> \<Longrightarrow> (l1, l3) \<in> Pbij_compose \<beta> \<gamma>"
 by (simp add: Pbij_compose_def, rule_tac x=l2 in exI, simp)
@@ -43,8 +43,8 @@ lemma Pbij_composeD: "(l1, l3) \<in> Pbij_compose \<beta> \<gamma> \<Longrightar
 by (simp add: Pbij_compose_def)
 (*>*)
 
-constdefs Pbij_extends ::"PBij \<Rightarrow> PBij \<Rightarrow> bool"
-"Pbij_extends \<gamma> \<beta> \<equiv> (\<beta> \<subseteq> \<gamma>)"
+definition Pbij_extends ::"PBij \<Rightarrow> PBij \<Rightarrow> bool"
+where "Pbij_extends \<gamma> \<beta> = (\<beta> \<subseteq> \<gamma>)"
 
 text{*These definitions satisfy the following properties.*}
 
@@ -145,8 +145,8 @@ by (simp add: Pbij_extends_def Pbij_inverse_def)
 text{*The identity bijection on a heap associates each element of the
 heap's domain with itself.*}
 
-constdefs mkId::"Heap \<Rightarrow> (Location \<times> Location) set"
-"mkId h \<equiv> {(l1,l2) . l1 = l2 \<and> l1 : Dom h}"
+definition mkId::"Heap \<Rightarrow> (Location \<times> Location) set"
+where "mkId h = {(l1,l2) . l1 = l2 \<and> l1 : Dom h}"
 
 lemma mkId1: "(mkId h):Pbij"
 (*<*)

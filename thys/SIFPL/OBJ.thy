@@ -20,13 +20,13 @@ text{*\label{sec:ObjLanguage}*}
 
 text{*First, some operations for association lists*}
 
-consts lookup :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option"
-primrec
-"lookup [] l = None"
+primrec lookup :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option"
+where
+"lookup [] l = None" |
 "lookup (h # t) l = (if (fst h)=l then Some (snd h) else lookup t l)" 
 
-constdefs Dom::"('a \<times> 'b) list \<Rightarrow> 'a set"
-"Dom L == {l . \<exists> a . lookup L l = Some a}"
+definition Dom::"('a \<times> 'b) list \<Rightarrow> 'a set"
+where "Dom L = {l . \<exists> a . lookup L l = Some a}"
 
 (*<*)
 lemma lookupNoneAppend[rule_format]: 
@@ -93,8 +93,8 @@ stores and heaps.*}
 
 types Store = "Var \<Rightarrow> Val"
 
-constdefs update :: "Store \<Rightarrow> Var \<Rightarrow> Val \<Rightarrow> Store"
-"update s x v == (\<lambda> y . if x=y then v else s y)"
+definition update :: "Store \<Rightarrow> Var \<Rightarrow> Val \<Rightarrow> Store"
+where "update s x v = (\<lambda> y . if x=y then v else s y)"
 
 types State = "Store \<times> Heap"
 
@@ -109,14 +109,14 @@ datatype BExpr = compB "Val \<Rightarrow> Val \<Rightarrow> bool" Expr Expr
 
 text{*The same applies to their semantics.*}
 
-consts evalE::"Expr \<Rightarrow> Store \<Rightarrow> Val"
-primrec
-"evalE (varE x) s = s x" 
-"evalE (valE v) s = v"
+primrec evalE::"Expr \<Rightarrow> Store \<Rightarrow> Val"
+where
+"evalE (varE x) s = s x" |
+"evalE (valE v) s = v" |
 "evalE (opE f e1 e2) s = f (evalE e1 s) (evalE e2 s)"
 
-consts evalB::"BExpr \<Rightarrow> Store \<Rightarrow> bool"
-primrec
+primrec evalB::"BExpr \<Rightarrow> Store \<Rightarrow> bool"
+where
 "evalB (compB f e1 e2) s = f (evalE e1 s) (evalE e2 s)"
 
 text{*The category of commands is extended by instructions for
@@ -226,9 +226,9 @@ where
 text{*Often, the height index does not matter, so we define a notion
 hiding it.*}
 
-constdefs 
+definition
 Sem :: "[State, OBJ, State] \<Rightarrow> bool" ("_ , _ \<Down> _ " 1000)
- "s,c \<Down> t \<equiv> (\<exists> n. s,c \<rightarrow>\<^sub>n t)"
+where "s,c \<Down> t = (\<exists> n. s,c \<rightarrow>\<^sub>n t)"
 
 inductive_cases Sem_eval_cases: 
  "s,Skip \<rightarrow>\<^sub>n t"

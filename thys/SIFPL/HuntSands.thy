@@ -24,21 +24,21 @@ pre- and post-states.*}
 
 types TT = "(State \<times> State) \<Rightarrow> bool"
 
-constdefs RSsecure::"(State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow>
+definition RSsecure::"(State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow>
                       (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow> IMP \<Rightarrow> bool"
-"RSsecure R S c \<equiv>(\<forall> s t ss tt . R s t \<longrightarrow> (s,c \<Down> ss) \<longrightarrow> 
+where "RSsecure R S c = (\<forall> s t ss tt . R s t \<longrightarrow> (s,c \<Down> ss) \<longrightarrow>
                           (t,c \<Down> tt) \<longrightarrow> S ss tt)"
 
-constdefs ARSsecure::"VDMAssn \<Rightarrow> (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow>
+definition ARSsecure::"VDMAssn \<Rightarrow> (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow>
                       (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow> IMP \<Rightarrow> bool"
-"ARSsecure A R S c \<equiv> (\<Turnstile> c : A) \<and> RSsecure R S c"
+where "ARSsecure A R S c = ((\<Turnstile> c : A) \<and> RSsecure R S c)"
 
 text{*Definition 3 of our paper follows.*}
 
-constdefs Sec :: "VDMAssn \<Rightarrow> (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow>
+definition Sec :: "VDMAssn \<Rightarrow> (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow>
                   (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow> TT \<Rightarrow> VDMAssn"
-"Sec A R S \<Phi> s t \<equiv> A s t \<and>
-                   (\<forall> r . R s r \<longrightarrow> \<Phi>(t,r)) \<and> (\<forall> r . \<Phi>(r,s) \<longrightarrow> S r t)"
+where "Sec A R S \<Phi> s t = (A s t \<and>
+                   (\<forall> r . R s r \<longrightarrow> \<Phi>(t,r)) \<and> (\<forall> r . \<Phi>(r,s) \<longrightarrow> S r t))"
 
 text{*With these definitions, we can prove Proposition 4 of our
 paper.*}
@@ -67,8 +67,8 @@ text{*Contexts map program variables to lattice elements.*}
 
 types "CONTEXT" = "Var \<Rightarrow> L"
 
-constdefs upd ::"CONTEXT \<Rightarrow> Var \<Rightarrow> L \<Rightarrow> CONTEXT"
-"upd G x p \<equiv> \<lambda> y . if x=y then p else G y"
+definition upd ::"CONTEXT \<Rightarrow> Var \<Rightarrow> L \<Rightarrow> CONTEXT"
+where "upd G x p = (\<lambda> y . if x=y then p else G y)"
 
 text{*We also define the predicate $\mathit{EQ}$ 
 %(in our paper denoted by the symbol $\ltimes$) 
@@ -76,8 +76,8 @@ which expresses when two states agree on all
 variables whose entry in a given context is below a certain security
 level.*}
 
-constdefs EQ:: "CONTEXT \<Rightarrow> L \<Rightarrow> State \<Rightarrow> State \<Rightarrow> bool"
-"EQ G p \<equiv> \<lambda> s t . \<forall> x . LEQ (G x) p \<longrightarrow>  s x = t x"
+definition EQ:: "CONTEXT \<Rightarrow> L \<Rightarrow> State \<Rightarrow> State \<Rightarrow> bool"
+where "EQ G p = (\<lambda> s t . \<forall> x . LEQ (G x) p \<longrightarrow>  s x = t x)"
 
 lemma EQ_LEQ: "\<lbrakk>EQ G p s t; LEQ pp p\<rbrakk> \<Longrightarrow> EQ G pp s t"
 (*<*)
@@ -89,8 +89,8 @@ done
 
 text{*The assertion called $\mathcal{Q}$ in our paper:*}
 
-constdefs Q::"L \<Rightarrow> CONTEXT \<Rightarrow> VDMAssn"
-"Q p H \<equiv> (\<lambda> s t . \<forall> x . (\<not> LEQ p (H x)) \<longrightarrow> t x = s x)"
+definition Q::"L \<Rightarrow> CONTEXT \<Rightarrow> VDMAssn"
+where "Q p H = (\<lambda> s t . \<forall> x . (\<not> LEQ p (H x)) \<longrightarrow> t x = s x)"
 
 text{*$Q$ expresses the preservation of values in a single execution,
 and corresponds to the first clause of Definition 3.2 in
@@ -99,20 +99,20 @@ definition of security instantiates the $A$ position of $A; R
 \Rightarrow S$-security with $Q$, while the context-dependent binary
 state relations are plugged in as the $R$ and $S$ components.*}
 
-constdefs secure :: "L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> bool"
-"secure p G c H \<equiv> \<forall> q . ARSsecure (Q p H) (EQ G q) (EQ H q) c"
+definition secure :: "L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> bool"
+where "secure p G c H = (\<forall> q . ARSsecure (Q p H) (EQ G q) (EQ H q) c)"
 
 text{*Indeed, one may show that this notion of security amounds to the
 conjunction of a unary (i.e.~one-execution-)property and a binary
 (i.e.~two-execution-) property, as expressed in Hunt \& Sands'
 Definition 3.2.*}
 
-constdefs secure1 :: "L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> bool"
-"secure1 p G c H \<equiv> (\<forall> s t . (s,c \<Down> t) \<longrightarrow> Q p H s t)"
+definition secure1 :: "L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> bool"
+where "secure1 p G c H = (\<forall> s t . (s,c \<Down> t) \<longrightarrow> Q p H s t)"
 
-constdefs secure2 :: "L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> bool"
-"secure2 p G c H \<equiv>  (\<forall> s t ss tt . (s,c \<Down> t) \<longrightarrow> (ss,c \<Down> tt) \<longrightarrow>
-                                    EQ G p s ss \<longrightarrow> EQ H p t tt)"
+definition secure2 :: "L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> bool"
+where "secure2 p G c H = ((\<forall> s t ss tt . (s,c \<Down> t) \<longrightarrow> (ss,c \<Down> tt) \<longrightarrow>
+                                    EQ G p s ss \<longrightarrow> EQ H p t tt))"
 
 lemma secureEQUIV: 
   "secure p G c H = (\<forall> q . secure1 p G c H \<and> secure2 q G c H)"
@@ -487,16 +487,16 @@ lemma if_algorithmic:
 text{*As in Section \ref{sec:BaseLineNI} we define a fixed point
 construction, useful for the (parallel) while rule.*}
 
-constdefs FIX::"(TT \<Rightarrow> TT) \<Rightarrow> TT"
-"FIX \<phi> \<equiv> \<lambda> (s,t). \<forall> \<Phi> . (\<forall> ss tt . \<phi> \<Phi> (ss, tt) \<longrightarrow> \<Phi> (ss, tt))
-                            \<longrightarrow> \<Phi> (s, t)" 
+definition FIX::"(TT \<Rightarrow> TT) \<Rightarrow> TT"
+where "FIX \<phi> = (\<lambda> (s,t). \<forall> \<Phi> . (\<forall> ss tt . \<phi> \<Phi> (ss, tt) \<longrightarrow> \<Phi> (ss, tt))
+                            \<longrightarrow> \<Phi> (s, t))"
 
 text{*For monotone invariant transformers, the construction indeed
 yields a fixed point.*}
 
-constdefs Monotone::"(TT \<Rightarrow> TT) \<Rightarrow> bool"
-"Monotone \<phi> \<equiv> \<forall> \<Phi> \<Psi> . (\<forall> s t . \<Phi>(s,t) \<longrightarrow> \<Psi>(s,t)) \<longrightarrow> 
-                        (\<forall> s t . \<phi> \<Phi> (s,t) \<longrightarrow> \<phi> \<Psi> (s,t))"
+definition Monotone::"(TT \<Rightarrow> TT) \<Rightarrow> bool"
+where "Monotone \<phi> = (\<forall> \<Phi> \<Psi> . (\<forall> s t . \<Phi>(s,t) \<longrightarrow> \<Psi>(s,t)) \<longrightarrow> 
+                        (\<forall> s t . \<phi> \<Phi> (s,t) \<longrightarrow> \<phi> \<Psi> (s,t)))"
 
 (*<*)
 lemma Fix2: "\<lbrakk>Monotone \<phi>; \<phi> (FIX \<phi>) (s, t)\<rbrakk> \<Longrightarrow> FIX \<phi> (s,t)"
@@ -533,12 +533,12 @@ done
 
 text{*Next, the definition of a while-operator.*}
 
-constdefs PhiWhilePOp::
+definition PhiWhilePOp::
           "VDMAssn \<Rightarrow> BExpr \<Rightarrow> TT \<Rightarrow> TT \<Rightarrow> TT"
-"PhiWhilePOp A b \<Phi> \<equiv> 
-  \<lambda> \<Psi> . (\<lambda>(r, u). (evalB b u \<longrightarrow> (\<exists>z. \<Phi> (z, u) \<and> 
+where "PhiWhilePOp A b \<Phi> =
+  (\<lambda> \<Psi> . (\<lambda>(r, u). (evalB b u \<longrightarrow> (\<exists>z. \<Phi> (z, u) \<and> 
                                         (\<forall>w. A z w \<longrightarrow> \<Psi> (r, w)))) \<and> 
-                     ((\<not> evalB b u) \<longrightarrow> A r u))"
+                     ((\<not> evalB b u) \<longrightarrow> A r u)))"
 
 text{*This operator is monotone in $\Phi$.*}
 
@@ -551,8 +551,8 @@ done
 
 text{*Therefore, we can define the following fixed point.*}
 
-constdefs PhiWhileP::"VDMAssn \<Rightarrow> BExpr \<Rightarrow> TT \<Rightarrow> TT"
-"PhiWhileP A b \<Phi> \<equiv> FIX (PhiWhilePOp A b \<Phi>)"
+definition PhiWhileP::"VDMAssn \<Rightarrow> BExpr \<Rightarrow> TT \<Rightarrow> TT"
+where "PhiWhileP A b \<Phi> = FIX (PhiWhilePOp A b \<Phi>)"
 
 text{*As as a function on $\phi$, this PhiWhileP is itself monotone
 in $\phi$:*}
@@ -780,8 +780,8 @@ varDFalse: "\<lbrakk>\<not> evalB b s; A s t\<rbrakk> \<Longrightarrow> (b,A,s,t
 
 text{*Here is the obvious definition of transitivity for assertions.*}
 
-constdefs transitive::"VDMAssn \<Rightarrow> bool"
-"transitive P \<equiv> \<forall> x y z . P x y \<longrightarrow> P y z \<longrightarrow> P x z"
+definition transitive::"VDMAssn \<Rightarrow> bool"
+where "transitive P = (\<forall> x y z . P x y \<longrightarrow> P y z \<longrightarrow> P x z)"
 
 text{*The inductive relation satisfies the following property.*}
 
@@ -890,8 +890,8 @@ done
 subsection{*Soundness results*}
 
 (*<*)
-constdefs Theorem3derivProp::"VDMAssn set \<Rightarrow> L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> L \<Rightarrow> bool"
-"Theorem3derivProp X p G c H q \<equiv> (\<exists> \<Phi> . X \<rhd> c : (Sec (Q p H) (EQ G q) (EQ H q) \<Phi>))"
+definition Theorem3derivProp::"VDMAssn set \<Rightarrow> L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> L \<Rightarrow> bool"
+where "Theorem3derivProp X p G c H q = (\<exists> \<Phi> . X \<rhd> c : (Sec (Q p H) (EQ G q) (EQ H q) \<Phi>))"
 
 lemma Theorem3_derivAux[rule_format]: 
 "(p,G,c,H):HS \<Longrightarrow> Theorem3derivProp X p G c H q"
@@ -1131,8 +1131,8 @@ D_SKIP:
   "({A} \<union> X,body,A): Deriv \<Longrightarrow> (X,Call,A) : Deriv"
 
 (*<*)
-constdefs DProp :: "VDMAssn \<Rightarrow> bool"
-"DProp B \<equiv> (\<exists> A R S \<phi> . B =  Sec A R S (\<phi> (FIX \<phi>)) \<and> Monotone \<phi>)"
+definition DProp :: "VDMAssn \<Rightarrow> bool"
+where "DProp B = (\<exists> A R S \<phi> . B =  Sec A R S (\<phi> (FIX \<phi>)) \<and> Monotone \<phi>)"
 
 lemma DerivProp_Aux: "(X,c,A):Deriv \<Longrightarrow> DProp A"
 apply (erule Deriv.induct)

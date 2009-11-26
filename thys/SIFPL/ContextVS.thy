@@ -23,23 +23,23 @@ datatype CtxtProg =
 text{*We let $C$, $D$ range over contextual programs. The substitution
 operation is defined by structural recursion.*}
 
-consts Fill::"CtxtProg \<Rightarrow> IMP \<Rightarrow> IMP"
-primrec
-"Fill Ctxt_Hole c = c"
-"Fill Ctxt_Skip c = Skip"
-"Fill (Ctxt_Assign x e) c = Assign x e"
-"Fill (Ctxt_Comp C1 C2) c = Comp (Fill C1 c) (Fill C2 c)"
-"Fill (Ctxt_If b C1 C2) c = Iff b (Fill C1 c) (Fill C2 c)"
-"Fill (Ctxt_While b C) c = While b (Fill C c)"
+primrec Fill::"CtxtProg \<Rightarrow> IMP \<Rightarrow> IMP"
+where
+"Fill Ctxt_Hole c = c" |
+"Fill Ctxt_Skip c = Skip" |
+"Fill (Ctxt_Assign x e) c = Assign x e" |
+"Fill (Ctxt_Comp C1 C2) c = Comp (Fill C1 c) (Fill C2 c)" |
+"Fill (Ctxt_If b C1 C2) c = Iff b (Fill C1 c) (Fill C2 c)" |
+"Fill (Ctxt_While b C) c = While b (Fill C c)" |
 "Fill Ctxt_Call c = Call"
 
 text{*Equally obvious are the definitions of the (syntactically)
 mentioned variables of arithmetic and boolean expressions.*}
 
-consts EVars::"Expr \<Rightarrow> Var set"
-primrec
-"EVars (varE x) = {x}"
-"EVars (valE v) = {}"
+primrec EVars::"Expr \<Rightarrow> Var set"
+where
+"EVars (varE x) = {x}" |
+"EVars (valE v) = {}" |
 "EVars (opE f e1 e2) = EVars e1 \<union> EVars e2"
 
 lemma low_Eval[rule_format]:
@@ -53,8 +53,8 @@ apply clarsimp
 done
 (*>*)
 
-consts BVars::"BExpr \<Rightarrow> Var set"
-primrec
+primrec BVars::"BExpr \<Rightarrow> Var set"
+where
 "BVars (compB f e1 e2) = EVars e1 \<union> EVars e2"
 
 lemma low_EvalB[rule_format]:
@@ -76,27 +76,27 @@ are denoted by $\mathit{Vars\; c}$. Note that in the clause for
 assignments the variable that is assigned to is not included in the
 set.*}
 
-consts Vars::"IMP \<Rightarrow> Var set"
-primrec
-"Vars Skip = {}"
-"Vars (Assign x e) = EVars e"
-"Vars (Comp c d) = Vars c \<union> Vars d"
-"Vars (While b c) = BVars b \<union> Vars c"
-"Vars (Iff b c d) = BVars b \<union> Vars c \<union> Vars d"
+primrec Vars::"IMP \<Rightarrow> Var set"
+where
+"Vars Skip = {}" |
+"Vars (Assign x e) = EVars e" |
+"Vars (Comp c d) = Vars c \<union> Vars d" |
+"Vars (While b c) = BVars b \<union> Vars c" |
+"Vars (Iff b c d) = BVars b \<union> Vars c \<union> Vars d" |
 "Vars Call = {}"
 
 text{*For contexts, we define when a set $X$ of variables is an upper
 bound for the variables read from.*}
 
-consts CtxtVars::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
-primrec
-"CtxtVars X Ctxt_Hole = True"
-"CtxtVars X Ctxt_Skip = True"
-"CtxtVars X (Ctxt_Assign x e) = (EVars e \<subseteq> X)"
-"CtxtVars X (Ctxt_Comp C1 C2) = (CtxtVars X C1 \<and> CtxtVars X C2)"
+primrec CtxtVars::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
+where
+"CtxtVars X Ctxt_Hole = True" |
+"CtxtVars X Ctxt_Skip = True" |
+"CtxtVars X (Ctxt_Assign x e) = (EVars e \<subseteq> X)" |
+"CtxtVars X (Ctxt_Comp C1 C2) = (CtxtVars X C1 \<and> CtxtVars X C2)" |
 "CtxtVars X (Ctxt_If b C1 C2) = (BVars b \<subseteq> X \<and> CtxtVars X C1
-                                             \<and>  CtxtVars X C2)"
-"CtxtVars X (Ctxt_While b C) = (BVars b \<subseteq> X \<and> CtxtVars X C)"
+                                             \<and>  CtxtVars X C2)" |
+"CtxtVars X (Ctxt_While b C) = (BVars b \<subseteq> X \<and> CtxtVars X C)" |
 "CtxtVars X Ctxt_Call = True"
 
 (*<*)
@@ -204,8 +204,8 @@ consts Ctxt_Body::CtxtProg
 text{*The following predicate expresses that all variables read from
 by a command $c$ are contained in the set $X$ of low variables.*}
 
-constdefs LOW::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
-"LOW X C \<equiv> CtxtVars X C \<and> (\<forall> x . x : X \<longrightarrow> CONTEXT x = low)"
+definition LOW::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
+where "LOW X C = (CtxtVars X C \<and> (\<forall> x . x : X \<longrightarrow> CONTEXT x = low))"
 
 (*<*)
 lemma secureI_secureFillI_Aux[rule_format]:
