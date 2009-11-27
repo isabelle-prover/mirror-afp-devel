@@ -279,7 +279,7 @@ proof -
 	with xexec' check_ins show ?thesis
 	  by(auto intro: hext_upd_obj elim!: is_ArrE
                   simp add: min_def split_beta is_Ref_def red_external_list_conv[symmetric]
-                            extRet2JVM_def[folded Datatype.sum_case_def]
+                            extRet2JVM_def[folded sum_case_def]
                   split: split_if_asm sum.split_asm dest: red_external_hext)
       qed(auto simp add: split_beta split: split_if_asm)
     next

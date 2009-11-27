@@ -4110,7 +4110,7 @@ next
     next
       case Nil
       with exec pc show ?thesis 
-	by(force elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def[folded Datatype.sum_case_def] split: split_if_asm sum.split_asm)
+	by(force elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def[folded sum_case_def] split: split_if_asm sum.split_asm)
     qed
   qed
 next
@@ -4124,7 +4124,7 @@ next
     case Nil
     with bisimParam have "pc = 0" "xcp = None" by(auto elim: bisims1.cases)
     with exec Nil show ?thesis 
-      apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def[folded Datatype.sum_case_def] split: split_if_asm sum.split_asm)
+      apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def[folded sum_case_def] split: split_if_asm sum.split_asm)
       apply(force simp add: neq_Nil_conv intro: exec_meth.intros)+
       done
   next
@@ -4164,7 +4164,7 @@ next
       with bisimParam obtain vs where "stk = vs" "length vs = length ps" "xcp = None"
 	by(auto dest: bisims1_pc_length_compEs2D)
       with exec pc Cons show ?thesis
-	apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def[folded Datatype.sum_case_def] split: split_if_asm sum.split_asm)
+	apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def[folded sum_case_def] split: split_if_asm sum.split_asm)
 	apply(force simp add: neq_Nil_conv intro: exec_meth.intros)+
 	done
     qed

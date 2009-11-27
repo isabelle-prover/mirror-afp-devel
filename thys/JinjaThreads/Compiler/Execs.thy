@@ -52,7 +52,7 @@ using assms
 proof(cases "ins ! pc")
   case (Invoke M n)
   thus ?thesis using exec check
-    by(force split: split_if_asm sum.splits split del: split_if simp add: split_beta nth_append min_def extRet2JVM_def[folded Datatype.sum_case_def] elim!: is_ArrE)
+    by(force split: split_if_asm sum.splits split del: split_if simp add: split_beta nth_append min_def extRet2JVM_def[folded sum_case_def] elim!: is_ArrE)
 qed(fastsimp simp add: nth_append is_Ref_def has_method_def nth_Cons split_beta hd_append tl_append neq_Nil_conv split: list.split split_if_asm nat.splits elim!: is_ArrE)+
 
 lemma exec_meth_stk_offer:
@@ -129,7 +129,7 @@ next
   next
     case (Invoke M n)
     with exec show ?thesis 
-      by(force split: split_if_asm sum.splits split del: split_if simp add: split_beta nth_append min_def extRet2JVM_def[folded Datatype.sum_case_def] elim!: is_ArrE)
+      by(force split: split_if_asm sum.splits split del: split_if simp add: split_beta nth_append min_def extRet2JVM_def[folded sum_case_def] elim!: is_ArrE)
   qed(auto simp add: split_beta split: split_if_asm)
   moreover from `check_instr (ins ! pc) P h stk loc arbitrary arbitrary pc []`
   have "check_instr (ins ! pc) P h stk loc arbitrary arbitrary (length ins' + pc) []"
@@ -181,7 +181,7 @@ proof(cases rule: exec_meth.cases)
   have "(ta, xcp', h', [(stk', loc', arbitrary, arbitrary, PC' - length ins)]) \<in> set (exec_instr (ins' ! pc) P h stk loc arbitrary arbitrary pc [])"
     apply(cases "ins' ! pc")
     apply(simp_all add: split_beta split: split_if_asm split del: split_if)
-    apply(force split: sum.splits simp add: min_def extRet2JVM_def[folded Datatype.sum_case_def])+
+    apply(force split: sum.splits simp add: min_def extRet2JVM_def[folded sum_case_def])+
     done
   moreover from `check_instr ((ins @ ins') ! PC) P H STK LOC arbitrary arbitrary PC []` jump pc
   have "check_instr (ins' ! pc) P h stk loc arbitrary arbitrary pc []"
@@ -215,7 +215,7 @@ proof(cases rule: exec_meth.cases)
     apply(cases "ins' ! (pc - length ins)")
     apply(safe)
     apply(simp_all add: split_beta nth_append split: split_if_asm)
-    apply(force split: sum.splits simp add: min_def extRet2JVM_def[folded Datatype.sum_case_def] dest: jump_ok_GotoD jump_ok_IfFalseD)+
+    apply(force split: sum.splits simp add: min_def extRet2JVM_def[folded sum_case_def] dest: jump_ok_GotoD jump_ok_IfFalseD)+
     done
 next
   case exec_catch thus ?thesis using pcs pc
@@ -1046,7 +1046,7 @@ lemma exec_instr_frs_offer:
   \<Longrightarrow> (ta, xcp', h', (stk', loc', C, M, pc') # frs @ frs') \<in> set (exec_instr ins P h stk loc C M pc (frs @ frs'))"
 apply(cases ins)
 apply(simp_all add: nth_append split_beta split: split_if_asm)
-apply(force split: sum.split_asm simp add: extRet2JVM_def[folded Datatype.sum_case_def])+
+apply(force split: sum.split_asm simp add: extRet2JVM_def[folded sum_case_def])+
 done
 
 lemma check_instr_frs_offer:
@@ -1059,7 +1059,7 @@ lemma exec_instr_CM_change:
   \<Longrightarrow> (ta, xcp', h', (stk', loc', C', M', pc') # frs) \<in> set (exec_instr ins P h stk loc C' M' pc frs)"
 apply(cases ins)
 apply(simp_all add: nth_append split_beta neq_Nil_conv split: split_if_asm)
-apply(force split: sum.split_asm simp add: extRet2JVM_def[folded Datatype.sum_case_def])+
+apply(force split: sum.split_asm simp add: extRet2JVM_def[folded sum_case_def])+
 done
 
 lemma check_instr_CM_change:

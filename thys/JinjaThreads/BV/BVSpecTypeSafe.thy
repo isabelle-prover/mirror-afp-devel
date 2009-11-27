@@ -107,7 +107,7 @@ proof -
 	  by(auto split: heapobj.split_asm dest:  external_WTrt_widen_mono)
 	from Us have "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)" by(simp only: rev_map[symmetric])
 	with xcpt Ta True False Invoke a `P \<turnstile> Ta\<bullet>M'(rev Us) :: U'` pre show ?thesis
-	  apply(auto simp add: extRet2JVM_def[folded Datatype.sum_case_def] split: sum.splits simp del: typeof_h.simps)
+	  apply(auto simp add: extRet2JVM_def[folded sum_case_def] split: sum.splits simp del: typeof_h.simps)
 	  apply(frule (4) red_external_conf_extRet[OF wf, unfolded red_external_list_conv])
 	  apply(drule red_external_list_xcp_heap_unchanged)
 	  apply(auto simp add: conf_def widen_Class split: heapobj.split_asm)
@@ -414,7 +414,7 @@ proof -
       with Ta ha no_xcp ins iec ha a n list_all2_lengthD[OF stk] obtain h' v tas'
 	where \<sigma>: "\<sigma> = (h', (v # drop (n+1) stk, loc, C, M, pc+1) # frs)"
 	and v: "(tas', Inl v, h') \<in> set (red_external_list P a M' (rev (take n stk)) h)"
-	by(fastsimp split: split_if_asm sum.split_asm simp add: extRet2JVM_def[folded Datatype.sum_case_def] min_def)
+	by(fastsimp split: split_if_asm sum.split_asm simp add: extRet2JVM_def[folded sum_case_def] min_def)
 
       from v[folded red_external_list_conv] Ta(1) `map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)` `P \<turnstile> Ta\<bullet>M'(rev Us) :: U'` heap_ok
       have "P,h' \<turnstile> v :\<le> U'" "P \<turnstile> h' \<surd>"

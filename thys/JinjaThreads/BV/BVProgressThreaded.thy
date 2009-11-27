@@ -328,7 +328,7 @@ proof(cases xcp)
 	    with None `xcp' = None` `P \<turnstile> (xcp, h, f # Frs) -ta-jvm\<rightarrow> (xcp', h', [])` `f = (stk, loc, C0, M0, pc)`
 	      `P \<turnstile> C0 sees M0:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, ins, xt) in C0`
 	    have "ins ! pc = Return"
-	      by(clarsimp simp add: exec_1_iff)(cases "ins ! pc", auto split: split_if_asm sum.split_asm simp add: split_beta extRet2JVM_def[folded Datatype.sum_case_def])
+	      by(clarsimp simp add: exec_1_iff)(cases "ins ! pc", auto split: split_if_asm sum.split_asm simp add: split_beta extRet2JVM_def[folded sum_case_def])
 	    with `P \<turnstile> (xcp, h, f # Frs) -ta-jvm\<rightarrow> (xcp', h', [])` `xcp = None`
 	      `f = (stk, loc, C0, M0, pc)` `P \<turnstile> C0 sees M0:Ts\<rightarrow>T = (mxs, mxl\<^isub>0, ins, xt) in C0`
 	    show ?thesis
