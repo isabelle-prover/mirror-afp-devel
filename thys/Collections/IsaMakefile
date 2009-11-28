@@ -1,0 +1,49 @@
+
+## targets
+
+default: Collections
+images: 
+test: Collections
+userguide: generated/Userguide.pdf
+
+all: images test userguide
+
+
+## global settings
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf -D generated
+
+
+## Collections
+
+Collections: $(LOG)/HOL-Collections.gz
+
+StdInst.thy: StdInst.in.thy
+	scripts/inst.rb < StdInst.in.thy > StdInst.thy
+
+$(LOG)/HOL-Collections.gz: ROOT.ML document/*.tex document/*.bib *.thy
+	@pushd ..; $(USEDIR) HOL Collections; res=$?; popd; exit ${res}
+
+generated/Userguide.pdf: $(LOG)/HOL-Collections.gz
+	@pushd generated; \
+    $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" > userguide.log;\
+    $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" >> userguide.log && \
+    $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
+    { [ ! -f root.bib ] || $(ISABELLE_TOOL) latex -o bbl "root_userguide.tex" >> userguide.log; } && \
+    { [ ! -f root.idx ] || $(ISABELLE_TOOL) latex -o idx "root_userguide.tex" >> userguide.log; } && \
+    $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
+    $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
+    mv root_userguide.pdf Userguide.pdf && \
+    echo "Userguide at ${PWD}/Userguide.pdf"; \
+    res=$?;\
+  popd; exit ${res}
+
+
+## clean
+
+clean:
+	@rm -f $(LOG)/HOL-Collections.gz
+	@rm -rf generated

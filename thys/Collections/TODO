@@ -1,0 +1,14 @@
+D  specify: union_map, finite_map, iterable_map
+D  specify generic union algorithm
+D  specify union and inter algos for iterable basic sets
+  
+D  Implement map on assoc_list, RBT, hash_map
+D  Implement set on list, RBT (use set_by_map), hash_set (use set_by_map)
+
+D  Implement iterators for hashmap and hashset (use set_by_map)
+
+  Implement efficient interruptible iterators for rbt and hashmap
+
+  Should we separate fifo-class from implementation? I.e. are there other useful fifo-implementations?
+  
+  Generalize data refinement, such that it becomes applicable for iterators (and related concepts, cf dpn pre* impl)

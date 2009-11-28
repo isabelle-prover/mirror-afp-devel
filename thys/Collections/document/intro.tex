@@ -1,0 +1,22 @@
+\section{Introduction}
+  This development provides an efficient, extensible, machine checked collections framework for use
+  in Isabelle/HOL. The library adopts the concepts of interface, implementation and generic algorithm
+  known from object oriented (collection) libraries like the C++ Standard Template Library\cite{C++STL} or 
+  the Java Collections Framework\cite{JavaCollFr} and makes them available in the Isabelle/HOL environment.
+
+  The library features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). This allows algorithms to be proven on the abstract level, where proofs are simpler because they do not have
+  to cope with low-level details.
+
+  The code-generator of Isabelle/HOL can be used to generate efficient code in all supported target languages, i.e. Haskell, SML, and OCaml.
+
+  For more documentation and introductory material refer to the userguide (Section~\ref{thy:Userguide}).
+
+\subsection{Document Structure}
+  Initially, in Sections~\ref{thy:MapSpec} and \ref{thy:SetSpec}, maps and sets are specified.
+  Moreover, in Section~\ref{thy:Fifo}, an amortized constant time Fifo-queue is defined.
+  In Sections~\ref{thy:MapGA} to \ref{thy:Index}, various generic algorithms on maps and sets are defined.
+  In Sections~\ref{thy:ListMapImpl} to \ref{thy:HashSet}, maps and sets are implemented using lists, red-black trees, and hashing.
+  Section~\ref{thy:Userguide} provides a userguide to the Isabelle Collections Framework. Section~\ref{thy:DatRef} defines a data-refinement framework for
+  the while-combinator, that is used in Sections~\ref{thy:Exploration} and \ref{thy:Exploration_Example} to specify a state-space exploration algorithm and
+  refine it to an executable algorithm (using DFS search strategy and hashsets). Finally, a short conclusion and outlook to further work is given in \ref{sec:conclusion}.
+
