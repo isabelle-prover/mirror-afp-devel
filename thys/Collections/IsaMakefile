@@ -1,34 +1,48 @@
+## configurables
+
+SESSION-NAME = Collections
+BASE-IMAGE = HOL
 
 ## targets
 
-default: Collections
-images: 
-test: Collections
+default: $(SESSION-NAME)
+test: $(SESSION-NAME)
 userguide: generated/Userguide.pdf
+# usually empty:
+images:  
 
 all: images test userguide
 
 
 ## global settings
+
 SRC = $(ISABELLE_HOME)/src
 OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d pdf -D generated
+# turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
+ifeq ($(ISABELLE_IMAGE_PATH),)
+IMAGE=$(OUT)/$(BASE-IMAGE)
+else
+IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
+endif
 
 
-## Collections
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" -D generated
 
-Collections: $(LOG)/HOL-Collections.gz
+# time limit (in sec)
+MAXTIME = 3600
 
-StdInst.thy: StdInst.in.thy
-	scripts/inst.rb < StdInst.in.thy > StdInst.thy
 
-$(LOG)/HOL-Collections.gz: ROOT.ML document/*.tex document/*.bib *.thy
-	@pushd ..; $(USEDIR) HOL Collections; res=$?; popd; exit ${res}
+## dependencies
+
+$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 generated/Userguide.pdf: $(LOG)/HOL-Collections.gz
-	@pushd generated; \
+	cd generated; \
     $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" > userguide.log;\
     $(ISABELLE_TOOL) latex -o sty "root_userguide.tex" >> userguide.log && \
     $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
@@ -37,13 +51,11 @@ generated/Userguide.pdf: $(LOG)/HOL-Collections.gz
     $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
     $(ISABELLE_TOOL) latex -o pdf "root_userguide.tex" >> userguide.log && \
     mv root_userguide.pdf Userguide.pdf && \
-    echo "Userguide at ${PWD}/Userguide.pdf"; \
-    res=$?;\
-  popd; exit ${res}
+    echo "Userguide at `pwd`/Userguide.pdf"
 
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/HOL-Collections.gz
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 	@rm -rf generated
