@@ -7,7 +7,8 @@ use_thys ["MapSpec", "SetSpec", "Fifo"];
 use_thys ["MapGA", "SetGA", "SetByMap", "Algos", "Index"];
 
 (* Implementations *)
-no_document use_thys ["AssocList", "RBT_add", "common/bugfixes/Efficient_Nat"];
+no_document use_thys
+ ["While_Combinator", "AssocList", "RBT_add", "common/bugfixes/Efficient_Nat"];
 
 use_thys
   ["ListMapImpl", "ListSetImpl", "RBTMapImpl", "RBTSetImpl",
