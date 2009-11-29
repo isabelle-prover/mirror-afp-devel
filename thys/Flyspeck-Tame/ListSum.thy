@@ -15,7 +15,7 @@ primrec
 
 syntax "_ListSum" :: "idt \<Rightarrow> 'b list \<Rightarrow> ('a::comm_monoid_add) \<Rightarrow> 
   ('a::comm_monoid_add)"    ("\<Sum>\<^bsub>_\<in>_\<^esub> _")
-translations "\<Sum>\<^bsub>x\<in>xs\<^esub> f" == "ListSum xs (\<lambda>x. f)" 
+translations "\<Sum>\<^bsub>x\<in>xs\<^esub> f" == "CONST ListSum xs (\<lambda>x. f)" 
 
 (* implementation on natural numbers *)
 (* 1. nat list sum *)
