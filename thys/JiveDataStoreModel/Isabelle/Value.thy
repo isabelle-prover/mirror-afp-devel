@@ -371,11 +371,8 @@ constdefs typeof :: "Value \<Rightarrow> Javatype"
              | arrV T a \<Rightarrow> ArrT T
              | nullV    \<Rightarrow> NullT)"
 
-syntax
- "_tau" :: "Value \<Rightarrow> Javatype" ("\<tau> _")
-
-translations
- "\<tau> v" == "typeof v"
+abbreviation tau_syntax :: "Value \<Rightarrow> Javatype" ("\<tau> _")
+  where "\<tau> v == typeof v"
 
 lemma typeof_simps [simp]:
 "(\<tau> (boolV b)) = BoolT"
