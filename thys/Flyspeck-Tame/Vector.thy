@@ -35,9 +35,9 @@ syntax
      pttrn \<Rightarrow> nat \<Rightarrow> 'a vector"
   ("(\<lbrakk>_. _ < _, _ < _, _ < _ \<rbrakk>)")
 translations 
-  "\<lbrakk>f. x < n\<rbrakk>" == "tabulate n (\<lambda>x. f)"
-  "\<lbrakk>f. x < m, y < n\<rbrakk>" == "tabulate2 m n (\<lambda>x y. f)"
-  "\<lbrakk>f. x < l, y < m, z < n\<rbrakk>" == "tabulate3 l m n (\<lambda>x y z. f)"
+  "\<lbrakk>f. x < n\<rbrakk>" == "CONST tabulate n (\<lambda>x. f)"
+  "\<lbrakk>f. x < m, y < n\<rbrakk>" == "CONST tabulate2 m n (\<lambda>x y. f)"
+  "\<lbrakk>f. x < l, y < m, z < n\<rbrakk>" == "CONST tabulate3 l m n (\<lambda>x y z. f)"
 
 
 subsection {* Access *}
@@ -54,9 +54,9 @@ syntax
   "_sub3" :: "'a vector vector vector \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a" ("(_\<lbrakk>_,_,_\<rbrakk>)" [1000] 999) 
 
 translations 
-  "(a\<lbrakk>n\<rbrakk>)" == "sub a n"
-  "(as\<lbrakk>m, n\<rbrakk>)" == "sub (sub as m) n"
-  "(as\<lbrakk>l, m, n\<rbrakk>)" == "sub (sub (sub as l) m) n"
+  "(a\<lbrakk>n\<rbrakk>)" == "CONST sub a n"
+  "(as\<lbrakk>m, n\<rbrakk>)" == "CONST sub (CONST sub as m) n"
+  "(as\<lbrakk>l, m, n\<rbrakk>)" == "CONST sub (CONST sub (CONST sub as l) m) n"
 
 text {* examples:  @{term "\<lbrakk>0. i < 5\<rbrakk>"}, @{term "\<lbrakk>i. i < 5, j < 3\<rbrakk>"}  *}
 
