@@ -23,16 +23,21 @@ subsection{* Literal Trail *}
 text{* LiteralTrail is a Trail consisting of literals, where decision literals are marked. *}
 
 types LiteralTrail = "Literal Trail"
-consts isDecision :: "(Literal \<times> bool) \<Rightarrow> bool"
-translations "(isDecision l)" == "(marked l)"
-consts lastDecision :: "LiteralTrail \<Rightarrow> Literal"
-translations "(lastDecision M)" == "(Trail.lastMarked M)"
-consts decisions :: "LiteralTrail \<Rightarrow> Literal list"
-translations "(decisions M)" == "(Trail.markedElements M)"
-consts decisionsTo :: "LiteralTrail \<Rightarrow> Literal \<Rightarrow> Literal list"
-translations "(decisionsTo M l)" == "(Trail.markedElementsTo M l)"
-consts prefixBeforeLastDecision :: "LiteralTrail \<Rightarrow> LiteralTrail"
-translations "(prefixBeforeLastDecision M)" == "(Trail.prefixBeforeLastMarked M)"
+
+abbreviation isDecision :: "('a \<times> bool) \<Rightarrow> bool"
+  where "isDecision l == marked l"
+
+abbreviation lastDecision :: "LiteralTrail \<Rightarrow> Literal"
+  where "lastDecision M == Trail.lastMarked M"
+
+abbreviation decisions :: "LiteralTrail \<Rightarrow> Literal list"
+  where "decisions M == Trail.markedElements M"
+
+abbreviation decisionsTo :: "Literal \<Rightarrow> LiteralTrail \<Rightarrow> Literal list"
+  where "decisionsTo M l == Trail.markedElementsTo M l"
+
+abbreviation prefixBeforeLastDecision :: "LiteralTrail \<Rightarrow> LiteralTrail"
+  where "prefixBeforeLastDecision M == Trail.prefixBeforeLastMarked M"
 
 (*--------------------------------------------------------------------------*)
 (*                            I N V A R I A N T S                           *)
@@ -2140,10 +2145,10 @@ number of literals on the different decision levels. It will be used
 for transition rules that change the trail, i.e., for $Decide$,
 $UnitPropagate$, $Backjump$ and $Backtrack$ transition rules.  *}
 
-constdefs
-"decisionLess == {(l1::('a*bool), l2::('a*bool)). isDecision l1 \<and> \<not> isDecision l2}"
-constdefs
-"lexLess == {(M1::'a Trail, M2::'a Trail). (M2, M1) \<in> lexord decisionLess}"
+definition
+"decisionLess = {(l1::('a*bool), l2::('a*bool)). isDecision l1 \<and> \<not> isDecision l2}"
+definition
+"lexLess = {(M1::'a Trail, M2::'a Trail). (M2, M1) \<in> lexord decisionLess}"
 
 
 text{* Following several lemmas will help prove that application of

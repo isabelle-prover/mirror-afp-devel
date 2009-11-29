@@ -24,49 +24,43 @@ datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
 
 subsection"Invariants and auxiliary functions"
 
-consts
-  height :: "'a tree \<Rightarrow> nat"
-  set_of :: "'a tree \<Rightarrow> 'a set" 
-  avl :: "'a tree \<Rightarrow> bool" 
-  is_ord :: "('a::order) tree \<Rightarrow> bool" 
-
-primrec
-"set_of ET = {}"
+primrec set_of :: "'a tree \<Rightarrow> 'a set"
+where
+"set_of ET = {}" |
 "set_of (MKT n l r h) = insert n (set_of l \<union> set_of r)"
 
-primrec
-"height ET = 0"
+primrec height :: "'a tree \<Rightarrow> nat"
+where
+"height ET = 0" |
 "height (MKT x l r h) = max (height l) (height r) + 1"
 
-primrec
-"avl ET = True"
+primrec avl :: "'a tree \<Rightarrow> bool"
+where
+"avl ET = True" |
 "avl (MKT x l r h) =
  ((height l = height r \<or> height l = 1+height r \<or> height r = 1+height l) \<and> 
   h = max (height l) (height r) + 1 \<and> avl l \<and> avl r)"
 
-primrec
-"is_ord ET = True"
+primrec is_ord :: "('a::order) tree \<Rightarrow> bool"
+where
+"is_ord ET = True" |
 "is_ord (MKT n l r h) =
  ((\<forall>n' \<in> set_of l. n' < n) \<and> (\<forall>n' \<in> set_of r. n < n') \<and> is_ord l \<and> is_ord r)"
 
 
 subsection "AVL interface and implementation"
 
-consts
-  is_in :: "('a::order) \<Rightarrow> 'a tree \<Rightarrow> bool"
-  insrt :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
-
-
-primrec
- "is_in k ET = False"
+primrec is_in :: "('a::order) \<Rightarrow> 'a tree \<Rightarrow> bool"
+where
+ "is_in k ET = False" |
  "is_in k (MKT n l r h) = (if k = n then True else
                            if k < n then (is_in k l)
                            else (is_in k r))"
 
 
-consts ht :: "'a tree \<Rightarrow> nat"
-primrec
-"ht ET = 0"
+primrec ht :: "'a tree \<Rightarrow> nat"
+where
+"ht ET = 0" |
 "ht (MKT x l r h) = h"
 
 definition
@@ -88,8 +82,9 @@ fun r_bal where
                 | MKT rln rll rlr h \<Rightarrow> mkt rln (mkt n l rll) (mkt rn rlr rr)
   else mkt rn (mkt n l rl) rr)"
 
-primrec
-"insrt x ET = MKT x ET ET 1"
+primrec insrt :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
+where
+"insrt x ET = MKT x ET ET 1" |
 "insrt x (MKT n l r h) = 
    (if x=n
     then MKT n l r h

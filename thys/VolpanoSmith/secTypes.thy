@@ -1,4 +1,6 @@
-theory secTypes imports Semantics begin
+theory secTypes
+imports Semantics
+begin
 
 section {* Security types *}
 
@@ -745,4 +747,3 @@ next
 qed
 
 end
-

@@ -95,10 +95,9 @@ subsection{* @{term uniq} - no duplicate elements. *}
 text{* @{term "(uniq list)"} holds iff there are no repeated elements
 in a list.  Obsolete: same as @{term "distinct"} in {\em List.thy}. *}
 
-consts
-uniq :: "'a list => bool"
-primrec
-"uniq [] = True"
+primrec uniq :: "'a list => bool"
+where
+"uniq [] = True" |
 "uniq (h#t) = (h \<notin> set t \<and> uniq t)"
 
 lemma uniqDistinct:
@@ -214,9 +213,9 @@ text{* @{term "firstPos"} returns the zero-based index of the first
   occurence of an element int a list, or the length of the list if the
   element does not occur. *}
 
-consts firstPos :: "'a => 'a list => nat"
-primrec
-"firstPos a [] = 0"
+primrec firstPos :: "'a => 'a list => nat"
+where
+"firstPos a [] = 0" |
 "firstPos a (h # t) = (if a = h then 0 else 1 + (firstPos a t))"
 
 lemma firstPosEqualZero:
@@ -769,10 +768,9 @@ subsection{* @{term isPrefix} - prefixes of list. *}
 text{* Check if a list is a prefix of another list. Obsolete: similiar
 notion is defined in {\em List\_prefixes.thy}. *}
 
-consts
-isPrefix :: "'a list => 'a list => bool"
-defs
-isPrefix_def: "isPrefix p t == \<exists> s. p @ s = t"
+definition
+  isPrefix :: "'a list => 'a list => bool"
+  where "isPrefix p t = (\<exists> s. p @ s = t)"
 
 lemma prefixIsSubset:
   assumes "isPrefix p l"
@@ -867,10 +865,9 @@ qed
 (*********************************************************)
 subsection{* @{term "list_diff"} - the set difference operation on two lists. *}
 
-consts 
-list_diff :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
-primrec 
-"list_diff x [] = x"
+primrec list_diff :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
+where
+"list_diff x [] = x" |
 "list_diff x (y#ys) = list_diff (removeAll y x) ys"
 
 lemma [simp]: 

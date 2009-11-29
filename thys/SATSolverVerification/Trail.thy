@@ -13,14 +13,13 @@ begin
 text{*   Trail is a list in which some elements can be marked. *}
 types 'a Trail = "('a*bool) list"
 
-consts 
-element :: "('a*bool) \<Rightarrow> 'a"
-marked  :: "('a*bool) \<Rightarrow> bool"
+abbreviation
+  element :: "('a*bool) \<Rightarrow> 'a"
+  where "element x == fst x"
 
-translations
-"(element x)" == "(fst x)"
-"(marked  x)" == "(snd x)"
-
+abbreviation
+  marked :: "('a*bool) \<Rightarrow> bool"
+  where "marked  x == snd x"
 
 (*--------------------------------------------------------------------------------*)
 subsection{* Trail elements *}
