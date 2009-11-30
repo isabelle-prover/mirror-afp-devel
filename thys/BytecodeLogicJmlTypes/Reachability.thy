@@ -91,8 +91,8 @@ done
 text{*Similar to the operational semantics, we define a variation of
 the reachability relation that hides the index.*}
 
-constdefs Reach::"Mbody \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> State \<Rightarrow> bool"
-"Reach M l s t \<equiv> \<exists> k . (M,l,s,k,t):Reachable"
+definition Reach::"Mbody \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> State \<Rightarrow> bool"
+where "Reach M l s t = (\<exists> k . (M,l,s,k,t):Reachable)"
 
 (*<*)  
 end

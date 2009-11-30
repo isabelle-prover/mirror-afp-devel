@@ -56,8 +56,8 @@ text{*The formal interpretation at JVM level of a type @{text n} is
 given by a triple $$\mathit{Cachera}(n) = (A, B, I)$$ consisting of a
 (trivial) precondition, a post-condition, and a strong invariant. *}
 
-constdefs Cachera::"nat \<Rightarrow> (Assn \<times> Post \<times> Inv)" 
-"Cachera n \<equiv> (\<lambda> s0 s . True,
+definition Cachera::"nat \<Rightarrow> (Assn \<times> Post \<times> Inv)" where
+"Cachera n = (\<lambda> s0 s . True,
               \<lambda> s0 (ops,s,h) (k,v) . |k| \<le> |h| + n,
               \<lambda> s0 (ops,s,h) k.  |k| \<le> |h| + n)"
 
@@ -71,9 +71,9 @@ contains the interpretations of the entries in $\Sigma$.*}
 text{*We abbreviate the above construction of judgements by a
 predicate @{text deriv}.*}
 
-constdefs deriv::"CTXT \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> 
-                    (Assn \<times> Post \<times> Inv) \<Rightarrow> bool"
-"deriv G C m l (ABI) \<equiv> (let (A,B,I) = ABI in (G \<rhd> \<lbrace> A \<rbrace> C,m,l \<lbrace> B \<rbrace> I))"
+definition deriv::"CTXT \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> 
+                    (Assn \<times> Post \<times> Inv) \<Rightarrow> bool" where
+"deriv G C m l (ABI) = (let (A,B,I) = ABI in (G \<rhd> \<lbrace> A \<rbrace> C,m,l \<lbrace> B \<rbrace> I))"
 
 text{*Thus, the intended interpretation of a typing judgement $\Sigma
 \rhd e: n$ is $$\mathit{deriv}\; C\; m\; l\; (\mathit{Cachera}\; n)$$
@@ -83,17 +83,17 @@ $C.m.l$.*}
 text{*We also define a judgement of the auxiliary form of
 sequents.*}
 
-constdefs derivAssum::"CTXT \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> 
-                         (Assn \<times> Post \<times> Inv) \<Rightarrow> bool"
-"derivAssum G C m l (ABI) \<equiv> (let (A,B,I) = ABI in G \<rhd>  \<langle> A \<rangle> C,m,l \<langle> B \<rangle> I)"
+definition derivAssum::"CTXT \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> 
+                         (Assn \<times> Post \<times> Inv) \<Rightarrow> bool" where
+"derivAssum G C m l (ABI) = (let (A,B,I) = ABI in G \<rhd>  \<langle> A \<rangle> C,m,l \<langle> B \<rangle> I)"
 
 text{*The following operation converts a derived judgement into the
 syntactical form of method specifications.*}
 
-constdefs mkSPEC::"(Assn \<times> Post \<times> Inv) \<Rightarrow> ANNO \<Rightarrow>
-                   (MethSpec \<times> MethInv \<times> ANNO)"
-"mkSPEC (ABI) Anno \<equiv> let (A,B,I) = ABI in
-       (\<lambda> s0 t . B s0 (mkState s0) t, \<lambda> s0 h . I s0 (mkState s0) h, Anno)"
+definition mkSPEC::"(Assn \<times> Post \<times> Inv) \<Rightarrow> ANNO \<Rightarrow>
+                   (MethSpec \<times> MethInv \<times> ANNO)" where
+"mkSPEC (ABI) Anno = (let (A,B,I) = ABI in
+       (\<lambda> s0 t . B s0 (mkState s0) t, \<lambda> s0 h . I s0 (mkState s0) h, Anno))"
 
 text{*This enables the interpretation of typing contexts $\Sigma$ as a
 set of constraints on the specification table @{text MST}.*}
@@ -391,18 +391,19 @@ text{*A functional program is well-typed if its domain agrees with
 that of some context such that each function body validates the
 context entry.*}
 
-constdefs TP::"TP_Sig \<Rightarrow> FunProg \<Rightarrow> bool"
-"TP \<Sigma> F \<equiv> (\<forall> f . (\<Sigma>\<down>f = None) = (F\<down>f = None)) \<and> 
-          (\<forall> f n par e . \<Sigma>\<down>f = Some n \<longrightarrow> F\<down>f = Some (par,e) \<longrightarrow> (\<Sigma>,e,n):TP_expr)"
+definition TP::"TP_Sig \<Rightarrow> FunProg \<Rightarrow> bool" where
+"TP \<Sigma> F = ((\<forall> f . (\<Sigma>\<down>f = None) = (F\<down>f = None)) \<and> 
+          (\<forall> f n par e . \<Sigma>\<down>f = Some n \<longrightarrow> F\<down>f = Some (par,e) \<longrightarrow> (\<Sigma>,e,n):TP_expr))"
 
 text{*For the translation into bytecode, we introduce identifiers for
 a class of lists, the expected field names, and a temporary (reserved)
 variable name.*} 
 
-consts LIST::Class
-       HD::Field
-       TL::Field
-       tmp::Var
+axiomatization
+  LIST::Class and
+  HD::Field and
+  TL::Field and
+  tmp::Var
 
 text{*The compilation of primitive expressions extends a code block by
 a sequence of JVM instructions that leave a value on the top of the
@@ -594,8 +595,8 @@ text{*A signature corresponds to a method specification table if all
 context entries are represented as @{text MST} entries and method
 names that are defined in the global program @{text P}.*}
 
-constdefs Sig_good::"TP_Sig \<Rightarrow> bool"
-"Sig_good \<Sigma> \<equiv>
+definition Sig_good::"TP_Sig \<Rightarrow> bool" where
+"Sig_good \<Sigma> =
  (\<forall> C m n. \<Sigma>\<down>(C,m) = Some n \<longrightarrow> 
     (MST\<down>(C, m) = Some (mkSPEC (Cachera n) emp) \<and>
     (\<exists> par code l0 . mbody_is C m (par,code,l0))))"
@@ -611,10 +612,10 @@ required to contain a method definition for each method
 text{*An auxiliary abbreviation that captures when a block of code has
 trivial annotations and only comprises defined program labels.*}
 
-constdefs Segment::
+definition Segment::
   "Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Label \<Rightarrow> (Label,Instr)AssList \<Rightarrow> bool"
-
-"Segment C m l l1 code \<equiv> 
+where
+"Segment C m l l1 code =
     (\<exists> Mspec Minv Anno . MST\<down>(C,m) = Some(Mspec,Minv,Anno) \<and> 
       (\<forall>ll. l \<le> ll \<longrightarrow> ll < l1 \<longrightarrow>
           Anno\<down>(ll) = None \<and> (\<exists>ins. ins_is C m ll ins \<and> code\<down>ll = Some ins)))"
@@ -705,13 +706,13 @@ done
  
 text{*The definition of basic instructions.*}
 
-constdefs basic::"Instr \<Rightarrow> bool"
-"basic ins \<equiv> (\<exists> c . ins = const c) \<or> ins = dup \<or> 
+definition basic::"Instr \<Rightarrow> bool" where
+"basic ins = ((\<exists> c . ins = const c) \<or> ins = dup \<or> 
               ins= pop \<or> ins= swap \<or> (\<exists> x. ins= load x) \<or>
               (\<exists> y. ins= store y) \<or> (\<exists> f. ins= binop f) \<or>
               (\<exists> g. ins= unop g) \<or> (\<exists> c1 F1. ins= getfield c1 F1) \<or>
               (\<exists> c2 F2. ins=  putfield c2 F2) \<or>
-              (\<exists> c3. ins=  checkcast c3)"
+              (\<exists> c3. ins=  checkcast c3))"
 
 text{*Next, we prove the soundness of basic instructions. The
 hypothesis refers to instructions located at the program
@@ -1329,18 +1330,18 @@ done
 text{*The full translation of a functional program into a bytecode
 program is defined as follows.*}
 
-constdefs compileProg::"FunProg \<Rightarrow> bool"
-"compileProg F \<equiv>
-   (\<forall> C m par e. F\<down>(C,m) = Some(par,e) \<longrightarrow> 
+definition compileProg::"FunProg \<Rightarrow> bool" where
+"compileProg F =
+  ((\<forall> C m par e. F\<down>(C,m) = Some(par,e) \<longrightarrow> 
           (\<exists> code l0 l. mbody_is C m (rev par,code,l0) \<and>
                        (l0,[],e,(code,l)):compileExpr)) \<and>
-   (\<forall> C m. (\<exists> M. mbody_is C m M) = (\<exists> fdecl . F\<down>(C,m) = Some fdecl))"
+   (\<forall> C m. (\<exists> M. mbody_is C m M) = (\<exists> fdecl . F\<down>(C,m) = Some fdecl)))"
 
 text{*The final condition relating a typing context to a method
 specification table.*}
 
-constdefs TP_MST::"TP_Sig \<Rightarrow> bool"
-"TP_MST \<Sigma> \<equiv>
+definition TP_MST::"TP_Sig \<Rightarrow> bool" where
+"TP_MST \<Sigma> =
    (\<forall> C m . case (MST\<down>(C,m)) of
             None \<Rightarrow> \<Sigma>\<down>(C,m) = None
           | Some(T,MI,Anno) \<Rightarrow> Anno = emp \<and> 

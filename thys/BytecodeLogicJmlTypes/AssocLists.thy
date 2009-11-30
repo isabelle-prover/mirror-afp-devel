@@ -17,10 +17,9 @@ data type of association lists.*}
 
 types ('a,'b) AssList = "('a \<times> 'b) list"
 
-consts lookup::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> ('b option)" ("_\<down>_" [90,0] 90)
-
-primrec
-"lookup [] l = None"
+primrec lookup::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> ('b option)" ("_\<down>_" [90,0] 90)
+where
+"lookup [] l = None" |
 "lookup (h # t) l = (if fst h = l then Some(snd h) else lookup t l)"
 
 (*<*)
@@ -42,9 +41,9 @@ lookup operation, and asserts some precedence for bracketing. In a
 similar way, shorthands are introduced for various operations
 throughout this document.*}
 
-consts delete::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> ('a, 'b) AssList"
-primrec
-"delete [] a = []"
+primrec delete::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> ('a, 'b) AssList"
+where
+"delete [] a = []" |
 "delete (h # t) a = (if (fst h) = a then delete t a else (h # (delete t a)))"
 
 (*<*)
@@ -78,9 +77,9 @@ apply simp
 done
 (*>*)
 
-constdefs upd::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> ('a, 'b) AssList"
+definition upd::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> ('a, 'b) AssList"
          ("_[_\<mapsto>_]" [1000,0,0] 1000)
-"upd L a b \<equiv> (a,b) # (delete L a)"
+where "upd L a b = (a,b) # (delete L a)"
 (*<*)
 lemma AL_update1: "(L::('a, 'b) AssList)[a\<mapsto>b]\<down>a = Some b"
 by (simp add: upd_def)
@@ -104,18 +103,18 @@ done
 
 text{*The empty map is represented by the empty list.*}
 
-constdefs emp::"('a, 'b)AssList"
-"emp \<equiv> []"
+definition emp::"('a, 'b)AssList"
+where "emp = []"
 (*<*)
 lemma AL_emp1: "emp\<down>a = None"
 by (simp add: emp_def)
 
-constdefs AL_isEmp::"('a,'b) AssList \<Rightarrow> bool"
-"AL_isEmp l \<equiv> (\<forall> a . l\<down>a = None)"
+definition AL_isEmp::"('a,'b) AssList \<Rightarrow> bool"
+where "AL_isEmp l = (\<forall> a . l\<down>a = None)"
 (*>*)
 
-constdefs contained::"('a,'b) AssList \<Rightarrow> ('a,'b) AssList \<Rightarrow> bool"
-"contained L M \<equiv> (\<forall> a b . L\<down>a = Some b \<longrightarrow> M\<down>a = Some b)"
+definition contained::"('a,'b) AssList \<Rightarrow> ('a,'b) AssList \<Rightarrow> bool"
+where "contained L M = (\<forall> a b . L\<down>a = Some b \<longrightarrow> M\<down>a = Some b)"
 
 text{*The following operation defined the cardinality of a map.*}
 

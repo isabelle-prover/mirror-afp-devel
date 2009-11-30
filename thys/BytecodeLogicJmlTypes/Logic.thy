@@ -83,20 +83,20 @@ strongest postconditions in Hoare-style logics.*}
 
 text{*On pre-conditions, the operator *}
 
-constdefs SP_pre::"Mbody \<Rightarrow> Label \<Rightarrow> Assn \<Rightarrow> Assn"
-"SP_pre M l A \<equiv> \<lambda> s0 r . (\<exists> s l1 n. A s0 s \<and> (M,l,s,n,l1,r):Step)"
+definition SP_pre::"Mbody \<Rightarrow> Label \<Rightarrow> Assn \<Rightarrow> Assn"
+where "SP_pre M l A = (\<lambda> s0 r . (\<exists> s l1 n. A s0 s \<and> (M,l,s,n,l1,r):Step))"
 
 text{*constructs an assertion that holds of a state $r$ precisely if
 the argument assertion $A$ held at the predecessor state of
 $r$. Similar readings explain the constructions on post-conditions*}
 
-constdefs SP_post::"Mbody \<Rightarrow> Label \<Rightarrow> Post \<Rightarrow> Post"
-"SP_post M l B \<equiv> \<lambda> s0 r t . (\<forall> s l1 n. (M,l,s,n,l1,r):Step \<longrightarrow> B s0 s t)"
+definition SP_post::"Mbody \<Rightarrow> Label \<Rightarrow> Post \<Rightarrow> Post"
+where "SP_post M l B = (\<lambda> s0 r t . (\<forall> s l1 n. (M,l,s,n,l1,r):Step \<longrightarrow> B s0 s t))"
 
 text{*and invariants*}
 
-constdefs SP_inv::"Mbody \<Rightarrow> Label \<Rightarrow> Inv \<Rightarrow> Inv"
-"SP_inv M l I \<equiv> \<lambda> s0 r h . \<forall> s l1 n. (M,l,s,n,l1,r):Step \<longrightarrow> I s0 s h"
+definition SP_inv::"Mbody \<Rightarrow> Label \<Rightarrow> Inv \<Rightarrow> Inv"
+where "SP_inv M l I = (\<lambda> s0 r h . \<forall> s l1 n. (M,l,s,n,l1,r):Step \<longrightarrow> I s0 s h)"
 
 text{*For the basic instructions, the appearance of the single-step
 execution relation in these constructions makes the
@@ -109,20 +109,20 @@ table. In order to simplify the formulation of the proof rule, we
 introduce three operators which manipulate the extracted assertions in
 a similar way as the above @{text SP}-operators.*}
 
-constdefs SINV_pre::"Var list \<Rightarrow> MethSpec \<Rightarrow> Assn \<Rightarrow> Assn"
-"SINV_pre par T A \<equiv> 
+definition SINV_pre::"Var list \<Rightarrow> MethSpec \<Rightarrow> Assn \<Rightarrow> Assn" where
+"SINV_pre par T A =
   (\<lambda> s0 s . (\<exists> ops1 ops2 S R h k w. 
                (ops1,par,R,ops2) : Frame \<and> T (R, k) (h,w) \<and> 
                A s0 (ops1,S,k) \<and> s = (w#ops2,S, h)))"
 
-constdefs SINV_post::"Var list \<Rightarrow> MethSpec \<Rightarrow> Post \<Rightarrow> Post"
-"SINV_post par T B \<equiv> 
+definition SINV_post::"Var list \<Rightarrow> MethSpec \<Rightarrow> Post \<Rightarrow> Post" where
+"SINV_post par T B =
   (\<lambda> s0 s t . \<forall> ops1 ops2 S R h k w r.
                (ops1,par,R,ops2) : Frame \<longrightarrow> T (R, k) (h,w) \<longrightarrow> 
                s=(w#ops2,S,h) \<longrightarrow> r=(ops1,S,k) \<longrightarrow> B s0 r t)"
 
-constdefs SINV_inv::"Var list \<Rightarrow> MethSpec \<Rightarrow> Inv \<Rightarrow> Inv"
-"SINV_inv par T I \<equiv>
+definition SINV_inv::"Var list \<Rightarrow> MethSpec \<Rightarrow> Inv \<Rightarrow> Inv" where
+"SINV_inv par T I =
   (\<lambda> s0 s h' . \<forall> ops1 ops2 S R h k w.
                 (ops1,par,R,ops2) : Frame \<longrightarrow> T (R,k) (h,w) \<longrightarrow> 
                 s=(w#ops2,S,h) \<longrightarrow> I s0 (ops1,S,k) h')"
@@ -170,7 +170,7 @@ C,m,l \lbrace B \rbrace\; I$.*}
 text{*The proof rules are defined relative to a fixed method
 specification table $\mathit{MST}$.*}
 
-consts MST::MSPEC
+axiomatization MST::MSPEC
 
 text{*In Isabelle, the distinction between the two judgement forms may
 for example be achieved by introducing a single judgement form that
@@ -305,24 +305,23 @@ text{*For \emph{verified} \emph{programs}, all preconditions can be
 justified by proof derivations, and initial labels of all methods
 (again provably) satisfy the method preconditions.*}
 
-constdefs mkState::"InitState \<Rightarrow> State"
-"mkState s0 \<equiv> ([],fst s0,snd s0)"
+definition mkState::"InitState \<Rightarrow> State"
+where "mkState s0 = ([],fst s0,snd s0)"
 
-constdefs mkPost::"MethSpec \<Rightarrow> Post"
-"mkPost T \<equiv> (\<lambda> s0 s t . s=mkState s0 \<longrightarrow> T s0 t)"
+definition mkPost::"MethSpec \<Rightarrow> Post"
+where "mkPost T = (\<lambda> s0 s t . s=mkState s0 \<longrightarrow> T s0 t)"
 
-constdefs mkInv::"MethInv \<Rightarrow> Inv"
-"mkInv MI \<equiv> (\<lambda> s0 s t . s=mkState s0 \<longrightarrow> MI s0 t)"
+definition mkInv::"MethInv \<Rightarrow> Inv"
+where "mkInv MI = (\<lambda> s0 s t . s=mkState s0 \<longrightarrow> MI s0 t)"
 
-constdefs VP_G::"CTXT \<Rightarrow> bool"
-"VP_G G \<equiv> 
-  (\<forall> C m l A B I. G\<down>(C,m,l) = Some (A,B,I) \<longrightarrow> G \<rhd> \<lbrace>A\<rbrace> C,m,l \<lbrace>B\<rbrace> I) \<and>
+definition VP_G::"CTXT \<Rightarrow> bool" where
+"VP_G G =
+  ((\<forall> C m l A B I. G\<down>(C,m,l) = Some (A,B,I) \<longrightarrow> G \<rhd> \<lbrace>A\<rbrace> C,m,l \<lbrace>B\<rbrace> I) \<and>
   (\<forall> C m par code l0 T MI Anno. 
       mbody_is C m (par,code,l0) \<longrightarrow> MST\<down>(C,m) = Some(T,MI,Anno) \<longrightarrow> 
-      G \<rhd> \<lbrace>(\<lambda> s0 s. s = mkState s0)\<rbrace> C,m,l0 \<lbrace>mkPost T\<rbrace> (mkInv MI))"
+      G \<rhd> \<lbrace>(\<lambda> s0 s. s = mkState s0)\<rbrace> C,m,l0 \<lbrace>mkPost T\<rbrace> (mkInv MI)))"
 
-constdefs VP::bool
-"VP \<equiv> \<exists> G . VP_G G"
+definition VP::bool where "VP = (\<exists> G . VP_G G)"
 
 (*<*)
 end
