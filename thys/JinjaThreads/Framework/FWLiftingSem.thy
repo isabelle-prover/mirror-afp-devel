@@ -46,7 +46,7 @@ qed
 end
 
 locale lifting_wf = multithreaded _ r
-  for r :: "('l,'t,'x,'m,'w) semantics" +
+  for r :: "('l,'t,'x,'m,'w,'o) semantics" +
   fixes P :: "'x \<Rightarrow> 'm \<Rightarrow> bool"
   assumes preserves_red: "\<lbrakk> r (x, m) ta (x', m'); P x m \<rbrakk> \<Longrightarrow> P x' m'"
   assumes preserves_NewThread: "\<lbrakk> r (x, m) ta (x', m'); P x m; NewThread t'' x'' m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> P x'' m'"
@@ -64,11 +64,11 @@ proof(rule ts_okI)
   moreover obtain ls ts m ws where s [simp]: "s = (ls, (ts, m), ws)" by(cases s, auto)
   moreover obtain ls' ts' m' ws' where s' [simp]: "s' = (ls', (ts', m'), ws')" by(cases s', auto)
   ultimately have es't': "ts' T = \<lfloor>(X, LN)\<rfloor>" by auto
-  obtain las tas cas was where ta: "ta = (las, tas, cas, was)" by(cases ta, auto)
+  obtain las tas cas was obs where ta: "ta = (las, tas, cas, was, obs)" by(cases ta)
   from redT show "P X (shr s')"
   proof(induct rule: redT_elims)
-    case (normal x x')
-    with ta have red: "\<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>"
+    case (normal x x' ta')
+    with ta have red: "\<langle>x, m\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>"
       and est: "ts t = \<lfloor>(x, no_wait_locks)\<rfloor>"
       and lota: "lock_ok_las ls t las"
       and cctta: "thread_oks ts tas"
@@ -77,6 +77,7 @@ proof(rule ts_okI)
       and ls': "ls' = redT_updLs ls t las"
       and es': "ts' = redT_updTs ts tas(t \<mapsto> (x', redT_updLns ls t no_wait_locks las))"
       and ws': "ws' = redT_updWs ws t was"
+      and [simp]: "ta = observable_ta_of ta'"
       by(auto)
     from est esokQ have qex: "P x m" by(auto dest: ts_okD)
     show "P X (shr s')"
@@ -93,7 +94,7 @@ proof(rule ts_okI)
 	with es't' est redT ta have "NewThread T X m' \<in> set tas"
 	  by(auto dest!: redT_new_thread)
 	thus ?thesis using red qex ta
-	  by(auto intro: preserves_NewThread)
+	  by(auto intro: preserves_NewThread simp add: observable_ta_of_def)
       next
 	fix a
 	assume "ts T = \<lfloor>a\<rfloor>"
@@ -140,7 +141,7 @@ by(unfold_locales)(rule multithreaded.new_thread_memory)
 
 locale lifting_inv = lifting_wf final r Q 
   for final :: "'x \<Rightarrow> bool" and
-      r :: "('l,'t,'x,'m,'w) semantics" and
+      r :: "('l,'t,'x,'m,'w,'o) semantics" and
       Q :: "'x \<Rightarrow> 'm \<Rightarrow> bool" +
   fixes P :: "'i \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
   assumes invariant_red: "\<lbrakk> r (x, m) ta (x', m'); P i x m; Q x m \<rbrakk> \<Longrightarrow> P i x' m'"
@@ -159,11 +160,11 @@ proof(rule ts_invI)
   moreover obtain ls ts m ws where s [simp]: "s = (ls, (ts, m), ws)" by(cases s, auto)
   moreover obtain ls' ts' m' ws' where s' [simp]: "s' = (ls', (ts', m'), ws')" by(cases s', auto)
   ultimately have es't': "ts' T = \<lfloor>(X, LN)\<rfloor>" by auto
-  obtain las tas cas was where ta: "ta = (las, tas, cas, was)" by (cases ta, auto)
+  obtain las tas cas was obs where ta: "ta = (las, tas, cas, was, obs)" by (cases ta)
   from redT show "\<exists>i. upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> T = \<lfloor>i\<rfloor> \<and> P i X (shr s')"
   proof(induct rule: redT_elims)
-    case (normal x x')
-    with ta have red: "\<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>"
+    case (normal x x' ta')
+    with ta have red: "\<langle>x, m\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>"
       and est: "ts t = \<lfloor>(x, no_wait_locks)\<rfloor>"
       and lota: "lock_ok_las ls t las"
       and cctta: "thread_oks ts tas"
@@ -172,6 +173,7 @@ proof(rule ts_invI)
       and ls': "ls' = redT_updLs ls t las"
       and es': "ts' = redT_updTs ts tas(t \<mapsto> (x', redT_updLns ls t no_wait_locks las))"
       and ws': "ws' = redT_updWs ws t was"
+      and [simp]: "ta = observable_ta_of ta'"
       by(auto)
     from est esinvP obtain i where Iti: "I t = \<lfloor>i\<rfloor>" and qiex: "P i x m"
       by(auto dest: ts_invD)
@@ -198,7 +200,8 @@ proof(rule ts_invI)
 	  by(auto intro!: invariant_NewThread)
 	hence "P (SOME i. P i X m') X m'"
 	  by-(rule someI_ex)
-	with nt cctta ta show ?thesis by (auto intro: SOME_new_thread_upd_invs) 
+	with nt cctta ta show ?thesis
+	  by (auto intro: SOME_new_thread_upd_invs simp add: observable_ta_of_def) 
       next
 	fix a
 	assume "ts T = \<lfloor>a\<rfloor>"
@@ -220,7 +223,8 @@ proof(rule ts_invI)
     qed
   next
     case (acquire x ln)
-    hence [simp]: "m' = m" "ta = \<epsilon>" "ts' = ts(t \<mapsto> (x, no_wait_locks))" by auto
+    hence [simp]: "m' = m" "ta = (\<lambda>\<^isup>f [], [], [], [], ReacquireLocks ln)"
+      "ts' = ts(t \<mapsto> (x, no_wait_locks))" by auto
     show ?thesis
     proof(cases "T = t")
       case True

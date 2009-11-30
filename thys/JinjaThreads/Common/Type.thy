@@ -5,38 +5,40 @@
 *)
 
 header {*
-  \chapter{Jinja Source Language}\label{cha:j}
-  \isaheader{Jinja types}
+  \chapter{Concepts for all JinjaThreads Languages}\label{cha:j}
+  \isaheader{JinjaThreads types}
 *}
 
-theory Type imports Aux begin
+theory Type imports
+  Aux
+begin
 
 types
-  cname = string -- "class names"
-  mname = string -- "method name"
-  vname = string -- "names for local/field variables"
+  cname = String.literal -- "class names"
+  mname = String.literal -- "method name"
+  vname = String.literal -- "names for local/field variables"
 
 constdefs
   Object :: cname
-  "Object \<equiv> ''Object''"
+  "Object \<equiv> STR ''Object''"
   Thread :: cname
-  "Thread \<equiv> ''Thread''"
+  "Thread \<equiv> STR ''Thread''"
   Throwable :: cname
-  "Throwable \<equiv> ''Throwable''"
+  "Throwable \<equiv> STR ''Throwable''"
   this :: vname
-  "this \<equiv> ''this''"
+  "this \<equiv> STR ''this''"
   run :: mname
-  "run \<equiv> ''run''"
+  "run \<equiv> STR ''run''"
   start :: mname
-  "start \<equiv> ''start''"
+  "start \<equiv> STR ''start''"
   wait :: mname
-  "wait \<equiv> ''wait''"
+  "wait \<equiv> STR ''wait''"
   notify :: mname
-  "notify \<equiv> ''notify''"
+  "notify \<equiv> STR ''notify''"
   notifyAll :: mname
-  "notifyAll \<equiv> ''notifyAll''"
+  "notifyAll \<equiv> STR ''notifyAll''"
   join :: mname
-  "join \<equiv> ''join''"
+  "join \<equiv> STR ''join''"
 
 lemma Object_Thread_Throwable_neq [simp]:
   "Thread \<noteq> Object" "Object \<noteq> Thread"

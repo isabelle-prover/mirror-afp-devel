@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* Preservation of Deadlock *}
+header{* \isaheader{Preservation of Deadlock} *}
 
 theory Deadlocked imports ProgressThreaded begin
 
@@ -19,7 +19,7 @@ proof(induct rule: red_reds.inducts)
   moreover from `P \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `Lock \<in> set (\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)` `hext (hp s) h` `ta' = convert_extTA extNTA ta`
   have "P \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -ta\<rightarrow>ext \<langle>va,h\<rangle>" by(auto intro: red_external_Lock_hext)
   ultimately show ?case using `ta' = convert_extTA extNTA ta` `e' = extRet2J va` `s' = (h', lcl s)`
-    `is_external_call P T M (length vs)` by(auto intro: red_reds.RedCallExternal)
+    `is_external_call P T M` by(auto intro: red_reds.RedCallExternal)
 qed(fastsimp intro: red_reds.intros dest: hext_objarrD)+
 
 lemma red_Join_hext:
@@ -37,7 +37,7 @@ proof(induct rule: red_reds.inducts)
     `ta' = convert_extTA extNTA ta` `typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>T\<rfloor>`
   have "P \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -ta\<rightarrow>ext \<langle>va,h\<rangle>" by(auto intro: red_external_Join_hext)
   ultimately show ?case using `ta' = convert_extTA extNTA ta` `e' = extRet2J va` `s' = (h', lcl s)`
-    `is_external_call P T M (length vs)` by(auto intro: red_reds.RedCallExternal)
+    `is_external_call P T M` by(auto intro: red_reds.RedCallExternal)
 qed(fastsimp intro: red_reds.intros)+
 
 
@@ -53,9 +53,10 @@ proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   from `typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>U\<rfloor>` `P,E,h \<turnstile> addr a\<bullet>M(map Val vs) : T` `hext h (hp s)`
   have "typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>U\<rfloor>" by(fastsimp split: heapobj.split_asm dest: hext_objD hext_arrD)
   moreover with `P \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `P,E,h \<turnstile> addr a\<bullet>M(map Val vs) : T` 
-    `Lock \<in> set (\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)` `hext h (hp s)` `ta' = convert_extTA extNTA ta` `is_external_call P U M (length vs)`
-  have "P \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -ta\<rightarrow>ext \<langle>va,h\<rangle>" by(auto intro: red_external_Lock_wth split: heapobj.split_asm)
-  ultimately show ?case using `is_external_call P U M (length vs)` `ta' = convert_extTA extNTA ta`
+    `Lock \<in> set (\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)` `hext h (hp s)` `ta' = convert_extTA extNTA ta` `is_external_call P U M`
+  have "P \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -ta\<rightarrow>ext \<langle>va,h\<rangle>"
+    by(auto intro: red_external_Lock_wth intro!: external_WT'.intros split: heapobj.split_asm)
+  ultimately show ?case using `is_external_call P U M` `ta' = convert_extTA extNTA ta`
     `e' = extRet2J va` `s' = (h', lcl s)` by(auto intro: red_reds.RedCallExternal)
 next
   case (LockSynchronized s a arrobj e E T)
@@ -71,19 +72,15 @@ lemma red_Join_wth:
   and reds_Join_wth:
   "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>; P,E,h \<turnstile> es [:] Ts; hext h (hp s) \<rbrakk>
   \<Longrightarrow> convert_extTA extNTA,P \<turnstile> \<langle>es, (h, lcl s)\<rangle> [-ta\<rightarrow>] \<langle>es', (h, lcl s')\<rangle>"
-(* apply(induct arbitrary: E T and E Ts rule: red_reds.inducts)
-apply(fastsimp intro: red_reds.intros split: split_if_asm)+
-defer -- Join
-apply(fastsimp intro: red_reds.intros split: split_if_asm)+
-. *)
 proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   case (RedCallExternal s a U M vs ta va h' ta' e' s')
   from `typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>U\<rfloor>` `P,E,h \<turnstile> addr a\<bullet>M(map Val vs) : T` `hext h (hp s)`
   have "typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>U\<rfloor>" by(fastsimp split: heapobj.split_asm dest: hext_objD hext_arrD)
   moreover with `P \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `P,E,h \<turnstile> addr a\<bullet>M(map Val vs) : T` 
-    `Join t \<in> set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>` `hext h (hp s)` `ta' = convert_extTA extNTA ta` `is_external_call P U M (length vs)`
-  have "P \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -ta\<rightarrow>ext \<langle>va,h\<rangle>" by(auto intro: red_external_Join_wth split: heapobj.split_asm)
-  ultimately show ?case using `is_external_call P U M (length vs)` `ta' = convert_extTA extNTA ta`
+    `Join t \<in> set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>` `hext h (hp s)` `ta' = convert_extTA extNTA ta` `is_external_call P U M`
+  have "P \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -ta\<rightarrow>ext \<langle>va,h\<rangle>"
+    by(auto intro: red_external_Join_wth intro!: external_WT'.intros split: heapobj.split_asm)
+  ultimately show ?case using `is_external_call P U M` `ta' = convert_extTA extNTA ta`
     `e' = extRet2J va` `s' = (h', lcl s)` by(auto intro: red_reds.RedCallExternal)
 qed(fastsimp intro: red_reds.intros split: split_if_asm)+
 
@@ -362,7 +359,7 @@ next
 next
   case CallParams thus ?case by(fastsimp intro: red_reds.intros)
 next
-  case (RedCall s a C fs M vs Ts T pns body D E T')
+  case (RedCall s a C fs M Ts T pns body D vs E T')
   from `P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T'` show ?case
   proof(rule WTrt_elim_cases)
     fix C' Ts' pns' body' D' Ts''
@@ -370,7 +367,7 @@ next
       and sees: "P \<turnstile> C' sees M: Ts'\<rightarrow>T' = (pns', body') in D'"
       and wtes: "P,E,H \<turnstile> map Val vs [:] Ts''"
       and widens: "P \<turnstile> Ts'' [\<le>] Ts'"
-      and nexc: "\<not> is_external_call P (Class C') M (length (map Val vs))"
+      and nexc: "\<not> is_external_call P (Class C') M"
     from wta obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(auto split: heapobj.split_asm)
     moreover from wtes have "length vs = length Ts''"
       by(auto intro: map_eq_imp_length_eq')
@@ -392,73 +389,17 @@ next
   next
     fix T Ts'
     assume "P \<turnstile> T\<bullet>M(Ts') :: T'" "P,E,H \<turnstile> addr a : T" "P,E,H \<turnstile> map Val vs [:] Ts'"
-    with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "is_external_call P (Class C) M (length Ts')"
+    with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "is_external_call P (Class C) M"
       by(fastsimp split: heapobj.split_asm intro: external_WT_is_external_call dest: hext_objD hext_arrD)
-    moreover from `P,E,H \<turnstile> map Val vs [:] Ts'` have "map typeof\<^bsub>H\<^esub> vs = map Some Ts'" by auto
-    hence "length (map typeof\<^bsub>H\<^esub> vs) = length Ts'" by simp
-    with `length vs = length pns` `length Ts = length pns` 
-    have "length Ts' = length vs" by simp
-    ultimately show ?case using `\<not> is_external_call P (Class C) M (length vs)` by simp
+    then  show ?case using `\<not> is_external_call P (Class C) M` by simp
   qed
-(*    fix C'
-    assume sub: "P \<turnstile> C' \<preceq>\<^sup>* Thread"
-      and start: "M = start"
-      and wt: "P,E,H \<turnstile> addr a : Class C'"
-    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(auto split: heapobj.split_asm)
-    with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "C = C'"
-      by(auto dest: hext_objD)
-    with sub start have False using `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
-      by(auto dest: Thread_not_sees_method_start[OF wf])
-    thus ?thesis ..
-  next
-    fix T'
-    assume "M = wait"
-    moreover
-    from `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D` 
-    obtain D' fs' ms' where c: "class P D = \<lfloor>(D', fs', ms')\<rfloor>" and ms: "(M, Ts, T, pns, body) \<in> set ms'"
-      by(auto dest!: visible_method_exists map_of_SomeD)
-    ultimately have False using wf
-      by(auto dest: class_wf simp add: wf_cdecl_def)
-    thus ?thesis ..
-  next
-    fix T'
-    assume "M = notify"
-    moreover
-    from `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D` 
-    obtain D' fs' ms' where c: "class P D = \<lfloor>(D', fs', ms')\<rfloor>" and ms: "(M, Ts, T, pns, body) \<in> set ms'"
-      by(auto dest!: visible_method_exists map_of_SomeD)
-    ultimately have False using wf
-      by(auto dest: class_wf simp add: wf_cdecl_def)
-    thus ?thesis ..
-  next
-    fix T'
-    assume "M = notifyAll"
-    moreover
-    from `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D` 
-    obtain D' fs' ms' where c: "class P D = \<lfloor>(D', fs', ms')\<rfloor>" and ms: "(M, Ts, T, pns, body) \<in> set ms'"
-      by(auto dest!: visible_method_exists map_of_SomeD)
-    ultimately have False using wf
-      by(auto dest: class_wf simp add: wf_cdecl_def)
-    thus ?thesis ..
-  next
-    fix C'
-    assume sub: "P \<turnstile> C' \<preceq>\<^sup>* Thread"
-      and start: "M = join"
-      and wt: "P,E,H \<turnstile> addr a : Class C'"
-    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(auto split: heapobj.split_asm)
-    with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "C = C'"
-      by(auto dest: hext_objD)
-    with sub start have False using `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
-      by(auto dest: Thread_not_sees_method_join[OF wf])
-    thus ?thesis ..
-  qed *)
 next
   case (RedCallExternal s a U M vs ta va h' ta' e' s')
   from `P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T` show ?case
   proof(rule WTrt_elim_cases)
     fix C ts pns body D Ts'
-    assume "P,E,H \<turnstile> addr a : Class C" "\<not> is_external_call P (Class C) M (length (map Val vs))"
-    with `is_external_call P U M (length vs)` `typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>U\<rfloor>` `hext H (hp s)` have False
+    assume "P,E,H \<turnstile> addr a : Class C" "\<not> is_external_call P (Class C) M"
+    with `is_external_call P U M` `typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>U\<rfloor>` `hext H (hp s)` have False
       by(auto split: heapobj.split_asm dest: hext_objD hext_arrD)
     thus ?thesis ..
   next
@@ -471,164 +412,18 @@ next
     from wta `typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>U\<rfloor>` `hext H (hp s)` have [simp]: "T' = U"
       by(auto split: heapobj.split_asm dest: hext_objD hext_arrD)
     with wta have "typeof\<^bsub>H\<^esub> (Addr a) = \<lfloor>U\<rfloor>" by simp
-    with red_external_wt_hconf_hext[OF `P \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` this, of Ts]
-      `P,E,H \<turnstile> map Val vs [:] Ts` `hext H (hp s)` `is_external_call P U M (length vs)` `ta' = convert_extTA extNTA ta`
-      `e' = extRet2J va` `s' = (h', lcl s)`
-    show ?thesis by(fastsimp intro: red_reds.RedCallExternal)
+    hence "P,H \<turnstile> a\<bullet>M(vs) : T" using wtext `P,E,H \<turnstile> map Val vs [:] Ts` by(auto intro: external_WT'.intros)
+    from red_external_wt_hconf_hext[OF `P \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` this `hext H (hp s)`] wta
+      `is_external_call P U M` `ta' = convert_extTA extNTA ta` `e' = extRet2J va` `s' = (h', lcl s)`
+    show ?thesis by(fastsimp intro: red_reds.RedCallExternal simp del: split_paired_Ex)
   qed
-(*  case (RedNewThread s a C fs body D)
-  from `P,E,H \<turnstile> addr a\<bullet>start([]) : T` show ?case
-  proof(rule WTrt_elim_cases)
-    fix C' pns' body' D'
-    assume sees: "P \<turnstile> C' sees start: []\<rightarrow>T = (pns', body') in D'"
-      and wt: "P,E,H \<turnstile> addr a : Class C'"
-    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(auto split: heapobj.split_asm)
-    with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "C = C'" by(auto dest: hext_objD)
-    with `P \<turnstile> C \<preceq>\<^sup>* Thread` fs' sees wf have False
-      by(auto simp: Method_def intro: Thread_no_sees_method_start[OF wf])
-    thus ?thesis ..
-  next
-    assume "P,E,H \<turnstile> addr a : NT"
-    hence False by(auto split: heapobj.split_asm)
-    thus ?thesis ..
-  next
-    fix C'
-    assume wt: "P,E,H \<turnstile> addr a : Class C'"
-      and sub: "P \<turnstile> C' \<preceq>\<^sup>* Thread"
-    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(auto split: heapobj.split_asm)
-    moreover with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "C = C'" by(auto dest: hext_objD)
-    moreover note sub `P \<turnstile> C sees run: []\<rightarrow>Void = ([], body) in D`
-    ultimately show ?thesis by(fastsimp intro: red_reds.RedNewThread)
-  qed
-next
-  case (RedNewThreadFail s a C fs E T)
-  from `P,E,H \<turnstile> addr a\<bullet>start([]) : T` show ?case
-  proof(rule WTrt_elim_cases)
-    fix C' pns' body' D'
-    assume sees: "P \<turnstile> C' sees start: []\<rightarrow>T = (pns', body') in D'"
-      and wt: "P,E,H \<turnstile> addr a : Class C'"
-    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(auto split: heapobj.split_asm)
-    with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "C = C'"
-      by(auto dest: hext_objD)
-    with `P \<turnstile> C \<preceq>\<^sup>* Thread` fs' sees wf have False
-      by(auto simp: Method_def intro: Thread_no_sees_method_start[OF wf])
-    thus ?thesis ..
-  next
-    assume "P,E,H \<turnstile> addr a : NT"
-    hence False by(auto split: heapobj.split_asm)
-    thus ?thesis ..
-  next
-    fix C'
-    assume wt: "P,E,H \<turnstile> addr a : Class C'"
-      and sub: "P \<turnstile> C' \<preceq>\<^sup>* Thread"
-    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(auto split: heapobj.split_asm)
-    with sub show ?thesis
-      by(fastsimp intro: red_reds.RedNewThreadFail)
-  qed
-next
-  case (RedWait s a arrobj E T)
-  from `P,E,H \<turnstile> addr a\<bullet>wait([]) : T` show ?case
-  proof(rule WTrt_elim_cases)
-    fix C pns body D
-    assume "P \<turnstile> C sees wait: []\<rightarrow>T = (pns, body) in D"
-    then obtain D' fs' ms' where c: "class P D = \<lfloor>(D', fs', ms')\<rfloor>" and ms: "(wait, [], T, pns, body) \<in> set ms'"
-      by(auto dest!: visible_method_exists map_of_SomeD)
-    hence False using wf
-      by(auto dest: class_wf simp add: wf_cdecl_def)
-    thus ?thesis ..
-  qed(fastsimp split: heapobj.split_asm intro: red_reds.RedWait)+
-next
-  case (RedWaitFail s a arrobj E T)
-  from `P,E,H \<turnstile> addr a\<bullet>wait([]) : T` show ?case
-  proof(rule WTrt_elim_cases)
-    fix C pns body D
-    assume "P \<turnstile> C sees wait: []\<rightarrow>T = (pns, body) in D"
-    then obtain D' fs' ms' where c: "class P D = \<lfloor>(D', fs', ms')\<rfloor>" and ms: "(wait, [], T, pns, body) \<in> set ms'"
-      by(auto dest!: visible_method_exists map_of_SomeD)
-    hence False using wf
-      by(auto dest: class_wf simp add: wf_cdecl_def)
-    thus ?thesis ..
-  qed(fastsimp split: heapobj.split_asm intro: red_reds.RedWaitFail)+
-next
-  case (RedNotify s a arrobj E T)
-  from `P,E,H \<turnstile> addr a\<bullet>notify([]) : T` show ?case
-  proof(rule WTrt_elim_cases)
-    fix C pns body D
-    assume "P \<turnstile> C sees notify: []\<rightarrow>T = (pns, body) in D"
-    then obtain D' fs' ms' where c: "class P D = \<lfloor>(D', fs', ms')\<rfloor>" and ms: "(notify, [], T, pns, body) \<in> set ms'"
-      by(auto dest!: visible_method_exists map_of_SomeD)
-    hence False using wf
-      by(auto dest: class_wf simp add: wf_cdecl_def)
-    thus ?thesis ..
-  qed(fastsimp split: heapobj.split_asm intro: red_reds.RedNotify)+
-next
-  case (RedNotifyFail s a arrobj E T)
-  from `P,E,H \<turnstile> addr a\<bullet>notify([]) : T` show ?case
-  proof(rule WTrt_elim_cases)
-    fix C pns body D
-    assume "P \<turnstile> C sees notify: []\<rightarrow>T = (pns, body) in D"
-    then obtain D' fs' ms' where c: "class P D = \<lfloor>(D', fs', ms')\<rfloor>" and ms: "(notify, [], T, pns, body) \<in> set ms'"
-      by(auto dest!: visible_method_exists map_of_SomeD)
-    hence False using wf
-      by(auto dest: class_wf simp add: wf_cdecl_def)
-    thus ?thesis ..
-  qed(fastsimp split: heapobj.split_asm intro: red_reds.RedNotifyFail)+
-next
-  case (RedNotifyAll s a arrobj E T)
-  from `P,E,H \<turnstile> addr a\<bullet>notifyAll([]) : T` show ?case
-  proof(rule WTrt_elim_cases)
-    fix C pns body D
-    assume "P \<turnstile> C sees notifyAll: []\<rightarrow>T = (pns, body) in D"
-    then obtain D' fs' ms' where c: "class P D = \<lfloor>(D', fs', ms')\<rfloor>" and ms: "(notifyAll, [], T, pns, body) \<in> set ms'"
-      by(auto dest!: visible_method_exists map_of_SomeD)
-    hence False using wf
-      by(auto dest: class_wf simp add: wf_cdecl_def)
-    thus ?thesis ..
-  qed(fastsimp split: heapobj.split_asm intro: red_reds.RedNotifyAll)+
-next
-  case (RedNotifyAllFail s a arrobj E T)
-  from `P,E,H \<turnstile> addr a\<bullet>notifyAll([]) : T` show ?case
-  proof(rule WTrt_elim_cases)
-    fix C pns body D
-    assume "P \<turnstile> C sees notifyAll: []\<rightarrow>T = (pns, body) in D"
-    then obtain D' fs' ms' where c: "class P D = \<lfloor>(D', fs', ms')\<rfloor>" and ms: "(notifyAll, [], T, pns, body) \<in> set ms'"
-      by(auto dest!: visible_method_exists map_of_SomeD)
-    hence False using wf
-      by(auto dest: class_wf simp add: wf_cdecl_def)
-    thus ?thesis ..
-  qed(fastsimp split: heapobj.split_asm intro: red_reds.RedNotifyAllFail)+
-next
-  case (RedJoin s a C fs E T)
-  from `P,E,H \<turnstile> addr a\<bullet>join([]) : T` show ?case
-  proof(rule WTrt_elim_cases)
-    fix C' pns' body' D'
-    assume sees: "P \<turnstile> C' sees join: []\<rightarrow>T = (pns', body') in D'"
-      and wt: "P,E,H \<turnstile> addr a : Class C'"
-    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(auto split: heapobj.split_asm)
-    with `hp s a = \<lfloor>Obj C fs\<rfloor>` `hext H (hp s)` have "C = C'"
-      by(auto dest: hext_objD)
-    with `P \<turnstile> C \<preceq>\<^sup>* Thread` fs' sees wf have False
-      by(auto dest: Thread_not_sees_method_join[OF wf])
-    thus ?thesis ..
-  next
-    assume "P,E,H \<turnstile> addr a : NT"
-    hence False by(auto split: heapobj.split_asm)
-    thus ?thesis ..
-  next
-    fix C'
-    assume wt: "P,E,H \<turnstile> addr a : Class C'"
-      and sub: "P \<turnstile> C' \<preceq>\<^sup>* Thread"
-    from wt obtain fs' where fs': "H a = \<lfloor>Obj C' fs'\<rfloor>" by(auto split: heapobj.split_asm)
-    with sub show ?thesis
-      by(fastsimp intro: red_reds.RedJoin)
-  qed *)
 next
   case RedCallNull thus ?case by(fastsimp intro: red_reds.intros)
 next
-  case (BlockRed e h l V vo ta e' h' l' T cr E T')
+  case (BlockRed e h l V vo ta e' h' l' T E T')
   note IH = `\<And>E T. \<lbrakk>P,E,H \<turnstile> e : T; hext H (hp (h, l(V := vo)))\<rbrakk>
               \<Longrightarrow> \<exists>ta' e' s'. convert_extTA extNTA,P \<turnstile> \<langle>e,(H, lcl (h, l(V := vo)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle> \<and> \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<and> \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>`
-  from IH[of "E(V \<mapsto> T)" T'] `P,E,H \<turnstile> {V:T=vo; e}\<^bsub>cr\<^esub> : T'` `hext H (hp (h, l))`
+  from IH[of "E(V \<mapsto> T)" T'] `P,E,H \<turnstile> {V:T=vo; e} : T'` `hext H (hp (h, l))`
   obtain ta' e' s' where "convert_extTA extNTA,P \<turnstile> \<langle>e,(H, lcl (h, l(V := vo)))\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle>" "\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "\<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
     by auto
   thus ?case by(cases s', cases ta', fastsimp dest: red_reds.BlockRed)
@@ -771,23 +566,23 @@ lemma can_lock_devreserp:
   "\<lbrakk> wf_J_prog P; P \<turnstile> \<langle>e, (h', l)\<rangle> L \<wrong>; P,E,h \<turnstile> e : T; P \<turnstile> h \<surd>; hext h h' \<rbrakk> \<Longrightarrow> P \<turnstile> \<langle>e, (h, l)\<rangle> L \<wrong>"
 apply(cases "L = {}")
  apply(clarsimp)
- apply(erule multithreaded.can_syncE[OF red_mthr])
+ apply(erule multithreaded_base.can_syncE)
  apply(clarsimp)
  apply(drule sym)
  apply(clarsimp)
  apply(drule red_wt_hconf_hext, assumption+)
   apply(simp)
  apply(clarsimp)
- apply(rule multithreaded.can_syncI[OF red_mthr])
+ apply(rule multithreaded_base.can_syncI)
  apply(fastsimp)
  apply(rule sym)
  apply(simp)
-apply(erule multithreaded.can_syncE[OF red_mthr])
+apply(erule multithreaded_base.can_syncE)
 apply(case_tac x', auto elim!: collect_locksE)
  apply(drule red_Lock_wth)
- apply(auto intro: multithreaded.can_syncI[OF red_mthr])
+ apply(auto intro: multithreaded_base.can_syncI)
 apply(drule red_Join_wth)
-apply(auto intro: multithreaded.can_syncI[OF red_mthr])
+apply(auto intro: multithreaded_base.can_syncI)
 done
 
 
@@ -798,8 +593,8 @@ lemma can_sync_preserved:
   shows "P \<turnstile> \<langle>e, (h', l)\<rangle> \<wrong>"
 using assms
 apply -
-apply(rule multithreaded.must_syncI[OF red_mthr])
-apply(erule multithreaded.can_syncE[OF red_mthr])
+apply(rule multithreaded_base.must_syncI)
+apply(erule multithreaded_base.can_syncE)
 apply(clarsimp)
 apply(auto simp add: collect_locks_def)
 apply(drule red_Lock_hext)
@@ -809,7 +604,7 @@ apply(drule red_Lock_hext)
 apply(drule red_Join_hext)
   apply(simp)
  apply(simp)
-apply(fastsimp)
+apply fastsimp
 done
 
 lemma preserve_deadlocked:
@@ -837,19 +632,19 @@ proof -
       by(cases s, cases s')(auto dest: redT_hext_incr)
 
     { fix LT
-      assume "multithreaded.can_sync (mred P) x (shr s) LT"
+      assume "multithreaded_base.can_sync (mred P) x (shr s) LT"
         and LT: "LT \<noteq> {}"
       hence cl: "P \<turnstile> \<langle>e, (shr s, l)\<rangle> LT \<wrong>" by auto
       with hext hconf LT have "P \<turnstile> \<langle>e, (shr s', l)\<rangle> \<wrong>"
 	by-(rule can_sync_preserved)
-      hence "multithreaded.must_sync (mred P) x (shr s')" by simp }
+      hence "multithreaded_base.must_sync (mred P) x (shr s')" by simp }
     note ml = this
     { fix LT
-      assume "multithreaded.can_sync (mred P) x (shr s') LT"
+      assume "multithreaded_base.can_sync (mred P) x (shr s') LT"
       hence cl: "P \<turnstile> \<langle>e, (shr s', l)\<rangle> LT \<wrong>" by auto
       with wf wte hext hconf have "P \<turnstile> \<langle>e, (shr s, l)\<rangle> LT \<wrong>"
 	by -(rule can_lock_devreserp)
-      hence "\<exists>LT'\<subseteq>LT. multithreaded.can_sync (mred P) x (shr s) LT'"
+      hence "\<exists>LT'\<subseteq>LT. multithreaded_base.can_sync (mred P) x (shr s) LT'"
 	by(auto) }
     note this ml }
   with lto show ?thesis by(unfold_locales)

@@ -6,7 +6,7 @@
 
 header {* \isaheader{Objects and the Heap} *}
 
-theory Objects imports TypeRel Value begin
+theory Objects imports Value begin
 
 subsection{* Objects and Arrays *}
 
@@ -56,6 +56,9 @@ lemma obj_ty_blank [iff]: "obj_ty (blank P C) = Class C"
 subsection{* Heap *}
 
 types heap = "addr \<rightharpoonup> heapobj"
+
+translations
+  "heap" <= (type) "nat \<Rightarrow> heapobj option"
 
 fun the_obj :: "heapobj \<Rightarrow> cname \<times> fields" where
   "the_obj (Obj C fs) = (C, fs)"
@@ -230,6 +233,13 @@ proof (cases v)
     qed
   qed
 qed(simp_all)
+
+
+lemma map_typeof_hext_mono:
+  "\<lbrakk> map typeof\<^bsub>h\<^esub> vs = map Some Ts; hext h h' \<rbrakk> \<Longrightarrow>  map typeof\<^bsub>h'\<^esub> vs = map Some Ts"
+apply(induct vs arbitrary: Ts)
+apply(auto simp add: Cons_eq_map_conv intro: hext_typeof_mono)
+done
 
 lemma hext_None: "\<lbrakk> hext h h'; h' a = None \<rbrakk> \<Longrightarrow> h a = None"
 by(cases "h a", auto dest: hext_objarrD)

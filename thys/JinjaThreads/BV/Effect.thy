@@ -39,8 +39,7 @@ primrec
   "succs ALength \<tau> pc        = (if (fst \<tau>)!0 = NT then [] else [pc+1])"
   "succs (Checkcast C) \<tau> pc  = [pc+1]"
   "succs Pop \<tau> pc            = [pc+1]"
-  "succs IAdd \<tau> pc           = [pc+1]"
-  "succs CmpEq \<tau> pc          = [pc+1]"
+  "succs (BinOpInstr b) \<tau> pc = [pc+1]"
 succs_IfFalse:
   "succs (IfFalse b) \<tau> pc    = [pc+1, nat (int pc + b)]"
 succs_Goto:
@@ -50,12 +49,11 @@ succs_Return:
 succs_Invoke:
   "succs (Invoke M n) \<tau> pc   = (if (fst \<tau>)!n = NT then [] else [pc+1])"
 succs_Throw:
-  "succs Throw \<tau> pc          = []"
+  "succs ThrowExc \<tau> pc          = []"
   "succs MEnter \<tau> pc         = (if (fst \<tau>)!0 = NT then [] else [pc+1])"
   "succs MExit \<tau> pc          = (if (fst \<tau>)!0 = NT then [] else [pc+1])"
 
 text "Effect of instruction on the state type:"
-
 
 consts 
 eff\<^isub>i :: "instr \<times> 'm prog \<times> ty\<^isub>i \<Rightarrow> ty\<^isub>i"
@@ -85,10 +83,8 @@ eff\<^isub>i_Checkcast:
 "eff\<^isub>i (Checkcast Ty, P, (T#ST,LT))       = (Ty # ST,LT)"
 eff\<^isub>i_Pop:
 "eff\<^isub>i (Pop, P, (T#ST,LT))               = (ST,LT)"
-eff\<^isub>i_IAdd:
-"eff\<^isub>i (IAdd, P,(T\<^isub>1#T\<^isub>2#ST,LT))           = (Integer#ST,LT)"
-eff\<^isub>i_CmpEq:
-"eff\<^isub>i (CmpEq, P, (T\<^isub>1#T\<^isub>2#ST,LT))         = (Boolean#ST,LT)"
+eff\<^isub>i_BinOpInstr:
+"eff\<^isub>i (BinOpInstr bop, P, (T2#T1#ST,LT)) = ((THE T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)#ST, LT)"
 eff\<^isub>i_IfFalse:
 "eff\<^isub>i (IfFalse b, P, (T\<^isub>1#ST,LT))        = (ST,LT)"
 eff\<^isub>i_Invoke:
@@ -96,7 +92,7 @@ eff\<^isub>i_Invoke:
   (let T = ST ! n;
        C = the_Class T;
        Ts = rev(take n ST);
-       U = if is_external_call P T M n then (THE U. P \<turnstile> T\<bullet>M(Ts) :: U) else fst (snd (snd (method P C M)))
+       U = if is_external_call P T M then (THE U. P \<turnstile> T\<bullet>M(Ts) :: U) else fst (snd (snd (method P C M)))
    in (U # drop (n+1) ST, LT))"
 eff\<^isub>i_Goto:
 "eff\<^isub>i (Goto n, P, s)                    = s"
@@ -118,7 +114,7 @@ rel_Checcast:
 rel_New:
   "is_relevant_class (New D)        = (\<lambda>P C. P \<turnstile> OutOfMemory \<preceq>\<^sup>* C)" 
 rel_Throw:
-  "is_relevant_class Throw          = (\<lambda>P C. True)"
+  "is_relevant_class ThrowExc       = (\<lambda>P C. True)"
 rel_Invoke:
   "is_relevant_class (Invoke M n)   = (\<lambda>P C. True)"
 rel_NewArray:
@@ -138,7 +134,7 @@ rel_default:
 
 constdefs
   is_relevant_entry :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool" 
-  "is_relevant_entry P i pc e \<equiv> let (f,t,C,h,d) = e in is_relevant_class i P C \<and> pc \<in> {f..<t}"
+  "is_relevant_entry P i pc e \<equiv> let (f,t,C,h,d) = e in (case C of None \<Rightarrow> True | \<lfloor>C'\<rfloor> \<Rightarrow> is_relevant_class i P C') \<and> pc \<in> {f..<t}"
 
   relevant_entries :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ex_table" 
   "relevant_entries P i pc \<equiv> filter (is_relevant_entry P i pc)"
@@ -146,7 +142,7 @@ constdefs
   xcpt_eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ty\<^isub>i 
                \<Rightarrow> ex_table \<Rightarrow> (pc \<times> ty\<^isub>i') list"                               
   "xcpt_eff i P pc \<tau> et \<equiv> let (ST,LT) = \<tau> in 
-  map (\<lambda>(f,t,C,h,d). (h, Some (Class C#drop (size ST - d) ST, LT))) (relevant_entries P i pc et)"
+  map (\<lambda>(f,t,C,h,d). (h, Some ((case C of None \<Rightarrow> Class Throwable | Some C' \<Rightarrow> Class C')#drop (size ST - d) ST, LT))) (relevant_entries P i pc et)"
 
   norm_eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>i \<Rightarrow> (pc \<times> ty\<^isub>i') list"
   "norm_eff i P pc \<tau> \<equiv> map (\<lambda>pc'. (pc',Some (eff\<^isub>i (i,P,\<tau>)))) (succs i \<tau> pc)"
@@ -208,11 +204,8 @@ where
 | app\<^isub>i_Pop:
   "app\<^isub>i (Pop, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
     True"
-| app\<^isub>i_IAdd:
-  "app\<^isub>i (IAdd, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST,LT)) = (T\<^isub>1 = T\<^isub>2 \<and> T\<^isub>1 = Integer)"
-| app\<^isub>i_CmpEq:
-  "app\<^isub>i (CmpEq, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST,LT)) =
-    (T\<^isub>1 = T\<^isub>2 \<or> is_refT T\<^isub>1 \<and> is_refT T\<^isub>2)"
+| app\<^isub>i_BinOpInstr:
+  "app\<^isub>i (BinOpInstr bop, P, pc, mxs, T\<^isub>r, (T2#T1#ST,LT)) = (\<exists>T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)"
 | app\<^isub>i_IfFalse:
   "app\<^isub>i (IfFalse b, P, pc, mxs, T\<^isub>r, (Boolean#ST,LT)) = 
     (0 \<le> int pc + b)"
@@ -221,14 +214,14 @@ where
 | app\<^isub>i_Return:
   "app\<^isub>i (Return, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = (P \<turnstile> T \<le> T\<^isub>r)"
 | app\<^isub>i_Throw:
-  "app\<^isub>i (Throw, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+  "app\<^isub>i (ThrowExc, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
     (T = NT \<or> (\<exists>C. T = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable))"
 | app\<^isub>i_Invoke:
   "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
     (n < length ST \<and> 
     (ST!n \<noteq> NT \<longrightarrow>
-      (\<exists>C D Ts T m. ST!n = Class C \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and> P \<turnstile> rev (take n ST) [\<le>] Ts) \<or>
-      (is_external_call P (ST ! n) M n) \<and> (\<exists>U. P \<turnstile> ST ! n\<bullet>M(rev (take n ST)) :: U)))"
+      (if is_external_call P (ST ! n) M then \<exists>U. P \<turnstile> ST ! n\<bullet>M(rev (take n ST)) :: U
+       else \<exists>C D Ts T m. ST!n = Class C \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and> P \<turnstile> rev (take n ST) [\<le>] Ts)))"
 | app\<^isub>i_MEnter:
   "app\<^isub>i (MEnter,P, pc,mxs,T\<^isub>r,(T#ST,LT)) = (is_refT T)"
 | app\<^isub>i_MExit:
@@ -239,7 +232,7 @@ where
 
 constdefs
   xcpt_app :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i \<Rightarrow> bool"
-  "xcpt_app i P pc mxs xt \<tau> \<equiv> \<forall>(f,t,C,h,d) \<in> set (relevant_entries P i pc xt). is_class P C \<and> d \<le> size (fst \<tau>) \<and> d < mxs"
+  "xcpt_app i P pc mxs xt \<tau> \<equiv> \<forall>(f,t,C,h,d) \<in> set (relevant_entries P i pc xt). (case C of None \<Rightarrow> True | Some C' \<Rightarrow> is_class P C') \<and> d \<le> size (fst \<tau>) \<and> d < mxs"
 
   app :: "instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> 
            ty\<^isub>i' \<Rightarrow> bool"                                          
@@ -300,10 +293,10 @@ proof -
   obtain xs LT where s: "s = (xs,LT)" by (cases s)
   show ?thesis
   proof (cases xs)
-    case Nil with assms s show ?thesis by simp
+    case Nil thus ?thesis using s assms by (simp)
   next
     fix l xs' assume "xs = l#xs'"
-    with assms s show ?thesis by simp
+    thus ?thesis using s assms by (simp)
   qed
 qed
 (*>*)
@@ -319,15 +312,15 @@ proof -
   obtain xs LT where s: "s = (xs,LT)" by (cases s)
   show ?thesis
   proof (cases xs)
-    case Nil with assms s show ?thesis by simp
+    case Nil thus ?thesis using s assms by (simp)
   next
     fix l xs' assume xs: "xs = l#xs'"
     thus ?thesis
     proof (cases xs')
-      case Nil with assms s xs show ?thesis by simp
+      case Nil thus ?thesis using s assms xs by (simp)
     next
-      fix l' ST assume "xs' = l'#ST"
-      with assms s xs show ?thesis by simp
+      fix l' ST assume xs': "xs' = l'#ST"
+      thus ?thesis using s assms xs xs' by (simp)
     qed
   qed
 qed
@@ -426,9 +419,8 @@ lemma app\<^isub>iPop[simp]:
 "app\<^isub>i (Pop,P,pc,mxs,T\<^isub>r,s) = (\<exists>ts ST LT. s = (ts#ST,LT))"
   by (rule length_cases2, auto)
 
-lemma appIAdd[simp]:
-"app\<^isub>i (IAdd,P,pc,mxs,T\<^isub>r,s) = (\<exists>ST LT. s = (Integer#Integer#ST,LT))"
-(*<*)
+lemma appBinOp[simp]:
+"app\<^isub>i (BinOpInstr bop,P,pc,mxs,T\<^isub>r,s) = (\<exists>T1 T2 ST LT T. s = (T2 # T1 # ST, LT) \<and> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T)"
 proof -
   obtain ST LT where [simp]: "s = (ST,LT)" by (cases s)
   have "ST = [] \<or> (\<exists>T. ST = [T]) \<or> (\<exists>T\<^isub>1 T\<^isub>2 ST'. ST = T\<^isub>1#T\<^isub>2#ST')"
@@ -439,35 +431,26 @@ proof -
   { fix T assume "ST = [T]" hence ?thesis by (cases T, auto) }
   moreover
   { fix T\<^isub>1 T\<^isub>2 ST' assume "ST = T\<^isub>1#T\<^isub>2#ST'"
-    hence ?thesis by (cases T\<^isub>1, auto)
+    hence ?thesis by simp
   }
   ultimately show ?thesis by blast
 qed
-(*>*)
-
 
 lemma appIfFalse [simp]:
 "app\<^isub>i (IfFalse b,P,pc,mxs,T\<^isub>r,s) = 
   (\<exists>ST LT. s = (Boolean#ST,LT) \<and> 0 \<le> int pc + b)"
-(*<*)
   apply (rule length_cases2)
   apply simp
   apply (case_tac l) 
   apply auto
   done
-(*>*)
-
-lemma appCmpEq[simp]:
-"app\<^isub>i (CmpEq,P,pc,mxs,T\<^isub>r,s) = 
-  (\<exists>T\<^isub>1 T\<^isub>2 ST LT. s = (T\<^isub>1#T\<^isub>2#ST,LT) \<and> (\<not>is_refT T\<^isub>1 \<and> T\<^isub>2 = T\<^isub>1 \<or> is_refT T\<^isub>1 \<and> is_refT T\<^isub>2))"
-  by (rule length_cases4, auto)
 
 lemma appReturn[simp]:
 "app\<^isub>i (Return,P,pc,mxs,T\<^isub>r,s) = (\<exists>T ST LT. s = (T#ST,LT) \<and> P \<turnstile> T \<le> T\<^isub>r)" 
   by (rule length_cases2, auto)
 
 lemma appThrow[simp]:
-  "app\<^isub>i (Throw,P,pc,mxs,T\<^isub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> (T = NT \<or> (\<exists>C. T = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable)))"
+  "app\<^isub>i (ThrowExc,P,pc,mxs,T\<^isub>r,s) = (\<exists>T ST LT. s=(T#ST,LT) \<and> (T = NT \<or> (\<exists>C. T = Class C \<and> P \<turnstile> C \<preceq>\<^sup>* Throwable)))"
   by (rule length_cases2, auto)  
 
 lemma appMEnter[simp]:
@@ -493,7 +476,7 @@ lemma relevant_entries_append [simp]:
 
 lemma xcpt_app_append [iff]:
   "xcpt_app i P pc mxs (xt@xt') \<tau> = (xcpt_app i P pc mxs xt \<tau> \<and> xcpt_app i P pc mxs xt' \<tau>)"
-  by (unfold xcpt_app_def) fastsimp
+unfolding xcpt_app_def by force
 
 lemma xcpt_eff_append [simp]:
   "xcpt_eff i P pc \<tau> (xt@xt') = xcpt_eff i P pc \<tau> xt @ xcpt_eff i P pc \<tau> xt'"

@@ -5,7 +5,7 @@
 header {* \isaheader{Program Compilation} *}
 
 theory PCompiler
-imports "../Common/WellForm"
+imports "../Common/WellForm" "../Common/BinOp" "../Common/Conform"
 begin
 
 constdefs
@@ -337,5 +337,40 @@ using wf
 by (simp add:wf_prog_def) (blast intro:wf_cdecl_compPI lift wf)
 (*>*)
 
+lemma WT_binop_compP [simp]: "compP f P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<longleftrightarrow> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T"
+by(fastsimp)
+
+lemma WTrt_binop_compP [simp]: "compP f P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T \<longleftrightarrow> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T"
+by(fastsimp)
+
+lemma is_class_compP [simp]:
+  "is_class (compP f P) = is_class P"
+by(simp add: is_class_def expand_fun_eq)
+
+lemma has_field_compP [simp]:
+  "compP f P \<turnstile> C has F:T in D \<longleftrightarrow> P \<turnstile> C has F:T in D"
+by(auto simp add: has_field_def)
+
+lemma conf_compP [simp]:
+  "compP f P,h \<turnstile> v :\<le> T \<longleftrightarrow> P,h \<turnstile> v :\<le> T"
+by(simp add: conf_def)
+
+lemma oconf_compP [simp]:
+  "oconf (compP f P) h obj = oconf P h obj"
+by(auto simp add: oconf_def split: heapobj.split)
+
+lemma hconf_compP [simp]:
+  "compP f P \<turnstile> h \<surd> \<longleftrightarrow> P \<turnstile> h \<surd>"
+by(auto simp add: hconf_def)
+
+lemma compP_conf: "conf (compP f P) = conf P"
+by(auto simp add: conf_def intro!: ext)
+
+lemma compP_confs: "compP f P,h \<turnstile> vs [:\<le>] Ts \<longleftrightarrow> P,h \<turnstile> vs [:\<le>] Ts"
+by(simp add: compP_conf)
+
+lemma compP_has_method: "compP f P \<turnstile> C has M \<longleftrightarrow> P \<turnstile> C has M"
+unfolding has_method_def
+by(fastsimp dest: sees_method_compPD intro: sees_method_compP)
 
 end

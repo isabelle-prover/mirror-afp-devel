@@ -5,7 +5,11 @@
 header {* \isaheader{Well-formedness Constraints} *}
 
 theory JWellForm
-imports "../Common/WellForm" WWellForm WellType DefAss
+imports
+  "../Common/WellForm"
+  WWellForm
+  WellType
+  DefAss
 begin
 
 constdefs
@@ -27,10 +31,8 @@ lemma wf_J_mdecl[simp]:
 (*<*)by(simp add:wf_J_mdecl_def)(*>*)
 
 
-syntax 
-  wf_J_prog :: "J_prog \<Rightarrow> bool"
-translations
-  "wf_J_prog"  ==  "wf_prog wf_J_mdecl"
+abbreviation wf_J_prog :: "J_prog \<Rightarrow> bool"
+where "wf_J_prog == wf_prog wf_J_mdecl"
 
 lemma wf_J_prog_wf_J_mdecl:
   "\<lbrakk> wf_J_prog P; (C, D, fds, mths) \<in> set P; jmdcl \<in> set mths \<rbrakk>

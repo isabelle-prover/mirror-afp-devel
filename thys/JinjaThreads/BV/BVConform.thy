@@ -59,7 +59,7 @@ primrec
 
 primrec conf_xcp :: "jvm_prog \<Rightarrow> heap \<Rightarrow> addr option \<Rightarrow> instr \<Rightarrow> bool" where
   "conf_xcp P h None i = True"
-| "conf_xcp P h \<lfloor>a\<rfloor> i = (\<exists>D fs. h a = \<lfloor>Obj D fs\<rfloor> \<and> (\<forall>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<longrightarrow> is_relevant_class i P D'))"
+| "conf_xcp P h \<lfloor>a\<rfloor> i = (\<exists>D fs. h a = \<lfloor>Obj D fs\<rfloor> \<and> P \<turnstile> D \<preceq>\<^sup>* Throwable \<and> (\<forall>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<longrightarrow> is_relevant_class i P D'))"
 
 constdefs
  correct_state :: "[jvm_prog,ty\<^isub>P,jvm_state] \<Rightarrow> bool"

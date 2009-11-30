@@ -8,59 +8,60 @@ header {* \isaheader{Exceptions} *}
 
 theory Exceptions imports Objects begin
 
-constdefs
-  NullPointer :: cname
-  "NullPointer \<equiv> ''NullPointer''"
+definition NullPointer :: cname
+where [code_inline]: "NullPointer = STR ''NullPointer''"
 
-  ClassCast :: cname
-  "ClassCast \<equiv> ''ClassCast''"
+definition ClassCast :: cname
+where [code_inline]: "ClassCast = STR ''ClassCast''"
 
-  OutOfMemory :: cname
-  "OutOfMemory \<equiv> ''OutOfMemory''"
+definition OutOfMemory :: cname
+where [code_inline]: "OutOfMemory = STR ''OutOfMemory''"
 
-  ArrayIndexOutOfBounds :: cname
-  "ArrayIndexOutOfBounds \<equiv> ''ArrayIndexOutOfBounds''"
+definition ArrayIndexOutOfBounds :: cname
+where [code_inline]: "ArrayIndexOutOfBounds = STR ''ArrayIndexOutOfBounds''"
 
-  ArrayStore :: cname
-  "ArrayStore \<equiv> ''ArrayStore''"
+definition ArrayStore :: cname
+where [code_inline]: "ArrayStore = STR ''ArrayStore''"
 
-  NegativeArraySize :: cname
-  "NegativeArraySize \<equiv> ''NegativeArraySize''"
+definition NegativeArraySize :: cname
+where [code_inline]: "NegativeArraySize = STR ''NegativeArraySize''"
 
-  IllegalMonitorState :: cname
-  "IllegalMonitorState \<equiv> ''IllegalMonitorState''"
+definition IllegalMonitorState :: cname
+where [code_inline]: "IllegalMonitorState = STR ''IllegalMonitorState''"
 
-  IllegalThreadState :: cname
-  "IllegalThreadState \<equiv> ''IllegalThreadState''"
+definition IllegalThreadState :: cname
+where [code_inline]: "IllegalThreadState = STR ''IllegalThreadState''"
 
-  sys_xcpts :: "cname set"
-  "sys_xcpts  \<equiv>  {NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds, ArrayStore, NegativeArraySize, IllegalMonitorState, IllegalThreadState}"
+definition sys_xcpts :: "cname set"
+where [code_inline]: "sys_xcpts = {NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds,
+                                   ArrayStore, NegativeArraySize, IllegalMonitorState, IllegalThreadState}"
 
-  addr_of_sys_xcpt :: "cname \<Rightarrow> addr"
-  "addr_of_sys_xcpt s \<equiv> if s = NullPointer then 0 else
-                        if s = ClassCast then 1 else
-                        if s = OutOfMemory then 2 else
-                        if s = ArrayIndexOutOfBounds then 3 else
-                        if s = ArrayStore then 4 else
-                        if s = NegativeArraySize then 5 else 
-                        if s = IllegalMonitorState then 6 else 
-                        if s = IllegalThreadState then 7 else arbitrary"
+definition addr_of_sys_xcpt :: "cname \<Rightarrow> addr"
+where "addr_of_sys_xcpt s \<equiv> if s = NullPointer then 0 else
+                            if s = ClassCast then 1 else
+                            if s = OutOfMemory then 2 else
+                            if s = ArrayIndexOutOfBounds then 3 else
+                            if s = ArrayStore then 4 else
+                            if s = NegativeArraySize then 5 else 
+                            if s = IllegalMonitorState then 6 else 
+                            if s = IllegalThreadState then 7 else undefined"
 
-  start_heap :: "'c prog \<Rightarrow> heap"
-  "start_heap G \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer)
-                        (addr_of_sys_xcpt ClassCast \<mapsto> blank G ClassCast)
-                        (addr_of_sys_xcpt OutOfMemory \<mapsto> blank G OutOfMemory)
-                        (addr_of_sys_xcpt ArrayIndexOutOfBounds \<mapsto> blank G ArrayIndexOutOfBounds)
-                        (addr_of_sys_xcpt ArrayStore \<mapsto> blank G ArrayStore)
-                        (addr_of_sys_xcpt NegativeArraySize \<mapsto> blank G NegativeArraySize)
-                        (addr_of_sys_xcpt IllegalMonitorState \<mapsto> blank G IllegalMonitorState)
-                        (addr_of_sys_xcpt IllegalThreadState \<mapsto> blank G IllegalThreadState)"
+definition start_heap :: "'c prog \<Rightarrow> heap"
+where "start_heap G \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer)
+                            (addr_of_sys_xcpt ClassCast \<mapsto> blank G ClassCast)
+                            (addr_of_sys_xcpt OutOfMemory \<mapsto> blank G OutOfMemory)
+                            (addr_of_sys_xcpt ArrayIndexOutOfBounds \<mapsto> blank G ArrayIndexOutOfBounds)
+                            (addr_of_sys_xcpt ArrayStore \<mapsto> blank G ArrayStore)
+                            (addr_of_sys_xcpt NegativeArraySize \<mapsto> blank G NegativeArraySize)
+                            (addr_of_sys_xcpt IllegalMonitorState \<mapsto> blank G IllegalMonitorState)
+                            (addr_of_sys_xcpt IllegalThreadState \<mapsto> blank G IllegalThreadState)"
 
-  preallocated :: "heap \<Rightarrow> bool"
-  "preallocated h \<equiv> \<forall>C \<in> sys_xcpts. \<exists>fs. h(addr_of_sys_xcpt C) = Some (Obj C fs)"
+definition preallocated :: "heap \<Rightarrow> bool"
+where "preallocated h \<equiv> \<forall>C \<in> sys_xcpts. \<exists>fs. h(addr_of_sys_xcpt C) = Some (Obj C fs)"
 
-lemma [code_unfold]:
-  "sys_xcpts = set [NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds, ArrayStore, NegativeArraySize, IllegalMonitorState, IllegalThreadState]"
+lemma sys_xcpts_code [code_inline]:
+  "sys_xcpts = set [NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds, ArrayStore,
+                    NegativeArraySize, IllegalMonitorState, IllegalThreadState]"
 by(simp add: sys_xcpts_def)
 
 section "System exceptions"

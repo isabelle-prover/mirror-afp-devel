@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* Progress and type safety theorem for the multithreaded system *}
+header {* \isaheader{Progress and type safety theorem for the multithreaded system} *}
 
 theory ProgressThreaded 
 imports Threaded TypeSafe "../Framework/FWProgress"
@@ -14,38 +14,16 @@ syntax
   can_sync_syntax :: "J_prog \<Rightarrow> expr \<Rightarrow> heap \<times> locals \<Rightarrow> addr set \<Rightarrow> bool" ("_ \<turnstile> \<langle>_,/ _\<rangle>/ _/ \<wrong>" [50,0,0,0] 81)
 
 translations
-  "P \<turnstile> \<langle>e, s\<rangle> L \<wrong>" => "multithreaded.can_sync ((CONST mred) P) (e, snd s) (fst s) L"
-  "P \<turnstile> \<langle>e, (h, x)\<rangle> L \<wrong>" == "multithreaded.can_sync ((CONST mred) P) (e, x) h L"
+  "P \<turnstile> \<langle>e, s\<rangle> L \<wrong>" => "multithreaded_base.can_sync ((CONST mred) P) (e, snd s) (fst s) L"
+  "P \<turnstile> \<langle>e, (h, x)\<rangle> L \<wrong>" == "multithreaded_base.can_sync ((CONST mred) P) (e, x) h L"
 
 syntax
   must_sync_syntax :: "J_prog \<Rightarrow> expr \<Rightarrow> heap \<times> locals \<Rightarrow> bool" ("_ \<turnstile> \<langle>_,/ _\<rangle>/ \<wrong>" [50,0,0] 81)
 
 translations
-  "P \<turnstile> \<langle>e, s\<rangle> \<wrong>" => "multithreaded.must_sync ((CONST mred) P) (e, snd s) (fst s)"
-  "P \<turnstile> \<langle>e, (h, x)\<rangle> \<wrong>" == "multithreaded.must_sync ((CONST mred) P) (e, x) h"
+  "P \<turnstile> \<langle>e, s\<rangle> \<wrong>" => "multithreaded_base.must_sync ((CONST mred) P) (e, snd s) (fst s)"
+  "P \<turnstile> \<langle>e, (h, x)\<rangle> \<wrong>" == "multithreaded_base.must_sync ((CONST mred) P) (e, x) h"
 
-text {* Interpreting final\_thread\_wf with final *}
-
-lemma final_no_red [elim]:
-  "final e \<Longrightarrow> \<not> P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>"
-apply(auto elim: red.cases finalE)
-done
-
-lemma final_locks: "final e \<Longrightarrow> expr_locks e l = 0"
-by(auto elim: finalE)
-
-lemma final_thread_wf_interp: "final_thread_wf final_expr (mred P)"
-proof(unfold_locales)
-  fix x m ta x' m'
-  assume "final_expr x" "mred P (x, m) ta (x', m')"
-  moreover obtain e l where e: "x = (e, l)" by (cases x, auto)
-  ultimately have "final e" by simp
-  moreover obtain e' l' where e': "(x' :: expr \<times> (char list \<rightharpoonup> val)) = (e', l')" by (cases x', auto)
-  ultimately show "False" using e `mred P (x, m) ta (x', m')` by(auto)
-qed
-
-interpretation red_mthr_final: final_thread_wf "final_expr" "mred P"
-by(rule final_thread_wf_interp)
 
 lemma lock_ok_ls_Some_ex_ts_not_final:
   assumes lock: "lock_ok ls ts"
@@ -66,7 +44,7 @@ proof -
 qed
 
 
-text {* Preservation lemmata *}
+section {* Preservation lemmata *}
 
 text {* Definite assignment *}
 
@@ -274,27 +252,27 @@ next
   moreover from `ta' = extTA2J P ta` sub
   have "red_mthr.actions_subset (extTA2J P ta'') ta'"
     by(auto del: subsetI elim: final_thread.actions_subset.cases)
-  moreover from red' `typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>T\<rfloor>` `is_external_call P T M (length vs)`
+  moreover from red' `typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>T\<rfloor>` `is_external_call P T M`
   obtain s'' e'' where "P \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J P ta''\<rightarrow> \<langle>e'',s''\<rangle>"
     by(fastsimp intro: red_reds.RedCallExternal)
   ultimately show ?case by blast
 next
   case (LockSynchronized s a arrobj e)
-  from `\<not> final_thread.actions_ok' (ls, (ts, m), ws) t \<epsilon>\<lbrace>\<^bsub>l\<^esub>Lock\<rightarrow>a\<rbrace>` have False
+  from `\<not> final_thread.actions_ok' (ls, (ts, m), ws) t \<epsilon>\<lbrace>\<^bsub>l\<^esub>Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>` have False
     by(auto simp add: lock_ok_las'_def finfun_upd_apply)
   thus ?case ..
 next
   case (UnlockSynchronized a v s)
   from `\<forall>l. expr_locks (insync(a) Val v) l \<le> has_locks (ls\<^sub>f l) t`
   have "has_lock (ls\<^sub>f a) t" by(force split: split_if_asm)
-  with `\<not> final_thread.actions_ok' (ls, (ts, m), ws) t \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a\<rbrace>`
+  with `\<not> final_thread.actions_ok' (ls, (ts, m), ws) t \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>`
   have False by(auto simp add: lock_ok_las'_def finfun_upd_apply)
   thus ?case ..
 next
   case (SynchronizedThrow2 a ad s)
   from `\<forall>l. expr_locks (insync(a) Throw ad) l \<le> has_locks (ls\<^sub>f l) t`
   have "has_lock (ls\<^sub>f a) t" by(force split: split_if_asm)
-  with `\<not> final_thread.actions_ok' (ls, (ts, m), ws) t \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a\<rbrace>`
+  with `\<not> final_thread.actions_ok' (ls, (ts, m), ws) t \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>`
   have False by(auto simp add: lock_ok_las'_def finfun_upd_apply)
   thus ?case ..
 qed(simp_all add: is_val_iff contains_insync_expr_locks_conv contains_insyncs_expr_lockss_conv final_thread.actions_ok'_empty, (fastsimp intro: red_reds.intros)+)
@@ -381,7 +359,7 @@ lemma progress_deadlock:
   and "sconf_type_ts_ok P Es (thr s) (shr s)"
   and "def_ass_ts_ok (thr s) (shr s)"
   and "lock_ok (locks s) (thr s)"
-  shows "progress final_expr (mred P) s (final_thread_wf.deadlock final_expr (mred P))"
+  shows "progress final_expr (mred P) s (multithreaded_base.deadlock final_expr (mred P))"
 using assms
 apply -
 apply(rule final_thread_wf.progress_deadlock)
@@ -393,7 +371,7 @@ by(rule red_wf_red, assumption+)
 lemma progress_deadlocked': 
   "\<lbrakk> wf_J_prog P; sync_es_ok (thr s) (shr s); sconf_type_ts_ok P Es (thr s) (shr s);
     def_ass_ts_ok (thr s) (shr s); lock_ok (locks s) (thr s) \<rbrakk>
-  \<Longrightarrow> progress final_expr (mred P) s (final_thread_wf.deadlocked' final_expr (mred P))"
+  \<Longrightarrow> progress final_expr (mred P) s (multithreaded_base.deadlocked' final_expr (mred P))"
 unfolding final_thread_wf.deadlock_eq_deadlocked'[symmetric, OF final_thread_wf_interp]
 by(rule progress_deadlock)
 
@@ -401,22 +379,24 @@ lemma redT_progress_deadlocked:
   "\<lbrakk> wf_J_prog P; sync_es_ok (thr start_state) (shr start_state);
      sconf_type_ts_ok P Es (thr start_state) (shr start_state);
      def_ass_ts_ok (thr start_state) (shr start_state); lock_ok (locks start_state) (thr start_state);
-     P \<turnstile> start_state -\<triangleright>?ttas\<rightarrow>* s; red_mthr_final.not_final_thread s t;
-     \<not> red_mthr_final.deadlocked P s t\<rbrakk>
+     P \<turnstile> start_state -\<triangleright>ttas\<rightarrow>* s; final_thread.not_final_thread final_expr s t;
+     \<not> multithreaded_base.deadlocked final_expr (mred P) s t\<rbrakk>
   \<Longrightarrow> \<exists>t' ta' s'. P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
-by(rule progress.redT_progress[OF progress_deadlocked' _ _ final_thread_wf.not_deadlocked'I[OF final_thread_wf_interp]])
+by(rule progress.redT_progress[OF progress_deadlocked' _ _ multithreaded_base.not_deadlocked'I])
 
 lemma redT_pregress_deadlock:
   "\<lbrakk> wf_J_prog P; sync_es_ok (thr start_state) (shr start_state);
      sconf_type_ts_ok P Es (thr start_state) (shr start_state);
      def_ass_ts_ok (thr start_state) (shr start_state); lock_ok (locks start_state) (thr start_state);
-     P \<turnstile> start_state -\<triangleright>?ttas\<rightarrow>* s;
-     red_mthr_final.not_final_thread s t; \<not> red_mthr_final.deadlock P s\<rbrakk>
+     P \<turnstile> start_state -\<triangleright>ttas\<rightarrow>* s;
+     final_thread.not_final_thread final_expr s t; \<not> multithreaded_base.deadlock final_expr (mred P) s\<rbrakk>
   \<Longrightarrow> \<exists>t' ta' s'. P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
 by(rule progress.redT_progress[OF progress_deadlock])
 
+section {* Type safety proof *}
+
 corollary TypeSafetyT:
-  fixes ttas :: "(thread_id \<times> (addr,thread_id,expr \<times> locals,heap,addr) thread_action) list"
+  fixes ttas :: "(thread_id \<times> (addr,thread_id,expr \<times> locals,heap,addr,(addr,obs_event) observable) thread_action) list"
   assumes wf: "wf_J_prog P"
   and sconf_subject: "sconf_type_ts_ok P Es (thr s) (shr s)"
   and defass: "def_ass_ts_ok (thr s) (shr s)"
@@ -431,7 +411,7 @@ corollary TypeSafetyT:
           (\<forall>t e'. \<exists>x' ln'. thr s' t = \<lfloor>((e', x'), ln')\<rfloor> \<longrightarrow>
                     (\<exists>v. e' = Val v \<and> (\<exists>E T. Es' t = \<lfloor>(E, T)\<rfloor> \<and> P,shr s' \<turnstile> v :\<le> T) \<and> ln' = no_wait_locks)
                   \<or> (\<exists>a. e' = Throw a \<and> a \<in> dom (shr s') \<and> ln' = no_wait_locks)
-                  \<or> red_mthr_final.deadlocked P s' t \<and> (\<exists>E T. Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,shr s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T)))
+                  \<or> multithreaded_base.deadlocked final_expr (mred P) s' t \<and> (\<exists>E T. Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,shr s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T)))
           \<and> Es \<unlhd> Es')"
 proof(rule conjI)
   from RedT tc show "thread_conf P (thr s') (shr s')" by(rule RedT_preserves_thread_conf)
@@ -488,9 +468,9 @@ next
 	using a by blast }
     moreover
     { assume nfine': "\<not> final e'"
-      with es't have "red_mthr_final.not_final_thread s' t"
-	by(auto intro: red_mthr_final.not_final_thread.intros)
-      with nored have "red_mthr_final.deadlocked P s' t"
+      with es't have "final_thread.not_final_thread final_expr s' t"
+	by(auto intro: final_thread.not_final_thread.intros)
+      with nored have "multithreaded_base.deadlocked final_expr (mred P) s' t"
 	by -(erule contrapos_np,rule redT_progress_deadlocked[OF wf addr sconf_subject defass lock RedT])
       moreover 
       from sconf_subject RedT
@@ -504,10 +484,10 @@ next
 	by(auto simp add: sconf_type_ok_def type_ok_def)
       with `?Es' t = \<lfloor>(E', T')\<rfloor>` have "\<exists>E T. ?Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,m' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T)"
 	by blast
-      ultimately have "red_mthr_final.deadlocked P s' t \<and> (\<exists>E T. ?Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,m' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T))" .. }
+      ultimately have "multithreaded_base.deadlocked final_expr (mred P) s' t \<and> (\<exists>E T. ?Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,m' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T))" .. }
     ultimately have "(\<exists>v. e' = Val v \<and> (\<exists>E T. ?Es' t = \<lfloor>(E, T)\<rfloor> \<and> P,m' \<turnstile> v :\<le> T) \<and> ln' = no_wait_locks)
                    \<or> (\<exists>a. e' = Throw a \<and> a \<in> dom m' \<and> ln' = no_wait_locks)
-                   \<or> red_mthr_final.deadlocked P s' t \<and> (\<exists>E T. ?Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,m' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T))"
+                   \<or> multithreaded_base.deadlocked final_expr (mred P) s' t \<and> (\<exists>E T. ?Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,m' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T))"
       by(blast) }
   moreover
   have "Es \<unlhd> ?Es'" using esinv RedT
@@ -516,7 +496,7 @@ next
           (\<forall>t e'. \<exists>x' ln'. thr s' t = \<lfloor>((e', x'), ln')\<rfloor> \<longrightarrow>
                     (\<exists>v. e' = Val v \<and> (\<exists>E T. Es' t = \<lfloor>(E, T)\<rfloor> \<and> P,shr s' \<turnstile> v :\<le> T) \<and> ln' = no_wait_locks)
                   \<or> (\<exists>a. e' = Throw a \<and> a \<in> dom (shr s') \<and> ln' = no_wait_locks)
-                  \<or> red_mthr_final.deadlocked P s' t \<and> (\<exists>E T. Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,shr s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T)))
+                  \<or> multithreaded_base.deadlocked final_expr (mred P) s' t \<and> (\<exists>E T. Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,shr s' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T)))
           \<and> Es \<unlhd> Es'" by(simp)
 qed
 

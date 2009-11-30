@@ -2,15 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* Preservation of deadlock for the JVMs *}
+header{* \isaheader{Preservation of deadlock for the JVMs} *}
 
 theory JVMDeadlocked imports BVProgressThreaded begin
-
-lemma map_typeof_hext_mono: (* Move to Objects *)
-  "\<lbrakk> map typeof\<^bsub>h\<^esub> vs = map Some Ts; hext h h' \<rbrakk> \<Longrightarrow>  map typeof\<^bsub>h'\<^esub> vs = map Some Ts"
-apply(induct vs arbitrary: Ts)
-apply(auto simp add: Cons_eq_map_conv intro: hext_typeof_mono)
-done
 
 lemma join_hext:
   assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"
@@ -45,29 +39,30 @@ proof -
       and n: "n < length stk"
       and ao: "h a = \<lfloor>ao\<rfloor>"
       and Ta: "typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>"
-      and iec: "is_external_call P Ta M' n"
+      and iec: "is_external_call P Ta M'"
       and wtext: "P \<turnstile> Ta\<bullet>M'(Ts) :: U"
       and Ts: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Ts"
-      by(auto simp add: check_def is_Ref_def has_method_def min_def split: split_if_asm heapobj.split_asm elim!: is_ArrE dest: external_call_not_sees_method[OF wfp])
+      by(auto simp add: check_def is_Ref_def has_method_def external_WT'_iff split: split_if_asm heapobj.split_asm elim!: is_ArrE dest: external_call_not_sees_method[OF wfp])
     from exec iec Ta n a sees Invoke join obtain ta' va m''
       where exec': "(ta', va, m'') \<in> set (red_external_list P a M' (rev (take n stk)) h)"
       and ta: "ta = extTA2JVM P ta'"
       and va: "(xcp', m', frs') = extRet2JVM n m'' stk loc C M pc Frs va"
-      by(auto simp add: min_def)
+      by(auto)
     from va have [simp]: "m'' = m'" by(cases va) simp_all
-    from exec' have red: "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h\<rangle> -ta'\<rightarrow>ext \<langle>va, m'\<rangle>"
-      unfolding red_external_list_conv by simp
+    from Ta Ts wtext have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U" by(rule external_WT'.intros)
+    with exec' have red: "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h\<rangle> -ta'\<rightarrow>ext \<langle>va, m'\<rangle>"
+      by(simp add: WT_red_external_list_conv)
     from join ta have "Join t \<in> set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>" by simp
     from red_external_Join_hext[OF red this hext] ao
     have "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h'\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by simp
     moreover from ao hext obtain ao' where "h' a = \<lfloor>ao'\<rfloor>" by(auto dest: hext_objarrD)
     moreover from hext Ta have "typeof\<^bsub>h'\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>" by(rule hext_typeof_mono)
     ultimately have "(ta, xcp', h', frs') \<in> set (exec P (xcp, h', frs))" using ta a n iec Invoke sees va
-      by(cases va)(force simp add: min_def red_external_list_conv)+
+      by(cases va)(force intro: red_external_imp_red_external_list)+
     moreover from Ts hext have "map typeof\<^bsub>h'\<^esub> (rev (take n stk)) = map Some Ts"
       by(rule map_typeof_hext_mono)
     with `typeof\<^bsub>h'\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>` `h' a = \<lfloor>ao'\<rfloor>` iec Invoke a n wtext
-    have "check_instr (ins ! pc) P h' stk loc C M pc Frs" by(auto simp add: is_Ref_def)
+    have "check_instr (ins ! pc) P h' stk loc C M pc Frs" by(auto simp add: is_Ref_def external_WT'_iff)
     with check sees have "check P (xcp, h', frs)" by(simp add: check_def)
     ultimately show "P \<turnstile> Normal (xcp, h', frs) -ta-jvmd\<rightarrow> Normal (xcp', h', frs')"
       by -(rule exec_1_d.exec_1_d_NormalI, auto simp add: exec_d_def)
@@ -81,11 +76,11 @@ lemma must_sync_preserved_d:
   and hext: "hext h h'"
   and cs: "P,\<Phi> \<turnstile> (xcp, h, frs) \<surd>"
   shows "P \<turnstile> \<langle>(xcp, h', frs)\<rangle>\<^isub>d \<wrong>"
-proof(rule multithreaded.must_syncI[OF execd_mthr])
+proof(rule multithreaded_base.must_syncI)
   from ml obtain ta xcp' frs' m'
     where red: "P \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', m', frs')"
     and LT: "LT = collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> {t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>}"
-    by(auto elim: multithreaded.can_syncE[OF execd_mthr])
+    by(auto elim: multithreaded_base.can_syncE)
   with LTnempty have lj: "(\<exists>l. Lock \<in> set (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)) \<or> (\<exists>t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>)"
     by(auto simp add: collect_locks_def)
   from red obtain f Frs
@@ -118,29 +113,30 @@ proof(rule multithreaded.must_syncI[OF execd_mthr])
 	and n: "n < length stk"
 	and ao: "h a = \<lfloor>ao\<rfloor>"
 	and Ta: "typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>"
-	and iec: "is_external_call P Ta M' n"
+	and iec: "is_external_call P Ta M'"
 	and wtext: "P \<turnstile> Ta\<bullet>M'(Ts) :: U"
 	and Ts: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Ts"
-	by(auto simp add: check_def is_Ref_def has_method_def min_def split: split_if_asm heapobj.split_asm elim!: is_ArrE dest: external_call_not_sees_method[OF wfp])
+	by(auto simp add: check_def is_Ref_def has_method_def external_WT'_iff split: split_if_asm heapobj.split_asm elim!: is_ArrE dest: external_call_not_sees_method[OF wfp])
       from exec iec Ta n a meth Invoke l obtain ta' va m''
 	where exec': "(ta', va, m'') \<in> set (red_external_list P a M' (rev (take n stk)) h)"
 	and ta: "ta = extTA2JVM P ta'"
 	and va: "(xcp', m', frs') = extRet2JVM n m'' stk loc C M pc Frs va"
 	by(auto simp add: min_def)
       from va have [simp]: "m'' = m'" by(cases va) simp_all
-      from exec' have red: "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h\<rangle> -ta'\<rightarrow>ext \<langle>va, m'\<rangle>"
-	unfolding red_external_list_conv by simp
+      from Ta Ts wtext have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U" by(rule external_WT'.intros)
+      with exec' have red: "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h\<rangle> -ta'\<rightarrow>ext \<langle>va, m'\<rangle>"
+	by(simp add: WT_red_external_list_conv)
       from l ta have "Lock \<in> set (\<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>\<^sub>f l)" by simp
       from red_external_Lock_hext[OF red this hext] ao
       have "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h'\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by simp
       moreover from ao hext obtain ao' where "h' a = \<lfloor>ao'\<rfloor>" by(auto dest: hext_objarrD)
       moreover from hext Ta have "typeof\<^bsub>h'\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>" by(rule hext_typeof_mono)
       ultimately have "(ta, xcp', h', frs') \<in> set (exec P (xcp, h', frs))" using ta a n iec Invoke meth va
-	by(cases va)(force simp add: min_def red_external_list_conv)+
+	by(cases va)(force intro: red_external_imp_red_external_list)+
       moreover from Ts hext have "map typeof\<^bsub>h'\<^esub> (rev (take n stk)) = map Some Ts"
 	by(rule map_typeof_hext_mono)
       with `typeof\<^bsub>h'\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>` `h' a = \<lfloor>ao'\<rfloor>` iec Invoke a n wtext
-      have "check_instr (ins ! pc) P h' stk loc C M pc Frs" by(auto simp add: is_Ref_def)
+      have "check_instr (ins ! pc) P h' stk loc C M pc Frs" by(auto simp add: is_Ref_def external_WT'_iff)
       with check meth have "check P (xcp, h', frs)" by(simp add: check_def)
       ultimately have "P \<turnstile> Normal (xcp, h', frs) -ta-jvmd\<rightarrow> Normal (xcp', h', frs')"
 	by -(rule exec_1_d.exec_1_d_NormalI, auto simp add: exec_d_def)
@@ -176,7 +172,7 @@ proof -
   from cl' obtain ta xcp' frs' m'
     where red: "P \<turnstile> Normal (xcp, h', frs) -ta-jvmd\<rightarrow> Normal (xcp', m', frs')"
     and L: "L = collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> {t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>}"
-    by -(erule  multithreaded.can_syncE[OF execd_mthr], auto)
+    by -(erule  multithreaded_base.can_syncE, auto)
   then obtain f Frs
     where check: "check P (xcp, h', frs)"
     and exec: "(ta, xcp', m', frs') \<in> set (exec P (xcp, h', frs))"
@@ -204,8 +200,8 @@ proof -
     moreover from check have "check P (xcp, h, frs)" by(simp add: check_def)
     ultimately have "P \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', h, frs')"
       by -(rule exec_1_d_NormalI, simp only: exec_d_def if_True)
-    with L have "multithreaded.can_sync (mexecd P) (xcp, frs) h L"
-      by(auto intro: multithreaded.can_syncI[OF execd_mthr])
+    with L have "multithreaded_base.can_sync (mexecd P) (xcp, frs) h L"
+      by(auto intro: multithreaded_base.can_syncI)
     thus ?thesis by auto
   next
     case None[simp]
@@ -225,29 +221,35 @@ proof -
 	  by(auto split: heapobj.splits simp add: conf_def)
 	from hext Ta have Ta': "typeof\<^bsub>h'\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>" by(rule hext_typeof_mono)
 	show ?thesis
-	proof(cases "is_external_call P Ta M' n")
+	proof(cases "is_external_call P Ta M'")
 	  case False
-	  with exec meth a Ta Ta' Invoke n ao show ?thesis by(simp add: min_def split_beta)
+	  with exec meth a Ta Ta' Invoke n ao show ?thesis by(simp add: split_beta)
 	next
 	  case True
 	  with exec meth a Ta Ta' Invoke n ao
 	  obtain ta' va h'' where ta': "ta = extTA2JVM P ta'"
 	    and va: "(xcp', m', frs') = extRet2JVM n h'' stk loc C M pc Frs va"
 	    and exec': "(ta', va, h'') \<in> set (red_external_list P a M' (rev (take n stk)) h')"
-	    by(fastsimp simp add: min_def)
+	    by(fastsimp)
 	  from va have [simp]: "h'' = m'" by(cases va) simp_all
-	  from exec' have red: "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h'\<rangle> -ta'\<rightarrow>ext \<langle>va, m'\<rangle>"
-	    by(simp add: red_external_list_conv)
+	  note Ta moreover from check True Invoke Ta meth a n Ta'
+	  obtain U where "P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : U" by(auto simp add: check_def)
+	  with exec' have red: "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)), h'\<rangle> -ta'\<rightarrow>ext \<langle>va, m'\<rangle>"
+	    by(simp add: WT_red_external_list_conv)
 	  from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
 	  then obtain Ts where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Ts"
 	    by(auto simp add: confs_conv_map)
 	  hence "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Ts)" by(simp only: rev_map[symmetric])
-	  from red_external_wt_hconf_hext[OF red Ta this hext]
+	  moreover hence "map typeof\<^bsub>h'\<^esub> (rev (take n stk)) = map Some (rev Ts)" using hext by(rule map_typeof_hext_mono)
+	  with `P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : U` Ta' have "P \<turnstile> Ta\<bullet>M'(rev Ts) :: U"
+	    by(auto simp add: external_WT'_iff)
+	  ultimately have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U" by(rule external_WT'.intros)
+	  from red_external_wt_hconf_hext[OF red this hext]
 	  obtain ta'' va' h''' where "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h\<rangle> -ta''\<rightarrow>ext \<langle>va',h'''\<rangle>"
 	    and ta'': "\<lbrace>ta''\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>" "\<lbrace>ta''\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>" "\<lbrace>ta''\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub>" by auto
 	  with True a Ta Invoke meth Ta' n
 	  have "(extTA2JVM P ta'', extRet2JVM n h''' stk loc C M pc Frs va') \<in> set (exec P (xcp, h, frs))"
-	    by(force simp add: min_def red_external_list_conv)
+	    by(force intro: red_external_imp_red_external_list)
 	  with ta'' ta' show ?thesis by auto
 	qed
       qed
@@ -261,7 +263,7 @@ proof -
       apply -
       apply(erule exE conjE|rule exI conjI)+
       prefer 2
-      apply(rule_tac x'="(fst \<sigma>', snd (snd \<sigma>'))" and m'="fst (snd \<sigma>')" in multithreaded.can_syncI[OF execd_mthr])
+      apply(rule_tac x'="(fst \<sigma>', snd (snd \<sigma>'))" and m'="fst (snd \<sigma>')" in multithreaded_base.can_syncI)
       apply auto
       done
   qed
@@ -281,7 +283,7 @@ next
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>\<^bsub>jvmd\<^esub>* s"
     and red: "P \<turnstile> s -t'\<triangleright>ta'\<rightarrow>\<^bsub>jvmd\<^esub> s'"
     and tst: "thr s t = \<lfloor>(x, ln)\<rfloor>"
-    and "multithreaded.can_sync (mexecd P) x (shr s) LT"
+    and "multithreaded_base.can_sync (mexecd P) x (shr s) LT"
     and LTnempty: "LT \<noteq> {}"
   moreover obtain xcp frs where x [simp]: "x = (xcp, frs)" by(cases x, auto)
   ultimately have ml: "P \<turnstile> \<langle>(xcp, shr s, frs)\<rangle>\<^isub>d LT \<wrong>" by auto
@@ -293,13 +295,13 @@ next
     by(rule execd_hext)
   ultimately have "P \<turnstile> \<langle>(xcp, shr s', frs)\<rangle>\<^isub>d \<wrong>" using LTnempty
     by-(rule must_sync_preserved_d[OF wf])
-  thus "multithreaded.must_sync (mexecd P) x (shr s')" by simp
+  thus "multithreaded_base.must_sync (mexecd P) x (shr s')" by simp
 next
   fix tta s t' ta' s' t x ln L
   assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>\<^bsub>jvmd\<^esub>* s"
     and red: "P \<turnstile> s -t'\<triangleright>ta'\<rightarrow>\<^bsub>jvmd\<^esub> s'"
     and tst: "thr s t = \<lfloor>(x, ln)\<rfloor>"
-    and "multithreaded.can_sync (mexecd P) x (shr s') L"
+    and "multithreaded_base.can_sync (mexecd P) x (shr s') L"
   moreover obtain xcp frs where x [simp]: "x = (xcp, frs)" by(cases x, auto)
   ultimately have ml: "P \<turnstile> \<langle>(xcp, shr s', frs)\<rangle>\<^isub>d L \<wrong>" by auto
   moreover from cs Red have cs': "correct_state_ts P \<Phi> (thr s) (shr s)"
@@ -310,7 +312,7 @@ next
     by(rule execd_hext)
   ultimately have "\<exists>L' \<subseteq> L. P \<turnstile> \<langle>(xcp, shr s, frs)\<rangle>\<^isub>d L' \<wrong>"
     by-(rule can_sync_devreserp_d[OF wf])
-  thus "\<exists>L' \<subseteq> L. multithreaded.can_sync (mexecd P) x (shr s) L'" by simp
+  thus "\<exists>L' \<subseteq> L. multithreaded_base.can_sync (mexecd P) x (shr s) L'" by simp
 qed
 
 
@@ -321,12 +323,12 @@ lemma must_lock_d_eq_must_lock:
   \<Longrightarrow> P \<turnstile> \<langle>(xcp, h, frs)\<rangle>\<^isub>d \<wrong> = P \<turnstile> \<langle>(xcp, h, frs)\<rangle> \<wrong>"
 apply(simp)
 apply(rule iffI)
- apply(rule multithreaded.must_syncI[OF exec_mthr])
- apply(erule multithreaded.must_syncE[OF execd_mthr])
+ apply(rule multithreaded_base.must_syncI)
+ apply(erule multithreaded_base.must_syncE)
  apply(simp only: mexec_eq_mexecd)
  apply(blast)
-apply(rule multithreaded.must_syncI[OF execd_mthr])
-apply(erule multithreaded.must_syncE[OF exec_mthr])
+apply(rule multithreaded_base.must_syncI)
+apply(erule multithreaded_base.must_syncE)
 apply(simp only: mexec_eq_mexecd[symmetric])
 apply(blast)
 done
@@ -336,12 +338,12 @@ lemma can_lock_d_eq_can_lock:
   \<Longrightarrow> P \<turnstile> \<langle>(xcp, h, frs)\<rangle>\<^isub>d L \<wrong> = P \<turnstile> \<langle>(xcp, h, frs)\<rangle> L \<wrong>"
 apply(simp)
 apply(rule iffI)
- apply(erule multithreaded.can_syncE[OF execd_mthr])
- apply(rule multithreaded.can_syncI[OF exec_mthr])
+ apply(erule multithreaded_base.can_syncE)
+ apply(rule multithreaded_base.can_syncI)
    apply(simp only: mexec_eq_mexecd)
   apply(assumption)+
-apply(erule multithreaded.can_syncE[OF exec_mthr])
-apply(rule multithreaded.can_syncI[OF execd_mthr])
+apply(erule multithreaded_base.can_syncE)
+apply(rule multithreaded_base.can_syncI)
  by(simp only: mexec_eq_mexecd)
 
 lemma exec_preserve_deadlocked:
@@ -366,39 +368,39 @@ proof -
     proof(induct rule: execd_mthr.redT_elims[consumes 1, case_names normal acquire])
       case acquire with cst show ?case by simp
     next
-      case (normal X X')
+      case (normal X X' TA)
       obtain XCP FRS where X [simp]: "X = (XCP, FRS)" by(cases X, auto)
       obtain XCP' FRS' where X' [simp]: "X' = (XCP', FRS')" by(cases X', auto)
-      from `mexecd P (X, shr s) ta' (X', shr s')`
-      have "P \<turnstile> Normal (XCP, shr s, FRS) -ta'-jvmd\<rightarrow> Normal (XCP', shr s', FRS')" by simp
+      from `mexecd P (X, shr s) TA (X', shr s')`
+      have "P \<turnstile> Normal (XCP, shr s, FRS) -TA-jvmd\<rightarrow> Normal (XCP', shr s', FRS')" by simp
       moreover from `thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>` css
       have "P,\<Phi> \<turnstile> (XCP, shr s, FRS) \<surd>" by(auto dest: ts_okD)
       ultimately show ?case using `P,\<Phi> \<turnstile> (xcp, shr s, frs) \<surd>` by -(rule correct_state_heap_change[OF wf])
     qed
     { fix L
-      assume "multithreaded.can_sync (mexec P) x (shr s) L"
+      assume "multithreaded_base.can_sync (mexec P) x (shr s) L"
 	and L: "L \<noteq> {}"
       hence ml: "P \<turnstile> \<langle>(xcp, shr s, frs)\<rangle> L \<wrong>" by simp
       with cst have "P \<turnstile> \<langle>(xcp, shr s, frs)\<rangle>\<^isub>d L \<wrong>"
 	by(auto dest: can_lock_d_eq_can_lock[OF wf])
-      hence "multithreaded.must_sync (mexecd P) x (shr s')"
+      hence "multithreaded_base.must_sync (mexecd P) x (shr s')"
 	by-(rule preserve_lock_behav.can_lock_preserved[OF preserve_deadlocked.axioms(2)[OF execd_preserve_deadlocked[OF wf lto cs]] Redd redd tst _ L], simp)
-      with cst' have "multithreaded.must_sync (mexec P) x (shr s')"
+      with cst' have "multithreaded_base.must_sync (mexec P) x (shr s')"
 	by(auto dest: must_lock_d_eq_must_lock[OF wf]) }
     note ml = this
     { fix L
-      assume "multithreaded.can_sync (mexec P) x (shr s') L"
+      assume "multithreaded_base.can_sync (mexec P) x (shr s') L"
       hence cl: "P \<turnstile> \<langle>(xcp, shr s', frs)\<rangle> L \<wrong>" by simp
       with cst' have "P \<turnstile> \<langle>(xcp, shr s', frs)\<rangle>\<^isub>d L \<wrong>"
 	by(auto dest: can_lock_d_eq_can_lock[OF wf])
       with Redd redd tst
-      have "\<exists>L' \<subseteq> L. multithreaded.can_sync (mexecd P) x (shr s) L'"
+      have "\<exists>L' \<subseteq> L. multithreaded_base.can_sync (mexecd P) x (shr s) L'"
 	by -(rule preserve_lock_behav.can_lock_devreserp[OF preserve_deadlocked.axioms(2)[OF execd_preserve_deadlocked[OF wf lto cs]]], auto)
-      then obtain L' where "multithreaded.can_sync (mexecd P) x (shr s) L'" 
+      then obtain L' where "multithreaded_base.can_sync (mexecd P) x (shr s) L'" 
 	and L': "L'\<subseteq> L" by blast
-      with cst have "multithreaded.can_sync (mexec P) x (shr s) L'"
+      with cst have "multithreaded_base.can_sync (mexec P) x (shr s) L'"
 	by(auto dest: can_lock_d_eq_can_lock[OF wf])
-      with L' have "\<exists>L' \<subseteq> L. multithreaded.can_sync (mexec P) x (shr s) L'"
+      with L' have "\<exists>L' \<subseteq> L. multithreaded_base.can_sync (mexec P) x (shr s) L'"
 	by(blast) }
     note this ml }
   thus ?thesis using lto by(unfold_locales)

@@ -60,6 +60,14 @@ next
   thus ?case by(simp)
 qed
 
+lemma redT_updT_finite_dom_inv:
+  "finite (dom (redT_updT ts ta)) = finite (dom ts)"
+by(cases ta) auto
+
+lemma redT_updTs_finite_dom_inv:
+  "finite (dom (redT_updTs ts tas)) = finite (dom ts)"
+by(induct tas arbitrary: ts)(simp_all add: redT_updT_finite_dom_inv)
+
 text{* Preconditions for thread creation actions *}
 
 text{* These primed versions are for checking preconditions only. They allow the thread actions to have a type for thread-local information that is different than the thread info state itself. *}
@@ -187,8 +195,7 @@ by(cases ta, auto)
 
 lemma redT_updTs_Some:
   "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_oks ts tas \<rbrakk> \<Longrightarrow> redT_updTs ts tas t = \<lfloor>xw\<rfloor>"
-apply(induct tas arbitrary: ts)
-by(auto intro: redT_updT_Some)
+by(induct tas arbitrary: ts)(auto intro: redT_updT_Some)
 
 lemma redT_updT'_Some:
   "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_ok ts ta \<rbrakk> \<Longrightarrow> redT_updT' ts ta t = \<lfloor>xw\<rfloor>"
@@ -196,8 +203,7 @@ by(cases ta, auto)
 
 lemma redT_updTs'_Some:
   "\<lbrakk> ts t = \<lfloor>xw\<rfloor>; thread_oks ts tas \<rbrakk> \<Longrightarrow> redT_updTs' ts tas t = \<lfloor>xw\<rfloor>"
-apply(induct tas arbitrary: ts)
-by(auto intro: redT_updT'_Some)
+by(induct tas arbitrary: ts)(auto intro: redT_updT'_Some)
 
 
 lemma thread_ok_new_thread:
@@ -352,8 +358,7 @@ next
     case False
     hence "NewThread t x m \<in> set TAS" using nt by simp
     with cct have "\<exists>!n. n < length TAS \<and> (\<exists>x' m'. TAS ! n = NewThread t x' m')"
-      apply(clarsimp)
-      by(rule IH)
+      by(clarsimp)(rule IH)
     then obtain n
       where nl: "n < length TAS"
       and exe'x': "\<exists>x' m'. TAS ! n = NewThread t x' m'"
@@ -364,8 +369,7 @@ next
     with nl have "TAS ! n \<in> set TAS" by -(rule nth_mem)
     ultimately have nset: "NewThread t x' m' \<in> set TAS" by simp
     with cct have es't: "redT_updT' TS TA t = None"
-      apply(clarsimp) 
-      by(erule thread_oks_new_thread)
+      by(clarsimp)(erule thread_oks_new_thread)
     show ?thesis
     proof(rule ex1I)
       show "Suc n < length (TA # TAS) \<and> (\<exists>x' m'. (TA # TAS) ! Suc n = NewThread t x' m')"

@@ -6,11 +6,11 @@ header {* \isaheader{Program Execution in the JVM} *}
 
 theory JVMExec imports JVMExecInstr JVMExceptions begin
 
-syntax instrs_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> instr list"
-translations "instrs_of P C M" == "fst(snd(snd(snd(snd(snd(method P C M))))))"
+abbreviation instrs_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> instr list"
+where "instrs_of P C M == fst(snd(snd(snd(snd(snd(method P C M))))))"
 
 
--- "single step execution:"
+section "single step execution"
 
 fun exception_step :: "jvm_prog \<Rightarrow> jvm_ta_state \<Rightarrow> jvm_ta_state"
 where
@@ -42,7 +42,7 @@ by(cases f, cases xcp, auto intro: exec_instr_not_empty del: notI)
 
 
 
--- "relational view"
+section "relational view"
 inductive
   exec_1 :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_thread_action \<Rightarrow> jvm_state \<Rightarrow> bool" ("_ \<turnstile>/ _ -_-jvm\<rightarrow>/ _" [61,61,0,61] 60)
   for P :: jvm_prog
@@ -50,9 +50,9 @@ where
   exec_1I:
   "(ta, \<sigma>') \<in> set (exec P \<sigma>) \<Longrightarrow> P \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>'"
 
--- "reflexive transitive closure:"
+section "reflexive transitive closure:"
 definition
-  exec_star :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action list \<Rightarrow> jvm_state \<Rightarrow> bool" ("_ \<turnstile>/ _ -_-jvm\<rightarrow>*/ _" [61,61,0,61] 60)
+  exec_star :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_thread_action list \<Rightarrow> jvm_state \<Rightarrow> bool" ("_ \<turnstile>/ _ -_-jvm\<rightarrow>*/ _" [61,61,0,61] 60)
 where
   "P \<turnstile> \<sigma> -tas-jvm\<rightarrow>* \<sigma>' \<equiv> rtrancl3p (exec_1 P) \<sigma> tas \<sigma>'"
 
@@ -97,6 +97,6 @@ constdefs
   start_state :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> jvm_state"
   "start_state P C M \<equiv>
   let (D,Ts,T,mxs,mxl\<^isub>0,b) = method P C M in
-    (None, start_heap P, [([], Null # replicate mxl\<^isub>0 arbitrary, C, M, 0)])"
+    (None, start_heap P, [([], Null # replicate mxl\<^isub>0 undefined, C, M, 0)])"
 
 end

@@ -4,9 +4,7 @@
 
 header {* \isaheader{Instructions of the JVM} *}
 
-
-theory JVMInstructions imports JVMState begin
-
+theory JVMInstructions imports JVMState "../Common/BinOp" begin
 
 datatype 
   instr = Load nat                  -- "load from local variable"
@@ -23,19 +21,33 @@ datatype
         | Invoke mname nat          -- "inv. instance meth of an object"
         | Return                    -- "return from method"
         | Pop                       -- "pop top element from opstack"
-        | IAdd                      -- "integer addition"
+        | BinOpInstr bop            -- "binary operator instruction"
         | Goto int                  -- "goto relative address"
-        | CmpEq                     -- "equality comparison"
         | IfFalse int               -- "branch if top of stack false"
-        | Throw                     -- "throw top of stack as exception"
+        | ThrowExc                  -- "throw top of stack as exception"
         | MEnter                    -- "enter the monitor of object on top of the stack"
         | MExit                     -- "exit the monitor of object on top of the stack"
+
+abbreviation IAdd :: instr
+where "IAdd \<equiv> BinOpInstr Add"
+
+abbreviation CmpEq :: instr
+where "CmpEq \<equiv> BinOpInstr Eq"
+
+abbreviation ISub :: instr
+where "ISub \<equiv> BinOpInstr Subtract"
+
+abbreviation IMult :: instr
+where "IMult \<equiv> BinOpInstr Mult"
+
+abbreviation IMod :: instr
+where "IMod \<equiv> BinOpInstr Mod"
 
 types
   bytecode = "instr list"
 
-  ex_entry = "pc \<times> pc \<times> cname \<times> pc \<times> nat" 
-  -- "start-pc, end-pc, exception type, handler-pc, remaining stack depth"
+  ex_entry = "pc \<times> pc \<times> cname option \<times> pc \<times> nat" 
+  -- "start-pc, end-pc, exception type (None = Any), handler-pc, remaining stack depth"
 
   ex_table = "ex_entry list"
 

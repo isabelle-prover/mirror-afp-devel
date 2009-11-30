@@ -8,7 +8,6 @@ theory WellType
 imports Expr State "../Common/ExternalCall"
 begin
 
-
 types 
   env  = "vname \<rightharpoonup> ty"
 
@@ -37,13 +36,9 @@ inductive WT :: "J_prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<
   "E V = Some T \<Longrightarrow>
   P,E \<turnstile> Var V :: T"
 
-| WTBinOpEq:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: T\<^isub>1;  P,E \<turnstile> e\<^isub>2 :: T\<^isub>2; P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>Eq\<guillemotright> e\<^isub>2 :: Boolean"
-
-| WTBinOpAdd:
-  "\<lbrakk> P,E \<turnstile> e\<^isub>1 :: Integer;  P,E \<turnstile> e\<^isub>2 :: Integer \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile> e\<^isub>1 \<guillemotleft>Add\<guillemotright> e\<^isub>2 :: Integer"
+| WTBinOp:
+  "\<lbrakk> P,E \<turnstile> e1 :: T1; P,E \<turnstile> e2 :: T2; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile> e1\<guillemotleft>bop\<guillemotright>e2 :: T"
 
 | WTLAss:
   "\<lbrakk> E V = Some T;  P,E \<turnstile> e :: T';  P \<turnstile> T' \<le> T;  V \<noteq> this \<rbrakk>
@@ -69,7 +64,7 @@ inductive WT :: "J_prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<
   \<Longrightarrow> P,E \<turnstile> e\<^isub>1\<bullet>F{D}:=e\<^isub>2 :: Void"
 
 | WTCall:
-  "\<lbrakk> P,E \<turnstile> e :: Class C; \<not> is_external_call P (Class C) M (length es); P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
+  "\<lbrakk> P,E \<turnstile> e :: Class C; \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
      P,E \<turnstile> es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E \<turnstile> e\<bullet>M(es) :: T"
 
@@ -79,7 +74,7 @@ inductive WT :: "J_prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<
 
 | WTBlock:
   "\<lbrakk> is_type P T;  P,E(V \<mapsto> T) \<turnstile> e :: T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow>  P,E \<turnstile> {V:T=vo; e}\<^bsub>False\<^esub> :: T'"
+  \<Longrightarrow>  P,E \<turnstile> {V:T=vo; e} :: T'"
 
 | WTSynchronized:
   "\<lbrakk> P,E \<turnstile> o' :: T; is_refT T; T \<noteq> NT; P,E \<turnstile> e :: T' \<rbrakk>
@@ -141,7 +136,7 @@ by (auto elim: WT.cases)
 lemma [iff]: "P,E \<turnstile> e\<^isub>1;;e\<^isub>2 :: T\<^isub>2 = (\<exists>T\<^isub>1. P,E \<turnstile> e\<^isub>1::T\<^isub>1 \<and> P,E \<turnstile> e\<^isub>2::T\<^isub>2)"
 by (auto elim: WT.cases)
 
-lemma [iff]: "(P,E \<turnstile> {V:T=vo; e}\<^bsub>cr\<^esub> :: T') \<longleftrightarrow> \<not> cr \<and> (is_type P T \<and> P,E(V\<mapsto>T) \<turnstile> e :: T' \<and> (case vo of None \<Rightarrow> True | Some v \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T))"
+lemma [iff]: "(P,E \<turnstile> {V:T=vo; e} :: T') \<longleftrightarrow> is_type P T \<and> P,E(V\<mapsto>T) \<turnstile> e :: T' \<and> (case vo of None \<Rightarrow> True | Some v \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T)"
 by (auto elim: WT.cases)
 
 inductive_cases WT_elim_cases[elim!]:
@@ -164,6 +159,40 @@ inductive_cases WT_elim_cases[elim!]:
   "P,E \<turnstile> sync(o') e :: T"
   "P,E \<turnstile> insync(a) e :: T"
 
+inductive_cases WT_callE:
+  "P,E \<turnstile> e\<bullet>M(es) :: T"
+
+lemma WT_unique: "\<lbrakk> P,E \<turnstile> e :: T; P,E \<turnstile> e :: T' \<rbrakk> \<Longrightarrow> T = T'"
+  and WTs_unique: "\<lbrakk> P,E \<turnstile> es [::] Ts; P,E \<turnstile> es [::] Ts' \<rbrakk> \<Longrightarrow> Ts = Ts'"
+apply(induct arbitrary: T' and Ts' rule: WT_WTs.inducts)
+apply blast
+apply blast
+apply blast
+apply fastsimp
+apply fastsimp
+apply(fastsimp dest: WT_binop_fun)
+apply fastsimp
+apply fastsimp
+apply fastsimp
+apply fastsimp
+apply(fastsimp dest: sees_field_fun)
+apply(fastsimp dest: sees_field_fun)
+apply(erule WT_callE)
+ apply(fastsimp dest: sees_method_fun)
+apply(fastsimp dest: external_WT_is_external_call)
+apply(erule WT_callE)
+ apply(fastsimp dest: external_WT_is_external_call)
+apply(fastsimp dest: external_WT_determ)
+apply fastsimp
+apply fastsimp
+apply fastsimp
+apply force
+apply fastsimp
+apply fastsimp
+apply blast
+apply fastsimp
+apply fastsimp
+done
 
 lemma wt_env_mono: "P,E \<turnstile> e :: T \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E' \<turnstile> e :: T)"
   and wts_env_mono: "P,E \<turnstile> es [::] Ts \<Longrightarrow> (\<And>E'. E \<subseteq>\<^sub>m E' \<Longrightarrow> P,E' \<turnstile> es [::] Ts)"
@@ -173,8 +202,7 @@ apply(simp add: WTNewArray)
 apply(fastsimp simp: WTCast)
 apply(fastsimp simp: WTVal)
 apply(simp add: WTVar map_le_def dom_def)
-apply(fastsimp simp: WTBinOpEq)
-apply(fastsimp simp: WTBinOpAdd)
+apply(fastsimp simp: WTBinOp)
 apply(force simp:map_le_def)
 apply(simp add: WTAAcc)
 apply(simp add: WTAAss, fastsimp)
@@ -206,4 +234,3 @@ lemma WT_expr_locks: "P,E \<turnstile> e :: T \<Longrightarrow> expr_locks e = (
 by(induct rule: WT_WTs.inducts)(auto)
 
 end
-

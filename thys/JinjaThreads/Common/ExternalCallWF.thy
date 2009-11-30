@@ -6,22 +6,32 @@ header{* \isaheader{ Properties of external calls in well-formed programs } *}
 
 theory ExternalCallWF imports WellForm Conform "../Framework/FWSemantics" begin
 
+lemma WT_red_external_list_imp_red_external:
+  "\<lbrakk> (ta, va, h') \<in> set (red_external_list P a M vs h); P,h \<turnstile> a\<bullet>M(vs) : U \<rbrakk>
+  \<Longrightarrow> P \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
+apply(fastsimp elim!: external_WT.cases external_WT'.cases simp add: red_external_list_def simp del: ta_update_locks.simps ta_update_NewThread.simps ta_update_Conditional.simps ta_update_wait_set.simps split: heapobj.split_asm intro: red_external.intros)
+done
+
+lemma WT_red_external_list_conv:
+  "P,h \<turnstile> a\<bullet>M(vs) : U \<Longrightarrow> P \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<longleftrightarrow> (ta, va, h') \<in> set (red_external_list P a M vs h)"
+by(blast intro: WT_red_external_list_imp_red_external red_external_imp_red_external_list elim: external_WT'.cases)
+
+
 primrec conf_extRet :: "'m prog \<Rightarrow> heap \<Rightarrow> val + addr \<Rightarrow> ty \<Rightarrow> bool" where
   "conf_extRet P h (Inl v) T = (P,h \<turnstile> v :\<le> T)"
 | "conf_extRet P h (Inr a) T = (P,h \<turnstile> Addr a :\<le> Class Throwable)"
 
 
 lemma external_call_hconf:
-  "\<lbrakk> P \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>T\<rfloor>; map typeof\<^bsub>h\<^esub> vs = map Some Ts; P \<turnstile> T\<bullet>M(Ts) :: U; P \<turnstile> h \<surd> \<rbrakk>
+  "\<lbrakk> P \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; P,h \<turnstile> a\<bullet>M(vs) : U; P \<turnstile> h \<surd> \<rbrakk>
   \<Longrightarrow> P \<turnstile> h' \<surd>"
 by(auto elim: red_external.cases)
 
 
 lemma red_external_conf_extRet:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>T\<rfloor>; map typeof\<^bsub>hp s\<^esub> vs = map Some Ts;
-     P \<turnstile> T\<bullet>M(Ts)::U; preallocated h \<rbrakk>
+  "\<lbrakk> wf_prog wf_md P; P \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; P,h \<turnstile> a\<bullet>M(vs) : U; preallocated h \<rbrakk>
   \<Longrightarrow> conf_extRet P h' va U"
-apply(auto elim!: red_external.cases external_WT.cases)
+apply(auto elim!: red_external.cases external_WT.cases external_WT'.cases)
 apply(auto simp del: typeof_h.simps simp add: typeof_IllegalMonitorState conf_def intro: xcpt_subcls_Throwable)
 done
 
@@ -61,22 +71,24 @@ proof(atomize_elim)
     from red show ?thesis
     proof cases
       case (RedNewThread C)
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a (C, run, a) h\<rbrace>`
+      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a (C, run, a) h\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>`
       let ?ta' = "\<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>"
       from ta False have "final_thread.actions_ok' s t ?ta'" by(auto)
       moreover from ta have "final_thread.actions_subset ?ta' ta" by auto
       ultimately show ?thesis using RedNewThread by(fastsimp)
     next
       case RedNewThreadFail
-      then obtain va' h' x where "P \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<rightarrow>ext \<langle>va', h'\<rangle>" by(fastsimp)
-      moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>` False have "final_thread.actions_ok' s t \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>" by(auto)
-      moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>` have "final_thread.actions_subset \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace> ta" by(auto)
+      then obtain va' h' x where "P \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>\<rightarrow>ext \<langle>va', h'\<rangle>" by(fastsimp)
+      moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>` False
+      have "final_thread.actions_ok' s t \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>" by(auto)
+      moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>`
+      have "final_thread.actions_subset \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace> ta" by(auto)
       ultimately show ?thesis by blast
     next
       case RedJoin thus ?thesis by fastsimp
     next
       case RedWait
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>`
+      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>`
       let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
       from ta False have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
 	by(auto simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
@@ -89,7 +101,7 @@ proof(atomize_elim)
     next
       case RedWaitFail
       note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>"
+      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>"
       from ta False have "has_lock ((locks s)\<^sub>f a) t" by(auto simp add: finfun_upd_apply split: split_if_asm)
       hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: finfun_upd_apply intro: has_lock_may_lock)
       moreover from ta have "final_thread.actions_subset ?ta' ta"
@@ -98,7 +110,7 @@ proof(atomize_elim)
       ultimately show ?thesis by blast
     next
       case RedNotify
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
+      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>`
       let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
       from ta False have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
 	by(auto simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
@@ -111,7 +123,7 @@ proof(atomize_elim)
     next
       case RedNotifyFail
       note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
+      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>"
       from ta False have "has_lock ((locks s)\<^sub>f a) t" by(auto simp add: finfun_upd_apply split: split_if_asm)
       hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: finfun_upd_apply intro: has_lock_may_lock)
       moreover from ta have "final_thread.actions_subset ?ta' ta"
@@ -120,7 +132,7 @@ proof(atomize_elim)
       ultimately show ?thesis by blast
     next
       case RedNotifyAll
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
+      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>`
       let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
       from ta False have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
 	by(auto simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
@@ -133,7 +145,7 @@ proof(atomize_elim)
     next
       case RedNotifyAllFail
       note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
+      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>"
       from ta False have "has_lock ((locks s)\<^sub>f a) t" by(auto simp add: finfun_upd_apply split: split_if_asm)
       hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: finfun_upd_apply intro: has_lock_may_lock)
       moreover from ta have "final_thread.actions_subset ?ta' ta"

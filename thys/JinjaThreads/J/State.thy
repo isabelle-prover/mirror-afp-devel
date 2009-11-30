@@ -2,7 +2,10 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Program State} *}
+header {*
+  \chapter{JinjaThreads source language}
+  \isaheader{Program State} 
+*}
 
 theory State imports "../Common/Objects" begin
 

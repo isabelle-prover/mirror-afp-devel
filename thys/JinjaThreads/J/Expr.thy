@@ -4,9 +4,11 @@
 
 header {* \isaheader{Expressions} *}
 
-theory Expr imports "../Common/Exceptions" begin
-
-datatype bop = Eq | Add     -- "names of binary operations"
+theory Expr imports
+  "../Common/Exceptions"
+  "../Common/BinOp"
+  "../Common/ExternalCall"
+begin
 
 datatype ('a,'b) exp
   = new cname      -- "class instance creation"
@@ -22,7 +24,7 @@ datatype ('a,'b) exp
   | FAcc "('a,'b) exp" vname cname     ("_\<bullet>_{_}" [10,90,99]90)       -- "field access"
   | FAss "('a,'b) exp" vname cname "('a,'b) exp"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      -- "field assignment"
   | Call "('a,'b) exp" mname "('a,'b) exp list"     ("_\<bullet>_'(_')" [90,99,0] 90)            -- "method call"
-  | Block 'a ty "val option" "('a,'b) exp" bool    ("'{_:_=_; _}\<^bsub>_\<^esub>")
+  | Block 'a ty "val option" "('a,'b) exp"    ("'{_:_=_; _}")
   | Synchronized 'b "('a,'b) exp" "('a,'b) exp" ("sync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
   | InSynchronized 'b addr "('a,'b) exp" ("insync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
   | Seq "('a,'b) exp" "('a,'b) exp"     ("_;;/ _"             [61,60]60)
@@ -36,55 +38,45 @@ types
   J_mb = "vname list \<times> expr"    -- "Jinja method body: parameter names and expression"
   J_prog = "J_mb prog"          -- "Jinja program"
 
+translations
+  "expr" <= (type) "(message_string, unit) exp"
+  "J_prog" <= (type) "(message_string list \<times> expr) prog"
+
+
+subsection "Syntactic sugar"
+
+abbreviation unit :: "('a,'b) exp"
+where "unit \<equiv> Val Unit"
+
+abbreviation null :: "('a,'b) exp"
+where "null \<equiv> Val Null"
+
+abbreviation addr :: "addr \<Rightarrow> ('a,'b) exp"
+where "addr a == Val (Addr a)"
+
+abbreviation true :: "('a,'b) exp"
+where "true == Val (Bool True)"
+
+abbreviation false :: "('a,'b) exp"
+where "false == Val (Bool False)"
+
+abbreviation Throw :: "addr \<Rightarrow> ('a,'b) exp"
+where "Throw a == throw (Val (Addr a))"
+
+abbreviation THROW :: "cname \<Rightarrow> ('a,'b) exp"
+where "THROW xc == Throw (addr_of_sys_xcpt xc)"
+
 abbreviation sync_unit_syntax :: "('a,unit) exp \<Rightarrow> ('a,unit) exp \<Rightarrow> ('a,unit) exp" ("sync'(_') _" [99,90] 90)
 where "sync(e1) e2 \<equiv> sync\<^bsub>()\<^esub> (e1) e2"
 
 abbreviation insync_unit_syntax :: "addr \<Rightarrow> ('a,unit) exp \<Rightarrow> ('a,unit) exp" ("insync'(_') _" [99,90] 90)
 where "insync(a) e2 \<equiv> insync\<^bsub>()\<^esub> (a) e2"
 
-text{*The semantics of binary operators: *}
-
-consts
-  binop :: "bop \<times> val \<times> val \<Rightarrow> val option"
-recdef binop "{}"
-  "binop(Eq,v\<^isub>1,v\<^isub>2) = Some(Bool (v\<^isub>1 = v\<^isub>2))"
-  "binop(Add,Intg i\<^isub>1,Intg i\<^isub>2) = Some(Intg(i\<^isub>1+i\<^isub>2))"
-  "binop(bop,v\<^isub>1,v\<^isub>2) = None"
-
-lemma [simp]:
-  "(binop(Add,v\<^isub>1,v\<^isub>2) = Some v) = (\<exists>i\<^isub>1 i\<^isub>2. v\<^isub>1 = Intg i\<^isub>1 \<and> v\<^isub>2 = Intg i\<^isub>2 \<and> v = Intg(i\<^isub>1+i\<^isub>2))"
-(*<*)
-apply(cases v\<^isub>1)
-apply auto
-apply(cases v\<^isub>2)
-apply auto
-done
-(*>*)
-
-
-subsection "Syntactic sugar"
-syntax
- unit :: "('a,'b) exp"
- null :: "('a,'b) exp"
- addr :: "addr \<Rightarrow> ('a,'b) exp"
- true :: "('a,'b) exp"
- false :: "('a,'b) exp"
-translations
- "unit" == "Val Unit"
- "null" == "Val Null"
- "addr a" == "Val(Addr a)"
- "true" == "Val(Bool True)"
- "false" == "Val(Bool False)"
-
-syntax
-  Throw :: "addr \<Rightarrow> ('a,'b) exp"
-  THROW :: "cname \<Rightarrow> ('a,'b) exp"
-translations
-  "Throw a" == "throw(Val(Addr a))"
-  "THROW xc" == "Throw(addr_of_sys_xcpt xc)"
-
 lemma inj_Val [simp]: "inj Val"
 by(rule inj_onI)(simp)
+
+lemma expr_ineqs [simp]: "Val v ;; e \<noteq> e" "if (e1) e else e2 \<noteq> e" "if (e1) e2 else e \<noteq> e"
+by(induct e) auto
 
 subsection{*Free Variables*}
 
@@ -105,7 +97,7 @@ primrec
   "fv(e\<bullet>F{D}) = fv e"
   "fv(FAss e\<^isub>1 F D e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
   "fv(e\<bullet>M(es)) = fv e \<union> fvs es"
-  "fv({V:T=vo; e}\<^bsub>cr\<^esub>) = fv e - {V}"
+  "fv({V:T=vo; e}) = fv e - {V}"
   "fv(sync\<^bsub>V\<^esub> (h) e) = fv h \<union> fv e"
   "fv(insync\<^bsub>V\<^esub> (a) e) = fv e"
   "fv(e\<^isub>1;;e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
@@ -121,8 +113,7 @@ lemma [simp]: "fvs(es @ es') = fvs es \<union> fvs es'"
 by(induct es) auto
 
 lemma [simp]: "fvs(map Val vs) = {}"
-(*<*)by (induct vs) auto(*>*)
-
+by (induct vs) auto
 
 subsection{*Locks and addresses*}
 
@@ -144,7 +135,7 @@ primrec
 "expr_locks (e\<bullet>F{D}) = expr_locks e"
 "expr_locks (FAss e F D e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
 "expr_locks (e\<bullet>m(ps)) = (\<lambda>ad. expr_locks e ad + expr_lockss ps ad)"
-"expr_locks ({V : T=vo; e}\<^bsub>cr\<^esub>) = expr_locks e"
+"expr_locks ({V : T=vo; e}) = expr_locks e"
 "expr_locks (sync\<^bsub>V\<^esub> (o') e) = (\<lambda>ad. expr_locks o' ad + expr_locks e ad)"
 "expr_locks (insync\<^bsub>V\<^esub> (a) e) = (\<lambda>ad. if (a = ad) then Suc (expr_locks e ad) else expr_locks e ad)"
 "expr_locks (e;;e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
@@ -184,7 +175,7 @@ primrec
   "contains_insync (e\<bullet>F{D}) = contains_insync e"
   "contains_insync (FAss e F D e') = (contains_insync e \<or> contains_insync e')"
   "contains_insync (e\<bullet>m(pns)) = (contains_insync e \<or> contains_insyncs pns)"
-  "contains_insync ({V : T=vo; e}\<^bsub>cr\<^esub>) = contains_insync e"
+  "contains_insync ({V : T=vo; e}) = contains_insync e"
   "contains_insync (sync\<^bsub>V\<^esub> (o') e) = (contains_insync o' \<or> contains_insync e)"
   "contains_insync (insync\<^bsub>V\<^esub> (a) e) = True"
   "contains_insync (e;;e') = (contains_insync e \<or> contains_insync e')"
@@ -216,7 +207,7 @@ apply auto
 done
 
 
-text{* Value expressions *}
+subsection {* Value expressions *}
 
 inductive is_val :: "('a,'b) exp \<Rightarrow> bool" where
   "is_val (Val v)"

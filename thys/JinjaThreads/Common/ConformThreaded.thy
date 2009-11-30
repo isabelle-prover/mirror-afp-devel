@@ -2,11 +2,11 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* Conformance for threads *}
+header{* \isaheader{Conformance for threads} *}
 
 theory ConformThreaded imports "../Framework/FWState" Exceptions  begin
 
-text {* Every thread must is represented as an object whose address is its thread ID *}
+text {* Every thread must be represented as an object whose address is its thread ID *}
 
 definition thread_conf :: "'m prog \<Rightarrow> (addr,thread_id,'x) thread_info \<Rightarrow> heap \<Rightarrow> bool"
 where "thread_conf P ts h \<equiv> \<forall>t xln. ts t = \<lfloor>xln\<rfloor> \<longrightarrow> (\<exists>T. typeof\<^bsub>h\<^esub> (Addr t) = Some T \<and> P \<turnstile> T \<le> Class Thread)"
@@ -55,7 +55,5 @@ next
       by(auto elim: thread_confDE)
   qed
 qed
-
-
 
 end

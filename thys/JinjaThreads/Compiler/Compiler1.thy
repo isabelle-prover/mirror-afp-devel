@@ -6,15 +6,19 @@
 
 header {* \isaheader{Compilation Stage 1} *}
 
-theory Compiler1 imports PCompiler J1 ListIndex begin
+theory Compiler1 imports
+  PCompiler
+  J1
+  ListIndex 
+begin
 
 definition fresh_var :: "vname list \<Rightarrow> vname"
-where "fresh_var Vs \<equiv> foldr op @ Vs ''V''"
+where "fresh_var Vs \<equiv> Aux.concat (STR ''V'' # Vs)"
 
 lemma fresh_var_fresh: "fresh_var Vs \<notin> set Vs"
 proof -
-  have "\<forall>V \<in> set Vs. length V < length (fresh_var Vs)"
-    by(induct Vs)(auto simp add: fresh_var_def)
+  have "\<forall>V \<in> set Vs. length (explode V) < length (explode (fresh_var Vs))"
+    by(induct Vs)(auto simp add: fresh_var_def Aux.concat_def explode_def implode_def)
   thus ?thesis by auto
 qed
 
@@ -38,7 +42,7 @@ primrec
 "compE1 Vs (e\<bullet>F{D}) = compE1 Vs e\<bullet>F{D}"
 "compE1 Vs (e\<bullet>F{D}:=e') = compE1 Vs e\<bullet>F{D}:=compE1 Vs e'"
 "compE1 Vs (e\<bullet>M(es)) = (compE1 Vs e)\<bullet>M(compEs1 Vs es)"
-"compE1 Vs {V:T=vo; e}\<^bsub>cr\<^esub> = {(size Vs):T=vo; compE1 (Vs@[V]) e}\<^bsub>cr\<^esub>"
+"compE1 Vs {V:T=vo; e} = {(size Vs):T=vo; compE1 (Vs@[V]) e}"
 "compE1 Vs (sync\<^bsub>U\<^esub> (o') e) = sync\<^bsub>length Vs\<^esub> (compE1 Vs o') (compE1 (Vs@[fresh_var Vs]) e)"
 "compE1 Vs (insync\<^bsub>U\<^esub> (a) e) = insync\<^bsub>length Vs\<^esub> (a) (compE1 (Vs@[fresh_var Vs]) e)"
 "compE1 Vs (e1;;e2) = (compE1 Vs e1);;(compE1 Vs e2)"
@@ -49,7 +53,6 @@ primrec
 
 "compEs1 Vs []     = []"
 "compEs1 Vs (e#es) = compE1 Vs e # compEs1 Vs es"
-
 
 lemma compEs1_conv_map [simp]: "compEs1 Vs es = map (compE1 Vs) es"
 by(induct es) simp_all
@@ -76,11 +79,13 @@ lemma compE1_eq_Call [simp]:
   "compE1 Vs e = obj\<bullet>M(params) \<longleftrightarrow> (\<exists>obj' params'. e = obj'\<bullet>M(params') \<and> compE1 Vs obj' = obj \<and> compEs1 Vs params' = params)"
 by(cases e, auto)
 
+lemma expr_locks_compE1 [simp]: "expr_locks (compE1 Vs e) = expr_locks e"
+  and expr_lockss_compEs1 [simp]: "expr_lockss (compEs1 Vs es) = expr_lockss es"
+by(induct e and es arbitrary: Vs and Vs)(auto intro: ext)
 
 lemma contains_insync_compE1 [simp]: "contains_insync (compE1 Vs e) = contains_insync e"
   and contains_insyncs_compEs1 [simp]: "contains_insyncs (compEs1 Vs es) = contains_insyncs es"
-by(induct e and es arbitrary: Vs and Vs) auto
-
+by(induct e and es arbitrary: Vs and Vs)simp_all
 
 lemma max_vars_compE1: "max_vars (compE1 Vs e) = max_vars e"
   and max_varss_compEs1: "max_varss (compEs1 Vs es) = max_varss es"
@@ -91,7 +96,6 @@ done
 lemma synthesized_call_compP [simp]:
   "synthesized_call (compP f P) h aMvs = synthesized_call P h aMvs"
 by(simp add: synthesized_call_def)
-
 
 
 consts

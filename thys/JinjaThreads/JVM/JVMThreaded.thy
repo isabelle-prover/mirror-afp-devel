@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* Instantiating the framework semantics with the JVM *}
+header{* \isaheader{Instantiating the framework semantics with the JVM} *}
 
 theory JVMThreaded imports "../Framework/FWSemantics" JVMDefensive "../Common/ConformThreaded" begin
 
@@ -14,7 +14,7 @@ where
 text{* The aggressive JVM *}
 
 abbreviation
-  mexec :: "jvm_prog \<Rightarrow> (jvm_thread_state \<times> heap) \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action \<Rightarrow> (jvm_thread_state \<times> heap) \<Rightarrow> bool"
+  mexec :: "jvm_prog \<Rightarrow> (jvm_thread_state \<times> heap) \<Rightarrow> jvm_thread_action \<Rightarrow> (jvm_thread_state \<times> heap) \<Rightarrow> bool"
 where
   "mexec P \<equiv> (\<lambda>((xcp, frstls), h) ta  ((xcp', frstls'), h'). P \<turnstile> (xcp, h, frstls) -ta-jvm\<rightarrow> (xcp', h', frstls'))"
 
@@ -22,7 +22,7 @@ lemma NewThread_memory_exec_instr:
   "\<lbrakk> (ta, s) \<in> set (exec_instr I P h stk loc C M pc frs); NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> m = fst (snd s)"
 apply(cases I)
 apply(auto split: split_if_asm simp add: split_beta)
-apply(auto dest!: red_ext_new_thread_heap[unfolded red_external_list_conv] simp add: extRet2JVM_def[folded Datatype.sum_case_def] split: sum.split)
+apply(auto dest!: red_ext_list_new_thread_heap simp add: extRet2JVM_def[folded Datatype.sum_case_def] split: sum.split)
 done
 
 lemma NewThread_memory_exec:
@@ -30,7 +30,7 @@ lemma NewThread_memory_exec:
 apply(erule exec_1.cases)
 apply(clarsimp)
 apply(case_tac bb, simp)
-apply(case_tac ae, auto simp add: exception_step_def_raw split: list.split_asm)
+apply(case_tac af, auto simp add: exception_step_def_raw split: list.split_asm)
 apply(drule NewThread_memory_exec_instr, simp+)
 done
 
@@ -44,18 +44,17 @@ done
 interpretation exec_mthr: multithreaded JVM_final "mexec P"
 by(rule exec_mthr)
 
-
 abbreviation
   mexecT :: "jvm_prog
              \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state
-             \<Rightarrow> thread_id \<times> (addr,thread_id,jvm_thread_state,heap,addr) thread_action
+             \<Rightarrow> thread_id \<times> (addr,thread_id,jvm_thread_state,heap,addr,(addr,obs_event) observable) thread_action
              \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state \<Rightarrow> bool"
 where
   "mexecT P \<equiv> exec_mthr.redT P"
 
 abbreviation
   mexecT_syntax1 :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state
-                  \<Rightarrow> thread_id \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action
+                  \<Rightarrow> thread_id \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr,(addr,obs_event) observable) thread_action
                   \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -_\<triangleright>_\<rightarrow>\<^bsub>jvm\<^esub> _" [50,0,0,0,50] 80)
 where
@@ -64,7 +63,7 @@ where
 
 abbreviation
   mExecT_syntax1 :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state
-                  \<Rightarrow> (thread_id \<times> (addr,thread_id,jvm_thread_state,heap,addr) thread_action) list
+                  \<Rightarrow> (thread_id \<times> (addr,thread_id,jvm_thread_state,heap,addr,(addr,obs_event) observable) thread_action) list
                   \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -\<triangleright>_\<rightarrow>\<^bsub>jvm\<^esub>* _" [50,0,0,50] 80)
 where
@@ -74,7 +73,7 @@ where
 text{* The defensive JVM *}
 
 abbreviation
-  mexecd :: "jvm_prog \<Rightarrow> jvm_thread_state \<times> heap \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action \<Rightarrow> jvm_thread_state \<times> heap \<Rightarrow> bool"
+  mexecd :: "jvm_prog \<Rightarrow> jvm_thread_state \<times> heap \<Rightarrow> jvm_thread_action \<Rightarrow> jvm_thread_state \<times> heap \<Rightarrow> bool"
 where
   "mexecd P \<equiv> (\<lambda>((xcp, frstls), h) ta ((xcp', frstls'), h'). P \<turnstile> Normal (xcp, h, frstls) -ta-jvmd\<rightarrow> Normal (xcp', h', frstls'))"
 
@@ -92,7 +91,7 @@ by(rule execd_mthr)
 
 abbreviation
   mexecdT :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state
-                       \<Rightarrow> thread_id \<times> (addr,thread_id,jvm_thread_state,heap,addr) thread_action
+                       \<Rightarrow> thread_id \<times> (addr,thread_id,jvm_thread_state,heap,addr,(addr,obs_event) observable) thread_action
                        \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state \<Rightarrow> bool"
 where
   "mexecdT P \<equiv> execd_mthr.redT P"
@@ -100,7 +99,7 @@ where
 
 abbreviation
   mexecdT_syntax1 :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state
-                  \<Rightarrow> thread_id \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action
+                  \<Rightarrow> thread_id \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr,(addr,obs_event) observable) thread_action
                   \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -_\<triangleright>_\<rightarrow>\<^bsub>jvmd\<^esub> _" [50,0,0,0,50] 80)
 where
@@ -109,7 +108,7 @@ where
 
 abbreviation
   mExecdT_syntax1 :: "jvm_prog \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state
-                  \<Rightarrow> (thread_id \<times> (addr,thread_id,jvm_thread_state,heap,addr) thread_action) list
+                  \<Rightarrow> (thread_id \<times> (addr,thread_id,jvm_thread_state,heap,addr,(addr,obs_event) observable) thread_action) list
                   \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -\<triangleright>_\<rightarrow>\<^bsub>jvmd\<^esub>* _" [50,0,0,50] 80)
 where

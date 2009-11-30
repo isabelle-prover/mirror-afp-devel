@@ -6,7 +6,6 @@ header {* \isaheader{Semantics of the thread actions for locking} *}
 
 theory FWLocking imports FWLock begin
 
-
 definition redT_updLs :: "('l,'t) locks \<Rightarrow> 't \<Rightarrow> 'l lock_actions \<Rightarrow> ('l,'t) locks" where
   "redT_updLs ls t las \<equiv> (\<lambda>(l, la). upd_locks l t la) \<circ>\<^isub>f ((ls, las)\<^sup>f)"
 
@@ -275,6 +274,5 @@ proof(rule lock_ok_lasI)
       by(auto intro!: clml collect_locksI elim: must_acquire_lock_contains_lock )
   qed
 qed
-
 
 end

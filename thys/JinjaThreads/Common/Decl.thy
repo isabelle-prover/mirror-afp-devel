@@ -21,10 +21,10 @@ types
 
 (*<*)
 translations
-  "fdecl"   <= (type) "vname \<times> ty"
-  "mdecl c" <= (type) "mname \<times> ty list \<times> ty \<times> c"
-  "class c" <= (type) "cname \<times> fdecl list \<times> (c mdecl) list"
-  "cdecl c" <= (type) "cname \<times> (c class)"
+  "fdecl"   <= (type) "String.literal \<times> ty"
+  "mdecl c" <= (type) "String.literal \<times> ty list \<times> ty \<times> c"
+  "class c" <= (type) "String.literal \<times> fdecl list \<times> (c mdecl) list"
+  "cdecl c" <= (type) "String.literal \<times> (c class)"
   "prog  c" <= (type) "(c cdecl) list"
 (*>*)
 

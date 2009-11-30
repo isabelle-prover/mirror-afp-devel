@@ -29,13 +29,9 @@ inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> exp
 | WTrtVar:
     "E V = Some T  \<Longrightarrow> WTrt P h E (Var V) T"
 
-| WTrtBinOpEq:
-    "\<lbrakk> WTrt P h E e1 T1; WTrt P h E e2 T2 \<rbrakk>
-    \<Longrightarrow> WTrt P h E (e1 \<guillemotleft>Eq\<guillemotright> e2) Boolean"
-
-| WTrtBinOpAdd:
-    "\<lbrakk> WTrt P h E e1 Integer; WTrt P h E e2 Integer \<rbrakk>
-  \<Longrightarrow> WTrt P h E (e1 \<guillemotleft>Add\<guillemotright> e2) Integer"
+| WTrtBinOp:
+    "\<lbrakk> WTrt P h E e1 T1; WTrt P h E e2 T2; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T \<rbrakk>
+  \<Longrightarrow> WTrt P h E (e1 \<guillemotleft>bop\<guillemotright> e2) T"
 
 | WTrtLAss:
     "\<lbrakk> E V = Some T; WTrt P h E e T'; P \<turnstile> T' \<le> T \<rbrakk>
@@ -79,7 +75,7 @@ inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> exp
     \<Longrightarrow> WTrt P h E (e1\<bullet>F{D}:=e2) Void"
 
 | WTrtCall:
-    "\<lbrakk> WTrt P h E e (Class C); \<not> is_external_call P (Class C) M (length es); P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
+    "\<lbrakk> WTrt P h E e (Class C); \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts \<rightarrow> T = (pns,body) in D;
        WTrts P h E es Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
     \<Longrightarrow> WTrt P h E (e\<bullet>M(es)) T"
 
@@ -93,7 +89,7 @@ inductive WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> exp
 
 | WTrtBlock:
     "\<lbrakk> WTrt P h (E(V\<mapsto>T)) e T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof\<^bsub>h\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow> WTrt P h E {V:T=vo; e}\<^bsub>cr\<^esub> T'"
+  \<Longrightarrow> WTrt P h E {V:T=vo; e} T'"
 
 | WTrtSynchronized:
     "\<lbrakk> WTrt P h E o' T; is_refT T; T \<noteq> NT; WTrt P h E e T' \<rbrakk>
@@ -187,7 +183,7 @@ by (auto elim: WTrt.cases)
 lemma [iff]: "P,E,h \<turnstile> e\<^isub>1;;e\<^isub>2 : T\<^isub>2 = (\<exists>T\<^isub>1. P,E,h \<turnstile> e\<^isub>1:T\<^isub>1 \<and> P,E,h \<turnstile> e\<^isub>2:T\<^isub>2)"
 by (auto elim: WTrt.cases)
 
-lemma [iff]: "P,E,h \<turnstile> {V:T=vo; e}\<^bsub>cr\<^esub> : T'  =  (P,E(V\<mapsto>T),h \<turnstile> e : T' \<and> (case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof\<^bsub>h\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T))"
+lemma [iff]: "P,E,h \<turnstile> {V:T=vo; e} : T'  =  (P,E(V\<mapsto>T),h \<turnstile> e : T' \<and> (case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof\<^bsub>h\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T))"
 by (auto elim: WTrt.cases)
 
 inductive_cases WTrt_elim_cases[elim!]:
@@ -228,8 +224,7 @@ apply(fastsimp simp: WTrtNewArray)
 apply(fastsimp simp: WTrtCast)
 apply(fastsimp simp: WTrtVal)
 apply(simp add: WTrtVar map_le_def dom_def)
-apply(fastsimp simp add: WTrtBinOpEq)
-apply(fastsimp simp add: WTrtBinOpAdd)
+apply(fastsimp simp add: WTrtBinOp)
 apply(force simp: map_le_def)
 apply(force simp: WTrtAAcc)
 apply(force simp: WTrtAAccNT)
@@ -269,8 +264,7 @@ apply(fastsimp simp: WTrtNewArray)
 apply(fastsimp simp: WTrtCast)
 apply(fastsimp simp: WTrtVal dest:hext_typeof_mono)
 apply(simp add: WTrtVar)
-apply(fastsimp simp add: WTrtBinOpEq)
-apply(fastsimp simp add: WTrtBinOpAdd)
+apply(fastsimp simp add: WTrtBinOp)
 apply(fastsimp simp add: WTrtLAss)
 apply(rule WTrtAAcc)
   apply(simp)
@@ -321,8 +315,7 @@ apply fast
 apply fast
 apply(fastsimp dest:typeof_lit_typeof)
 apply(simp)
-apply(fastsimp)
-apply(fastsimp)
+apply(fastsimp intro: WT_binop_WTrt_binop)
 apply(fastsimp)
 apply(erule WTrtAAcc)
 apply(assumption)

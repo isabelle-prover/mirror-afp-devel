@@ -2,22 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantics for the weak bisimulation proof from intermediate language to byte code} *}
+header {* \isaheader{Semantics for the delay bisimulation proof from intermediate language to byte code} *}
 
-theory Execs imports Tau begin
-
-inductive exec_meth :: "jvm_prog \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> jvm_thread_action \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-  for P :: "jvm_prog" and ins :: "instr list" and xt :: "ex_table"
-  where
-  exec_instr: 
-  "\<lbrakk> (ta, xcp, h', [(stk', loc', arbitrary, arbitrary, pc')]) \<in> set (exec_instr (ins ! pc) P h stk loc arbitrary arbitrary pc []);
-     pc < length ins;
-     check_instr (ins ! pc) P h stk loc arbitrary arbitrary pc [] \<rbrakk>
-  \<Longrightarrow> exec_meth P ins xt h (stk, loc, pc, None) ta h' (stk', loc', pc', xcp)"
-
-| exec_catch:
-  "\<lbrakk> match_ex_table P (cname_of h xcp) pc xt = \<lfloor>(pc', d)\<rfloor>; d \<le> size stk \<rbrakk>
-  \<Longrightarrow> exec_meth P ins xt h (stk, loc, pc, \<lfloor>xcp\<rfloor>) \<epsilon> h (Addr xcp # drop (size stk - d) stk, loc, pc', None)"
+theory Execs imports JVMTau begin
 
 declare match_ex_table_app [simp del]
   match_ex_table_eq_NoneI [simp del]
@@ -25,27 +12,332 @@ declare match_ex_table_app [simp del]
   compxE2_stack_xlift_convs [simp del]
   compxEs2_stack_xlift_convs [simp del]
 
+types check_instr' = "instr \<Rightarrow> jvm_prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> val list \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> pc \<Rightarrow> frame list \<Rightarrow> bool"
+
+primrec check_instr' :: check_instr'
+where 
+check_instr'_Load:
+  "check_instr' (Load n) P h stk loc C M\<^isub>0 pc frs =
+  True"
+
+| check_instr'_Store:
+  "check_instr' (Store n) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (0 < length stk)"
+
+| check_instr'_Push:
+  "check_instr' (Push v) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  True"
+
+| check_instr'_New:
+  "check_instr' (New C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  True"
+
+| check_instr'_NewArray:
+  "check_instr' (NewArray T) P h stk loc C0 M0 pc frs =
+  (0 < length stk)"
+
+| check_instr'_ALoad:
+  "check_instr' ALoad P h stk loc C0 M0 pc frs =
+  (1 < length stk)"
+
+| check_instr'_AStore:
+  "check_instr' AStore P h stk loc C0 M0 pc frs =
+  (2 < length stk)"
+
+| check_instr'_ALength:
+  "check_instr' ALength P h stk loc C0 M0 pc frs =
+  (0 < length stk)"
+
+| check_instr'_Getfield:
+  "check_instr' (Getfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  (0 < length stk)"
+
+| check_instr'_Putfield:
+  "check_instr' (Putfield F C) P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  (1 < length stk)"
+
+| check_instr'_Checkcast:
+  "check_instr' (Checkcast T) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (0 < length stk)"
+
+| check_instr'_Invoke:
+  "check_instr' (Invoke M n) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (n < length stk)"
+
+| check_instr'_Return:
+  "check_instr' Return P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (0 < length stk)"
+ 
+| check_instr'_Pop:
+  "check_instr' Pop P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
+  (0 < length stk)"
+
+| check_instr'_BinOpInstr:
+  "check_instr' (BinOpInstr bop) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (1 < length stk)"
+
+| check_instr'_IfFalse:
+  "check_instr' (IfFalse b) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (0 < length stk \<and> 0 \<le> int pc+b)"
+
+| check_instr'_Goto:
+  "check_instr' (Goto b) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (0 \<le> int pc+b)"
+
+| check_instr'_Throw:
+  "check_instr' ThrowExc P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (0 < length stk)"
+
+| check_instr'_MEnter:
+  "check_instr' MEnter P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+   (0 < length stk)"
+
+| check_instr'_MExit:
+  "check_instr' MExit P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+   (0 < length stk)"
+
+lemma check_instr_imp_check_instr':
+  "check_instr ins P h stk loc C M pc frs \<Longrightarrow> check_instr' ins P h stk loc C M pc frs"
+by(cases ins) auto
+
+definition ci_stk_offer :: "check_instr' \<Rightarrow> bool"
+where
+  "ci_stk_offer ci =
+  (\<forall>ins P h stk stk' loc C M pc frs. ci ins P h stk loc C M pc frs \<longrightarrow> ci ins P h (stk @ stk') loc C M pc frs)"
+
+lemma ci_stk_offerI:
+  "(\<And>ins P h stk stk' loc C M pc frs. ci ins P h stk loc C M pc frs \<Longrightarrow> ci ins P h (stk @ stk') loc C M pc frs) \<Longrightarrow> ci_stk_offer ci"
+unfolding ci_stk_offer_def by blast
+
+lemma ci_stk_offerD:
+  "\<lbrakk> ci_stk_offer ci; ci ins P h stk loc C M pc frs \<rbrakk> \<Longrightarrow> ci ins P h (stk @ stk') loc C M pc frs"
+unfolding ci_stk_offer_def by blast
+
+lemma check_instr_stk_offer:
+  "ci_stk_offer check_instr"
+proof(rule ci_stk_offerI)
+  fix ins P h stk stk' loc C M pc frs
+  assume "check_instr ins P h stk loc C M pc frs"
+  thus "check_instr ins P h (stk @ stk') loc C M pc frs"
+    by(cases ins)(auto simp add: nth_append hd_append neq_Nil_conv tl_append split: list.split)
+qed
+
+lemma check_instr'_stk_offer:
+  "ci_stk_offer check_instr'"
+proof(rule ci_stk_offerI)
+  fix ins P h stk stk' loc C M pc frs
+  assume "check_instr' ins P h stk loc C M pc frs"
+  thus "check_instr' ins P h (stk @ stk') loc C M pc frs"
+    by(cases ins) auto
+qed
+
+(* TODO: Combine ins_jump_ok and jump_ok *)
+primrec jump_ok :: "instr list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
+where "jump_ok [] n n' = True"
+| "jump_ok (x # xs) n n' = (jump_ok xs (Suc n) n' \<and> 
+                           (case x of IfFalse m \<Rightarrow> - int n \<le> m \<and> m \<le> int (n' + length xs)
+                                       | Goto m \<Rightarrow> - int n \<le> m \<and> m \<le> int (n' + length xs)
+                                            | _ \<Rightarrow> True))"
+
+lemma jump_ok_append [simp]:
+  "jump_ok (xs @ xs') n n' \<longleftrightarrow> jump_ok xs n (n' + length xs') \<and> jump_ok xs' (n + length xs) n'"
+apply(induct xs arbitrary: n)
+ apply(simp)
+apply(auto split: instr.split)
+done
+
+lemma jump_ok_GotoD:
+  "\<lbrakk> jump_ok ins n n'; ins ! pc = Goto m; pc < length ins \<rbrakk> \<Longrightarrow> - int (pc + n) \<le> m \<and> m < int (length ins - pc + n')"
+apply(induct ins arbitrary: n n' pc)
+ apply(simp)
+apply(clarsimp)
+apply(case_tac pc)
+apply(fastsimp)+
+done
+
+lemma jump_ok_IfFalseD:
+  "\<lbrakk> jump_ok ins n n'; ins ! pc = IfFalse m; pc < length ins \<rbrakk> \<Longrightarrow> - int (pc + n) \<le> m \<and> m < int (length ins - pc + n')"
+apply(induct ins arbitrary: n n' pc)
+ apply(simp)
+apply(clarsimp)
+apply(case_tac pc)
+apply(fastsimp)+
+done
+
+lemma compE2_jump_ok [intro!]: "jump_ok (compE2 e) n (Suc n')"
+  and compEs2_jump_ok [intro!]: "jump_ok (compEs2 es) n (Suc n')"
+apply(induct e and es arbitrary: n n' and n n')
+apply(auto split: bop.split)
+done
+
+lemma compE1_Goto_not_same: "\<lbrakk> compE2 e ! pc = Goto i; pc < length (compE2 e) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
+  and compEs2_Goto_not_same: "\<lbrakk> compEs2 es ! pc = Goto i; pc < length (compEs2 es) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
+apply(induct e and es arbitrary: pc i and pc i)
+apply(auto simp add: nth_Cons nth_append split: split_if_asm bop.split_asm nat.splits)
+apply fastsimp+
+done
+
+fun ins_jump_ok :: "instr \<Rightarrow> nat \<Rightarrow> bool"
+where
+  "ins_jump_ok (Goto m) l = (- (int l) \<le> m)"
+| "ins_jump_ok (IfFalse m) l = (- (int l) \<le> m)"
+| "ins_jump_ok _ _ = True"
+
+definition wf_ci :: "check_instr' \<Rightarrow> bool"
+where
+  "wf_ci ci \<longleftrightarrow>
+   ci_stk_offer ci \<and> ci \<le> check_instr' \<and>
+   (\<forall>ins P h stk loc C M pc pc' frs. ci ins P h stk loc C M pc frs \<longrightarrow> ins_jump_ok ins pc' \<longrightarrow> ci ins P h stk loc C M pc' frs)"
+
+lemma wf_ciI:
+  "\<lbrakk> ci_stk_offer ci;
+    \<And>ins P h stk loc C M pc frs. ci ins P h stk loc C M pc frs \<Longrightarrow> check_instr' ins P h stk loc C M pc frs;
+    \<And>ins P h stk loc C M pc pc' frs. \<lbrakk> ci ins P h stk loc C M pc frs; ins_jump_ok ins pc' \<rbrakk> \<Longrightarrow> ci ins P h stk loc C M pc' frs \<rbrakk>
+  \<Longrightarrow> wf_ci ci"
+unfolding wf_ci_def le_fun_def le_bool_def
+by blast
+
+lemma check_instr'_pc:
+  "\<lbrakk> check_instr' ins P h stk loc C M pc frs; ins_jump_ok ins pc' \<rbrakk> \<Longrightarrow> check_instr' ins P h stk loc C M pc' frs"
+by(cases ins) auto
+
+lemma wf_ci_check_instr' [iff]:
+  "wf_ci check_instr'"
+apply(rule wf_ciI)
+  apply(rule check_instr'_stk_offer)
+ apply(assumption)
+apply(erule (1) check_instr'_pc)
+done
+
+lemma check_instr_pc:
+  "\<lbrakk> check_instr ins P h stk loc C M pc frs; ins_jump_ok ins pc' \<rbrakk> \<Longrightarrow> check_instr ins P h stk loc C M pc' frs"
+by(cases ins) auto
+
+lemma jump_ok_ins_jump_ok:
+  "\<lbrakk> jump_ok ins n n'; pc < length ins \<rbrakk> \<Longrightarrow> ins_jump_ok (ins ! pc) (pc + n)"
+apply(induct ins arbitrary: n n' pc)
+apply(fastsimp simp add: nth_Cons' gr0_conv_Suc split: instr.split_asm)+
+done
+
+lemma wf_ci_check_instr [iff]:
+  "wf_ci check_instr"
+apply(rule wf_ciI)
+  apply(rule check_instr_stk_offer)
+ apply(erule check_instr_imp_check_instr')
+apply(erule (1) check_instr_pc)
+done
+
+lemma wf_ciD1: "wf_ci ci \<Longrightarrow> ci_stk_offer ci"
+unfolding wf_ci_def by blast
+
+lemma wf_ciD2: "\<lbrakk> wf_ci ci; ci ins P h stk loc C M pc frs \<rbrakk> \<Longrightarrow> check_instr' ins P h stk loc C M pc frs"
+unfolding wf_ci_def le_fun_def le_bool_def
+by blast
+
+lemma wf_ciD3: "\<lbrakk> wf_ci ci; ci ins P h stk loc C M pc frs; ins_jump_ok ins pc' \<rbrakk> \<Longrightarrow> ci ins P h stk loc C M pc' frs"
+unfolding wf_ci_def by blast
+
+lemma check_instr'_ins_jump_ok: "check_instr' ins P h stk loc C M pc frs \<Longrightarrow> ins_jump_ok ins pc"
+by(cases ins) auto
+
+lemma wf_ci_ins_jump_ok:
+  assumes wf: "wf_ci ci"
+  and ci: "ci ins P h stk loc C M pc frs"
+  and pc': "pc \<le> pc'"
+  shows "ins_jump_ok ins pc'"
+proof -
+  from wf ci have "check_instr' ins P h stk loc C M pc frs" by(rule wf_ciD2)
+  with pc' have "check_instr' ins P h stk loc C M pc' frs" by(cases ins) auto
+  thus ?thesis by(rule check_instr'_ins_jump_ok)
+qed
+
+lemma wf_ciD3': "\<lbrakk> wf_ci ci; ci ins P h stk loc C M pc frs; pc \<le> pc' \<rbrakk> \<Longrightarrow> ci ins P h stk loc C M pc' frs"
+apply(frule (2) wf_ci_ins_jump_ok)
+apply(erule (2) wf_ciD3)
+done
+
+typedef (open) check_instr = "wf_ci"
+by(auto simp add: mem_def)
+
+definition ci_app :: "check_instr \<Rightarrow> check_instr'"
+where "ci_app ci = Rep_check_instr ci"
+
+lemma ci_app_check_instr' [simp]: "ci_app (Abs_check_instr check_instr') = check_instr'"
+by(simp add: ci_app_def Abs_check_instr_inverse mem_def)
+
+lemma ci_app_check_instr [simp]: "ci_app (Abs_check_instr check_instr) = check_instr"
+by(simp add: ci_app_def Abs_check_instr_inverse mem_def)
+
+lemma wf_ci_stk_offerD:
+  "ci_app ci ins P h stk loc C M pc frs \<Longrightarrow> ci_app ci ins P h (stk @ stk') loc C M pc frs"
+unfolding ci_app_def 
+apply(rule ci_stk_offerD[OF wf_ciD1])
+by(rule Rep_check_instr[simplified mem_def])
+
+lemma wf_ciD2_ci_app:
+  "ci_app ci ins P h stk loc C M pc frs \<Longrightarrow> check_instr' ins P h stk loc C M pc frs"
+apply(cases ci)
+apply(simp add: mem_def Abs_check_instr_inverse ci_app_def)
+apply(erule (1) wf_ciD2)
+done
+
+lemma wf_ciD3_ci_app:
+  "\<lbrakk> ci_app ci ins P h stk loc C M pc frs; ins_jump_ok ins pc' \<rbrakk> \<Longrightarrow> ci_app ci ins P h stk loc C M pc' frs"
+apply(cases ci)
+apply(simp add: mem_def Abs_check_instr_inverse ci_app_def)
+apply(erule (2) wf_ciD3)
+done
+
+lemma wf_ciD3'_ci_app: "\<lbrakk> ci_app ci ins P h stk loc C M pc frs; pc \<le> pc' \<rbrakk> \<Longrightarrow> ci_app ci ins P h stk loc C M pc' frs"
+apply(cases ci)
+apply(simp add: mem_def Abs_check_instr_inverse ci_app_def)
+apply(erule (2) wf_ciD3')
+done
+
+inductive exec_meth :: "check_instr \<Rightarrow> jvm_prog \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> jvm_thread_action \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+  for ci :: check_instr and P :: "jvm_prog" and ins :: "instr list" and xt :: "ex_table"
+  where
+  exec_instr: 
+  "\<lbrakk> (ta, xcp, h', [(stk', loc', undefined, undefined, pc')]) \<in> set (exec_instr (ins ! pc) P h stk loc undefined undefined pc []);
+     pc < length ins;
+     ci_app ci (ins ! pc) P h stk loc undefined undefined pc [] \<rbrakk>
+  \<Longrightarrow> exec_meth ci P ins xt h (stk, loc, pc, None) ta h' (stk', loc', pc', xcp)"
+
+| exec_catch:
+  "\<lbrakk> match_ex_table P (cname_of h xcp) pc xt = \<lfloor>(pc', d)\<rfloor>; d \<le> length stk \<rbrakk>
+  \<Longrightarrow> exec_meth ci P ins xt h (stk, loc, pc, \<lfloor>xcp\<rfloor>) \<epsilon> h (Addr xcp # drop (size stk - d) stk, loc, pc', None)"
+
+lemma exec_meth_instr:
+  "exec_meth ci P ins xt h (stk, loc, pc, None) ta h' (stk', loc', pc', xcp) \<longleftrightarrow>
+   (ta, xcp, h', [(stk', loc', undefined, undefined, pc')]) \<in> set (exec_instr (ins ! pc) P h stk loc undefined undefined pc []) \<and> pc < length ins \<and> ci_app ci (ins ! pc) P h stk loc undefined undefined pc []"
+by(auto elim: exec_meth.cases intro: exec_instr)
+
+lemma exec_meth_xcpt:
+  "exec_meth ci P ins xt h (stk, loc, pc, \<lfloor>xcp\<rfloor>) ta h (stk', loc', pc', xcp') \<longleftrightarrow>
+   (\<exists>d. match_ex_table P (cname_of h xcp) pc xt = \<lfloor>(pc', d)\<rfloor> \<and> ta = \<epsilon> \<and> stk' = (Addr xcp # drop (size stk - d) stk) \<and> loc' = loc \<and> xcp' = None \<and> d \<le> length stk)"
+by(auto elim: exec_meth.cases intro: exec_catch)
+
+abbreviation exec_meth_a
+where "exec_meth_a \<equiv> exec_meth (Abs_check_instr check_instr')"
+
+abbreviation exec_meth_d
+where "exec_meth_d \<equiv> exec_meth (Abs_check_instr check_instr)"
+
 lemma exec_meth_length_compE2D [dest]:
-  "exec_meth P (compE2 e) (compxE2 e 0 d) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp') \<Longrightarrow> pc < length (compE2 e)"
+  "exec_meth ci P (compE2 e) (compxE2 e 0 d) h (stk, loc, pc, xcp) ta h' s' \<Longrightarrow> pc < length (compE2 e)"
 apply(erule exec_meth.cases)
 apply(auto dest: match_ex_table_pc_length_compE2)
 done
 
 lemma exec_meth_length_compEs2D [dest]:
-  "exec_meth P (compEs2 es) (compxEs2 es 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp') \<Longrightarrow> pc < length (compEs2 es)"
+  "exec_meth ci P (compEs2 es) (compxEs2 es 0 0) h (stk, loc, pc, xcp) ta h' s' \<Longrightarrow> pc < length (compEs2 es)"
 apply(erule exec_meth.cases)
 apply(auto dest: match_ex_table_pc_length_compEs2)
 done
 
-lemma check_instr_stk_offer:
-  "check_instr ins P h stk loc C M pc []
-  \<Longrightarrow> check_instr ins P h (stk @ stk'') loc C M pc []"
-apply(cases ins)
-apply(auto simp add: nth_append hd_append neq_Nil_conv tl_append split: list.split)
-done
 
 lemma exec_instr_stk_offer:
-  assumes check: "check_instr (ins ! pc) P h stk loc C M pc frs"
+  assumes check: "check_instr' (ins ! pc) P h stk loc C M pc frs"
   and exec: "(ta', xcp', h', (stk', loc', C, M, pc') # frs) \<in> set (exec_instr (ins ! pc) P h stk loc C M pc frs)"
   shows "(ta', xcp', h', (stk' @ stk'', loc', C, M, pc') # frs) \<in> set (exec_instr (ins ! pc) P h (stk @ stk'') loc C M pc frs)"
 using assms
@@ -56,8 +348,8 @@ proof(cases "ins ! pc")
 qed(fastsimp simp add: nth_append is_Ref_def has_method_def nth_Cons split_beta hd_append tl_append neq_Nil_conv split: list.split split_if_asm nat.splits elim!: is_ArrE)+
 
 lemma exec_meth_stk_offer:
-  assumes exec: "exec_meth P ins xt h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_meth P ins (stack_xlift (length stk'') xt)  h (stk @ stk'', loc, pc, xcp) ta h' (stk' @ stk'', loc', pc', xcp')"
+  assumes exec: "exec_meth ci P ins xt h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_meth ci P ins (stack_xlift (length stk'') xt)  h (stk @ stk'', loc, pc, xcp) ta h' (stk' @ stk'', loc', pc', xcp')"
 using exec
 proof(cases)
   case (exec_catch h xcp pc pc'' d stk loc)
@@ -65,25 +357,26 @@ proof(cases)
   have "match_ex_table P (cname_of h xcp) pc (stack_xlift (length stk'') xt) = \<lfloor>(pc'', length stk'' + d)\<rfloor>"
     by(simp add: match_ex_table_stack_xlift)
   moreover have "length stk'' + d \<le> length (stk @ stk'')" using `d \<le> length stk` by simp
-  ultimately have "exec_meth P ins (stack_xlift (length stk'') xt) h ((stk @ stk''), loc, pc, \<lfloor>xcp\<rfloor>) \<epsilon> h ((Addr xcp # drop (length (stk @ stk'') - (length stk'' + d)) (stk @ stk'')), loc, pc'', None)"
+  ultimately have "exec_meth ci P ins (stack_xlift (length stk'') xt) h ((stk @ stk''), loc, pc, \<lfloor>xcp\<rfloor>) \<epsilon> h ((Addr xcp # drop (length (stk @ stk'') - (length stk'' + d)) (stk @ stk'')), loc, pc'', None)"
     by(rule exec_meth.exec_catch)
   with exec_catch show ?thesis by(simp)
 next
   case (exec_instr ta' xcp' h' stk' loc' pc' pc h stk loc)
-  from `check_instr (ins ! pc) P h stk loc arbitrary arbitrary pc []`
-  have "check_instr (ins ! pc) P h (stk @ stk'') loc arbitrary arbitrary pc []"
-    by(rule check_instr_stk_offer)
-  moreover from `check_instr (ins ! pc) P h stk loc arbitrary arbitrary  pc []`
-    `(ta', xcp', h', [(stk', loc', arbitrary,arbitrary , pc')]) \<in> set (exec_instr (ins ! pc) P h stk loc arbitrary arbitrary pc [])`
-  have "(ta', xcp', h', [(stk' @ stk'', loc', arbitrary, arbitrary, pc')]) \<in> set (exec_instr (ins ! pc) P h (stk @ stk'') loc arbitrary arbitrary pc [])"
+  note ciins = `ci_app ci (ins ! pc) P h stk loc undefined undefined pc []`
+  hence "ci_app ci (ins ! pc) P h (stk @ stk'') loc undefined undefined pc []"
+    by(rule wf_ci_stk_offerD)
+  moreover from ciins
+  have "check_instr' (ins ! pc) P h stk loc undefined undefined  pc []"
+    by(rule wf_ciD2_ci_app)
+  hence "(ta', xcp', h', [(stk' @ stk'', loc', undefined, undefined, pc')]) \<in> set (exec_instr (ins ! pc) P h (stk @ stk'') loc undefined undefined pc [])"
+    using `(ta', xcp', h', [(stk', loc', undefined,undefined , pc')]) \<in> set (exec_instr (ins ! pc) P h stk loc undefined undefined pc [])`
     by(rule exec_instr_stk_offer)
   ultimately show ?thesis using exec_instr by(auto intro: exec_meth.exec_instr)
 qed
-
   
 lemma exec_meth_append_xt [intro]:
-  "exec_meth P ins xt  h s ta h' s'
-  \<Longrightarrow> exec_meth P (ins @ ins') (xt @ xt')  h s ta h' s'"
+  "exec_meth ci P ins xt  h s ta h' s'
+  \<Longrightarrow> exec_meth ci P (ins @ ins') (xt @ xt')  h s ta h' s'"
 apply(erule exec_meth.cases)
  apply(auto)
  apply(rule exec_instr)
@@ -94,14 +387,14 @@ apply(rule exec_catch)
 by(simp)
 
 lemma exec_meth_append [intro]:
-  "exec_meth P ins xt h s ta h' s' \<Longrightarrow> exec_meth P (ins @ ins') xt  h s ta h' s'"
+  "exec_meth ci P ins xt h s ta h' s' \<Longrightarrow> exec_meth ci P (ins @ ins') xt  h s ta h' s'"
 by(rule exec_meth_append_xt[where xt'="[]", simplified])
 
 lemma append_exec_meth_xt:
-  assumes exec: "exec_meth P ins xt h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  assumes exec: "exec_meth ci P ins xt h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
   and jump: "jump_ok ins 0 n"
   and pcs: "pcs xt' \<subseteq> {0..<length ins'}"
-  shows "exec_meth P (ins' @ ins) (xt' @ shift (length ins') xt)  h (stk, loc, (length ins' + pc), xcp) ta h' (stk', loc', (length ins' + pc'), xcp')"
+  shows "exec_meth ci P (ins' @ ins) (xt' @ shift (length ins') xt)  h (stk, loc, (length ins' + pc), xcp) ta h' (stk', loc', (length ins' + pc'), xcp')"
 using exec
 proof(cases)
   case (exec_catch h xcp pc pc'' d stk loc)
@@ -114,8 +407,8 @@ proof(cases)
   with exec_catch show ?thesis by(auto dest: exec_meth.exec_catch)
 next
   case (exec_instr ta' xcp' h' stk' loc' pc' pc h stk loc)
-  note exec = `(ta', xcp', h', [(stk', loc', arbitrary, arbitrary, pc')]) \<in> set (exec_instr (ins ! pc) P h stk loc arbitrary arbitrary pc [])`
-  hence "(ta', xcp', h', [(stk', loc', arbitrary, arbitrary, length ins' + pc')]) \<in> set (exec_instr (ins ! pc) P h stk loc arbitrary arbitrary (length ins' + pc) [])"
+  note exec = `(ta', xcp', h', [(stk', loc', undefined, undefined, pc')]) \<in> set (exec_instr (ins ! pc) P h stk loc undefined undefined pc [])`
+  hence "(ta', xcp', h', [(stk', loc', undefined, undefined, length ins' + pc')]) \<in> set (exec_instr (ins ! pc) P h stk loc undefined undefined (length ins' + pc) [])"
   proof(cases "ins ! pc")
     case (Goto i)
     with jump `pc < length ins` have "- int pc  \<le> i" "i < int (length ins - pc + n)"
@@ -131,61 +424,63 @@ next
     with exec show ?thesis 
       by(force split: split_if_asm sum.splits split del: split_if simp add: split_beta nth_append min_def extRet2JVM_def[folded Datatype.sum_case_def] elim!: is_ArrE)
   qed(auto simp add: split_beta split: split_if_asm)
-  moreover from `check_instr (ins ! pc) P h stk loc arbitrary arbitrary pc []`
-  have "check_instr (ins ! pc) P h stk loc arbitrary arbitrary (length ins' + pc) []"
-    by(cases "ins ! pc", auto)
-  ultimately have "exec_meth P (ins' @ ins) (xt' @ shift (length ins') xt)  h (stk, loc, (length ins' + pc), None) ta' h' (stk', loc', (length ins' + pc'), xcp')"
+  moreover from `ci_app ci (ins ! pc) P h stk loc undefined undefined pc []`
+  have "ci_app ci (ins ! pc) P h stk loc undefined undefined (length ins' + pc) []"
+    by(rule wf_ciD3'_ci_app) simp
+  ultimately have "exec_meth ci P (ins' @ ins) (xt' @ shift (length ins') xt)  h (stk, loc, (length ins' + pc), None) ta' h' (stk', loc', (length ins' + pc'), xcp')"
     using `pc < length ins` by -(rule exec_meth.exec_instr, simp_all)
   thus ?thesis using exec_instr by(auto)
 qed
 
 lemma append_exec_meth:
-  assumes exec: "exec_meth P ins xt  h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  assumes exec: "exec_meth ci P ins xt  h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
   and jump: "jump_ok ins 0 n"
-  shows "exec_meth P (ins' @ ins) (shift (length ins') xt) h (stk, loc, (length ins' + pc), xcp) ta h' (stk', loc', (length ins' + pc'), xcp')"
+  shows "exec_meth ci P (ins' @ ins) (shift (length ins') xt) h (stk, loc, (length ins' + pc), xcp) ta h' (stk', loc', (length ins' + pc'), xcp')"
 using assms by(rule append_exec_meth_xt [where xt'="[]", simplified])
 
 lemma exec_meth_take_xt':
-  "\<lbrakk> exec_meth P (ins @ ins') (xt' @ xt) h (stk, loc, pc, xcp) ta h' s';
+  "\<lbrakk> exec_meth ci P (ins @ ins') (xt' @ xt) h (stk, loc, pc, xcp) ta h' s';
     pc < length ins; pc \<notin> pcs xt \<rbrakk>
-  \<Longrightarrow> exec_meth P ins xt' h (stk, loc, pc, xcp) ta h' s'"
+  \<Longrightarrow> exec_meth ci P ins xt' h (stk, loc, pc, xcp) ta h' s'"
 apply(erule exec_meth.cases)
 apply(auto intro: exec_meth.intros simp add: match_ex_table_append nth_append dest: match_ex_table_pcsD)
 done
 
 lemma exec_meth_take_xt:
-  "\<lbrakk> exec_meth P (ins @ ins') (xt' @ shift (length ins) xt) h (stk, loc, pc, xcp) ta h' s';
+  "\<lbrakk> exec_meth ci P (ins @ ins') (xt' @ shift (length ins) xt) h (stk, loc, pc, xcp) ta h' s';
     pc < length ins \<rbrakk>
-  \<Longrightarrow> exec_meth P ins xt' h (stk, loc, pc, xcp) ta h' s'"
+  \<Longrightarrow> exec_meth ci P ins xt' h (stk, loc, pc, xcp) ta h' s'"
 by(auto intro: exec_meth_take_xt')
 
 lemma exec_meth_take:
-  "\<lbrakk> exec_meth P (ins @ ins') xt h (stk, loc, pc, xcp) ta h' s';
+  "\<lbrakk> exec_meth ci P (ins @ ins') xt h (stk, loc, pc, xcp) ta h' s';
     pc < length ins \<rbrakk>
-  \<Longrightarrow> exec_meth P ins xt   h (stk, loc, pc, xcp) ta h' s'"
+  \<Longrightarrow> exec_meth ci P ins xt   h (stk, loc, pc, xcp) ta h' s'"
 by(auto intro: exec_meth_take_xt[where xt = "[]"])
 
 
+
+
 lemma exec_meth_drop_xt:
-  assumes exec: "exec_meth P (ins @ ins') (xt @ shift (length ins) xt') h (stk, loc, (length ins + pc), xcp) ta h' (stk', loc', pc', xcp')"
+  assumes exec: "exec_meth ci P (ins @ ins') (xt @ shift (length ins) xt') h (stk, loc, (length ins + pc), xcp) ta h' (stk', loc', pc', xcp')"
   and xt: "pcs xt \<subseteq> {..<length ins}"
   and jump: "jump_ok ins' 0 n"
-  shows "exec_meth P ins' xt' h (stk, loc, pc, xcp) ta h' (stk', loc', (pc' - length ins), xcp')"
+  shows "exec_meth ci P ins' xt' h (stk, loc, pc, xcp) ta h' (stk', loc', (pc' - length ins), xcp')"
 using exec
 proof(cases rule: exec_meth.cases)
   case (exec_instr TA XCP' H' STK' LOC' PC' PC H STK LOC)
   hence [simp]: "H = h" "STK = stk" "LOC = loc" "PC = length ins + pc" "xcp = None" "XCP' = xcp'"
     "TA = ta" "H' = h'" "STK' = stk'" "LOC' = loc'" "PC' = pc'" by auto
   from `PC < length (ins @ ins')` have pc: "pc < length ins'" by simp
-  moreover with `(TA, XCP', H', [(STK', LOC', arbitrary, arbitrary, PC')]) \<in> set (exec_instr ((ins @ ins') ! PC) P H STK LOC arbitrary arbitrary PC [])`
-  have "(ta, xcp', h', [(stk', loc', arbitrary, arbitrary, PC' - length ins)]) \<in> set (exec_instr (ins' ! pc) P h stk loc arbitrary arbitrary pc [])"
+  moreover with `(TA, XCP', H', [(STK', LOC', undefined, undefined, PC')]) \<in> set (exec_instr ((ins @ ins') ! PC) P H STK LOC undefined undefined PC [])`
+  have "(ta, xcp', h', [(stk', loc', undefined, undefined, PC' - length ins)]) \<in> set (exec_instr (ins' ! pc) P h stk loc undefined undefined pc [])"
     apply(cases "ins' ! pc")
     apply(simp_all add: split_beta split: split_if_asm split del: split_if)
     apply(force split: sum.splits simp add: min_def extRet2JVM_def[folded Datatype.sum_case_def])+
     done
-  moreover from `check_instr ((ins @ ins') ! PC) P H STK LOC arbitrary arbitrary PC []` jump pc
-  have "check_instr (ins' ! pc) P h stk loc arbitrary arbitrary pc []"
-    by(cases "ins' ! pc", auto dest: jump_ok_GotoD jump_ok_IfFalseD)
+  moreover from `ci_app ci ((ins @ ins') ! PC) P H STK LOC undefined undefined PC []` jump pc
+  have "ci_app ci (ins' ! pc) P h stk loc undefined undefined pc []"
+    by(fastsimp elim: wf_ciD3_ci_app dest: jump_ok_ins_jump_ok)
   ultimately show ?thesis by(auto intro: exec_meth.intros)
 next
   case (exec_catch H XCP PC PC' D STK LOC)
@@ -198,13 +493,13 @@ next
 qed
 
 lemma exec_meth_drop:
-  "\<lbrakk> exec_meth P (ins @ ins') (shift (length ins) xt) h (stk, loc, (length ins + pc), xcp) ta h' (stk', loc', pc', xcp');
+  "\<lbrakk> exec_meth ci P (ins @ ins') (shift (length ins) xt) h (stk, loc, (length ins + pc), xcp) ta h' (stk', loc', pc', xcp');
      jump_ok ins' 0 b \<rbrakk>
-   \<Longrightarrow> exec_meth P ins' xt h (stk, loc, pc, xcp) ta h' (stk', loc', (pc' - length ins), xcp')"
+   \<Longrightarrow> exec_meth ci P ins' xt h (stk, loc, pc, xcp) ta h' (stk', loc', (pc' - length ins), xcp')"
 by(auto intro: exec_meth_drop_xt[where xt = "[]"])
 
 lemma exec_meth_drop_xt_pc:
-  assumes exec: "exec_meth P (ins @ ins') (xt @ shift (length ins) xt') h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  assumes exec: "exec_meth ci P (ins @ ins') (xt @ shift (length ins) xt') h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
   and pc: "pc \<ge> length ins"
   and pcs: "pcs xt \<subseteq> {..<length ins}"
   and jump: "jump_ok ins' 0 n'"
@@ -224,819 +519,1285 @@ qed
 
 lemmas exec_meth_drop_pc = exec_meth_drop_xt_pc[where xt="[]", simplified, standard]
 
-definition exec_move :: "J1_prog \<Rightarrow> expr1 \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-where "exec_move P e \<equiv> exec_meth (compP2 P) (compE2 e) (compxE2 e 0 0)"
+definition exec_move :: "check_instr \<Rightarrow> J1_prog \<Rightarrow> expr1 \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> jvm_thread_action \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+where "exec_move ci P e \<equiv> exec_meth ci (compP2 P) (compE2 e) (compxE2 e 0 0)"
 
-definition exec_moves :: "J1_prog \<Rightarrow> expr1 list \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-where "exec_moves P es \<equiv> exec_meth (compP2 P) (compEs2 es) (compxEs2 es 0 0)"
+definition exec_moves :: "check_instr \<Rightarrow> J1_prog \<Rightarrow> expr1 list \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> jvm_thread_action \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+where "exec_moves ci P es \<equiv> exec_meth ci (compP2 P) (compEs2 es) (compxEs2 es 0 0)"
+
+abbreviation exec_move_a
+where "exec_move_a \<equiv> exec_move (Abs_check_instr check_instr')"
+
+abbreviation exec_move_d
+where "exec_move_d \<equiv> exec_move (Abs_check_instr check_instr)"
+
+abbreviation exec_moves_a
+where "exec_moves_a \<equiv> exec_moves (Abs_check_instr check_instr')"
+
+abbreviation exec_moves_d
+where "exec_moves_d \<equiv> exec_moves (Abs_check_instr check_instr)"
 
 lemma exec_move_newArrayI:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (newA T\<lfloor>e\<rceil>) h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (newA T\<lfloor>e\<rceil>) h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_newArray:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (newA T\<lfloor>e\<rceil>) h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (newA T\<lfloor>e\<rceil>) h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def by(auto intro!: ext intro: exec_meth_take)
 
 lemma exec_move_CastI:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (Cast T e) h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (Cast T e) h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_Cast:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (Cast T e) h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (Cast T e) h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def by(auto intro!: ext intro: exec_meth_take)
 
 lemma exec_move_BinOpI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (e \<guillemotleft>bop\<guillemotright> e') h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (e \<guillemotleft>bop\<guillemotright> e') h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_BinOp1:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (e \<guillemotleft>bop\<guillemotright> e') h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (e \<guillemotleft>bop\<guillemotright> e') h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def
 by(auto intro!: ext intro: exec_meth_take_xt simp add: compxE2_size_convs)
 
 lemma exec_move_BinOpI2:
-  assumes exec: "exec_move P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (e1 \<guillemotleft>bop\<guillemotright> e2) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
+  assumes exec: "exec_move ci P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (e1 \<guillemotleft>bop\<guillemotright> e2) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
 proof -
-  from exec have "exec_meth (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_move_def .
   from exec_meth_stk_offer[OF this, where stk''="[v]"] show ?thesis
     by(fastsimp split: bop.splits intro: append_exec_meth_xt simp add: exec_move_def compxE2_size_convs compxE2_stack_xlift_convs)
 qed
 
 lemma exec_move_LAssI:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (V := e) h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (V := e) h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_LAss:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (V := e) h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (V := e) h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def by(auto intro!: ext intro: exec_meth_take)
 
 lemma exec_move_AAccI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (e\<lfloor>e'\<rceil>) h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (e\<lfloor>e'\<rceil>) h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_AAcc1:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (e\<lfloor>e'\<rceil>) h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (e\<lfloor>e'\<rceil>) h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def
 by(auto intro!: ext intro: exec_meth_take_xt simp add: compxE2_size_convs)
 
 lemma exec_move_AAccI2:
-  assumes exec: "exec_move P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (e1\<lfloor>e2\<rceil>) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
+  assumes exec: "exec_move ci P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (e1\<lfloor>e2\<rceil>) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
 proof -
-  from exec have "exec_meth (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_move_def .
   from exec_meth_stk_offer[OF this, where stk''="[v]"] show ?thesis
     by(fastsimp intro: append_exec_meth_xt simp add: exec_move_def compxE2_size_convs compxE2_stack_xlift_convs)
 qed
 
 lemma exec_move_AAssI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (e\<lfloor>e'\<rceil> := e'') h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (e\<lfloor>e'\<rceil> := e'') h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_AAss1:
   assumes pc: "pc < length (compE2 e)"
-  shows "exec_move P (e\<lfloor>e'\<rceil> := e'') h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  shows "exec_move ci P (e\<lfloor>e'\<rceil> := e'') h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
   (is "?lhs = ?rhs")
 proof(rule ext iffI)+
   fix ta h' s' assume "?rhs ta h' s'"
   thus "?lhs ta h' s'" by(rule exec_move_AAssI1)
 next
   fix ta h' s' assume "?lhs ta h' s'"
-  hence "exec_meth (compP2 P) (compE2 e @ compE2 e' @ compE2 e'' @ [AStore, Push Unit])
+  hence "exec_meth ci (compP2 P) (compE2 e @ compE2 e' @ compE2 e'' @ [AStore, Push Unit])
      (compxE2 e 0 0 @ shift (length (compE2 e)) (compxE2 e' 0 (Suc 0) @ compxE2 e'' (length (compE2 e')) (Suc (Suc 0))))
      h (stk, loc, pc, xcp) ta h' s'" by(simp add: exec_move_def shift_compxE2 add_ac)
   thus "?rhs ta h' s'" unfolding exec_move_def using pc by(rule exec_meth_take_xt)
 qed
 
 lemma exec_move_AAssI2:
-  assumes exec: "exec_move P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (e1\<lfloor>e2\<rceil> := e3) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
+  assumes exec: "exec_move ci P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (e1\<lfloor>e2\<rceil> := e3) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
 proof -
-  from exec have "exec_meth (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_move_def .
   from exec_meth_stk_offer[OF this, where stk''="[v]", simplified stack_xlift_compxE2, simplified]
-  have "exec_meth (compP2 P) (compE2 e2 @ compE2 e3 @ [AStore, Push Unit]) (compxE2 e2 0 (Suc 0) @ shift (length (compE2 e2)) (compxE2 e3 0 (Suc (Suc 0)))) h (stk @ [v], loc, pc, xcp) ta h' (stk' @ [v], loc', pc', xcp')"
+  have "exec_meth ci (compP2 P) (compE2 e2 @ compE2 e3 @ [AStore, Push Unit]) (compxE2 e2 0 (Suc 0) @ shift (length (compE2 e2)) (compxE2 e3 0 (Suc (Suc 0)))) h (stk @ [v], loc, pc, xcp) ta h' (stk' @ [v], loc', pc', xcp')"
     by(rule exec_meth_append_xt)
-  hence "exec_meth (compP2 P) (compE2 e1 @ compE2 e2 @ compE2 e3 @ [AStore, Push Unit]) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (compxE2 e2 0 (Suc 0) @ shift (length (compE2 e2)) (compxE2 e3 0 (Suc (Suc 0))))) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
+  hence "exec_meth ci (compP2 P) (compE2 e1 @ compE2 e2 @ compE2 e3 @ [AStore, Push Unit]) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (compxE2 e2 0 (Suc 0) @ shift (length (compE2 e2)) (compxE2 e3 0 (Suc (Suc 0))))) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
     by(rule append_exec_meth_xt) auto
   thus ?thesis by(auto simp add: exec_move_def shift_compxE2 add_ac)
 qed
 
 lemma exec_move_AAssI3:
-  assumes exec: "exec_move P e3 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (e1\<lfloor>e2\<rceil> := e3) h (stk @ [v', v], loc, length (compE2 e1) + length (compE2 e2) + pc, xcp) ta h' (stk' @ [v', v], loc', length (compE2 e1) + length (compE2 e2) + pc', xcp')"
+  assumes exec: "exec_move ci P e3 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (e1\<lfloor>e2\<rceil> := e3) h (stk @ [v', v], loc, length (compE2 e1) + length (compE2 e2) + pc, xcp) ta h' (stk' @ [v', v], loc', length (compE2 e1) + length (compE2 e2) + pc', xcp')"
 proof -
-  from exec have "exec_meth (compP2 P) (compE2 e3) (compxE2 e3 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e3) (compxE2 e3 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_move_def .
   from exec_meth_stk_offer[OF this, where stk''="[v', v]", simplified stack_xlift_compxE2, simplified]
-  have "exec_meth (compP2 P) (compE2 e3 @ [AStore, Push Unit]) (compxE2 e3 0 (Suc (Suc 0))) h (stk @ [v', v], loc, pc, xcp) ta h' (stk' @ [v', v], loc', pc', xcp')"
+  have "exec_meth ci (compP2 P) (compE2 e3 @ [AStore, Push Unit]) (compxE2 e3 0 (Suc (Suc 0))) h (stk @ [v', v], loc, pc, xcp) ta h' (stk' @ [v', v], loc', pc', xcp')"
     by(rule exec_meth_append)
-  hence "exec_meth (compP2 P) ((compE2 e1 @ compE2 e2) @ compE2 e3 @ [AStore, Push Unit]) 
+  hence "exec_meth ci (compP2 P) ((compE2 e1 @ compE2 e2) @ compE2 e3 @ [AStore, Push Unit]) 
                    ((compxE2 e1 0 0 @ compxE2 e2 (length (compE2 e1)) (Suc 0)) @ shift (length (compE2 e1 @ compE2 e2)) (compxE2 e3 0 (Suc (Suc 0)))) h (stk @ [v', v], loc, length (compE2 e1 @ compE2 e2) + pc, xcp) ta h' (stk' @ [v', v], loc', length (compE2 e1 @ compE2 e2) + pc', xcp')"
     by(rule append_exec_meth_xt) auto
   thus ?thesis by(auto simp add: exec_move_def shift_compxE2 add_ac)
 qed
 
 lemma exec_move_ALengthI:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (e\<bullet>length) h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (e\<bullet>length) h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_ALength:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (e\<bullet>length) h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (e\<bullet>length) h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def by(auto intro!: ext intro: exec_meth_take)
 
 lemma exec_move_FAccI:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (e\<bullet>F{D}) h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (e\<bullet>F{D}) h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_FAcc:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (e\<bullet>F{D}) h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (e\<bullet>F{D}) h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def by(auto intro!: ext intro: exec_meth_take)
 
 lemma exec_move_FAssI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (e\<bullet>F{D} := e') h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (e\<bullet>F{D} := e') h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_FAss1:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (e\<bullet>F{D} := e') h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (e\<bullet>F{D} := e') h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def
 by(auto intro!: ext intro: exec_meth_take_xt simp add: compxE2_size_convs)
 
 lemma exec_move_FAssI2:
-  assumes exec: "exec_move P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (e1\<bullet>F{D} := e2) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
+  assumes exec: "exec_move ci P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (e1\<bullet>F{D} := e2) h (stk @ [v], loc, length (compE2 e1) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e1) + pc', xcp')"
 proof -
-  from exec have "exec_meth (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_move_def .
   from exec_meth_stk_offer[OF this, where stk''="[v]"] show ?thesis
     by(fastsimp intro: append_exec_meth_xt simp add: exec_move_def compxE2_size_convs compxE2_stack_xlift_convs)
 qed
 
 lemma exec_move_CallI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (e\<bullet>M(es)) h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (e\<bullet>M(es)) h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_Call1:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (e\<bullet>M(es)) h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (e\<bullet>M(es)) h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def
-by(auto intro!: ext intro: exec_meth_take_xt simp add: compxE2_size_convs)
+by(auto intro!: ext intro: exec_meth_take_xt simp add: compxEs2_size_convs)
 
 lemma exec_move_CallI2:
-  assumes exec: "exec_moves P es h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (e\<bullet>M(es)) h (stk @ [v], loc, length (compE2 e) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e) + pc', xcp')"
+  assumes exec: "exec_moves ci P es h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (e\<bullet>M(es)) h (stk @ [v], loc, length (compE2 e) + pc, xcp) ta h' (stk' @ [v], loc', length (compE2 e) + pc', xcp')"
 proof -
-  from exec have "exec_meth (compP2 P) (compEs2 es) (compxEs2 es 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compEs2 es) (compxEs2 es 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_moves_def .
   from exec_meth_stk_offer[OF this, where stk''="[v]"] show ?thesis
     by(fastsimp intro: append_exec_meth_xt simp add: exec_move_def compxEs2_size_convs compxEs2_stack_xlift_convs)
 qed
 
 lemma exec_move_BlockNoneI:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P {V:T=None; e}\<^bsub>cr\<^esub> h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P {V:T=None; e} h s ta h' s'"
 unfolding exec_move_def by simp
 
 lemma exec_move_BlockNone:
-  "exec_move P {V:T=None; e}\<^bsub>cr\<^esub> = exec_move P e"
+  "exec_move ci P {V:T=None; e} = exec_move ci P e"
 unfolding exec_move_def by(simp)
 
 lemma exec_move_BlockSomeI:
-  assumes exec: "exec_move P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P {V:T=\<lfloor>v\<rfloor>; e}\<^bsub>cr\<^esub> h (stk, loc, Suc (Suc pc), xcp) ta h' (stk', loc', Suc (Suc pc'), xcp')"
+  assumes exec: "exec_move ci P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P {V:T=\<lfloor>v\<rfloor>; e} h (stk, loc, Suc (Suc pc), xcp) ta h' (stk', loc', Suc (Suc pc'), xcp')"
 proof -
   let ?ins = "[Push v, Store V]"
-  from exec have "exec_meth (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(simp add: exec_move_def)
-  hence "exec_meth (compP2 P) (?ins @ compE2 e) (shift (length ?ins) (compxE2 e 0 0)) h (stk, loc, length ?ins + pc, xcp) ta h' (stk', loc', length ?ins + pc', xcp')"
+  hence "exec_meth ci (compP2 P) (?ins @ compE2 e) (shift (length ?ins) (compxE2 e 0 0)) h (stk, loc, length ?ins + pc, xcp) ta h' (stk', loc', length ?ins + pc', xcp')"
     by(rule append_exec_meth) auto
   thus ?thesis by(simp add: exec_move_def shift_compxE2)
 qed
 
 lemma exec_move_BlockSome:
-  "exec_move P {V:T=\<lfloor>v\<rfloor>; e}\<^bsub>cr\<^esub> h (stk, loc, Suc (Suc pc), xcp) ta h' (stk', loc', Suc (Suc pc'), xcp') =
-   exec_move P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')" (is "?lhs = ?rhs")
+  "exec_move ci P {V:T=\<lfloor>v\<rfloor>; e} h (stk, loc, Suc (Suc pc), xcp) ta h' (stk', loc', Suc (Suc pc'), xcp') =
+   exec_move ci P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')" (is "?lhs = ?rhs")
 proof
   assume ?rhs thus ?lhs by(rule exec_move_BlockSomeI)
 next
   let ?ins = "[Push v, Store V]"
   assume ?lhs
-  hence "exec_meth (compP2 P) (?ins @ compE2 e) (shift (length ?ins) (compxE2 e 0 0)) h (stk, loc, length ?ins + pc, xcp) ta h' (stk', loc', length ?ins + pc', xcp')"
+  hence "exec_meth ci (compP2 P) (?ins @ compE2 e) (shift (length ?ins) (compxE2 e 0 0)) h (stk, loc, length ?ins + pc, xcp) ta h' (stk', loc', length ?ins + pc', xcp')"
     by(simp add: exec_move_def shift_compxE2)
-  hence "exec_meth (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', length ?ins + pc' - length ?ins, xcp')"
+  hence "exec_meth ci (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', length ?ins + pc' - length ?ins, xcp')"
     by(rule exec_meth_drop) auto
   thus ?rhs by(simp add: exec_move_def)
 qed
 
 lemma exec_move_SyncI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (sync\<^bsub>V\<^esub> (e) e') h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (sync\<^bsub>V\<^esub> (e) e') h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_Sync1:
   assumes pc: "pc < length (compE2 e)"
-  shows "exec_move P (sync\<^bsub>V\<^esub> (e) e') h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  shows "exec_move ci P (sync\<^bsub>V\<^esub> (e) e') h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
   (is "?lhs = ?rhs")
 proof(rule ext iffI)+
   fix ta h' s'
   assume "?lhs ta h' s'"
-  hence "exec_meth (compP2 P) (compE2 e @ Store V # Load V # MEnter # compE2 e' @ [Load V, MExit, Goto 4, Load V, MExit, Throw])
-                   (compxE2 e 0 0 @ shift (length (compE2 e)) (compxE2 e' 3 0 @ [(3, 3 + length (compE2 e'), Throwable, 6 + length (compE2 e'), 0)]))
+  hence "exec_meth ci (compP2 P) (compE2 e @ Store V # Load V # MEnter # compE2 e' @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
+                   (compxE2 e 0 0 @ shift (length (compE2 e)) (compxE2 e' 3 0 @ [(3, 3 + length (compE2 e'), None, 6 + length (compE2 e'), 0)]))
                    h (stk, loc, pc, xcp) ta h' s'"
     by(simp add: shift_compxE2 add_ac exec_move_def)
   thus "?rhs ta h' s'" unfolding exec_move_def using pc by(rule exec_meth_take_xt)
 qed(rule exec_move_SyncI1)
 
 lemma exec_move_SyncI2:
-  assumes exec: "exec_move P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (sync\<^bsub>V\<^esub> (o') e) h (stk, loc, (Suc (Suc (Suc (length (compE2 o') + pc)))), xcp) ta h' (stk', loc', (Suc (Suc (Suc (length (compE2 o') + pc')))), xcp')"
+  assumes exec: "exec_move ci P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (sync\<^bsub>V\<^esub> (o') e) h (stk, loc, (Suc (Suc (Suc (length (compE2 o') + pc)))), xcp) ta h' (stk', loc', (Suc (Suc (Suc (length (compE2 o') + pc')))), xcp')"
 proof -
   let ?e = "compE2 o' @ [Store V, Load V, MEnter]"
-  let ?e' = "[Load V, MExit, Goto 4, Load V, MExit, Throw]"
-  from exec have "exec_meth (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  let ?e' = "[Load V, MExit, Goto 4, Load V, MExit, ThrowExc]"
+  from exec have "exec_meth ci (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(simp add: exec_move_def)
-  hence "exec_meth (compP2 P) ((?e @ compE2 e) @ ?e') ((compxE2 o' 0 0 @ shift (length ?e) (compxE2 e 0 0)) @ [(length ?e, length ?e + length (compE2 e), Throwable, length ?e + length (compE2 e) + 3, 0)]) h (stk, loc, (length ?e + pc), xcp) ta h' (stk', loc', (length ?e + pc'), xcp')"
+  hence "exec_meth ci (compP2 P) ((?e @ compE2 e) @ ?e') ((compxE2 o' 0 0 @ shift (length ?e) (compxE2 e 0 0)) @ [(length ?e, length ?e + length (compE2 e), None, length ?e + length (compE2 e) + 3, 0)]) h (stk, loc, (length ?e + pc), xcp) ta h' (stk', loc', (length ?e + pc'), xcp')"
     by(rule exec_meth_append_xt[OF append_exec_meth_xt]) auto
   thus ?thesis by(simp add: nat_number shift_compxE2 exec_move_def)
 qed
 
 lemma exec_move_SeqI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (e;;e') h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (e;;e') h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_Seq1:
   assumes pc: "pc < length (compE2 e)"
-  shows "exec_move P (e;;e') h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  shows "exec_move ci P (e;;e') h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
   (is "?lhs = ?rhs")
 proof(rule ext iffI)+
   fix ta h' s'
   assume "?lhs ta h' s'"
-  hence "exec_meth (compP2 P) (compE2 e @ Pop # compE2 e') (compxE2 e 0 0 @ shift (length (compE2 e)) (compxE2 e' (Suc 0) 0)) h (stk, loc, pc, xcp) ta h' s'"
+  hence "exec_meth ci (compP2 P) (compE2 e @ Pop # compE2 e') (compxE2 e 0 0 @ shift (length (compE2 e)) (compxE2 e' (Suc 0) 0)) h (stk, loc, pc, xcp) ta h' s'"
     by(simp add: exec_move_def shift_compxE2)
   thus "?rhs ta h' s'" unfolding exec_move_def using pc by(rule exec_meth_take_xt)
 qed(rule exec_move_SeqI1)
 
 lemma exec_move_SeqI2:
-  assumes exec: "exec_move P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc' ,xcp')"
-  shows "exec_move P (e';;e) h (stk, loc, (Suc (length (compE2 e') + pc)), xcp) ta h' (stk', loc', (Suc (length (compE2 e') + pc')), xcp')"
+  assumes exec: "exec_move ci P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc' ,xcp')"
+  shows "exec_move ci P (e';;e) h (stk, loc, (Suc (length (compE2 e') + pc)), xcp) ta h' (stk', loc', (Suc (length (compE2 e') + pc')), xcp')"
 proof -
-  from exec have "exec_meth (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(simp add: exec_move_def)
-  hence "exec_meth (compP2 P) ((compE2 e' @ [Pop]) @ compE2 e) (compxE2 e' 0 0 @ shift (length (compE2 e' @ [Pop])) (compxE2 e 0 0)) h (stk, loc, (length ((compE2 e') @ [Pop]) + pc), xcp) ta h' (stk', loc', (length ((compE2 e') @ [Pop]) + pc'), xcp')"
+  hence "exec_meth ci (compP2 P) ((compE2 e' @ [Pop]) @ compE2 e) (compxE2 e' 0 0 @ shift (length (compE2 e' @ [Pop])) (compxE2 e 0 0)) h (stk, loc, (length ((compE2 e') @ [Pop]) + pc), xcp) ta h' (stk', loc', (length ((compE2 e') @ [Pop]) + pc'), xcp')"
     by(rule append_exec_meth_xt) auto
   thus ?thesis by(simp add: shift_compxE2 exec_move_def)
 qed
 
 lemma exec_move_Seq2:
   assumes pc: "pc < length (compE2 e)"
-  shows "exec_move P (e';;e) h (stk, loc, Suc (length (compE2 e') + pc), xcp) ta
-                             h' (stk', loc', Suc (length (compE2 e') + pc'), xcp') =
-         exec_move P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (e';;e) h (stk, loc, Suc (length (compE2 e') + pc), xcp) ta
+                                h' (stk', loc', Suc (length (compE2 e') + pc'), xcp') =
+         exec_move ci P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
   (is "?lhs = ?rhs")
 proof
   let ?E = "compE2 e' @ [Pop]"
   assume ?lhs
-  hence "exec_meth (compP2 P) (?E @ compE2 e) (compxE2 e' 0 0 @ shift (length ?E) (compxE2 e 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
+  hence "exec_meth ci (compP2 P) (?E @ compE2 e) (compxE2 e' 0 0 @ shift (length ?E) (compxE2 e 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
     by(simp add: exec_move_def shift_compxE2)
   from exec_meth_drop_xt[OF this] show ?rhs unfolding exec_move_def by fastsimp
 qed(rule exec_move_SeqI2)
 
 lemma exec_move_CondI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (if (e) e1 else e2) h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (if (e) e1 else e2) h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_Cond1:
   assumes pc: "pc < length (compE2 e)"
-  shows "exec_move P (if (e) e1 else e2) h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  shows "exec_move ci P (if (e) e1 else e2) h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
   (is "?lhs = ?rhs")
 proof(rule ext iffI)+
   let ?E = "IfFalse (2 + int (length (compE2 e1))) # compE2 e1 @ Goto (1 + int (length (compE2 e2))) # compE2 e2"
   let ?xt = "compxE2 e1 (Suc 0) 0 @ compxE2 e2 (Suc (Suc (length (compE2 e1)))) 0"
   fix ta h' s'
   assume "?lhs ta h' s'"
-  hence "exec_meth (compP2 P) (compE2 e @ ?E) (compxE2 e 0 0 @ shift (length (compE2 e)) ?xt) h (stk, loc, pc, xcp) ta h' s'"
+  hence "exec_meth ci (compP2 P) (compE2 e @ ?E) (compxE2 e 0 0 @ shift (length (compE2 e)) ?xt) h (stk, loc, pc, xcp) ta h' s'"
     by(simp add: exec_move_def shift_compxE2 add_ac)
   thus "?rhs ta h' s'" unfolding exec_move_def using pc by(rule exec_meth_take_xt)
 qed(rule exec_move_CondI1)
 
 lemma exec_move_CondI2:
-  assumes exec: "exec_move P e1 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (if (e) e1 else e2) h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) ta h' (stk', loc', (Suc (length (compE2 e) + pc')), xcp')"
+  assumes exec: "exec_move ci P e1 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (if (e) e1 else e2) h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) ta h' (stk', loc', (Suc (length (compE2 e) + pc')), xcp')"
 proof -
-  from exec have "exec_meth (compP2 P) (compE2 e1) (compxE2 e1 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e1) (compxE2 e1 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(simp add: exec_move_def)
-  hence "exec_meth (compP2 P) (((compE2 e @ [IfFalse (2 + int (length (compE2 e1)))]) @ compE2 e1) @ Goto (1 + int (length (compE2 e2))) # compE2 e2) ((compxE2 e 0 0 @ shift (length (compE2 e @ [IfFalse (2 + int (length (compE2 e1)))])) (compxE2 e1 0 0)) @ (compxE2 e2 (Suc (Suc (length (compE2 e) + length (compE2 e1)))) 0)) h (stk, loc, (length (compE2 e @ [IfFalse (2 + int (length (compE2 e1)))]) + pc), xcp) ta h' (stk', loc', (length (compE2 e @ [IfFalse (2 + int (length (compE2 e1)))]) + pc'), xcp')"
+  hence "exec_meth ci (compP2 P) (((compE2 e @ [IfFalse (2 + int (length (compE2 e1)))]) @ compE2 e1) @ Goto (1 + int (length (compE2 e2))) # compE2 e2) ((compxE2 e 0 0 @ shift (length (compE2 e @ [IfFalse (2 + int (length (compE2 e1)))])) (compxE2 e1 0 0)) @ (compxE2 e2 (Suc (Suc (length (compE2 e) + length (compE2 e1)))) 0)) h (stk, loc, (length (compE2 e @ [IfFalse (2 + int (length (compE2 e1)))]) + pc), xcp) ta h' (stk', loc', (length (compE2 e @ [IfFalse (2 + int (length (compE2 e1)))]) + pc'), xcp')"
     by -(rule exec_meth_append_xt, rule append_exec_meth_xt, auto)
   thus ?thesis by(simp add: shift_compxE2 exec_move_def)
 qed
 
 lemma exec_move_Cond2:
   assumes pc: "pc < length (compE2 e1)"
-  shows "exec_move P (if (e) e1 else e2) h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) ta h' (stk', loc', (Suc (length (compE2 e) + pc')), xcp') = exec_move P e1 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (if (e) e1 else e2) h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) ta h' (stk', loc', (Suc (length (compE2 e) + pc')), xcp') = exec_move ci P e1 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
   (is "?lhs = ?rhs")
 proof
   let ?E1 = "compE2 e @ [IfFalse (2 + int (length (compE2 e1)))]"
   let ?E2 = "Goto (1 + int (length (compE2 e2))) # compE2 e2"
   assume ?lhs
-  hence "exec_meth (compP2 P) (?E1 @ compE2 e1 @ ?E2) (compxE2 e 0 0 @ shift (length ?E1) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (compxE2 e2 (Suc 0) 0))) h (stk, loc, length ?E1 + pc, xcp) ta h' (stk', loc', length ?E1 + pc', xcp')"
+  hence "exec_meth ci (compP2 P) (?E1 @ compE2 e1 @ ?E2) (compxE2 e 0 0 @ shift (length ?E1) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (compxE2 e2 (Suc 0) 0))) h (stk, loc, length ?E1 + pc, xcp) ta h' (stk', loc', length ?E1 + pc', xcp')"
     by(simp add: exec_move_def shift_compxE2 add_ac)
   thus ?rhs unfolding exec_move_def
     by -(rule exec_meth_take_xt,drule exec_meth_drop_xt,auto simp add: pc)
 qed(rule exec_move_CondI2)
 
 lemma exec_move_CondI3:
-  assumes exec: "exec_move P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (if (e) e1 else e2) h (stk, loc, Suc (Suc (length (compE2 e) + length (compE2 e1) + pc)), xcp) ta h' (stk', loc', Suc (Suc (length (compE2 e) + length (compE2 e1) + pc')), xcp')"
+  assumes exec: "exec_move ci P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (if (e) e1 else e2) h (stk, loc, Suc (Suc (length (compE2 e) + length (compE2 e1) + pc)), xcp) ta h' (stk', loc', Suc (Suc (length (compE2 e) + length (compE2 e1) + pc')), xcp')"
 proof -
   let ?E = "compE2 e @ IfFalse (2 + int (length (compE2 e1))) # compE2 e1 @ [Goto (1 + int (length (compE2 e2)))]"
   let ?xt = "compxE2 e 0 0 @ compxE2 e1 (Suc (length (compE2 e))) 0"
-  from exec have "exec_meth (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e2) (compxE2 e2 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(simp add: exec_move_def)
-  hence "exec_meth (compP2 P) (?E @ compE2 e2) (?xt @ shift (length ?E) (compxE2 e2 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
+  hence "exec_meth ci (compP2 P) (?E @ compE2 e2) (?xt @ shift (length ?E) (compxE2 e2 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
     by(rule append_exec_meth_xt) auto
   thus ?thesis by(simp add: shift_compxE2 exec_move_def)
 qed
 
 lemma exec_move_Cond3:
-  "exec_move P (if (e) e1 else e2) h (stk, loc, Suc (Suc (length (compE2 e) + length (compE2 e1) + pc)), xcp) ta
-                                   h' (stk', loc', Suc (Suc (length (compE2 e) + length (compE2 e1) + pc')), xcp') =
-   exec_move P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  "exec_move ci P (if (e) e1 else e2) h (stk, loc, Suc (Suc (length (compE2 e) + length (compE2 e1) + pc)), xcp) ta
+                                      h' (stk', loc', Suc (Suc (length (compE2 e) + length (compE2 e1) + pc')), xcp') =
+   exec_move ci P e2 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
   (is "?lhs = ?rhs")
 proof
   let ?E = "compE2 e @ IfFalse (2 + int (length (compE2 e1))) # compE2 e1 @ [Goto (1 + int (length (compE2 e2)))]"
   let ?xt = "compxE2 e 0 0 @ compxE2 e1 (Suc (length (compE2 e))) 0"
   assume ?lhs
-  hence "exec_meth (compP2 P) (?E @ compE2 e2) (?xt @ shift (length ?E) (compxE2 e2 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
+  hence "exec_meth ci (compP2 P) (?E @ compE2 e2) (?xt @ shift (length ?E) (compxE2 e2 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
     by(simp add: shift_compxE2 exec_move_def)
   thus ?rhs unfolding exec_move_def by -(drule exec_meth_drop_xt, auto)
 qed(rule exec_move_CondI3)
 
 lemma exec_move_WhileI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (while (e) e') h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (while (e) e') h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_While1:
   assumes pc: "pc < length (compE2 e)"
-  shows "exec_move P (while (e) e') h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  shows "exec_move ci P (while (e) e') h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
   (is "?lhs = ?rhs")
 proof(rule ext iffI)+
   let ?E = "IfFalse (3 + int (length (compE2 e'))) # compE2 e' @ [Pop, Goto (- int (length (compE2 e)) + (-2 - int (length (compE2 e')))), Push Unit]"
   let ?xt = "compxE2 e' (Suc 0) 0"
   fix ta h' s'
   assume "?lhs ta h' s'"
-  hence "exec_meth (compP2 P) (compE2 e @ ?E) (compxE2 e 0 0 @ shift (length (compE2 e)) ?xt) h (stk, loc, pc, xcp) ta h' s'"
+  hence "exec_meth ci (compP2 P) (compE2 e @ ?E) (compxE2 e 0 0 @ shift (length (compE2 e)) ?xt) h (stk, loc, pc, xcp) ta h' s'"
     by(simp add: exec_move_def shift_compxE2 add_ac)
   thus "?rhs ta h' s'" unfolding exec_move_def using pc by(rule exec_meth_take_xt)
 qed(rule exec_move_WhileI1)
 
 lemma exec_move_WhileI2:
-  assumes exec: "exec_move P e1 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (while (e) e1) h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) ta h' (stk', loc', (Suc (length (compE2 e) + pc')), xcp')"
+  assumes exec: "exec_move ci P e1 h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (while (e) e1) h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) ta h' (stk', loc', (Suc (length (compE2 e) + pc')), xcp')"
 proof -
   let ?E = "compE2 e @ [IfFalse (3 + int (length (compE2 e1)))]"
   let ?E' = "[Pop, Goto (- int (length (compE2 e)) + (-2 - int (length (compE2 e1)))), Push Unit]"
-  from exec have "exec_meth (compP2 P) (compE2 e1) (compxE2 e1 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e1) (compxE2 e1 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(simp add: exec_move_def)
-  hence "exec_meth (compP2 P) ((?E @ compE2 e1) @ ?E') (compxE2 e 0 0 @ shift (length ?E) (compxE2 e1 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
+  hence "exec_meth ci (compP2 P) ((?E @ compE2 e1) @ ?E') (compxE2 e 0 0 @ shift (length ?E) (compxE2 e1 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
     by -(rule exec_meth_append, rule append_exec_meth_xt, auto)
   thus ?thesis by(simp add: shift_compxE2 exec_move_def add_ac)
 qed
 
 lemma exec_move_While2:
   assumes pc: "pc < length (compE2 e')"
-  shows "exec_move P (while (e) e') h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) ta
+  shows "exec_move ci P (while (e) e') h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) ta
                                     h' (stk', loc', (Suc (length (compE2 e) + pc')), xcp') =
-         exec_move P e' h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+         exec_move ci P e' h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
   (is "?lhs = ?rhs")
 proof
   let ?E = "compE2 e @ [IfFalse (3 + int (length (compE2 e')))]"
   let ?E' = "[Pop, Goto (- int (length (compE2 e)) + (-2 - int (length (compE2 e')))), Push Unit]"
   assume ?lhs
-  hence "exec_meth (compP2 P) ((?E @ compE2 e') @ ?E') (compxE2 e 0 0 @ shift (length ?E) (compxE2 e' 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
+  hence "exec_meth ci (compP2 P) ((?E @ compE2 e') @ ?E') (compxE2 e 0 0 @ shift (length ?E) (compxE2 e' 0 0)) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
     by(simp add: exec_move_def shift_compxE2 add_ac)
   thus ?rhs unfolding exec_move_def using pc
     by -(drule exec_meth_take, simp, drule exec_meth_drop_xt, auto)
 qed(rule exec_move_WhileI2)
 
 lemma exec_move_ThrowI:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (throw e) h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (throw e) h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_Throw:
-  "pc < length (compE2 e) \<Longrightarrow> exec_move P (throw e) h (stk, loc, pc, xcp) = exec_move P e h (stk, loc, pc, xcp)"
+  "pc < length (compE2 e) \<Longrightarrow> exec_move ci P (throw e) h (stk, loc, pc, xcp) = exec_move ci P e h (stk, loc, pc, xcp)"
 unfolding exec_move_def by(auto intro!: ext intro: exec_meth_take)
 
 lemma exec_move_TryI1:
-  "exec_move P e h s ta h' s' \<Longrightarrow> exec_move P (try e catch(C V) e') h s ta h' s'"
+  "exec_move ci P e h s ta h' s' \<Longrightarrow> exec_move ci P (try e catch(C V) e') h s ta h' s'"
 unfolding exec_move_def by auto
 
 lemma exec_move_TryI2:
-  assumes exec: "exec_move P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_move P (try e' catch(C V) e) h (stk, loc, Suc (Suc (length (compE2 e') + pc)), xcp) ta h' (stk', loc', Suc (Suc (length (compE2 e') + pc')), xcp')"
+  assumes exec: "exec_move ci P e h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_move ci P (try e' catch(C V) e) h (stk, loc, Suc (Suc (length (compE2 e') + pc)), xcp) ta h' (stk', loc', Suc (Suc (length (compE2 e') + pc')), xcp')"
 proof -
   let ?e = "compE2 e' @ [Goto (int(size (compE2 e))+2), Store V]"
-  from exec have "exec_meth (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compE2 e) (compxE2 e 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(simp add: exec_move_def)
-  hence "exec_meth (compP2 P) ((?e @ compE2 e) @ []) ((compxE2 e' 0 0 @ shift (length ?e) (compxE2 e 0 0)) @ [(0, length (compE2 e'), C, Suc (length (compE2 e')), 0)]) h (stk, loc, (length ?e + pc), xcp) ta h' (stk', loc', (length ?e + pc'), xcp')"
+  hence "exec_meth ci (compP2 P) ((?e @ compE2 e) @ []) ((compxE2 e' 0 0 @ shift (length ?e) (compxE2 e 0 0)) @ [(0, length (compE2 e'), \<lfloor>C\<rfloor>, Suc (length (compE2 e')), 0)]) h (stk, loc, (length ?e + pc), xcp) ta h' (stk', loc', (length ?e + pc'), xcp')"
     by(rule exec_meth_append_xt[OF append_exec_meth_xt]) auto
   thus ?thesis by(simp add: nat_number shift_compxE2 exec_move_def)
 qed
 
 lemma exec_move_Try2:
-  "exec_move P (try e catch(C V) e') h (stk, loc, Suc (Suc (length (compE2 e) + pc)), xcp) ta
+  "exec_move ci P (try e catch(C V) e') h (stk, loc, Suc (Suc (length (compE2 e) + pc)), xcp) ta
                                      h' (stk', loc', Suc (Suc (length (compE2 e) + pc')), xcp') =
-   exec_move P e' h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+   exec_move ci P e' h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
   (is "?lhs = ?rhs")
 proof
   let ?E = "compE2 e @ [Goto (int(size (compE2 e'))+2), Store V]"
-  let ?xt = "[(0, length (compE2 e), C, Suc (length (compE2 e)), 0)]"
+  let ?xt = "[(0, length (compE2 e), \<lfloor>C\<rfloor>, Suc (length (compE2 e)), 0)]"
   assume lhs: ?lhs
   hence pc: "pc < length (compE2 e')"
     by(fastsimp elim!: exec_meth.cases simp add: exec_move_def match_ex_table_append match_ex_entry dest: match_ex_table_pcsD)
-  from lhs have "exec_meth (compP2 P) ((?E @ compE2 e') @ []) ((compxE2 e 0 0 @ shift (length ?E) (compxE2 e' 0 0)) @ ?xt) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
+  from lhs have "exec_meth ci (compP2 P) ((?E @ compE2 e') @ []) ((compxE2 e 0 0 @ shift (length ?E) (compxE2 e' 0 0)) @ ?xt) h (stk, loc, length ?E + pc, xcp) ta h' (stk', loc', length ?E + pc', xcp')"
     by(simp add: exec_move_def shift_compxE2 add_ac)
   thus ?rhs unfolding exec_move_def using pc
     by-(drule exec_meth_drop_xt[OF exec_meth_take_xt'], auto)
 qed(rule exec_move_TryI2)
 
 
-inductive \<tau>Exec_move :: "J1_prog \<Rightarrow> expr1 \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-  for P :: "J1_prog" and e :: "expr1" and h :: heap
-  where
-  \<tau>Exec_refl: "\<tau>Exec_move P e h s s"
+definition \<tau>exec_meth :: "check_instr \<Rightarrow> jvm_prog \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+where "\<tau>exec_meth ci P ins xt h s s' \<longleftrightarrow> exec_meth ci P ins xt h s \<epsilon> h s' \<and> (snd (snd (snd s)) = None \<longrightarrow> \<tau>instr P h (fst s) (ins ! fst (snd (snd s))))"
 
-| \<tau>Exec_step:
-  "\<lbrakk> \<tau>Exec_move P e h s (stk', loc', pc', xcp');
-     exec_move P e h (stk', loc', pc', xcp') \<epsilon> h s';
-     \<tau>move2 e pc' xcp' \<rbrakk>
-  \<Longrightarrow> \<tau>Exec_move P e h s s'"
+abbreviation \<tau>exec_meth_a
+where "\<tau>exec_meth_a \<equiv> \<tau>exec_meth (Abs_check_instr check_instr')"
 
-lemmas \<tau>Exec1step = \<tau>Exec_step[OF \<tau>Exec_refl]
-lemmas \<tau>Exec2step = \<tau>Exec_step[OF \<tau>Exec_step, OF \<tau>Exec_refl]
-lemmas \<tau>Exec3step = \<tau>Exec_step[OF \<tau>Exec_step, OF \<tau>Exec_step, OF \<tau>Exec_refl]
+abbreviation \<tau>exec_meth_d
+where "\<tau>exec_meth_d \<equiv> \<tau>exec_meth (Abs_check_instr check_instr)"
 
-lemma \<tau>Exec_move_rtrancl:
-  "\<tau>Exec_move P e h = (\<lambda>(stk, loc, pc, xcp) s'. exec_move P e h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>move2 e pc xcp)^**"
-  (is "?lhs = ?rhs")
-proof((rule ext)+, rule iffI)
-  fix s s' assume "?lhs s s'" thus "?rhs s s'"
-    by(induct rule: \<tau>Exec_move.induct)(auto elim: rtranclp.rtrancl_into_rtrancl)
-next
-  fix s s' assume "?rhs s s'" thus "?lhs s s'"
-    by(induct rule: rtranclp.induct)(auto intro: \<tau>Exec_move.intros)
-qed
+lemma \<tau>exec_methI [intro]:
+  "\<lbrakk> exec_meth ci P ins xt h (stk, loc, pc, xcp) \<epsilon> h s'; xcp = None \<Longrightarrow> \<tau>instr P h stk (ins ! pc) \<rbrakk>
+   \<Longrightarrow> \<tau>exec_meth ci P ins xt h (stk, loc, pc, xcp) s'"
+by(simp add: \<tau>exec_meth_def)
 
-lemmas \<tau>Exec_move_induct = rtranclp_induct[where r="\<lambda>(stk, loc, pc, xcp) s'. exec_move P e h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>move2 e pc xcp", folded \<tau>Exec_move_rtrancl, simplified split_paired_all split_beta fst_conv snd_conv, standard, consumes 1, case_names refl step]
+lemma \<tau>exec_methE [elim]:
+  assumes "\<tau>exec_meth ci P ins xt h s s'"
+  obtains stk loc pc xcp
+  where "s = (stk, loc, pc, xcp)"
+  and "exec_meth ci P ins xt h (stk, loc, pc, xcp) \<epsilon> h s'"
+  and "xcp = None \<Longrightarrow> \<tau>instr P h stk (ins ! pc)"
+using assms
+by(cases s)(auto simp add: \<tau>exec_meth_def)
 
-lemma \<tau>Exec_move_trans [trans]: 
-  "\<lbrakk> \<tau>Exec_move P e h s s'; \<tau>Exec_move P e h s' s'' \<rbrakk> \<Longrightarrow> \<tau>Exec_move P e h s s''"
-unfolding \<tau>Exec_move_rtrancl
+abbreviation \<tau>Exec_methr :: "check_instr \<Rightarrow> jvm_prog \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+where
+  "\<tau>Exec_methr ci P ins xt h == (\<tau>exec_meth ci P ins xt h)^**"
+
+abbreviation \<tau>Exec_metht :: "check_instr \<Rightarrow> jvm_prog \<Rightarrow> instr list \<Rightarrow> ex_table \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+where
+  "\<tau>Exec_metht ci P ins xt h == (\<tau>exec_meth ci P ins xt h)^++"
+
+abbreviation \<tau>Exec_methr_a
+where "\<tau>Exec_methr_a \<equiv> \<tau>Exec_methr (Abs_check_instr check_instr')"
+
+abbreviation \<tau>Exec_methr_d
+where "\<tau>Exec_methr_d \<equiv> \<tau>Exec_methr (Abs_check_instr check_instr)"
+
+abbreviation \<tau>Exec_metht_a
+where "\<tau>Exec_metht_a \<equiv> \<tau>Exec_metht (Abs_check_instr check_instr')"
+
+abbreviation \<tau>Exec_metht_d
+where "\<tau>Exec_metht_d \<equiv> \<tau>Exec_metht (Abs_check_instr check_instr)"
+
+lemma  \<tau>Exec_methr_refl: "\<tau>Exec_methr ci P ins xt h s s" ..
+
+lemma \<tau>Exec_methr_step':
+  "\<lbrakk> \<tau>Exec_methr ci P ins xt h s (stk', loc', pc', xcp');
+     \<tau>exec_meth ci P ins xt h (stk', loc', pc', xcp') s' \<rbrakk>
+  \<Longrightarrow> \<tau>Exec_methr ci P ins xt h s s'"
+by(rule rtranclp.rtrancl_into_rtrancl)
+
+lemma \<tau>Exec_methr_step:
+  "\<lbrakk> \<tau>Exec_methr ci P ins xt h s (stk', loc', pc', xcp');
+     exec_meth ci P ins xt h (stk', loc', pc', xcp') \<epsilon> h s';
+     xcp' = None \<Longrightarrow> \<tau>instr P h stk' (ins ! pc') \<rbrakk>
+  \<Longrightarrow> \<tau>Exec_methr ci P ins xt h s s'"
+by(erule \<tau>Exec_methr_step')(rule \<tau>exec_methI)
+
+lemmas \<tau>Exec_methr_intros = \<tau>Exec_methr_refl \<tau>Exec_methr_step
+lemmas \<tau>Exec_methr1step = \<tau>Exec_methr_step[OF \<tau>Exec_methr_refl]
+lemmas \<tau>Exec_methr2step = \<tau>Exec_methr_step[OF \<tau>Exec_methr_step, OF \<tau>Exec_methr_refl]
+lemmas \<tau>Exec_methr3step = \<tau>Exec_methr_step[OF \<tau>Exec_methr_step, OF \<tau>Exec_methr_step, OF \<tau>Exec_methr_refl]
+
+lemma \<tau>Exec_methr_cases [consumes 1, case_names refl step]:
+  assumes "\<tau>Exec_methr ci P ins xt h s s'"
+  obtains "s = s'"
+  | stk' loc' pc' xcp'
+    where "\<tau>Exec_methr ci P ins xt h s (stk', loc', pc', xcp')"
+       "exec_meth ci P ins xt h (stk', loc', pc', xcp') \<epsilon> h s'"
+       "xcp' = None \<Longrightarrow> \<tau>instr P h stk' (ins ! pc')"
+using assms
+by(rule rtranclp.cases)(auto elim!: \<tau>exec_methE)
+
+lemma \<tau>Exec_methr_induct [consumes 1, case_names refl step]:
+  "\<lbrakk> \<tau>Exec_methr ci P ins xt h s s';
+     Q s;
+     \<And>stk loc pc xcp s'. \<lbrakk> \<tau>Exec_methr ci P ins xt h s (stk, loc, pc, xcp); exec_meth ci P ins xt h (stk, loc, pc, xcp) \<epsilon> h s';
+                          xcp = None \<Longrightarrow> \<tau>instr P h stk (ins ! pc); Q (stk, loc, pc, xcp) \<rbrakk> \<Longrightarrow> Q s' \<rbrakk>
+  \<Longrightarrow> Q s'"
+by(erule (1) rtranclp_induct)(blast elim: \<tau>exec_methE)
+
+lemma \<tau>Exec_methr_trans: 
+  "\<lbrakk> \<tau>Exec_methr ci P ins xt h s s'; \<tau>Exec_methr ci P ins xt h s' s'' \<rbrakk> \<Longrightarrow> \<tau>Exec_methr ci P ins xt h s s''"
 by(rule rtranclp_trans)
 
-lemmas \<tau>Exec_move_induct_split = \<tau>Exec_move.induct[split_format (complete), consumes 1, case_names \<tau>Exec_refl \<tau>Exec_step]
+lemmas \<tau>Exec_meth_induct_split = \<tau>Exec_methr_induct[split_format (complete), consumes 1, case_names \<tau>Exec_refl \<tau>Exec_step]
 
-lemma \<tau>Exec_move_induct_None [consumes 1, case_names refl normal xcp]:
-  assumes major: "\<tau>Exec_move P e h (stk, loc, pc, None) (stk', loc', pc', xcp')"
-  and refl: "\<And>stk loc pc. Q stk loc pc stk loc pc"
-  and one: "\<And>stk loc pc stk' loc' pc' stk'' loc'' pc''.
-            \<lbrakk> \<tau>Exec_move P e h (stk, loc, pc, None) (stk', loc', pc', None);
-              exec_move P e h (stk', loc', pc', None) \<epsilon> h (stk'', loc'', pc'', None);
-              \<tau>move2 e pc' None;
-              Q stk loc pc stk' loc' pc' \<rbrakk>
-            \<Longrightarrow> Q stk loc pc stk'' loc'' pc''"
-  and xcp: "\<And>stk loc pc stk' loc' pc' a stk'' loc'' pc''.
-            \<lbrakk> \<tau>Exec_move P e h (stk, loc, pc, None) (stk', loc', pc', None);
-              exec_move P e h (stk', loc', pc', None) \<epsilon> h (stk', loc', pc', \<lfloor>a\<rfloor>);
-              exec_move P e h (stk', loc', pc', \<lfloor>a\<rfloor>) \<epsilon> h (stk'', loc'', pc'', None);
-              \<tau>move2 e pc' None; \<tau>move2 e pc' \<lfloor>a\<rfloor>;
-              Q stk loc pc stk' loc' pc' \<rbrakk>
-            \<Longrightarrow> Q stk loc pc stk'' loc'' pc''"
-  shows "Q stk loc pc stk' loc' pc'"
+lemma \<tau>Exec_methr_converse_cases [consumes 1, case_names refl step]:
+  assumes "\<tau>Exec_methr ci P ins xt h s s'"
+  obtains "s = s'"
+  | stk loc pc xcp s''
+    where "s = (stk, loc, pc, xcp)"
+       "exec_meth ci P ins xt h (stk, loc, pc, xcp) \<epsilon> h s''"
+       "xcp = None \<Longrightarrow> \<tau>instr P h stk (ins ! pc)"
+       "\<tau>Exec_methr ci P ins xt h s'' s'"
+using assms
+by(erule converse_rtranclpE)(blast elim: \<tau>exec_methE)
+
+definition \<tau>exec_move :: "check_instr \<Rightarrow> J1_prog \<Rightarrow> expr1 \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+where "\<tau>exec_move ci P e h = (\<lambda>(stk, loc, pc, xcp) s'. exec_move ci P e h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>move2 P h stk e pc xcp)"
+
+definition \<tau>exec_moves :: "check_instr \<Rightarrow> J1_prog \<Rightarrow> expr1 list \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
+where "\<tau>exec_moves ci P es h = (\<lambda>(stk, loc, pc, xcp) s'. exec_moves ci P es h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>moves2 P h stk es pc xcp)"
+
+lemma \<tau>exec_moveI:
+  "\<lbrakk> exec_move ci P e h (stk, loc, pc, xcp) \<epsilon> h s'; \<tau>move2 P h stk e pc xcp \<rbrakk> 
+  \<Longrightarrow> \<tau>exec_move ci P e h (stk, loc, pc, xcp) s'"
+by(simp add: \<tau>exec_move_def)
+
+lemma \<tau>exec_moveE:
+  assumes "\<tau>exec_move ci P e h (stk, loc, pc, xcp) s'"
+  obtains "exec_move ci P e h (stk, loc, pc, xcp) \<epsilon> h s'" "\<tau>move2 P h stk e pc xcp"
+using assms by(simp add: \<tau>exec_move_def)
+
+lemma \<tau>exec_movesI:
+  "\<lbrakk> exec_moves ci P es h (stk, loc, pc, xcp) \<epsilon> h s'; \<tau>moves2 P h stk es pc xcp \<rbrakk> 
+  \<Longrightarrow> \<tau>exec_moves ci P es h (stk, loc, pc, xcp) s'"
+by(simp add: \<tau>exec_moves_def)
+
+lemma \<tau>exec_movesE:
+  assumes "\<tau>exec_moves ci P es h (stk, loc, pc, xcp) s'"
+  obtains "exec_moves ci P es h (stk, loc, pc, xcp) \<epsilon> h s'" "\<tau>moves2 P h stk es pc xcp"
+using assms by(simp add: \<tau>exec_moves_def)
+
+lemma \<tau>exec_move_conv_\<tau>exec_meth:
+  "\<tau>exec_move ci P e = \<tau>exec_meth ci (compP2 P) (compE2 e) (compxE2 e 0 0)"
+by(auto simp add: \<tau>exec_move_def exec_move_def \<tau>move2_iff compP2_def intro!: ext \<tau>exec_methI elim!: \<tau>exec_methE)
+
+lemma \<tau>exec_moves_conv_\<tau>exec_meth:
+  "\<tau>exec_moves ci P es = \<tau>exec_meth ci (compP2 P) (compEs2 es) (compxEs2 es 0 0)"
+by(auto simp add: \<tau>exec_moves_def exec_moves_def \<tau>moves2_iff compP2_def intro!: ext \<tau>exec_methI elim!: \<tau>exec_methE)
+
+abbreviation \<tau>Exec_mover
+where "\<tau>Exec_mover ci P e h == (\<tau>exec_move ci P e h)^**"
+
+abbreviation \<tau>Exec_movet
+where "\<tau>Exec_movet ci P e h == (\<tau>exec_move ci P e h)^++"
+
+abbreviation \<tau>Exec_mover_a
+where "\<tau>Exec_mover_a \<equiv> \<tau>Exec_mover (Abs_check_instr check_instr')"
+
+abbreviation \<tau>Exec_mover_d
+where "\<tau>Exec_mover_d \<equiv> \<tau>Exec_mover (Abs_check_instr check_instr)"
+
+abbreviation \<tau>Exec_movet_a
+where "\<tau>Exec_movet_a \<equiv> \<tau>Exec_movet (Abs_check_instr check_instr')"
+
+abbreviation \<tau>Exec_movet_d
+where "\<tau>Exec_movet_d \<equiv> \<tau>Exec_movet (Abs_check_instr check_instr)"
+
+abbreviation \<tau>Exec_movesr
+where "\<tau>Exec_movesr ci P e h == (\<tau>exec_moves ci P e h)^**"
+
+abbreviation \<tau>Exec_movest
+where "\<tau>Exec_movest ci P e h == (\<tau>exec_moves ci P e h)^++"
+
+abbreviation \<tau>Exec_movesr_a
+where "\<tau>Exec_movesr_a \<equiv> \<tau>Exec_movesr (Abs_check_instr check_instr')"
+
+abbreviation \<tau>Exec_movesr_d
+where "\<tau>Exec_movesr_d \<equiv> \<tau>Exec_movesr (Abs_check_instr check_instr)"
+
+abbreviation \<tau>Exec_movest_a
+where "\<tau>Exec_movest_a \<equiv> \<tau>Exec_movest (Abs_check_instr check_instr')"
+
+abbreviation \<tau>Exec_movest_d
+where "\<tau>Exec_movest_d \<equiv> \<tau>Exec_movest (Abs_check_instr check_instr)"
+
+lemma \<tau>Execr_refl: "\<tau>Exec_mover ci P e h s s"
+by(rule rtranclp.rtrancl_refl)
+
+lemma \<tau>Execsr_refl: "\<tau>Exec_movesr ci P e h s s"
+by(rule rtranclp.rtrancl_refl)
+
+lemma \<tau>Execr_step: 
+  "\<lbrakk> \<tau>Exec_mover ci P e h s (stk', loc', pc', xcp');
+     exec_move ci P e h (stk', loc', pc', xcp') \<epsilon> h s';
+     \<tau>move2 P h stk' e pc' xcp' \<rbrakk>
+  \<Longrightarrow> \<tau>Exec_mover ci P e h s s'"
+by(rule rtranclp.rtrancl_into_rtrancl)(auto elim: \<tau>exec_moveI)
+
+lemma \<tau>Execsr_step: 
+  "\<lbrakk> \<tau>Exec_movesr ci P es h s (stk', loc', pc', xcp');
+     exec_moves ci P es h (stk', loc', pc', xcp') \<epsilon> h s';
+     \<tau>moves2 P h stk' es pc' xcp' \<rbrakk>
+  \<Longrightarrow> \<tau>Exec_movesr ci P es h s s'"
+by(rule rtranclp.rtrancl_into_rtrancl)(auto elim: \<tau>exec_movesI)
+
+lemma \<tau>Exect_step:
+  "\<lbrakk> \<tau>Exec_movet ci P e h s (stk', loc', pc', xcp');
+     exec_move ci P e h (stk', loc', pc', xcp') \<epsilon> h s';
+     \<tau>move2 P h stk' e pc' xcp' \<rbrakk>
+  \<Longrightarrow> \<tau>Exec_movet ci P e h s s'"
+by(rule tranclp.trancl_into_trancl)(auto intro: \<tau>exec_moveI)
+
+lemma \<tau>Execst_step:
+  "\<lbrakk> \<tau>Exec_movest ci P es h s (stk', loc', pc', xcp');
+     exec_moves ci P es h (stk', loc', pc', xcp') \<epsilon> h s';
+     \<tau>moves2 P h stk' es pc' xcp' \<rbrakk>
+  \<Longrightarrow> \<tau>Exec_movest ci P es h s s'"
+by(rule tranclp.trancl_into_trancl)(auto intro: \<tau>exec_movesI)
+
+lemmas \<tau>Execr1step = \<tau>Execr_step[OF \<tau>Execr_refl]
+lemmas \<tau>Execr2step = \<tau>Execr_step[OF \<tau>Execr_step, OF \<tau>Execr_refl]
+lemmas \<tau>Execr3step = \<tau>Execr_step[OF \<tau>Execr_step, OF \<tau>Execr_step, OF \<tau>Execr_refl]
+
+lemmas \<tau>Execsr1step = \<tau>Execsr_step[OF \<tau>Execsr_refl]
+lemmas \<tau>Execsr2step = \<tau>Execsr_step[OF \<tau>Execsr_step, OF \<tau>Execsr_refl]
+lemmas \<tau>Execsr3step = \<tau>Execsr_step[OF \<tau>Execsr_step, OF \<tau>Execsr_step, OF \<tau>Execsr_refl]
+
+lemma \<tau>Exect1step:
+  "\<lbrakk> exec_move ci P e h s \<epsilon> h s';
+     \<tau>move2 P h (fst s) e (fst (snd (snd s))) (snd (snd (snd s))) \<rbrakk>
+  \<Longrightarrow> \<tau>Exec_movet ci P e h s s'"
+by(rule tranclp.r_into_trancl)(cases s, auto intro: \<tau>exec_moveI)
+
+lemmas \<tau>Exect2step = \<tau>Exect_step[OF \<tau>Exect1step]
+lemmas \<tau>Exect3step = \<tau>Exect_step[OF \<tau>Exect_step, OF \<tau>Exect1step]
+
+lemma \<tau>Execst1step:
+  "\<lbrakk> exec_moves ci P es h s \<epsilon> h s';
+     \<tau>moves2 P h (fst s) es (fst (snd (snd s))) (snd (snd (snd s))) \<rbrakk>
+  \<Longrightarrow> \<tau>Exec_movest ci P es h s s'"
+by(rule tranclp.r_into_trancl)(cases s, auto intro: \<tau>exec_movesI)
+
+lemmas \<tau>Execst2step = \<tau>Execst_step[OF \<tau>Execst1step]
+lemmas \<tau>Execst3step = \<tau>Execst_step[OF \<tau>Execst_step, OF \<tau>Execst1step]
+
+
+lemma \<tau>Execr_induct [consumes 1, case_names refl step]:
+  assumes major: "\<tau>Exec_mover ci P e h (stk, loc, pc, xcp) (stk'', loc'', pc'', xcp'')"
+  and refl: "Q stk loc pc xcp"
+  and step: "\<And>stk' loc' pc' xcp' stk'' loc'' pc'' xcp''.
+             \<lbrakk> \<tau>Exec_mover ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp');
+               \<tau>exec_move ci P e h (stk', loc', pc', xcp') (stk'', loc'', pc'', xcp''); Q stk' loc' pc' xcp' \<rbrakk>
+             \<Longrightarrow> Q stk'' loc'' pc'' xcp''"
+  shows "Q stk'' loc'' pc'' xcp''"
+using major refl
+by(rule rtranclp_induct4)(rule step)
+
+lemma \<tau>Execsr_induct [consumes 1, case_names refl step]:
+  assumes major: "\<tau>Exec_movesr ci P es h (stk, loc, pc, xcp) (stk'', loc'', pc'', xcp'')"
+  and refl: "Q stk loc pc xcp"
+  and step: "\<And>stk' loc' pc' xcp' stk'' loc'' pc'' xcp''.
+             \<lbrakk> \<tau>Exec_movesr ci P es h (stk, loc, pc, xcp) (stk', loc', pc', xcp');
+               \<tau>exec_moves ci P es h (stk', loc', pc', xcp') (stk'', loc'', pc'', xcp''); Q stk' loc' pc' xcp' \<rbrakk>
+             \<Longrightarrow> Q stk'' loc'' pc'' xcp''"
+  shows "Q stk'' loc'' pc'' xcp''"
+using major refl
+by(rule rtranclp_induct4)(rule step)
+
+lemma \<tau>Exect_induct [consumes 1, case_names base step]:
+  assumes major: "\<tau>Exec_movet ci P e h (stk, loc, pc, xcp) (stk'', loc'', pc'', xcp'')"
+  and base: "\<And>stk' loc' pc' xcp'. \<tau>exec_move ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp') \<Longrightarrow> Q stk' loc' pc' xcp'"
+  and step: "\<And>stk' loc' pc' xcp' stk'' loc'' pc'' xcp''.
+             \<lbrakk> \<tau>Exec_movet ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp');
+               \<tau>exec_move ci P e h (stk', loc', pc', xcp') (stk'', loc'', pc'', xcp''); Q stk' loc' pc' xcp' \<rbrakk>
+             \<Longrightarrow> Q stk'' loc'' pc'' xcp''"
+  shows "Q stk'' loc'' pc'' xcp''"
 using major
-proof(induct stk loc pc xcp\<equiv>"None::addr option" stk' loc' pc' xcp' rule: \<tau>Exec_move_induct_split)
-  case \<tau>Exec_refl show ?case by (rule refl)
-next
-  case (\<tau>Exec_step stk loc pc xcp stk' loc' pc' xcp' stk'' loc'' pc'' xcp'')
-  from `xcp = None` `xcp = None \<Longrightarrow> Q stk loc pc stk' loc' pc'`
-  have Q: "Q stk loc pc stk' loc' pc'" by blast
-  show ?case
-  proof(cases xcp'')
-    case None
-    show ?thesis
-    proof(cases xcp')
-      case None
-      from `\<tau>Exec_move P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp')` `\<tau>move2 e pc' xcp'` Q
-	`exec_move P e h (stk', loc', pc', xcp') \<epsilon> h (stk'', loc'', pc'', xcp'')`
-      show ?thesis unfolding `xcp = None` None `xcp'' = None`
-	by-(rule one)
-    next
-      case (Some a)
-      with `\<tau>Exec_move P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp')` `xcp = None`
-      obtain STK LOC PC XCP
-	where exec: "\<tau>Exec_move P e h (stk, loc, pc, None) (STK, LOC, PC, XCP)"
-	and exec': "exec_move P e h (STK, LOC, PC, XCP) \<epsilon> h (stk', loc', pc', \<lfloor>a\<rfloor>)"
-	and \<tau>: "\<tau>move2 e PC XCP"
-	by(auto elim: \<tau>Exec_move.cases)
-      from exec' have [simp]: "STK = stk'" "LOC = loc'" "PC = pc'" "XCP = None"
-	by(auto elim: exec_meth.cases simp add: exec_move_def dest: exec_instr_xcp_unchanged)
-      with Q `\<tau>move2 e pc' xcp'` exec \<tau> exec'
-      show ?thesis using `exec_move P e h (stk', loc', pc', xcp') \<epsilon> h (stk'', loc'', pc'', xcp'')`
-	`xcp = None` `xcp'' = None` Some by simp(rule xcp)
-    qed
-  next
-    case (Some a)
-    with `exec_move P e h (stk', loc', pc', xcp') \<epsilon> h (stk'', loc'', pc'', xcp'')`
-    have "stk'' = stk'" "loc'' = loc'" "pc'' = pc'"
-      by(auto simp add: exec_move_def elim: exec_meth.cases dest: exec_instr_xcp_unchanged)
-    with Q show ?thesis by simp
-  qed
-qed
+by(rule tranclp_induct4)(erule base step)+
 
+lemma \<tau>Execst_induct [consumes 1, case_names base step]:
+  assumes major: "\<tau>Exec_movest ci P es h (stk, loc, pc, xcp) (stk'', loc'', pc'', xcp'')"
+  and base: "\<And>stk' loc' pc' xcp'. \<tau>exec_moves ci P es h (stk, loc, pc, xcp) (stk', loc', pc', xcp') \<Longrightarrow> Q stk' loc' pc' xcp'"
+  and step: "\<And>stk' loc' pc' xcp' stk'' loc'' pc'' xcp''.
+             \<lbrakk> \<tau>Exec_movest ci P es h (stk, loc, pc, xcp) (stk', loc', pc', xcp');
+               \<tau>exec_moves ci P es h (stk', loc', pc', xcp') (stk'', loc'', pc'', xcp''); Q stk' loc' pc' xcp' \<rbrakk>
+             \<Longrightarrow> Q stk'' loc'' pc'' xcp''"
+  shows "Q stk'' loc'' pc'' xcp''"
+using major
+by(rule tranclp_induct4)(erule base step)+
 
-lemmas \<tau>Exec_move_converse_cases = converse_rtranclpE[where r="\<lambda>(stk, loc, pc, xcp) s'. exec_move P e h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>move2 e pc xcp", where x="(stk, loc, pc, xcp)", folded \<tau>Exec_move_rtrancl, simplified split_beta fst_conv snd_conv, standard, consumes 1, case_names refl step]
+lemma \<tau>Exec_mover_\<tau>Exec_methr:
+  "\<tau>Exec_mover ci P e = \<tau>Exec_methr ci (compP2 P) (compE2 e) (compxE2 e 0 0)"
+by(simp only: \<tau>exec_move_conv_\<tau>exec_meth)
 
+lemma \<tau>Exec_movesr_\<tau>Exec_methr:
+  "\<tau>Exec_movesr ci P es = \<tau>Exec_methr ci (compP2 P) (compEs2 es) (compxEs2 es 0 0)"
+by(simp only: \<tau>exec_moves_conv_\<tau>exec_meth)
 
-inductive \<tau>Exec_moves :: "J1_prog \<Rightarrow> expr1 list \<Rightarrow> heap \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> (val list \<times> val list \<times> pc \<times> addr option) \<Rightarrow> bool"
-  for P :: "J1_prog" and es :: "expr1 list" and h :: heap
-  where
-  \<tau>Execs_refl: "\<tau>Exec_moves P es h s s"
+lemma \<tau>Exec_movet_\<tau>Exec_metht:
+  "\<tau>Exec_movet ci P e = \<tau>Exec_metht ci (compP2 P) (compE2 e) (compxE2 e 0 0)"
+by(simp only: \<tau>exec_move_conv_\<tau>exec_meth)
 
-| \<tau>Execs_step:
-  "\<lbrakk> \<tau>Exec_moves P es h s (stk', loc', pc', xcp'); 
-     exec_moves P es h (stk', loc', pc', xcp') \<epsilon> h s';
-     \<tau>moves2 es pc' xcp' \<rbrakk>
-  \<Longrightarrow> \<tau>Exec_moves P es h s s'"
+lemma \<tau>Exec_movest_\<tau>Exec_metht:
+  "\<tau>Exec_movest ci P es = \<tau>Exec_metht ci (compP2 P) (compEs2 es) (compxEs2 es 0 0)"
+by(simp only: \<tau>exec_moves_conv_\<tau>exec_meth)
 
-lemmas \<tau>Execs1step = \<tau>Execs_step[OF \<tau>Execs_refl]
-lemmas \<tau>Execs2step = \<tau>Execs_step[OF \<tau>Execs_step, OF \<tau>Execs_refl]
-lemmas \<tau>Execs3step = \<tau>Execs_step[OF \<tau>Execs_step, OF \<tau>Execs_step, OF \<tau>Execs_refl]
-
-lemma \<tau>Exec_moves_rtrancl:
-  "\<tau>Exec_moves P es h = (\<lambda>(stk, loc, pc, xcp) s'. exec_moves P es h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>moves2 es pc xcp)^**"
-  (is "?lhs = ?rhs")
-proof((rule ext)+, rule iffI)
-  fix s s' assume "?lhs s s'" thus "?rhs s s'"
-    by(induct rule: \<tau>Exec_moves.induct)(auto elim: rtranclp.rtrancl_into_rtrancl)
-next
-  fix s s' assume "?rhs s s'" thus "?lhs s s'"
-    by(induct rule: rtranclp.induct)(auto intro: \<tau>Exec_moves.intros)
-qed
-
-
-lemmas \<tau>Exec_moves_induct = rtranclp_induct[where r="\<lambda>(stk, loc, pc, xcp) s'. exec_moves P es h (stk, loc, pc, xcp) \<epsilon> h s' \<and> \<tau>moves2 es pc xcp", folded \<tau>Exec_moves_rtrancl, simplified split_paired_all split_beta fst_conv snd_conv, standard, consumes 1, case_names refl step]
-
-
-lemma \<tau>Exec_moves_trans [trans]: 
-  "\<lbrakk> \<tau>Exec_moves P es h s s'; \<tau>Exec_moves P es h s' s'' \<rbrakk> \<Longrightarrow> \<tau>Exec_moves P es h s s''"
-unfolding \<tau>Exec_moves_rtrancl
+lemma \<tau>Exec_mover_trans: 
+  "\<lbrakk> \<tau>Exec_mover ci P e h s s'; \<tau>Exec_mover ci P e h s' s'' \<rbrakk> \<Longrightarrow> \<tau>Exec_mover ci P e h s s''"
 by(rule rtranclp_trans)
 
-lemmas \<tau>Exec_moves_induct_split = \<tau>Exec_moves.induct[split_format (complete), standard, consumes 1, case_names \<tau>Execs_refl \<tau>Execs_step]
+lemma \<tau>Exec_movesr_trans: 
+  "\<lbrakk> \<tau>Exec_movesr ci P es h s s'; \<tau>Exec_movesr ci P es h s' s'' \<rbrakk> \<Longrightarrow> \<tau>Exec_movesr ci P es h s s''"
+by(rule rtranclp_trans)
 
+lemma \<tau>Exec_movet_trans: 
+  "\<lbrakk> \<tau>Exec_movet ci P e h s s'; \<tau>Exec_movet ci P e h s' s'' \<rbrakk> \<Longrightarrow> \<tau>Exec_movet ci P e h s s''"
+by(rule tranclp_trans)
 
-lemma \<tau>Exec_move_\<tau>Exec_moves:
-  "\<tau>Exec_move P e h s s' \<Longrightarrow> \<tau>Exec_moves P (e # es) h s s'"
-apply(induct rule: \<tau>Exec_move_induct)
- apply(rule \<tau>Execs_refl)
-apply(erule \<tau>Execs_step)
-apply(auto intro: \<tau>moves2Hd simp add: exec_move_def exec_moves_def)
-done
+lemma \<tau>Exec_movest_trans: 
+  "\<lbrakk> \<tau>Exec_movest ci P es h s s'; \<tau>Exec_movest ci P es h s' s'' \<rbrakk> \<Longrightarrow> \<tau>Exec_movest ci P es h s s''"
+by(rule tranclp_trans)
 
-lemma exec_moves_append: "exec_moves P es h s ta h' s' \<Longrightarrow> exec_moves P (es @ es') h s ta h' s'"
+lemma \<tau>exec_move_into_\<tau>exec_moves:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_moves ci P (e # es) h s s'"
+by(cases s)(auto elim!: \<tau>exec_moveE intro!: \<tau>exec_movesI simp add: exec_move_def exec_moves_def intro: \<tau>moves2Hd)
+
+lemma \<tau>Exec_mover_\<tau>Exec_movesr:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_movesr ci P (e # es) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl \<tau>exec_move_into_\<tau>exec_moves)+
+
+lemma \<tau>Exec_movet_\<tau>Exec_movest:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movest ci P (e # es) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl \<tau>exec_move_into_\<tau>exec_moves)+
+
+lemma exec_moves_append: "exec_moves ci P es h s ta h' s' \<Longrightarrow> exec_moves ci P (es @ es') h s ta h' s'"
 by(auto simp add: exec_moves_def)
 
-lemma \<tau>Exec_moves_append [intro]:
-  "\<tau>Exec_moves P es h s s' \<Longrightarrow> \<tau>Exec_moves P (es @ es') h s s'"
-apply(induct rule: \<tau>Exec_moves.induct)
- apply(rule \<tau>Execs_refl)
-apply(erule \<tau>Execs_step, auto intro: exec_moves_append)
-done
+lemma \<tau>exec_moves_append: "\<tau>exec_moves ci P es h s s' \<Longrightarrow> \<tau>exec_moves ci P (es @ es') h s s'"
+by(cases s)(auto elim!: \<tau>exec_movesE intro!: \<tau>exec_movesI exec_moves_append)
+
+lemma \<tau>Exec_movesr_append [intro]:
+  "\<tau>Exec_movesr ci P es h s s' \<Longrightarrow> \<tau>Exec_movesr ci P (es @ es') h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl \<tau>exec_moves_append)+
+
+lemma \<tau>Exec_movest_append [intro]:
+  "\<tau>Exec_movest ci P es h s s' \<Longrightarrow> \<tau>Exec_movest ci P (es @ es') h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl \<tau>exec_moves_append)+
 
 lemma append_exec_moves:
   assumes len: "length vs = length es'"
-  and exec: "exec_moves P es h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
-  shows "exec_moves P (es' @ es) h ((stk @ vs), loc, (length (compEs2 es') + pc), xcp) ta h' ((stk' @ vs), loc', (length (compEs2 es') + pc'), xcp')"
+  and exec: "exec_moves ci P es h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  shows "exec_moves ci P (es' @ es) h ((stk @ vs), loc, (length (compEs2 es') + pc), xcp) ta h' ((stk' @ vs), loc', (length (compEs2 es') + pc'), xcp')"
 proof -
-  from exec have "exec_meth (compP2 P) (compEs2 es) (compxEs2 es 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+  from exec have "exec_meth ci (compP2 P) (compEs2 es) (compxEs2 es 0 0) h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
     unfolding exec_moves_def .
-  hence "exec_meth (compP2 P) (compEs2 es) (stack_xlift (length vs) (compxEs2 es 0 0))  h ((stk @ vs), loc, pc, xcp) ta h' ((stk' @ vs), loc', pc', xcp')" by(rule exec_meth_stk_offer)
-  hence "exec_meth (compP2 P) (compEs2 es' @ compEs2 es) (compxEs2 es' 0 0 @ shift (length (compEs2 es')) (stack_xlift (length (vs)) (compxEs2 es 0 0))) h ((stk @ vs), loc, (length (compEs2 es') + pc), xcp) ta h' ((stk' @ vs), loc', (length (compEs2 es') + pc'), xcp')"
+  hence "exec_meth ci (compP2 P) (compEs2 es) (stack_xlift (length vs) (compxEs2 es 0 0))  h ((stk @ vs), loc, pc, xcp) ta h' ((stk' @ vs), loc', pc', xcp')" by(rule exec_meth_stk_offer)
+  hence "exec_meth ci (compP2 P) (compEs2 es' @ compEs2 es) (compxEs2 es' 0 0 @ shift (length (compEs2 es')) (stack_xlift (length (vs)) (compxEs2 es 0 0))) h ((stk @ vs), loc, (length (compEs2 es') + pc), xcp) ta h' ((stk' @ vs), loc', (length (compEs2 es') + pc'), xcp')"
     by(rule append_exec_meth_xt) auto
   thus ?thesis by(simp add: exec_moves_def stack_xlift_compxEs2 shift_compxEs2 len)
 qed
 
-lemma append_\<tau>Exec_moves:
+
+lemma append_\<tau>exec_moves:
+  "\<lbrakk> length vs = length es';
+    \<tau>exec_moves ci P es h (stk, loc, pc, xcp) (stk', loc', pc', xcp') \<rbrakk>
+  \<Longrightarrow> \<tau>exec_moves ci P (es' @ es) h ((stk @ vs), loc, (length (compEs2 es') + pc), xcp) ((stk' @ vs), loc', (length (compEs2 es') + pc'), xcp')"
+by(auto elim!: \<tau>exec_movesE intro: \<tau>exec_movesI append_exec_moves \<tau>moves2_stk_append append_\<tau>moves2)
+
+lemma append_\<tau>Exec_movesr:
   assumes len: "length vs = length es'"
-  shows "\<tau>Exec_moves P es h  (stk, loc, pc, xcp) (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_moves P (es' @ es) h ((stk @ vs), loc, (length (compEs2 es') + pc), xcp)  ((stk' @ vs), loc', (length (compEs2 es') + pc'), xcp')"
-proof(induct rule: \<tau>Exec_moves_induct_split)
-  case \<tau>Execs_refl thus ?case by(rule \<tau>Exec_moves.\<tau>Execs_refl)
-next
-  case \<tau>Execs_step thus ?case
-    by(auto elim!: \<tau>Exec_moves.\<tau>Execs_step append_exec_moves[OF len] intro: append_\<tau>moves2)
-qed
+  shows "\<tau>Exec_movesr ci P es h  (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movesr ci P (es' @ es) h ((stk @ vs), loc, (length (compEs2 es') + pc), xcp)  ((stk' @ vs), loc', (length (compEs2 es') + pc'), xcp')"
+by(induct rule: rtranclp_induct4)(blast intro: rtranclp.rtrancl_into_rtrancl append_\<tau>exec_moves[OF len])+
 
-lemma NewArray_\<tau>Exec_meth_xt [elim!]:
-  "\<tau>Exec_move P e h s s' \<Longrightarrow> \<tau>Exec_move P (newA T\<lfloor>e\<rceil>) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_newArrayI elim!: \<tau>Exec_step)
+lemma append_\<tau>Exec_movest:
+  assumes len: "length vs = length es'"
+  shows "\<tau>Exec_movest ci P es h  (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movest ci P (es' @ es) h ((stk @ vs), loc, (length (compEs2 es') + pc), xcp)  ((stk' @ vs), loc', (length (compEs2 es') + pc'), xcp')"
+by(induct rule: tranclp_induct4)(blast intro: tranclp.trancl_into_trancl append_\<tau>exec_moves[OF len])+
 
-lemma Cast_\<tau>Exec_meth_xt [elim!]:
-  "\<tau>Exec_move P e h s s' \<Longrightarrow> \<tau>Exec_move P (Cast T e) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_CastI elim!: \<tau>Exec_step)
 
-lemma BinOp_\<tau>Exec_meth_xt1 [elim!]:
-  "\<tau>Exec_move P e1 h s s' \<Longrightarrow> \<tau>Exec_move P (e1 \<guillemotleft>bop\<guillemotright> e2) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_BinOpI1 elim!: \<tau>Exec_step)
+lemma NewArray_\<tau>execI:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (newA T\<lfloor>e\<rceil>) h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_newArrayI)
 
-lemma BinOp_\<tau>Exec_meth_xt2:
-  "\<tau>Exec_move P e2 h (stk, loc, pc, xcp)  (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P (e \<guillemotleft>bop\<guillemotright> e2)  h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_BinOpI2 elim!: \<tau>Exec_step)
+lemma Cast_\<tau>execI:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (Cast T e) h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_CastI)
 
-lemma LAss_\<tau>Exec_meth_xt [elim!]:
-  "\<tau>Exec_move P E h s s' \<Longrightarrow> \<tau>Exec_move P (V:=E) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_LAssI elim!: \<tau>Exec_step)
+lemma BinOp_\<tau>execI1:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (e \<guillemotleft>bop\<guillemotright> e') h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_BinOpI1)
 
-lemma AAcc_\<tau>Exec_meth_xt1 [elim!]:
-  "\<tau>Exec_move P a h s s' \<Longrightarrow> \<tau>Exec_move P (a\<lfloor>i\<rceil>) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_AAccI1 elim!: \<tau>Exec_step)
+lemma BinOp_\<tau>execI2:
+  "\<tau>exec_move ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (e \<guillemotleft>bop\<guillemotright> e') h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_BinOpI2 \<tau>move2_stk_append)
 
-lemma AAcc_\<tau>Exec_meth_xt2:
-  "\<tau>Exec_move P i h (stk, loc, pc, xcp)  (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P (a\<lfloor>i\<rceil>) h ((stk @ [v]), loc, (length (compE2 a) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 a) + pc'), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_AAccI2 elim!: \<tau>Exec_step)
+lemma LAss_\<tau>execI:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (V := e) h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_LAssI)
 
-lemma AAss_\<tau>Exec_meth_xt1 [elim!]:
-  "\<tau>Exec_move P a h s s' \<Longrightarrow> \<tau>Exec_move P (a\<lfloor>i\<rceil> := e) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_AAssI1 elim!: \<tau>Exec_step)
+lemma AAcc_\<tau>execI1:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (e\<lfloor>i\<rceil>) h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_AAccI1)
 
-lemma AAss_\<tau>Exec_meth_xt2:
-  "\<tau>Exec_move P i h (stk, loc, pc, xcp)  (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P (a\<lfloor>i\<rceil> := e) h ((stk @ [v]), loc, (length (compE2 a) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 a) + pc'), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_AAssI2 elim!: \<tau>Exec_step)
+lemma AAcc_\<tau>execI2:
+  "\<tau>exec_move ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (e\<lfloor>e'\<rceil>) h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_AAccI2 \<tau>move2_stk_append)
 
-lemma AAss_\<tau>Exec_meth_xt3:
-  "\<tau>Exec_move P e h (stk, loc, pc, xcp)  (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P (a\<lfloor>i\<rceil> := e) h ((stk @ [v, v']), loc, (length (compE2 a) + length (compE2 i) + pc), xcp) ((stk' @ [v, v']), loc', (length (compE2 a) + length (compE2 i) + pc'), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_AAssI3 elim!: \<tau>Exec_step)
+lemma AAss_\<tau>execI1:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (e\<lfloor>i\<rceil> := e') h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_AAssI1)
 
-lemma ALength_\<tau>Exec_meth_xt [elim!]:
-  "\<tau>Exec_move P a h s s' \<Longrightarrow> \<tau>Exec_move P (a\<bullet>length) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_ALengthI elim!: \<tau>Exec_step)
+lemma AAss_\<tau>execI2:
+  "\<tau>exec_move ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (e\<lfloor>e'\<rceil> := e'') h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_AAssI2 \<tau>move2_stk_append)
 
-lemma FAcc_\<tau>Exec_meth_xt [elim!]:
-  "\<tau>Exec_move P e h s s' \<Longrightarrow> \<tau>Exec_move P (e\<bullet>F{D}) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_FAccI elim!: \<tau>Exec_step)
+lemma AAss_\<tau>execI3:
+  "\<tau>exec_move ci P e'' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (e\<lfloor>e'\<rceil> := e'') h ((stk @ [v, v']), loc, (length (compE2 e) + length (compE2 e') + pc), xcp) ((stk' @ [v, v']), loc', (length (compE2 e) + length (compE2 e') + pc'), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_AAssI3 \<tau>move2_stk_append)
 
-lemma FAss_\<tau>Exec_meth_xt1 [elim!]:
-  "\<tau>Exec_move P e h s s' \<Longrightarrow> \<tau>Exec_move P (e\<bullet>F{D} := e') h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_FAssI1 elim!: \<tau>Exec_step)
+lemma ALength_\<tau>execI:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (e\<bullet>length) h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_ALengthI)
 
-lemma FAss_\<tau>Exec_meth_xt2:
-  "\<tau>Exec_move P e' h (stk, loc, pc, xcp)  (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P (e\<bullet>F{D} := e') h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_FAssI2 elim!: \<tau>Exec_step)
+lemma FAcc_\<tau>execI:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (e\<bullet>F{D}) h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_FAccI)
 
-lemma Call_\<tau>Exec_meth_xtObj [elim!]:
-  "\<tau>Exec_move P obj h s s' \<Longrightarrow> \<tau>Exec_move P (obj\<bullet>M'(es)) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_CallI1 elim!: \<tau>Exec_step)
+lemma FAss_\<tau>execI1:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (e\<bullet>F{D} := e') h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_FAssI1)
 
-lemma Call_\<tau>Exec_meth_xtParams [elim!]:
-  "\<tau>Exec_moves P es   h (stk, loc, pc, xcp)  (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P (obj\<bullet>M'(es))   h ((stk @ [v]), loc, (length (compE2 obj) + pc), xcp)  ((stk' @ [v]), loc', (length (compE2 obj) + pc'), xcp')"
-by(induct rule: \<tau>Exec_moves_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_CallI2 elim!: \<tau>Exec_step)
+lemma FAss_\<tau>execI2:
+  "\<tau>exec_move ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (e\<bullet>F{D} := e') h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_FAssI2 \<tau>move2_stk_append)
 
-lemma Block_\<tau>Exec_meth_xtSome [elim!]:
-  "\<tau>Exec_move P E   h (stk, loc, pc, xcp)  (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P {V:T=\<lfloor>v\<rfloor>; E}\<^bsub>cr\<^esub> h (stk, loc, (Suc (Suc pc)), xcp)  (stk', loc', (Suc (Suc pc')), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_BlockSomeI elim!: \<tau>Exec_step)
+lemma Call_\<tau>execI1:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (e\<bullet>M(es)) h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_CallI1)
 
-lemma Block_\<tau>Exec_meth_xtNone [elim!]:
-  "\<tau>Exec_move P E h s s' \<Longrightarrow> \<tau>Exec_move P {V:T=None; E}\<^bsub>cr\<^esub> h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_BlockNoneI elim!: \<tau>Exec_step)
+lemma Call_\<tau>execI2:
+  "\<tau>exec_moves ci P es h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (e\<bullet>M(es)) h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
+by(blast elim: \<tau>exec_movesE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_CallI2 \<tau>moves2_stk_append)
 
-lemma Sync_\<tau>Exec_meth_xt [elim!]:
-  "\<tau>Exec_move P o' h s s' \<Longrightarrow> \<tau>Exec_move P (sync\<^bsub>V\<^esub> (o') e) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_SyncI1 elim!: \<tau>Exec_step)
+lemma Block_\<tau>execI_Some:
+  "\<tau>exec_move ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P {V:T=\<lfloor>v\<rfloor>; e} h (stk, loc, Suc (Suc pc), xcp) (stk', loc', Suc (Suc pc'), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_BlockSomeI)
 
-lemma Insync_\<tau>Exec_meth_xt [elim!]:
-  "\<tau>Exec_move P e  h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P (sync\<^bsub>V\<^esub> (o') e)  h (stk, loc, (Suc (Suc (Suc (length (compE2 o') + pc)))), xcp) (stk', loc', (Suc (Suc (Suc (length (compE2 o') + pc')))), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_SyncI2 elim!: \<tau>Exec_step)
+lemma Block_\<tau>execI_None:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P {V:T=None; e} h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_BlockNoneI)
 
-lemma Seq_\<tau>Exec_meth_xt1 [elim!]:
-  "\<tau>Exec_move P e h s s' \<Longrightarrow> \<tau>Exec_move P (e;;e') h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_SeqI1 elim!: \<tau>Exec_step)
+lemma Sync_\<tau>execI:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (sync\<^bsub>V\<^esub> (e) e') h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_SyncI1)
 
-lemma Seq_\<tau>Exec_meth_xt2:
-  "\<tau>Exec_move P e h (stk, loc, pc, xcp)  (stk', loc', pc' ,xcp') \<Longrightarrow>
-   \<tau>Exec_move P (e';;e) h (stk, loc, (Suc (length (compE2 e') + pc)), xcp) (stk', loc', (Suc (length (compE2 e') + pc')), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_SeqI2 elim!: \<tau>Exec_step)
+lemma Insync_\<tau>execI:
+  "\<tau>exec_move ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (sync\<^bsub>V\<^esub> (e) e') h (stk, loc, Suc (Suc (Suc (length (compE2 e) + pc))), xcp) (stk', loc', Suc (Suc (Suc (length (compE2 e) + pc'))), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_SyncI2)
 
-lemma Cond_\<tau>Exec_meth_xt_Cond [elim!]:
-  "\<tau>Exec_move P e h s s' \<Longrightarrow> \<tau>Exec_move P (if (e) e1 else e2) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_CondI1 elim!: \<tau>Exec_step)
+lemma Seq_\<tau>execI1:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (e;; e') h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_SeqI1)
 
-lemma Cond_\<tau>Exec_meth_xt_then:
-  "\<tau>Exec_move P e1  h (stk, loc, pc, xcp)  (stk', loc', pc', xcp') \<Longrightarrow>
-   \<tau>Exec_move P (if (e) e1 else e2)  h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) (stk', loc', (Suc (length (compE2 e) + pc')), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_CondI2 elim!: \<tau>Exec_step)
+lemma Seq_\<tau>execI2:
+  "\<tau>exec_move ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (e;; e') h (stk, loc, Suc (length (compE2 e) + pc), xcp) (stk', loc', Suc (length (compE2 e) + pc'), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_SeqI2)
 
-lemma Cond_\<tau>Exec_meth_xt_else:
-  "\<tau>Exec_move P e2  h (stk, loc ,pc, xcp)  (stk', loc', pc', xcp') \<Longrightarrow>
-   \<tau>Exec_move P (if (e) e1 else e2)  h (stk, loc, (Suc (Suc (length (compE2 e) + length (compE2 e1) + pc))), xcp)  (stk', loc', (Suc (Suc (length (compE2 e) + length (compE2 e1) + pc'))), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_CondI3 elim!: \<tau>Exec_step)
+lemma Cond_\<tau>execI1:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (if (e) e' else e'') h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_CondI1)
 
-lemma While_\<tau>Exec_meth_xt1 [elim!]:
-  "\<tau>Exec_move P c h s s' \<Longrightarrow> \<tau>Exec_move P (while (c) e) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_WhileI1 elim!: \<tau>Exec_step)
+lemma Cond_\<tau>execI2:
+  "\<tau>exec_move ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (if (e) e' else e'') h (stk, loc, Suc (length (compE2 e) + pc), xcp) (stk', loc', Suc (length (compE2 e) + pc'), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_CondI2)
 
-lemma While_\<tau>Exec_meth_xt2:
-  "\<tau>Exec_move P E h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P (while (c) E)  h (stk, loc ,(Suc (length (compE2 c) + pc)), xcp) (stk', loc', (Suc (length (compE2 c) + pc')), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_WhileI2 elim!: \<tau>Exec_step)
+lemma Cond_\<tau>execI3:
+  "\<tau>exec_move ci P e'' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (if (e) e' else e'') h (stk, loc, Suc (Suc (length (compE2 e) + length (compE2 e') + pc)), xcp) (stk', loc', Suc (Suc (length (compE2 e) + length (compE2 e') + pc')), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_CondI3)
 
-lemma Throw_\<tau>Exec_meth_xt [elim!]:
-  "\<tau>Exec_move P e h s s' \<Longrightarrow> \<tau>Exec_move P (throw e) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_ThrowI elim!: \<tau>Exec_step)
+lemma While_\<tau>execI1:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (while (e) e') h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_WhileI1)
 
-lemma Try_\<tau>Exec_meth_xt1 [elim!]:
-  "\<tau>Exec_move P E h s s' \<Longrightarrow> \<tau>Exec_move P (try E catch(C' V) e) h s s'"
-by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_TryI1 elim!: \<tau>Exec_step)
+lemma While_\<tau>execI2:
+  "\<tau>exec_move ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (while (e) e') h (stk, loc, Suc (length (compE2 e) + pc), xcp) (stk', loc', Suc (length (compE2 e) + pc'), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_WhileI2)
 
-lemma Try_\<tau>Exec_meth_xt2:
-  "\<tau>Exec_move P e  h (stk, loc, pc, xcp)  (stk', loc', pc', xcp')
-  \<Longrightarrow> \<tau>Exec_move P (try E catch(C' V) e)  h (stk, loc, (Suc (Suc (length (compE2 E) + pc))), xcp)  (stk', loc', (Suc (Suc (length (compE2 E) + pc'))), xcp')"
-by(induct rule: \<tau>Exec_move_induct_split)(auto intro: \<tau>Exec_refl \<tau>move2_\<tau>moves2.intros exec_move_TryI2 elim!: \<tau>Exec_step)
+lemma Throw_\<tau>execI:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (throw e) h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_ThrowI)
 
-lemma \<tau>Exec_moves_map_Val:
-  "P,E \<turnstile>1 map Val vs [::] Ts
-  \<Longrightarrow> \<tau>Exec_moves P (map Val vs) h ([], xs, 0, None) ((rev vs), xs, (length (compEs2 (map Val vs))), None)"
+lemma Try_\<tau>execI1:
+  "\<tau>exec_move ci P e h s s' \<Longrightarrow> \<tau>exec_move ci P (try e catch(C V) e') h s s'"
+by(cases s)(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_TryI1)
+
+lemma Try_\<tau>execI2:
+  "\<tau>exec_move ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>exec_move ci P (try e catch(C V) e') h (stk, loc, Suc (Suc (length (compE2 e) + pc)), xcp) (stk', loc', Suc (Suc (length (compE2 e) + pc')), xcp')"
+by(blast elim: \<tau>exec_moveE intro: \<tau>exec_moveI \<tau>move2_\<tau>moves2.intros exec_move_TryI2)
+
+
+
+lemma NewArray_\<tau>ExecrI:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (newA T\<lfloor>e\<rceil>) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl NewArray_\<tau>execI)+
+
+lemma Cast_\<tau>ExecrI:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (Cast T e) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Cast_\<tau>execI)+
+
+lemma BinOp_\<tau>ExecrI1:
+  "\<tau>Exec_mover ci P e1 h s s' \<Longrightarrow> \<tau>Exec_mover ci P (e1 \<guillemotleft>bop\<guillemotright> e2) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl BinOp_\<tau>execI1)+
+
+lemma BinOp_\<tau>ExecrI2:
+  "\<tau>Exec_mover ci P e2 h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P (e \<guillemotleft>bop\<guillemotright> e2)  h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl BinOp_\<tau>execI2)+
+
+lemma LAss_\<tau>ExecrI:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (V := e) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl LAss_\<tau>execI)+
+
+lemma AAcc_\<tau>ExecrI1:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (e\<lfloor>i\<rceil>) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl AAcc_\<tau>execI1)+
+
+lemma AAcc_\<tau>ExecrI2:
+  "\<tau>Exec_mover ci P i h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P (a\<lfloor>i\<rceil>) h ((stk @ [v]), loc, (length (compE2 a) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 a) + pc'), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl AAcc_\<tau>execI2)+
+
+lemma AAss_\<tau>ExecrI1:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (e\<lfloor>i\<rceil> := e') h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl AAss_\<tau>execI1)+
+
+lemma AAss_\<tau>ExecrI2:
+  "\<tau>Exec_mover ci P i h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P (a\<lfloor>i\<rceil> := e) h ((stk @ [v]), loc, (length (compE2 a) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 a) + pc'), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl AAss_\<tau>execI2)+
+
+lemma AAss_\<tau>ExecrI3:
+  "\<tau>Exec_mover ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P (a\<lfloor>i\<rceil> := e) h ((stk @ [v, v']), loc, (length (compE2 a) + length (compE2 i) + pc), xcp) ((stk' @ [v, v']), loc', (length (compE2 a) + length (compE2 i) + pc'), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl AAss_\<tau>execI3)+
+
+lemma ALength_\<tau>ExecrI:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (e\<bullet>length) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl ALength_\<tau>execI)+
+
+lemma FAcc_\<tau>ExecrI:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (e\<bullet>F{D}) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl FAcc_\<tau>execI)+
+
+lemma FAss_\<tau>ExecrI1:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (e\<bullet>F{D} := e') h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl FAss_\<tau>execI1)+
+
+lemma FAss_\<tau>ExecrI2:
+  "\<tau>Exec_mover ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P (e\<bullet>F{D} := e') h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl FAss_\<tau>execI2)+
+
+lemma Call_\<tau>ExecrI1:
+  "\<tau>Exec_mover ci P obj h s s' \<Longrightarrow> \<tau>Exec_mover ci P (obj\<bullet>M'(es)) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Call_\<tau>execI1)+
+
+lemma Call_\<tau>ExecrI2:
+  "\<tau>Exec_movesr ci P es h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P (obj\<bullet>M'(es)) h ((stk @ [v]), loc, (length (compE2 obj) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 obj) + pc'), xcp')"
+by(induct rule: \<tau>Execsr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Call_\<tau>execI2)+
+
+lemma Block_\<tau>ExecrI_Some:
+  "\<tau>Exec_mover ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P {V:T=\<lfloor>v\<rfloor>; e} h (stk, loc, (Suc (Suc pc)), xcp) (stk', loc', (Suc (Suc pc')), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Block_\<tau>execI_Some)+
+
+lemma Block_\<tau>ExecrI_None:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P {V:T=None; e} h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Block_\<tau>execI_None)+
+
+lemma Sync_\<tau>ExecrI:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (sync\<^bsub>V\<^esub> (e) e') h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Sync_\<tau>execI)+
+
+lemma Insync_\<tau>ExecrI:
+  "\<tau>Exec_mover ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P (sync\<^bsub>V\<^esub> (e) e')  h (stk, loc, (Suc (Suc (Suc (length (compE2 e) + pc)))), xcp) (stk', loc', (Suc (Suc (Suc (length (compE2 e) + pc')))), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Insync_\<tau>execI)+
+
+lemma Seq_\<tau>ExecrI1:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (e;;e') h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Seq_\<tau>execI1)+
+
+lemma Seq_\<tau>ExecrI2:
+  "\<tau>Exec_mover ci P e h (stk, loc, pc, xcp) (stk', loc', pc' ,xcp') \<Longrightarrow>
+   \<tau>Exec_mover ci P (e';;e) h (stk, loc, (Suc (length (compE2 e') + pc)), xcp) (stk', loc', (Suc (length (compE2 e') + pc')), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Seq_\<tau>execI2)+
+
+lemma Cond_\<tau>ExecrI1:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (if (e) e1 else e2) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Cond_\<tau>execI1)+
+
+lemma Cond_\<tau>ExecrI2:
+  "\<tau>Exec_mover ci P e1  h (stk, loc, pc, xcp) (stk', loc', pc', xcp') \<Longrightarrow>
+   \<tau>Exec_mover ci P (if (e) e1 else e2)  h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) (stk', loc', (Suc (length (compE2 e) + pc')), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Cond_\<tau>execI2)+
+
+lemma Cond_\<tau>ExecrI3:
+  "\<tau>Exec_mover ci P e2  h (stk, loc ,pc, xcp) (stk', loc', pc', xcp') \<Longrightarrow>
+   \<tau>Exec_mover ci P (if (e) e1 else e2)  h (stk, loc, (Suc (Suc (length (compE2 e) + length (compE2 e1) + pc))), xcp)  (stk', loc', (Suc (Suc (length (compE2 e) + length (compE2 e1) + pc'))), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Cond_\<tau>execI3)+
+
+lemma While_\<tau>ExecrI1:
+  "\<tau>Exec_mover ci P c h s s' \<Longrightarrow> \<tau>Exec_mover ci P (while (c) e) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl While_\<tau>execI1)+
+
+lemma While_\<tau>ExecrI2:
+  "\<tau>Exec_mover ci P E h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P (while (c) E)  h (stk, loc ,(Suc (length (compE2 c) + pc)), xcp) (stk', loc', (Suc (length (compE2 c) + pc')), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl While_\<tau>execI2)+
+
+lemma Throw_\<tau>ExecrI:
+  "\<tau>Exec_mover ci P e h s s' \<Longrightarrow> \<tau>Exec_mover ci P (throw e) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Throw_\<tau>execI)+
+
+lemma Try_\<tau>ExecrI1:
+  "\<tau>Exec_mover ci P E h s s' \<Longrightarrow> \<tau>Exec_mover ci P (try E catch(C' V) e) h s s'"
+by(induct rule: rtranclp_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Try_\<tau>execI1)+
+
+lemma Try_\<tau>ExecrI2:
+  "\<tau>Exec_mover ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_mover ci P (try E catch(C' V) e)  h (stk, loc, (Suc (Suc (length (compE2 E) + pc))), xcp)  (stk', loc', (Suc (Suc (length (compE2 E) + pc'))), xcp')"
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl Try_\<tau>execI2)+
+
+
+lemma NewArray_\<tau>ExectI:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (newA T\<lfloor>e\<rceil>) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl NewArray_\<tau>execI)+
+
+lemma Cast_\<tau>ExectI:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (Cast T e) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl Cast_\<tau>execI)+
+
+lemma BinOp_\<tau>ExectI1:
+  "\<tau>Exec_movet ci P e1 h s s' \<Longrightarrow> \<tau>Exec_movet ci P (e1 \<guillemotleft>bop\<guillemotright> e2) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl BinOp_\<tau>execI1)+
+
+lemma BinOp_\<tau>ExectI2:
+  "\<tau>Exec_movet ci P e2 h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P (e \<guillemotleft>bop\<guillemotright> e2)  h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl BinOp_\<tau>execI2)+
+
+lemma LAss_\<tau>ExectI:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (V := e) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl LAss_\<tau>execI)+
+
+lemma AAcc_\<tau>ExectI1:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (e\<lfloor>i\<rceil>) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl AAcc_\<tau>execI1)+
+
+lemma AAcc_\<tau>ExectI2:
+  "\<tau>Exec_movet ci P i h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P (a\<lfloor>i\<rceil>) h ((stk @ [v]), loc, (length (compE2 a) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 a) + pc'), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl AAcc_\<tau>execI2)+
+
+lemma AAss_\<tau>ExectI1:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (e\<lfloor>i\<rceil> := e') h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl AAss_\<tau>execI1)+
+
+lemma AAss_\<tau>ExectI2:
+  "\<tau>Exec_movet ci P i h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P (a\<lfloor>i\<rceil> := e) h ((stk @ [v]), loc, (length (compE2 a) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 a) + pc'), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl AAss_\<tau>execI2)+
+
+lemma AAss_\<tau>ExectI3:
+  "\<tau>Exec_movet ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P (a\<lfloor>i\<rceil> := e) h ((stk @ [v, v']), loc, (length (compE2 a) + length (compE2 i) + pc), xcp) ((stk' @ [v, v']), loc', (length (compE2 a) + length (compE2 i) + pc'), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl AAss_\<tau>execI3)+
+
+lemma ALength_\<tau>ExectI:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (e\<bullet>length) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl ALength_\<tau>execI)+
+
+lemma FAcc_\<tau>ExectI:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (e\<bullet>F{D}) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl FAcc_\<tau>execI)+
+
+lemma FAss_\<tau>ExectI1:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (e\<bullet>F{D} := e') h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl FAss_\<tau>execI1)+
+
+lemma FAss_\<tau>ExectI2:
+  "\<tau>Exec_movet ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P (e\<bullet>F{D} := e') h ((stk @ [v]), loc, (length (compE2 e) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 e) + pc'), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl FAss_\<tau>execI2)+
+
+lemma Call_\<tau>ExectI1:
+  "\<tau>Exec_movet ci P obj h s s' \<Longrightarrow> \<tau>Exec_movet ci P (obj\<bullet>M'(es)) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl Call_\<tau>execI1)+
+
+lemma Call_\<tau>ExectI2:
+  "\<tau>Exec_movest ci P es h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P (obj\<bullet>M'(es)) h ((stk @ [v]), loc, (length (compE2 obj) + pc), xcp) ((stk' @ [v]), loc', (length (compE2 obj) + pc'), xcp')"
+by(induct rule: \<tau>Execst_induct)(blast intro: tranclp.trancl_into_trancl Call_\<tau>execI2)+
+
+lemma Block_\<tau>ExectI_Some:
+  "\<tau>Exec_movet ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P {V:T=\<lfloor>v\<rfloor>; e} h (stk, loc, (Suc (Suc pc)), xcp) (stk', loc', (Suc (Suc pc')), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl Block_\<tau>execI_Some)+
+
+lemma Block_\<tau>ExectI_None:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P {V:T=None; e} h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl Block_\<tau>execI_None)+
+
+lemma Sync_\<tau>ExectI:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (sync\<^bsub>V\<^esub> (e) e') h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl Sync_\<tau>execI)+
+
+lemma Insync_\<tau>ExectI:
+  "\<tau>Exec_movet ci P e' h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P (sync\<^bsub>V\<^esub> (e) e')  h (stk, loc, (Suc (Suc (Suc (length (compE2 e) + pc)))), xcp) (stk', loc', (Suc (Suc (Suc (length (compE2 e) + pc')))), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl Insync_\<tau>execI)+
+
+lemma Seq_\<tau>ExectI1:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (e;;e') h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl Seq_\<tau>execI1)+
+
+lemma Seq_\<tau>ExectI2:
+  "\<tau>Exec_movet ci P e h (stk, loc, pc, xcp) (stk', loc', pc' ,xcp') \<Longrightarrow>
+   \<tau>Exec_movet ci P (e';;e) h (stk, loc, (Suc (length (compE2 e') + pc)), xcp) (stk', loc', (Suc (length (compE2 e') + pc')), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl Seq_\<tau>execI2)+
+
+lemma Cond_\<tau>ExectI1:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (if (e) e1 else e2) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl Cond_\<tau>execI1)+
+
+lemma Cond_\<tau>ExectI2:
+  "\<tau>Exec_movet ci P e1  h (stk, loc, pc, xcp) (stk', loc', pc', xcp') \<Longrightarrow>
+   \<tau>Exec_movet ci P (if (e) e1 else e2)  h (stk, loc, (Suc (length (compE2 e) + pc)), xcp) (stk', loc', (Suc (length (compE2 e) + pc')), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl Cond_\<tau>execI2)+
+
+lemma Cond_\<tau>ExectI3:
+  "\<tau>Exec_movet ci P e2  h (stk, loc ,pc, xcp) (stk', loc', pc', xcp') \<Longrightarrow>
+   \<tau>Exec_movet ci P (if (e) e1 else e2)  h (stk, loc, (Suc (Suc (length (compE2 e) + length (compE2 e1) + pc))), xcp)  (stk', loc', (Suc (Suc (length (compE2 e) + length (compE2 e1) + pc'))), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl Cond_\<tau>execI3)+
+
+lemma While_\<tau>ExectI1:
+  "\<tau>Exec_movet ci P c h s s' \<Longrightarrow> \<tau>Exec_movet ci P (while (c) e) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl While_\<tau>execI1)+
+
+lemma While_\<tau>ExectI2:
+  "\<tau>Exec_movet ci P E h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P (while (c) E)  h (stk, loc ,(Suc (length (compE2 c) + pc)), xcp) (stk', loc', (Suc (length (compE2 c) + pc')), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl While_\<tau>execI2)+
+
+lemma Throw_\<tau>ExectI:
+  "\<tau>Exec_movet ci P e h s s' \<Longrightarrow> \<tau>Exec_movet ci P (throw e) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl Throw_\<tau>execI)+
+
+lemma Try_\<tau>ExectI1:
+  "\<tau>Exec_movet ci P E h s s' \<Longrightarrow> \<tau>Exec_movet ci P (try E catch(C' V) e) h s s'"
+by(induct rule: tranclp_induct)(blast intro: tranclp.trancl_into_trancl Try_\<tau>execI1)+
+
+lemma Try_\<tau>ExectI2:
+  "\<tau>Exec_movet ci P e h (stk, loc, pc, xcp) (stk', loc', pc', xcp')
+  \<Longrightarrow> \<tau>Exec_movet ci P (try E catch(C' V) e)  h (stk, loc, (Suc (Suc (length (compE2 E) + pc))), xcp)  (stk', loc', (Suc (Suc (length (compE2 E) + pc'))), xcp')"
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl Try_\<tau>execI2)+
+
+lemma \<tau>Exec_movesr_map_Val:
+  "\<tau>Exec_movesr_a P (map Val vs) h ([], xs, 0, None) ((rev vs), xs, (length (compEs2 (map Val vs))), None)"
 proof(induct vs arbitrary: pc stk Ts rule: rev_induct)
-  case Nil thus ?case by(auto intro: \<tau>Execs_refl)
+  case Nil thus ?case by(auto)
 next
   case (snoc v vs')
   let ?E = "compEs2 (map Val vs')"
-  from snoc have "\<tau>Exec_moves P (map Val (vs' @ [v]))  h ([], xs, 0, None)  ((rev vs'), xs, (length ?E), None)"
-    by(auto elim: WTs1_snoc_cases)
+  from snoc have "\<tau>Exec_movesr_a P (map Val (vs' @ [v])) h ([], xs, 0, None) ((rev vs'), xs, (length ?E), None)"
+    by auto
   also {
-    from `P,E \<turnstile>1 map Val (vs' @ [v]) [::] Ts`
-    have "exec_meth (compP2 P) (?E @ [Push v]) (compxEs2 (map Val vs') 0 0 @ shift (length ?E) [])   h ((rev vs'), xs, (length ?E + 0), None) \<epsilon> h ((v # rev vs'), xs, (length ?E + Suc 0), None)"
-      by -(rule append_exec_meth_xt[OF exec_instr],auto elim: WTs1_snoc_cases)
-    moreover have "\<tau>moves2 (map Val vs' @ [Val v]) (length (compEs2 (map Val vs')) + 0) None"
+    have "exec_meth_a (compP2 P) (?E @ [Push v]) (compxEs2 (map Val vs') 0 0 @ shift (length ?E) []) h ((rev vs'), xs, (length ?E + 0), None) \<epsilon> h ((v # rev vs'), xs, (length ?E + Suc 0), None)"
+      by -(rule append_exec_meth_xt, auto simp add: exec_meth_instr)
+    moreover have "\<tau>moves2 (compP2 P) h (rev vs') (map Val vs' @ [Val v]) (length (compEs2 (map Val vs')) + 0) None"
       by(rule append_\<tau>moves2 \<tau>moves2Hd \<tau>move2Val)+
-    ultimately have "\<tau>Exec_moves P (map Val (vs' @ [v]))   h ((rev vs'), xs, (length ?E), None)  ((rev (vs' @ [v])), xs, (length (compEs2 (map Val (vs' @ [v])))), None)"
-      by -(rule \<tau>Execs1step, auto simp add: exec_moves_def) }
+    ultimately have "\<tau>Exec_movesr_a P (map Val (vs' @ [v])) h ((rev vs'), xs, (length ?E), None) ((rev (vs' @ [v])), xs, (length (compEs2 (map Val (vs' @ [v])))), None)"
+      by -(rule \<tau>Execsr1step, auto simp add: exec_moves_def compP2_def) }
   finally show ?case .
 qed
 
-lemma \<tau>Exec_move_blocks1 [simp]:
-  "\<tau>Exec_move P (blocks1 n Ts body) h s s' = \<tau>Exec_move P body h s s'"
-  (is "?lhs = ?rhs")
-proof(rule iffI)
-  assume ?lhs thus ?rhs
-    by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>Exec_step simp add: exec_move_def)
-next
-  assume ?rhs thus ?lhs
-    by(induct rule: \<tau>Exec_move.induct)(auto intro: \<tau>Exec_refl \<tau>Exec_step simp add: exec_move_def)
-qed
+lemma \<tau>Exec_mover_blocks1 [simp]:
+  "\<tau>Exec_mover ci P (blocks1 n Ts body) h s s' = \<tau>Exec_mover ci P body h s s'"
+by(simp add: \<tau>exec_move_conv_\<tau>exec_meth)
 
-inductive
-  exec_1' :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_thread_action \<Rightarrow> jvm_state \<Rightarrow> bool"
-  for P :: jvm_prog
-  where
-  exec_1_Normal:
-  "\<lbrakk> (ta, xcp', h', frs') \<in> set (exec_instr (instrs_of P C M ! pc) P h stk loc C M pc frs);
-     pc < length (instrs_of P C M);
-     check_instr (instrs_of P C M ! pc) P h stk loc C M pc frs \<rbrakk>
-  \<Longrightarrow> exec_1' P (None, h, (stk, loc, C, M, pc) # frs) ta (xcp', h', frs')"
+lemma \<tau>Exec_movet_blocks1 [simp]:
+  "\<tau>Exec_movet ci P (blocks1 n Ts body) h s s' = \<tau>Exec_movet ci P body h s s'"
+by(simp add: \<tau>exec_move_conv_\<tau>exec_meth)
 
-|  exec_1_Throw:
-  "(ta, \<sigma>) = exception_step P (\<epsilon>, \<lfloor>a\<rfloor>, h, f # frs)
-  \<Longrightarrow> exec_1' P (\<lfloor>a\<rfloor>, h, f # frs) ta \<sigma>"
 
-inductive \<tau>Exec_1 :: "J1_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
-  for P :: J1_prog
-  where
-  \<tau>Exec_1_refl:  "\<tau>Exec_1 P \<sigma> \<sigma>"
-| \<tau>Exec_1_step: "\<lbrakk> \<tau>Exec_1 P \<sigma> \<sigma>'; exec_1' (compP2 P) \<sigma>' \<epsilon> \<sigma>''; \<tau>Move2 P \<sigma>' \<rbrakk> \<Longrightarrow> \<tau>Exec_1 P \<sigma> \<sigma>''"
+definition \<tau>exec_1 :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
+  where "\<tau>exec_1 P \<sigma> \<sigma>' \<longleftrightarrow> exec_1 P \<sigma> \<epsilon> \<sigma>' \<and> \<tau>Move2 P \<sigma>"
 
-lemmas \<tau>Exec_1step = \<tau>Exec_1_step[OF \<tau>Exec_1_refl]
-lemmas \<tau>Exec_2step = \<tau>Exec_1_step[OF \<tau>Exec_1_step, OF \<tau>Exec_1_refl]
-lemmas \<tau>Exec_3step = \<tau>Exec_1_step[OF \<tau>Exec_1_step, OF \<tau>Exec_1_step, OF \<tau>Exec_1_refl]
+lemma \<tau>exec_1I [intro]:
+  "\<lbrakk> exec_1 P \<sigma> \<epsilon> \<sigma>'; \<tau>Move2 P \<sigma> \<rbrakk> \<Longrightarrow> \<tau>exec_1 P \<sigma> \<sigma>'"
+by(simp add: \<tau>exec_1_def)
 
-lemma \<tau>Exec_1_induct [consumes 1, case_names refl step]:
-  "\<lbrakk> \<tau>Exec_1 P \<sigma> \<sigma>'; Q \<sigma>;
-     \<And>\<sigma>' \<sigma>''. \<lbrakk> \<tau>Exec_1 P \<sigma> \<sigma>'; exec_1' (compP2 P) \<sigma>' \<epsilon> \<sigma>''; \<tau>Move2 P \<sigma>'; Q \<sigma>' \<rbrakk> \<Longrightarrow> Q \<sigma>''\<rbrakk>
-  \<Longrightarrow> Q \<sigma>'"
-by(induct rule: \<tau>Exec_1.induct)(auto)
+lemma \<tau>exec_1E [elim]:
+  assumes "\<tau>exec_1 P \<sigma> \<sigma>'"
+  obtains "exec_1 P \<sigma> \<epsilon> \<sigma>'" "\<tau>Move2 P \<sigma>"
+using assms by(auto simp add: \<tau>exec_1_def)
 
-lemma \<tau>Exec_1_trans [trans]: 
-  assumes one: "\<tau>Exec_1 P \<sigma> \<sigma>'"
-  and two: "\<tau>Exec_1 P \<sigma>' \<sigma>''"
-  shows "\<tau>Exec_1 P \<sigma> \<sigma>''"
-using two one
-by(induct rule: \<tau>Exec_1_induct)(auto intro: \<tau>Exec_1_step)
+abbreviation \<tau>Exec_1r :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
+where "\<tau>Exec_1r P == (\<tau>exec_1 P)^**"
+
+abbreviation \<tau>Exec_1t :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
+where "\<tau>Exec_1t P == (\<tau>exec_1 P)^++"
+
+definition \<tau>exec_1_d :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
+where "\<tau>exec_1_d P \<sigma> \<sigma>' \<longleftrightarrow> exec_1 P \<sigma> \<epsilon> \<sigma>' \<and> \<tau>Move2 P \<sigma> \<and> check P \<sigma>"
+
+lemma \<tau>exec_1_dI [intro]:
+  "\<lbrakk> exec_1 P \<sigma> \<epsilon> \<sigma>'; check P \<sigma>; \<tau>Move2 P \<sigma> \<rbrakk> \<Longrightarrow> \<tau>exec_1_d P \<sigma> \<sigma>'"
+by(simp add: \<tau>exec_1_d_def)
+
+lemma \<tau>exec_1_dE [elim]:
+  assumes "\<tau>exec_1_d P \<sigma> \<sigma>'"
+  obtains "exec_1 P \<sigma> \<epsilon> \<sigma>'" "check P \<sigma>" "\<tau>Move2 P \<sigma>"
+using assms by(auto simp add: \<tau>exec_1_d_def)
+
+abbreviation \<tau>Exec_1_dr :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
+where "\<tau>Exec_1_dr P == (\<tau>exec_1_d P)^**"
+
+abbreviation \<tau>Exec_1_dt :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
+where "\<tau>Exec_1_dt P == (\<tau>exec_1_d P)^++"
+
+
 
 declare compxE2_size_convs[simp del] compxEs2_size_convs[simp del]
 declare compxE2_stack_xlift_convs[simp del] compxEs2_stack_xlift_convs[simp del]
@@ -1067,426 +1828,178 @@ lemma check_instr_CM_change:
   \<Longrightarrow> check_instr ins P h stk loc C' M' pc frs"
 by(cases ins)(simp_all)
 
-lemma exec_move_exec_1':
-  assumes exec: "exec_move P body h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
+lemma exec_move_exec_1:
+  assumes exec: "exec_move ci P body h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
   and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = body in D"
-  shows "exec_1' (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs) ta (xcp', h', (stk', loc', C, M, pc') # frs)"
+  shows "exec_1 (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs) ta (xcp', h', (stk', loc', C, M, pc') # frs)"
 using exec unfolding exec_move_def
 proof(cases)
   case (exec_instr TA XCP' H' STK' LOC' PC' PC H STK LOC)
   hence [simp]: "H = h" "STK = stk" "LOC = loc" "PC = pc" "xcp = None" "TA = ta" "H' = h'" 
     "STK' = stk'" "LOC' = loc'" "PC' = pc'" "XCP' = xcp'"
-    and exec: "(ta, xcp', h', [(stk', loc', arbitrary, arbitrary, pc')])
-                \<in> set (exec_instr (compE2 body ! pc) (compP2 P) h stk loc arbitrary arbitrary pc [])" by auto
+    and exec: "(ta, xcp', h', [(stk', loc', undefined, undefined, pc')])
+                \<in> set (exec_instr (compE2 body ! pc) (compP2 P) h stk loc undefined undefined pc [])" by auto
   from exec have "(ta, xcp', h', [(stk', loc', C, M, pc')])
                 \<in> set (exec_instr (compE2 body ! pc) (compP2 P) h stk loc C M pc [])"
     by(rule exec_instr_CM_change)
   from exec_instr_frs_offer[OF this, of frs]
   have "(ta, xcp', h', (stk', loc', C, M, pc') # frs)
         \<in> set (exec_instr (compE2 body ! pc) (compP2 P) h stk loc C M pc frs)" by simp
-  moreover
-  from check_instr_frs_offer[OF `check_instr (compE2 body ! PC) (compP2 P) H STK LOC arbitrary arbitrary PC []`, of frs]
-    compE2_not_Return[of body] `PC < length (compE2 body)`
-  have "check_instr (compE2 body ! PC) (compP2 P) H STK LOC C M PC frs"
-    by(simp)(rule check_instr_CM_change, simp_all add: in_set_conv_nth)
-  ultimately show ?thesis using sees_method_compP[OF sees, where f=compMb2] `PC < length (compE2 body)`
-    by(auto simp add: compP2_def compMb2_def nth_append intro: exec_1_Normal)
+  with sees `PC < length (compE2 body)` show ?thesis
+    by(simp add: exec_1_iff compP2_def compMb2_def nth_append)
 next
   case exec_catch
   thus ?thesis using sees_method_compP[OF sees, of compMb2]
-    by(auto simp add: compMb2_def compP2_def intro: exec_1_Throw)
+    by(simp add: exec_1_iff compMb2_def compP2_def)
 qed
 
-lemma \<tau>Exec_move_\<tau>Exec_1:
-  assumes move: "\<tau>Exec_move P body h (stk, loc, pc, xcp) (stk', loc', pc', xcp')"
+lemma \<tau>exec_move_\<tau>exec_1:
+  assumes exec: "\<tau>exec_move ci P body h (stk, loc, pc, xcp) (stk', loc', pc', xcp')"
   and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = body in D"
-  shows "\<tau>Exec_1 P (xcp, h, (stk, loc, C, M, pc) # frs') (xcp', h, (stk', loc', C, M, pc') # frs')"
-using move
-proof(induct rule: \<tau>Exec_move.induct[split_format (complete)])
-  case \<tau>Exec_refl thus ?case by(rule \<tau>Exec_1_refl)
-next
-  case (\<tau>Exec_step stk loc pc xcp stk' loc' pc' xcp' stk'' loc'' pc'' xcp'')
-  note ` \<tau>Exec_1 P (xcp, h, (stk, loc, C, M, pc) # frs') (xcp', h, (stk', loc', C, M, pc') # frs')`
-  moreover from `exec_move P body h (stk', loc', pc', xcp') \<epsilon> h (stk'', loc'', pc'', xcp'')` sees
-  have "exec_1' (compP2 P) (xcp', h, (stk', loc', C, M, pc') # frs') \<epsilon> (xcp'', h, (stk'', loc'', C, M, pc'') # frs')"
-    by(rule exec_move_exec_1')
-  moreover {
-    fix a assume [simp]: "xcp' = \<lfloor>a\<rfloor>" 
+  shows "\<tau>exec_1 (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs) (xcp', h, (stk', loc', C, M, pc') # frs)"
+proof(rule \<tau>exec_1I)
+  from exec obtain exec': "exec_move ci P body h (stk, loc, pc, xcp) \<epsilon> h (stk', loc', pc', xcp')"
+    and \<tau>: "\<tau>move2 P h stk body pc xcp" by(rule \<tau>exec_moveE)
+  have "exec_1 (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs) \<epsilon> (xcp', h, (stk', loc', C, M, pc') # frs)"
+    using exec' sees by(rule exec_move_exec_1)
+  thus "compP2 P \<turnstile> (xcp, h, (stk, loc, C, M, pc) # frs) -\<epsilon>-jvm\<rightarrow> (xcp', h, (stk', loc', C, M, pc') # frs)" by auto
+  { fix a
+    assume [simp]: "xcp = \<lfloor>a\<rfloor>" 
     from sees_method_compP[OF sees, of compMb2]
     have "ex_table_of (compP2 P) C M = compxE2 body 0 0" by(simp add: compP2_def compMb2_def)
-    with `exec_move P body h (stk', loc', pc', xcp') \<epsilon> h (stk'', loc'', pc'', xcp'')`
-    have "match_ex_table (compP2 P) (cname_of h a) pc' (ex_table_of (compP2 P) C M) \<noteq> None" "pc' < length (compE2 body)"
-      by(auto simp add: exec_move_def elim: exec_meth.cases) }
-  with `\<tau>move2 body pc' xcp'` sees sees_method_compP[OF sees, of compMb2]
-  have "\<tau>Move2 P (xcp', h, (stk', loc', C, M, pc') # frs')" by(clarsimp simp add: compMb2_def compP2_def)
-  ultimately show ?case by(rule \<tau>Exec_1_step)
+    hence "match_ex_table (compP2 P) (cname_of h a) pc (ex_table_of (compP2 P) C M) \<noteq> None" "pc < length (compE2 body)"
+      using exec' sees by(auto simp add: exec_move_def elim: exec_meth.cases) }
+  with \<tau> sees sees_method_compP[OF sees, of compMb2]
+  show "\<tau>Move2 (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs)" 
+    unfolding \<tau>Move2_compP2[OF sees] by(fastsimp simp add: compP2_def compMb2_def)
 qed
 
+lemma \<tau>Exec_mover_\<tau>Exec_1r:
+  assumes move: "\<tau>Exec_mover ci P body h (stk, loc, pc, xcp) (stk', loc', pc', xcp')"
+  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = body in D"
+  shows "\<tau>Exec_1r (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs') (xcp', h, (stk', loc', C, M, pc') # frs')"
+using move
+by(induct rule: \<tau>Execr_induct)(blast intro: rtranclp.rtrancl_into_rtrancl \<tau>exec_move_\<tau>exec_1[OF _ sees])+
 
-inductive \<tau>Red :: "J1_prog \<Rightarrow> heap \<Rightarrow> expr1 \<Rightarrow> val list \<Rightarrow> expr1 \<Rightarrow> val list \<Rightarrow> bool"
-  for P :: "J1_prog" and h :: heap
-  where
-  \<tau>Red_refl: "\<tau>Red P h e xs e xs"
+lemma \<tau>Exec_movet_\<tau>Exec_1t:
+  assumes move: "\<tau>Exec_movet ci P body h (stk, loc, pc, xcp) (stk', loc', pc', xcp')"
+  and sees: "P \<turnstile> C sees M : Ts\<rightarrow>T = body in D"
+  shows "\<tau>Exec_1t (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs') (xcp', h, (stk', loc', C, M, pc') # frs')"
+using move
+by(induct rule: \<tau>Exect_induct)(blast intro: tranclp.trancl_into_trancl \<tau>exec_move_\<tau>exec_1[OF _ sees])+
 
-| \<tau>Red_step:
-  "\<lbrakk> \<tau>Red P h e xs e' xs'; P \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>; \<tau>move1 e' \<rbrakk>
-  \<Longrightarrow> \<tau>Red P h e xs e'' xs''"
-
-lemmas \<tau>Red1step = \<tau>Red_step[OF \<tau>Red_refl]
-lemmas \<tau>Red2step = \<tau>Red_step[OF \<tau>Red_step, OF \<tau>Red_refl]
-lemmas \<tau>Red3step = \<tau>Red_step[OF \<tau>Red_step, OF \<tau>Red_step, OF \<tau>Red_refl]
-
-lemma \<tau>Red_induct [consumes 1, case_names refl step]:
-  "\<lbrakk> \<tau>Red P h e xs e' xs'; Q e xs;
-     \<And>e' xs' e'' xs''.
-       \<lbrakk> \<tau>Red P h e xs e' xs';
-         P \<turnstile>1 \<langle>e', (h, xs')\<rangle> -\<epsilon>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>;
-         \<tau>move1 e'; Q e' xs' \<rbrakk>
-       \<Longrightarrow> Q e'' xs''\<rbrakk>
-  \<Longrightarrow> Q e' xs'"
-by(induct rule: \<tau>Red.induct)(auto)
-
-inductive \<tau>Reds :: "J1_prog \<Rightarrow> heap \<Rightarrow> expr1 list \<Rightarrow> val list \<Rightarrow> expr1 list \<Rightarrow> val list \<Rightarrow> bool"
-  for P :: "J1_prog" and h :: heap
-  where
-  \<tau>Reds_refl: "\<tau>Reds P h es xs es xs"
-
-| \<tau>Reds_step:
-  "\<lbrakk> \<tau>Reds P h es xs es' xs'; P \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>; \<tau>moves1 es' \<rbrakk>
-  \<Longrightarrow> \<tau>Reds P h es xs es'' xs''"
-
-lemmas \<tau>Reds1step = \<tau>Reds_step[OF \<tau>Reds_refl]
-lemmas \<tau>Reds2step = \<tau>Reds_step[OF \<tau>Reds_step, OF \<tau>Reds_refl]
-lemmas \<tau>Reds3step = \<tau>Reds_step[OF \<tau>Reds_step, OF \<tau>Reds_step, OF \<tau>Reds_refl]
-
-lemma \<tau>Reds_induct [consumes 1, case_names refl step]:
-  "\<lbrakk> \<tau>Reds P h es xs es' xs'; Q es xs;
-     \<And>es' xs' es'' xs''.
-       \<lbrakk> \<tau>Reds P h es xs es' xs';
-         P \<turnstile>1 \<langle>es', (h, xs')\<rangle> [-\<epsilon>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>;
-         \<tau>moves1 es'; Q es' xs' \<rbrakk>
-       \<Longrightarrow> Q es'' xs''\<rbrakk>
-  \<Longrightarrow> Q es' xs'"
-by(induct rule: \<tau>Reds.induct)(auto)
-
-
-lemma NewArray_\<tau>Red_xt [elim!]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (newA T\<lfloor>e\<rceil>) xs (newA T\<lfloor>e'\<rceil>) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros New1ArrayRed \<tau>move1NewArray)
-
-lemma Cast_\<tau>Red_xt [elim!]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (Cast T e) xs (Cast T e') xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Cast1Red \<tau>move1Cast)
-
-lemma BinOp_\<tau>Red_xt1 [elim!]:
-  "\<tau>Red P h e1 xs e1' xs' \<Longrightarrow> \<tau>Red P h (e1 \<guillemotleft>bop\<guillemotright> e2) xs (e1' \<guillemotleft>bop\<guillemotright> e2) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Bin1OpRed1 \<tau>move1BinOp1)
-
-lemma \<tau>Red_preserves_len: "\<tau>Red P h e xs e' xs' \<Longrightarrow> length xs' = length xs"
-by(induct rule: \<tau>Red.induct)(auto dest: red1_preserves_len)
-
-lemma Block_None_\<tau>Red_xt:
-  "\<lbrakk> \<tau>Red P h e xs e' xs'; V < length xs \<rbrakk> \<Longrightarrow> \<tau>Red P h {V:T=None; e}\<^bsub>cr\<^esub> xs {V:T=None; e'}\<^bsub>cr\<^esub> xs'"
-by(induct rule: \<tau>Red.induct)
-  (auto intro: \<tau>Red.intros dest: \<tau>Red_preserves_len intro: \<tau>move1Block elim!: \<tau>Red_step Block1RedNone)
-
-lemma \<tau>Red_inj_\<tau>Reds: "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Reds P h (e # es) xs (e' # es) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Reds.intros List1Red1 \<tau>moves1Hd)
-
-lemma \<tau>Reds_cons_\<tau>Reds: "\<tau>Reds P h es xs es' xs' \<Longrightarrow> \<tau>Reds P h (Val v # es) xs (Val v # es') xs'"
-by(induct rule: \<tau>Reds.induct)(auto intro: \<tau>Reds.intros List1Red2 \<tau>moves1Tl)
-
-lemma \<tau>Red_rtrancl_conv:
-  "\<tau>Red P h = (\<lambda>e xs e' xs'. (\<lambda>(e, xs) (e', xs'). P \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle> \<and> \<tau>move1 e)^** (e, xs) (e', xs'))"
-proof(rule ext)+
-  fix e xs e' xs'
-  show "\<tau>Red P h e xs e' xs' \<longleftrightarrow> (\<lambda>(e, xs) (e', xs'). P \<turnstile>1 \<langle>e,(h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e',(h, xs')\<rangle> \<and> \<tau>move1 e)\<^sup>*\<^sup>* (e, xs) (e', xs')" (is "?lhs \<longleftrightarrow> ?rhs")
-  proof
-    assume ?lhs thus ?rhs
-      by induct(auto elim: rtranclp.rtrancl_into_rtrancl)
-  next
-    assume ?rhs thus ?lhs
-      by(induct a\<equiv>"(e, xs)" b\<equiv>"(e', xs')" arbitrary: e xs e' xs' rule: rtranclp.induct)
-        (blast intro: \<tau>Red_step intro: \<tau>Red_refl)+
-  qed
-qed
-
-
-lemma converse_\<tau>RedE:
-  assumes "\<tau>Red P h e xs e'' xs''"
-  obtains "e = e''" "xs = xs''"
-        | e' xs' where "P \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>" "\<tau>move1 e" "\<tau>Red P h e' xs' e'' xs''"
-using assms unfolding \<tau>Red_rtrancl_conv
-by(rule converse_rtranclpE)(blast)+
-
-lemma converse_\<tau>Red_step:
-  "\<lbrakk> P \<turnstile>1 \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>; \<tau>move1 e; \<tau>Red P h e' xs' e'' xs'' \<rbrakk> \<Longrightarrow> \<tau>Red P h e xs e'' xs''"
-unfolding \<tau>Red_rtrancl_conv
-apply(rule converse_rtranclp_into_rtranclp)
- prefer 2
- apply(assumption)
-apply(simp)
+lemma exec_meth_\<tau>_heap_unchanged:
+  "\<lbrakk> \<tau>move2 P h stk e pc None; (ta, xcp', h', frs') \<in> set (exec_instr (compE2 e ! pc) P h stk loc C M pc' frs) \<rbrakk> \<Longrightarrow> h' = h"
+apply(cases "compE2 e ! pc")
+apply(auto simp add: \<tau>move2_iff split_beta \<tau>moves2_iff split: split_if_asm)
 done
 
-lemma Block_\<tau>Red_None [elim!]:
-  "\<lbrakk> \<tau>Red P h e xs e' xs'; V < length xs' \<rbrakk> \<Longrightarrow> \<tau>Red P h {V:T=None; e}\<^bsub>cr\<^esub> xs {V:T=None; e'}\<^bsub>cr\<^esub> xs'"
-apply(induct rule: \<tau>Red.induct)
-apply(fastsimp intro: \<tau>Red_refl elim!: \<tau>Red_step intro: Block1RedNone \<tau>move1Block dest: red1_preserves_len)+
-done
+lemma exec_meth_\<tau>s_heap_unchanged:
+  "\<lbrakk> \<tau>moves2 P h stk es pc None; (ta, xcp', h', frs') \<in> set (exec_instr (compEs2 es ! pc) P h stk loc C M pc' frs) \<rbrakk> \<Longrightarrow> h' = h"
+by(cases "compEs2 es ! pc")(auto simp add: \<tau>move2_iff \<tau>moves2_iff split_beta split: split_if_asm)
 
-lemma Block_\<tau>Red_Some:
-  "\<lbrakk> \<tau>Red P h e (xs[V := v]) e' xs'; e \<noteq> e' \<or> xs[V := v] \<noteq> xs'; V < length xs \<rbrakk> 
-  \<Longrightarrow> \<tau>Red P h {V:Ty=\<lfloor>v\<rfloor>; e}\<^bsub>cr\<^esub> xs {V:Ty=None; e'}\<^bsub>cr\<^esub> xs'"
-apply(erule converse_\<tau>RedE)
- apply(simp)
-apply(rule converse_\<tau>Red_step)
-  apply(erule (1) Block1RedSome)
- apply(erule \<tau>move1Block)
-apply(drule red1_preserves_len)
-apply(frule \<tau>Red_preserves_len)
-by clarsimp
+
+lemma \<tau>Exec_1r_rtranclpD:
+  "\<tau>Exec_1r P (xcp, h, frs) (xcp', h', frs')
+  \<Longrightarrow> (\<lambda>((xcp, frs), h) ((xcp', frs'), h'). exec_1 P (xcp, h, frs) \<epsilon> (xcp', h', frs') \<and> \<tau>Move2 P (xcp, h, frs))^** ((xcp, frs), h) ((xcp', frs'), h')"
+by(induct rule: rtranclp_induct3)(fastsimp intro: rtranclp.rtrancl_into_rtrancl)+
+
+lemma \<tau>Exec_1t_rtranclpD:
+  "\<tau>Exec_1t P (xcp, h, frs) (xcp', h', frs')
+  \<Longrightarrow> (\<lambda>((xcp, frs), h) ((xcp', frs'), h'). exec_1 P (xcp, h, frs) \<epsilon> (xcp', h', frs') \<and> \<tau>Move2 P (xcp, h, frs))^++ ((xcp, frs), h) ((xcp', frs'), h')"
+by(induct rule: tranclp_induct3)(fastsimp intro: tranclp.trancl_into_trancl)+
 
 lemma exec_meth_length_compE2_stack_xliftD:
-  "exec_meth P (compE2 e) (stack_xlift d (compxE2 e 0 0)) h (stk, loc, pc, xcp) ta h' s'
+  "exec_meth ci P (compE2 e) (stack_xlift d (compxE2 e 0 0)) h (stk, loc, pc, xcp) ta h' s'
   \<Longrightarrow> pc < length (compE2 e)"
 by(cases s')(auto simp add: stack_xlift_compxE2)
 
 lemma exec_meth_length_pc_xt_Nil:
-  "exec_meth P ins [] h (stk, loc, pc, xcp) ta h' s' \<Longrightarrow> pc < length ins"
+  "exec_meth ci P ins [] h (stk, loc, pc, xcp) ta h' s' \<Longrightarrow> pc < length ins"
 apply(erule exec_meth.cases)
 apply(auto dest: match_ex_table_pc_length_compE2)
 done
 
-lemma BinOp_\<tau>Red_xt2 [elim!]:
-  "\<tau>Red P h e2 xs e2' xs' \<Longrightarrow> \<tau>Red P h (Val v \<guillemotleft>bop\<guillemotright> e2) xs (Val v \<guillemotleft>bop\<guillemotright> e2') xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Bin1OpRed2 \<tau>move1BinOp2)
-
-lemma \<tau>Red_trans [trans]: 
-  assumes one: "\<tau>Red P h e xs e' xs'"
-  and two: "\<tau>Red P h e' xs' e'' xs''"
-  shows "\<tau>Red P h e xs e'' xs''"
-using two one
-by(induct rule: \<tau>Red_induct)(auto intro: \<tau>Red_step)
-
 lemma BinOp_exec2D:
-  assumes exec: "exec_meth (compP2 P) (compE2 (e1 \<guillemotleft>bop\<guillemotright> e2)) (compxE2 (e1 \<guillemotleft>bop\<guillemotright> e2) 0 0) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ta h' (stk', loc', pc', xcp')"
+  assumes exec: "exec_meth ci (compP2 P) (compE2 (e1 \<guillemotleft>bop\<guillemotright> e2)) (compxE2 (e1 \<guillemotleft>bop\<guillemotright> e2) 0 0) h (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ta h' (stk', loc', pc', xcp')"
   and pc: "pc < length (compE2 e2)"
-  shows "exec_meth (compP2 P) (compE2 e2) (stack_xlift (length [v1]) (compxE2 e2 0 0)) h (stk @ [v1], loc, pc, xcp) ta h' (stk', loc', pc' - length (compE2 e1), xcp') \<and> pc' \<ge> length (compE2 e1)"
+  shows "exec_meth ci (compP2 P) (compE2 e2) (stack_xlift (length [v1]) (compxE2 e2 0 0)) h (stk @ [v1], loc, pc, xcp) ta h' (stk', loc', pc' - length (compE2 e1), xcp') \<and> pc' \<ge> length (compE2 e1)"
 proof
-  from exec have "exec_meth (compP2 P) ((compE2 e1 @ compE2 e2) @ (case bop of Eq \<Rightarrow> [CmpEq] | Add \<Rightarrow> [IAdd]))
+  from exec have "exec_meth ci (compP2 P) ((compE2 e1 @ compE2 e2) @ [BinOpInstr bop])
      (compxE2 e1 0 0 @ shift (length (compE2 e1)) (stack_xlift (length [v1]) (compxE2 e2 0 0))) h
      (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(simp add: compxE2_size_convs compxE2_stack_xlift_convs)
-  hence exec': "exec_meth (compP2 P) (compE2 e1 @ compE2 e2) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (stack_xlift (length [v1]) (compxE2 e2 0 0))) h
+  hence exec': "exec_meth ci (compP2 P) (compE2 e1 @ compE2 e2) (compxE2 e1 0 0 @ shift (length (compE2 e1)) (stack_xlift (length [v1]) (compxE2 e2 0 0))) h
      (stk @ [v1], loc, length (compE2 e1) + pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(rule exec_meth_take) (simp add: pc)
-  thus "exec_meth (compP2 P) (compE2 e2) (stack_xlift (length [v1]) (compxE2 e2 0 0)) h
+  thus "exec_meth ci (compP2 P) (compE2 e2) (stack_xlift (length [v1]) (compxE2 e2 0 0)) h
      (stk @ [v1], loc, pc, xcp) ta h' (stk', loc', pc' - length (compE2 e1), xcp')"
     by(rule exec_meth_drop_xt) auto
   from exec' show "pc' \<ge> length (compE2 e1)"
    by(rule exec_meth_drop_xt_pc)(auto)
-qed  
-
-lemma \<tau>Red_ThrowD [dest]: "\<tau>Red P h (Throw a) xs e'' xs'' \<Longrightarrow> e'' = Throw a \<and> xs'' = xs"
-by(induct e\<equiv>"Throw a :: expr1" xs e'' xs'' rule: \<tau>Red.induct)(auto)
-
-
-lemma LAss_\<tau>Red [elim!]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (V := e) xs (V := e') xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros LAss1Red \<tau>move1LAss)
-
-lemma AAcc_\<tau>Red_xt1 [elim!]:
-  "\<tau>Red P h a xs a' xs' \<Longrightarrow> \<tau>Red P h (a\<lfloor>i\<rceil>) xs (a'\<lfloor>i\<rceil>) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros AAcc1Red1 \<tau>move1AAcc1)
-
-lemma AAcc_\<tau>Red_xt2 [elim!]:
-  "\<tau>Red P h i xs i' xs' \<Longrightarrow> \<tau>Red P h (Val a\<lfloor>i\<rceil>) xs (Val a\<lfloor>i'\<rceil>) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros AAcc1Red2 \<tau>move1AAcc2)
-
-lemma AAss_\<tau>Red_xt1 [elim!]:
-  "\<tau>Red P h a xs a' xs' \<Longrightarrow> \<tau>Red P h (a\<lfloor>i\<rceil> := e) xs (a'\<lfloor>i\<rceil> := e) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros AAss1Red1 \<tau>move1AAss1)
-
-lemma AAss_\<tau>Red_xt2 [elim!]:
-  "\<tau>Red P h i xs i' xs' \<Longrightarrow> \<tau>Red P h (Val a\<lfloor>i\<rceil> := e) xs (Val a\<lfloor>i'\<rceil> := e) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros AAss1Red2 \<tau>move1AAss2)
-
-lemma AAss_\<tau>Red_xt3 [elim!]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (Val a\<lfloor>Val i\<rceil> := e) xs (Val a\<lfloor>Val i\<rceil> := e') xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros AAss1Red3 \<tau>move1AAss3)
-
-lemma ALength_\<tau>Red_xt [elim!]:
-  "\<tau>Red P h a xs a' xs' \<Longrightarrow> \<tau>Red P h (a\<bullet>length) xs (a'\<bullet>length) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros ALength1Red \<tau>move1ALength)
-
-lemma FAcc_\<tau>Red_xt [elim!]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (e\<bullet>F{D}) xs (e'\<bullet>F{D}) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros FAcc1Red \<tau>move1FAcc)
-
-lemma FAss_\<tau>Red_xt1 [elim!]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (e\<bullet>F{D} := e2) xs (e'\<bullet>F{D} := e2) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros FAss1Red1 \<tau>move1FAss1)
-
-lemma FAss_\<tau>Red_xt2 [elim!]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (Val v\<bullet>F{D} := e) xs (Val v\<bullet>F{D} := e') xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros FAss1Red2 \<tau>move1FAss2)
-
-lemma Call_\<tau>Red_obj [elim!]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (e\<bullet>M(ps)) xs (e'\<bullet>M(ps)) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Call1Obj \<tau>move1CallObj)
-
-lemma Call_\<tau>Red_param [elim!]:
-  "\<tau>Reds P h es xs es' xs' \<Longrightarrow> \<tau>Red P h (Val v\<bullet>M(es)) xs (Val v\<bullet>M(es')) xs'"
-by(induct rule: \<tau>Reds.induct)(auto intro: \<tau>Red.intros Call1Params \<tau>move1CallParams)
+qed
 
 lemma Call_execParamD:
-  assumes exec: "exec_meth (compP2 P) (compE2 (obj\<bullet>M'(ps))) (compxE2 (obj\<bullet>M'(ps)) 0 0) h (stk @ [v], loc, length (compE2 obj) + pc, xcp) ta h' (stk', loc', pc', xcp')"
+  assumes exec: "exec_meth ci (compP2 P) (compE2 (obj\<bullet>M'(ps))) (compxE2 (obj\<bullet>M'(ps)) 0 0) h (stk @ [v], loc, length (compE2 obj) + pc, xcp) ta h' (stk', loc', pc', xcp')"
   and pc: "pc < length (compEs2 ps)"
-  shows "exec_meth (compP2 P) (compEs2 ps) (stack_xlift (length [v]) (compxEs2 ps 0 0)) h (stk @ [v], loc, pc, xcp) ta h' (stk', loc', pc' - length (compE2 obj), xcp') \<and> pc' \<ge> length (compE2 obj)"
+  shows "exec_meth ci (compP2 P) (compEs2 ps) (stack_xlift (length [v]) (compxEs2 ps 0 0)) h (stk @ [v], loc, pc, xcp) ta h' (stk', loc', pc' - length (compE2 obj), xcp') \<and> pc' \<ge> length (compE2 obj)"
 proof
-  from exec have "exec_meth (compP2 P) ((compE2 obj @ compEs2 ps) @ [Invoke M' (length ps)])
+  from exec have "exec_meth ci (compP2 P) ((compE2 obj @ compEs2 ps) @ [Invoke M' (length ps)])
      (compxE2 obj 0 0 @ shift (length (compE2 obj)) (stack_xlift (length [v]) (compxEs2 ps 0 0))) h
      (stk @ [v], loc, length (compE2 obj) + pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(simp add: compxEs2_size_convs compxEs2_stack_xlift_convs)
-  hence exec': "exec_meth (compP2 P) (compE2 obj @ compEs2 ps) (compxE2 obj 0 0 @ shift (length (compE2 obj)) (stack_xlift (length [v]) (compxEs2 ps 0 0))) h
+  hence exec': "exec_meth ci (compP2 P) (compE2 obj @ compEs2 ps) (compxE2 obj 0 0 @ shift (length (compE2 obj)) (stack_xlift (length [v]) (compxEs2 ps 0 0))) h
      (stk @ [v], loc, length (compE2 obj) + pc, xcp) ta h' (stk', loc', pc', xcp')"
     by(rule exec_meth_take)(simp add: pc)
-  thus "exec_meth (compP2 P) (compEs2 ps) (stack_xlift (length [v]) (compxEs2 ps 0 0)) h (stk @ [v], loc, pc, xcp) ta h' (stk', loc', pc' - length (compE2 obj), xcp')"
+  thus "exec_meth ci (compP2 P) (compEs2 ps) (stack_xlift (length [v]) (compxEs2 ps 0 0)) h (stk @ [v], loc, pc, xcp) ta h' (stk', loc', pc' - length (compE2 obj), xcp')"
     by(rule exec_meth_drop_xt) auto
   from exec' show "pc' \<ge> length (compE2 obj)"
    by(rule exec_meth_drop_xt_pc)(auto)
 qed  
 
-lemma Sync_\<tau>Red [elim]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (sync\<^bsub>V\<^esub> (e) e2) xs (sync\<^bsub>V\<^esub> (e') e2) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Synchronized1Red1 \<tau>move1Sync)
 
-lemma InSync_\<tau>Red_1 [elim]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (insync\<^bsub>V\<^esub> (a) e) xs (insync\<^bsub>V\<^esub> (a) e') xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Synchronized1Red2 \<tau>move1InSync)
+lemma exec_move_length_compE2D [dest]:
+  "exec_move ci P e h (stk, loc, pc, xcp) ta h' s' \<Longrightarrow> pc < length (compE2 e)"
+by(cases s')(auto simp add: exec_move_def)
 
-lemma Seq_\<tau>Red [elim]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (e;;e2) xs (e';;e2) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Seq1Red \<tau>move1Seq)
+lemma exec_moves_length_compEs2D [dest]:
+  "exec_moves ci P es h (stk, loc, pc, xcp) ta h' s' \<Longrightarrow> pc < length (compEs2 es)"
+by(cases s')(auto simp add: exec_moves_def)
 
-lemma Cond_\<tau>Red [elim]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (if (e) e1 else e2) xs (if (e') e1 else e2) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Cond1Red \<tau>move1Cond)
 
-lemma Throw_\<tau>Red [elim]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (throw e) xs (throw e') xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Throw1Red \<tau>move1Throw)
+lemma exec_meth_ci_appD:
+  "\<lbrakk> exec_meth ci P ins xt h (stk, loc, pc, None) ta h' fr' \<rbrakk>
+  \<Longrightarrow>  ci_app ci (ins ! pc) P h stk loc undefined undefined pc []"
+by(cases fr')(simp add: exec_meth_instr)
 
-lemma Try_\<tau>Red [elim]:
-  "\<tau>Red P h e xs e' xs' \<Longrightarrow> \<tau>Red P h (try e catch(C V) e2) xs (try e' catch(C V) e2) xs'"
-by(induct rule: \<tau>Red.induct)(auto intro: \<tau>Red.intros Try1Red \<tau>move1Try)
+lemma exec_move_ci_appD:
+  "exec_move ci P E h (stk, loc, pc, None) ta h' fr'
+  \<Longrightarrow> ci_app ci (compE2 E ! pc) (compP2 P) h stk loc undefined undefined pc []"
+unfolding exec_move_def by(rule exec_meth_ci_appD)
 
-lemma \<tau>Reds_trans [trans]: 
-  assumes one: "\<tau>Reds P h es xs es' xs'"
-  and two: "\<tau>Reds P h es' xs' es'' xs''"
-  shows "\<tau>Reds P h es xs es'' xs''"
-using two one
-by(induct rule: \<tau>Reds_induct)(auto intro: \<tau>Reds_step)
+lemma exec_moves_ci_appD:
+  "exec_moves ci P Es h (stk, loc, pc, None) ta h' fr'
+  \<Longrightarrow> ci_app ci (compEs2 Es ! pc) (compP2 P) h stk loc undefined undefined pc []"
+unfolding exec_moves_def by(rule exec_meth_ci_appD)
 
-inductive \<tau>Red1 :: "J1_prog \<Rightarrow> heap \<Rightarrow> (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow>
-                           (expr1 \<times> locals1) \<times> ((expr1 \<times> locals1) list) \<Rightarrow> bool"
-for P ::J1_prog and h :: heap
-where
-  \<tau>Red1_refl: "\<tau>Red1 P h exs exs"
-| \<tau>Red1_step: "\<lbrakk> \<tau>Red1 P h exs (ex', exs'); P \<turnstile>1 \<langle>ex'/exs', h\<rangle> -\<epsilon>\<rightarrow> \<langle>ex''/exs'', h\<rangle>; \<tau>Move1 (ex', exs') \<rbrakk> \<Longrightarrow> \<tau>Red1 P h exs (ex'', exs'')"
+lemma \<tau>instr_stk_append_check:
+  "check_instr' i P h stk loc C M pc frs \<Longrightarrow> \<tau>instr P h (stk @ vs) i = \<tau>instr P h stk i"
+by(cases i)(simp_all add: nth_append)
 
-lemmas \<tau>Red1_1step = \<tau>Red1_step[OF \<tau>Red1_refl]
-lemmas \<tau>Red1_2step = \<tau>Red1_step[OF \<tau>Red1_step, OF \<tau>Red1_refl]
-lemmas \<tau>Red1_3step = \<tau>Red1_step[OF \<tau>Red1_step, OF \<tau>Red1_step, OF \<tau>Red1_refl]
-
-lemma \<tau>Red1_induct [consumes 1, case_names refl step]:
-  "\<lbrakk> \<tau>Red1 P h exs exs'; Q exs;
-     \<And>exs' ex'' exs''.
-       \<lbrakk> \<tau>Red1 P h exs exs';
-         P \<turnstile>1 \<langle>fst exs'/snd exs', h\<rangle> -\<epsilon>\<rightarrow> \<langle>ex''/exs'', h\<rangle>;
-         \<tau>Move1 exs'; Q exs' \<rbrakk>
-       \<Longrightarrow> Q (ex'', exs'')\<rbrakk>
-  \<Longrightarrow> Q exs'"
-by(induct rule: \<tau>Red1.induct)(auto)
-
-lemma \<tau>Red1_rtrancl_conv:
-  "\<tau>Red1 P h = (\<lambda>(ex, exs) (ex', exs'). P \<turnstile>1 \<langle>ex/exs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>ex'/exs', h\<rangle> \<and> \<tau>Move1 (ex, exs))^**"
-  (is "_ = (?r)^**")
-proof(intro ext)
-  fix exs exs'
-  show "\<tau>Red1 P h exs exs' = ?r^** exs exs'" (is "?lhs = ?rhs")
-  proof
-    assume ?lhs thus ?rhs
-      by(induct)(auto intro: rtranclp.rtrancl_into_rtrancl)
-  next
-    assume ?rhs thus ?lhs
-      by(induct)(auto intro: \<tau>Red1.intros)
-  qed
-qed
-
-lemma \<tau>Red1_trans [trans]:
-  "\<lbrakk> \<tau>Red1 P h exs exs'; \<tau>Red1 P h exs' exs'' \<rbrakk> \<Longrightarrow> \<tau>Red1 P h exs exs''"
-unfolding \<tau>Red1_rtrancl_conv by(rule rtranclp_trans)
-
-lemma \<tau>Red_into_\<tau>Red1:
-  "\<tau>Red P h e xs e'' xs'' \<Longrightarrow> \<tau>Red1 P h ((e, xs), exs) ((e'', xs''), exs)"
-apply(induct rule: \<tau>Red.induct)
-apply(fastsimp intro: \<tau>Red1.intros dest: red1Red)+
+lemma \<tau>instr_stk_drop_exec_move:
+  "exec_move ci P e h (stk, loc, pc, None) ta h' fr'
+  \<Longrightarrow> \<tau>instr (compP2 P) h (stk @ vs) (compE2 e ! pc) = \<tau>instr (compP2 P) h stk (compE2 e ! pc)"
+apply(drule exec_move_ci_appD)
+apply(drule wf_ciD2_ci_app)
+apply(erule \<tau>instr_stk_append_check)
 done
 
-lemma \<tau>Red_preserves_B:
- "\<lbrakk> \<tau>Red P h e xs e' xs'; \<B> e n \<rbrakk> \<Longrightarrow> \<B> e' n"
-apply(induct rule: \<tau>Red.induct)
-apply(auto intro: red1_preserves_B)
-done
-
-theorem \<tau>Red1_subject_reduction:
-  assumes wf: "wf_prog wf_md P"
-  and hconf: "P \<turnstile> h \<surd>"
-  shows "\<lbrakk> \<tau>Red P h e xs e' xs'; P,E,h \<turnstile>1 e:T;
-     P,h,A \<turnstile>1 xs (:\<le>) E @ env_exp e;
-     \<D>1 (length E) e \<lfloor>A\<rfloor>; \<B> e (length E) \<rbrakk>
-  \<Longrightarrow> \<exists>A' T'. P,h,A' \<turnstile>1 xs' (:\<le>) E @ env_exp e' \<and> 
-          \<D>1 (length E) e' \<lfloor>A'\<rfloor> \<and> P,E,h \<turnstile>1 e' : T' \<and> P \<turnstile> T' \<le> T"
-apply(induct rule: \<tau>Red.induct)
- apply fastsimp
-apply clarsimp
-apply(frule (1) \<tau>Red_preserves_B)
-apply(frule red1_preserves_lconf_defass)
-    apply(simp_all)
-apply(frule subject_reduction1[OF wf])
-apply(auto intro: hconf widen_trans)
-done
-
-lemma \<tau>Red_max_vars: "\<tau>Red P h e xs e' xs' \<Longrightarrow> max_vars e' \<le> max_vars e"
-apply(induct rule: \<tau>Red.induct)
-apply(auto dest: red1_max_vars)
-done
-
-lemma exec_meth_\<tau>_heap_unchanged:
-  "\<lbrakk> \<tau>move2 e pc None; (ta, xcp', h', frs') \<in> set (exec_instr (compE2 e ! pc) P h stk loc C M pc' frs) \<rbrakk> \<Longrightarrow> h' = h"
-
-  and exec_meth_\<tau>s_heap_unchanged:
-  "\<lbrakk> \<tau>moves2 es pc None; (ta, xcp', h', frs') \<in> set (exec_instr (compEs2 es ! pc) P h stk loc C M pc' frs) \<rbrakk> \<Longrightarrow> h' = h"
-apply(induct e pc xcp\<equiv>"None::addr option" and es pc xcp\<equiv>"None :: addr option"
-      arbitrary: ta h' frs' stk loc C M frs pc' xcp' and ta h' frs' stk loc C M frs pc' xcp'
-      rule: \<tau>move2_\<tau>moves2.inducts)
-apply(auto dest: \<tau>move2_pc_length_compE2 \<tau>moves2_pc_length_compEs2 simp add: nth_append split: split_if_asm)
-apply(auto simp add: nth_Cons nth_append dest: \<tau>move2_pc_length_compE2 split: nat.split_asm split_if_asm)
-done
-
-
-lemma \<tau>Exec_1_rtranclpD:
-  "\<tau>Exec_1 P (xcp, h, frs) (xcp', h', frs')
-  \<Longrightarrow> (\<lambda>((xcp, frs), h) ((xcp', frs'), h'). exec_1' (compP2 P) (xcp, h, frs) \<epsilon> (xcp', h', frs') \<and> \<tau>Move2 P (xcp, h, frs))^** ((xcp, frs), h) ((xcp', frs'), h')"
-apply(induct s\<equiv>"(xcp,h,frs)" s'\<equiv>"(xcp', h', frs')" arbitrary: xcp h frs xcp' h' frs' rule: \<tau>Exec_1.induct)
-apply(fastsimp intro: rtranclp.rtrancl_into_rtrancl)+
-done
-
-lemma \<tau>Red1_rtranclpD:
-  "\<tau>Red1 P h s s' \<Longrightarrow> (\<lambda>((ex, exs), h) ((ex', exs'), h'). P \<turnstile>1 \<langle>ex/exs, h\<rangle> -\<epsilon>\<rightarrow> \<langle>ex'/exs', h'\<rangle> \<and> \<tau>Move1 (ex, exs))^** (s, h) (s', h)"
-apply(induct rule: \<tau>Red1.induct)
-apply(auto intro: rtranclp.rtrancl_into_rtrancl)
+lemma \<tau>instr_stk_drop_exec_moves:
+  "exec_moves ci P es h (stk, loc, pc, None) ta h' fr'
+  \<Longrightarrow> \<tau>instr (compP2 P) h (stk @ vs) (compEs2 es ! pc) = \<tau>instr (compP2 P) h stk (compEs2 es ! pc)"
+apply(drule exec_moves_ci_appD)
+apply(drule wf_ciD2_ci_app)
+apply(erule \<tau>instr_stk_append_check)
 done
 
 end

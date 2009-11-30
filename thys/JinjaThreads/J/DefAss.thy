@@ -110,6 +110,9 @@ by(auto simp add: hyperRestrict_def)
 lemma restrict_lem3: "D \<subseteq> E \<Longrightarrow> A \<squnion> (B \<squnion> C) \<exclamdown> D \<sqsubseteq> B \<squnion> (C \<squnion> (A \<exclamdown> E))"
 by(auto simp add: hyperset_defs)
 
+lemma sqInt_lem: "A \<sqsubseteq> A' \<Longrightarrow> A \<sqinter> B \<sqsubseteq> A' \<sqinter> B"
+by(auto simp add: hyperset_defs)
+
 subsection "Definite assignment"
 
 consts
@@ -132,7 +135,7 @@ primrec
 "\<A> (e\<bullet>F{D}) = \<A> e"
 "\<A> (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
 "\<A> (e\<bullet>M(es)) = \<A> e \<squnion> \<A>s es"
-"\<A> ({V:T=vo; e}\<^bsub>cr\<^esub>) = \<A> e \<ominus> V"
+"\<A> ({V:T=vo; e}) = \<A> e \<ominus> V"
 "\<A> (sync\<^bsub>V\<^esub> (o') e) = \<A> o' \<squnion> \<A> e"
 "\<A> (insync\<^bsub>V\<^esub> (a) e) = \<A> e"
 "\<A> (e\<^isub>1;;e\<^isub>2) = \<A> e\<^isub>1 \<squnion> \<A> e\<^isub>2"
@@ -158,7 +161,7 @@ primrec
 "\<D> (e\<bullet>F{D}) A = \<D> e A"
 "\<D> (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"
 "\<D> (e\<bullet>M(es)) A = (\<D> e A \<and> \<D>s es (A \<squnion> \<A> e))"
-"\<D> ({V:T=vo; e}\<^bsub>cr\<^esub>) A = (if vo = None then \<D> e (A \<ominus> V) else \<D> e (A \<squnion> \<lfloor>{V}\<rfloor>))"
+"\<D> ({V:T=vo; e}) A = (if vo = None then \<D> e (A \<ominus> V) else \<D> e (A \<squnion> \<lfloor>{V}\<rfloor>))"
 "\<D> (sync\<^bsub>V\<^esub> (o') e) A = (\<D> o' A \<and> \<D> e (A \<squnion> \<A> o'))"
 "\<D> (insync\<^bsub>V\<^esub> (a) e) A = \<D> e A"
 "\<D> (e\<^isub>1;;e\<^isub>2) A = (\<D> e\<^isub>1 A \<and> \<D> e\<^isub>2 (A \<squnion> \<A> e\<^isub>1))"

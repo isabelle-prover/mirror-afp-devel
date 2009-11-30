@@ -1,5 +1,5 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-    ID:         $Id: BVExec.thy,v 1.1 2009-04-23 13:54:29 alochbihler Exp $
+    ID:         $Id: BVExec.thy,v 1.3 2009-11-17 08:07:05 lochbihl Exp $
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
@@ -128,7 +128,7 @@ proof -
     by (auto intro: wt_err_imp_wt_app_eff simp add: l)
   ultimately
   have "wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (map ok_val \<tau>s')"
-    using instrs by (simp add: wt_method_def2 check_types_def image_compose)
+    using instrs by (simp add: wt_method_def2 check_types_def del: map_map)
   thus ?thesis by blast
 qed
 (*>*)

@@ -79,6 +79,17 @@ declare set_drop_subset [simp]
 lemma [simp]: "x \<in> is_type P \<longleftrightarrow> is_type P x"
 by(simp add: mem_def)
 
+lemma (in start_context) [simp, intro!]: "is_class P Throwable"
+apply(rule converse_subcls_is_class[OF wf])
+ apply(rule xcpt_subcls_Throwable[OF _ wf])
+ prefer 2
+ apply(rule is_class_xcpt[OF _ wf])
+apply(fastsimp simp add: sys_xcpts_def)+
+done
+
+declare option.splits[split del]
+declare option.case_cong[cong]
+
 theorem (in start_context) exec_pres_type:
   "pres_type step (size is) A"
 (*<*)
@@ -97,112 +108,192 @@ theorem (in start_context) exec_pres_type:
   apply (case_tac "is!pc")
 
   -- Load
-  apply clarsimp
+  apply(clarsimp split: option.splits)
   apply (frule listE_nth_in, assumption)
-  apply fastsimp
+  apply(fastsimp split: option.splits)
 
   -- Store
-  apply fastsimp
+  apply clarsimp
+  apply(erule disjE)
+   apply clarsimp
+  apply(fastsimp split: option.splits)
 
   -- Push
-  apply(fastsimp simp add: typeof_lit_is_type)
+  apply(fastsimp simp add: typeof_lit_is_type split: option.splits)
 
   -- New
-  apply clarsimp
+  apply (clarsimp)
   apply (erule disjE)
    apply clarsimp
-  apply clarsimp
-  apply (erule allE)+
-  apply (erule impE, blast)
-  apply (erule impE, blast)
+  apply (clarsimp)
+  apply(rule conjI)
+   apply(force split: option.splits)
   apply fastsimp
 
   -- NewArray
   apply clarsimp
-  apply(erule disjE)
-   apply(clarsimp)
-  apply(clarsimp)
+  apply (erule disjE)
+   apply clarsimp
+  apply (clarsimp)
   apply (erule allE)+
-  apply (erule impE, blast)
-  apply (erule impE, blast)
-  apply fastsimp
+  apply(erule impE, blast)
+  apply(erule impE, blast)
+  apply(force split: option.splits)
 
   -- ALoad
   apply(clarsimp split: split_if_asm)
-   apply(fastsimp)
+   apply(rule conjI)
+    apply(fastsimp split: option.splits)
+   apply(erule allE)+
+   apply(erule impE, blast)
+   apply(erule impE, blast)
+   apply arith
   apply(erule disjE)
    apply(fastsimp)
-  apply(fastsimp)
+  apply(clarsimp)
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
+  apply(erule allE)+
+  apply(erule impE, blast)
+  apply(erule impE, blast)
+  apply arith
 
   -- AStore
   apply(clarsimp split: split_if_asm)
-   apply(fastsimp)
+   apply(rule conjI)
+    apply(fastsimp split: option.splits)
+   apply(erule allE)+
+   apply(erule impE, blast)
+   apply(erule impE, blast)
+   apply arith
   apply(erule disjE)
    apply(fastsimp)
-  apply(fastsimp)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
+  apply(erule allE)+
+  apply(erule impE, blast)
+  apply(erule impE, blast)
+  apply arith
 
   -- ALength
   apply(clarsimp split: split_if_asm)
-   apply(fastsimp)
+   apply(rule conjI)
+    apply(fastsimp split: option.splits)
+   apply(erule allE)+
+   apply(erule impE, blast)
+   apply(erule impE, blast)
+   apply arith
   apply(erule disjE)
    apply(fastsimp)
-  apply(fastsimp)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
+  apply(erule allE)+
+  apply(erule impE, blast)
+  apply(erule impE, blast)
+  apply arith
+
 
   -- Getfield
-  apply (fastsimp dest: sees_field_is_type)
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp dest: sees_field_is_type)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
+  apply fastsimp
 
   -- Putfield
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
   apply fastsimp
 
   -- Checkcast
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
   apply fastsimp
 
   defer 
   
   -- Return
-  apply fastsimp
+  apply(fastsimp split: option.splits)
 
   -- Pop
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
   apply fastsimp
 
-  -- IAdd
+  -- BinOpInstr
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp intro: WTrt_binop_is_type)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
   apply fastsimp
   
   -- Goto
-  apply fastsimp
-
-  -- CmpEq
-  apply fastsimp
+  apply(fastsimp split: option.splits)
 
   -- IfFalse
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp)
+  apply(erule disjE)
+   apply fastsimp
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
   apply fastsimp
 
-  -- Throw
+  -- ThrowExc
+  apply(clarsimp)
+  apply(rule conjI)
+   apply(erule allE)+
+   apply(erule impE, blast)
+   apply(erule impE, blast)
+   apply(clarsimp split: option.splits)
   apply fastsimp
 
   -- MEnter
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
   apply fastsimp
 
   -- MExit
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
   apply fastsimp
 
   -- Invoke
   apply(rename_tac the_s M n)
   apply (clarsimp split: split_if_asm)
+    apply(rule conjI)
+     apply(fastsimp split: option.splits)
     apply fastsimp
    apply (erule disjE)
-    apply(clarsimp)
-    apply(erule disjE)
-     apply(fastsimp dest: external_call_not_sees_method[OF wf])
-    apply(clarsimp)
-    apply(erule allE)+
-    apply(erule impE, blast)
-    apply(erule impE, blast)
-    apply(clarsimp)
-   apply clarsimp
-   apply(erule disjE)
-    apply(clarsimp)
-    apply(simp add: external_WT_The_conv)
+    apply(clarsimp simp add: external_WT_The_conv)
     apply(rule conjI)
      apply(erule in_listE)+
      apply(erule WT_external_is_type)
@@ -214,7 +305,7 @@ theorem (in start_context) exec_pres_type:
     apply simp
    apply clarsimp
    apply(rule conjI)
-    apply blast
+    apply(fastsimp split: option.splits)
    apply fastsimp
   apply clarsimp
   apply(erule disjE)
@@ -228,9 +319,12 @@ theorem (in start_context) exec_pres_type:
   apply(rotate_tac -2)
   apply(erule impE, blast)
   apply(erule impE, blast)
-  apply(clarsimp)
+  apply(clarsimp split: option.splits)
   done
 (*>*)
+
+declare option.weak_case_cong[cong]
+declare option.splits[split]
 
 declare is_relevant_entry_def [simp del]
 declare set_drop_subset [simp del]

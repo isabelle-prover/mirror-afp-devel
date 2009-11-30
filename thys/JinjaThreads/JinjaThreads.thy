@@ -3,15 +3,21 @@ imports
   "Common/Aux"
   "Framework/FWLiftingSem"
   "Framework/FWProgress"
-  "Framework/FWBisimulation"
+  "Framework/FWBisimDeadlock"
   "Common/ExternalCallWF"
   "Common/ConformThreaded"
+  "Common/BinOp"
+  "J/State"
   "J/Deadlocked"
+  "J/Annotate"
+  "JVM/JVMState"
   "JVM/JVMThreaded"
+  "BV/SemiType"
   "BV/JVMDeadlocked"
   "BV/LBVJVM"
   "BV/BVExec"
-  "Compiler/Compiler"
+  "Compiler/J0"
+  "Compiler/Correctness"
 begin
 
 end

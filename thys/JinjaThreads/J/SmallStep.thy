@@ -4,11 +4,15 @@
 
 header {* \isaheader{Small Step Semantics} *}
 
-theory SmallStep imports Expr State "../Common/ExternalCall" "../Framework/FWState" begin
+theory SmallStep imports
+  Expr
+  State
+  "../Common/ExternalCall"
+begin
 
 consts blocks :: "'a list * ty list * val list * ('a,'b) exp \<Rightarrow> ('a,'b) exp"
 recdef blocks "measure(\<lambda>(Vs,Ts,vs,e). size Vs)"
- "blocks(V#Vs, T#Ts, v#vs, e) = {V:T=\<lfloor>v\<rfloor>; blocks(Vs,Ts,vs,e)}\<^bsub>False\<^esub>"
+ "blocks(V#Vs, T#Ts, v#vs, e) = {V:T=\<lfloor>v\<rfloor>; blocks(Vs,Ts,vs,e)}"
  "blocks([],[],[],e) = e"
 
 
@@ -27,14 +31,17 @@ lemma expr_locks_blocks:
 by(induct pns Ts vs e rule: blocks.induct)(auto)
 
 types
-  J_thread_action = "(addr,thread_id,expr \<times> locals,heap,addr) thread_action"
+  J_thread_action = "(addr,thread_id,expr \<times> locals,heap,addr,obs_event option) thread_action"
+
+translations
+  "J_thread_action" <= (type) "(nat,nat,expr \<times> (message_string \<rightharpoonup> val),heap,nat,obs_event option) thread_action"
 
 definition extNTA2J :: "J_prog \<Rightarrow> (cname \<times> mname \<times> addr) \<Rightarrow> expr \<times> locals"
 where "extNTA2J P = (\<lambda>(C, M, a). let (D,Ts,T,pns,body) = method P C M
-                                 in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}\<^bsub>True\<^esub>, empty))"
+                                 in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, empty))"
 
 lemma extNTA2J_iff [simp]:
-  "extNTA2J P (C, M, a) = ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (snd (snd (snd (method P C M))))}\<^bsub>True\<^esub>, empty)"
+  "extNTA2J P (C, M, a) = ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (snd (snd (snd (method P C M))))}, empty)"
 by(simp add: extNTA2J_def split_beta)
 
 abbreviation extTA2J :: "J_prog \<Rightarrow> external_thread_action \<Rightarrow> J_thread_action"
@@ -59,13 +66,13 @@ text{* Locking mechanism:
   done and the lock acquired. If the lock cannot be obtained, the evaluation step is discarded. If another thread
   changes the evaluation result of this last step, the thread then will try to synchronize on the new object. *}
 
-inductive red :: "(external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action) \<Rightarrow> J_prog \<Rightarrow> 
-                 expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
+inductive red :: "(external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr,obs_event option) thread_action) \<Rightarrow> J_prog \<Rightarrow> 
+                 expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,'x,heap,addr,obs_event option) thread_action \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
                 ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0] 81)
- and reds ::  "(external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action) \<Rightarrow> J_prog \<Rightarrow>
-                 expr list \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action \<Rightarrow> expr list \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
+ and reds ::  "(external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr,obs_event option) thread_action) \<Rightarrow> J_prog \<Rightarrow>
+                 expr list \<Rightarrow> (heap \<times> locals) \<Rightarrow> (addr,thread_id,'x,heap,addr,obs_event option) thread_action \<Rightarrow> expr list \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
                ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0] 81)
-for extTA :: "external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action" and P :: J_prog
+for extTA :: "external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr,obs_event option) thread_action" and P :: J_prog
 where
   RedNew:
   "\<lbrakk> new_Addr h = Some a; P \<turnstile> C has_fields FDTs; h' = h(a\<mapsto>(Obj C (init_fields FDTs))) \<rbrakk>
@@ -107,7 +114,7 @@ where
   "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e, s\<rangle> -ta\<rightarrow> \<langle>(Val v) \<guillemotleft>bop\<guillemotright> e', s'\<rangle>"
 
 | RedBinOp:
-  "binop(bop, v1, v2) = Some v \<Longrightarrow>
+  "binop bop v1 v2 = Some v \<Longrightarrow>
   extTA,P \<turnstile> \<langle>(Val v1) \<guillemotleft>bop\<guillemotright> (Val v2), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val v, s\<rangle>"
 
 | RedVar:
@@ -202,12 +209,12 @@ where
   extTA,P \<turnstile> \<langle>(Val v)\<bullet>M(es),s\<rangle> -ta\<rightarrow> \<langle>(Val v)\<bullet>M(es'),s'\<rangle>"
 
 | RedCall:
-  "\<lbrakk> hp s a = \<lfloor>Obj C fs\<rfloor>; \<not> is_external_call P (Class C) M (length vs); P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D; 
+  "\<lbrakk> hp s a = \<lfloor>Obj C fs\<rfloor>; \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns,body) in D; 
     size vs = size pns; size Ts = size pns \<rbrakk>
-  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -\<epsilon>\<rightarrow> \<langle>{this:Class D=\<lfloor>Addr a\<rfloor>; blocks(pns, Ts, vs, body)}\<^bsub>True\<^esub>, s\<rangle>"
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -\<epsilon>\<rightarrow> \<langle>blocks(this#pns, Class D#Ts, Addr a#vs, body), s\<rangle>"
 
 | RedCallExternal:
-  "\<lbrakk> typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>T\<rfloor>; is_external_call P T M (length vs); P \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>;
+  "\<lbrakk> typeof\<^bsub>hp s\<^esub> (Addr a) = \<lfloor>T\<rfloor>; is_external_call P T M; P \<turnstile> \<langle>a\<bullet>M(vs), hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>;
      ta' = extTA ta; e' = extRet2J va; s' = (h', lcl s) \<rbrakk>
   \<Longrightarrow> extTA,P \<turnstile> \<langle>(addr a)\<bullet>M(map Val vs), s\<rangle> -ta'\<rightarrow> \<langle>e', s'\<rangle>"
 
@@ -216,10 +223,10 @@ where
 
 | BlockRed:
   "extTA,P \<turnstile> \<langle>e, (h, l(V:=vo))\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>
-  \<Longrightarrow> extTA,P \<turnstile> \<langle>{V:T=vo; e}\<^bsub>cr\<^esub>, (h, l)\<rangle> -ta\<rightarrow> \<langle>{V:T=l' V; e'}\<^bsub>cr\<^esub>, (h', l'(V := l V))\<rangle>"
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>{V:T=vo; e}, (h, l)\<rangle> -ta\<rightarrow> \<langle>{V:T=l' V; e'}, (h', l'(V := l V))\<rangle>"
 
 | RedBlock:
-  "extTA,P \<turnstile> \<langle>{V:T=vo; Val u}\<^bsub>cr\<^esub>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val u, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>{V:T=vo; Val u}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Val u, s\<rangle>"
 
 | SynchronizedRed1:
   "extTA,P \<turnstile> \<langle>o', s\<rangle> -ta\<rightarrow> \<langle>o'', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>sync(o'') e, s'\<rangle>"
@@ -228,13 +235,13 @@ where
   "extTA,P \<turnstile> \<langle>sync(null) e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, s\<rangle>"
 
 | LockSynchronized:
-  "hp s a = \<lfloor>arrobj\<rfloor> \<Longrightarrow> extTA,P \<turnstile> \<langle>sync(addr a) e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>insync(a) e, s\<rangle>"
+  "hp s a = \<lfloor>arrobj\<rfloor> \<Longrightarrow> extTA,P \<turnstile> \<langle>sync(addr a) e, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Lock\<rightarrow>a \<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>\<rightarrow> \<langle>insync(a) e, s\<rangle>"
 
 | SynchronizedRed2:
   "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>insync(a) e, s\<rangle> -ta\<rightarrow> \<langle>insync(a) e', s'\<rangle>"
 
 | UnlockSynchronized:
-  "extTA,P \<turnstile> \<langle>insync(a) (Val v), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
+  "extTA,P \<turnstile> \<langle>insync(a) (Val v), s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>\<rightarrow> \<langle>Val v, s\<rangle>"
 
 | SeqRed:
   "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>e;;e2, s\<rangle> -ta\<rightarrow> \<langle>e';;e2, s'\<rangle>"
@@ -268,7 +275,7 @@ where
 
 | RedTryCatch:
   "\<lbrakk> hp s a = Some(Obj D fs); P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
-  \<Longrightarrow> extTA,P \<turnstile> \<langle>try (Throw a) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>{V:Class C=\<lfloor>Addr a\<rfloor>; e2}\<^bsub>False\<^esub>, s\<rangle>"
+  \<Longrightarrow> extTA,P \<turnstile> \<langle>try (Throw a) catch(C V) e2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>{V:Class C=\<lfloor>Addr a\<rfloor>; e2}, s\<rangle>"
 
 | RedTryFail:
   "\<lbrakk> hp s a = Some(Obj D fs); \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
@@ -300,9 +307,9 @@ where
 | FAssThrow2: "extTA,P \<turnstile> \<langle>Val v\<bullet>F{D}:=(Throw a::expr), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | CallThrowObj: "extTA,P \<turnstile> \<langle>(Throw a)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | CallThrowParams: "\<lbrakk> es = map Val vs @ Throw a # es' \<rbrakk> \<Longrightarrow> extTA,P \<turnstile> \<langle>(Val v)\<bullet>M(es), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
-| BlockThrow: "extTA,P \<turnstile> \<langle>{V:T=vo; Throw a}\<^bsub>cr\<^esub>, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
+| BlockThrow: "extTA,P \<turnstile> \<langle>{V:T=vo; Throw a}, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | SynchronizedThrow1: "extTA,P \<turnstile> \<langle>sync(Throw a) e, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
-| SynchronizedThrow2: "extTA,P \<turnstile> \<langle>insync(a) Throw ad, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<rightarrow> \<langle>Throw ad, s\<rangle>"
+| SynchronizedThrow2: "extTA,P \<turnstile> \<langle>insync(a) Throw ad, s\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<lbrace>\<^bsub>o\<^esub>Synchronization a\<rbrace>\<rightarrow> \<langle>Throw ad, s\<rangle>"
 | SeqThrow: "extTA,P \<turnstile> \<langle>(Throw a);;e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | CondThrow: "extTA,P \<turnstile> \<langle>if (Throw a) e\<^isub>1 else e\<^isub>2, s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
 | ThrowThrow: "extTA,P \<turnstile> \<langle>throw(Throw a), s\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw a, s\<rangle>"
@@ -320,7 +327,7 @@ inductive_cases red_cases:
   "extTA,P \<turnstile> \<langle>e\<bullet>F{D}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "extTA,P \<turnstile> \<langle>e\<bullet>F{D} := e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
   "extTA,P \<turnstile> \<langle>e\<bullet>M(es), s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
-  "extTA,P \<turnstile> \<langle>{V:T=vo; e}\<^bsub>cr\<^esub>, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
+  "extTA,P \<turnstile> \<langle>{V:T=vo; e}, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "extTA,P \<turnstile> \<langle>sync(o') e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "extTA,P \<turnstile> \<langle>insync(a) e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
   "extTA,P \<turnstile> \<langle>e;;e', s\<rangle> -ta\<rightarrow> \<langle>e'', s'\<rangle>"
@@ -341,12 +348,12 @@ abbreviation reds' :: "J_prog \<Rightarrow> expr list \<Rightarrow> (heap \<time
                ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0] 81)
 where "reds' P \<equiv> reds (extTA2J P) P"
 
-
 subsection{* The reflexive transitive closure *}
 
 abbreviation
-  Step :: "(external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr) thread_action) \<Rightarrow> J_prog \<Rightarrow>
-           expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> ((addr,thread_id,'x,heap,addr) thread_action) list \<Rightarrow> expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
+  Step :: "(external_thread_action \<Rightarrow> (addr,thread_id,'x,heap,addr,obs_event option) thread_action) \<Rightarrow> J_prog \<Rightarrow>
+           expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> ((addr,thread_id,'x,heap,addr,obs_event option) thread_action) list \<Rightarrow>
+           expr \<Rightarrow> (heap \<times> locals) \<Rightarrow> bool"
           ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0] 81)
 where
   "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow>* \<langle>e', s'\<rangle> == rtrancl3p (\<lambda>(e, s) ta (e', s'). extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>) (e,s) ta (e',s')"
@@ -366,6 +373,10 @@ by(auto)
 
 lemma [iff]: "\<not> extTA,P \<turnstile> \<langle>Throw a, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
 by(fastsimp elim: red_cases)
+
+lemma reds_preserves_len:
+  "extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> length es' = length es"
+by(induct es arbitrary: es')(auto elim: reds.cases)
 
 lemma red_hext_incr: "extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> hp s \<unlhd> hp s'"
   and reds_hext_incr: "extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> hp s \<unlhd> hp s'"
@@ -392,7 +403,7 @@ lemma red_lcl_add_aux:
   and reds_lcl_add_aux:
   "extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> extTA,P \<turnstile> \<langle>es, (hp s, l0 ++ lcl s)\<rangle> [-ta\<rightarrow>] \<langle>es', (hp s', l0 ++ lcl s')\<rangle>"
 proof (induct arbitrary: l0 and l0 rule:red_reds.inducts)
-  case (BlockRed e h x V vo ta e' h' x' T cr l0)
+  case (BlockRed e h x V vo ta e' h' x' T)
   note IH = `\<And>l0. extTA,P \<turnstile> \<langle>e,(hp (h, x(V := vo)), l0 ++ lcl (h, x(V := vo)))\<rangle> -ta\<rightarrow> \<langle>e',(hp (h', x'), l0 ++ lcl (h', x'))\<rangle>`[simplified]
   have lrew: "\<And>x x'. x(V := vo) ++ x'(V := vo) = (x ++ x')(V := vo)" 
     by(simp add:expand_fun_eq map_add_def)
@@ -433,10 +444,10 @@ lemma Step_lcl_add:
 proof(induct rule: Step_induct)
   case refl thus ?case by(auto intro: rtrancl3p.intros)
 next
-  case (step e h l ta e' h' l' las tas cas was e'' h'' l'')
+  case (step e h l ta e' h' l' las tas cas was obs e'' h'' l'')
   have IH: "extTA,P \<turnstile> \<langle>e,(h, l0 ++ l)\<rangle> -ta\<rightarrow>* \<langle>e',(h', l0 ++ l')\<rangle>"
-   and red: "extTA,P \<turnstile> \<langle>e',(h', l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l'')\<rangle>" by fact+
-  from red have "extTA,P \<turnstile> \<langle>e',(h', l0 ++ l')\<rangle> -(las, tas, cas, was)\<rightarrow> \<langle>e'',(h'', l0 ++ l'')\<rangle>" by - (rule red_lcl_add)
+   and red: "extTA,P \<turnstile> \<langle>e',(h', l')\<rangle> -(las, tas, cas, was, obs)\<rightarrow> \<langle>e'',(h'', l'')\<rangle>" by fact+
+  from red have "extTA,P \<turnstile> \<langle>e',(h', l0 ++ l')\<rangle> -(las, tas, cas, was, obs)\<rightarrow> \<langle>e'',(h'', l0 ++ l'')\<rangle>" by(rule red_lcl_add)
   with IH show ?case by(auto elim: rtrancl3p_step)
 qed
 
@@ -463,21 +474,21 @@ proof(induct arbitrary: W and W rule: red_reds.inducts)
     by(rule red_reds.RedLAss)
   with RedLAss show ?case by(simp del: fun_upd_apply)
 next
-  case (BlockRed e h x V vo ta e' h' x' T cr W)
+  case (BlockRed e h x V vo ta e' h' x' T)
   have IH: "\<And>W. fv e \<subseteq> W \<Longrightarrow> extTA,P \<turnstile> \<langle>e,(hp (h, x(V := vo)), lcl (h, x(V := vo)) |` W)\<rangle> -ta\<rightarrow> \<langle>e',(hp (h', x'), lcl (h', x') |` W)\<rangle>" by fact
-  from `fv {V:T=vo; e}\<^bsub>cr\<^esub> \<subseteq> W` have fve: "fv e \<subseteq> insert V W" by auto
+  from `fv {V:T=vo; e} \<subseteq> W` have fve: "fv e \<subseteq> insert V W" by auto
   show ?case
   proof(cases "V \<in> W")
     case True
     with fve have "fv e \<subseteq> W" by auto
     from True IH[OF this] have "extTA,P \<turnstile> \<langle>e,(h, (x |` W )(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x' |` W)\<rangle>" by(simp)
-    with True have "extTA,P \<turnstile> \<langle>{V:T=vo; e}\<^bsub>cr\<^esub>,(h, x |` W)\<rangle> -ta\<rightarrow> \<langle>{V:T=x' V; e'}\<^bsub>cr\<^esub>,(h', (x' |` W)(V := x V))\<rangle>"
+    with True have "extTA,P \<turnstile> \<langle>{V:T=vo; e},(h, x |` W)\<rangle> -ta\<rightarrow> \<langle>{V:T=x' V; e'},(h', (x' |` W)(V := x V))\<rangle>"
       by -(drule red_reds.BlockRed[where T=T], simp)
     with True show ?thesis by(simp del: fun_upd_apply)
   next
     case False
     with IH[OF fve] have "extTA,P \<turnstile> \<langle>e,(h, (x |` W)(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x' |` insert V W)\<rangle>" by(simp)
-    with False have "extTA,P \<turnstile> \<langle>{V:T=vo; e}\<^bsub>cr\<^esub>,(h, x |` W)\<rangle> -ta\<rightarrow> \<langle>{V:T=x' V; e'}\<^bsub>cr\<^esub>,(h', (x' |` W))\<rangle>"
+    with False have "extTA,P \<turnstile> \<langle>{V:T=vo; e},(h, x |` W)\<rangle> -ta\<rightarrow> \<langle>{V:T=x' V; e'},(h', (x' |` W))\<rangle>"
       by -(drule red_reds.BlockRed[where T=T],simp)
     with False show ?thesis by(simp del: fun_upd_apply)
   qed
@@ -498,7 +509,7 @@ proof (induct rule:red_reds.inducts)
   thus ?case by(clarsimp)(fastsimp split:split_if_asm)
 qed auto
 
-
+subsection {* Final expressions *}
 
 inductive final :: "('a,'b) exp \<Rightarrow> bool" where
   "final (Val v)"

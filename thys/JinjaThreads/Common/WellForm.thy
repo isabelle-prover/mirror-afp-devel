@@ -13,7 +13,7 @@ for programs but does not look inside method bodies.  Hence it works
 for both Jinja and JVM programs. Well-typing of expressions is defined
 elsewhere (in theory @{text WellType}).
 
-Because Jinja does not have method overloading, its policy for method
+Because JinjaThreads does not have method overloading, its policy for method
 overriding is the classical one: \emph{covariant in the result type
 but contravariant in the argument types.} This means the result type
 of the overriding method becomes more specific, the argument types
@@ -24,17 +24,16 @@ types 'm wf_mdecl_test = "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<R
 
 definition wf_extCall :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" where
   "wf_extCall P C M \<equiv>
-   \<forall>D. P \<turnstile> D \<preceq>\<^sup>* C \<or> P \<turnstile> C \<preceq>\<^sup>* D \<longrightarrow> (\<forall>n. \<not> is_external_call P (Class D) M n)"
+   \<forall>D. P \<turnstile> D \<preceq>\<^sup>* C \<or> P \<turnstile> C \<preceq>\<^sup>* D \<longrightarrow> \<not> is_external_call P (Class D) M"
 
-constdefs
-  wf_fdecl :: "'m prog \<Rightarrow> fdecl \<Rightarrow> bool"
-  "wf_fdecl P \<equiv> \<lambda>(F,T). is_type P T"
+definition wf_fdecl :: "'m prog \<Rightarrow> fdecl \<Rightarrow> bool"
+where "wf_fdecl P \<equiv> \<lambda>(F,T). is_type P T"
 
-  wf_mdecl :: "'m wf_mdecl_test \<Rightarrow> 'm wf_mdecl_test"
-  "wf_mdecl wf_md P C \<equiv> \<lambda>(M,Ts,T,mb).
-  (\<forall>T\<in>set Ts. is_type P T) \<and> is_type P T \<and> wf_md P C (M,Ts,T,mb)"
+definition wf_mdecl :: "'m wf_mdecl_test \<Rightarrow> 'm wf_mdecl_test"
+where "wf_mdecl wf_md P C \<equiv> \<lambda>(M,Ts,T,mb). (\<forall>T\<in>set Ts. is_type P T) \<and> is_type P T \<and> wf_md P C (M,Ts,T,mb)"
 
-  wf_cdecl :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> 'm cdecl \<Rightarrow> bool"
+definition wf_cdecl :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> 'm cdecl \<Rightarrow> bool"
+where
   "wf_cdecl wf_md P  \<equiv>  \<lambda>(C,(D,fs,ms)).
   (\<forall>f\<in>set fs. wf_fdecl P f) \<and>  distinct_fst fs \<and>
   (\<forall>m\<in>set ms. wf_mdecl wf_md P C m) \<and>  distinct_fst ms \<and>
@@ -43,17 +42,15 @@ constdefs
    (\<forall>(M,Ts,T,m)\<in>set ms. wf_extCall P C M \<and>
       (\<forall>D' Ts' T' m'. P \<turnstile> D sees M:Ts' \<rightarrow> T' = m' in D' \<longrightarrow>
                        P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T'))) \<and>
-  (C = Object \<longrightarrow> (fs = []) \<and> (ms = [])) \<and> (* require object to implement no fields/methods because of array subtype of object *)
+  (C = Object \<longrightarrow> (fs = []) \<and> (ms = [])) \<and> (* require object to implement no fields/methods because of array subtype of Object *)
 
   (C = Thread \<longrightarrow> (\<exists>m. (run, [], Void, m) \<in> set ms))"
 
+definition wf_syscls :: "'m prog \<Rightarrow> bool"
+where "wf_syscls P \<equiv> {Object, Throwable, Thread} \<union> sys_xcpts \<subseteq> set(map fst P) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
 
-  wf_syscls :: "'m prog \<Rightarrow> bool"
-  "wf_syscls P  \<equiv>  {Object, Throwable, Thread} \<union> sys_xcpts \<subseteq> set(map fst P) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
-
-  wf_prog :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> bool"
-  "wf_prog wf_md P  \<equiv>  wf_syscls P \<and> (\<forall>c \<in> set P. wf_cdecl wf_md P c) \<and> distinct_fst P"
-
+definition wf_prog :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> bool"
+where "wf_prog wf_md P  \<equiv>  wf_syscls P \<and> (\<forall>c \<in> set P. wf_cdecl wf_md P c) \<and> distinct_fst P"
 
 subsection{* Well-formedness lemmas *}
 
@@ -230,7 +227,6 @@ done
 qed
 (*>*)
 
-(* FIXME can't we prove this one directly?? *)
 lemma subcls1_induct [consumes 2, case_names Object Subcls]:
   "\<lbrakk> wf_prog wf_md P; is_class P C; Q Object;
     \<And>C D. \<lbrakk>C \<noteq> Object; P \<turnstile> C \<prec>\<^sup>1 D; is_class P D; Q D\<rbrakk> \<Longrightarrow> Q C \<rbrakk>
@@ -288,7 +284,7 @@ lemma subcls_antisym:
 apply(drule acyclic_subcls1)
 apply(drule acyclic_impl_antisym_rtrancl)
 apply(drule antisymD)
-apply(unfold rtrancl_def)
+apply(unfold Transitive_Closure.rtrancl_def)
 apply(auto)
 done
 
@@ -469,7 +465,7 @@ lemma external_call_not_sees:
   assumes wf: "wf_prog wf_md P"
   and sees: "P \<turnstile> C sees_methods Mm" "Mm M = \<lfloor>mthd\<rfloor>"
   and subcls: "P \<turnstile> C \<preceq>\<^sup>* C' \<or> P \<turnstile> C' \<preceq>\<^sup>* C"
-  and ext: "is_external_call P (Class C') M n"
+  and ext: "is_external_call P (Class C') M"
   shows False
 using sees subcls
 proof(induct rule: Methods.induct)
@@ -488,7 +484,7 @@ next
     moreover obtain Ts T meth where a: "a = (Ts, T, meth)" by(cases a)
     ultimately have "(M, Ts, T, meth) \<in> set ms" by(auto dest: map_of_SomeD)
     with wfC `C \<noteq> Object` have "wf_extCall P C M" by(auto simp add: wf_cdecl_def)
-    with `P \<turnstile> C \<preceq>\<^sup>* C' \<or> P \<turnstile> C' \<preceq>\<^sup>* C` `is_external_call P (Class C') M n`
+    with `P \<turnstile> C \<preceq>\<^sup>* C' \<or> P \<turnstile> C' \<preceq>\<^sup>* C` `is_external_call P (Class C') M`
     show False by(auto simp add: wf_extCall_def)
   next
     case None
@@ -517,7 +513,7 @@ next
 qed
 
 lemma external_call_not_sees_method:
-  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M: Ts \<rightarrow> T = mthd in D; is_external_call P (Class C') M n; P \<turnstile> C \<preceq>\<^sup>* C' \<or> P \<turnstile> C' \<preceq>\<^sup>* C \<rbrakk>
+  "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M: Ts \<rightarrow> T = mthd in D; is_external_call P (Class C') M; P \<turnstile> C \<preceq>\<^sup>* C' \<or> P \<turnstile> C' \<preceq>\<^sup>* C \<rbrakk>
   \<Longrightarrow> False"
 by(auto simp add: Method_def elim: external_call_not_sees)
    
@@ -684,8 +680,8 @@ done
 
 lemma map_of_remap_conv:
   "\<lbrakk> distinct_fst fs; map_of (map (\<lambda>(F, y). ((F, D), y)) fs) (F, D) = \<lfloor>T\<rfloor> \<rbrakk>
-  \<Longrightarrow> map_of (map ((\<lambda>((F, D), T). (F, D, T)) \<circ> (\<lambda>(F, y). ((F, D), y))) fs) F = \<lfloor>(D, T)\<rfloor>"
-apply(induct fs) 
+  \<Longrightarrow> map_of (map (\<lambda>((F, D), T). (F, D, T)) (map (\<lambda>(F, y). ((F, D), y)) fs)) F = \<lfloor>(D, T)\<rfloor>"
+apply(induct fs)
 apply auto
 done
 
@@ -702,7 +698,7 @@ proof -
     from `class P Object = \<lfloor>(D', fs, ms)\<rfloor>` wf
     have "wf_cdecl wf_md P (Object, D', fs, ms)" by(rule class_wf)
     hence "distinct_fst fs" by(simp add: wf_cdecl_def)
-    with FD has_fields_Object show ?thesis by(auto intro: map_of_remap_conv)
+    with FD has_fields_Object show ?thesis by(auto intro: map_of_remap_conv simp del: map_map)
   next
     case (has_fields_rec DD D' fs ms FDTs' FDTs'')
     hence [simp]: "DD = D" "FDTs'' = FDTs" "FDTs = map (\<lambda>(F, T). ((F, D), T)) fs @ FDTs'"
@@ -721,7 +717,7 @@ proof -
       with wf show False by(auto dest: subcls_irrefl)
     qed
     ultimately show ?thesis using FD hasf'
-      by(auto simp add: map_add_Some_iff intro: map_of_remap_conv)
+      by(auto simp add: map_add_Some_iff intro: map_of_remap_conv simp del: map_map)
   qed
   with hasf show ?thesis unfolding sees_field_def by blast
 qed

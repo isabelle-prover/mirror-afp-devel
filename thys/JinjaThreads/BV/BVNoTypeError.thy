@@ -8,7 +8,6 @@ theory BVNoTypeError
 imports "../JVM/JVMDefensive" BVSpecTypeSafe
 begin
 
-
 declare is_IntgI[intro, simp]
 declare is_BoolI[intro, simp]
 declare is_RefI [simp]
@@ -215,14 +214,16 @@ proof -
 	moreover {
           assume Null: "stk!n \<noteq> Null" and NT: "ST!n \<noteq> NT"
 	  
-	  from NT app Invoke 
-	  have "(\<exists>D D' Ts T m. ST!n = Class D \<and> P \<turnstile> D sees M': Ts\<rightarrow>T = m in D' \<and> P \<turnstile> rev (take n ST) [\<le>] Ts) \<or>
-                (is_external_call P (ST ! n) M' n \<and> (\<exists>U. P \<turnstile> ST ! n\<bullet>M'(rev (take n ST)) :: U))" by auto
-	  moreover
+	  from NT app Invoke
+	  have "if is_external_call P (ST ! n) M' then \<exists>U. P \<turnstile> ST ! n\<bullet>M'(rev (take n ST)) :: U
+	        else \<exists>D D' Ts T m. ST!n = Class D \<and> P \<turnstile> D sees M': Ts\<rightarrow>T = m in D' \<and> P \<turnstile> rev (take n ST) [\<le>] Ts"
+	    by auto
+ 	  moreover
 	  { fix D D' Ts T m
 	    assume D: "ST!n = Class D"
 	      and M': "P \<turnstile> D sees M': Ts\<rightarrow>T = m in D'"
 	      and Ts: "P \<turnstile> rev (take n ST) [\<le>] Ts"
+	      and nec: "\<not> is_external_call P (ST ! n) M'"
             from M' wf have DObject: "D \<noteq> Object"
 	      by(auto dest: wf_Object_method_empty)
             from D stk n have "P,h \<turnstile> stk!n :\<le> Class D" 
@@ -241,12 +242,13 @@ proof -
             hence "P,h \<turnstile> rev (take n stk) [:\<le>] rev (take n ST)" ..
             also note Ts also note Ts'
             finally have "P,h \<turnstile> rev (take n stk) [:\<le>] Ts'" .
-	    
-            with Invoke Null n C'
-            have ?thesis by (auto simp add: is_Ref_def2 has_methodI) }
+	    moreover from C' have "\<not> is_external_call P (Class C') M'"
+	      by(auto dest: external_call_not_sees_method[OF wf])
+	    ultimately have ?thesis using Invoke Null n C' nec
+	      by (auto simp add: is_Ref_def2 has_methodI) }
 	  moreover
 	  { fix U
-	    assume iec: "is_external_call P (ST ! n) M' n"
+	    assume iec: "is_external_call P (ST ! n) M'"
 	      and wtext: "P \<turnstile> ST ! n\<bullet>M'(rev (take n ST)) :: U"
 	    from iec have "is_refT (ST ! n)" by(rule is_external_call_is_refT)
 	    moreover from stk n have "P,h \<turnstile> stk ! n :\<le> ST ! n" by(rule list_all2_nthD2)
@@ -258,7 +260,7 @@ proof -
 	    with wtext `P,h \<turnstile> stk ! n :\<le> ST ! n` obtain U' 
 	      where "P \<turnstile> Ta\<bullet>M'(rev (take n ST)) :: U'" "P \<turnstile> U' \<le> U"
 	      by(auto intro: widens_refl dest: external_WTrt_widen_mono)
-	    with n have "is_external_call P Ta M' n" by(auto dest: external_WT_is_external_call simp add: min_def)
+	    with n have "is_external_call P Ta M'" by(auto dest: external_WT_is_external_call)
 	    moreover from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
 	    then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
 	      by(auto simp add: confs_conv_map)
@@ -266,12 +268,20 @@ proof -
 	    with `P \<turnstile> Ta\<bullet>M'(rev (take n ST)) :: U'` `Ta \<noteq> NT` obtain U'' where "P \<turnstile> Ta\<bullet>M'(rev Us) :: U''"
 	      by(auto dest: external_WTrt_widen_mono)
 	    moreover note Invoke Null n `stk ! n = Addr a` `typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>`
-	    ultimately have ?thesis by(auto simp add: is_Ref_def rev_map[symmetric] simp del: rev_map split: heapobj.splits) }
-	  ultimately have ?thesis by(blast) }
+	    ultimately have ?thesis
+	      by(force simp add: is_Ref_def rev_map[symmetric] split: heapobj.splits intro!: external_WT'.intros) }
+	  ultimately have ?thesis by(auto split: split_if_asm) }
 	ultimately show ?thesis by blast      
       next
 	case Return with stk app \<Phi> meth frames 
 	show ?thesis by (auto simp add: has_methodI)
+      next
+	case ThrowExc with stk app \<Phi> meth frames 
+	show ?thesis
+	  by(fastsimp simp add: xcpt_app_def conf_def intro: widen_trans[OF _ widen_subcls])
+      next
+	case (BinOpInstr bop) with stk app \<Phi> meth frames
+	show ?thesis by(auto simp add: conf_def)(force dest: WTrt_binop_widen_mono)
       qed (auto simp add: list_all2_lengthD)
       thus "check P \<sigma>" using meth pc mxs by (simp add: check_def has_methodI)
     next
@@ -306,7 +316,6 @@ theorem welltyped_aggressive_imp_defensive:
 apply(simp only: exec_star_def)
 apply(induct rule: rtrancl3p.induct)
  apply(simp add: exec_star_d_def)
- apply(rule rtrancl3p_refl)
 apply(simp)
 apply(simp only: exec_star_def[symmetric])
 apply(frule BV_correct, assumption+)

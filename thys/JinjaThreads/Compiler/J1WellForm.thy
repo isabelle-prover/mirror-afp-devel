@@ -38,13 +38,9 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
   "\<lbrakk> E!V = T; V < size E \<rbrakk> \<Longrightarrow>
   P,E \<turnstile>1 Var V :: T"
 
-| WT1BinOpEq:
-  "\<lbrakk> P,E \<turnstile>1 e1 :: T1;  P,E \<turnstile>1 e2 :: T2; P \<turnstile> T1 \<le> T2 \<or> P \<turnstile> T2 \<le> T1 \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile>1 e1 \<guillemotleft>Eq\<guillemotright> e2 :: Boolean"
-
-| WT1BinOpAdd:
-  "\<lbrakk> P,E \<turnstile>1 e1 :: Integer;  P,E \<turnstile>1 e2 :: Integer \<rbrakk>
-  \<Longrightarrow> P,E \<turnstile>1 e1 \<guillemotleft>Add\<guillemotright> e2 :: Integer"
+| WT1BinOp:
+  "\<lbrakk> P,E \<turnstile>1 e1 :: T1; P,E \<turnstile>1 e2 :: T2; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T \<rbrakk>
+  \<Longrightarrow> P,E \<turnstile>1 e1\<guillemotleft>bop\<guillemotright>e2 :: T"
 
 | WT1LAss:
   "\<lbrakk> E!i = T;  i < size E; P,E \<turnstile>1 e :: T';  P \<turnstile> T' \<le> T \<rbrakk>
@@ -70,7 +66,7 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
   \<Longrightarrow> P,E \<turnstile>1 e1\<bullet>F{D} := e2 :: Void"
 
 | WT1Call:
-  "\<lbrakk> P,E \<turnstile>1 e :: Class C; \<not> is_external_call P (Class C) M (length es); P \<turnstile> C sees M:Ts \<rightarrow> T = m in D;
+  "\<lbrakk> P,E \<turnstile>1 e :: Class C; \<not> is_external_call P (Class C) M; P \<turnstile> C sees M:Ts \<rightarrow> T = m in D;
      P,E \<turnstile>1 es [::] Ts'; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> P,E \<turnstile>1 e\<bullet>M(es) :: T"
 
@@ -80,7 +76,7 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
 
 | WT1Block:
   "\<lbrakk> is_type P T;  P,E@[T] \<turnstile>1 e :: T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow>  P,E \<turnstile>1 {V:T=vo; e}\<^bsub>False\<^esub> :: T'"
+  \<Longrightarrow>  P,E \<turnstile>1 {V:T=vo; e} :: T'"
 
 | WT1Synchronized:
   "\<lbrakk> P,E \<turnstile>1 o' :: T; is_refT T; T \<noteq> NT; P,E@[Class Object] \<turnstile>1 e :: T' \<rbrakk>
@@ -89,6 +85,7 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
 | WT1Seq:
   "\<lbrakk> P,E \<turnstile>1 e\<^isub>1::T\<^isub>1;  P,E \<turnstile>1 e\<^isub>2::T\<^isub>2 \<rbrakk>
   \<Longrightarrow>  P,E \<turnstile>1 e\<^isub>1;;e\<^isub>2 :: T\<^isub>2"
+
 | WT1Cond:
   "\<lbrakk> P,E \<turnstile>1 e :: Boolean;  P,E \<turnstile>1 e\<^isub>1::T\<^isub>1;  P,E \<turnstile>1 e\<^isub>2::T\<^isub>2;
      P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<or> P \<turnstile> T\<^isub>2 \<le> T\<^isub>1;  P \<turnstile> T\<^isub>1 \<le> T\<^isub>2 \<longrightarrow> T = T\<^isub>2;  P \<turnstile> T\<^isub>2 \<le> T\<^isub>1 \<longrightarrow> T = T\<^isub>1 \<rbrakk>
@@ -110,7 +107,7 @@ inductive WT1 :: "J1_prog \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> t
 
 | WT1Cons: "\<lbrakk> P,E \<turnstile>1 e :: T; P,E \<turnstile>1 es [::] Ts \<rbrakk> \<Longrightarrow> P,E \<turnstile>1 e#es [::] T#Ts"
 
-declare  WT1_WTs1.intros[intro!]
+declare WT1_WTs1.intros[intro!]
 declare WT1Nil[iff]
 declare WT1Call[rule del, intro]
 declare WT1External[rule del, intro]
@@ -120,7 +117,7 @@ inductive_cases WT1_WTs1_cases[elim!]:
   "P,E \<turnstile>1 Var i :: T"
   "P,E \<turnstile>1 Cast D e :: T"
   "P,E \<turnstile>1 i:=e :: T"
-  "P,E \<turnstile>1 {i:U=vo; e}\<^bsub>cr\<^esub> :: T"
+  "P,E \<turnstile>1 {i:U=vo; e} :: T"
   "P,E \<turnstile>1 e1;;e2 :: T"
   "P,E \<turnstile>1 if (e) e1 else e2 :: T"
   "P,E \<turnstile>1 while (e) c :: T"
@@ -143,6 +140,32 @@ inductive_cases WT1_WTs1_cases[elim!]:
 lemma WTs1_same_size: "P,E \<turnstile>1 es [::] Ts \<Longrightarrow> size es = size Ts"
 by (induct es arbitrary: Ts) auto
 
+lemma WTs1_snoc_cases:
+  assumes wt: "P,E \<turnstile>1 es @ [e] [::] Ts"
+  obtains T Ts' where "P,E \<turnstile>1 es [::] Ts'" "P,E \<turnstile>1 e :: T"
+proof -
+  from wt have "\<exists>T Ts'. P,E \<turnstile>1 es [::] Ts' \<and> P,E \<turnstile>1 e :: T"
+    by(induct es arbitrary: Ts) auto
+  thus thesis by(auto intro: that)
+qed
+
+lemma WTs1_append:
+  assumes wt: "P,Env \<turnstile>1 es @ es' [::] Ts"
+  obtains Ts' Ts'' where "P,Env \<turnstile>1 es [::] Ts'" "P,Env \<turnstile>1 es' [::] Ts''"
+proof -
+  from wt have "\<exists>Ts' Ts''. P,Env \<turnstile>1 es [::] Ts' \<and> P,Env \<turnstile>1 es' [::] Ts''"
+    by(induct es arbitrary: Ts) auto
+  thus ?thesis by(auto intro: that)
+qed
+
+lemma WT1_not_contains_insync: "P,E \<turnstile>1 e :: T \<Longrightarrow> \<not> contains_insync e"
+  and WTs1_not_contains_insyncs: "P,E \<turnstile>1 es [::] Ts \<Longrightarrow> \<not> contains_insyncs es"
+by(induct rule: WT1_WTs1.inducts) auto
+
+lemma WT1_expr_locks: "P,E \<turnstile>1 e :: T \<Longrightarrow> expr_locks e = (\<lambda>a. 0)"
+  and WTs1_expr_lockss: "P,E \<turnstile>1 es [::] Ts \<Longrightarrow> expr_lockss es = (\<lambda>a. 0)"
+by(induct rule: WT1_WTs1.inducts)(auto)
+
 lemma assumes wf: "wf_prog wfmd P"
   shows WT1_unique: "P,E \<turnstile>1 e :: T1 \<Longrightarrow> P,E \<turnstile>1 e :: T2 \<Longrightarrow> T1 = T2" 
   and WTs1_unique: "P,E \<turnstile>1 es [::] Ts1 \<Longrightarrow> P,E \<turnstile>1 es [::] Ts2 \<Longrightarrow> Ts1 = Ts2"
@@ -152,8 +175,7 @@ apply blast
 apply blast
 apply clarsimp
 apply blast
-apply blast
-apply blast
+apply(blast dest: WT_binop_fun)
 apply blast
 apply blast
 apply blast
@@ -177,8 +199,6 @@ apply blast
 apply blast
 done
 
-
-
 lemma assumes wf: "wf_prog p P"
   shows WT1_is_type: "P,E \<turnstile>1 e :: T \<Longrightarrow> set E \<subseteq> is_type P \<Longrightarrow> is_type P T"
   and "P,E \<turnstile>1 es [::] Ts \<Longrightarrow> set E \<subseteq> is_type P \<Longrightarrow> set Ts \<subseteq> is_type P"
@@ -188,8 +208,7 @@ apply simp
 apply simp
 apply (simp add:typeof_lit_is_type)
 apply (fastsimp intro:nth_mem simp add: mem_def)
-apply(simp)
-apply(simp)
+apply(simp add: WT_binop_is_type)
 apply(simp)
 apply(simp)
 apply(simp)
@@ -209,9 +228,19 @@ apply simp
 apply(simp add: mem_def)
 done
 
-lemma WT1_noRetBlock: "P,E \<turnstile>1 e :: T \<Longrightarrow> noRetBlock e"
-  and WTs1_noRetBlocks: "P,E \<turnstile>1 es [::] Ts \<Longrightarrow> noRetBlocks es"
-by(induct rule: WT1_WTs1.inducts) auto
+lemma blocks1_WT:
+  "\<lbrakk> P,Env @ Ts \<turnstile>1 body :: T; set Ts \<subseteq> is_type P \<rbrakk> \<Longrightarrow> P,Env \<turnstile>1 blocks1 (length Env) Ts body :: T"
+proof(induct n\<equiv>"length Env" Ts body arbitrary: Env rule: blocks1.induct)
+  case 1 thus ?case by simp
+next
+  case (2 n T' Ts e)
+  note IH = `\<And>Env. \<lbrakk>P,Env @ Ts \<turnstile>1 e :: T; set Ts \<subseteq> is_type P; Suc n = length Env\<rbrakk>
+              \<Longrightarrow> P,Env \<turnstile>1 blocks1 (length Env) Ts e :: T`
+  from `set (T' # Ts) \<subseteq> is_type P` have "set Ts \<subseteq> is_type P" "is_type P T'" by(auto simp add: mem_def)
+  moreover from `P,Env @ T' # Ts \<turnstile>1 e :: T` have "P,(Env @ [T']) @ Ts \<turnstile>1 e :: T" by simp
+  note IH[OF this] `n = length Env`
+  ultimately show ?case by auto
+qed
 
 subsection{* Well-formedness*}
 
@@ -234,7 +263,7 @@ primrec
 "\<B> (e\<bullet>F{D}) i = \<B> e i"
 "\<B> (e1\<bullet>F{D} := e2) i = (\<B> e1 i \<and> \<B> e2 i)"
 "\<B> (e\<bullet>M(es)) i = (\<B> e i \<and> \<B>s es i)"
-"\<B> ({j:T=vo; e}\<^bsub>cr\<^esub>) i = (i = j \<and> \<B> e (i+1))"
+"\<B> ({j:T=vo; e}) i = (i = j \<and> \<B> e (i+1))"
 "\<B> (sync\<^bsub>V\<^esub> (o') e) i = (i = V \<and> \<B> o' i \<and> \<B> e (i+1))"
 "\<B> (insync\<^bsub>V\<^esub> (a) e) i = (i = V \<and> \<B> e (i+1))"
 "\<B> (e1;;e2) i = (\<B> e1 i \<and> \<B> e2 i)"
@@ -252,6 +281,21 @@ by(induct es) auto
 lemma Bs_map_Val [simp]: "\<B>s (map Val vs) n"
 by(induct vs) auto
 
+lemma B_blocks1 [intro]: "\<B> body (n + length Ts) \<Longrightarrow> \<B> (blocks1 n Ts body) n"
+by(induct n Ts body rule: blocks1.induct)(auto)
+
+lemma B_extRet2J [simp]: "\<B> (extRet2J va) n"
+by(cases va) auto
+
+lemma B_inline_call: "\<lbrakk> \<B> e n; \<And>n. \<B> e' n \<rbrakk> \<Longrightarrow> \<B> (inline_call e' e) n"
+  and Bs_inline_calls: "\<lbrakk> \<B>s es n; \<And>n. \<B> e' n \<rbrakk> \<Longrightarrow> \<B>s (inline_calls e' es) n"
+by(induct e and es arbitrary: n and n) auto
+
+lemma red1_preserves_B: "\<lbrakk> P \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<B> e n\<rbrakk> \<Longrightarrow> \<B> e' n"
+  and reds1_preserves_Bs: "\<lbrakk> P \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; \<B>s es n\<rbrakk> \<Longrightarrow> \<B>s es' n"
+by(induct arbitrary: n and n rule: red1_reds1.inducts)(auto)
+
+
 primrec syncvars :: "('a, 'a) exp \<Rightarrow> bool"
   and syncvarss :: "('a, 'a) exp list \<Rightarrow> bool"
 where
@@ -268,7 +312,7 @@ where
 | "syncvars (e\<bullet>F{D}) = syncvars e"
 | "syncvars (e\<bullet>F{D} := e2) = (syncvars e \<and> syncvars e2)"
 | "syncvars (e\<bullet>M(es)) = (syncvars e \<and> syncvarss es)"
-| "syncvars {V:T=vo;e}\<^bsub>cr\<^esub> = syncvars e"
+| "syncvars {V:T=vo;e} = syncvars e"
 | "syncvars (sync\<^bsub>V\<^esub> (e1) e2) = (syncvars e1 \<and> syncvars e2 \<and> V \<notin> fv e2)"
 | "syncvars (insync\<^bsub>V\<^esub> (a) e) = (syncvars e \<and> V \<notin> fv e)"
 | "syncvars (e1;;e2) = (syncvars e1 \<and> syncvars e2)"
@@ -283,15 +327,14 @@ where
 lemma syncvarss_append [simp]: "syncvarss (es @ es') \<longleftrightarrow> syncvarss es \<and> syncvarss es'"
 by(induct es) auto
 
-lemma noRetBlock_blocks1 [simp]: "noRetBlock (blocks1 n Ts e) = noRetBlock e"
-by(induct Ts arbitrary: n e) auto
-
+lemma syncvarss_map_Val [simp]: "syncvarss (map Val vs)"
+by(induct vs) auto
 
 definition bsok :: "expr1 \<Rightarrow> nat \<Rightarrow> bool"
-where "bsok e n \<equiv> \<B> e n \<and> expr_locks e = (\<lambda>ad. 0) \<and> noRetBlock e"
+where "bsok e n \<equiv> \<B> e n \<and> expr_locks e = (\<lambda>ad. 0)"
 
 definition bsoks :: "expr1 list \<Rightarrow> nat \<Rightarrow> bool"
-where "bsoks es n \<equiv> \<B>s es n \<and> expr_lockss es = (\<lambda>ad. 0) \<and> noRetBlocks es"
+where "bsoks es n \<equiv> \<B>s es n \<and> expr_lockss es = (\<lambda>ad. 0)"
 
 lemma bsok_simps [simp]:
   "bsok (new C) n = True"
@@ -307,7 +350,7 @@ lemma bsok_simps [simp]:
   "bsok (e\<bullet>F{D}) n = bsok e n"
   "bsok (e\<bullet>F{D} := e') n = (bsok e n \<and> bsok e' n)"
   "bsok (e\<bullet>M(ps)) n = (bsok e n \<and> bsoks ps n)"
-  "bsok {V:T=vo; e}\<^bsub>cr\<^esub> n = (bsok e (Suc n) \<and> V = n \<and> \<not> cr)"
+  "bsok {V:T=vo; e} n = (bsok e (Suc n) \<and> V = n)"
   "bsok (sync\<^bsub>V\<^esub> (e) e') n = (bsok e n \<and> bsok e' (Suc n) \<and> V = n)"
   "bsok (insync\<^bsub>V\<^esub> (ad) e) n = False"
   "bsok (e;; e') n = (bsok e n \<and> bsok e' n)"
@@ -320,10 +363,33 @@ lemma bsok_simps [simp]:
   "bsoks (e # es) n = (bsok e n \<and> bsoks es n)"
 by(auto simp add: bsok_def bsoks_def expand_fun_eq)
 
+lemma WT1_fv: "\<lbrakk> P,E \<turnstile>1 e :: T; \<B> e (length E); syncvars e \<rbrakk> \<Longrightarrow> fv e \<subseteq> {0..<length E}"
+  and WTs1_fvs: "\<lbrakk> P,E \<turnstile>1 es [::] Ts; \<B>s es (length E); syncvarss es \<rbrakk> \<Longrightarrow> fvs es \<subseteq> {0..<length E}"
+proof(induct rule: WT1_WTs1.inducts)
+  case (WT1Synchronized E e1 T e2 T' V)
+  note IH1 = `\<lbrakk>\<B> e1 (length E); syncvars e1\<rbrakk> \<Longrightarrow> fv e1 \<subseteq> {0..<length E}`
+  note IH2 = `\<lbrakk>\<B> e2 (length (E @ [Class Object])); syncvars e2\<rbrakk> \<Longrightarrow> fv e2 \<subseteq> {0..<length (E @ [Class Object])}`
+  from `\<B> (sync\<^bsub>V\<^esub> (e1) e2) (length E)` have [simp]: "V = length E"
+    and B1: "\<B> e1 (length E)" and B2: "\<B> e2 (Suc (length E))" by auto
+  from `syncvars (sync\<^bsub>V\<^esub> (e1) e2)` have sync1: "syncvars e1" and sync2: "syncvars e2" and V: "V \<notin> fv e2" by auto
+  have "fv e2 \<subseteq> {0..<length E}"
+  proof
+    fix x
+    assume x: "x \<in> fv e2"
+    with V have "x \<noteq> length E" by auto
+    moreover from IH2 B2 sync2 have "fv e2 \<subseteq> {0..<Suc (length E)}" by auto
+    with x have "x < Suc (length E)" by auto
+    ultimately show "x \<in> {0..<length E}" by auto
+  qed
+  with IH1[OF B1 sync1] show ?case by(auto)
+next
+  case (WT1Cond E e e1 T1 e2 T2 T)
+  thus ?case by(auto del: subsetI)
+qed fastsimp+
 
 
-constdefs
-  wf_J1_mdecl :: "J1_prog \<Rightarrow> cname \<Rightarrow> expr1 mdecl \<Rightarrow> bool"
+definition wf_J1_mdecl :: "J1_prog \<Rightarrow> cname \<Rightarrow> expr1 mdecl \<Rightarrow> bool"
+where
   "wf_J1_mdecl P C  \<equiv>  \<lambda>(M,Ts,T,body).
     (\<exists>T'. P,Class C#Ts \<turnstile>1 body :: T' \<and> P \<turnstile> T' \<le> T) \<and>
     \<D> body \<lfloor>{..size Ts}\<rfloor> \<and> \<B> body (size Ts + 1) \<and> syncvars body"
@@ -334,215 +400,7 @@ lemma wf_J1_mdecl[simp]:
      \<D> body \<lfloor>{..size Ts}\<rfloor> \<and> \<B> body (size Ts + 1)) \<and> syncvars body"
 by (simp add:wf_J1_mdecl_def)
 
-syntax
-  wf_J1_prog :: "J1_prog \<Rightarrow> bool"
-
-translations
-  "wf_J1_prog"  ==  "wf_prog wf_J1_mdecl"
-
-inductive WTrt1 :: "J1_prog \<Rightarrow> heap \<Rightarrow> env1 \<Rightarrow> expr1 \<Rightarrow> ty \<Rightarrow> bool"
-  and WTrts1 :: "J1_prog \<Rightarrow> heap \<Rightarrow> env1 \<Rightarrow> expr1 list \<Rightarrow> ty list \<Rightarrow> bool"
-  and WTrt1_syntax :: "J1_prog \<Rightarrow> env1 \<Rightarrow> heap \<Rightarrow> expr1 \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile>1 _ : _"   [51,0,0,0,51] 50)
-  and WTrts1_syntax :: "J1_prog \<Rightarrow> env1 \<Rightarrow> heap \<Rightarrow> expr1 list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_,_ \<turnstile>1 _ [:] _"   [51,0,0,0,51] 50)
-  for P :: J1_prog and h :: heap
-  where
-
-  "P,E,h \<turnstile>1 e : T \<equiv> WTrt1 P h E e T"
-| "P,E,h \<turnstile>1 es [:] Ts \<equiv> WTrts1 P h E es Ts"
-
-|  WTrt1New:
-  "is_class P C  \<Longrightarrow>
-  P,E,h \<turnstile>1 new C : Class C"
-
-| WTrt1NewArray:
-  "\<lbrakk> P,E,h \<turnstile>1 e : Integer; is_type P T \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 newA T\<lfloor>e\<rceil> : T\<lfloor>\<rceil>"
-
-| WTrt1Cast:
-  "\<lbrakk> P,E,h \<turnstile>1 e : T; is_type P U \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 Cast U e : U"
-
-| WTrt1Val:
-  "typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow>
-  P,E,h \<turnstile>1 Val v : T"
-
-| WTrt1Var:
-  "\<lbrakk> E!V = T; V < size E \<rbrakk> \<Longrightarrow>
-  P,E,h \<turnstile>1 Var V : T"
-
-| WTrt1BinOpEq:
-  "\<lbrakk> P,E,h \<turnstile>1 e1 : T1;  P,E,h \<turnstile>1 e2 : T2 \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 e1 \<guillemotleft>Eq\<guillemotright> e2 : Boolean"
-
-| WTrt1BinOpAdd:
-  "\<lbrakk> P,E,h \<turnstile>1 e1 : Integer;  P,E,h \<turnstile>1 e2 : Integer \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 e1 \<guillemotleft>Add\<guillemotright> e2 : Integer"
-
-| WTrt1LAss:
-  "\<lbrakk> E!i = T; i < size E; P,E,h \<turnstile>1 e : T';  P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 i:=e : Void"
-
-| WTrt1AAcc:
-  "\<lbrakk> P,E,h \<turnstile>1 a : T\<lfloor>\<rceil>; P,E,h \<turnstile>1 i : Integer \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 a\<lfloor>i\<rceil> : T"
-
-| WTrt1AAccNT:
-  "\<lbrakk> P,E,h \<turnstile>1 a : NT; P,E,h \<turnstile>1 i : Integer \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 a\<lfloor>i\<rceil> : T"
-
-| WTrt1AAss:
-  "\<lbrakk> P,E,h \<turnstile>1 a : T\<lfloor>\<rceil>; P,E,h \<turnstile>1 i : Integer; P,E,h \<turnstile>1 e : T' \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 a\<lfloor>i\<rceil> := e : Void"
-
-| WTrt1AAssNT:
-  "\<lbrakk> P,E,h \<turnstile>1 a : NT; P,E,h \<turnstile>1 i : Integer; P,E,h \<turnstile>1 e : T' \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 a\<lfloor>i\<rceil> := e : Void"
-
-| WTrt1ALength:
-  "P,E,h \<turnstile>1 a : T\<lfloor>\<rceil> \<Longrightarrow> P,E,h \<turnstile>1 a\<bullet>length : Integer"
-
-| WTrt1ALengthNT:
-  "P,E,h \<turnstile>1 a : NT \<Longrightarrow> P,E,h \<turnstile>1 a\<bullet>length : T"
-
-| WTrt1FAcc:
-  "\<lbrakk> P,E,h \<turnstile>1 e : Class C; P \<turnstile> C has F:T in D \<rbrakk> \<Longrightarrow>
-  P,E,h \<turnstile>1 e\<bullet>F{D} : T"
-
-| WTrt1FAccNT:
-    "P,E,h \<turnstile>1 e : NT \<Longrightarrow> P,E,h \<turnstile>1 e\<bullet>F{D} : T"
-
-| WTrt1FAss:
-  "\<lbrakk> P,E,h \<turnstile>1 e1 : Class C; P \<turnstile> C has F:T in D; P,E,h \<turnstile>1 e2 : T2;  P \<turnstile> T2 \<le> T \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 e1\<bullet>F{D}:=e2 : Void"
-
-| WTrt1FAssNT:
-  "\<lbrakk> P,E,h \<turnstile>1 e1 : NT; P,E,h \<turnstile>1 e2 : T2 \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 e1\<bullet>F{D}:=e2 : Void"
-
-| WTrt1Call:
-  "\<lbrakk> P,E,h \<turnstile>1 e : Class C; \<not> is_external_call P (Class C) M (length es); P \<turnstile> C sees M:Ts' \<rightarrow> T = m in D;
-    P,E,h \<turnstile>1 es [:] Ts;  P \<turnstile> Ts [\<le>] Ts' \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 e\<bullet>M(es) : T"
-
-| WTrt1CallNT:
-  "\<lbrakk> P,E,h \<turnstile>1 e : NT; P,E,h \<turnstile>1 es [:] Ts \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 e\<bullet>M(es) : T"
-
-| WTrt1CallExternal:
-    "\<lbrakk> P,E,h \<turnstile>1 e : T; P,E,h \<turnstile>1 es [:] Ts; P \<turnstile> T\<bullet>M(Ts) :: U \<rbrakk>
-    \<Longrightarrow> P,E,h \<turnstile>1 e\<bullet>M(es) : U"
-
-| WTrt1Block:
-  "\<lbrakk> P,(E@[T]),h \<turnstile>1 e : T'; case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof\<^bsub>h\<^esub> v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> T \<rbrakk>
-  \<Longrightarrow>  P,E,h \<turnstile>1 {V:T=vo; e}\<^bsub>cr\<^esub> : T'"
-
-| WTrt1Synchronized:
-  "\<lbrakk> P,E,h \<turnstile>1 o' : T; is_refT T; T \<noteq> NT; P,(E@[Class Object]),h \<turnstile>1 e : T' \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 sync\<^bsub>V\<^esub> (o') e : T'"
-
-| WTrt1SynchronizedNT:
-  "\<lbrakk> P,E,h \<turnstile>1 o' : NT; P,(E@[Class Object]),h \<turnstile>1 e : T' \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 sync\<^bsub>V\<^esub> (o') e : T"
-
-| WTrt1InSynchronized:
-  "\<lbrakk> P,E,h \<turnstile>1 addr a : T; P,(E@[Class Object]),h \<turnstile>1 e : T' \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 insync\<^bsub>V\<^esub> (a) e : T'"
-
-| WTrt1Seq:
-  "\<lbrakk> P,E,h \<turnstile>1 e1 : T1; P,E,h \<turnstile>1 e2 : T2 \<rbrakk>
-  \<Longrightarrow>  P,E,h \<turnstile>1 e1;;e2 : T2"
-
-| WTrt1Cond:
-  "\<lbrakk> P,E,h \<turnstile>1 e : Boolean;  P,E,h \<turnstile>1 e1 : T1;  P,E,h \<turnstile>1 e2 : T2;
-     P \<turnstile> T1 \<le> T2 \<or> P \<turnstile> T2 \<le> T1;  P \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2; P \<turnstile> T2 \<le> T1 \<longrightarrow> T = T1 \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 if (e) e1 else e2 : T"
-
-| WTrt1While:
-  "\<lbrakk> P,E,h \<turnstile>1 e : Boolean;  P,E,h \<turnstile>1 c : T \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 while (e) c : Void"
-
-| WTrt1Throw:
-  "\<lbrakk> P,E,h \<turnstile>1 e : T'; P \<turnstile> T' \<le> Class Throwable \<rbrakk> \<Longrightarrow> 
-  P,E,h \<turnstile>1 throw e : T"
-
-| WTrt1Try:
-  "\<lbrakk> P,E,h \<turnstile>1 e1 : T1;  P,(E@[Class C]),h \<turnstile>1 e2 : T2; P \<turnstile> T1 \<le> T2 \<rbrakk>
-  \<Longrightarrow> P,E,h \<turnstile>1 try e1 catch(C V) e2 : T2"
-
-| WTrt1Nil: "P,E,h \<turnstile>1 [] [:] []"
-
-| WTrt1Cons: "\<lbrakk> P,E,h \<turnstile>1 e : T; P,E,h \<turnstile>1 es [:] Ts \<rbrakk> \<Longrightarrow> P,E,h \<turnstile>1 e#es [:] T#Ts"
-
-declare WTrt1_WTrts1.intros[intro!]
-declare WT1Nil[iff]
-
-declare 
-  WTrt1AAcc[rule del, intro] WTrt1AAccNT[rule del, intro]
-  WTrt1AAss[rule del, intro] WTrt1AAssNT[rule del, intro]
-  WTrt1ALength[rule del, intro] WTrt1ALengthNT[rule del, intro]  
-  WTrt1FAcc[rule del, intro] WTrt1FAccNT[rule del, intro]
-  WTrt1FAss[rule del, intro] WTrt1FAssNT[rule del, intro]
-  WTrt1Call[rule del, intro] WTrt1CallNT[rule del, intro]
-  WTrt1CallExternal[rule del, intro]
-  WTrt1Synchronized[rule del, intro]
-  WTrt1SynchronizedNT[rule del, intro]
-
-inductive_cases WTrt1_WTrts1_cases[elim!]:
-  "P,E,h \<turnstile>1 Val v : T"
-  "P,E,h \<turnstile>1 Var i : T"
-  "P,E,h \<turnstile>1 i:=e : T"
-  "P,E,h \<turnstile>1 {i:U=vo; e}\<^bsub>cr\<^esub> : T"
-  "P,E,h \<turnstile>1 e1;;e2 : T"
-  "P,E,h \<turnstile>1 if (e) e1 else e2 : T"
-  "P,E,h \<turnstile>1 while (e) c : T"
-  "P,E,h \<turnstile>1 throw e : T"
-  "P,E,h \<turnstile>1 try e1 catch(C i) e2 : T"
-  "P,E,h \<turnstile>1 e1 \<guillemotleft>bop\<guillemotright> e2 : T"
-  "P,E,h \<turnstile>1 new C : T"
-  "P,E,h \<turnstile>1 e\<bullet>M(es) : T"
-  "P,E,h \<turnstile>1 sync\<^bsub>V\<^esub> (o') e : T"
-  "P,E,h \<turnstile>1 insync\<^bsub>V\<^esub> (a) e : T"
-  "P,E,h \<turnstile>1 Cast U e : T"
-  "P,E,h \<turnstile>1 newA T\<lfloor>e\<rceil> : T'"
-  "P,E,h \<turnstile>1 a\<lfloor>i\<rceil> : T"
-  "P,E,h \<turnstile>1 a\<lfloor>i\<rceil> := e : T"
-  "P,E,h \<turnstile>1 a\<bullet>length : T"
-  "P,E,h \<turnstile>1 e\<bullet>F{D} : T"
-  "P,E,h \<turnstile>1 e\<bullet>F{D} := e' : T"
-  "P,E,h \<turnstile>1 [] [:] Ts"
-  "P,E,h \<turnstile>1 e#es [:] Ts"
-
-lemma WTrts1_same_size: "P,E,h \<turnstile>1 es [:] Ts \<Longrightarrow> size es = size Ts"
-apply (induct es arbitrary: Ts) 
-apply auto
-done
-
-lemma WTrts1_Val[simp]:
- "P,E,h \<turnstile>1 map Val vs [:] Ts \<longleftrightarrow> map (typeof\<^bsub>h\<^esub>) vs = map Some Ts"
-by(induct vs arbitrary: Ts) auto
-
-lemma WTrts1_append [simp]:
-  "P,E,h \<turnstile>1 es @ es' [:] Ts \<longleftrightarrow> P,E,h \<turnstile>1 es [:] take (length es) Ts \<and> P,E,h \<turnstile>1 es' [:] drop (length es) Ts"
-apply(induct es arbitrary: Ts)
-apply auto
-apply(case_tac Ts)
-apply(auto)
-done
-
-
-lemma WT1_imp_WTrt1: "P,E \<turnstile>1 e :: T \<Longrightarrow> P,E,h \<turnstile>1 e : T"
-  and WTs1_imp_WTrts1: "P,E \<turnstile>1 es [::] Ts \<Longrightarrow> P,E,h \<turnstile>1 es [:] Ts"
-apply(induct rule: WT1_WTs1.inducts)
-apply(auto intro: typeof_lit_typeof has_visible_field)
-apply(blast intro: typeof_lit_typeof)
-done
-
-lemma WTrt1_hext_mono: "\<lbrakk> P,E,h \<turnstile>1 e : T; hext h h' \<rbrakk> \<Longrightarrow> P,E,h' \<turnstile>1 e : T"
-  and WTrts1_hext_mono: "\<lbrakk> P,E,h \<turnstile>1 es [:] Ts; hext h h' \<rbrakk> \<Longrightarrow> P,E,h' \<turnstile>1 es [:] Ts"
-apply(induct rule: WTrt1_WTrts1.inducts)
-apply(auto elim!: hext_typeof_mono)
-done
-
-
+abbreviation wf_J1_prog :: "J1_prog \<Rightarrow> bool"
+where "wf_J1_prog == wf_prog wf_J1_mdecl"
 
 end

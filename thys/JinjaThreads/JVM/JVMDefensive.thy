@@ -5,7 +5,7 @@
 header {* \isaheader{A Defensive JVM} *}
 
 theory JVMDefensive
-imports JVMExec "../Common/Conform"
+imports JVMExec "../Common/ExternalCallWF"
 begin
 
 text {*
@@ -84,9 +84,9 @@ check_instr_Invoke:
          T = the (typeof\<^bsub>h\<^esub> (Addr a));
          C = cname_of h a;
          Ts = fst (snd (method P C M))
-    in h a \<noteq> None \<and>  
-       (\<not> is_Arr (the (h a)) \<and> P \<turnstile> C has M \<and> P,h \<turnstile> rev (take n stk) [:\<le>] Ts \<or> 
-        is_external_call P T M n \<and> (\<exists>Ts U. P \<turnstile> T\<bullet>M(Ts) :: U \<and> map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Ts)))))"
+    in h a \<noteq> None \<and>
+       (if is_external_call P T M then \<exists>U. P,h \<turnstile> a\<bullet>M(rev (take n stk)) : U 
+        else \<not> is_Arr (the (h a)) \<and> P \<turnstile> C has M \<and> P,h \<turnstile> rev (take n stk) [:\<le>] Ts))))"
 
 check_instr_Return:
   "check_instr Return P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
@@ -100,25 +100,33 @@ check_instr_Pop:
   "check_instr Pop P h stk loc C\<^isub>0 M\<^isub>0 pc frs = 
   (0 < length stk)"
 
+check_instr_BinOpInstr:
+  "check_instr (BinOpInstr bop) P h stk loc C0 M0 pc frs =
+  (1 < length stk \<and> (let T2 = the (typeof\<^bsub>h\<^esub> (hd stk)); T1 = the (typeof\<^bsub>h\<^esub> (hd (tl stk))) in \<exists>T. P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T))"
+
+(*
 check_instr_IAdd:
   "check_instr IAdd P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
   (1 < length stk \<and> is_Intg (hd stk) \<and> is_Intg (hd (tl stk)))"
+*)
 
 check_instr_IfFalse:
   "check_instr (IfFalse b) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
   (0 < length stk \<and> is_Bool (hd stk) \<and> 0 \<le> int pc+b)"
 
+(*
 check_instr_CmpEq:
   "check_instr CmpEq P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
   (1 < length stk)"
+*)
 
 check_instr_Goto:
   "check_instr (Goto b) P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
   (0 \<le> int pc+b)"
 
 check_instr_Throw:
-  "check_instr Throw P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
-  (0 < length stk \<and> is_Ref (hd stk))"
+  "check_instr ThrowExc P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
+  (0 < length stk \<and> P \<turnstile> the (typeof\<^bsub>h\<^esub> (hd stk)) \<le> Class Throwable)"
 
 check_instr_MEnter:
   "check_instr MEnter P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
@@ -127,7 +135,6 @@ check_instr_MEnter:
 check_instr_MExit:
   "check_instr MExit P h stk loc C\<^isub>0 M\<^isub>0 pc frs =
    (0 < length stk \<and> is_Ref (hd stk))"
-
 
 
 constdefs
@@ -175,7 +182,7 @@ by(auto simp add: exec_d_def)
 -- "reflexive transitive closure:"
 
 definition
-  exec_star_d :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> (addr,thread_id,jvm_thread_state,heap,addr) thread_action list \<Rightarrow> jvm_state type_error \<Rightarrow> bool"
+  exec_star_d :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_thread_action list \<Rightarrow> jvm_state type_error \<Rightarrow> bool"
                  ("_ \<turnstile>/ _ -_-jvmd\<rightarrow>*/ _" [61,61,0,61] 60)
 where
   "P \<turnstile> \<sigma> -tas-jvmd\<rightarrow>* \<sigma>' \<equiv> rtrancl3p (exec_1_d P) \<sigma> tas \<sigma>'"
@@ -249,45 +256,30 @@ proof -
       by(auto simp add: check_def has_method_def)
     from None exec mthd
     have xexec: "(ta, xcp', h', frs') \<in> set (exec_instr (ins ! pc) P h stk loc C0 M0 pc Frs)" by(clarsimp)
-    show ?thesis
-    proof(cases xcp')
-      case None
-      with xexec have xexec': "(ta, None, h', frs') \<in> set (exec_instr (ins ! pc) P h stk loc C0 M0 pc Frs)" by simp
-      thus ?thesis
-      proof(cases "ins ! pc")
-	case (New C)
-	moreover with check_ins xexec' obtain a where "new_Addr h = \<lfloor>a\<rfloor>" by(auto)
-	moreover hence "h a = None" by(auto dest: new_Addr_SomeD)
-	ultimately show ?thesis using xexec' by(auto intro!: hext_new)
-      next
-	case (NewArray T)
-	moreover with check_ins xexec' obtain a where "new_Addr h = \<lfloor>a\<rfloor>"
-	  by(simp split: if_splits)
-	moreover hence "h a = None" by(auto dest: new_Addr_SomeD)
-	ultimately show ?thesis using xexec'
-	  by(auto intro!: hext_new split: split_if_asm)
-      next
-	case AStore
-	with xexec' check_ins show ?thesis
-	  by(auto intro: hext_upd_arr elim!: is_ArrE simp add: split_beta split: split_if_asm)
-      next
-	case Putfield
-	with xexec' check_ins show ?thesis
-	  by(auto intro: hext_upd_obj elim!: is_ArrE simp add: split_beta is_Ref_def split: split_if_asm)
-      next
-	case (Invoke M n)
-	with xexec' check_ins show ?thesis
-	  by(auto intro: hext_upd_obj elim!: is_ArrE
-                  simp add: min_def split_beta is_Ref_def red_external_list_conv[symmetric]
-                            extRet2JVM_def[folded Datatype.sum_case_def]
-                  split: split_if_asm sum.split_asm dest: red_external_hext)
-      qed(auto simp add: split_beta split: split_if_asm)
+    thus ?thesis
+    proof(cases "ins ! pc")
+      case (New C)
+      with xexec show ?thesis by(auto dest: new_Addr_SomeD intro: hext_new)
     next
-      case (Some a)
-      with xexec `frs = f # Frs` `f = (stk, loc, C0, M0, pc)` have "h' = h"
-	by(auto dest: exec_instr_xcp_unchanged)
-      thus ?thesis by auto
-    qed
+      case (NewArray T)
+      with xexec show ?thesis
+	by(auto dest: new_Addr_SomeD intro: hext_new split: split_if_asm)
+    next
+      case AStore
+      with xexec check_ins show ?thesis
+	by(auto intro: hext_upd_arr elim!: is_ArrE simp add: split_beta split: split_if_asm)
+    next
+      case Putfield
+      with xexec check_ins show ?thesis
+	by(auto intro: hext_upd_obj elim!: is_ArrE simp add: split_beta is_Ref_def split: split_if_asm)
+    next
+      case (Invoke M n)
+      with xexec check_ins show ?thesis
+	by(auto intro: hext_upd_obj elim!: is_ArrE
+                simp add: min_def split_beta is_Ref_def
+                          extRet2JVM_def[folded Datatype.sum_case_def]
+                split: split_if_asm sum.split_asm dest: red_external_list_hext)
+    qed(auto simp add: split_beta split: split_if_asm)
   next
     case (Some a)
     with exec have "h' = h" by auto

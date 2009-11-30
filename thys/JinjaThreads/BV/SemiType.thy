@@ -2,7 +2,10 @@
     Author:     Tobias Nipkow, Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{The Jinja Type System as a Semilattice} *}
+header {* 
+  \chapter{Bytecode verifier}
+  \isaheader{The Jinja Type System as a Semilattice} 
+*}
 
 theory SemiType
 imports "../Common/WellForm" "../../Jinja/DFA/Semilattices"
