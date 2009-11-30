@@ -105,18 +105,20 @@ text {* This is the concrete syntax that expresses the subtype relations
 between all types. 
 \label{subtype_relations_concrete_syntax} *}
 
-syntax
-  "@direct_subtype" :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<prec>1 _" [71,71] 70)
-  "@widen"          :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<preceq> _" [71,71] 70)
-  "@widen_strict"   :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<prec> _" [71,71] 70)
+abbreviation
+  direct_subtype_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<prec>1 _" [71,71] 70)
+where -- {* direct subtype relation *}
+  "A \<prec>1 B == (A,B) \<in> direct_subtype"
 
-translations
-  "A \<prec>1 B" == "(A,B) \<in> direct_subtype"
-  -- {* direct subtype relation *}
-  "A \<preceq> B" == "(A,B) \<in> direct_subtype\<^sup>*"
-  -- {* reflexive transitive closure of direct subtype relation *}
-  "A \<prec> B" == "(A,B) \<in> direct_subtype\<^sup>+"
-  -- {* transitive closure of direct subtype relation *}
+abbreviation
+  widen_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<preceq> _" [71,71] 70)
+where -- {* reflexive transitive closure of direct subtype relation *}
+  "A \<preceq> B == (A,B) \<in> direct_subtype\<^sup>*"
+
+abbreviation
+  widen_strict_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<prec> _" [71,71] 70)
+where -- {* transitive closure of direct subtype relation *}
+  "A \<prec> B == (A,B) \<in> direct_subtype\<^sup>+"
 
 
 subsection {* The Subtype Relation as Partial Order *}

@@ -44,8 +44,8 @@ orders per type, we need to repeat some things.
 
 types 'a RPR = "('a * 'a) set"
 
-syntax "_rpr_eq" :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<^bsub>_\<^esub>\<preceq> _" [50, 1000, 51] 50)
-translations "x \<^bsub>r\<^esub>\<preceq> y" == "(x, y) \<in> r"
+abbreviation rpr_eq_syntax :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<^bsub>_\<^esub>\<preceq> _" [50, 1000, 51] 50) where
+  "x \<^bsub>r\<^esub>\<preceq> y == (x, y) \<in> r"
 
 definition indifferent_pref :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<^bsub>_\<^esub>\<approx> _" [50, 1000, 51] 50) where
   "x \<^bsub>r\<^esub>\<approx> y \<equiv> (x \<^bsub>r\<^esub>\<preceq> y \<and> y \<^bsub>r\<^esub>\<preceq> x)"

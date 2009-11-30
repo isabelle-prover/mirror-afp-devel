@@ -135,9 +135,9 @@ lemma length_filter_True_eq:
 subsubsection {* @{const map} *}
 
 syntax (xsymbols)
-  "@map" :: "[ 'b, pttrn, 'a list] => 'a list"("(1[_. _ \<in> _])")
+  "_map" :: "[ 'b, pttrn, 'a list] => 'a list"("(1[_. _ \<in> _])")
 syntax 
-  "@map" :: "[ 'b, pttrn, 'a list] => 'a list"("(1[_./ _ : _])")
+  "_map" :: "[ 'b, pttrn, 'a list] => 'a list"("(1[_./ _ : _])")
 
 translations
   "[f. x \<in> xs]"== "map (\<lambda>x. f) xs" 
@@ -147,9 +147,9 @@ translations
 subsubsection {* @{const map_filter} *}
 
 syntax (xsymbols)
-  "@map_filter" :: "['b, pttrn, 'a list, bool] => 'a list"("(1[_. _ \<in> _, _])")
+  "_map_filter" :: "['b, pttrn, 'a list, bool] => 'a list"("(1[_. _ \<in> _, _])")
 syntax 
-  "@map_filter" :: "['b, pttrn, 'a list, bool] => 'a list"("(1[_./ _ : _, _])")
+  "_map_filter" :: "['b, pttrn, 'a list, bool] => 'a list"("(1[_./ _ : _, _])")
 
 translations
   "[f. x \<in> xs, P]"== "map_filter (\<lambda>x. f) P xs" 
@@ -163,8 +163,8 @@ lemma [simp]: "[f x. x <- xs, P x] = [f x. x <- [x \<leftarrow> xs. P x]]"
 subsubsection {* @{const concat} *}
 
 syntax (xsymbols)
-  "@concat"     :: "idt => 'a list => 'a list \<Rightarrow> 'a list"  ("\<Squnion>\<^bsub>_\<in> _\<^esub> _" 10)
-translations "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "concat [f. x <- xs]" 
+  "_concat" :: "idt => 'a list => 'a list \<Rightarrow> 'a list"  ("\<Squnion>\<^bsub>_\<in> _\<^esub> _" 10)
+translations "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "CONST concat [f. x <- xs]" 
 
 
 subsubsection {* List product *}

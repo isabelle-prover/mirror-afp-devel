@@ -79,9 +79,9 @@ where
 "
 declare swapWatches_def[code_inline]
 
-consts getNonWatchedUnfalsifiedLiteral :: "Clause \<Rightarrow> Literal \<Rightarrow> Literal \<Rightarrow> LiteralTrail \<Rightarrow> Literal option"
-primrec
-"getNonWatchedUnfalsifiedLiteral [] w1 w2 M = None"
+primrec getNonWatchedUnfalsifiedLiteral :: "Clause \<Rightarrow> Literal \<Rightarrow> Literal \<Rightarrow> LiteralTrail \<Rightarrow> Literal option"
+where
+"getNonWatchedUnfalsifiedLiteral [] w1 w2 M = None" |
 "getNonWatchedUnfalsifiedLiteral (literal # clause) w1 w2 M = 
     (if literal \<noteq> w1 \<and> 
         literal \<noteq> w2 \<and> 
@@ -100,10 +100,9 @@ where
 "
 declare setReason_def[code_inline]
 
-consts
-notifyWatches_loop::"Literal \<Rightarrow> nat list \<Rightarrow> nat list \<Rightarrow> State \<Rightarrow> State"
-primrec
-"notifyWatches_loop literal [] newWl state = state\<lparr> getWatchList := (getWatchList state)(literal := newWl) \<rparr>" 
+primrec notifyWatches_loop::"Literal \<Rightarrow> nat list \<Rightarrow> nat list \<Rightarrow> State \<Rightarrow> State"
+where
+"notifyWatches_loop literal [] newWl state = state\<lparr> getWatchList := (getWatchList state)(literal := newWl) \<rparr>" |
 "notifyWatches_loop literal (clause # list') newWl state = 
     (let state' = (if Some literal = (getWatch1 state clause) then 
                        (swapWatches clause state) 
@@ -227,10 +226,9 @@ where
     \<rparr>
 "
 
-consts
-initialize :: "Formula \<Rightarrow> State \<Rightarrow> State"
-primrec
-"initialize [] state = state"
+primrec initialize :: "Formula \<Rightarrow> State \<Rightarrow> State"
+where
+"initialize [] state = state" |
 "initialize (clause # formula) state = initialize formula (addClause clause state)"
 
 definition 
@@ -329,9 +327,8 @@ where
     )
 "
 
-consts
-selectLiteral :: "State \<Rightarrow> Variable set \<Rightarrow> Literal"
-axioms
+axiomatization selectLiteral :: "State \<Rightarrow> Variable set \<Rightarrow> Literal"
+where
 selectLiteral_def:
 "Vbl - vars (elements (getM state)) \<noteq> {} \<longrightarrow> 
     var (selectLiteral state Vbl) \<in> (Vbl - vars (elements (getM state)))"

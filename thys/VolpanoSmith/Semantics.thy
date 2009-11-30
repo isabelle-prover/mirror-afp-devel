@@ -1,4 +1,6 @@
-theory Semantics imports Main begin
+theory Semantics
+imports Main
+begin
 
 section {* The Language *}
 
@@ -10,12 +12,8 @@ datatype val
   = Bool bool      -- "Boolean value"
   | Intg int       -- "integer value" 
 
-syntax
-  true  :: val
-  false :: val
-translations
-  "true"  == "Bool True"
-  "false" == "Bool False"
+abbreviation "true == Bool True"
+abbreviation "false == Bool False"
 
 
 

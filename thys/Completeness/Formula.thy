@@ -19,8 +19,10 @@ lemma X_deX[simp]: "X (deX a) = a"
 
 definition "zeroX = X 0"
 
-consts nextX :: "vbl => vbl"
-primrec "nextX (X n) = X (Suc n)"
+
+primrec
+  nextX :: "vbl => vbl" where
+  "nextX (X n) = X (Suc n)"
 
 definition
   vblcase :: "['a,vbl => 'a,vbl] => 'a" where
