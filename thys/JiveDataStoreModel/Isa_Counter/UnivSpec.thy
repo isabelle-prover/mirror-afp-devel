@@ -15,11 +15,11 @@ In later versions of Jive, one may be able to generate it from JML model
 classes.
 *}
 
-constdefs
-aCounter :: "Value \<Rightarrow> Store \<Rightarrow> JavaInt"
-
-"aCounter x s == if x ~= nullV & (alive x s) & typeof x = CClassT CounterImpl then
-  aI ( s@@(x..CounterImpl'value) )
- else undefined"
+definition
+aCounter :: "Value \<Rightarrow> Store \<Rightarrow> JavaInt" where
+"aCounter x s =
+  (if x ~= nullV & (alive x s) & typeof x = CClassT CounterImpl then
+    aI ( s@@(x..CounterImpl'value) )
+   else undefined)"
 
 end

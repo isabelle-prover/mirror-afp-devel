@@ -51,17 +51,8 @@ subsection {* Discriminator Functions *}
 
 text {* To test values, we define the following discriminator functions. *}
 
-consts isBoolV  :: "Value \<Rightarrow> bool" 
-       isIntgV  :: "Value \<Rightarrow> bool"
-       isShortV :: "Value \<Rightarrow> bool"
-       isByteV  :: "Value \<Rightarrow> bool"
-       isRefV   :: "Value \<Rightarrow> bool"
-       isObjV   :: "Value \<Rightarrow> bool"
-       isArrV   :: "Value \<Rightarrow> bool"
-       isNullV  :: "Value \<Rightarrow> bool"
-
-defs isBoolV_def:
-"isBoolV v \<equiv> (case v of
+definition isBoolV  :: "Value \<Rightarrow> bool" where
+"isBoolV v = (case v of
                boolV b  \<Rightarrow> True 
              | intgV i  \<Rightarrow> False
              | shortV s \<Rightarrow> False
@@ -79,9 +70,10 @@ lemma isBoolV_simps [simp]:
 "isBoolV (arrV T a)      = False"
 "isBoolV (nullV)         = False"
   by (simp_all add: isBoolV_def)
- 
-defs isIntgV_def:
-"isIntgV v \<equiv> (case v of
+
+
+definition isIntgV  :: "Value \<Rightarrow> bool" where
+"isIntgV v = (case v of
                boolV b  \<Rightarrow> False 
              | intgV i  \<Rightarrow> True
              | shortV s \<Rightarrow> False
@@ -101,9 +93,8 @@ lemma isIntgV_simps [simp]:
   by (simp_all add: isIntgV_def)
 
 
-
-defs isShortV_def:
-"isShortV v \<equiv> (case v of
+definition isShortV :: "Value \<Rightarrow> bool" where
+"isShortV v = (case v of
                boolV b  \<Rightarrow> False 
              | intgV i  \<Rightarrow> False
              | shortV s \<Rightarrow> True
@@ -123,8 +114,8 @@ lemma isShortV_simps [simp]:
   by (simp_all add: isShortV_def)
 
 
-defs isByteV_def:
-"isByteV v \<equiv> (case v of
+definition isByteV :: "Value \<Rightarrow> bool" where
+"isByteV v = (case v of
                boolV b  \<Rightarrow> False 
              | intgV i  \<Rightarrow> False
              | shortV s \<Rightarrow> False
@@ -143,8 +134,9 @@ lemma isByteV_simps [simp]:
 "isByteV (nullV)        = False"
   by (simp_all add: isByteV_def)
 
-defs isRefV_def:
-"isRefV v \<equiv>  (case v of
+
+definition isRefV :: "Value \<Rightarrow> bool" where
+"isRefV v = (case v of
                boolV b  \<Rightarrow> False 
              | intgV i  \<Rightarrow> False
              | shortV s \<Rightarrow> False
@@ -164,8 +156,8 @@ lemma isRefV_simps [simp]:
   by (simp_all add: isRefV_def)
 
 
-defs isObjV_def:
-"isObjV v \<equiv>  (case v of
+definition isObjV :: "Value \<Rightarrow> bool" where
+"isObjV v = (case v of
                boolV b  \<Rightarrow> False 
              | intgV i  \<Rightarrow> False
              | shortV s  \<Rightarrow> False
@@ -185,8 +177,8 @@ lemma isObjV_simps [simp]:
   by (simp_all add: isObjV_def)
 
 
-defs isArrV_def:
-"isArrV v \<equiv>  (case v of
+definition isArrV :: "Value \<Rightarrow> bool" where
+"isArrV v = (case v of
                boolV b  \<Rightarrow> False 
              | intgV i  \<Rightarrow> False
              | shortV s  \<Rightarrow> False
@@ -206,8 +198,8 @@ lemma isArrV_simps [simp]:
   by (simp_all add: isArrV_def)
 
 
-defs isNullV_def:
-"isNullV v \<equiv>  (case v of
+definition isNullV  :: "Value \<Rightarrow> bool" where
+"isNullV v = (case v of
                boolV b  \<Rightarrow> False 
              | intgV i  \<Rightarrow> False
              | shortV s  \<Rightarrow> False
@@ -228,127 +220,116 @@ lemma isNullV_simps [simp]:
 
 subsection {* Selector Functions *}
 
-consts
-aI    :: "Value \<Rightarrow> JavaInt"
-aB    :: "Value \<Rightarrow> JavaBoolean"
-aSh   :: "Value \<Rightarrow> JavaShort"
-aBy   :: "Value \<Rightarrow> JavaByte"
-tid   :: "Value \<Rightarrow> CTypeId"
-oid   :: "Value \<Rightarrow> ObjectId"
-jt    :: "Value \<Rightarrow> Javatype"
-aid   :: "Value \<Rightarrow> ObjectId"
-
-
-defs aI_def:
-"aI v \<equiv>  case v of  
+definition aI :: "Value \<Rightarrow> JavaInt" where
+"aI v = (case v of  
             boolV  b   \<Rightarrow> undefined
           | intgV  i   \<Rightarrow> i
           | shortV sh  \<Rightarrow> undefined
           | byteV  by  \<Rightarrow> undefined
           | objV   C a \<Rightarrow> undefined
           | arrV  T a  \<Rightarrow> undefined
-          | nullV      \<Rightarrow> undefined"
+          | nullV      \<Rightarrow> undefined)"
 lemma aI_simps [simp]:
 "aI (intgV i) = i"
 by (simp add: aI_def)
 
 
-defs aB_def:
-"aB v \<equiv>  case v of  
+definition aB :: "Value \<Rightarrow> JavaBoolean" where
+"aB v = (case v of  
             boolV  b   \<Rightarrow> b
           | intgV  i   \<Rightarrow> undefined
           | shortV sh  \<Rightarrow> undefined
           | byteV  by  \<Rightarrow> undefined
           | objV   C a \<Rightarrow> undefined
           | arrV  T a  \<Rightarrow> undefined
-          | nullV      \<Rightarrow> undefined"
+          | nullV      \<Rightarrow> undefined)"
 lemma aB_simps [simp]:
 "aB (boolV b) = b"
 by (simp add: aB_def)
 
 
-defs aSh_def:
-"aSh v \<equiv>  case v of  
+definition aSh :: "Value \<Rightarrow> JavaShort" where
+"aSh v = (case v of  
             boolV  b   \<Rightarrow> undefined
           | intgV  i   \<Rightarrow> undefined
           | shortV sh  \<Rightarrow> sh
           | byteV  by  \<Rightarrow> undefined
           | objV   C a \<Rightarrow> undefined
           | arrV  T a  \<Rightarrow> undefined
-          | nullV      \<Rightarrow> undefined"
+          | nullV      \<Rightarrow> undefined)"
 lemma aSh_simps [simp]:
 "aSh (shortV sh) = sh"
 by (simp add: aSh_def)
 
 
-defs aBy_def:
-"aBy v \<equiv>  case v of  
+definition aBy :: "Value \<Rightarrow> JavaByte" where
+"aBy v = (case v of  
             boolV  b   \<Rightarrow> undefined
           | intgV  i   \<Rightarrow> undefined
           | shortV s   \<Rightarrow> undefined
           | byteV  by  \<Rightarrow> by
           | objV   C a \<Rightarrow> undefined
           | arrV  T a  \<Rightarrow> undefined
-          | nullV      \<Rightarrow> undefined"
+          | nullV      \<Rightarrow> undefined)"
 lemma aBy_simps [simp]:
 "aBy (byteV by) = by"
 by (simp add: aBy_def)
 
-defs tid_def:
-"tid v \<equiv> case v of
+
+definition tid :: "Value \<Rightarrow> CTypeId" where
+"tid v = (case v of
             boolV  b   \<Rightarrow> undefined
           | intgV  i   \<Rightarrow> undefined
           | shortV s   \<Rightarrow> undefined
           | byteV  by  \<Rightarrow> undefined
           | objV   C a \<Rightarrow> C
           | arrV  T a  \<Rightarrow> undefined
-          | nullV      \<Rightarrow> undefined"
+          | nullV      \<Rightarrow> undefined)"
 
 lemma tid_simps [simp]:
 "tid (objV C a) = C"
 by (simp add: tid_def)
 
 
-defs oid_def:
-"oid v \<equiv> case v of
+definition oid :: "Value \<Rightarrow> ObjectId" where
+"oid v = (case v of
             boolV  b   \<Rightarrow> undefined
           | intgV  i   \<Rightarrow> undefined
           | shortV s   \<Rightarrow> undefined
           | byteV  by  \<Rightarrow> undefined
           | objV   C a \<Rightarrow> a
           | arrV  T a  \<Rightarrow> undefined
-          | nullV      \<Rightarrow> undefined"
+          | nullV      \<Rightarrow> undefined)"
 
 lemma oid_simps [simp]:
 "oid (objV C a) = a"
 by (simp add: oid_def)
 
 
-
-defs jt_def:
-"jt v \<equiv> case v of
+definition jt :: "Value \<Rightarrow> Javatype" where
+"jt v = (case v of
             boolV  b   \<Rightarrow> undefined
           | intgV  i   \<Rightarrow> undefined
           | shortV s   \<Rightarrow> undefined
           | byteV  by  \<Rightarrow> undefined
           | objV   C a \<Rightarrow> undefined
           | arrV  T a  \<Rightarrow> at2jt T
-          | nullV      \<Rightarrow> undefined"
+          | nullV      \<Rightarrow> undefined)"
 
 lemma jt_simps [simp]:
 "jt (arrV T a) = at2jt T"
 by (simp add: jt_def)
 
 
-defs aid_def:
-"aid v \<equiv> case v of
+definition aid :: "Value \<Rightarrow> ObjectId" where
+"aid v = (case v of
             boolV  b   \<Rightarrow> undefined
           | intgV  i   \<Rightarrow> undefined
           | shortV s   \<Rightarrow> undefined
           | byteV  by  \<Rightarrow> undefined
           | objV   C a \<Rightarrow> undefined
           | arrV  T a  \<Rightarrow> a
-          | nullV      \<Rightarrow> undefined"
+          | nullV      \<Rightarrow> undefined)"
 
 lemma aid_simps [simp]:
 "aid (arrV T a) = a"
@@ -361,8 +342,8 @@ text {* To determine the type of a value, we define the function
 often written as $\tau$ in theoretical texts, therefore we add
 the appropriate syntax support. *}
 
-constdefs typeof :: "Value \<Rightarrow> Javatype"
-"typeof v \<equiv> (case v of
+definition typeof :: "Value \<Rightarrow> Javatype" where
+"typeof v = (case v of
                boolV b  \<Rightarrow> BoolT 
              | intgV i  \<Rightarrow> IntgT
              | shortV sh  \<Rightarrow> ShortT
@@ -393,8 +374,8 @@ default value is False, for the integral types, it is 0, and for the reference
 types, it is nullV.
 *}
 
-constdefs init :: "Javatype \<Rightarrow> Value"
-"init T \<equiv> (case T of
+definition init :: "Javatype \<Rightarrow> Value" where
+"init T = (case T of
              BoolT        \<Rightarrow> boolV  False
            | IntgT        \<Rightarrow> intgV  0
            | ShortT        \<Rightarrow> shortV 0

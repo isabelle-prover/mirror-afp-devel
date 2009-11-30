@@ -463,16 +463,14 @@ another value. This is an extension of the predicate @{text "oreach"} as describ
 in \cite[p. 54]{Poetzsch-Heffter97specification} because now arrays are handled as well.
 *}
 
-consts rreach:: "Store \<Rightarrow> Value \<Rightarrow> Value \<Rightarrow> bool" 
-                            ("_|-Ref _ reachable'_from _" [91,91,91]90)
-syntax (xsymbols)
-rreach:: "Store \<Rightarrow> Value \<Rightarrow> Value \<Rightarrow> bool" 
-                      ("_\<turnstile>Ref _ reachable'_from _" [91,91,91]90)
+definition rreach:: "Store \<Rightarrow> Value \<Rightarrow> Value \<Rightarrow> bool" 
+  ("_|-Ref _ reachable'_from _" [91,91,91]90) where
+"s|-Ref y reachable_from x = (\<exists> l. s\<turnstile> l reachable_from x \<and> y = ref l)"
 
-defs rreach_def:
-"s\<turnstile>Ref y reachable_from x \<equiv> \<exists> l. s\<turnstile> l reachable_from x \<and> y = ref l"
+notation (xsymbols)
+  rreach  ("_\<turnstile>Ref _ reachable'_from _" [91,91,91]90)
 
-    
+
 subsection {* Disjointness of Reachable Locations *}
 
 text {* The predicate @{text "disj"} tests whether two values are disjoint
@@ -480,8 +478,8 @@ in a given store. Its properties as given in
 \cite[Lemma 3.3, p. 54]{Poetzsch-Heffter97specification} are then proven.
 *}
 
-constdefs disj:: "Value \<Rightarrow> Value \<Rightarrow> Store \<Rightarrow> bool"
-"disj x y s \<equiv> \<forall> l. \<not> s\<turnstile> l reachable_from x \<or> \<not> s\<turnstile> l reachable_from y"
+definition disj:: "Value \<Rightarrow> Value \<Rightarrow> Store \<Rightarrow> bool" where
+"disj x y s = (\<forall> l. \<not> s\<turnstile> l reachable_from x \<or> \<not> s\<turnstile> l reachable_from y)"
 
 
 lemma disjI1: "\<lbrakk>\<And> l. s\<turnstile> l reachable_from x \<Longrightarrow> \<not> s\<turnstile> l reachable_from y\<rbrakk> 
@@ -573,11 +571,9 @@ This is tested by  the predicate
 @{text "xeq"}. Lemma 3.4 of  \cite{Poetzsch-Heffter97specification} is then proven for @{text "xeq"}.
 *} 
 
-constdefs xeq:: "Value \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool"  
-                                     
-"xeq x s t \<equiv> alive x s = alive x t \<and> 
-             (\<forall> l. s\<turnstile> l reachable_from x \<longrightarrow> s@@l = t@@l)"
-
+definition xeq:: "Value \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool" where
+"xeq x s t = (alive x s = alive x t \<and> 
+             (\<forall> l. s\<turnstile> l reachable_from x \<longrightarrow> s@@l = t@@l))"
 
 abbreviation xeq_syntax :: "Store \<Rightarrow> Value \<Rightarrow> Store \<Rightarrow> bool"
   ("_/ (==[_])/ _" [900,0,900] 900)
@@ -753,8 +749,8 @@ text {* T-equivalence is the extension of X-equivalence from values to types. Tw
 T-equivalent iff they are X-equivalent for all values of type T. This is formalized by the
 predicate @{text "teq"} \cite[p. 55]{Poetzsch-Heffter97specification}. *}
 
-constdefs teq:: "Javatype \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool"
-"teq t s1 s2 \<equiv> \<forall> x. typeof x \<le> t \<longrightarrow> s1 \<equiv>[x] s2"
+definition teq:: "Javatype \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool" where
+"teq t s1 s2 = (\<forall> x. typeof x \<le> t \<longrightarrow> s1 \<equiv>[x] s2)"
 
 subsection {* Less Alive *}
 

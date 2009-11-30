@@ -22,8 +22,8 @@ text {* The discriminator @{text "isNewArr"} can be used to distinguish both
 kinds of newly created elements.
 *}
 
-constdefs isNewArr :: "New \<Rightarrow> bool"
-"isNewArr t \<equiv> (case t of 
+definition isNewArr :: "New \<Rightarrow> bool" where
+"isNewArr t = (case t of 
                  new_instance C \<Rightarrow> False     
                | new_array T l \<Rightarrow> True)"   
 
@@ -35,8 +35,8 @@ lemma isNewArr_simps [simp]:
 text {* The function @{text "typeofNew"} yields the type of the newly created
 element. *}
 
-constdefs typeofNew :: "New \<Rightarrow> Javatype"
-"typeofNew n \<equiv> (case n of
+definition typeofNew :: "New \<Rightarrow> Javatype" where
+"typeofNew n = (case n of
                   new_instance C \<Rightarrow> CClassT C
                 | new_array T l  \<Rightarrow> ArrT T)"
 
@@ -66,8 +66,8 @@ text {* The function @{text "aliveImpl"} determines for a given value whether
 it is alive in a given store.
 *}
 
-constdefs aliveImpl::"Value \<Rightarrow> StoreImpl \<Rightarrow> bool"
-"aliveImpl x s \<equiv> (case x of
+definition aliveImpl::"Value \<Rightarrow> StoreImpl \<Rightarrow> bool" where
+"aliveImpl x s = (case x of
                     boolV b  \<Rightarrow> True
                   | intgV i  \<Rightarrow> True
                   | shortV s  \<Rightarrow> True
@@ -182,9 +182,9 @@ defs new_def:
 
 text {* The predicate @{text "wts"} tests whether the store is well-typed. *}
 
-constdefs
-wts :: "Store \<Rightarrow> bool"
-"wts OS \<equiv> \<forall> (l::Location) . (typeof (OS@@l)) \<le> (ltype l)"
+definition
+wts :: "Store \<Rightarrow> bool" where
+"wts OS = (\<forall> (l::Location) . (typeof (OS@@l)) \<le> (ltype l))"
 
 
 subsection {* Derived Properties of the Store *}

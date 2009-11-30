@@ -45,11 +45,8 @@ We have to specify the direct subtype relation between
 \end{itemize}
 *}
 
-consts
-direct_subtype :: "(Javatype * Javatype) set"
-
-defs
-direct_subtype_def: "direct_subtype == 
+definition direct_subtype :: "(Javatype * Javatype) set" where
+"direct_subtype =
 { (NullT, AClassT Dummy),
   (NullT, CClassT UndoCounter), 
   (NullT, CClassT NullPointerException),

@@ -36,45 +36,44 @@ datatype Javatype = BoolT | IntgT | ShortT | ByteT | NullT | ArrT Arraytype
 text {* We need a function that widens @{typ Arraytype} to @{typ Javatype}.
 *}
 
-constdefs
+definition
   at2jt :: "Arraytype \<Rightarrow> Javatype"
-  "at2jt at == case at of 
+where
+  "at2jt at = (case at of 
          BoolAT               \<Rightarrow> BoolT
        | IntgAT               \<Rightarrow> IntgT
        | ShortAT              \<Rightarrow> ShortT
        | ByteAT               \<Rightarrow> ByteT
        | CClassAT CTypeId     \<Rightarrow> CClassT CTypeId
        | AClassAT ATypeId     \<Rightarrow> AClassT ATypeId
-       | InterfaceAT ITypeId  \<Rightarrow> InterfaceT ITypeId"
+       | InterfaceAT ITypeId  \<Rightarrow> InterfaceT ITypeId)"
   
 text {* We define two predicates that separate the primitive types and the 
 class types.
 *}
                              
-consts 
-   isprimitive:: "Javatype \<Rightarrow> bool"
-   isclass:: "Javatype \<Rightarrow> bool"
-
-primrec
-"isprimitive BoolT = True"
-"isprimitive IntgT = True"
-"isprimitive ShortT = True"
-"isprimitive ByteT = True"
-"isprimitive NullT = False"
-"isprimitive (ArrT T) = False"
-"isprimitive (CClassT c) = False"
-"isprimitive (AClassT c) = False"
+primrec isprimitive:: "Javatype \<Rightarrow> bool"
+where
+"isprimitive BoolT = True" |
+"isprimitive IntgT = True" |
+"isprimitive ShortT = True" |
+"isprimitive ByteT = True" |
+"isprimitive NullT = False" |
+"isprimitive (ArrT T) = False" |
+"isprimitive (CClassT c) = False" |
+"isprimitive (AClassT c) = False" |
 "isprimitive (InterfaceT i) = False" 
 
-primrec
-"isclass BoolT = False"
-"isclass IntgT = False"
-"isclass ShortT = False"
-"isclass ByteT = False"
-"isclass NullT = False"
-"isclass (ArrT T) = False"
-"isclass (CClassT c) = True"
-"isclass (AClassT c) = True"
+primrec isclass:: "Javatype \<Rightarrow> bool"
+where
+"isclass BoolT = False" |
+"isclass IntgT = False" |
+"isclass ShortT = False" |
+"isclass ByteT = False" |
+"isclass NullT = False" |
+"isclass (ArrT T) = False" |
+"isclass (CClassT c) = True" |
+"isclass (AClassT c) = True" |
 "isclass (InterfaceT i) = False" 
 
 end
