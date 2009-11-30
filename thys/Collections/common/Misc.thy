@@ -232,8 +232,7 @@ subsection {* Sets *}
     obtains f::"'a \<Rightarrow> nat" and n::"nat" where
       "f`A = {i. i<n}"
       "inj_on f A"
-    using A
-    by (metis bij_betw_Inv bij_betw_def finite_imp_nat_seg_image_inj_on)
+    by (metis A finite_imp_inj_to_nat_seg)
 
   lemma lists_of_len_fin1: "finite P \<Longrightarrow> finite (lists P \<inter> { l. length l = n })"
   proof (induct n)
@@ -283,7 +282,7 @@ lemma inv_on_f_range: "\<lbrakk> y \<in> f`A \<rbrakk> \<Longrightarrow> inv_on 
   by (auto simp add: inv_on_def intro: someI2)
 
 lemma inj_on_map_inv_f [simp]: "\<lbrakk>set l \<subseteq> A; inj_on f A\<rbrakk> \<Longrightarrow> map (inv_on f A) (map f l) = l"
-  apply (simp add: map_compose[symmetric])
+  apply simp
   apply (induct l)
   apply auto
   done
@@ -1144,7 +1143,7 @@ lemma map_id'[simp]:
   by (rule ext) simp
 
 lemma inj_map_inv_f [simp]: "inj f \<Longrightarrow> map (inv f) (map f l) = l"
-  by (simp add: map_compose[symmetric])
+  by simp
 
 lemma inj_on_map_the: "\<lbrakk>D \<subseteq> dom m; inj_on m D\<rbrakk> \<Longrightarrow> inj_on (the\<circ>m) D"
   apply (rule inj_onI)
@@ -1677,8 +1676,8 @@ subsection {* Directed Graphs and Relations *}
   subsubsection "Cyclicity"
   lemma acyclic_union: 
     "acyclic (A\<union>B) \<Longrightarrow> acyclic A" 
-    "acyclic (A\<union>B) \<Longrightarrow> acyclic B" 
-    by (metis Un_upper1 Un_upper2 acyclic_subset sup_set_eq)+
+    "acyclic (A\<union>B) \<Longrightarrow> acyclic B"
+    by (metis Un_upper1 Un_upper2 acyclic_subset)+
 
   lemma cyclicE: "\<lbrakk>\<not>acyclic g; !!x. (x,x)\<in>g\<^sup>+ \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
     by (unfold acyclic_def) blast

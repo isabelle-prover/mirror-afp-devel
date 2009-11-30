@@ -6,7 +6,7 @@ header "Isabelle Collections Framework Userguide"
 theory Userguide
 imports 
   Collections
-  "common/bugfixes/Efficient_Nat"
+  Efficient_Nat
 begin
 text_raw {*\label{thy:Userguide}*}
 
