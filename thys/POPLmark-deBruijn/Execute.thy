@@ -1,5 +1,5 @@
 (*  ID:         $Id: Execute.thy,v 1.6 2009-07-14 09:00:10 fhaftmann Exp $
-    Author:     Stefan Berghofer, TU Muenchen, 2005
+    Author:     Stefan Berghofer, TU Muenchen, 2005; Lukas Bulwahn, TU Muenchen, 2009
 *)
 
 theory Execute
@@ -83,5 +83,43 @@ cannot immediately read off an algorithm that, given a term @{text t}, computes 
 would have to extract the algorithm contained in the proof of the {\it decomposition lemma}
 from \secref{sec:evaluation-ctxt}.
 *}
+
+text {* The same game with the predicate compiler and the generic code generator *}
+
+lemma [code_pred_intro]: "valuep (Rcd [])"
+by (auto intro: valuep.intros)
+
+lemma [code_pred_intro]: "valuep t \<Longrightarrow> valuep (Rcd fs) \<Longrightarrow> valuep (Rcd ((l, t) # fs))" 
+by (auto intro!: valuep.intros elim!: valuep.cases)
+
+lemmas [code_pred_intro] = valuep.intros(1-2)
+
+code_pred valuep
+proof -
+  case valuep
+  from this(1) show thesis
+  proof (cases rule: valuep.cases)
+    case (Rcd fs)
+    from this valuep(2-3) show thesis
+      by (cases fs) (auto intro: valuep.intros)
+  next
+    case Abs
+    from this valuep(4) show thesis by auto
+  next
+    case TAbs
+    from this valuep(5) show thesis by auto
+  qed
+qed
+
+thm valuep.equation
+
+code_pred (modes: i => o => bool as normalize) norm .
+
+thm norm.equation
+lemma [code]: "value = valuep"
+unfolding value_def Collect_def ..
+declare mem_def[code_inline]
+
+values "{u. norm fact2 u}"
 
 end

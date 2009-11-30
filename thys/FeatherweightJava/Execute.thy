@@ -1,0 +1,203 @@
+(*
+
+Author: Lukas Bulwahn, TU Muenchen, 2009
+
+*)
+theory Execute
+imports FJSound
+begin
+
+section {* Executing FeatherweightJava programs *}
+text {* We execute FeatherweightJava programs using the predicate compiler. *}
+
+code_pred (modes: i => i => i => bool,
+  i => i => o => bool as supertypes_of) subtyping .
+
+thm subtyping.equation
+(*
+code_pred subtypings .
+
+thm subtypings.equation
+
+code_pred mtype .
+thm mtype.equation
+
+code_pred typings .
+thm typings.equation
+
+thm mbody.intros
+code_pred mbody .
+thm mbody.equation
+thm reduction.intros(6)
+*)
+text {* The reduction relation requires that we inverse the List.append function.
+Therefore, we define a new predicate append and derive introduction rules. *}
+
+definition append where "append xs ys zs = (zs = xs @ ys)"
+
+lemma [code_pred_intro]: "append [] xs xs"
+unfolding append_def by simp
+
+lemma [code_pred_intro]: "append xs ys zs \<Longrightarrow> append (x#xs) ys (x#zs)"
+unfolding append_def by simp
+
+text {* With this at hand, we derive new introduction rules for the reduction relation: *}
+
+lemma rc_invk_arg': "CT \<turnstile> ei \<rightarrow> ei' \<Longrightarrow> append el (ei # er) e' \<Longrightarrow> append el (ei' # er) e'' \<Longrightarrow>
+CT \<turnstile> MethodInvk e m e' \<rightarrow> MethodInvk e m e''"
+unfolding append_def by simp (rule reduction.intros(6))
+
+lemma rc_new_arg': "CT \<turnstile> ei \<rightarrow> ei' \<Longrightarrow> append el (ei # er) e \<Longrightarrow> append el (ei' # er) e'
+   ==> CT \<turnstile> New C e \<rightarrow> New C e'"
+unfolding append_def by simp (rule reduction.intros(7))
+
+lemmas [code_pred_intro] = reduction.intros(1-5)[unfolded Predicate.eq_is_eq[symmetric]]
+  rc_invk_arg' rc_new_arg' reduction.intros(8)
+
+code_pred (modes: i => i => o => bool as reduce) reduction
+proof -
+  case append
+  from this show thesis
+    unfolding append_def by (cases a1) fastsimp+
+next
+  case reduction
+  from this show thesis
+  proof (cases rule: reduction.cases)
+    case r_field
+    with reduction(2) show thesis
+      unfolding Predicate.eq_is_eq by fastsimp
+  next
+    case r_invk
+    with reduction(3) show thesis
+      unfolding Predicate.eq_is_eq by fastsimp
+  next
+    case r_cast
+    with reduction(4) show thesis
+      by fastsimp
+  next
+    case rc_field
+    with reduction(5) show thesis
+      by fastsimp
+  next
+    case rc_invk_recv
+    with reduction(6) show thesis
+      by fastsimp
+  next
+    case rc_invk_arg
+    with reduction(7) show thesis
+      unfolding append_def by fastsimp
+  next
+    case rc_new_arg
+    with reduction(8) show thesis
+      unfolding append_def by fastsimp
+  next
+    case rc_cast
+    with reduction(9) show thesis
+      by fastsimp
+  qed
+qed
+
+thm reduction.equation
+
+code_pred reductions .
+
+thm reductions.equation
+
+text {* We also make the class typing executable: this requires that
+  we derive rules for method_typing. *}
+
+definition method_typing_aux
+where
+  "method_typing_aux CT m D Cs C = (\<not> (\<forall>Ds D0. mtype(CT,m,D) = Ds \<rightarrow> D0 \<longrightarrow> Cs = Ds \<and> C = D0))"
+
+lemma method_typing_aux:
+  "(\<forall>Ds D0. mtype(CT,m,D) = Ds \<rightarrow> D0 \<longrightarrow> Cs = Ds \<and> C = D0) = (\<not> method_typing_aux CT m D Cs C)"
+unfolding method_typing_aux_def by auto
+
+lemma [code_pred_intro]:
+  "mtype(CT,m,D) = Ds \<rightarrow> D0 \<Longrightarrow> Cs \<noteq> Ds \<Longrightarrow> method_typing_aux CT m D Cs C"
+unfolding method_typing_aux_def by auto
+
+lemma [code_pred_intro]:
+  "mtype(CT,m,D) = Ds \<rightarrow> D0 \<Longrightarrow> C \<noteq> D0 \<Longrightarrow> method_typing_aux CT m D Cs C"
+unfolding method_typing_aux_def by auto
+
+declare method_typing.intros[unfolded method_typing_aux,
+  unfolded Predicate.eq_is_eq[symmetric], code_pred_intro]
+
+declare class_typing.intros[unfolded append_def[symmetric],
+  unfolded Predicate.eq_is_eq[symmetric], code_pred_intro]
+
+code_pred (modes: i => i => bool) class_typing
+proof -
+  case class_typing
+  from class_typing.cases[OF this(1), of thesis] this(2) show thesis
+    unfolding Predicate.eq_is_eq append_def by fastsimp
+next
+  case method_typing
+  from method_typing.cases[OF this(1), of thesis] this(2) show thesis
+    unfolding Predicate.eq_is_eq append_def method_typing_aux_def by fastsimp
+next
+  case method_typing_aux
+  from this show thesis
+    unfolding method_typing_aux_def by auto
+qed
+
+subsection {* A simple example *}
+
+text {* We now execute a simple FJ example program: *}
+
+abbreviation A :: className
+where "A == Suc 0"
+
+abbreviation B :: className
+where "B == 2"
+
+abbreviation cPair :: className
+where "cPair == 3"
+
+definition classA_Def :: classDef
+where
+  "classA_Def = \<lparr> cName = A, cSuper = Object, cFields = [], cConstructor = \<lparr>kName = A, kParams = [], kSuper = [], kInits = []\<rparr>, cMethods = []\<rparr>"
+
+definition
+  "classB_Def = \<lparr> cName = B, cSuper = Object, cFields = [], cConstructor = \<lparr>kName = B, kParams = [], kSuper = [], kInits = []\<rparr>, cMethods = []\<rparr>"
+
+abbreviation ffst :: varName
+where
+  "ffst == 4"
+
+abbreviation fsnd :: varName
+where
+  "fsnd == 5"
+
+abbreviation setfst :: methodName
+where
+  "setfst == 6"
+
+abbreviation newfst :: varName
+where
+  "newfst == 7"
+
+definition classPair_Def :: classDef
+where
+  "classPair_Def = \<lparr> cName = cPair, cSuper = Object,
+    cFields = [\<lparr> vdName = ffst, vdType = Object \<rparr>, \<lparr> vdName = fsnd, vdType = Object \<rparr>],
+    cConstructor = \<lparr> kName = cPair, kParams = [\<lparr> vdName = ffst, vdType = Object \<rparr>, \<lparr> vdName = fsnd, vdType = Object \<rparr>], kSuper = [], kInits = [ffst, fsnd]\<rparr> ,
+    cMethods = [\<lparr> mReturn = cPair, mName = setfst, mParams = [\<lparr>vdName = newfst, vdType = Object \<rparr>],
+      mBody = New cPair [Var newfst, FieldProj (Var this) fsnd]  \<rparr>]\<rparr>"
+
+definition exampleProg :: classTable
+  where "exampleProg = (((%x. None)(A := Some classA_Def))(B := Some classB_Def))(cPair := Some classPair_Def)"
+
+
+value [code] "exampleProg \<turnstile> classA_Def OK"
+value [code] "exampleProg \<turnstile> classB_Def OK"
+value [code] "exampleProg \<turnstile> classPair_Def OK"
+
+
+values "{x. exampleProg \<turnstile> MethodInvk (New cPair [New A [], New B []]) setfst [New B []] \<rightarrow>* x}"
+values "{x. exampleProg \<turnstile> FieldProj (FieldProj (New cPair [New cPair [New A [], New B []], New A []]) ffst) fsnd \<rightarrow>* x}"
+
+
+end
