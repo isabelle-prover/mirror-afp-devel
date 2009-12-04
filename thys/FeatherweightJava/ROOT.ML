@@ -1,3 +1,3 @@
 
-use_thy "FJSound";
+use_thys ["FJSound", "Execute"];
 

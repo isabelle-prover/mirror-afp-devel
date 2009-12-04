@@ -14,23 +14,8 @@ code_pred (modes: i => i => i => bool,
   i => i => o => bool as supertypes_of) subtyping .
 
 thm subtyping.equation
-(*
-code_pred subtypings .
 
-thm subtypings.equation
-
-code_pred mtype .
-thm mtype.equation
-
-code_pred typings .
-thm typings.equation
-
-thm mbody.intros
-code_pred mbody .
-thm mbody.equation
-thm reduction.intros(6)
-*)
-text {* The reduction relation requires that we inverse the List.append function.
+text {* The reduction relation requires that we inverse the @{term List.append} function.
 Therefore, we define a new predicate append and derive introduction rules. *}
 
 definition append where "append xs ys zs = (zs = xs @ ys)"
@@ -104,7 +89,7 @@ code_pred reductions .
 thm reductions.equation
 
 text {* We also make the class typing executable: this requires that
-  we derive rules for method_typing. *}
+  we derive rules for @{term "method_typing"}. *}
 
 definition method_typing_aux
 where
