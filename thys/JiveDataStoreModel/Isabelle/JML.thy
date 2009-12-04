@@ -13,8 +13,9 @@ theory JML imports StoreProperties  begin
 text {* JML operators that are to be used in Hoare formulae can be formalized here.
 *}
 
-constdefs
+definition
   instanceof :: "Value \<Rightarrow> Javatype \<Rightarrow> bool"  ("_ @instanceof _")
-  "instanceof v t \<equiv> typeof v \<le> t"
+where
+  "instanceof v t = (typeof v \<le> t)"
 
 end

@@ -66,6 +66,13 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2009-12-03:
+<a href="entries/Presburger-Automata.shtml">Formalizing the Logic-Automaton Connection</a>
+<br>Author:
+<a href="http://www.in.tum.de/~berghofe">Stefan Berghofer</a> and Markus Reiter
+</td></tr>
+
+<tr><td class="entry">
 2009-11-29:
 <a href="entries/Tree-Automata.shtml">Tree Automata</a>
 <br>Author: Peter Lammich (peter lammich at uni-muenster de)

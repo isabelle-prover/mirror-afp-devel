@@ -124,8 +124,8 @@ types OpStack = "Val list"
 text{*States contain an operand stack, a store, and a heap.*}
 types State = "OpStack \<times> Store \<times> Heap"
 
-constdefs heap::"State \<Rightarrow> Heap"
-"heap s \<equiv> (snd(snd s))"
+definition heap::"State \<Rightarrow> Heap"
+where "heap s = snd(snd s)"
 
 text{*The operational semantics and the program logic are defined
 relative to a fixed program @{text P}.  Alternatively, the type of the
@@ -134,20 +134,19 @@ program component.  We also define the constant value @{text TRUE},
 the representation of which does not matter for the current
 formalisation.*}
 
-consts P::Prog
-consts TRUE::Val
+axiomatization P::Prog and TRUE::Val
 
 text{*In order to obtain more readable rules, we define operations
 for extracting method bodies and instructions from the program.*}
 
-constdefs mbody_is::"Class \<Rightarrow> Method \<Rightarrow> Mbody \<Rightarrow> bool"
-"mbody_is C m M \<equiv> \<exists> CD . P\<down>C = Some CD \<and> CD\<down>m = Some M"
+definition mbody_is::"Class \<Rightarrow> Method \<Rightarrow> Mbody \<Rightarrow> bool"
+where "mbody_is C m M = (\<exists> CD . P\<down>C = Some CD \<and> CD\<down>m = Some M)"
 
-constdefs get_ins::"Mbody \<Rightarrow> Label \<Rightarrow> Instr option"
-"get_ins M l \<equiv> (fst(snd M))\<down>l"
+definition get_ins::"Mbody \<Rightarrow> Label \<Rightarrow> Instr option"
+where "get_ins M l = (fst(snd M))\<down>l"
 
-constdefs ins_is::"Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Instr \<Rightarrow> bool"
-"ins_is C m l ins \<equiv> \<exists> M . mbody_is C m M \<and> get_ins M l = Some ins"
+definition ins_is::"Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Instr \<Rightarrow> bool"
+where "ins_is C m l ins = (\<exists> M . mbody_is C m M \<and> get_ins M l = Some ins)"
 
 text{*The transfer of method arguments from the caller's operand stack
 to the formal parameters of an invoked method is modelled by the
@@ -172,13 +171,11 @@ done
 (*>*)
 
 text{*In order to obtain a deterministic semantics, we assume the
-existence of a function*}
+existence of a function, with the obvious freshness axiom for this
+construction.*}
 
-consts nextLoc::"Heap \<Rightarrow> Addr"
-
-text{*We add the obvious freshness axiom for this construction.*}
-
-axioms nextLoc_fresh: "h\<down>(nextLoc h) = None"
+axiomatization nextLoc::"Heap \<Rightarrow> Addr"
+where nextLoc_fresh: "h\<down>(nextLoc h) = None"
 
 subsubsection{*Operational judgements*} 
 
@@ -283,8 +280,8 @@ Run:  "\<lbrakk>(M,l,s,n,ll,t):Step; (M,ll,t,m,h,v):Exec; k = (max n m) +1 \<rbr
 text{*A big-step operational judgement that abstracts from the
 derivation height is easily defined.*}
 
-constdefs Opsem::"Mbody \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> Heap \<Rightarrow> Val \<Rightarrow> bool"
-"Opsem M l s h v \<equiv> \<exists> n . (M,l,s,n,h,v):Exec"
+definition Opsem::"Mbody \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> Heap \<Rightarrow> Val \<Rightarrow> bool"
+where "Opsem M l s h v = (\<exists> n . (M,l,s,n,h,v):Exec)"
 
 subsection {* Basic properties *}
 

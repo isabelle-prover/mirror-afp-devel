@@ -33,8 +33,8 @@ that are used subsequently.
 
 text {* The domain type of an attribute is the definition class (or interface)
 of the attribute. *}
-constdefs dtype:: "AttId \<Rightarrow> Javatype"
-"dtype f \<equiv> (case f of 
+definition dtype:: "AttId \<Rightarrow> Javatype" where
+"dtype f = (case f of 
               CounterImpl'value \<Rightarrow> CClassT CounterImpl
             | UndoCounter'save \<Rightarrow> CClassT UndoCounter
             | Dummy'dummy \<Rightarrow> AClassT Dummy
@@ -51,22 +51,22 @@ text {* For convenience, we add some functions that directly apply the selectors
   the datatype @{typ Javatype}.
   *}
   
-constdefs cDTypeId :: "AttId \<Rightarrow> CTypeId"
-"cDTypeId f \<equiv> (case f of 
+definition cDTypeId :: "AttId \<Rightarrow> CTypeId" where
+"cDTypeId f = (case f of 
               CounterImpl'value \<Rightarrow> CounterImpl
             | UndoCounter'save \<Rightarrow> UndoCounter
             | Dummy'dummy \<Rightarrow> undefined
             | Counter'dummy \<Rightarrow> undefined )"
 
-constdefs aDTypeId:: "AttId \<Rightarrow> ATypeId"
-"aDTypeId f \<equiv> (case f of 
+definition aDTypeId:: "AttId \<Rightarrow> ATypeId" where
+"aDTypeId f = (case f of 
               CounterImpl'value \<Rightarrow> undefined
             | UndoCounter'save \<Rightarrow> undefined
             | Dummy'dummy \<Rightarrow> Dummy
             | Counter'dummy \<Rightarrow> undefined )"
 
-constdefs iDTypeId:: "AttId \<Rightarrow> ITypeId"
-"iDTypeId f \<equiv> (case f of 
+definition iDTypeId:: "AttId \<Rightarrow> ITypeId" where
+"iDTypeId f = (case f of 
               CounterImpl'value \<Rightarrow> undefined
             | UndoCounter'save \<Rightarrow> undefined
             | Dummy'dummy \<Rightarrow> undefined
@@ -83,8 +83,8 @@ lemma DTypeId_simps [simp]:
 text {* The range type of an attribute is the type of the value stored in that
 attribute.
 *}
-constdefs rtype:: "AttId \<Rightarrow> Javatype"
-"rtype f \<equiv> (case f of 
+definition rtype:: "AttId \<Rightarrow> Javatype" where
+"rtype f = (case f of 
               CounterImpl'value \<Rightarrow> IntgT
             | UndoCounter'save \<Rightarrow> IntgT
             | Dummy'dummy \<Rightarrow> NullT
@@ -133,8 +133,8 @@ and a field name. In case of the illegal combinations we just return
 @{text "undefined"}. We can also filter out static fields in 
 @{text "catt"}.*}
   
-constdefs catt:: "CTypeId \<Rightarrow> AttId \<Rightarrow> CAttId"
-"catt C f \<equiv>
+definition catt:: "CTypeId \<Rightarrow> AttId \<Rightarrow> CAttId" where
+"catt C f =
   (case C of
      CounterImpl \<Rightarrow> (case f of 
                 CounterImpl'value \<Rightarrow> CounterImpl'CounterImpl'value
@@ -164,8 +164,8 @@ lemma catt_simps [simp]:
 text {* Selection of the class name of the type of the object in which the field lives.
   The field can only be located in a concrete class. *}
   
-constdefs cls:: "CAttId \<Rightarrow> CTypeId"
-"cls cf \<equiv> (case cf of
+definition cls:: "CAttId \<Rightarrow> CTypeId" where
+"cls cf = (case cf of
              CounterImpl'CounterImpl'value  \<Rightarrow> CounterImpl
            | UndoCounter'CounterImpl'value  \<Rightarrow> UndoCounter
            | UndoCounter'UndoCounter'save  \<Rightarrow> UndoCounter
@@ -182,8 +182,8 @@ lemma cls_simps [simp]:
   by (simp_all add: cls_def)
 
 text {* Selection of the field name. *}
-constdefs att:: "CAttId \<Rightarrow> AttId"
-"att cf \<equiv> (case cf of
+definition att:: "CAttId \<Rightarrow> AttId" where
+"att cf = (case cf of
              CounterImpl'CounterImpl'value  \<Rightarrow> CounterImpl'value
            | UndoCounter'CounterImpl'value  \<Rightarrow> CounterImpl'value
            | UndoCounter'UndoCounter'save  \<Rightarrow> UndoCounter'save

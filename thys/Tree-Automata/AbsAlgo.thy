@@ -294,12 +294,8 @@ lemma br_invar_initial[simp]: "finite \<delta> \<Longrightarrow> (br_initial \<d
   apply (auto simp add: br_initial_def br_invar_def br_iq_def)
     
   apply (case_tac r)
-  apply (auto intro: b_accessible.intros) [1]
-
-  apply (auto elim!: bacc_step.cases) [1]
-
-  apply (rule_tac B="lhs ` \<delta>" in finite_subset)
-  apply auto
+  apply (fastsimp intro: b_accessible.intros)
+  apply (fastsimp elim!: bacc_step.cases)
   done
 
 lemma br_invar_step: 
@@ -335,11 +331,7 @@ proof -
       apply (auto simp add: br_dsq_def)
       done
   next
-    show "finite Q'" using A(2)
-      apply (simp add: br_invar_def br_dsq_def)
-      apply (rule_tac B="lhs ` \<delta>" in finite_subset)
-      apply auto
-      done
+    show "finite Q'" using A(2) by (simp add: br_invar_def br_dsq_def)
   qed
 qed
 

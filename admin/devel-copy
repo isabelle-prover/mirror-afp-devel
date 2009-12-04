@@ -3,10 +3,9 @@
 # Author: Gerwin Klein, NICTA
 #
 # Cron job that copies development snapshot to SF.
-# Tested on sunbroy2 only.
 # 
 
 SOURCE=~isatest/html-data/afp/
 TARGET=lsf37,afp@web.sourceforge.net:htdocs/
 
-/usr/local/bin/rsync -rplqz $SOURCE $TARGET
+/usr/bin/rsync -rplqz $SOURCE $TARGET

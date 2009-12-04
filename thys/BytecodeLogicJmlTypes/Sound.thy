@@ -55,8 +55,8 @@ properties are implied by $A(s_0,s)$.
 Formally, this interpretation is expressed as follows.
 *}
 
-constdefs valid::"Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Assn \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool"
-"valid C m l A B I  \<equiv> 
+definition valid::"Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Assn \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool" where
+"valid C m l A B I =
    (\<forall> M. mbody_is C m M \<longrightarrow>
    (\<forall> Mspec Minv Anno . MST\<down>(C,m) = Some(Mspec,Minv,Anno) \<longrightarrow>
    (\<forall> par code l0 . M = (par,code,l0) \<longrightarrow>
@@ -65,10 +65,10 @@ constdefs valid::"Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> A
      (\<forall> ll r . (MS M l s ll r  \<longrightarrow> (\<forall> Q . Anno\<down>(ll) = Some Q \<longrightarrow>  Q s0 r)) \<and>
                (Reach M l s r \<longrightarrow> I s0 s (heap r))))))))"
 
-syntax "_valid" :: "Assn \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> 
+abbreviation valid_syntax :: "Assn \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> 
                     Label \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool" 
        (" \<Turnstile> \<lbrace> _ \<rbrace> _ , _ , _ \<lbrace> _ \<rbrace> _" [200,200,200,200,200,200] 200)
-translations "_valid A C m l B I" == "valid C m l A B I"
+where "valid_syntax A C m l B I == valid C m l A B I"
 
 text{*This notion of validity extends that of Bannwart-M\"uller by
 allowing the post-condition to differ from method specification and to
@@ -83,21 +83,21 @@ text{*Validity us lifted to contexts and the method specification
 table. In the case of the former, we simply require that all entries
 be valid.*}
 
-constdefs G_valid::"CTXT \<Rightarrow> bool"
-"G_valid G \<equiv> \<forall> C m l A B I. G\<down>(C,m,l) = Some (A,B,I)\<longrightarrow>
-                                \<Turnstile> \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I"
+definition G_valid::"CTXT \<Rightarrow> bool" where
+"G_valid G = (\<forall> C m l A B I. G\<down>(C,m,l) = Some (A,B,I)\<longrightarrow>
+                                \<Turnstile> \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I)"
 
 text{*Regarding the specification table, we require that the initial
 label of each method satisfies an assertion that ties the method
 precondition to the current state.*}
 
-constdefs MST_valid ::bool
-"MST_valid \<equiv> \<forall> C m par code l0 T MI Anno. 
+definition MST_valid ::bool where
+"MST_valid = (\<forall> C m par code l0 T MI Anno. 
   mbody_is C m (par,code,l0) \<longrightarrow> MST\<down>(C, m) = Some (T,MI,Anno) \<longrightarrow> 
-  \<Turnstile> \<lbrace>(\<lambda> s0 s. s = mkState s0)\<rbrace> C, m, l0 \<lbrace>(mkPost T)\<rbrace> (mkInv MI)"
+  \<Turnstile> \<lbrace>(\<lambda> s0 s. s = mkState s0)\<rbrace> C, m, l0 \<lbrace>(mkPost T)\<rbrace> (mkInv MI))"
 
-constdefs Prog_valid::bool
-"Prog_valid \<equiv> \<exists> G . G_valid G \<and> MST_valid"
+definition Prog_valid::bool where
+"Prog_valid = (\<exists> G . G_valid G \<and> MST_valid)"
 
 text{*The remainder of this section contains a proof of soundness,
 i.e.~of the property $$@{text VP} \Longrightarrow @{text
@@ -121,9 +121,9 @@ continuations affected by an assertion. The appropriate definitions of
 relativised validity for judgements, for the precondition table, and
 for the method specification table are as follows.*}
 
-constdefs validn::
-  "nat \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Assn \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool"
-"validn K C m l A B I \<equiv> 
+definition validn::
+  "nat \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Assn \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool" where
+"validn K C m l A B I =
    (\<forall> M. mbody_is C m M \<longrightarrow>
    (\<forall> Mspec Minv Anno . MST\<down>(C,m) = Some(Mspec,Minv,Anno) \<longrightarrow>
    (\<forall> par code l0 . M = (par,code,l0) \<longrightarrow>
@@ -134,22 +134,22 @@ constdefs validn::
                  (\<forall> Q . Anno\<down>(ll) = Some Q \<longrightarrow>  Q s0 r)) \<and>
                ((M,l,s,k,r):Reachable \<longrightarrow> I s0 s (heap r)))))))))"
 
-syntax "_validn" :: "nat \<Rightarrow> Assn \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow>
+abbreviation validn_syntax :: "nat \<Rightarrow> Assn \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow>
                      Label \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool" 
 ("\<Turnstile>\<^sub>_ \<lbrace> _ \<rbrace> _ , _ , _ \<lbrace> _ \<rbrace> _ " [200,200,200,200,200,200,200] 200)
-translations "_validn K A C m l B I" == "validn K C m l A B I"
+where "validn_syntax K A C m l B I == validn K C m l A B I"
 
-constdefs G_validn::"nat \<Rightarrow> CTXT \<Rightarrow> bool"
-"G_validn K G \<equiv> \<forall> C m l A B I. G\<down>(C,m,l) = Some (A,B,I) \<longrightarrow>
-                                \<Turnstile>\<^sub>K \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I"
+definition G_validn::"nat \<Rightarrow> CTXT \<Rightarrow> bool" where
+"G_validn K G = (\<forall> C m l A B I. G\<down>(C,m,l) = Some (A,B,I) \<longrightarrow>
+                                \<Turnstile>\<^sub>K \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I)"
 
-constdefs MST_validn::"nat \<Rightarrow> bool"
-"MST_validn K \<equiv> \<forall> C m par code l0 T MI Anno. 
+definition MST_validn::"nat \<Rightarrow> bool" where
+"MST_validn K = (\<forall> C m par code l0 T MI Anno. 
    mbody_is C m (par,code,l0) \<longrightarrow> MST\<down>(C, m) = Some (T,MI,Anno) \<longrightarrow> 
-   \<Turnstile>\<^sub>K \<lbrace>(\<lambda> s0 s. s = mkState s0)\<rbrace> C, m, l0 \<lbrace>(mkPost T)\<rbrace> (mkInv MI)"
+   \<Turnstile>\<^sub>K \<lbrace>(\<lambda> s0 s. s = mkState s0)\<rbrace> C, m, l0 \<lbrace>(mkPost T)\<rbrace> (mkInv MI))"
 
-constdefs Prog_validn::"nat \<Rightarrow> bool"
-"Prog_validn K \<equiv> \<exists> G . G_validn K G \<and> MST_validn K"
+definition Prog_validn::"nat \<Rightarrow> bool" where
+"Prog_validn K = (\<exists> G . G_validn K G \<and> MST_validn K)"
 
 text{*The relativised notions are related to each other, and to the
 native notions of validity as follows.*}
@@ -297,11 +297,10 @@ done
 text{*We define an abbreviation for the side conditions of the rule
 for static method invocations\ldots*}
 
-constdefs INVS_SC::
+definition INVS_SC::
   "Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow>  MethSpec \<Rightarrow> MethInv \<Rightarrow>
-   ANNO \<Rightarrow> ANNO \<Rightarrow> Mbody \<Rightarrow> Assn \<Rightarrow> Inv \<Rightarrow> bool"
-
-" INVS_SC C m l D m' T MI Anno Anno2 M' A I \<equiv>  \<exists> M par code l0 T1 MI1.
+   ANNO \<Rightarrow> ANNO \<Rightarrow> Mbody \<Rightarrow> Assn \<Rightarrow> Inv \<Rightarrow> bool" where
+"INVS_SC C m l D m' T MI Anno Anno2 M' A I = (\<exists> M par code l0 T1 MI1.
     mbody_is C m M \<and> get_ins M l = Some (invokeS D m') \<and> 
     MST\<down>(C,m) = Some (T1,MI1,Anno) \<and> 
     MST\<down>(D,m') = Some (T,MI,Anno2) \<and>  
@@ -309,22 +308,21 @@ constdefs INVS_SC::
     (\<forall> Q . Anno\<down>(l) = Some Q \<longrightarrow> (\<forall> s0 s . A s0 s \<longrightarrow> Q s0 s)) \<and> 
     (\<forall> s0 s . A s0 s \<longrightarrow> I s0 s (heap s)) \<and> 
     (\<forall> s0 ops1 ops2 S R h t . (ops1,par,R,ops2) : Frame \<longrightarrow>
-          A s0 (ops1,S,h) \<longrightarrow> MI (R,h) t \<longrightarrow> I s0 (ops1,S,h) t)"
+          A s0 (ops1,S,h) \<longrightarrow> MI (R,h) t \<longrightarrow> I s0 (ops1,S,h) t))"
 
 text{*\ldots and another abbreviation for the soundness property of
 the same rule. *}
 
-constdefs INVS_soundK::
+definition INVS_soundK::
   "nat \<Rightarrow> CTXT \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> 
    MethSpec \<Rightarrow> MethInv \<Rightarrow> ANNO \<Rightarrow> ANNO \<Rightarrow> Mbody \<Rightarrow> Assn \<Rightarrow> 
-   Post \<Rightarrow> Inv \<Rightarrow> bool"
-
-"INVS_soundK K G C m l D m' T MI Anno Anno2 M' A B I \<equiv> 
-    INVS_SC C m l D m' T MI Anno Anno2 M' A I \<longrightarrow> 
+   Post \<Rightarrow> Inv \<Rightarrow> bool" where
+"INVS_soundK K G C m l D m' T MI Anno Anno2 M' A B I =
+  (INVS_SC C m l D m' T MI Anno Anno2 M' A I \<longrightarrow> 
     G_validn K G \<longrightarrow> MST_validn K \<longrightarrow>
     \<Turnstile>\<^sub>K \<lbrace>(SINV_pre (fst M') T A)\<rbrace> C,m,(l+1)
         \<lbrace>(SINV_post (fst M') T B)\<rbrace> (SINV_inv (fst M') T I)
-   \<longrightarrow> \<Turnstile>\<^sub>(K+1) \<lbrace> A \<rbrace> C,m,l \<lbrace> B \<rbrace> I"
+   \<longrightarrow> \<Turnstile>\<^sub>(K+1) \<lbrace> A \<rbrace> C,m,l \<lbrace> B \<rbrace> I)"
 
 text{*The proof that this property holds for all $K$ proceeds by
 induction on $K$.*}

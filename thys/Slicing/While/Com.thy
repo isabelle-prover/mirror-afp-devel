@@ -11,12 +11,8 @@ datatype val
   = Bool bool      -- "Boolean value"
   | Intg int       -- "integer value" 
 
-syntax
-  true  :: val
-  false :: val
-translations
-  "true"  == "Bool True"
-  "false" == "Bool False"
+abbreviation "true == Bool True"
+abbreviation "false == Bool False"
 
 section {* Expressions and Commands*}
 
@@ -47,10 +43,10 @@ datatype cmd
 
 fun num_inner_nodes :: "cmd \<Rightarrow> nat" ("#:_")
 where "#:Skip              = 1"
-  | "#:(V:=e)              = 2"       (* zus√§tzlicher Skip-Knoten *)
+  | "#:(V:=e)              = 2"       (* zus√\<currency>tzlicher Skip-Knoten *)
   | "#:(c\<^isub>1;;c\<^isub>2)            = #:c\<^isub>1 + #:c\<^isub>2"
   | "#:(if (b) c\<^isub>1 else c\<^isub>2) = #:c\<^isub>1 + #:c\<^isub>2 + 1"
-  | "#:(while (b) c)       = #:c + 2" (* zus√§tzlicher Skip-Knoten *)
+  | "#:(while (b) c)       = #:c + 2" (* zus√\<currency>tzlicher Skip-Knoten *)
   
 
 
@@ -75,6 +71,3 @@ where Val: "interpret (Val v) s = Some v"
       case binop bop v\<^isub>1 v\<^isub>2 of None \<Rightarrow> None | Some v \<Rightarrow> Some v)))"
 
 end
-
-
-

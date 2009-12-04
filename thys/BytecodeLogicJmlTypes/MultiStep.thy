@@ -171,8 +171,8 @@ by (erule MStep_Exec2_Aux, fast)
 
 text{*Finally, the definition of the non-height-indexed relation.*}
 
-constdefs MS::"Mbody \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> bool"
-"MS M l s ll t \<equiv> (\<exists> k . (M,l,s,k,ll,t):MStep)"
+definition MS::"Mbody \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> bool"
+where "MS M l s ll t = (\<exists> k . (M,l,s,k,ll,t):MStep)"
 
 (*<*)  
 end

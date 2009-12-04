@@ -454,7 +454,7 @@ proof (induct arbitrary: \<delta> q rule: accs.induct[case_names step])
     R: "(q \<rightarrow> l (map (inv_on f Q) qs))\<in>\<delta>"
     apply (erule_tac imageE)
     apply (case_tac x)
-    apply (auto)
+    apply (auto simp del:map_map)
     apply (subst inj_on_map_inv_f)
     apply (auto dest: \<delta>_statesI) [2]
     apply (subgoal_tac "q\<in>\<delta>_states \<delta>")
