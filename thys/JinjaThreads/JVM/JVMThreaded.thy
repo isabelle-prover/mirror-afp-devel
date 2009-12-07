@@ -22,7 +22,7 @@ lemma NewThread_memory_exec_instr:
   "\<lbrakk> (ta, s) \<in> set (exec_instr I P h stk loc C M pc frs); NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> m = fst (snd s)"
 apply(cases I)
 apply(auto split: split_if_asm simp add: split_beta)
-apply(auto dest!: red_ext_list_new_thread_heap simp add: extRet2JVM_def[folded Datatype.sum_case_def] split: sum.split)
+apply(auto dest!: red_ext_list_new_thread_heap simp add: extRet2JVM_def[folded sum_case_def] split: sum.split)
 done
 
 lemma NewThread_memory_exec:
