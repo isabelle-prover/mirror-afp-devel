@@ -30,11 +30,6 @@ val sort_variables = Unsynchronized.ref true;
 val use_cond_inv_modifies = Unsynchronized.ref true;
 val trace_hoare = Unsynchronized.ref false;
 
-val foldl = Library.foldl;
-val foldr = Library.foldr;
-val take = Library.take;
-val drop = Library.drop;
-
 val call_prfx = "_Call_";
 val call_ass_prfx = "_CallAss_";
 val guarded_call_prfx = "_GuardedCall_";
@@ -1164,12 +1159,12 @@ fun procedures_definition locname procs thy =
              SOME (_,p,_,_,m,_) => SOME (proc_name m p)
            | _ => NONE);
         fun in_names x = if x mem names then SOME x else NONE;
-        fun add_edges (g,(n,es)) = foldl (fn (g,x) => Graph.add_edge (n,x) g) (g,es);
+        fun add_edges n = fold (fn x => Graph.add_edge (n, x));
 
         val all_callss = map (map snd o max_subterms_dest dcall) bodies;
         val callss = map (map_filter in_names) all_callss;
-        val graph = foldl (fn (g,n) => Graph.new_node (n,()) g) (Graph.empty,names);
-        val graph' = foldl add_edges (graph,(names ~~ callss));
+        val graph = fold (fn n => Graph.new_node (n, ())) names Graph.empty;
+        val graph' = fold2 add_edges names callss graph;
         fun idx x = find_index (fn y => x=y) names;
         fun name_ord (a,b) = int_ord (idx a, idx b);
         val cliques = Graph.strong_conn graph';
@@ -1708,7 +1703,7 @@ fun mk_split_thms ctxt (vars as _::_)  =
     val pT = foldr1 HOLogic.mk_prodT types;
     val x = (Name.variant names "x",pT);
     val xp = foldr1 HOLogic.mk_prod free_vars;
-    val tfree_names = foldr OldTerm.add_term_tfree_names (free_vars,[]);
+    val tfree_names = Library.foldr OldTerm.add_term_tfree_names (free_vars,[]);
     val zeta = TFree (Name.variant tfree_names "z", Sign.defaultS thy);
 
     val split_meta_prop =
@@ -1719,18 +1714,18 @@ fun mk_split_thms ctxt (vars as _::_)  =
     val P = Free (Name.variant names "P",pT --> HOLogic.boolT);
 
     val split_object_prop =
-      let fun ALL vs t = foldr (fn ((v,T),t) => HOLogic.mk_all (v,T,t)) (vs,t)
+      let fun ALL vs t = Library.foldr (fn ((v,T),t) => HOLogic.mk_all (v,T,t)) (vs,t)
       in (ALL [x] (P $ Free x)) === (ALL vars (P $ xp))
       end;
 
     val split_ex_prop =
-      let fun EX vs t = foldr (fn ((v,T),t) => HOLogic.mk_exists (v,T,t)) (vs,t)
+      let fun EX vs t = Library.foldr (fn ((v,T),t) => HOLogic.mk_exists (v,T,t)) (vs,t)
       in (EX [x] (P $ Free x)) === (EX vars (P $ xp))
       end;
 
     val split_UN_prop =
       let val P = Free (Name.variant names "P",pT --> HOLogic.mk_setT zeta);
-          fun UN vs t = foldr (fn ((v,T),t) => mk_UN (v,T,t)) (vs,t)
+          fun UN vs t = Library.foldr (fn ((v,T),t) => mk_UN (v,T,t)) (vs,t)
       in (UN [x] (P $ Free x)) === (UN vars (P $ xp))
       end;
 
@@ -1765,7 +1760,7 @@ fun adapt_aux_var ctxt split_app (vars as (_::_::_)) tvar_rules =
      let
        val thy = ProofContext.theory_of ctxt;
        fun get_maxidx thm = let val {maxidx=m,...} = rep_thm thm in m end;
-       val max_idx = foldl Int.max (0,(map (get_maxidx o snd) tvar_rules));
+       val max_idx = fold Integer.max (map (get_maxidx o snd) tvar_rules) 0;
        val types = map (fn i => TVar (("z",i),Sign.defaultS thy))
                     (max_idx + 1 upto (max_idx + length vars));
        fun ctyp n = ctyp_of thy (TVar (n,Sign.defaultS thy));

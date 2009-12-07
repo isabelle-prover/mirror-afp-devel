@@ -117,7 +117,7 @@ fun first_successful_tr _ []   = raise TERM ("first_successful_tr: no success",[
   | first_successful_tr f [x] = f x
   | first_successful_tr f (x::xs) = f x handle TERM _ => first_successful_tr f xs;
 
-fun string_concat ss = foldl (op ^) ("",ss);
+fun string_concat ss = fold (curry (op ^)) ss "";
 
 fun statespace_lookup_tr ctxt ps s n =
   let
@@ -476,7 +476,7 @@ fun init_tr ctxt [Const (var,_),comp,value] =
     fun mk_upd var c v =
       Syntax.free (suffix updateN (varname (suffix ("_" ^ c) var))) $ v;
     val upds = map2 (mk_upd var) comps values;
-    fun app_upds s = foldl (fn (s,upd) => upd$s) (s,upds)
+    val app_upds = fold (fn upd => fn s => upd $ s) upds
     val upd = if is_global (Context.Proof ctxt) (varname (suffix ("_" ^ hd comps) var))
       then Syntax.free (suffix updateN globalsN)
         $ app_upds (Syntax.free globalsN $ Bound 0) $ Bound 0
@@ -518,9 +518,9 @@ fun new_tr ctxt (ts as [var,size,init]) =
     val free_upd = update_comp (Context.Proof ctxt) [] false false freeN 
                       (Syntax.const "HOL.minus"$free$size);
 
-    val g' = Syntax.free (suffix updateN globalsN)$
-              (K_rec_syntax (foldl (fn (s,upd) => upd s) (g,alloc_upd::free_upd::inits)))$
-              (Bound 0);
+    val g' = Syntax.free (suffix updateN globalsN) $
+              K_rec_syntax (fold (fn upd => fn s => upd s) (alloc_upd :: free_upd :: inits) g) $
+              Bound 0;
     val cond = Syntax.const "If"$freetest$
                  (update_tr ctxt [] offset offset new var g')$
                  (update_tr ctxt [] offset offset null var (Bound 0))
@@ -562,9 +562,9 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
     val free_upd = update_comp (Context.Proof ctxt) [] false false freeN 
                       (Syntax.const "HOL.minus"$free$size);
 
-    val g' = Syntax.free (suffix updateN globalsN)$
-              (K_rec_syntax (foldl (fn (s,upd) => upd s) (g,alloc_upd::inits@[free_upd])))$
-              (Bound 0);
+    val g' = Syntax.free (suffix updateN globalsN) $
+              K_rec_syntax (fold (fn upd => fn s => upd s) (alloc_upd :: inits @ [free_upd]) g) $
+              Bound 0;
     val cond = Syntax.const "if_rel"$Abs ("s",dummyT,freetest)$
                  (Abs ("s",dummyT,update_tr ctxt [] offset offset new var g'))$
                  (Abs ("s",dummyT,update_tr ctxt [] offset offset null var (Bound 0)))$
@@ -678,7 +678,7 @@ fun guard ctxt Ts (add as (Const ("HOL.plus_class.plus",_)$l$r)) = guard ctxt Ts
       if is_arr l then guard i & SOME (in_length i l) & guard e else NONE*) (* oder default?*)
 (*  | guard (Const (upd,_)$e$s) = for procedure parameters,like default but left to right 
       if is_some (try (unsuffix updateN) upd) then guard s & guard e else guard e & guard s *)
-  | guard ctxt Ts t = foldr (fn (l,r) => guard ctxt Ts l & r) (snd (strip_comb t),NONE) (* default *)
+  | guard ctxt Ts t = fold_rev (fn l => fn r => guard ctxt Ts l & r) (snd (strip_comb t)) NONE (* default *)
   | guard _ _ _ = NONE;
 in
  fun mk_guard ctxt t =
@@ -815,7 +815,7 @@ fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
         val globals = 
               [Syntax.const (suffix updateN globalsN)$
                               (K_rec_syntax (Const (globalsN,dummyT)$Bound 0))];
-        val ret = Abs ("s",dummyT,Abs("t",dummyT,foldr (op $) (globals,Bound 1)));
+        val ret = Abs ("s",dummyT,Abs("t",dummyT, Library.foldr (op $) (globals, Bound 1)));
 
         val val_formals = filter (fn (kind,_) => kind=In) formals;
         val res_formals = filter (fn (kind,_) => kind=Out) formals;
@@ -825,8 +825,7 @@ fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
           let
             val state = (case state_kind of Record => Bound 0 
                      | Function => Syntax.const localsN$Bound 0);
-            val upds = foldr (fn (((_,name),arg),s) => init_par_tr name arg s) 
-                               (rev (val_formals~~val_actuals),state);
+            val upds = fold2 (fn (_, name) => init_par_tr name) val_formals val_actuals state;
           in (case state_kind of Record => upds
               | Function => 
                  Syntax.const locals_updateN$(K_rec_syntax upds)$Bound 0)
@@ -841,8 +840,8 @@ fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
                                 (rev (res_formals~~res_actuals));
                 val res = Abs ("i",dummyT,Abs ("t",dummyT,
                                  Syntax.const "Basic"$
-                                      (Abs ("s",dummyT,foldr (fn (f,s) => f s) 
-                                                         (results,Bound 0)))));
+                                      (Abs ("s",dummyT,
+                                        fold_rev (fn f => fn s => f s) results (Bound 0)))));
               in if has_args then Call $init $ pt $ ret $ res else Call $ pt end
             | SOME c => (* Function call *)
                let
@@ -857,9 +856,9 @@ fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
                  in Call $ init $ pt $ ret $ res $ c end)
 	val guard = get_generate_guard (Context.Proof ctxt);
     in if grd 
-       then (case foldr (fn (arg,g) => 
-                   guard (Context.Proof ctxt) (antiquoteCur_tr ctxt arg) & g) 
-                   (res_actuals@val_actuals,NONE) of
+       then (case fold_rev (fn arg => fn g => 
+                   guard (Context.Proof ctxt) (antiquoteCur_tr ctxt arg) & g)
+                   (res_actuals@val_actuals) NONE of
                NONE => call
              | SOME g => Syntax.const "guards" $mk_singleton_guard "False" g$ call)
        else call
@@ -975,7 +974,7 @@ fun list_update_tr' l (r as Const ("list_update",_)$l'$i$e) =
               | tr' _ idxs e = (idxs,e);
 
 	    val (idxs,e') = tr' l [i] e;
-            val lft = (foldr (fn (i,arr) => (Syntax.const "nth" $ arr $ i)) (idxs,l));
+            val lft = fold_rev (fn i => fn arr => Syntax.const "nth" $ arr $ i) idxs l;
           in (lft,e') end
     else (l,r)
   | list_update_tr' l r  = (l,r) 
@@ -1089,7 +1088,7 @@ fun init_tr' [Abs (_,_,t)] =
 
     val l= length prfx;
     val _ = if l <= 1 then raise Match else ();
-    val comp = mk_list (map (Syntax.const o implode o curry drop l) comps);
+    val comp = mk_list (map (Syntax.const o implode o drop l) comps);
     val vals = map mk_set (transpose (map (dest_list o snd) upds));
     val v = case vals of [v] => v | vs => mk_list vs;    
   in Syntax.const "_Init"$Syntax.const (implode (fst (split_last prfx)))$comp$v 
@@ -1353,7 +1352,7 @@ fun new_tr' [(trm as (Abs (s,_,
  
      val inits_free_allocs = dest_updates inits_free_alloc;
      
-     val inits = map mk_init (take (length inits_free_allocs - 2, inits_free_allocs));
+     val inits = map mk_init (take (length inits_free_allocs - 2) (inits_free_allocs));
      val inits' = foldr1 (fn (t1,t2) => Syntax.const "_newinits"$t1$t2) (rev inits);
 
      fun tr' (upd,v) =
@@ -1382,7 +1381,7 @@ fun nnew_tr' [(trm as
  
      val free_inits_allocs = dest_updates free_inits_alloc;
      
-     val inits = map mk_init (take (length free_inits_allocs - 2, tl free_inits_allocs));
+     val inits = map mk_init (take (length free_inits_allocs - 2) (tl free_inits_allocs));
      val inits' = foldr1 (fn (t1,t2) => Syntax.const "_newinits"$t1$t2) (rev inits);
 
      fun tr' (upd,v) =
