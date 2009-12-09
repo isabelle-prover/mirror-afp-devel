@@ -10,7 +10,7 @@ abbreviation sourcenode :: "edge \<Rightarrow> node"
 abbreviation targetnode :: "edge \<Rightarrow> node"
   where "targetnode e \<equiv> snd(snd e)"
 
-abbreviation kind :: "edge \<Rightarrow> (vname,val,node) edge_kind"
+abbreviation kind :: "edge \<Rightarrow> (vname,val,node,pname) edge_kind"
   where "kind e \<equiv> fst(snd e)"
 
 

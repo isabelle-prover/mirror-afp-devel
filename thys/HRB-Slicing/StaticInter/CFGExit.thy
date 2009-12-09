@@ -5,10 +5,11 @@ subsection {* Adds an exit node to the abstract CFG *}
 locale CFGExit = CFG sourcenode targetnode kind valid_edge Entry 
     get_proc get_return_edges procs Main
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
-  and kind :: "'edge \<Rightarrow> ('var,'val,'ret) edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> pname"
+  and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
+  and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
-  and procs :: "(pname \<times> 'var list \<times> 'var list) list" and Main :: "pname" +
+  and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname" +
   fixes Exit::"'node"  ("'('_Exit'_')")
   assumes Exit_source [dest]: "\<lbrakk>valid_edge a; sourcenode a = (_Exit_)\<rbrakk> \<Longrightarrow> False"
   and get_proc_Exit:"get_proc (_Exit_) = Main"

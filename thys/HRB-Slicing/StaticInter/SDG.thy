@@ -24,10 +24,11 @@ locale SDG = CFGExit_wf sourcenode targetnode kind valid_edge Entry
   Postdomination sourcenode targetnode kind valid_edge Entry 
     get_proc get_return_edges procs Main Exit
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
-  and kind :: "'edge \<Rightarrow> ('var,'val,'ret) edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> pname"
+  and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
+  and valid_edge :: "'edge \<Rightarrow> bool"
+  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
-  and procs :: "(pname \<times> 'var list \<times> 'var list) list" and Main :: "pname"
+  and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname"
   and Exit::"'node"  ("'('_Exit'_')") 
   and Def :: "'node \<Rightarrow> 'var set" and Use :: "'node \<Rightarrow> 'var set"
   and ParamDefs :: "'node \<Rightarrow> 'var list" and ParamUses :: "'node \<Rightarrow> 'var set list"
@@ -482,16 +483,16 @@ inductive cdep_edge :: "'node SDG_node \<Rightarrow> 'node SDG_node \<Rightarrow
     ("_ \<longrightarrow>\<^bsub>cd\<^esub> _" [51,0] 80)
   and ddep_edge :: "'node SDG_node \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
     ("_ -_\<rightarrow>\<^bsub>dd\<^esub> _" [51,0,0] 80)
-  and call_edge :: "'node SDG_node \<Rightarrow> pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
+  and call_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
     ("_ -_\<rightarrow>\<^bsub>call\<^esub> _" [51,0,0] 80)
-  and return_edge :: "'node SDG_node \<Rightarrow> pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
+  and return_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
     ("_ -_\<rightarrow>\<^bsub>ret\<^esub> _" [51,0,0] 80)
-  and param_in_edge :: "'node SDG_node \<Rightarrow> pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
+  and param_in_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
     ("_ -_:_\<rightarrow>\<^bsub>in\<^esub> _" [51,0,0,0] 80)
-  and param_out_edge :: "'node SDG_node \<Rightarrow> pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
+  and param_out_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
     ("_ -_:_\<rightarrow>\<^bsub>out\<^esub> _" [51,0,0,0] 80)
   and SDG_edge :: "'node SDG_node \<Rightarrow> 'var option \<Rightarrow> 
-                          (pname \<times> bool) option \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
+                          ('pname \<times> bool) option \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
 
 where
     (* Syntax *)
@@ -595,7 +596,7 @@ qed
 
 
 lemma SDG_cdep_edge_CFG_node: "n \<longrightarrow>\<^bsub>cd\<^esub> n' \<Longrightarrow> \<exists>m. n = CFG_node m"
-by(induct n Vopt\<equiv>"None::'var option" popt\<equiv>"None::(pname \<times> bool) option" n' 
+by(induct n Vopt\<equiv>"None::'var option" popt\<equiv>"None::('pname \<times> bool) option" n' 
    rule:SDG_edge.induct) auto
 
 lemma SDG_call_edge_CFG_node: "n -p\<rightarrow>\<^bsub>call\<^esub> n' \<Longrightarrow> \<exists>m. n = CFG_node m"
@@ -1981,18 +1982,18 @@ inductive sum_cdep_edge :: "'node SDG_node \<Rightarrow> 'node SDG_node \<Righta
     ("_ s\<longrightarrow>\<^bsub>cd\<^esub> _" [51,0] 80)
   and sum_ddep_edge :: "'node SDG_node \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
     ("_ s-_\<rightarrow>\<^bsub>dd\<^esub> _" [51,0,0] 80)
-  and sum_call_edge :: "'node SDG_node \<Rightarrow> pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
+  and sum_call_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
     ("_ s-_\<rightarrow>\<^bsub>call\<^esub> _" [51,0,0] 80)
-  and sum_return_edge :: "'node SDG_node \<Rightarrow> pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
+  and sum_return_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
     ("_ s-_\<rightarrow>\<^bsub>ret\<^esub> _" [51,0,0] 80)
-  and sum_param_in_edge :: "'node SDG_node \<Rightarrow> pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
+  and sum_param_in_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
     ("_ s-_:_\<rightarrow>\<^bsub>in\<^esub> _" [51,0,0,0] 80)
-  and sum_param_out_edge :: "'node SDG_node \<Rightarrow> pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
+  and sum_param_out_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
     ("_ s-_:_\<rightarrow>\<^bsub>out\<^esub> _" [51,0,0,0] 80)
-  and sum_summary_edge :: "'node SDG_node \<Rightarrow> pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
+  and sum_summary_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
     ("_ s-_\<rightarrow>\<^bsub>sum\<^esub> _" [51,0] 80)
   and sum_SDG_edge :: "'node SDG_node \<Rightarrow> 'var option \<Rightarrow> 
-                          (pname \<times> bool) option \<Rightarrow> bool \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
+                          ('pname \<times> bool) option \<Rightarrow> bool \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
 
 where
     (* Syntax *)

@@ -107,9 +107,6 @@ subsection{* Edge kinds *}
 text {* Every procedure has a unique name, e.g. in object oriented languages
   @{text pname} refers to class + procedure. *}
 
-types pname = "string"
-
-
 text {* A state is a call stack of tuples, which consists of:
   \begin{enumerate}
   \item data information, i.e.\ a mapping from the local variables in the call 
@@ -126,16 +123,16 @@ text {* A state is a call stack of tuples, which consists of:
   of the return parameter values to the underlying stack frame. See the funtions 
   @{text transfer} and @{text pred} in locale @{text CFG}. *}
 
-datatype ('var,'val,'ret) edge_kind =
+datatype ('var,'val,'ret,'pname) edge_kind =
     UpdateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)"                  ("\<Up>_")
   | PredicateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool"                         ("'(_')\<^isub>\<surd>")
-  | CallEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'ret" pname  
+  | CallEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'ret" "'pname"  
              "(('var \<rightharpoonup> 'val) \<rightharpoonup> 'val) list"                       ("_:_\<hookrightarrow>\<^bsub>_\<^esub>_" 70)
-  | ReturnEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" pname 
+  | ReturnEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'pname" 
                "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)" ("_\<^bsub>_\<^esub>\<hookleftarrow>_" 70)
 
 
-definition intra_kind :: "('var,'val,'ret) edge_kind \<Rightarrow> bool"
+definition intra_kind :: "('var,'val,'ret,'pname) edge_kind \<Rightarrow> bool"
 where "intra_kind et \<equiv> (\<exists>f. et = \<Up>f) \<or> (\<exists>Q. et = (Q)\<^isub>\<surd>)"
 
 

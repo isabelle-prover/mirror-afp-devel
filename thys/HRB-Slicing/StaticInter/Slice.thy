@@ -89,7 +89,7 @@ qed
 subsection {* Defining the sliced edge kinds *}
 
 primrec slice_kind_aux :: "'node \<Rightarrow> 'node \<Rightarrow> 'node SDG_node set \<Rightarrow> 
-  ('var,'val,'ret) edge_kind \<Rightarrow> ('var,'val,'ret) edge_kind"
+  ('var,'val,'ret,'pname) edge_kind \<Rightarrow> ('var,'val,'ret,'pname) edge_kind"
 where "slice_kind_aux m m' S \<Up>f = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then \<Up>f else \<Up>id)"
   | "slice_kind_aux m m' S (Q)\<^isub>\<surd> = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then (Q)\<^isub>\<surd> else
   (if obs_intra m \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> = {} then 
@@ -114,12 +114,12 @@ where "slice_kind_aux m m' S \<Up>f = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG
          (Q\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. rspp m' S outs cf' cf)))
     else ((\<lambda>cf. True)\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. cf')))"
 
-definition slice_kind :: "'node SDG_node \<Rightarrow> 'edge \<Rightarrow> ('var,'val,'ret) edge_kind"
+definition slice_kind :: "'node SDG_node \<Rightarrow> 'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind"
   where "slice_kind n\<^isub>c a \<equiv> 
   slice_kind_aux (sourcenode a) (targetnode a) (HRB_slice n\<^isub>c) (kind a)"
 
 definition slice_kinds :: "'node SDG_node \<Rightarrow> 'edge list \<Rightarrow> 
-  ('var,'val,'ret) edge_kind list"
+  ('var,'val,'ret,'pname) edge_kind list"
   where "slice_kinds n\<^isub>c as \<equiv> map (slice_kind n\<^isub>c) as"
 
 

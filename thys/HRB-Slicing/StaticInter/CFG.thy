@@ -9,13 +9,13 @@ subsubsection {* Locale fixes and assumptions *}
 locale CFG =
   fixes sourcenode :: "'edge \<Rightarrow> 'node"
   fixes targetnode :: "'edge \<Rightarrow> 'node"
-  fixes kind :: "'edge \<Rightarrow> ('var,'val,'ret) edge_kind"
+  fixes kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind"
   fixes valid_edge :: "'edge \<Rightarrow> bool"
   fixes Entry::"'node" ("'('_Entry'_')")
-  fixes get_proc::"'node \<Rightarrow> pname"
+  fixes get_proc::"'node \<Rightarrow> 'pname"
   fixes get_return_edges::"'edge \<Rightarrow> 'edge set"
-  fixes procs::"(pname \<times> 'var list \<times> 'var list) list"
-  fixes Main::"pname"
+  fixes procs::"('pname \<times> 'var list \<times> 'var list) list"
+  fixes Main::"'pname"
   assumes Entry_target [dest]: "\<lbrakk>valid_edge a; targetnode a = (_Entry_)\<rbrakk> \<Longrightarrow> False"
   and get_proc_Entry:"get_proc (_Entry_) = Main"
   and Entry_no_call_source:
@@ -130,7 +130,7 @@ lemma [simp]:"length (params fs cf) = length fs"
   by(induct fs) auto
 
 
-fun transfer :: "('var,'val,'ret) edge_kind \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> 
+fun transfer :: "('var,'val,'ret,'pname) edge_kind \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> 
   (('var \<rightharpoonup> 'val) \<times> 'ret) list"
 where "transfer (\<Up>f) (cf#cfs)    = (f (fst cf),snd cf)#cfs"
   | "transfer (Q)\<^isub>\<surd> (cf#cfs)      = (cf#cfs)"
@@ -141,20 +141,20 @@ where "transfer (\<Up>f) (cf#cfs)    = (f (fst cf),snd cf)#cfs"
                                  | cf'#cfs' \<Rightarrow> (f (fst cf) (fst cf'),snd cf')#cfs')"
   | "transfer et [] = []"
 
-fun transfers :: "('var,'val,'ret) edge_kind list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow>
+fun transfers :: "('var,'val,'ret,'pname) edge_kind list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow>
                   (('var \<rightharpoonup> 'val) \<times> 'ret) list"
 where "transfers [] s   = s"
   | "transfers (et#ets) s = transfers ets (transfer et s)"
 
 
-fun pred :: "('var,'val,'ret) edge_kind \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
+fun pred :: "('var,'val,'ret,'pname) edge_kind \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
 where "pred (\<Up>f) (cf#cfs) = True"
   | "pred (Q)\<^isub>\<surd> (cf#cfs)   = Q (fst cf)"
   | "pred (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) (cf#cfs) = Q (fst cf,r)"
   | "pred (Q\<^bsub>p\<^esub>\<hookleftarrow>f) (cf#cfs) = (Q cf \<and> cfs \<noteq> [])"
   | "pred et [] = False"
 
-fun preds :: "('var,'val,'ret) edge_kind list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
+fun preds :: "('var,'val,'ret,'pname) edge_kind list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
 where "preds [] s   = True"
   | "preds (et#ets) s = (pred et s \<and> preds ets (transfer et s))"
 
@@ -332,7 +332,7 @@ definition
   where "sourcenodes xs \<equiv> map sourcenode xs"
 
 definition
-  kinds :: "'edge list \<Rightarrow> ('var,'val,'ret) edge_kind list"
+  kinds :: "'edge list \<Rightarrow> ('var,'val,'ret,'pname) edge_kind list"
   where "kinds xs \<equiv> map kind xs"
 
 definition

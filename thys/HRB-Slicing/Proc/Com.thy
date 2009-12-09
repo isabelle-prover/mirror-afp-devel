@@ -6,6 +6,7 @@ theory Com imports "../StaticInter/BasicDefs" begin
 subsection {* Variables and Values *}
 
 types vname = string -- "names for variables"
+types pname = string -- "names for procedures"
 
 datatype val
   = Bool bool      -- "Boolean value"

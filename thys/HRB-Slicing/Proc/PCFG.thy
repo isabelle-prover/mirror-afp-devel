@@ -65,7 +65,7 @@ text {* Control flow information in this language is the node, to which we retur
   after the calles procedure is finished. *}
 
 datatype p_edge_kind = 
-  IEdge "(vname,val,pname \<times> label) edge_kind"
+  IEdge "(vname,val,pname \<times> label,pname) edge_kind"
 | CEdge "pname \<times> expr list \<times> vname list"
 
 
@@ -1242,14 +1242,14 @@ qed
 subsubsection{* The edges of the combined CFG *}
 
 types node = "(pname \<times> label)"
-types edge = "(node \<times> (vname,val,node) edge_kind \<times> node)"
+types edge = "(node \<times> (vname,val,node,pname) edge_kind \<times> node)"
 
 fun get_proc :: "node \<Rightarrow> pname"
   where "get_proc (p,l) = p"
 
 
 inductive PCFG :: 
-  "cmd \<Rightarrow> procs \<Rightarrow> node \<Rightarrow> (vname,val,node) edge_kind \<Rightarrow> node \<Rightarrow> bool" 
+  "cmd \<Rightarrow> procs \<Rightarrow> node \<Rightarrow> (vname,val,node,pname) edge_kind \<Rightarrow> node \<Rightarrow> bool" 
 ("_,_ \<turnstile> _ -_\<rightarrow> _" [51,51,0,0,0] 81)
 for prog::cmd and procs::procs
 where
