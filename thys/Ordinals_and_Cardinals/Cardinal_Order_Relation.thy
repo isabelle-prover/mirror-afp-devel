@@ -1,5 +1,7 @@
 header {* Cardinal-order relations  *}
 
+(* author: Andrei Popescu *)
+
 theory Cardinal_Order_Relation imports Infinite_Set Constructions_on_Wellorders 
 begin
 
@@ -115,7 +117,7 @@ We shall prove that this notion is unique up to order isomorphism, meaning
 that order isomorphism shall be the true identity of cardinals.  *}
 
 
-definition card_of :: "'a set \<Rightarrow> 'a rel" ("| _ |" )
+definition card_of :: "'a set \<Rightarrow> 'a rel" ("|_|" )
 where "card_of A = (SOME r. card_order_on A r)"
 
 
@@ -211,6 +213,24 @@ qed
 lemma card_of_ordLeq2: 
 "A \<noteq> {} \<Longrightarrow> (\<exists>g. g ` B = A) = ( |A| \<le>o |B| )"
 using card_of_ordLeq[of A B] inj_on_iff_surjective[of A B] by auto
+
+
+lemma card_of_inj_rel: assumes INJ: "!! x y y'. \<lbrakk>(x,y) : R; (x,y') : R\<rbrakk> \<Longrightarrow> y = y'"
+shows "|{y. EX x. (x,y) : R}| <=o |{x. EX y. (x,y) : R}|"
+proof-
+  let ?Y = "{y. EX x. (x,y) : R}"  let ?X = "{x. EX y. (x,y) : R}"
+  let ?f = "% y. SOME x. (x,y) : R"
+  have "?f ` ?Y <= ?X" using someI by force (* FIXME: takes a bit long *)
+  moreover have "inj_on ?f ?Y"
+  unfolding inj_on_def proof(auto)
+    fix y1 x1 y2 x2
+    assume *: "(x1, y1) \<in> R" "(x2, y2) \<in> R" and **: "?f y1 = ?f y2"
+    hence "(?f y1,y1) : R" using someI[of "% x. (x,y1) : R"] by auto
+    moreover have "(?f y2,y2) : R" using * someI[of "% x. (x,y2) : R"] by auto
+    ultimately show "y1 = y2" using ** INJ by auto
+  qed
+  ultimately show "|?Y| <=o |?X|" using card_of_ordLeq by auto
+qed
 
 
 lemma card_of_ordLess:
@@ -389,6 +409,25 @@ using card_of_ordLeq inj_on_id by blast
 corollary Card_order_empty:
 "Card_order r \<Longrightarrow> |{}| \<le>o r"
 using card_of_empty card_of_Field_ordIso ordLeq_ordIso_trans by blast
+
+
+lemma card_of_image: 
+"|f ` A| <=o |A|"
+proof(cases "A = {}", simp add: card_of_empty)
+  assume "A ~= {}"
+  hence "f ` A ~= {}" by auto
+  thus "|f ` A| \<le>o |A|"
+  using card_of_ordLeq2[of "f ` A" A] by auto
+qed
+
+
+lemma surj_imp_ordLess:
+assumes "B <= f ` A"
+shows "|B| <=o |A|"
+proof-
+  have "|B| <=o |f ` A|" using assms card_of_mono1 by auto
+  thus ?thesis using card_of_image ordLeq_transitive by blast
+qed
 
 
 lemma Well_order_card_of_empty:
@@ -1153,7 +1192,7 @@ using embed_inj_on[of "|A|" "|B|"]  embed_Field[of "|A|" "|B|"]
 lemma card_of_ordIso_finite:
 assumes "|A| =o |B|" 
 shows "finite A = finite B"
-using assms unfolding ordIso_def iso_def2
+using assms unfolding ordIso_def iso_def_raw
 by (auto simp add: Field_card_of bij_betw_finite)
 
 
@@ -1257,7 +1296,7 @@ proof-
     using card_of_least[of "?A \<times> ?A"] 4 by auto
     ultimately have "r <o ?r'" using ordLess_ordLeq_trans by auto
     then obtain f where 6: "embed r ?r' f" and 7: "\<not> bij_betw f ?A (?A \<times> ?A)"
-    unfolding ordLess_def embedS_def2 
+    unfolding ordLess_def embedS_def_raw 
     by (auto simp add: Field_bsqr)
     let ?B = "f ` ?A"
     have "|?A| =o |?B|" 
@@ -1645,6 +1684,26 @@ using assms card_of_Plus_ordLess_infinite card_of_Un_Plus_ordLeq
       ordLeq_ordLess_trans by blast
 
 
+lemma card_of_Un_singl_ordLess_infinite1:
+assumes "infinite B" and "|A| <o |B|" 
+shows "|{a} Un A| <o |B|"
+proof-
+  have "|{a}| <o |B|" using assms by(auto simp add: finite_ordLess_infinite2) 
+  thus ?thesis using assms card_of_Un_ordLess_infinite[of B] by fastsimp
+qed
+
+
+lemma card_of_Un_singl_ordLess_infinite:
+assumes "infinite B"  
+shows "( |A| <o |B| ) = ( |{a} Un A| <o |B| )"
+using assms card_of_Un_singl_ordLess_infinite1[of B A] 
+proof(auto)
+  assume "|insert a A| <o |B|"
+  moreover have "|A| <=o |insert a A|" using card_of_mono1[of A] by auto
+  ultimately show "|A| <o |B|" using ordLeq_ordLess_trans by blast
+qed
+
+
 
 subsection {* Cardinals versus lists  *}
 
@@ -2001,7 +2060,8 @@ using assms card_of_Fpow_infinite card_of_ordIso by blast
 subsection {* The cardinal $\omega$ and the finite cardinals  *}
 
 
-text{* The cardinal $\omega$, of natural numbers, shall be the standard non-strict order relation on 
+text{* The cardinal $\omega$, of natural numbers, shall be the standard non-strict 
+order relation on 
 @{text "nat"}, that we abbreviate by @{text "natLeq"}.  The finite cardinals 
 shall be the restrictions of these relations to the numbers smaller than 
 fixed numbers @{text "n"}, that we abbreviate by @{text "natLeq_on n"}.  *}
@@ -2190,7 +2250,7 @@ lemma natLeq_on_injective_ordIso:
 proof(auto simp add: natLeq_on_Well_order ordIso_reflexive)
   assume "natLeq_on m =o natLeq_on n"
   then obtain f where "bij_betw f {0..<m} {0..<n}" 
-  using Field_natLeq_on assms unfolding ordIso_def iso_def2 by auto
+  using Field_natLeq_on assms unfolding ordIso_def iso_def_raw by auto
   thus "m = n" using atLeastLessThan_injective2 by blast 
 qed
 
@@ -2263,7 +2323,7 @@ using infinite_iff_natLeq_ordLeq ordLess_iff_not_ordLeq
 
 lemma ordIso_natLeq_on_imp_finite:
 "|A| =o natLeq_on n \<Longrightarrow> finite A"
-unfolding ordIso_def iso_def2 
+unfolding ordIso_def iso_def_raw 
 by (auto simp add: Field_card_of Field_natLeq_on bij_betw_finite)
 
 

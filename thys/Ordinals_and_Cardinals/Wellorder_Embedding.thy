@@ -1,5 +1,7 @@
 header {* Well-order embeddings  *}
 
+(* author: Andrei Popescu *)
+
 theory Wellorder_Embedding imports Zorn Fun2 Wellorder_Relation 
 begin
 
@@ -85,26 +87,17 @@ where
 "embed r r' f \<equiv> \<forall>a \<in> Field r. bij_betw f (under r a) (under r' (f a))"
 
 
-lemma embed_def2:
-"embed r r' = (\<lambda> f. \<forall>a \<in> Field r. bij_betw f (under r a) (under r' (f a)))"
-by(rule ext, auto simp add: embed_def) 
+lemmas embed_defs = embed_def embed_def_raw
 
-
-lemmas embed_defs = embed_def embed_def2
 
 text {* Strict embeddings: *}
 
 definition embedS :: "'a rel \<Rightarrow> 'a' rel \<Rightarrow> ('a \<Rightarrow> 'a') \<Rightarrow> bool"
 where
-"embedS r r' f \<equiv> embed r r' f \<and> \<not> bij_betw f (Field r) (Field r')"
+"embedS r r' f \<equiv> embed r r' f \<and> \<not> bij_betw f (Field r) (Field r')" 
 
 
-lemma embedS_def2:
-"embedS r r' = (\<lambda>f. embed r r' f \<and> \<not> bij_betw f (Field r) (Field r'))"
-by(rule ext, auto simp add: embedS_def) 
-
-
-lemmas embedS_defs = embedS_def embedS_def2
+lemmas embedS_defs = embedS_def embedS_def_raw
 
 
 definition iso :: "'a rel \<Rightarrow> 'a' rel \<Rightarrow> ('a \<Rightarrow> 'a') \<Rightarrow> bool"
@@ -112,12 +105,7 @@ where
 "iso r r' f \<equiv> embed r r' f \<and> bij_betw f (Field r) (Field r')"
 
 
-lemma iso_def2:
-"iso r r' = (\<lambda>f. embed r r' f \<and> bij_betw f (Field r) (Field r'))"
-by(rule ext, auto simp add: iso_def) 
-
-
-lemmas iso_defs = iso_def iso_def2
+lemmas iso_defs = iso_def iso_def_raw
 
 
 definition compat :: "'a rel \<Rightarrow> 'a' rel \<Rightarrow> ('a \<Rightarrow> 'a') \<Rightarrow> bool"

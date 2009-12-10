@@ -1,5 +1,6 @@
 header {* Basics on order-like relations *}
 
+(* author: Andrei Popescu *)
 
 theory Order_Relation2 imports Order_Relation
 begin
@@ -8,7 +9,8 @@ begin
 text{* In this section, we develop basic concepts and results pertaining 
 to order-like relations, i.e., to reflexive and/or transitive and/or symmetric and/or 
 total relations.  The development is placed on top of the definitions 
-from the theory @{text "Order_Relation"}.  We also further define upper and lower bounds operators. *}
+from the theory @{text "Order_Relation"}.  We also 
+further define upper and lower bounds operators. *}
 
 
 types 'a rel = "('a * 'a) set"

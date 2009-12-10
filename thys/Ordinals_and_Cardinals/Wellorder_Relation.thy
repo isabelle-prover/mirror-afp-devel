@@ -1,11 +1,14 @@
 header {* Well-order relations  *}
 
+(* author: Andrei Popescu *)
+
 theory Wellorder_Relation imports Wellfounded2
 begin
 
 
 text{* In this section, we develop basic concepts and results pertaining 
-to well-order relations.  Note that we consider well-order relations as {\em non-strict relations},  
+to well-order relations.  Note that we consider well-order relations 
+as {\em non-strict relations},  
 i.e., as containing the diagonals of their fields. *}
 
 
