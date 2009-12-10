@@ -56,6 +56,12 @@ is available <a href="citing.shtml">[here]</a>. A
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2009-12-10:
+<a href="entries/DPT-SAT-Solver.shtml">A Fast SAT Solver for Isabelle in Standard ML</a>
+<br>Author: Armin Heller
+</td></tr>
+
+<tr><td class="entry">
 2009-12-03:
 <a href="entries/Presburger-Automata.shtml">Formalizing the Logic-Automaton Connection</a>
 <br>Author:
