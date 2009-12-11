@@ -139,7 +139,7 @@ lemma bij_complete:
 proof -
   from finiteC ABC bijf have "card B = card A"
     unfolding bij_betw_def
-    by (auto iff: inj_on_iff_eq_card intro: finite_subset)
+    by (auto iff: inj_on_iff_eq_card [symmetric] intro: finite_subset)
   with finiteC ABC bijf have "card (C - A) = card (C - B)"
     by (auto iff: finite_subset card_Diff_subset)
   with finiteC obtain g where bijg: "bij_betw g (C - A) (C - B)"
