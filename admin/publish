@@ -9,14 +9,19 @@
 
 ## settings
 
+VERSION=afp-2009-1
+
 DEST=afp@web.sourceforge.net:htdocs/
-SRC=ssh://macbroy23.informatik.tu-muenchen.de//home/kleing/afp-hg/release
+SRC=afp.hg.sourceforge.net/hgroot/afp/$VERSION
 
 if [ -n "$SF_LOGIN" ]; then
-    DEST="$SF_LOGIN,$DEST"
+    LN=$SF_LOGIN
 else
-    DEST="$LOGNAME,$DEST"
+    LN=$LOGNAME
 fi
+
+DEST=$LN,$DEST
+SRC=ssh://$LN@$SRC
 
 EXPORT_PRE=afp
 HG=hg
