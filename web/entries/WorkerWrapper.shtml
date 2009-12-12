@@ -95,7 +95,9 @@ Gill and Hutton formalise the worker/wrapper transformation, building on the wor
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
+	<ul>
+        <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-10-31.tar.gz">afp-<!--#echo var="name" -->-2009-10-31.tar.gz</a></li>
+	</ul>
 	</td></tr>
   </tbody>
 </table>

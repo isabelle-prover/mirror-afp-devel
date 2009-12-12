@@ -97,7 +97,9 @@ Please add further fun examples of this kind!
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
+    <ul>
+    <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+    </ul>
 	</td></tr>
   </tbody>
 </table>

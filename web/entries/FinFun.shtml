@@ -95,7 +95,9 @@ FinFuns are total functions that are constant except for a finite set of points,
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
+    <ul>
+    <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-05-25.tar.gz">afp-<!--#echo var="name" -->-2009-05-25.tar.gz</a></li>
+    </ul>
 	</td></tr>
   </tbody>
 </table>

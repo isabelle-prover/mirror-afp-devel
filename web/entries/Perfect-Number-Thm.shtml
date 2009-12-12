@@ -95,7 +95,9 @@ These theories present the mechanised proof of the Perfect Number Theorem.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
+	<ul>
+        <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-11-24.tar.gz">afp-<!--#echo var="name" -->-2009-11-24.tar.gz</a></li>
+	</ul>
 	</td></tr>
   </tbody>
 </table>
