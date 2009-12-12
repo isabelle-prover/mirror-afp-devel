@@ -9,8 +9,14 @@
 
 . ~/.bashrc
 
+if [ -n "$SF_LOGIN" ]; then
+    LN=$SF_LOGIN
+else
+    LN=$LOGNAME
+fi
+
 HEAD=~/afp/devel
-BRANCH=~/afp-hg/Isabelle2009
+BRANCH=ssh://LN@afp.hg.sourceforge.net/hg_root/afp/afp-2009-1
 SYNC_MSG="auto merge from release branch"
 
 function fail()
