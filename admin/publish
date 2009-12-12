@@ -9,8 +9,10 @@
 
 ## settings
 
+VERSION=afp-2009-1
+
 DEST=afp@web.sourceforge.net:htdocs/
-SRC=ssh://macbroy23.informatik.tu-muenchen.de//home/kleing/afp-hg/release
+SRC=http://afp.hg.sourceforge.net:8000/hgroot/afp/afp/$VERSION
 
 if [ -n "$SF_LOGIN" ]; then
     DEST="$SF_LOGIN,$DEST"
