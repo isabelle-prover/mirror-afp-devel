@@ -1,5 +1,7 @@
 header {* Constructions on wellorders *}
 
+(* author: Andrei Popescu *)
+
 theory Constructions_on_Wellorders imports Wellorder_Embedding 
 begin
 
@@ -913,7 +915,7 @@ next
   assume "r' <o r"
   then obtain f where 1: "Well_order r \<and> Well_order r'" and 
                       2: "embed r' r f \<and> f ` (Field r') \<noteq> Field r"
-  unfolding ordLess_def embedS_def2 bij_betw_def using embed_inj_on by blast
+  unfolding ordLess_def embedS_def_raw bij_betw_def using embed_inj_on by blast
   hence "ofilter r (f ` (Field r'))" using embed_Field_ofilter by blast
   then obtain a where 3: "a \<in> Field r" and 4: "underS r a = f ` (Field r')" 
   using 1 2 by (auto simp add: wo_rel.ofilter_underS_Field wo_rel_def) 
@@ -1024,7 +1026,7 @@ proof-
                         "inj_on f A \<and> f ` A \<le> A"
     unfolding ordLeq_def using 2 embed_inj_on embed_Field by blast
     hence "bij_betw f A A" unfolding bij_betw_def using FIN endo_inj_surj by blast
-    thus "r =o r'" unfolding ordIso_def iso_def2 using 1 2 by auto
+    thus "r =o r'" unfolding ordIso_def iso_def_raw using 1 2 by auto
   qed
   ultimately show ?thesis using assms ordLeq_total ordIso_symmetric by blast
 qed

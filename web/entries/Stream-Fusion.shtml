@@ -104,13 +104,14 @@
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
+	<ul>
+        <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-05-13.tar.gz">afp-<!--#echo var="name" -->-2009-05-13.tar.gz</a></li>
+	</ul>
 	</td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
-<div align="right" class="date">$Date: 2009-05-25 01:23:57 $, $Revision: 1.1 
-$</div></body>
+</body>
 </html>

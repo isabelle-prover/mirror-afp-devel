@@ -1,5 +1,7 @@
 header {* More on injections, bijections and inverses   *}
 
+(* author: Andrei Popescu *)
+
 theory Fun2 imports Infinite_Set
 begin 
 
@@ -363,7 +365,7 @@ next
   obtain g where g_def: "g = (\<lambda> n. if n = 0 then a else f (Suc n))" by blast
   obtain A' where A'_def: "A' = g ` UNIV" by blast
   have temp: "\<forall>y. f y \<noteq> a" using 2 by blast
-  have 3: "inj g \<and> g ` UNIV \<le> A \<and> a \<in> g ` UNIV"   
+  have 3: "inj_on g UNIV \<and> g ` UNIV \<le> A \<and> a \<in> g ` UNIV"   
   proof(auto simp add: Case2 g_def, unfold inj_on_def, intro ballI impI, 
         case_tac "x = 0", auto simp add: 2)
     fix y  assume "a = (if y = 0 then a else f (Suc y))"  
@@ -377,7 +379,8 @@ next
   qed
   hence 4: "bij_betw g UNIV A' \<and> a \<in> A' \<and> A' \<le> A" 
   using inj_on_imp_bij_betw[of g] unfolding A'_def by auto
-  hence 5: "bij_betw (inv g) A' UNIV" by (auto simp add: bij_betw_inv_into)
+  hence 5: "bij_betw (inv g) A' UNIV"
+  by (auto simp add: bij_betw_inv_into)
   (*  *)
   obtain n where "g n = a" using 3 by auto
   hence 6: "bij_betw g (UNIV - {n}) (A' - {a})" 
@@ -953,3 +956,5 @@ qed
 
 
 end
+
+
