@@ -12,13 +12,16 @@
 VERSION=afp-2009-1
 
 DEST=afp@web.sourceforge.net:htdocs/
-SRC=http://afp.hg.sourceforge.net:8000/hgroot/afp/afp/$VERSION
+SRC=afp.hg.sourceforge.net/hgroot/afp/$VERSION
 
 if [ -n "$SF_LOGIN" ]; then
-    DEST="$SF_LOGIN,$DEST"
+    LN=$SF_LOGIN
 else
-    DEST="$LOGNAME,$DEST"
+    LN=$LOGNAME
 fi
+
+DEST=$LN,$DEST
+SRC=ssh://$LN@$SRC
 
 EXPORT_PRE=afp
 HG=hg
