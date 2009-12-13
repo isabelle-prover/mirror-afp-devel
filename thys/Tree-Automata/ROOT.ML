@@ -1,6 +1,6 @@
 no_document use_thys
   ["../Collections/common/Misc",
-   "../Collections/common/bugfixes/Efficient_Nat",
+   "Efficient_Nat",
    "While_Combinator", "../Collections/Collections",
    "../Collections/DatRef",
    "../Collections/Exploration"];
