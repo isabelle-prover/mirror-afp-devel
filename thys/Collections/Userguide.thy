@@ -113,7 +113,7 @@ text {*
     \item[@{theory MapGA}] Generic algorithms for maps
     \item[@{theory MapStdImpl}] Standard map implementations (list,rb-tree, hash)
     \item[@{theory Algos}] Various generic algorithms
-    \item[@{theory Index}] Generic algorithm for building indices of sets
+    \item[@{theory SetIndex}] Generic algorithm for building indices of sets
     \item[@{theory Fifo}] Amortized fifo queue
     \item[@{theory DatRef}] Data refinement for the while combinator
   \end{description}
@@ -524,7 +524,7 @@ text_raw {*\label{sec:userguide.design}*}
     As the generic algorithms in this framework only depend on a few function parameters,
     we have not grouped operations together. However, this may well make sense for more complex
     generic algorithms, that depend on many functions. A borderline example are the generic indexing algorithms
-    defined in Theory~@{theory Index}. The algorithms depend on quite a few functions. While we need to explicitely
+    defined in Theory~@{theory SetIndex}. The algorithms depend on quite a few functions. While we need to explicitely
     specify them as parameters, we try to simplify reasoning about them by defining an appropriate locale.
     *}
 

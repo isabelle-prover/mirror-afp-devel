@@ -11,7 +11,7 @@ imports
   "../Collections/common/Misc" 
   "../Collections/SetStdImpl" 
   "../Collections/MapStdImpl" 
-  "../Collections/Index" 
+  "../Collections/SetIndex" 
   "../Collections/Algos" 
   "../Collections/StdInst" 
   "../Collections/Fifo" 

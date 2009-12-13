@@ -4,7 +4,7 @@ no_document use_thy "common/Misc";
 use_thys ["MapSpec", "SetSpec", "Fifo"];
 
 (* Generic algorithms *)
-use_thys ["MapGA", "SetGA", "SetByMap", "Algos", "Index"];
+use_thys ["MapGA", "SetGA", "SetByMap", "Algos", "SetIndex"];
 
 (* Implementations *)
 no_document use_thys

@@ -3,10 +3,10 @@
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
 header "Indices of Sets"
-theory Index
+theory SetIndex
 imports "common/Misc" MapSpec SetSpec
 begin
-text_raw {*\label{thy:Index}*}
+text_raw {*\label{thy:SetIndex}*}
 
 text {*
   This theory defines an indexing operation that builds an index from a set 
