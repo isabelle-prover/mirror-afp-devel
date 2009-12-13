@@ -7,7 +7,7 @@ theory Ta_impl
 imports 
   Main
 
-  "../Collections/common/bugfixes/Efficient_Nat" 
+  "Efficient_Nat" 
   "../Collections/common/Misc" 
   "../Collections/SetStdImpl" 
   "../Collections/MapStdImpl" 
