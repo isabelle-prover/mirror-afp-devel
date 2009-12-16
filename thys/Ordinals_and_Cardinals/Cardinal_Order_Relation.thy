@@ -229,7 +229,7 @@ proof-
     moreover have "(?f y2,y2) : R" using * someI[of "% x. (x,y2) : R"] by auto
     ultimately show "y1 = y2" using ** INJ by auto
   qed
-  ultimately show "|?Y| <=o |?X|" using card_of_ordLeq by auto
+  ultimately show "|?Y| <=o |?X|" using card_of_ordLeq by (auto dest: predicate1D)
 qed
 
 
