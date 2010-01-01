@@ -61,11 +61,6 @@ proof -
   with assms show "?thesis" by auto
 qed
 
-lemma divisor_imp_smeq: "a : divisors (Suc n) ==> a <= Suc n"
-apply (auto simp add: divisors_def)
-apply (metis Suc_neq_Zero divides_ge)
-done
-
 lemma sigma_imp_divisors: "sigma(n)=n+1 ==> n>1 & divisors n = {n,1}"
 proof
   assume ass:"sigma(n)=n+1"
@@ -156,136 +151,16 @@ proof -
   thus ?thesis by simp
 qed
 
-lemma sigma_finite_set1[simp]:
-assumes m0: "(m::nat)>0" and p1: "p>1"
-shows "finite {p ^ f * b | f b . f <= n & b dvd m}" 
-proof -
-  have "{p^f * b | f b . f <= n & b dvd m} <= {0 .. p^n*m}"
-    by auto (metis dvd_imp_le m0 mult_le_mono nat_less_le p1 power_increasing)
-  thus "finite {p^f * b | f b . f <= n & b dvd m}" by (simp add: finite_subset)
-qed
-
-
-lemma sigma_finite_set2[simp]:
-assumes m0: "m>0"
-shows "m>0 ==> finite {(x::nat) * b |b. b dvd m}"
-proof -
-  from m0 have "finite (divisors m)" by simp
-  hence "finite ((op * x)`(divisors m))" by auto
-  moreover have "{x * b |b. b dvd m} = (op * x)`(divisors m)"
-    by (auto simp add: divisors_def)
-  ultimately show "?thesis" by auto
-qed
-
-
-lemma prodsums_eq_sumprods_help2:
-assumes ndvd: "~ p dvd m" and p1: "p>(1::nat)"
-shows "\<Sum> ({p^f*b |f b. f <= n & b dvd m} Int {p^f*b |f b. f = Suc n & b dvd m})
-       = 0"
-proof -
-  have  "!!b f ba. [| f <= n; p * p ^ n * b = p ^ f * ba; b dvd m; ba dvd m |] ==> False"
-  proof -
-    fix b ba f
-    assume ass: "f <= n" "p * p ^ n * b = p ^ f * ba" "b dvd m" "ba dvd m"
-    then obtain e where edef: "f+e = Suc n"
-      by (metis Suc_eq_plus1 le_add_diff_inverse trans_le_add1)
-    hence"p^(Suc n) = p^(f+e)" by auto
-    hence "p^(Suc n) = p^f*p^e" by (simp only: power_add) 
-    with ass have "p^f*p^e * b = p ^ f * ba"  by auto
-    with p1 have "p^e*b=ba" by auto
-    moreover from edef ass have "e>0" by auto
-    ultimately have "p dvd ba" by auto
-    with ass have "p dvd m" by (metis dvd.order_trans )
-    with ndvd show "False" by auto
-  qed
-  thus "?thesis" by (auto simp: Int_def intro!: setsum_0_if_empty)
-qed
-
-lemma sum_pow_plus_suc_eq_sum_upto_suc:
-  assumes p:"(p::nat)>1"
-  shows "\<Sum>{p ^ f |f. f <= n} + p^(Suc n)= \<Sum>{p ^ f |f. f <= Suc n}"
-     (is "?lhs = ?rhs")
-proof -
-  have "?lhs =  (\<Sum> i = 0 .. n . p^i) + p^(Suc n)"
-    by (simp only: rewrite_sum_of_powers[OF p]) (*TOASK: how to do this with something similar to subst?*)
-  hence "?lhs =  (\<Sum> i = 0 .. Suc n . p^i)" by simp
-  thus "?lhs =  ?rhs" by (subst rewrite_sum_of_powers[OF p])
-qed
-
-lemma rewrite_power_times_sum:
-assumes "(p::nat) > 1"
-shows "p^x*(\<Sum>{b. b dvd m}) = \<Sum> {p^f*b | f b . f = x & b dvd m}" (is "?l = ?r")
-proof -
-  have "?l = setsum (op * (p^x)) {b . b dvd m}"
-    by (auto simp add: setsum_right_distrib)
-  moreover from `p>1` have "inj_on (op * (p^x)) {b . b dvd m}"
-    by(simp add: inj_on_def)
-  ultimately also have  "?l = (setsum id ((op * (p^x))` {b. b dvd m}))"
-    by (auto simp only: setsum_reindex_id)
-  thus "?thesis" by (auto simp add:conj_commute image_def)
-qed
-
-
-
-(* TODO: betere afkortingen maken *)
-lemma prodsums_eq_sumprods_help: 
-assumes "(m::nat)>0" and "(p::nat)>1" and "coprime p m"
-shows "\<Sum>{p^f*b | f b. f <= n & b dvd m} + p^(Suc n)*(\<Sum>{b. b dvd m}) =
-       \<Sum>{p^f*b | f b . f <= Suc n & b dvd m}"
-      (is "\<Sum> ?lhsa + ?lhsb = \<Sum> ?rhs")
-proof -
-  from `p>1` have "?lhsb = (\<Sum> {p^f*b | f b . f=Suc n & b dvd m})" (is "?lhsb = \<Sum> ?lhsbn" )
-    by (auto simp only: rewrite_power_times_sum)
-  moreover from `m>0` `p>1` have "finite ?lhsa" by simp
-  moreover from `m>0` have "finite ?lhsbn" by simp
-  ultimately have "\<Sum> ?lhsa + ?lhsb = \<Sum>(?lhsa Un ?lhsbn) + \<Sum>(?lhsa Int ?lhsbn)"
-    by (auto, auto simp only: setsum_Un_Int)
-  moreover {
-    have "\<Sum> (?lhsa Un ?lhsbn) =
-          \<Sum> ({x . (EX f b. (x = p ^ f * b & f <= n & b dvd m) \<or>
-                           (x = p^f*b & f=Suc n & b dvd m))})"
-      by(rule seteq_imp_setsumeq, auto simp del:power_Suc)
-    also have "... = \<Sum> {p ^ f * b | f b . (f <= n \<or> f=Suc n) & b dvd m}"
-      by(rule seteq_imp_setsumeq) auto
-    finally have "\<Sum>(?lhsa Un ?lhsbn) = \<Sum>{p^f * b |f b. f <= Suc n & b dvd m}"
-      by (simp only: le_Suc_eq) }
-  moreover {
-    from `coprime p m` `p>1` have "~ p dvd m"
-      by (metis coprime_def dvd_div_mult_self gcd_mult' nat_less_le)
-    with `p>1` have "~ p dvd m" "p>1" by auto
-    hence " \<Sum> (?lhsa Int ?lhsbn) = 0" by (rule prodsums_eq_sumprods_help2) }
-  ultimately show "?thesis" by auto
-qed
-
-
 lemma prodsums_eq_sumprods:
-assumes "p > Suc 0" and "coprime p m" and "m > 0"
+assumes "coprime p m"
 shows "(\<Sum>{p^f|f. f<=n})*(\<Sum>{b. b dvd m}) = (\<Sum> {p^f*b| f b. f <= n & b dvd m})"
-proof (induct n)
-  case 0 show ?case by auto
-next
-  case (Suc n)
-  let ?lhs = "\<Sum>{p^f |f. f <= n} * \<Sum>{b. b dvd m}"
-  let ?rhs = "\<Sum>{p^f * b |f b. f <= n & b dvd m}"
-  show ?case (is "?lhsn = ?rhsn")
-  proof -
-    from Suc have "?lhs + p^(Suc n)*(\<Sum>{b. b dvd m}) =
-                   ?rhs + p^(Suc n)*(\<Sum>{b. b dvd m})" by auto
-    moreover
-    { have "\<Sum>{p^f |f. f <= n} * \<Sum>{b. b dvd m} + p^(Suc n)*(\<Sum>{b. b dvd m})
-          =(\<Sum>{p^f |f. f <= n} + p^(Suc n))*(\<Sum>{b. b dvd m})"
-        by (simp add: add_mult_distrib)
-      with `p>Suc 0`
-      have "\<Sum>{p^f|f. f<=n} * \<Sum>{b. b dvd m} + p^(Suc n)*(\<Sum>{b. b dvd m})= ?lhsn"
-        by (simp only: sum_pow_plus_suc_eq_sum_upto_suc prime_def)
-    }
-    moreover from `m>0` `p>Suc 0` `coprime p m`
-    have "\<Sum>{p^f*b |f b. f <= n & b dvd m} + p^(Suc n)*(\<Sum>{b. b dvd m}) = ?rhsn"
-      by (subst prodsums_eq_sumprods_help,auto)
-    ultimately show  ?case by simp
-  qed
+proof-
+  have "ALL x f. x dvd m \<longrightarrow> coprime (p ^ f) x"
+    by(metis assms coprime_commute coprime_divisors coprime_exp dvd.eq_iff)
+  thus ?thesis
+    by(auto simp: imp_ex setsum_mult_setsum_if_inj[OF mult_inj_if_coprime_nat]
+            intro!: arg_cong[where f = "setsum (%x. x)"])
 qed
-
 
 lemma rewrite_for_sigma_semimultiplicative:
 assumes "prime p"
@@ -311,7 +186,7 @@ by (auto simp only: division_decomp mult_dvd_mono)
 
 (*TODO logischer volgorde maken *)
 theorem sigma_semimultiplicative:
-  assumes p: "prime p" and cop: "coprime p m" and m0:"m>0"
+  assumes p: "prime p" and cop: "coprime p m"
   shows "sigma (p^n) * sigma m = sigma (p^n * m)" (is "?l = ?r")
 proof -
   from cop have cop2: "coprime (p^n) m"
@@ -319,7 +194,7 @@ proof -
   have "?l = (\<Sum> {a . a dvd p^n})*(\<Sum> {b . b dvd m})" by (simp add: sigma_def)
   also from p have "... = (\<Sum> {p^f| f . f<=n})*(\<Sum> {b . b dvd m})"
     by (simp add: pr_pow_div_eq_sm_pr_pow)
-  also from m0 p cop  have "... = (\<Sum> {p^f*b| f b . f<=n & b dvd m})"
+  also from cop  have "... = (\<Sum> {p^f*b| f b . f<=n & b dvd m})"
     by (auto simp add: prodsums_eq_sumprods prime_def)
   also have "... = (\<Sum> {a*b| a b . a dvd (p^n) & b dvd m})"
     by(rule seteq_imp_setsumeq,rule rewrite_for_sigma_semimultiplicative[OF p])
