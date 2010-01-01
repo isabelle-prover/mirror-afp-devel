@@ -88,6 +88,4 @@ next
   finally show "2*(2^n * (2*2^n - Suc 0)) = sigma(2^n*(2*2^n - Suc 0))" by auto
 qed
 
-unused_thms PerfectBasics Infinite_Set -
-
 end
