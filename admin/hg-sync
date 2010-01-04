@@ -16,7 +16,7 @@ else
 fi
 
 HEAD=~/afp/devel
-BRANCH=ssh://$LN@afp.hg.sourceforge.net/hg_root/afp/afp-2009-1
+BRANCH=ssh://$LN@afp.hg.sourceforge.net/hgroot/afp/afp-2009-1
 SYNC_MSG="auto merge from release branch"
 
 function fail()
