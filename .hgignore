@@ -1,2 +1,6 @@
 syntax: glob
 thys/Collections/generated
+thys/Tree-Automata/code/haskell/generated/Nat.hs
+thys/Tree-Automata/code/haskell/generated/Ta.hs
+thys/Tree-Automata/code/ml/generated/Ta.ML
+thys/Tree-Automata/code/ocaml/generated/Ta.ml

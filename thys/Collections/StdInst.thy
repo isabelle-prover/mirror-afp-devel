@@ -5,7 +5,7 @@
 *)
 header {* Standard Instantiations *}
 theory StdInst
-imports MapStdImpl SetStdImpl HashMap HashSet Index Algos
+imports MapStdImpl SetStdImpl HashMap HashSet SetIndex Algos
 begin
 text_raw {*\label{thy:StdInst}*}
 (* We use a small ad-hoc hack to generate the actual instantiations from this file: *)
