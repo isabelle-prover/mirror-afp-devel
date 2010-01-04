@@ -27,10 +27,10 @@ IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
 
-USEDIR = $(ISATOOL) usedir -v true -i true -d false -P "http://isabelle.in.tum.de/library/" -D generated
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -d false -P "http://isabelle.in.tum.de/library/" -D generated
 FIXDOC = fixdoc
-DOCUMENT = $(ISATOOL) document -o pdf
-DOCUMENT_OUTLINE = $(ISATOOL) document -n outline -o pdf -t "/proof,/ML"
+DOCUMENT = $(ISABELLE_TOOL) document -o pdf
+DOCUMENT_OUTLINE = $(ISABELLE_TOOL) document -n outline -o pdf -t "/proof,/ML"
 
 # time limit (in sec)
 MAXTIME = 3600
