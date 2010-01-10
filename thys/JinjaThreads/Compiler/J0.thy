@@ -919,16 +919,16 @@ lemma \<tau>red0r_into_\<tau>Red0r:
 proof(induct e xs\<equiv>"empty :: locals" rule: converse_rtranclp_induct2)
   case refl show ?case by blast
 next
-  case (step e xs e' xs')
-  from `\<tau>red0 (extTA2J0 P) P h (e, xs) (e', xs')`
-  have red: "extTA2J0 P,P \<turnstile> \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>" and "\<tau>move0 P h e"  and "no_call P h e" by auto
-  from wwf red have "fv e' \<subseteq> fv e" by(rule red_fv_subset)
-  with `fv e = {}` have "fv e' = {}" by blast
-  moreover from red_dom_lcl[OF red] `fv e = {}` `xs = empty`
+  case (step e e' xs')
+  from `\<tau>red0 (extTA2J0 P) P h (e, empty) (e', xs')`
+  have red: "extTA2J0 P,P \<turnstile> \<langle>e, (h, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>" and "\<tau>move0 P h e"  and "no_call P h e" by auto
+  from red_dom_lcl[OF red] `fv e = {}`
   have "dom xs' = {}" by(auto split:split_if_asm)
   hence "xs' = empty" by(auto)
+  moreover from wwf red have "fv e' \<subseteq> fv e" by(rule red_fv_subset)
+  with `fv e = {}` have "fv e' = {}" by blast
   ultimately have "\<tau>Red0r P h (e', es) (e'', es)" by(rule step)
-  moreover from red `\<tau>move0 P h e` `xs' = empty` `xs = empty` `no_call P h e`
+  moreover from red `\<tau>move0 P h e` `xs' = empty` `no_call P h e`
   have "\<tau>Red0 P h (e, es) (e', es)" by(auto simp add: no_call_def intro!: red0Red)
   ultimately show ?case by(blast intro: converse_rtranclp_into_rtranclp)
 qed
@@ -940,19 +940,19 @@ lemma \<tau>red0t_into_\<tau>Red0t:
   "\<lbrakk> \<tau>red0t (extTA2J0 P) P h (e, empty) (e'', empty); fv e = {} \<rbrakk>
   \<Longrightarrow> \<tau>Red0t P h (e, es) (e'', es)"
 proof(induct e xs\<equiv>"empty :: locals" rule: converse_tranclp_induct2)
-  case (base e xs)
+  case (base e)
   thus ?case by(blast intro!: tranclp.r_into_trancl \<tau>red0_into_\<tau>Red0)
 next
-  case (step e xs e' xs')
-  from `\<tau>red0 (extTA2J0 P) P h (e, xs) (e', xs')` 
-  have red: "extTA2J0 P,P \<turnstile> \<langle>e, (h, xs)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>" and "\<tau>move0 P h e" and "no_call P h e" by auto
-  from wwf red have "fv e' \<subseteq> fv e" by(rule red_fv_subset)
-  with `fv e = {}` have "fv e' = {}" by blast
-  moreover from red_dom_lcl[OF red] `fv e = {}` `xs = empty`
+  case (step e e' xs')
+  from `\<tau>red0 (extTA2J0 P) P h (e, empty) (e', xs')` 
+  have red: "extTA2J0 P,P \<turnstile> \<langle>e, (h, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>" and "\<tau>move0 P h e" and "no_call P h e" by auto
+  from red_dom_lcl[OF red] `fv e = {}`
   have "dom xs' = {}" by(auto split:split_if_asm)
   hence "xs' = empty" by auto
+  moreover from wwf red have "fv e' \<subseteq> fv e" by(rule red_fv_subset)
+  with `fv e = {}` have "fv e' = {}" by blast
   ultimately have "\<tau>Red0t P h (e', es) (e'', es)" by(rule step)
-  moreover from red `\<tau>move0 P h e` `xs' = empty` `xs = empty` `no_call P h e`
+  moreover from red `\<tau>move0 P h e` `xs' = empty` `no_call P h e`
   have "\<tau>Red0 P h (e, es) (e', es)" by(auto simp add: no_call_def intro!: red0Red)
   ultimately show ?case by(blast intro: tranclp_into_tranclp2)
 qed

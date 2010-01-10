@@ -318,7 +318,7 @@ begin
   theorem accs_unique: "\<lbrakk> accs \<delta> t q; accs \<delta> t q' \<rbrakk> \<Longrightarrow> q=q'"
     unfolding accs_laz
   proof (induct \<delta>\<equiv>\<delta> t q arbitrary: q' rule: accs_laz.induct[case_names step])
-    case (step q f qs _ ts q')
+    case (step q f qs ts q')
     hence I: 
       "(q \<rightarrow> f qs) \<in> \<delta>"
       "list_all_zip (accs_laz \<delta>) ts qs"
@@ -1341,7 +1341,7 @@ begin
   proof -
     have "\<exists>s\<subseteq>Q. q\<in>s \<and> accs_laz \<delta>ss t s" using A[unfolded accs_laz]
     proof (induct \<delta>\<equiv>\<delta> t q rule: accs_laz.induct[case_names step])
-      case (step q f qs _ ts)
+      case (step q f qs ts)
       hence I:
         "(q \<rightarrow> f qs)\<in>\<delta>"
         "list_all_zip (accs_laz \<delta>) ts qs"
@@ -1383,7 +1383,7 @@ begin
   proof (induct \<delta>\<equiv>\<delta>ss t s 
                 arbitrary: q 
                 rule: accs_laz.induct[case_names step])
-    case (step s f ss _ ts)
+    case (step s f ss ts)
     hence I:
       "(s \<rightarrow> f ss) \<in> \<delta>ss"
       "list_all_zip (accs_laz \<delta>ss) ts ss"
@@ -1583,7 +1583,7 @@ begin
       proof (induct \<delta>\<equiv>\<delta>complete t q\<equiv>"Some qi"
                     arbitrary: qi
                     rule: accs_laz.induct[case_names step])
-        case (step _ f qs _ ts qi)
+        case (step f qs ts qi)
         hence I:
           "((Some qi) \<rightarrow> f qs) \<in> \<delta>complete"
           "list_all_zip (accs_laz \<delta>complete) ts qs"

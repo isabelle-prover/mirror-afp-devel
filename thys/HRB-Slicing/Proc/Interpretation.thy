@@ -42,27 +42,23 @@ proof(atomize_elim)
     by(fastsimp simp:valid_edge_def)
   from `prog,procs \<turnstile> sourcenode a -Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rightarrow> targetnode a`
   show "\<exists>a'. valid_edge wfp a' \<and> (\<exists>Q' f'. kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f') \<and> targetnode a' = r"
-  proof(induct x\<equiv>"sourcenode a" et\<equiv>"Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" x'\<equiv>"targetnode a" rule:PCFG.induct)
-    case (MainCall l px es rets n' ins outs c)
-    from `\<lambda>s. True:(Main, n')\<hookrightarrow>\<^bsub>px\<^esub>map interpret es = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
-    have [simp]:"px = p" "r = (Main, n')" by simp_all
-    from `prog \<turnstile> Label l -CEdge (px, es, rets)\<rightarrow>\<^isub>p n'` obtain l' 
+  proof(induct "sourcenode a" "Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" "targetnode a" rule:PCFG.induct)
+    case (MainCall l es rets n' ins outs c)
+    from `prog \<turnstile> Label l -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` obtain l' 
       where [simp]:"n' = Label l'"
       by(fastsimp dest:Proc_CFG_Call_Labels)
     from MainCall
     have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<^bsub>p\<^esub>\<hookleftarrow>
       (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label l')"
       by(fastsimp intro:MainReturn)
-    with `Rep_wf_prog wfp = (prog,procs)` show ?thesis
+    with `Rep_wf_prog wfp = (prog,procs)` `(Main, n') = r` show ?thesis
       by(fastsimp simp:valid_edge_def)
   next
-    case (ProcCall i px ins outs c l p' es' rets' l' ins' outs' c' ps es rets)
-    from `\<lambda>s. True:(px, Label l')\<hookrightarrow>\<^bsub>p'\<^esub>map interpret es' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-    have [simp]:"p' = p" "r = (px, Label l')" by simp_all
+    case (ProcCall i px ins outs c l es' rets' l' ins' outs' c' ps es rets)
     from ProcCall have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (px,Label l'))\<^bsub>p\<^esub>\<hookleftarrow>
       (\<lambda>cf cf'. cf'(rets' [:=] map cf outs'))\<rightarrow> (px,Label l')"
       by(fastsimp intro:ProcReturn)
-    with `Rep_wf_prog wfp = (prog,procs)` show ?thesis
+    with `Rep_wf_prog wfp = (prog,procs)` `(px, Label l') = r` show ?thesis
       by(fastsimp simp:valid_edge_def)
   qed auto
 qed
@@ -349,34 +345,30 @@ proof -
       by(simp add:valid_edge_def)
     thus "\<exists>a''. valid_edge wfp a'' \<and> sourcenode a'' = targetnode a \<and> 
       targetnode a'' = sourcenode a' \<and> kind a'' = (\<lambda>cf. False)\<^isub>\<surd>"
-    proof(induct x\<equiv>"sourcenode a" et\<equiv>"Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" x'\<equiv>"targetnode a" rule:PCFG.induct)
-      case (MainCall l px es rets n' ins outs c)
-      from `\<lambda>s. True:(Main, n')\<hookrightarrow>\<^bsub>px\<^esub>map interpret es = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-      have [simp]:"px = p" by simp
+    proof(induct "sourcenode a" "Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" "targetnode a" rule:PCFG.induct)
+      case (MainCall l es rets n' ins outs c)
       have "c \<turnstile> Entry -IEdge (\<lambda>s. False)\<^isub>\<surd>\<rightarrow>\<^isub>p Exit" by(rule Proc_CFG_Entry_Exit)
       moreover
-      from `prog \<turnstile> Label l -CEdge (px, es, rets)\<rightarrow>\<^isub>p n'`
-      have "containsCall procs prog [] px es rets" by(rule Proc_CFG_Call_containsCall)
+      from `prog \<turnstile> Label l -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
+      have "containsCall procs prog [] p es rets" by(rule Proc_CFG_Call_containsCall)
       ultimately have "prog,procs \<turnstile> (p,Entry) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (p,Exit)"
-	using `(px, ins, outs, c) \<in> set procs` by(fastsimp intro:Proc)
-      with `sourcenode a' = (p,Exit)` `(px, Entry) = targetnode a`[THEN sym]
+	using `(p, ins, outs, c) \<in> set procs` by(fastsimp intro:Proc)
+      with `sourcenode a' = (p,Exit)` `(p, Entry) = targetnode a`[THEN sym]
       show ?case by(fastsimp simp:valid_edge_def)
     next
-      case (ProcCall i px ins outs c l p' es' rets' l' ins' outs' c' ps es rets)
-      from `\<lambda>s. True:(px, Label l')\<hookrightarrow>\<^bsub>p'\<^esub>map interpret es' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-      have [simp]:"p' = p" by simp
+      case (ProcCall i px ins outs c l es' rets' l' ins' outs' c' ps es rets)
       from `procs ! i = (px, ins, outs, c)` `i < length procs`
       have "(px,ins,outs,c) \<in> set procs" by(fastsimp simp:in_set_conv_nth)
       have "c' \<turnstile> Entry -IEdge (\<lambda>s. False)\<^isub>\<surd>\<rightarrow>\<^isub>p Exit" by(rule Proc_CFG_Entry_Exit)
       moreover
-      from `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
-      have "containsCall procs c [] p' es' rets'" by(rule Proc_CFG_Call_containsCall)
+      from `c \<turnstile> Label l -CEdge (p, es', rets')\<rightarrow>\<^isub>p Label l'`
+      have "containsCall procs c [] p es' rets'" by(rule Proc_CFG_Call_containsCall)
       with `containsCall procs prog ps px es rets` `(px,ins,outs,c) \<in> set procs`
-      have "containsCall procs prog (ps@[px]) p' es' rets'"
+      have "containsCall procs prog (ps@[px]) p es' rets'"
 	by(rule containsCall_in_proc)
       ultimately have "prog,procs \<turnstile> (p,Entry) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (p,Exit)"
-	using `(p', ins', outs', c') \<in> set procs` by(fastsimp intro:Proc)
-      with `sourcenode a' = (p,Exit)` `(p', Entry) = targetnode a`[THEN sym]
+	using `(p, ins', outs', c') \<in> set procs` by(fastsimp intro:Proc)
+      with `sourcenode a' = (p,Exit)` `(p, Entry) = targetnode a`[THEN sym]
       show ?case by(fastsimp simp:valid_edge_def)
     qed auto
   next
@@ -393,26 +385,24 @@ proof -
       by(simp add:valid_edge_def)
     thus "\<exists>a''. valid_edge wfp a'' \<and> sourcenode a'' = sourcenode a \<and> 
       targetnode a'' = targetnode a' \<and> kind a'' = (\<lambda>cf. False)\<^isub>\<surd>"
-    proof(induct x\<equiv>"sourcenode a" et\<equiv>"Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" x'\<equiv>"targetnode a" rule:PCFG.induct)
-      case (MainCall l px es rets n' ins outs c)
-      from `\<lambda>s. True:(Main, n')\<hookrightarrow>\<^bsub>px\<^esub>map interpret es = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-      have [simp]:"px = p" "r = (Main,n')" by simp_all
-      from `prog \<turnstile> Label l -CEdge (px, es, rets)\<rightarrow>\<^isub>p n'` `distinct rets`
+    proof(induct "sourcenode a" "Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" "targetnode a" rule:PCFG.induct)
+      case (MainCall l es rets n' ins outs c)
+      from `prog \<turnstile> Label l -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` `distinct rets`
       have "prog,procs \<turnstile> (Main,Label l) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,n')"
 	by(rule MainCallReturn)
       with `(Main, Label l) = sourcenode a`[THEN sym] `targetnode a' = r`
+        `(Main, n') = r`[THEN sym]
       show ?case by(auto simp:valid_edge_def)
     next
-      case (ProcCall i px ins outs c l p' es' rets' l' ins' outs' c' ps es rets)
-      from `\<lambda>s. True:(px, Label l')\<hookrightarrow>\<^bsub>p'\<^esub>map interpret es' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-      have [simp]:"p' = p" "r = (px,Label l')" by simp_all
+      case (ProcCall i px ins outs c l es' rets' l' ins' outs' c' ps es rets)
       from `i < length procs` `procs ! i = (px, ins, outs, c)`
       have "(px,ins,outs,c) \<in> set procs" by(fastsimp simp:in_set_conv_nth)
-      with `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'` `distinct rets'`
+      with `c \<turnstile> Label l -CEdge (p, es', rets')\<rightarrow>\<^isub>p Label l'` `distinct rets'`
 	`containsCall procs prog ps px es rets`
       have "prog,procs \<turnstile> (px,Label l) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (px,Label l')"
 	by(fastsimp intro:ProcCallReturn)
       with `(px, Label l) = sourcenode a`[THEN sym] `targetnode a' = r`
+        `(px, Label l') = r`[THEN sym]
       show ?case by(auto simp:valid_edge_def)
     qed auto
   next

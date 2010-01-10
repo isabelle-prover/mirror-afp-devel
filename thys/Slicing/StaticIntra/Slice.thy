@@ -1278,10 +1278,10 @@ proof(induct arbitrary:as' s s' rule:path.induct)
     by(fastsimp intro!:slice_edges_no_nodes_in_slice simp:slice_edges_def)
   with `n -as'\<rightarrow>* n` show ?case
   proof(induct nx\<equiv>"n" as' nx'\<equiv>"n" rule:path.induct)
-    case (Cons_path n'' as n' a nx)
+    case (Cons_path n'' as a)
     from `valid_node n` have "n \<in> backward_slice n" by(rule refl)
     with `\<forall>nx\<in>set (sourcenodes (a # as)). nx \<notin> backward_slice n` 
-      `sourcenode a = nx` `nx = n`
+      `sourcenode a = n`
     have False by(simp add:sourcenodes_def)
     thus ?case by simp
   qed simp

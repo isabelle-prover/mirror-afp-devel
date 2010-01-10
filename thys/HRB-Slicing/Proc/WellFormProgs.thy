@@ -41,66 +41,62 @@ lemma well_formed_same_procs_nth_nth:
 
 lemma PCFG_sourcelabel_None_less_num_nodes:
   "\<lbrakk>prog,procs \<turnstile> (Main,Label l) -et\<rightarrow> n'; well_formed procs\<rbrakk> \<Longrightarrow> l < #:prog"
-proof(induct n\<equiv>"(Main,Label l)" et n' 
+proof(induct "(Main,Label l)" et n' 
       arbitrary:l rule:PCFG.induct)
-  case (Main n et n')
-  from `prog \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'` `(Main,n) = (Main,Label l)`
+  case (Main et n')
+  from `prog \<turnstile> Label l -IEdge et\<rightarrow>\<^isub>p n'`
   show ?case by(fastsimp elim:Proc_CFG_sourcelabel_less_num_nodes)
 next
-  case (MainCall l' p es rets n' ins outs c)
-  from `prog \<turnstile> Label l' -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'` `(Main,Label l') = (Main,Label l)`
+  case (MainCall l p es rets n' ins outs c)
+  from `prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
   show ?case by(fastsimp elim:Proc_CFG_sourcelabel_less_num_nodes)
 next
-  case (MainCallReturn n p es rets n' l)
-  from `prog \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` `(Main, n) = (Main, Label l)`
+  case (MainCallReturn p es rets n' l)
+  from `prog \<turnstile> Label l -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
   show ?case by(fastsimp elim:Proc_CFG_sourcelabel_less_num_nodes)
 qed auto
 
 lemma Proc_CFG_sourcelabel_Some_less_num_nodes:
   "\<lbrakk>prog,procs \<turnstile> (p,Label l) -et\<rightarrow> n'; (p,ins,outs,c) \<in> set procs; 
     well_formed procs\<rbrakk> \<Longrightarrow> l < #:c"
-proof(induct n\<equiv>"(p,Label l)" et n' arbitrary:l rule:PCFG.induct)
-  case (Proc p' ins' outs' c' n et n')
-  from `(p',n) = (p,Label l)` have "p = p'" and "n = Label l" by simp+
-  from `c' \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'` `n = Label l` have "l < #:c'"
+proof(induct "(p,Label l)" et n' arbitrary:l rule:PCFG.induct)
+  case (Proc ins' outs' c' et n')
+  from `c' \<turnstile> Label l -IEdge et\<rightarrow>\<^isub>p n'` have "l < #:c'"
     by(fastsimp intro:Proc_CFG_sourcelabel_less_num_nodes)
-  with `well_formed procs` `p = p'` `(p,ins,outs,c) \<in> set procs` 
-    `(p',ins',outs',c') \<in> set procs`
+  with `well_formed procs` `(p,ins,outs,c) \<in> set procs` 
+    `(p,ins',outs',c') \<in> set procs`
   show ?case by fastsimp
 next
-  case (ProcCall i p' ins' outs' c' l' p'' es rets l'' ins'' outs'' c'')
-  from `(p',Label l') = (p,Label l)` have "p = p'" and "l' = l" by simp_all
-  from `c' \<turnstile> Label l' -CEdge (p'',es,rets)\<rightarrow>\<^isub>p Label l''` `l' = l` have "l < #:c'"
+  case (ProcCall i ins' outs' c' l p' es rets l' ins'' outs'' c'')
+  from `c' \<turnstile> Label l -CEdge (p',es,rets)\<rightarrow>\<^isub>p Label l'` have "l < #:c'"
     by(fastsimp intro:Proc_CFG_sourcelabel_less_num_nodes)
-  with `well_formed procs` `p = p'` `(p,ins,outs,c) \<in> set procs` 
-    `i < length procs` `procs ! i = (p', ins', outs', c')`
+  with `well_formed procs` `(p,ins,outs,c) \<in> set procs` 
+    `i < length procs` `procs ! i = (p, ins', outs', c')`
   show ?case by fastsimp
 next
-  case (ProcCallReturn p' ins' outs' c' n p'' es rets n')
-  from `(p',n) = (p,Label l)` have "p = p'" and "n = Label l" by simp+
-  from `c' \<turnstile> n -CEdge (p'', es, rets)\<rightarrow>\<^isub>p n'` `n = Label l` have "l < #:c'"
+  case (ProcCallReturn ins' outs' c' p' es rets n')
+  from `c' \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p n'` have "l < #:c'"
     by(fastsimp intro:Proc_CFG_sourcelabel_less_num_nodes)
-  with `well_formed procs` `p = p'` `(p,ins,outs,c) \<in> set procs` 
-    `(p',ins',outs',c') \<in> set procs`
+  with `well_formed procs` `(p,ins,outs,c) \<in> set procs` 
+    `(p,ins',outs',c') \<in> set procs`
   show ?case by fastsimp
 qed auto
 
 
 lemma Proc_CFG_targetlabel_Main_less_num_nodes:
   "\<lbrakk>prog,procs \<turnstile> n -et\<rightarrow> (Main,Label l); well_formed procs\<rbrakk> \<Longrightarrow> l < #:prog"
-proof(induct n et n'\<equiv>"(Main,Label l)" 
+proof(induct n et "(Main,Label l)" 
       arbitrary:l rule:PCFG.induct)
-  case (Main n et n')
-  from `prog \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'` `(Main, n') = (Main, Label l)`
+  case (Main n et)
+  from `prog \<turnstile> n -IEdge et\<rightarrow>\<^isub>p Label l`
   show ?case by(fastsimp elim:Proc_CFG_targetlabel_less_num_nodes)
 next
   case (MainReturn l' p es rets l'' ins outs c)
   from `prog \<turnstile> Label l' -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l''` 
-    `(Main,Label l'') = (Main,Label l)`
   show ?case by(fastsimp elim:Proc_CFG_targetlabel_less_num_nodes)
 next
-  case (MainCallReturn n p es rets n' l)
-  from `prog \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` `(Main, n') = (Main, Label l)`
+  case (MainCallReturn n p es rets)
+  from `prog \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p Label l`
   show ?case by(fastsimp elim:Proc_CFG_targetlabel_less_num_nodes)
 qed auto
 
@@ -108,29 +104,26 @@ qed auto
 lemma Proc_CFG_targetlabel_Some_less_num_nodes:
   "\<lbrakk>prog,procs \<turnstile> n -et\<rightarrow> (p,Label l); (p,ins,outs,c) \<in> set procs; 
     well_formed procs\<rbrakk> \<Longrightarrow> l < #:c"
-proof(induct n et n'\<equiv>"(p,Label l)" arbitrary:l rule:PCFG.induct)
-  case (Proc p' ins' outs' c' n et n')
-  from `(p', n') = (p, Label l)` have "p = p'" and "n' = Label l" by simp_all
-  from `c' \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'` `n' = Label l` have "l < #:c'"
+proof(induct n et "(p,Label l)" arbitrary:l rule:PCFG.induct)
+  case (Proc ins' outs' c' n et)
+  from `c' \<turnstile> n -IEdge et\<rightarrow>\<^isub>p Label l` have "l < #:c'"
     by(fastsimp intro:Proc_CFG_targetlabel_less_num_nodes)
-  with `well_formed procs` `p = p'` `(p,ins,outs,c) \<in> set procs` 
-    `(p',ins',outs',c') \<in> set procs`
+  with `well_formed procs` `(p,ins,outs,c) \<in> set procs` 
+    `(p,ins',outs',c') \<in> set procs`
   show ?case by fastsimp
 next
-  case (ProcReturn i p' ins' outs' c' l' p'' es rets l'' ins'' outs'' c'')
-  from `(p',Label l'') = (p,Label l)` have "p = p'" and "l'' = l" by simp_all
-  from `c' \<turnstile> Label l' -CEdge (p'',es,rets)\<rightarrow>\<^isub>p Label l''` `l'' = l` have "l < #:c'"
+  case (ProcReturn i ins' outs' c' l' p'' es rets l ins'' outs'' c'')
+  from `c' \<turnstile> Label l' -CEdge (p'',es,rets)\<rightarrow>\<^isub>p Label l` have "l < #:c'"
     by(fastsimp intro:Proc_CFG_targetlabel_less_num_nodes)
-  with `well_formed procs` `p = p'` `(p,ins,outs,c) \<in> set procs` 
-    `i < length procs` `procs ! i = (p', ins', outs', c')`
+  with `well_formed procs` `(p,ins,outs,c) \<in> set procs` 
+    `i < length procs` `procs ! i = (p, ins', outs', c')`
   show ?case by fastsimp
 next
-  case (ProcCallReturn p' ins' outs' c' n p'' es rets n')
-  from `(p',n') = (p,Label l)` have "p = p'" and "n' = Label l" by simp+
-  from `c' \<turnstile> n -CEdge (p'', es, rets)\<rightarrow>\<^isub>p n'` `n' = Label l` have "l < #:c'"
+  case (ProcCallReturn ins' outs' c' n p'' es rets)
+  from `c' \<turnstile> n -CEdge (p'', es, rets)\<rightarrow>\<^isub>p Label l` have "l < #:c'"
     by(fastsimp intro:Proc_CFG_targetlabel_less_num_nodes)
-  with `well_formed procs` `p = p'` `(p,ins,outs,c) \<in> set procs` 
-    `(p',ins',outs',c') \<in> set procs`
+  with `well_formed procs` `(p,ins,outs,c) \<in> set procs` 
+    `(p,ins',outs',c') \<in> set procs`
   show ?case by fastsimp
 qed auto
 
@@ -165,15 +158,13 @@ next
     `i < length procs` `procs ! i = (p, ins, outs, c)` `well_formed procs`
     `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
   show ?case
-  proof(induct n\<equiv>"(p,Label l)" et' n'\<equiv>"(p',Entry)" rule:PCFG.induct)
-    case (ProcCall ix px insx outsx cx lx p'x es'x rets'x l'x ins'x outs'x c'x 
+  proof(induct "(p,Label l)" et' "(p',Entry)" rule:PCFG.induct)
+    case (ProcCall ix insx outsx cx es'x rets'x l'x ins'x outs'x c'x ps
       esx retsx)
-    from `(p'x, Entry) = (p', Entry)` have [simp]:"p'x = p'" by simp
-    from `(px, Label lx) = (p, Label l)` have [simp]:"lx = l" "px = p" by simp_all
     from `well_formed procs` `ix < length procs` `i < length procs` 
-      `procs ! ix = (px, insx, outsx, cx)` `procs ! i = (p, ins, outs, c)`
+      `procs ! ix = (p, insx, outsx, cx)` `procs ! i = (p, ins, outs, c)`
     have [simp]:"ix = i" "cx = c" by(auto dest:well_formed_same_procs_nth_nth)
-    from `cx \<turnstile> Label lx -CEdge (p'x, es'x, rets'x)\<rightarrow>\<^isub>p Label l'x`
+    from `cx \<turnstile> Label l -CEdge (p', es'x, rets'x)\<rightarrow>\<^isub>p Label l'x`
       `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
     have [simp]:"es'x = es'" "l'x = l'" by(auto dest:Proc_CFG_Call_nodes_eq)
     show ?case by simp
@@ -189,18 +180,16 @@ next
     `(p', ins', outs', c') \<in> set procs`
     `containsCall procs prog ps p es rets` `well_formed procs`
   show ?case
-  proof(induct n\<equiv>"(p',Exit)" et' n'\<equiv>"(p,Label l')" rule:PCFG.induct)
-    case (ProcReturn ix px insx outsx cx lx p'x es'x rets'x l'x ins'x outs'x c'x psx
+  proof(induct "(p',Exit)" et' "(p,Label l')" rule:PCFG.induct)
+    case (ProcReturn ix insx outsx cx lx es'x rets'x ins'x outs'x c'x psx
       esx retsx)
-    from `(p'x, Exit) = (p', Exit)` have [simp]:"p'x = p'" by simp
-    with `(p'x, ins'x, outs'x, c'x) \<in> set procs`
+    from `(p', ins'x, outs'x, c'x) \<in> set procs`
       `(p', ins', outs', c') \<in> set procs` `well_formed procs`
     have [simp]:"outs'x = outs'" by fastsimp
-    from `(px, Label l'x) = (p, Label l')` have [simp]:"px = p" "l'x = l'" by simp_all
-    from `ix < length procs` `procs ! ix = (px, insx, outsx, cx)`
+    from `ix < length procs` `procs ! ix = (p, insx, outsx, cx)`
       `i < length procs` `procs ! i = (p, ins, outs, c)` `well_formed procs`
     have [simp]:"ix = i" "cx = c" by(auto dest:well_formed_same_procs_nth_nth)
-    from `cx \<turnstile> Label lx -CEdge (p'x, es'x, rets'x)\<rightarrow>\<^isub>p Label l'x`
+    from `cx \<turnstile> Label lx -CEdge (p', es'x, rets'x)\<rightarrow>\<^isub>p Label l'`
       `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
     have [simp]:"rets'x = rets'" by(fastsimp dest:Proc_CFG_Call_nodes_eq')
     show ?case by simp

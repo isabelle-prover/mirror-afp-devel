@@ -8,37 +8,34 @@ subsection {* From @{term "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> 
 
 lemma Skip_WCFG_edge_Exit:
   "\<lbrakk>labels prog l Skip\<rbrakk> \<Longrightarrow> prog \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)"
-proof(induct prog l c\<equiv>Skip rule:labels.induct)
-  case (Labels_Base c)
-  from `c = Skip` show ?case by(fastsimp intro:WCFG_Skip)
+proof(induct prog l Skip rule:labels.induct)
+  case Labels_Base
+  show ?case by(fastsimp intro:WCFG_Skip)
 next
   case (Labels_LAss V e)
   show ?case by(rule WCFG_LAssSkip)
 next
-  case (Labels_Seq2 c\<^isub>2 l c c\<^isub>1)
-  from `c = Skip` `c = Skip \<Longrightarrow> c\<^isub>2 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)`
-  have "c\<^isub>2 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" by simp
-  hence "c\<^isub>1;;c\<^isub>2 \<turnstile> (_ l _) \<oplus> #:c\<^isub>1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> #:c\<^isub>1"
+  case (Labels_Seq2 c\<^isub>2 l c\<^isub>1)
+  from `c\<^isub>2 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)`
+  have "c\<^isub>1;;c\<^isub>2 \<turnstile> (_ l _) \<oplus> #:c\<^isub>1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> #:c\<^isub>1"
     by(fastsimp intro:WCFG_SeqSecond)
   thus ?case by(simp del:id_apply)
 next
-  case (Labels_CondTrue c\<^isub>1 l c b c\<^isub>2)
-  from `c = Skip` `c = Skip \<Longrightarrow> c\<^isub>1 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)`
-  have "c\<^isub>1 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" by simp
-  hence "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> 1"
+  case (Labels_CondTrue c\<^isub>1 l b c\<^isub>2)
+  from `c\<^isub>1 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)`
+  have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -\<Up>id\<rightarrow> (_Exit_) \<oplus> 1"
     by(fastsimp intro:WCFG_CondThen)
   thus ?case by(simp del:id_apply)
 next
-  case (Labels_CondFalse c\<^isub>2 l c b c\<^isub>1)
-  from `c = Skip` `c = Skip \<Longrightarrow> c\<^isub>2 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)`
-  have "c\<^isub>2 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)" by simp
-  hence "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) -\<Up>id\<rightarrow> (_Exit_) \<oplus> (#:c\<^isub>1 + 1)"
+  case (Labels_CondFalse c\<^isub>2 l b c\<^isub>1)
+  from `c\<^isub>2 \<turnstile> (_ l _) -\<Up>id\<rightarrow> (_Exit_)`
+  have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) -\<Up>id\<rightarrow> (_Exit_) \<oplus> (#:c\<^isub>1 + 1)"
     by(fastsimp intro:WCFG_CondElse)
   thus ?case by(simp del:id_apply)
 next
   case (Labels_WhileExit b c')
   show ?case by(rule WCFG_WhileFalseSkip)
-qed simp_all
+qed
 
 
 lemma step_WCFG_edge:
@@ -178,35 +175,35 @@ subsection {* From @{term "c \<turnstile> (_ l _) -et\<rightarrow> (_ l' _)"} wi
 lemma WCFG_edge_Exit_Skip:
   "\<lbrakk>prog \<turnstile> n -et\<rightarrow> (_Exit_); n \<noteq> (_Entry_)\<rbrakk>
   \<Longrightarrow> \<exists>l. n = (_ l _) \<and> labels prog l Skip \<and> et = \<Up>id"
-proof(induct prog n et n'\<equiv>"(_Exit_)" rule:WCFG_induct)
+proof(induct prog n et "(_Exit_)" rule:WCFG_induct)
   case WCFG_Skip show ?case by(fastsimp intro:Labels_Base)
 next
   case WCFG_LAssSkip show ?case by(fastsimp intro:Labels_LAss)
 next
   case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
-  note IH = `\<lbrakk>n \<noteq> (_Entry_); n' = (_Exit_)\<rbrakk> 
+  note IH = `\<lbrakk>n' = (_Exit_); n \<noteq> (_Entry_)\<rbrakk> 
     \<Longrightarrow> \<exists>l. n = (_ l _) \<and> labels c\<^isub>2 l Skip \<and> et = \<Up>id`
   from `n' \<oplus> #:c\<^isub>1 = (_Exit_)` have "n' = (_Exit_)" by(cases n') auto
-  from IH[OF `n \<noteq> (_Entry_)` this] obtain l where [simp]:"n = (_ l _)" "et = \<Up>id"
+  from IH[OF this `n \<noteq> (_Entry_)`] obtain l where [simp]:"n = (_ l _)" "et = \<Up>id"
     and "labels c\<^isub>2 l Skip" by blast
   hence "labels (c\<^isub>1;;c\<^isub>2) (l + #:c\<^isub>1) Skip" by(fastsimp intro:Labels_Seq2)
   thus ?case by(fastsimp simp:id_def)
 next
   case (WCFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
-  note IH = `\<lbrakk>n \<noteq> (_Entry_); n' = (_Exit_)\<rbrakk>
+  note IH = `\<lbrakk>n' = (_Exit_); n \<noteq> (_Entry_)\<rbrakk>
     \<Longrightarrow> \<exists>l. n = (_ l _) \<and> labels c\<^isub>1 l Skip \<and> et = \<Up>id`
   from `n' \<oplus> 1 = (_Exit_)` have "n' = (_Exit_)" by(cases n') auto
-  from IH[OF `n \<noteq> (_Entry_)` this] obtain l where [simp]:"n = (_ l _)" "et = \<Up>id"
+  from IH[OF this `n \<noteq> (_Entry_)`] obtain l where [simp]:"n = (_ l _)" "et = \<Up>id"
     and "labels c\<^isub>1 l Skip" by blast
   hence "labels (if (b) c\<^isub>1 else c\<^isub>2) (l + 1) Skip"
     by(fastsimp intro:Labels_CondTrue)
   thus ?case by(fastsimp simp:id_def)
 next
   case (WCFG_CondElse c\<^isub>2 n et n' b c\<^isub>1)
-  note IH = `\<lbrakk>n \<noteq> (_Entry_); n' = (_Exit_)\<rbrakk>
+  note IH = `\<lbrakk>n' = (_Exit_); n \<noteq> (_Entry_)\<rbrakk>
     \<Longrightarrow> \<exists>l. n = (_ l _) \<and> labels c\<^isub>2 l Skip \<and> et = \<Up>id`
   from `n' \<oplus> #:c\<^isub>1 + 1 = (_Exit_)` have "n' = (_Exit_)" by(cases n') auto
-  from IH[OF `n \<noteq> (_Entry_)` this] obtain l where [simp]:"n = (_ l _)" "et = \<Up>id"
+  from IH[OF this `n \<noteq> (_Entry_)`] obtain l where [simp]:"n = (_ l _)" "et = \<Up>id"
     and label:"labels c\<^isub>2 l Skip" by blast
   hence "labels (if (b) c\<^isub>1 else c\<^isub>2) (l + #:c\<^isub>1 + 1) Skip"
     by(fastsimp intro:Labels_CondFalse)
@@ -221,24 +218,22 @@ qed simp_all
 lemma WCFG_edge_step:
   "\<lbrakk>prog \<turnstile> (_ l _) -et\<rightarrow> (_ l' _); transfer et s = s'; pred et s\<rbrakk>
   \<Longrightarrow> \<exists>c c'. prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels prog l c \<and> labels prog l' c'"
-proof(induct prog n\<equiv>"(_ l _)" et n'\<equiv>"(_ l' _)" arbitrary:l l' rule:WCFG_induct)
+proof(induct prog "(_ l _)" et "(_ l' _)" arbitrary:l l' rule:WCFG_induct)
   case (WCFG_LAss V e)
-  from `(_0_) = (_ l _)` have [simp]:"l = 0" by simp
-  from `(_1_) = (_ l' _)` have [simp]:"l' = 1" by simp
   from `transfer \<Up>\<lambda>s. s(V:=(interpret e s)) s = s'`
   have [simp]:"s' = s(V:=(interpret e s))" by(simp del:fun_upd_apply)
-  have "labels (V:=e) l (V:=e)" by(fastsimp intro:Labels_Base)
+  have "labels (V:=e) 0 (V:=e)" by(fastsimp intro:Labels_Base)
   moreover
-  hence "labels (V:=e) l' Skip" by(fastsimp intro:Labels_LAss)
+  hence "labels (V:=e) 1 Skip" by(fastsimp intro:Labels_LAss)
   ultimately show ?case
     apply(rule_tac x="V:=e" in exI)
     apply(rule_tac x="Skip" in exI)
     by(fastsimp intro:StepLAss simp del:fun_upd_apply)
 next
-  case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
-  note IH = `\<And>l l'. \<lbrakk>transfer et s = s'; pred et s; n = (_ l _); n' = (_ l' _)\<rbrakk>
+  case (WCFG_SeqFirst c\<^isub>1 et c\<^isub>2)
+  note IH = `\<lbrakk>transfer et s = s'; pred et s\<rbrakk>
     \<Longrightarrow> \<exists>c c'. c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>1 l c \<and> labels c\<^isub>1 l' c'`
-  from IH[OF `transfer et s = s'` `pred et s` `n = (_ l _)` `n' = (_ l' _)`]
+  from IH[OF `transfer et s = s'` `pred et s`]
   obtain c c' where "c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
     and "labels c\<^isub>1 l c" and "labels c\<^isub>1 l' c'" by blast
   from `c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>` have "c\<^isub>1;;c\<^isub>2 \<turnstile> \<langle>c;;c\<^isub>2,s,l\<rangle> \<leadsto> \<langle>c';;c\<^isub>2,s',l'\<rangle>"
@@ -251,8 +246,8 @@ next
     by(fastsimp intro:Labels_Seq1)
   ultimately show ?case by blast
 next
-  case (WCFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
-  from `c\<^isub>1 \<turnstile> n -et\<rightarrow> (_Exit_)` `n = (_ l _)` 
+  case (WCFG_SeqConnect c\<^isub>1 et c\<^isub>2)
+  from `c\<^isub>1 \<turnstile> (_ l _) -et\<rightarrow> (_Exit_)`
   have "labels c\<^isub>1 l Skip" and [simp]:"et = \<Up>id"
     by(auto dest:WCFG_edge_Exit_Skip)
   from `transfer et s = s'` have [simp]:"s' = s" by simp
@@ -269,7 +264,7 @@ next
     `labels (c\<^isub>1;;c\<^isub>2) #:c\<^isub>1 c\<^isub>2` `(_0_) \<oplus> #:c\<^isub>1 = (_ l' _)` show ?case by simp blast
 next
   case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
-  note IH = `\<And>l l'. \<lbrakk>transfer et s = s'; pred et s; n = (_ l _); n' = (_ l' _)\<rbrakk>
+  note IH = `\<And>l l'. \<lbrakk>n = (_ l _); n' = (_ l' _); transfer et s = s'; pred et s\<rbrakk>
     \<Longrightarrow> \<exists>c c'. c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>2 l c \<and> labels c\<^isub>2 l' c'`
   from `n \<oplus> #:c\<^isub>1 = (_ l _)` obtain lx where "n = (_ lx _)" 
     and [simp]:"l = lx + #:c\<^isub>1"
@@ -277,7 +272,7 @@ next
   from `n' \<oplus> #:c\<^isub>1 = (_ l' _)` obtain lx' where "n' = (_ lx' _)" 
     and [simp]:"l' = lx' + #:c\<^isub>1"
     by(cases n') auto
-  from IH[OF `transfer et s = s'` `pred et s` `n = (_ lx _)` `n' = (_ lx' _)`]
+  from IH[OF `n = (_ lx _)` `n' = (_ lx' _)` `transfer et s = s'` `pred et s`]
   obtain c c' where "c\<^isub>2 \<turnstile> \<langle>c,s,lx\<rangle> \<leadsto> \<langle>c',s',lx'\<rangle>"
     and "labels c\<^isub>2 lx c" and "labels c\<^isub>2 lx' c'" by blast
   from `c\<^isub>2 \<turnstile> \<langle>c,s,lx\<rangle> \<leadsto> \<langle>c',s',lx'\<rangle>` have "c\<^isub>1;;c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
@@ -289,7 +284,6 @@ next
   ultimately show ?case by blast
 next
   case (WCFG_CondTrue b c\<^isub>1 c\<^isub>2)
-  from `(_0_) = (_ l _)` have [simp]:"l = 0" by simp
   from `(_0_) \<oplus> 1 = (_ l' _)` have [simp]:"l' = 1" by simp
   from `transfer (\<lambda>s. interpret b s = Some true)\<^isub>\<surd> s = s'` have [simp]:"s' = s" by simp
   have "labels (if (b) c\<^isub>1 else c\<^isub>2) 0 (if (b) c\<^isub>1 else c\<^isub>2)"
@@ -304,7 +298,6 @@ next
     `labels (if (b) c\<^isub>1 else c\<^isub>2) 1 c\<^isub>1` show ?case by simp blast
 next
   case (WCFG_CondFalse b c\<^isub>1 c\<^isub>2)
-  from `(_0_) = (_ l _)` have [simp]:"l = 0" by simp
   from `(_0_) \<oplus> #:c\<^isub>1 + 1 = (_ l' _)` have [simp]:"l' = #:c\<^isub>1 + 1" by simp
   from `transfer (\<lambda>s. interpret b s = Some false)\<^isub>\<surd> s = s'` have [simp]:"s' = s"
     by simp
@@ -320,13 +313,13 @@ next
     `labels (if (b) c\<^isub>1 else c\<^isub>2) (#:c\<^isub>1 + 1) c\<^isub>2` show ?case by simp blast
 next
   case (WCFG_CondThen c\<^isub>1 n et n' b c\<^isub>2)
-  note IH = `\<And>l l'. \<lbrakk>transfer et s = s'; pred et s; n = (_ l _); n' = (_ l' _)\<rbrakk>
+  note IH = `\<And>l l'. \<lbrakk>n = (_ l _); n' = (_ l' _); transfer et s = s'; pred et s\<rbrakk>
     \<Longrightarrow> \<exists>c c'. c\<^isub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>1 l c \<and> labels c\<^isub>1 l' c'`
   from `n \<oplus> 1 = (_ l _)` obtain lx where "n = (_ lx _)" and [simp]:"l = lx + 1"
     by(cases n) auto
   from `n' \<oplus> 1 = (_ l' _)` obtain lx' where "n' = (_ lx' _)" and [simp]:"l' = lx' + 1"
     by(cases n') auto
-  from IH[OF `transfer et s = s'` `pred et s` `n = (_ lx _)` `n' = (_ lx' _)`]
+  from IH[OF `n = (_ lx _)` `n' = (_ lx' _)` `transfer et s = s'` `pred et s`]
   obtain c c'  where "c\<^isub>1 \<turnstile> \<langle>c,s,lx\<rangle> \<leadsto> \<langle>c',s',lx'\<rangle>"
     and "labels c\<^isub>1 lx c" and "labels c\<^isub>1 lx' c'" by blast
   from `c\<^isub>1 \<turnstile> \<langle>c,s,lx\<rangle> \<leadsto> \<langle>c',s',lx'\<rangle>` have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
@@ -340,7 +333,7 @@ next
   ultimately show ?case by blast
 next
   case (WCFG_CondElse c\<^isub>2 n et n' b c\<^isub>1)
-  note IH = `\<And>l l'. \<lbrakk>transfer et s = s'; pred et s; n = (_ l _); n' = (_ l' _)\<rbrakk>
+  note IH = `\<And>l l'. \<lbrakk>n = (_ l _); n' = (_ l' _); transfer et s = s'; pred et s\<rbrakk>
     \<Longrightarrow> \<exists>c c'. c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels c\<^isub>2 l c \<and> labels c\<^isub>2 l' c'`
   from `n \<oplus> #:c\<^isub>1 + 1 = (_ l _)` obtain lx where "n = (_ lx _)" 
     and [simp]:"l = lx + #:c\<^isub>1 + 1"
@@ -348,7 +341,7 @@ next
   from `n' \<oplus> #:c\<^isub>1 + 1 = (_ l' _)` obtain lx' where "n' = (_ lx' _)" 
     and [simp]:"l' = lx' + #:c\<^isub>1 + 1"
     by(cases n') auto
-  from IH[OF `transfer et s = s'` `pred et s` `n = (_ lx _)` `n' = (_ lx' _)`]
+  from IH[OF `n = (_ lx _)` `n' = (_ lx' _)` `transfer et s = s'` `pred et s`]
   obtain c c' where "c\<^isub>2 \<turnstile> \<langle>c,s,lx\<rangle> \<leadsto> \<langle>c',s',lx'\<rangle>"
     and "labels c\<^isub>2 lx c" and "labels c\<^isub>2 lx' c'" by blast
   from `c\<^isub>2 \<turnstile> \<langle>c,s,lx\<rangle> \<leadsto> \<langle>c',s',lx'\<rangle>` have "if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>"
@@ -362,7 +355,6 @@ next
   ultimately show ?case by blast
 next
   case (WCFG_WhileTrue b cx)
-  from `(_0_) = (_ l _)` have [simp]:"l = 0" by simp
   from `(_0_) \<oplus> 2 = (_ l' _)` have [simp]:"l' = 2" by simp
   from `transfer (\<lambda>s. interpret b s = Some true)\<^isub>\<surd> s = s'` have [simp]:"s' = s" by simp
   have "labels (while (b) cx) 0 (while (b) cx)"
@@ -377,8 +369,6 @@ next
     `labels (while (b) cx) 2 (cx;;while (b) cx)` show ?case by simp blast
 next
   case (WCFG_WhileFalse b cx)
-  from `(_0_) = (_ l _)` have [simp]:"l = 0" by simp
-  from `(_1_) = (_ l' _)` have [simp]:"l' = 1" by simp
   from `transfer (\<lambda>s. interpret b s = Some false)\<^isub>\<surd> s = s'` have [simp]:"s' = s"
     by simp
   have "labels (while (b) cx) 0 (while (b) cx)" by(fastsimp intro:Labels_Base)
@@ -391,13 +381,13 @@ next
   show ?case by simp blast
 next
   case (WCFG_WhileBody cx n et n' b)
-  note IH = `\<And>l l'. \<lbrakk>transfer et s = s'; pred et s; n = (_ l _); n' = (_ l' _)\<rbrakk>
+  note IH = `\<And>l l'. \<lbrakk>n = (_ l _); n' = (_ l' _); transfer et s = s'; pred et s\<rbrakk>
     \<Longrightarrow> \<exists>c c'. cx \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle> \<and> labels cx l c \<and> labels cx l' c'`
   from `n \<oplus> 2 = (_ l _)` obtain lx where "n = (_ lx _)" and [simp]:"l = lx + 2"
     by(cases n) auto
   from `n' \<oplus> 2 = (_ l' _)` obtain lx' where "n' = (_ lx' _)" 
     and [simp]:"l' = lx' + 2" by(cases n') auto
-  from IH[OF `transfer et s = s'` `pred et s` `n = (_ lx _)` `n' = (_ lx' _)`]
+  from IH[OF `n = (_ lx _)` `n' = (_ lx' _)` `transfer et s = s'` `pred et s`]
   obtain c c' where "cx \<turnstile> \<langle>c,s,lx\<rangle> \<leadsto> \<langle>c',s',lx'\<rangle>"
     and "labels cx lx c" and "labels cx lx' c'" by blast
   hence "while (b) cx \<turnstile> \<langle>c;;while (b) cx,s,l\<rangle> \<leadsto> \<langle>c';;while (b) cx,s',l'\<rangle>"
@@ -411,7 +401,6 @@ next
   ultimately show ?case by blast
 next
   case (WCFG_WhileBodyExit cx n et b)
-  from `(_0_) = (_ l' _)` have [simp]:"l' = 0" by simp
   from `n \<oplus> 2 = (_ l _)` obtain lx where [simp]:"n = (_ lx _)" and [simp]:"l = lx + 2"
     by(cases n) auto
   from `cx \<turnstile> n -et\<rightarrow> (_Exit_)` have "labels cx lx Skip" and [simp]:"et = \<Up>id"
@@ -426,7 +415,7 @@ next
     by(fastsimp intro:Labels_Base)
   ultimately show ?case 
     using `labels (while (b) cx) l (Skip;;while (b) cx)` by simp blast
-qed simp_all
+qed
 
 
 end

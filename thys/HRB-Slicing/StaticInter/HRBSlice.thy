@@ -307,23 +307,23 @@ proof -
   have "CFG_node (targetnode a) \<in> combine_SDG_slices (sum_SDG_slice1 n\<^isub>c)"
     by(simp add:HRB_slice_def)
   thus "CFG_node (sourcenode a) \<in> HRB_slice n\<^isub>c"
-  proof(induct n\<equiv>"CFG_node (targetnode a)" rule:combine_SDG_slices.induct)
-    case (combSlice_refl n)
+  proof(induct "CFG_node (targetnode a)" rule:combine_SDG_slices.induct)
+    case combSlice_refl
     from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
     have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (targetnode a)"
       by(fastsimp intro:sum_SDG_return_edge)
     with `valid_edge a` 
     have "CFG_node (sourcenode a) \<in> sum_SDG_slice2 (CFG_node (targetnode a))"
       by(fastsimp intro:sum_SDG_slice2.intros)
-    with `n \<in> sum_SDG_slice1 n\<^isub>c` `n = CFG_node (targetnode a)`
+    with `CFG_node (targetnode a) \<in> sum_SDG_slice1 n\<^isub>c`
       `CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (targetnode a)`
     show ?case by(fastsimp intro:combSlice_Return_parent_node simp:HRB_slice_def)
   next
-    case (combSlice_Return_parent_node n' n'' p' n)
+    case (combSlice_Return_parent_node n' n'' p')
     from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
     have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (targetnode a)"
       by(fastsimp intro:sum_SDG_return_edge)
-    with `n \<in> sum_SDG_slice2 n'` `n = CFG_node (targetnode a)`
+    with `CFG_node (targetnode a) \<in> sum_SDG_slice2 n'`
     have "CFG_node (sourcenode a) \<in> sum_SDG_slice2 n'"
       by(fastsimp intro:sum_SDG_slice2.intros)
     with `n' \<in> sum_SDG_slice1 n\<^isub>c` `n'' s-p'\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n')`

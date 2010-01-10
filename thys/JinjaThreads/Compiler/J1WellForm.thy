@@ -233,12 +233,12 @@ lemma blocks1_WT:
 proof(induct n\<equiv>"length Env" Ts body arbitrary: Env rule: blocks1.induct)
   case 1 thus ?case by simp
 next
-  case (2 n T' Ts e)
-  note IH = `\<And>Env. \<lbrakk>P,Env @ Ts \<turnstile>1 e :: T; set Ts \<subseteq> is_type P; Suc n = length Env\<rbrakk>
-              \<Longrightarrow> P,Env \<turnstile>1 blocks1 (length Env) Ts e :: T`
+  case (2 T' Ts e)
+  note IH = `\<And>Env'. \<lbrakk>Suc (length Env) = length Env'; P,Env' @ Ts \<turnstile>1 e :: T; set Ts \<subseteq> is_type P\<rbrakk>
+              \<Longrightarrow> P,Env' \<turnstile>1 blocks1 (length Env') Ts e :: T`
   from `set (T' # Ts) \<subseteq> is_type P` have "set Ts \<subseteq> is_type P" "is_type P T'" by(auto simp add: mem_def)
   moreover from `P,Env @ T' # Ts \<turnstile>1 e :: T` have "P,(Env @ [T']) @ Ts \<turnstile>1 e :: T" by simp
-  note IH[OF this] `n = length Env`
+  note IH[OF _ this]
   ultimately show ?case by auto
 qed
 

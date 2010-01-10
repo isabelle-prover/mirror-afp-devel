@@ -471,7 +471,6 @@ lemma bisim1_B: "P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> s \<Longrightar
   and bisims1_Bs: "P,es,n,h \<turnstile> (es', xs) [\<leftrightarrow>] s \<Longrightarrow> \<B>s es n \<and> \<B>s es' n"
 apply(induct exs\<equiv>"(e', xs)" s and esxs\<equiv>"(es', xs)" s arbitrary: e' xs and es' xs rule: bisim1_bisims1.inducts)
 apply(auto simp add: bsok_def bsoks_def)
-apply blast+
 done
 
 lemma bisim1_bsok: "P,e,n,h \<turnstile> exs \<leftrightarrow> s \<Longrightarrow> bsok e n"
@@ -1244,60 +1243,57 @@ next
   case bisim1Sync11
   thus ?case by(simp add: matches_ex_entry_def)
 next
-  case (bisim1SyncThrow e1 V a' xs stk loc pc e2)
-  hence IH: "\<And>pc' d. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e1 pc' d) = None"
-    and [simp]: "a' = a" by auto
-  from `P,e1,V,h \<turnstile> (Throw a',xs) \<leftrightarrow> (stk,loc,pc,\<lfloor>a'\<rfloor>)` have "pc < length (compE2 e1)" by(auto dest: bisim1_ThrowD)
+  case (bisim1SyncThrow e1 V xs stk loc pc e2)
+  note IH = `\<And>pc' d. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e1 pc' d) = None`
+  from `P,e1,V,h \<turnstile> (Throw a,xs) \<leftrightarrow> (stk,loc,pc,\<lfloor>a\<rfloor>)` have "pc < length (compE2 e1)" by(auto dest: bisim1_ThrowD)
   with IH[of pc' d] show ?case
     by(auto simp add: match_ex_table_append matches_ex_entry_def dest: match_ex_table_pc_length_compE2 intro: match_ex_table_not_pcs_None)
 next
   case bisims1List1 thus ?case
     by(auto simp add: Cons_eq_append_conv dest: bisim1_ThrowD bisim_Val_loc_eq_xcp_None)
 next
-  case (bisims1List2 es n es'' xs stk loc pc xcp e v)
+  case (bisims1List2 es n es'' xs stk loc pc e v)
   hence "\<And>pc' d. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxEs2 es pc' d) = None"
     by(auto simp add: Cons_eq_append_conv)
   from this[of "pc' + length (compE2 e)" "Suc d"] show ?case by(auto simp add: add_assoc)
 next
-  case (bisim1BlockThrowSome e V a' xs stk loc pc T v)
+  case (bisim1BlockThrowSome e V xs stk loc pc T v)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e pc' d) = None" by auto
   from this[of "2+pc'"] show ?case by(auto)
 next
-  case (bisim1Seq2 e2 n e' xs stk loc pc xcp e1)
+  case (bisim1Seq2 e2 n xs stk loc pc e1)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e2 pc' d) = None" by auto
   from this[of "Suc (pc' + length (compE2 e1))"] show ?case by(simp add: add_assoc)
 next
-  case (bisim1CondThen e1 n e' xs stk loc pc xcp e e2)
+  case (bisim1CondThen e1 n xs stk loc pc e e2)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e1 pc' d) = None" by auto
   note this[of "Suc (pc' + length (compE2 e))"]
-  moreover from `P,e1,n,h \<turnstile> (e',xs) \<leftrightarrow> (stk,loc,pc,xcp)` `e' = Throw a`
+  moreover from `P,e1,n,h \<turnstile> (Throw a,xs) \<leftrightarrow> (stk,loc,pc,\<lfloor>a\<rfloor>)`
   have "pc < length (compE2 e1)" by(auto dest: bisim1_ThrowD)
   ultimately show ?case by(simp add: add_assoc match_ex_table_eq_NoneI outside_pcs_compxE2_not_matches_entry)
 next
-  case (bisim1CondElse e2 n e' xs stk loc pc xcp e e1)
+  case (bisim1CondElse e2 n xs stk loc pc e e1)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e2 pc' d) = None" by auto
   note this[of "Suc (Suc (pc' + (length (compE2 e) + length (compE2 e1))))"]
   thus ?case by(simp add: add_assoc)
 next
-  case (bisim1WhileThrow2 e n a' xs stk loc pc c)
+  case (bisim1WhileThrow2 e n xs stk loc pc c)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e pc' d) = None" by auto
   from this[of "Suc (pc' + (length (compE2 c)))"]
   show ?case by(simp add: add_assoc)
 next
-  case (bisim1Throw1 e n e' xs stk loc pc xcp)
-  from `throw e' = Throw a` have "e' = addr a" by simp
-  with `P,e,n,h \<turnstile> (e',xs) \<leftrightarrow> (stk,loc,pc,xcp)` have "P,e,n,h \<turnstile> (addr a,xs) \<leftrightarrow> (stk,loc,pc,xcp)" by simp
-  hence "xcp = None" by(auto dest: bisim_Val_loc_eq_xcp_None)
-  with `xcp = \<lfloor>a\<rfloor>` show ?case by(simp)
+  case (bisim1Throw1 e n xs stk loc pc)
+  from `P,e,n,h \<turnstile> (addr a,xs) \<leftrightarrow> (stk,loc,pc,\<lfloor>a\<rfloor>)`
+  show ?case by(auto dest: bisim_Val_loc_eq_xcp_None)
 next
-  case (bisim1TryFail e V a' xs stk loc pc C' fs C e2)
+  case (bisim1TryFail e V xs stk loc pc C' fs C e2)
   hence "match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e pc' d) = None" by auto
-  moreover from `P,e,V,h \<turnstile> (Throw a',xs) \<leftrightarrow> (stk,loc,pc,\<lfloor>a'\<rfloor>)` have "pc < length (compE2 e)"
+  moreover from `P,e,V,h \<turnstile> (Throw a,xs) \<leftrightarrow> (stk,loc,pc,\<lfloor>a\<rfloor>)` have "pc < length (compE2 e)"
     by(auto dest: bisim1_ThrowD)
-  ultimately show ?case using `h a' = \<lfloor>Obj C' fs\<rfloor>` `\<not> P \<turnstile> C' \<preceq>\<^sup>* C` `\<lfloor>a'\<rfloor> = \<lfloor>a\<rfloor>`
+  ultimately show ?case using `h a = \<lfloor>Obj C' fs\<rfloor>` `\<not> P \<turnstile> C' \<preceq>\<^sup>* C`
     by(simp add: matches_ex_entry_def)
 next
-  case (bisim1TryCatchThrow e2 V a' xs stk loc pc e C)
+  case (bisim1TryCatchThrow e2 V xs stk loc pc e C)
   hence "\<And>pc'. match_ex_table (compP f P) (cname_of h a) (pc' + pc) (compxE2 e2 pc' d) = None" by auto
   from this[of "Suc (Suc (pc' + (length (compE2 e))))"]
   show ?case by(simp add: add_assoc matches_ex_entry_def)
@@ -1358,15 +1354,15 @@ next
     by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2FAssRed simp add: nth_append exec_move_def)
   with bisim1FAss3 show ?case by simp
 next
-  case (bisim1Sync6 e1 V e2 v' xs)
+  case (bisim1Sync6 e1 V e2 v xs)
   have "\<tau>Exec_mover_a P (sync\<^bsub>V\<^esub> (e1) e2) h ([v], xs, 5 + length (compE2 e1) + length (compE2 e2), None)
                                         ([v], xs, 9 + length (compE2 e1) + length (compE2 e2), None)"
     by(rule \<tau>Execr1step)(auto intro: exec_instr \<tau>move2Sync6 simp add: exec_move_def)
   with bisim1Sync6 show ?case by(auto simp add: nat_number)
 next
-  case (bisim1Seq2 e2 n e' xs stk loc pc xcp e1)
+  case (bisim1Seq2 e2 n xs stk loc pc xcp e1)
   from `Suc (length (compE2 e1) + pc) < length (compE2 (e1;; e2))` have pc: "pc < length (compE2 e2)" by simp
-  with `e' = Val v` `\<lbrakk>pc < length (compE2 e2); e' = Val v\<rbrakk> \<Longrightarrow> xs = loc \<and> xcp = None \<and> \<tau>Exec_mover_a P e2 h (stk, xs, pc, None) ([v], xs, length (compE2 e2), None)`
+  with `pc < length (compE2 e2) \<Longrightarrow> xs = loc \<and> xcp = None \<and> \<tau>Exec_mover_a P e2 h (stk, xs, pc, None) ([v], xs, length (compE2 e2), None)`
   have "xs = loc" "xcp = None"
     "\<tau>Exec_mover_a P e2 h (stk, xs, pc, None) ([v], xs, length (compE2 e2), None)" by auto
   moreover 
@@ -1374,8 +1370,8 @@ next
     by -(rule Seq_\<tau>ExecrI2)
   ultimately show ?case by(simp)
 next
-  case (bisim1CondThen e1 n e' xs stk loc pc xcp e e2)
-  from `P, e1, n, h \<turnstile> (e',xs) \<leftrightarrow> (stk,loc,pc,xcp)`
+  case (bisim1CondThen e1 n xs stk loc pc xcp e e2)
+  from `P, e1, n, h \<turnstile> (Val v,xs) \<leftrightarrow> (stk,loc,pc,xcp)`
   have "pc \<le> length (compE2 e1)" by(rule bisim1_pc_length_compE2)
 
   have e: "\<tau>Exec_mover_a P (if (e) e1 else e2) h
@@ -1385,7 +1381,7 @@ next
   show ?case
   proof(cases "pc < length (compE2 e1)")
     case True
-    with `e' = Val v` `\<lbrakk>pc < length (compE2 e1); e' = Val v\<rbrakk>
+    with `pc < length (compE2 e1)
          \<Longrightarrow> xs = loc \<and> xcp = None \<and> \<tau>Exec_mover_a P e1 h (stk, xs, pc, None) ([v], xs, length (compE2 e1), None)`
     have s: "xs = loc" "xcp = None"
       and "\<tau>Exec_mover_a P e1 h (stk, xs, pc, None) ([v], xs, length (compE2 e1), None)" by auto
@@ -1397,19 +1393,19 @@ next
   next
     case False
     with `pc \<le> length (compE2 e1)` have pc: "pc = length (compE2 e1)" by auto
-    with `P, e1, n, h \<turnstile> (e',xs) \<leftrightarrow> (stk,loc,pc,xcp)` `e' = Val v`
+    with `P, e1, n, h \<turnstile> (Val v,xs) \<leftrightarrow> (stk,loc,pc,xcp)`
     have "stk = [v]" "xs = loc" "xcp = None" by(auto dest: bisim1_Val_length_compE2D)
     with pc e show ?thesis by(simp)
   qed
 next
-  case (bisim1CondElse e2 n e' xs stk loc pc xcp e e1)
-  from `P, e2, n, h \<turnstile> (e',xs) \<leftrightarrow> (stk,loc,pc,xcp)`
+  case (bisim1CondElse e2 n xs stk loc pc xcp e e1)
+  from `P, e2, n, h \<turnstile> (Val v,xs) \<leftrightarrow> (stk,loc,pc,xcp)`
   have "pc \<le> length (compE2 e2)" by(rule bisim1_pc_length_compE2)
 
   show ?case
   proof(cases "pc < length (compE2 e2)")
     case True
-    with `e' = Val v` `\<lbrakk>pc < length (compE2 e2); e' = Val v\<rbrakk>
+    with `pc < length (compE2 e2)
          \<Longrightarrow> xs = loc \<and> xcp = None \<and> \<tau>Exec_mover_a P e2 h (stk, xs, pc, None) ([v], xs, length (compE2 e2), None)`
     have s: "xs = loc" "xcp = None"
       and e: "\<tau>Exec_mover_a P e2 h (stk, xs, pc, None) ([v], xs, length (compE2 e2), None)" by auto
@@ -1419,7 +1415,7 @@ next
   next
     case False
     with `pc \<le> length (compE2 e2)` have pc: "pc = length (compE2 e2)" by auto
-    with `P, e2, n, h \<turnstile> (e',xs) \<leftrightarrow> (stk,loc,pc,xcp)` `e' = Val v`
+    with `P, e2, n, h \<turnstile> (Val v,xs) \<leftrightarrow> (stk,loc,pc,xcp)`
     have "stk = [v]" "xs = loc" "xcp = None" by(auto dest: bisim1_Val_length_compE2D)
     with pc show ?thesis by(simp add: add_assoc)
   qed
@@ -1429,7 +1425,7 @@ next
                    ([], xs, Suc (Suc (Suc (length (compE2 c) + length (compE2 e)))), None)
                    ([Unit], xs, length (compE2 (while (c) e)), None)"
     by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2While4 simp add: nth_append exec_move_def)
-  with `unit = Val v` show ?case by(simp)
+  then show ?case by(simp)
 next
   case (bisims1List1 e n e' xs stk loc pc xcp es)
   from `e' # es = map Val vs` obtain v vs' where [simp]: "vs = v # vs'" "e' = Val v" "es = map Val vs'" by auto
@@ -1438,7 +1434,7 @@ next
   hence "xs = loc \<and> xcp = None \<and> \<tau>Exec_mover_a P e h (stk, xs, pc, None) ([v], xs, length (compE2 e), None)"
   proof(cases "pc < length (compE2 e)")
     case True
-    with `\<lbrakk>pc < length (compE2 e); e' = Val v\<rbrakk> \<Longrightarrow> xs = loc \<and> xcp = None \<and> \<tau>Exec_mover_a P e h (stk, xs, pc, None) ([v], xs, length (compE2 e), None)`
+    with `\<lbrakk>e' = Val v; pc < length (compE2 e)\<rbrakk> \<Longrightarrow> xs = loc \<and> xcp = None \<and> \<tau>Exec_mover_a P e h (stk, xs, pc, None) ([v], xs, length (compE2 e), None)`
     show ?thesis by auto
   next
     case False
@@ -1464,7 +1460,7 @@ next
   hence "xs = loc \<and> xcp = None \<and> \<tau>Exec_movesr_a P es h (stk, xs, pc, None) (rev vs', xs, length (compEs2 es), None)"
   proof(cases "pc < length (compEs2 es)")
     case True
-    with `\<lbrakk>pc < length (compEs2 es); es' = map Val vs'\<rbrakk> \<Longrightarrow> xs = loc \<and> xcp = None \<and> \<tau>Exec_movesr_a P es h (stk, xs, pc, None)
+    with `\<lbrakk>es' = map Val vs'; pc < length (compEs2 es)\<rbrakk> \<Longrightarrow> xs = loc \<and> xcp = None \<and> \<tau>Exec_movesr_a P es h (stk, xs, pc, None)
       (rev vs', xs, length (compEs2 es), None)`
     show ?thesis by auto
   next
@@ -1513,8 +1509,7 @@ lemma bisim1_Throw_\<tau>Exec_movet:
 proof(induct e n e'\<equiv>"Throw a::expr1" xs stk loc pc xcp\<equiv>"None::addr option"
          and es n es''\<equiv>"map Val vs @ Throw a # es'::expr1 list" xs stk loc pc xcp\<equiv>"None::addr option"
          arbitrary: Env T and vs Env Ts rule: bisim1_bisims1_inducts_split)
-  case (bisim1Sync9 e1 V e2 A xs)
-  hence [simp]: "A = a" by simp
+  case (bisim1Sync9 e1 V e2 xs)
   let ?pc = "8 + length (compE2 e1) + length (compE2 e2)"
   have "\<tau>Exec_movet_a P (sync\<^bsub>V\<^esub> (e1) e2) h ([Addr a], xs, ?pc, None) ([Addr a], xs, ?pc, \<lfloor>a\<rfloor>)"
     by(rule \<tau>Exect1step)(auto intro: exec_instr \<tau>move2_\<tau>moves2.intros simp add: is_Ref_def exec_move_def)
@@ -1522,12 +1517,12 @@ proof(induct e n e'\<equiv>"Throw a::expr1" xs stk loc pc xcp\<equiv>"None::addr
   have "P,sync\<^bsub>V\<^esub> (e1) e2,V,h \<turnstile> (Throw a,xs) \<leftrightarrow> ([Addr a],xs,?pc,\<lfloor>a\<rfloor>)" by(rule bisim1Sync10)
   ultimately show ?case by auto
 next
-  case (bisim1Seq2 e2 n e' xs stk loc pc xcp e1)
+  case (bisim1Seq2 e2 n xs stk loc pc e1)
   then obtain pc' where "\<tau>Exec_movet_a P e2 h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
     "P, e2, n, h \<turnstile> (Throw a,xs) \<leftrightarrow> ([Addr a],loc,pc',\<lfloor>a\<rfloor>)" "xs = loc" by auto
   with `bsok e1 n` show ?case by(auto intro: Seq_\<tau>ExectI2 bisim1_bisims1.bisim1Seq2)
 next
-  case (bisim1CondThen e1 n e' xs stk loc pc xcp e e2)
+  case (bisim1CondThen e1 n xs stk loc pc e e2)
   then obtain pc' where exec: "\<tau>Exec_movet_a P e1 h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
     and bisim: "P, e1, n, h \<turnstile> (Throw a,xs) \<leftrightarrow> ([Addr a],loc,pc',\<lfloor>a\<rfloor>)" and s: "xs = loc" by auto
   from exec have "\<tau>Exec_movet_a P (if (e) e1 else e2) h (stk, loc, Suc (length (compE2 e) + pc), None) ([Addr a], loc, Suc (length (compE2 e) + pc'), \<lfloor>a\<rfloor>)"
@@ -1537,7 +1532,7 @@ next
     by(rule bisim1_bisims1.bisim1CondThen)
   ultimately show ?case using s by(auto)
 next
-  case (bisim1CondElse e2 n e' xs stk loc pc xcp e e1)
+  case (bisim1CondElse e2 n xs stk loc pc e e1)
   then obtain pc' where exec: "\<tau>Exec_movet_a P e2 h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
     and bisim: "P, e2, n, h \<turnstile> (Throw a, xs ) \<leftrightarrow> ([Addr a], loc, pc', \<lfloor>a\<rfloor>)" and s: "xs = loc" by auto
   let "?pc pc" = "Suc (Suc (length (compE2 e) + length (compE2 e1) + pc))"
@@ -1548,10 +1543,9 @@ next
     by(rule bisim1_bisims1.bisim1CondElse)
   ultimately show ?case using s by auto
 next
-  case (bisim1Throw1 e n e' xs stk loc pc xcp)
-  note bisim = `P, e, n, h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
-  from `throw e' = Throw a` have e': "e' = addr a" by simp
-  with bisim have s: "xs = loc" 
+  case (bisim1Throw1 e n xs stk loc pc)
+  note bisim = `P, e, n, h \<turnstile> (addr a, xs) \<leftrightarrow> (stk, loc, pc, None)`
+  from bisim have s: "xs = loc" 
     and exec: "\<tau>Exec_mover_a P e h (stk, loc, pc, None) ([Addr a], loc, length (compE2 e), None)"
     by(auto dest: bisim1Val2D1)
   from exec have "\<tau>Exec_mover_a P (throw e) h (stk, loc, pc, None) ([Addr a], loc, length (compE2 e), None)"
@@ -1563,20 +1557,20 @@ next
     by(rule bisim1Throw2)
   ultimately show ?case using s by auto
 next
-  case (bisims1List1 e n e' xs stk loc pc xcp es)
-  note bisim = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisims1List1 e n e' xs stk loc pc es)
+  note bisim = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note B = `bsok e n`
   show ?case
   proof(cases "is_val e'")
     case True
     with `e' # es = map Val vs @ Throw a # es'` obtain v vs' where "vs = v # vs'" "e' = Val v"
       and es: "es = map Val vs' @ Throw a # es'" by(auto simp add: Cons_eq_append_conv)
-    with bisim have "P,e,n,h \<turnstile> (Val v, xs) \<leftrightarrow> (stk, loc, pc, xcp)" by simp
-    from bisim1Val2D1[OF this] have [simp]: "xs = loc" "xcp = None"
-      and exec: "\<tau>Exec_mover_a P e h (stk, loc, pc, xcp) ([v], loc, length (compE2 e), None)"  by auto
-    from exec have "\<tau>Exec_movesr_a P (e # es) h (stk, loc, pc, xcp) ([v], loc, length (compE2 e), None)"
+    with bisim have "P,e,n,h \<turnstile> (Val v, xs) \<leftrightarrow> (stk, loc, pc, None)" by simp
+    from bisim1Val2D1[OF this] have [simp]: "xs = loc"
+      and exec: "\<tau>Exec_mover_a P e h (stk, loc, pc, None) ([v], loc, length (compE2 e), None)"  by auto
+    from exec have "\<tau>Exec_movesr_a P (e # es) h (stk, loc, pc, None) ([v], loc, length (compE2 e), None)"
       by(rule \<tau>Exec_mover_\<tau>Exec_movesr)
-    also from es `\<lbrakk>es = map Val vs' @ Throw a # es'; None = None\<rbrakk>
+    also from es `es = map Val vs' @ Throw a # es'
          \<Longrightarrow> \<exists>pc'. \<tau>Exec_movest_a P es h ([], loc, 0, None) (Addr a # rev vs', loc, pc', \<lfloor>a\<rfloor>) \<and>
            P,es,n,h \<turnstile> (map Val vs' @ Throw a # es', loc) [\<leftrightarrow>] (Addr a # rev vs', loc, pc', \<lfloor>a\<rfloor>) \<and> loc = loc`
     obtain pc' where execes: "\<tau>Exec_movest_a P es h ([], loc, 0, None) (Addr a # rev vs', loc, pc', \<lfloor>a\<rfloor>)"
@@ -1590,7 +1584,7 @@ next
     case False
     with `e' # es = map Val vs @ Throw a # es'` have [simp]: "e' = Throw a" "es = es'" "vs = []"
       by(auto simp add: Cons_eq_append_conv)
-    from `\<lbrakk>e' = Throw a; xcp = None\<rbrakk> \<Longrightarrow> \<exists>pc'. \<tau>Exec_movet_a P e h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>) \<and> P,e,n,h \<turnstile> (Throw a, xs ) \<leftrightarrow> ([Addr a], loc, pc', \<lfloor>a\<rfloor>) \<and> xs = loc` `xcp = None`
+    from `e' = Throw a \<Longrightarrow> \<exists>pc'. \<tau>Exec_movet_a P e h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>) \<and> P,e,n,h \<turnstile> (Throw a, xs ) \<leftrightarrow> ([Addr a], loc, pc', \<lfloor>a\<rfloor>) \<and> xs = loc`
     obtain pc' where "\<tau>Exec_movet_a P e h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
       and bisim: "P,e,n,h \<turnstile> (Throw a, xs ) \<leftrightarrow> ([Addr a], loc, pc', \<lfloor>a\<rfloor>)" and s: "xs = loc" by auto
     hence "\<tau>Exec_movest_a P (e # es) h (stk, loc, pc, None) ([Addr a], loc, pc', \<lfloor>a\<rfloor>)"
@@ -1600,13 +1594,13 @@ next
     ultimately show ?thesis using s by auto
   qed
 next
-  case (bisims1List2 es n es'' xs stk loc pc xcp e v)
-  note IH = `\<And>vs. \<lbrakk> es'' = map Val vs @ Throw a # es'; xcp = None\<rbrakk>
+  case (bisims1List2 es n es'' xs stk loc pc e v)
+  note IH = `\<And>vs. es'' = map Val vs @ Throw a # es'
     \<Longrightarrow> \<exists>pc'. \<tau>Exec_movest_a P es h (stk, loc, pc, None) (Addr a # rev vs, loc, pc', \<lfloor>a\<rfloor>) \<and>
            P,es,n,h \<turnstile> (map Val vs @ Throw a # es',xs) [\<leftrightarrow>] (Addr a # rev vs,loc,pc',\<lfloor>a\<rfloor>) \<and> xs = loc`
   from `Val v # es'' = map Val vs @ Throw a # es'`
   obtain vs' where [simp]: "vs = v # vs'" "es'' = map Val vs' @ Throw a # es'" by(auto simp add: Cons_eq_append_conv)
-  from IH[OF `es'' = map Val vs' @ Throw a # es'` `xcp = None`]
+  from IH[OF `es'' = map Val vs' @ Throw a # es'`]
   obtain pc' where exec: "\<tau>Exec_movest_a P es h (stk, loc, pc, None) (Addr a # rev vs', loc, pc', \<lfloor>a\<rfloor>)"
     and bisim: "P,es,n,h \<turnstile> (map Val vs' @ Throw a # es',xs) [\<leftrightarrow>] (Addr a # rev vs',loc,pc',\<lfloor>a\<rfloor>)"
     and [simp]: "xs = loc" by auto
@@ -1646,10 +1640,10 @@ lemma bisim1_inline_call_Throw:
 proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: addr option"
         and es n es' xs stk loc pc xcp\<equiv>"None :: addr option"
       rule: bisim1_bisims1_inducts_split)
-  case (bisim1BinOp1 e1 n e' xs stk loc pc xcp e2 bop)
-  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e1 ! pc = Invoke M n0; pc < length (compE2 e1); xcp = None \<rbrakk>
+  case (bisim1BinOp1 e1 n e' xs stk loc pc e2 bop)
+  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e1 ! pc = Invoke M n0; pc < length (compE2 e1)\<rbrakk>
               \<Longrightarrow> ?concl e1 n e' xs pc stk loc`
-  note bisim1 = `P,e1,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,e1,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note ins = `compE2 (e1 \<guillemotleft>bop\<guillemotright> e2) ! pc = Invoke M n0`
   note call = `call1 (e' \<guillemotleft>bop\<guillemotright> e2) = \<lfloor>(a, M, vs)\<rfloor>`
   show ?case
@@ -1657,7 +1651,7 @@ proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: addr option"
     case False
     with bisim1 call have "pc < length (compE2 e1)"
       by(auto intro: bisim1_call_pcD)
-    with call ins IH1 `bsok e2 n` False `xcp = None` show ?thesis
+    with call ins IH1 `bsok e2 n` False show ?thesis
       by(auto simp add: nth_append intro: bisim1_bisims1.bisim1BinOp1)
   next
     case True
@@ -1674,10 +1668,10 @@ next
   case bisim1BinOp2 thus ?case
     by(auto split: split_if_asm bop.split_asm dest: bisim1_bisims1.bisim1BinOp2)
 next
-  case (bisim1AAcc1 A n a' xs stk loc pc xcp i)
-  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0; pc < length (compE2 A); xcp = None \<rbrakk>
+  case (bisim1AAcc1 A n a' xs stk loc pc i)
+  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0; pc < length (compE2 A)\<rbrakk>
               \<Longrightarrow> ?concl A n a' xs pc stk loc`
-  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note ins = `compE2 (A\<lfloor>i\<rceil>) ! pc = Invoke M n0`
   note call = `call1 (a'\<lfloor>i\<rceil>) = \<lfloor>(a, M, vs)\<rfloor>`
   show ?case
@@ -1685,7 +1679,7 @@ next
     case False
     with bisim1 call have "pc < length (compE2 A)"
       by(auto intro: bisim1_call_pcD)
-    with call ins IH1 `bsok i n` False `xcp = None` show ?thesis
+    with call ins IH1 `bsok i n` False show ?thesis
       by(auto simp add: nth_append intro: bisim1_bisims1.bisim1AAcc1)
   next
     case True
@@ -1702,10 +1696,10 @@ next
   case bisim1AAcc2 thus ?case
     by(auto split: split_if_asm dest: bisim1_bisims1.bisim1AAcc2)
 next
-  case (bisim1AAss1 A n a' xs stk loc pc xcp i e)
-  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0; pc < length (compE2 A); xcp = None \<rbrakk>
+  case (bisim1AAss1 A n a' xs stk loc pc i e)
+  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0; pc < length (compE2 A)\<rbrakk>
               \<Longrightarrow> ?concl A n a' xs pc stk loc`
-  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note ins = `compE2 (A\<lfloor>i\<rceil> := e) ! pc = Invoke M n0`
   note call = `call1 (a'\<lfloor>i\<rceil> := e) = \<lfloor>(a, M, vs)\<rfloor>`
   show ?case
@@ -1713,7 +1707,7 @@ next
     case False
     with bisim1 call have "pc < length (compE2 A)"
       by(auto intro: bisim1_call_pcD)
-    with call ins IH1 `bsok i n` `bsok e n` False `xcp = None` show ?thesis
+    with call ins IH1 `bsok i n` `bsok e n` False show ?thesis
       by(auto simp add: nth_append intro: bisim1_bisims1.bisim1AAss1)
   next
     case True
@@ -1727,10 +1721,10 @@ next
     from call ins show ?thesis by simp
   qed
 next
-  case (bisim1AAss2 i n i' xs stk loc pc xcp A e v)
-  note IH1 = `\<lbrakk>call1 i' = \<lfloor>(a, M, vs)\<rfloor>; compE2 i ! pc = Invoke M n0; pc < length (compE2 i); xcp = None \<rbrakk>
+  case (bisim1AAss2 i n i' xs stk loc pc A e v)
+  note IH1 = `\<lbrakk>call1 i' = \<lfloor>(a, M, vs)\<rfloor>; compE2 i ! pc = Invoke M n0; pc < length (compE2 i)\<rbrakk>
               \<Longrightarrow> ?concl i n i' xs pc stk loc`
-  note bisim1 = `P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note ins = `compE2 (A\<lfloor>i\<rceil> := e) ! (length (compE2 A) + pc) = Invoke M n0`
   note call = `call1 (Val v\<lfloor>i'\<rceil> := e) = \<lfloor>(a, M, vs)\<rfloor>`
   show ?case
@@ -1738,7 +1732,7 @@ next
     case False
     with bisim1 call have "pc < length (compE2 i)"
       by(auto intro: bisim1_call_pcD)
-    with call ins IH1 `bsok A n` `bsok e n` False `xcp = None` show ?thesis
+    with call ins IH1 `bsok A n` `bsok e n` False show ?thesis
       by(auto simp add: nth_append intro: bisim1_bisims1.bisim1AAss2)
   next
     case True
@@ -1755,10 +1749,10 @@ next
   case bisim1AAss3 thus ?case
     by(auto split: split_if_asm nat.split_asm simp add: nth_Cons dest: bisim1_bisims1.bisim1AAss3)
 next
-  case (bisim1FAss1 e n e' xs stk loc pc xcp e2 F D)
-  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e ! pc = Invoke M n0; pc < length (compE2 e); xcp = None \<rbrakk>
+  case (bisim1FAss1 e n e' xs stk loc pc e2 F D)
+  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e ! pc = Invoke M n0; pc < length (compE2 e)\<rbrakk>
               \<Longrightarrow> ?concl e n e' xs pc stk loc`
-  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note ins = `compE2 (e\<bullet>F{D} := e2) ! pc = Invoke M n0`
   note call = `call1 (e'\<bullet>F{D} := e2) = \<lfloor>(a, M, vs)\<rfloor>`
   show ?case
@@ -1766,7 +1760,7 @@ next
     case False
     with bisim1 call have "pc < length (compE2 e)"
       by(auto intro: bisim1_call_pcD)
-    with call ins IH1 `bsok e2 n` False `xcp = None` show ?thesis
+    with call ins IH1 `bsok e2 n` False show ?thesis
       by(auto simp add: nth_append intro: bisim1_bisims1.bisim1FAss1)
   next
     case True
@@ -1783,21 +1777,20 @@ next
   case bisim1FAss2 thus ?case
     by(auto split: split_if_asm nat.split_asm simp add: nth_Cons dest: bisim1_bisims1.bisim1FAss2)
 next
-  case (bisim1Call1 obj n obj' xs stk loc pc xcp ps M')
+  case (bisim1Call1 obj n obj' xs stk loc pc ps M')
   note IH1 = `\<lbrakk>call1 obj' = \<lfloor>(a, M, vs)\<rfloor>; compE2 obj ! pc = Invoke M n0;
-              pc < length (compE2 obj); xcp = None\<rbrakk>
+              pc < length (compE2 obj)\<rbrakk>
               \<Longrightarrow> ?concl obj n obj' xs pc stk loc`
-  note IH2 = `\<And>xs. \<lbrakk>calls1 ps = \<lfloor>(a, M, vs)\<rfloor>; compEs2 ps ! 0 = Invoke M n0; 0 < length (compEs2 ps); None = None\<rbrakk>
+  note IH2 = `\<And>xs. \<lbrakk>calls1 ps = \<lfloor>(a, M, vs)\<rfloor>; compEs2 ps ! 0 = Invoke M n0; 0 < length (compEs2 ps)\<rbrakk>
              \<Longrightarrow> ?concls ps n ps xs 0 [] xs`
   note ins = `compE2 (obj\<bullet>M'(ps)) ! pc = Invoke M n0`
-  note bisim1 = `P,obj,n,h \<turnstile> (obj', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
-  note xcp = `xcp = None`
+  note bisim1 = `P,obj,n,h \<turnstile> (obj', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (obj'\<bullet>M'(ps)) = \<lfloor>(a, M, vs)\<rfloor>`
   thus ?case
   proof(cases rule: call1_callE)
     case CallObj
     with bisim1 call have "pc < length (compE2 obj)" by(auto intro: bisim1_call_pcD)
-    with call ins CallObj IH1 `bsoks ps n` xcp show ?thesis
+    with call ins CallObj IH1 `bsoks ps n` show ?thesis
       by(auto intro: bisim1_bisims1.bisim1Call1)
   next
     case (CallParams v)
@@ -1825,12 +1818,11 @@ next
     from `bsok obj n` ins show ?thesis by(auto intro: bisim1CallThrow[of "[]" "[]", simplified])
   qed
 next
-  case (bisim1CallParams ps n ps' xs stk loc pc xcp obj M' v)
-  note IH2 = `\<lbrakk>calls1 ps' = \<lfloor>(a, M, vs)\<rfloor>; compEs2 ps ! pc = Invoke M n0; pc < length (compEs2 ps); xcp = None\<rbrakk>
+  case (bisim1CallParams ps n ps' xs stk loc pc obj M' v)
+  note IH2 = `\<lbrakk>calls1 ps' = \<lfloor>(a, M, vs)\<rfloor>; compEs2 ps ! pc = Invoke M n0; pc < length (compEs2 ps)\<rbrakk>
              \<Longrightarrow> ?concls ps n ps' xs pc stk loc`
   note ins = `compE2 (obj\<bullet>M'(ps)) ! (length (compE2 obj) + pc) = Invoke M n0`
-  note bisim2 = `P,ps,n,h \<turnstile> (ps', xs) [\<leftrightarrow>] (stk, loc, pc, xcp)`
-  note xcp = `xcp = None`
+  note bisim2 = `P,ps,n,h \<turnstile> (ps', xs) [\<leftrightarrow>] (stk, loc, pc, None)`
   note call = `call1 (Val v\<bullet>M'(ps')) = \<lfloor>(a, M, vs)\<rfloor>`
   thus ?case
   proof(cases rule: call1_callE)
@@ -1839,7 +1831,7 @@ next
     case (CallParams v')
     hence [simp]: "v' = v" and call': "calls1 ps' = \<lfloor>(a, M, vs)\<rfloor>" by auto
     from bisim2 call' have "pc < length (compEs2 ps)" by(auto intro: bisims1_calls_pcD)
-    with IH2 CallParams `bsok obj n` xcp ins show ?thesis
+    with IH2 CallParams `bsok obj n` ins show ?thesis
       by(auto simp add: is_vals_conv split: split_if_asm intro: bisim1_bisims1.bisim1CallParams)
   next
     case Call
@@ -1854,19 +1846,19 @@ next
     with `bsoks ps n` `bsok obj n` ins show ?thesis by(auto intro: bisim1CallThrow)
   qed
 next
-  case (bisims1List1 e n e' xs stk loc pc xcp es)
-  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e ! pc = Invoke M n0; pc < length (compE2 e); xcp = None\<rbrakk>
+  case (bisims1List1 e n e' xs stk loc pc es)
+  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e ! pc = Invoke M n0; pc < length (compE2 e)\<rbrakk>
               \<Longrightarrow> ?concl e n e' xs pc stk loc`
-  note IH2 = `\<And>xs. \<lbrakk>calls1 es = \<lfloor>(a, M, vs)\<rfloor>; compEs2 es ! 0 = Invoke M n0; 0 < length (compEs2 es); None = None\<rbrakk>
+  note IH2 = `\<And>xs. \<lbrakk>calls1 es = \<lfloor>(a, M, vs)\<rfloor>; compEs2 es ! 0 = Invoke M n0; 0 < length (compEs2 es)\<rbrakk>
              \<Longrightarrow> ?concls es n es xs 0 [] xs`
-  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `calls1 (e' # es) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compEs2 (e # es) ! pc = Invoke M n0`
   show ?case
   proof(cases "is_val e'")
     case False
     with bisim1 call have "pc < length (compE2 e)" by(auto intro: bisim1_call_pcD)
-    with call ins False IH1 `bsoks es n` `xcp = None` show ?thesis
+    with call ins False IH1 `bsoks es n` show ?thesis
       by(auto simp add: nth_append split_beta intro: bisim1_bisims1.bisims1List1)
   next
     case True
@@ -1949,35 +1941,22 @@ proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: addr option" and es n es' 
 next
   case bisim1New thus ?case by auto
 next
-  case bisim1NewThrow thus ?case by auto
-next
   case bisim1NewArray thus ?case
     by auto (fastsimp intro: bisim1_bisims1.bisim1NewArray elim!: NewArray_\<tau>ExecrI intro!: exI)
 next
-  case bisim1NewArrayNegative thus ?case by auto
-next
-  case bisim1NewArrayFail thus ?case by auto
-next
-  case bisim1NewArrayThrow thus ?case by auto
-next
   case bisim1Cast thus ?case
     by(auto)(fastsimp intro: bisim1_bisims1.bisim1Cast elim!: Cast_\<tau>ExecrI intro!: exI)+
-next
-  case bisim1CastFail thus ?case by auto
-next
-  case bisim1CastThrow thus ?case by auto
 next
   case bisim1Val thus ?case by auto
 next
   case bisim1Var thus ?case by auto
 next
-  case (bisim1BinOp1 e1 n e' xs stk loc pc xcp e2 bop)
-  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e' \<le> length xs; xcp = None\<rbrakk> \<Longrightarrow> ?concl e1 n e' xs pc stk loc`
-  note IH2 = `\<And>xs. \<lbrakk>call1 e2 = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e2 \<le> length xs; None = None\<rbrakk> \<Longrightarrow> ?concl e2 n e2 xs 0 [] xs`
+  case (bisim1BinOp1 e1 n e' xs stk loc pc e2 bop)
+  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e' \<le> length xs\<rbrakk> \<Longrightarrow> ?concl e1 n e' xs pc stk loc`
+  note IH2 = `\<And>xs. \<lbrakk>call1 e2 = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e2 \<le> length xs\<rbrakk> \<Longrightarrow> ?concl e2 n e2 xs 0 [] xs`
   note call = `call1 (e' \<guillemotleft>bop\<guillemotright> e2) = \<lfloor>(a, M', vs)\<rfloor>`
   note len = `n + max_vars (e' \<guillemotleft>bop\<guillemotright> e2) \<le> length xs`
-  note xcp = `xcp = None`
-  note bisim1 = `P,e1,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,e1,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   show ?case
   proof(cases "is_val e'")
     case True
@@ -1997,11 +1976,11 @@ next
       by -(rule bisim1BinOp2, simp)
     ultimately show ?thesis using ins by fastsimp
   next
-    case False with IH1 len `bsok e2 n` False xcp call show ?thesis
+    case False with IH1 len `bsok e2 n` False call show ?thesis
       by(clarsimp)(fastsimp intro: bisim1_bisims1.bisim1BinOp1 elim!: BinOp_\<tau>ExecrI1 intro!: exI)
   qed
 next
-  case (bisim1BinOp2 e2 n e' xs stk loc pc xcp e1 bop v1)
+  case (bisim1BinOp2 e2 n e' xs stk loc pc e1 bop v1)
   then obtain pc' loc' stk' where pc': "pc' < length (compE2 e2)" "compE2 e2 ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_mover_a P e2 h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,e2,n,h \<turnstile> (e', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by fastsimp
@@ -2013,24 +1992,17 @@ next
     by -(rule bisim1_bisims1.bisim1BinOp2, simp)
   ultimately show ?case using pc' by(fastsimp)
 next
-  case bisim1BinOpThrow1 thus ?case by simp
-next
-  case bisim1BinOpThrow2 thus ?case by simp
-next
   case bisim1LAss1 thus ?case
     by(auto)(fastsimp intro: bisim1_bisims1.bisim1LAss1 elim!: LAss_\<tau>ExecrI intro!: exI)
 next
   case bisim1LAss2 thus ?case by simp
 next
-  case bisim1LAssThrow thus ?case by simp
-next
-  case (bisim1AAcc1 A n a' xs stk loc pc xcp i)
-  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars a' \<le> length xs; xcp = None\<rbrakk> \<Longrightarrow> ?concl A n a' xs pc stk loc`
-  note IH2 = `\<And>xs. \<lbrakk>call1 i = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars i \<le> length xs; None = None\<rbrakk> \<Longrightarrow> ?concl i n i xs 0 [] xs`
+  case (bisim1AAcc1 A n a' xs stk loc pc i)
+  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars a' \<le> length xs\<rbrakk> \<Longrightarrow> ?concl A n a' xs pc stk loc`
+  note IH2 = `\<And>xs. \<lbrakk>call1 i = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars i \<le> length xs\<rbrakk> \<Longrightarrow> ?concl i n i xs 0 [] xs`
   note call = `call1 (a'\<lfloor>i\<rceil>) = \<lfloor>(a, M', vs)\<rfloor>`
   note len = `n + max_vars (a'\<lfloor>i\<rceil>) \<le> length xs`
-  note xcp = `xcp = None`
-  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, None)`
   show ?case
   proof(cases "is_val a'")
     case True
@@ -2050,11 +2022,11 @@ next
       by - (rule bisim1AAcc2, simp)
     ultimately show ?thesis using ins by fastsimp
   next
-    case False with IH1 len `bsok i n` False xcp call show ?thesis
+    case False with IH1 len `bsok i n` False call show ?thesis
       by(clarsimp)(fastsimp intro: bisim1_bisims1.bisim1AAcc1 elim!: AAcc_\<tau>ExecrI1 intro!: exI)
   qed
 next
-  case (bisim1AAcc2 i n i' xs stk loc pc xcp A v)
+  case (bisim1AAcc2 i n i' xs stk loc pc A v)
   then obtain pc' loc' stk' where pc': "pc' < length (compE2 i)" "compE2 i ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_mover_a P i h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by fastsimp
@@ -2066,22 +2038,13 @@ next
     by -(rule bisim1_bisims1.bisim1AAcc2, simp)
   ultimately show ?case using pc' by(fastsimp)
 next
-  case bisim1AAccThrow1 thus ?case by simp
-next
-  case bisim1AAccThrow2 thus ?case by simp
-next
-  case bisim1AAccNull thus ?case by simp
-next
-  case bisim1AAccBounds thus ?case by simp
-next
-  case (bisim1AAss1 A n a' xs stk loc pc xcp i e)
-  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars a' \<le> length xs; xcp = None\<rbrakk> \<Longrightarrow> ?concl A n a' xs pc stk loc`
-  note IH2 = `\<And>xs. \<lbrakk>call1 i = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars i \<le> length xs; None = None\<rbrakk> \<Longrightarrow> ?concl i n i xs 0 [] xs`
-  note IH3 = `\<And>xs. \<lbrakk>call1 e = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e \<le> length xs; None = None\<rbrakk> \<Longrightarrow> ?concl e n e xs 0 [] xs`
+  case (bisim1AAss1 A n a' xs stk loc pc i e)
+  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars a' \<le> length xs\<rbrakk> \<Longrightarrow> ?concl A n a' xs pc stk loc`
+  note IH2 = `\<And>xs. \<lbrakk>call1 i = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars i \<le> length xs\<rbrakk> \<Longrightarrow> ?concl i n i xs 0 [] xs`
+  note IH3 = `\<And>xs. \<lbrakk>call1 e = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e \<le> length xs\<rbrakk> \<Longrightarrow> ?concl e n e xs 0 [] xs`
   note call = `call1 (a'\<lfloor>i\<rceil> := e) = \<lfloor>(a, M', vs)\<rfloor>`
   note len = `n + max_vars (a'\<lfloor>i\<rceil> := e) \<le> length xs`
-  note xcp = `xcp = None`
-  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note bisim2 = `P,i,n,h \<turnstile> (i, loc) \<leftrightarrow> ([], loc, 0, None)`
   show ?case
   proof(cases "is_val a'")
@@ -2125,17 +2088,16 @@ next
       ultimately show ?thesis using ins False by(fastsimp intro!: exI)
     qed
   next
-    case False with IH1 len `bsok i n` `bsok e n` False xcp call show ?thesis
+    case False with IH1 len `bsok i n` `bsok e n` False call show ?thesis
       by(clarsimp)(fastsimp intro: bisim1_bisims1.bisim1AAss1 elim!: AAss_\<tau>ExecrI1 intro!: exI)
   qed
 next
-  case (bisim1AAss2 i n i' xs stk loc pc xcp A e v)
-  note IH2 = `\<lbrakk>call1 i' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars i' \<le> length xs; xcp = None\<rbrakk> \<Longrightarrow> ?concl i n i' xs pc stk loc`
-  note IH3 = `\<And>xs. \<lbrakk>call1 e = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e \<le> length xs; None = None\<rbrakk> \<Longrightarrow> ?concl e n e xs 0 [] xs`
+  case (bisim1AAss2 i n i' xs stk loc pc A e v)
+  note IH2 = `\<lbrakk>call1 i' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars i' \<le> length xs\<rbrakk> \<Longrightarrow> ?concl i n i' xs pc stk loc`
+  note IH3 = `\<And>xs. \<lbrakk>call1 e = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e \<le> length xs\<rbrakk> \<Longrightarrow> ?concl e n e xs 0 [] xs`
   note call = `call1 (Val v\<lfloor>i'\<rceil> := e) = \<lfloor>(a, M', vs)\<rfloor>`
   note len = `n + max_vars (Val v\<lfloor>i'\<rceil> := e) \<le> length xs`
-  note xcp = `xcp = None`
-  note bisim2 = `P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim2 = `P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (stk, loc, pc, None)`
   show ?case
   proof(cases "is_val i'")
     case True
@@ -2157,7 +2119,7 @@ next
     ultimately show ?thesis using ins by(fastsimp intro!: exI)
   next
     case False
-    with IH2 len xcp call obtain pc' loc' stk'
+    with IH2 len call obtain pc' loc' stk'
       where ins: "pc' < length (compE2 i)" "compE2 i ! pc' = Invoke M' (length vs)"
       and exec: "\<tau>Exec_mover_a P i h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
       and bisim': "P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by fastsimp
@@ -2166,7 +2128,7 @@ next
     with AAss_\<tau>ExecrI2[OF exec, of A e v] ins False show ?thesis by(auto intro!: exI)
   qed
 next
-  case (bisim1AAss3 e n e' xs stk loc pc xcp A i v v')
+  case (bisim1AAss3 e n e' xs stk loc pc A i v v')
   then obtain pc' loc' stk' where pc': "pc' < length (compE2 e)" "compE2 e ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_mover_a P e h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by fastsimp
@@ -2178,41 +2140,20 @@ next
     by -(rule bisim1_bisims1.bisim1AAss3, simp)
   ultimately show ?case using pc' by(fastsimp intro!: exI)
 next
-  case bisim1AAssThrow1 thus ?case by simp
-next
-  case bisim1AAssThrow2 thus ?case by simp
-next
-  case bisim1AAssThrow3 thus ?case by simp
-next
-  case bisim1AAssNull thus ?case by simp
-next
-  case bisim1AAssBounds thus ?case by simp
-next
-  case bisim1AAssStore thus ?case by simp
-next
   case bisim1AAss4 thus ?case by simp
 next
   case bisim1ALength thus ?case
     by(auto)(fastsimp intro: bisim1_bisims1.bisim1ALength elim!: ALength_\<tau>ExecrI intro!: exI)
 next
-  case bisim1ALengthNull thus ?case by simp
-next
-  case bisim1ALengthThrow thus ?case by simp
-next
   case bisim1FAcc thus ?case
     by(auto)(fastsimp intro: bisim1_bisims1.bisim1FAcc elim!: FAcc_\<tau>ExecrI intro!: exI)
 next
-  case bisim1FAccNull thus ?case by simp
-next
-  case bisim1FAccThrow thus ?case by simp
-next
-  case (bisim1FAss1 e n e' xs stk loc pc xcp e2 F D)
-  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e' \<le> length xs; xcp = None\<rbrakk> \<Longrightarrow> ?concl e n e' xs pc stk loc`
-  note IH2 = `\<And>xs. \<lbrakk>call1 e2 = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e2 \<le> length xs; None = None\<rbrakk> \<Longrightarrow> ?concl e2 n e2 xs 0 [] xs`
+  case (bisim1FAss1 e n e' xs stk loc pc e2 F D)
+  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e' \<le> length xs\<rbrakk> \<Longrightarrow> ?concl e n e' xs pc stk loc`
+  note IH2 = `\<And>xs. \<lbrakk>call1 e2 = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e2 \<le> length xs\<rbrakk> \<Longrightarrow> ?concl e2 n e2 xs 0 [] xs`
   note call = `call1 (e'\<bullet>F{D} := e2) = \<lfloor>(a, M', vs)\<rfloor>`
   note len = `n + max_vars (e'\<bullet>F{D} := e2) \<le> length xs`
-  note xcp = `xcp = None`
-  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   show ?case
   proof(cases "is_val e'")
     case True
@@ -2232,11 +2173,11 @@ next
       by - (rule bisim1FAss2, simp)
     ultimately show ?thesis using ins by fastsimp
   next
-    case False with IH1 len `bsok e2 n` False xcp call show ?thesis
+    case False with IH1 len `bsok e2 n` False call show ?thesis
       by(clarsimp)(fastsimp intro: bisim1_bisims1.bisim1FAss1 elim!: FAss_\<tau>ExecrI1 intro!: exI)
   qed
 next
-  case (bisim1FAss2 e2 n e' xs stk loc pc xcp e F D v)
+  case (bisim1FAss2 e2 n e' xs stk loc pc e F D v)
   then obtain pc' loc' stk' where pc': "pc' < length (compE2 e2)" "compE2 e2 ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_mover_a P e2 h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,e2,n,h \<turnstile> (e', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by fastsimp
@@ -2248,25 +2189,19 @@ next
     by -(rule bisim1_bisims1.bisim1FAss2, simp)
   ultimately show ?case using pc' by(fastsimp)
 next
-  case bisim1FAssNull thus ?case by simp
-next
-  case bisim1FAssThrow1 thus ?case by simp
-next
-  case bisim1FAssThrow2 thus ?case by simp
-next
   case bisim1FAss3 thus ?case by simp
 next
-  case (bisim1Call1 obj n obj' xs stk loc pc xcp ps M)
-  note IH1 = `\<lbrakk>call1 obj' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars obj' \<le> length xs; xcp = None\<rbrakk> \<Longrightarrow> ?concl obj n obj' xs pc stk loc`
-  note IH2 = `\<And>xs. \<lbrakk>calls1 ps = \<lfloor>(a, M', vs)\<rfloor>; n + max_varss ps \<le> length xs; None = None\<rbrakk> \<Longrightarrow> ?concls ps n ps xs 0 [] xs`
+  case (bisim1Call1 obj n obj' xs stk loc pc ps M)
+  note IH1 = `\<lbrakk>call1 obj' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars obj' \<le> length xs\<rbrakk> \<Longrightarrow> ?concl obj n obj' xs pc stk loc`
+  note IH2 = `\<And>xs. \<lbrakk>calls1 ps = \<lfloor>(a, M', vs)\<rfloor>; n + max_varss ps \<le> length xs\<rbrakk> \<Longrightarrow> ?concls ps n ps xs 0 [] xs`
   note len = `n + max_vars (obj'\<bullet>M(ps)) \<le> length xs`
-  note bisim1 = `P,obj,n,h \<turnstile> (obj', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  note bisim1 = `P,obj,n,h \<turnstile> (obj', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (obj'\<bullet>M(ps)) = \<lfloor>(a, M', vs)\<rfloor>`
   from call show ?case
   proof(cases rule: call1_callE)
     case CallObj
     hence "\<not> is_val obj'" by auto
-    with CallObj IH1 len `bsoks ps n` `xcp = None` show ?thesis
+    with CallObj IH1 len `bsoks ps n` show ?thesis
       by(clarsimp)(fastsimp intro: bisim1_bisims1.bisim1Call1 elim!: Call_\<tau>ExecrI1 intro!: exI)
   next
     case (CallParams v)
@@ -2305,9 +2240,9 @@ next
     ultimately show ?thesis by fastsimp
   qed
 next
-  case (bisim1CallParams ps n ps' xs stk loc pc xcp obj M v)
-  note IH2 = `\<lbrakk>calls1 ps' = \<lfloor>(a, M', vs)\<rfloor>; n + max_varss ps' \<le> length xs; xcp = None\<rbrakk> \<Longrightarrow> ?concls ps n ps' xs pc stk loc`
-  note bisim2 = `P,ps,n,h \<turnstile> (ps', xs) [\<leftrightarrow>] (stk, loc, pc, xcp)`
+  case (bisim1CallParams ps n ps' xs stk loc pc obj M v)
+  note IH2 = `\<lbrakk>calls1 ps' = \<lfloor>(a, M', vs)\<rfloor>; n + max_varss ps' \<le> length xs\<rbrakk> \<Longrightarrow> ?concls ps n ps' xs pc stk loc`
+  note bisim2 = `P,ps,n,h \<turnstile> (ps', xs) [\<leftrightarrow>] (stk, loc, pc, None)`
   note call = `call1 (Val v\<bullet>M(ps')) = \<lfloor>(a, M', vs)\<rfloor>`
   note len = `n + max_vars (Val v\<bullet>M(ps')) \<le> length xs`
   from call show ?case
@@ -2315,7 +2250,7 @@ next
     case CallObj thus ?thesis by simp
   next
     case (CallParams v')
-    with IH2 len `xcp = None` obtain pc' stk' loc'
+    with IH2 len obtain pc' stk' loc'
       where exec: "\<tau>Exec_movesr_a P ps h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
       and ins: "pc' < length (compEs2 ps)" "compEs2 ps ! pc' = Invoke M' (length vs)"
       and bisim': "P,ps,n,h \<turnstile> (ps', xs) [\<leftrightarrow>] (rev vs @ Addr a # stk',loc',pc',None)" by auto
@@ -2350,17 +2285,11 @@ next
     ultimately show ?thesis by fastsimp
   qed
 next
-  case bisim1CallThrow thus ?case by simp
-next
-  case bisim1CallThrowObj thus ?case by simp
-next
-  case bisim1CallThrowParams thus ?case by simp
-next
   case bisim1BlockSome1 thus ?case by simp
 next
   case bisim1BlockSome2 thus ?case by simp
 next
-  case (bisim1BlockSome4 e V e' xs stk loc pc xcp T v)
+  case (bisim1BlockSome4 e V e' xs stk loc pc T v)
   then obtain pc' loc' stk' where pc': "pc' < length (compE2 e)" "compE2 e ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_mover_a P e h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,e,Suc V,h \<turnstile> (e', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by auto
@@ -2369,9 +2298,7 @@ next
     by-(rule bisim1_bisims1.bisim1BlockSome4, simp)
   ultimately show ?case using pc' by fastsimp
 next  
-  case bisim1BlockThrowSome thus ?case by simp
-next
-  case (bisim1BlockNone e V e' xs stk loc pc xcp T)
+  case (bisim1BlockNone e V e' xs stk loc pc T)
   then obtain pc' loc' stk' where pc': "pc' < length (compE2 e)" "compE2 e ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_mover_a P e h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,e,Suc V,h \<turnstile> (e', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by auto
@@ -2379,8 +2306,6 @@ next
   moreover from bisim' have "P,{V:T=None; e},V,h \<turnstile> ({V:T=None; e'}, xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)"
     by-(rule bisim1_bisims1.bisim1BlockNone, simp)
   ultimately show ?case using pc' by fastsimp
-next
-  case bisim1BlockThrowNone thus ?case by simp
 next
   case bisim1Sync1 thus ?case
     by (auto)(fastsimp intro: bisim1_bisims1.bisim1Sync1 elim!: Sync_\<tau>ExecrI intro!: exI)
@@ -2402,26 +2327,10 @@ next
 next
   case bisim1Sync9 thus ?case by simp
 next
-  case bisim1Sync10 thus ?case by simp
-next
-  case bisim1Sync11 thus ?case by simp
-next
-  case bisim1Sync12 thus ?case by simp
-next
-  case bisim1Sync13 thus ?case by simp
-next
-  case bisim1Sync14 thus ?case by simp
-next
-  case bisim1Sync15 thus ?case by simp
-next
-  case bisim1SyncThrow thus ?case by simp
-next
   case bisim1Seq1 thus ?case
     by (auto)(fastsimp intro: bisim1_bisims1.bisim1Seq1 elim!: Seq_\<tau>ExecrI1 intro!: exI)
 next
-  case bisim1SeqThrow1 thus ?case by simp
-next
-  case (bisim1Seq2 e2 n e' xs stk loc pc xcp e1)
+  case (bisim1Seq2 e2 n e' xs stk loc pc e1)
   then obtain pc' loc' stk' where pc': "pc' < length (compE2 e2)" "compE2 e2 ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_mover_a P e2 h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,e2,n,h \<turnstile> (e', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by auto
@@ -2431,21 +2340,19 @@ next
   case bisim1Cond1 thus ?case
     by (auto)(fastsimp intro: bisim1_bisims1.bisim1Cond1 elim!: Cond_\<tau>ExecrI1 intro!: exI)+
 next
-  case (bisim1CondThen e1 n e' xs stk loc pc xcp e e2)
+  case (bisim1CondThen e1 n e' xs stk loc pc e e2)
   then obtain pc' loc' stk' where pc': "pc' < length (compE2 e1)" "compE2 e1 ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_mover_a P e1 h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,e1,n,h \<turnstile> (e', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by auto
   from Cond_\<tau>ExecrI2[OF exec] pc' bisim' `bsok e n` `bsok e2 n` show ?case
     by(fastsimp intro: bisim1_bisims1.bisim1CondThen intro!: exI)
 next
-  case (bisim1CondElse e2 n e' xs stk loc pc xcp e e1)
+  case (bisim1CondElse e2 n e' xs stk loc pc e e1)
   then obtain pc' loc' stk' where pc': "pc' < length (compE2 e2)" "compE2 e2 ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_mover_a P e2 h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,e2,n,h \<turnstile> (e', xs) \<leftrightarrow> (rev vs @ Addr a # stk', loc', pc', None)" by auto
   from Cond_\<tau>ExecrI3[OF exec] pc' bisim' `bsok e n` `bsok e1 n` show ?case
     by (fastsimp intro: bisim1_bisims1.bisim1CondElse intro!: exI)
-next
-  case bisim1CondThrow thus ?case by simp
 next
   case bisim1While1 thus ?case by simp
 next
@@ -2459,24 +2366,14 @@ next
 next
   case bisim1While7 thus ?case by simp
 next
-  case bisim1WhileThrow1 thus ?case by simp
-next
-  case bisim1WhileThrow2 thus ?case by simp
-next
   case bisim1Throw1 thus ?case
     by (auto)(fastsimp intro!: exI bisim1_bisims1.bisim1Throw1 elim!: Throw_\<tau>ExecrI)+
-next
-  case bisim1Throw2 thus ?case by simp
-next
-  case bisim1ThrowNull thus ?case by simp
-next
-  case bisim1ThrowThrow thus ?case by simp
 next
   case bisim1Try thus ?case
     by (auto)(fastsimp intro: bisim1_bisims1.bisim1Try elim!: Try_\<tau>ExecrI1 intro!: exI)+
 next
   case (bisim1TryCatch1 e V a' xs stk loc pc C' fs C e2)
-  note IH2 = `\<And>xs. \<lbrakk>call1 e2 = \<lfloor>(a, M', vs)\<rfloor>; Suc V + max_vars e2 \<le> length xs; None = None\<rbrakk> \<Longrightarrow> ?concl e2 (Suc V) e2 xs 0 [] xs`
+  note IH2 = `\<And>xs. \<lbrakk>call1 e2 = \<lfloor>(a, M', vs)\<rfloor>; Suc V + max_vars e2 \<le> length xs\<rbrakk> \<Longrightarrow> ?concl e2 (Suc V) e2 xs 0 [] xs`
   note bisim1 = `P,e,V,h \<turnstile> (Throw a', xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a'\<rfloor>)`
   note bisim2 = `\<And>xs. P,e2,Suc V,h \<turnstile> (e2, xs) \<leftrightarrow> ([], xs, 0, None)`
   note len = `V + max_vars {V:Class C=None; e2} \<le> length (xs[V := Addr a'])`
@@ -2498,16 +2395,12 @@ next
   case bisim1TryCatch2 thus ?case
     by (auto)(fastsimp intro!: Try_\<tau>ExecrI2 bisim1_bisims1.bisim1TryCatch2 exI)+
 next
-  case bisim1TryFail thus ?case by simp
-next
-  case bisim1TryCatchThrow thus ?case by simp
-next
   case bisims1Nil thus ?case by simp
 next
-  case (bisims1List1 e n e' xs stk loc pc xcp es)
-  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e' \<le> length xs; xcp = None\<rbrakk> \<Longrightarrow> ?concl e n e' xs pc stk loc`
-  note IH2 = `\<And>xs. \<lbrakk>calls1 es = \<lfloor>(a, M', vs)\<rfloor>; n + max_varss es \<le> length xs; None = None\<rbrakk> \<Longrightarrow> ?concls es n es xs 0 [] xs`
-  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisims1List1 e n e' xs stk loc pc es)
+  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M', vs)\<rfloor>; n + max_vars e' \<le> length xs\<rbrakk> \<Longrightarrow> ?concl e n e' xs pc stk loc`
+  note IH2 = `\<And>xs. \<lbrakk>calls1 es = \<lfloor>(a, M', vs)\<rfloor>; n + max_varss es \<le> length xs\<rbrakk> \<Longrightarrow> ?concls es n es xs 0 [] xs`
+  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `calls1 (e' # es) = \<lfloor>(a, M', vs)\<rfloor>`
   note len = `n + max_varss (e' # es) \<le> length xs`
   show ?case
@@ -2532,11 +2425,11 @@ next
     ultimately show ?thesis using ins by fastsimp
   next
     case False
-    with call IH1 len `xcp = None` `bsoks es n` show ?thesis
+    with call IH1 len `bsoks es n` show ?thesis
       by (auto)(fastsimp intro!: \<tau>Exec_mover_\<tau>Exec_movesr bisim1_bisims1.bisims1List1 exI)+
   qed
 next
-  case (bisims1List2 es n es' xs stk loc pc xcp e v)
+  case (bisims1List2 es n es' xs stk loc pc e v)
   then obtain pc' stk' loc' where pc': "pc' < length (compEs2 es)" "compEs2 es ! pc' = Invoke M' (length vs)"
     and exec: "\<tau>Exec_movesr_a P es h (stk, loc, pc, None) (rev vs @ Addr a # stk', loc', pc', None)"
     and bisim': "P,es,n,h \<turnstile> (es', xs) [\<leftrightarrow>] (rev vs @ Addr a # stk', loc', pc', None)" by auto
@@ -2568,39 +2461,27 @@ proof(induct e n e' xs stk loc pc xcp\<equiv>"None :: addr option"
 next
   case bisim1New thus ?case by simp
 next
-  case bisim1NewThrow thus ?case by simp
-next
   case bisim1NewArray thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1NewArray)
 next
-  case bisim1NewArrayNegative thus ?case by simp
-next
-  case bisim1NewArrayFail thus ?case by simp
-next
-  case bisim1NewArrayThrow thus ?case by simp
-next
   case bisim1Cast thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Cast)
-next
-  case bisim1CastFail thus ?case by simp
-next
-  case bisim1CastThrow thus ?case by simp
 next
   case bisim1Val thus ?case by simp
 next
   case bisim1Var thus ?case by simp
 next
-  case (bisim1BinOp1 e1 n e' xs stk loc pc xcp e2 bop)
-  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e1 ! pc = Invoke M n0;
-               xcp = None\<rbrakk> \<Longrightarrow> ?concl e1 n e' xs pc stk loc`
-  note bisim1 = `P,e1,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1BinOp1 e1 n e' xs stk loc pc e2 bop)
+  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e1 ! pc = Invoke M n0\<rbrakk>
+               \<Longrightarrow> ?concl e1 n e' xs pc stk loc`
+  note bisim1 = `P,e1,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (e' \<guillemotleft>bop\<guillemotright> e2) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (e1 \<guillemotleft>bop\<guillemotright> e2) ! pc = Invoke M n0`
   show ?case
   proof(cases "is_val e'")
     case False
     with bisim1 call have "pc < length (compE2 e1)" by(auto intro: bisim1_call_pcD)
-    with call ins False IH1 `bsok e2 n` `xcp = None` show ?thesis
+    with call ins False IH1 `bsok e2 n` show ?thesis
       by(auto intro: bisim1_bisims1.bisim1BinOp1)
   next
     case True
@@ -2614,39 +2495,33 @@ next
     thus ?thesis ..
   qed
 next
-  case (bisim1BinOp2 e2 n e' xs stk loc pc xcp e1 bop v1)
-  note IH2 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e2 ! pc = Invoke M n0;
-              xcp = None\<rbrakk> \<Longrightarrow> ?concl e2 n e' xs pc stk loc`
-  note bisim2 = `P,e2,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1BinOp2 e2 n e' xs stk loc pc e1 bop v1)
+  note IH2 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e2 ! pc = Invoke M n0\<rbrakk>
+              \<Longrightarrow> ?concl e2 n e' xs pc stk loc`
+  note bisim2 = `P,e2,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (Val v1 \<guillemotleft>bop\<guillemotright> e') = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (e1 \<guillemotleft>bop\<guillemotright> e2) ! (length (compE2 e1) + pc) = Invoke M n0`
   from call bisim2 have pc: "pc < length (compE2 e2)" by(auto intro: bisim1_call_pcD)
   with ins have ins': "compE2 e2 ! pc = Invoke M n0" by(simp)
-  from IH2 ins' pc `bsok e1 n` `xcp = None` call show ?case
+  from IH2 ins' pc `bsok e1 n` call show ?case
     by(auto dest: bisim1_bisims1.bisim1BinOp2)
-next
-  case bisim1BinOpThrow1 thus ?case by simp
-next
-  case bisim1BinOpThrow2 thus ?case by simp
 next
   case bisim1LAss1 thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1LAss1)
 next
   case bisim1LAss2 thus ?case by simp
 next
-  case bisim1LAssThrow thus ?case by simp
-next
-  case (bisim1AAcc1 A n a' xs stk loc pc xcp i)
-  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0;
-               xcp = None\<rbrakk> \<Longrightarrow> ?concl A n a' xs pc stk loc`
-  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1AAcc1 A n a' xs stk loc pc i)
+  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0\<rbrakk>
+               \<Longrightarrow> ?concl A n a' xs pc stk loc`
+  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (a'\<lfloor>i\<rceil>) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (A\<lfloor>i\<rceil>) ! pc = Invoke M n0`
   show ?case
   proof(cases "is_val a'")
     case False
     with bisim1 call have "pc < length (compE2 A)" by(auto intro: bisim1_call_pcD)
-    with call ins False IH1 `bsok i n` `xcp = None` show ?thesis
+    with call ins False IH1 `bsok i n` show ?thesis
       by(auto intro: bisim1_bisims1.bisim1AAcc1)
   next
     case True
@@ -2660,36 +2535,28 @@ next
     thus ?thesis ..
   qed
 next
-  case (bisim1AAcc2 i n i' xs stk loc pc xcp A v)
-  note IH2 = `\<lbrakk>call1 i' = \<lfloor>(a, M, vs)\<rfloor>; compE2 i ! pc = Invoke M n0;
-              xcp = None\<rbrakk> \<Longrightarrow> ?concl i n i' xs pc stk loc`
-  note bisim2 = `P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1AAcc2 i n i' xs stk loc pc A v)
+  note IH2 = `\<lbrakk>call1 i' = \<lfloor>(a, M, vs)\<rfloor>; compE2 i ! pc = Invoke M n0\<rbrakk>
+              \<Longrightarrow> ?concl i n i' xs pc stk loc`
+  note bisim2 = `P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (Val v\<lfloor>i'\<rceil>) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (A\<lfloor>i\<rceil>) ! (length (compE2 A) + pc) = Invoke M n0`
   from call bisim2 have pc: "pc < length (compE2 i)" by(auto intro: bisim1_call_pcD)
   with ins have ins': "compE2 i ! pc = Invoke M n0" by(simp)
-  from IH2 ins' pc `bsok A n` `xcp = None` call show ?case
+  from IH2 ins' pc `bsok A n` call show ?case
     by(auto dest: bisim1_bisims1.bisim1AAcc2)
 next
-  case bisim1AAccThrow1 thus ?case by simp
-next
-  case bisim1AAccThrow2 thus ?case by simp
-next
-  case bisim1AAccBounds thus ?case by simp
-next
-  case bisim1AAccNull thus ?case by simp
-next
-  case (bisim1AAss1 A n a' xs stk loc pc xcp i e)
-  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0;
-              xcp = None\<rbrakk> \<Longrightarrow> ?concl A n a' xs pc stk loc`
-  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1AAss1 A n a' xs stk loc pc i e)
+  note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0\<rbrakk>
+              \<Longrightarrow> ?concl A n a' xs pc stk loc`
+  note bisim1 = `P,A,n,h \<turnstile> (a', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (a'\<lfloor>i\<rceil> := e) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (A\<lfloor>i\<rceil> := e) ! pc = Invoke M n0`
   show ?case
   proof(cases "is_val a'")
     case False
     with bisim1 call have "pc < length (compE2 A)" by(auto intro: bisim1_call_pcD)
-    with call ins False IH1 `bsok i n` `bsok e n` `xcp = None` show ?thesis
+    with call ins False IH1 `bsok i n` `bsok e n` show ?thesis
       by(auto intro: bisim1_bisims1.bisim1AAss1)
   next
     case True
@@ -2703,10 +2570,10 @@ next
     thus ?thesis ..
   qed
 next
-  case (bisim1AAss2 i n i' xs stk loc pc xcp A e v)
-  note IH2 = `\<lbrakk>call1 i' = \<lfloor>(a, M, vs)\<rfloor>; compE2 i ! pc = Invoke M n0;
-              xcp = None\<rbrakk> \<Longrightarrow> ?concl i n i' xs pc stk loc`
-  note bisim2 = `P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1AAss2 i n i' xs stk loc pc A e v)
+  note IH2 = `\<lbrakk>call1 i' = \<lfloor>(a, M, vs)\<rfloor>; compE2 i ! pc = Invoke M n0\<rbrakk>
+              \<Longrightarrow> ?concl i n i' xs pc stk loc`
+  note bisim2 = `P,i,n,h \<turnstile> (i', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (Val v\<lfloor>i'\<rceil> := e) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (A\<lfloor>i\<rceil> := e) ! (length (compE2 A) + pc) = Invoke M n0`
   show ?case
@@ -2714,7 +2581,7 @@ next
     case False
     with bisim2 call have pc: "pc < length (compE2 i)" by(auto intro: bisim1_call_pcD)
     with ins have ins': "compE2 i ! pc = Invoke M n0" by(simp)
-    from IH2 ins' pc False `bsok A n` `bsok e n` `xcp = None` call show ?thesis
+    from IH2 ins' pc False `bsok A n` `bsok e n` call show ?thesis
       by(auto dest: bisim1_bisims1.bisim1AAss2)
   next
     case True
@@ -2728,57 +2595,36 @@ next
     thus ?thesis ..
   qed
 next
-  case (bisim1AAss3 e n e' xs stk loc pc xcp i A v v')
-  note IH2 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e ! pc = Invoke M n0;
-               xcp = None\<rbrakk> \<Longrightarrow> ?concl e n e' xs pc stk loc`
-  note bisim3 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1AAss3 e n e' xs stk loc pc i A v v')
+  note IH2 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e ! pc = Invoke M n0\<rbrakk>
+               \<Longrightarrow> ?concl e n e' xs pc stk loc`
+  note bisim3 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (Val v\<lfloor>Val v'\<rceil> := e') = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (i\<lfloor>A\<rceil> := e) ! (length (compE2 i) + length (compE2 A) + pc) = Invoke M n0`
   from call bisim3 have pc: "pc < length (compE2 e)" by(auto intro: bisim1_call_pcD)
   with ins have ins': "compE2 e ! pc = Invoke M n0" by(simp)
-  from IH2 ins' pc `bsok A n` `bsok i n` `xcp = None` call show ?case
+  from IH2 ins' pc `bsok A n` `bsok i n` call show ?case
     by(auto dest: bisim1_bisims1.bisim1AAss3)
-next
-  case bisim1AAssThrow1 thus ?case by simp
-next
-  case bisim1AAssThrow2 thus ?case by simp
-next
-  case bisim1AAssThrow3 thus ?case by simp
-next
-  case bisim1AAssBounds thus ?case by simp
-next
-  case bisim1AAssNull thus ?case by simp
-next
-  case bisim1AAssStore thus ?case by simp
 next
   case bisim1AAss4 thus ?case by simp
 next
   case bisim1ALength thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1ALength)
 next
-  case bisim1ALengthNull thus ?case by simp
-next
-  case bisim1ALengthThrow thus ?case by simp
-next
-next
   case bisim1FAcc thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1FAcc)
 next
-  case bisim1FAccNull thus ?case by simp
-next
-  case bisim1FAccThrow thus ?case by simp
-next
-  case (bisim1FAss1 e1 n e' xs stk loc pc xcp e2 F D)
-  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e1 ! pc = Invoke M n0;
-               xcp = None\<rbrakk> \<Longrightarrow> ?concl e1 n e' xs pc stk loc`
-  note bisim1 = `P,e1,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1FAss1 e1 n e' xs stk loc pc e2 F D)
+  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e1 ! pc = Invoke M n0\<rbrakk>
+               \<Longrightarrow> ?concl e1 n e' xs pc stk loc`
+  note bisim1 = `P,e1,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (e'\<bullet>F{D} := e2) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (e1\<bullet>F{D} := e2) ! pc = Invoke M n0`
   show ?case
   proof(cases "is_val e'")
     case False
     with bisim1 call have "pc < length (compE2 e1)" by(auto intro: bisim1_call_pcD)
-    with call ins False IH1 `bsok e2 n` `xcp = None` show ?thesis
+    with call ins False IH1 `bsok e2 n` show ?thesis
       by(auto intro: bisim1_bisims1.bisim1FAss1)
   next
     case True
@@ -2792,37 +2638,30 @@ next
     thus ?thesis ..
   qed
 next
-  case (bisim1FAss2 e2 n e' xs stk loc pc xcp e1 F D v1)
-  note IH2 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e2 ! pc = Invoke M n0;
-               xcp = None\<rbrakk> \<Longrightarrow> ?concl e2 n e' xs pc stk loc`
-  note bisim2 = `P,e2,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1FAss2 e2 n e' xs stk loc pc e1 F D v1)
+  note IH2 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e2 ! pc = Invoke M n0\<rbrakk>
+               \<Longrightarrow> ?concl e2 n e' xs pc stk loc`
+  note bisim2 = `P,e2,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (Val v1\<bullet>F{D} := e') = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (e1\<bullet>F{D} := e2) ! (length (compE2 e1) + pc) = Invoke M n0`
   from call bisim2 have pc: "pc < length (compE2 e2)" by(auto intro: bisim1_call_pcD)
   with ins have ins': "compE2 e2 ! pc = Invoke M n0" by(simp)
-  from IH2 ins' pc `bsok e1 n` `xcp = None` call show ?case
+  from IH2 ins' pc `bsok e1 n` call show ?case
     by(auto dest: bisim1_bisims1.bisim1FAss2)
-next
-  case bisim1FAssThrow1 thus ?case by simp
-next
-  case bisim1FAssThrow2 thus ?case by simp
-next
-  case bisim1FAssNull thus ?case by simp
 next
   case bisim1FAss3 thus ?case by simp
 next
-  case (bisim1Call1 obj n obj' xs stk loc pc xcp ps M')
-  note IH1 = `\<lbrakk>call1 obj' = \<lfloor>(a, M, vs)\<rfloor>; compE2 obj ! pc = Invoke M n0;
-               xcp = None\<rbrakk> \<Longrightarrow> ?concl obj n obj' xs pc stk loc`
-  note bisim1 = `P,obj,n,h \<turnstile> (obj', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisim1Call1 obj n obj' xs stk loc pc ps M')
+  note IH1 = `\<lbrakk>call1 obj' = \<lfloor>(a, M, vs)\<rfloor>; compE2 obj ! pc = Invoke M n0\<rbrakk>
+               \<Longrightarrow> ?concl obj n obj' xs pc stk loc`
+  note bisim1 = `P,obj,n,h \<turnstile> (obj', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `call1 (obj'\<bullet>M'(ps)) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (obj\<bullet>M'(ps)) ! pc = Invoke M n0`
-  note xcp = `xcp = None`
   show ?case
   proof(cases "is_val obj'")
     case False
     with call bisim1 have "pc < length (compE2 obj)" by(auto intro: bisim1_call_pcD)
-    with call False ins IH1 `bsoks ps n` False xcp show ?thesis
+    with call False ins IH1 `bsoks ps n` False show ?thesis
       by(auto intro: bisim1_bisims1.bisim1Call1)
   next
     case True
@@ -2841,13 +2680,12 @@ next
     show ?thesis by(auto simp add: is_val_iff)
   qed
 next
-  case (bisim1CallParams ps n ps' xs stk loc pc xcp obj M' v')
-  note IH2 = `\<lbrakk>calls1 ps' = \<lfloor>(a, M, vs)\<rfloor>; compEs2 ps ! pc = Invoke M n0;
-               xcp = None\<rbrakk> \<Longrightarrow> ?concls ps n ps' xs pc stk loc`
-  note bisim = `P,ps,n,h \<turnstile> (ps', xs) [\<leftrightarrow>] (stk, loc, pc, xcp)`
+  case (bisim1CallParams ps n ps' xs stk loc pc obj M' v')
+  note IH2 = `\<lbrakk>calls1 ps' = \<lfloor>(a, M, vs)\<rfloor>; compEs2 ps ! pc = Invoke M n0\<rbrakk>
+               \<Longrightarrow> ?concls ps n ps' xs pc stk loc`
+  note bisim = `P,ps,n,h \<turnstile> (ps', xs) [\<leftrightarrow>] (stk, loc, pc, None)`
   note call = `call1 (Val v'\<bullet>M'(ps')) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compE2 (obj\<bullet>M'(ps)) ! (length (compE2 obj) + pc) = Invoke M n0`
-  note xcp = `xcp = None`
   from call show ?case
   proof(cases rule: call1_callE)
     case CallObj thus ?thesis by simp
@@ -2856,7 +2694,7 @@ next
     hence [simp]: "v'' = v'" and call': "calls1 ps' = \<lfloor>(a, M, vs)\<rfloor>" by simp_all
     from bisim call' have pc: "pc < length (compEs2 ps)" by(rule bisims1_calls_pcD)
     with ins have ins': "compEs2 ps ! pc = Invoke M n0" by(simp add: nth_append)
-    with IH2 call' ins xcp pc
+    with IH2 call' ins pc
     have "P,ps,n,h \<turnstile> (inline_calls (Val v) ps', xs)
                 [\<leftrightarrow>] (v # drop (Suc (length vs)) stk, loc, Suc pc, None)"
       and len: "Suc (length vs) \<le> length stk" and n0: "n0 = length vs" by auto
@@ -2879,12 +2717,6 @@ next
     ultimately show ?thesis using ins by(auto)
   qed
 next
-  case bisim1CallThrowObj thus ?case by simp
-next
-  case bisim1CallThrowParams thus ?case by simp
-next 
-  case bisim1CallThrow thus ?case by simp
-next
   case bisim1BlockSome1 thus ?case by simp
 next
   case bisim1BlockSome2 thus ?case by simp
@@ -2892,12 +2724,8 @@ next
   case bisim1BlockSome4 thus ?case
     by(auto intro: bisim1_bisims1.bisim1BlockSome4)
 next
-  case bisim1BlockThrowSome thus ?case by simp
-next
   case bisim1BlockNone thus ?case
     by(auto intro: bisim1_bisims1.bisim1BlockNone)
-next
-  case bisim1BlockThrowNone thus ?case by simp
 next
   case bisim1Sync1 thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Sync1)
@@ -2919,24 +2747,8 @@ next
 next
   case bisim1Sync9 thus ?case by simp
 next
-  case bisim1Sync10 thus ?case by simp
-next
-  case bisim1Sync11 thus ?case by simp
-next
-  case bisim1Sync12 thus ?case by simp
-next
-  case bisim1Sync13 thus ?case by simp
-next
-  case bisim1Sync14 thus ?case by simp
-next
-  case bisim1Sync15 thus ?case by simp
-next
-  case bisim1SyncThrow thus ?case by simp
-next
   case bisim1Seq1 thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Seq1)
-next
-  case bisim1SeqThrow1 thus ?case by simp
 next
   case bisim1Seq2 thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2)(fastsimp dest: bisim1_bisims1.bisim1Seq2)
@@ -2944,15 +2756,13 @@ next
   case bisim1Cond1 thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Cond1)
 next
-  case (bisim1CondThen e1 n e' xs STK loc pc xcp e e2) thus ?case
+  case (bisim1CondThen e1 n e' xs STK loc pc e e2) thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2)
       (fastsimp dest: bisim1_bisims1.bisim1CondThen[where e=e and ?e2.0=e2])
 next
-  case (bisim1CondElse e2 n e' xs STK loc pc xcp e e1) thus ?case
+  case (bisim1CondElse e2 n e' xs STK loc pc e e1) thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2)
       (fastsimp dest: bisim1_bisims1.bisim1CondElse[where e=e and ?e1.0=e1])
-next
-  case bisim1CondThrow thus ?case by simp
 next
   case bisim1While1 thus ?case by simp
 next
@@ -2966,18 +2776,8 @@ next
 next
   case bisim1While7 thus ?case by simp
 next
-  case bisim1WhileThrow1 thus ?case by simp
-next
-  case bisim1WhileThrow2 thus ?case by simp
-next
   case bisim1Throw1 thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Throw1)
-next
-  case bisim1Throw2 thus ?case by simp
-next
-  case bisim1ThrowNull thus ?case by simp
-next
-  case bisim1ThrowThrow thus ?case by simp
 next
   case bisim1Try thus ?case
     by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Try)
@@ -2987,24 +2787,19 @@ next
   case bisim1TryCatch2 thus ?case
     by(fastsimp dest: bisim1_bisims1.bisim1TryCatch2)
 next
-  case bisim1TryFail thus ?case by simp
-next
-  case bisim1TryCatchThrow thus ?case by simp
-next
   case bisims1Nil thus ?case by simp
 next
-  case (bisims1List1 e n e' xs stk loc pc xcp es)
-  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e ! pc = Invoke M n0;
-              xcp = None\<rbrakk> \<Longrightarrow> ?concl e n e' xs pc stk loc`
-  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  case (bisims1List1 e n e' xs stk loc pc es)
+  note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e ! pc = Invoke M n0\<rbrakk>
+              \<Longrightarrow> ?concl e n e' xs pc stk loc`
+  note bisim1 = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, None)`
   note call = `calls1 (e' # es) = \<lfloor>(a, M, vs)\<rfloor>`
   note ins = `compEs2 (e # es) ! pc = Invoke M n0`
-  note xcp = `xcp = None`
   show ?case
   proof(cases "is_val e'")
     case False
     with bisim1 call have "pc < length (compE2 e)" by(auto intro: bisim1_call_pcD)
-    with call ins False IH1 `bsoks es n` xcp show ?thesis
+    with call ins False IH1 `bsoks es n` show ?thesis
       by(auto intro: bisim1_bisims1.bisims1List1)
   next
     case True
@@ -3018,16 +2813,16 @@ next
     thus ?thesis ..
   qed
 next
-  case (bisims1List2 es n es' xs stk loc pc xcp e v')
-  note IH = `\<lbrakk>calls1 es' = \<lfloor>(a, M, vs)\<rfloor>; compEs2 es ! pc = Invoke M n0;
-             xcp = None\<rbrakk> \<Longrightarrow> ?concls es n es' xs pc stk loc`
+  case (bisims1List2 es n es' xs stk loc pc e v')
+  note IH = `\<lbrakk>calls1 es' = \<lfloor>(a, M, vs)\<rfloor>; compEs2 es ! pc = Invoke M n0\<rbrakk>
+             \<Longrightarrow> ?concls es n es' xs pc stk loc`
   note call = `calls1 (Val v' # es') = \<lfloor>(a, M, vs)\<rfloor>`
-  note bisim = `P,es,n,h \<turnstile> (es', xs) [\<leftrightarrow>] (stk, loc, pc, xcp)`
+  note bisim = `P,es,n,h \<turnstile> (es', xs) [\<leftrightarrow>] (stk, loc, pc, None)`
   note ins = `compEs2 (e # es) ! (length (compE2 e) + pc) = Invoke M n0`
   from call have call': "calls1 es' = \<lfloor>(a, M, vs)\<rfloor>" by simp
   with bisim have pc: "pc < length (compEs2 es)" by(rule bisims1_calls_pcD)
   with ins have ins': "compEs2 es ! pc = Invoke M n0" by(simp add: nth_append)
-  from IH call ins `bsok e n` pc `xcp = None` show ?case
+  from IH call ins `bsok e n` pc show ?case
     by(auto split: split_if_asm dest: bisim1_bisims1.bisims1List2)
 qed
 
@@ -3058,56 +2853,55 @@ proof(induct E n e xs stk\<equiv>"[v]" loc pc\<equiv>"length (compE2 E)" xcp\<eq
       arbitrary: v and vs rule: bisim1_bisims1_inducts_split)
   case bisim1BlockSome2 thus ?case by(simp (no_asm_use))
 next
-  case (bisim1BlockSome4 e V e' xs stk loc pc xcp T val)
+  case (bisim1BlockSome4 e V e' xs loc pc T val)
   note len = `V + max_vars {V:T=None; e'} \<le> length xs`
   hence V: "V < length xs" by simp
-  from `P,e,Suc V,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  from `P,e,Suc V,h \<turnstile> (e', xs) \<leftrightarrow> ([v], loc, pc, None)`
   have lenxs: "length xs = length loc" by(auto dest: bisim1_length_xs)
-  note IH = `\<And>v. \<lbrakk>Suc V + max_vars e' \<le> length xs; stk = [v]; pc = length (compE2 e); xcp = None\<rbrakk>
+  note IH = `\<lbrakk>pc = length (compE2 e); Suc V + max_vars e' \<le> length xs\<rbrakk>
              \<Longrightarrow> \<tau>red1r P h (e', xs) (Val v, loc)`
   with len `Suc (Suc pc) = length (compE2 {V:T=\<lfloor>val\<rfloor>; e})`
-    `stk = [v]` `xcp = None`
   have "\<tau>red1r P h (e', xs) (Val v, loc)" by(simp)
   hence "\<tau>red1r P h ({V:T=None; e'}, xs) ({V:T=None; Val v}, loc)"
     by(rule Block_None_\<tau>red1r_xt)
   thus ?case using V lenxs by(auto elim!: rtranclp.rtrancl_into_rtrancl intro: Red1Block \<tau>move1BlockRed)
 next
-  case (bisim1BlockNone e V e' xs stk loc pc xcp T)
+  case (bisim1BlockNone e V e' xs loc T)
   note len = `V + max_vars {V:T=None; e'} \<le> length xs`
   hence V: "V < length xs" by simp
-  from `P,e,Suc V,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  from `P,e,Suc V,h \<turnstile> (e', xs) \<leftrightarrow> ([v], loc, length (compE2 {V:T=None; e}), None)`
   have lenxs: "length xs = length loc" by(auto dest: bisim1_length_xs)
-  note IH = `\<And>v. \<lbrakk>Suc V + max_vars e' \<le> length xs; stk = [v]; pc = length (compE2 e); xcp = None\<rbrakk>
+  note IH = `\<lbrakk>length (compE2 {V:T=None; e}) = length (compE2 e); Suc V + max_vars e' \<le> length xs\<rbrakk>
              \<Longrightarrow> \<tau>red1r P h (e', xs) (Val v, loc)`
-  with len `pc = length (compE2 {V:T=None; e})` `stk = [v]` `xcp = None`
+  with len
   have "\<tau>red1r P h (e', xs) (Val v, loc)" by(simp)
   hence "\<tau>red1r P h ({V:T=None; e'}, xs) ({V:T=None; Val v}, loc)"
     by(rule Block_None_\<tau>red1r_xt)
   thus ?case using V lenxs by(auto elim!: rtranclp.rtrancl_into_rtrancl intro: Red1Block \<tau>move1BlockRed)
 next
-  case (bisim1TryCatch2 e2 V e' xs stk loc pc xcp e C)
+  case (bisim1TryCatch2 e2 V e' xs loc pc e C)
   note len = `V + max_vars {V:Class C=None; e'} \<le> length xs`
   hence V: "V < length xs" by simp
-  from `P,e2,Suc V,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+  from `P,e2,Suc V,h \<turnstile> (e', xs) \<leftrightarrow> ([v], loc, pc, None)`
   have lenxs: "length xs = length loc" by(auto dest: bisim1_length_xs)
-  note IH = `\<And>v. \<lbrakk>Suc V + max_vars e' \<le> length xs; stk = [v]; pc = length (compE2 e2); xcp = None\<rbrakk>
+  note IH = `\<lbrakk>pc = length (compE2 e2); Suc V + max_vars e' \<le> length xs\<rbrakk>
              \<Longrightarrow> \<tau>red1r P h (e', xs) (Val v, loc)`
-  with len `Suc (Suc (length (compE2 e) + pc)) = length (compE2 (try e catch(C V) e2))` `stk = [v]` `xcp = None`
+  with len `Suc (Suc (length (compE2 e) + pc)) = length (compE2 (try e catch(C V) e2))`
   have "\<tau>red1r P h (e', xs) (Val v, loc)" by(simp)
   hence "\<tau>red1r P h ({V:Class C=None; e'}, xs) ({V:Class C=None; Val v}, loc)"
     by(rule Block_None_\<tau>red1r_xt)
   thus ?case using V lenxs by(auto elim!: rtranclp.rtrancl_into_rtrancl intro: Red1Block \<tau>move1BlockRed)
 next
-  case (bisims1List1 e n e' xs stk loc pc xcp es)
-  note bisim = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
-  with `pc = length (compEs2 (e # es))` have es: "es = []" and pc: "pc = length (compE2 e)"
+  case (bisims1List1 e n e' xs loc es)
+  note bisim = `P,e,n,h \<turnstile> (e', xs) \<leftrightarrow> (rev vs, loc, length (compEs2 (e # es)), None)`
+  then have es: "es = []" and pc: "length (compEs2 (e # es)) = length (compE2 e)"
     by(auto dest: bisim1_pc_length_compE2)
-  with bisim obtain val where stk: "stk = [val]" and e': "is_val e' \<Longrightarrow> e' = Val val"
+  with bisim obtain val where stk: "rev vs = [val]" and e': "is_val e' \<Longrightarrow> e' = Val val"
     by(auto dest: bisim1_pc_length_compE2D)
   with es pc bisims1List1 have "\<tau>red1r P h (e', xs) (Val val, loc)" by simp
-  with stk es `stk = rev vs` show ?case by(auto intro: \<tau>red1r_inj_\<tau>reds1r)
+  with stk es show ?case by(auto intro: \<tau>red1r_inj_\<tau>reds1r)
 next
-  case (bisims1List2 es n es' xs stk loc pc xcp e v)
+  case (bisims1List2 es n es' xs stk loc pc e v)
   from `stk @ [v] = rev vs` obtain vs' where vs: "vs = v # vs'" by(cases vs) auto
   with bisims1List2 show ?case by(auto intro: \<tau>reds1r_cons_\<tau>reds1r)
 qed(fastsimp dest: bisim1_pc_length_compE2 bisims1_pc_length_compEs2)+

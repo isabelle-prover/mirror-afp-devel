@@ -890,7 +890,7 @@ by (rule_tac B="{Cs. set Cs <= {C. is_class P C} \<and> length Cs = n}" in finit
 
 lemma path_finite_leq:
 "wf_prog wf_md P \<Longrightarrow> finite{Cs. Subobjs P C Cs \<and> length Cs \<le> length P}"
-  by (induct "length P",simp only:empty_path_empty_set,
+  by (induct ("length P"), simp only:empty_path_empty_set,
     auto intro:path_length_n_finite_set simp:split_set_path_length)
 
 

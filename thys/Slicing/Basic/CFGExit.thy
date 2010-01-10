@@ -77,16 +77,15 @@ lemma path_Exit_source [dest]:
   assumes "(_Exit_) -as\<rightarrow>* n'" shows "n' = (_Exit_)" and "as = []"
   using `(_Exit_) -as\<rightarrow>* n'`
 proof(induct n\<equiv>"(_Exit_)" as n' rule:path.induct)
-  case (Cons_path n'' as n' a n)
-  { assume "n = (_Exit_)"
-    with `sourcenode a = n` `valid_edge a` have False 
-      by -(rule Exit_source,simp_all) }
-  hence "n = (_Exit_) \<Longrightarrow> False" .
-  { case 1 with `n = (_Exit_) \<Longrightarrow> False` show ?case by simp
+  case (Cons_path n'' as n' a)
+  from `sourcenode a = (_Exit_)` `valid_edge a` have False 
+    by -(rule Exit_source,simp_all)
+  { case 1 with `False` show ?case ..
   next
-    case 2 with `n = (_Exit_) \<Longrightarrow> False` show ?case by simp
+    case 2 with `False` show ?case ..
   }
 qed simp_all
+
 lemma Exit_no_sourcenode[dest]:
   assumes isin:"(_Exit_) \<in> set (sourcenodes as)" and path:"n -as\<rightarrow>* n'"
   shows False

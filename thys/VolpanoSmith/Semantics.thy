@@ -112,10 +112,8 @@ by(blast elim:converse_rtranclpE red.cases)
 
 lemma LAss_reds:
   "\<langle>V:=e,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> s' = s(V:=\<lbrakk>e\<rbrakk> s)"
-proof(induct c=="V:=e" s rule:converse_rtranclp_induct2)
-  case refl thus ?case by simp
-next
-  case (step c s c'' s'')
+proof(induct "V:=e" s rule:converse_rtranclp_induct2)
+  case (step s c'' s'')
   hence "c'' = Skip" and "s'' = s(V:=(\<lbrakk>e\<rbrakk> s))" by(auto elim:red.cases)
   with `\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>` show ?case by(auto dest:Skip_reds)
 qed
@@ -180,19 +178,15 @@ by(induct c=="if (b) c\<^isub>1 else c\<^isub>2" s rule:converse_rtranclp_induct
 
 lemma WhileFalse_reds: 
   "\<langle>while (b) cx,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<lbrakk>b\<rbrakk> s = Some false \<Longrightarrow> s = s'"
-proof(induct c=="while (b) cx" s rule:converse_rtranclp_induct2)
-  case refl thus ?case by simp
-next
+proof(induct "while (b) cx" s rule:converse_rtranclp_induct2)
   case step thus ?case by(auto elim:red.cases dest: Skip_reds)
 qed
 
 lemma WhileTrue_reds: 
   "\<langle>while (b) cx,s\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle> \<Longrightarrow> \<lbrakk>b\<rbrakk> s = Some true
   \<Longrightarrow> \<exists>sx. \<langle>cx,s\<rangle> \<rightarrow>* \<langle>Skip,sx\<rangle> \<and> \<langle>while (b) cx,sx\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>"
-proof(induct c=="while (b) cx" s rule:converse_rtranclp_induct2)
-  case refl thus ?case by simp
-next
-  case (step c s c'' s'')
+proof(induct "while (b) cx" s rule:converse_rtranclp_induct2)
+  case (step s c'' s'')
   hence "c'' = cx;;while (b) cx \<and> s'' = s" by(auto elim:red.cases)
   with `\<langle>c'',s''\<rangle> \<rightarrow>* \<langle>Skip,s'\<rangle>` show ?case by(auto dest:Seq_reds)
 qed
@@ -214,29 +208,25 @@ lemma Seq_red_nE: assumes "\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarr
 proof -
   from `\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>` 
   have "\<exists>i j s''. \<langle>c\<^isub>1,s\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,s''\<rangle> \<and> \<langle>c\<^isub>2,s''\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle> \<and> n = i + j + 1"
-  proof(induct c\<equiv>"c\<^isub>1;;c\<^isub>2" s n c'\<equiv>"Skip" s' arbitrary:c\<^isub>1 rule:red_n.induct)
-    case (red_n_Base c s)
-    from `c = c\<^isub>1;;c\<^isub>2` `c = Skip` have False by simp
-    thus ?case by simp
-  next
-    case (red_n_Rec c s c'' s'' n c' s')
-    note IH = `\<And>c\<^isub>1. \<lbrakk>c'' = c\<^isub>1;;c\<^isub>2; c' = Skip\<rbrakk>
+  proof(induct "c\<^isub>1;;c\<^isub>2" s n "Skip" s' arbitrary:c\<^isub>1 rule:red_n.induct)
+    case (red_n_Rec s c'' s'' n s')
+    note IH = `\<And>c\<^isub>1. c'' = c\<^isub>1;;c\<^isub>2
       \<Longrightarrow> \<exists>i j sx. \<langle>c\<^isub>1,s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle> \<and> \<langle>c\<^isub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle> \<and> n = i + j + 1`
-    from `\<langle>c,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>` `c = c\<^isub>1;;c\<^isub>2`
+    from `\<langle>c\<^isub>1;;c\<^isub>2,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>`
     have "(c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s'') \<or> 
       (\<exists>c\<^isub>1'. c'' = c\<^isub>1';;c\<^isub>2 \<and> \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>)"
-      by(induct rule:red_induct) auto
+      by(induct "c\<^isub>1;;c\<^isub>2" _ _ _ rule:red_induct) auto
     thus ?case
     proof
       assume "c\<^isub>1 = Skip \<and> c'' = c\<^isub>2 \<and> s = s''"
       hence "c\<^isub>1 = Skip" and "c'' = c\<^isub>2" and "s = s''" by simp_all
       from `c\<^isub>1 = Skip` have "\<langle>c\<^isub>1,s\<rangle> \<rightarrow>\<^bsup>0\<^esup> \<langle>Skip,s\<rangle>" by(fastsimp intro:red_n_Base)
-      with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>c',s'\<rangle>` `c'' = c\<^isub>2` `c' = Skip` `s = s''`
+      with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>` `c'' = c\<^isub>2` `s = s''`
       show ?thesis by(rule_tac x="0" in exI) auto
     next
       assume "\<exists>c\<^isub>1'. c'' = c\<^isub>1';;c\<^isub>2 \<and> \<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>"
       then obtain c\<^isub>1' where "c'' = c\<^isub>1';;c\<^isub>2" and "\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>" by blast
-      from IH[OF `c'' = c\<^isub>1';;c\<^isub>2` `c' = Skip`] obtain i j sx
+      from IH[OF `c'' = c\<^isub>1';;c\<^isub>2`] obtain i j sx
 	where "\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>" and "\<langle>c\<^isub>2,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>"
 	and "n = i + j + 1" by blast
       from `\<langle>c\<^isub>1,s\<rangle> \<rightarrow> \<langle>c\<^isub>1',s''\<rangle>` `\<langle>c\<^isub>1',s''\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>`
@@ -254,28 +244,24 @@ lemma while_red_nE:
   \<Longrightarrow> (\<lbrakk>b\<rbrakk> s = Some false \<and> s = s' \<and> n = 1) \<or>
      (\<exists>i j s''. \<lbrakk>b\<rbrakk> s = Some true \<and> \<langle>cx,s\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,s''\<rangle> \<and> 
                 \<langle>while (b) cx,s''\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle> \<and> n = i + j + 2)"
-proof(induct c\<equiv>"while (b) cx" s n c'\<equiv>"Skip" s' arbitrary:c rule:red_n.induct)
-  case (red_n_Base c s)
-  from `c = while (b) cx` `c = Skip` have False by simp
-  thus ?case by simp
-next
-  case (red_n_Rec c s c'' s'' n c' s')
-  from `\<langle>c,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>` `c = while (b) cx`
+proof(induct "while (b) cx" s n "Skip" s' arbitrary:c rule:red_n.induct)
+  case (red_n_Rec s c'' s'' n s')
+  from `\<langle>while (b) cx,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>`
   have "(\<lbrakk>b\<rbrakk> s = Some false \<and> c'' = Skip \<and> s'' = s) \<or>
     (\<lbrakk>b\<rbrakk> s = Some true \<and> c'' = cx;;while (b) cx \<and> s'' = s)"
-    by(induct rule:red_induct) auto
+    by(induct "while (b) cx" _ _ _ rule:red_induct) auto
   thus ?case
   proof
     assume "\<lbrakk>b\<rbrakk> s = Some false \<and> c'' = Skip \<and> s'' = s"
     hence "\<lbrakk>b\<rbrakk> s = Some false" and "c'' = Skip" and "s'' = s" by simp_all
-    with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>c',s'\<rangle>` have "s = s'" and "n = 0"
-      by(induct rule:red_n.induct,auto elim:red.cases)
+    with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>` have "s = s'" and "n = 0"
+      by(induct _ _ Skip _ rule:red_n.induct,auto elim:red.cases)
     with `\<lbrakk>b\<rbrakk> s = Some false` show ?thesis by fastsimp
   next
     assume "\<lbrakk>b\<rbrakk> s = Some true \<and> c'' = cx;;while (b) cx \<and> s'' = s"
     hence "\<lbrakk>b\<rbrakk> s = Some true" and "c'' = cx;;while (b) cx" 
       and "s'' = s" by simp_all
-    with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>c',s'\<rangle>` `c' = Skip` 
+    with `\<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>Skip,s'\<rangle>`
     obtain i j sx where "\<langle>cx,s\<rangle> \<rightarrow>\<^bsup>i\<^esup> \<langle>Skip,sx\<rangle>" and "\<langle>while (b) cx,sx\<rangle> \<rightarrow>\<^bsup>j\<^esup> \<langle>Skip,s'\<rangle>"
       and "n = i + j + 1" by(fastsimp elim:Seq_red_nE)
     with `\<lbrakk>b\<rbrakk> s = Some true` show ?thesis by fastsimp

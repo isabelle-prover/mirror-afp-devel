@@ -1917,7 +1917,7 @@ lemma Red_term_pres_no_match_it:
     size ts' = size ts; size ns = size ts;
     no_match ps (map dterm ts)\<rbrakk>
    \<Longrightarrow> no_match ps (map dterm ts')"
-proof(induct n \<equiv> "listsum ns" arbitrary: ts ns)
+proof(induct "listsum ns" arbitrary: ts ns)
   case 0
   hence "\<forall>i < size ts. ns!i = 0" by (simp add:listsimps_eq_0_iff)
   with 0 show ?case by simp (metis nth_equalityI)
@@ -1926,18 +1926,18 @@ next
   then have "listsum ns \<noteq> 0" by arith
   then obtain k l where "k<size ts" and [simp]: "ns!k = Suc l"
     by(simp add:listsimps_eq_0_iff)
-      (metis Suc(4) gr0_implies_Suc in_set_conv_nth)
+      (metis `length ns = length ts` gr0_implies_Suc in_set_conv_nth)
   let ?ns = "ns[k := l]"
-  have "n = listsum ?ns" using Suc(6) `k<size ts` `size ns = size ts`
+  have "n = listsum ?ns" using `Suc n = listsum ns` `k<size ts` `size ns = size ts`
     by (simp add:listsum_update)
   obtain t' where "ts!k \<Rightarrow> t'" "(t', ts'!k) : Red_term^^l"
-    using Suc(2) `k<size ts` `size ns = size ts` `ns!k = Suc l`
+    using Suc(3) `k<size ts` `size ns = size ts` `ns!k = Suc l`
     by (metis rel_pow_Suc_E2)
   then have 1: "\<forall>i<size(ts[k:=t']). (ts[k:=t']!i, ts'!i) : Red_term^^(?ns!i)"
-    using Suc(2) `k<size ts` `size ns = size ts`
+    using Suc(3) `k<size ts` `size ns = size ts`
     by (auto simp add:nth_list_update)
-  note nm1 = Red_term_pres_no_match[OF `k<size ts` `ts!k \<Rightarrow> t'` Suc(5)]
-  show ?case by(rule Suc(1)[OF 1 _ _ nm1 `n = listsum ?ns`])
+  note nm1 = Red_term_pres_no_match[OF `k<size ts` `ts!k \<Rightarrow> t'` `no_match ps (map dterm ts)`]
+  show ?case by(rule Suc(1)[OF `n = listsum ?ns` 1 _ _ nm1])
                (simp_all add: `size ts' = size ts` `size ns = size ts`)
 qed
 

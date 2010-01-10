@@ -554,7 +554,7 @@ lemma lrev_induct [case_names LNil snocl, consumes 1]:
 proof-
   from fin have "lrev xs \<in> A\<^sup>\<star>" by simp
   hence "P (lrev (lrev xs))"
-  proof (induct "lrev xs")
+  proof (induct ("lrev xs"))
     case (LNil_fin l) with init show "P (lrev l)" by simp
   next
     case (LCons_fin a l) thus ?case by (auto intro: step)

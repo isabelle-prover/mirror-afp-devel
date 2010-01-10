@@ -1203,8 +1203,8 @@ proof -
   from p r_def have vs2: "vs = fst (splitAt ram1 vs) @ [ram1] @ r" by (auto dest: splitAt_ram simp: pre_between_def)
   then have "fst (splitAt ram1 vs) = [] \<Longrightarrow> hd vs = ram1" by auto
   with vs have neq: "fst (splitAt ram1 vs) \<noteq> []" by auto
-  with vs2 have vs_fst: "hd vs = hd (fst (splitAt ram1 vs))" by (induct "fst (splitAt ram1 vs)") auto
-  with neq have "hd vs \<in> set (fst (splitAt ram1 vs))"  by (induct "fst (splitAt ram1 vs)") auto
+  with vs2 have vs_fst: "hd vs = hd (fst (splitAt ram1 vs))" by (induct ("fst (splitAt ram1 vs)")) auto
+  with neq have "hd vs \<in> set (fst (splitAt ram1 vs))"  by auto
   with b p have "hd vs \<in> set (between vs ram2 ram1)" by auto
   with btw_def have help1: "btw =  fst (splitAt (hd vs) btw) @ [hd vs] @ snd (splitAt (hd vs) btw)" by (auto dest: splitAt_ram)
   from p b btw_def have "btw = snd (splitAt ram2 vs) @  fst (splitAt ram1 vs)" by auto

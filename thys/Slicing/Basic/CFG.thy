@@ -61,18 +61,14 @@ lemma path_Entry_target [dest]:
   shows "n = (_Entry_)" and "as = []"
 using `n -as\<rightarrow>* (_Entry_)`
 proof(induct n as n'\<equiv>"(_Entry_)" rule:path.induct)
-  case (Cons_path n'' as n' a n)
-  { assume "n' = (_Entry_)"
-    with `n' = (_Entry_) \<Longrightarrow> n'' = (_Entry_)`
-    have "n'' = (_Entry_)" by simp
-    with `targetnode a = n''` `valid_edge a` have False
-      by -(rule Entry_target,simp_all) }
-  hence "n' = (_Entry_) \<Longrightarrow> False" .
+  case (Cons_path n'' as a n)
+  from `targetnode a = n''` `valid_edge a` `n'' = (_Entry_)` have False
+    by -(rule Entry_target,simp_all)
   { case 1
-    with `n' = (_Entry_) \<Longrightarrow> False` show ?case by simp
+    with `False` show ?case ..
   next
     case 2
-    with `n' = (_Entry_) \<Longrightarrow> False` show ?case by simp
+    with `False` show ?case ..
   }
 qed simp_all
 

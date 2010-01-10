@@ -180,7 +180,7 @@ proof-
   have "khl <= np \<longrightarrow> 
     (\<exists> S. S \<subseteq> PR \<and> card S = khl \<and> (\<forall>i\<in>S. \<forall>j\<in>PR - S. f j \<le> f i))"
     ( is "khl <= np \<longrightarrow> ?P khl" )
-  proof(induct khl)
+  proof(induct (khl))
     have "?P 0" by force
     thus "0 <= np \<longrightarrow> ?P 0" ..
   next
@@ -243,7 +243,7 @@ proof-
   have "khl <= np \<longrightarrow> 
     (\<exists> S. S \<subseteq> PR \<and> card S = khl \<and> (\<forall>i\<in>S. \<forall>j\<in>PR - S. f i \<le> f j))"
     ( is "khl <= np \<longrightarrow> ?P khl" )
-  proof(induct khl)
+  proof(induct (khl))
     have "?P 0" by force
     thus "0 <= np \<longrightarrow> ?P 0" ..
   next

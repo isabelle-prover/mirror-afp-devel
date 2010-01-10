@@ -374,16 +374,13 @@ lemma \<tau>rtrancl3p_SingletonE:
 proof(atomize_elim)
   from red show "\<exists>s' s''. s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' -\<tau>\<rightarrow>* s'''"
   proof(induct s tls\<equiv>"[tl]" s''')
-    case \<tau>rtrancl3p_refl thus ?case by simp
-  next
-    case (\<tau>rtrancl3p_step s s' tls s'' tl')
-    hence [simp]: "tl' = tl" "tls = []" by simp_all
-    from `s -tl'\<rightarrow> s'` `\<not> \<tau>move s tl' s'` `s' -\<tau>-tls\<rightarrow>* s''` show ?case
+    case (\<tau>rtrancl3p_step s s' s'')
+    from `s -tl\<rightarrow> s'` `\<not> \<tau>move s tl s'` `s' -\<tau>-[]\<rightarrow>* s''` show ?case
       by(auto simp add: \<tau>rtrancl3p_Nil_eq_\<tau>moves)
   next
-    case (\<tau>rtrancl3p_\<tau>step s s' tls s'' tl')
+    case (\<tau>rtrancl3p_\<tau>step s s' s'' tl')
     then obtain t' t'' where "s' -\<tau>\<rightarrow>* t'" "t' -tl\<rightarrow> t''" "\<not> \<tau>move t' tl t''" "t'' -\<tau>\<rightarrow>* s''" by auto
-    moreover note tls = `tls = [tl]`
+    moreover
     from `s -tl'\<rightarrow> s'` `\<tau>move s tl' s'` have "s -\<tau>\<rightarrow>* s'" by blast
     ultimately show ?case by(auto intro: rtranclp_trans)
   qed

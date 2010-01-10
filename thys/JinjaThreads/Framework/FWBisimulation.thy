@@ -516,7 +516,7 @@ proof(induct A\<equiv>"dom (thr s)" arbitrary: s rule: finite_induct)
   thus ?case ..
 next
   case (insert t A)
-  note IH = `\<And>s. \<lbrakk> mthr.\<tau>diverge s; ?wfs s; A = dom (thr s) \<rbrakk>
+  note IH = `\<And>s. \<lbrakk> A = dom (thr s); mthr.\<tau>diverge s; ?wfs s  \<rbrakk>
              \<Longrightarrow> \<exists>t x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wset s t = None \<and> \<tau>diverge (x, shr s)`
   from `insert t A = dom (thr s)`
   obtain x ln where tst: "thr s t = \<lfloor>(x, ln)\<rfloor>" by(fastsimp simp add: dom_def)
@@ -529,7 +529,9 @@ next
     case False
     def xm == "(x, shr s)"
     def xm' == "(x, shr s)"
-    with tst `mthr.\<tau>diverge s` False `?wfs s`
+    have "A = dom (thr s')" using `t \<notin> A` `insert t A = dom (thr s)`
+      unfolding s'_def by auto
+    moreover { from xm'_def tst `mthr.\<tau>diverge s` False `?wfs s`
     have "\<exists>s x. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> (ln \<noteq> no_wait_locks \<or> wset s t \<noteq> None \<or> \<not> \<tau>diverge xm') \<and>
                 s' = (locks s, ((thr s)(t := None), shr s), wset s) \<and> xm = (x, shr s) \<and> 
                 mthr.\<tau>diverge s \<and> silent_moves xm' xm \<and> ?wfs s"
@@ -613,11 +615,9 @@ next
 	  unfolding `m'' = shr s` `shr s = shr s''` by auto
 	ultimately show ?thesis using `\<not> \<tau>diverge xm'` `mthr.\<tau>diverge s''` by blast
       qed
-    qed
+    qed }
     moreover from `?wfs s` have "?wfs s'"
       unfolding s'_def by(auto intro!: ts_okI split: split_if_asm dest: ts_okD)
-    moreover have "A = dom (thr s')" using `t \<notin> A` `insert t A = dom (thr s)`
-      unfolding s'_def by auto
     ultimately have "\<exists>t x. thr s' t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> wset s' t = None \<and> \<tau>diverge (x, shr s')" by(rule IH)
     then obtain t' x' where "thr s' t' = \<lfloor>(x', no_wait_locks)\<rfloor>"
       and "wset s' t' = None" and "\<tau>diverge (x', shr s')" by blast
@@ -699,14 +699,14 @@ proof(intro allI impI)
       with `ts \<in> Q` show ?case by(auto elim: m\<mu>t.cases)
     next
       case (insert t A)
-      note IH = `\<And>ts Q. \<lbrakk>ts \<in> Q; A = dom ts\<rbrakk> \<Longrightarrow> \<exists>z\<in>Q. \<forall>y. m\<mu>t m y z \<longrightarrow> y \<notin> Q`
+      note IH = `\<And>ts Q. \<lbrakk>A = dom ts; ts \<in> Q\<rbrakk> \<Longrightarrow> \<exists>z\<in>Q. \<forall>y. m\<mu>t m y z \<longrightarrow> y \<notin> Q`
       def Q' == "{ts. ts t = None \<and> (\<exists>xln. ts(t \<mapsto> xln) \<in> Q)}"
       let ?ts' = "ts(t := None)"
-      from `insert t A = dom ts` obtain xln where "ts t = \<lfloor>xln\<rfloor>" by(cases "ts t") auto
+      from `insert t A = dom ts` `t \<notin> A` have "A = dom ?ts'" by auto
+      moreover from `insert t A = dom ts` obtain xln where "ts t = \<lfloor>xln\<rfloor>" by(cases "ts t") auto
       hence "ts(t \<mapsto> xln) = ts" by(auto simp add: expand_fun_eq)
       with `ts \<in> Q` have "ts(t \<mapsto> xln) \<in> Q" by(auto)
       hence "?ts' \<in> Q'" unfolding Q'_def by(auto simp del: split_paired_Ex)
-      moreover from `insert t A = dom ts` `t \<notin> A` have "A = dom ?ts'" by auto
       ultimately have "\<exists>z\<in>Q'. \<forall>y. m\<mu>t m y z \<longrightarrow> y \<notin> Q'" by(rule IH)
       then obtain ts' where "ts' \<in> Q'" 
 	and min: "\<And>ts''. m\<mu>t m ts'' ts' \<Longrightarrow> ts'' \<notin> Q'" by blast
@@ -1287,9 +1287,9 @@ proof -
     case (insert t A)
     def s1' == "(locks s1, ((thr s1)(t := None), shr s1), wset s1)"
     def s2' == "(locks s2, ((thr s2)(t := None), shr s2), wset s2)"
-    from `s1 \<approx>m s2` have "s1' \<approx>m s2'" unfolding s1'_def s2'_def by(auto simp add: mbisim_def intro: tbisim_NoneI)
-    moreover from `t \<notin> A` `insert t A = {t. r1.final_thread s1 t}` have "A = {t. r1.final_thread s1' t}"
+    from `t \<notin> A` `insert t A = {t. r1.final_thread s1 t}` have "A = {t. r1.final_thread s1' t}"
       unfolding s1'_def by(auto simp add: r1.final_thread_def)
+    moreover from `s1 \<approx>m s2` have "s1' \<approx>m s2'" unfolding s1'_def s2'_def by(auto simp add: mbisim_def intro: tbisim_NoneI)
     ultimately have "\<exists>s2''. r2.mthr.silent_moves s2' s2'' \<and> s1' \<approx>m s2'' \<and> (\<forall>t. r1.final_thread s1' t \<longrightarrow> r2.final_thread s2'' t) \<and> shr s2'' = shr s2'" by(rule insert)
     then obtain s2'' where reds: "r2.mthr.silent_moves s2' s2''" 
       and "s1' \<approx>m s2''" and fin: "\<And>t. r1.final_thread s1' t \<Longrightarrow> r2.final_thread s2'' t" and "shr s2'' = shr s2'" by blast

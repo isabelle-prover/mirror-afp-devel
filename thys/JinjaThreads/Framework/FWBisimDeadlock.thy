@@ -81,8 +81,9 @@ proof -
       with mbisim_thrD1[OF `s1 \<approx>m (ls2, (ts2, m2), ws2)` `thr s1 t' = \<lfloor>(x1, ln)\<rfloor>`]
       show "\<exists>x2. thr ?s2 t' = \<lfloor>(x2, ln)\<rfloor> \<and> (x1, shr ?s1) \<approx> (x2, shr ?s2)" by auto
     qed
-    hence "\<exists>ts2'. r2.mthr.silent_moves ?s2 (ls2, (ts2', m2), ws2) \<and> (\<forall>t. no_\<tau>moves1 ?s1 t \<longrightarrow> no_\<tau>moves2 (ls2, (ts2', m2), ws2) t) \<and> ?s1 \<approx>m (ls2, (ts2', m2), ws2)"
-      using `A = dom (thr ?s1)` by(rule insert)
+    with `A = dom (thr ?s1)`
+    have "\<exists>ts2'. r2.mthr.silent_moves ?s2 (ls2, (ts2', m2), ws2) \<and> (\<forall>t. no_\<tau>moves1 ?s1 t \<longrightarrow> no_\<tau>moves2 (ls2, (ts2', m2), ws2) t) \<and> ?s1 \<approx>m (ls2, (ts2', m2), ws2)"
+      by(rule insert)
     then obtain ts2' where "r2.mthr.silent_moves ?s2 (ls2, (ts2', m2), ws2)"
       and no_\<tau>: "\<And>t. no_\<tau>moves1 ?s1 t \<Longrightarrow> no_\<tau>moves2 (ls2, (ts2', m2), ws2) t"
       and "?s1 \<approx>m (ls2, (ts2', m2), ws2)" by auto

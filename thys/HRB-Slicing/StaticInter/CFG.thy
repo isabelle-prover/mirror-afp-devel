@@ -500,26 +500,26 @@ by(induct as,auto simp:intra_kind_def)
 
 lemma valid_path_aux_callstack_prefix:
   "valid_path_aux (cs@cs') as \<Longrightarrow> valid_path_aux cs as"
-proof(induct xs\<equiv>"cs@cs'" as arbitrary:cs cs' rule:vpa_induct)
+proof(induct "cs@cs'" as arbitrary:cs cs' rule:vpa_induct)
   case vpa_empty thus ?case by simp
 next
-  case (vpa_intra cs'' a as)
+  case (vpa_intra a as)
   hence "valid_path_aux cs as" by simp
   with `intra_kind (kind a)` show ?case by(cases "kind a",auto simp:intra_kind_def)
 next
-  case (vpa_Call cs a as Q r p fs cs'' cs')
-  note IH = `\<And>xs ys. a#cs = xs@ys \<Longrightarrow> valid_path_aux xs as`
-  from `cs = cs''@cs'` have "a#cs = (a#cs'')@cs'" by simp
+  case (vpa_Call a as Q r p fs cs'' cs')
+  note IH = `\<And>xs ys. a#cs''@cs' = xs@ys \<Longrightarrow> valid_path_aux xs as`
+  have "a#cs''@cs' = (a#cs'')@cs'" by simp
   from IH[OF this] have "valid_path_aux (a#cs'') as" .
   with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` show ?case by simp
 next
-  case (vpa_ReturnEmpty cs a as Q p f cs'' cs')
+  case (vpa_ReturnEmpty a as Q p f cs'' cs')
   hence "valid_path_aux cs'' as" by simp
-  with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = []` `cs = cs''@cs'` show ?case by simp
+  with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs''@cs' = []` show ?case by simp
 next
-  case (vpa_ReturnCons cs a as Q p f c' cs' csx csx')
+  case (vpa_ReturnCons a as Q p f c' cs' csx csx')
   note IH = `\<And>xs ys. cs' = xs@ys \<Longrightarrow> valid_path_aux xs as`
-  from `cs = c'#cs'` `cs = csx@csx'` 
+  from `csx@csx' = c'#cs'` 
   have "csx = [] \<and> csx' = c'#cs' \<or> (\<exists>zs. csx = c'#zs \<and> zs@csx' = cs')"
     by(simp add:append_eq_Cons_conv)
   thus ?case
@@ -723,12 +723,13 @@ lemma valid_path_aux_split:
   assumes "valid_path_aux cs (as@as')"
   shows "valid_path_aux cs as" and "valid_path_aux (upd_cs cs as) as'"
   using `valid_path_aux cs (as@as')`
-proof(induct cs xs\<equiv>"as@as'" arbitrary:as as' rule:vpa_induct)
-  case (vpa_intra cs a as)
+proof(induct cs "as@as'" arbitrary:as as' rule:vpa_induct)
+  case (vpa_intra cs a as as'')
   note IH1 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_aux cs xs`
   note IH2 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_aux (upd_cs cs xs) ys`
-  { case (1 as'')
-    hence "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
+  { case 1
+    from vpa_intra
+    have "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
       by(simp add:Cons_eq_append_conv)
     thus ?case
     proof
@@ -742,8 +743,9 @@ proof(induct cs xs\<equiv>"as@as'" arbitrary:as as' rule:vpa_induct)
       show ?thesis by(fastsimp simp:intra_kind_def)
     qed
   next
-    case (2 as'')
-    hence "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
+    case 2
+    from vpa_intra
+    have "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
       by(simp add:Cons_eq_append_conv)
     thus ?case
     proof
@@ -763,11 +765,12 @@ proof(induct cs xs\<equiv>"as@as'" arbitrary:as as' rule:vpa_induct)
     qed
   }
 next
-  case (vpa_Call cs a as Q r p fs)
+  case (vpa_Call cs a as Q r p fs as'')
   note IH1 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_aux (a#cs) xs`
   note IH2 = `\<And>xs ys. as = xs@ys \<Longrightarrow>   valid_path_aux (upd_cs (a#cs) xs) ys`
-  { case (1 as'')
-    hence "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
+  { case 1
+    from vpa_Call
+    have "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
       by(simp add:Cons_eq_append_conv)
     thus ?case
     proof
@@ -781,8 +784,9 @@ next
       show ?thesis by simp
     qed
   next
-    case (2 as'')
-    hence "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
+    case 2
+    from vpa_Call
+    have "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
       by(simp add:Cons_eq_append_conv)
     thus ?case
     proof
@@ -800,11 +804,12 @@ next
     qed
   }
 next
-  case (vpa_ReturnEmpty cs a as Q p f)
+  case (vpa_ReturnEmpty cs a as Q p f as'')
   note IH1 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_aux [] xs`
   note IH2 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_aux (upd_cs [] xs) ys`
-  { case (1 as'')
-    hence "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
+  { case 1
+    from vpa_ReturnEmpty
+    have "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
       by(simp add:Cons_eq_append_conv)
     thus ?case
     proof
@@ -818,8 +823,9 @@ next
       show ?thesis by simp
     qed
   next
-    case (2 as'')
-    hence "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
+    case 2
+    from vpa_ReturnEmpty
+    have "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
       by(simp add:Cons_eq_append_conv)
     thus ?case
     proof
@@ -838,11 +844,12 @@ next
     qed
   }
 next
-  case (vpa_ReturnCons cs a as Q p f c' cs')
+  case (vpa_ReturnCons cs a as Q p f c' cs' as'')
   note IH1 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_aux cs' xs`
   note IH2 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_aux (upd_cs cs' xs) ys`
-  { case (1 as'')
-    hence "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
+  { case 1
+    from vpa_ReturnCons
+    have "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
       by(simp add:Cons_eq_append_conv)
     thus ?case
     proof
@@ -857,8 +864,9 @@ next
        show ?thesis by simp
      qed
    next
-     case (2 as'')
-     hence "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
+     case 2
+     from vpa_ReturnCons
+     have "as'' = [] \<and> a#as = as' \<or> (\<exists>xs. a#xs = as'' \<and> as = xs@as')"
       by(simp add:Cons_eq_append_conv)
     thus ?case
     proof
@@ -1051,26 +1059,26 @@ by(auto intro:rules split:edge_kind.split_asm list.split_asm simp:intra_kind_def
 
 lemma vpra_callstack_prefix:
   "valid_path_rev_aux (cs@cs') as \<Longrightarrow> valid_path_rev_aux cs as"
-proof(induct xs\<equiv>"cs@cs'" as arbitrary:cs cs' rule:vpra_induct)
+proof(induct "cs@cs'" as arbitrary:cs cs' rule:vpra_induct)
   case vpra_empty thus ?case by simp
 next
-  case (vpra_intra cs'' a as)
+  case (vpra_intra a as)
   hence "valid_path_rev_aux cs as" by simp
   with `intra_kind (kind a)` show ?case by(fastsimp simp:intra_kind_def)
 next
-  case (vpra_Return cs'' a as Q p f)
-  note IH = `\<And>cs cs'. a#cs'' = cs@cs' \<Longrightarrow> valid_path_rev_aux cs as`
-  from `cs'' = cs@cs'` have "a#cs'' = (a#cs)@cs'" by simp
+  case (vpra_Return a as Q p f)
+  note IH = `\<And>ds ds'. a#cs@cs' = ds@ds' \<Longrightarrow> valid_path_rev_aux ds as`
+  have "a#cs@cs' = (a#cs)@cs'" by simp
   from IH[OF this] have "valid_path_rev_aux (a#cs) as" .
   with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` show ?case by simp
 next
-  case (vpra_CallEmpty cs'' a as Q r p fs)
+  case (vpra_CallEmpty a as Q r p fs)
   hence "valid_path_rev_aux cs as" by simp
-  with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `cs'' = []` `cs'' = cs@cs'` show ?case by simp
+  with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `cs@cs' = []` show ?case by simp
 next
-  case (vpra_CallCons cs'' a as Q r p fs c' csx)
+  case (vpra_CallCons a as Q r p fs c' csx)
   note IH = `\<And>cs cs'. csx = cs@cs' \<Longrightarrow> valid_path_rev_aux cs as`
-  from `cs'' = c'#csx` `cs'' = cs@cs'`
+  from `cs@cs' = c'#csx`
   have "(cs = [] \<and> cs' = c'#csx) \<or> (\<exists>zs. cs = c'#zs \<and> zs@cs' = csx)"
     by(simp add:append_eq_Cons_conv)
   thus ?case
@@ -1110,12 +1118,13 @@ lemma valid_path_rev_aux_split:
   assumes "valid_path_rev_aux cs (as@as')"
   shows "valid_path_rev_aux cs as'" and "valid_path_rev_aux (upd_rev_cs cs as') as"
   using `valid_path_rev_aux cs (as@as')`
-proof(induct cs xs\<equiv>"as@as'" arbitrary:as as' rule:vpra_induct)
-  case (vpra_intra cs a as)
+proof(induct cs "as@as'" arbitrary:as as' rule:vpra_induct)
+  case (vpra_intra cs a as as'')
   note IH1 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_rev_aux cs ys`
   note IH2 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_rev_aux (upd_rev_cs cs ys) xs`
-  { case (1 as'')
-    hence "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
+  { case 1
+    from vpra_intra
+    have "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
       by(cases as' rule:rev_cases) auto
     thus ?case
     proof
@@ -1129,8 +1138,9 @@ proof(induct cs xs\<equiv>"as@as'" arbitrary:as as' rule:vpra_induct)
       show ?thesis by(fastsimp simp:intra_kind_def)
     qed
   next
-    case (2 as'')
-    hence "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
+    case 2
+    from vpra_intra
+    have "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
       by(cases as' rule:rev_cases) auto
     thus ?case
     proof
@@ -1150,11 +1160,12 @@ proof(induct cs xs\<equiv>"as@as'" arbitrary:as as' rule:vpra_induct)
     qed
   }
 next
-  case (vpra_Return cs a as Q p f)
+  case (vpra_Return cs a as Q p f as'')
   note IH1 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_rev_aux (a#cs) ys`
   note IH2 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_rev_aux (upd_rev_cs (a#cs) ys) xs`
-  { case (1 as'')
-    hence "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
+  { case 1
+    from vpra_Return
+    have "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
       by(cases as' rule:rev_cases) auto
     thus ?case
     proof
@@ -1168,8 +1179,9 @@ next
       show ?thesis by fastsimp
     qed
   next
-    case (2 as'')
-    hence "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
+    case 2
+    from vpra_Return
+    have "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
       by(cases as' rule:rev_cases) auto
     thus ?case
     proof
@@ -1191,11 +1203,12 @@ next
     qed
   }
 next
-  case (vpra_CallEmpty cs a as Q r p fs)
+  case (vpra_CallEmpty cs a as Q r p fs as'')
   note IH1 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_rev_aux [] ys`
   note IH2 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_rev_aux (upd_rev_cs [] ys) xs`
-  { case (1 as'')
-    hence "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
+  { case 1
+    from vpra_CallEmpty
+    have "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
       by(cases as' rule:rev_cases) auto
     thus ?case
     proof
@@ -1209,8 +1222,9 @@ next
       show ?thesis by fastsimp
     qed
   next
-    case (2 as'')
-    hence "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
+    case 2
+    from vpra_CallEmpty
+    have "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
       by(cases as' rule:rev_cases) auto
     thus ?case
     proof
@@ -1230,11 +1244,12 @@ next
     qed
   }
 next
-  case (vpra_CallCons cs a as Q r p fs c' cs')
+  case (vpra_CallCons cs a as Q r p fs c' cs' as'')
   note IH1 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_rev_aux cs' ys`
   note IH2 = `\<And>xs ys. as = xs@ys \<Longrightarrow> valid_path_rev_aux (upd_rev_cs cs' ys) xs`
-  { case (1 as'')
-    hence "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
+  { case 1
+    from vpra_CallCons
+    have "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
       by(cases as' rule:rev_cases) auto
     thus ?case
     proof
@@ -1248,8 +1263,9 @@ next
       show ?thesis by fastsimp
     qed
   next
-    case (2 as'')
-    hence "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
+    case 2
+    from vpra_CallCons
+    have "as' = [] \<and> as@[a] = as'' \<or> (\<exists>xs. as = as''@xs \<and> xs@[a] = as')"
       by(cases as' rule:rev_cases) auto
     thus ?case
     proof
@@ -3084,18 +3100,14 @@ lemma path_Entry_target [dest]:
   shows "n = (_Entry_)" and "as = []"
 using `n -as\<rightarrow>* (_Entry_)`
 proof(induct n as n'\<equiv>"(_Entry_)" rule:path.induct)
-  case (Cons_path n'' as n' a n)
-  { assume "n' = (_Entry_)"
-    with `n' = (_Entry_) \<Longrightarrow> n'' = (_Entry_)`
-    have "n'' = (_Entry_)" by simp
-    with `targetnode a = n''` `valid_edge a` have False
-      by -(rule Entry_target,simp_all) }
-  hence "n' = (_Entry_) \<Longrightarrow> False" .
+  case (Cons_path n'' as a n)
+  from `n'' = (_Entry_)` `targetnode a = n''` `valid_edge a` have False
+    by -(rule Entry_target,simp_all)
   { case 1
-    with `n' = (_Entry_) \<Longrightarrow> False` show ?case by simp
+    from `False` show ?case ..
   next
     case 2
-    with `n' = (_Entry_) \<Longrightarrow> False` show ?case by simp
+    from `False` show ?case ..
   }
 qed simp_all
 

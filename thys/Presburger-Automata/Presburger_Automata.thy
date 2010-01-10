@@ -894,7 +894,7 @@ next
       hence "m < l \<or> m = l" by auto
       thus ?thesis proof (elim disjE)
 	assume H: "m < l"
-	with Cons(9) have I: "(y # xs) ! i = Some m" proof (induct "y # xs" arbitrary: jj i)
+	with Cons(9) have I: "(y # xs) ! i = Some m" proof (induct ("y # xs") arbitrary: jj i)
 	  case (Cons a l jj i) thus ?case by (cases i) (auto, cases "tr_lookup T jj ii \<or> a \<noteq> None", simp+)
 	qed simp
 	from 0 H have "(mk_eqcl' (y # xs) ii jj l T ! j = Some m) = ((y#xs) ! j = Some m)" by (cases "tr_lookup T jj ii \<or> y \<noteq> None") simp+
@@ -1604,7 +1604,7 @@ lemma bddh_subsetbdd:
   and "bddh l bdd'"
   and "nfa_is_node A q"
   shows "bddh l (subsetbdd (fst A) q bdd')"
-using assms unfolding nfa_is_node_def by (induct "fst A" q bdd' rule: subsetbdd.induct) (simp add: bddh_binop)+
+using assms unfolding nfa_is_node_def by (induct ("fst A") q bdd' rule: subsetbdd.induct) (simp add: bddh_binop)+
 
 lemma bdd_lookup_subsetbdd':
   assumes "length bdds = length q"
@@ -2708,7 +2708,7 @@ proof -
     hence "list_all (\<lambda>p. \<exists>j. bdd_lookup bt p = Some j \<and> j < length ls) (add_leaves (subsetbdd (fst A) q (nfa_emptybdd (length q))) [])" by (simp add: list_all_iff subset_succs_def)
     hence "bdd_all (\<lambda>p. \<exists>j. bdd_lookup bt p = Some j \<and> j < length ls) (subsetbdd (fst A) q (nfa_emptybdd (length q)))" by (simp add: add_leaves_bdd_all_eq)
     hence "bdd_all (\<lambda>l. l < length ls) (bdd_map (\<lambda>q. the (bdd_lookup bt q)) (subsetbdd (fst A) q (nfa_emptybdd (length q))))"
-      by (induct "subsetbdd (fst A) q (nfa_emptybdd (length q))") auto
+      by (induct ("subsetbdd (fst A) q (nfa_emptybdd (length q))")) auto
   }
   then have "\<forall>x \<in> set ls. bdd_all (\<lambda>l. l < length ls) (bdd_map (\<lambda>q. the (bdd_lookup bt q)) (subsetbdd (fst A) x (nfa_emptybdd (length x))))" by (simp add: in_set_conv_nth)
   hence "list_all (\<lambda>x. bdd_all (\<lambda>l. l < length ls) (bdd_map (\<lambda>q. the (bdd_lookup bt q)) (subsetbdd (fst A) x (nfa_emptybdd (length x))))) ls" by (simp add: list_all_iff)

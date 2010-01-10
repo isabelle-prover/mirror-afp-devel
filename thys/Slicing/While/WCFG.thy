@@ -131,16 +131,12 @@ by(induct prog n et n'\<equiv>"(_Entry_)" rule:WCFG_induct,auto)
 
 lemma WCFG_sourcelabel_less_num_nodes:
   "prog \<turnstile> (_ l _) -et\<rightarrow> n' \<Longrightarrow> l < #:prog"
-proof(induct prog n\<equiv>"(_ l _)" et n' arbitrary:l rule:WCFG_induct)
-  case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
-  note IH = `\<And>l. n = (_ l _) \<Longrightarrow> l < #:c\<^isub>1`
-  from IH[OF `n = (_ l _)`] have "l < #:c\<^isub>1" .
-  thus ?case by simp
+proof(induct prog "(_ l _)" et n' arbitrary:l rule:WCFG_induct)
+  case (WCFG_SeqFirst c\<^isub>1 et n' c\<^isub>2)
+  from `l < #:c\<^isub>1` show ?case by simp
 next
-  case (WCFG_SeqConnect c\<^isub>1 n et c\<^isub>2)
-  note IH = `\<And>l. n = (_ l _) \<Longrightarrow> l < #:c\<^isub>1`
-  from IH[OF `n = (_ l _)`] have "l < #:c\<^isub>1" .
-  thus ?case by simp
+  case (WCFG_SeqConnect c\<^isub>1 et c\<^isub>2)
+  from `l < #:c\<^isub>1` show ?case by simp
 next
   case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
   note IH = `\<And>l. n = (_ l _) \<Longrightarrow> l < #:c\<^isub>2`
@@ -176,11 +172,9 @@ qed (auto simp:num_inner_nodes_gr_0)
 
 lemma WCFG_targetlabel_less_num_nodes:
   "prog \<turnstile> n -et\<rightarrow> (_ l _) \<Longrightarrow> l < #:prog"
-proof(induct prog n et n'\<equiv>"(_ l _)" arbitrary:l rule:WCFG_induct)
-  case (WCFG_SeqFirst c\<^isub>1 n et n' c\<^isub>2)
-  note IH = `\<And>l. n' = (_ l _) \<Longrightarrow> l < #:c\<^isub>1`
-  from IH[OF `n' = (_ l _)`] have "l < #:c\<^isub>1" .
-  thus ?case by simp
+proof(induct prog n et "(_ l _)" arbitrary:l rule:WCFG_induct)
+  case (WCFG_SeqFirst c\<^isub>1 n et c\<^isub>2)
+  from `l < #:c\<^isub>1` show ?case by simp
 next
   case (WCFG_SeqSecond c\<^isub>2 n et n' c\<^isub>1)
   note IH = `\<And>l. n' = (_ l _) \<Longrightarrow> l < #:c\<^isub>2`

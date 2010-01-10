@@ -16,22 +16,22 @@ definition label_incrs :: "w_edge list \<Rightarrow> nat \<Rightarrow> w_edge li
 
 lemma path_SeqFirst:
   "prog \<turnstile> n -as\<rightarrow>* (_ l _) \<Longrightarrow> prog;;c\<^isub>2 \<turnstile> n -as\<rightarrow>* (_ l _)"
-proof(induct n as n'\<equiv>"(_ l _)" arbitrary:l rule:While_CFG.path.induct)
-  case (empty_path n)
-  from `CFG.valid_node sourcenode targetnode (valid_edge prog) n` 
-    `n = (_ l _)` show ?case
-    apply simp apply(rule While_CFG.empty_path)
+proof(induct n as "(_ l _)" arbitrary:l rule:While_CFG.path.induct)
+  case empty_path
+  from `CFG.valid_node sourcenode targetnode (valid_edge prog) (_ l _)`
+  show ?case
+    apply -
+    apply(rule While_CFG.empty_path)
     apply(auto simp:While_CFG.valid_node_def valid_edge_def)
     by(case_tac b,auto dest:WCFG_SeqFirst WCFG_SeqConnect)
 next
-  case (Cons_path n'' as n' a n)
-  note IH = `\<And>l. n' = (_ l _) \<Longrightarrow> prog;; c\<^isub>2 \<turnstile> n'' -as\<rightarrow>* (_ l _)`
-  from `prog \<turnstile> n'' -as\<rightarrow>* n'` `n' = (_ l _)` have "n'' \<noteq> (_Exit_)"
+  case (Cons_path n'' as a n)
+  note IH = `prog;; c\<^isub>2 \<turnstile> n'' -as\<rightarrow>* (_ l _)`
+  from `prog \<turnstile> n'' -as\<rightarrow>* (_ l _)` have "n'' \<noteq> (_Exit_)"
     by fastsimp
   with `valid_edge prog a` `sourcenode a = n` `targetnode a = n''`
   have "prog;;c\<^isub>2 \<turnstile> n -kind a\<rightarrow> n''" by(simp add:valid_edge_def WCFG_SeqFirst)
-  from IH[OF `n' = (_ l _)`] have "prog;;c\<^isub>2 \<turnstile> n'' -as\<rightarrow>* (_ l _)" .
-  with `prog;;c\<^isub>2 \<turnstile> n -kind a\<rightarrow> n''` `sourcenode a = n` `targetnode a = n''` show ?case
+  with IH `prog;;c\<^isub>2 \<turnstile> n -kind a\<rightarrow> n''` `sourcenode a = n` `targetnode a = n''` show ?case
     by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
 qed
 
@@ -76,39 +76,38 @@ qed simp
 lemma path_CondTrue:
   "prog \<turnstile> (_ l _) -as\<rightarrow>* n' 
   \<Longrightarrow> if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -as \<oplus>s 1\<rightarrow>* n' \<oplus> 1"
-proof(induct n\<equiv>"(_ l _)" as n' arbitrary:l rule:While_CFG.path.induct)
-  case (empty_path n)
-  from `CFG.valid_node sourcenode targetnode (valid_edge prog) n` `n = (_ l _)` 
+proof(induct "(_ l _)" as n' arbitrary:l rule:While_CFG.path.induct)
+  case empty_path
+  from `CFG.valid_node sourcenode targetnode (valid_edge prog) (_ l _)` 
     WCFG_CondTrue[of b prog c\<^isub>2]
   have "CFG.valid_node sourcenode targetnode (valid_edge (if (b) prog else c\<^isub>2)) 
-    (n \<oplus> 1)"
+    ((_ l _) \<oplus> 1)"
     apply(auto simp:While_CFG.valid_node_def valid_edge_def)
     apply(rotate_tac 1,drule WCFG_CondThen,simp,fastsimp)
     apply(case_tac a) apply auto
      apply(rotate_tac 1,drule WCFG_CondThen,simp,fastsimp)
     by(rotate_tac 1,drule WCFG_EntryD,auto)
-  with `n = (_ l _)` show ?case
+  then show ?case
     by(fastsimp intro:While_CFG.empty_path simp:label_incrs_def)
 next
-  case (Cons_path n'' as n' a n)
+  case (Cons_path n'' as n' a)
   note IH = `\<And>l. n'' = (_ l _) 
     \<Longrightarrow> if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -as \<oplus>s 1\<rightarrow>* n' \<oplus> 1`
-  note [simp] = `n = (_ l _)`
-  from `valid_edge prog a` `sourcenode a = n`  `targetnode a = n''` `n = (_ l _)`
-  have "if (b) prog else c\<^isub>2 \<turnstile> n \<oplus> 1 -kind a\<rightarrow> n'' \<oplus> 1"
+  from `valid_edge prog a` `sourcenode a = (_ l _)`  `targetnode a = n''`
+  have "if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -kind a\<rightarrow> n'' \<oplus> 1"
     by -(rule WCFG_CondThen,simp_all add:valid_edge_def)
-  from `sourcenode a = n` `targetnode a = n''` `valid_edge prog a`
-  have "[(n,kind a,n'')] \<oplus>s 1 = [a] \<oplus>s 1"
+  from `sourcenode a = (_ l _)` `targetnode a = n''` `valid_edge prog a`
+  have "[((_ l _),kind a,n'')] \<oplus>s 1 = [a] \<oplus>s 1"
     by(cases a,simp add:label_incrs_def valid_edge_def)
   show ?case
   proof(cases n'')
     case (Node l')
     from IH[OF this] have "if (b) prog else c\<^isub>2 \<turnstile> (_ l' _) \<oplus> 1 -as \<oplus>s 1\<rightarrow>* n' \<oplus> 1" .
-    with `if (b) prog else c\<^isub>2 \<turnstile> n \<oplus> 1 -kind a\<rightarrow> n'' \<oplus> 1` Node
-    have "if (b) prog else c\<^isub>2 \<turnstile> n \<oplus> 1 -(n \<oplus> 1,kind a,n'' \<oplus> 1)#(as \<oplus>s 1)\<rightarrow>* n' \<oplus> 1"
+    with `if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -kind a\<rightarrow> n'' \<oplus> 1` Node
+    have "if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -((_ l _) \<oplus> 1,kind a,n'' \<oplus> 1)#(as \<oplus>s 1)\<rightarrow>* n' \<oplus> 1"
       by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def valid_node_def)
-    with `[(n,kind a,n'')] \<oplus>s 1 = [a] \<oplus>s 1` 
-    have "if (b) prog else c\<^isub>2 \<turnstile> n \<oplus> 1 -a#as \<oplus>s 1\<rightarrow>* n' \<oplus> 1"
+    with `[((_ l _),kind a,n'')] \<oplus>s 1 = [a] \<oplus>s 1` 
+    have "if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -a#as \<oplus>s 1\<rightarrow>* n' \<oplus> 1"
       by(simp add:label_incrs_def)
     thus ?thesis by simp
   next
@@ -119,11 +118,11 @@ next
     case Exit
     with `prog \<turnstile> n'' -as\<rightarrow>* n'` have "n' = (_Exit_)" and "as = []"
       by(auto dest:While_CFGExit.path_Exit_source)
-    from `if (b) prog else c\<^isub>2 \<turnstile> n \<oplus> 1 -kind a\<rightarrow> n'' \<oplus> 1` 
-    have "if (b) prog else c\<^isub>2 \<turnstile> n \<oplus> 1 -[(n \<oplus> 1,kind a,n'' \<oplus> 1)]\<rightarrow>* n'' \<oplus> 1"
+    from `if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -kind a\<rightarrow> n'' \<oplus> 1` 
+    have "if (b) prog else c\<^isub>2 \<turnstile> (_ l _) \<oplus> 1 -[((_ l _) \<oplus> 1,kind a,n'' \<oplus> 1)]\<rightarrow>* n'' \<oplus> 1"
       by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path 
 	          simp:While_CFG.valid_node_def valid_edge_def)
-    with Exit `[(n,kind a,n'')] \<oplus>s 1 = [a] \<oplus>s 1`  `n' = (_Exit_)` `as = []`
+    with Exit `[((_ l _),kind a,n'')] \<oplus>s 1 = [a] \<oplus>s 1`  `n' = (_Exit_)` `as = []`
     show ?thesis by(fastsimp simp:label_incrs_def)
   qed
 qed
@@ -132,13 +131,12 @@ qed
 lemma path_CondFalse:
   "prog \<turnstile> (_ l _) -as\<rightarrow>* n'
   \<Longrightarrow> if (b) c\<^isub>1 else prog \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) -as \<oplus>s (#:c\<^isub>1 + 1)\<rightarrow>* n' \<oplus> (#:c\<^isub>1 + 1)"
-proof(induct n\<equiv>"(_ l _)" as n' arbitrary:l rule:While_CFG.path.induct)
-  case (empty_path n)
-  note [simp] = `n = (_ l _)`
-  from `CFG.valid_node sourcenode targetnode (valid_edge prog) n`
+proof(induct "(_ l _)" as n' arbitrary:l rule:While_CFG.path.induct)
+  case empty_path
+  from `CFG.valid_node sourcenode targetnode (valid_edge prog) (_ l _)`
     WCFG_CondFalse[of b c\<^isub>1 prog]
   have "CFG.valid_node sourcenode targetnode (valid_edge (if (b) c\<^isub>1 else prog))
-    (n \<oplus> #:c\<^isub>1 + 1)"
+    ((_ l _) \<oplus> #:c\<^isub>1 + 1)"
     apply(auto simp:While_CFG.valid_node_def valid_edge_def)
     apply(rotate_tac 1,drule WCFG_CondElse,simp,fastsimp)
     apply(case_tac a) apply auto
@@ -146,28 +144,27 @@ proof(induct n\<equiv>"(_ l _)" as n' arbitrary:l rule:While_CFG.path.induct)
     by(rotate_tac 1,drule WCFG_EntryD,auto)
   thus ?case by(fastsimp intro:While_CFG.empty_path simp:label_incrs_def)
 next
-  case (Cons_path n'' as n' a n)
+  case (Cons_path n'' as n' a)
   note IH = `\<And>l. n'' = (_ l _) \<Longrightarrow> if (b) c\<^isub>1 else prog \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) 
                                                -as \<oplus>s (#:c\<^isub>1 + 1)\<rightarrow>* n' \<oplus> (#:c\<^isub>1 + 1)`
-  note [simp] = `n = (_ l _)`
-  from `valid_edge prog a` `sourcenode a = n`  `targetnode a = n''` `n = (_ l _)`
-  have "if (b) c\<^isub>1 else prog \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) -kind a\<rightarrow> n'' \<oplus> (#:c\<^isub>1 + 1)"
+  from `valid_edge prog a` `sourcenode a = (_ l _)`  `targetnode a = n''`
+  have "if (b) c\<^isub>1 else prog \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) -kind a\<rightarrow> n'' \<oplus> (#:c\<^isub>1 + 1)"
     by -(rule WCFG_CondElse,simp_all add:valid_edge_def)
-  from `sourcenode a = n` `targetnode a = n''` `valid_edge prog a`
-  have "[(n,kind a,n'')] \<oplus>s (#:c\<^isub>1 + 1) = [a] \<oplus>s (#:c\<^isub>1 + 1)"
+  from `sourcenode a = (_ l _)` `targetnode a = n''` `valid_edge prog a`
+  have "[((_ l _),kind a,n'')] \<oplus>s (#:c\<^isub>1 + 1) = [a] \<oplus>s (#:c\<^isub>1 + 1)"
     by(cases a,simp add:label_incrs_def valid_edge_def)
   show ?case
   proof(cases n'')
     case (Node l')
     from IH[OF this] have "if (b) c\<^isub>1 else prog \<turnstile> (_ l' _) \<oplus> (#:c\<^isub>1 + 1) 
                                              -as \<oplus>s (#:c\<^isub>1 + 1)\<rightarrow>* n' \<oplus> (#:c\<^isub>1 + 1)" .
-    with `if (b) c\<^isub>1 else prog \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) -kind a\<rightarrow> n'' \<oplus> (#:c\<^isub>1 + 1)` Node
-    have "if (b) c\<^isub>1 else prog \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) 
-      -(n \<oplus> (#:c\<^isub>1 + 1),kind a,n'' \<oplus> (#:c\<^isub>1 + 1))#(as \<oplus>s (#:c\<^isub>1 + 1))\<rightarrow>* 
+    with `if (b) c\<^isub>1 else prog \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) -kind a\<rightarrow> n'' \<oplus> (#:c\<^isub>1 + 1)` Node
+    have "if (b) c\<^isub>1 else prog \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) 
+      -((_ l _) \<oplus> (#:c\<^isub>1 + 1),kind a,n'' \<oplus> (#:c\<^isub>1 + 1))#(as \<oplus>s (#:c\<^isub>1 + 1))\<rightarrow>* 
       n' \<oplus> (#:c\<^isub>1 + 1)"
       by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def valid_node_def)
-    with `[(n,kind a,n'')] \<oplus>s (#:c\<^isub>1 + 1) = [a] \<oplus>s (#:c\<^isub>1 + 1)` Node
-    have "if (b) c\<^isub>1 else prog \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) -a#as \<oplus>s (#:c\<^isub>1 + 1)\<rightarrow>* 
+    with `[((_ l _),kind a,n'')] \<oplus>s (#:c\<^isub>1 + 1) = [a] \<oplus>s (#:c\<^isub>1 + 1)` Node
+    have "if (b) c\<^isub>1 else prog \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) -a#as \<oplus>s (#:c\<^isub>1 + 1)\<rightarrow>* 
                                 n' \<oplus> (#:c\<^isub>1 + 1)"
       by(simp add:label_incrs_def)
     thus ?thesis by simp
@@ -179,12 +176,12 @@ next
     case Exit
     with `prog \<turnstile> n'' -as\<rightarrow>* n'` have "n' = (_Exit_)" and "as = []"
       by(auto dest:While_CFGExit.path_Exit_source)
-    from `if (b) c\<^isub>1 else prog \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) -kind a\<rightarrow> n'' \<oplus> (#:c\<^isub>1 + 1)`
-    have "if (b) c\<^isub>1 else prog \<turnstile> n \<oplus> (#:c\<^isub>1 + 1) 
-          -[(n \<oplus> (#:c\<^isub>1 + 1),kind a,n'' \<oplus> (#:c\<^isub>1 + 1))]\<rightarrow>* n'' \<oplus> (#:c\<^isub>1 + 1)"
+    from `if (b) c\<^isub>1 else prog \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) -kind a\<rightarrow> n'' \<oplus> (#:c\<^isub>1 + 1)`
+    have "if (b) c\<^isub>1 else prog \<turnstile> (_ l _) \<oplus> (#:c\<^isub>1 + 1) 
+          -[((_ l _) \<oplus> (#:c\<^isub>1 + 1),kind a,n'' \<oplus> (#:c\<^isub>1 + 1))]\<rightarrow>* n'' \<oplus> (#:c\<^isub>1 + 1)"
       by(fastsimp intro:While_CFG.Cons_path While_CFG.empty_path 
 	          simp:While_CFG.valid_node_def valid_edge_def)
-    with Exit `[(n,kind a,n'')] \<oplus>s (#:c\<^isub>1 + 1) = [a] \<oplus>s (#:c\<^isub>1 + 1)` `n' = (_Exit_)`
+    with Exit `[((_ l _),kind a,n'')] \<oplus>s (#:c\<^isub>1 + 1) = [a] \<oplus>s (#:c\<^isub>1 + 1)` `n' = (_Exit_)`
       `as = []` 
     show ?thesis by(fastsimp simp:label_incrs_def)
   qed
@@ -195,13 +192,11 @@ qed
 lemma path_While:
   "prog \<turnstile> (_ l _) -as\<rightarrow>* (_ l' _) 
   \<Longrightarrow> while (b) prog \<turnstile> (_ l _) \<oplus> 2 -as \<oplus>s 2\<rightarrow>* (_ l' _) \<oplus> 2"
-proof(induct n\<equiv>"(_ l _)" as n'\<equiv>"(_ l' _)" arbitrary:l l' rule:While_CFG.path.induct)
-  case (empty_path n)
-  note [simp] = `n = (_ l _)` `n = (_ l' _)`
-  hence [simp]:"l = l'" by simp
-  from `CFG.valid_node sourcenode targetnode (valid_edge prog) n`
+proof(induct "(_ l _)" as "(_ l' _)" arbitrary:l l' rule:While_CFG.path.induct)
+  case empty_path
+  from `CFG.valid_node sourcenode targetnode (valid_edge prog) (_ l _)`
     WCFG_WhileTrue[of b prog]
-  have "CFG.valid_node sourcenode targetnode (valid_edge (while (b) prog)) (n \<oplus> 2)"
+  have "CFG.valid_node sourcenode targetnode (valid_edge (while (b) prog)) ((_ l _) \<oplus> 2)"
     apply(auto simp:While_CFG.valid_node_def valid_edge_def)
      apply(case_tac ba) apply auto
       apply(rotate_tac 1,drule WCFG_WhileBody,auto)
@@ -211,34 +206,33 @@ proof(induct n\<equiv>"(_ l _)" as n'\<equiv>"(_ l' _)" arbitrary:l l' rule:Whil
     by(rotate_tac 1,drule WCFG_EntryD,auto)
   thus ?case by(fastsimp intro:While_CFG.empty_path simp:label_incrs_def)
 next
-  case (Cons_path n'' as n' a n)
-  note [simp] = `n = (_ l _)` `n' = (_ l' _)`
-  note IH = `\<And>l l'. \<lbrakk>n'' = (_ l _); n' = (_ l' _)\<rbrakk>
+  case (Cons_path n'' as a)
+  note IH = `\<And>l. n'' = (_ l _)
     \<Longrightarrow> while (b) prog \<turnstile> (_ l _) \<oplus> 2 -as \<oplus>s 2\<rightarrow>* (_ l' _) \<oplus> 2`
-   from `sourcenode a = n` `targetnode a = n''` `valid_edge prog a`
-  have "[(n,kind a,n'')] \<oplus>s 2 = [a] \<oplus>s 2"
+   from `sourcenode a = (_ l _)` `targetnode a = n''` `valid_edge prog a`
+  have "[((_ l _),kind a,n'')] \<oplus>s 2 = [a] \<oplus>s 2"
     by(cases a,simp add:label_incrs_def valid_edge_def)
   show ?case
   proof(cases n'')
     case (Node l'')
-    with `valid_edge prog a` `sourcenode a = n`  `targetnode a = n''` `n = (_ l _)`
-    have "while (b) prog \<turnstile> n \<oplus> 2 -kind a\<rightarrow> n'' \<oplus> 2"
+    with `valid_edge prog a` `sourcenode a = (_ l _)`  `targetnode a = n''`
+    have "while (b) prog \<turnstile> (_ l _) \<oplus> 2 -kind a\<rightarrow> n'' \<oplus> 2"
       by -(rule WCFG_WhileBody,simp_all add:valid_edge_def)
-    from IH[OF Node `n' = (_ l' _)`]
+    from IH[OF Node]
     have "while (b) prog \<turnstile> (_ l'' _) \<oplus> 2 -as \<oplus>s 2\<rightarrow>* (_ l' _) \<oplus> 2" .
-    with `while (b) prog \<turnstile> n \<oplus> 2 -kind a\<rightarrow> n'' \<oplus> 2` Node
-    have "while (b) prog \<turnstile> n \<oplus> 2 -(n \<oplus> 2,kind a,n'' \<oplus> 2)#(as \<oplus>s 2)\<rightarrow>* n' \<oplus> 2"
+    with `while (b) prog \<turnstile> (_ l _) \<oplus> 2 -kind a\<rightarrow> n'' \<oplus> 2` Node
+    have "while (b) prog \<turnstile> (_ l _) \<oplus> 2 -((_ l _) \<oplus> 2,kind a,n'' \<oplus> 2)#(as \<oplus>s 2)\<rightarrow>* (_ l' _) \<oplus> 2"
       by(fastsimp intro:While_CFG.Cons_path simp:valid_edge_def)
-    with `[(n,kind a,n'')] \<oplus>s 2 = [a] \<oplus>s 2` show ?thesis by(simp add:label_incrs_def)
+    with `[((_ l _),kind a,n'')] \<oplus>s 2 = [a] \<oplus>s 2` show ?thesis by(simp add:label_incrs_def)
   next
     case Entry
     with `valid_edge prog a` `targetnode a = n''` have False by fastsimp
     thus ?thesis by simp
   next
     case Exit
-    with `prog \<turnstile> n'' -as\<rightarrow>* n'` have "n' = (_Exit_)" and "as = []"
+    with `prog \<turnstile> n'' -as\<rightarrow>* (_ l' _)` have "(_ l' _) = (_Exit_)" and "as = []"
       by(auto dest:While_CFGExit.path_Exit_source)
-    with `n' = (_ l' _)` have False by simp
+    then have False by simp
     thus ?thesis by simp
   qed
 qed

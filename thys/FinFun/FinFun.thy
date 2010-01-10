@@ -113,7 +113,7 @@ proof -
   from assms obtain b where "finite {a. y a \<noteq> b}"
     unfolding finfun_def by blast
   hence "finite {c. g (y c) \<noteq> g b}"
-  proof(induct x\<equiv>"{a. y a \<noteq> b}" arbitrary: y)
+  proof(induct "{a. y a \<noteq> b}" arbitrary: y)
     case empty
     hence "y = (\<lambda>a. b)" by(auto intro: ext)
     thus ?case by(simp)
@@ -501,13 +501,13 @@ proof -
   interpret gwf: fun_left_comm "?upd" by(rule upd_left_comm)
   
   from fin anf fg show ?thesis
-  proof(induct A\<equiv>"dom f" arbitrary: f)
+  proof(induct "dom f" arbitrary: f)
     case empty
     from `{} = dom f` have "f = empty" by(auto simp add: dom_def intro: ext)
     thus ?case by(simp add: finfun_const_def upd_const_same)
   next
     case (insert a' A)
-    note IH = `\<And>f.  \<lbrakk> a \<notin> dom f; f \<subseteq>\<^sub>m g; A = dom f\<rbrakk> \<Longrightarrow> upd a d (?fr (dom f)) = ?fr (dom f)`
+    note IH = `\<And>f.  \<lbrakk> A = dom f; a \<notin> dom f; f \<subseteq>\<^sub>m g \<rbrakk> \<Longrightarrow> upd a d (?fr (dom f)) = ?fr (dom f)`
     note fin = `finite A` note anf = `a \<notin> dom f` note a'nA = `a' \<notin> A`
     note domf = `insert a' A = dom f` note fg = `f \<subseteq>\<^sub>m g`
     
@@ -519,7 +519,7 @@ proof -
     hence ga': "map_default d g a' = map_default d f a'" by(simp add: map_default_def)
     also from anf domf have "a \<noteq> a'" by auto note upd_commute[OF this]
     also from domf a'nA anf fg have "a \<notin> dom ?f'" "?f' \<subseteq>\<^sub>m g" and A: "A = dom ?f'" by(auto simp add: ran_def map_le_def)
-    note A also note IH[OF `a \<notin> dom ?f'` `?f' \<subseteq>\<^sub>m g` A]
+    note A also note IH[OF A `a \<notin> dom ?f'` `?f' \<subseteq>\<^sub>m g`]
     also have "upd a' (map_default d f a') (?fr (dom (f(a' := None)))) = ?fr (dom f)"
       unfolding domf[symmetric] gwf.fold_insert[OF fin a'nA] ga' unfolding A ..
     also have "insert a' (dom ?f') = dom f" using domf by auto
@@ -539,13 +539,13 @@ proof -
   interpret gwf: fun_left_comm "?upd" by(rule upd_left_comm)
   
   from fin anf fg show ?thesis
-  proof(induct A\<equiv>"dom f" arbitrary: f)
+  proof(induct "dom f" arbitrary: f)
     case empty
     from `{} = dom f` have "f = empty" by(auto simp add: dom_def intro: ext)
     thus ?case by(auto simp add: finfun_const_def finfun_update_def upd_upd_twice)
   next
     case (insert a' A)
-    note IH = `\<And>f. \<lbrakk>a \<notin> dom f; f \<subseteq>\<^sub>m g; A = dom f\<rbrakk> \<Longrightarrow> upd a d'' (upd a d' (?fr (dom f))) = upd a d'' (?fr (dom f))`
+    note IH = `\<And>f. \<lbrakk>A = dom f; a \<notin> dom f; f \<subseteq>\<^sub>m g\<rbrakk> \<Longrightarrow> upd a d'' (upd a d' (?fr (dom f))) = upd a d'' (?fr (dom f))`
     note fin = `finite A` note anf = `a \<notin> dom f` note a'nA = `a' \<notin> A`
     note domf = `insert a' A = dom f` note fg = `f \<subseteq>\<^sub>m g`
     
@@ -559,7 +559,7 @@ proof -
     also from anf domf have ana': "a \<noteq> a'" by auto note upd_commute[OF this]
     also note upd_commute[OF ana']
     also from domf a'nA anf fg have "a \<notin> dom ?f'" "?f' \<subseteq>\<^sub>m g" and A: "A = dom ?f'" by(auto simp add: ran_def map_le_def)
-    note A also note IH[OF `a \<notin> dom ?f'` `?f' \<subseteq>\<^sub>m g` A]
+    note A also note IH[OF A `a \<notin> dom ?f'` `?f' \<subseteq>\<^sub>m g`]
     also note upd_commute[OF ana'[symmetric]] also note ga'[symmetric] also note A[symmetric]
     also note gwf.fold_insert[symmetric, OF fin a'nA] also note domf
     finally show ?case .
@@ -849,7 +849,7 @@ proof(induct x rule: Abs_finfun_induct)
   case (Abs_finfun y)
   then obtain b where "finite {a. y a \<noteq> b}" unfolding finfun_def by blast
   thus ?case using `y \<in> finfun`
-  proof(induct x\<equiv>"{a. y a \<noteq> b}" arbitrary: y rule: finite_induct)
+  proof(induct "{a. y a \<noteq> b}" arbitrary: y rule: finite_induct)
     case empty
     hence "\<And>a. y a = b" by blast
     hence "y = (\<lambda>a. b)" by(auto intro: ext)
@@ -857,10 +857,10 @@ proof(induct x rule: Abs_finfun_induct)
     thus ?case by(simp add: const)
   next
     case (insert a A)
-    note IH = `\<And>y. \<lbrakk> y \<in> finfun; A = {a. y a \<noteq> b} \<rbrakk> \<Longrightarrow> P (Abs_finfun y)`
+    note IH = `\<And>y. \<lbrakk> A = {a. y a \<noteq> b}; y \<in> finfun  \<rbrakk> \<Longrightarrow> P (Abs_finfun y)`
     note y = `y \<in> finfun`
     with `insert a A = {a. y a \<noteq> b}` `a \<notin> A`
-    have "y(a := b) \<in> finfun" "A = {a'. (y(a := b)) a' \<noteq> b}" by auto
+    have "A = {a'. (y(a := b)) a' \<noteq> b}" "y(a := b) \<in> finfun" by auto
     from IH[OF this] have "P (finfun_update (Abs_finfun (y(a := b))) a (y a))" by(rule update)
     thus ?case using y unfolding finfun_update_def by simp
   qed

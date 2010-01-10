@@ -22,26 +22,25 @@ proof -
   have "CFG_node n \<in> combine_SDG_slices (sum_SDG_slice1 (CFG_node (_Exit_)))"
     by(simp add:HRB_slice_def SDG_to_CFG_set_def)
   thus ?thesis
-  proof(induct m\<equiv>"CFG_node n" rule:combine_SDG_slices.induct)
-    case (combSlice_refl m)
-    from `m \<in> sum_SDG_slice1 (CFG_node (_Exit_))`
-    have "m = CFG_node (_Exit_) \<or> 
+  proof(induct "CFG_node n" rule:combine_SDG_slices.induct)
+    case combSlice_refl
+    from `CFG_node n \<in> sum_SDG_slice1 (CFG_node (_Exit_))`
+    have "CFG_node n = CFG_node (_Exit_) \<or> 
       (\<exists>n Vopt popt b. sum_SDG_edge n Vopt popt b (CFG_node (_Exit_)))"
       by(induct rule:sum_SDG_slice1.induct) auto
-    with `m = CFG_node n` show ?thesis by(fastsimp dest:Exit_no_sum_SDG_edge_target)
+    then show ?thesis by(fastsimp dest:Exit_no_sum_SDG_edge_target)
   next
-    case (combSlice_Return_parent_node n' n'' p nx)
+    case (combSlice_Return_parent_node n' n'' p)
     from `n' \<in> sum_SDG_slice1 (CFG_node (_Exit_))`
     have "n' = CFG_node (_Exit_) \<or> 
       (\<exists>n Vopt popt b. sum_SDG_edge n Vopt popt b (CFG_node (_Exit_)))"
       by(induct rule:sum_SDG_slice1.induct) auto
     hence "n' = CFG_node (_Exit_)" by(fastsimp dest:Exit_no_sum_SDG_edge_target)
-    with `nx \<in> sum_SDG_slice2 n'`
-    have "nx = CFG_node (_Exit_) \<or> 
+    with `CFG_node n \<in> sum_SDG_slice2 n'`
+    have "CFG_node n = CFG_node (_Exit_) \<or> 
       (\<exists>n Vopt popt b. sum_SDG_edge n Vopt popt b (CFG_node (_Exit_)))"
       by(induct rule:sum_SDG_slice2.induct) auto
-    hence "nx = CFG_node (_Exit_)" by(fastsimp dest:Exit_no_sum_SDG_edge_target)
-    with `nx = CFG_node n` show ?thesis by simp
+    then show ?thesis by(fastsimp dest:Exit_no_sum_SDG_edge_target)
   qed
 qed
 
@@ -57,15 +56,13 @@ proof -
   have "CFG_node (_Exit_) \<in> combine_SDG_slices (sum_SDG_slice1 n\<^isub>c)"
     by(simp add:HRB_slice_def SDG_to_CFG_set_def)
   thus ?thesis
-  proof(induct n\<equiv>"CFG_node (_Exit_)" rule:combine_SDG_slices.induct)
+  proof(induct "CFG_node (_Exit_)" rule:combine_SDG_slices.induct)
     case combSlice_refl
     thus ?case
-      by(induct rule:sum_SDG_slice1.induct,auto dest:Exit_no_sum_SDG_edge_source)
+      by(induct "CFG_node (_Exit_)" rule:sum_SDG_slice1.induct,auto dest:Exit_no_sum_SDG_edge_source)
   next
-    case (combSlice_Return_parent_node n' n'' p n)
-    from `n \<in> sum_SDG_slice2 n'` `n = CFG_node (_Exit_)`
-    have "CFG_node (_Exit_) \<in> sum_SDG_slice2 n'" by simp
-    from this `n' \<in> sum_SDG_slice1 n\<^isub>c` show ?case
+    case (combSlice_Return_parent_node n' n'' p)
+    from `CFG_node (_Exit_) \<in> sum_SDG_slice2 n'` `n' \<in> sum_SDG_slice1 n\<^isub>c` show ?case
       apply(induct n\<equiv>"CFG_node (_Exit_)" rule:sum_SDG_slice2.induct)
       apply(auto dest:Exit_no_sum_SDG_edge_source)
       apply(induct n\<equiv>"CFG_node (_Exit_)" rule:sum_SDG_slice1.induct)

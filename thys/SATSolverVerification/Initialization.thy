@@ -282,7 +282,7 @@ proof-
 	  case False
 	  from `\<not> ?clause' = []` `length ?clause' \<noteq> 1`
 	  have "length ?clause' > 1"
-	    by (induct ?clause') auto
+	    by (induct (?clause')) auto
 
 	  hence "nth ?clause' 0 \<noteq> nth ?clause' 1"
 	    using distinct_remdups[of "?clause'"]
