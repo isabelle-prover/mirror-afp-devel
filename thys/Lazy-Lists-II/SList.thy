@@ -230,7 +230,7 @@ primrec
 
 
 no_translations
-  "[x\<leftarrow>xs . P]" == "filter (%x. P) xs"
+  "[x\<leftarrow>xs . P]" == "CONST filter (%x. P) xs"
 
 syntax
   (* Special syntax for list_all and filter *)
