@@ -1617,7 +1617,7 @@ lemma lhd_iterates [simp]: "lhd (iterates f x) = x"
 by(subst iterates) simp
 
 lemma lhd_llist_of [simp]: "lhd (llist_of xs) = hd xs"
-by(cases xs)(simp_all add: hd_list_def lhd_def)
+  by (cases xs) (simp_all add: hd_def lhd_def)
 
 lemma lhd_ldropn:
   "Fin n < llength xs \<Longrightarrow> lhd (ldropn n xs) = lnth xs n"
