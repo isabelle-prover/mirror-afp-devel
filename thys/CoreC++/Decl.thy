@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: Decl.thy,v 1.13 2008-06-25 18:29:54 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -47,23 +46,23 @@ constdefs
 
 lemma not_getbase_repeats:
   "D \<notin> set (map getbase xs) \<Longrightarrow> Repeats D \<notin> set xs"
-by (induct rule:set.induct, auto)
+by (induct rule: list.induct, auto)
 
 lemma not_getbase_shares:
   "D \<notin> set (map getbase xs) \<Longrightarrow> Shares D \<notin> set xs"
-by (induct rule:set.induct, auto)
+by (induct rule: list.induct, auto)
 
 
 lemma RepBaseclass_isBaseclass:
   "\<lbrakk>class P C = Some(Bs,fs,ms); Repeats D \<in> set Bs\<rbrakk>
 \<Longrightarrow> D \<in> baseClasses Bs"
-by (simp add:baseClasses_def, induct rule:set.induct, 
+by (simp add:baseClasses_def, induct rule: list.induct, 
   auto simp:not_getbase_repeats)
 
 lemma ShBaseclass_isBaseclass:
   "\<lbrakk>class P C = Some(Bs,fs,ms); Shares D \<in> set Bs\<rbrakk>
 \<Longrightarrow> D \<in> baseClasses Bs"
-by (simp add:baseClasses_def, induct rule:set.induct, 
+by (simp add:baseClasses_def, induct rule: list.induct, 
   auto simp:not_getbase_shares)
 
 lemma base_repeats_or_shares:
