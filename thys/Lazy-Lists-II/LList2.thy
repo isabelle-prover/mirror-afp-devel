@@ -1,5 +1,4 @@
 (*  Title:      LList2.thy
-    ID:         $Id: LList2.thy,v 1.14 2009-06-10 09:58:19 makarius Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
