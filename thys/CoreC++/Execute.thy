@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: Execute.thy,v 1.22 2009-07-14 09:00:10 fhaftmann Exp $
     Author:      Daniel Wasserrab, Stefan Berghofer
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
