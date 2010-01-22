@@ -1,5 +1,4 @@
 (*  Title:       Miscellaneous Definitions and Lemmas
-    ID:
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 
@@ -457,7 +456,7 @@ subsubsection {* Union, difference and intersection *}
     by (simp add: union_ac)
 
   lemma mset_union_1_elem3[simp]: "(M+{#b#}={#a#}) = (b=a & M={#})"
-    by (auto simp add: eq_sym_conv)
+    by (auto dest: sym)
   lemma mset_union_1_elem4[simp]: "({#b#}+M={#a#}) = (b=a & M={#})" using mset_union_1_elem3
     by (simp add: union_ac)
 
