@@ -262,7 +262,7 @@ assumes a:"At i xs :# \<Gamma> \<and> At i xs :# \<Delta>"
     and b:"Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable R*"
 proof-
-from a have "\<Gamma> = \<Gamma> \<ominus> At i xs \<oplus> At i xs \<and> \<Delta> = \<Delta> \<ominus> At i xs \<oplus> At i xs" using elem_imp_eq_diff_union by auto
+from a have "\<Gamma> = \<Gamma> \<ominus> At i xs \<oplus> At i xs \<and> \<Delta> = \<Delta> \<ominus> At i xs \<oplus> At i xs" by auto
 then have "extend ((\<Gamma> \<ominus> At i xs) \<Rightarrow>* (\<Delta> \<ominus> At i xs)) (\<LM> At i xs \<RM> \<Rightarrow>* \<LM> At i xs \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)" 
      using extend_def[where forms="\<Gamma> \<ominus> At i xs \<Rightarrow>* \<Delta> \<ominus> At i xs" and seq="\<LM>At i xs\<RM> \<Rightarrow>* \<LM>At i xs\<RM>"] by auto
 moreover
@@ -279,7 +279,7 @@ assumes a: "ff :# \<Gamma>"
    and  b: "Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable R*"
 proof-
-from a have "\<Gamma> = \<Gamma> \<ominus> ff \<oplus> ff" using elem_imp_eq_diff_union[where a=ff] by auto
+from a have "\<Gamma> = \<Gamma> \<ominus> ff \<oplus> ff" by auto
 then have "extend (\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>) (\<LM>ff\<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)"
      using extend_def[where forms="\<Gamma> \<ominus> ff \<Rightarrow>* \<Delta>" and seq="\<LM>ff\<RM> \<Rightarrow>* \<Empt>"] by auto 
 moreover

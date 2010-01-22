@@ -243,7 +243,7 @@ assumes a:"At i :# \<Gamma>"
     and b:"Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* At i,0) \<in> derivable R*"
 proof-
-from a have "\<Gamma> = \<Gamma> \<ominus> At i \<oplus> At i" using elem_imp_eq_diff_union by auto
+from a have "\<Gamma> = \<Gamma> \<ominus> At i \<oplus> At i" by auto
 then have "extend ((\<Gamma> \<ominus> At i) \<Rightarrow>* Em) (\<LM> At i \<RM> \<Rightarrow>* At i) = (\<Gamma> \<Rightarrow>* At i)" 
      using extend_def[where forms="\<Gamma> \<ominus> At i \<Rightarrow>* Em" and seq="\<LM>At i\<RM> \<Rightarrow>* At i"] by auto
 moreover
@@ -260,7 +260,7 @@ assumes a: "ff :# \<Gamma>"
    and  b: "Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* C,0) \<in> derivable R*"
 proof-
-from a have "\<Gamma> = \<Gamma> \<ominus> ff \<oplus> ff" using elem_imp_eq_diff_union[where a=ff] by auto
+from a have "\<Gamma> = \<Gamma> \<ominus> ff \<oplus> ff" by auto
 then have "extend (\<Gamma> \<ominus> ff \<Rightarrow>* C) (\<LM>ff\<RM> \<Rightarrow>* Em) = (\<Gamma> \<Rightarrow>* C)"
      using extend_def[where forms="\<Gamma> \<ominus> ff \<Rightarrow>* C" and seq="\<LM>ff\<RM> \<Rightarrow>* Em"] by auto 
 moreover
