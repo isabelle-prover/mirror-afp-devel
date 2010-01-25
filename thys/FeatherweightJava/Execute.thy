@@ -39,11 +39,11 @@ unfolding append_def by simp (rule reduction.intros(7))
 lemmas [code_pred_intro] = reduction.intros(1-5)[unfolded Predicate.eq_is_eq[symmetric]]
   rc_invk_arg' rc_new_arg' reduction.intros(8)
 
-code_pred (modes: i => i => o => bool as reduce) reduction
+code_pred (modes: i => i => i => bool, i => i => o => bool as reduce) reduction
 proof -
   case append
   from this show thesis
-    unfolding append_def by (cases a1) fastsimp+
+    unfolding append_def by (cases xa) fastsimp+
 next
   case reduction
   from this show thesis

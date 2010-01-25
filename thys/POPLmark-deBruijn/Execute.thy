@@ -113,7 +113,7 @@ qed
 
 thm valuep.equation
 
-code_pred (modes: i => o => bool as normalize) norm .
+code_pred (modes: i => i => bool,  i => o => bool as normalize) norm .
 
 thm norm.equation
 lemma [code]: "value = valuep"
