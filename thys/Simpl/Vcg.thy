@@ -1,5 +1,4 @@
-(*  ID:          $Id$
-    Author:      Norbert Schirmer
+(*  Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
 *)
