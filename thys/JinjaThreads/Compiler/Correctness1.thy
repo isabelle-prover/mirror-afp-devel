@@ -2382,52 +2382,50 @@ lemma Red1_simulates_red0:
   (is "\<exists>ex2'' exs2'' . _ \<and> ?red ex2'' exs2''")
 using red
 proof(cases)
-  case (red0Red e H TA e' H' XS' es)
-  hence e1: "e1 = e" and e1': "e1' = e'"
-    and [simp]: "H = h" "TA = ta" "es = es1" "H' = h'" "es1' = es1"
-    and red: "extTA2J0 P,P \<turnstile> \<langle>e,(h, empty)\<rangle> -TA\<rightarrow> \<langle>e',(h', XS')\<rangle>"
-    and notsynth: "\<forall>aMvs. call e = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h aMvs" by simp_all
-  from bisiml e1 obtain E xs where ex2: "ex2 = (E, xs)"
-    and bisim: "bisim [] e E xs" and fv: "fv e1 = {}" 
-    and length: "max_vars E \<le> length xs" and bsl: "bisim_list es exs2"
+  case (red0Red XS')
+  note [simp] = `es1' = es1`
+    and red = `extTA2J0 P,P \<turnstile> \<langle>e1,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e1',(h', XS')\<rangle>`
+    and notsynth = `\<forall>aMvs. call e1 = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h aMvs`
+  from bisiml obtain E xs where ex2: "ex2 = (E, xs)"
+    and bisim: "bisim [] e1 E xs" and fv: "fv e1 = {}" 
+    and length: "max_vars E \<le> length xs" and bsl: "bisim_list es1 exs2"
     and D: "\<D> e1 \<lfloor>{}\<rfloor>" by(auto elim!: bisim_list1_elim)
-  from bisim_max_vars[OF bisim] length red1_simulates_red_aux[OF wf red bisim] fv e1 notsynth
-  obtain ta' e2' xs' where sim: "sim_move01 (compP1 P) TA e E h xs ta' e2' h' xs'"
-    and bisim': "bisim [] e' e2' xs'" and XS': "XS' \<subseteq>\<^sub>m empty" by auto
+  from bisim_max_vars[OF bisim] length red1_simulates_red_aux[OF wf red bisim] fv notsynth
+  obtain ta' e2' xs' where sim: "sim_move01 (compP1 P) ta e1 E h xs ta' e2' h' xs'"
+    and bisim': "bisim [] e1' e2' xs'" and XS': "XS' \<subseteq>\<^sub>m empty" by auto
   from sim_move01_into_Red1[OF sim, of es1 exs2]
-  have "?red (e2', xs') exs2" unfolding e1 ex2 by auto
+  have "?red (e2', xs') exs2" unfolding ex2 by auto
   moreover {
     note bsl bisim' moreover
-    from fv e1 red_fv_subset[OF wf_prog_wwf_prog[OF wf] red]
-    have "fv e' = {}" by simp
-    moreover from red D e1 have "\<D> e' \<lfloor>dom XS'\<rfloor>"
+    from fv red_fv_subset[OF wf_prog_wwf_prog[OF wf] red]
+    have "fv e1' = {}" by simp
+    moreover from red D have "\<D> e1' \<lfloor>dom XS'\<rfloor>"
       by(auto dest: red_preserves_defass[OF wf] split: split_if_asm)
-    with red_dom_lcl[OF red] `fv e1 = {}` e1 have "\<D> e' \<lfloor>{}\<rfloor>"
+    with red_dom_lcl[OF red] `fv e1 = {}` have "\<D> e1' \<lfloor>{}\<rfloor>"
       by(auto elim!: D_mono' simp add: hyperset_defs)
     moreover from sim have "length xs = length xs'" "max_vars e2' \<le> max_vars E"
       by(auto dest: sim_move01_preserves_len sim_move01_max_vars_decr)
     with length have length': "max_vars e2' \<le> length xs'" by(auto)
-    ultimately have "bisim_list1 (e1', es) ((e2', xs'), exs2)" unfolding e1' by(rule bisim_list1I) }
+    ultimately have "bisim_list1 (e1', es1) ((e2', xs'), exs2)" by(rule bisim_list1I) }
   ultimately show ?thesis using ex2 by(simp split del: split_if)(rule exI conjI|assumption)+
 next
-  case (red0Call e a M vs H C fs Ts T pns body D es)
-  hence [simp]: "es1 = es" "H = h" "ta = \<epsilon>" "h' = h" 
-    and es1': "es1' = e # es"
-    and e1: "e1 = e"
-    and e1': "e1' = blocks (this#pns, Class D#Ts, Addr a#vs, body)"
-    and call: "call e = \<lfloor>(a, M, vs)\<rfloor>"
-    and ha: "h a = \<lfloor>Obj C fs\<rfloor>"
-    and nec: "\<not> is_external_call P (Class C) M"
-    and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D"
-    and len: "length vs = length pns" "length Ts = length pns" by simp_all
-  from bisiml e1 obtain E xs where ex2: "ex2 = (E, xs)"
-    and bisim: "bisim [] e E xs" and fv: "fv e1 = {}" 
-    and length: "max_vars E \<le> length xs" and bsl: "bisim_list es exs2"
+  case (red0Call a M vs C fs Ts T pns body D)
+  note [simp] = `ta = \<epsilon>` `h' = h`
+    and es1' = `es1' = e1 # es1`
+    and e1' = `e1' = blocks (this#pns, Class D#Ts, Addr a#vs, body)`
+    and call = `call e1 = \<lfloor>(a, M, vs)\<rfloor>`
+    and ha = `h a = \<lfloor>Obj C fs\<rfloor>`
+    and nec = `\<not> is_external_call P (Class C) M`
+    and sees = `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
+    and len = `length vs = length pns` `length Ts = length pns`
+  from bisiml obtain E xs where ex2: "ex2 = (E, xs)"
+    and bisim: "bisim [] e1 E xs" and fv: "fv e1 = {}" 
+    and length: "max_vars E \<le> length xs" and bsl: "bisim_list es1 exs2"
     and D: "\<D> e1 \<lfloor>{}\<rfloor>" by(auto elim!: bisim_list1_elim)
   
   from bisim_call_Some_call1[OF bisim call, of "compP1 P" h] length
   obtain e' xs' where red: "\<tau>red1'r (compP1 P) h (E, xs) (e', xs')"
-    and "call1 e' = \<lfloor>(a, M, vs)\<rfloor>" "bisim [] e e' xs'" 
+    and "call1 e' = \<lfloor>(a, M, vs)\<rfloor>" "bisim [] e1 e' xs'" 
     and "take 0 xs = take 0 xs'" by auto
     
   let ?e1' = "blocks (this#pns, Class D#Ts, Addr a#vs, body)"
@@ -2453,16 +2451,16 @@ next
   ultimately have "\<tau>Red1't (compP1 P) h ((E, xs), exs2) ((?e2', ?xs2'), ?exs2')" by(rule rtranclp_into_tranclp1)
   moreover
   
-  from bsl `bisim [] e e' xs'` have "bisim_list (e1 # es) ?exs2'" using fv D unfolding e1
+  from bsl `bisim [] e1 e' xs'` have "bisim_list (e1 # es1) ?exs2'" using fv D
   proof(rule bisim_listCons)
     from red have "length xs' = length xs" by(rule \<tau>red1'r_preserves_len)
     moreover from red have "max_vars e' \<le> max_vars E" by(rule \<tau>red1'r_max_vars)
     ultimately show "max_vars e' \<le> length xs'" using length by simp
-    from `call e = \<lfloor>(a, M, vs)\<rfloor>` show "call e = \<lfloor>(a, M, vs)\<rfloor>" by simp
+    from `call e1 = \<lfloor>(a, M, vs)\<rfloor>` show "call e1 = \<lfloor>(a, M, vs)\<rfloor>" by simp
     from `call1 e' = \<lfloor>(a, M, vs)\<rfloor>` show "call1 e' = \<lfloor>(a, M, vs)\<rfloor>" by simp
   qed
   hence "bisim_list1 (e1', es1') ((?e2', ?xs2'), ?exs2')"
-    unfolding e1' es1' e1
+    unfolding e1' es1'
   proof(rule bisim_list1I)
     from wf_prog_wwf_prog[OF wf] `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
     have "wf_mdecl wwf_J_mdecl P D (M,Ts,T,pns,body)" by(rule sees_wf_mdecl)
@@ -2487,50 +2485,50 @@ next
     
     from len show "max_vars ?e2' \<le> length ?xs2'" by(auto simp add: blocks1_max_vars)
   qed
-  moreover have "\<tau>Move0 P h (e1, es1)" using call e1 nec ha
+  moreover have "\<tau>Move0 P h (e1, es1)" using call nec ha
     by(auto simp add: \<tau>move0_callD synthesized_call_def)
-  ultimately show ?thesis using ex2 `call e = \<lfloor>(a, M, vs)\<rfloor>` 
+  ultimately show ?thesis using ex2 `call e1 = \<lfloor>(a, M, vs)\<rfloor>`
     by(simp del: \<tau>Move1.simps)(rule exI conjI|assumption)+
 next
-  case (red0Return e' e es H)
-  hence e1: "e1 = e'" and es1: "es1 = e # es" and e1': "e1' = inline_call e' e"
-    and [simp]: "H = h" "ta = \<epsilon>" "es1' = es" "h' = h"
-    and fin: "final e'" by(simp_all)
-  from bisiml e1 es1 obtain E' xs' E xs exs' aMvs where ex2: "ex2 = (E', xs')" and exs2: "exs2 = (E, xs) # exs'"
-    and bisim': "bisim [] e' E' xs'"
+  case (red0Return e)
+  note es1 = `es1 = e # es1'` and e1' = `e1' = inline_call e1 e`
+    and [simp] = `ta = \<epsilon>` `h' = h`
+    and fin = `final e1`
+  from bisiml es1 obtain E' xs' E xs exs' aMvs where ex2: "ex2 = (E', xs')" and exs2: "exs2 = (E, xs) # exs'"
+    and bisim': "bisim [] e1 E' xs'"
     and bisim: "bisim [] e E xs"
     and fv: "fv e = {}"
     and length: "max_vars E \<le> length xs"
-    and bisiml: "bisim_list es exs'"
+    and bisiml: "bisim_list es1' exs'"
     and D: "\<D> e \<lfloor>{}\<rfloor>"
     and call: "call e = \<lfloor>aMvs\<rfloor>"
     and call1: "call1 E = \<lfloor>aMvs\<rfloor>"
     by(fastsimp elim: bisim_list1_elim)
   let ?e2' = "inline_call E' E"
 
-  from `final e'` bisim' have "final E'" by(auto)
-  hence red': "compP1 P \<turnstile>1 \<langle>ex2/exs2, H\<rangle> -\<epsilon>\<rightarrow> \<langle>(?e2', xs)/exs', H\<rangle>"
+  from `final e1` bisim' have "final E'" by(auto)
+  hence red': "compP1 P \<turnstile>1 \<langle>ex2/exs2, h\<rangle> -\<epsilon>\<rightarrow> \<langle>(?e2', xs)/exs', h\<rangle>"
     unfolding ex2 exs2 by(rule red1Return)
   moreover have "\<not> IUFL ex2 exs2 \<epsilon> (?e2', xs) exs'" using exs2 by(simp add: IUFL_def)
   moreover have "\<tau>Move0 P h (e1, es1) = \<tau>Move1 P h ((E', xs'), exs2)"
-    using e1 `final e'` `final E'` by auto
+    using `final e1` `final E'` by auto
   moreover {
     note bisiml
     moreover
     from bisim' fin bisim
-    have "bisim [] (inline_call e' e) (inline_call E' E) xs"
+    have "bisim [] (inline_call e1 e) (inline_call E' E) xs"
       using call by(rule bisim_inline_call)(simp add: fv)
-    moreover from fv_inline_call[OF call, of e'] fv fin 
-    have "fv (inline_call e' e) = {}" by auto
-    moreover from fin have "\<D> e' \<lfloor>{}\<rfloor>" by auto
-    hence "\<D> (inline_call e' e) \<lfloor>{}\<rfloor>"
+    moreover from fv_inline_call[OF call, of e1] fv fin 
+    have "fv (inline_call e1 e) = {}" by auto
+    moreover from fin have "\<D> e1 \<lfloor>{}\<rfloor>" by auto
+    hence "\<D> (inline_call e1 e) \<lfloor>{}\<rfloor>"
       using call D by(rule defass_inline_call)
     moreover from `call1 E = \<lfloor>aMvs\<rfloor>`
     have "max_vars ?e2' \<le> max_vars E + max_vars E'" by(rule inline_call_max_vars1)
     with `final E'` length have "max_vars ?e2' \<le> length xs" by(auto elim!: final.cases)
-    ultimately have "bisim_list1 (inline_call e' e, es) ((?e2', xs), exs')"
+    ultimately have "bisim_list1 (inline_call e1 e, es1') ((?e2', xs), exs')"
       by(rule bisim_list1I) }
-  ultimately show ?thesis using e1' `final e'` `final E'` e1 ex2 
+  ultimately show ?thesis using e1' `final e1` `final E'` ex2
     apply(simp del: \<tau>Move0.simps \<tau>Move1.simps)
     apply(rule exI conjI impI|assumption)+
      apply(rule tranclp.r_into_trancl, simp)
@@ -2605,16 +2603,16 @@ lemma red0_simulates_Red1:
   (is "\<exists>e' es' . _ \<and> ?red e' es'")
 using red
 proof(cases)
-  case (red1Red E H xs TA E' H' xs' exs)
-  hence red: "compP1 P \<turnstile>1 \<langle>E,(H, xs)\<rangle> -TA\<rightarrow> \<langle>E',(H', xs')\<rangle>" and ex2: "ex2 = (E, xs)"
-    and ex2': "ex2' = (E', xs')"
-    and [simp]: "ta = extTA2J1 (compP1 P) TA" "h = H" "exs2 = exs" "exs2' = exs" "h' = H'" by simp_all
+  case (red1Red E xs TA E' xs')
+  note red = `compP1 P \<turnstile>1 \<langle>E,(h, xs)\<rangle> -TA\<rightarrow> \<langle>E',(h', xs')\<rangle>` and ex2 = `ex2 = (E, xs)`
+    and ex2' = `ex2' = (E', xs')`
+    and [simp] = `ta = extTA2J1 (compP1 P) TA` `exs2' = exs2`
   from bisiml ex2 have bisim: "bisim [] e E xs" and fv: "fv e = {}"
-    and length: "max_vars E \<le> length xs" and bsl: "bisim_list es exs"
+    and length: "max_vars E \<le> length xs" and bsl: "bisim_list es exs2"
     and D: "\<D> e \<lfloor>{}\<rfloor>" by(auto elim: bisim_list1_elim)
   from IUFL ex2 ex2' have IUF: "\<not> IUF E TA E'" by(auto simp add: IUFL_def)
   from red_simulates_red1_aux[OF wf red, simplified, OF bisim, of empty] fv length IUF D
-  obtain TA' e2' x' where red': "sim_move10 P TA E E' e H empty TA' e2' H' x'"
+  obtain TA' e2' x' where red': "sim_move10 P TA E E' e h empty TA' e2' h' x'"
     and bisim'': "bisim [] e2' E' xs'" and lcl': "x' \<subseteq>\<^sub>m empty" by auto
   from red have "\<not> final E" by auto
   with sim_move10_into_red0[OF wf_prog_wwf_prog[OF wf] red', of es] fv ex2 ex2'
@@ -2636,23 +2634,23 @@ proof(cases)
     moreover from red have "length xs' = length xs" by(auto dest: red1_preserves_len)
     with red1_max_vars[OF red] length
     have "max_vars E' \<le> length xs'" by simp
-    ultimately have "bisim_list1 (e2', es) ((E', xs'), exs)"
+    ultimately have "bisim_list1 (e2', es) ((E', xs'), exs2)"
       by(rule bisim_list1I) }
   ultimately show ?thesis using ex2'
     by(clarsimp split: split_if_asm)(rule exI conjI|assumption|simp)+
 next
-  case (red1Call E a M vs H C fs Ts T body D xs exs)
-  hence [simp]: "ex2 = (E, xs)" "exs2 = exs" "h = H" "ta = \<epsilon>" "h' = H"
-    and ex2': "ex2' = (blocks1 0 (Class D#Ts) body, Addr a # vs @ replicate (max_vars body) undefined)"
-    and exs': "exs2' = (E, xs) # exs"
-    and call: "call1 E = \<lfloor>(a, M, vs)\<rfloor>" and ha: "H a = \<lfloor>Obj C fs\<rfloor>"
-    and nec: "\<not> is_external_call (compP1 P) (Class C) M"
-    and sees: "compP1 P \<turnstile> C sees M: Ts\<rightarrow>T = body in D"
-    and len: "length vs = length Ts" by simp_all
+  case (red1Call E a M vs C fs Ts T body D xs)
+  note [simp] = `ex2 = (E, xs)` `h' = h` `ta = \<epsilon>`
+    and ex2' = `ex2' = (blocks1 0 (Class D#Ts) body, Addr a # vs @ replicate (max_vars body) undefined)`
+    and exs' = `exs2' = (E, xs) # exs2`
+    and call = `call1 E = \<lfloor>(a, M, vs)\<rfloor>` and ha = `h a = \<lfloor>Obj C fs\<rfloor>`
+    and nec = `\<not> is_external_call (compP1 P) (Class C) M`
+    and sees = `compP1 P \<turnstile> C sees M: Ts\<rightarrow>T = body in D`
+    and len = `length vs = length Ts`
   let ?e2' = "blocks1 0 (Class D#Ts) body"
   let ?xs2' = "Addr a # vs @ replicate (max_vars body) undefined"
   from bisiml have bisim: "bisim [] e E xs" and fv: "fv e = {}"
-    and length: "max_vars E \<le> length xs" and bsl: "bisim_list es exs"
+    and length: "max_vars E \<le> length xs" and bsl: "bisim_list es exs2"
     and D: "\<D> e \<lfloor>{}\<rfloor>" by(auto elim: bisim_list1_elim)
 
   from bisim `call1 E = \<lfloor>(a, M, vs)\<rfloor>`
@@ -2668,14 +2666,14 @@ next
   note sees' moreover from wf sees' have "length Ts = length pns"
     by(auto dest!: sees_wf_mdecl simp add: wf_mdecl_def)
   with len have "length vs = length pns" "length Ts = length pns" by simp_all
-  ultimately have red': "P \<turnstile>0 \<langle>e/es, H\<rangle> -\<epsilon>\<rightarrow> \<langle>?e'/e#es, H\<rangle>" by(rule red0Call)
+  ultimately have red': "P \<turnstile>0 \<langle>e/es, h\<rangle> -\<epsilon>\<rightarrow> \<langle>?e'/e#es, h\<rangle>" by(rule red0Call)
   moreover from `call e = \<lfloor>(a, M, vs)\<rfloor>` ha `\<not> is_external_call P (Class C) M`
   have "\<tau>Move0 P h (e, es)" by(auto simp add: \<tau>move0_callD synthesized_call_def)
-  ultimately have "\<tau>Red0t P H (e, es) (?e', e#es)" by auto
+  ultimately have "\<tau>Red0t P h (e, es) (?e', e#es)" by auto
   moreover
   from bsl bisim fv D length `call e = \<lfloor>(a, M, vs)\<rfloor>` `call1 E = \<lfloor>(a, M, vs)\<rfloor>`
-  have "bisim_list (e # es) ((E, xs) # exs)" by(rule bisim_list.intros)
-  hence "bisim_list1 (?e', e # es) (ex2', (E, xs) # exs)" unfolding ex2'
+  have "bisim_list (e # es) ((E, xs) # exs2)" by(rule bisim_list.intros)
+  hence "bisim_list1 (?e', e # es) (ex2', (E, xs) # exs2)" unfolding ex2'
   proof(rule bisim_list1I)
     from wf_prog_wwf_prog[OF wf] sees'
     have "wf_mdecl wwf_J_mdecl P D (M,Ts,T,pns,Jbody)" by(rule sees_wf_mdecl)
@@ -2703,13 +2701,13 @@ next
   ultimately show ?thesis using exs'
     by(simp del: \<tau>Move1.simps \<tau>Move0.simps)(rule exI conjI rtranclp.rtrancl_refl|assumption)+
 next
-  case (red1Return E' x' E x exs H)
-  hence [simp]: "h = H" "ta = \<epsilon>" "exs2' = exs" "h' = H"
-    and ex2: "ex2 = (E', x')" and exs2: "exs2 = (E, x) # exs"
-    and ex2': "ex2' = (inline_call E' E, x)"
-    and fin: "final E'" by simp_all
+  case (red1Return E' x' E x)
+  note [simp] = `h' = h` `ta = \<epsilon>`
+    and ex2 = `ex2 = (E', x')` and exs2 = `exs2 = (E, x) # exs2'`
+    and ex2' = `ex2' = (inline_call E' E, x)`
+    and fin = `final E'`
   from bisiml ex2 exs2 obtain e' es' aMvs where es: "es = e' # es'"
-    and bsl: "bisim_list es' exs"
+    and bsl: "bisim_list es' exs2'"
     and bisim: "bisim [] e E' x'"
     and bisim': "bisim [] e' E x"
     and fv: "fv e' = {}"
@@ -2720,11 +2718,11 @@ next
     by(fastsimp elim!: bisim_list1_elim)
   
   from `final E'` bisim have fin': "final e" by(auto)
-  hence "P \<turnstile>0 \<langle>e/e' # es',H\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e e'/es',H\<rangle>" by(rule red0Return)
+  hence "P \<turnstile>0 \<langle>e/e' # es',h\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e e'/es',h\<rangle>" by(rule red0Return)
   moreover from bisim fin' bisim' call
   have "bisim [] (inline_call e e') (inline_call E' E) x"
     by(rule bisim_inline_call)(simp add: fv)
-  with bsl have "bisim_list1 (inline_call e e', es') (ex2', exs)" unfolding ex2'
+  with bsl have "bisim_list1 (inline_call e e', es') (ex2', exs2')" unfolding ex2'
   proof(rule bisim_list1I)
     from fin' fv_inline_call[OF call, of e] fv show "fv (inline_call e e') = {}" by auto
     from fin' have "\<D> e \<lfloor>{}\<rfloor>" by auto

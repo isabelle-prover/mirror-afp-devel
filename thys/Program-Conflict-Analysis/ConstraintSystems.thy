@@ -97,9 +97,6 @@ next
     moreover from CASE(1) have "mon_e fg e = {}" by simp
     ultimately show ?thesis using S_base[OF CASE(4)] by (auto simp add: mon_w_unconc)
   next
-    case trss_call hence False by auto
-    thus ?thesis ..
-  next
     case trss_ret then obtain q where CASE: "e=LRet" "sh=return fg q#[v]" "ch=c'" by auto
     with SPLIT(1) have "(([entry fg p], {#}), w, [return fg q,v], c') \<in> trcl (trss fg)" by simp
     from trss_find_call'[OF this] obtain ut ct w1 w2 where FC:

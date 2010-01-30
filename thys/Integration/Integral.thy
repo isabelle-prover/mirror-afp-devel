@@ -1074,14 +1074,14 @@ lemma nnfis_times:
   assumes ms: "measure_space M" and a: "a \<in> nnfis f M" and nn: "0\<le>z"
   shows "z*a \<in> nnfis (\<lambda>w. z*f w) M" (*<*)using a
 proof (cases)
-  case (base u x y)
+  case (base u x)
   from prems have "(\<lambda>m w. z*u m w)\<up>(\<lambda>w. z*f w)" by (simp add: realfun_mon_conv_times)
   also
   { fix m 
     from prems have "z*x m \<in> sfis (\<lambda>w. z*u m w) M" by (simp add: sfis_times)
   }
-  moreover from prems have "(\<lambda>m. z*x m)\<up>(z*y)" by (simp add: real_mon_conv_times)
-  ultimately have "z*y \<in> nnfis (\<lambda>w. z*f w) M" by (rule nnfis.base)
+  moreover from prems have "(\<lambda>m. z*x m)\<up>(z*a)" by (simp add: real_mon_conv_times)
+  ultimately have "z*a \<in> nnfis (\<lambda>w. z*f w) M" by (rule nnfis.base)
   
   with base show ?thesis by simp
 qed(*>*)
@@ -1091,19 +1091,19 @@ lemma nnfis_add:
   assumes ms: "measure_space M" and a: "a \<in> nnfis f M" and b: "b \<in> nnfis g M"
   shows "a+b \<in> nnfis (\<lambda>w. f w + g w) M" (*<*)using a
 proof (cases)
-  case (base u x y)
+  case (base u x)
   from b show ?thesis 
   proof (cases)
-    case (base v r s)
+    case (base v r)
     from prems have "(\<lambda>m w. u m w + v m w)\<up>(\<lambda>w. f w + g w)"
       by (simp add: realfun_mon_conv_add)
     also
     { fix n
       from prems have "x n + r n \<in> sfis (\<lambda>w. u n w + v n w) M" by (simp add: sfis_add) 
     }
-    moreover from prems have "(\<lambda>m. x m + r m)\<up>(y+s)" by (simp add: real_mon_conv_add)
+    moreover from prems have "(\<lambda>m. x m + r m)\<up>(a+b)" by (simp add: real_mon_conv_add)
    
-    ultimately have "y+s \<in> nnfis (\<lambda>w. f w + g w) M" by (rule nnfis.base)
+    ultimately have "a+b \<in> nnfis (\<lambda>w. f w + g w) M" by (rule nnfis.base)
     with prems show ?thesis by simp
   qed
 qed(*>*)
@@ -1113,21 +1113,21 @@ lemma assumes ms: "measure_space M" and a: "a \<in> nnfis f M"
   and b: "b \<in> nnfis g M" and fg: "f\<le>g"
   shows nnfis_mono: "a \<le> b" using a
 proof (cases)
-  case (base u x y)
+  case (base u x)
   from b show ?thesis 
   proof (cases)
-    case (base v r s)
+    case (base v r)
     { fix m
       from prems have "u m \<le> f" 
 	by (simp add: realfun_mon_conv_le) 
       also note fg finally have "u m \<le> g" .
-      with prems have "v\<up>g" and  "\<And>n. r n \<in> sfis (v n) M" and "r\<up>s" 
+      with prems have "v\<up>g" and  "\<And>n. r n \<in> sfis (v n) M" and "r\<up>b" 
 	and "x m \<in> sfis (u m) M" and "u m \<le> g" and "measure_space M"
 	by simp_all
-      hence "x m \<le> s" 
+      hence "x m \<le> b" 
 	by (rule sfis_mon_conv_mono)
     }
-    with prems have "y \<le> s" 
+    with prems have "a \<le> b" 
       by (auto simp add: real_mon_conv LIMSEQ_le_const2)
     thus ?thesis using prems 
       by simp
@@ -1402,7 +1402,7 @@ proof -
   { fix n
     from xf[of n] have "\<exists>u. u\<up>(f n) \<and> (\<forall>m. \<exists>a. a \<in> sfis (u m) M)" (is "\<exists>x. ?P x")
     proof (cases)
-      case (base r a b)
+      case (base r a)
       hence "r\<up>(f n)" and "\<And>m. \<exists>a. a \<in> sfis (r m) M" by auto
       thus ?thesis by fast
     qed
@@ -1468,7 +1468,7 @@ text{*Establishing that only nonnegative functions may arise this way
 lemma nnfis_nn: assumes "a \<in> nnfis f M"
   shows "nonnegative f" (*<*)using prems
 proof (cases)
-  case (base u x y)
+  case (base u x)
   {fix t
     { fix n
       from base have "x n \<in> sfis (u n) M" by fast
@@ -1488,7 +1488,7 @@ qed(*>*)(*>*)text{*\subsection{Integrable Functions}
 lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f:(*>*) "a \<in> nnfis f M"
   shows nnfis_rv: "f \<in> rv M" (*<*)using f
 proof (cases)
-  case (base u x y)
+  case (base u x)
   { fix n
     from base have "x n \<in> sfis (u n) M"
       by simp
@@ -1860,7 +1860,7 @@ corollary assumes ms: "measure_space M" and f: "f \<in> rv M"
   and b: "b \<in> nnfis g M" and fg: "f\<le>g" and nn: "nonnegative f"  
   shows nnfis_dom_conv: "\<exists>a. a \<in> nnfis f M \<and> a \<le> b" using b
 proof (cases)
-  case (base v r z)
+  case (base v r)
   from ms f nn have "\<exists>u x. u\<up>f \<and> (\<forall>n. x n \<in> sfis (u n) M)" 
     by (rule rv_mon_conv_sfis)
   then obtain u x where uf: "u\<up>f" and xu: "\<And>n. x n \<in> sfis (u n) M" 

@@ -1959,7 +1959,7 @@ qed
 lemma not_pure_term[simp]: "\<not> pure(term v)"
 proof
   assume "pure(term v)" thus False
-  proof cases qed auto
+    by cases
 qed
 
 abbreviation RedMLs :: "tm list \<Rightarrow> tm list \<Rightarrow> bool" (infix "[\<Rightarrow>*]" 50) where
@@ -2133,7 +2133,7 @@ next
     hence "(V x \<bullet>\<bullet> rs) \<bullet> r \<Rightarrow> r'" by simp
     thus ?case
     proof(cases rule:Red_term.cases)
-      case (ctxt_At1 s s' t)
+      case (ctxt_At1 s')
       then obtain k s'' where "k<length rs" "rs ! k \<Rightarrow> s''" "s' = V x \<bullet>\<bullet> rs[k := s'']"
 	using snoc(1) by force
       then show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
@@ -2143,13 +2143,13 @@ next
 	thus ?thesis by blast
       qed
     next
-      case (ctxt_At2 t t' s)
+      case (ctxt_At2 t')
       then show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
       proof-
 	have "size rs<?n \<and> ?P (size rs) t'" using prems by simp
 	thus ?thesis by blast
       qed
-    qed auto
+    qed
   qed
   then obtain k s where "k<size rs" "rs!k \<Rightarrow> s" and [simp]: "r' = V x \<bullet>\<bullet> rs[k:=s]" by metis
   from Suc(1)[of "rs[k:=s]"] `(r',r) \<in> Red_term ^^ i`
@@ -2188,7 +2188,7 @@ next
     hence "(C nm \<bullet>\<bullet> rs) \<bullet> r \<Rightarrow> r'" by simp
     thus ?case
     proof(cases rule:Red_term.cases)
-      case (ctxt_At1 s s' t)
+      case (ctxt_At1 s')
       then obtain k s'' where "k<length rs" "rs ! k \<Rightarrow> s''" "s' = C nm \<bullet>\<bullet> rs[k := s'']"
 	using snoc(1) by force
       then show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
@@ -2198,13 +2198,13 @@ next
 	thus ?thesis by blast
       qed
     next
-      case (ctxt_At2 t t' s)
+      case (ctxt_At2 t')
       then show ?thesis (is "\<exists>k < ?n. \<exists>s. ?P k s")
       proof-
 	have "size rs<?n \<and> ?P (size rs) t'" using prems by simp
 	thus ?thesis by blast
       qed
-    qed auto
+    qed
   qed
   then obtain k s where "k<size rs" "rs!k \<Rightarrow> s" and [simp]: "r' = C nm \<bullet>\<bullet> rs[k:=s]" by metis
   from Suc(1)[of "rs[k:=s]"] `(r',r) \<in> Red_term ^^ i`
@@ -2326,13 +2326,13 @@ proof -
 	have "C_normal\<^bsub>ML\<^esub> ?u" using less term_Clo by(simp)
 	from less(1)[OF `i' < k` refl `C_normal\<^bsub>ML\<^esub> ?u` `pure t''` 1] show ?thesis by(simp add:normal.intros)
       next
-	case (ctxt_term u u')
+	case (ctxt_term u')
 	have "i' < k" using `k = Suc i` by arith
 	have "C_normal\<^bsub>ML\<^esub> u'" by (rule C_normal_ML_inv)
           (insert less ctxt_term, simp_all)
 	have "(term u', t') \<in> Red_term ^^ i'" using prems by auto
 	from less(1)[OF `i' < k` refl `C_normal\<^bsub>ML\<^esub> u'` `pure t'` this] show ?thesis .
-      qed auto
+      qed
     qed
   qed
   }

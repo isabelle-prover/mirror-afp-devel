@@ -663,8 +663,8 @@ next
   proof cases
     case has_fields_Object with DObj show ?thesis by simp
   next
-    case (has_fields_rec DD DD' fs ms FDTs' FDTs'')
-    with classD have [simp]: "DD = D" "FDTs'' = FDTs" "DD' = D'" "rest = (fs, ms)"
+    case (has_fields_rec DD' fs ms FDTs')
+    with classD have [simp]: "rest = (fs, ms)"
       and hasf': "P \<turnstile> D' has_fields FDTs'"
       and FDTs: "FDTs = map (\<lambda>(F, T). ((F, D), T)) fs @ FDTs'" by auto
     from FDTs FE DnE hasf' show ?thesis by(auto dest: map_of_SomeD simp add: has_field_def)
@@ -694,14 +694,14 @@ proof -
     and FD: "map_of FDTs (F, D) = \<lfloor>T\<rfloor>" unfolding has_field_def by blast
   from hasf have "map_of (map (\<lambda>((F, D), T). (F, D, T)) FDTs) F = \<lfloor>(D, T)\<rfloor>"
   proof cases
-    case (has_fields_Object D' fs ms FDTs')
+    case (has_fields_Object D' fs ms)
     from `class P Object = \<lfloor>(D', fs, ms)\<rfloor>` wf
     have "wf_cdecl wf_md P (Object, D', fs, ms)" by(rule class_wf)
     hence "distinct_fst fs" by(simp add: wf_cdecl_def)
     with FD has_fields_Object show ?thesis by(auto intro: map_of_remap_conv simp del: map_map)
   next
-    case (has_fields_rec DD D' fs ms FDTs' FDTs'')
-    hence [simp]: "DD = D" "FDTs'' = FDTs" "FDTs = map (\<lambda>(F, T). ((F, D), T)) fs @ FDTs'"
+    case (has_fields_rec D' fs ms FDTs')
+    hence [simp]: "FDTs = map (\<lambda>(F, T). ((F, D), T)) fs @ FDTs'"
       and classD: "class P D = \<lfloor>(D', fs, ms)\<rfloor>" and DnObj: "D \<noteq> Object"
       and hasf': "P \<turnstile> D' has_fields FDTs'" by auto
     from `class P D = \<lfloor>(D', fs, ms)\<rfloor>` wf

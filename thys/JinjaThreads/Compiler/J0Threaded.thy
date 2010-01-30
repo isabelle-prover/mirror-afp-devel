@@ -37,27 +37,27 @@ lemma bisim_red_red0_finalD:
   shows "\<exists>x2'. red0_\<tau>mthr.silent_moves P (x2, m2) (x2', m2) \<and> bisim_red_red0 (x1, m1) (x2', m2) \<and> final_expr0 x2'"
 using bisim
 proof(cases rule: bisim_red_red0.cases)
-  fix e' e es h
-  assume "(x1, m1) = ((e', empty), h)" "(x2, m2) = ((e, es), h)" "e' = fold_es e es" and wf_state: "wf_state e es"
-  hence [simp]: "x1 = (e', empty)" "m1 = h" "x2 = (e, es)" "e' = fold_es e es" "m2 = h" by simp_all
+  fix e' e es
+  assume wf_state: "wf_state e es"
+  and [simp]: "x1 = (e', empty)" "x2 = (e, es)" "e' = fold_es e es" "m2 = m1"
   from `final_expr x1` have "final (fold_es e es)" by simp
   moreover from wf_state have "list_all is_call es" by auto
-  ultimately have "red0_\<tau>mthr.silent_moves P ((e, es), h) ((fold_es e es, []), h)"
+  ultimately have "red0_\<tau>mthr.silent_moves P ((e, es), m1) ((fold_es e es, []), m1)"
   proof(induct es arbitrary: e)
     case Nil thus ?case by simp
   next
     case (Cons e' es)
     from `final (fold_es e (e' # es))` have "final (fold_es (inline_call e e') es)" by simp
     moreover from `list_all is_call (e' # es)` have "list_all is_call es" by simp
-    ultimately have "red0_\<tau>mthr.silent_moves P ((inline_call e e', es), h) ((fold_es (inline_call e e') es, []), h)"
+    ultimately have "red0_\<tau>mthr.silent_moves P ((inline_call e e', es), m1) ((fold_es (inline_call e e') es, []), m1)"
       by(rule Cons)
     moreover from `final (fold_es e (e' # es))` `list_all is_call (e' # es)`
     have "final e" by(rule fold_es_finalD)
-    hence "P \<turnstile>0 \<langle>e/e'#es, h\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e e'/es, h\<rangle>" by(rule red0Return)
-    with `final e` have "red0_\<tau>mthr.silent_move P ((e, e'#es), h) ((inline_call e e', es), h)" by auto
+    hence "P \<turnstile>0 \<langle>e/e'#es, m1\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e e'/es, m1\<rangle>" by(rule red0Return)
+    with `final e` have "red0_\<tau>mthr.silent_move P ((e, e'#es), m1) ((inline_call e e', es), m1)" by auto
     ultimately show ?case by -(erule converse_rtranclp_into_rtranclp, simp)
   qed
-  moreover have "bisim_red_red0 ((fold_es e es, empty), h) ((fold_es e es, []), h)"
+  moreover have "bisim_red_red0 ((fold_es e es, empty), m1) ((fold_es e es, []), m1)"
     using `final (fold_es e es)` by(auto intro!: bisim_red_red0.intros)
   ultimately show ?thesis using `final (fold_es e es)` by auto
 qed

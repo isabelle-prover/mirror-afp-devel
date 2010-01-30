@@ -306,7 +306,7 @@ shows "\<exists> Ps. Ps \<noteq> [] \<and>
              (\<forall> p \<in> set Ps. \<exists> n\<le>m. (p,n) \<in> derivable R)"
 using assms
 proof (cases)
-    case (base D)
+    case base
     then show "\<exists> Ps. Ps \<noteq> [] \<and>
                      (Ps,C) \<in> R \<and> 
                      (\<forall> p \<in> set Ps. \<exists> n\<le>m. (p,n) \<in> derivable R)" using assms by simp
@@ -328,14 +328,13 @@ assumes "(Ps,C) \<in> upRules"
 shows "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Cpd0 F Fs\<RM>) \<or> C = (\<LM>Cpd0 F Fs\<RM> \<Rightarrow>* \<Empt>)"
 using assms
 proof (cases)
-case (I c F Fs Ps)
-then obtain \<Gamma> \<Delta> where "c = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=c] by auto
+case (I F Fs)
+then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
-then have "\<exists> F Fs. c = (\<Empt> \<Rightarrow>* \<LM>Cpd0 F Fs\<RM>) \<or> c = (\<LM>Cpd0 F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-     using `mset c \<equiv> \<LM>Cpd0 F Fs\<RM>` and `c= (\<Gamma> \<Rightarrow>* \<Delta>)`
+then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Cpd0 F Fs\<RM>) \<or> C = (\<LM>Cpd0 F Fs\<RM> \<Rightarrow>* \<Empt>)" 
+     using `mset C \<equiv> \<LM>Cpd0 F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
      and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Cpd0 F Fs"]
      by auto
-thus ?thesis using `C=c` by simp
 qed
 
 lemma provRuleCharacterise:
@@ -343,14 +342,13 @@ assumes "(Ps,C) \<in> provRules"
 shows "\<exists> F x A. (C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)) \<and> x \<sharp> set_of_prem (Ps - A)"
 using assms
 proof (cases)
-case (I c F x A Pss)
-then obtain \<Gamma> \<Delta> where "c = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=c] by auto
-then have "(Pss,\<Gamma> \<Rightarrow>* \<Delta>) \<in> provRules" using prems by simp
-then have "\<exists> F x A. (c = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> c = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)) \<and> x \<sharp> set_of_prem (Pss - A)" 
-     using `mset c = \<LM> F \<nabla> [x].A \<RM>` and `c= (\<Gamma> \<Rightarrow>* \<Delta>)` and `x \<sharp> set_of_prem (Pss - A)`
+case (I F x A)
+then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
+then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> provRules" using prems by simp
+then show "\<exists> F x A. (C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)) \<and> x \<sharp> set_of_prem (Ps - A)" 
+     using `mset C = \<LM> F \<nabla> [x].A \<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)` and `x \<sharp> set_of_prem (Ps - A)`
      and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
      by auto
-thus ?thesis using `C=c` and `Ps = Pss` by simp
 qed
 
 lemma nprovRuleCharacterise:
@@ -358,14 +356,13 @@ assumes "(Ps,C) \<in> nprovRules"
 shows "\<exists> F x A. C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)"
 using assms
 proof (cases)
-case (I c F x A Ps)
-then obtain \<Gamma> \<Delta> where "c = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=c] by auto
+case (I F x A)
+then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> nprovRules" using prems by simp
-then have "\<exists> F x A. c = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> c = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)" 
-     using `mset c = \<LM> F \<nabla> [x].A \<RM>` and `c= (\<Gamma> \<Rightarrow>* \<Delta>)`
+then show "\<exists> F x A. C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)" 
+     using `mset C = \<LM> F \<nabla> [x].A \<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
      and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
      by auto
-thus ?thesis using `C=c` by simp
 qed
 
 

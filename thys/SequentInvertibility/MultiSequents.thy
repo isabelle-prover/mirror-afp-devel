@@ -462,7 +462,7 @@ assumes "(Ps,\<Phi> \<Rightarrow>* \<Psi>) \<in> upRules"
 shows "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
-    case (I d R Rs ts)    
+    case (I R Rs)
     then show "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
@@ -473,7 +473,7 @@ assumes "(Ps,\<Phi> \<Rightarrow>* \<Psi>) \<in> upRules"
 shows "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
-    case (I d R Rs ts)    
+    case (I R Rs)
     then show "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
@@ -487,13 +487,13 @@ proof-
     then have "(Ps,C) \<in> upRules" using assms by simp
     then show ?thesis
        proof (cases)
-          case (I D R Rs Ts)
-          obtain G H where "D = (G \<Rightarrow>* H)" by (cases D) (auto)
-          then have "G + H = \<LM>Compound R Rs\<RM>" using mset_def and `mset D \<equiv> \<LM>Compound R Rs\<RM>` by auto
+          case (I R Rs)
+          obtain G H where "C = (G \<Rightarrow>* H)" by (cases C) (auto)
+          then have "G + H = \<LM>Compound R Rs\<RM>" using mset_def and `mset C \<equiv> \<LM>Compound R Rs\<RM>` by auto
           then have "size (G+H) = 1" by auto 
           then have "size G + size H = 1" by auto
-          then have "seq_size D = 1" using seq_size_def[where ant=G and suc=H] and `D = (G \<Rightarrow>* H)` by auto
-          moreover have "snd r = D" using `r = (Ps,C)` and `C=D` by simp
+          then have "seq_size C = 1" using seq_size_def[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
+          moreover have "snd r = C" using `r = (Ps,C)` by simp
           ultimately show "seq_size (snd r) = 1" by simp
        qed
 qed
@@ -503,14 +503,13 @@ assumes "(Ps,C) \<in> upRules"
 shows "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)"
 using assms
 proof (cases)
-case (I c F Fs Ps)
-then obtain \<Gamma> \<Delta> where "c = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=c] by auto
+case (I F Fs)
+then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
-then have "\<exists> F Fs. c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-     using `mset c \<equiv> \<LM>Compound F Fs\<RM>` and `c= (\<Gamma> \<Rightarrow>* \<Delta>)`
+then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
+     using `mset C \<equiv> \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
      and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
      by auto
-thus ?thesis using `C=c` by simp
 qed
 
 lemma extendEmpty:

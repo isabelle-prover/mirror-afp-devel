@@ -110,7 +110,7 @@ proof -
       and stls: "stls = inf_step2inf_step_table s tls" by blast
     from inf show ?case
     proof cases
-      case (inf_stepI S tl s' tls')
+      case (inf_stepI tl s' tls')
       hence tls: "tls = LCons tl tls'" and r: "trsys s tl s'"
 	and inf': "s' -tls'\<rightarrow>* \<infinity>" by simp_all
       let ?s' = "SOME s'. trsys s tl s' \<and> s' -tls'\<rightarrow>* \<infinity>"
@@ -138,7 +138,7 @@ proof -
       and tls: "tls = lmap (fst \<circ> snd) stls" by blast
     from inf show ?case
     proof cases
-      case (inf_step_tableI S s' stls' tl)
+      case (inf_step_tableI s' stls' tl)
       hence stls: "stls = LCons (s, tl, s') stls'" and r: "trsys s tl s'"
 	and inf': "s' -stls'\<rightarrow>*t \<infinity>" by simp_all
       from stls tls have "tls = LCons tl (lmap (fst \<circ> snd) stls')" by simp
@@ -252,8 +252,8 @@ next
   from `s -lappend (llist_of (st # stls)) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity>`
   show ?case
   proof cases
-    case (inf_step_tableI S s' stls' tl)
-    hence [simp]: "S = s" "st = (S, tl, s')" "stls' = lappend (llist_of stls) (LCons (x, tl', x') xs)"
+    case (inf_step_tableI s' stls' tl)
+    hence [simp]: "st = (s, tl, s')" "stls' = lappend (llist_of stls) (LCons (x, tl', x') xs)"
       and "s -tl\<rightarrow> s'" "s' -lappend (llist_of stls) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity>" by simp_all
     from IH[OF `s' -lappend (llist_of stls) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity>`]
     have "s' -map (fst \<circ> snd) stls\<rightarrow>* x" "x -LCons (x, tl', x') xs\<rightarrow>*t \<infinity>" by auto
@@ -274,8 +274,8 @@ next
   from `s -lappend (LCons st stls) (LCons (x, tl' x') xs)\<rightarrow>*t \<infinity>`
   show ?case
   proof cases
-    case (inf_step_tableI X X' STLS TL)
-    hence [simp]: "X = s" "s1 = s" "TL = tl1" "X' = s1'" "STLS = lappend stls (LCons (x, tl' x') xs)"
+    case (inf_step_tableI X' STLS TL)
+    hence [simp]: "s1 = s" "TL = tl1" "X' = s1'" "STLS = lappend stls (LCons (x, tl' x') xs)"
       and "s -tl1\<rightarrow> s1'" and "s1' -lappend stls (LCons (x, tl' x') xs)\<rightarrow>*t \<infinity>" by simp_all
     from `\<forall>(s, tl, s')\<in>lset (LCons st stls). \<tau>move s tl s'` have "\<tau>move s tl1 s1'" by simp
     moreover
@@ -510,7 +510,7 @@ proof -
       and sstls: "sstls = \<tau>inf_step2\<tau>inf_step_table s tls" by blast
     from \<tau>inf show ?case
     proof(cases)
-      case (\<tau>inf_step_Cons S s' s'' tls' tl)
+      case (\<tau>inf_step_Cons s' s'' tls' tl)
       let ?ss = "SOME (s', s''). s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' -\<tau>-tls'\<rightarrow>* \<infinity>"
       from \<tau>inf_step_Cons have tls: "tls = LCons tl tls'" and "s -\<tau>\<rightarrow>* s'" "s' -tl\<rightarrow> s''"
 	"\<not> \<tau>move s' tl s''" "s'' -\<tau>-tls'\<rightarrow>* \<infinity>" by simp_all
@@ -519,7 +519,7 @@ proof -
       with sstls tls have ?\<tau>inf_step_table_Cons by auto
       thus ?thesis ..
     next
-      case (\<tau>inf_step_Nil S)
+      case \<tau>inf_step_Nil
       with sstls have ?\<tau>inf_step_table_Nil by simp
       thus ?thesis ..
     qed
@@ -793,7 +793,7 @@ proof -
       and stls2: "stls2 = tl1_to_tl2 s2 stls1" and bisim: "s1 \<approx> s2" by blast
     from red1' show ?case
     proof(cases)
-      case (inf_step_tableI S1 s1' stls1' tl1)
+      case (inf_step_tableI s1' stls1' tl1)
       hence stls1: "stls1 = LCons (s1, tl1, s1') stls1'"
 	and r: "s1 -1-tl1\<rightarrow> s1'" and reds1: "s1' -1-stls1'\<rightarrow>*t \<infinity>" by simp_all
       let ?tl2s2' = "SOME (tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2"
@@ -827,7 +827,7 @@ proof -
 	by blast
       from `s1 -1-stls1\<rightarrow>*t \<infinity>` show ?case
       proof cases
-	case (inf_step_tableI S1 s1' stls1' tl1)
+	case (inf_step_tableI s1' stls1' tl1)
 	hence  stls1: "stls1 = LCons (s1, tl1, s1') stls1'"
 	  and r: "s1 -1-tl1\<rightarrow> s1'" and reds: "s1' -1-stls1'\<rightarrow>*t \<infinity>" by simp_all
 	let ?tl2s2' = "SOME (tl2, s2').  s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2"
@@ -1126,7 +1126,7 @@ proof -
       and sstls2: "sstls2 = tl1_to_tl2 s2 sstls1" and bisim: "s1 \<approx> s2" by blast
     from \<tau>inf' show ?case
     proof(cases)
-      case (\<tau>inf_step_table_Cons S1 s1' s1'' sstls1' tl1)
+      case (\<tau>inf_step_table_Cons s1' s1'' sstls1' tl1)
       hence sstls1: "sstls1 = LCons (s1, s1', tl1, s1'') sstls1'"
 	and \<tau>s: "s1 -\<tau>1\<rightarrow>* s1'" and r: "s1' -1-tl1\<rightarrow> s1''" and n\<tau>: "\<not> \<tau>move1 s1' tl1 s1''"
 	and reds1: "s1'' -\<tau>1-sstls1'\<rightarrow>*t \<infinity>" by simp_all
@@ -1144,7 +1144,7 @@ proof -
       hence "?P ?s2tl2s2'" by(rule someI)
       ultimately show ?thesis using reds1 by fastsimp
     next
-      case (\<tau>inf_step_table_Nil S)
+      case \<tau>inf_step_table_Nil
       hence [simp]: "sstls1 = LNil" and "s1 -\<tau>1\<rightarrow> \<infinity>" by simp_all
       from `s1 -\<tau>1\<rightarrow> \<infinity>` `s1 \<approx> s2` have "s2 -\<tau>2\<rightarrow> \<infinity>" by(simp add: \<tau>diverge_bisim_inv)
       thus ?thesis using sstls2 by simp
@@ -1169,7 +1169,7 @@ proof -
 	         \<Longrightarrow> lnth (lmap (fst \<circ> snd \<circ> snd) sstls1) m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)) m`
       from `s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>` show ?case
       proof cases
-	case (\<tau>inf_step_table_Cons S1 s1' s1'' sstls1' tl1)
+	case (\<tau>inf_step_table_Cons s1' s1'' sstls1' tl1)
 	hence sstls1: "sstls1 = LCons (s1, s1', tl1, s1'') sstls1'"
 	  and \<tau>s: "s1 -\<tau>1\<rightarrow>* s1'" and r: "s1' -1-tl1\<rightarrow> s1''"
 	  and n\<tau>: "\<not> \<tau>move1 s1' tl1 s1''" and reds: "s1'' -\<tau>1-sstls1'\<rightarrow>*t \<infinity>" by simp_all

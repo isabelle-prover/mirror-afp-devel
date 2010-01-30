@@ -581,8 +581,8 @@ next
   from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<oplus> 1`
   obtain nx where "c\<^isub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<and> nx \<oplus> 1 = n''"
   proof(cases)
-    case (Proc_CFG_CondElse c\<^isub>2' nx etx nx' bx c\<^isub>1')
-    from `if (b) c\<^isub>1 else c\<^isub>2 = if (bx) c\<^isub>1' else c\<^isub>2'` `n' \<oplus> 1 = nx' \<oplus> #:c\<^isub>1' + 1`
+    case (Proc_CFG_CondElse nx nx')
+    from `n' \<oplus> 1 = nx' \<oplus> #:c\<^isub>1 + 1`
       `c\<^isub>1 \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'`
     obtain l where "n' = Label l" and "l \<ge> #:c\<^isub>1"
       by(cases n', auto dest:Proc_CFG_Call_Labels,cases nx',auto)
@@ -601,12 +601,12 @@ next
   from `if (b) c\<^isub>1 else c\<^isub>2 \<turnstile> n'' -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<oplus> #:c\<^isub>1 + 1`
   obtain nx where "c\<^isub>2 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p n' \<and> nx \<oplus> #:c\<^isub>1 + 1 = n''"
   proof(cases)
-    case (Proc_CFG_CondThen c\<^isub>1' nx etx nx' bx c\<^isub>2')
-    from `if (b) c\<^isub>1 else c\<^isub>2 = if (bx) c\<^isub>1' else c\<^isub>2'` `n' \<oplus> #:c\<^isub>1 + 1 = nx' \<oplus> 1`
-      `c\<^isub>1' \<turnstile> nx -etx\<rightarrow>\<^isub>p nx'` `CEdge (p',es',rets') = etx`
+    case (Proc_CFG_CondThen nx nx')
+    from `n' \<oplus> #:c\<^isub>1 + 1 = nx' \<oplus> 1`
+      `c\<^isub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx'`
     obtain l where "nx' = Label l" and "l \<ge> #:c\<^isub>1"
       by(cases n',auto,cases nx',auto dest:Proc_CFG_Call_Labels)
-    with `if (b) c\<^isub>1 else c\<^isub>2 = if (bx) c\<^isub>1' else c\<^isub>2'` `c\<^isub>1' \<turnstile> nx -etx\<rightarrow>\<^isub>p nx'`
+    with `c\<^isub>1 \<turnstile> nx -CEdge (p',es',rets')\<rightarrow>\<^isub>p nx'`
     have False by(fastsimp dest:Proc_CFG_targetlabel_less_num_nodes)
     thus ?thesis by simp
   qed (auto dest:label_incr_inj)

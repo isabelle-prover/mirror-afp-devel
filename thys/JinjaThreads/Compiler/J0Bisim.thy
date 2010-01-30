@@ -52,14 +52,14 @@ proof(cases)
   proof
     from red show "fvs (e' # es') = {}"
     proof cases
-      case (red0Red E H ta E' H' xs' ES)
-      hence [simp]: "ES = es" "es' = es" "E = e" "E' = e'" "H = h" "H' = h'"
+      case (red0Red xs')
+      hence [simp]: "es' = es"
 	and red: "extTA2J0 P,P \<turnstile> \<langle>e,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>" by auto
       from red_fv_subset[OF wf red] fv have "fv e' = {}" by auto
       with fv show ?thesis by simp
     next
-      case (red0Call E a M vs H C fs Ts T pns body D ES)
-      hence [simp]: "E = e" "ES = es" "H = h" "ta = \<epsilon>"
+      case (red0Call a M vs C fs Ts T pns body D)
+      hence [simp]: "ta = \<epsilon>"
 	"e' = blocks (this#pns, Class D#Ts, Addr a#vs, body)"
 	"es' = e # es" "h' = h"
 	and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D" by auto
@@ -67,10 +67,10 @@ proof(cases)
       have "fv body \<subseteq> insert this (set pns)" "length Ts = length pns" by(simp_all add: wf_mdecl_def)
       thus ?thesis using fv `length vs = length pns` by auto
     next
-      case (red0Return E' E ES H)
+      case (red0Return E)
       with icl have "is_call E" by simp
       then obtain aMvs where "call E = \<lfloor>aMvs\<rfloor>" by(auto simp add: is_call_def)
-      with fv_inline_call[OF this, of E'] red0Return
+      with fv_inline_call[OF this, of e] red0Return
       show ?thesis using fv by auto
     qed
   next
@@ -649,7 +649,7 @@ next
   from red show "bisim_red_red0 s1 s2' \<and> (\<lambda>((e, es), h) ((e, es'), h). length es < length es')\<^sup>+\<^sup>+ s2' s2 \<or>
         (\<exists>s1'. red_\<tau>mthr.silent_movet P s1 s1' \<and> bisim_red_red0 s1' s2')"
   proof cases
-    case (red0Red E H TA E' H' xs' ES)
+    case (red0Red xs')
     hence [simp]: "es' = es"
       and "extTA2J0 P,P \<turnstile> \<langle>e, (h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h2', xs')\<rangle>" by auto
     from red0_red_tabisim0[OF wf this(2)] have red': "P \<turnstile> \<langle>e,(h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e',(h2', xs')\<rangle>" by auto
@@ -666,7 +666,7 @@ next
       by(auto del: wf_state.cases wf_state.intros)
     ultimately show ?thesis by blast
   next
-    case (red0Call E a M vs h C fs Ts T pns body D ES)
+    case (red0Call a M vs C fs Ts T pns body D)
     hence [simp]: "es' = e # es" "h2' = h2" "e' = blocks (this # pns, Class D # Ts, Addr a # vs, body)"
       and call: "call e = \<lfloor>(a, M, vs)\<rfloor>"
       and ha: "h2 a = \<lfloor>Obj C fs\<rfloor>"
@@ -685,7 +685,7 @@ next
       by(auto del: wf_state.intros wf_state.cases)
     ultimately show ?thesis unfolding s1 s2 s2' fold heap x1 by(fastsimp)
   next
-    case (red0Return e'a E ES H)
+    case (red0Return E)
     hence [simp]: "es = E # es'" "e' = inline_call e E" "h2' = h2" by auto
     from fold wf_state'
     have "bisim_red_red0 ((e1, empty), h1) ((inline_call e E, es'), h2)" unfolding heap
@@ -759,7 +759,7 @@ next
   from red show "\<exists>s1' s1'' ta1. red_\<tau>mthr.silent_moves P s1 s1' \<and> mred P s1' ta1 s1'' \<and>
                                 \<not> \<tau>MOVE P s1' ta1 s1'' \<and> bisim_red_red0 s1'' s2' \<and> ta_bisim0 ta1 ta2"
   proof(cases)
-    case (red0Red E H TA E' H' xs' ES)
+    case (red0Red xs')
     hence [simp]: "es' = es"
       and "extTA2J0 P,P \<turnstile> \<langle>e, (h2, empty)\<rangle> -ta2\<rightarrow> \<langle>e', (h2', xs')\<rangle>" by auto
     from red0_red_tabisim0[OF wf this(2)] obtain ta1
