@@ -114,7 +114,7 @@ lemma rm_iterate_impl:
   apply (unfold_locales)
   apply (unfold rm_iterate_alt)
   apply simp
-  apply (simp only: rm_\<alpha>_alist dom_map_of)
+  apply (simp only: rm_\<alpha>_alist dom_map_of_conv_image_fst)
 proof -
   case goal1 thus ?case 
   proof (rule_tac 

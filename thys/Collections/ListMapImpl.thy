@@ -133,8 +133,8 @@ proof -
     next
       case (Cons p m)
       obtain k v where PFMT[simp]: "p=(k,v)" by (cases p) auto
-      from Cons.prems(2) have I': "I (insert k (dom (Map.map_of m))) \<sigma>0" 
-        by (simp del: Map.map_of.simps add: AssocList.dom_map_of)
+      from Cons.prems(2) have I': "I (insert k (dom (Map.map_of m))) \<sigma>0"
+        by (simp del: Map.map_of.simps add: dom_map_of_conv_image_fst)
       {
         assume C[simp]: "c \<sigma>0"
         have "lm_iteratei c f (p # m) \<sigma>0 = lm_iteratei c f m (f k v \<sigma>0)"
@@ -144,7 +144,7 @@ proof -
           by (unfold lm_invar_def) auto
         from Cons.prems(1) have KNID: "k\<notin>dom (Map.map_of m)"
           by (unfold lm_invar_def)
-             (simp add: AssocList.dom_map_of)
+             (simp add: dom_map_of_conv_image_fst)
         have IN: "I (dom (Map.map_of m)) (f k v \<sigma>0)" 
         proof -
           have "I (insert k (dom (Map.map_of m)) - {k}) (f k v \<sigma>0)"

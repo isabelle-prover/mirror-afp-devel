@@ -1,5 +1,4 @@
 (*  Title:      Jinja/Common/TypeRel.thy
-    ID:         $Id: TypeRel.thy,v 1.10 2009-03-04 14:00:59 nipkow Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -420,7 +419,7 @@ apply(rule_tac x = "map (\<lambda>(F,T). ((F,D'),T)) fs @ pre" in exI)
 apply simp
 apply(simp add:Int_Un_distrib2)
 apply(rule equals0I)
-apply(auto dest: subcls_notin_has_fields simp:dom_map_of image_def)
+apply(auto dest: subcls_notin_has_fields simp:dom_map_of_conv_image_fst image_def)
 done
 (*>*)
 

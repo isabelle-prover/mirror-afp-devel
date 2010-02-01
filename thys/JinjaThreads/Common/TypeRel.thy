@@ -609,7 +609,7 @@ apply(rule_tac x = "map (\<lambda>(F,T). ((F,D'),T)) fs @ pre" in exI)
 apply simp
 apply(simp add:Int_Un_distrib2)
 apply(rule equals0I)
-apply(auto dest: subcls_notin_has_fields simp:dom_map_of image_def)
+apply(auto dest: subcls_notin_has_fields simp:dom_map_of_conv_image_fst image_def)
 done
 (*>*)
 
