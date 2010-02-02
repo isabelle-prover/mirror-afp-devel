@@ -4588,11 +4588,11 @@ next
     (stack_xlift (length STK) (compxE2 e 0 0) @ shift (length ?pre) (stack_xlift (length STK) (compxE2 e2 0 0)))
     h (stk @ STK, loc, length ?pre + pc, xcp) ta h' (stk', loc', pc', xcp')"
   proof(cases)
-    case (exec_catch ha xcp'' PC pc'' d stk'' loc'')
-    hence s: "stk' = Addr xcp'' # drop (length stk'' - d) stk''" "stk'' = stk @ STK" "loc' = loc''"
-      "pc' = pc''" "ta = \<epsilon>" "h' = ha" "xcp' = None" "xcp = \<lfloor>xcp''\<rfloor>" "h = ha" "loc = loc''"
-      "PC = Suc (Suc (length (compE2 e) + pc))" by simp_all
-    from `match_ex_table (compP2 P) (cname_of ha xcp'') PC (stack_xlift (length STK) (compxE2 (try e catch(C' V) e2) 0 0)) = \<lfloor>(pc'', d)\<rfloor>` `d \<le> length stk''`
+    case (exec_catch xcp'' d)
+    let ?stk = "stk @ STK" and ?PC = "Suc (Suc (length (compE2 e) + pc))"
+    note s = `stk' = Addr xcp'' # drop (length ?stk - d) ?stk`
+      `ta = \<epsilon>` `h' = h` `xcp' = None` `xcp = \<lfloor>xcp''\<rfloor>` `loc' = loc`
+    from `match_ex_table (compP2 P) (cname_of h xcp'') ?PC (stack_xlift (length STK) (compxE2 (try e catch(C' V) e2) 0 0)) = \<lfloor>(pc', d)\<rfloor>` `d \<le> length ?stk`
     show ?thesis unfolding s
       by -(rule exec_meth.exec_catch, simp_all add: shift_compxE2 stack_xlift_compxE2, simp add: match_ex_table_append add: matches_ex_entry_def)
   qed(auto intro: exec_meth.intros simp add: shift_compxE2 stack_xlift_compxE2)
@@ -4633,13 +4633,14 @@ next
     shift (length ?pre) (stack_xlift (length STK)  (compxE2 e2 0 0)))
     h (stk @ STK, loc, length ?pre + pc, \<lfloor>a\<rfloor>) ta h' (stk', loc', pc', xcp')"
   proof(cases)
-    case (exec_catch ha xcp'' PC pc'' d stk'' loc'')
-    hence s: "stk' = Addr xcp'' # drop (length stk'' - d) stk''" "stk'' = stk @ STK" "loc' = loc''" "pc' = pc''"
-      "ta = \<epsilon>" "h' = ha" "xcp' = None" "a = xcp''" "h = ha" "loc = loc''" "PC = Suc (Suc (length (compE2 e) + pc))" by simp_all
-    from `match_ex_table (compP2 P) (cname_of ha xcp'') PC (stack_xlift (length STK) (compxE2 (try e catch(C' V) e2) 0 0)) = \<lfloor>(pc'', d)\<rfloor>` `d \<le> length stk''`
+    case (exec_catch d)
+    let ?stk = "stk @ STK" and ?PC = "Suc (Suc (length (compE2 e) + pc))"
+    note s = `stk' = Addr a # drop (length ?stk - d) ?stk` `loc' = loc`
+      `ta = \<epsilon>` `h' = h` `xcp' = None`
+    from `match_ex_table (compP2 P) (cname_of h a) ?PC (stack_xlift (length STK) (compxE2 (try e catch(C' V) e2) 0 0)) = \<lfloor>(pc', d)\<rfloor>` `d \<le> length ?stk`
     show ?thesis unfolding s
       by -(rule exec_meth.exec_catch, simp_all add: shift_compxE2 stack_xlift_compxE2, simp add: match_ex_table_append add: matches_ex_entry_def)
-  qed simp_all
+  qed
   hence "?exec e2 stk STK loc pc \<lfloor>a\<rfloor> stk' loc' (pc' - length ?pre) xcp'"
     by(rule exec_meth_drop_xt)(auto simp add: stack_xlift_compxE2)
   from IH[OF this] obtain stk'' where stk': "stk' = stk'' @ STK"

@@ -1761,7 +1761,7 @@ proof(rule antisymI)
       with r `r x y` have "x = y" by(auto elim: antisymD)
       with irrefl[of x] `r x y` show ?thesis by auto
     next
-      case (llexord_LNil ys')
+      case llexord_LNil
       with `llexord r ys xs` have ?EqLNil unfolding q by simp
       thus ?thesis ..
     qed
@@ -1870,7 +1870,7 @@ proof
 	case (llexord_LCons_less x y xs' ys')
 	with prefix[of LNil xs y ys'] show ?thesis by simp
       next
-	case (llexord_LNil ys')
+	case llexord_LNil
 	have ?EqLNil
 	proof(cases ys)
 	  case LNil thus ?thesis unfolding q llexord_LNil by simp

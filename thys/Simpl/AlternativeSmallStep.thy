@@ -581,7 +581,7 @@ next
   from step 
   show "\<Gamma>\<turnstile>\<langle>cs,css,s\<rangle> \<Rightarrow> t"
   proof (cases)
-    case (Catch c1 c2 cs css s)
+    case (Catch c1 c2 cs s)
     with execs obtain t' where
       exec_c1: "\<Gamma>\<turnstile>\<langle>c1,Normal s\<rangle> \<Rightarrow> t'" and
       execs_rest: "\<Gamma>\<turnstile>\<langle>[],(cs, c2 # cs) # css,t'\<rangle> \<Rightarrow> t"
@@ -629,7 +629,7 @@ next
     qed
     with Catch show ?thesis by simp
   next
-    case (Call p bdy cs css s)
+    case (Call p bdy cs s)
     have bdy: "\<Gamma> p = Some bdy" by fact
     from Call execs obtain t' where
       exec_body: "\<Gamma>\<turnstile>\<langle>bdy,Normal s\<rangle> \<Rightarrow> t'" and

@@ -444,7 +444,7 @@ lemma red_trancl_\<tau>_heapD_inv:
   assumes inv: "wfs_inv"
   shows "\<lbrakk> silent_move^++ s s'; wfs s \<rbrakk> \<Longrightarrow> snd s' = snd s"
 proof(induct rule: tranclp_induct)
-  case base thus ?case by(cases s)(auto simp add: silent_move_iff dest: \<tau>move_heap)
+  case base thus ?case by(cases (no_simp) s)(auto simp add: silent_move_iff dest: \<tau>move_heap)
 next
   case (step s' s'')
   thus ?case by(cases s, cases s', cases s'')(auto simp add: silent_move_iff dest: \<tau>move_heap wfs_inv_trancl_inv[OF inv])
@@ -1417,8 +1417,8 @@ proof -
   from mbisim have [simp]: "ls2 = ls1" "ws2 = ws1" "finite (dom ts1)" by(auto simp add: mbisim_def)
   from redT show ?thesis
   proof cases
-    case (redT_normal x1 S ta1 x1' M' T S')
-    hence [simp]: "S = s1" "T = t" "TA = observable_ta_of ta1" "S' = s1'" "M' = m1'"
+    case (redT_normal x1 ta1 x1' M')
+    hence [simp]: "TA = observable_ta_of ta1" "M' = m1'"
       and red: "(x1, m1) -1-ta1\<rightarrow> (x1', m1')" and tst: "ts1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>"
       and wst: "ws1 t = None" and aoe: "r1.actions_ok s1 t ta1"
       and s1': "s1' = redT_upd s1 t ta1 x1' m1'" by auto
@@ -1525,8 +1525,8 @@ proof -
     qed
     ultimately show ?thesis using tasim unfolding tl1 by fastsimp
   next
-    case (redT_acquire S T x1 ln n S')
-    hence [simp]: "S = s1" "T = t" "TA = (\<lambda>\<^isup>f [], [], [], [], ReacquireLocks ln)" "S' = s1'"
+    case (redT_acquire x1 ln n)
+    hence [simp]: "TA = (\<lambda>\<^isup>f [], [], [], [], ReacquireLocks ln)"
       and tst: "thr s1 t = \<lfloor>(x1, ln)\<rfloor>" and wst: "wset s1 t = None"
       and maa: "may_acquire_all (locks s1) t ln" and ln: "0 < ln\<^sub>f n"
       and s1': "s1' = (acquire_all ls1 t ln, (ts1(t \<mapsto> (x1, no_wait_locks)), m1), ws1)" by auto
@@ -1690,8 +1690,8 @@ proof -
   from mbisim have [simp]: "ls2 = ls1" "ws2 = ws1" "finite (dom ts1)" by(auto simp add: mbisim_def)
   from redT1 show ?thesis
   proof cases
-    case (redT_normal x1 S TA x1' M' T S')
-    with tst ts't have [simp]: "S = s1" "T = t" "TA = \<epsilon>" "S' = s1'" "x = x1" "x' = x1'"
+    case (redT_normal x1 TA x1' M')
+    with tst ts't have [simp]: "TA = \<epsilon>" "x = x1" "x' = x1'"
       and red: "(x1, m1) -1-\<epsilon>\<rightarrow> (x1', M')"
       and tst: "thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>"
       and wst: "wset s1 t = None"
@@ -1933,8 +1933,8 @@ proof -
   from mbisim have [simp]: "ls2 = ls1" "ws2 = ws1" "finite (dom ts1)" by(auto simp add: mbisim_def)
   from redT1 show ?thesis
   proof cases
-    case (redT_normal x1 S TA x1' M' T S')
-    with tst ts't have [simp]: "S = s1" "T = t" "TA = \<epsilon>" "S' = s1'" "x = x1" "x' = x1'"
+    case (redT_normal x1 TA x1' M')
+    with tst ts't have [simp]: "TA = \<epsilon>" "x = x1" "x' = x1'"
       and red: "(x1, m1) -1-\<epsilon>\<rightarrow> (x1', M')"
       and tst: "thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>"
       and wst: "wset s1 t = None"
@@ -2032,7 +2032,7 @@ proof -
       ultimately show ?thesis by(auto)
     qed
   next
-    case (redT_acquire s ta x ln n s')
+    case (redT_acquire x ln n)
     with tst have False by(auto simp add: expand_fun_eq)
     thus ?thesis ..
   qed

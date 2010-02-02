@@ -3311,14 +3311,14 @@ lemma \<tau>Red1_simulates_exec_1_\<tau>:
   shows "h = h' \<and> (\<exists>e' xs' exs'. (if sim21_size (compP2 P) (xcp', frs') (xcp, frs) then \<tau>Red1r else \<tau>Red1t) P h ((e, xs), exs) ((e', xs'), exs') \<and> bisim1_list1 P h (e', xs') exs' xcp' frs')"
 using bisim
 proof(cases)
-  case (bl1_Normal XCP stk loc C M pc FRS Ts T body D E XS EXS a M' vs XS')
-  hence [simp]: "e = E" "XS = xs" "exs = EXS @ [(addr a\<bullet>M'(map Val vs), XS')]"
-    "XCP = xcp" "frs = (stk, loc, C, M, pc) # FRS"
-    and conf: "compP2 P,compTP P \<turnstile> (xcp, h, (stk, loc, C, M, pc) # FRS) \<surd>"
-    and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = body in D"
-    and bisim: "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (E, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
-    and lenxs: "max_vars E \<le> length xs"
-    and bisims: "list_all2 (bisim1_fr P h) EXS FRS" by auto
+  case (bl1_Normal stk loc C M pc FRS Ts T body D EXS a M' vs XS')
+  note [simp] = `exs = EXS @ [(addr a\<bullet>M'(map Val vs), XS')]`
+    `frs = (stk, loc, C, M, pc) # FRS`
+    and conf = `compP2 P,compTP P \<turnstile> (xcp, h, (stk, loc, C, M, pc) # FRS) \<surd>`
+    and sees = `P \<turnstile> C sees M: Ts\<rightarrow>T = body in D`
+    and bisim = `P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+    and lenxs = `max_vars e \<le> length xs`
+    and bisims = `list_all2 (bisim1_fr P h) EXS FRS`
   from sees_method_compP[OF sees, where f=compMb2]
   have sees': "compP2 P \<turnstile> C sees M: Ts\<rightarrow>T = (max_stack body, max_vars body, compE2 body @ [Return], compxE2 body 0 0) in D"
     by(simp add: compP2_def compMb2_def)
@@ -3359,14 +3359,14 @@ proof(cases)
 	  by(auto split: split_if_asm simp add: split_beta compP2_def compMb2_def check_def)
 	moreover from execi sees True ins False sees' have "v' \<noteq> Null" by auto
 	ultimately obtain a' where [simp]: "v' = Addr a'" by(auto simp add: is_Ref_def)
-	from bisim have Bisim': "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (E, xs) \<leftrightarrow> (rev (rev vs') @ Addr a' # stk', loc, pc, None)"
+	from bisim have Bisim': "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (e, xs) \<leftrightarrow> (rev (rev vs') @ Addr a' # stk', loc, pc, None)"
 	  by simp
 	from bisim1_Invoke_\<tau>Red[OF this, of MM] True ins lenxs
-	obtain e' xs' where red: "\<tau>red1r P h (E, xs) (e', xs')"
+	obtain e' xs' where red: "\<tau>red1r P h (e, xs) (e', xs')"
 	  and bisim': "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (e', xs') \<leftrightarrow> (rev (rev vs') @ Addr a' # stk', loc, pc, None)"
 	  and call': "call1 e' = \<lfloor>(a', MM, rev vs')\<rfloor>" by auto
 	hence call: "call1 e' = \<lfloor>(a', MM, rev vs')\<rfloor>" by simp
-	from red have Red: "\<tau>Red1r P h ((E, xs), exs) ((e', xs'), exs)"
+	from red have Red: "\<tau>Red1r P h ((e, xs), exs) ((e', xs'), exs)"
 	  by(rule \<tau>red1r_into_\<tau>Red1r)
 	
 	from False execi True check ins sees' obtain C' fs' Ts' T' meth D'
@@ -3445,9 +3445,9 @@ proof(cases)
 	  done
         from red1_simulates_exec_instr[OF wf hconf bisim this _ ST] lenxs \<tau>i obtain e'' xs''
 	  where bisim': "P,blocks1 0 (Class D#Ts) body,0,h' \<turnstile> (e'', xs'') \<leftrightarrow> (stk', loc', pc', xcp')"
-	  and red: "(if xcp' = None \<longrightarrow> pc < pc' then \<tau>red1r else \<tau>red1t) P h (E, xs) (e'', xs'')" and [simp]: "h' = h"
+	  and red: "(if xcp' = None \<longrightarrow> pc < pc' then \<tau>red1r else \<tau>red1t) P h (e, xs) (e'', xs'')" and [simp]: "h' = h"
 	  by(auto simp del: blocks1.simps)
-        have Red: "(if sim21_size (compP2 P) (xcp', frs') (xcp, frs) then \<tau>Red1r else \<tau>Red1t) P h ((E, xs), exs) ((e'', xs''), exs)"
+        have Red: "(if sim21_size (compP2 P) (xcp', frs') (xcp, frs) then \<tau>Red1r else \<tau>Red1t) P h ((e, xs), exs) ((e'', xs''), exs)"
         proof(cases "xcp' = None \<longrightarrow> pc < pc'")
 	  case True
 	  from bisim bisim' have "pc \<le> Suc (length (compE2 body))" "pc' \<le> Suc (length (compE2 body))"
@@ -3478,11 +3478,11 @@ proof(cases)
       with pc have [simp]: "pc = length (compE2 body)" by simp
       with execi sees have [simp]: "xcp' = None"
 	by(cases "compE2 body ! pc")(auto split: split_if_asm simp add: compP2_def compMb2_def split_beta)
-      from bisim have Bisim: "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (E, xs) \<leftrightarrow> (stk, loc, length (compE2 (blocks1 0 (Class D#Ts) body)), None)" by simp
+      from bisim have Bisim: "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, length (compE2 (blocks1 0 (Class D#Ts) body)), None)" by simp
       then obtain v where [simp]: "stk = [v]" by(blast dest: bisim1_pc_length_compE2D)
-      with Bisim lenxs have red: "\<tau>red1r P h (E, xs) (Val v, loc)"
+      with Bisim lenxs have red: "\<tau>red1r P h (e, xs) (Val v, loc)"
 	by clarify (erule bisim1_Val_\<tau>red1r, simp)
-      hence Red: "\<tau>Red1r P h ((E, xs), exs) ((Val v, loc), exs)" by(rule \<tau>red1r_into_\<tau>Red1r)
+      hence Red: "\<tau>Red1r P h ((e, xs), exs) ((Val v, loc), exs)" by(rule \<tau>red1r_into_\<tau>Red1r)
       show ?thesis
       proof(cases "FRS")
 	case Nil [simp]
@@ -3571,10 +3571,10 @@ proof(cases)
       from conf obtain CCC fs where ha: "h a' = \<lfloor>Obj CCC fs\<rfloor>" and subcls: "P \<turnstile> CCC \<preceq>\<^sup>* Throwable"
 	by(auto split: heapobj.split_asm simp add: correct_state_def conf_f_def2 compP2_def)
       from bisim1_xcp_\<tau>Red[OF ha subcls bisim[unfolded Some], of compMb2] match lenxs
-      have red: "\<tau>red1r P h (E, xs) (Throw a', loc)"
+      have red: "\<tau>red1r P h (e, xs) (Throw a', loc)"
 	and b': "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (Throw a', loc) \<leftrightarrow> (stk, loc, pc, \<lfloor>a'\<rfloor>)"
 	by(auto simp add: compP2_def)
-      from red have Red: "\<tau>Red1r P h ((E, xs), exs) ((Throw a', loc), exs)"
+      from red have Red: "\<tau>Red1r P h ((e, xs), exs) ((Throw a', loc), exs)"
 	by(rule \<tau>red1r_into_\<tau>Red1r)
       show ?thesis
       proof(cases "FRS")
@@ -3654,9 +3654,9 @@ proof(cases)
       hence ST: "P,h \<turnstile> stk [:\<le>] ST" by(rule list_all2_mono)(simp add: compP2_def)
       from red1_simulates_exec_instr[OF wf hconf bisim[unfolded `xcp = \<lfloor>a'\<rfloor>`] execm _ ST] lenxs ha' subclsD' \<tau>' obtain e'' xs''
 	where b': "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (e'', xs'') \<leftrightarrow> (Addr a' # drop (length stk - d) stk, loc, pch, None)"
-	and red: "(if pc < pch then \<tau>red1r else \<tau>red1t) P h (E, xs) (e'', xs'')" and [simp]: "h' = h"
+	and red: "(if pc < pch then \<tau>red1r else \<tau>red1t) P h (e, xs) (e'', xs'')" and [simp]: "h' = h"
 	by(auto split: split_if_asm intro: \<tau>move2xcp simp add: compP2_def simp del: blocks1.simps)
-      have Red: "(if sim21_size (compP2 P) (xcp', frs') (xcp, frs) then \<tau>Red1r else \<tau>Red1t) P h ((E, xs), exs) ((e'', xs''), exs)"
+      have Red: "(if sim21_size (compP2 P) (xcp', frs') (xcp, frs) then \<tau>Red1r else \<tau>Red1t) P h ((e, xs), exs) ((e'', xs''), exs)"
       proof(cases "pc < pch")
 	case True
 	from bisim b' have "pc \<le> Suc (length (compE2 body))" "pch \<le> Suc (length (compE2 body))"
@@ -3695,14 +3695,14 @@ lemma \<tau>Red1_simulates_exec_1_not_\<tau>:
                                       bisim1_list1 P h' (e'', xs'') exs'' xcp' frs'"
 using bisim
 proof cases
-  case (bl1_Normal XCP stk loc C M pc FRS Ts T body D E XS EXS a M' vs XS')
-  hence [simp]: "e = E" "XS = xs" "exs = EXS @ [(addr a\<bullet>M'(map Val vs), XS')]" "XCP = xcp"
-    "frs = (stk, loc, C, M, pc) # FRS"
-    and conf: "compP2 P,compTP P \<turnstile> (xcp, h, (stk, loc, C, M, pc) # FRS) \<surd>"
-    and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = body in D"
-    and bisim: "P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (E, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
-    and lenxs: "max_vars E \<le> length xs"
-    and bisims: "list_all2 (bisim1_fr P h) EXS FRS" by auto
+  case (bl1_Normal stk loc C M pc FRS Ts T body D EXS a M' vs XS')
+  note [simp] = `exs = EXS @ [(addr a\<bullet>M'(map Val vs), XS')]`
+    `frs = (stk, loc, C, M, pc) # FRS`
+    and conf = `compP2 P,compTP P \<turnstile> (xcp, h, (stk, loc, C, M, pc) # FRS) \<surd>`
+    and sees = `P \<turnstile> C sees M: Ts\<rightarrow>T = body in D`
+    and bisim = `P,blocks1 0 (Class D#Ts) body,0,h \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, xcp)`
+    and lenxs = `max_vars e \<le> length xs`
+    and bisims = `list_all2 (bisim1_fr P h) EXS FRS`
 
   from sees_method_compP[OF sees, where f=compMb2]
   have sees': "compP2 P \<turnstile> C sees M: Ts\<rightarrow>T = (max_stack body, max_vars body, compE2 body @ [Return], compxE2 body 0 0) in D"
@@ -3744,9 +3744,9 @@ proof cases
 	done
       from red1_simulates_exec_instr[OF wf hconf bisim this _ ST] lenxs \<tau>i obtain e'' xs'' ta' e' xs'
 	where bisim': "P,blocks1 0 (Class D#Ts) body,0,h' \<turnstile> (e'', xs'') \<leftrightarrow> (stk', loc', pc', xcp')"
-	and red1: "\<tau>red1r P h (E, xs) (e', xs')" and red2: "P \<turnstile>1 \<langle>e',(h, xs')\<rangle> -ta'\<rightarrow> \<langle>e'',(h', xs'')\<rangle>"
+	and red1: "\<tau>red1r P h (e, xs) (e', xs')" and red2: "P \<turnstile>1 \<langle>e',(h, xs')\<rangle> -ta'\<rightarrow> \<langle>e'',(h', xs'')\<rangle>"
 	and \<tau>1: "\<not> \<tau>move1 P h e'" and tabisim: "ta_bisim (wbisim1 P) (extTA2J1 P ta') ta" by(auto simp del: blocks1.simps)
-      from red1 have Red1: "\<tau>Red1r P h ((E, xs), exs) ((e', xs'), exs)"
+      from red1 have Red1: "\<tau>Red1r P h ((e, xs), exs) ((e', xs'), exs)"
 	by(rule \<tau>red1r_into_\<tau>Red1r)
       moreover from red2 have "P \<turnstile>1 \<langle>(e', xs')/exs, h\<rangle> -extTA2J1 P ta'\<rightarrow> \<langle>(e'', xs'')/exs, h'\<rangle>"
 	by(rule red1Red)

@@ -715,11 +715,11 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
 	with SA_arrow show ?thesis
 	  by (auto intro: subtyping.SA_Top wf_arrow elim: wf_subtypeE)
       next
-	case (SA_arrow \<Gamma>' T\<^isub>1' S\<^isub>1' S\<^isub>2' T\<^isub>2')
+	case (SA_arrow T\<^isub>1' T\<^isub>2')
 	from SA_arrow SA_arrow' have "\<Gamma> \<turnstile> S\<^isub>1 \<rightarrow> S\<^isub>2 <: T\<^isub>1' \<rightarrow> T\<^isub>2'"
-	  by (auto intro!: subtyping.SA_arrow intro: less(1) [of "S\<^isub>1'"] less(1) [of "S\<^isub>2'"])
+	  by (auto intro!: subtyping.SA_arrow intro: less(1) [of "T\<^isub>1"] less(1) [of "T\<^isub>2"])
 	with SA_arrow show ?thesis by simp
-      qed simp_all
+      qed
     next
       case (SA_all \<Gamma> T\<^isub>1 S\<^isub>1 S\<^isub>2 T\<^isub>2)
       note SA_all' = SA_all
@@ -729,17 +729,17 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
 	with SA_all show ?thesis by (auto intro!:
 	  subtyping.SA_Top wf_all intro: wf_equallength elim: wf_subtypeE)
       next
-	case (SA_all \<Gamma>' T\<^isub>1' S\<^isub>1' S\<^isub>2' T\<^isub>2')
+	case (SA_all T\<^isub>1' T\<^isub>2')
 	from SA_all SA_all' have "\<Gamma> \<turnstile> T\<^isub>1' <: S\<^isub>1"
 	  by - (rule less(1), simp_all)
-	moreover from SA_all SA_all' have "TVarB T\<^isub>1' \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: S\<^isub>2'"
+	moreover from SA_all SA_all' have "TVarB T\<^isub>1' \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2"
 	  by - (rule less(2) [of _ "[]", simplified], simp_all)
 	with SA_all SA_all' have "TVarB T\<^isub>1' \<Colon> \<Gamma> \<turnstile> S\<^isub>2 <: T\<^isub>2'"
 	  by - (rule less(1), simp_all)
 	ultimately have "\<Gamma> \<turnstile> (\<forall><:S\<^isub>1. S\<^isub>2) <: (\<forall><:T\<^isub>1'. T\<^isub>2')"
 	  by (rule subtyping.SA_all)
 	with SA_all show ?thesis by simp
-      qed simp_all
+      qed
     qed
   }
   note tr = this
@@ -1356,17 +1356,17 @@ theorem preservation: -- {* A.20 *}
 proof (induct arbitrary: t')
   case (T_Var \<Gamma> i U T t')
   from `Var i \<longmapsto> t'`
-  show ?case by cases simp_all
+  show ?case by cases
 next
   case (T_Abs T\<^isub>1 \<Gamma> t\<^isub>2 T\<^isub>2 t')
   from `(\<lambda>:T\<^isub>1. t\<^isub>2) \<longmapsto> t'`
-  show ?case by cases simp_all
+  show ?case by cases
 next
   case (T_App \<Gamma> t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 t\<^isub>2 t')
   from `t\<^isub>1 \<bullet> t\<^isub>2 \<longmapsto> t'`
   show ?case
   proof cases
-    case (E_Abs v\<^isub>2 T\<^isub>1\<^isub>1' t\<^isub>1\<^isub>2)
+    case (E_Abs T\<^isub>1\<^isub>1' t\<^isub>1\<^isub>2)
     with T_App have "\<Gamma> \<turnstile> (\<lambda>:T\<^isub>1\<^isub>1'. t\<^isub>1\<^isub>2) : T\<^isub>1\<^isub>1 \<rightarrow> T\<^isub>1\<^isub>2" by simp
     then obtain S'
       where T\<^isub>1\<^isub>1: "\<Gamma> \<turnstile> T\<^isub>1\<^isub>1 <: T\<^isub>1\<^isub>1'"
@@ -1379,30 +1379,30 @@ next
     hence "\<Gamma> \<turnstile> t\<^isub>1\<^isub>2[0 \<mapsto> t\<^isub>2] : T\<^isub>1\<^isub>2" using S' by (rule T_Sub)
     with E_Abs show ?thesis by simp
   next
-    case (E_App1 t''' t'' u)
-    hence "t\<^isub>1 \<longmapsto> t''" by simp
-    hence "\<Gamma> \<turnstile> t'' : T\<^isub>1\<^isub>1 \<rightarrow> T\<^isub>1\<^isub>2" by (rule T_App)
+    case (E_App1 t'')
+    from `t\<^isub>1 \<longmapsto> t''`
+    have "\<Gamma> \<turnstile> t'' : T\<^isub>1\<^isub>1 \<rightarrow> T\<^isub>1\<^isub>2" by (rule T_App)
     hence "\<Gamma> \<turnstile> t'' \<bullet> t\<^isub>2 : T\<^isub>1\<^isub>2" using `\<Gamma> \<turnstile> t\<^isub>2 : T\<^isub>1\<^isub>1`
       by (rule typing.T_App)
     with E_App1 show ?thesis by simp
   next
-    case (E_App2 v t''' t'')
-    hence "t\<^isub>2 \<longmapsto> t''" by simp
-    hence "\<Gamma> \<turnstile> t'' : T\<^isub>1\<^isub>1" by (rule T_App)
+    case (E_App2 t'')
+    from `t\<^isub>2 \<longmapsto> t''`
+    have "\<Gamma> \<turnstile> t'' : T\<^isub>1\<^isub>1" by (rule T_App)
     with T_App(1) have "\<Gamma> \<turnstile> t\<^isub>1 \<bullet> t'' : T\<^isub>1\<^isub>2"
       by (rule typing.T_App)
     with E_App2 show ?thesis by simp
-  qed simp_all
+  qed
 next
   case (T_TAbs T\<^isub>1 \<Gamma> t\<^isub>2 T\<^isub>2 t')
   from `(\<lambda><:T\<^isub>1. t\<^isub>2) \<longmapsto> t'`
-  show ?case by cases simp_all
+  show ?case by cases
 next
   case (T_TApp \<Gamma> t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 T\<^isub>2 t')
   from `t\<^isub>1 \<bullet>\<^isub>\<tau> T\<^isub>2 \<longmapsto> t'`
   show ?case
   proof cases
-    case (E_TAbs T\<^isub>1\<^isub>1' t\<^isub>1\<^isub>2 T\<^isub>2')
+    case (E_TAbs T\<^isub>1\<^isub>1' t\<^isub>1\<^isub>2)
     with T_TApp have "\<Gamma> \<turnstile> (\<lambda><:T\<^isub>1\<^isub>1'. t\<^isub>1\<^isub>2) : (\<forall><:T\<^isub>1\<^isub>1. T\<^isub>1\<^isub>2)" by simp
     then obtain S'
       where "TVarB T\<^isub>1\<^isub>1 \<Colon> \<Gamma> \<turnstile> t\<^isub>1\<^isub>2 : S'"
@@ -1412,13 +1412,13 @@ next
       by (rule substT_type [where \<Delta>="[]", simplified])
     with E_TAbs show ?thesis by simp
   next
-    case (E_TApp t''' t'' T)
-    hence "t\<^isub>1 \<longmapsto> t''" by simp
-    hence "\<Gamma> \<turnstile> t'' : (\<forall><:T\<^isub>1\<^isub>1. T\<^isub>1\<^isub>2)" by (rule T_TApp)
+    case (E_TApp t'')
+    from `t\<^isub>1 \<longmapsto> t''`
+    have "\<Gamma> \<turnstile> t'' : (\<forall><:T\<^isub>1\<^isub>1. T\<^isub>1\<^isub>2)" by (rule T_TApp)
     hence "\<Gamma> \<turnstile> t'' \<bullet>\<^isub>\<tau> T\<^isub>2 : T\<^isub>1\<^isub>2[0 \<mapsto>\<^isub>\<tau> T\<^isub>2]\<^isub>\<tau>" using `\<Gamma> \<turnstile> T\<^isub>2 <: T\<^isub>1\<^isub>1`
       by (rule typing.T_TApp)
     with E_TApp show ?thesis by simp
-  qed simp_all
+  qed
 next
   case (T_Sub \<Gamma> t S T t')
   from `t \<longmapsto> t'`
@@ -1444,11 +1444,11 @@ proof (induct "[]::env" v "T\<^isub>1 \<rightarrow> T\<^isub>2" arbitrary: T\<^i
 next
   case (T_App t\<^isub>1 T\<^isub>1\<^isub>1 t\<^isub>2 T\<^isub>1 T\<^isub>2)
   from `t\<^isub>1 \<bullet> t\<^isub>2 \<in> value`
-  show ?case by cases simp_all
+  show ?case by cases
 next
   case (T_TApp t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 T\<^isub>2 T\<^isub>1 T\<^isub>2')
   from `t\<^isub>1 \<bullet>\<^isub>\<tau> T\<^isub>2 \<in> value`
-  show ?case by cases simp_all
+  show ?case by cases
 next
   case (T_Sub t S T\<^isub>1 T\<^isub>2)
   from `[] \<turnstile> S <: T\<^isub>1 \<rightarrow> T\<^isub>2`
@@ -1463,14 +1463,14 @@ lemma TyAll_canonical: -- {* A.14(3) *}
 proof (induct "[]::env" v "\<forall><:T\<^isub>1. T\<^isub>2" arbitrary: T\<^isub>1 T\<^isub>2)
   case (T_App t\<^isub>1 T\<^isub>1\<^isub>1 t\<^isub>2 T\<^isub>1 T\<^isub>2)
   from `t\<^isub>1 \<bullet> t\<^isub>2 \<in> value`
-  show ?case by cases simp_all
+  show ?case by cases
 next
   case T_TAbs
   show ?case by iprover
 next
   case (T_TApp t\<^isub>1 T\<^isub>1\<^isub>1 T\<^isub>1\<^isub>2 T\<^isub>2 T\<^isub>1 T\<^isub>2')
   from `t\<^isub>1 \<bullet>\<^isub>\<tau> T\<^isub>2 \<in> value`
-  show ?case by cases simp_all
+  show ?case by cases
 next
   case (T_Sub t S T\<^isub>1 T\<^isub>2)
   from `[] \<turnstile> S <: (\<forall><:T\<^isub>1. T\<^isub>2)`
