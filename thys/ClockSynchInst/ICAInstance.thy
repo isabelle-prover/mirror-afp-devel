@@ -1,5 +1,4 @@
 (*  Title:       Instances of Schneider's generalized protocol of clock synchronization
-    ID:          $Id: ICAInstance.thy,v 1.9 2007-10-23 20:52:11 nipkow Exp $
     Author:      Damián Barsotti <damian at hal.famaf.unc.edu.ar>, 2006
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
@@ -124,29 +123,9 @@ generalized summation over a set constructor. *}
 
 lemma sum_abs_triangle_ineq:
 "finite S \<Longrightarrow>
-  \<bar>\<Sum>l\<in>S. (f::'a \<Rightarrow> 'b::ordered_idom) l\<bar> <= (\<Sum>l\<in>S. \<bar>f l\<bar>)"
+  \<bar>\<Sum>l\<in>S. (f::'a \<Rightarrow> 'b::linordered_idom) l\<bar> <= (\<Sum>l\<in>S. \<bar>f l\<bar>)"
   (is "... \<Longrightarrow> ?P S")
-proof(induct S rule: finite_induct)
-  show "?P {}" by simp 
-next
-  fix F x 
-  assume finit: "finite F" and
-    xnotinF: "x \<notin> F" and HI: "\<bar>setsum f F\<bar> \<le> (\<Sum>l\<in>F. \<bar>f l\<bar>)"
-  hence "\<bar>setsum f (insert x F)\<bar> = \<bar>f x + setsum f F\<bar>"
-    by simp
-  also 
-  have "... <= \<bar>f x \<bar> + \<bar>setsum f F\<bar>"
-    using abs_triangle_ineq 
-    by auto
-  also
-  from HI have "... <= \<bar>f x \<bar> + (\<Sum>l\<in>F. \<bar>f l\<bar>)"
-    by simp
-  also
-  from finit xnotinF have "... = (\<Sum>l\<in>insert x F. \<bar>f l\<bar>)"
-    by simp
-  finally
-  show "?P (insert x F)" .
-qed
+  by (rule Finite_Set.setsum_abs)
 
 lemma sum_le:
   "\<lbrakk>finite S ; \<forall> r\<in>S. f r <= b \<rbrakk>
