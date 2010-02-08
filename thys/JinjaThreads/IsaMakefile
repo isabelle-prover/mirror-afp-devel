@@ -26,7 +26,7 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -P "http://isabelle.in.tum.de/library/" -D generated -M 1
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -P "http://isabelle.in.tum.de/library/" -D generated
 
 ## threads
 
