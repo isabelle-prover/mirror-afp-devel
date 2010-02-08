@@ -1,5 +1,4 @@
 (*  Title:      Topology.thy
-    ID:         $Id: Topology.thy,v 1.18 2009-06-23 05:36:14 nipkow Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -8,7 +7,7 @@
 header {* A bit of general topology *}
 
 theory Topology
-imports FuncSet Zorn
+imports Structure_Syntax FuncSet Zorn
 begin
 
 text{*
