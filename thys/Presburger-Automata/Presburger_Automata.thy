@@ -3561,7 +3561,7 @@ proof -
       \<bar>k * int (x mod 2)\<bar> + \<bar>eval_dioph ks (map (\<lambda>x. x mod 2) xs)\<bar>"
       by (rule abs_triangle_ineq)
     also have "\<bar>k * int (x mod 2)\<bar> \<le> \<bar>k\<bar> * \<bar>int (x mod 2)\<bar>"
-      by (rule abs_le_mult)
+      by (simp add: abs_mult)
     also have "\<bar>int (x mod 2)\<bar> \<le> 1" by simp
     finally have "\<bar>k * int (x mod 2) + eval_dioph ks (map (\<lambda>x. x mod 2) xs)\<bar> \<le>
       \<bar>k\<bar> + \<bar>eval_dioph ks (map (\<lambda>x. x mod 2) xs)\<bar>"
