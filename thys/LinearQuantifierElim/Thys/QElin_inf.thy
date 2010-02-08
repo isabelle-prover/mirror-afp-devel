@@ -137,7 +137,7 @@ next
         and "\<forall>y. ?U < y \<and> y \<le> x \<longrightarrow> ?L < y" using Atom 1
 	by(simp_all add:nolb_def depends\<^isub>R_def Ball_def field_simps)
       hence "?L < ?U \<or> ?L = ?U"
-	by(metis linorder_neqE_ordered_idom real_le_refl)
+	by (metis linorder_neqE_linordered_idom real_le_refl)
       hence ?thesis using Atom 1 `d>0`
 	by (simp add: iprod_left_add_distrib field_simps)
     } ultimately show ?thesis by force
@@ -154,13 +154,13 @@ lemma I_subst_peps:
   "nqfree f \<Longrightarrow> R.I (subst\<^isub>+ f (r,cs)) xs \<Longrightarrow>
   (\<exists>leps>r+\<langle>cs,xs\<rangle>. \<forall>x. r+\<langle>cs,xs\<rangle> < x \<and> x \<le> leps \<longrightarrow> R.I f (x#xs))"
 proof(induct f)
-  case TrueF thus ?case by simp (metis ordered_semidom_class.less_add_one)
+  case TrueF thus ?case by simp (metis less_add_one)
 next
   case (Atom a)
   show ?case
   proof (cases "((r,cs),a)" rule: asubst_peps.cases)
     case (1 r cs s d ds)
-    { assume "d=0" hence ?thesis using Atom 1 by auto(metis ordered_semidom_class.less_add_one) }
+    { assume "d=0" hence ?thesis using Atom 1 by auto (metis less_add_one) }
     moreover
     { assume "d<0"
       with Atom 1 have "r + \<langle>cs,xs\<rangle> < (s - \<langle>ds,xs\<rangle>)/d" (is "?a < ?b")
@@ -192,7 +192,7 @@ next
 	  by(force simp: iprod_left_add_distrib)
       qed
     } ultimately show ?thesis by (metis less_linear)
-  qed (insert Atom, auto split:split_if_asm intro: ordered_semidom_class.less_add_one)
+  qed (insert Atom, auto split:split_if_asm intro: less_add_one)
 next
   case And thus ?case
     apply clarsimp
