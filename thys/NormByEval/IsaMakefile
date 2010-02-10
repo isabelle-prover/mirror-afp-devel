@@ -6,9 +6,9 @@ BASE-IMAGE = HOL
 ## targets
 
 default: $(SESSION-NAME)
-test: $(SESSION-NAME)
+test:
 # usually empty:
-images:  
+images: $(SESSION-NAME)
 
 all: images test
 
@@ -35,9 +35,9 @@ MAXTIME = 3600
 
 ## dependencies
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): $(OUT)/$(SESSION-NAME)
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
+$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
 	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
 
