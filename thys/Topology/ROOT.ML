@@ -1,5 +1,5 @@
+
 no_document use_thys [
-  "Structure_Syntax",
   "FuncSet",
   "Zorn",
   "../Lazy-Lists-II/LList2"

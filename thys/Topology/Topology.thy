@@ -7,7 +7,7 @@
 header {* A bit of general topology *}
 
 theory Topology
-imports Structure_Syntax FuncSet Zorn
+imports FuncSet Zorn
 begin
 
 text{*

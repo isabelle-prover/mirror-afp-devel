@@ -5,7 +5,7 @@
 header {* Categories *}
 
 theory Cat
-imports FuncSet Structure_Syntax
+imports FuncSet
 begin
 
 subsection {* Definitions *}
