@@ -1,5 +1,4 @@
 (*  Title:      hoare_syntax.ML
-    ID:         $Id: hoare_syntax.ML,v 1.13 2009-06-02 19:13:33 makarius Exp $
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer 
@@ -509,7 +508,7 @@ fun new_tr ctxt (ts as [var,size,init]) =
 
     val inits = map mk_upd (dest_inits init);
     val free = lookup_comp (Context.Proof ctxt) [] freeN (Bound 0)
-    val freetest = Syntax.const @{const_name Algebras.less_eq} $ size $ free;
+    val freetest = Syntax.const @{const_name Orderings.less_eq} $ size $ free;
     
     val null = Syntax.free "Ref.Null";
 
@@ -553,7 +552,7 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
 
     val inits = map mk_upd (dest_inits init);
     val free = lookup_comp (Context.Proof ctxt) [] freeN (Bound 0)
-    val freetest = Syntax.const @{const_name Algebras.less_eq}$size$free;
+    val freetest = Syntax.const @{const_name Orderings.less_eq} $ size $ free;
     
     val null = Syntax.free "Ref.Null";
 
@@ -619,15 +618,15 @@ fun mk_imp (l,SOME r) = SOME (HOLogic.mk_imp (l,r))
 
 local
 
-fun le_max t = Syntax.const @{const_name Algebras.less_eq} $ t $ Syntax.free "MAX";
-fun ge_min t = Syntax.const @{const_name Algebras.less_eq} $ Syntax.free "MIN" $ t;
-fun le l r = Syntax.const @{const_name Algebras.less} $ l $ r;
+fun le_max t = Syntax.const @{const_name Orderings.less_eq} $ t $ Syntax.free "MAX";
+fun ge_min t = Syntax.const @{const_name Orderings.less_eq} $ Syntax.free "MIN" $ t;
+fun le l r = Syntax.const @{const_name Orderings.less} $ l $ r;
 fun in_range t = Syntax.free "in_range" $ t;
 fun not_zero t = Syntax.const "Not" $ (Syntax.const "op =" $ t $ Syntax.const @{const_name Algebras.zero}); 
 fun not_Null t = Syntax.const "Not" $ (Syntax.const "op =" $ t $ Syntax.free "Ref.Null");
 fun in_alloc t = Syntax.const "op :" $ t $ (Syntax.const "set" $ Syntax.free "alloc_'");
-fun in_length i l = Syntax.const @{const_name Algebras.less} $ i $ (Syntax.const "size" $ l);
-fun is_pos t = Syntax.const @{const_name Algebras.less_eq} $ Syntax.const @{const_name Algebras.zero} $ t;
+fun in_length i l = Syntax.const @{const_name Orderings.less} $ i $ (Syntax.const "size" $ l);
+fun is_pos t = Syntax.const @{const_name Orderings.less_eq} $ Syntax.const @{const_name Algebras.zero} $ t;
 
 fun is_arr (Const ("List.nth",_)$l$e) = is_arr l 
   | is_arr (Const (a,_)$Bound 0) = is_state_var a
@@ -1340,7 +1339,7 @@ fun hd_name (Const ("_free",_)$Free (x,_)) = x
 
 
 fun new_tr' [(trm as (Abs (s,_, 
-       Const ("If",_)$(Const (@{const_syntax Algebras.less_eq},_)$size$free)$
+       Const ("If",_)$(Const (@{const_syntax Orderings.less_eq},_)$size$free)$
          (upd$new$(gupd$(Abs (_,_,inits_free_alloc))$Bound 0))$
          (upd'$null$Bound 0))))] =
   let
@@ -1369,7 +1368,7 @@ fun new_tr' [(trm as (Abs (s,_,
   | new_tr' ts = raise Match;
 
 fun nnew_tr' [(trm as  
-       Const ("if_rel",_)$(Abs (s,_,Const (@{const_syntax Algebras.less_eq},_)$size$free))$
+       Const ("if_rel",_)$(Abs (s,_,Const (@{const_syntax Orderings.less_eq},_)$size$free))$
          (Abs (_,_,upd$new$(gupd$(Abs (_,_,free_inits_alloc))$Bound 0)))$
          (Abs (_,_,(upd'$null$Bound 0)))$_)] =
   let
