@@ -300,7 +300,7 @@ subsection {* Multisets *}
   And adding the following translations instead:
   
      + syntax
-     + "@multiset" :: "args \<Rightarrow> 'a multiset" ("{#(_)#}")
+     + "_multiset" :: "args \<Rightarrow> 'a multiset" ("{#(_)#}")
 
      + translations
      +   "{#x, xs#}" == "{#x#} + {#xs#}" 
