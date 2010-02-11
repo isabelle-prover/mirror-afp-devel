@@ -55,38 +55,46 @@ translations
 
 print_translation {*
 let
-fun in_tr' [Const ("list_multsel",_)$x$
-               (Const ("pfilter",_)$(Const ("_antiquoteCur",_)$c)$i),
-            Const ("pfilter",_)$(Const ("_antiquoteCur",_)$c')$y] =
-     if c=c'
-     then Syntax.const "_In"$c$(Syntax.const "list_multsel"$x$i)$y
-     else raise Match 
-  | in_tr' [Const ("list_multsel",_)$x$
-               (Const ("pmask",_)$z$(Const ("_antiquoteCur",_)$c)),
-            Const ("pfilter",_)$(Const ("_antiquoteCur",_)$c')$y] =
-     if c=c'
-     then Syntax.const "_In"$c$x$y
+  fun in_tr'
+        [Const (@{const_syntax list_multsel}, _) $ x $
+          (Const (@{const_syntax pfilter}, _) $
+            (Const (@{syntax_const "_antiquoteCur"}, _) $ c) $ i),
+          Const (@{const_syntax pfilter}, _) $
+            (Const (@{syntax_const "_antiquoteCur"}, _) $ c') $ y] =
+        if c = c' then
+          Syntax.const @{syntax_const "_In"} $ c $
+            (Syntax.const @{const_syntax list_multsel} $ x $ i) $ y
+        else raise Match 
+    | in_tr'
+        [Const (@{const_syntax list_multsel}, _) $ x $
+          (Const (@{const_syntax pmask}, _) $ z $
+            (Const (@{syntax_const "_antiquoteCur"}, _) $ c)),
+          Const (@{const_syntax pfilter}, _) $ (Const (@{syntax_const "_antiquoteCur"}, _) $ c') $ y] =
+     if c = c' then Syntax.const @{syntax_const "_In"} $ c $ x $ y
      else raise Match 
 
-fun where_tr' [Const ("_locinit",_)$Const (c,_)$
-                  (Const ("p_and",_)$(Const ("_antiquoteCur",_)$Const (c',_))$m),
-               s] =
-     if c=c' then Syntax.const "_Where"$m$Syntax.const c$s else raise Match
-  | where_tr' ts = raise Match
-in [("_Assign",in_tr'),
-    ("_Loc",where_tr')] end
+  fun where_tr'
+        [Const (@{syntax_const "_locinit"}, _) $ Const (c, _) $
+          (Const (@{const_syntax p_and}, _) $
+            (Const (@{syntax_const "_antiquoteCur"}, _) $ Const (c', _)) $ m), s] =
+        if c = c' then
+          Syntax.const @{syntax_const "_Where"} $ m $
+            Syntax.const c $ s
+        else raise Match
+    | where_tr' ts = raise Match
 
+in [(@{syntax_const "_Assign"}, in_tr'), (@{syntax_const "_Loc"}, where_tr')] end
 *}
 
 print_ast_translation {*
 let
-fun where_else_tr' [Appl [Constant "_Where", m, c, s1],
-                    Appl [Constant "_Where", Appl [Constant "p_not",m'],c',s2]] = 
-     if c=c' andalso m=m' 
-     then Appl [Constant "_WhereElse",m,c,s1,s2]
-     else raise Match
-
-in [("_seq",where_else_tr')] end
+  fun where_else_tr'
+    [Appl [Constant @{syntax_const "_Where"}, m, c, s1],
+      Appl [Constant @{syntax_const "_Where"},
+      Appl [Constant @{const_syntax p_not}, m'], c', s2]] = 
+    if c = c' andalso m = m' then Appl [Constant @{syntax_const "_WhereElse"}, m, c, s1, s2]
+    else raise Match
+in [(@{syntax_const "_seq"}, where_else_tr')] end
 *}
 
 

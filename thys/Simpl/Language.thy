@@ -912,12 +912,11 @@ apply (erule allE, erule mp, (rule allI impI)+, erule com_rel_elim_cases,simp,si
 done
 
 consts inter_guards:: "('s,'p,'f) com \<times> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com option"
-syntax "@inter_guards":: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com option" 
+
+abbreviation 
+  inter_guards_syntax :: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com option"
            ("_ \<inter>\<^sub>g _" [20,20] 19)
-
-translations
-"c \<inter>\<^sub>g d" == "inter_guards (c,d)" 
-
+  where "c \<inter>\<^sub>g d == inter_guards (c,d)" 
 
 recdef inter_guards "inv_image com_rel fst" 
 "(Skip \<inter>\<^sub>g Skip) = Some Skip"
@@ -1089,11 +1088,11 @@ subsubsection {* Subset on Guards: @{text "c\<^isub>1 \<subseteq>\<^sub>g c\<^is
 
 
 consts subseteq_guards:: "('s,'p,'f) com \<times> ('s,'p,'f) com \<Rightarrow> bool"
-syntax "@subseteq_guards":: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> bool" 
-           ("_ \<subseteq>\<^sub>g _" [20,20] 19)
 
-translations
-"c \<subseteq>\<^sub>g d" == "subseteq_guards (c,d)" 
+abbreviation
+  subseteq_guards_syntax :: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> bool"
+           ("_ \<subseteq>\<^sub>g _" [20,20] 19)
+  where "c \<subseteq>\<^sub>g d == subseteq_guards (c,d)"
 
 
 recdef subseteq_guards "inv_image com_rel snd" 

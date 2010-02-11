@@ -331,7 +331,7 @@ syntax
   "_sum" :: "idt => nat => nat => nat"
     ("SUMM _<_. _" [0, 0, 10] 10)
 translations
-  "SUMM j<k. b" == "sum (\<lambda>j. b) k"
+  "SUMM j<k. b" == "CONST sum (\<lambda>j. b) k"
 
 text {*
  The following proof is quite explicit in the individual steps taken,
