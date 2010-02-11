@@ -140,8 +140,8 @@ syntax
   "_map" :: "[ 'b, pttrn, 'a list] => 'a list"("(1[_./ _ : _])")
 
 translations
-  "[f. x \<in> xs]"== "map (\<lambda>x. f) xs" 
-  "[f. x : xs]"== "map (\<lambda>x. f) xs";
+  "[f. x \<in> xs]"== "CONST map (\<lambda>x. f) xs" 
+  "[f. x : xs]"== "CONST map (\<lambda>x. f) xs";
 
 
 subsubsection {* @{const map_filter} *}
@@ -152,8 +152,8 @@ syntax
   "_map_filter" :: "['b, pttrn, 'a list, bool] => 'a list"("(1[_./ _ : _, _])")
 
 translations
-  "[f. x \<in> xs, P]"== "map_filter (\<lambda>x. f) P xs" 
-  "[f. x : xs, P]"== "map_filter (\<lambda>x. f) P xs"
+  "[f. x \<in> xs, P]"== "CONST map_filter (\<lambda>x. f) P xs" 
+  "[f. x : xs, P]"== "CONST map_filter (\<lambda>x. f) P xs"
 *)
 
 lemma [simp]: "[f x. x <- xs, P x] = [f x. x <- [x \<leftarrow> xs. P x]]"

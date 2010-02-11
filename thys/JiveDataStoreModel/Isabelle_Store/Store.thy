@@ -126,8 +126,8 @@ syntax
   "_sModify"  :: "['a, smodifybinds] \<Rightarrow> 'a"       ("_/\<langle>(_)\<rangle>" [900,0] 900)
 translations
   "_sModify s (_smodifybinds b bs)"  == "_sModify (_sModify s b) bs"
-  "s\<langle>x:=y\<rangle>"                          == "update s x y"
-  "s\<langle>c\<rangle>"                             == "alloc s c" 
+  "s\<langle>x:=y\<rangle>"                          == "CONST update s x y"
+  "s\<langle>c\<rangle>"                             == "CONST alloc s c" 
  
 
 text {* With this syntactic setup we can write chains of (array) updates and 
