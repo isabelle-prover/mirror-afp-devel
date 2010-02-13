@@ -37,7 +37,7 @@ translations
 types ('l,'t,'x,'m,'w,'o) thread_action =
   "'l lock_actions \<times> ('t,'x,'m) new_thread_action list \<times>
    't conditional_action list \<times> 'w wait_set_action list \<times> 'o"
-(* pretty printing for thread_action type *)
+(* pretty printing for thread_action type *)  (* FIXME @{type_syntax} *)
 print_translation {*
   let
     fun tr' [Const ("finfun", _) $ l $ (Const ("list", _) $ Const ("lock_action", _)),
@@ -112,7 +112,7 @@ syntax
 
 translations
   "_lockUpdate ta (_locklets b bs)"  == "_lockUpdate (_lockUpdate ta b) bs"
-  "ta\<lbrace>\<^bsub>l\<^esub>x\<rightarrow>y\<rbrace>"                         == "(CONST ta_update_locks) ta x y"
+  "ta\<lbrace>\<^bsub>l\<^esub>x\<rightarrow>y\<rbrace>"                         == "CONST ta_update_locks ta x y"
 
 
 nonterminals
@@ -125,7 +125,7 @@ syntax
 
 translations
   "_ntUpdate ta (_ntlets b bs)"  == "_ntUpdate (_ntUpdate ta b) bs"
-  "ta\<lbrace>\<^bsub>t\<^esub>nt\<rbrace>"                         == "(CONST ta_update_NewThread) ta nt"
+  "ta\<lbrace>\<^bsub>t\<^esub>nt\<rbrace>"                         == "CONST ta_update_NewThread ta nt"
 
 
 nonterminals
@@ -138,7 +138,7 @@ syntax
 
 translations
   "_jUpdate ta (_jlets b bs)"  == "_jUpdate (_jUpdate ta b) bs"
-  "ta\<lbrace>\<^bsub>c\<^esub>nt\<rbrace>"                         == "(CONST ta_update_Conditional) ta nt"
+  "ta\<lbrace>\<^bsub>c\<^esub>nt\<rbrace>"                         == "CONST ta_update_Conditional ta nt"
 
 
 nonterminals
@@ -151,7 +151,7 @@ syntax
 
 translations
   "_wsUpdate ta (_wslets b bs)"  == "_wsUpdate (_wsUpdate ta b) bs"
-  "ta\<lbrace>\<^bsub>w\<^esub>ws\<rbrace>"                         == "(CONST ta_update_wait_set) ta ws"
+  "ta\<lbrace>\<^bsub>w\<^esub>ws\<rbrace>"                         == "CONST ta_update_wait_set ta ws"
 
 
 types
@@ -164,7 +164,7 @@ types
 translations
   "locks l t" <= (type) "l \<Rightarrow>\<^isub>f (t \<times> nat) option"
   "thread_info l t x" <= (type) "t \<rightharpoonup> (x \<times> (l \<Rightarrow>\<^isub>f nat))"
-(* pretty printing for state type *)
+(* pretty printing for state type *)  (* FIXME @{type_syntax} *)
 print_translation {*
   let
     fun tr' [Const ("finfun", _) $ l1 $ (Const ("option", _) $ (Const ("*", _) $ t1 $ Const ("nat", _))),
@@ -284,7 +284,7 @@ types
   ('l,'t,'x,'m,'w,'o) semantics =
     "'x \<times> 'm \<Rightarrow> ('l,'t,'x,'m,'w,'o option) thread_action \<Rightarrow> 'x \<times> 'm \<Rightarrow> bool"
 
-(* pretty printing for semantics *)
+(* pretty printing for semantics *)  (* FIXME @{type_syntax} *)
 print_translation {*
   let
     fun tr' [Const ("*", _) $ x1 $ m1,

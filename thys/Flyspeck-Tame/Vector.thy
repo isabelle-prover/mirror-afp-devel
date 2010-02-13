@@ -48,15 +48,17 @@ constdefs
  sub :: "'a vector \<Rightarrow> nat \<Rightarrow> 'a" 
  "sub a n \<equiv> sub1 (a, n)"
 
-syntax 
-  "_sub" :: "'a vector \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<lbrakk>_\<rbrakk>)" [1000] 999) 
-  "_sub2" :: "'a vector vector \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<lbrakk>_,_\<rbrakk>)" [1000] 999)
-  "_sub3" :: "'a vector vector vector \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a" ("(_\<lbrakk>_,_,_\<rbrakk>)" [1000] 999) 
+abbreviation
+  sub1_syntax :: "'a vector \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<lbrakk>_\<rbrakk>)" [1000] 999)
+  where "a\<lbrakk>n\<rbrakk> == sub a n"
 
-translations 
-  "(a\<lbrakk>n\<rbrakk>)" == "CONST sub a n"
-  "(as\<lbrakk>m, n\<rbrakk>)" == "CONST sub (CONST sub as m) n"
-  "(as\<lbrakk>l, m, n\<rbrakk>)" == "CONST sub (CONST sub (CONST sub as l) m) n"
+abbreviation
+  sub2_syntax :: "'a vector vector \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<lbrakk>_,_\<rbrakk>)" [1000] 999)
+  where "as\<lbrakk>m, n\<rbrakk> == sub (sub as m) n"
+
+abbreviation
+  sub3_syntax :: "'a vector vector vector \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a" ("(_\<lbrakk>_,_,_\<rbrakk>)" [1000] 999)
+  where "as\<lbrakk>l, m, n\<rbrakk> == sub (sub (sub as l) m) n"
 
 text {* examples:  @{term "\<lbrakk>0. i < 5\<rbrakk>"}, @{term "\<lbrakk>i. i < 5, j < 3\<rbrakk>"}  *}
 
