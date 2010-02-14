@@ -43,7 +43,7 @@ is available <a href="citing.shtml">[here]</a>. A
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2009</td>
+      <td class="head">2010</td>
     </tr>
 
 <!-- entry template begin (delete this line) --
@@ -54,6 +54,20 @@ is available <a href="citing.shtml">[here]</a>. A
 <a href="???">???</a>
 </td></tr>
 -- entry template end (delete this line) -->
+
+<tr><td class="entry">
+2010-02-14:
+<a href="entries/Coinductive.shtml">Coinductive</a>
+<br>Author:
+<a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
+</td></tr>
+
+<p> </p>
+<table width="80%" class="entries">
+  <tbody>
+    <tr>
+      <td class="head">2009</td>
+    </tr>
 
 <tr><td class="entry">
 2009-12-10:
