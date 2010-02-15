@@ -47,9 +47,9 @@ href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas L
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"> 
 <!-- Abstract: -->	
-This is a collection of theories defining coinductive (infinite) lists
-(also: natural numbers) and a library of functions on them.
-The initial theory was contributed by Paulson and Wenzel.
+This is a collection of theories defining lazy (finite and infinite) lists
+and a library of functions on them coinductively. Lazy natural numbers are
+covered as well. The initial theory was contributed by Paulson and Wenzel.
 Further contributions are welcome.
    </td></tr>
 
