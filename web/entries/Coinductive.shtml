@@ -47,10 +47,13 @@ href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas L
 	<tr><td class="datahead" valign="top">Abstract:</td>
   <td class="abstract"> 
 <!-- Abstract: -->	
-This is a collection of theories defining lazy (finite and infinite) lists
-and a library of functions on them coinductively. Lazy natural numbers are
-covered as well. The initial theory was contributed by Paulson and Wenzel.
-Further contributions are welcome.
+This article collects formalisations of general-purpose coinductive data
+types and sets. Currently, it contains coinductive natural numbers,
+coinductive lists, i.e. lazy lists or streams, and a library of operations on
+coinductive lists.
+<br>
+The initial theory was contributed by Paulson and Wenzel.  Extensions
+and other coinductive formalisations of general interest are welcome.
    </td></tr>
 
 <!-- uncomment for entries significantly updated in devel version:
