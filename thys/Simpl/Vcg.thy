@@ -402,7 +402,6 @@ translations
 parse_translation (advanced){*
 let
     val argsC = @{syntax_const "_modifyargs"};
-    val updateN = @{syntax_const "_update"};
     val globalsN = @{const_syntax globals};
     val ex = @{const_syntax mex};
     val eq = @{const_syntax meq};
