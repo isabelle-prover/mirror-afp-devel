@@ -4,7 +4,6 @@
     Maintainer:  Andreas Lochbihler
 *)
 theory Coinductive_List_Lib imports
-  Main
   Coinductive_List
   Coinductive_Nat
 begin

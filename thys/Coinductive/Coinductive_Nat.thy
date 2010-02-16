@@ -3,7 +3,6 @@
     Maintainer:  Andreas Lochbihler
 *)
 theory Coinductive_Nat imports
-  Main
   Nat_Infinity
 begin
 
