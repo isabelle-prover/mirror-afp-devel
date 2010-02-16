@@ -56,7 +56,7 @@ qed simp
 
 subsection {* Prefix ordering as a lower semilattice *}
 
-instantiation llist :: (type) lower_semilattice begin
+instantiation llist :: (type) semilattice_inf begin
 
 definition [code del]:
   "inf xs ys =
