@@ -2238,6 +2238,7 @@ subsection {* Instantiating the @{text Postdomination} locale *}
 interpretation ProcPostdomination:
   Postdomination sourcenode targetnode kind "valid_edge wfp" "(Main,Entry)"
   get_proc "get_return_edges wfp" "lift_procs wfp" Main "(Main,Exit)"
+  for wfp
 proof -
   from Rep_wf_prog[of wfp]
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)" 
