@@ -14,6 +14,7 @@ fun labels_nodes :: "cmd \<Rightarrow> w_node \<Rightarrow> cmd \<Rightarrow> bo
 
 interpretation While_semantics_CFG_wf: CFG_semantics_wf 
   sourcenode targetnode kind "valid_edge prog" Entry reds "labels_nodes prog"
+  for prog
 proof(unfold_locales)
   fix n c s c' s' n'
   assume "labels_nodes prog n c" and "\<langle>c,s\<rangle> \<rightarrow>* \<langle>c',s'\<rangle>"

@@ -414,6 +414,7 @@ qed simp_all
 
 interpretation While_CFG_wf: CFG_wf sourcenode targetnode kind 
   "valid_edge prog" Entry "Defs prog" "Uses prog" id
+  for prog
 proof(unfold_locales)
   show "Defs prog (_Entry_) = {} \<and> Uses prog (_Entry_) = {}"
     by(simp add:Defs.simps Uses.simps)
@@ -454,6 +455,7 @@ qed
 
 interpretation While_CFGExit_wf: CFGExit_wf sourcenode targetnode kind 
   "valid_edge prog" Entry "Defs prog" "Uses prog" id Exit
+  for prog
 proof(unfold_locales)
   show "Defs prog (_Exit_) = {} \<and> Uses prog (_Exit_) = {}"
     by(simp add:Defs.simps Uses.simps)

@@ -51,6 +51,7 @@ where
 
 interpretation JVM_CFG_Interpret:
   CFG "sourcenode" "targetnode" "kind" "valid_edge prog" "Entry"
+  for prog
 proof (unfold_locales)
   fix a
   assume ve: "valid_edge prog a"
@@ -84,6 +85,7 @@ qed
 
 interpretation JVM_CFGExit_Interpret:
   CFGExit "sourcenode" "targetnode" "kind" "valid_edge prog" "Entry" "(_Exit_)"
+  for prog
 proof(unfold_locales)
   fix a
   assume ve: "valid_edge prog a"

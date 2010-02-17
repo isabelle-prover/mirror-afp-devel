@@ -1094,6 +1094,7 @@ subsection {* Interpretation of the @{text "CFG_semantics_wf"} locale *}
 interpretation JVM_semantics_CFG_wf:
   CFG_semantics_wf "sourcenode" "targetnode" "kind" "valid_edge prog" "(_Entry_)"
    "sem prog" "identifies"
+  for prog
 proof(unfold_locales)
   fix n c s c' s'
   assume sem_step:"prog \<turnstile> \<langle>c,s\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>"

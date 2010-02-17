@@ -357,6 +357,7 @@ text {*
 
 interpretation JVM_CFG_Postdomination:
   Postdomination "sourcenode" "targetnode" "kind" "valid_edge\<^bsub>CFG\<^esub> prog" "Entry" "(_Exit_)"
+  for prog
 proof(unfold_locales)
   fix n
   assume vn: "CFG.valid_node sourcenode targetnode (valid_edge\<^bsub>CFG\<^esub> prog) n" 
@@ -736,6 +737,7 @@ subsection {* Interpretation of the locale *}
 
 interpretation JVM_CFG_StrongPostdomination:
   StrongPostdomination "sourcenode" "targetnode" "kind" "valid_edge\<^bsub>CFG\<^esub> prog" "Entry" "(_Exit_)"
+  for prog
 proof(unfold_locales)
   fix n
   assume vn: "CFG.valid_node sourcenode targetnode (valid_edge\<^bsub>CFG\<^esub> prog) n"

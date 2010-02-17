@@ -1122,8 +1122,9 @@ proof -
 qed
 
 interpretation JVM_CFG_wf: CFG_wf
-"sourcenode" "targetnode" "kind" "valid_edge prog" "(_Entry_)"
-  "Def (fst(prog))" "Use (fst(prog))" "state_val"
+  "sourcenode" "targetnode" "kind" "valid_edge prog" "(_Entry_)"
+  "Def (fst prog)" "Use (fst prog)" "state_val"
+  for prog
 proof (unfold_locales)
   show "Def (fst prog) (_Entry_) = {} \<and> Use (fst prog) (_Entry_) = {}"
     by (auto elim: Def.cases Use.cases)
