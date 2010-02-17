@@ -6,11 +6,11 @@ BASE-IMAGE = HOL
 ## targets
 
 default: $(SESSION-NAME)
-test: $(SESSION-NAME)
+test: $(SESSION-NAME)-test
 # usually empty:
-images:  
+images: $(SESSION-NAME)
 
-all: images test
+all: images
 
 
 ## global settings
@@ -26,8 +26,10 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
+DOCFLAGS = -v true -i true -V outline=/proof,/ML -g true -d pdf -P "http://isabelle.in.tum.de/library/"
+USEDIR = $(ISABELLE_TOOL) usedir  $(DOCFLAGS)
+BUILD = $(ISABELLE_TOOL) usedir -b $(DOCFLAGS)
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
 
 # time limit (in sec)
 MAXTIME = 200
@@ -35,13 +37,25 @@ MAXTIME = 200
 
 ## dependencies
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+# test run and proof document
+
+$(SESSION-NAME)-test: $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML *.thy document/*.tex
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+
+
+# build image
+
+$(SESSION-NAME): $(OUT)/$(SESSION-NAME)
+
+$(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy document/*.tex
+	ulimit -t $(MAXTIME); $(BUILD) $(IMAGE) $(SESSION-NAME)
+
 
 
 ## clean
 
 clean:
 	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -f $(OUT)/$(SESSION-NAME)

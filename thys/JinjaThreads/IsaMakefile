@@ -1,7 +1,7 @@
 ## configurables
 
 SESSION-NAME = JinjaThreads
-BASE-IMAGE = HOL
+BASE-IMAGE = Coinductive
 
 ## targets
 
@@ -26,16 +26,22 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -P "http://isabelle.in.tum.de/library/" -D generated
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -V outline=/proof,/ML
 
-## threads
+## dependencies
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+# test run and proof document
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML HOL-Coinduct/*.thy Common/*.thy J/*.thy Framework/*.thy document/*.tex BV/*.thy JVM/*.thy Compiler/*.thy
+$(SESSION-NAME): Coinductive $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+Coinductive:
+	cd ../Coinductive; $(ISABELLE_TOOL) make Coinductive
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Common/*.thy J/*.thy Framework/*.thy document/*.tex BV/*.thy JVM/*.thy Compiler/*.thy
 	cd ..; $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 ## clean
 
 clean:
 	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -f $(OUT)/$(SESSION-NAME)

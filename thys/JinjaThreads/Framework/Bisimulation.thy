@@ -6,7 +6,7 @@ header {* \isaheader{Various notions of bisimulation} *}
 
 theory Bisimulation imports
   "FWState"
-  "../HOL-Coinduct/Coinductive_List_Lib"
+  "../../Coinductive/Coinductive_List_Lib"
 begin
 
 definition flip :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> 'c"
