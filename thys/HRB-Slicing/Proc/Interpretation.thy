@@ -86,6 +86,7 @@ subsection {* Instatiation of the @{text CFG} locale *}
 interpretation ProcCFG:
   CFG sourcenode targetnode kind "valid_edge wfp" "(Main,Entry)"
   get_proc "get_return_edges wfp" "lift_procs wfp" Main
+  for wfp
 proof -
   from Rep_wf_prog[of wfp]
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)" 
@@ -619,6 +620,7 @@ subsection {* Instatiation of the @{text CFGExit} locale *}
 interpretation ProcCFGExit:
   CFGExit sourcenode targetnode kind "valid_edge wfp" "(Main,Entry)"
   get_proc "get_return_edges wfp" "lift_procs wfp" Main "(Main,Exit)"
+  for wfp
 proof -
   from Rep_wf_prog[of wfp]
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)" 

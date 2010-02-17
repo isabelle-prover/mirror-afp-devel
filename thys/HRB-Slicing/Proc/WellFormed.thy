@@ -1114,6 +1114,7 @@ interpretation ProcCFG_wf:
   CFG_wf sourcenode targetnode kind "valid_edge wfp" "(Main,Entry)"
   get_proc "get_return_edges wfp" "lift_procs wfp" Main 
   "Def wfp" "Use wfp" "ParamDefs wfp" "ParamUses wfp"
+  for wfp
 proof -
   from Rep_wf_prog[of wfp]
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)" 
@@ -1680,6 +1681,7 @@ interpretation ProcCFGExit_wf:
   CFGExit_wf sourcenode targetnode kind "valid_edge wfp" "(Main,Entry)"
   get_proc "get_return_edges wfp" "lift_procs wfp" Main "(Main,Exit)"
   "Def wfp" "Use wfp" "ParamDefs wfp" "ParamUses wfp"
+  for wfp
 proof
   from Exit_Def_empty Exit_Use_empty
   show "Def wfp (Main, Exit) = {} \<and> Use wfp (Main, Exit) = {}" by simp
