@@ -1,6 +1,6 @@
-header {* \isaheader{Weak order dependence} *}
+header {* \isaheader{Weak Order Dependence} *}
 
-theory WeakOrderDependence imports CFG DataDependence begin
+theory WeakOrderDependence imports "../Basic/CFG" DataDependence begin
 
 text {* Weak order dependence is just defined as a static control dependence *}
 

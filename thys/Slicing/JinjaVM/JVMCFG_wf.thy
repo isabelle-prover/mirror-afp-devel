@@ -1,4 +1,4 @@
-theory JVMCFG_wf imports JVMInterpretation "../Basic/CFG_wf" begin
+theory JVMCFG_wf imports JVMInterpretation "../Basic/CFGExit_wf" begin
 
 text {*
 \isaheader{Instantiation of the @{text "CFG_wf"} locale}
@@ -1168,4 +1168,13 @@ next
     by simp_all
 qed
 
+interpretation JVM_CFGExit_wf: CFGExit_wf
+  "sourcenode" "targetnode" "kind" "valid_edge prog" "(_Entry_)"
+  "Def (fst prog)" "Use (fst prog)" "state_val" "(_Exit_)"
+proof
+  show "Def (fst prog) (_Exit_) = {} \<and> Use (fst prog) (_Exit_) = {}"
+    by(fastsimp elim:Def.cases Use.cases)
+qed
+
+  
 end

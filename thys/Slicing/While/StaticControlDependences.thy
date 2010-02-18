@@ -1,8 +1,8 @@
 header {* \isaheader{Interpretations of the various static control dependences} *}
 
-theory StaticControlDependences imports AdditionalLemmas 
-  "../Basic/StandardControlDependence"
-  "../Basic/WeakControlDependence"
+theory StaticControlDependences imports 
+  AdditionalLemmas
+  "../StaticIntra/CDepInstantiations"
 begin
 
 interpretation WStandardControlDependence:

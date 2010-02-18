@@ -1,16 +1,15 @@
 theory Slicing
 imports
-  "Basic/StandardControlDependence"
-  "Basic/WeakControlDependence"
-  "Basic/ControlDependenceRelations"
+  "Basic/Postdomination"
+  "Basic/CFGExit_wf"
   "Basic/SemanticsCFG"
   "Dynamic/DynSlice"
   "StaticIntra/CDepInstantiations"
+  "StaticIntra/ControlDependenceRelations"
   "While/SemanticsWellFormed"
   "While/DynamicControlDependences"
   "While/StaticControlDependences"
-  "JinjaVM/JVMCFG_wf" 
-  "JinjaVM/JVMPostdomination" 
+  "JinjaVM/JVMControlDependences" 
   "JinjaVM/SemanticsWF"
 begin
 

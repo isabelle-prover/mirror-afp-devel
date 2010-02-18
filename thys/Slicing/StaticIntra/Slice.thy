@@ -1,7 +1,7 @@
 header {* \isaheader{Static backward slice} *}
 
 theory Slice 
-  imports Observable Distance "../Basic/SemanticsCFG" "../Basic/DataDependence" 
+  imports Observable Distance DataDependence "../Basic/SemanticsCFG"  
 begin
 
 locale BackwardSlice = 

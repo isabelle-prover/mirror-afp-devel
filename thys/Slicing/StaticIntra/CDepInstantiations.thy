@@ -1,7 +1,10 @@
 header {* \isaheader{Instantiate framework with control dependences} *}
 
-theory CDepInstantiations imports Slice "../Basic/StandardControlDependence"
-  "../Basic/WeakControlDependence" "../Basic/WeakOrderDependence" begin
+theory CDepInstantiations imports 
+  Slice 
+  PDG 
+  WeakOrderDependence 
+begin
 
 subsection{* Standard control dependence *}
 

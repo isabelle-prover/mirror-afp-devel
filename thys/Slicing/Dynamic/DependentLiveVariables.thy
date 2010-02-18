@@ -1,7 +1,6 @@
-header {* \isachapter{Dynamic Slicing} 
-  \isaheader{Dependent live variables} *}
+header {*\isaheader{Dependent Live Variables} *}
 
-theory DependentLiveVariables imports "../Basic/PDG" begin
+theory DependentLiveVariables imports DynPDG begin
 
 text {* @{text dependent_live_vars} calculates variables which
   can change\\ the value of the @{term Use} variables of the target node *}

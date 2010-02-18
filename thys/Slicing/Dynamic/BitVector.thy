@@ -1,4 +1,4 @@
-header {* \isaheader{Formalisation of bit vectors} *}
+header {* \isaheader{Formalization of Bit Vectors} *}
 
 theory BitVector imports Main begin
 

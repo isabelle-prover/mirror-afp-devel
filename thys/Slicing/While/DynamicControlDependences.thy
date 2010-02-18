@@ -1,9 +1,6 @@
 header {* \isaheader{Interpretations of the various dynamic control dependences} *}
 
-theory DynamicControlDependences imports AdditionalLemmas 
-  "../Basic/StandardControlDependence"
-  "../Basic/WeakControlDependence"
-begin
+theory DynamicControlDependences imports AdditionalLemmas "../Dynamic/DynPDG" begin
 
 interpretation WDynStandardControlDependence:
   DynStandardControlDependencePDG sourcenode targetnode kind "valid_edge prog"
