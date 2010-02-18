@@ -6,7 +6,7 @@
 
 (*<*)
 theory Huffman
-imports Main Executable_Set
+imports Main
 begin
 (*>*)
 
@@ -919,7 +919,7 @@ by (induct ts) simp+
 
 lemma insortTree_ne_Nil [simp]:
 "insortTree t ts \<noteq> []"
-by (induct ts) simp+
+by (case_tac ts) simp+
 
 text {*
 The alphabet, consistency, symbol frequencies, and height of a forest after
@@ -1016,7 +1016,7 @@ Simplification rules therefore play an important role.
 
 lemma notin_alphabet_imp_sibling_id [simp]:
 "a \<notin> alphabet t \<Longrightarrow> sibling t a = a"
-by (induct t a rule: sibling.induct) simp+
+by (cases rule: sibling.cases [where x = "(t, a)"]) simp+
 
 lemma height_0_imp_sibling_id [simp]:
 "height t = 0 \<Longrightarrow> sibling t a = a"
@@ -2175,7 +2175,7 @@ commutativity lemma, we need to introduce a few simple lemmas.
 
 lemma cachedWeight_splitLeaf [simp]:
 "cachedWeight (splitLeaf t w\<^isub>a a w\<^isub>b b) = cachedWeight t"
-by (induct t) simp+
+by (case_tac t) simp+
 
 lemma splitLeaf\<^isub>F_insortTree_when_in_alphabet_left [simp]:
 "\<lbrakk>a \<in> alphabet t; consistent t; a \<notin> alphabet\<^isub>F ts; freq t a = w\<^isub>a + w\<^isub>b\<rbrakk> \<Longrightarrow>
