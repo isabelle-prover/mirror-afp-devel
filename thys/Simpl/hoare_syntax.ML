@@ -515,7 +515,7 @@ fun new_tr ctxt (ts as [var,size,init]) =
     val alloc_upd = update_comp (Context.Proof ctxt) [] false false allocN 
                       (Syntax.const "Cons"$new$alloc);
     val free_upd = update_comp (Context.Proof ctxt) [] false false freeN 
-                      (Syntax.const @{const_name Algebras.minus} $ free $ size);
+                      (Syntax.const @{const_name Groups.minus} $ free $ size);
 
     val g' = Syntax.free (suffix updateN globalsN) $
               K_rec_syntax (fold (fn upd => fn s => upd s) (alloc_upd :: free_upd :: inits) g) $
@@ -559,7 +559,7 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
     val alloc_upd = update_comp (Context.Proof ctxt) [] false false allocN 
                       (Syntax.const "Cons"$new$alloc);
     val free_upd = update_comp (Context.Proof ctxt) [] false false freeN 
-                      (Syntax.const @{const_name Algebras.minus}$free$size);
+                      (Syntax.const @{const_name Groups.minus}$free$size);
 
     val g' = Syntax.free (suffix updateN globalsN) $
               K_rec_syntax (fold (fn upd => fn s => upd s) (alloc_upd :: inits @ [free_upd]) g) $
@@ -622,11 +622,11 @@ fun le_max t = Syntax.const @{const_name Orderings.less_eq} $ t $ Syntax.free "M
 fun ge_min t = Syntax.const @{const_name Orderings.less_eq} $ Syntax.free "MIN" $ t;
 fun le l r = Syntax.const @{const_name Orderings.less} $ l $ r;
 fun in_range t = Syntax.free "in_range" $ t;
-fun not_zero t = Syntax.const "Not" $ (Syntax.const "op =" $ t $ Syntax.const @{const_name Algebras.zero}); 
+fun not_zero t = Syntax.const "Not" $ (Syntax.const "op =" $ t $ Syntax.const @{const_name Groups.zero}); 
 fun not_Null t = Syntax.const "Not" $ (Syntax.const "op =" $ t $ Syntax.free "Ref.Null");
 fun in_alloc t = Syntax.const "op :" $ t $ (Syntax.const "set" $ Syntax.free "alloc_'");
 fun in_length i l = Syntax.const @{const_name Orderings.less} $ i $ (Syntax.const "size" $ l);
-fun is_pos t = Syntax.const @{const_name Orderings.less_eq} $ Syntax.const @{const_name Algebras.zero} $ t;
+fun is_pos t = Syntax.const @{const_name Orderings.less_eq} $ Syntax.const @{const_name Groups.zero} $ t;
 
 fun is_arr (Const ("List.nth",_)$l$e) = is_arr l 
   | is_arr (Const (a,_)$Bound 0) = is_state_var a
@@ -651,19 +651,19 @@ fun infer_type ctxt t =
 fun infer_type thy t =  
   fst (Sign.infer_types (Sign.pp thy) thy (Sign.consts_of thy)
         (K NONE) (K NONE) (Name.make_context []) false ([t], TypeInfer.logicT));*)
-fun guard ctxt Ts (add as (Const (@{const_name Algebras.plus},_)$l$r)) = guard ctxt Ts l & guard ctxt Ts r & SOME (in_range add)
-  | guard ctxt Ts (sub as (Const (@{const_name Algebras.minus},_)$l$r)) = 
+fun guard ctxt Ts (add as (Const (@{const_name Groups.plus},_)$l$r)) = guard ctxt Ts l & guard ctxt Ts r & SOME (in_range add)
+  | guard ctxt Ts (sub as (Const (@{const_name Groups.minus},_)$l$r)) = 
       let
         val g = (if (fastype_of1 (Ts,sub)) = HOLogic.natT then le r l else in_range sub)
                 handle TERM _ => error ("guard generation, cannot determine type of: "
                                         ^ Syntax.string_of_term (Context.proof_of ctxt) sub);
       in guard ctxt Ts l & guard ctxt Ts r & SOME g end
-  | guard ctxt Ts (mul as (Const (@{const_name Algebras.times},_)$l$r)) = guard ctxt Ts l & guard ctxt Ts r & SOME (in_range mul)
+  | guard ctxt Ts (mul as (Const (@{const_name Groups.times},_)$l$r)) = guard ctxt Ts l & guard ctxt Ts r & SOME (in_range mul)
   | guard ctxt Ts (Const ("op &",_)$l$r) = guard ctxt Ts l & mk_imp (l,guard ctxt Ts r)
   | guard ctxt Ts (Const ("op |",_)$l$r) = guard ctxt Ts l & mk_imp (HOLogic.Not $ l,guard ctxt Ts r)
   | guard ctxt Ts (dv as (Const ("Divides.div_class.div",_)$l$r)) = guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r) & SOME (in_range dv) (* FIXME: Make more concrete guard...*)
   | guard ctxt Ts (Const ("Divides.div_class.mod",_)$l$r) = guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r)
-  | guard ctxt Ts (un as (Const (@{const_name Algebras.uminus},_)$n)) = guard ctxt Ts n & SOME (in_range un)  
+  | guard ctxt Ts (un as (Const (@{const_name Groups.uminus},_)$n)) = guard ctxt Ts n & SOME (in_range un)  
   | guard ctxt Ts (Const ("IntDef.nat",_)$i) = guard ctxt Ts i & SOME (is_pos i) 
   | guard ctxt Ts (i as (Const ("IntDef.int",_)$n)) = guard ctxt Ts n & SOME (in_range i)
   | guard ctxt Ts (Const ("List.nth",_)$l$e) = 
