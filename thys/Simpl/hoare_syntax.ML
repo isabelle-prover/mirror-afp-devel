@@ -85,7 +85,7 @@ val globalsN = "globals";
 val localsN = "locals";
 val globals_updateN = suffix Record.updateN globalsN;
 val locals_updateN = suffix Record.updateN localsN;
-val upd_globalsN = "upd_globals";
+val upd_globalsN = "upd_globals";   (* FIXME authentic syntax !? *)
 val allocN = "alloc_'";
 val freeN = "free_'";
 
@@ -387,10 +387,6 @@ fun heap_var_tr ctxt hp p value =
         (Syntax.const @{const_syntax fun_upd} $ lookup_comp ctxt [] hp s $ p $ value) s;
   in upd end;
 
-fun get_arr_var (Const ("nth",_) $ arr $ i) =   (* FIXME !? *)
-      (case get_arr_var arr of
-         SOME (name,p,is) => SOME (name,p,i::is)
-       | NONE => NONE)
 fun get_arr_var (Const (@{const_syntax List.nth},_) $ arr $ i) =
       (case get_arr_var arr of
          SOME (name,p,is) => SOME (name,p,i::is)
@@ -563,7 +559,7 @@ fun new_tr ctxt (ts as [var,size,init]) =
 
         val g = Syntax.free globalsN $ Bound 0;
         val alloc = lookup_comp ctxt [] allocN (Bound 0);
-        val new = Syntax.free "new" $ (Syntax.const "set" $ alloc);  (* FIXME new !? *)
+        val new = Syntax.free "new" $ (Syntax.const @{const_syntax set} $ alloc);  (* FIXME new !? *)
 
         fun mk_upd (var,v) =
           let
@@ -1388,23 +1384,22 @@ fun pname_tr' ((f as Const (@{syntax_const "_free"}, _)) $ Free (p, T)) =
   | pname_tr' p =
       let
         (* from HOL strings to ML strings *)
-        fun dest_nib c =  (* FIXME authentic syntax *)
-            (case String.explode c of
-               [#"N", #"i", #"b", #"b", #"l", #"e", h] =>
-                 if #"0" <= h andalso h <= #"9" then Char.ord h - Char.ord #"0"
-                 else if #"A" <= h andalso h <= #"F" then Char.ord h - Char.ord #"A" + 10
-                      else raise Match
-             | _ => raise Match);
+        fun dest_nib c =    (* FIXME authentic syntax *)
+          (case explode c of
+            ["N", "i", "b", "b", "l", "e", h] =>
+              if "0" <= h andalso h <= "9" then ord h - ord "0"
+              else if "A" <= h andalso h <= "F" then ord h - ord "A" + 10
+              else raise Match
+          | _ => raise Match);
 
         fun dest_chr (Const (@{const_syntax Char},_) $ Const (c1, _) $ Const (c2,_)) =
-            let val c = Char.chr (dest_nib c1 * 16 + dest_nib c2)
-            in if Char.isPrint c then c else raise Match end
+              let val c = Char.chr (dest_nib c1 * 16 + dest_nib c2)
+              in if Char.isPrint c then c else raise Match end
           | dest_chr _ = raise Match;
 
         fun dest_string (Const (@{const_syntax Nil}, _)) = []
-          | dest_string (Const (@{const_syntax Cons}, _) $ c $ cs) = dest_chr c::dest_string cs
+          | dest_string (Const (@{const_syntax Cons}, _) $ c $ cs) = dest_chr c :: dest_string cs
           | dest_string _ = raise Match;
-
         in
           (case try dest_string p of
             SOME name => Syntax.const (String.implode name)
