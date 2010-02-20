@@ -6,7 +6,7 @@
 
 header {* \isaheader{Compilation Stage 1} *}
 
-theory Compiler1 imports PCompiler J1 ListIndex begin
+theory Compiler1 imports PCompiler J1 Hidden begin
 
 text{* Replacing variable names by indices. *}
 
@@ -19,8 +19,8 @@ primrec
 "compE\<^isub>1 Vs (Cast C e) = Cast C (compE\<^isub>1 Vs e)"
 "compE\<^isub>1 Vs (Val v) = Val v"
 "compE\<^isub>1 Vs (e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = (compE\<^isub>1 Vs e\<^isub>1) \<guillemotleft>bop\<guillemotright> (compE\<^isub>1 Vs e\<^isub>2)"
-"compE\<^isub>1 Vs (Var V) = Var(index Vs V)"
-"compE\<^isub>1 Vs (V:=e) = (index Vs V):= (compE\<^isub>1 Vs e)"
+"compE\<^isub>1 Vs (Var V) = Var(last_index Vs V)"
+"compE\<^isub>1 Vs (V:=e) = (last_index Vs V):= (compE\<^isub>1 Vs e)"
 "compE\<^isub>1 Vs (e\<bullet>F{D}) = (compE\<^isub>1 Vs e)\<bullet>F{D}"
 "compE\<^isub>1 Vs (e\<^isub>1\<bullet>F{D}:=e\<^isub>2) = (compE\<^isub>1 Vs e\<^isub>1)\<bullet>F{D} := (compE\<^isub>1 Vs e\<^isub>2)"
 "compE\<^isub>1 Vs (e\<bullet>M(es)) = (compE\<^isub>1 Vs e)\<bullet>M(compEs\<^isub>1 Vs es)"
