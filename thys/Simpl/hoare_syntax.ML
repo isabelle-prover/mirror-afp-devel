@@ -23,6 +23,8 @@ USA
 
 signature HOARE_SYNTAX =
 sig
+  val intern_const_syntax: Proof.context -> string -> string
+
   val antiquoteCur: string
   val antiquoteOld: string
   val antiquoteOld_tr: Proof.context -> term list -> term
@@ -137,6 +139,11 @@ fun is_prefix_or_suffix s t =
 
 (** hoare data **)
 
+fun intern_const_syntax ctxt name =
+  (case try (unprefix Syntax.constN) name of
+    SOME c => c
+  | NONE => Consts.intern (ProofContext.consts_of ctxt) name);
+
 fun is_global_comp ctxt name =
   (case StateSpace.get_comp (Context.Proof ctxt) name of
     SOME (_, ln) => is_prefix_or_suffix "globals" (Long_Name.base_name ln)
@@ -151,13 +158,10 @@ val antiquoteCur = @{syntax_const "_antiquoteCur"};
 val antiquoteOld = @{syntax_const "_antiquoteOld"};
 
 fun is_global ctxt name =
-  let val thy = ProofContext.theory_of ctxt
-  in
-    (case Sign.const_type thy (Sign.intern_const thy name) of
-      NONE => is_global_comp ctxt name
-    | SOME T => String.isPrefix globalsN (Long_Name.base_name (fst (dest_Type (domain_type T)))))
-    handle Match => false
-  end;
+  (case Sign.const_type (ProofContext.theory_of ctxt) (intern_const_syntax ctxt name) of
+    NONE => is_global_comp ctxt name
+  | SOME T => String.isPrefix globalsN (Long_Name.base_name (fst (dest_Type (domain_type T)))))
+  handle Match => false;
 
 exception UNDEFINED of string
 
@@ -193,8 +197,7 @@ fun statespace_update_tr ctxt ps id n v s =
 
 local
   fun is_record_sel ctxt =
-    let val thy = ProofContext.theory_of ctxt
-    in can (Sign.the_const_type thy o Sign.intern_const thy) end;
+    can (Sign.the_const_type (ProofContext.theory_of ctxt)) o intern_const_syntax ctxt;
 in
 
 fun lookup_comp ctxt ps name =
