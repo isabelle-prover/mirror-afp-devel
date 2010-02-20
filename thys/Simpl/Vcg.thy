@@ -398,6 +398,9 @@ translations
 "s may_only_modify_globals Z in []" => "s may_not_modify_globals Z"
 
 
+constdefs Let':: "['a, 'a => 'b] => 'b"
+"Let' \<equiv> Let"
+
 use "hoare_syntax.ML"
 setup Hoare_Syntax.setup
 

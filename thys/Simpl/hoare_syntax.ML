@@ -112,8 +112,8 @@ fun maxprefixs eq [] = []
   | maxprefixs eq [[]] = []
   | maxprefixs eq xss = foldr1 (maxprefix eq) xss;
 
-fun mk_list [] = Syntax.const "Nil"
-  | mk_list (x::xs) = Syntax.const "Cons" $ x $ mk_list xs;
+fun mk_list [] = Syntax.const @{const_syntax Nil}
+  | mk_list (x::xs) = Syntax.const @{const_syntax Cons} $ x $ mk_list xs;
 
 (* convert Fail to Match, useful for print translations *)
 fun unsuffix' sfx a = unsuffix sfx a handle Fail _ => raise Match;
@@ -123,13 +123,13 @@ fun mk_nib n = "Nibble" ^ chr (n + (if n <= 9 then ord "0" else ord "A" - 10));
 
 fun mk_char c =
   if Char.isAscii c andalso Char.isPrint c then
-    Syntax.const "Char" $
+    Syntax.const @{const_syntax Char} $
       Syntax.const (mk_nib (Char.ord c div 16)) $
       Syntax.const (mk_nib (Char.ord c mod 16))
   else raise TERM ("call_tr: printable procedure name expected: " ^ str c, []);
 
-fun mk_string [] = Syntax.const "Nil"
-  | mk_string (c::cs) = Syntax.const "Cons" $ mk_char c $ mk_string cs;
+fun mk_string [] = Syntax.const @{const_syntax Nil}
+  | mk_string (c::cs) = Syntax.const @{const_syntax Cons} $ mk_char c $ mk_string cs;
 
 fun is_prefix_or_suffix s t =
   can (unprefix s) t orelse can (unsuffix s) t;
@@ -238,18 +238,14 @@ fun update_comp ctxt ps atomic id name value =
     end
   else
     let
-      val namet = mk_component_name name;
+      val reg = if is_global_comp ctxt name then "globals" else "locals";
+      val upd = Syntax.free (reg ^ Record.updateN);
+      val sel = Syntax.free reg;
     in
-      let
-        val reg = if is_global_comp ctxt name then "globals" else "locals";
-        val upd = Syntax.free (reg ^ Record.updateN);
-        val sel = Syntax.free reg;
-      in
-        fn s =>
-          if atomic then
-            upd $ (K_rec_syntax (statespace_update_tr ctxt ps id name value (sel $ s))) $ s
-          else statespace_update_tr ctxt ps id name value s
-      end
+      fn s =>
+        if atomic then
+          upd $ (K_rec_syntax (statespace_update_tr ctxt ps id name value (sel $ s))) $ s
+        else statespace_update_tr ctxt ps id name value s
     end;
 
 end;
@@ -388,10 +384,10 @@ fun heap_var_tr ctxt hp p value =
   let
     fun upd s =
       update_comp ctxt [] true false hp
-        (Syntax.const "fun_upd" $ lookup_comp ctxt [] hp s $ p $ value) s;
+        (Syntax.const @{const_syntax fun_upd} $ lookup_comp ctxt [] hp s $ p $ value) s;
   in upd end;
 
-fun get_arr_var (Const ("nth",_) $ arr $ i) =
+fun get_arr_var (Const ("nth",_) $ arr $ i) =   (* FIXME !? *)
       (case get_arr_var arr of
          SOME (name,p,is) => SOME (name,p,i::is)
        | NONE => NONE)
@@ -413,11 +409,11 @@ fun get_arr_var (Const (@{const_syntax List.nth},_) $ arr $ i) =
 fun arr_var_tr ctxt ps name arr pos value idxs  =
   let
     fun sel_tr [] = arr
-      | sel_tr (i::is) = Syntax.const "nth" $ sel_tr is $ i;
+      | sel_tr (i::is) = Syntax.const @{const_syntax nth} $ sel_tr is $ i;
 
     fun lupd_tr value [] _ = value
       | lupd_tr value (i::is) idxs  =
-          Syntax.const "list_update" $ sel_tr idxs $ i $ lupd_tr value is (i::idxs)
+          Syntax.const @{const_syntax list_update} $ sel_tr idxs $ i $ lupd_tr value is (i::idxs);
 
 
     val value' = lupd_tr value idxs [];
@@ -438,7 +434,7 @@ fun get_arr_mult_var (Const (@{syntax_const "_antiquoteCur"},_) $ Free (var,_)) 
 
 fun arr_mult_var_tr ctxt ps name arr pos vals idxs  =
   let
-    val value' = Syntax.const "list_multupd" $ arr $ idxs $ vals;
+    val value' = Syntax.const @{const_syntax list_multupd} $ arr $ idxs $ vals;
   in
     case pos of
       NONE => atomic_var_tr ctxt ps name value'
@@ -454,7 +450,8 @@ fun update_tr ctxt ps off_var off_val e
       if Hoare.is_state_var hp
       then heap_var_tr ctxt hp (antiquote_off_tr off_val ctxt antiquoteCur p) e
       else raise TERM ("no proper lvalue",[v])
-  | update_tr ctxt ps off_var off_val e (v as Const ("list_multsel", _) $ arr $ idxs) =
+  | update_tr ctxt ps off_var off_val e
+        (v as Const (@{const_syntax list_multsel}, _) $ arr $ idxs) =
       (case get_arr_mult_var arr of
          SOME (var, pos) =>
             let
@@ -485,8 +482,8 @@ fun app_assign_tr f ctxt (ts as [v, e]) =
   | app_assign_tr _ _ ts = raise TERM ("assign_tr", ts);
 
 
-val assign_tr = app_assign_tr (Syntax.const "Basic");
-val raise_tr = app_assign_tr (Syntax.const "raise");
+val assign_tr = app_assign_tr (Syntax.const @{const_syntax Basic});
+val raise_tr = app_assign_tr (Syntax.const @{const_syntax raise});
 
 
 fun basic_assign_tr ctxt (ts as [v, e]) =
@@ -513,9 +510,9 @@ fun basic_assigns_tr ctxt [t] =
   | basic_assigns_tr _ ts = raise TERM ("basic_assigns_tr", ts);
 
 fun basic_tr ctxt [t] =
-  Syntax.const "Basic" $
+  Syntax.const @{const_syntax Basic} $
     (Abs ("s", dummyT,
-      antiquote_tr ctxt "_antiquoteCur" (Term.incr_boundvars 1 t) $ Bound 0));
+      antiquote_tr ctxt @{syntax_const "_antiquoteCur"} (Term.incr_boundvars 1 t) $ Bound 0));
 
 fun init_tr ctxt [Const (var,_),comp,value] =
       let
@@ -548,7 +545,7 @@ fun init_tr ctxt [Const (var,_),comp,value] =
               app_upds (Syntax.free globalsN $ Bound 0) $ Bound 0
           else app_upds (Bound 0)
       in
-        Syntax.free "Basic" $ Abs ("s", dummyT, upd)
+        Syntax.const @{const_syntax Basic} $ Abs ("s", dummyT, upd)
       end
   | init_tr _ _ = raise Match;
 
@@ -566,7 +563,7 @@ fun new_tr ctxt (ts as [var,size,init]) =
 
         val g = Syntax.free globalsN $ Bound 0;
         val alloc = lookup_comp ctxt [] allocN (Bound 0);
-        val new = Syntax.free "new" $ (Syntax.const "set" $ alloc);
+        val new = Syntax.free "new" $ (Syntax.const "set" $ alloc);  (* FIXME new !? *)
 
         fun mk_upd (var,v) =
           let
@@ -574,18 +571,18 @@ fun new_tr ctxt (ts as [var,size,init]) =
             val var' = lookup_comp ctxt [] varn (Bound 0);
           in
             update_comp ctxt [] false false varn
-              (Syntax.const "fun_upd" $ var' $ new $ v)
+              (Syntax.const @{const_syntax fun_upd} $ var' $ new $ v)
           end;
 
         val inits = map mk_upd (dest_inits init);
         val free = lookup_comp ctxt [] freeN (Bound 0);
         val freetest = Syntax.const @{const_syntax Orderings.less_eq} $ size $ free;
 
-        val null = Syntax.free "Ref.Null";
+        val null = Syntax.free "Ref.Null";   (* FIXME ?? *)
 
         val alloc_upd =
           update_comp ctxt [] false false allocN
-            (Syntax.const "Cons" $ new $ alloc);
+            (Syntax.const @{const_syntax Cons} $ new $ alloc);
         val free_upd =
           update_comp ctxt [] false false freeN
             (Syntax.const @{const_syntax Algebras.minus} $ free $ size);
@@ -595,11 +592,11 @@ fun new_tr ctxt (ts as [var,size,init]) =
             K_rec_syntax (fold (fn upd => fn s => upd s) (alloc_upd :: free_upd :: inits) g) $
             Bound 0;
         val cond =
-          Syntax.const "If" $ freetest $
+          Syntax.const @{const_syntax If} $ freetest $
             update_tr ctxt [] offset offset new var g' $
             update_tr ctxt [] offset offset null var (Bound 0);
 
-      in Syntax.const "Basic" $ Abs ("s", dummyT, cond)
+      in Syntax.const @{const_syntax Basic} $ Abs ("s", dummyT, cond)
       end
   | new_tr _ ts = raise TERM ("new_tr",ts);
 
@@ -617,7 +614,7 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
 
         val g = Syntax.free globalsN $ Bound 0;
         val alloc = lookup_comp ctxt [] allocN (Bound 0);
-        val new = Syntax.free "new" $ (Syntax.const "set" $ alloc);
+        val new = Syntax.free "new" $ (Syntax.const @{const_syntax set} $ alloc);  (* FIXME new !? *)
 
         fun mk_upd (var,v) =
           let
@@ -625,18 +622,18 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
             val var' = lookup_comp ctxt [] varn (Bound 0);
           in
             update_comp ctxt [] false false varn
-              (Syntax.const "fun_upd" $ var' $ new $ v)
+              (Syntax.const @{const_syntax fun_upd} $ var' $ new $ v)
           end;
 
         val inits = map mk_upd (dest_inits init);
         val free = lookup_comp ctxt [] freeN (Bound 0);
         val freetest = Syntax.const @{const_syntax Orderings.less_eq} $ size $ free;
 
-        val null = Syntax.free "Ref.Null";
+        val null = Syntax.free "Ref.Null";   (* FIXME ?? *)
 
         val alloc_upd =
           update_comp ctxt [] false false allocN
-            (Syntax.const "Cons" $ new $ alloc);
+            (Syntax.const @{const_syntax Cons} $ new $ alloc);
         val free_upd =
           update_comp ctxt [] false false freeN
             (Syntax.const @{const_syntax Algebras.minus} $ free $ size);
@@ -646,12 +643,12 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
             K_rec_syntax (fold (fn upd => fn s => upd s) (alloc_upd :: inits @ [free_upd]) g) $
             Bound 0;
         val cond =
-          Syntax.const "if_rel" $ Abs ("s", dummyT, freetest) $
+          Syntax.const @{const_syntax if_rel} $ Abs ("s", dummyT, freetest) $
             Abs ("s", dummyT, update_tr ctxt [] offset offset new var g') $
             Abs ("s", dummyT, update_tr ctxt [] offset offset null var (Bound 0)) $
             Abs ("s", dummyT, update_tr ctxt [] offset offset new var g');
 
-      in Syntax.const "Spec" $ cond
+      in Syntax.const @{const_syntax Spec} $ cond
       end
   | nnew_tr _ ts = raise TERM ("nnew_tr", ts);
 
@@ -676,54 +673,57 @@ fun loc_tr ctxt (ts as [init, bdy]) =
     fun mk_ret_upd var =
       update_comp ctxt [] true false var (lookup_comp ctxt [] var (Bound 1));
 
-    fun app_upd (s, upd) = upd $ s;
-
     val var_vals = map (apfst Hoare.varname) (dest_inits init);
     val ini = Abs ("s", dummyT, fold mk_init_upd var_vals (Bound 0));
     val ret = Abs ("s",dummyT, Abs ("t",dummyT, fold (mk_ret_upd o fst) var_vals (Bound 0)));
-    val c = Abs ("i", dummyT, Abs ("t", dummyT, Syntax.const "Skip"));
+    val c = Abs ("i", dummyT, Abs ("t", dummyT, Syntax.const @{const_syntax Skip}));
 
-  in Syntax.const "block" $ ini $ bdy $ ret $ c end
+  in Syntax.const @{const_syntax block} $ ini $ bdy $ ret $ c end
 
 infixr 9 &;
 
 fun (NONE & NONE) = NONE
   | ((SOME x) & NONE) = SOME x
   | (NONE & (SOME x)) = SOME x
-  | ((SOME x) & (SOME y)) = SOME (Syntax.const "op &" $ x $ y);
+  | ((SOME x) & (SOME y)) = SOME (Syntax.const @{const_syntax "op &"} $ x $ y);
 
 fun mk_imp (l,SOME r) = SOME (HOLogic.mk_imp (l, r))
   | mk_imp (l,NONE) = NONE;
 
+
 local
-
-fun le_max t =
-  Syntax.const @{const_syntax Orderings.less_eq} $ t $ Syntax.free "MAX";
-
-fun ge_min t =
-  Syntax.const @{const_syntax Orderings.less_eq} $ Syntax.free "MIN" $ t;
 
 fun le l r =
   Syntax.const @{const_syntax Orderings.less} $ l $ r;
 
-fun in_range t = Syntax.free "in_range" $ t;
+fun in_range t = Syntax.free "in_range" $ t;   (* FIXME ?? *)
 
 fun not_zero t =
-  Syntax.const "Not" $ (Syntax.const "op =" $ t $ Syntax.const @{const_syntax Algebras.zero});
+  Syntax.const @{const_syntax Not} $
+    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.const @{const_syntax Algebras.zero});
 
 fun not_Null t =
-  Syntax.const "Not" $ (Syntax.const "op =" $ t $ Syntax.free "Ref.Null");
-
-fun in_alloc t =
-  Syntax.const "op :" $ t $ (Syntax.const "set" $ Syntax.free "alloc_'");
+  Syntax.const @{const_syntax Not} $
+    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.free "Ref.Null");   (* FIXME ?? *)
 
 fun in_length i l =
-  Syntax.const @{const_syntax Orderings.less} $ i $ (Syntax.const "size" $ l);
+  Syntax.const @{const_syntax Orderings.less} $ i $
+    (Syntax.const @{const_syntax size} $ l);
 
 fun is_pos t =
   Syntax.const @{const_syntax Orderings.less_eq} $ Syntax.const @{const_syntax Algebras.zero} $ t;
 
-fun is_arr (Const ("List.nth",_) $ l $ e) = is_arr l
+
+fun infer_type ctxt t =
+  let val thy = ProofContext.theory_of ctxt;
+  in
+    Syntax.check_term ctxt (Sign.intern_term thy (ProofContext.decode_term ctxt t))
+  end;
+
+
+(* NOTE: operations on actual terms *)
+
+fun is_arr (Const (@{const_name List.nth},_) $ l $ e) = is_arr l
   | is_arr (Const (a, _) $ Bound 0) = Hoare.is_state_var a
   | is_arr (Const (a,_) $ (Const (globals,_) $ Bound 0)) = Hoare.is_state_var a
   | is_arr ((Const (hp,_) $ (Const (globals,_) $ Bound 0)) $ p) = Hoare.is_state_var hp
@@ -734,41 +734,34 @@ fun dummyfyT (TFree x) = TFree x
   | dummyfyT (Type (c, Ts)) =
      let
        val Ts' = map dummyfyT Ts;
-     in if exists (fn T => T = dummyT) Ts' then dummyT else (Type (c,Ts')) end;
+     in if exists (fn T => T = dummyT) Ts' then dummyT else Type (c, Ts') end;
 
-fun infer_type ctxt t =
-  let val thy = ProofContext.theory_of ctxt;
-  in
-    Syntax.check_term ctxt (Sign.intern_term thy (ProofContext.decode_term ctxt t))
-  end;
-(*
-fun infer_type thy t =
-  fst (Sign.infer_types (Sign.pp thy) thy (Sign.consts_of thy)
-        (K NONE) (K NONE) (Name.make_context []) false ([t], TypeInfer.logicT));*)
-fun guard ctxt Ts (add as (Const (@{const_syntax Algebras.plus},_) $ l $ r)) =
+fun guard ctxt Ts (add as (Const (@{const_name Algebras.plus},_) $ l $ r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (in_range add)
-  | guard ctxt Ts (sub as (Const (@{const_syntax Algebras.minus},_) $ l $ r)) =
+  | guard ctxt Ts (sub as (Const (@{const_name Algebras.minus},_) $ l $ r)) =
       let
         val g =
           (if fastype_of1 (Ts,sub) = HOLogic.natT then le r l else in_range sub)
             handle TERM _ => error ("guard generation, cannot determine type of: " ^
               Syntax.string_of_term ctxt sub);
       in guard ctxt Ts l & guard ctxt Ts r & SOME g end
-  | guard ctxt Ts (mul as (Const (@{const_syntax Algebras.times},_) $ l $r)) =
+  | guard ctxt Ts (mul as (Const (@{const_name Algebras.times},_) $ l $r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (in_range mul)
-  | guard ctxt Ts (Const ("op &",_) $ l $ r) =
+  | guard ctxt Ts (Const (@{const_name "op &"},_) $ l $ r) =
       guard ctxt Ts l & mk_imp (l,guard ctxt Ts r)
-  | guard ctxt Ts (Const ("op |",_) $ l $ r) =
+  | guard ctxt Ts (Const (@{const_name "op |"},_) $ l $ r) =
       guard ctxt Ts l & mk_imp (HOLogic.Not $ l,guard ctxt Ts r)
-  | guard ctxt Ts (dv as (Const ("Divides.div_class.div",_) $ l $ r)) =
+  | guard ctxt Ts (dv as (Const (@{const_name Divides.div_class.div},_) $ l $ r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r) & SOME (in_range dv) (* FIXME: Make more concrete guard...*)
-  | guard ctxt Ts (Const ("Divides.div_class.mod",_) $ l $ r) =
+  | guard ctxt Ts (Const (@{const_name Divides.div_class.mod},_) $ l $ r) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r)
-  | guard ctxt Ts (un as (Const (@{const_syntax Algebras.uminus},_) $ n)) =
+  | guard ctxt Ts (un as (Const (@{const_name Algebras.uminus},_) $ n)) =
       guard ctxt Ts n & SOME (in_range un)
-  | guard ctxt Ts (Const ("IntDef.nat",_) $ i) = guard ctxt Ts i & SOME (is_pos i)
-  | guard ctxt Ts (i as (Const ("IntDef.int",_) $ n)) = guard ctxt Ts n & SOME (in_range i)
-  | guard ctxt Ts (Const ("List.nth",_) $ l $ e) =
+  | guard ctxt Ts (Const (@{const_name Int.nat},_) $ i) =
+      guard ctxt Ts i & SOME (is_pos i)
+  | guard ctxt Ts (i as (Const (@{const_name Int.int},_) $ n)) =
+      guard ctxt Ts n & SOME (in_range i)
+  | guard ctxt Ts (Const (@{const_name List.nth},_) $ l $ e) =
       if is_arr l then guard ctxt Ts l & guard ctxt Ts e & SOME (in_length e l)
       else NONE (*oder default?*)
   | guard ctxt Ts (Const (hp,_) $ (Const (globals,_) $ Bound 0) $ p) =
@@ -782,7 +775,9 @@ fun guard ctxt Ts (add as (Const (@{const_syntax Algebras.plus},_) $ l $ r)) =
   | guard ctxt Ts t =
       fold_rev (fn l => fn r => guard ctxt Ts l & r) (snd (strip_comb t)) NONE (* default *)
   | guard _ _ _ = NONE;
+
 in
+
  fun mk_guard ctxt t =
    let
       (* We apply type inference first, so that we can generate different guards,
@@ -797,9 +792,10 @@ val setup = Context.theory_map (Hoare.install_generate_guard mk_guard);
 
 
 fun mk_singleton_guard f g =
-  Syntax.const "Cons" $
-    (Syntax.const "Pair" $ Syntax.const f $ (Syntax.const "Collect" $ Abs ("s", dummyT, g))) $
-      Syntax.const "Nil";
+  Syntax.const @{const_syntax Cons} $
+    (Syntax.const @{const_syntax Pair} $ Syntax.const f $
+      (Syntax.const @{const_syntax Collect} $ Abs ("s", dummyT, g))) $
+    Syntax.const @{const_syntax Nil};
 
 fun guarded_Assign_tr ctxt (ts as [v, e]) =
       let
@@ -808,9 +804,11 @@ fun guarded_Assign_tr ctxt (ts as [v, e]) =
         (* By the artificial "=" between left and right-hand side we get a bigger term and thus
            more information for type-inference *)
       in
-        case guard (Syntax.const "op =" $ antiquoteCur_tr ctxt v $ antiquoteCur_tr ctxt e) of
+        case guard (Syntax.const @{const_syntax "op ="} $
+            antiquoteCur_tr ctxt v $ antiquoteCur_tr ctxt e) of
           NONE => ass
-        | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ ass
+        | SOME g =>
+            Syntax.const @{const_syntax guards} $ mk_singleton_guard @{const_syntax False} g $ ass
       end
   | guarded_Assign_tr _ ts = raise Match;
 
@@ -821,7 +819,8 @@ fun guarded_New_tr ctxt (ts as [var, size, init]) =
       in
         case guard (antiquoteCur_tr ctxt var) of
           NONE => new
-        | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ new
+        | SOME g =>
+            Syntax.const @{const_syntax guards} $ mk_singleton_guard @{const_syntax False} g $ new
       end
   | guarded_New_tr _ ts = raise TERM ("guarded_New_tr", ts);
 
@@ -832,7 +831,8 @@ fun guarded_NNew_tr ctxt (ts as [var, size, init]) =
       in
         case guard (antiquoteCur_tr ctxt var) of
           NONE => new
-        | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ new
+        | SOME g =>
+            Syntax.const @{const_syntax guards} $ mk_singleton_guard @{const_syntax False} g $ new
       end
   | guarded_NNew_tr _ ts = raise TERM ("guarded_NNew_tr", ts);
 
@@ -841,11 +841,13 @@ fun guarded_While_tr ctxt (ts as [b,I,V,c]) =
       let
         val guard = Hoare.generate_guard ctxt;
         val cnd as Abs (_, _, b') = quote_tr ctxt antiquoteCur b;
-        val b'' = Syntax.const "Collect" $ cnd;
+        val b'' = Syntax.const @{const_syntax Collect} $ cnd;
       in
         case guard b' of
-          NONE => Syntax.const "whileAnno" $ b'' $ I $ V $ c
-        | SOME g => Syntax.const "whileAnnoG" $ mk_singleton_guard "False" g $ b'' $ I $ V $ c
+          NONE => Syntax.const @{const_syntax whileAnno} $ b'' $ I $ V $ c
+        | SOME g =>
+            Syntax.const @{const_syntax whileAnnoG} $
+              mk_singleton_guard @{const_syntax False} g $ b'' $ I $ V $ c
       end
   | guarded_While_tr _ ts = raise Match;
 
@@ -854,8 +856,10 @@ fun guarded_WhileFix_tr ctxt (ts as [b as (_ $ Abs (_, _, b')), I, V, c]) =
         val guard = Hoare.generate_guard ctxt;
       in
         case guard b' of
-          NONE => Syntax.const "whileAnnoFix" $ b $ I $ V $ c
-        | SOME g => Syntax.const "whileAnnoGFix" $ mk_singleton_guard "False" g $ b $ I $ V $ c
+          NONE => Syntax.const @{const_syntax whileAnnoFix} $ b $ I $ V $ c
+        | SOME g =>
+            Syntax.const @{const_syntax whileAnnoGFix} $
+              mk_singleton_guard @{const_syntax False} g $ b $ I $ V $ c
       end
   | guarded_WhileFix_tr _ ts = raise Match;
 
@@ -863,11 +867,13 @@ fun guarded_Cond_tr ctxt (ts as [b, c, d]) =
       let
         val guard = Hoare.generate_guard ctxt;
         val cnd as Abs (_, _, b') = quote_tr ctxt @{syntax_const "_antiquoteCur"} b;
-        val cond = Syntax.const "Cond" $ (Syntax.const "Collect" $ cnd) $ c $ d;
+        val cond =
+          Syntax.const @{const_syntax Cond} $ (Syntax.const @{const_syntax Collect} $ cnd) $ c $ d;
       in
         case guard b' of
           NONE => cond
-        | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ cond
+        | SOME g =>
+            Syntax.const @{const_syntax guards} $ mk_singleton_guard @{const_syntax False} g $ cond
       end
   | guarded_Cond_tr _ ts = raise Match;
 
@@ -944,7 +950,7 @@ fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
                   (rev (res_formals ~~ res_actuals));
               val res =
                 Abs ("i", dummyT, Abs ("t", dummyT,
-                    Syntax.const "Basic" $
+                    Syntax.const @{const_syntax Basic} $
                       Abs ("s", dummyT, fold_rev (fn f => fn s => f s) results (Bound 0))));
             in if has_args then Call $init $ pt $ ret $ res else Call $ pt end
         | SOME c => (* Function call *)
@@ -964,7 +970,8 @@ fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
       (case fold_rev (fn arg => fn g => guard (antiquoteCur_tr ctxt arg) & g)
           (res_actuals @ val_actuals) NONE of
         NONE => call
-      | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ call)
+      | SOME g =>
+          Syntax.const @{const_syntax guards} $ mk_singleton_guard @{const_syntax False} g $ call)
     else call
   end;
 
@@ -988,8 +995,8 @@ fun dest_procname ctxt prfx false (Const (p, _)) =
       (prfx ^ suffix Hoare.proc_deco p, t)
   | dest_procname ctxt prfx false (t as Const (@{syntax_const "_antiquoteOld"}, _) $ _ $ Free (p,_)) =
       (prfx ^ suffix Hoare.proc_deco p, t)
-
-  | dest_procname ctxt prfx false (t as Const ("StateFun.lookup",_) $ _ $ Free (p, _) $ _) =
+  (* FIXME StateFun.lookup !? *)
+  | dest_procname ctxt prfx false (t as Const ("StateFun.lookup", _) $ _ $ Free (p, _) $ _) =
       (prfx ^ suffix Hoare.proc_deco (Hoare.remdeco p), t) (* antiquoteOld *)
 
   | dest_procname ctxt prfx false t = (prfx, t)
@@ -999,17 +1006,18 @@ fun dest_procname ctxt prfx false (Const (p, _)) =
         (case quote t of
           (t' as Abs (_, _, Free (p, _) $ Bound 0)) =>
             (prfx ^ Hoare.resuffix Hoare.deco Hoare.proc_deco p, t')
-        | (t' as Abs (_, _, Const ("StateFun.lookup",_) $ _ $ Free (p, _) $ (_ $ Bound 0))) =>
+        (* FIXME StateFun.lookup !? *)
+        | (t' as Abs (_, _, Const ("StateFun.lookup", _) $ _ $ Free (p, _) $ (_ $ Bound 0))) =>
             (prfx ^ suffix Hoare.proc_deco (Hoare.remdeco p), t')
         | t' => (prfx, t'))
       end
 
 fun gen_call_tr prfx dyn grd ctxt p actuals has_args cont =
   let
-    fun Call false true NONE = Const ("call", dummyT)
-      | Call false false NONE = Const ("Call", dummyT)
-      | Call true true NONE = Const ("dynCall", dummyT)
-      | Call false true (SOME c) = Const ("fcall", dummyT)
+    fun Call false true NONE = Const (@{const_syntax call}, dummyT)
+      | Call false false NONE = Const (@{const_syntax Call}, dummyT)
+      | Call true true NONE = Const (@{const_syntax dynCall}, dummyT)
+      | Call false true (SOME c) = Const (@{const_syntax fcall}, dummyT)
       | Call _ _ _ = raise TERM ("gen_call_tr: no proper procedure call", []);
 
     val (pn, pt) = dest_procname ctxt prfx dyn p;
@@ -1020,7 +1028,7 @@ fun gen_call_tr prfx dyn grd ctxt p actuals has_args cont =
     | NONE =>
         if StateSpace.get_silent (Context.Proof ctxt)
         then mk_call_tr ctxt grd (Call dyn has_args cont) [] pn pt [] has_args cont
-        else raise TERM ("gen_call_tr: procedure " ^ pn ^ " not defined", []))
+        else raise TERM ("gen_call_tr: procedure " ^ quote pn ^ " not defined", []))
   end;
 
 fun call_tr dyn grd ctxt [p, actuals] =
@@ -1069,43 +1077,43 @@ fun term_name_eq (Const (x, _)) (Const (y, _)) = (x = y)
   | term_name_eq (Abs (s, _, a)) (Abs (t, _, b)) = (s = t) andalso term_name_eq a b
   | term_name_eq _ _ = false;
 
-fun list_update_tr' l (r as Const ("list_update",_) $ l' $ i $ e) =
+fun list_update_tr' l (r as Const (@{const_syntax list_update},_) $ l' $ i $ e) =
       if term_name_eq l l'
       then
         let
-          fun sel_arr a [i] (Const ("nth",_) $ a' $ i') =
+          fun sel_arr a [i] (Const (@{const_syntax nth},_) $ a' $ i') =
                 term_name_eq a a' andalso i = i'
-            | sel_arr a (i::is) (Const ("nth",_) $ sel $ i') =
+            | sel_arr a (i::is) (Const (@{const_syntax nth},_) $ sel $ i') =
                 i = i' andalso sel_arr a is sel
             | sel_arr _ _ _ = false;
 
-          fun tr' a idxs (e as Const ("list_update", _) $ sel $ i $ e') =
+          fun tr' a idxs (e as Const (@{const_syntax list_update}, _) $ sel $ i $ e') =
                 if sel_arr a idxs sel then tr' a (i :: idxs) e'
                 else (idxs, e)
             | tr' _ idxs e = (idxs, e);
 
           val (idxs, e') = tr' l [i] e;
-          val lft = fold_rev (fn i => fn arr => Syntax.const "nth" $ arr $ i) idxs l;
+          val lft = fold_rev (fn i => fn arr => Syntax.const @{const_syntax nth} $ arr $ i) idxs l;
         in (lft,e') end
       else (l, r)
   | list_update_tr' l r  = (l, r);
 
-fun list_mult_update_tr' l (r as Const ("list_multupd",_) $ var $ idxs $ values) =
-      (Syntax.const "list_multsel" $ var $ idxs, values)
+fun list_mult_update_tr' l (r as Const (@{const_syntax list_multupd},_) $ var $ idxs $ values) =
+      (Syntax.const @{const_syntax list_multsel} $ var $ idxs, values)
   | list_mult_update_tr' l r = (l, r);
 
-fun update_tr' l (r as Const ("fun_upd", _) $
+fun update_tr' l (r as Const (@{const_syntax fun_upd}, _) $
         (hp as (Const (@{syntax_const "_antiquoteCur"}, _) $ _)) $ p $ value) =
       if term_name_eq l hp then
         (case value of
-          (Const ("list_update", _) $ _ $ _ $ _) => list_update_tr' (l $ p) value
-        | (Const ("list_multupd",_) $ _ $ _ $ _) => list_mult_update_tr' (l $ p) value
+          (Const (@{const_syntax list_update}, _) $ _ $ _ $ _) => list_update_tr' (l $ p) value
+        | (Const (@{const_syntax list_multupd},_) $ _ $ _ $ _) => list_mult_update_tr' (l $ p) value
         | _ => (l $ p, value))
       else (l, r)
-  | update_tr' l (r as Const ("list_update",_) $
+  | update_tr' l (r as Const (@{const_syntax list_update},_) $
         (var as (Const (@{syntax_const "_antiquoteCur"}, _) $ _)) $ i $ value) =
       if term_name_eq l var then list_update_tr' l r else (l, r)
-  | update_tr' l (r as Const ("list_multupd", _) $
+  | update_tr' l (r as Const (@{const_syntax list_multupd}, _) $
         (var as (Const (@{syntax_const "_antiquoteCur"}, _) $ _)) $ idxs $ values) =
       if term_name_eq l var then list_mult_update_tr' l r else (l, r)
   | update_tr' l r = (l, r);
@@ -1123,7 +1131,7 @@ fun dest_K_rec (Abs (_, _, v)) =
 local
 fun uncover (upd,v) =
   (case (upd, v) of
-    (Const (cupd, _), upd' $ dest $ constr $ n $ (Const ("K_statefun", _) $ v') $ s) =>
+    (Const (cupd, _), upd' $ dest $ constr $ n $ (Const (@{const_syntax K_statefun}, _) $ v') $ s) =>
       if Long_Name.base_name cupd mem_string [globals_updateN, locals_updateN]
       then (case s of (Const (g, _) $ _) =>
                if Long_Name.base_name g mem_string [globalsN, localsN]
@@ -1176,7 +1184,7 @@ fun dest_updates (t as (upd as Const (u, _)) $ k $ state) =
           then [(upd,value)]
           else if Long_Name.base_name u = globalsN then [] else raise Match
       | NONE => []) (* t could be just (globals $ s) *)
-  | dest_updates ((Const (u, _)) $ _ $ _ $ n $ (Const ("K_statefun",_) $ value) $ state) =
+  | dest_updates ((Const (u, _)) $ _ $ _ $ n $ (Const (@{const_syntax K_statefun},_) $ value) $ state) =
       if Long_Name.base_name u = Long_Name.base_name StateFun.updateN
       then (n, value) :: dest_updates state
       else raise Match
@@ -1200,8 +1208,8 @@ fun init_tr' [Abs (_,_,t)] =
       | dest_list (Const (@{const_syntax Cons}, _) $ x $ xs) = x :: dest_list xs
       | dest_list t = [t];
 
-    fun mk_set [] = Syntax.const "Set.empty"
-      | mk_set (x :: xs) = Syntax.const "insert" $ x $ mk_set xs;
+    fun mk_set [] = Syntax.const @{const_syntax Set.empty}
+      | mk_set (x :: xs) = Syntax.const @{const_syntax insert} $ x $ mk_set xs;
 
     val l = length prfx;
     val _ = if l <= 1 then raise Match else ();
@@ -1235,7 +1243,7 @@ end;
 val assign_tr' = app_assign_tr' (Syntax.const @{syntax_const "_Assign"});
 val raise_tr' = app_assign_tr' (Syntax.const @{syntax_const "_raise"});
 
-fun split_Let' ((l as Const ("Let'", _)) $ x $ t) =
+fun split_Let' ((l as Const (@{const_syntax Let'}, _)) $ x $ t) =
       let val (recomb,t') = split_Let' t
       in (fn t => l $ x $ recomb t, t') end
   | split_Let' (Abs (x, T, t)) =
@@ -1244,7 +1252,7 @@ fun split_Let' ((l as Const ("Let'", _)) $ x $ t) =
         then (I, t') (* Get rid of last abstraction *)
         else (fn t => Abs (x, T, recomb t), t')
      end
-  | split_Let' ((s as Const ("split",_)) $ t) =
+  | split_Let' ((s as Const (@{const_syntax split},_)) $ t) =
      let val (recomb, t') = split_Let' t
      in (fn t => s $ recomb t, t') end
   | split_Let' t = (I, t)
@@ -1253,7 +1261,7 @@ fun basic_tr' [Abs (s, T, t)] =
   let
     val (has_let, t') =
       case t of
-        ((t' as (Const ("Let'",_) $ _ $ _)) $ Bound 0) => (true, t')
+        ((t' as (Const (@{const_syntax Let'},_) $ _ $ _)) $ Bound 0) => (true, t')
       | _ => (false, t);
     val (recomb, t'') = split_Let' t';
     val upds = dest_updates t'';
@@ -1319,9 +1327,9 @@ fun gen_call_tr' Call CallAss init p return c =
     fun get_init_updates (Abs (s, _, upds)) = dest_updates upds
       | get_init_updates upds = dest_updates upds;
 
-    fun get_res_updates (Abs (i, _, Abs (t, _, Const ("Basic", _) $ Abs (s, _, upds)))) =
+    fun get_res_updates (Abs (i, _, Abs (t, _, Const (@{const_syntax Basic}, _) $ Abs (s, _, upds)))) =
           dest_updates upds
-      | get_res_updates (Abs (i, _, Abs (t, _, Const ("Basic", _) $ upds))) =
+      | get_res_updates (Abs (i, _, Abs (t, _, Const (@{const_syntax Basic}, _) $ upds))) =
           dest_updates upds
       | get_res_updates _ = raise Match;
 
@@ -1388,13 +1396,13 @@ fun pname_tr' ((f as Const (@{syntax_const "_free"}, _)) $ Free (p, T)) =
                       else raise Match
              | _ => raise Match);
 
-        fun dest_chr (Const ("Char",_) $ Const (c1, _) $ Const (c2,_)) =
+        fun dest_chr (Const (@{const_syntax Char},_) $ Const (c1, _) $ Const (c2,_)) =
             let val c = Char.chr (dest_nib c1 * 16 + dest_nib c2)
             in if Char.isPrint c then c else raise Match end
           | dest_chr _ = raise Match;
 
-        fun dest_string (Const ("Nil", _)) = []
-          | dest_string (Const ("Cons", _) $ c $ cs) = dest_chr c::dest_string cs
+        fun dest_string (Const (@{const_syntax Nil}, _)) = []
+          | dest_string (Const (@{const_syntax Cons}, _) $ c $ cs) = dest_chr c::dest_string cs
           | dest_string _ = raise Match;
 
         in
@@ -1443,7 +1451,7 @@ fun proc_tr' ctxt [p] =
                 actuals_tr' (map mkpar (val_formals @ res_formals)))
          else raise Match
       end
-  | proc_tr' ctxt _ = raise Match;
+  | proc_tr' _ _ = raise Match;
 
 fun fcall_tr' [init, p, return, result, c] =
       gen_fcall_tr' init (pname_tr' p) return result c
@@ -1459,12 +1467,12 @@ fun assert_tr' ((t as Abs (_, _, p)) :: ts) =
               Long_Name.base_name l = Long_Name.base_name StateFun.lookupN
           | selector t = false;
 
-        fun fix_state (Const ("op =",_) $ (Const (@{syntax_const "_free"}, _) $ _)) = true
-          | fix_state (Const ("op =",_) $ (Const (@{syntax_const "_bound"}, _) $ _)) = true
-          | fix_state (Const ("op =",_) $ (Const (@{syntax_const "_var"}, _) $ _)) = true
-          | fix_state (Const ("op =",_) $ Free _) = true
-          | fix_state (Const ("op =",_) $ Bound _) = true
-          | fix_state (Const ("op =",_) $ Var _) = true
+        fun fix_state (Const (@{const_syntax "op ="},_) $ (Const (@{syntax_const "_free"}, _) $ _)) = true
+          | fix_state (Const (@{const_syntax "op ="},_) $ (Const (@{syntax_const "_bound"}, _) $ _)) = true
+          | fix_state (Const (@{const_syntax "op ="},_) $ (Const (@{syntax_const "_var"}, _) $ _)) = true
+          | fix_state (Const (@{const_syntax "op ="},_) $ Free _) = true
+          | fix_state (Const (@{const_syntax "op ="},_) $ Bound _) = true
+          | fix_state (Const (@{const_syntax "op ="},_) $ Var _) = true
           | fix_state _ = false;
       in
         if antiquote_applied_only_to (fn t => selector t orelse fix_state t) p
@@ -1475,27 +1483,24 @@ fun assert_tr' ((t as Abs (_, _, p)) :: ts) =
   | assert_tr' _ = raise Match
 
 
-fun bexp_tr' name ((Const ("Collect", _) $ t) :: ts) =
+fun bexp_tr' name ((Const (@{const_syntax Collect}, _) $ t) :: ts) =
       app_quote_tr' (Syntax.const name) (t :: ts)
   | bexp_tr' _ _ = raise Match;
 
 
 
-fun hd_name (Const (@{syntax_const "_free"}, _) $ Free (x, _)) = x
-  | hd_name (Const (x, _)) = x
-  | hd_name _ = raise Match;
-
-
-fun new_tr' [(trm as (Abs (s,_,
-       Const ("If", _) $ (Const (@{const_syntax Orderings.less_eq},_) $ size $ free) $
-         (upd $ new $ (gupd $ (Abs (_, _, inits_free_alloc)) $ Bound 0)) $
-         (upd' $ null $ Bound 0))))] =
+fun new_tr'
+        [Abs (s,_,
+          Const (@{const_syntax If}, _) $
+          (Const (@{const_syntax Orderings.less_eq},_) $ size $ free) $
+          (upd $ new $ (gupd $ Abs (_, _, inits_free_alloc) $ Bound 0)) $
+          (upd' $ null $ Bound 0))] =
       let
-        fun mk_init (Const (upd, _), Const ("fun_upd",_) $ _ $ _ $ v) =
+        fun mk_init (Const (upd, _), Const (@{const_syntax fun_upd},_) $ _ $ _ $ v) =
               let val var = unsuffix' Hoare.deco (unsuffix' Record.updateN upd)
               in Syntax.const @{syntax_const "_newinit"} $ Syntax.const var $ v end
           | mk_init ((f as Const (@{syntax_const "_free"}, _)) $
-                Free (var, T), Const ("fun_upd",_) $ _ $ _ $ v) =
+                Free (var, T), Const (@{const_syntax fun_upd},_) $ _ $ _ $ v) =
               Syntax.const @{syntax_const "_newinit"} $
                 (f $ Free (Hoare.remdeco var, T)) $ v;
 
@@ -1515,18 +1520,19 @@ fun new_tr' [(trm as (Abs (s,_,
         val l = tr' (global_upd_tr' upd' null);
 
       in Syntax.const @{syntax_const "_New"} $ l $ size $ inits' end
-  | new_tr' ts = raise Match;
+  | new_tr' _ = raise Match;
 
-fun nnew_tr' [(trm as
-       Const ("if_rel",_) $ (Abs (s, _, Const (@{const_syntax Orderings.less_eq}, _) $ size $ free)) $
-         (Abs (_, _, upd $ new $ (gupd $ (Abs (_, _, free_inits_alloc)) $ Bound 0))) $
-         (Abs (_, _, (upd' $ null $ Bound 0))) $ _)] =
+fun nnew_tr'
+        [Const (@{const_syntax if_rel},_) $
+          (Abs (s, _, Const (@{const_syntax Orderings.less_eq}, _) $ size $ free)) $
+          (Abs (_, _, upd $ new $ (gupd $ (Abs (_, _, free_inits_alloc)) $ Bound 0))) $
+          (Abs (_, _, (upd' $ null $ Bound 0))) $ _] =
       let
-        fun mk_init (Const (upd, _), Const ("fun_upd", _) $ _ $ _ $ v) =
+        fun mk_init (Const (upd, _), Const (@{const_syntax fun_upd}, _) $ _ $ _ $ v) =
               let val var = unsuffix' Hoare.deco (unsuffix' Record.updateN upd)
               in Syntax.const @{syntax_const "_newinit"} $ Syntax.const var $ v end
           | mk_init ((f as Const (@{syntax_const "_free"}, _)) $ Free (var, T),
-                Const ("fun_upd", _) $_ $ _ $ v) =
+                Const (@{const_syntax fun_upd}, _) $_ $ _ $ v) =
               Syntax.const @{syntax_const "_newinit"} $
                 (f $ Free (Hoare.remdeco var, T)) $ v;
 
@@ -1546,7 +1552,7 @@ fun nnew_tr' [(trm as
         val l = tr' (global_upd_tr' upd' null);
 
       in Syntax.const @{syntax_const "_NNew"} $ l $ size $ inits' end
-  | nnew_tr' ts = raise Match;
+  | nnew_tr' _ = raise Match;
 
 
 fun faccess_tr' ((t as (Const (@{syntax_const "_antiquoteCur"}, _) $ Const h)) $ r) =
@@ -1556,11 +1562,12 @@ fun faccess_tr' ((t as (Const (@{syntax_const "_antiquoteCur"}, _) $ Const h)) $
 
 fun switch_tr' [v, vs] =
   let
-    fun case_tr' (Const ("Pair", _) $ V $ c) = Syntax.const @{syntax_const "_switchcase"} $ V $ c
+    fun case_tr' (Const (@{const_syntax Pair}, _) $ V $ c) =
+          Syntax.const @{syntax_const "_switchcase"} $ V $ c
       | case_tr' _ = raise Match;
 
-    fun dest_list (Const ("Nil", _)) = []
-      | dest_list (Const ("Cons", _) $ x $ xs) = x :: dest_list xs
+    fun dest_list (Const (@{const_syntax Nil}, _)) = []
+      | dest_list (Const (@{const_syntax Cons}, _) $ x $ xs) = x :: dest_list xs
       | dest_list t = raise Match;
 
     fun ltr' [] = raise Match
@@ -1582,14 +1589,14 @@ fun bind_tr' [e, Abs abs] =
 
 
 local
-  fun dest_list (Const ("Nil", _)) = []
-    | dest_list (Const ("Cons", _) $ x $ xs) = x :: dest_list xs
+  fun dest_list (Const (@{const_syntax Nil}, _)) = []
+    | dest_list (Const (@{const_syntax Cons}, _) $ x $ xs) = x :: dest_list xs
     | dest_list _ = raise Match;
 
   fun guard_tr' fg =
     let val (flag, g) = HOLogic.dest_prod fg
     in
-      if flag = HOLogic.true_const then Syntax.const "_guarantee" $ g
+      if flag = HOLogic.true_const then Syntax.const @{syntax_const "_guarantee"} $ g
       else if flag = HOLogic.false_const then g
       else fg
     end handle TERM _ => fg;
@@ -1607,7 +1614,7 @@ in
         Syntax.const @{syntax_const "_guards"} $ cond_guards_lst_tr' (dest_list gs) $ c
     | guards_tr' _ = raise Match;
 
-  fun whileAnnoG_tr' [gs, cond as (Const ("Collect", _) $ b), I, V, c] =
+  fun whileAnnoG_tr' [gs, cond as (Const (@{const_syntax Collect}, _) $ b), I, V, c] =
         let
           val b' =
             (case assert_tr' [b] of
@@ -1621,7 +1628,7 @@ in
         end
     | whileAnnoG_tr' ts = raise Match;
 
-  fun whileAnnoGFix_tr' [gs, cond as (Const ("Collect", _) $ b), I, V, c] =
+  fun whileAnnoGFix_tr' [gs, cond as (Const (@{const_syntax Collect}, _) $ b), I, V, c] =
     let
       val b' =
         (case assert_tr' [b] of

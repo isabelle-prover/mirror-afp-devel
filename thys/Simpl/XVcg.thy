@@ -38,9 +38,6 @@ theorem attribute @{text "vcg_simp"} we can declare equalities to be used
 by the verification condition generator, while simplifying assertions.
 *}
 
-constdefs Let':: "['a, 'a => 'b] => 'b"
-"Let' \<equiv> Let"
-
 syntax
 "_Let'" :: "[letbinds, basicblock] => basicblock"  ("(LET (_)/ IN (_))" 23)
  
