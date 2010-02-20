@@ -58,8 +58,6 @@ fun maxprefixs eq [] = []
   | maxprefixs eq [[]] = []
   | maxprefixs eq xss = foldr1 (maxprefix eq) xss;
 
-fun has_suffix sfx = is_some o try (unsuffix sfx);
-
 fun mk_list [] = Syntax.const "Nil"
   | mk_list (x::xs) = Syntax.const "Cons" $ x $ mk_list xs;
 
@@ -861,8 +859,7 @@ fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
             else ();
 
     val globals =
-      [Syntax.const (suffix Record.updateN globalsN) $
-        (K_rec_syntax (Const (globalsN, dummyT) $ Bound 0))];
+      [Syntax.const globals_updateN $ (K_rec_syntax (Const (globalsN, dummyT) $ Bound 0))];
     val ret = Abs ("s", dummyT, Abs ("t", dummyT, Library.foldr (op $) (globals, Bound 1)));
 
     val val_formals = filter (fn (kind, _) => kind = Hoare.In) formals;
@@ -1083,7 +1080,7 @@ fun uncover (upd,v) =
   | (Const (gupd, _), upd' $ k $ s) =>
       (case dest_K_rec k of
         SOME v' =>
-          if Long_Name.base_name gupd = suffix Record.updateN globalsN
+          if Long_Name.base_name gupd = globals_updateN
           then
             (case s of
               Const (gl, _) $ _ =>
@@ -1112,7 +1109,7 @@ fun dest_updates (t as (upd as Const (u, _)) $ k $ state) =
         SOME value =>
           if Long_Name.base_name u mem_string [globals_updateN,locals_updateN]
           then dest_updates value
-          else if has_suffix Record.updateN u orelse Long_Name.base_name u = upd_globalsN
+          else if can (unsuffix Record.updateN) u orelse Long_Name.base_name u = upd_globalsN
           then (upd,value)::dest_updates state
           else raise Match
       | NONE => raise Match)
@@ -1121,7 +1118,7 @@ fun dest_updates (t as (upd as Const (u, _)) $ k $ state) =
         SOME value =>
           if Long_Name.base_name u mem_string [globals_updateN,locals_updateN]
           then dest_updates value
-          else if has_suffix Record.updateN u orelse Long_Name.base_name u = upd_globalsN
+          else if can (unsuffix Record.updateN) u orelse Long_Name.base_name u = upd_globalsN
           then [(upd,value)]
           else if Long_Name.base_name u = globalsN then [] else raise Match
       | NONE => []) (* t could be just (globals $ s) *)
@@ -1136,7 +1133,7 @@ fun init_tr' [Abs (_,_,t)] =
     val upds  =
       case dest_updates t of
         us as [(Const (gupd, _), v)] =>
-          if Long_Name.base_name gupd = suffix Record.updateN globalsN
+          if Long_Name.base_name gupd = globals_updateN
           then dest_updates v else us
       | us => us;
 
