@@ -61,9 +61,7 @@ lemma LAss_lem:
   "\<lbrakk>x \<in> set xs; size xs \<le> size ys \<rbrakk>
   \<Longrightarrow> m\<^isub>1 \<subseteq>\<^sub>m m\<^isub>2(xs[\<mapsto>]ys) \<Longrightarrow> m\<^isub>1(x\<mapsto>y) \<subseteq>\<^sub>m m\<^isub>2(xs[\<mapsto>]ys[last_index xs x := y])"
 (*<*)
-apply(simp add:map_le_def);
-apply(simp add:fun_upds_apply last_index_less_aux eq_sym_conv)
-done
+by(simp add:map_le_def fun_upds_apply eq_sym_conv)
 (*>*)
 lemma Block_lem:
 fixes l :: "'a \<rightharpoonup> 'b"
@@ -88,7 +86,7 @@ proof -
       using size by(auto simp add:fun_upds_apply split:if_splits)
     hence "w = ls' ! last_index Vs V" using hidden[OF VinVs] by simp
     hence "[Vs [\<mapsto>] ls'](V := l V) = [Vs [\<mapsto>] ls']" using Some size VinVs
-      by(simp add:last_index_less_aux map_upds_upd_conv_last_index)
+      by(simp add: map_upds_upd_conv_last_index)
     thus ?thesis by simp
   qed
   finally show ?thesis .
@@ -170,7 +168,7 @@ next
 	  hence "unmod (compE\<^isub>1 (Vs @ [V]) e) (last_index Vs V)"
 	    by(rule hidden_unmod)
 	  moreover have "last_index Vs V < length ls"
-	    using len' VinVs by(simp add:last_index_less_aux)
+	    using len' VinVs by simp
 	  ultimately have "ls ! last_index Vs V = ls' ! last_index Vs V"
 	    by(rule eval\<^isub>1_preserves_unmod[OF 1])
 	}
@@ -235,7 +233,7 @@ next
 	  hence "unmod (compE\<^isub>1 (Vs @ [V]) e\<^isub>2) (last_index Vs V)"
 	    by(rule hidden_unmod)
 	  moreover have "last_index Vs V < length ?ls"
-	    using len\<^isub>1 VinVs by(simp add:last_index_less_aux)
+	    using len\<^isub>1 VinVs by simp
 	  ultimately have "?ls ! last_index Vs V = ls\<^isub>2 ! last_index Vs V"
 	    by(rule eval\<^isub>1_preserves_unmod[OF 2])
 	  moreover have "last_index Vs V < size Vs" using VinVs by simp
@@ -359,10 +357,10 @@ next
   case BinOpThrow1 thus ?case  by(fastsimp intro!:eval\<^isub>1_evals\<^isub>1.intros)
 next
   case Var thus ?case
-    by(force intro!:Var\<^isub>1 simp add:last_index_less_aux map_le_def fun_upds_apply)
+    by(force intro!:Var\<^isub>1 simp add: map_le_def fun_upds_apply)
 next
   case LAss thus ?case
-    by(fastsimp simp add: last_index_less_aux LAss_lem intro:eval\<^isub>1_evals\<^isub>1.intros
+    by(fastsimp simp add: LAss_lem intro:eval\<^isub>1_evals\<^isub>1.intros
                 dest:eval\<^isub>1_preserves_len)
 next
   case LAssThrow thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
@@ -506,7 +504,7 @@ text{* The main complication is preservation of definite assignment
 lemma image_last_index: "A \<subseteq> set(xs@[x]) \<Longrightarrow> last_index (xs @ [x]) ` A =
   (if x \<in> A then insert (size xs) (last_index xs ` (A-{x})) else last_index xs ` A)"
 (*<*)
-by(auto simp:image_def last_index_append)
+by(auto simp:image_def)
 (*>*)
 
 
@@ -527,7 +525,7 @@ proof(induct e and es)
     using Block.prems by(simp add: hyperset_defs)
   moreover from calculation have "B \<subseteq> set (Vs@[V'])" by(auto dest!:A_fv)
   ultimately show ?case using Block
-    by(auto simp add: hyperset_defs image_last_index)
+    by(auto simp add: hyperset_defs image_last_index last_index_size_conv)
 next
   case (TryCatch e\<^isub>1 C V' e\<^isub>2)
   hence fve\<^isub>2: "fv e\<^isub>2 \<subseteq> set (Vs@[V'])" by auto
@@ -538,7 +536,7 @@ next
       by(simp add:hyperset_defs)
     hence "A\<^isub>2 \<subseteq> set (Vs@[V'])" using TryCatch.prems A_fv[OF A\<^isub>2] by simp blast
     thus ?thesis using TryCatch fve\<^isub>2 A\<^isub>1 A\<^isub>2
-      by(auto simp add:hyperset_defs image_last_index)
+      by(auto simp add:hyperset_defs image_last_index last_index_size_conv)
   next
     fix A\<^isub>1 assume A\<^isub>1: "\<A> e\<^isub>1 =  \<lfloor>A\<^isub>1\<rfloor>"
     show ?thesis
@@ -551,7 +549,7 @@ next
       moreover
       have "A\<^isub>2 \<subseteq> set (Vs@[V'])" using TryCatch.prems A_fv[OF A\<^isub>2] by simp blast
       ultimately show ?thesis using TryCatch A\<^isub>1 A\<^isub>2
-	by(fastsimp simp add: hyperset_defs image_last_index
+	by(fastsimp simp add: hyperset_defs image_last_index last_index_size_conv
 	  Diff_subset_conv inj_on_image_Int[OF inj_on_last_index])
     qed
   qed
@@ -642,7 +640,8 @@ next
     using TryCatch.prems by(simp add:Diff_subset_conv)
   moreover have "last_index (Vs@[V]) ` A \<subseteq> last_index Vs ` A \<union> {size Vs}"
     using TryCatch.prems by(auto simp add: image_last_index split:split_if_asm)
-  ultimately show ?case using TryCatch by(auto simp:hyperset_defs elim!:D_mono')
+  ultimately show ?case using TryCatch
+    by(auto simp:hyperset_defs elim!:D_mono')
 next
   case (Seq e\<^isub>1 e\<^isub>2)
   hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>last_index Vs ` A\<rfloor>" by simp
@@ -701,7 +700,7 @@ next
   hence "\<D> (compE\<^isub>1 (Vs@[V]) e) \<lfloor>last_index (Vs@[V]) ` (A-{V})\<rfloor>"
     using Block.prems by(simp add:Diff_subset_conv)
   moreover have "size Vs \<notin> last_index Vs ` A"
-    using Block.prems by(auto simp add:image_def)
+    using Block.prems by(auto simp add:image_def size_last_index_conv)
   ultimately show ?case using Block
     by(auto simp add: image_last_index Diff_subset_conv hyperset_defs elim!: D_mono')
 next

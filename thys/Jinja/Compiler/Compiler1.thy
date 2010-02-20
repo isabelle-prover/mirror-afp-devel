@@ -6,7 +6,7 @@
 
 header {* \isaheader{Compilation Stage 1} *}
 
-theory Compiler1 imports PCompiler J1 ListIndex2 begin
+theory Compiler1 imports PCompiler J1 Hidden begin
 
 text{* Replacing variable names by indices. *}
 
