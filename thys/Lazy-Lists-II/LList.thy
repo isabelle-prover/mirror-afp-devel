@@ -21,7 +21,7 @@ Previous definition of llistD_Fun was explicit:
 
 header {*Definition of type llist by a greatest fixed point*}
 
-theory LList imports SList begin
+theory LList imports "~~/src/HOL/Induct/SList" begin
 
 coinductive_set
   llist  :: "'a item set => 'a item set"

@@ -59,17 +59,17 @@ done
 
 lemma LAss_lem:
   "\<lbrakk>x \<in> set xs; size xs \<le> size ys \<rbrakk>
-  \<Longrightarrow> m\<^isub>1 \<subseteq>\<^sub>m m\<^isub>2(xs[\<mapsto>]ys) \<Longrightarrow> m\<^isub>1(x\<mapsto>y) \<subseteq>\<^sub>m m\<^isub>2(xs[\<mapsto>]ys[index xs x := y])"
+  \<Longrightarrow> m\<^isub>1 \<subseteq>\<^sub>m m\<^isub>2(xs[\<mapsto>]ys) \<Longrightarrow> m\<^isub>1(x\<mapsto>y) \<subseteq>\<^sub>m m\<^isub>2(xs[\<mapsto>]ys[last_index xs x := y])"
 (*<*)
 apply(simp add:map_le_def);
-apply(simp add:fun_upds_apply index_less_aux eq_sym_conv)
+apply(simp add:fun_upds_apply last_index_less_aux eq_sym_conv)
 done
 (*>*)
 lemma Block_lem:
 fixes l :: "'a \<rightharpoonup> 'b"
 assumes 0: "l \<subseteq>\<^sub>m [Vs [\<mapsto>] ls]"
     and 1: "l' \<subseteq>\<^sub>m [Vs [\<mapsto>] ls', V\<mapsto>v]"
-    and hidden: "V \<in> set Vs \<Longrightarrow> ls ! index Vs V = ls' ! index Vs V"
+    and hidden: "V \<in> set Vs \<Longrightarrow> ls ! last_index Vs V = ls' ! last_index Vs V"
     and size: "size ls = size ls'"    "size Vs < size ls'"
 shows "l'(V := l V) \<subseteq>\<^sub>m [Vs [\<mapsto>] ls']"
 (*<*)
@@ -84,11 +84,11 @@ proof -
     case (Some w)
     hence "[Vs [\<mapsto>] ls] V = Some w"
       using 0 by(force simp add: map_le_def split:if_splits)
-    hence VinVs: "V \<in> set Vs" and w: "w = ls ! index Vs V"
+    hence VinVs: "V \<in> set Vs" and w: "w = ls ! last_index Vs V"
       using size by(auto simp add:fun_upds_apply split:if_splits)
-    hence "w = ls' ! index Vs V" using hidden[OF VinVs] by simp
-    hence "[Vs [\<mapsto>] ls'](V := l V) = [Vs [\<mapsto>] ls']"
-      using Some size VinVs by(simp add:index_less_aux map_upds_upd_conv_index)
+    hence "w = ls' ! last_index Vs V" using hidden[OF VinVs] by simp
+    hence "[Vs [\<mapsto>] ls'](V := l V) = [Vs [\<mapsto>] ls']" using Some size VinVs
+      by(simp add:last_index_less_aux map_upds_upd_conv_last_index)
     thus ?thesis by simp
   qed
   finally show ?thesis .
@@ -165,12 +165,13 @@ next
 	  using len' rel' by simp
 	moreover
 	{ assume VinVs: "V \<in> set Vs"
-	  hence "hidden (Vs @ [V]) (index Vs V)" by(rule hidden_index)
-	  hence "unmod (compE\<^isub>1 (Vs @ [V]) e) (index Vs V)"
+	  hence "hidden (Vs @ [V]) (last_index Vs V)"
+            by(rule hidden_last_index)
+	  hence "unmod (compE\<^isub>1 (Vs @ [V]) e) (last_index Vs V)"
 	    by(rule hidden_unmod)
-	  moreover have "index Vs V < length ls"
-	    using len' VinVs by(simp add:index_less_aux)
-	  ultimately have "ls ! index Vs V = ls' ! index Vs V"
+	  moreover have "last_index Vs V < length ls"
+	    using len' VinVs by(simp add:last_index_less_aux)
+	  ultimately have "ls ! last_index Vs V = ls' ! last_index Vs V"
 	    by(rule eval\<^isub>1_preserves_unmod[OF 1])
 	}
 	ultimately show ?thesis using Block_lem[OF rel] len' by auto
@@ -230,16 +231,16 @@ next
 	  using len\<^isub>1 rel\<^isub>2 by simp
 	moreover
 	{ assume VinVs: "V \<in> set Vs"
-	  hence "hidden (Vs @ [V]) (index Vs V)" by(rule hidden_index)
-	  hence "unmod (compE\<^isub>1 (Vs @ [V]) e\<^isub>2) (index Vs V)"
+	  hence "hidden (Vs @ [V]) (last_index Vs V)" by(rule hidden_last_index)
+	  hence "unmod (compE\<^isub>1 (Vs @ [V]) e\<^isub>2) (last_index Vs V)"
 	    by(rule hidden_unmod)
-	  moreover have "index Vs V < length ?ls"
-	    using len\<^isub>1 VinVs by(simp add:index_less_aux)
-	  ultimately have "?ls ! index Vs V = ls\<^isub>2 ! index Vs V"
+	  moreover have "last_index Vs V < length ?ls"
+	    using len\<^isub>1 VinVs by(simp add:last_index_less_aux)
+	  ultimately have "?ls ! last_index Vs V = ls\<^isub>2 ! last_index Vs V"
 	    by(rule eval\<^isub>1_preserves_unmod[OF 2])
-	  moreover have "index Vs V < size Vs" using VinVs by simp
-	  ultimately have "ls\<^isub>1 ! index Vs V = ls\<^isub>2 ! index Vs V"
-	    using len\<^isub>1 by(simp del:size_index_conv)
+	  moreover have "last_index Vs V < size Vs" using VinVs by simp
+	  ultimately have "ls\<^isub>1 ! last_index Vs V = ls\<^isub>2 ! last_index Vs V"
+	    using len\<^isub>1 by(simp del:size_last_index_conv)
 	}
 	ultimately show ?thesis using Block_lem[OF rel\<^isub>1] len\<^isub>1  by simp
       qed
@@ -358,10 +359,10 @@ next
   case BinOpThrow1 thus ?case  by(fastsimp intro!:eval\<^isub>1_evals\<^isub>1.intros)
 next
   case Var thus ?case
-    by(force intro!:Var\<^isub>1 simp add:index_less_aux map_le_def fun_upds_apply)
+    by(force intro!:Var\<^isub>1 simp add:last_index_less_aux map_le_def fun_upds_apply)
 next
   case LAss thus ?case
-    by(fastsimp simp add: index_less_aux LAss_lem intro:eval\<^isub>1_evals\<^isub>1.intros
+    by(fastsimp simp add: last_index_less_aux LAss_lem intro:eval\<^isub>1_evals\<^isub>1.intros
                 dest:eval\<^isub>1_preserves_len)
 next
   case LAssThrow thus ?case by(fastsimp intro:eval\<^isub>1_evals\<^isub>1.intros)
@@ -502,24 +503,10 @@ and \<B>s: "\<And>Vs n. size Vs = n \<Longrightarrow> \<B>s (compEs\<^isub>1 Vs 
 text{* The main complication is preservation of definite assignment
 @{term"\<D>"}. *}
 
-lemma image_index: "A \<subseteq> set(xs@[x]) \<Longrightarrow> index (xs @ [x]) ` A =
-  (if x \<in> A then insert (size xs) (index xs ` (A-{x})) else index xs ` A)"
+lemma image_last_index: "A \<subseteq> set(xs@[x]) \<Longrightarrow> last_index (xs @ [x]) ` A =
+  (if x \<in> A then insert (size xs) (last_index xs ` (A-{x})) else last_index xs ` A)"
 (*<*)
-apply(auto simp:image_def)
-   apply(rule bexI)
-    prefer 2 apply blast
-   apply simp
-  apply(rule ccontr)
-  apply(erule_tac x=xa in ballE)
-   prefer 2 apply blast
-  apply(fastsimp simp add:neq_commute)
- apply(subgoal_tac "x \<noteq> xa")
-  prefer 2 apply blast
- apply(fastsimp simp add:neq_commute)
-apply(subgoal_tac "x \<noteq> xa")
- prefer 2 apply blast
-apply(force)
-done
+by(auto simp:image_def last_index_append)
 (*>*)
 
 
@@ -530,8 +517,8 @@ and "\<And>Vs. \<A>s es = None \<Longrightarrow> \<A>s (compEs\<^isub>1 Vs es) =
 
 
 lemma A_compE\<^isub>1:
-      "\<And>A Vs. \<lbrakk> \<A> e = \<lfloor>A\<rfloor>; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A> (compE\<^isub>1 Vs e) = \<lfloor>index Vs ` A\<rfloor>"
-and "\<And>A Vs. \<lbrakk> \<A>s es = \<lfloor>A\<rfloor>; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A>s (compEs\<^isub>1 Vs es) = \<lfloor>index Vs ` A\<rfloor>"
+      "\<And>A Vs. \<lbrakk> \<A> e = \<lfloor>A\<rfloor>; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A> (compE\<^isub>1 Vs e) = \<lfloor>last_index Vs ` A\<rfloor>"
+and "\<And>A Vs. \<lbrakk> \<A>s es = \<lfloor>A\<rfloor>; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow> \<A>s (compEs\<^isub>1 Vs es) = \<lfloor>last_index Vs ` A\<rfloor>"
 (*<*)
 proof(induct e and es)
   case (Block V' T e)
@@ -540,7 +527,7 @@ proof(induct e and es)
     using Block.prems by(simp add: hyperset_defs)
   moreover from calculation have "B \<subseteq> set (Vs@[V'])" by(auto dest!:A_fv)
   ultimately show ?case using Block
-    by(auto simp add: hyperset_defs image_index)
+    by(auto simp add: hyperset_defs image_last_index)
 next
   case (TryCatch e\<^isub>1 C V' e\<^isub>2)
   hence fve\<^isub>2: "fv e\<^isub>2 \<subseteq> set (Vs@[V'])" by auto
@@ -551,7 +538,7 @@ next
       by(simp add:hyperset_defs)
     hence "A\<^isub>2 \<subseteq> set (Vs@[V'])" using TryCatch.prems A_fv[OF A\<^isub>2] by simp blast
     thus ?thesis using TryCatch fve\<^isub>2 A\<^isub>1 A\<^isub>2
-      by(auto simp add:hyperset_defs image_index)
+      by(auto simp add:hyperset_defs image_last_index)
   next
     fix A\<^isub>1 assume A\<^isub>1: "\<A> e\<^isub>1 =  \<lfloor>A\<^isub>1\<rfloor>"
     show ?thesis
@@ -564,8 +551,8 @@ next
       moreover
       have "A\<^isub>2 \<subseteq> set (Vs@[V'])" using TryCatch.prems A_fv[OF A\<^isub>2] by simp blast
       ultimately show ?thesis using TryCatch A\<^isub>1 A\<^isub>2
-	by(fastsimp simp add: hyperset_defs image_index
-	  Diff_subset_conv inj_on_image_Int[OF inj_on_index])
+	by(fastsimp simp add: hyperset_defs image_last_index
+	  Diff_subset_conv inj_on_image_Int[OF inj_on_last_index])
     qed
   qed
 next
@@ -582,7 +569,7 @@ next
     have "A\<^isub>2 \<subseteq> set Vs" using Cond.prems A_fv[OF A\<^isub>2] by simp blast
     ultimately have ?case using Cond
       by(auto simp add:hyperset_defs image_Un
-	  inj_on_image_Int[OF inj_on_index])
+	  inj_on_image_Int[OF inj_on_last_index])
   }
   ultimately show ?case by fastsimp
 qed (auto simp add:hyperset_defs)
@@ -593,143 +580,143 @@ lemma D_None[iff]: "\<D> (e::'a exp) None" and [iff]: "\<D>s (es::'a exp list) N
 (*<*)by(induct e and es)(simp_all)(*>*)
 
 
-lemma D_index_compE\<^isub>1:
+lemma D_last_index_compE\<^isub>1:
       "\<And>A Vs. \<lbrakk> A \<subseteq> set Vs; fv e \<subseteq> set Vs \<rbrakk> \<Longrightarrow>
-                \<D> e \<lfloor>A\<rfloor> \<Longrightarrow> \<D> (compE\<^isub>1 Vs e) \<lfloor>index Vs ` A\<rfloor>"
+                \<D> e \<lfloor>A\<rfloor> \<Longrightarrow> \<D> (compE\<^isub>1 Vs e) \<lfloor>last_index Vs ` A\<rfloor>"
 and "\<And>A Vs. \<lbrakk> A \<subseteq> set Vs; fvs es \<subseteq> set Vs \<rbrakk> \<Longrightarrow>
-                \<D>s es \<lfloor>A\<rfloor> \<Longrightarrow> \<D>s (compEs\<^isub>1 Vs es) \<lfloor>index Vs ` A\<rfloor>"
+                \<D>s es \<lfloor>A\<rfloor> \<Longrightarrow> \<D>s (compEs\<^isub>1 Vs es) \<lfloor>last_index Vs ` A\<rfloor>"
 (*<*)
 proof(induct e and es)
   case (BinOp e\<^isub>1 bop e\<^isub>2)
-  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>index Vs ` A\<rfloor>" by simp
+  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>last_index Vs ` A\<rfloor>" by simp
   show ?case
   proof (cases "\<A> e\<^isub>1")
     case None thus ?thesis using BinOp by simp
   next
     case (Some A\<^isub>1)
-    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>index Vs ` A\<^isub>1\<rfloor>"
+    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>last_index Vs ` A\<^isub>1\<rfloor>"
       using A_compE\<^isub>1[OF Some] BinOp.prems  by auto
     have "A \<union> A\<^isub>1 \<subseteq> set Vs" using BinOp.prems A_fv[OF Some] by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using BinOp Some by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` A \<union> index Vs ` A\<^isub>1\<rfloor>"
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using BinOp Some by auto
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` A \<union> last_index Vs ` A\<^isub>1\<rfloor>"
       by(simp add: image_Un)
     thus ?thesis using IH\<^isub>1 indexA\<^isub>1 by auto
   qed
 next
   case (FAss e\<^isub>1 F D e\<^isub>2)
-  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>index Vs ` A\<rfloor>" by simp
+  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>last_index Vs ` A\<rfloor>" by simp
   show ?case
   proof (cases "\<A> e\<^isub>1")
     case None thus ?thesis using FAss by simp
   next
     case (Some A\<^isub>1)
-    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>index Vs ` A\<^isub>1\<rfloor>"
+    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>last_index Vs ` A\<^isub>1\<rfloor>"
       using A_compE\<^isub>1[OF Some] FAss.prems  by auto
     have "A \<union> A\<^isub>1 \<subseteq> set Vs" using FAss.prems A_fv[OF Some] by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using FAss Some by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` A \<union> index Vs ` A\<^isub>1\<rfloor>"
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using FAss Some by auto
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` A \<union> last_index Vs ` A\<^isub>1\<rfloor>"
       by(simp add: image_Un)
     thus ?thesis using IH\<^isub>1 indexA\<^isub>1 by auto
   qed
 next
   case (Call e\<^isub>1 M es)
-  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>index Vs ` A\<rfloor>" by simp
+  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>last_index Vs ` A\<rfloor>" by simp
   show ?case
   proof (cases "\<A> e\<^isub>1")
     case None thus ?thesis using Call by simp
   next
     case (Some A\<^isub>1)
-    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>index Vs ` A\<^isub>1\<rfloor>"
+    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>last_index Vs ` A\<^isub>1\<rfloor>"
       using A_compE\<^isub>1[OF Some] Call.prems  by auto
     have "A \<union> A\<^isub>1 \<subseteq> set Vs" using Call.prems A_fv[OF Some] by auto
-    hence "\<D>s (compEs\<^isub>1 Vs es) \<lfloor>index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using Call Some by auto
-    hence "\<D>s (compEs\<^isub>1 Vs es) \<lfloor>index Vs ` A \<union> index Vs ` A\<^isub>1\<rfloor>"
+    hence "\<D>s (compEs\<^isub>1 Vs es) \<lfloor>last_index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using Call Some by auto
+    hence "\<D>s (compEs\<^isub>1 Vs es) \<lfloor>last_index Vs ` A \<union> last_index Vs ` A\<^isub>1\<rfloor>"
       by(simp add: image_Un)
     thus ?thesis using IH\<^isub>1 indexA\<^isub>1 by auto
   qed
 next
   case (TryCatch e\<^isub>1 C V e\<^isub>2)
   have "\<lbrakk> A\<union>{V} \<subseteq> set(Vs@[V]); fv e\<^isub>2 \<subseteq> set(Vs@[V]); \<D> e\<^isub>2 \<lfloor>A\<union>{V}\<rfloor>\<rbrakk> \<Longrightarrow>
-        \<D> (compE\<^isub>1 (Vs@[V]) e\<^isub>2) \<lfloor>index (Vs@[V]) ` (A\<union>{V})\<rfloor>" by fact
-  hence "\<D> (compE\<^isub>1 (Vs@[V]) e\<^isub>2) \<lfloor>index (Vs@[V]) ` (A\<union>{V})\<rfloor>"
+        \<D> (compE\<^isub>1 (Vs@[V]) e\<^isub>2) \<lfloor>last_index (Vs@[V]) ` (A\<union>{V})\<rfloor>" by fact
+  hence "\<D> (compE\<^isub>1 (Vs@[V]) e\<^isub>2) \<lfloor>last_index (Vs@[V]) ` (A\<union>{V})\<rfloor>"
     using TryCatch.prems by(simp add:Diff_subset_conv)
-  moreover have "index (Vs@[V]) ` A \<subseteq> index Vs ` A \<union> {size Vs}"
-    using TryCatch.prems by(auto simp add: image_index split:split_if_asm)
+  moreover have "last_index (Vs@[V]) ` A \<subseteq> last_index Vs ` A \<union> {size Vs}"
+    using TryCatch.prems by(auto simp add: image_last_index split:split_if_asm)
   ultimately show ?case using TryCatch by(auto simp:hyperset_defs elim!:D_mono')
 next
   case (Seq e\<^isub>1 e\<^isub>2)
-  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>index Vs ` A\<rfloor>" by simp
+  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>last_index Vs ` A\<rfloor>" by simp
   show ?case
   proof (cases "\<A> e\<^isub>1")
     case None thus ?thesis using Seq by simp
   next
     case (Some A\<^isub>1)
-    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>index Vs ` A\<^isub>1\<rfloor>"
+    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>last_index Vs ` A\<^isub>1\<rfloor>"
       using A_compE\<^isub>1[OF Some] Seq.prems  by auto
     have "A \<union> A\<^isub>1 \<subseteq> set Vs" using Seq.prems A_fv[OF Some] by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using Seq Some by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` A \<union> index Vs ` A\<^isub>1\<rfloor>"
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using Seq Some by auto
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` A \<union> last_index Vs ` A\<^isub>1\<rfloor>"
       by(simp add: image_Un)
     thus ?thesis using IH\<^isub>1 indexA\<^isub>1 by auto
   qed
 next
   case (Cond e e\<^isub>1 e\<^isub>2)
-  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e) \<lfloor>index Vs ` A\<rfloor>" by simp
+  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e) \<lfloor>last_index Vs ` A\<rfloor>" by simp
   show ?case
   proof (cases "\<A> e")
     case None thus ?thesis using Cond by simp
   next
     case (Some B)
-    have indexB: "\<A> (compE\<^isub>1 Vs e) = \<lfloor>index Vs ` B\<rfloor>"
+    have indexB: "\<A> (compE\<^isub>1 Vs e) = \<lfloor>last_index Vs ` B\<rfloor>"
       using A_compE\<^isub>1[OF Some] Cond.prems  by auto
     have "A \<union> B \<subseteq> set Vs" using Cond.prems A_fv[OF Some] by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>index Vs ` (A \<union> B)\<rfloor>"
-      and "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` (A \<union> B)\<rfloor>"
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>last_index Vs ` (A \<union> B)\<rfloor>"
+      and "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` (A \<union> B)\<rfloor>"
       using Cond Some by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>index Vs ` A \<union> index Vs ` B\<rfloor>"
-      and "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` A \<union> index Vs ` B\<rfloor>"
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>last_index Vs ` A \<union> last_index Vs ` B\<rfloor>"
+      and "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` A \<union> last_index Vs ` B\<rfloor>"
       by(simp add: image_Un)+
     thus ?thesis using IH\<^isub>1 indexB by auto
   qed
 next
   case (While e\<^isub>1 e\<^isub>2)
-  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>index Vs ` A\<rfloor>" by simp
+  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>last_index Vs ` A\<rfloor>" by simp
   show ?case
   proof (cases "\<A> e\<^isub>1")
     case None thus ?thesis using While by simp
   next
     case (Some A\<^isub>1)
-    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>index Vs ` A\<^isub>1\<rfloor>"
+    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>last_index Vs ` A\<^isub>1\<rfloor>"
       using A_compE\<^isub>1[OF Some] While.prems  by auto
     have "A \<union> A\<^isub>1 \<subseteq> set Vs" using While.prems A_fv[OF Some] by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using While Some by auto
-    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>index Vs ` A \<union> index Vs ` A\<^isub>1\<rfloor>"
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using While Some by auto
+    hence "\<D> (compE\<^isub>1 Vs e\<^isub>2) \<lfloor>last_index Vs ` A \<union> last_index Vs ` A\<^isub>1\<rfloor>"
       by(simp add: image_Un)
     thus ?thesis using IH\<^isub>1 indexA\<^isub>1 by auto
   qed
 next
   case (Block V T e)
   have "\<lbrakk> A-{V} \<subseteq> set(Vs@[V]); fv e \<subseteq> set(Vs@[V]); \<D> e \<lfloor>A-{V}\<rfloor> \<rbrakk> \<Longrightarrow>
-        \<D> (compE\<^isub>1 (Vs@[V]) e) \<lfloor>index (Vs@[V]) ` (A-{V})\<rfloor>" by fact
-  hence "\<D> (compE\<^isub>1 (Vs@[V]) e) \<lfloor>index (Vs@[V]) ` (A-{V})\<rfloor>"
+        \<D> (compE\<^isub>1 (Vs@[V]) e) \<lfloor>last_index (Vs@[V]) ` (A-{V})\<rfloor>" by fact
+  hence "\<D> (compE\<^isub>1 (Vs@[V]) e) \<lfloor>last_index (Vs@[V]) ` (A-{V})\<rfloor>"
     using Block.prems by(simp add:Diff_subset_conv)
-  moreover have "size Vs \<notin> index Vs ` A"
+  moreover have "size Vs \<notin> last_index Vs ` A"
     using Block.prems by(auto simp add:image_def)
   ultimately show ?case using Block
-    by(auto simp add: image_index Diff_subset_conv hyperset_defs elim!: D_mono')
+    by(auto simp add: image_last_index Diff_subset_conv hyperset_defs elim!: D_mono')
 next
   case (Cons_exp e\<^isub>1 es)
-  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>index Vs ` A\<rfloor>" by simp
+  hence IH\<^isub>1: "\<D> (compE\<^isub>1 Vs e\<^isub>1) \<lfloor>last_index Vs ` A\<rfloor>" by simp
   show ?case
   proof (cases "\<A> e\<^isub>1")
     case None thus ?thesis using Cons_exp by simp
   next
     case (Some A\<^isub>1)
-    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>index Vs ` A\<^isub>1\<rfloor>"
+    have indexA\<^isub>1: "\<A> (compE\<^isub>1 Vs e\<^isub>1) = \<lfloor>last_index Vs ` A\<^isub>1\<rfloor>"
       using A_compE\<^isub>1[OF Some] Cons_exp.prems  by auto
     have "A \<union> A\<^isub>1 \<subseteq> set Vs" using Cons_exp.prems A_fv[OF Some] by auto
-    hence "\<D>s (compEs\<^isub>1 Vs es) \<lfloor>index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using Cons_exp Some by auto
-    hence "\<D>s (compEs\<^isub>1 Vs es) \<lfloor>index Vs ` A \<union> index Vs ` A\<^isub>1\<rfloor>"
+    hence "\<D>s (compEs\<^isub>1 Vs es) \<lfloor>last_index Vs ` (A \<union> A\<^isub>1)\<rfloor>" using Cons_exp Some by auto
+    hence "\<D>s (compEs\<^isub>1 Vs es) \<lfloor>last_index Vs ` A \<union> last_index Vs ` A\<^isub>1\<rfloor>"
       by(simp add: image_Un)
     thus ?thesis using IH\<^isub>1 indexA\<^isub>1 by auto
   qed
@@ -737,13 +724,13 @@ qed (simp_all add:hyperset_defs)
 (*>*)
 
 
-lemma index_image_set: "distinct xs \<Longrightarrow> index xs ` set xs = {..<size xs}"
-(*<*)by(induct xs rule:rev_induct) (auto simp add: image_index)(*>*)
+lemma last_index_image_set: "distinct xs \<Longrightarrow> last_index xs ` set xs = {..<size xs}"
+(*<*)by(induct xs rule:rev_induct) (auto simp add: image_last_index)(*>*)
 
 
 lemma D_compE\<^isub>1:
   "\<lbrakk> \<D> e \<lfloor>set Vs\<rfloor>; fv e \<subseteq> set Vs; distinct Vs \<rbrakk> \<Longrightarrow> \<D> (compE\<^isub>1 Vs e) \<lfloor>{..<length Vs}\<rfloor>"
-(*<*)by(fastsimp dest!: D_index_compE\<^isub>1[OF subset_refl] simp add:index_image_set)(*>*)
+(*<*)by(fastsimp dest!: D_last_index_compE\<^isub>1[OF subset_refl] simp add:last_index_image_set)(*>*)
 
 
 lemma D_compE\<^isub>1':
