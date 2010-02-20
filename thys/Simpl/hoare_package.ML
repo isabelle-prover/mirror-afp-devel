@@ -750,7 +750,7 @@ type hoare_data =
  {proc_info: proc_info Symtab.table,
   active_procs: string list list,
   default_state_kind: state_kind,
-  generate_guard: (stamp * (Context.generic -> term -> term option)),
+  generate_guard: (stamp * (Proof.context -> term -> term option)),
   wp_tacs: (string * hoare_tac) list,
   hoare_tacs: (string * hoare_tac) list,
   vcg_simps: thm list};
@@ -770,7 +770,7 @@ structure HoareData = Generic_Data
                (Symtab.empty: proc_info Symtab.table) (* smlnj needs typing *)
                ([]:string list list)
                (Function)
-               (stamp (),(K (K NONE)):Context.generic -> term -> term option)
+               (stamp (),(K (K NONE)): Proof.context -> term -> term option)
                ([]:(string * hoare_tac) list)
                ([]:(string * hoare_tac) list)
                ([]:thm list);
@@ -830,7 +830,7 @@ fun set_default_state_kind sk ctxt =
                    generate_guard wp_tacs hoare_tacs vcg_simps;
   in HoareData.put data ctxt end;
 
-fun get_default_state_kind ctxt = #default_state_kind (HoareData.get ctxt);
+fun get_default_state_kind ctxt = #default_state_kind (HoareData.get (Context.Proof ctxt));
 
 fun add_active_procs phi ps ctxt =
   let
@@ -909,7 +909,7 @@ fun add_params phi name frmls ctxt =
   in HoareData.put data ctxt end;
 
 fun get_params name ctxt =
-  Option.map #params (Symtab.lookup (#proc_info (HoareData.get ctxt)) name);
+  Option.map #params (Symtab.lookup (#proc_info (HoareData.get (Context.Proof ctxt))) name);
 
 
 fun add_recursive phi name ctxt =
@@ -940,7 +940,7 @@ fun add_state_kind phi name sk ctxt =
   in HoareData.put data ctxt end;
 
 fun get_state_kind name ctxt =
-  Option.map #state_kind (Symtab.lookup (#proc_info (HoareData.get ctxt)) name);
+  Option.map #state_kind (Symtab.lookup (#proc_info (HoareData.get (Context.Proof ctxt))) name);
 
 fun install_generate_guard f ctxt =
   let
@@ -951,14 +951,16 @@ fun install_generate_guard f ctxt =
                 wp_tacs hoare_tacs vcg_simps
   in HoareData.put data ctxt end;
 
-fun get_generate_guard ctxt = snd (#generate_guard (HoareData.get ctxt));
+fun generate_guard ctxt = snd (#generate_guard (HoareData.get (Context.Proof ctxt))) ctxt;
 
 
 fun check_procedures_definition procs thy =
     let
         val _ = Theory.requires thy "Hoare" "Hoare definitions";
+        val ctxt = ProofContext.init thy;
+
         fun already_defined name =
-            if is_some (get_params name (Context.Theory thy))
+            if is_some (get_params name ctxt)
             then ["procedure " ^ quote name ^ " already defined"]
             else []
 
@@ -2069,7 +2071,7 @@ fun gen_context_thms ctxt thy mode params G T F =
 
     fun hoare_context_specs thy mode G T F =
       let fun mk t = (SOME o mkHoare mode G T F o apsnd destQuadruple o dest_UN) t
-                     handle _ => NONE
+                     handle _ => NONE  (* FIXME avoid handle _ !!! *)
       in map_filter mk (dest_Un T) end;
 
 
@@ -2489,7 +2491,8 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                               simp_tac (HOL_basic_ss addsimps (CollectInt_iff::simp_thms)) 1]
                   else all_tac]
         end
-        handle e => raise TERM ("get_call_tac.modify_tac: no proper modifies spec",[]);
+        handle _ => raise TERM ("get_call_tac.modify_tac: no proper modifies spec", []);
+        (* FIXME avoid handle _ !!! *)
 
   fun specs_of_assms_tac thms =
        (case get_spec pname is_spec_clause thms of
@@ -2568,7 +2571,7 @@ fun call_tac cont_tac mode state_kind state_space ctxt asms spec_sfx t =
            gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                          (proc_name cmode pname) return has_args F;
   in gen_tac (dest_call c) end
-  handle (TERM t) => (K no_tac);
+  handle TERM t => (K no_tac);
 
 fun solve_in_Faults_tac i =
     resolve_tac [UNIV_I, in_insert_hd] i
@@ -2725,7 +2728,7 @@ fun gen_Anno_tac dest rules tac cont_tac ctxt state_kind (t,i) st =
             cont_tac (i+1),
             conseq_simp_tac ctxt state_kind [] i] st
   end
-  handle (TERM _) => no_tac st;
+  handle TERM _ => no_tac st;
 
 
 fun specAnno_tac ctxt state_kind cont_tac mode =
@@ -2777,7 +2780,7 @@ fun lemAnno_tac ctxt state_kind mode (t,i) st =
             rtac spec (i+1),
             conseq_simp_tac ctxt state_kind [] i] st
   end
-  handle (TERM _) => no_tac st;
+  handle TERM _ => no_tac st;
 
 fun prems_tac ctxt i = TRY (resolve_tac (Assumption.all_prems_of ctxt) i);
 
@@ -2814,7 +2817,7 @@ fun HoareTac annotate_inv strip_guards mode state_kind state_space spec_sfx ctxt
                      SOME Q
                 else NONE);
      val asms = (mk_proc_assoc (gen_context_thms ctxt (theory_of_thm st) mode params G T F))
-                handle _ => [];
+                handle _ => [];  (* FIXME avoid handle _ !!! *)
 
      fun while_annoG_tac (t,i) =
            whileAnnoG_tac ctxt (annotate_inv orelse strip_guards) mode t i;
@@ -2919,7 +2922,7 @@ fun HoareStepTac strip_guards mode state_kind state_space spec_sfx ctxt tac st =
                                               (Logic.get_goal (prop_of st) 1));
            val params = (strip_vars (Logic.get_goal (prop_of st) 1));
        in mk_proc_assoc (gen_context_thms ctxt (theory_of_thm st) mode params G T F)
-       end handle _ => [];
+       end handle _ => [];   (* FIXME avoid handle _ !!! *)
 
      fun result_tac i = TRY (EVERY [rtac (Basic mode) i, rtac subset_refl i]);
      fun call (t,i) = call_tac result_tac mode state_kind state_space ctxt asms spec_sfx t i
@@ -3413,7 +3416,7 @@ fun solve_modifies_tac ctxt state_kind state_space i =
           val (Const ("op =",_)$x_upd$x_upd') = strip_qnt_body "Ex" concl;
           val (split,sd) = seed x_upd;
         in if sd = state then split else 0 end
-        handle _ => 0)
+        handle _ => 0)    (* FIXME avoid handle _ !!! *)
       else 0
       | is_split_state t = 0;
     val ss = HOL_ss addsimps (Ex_True::Ex_False::Record.get_extinjects thy);
@@ -3454,7 +3457,7 @@ fun proc_lookup_simp_tac ctxt i st =
                              suffix (body_def_sfx^"_def") pname,
                              suffix procL pname^"."^ (suffix (body_def_sfx^"_def") pname)]);
   in simp_tac (HOL_basic_ss addsimps thms@strip_simps@the_simps) i st end
-  handle _ => all_tac st;
+  handle _ => all_tac st;   (* FIXME avoid handle _ !!! *)
 
 fun proc_lookup_in_dom_simp_tac ctxt i st =
   let
@@ -3464,7 +3467,7 @@ fun proc_lookup_in_dom_simp_tac ctxt i st =
     val thms =  map_filter I (map (try (ProofContext.get_thm ctxt))
                                [suffix bodyP pname]);
   in simp_tac (HOL_basic_ss addsimps (lookup_Some_in_dom::dom_strip::thms)) i st end
-  handle _ => all_tac st;
+  handle _ => all_tac st;    (* FIXME avoid handle _ !!! *)
 
 
 fun HoareRuleTac ctxt insts st =
@@ -3565,7 +3568,7 @@ fun find_state_space_in_triple thy t =
          val SOME Tids  = stateT_ids state_spaceT;
       in SOME (Tids,mode,state_kind_of thy state_spaceT)
       end)
-      handle _ => NONE
+      handle _ => NONE   (* FIXME avoid handle _ !!! *)
 
 fun get_state_space_in_subset_eq thy t =
   (* get state type from the following kind of terms: P <= Q, s: P *)
@@ -3577,7 +3580,7 @@ fun get_state_space_in_subset_eq thy t =
             (* also works for "in": x : P *)
     val SOME Tids = stateT_ids state_spaceT;
   in SOME (Tids,Partial,state_kind_of thy state_spaceT)
-  end handle _ => NONE;
+  end handle _ => NONE;    (* FIXME avoid handle _ !!! *)
 
 fun get_state_space i st =
     let val thy = theory_of_thm st;

@@ -21,8 +21,6 @@ USA
 
 (* FIXME: Adapt guard generation to new syntax of op + etc. *)
 
-(* FIXME: make all parse/print-translation dependent on ProofContext not GenericContext*)
-
 structure HoareSyntax =
 struct
 open HoarePackage
@@ -37,6 +35,7 @@ val locals_updateN = suffix updateN localsN;
 val upd_globalsN = "upd_globals";
 val allocN = "alloc_'";
 val freeN = "free_'";
+
 
 (** utils **)
 
@@ -88,7 +87,7 @@ fun is_prefix_or_suffix s t =
 (** hoare data **)
 
 fun is_global_comp ctxt name =
-  (case StateSpace.get_comp ctxt name of
+  (case StateSpace.get_comp (Context.Proof ctxt) name of
     SOME (_, ln) => is_prefix_or_suffix "globals" (Long_Name.base_name ln)
   | NONE => false);
 
@@ -101,11 +100,13 @@ val antiquoteCur = @{syntax_const "_antiquoteCur"};
 val antiquoteOld = @{syntax_const "_antiquoteOld"};
 
 fun is_global ctxt name =
-  (case Sign.const_type (Context.theory_of ctxt)
-          (Sign.intern_const (Context.theory_of ctxt) name) of
-    NONE => is_global_comp ctxt name
-  | SOME T => String.isPrefix globalsN (Long_Name.base_name (fst (dest_Type (domain_type T)))))
-  handle Match => false;
+  let val thy = ProofContext.theory_of ctxt
+  in
+    (case Sign.const_type thy (Sign.intern_const thy name) of
+      NONE => is_global_comp ctxt name
+    | SOME T => String.isPrefix globalsN (Long_Name.base_name (fst (dest_Type (domain_type T)))))
+    handle Match => false
+  end;
 
 exception UNDEFINED of string
 
@@ -138,21 +139,21 @@ fun statespace_update_tr ctxt ps id n v s =
   end;
 
 local
- fun is_record_sel ctxt =
-   let val thy = Context.theory_of ctxt
-   in can (Sign.the_const_type thy o Sign.intern_const thy) end;
+  fun is_record_sel ctxt =
+    let val thy = ProofContext.theory_of ctxt
+    in can (Sign.the_const_type thy o Sign.intern_const thy) end;
 in
+
 fun lookup_comp ctxt ps name =
-  let
-    val thy = Context.theory_of ctxt;
-  in if is_record_sel ctxt name
-     then if is_global ctxt name
-          then (fn s => Syntax.free name $ (Syntax.free "globals" $ s))
-          else (fn s => Syntax.free name $ s)
-     else let
-            val sel = Syntax.const (if is_global_comp ctxt name then "globals" else "locals");
-          in (fn s => statespace_lookup_tr (Context.proof_of ctxt) ps (sel $ s) name) end
-  end;
+  if is_record_sel ctxt name
+  then
+    if is_global ctxt name
+    then (fn s => Syntax.free name $ (Syntax.free "globals" $ s))
+    else (fn s => Syntax.free name $ s)
+  else
+    let
+      val sel = Syntax.const (if is_global_comp ctxt name then "globals" else "locals");
+    in (fn s => statespace_lookup_tr ctxt ps (sel $ s) name) end;
 
 (*
 FIXME:
@@ -172,47 +173,44 @@ be composed nicer...
 fun K_rec_syntax v = Abs ("_", dummyT, incr_boundvars 1 v);
 
 fun update_comp ctxt ps atomic id name value =
-  let
-    val thy = Context.theory_of ctxt;
-  in
-    if is_record_sel ctxt name
-    then
+  if is_record_sel ctxt name
+  then
+    let
+      val upd = Syntax.free (suffix updateN name) $ K_rec_syntax value;
+    in
+      if atomic andalso is_global ctxt name
+      then (fn s =>
+        Syntax.free globals_updateN $ (K_rec_syntax (upd $ (Syntax.free globalsN $ s))) $ s)
+      else (fn s => upd $ s)
+    end
+  else
+    let
+      val namet = mk_component_name name;
+    in
       let
-        val upd = Syntax.free (suffix updateN name) $ K_rec_syntax value
+        val reg = if is_global_comp ctxt name then "globals" else "locals";
+        val upd = Syntax.free (reg ^ updateN);
+        val sel = Syntax.free reg;
       in
-        if atomic andalso is_global ctxt name
-        then (fn s => Syntax.free globals_updateN $
-                        (K_rec_syntax (upd $ (Syntax.free globalsN $ s))) $ s)
-        else (fn s => upd $ s)
+        fn s =>
+          if atomic then
+            upd $ (K_rec_syntax (statespace_update_tr ctxt ps id name value (sel $ s))) $ s
+          else statespace_update_tr ctxt ps id name value s
       end
-    else
-      let
-        val namet = mk_component_name name;
-      in
-        let
-          val reg = if is_global_comp ctxt name then "globals" else "locals";
-          val upd = Syntax.free (reg ^ updateN);
-          val sel = Syntax.free reg;
-        in
-          fn s =>
-            if atomic then
-              upd $
-                (K_rec_syntax
-                  (statespace_update_tr (Context.proof_of ctxt) ps id name value (sel $ s))) $ s
-            else statespace_update_tr (Context.proof_of ctxt) ps id name value s
-        end
-      end
-  end;
+    end;
+
 end;
 
 fun antiquote_global_tr ctxt off i t =
-  let fun mk n t = lookup_comp (Context.Proof ctxt) [] n (Bound (i + off n));
-                   (*if is_global ctxt n then t$(Free ("globals",dummyT)$Bound (i + off n))
-                     else t$Bound (i + off n)*)
-  in (case t of
-         Free  (n,_) => mk n t
-       | Const (n,_) => mk n t
-       | _ => t $ Bound i)
+  let
+    fun mk n t = lookup_comp ctxt [] n (Bound (i + off n));
+     (*if is_global ctxt n then t$(Free ("globals",dummyT)$Bound (i + off n))
+       else t$Bound (i + off n)*)
+  in
+    (case t of
+      Free  (n, _) => mk n t
+    | Const (n, _) => mk n t
+    | _ => t $ Bound i)
   end;
 
 
@@ -235,37 +233,36 @@ fun antiquoteCur_tr ctxt t = antiquote_tr ctxt antiquoteCur (Term.incr_boundvars
 
 
 fun antiquote_varname_tr anti [n] =
-    (case n of
-         Free (v,T) => Syntax.const anti $ Free (varname v,T)
-       | Const (c,T) => Syntax.const anti $ Const (varname c,T)
-       | _ => Syntax.const anti $ n)
-
-
-
-fun antiquoteOld_tr anti ctxt [s,n] =
   (case n of
-          Free (v,T) => lookup_comp (Context.Proof ctxt) [] (varname v) s
-        | Const (c,T) => lookup_comp (Context.Proof ctxt) [] (varname c) s
-        | _ => n $ s)
+    Free (v, T) => Syntax.const anti $ Free (varname v, T)
+  | Const (c, T) => Syntax.const anti $ Const (varname c, T)
+  | _ => Syntax.const anti $ n);
+
+
+
+fun antiquoteOld_tr anti ctxt [s, n] =
+  (case n of
+    Free (v, T) => lookup_comp ctxt [] (varname v) s
+  | Const (c, T) => lookup_comp ctxt [] (varname c) s
+  | _ => n $ s);
 
 fun antiquote_tr' name =
   let
-    fun isState i t =
+    fun is_state i t =
       (case t of
         Bound j => i = j
       | Const (g,_) $ Bound j =>
           i = j andalso Long_Name.base_name g mem_string [globalsN, localsN]
       | _ => false);
     fun tr' i (t $ u) =
-       if isState i u then Syntax.const name $ tr' i (undeco t)
+       if is_state i u then Syntax.const name $ tr' i (undeco t)
        else tr' i t $ tr' i u
       | tr' i (Abs (x, T, t)) = Abs (x, T, tr' (i + 1) t)
       | tr' i a = if a = Bound i then raise Match else a;
   in tr' 0 end;
 
 fun quote_tr' name (Abs (_, _, t)) = Term.incr_boundvars ~1 (antiquote_tr' name t)
-  | quote_tr' name (t as (Const _)) (* eta contracted *) =
-       Syntax.const name $ undeco t
+  | quote_tr' name (t as (Const _)) (* eta contracted *) = Syntax.const name $ undeco t
   | quote_tr' _ _ = raise Match;
 
 
@@ -280,35 +277,34 @@ fun antiquote_applied_only_to P =
   let
      fun test i (t $ u) =
        state_test u
-        (fn Bound j =>
-              if j=i then  P t
-              else test i t andalso test i u
-         | u => test i t andalso test i u)
+         (fn Bound j =>
+               if j=i then  P t
+               else test i t andalso test i u
+           | u => test i t andalso test i u)
        | test i (Abs (x, T, t)) = test (i + 1) t
-       | test i a = true
+       | test i a = true;
   in test 0 end;
 
 
 fun antiquote_mult_tr' is_selector current old  =
   let
     fun tr' i (t $ u) =
-      state_test u (
-        fn Bound j =>
-            if j = i then Syntax.const current $ tr' i (undeco t)
-            else if is_selector t (* other quantified states *)
-            then Syntax.const old $ Bound j $ tr' i (undeco t)
-            else  tr' i t $ tr' i u
-         | pre as ((Const (m,_) $ (s as Free _))) (* pre state *) =>
-            if (m = @{syntax_const "_bound"} orelse m = @{syntax_const "_free"})
-              andalso is_selector t
-            then Syntax.const old $ pre $ tr' i (undeco t)
-            else tr' i t $ pre
-        | pre as ((Const (m,_) $ (s as Var _))) (* pre state *) =>
-            if m = @{syntax_const "_var"} andalso is_selector t
-            then Syntax.const old $ pre $ tr' i (undeco t)
-            else tr' i t $ pre
-        | u => tr' i t $ tr' i u)
-
+          state_test u
+            (fn Bound j =>
+                  if j = i then Syntax.const current $ tr' i (undeco t)
+                  else if is_selector t (* other quantified states *)
+                  then Syntax.const old $ Bound j $ tr' i (undeco t)
+                  else  tr' i t $ tr' i u
+              | pre as ((Const (m,_) $ (s as Free _))) (* pre state *) =>
+                  if (m = @{syntax_const "_bound"} orelse m = @{syntax_const "_free"})
+                    andalso is_selector t
+                  then Syntax.const old $ pre $ tr' i (undeco t)
+                  else tr' i t $ pre
+              | pre as ((Const (m,_) $ (s as Var _))) (* pre state *) =>
+                  if m = @{syntax_const "_var"} andalso is_selector t
+                  then Syntax.const old $ pre $ tr' i (undeco t)
+                  else tr' i t $ pre
+              | u => tr' i t $ tr' i u)
       | tr' i (Abs (x, T, t)) = Abs (x, T, tr' (i + 1) t)
       | tr' i a = if a = Bound i then raise Match else a;
   in tr' 0 end;
@@ -327,17 +323,18 @@ fun app_quote_mult_tr' is_selector f (t :: ts) =
   | app_quote_mult_tr' _ _ _ = raise Match;
 
 
-fun global_upd_tr upd =
-  (fn s => Syntax.free globals_updateN $ (K_rec_syntax (upd (Syntax.free globalsN $ s))) $ s)
+fun global_upd_tr upd s =
+  Syntax.free globals_updateN $ (K_rec_syntax (upd (Syntax.free globalsN $ s))) $ s;
 
 fun atomic_var_tr ctxt ps name value =
-  update_comp (Context.Proof ctxt) ps true false name value;
+  update_comp ctxt ps true false name value;
 
 
 fun heap_var_tr ctxt hp p value =
-  let val upd =
-       fn s => update_comp (Context.Proof ctxt) [] true false hp
-         (Syntax.const "fun_upd" $ (lookup_comp (Context.Proof ctxt) [] hp s) $ p $ value) s;
+  let
+    fun upd s =
+      update_comp ctxt [] true false hp
+        (Syntax.const "fun_upd" $ lookup_comp ctxt [] hp s $ p $ value) s;
   in upd end;
 
 fun get_arr_var (Const ("nth",_) $ arr $ i) =
@@ -388,9 +385,10 @@ fun get_arr_mult_var (Const (@{syntax_const "_antiquoteCur"},_) $ Free (var,_)) 
 fun arr_mult_var_tr ctxt ps name arr pos vals idxs  =
   let
     val value' = Syntax.const "list_multupd" $ arr $ idxs $ vals;
-  in case pos of
-       NONE   => atomic_var_tr ctxt ps name value'
-     | SOME p => heap_var_tr ctxt name p value'
+  in
+    case pos of
+      NONE => atomic_var_tr ctxt ps name value'
+    | SOME p => heap_var_tr ctxt name p value'
   end;
 
 fun update_tr ctxt ps off_var off_val e
@@ -406,39 +404,38 @@ fun update_tr ctxt ps off_var off_val e
       (case get_arr_mult_var arr of
          SOME (var, pos) =>
             let
-              val pos' = Option.map
-                            (antiquote_off_tr off_val ctxt antiquoteCur) pos;
-              val var' = lookup_comp (Context.Proof ctxt) ps var (Bound (off_var var));
+              val pos' = Option.map (antiquote_off_tr off_val ctxt antiquoteCur) pos;
+              val var' = lookup_comp ctxt ps var (Bound (off_var var));
               val arr' = case pos' of NONE => var' | SOME p => var' $ p;
               val idxs' = antiquote_off_tr off_val ctxt antiquoteCur idxs;
             in arr_mult_var_tr ctxt ps var arr' pos' e idxs' end
-       | NONE =>  raise TERM ("no proper lvalue",[v]))
+       | NONE =>  raise TERM ("no proper lvalue", [v]))
   | update_tr ctxt ps off_var off_val e v =
       (case get_arr_var v of
-           SOME (var,pos,idxs)
-           =>  let val pos' = Option.map
-                               (antiquote_off_tr off_val ctxt antiquoteCur) pos;
-                   val var' = lookup_comp (Context.Proof ctxt) ps var (Bound (off_var var));
-                   val arr' = case pos' of NONE => var' | SOME p => var' $ p;
-                   val idxs' = rev (map (antiquote_off_tr off_val ctxt antiquoteCur) idxs);
-               in arr_var_tr ctxt ps var arr' pos' e idxs' end
-       | NONE =>  raise TERM ("no proper lvalue",[v]))
-  | update_tr _ _ _ _ e t = raise TERM ("update_tr",[t])
+        SOME (var,pos,idxs) =>
+          let
+            val pos' = Option.map (antiquote_off_tr off_val ctxt antiquoteCur) pos;
+            val var' = lookup_comp ctxt ps var (Bound (off_var var));
+            val arr' = case pos' of NONE => var' | SOME p => var' $ p;
+            val idxs' = rev (map (antiquote_off_tr off_val ctxt antiquoteCur) idxs);
+          in arr_var_tr ctxt ps var arr' pos' e idxs' end
+      | NONE => raise TERM ("no proper lvalue", [v]))
+  | update_tr _ _ _ _ e t = raise TERM ("update_tr", [t])
 
 
-fun app_assign_tr f ctxt (ts as [v,e]) =
+fun app_assign_tr f ctxt (ts as [v, e]) =
       let
         fun offset v = 0;
-      in f $ Abs("s", dummyT, update_tr ctxt [] offset offset (antiquoteCur_tr ctxt e) v (Bound 0))
+      in f $ Abs ("s", dummyT, update_tr ctxt [] offset offset (antiquoteCur_tr ctxt e) v (Bound 0))
       end
-  | app_assign_tr _ _ ts = raise TERM ("assign_tr",ts);
+  | app_assign_tr _ _ ts = raise TERM ("assign_tr", ts);
 
 
 val assign_tr = app_assign_tr (Syntax.const "Basic");
 val raise_tr = app_assign_tr (Syntax.const "raise");
 
 
-fun basic_assign_tr ctxt (ts as [v,e]) =
+fun basic_assign_tr ctxt (ts as [v, e]) =
       let
         fun offset v = 0;
       in update_tr ctxt [] offset offset (antiquoteCur_tr ctxt e) v
@@ -492,7 +489,7 @@ fun init_tr ctxt [Const (var,_),comp,value] =
         val upds = map2 (mk_upd var) comps values;
         val app_upds = fold (fn upd => fn s => upd $ s) upds;
         val upd =
-          if is_global (Context.Proof ctxt) (varname (suffix ("_" ^ hd comps) var)) then
+          if is_global ctxt (varname (suffix ("_" ^ hd comps) var)) then
             Syntax.free (suffix updateN globalsN) $
               app_upds (Syntax.free globalsN $ Bound 0) $ Bound 0
           else app_upds (Bound 0)
@@ -514,27 +511,29 @@ fun new_tr ctxt (ts as [var,size,init]) =
           | dest_inits _ = raise Match;
 
         val g = Syntax.free globalsN $ Bound 0;
-        val alloc = lookup_comp (Context.Proof ctxt) [] allocN (Bound 0)
+        val alloc = lookup_comp ctxt [] allocN (Bound 0);
         val new = Syntax.free "new" $ (Syntax.const "set" $ alloc);
 
         fun mk_upd (var,v) =
-          let val varn = varname var
-              val var' = lookup_comp (Context.Proof ctxt) [] varn (Bound 0)
-          in update_comp (Context.Proof ctxt) [] false false varn
-               (Syntax.const "fun_upd" $ var' $ new $ v)
+          let
+            val varn = varname var;
+            val var' = lookup_comp ctxt [] varn (Bound 0);
+          in
+            update_comp ctxt [] false false varn
+              (Syntax.const "fun_upd" $ var' $ new $ v)
           end;
 
         val inits = map mk_upd (dest_inits init);
-        val free = lookup_comp (Context.Proof ctxt) [] freeN (Bound 0)
+        val free = lookup_comp ctxt [] freeN (Bound 0);
         val freetest = Syntax.const @{const_syntax Orderings.less_eq} $ size $ free;
 
         val null = Syntax.free "Ref.Null";
 
         val alloc_upd =
-          update_comp (Context.Proof ctxt) [] false false allocN
+          update_comp ctxt [] false false allocN
             (Syntax.const "Cons" $ new $ alloc);
         val free_upd =
-          update_comp (Context.Proof ctxt) [] false false freeN
+          update_comp ctxt [] false false freeN
             (Syntax.const @{const_syntax Algebras.minus} $ free $ size);
 
         val g' =
@@ -563,27 +562,29 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
           | dest_inits _ = raise Match;
 
         val g = Syntax.free globalsN $ Bound 0;
-        val alloc = lookup_comp (Context.Proof ctxt) [] allocN (Bound 0);
+        val alloc = lookup_comp ctxt [] allocN (Bound 0);
         val new = Syntax.free "new" $ (Syntax.const "set" $ alloc);
 
         fun mk_upd (var,v) =
-          let val varn = varname var
-              val var' = lookup_comp (Context.Proof ctxt) [] varn (Bound 0)
-          in update_comp (Context.Proof ctxt) [] false false varn
-               (Syntax.const "fun_upd" $ var' $ new $ v)
+          let
+            val varn = varname var;
+            val var' = lookup_comp ctxt [] varn (Bound 0);
+          in
+            update_comp ctxt [] false false varn
+              (Syntax.const "fun_upd" $ var' $ new $ v)
           end;
 
         val inits = map mk_upd (dest_inits init);
-        val free = lookup_comp (Context.Proof ctxt) [] freeN (Bound 0);
+        val free = lookup_comp ctxt [] freeN (Bound 0);
         val freetest = Syntax.const @{const_syntax Orderings.less_eq} $ size $ free;
 
         val null = Syntax.free "Ref.Null";
 
         val alloc_upd =
-          update_comp (Context.Proof ctxt) [] false false allocN
+          update_comp ctxt [] false false allocN
             (Syntax.const "Cons" $ new $ alloc);
         val free_upd =
-          update_comp (Context.Proof ctxt) [] false false freeN
+          update_comp ctxt [] false false freeN
             (Syntax.const @{const_syntax Algebras.minus} $ free $ size);
 
         val g' =
@@ -598,31 +599,30 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
 
       in Syntax.const "Spec" $ cond
       end
-  | nnew_tr _ ts = raise TERM ("nnew_tr",ts);
+  | nnew_tr _ ts = raise TERM ("nnew_tr", ts);
 
-fun loc_tr ctxt (ts as [init,bdy]) =
+fun loc_tr ctxt (ts as [init, bdy]) =
   let
-    fun dest_init (Const (@{syntax_const "_locinit"},_) $ Const (var,_) $ v) = (var,v)
-      | dest_init (Const (@{syntax_const "_locnoinit"},_) $ Const (var,_)) =
+    fun dest_init (Const (@{syntax_const "_locinit"}, _) $ Const (var,_) $ v) = (var, v)
+      | dest_init (Const (@{syntax_const "_locnoinit"}, _) $ Const (var, _)) =
            (var, Syntax.const antiquoteCur $ Syntax.free (varname var))
            (* FIXME could skip this dummy initialisation v := v s and
               derive non init variables in the print translation from
               the return function instead the init function *)
       | dest_init _ = raise Match;
 
-    fun dest_inits (Const (@{syntax_const "_locinits"},_) $ x $ xs) = dest_init x :: dest_inits xs
-      | dest_inits (t as (Const (@{syntax_const "_locinit"},_) $ _ $ _)) = [dest_init t]
-      | dest_inits (t as (Const (@{syntax_const "_locnoinit"},_) $ _)) = [dest_init t]
+    fun dest_inits (Const (@{syntax_const "_locinits"}, _) $ x $ xs) = dest_init x :: dest_inits xs
+      | dest_inits (t as (Const (@{syntax_const "_locinit"}, _) $ _ $ _)) = [dest_init t]
+      | dest_inits (t as (Const (@{syntax_const "_locnoinit"}, _) $ _)) = [dest_init t]
       | dest_inits _ = raise Match;
 
-    fun mk_init_upd (var,v) =
-      update_comp (Context.Proof ctxt) [] true false var (antiquoteCur_tr ctxt v);
+    fun mk_init_upd (var, v) =
+      update_comp ctxt [] true false var (antiquoteCur_tr ctxt v);
 
     fun mk_ret_upd var =
-      update_comp (Context.Proof ctxt) [] true false var
-        (lookup_comp (Context.Proof ctxt) [] var (Bound 1));
+      update_comp ctxt [] true false var (lookup_comp ctxt [] var (Bound 1));
 
-    fun app_upd (s,upd) = upd$s;
+    fun app_upd (s, upd) = upd $ s;
 
     val var_vals = map (apfst varname) (dest_inits init);
     val ini = Abs ("s", dummyT, fold mk_init_upd var_vals (Bound 0));
@@ -685,8 +685,7 @@ fun dummyfyT (TFree x) = TFree x
 fun infer_type ctxt t =
   let val thy = ProofContext.theory_of ctxt;
   in
-    (hd (Syntax.check_terms ctxt
-         ([Sign.intern_term thy (ProofContext.decode_term ctxt t)])))
+    Syntax.check_term ctxt (Sign.intern_term thy (ProofContext.decode_term ctxt t))
   end;
 (*
 fun infer_type thy t =
@@ -699,7 +698,7 @@ fun guard ctxt Ts (add as (Const (@{const_syntax Algebras.plus},_) $ l $ r)) =
         val g =
           (if fastype_of1 (Ts,sub) = HOLogic.natT then le r l else in_range sub)
             handle TERM _ => error ("guard generation, cannot determine type of: " ^
-              Syntax.string_of_term (Context.proof_of ctxt) sub);
+              Syntax.string_of_term ctxt sub);
       in guard ctxt Ts l & guard ctxt Ts r & SOME g end
   | guard ctxt Ts (mul as (Const (@{const_syntax Algebras.times},_) $ l $r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (in_range mul)
@@ -734,8 +733,7 @@ in
    let
       (* We apply type inference first, so that we can generate different guards,
          depending on the type, e.g. int vs. nat *)
-      val Abs (_, T, t') =
-        map_types dummyfyT (infer_type (Context.proof_of ctxt) (Abs ("s", dummyT, t)));
+      val Abs (_, T, t') = map_types dummyfyT (infer_type ctxt (Abs ("s", dummyT, t)));
    in guard ctxt [T] t' end;
 
 end
@@ -743,121 +741,116 @@ end
 
 fun mk_singleton_guard f g =
   Syntax.const "Cons" $
-    (Syntax.const "Pair" $ Syntax.const f $ (Syntax.const "Collect" $ (Abs ("s", dummyT, g)))) $
+    (Syntax.const "Pair" $ Syntax.const f $ (Syntax.const "Collect" $ Abs ("s", dummyT, g))) $
       Syntax.const "Nil";
 
-fun guarded_Assign_tr ctxt (ts as [v,e]) =
+fun guarded_Assign_tr ctxt (ts as [v, e]) =
       let
-          val ass = assign_tr ctxt [v,e];
-          val guard = get_generate_guard (Context.Proof ctxt);
-          (* By the artificial "=" between left and right-hand side we get a bigger term and thus
-             more information for type-inference *)
-      in case (guard (Context.Proof ctxt)
-                (Syntax.const "op =" $ antiquoteCur_tr ctxt v $ antiquoteCur_tr ctxt e)) of
-           NONE => ass
-         | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ ass
+        val ass = assign_tr ctxt [v, e];
+        val guard = generate_guard ctxt;
+        (* By the artificial "=" between left and right-hand side we get a bigger term and thus
+           more information for type-inference *)
+      in
+        case guard (Syntax.const "op =" $ antiquoteCur_tr ctxt v $ antiquoteCur_tr ctxt e) of
+          NONE => ass
+        | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ ass
       end
   | guarded_Assign_tr _ ts = raise Match;
 
 fun guarded_New_tr ctxt (ts as [var, size, init]) =
-      let val thy = Context.theory_of (Context.Proof ctxt);
-          val new = new_tr ctxt [var, size, init];
-          val guard = get_generate_guard (Context.Proof ctxt);
-      in case guard (Context.Proof ctxt) (antiquoteCur_tr ctxt var) of
-           NONE => new
-         | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ new
+      let
+        val new = new_tr ctxt [var, size, init];
+        val guard = generate_guard ctxt;
+      in
+        case guard (antiquoteCur_tr ctxt var) of
+          NONE => new
+        | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ new
       end
   | guarded_New_tr _ ts = raise TERM ("guarded_New_tr", ts);
 
 fun guarded_NNew_tr ctxt (ts as [var, size, init]) =
-      let val thy = Context.theory_of (Context.Proof ctxt);
-          val new = nnew_tr ctxt [var, size, init];
-          val guard = get_generate_guard (Context.Proof ctxt);
-      in case guard (Context.Proof ctxt) (antiquoteCur_tr ctxt var) of
-           NONE => new
-         | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ new
+      let
+        val new = nnew_tr ctxt [var, size, init];
+        val guard = generate_guard ctxt;
+      in
+        case guard (antiquoteCur_tr ctxt var) of
+          NONE => new
+        | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ new
       end
   | guarded_NNew_tr _ ts = raise TERM ("guarded_NNew_tr", ts);
 
 
 fun guarded_While_tr ctxt (ts as [b,I,V,c]) =
       let
-        val thy = Context.theory_of (Context.Proof ctxt);
-        val guard = get_generate_guard (Context.Proof ctxt);
-        val (cnd as Abs (_, _, b')) = quote_tr ctxt antiquoteCur b;
+        val guard = generate_guard ctxt;
+        val cnd as Abs (_, _, b') = quote_tr ctxt antiquoteCur b;
         val b'' = Syntax.const "Collect" $ cnd;
-
-      in case (guard (Context.Proof ctxt) b') of
-            NONE => Syntax.const "whileAnno" $ b'' $ I $ V $ c
-          | SOME g => Syntax.const "whileAnnoG" $ mk_singleton_guard "False" g $
-                       b'' $ I $ V $ c
+      in
+        case guard b' of
+          NONE => Syntax.const "whileAnno" $ b'' $ I $ V $ c
+        | SOME g => Syntax.const "whileAnnoG" $ mk_singleton_guard "False" g $ b'' $ I $ V $ c
       end
   | guarded_While_tr _ ts = raise Match;
 
-fun guarded_WhileFix_tr ctxt (ts as [b as (_$Abs (_,_,b')),I,V,c]) =
+fun guarded_WhileFix_tr ctxt (ts as [b as (_ $ Abs (_, _, b')), I, V, c]) =
       let
-        val thy = Context.theory_of (Context.Proof ctxt);
-        val guard = get_generate_guard (Context.Proof ctxt);
-
-      in case (guard (Context.Proof ctxt) b') of
-            NONE => Syntax.const "whileAnnoFix" $ b $ I $ V $ c
-          | SOME g => Syntax.const "whileAnnoGFix" $ mk_singleton_guard "False" g $
-                       b $ I $ V $ c
+        val guard = generate_guard ctxt;
+      in
+        case guard b' of
+          NONE => Syntax.const "whileAnnoFix" $ b $ I $ V $ c
+        | SOME g => Syntax.const "whileAnnoGFix" $ mk_singleton_guard "False" g $ b $ I $ V $ c
       end
   | guarded_WhileFix_tr _ ts = raise Match;
 
-fun guarded_Cond_tr ctxt (ts as [b,c,d]) =
+fun guarded_Cond_tr ctxt (ts as [b, c, d]) =
       let
-        val thy = Context.theory_of (Context.Proof ctxt);
-        val guard = get_generate_guard (Context.Proof ctxt);
-        val (cnd as (Abs (_, _, b'))) = quote_tr ctxt @{syntax_const "_antiquoteCur"} b;
+        val guard = generate_guard ctxt;
+        val cnd as (Abs (_, _, b')) = quote_tr ctxt @{syntax_const "_antiquoteCur"} b;
         val cond = Syntax.const "Cond" $ (Syntax.const "Collect" $ cnd) $ c $ d;
-
-      in case (guard (Context.Proof ctxt) b') of
-            NONE => cond
-          | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ cond
+      in
+        case guard b' of
+          NONE => cond
+        | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ cond
       end
   | guarded_Cond_tr _ ts = raise Match;
 
 
 (* parsing procedure calls *)
 
-fun dest_pars (Const (@{syntax_const "_par"},_) $ p) = [p]
-  | dest_pars (Const (@{syntax_const "_pars"},_) $ p $ ps) = dest_pars p @ dest_pars ps
-  | dest_pars t = raise TERM("dest_pars",[t]);
+fun dest_pars (Const (@{syntax_const "_par"}, _) $ p) = [p]
+  | dest_pars (Const (@{syntax_const "_pars"}, _) $ p $ ps) = dest_pars p @ dest_pars ps
+  | dest_pars t = raise TERM ("dest_pars", [t]);
 
-fun dest_actuals (Const (@{syntax_const "_actuals_empty"},_)) = []
-  | dest_actuals (Const (@{syntax_const "_actuals"},_) $ pars) = dest_pars pars
-  | dest_actuals t = raise TERM ("dest_actuals",[t]);
+fun dest_actuals (Const (@{syntax_const "_actuals_empty"}, _)) = []
+  | dest_actuals (Const (@{syntax_const "_actuals"}, _) $ pars) = dest_pars pars
+  | dest_actuals t = raise TERM ("dest_actuals", [t]);
 
 
 fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
   let
-    val thy = Context.theory_of (Context.Proof ctxt);
     val fcall = cont <> NONE;
-    val state_kind =
-      the_default (get_default_state_kind (Context.Proof ctxt))
-        (get_state_kind pn (Context.Proof ctxt));
+    val state_kind = the_default (get_default_state_kind ctxt) (get_state_kind pn ctxt);
     fun init_par_tr name arg =
-      update_comp (Context.Proof ctxt) [] false false name (antiquoteCur_tr ctxt arg);
+      update_comp ctxt [] false false name (antiquoteCur_tr ctxt arg);
 
     fun result_par_tr name arg =
-      let fun offset_old n = 2;
-          fun offset n = if is_global (Context.Proof ctxt) n then 0 else 2;
-      in update_tr ctxt [pn] offset offset_old
-           (lookup_comp (Context.Proof ctxt) [] name (Bound 1)) arg
+      let
+        fun offset_old n = 2;
+        fun offset n = if is_global ctxt n then 0 else 2;
+      in
+        update_tr ctxt [pn] offset offset_old
+          (lookup_comp ctxt [] name (Bound 1)) arg
       end;
 
     val _ = if not (StateSpace.get_silent (Context.Proof ctxt)) andalso
                ((not fcall andalso length formals <> length actuals)
                  orelse
-                (fcall andalso length formals <> length actuals + 1)
-               )
+                (fcall andalso length formals <> length actuals + 1))
             then raise
                 TERM ("call_tr: number of formal (" ^ string_of_int (length formals) ^
                       ") and actual (" ^ string_of_int (length actuals) ^
                       ") parameters for \"" ^ unsuffix proc_deco pn ^
-                      "\" do not match.",[])
+                      "\" do not match.", [])
             else ();
 
     val globals =
@@ -888,32 +881,34 @@ fun mk_call_tr ctxt grd Call formals pn pt actuals has_args cont =
       (case cont of
         NONE => (* Procedure call *)
             let
-              val results = map (fn ((_,name),arg) => result_par_tr name arg)
-                              (rev (res_formals ~~ res_actuals));
-              val res = Abs ("i", dummyT, Abs ("t", dummyT,
-                               Syntax.const "Basic" $
-                                    (Abs ("s", dummyT,
-                                      fold_rev (fn f => fn s => f s) results (Bound 0)))));
+              val results =
+                map (fn ((_, name), arg) => result_par_tr name arg)
+                  (rev (res_formals ~~ res_actuals));
+              val res =
+                Abs ("i", dummyT, Abs ("t", dummyT,
+                    Syntax.const "Basic" $
+                      Abs ("s", dummyT, fold_rev (fn f => fn s => f s) results (Bound 0))));
             in if has_args then Call $init $ pt $ ret $ res else Call $ pt end
         | SOME c => (* Function call *)
             let
               val res =
                 (case res_formals of
-                  [(_, n)] => Abs ("s", dummyT, lookup_comp (Context.Proof ctxt) [] n (Bound 0))
+                  [(_, n)] => Abs ("s", dummyT, lookup_comp ctxt [] n (Bound 0))
                 | _ =>
-                  if StateSpace.get_silent (Context.Proof ctxt)
-                  then Abs ("s", dummyT, lookup_comp (Context.Proof ctxt) [] "dummy" (Bound 0))
-                  else raise TERM ("call_tr: function " ^ pn ^ "may only have one result parameter", []));
+                    if StateSpace.get_silent (Context.Proof ctxt)
+                    then Abs ("s", dummyT, lookup_comp ctxt [] "dummy" (Bound 0))
+                    else raise TERM ("call_tr: function " ^ pn ^ "may only have one result parameter", []));
             in Call $ init $ pt $ ret $ res $ c end)
-    val guard = get_generate_guard (Context.Proof ctxt);
-  in if grd
-     then (case fold_rev (fn arg => fn g =>
-                 guard (Context.Proof ctxt) (antiquoteCur_tr ctxt arg) & g)
-                 (res_actuals@val_actuals) NONE of
-             NONE => call
-           | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ call)
-     else call
-  end
+    val guard = generate_guard  ctxt;
+  in
+    if grd
+    then
+      (case fold_rev (fn arg => fn g => guard (antiquoteCur_tr ctxt arg) & g)
+          (res_actuals @ val_actuals) NONE of
+        NONE => call
+      | SOME g => Syntax.const "guards" $ mk_singleton_guard "False" g $ call)
+    else call
+  end;
 
 
 (* FIXME: What is prfx for, maybe unused *)
@@ -958,13 +953,15 @@ fun gen_call_tr prfx dyn grd ctxt p actuals has_args cont =
       | Call _ _ _ = raise TERM ("gen_call_tr: no proper procedure call", []);
 
     val (pn, pt) = dest_procname ctxt prfx dyn p;
-  in (case get_params pn (Context.Proof ctxt) of
-        SOME formals =>
-          mk_call_tr ctxt grd (Call dyn has_args cont) formals pn pt actuals has_args cont
-      | NONE => if StateSpace.get_silent (Context.Proof ctxt)
-                then mk_call_tr ctxt grd (Call dyn has_args cont) [] pn pt [] has_args cont
-                else raise TERM ("gen_call_tr: procedure " ^ pn ^ " not defined", []))
-  end
+  in
+    (case get_params pn ctxt of
+      SOME formals =>
+        mk_call_tr ctxt grd (Call dyn has_args cont) formals pn pt actuals has_args cont
+    | NONE =>
+        if StateSpace.get_silent (Context.Proof ctxt)
+        then mk_call_tr ctxt grd (Call dyn has_args cont) [] pn pt [] has_args cont
+        else raise TERM ("gen_call_tr: procedure " ^ pn ^ " not defined", []))
+  end;
 
 fun call_tr dyn grd ctxt [p, actuals] =
       gen_call_tr "" dyn grd ctxt p (dest_actuals actuals) true NONE
@@ -980,7 +977,7 @@ fun proc_tr ctxt [p, actuals] =
 
 fun proc_ass_tr ctxt [l, p, actuals] =
       gen_call_tr "" false false ctxt p (dest_actuals actuals @ [l]) false NONE
-  | proc_ass_tr  _ t = raise TERM ("proc_ass_tr", t);
+  | proc_ass_tr _ t = raise TERM ("proc_ass_tr", t);
 
 fun fcall_tr ctxt [p, actuals, c] =
       gen_call_tr "" false false ctxt p (dest_actuals actuals) true (SOME c)
@@ -1305,10 +1302,10 @@ fun gen_fcall_tr' init p return result c =
       (case c of
         Abs abs => Syntax.atomic_abs_tr' abs
       | _ => raise Match);
-
-  in if ! use_call_tr' then
-       Syntax.const @{syntax_const "_FCall"} $ p $ actuals_tr' init_actuals $ v $ c'
-     else raise Match
+  in
+    if ! use_call_tr' then
+      Syntax.const @{syntax_const "_FCall"} $ p $ actuals_tr' init_actuals $ v $ c'
+    else raise Match
   end;
 
 
@@ -1361,7 +1358,7 @@ fun proc_tr' ctxt [p] =
       let
         val p' = pname_tr' p;
         val pn = fst (dest_procname ctxt "" false p');
-        val formals =  the (get_params pn (Context.Proof ctxt)) handle Option => raise Match;
+        val formals = the (get_params pn ctxt) handle Option.Option => raise Match;
         val val_formals = map_filter (fn (In, p) => SOME p | _ => NONE) formals;
         val res_formals = map_filter (fn (Out, p) => SOME p | _ => NONE) formals;
         fun mkpar n =

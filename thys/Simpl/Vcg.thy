@@ -421,7 +421,7 @@ let
      |  idx (x::xs) y = if x=y then 0 else (idx xs y)+1
 
     fun gen_update ctxt names (name,t) = 
-        HoareSyntax.update_comp (Context.Proof ctxt) [] false true name  (Bound (idx names name)) t
+        HoareSyntax.update_comp ctxt [] false true name (Bound (idx names name)) t
 
     fun gen_updates ctxt names t = Library.foldr (gen_update ctxt names) (names,t) 
 
