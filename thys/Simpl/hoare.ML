@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-structure Hoare_Package =
+structure Hoare =
 struct
 
 (* Misc *)
@@ -574,7 +574,7 @@ fun idx eq [] x = ~1
   | idx eq (x::rs) y =
       if eq x y then 0
       else let val i = idx eq rs y in if i < 0 then i else i+1 end
-  | idx _ _ _ = raise TERM ("Hoare_Package.idx",[]);
+  | idx _ _ _ = raise TERM ("Hoare.idx",[]);
 
 fun resuffix sfx1 sfx2 s =
   suffix sfx2 (unsuffix sfx1 s)
@@ -714,7 +714,7 @@ fun dest_call (Const ("Language.call",_)$init$pname$return$c) =
            (Bound 0,pname,Bound 0,Bound 0,Static,false)
   | dest_call (Const ("Language.dynCall",_)$init$pname$return$c) =
            (init,pname,return,c,Parameter,true)
-  | dest_call t = raise TERM ("Hoare_Package.dest_call: unexpected term",[t]);
+  | dest_call t = raise TERM ("Hoare.dest_call: unexpected term",[t]);
 
 fun dest_whileAnno (Const ("Language.whileAnnoG",_) $gs$b$I$V$c) =
         (SOME gs,b,I,V,c,false)
@@ -722,11 +722,11 @@ fun dest_whileAnno (Const ("Language.whileAnnoG",_) $gs$b$I$V$c) =
   | dest_whileAnno (Const ("Language.whileAnnoGFix",_)$gs$b$I$V$c) =
         (SOME gs,b,I,V,c,true)
   | dest_whileAnno (Const ("Language.whileAnnoFix",_) $b$I$V$c) = (NONE,b,I,V,c,true)
-  | dest_whileAnno t = raise TERM ("Hoare_Package.dest_while: unexpected term",[t]);
+  | dest_whileAnno t = raise TERM ("Hoare.dest_while: unexpected term",[t]);
 
 fun dest_Guard (Const ("Language.com.Guard",_)$f$g$c) = (f,g,c,false)
   | dest_Guard (Const ("Language.guaranteeStrip",_)$f$g$c) = (f,g,c,true)
-  | dest_Guard t = raise TERM ("Hoare_Package.dest_guard: unexpected term",[t]);
+  | dest_Guard t = raise TERM ("Hoare.dest_guard: unexpected term",[t]);
 
 (*** extend theory by procedure definition ***)
 
@@ -761,7 +761,7 @@ fun make_hoare_data proc_info active_procs default_state_kind generate_guard
    generate_guard = generate_guard,
    wp_tacs = wp_tacs, hoare_tacs = hoare_tacs, vcg_simps = vcg_simps};
 
-structure HoareData = Generic_Data
+structure Hoare_Data = Generic_Data
 (
   type T = hoare_data;
 
@@ -796,6 +796,8 @@ structure HoareData = Generic_Data
       else error ("Theories have different aux. functions to generate guards")
 );
 
+val get_data = Hoare_Data.get o Context.Proof;
+
 
 (* access 'params' *)
 
@@ -824,51 +826,51 @@ fun set_default_state_kind sk ctxt =
   let
     val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = HoareData.get ctxt;
+            = Hoare_Data.get ctxt;
       val data = make_hoare_data proc_info active_procs sk
                    generate_guard wp_tacs hoare_tacs vcg_simps;
-  in HoareData.put data ctxt end;
+  in Hoare_Data.put data ctxt end;
 
-fun get_default_state_kind ctxt = #default_state_kind (HoareData.get (Context.Proof ctxt));
+val get_default_state_kind = #default_state_kind o get_data;
 
 fun add_active_procs phi ps ctxt =
   let
       val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = HoareData.get ctxt;
+            = Hoare_Data.get ctxt;
       val data = make_hoare_data proc_info
                    ((map (morph_name ctxt phi) ps)::active_procs)
                    default_state_kind
                    generate_guard wp_tacs hoare_tacs vcg_simps;
-  in HoareData.put data ctxt end;
+  in Hoare_Data.put data ctxt end;
 
 
 fun add_wp_tacs tacs ctxt =
   let
       val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = HoareData.get ctxt;
+            = Hoare_Data.get ctxt;
       val data = make_hoare_data proc_info active_procs default_state_kind generate_guard
                    (wp_tacs@tacs) hoare_tacs vcg_simps;
-  in HoareData.put data ctxt end;
+  in Hoare_Data.put data ctxt end;
 
 fun add_hoare_tacs tacs ctxt =
   let
       val {proc_info,active_procs, default_state_kind, generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = HoareData.get ctxt;
+            = Hoare_Data.get ctxt;
       val data = make_hoare_data proc_info active_procs default_state_kind generate_guard
                    wp_tacs (hoare_tacs@tacs) vcg_simps;
-  in HoareData.put data ctxt end;
+  in Hoare_Data.put data ctxt end;
 
 fun map_vcg_simps f ctxt =
   let
       val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = HoareData.get ctxt;
+            = Hoare_Data.get ctxt;
       val data = make_hoare_data proc_info active_procs default_state_kind generate_guard
                    wp_tacs hoare_tacs (f vcg_simps);
-  in HoareData.put data ctxt end;
+  in Hoare_Data.put data ctxt end;
 
 fun thy_attrib f = Thm.declaration_attribute (fn thm => map_vcg_simps (f thm));
 
@@ -898,59 +900,59 @@ fun add_params phi name frmls ctxt =
   let
       val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
            vcg_simps,...}
-            = HoareData.get ctxt;
+            = Hoare_Data.get ctxt;
       val params = map (apsnd (morph_name ctxt phi)) frmls;
       val f = map_proc_info_params (K params);
       val default = f empty_proc_info;
       val proc_info' = Symtab.map_default (morph_name ctxt phi name,default) f proc_info;
       val data = make_hoare_data proc_info' active_procs default_state_kind
                    generate_guard wp_tacs hoare_tacs vcg_simps;
-  in HoareData.put data ctxt end;
+  in Hoare_Data.put data ctxt end;
 
 fun get_params name ctxt =
-  Option.map #params (Symtab.lookup (#proc_info (HoareData.get (Context.Proof ctxt))) name);
+  Option.map #params (Symtab.lookup (#proc_info (get_data ctxt)) name);
 
 
 fun add_recursive phi name ctxt =
   let
      val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
           vcg_simps,...}
-          = HoareData.get ctxt;
+          = Hoare_Data.get ctxt;
      val f = map_proc_info_recursive (K true);
      val default = f empty_proc_info;
      val proc_info'= Symtab.map_default (morph_name ctxt phi name,default) f proc_info;
      val data = make_hoare_data proc_info' active_procs default_state_kind
                   generate_guard wp_tacs hoare_tacs vcg_simps;
-  in HoareData.put data ctxt end;
+  in Hoare_Data.put data ctxt end;
 
 fun get_recursive name ctxt =
-  Option.map #recursive (Symtab.lookup (#proc_info (HoareData.get ctxt)) name);
+  Option.map #recursive (Symtab.lookup (#proc_info (get_data ctxt)) name);
 
 fun add_state_kind phi name sk ctxt =
   let
      val {proc_info,active_procs,default_state_kind,generate_guard,wp_tacs,hoare_tacs,
           vcg_simps,...}
-          = HoareData.get ctxt;
+          = Hoare_Data.get ctxt;
      val f = map_proc_info_state_kind (K sk);
      val default = f empty_proc_info;
      val proc_info'= Symtab.map_default (morph_name ctxt phi name,default) f proc_info;
      val data = make_hoare_data proc_info' active_procs default_state_kind
                   generate_guard wp_tacs hoare_tacs vcg_simps;
-  in HoareData.put data ctxt end;
+  in Hoare_Data.put data ctxt end;
 
 fun get_state_kind name ctxt =
-  Option.map #state_kind (Symtab.lookup (#proc_info (HoareData.get (Context.Proof ctxt))) name);
+  Option.map #state_kind (Symtab.lookup (#proc_info (get_data ctxt)) name);
 
 fun install_generate_guard f ctxt =
   let
     val {proc_info,active_procs, default_state_kind, generate_guard,wp_tacs,hoare_tacs,
          vcg_simps,...} =
-         HoareData.get ctxt;
+         Hoare_Data.get ctxt;
     val data = make_hoare_data proc_info active_procs default_state_kind (stamp (), f)
                 wp_tacs hoare_tacs vcg_simps
-  in HoareData.put data ctxt end;
+  in Hoare_Data.put data ctxt end;
 
-fun generate_guard ctxt = snd (#generate_guard (HoareData.get (Context.Proof ctxt))) ctxt;
+fun generate_guard ctxt = snd (#generate_guard (get_data ctxt)) ctxt;
 
 
 fun check_procedures_definition procs thy =
@@ -1830,7 +1832,7 @@ fun merge_assertion_simp_tac thms =
  *)
 fun in_assertion_simp_tac ctxt state_kind thms i =
  let val HOL_basic_ss' = Simplifier.context ctxt HOL_basic_ss;
-     val vcg_simps = #vcg_simps (HoareData.get (Context.Proof ctxt));
+     val vcg_simps = #vcg_simps (get_data ctxt);
  in
    EVERY [simp_tac
             (HOL_basic_ss' addsimps ([mem_Collect_eq,Un_iff,Int_iff,
@@ -1943,7 +1945,7 @@ fun post_conforms_tac ctxt state_kind i =
 
 fun dest_hoare_raw (Const("HoarePartialDef.hoarep",_)$G$T$F$P$C$Q$A) = (P,C,Q,A,Partial,G,T,F)
   | dest_hoare_raw (Const("HoareTotalDef.hoaret",_)$G$T$F$P$C$Q$A) = (P,C,Q,A,Total,G,T,F)
-  | dest_hoare_raw t = raise TERM ("Hoare_Package.dest_hoare_raw: unexpected term",[t])
+  | dest_hoare_raw t = raise TERM ("Hoare.dest_hoare_raw: unexpected term",[t])
 
 
 fun mk_hoare_abs Ts (P,C,Q,A,mode,G,T,F) =
@@ -2112,7 +2114,7 @@ val is_spec_clause = not o is_modifies_clause;
 fun swap_constr_destr f (t as (Const ("Fun.id",_))) = t
   | swap_constr_destr f  (t as (Const (c,Type ("fun",[T,valT])))) =
      (Const (f c, Type ("fun",[valT,T]))
-      handle Empty => raise TERM ("Hoare_Package.swap_constr_destr",[t]))
+      handle Empty => raise TERM ("Hoare.swap_constr_destr",[t]))
   | swap_constr_destr f (Const ("StateFun.map_fun",Type ("fun",
                                              [Type ("fun",[T,valT]),
                                               Type ("fun",[Type ("fun",[xT,T']),
@@ -2139,7 +2141,7 @@ fun swap_constr_destr f (t as (Const ("Fun.id",_))) = t
      (Const ("List.map",Type ("fun",
                           [Type ("fun",[bT,aT]),
                            Type ("fun",[bsT,asT])]))$swap_constr_destr f g)
-  | swap_constr_destr f t = raise TERM ("Hoare_Package.swap_constr_destr",[t]);
+  | swap_constr_destr f t = raise TERM ("Hoare.swap_constr_destr",[t]);
 
 (* FIXME: unused? *)
 val constr_to_destr =
@@ -2342,7 +2344,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
        in Const (unsuffix Record.updateN upd,gT --> (Envir.norm_type subst vT)) end;
 
      fun revT (Type ("fun",[A,B])) = Type ("fun",[B,A])
-       | revT T = raise TYPE ("Hoare_Package.revT",[T],[]);
+       | revT T = raise TYPE ("Hoare.revT",[T],[]);
 
      (* lookup:: "('v => 'a) => 'n => ('n => 'v) => 'a"
       * update:: "('v => 'a) => ('a => 'v) => 'n => ('a => 'a) => ('n => 'v) => ('n => 'v)"
@@ -2547,7 +2549,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
 
   in
     (case cmode of
-       Static => if get_recursive pname (Context.Proof ctxt) = SOME false
+       Static => if get_recursive pname ctxt = SOME false
                  andalso is_none spec
                  then inline_bdy_tac has_args
                  else test_modify_in_ctxt_tac
@@ -2807,8 +2809,8 @@ fun HoareTac annotate_inv strip_guards mode state_kind state_space spec_sfx ctxt
  let
      val (P,c,Q,A,_,G,T,F) = dest_hoare (Logic.strip_assums_concl
                                        (Logic.get_goal (prop_of st) 1));
-     val wp_tacs = #wp_tacs (HoareData.get (Context.Proof ctxt));
-     val hoare_tacs = #hoare_tacs (HoareData.get (Context.Proof ctxt));
+     val wp_tacs = #wp_tacs (get_data ctxt);
+     val hoare_tacs = #hoare_tacs (get_data ctxt);
      val params = (strip_vars (Logic.get_goal (prop_of st) 1));
      val Inv = (if annotate_inv
                 then (* Take the postcondition of the triple as invariant for all *)

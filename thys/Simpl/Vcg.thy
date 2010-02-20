@@ -28,25 +28,25 @@ USA
 header {* Facilitating the Hoare Logic *}
 theory Vcg
 imports StateSpace "~~/src/HOL/Statespace/StateSpaceLocale" Generalise
-uses "hoare_package.ML" ("hoare_syntax.ML")
+uses "hoare.ML" ("hoare_syntax.ML")
 begin
 
-setup Hoare_Package.setup
+setup Hoare.setup
 
-method_setup hoare = "Hoare_Package.hoare"
+method_setup hoare = "Hoare.hoare"
   "raw verification condition generator for Hoare Logic"
 
-method_setup hoare_raw = "Hoare_Package.hoare_raw"
+method_setup hoare_raw = "Hoare.hoare_raw"
   "even more raw verification condition generator for Hoare Logic"
 
-method_setup vcg = "Hoare_Package.vcg" 
+method_setup vcg = "Hoare.vcg" 
   "verification condition generator for Hoare Logic"
 
-method_setup vcg_step = "Hoare_Package.vcg_step" 
+method_setup vcg_step = "Hoare.vcg_step" 
   "single verification condition generation step with light simplification"
 
 
-method_setup hoare_rule = "Hoare_Package.hoare_rule" 
+method_setup hoare_rule = "Hoare.hoare_rule" 
   "apply single hoare rule and solve certain sideconditions"
 
 consts NoBody::"('s,'p,'f) com"
@@ -398,8 +398,7 @@ translations
 
 
 use "hoare_syntax.ML"
-
-declaration {* K (Hoare_Package.install_generate_guard Hoare_Syntax.mk_guard) *}
+setup Hoare_Syntax.setup
 
 
 parse_translation (advanced) {*
@@ -408,7 +407,7 @@ let
     val globalsN = @{const_syntax globals};
     val ex = @{const_syntax mex};
     val eq = @{const_syntax meq};
-    val varn = Hoare_Package.varname;
+    val varn = Hoare.varname;
 
     fun extract_args (Const (argsC,_)$Free (n,_)$t) = varn n::extract_args t
       | extract_args (Free (n,_)) = [varn n]
@@ -445,7 +444,7 @@ end;
 print_translation {*
 let
   val argsC = @{syntax_const "_modifyargs"};
-  val chop = Hoare_Package.chopsfx Hoare_Package.deco;
+  val chop = Hoare.chopsfx Hoare.deco;
 
   fun get_state ( _ $ _ $ t) = get_state t  (* for record-updates*)
     | get_state ( _ $ _ $ _ $ _ $ _ $ t) = get_state t (* for statespace-updates *)
@@ -579,9 +578,9 @@ let
 fun spec_tr' ((coll as Const _)$
                ((splt as Const _) $ (t as (Abs (s,T,p))))::ts) =
       let
-        fun selector (Const (c, T)) = Hoare_Package.is_state_var c
+        fun selector (Const (c, T)) = Hoare.is_state_var c
           | selector (Const (@{syntax_const "_free"}, _) $ (Free (c, T))) =
-              Hoare_Package.is_state_var c
+              Hoare.is_state_var c
           | selector _ = false;
       in
         if Hoare_Syntax.antiquote_applied_only_to selector p then
@@ -609,7 +608,7 @@ translations
 
 print_translation {*
 let
-  fun selector (Const (c,T)) = Hoare_Package.is_state_var c  
+  fun selector (Const (c,T)) = Hoare.is_state_var c  
     | selector _ = false;
 
   fun measure_tr' ((t as (Abs (_,_,p)))::ts) =

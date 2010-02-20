@@ -307,9 +307,8 @@ and
                          IF 0 < \<acute>M THEN CALL coast(\<acute>N,\<acute>M- 1) FI"
 
 
-ML {* bind_thm ("HoareTotal_ProcRec2",
-                  Hoare_Package.gen_proc_rec Hoare_Package.Total 2)*}
-thm HoareTotal_ProcRec2
+ML {* bind_thm ("HoareTotal_ProcRec2", Hoare.gen_proc_rec Hoare.Total 2)*}
+
 
 lemma (in pedal_coast_clique)
   shows "(\<Gamma>\<turnstile>\<^sub>t \<lbrace>True\<rbrace>  PROC pedal(\<acute>N,\<acute>M) \<lbrace>True\<rbrace>) \<and>

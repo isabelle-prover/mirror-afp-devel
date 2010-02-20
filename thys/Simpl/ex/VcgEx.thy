@@ -711,11 +711,7 @@ be derived from the general @{thm [source] HoarePartial.ProcRec} rule. An ML fun
 this work:
 *}
 
-ML {* bind_thm ("ProcRec2",
-                  Hoare_Package.gen_proc_rec Hoare_Package.Partial 2)*}
-
-thm ProcRec2
-
+ML {* bind_thm ("ProcRec2", Hoare.gen_proc_rec Hoare.Partial 2) *}
 
 
 lemma (in odd_even_clique)

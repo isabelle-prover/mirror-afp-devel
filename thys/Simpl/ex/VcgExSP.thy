@@ -651,8 +651,8 @@ do this work:
 
 
 
-ML {* bind_thm ("ProcRec2",
-                  Hoare_Package.gen_proc_rec Hoare_Package.Partial 2)*}
+ML {* bind_thm ("ProcRec2", Hoare.gen_proc_rec Hoare.Partial 2) *}
+
 
 lemma (in odd_even_clique)
   shows odd_spec: "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>A :== PROC odd(\<acute>N) 

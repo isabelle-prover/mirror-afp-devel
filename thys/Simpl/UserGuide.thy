@@ -206,7 +206,7 @@ lemma (in vars) "\<Gamma>\<turnstile> \<lbrace>\<acute>N = 5\<rbrace> \<acute>N 
   apply (simp only: mem_Collect_eq)
   txt {* @{subgoals} *}
   apply (tactic 
-    {* Hoare_Package.BasicSimpTac @{context} Hoare_Package.Function false
+    {* Hoare.BasicSimpTac @{context} Hoare.Function false
        [] (K all_tac) 1*})
   txt {* @{subgoals} *}
   by simp
@@ -875,8 +875,8 @@ when we construct a well-founded relation on the product of state space and proc
 names.
 *}
 
-ML {* bind_thm ("HoareTotal_ProcRec2",
-              Hoare_Package.gen_proc_rec Hoare_Package.Total 2)*}
+ML {* bind_thm ("HoareTotal_ProcRec2", Hoare.gen_proc_rec Hoare.Total 2)*}
+
 
 text {*
   We provide the ML function {\tt gen\_proc\_rec} to
