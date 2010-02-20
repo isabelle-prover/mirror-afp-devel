@@ -28,12 +28,10 @@ USA
 header {* Facilitating the Hoare Logic *}
 theory Vcg
 imports StateSpace "~~/src/HOL/Statespace/StateSpaceLocale" Generalise
-uses "hoare_package.ML" "hoare_syntax.ML"
+uses "hoare_package.ML" ("hoare_syntax.ML")
 begin
 
 setup HoarePackage.setup
-setup {* Context.theory_map 
-          (HoarePackage.install_generate_guard HoareSyntax.mk_guard) *}
 
 method_setup hoare = "HoarePackage.hoare"
   "raw verification condition generator for Hoare Logic"
@@ -397,6 +395,14 @@ syntax
 
 translations
 "s may_only_modify_globals Z in []" => "s may_not_modify_globals Z"
+
+
+use "hoare_syntax.ML"
+
+setup {*
+  Context.theory_map 
+    (HoarePackage.install_generate_guard HoareSyntax.mk_guard)
+*}
 
 
 parse_translation (advanced){*
