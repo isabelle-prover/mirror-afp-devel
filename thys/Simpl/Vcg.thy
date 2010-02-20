@@ -408,7 +408,7 @@ setup Hoare_Syntax.setup
 parse_translation (advanced) {*
 let
     val argsC = @{syntax_const "_modifyargs"};
-    val globalsN = @{const_syntax globals};
+    val globalsN = "globals";
     val ex = @{const_syntax mex};
     val eq = @{const_syntax meq};
     val varn = Hoare.varname;
@@ -641,6 +641,5 @@ print_translation {*
 print_translation (advanced) {*
     [(@{const_syntax Call}, Hoare_Syntax.proc_tr')]
 *}
-
 
 end
