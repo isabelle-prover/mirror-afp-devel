@@ -206,7 +206,7 @@ lemma (in vars) "\<Gamma>\<turnstile> \<lbrace>\<acute>N = 5\<rbrace> \<acute>N 
   apply (simp only: mem_Collect_eq)
   txt {* @{subgoals} *}
   apply (tactic 
-    {* HoarePackage.BasicSimpTac @{context} HoarePackage.Function false
+    {* Hoare_Package.BasicSimpTac @{context} Hoare_Package.Function false
        [] (K all_tac) 1*})
   txt {* @{subgoals} *}
   by simp
@@ -294,9 +294,9 @@ Square(\<acute>R)"} for the procedure call. The internal term is the
 following: 
 *} 
 
-(*<*) ML "HoareSyntax.use_call_tr' :=false"  (*>*) 
+(*<*) ML "Hoare_Syntax.use_call_tr' :=false"  (*>*) 
 text {* \small @{term [display] "CALL Square(\<acute>I,\<acute>R)"} *} 
-(*<*) ML "HoareSyntax.use_call_tr' :=true" (*>*)
+(*<*) ML "Hoare_Syntax.use_call_tr' :=true" (*>*)
 
 text {* Note the
         additional decoration (with the procedure name) of the parameter and
@@ -554,13 +554,13 @@ variables are automatically copied back to the procedure caller.
 We can study this effect on the translation of @{term "\<acute>p :== CALL append(\<acute>p,\<acute>q)"}:
 *}
 (*<*)
-ML "HoareSyntax.use_call_tr' :=false"
+ML "Hoare_Syntax.use_call_tr' :=false"
 (*>*)
 text {*
 @{term [display] "\<acute>p :== CALL append(\<acute>p,\<acute>q)"}
 *}
 (*<*)
-ML "HoareSyntax.use_call_tr' :=true"
+ML "Hoare_Syntax.use_call_tr' :=true"
 end
 (*>*)
 
@@ -876,7 +876,7 @@ names.
 *}
 
 ML {* bind_thm ("HoareTotal_ProcRec2",
-              HoarePackage.gen_proc_rec HoarePackage.Total 2)*}
+              Hoare_Package.gen_proc_rec Hoare_Package.Total 2)*}
 
 text {*
   We provide the ML function {\tt gen\_proc\_rec} to

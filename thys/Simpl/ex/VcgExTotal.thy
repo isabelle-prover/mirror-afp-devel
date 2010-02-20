@@ -308,7 +308,7 @@ and
 
 
 ML {* bind_thm ("HoareTotal_ProcRec2",
-                  HoarePackage.gen_proc_rec HoarePackage.Total 2)*}
+                  Hoare_Package.gen_proc_rec Hoare_Package.Total 2)*}
 thm HoareTotal_ProcRec2
 
 lemma (in pedal_coast_clique)

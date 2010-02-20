@@ -479,7 +479,7 @@ print_locale Fac_impl
 
 text {*
 To see how a call is syntactically translated you can switch off the
-printing translation via the flag @{text HoarePackage.use_call_tr'}
+printing translation via the flag @{ML Hoare_Syntax.use_call_tr'}
 *}
 
 context Fac_impl 
@@ -487,12 +487,12 @@ begin
 text {*
 @{term "CALL Fac(\<acute>N,\<acute>R)"} is internally:
 *}
-ML "HoareSyntax.use_call_tr' := false"
+ML "Hoare_Syntax.use_call_tr' := false"
 text {*
 @{term "CALL Fac(\<acute>N,\<acute>R)"}
 *}
 term "CALL Fac(\<acute>N,\<acute>R)"
-ML "HoareSyntax.use_call_tr' := true"
+ML "Hoare_Syntax.use_call_tr' := true"
 
 
 text {*
@@ -652,7 +652,7 @@ do this work:
 
 
 ML {* bind_thm ("ProcRec2",
-                  HoarePackage.gen_proc_rec HoarePackage.Partial 2)*}
+                  Hoare_Package.gen_proc_rec Hoare_Package.Partial 2)*}
 
 lemma (in odd_even_clique)
   shows odd_spec: "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>A :== PROC odd(\<acute>N) 
@@ -749,12 +749,12 @@ procedures (imports globals_list)
 
 
 
-ML "HoareSyntax.use_call_tr' := false"
+ML "Hoare_Syntax.use_call_tr' := false"
 context append_impl
 begin 
 term "CALL append(\<acute>p,\<acute>q,\<acute>p\<rightarrow>\<acute>next)"
 end
-ML "HoareSyntax.use_call_tr' := true"
+ML "Hoare_Syntax.use_call_tr' := true"
 
 text {* Below we give two specifications this time..
 The first one captures the functional behaviour and focuses on the

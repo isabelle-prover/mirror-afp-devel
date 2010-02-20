@@ -532,7 +532,7 @@ print_locale Fac_impl
 
 text {*
 To see how a call is syntactically translated you can switch off the
-printing translation via the flag @{text HoarePackage.use_call_tr'}
+printing translation via the flag @{ML Hoare_Syntax.use_call_tr'}
 *}
 
 context Fac_impl
@@ -540,12 +540,12 @@ begin
 text {*
 @{term "CALL Fac(\<acute>N,\<acute>M)"} is internally:
 *}
-ML "HoareSyntax.use_call_tr' := false"
+ML "Hoare_Syntax.use_call_tr' := false"
 text {*
 @{term "CALL Fac(\<acute>N,\<acute>M)"}
 *}
 term "CALL Fac(\<acute>N,\<acute>M)"
-ML "HoareSyntax.use_call_tr' := true"
+ML "Hoare_Syntax.use_call_tr' := true"
 end
 
 text {*
@@ -712,7 +712,7 @@ this work:
 *}
 
 ML {* bind_thm ("ProcRec2",
-                  HoarePackage.gen_proc_rec HoarePackage.Partial 2)*}
+                  Hoare_Package.gen_proc_rec Hoare_Package.Partial 2)*}
 
 thm ProcRec2
 
@@ -820,9 +820,9 @@ procedures
 
 context append_impl
 begin
-ML "HoareSyntax.use_call_tr' := false"
+ML "Hoare_Syntax.use_call_tr' := false"
 term "CALL append(\<acute>p,\<acute>q,\<acute>p\<rightarrow>\<acute>next)"
-ML "HoareSyntax.use_call_tr' := true"
+ML "Hoare_Syntax.use_call_tr' := true"
 end
 text {* Below we give two specifications this time.
 One captures the functional behaviour and focuses on the

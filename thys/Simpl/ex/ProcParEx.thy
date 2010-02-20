@@ -89,10 +89,10 @@ print_locale! compare_signature
 
 context compare_signature
 begin
-ML "HoareSyntax.use_call_tr' := false"
+ML "Hoare_Syntax.use_call_tr' := false"
 term "\<acute>b :== CALL compare(\<acute>n,\<acute>m)"
 term "\<acute>b :== DYNCALL \<acute>compare(\<acute>n,\<acute>m)"
-ML "HoareSyntax.use_call_tr' := true"
+ML "Hoare_Syntax.use_call_tr' := true"
 term "\<acute>b :== DYNCALL \<acute>compare(\<acute>n,\<acute>m)"
 end
 

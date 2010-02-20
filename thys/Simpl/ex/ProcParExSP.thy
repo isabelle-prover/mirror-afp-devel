@@ -81,9 +81,9 @@ print_locale! compare_signature
 
 context compare_impl
 begin
-ML "HoareSyntax.use_call_tr' := false"
+ML "Hoare_Syntax.use_call_tr' := false"
 term "\<acute>r :== CALL compare(\<acute>i,\<acute>j)"
-ML "HoareSyntax.use_call_tr' := true"
+ML "Hoare_Syntax.use_call_tr' := true"
 end
 
 
@@ -120,9 +120,9 @@ end
 context Max_impl
 begin
 term "\<acute>b :== DYNCALL \<acute>compare(\<acute>n,\<acute>m)"
-ML "HoareSyntax.use_call_tr' := false"
+ML "Hoare_Syntax.use_call_tr' := false"
 term "\<acute>b :== DYNCALL \<acute>compare(\<acute>n,\<acute>m)"
-ML "HoareSyntax.use_call_tr' := true"
+ML "Hoare_Syntax.use_call_tr' := true"
 end
 
 

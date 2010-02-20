@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-structure HoarePackage =
+structure Hoare_Package =
 struct
 
 (* Misc *)
@@ -574,7 +574,7 @@ fun idx eq [] x = ~1
   | idx eq (x::rs) y =
       if eq x y then 0
       else let val i = idx eq rs y in if i < 0 then i else i+1 end
-  | idx _ _ _ = raise TERM ("HoarePackage.idx",[]);
+  | idx _ _ _ = raise TERM ("Hoare_Package.idx",[]);
 
 fun resuffix sfx1 sfx2 s =
   suffix sfx2 (unsuffix sfx1 s)
@@ -616,9 +616,8 @@ fun extension_id thy stateN =
      SOME (e,_) => SOME (unsuffix Record.ext_typeN e)
    | NONE => NONE);
 
-val updateN = Record.updateN
-
 datatype par_kind = In | Out
+
 
 (*** utilities ***)
 
@@ -715,7 +714,7 @@ fun dest_call (Const ("Language.call",_)$init$pname$return$c) =
            (Bound 0,pname,Bound 0,Bound 0,Static,false)
   | dest_call (Const ("Language.dynCall",_)$init$pname$return$c) =
            (init,pname,return,c,Parameter,true)
-  | dest_call t = raise TERM ("HoarePackage.dest_call: unexpected term",[t]);
+  | dest_call t = raise TERM ("Hoare_Package.dest_call: unexpected term",[t]);
 
 fun dest_whileAnno (Const ("Language.whileAnnoG",_) $gs$b$I$V$c) =
         (SOME gs,b,I,V,c,false)
@@ -723,11 +722,11 @@ fun dest_whileAnno (Const ("Language.whileAnnoG",_) $gs$b$I$V$c) =
   | dest_whileAnno (Const ("Language.whileAnnoGFix",_)$gs$b$I$V$c) =
         (SOME gs,b,I,V,c,true)
   | dest_whileAnno (Const ("Language.whileAnnoFix",_) $b$I$V$c) = (NONE,b,I,V,c,true)
-  | dest_whileAnno t = raise TERM ("HoarePackage.dest_while: unexpected term",[t]);
+  | dest_whileAnno t = raise TERM ("Hoare_Package.dest_while: unexpected term",[t]);
 
 fun dest_Guard (Const ("Language.com.Guard",_)$f$g$c) = (f,g,c,false)
   | dest_Guard (Const ("Language.guaranteeStrip",_)$f$g$c) = (f,g,c,true)
-  | dest_Guard t = raise TERM ("HoarePackage.dest_guard: unexpected term",[t]);
+  | dest_Guard t = raise TERM ("Hoare_Package.dest_guard: unexpected term",[t]);
 
 (*** extend theory by procedure definition ***)
 
@@ -1944,7 +1943,7 @@ fun post_conforms_tac ctxt state_kind i =
 
 fun dest_hoare_raw (Const("HoarePartialDef.hoarep",_)$G$T$F$P$C$Q$A) = (P,C,Q,A,Partial,G,T,F)
   | dest_hoare_raw (Const("HoareTotalDef.hoaret",_)$G$T$F$P$C$Q$A) = (P,C,Q,A,Total,G,T,F)
-  | dest_hoare_raw t = raise TERM ("HoarePackage.dest_hoare_raw: unexpected term",[t])
+  | dest_hoare_raw t = raise TERM ("Hoare_Package.dest_hoare_raw: unexpected term",[t])
 
 
 fun mk_hoare_abs Ts (P,C,Q,A,mode,G,T,F) =
@@ -2113,7 +2112,7 @@ val is_spec_clause = not o is_modifies_clause;
 fun swap_constr_destr f (t as (Const ("Fun.id",_))) = t
   | swap_constr_destr f  (t as (Const (c,Type ("fun",[T,valT])))) =
      (Const (f c, Type ("fun",[valT,T]))
-      handle Empty => raise TERM ("HoarePackage.swap_constr_destr",[t]))
+      handle Empty => raise TERM ("Hoare_Package.swap_constr_destr",[t]))
   | swap_constr_destr f (Const ("StateFun.map_fun",Type ("fun",
                                              [Type ("fun",[T,valT]),
                                               Type ("fun",[Type ("fun",[xT,T']),
@@ -2140,7 +2139,7 @@ fun swap_constr_destr f (t as (Const ("Fun.id",_))) = t
      (Const ("List.map",Type ("fun",
                           [Type ("fun",[bT,aT]),
                            Type ("fun",[bsT,asT])]))$swap_constr_destr f g)
-  | swap_constr_destr f t = raise TERM ("HoarePackage.swap_constr_destr",[t]);
+  | swap_constr_destr f t = raise TERM ("Hoare_Package.swap_constr_destr",[t]);
 
 (* FIXME: unused? *)
 val constr_to_destr =
@@ -2340,10 +2339,10 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
 
      fun mk_selR subst gT (upd,uT) =
        let val vT = range_type (hd (binder_types uT));
-       in Const (unsuffix updateN upd,gT --> (Envir.norm_type subst vT)) end;
+       in Const (unsuffix Record.updateN upd,gT --> (Envir.norm_type subst vT)) end;
 
      fun revT (Type ("fun",[A,B])) = Type ("fun",[B,A])
-       | revT T = raise TYPE ("HoarePackage.revT",[T],[]);
+       | revT T = raise TYPE ("Hoare_Package.revT",[T],[]);
 
      (* lookup:: "('v => 'a) => 'n => ('n => 'v) => 'a"
       * update:: "('v => 'a) => ('a => 'v) => 'n => ('a => 'a) => ('n => 'v) => ('n => 'v)"

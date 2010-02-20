@@ -31,22 +31,22 @@ imports StateSpace "~~/src/HOL/Statespace/StateSpaceLocale" Generalise
 uses "hoare_package.ML" ("hoare_syntax.ML")
 begin
 
-setup HoarePackage.setup
+setup Hoare_Package.setup
 
-method_setup hoare = "HoarePackage.hoare"
+method_setup hoare = "Hoare_Package.hoare"
   "raw verification condition generator for Hoare Logic"
 
-method_setup hoare_raw = "HoarePackage.hoare_raw"
+method_setup hoare_raw = "Hoare_Package.hoare_raw"
   "even more raw verification condition generator for Hoare Logic"
 
-method_setup vcg = "HoarePackage.vcg" 
+method_setup vcg = "Hoare_Package.vcg" 
   "verification condition generator for Hoare Logic"
 
-method_setup vcg_step = "HoarePackage.vcg_step" 
+method_setup vcg_step = "Hoare_Package.vcg_step" 
   "single verification condition generation step with light simplification"
 
 
-method_setup hoare_rule = "HoarePackage.hoare_rule" 
+method_setup hoare_rule = "Hoare_Package.hoare_rule" 
   "apply single hoare rule and solve certain sideconditions"
 
 consts NoBody::"('s,'p,'f) com"
@@ -399,19 +399,16 @@ translations
 
 use "hoare_syntax.ML"
 
-setup {*
-  Context.theory_map 
-    (HoarePackage.install_generate_guard HoareSyntax.mk_guard)
-*}
+declaration {* K (Hoare_Package.install_generate_guard Hoare_Syntax.mk_guard) *}
 
 
-parse_translation (advanced){*
+parse_translation (advanced) {*
 let
     val argsC = @{syntax_const "_modifyargs"};
     val globalsN = @{const_syntax globals};
     val ex = @{const_syntax mex};
     val eq = @{const_syntax meq};
-    val varn = HoarePackage.varname;
+    val varn = Hoare_Package.varname;
 
     fun extract_args (Const (argsC,_)$Free (n,_)$t) = varn n::extract_args t
       | extract_args (Free (n,_)) = [varn n]
@@ -421,7 +418,7 @@ let
      |  idx (x::xs) y = if x=y then 0 else (idx xs y)+1
 
     fun gen_update ctxt names (name,t) = 
-        HoareSyntax.update_comp ctxt [] false true name (Bound (idx names name)) t
+        Hoare_Syntax.update_comp ctxt [] false true name (Bound (idx names name)) t
 
     fun gen_updates ctxt names t = Library.foldr (gen_update ctxt names) (names,t) 
 
@@ -448,7 +445,7 @@ end;
 print_translation {*
 let
   val argsC = @{syntax_const "_modifyargs"};
-  val chop = HoarePackage.chopsfx HoarePackage.deco;
+  val chop = Hoare_Package.chopsfx Hoare_Package.deco;
 
   fun get_state ( _ $ _ $ t) = get_state t  (* for record-updates*)
     | get_state ( _ $ _ $ _ $ _ $ _ $ t) = get_state t (* for statespace-updates *)
@@ -486,54 +483,54 @@ end;
 (* decorate state components with suffix *)
 (*
 parse_ast_translation {*
- [(@{syntax_const "_Free"}, HoareSyntax.free_arg_ast_tr),
-  (@{syntax_const "_In"}, HoareSyntax.in_arg_ast_tr),
-  (@{syntax_const "_Where"}, HoareSyntax.where_arg_ast_tr @{syntax_const "_Where"}),
-  (@{syntax_const "_WhereElse"}, HoareSyntax.where_arg_ast_tr @{syntax_const "_WhereElse"})
+ [(@{syntax_const "_Free"}, Hoare_Syntax.free_arg_ast_tr),
+  (@{syntax_const "_In"}, Hoare_Syntax.in_arg_ast_tr),
+  (@{syntax_const "_Where"}, Hoare_Syntax.where_arg_ast_tr @{syntax_const "_Where"}),
+  (@{syntax_const "_WhereElse"}, Hoare_Syntax.where_arg_ast_tr @{syntax_const "_WhereElse"})
 ] 
 *}
 *)
 (*
 parse_ast_translation (advanced) {*
  [(@{syntax_const "_antiquoteOld"},
-    HoareSyntax.antiquoteOld_varname_tr @{syntax_const "_antiquoteOld"})]
+    Hoare_Syntax.antiquoteOld_varname_tr @{syntax_const "_antiquoteOld"})]
 *}
 *)
 
 
 parse_translation {*
  [(@{syntax_const "_antiquoteCur"},
-    HoareSyntax.antiquote_varname_tr @{syntax_const "_antiquoteCur"})]
+    Hoare_Syntax.antiquote_varname_tr @{syntax_const "_antiquoteCur"})]
 *}
 
 
  parse_translation  (advanced) {*
-[(@{syntax_const "_antiquoteOld"}, HoareSyntax.antiquoteOld_tr "_antiquoteOld"),
- (@{syntax_const "_Call"}, HoareSyntax.call_tr false false),
- (@{syntax_const "_FCall"}, HoareSyntax.fcall_tr),
- (@{syntax_const "_CallAss"}, HoareSyntax.call_ass_tr false false),
- (@{syntax_const "_GuardedCall"}, HoareSyntax.call_tr false true),
- (@{syntax_const "_GuardedCallAss"}, HoareSyntax.call_ass_tr false true),
- (@{syntax_const "_Proc"}, HoareSyntax.proc_tr),
- (@{syntax_const "_ProcAss"}, HoareSyntax.proc_ass_tr),
- (@{syntax_const "_DynCall"}, HoareSyntax.call_tr true false),
- (@{syntax_const "_DynCallAss"}, HoareSyntax.call_ass_tr true false),
- (@{syntax_const "_GuardedDynCall"}, HoareSyntax.call_tr true true),
- (@{syntax_const "_GuardedDynCallAss"}, HoareSyntax.call_ass_tr true true),
- (@{syntax_const "_BasicBlock"}, HoareSyntax.basic_assigns_tr)
+[(@{syntax_const "_antiquoteOld"}, Hoare_Syntax.antiquoteOld_tr "_antiquoteOld"),
+ (@{syntax_const "_Call"}, Hoare_Syntax.call_tr false false),
+ (@{syntax_const "_FCall"}, Hoare_Syntax.fcall_tr),
+ (@{syntax_const "_CallAss"}, Hoare_Syntax.call_ass_tr false false),
+ (@{syntax_const "_GuardedCall"}, Hoare_Syntax.call_tr false true),
+ (@{syntax_const "_GuardedCallAss"}, Hoare_Syntax.call_ass_tr false true),
+ (@{syntax_const "_Proc"}, Hoare_Syntax.proc_tr),
+ (@{syntax_const "_ProcAss"}, Hoare_Syntax.proc_ass_tr),
+ (@{syntax_const "_DynCall"}, Hoare_Syntax.call_tr true false),
+ (@{syntax_const "_DynCallAss"}, Hoare_Syntax.call_ass_tr true false),
+ (@{syntax_const "_GuardedDynCall"}, Hoare_Syntax.call_tr true true),
+ (@{syntax_const "_GuardedDynCallAss"}, Hoare_Syntax.call_ass_tr true true),
+ (@{syntax_const "_BasicBlock"}, Hoare_Syntax.basic_assigns_tr)
 ]
 *}
 
 (*
-  (@{syntax_const "_Call"}, HoareSyntax.call_ast_tr),
-  (@{syntax_const "_CallAss"}, HoareSyntax.call_ass_ast_tr),
-  (@{syntax_const "_GuardedCall"}, HoareSyntax.guarded_call_ast_tr),
-  (@{syntax_const "_GuardedCallAss"}, HoareSyntax.guarded_call_ass_ast_tr)
+  (@{syntax_const "_Call"}, Hoare_Syntax.call_ast_tr),
+  (@{syntax_const "_CallAss"}, Hoare_Syntax.call_ass_ast_tr),
+  (@{syntax_const "_GuardedCall"}, Hoare_Syntax.guarded_call_ast_tr),
+  (@{syntax_const "_GuardedCallAss"}, Hoare_Syntax.guarded_call_ass_ast_tr)
 *)
 
 parse_translation (advanced) {*
   let
-    fun quote_tr ctxt [t] = HoareSyntax.quote_tr ctxt @{syntax_const "_antiquoteCur"} t
+    fun quote_tr ctxt [t] = Hoare_Syntax.quote_tr ctxt @{syntax_const "_antiquoteCur"} t
       | quote_tr ctxt ts = raise TERM ("quote_tr", ts);
   in [(@{syntax_const "_quote"}, quote_tr)] end
 *}
@@ -541,39 +538,39 @@ parse_translation (advanced) {*
 
 
 parse_translation (advanced) {*
-  [(@{syntax_const "_Assign"}, HoareSyntax.assign_tr),
-   (@{syntax_const "_raise"}, HoareSyntax.raise_tr),
-   (@{syntax_const "_New"}, HoareSyntax.new_tr),
-   (@{syntax_const "_NNew"}, HoareSyntax.nnew_tr),
-   (@{syntax_const "_GuardedAssign"}, HoareSyntax.guarded_Assign_tr),
-   (@{syntax_const "_GuardedNew"}, HoareSyntax.guarded_New_tr),
-   (@{syntax_const "_GuardedNNew"}, HoareSyntax.guarded_NNew_tr),
-   (@{syntax_const "_GuardedWhile_inv_var"}, HoareSyntax.guarded_While_tr),
-   (@{syntax_const "_GuardedWhileFix_inv_var_hook"}, HoareSyntax.guarded_WhileFix_tr),
-   (@{syntax_const "_GuardedCond"}, HoareSyntax.guarded_Cond_tr),
-   (@{syntax_const "_Basic"}, HoareSyntax.basic_tr)]
+  [(@{syntax_const "_Assign"}, Hoare_Syntax.assign_tr),
+   (@{syntax_const "_raise"}, Hoare_Syntax.raise_tr),
+   (@{syntax_const "_New"}, Hoare_Syntax.new_tr),
+   (@{syntax_const "_NNew"}, Hoare_Syntax.nnew_tr),
+   (@{syntax_const "_GuardedAssign"}, Hoare_Syntax.guarded_Assign_tr),
+   (@{syntax_const "_GuardedNew"}, Hoare_Syntax.guarded_New_tr),
+   (@{syntax_const "_GuardedNNew"}, Hoare_Syntax.guarded_NNew_tr),
+   (@{syntax_const "_GuardedWhile_inv_var"}, Hoare_Syntax.guarded_While_tr),
+   (@{syntax_const "_GuardedWhileFix_inv_var_hook"}, Hoare_Syntax.guarded_WhileFix_tr),
+   (@{syntax_const "_GuardedCond"}, Hoare_Syntax.guarded_Cond_tr),
+   (@{syntax_const "_Basic"}, Hoare_Syntax.basic_tr)]
 *}
 
 parse_translation (advanced) {*
- [(@{syntax_const "_Init"}, HoareSyntax.init_tr),
-  (@{syntax_const "_Loc"}, HoareSyntax.loc_tr)] 
+ [(@{syntax_const "_Init"}, Hoare_Syntax.init_tr),
+  (@{syntax_const "_Loc"}, Hoare_Syntax.loc_tr)] 
 *}
 
 
 print_translation {*
-    [(@{const_syntax Basic}, HoareSyntax.assign_tr'),
-     (@{const_syntax raise}, HoareSyntax.raise_tr'),
-     (@{const_syntax Basic}, HoareSyntax.new_tr'),
-     (@{const_syntax Basic}, HoareSyntax.init_tr'),
-     (@{const_syntax Spec}, HoareSyntax.nnew_tr'),
-     (@{const_syntax block}, HoareSyntax.loc_tr'),
-     (@{const_syntax Collect}, HoareSyntax.assert_tr'),
-     (@{const_syntax Cond}, HoareSyntax.bexp_tr' "_Cond"),
-     (@{const_syntax switch}, HoareSyntax.switch_tr'),
-     (@{const_syntax guards}, HoareSyntax.guards_tr'),
-     (@{const_syntax whileAnnoG}, HoareSyntax.whileAnnoG_tr'),
-     (@{const_syntax whileAnnoGFix}, HoareSyntax.whileAnnoGFix_tr'),
-     (@{const_syntax Basic}, HoareSyntax.basic_tr')]
+    [(@{const_syntax Basic}, Hoare_Syntax.assign_tr'),
+     (@{const_syntax raise}, Hoare_Syntax.raise_tr'),
+     (@{const_syntax Basic}, Hoare_Syntax.new_tr'),
+     (@{const_syntax Basic}, Hoare_Syntax.init_tr'),
+     (@{const_syntax Spec}, Hoare_Syntax.nnew_tr'),
+     (@{const_syntax block}, Hoare_Syntax.loc_tr'),
+     (@{const_syntax Collect}, Hoare_Syntax.assert_tr'),
+     (@{const_syntax Cond}, Hoare_Syntax.bexp_tr' "_Cond"),
+     (@{const_syntax switch}, Hoare_Syntax.switch_tr'),
+     (@{const_syntax guards}, Hoare_Syntax.guards_tr'),
+     (@{const_syntax whileAnnoG}, Hoare_Syntax.whileAnnoG_tr'),
+     (@{const_syntax whileAnnoGFix}, Hoare_Syntax.whileAnnoGFix_tr'),
+     (@{const_syntax Basic}, Hoare_Syntax.basic_tr')]
 *}
 
 
@@ -582,15 +579,15 @@ let
 fun spec_tr' ((coll as Const _)$
                ((splt as Const _) $ (t as (Abs (s,T,p))))::ts) =
       let
-        fun selector (Const (c, T)) = HoareSyntax.is_state_var c
+        fun selector (Const (c, T)) = Hoare_Package.is_state_var c
           | selector (Const (@{syntax_const "_free"}, _) $ (Free (c, T))) =
-              HoareSyntax.is_state_var c
+              Hoare_Package.is_state_var c
           | selector _ = false;
       in
-        if HoareSyntax.antiquote_applied_only_to selector p then
+        if Hoare_Syntax.antiquote_applied_only_to selector p then
           Syntax.const @{const_syntax Spec} $ coll $
-            (splt $ HoareSyntax.quote_mult_tr' selector
-                HoareSyntax.antiquoteCur HoareSyntax.antiquoteOld  (Abs (s,T,t)))
+            (splt $ Hoare_Syntax.quote_mult_tr' selector
+                Hoare_Syntax.antiquoteCur Hoare_Syntax.antiquoteOld  (Abs (s,T,t)))
          else raise Match
       end
   | spec_tr' ts = raise Match
@@ -612,18 +609,18 @@ translations
 
 print_translation {*
 let
-  fun selector (Const (c,T)) = HoareSyntax.is_state_var c  
+  fun selector (Const (c,T)) = Hoare_Package.is_state_var c  
     | selector _ = false;
 
   fun measure_tr' ((t as (Abs (_,_,p)))::ts) =
-        if HoareSyntax.antiquote_applied_only_to selector p
-        then HoareSyntax.app_quote_tr' (Syntax.const @{syntax_const "_Measure"}) (t::ts)
+        if Hoare_Syntax.antiquote_applied_only_to selector p
+        then Hoare_Syntax.app_quote_tr' (Syntax.const @{syntax_const "_Measure"}) (t::ts)
         else raise Match
     | measure_tr' _ = raise Match
 
   fun mlex_tr' ((t as (Abs (_,_,p)))::r::ts) =
-        if HoareSyntax.antiquote_applied_only_to selector p
-        then HoareSyntax.app_quote_tr' (Syntax.const @{syntax_const "_Mlex"}) (t::r::ts)
+        if Hoare_Syntax.antiquote_applied_only_to selector p
+        then Hoare_Syntax.app_quote_tr' (Syntax.const @{syntax_const "_Mlex"}) (t::r::ts)
         else raise Match
     | mlex_tr' _ = raise Match
 
@@ -632,14 +629,14 @@ in [(@{const_syntax measure}, measure_tr'), (@{const_syntax mlex_prod}, mlex_tr'
 
 
 print_translation {*
-    [(@{const_syntax call}, HoareSyntax.call_tr'),
-     (@{const_syntax dynCall}, HoareSyntax.dyn_call_tr'),
-     (@{const_syntax fcall}, HoareSyntax.fcall_tr'),
-     (@{const_syntax bind}, HoareSyntax.bind_tr')]
+    [(@{const_syntax call}, Hoare_Syntax.call_tr'),
+     (@{const_syntax dynCall}, Hoare_Syntax.dyn_call_tr'),
+     (@{const_syntax fcall}, Hoare_Syntax.fcall_tr'),
+     (@{const_syntax bind}, Hoare_Syntax.bind_tr')]
 *}
 
 print_translation (advanced) {*
-    [(@{const_syntax Call}, HoareSyntax.proc_tr')]
+    [(@{const_syntax Call}, Hoare_Syntax.proc_tr')]
 *}
 
 
