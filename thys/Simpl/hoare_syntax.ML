@@ -1365,7 +1365,7 @@ fun proc_tr' ctxt [p] =
           Syntax.const @{syntax_const "_par"} $
             (Syntax.const antiquoteCur $ Syntax.const (remdeco n));
       in
-        if not ("NoProc" mem_string (! print_mode))  (* FIXME !? *)
+        if not (print_mode_active "NoProc")
         then
           (case res_formals of
             [r] =>
@@ -1402,7 +1402,7 @@ fun assert_tr' ((t as Abs (_, _, p)) :: ts) =
           | fix_state _ = false;
       in
         if antiquote_applied_only_to (fn t => selector t orelse fix_state t) p
-          andalso not ("NoAssertion" mem_string (! print_mode))  (* FIXME !? *)
+          andalso not (print_mode_active "NoAssertion")
         then app_quote_mult_tr' selector (Syntax.const @{syntax_const "_Assert"}) (t :: ts)
         else raise Match
       end
