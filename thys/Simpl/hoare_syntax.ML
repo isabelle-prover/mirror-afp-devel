@@ -21,7 +21,61 @@ USA
 
 (* FIXME: Adapt guard generation to new syntax of op + etc. *)
 
-structure Hoare_Syntax =
+signature HOARE_SYNTAX =
+sig
+  val antiquoteCur: string
+  val antiquoteOld: string
+  val antiquoteOld_tr: Proof.context -> term list -> term
+  val antiquote_applied_only_to: (term -> bool) -> term -> bool
+  val antiquote_varname_tr: string -> term list -> term
+  val app_quote_tr': term -> term list -> term
+  val assert_tr': term list -> term
+  val assign_tr': term list -> term
+  val assign_tr: Proof.context -> term list -> term
+  val basic_assigns_tr: Proof.context -> term list -> term
+  val basic_tr': term list -> term
+  val basic_tr: Proof.context -> term list -> term
+  val bexp_tr': string -> term list -> term
+  val bind_tr': term list -> term
+  val call_ass_tr: bool -> bool -> Proof.context -> term list -> term
+  val call_tr': term list -> term
+  val call_tr: bool -> bool -> Proof.context -> term list -> term
+  val dyn_call_tr': term list -> term
+  val fcall_tr': term list -> term
+  val fcall_tr: Proof.context -> term list -> term
+  val guarded_Assign_tr: Proof.context -> term list -> term
+  val guarded_Cond_tr: Proof.context -> term list -> term
+  val guarded_NNew_tr: Proof.context -> term list -> term
+  val guarded_New_tr: Proof.context -> term list -> term
+  val guarded_WhileFix_tr: Proof.context -> term list -> term
+  val guarded_While_tr: Proof.context -> term list -> term
+  val guards_tr': term list -> term
+  val hide_guards: bool Unsynchronized.ref
+  val init_tr': term list -> term
+  val init_tr: Proof.context -> term list -> term
+  val loc_tr': term list -> term
+  val loc_tr: Proof.context -> term list -> term
+  val new_tr : Proof.context -> term list -> term
+  val new_tr': term list -> term
+  val nnew_tr : Proof.context -> term list -> term
+  val nnew_tr': term list -> term
+  val proc_ass_tr: Proof.context -> term list -> term
+  val proc_tr': Proof.context -> term list -> term
+  val proc_tr: Proof.context -> term list -> term
+  val quote_mult_tr': (term -> bool) -> string -> string -> term -> term
+  val quote_tr': string -> term -> term
+  val quote_tr: Proof.context -> string -> term -> term
+  val raise_tr': term list -> term
+  val raise_tr: Proof.context -> term list -> term
+  val setup: theory -> theory
+  val switch_tr': term list -> term
+  val update_comp: Proof.context -> string list -> bool -> bool -> xstring -> term -> term -> term
+  val use_call_tr': bool Unsynchronized.ref
+  val whileAnnoGFix_tr': term list -> term
+  val whileAnnoG_tr': term list -> term
+end;
+
+structure Hoare_Syntax: HOARE_SYNTAX =
 struct
 
 val use_call_tr' = Unsynchronized.ref true;
@@ -239,7 +293,7 @@ fun antiquote_varname_tr anti [n] =
 
 
 
-fun antiquoteOld_tr anti ctxt [s, n] =
+fun antiquoteOld_tr ctxt [s, n] =
   (case n of
     Free (v, T) => lookup_comp ctxt [] (Hoare.varname v) s
   | Const (c, T) => lookup_comp ctxt [] (Hoare.varname c) s

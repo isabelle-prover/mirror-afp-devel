@@ -504,7 +504,7 @@ parse_translation {*
 
 
  parse_translation  (advanced) {*
-[(@{syntax_const "_antiquoteOld"}, Hoare_Syntax.antiquoteOld_tr "_antiquoteOld"),
+[(@{syntax_const "_antiquoteOld"}, Hoare_Syntax.antiquoteOld_tr),
  (@{syntax_const "_Call"}, Hoare_Syntax.call_tr false false),
  (@{syntax_const "_FCall"}, Hoare_Syntax.fcall_tr),
  (@{syntax_const "_CallAss"}, Hoare_Syntax.call_ass_tr false false),

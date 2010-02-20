@@ -20,7 +20,53 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-structure Hoare =
+signature HOARE =
+sig
+  datatype hoareMode = Partial | Total
+  val gen_proc_rec: hoareMode -> int -> thm
+  datatype state_kind = Record | Function
+  datatype par_kind = In | Out
+  val deco: string
+  val proc_deco: string
+  val par_deco: string -> string
+  val chopsfx: string -> string -> string
+  val is_state_var: string -> bool
+  val remdeco: string -> string
+  val undeco: term -> term
+  val varname: string -> string
+  val resuffix: string -> string -> string -> string
+  type proc_info =
+    {params: ((par_kind * string) list),
+     recursive: bool,
+     state_kind: state_kind}
+  type hoare_tac = (bool -> int -> tactic) -> Proof.context -> hoareMode -> int -> tactic
+  type hoare_data =
+   {proc_info: proc_info Symtab.table,
+    active_procs: string list list,
+    default_state_kind: state_kind,
+    generate_guard: (stamp * (Proof.context -> term -> term option)),
+    wp_tacs: (string * hoare_tac) list,
+    hoare_tacs: (string * hoare_tac) list,
+    vcg_simps: thm list}
+  val get_data: Proof.context -> hoare_data
+  val get_params: string -> Proof.context -> (par_kind * string) list option
+  val get_default_state_kind: Proof.context -> state_kind
+  val get_state_kind: string -> Proof.context -> state_kind option
+  val clique_name: string list -> string
+  val install_generate_guard: (Proof.context -> term -> term option) ->
+    Context.generic -> Context.generic
+  val generate_guard: Proof.context -> term -> term option
+  val BasicSimpTac: Proof.context -> state_kind ->
+    bool -> thm list -> (int -> tactic) -> int -> tactic
+  val hoare: (Proof.context -> Proof.method) context_parser
+  val hoare_raw: (Proof.context -> Proof.method) context_parser
+  val vcg: (Proof.context -> Proof.method) context_parser
+  val vcg_step: (Proof.context -> Proof.method) context_parser
+  val hoare_rule: (Proof.context -> Proof.method) context_parser
+  val setup: theory -> theory
+end;
+
+structure Hoare: HOARE =
 struct
 
 (* Misc *)
