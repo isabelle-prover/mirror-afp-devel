@@ -14,14 +14,14 @@ syntax
   can_sync_syntax :: "J_prog \<Rightarrow> expr \<Rightarrow> heap \<times> locals \<Rightarrow> addr set \<Rightarrow> bool" ("_ \<turnstile> \<langle>_,/ _\<rangle>/ _/ \<wrong>" [50,0,0,0] 81)
 
 translations
-  "P \<turnstile> \<langle>e, s\<rangle> L \<wrong>" => "multithreaded_base.can_sync ((CONST mred) P) (e, snd s) (fst s) L"
-  "P \<turnstile> \<langle>e, (h, x)\<rangle> L \<wrong>" == "multithreaded_base.can_sync ((CONST mred) P) (e, x) h L"
+  "P \<turnstile> \<langle>e, s\<rangle> L \<wrong>" => "multithreaded_base.can_sync (CONST mred P) (e, CONST snd s) (CONST fst s) L"
+  "P \<turnstile> \<langle>e, (h, x)\<rangle> L \<wrong>" == "multithreaded_base.can_sync (CONST mred P) (e, x) h L"
 
 syntax
   must_sync_syntax :: "J_prog \<Rightarrow> expr \<Rightarrow> heap \<times> locals \<Rightarrow> bool" ("_ \<turnstile> \<langle>_,/ _\<rangle>/ \<wrong>" [50,0,0] 81)
 
 translations
-  "P \<turnstile> \<langle>e, s\<rangle> \<wrong>" => "multithreaded_base.must_sync ((CONST mred) P) (e, snd s) (fst s)"
+  "P \<turnstile> \<langle>e, s\<rangle> \<wrong>" => "multithreaded_base.must_sync ((CONST mred) P) (e, CONST snd s) (CONST fst s)"
   "P \<turnstile> \<langle>e, (h, x)\<rangle> \<wrong>" == "multithreaded_base.must_sync ((CONST mred) P) (e, x) h"
 
 

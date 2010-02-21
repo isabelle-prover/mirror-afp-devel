@@ -76,7 +76,7 @@ syntax
 
 translations
   "_LMUpdate xs (_lmupdbinds b bs)" == "_LMUpdate (_LMUpdate xs b) bs"
-  "xs[is[:=]ys]" == "list_multupd xs is ys"
+  "xs[is[:=]ys]" == "CONST list_multupd xs is ys"
 
 
 subsection {* Some Fancy Syntax *}
@@ -243,9 +243,9 @@ translations
   "_Do c" => "c"
   "b\<bullet> c" => "CONST condCatch c b SKIP"
   "b\<bullet> (_DoPre c)" <= "CONST condCatch c b SKIP"
-  "l\<bullet> (whileAnnoG gs b I V c)" <= "l\<bullet> (_DoPre (CONST whileAnnoG gs b I V c))"
-  "l\<bullet> (whileAnno b I V c)" <= "l\<bullet> (_DoPre (CONST whileAnno b I V c))"
-  "condCatch c b SKIP" <= "(_DoPre (CONST condCatch c b SKIP))"
+  "l\<bullet> (CONST whileAnnoG gs b I V c)" <= "l\<bullet> (_DoPre (CONST whileAnnoG gs b I V c))"
+  "l\<bullet> (CONST whileAnno b I V c)" <= "l\<bullet> (_DoPre (CONST whileAnno b I V c))"
+  "CONST condCatch c b SKIP" <= "(_DoPre (CONST condCatch c b SKIP))"
   "_Do c" <= "_DoPre c"
   "c;; d" == "CONST Seq c d"
   "_guarantee g" => "(CONST True, g)"
