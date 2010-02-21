@@ -13,7 +13,7 @@ begin
 section{* The fully-lazy list type. *}
 
 domain 'a llist =
-    lnil
+    lnil ("lnil")
   | lcons (lazy "'a") (lazy "'a llist") (infixr ":@" 65)
 
 lemma llist_case_distr_strict:
