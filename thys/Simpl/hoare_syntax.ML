@@ -583,7 +583,7 @@ fun new_tr ctxt (ts as [var,size,init]) =
             (Syntax.const @{const_syntax Cons} $ new $ alloc);
         val free_upd =
           update_comp ctxt [] false false freeN
-            (Syntax.const @{const_syntax Algebras.minus} $ free $ size);
+            (Syntax.const @{const_syntax Groups.minus} $ free $ size);
 
         val g' =
           Syntax.free (suffix Record.updateN globalsN) $
@@ -634,7 +634,7 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
             (Syntax.const @{const_syntax Cons} $ new $ alloc);
         val free_upd =
           update_comp ctxt [] false false freeN
-            (Syntax.const @{const_syntax Algebras.minus} $ free $ size);
+            (Syntax.const @{const_syntax Groups.minus} $ free $ size);
 
         val g' =
           Syntax.free (suffix Record.updateN globalsN) $
@@ -698,7 +698,7 @@ fun in_range t = Syntax.free "in_range" $ t;   (* FIXME ?? *)
 
 fun not_zero t =
   Syntax.const @{const_syntax Not} $
-    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.const @{const_syntax Algebras.zero});
+    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.const @{const_syntax Groups.zero});
 
 fun not_Null t =
   Syntax.const @{const_syntax Not} $
@@ -709,7 +709,7 @@ fun in_length i l =
     (Syntax.const @{const_syntax size} $ l);
 
 fun is_pos t =
-  Syntax.const @{const_syntax Orderings.less_eq} $ Syntax.const @{const_syntax Algebras.zero} $ t;
+  Syntax.const @{const_syntax Orderings.less_eq} $ Syntax.const @{const_syntax Groups.zero} $ t;
 
 
 fun infer_type ctxt t =
@@ -734,7 +734,7 @@ fun dummyfyT (TFree x) = TFree x
        val Ts' = map dummyfyT Ts;
      in if exists (fn T => T = dummyT) Ts' then dummyT else Type (c, Ts') end;
 
-fun guard ctxt Ts (add as (Const (@{const_name Algebras.plus},_) $ l $ r)) =
+fun guard ctxt Ts (add as (Const (@{const_name Groups.plus},_) $ l $ r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (in_range add)
   | guard ctxt Ts (sub as (Const (@{const_name Algebras.minus},_) $ l $ r)) =
       let

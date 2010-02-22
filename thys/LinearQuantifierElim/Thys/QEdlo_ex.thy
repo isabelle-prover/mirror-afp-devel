@@ -38,7 +38,7 @@ method_setup reify = {*
 *} "dlo reification"
 
 (* leave just enough equations in to convert back to True/False by eval *)
-declare I\<^isub>d\<^isub>l\<^isub>o.simps(2)[code del]
+declare I\<^isub>d\<^isub>l\<^isub>o.simps(1)[code]
 declare Logic.interpret.simps[code del]
 declare Logic.interpret.simps(1-2)[code]
 
