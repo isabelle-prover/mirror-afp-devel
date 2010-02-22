@@ -1,4 +1,5 @@
 (*  Title:      LList2.thy
+    ID:         $Id: LList2.thy,v 1.13 2008/10/07 14:07:44 fhaftmann Exp $
     Author:     Stefan Friedrich
     Maintainer: Stefan Friedrich
     License:    LGPL
@@ -12,7 +13,7 @@ Safety and liveness.
 header{* More on llists *}
 
 theory LList2
-imports LList
+imports "../Coinductive/Coinductive_List"
 begin
 
 section{*Preliminaries*}
@@ -21,9 +22,7 @@ syntax
   LCons :: "'a \<Rightarrow> 'a llist \<Rightarrow> 'a llist" (infixr "##" 65)
   lappend :: "['a llist, 'a llist] => 'a llist" (infixr "@@" 65)
 
-lemmas lappend_assoc = lappend_assoc'
-
-lemmas llistE [case_names LNil LCons, cases type: llist]
+lemmas llistE = llist_cases
 
 lemma llist_split: "P (llist_case f1 f2 x) =
   ((x = LNil \<longrightarrow> P f1) \<and> (\<forall> a xs. x = a ## xs \<longrightarrow> P (f2 a xs)))"
@@ -34,18 +33,7 @@ lemma llist_split_asm:
   (\<not> (x = LNil \<and> \<not> P f1 \<or> (\<exists>a llist. x = a ## llist \<and> \<not> P (f2 a llist))))"
   by (cases "x") auto
 
-
 section{*Finite and infinite llists over an alphabet*}
-
-consts
-  inflsts :: "'a set \<Rightarrow> 'a llist set"
-  fpslsts :: "'a set \<Rightarrow> 'a llist set"
-  poslsts :: "'a set \<Rightarrow> 'a llist set"
-
-syntax (xsymbols)
-  inflsts :: "'a set \<Rightarrow> 'a llist set" ("(_\<^sup>\<omega>)" [1000] 999)
-  fpslsts :: "'a set \<Rightarrow> 'a llist set" ("(_\<^sup>\<clubsuit>)" [1000] 999)
-  poslsts :: "'a set \<Rightarrow> 'a llist set" ("(_\<^sup>\<spadesuit>)" [1000] 999)
 
 inductive_set
   finlsts :: "'a set \<Rightarrow> 'a llist set" ("(_\<^sup>\<star>)" [1000] 999)
@@ -63,13 +51,19 @@ where
 
 declare alllsts.cases [case_names LNil LCons, cases set: alllsts]
 
-defs
-  inflsts_def: "A\<^sup>\<omega> \<equiv>  A\<^sup>\<infinity> - UNIV\<^sup>\<star>"
+definition inflsts :: "'a set \<Rightarrow> 'a llist set"
+where "inflsts A \<equiv>  A\<^sup>\<infinity> - UNIV\<^sup>\<star>"
 
-  poslsts_def: "A\<^sup>\<spadesuit> \<equiv> A\<^sup>\<infinity> - {LNil}"
+definition fpslsts :: "'a set \<Rightarrow> 'a llist set"
+where "fpslsts A \<equiv> A\<^sup>\<star> - {LNil}"
 
-  fpslsts_def: "A\<^sup>\<clubsuit> \<equiv> A\<^sup>\<star> - {LNil}"
+definition poslsts :: "'a set \<Rightarrow> 'a llist set"
+where "poslsts A \<equiv> A\<^sup>\<infinity> - {LNil}"
 
+notation (xsymbols)
+  inflsts ("(_\<^sup>\<omega>)" [1000] 999) and
+  fpslsts ("(_\<^sup>\<clubsuit>)" [1000] 999) and
+  poslsts ("(_\<^sup>\<spadesuit>)" [1000] 999)
 
 subsection{*Facts about all llists*}
 
@@ -78,10 +72,13 @@ lemma neq_LNil_conv: "(xs \<noteq> LNil) = (\<exists>y ys. xs = y ## ys)"
 
 lemma alllsts_UNIV [iff]:
   "s \<in> UNIV\<^sup>\<infinity>"
-proof (rule alllsts.coinduct [of "\<lambda>x. True"], simp)
-  fix z :: "'a llist"
-  show "z = LNil \<or> (\<exists>l a. z = a ## l \<and> (True \<or> l \<in> UNIV\<^sup>\<infinity>) \<and> a \<in> UNIV)"
-    by (cases "z") auto
+proof -
+  have "s \<in> UNIV" by blast
+  thus ?thesis
+  proof coinduct
+    case (alllsts z)
+    thus ?case by(cases z) auto
+  qed
 qed
 
 lemma alllsts_empty [simp]: "{}\<^sup>\<infinity> = {LNil}"
@@ -91,11 +88,11 @@ lemma alllsts_mono:
   assumes asubb: "A \<subseteq> B"
   shows "A\<^sup>\<infinity> \<subseteq> B\<^sup>\<infinity>"
 proof
-  fix x assume "x \<in> A\<^sup>\<infinity>" thus "x \<in> B\<^sup>\<infinity>"
-  proof (elim alllsts.coinduct [of "\<lambda>z. z \<in> A\<^sup>\<infinity>"])
-    fix z assume "z \<in> A\<^sup>\<infinity>"
-    thus "z = LNil \<or> (\<exists>l a. z = a ## l \<and> (l \<in> A\<^sup>\<infinity> \<or> l \<in> B\<^sup>\<infinity>) \<and> a \<in> B)"
-      using asubb by (cases "z") auto
+  fix x assume "x \<in> A\<^sup>\<infinity>" 
+  thus "x \<in> B\<^sup>\<infinity>"
+  proof coinduct
+    case (alllsts z)
+    thus ?case using asubb by(cases z) auto
   qed
 qed
 
@@ -109,7 +106,7 @@ subsection{*Facts about non-empty (positive) llists*}
 
 lemma poslsts_iff [iff]:
   "(s \<in> A\<^sup>\<spadesuit>) = (s \<in> A\<^sup>\<infinity> \<and> s \<noteq> LNil)"
-  by (auto simp: poslsts_def)
+  by (simp add: poslsts_def)
 
 lemma poslsts_UNIV [iff]:
   "s \<in> UNIV\<^sup>\<spadesuit> = (s \<noteq> LNil)"
@@ -143,23 +140,16 @@ lemma finlsts_induct
   and lcons: "\<And>a l. \<lbrakk>l \<in> A\<^sup>\<star>; P l; a \<in> A\<rbrakk> \<Longrightarrow> P (a ## l)"
   shows "P x"
   using xA by (induct "x") (auto intro: lnil lcons)
-(*
-lemma LCons_finite:
-  "a##xs \<in> A\<^sup>\<star> \<Longrightarrow> xs \<in> A\<^sup>\<star>"
-  by (erule finlsts.cases) auto
-*)
 
-lemma finite_lemma [rule_format]:
-  "x \<in> A\<^sup>\<star> \<Longrightarrow> x \<in> B\<^sup>\<infinity> \<longrightarrow> x \<in> B\<^sup>\<star>"
-proof (induct rule: finlsts.induct)
-  case LNil_fin show ?case by auto
+lemma finite_lemma:
+  assumes "x \<in> A\<^sup>\<star>"
+  shows "x \<in> B\<^sup>\<infinity> \<Longrightarrow> x \<in> B\<^sup>\<star>"
+using assms
+proof (induct)
+  case LNil_fin thus ?case by auto
 next
-  case (LCons_fin l a)
-  show ?case
-  proof
-    assume "a##l \<in> B\<^sup>\<infinity>" thus "a##l \<in> B\<^sup>\<star>" using LCons_fin
-      by (cases "a##l") auto
-  qed
+  case (LCons_fin a l)
+  thus ?case using LCons_fin by (cases "a##l") auto
 qed
 
 lemma fin_finite [dest]:
@@ -178,11 +168,11 @@ lemma finT_simp [simp]:
 
 subsubsection{*A recursion operator for finite llists*}
 
-constdefs
-  finlsts_pred :: "('a llist \<times> 'a llist) set"
-  "finlsts_pred \<equiv> {(r,s). r \<in> UNIV\<^sup>\<star> \<and> (\<exists>a. a##r = s)}"
+definition finlsts_pred :: "('a llist \<times> 'a llist) set"
+where "finlsts_pred \<equiv> {(r,s). r \<in> UNIV\<^sup>\<star> \<and> (\<exists>a. a##r = s)}"
 
-  finlsts_rec :: "['b, ['a, 'a llist, 'b] \<Rightarrow> 'b] \<Rightarrow> 'a llist \<Rightarrow> 'b"
+definition finlsts_rec :: "['b, ['a, 'a llist, 'b] \<Rightarrow> 'b] \<Rightarrow> 'a llist \<Rightarrow> 'b"
+where
   "finlsts_rec c d r \<equiv> if r \<in> UNIV\<^sup>\<star>
   then (wfrec finlsts_pred (%f. llist_case c (%a r. d a r (f r))) r)
   else undefined"
@@ -250,7 +240,7 @@ subsection{*Facts about infinite llists*}
 
 lemma inflstsI [intro]:
   "\<lbrakk> x \<in> A\<^sup>\<infinity>; x \<in> UNIV\<^sup>\<star> \<Longrightarrow> False \<rbrakk> \<Longrightarrow> x \<in> A\<^sup>\<omega>"
-  by (unfold inflsts_def) auto
+unfolding inflsts_def by clarsimp
 
 lemma inflstsE [elim]:
   "\<lbrakk> x \<in> A\<^sup>\<omega>; \<lbrakk> x \<in> A\<^sup>\<infinity>; x \<notin> UNIV\<^sup>\<star> \<rbrakk> \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
@@ -310,9 +300,17 @@ section{*Lappend*}
 subsection{*Simplification*}
 
 lemma lapp_inf [simp]:
-  "s \<in> A\<^sup>\<omega> \<Longrightarrow> s @@ t = s"
-  by (rule llist_equalityI [of _ _ " (\<lambda>u. (u@@t, u))`A\<^sup>\<omega>"], auto)
-     (erule_tac s = "u" in  inflsts_cases, auto)
+  assumes "s \<in> A\<^sup>\<omega>"
+  shows "s @@ t = s"
+proof -
+  from `s \<in> A\<^sup>\<omega>` have "(lappend s t, s) \<in> (\<lambda>u. (u@@t, u))`A\<^sup>\<omega>" by auto
+  thus ?thesis
+  proof(coinduct rule: llist_equalityI)
+    case (Eqllist q)
+    then obtain u where "u \<in> A\<^sup>\<omega>" "q = (lappend u t, u)" by auto
+    thus ?case by cases auto
+  qed
+qed
 
 lemma LNil_is_lappend_conv [iff]:
 "(LNil = s @@ t) = (s = LNil \<and> t = LNil)"
@@ -325,12 +323,6 @@ lemma lappend_is_LNil_conv [iff]:
 lemma same_lappend_eq [iff]:
  "r \<in> A\<^sup>\<star> \<Longrightarrow> (r @@ s = r @@ t) = (s = t)"
   by (erule finlsts.induct) simp+
-(*
-lemma lappend_same_eq [iff]:
-assumes rA: "r \<in> A\<^sup>\<star>"
-  shows "(s @@ r = t @@ r) = (s = t)"
-oops
-*)
 
 subsection{*Typing rules*}
 
@@ -338,14 +330,15 @@ lemma lappT:
   assumes sllist: "s \<in> A\<^sup>\<infinity>"
   and tllist: "t \<in> A\<^sup>\<infinity>"
   shows "s@@t \<in> A\<^sup>\<infinity>"
-proof (rule alllsts.coinduct [of "\<lambda>x. x \<in> (\<Union> u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u@@v})"])
-  from sllist tllist show "s @@ t \<in> (\<Union>u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u @@ v})"
-    by fast
-next fix z assume "z \<in> (\<Union>u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u @@ v})"
-  then obtain u v where ullist: "u\<in>A\<^sup>\<infinity>" and vllist: "v\<in>A\<^sup>\<infinity>" and zapp: "z=u @@ v"
-    by auto
-  thus "z = LNil \<or> (\<exists>l a. z = a ## l \<and> (l \<in> (\<Union>u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {u @@ v}) \<or> l \<in> A\<^sup>\<infinity>) \<and> a \<in> A)"
-    by (cases "u") (auto elim: alllsts.cases)
+proof -
+  from assms have "lappend s t \<in> (\<Union>u\<in>A\<^sup>\<infinity>. \<Union>v\<in>A\<^sup>\<infinity>. {lappend u v})" by fast
+  thus ?thesis
+  proof coinduct
+    case (alllsts z)
+    then obtain u v where ullist: "u\<in>A\<^sup>\<infinity>" and vllist: "v\<in>A\<^sup>\<infinity>"
+      and zapp: "z=u @@ v" by auto
+    thus ?case by (cases "u") (auto elim: alllsts.cases)
+  qed
 qed
 
 lemma lappfin_finT: "\<lbrakk> s \<in> A\<^sup>\<star>; t \<in> A\<^sup>\<star> \<rbrakk> \<Longrightarrow> s@@t \<in> A\<^sup>\<star>"
@@ -354,31 +347,19 @@ lemma lappfin_finT: "\<lbrakk> s \<in> A\<^sup>\<star>; t \<in> A\<^sup>\<star> 
 lemma lapp_fin_fin_lemma:
   assumes rsA: "r @@ s \<in> A\<^sup>\<star>"
   shows "r \<in> A\<^sup>\<star>"
-proof-
-  have "\<forall>l \<in> A\<^sup>\<star>. \<forall>r. l = r @@ s \<longrightarrow> r \<in> A\<^sup>\<star>"
-  proof rule
-    fix l assume "l\<in>A\<^sup>\<star>"
-    thus "\<forall>r. l = r @@ s \<longrightarrow> r \<in> A\<^sup>\<star>"
-    proof (induct "l")
-      case LNil_fin thus ?case by auto
-    next
-      case (LCons_fin a l') show ?case 
-      proof (clarify)
-	fix r assume al'rs: "a##l' = r @@ s"
-	show "r \<in> A\<^sup>\<star>"
-	proof (cases "r")
-	  case LNil thus ?thesis by auto
-	next
-	  case (LCons x xs) with al'rs
-	  have "a = x" and "l' = xs @@ s"
-	    by auto
-	  with LCons_fin LCons show ?thesis 
-	    by auto
-	qed
-      qed
-    qed
+using rsA
+proof(induct l\<equiv>"r@@s" arbitrary: r)
+  case LNil_fin thus ?case by auto
+next
+  case (LCons_fin a l')
+  show ?case
+  proof (cases "r")
+    case LNil thus ?thesis by auto
+  next
+    case (LCons x xs) with `a##l' = r @@ s`
+    have "a = x" and "l' = xs @@ s" by auto
+    with LCons_fin LCons show ?thesis by auto
   qed
-  with rsA show ?thesis by blast
 qed
 
 lemma lapp_fin_fin_iff [iff]: "(r @@ s \<in> A\<^sup>\<star>) = (r \<in> A\<^sup>\<star> \<and> s \<in> A\<^sup>\<star>)"
@@ -398,31 +379,25 @@ proof (cases "r \<in> UNIV\<^sup>\<star>")
   with rs show ?thesis by simp
 next
   case True
-  hence "r @@ s \<in> A\<^sup>\<infinity> \<longrightarrow> r \<in> A\<^sup>\<infinity>"
-  by (induct "r") auto
-  with rs show ?thesis by auto
+  thus ?thesis using rs
+    by (induct "r") auto
 qed
 
-(*
-lemma lapp_infT:
- "s \<in> A\<^sup>\<omega> \<Longrightarrow> s @@ t \<in> A\<^sup>\<omega>"
-  by simp
-*)
 lemma lapp_fin_infT: "\<lbrakk>s \<in> A\<^sup>\<star>; t \<in> A\<^sup>\<omega>\<rbrakk> \<Longrightarrow> s @@ t \<in> A\<^sup>\<omega>"
   by (induct rule: finlsts.induct)
      (auto intro: inflstsI2)
 
-lemma app_invT [rule_format]:
-  "r \<in> A\<^sup>\<star> \<Longrightarrow> \<forall>s. r @@ s \<in> A\<^sup>\<omega> \<longrightarrow> s \<in> A\<^sup>\<omega>"
-proof (induct rule: finlsts.induct)
+lemma app_invT:
+  assumes "r \<in> A\<^sup>\<star>" shows "r @@ s \<in> A\<^sup>\<omega> \<Longrightarrow> s \<in> A\<^sup>\<omega>"
+using assms
+proof (induct arbitrary: s)
   case LNil_fin thus ?case by simp
-next case (LCons_fin l a) show ?case
-  proof clarify
-    fix s assume "(a ## l) @@ s \<in> A\<^sup>\<omega>"
-    hence "a ## (l @@ s) \<in> A\<^sup>\<omega>" by simp
-    hence "l @@ s \<in> A\<^sup>\<omega>" by (auto elim: inflsts_cases)
-    with LCons_fin show "s \<in> A\<^sup>\<omega>" by blast
-  qed
+next
+  case (LCons_fin a l)
+  from `(a ## l) @@ s \<in> A\<^sup>\<omega>`
+  have "a ## (l @@ s) \<in> A\<^sup>\<omega>" by simp
+  hence "l @@ s \<in> A\<^sup>\<omega>" by (auto elim: inflsts_cases)
+  with LCons_fin show "s \<in> A\<^sup>\<omega>" by blast
 qed
 
 lemma lapp_inv2T:
@@ -453,42 +428,39 @@ qed
 
 section{*Length, indexing, prefixes, and suffixes of llists*}
 
-consts
-  ll2f :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a option" (infix "!!" 100)
-  ltake :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"
-  ldrop :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"
-  
-syntax (xsymbols)
-  ltake  :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist" (infixl "\<down>" 110)
-  ldrop  :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist" (infixl "\<up>" 110)
-
-primrec
+primrec ll2f :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a option" (infix "!!" 100)
+where
   "l!!0 = (case l of LNil \<Rightarrow> None | LCons x xs \<Rightarrow> Some x)"
-  "l!!(Suc i) = (case l of LNil \<Rightarrow> None | x ## xs \<Rightarrow> xs!!i)"
+| "l!!(Suc i) = (case l of LNil \<Rightarrow> None | x ## xs \<Rightarrow> xs!!i)"
 
-primrec
-  "l \<down> 0     = LNil"
-  "l \<down> Suc i = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> x ## xs \<down> i)"
+primrec ltake :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"
+where
+  "ltake l 0     = LNil"
+| "ltake l (Suc i) = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> x ## ltake xs i)"
 
-primrec
-  "l \<up> 0     = l"
-  "l \<up> Suc i = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> xs \<up> i)"
+primrec ldrop :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"
+where
+  "ldrop l 0     = l"
+| "ldrop l (Suc i) = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> ldrop xs i)"
 
-constdefs
-  lset :: "'a llist \<Rightarrow> 'a set"
-  "lset l \<equiv> ran (ll2f l)"
+notation (xsymbols)
+  ltake (infixl "\<down>" 110) and
+  ldrop (infixl "\<up>" 110)
 
-  llength :: "'a llist \<Rightarrow> nat"
-  "llength \<equiv> finlsts_rec 0 (\<lambda> a r n. Suc n)"
+definition lset :: "'a llist \<Rightarrow> 'a set"
+where "lset l \<equiv> ran (ll2f l)"
 
-  llast :: "'a llist \<Rightarrow> 'a"
-  "llast \<equiv> finlsts_rec undefined (\<lambda> x xs l. if xs = LNil then x else l)"
+definition llength :: "'a llist \<Rightarrow> nat"
+where "llength \<equiv> finlsts_rec 0 (\<lambda> a r n. Suc n)"
 
-  lbutlast :: "'a llist \<Rightarrow> 'a llist"
-  "lbutlast \<equiv> finlsts_rec LNil (\<lambda> x xs l. if xs = LNil then LNil else x##l)"
+definition llast :: "'a llist \<Rightarrow> 'a"
+where "llast \<equiv> finlsts_rec undefined (\<lambda> x xs l. if xs = LNil then x else l)"
 
-  lrev :: "'a llist \<Rightarrow> 'a llist"
-  "lrev \<equiv> finlsts_rec LNil (\<lambda> x xs l. l @@ x ## LNil)"
+definition lbutlast :: "'a llist \<Rightarrow> 'a llist"
+where "lbutlast \<equiv> finlsts_rec LNil (\<lambda> x xs l. if xs = LNil then LNil else x##l)"
+
+definition lrev :: "'a llist \<Rightarrow> 'a llist"
+where "lrev \<equiv> finlsts_rec LNil (\<lambda> x xs l. l @@ x ## LNil)"
 
 lemmas llength_LNil  = llength_def [THEN finlsts_rec_LNil_def, standard]
   and  llength_LCons = llength_def [THEN finlsts_rec_LCons_def, standard]
@@ -520,12 +492,12 @@ lemma lrev_lrev_ident [simp]:
   assumes fin: "xs \<in> UNIV\<^sup>\<star>"
   shows "lrev (lrev xs) = xs"
   using fin
-proof (induct, simp)
+proof (induct)
   case (LCons_fin a l)
   have "a ## LNil \<in> UNIV\<^sup>\<star>" by auto
   thus ?case using LCons_fin
     by auto
-qed
+qed simp
 
 lemma lrev_is_LNil_conv [iff]:
   "xs \<in> UNIV\<^sup>\<star> \<Longrightarrow> (lrev xs = LNil) = (xs = LNil)"
@@ -551,51 +523,40 @@ lemma lrev_induct [case_names LNil snocl, consumes 1]:
   and step: "\<And>x xs. \<lbrakk> xs \<in> A\<^sup>\<star>; P xs; x \<in> A \<rbrakk> \<Longrightarrow> P (xs @@ x##LNil)"
   shows "P xs"
 proof-
-  from fin have "lrev xs \<in> A\<^sup>\<star>" by simp
-  hence "P (lrev (lrev xs))"
-  proof (induct ("lrev xs"))
-    case (LNil_fin l) with init show "P (lrev l)" by simp
+  def l == "lrev xs"
+  with fin have "l \<in> A\<^sup>\<star>" by simp
+  hence "P (lrev l)"
+  proof (induct l)
+    case LNil_fin with init show ?case by simp
   next
     case (LCons_fin a l) thus ?case by (auto intro: step)
   qed
-  thus ?thesis using fin by simp
+  thus ?thesis using fin l_def by simp
 qed
 
-lemma finlsts_rev_cases [case_names LNil snocl, consumes 1]:
+lemma finlsts_rev_cases:
   assumes tfin: "t \<in> A\<^sup>\<star>"
-  and     lnil: "t = LNil \<Longrightarrow> P"
-  and    lcons: "\<And> a l. \<lbrakk> l \<in> A\<^sup>\<star>; a \<in> A; t = l @@ a ## LNil \<rbrakk> \<Longrightarrow> P"
-  shows  "P"
-  using prems
+  obtains (LNil) "t = LNil"
+    |    (snocl) a l where "l \<in> A\<^sup>\<star>" "a \<in> A" "t = l @@ a ## LNil"
+  using assms
   by (induct rule: lrev_induct) auto
 
-(*lemma fps_lrev_cases [case_names snocl, consumes 1]:
-  "\<lbrakk>t \<in> UNIV\<^sup>\<clubsuit>;
-    \<And> a s. t = s @@ a ## LNil \<Longrightarrow> R \<rbrakk>
-  \<Longrightarrow> R"
-  by (auto elim!: finlsts_rev_cases)
-
-*)
 lemma ll2f_LNil [simp]: "LNil!!x = None"
   by (cases "x") auto
 
-lemma None_lfinite [rule_format]: "\<forall>t. t!!i = None \<longrightarrow> t \<in> UNIV\<^sup>\<star>"
-proof (induct "i")
-  case 0 show ?case
-  proof
-    fix t show "t !! 0 = None \<longrightarrow> t \<in> UNIV\<^sup>\<star>"
-      by (rule llistE [of "t"]) auto
-  qed
-next case (Suc n)
+lemma None_lfinite: "t!!i = None \<Longrightarrow> t \<in> UNIV\<^sup>\<star>"
+proof (induct "i" arbitrary: t)
+  case 0 thus ?case
+    by(cases t) auto
+next
+  case (Suc n)
   show ?case
-  proof clarify
-    fix t assume tsuc: "(t::'a llist)!!Suc n = None"
-    show  "t \<in> UNIV\<^sup>\<star>"
-    proof  (rule llistE [of "t"], clarify)
-      fix x l' assume "t = x ## l'"
-      with Suc tsuc show "t \<in> UNIV\<^sup>\<star>"
-	by auto
-    qed
+  proof(cases t)
+    case LNil thus ?thesis by auto
+  next
+    case (LCons x l')
+    with `l' !! n = None \<Longrightarrow> l' \<in> UNIV\<^sup>\<star>` `t !! Suc n = None`
+    show ?thesis by auto
   qed
 qed
 
@@ -614,21 +575,19 @@ lemma  ll2f_llength [simp]: "r \<in> A\<^sup>\<star> \<Longrightarrow> r!!(lleng
 lemma llength_least_None:
   assumes rA: "r \<in> A\<^sup>\<star>"
   shows "llength r = (LEAST i. r!!i = None)"
-proof-
-  from rA show ?thesis
-  proof (induct "r")
-    case LNil_fin thus ?case by simp
-  next
-    case (LCons_fin a l)
-    hence "(LEAST i. (a ## l) !! i = None) = llength (a ## l)"
-      by (auto intro!: ll2f_llength Least_Suc2)
-    thus ?case by rule
-  qed
+using rA
+proof induct
+  case LNil_fin thus ?case by simp
+next
+  case (LCons_fin a l)
+  hence "(LEAST i. (a ## l) !! i = None) = llength (a ## l)"
+    by (auto intro!: ll2f_llength Least_Suc2)
+  thus ?case by rule
 qed
 
 lemma ll2f_lem1:
- "\<And>x t. t !! (Suc i) = Some x \<Longrightarrow> \<exists> y. t !! i = Some y"
-proof (induct i)
+ "t !! (Suc i) = Some x \<Longrightarrow> \<exists> y. t !! i = Some y"
+proof (induct i arbitrary: x t)
   case 0 thus ?case by (auto split: llist_split llist_split_asm)
 next
   case (Suc k) thus ?case
@@ -637,16 +596,16 @@ qed
 
 lemmas ll2f_Suc_Some = ll2f_lem1 [THEN exE, standard]
 
-lemma ll2f_None_Suc: "\<And> t. t !! i = None \<Longrightarrow> t !! Suc i = None"
-proof (induct i)
+lemma ll2f_None_Suc: "t !! i = None \<Longrightarrow> t !! Suc i = None"
+proof (induct i arbitrary: t)
   case 0 thus ?case by (auto split: llist_split)
 next
   case (Suc k) thus ?case by (cases t) auto
 qed
 
 lemma ll2f_None_le:
-  "\<And>t j. \<lbrakk> t!!j = None; j \<le> i \<rbrakk> \<Longrightarrow> t!!i = None"
-proof (induct i)
+  "\<lbrakk> t!!j = None; j \<le> i \<rbrakk> \<Longrightarrow> t!!i = None"
+proof (induct i arbitrary: t j)
   case 0 thus ?case by simp
 next
   case (Suc k) thus ?case by (cases j) (auto split: llist_split)
@@ -674,8 +633,8 @@ lemma ltake_LNil [simp]: "LNil \<down> i = LNil"
 lemma ltake_LCons_Suc: "(a ## l) \<down> (Suc i) = a ## l \<down> i"
   by simp
 
-lemma take_fin [iff]: "\<And>t. t \<in> A\<^sup>\<infinity> \<Longrightarrow> t\<down>i \<in> A\<^sup>\<star>"
-proof (induct i)
+lemma take_fin [iff]: "t \<in> A\<^sup>\<infinity> \<Longrightarrow> t\<down>i \<in> A\<^sup>\<star>"
+proof (induct i arbitrary: t)
   case 0 show ?case by auto
 next
   case (Suc j) thus ?case
@@ -685,30 +644,18 @@ qed
 lemma ltake_fin [iff]:
   "r \<down> i \<in> UNIV\<^sup>\<star>"
   by simp
-(*
-lemma take_fin [iff]: "\<And>t. t\<down>i \<in> UNIV\<^sup>\<star>"
-proof (induct i)
-  case 0 show ?case by auto
-next
-  case (Suc j) thus ?case
-    by (cases "t") auto
-qed
-*)
 
-lemma llength_take [rule_format, simp]: "\<forall> t \<in> A\<^sup>\<omega>. llength (t\<down>i) = i"
-proof (induct "i")
+lemma llength_take [simp]: "t \<in> A\<^sup>\<omega> \<Longrightarrow> llength (t\<down>i) = i"
+proof (induct "i" arbitrary: t)
   case 0 thus ?case by simp
 next
-  case (Suc j) show ?case
-  proof
-    fix t assume tinf: "t \<in> A\<^sup>\<omega>"
-    thus  "llength (t \<down> Suc j) = Suc j" using Suc
-      by (cases "t") (auto simp: llength_LCons [of _ UNIV])
-  qed 
+  case (Suc j)
+  from `t \<in> A\<^sup>\<omega>` `\<And>t. t \<in> A\<^sup>\<omega> \<Longrightarrow> llength (t \<down> j) = j` show ?case
+    by(cases) (auto simp: llength_LCons [of _ UNIV])
 qed
 
-lemma ltake_ldrop_id: "\<And>x. (x \<down> i) @@ (x \<up> i) = x"
-proof (induct "i")
+lemma ltake_ldrop_id: "(x \<down> i) @@ (x \<up> i) = x"
+proof (induct "i" arbitrary: x)
   case 0 thus ?case by simp
 next
   case (Suc j) thus ?case
@@ -716,8 +663,8 @@ next
 qed
 
 lemma ltake_ldrop: 
-  "\<And>xs. (xs \<up> m) \<down> n =(xs \<down> (n + m)) \<up> m"
-proof (induct "m")
+  "(xs \<up> m) \<down> n =(xs \<down> (n + m)) \<up> m"
+proof (induct "m" arbitrary: xs)
   case 0 show ?case by simp
 next
   case (Suc l) thus ?case
@@ -727,29 +674,29 @@ qed
 lemma ldrop_LNil [simp]: "LNil \<up> i = LNil"
   by (cases "i") auto
 
-lemma ldrop_add: "\<And>t. t \<up> (i + k) = t \<up> i \<up> k"
-proof (induct "i", simp)
+lemma ldrop_add: "t \<up> (i + k) = t \<up> i \<up> k"
+proof (induct "i" arbitrary: t)
   case (Suc j) thus ?case
     by (cases "t") auto
-qed
+qed simp
 
-lemma ldrop_fun: "\<And>t. t \<up> i !! j = t!!(i + j)"
-proof (induct i)
+lemma ldrop_fun: "t \<up> i !! j = t!!(i + j)"
+proof (induct i arbitrary: t)
   case 0 thus ?case by simp
 next
   case (Suc k) then show ?case
     by (cases "t") auto
 qed
 
-lemma ldropT[simp]: "\<And>t. t \<in> A\<^sup>\<infinity> \<Longrightarrow> t \<up> i \<in> A\<^sup>\<infinity>"
-proof (induct i)
+lemma ldropT[simp]: "t \<in> A\<^sup>\<infinity> \<Longrightarrow> t \<up> i \<in> A\<^sup>\<infinity>"
+proof (induct i arbitrary: t)
   case 0 thus ?case by simp
 next case (Suc j)
   thus ?case by (cases "t") auto
 qed
 
-lemma ldrop_finT[simp]: "\<And>t. t \<in> A\<^sup>\<star> \<Longrightarrow> t \<up> i \<in> A\<^sup>\<star>"
-proof (induct i)
+lemma ldrop_finT[simp]: "t \<in> A\<^sup>\<star> \<Longrightarrow> t \<up> i \<in> A\<^sup>\<star>"
+proof (induct i arbitrary: t)
   case 0 thus ?case by simp
 next
   fix n t assume "t \<in> A\<^sup>\<star>" and 
@@ -758,46 +705,45 @@ next
     by (cases "t") auto
 qed
 
-lemma ldrop_infT[simp]: "\<And>t. t \<in> A\<^sup>\<omega> \<Longrightarrow> t \<up> i \<in> A\<^sup>\<omega>"
-proof (induct i)
+lemma ldrop_infT[simp]: "t \<in> A\<^sup>\<omega> \<Longrightarrow> t \<up> i \<in> A\<^sup>\<omega>"
+proof (induct i arbitrary: t)
   case 0 thus ?case by simp
 next
-  fix n t assume "t \<in> A\<^sup>\<omega>" and 
-    "\<And>t::'a llist. t \<in> A\<^sup>\<omega> \<Longrightarrow> t \<up> n \<in> A\<^sup>\<omega>"
-  thus "t \<up> Suc n \<in> A\<^sup>\<omega>"
+  case (Suc n)
+  from `t \<in> A\<^sup>\<omega>` `\<And>t. t \<in> A\<^sup>\<omega> \<Longrightarrow> t \<up> n \<in> A\<^sup>\<omega>` show ?case
     by (cases "t") auto
 qed
 
 lemma lapp_suff_llength: "r \<in> A\<^sup>\<star> \<Longrightarrow> (r@@s) \<up> llength r = s"
-  by (erule finlsts.induct) auto
+  by (induct rule: finlsts.induct) auto
 
 lemma ltake_lappend_llength [simp]:
   "r \<in> A\<^sup>\<star> \<Longrightarrow> (r @@ s) \<down> llength r = r"
-  by (erule finlsts.induct) auto
+  by (induct rule: finlsts.induct) auto
 
 lemma ldrop_LNil_less:
-  "\<And>j t. \<lbrakk>j \<le> i; t \<up> j = LNil\<rbrakk> \<Longrightarrow> t \<up> i = LNil"
-proof (induct i)
+  "\<lbrakk>j \<le> i; t \<up> j = LNil\<rbrakk> \<Longrightarrow> t \<up> i = LNil"
+proof (induct i arbitrary: j t)
   case 0 thus ?case by auto
 next case (Suc n) thus ?case
     by (cases j, simp) (cases t, simp_all)
 qed
 
 lemma ldrop_inf_iffT [iff]: "(t \<up> i \<in> UNIV\<^sup>\<omega>)  =  (t \<in> UNIV\<^sup>\<omega>)"
-proof (auto)
-    show "t\<up>i \<in> UNIV\<^sup>\<omega> \<Longrightarrow> t \<in> UNIV\<^sup>\<omega>"
+proof
+  show "t\<up>i \<in> UNIV\<^sup>\<omega> \<Longrightarrow> t \<in> UNIV\<^sup>\<omega>"
     by (rule ccontr) (auto dest: ldrop_finT)
-qed
+qed auto
 
 lemma ldrop_fin_iffT [iff]: "(t \<up> i \<in> UNIV\<^sup>\<star>) = (t \<in> UNIV\<^sup>\<star>)"
   by auto
 
 lemma drop_nonLNil: "t\<up>i \<noteq> LNil \<Longrightarrow> t \<noteq> LNil"
-    by (auto)
+  by (auto)
 
 lemma llength_drop_take:
-  "\<And>t. t\<up>i \<noteq> LNil \<Longrightarrow> llength (t\<down>i) = i"
-proof (induct i)
+  "t\<up>i \<noteq> LNil \<Longrightarrow> llength (t\<down>i) = i"
+proof (induct i arbitrary: t)
   case 0 show ?case by simp
 next
   case (Suc j) thus ?case by (cases t) (auto simp: llength_LCons [of _ UNIV])
@@ -956,7 +902,7 @@ lemma llist_le_trans [trans]:
   shows "r \<le> s \<Longrightarrow> s \<le> t \<Longrightarrow> r \<le> t"
   by (auto simp: llist_le_def lappend_assoc)
 
-lemma llist_le_antisym:
+lemma llist_le_anti_sym:
   fixes s:: "'a llist"
   assumes st: "s \<le> t"
   and ts: "t \<le> s"
@@ -984,18 +930,18 @@ qed
 lemma llist_less_le_not_le:
   fixes s :: "'a llist"
   shows "(s < t) = (s \<le> t \<and> \<not> t \<le> s)"
-  by (auto simp add: llist_less_def dest: llist_le_antisym)
+  by (auto simp add: llist_less_def dest: llist_le_anti_sym)
 
 instance by default
   (assumption | rule llist_le_refl
-    llist_le_trans llist_le_antisym llist_less_le_not_le)+
+    llist_le_trans llist_le_anti_sym llist_less_le_not_le)+
 
 end
 
 
 subsection{*Typing rules*}
 
-lemma llist_le_finT [rule_format, simp]:
+lemma llist_le_finT [simp]:
  "r\<le>s \<Longrightarrow> s \<in> A\<^sup>\<star> \<Longrightarrow> r \<in> A\<^sup>\<star>"
 proof-
   assume rs: "r\<le>s" and sfin: "s \<in> A\<^sup>\<star>"
@@ -1013,7 +959,7 @@ proof-
   with rs show ?thesis by auto
 qed
 
-lemma llist_less_finT [rule_format, iff]:
+lemma llist_less_finT [iff]:
  "r<s \<Longrightarrow> s \<in> A\<^sup>\<star> \<Longrightarrow> r \<in> A\<^sup>\<star>"
   by (auto simp: less_le)
 
@@ -1031,31 +977,28 @@ lemma less_LCons [iff]:
   " (a ## r < b ## t) = (a = b \<and> r < t)"
   by (auto simp: less_le)
 
-lemma llength_mono [rule_format, iff]:
+lemma llength_mono [iff]:
   assumes"r \<in> A\<^sup>\<star>"
-  shows "\<forall>s. s<r \<longrightarrow> llength s < llength r"
-  using prems
-proof(induct "r")
+  shows "s<r \<Longrightarrow> llength s < llength r"
+  using assms
+proof(induct "r" arbitrary: s)
   case LNil_fin thus ?case by simp
 next
-  case (LCons_fin a l) show ?case
-  proof (clarify)
-    fix s assume sless: "s < a ## l"
-    with LCons_fin show "llength s < llength (a ## l)"
-      by (cases s) (auto simp: llength_LCons [of _ UNIV])
-  qed
+  case (LCons_fin a l)
+  thus ?case
+    by (cases s) (auto simp: llength_LCons [of _ UNIV])
 qed
 
 lemma le_lappend [iff]: "r \<le> r @@ s"
   by (auto simp: llist_le_def)
 
 lemma take_inf_less:
-  "\<And>t. t \<in> UNIV\<^sup>\<omega> \<Longrightarrow> t \<down> i < t"
-proof (induct i)
+  "t \<in> UNIV\<^sup>\<omega> \<Longrightarrow> t \<down> i < t"
+proof (induct i arbitrary: t)
   case 0 thus ?case by (auto elim: inflsts_cases)
 next
-  case (Suc i) assume "t \<in> UNIV\<^sup>\<omega>"
-  thus ?case
+  case (Suc i) 
+  from `t \<in> UNIV\<^sup>\<omega>` show ?case
   proof (cases "t")
     case (LCons a l) with Suc show ?thesis
       by auto
@@ -1066,48 +1009,39 @@ lemma lapp_take_less:
   assumes iless: "i < llength r"
   shows "(r @@ s) \<down> i < r"
 proof (cases "r \<in> UNIV\<^sup>\<star>")
-  case True 
-  have "\<forall>r \<in> UNIV\<^sup>\<star>. i < llength r \<longrightarrow> (r @@ s) \<down> i < r"
-  proof(induct i)
-    case 0 thus ?case
-    proof clarify
-      fix r::"'a llist" assume "0 < llength r"
-      thus "(r @@ s) \<down> 0 < r"
-	by (cases "r") auto
-    qed
+  case True
+  thus ?thesis using iless
+  proof(induct i arbitrary: r)
+    case 0 thus ?case by (cases "r") auto
   next
-    case (Suc j) show ?case
-    proof clarify
-      fix r :: "'a llist" assume "r \<in> UNIV\<^sup>\<star>" "Suc j < llength r"
-      thus "(r @@ s) \<down> Suc j < r" using Suc
-	by (cases r) auto
-    qed
+    case (Suc j)
+    from `r \<in> UNIV\<^sup>\<star>` `Suc j < llength r` `\<And>r. \<lbrakk>r \<in> UNIV\<^sup>\<star>; j < llength r\<rbrakk> \<Longrightarrow> lappend r s \<down> j < r`
+    show ?case by (cases) auto
   qed
-  with iless True show ?thesis by auto
-next case False thus ?thesis by (simp add: take_inf_less)
+next
+  case False thus ?thesis by (simp add: take_inf_less)
 qed
 
 
 subsection{*Finite prefixes and infinite suffixes*}
 
-constdefs
-  finpref :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
-  "finpref A s \<equiv> {r. r \<in> A\<^sup>\<star> \<and> r \<le> s}"
+definition finpref :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
+where "finpref A s \<equiv> {r. r \<in> A\<^sup>\<star> \<and> r \<le> s}"
 
-  suff :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
-  "suff A s \<equiv> {r. r \<in> A\<^sup>\<infinity> \<and> s \<le> r}"
+definition suff :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
+where "suff A s \<equiv> {r. r \<in> A\<^sup>\<infinity> \<and> s \<le> r}"
 
-  infsuff :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
-  "infsuff A s \<equiv> {r. r \<in> A\<^sup>\<omega> \<and> s \<le> r}"
+definition infsuff :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
+where "infsuff A s \<equiv> {r. r \<in> A\<^sup>\<omega> \<and> s \<le> r}"
 
-  prefix_closed :: "'a llist set \<Rightarrow> bool"
-  "prefix_closed A \<equiv> \<forall> t \<in> A. \<forall> s \<le> t. s \<in> A"
+definition prefix_closed :: "'a llist set \<Rightarrow> bool"
+where "prefix_closed A \<equiv> \<forall> t \<in> A. \<forall> s \<le> t. s \<in> A"
 
-  pprefix_closed :: "'a llist set \<Rightarrow> bool"
-  "pprefix_closed A \<equiv> \<forall> t \<in> A. \<forall> s. s \<le> t \<and> s \<noteq> LNil \<longrightarrow> s \<in> A"
+definition pprefix_closed :: "'a llist set \<Rightarrow> bool"
+where "pprefix_closed A \<equiv> \<forall> t \<in> A. \<forall> s. s \<le> t \<and> s \<noteq> LNil \<longrightarrow> s \<in> A"
 
-  suffix_closed :: "'a llist set \<Rightarrow> bool"
-  "suffix_closed A \<equiv> \<forall> t \<in> A. \<forall> s. t \<le> s \<longrightarrow> s \<in> A"
+definition suffix_closed :: "'a llist set \<Rightarrow> bool"
+where "suffix_closed A \<equiv> \<forall> t \<in> A. \<forall> s. t \<le> s \<longrightarrow> s \<in> A"
 
 lemma finpref_LNil [simp]:
   "finpref A LNil = {LNil}"
@@ -1132,8 +1066,7 @@ lemma suff_mono2: "s \<le> t \<Longrightarrow> suff A t \<subseteq> suff A s"
 lemma suff_appE:
   assumes rA: "r \<in> A\<^sup>\<star>"
   and  tsuff: "t \<in> suff A r"
-  and      H:  "\<And>s. \<lbrakk> s \<in> A\<^sup>\<infinity>; t = r@@s \<rbrakk> \<Longrightarrow> R"
-  shows "R"
+  obtains s where "s \<in> A\<^sup>\<infinity>" "t = r@@s"
 proof-
   from tsuff obtain s where
     tA: "t \<in> A\<^sup>\<infinity>" and trs: "t = r @@ s"
@@ -1141,7 +1074,7 @@ proof-
   from rA trs tA have "s \<in> A\<^sup>\<infinity>"
     by (auto simp: lapp_allT_iff)
   thus ?thesis using trs
-    by (rule H)
+    by (rule that)
 qed
 
 lemma LNil_suff [iff]: "(LNil \<in> suff A s) = (s = LNil)"
@@ -1172,8 +1105,7 @@ lemma infsuff_mono2: "s \<le> t \<Longrightarrow> infsuff A t \<subseteq> infsuf
 lemma infsuff_appE:
   assumes   rA: "r \<in> A\<^sup>\<star>"
   and tinfsuff: "t \<in> infsuff A r"
-  and        H:  "\<And>s. \<lbrakk> s \<in> A\<^sup>\<omega>; t = r@@s \<rbrakk> \<Longrightarrow> R"
-  shows "R"
+  obtains s where "s \<in> A\<^sup>\<omega>" "t = r@@s"
 proof-
   from tinfsuff obtain s where
     tA: "t \<in> A\<^sup>\<omega>" and trs: "t = r @@ s"
@@ -1181,7 +1113,7 @@ proof-
   from rA trs tA have "s \<in> A\<^sup>\<omega>"
     by (auto dest: app_invT)
   thus ?thesis using trs
-    by (rule H)
+    by (rule that)
 qed
 
 lemma finpref_infsuff [dest]:
@@ -1203,28 +1135,26 @@ lemma prefix_lemma:
   shows "x = y"
 proof-
   let ?r = "{(x, y). x\<in>A\<^sup>\<omega> \<and> y\<in>A\<^sup>\<omega> \<and> finpref A x \<subseteq> finpref A y}"
-  show ?thesis
-  proof (rule llist_equalityI [of _ _ ?r])
-    show "(x, y) \<in> ?r" using xinf yinf
-      by (auto simp: finpref_def intro: R)
-  next show "?r \<subseteq> llistD_Fun (?r \<union> range (\<lambda>x. (x, x)))"
-    proof clarify
-      fix a b assume ainf: "a \<in> A\<^sup>\<omega>" and binf: "b \<in> A\<^sup>\<omega>" and
-	pref: "finpref A a \<subseteq> finpref A b"
-      thus "(a, b) \<in> llistD_Fun (?r \<union> range (\<lambda>x. (x, x)))"
-      proof (cases a)
-	case (LCons a' l') note acons = this with binf show ?thesis
-	proof (cases b)
-	  case (LCons b' l'')
-	  with acons pref have "a' = b'" "finpref A l' \<subseteq> finpref A l''"
-	    by (auto simp: finpref_def)
-	  thus  ?thesis using acons LCons
-	    by auto 
-	qed
+  have "(x, y) \<in> ?r" using xinf yinf
+    by (auto simp: finpref_def intro: R)
+  thus ?thesis
+  proof (coinduct rule: llist_equalityI)
+    case (Eqllist q)
+    then obtain a b where q: "q = (a, b)" and ainf: "a \<in> A\<^sup>\<omega>"
+      and binf: "b \<in> A\<^sup>\<omega>" and pref: "finpref A a \<subseteq> finpref A b" by auto
+    from ainf show ?case
+    proof cases
+      case (LCons a' l')
+      note acons = this with binf show ?thesis
+      proof (cases b)
+	case (LCons b' l'')
+	with acons pref have "a' = b'" "finpref A l' \<subseteq> finpref A l''"
+	  by (auto simp: finpref_def)
+	thus ?thesis using acons LCons q by auto
       qed
     qed
   qed
-qed
+qed 
 
 lemma inf_neqE:
 "\<lbrakk> x \<in>  A\<^sup>\<omega>; y \<in> A\<^sup>\<omega>; x \<noteq> y;
@@ -1243,15 +1173,18 @@ proof-
     case infinite with sx tx show ?thesis
       by (auto simp: llist_inf_le)
   next
-    case finite hence "\<forall>x t. s \<le> x \<and> t \<le> x \<longrightarrow> s \<le> t \<or> t \<le> s"
-    proof (induct "s")
+    case finite
+    thus ?thesis using sx tx
+    proof (induct "s" arbitrary: x t)
       case LNil_fin thus ?case by simp
     next
-      case (LCons_fin a l) show ?case
-      proof clarify
-	fix x t assume alx: "a ## l \<le> x"
-	  and tx: "t \<le> x" and tal: "\<not> t \<le> a ## l"
-	show " a ## l \<le> t"
+      case (LCons_fin a l)
+      note alx = `a ## l \<le> x`
+      note tx = `t \<le> x`
+      show ?case
+      proof(rule disjCI)
+	assume tal: "\<not> t \<le> a ## l"
+	show "LCons a l \<le> t"
 	proof (cases t)
 	  case LNil thus ?thesis using tal by auto
 	next case (LCons b ts) note tcons = this show ?thesis
@@ -1273,39 +1206,35 @@ proof-
 	qed
       qed
     qed
-    thus ?thesis using sx tx by auto
   qed
 qed
 
-constdefs
-  pfinpref :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
-  "pfinpref A s \<equiv> finpref A s - {LNil}"
+definition pfinpref :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
+where "pfinpref A s \<equiv> finpref A s - {LNil}"
 
 lemma pfinpref_iff [iff]:
   "(x \<in> pfinpref A s) = (x \<in> finpref A s \<and> x \<noteq> LNil)"
   by (auto simp: pfinpref_def)
 
-
 section{* Safety and Liveness *}
 
-constdefs
-  infsafety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
-  "infsafety A P \<equiv> \<forall> t \<in> A\<^sup>\<omega>. (\<forall> r \<in> finpref A t. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
+definition infsafety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
+where "infsafety A P \<equiv> \<forall> t \<in> A\<^sup>\<omega>. (\<forall> r \<in> finpref A t. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
 
-  infliveness :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
-  "infliveness A P \<equiv> \<forall> t \<in> A\<^sup>\<star>. \<exists> s \<in> A\<^sup>\<omega>. t @@ s \<in> P"
+definition infliveness :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
+where "infliveness A P \<equiv> \<forall> t \<in> A\<^sup>\<star>. \<exists> s \<in> A\<^sup>\<omega>. t @@ s \<in> P"
 
-  possafety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
-  "possafety A P \<equiv> \<forall> t \<in> A\<^sup>\<spadesuit>. (\<forall> r \<in> pfinpref A t. \<exists> s \<in> A\<^sup>\<infinity>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
+definition possafety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
+where "possafety A P \<equiv> \<forall> t \<in> A\<^sup>\<spadesuit>. (\<forall> r \<in> pfinpref A t. \<exists> s \<in> A\<^sup>\<infinity>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
 
-  posliveness :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
-  "posliveness A P \<equiv> \<forall> t \<in> A\<^sup>\<clubsuit>. \<exists> s \<in> A\<^sup>\<infinity>. t @@ s \<in> P"
+definition posliveness :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
+where "posliveness A P \<equiv> \<forall> t \<in> A\<^sup>\<clubsuit>. \<exists> s \<in> A\<^sup>\<infinity>. t @@ s \<in> P"
 
-  safety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
-  "safety A P \<equiv> \<forall> t \<in> A\<^sup>\<infinity>. (\<forall> r \<in> finpref A t. \<exists> s \<in> A\<^sup>\<infinity>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
+definition safety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
+where "safety A P \<equiv> \<forall> t \<in> A\<^sup>\<infinity>. (\<forall> r \<in> finpref A t. \<exists> s \<in> A\<^sup>\<infinity>. r @@ s \<in> P) \<longrightarrow> t \<in> P"
 
-  liveness :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
-  "liveness A P \<equiv> \<forall> t \<in> A\<^sup>\<star>. \<exists> s \<in> A\<^sup>\<infinity>. t @@ s \<in> P"
+definition liveness :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
+where "liveness A P \<equiv> \<forall> t \<in> A\<^sup>\<star>. \<exists> s \<in> A\<^sup>\<infinity>. t @@ s \<in> P"
 
 lemma safetyI:
   "(\<And>t. \<lbrakk>t \<in>  A\<^sup>\<infinity>; \<forall> r \<in> finpref A t. \<exists> s \<in> A\<^sup>\<infinity>. r @@ s \<in> P\<rbrakk> \<Longrightarrow> t \<in> P)
@@ -1358,7 +1287,8 @@ lemma possafetyE:
 lemma possafety_pprefix_closed:
   assumes psafety: "possafety UNIV P"
   shows "pprefix_closed P"
-proof (unfold pprefix_closed_def, clarify)
+unfolding pprefix_closed_def
+proof(intro ballI allI impI, erule conjE)
   fix t s assume tP: "t \<in> P" and st: "s \<le> t" and spos: "s \<noteq> LNil"
   from psafety show "s \<in> P"
   proof (rule possafetyD)
