@@ -736,14 +736,14 @@ fun dummyfyT (TFree x) = TFree x
 
 fun guard ctxt Ts (add as (Const (@{const_name Groups.plus},_) $ l $ r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (in_range add)
-  | guard ctxt Ts (sub as (Const (@{const_name Algebras.minus},_) $ l $ r)) =
+  | guard ctxt Ts (sub as (Const (@{const_name Groups.minus},_) $ l $ r)) =
       let
         val g =
           (if fastype_of1 (Ts,sub) = HOLogic.natT then le r l else in_range sub)
             handle TERM _ => error ("guard generation, cannot determine type of: " ^
               Syntax.string_of_term ctxt sub);
       in guard ctxt Ts l & guard ctxt Ts r & SOME g end
-  | guard ctxt Ts (mul as (Const (@{const_name Algebras.times},_) $ l $r)) =
+  | guard ctxt Ts (mul as (Const (@{const_name Groups.times},_) $ l $r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (in_range mul)
   | guard ctxt Ts (Const (@{const_name "op &"},_) $ l $ r) =
       guard ctxt Ts l & mk_imp (l,guard ctxt Ts r)
@@ -753,7 +753,7 @@ fun guard ctxt Ts (add as (Const (@{const_name Groups.plus},_) $ l $ r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r) & SOME (in_range dv) (* FIXME: Make more concrete guard...*)
   | guard ctxt Ts (Const (@{const_name Divides.div_class.mod},_) $ l $ r) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r)
-  | guard ctxt Ts (un as (Const (@{const_name Algebras.uminus},_) $ n)) =
+  | guard ctxt Ts (un as (Const (@{const_name Groups.uminus},_) $ n)) =
       guard ctxt Ts n & SOME (in_range un)
   | guard ctxt Ts (Const (@{const_name Int.nat},_) $ i) =
       guard ctxt Ts i & SOME (is_pos i)
