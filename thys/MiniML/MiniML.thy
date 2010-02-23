@@ -1,5 +1,4 @@
 (* Title:     HOL/MiniML/MiniML.thy
-   ID:        $Id: MiniML.thy,v 1.13 2008-06-12 06:57:24 lsf37 Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
