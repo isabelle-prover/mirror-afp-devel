@@ -551,9 +551,9 @@ lemma pow2_le_abs: "(a\<twosuperior> \<le> b\<twosuperior>) = (\<bar>a\<bar> \<l
     thus "\<bar>a\<bar>\<twosuperior> \<le> \<bar>b\<bar>\<twosuperior>"
       by (rule power_mono) simp
   next
-    have "0 \<le> \<bar>a\<bar>" and "0 \<le> \<bar>b\<bar>" by auto
-    also assume "\<bar>a\<bar>\<twosuperior> \<le> \<bar>b\<bar>\<twosuperior>" hence "\<bar>a\<bar>^(Suc 1) \<le> \<bar>b\<bar>^(Suc 1)" by (simp add: numeral_2_eq_2)
-    ultimately show "\<bar>a\<bar> \<le> \<bar>b\<bar>" by (rule realpow_increasing)
+    assume "\<bar>a\<bar>\<twosuperior> \<le> \<bar>b\<bar>\<twosuperior>" hence "\<bar>a\<bar>^(Suc 1) \<le> \<bar>b\<bar>^(Suc 1)" by (simp add: numeral_2_eq_2)
+    moreover have "0 \<le> \<bar>b\<bar>" by auto
+    ultimately show "\<bar>a\<bar> \<le> \<bar>b\<bar>" by (rule power_le_imp_le_base)
   qed
   finally show ?thesis .
 qed(*>*)
