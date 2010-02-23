@@ -10,9 +10,6 @@ theory Type
 imports Maybe
 begin
 
--- "new class for structures containing type variables"
-axclass  type_struct < type
-
 -- "type expressions"
 datatype "typ" = TVar nat | Fun "typ" "typ" (infixr "->" 70)
 
@@ -20,49 +17,93 @@ datatype "typ" = TVar nat | Fun "typ" "typ" (infixr "->" 70)
 datatype type_scheme = FVar nat | BVar nat | SFun type_scheme type_scheme (infixr "=->" 70)
 
 -- "embedding types into type schemata"
-consts
-  mk_scheme :: "typ => type_scheme"
-primrec
+primrec mk_scheme :: "typ => type_scheme" where
   "mk_scheme (TVar n) = (FVar n)"
-  "mk_scheme (t1 -> t2) = ((mk_scheme t1) =-> (mk_scheme t2))"
+| "mk_scheme (t1 -> t2) = ((mk_scheme t1) =-> (mk_scheme t2))"
 
-instance  "typ"::type_struct ..
-instance  type_scheme::type_struct ..  
-instance  list::(type_struct)type_struct ..
-instance  "fun"::(type,type_struct)type_struct ..
+-- "type variable substitution"
+types subst = "nat => typ"
 
+class type_struct =
+  fixes free_tv :: "'a => nat set"
+    -- {* @{text "free_tv s"}: the type variables occuring freely in the type structure s *}
+  fixes free_tv_ML :: "'a => nat list"
+    -- {* executable version of @{text free_tv}: Implementation with lists *}
+  fixes bound_tv :: "'a => nat set"
+    -- {* @{text "bound_tv s"}: the type variables occuring bound in the type structure s *}
+  fixes min_new_bound_tv :: "'a => nat"
+    -- "minimal new free / bound variable"
+  fixes app_subst :: "subst => 'a => 'a" ("$")
+    -- "extension of substitution to type structures"
 
--- {* @{text "free_tv s"}: the type variables occuring freely in the type structure s *}
-consts
-  free_tv :: "['a::type_struct] => nat set"
+instantiation "typ" :: type_struct
+begin
 
-primrec (free_tv_typ)
+primrec free_tv_typ where
   free_tv_TVar:    "free_tv (TVar m) = {m}"
-  free_tv_Fun:     "free_tv (t1 -> t2) = (free_tv t1) Un (free_tv t2)"
+| free_tv_Fun:     "free_tv (t1 -> t2) = (free_tv t1) Un (free_tv t2)"
 
-primrec (free_tv_type_scheme)
+primrec app_subst_typ where
+  app_subst_TVar: "$ S (TVar n) = S n" 
+| app_subst_Fun:  "$ S (t1 -> t2) = ($ S t1) -> ($ S t2)" 
+
+instance ..
+
+end
+
+instantiation type_scheme :: type_struct
+begin
+
+primrec free_tv_type_scheme where
   "free_tv (FVar m) = {m}"
-  "free_tv (BVar m) = {}"
-  "free_tv (S1 =-> S2) = (free_tv S1) Un (free_tv S2)"
+| "free_tv (BVar m) = {}"
+| "free_tv (S1 =-> S2) = (free_tv S1) Un (free_tv S2)"
 
-primrec (free_tv_list)
-  "free_tv [] = {}"
-  "free_tv (x#l) = (free_tv x) Un (free_tv l)"
-
-  
--- {* executable version of @{text free_tv}: Implementation with lists *}
-consts
-  free_tv_ML :: "['a::type_struct] => nat list"
-
-primrec (free_tv_ML_type_scheme)
+primrec free_tv_ML_type_scheme where
   "free_tv_ML (FVar m) = [m]"
-  "free_tv_ML (BVar m) = []"
-  "free_tv_ML (S1 =-> S2) = (free_tv_ML S1) @ (free_tv_ML S2)"
+| "free_tv_ML (BVar m) = []"
+| "free_tv_ML (S1 =-> S2) = (free_tv_ML S1) @ (free_tv_ML S2)"
 
-primrec (free_tv_ML_list)
+primrec bound_tv_type_scheme where
+  "bound_tv (FVar m) = {}"
+| "bound_tv (BVar m) = {m}"
+| "bound_tv (S1 =-> S2) = (bound_tv S1) Un (bound_tv S2)"
+
+primrec min_new_bound_tv_type_scheme where
+  "min_new_bound_tv (FVar n) = 0"
+| "min_new_bound_tv (BVar n) = Suc n"
+| "min_new_bound_tv (sch1 =-> sch2) = max (min_new_bound_tv sch1) (min_new_bound_tv sch2)"
+
+primrec app_subst_type_scheme where
+  "$ S (FVar n) = mk_scheme (S n)"
+| "$ S (BVar n) = (BVar n)"
+| "$ S (sch1 =-> sch2) = ($ S sch1) =-> ($ S sch2)"
+
+instance ..
+
+end
+
+instantiation list :: (type_struct) type_struct
+begin
+
+primrec free_tv_list where
+  "free_tv [] = {}"
+| "free_tv (x#l) = (free_tv x) Un (free_tv l)"
+
+primrec free_tv_ML_list where
   "free_tv_ML [] = []"
-  "free_tv_ML (x#l) = (free_tv_ML x) @ (free_tv_ML l)"
+| "free_tv_ML (x#l) = (free_tv_ML x) @ (free_tv_ML l)"
 
+primrec bound_tv_list where
+  "bound_tv [] = {}"
+| "bound_tv (x#l) = (bound_tv x) Un (bound_tv l)"
+
+definition app_subst_list where
+  app_subst_list: "$ S = map ($ S)"
+
+instance ..
+
+end
 
 text  
 {* @{text "new_tv s n"} computes whether n is a new type variable w.r.t. a type 
@@ -72,56 +113,10 @@ definition
   new_tv :: "[nat,'a::type_struct] => bool" where
   "new_tv n ts = (! m. m:(free_tv ts) --> m<n)"
 
-  
--- {* @{text "bound_tv s"}: the type variables occuring bound in the type structure s *}
-consts
-  bound_tv :: "['a::type_struct] => nat set"
-
-primrec (bound_tv_type_scheme)
-  "bound_tv (FVar m) = {}"
-  "bound_tv (BVar m) = {m}"
-  "bound_tv (S1 =-> S2) = (bound_tv S1) Un (bound_tv S2)"
-
-primrec (bound_tv_list)
-  "bound_tv [] = {}"
-  "bound_tv (x#l) = (bound_tv x) Un (bound_tv l)"
-
-
--- "minimal new free / bound variable"
-consts
-  min_new_bound_tv :: "'a::type_struct => nat"
-
-primrec (min_new_bound_tv_type_scheme)
-  "min_new_bound_tv (FVar n) = 0"
-  "min_new_bound_tv (BVar n) = Suc n"
-  "min_new_bound_tv (sch1 =-> sch2) = max (min_new_bound_tv sch1) (min_new_bound_tv sch2)"
-
-
--- "substitutions"
-
--- "type variable substitution"
-types  subst = "nat => typ"
-
 -- "identity"
 definition
   id_subst :: subst where
   "id_subst = (%n. TVar n)"
-
--- "extension of substitution to type structures"
-consts
-  app_subst :: "[subst, 'a::type_struct] => 'a::type_struct" ("$")
-
-primrec (app_subst_typ)
-  app_subst_TVar: "$ S (TVar n) = S n" 
-  app_subst_Fun:  "$ S (t1 -> t2) = ($ S t1) -> ($ S t2)" 
-
-primrec (app_subst_type_scheme)
-  "$ S (FVar n) = mk_scheme (S n)"
-  "$ S (BVar n) = (BVar n)"
-  "$ S (sch1 =-> sch2) = ($ S sch1) =-> ($ S sch2)"
-
-defs (overloaded)
-  app_subst_list: "$ S == map ($ S)"
 
 -- "domain of a substitution"
 definition
@@ -133,22 +128,55 @@ definition
   cod :: "subst => nat set" where
   "cod S = (UN m:dom S. (free_tv (S m)))"
 
-defs (overloaded)
-  free_tv_subst: "free_tv S == (dom S) Un (cod S)" 
+class of_nat =
+  fixes of_nat :: "nat \<Rightarrow> 'a"
 
-  
+instantiation nat :: of_nat
+begin
+
+definition
+  "of_nat n = n"
+
+instance ..
+
+end
+
+class typ_of =
+  fixes typ_of :: "'a \<Rightarrow> typ"
+
+instantiation "typ" :: typ_of
+begin
+
+definition
+  "typ_of T = T"
+
+instance ..
+
+end
+
+instantiation "fun" :: (of_nat, typ_of) type_struct
+begin
+
+definition free_tv_fun where
+  "free_tv f = (let S = \<lambda>n. typ_of (f (of_nat n)) in (dom S) Un (cod S))"
+
+instance ..
+
+end
+
+lemma free_tv_subst:
+  "free_tv S = (dom S) Un (cod S)"
+  by (simp add: free_tv_fun_def of_nat_nat_def typ_of_typ_def )
+
 -- "unification algorithm mgu"
-consts
-  mgu :: "[typ,typ] => subst option"
-axioms
+axiomatization mgu :: "typ \<Rightarrow> typ \<Rightarrow> subst option" where
   mgu_eq:   "mgu t1 t2 = Some U ==> $U t1 = $U t2"
-  mgu_mg:   "[| (mgu t1 t2) = Some U; $S t1 = $S t2 |] ==> ? R. S = $R o U"
-  mgu_Some: "$S t1 = $S t2 ==> ? U. mgu t1 t2 = Some U"
-  mgu_free: "mgu t1 t2 = Some U ==> (free_tv U) <= (free_tv t1) Un (free_tv t2)"
+  and mgu_mg:   "[| (mgu t1 t2) = Some U; $S t1 = $S t2 |] ==> ? R. S = $R o U"
+  and mgu_Some: "$S t1 = $S t2 ==> ? U. mgu t1 t2 = Some U"
+  and mgu_free: "mgu t1 t2 = Some U ==> (free_tv U) <= (free_tv t1) Un (free_tv t2)"
 
 
 declare mgu_eq [simp] mgu_mg [simp] mgu_free [simp]
-
 lemma mk_scheme_Fun [rule_format]: "mk_scheme t = sch1 =-> sch2 --> (? t1 t2. sch1 = mk_scheme t1 & sch2 = mk_scheme t2)"
 apply (induct_tac "t")
 apply (simp (no_asm))
