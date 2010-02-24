@@ -32,128 +32,128 @@ theory Hoare imports HoarePartial HoareTotal begin
 
 syntax 
 
-hoarep_emptyFaults::
+"_hoarep_emptyFaults"::
 "[('s,'p,'f) body,('s,'p) quadruple set,
    'f set,'s assn,('s,'p,'f) com, 's assn,'s assn] => bool"
     ("(3_,_/\<turnstile> (_/ (_)/ _,/_))" [61,60,1000,20,1000,1000]60)
 
-hoarep_emptyCtx::
+"_hoarep_emptyCtx"::
 "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com, 's assn,'s assn] => bool"
     ("(3_/\<turnstile>\<^bsub>'/_\<^esub> (_/ (_)/ _,/_))" [61,60,1000,20,1000,1000]60)
 
-hoarep_emptyCtx_emptyFaults::
+"_hoarep_emptyCtx_emptyFaults"::
 "[('s,'p,'f) body,'s assn,('s,'p,'f) com, 's assn,'s assn] => bool"
     ("(3_/\<turnstile> (_/ (_)/ _,/_))" [61,1000,20,1000,1000]60)
 
-hoarep_noAbr::
+"_hoarep_noAbr"::
 "[('s,'p,'f) body,('s,'p) quadruple set,'f set,
     's assn,('s,'p,'f) com, 's assn] => bool"
     ("(3_,_/\<turnstile>\<^bsub>'/_\<^esub> (_/ (_)/ _))" [61,60,60,1000,20,1000]60)
 
-hoarep_noAbr_emptyFaults::
+"_hoarep_noAbr_emptyFaults"::
 "[('s,'p,'f) body,('s,'p) quadruple set,'s assn,('s,'p,'f) com, 's assn] => bool"
     ("(3_,_/\<turnstile> (_/ (_)/ _))" [61,60,1000,20,1000]60)
 
-hoarep_emptyCtx_noAbr::
+"_hoarep_emptyCtx_noAbr"::
 "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com, 's assn] => bool"
     ("(3_/\<turnstile>\<^bsub>'/_\<^esub> (_/ (_)/ _))" [61,60,1000,20,1000]60)
 
-hoarep_emptyCtx_noAbr_emptyFaults::
+"_hoarep_emptyCtx_noAbr_emptyFaults"::
 "[('s,'p,'f) body,'s assn,('s,'p,'f) com, 's assn] => bool"
     ("(3_/\<turnstile> (_/ (_)/ _))" [61,1000,20,1000]60)
 
 
 
-hoaret_emptyFaults::
+"_hoaret_emptyFaults"::
 "[('s,'p,'f) body,('s,'p) quadruple set,
     's assn,('s,'p,'f) com, 's assn,'s assn] => bool"
     ("(3_,_/\<turnstile>\<^sub>t (_/ (_)/ _,/_))" [61,60,1000,20,1000,1000]60)
 
-hoaret_emptyCtx::
+"_hoaret_emptyCtx"::
 "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com, 's assn,'s assn] => bool"
     ("(3_/\<turnstile>\<^sub>t\<^bsub>'/_\<^esub> (_/ (_)/ _,/_))" [61,60,1000,20,1000,1000]60)
 
-hoaret_emptyCtx_emptyFaults::
+"_hoaret_emptyCtx_emptyFaults"::
 "[('s,'p,'f) body,'s assn,('s,'p,'f) com, 's assn,'s assn] => bool"
     ("(3_/\<turnstile>\<^sub>t (_/ (_)/ _,/_))" [61,1000,20,1000,1000]60)
 
-hoaret_noAbr::
+"_hoaret_noAbr"::
 "[('s,'p,'f) body,'f set, ('s,'p) quadruple set,
     's assn,('s,'p,'f) com, 's assn] => bool"
     ("(3_,_/\<turnstile>\<^sub>t\<^bsub>'/_\<^esub> (_/ (_)/ _))" [61,60,60,1000,20,1000]60)
 
-hoaret_noAbr_emptyFaults::
+"_hoaret_noAbr_emptyFaults"::
 "[('s,'p,'f) body,('s,'p) quadruple set,'s assn,('s,'p,'f) com, 's assn] => bool"
     ("(3_,_/\<turnstile>\<^sub>t (_/ (_)/ _))" [61,60,1000,20,1000]60)
 
-hoaret_emptyCtx_noAbr::
+"_hoaret_emptyCtx_noAbr"::
 "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com, 's assn] => bool"
     ("(3_/\<turnstile>\<^sub>t\<^bsub>'/_\<^esub> (_/ (_)/ _))" [61,60,1000,20,1000]60)
 
-hoaret_emptyCtx_noAbr_emptyFaults::
+"_hoaret_emptyCtx_noAbr_emptyFaults"::
 "[('s,'p,'f) body,'s assn,('s,'p,'f) com, 's assn] => bool"
     ("(3_/\<turnstile>\<^sub>t (_/ (_)/ _))" [61,1000,20,1000]60)
 
 
 syntax (ascii)
 
-hoarep_emptyFaults::
+"_hoarep_emptyFaults"::
 "[('s,'p,'f) body,('s,'p) quadruple set,
      's assn,('s,'p,'f) com, 's assn,'s assn] \<Rightarrow> bool"
    ("(3_,_/|- (_/ (_)/ _,/_))" [61,60,1000,20,1000,1000]60)
 
-hoarep_emptyCtx::
+"_hoarep_emptyCtx"::
 "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com, 's assn,'s assn] => bool"
    ("(3_/|-'/_ (_/ (_)/ _,/_))" [61,60,1000,20,1000,1000]60)
 
-hoarep_emptyCtx_emptyFaults::
+"_hoarep_emptyCtx_emptyFaults"::
 "[('s,'p,'f) body,'s assn,('s,'p,'f) com, 's assn,'s assn] => bool"
    ("(3_/|-(_/ (_)/ _,/_))" [61,1000,20,1000,1000]60)
 
-hoarep_noAbr::
+"_hoarep_noAbr"::
 "[('s,'p,'f) body,('s,'p) quadruple set,'f set,
    's assn,('s,'p,'f) com, 's assn] => bool"
    ("(3_,_/|-'/_ (_/ (_)/ _))" [61,60,60,1000,20,1000]60)
 
-hoarep_noAbr_emptyFaults::
+"_hoarep_noAbr_emptyFaults"::
 "[('s,'p,'f) body,('s,'p) quadruple set,'s assn,('s,'p,'f) com, 's assn] => bool"
    ("(3_,_/|-(_/ (_)/ _))" [61,60,1000,20,1000]60)
 
-hoarep_emptyCtx_noAbr::
+"_hoarep_emptyCtx_noAbr"::
 "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com, 's assn] => bool"
    ("(3_/|-'/_ (_/ (_)/ _))" [61,60,1000,20,1000]60)
 
-hoarep_emptyCtx_noAbr_emptyFaults::
+"_hoarep_emptyCtx_noAbr_emptyFaults"::
 "[('s,'p,'f) body,'s assn,('s,'p,'f) com, 's assn] => bool"
    ("(3_/|-(_/ (_)/ _))" [61,1000,20,1000]60)
 
-hoaret_emptyFault::
+"_hoaret_emptyFault"::
 "[('s,'p,'f) body,('s,'p) quadruple set,
      's assn,('s,'p,'f) com, 's assn,'s assn] => bool"
    ("(3_,_/|-t (_/ (_)/ _,/_))" [61,60,1000,20,1000,1000]60)
 
-hoaret_emptyCtx::
+"_hoaret_emptyCtx"::
 "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com, 's assn,'s assn] => bool"
    ("(3_/|-t'/_ (_/ (_)/ _,/_))" [61,60,1000,20,1000,1000]60)
 
-hoaret_emptyCtx_emptyFaults::
+"_hoaret_emptyCtx_emptyFaults"::
 "[('s,'p,'f) body,'s assn,('s,'p,'f) com, 's assn,'s assn] => bool"
    ("(3_/|-t(_/ (_)/ _,/_))" [61,1000,20,1000,1000]60)
 
-hoaret_noAbr::
+"_hoaret_noAbr"::
 "[('s,'p,'f) body,('s,'p) quadruple set,'f set,
    's assn,('s,'p,'f) com, 's assn] => bool"
    ("(3_,_/|-t'/_ (_/ (_)/ _))" [61,60,60,1000,20,1000]60)
 
-hoaret_noAbr_emptyFaults::
+"_hoaret_noAbr_emptyFaults"::
 "[('s,'p,'f) body,('s,'p) quadruple set,'s assn,('s,'p,'f) com, 's assn] => bool"
    ("(3_,_/|-t(_/ (_)/ _))" [61,60,1000,20,1000]60)
 
-hoaret_emptyCtx_noAbr::
+"_hoaret_emptyCtx_noAbr"::
 "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com, 's assn] => bool"
    ("(3_/|-t'/_ (_/ (_)/ _))" [61,60,1000,20,1000]60)
 
-hoaret_emptyCtx_noAbr_emptyFaults::
+"_hoaret_emptyCtx_noAbr_emptyFaults"::
 "[('s,'p,'f) body,'s assn,('s,'p,'f) com, 's assn] => bool"
    ("(3_/|-t(_/ (_)/ _))" [61,1000,20,1000]60)
 
