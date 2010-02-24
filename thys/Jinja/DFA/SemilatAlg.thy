@@ -13,24 +13,22 @@ begin
 consts 
   lesubstep_type :: "(nat \<times> 's) set \<Rightarrow> 's ord \<Rightarrow> (nat \<times> 's) set \<Rightarrow> bool"
 (*<*)
-syntax
-  lesubstep_type :: "(nat \<times> 's) set \<Rightarrow> 's ord \<Rightarrow> (nat \<times> 's) set \<Rightarrow> bool"
-                    ("(_ /{<='__} _)" [50, 0, 51] 50)
+notation
+  lesubstep_type  ("(_ /{<='__} _)" [50, 0, 51] 50)
 (*>*)
-syntax (xsymbols)
-  lesubstep_type :: "(nat \<times> 's) set \<Rightarrow> 's ord \<Rightarrow> (nat \<times> 's) set \<Rightarrow> bool"
-                    ("(_ /{\<sqsubseteq>\<^bsub>_\<^esub>} _)" [50, 0, 51] 50)
+notation (xsymbols)
+  lesubstep_type  ("(_ /{\<sqsubseteq>\<^bsub>_\<^esub>} _)" [50, 0, 51] 50)
 defs lesubstep_type_def:
   "A {\<sqsubseteq>\<^bsub>r\<^esub>} B \<equiv> \<forall>(p,\<tau>) \<in> A. \<exists>\<tau>'. (p,\<tau>') \<in> B \<and> \<tau> \<sqsubseteq>\<^sub>r \<tau>'"
 
 consts
   pluslussub :: "'a list \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a" 
 (*<*)
-syntax 
-  pluslussub :: "'a list \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a" ("(_ /++'__ _)" [65, 1000, 66] 65)
+notation
+  pluslussub  ("(_ /++'__ _)" [65, 1000, 66] 65)
 (*>*)
-syntax (xsymbols)
-  pluslussub :: "'a list \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a" ("(_ /\<Squnion>\<^bsub>_\<^esub> _)" [65, 0, 66] 65)
+notation (xsymbols)
+  pluslussub  ("(_ /\<Squnion>\<^bsub>_\<^esub> _)" [65, 0, 66] 65)
 primrec
   "[] \<Squnion>\<^bsub>f\<^esub> y = y"
   "(x#xs) \<Squnion>\<^bsub>f\<^esub> y = xs \<Squnion>\<^bsub>f\<^esub> (x \<squnion>\<^sub>f y)"

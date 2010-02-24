@@ -151,58 +151,6 @@ abbreviation VDM_deriv :: "[Assn set, OBJ, Assn] \<Rightarrow> bool"
                    ("_ \<rhd> _ : _" [100,100] 50)
 where "G \<rhd> c : A == (G,c,A) \<in> VDM_proof"
 
-(*
-consts VDM_proof :: "(Assn set \<times> OBJ \<times> Assn) set"
-
-syntax VDM_deriv :: "[Assn set, OBJ, Assn] \<Rightarrow> bool" 
-                   ("_ \<rhd> _ : _" [100,100] 50)
-translations "G \<rhd> c : A" == "(G,c,A) \<in> VDM_proof"
-
-inductive_set VDM_proof :: "(Assn set \<times> OBJ \<times> Assn) set"
-where
-VDMSkip:   "G \<rhd> Skip : (\<lambda> s t . t=s)"
-
-VDMAssign: "G \<rhd> (Assign x e) : 
-                 (\<lambda> s t . t = (update (fst s) x (evalE e (fst s)), snd s))"
-
-VDMNew: "G \<rhd> (New x C) :
-             (\<lambda> s t . \<exists> l . l \<notin> Dom (snd s) \<and> 
-                            t = (update (fst s) x (RVal (Loc l)),
-                                 (l,(C,[])) # (snd s)))"
-
-VDMGet: "G \<rhd> (Get x y F) : 
-             (\<lambda> s t . \<exists> l C Flds v. (fst s) y = RVal(Loc l) \<and> 
-                                     lookup (snd s) l = Some(C,Flds) \<and> 
-                                     lookup Flds F = Some v \<and> 
-                                     t = (update (fst s) x v, snd s))"
-
-VDMPut: "G \<rhd> (Put x F e) :
-             (\<lambda> s t . \<exists> l C Flds. (fst s) x = RVal(Loc l) \<and>
-                                   lookup (snd s) l = Some(C,Flds) \<and> 
-                                   t = (fst s, 
-                                          (l,(C,(F,evalE e (fst s)) # Flds))
-                                           # (snd s)))"
-
-VDMComp: "\<lbrakk> G \<rhd> c1:A1; G \<rhd> c2:A2\<rbrakk> 
-         \<Longrightarrow> G \<rhd> (Comp c1 c2) : (\<lambda> s t . \<exists> r . A1 s r \<and> A2 r t)"
-
-VDMIff:  "\<lbrakk> G \<rhd> c1 : A; G \<rhd> c2 :B\<rbrakk>
-         \<Longrightarrow> G \<rhd> (Iff b c1 c2) :
-                   (\<lambda> s t . (((evalB b (fst s)) \<longrightarrow> A s t) \<and> 
-                             ((\<not> (evalB b (fst s))) \<longrightarrow> B s t)))"
-
-VDMWhile:  "\<lbrakk> G \<rhd> c : B; 
-              \<forall> s . (\<not> evalB b (fst s)) \<longrightarrow> A s s;
-              \<forall> s r t. evalB b (fst s) \<longrightarrow> B s r \<longrightarrow> A r t \<longrightarrow> A s t \<rbrakk>
-            \<Longrightarrow> G \<rhd> (While b c) : (\<lambda> s t . A s t \<and> \<not> (evalB b (fst t)))"
-
-VDMCall: "({A} \<union> G) \<rhd> body : A \<Longrightarrow> G \<rhd> Call : A"
-
-VDMAx: "A \<in> G \<Longrightarrow>  G \<rhd> Call : A"
-
-VDMConseq: "\<lbrakk> G \<rhd> c : A; \<forall> s t. A s t \<longrightarrow> B s t\<rbrakk> \<Longrightarrow> G \<rhd> c : B"
-*)
-
 text{*The while-rule is in fact inter-derivable with the following rule.*}
 lemma Hoare_While: 
  "G \<rhd> c : (\<lambda> s t . \<forall> r . evalB b (fst s) \<longrightarrow> I s r \<longrightarrow> I t r) \<Longrightarrow>

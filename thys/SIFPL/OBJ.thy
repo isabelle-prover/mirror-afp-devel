@@ -185,38 +185,6 @@ SemSkip: "s=t \<Longrightarrow> (s,Skip,1, t):Semn"
   \<Longrightarrow> (s, Iff b c1 c2, n+1, t):Semn"
 
 | SemCall: "\<lbrakk> (s,body,n, t):Semn\<rbrakk> \<Longrightarrow> (s,Call,n+1, t):Semn"
-(*
-consts Semn :: "(State \<times> OBJ \<times> nat \<times> State) set"
-
-syntax Semn_  :: "[State, OBJ, nat, State] \<Rightarrow> bool"   (" _ , _ \<longrightarrow>\<^sub>_  _ ")
-
-translations "s,c \<longrightarrow>\<^sub>n t" == "(s,c,n,t) : Semn"
-
-inductive Semn intros
- SemSkip: "s=t \<Longrightarrow> s,Skip \<longrightarrow>\<^sub>1 t"
- SemAssign:"\<lbrakk> t = (update (fst s) x (evalE e (fst s)), snd s)\<rbrakk> 
-            \<Longrightarrow> s,(Assign x e) \<longrightarrow>\<^sub>1 t"
- SemNew : "\<lbrakk>l \<notin> Dom (snd s); 
-            t = (update (fst s) x (RVal (Loc l)), (l,(C,[])) # (snd s))\<rbrakk> 
-           \<Longrightarrow> s,(New x C) \<longrightarrow>\<^sub>1 t"
- SemGet : "\<lbrakk>(fst s) y = RVal(Loc l); lookup (snd s) l = Some(C,Flds); 
-            lookup Flds F = Some v; t = (update (fst s) x v, snd s)\<rbrakk> 
-          \<Longrightarrow> s,(Get x y F) \<longrightarrow>\<^sub>1 t"
- SemPut : "\<lbrakk>(fst s) x = RVal(Loc l); lookup (snd s) l = Some(C,Flds); 
-             t = (fst s, (l,(C,(F,evalE e (fst s)) # Flds)) # (snd s))\<rbrakk> 
-          \<Longrightarrow> s,(Put x F e) \<longrightarrow>\<^sub>1 t"
- SemComp:  "\<lbrakk> s,c1 \<longrightarrow>\<^sub>n r; r,c2 \<longrightarrow>\<^sub>m t; k=(max n m)+1\<rbrakk>
-          \<Longrightarrow> s,(Comp c1 c2) \<longrightarrow>\<^sub>k t"
- SemWhileT:"\<lbrakk>evalB b (fst s); s,c \<longrightarrow>\<^sub>n r; r,(While b c) \<longrightarrow>\<^sub>m t; 
-             k=((max n m)+1)\<rbrakk>
-           \<Longrightarrow> s,(While b c) \<longrightarrow>\<^sub>k t"
- SemWhileF: "\<lbrakk>\<not> (evalB b (fst s)); t=s\<rbrakk> \<Longrightarrow> s,(While b c) \<longrightarrow>\<^sub>1 t"
- SemTrue:  "\<lbrakk>evalB b (fst s); s,c1 \<longrightarrow>\<^sub>n t\<rbrakk> 
-          \<Longrightarrow> s,(Iff b c1 c2) \<longrightarrow>\<^sub>(n+1) t"
- SemFalse: "\<lbrakk>\<not> (evalB b (fst s)); s,c2 \<longrightarrow>\<^sub>n t\<rbrakk>
-          \<Longrightarrow> s,(Iff b c1 c2) \<longrightarrow>\<^sub>(n+1) t"
- SemCall: "\<lbrakk> s,body \<longrightarrow>\<^sub>n t\<rbrakk> \<Longrightarrow> s,Call \<longrightarrow>\<^sub>(n+1) t"
-*)
 
 abbreviation
   SemN  :: "[State, OBJ, nat, State] \<Rightarrow> bool"   (" _ , _ \<rightarrow>\<^sub>_  _ ")

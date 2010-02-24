@@ -29,8 +29,8 @@ USA
 header {* Big-Step Semantics for Simpl *}
 theory Semantic imports Language begin
 
-syntax
-restrict_map :: "('a ~=> 'b) => 'a set => ('a ~=> 'b)" ("_|\<^bsub>_\<^esub>" [90, 91] 90)
+notation
+restrict_map  ("_|\<^bsub>_\<^esub>" [90, 91] 90)
 
 
 datatype ('s,'f) xstate = Normal 's | Abrupt 's | Fault 'f | Stuck

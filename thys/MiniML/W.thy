@@ -1,5 +1,4 @@
 (* Title:     HOL/MiniML/W.thy
-   ID:        $Id: W.thy,v 1.14 2009-07-23 16:46:20 makarius Exp $
    Author:    Dieter Nazareth, Wolfgang Naraschewski and Tobias Nipkow
    Copyright  1996 TU Muenchen
 *)
@@ -104,86 +103,91 @@ declare new_tv_bound_typ_inst_sch [simp]
 lemma new_tv_W [rule_format (no_asm)]: 
   "!n A S t m. new_tv n A --> W e A n = Some (S,t,m) -->     
                new_tv m S & new_tv m t"
-apply (induct_tac "e")
-(* case Var n *)
-apply (simp (no_asm) split add: split_option_bind)
-apply (intro strip)
-apply (drule new_tv_nth_nat_A)
-apply assumption
-apply (simp (no_asm_simp))
-(* case Abs e *)
-apply (simp (no_asm) add: new_tv_subst new_tv_Suc_list split add: split_option_bind)
-apply (intro strip)
-apply (erule_tac x = "Suc n" in allE)
-apply (erule_tac x = " (FVar n) #A" in allE)
-apply (fastsimp simp add: new_tv_subst new_tv_Suc_list)
-(* case App e1 e2 *)
-apply (simp (no_asm) split add: split_option_bind)
-apply (intro strip)
-apply (rename_tac S1 t1 n1 S2 t2 n2 S3)
-apply (erule_tac x = "n" in allE)
-apply (erule_tac x = "A" in allE)
-apply (erule_tac x = "S1" in allE)
-apply (erule_tac x = "t1" in allE)
-apply (erule_tac x = "n1" in allE)
-apply (erule_tac x = "n1" in allE)
-apply (simp add: eq_sym_conv del: all_simps)
-apply (erule_tac x = "$S1 A" in allE)
-apply (erule_tac x = "S2" in allE)
-apply (erule_tac x = "t2" in allE)
-apply (erule_tac x = "n2" in allE)
-apply ( simp add: o_def rotate_Some)
-apply (rule conjI)
-apply (rule new_tv_subst_comp_2)
-apply (rule new_tv_subst_comp_2)
-apply (rule lessI [THEN less_imp_le, THEN new_tv_le])
-apply (rule_tac n = "n1" in new_tv_subst_le)
-apply (simp add: rotate_Some)
-apply (simp (no_asm_simp))
-apply (fast dest: W_var_geD intro: new_scheme_list_le new_tv_subst_scheme_list lessI [THEN less_imp_le [THEN new_tv_subst_le]])
-apply (erule sym [THEN mgu_new])
-apply (blast dest!: W_var_geD
-             intro: lessI [THEN less_imp_le, THEN new_tv_le] new_tv_subst_te 
-                    new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
+proof (induct e)
+  case Var then show ?case
+    apply (simp (no_asm) split add: split_option_bind)
+    apply (intro strip)
+    apply (drule new_tv_nth_nat_A)
+    apply assumption
+    apply (simp (no_asm_simp))
+    done
+next
+  case Abs then show ?case
+    apply (simp (no_asm) add: new_tv_subst new_tv_Suc_list split add: split_option_bind)
+    apply (intro strip)
+    apply (erule_tac x = "Suc n" in allE)
+    apply (erule_tac x = " (FVar n) #A" in allE)
+    apply (fastsimp simp add: new_tv_subst new_tv_Suc_list)
+    done
+next
+  case App then show ?case
+    apply (simp (no_asm) split add: split_option_bind)
+    apply (intro strip)
+    apply (rename_tac S1 t1 n1 S2 t2 n2 S3)
+    apply (erule_tac x = "n" in allE)
+    apply (erule_tac x = "A" in allE)
+    apply (erule_tac x = "S1" in allE)
+    apply (erule_tac x = "t1" in allE)
+    apply (erule_tac x = "n1" in allE)
+    apply (erule_tac x = "n1" in allE)
+    apply (simp add: eq_sym_conv del: all_simps)
+    apply (erule_tac x = "$S1 A" in allE)
+    apply (erule_tac x = "S2" in allE)
+    apply (erule_tac x = "t2" in allE)
+    apply (erule_tac x = "n2" in allE)
+    apply ( simp add: o_def rotate_Some)
+    apply (rule conjI)
+    apply (rule new_tv_subst_comp_2)
+    apply (rule new_tv_subst_comp_2)
+    apply (rule lessI [THEN less_imp_le, THEN new_tv_le])
+    apply (rule_tac n = "n1" in new_tv_subst_le)
+    apply (simp add: rotate_Some)
+    apply (simp (no_asm_simp))
+    apply (fast dest: W_var_geD intro: new_scheme_list_le new_tv_subst_scheme_list lessI [THEN less_imp_le [THEN new_tv_subst_le]])
+    apply (erule sym [THEN mgu_new])
+    apply (blast dest!: W_var_geD
+      intro: lessI [THEN less_imp_le, THEN new_tv_le] new_tv_subst_te 
+      new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
 
-apply (erule impE)
-apply (blast dest: W_var_geD intro: new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
-apply clarsimp
+    apply (erule impE)
+    apply (blast dest: W_var_geD intro: new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
+    apply clarsimp
 
-apply (rule lessI [THEN new_tv_subst_var])
-apply (erule sym [THEN mgu_new])
-apply (blast dest!: W_var_geD
-             intro: lessI [THEN less_imp_le, THEN new_tv_le] new_tv_subst_te 
-                    new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
+    apply (rule lessI [THEN new_tv_subst_var])
+    apply (erule sym [THEN mgu_new])
+    apply (blast dest!: W_var_geD
+      intro: lessI [THEN less_imp_le, THEN new_tv_le] new_tv_subst_te 
+      new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
 
-apply (erule impE)
-apply (blast dest: W_var_geD intro: new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
-apply clarsimp
-
--- "41: case LET e1 e2"
-apply (simp (no_asm) split add: split_option_bind)
-apply (intro strip)
-apply (erule allE,erule allE,erule allE,erule allE,erule allE, erule impE, assumption, erule impE, assumption) 
-apply (erule conjE)
-apply (erule allE,erule allE,erule allE,erule allE,erule allE, erule impE, erule_tac [2] notE impE, tactic "assume_tac 2")
-apply (simp only: new_tv_def)
-apply (simp (no_asm_simp))
-apply (drule W_var_ge)+
-apply (rule allI)
-apply (intro strip)
-apply (simp only: free_tv_subst)
-apply (drule free_tv_app_subst_scheme_list [THEN subsetD])
-apply (best elim: less_le_trans)
-apply (erule conjE)
-apply (rule conjI)
-apply (simp only: o_def)
-apply (rule new_tv_subst_comp_2)
-apply (erule W_var_ge [THEN new_tv_subst_le])
-apply assumption
-apply assumption
-apply assumption
-done
-
+    apply (erule impE)
+    apply (blast dest: W_var_geD intro: new_tv_subst_scheme_list new_scheme_list_le new_tv_le)
+    apply clarsimp
+    done
+next
+  case LET then show ?case
+    apply (simp (no_asm) split add: split_option_bind)
+    apply (intro strip)
+    apply (erule allE,erule allE,erule allE,erule allE,erule allE, erule impE, assumption, erule impE, assumption) 
+    apply (erule conjE)
+    apply (erule allE,erule allE,erule allE,erule allE,erule allE, erule impE, erule_tac [2] notE impE, tactic "assume_tac 2")
+    apply (simp only: new_tv_def)
+    apply (simp (no_asm_simp))
+    apply (drule W_var_ge)+
+    apply (rule allI)
+    apply (intro strip)
+    apply (simp only: free_tv_subst)
+    apply (drule free_tv_app_subst_scheme_list [THEN subsetD])
+    apply (best elim: less_le_trans)
+    apply (erule conjE)
+    apply (rule conjI)
+    apply (simp only: o_def)
+    apply (rule new_tv_subst_comp_2)
+    apply (erule W_var_ge [THEN new_tv_subst_le])
+    apply assumption
+    apply assumption
+    apply assumption
+    done
+qed
 
 lemma free_tv_bound_typ_inst1 [rule_format (no_asm)]: 
   "(v ~: free_tv sch) --> (v : free_tv (bound_typ_inst (TVar o S) sch)) --> (? x. v = S x)"
@@ -201,81 +205,86 @@ declare free_tv_bound_typ_inst1 [simp]
 lemma free_tv_W [rule_format (no_asm)]: 
   "!n A S t m v. W e A n = Some (S,t,m) -->             
           (v:free_tv S | v:free_tv t) --> v<n --> v:free_tv A"
-apply (induct e)
-(* case Var n *)
-apply (simp (no_asm) add: free_tv_subst split add: split_option_bind)
-apply (intro strip)
-apply (case_tac "v : free_tv (A!nat) ")
- apply simp
-apply (drule free_tv_bound_typ_inst1)
- apply (simp (no_asm) add: o_def)
-apply (erule exE)
-apply simp
-(* case Abs e *)
-apply (simp add: free_tv_subst split add: split_option_bind del: all_simps)
-apply (intro strip)
-apply (rename_tac S t n1 v)
-apply (erule_tac x = "Suc n" in allE)
-apply (erule_tac x = "FVar n # A" in allE)
-apply (erule_tac x = "S" in allE)
-apply (erule_tac x = "t" in allE)
-apply (erule_tac x = "n1" in allE)
-apply (erule_tac x = "v" in allE)
-apply (bestsimp intro: cod_app_subst simp add: less_Suc_eq)
-(* case App e1 e2 *)
-apply (simp (no_asm) split add: split_option_bind del: all_simps)
-apply (intro strip)
-apply (rename_tac S t n1 S1 t1 n2 S2 v)
-apply (erule_tac x = "n" in allE)
-apply (erule_tac x = "A" in allE)
-apply (erule_tac x = "S" in allE)
-apply (erule_tac x = "t" in allE)
-apply (erule_tac x = "n1" in allE)
-apply (erule_tac x = "n1" in allE)
-apply (erule_tac x = "v" in allE)
-(* second case *)
-apply (erule_tac x = "$ S A" in allE)
-apply (erule_tac x = "S1" in allE)
-apply (erule_tac x = "t1" in allE)
-apply (erule_tac x = "n2" in allE)
-apply (erule_tac x = "v" in allE)
-apply (intro conjI impI | elim conjE)+
- apply (simp add: rotate_Some o_def)
- apply (drule W_var_geD)
- apply (drule W_var_geD)
- apply ( (frule less_le_trans) , (assumption))
- apply clarsimp 
- apply (drule free_tv_comp_subst [THEN subsetD])
- apply (drule sym [THEN mgu_free])
- apply clarsimp 
- apply (fastsimp dest: free_tv_comp_subst [THEN subsetD] sym [THEN mgu_free] codD free_tv_app_subst_te [THEN subsetD] free_tv_app_subst_scheme_list [THEN subsetD] less_le_trans less_not_refl2 subsetD)
-apply simp
-apply (drule sym [THEN W_var_geD])
-apply (drule sym [THEN W_var_geD])
-apply ( (frule less_le_trans) , (assumption))
-apply clarsimp
-apply (drule mgu_free)
-apply (fastsimp dest: mgu_free codD free_tv_subst_var [THEN subsetD] free_tv_app_subst_te [THEN subsetD] free_tv_app_subst_scheme_list [THEN subsetD] less_le_trans subsetD)
-(* LET e1 e2 *)
-apply (simp (no_asm) split add: split_option_bind del: all_simps)
-apply (intro strip)
-apply (rename_tac S1 t1 n2 S2 t2 n3 v)
-apply (erule_tac x = "n" in allE)
-apply (erule_tac x = "A" in allE)
-apply (erule_tac x = "S1" in allE)
-apply (erule_tac x = "t1" in allE)
-apply (rotate_tac -1)
-apply (erule_tac x = "n2" in allE)
-apply (rotate_tac -1)
-apply (erule_tac x = "v" in allE)
-apply (erule (1) notE impE)
-apply (erule allE,erule allE,erule allE,erule allE,erule allE,erule_tac  x = "v" in allE)
-apply (erule (1) notE impE)
-apply simp
-apply (rule conjI)
-apply (fast dest!: codD free_tv_app_subst_scheme_list [THEN subsetD] free_tv_o_subst [THEN subsetD] W_var_ge dest: less_le_trans)
-apply (fast dest!: codD free_tv_app_subst_scheme_list [THEN subsetD] W_var_ge dest: less_le_trans)
-done
+proof (induct e)
+  case (Var n) then show ?case
+    apply (simp (no_asm) add: free_tv_subst split add: split_option_bind)
+    apply (intro strip)
+    apply (case_tac "v : free_tv (A!n)")
+    apply simp
+    apply (drule free_tv_bound_typ_inst1)
+    apply (simp (no_asm) add: o_def)
+    apply (erule exE)
+    apply simp
+    done
+  case Abs then show ?case
+    apply (simp add: free_tv_subst split add: split_option_bind del: all_simps)
+    apply (intro strip)
+    apply (rename_tac S t n1 v)
+    apply (erule_tac x = "Suc n" in allE)
+    apply (erule_tac x = "FVar n # A" in allE)
+    apply (erule_tac x = "S" in allE)
+    apply (erule_tac x = "t" in allE)
+    apply (erule_tac x = "n1" in allE)
+    apply (erule_tac x = "v" in allE)
+    apply (bestsimp intro: cod_app_subst simp add: less_Suc_eq)
+    done
+  case App then show ?case
+    apply (simp (no_asm) split add: split_option_bind del: all_simps)
+    apply (intro strip)
+    apply (rename_tac S t n1 S1 t1 n2 S2 v)
+    apply (erule_tac x = "n" in allE)
+    apply (erule_tac x = "A" in allE)
+    apply (erule_tac x = "S" in allE)
+    apply (erule_tac x = "t" in allE)
+    apply (erule_tac x = "n1" in allE)
+    apply (erule_tac x = "n1" in allE)
+    apply (erule_tac x = "v" in allE)
+    (* second case *)
+    apply (erule_tac x = "$ S A" in allE)
+    apply (erule_tac x = "S1" in allE)
+    apply (erule_tac x = "t1" in allE)
+    apply (erule_tac x = "n2" in allE)
+    apply (erule_tac x = "v" in allE)
+    apply (intro conjI impI | elim conjE)+
+    apply (simp add: rotate_Some o_def)
+    apply (drule W_var_geD)
+    apply (drule W_var_geD)
+    apply ( (frule less_le_trans) , (assumption))
+    apply clarsimp 
+    apply (drule free_tv_comp_subst [THEN subsetD])
+    apply (drule sym [THEN mgu_free])
+    apply clarsimp 
+    apply (fastsimp dest: free_tv_comp_subst [THEN subsetD] sym [THEN mgu_free] codD free_tv_app_subst_te [THEN subsetD] free_tv_app_subst_scheme_list [THEN subsetD] less_le_trans less_not_refl2 subsetD)
+    apply simp
+    apply (drule sym [THEN W_var_geD])
+    apply (drule sym [THEN W_var_geD])
+    apply ( (frule less_le_trans) , (assumption))
+    apply clarsimp
+    apply (drule mgu_free)
+    apply (fastsimp dest: mgu_free codD free_tv_subst_var [THEN subsetD] free_tv_app_subst_te [THEN subsetD] free_tv_app_subst_scheme_list [THEN subsetD] less_le_trans subsetD)
+    done
+next
+  case LET then show ?case
+    apply (simp (no_asm) split add: split_option_bind del: all_simps)
+    apply (intro strip)
+    apply (rename_tac S1 t1 n2 S2 t2 n3 v)
+    apply (erule_tac x = "n" in allE)
+    apply (erule_tac x = "A" in allE)
+    apply (erule_tac x = "S1" in allE)
+    apply (erule_tac x = "t1" in allE)
+    apply (rotate_tac -1)
+    apply (erule_tac x = "n2" in allE)
+    apply (rotate_tac -1)
+    apply (erule_tac x = "v" in allE)
+    apply (erule (1) notE impE)
+    apply (erule allE,erule allE,erule allE,erule allE,erule allE,erule_tac  x = "v" in allE)
+    apply (erule (1) notE impE)
+    apply simp
+    apply (rule conjI)
+    apply (fast dest!: codD free_tv_app_subst_scheme_list [THEN subsetD] free_tv_o_subst [THEN subsetD] W_var_ge dest: less_le_trans)
+    apply (fast dest!: codD free_tv_app_subst_scheme_list [THEN subsetD] W_var_ge dest: less_le_trans)
+    done
+qed
 
 lemma weaken_A_Int_B_eq_empty: "(!x. x : A --> x ~: B) ==> A Int B = {}"
 apply fast

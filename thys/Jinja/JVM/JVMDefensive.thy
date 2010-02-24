@@ -147,9 +147,8 @@ where
 consts
   "exec_all_d" :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
                    ("_ |- _ -jvmd-> _" [61,61,61]60)
-syntax (xsymbols)
-  "exec_all_d" :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
-                   ("_ \<turnstile> _ -jvmd\<rightarrow> _" [61,61,61]60)  
+notation (xsymbols)
+  "exec_all_d"   ("_ \<turnstile> _ -jvmd\<rightarrow> _" [61,61,61]60)
 defs
   exec_all_d_def1: "P \<turnstile> \<sigma> -jvmd\<rightarrow> \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> (exec_1_d P)\<^sup>*"
 

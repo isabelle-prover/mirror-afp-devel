@@ -61,22 +61,11 @@ constdefs
  "\<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A \<equiv> (\<forall>(P,p,Q,A)\<in>\<Theta>. \<Gamma>\<Turnstile>n:\<^bsub>/F\<^esub> P (Call p) Q,A) \<longrightarrow> \<Gamma> \<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A"
 
 
-syntax (ascii)
-  valid :: "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com,'s assn,'s assn] => bool"
-                ("_|='/_/ _ _ _,_"  [61,60,1000, 20, 1000,1000] 60)
-
-  cvalid::
-   "[('s,'p,'f) body,('s,'p) quadruple set,'f set,
-       's assn,('s,'p,'f) com,'s assn,'s assn] \<Rightarrow> bool"
-                ("_,_|='/_/ _ _ _,_"  [61,60,60,1000, 20, 1000,1000] 60)
-
-  nvalid :: "[('s,'p,'f) body,nat,'f set,
-                's assn,('s,'p,'f) com,'s assn,'s assn] => bool"
-                ("_|=_:'/_/ _ _ _,_"  [61,60,60,1000, 20, 1000,1000] 60)
-  cnvalid::
-   "[('s,'p,'f) body,('s,'p) quadruple set,nat,'f set,
-       's assn,('s,'p,'f) com,'s assn,'s assn] => bool"
-                ("_,_|=_:'/_/ _ _ _,_"  [61,60,60,60,1000, 20, 1000,1000] 60)
+notation (ascii)
+  valid  ("_|='/_/ _ _ _,_"  [61,60,1000, 20, 1000,1000] 60) and
+  cvalid  ("_,_|='/_/ _ _ _,_"  [61,60,60,1000, 20, 1000,1000] 60) and
+  nvalid  ("_|=_:'/_/ _ _ _,_"  [61,60,60,1000, 20, 1000,1000] 60) and
+  cnvalid  ("_,_|=_:'/_/ _ _ _,_"  [61,60,60,60,1000, 20, 1000,1000] 60)
 
 
 subsection {*Properties of Validity *}
