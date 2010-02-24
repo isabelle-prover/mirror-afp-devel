@@ -53,23 +53,15 @@ constdefs
                  ("_ |- _ <=' _"  [71,71,71] 70)
   "sup_state_opt P \<equiv> Opt.le (sup_state P)"
 
-syntax
-  sup_loc :: "['c prog,ty\<^isub>l,ty\<^isub>l] \<Rightarrow> bool" 
-                 ("_ |- _ [<=T] _"  [71,71,71] 70)
+abbreviation
+  sup_loc :: "['c prog,ty\<^isub>l,ty\<^isub>l] \<Rightarrow> bool"  ("_ |- _ [<=T] _"  [71,71,71] 70)
+  where "P |- LT [<=T] LT' \<equiv> list_all2 (sup_ty_opt P) LT LT'"
 
-
-syntax (xsymbols)
-  sup_ty_opt    :: "['c prog, ty err, ty err] \<Rightarrow> bool" 
-                   ("_ \<turnstile> _ \<le>\<^sub>\<top> _" [71,71,71] 70)
-  sup_state     :: "['c prog, ty\<^isub>i, ty\<^isub>i] \<Rightarrow> bool" 
-                   ("_ \<turnstile> _ \<le>\<^sub>i _" [71,71,71] 70)
-  sup_state_opt :: "['c prog, ty\<^isub>i', ty\<^isub>i'] \<Rightarrow> bool"
-                   ("_ \<turnstile> _ \<le>' _" [71,71,71] 70)
-
-abbreviation (xsymbols)
-  sup_loc       :: "['c prog, ty\<^isub>l, ty\<^isub>l] \<Rightarrow> bool"
-                   ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70) where
-  "P \<turnstile> LT [\<le>\<^sub>\<top>] LT' \<equiv> list_all2 (sup_ty_opt P) LT LT'"
+notation (xsymbols)
+  sup_ty_opt  ("_ \<turnstile> _ \<le>\<^sub>\<top> _" [71,71,71] 70) and
+  sup_state  ("_ \<turnstile> _ \<le>\<^sub>i _" [71,71,71] 70) and
+  sup_state_opt  ("_ \<turnstile> _ \<le>' _" [71,71,71] 70) and
+  sup_loc  ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70)
 
 
 section "Unfolding"

@@ -45,14 +45,9 @@ constdefs
 
 
 
-syntax (ascii)
-  validt :: "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com,'s assn,'s assn] => bool"
-                ("_|=t'/_/ _ _ _,_"  [61,60,1000, 20, 1000,1000] 60)
-
-  cvalidt::
-   "[('s,'p,'f) body,('s,'p) quadruple set,'f set,
-      's assn,('s,'p,'f) com,'s assn,'s assn] \<Rightarrow> bool"
-                ("_,_|=t'/_ / _ _ _,_"  [61,60,60,1000, 20, 1000,1000] 60)
+notation (ascii)
+  validt  ("_|=t'/_/ _ _ _,_"  [61,60,1000, 20, 1000,1000] 60) and
+  cvalidt  ("_,_|=t'/_ / _ _ _,_"  [61,60,60,1000, 20, 1000,1000] 60)
 
 subsection {* Properties of Validity *}
 

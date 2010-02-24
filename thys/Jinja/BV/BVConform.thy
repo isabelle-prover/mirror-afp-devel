@@ -13,25 +13,21 @@ imports BVSpec "../JVM/JVMExec" "../Common/Conform"
 begin
 
 
-consts
+constdefs
   confT :: "'c prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty err \<Rightarrow> bool" 
            ("_,_ |- _ :<=T _" [51,51,51,51] 50)
+  "P,h |- v :<=T E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
 
-syntax (xsymbols)
-  confT :: "'c prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty err \<Rightarrow> bool" 
-           ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
+notation (xsymbols)
+  confT  ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
 
-defs confT_def:
-  "P,h \<turnstile> v :\<le>\<^sub>\<top> E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
-
-syntax
+abbreviation
   confTs :: "'c prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty\<^isub>l \<Rightarrow> bool" 
-            ("_,_ |- _ [:<=T] _" [51,51,51,51] 50)
+            ("_,_ |- _ [:<=T] _" [51,51,51,51] 50) where
+  "P,h |- vs [:<=T] Ts \<equiv> list_all2 (confT P h) vs Ts"
 
-abbreviation (xsymbols)
-  confTs :: "'c prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty\<^isub>l \<Rightarrow> bool"
-           ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50) where
-  "P,h \<turnstile> vs [:\<le>\<^sub>\<top>] Ts \<equiv> list_all2 (confT P h) vs Ts"
+notation (xsymbols)
+  confTs  ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
 
 constdefs
   conf_f  :: "jvm_prog \<Rightarrow> heap \<Rightarrow> ty\<^isub>i \<Rightarrow> bytecode \<Rightarrow> frame \<Rightarrow> bool"
@@ -75,9 +71,8 @@ constdefs
                     conf_f P h \<tau> is f \<and> conf_fs P h \<Phi> M (size Ts) T fs))
   | Some x \<Rightarrow> frs = []" 
 
-syntax (xsymbols)
- correct_state :: "[jvm_prog,ty\<^isub>P,jvm_state] \<Rightarrow> bool"
-                  ("_,_ \<turnstile> _ \<surd>"  [61,0,0] 61)
+notation (xsymbols)
+ correct_state  ("_,_ \<turnstile> _ \<surd>"  [61,0,0] 61)
 
 
 
