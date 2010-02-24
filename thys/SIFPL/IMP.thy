@@ -76,13 +76,6 @@ where
 text{*The operational semantics is a standard big-step relation, with
 a height index that facilitates the Kleymann-Nipkow-style~\cite{KleymannPhD,Nipkow-CSL02}
 soundness proof of the program logic.*}
-(*
-consts Semn :: "(State \<times> IMP \<times> nat \<times> State) set"
-
-syntax Semn_  :: "[State, IMP, nat, State] \<Rightarrow> bool"   (" _ , _ \<longrightarrow>\<^sub>_  _ ")
-
-translations "s,c \<longrightarrow>\<^sub>n t" == "(s,c,n,t) : Semn"
-*)
 
 inductive_set Semn :: "(State \<times> IMP \<times> nat \<times> State) set" where
  SemSkip: "(s,Skip,1,s) : Semn" 
