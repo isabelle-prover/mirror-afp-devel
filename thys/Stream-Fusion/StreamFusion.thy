@@ -14,9 +14,7 @@ hide (open) const Left Right
 
 domain ('a, 'b) Either = Left 'a | Right 'b
 
-domain ('a, 'b) Both = Both 'a 'b (infixl ":!:" 75)
-
-syntax Both :: "type \<Rightarrow> type \<Rightarrow> type" (infixl ":!:" 25)
+domain ('a, 'b) Both  (infixl ":!:" 25) = Both 'a 'b (infixl ":!:" 75)
 
 domain 'a L = L (lazy 'a)
 
