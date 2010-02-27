@@ -757,7 +757,7 @@ fun guard ctxt Ts (add as (Const (@{const_name Groups.plus},_) $ l $ r)) =
       guard ctxt Ts n & SOME (in_range un)
   | guard ctxt Ts (Const (@{const_name Int.nat},_) $ i) =
       guard ctxt Ts i & SOME (is_pos i)
-  | guard ctxt Ts (i as (Const (@{const_name Int.int},_) $ n)) =
+  | guard ctxt Ts (i as (Const (@{const_abbrev Int.int},_) $ n)) =
       guard ctxt Ts n & SOME (in_range i)
   | guard ctxt Ts (Const (@{const_name List.nth},_) $ l $ e) =
       if is_arr l then guard ctxt Ts l & guard ctxt Ts e & SOME (in_length e l)
