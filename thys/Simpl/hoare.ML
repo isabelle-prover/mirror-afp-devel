@@ -1646,14 +1646,14 @@ fun mark_proven_guards proven t =
    in fold_com mark t end
 
 local
-  val ss = HOL_basic_ss addsimps ([if_True,if_False,fst_conv,snd_conv,split_conv,Let_def,
+  val ss = HOL_basic_ss addsimps ([@{thm if_True}, @{thm if_False}, @{thm fst_conv}, @{thm snd_conv}, @{thm split_conv}, @{thm Let_def},
                                    insert_iff,empty_iff,
                                    CollectInt_iff,conj_assoc,
-                                   while_def]@simp_thms@
+                                   while_def] @ @{thms simp_thms} @
                                    anno_defs@mark_guards_simps@merge_guards_simps@
                                    guards_simps@strip_guards_simps@
                                    is_Guard_simps@dest_Guard_simps)
-                        addcongs [if_weak_cong];
+                        addcongs [@{thm if_weak_cong}];
 in
 val merge_mark_strip_guards_simp_tac = simp_tac ss
 end;
@@ -1905,7 +1905,7 @@ fun assertion_simp_tac ctxt state_kind thms i =
 (* simplify equality test on strings (and datatype-constructors) and propagate result*)
 fun string_eq_simp_tac ctxt = simp_tac (Simplifier.context ctxt HOL_basic_ss
   addsimps (@{thms list.inject} @ @{thms char.inject}
-    @ @{thms list.distinct} @ @{thms char.distinct} @ simp_thms));
+    @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms}));
     
 
 
@@ -2055,8 +2055,8 @@ local
 val conseq1_ss_base = (HOL_basic_ss
                        addsimps ([mem_Collect_eq,singleton_iff,Int_iff,
                                   empty_iff,UNIV_I,
-                                  conj_assoc,disj_assoc]@all_imp_eq_triv
-                                  @K_convs@simp_thms@ex_simps@all_simps)
+                                  conj_assoc, @{thm disj_assoc}] @ all_imp_eq_triv
+                                  @K_convs @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
                        delsimps [all_imp_to_ex]
                        addcongs K_congs
                        )
@@ -2066,7 +2066,7 @@ fun conseq1_ss Record   = conseq1_ss_record
   | conseq1_ss Function = conseq1_ss_fun;
 
 val conseq2_ss_base = (HOL_basic_ss
-        addsimps (all_imp_eq_triv@simp_thms@simp_thms@ex_simps@all_simps )
+        addsimps (all_imp_eq_triv @ @{thms simp_thms} @ @{thms ex_simps} @ @{thms all_simps})
         delsimps [all_imp_to_ex]
         addcongs [imp_cong]
     )
@@ -2547,7 +2547,7 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
                   basic_tac spec (cnt - 8),
                   if cmode = Parameter
                   then EVERY [rtac subset_refl (cnt - 8),
-                              simp_tac (HOL_basic_ss addsimps (CollectInt_iff::simp_thms)) 1]
+                              simp_tac (HOL_basic_ss addsimps (CollectInt_iff :: @{thms simp_thms})) 1]
                   else all_tac]
         end
         handle _ => raise TERM ("get_call_tac.modify_tac: no proper modifies spec", []);
@@ -2639,7 +2639,7 @@ fun solve_in_Faults_tac i =
 
 local
 val triv_simp = merge_assertion_simp_tac [mem_Collect_eq] THEN'
-         simp_tac (HOL_basic_ss addsimps simp_thms addcongs [conj_cong,imp_cong]);
+         simp_tac (HOL_basic_ss addsimps @{thms simp_thms} addcongs [@{thm conj_cong}, @{thm imp_cong}]);
     (* a guarded while produces stupid things, since the guards are
           put at the end of the body and in the invariant (rule WhileAnnoG):
          - guard: g /\ g
@@ -3167,7 +3167,7 @@ fun split_state ctxt s T t =
     val vars' = if !sort_variables then sort_vars ctxt T vars else vars;
   in (abstract_vars vars' s t,rev vars') end;
 
-fun ex_tac vs st = Record.record_split_simp_tac simp_thms (K ~1) 1 st;
+fun ex_tac vs st = Record.record_split_simp_tac @{thms simp_thms} (K ~1) 1 st;
 
 end;
 
@@ -3314,7 +3314,7 @@ local
 val ss = global_simpset_of @{theory Fun}
   addsimps (@{thm StateFun.lookup_def} :: @{thm StateFun.id_id_cancel}
     :: @{thms list.inject} @ @{thms char.inject}
-    @ @{thms list.distinct} @ @{thms char.distinct} @ simp_thms)
+    @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms})
   addsimprocs [Record.record_simproc, StateFun.lazy_conj_simproc]
   addcongs @{thms block_conj_cong};
 
@@ -3455,9 +3455,9 @@ local
 val state_fun_update_ss = HOL_basic_ss
   addsimps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}]
     @ @{thms list.inject} @ @{thms char.inject}
-    @ @{thms list.distinct} @ @{thms char.distinct} @ simp_thms @ K_fun_convs)
+    @ @{thms list.distinct} @ @{thms char.distinct} @ @{thms simp_thms} @ K_fun_convs)
     addcongs ([imp_cong] (* @ K_fun_congs  FIXME: Stefan fragen*))
-    addsplits [split_if]
+    addsplits [@{thm split_if}]
     addsimprocs [DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"]]
 
 in
@@ -3609,7 +3609,7 @@ fun vcg_polish_tac solve_modifies ctxt state_kind state_space i =
     then solve_modifies_tac ctxt state_kind state_space i
     else record_vanish_tac ctxt state_kind state_space i
          THEN_MAYBE EVERY [rename_goal remdeco i(*,
-                           simp_tac (HOL_basic_ss addsimps (thms "simp_thms")) i*)];
+                           simp_tac (HOL_basic_ss addsimps @{thms simp_thms})) i*)];
 
 fun is_funtype (Type ("fun", _)) = true
   | is_funtype _ = false;
