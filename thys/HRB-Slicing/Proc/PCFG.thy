@@ -1,6 +1,6 @@
 header {* \isaheader{Definition of the CFG} *}
 
-theory PCFG imports Com State begin
+theory PCFG imports ProcState begin
 
 definition Main :: "pname"
   where "Main = ''Main''"
