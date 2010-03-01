@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: DefAss.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -7,29 +6,30 @@
 
 header {* \isaheader{Definite assignment} *}
 
-theory DefAss imports BigStep begin
+theory DefAss
+imports BigStep
+begin
 
 
 section {*Hypersets*}
 
 types hyperset = "vname set option"
 
-constdefs
-  hyperUn :: "hyperset \<Rightarrow> hyperset \<Rightarrow> hyperset"   (infixl "\<squnion>" 65)
+definition hyperUn :: "hyperset \<Rightarrow> hyperset \<Rightarrow> hyperset"   (infixl "\<squnion>" 65) where
   "A \<squnion> B  \<equiv>  case A of None \<Rightarrow> None
                  | \<lfloor>A\<rfloor> \<Rightarrow> (case B of None \<Rightarrow> None | \<lfloor>B\<rfloor> \<Rightarrow> \<lfloor>A \<union> B\<rfloor>)"
 
-  hyperInt :: "hyperset \<Rightarrow> hyperset \<Rightarrow> hyperset"   (infixl "\<sqinter>" 70)
+definition hyperInt :: "hyperset \<Rightarrow> hyperset \<Rightarrow> hyperset"   (infixl "\<sqinter>" 70) where
   "A \<sqinter> B  \<equiv>  case A of None \<Rightarrow> B
                  | \<lfloor>A\<rfloor> \<Rightarrow> (case B of None \<Rightarrow> \<lfloor>A\<rfloor> | \<lfloor>B\<rfloor> \<Rightarrow> \<lfloor>A \<inter> B\<rfloor>)"
 
-  hyperDiff1 :: "hyperset \<Rightarrow> vname \<Rightarrow> hyperset"   (infixl "\<ominus>" 65)
+definition hyperDiff1 :: "hyperset \<Rightarrow> vname \<Rightarrow> hyperset"   (infixl "\<ominus>" 65) where
   "A \<ominus> a  \<equiv>  case A of None \<Rightarrow> None | \<lfloor>A\<rfloor> \<Rightarrow> \<lfloor>A - {a}\<rfloor>"
 
- hyper_isin :: "vname \<Rightarrow> hyperset \<Rightarrow> bool"   (infix "\<in>\<in>" 50)
+definition hyper_isin :: "vname \<Rightarrow> hyperset \<Rightarrow> bool"   (infix "\<in>\<in>" 50) where
 "a \<in>\<in> A  \<equiv>  case A of None \<Rightarrow> True | \<lfloor>A\<rfloor> \<Rightarrow> a \<in> A"
 
-  hyper_subset :: "hyperset \<Rightarrow> hyperset \<Rightarrow> bool"   (infix "\<sqsubseteq>" 50)
+definition hyper_subset :: "hyperset \<Rightarrow> hyperset \<Rightarrow> bool"   (infix "\<sqsubseteq>" 50) where
   "A \<sqsubseteq> B  \<equiv>  case B of None \<Rightarrow> True
                  | \<lfloor>B\<rfloor> \<Rightarrow> (case A of None \<Rightarrow> False | \<lfloor>A\<rfloor> \<Rightarrow> A \<subseteq> B)"
 
@@ -157,9 +157,5 @@ done
 lemma D_mono': "\<D> e A \<Longrightarrow> A \<sqsubseteq> A' \<Longrightarrow> \<D> e A'"
 and Ds_mono': "\<D>s es A \<Longrightarrow> A \<sqsubseteq> A' \<Longrightarrow> \<D>s es A'"
 by(blast intro:D_mono, blast intro:Ds_mono)
-
-
-
-
 
 end

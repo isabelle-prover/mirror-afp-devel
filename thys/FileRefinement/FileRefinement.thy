@@ -40,24 +40,20 @@ subsection {* Abstract File *}
 types
   AFile = "byte rArray" -- "abstract file is a resizable array of bytes"
 
-constdefs
-  makeAF :: AFile
-  -- "initial file has size 0"
+definition makeAF :: AFile
+ where  -- "initial file has size 0"
   "makeAF == (0, % index. fillByte)"
 
-constdefs
-  afSize :: "AFile => nat"
+definition afSize :: "AFile => nat" where
   -- "file size is the length of the resizable array"
   "afSize afile == fst afile"
 
-constdefs
-  afRead :: "AFile => nat ~=> byte"
+definition afRead :: "AFile => nat ~=> byte" where
   -- "reading from a file looks up the byte, reporting @{term None} if the index is out of file bounds"
   "afRead afile byteIndex == 
    if byteIndex < fst afile then Some ((snd afile) byteIndex) else None"
 
-constdefs
-  afWrite :: "AFile => nat => byte ~=> AFile"
+definition afWrite :: "AFile => nat => byte ~=> AFile" where
   -- "writing to a file updates the file content and extends the file if there is enough space"
   "afWrite afile byteIndex value == 
    if byteIndex div blockSize < numBlocks then
@@ -75,22 +71,19 @@ record CFile =
   nextFreeBlock :: nat -- "next block available for allocation"
   data          :: "Block cArray" -- "array of up to @{term numBlocks} blocks"
 
-constdefs
-  makeCF :: CFile
-  -- "initial file has no allocated blocks"
+definition makeCF :: CFile
+ where  -- "initial file has no allocated blocks"
   "makeCF ==
    (| fileSize      = 0,
       nextFreeBlock = 0,
       data          = makeCArray numBlocks (makeCArray blockSize fillByte)
    |)"
 
-constdefs
-  cfSize :: "CFile => nat"
+definition cfSize :: "CFile => nat" where
   "cfSize cfile == fileSize cfile"
 
 
-constdefs
-  cfRead :: "CFile => nat ~=> byte"
+definition cfRead :: "CFile => nat ~=> byte" where
   -- {* Looks up correct data block and reads its content,
         if byteIndex is within bounds, else returns None. *}
   "cfRead cfile byteIndex ==
@@ -104,8 +97,7 @@ subsubsection {* Writing File *}
 
 text {* We first present some auxiliary operations. *}
 
-constdefs
-  cfWriteNoExtend :: "CFile => nat => byte => CFile"
+definition cfWriteNoExtend :: "CFile => nat => byte => CFile" where
   -- {* Writing to a file when
         @{term byteIndex} is within bounds. *}
   "cfWriteNoExtend cfile byteIndex value ==
@@ -115,8 +107,7 @@ constdefs
          cfile(| data := 
                  writeCArray (data cfile) i (writeCArray block j value) |)"
 
-constdefs
-  cfExtendFile :: "CFile => nat => CFile"
+definition cfExtendFile :: "CFile => nat => CFile" where
   -- {* Writing to a file when
         @{term byteIndex} is out of bounds.  Involves
         allocating a new block. *}
@@ -126,8 +117,7 @@ constdefs
 
 text {* The main file write operation. *}
 
-constdefs
-  cfWrite :: "CFile => nat => byte ~=> CFile"
+definition cfWrite :: "CFile => nat => byte ~=> CFile" where
   -- {* Writes the file at byte location byteIndex, automatically extending
    the file to that byte location if byteIndex is not within bounds.  *}
   "cfWrite cfile byteIndex value ==
@@ -141,13 +131,11 @@ constdefs
 (* ---------------------------------------------------------------*)
 subsection {* Reachability Invariants for Concrete File *}
 
-constdefs
-  nextFreeBlockInvariant :: "CFile => bool"
+definition nextFreeBlockInvariant :: "CFile => bool" where
   "nextFreeBlockInvariant state ==
    (fileSize state + blockSize - 1) div blockSize = nextFreeBlock state"
 
-constdefs
-  unallocatedBlocksInvariant :: "CFile => bool"
+definition unallocatedBlocksInvariant :: "CFile => bool" where
   -- {* This invariant of the implementation is needed to prove
    writeExtendCorrect. It says that any unallocated block contains
    fillByte's. *}
@@ -156,15 +144,13 @@ constdefs
      ~ blockNum < nextFreeBlock state & blockNum < numBlocks & i < blockSize 
      --> data state blockNum i = fillByte"
 
-constdefs
-  lastBlockInvariant :: "CFile => bool"
+definition lastBlockInvariant :: "CFile => bool" where
   "lastBlockInvariant state ==
    ALL index .
      ~ index < fileSize state & nextFreeBlock state = index div blockSize + 1
      --> data state (index div blockSize) (index mod blockSize) = fillByte"
 
-constdefs
-  reachabilityInvariant :: "CFile => bool"
+definition reachabilityInvariant :: "CFile => bool" where
   "reachabilityInvariant cfile == 
       nextFreeBlockInvariant cfile &
       unallocatedBlocksInvariant cfile &
@@ -398,8 +384,7 @@ text {* Here we show correctness of file system operations. *}
 (* ---------------------------------------------------------------*)
 subsubsection {* Abstraction Function *}
 
-constdefs
-  abstFn :: "CFile => AFile"
+definition abstFn :: "CFile => AFile" where
   "abstFn cfile == (fileSize cfile, 
                     % index . case cfRead cfile index of
                                 None       => fillByte

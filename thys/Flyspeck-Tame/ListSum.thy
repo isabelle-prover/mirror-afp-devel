@@ -91,7 +91,7 @@ lemma ListSum_disj_union:
   by (simp add: ListSum_conv_setsum setsum_Un_disjoint)
 
 
-constdefs separating :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> bool"
+definition separating :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> bool" where
   "separating V F \<equiv> 
    (\<forall>v1 \<in> V. \<forall>v2 \<in> V. v1 \<noteq> v2 \<longrightarrow>  F v1 \<inter> F v2 = {})"
 

@@ -27,20 +27,19 @@ translations
   "prog " <= (type) "cdecl list"
 
 
-constdefs
-  "class" :: "prog \<Rightarrow> cname \<rightharpoonup> class"
+definition "class" :: "prog \<Rightarrow> cname \<rightharpoonup> class" where
   "class \<equiv> map_of"
 
-  is_class :: "prog \<Rightarrow> cname \<Rightarrow> bool"
+definition is_class :: "prog \<Rightarrow> cname \<Rightarrow> bool" where
   "is_class P C \<equiv> class P C \<noteq> None"
 
-  baseClasses :: "base list \<Rightarrow> cname set"
+definition baseClasses :: "base list \<Rightarrow> cname set" where
   "baseClasses Bs \<equiv> set ((map getbase) Bs)"
 
-  RepBases :: "base list \<Rightarrow> cname set"
+definition RepBases :: "base list \<Rightarrow> cname set" where
   "RepBases Bs \<equiv> set ((map getbase) (filter isRepBase Bs))"
 
-  SharedBases :: "base list \<Rightarrow> cname set"
+definition SharedBases :: "base list \<Rightarrow> cname set" where
   "SharedBases Bs \<equiv> set ((map getbase) (filter isShBase Bs))"
 
 
@@ -93,8 +92,7 @@ done
 
 
 
-constdefs
-  is_type :: "prog \<Rightarrow> ty \<Rightarrow> bool"
+definition is_type :: "prog \<Rightarrow> ty \<Rightarrow> bool" where
   "is_type P T  \<equiv>
   (case T of Void \<Rightarrow> True | Boolean \<Rightarrow> True | Integer \<Rightarrow> True | NT \<Rightarrow> True
    | Class C \<Rightarrow> is_class P C)"

@@ -3713,19 +3713,16 @@ locale bModule = aGroup M +
   and scr_one:
        "m \<in> carrier M \<Longrightarrow> m \<cdot>\<^bsub>sr\<^esub> (1\<^sub>r\<^bsub>S\<^esub>) = m" 
 
-constdefs
-  lModule::"('a, 'r, 's, 'more) bModule_scheme \<Rightarrow> ('a, 'r) Module"
+definition lModule :: "('a, 'r, 's, 'more) bModule_scheme \<Rightarrow> ('a, 'r) Module" where
        ("(_\<^sub>l)" [1000]999)
   "M\<^sub>l == \<lparr>carrier = carrier M, pop = pop M, mop = mop M, 
     zero = zero M, sprod = sc_l M \<rparr>"
 
-constdefs
- scr_re :: "('a, 'b, 'c, 'more) bModule_scheme \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> 'a" 
+definition scr_re :: "('a, 'b, 'c, 'more) bModule_scheme \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> 'a" where 
                   
  "scr_re M r m == sc_r M m r"
 
-constdefs
-  rModule::"('a, 'r, 's, 'more) bModule_scheme \<Rightarrow> ('a, 's) Module"
+definition rModule :: "('a, 'r, 's, 'more) bModule_scheme \<Rightarrow> ('a, 's) Module" where
         ("(_\<^sub>r)" [1000]999) 
   "M\<^sub>r == \<lparr>carrier = carrier M, pop = pop M, mop = mop M, 
     zero = zero M, sprod = scr_re M \<rparr>"
@@ -3810,9 +3807,8 @@ apply (frule sc_mem [of a m], assumption+)
 apply (simp add:ag_l_zero)
 done
 
-constdefs
- cos_scr::"[('r, 'm) Ring_scheme, 'r set, ('a, 'r, 'm1) Module_scheme] \<Rightarrow>
-               'a \<Rightarrow> 'r set \<Rightarrow> 'a"
+definition cos_scr :: "[('r, 'm) Ring_scheme, 'r set, ('a, 'r, 'm1) Module_scheme] \<Rightarrow>
+               'a \<Rightarrow> 'r set \<Rightarrow> 'a" where
   "cos_scr R A M == \<lambda>m. \<lambda>X. (SOME x. x \<in> X) \<cdot>\<^sub>s\<^bsub>M\<^esub> m"
 
 lemma (in Module) cos_scr_welldef:"\<lbrakk>ideal R A; A \<subseteq> Ann\<^bsub>R\<^esub> M; a \<in> carrier R; 
@@ -3825,9 +3821,8 @@ apply (cut_tac sc_Ring,
 apply (rule someI2_ex, blast, assumption)
 done
 
-constdefs
- r_qr_bmod::"[('r, 'm) Ring_scheme, 'r set, ('a, 'r, 'm1) Module_scheme] \<Rightarrow> 
-    ('a, 'r, 'r set) bModule" 
+definition r_qr_bmod :: "[('r, 'm) Ring_scheme, 'r set, ('a, 'r, 'm1) Module_scheme] \<Rightarrow> 
+    ('a, 'r, 'r set) bModule" where 
  "r_qr_bmod R A M == \<lparr>carrier = carrier M, pop = pop M, mop = mop M, 
   zero = zero M, sc_l = sprod M, sc_r = cos_scr R A M \<rparr>" *)
  (* Remark. A should be an ideal contained in Ann\<^sub>R M. *)

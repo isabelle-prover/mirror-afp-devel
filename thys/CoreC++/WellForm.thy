@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: WellForm.thy,v 1.11 2007-07-19 21:23:09 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -21,15 +20,14 @@ CoreC++ allows covariant return types *}
 
 types wf_mdecl_test = "prog \<Rightarrow> cname \<Rightarrow> mdecl \<Rightarrow> bool"
 
-constdefs
-  wf_fdecl :: "prog \<Rightarrow> fdecl \<Rightarrow> bool"
+definition wf_fdecl :: "prog \<Rightarrow> fdecl \<Rightarrow> bool" where
   "wf_fdecl P \<equiv> \<lambda>(F,T). is_type P T"
 
-  wf_mdecl :: "wf_mdecl_test \<Rightarrow> wf_mdecl_test"
+definition wf_mdecl :: "wf_mdecl_test \<Rightarrow> wf_mdecl_test" where
   "wf_mdecl wf_md P C \<equiv> \<lambda>(M,Ts,T,mb).
   (\<forall>T\<in>set Ts. is_type P T) \<and> is_type P T \<and> T \<noteq> NT \<and> wf_md P C (M,Ts,T,mb)"
 
-  wf_cdecl :: "wf_mdecl_test \<Rightarrow> prog \<Rightarrow> cdecl \<Rightarrow> bool"
+definition wf_cdecl :: "wf_mdecl_test \<Rightarrow> prog \<Rightarrow> cdecl \<Rightarrow> bool" where
   "wf_cdecl wf_md P  \<equiv>  \<lambda>(C,(Bs,fs,ms)).
   (\<forall>M mthd Cs. P \<turnstile> C has M = mthd via Cs \<longrightarrow> 
                (\<exists>mthd' Cs'. P \<turnstile> (C,Cs) has overrider M = mthd' via Cs')) \<and> 
@@ -41,10 +39,10 @@ constdefs
       \<forall>Ts' T' m' Cs. P \<turnstile> D has M = (Ts',T',m') via Cs \<longrightarrow>
                      Ts' = Ts \<and> P \<turnstile> T \<le> T'))"
 
-  wf_syscls :: "prog \<Rightarrow> bool"
+definition wf_syscls :: "prog \<Rightarrow> bool" where
   "wf_syscls P  \<equiv>  sys_xcpts \<subseteq> set(map fst P)"
 
-  wf_prog :: "wf_mdecl_test \<Rightarrow> prog \<Rightarrow> bool"
+definition wf_prog :: "wf_mdecl_test \<Rightarrow> prog \<Rightarrow> bool" where
   "wf_prog wf_md P \<equiv> wf_syscls P \<and> distinct_fst P \<and> 
                      (\<forall>c \<in> set P. wf_cdecl wf_md P c)"
 

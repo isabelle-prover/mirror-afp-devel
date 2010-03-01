@@ -1,5 +1,4 @@
-(*  ID:         $Id: Vector.thy,v 1.4 2008-10-09 13:27:33 fhaftmann Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
+(*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header {* Vector *}
@@ -12,16 +11,18 @@ datatype 'a vector = Vector "'a list"
 
 subsection {* Tabulation *}
 
-constdefs
-  tabulate' :: "nat \<times> (nat \<Rightarrow> 'a) \<Rightarrow> 'a vector"
+definition tabulate' :: "nat \<times> (nat \<Rightarrow> 'a) \<Rightarrow> 'a vector" where
   [code del]: "tabulate' p \<equiv> Vector (map (snd p) [0 ..< fst p])"
         (* map int [0..nat (fst p)])])*)
-  tabulate :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a vector"
+
+definition tabulate :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a vector" where
   "tabulate n f \<equiv> tabulate' (n, f)"
-  tabulate2 :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> 'a vector vector"
+
+definition tabulate2 :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> 'a vector vector" where
   "tabulate2 m n f \<equiv> tabulate m (\<lambda>i .tabulate n (f i))"
-  tabulate3 :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
-  (nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> 'a vector vector vector"
+
+definition tabulate3 :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
+  (nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> 'a vector vector vector" where
   "tabulate3 l m n f \<equiv> tabulate l (\<lambda>i. tabulate m (\<lambda>j .tabulate n (\<lambda>k. f i j k)))"
 
 
@@ -42,10 +43,10 @@ translations
 
 subsection {* Access *}
 
-constdefs 
- sub1 :: "'a vector \<times> nat \<Rightarrow> 'a"
+definition sub1 :: "'a vector \<times> nat \<Rightarrow> 'a" where
  [code del]: "sub1 p \<equiv> let (a, n) = p in case a of (Vector as) \<Rightarrow> as ! n"
- sub :: "'a vector \<Rightarrow> nat \<Rightarrow> 'a" 
+
+definition sub :: "'a vector \<Rightarrow> nat \<Rightarrow> 'a" where
  "sub a n \<equiv> sub1 (a, n)"
 
 abbreviation

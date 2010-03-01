@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: Objects.thy,v 1.9 2008-06-23 21:24:36 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -19,8 +18,7 @@ types
   obj  = "cname \<times> subo set"            -- "mdc and subobject"
 
 
-constdefs
-  init_class_fieldmap :: "prog \<Rightarrow> cname \<Rightarrow> (vname \<rightharpoonup> val)"
+definition init_class_fieldmap :: "prog \<Rightarrow> cname \<Rightarrow> (vname \<rightharpoonup> val)" where
   "init_class_fieldmap P C \<equiv> 
      map_of (map (\<lambda>(F,T).(F,default_val T)) (fst(snd(the(class P C)))) )"
 
@@ -44,13 +42,12 @@ lemma SubobjsSet_init_objSet:
 by ( fastsimp intro:init_obj.intros elim:init_obj.cases)
 
 
-constdefs
-  obj_ty  :: "obj \<Rightarrow> ty"
+definition obj_ty :: "obj \<Rightarrow> ty" where
   "obj_ty obj  \<equiv>  Class (fst obj)"
 
 
  -- "a new, blank object with default values in all fields:"
-  blank :: "prog \<Rightarrow> cname \<Rightarrow> obj"
+definition blank :: "prog \<Rightarrow> cname \<Rightarrow> obj" where
   "blank P C  \<equiv> (C, Collect (init_obj P C))"
 
 
@@ -65,8 +62,7 @@ abbreviation
   cname_of :: "heap \<Rightarrow> addr \<Rightarrow> cname" where
   "cname_of hp a == fst (the (hp a))"
 
-constdefs
-  new_Addr  :: "heap \<Rightarrow> addr option"
+definition new_Addr :: "heap \<Rightarrow> addr option" where
   "new_Addr h  \<equiv>  if \<exists>a. h a = None then Some(SOME a. h a = None) else None"
 
 lemma new_Addr_SomeD:

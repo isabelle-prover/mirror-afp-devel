@@ -1,5 +1,4 @@
-(*  ID:         $Id: Enumerator.thy,v 1.4 2009-04-24 19:28:46 fhaftmann Exp $
-    Author:     Gertrud Bauer
+(*  Author:     Gertrud Bauer
 *)
 
 header {* Enumerating Patches *}
@@ -42,39 +41,38 @@ we run over all osibilites fro the finishe face along the edge
 
 text{* \paragraph{Executable enumeration of patches} *}
 
-constdefs enumBase :: "nat \<Rightarrow> nat list list"
+definition enumBase :: "nat \<Rightarrow> nat list list" where
  "enumBase nmax \<equiv> [[i]. i \<leftarrow> [0 ..< Suc nmax]]"
 
-constdefs enumAppend :: "nat \<Rightarrow> nat list list \<Rightarrow> nat list list"
+definition enumAppend :: "nat \<Rightarrow> nat list list \<Rightarrow> nat list list" where
  "enumAppend nmax iss \<equiv> \<Squnion>\<^bsub>is\<in>iss\<^esub> [is @ [n]. n \<leftarrow> [last is ..< Suc nmax]]"
 
-constdefs enumerator :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" (* precondition inner >= 3 *)
+definition enumerator :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" where (* precondition inner >= 3 *)
  "enumerator inner outer \<equiv>
      let nmax = outer - 2; k = inner - 3 in 
      [[0] @ is @ [outer - 1]. is \<leftarrow> (enumAppend nmax ^^ k) (enumBase nmax)]"    
 
- enumTab :: "nat list list vector vector"
+definition enumTab :: "nat list list vector vector" where
 "enumTab \<equiv> \<lbrakk> enumerator inner outer. inner < 9, outer < 9 \<rbrakk>"
 
 (* never used with > 8 but easier this way *)
- enum :: "nat \<Rightarrow> nat \<Rightarrow> nat list list"
+definition enum :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" where
 "enum inner outer \<equiv> if inner < 9 & outer < 9 then enumTab\<lbrakk>inner,outer\<rbrakk>
                     else enumerator inner outer"
 
 text{* \paragraph{Conversion to list of vertices} *}
 
-consts hideDupsRec :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a option list"
-primrec "hideDupsRec a [] = []"
- "hideDupsRec a (b#bs) = 
+primrec hideDupsRec :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a option list" where
+  "hideDupsRec a [] = []"
+| "hideDupsRec a (b#bs) = 
      (if a = b then None # hideDupsRec b bs 
      else Some b # hideDupsRec b bs)"    
 
-consts hideDups :: "'a list \<Rightarrow> 'a option list"
-primrec "hideDups [] = []"
- "hideDups (b#bs) = Some b # hideDupsRec b bs"
+primrec hideDups :: "'a list \<Rightarrow> 'a option list" where
+  "hideDups [] = []"
+| "hideDups (b#bs) = Some b # hideDupsRec b bs"
 
-constdefs indexToVertexList :: "face \<Rightarrow> vertex \<Rightarrow> nat list \<Rightarrow> vertex option list" (* precondition hd is = 0 *)
+definition indexToVertexList :: "face \<Rightarrow> vertex \<Rightarrow> nat list \<Rightarrow> vertex option list" where (* precondition hd is = 0 *)
  "indexToVertexList f v is \<equiv> hideDups [f\<^bsup>k\<^esup>\<bullet>v. k \<leftarrow> is]" 
-
 
 end

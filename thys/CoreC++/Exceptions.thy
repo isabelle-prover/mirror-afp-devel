@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: Exceptions.thy,v 1.9 2008-10-07 14:07:44 fhaftmann Exp $
     Author:      Gerwin Klein, Martin Strecker, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -12,30 +11,29 @@ theory Exceptions imports Objects begin
 section {* Exceptions *}
 
 
-constdefs
-  NullPointer :: cname
+definition NullPointer :: cname where 
   "NullPointer \<equiv> ''NullPointer''"
 
-  ClassCast :: cname
+definition ClassCast :: cname where
   "ClassCast \<equiv> ''ClassCast''"
 
-  OutOfMemory :: cname
+definition OutOfMemory :: cname where
   "OutOfMemory \<equiv> ''OutOfMemory''"
 
-  sys_xcpts :: "cname set"
+definition sys_xcpts :: "cname set" where
   "sys_xcpts  \<equiv>  {NullPointer, ClassCast, OutOfMemory}"
 
-  addr_of_sys_xcpt :: "cname \<Rightarrow> addr"
+definition addr_of_sys_xcpt :: "cname \<Rightarrow> addr" where
   "addr_of_sys_xcpt s \<equiv> if s = NullPointer then 0 else
                         if s = ClassCast then 1 else
                         if s = OutOfMemory then 2 else undefined"
 
-  start_heap :: "prog \<Rightarrow> heap"
+definition start_heap :: "prog \<Rightarrow> heap" where
   "start_heap P \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank P NullPointer)
                         (addr_of_sys_xcpt ClassCast \<mapsto> blank P ClassCast)
                         (addr_of_sys_xcpt OutOfMemory \<mapsto> blank P OutOfMemory)"
 
-  preallocated :: "heap \<Rightarrow> bool"
+definition preallocated :: "heap \<Rightarrow> bool" where
   "preallocated h \<equiv> \<forall>C \<in> sys_xcpts. \<exists>S. h (addr_of_sys_xcpt C) = Some (C,S)"
 
 

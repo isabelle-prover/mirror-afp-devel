@@ -1,5 +1,4 @@
-(*  ID:         $Id: ArchCompProps.thy,v 1.2 2006-09-12 11:21:48 makarius Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
 *)
 
 header "Completeness of Archive Test"

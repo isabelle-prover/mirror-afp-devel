@@ -171,7 +171,7 @@ text{* \noindent Substitution is extended to multisets in the obvious way.
 To formalise the condition ``no specific substitutions'', an inductive predicate is introduced.  If some formula in the multiset $\Gamma$ is a non-trivial substitution, then \texttt{multSubst} $\Gamma$:
 *}
 
-constdefs multSubst :: "form multiset \<Rightarrow> bool"
+definition multSubst :: "form multiset \<Rightarrow> bool" where
 multSubst_def: "multSubst \<Gamma> \<equiv> (\<exists> A \<in> (set_of \<Gamma>). \<exists> x y B. [y,x]B = A \<and> y\<noteq>x)"
 
 text{* 

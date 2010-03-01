@@ -13,8 +13,7 @@ recdef qsort "measure (size o snd)"
 		       qsort(le, [y:xs . le x y])"
 (hints recdef_simp: length_filter_le[THEN le_less_trans])
 
-constdefs
- fgraph :: "graph \<Rightarrow> nat fgraph"
+definition fgraph :: "graph \<Rightarrow> nat fgraph" where
 "fgraph g == map vertices (faces g)"
 
  nof_vertices :: "'a fgraph \<Rightarrow> nat"
@@ -37,8 +36,7 @@ primrec
     if final g then enum_finals succs n todo' (fgraph g # fins)
     else enum_finals succs n (succs g @ todo') fins)"
 
-constdefs
- fins :: "nat \<Rightarrow> nat \<Rightarrow> nat fgraph list option"
+definition fins :: "nat \<Rightarrow> nat \<Rightarrow> nat fgraph list option" where
 "fins p n == enum_finals (next_tame p) n [Seed p] []"
 
  same :: "nat fgraph list option \<Rightarrow> nat fgraph list \<Rightarrow> bool"
@@ -53,7 +51,7 @@ constdefs
 
 code_module test file "Test.ML" contains "same (fins 0 800000) []"
 
-constdefs stat :: "nat fgraph list \<Rightarrow> nat * nat * nat * nat * nat"
+definition stat :: "nat fgraph list \<Rightarrow> nat * nat * nat * nat * nat" where
 "stat A ==
  (length A,
   foldl (%x y. if x<y then y else x) 0 (map length A),
@@ -86,8 +84,7 @@ primrec
     if final g then countgs succs n (fst ij, snd ij + 1) todo'
     else countgs succs n (fst ij + 1, snd ij) (succs g @ todo'))"
 
-constdefs
- count :: "nat \<Rightarrow> nat \<Rightarrow> (nat*nat) option"
+definition count :: "nat \<Rightarrow> nat \<Rightarrow> (nat*nat) option" where
 "count p n == countgs (next_tame p) n (1,0) [Seed p]"
 
 ML"set Toplevel.timing"
