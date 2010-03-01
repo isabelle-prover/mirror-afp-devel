@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: Type.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -17,10 +16,8 @@ types
  mname = string -- "method name"
  vname = string -- "names for local/field variables"
  
-
-constdefs
- this :: vname
-"this \<equiv> ''this''"
+definition this :: vname where
+  "this \<equiv> ''this''"
 
 -- "types"
 datatype ty
@@ -49,8 +46,7 @@ primrec
   "isShBase(Repeats C) = False"
   "isShBase(Shares C) = True"
 
-constdefs
-  is_refT :: "ty \<Rightarrow> bool"
+definition is_refT :: "ty \<Rightarrow> bool" where
   "is_refT T  \<equiv>  T = NT \<or> (\<exists>C. T = Class C)"
 
 lemma [iff]: "is_refT NT"

@@ -23,14 +23,12 @@ section {* Map implementation and an abstraction function *}
 types 
   'a tarray = "(index * 'a) Tree"
 
-constdefs
-  valid_tmap :: "'a tarray => bool"
+definition valid_tmap :: "'a tarray => bool" where
   "valid_tmap t == sortedTree fst t"
 
 declare valid_tmap_def [simp]
 
-constdefs
-  mapOf :: "'a tarray => index => 'a option"
+definition mapOf :: "'a tarray => index => 'a option" where
   -- {* the abstraction function from trees to maps *}
   "mapOf t i == 
    (case (tlookup fst i t) of
@@ -151,8 +149,7 @@ by (simp add: mapOf_def)
 section {* Map Update Operation *}
 (*============================================================*)
 
-constdefs
-  mupdate :: "index => 'a => 'a tarray => 'a tarray"
+definition mupdate :: "index => 'a => 'a tarray => 'a tarray" where
   "mupdate i a t == binsert fst (i,a) t"
 
 lemma assumes v: "valid_tmap t"
@@ -227,8 +224,7 @@ qed
 section {* Map Remove Operation *}
 (*============================================================*)
 
-constdefs
-  mremove :: "index => 'a tarray => 'a tarray"
+definition mremove :: "index => 'a tarray => 'a tarray" where
   "mremove i t == remove fst (i, undefined) t"
 
 lemma assumes v: "valid_tmap t"

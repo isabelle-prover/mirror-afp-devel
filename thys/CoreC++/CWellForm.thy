@@ -9,8 +9,7 @@ header {* \isaheader{Well-formedness Constraints} *}
 theory CWellForm imports WellForm WWellForm WellTypeRT DefAss begin
 
 
-constdefs
-  wf_C_mdecl :: "prog \<Rightarrow> cname \<Rightarrow> mdecl \<Rightarrow> bool"
+definition wf_C_mdecl :: "prog \<Rightarrow> cname \<Rightarrow> mdecl \<Rightarrow> bool" where
   "wf_C_mdecl P C \<equiv>  \<lambda>(M,Ts,T,(pns,body)).
   length Ts = length pns \<and>
   distinct pns \<and>

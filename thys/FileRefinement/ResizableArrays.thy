@@ -6,15 +6,13 @@ text {* These arrays resize themselves, padding with fillValue. *}
 types
   'a rArray = "nat * (nat => 'a)"
 
-constdefs
-  fillAndUpdate :: "nat => (nat => 'a) => nat => 'a => 'a => (nat => 'a)"
+definition fillAndUpdate :: "nat => (nat => 'a) => nat => 'a => 'a => (nat => 'a)" where
   "fillAndUpdate len f i value fillValue j ==
      if j=i then value
      else if (len <= j & j < i) then fillValue
      else f j"
 
-constdefs
-  raWrite :: "'a rArray => nat => 'a => 'a => 'a rArray"
+definition raWrite :: "'a rArray => nat => 'a => 'a => 'a rArray" where
   "raWrite arr i value fillValue ==    
    (let len = fst arr;
         f = snd arr
@@ -23,8 +21,7 @@ constdefs
      else (i+1, fillAndUpdate len f i value fillValue)
    )"
 
-constdefs
-  cutoff :: "'a => 'a rArray => 'a rArray"
+definition cutoff :: "'a => 'a rArray => 'a rArray" where
   "cutoff fill arr == 
      (fst arr, 
       % i. if i < fst arr then snd arr i else fill)"

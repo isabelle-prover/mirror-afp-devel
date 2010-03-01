@@ -658,17 +658,15 @@ done
 
    
 (*   *****************************************************************
-constdefs
- ldeg_p:: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a]
-                  \<Rightarrow> 'a"
+definition ldeg_p :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a, 'a]
+                  \<Rightarrow> 'a" where
  "ldeg_p R S X p == if p = \<zero>\<^bsub>R\<^esub> then \<zero>\<^bsub>R\<^esub> 
                        else if deg_n R S X p = 0 then p
                        else polyn_expr R X (fst (s_cf R S X p)  - Suc 0) 
                                                          (s_cf R S X p)" *)
       (** deg R S X p \<le> (Suc d), lower degree part **) (*
-constdefs
- hdeg_p::"[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,'a]
-                  \<Rightarrow> 'a"
+definition hdeg_p :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,'a]
+                  \<Rightarrow> 'a" where
  "hdeg_p R S X p == if p = \<zero>\<^bsub>R\<^esub> then \<zero>\<^bsub>R\<^esub> else 
                      (if (deg_n R S X p) = 0 then \<zero>\<^bsub>R\<^esub> else
                       (snd (s_cf R S X p) (fst (s_cf R S X p))) \<cdot>\<^sub>r\<^bsub>R\<^esub> 

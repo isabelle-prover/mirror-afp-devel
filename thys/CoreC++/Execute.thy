@@ -148,14 +148,13 @@ text {* Redefine MethodDefs and FieldDecls *}
 
 (* FIXME: These predicates should be defined inductively in the first place! *)
 
-constdefs
-  MethodDefs' :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool"
+definition MethodDefs' :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool" where
   "MethodDefs' P C M Cs mthd \<equiv> (Cs, mthd) \<in> MethodDefs P C M"
 
-  FieldDecls' :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> path \<Rightarrow> ty \<Rightarrow> bool"
+definition FieldDecls' :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> path \<Rightarrow> ty \<Rightarrow> bool" where
   "FieldDecls' P C F Cs T \<equiv> (Cs, T) \<in> FieldDecls P C F"
 
-  MinimalMethodDefs' :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool"
+definition MinimalMethodDefs' :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool" where
   "MinimalMethodDefs' P C M Cs mthd \<equiv> (Cs, mthd) \<in> MinimalMethodDefs P C M"
 
 lemma [code_ind params: 3]:
@@ -182,8 +181,7 @@ lemma ForallFieldDecls_eq:
   "(\<forall>(Cs, T)\<in>FieldDecls P C F. Q Cs) = (\<forall>(Cs, T)\<in>{(Cs, T). FieldDecls' P C F Cs T}. Q Cs)"
   by (auto simp add: FieldDecls'_def)
 
-constdefs
-  OverriderMethodDefs' :: "prog \<Rightarrow> subobj \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool"
+definition OverriderMethodDefs' :: "prog \<Rightarrow> subobj \<Rightarrow> mname \<Rightarrow> path \<Rightarrow> method \<Rightarrow> bool" where
   "OverriderMethodDefs' P R M Cs mthd \<equiv> (Cs, mthd) \<in> OverriderMethodDefs P R M"
 
 lemma OverriderMethodDefs_card_eq:

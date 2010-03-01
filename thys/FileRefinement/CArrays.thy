@@ -7,17 +7,14 @@ text {* For these arrays there is no
 types
   'a cArray = "nat => 'a"
 
-constdefs
-  makeCArray :: "nat => 'a => 'a cArray"
+definition makeCArray :: "nat => 'a => 'a cArray" where
   "makeCArray arraySize fillValue index == 
    if index < arraySize then fillValue else undefined"
 
-constdefs
-  readCArray :: "'a cArray => nat => 'a"
+definition readCArray :: "'a cArray => nat => 'a" where
   "readCArray array index == array index"
 
-constdefs
-  writeCArray :: "'a cArray => nat => 'a => 'a cArray"
+definition writeCArray :: "'a cArray => nat => 'a => 'a cArray" where
   "writeCArray array index value == array(index := value)"
 
 (* ---------------------------------------------------------------*)

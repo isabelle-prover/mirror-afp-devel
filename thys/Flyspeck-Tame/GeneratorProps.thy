@@ -90,8 +90,7 @@ lemma ExcessTable_empty:
 by(simp add:ExcessTable_def filter_empty_conv ExcessAt_def)
 
 
-constdefs
- close :: "graph \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool"
+definition close :: "graph \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool" where
 "close g u v \<equiv>
  \<exists>f \<in> set(facesAt g u). if |vertices f| = 4 then v = f \<bullet> u \<or> v = f \<bullet> (f \<bullet> u)
                         else v = f \<bullet> u"

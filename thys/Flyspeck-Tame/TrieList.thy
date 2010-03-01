@@ -111,8 +111,7 @@ apply(induct as)
 apply (auto simp:Let_def assoc_conv split:option.split)
 done
 
-constdefs
- trie_of_list :: "('b \<Rightarrow> 'a list) \<Rightarrow> 'b list \<Rightarrow> ('a,'b)trie"
+definition trie_of_list :: "('b \<Rightarrow> 'a list) \<Rightarrow> 'b list \<Rightarrow> ('a,'b)trie" where
 "trie_of_list key == foldl (%t v. insert_trie t (key v) v) (Trie [] [])"
 
 lemma in_set_lookup_trie_of_list:

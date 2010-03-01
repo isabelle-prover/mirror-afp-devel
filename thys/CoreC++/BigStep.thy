@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: BigStep.thy,v 1.17 2007-07-19 21:23:08 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -9,7 +8,9 @@
 
 header {* \isaheader{Big Step Semantics} *}
 
-theory BigStep imports Syntax State begin
+theory BigStep
+imports Syntax State
+begin
 
 
 section {* The rules *}
@@ -261,10 +262,10 @@ inductive_cases evals_cases [cases set]:
 
 section {*Final expressions*}
 
-constdefs
-  final :: "expr \<Rightarrow> bool"
+definition final :: "expr \<Rightarrow> bool" where
   "final e  \<equiv>  (\<exists>v. e = Val v) \<or> (\<exists>r. e = Throw r)"
-  finals:: "expr list \<Rightarrow> bool"
+
+definition finals:: "expr list \<Rightarrow> bool" where
   "finals es  \<equiv>  (\<exists>vs. es = map Val vs) \<or> (\<exists>vs r es'. es = map Val vs @ Throw r # es')"
 
 lemma [simp]: "final(Val v)"

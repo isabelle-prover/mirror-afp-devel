@@ -1,5 +1,4 @@
-(*  ID:         $Id: Rotation.thy,v 1.3 2007-08-20 16:13:00 fhaftmann Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
 *)
 
 header {* More Rotation *}
@@ -8,11 +7,10 @@ theory Rotation
 imports ListAux PlaneGraphIso
 begin
 
-constdefs
- rotate_to :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a list"
+definition rotate_to :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a list" where
 "rotate_to vs v \<equiv>  v # snd (splitAt v vs) @ fst (splitAt v vs)"
 
- rotate_min :: "nat list \<Rightarrow> nat list"
+definition rotate_min :: "nat list \<Rightarrow> nat list" where
 "rotate_min vs \<equiv> rotate_to vs (min_list vs)"
 
 

@@ -1,5 +1,4 @@
-(*  ID:         $Id: ListAux.thy,v 1.15 2009-07-14 09:00:10 fhaftmann Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
+(*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header {* Basic Functions Old and New *}
@@ -169,10 +168,10 @@ translations "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "CONST concat [f. x <- xs
 
 subsubsection {* List product *}
 
-constdefs listProd1 :: "'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list"
+definition listProd1 :: "'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list" where
  "listProd1 a bs \<equiv> [(a,b). b <- bs]"
 
-constdefs listProd :: "'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list" (infix "\<times>" 50)
+definition listProd :: "'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list" (infix "\<times>" 50) where
  "as \<times> bs \<equiv> \<Squnion>\<^bsub>a \<in> as\<^esub> listProd1 a bs"
 
 lemma(*<*)[simp]: (*>*) "set (xs \<times> ys) = (set xs) \<times> (set ys)" 
@@ -784,7 +783,7 @@ primrec
   "splitAtRec c bs (a#as) = (if a = c then (bs, as)
                               else splitAtRec c (bs@[a]) as)"
 
-constdefs splitAt :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list"
+definition splitAt :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list" where
   "splitAt c as  \<equiv> splitAtRec c [] as"
 
 
@@ -1282,7 +1281,7 @@ done
 
 subsection {* @{text between} *}
 
-constdefs between :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list"
+definition between :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list" where
  "between vs ram\<^isub>1 ram\<^isub>2 \<equiv>
      let (pre\<^isub>1, post\<^isub>1) = splitAt ram\<^isub>1 vs in
      if ram\<^isub>2 mem post\<^isub>1
@@ -1354,7 +1353,7 @@ subsection {* Tables *}
 
 types ('a, 'b) table = "('a \<times> 'b) list"
 
-constdefs isTable :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> ('a, 'b) table \<Rightarrow> bool"
+definition isTable :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> ('a, 'b) table \<Rightarrow> bool" where
   "isTable f vs t \<equiv> \<forall>p. p \<in> set t \<longrightarrow> snd p = f (fst p) \<and> fst p \<in> set vs" 
 
 lemma isTable_eq: "isTable E vs ((a,b)#ps) \<Longrightarrow> b = E a"
@@ -1368,8 +1367,7 @@ lemma isTable_Cons: "isTable E vs ((a,b)#ps) \<Longrightarrow> isTable E vs ps"
   by (unfold isTable_def) auto
 
 
-constdefs
-removeKey  :: "'a \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'b) list"
+definition removeKey :: "'a \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'b) list" where
 "removeKey a ps \<equiv> [p \<leftarrow> ps. a \<noteq> fst p]"
 
 consts removeKeyList :: "'a list \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'b) list"

@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: Annotate.thy,v 1.10 2008-06-23 21:24:36 makarius Exp $
     Author:      Tobias Nipkow, Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)

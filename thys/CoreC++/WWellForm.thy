@@ -10,8 +10,7 @@ header {* \isaheader{Weak well-formedness of CoreC++ programs} *}
 theory WWellForm imports WellForm Expr begin
 
 
-constdefs
-  wwf_mdecl :: "prog \<Rightarrow> cname \<Rightarrow> mdecl \<Rightarrow> bool"
+definition wwf_mdecl :: "prog \<Rightarrow> cname \<Rightarrow> mdecl \<Rightarrow> bool" where
   "wwf_mdecl P C  \<equiv>  \<lambda>(M,Ts,T,(pns,body)).
   length Ts = length pns \<and> distinct pns \<and> this \<notin> set pns \<and> fv body \<subseteq> {this} \<union> set pns"
 

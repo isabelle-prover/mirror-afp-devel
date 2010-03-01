@@ -77,8 +77,7 @@ lemma only_one_append:"\<lbrakk>C' \<notin> set Cs; C' \<notin> set Cs'; Ds@ C'#
   done
 
 
-constdefs
-  pick ::"'a set \<Rightarrow> 'a"
+definition pick :: "'a set \<Rightarrow> 'a" where
   "pick A \<equiv> SOME x. x \<in> A"
 
 
@@ -86,8 +85,7 @@ lemma pick_is_element:"x \<in> A \<Longrightarrow> pick A \<in> A"
 by (unfold pick_def,rule_tac x="x" in someI)
 
 
-constdefs
-  set2list :: "'a set \<Rightarrow> 'a list"
+definition set2list :: "'a set \<Rightarrow> 'a list" where
   "set2list A \<equiv> fst (while (\<lambda>(Es,S). S \<noteq> {})
                        (\<lambda>(Es,S). let x = pick S in (x#Es,S-{x}))
                        ([],A) )"
@@ -115,8 +113,7 @@ by (auto dest:set2list_prop simp:set2list_def)
 
 section {*@{text distinct_fst}*}
  
-constdefs
-  distinct_fst  :: "('a \<times> 'b) list \<Rightarrow> bool"
+definition distinct_fst :: "('a \<times> 'b) list \<Rightarrow> bool" where
   "distinct_fst  \<equiv>  distinct \<circ> map fst"
 
 lemma distinct_fst_Nil [simp]:
@@ -142,8 +139,7 @@ by (induct kxs) (auto simp:fun_upd_apply)
 
 section {* Using @{term list_all2} for relations *}
 
-constdefs
-  fun_of :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
+definition fun_of :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool" where
   "fun_of S \<equiv> \<lambda>x y. (x,y) \<in> S"
 
 text {* Convenience lemmas *}

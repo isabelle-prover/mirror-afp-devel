@@ -30,8 +30,7 @@ done
 
 
 
-constdefs
-  assigned :: "vname \<Rightarrow> expr \<Rightarrow> bool"
+definition assigned :: "vname \<Rightarrow> expr \<Rightarrow> bool" where
   "assigned V e  \<equiv>  \<exists>v e'. e = (V:= Val v;; e')"
 
 
