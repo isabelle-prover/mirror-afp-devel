@@ -51,10 +51,15 @@
 <a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
 <a href="entries/FFT.shtml">FFT</a> &nbsp;
 <a href="entries/SATSolverVerification.shtml">SATSolverVerification</a> &nbsp;
-<a href="entries/GenClock.shtml">GenClock</a> &nbsp;
-<a href="entries/ClockSynchInst.shtml">ClockSynchInst</a> &nbsp;
 <a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
-<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
+  <dl>
+  <dt>Distributed</dt>
+  <dd>
+  <a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
+  <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
+  <a href="entries/ClockSynchInst.shtml">ClockSynchInst</a> &nbsp;
+  </dd>
+  </dl>
 </dd>
 
 <dt><font size=4><b>Data Structures</b></font></dt>
@@ -98,6 +103,7 @@
   <a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
   <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp; 
   <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
+  <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
   </dd>
   <dt>Compiling</dt>
   <dd>
