@@ -1,16 +1,16 @@
 ## configurables
 
 SESSION-NAME = HRB-Slicing
-BASE-IMAGE = HOL
+BASE-IMAGE = Jinja
 
 ## targets
 
 default: $(SESSION-NAME)
-test: $(SESSION-NAME)
+test: $(SESSION-NAME)-test
 # usually empty:
-images:  
+images:  $(SESSION-NAME)
 
-all: images test
+all: images
 
 
 ## global settings
@@ -26,22 +26,44 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -P "http://isabelle.in.tum.de/library/" # -D generated
+DOCFLAGS = -v true -i true -V outline=/proof,/ML -g true -d pdf
+USEDIR = $(ISABELLE_TOOL) usedir  $(DOCFLAGS)
+BUILD = $(ISABELLE_TOOL) usedir -b $(DOCFLAGS)
+BUILD_PART = $(ISABELLE_TOOL) usedir -b -v true -i false -g false -d false
 
 # time limit (in sec)
-MAXTIME = 1000
+MAXTIME = 5400
 
 
 ## dependencies
 
-$(SESSION-NAME): $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+Jinja:
+	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML StaticInter/*.thy Proc/*.thy document/*.tex
-	cd ..; ulimit -t $(MAXTIME); $(USEDIR) $(IMAGE) $(SESSION-NAME)
+# test run and proof document
+
+$(SESSION-NAME)-test: Jinja $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(OUT)/Jinja ROOT.ML HRBSlicing.thy \
+  StaticInter/*.thy Proc/*.thy JinjaVM_Inter/*.thy \
+  document/root.tex 
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) Jinja $(SESSION-NAME)
+
+
+# build image
+
+HRB-Slicing: $(OUT)/HRB-Slicing
+
+$(OUT)/HRB-Slicing: $(OUT)/Jinja ROOT.ML HRBSlicing.thy \
+  StaticInter/*.thy Proc/*.thy JinjaVM_Inter/*.thy \
+  document/root.tex 
+	ulimit -t $(MAXTIME); $(BUILD) Jinja $(SESSION-NAME)
+
 
 
 ## clean
 
 clean:
 	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -f $(OUT)/$(SESSION-NAME)
+
