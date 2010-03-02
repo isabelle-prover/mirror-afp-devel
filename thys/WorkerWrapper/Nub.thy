@@ -118,7 +118,7 @@ lemma case_maybe_case:
    =
    (case L of lnil \<Rightarrow> f | x :@ xs \<Rightarrow> g\<cdot>(cfst\<cdot>(h\<cdot>x\<cdot>xs))\<cdot>(csnd\<cdot>(h\<cdot>x\<cdot>xs)))"
   apply (cases L rule: llist.casedist, simp_all)
-  apply (rule_tac p="h\<cdot>a\<cdot>l" in cprodE)
+  apply (rule_tac p="h\<cdot>a\<cdot>llist" in cprodE)
   apply simp
   done
 
@@ -141,7 +141,7 @@ proof -
       apply simp_all
     apply (rule_tac p="SetMem\<cdot>a\<cdot>(exceptR\<cdot>w)" in trE)
       apply simp_all
-    apply (induct_tac l rule: llist.ind)
+    apply (induct_tac llist rule: llist.ind)
        apply simp_all
     apply (rule_tac p="SetMem\<cdot>aa\<cdot>(exceptR\<cdot>w)" in trE)
       apply simp_all

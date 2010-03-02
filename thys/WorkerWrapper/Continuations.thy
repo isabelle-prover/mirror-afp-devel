@@ -114,13 +114,13 @@ lemma eval_body'_eval_body_eq: "eval_body' = unwrapC oo eval_body oo wrapC"
   apply (case_tac xa rule: Expr.casedist)
       apply simp_all
     apply (simp add: wrapC_def)
-    apply (case_tac "x\<cdot>E1\<cdot>Just\<cdot>Nothing" rule: Maybe.casedist)
+    apply (case_tac "x\<cdot>Expr1\<cdot>Just\<cdot>Nothing" rule: Maybe.casedist)
      apply simp_all
-    apply (case_tac "x\<cdot>E2\<cdot>Just\<cdot>Nothing" rule: Maybe.casedist)
+    apply (case_tac "x\<cdot>Expr2\<cdot>Just\<cdot>Nothing" rule: Maybe.casedist)
      apply simp_all
    apply (simp add: mfail_def)
   apply (simp add: mcatch_def wrapC_def)
-  apply (case_tac "x\<cdot>E1\<cdot>Just\<cdot>Nothing" rule: Maybe.casedist)
+  apply (case_tac "x\<cdot>Expr1\<cdot>Just\<cdot>Nothing" rule: Maybe.casedist)
    apply simp_all
   done
 
@@ -139,9 +139,9 @@ lemma eval_body'_eval_body_final_eq: "eval_body_final oo unwrapC oo wrapC = eval
   apply (rule ext_cfun)+
   apply (case_tac xa rule: Expr.casedist)
      apply (simp_all add: unwrapC_def)
-  apply (case_tac "wrapC\<cdot>x\<cdot>E1" rule: Maybe.casedist)
+  apply (case_tac "wrapC\<cdot>x\<cdot>Expr1" rule: Maybe.casedist)
     apply simp_all
-  apply (case_tac "wrapC\<cdot>x\<cdot>E2" rule: Maybe.casedist)
+  apply (case_tac "wrapC\<cdot>x\<cdot>Expr2" rule: Maybe.casedist)
     apply simp_all
   done
 

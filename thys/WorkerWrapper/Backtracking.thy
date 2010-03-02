@@ -73,7 +73,7 @@ lemma wrap_unwrap_id: "wrap oo unwrap = ID"
   apply (rule ext_cfun)+
   apply (case_tac "x\<cdot>xa")
   apply (simp_all)
-  apply (induct_tac l)
+  apply (induct_tac llist)
   apply simp_all
   done
 
@@ -123,8 +123,8 @@ lemma eval_body_body':
      apply (simp add: unwrap_def)
     apply (simp add: unwrap_def)
     apply (simp add: FIXME2 eta_cfun)
-    apply (subgoal_tac "(\<Lambda> xa. blah\<cdot>(lconcat\<cdot>(lmap\<cdot>(\<Lambda> y. (xa + y) :@ lnil)\<cdot>(wrap\<cdot>x\<cdot>E2)))\<cdot>xb)
-                      = (\<Lambda> xa. blah\<cdot>(wrap\<cdot>x\<cdot>E2)\<cdot>(\<Lambda> y. xb\<cdot>(xa + y)))")
+    apply (subgoal_tac "(\<Lambda> xa. blah\<cdot>(lconcat\<cdot>(lmap\<cdot>(\<Lambda> y. (xa + y) :@ lnil)\<cdot>(wrap\<cdot>x\<cdot>Expr2)))\<cdot>xb)
+                      = (\<Lambda> xa. blah\<cdot>(wrap\<cdot>x\<cdot>Expr2)\<cdot>(\<Lambda> y. xb\<cdot>(xa + y)))")
      apply simp
     apply (rule ext_cfun)+
     apply (simp add: FIXME2)
