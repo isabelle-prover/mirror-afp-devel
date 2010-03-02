@@ -83,8 +83,7 @@ by(induct xs arbitrary:ys,auto,case_tac ys,auto)
 
 subsection {*@{text distinct_fst}*}
  
-constdefs
-  distinct_fst  :: "('a \<times> 'b) list \<Rightarrow> bool"
+definition distinct_fst :: "('a \<times> 'b) list \<Rightarrow> bool" where
   "distinct_fst  \<equiv>  distinct \<circ> map fst"
 
 lemma distinct_fst_Nil [simp]:

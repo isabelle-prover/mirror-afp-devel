@@ -1,5 +1,4 @@
-(*  ID:         $Id: ScoreProps.thy,v 1.10 2008-06-12 06:57:17 lsf37 Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
+(*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header {* Properties of Lower Bound Machinery *}
@@ -42,9 +41,8 @@ next
 qed
 
 
-constdefs
-  deleteAround' :: "graph \<Rightarrow> vertex \<Rightarrow> (vertex \<times> nat) list \<Rightarrow>
-    (vertex \<times> nat) list"
+definition deleteAround' :: "graph \<Rightarrow> vertex \<Rightarrow> (vertex \<times> nat) list \<Rightarrow>
+    (vertex \<times> nat) list" where
   "deleteAround' g v ps \<equiv>
       let fs = facesAt g v;
       vs = (\<lambda>f. let n1 = f \<bullet> v;
@@ -420,8 +418,7 @@ primrec
      then (v, vi)#ExcessTable_cont ExcessAtPG vs
      else ExcessTable_cont ExcessAtPG vs)"
 
-constdefs
-  ExcessTable' :: "graph \<Rightarrow> vertex list \<Rightarrow> (vertex \<times> nat) list"
+definition ExcessTable' :: "graph \<Rightarrow> vertex list \<Rightarrow> (vertex \<times> nat) list" where
   "ExcessTable' g \<equiv> ExcessTable_cont (ExcessAt g)"
 
 

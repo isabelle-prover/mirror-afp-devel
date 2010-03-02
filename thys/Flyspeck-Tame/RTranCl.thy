@@ -50,8 +50,7 @@ proof -
   qed
 qed
 
-constdefs
- invariant :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a list) \<Rightarrow> bool"
+definition invariant :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a list) \<Rightarrow> bool" where
 "invariant P succs \<equiv> \<forall>g g'. g' \<in> set(succs g) \<longrightarrow> P g \<longrightarrow> P g'"
 
 lemma invariantE:

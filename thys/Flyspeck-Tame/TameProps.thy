@@ -1,5 +1,4 @@
-(* ID:         $Id: TameProps.thy,v 1.6 2008-06-12 06:57:17 lsf37 Exp $
-   Author:     Tobias Nipkow
+(* Author:     Tobias Nipkow
 *)
 
 header{* Tame Properties *}
@@ -56,8 +55,7 @@ next
 qed
 
 
-constdefs
- untame :: "(graph \<Rightarrow> bool) \<Rightarrow> bool"
+definition untame :: "(graph \<Rightarrow> bool) \<Rightarrow> bool" where
 "untame P \<equiv> \<forall>g. final g \<and> P g \<longrightarrow> \<not> tame g"
 
 

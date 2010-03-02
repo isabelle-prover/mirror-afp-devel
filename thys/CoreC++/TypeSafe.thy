@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: TypeSafe.thy,v 1.20 2008-06-12 06:57:16 lsf37 Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -9,7 +8,9 @@
 
 header {* \isaheader{Type Safety Proof} *}
 
-theory TypeSafe imports HeapExtension CWellForm begin
+theory TypeSafe
+imports HeapExtension CWellForm
+begin
 
 
 section{*Basic preservation lemmas*}
@@ -291,8 +292,7 @@ qed (auto simp:hyperset_defs)
 
 text{* Combining conformance of heap and local variables: *}
 
-constdefs
-  sconf :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>"   [51,51,51]50)
+definition sconf :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> bool"  ("_,_ \<turnstile> _ \<surd>"   [51,51,51]50) where
   "P,E \<turnstile> s \<surd>  \<equiv>  let (h,l) = s in P \<turnstile> h \<surd> \<and> P,h \<turnstile> l (:\<le>)\<^sub>w E \<and> P \<turnstile> E \<surd>"
 
 lemma red_preserves_sconf:
@@ -1533,8 +1533,7 @@ section {*The final polish*}
 
 text{* The above preservation lemmas are now combined and packed nicely. *}
 
-constdefs
-  wf_config :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"   ("_,_,_ \<turnstile> _ : _ \<surd>"   [51,0,0,0,0]50)
+definition wf_config :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile> _ : _ \<surd>"   [51,0,0,0,0]50) where
   "P,E,s \<turnstile> e:T \<surd>  \<equiv>  P,E \<turnstile> s \<surd> \<and> P,E,hp s \<turnstile> e : T"
 
 theorem Subject_reduction: assumes wf: "wf_C_prog P"

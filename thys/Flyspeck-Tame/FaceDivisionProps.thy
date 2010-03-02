@@ -105,7 +105,7 @@ declare Nat.diff_is_0_eq' [simp del]
 (********************* section is_prefix ****************************)
 subsection {* @{text "is_prefix"} *}
 
-constdefs is_prefix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"
+definition is_prefix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
 "is_prefix ls vs \<equiv>  (\<exists> bs. vs = ls @ bs)"
 
 lemma is_prefix_add:
@@ -126,7 +126,7 @@ by (auto dest!: splitAt_ram simp: is_prefix_def)
 (********************* section is_postfix ****************************)
 subsection {* @{text "is_postfix"} *}
 
-constdefs is_postfix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"
+definition is_postfix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
 "is_postfix ls vs \<equiv>  (\<exists> as. vs = as @ ls)"
 
 lemma is_postfix_add:
@@ -153,7 +153,7 @@ by (auto dest!: splitAt_ram simp: is_postfix_def)
 (******************** section is_sublist *********************************)
 subsection {* @{text"is_sublist"} *}
 
-constdefs is_sublist :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"
+definition is_sublist :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
 "is_sublist ls vs \<equiv>  (\<exists> as bs. vs = as @ ls @ bs)"
 
 lemma is_prefix_sublist:
@@ -482,7 +482,7 @@ apply (subgoal_tac "vs = fst (splitAt ram vs) @ ram # snd (splitAt ram vs) @ []"
 (*********************** section is_nextElem *****************************)
 subsection {* @{text "is_nextElem"} *}
 
-constdefs is_nextElem :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
+definition is_nextElem :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
  "is_nextElem xs x y \<equiv> is_sublist [x,y] xs \<or> xs \<noteq> [] \<and> x = last xs \<and> y = hd xs"
 
 lemma is_nextElem_a[intro]: "is_nextElem vs a b \<Longrightarrow> a \<in> set vs"
@@ -801,7 +801,7 @@ qed
 
 subsection {* @{text before} *}
 
-constdefs before :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
+definition before :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
 "before vs ram1 ram2 \<equiv> \<exists> a b c. vs = a @ ram1 # b @ ram2 # c"
 
 lemma before_dist_fst_fst[simp]: "before vs ram1 ram2 \<Longrightarrow> distinct vs \<Longrightarrow> fst (splitAt ram2 (fst (splitAt ram1 vs))) = fst (splitAt ram1 (fst (splitAt ram2 vs)))"
@@ -1001,7 +1001,7 @@ qed
 (************************ between lemmas *************************************)
 subsection {* @{const between} *}
 
-constdefs pre_between :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
+definition pre_between :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
 "pre_between vs ram1 ram2 \<equiv>
    distinct vs \<and> ram1 \<in> set vs \<and> ram2 \<in> set vs \<and> ram1 \<noteq> ram2"
 
@@ -1692,7 +1692,7 @@ lemma nextVertex_congs_eq: "f\<^isub>1 \<cong> f\<^isub>2 \<Longrightarrow> dist
 subsection {* @{const split_face} *}
 
 
-constdefs pre_split_face :: "face \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool"
+definition pre_split_face :: "face \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool" where
 "pre_split_face oldF ram1 ram2 newVertexList \<equiv>
    distinct (vertices oldF) \<and> distinct (newVertexList)
   \<and> \<V> oldF \<inter> set newVertexList = {}
@@ -2012,7 +2012,7 @@ qed
 
 subsection {* @{text verticesFrom} *}
 
-constdefs verticesFrom :: "face \<Rightarrow> vertex \<Rightarrow> vertex list"
+definition verticesFrom :: "face \<Rightarrow> vertex \<Rightarrow> vertex list" where
  "verticesFrom f \<equiv> rotate_to (vertices f)"
 
 lemmas verticesFrom_Def = verticesFrom_def rotate_to_def
@@ -2364,7 +2364,7 @@ done
 subsection {* @{const splitFace} *}
 
 
-constdefs pre_splitFace :: "graph \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> vertex list \<Rightarrow> bool"
+definition pre_splitFace :: "graph \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> vertex list \<Rightarrow> bool" where
   "pre_splitFace g ram1 ram2 oldF nvs \<equiv>
   oldF \<in> \<F> g \<and> \<not> final oldF \<and> distinct (vertices oldF) \<and> distinct nvs
   \<and> \<V> g \<inter> set nvs = {}
@@ -2613,8 +2613,7 @@ qed
 
 (********************** Edges *******************)
 
-constdefs
- Edges :: "vertex list \<Rightarrow> (vertex \<times> vertex) set"
+definition Edges :: "vertex list \<Rightarrow> (vertex \<times> vertex) set" where
 "Edges vs \<equiv> {(a,b). is_sublist [a,b] vs}"
 
 lemma Edges_Nil[simp]: "Edges [] = {}"
@@ -4062,7 +4061,7 @@ done
 (**** computes the list of ram vertices **********)
 subsection {* @{text removeNones} *}
 
-constdefs removeNones :: "'a option list \<Rightarrow> 'a list"
+definition removeNones :: "'a option list \<Rightarrow> 'a list" where
 "removeNones vOptionList \<equiv> [the x. x \<leftarrow> vOptionList, x \<noteq> None]"
 
 (* "removeNones vOptionList \<equiv> map the [x \<in> vOptionList. x \<noteq> None]" *)
@@ -4523,12 +4522,12 @@ apply (rule indexToVertexList_natToVertexList_eq) apply (simp_all) by auto
 
 (**************************** invalidVertexList ************)
 
-constdefs is_duplicateEdge :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool"
+definition is_duplicateEdge :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool" where
  "is_duplicateEdge g f a b \<equiv>
    ((a, b) \<in> edges g \<and> (a, b) \<notin> edges f \<and> (b, a) \<notin> edges f)
  \<or> ((b, a) \<in> edges g \<and> (b, a) \<notin> edges f \<and> (a, b) \<notin> edges f)"
 
-constdefs invalidVertexList :: "graph \<Rightarrow> face \<Rightarrow> vertex option list \<Rightarrow> bool"
+definition invalidVertexList :: "graph \<Rightarrow> face \<Rightarrow> vertex option list \<Rightarrow> bool" where
  "invalidVertexList g f vs \<equiv>
      \<exists>i < |vs|- 1.
          case vs!i of None \<Rightarrow> False
@@ -4540,7 +4539,7 @@ constdefs invalidVertexList :: "graph \<Rightarrow> face \<Rightarrow> vertex op
 
 subsection {* @{text"pre_subdivFace(')"} *}
 
-constdefs pre_subdivFace_face :: "face \<Rightarrow> vertex \<Rightarrow> vertex option list \<Rightarrow> bool"
+definition pre_subdivFace_face :: "face \<Rightarrow> vertex \<Rightarrow> vertex option list \<Rightarrow> bool" where
 "pre_subdivFace_face f v' vOptionList \<equiv>
      [v \<leftarrow> verticesFrom f v'. v \<in> set (removeNones vOptionList)]
        = (removeNones vOptionList)
@@ -4553,12 +4552,12 @@ constdefs pre_subdivFace_face :: "face \<Rightarrow> vertex \<Rightarrow> vertex
   \<and> vOptionList \<noteq>  []
   \<and> tl (vOptionList) \<noteq> []"
 
-constdefs pre_subdivFace :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex option list \<Rightarrow> bool"
+definition pre_subdivFace :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex option list \<Rightarrow> bool" where
 "pre_subdivFace g f v' vOptionList \<equiv>
   pre_subdivFace_face f v' vOptionList \<and> \<not> invalidVertexList g f vOptionList"
 
 (* zu teilende Fläche, ursprüngliches v, erster Ram-Punkt, Anzahl der überlaufenen NOnes, rest der vol *)
-constdefs pre_subdivFace' :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> nat \<Rightarrow> vertex option list \<Rightarrow> bool"
+definition pre_subdivFace' :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> nat \<Rightarrow> vertex option list \<Rightarrow> bool" where
 "pre_subdivFace' g f v' ram1 n vOptionList \<equiv>
   \<not> final f \<and> v' \<in> \<V> f \<and> ram1 \<in> \<V> f
   \<and> v' \<notin> set (removeNones vOptionList)

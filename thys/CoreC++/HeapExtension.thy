@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: HeapExtension.thy,v 1.11 2007-07-19 21:23:09 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -15,13 +14,13 @@
 
 header {* \isaheader{Heap Extension} *}
 
-theory HeapExtension imports Progress begin
-
+theory HeapExtension
+imports Progress
+begin
 
 section {* The Heap Extension *}
 
-constdefs
-  hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50)
+definition hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50) where
   "h \<unlhd> h'  \<equiv>  \<forall>a C S. h a = Some(C,S) \<longrightarrow> (\<exists>S'. h' a = Some(C,S'))"
 
 lemma hextI: "\<forall>a C S. h a = Some(C,S) \<longrightarrow> (\<exists>S'. h' a = Some(C,S')) \<Longrightarrow> h \<unlhd> h'"

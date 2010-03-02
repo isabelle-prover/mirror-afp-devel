@@ -69,8 +69,8 @@ next
   thus ?case by(simp add:atoms\<^isub>0_def)
 qed
 
-setup {* Sign.revert_abbrev "" @{const_name R.I} *}
-setup {* Sign.revert_abbrev "" @{const_name R.lift_nnf_qe} *}
+setup {* Sign.revert_abbrev "" @{const_abbrev R.I} *}
+setup {* Sign.revert_abbrev "" @{const_abbrev R.lift_nnf_qe} *}
 
 
 subsubsection{*Shared constructions*}

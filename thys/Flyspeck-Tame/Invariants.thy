@@ -1,5 +1,4 @@
-(*  ID:         $Id: Invariants.thy,v 1.21 2009-08-31 15:34:44 nipkow Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
+(*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header{* Invariants of (Plane) Graphs *}
@@ -10,14 +9,14 @@ begin
 
 subsection{* Rotation of face into normal form *}
 
-constdefs minVertex :: "face \<Rightarrow> vertex"
+definition minVertex :: "face \<Rightarrow> vertex" where
 "minVertex f \<equiv> min_list (vertices f)"
 
 (* FIXME define normFace via rotate_min *)
-constdefs normFace :: "face \<Rightarrow> vertex list"
+definition normFace :: "face \<Rightarrow> vertex list" where
 "normFace \<equiv> \<lambda>f. verticesFrom f (minVertex f)"
 
-constdefs normFaces :: "face list \<Rightarrow> vertex list list"
+definition normFaces :: "face list \<Rightarrow> vertex list list" where
 "normFaces fl \<equiv> map normFace fl"
 
 lemma normFaces_distinct:  "distinct (normFaces fl) \<Longrightarrow> distinct fl"
@@ -28,51 +27,48 @@ apply (induct fl) by (auto simp: normFace_def normFaces_def)
 
 subsection {* Minimal (plane) graph properties *}
 
-constdefs minGraphProps' :: "graph \<Rightarrow> bool"
+definition minGraphProps' :: "graph \<Rightarrow> bool" where
   "minGraphProps' g \<equiv> \<forall>f \<in> \<F> g. 2 < |vertices f| \<and> distinct (vertices f)"
 
-constdefs edges_sym:: "graph \<Rightarrow> bool"
+definition edges_sym :: "graph \<Rightarrow> bool" where
 "edges_sym g \<equiv> \<forall> a b. (a,b) \<in> edges g \<longrightarrow> (b,a) \<in> edges g"
 
-constdefs faceListAt_len:: "graph \<Rightarrow> bool"
+definition faceListAt_len :: "graph \<Rightarrow> bool" where
 "faceListAt_len g \<equiv> (length (faceListAt g) = countVertices g)"
 
-constdefs facesAt_eq:: "graph \<Rightarrow> bool"
+definition facesAt_eq :: "graph \<Rightarrow> bool" where
 "facesAt_eq g \<equiv> \<forall>v \<in> \<V> g. set(facesAt g v) = {f. f \<in> \<F> g \<and> v \<in> \<V> f}"
 
-constdefs facesAt_distinct:: "graph \<Rightarrow> bool"
+definition facesAt_distinct :: "graph \<Rightarrow> bool" where
 "facesAt_distinct g \<equiv> \<forall>v \<in> \<V> g. distinct (normFaces (facesAt g  v))"
 
-constdefs faces_distinct:: "graph \<Rightarrow> bool"
+definition faces_distinct :: "graph \<Rightarrow> bool" where
 "faces_distinct g \<equiv> distinct (normFaces (faces g))"
 
-constdefs faces_subset:: "graph \<Rightarrow> bool"
+definition faces_subset :: "graph \<Rightarrow> bool" where
 "faces_subset g \<equiv> \<forall>f \<in> \<F> g. \<V> f \<subseteq> \<V> g"
 
-constdefs edges_disj :: "graph \<Rightarrow> bool"
+definition edges_disj :: "graph \<Rightarrow> bool" where
 "edges_disj g \<equiv>
  \<forall>f \<in> \<F> g. \<forall>f' \<in> \<F> g. f \<noteq> f' \<longrightarrow> \<E> f \<inter> \<E> f' = {}"
 
-constdefs
- face_face_op:: "graph \<Rightarrow> bool"
+definition face_face_op :: "graph \<Rightarrow> bool" where
 "face_face_op g \<equiv> |faces g| \<noteq> 2 \<longrightarrow>
  (\<forall>f\<in>\<F> g. \<forall>f'\<in>\<F> g. f \<noteq> f' \<longrightarrow> \<E> f \<noteq> (\<E> f')\<inverse>)"
 
-constdefs
- one_final_but :: "graph \<Rightarrow> (vertex \<times> vertex)set \<Rightarrow> bool"
+definition one_final_but :: "graph \<Rightarrow> (vertex \<times> vertex)set \<Rightarrow> bool" where
 "one_final_but g E \<equiv>
  \<forall>f \<in> \<F> g. \<not> final f \<longrightarrow>
    (\<forall>(a,b)\<in>\<E> f - E. (b,a) : E \<or> (\<exists>f'\<in>\<F> g. final f' \<and> (b,a) \<in> \<E> f'))"
 
- one_final :: "graph \<Rightarrow> bool"
+definition one_final :: "graph \<Rightarrow> bool" where
 "one_final g \<equiv> one_final_but g {}"
 
 
-constdefs
- minGraphProps :: "graph \<Rightarrow> bool"
+definition minGraphProps :: "graph \<Rightarrow> bool" where
 "minGraphProps g \<equiv> minGraphProps' g \<and> facesAt_eq g \<and> faceListAt_len g \<and> facesAt_distinct g \<and> faces_distinct g \<and> faces_subset g \<and> edges_sym g \<and> edges_disj g \<and> face_face_op g"
 
- inv :: "graph \<Rightarrow> bool"
+definition inv :: "graph \<Rightarrow> bool" where
 "inv g \<equiv> minGraphProps g \<and> one_final g \<and> |faces g| \<ge> 2"
 
 
@@ -341,7 +337,7 @@ done
 
 subsection {* @{const containsDuplicateEdge} *}
 
-constdefs containsUnacceptableEdgeSnd' :: "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> bool"
+definition containsUnacceptableEdgeSnd' :: "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> bool" where
  "containsUnacceptableEdgeSnd' N is \<equiv>
   (\<exists>k < |is| - 2. let i0 = is!k; i1 = is!(k+1); i2 = is!(k+2) in
   N i1 i2 \<and> (i0 < i1) \<and> (i1 < i2))"

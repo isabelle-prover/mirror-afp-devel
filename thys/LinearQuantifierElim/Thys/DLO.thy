@@ -89,7 +89,7 @@ done
 lemmas [folded DLO_code_lemmas, code] =
   DLO.nnf.simps DLO.qelim_def DLO.lift_dnf_qe.simps DLO.lift_dnf_qe.simps
 
-setup {* Sign.revert_abbrev "" @{const_name DLO.I} *}
+setup {* Sign.revert_abbrev "" @{const_abbrev DLO.I} *}
 
 definition lbounds where "lbounds as = [i. Less (Suc i) 0 \<leftarrow> as]"
 definition ubounds where "ubounds as = [i. Less 0 (Suc i) \<leftarrow> as]"

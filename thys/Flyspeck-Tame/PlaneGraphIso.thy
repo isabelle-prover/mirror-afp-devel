@@ -1,5 +1,4 @@
-(*  ID:         $Id: PlaneGraphIso.thy,v 1.6 2009-08-27 17:49:29 nipkow Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
 *)
 
 header{* Isomorphisms Between Plane Graphs *}
@@ -23,8 +22,7 @@ consts
  pr_isomorphic  :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<cong>" 60)
  isomorphic :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<simeq>" 60)
 
-constdefs
- Iso :: "('a * 'a) set" ("{\<cong>}")
+definition Iso :: "('a * 'a) set" ("{\<cong>}") where
  "{\<cong>} \<equiv> {(f\<^isub>1, f\<^isub>2). f\<^isub>1 \<cong> f\<^isub>2}"
 
 lemma [iff]: "((x,y) \<in> {\<cong>}) = x \<cong> y"
@@ -136,17 +134,16 @@ by(simp add: eq_equiv_class_iff2[OF equiv_EqF])
 
 subsection{* Homomorphism and isomorphism *}
 
-constdefs
- is_Hom :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightarrow> 'b Fgraph \<Rightarrow> bool"
+definition is_Hom :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightarrow> 'b Fgraph \<Rightarrow> bool" where
 "is_Hom \<phi> Fs\<^isub>1 Fs\<^isub>2 \<equiv> (map \<phi> ` Fs\<^isub>1)//{\<cong>} = Fs\<^isub>2 //{\<cong>}"
 
- is_pr_Iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightarrow> 'b Fgraph \<Rightarrow> bool"
+definition is_pr_Iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightarrow> 'b Fgraph \<Rightarrow> bool" where
 "is_pr_Iso \<phi> Fs\<^isub>1 Fs\<^isub>2 \<equiv> is_Hom \<phi> Fs\<^isub>1 Fs\<^isub>2 \<and> inj_on \<phi> (\<Union>F \<in> Fs\<^isub>1. set F)"
 
- is_hom :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
+definition is_hom :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
 "is_hom \<phi> Fs\<^isub>1 Fs\<^isub>2 \<equiv> is_Hom \<phi> (set Fs\<^isub>1) (set Fs\<^isub>2)"
 
- is_pr_iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
+definition is_pr_iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
 "is_pr_iso \<phi> Fs\<^isub>1 Fs\<^isub>2 \<equiv> is_pr_Iso \<phi> (set Fs\<^isub>1) (set Fs\<^isub>2)"
 
 text{* Homomorphisms preserve the set of nodes. *}
@@ -541,8 +538,7 @@ subsubsection{* Implementing maps by lists *}
 text{* The representation are lists of pairs with no repetition in the
 first or second component. *}
 
-constdefs
- oneone :: "('a * 'b)list \<Rightarrow> bool"
+definition oneone :: "('a * 'b)list \<Rightarrow> bool" where
 "oneone xys  \<equiv>  distinct(map fst xys) \<and> distinct(map snd xys)"
 declare oneone_def[simp]
 
@@ -608,8 +604,7 @@ done
 
 text{* A simple implementation *}
 
-constdefs
-  test :: "('a,'b)tester"
+definition test :: "('a,'b)tester" where
  "test I I' ==
   \<forall>xy \<in> set I. \<forall>xy' \<in> set I'. (fst xy = fst xy') = (snd xy = snd xy')"
 
@@ -687,8 +682,7 @@ corollary test_corr:
                       in m \<subseteq>\<^sub>m m ++ m' \<and> inj_on (m++m') (dom(m++m')))"
 by(simp add: test_correct)
 
-constdefs
-  merge :: "('a,'b)merger"
+definition merge :: "('a,'b)merger" where
  "merge I' I  \<equiv>  [xy \<leftarrow> I'. fst xy \<notin> fst ` set I] @ I"
 
 
@@ -725,8 +719,7 @@ by(simp add: pr_iso_test2_conv_1[OF test_corr merge_correct merge_inv]
 
 text{* The final stage: implementing test and merge as recursive functions. *}
 
-constdefs
- test2 :: "('a,'b)tester"
+definition test2 :: "('a,'b)tester" where
 "test2 I I' == list_all (%(x,y). list_all (%(x',y'). (x=x') = (y=y')) I') I"
 
 lemma test2_conv_test: "test2 I I' = test I I'"
@@ -775,8 +768,7 @@ by(simp add: pr_iso_test3_conv_2 pr_iso_test2_corr)
 
 text{* A final optimization. *}
 
-constdefs
- pr_iso_test :: "(nat * 'a fgraph) \<Rightarrow> (nat * 'b fgraph) \<Rightarrow> bool"
+definition pr_iso_test :: "(nat * 'a fgraph) \<Rightarrow> (nat * 'b fgraph) \<Rightarrow> bool" where
 "pr_iso_test \<equiv> \<lambda>(n\<^isub>1,Fs\<^isub>1) (n\<^isub>2,Fs\<^isub>2). n\<^isub>1 = n\<^isub>2 \<and> length Fs\<^isub>1 = length Fs\<^isub>2
                                 \<and> pr_iso_test3 [] Fs\<^isub>1 Fs\<^isub>2"
 
@@ -792,19 +784,17 @@ done
 
 subsubsection{* `Improper' Isomorphisms *}
 
-constdefs
- is_Iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightarrow> 'b Fgraph \<Rightarrow> bool"
+definition is_Iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightarrow> 'b Fgraph \<Rightarrow> bool" where
 "is_Iso \<phi> Fs\<^isub>1 Fs\<^isub>2 \<equiv> is_pr_Iso \<phi> Fs\<^isub>1 Fs\<^isub>2 \<or> is_pr_Iso \<phi> Fs\<^isub>1 (rev ` Fs\<^isub>2)"
 
- is_iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
+definition is_iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
 "is_iso \<phi> Fs\<^isub>1 Fs\<^isub>2 \<equiv> is_Iso \<phi> (set Fs\<^isub>1) (set Fs\<^isub>2)"
 
 defs (overloaded) iso_fgraph_def:
 "g\<^isub>1 \<simeq> g\<^isub>2  \<equiv>  \<exists>\<phi>. is_iso \<phi> g\<^isub>1 g\<^isub>2"
 
 
-constdefs
- iso_test :: "(nat * 'a fgraph) \<Rightarrow> (nat * 'b fgraph) \<Rightarrow> bool"
+definition iso_test :: "(nat * 'a fgraph) \<Rightarrow> (nat * 'b fgraph) \<Rightarrow> bool" where
 "iso_test \<equiv> %g\<^isub>1 g\<^isub>2. pr_iso_test g\<^isub>1 g\<^isub>2 \<or> pr_iso_test g\<^isub>1 (fst g\<^isub>2,map rev (snd g\<^isub>2))"
 
 
@@ -839,17 +829,16 @@ done
 
 subsection{* Elementhood and containment modulo *}
 
-constdefs
- pr_iso_in :: "'a \<Rightarrow> 'a set \<Rightarrow> bool"  (infix "\<in>\<^isub>\<cong>" 60)
+definition pr_iso_in :: "'a \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<in>\<^isub>\<cong>" 60) where
  "x \<in>\<^isub>\<cong> M \<equiv> \<exists>y \<in> M. x \<cong> y"
 
- pr_iso_subseteq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<subseteq>\<^isub>\<cong>" 60)
+definition pr_iso_subseteq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<subseteq>\<^isub>\<cong>" 60) where
  "M \<subseteq>\<^isub>\<cong> N \<equiv> \<forall>x \<in> M. x \<in>\<^isub>\<cong> N"
 
- iso_in :: "'a \<Rightarrow> 'a set \<Rightarrow> bool"  (infix "\<in>\<^isub>\<simeq>" 60)
+definition iso_in :: "'a \<Rightarrow> 'a set \<Rightarrow> bool"  (infix "\<in>\<^isub>\<simeq>" 60) where
  "x \<in>\<^isub>\<simeq> M \<equiv> \<exists>y \<in> M. x \<simeq> y"
 
- iso_subseteq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<subseteq>\<^isub>\<simeq>" 60)
+definition iso_subseteq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<subseteq>\<^isub>\<simeq>" 60) where
  "M \<subseteq>\<^isub>\<simeq> N \<equiv> \<forall>x \<in> M. x \<in>\<^isub>\<simeq> N"
 
 

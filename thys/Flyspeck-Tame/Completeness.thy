@@ -1,5 +1,4 @@
-(*  ID:         $Id: Completeness.thy,v 1.2 2007-07-20 20:30:58 makarius Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
 *)
 
 header {* Combining All Completeness Proofs *}
@@ -8,8 +7,7 @@ theory Completeness
 imports ArchCompProps
 begin
 
-constdefs
- Archive :: "vertex fgraph set"
+definition Archive :: "vertex fgraph set" where
 "Archive \<equiv>
  set(Tri @ Quad @ Pent @ Hex @ Hept @ Oct)"
 

@@ -1,5 +1,4 @@
-(*  ID:         $Id: Plane.thy,v 1.3 2007-09-20 12:54:48 nipkow Exp $
-    Author:     Gertrud Bauer
+(*  Author:     Gertrud Bauer
 *)
 
 header{* Plane Graph Enumeration *}
@@ -9,14 +8,13 @@ imports Enumerator FaceDivision RTranCl
 begin
 
 
-constdefs
- maxGon :: "nat \<Rightarrow> nat"
+definition maxGon :: "nat \<Rightarrow> nat" where
 "maxGon p \<equiv> p+3"
 
 declare maxGon_def [simp]
 
 
-constdefs duplicateEdge :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool"
+definition duplicateEdge :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool" where
  "duplicateEdge g f a b \<equiv> 
   2 \<le> directedLength f a b \<and> 2 \<le> directedLength f b a \<and> b mem (neighbors g a)"
 
@@ -35,11 +33,11 @@ primrec "containsUnacceptableEdge N [] = False"
            | (w#ws) \<Rightarrow> if v < w \<and> N v w then True
                       else containsUnacceptableEdgeSnd N v vs)"
 
-constdefs containsDuplicateEdge :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> nat list \<Rightarrow> bool"
+definition containsDuplicateEdge :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> nat list \<Rightarrow> bool" where
  "containsDuplicateEdge g f v is \<equiv> 
      containsUnacceptableEdge (\<lambda>i j. duplicateEdge g f (f\<^bsup>i\<^esup>\<bullet>v) (f\<^bsup>j\<^esup>\<bullet>v)) is" 
 
-constdefs containsDuplicateEdge' :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> nat list \<Rightarrow> bool"
+definition containsDuplicateEdge' :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> nat list \<Rightarrow> bool" where
  "containsDuplicateEdge' g f v is \<equiv> 
   2 \<le> |is| \<and> 
   ((\<exists>k < |is| - 2. let i0 = is!k; i1 = is!(k+1); i2 = is!(k+2) in
@@ -48,27 +46,26 @@ constdefs containsDuplicateEdge' :: "graph \<Rightarrow> face \<Rightarrow> vert
     (duplicateEdge g f (f\<^bsup>i0 \<^esup>\<bullet>v) (f\<^bsup>i1 \<^esup>\<bullet>v)) \<and> (i0 < i1)))" 
 
 
-constdefs generatePolygon :: "nat \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> graph \<Rightarrow> graph list"
+definition generatePolygon :: "nat \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> graph \<Rightarrow> graph list" where
  "generatePolygon n v f g \<equiv> 
      let enumeration = enumerator n |vertices f|;
      enumeration = [is \<leftarrow> enumeration. \<not> containsDuplicateEdge g f v is];
      vertexLists = [indexToVertexList f v is. is \<leftarrow> enumeration] in
      [subdivFace g f vs. vs \<leftarrow> vertexLists]"
 
-constdefs next_plane0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_plane0\<^bsub>_\<^esub>")
+definition next_plane0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_plane0\<^bsub>_\<^esub>") where
  "next_plane0\<^bsub>p\<^esub> g \<equiv>
      if final g then [] 
      else \<Squnion>\<^bsub>f\<in>nonFinals g\<^esub> \<Squnion>\<^bsub>v\<in>vertices f\<^esub> \<Squnion>\<^bsub>i\<in>[3..<Suc(maxGon p)]\<^esub> generatePolygon i v f g"
 
 
-constdefs Seed :: "nat \<Rightarrow> graph" ("Seed\<^bsub>_\<^esub>")
+definition Seed :: "nat \<Rightarrow> graph" ("Seed\<^bsub>_\<^esub>") where
   "Seed\<^bsub>p\<^esub> \<equiv> graph(maxGon p)"
 
 lemma Seed_not_final[iff]: "\<not> final (Seed p)"
 by(simp add:Seed_def graph_def finalGraph_def nonFinals_def)
 
-constdefs
- PlaneGraphs0 :: "graph set" 
+definition PlaneGraphs0 :: "graph set" where 
 "PlaneGraphs0 \<equiv> \<Union>p. {g. Seed\<^bsub>p\<^esub> [next_plane0\<^bsub>p\<^esub>]\<rightarrow>* g \<and> final g}"
 
 end

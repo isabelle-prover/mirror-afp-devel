@@ -820,8 +820,7 @@ qed
 
 section{*The constant llist *}
 
-constdefs
-  lconst :: "'a \<Rightarrow> 'a llist"
+definition lconst :: "'a \<Rightarrow> 'a llist" where
   "lconst a \<equiv> iterates (\<lambda>x. x) a"
 
 lemma lconst_unfold: "lconst a = a ## lconst a"

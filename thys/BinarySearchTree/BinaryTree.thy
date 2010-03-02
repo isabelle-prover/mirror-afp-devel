@@ -36,8 +36,7 @@ types
 types -- {* hash function type *}
   'a hash = "'a => index"
 
-constdefs
-  eqs :: "'a hash => 'a => 'a set"
+definition eqs :: "'a hash => 'a => 'a set" where
   -- {* equivalence class of elements with the same hash code *}
   "eqs h x == {y. h y = h x}"
 
@@ -83,8 +82,7 @@ apply (clarify, auto)
 apply (simp_all split: split_if_asm) 
 done
 
-constdefs
-  sorted_distinct_pred :: "'a hash => 'a => 'a => 'a Tree => bool"
+definition sorted_distinct_pred :: "'a hash => 'a => 'a => 'a Tree => bool" where
   -- {* No two elements have the same hash code *}
   "sorted_distinct_pred h a b t == sortedTree h t & 
       a:setOf t & b:setOf t & h a = h b --> 
@@ -204,8 +202,7 @@ qed
 
 subsection {* Tree membership as a special case of lookup *}
 
-constdefs
-  memb :: "'a hash => 'a => 'a Tree => bool"
+definition memb :: "'a hash => 'a => 'a Tree => bool" where
   "memb h x t == 
    (case (tlookup h (h x) t) of
       None => False

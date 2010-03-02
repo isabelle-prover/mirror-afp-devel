@@ -66,11 +66,11 @@ next
   case goal2 thus ?case by(simp add:atoms\<^isub>0_def)
 qed
 
-setup {* Sign.revert_abbrev "" @{const_name Z.I} *}
-setup {* Sign.revert_abbrev "" @{const_name Z.lift_dnf_qe} *}
+setup {* Sign.revert_abbrev "" @{const_abbrev Z.I} *}
+setup {* Sign.revert_abbrev "" @{const_abbrev Z.lift_dnf_qe} *}
 (* FIXME doesn't work*)
 (* FIXME does not help
-setup {* Sign.revert_abbrev "" @{const_name Z.normal} *}
+setup {* Sign.revert_abbrev "" @{const_abbrev Z.normal} *}
 *)
 
 abbreviation
