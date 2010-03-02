@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: Conform.thy,v 1.17 2008-06-12 06:57:16 lsf37 Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 
@@ -8,37 +7,33 @@
 
 header {* \isaheader{Conformance Relations for Proofs} *}
 
-theory Conform imports Exceptions WellTypeRT begin
+theory Conform
+imports Exceptions WellTypeRT
+begin
 
-
-consts
-  conf :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50)
-
-primrec
+primrec conf :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50) where
   "P,h \<turnstile> v :\<le> Void      = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Void)"
-  "P,h \<turnstile> v :\<le> Boolean   = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Boolean)"
-  "P,h \<turnstile> v :\<le> Integer   = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Integer)"
-  "P,h \<turnstile> v :\<le> NT        = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT)"
-  "P,h \<turnstile> v :\<le> (Class C) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C) \<or> P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT)"
+| "P,h \<turnstile> v :\<le> Boolean   = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Boolean)"
+| "P,h \<turnstile> v :\<le> Integer   = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Integer)"
+| "P,h \<turnstile> v :\<le> NT        = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT)"
+| "P,h \<turnstile> v :\<le> (Class C) = (P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C) \<or> P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT)"
 
-
-constdefs
-  fconf :: "prog \<Rightarrow> heap \<Rightarrow> ('a \<rightharpoonup> val) \<Rightarrow> ('a \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50)
+definition fconf :: "prog \<Rightarrow> heap \<Rightarrow> ('a \<rightharpoonup> val) \<Rightarrow> ('a \<rightharpoonup> ty) \<Rightarrow> bool" ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50) where
   "P,h \<turnstile> v\<^isub>m (:\<le>) T\<^isub>m  \<equiv>
   \<forall>FD T. T\<^isub>m FD = Some T \<longrightarrow> (\<exists>v. v\<^isub>m FD = Some v \<and> P,h \<turnstile> v :\<le> T)"
 
-  oconf :: "prog \<Rightarrow> heap \<Rightarrow> obj \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>" [51,51,51] 50)
+definition oconf :: "prog \<Rightarrow> heap \<Rightarrow> obj \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>" [51,51,51] 50) where
   "P,h \<turnstile> obj \<surd>  \<equiv> let (C,S) = obj in 
       (\<forall>Cs. Subobjs P C Cs \<longrightarrow> (\<exists>!fs'. (Cs,fs') \<in> S)) \<and> 
       (\<forall>Cs fs'. (Cs,fs') \<in> S \<longrightarrow> Subobjs P C Cs \<and> 
 	            (\<exists>fs Bs ms. class P (last Cs) = Some (Bs,fs,ms) \<and> 
                                 P,h \<turnstile> fs' (:\<le>) map_of fs))"  
 
-  hconf :: "prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile> _ \<surd>" [51,51] 50)
+definition hconf :: "prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile> _ \<surd>" [51,51] 50) where
   "P \<turnstile> h \<surd>  \<equiv>
   (\<forall>a obj. h a = Some obj \<longrightarrow> P,h \<turnstile> obj \<surd>) \<and> preallocated h"
 
-  lconf :: "prog \<Rightarrow> heap \<Rightarrow> ('a \<rightharpoonup> val) \<Rightarrow> ('a \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>')\<^sub>w _" [51,51,51,51] 50)
+definition lconf :: "prog \<Rightarrow> heap \<Rightarrow> ('a \<rightharpoonup> val) \<Rightarrow> ('a \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>')\<^sub>w _" [51,51,51,51] 50) where
   "P,h \<turnstile> v\<^isub>m (:\<le>)\<^sub>w T\<^isub>m  \<equiv>
   \<forall>V v. v\<^isub>m V = Some v \<longrightarrow> (\<exists>T. T\<^isub>m V = Some T \<and> P,h \<turnstile> v :\<le> T)"
 
@@ -204,8 +199,7 @@ by(simp add:lconf_def)
 
 section{* Environment conformance *}
 
-constdefs
-  envconf :: "prog \<Rightarrow> env \<Rightarrow> bool"  ("_ \<turnstile> _ \<surd>" [51,51] 50)
+definition envconf :: "prog \<Rightarrow> env \<Rightarrow> bool" ("_ \<turnstile> _ \<surd>" [51,51] 50) where
   "P \<turnstile> E \<surd> \<equiv> \<forall>V T. E V = Some T \<longrightarrow> is_type P T"
 
 section{* Type conformance *}

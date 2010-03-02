@@ -8,7 +8,7 @@ theory FaceDivision
 imports Graph
 begin
 
-constdefs split_face :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> vertex list \<Rightarrow> face \<times> face"
+definition split_face :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> vertex list \<Rightarrow> face \<times> face" where
  "split_face f ram\<^isub>1 ram\<^isub>2 newVs \<equiv> let vs = vertices f;
      f\<^isub>1 = [ram\<^isub>1] @ between vs ram\<^isub>1 ram\<^isub>2 @ [ram\<^isub>2];
      f\<^isub>2 = [ram\<^isub>2] @ between vs ram\<^isub>2 ram\<^isub>1 @ [ram\<^isub>1] in
@@ -16,15 +16,14 @@ constdefs split_face :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<Righta
      Face (f\<^isub>2 @ newVs) Nonfinal)"
 
 
-constdefs replacefacesAt ::
-     "nat list \<Rightarrow> face \<Rightarrow> face list \<Rightarrow> face list list \<Rightarrow> face list list"
+definition replacefacesAt :: "nat list \<Rightarrow> face \<Rightarrow> face list \<Rightarrow> face list list \<Rightarrow> face list list" where
  "replacefacesAt ns f fs F \<equiv> mapAt ns (replace f fs) F"
 
 
-constdefs makeFaceFinalFaceList :: "face \<Rightarrow> face list \<Rightarrow> face list"
+definition makeFaceFinalFaceList :: "face \<Rightarrow> face list \<Rightarrow> face list" where
   "makeFaceFinalFaceList f fs \<equiv> replace f [setFinal f] fs"
 
-constdefs makeFaceFinal :: "face \<Rightarrow> graph \<Rightarrow> graph"
+definition makeFaceFinal :: "face \<Rightarrow> graph \<Rightarrow> graph" where
  "makeFaceFinal f g \<equiv>
      Graph (makeFaceFinalFaceList f (faces g))
            (countVertices g)
@@ -32,11 +31,11 @@ constdefs makeFaceFinal :: "face \<Rightarrow> graph \<Rightarrow> graph"
            (heights g)"
 
 
-constdefs heightsNewVertices :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list"
+definition heightsNewVertices :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list" where
  "heightsNewVertices h\<^isub>1 h\<^isub>2 n \<equiv> [min (h\<^isub>1 + i + 1) (h\<^isub>2 + n - i). i \<leftarrow> [0 ..< n]]"
 
-constdefs splitFace
-    :: "graph \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> vertex list \<Rightarrow> face \<times> face \<times> graph"
+definition splitFace
+ :: "graph \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> vertex list \<Rightarrow> face \<times> face \<times> graph" where
  "splitFace g ram\<^isub>1 ram\<^isub>2 oldF newVs \<equiv>
      let fs = faces g;
      n = countVertices g;
@@ -68,7 +67,7 @@ primrec "subdivFace' g f u n [] = makeFaceFinal f g"
             (f\<^isub>1, f\<^isub>2, g') = splitFace g u v f ws in
             subdivFace' g' f\<^isub>2 v 0 vos)"
 
-constdefs subdivFace :: "graph \<Rightarrow> face \<Rightarrow> vertex option list \<Rightarrow> graph"
+definition subdivFace :: "graph \<Rightarrow> face \<Rightarrow> vertex option list \<Rightarrow> graph" where
 "subdivFace g f vos \<equiv> subdivFace' g f (the(hd vos)) 0 (tl vos)"
 
 end

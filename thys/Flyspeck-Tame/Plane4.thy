@@ -1,5 +1,4 @@
-(*  ID:         $Id: Plane4.thy,v 1.1 2006-05-22 09:54:01 nipkow Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
 *)
 
 header {* Checking Final Quadrilaterals *}
@@ -8,19 +7,16 @@ theory Plane4
 imports While_Combinator Tame
 begin
 
-constdefs
- norm_subset :: "vertex list list \<Rightarrow> vertex list list \<Rightarrow> bool"
+definition norm_subset :: "vertex list list \<Rightarrow> vertex list list \<Rightarrow> bool" where
 "norm_subset xs ys \<equiv> let zs = map rotate_min ys
                      in \<forall>x \<in> set xs. rotate_min x \<in> set zs"
 
-consts remrevdups :: "'a list list \<Rightarrow> 'a list list"
-primrec
-"remrevdups [] = []"
-"remrevdups (xs#xss) = (if xs mem xss \<or> rev xs mem xss then remrevdups xss
+primrec remrevdups :: "'a list list \<Rightarrow> 'a list list" where
+  "remrevdups [] = []"
+| "remrevdups (xs#xss) = (if xs mem xss \<or> rev xs mem xss then remrevdups xss
                         else xs # remrevdups xss)"
 
-constdefs
- find_cycles1 :: "nat \<Rightarrow> graph \<Rightarrow> vertex \<Rightarrow> vertex list list"
+definition find_cycles1 :: "nat \<Rightarrow> graph \<Rightarrow> vertex \<Rightarrow> vertex list list" where
 "find_cycles1 n g v \<equiv>
  snd(snd(
  while (%(vs,wss,res). vs \<noteq> [])
@@ -35,11 +31,11 @@ constdefs
  ([v], [neighbors g v], [])
  ))"
 
- find_cycles :: "nat \<Rightarrow> graph \<Rightarrow> vertex list list"
+definition  find_cycles :: "nat \<Rightarrow> graph \<Rightarrow> vertex list list" where
 "find_cycles n g \<equiv>
  remrevdups(map rotate_min (foldr (%v vss. find_cycles1 n g v @ vss) (vertices g) []))"
 
-constdefs
+definition
 (* Not needed but could be used to get rid of makeTrianglesFinal
  ok3 :: "graph \<Rightarrow> vertex list \<Rightarrow> bool"
 "ok3 g vs  \<equiv>
@@ -52,7 +48,7 @@ constdefs
    distinct vs \<and> |vs| = 3 \<and> is_cycle g vs \<longrightarrow> ok3 g vs"
 *)
 
- ok42 :: "vertex list \<Rightarrow> vertex list list \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool"
+ ok42 :: "vertex list \<Rightarrow> vertex list list \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool" where
 "ok42 vs fs a b c d ==
   norm_subset (tameConf\<^isub>1 a b c d) fs \<or>
   norm_subset (tameConf\<^isub>2 a b c d) fs \<or>
@@ -65,13 +61,13 @@ constdefs
         norm_subset (tameConf\<^isub>4 a b c d e) fs)
   )"
 
- ok4 :: "graph \<Rightarrow> vertex list \<Rightarrow> bool"
+definition ok4 :: "graph \<Rightarrow> vertex list \<Rightarrow> bool" where
 "ok4 g vs  \<equiv>
  let fs = map vertices (faces g); gvs = vertices g;
      a = hd vs; b = hd(tl vs); c = hd(tl(tl vs)); d = hd(tl(tl(tl vs)))
  in ok42 gvs fs a b c d \<or> ok42 gvs fs d c b a"
 
- is_tame\<^isub>3 :: "graph \<Rightarrow> bool"
+definition is_tame\<^isub>3 :: "graph \<Rightarrow> bool" where
 "is_tame\<^isub>3 g \<equiv> \<forall>vs \<in> set(find_cycles 4 g).
    is_cycle g vs \<and> distinct vs \<and> |vs| = 4 \<longrightarrow> ok4 g vs"
 

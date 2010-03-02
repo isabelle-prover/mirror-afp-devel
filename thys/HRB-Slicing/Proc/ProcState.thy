@@ -1,6 +1,6 @@
 header {* \isaheader{The state} *}
 
-theory State imports Com begin
+theory ProcState imports Com begin
 
 fun "interpret" :: "expr \<Rightarrow> (vname \<rightharpoonup> val) \<Rightarrow> val option"
 where Val: "interpret (Val v) cf = Some v"

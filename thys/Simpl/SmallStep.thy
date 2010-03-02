@@ -1093,7 +1093,7 @@ next
 qed
 
 ML {*
-  bind_thm ("tranclp_induct2", split_rule
+  bind_thm ("tranclp_induct2", Split_Rule.split_rule
     (read_instantiate @{context} [(("a", 0), "(aa,ab)"), (("b", 0), "(ba,bb)")] @{thm tranclp_induct}));
 *}
 
@@ -2158,7 +2158,7 @@ next
 qed
 
 ML {*
-  bind_thm ("trancl_induct2", split_rule
+  bind_thm ("trancl_induct2", Split_Rule.split_rule
     (read_instantiate @{context} [(("a", 0), "(aa,ab)"), (("b", 0), "(ba,bb)")] @{thm trancl_induct}));
 *}
 

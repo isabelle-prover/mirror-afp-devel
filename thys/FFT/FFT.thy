@@ -1,5 +1,4 @@
 (*  Title:       Fast Fourier Transform
-    ID:          $Id: FFT.thy,v 1.9 2009-05-10 11:53:46 fhaftmann Exp $
     Author:      Clemens Ballarin <ballarin at in.tum.de>, started 12 April 2005
     Maintainer:  Clemens Ballarin <ballarin at in.tum.de>
 *)
@@ -112,8 +111,7 @@ text {* The function @{term cis} from the complex library returns the
   is the base for our definition of @{text root}.  The main property,
   De Moirve's formula is already there in the library. *}
 
-constdefs
-  root :: "nat => complex"
+definition root :: "nat => complex" where
   "root n == cis (2*pi/(real (n::nat)))"
 
 lemma sin_periodic_pi_diff [simp]: "sin (x - pi) = - sin x"
@@ -265,10 +263,10 @@ text {*
   @{text "DFT n a"} is the transform of vector @{text a}
   of length @{text n}, @{text IDFT} its inverse. *}
 
-constdefs
-  DFT :: "nat => (nat => complex) => (nat => complex)"
+definition DFT :: "nat => (nat => complex) => (nat => complex)" where
   "DFT n a == (%i. \<Sum>j=0..<n. (root n) ^ (i * j) * (a j))"
-  IDFT :: "nat => (nat => complex) => (nat => complex)"
+
+definition IDFT :: "nat => (nat => complex) => (nat => complex)" where
   "IDFT n a == (%i. (\<Sum>k=0..<n. (a k) / (root n) ^ (i * k)))"
 
 lemma "map (DFT 4 a) [0, 1, 2, 3] = ?x"

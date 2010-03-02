@@ -1,13 +1,13 @@
 (*  Title:       CoreC++
-    ID:          $Id: Determinism.thy,v 1.7 2007-08-12 16:28:13 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
 header {* \isaheader{Determinism Proof} *}
 
-theory Determinism imports TypeSafe begin
-
+theory Determinism
+imports TypeSafe
+begin
 
 section{* Some lemmas *}
 

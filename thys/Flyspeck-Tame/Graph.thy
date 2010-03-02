@@ -1,5 +1,4 @@
-(*  ID:         $Id: Graph.thy,v 1.10 2009-07-14 09:00:10 fhaftmann Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
+(*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header {* Graph *}
@@ -42,7 +41,9 @@ primrec
   final_face_simp: "final (Face vs f) = (case f of Final \<Rightarrow> True | Nonfinal \<Rightarrow> False)"
 
 consts type :: "'a \<Rightarrow> facetype"
-primrec "type (Face vs f) = f"
+
+primrec
+  "type (Face vs f) = f"
 
 primrec (vertices_face)
   vertices_face_simp: "vertices (Face vs f) = vs"
@@ -52,27 +53,26 @@ defs (overloaded) cong_face_def:
 
 text {* The following operation makes a face final. *}
 
-constdefs setFinal :: "face \<Rightarrow> face"
+definition setFinal :: "face \<Rightarrow> face" where
   "setFinal f \<equiv> Face (vertices f) Final"
 
 
 text {* The function @{text nextVertex} (written @{text "f \<bullet> v"}) is based on
 @{text nextElem}, that returns the successor of an element in a list.  *}
 
-consts nextElem :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
-primrec
+primrec nextElem :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where
  "nextElem [] b x = b"
- "nextElem (a#as) b x =
+|"nextElem (a#as) b x =
     (if x=a then (case as of [] \<Rightarrow> b | (a'#as') \<Rightarrow> a') else nextElem as b x)"
 
-constdefs nextVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*) ("_ \<bullet>")(*>*) (* *)
+definition nextVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_ \<bullet>") (*>*)where (* *)
  "f \<bullet> \<equiv> let vs = vertices f in nextElem vs (hd vs)"
 
 
 text {* @{text nextVertices} is $n$-fold application of
 @{text nextvertex}. *}
 
-constdefs nextVertices :: "face \<Rightarrow> nat \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_\<^bsup>_\<^esup> \<bullet> _")(*>*) (* *)
+definition nextVertices :: "face \<Rightarrow> nat \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_\<^bsup>_\<^esup> \<bullet> _") (*>*)where (* *)
   "f\<^bsup>n\<^esup> \<bullet> v \<equiv> (f \<bullet> ^^ n) v"
 
 lemma nextV2: "f\<^bsup>2\<^esup>\<bullet>v = f\<bullet> (f\<bullet> v)"
@@ -95,7 +95,7 @@ lemma [code_unfold, code_inline del]: "f\<^bsup>op\<^esup>\<bullet>v = (if
       else (let vs = vertices f in nextElem (rev vs) (last vs) v))"
  by (simp add: nextVertex_def op_vertices_def) (*>*) (* *)
 
-constdefs prevVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_\<^bsup>-1\<^esup> \<bullet>")(*>*) (* *)
+definition prevVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_\<^bsup>-1\<^esup> \<bullet>") (*>*)where (* *)
   "f\<^bsup>-1\<^esup> \<bullet> v \<equiv> (let vs = vertices f in nextElem (rev vs) (last vs) v)"
 
 
@@ -109,15 +109,15 @@ subsection {* Graphs *}
 
 datatype graph = Graph "(face list)" "nat" "face list list" "nat list"
 
-consts faces :: "graph \<Rightarrow> face list"
-primrec "faces (Graph fs n f h) = fs"
+primrec faces :: "graph \<Rightarrow> face list" where
+  "faces (Graph fs n f h) = fs"
 
 abbreviation
   Faces :: "graph \<Rightarrow> face set" ("\<F>") where
   "\<F> g == set(faces g)"
 
-consts countVertices :: "graph \<Rightarrow> nat"
-primrec "countVertices (Graph fs n f h) = n"
+primrec countVertices :: "graph \<Rightarrow> nat" where
+  "countVertices (Graph fs n f h) = n"
 
 primrec
   vertices_graph_simp: "vertices (Graph fs n f h) = [0 ..< n]"
@@ -134,18 +134,16 @@ lemma len_vertices_graph [code_unfold, code_inline del]:
 by (simp add:vertices_graph)
 
 
-consts faceListAt :: "graph \<Rightarrow> face list list"
-primrec
+primrec faceListAt :: "graph \<Rightarrow> face list list" where
   "faceListAt (Graph fs n f h) = f"
 
-constdefs facesAt :: "graph \<Rightarrow> vertex \<Rightarrow> face list"
+definition facesAt :: "graph \<Rightarrow> vertex \<Rightarrow> face list" where
  "facesAt g v \<equiv> if v \<in> set(vertices g) then faceListAt g ! v else []"
 
-consts heights :: "graph \<Rightarrow> nat list"
-primrec
+primrec heights :: "graph \<Rightarrow> nat list" where
   "heights (Graph fs n f h) = h"
 
-constdefs height :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
+definition height :: "graph \<Rightarrow> vertex \<Rightarrow> nat" where
   "height g v \<equiv> heights g ! v"
 
 lemma graph_split:
@@ -156,7 +154,7 @@ lemma graph_split:
   by (induct g) simp
 
 
-constdefs graph :: "nat \<Rightarrow> graph"
+definition graph :: "nat \<Rightarrow> graph" where
   "graph n \<equiv>
     (let vs = [0 ..< n];
      fs = [ Face vs Final, Face (rev vs) Nonfinal]
@@ -166,13 +164,13 @@ subsection{* Operations on graphs *}
 
 text {* final graph, final / nonfinal faces *}
 
-constdefs finals :: "graph \<Rightarrow> face list"
+definition finals :: "graph \<Rightarrow> face list" where
   "finals g \<equiv> [f \<leftarrow> faces g. final f]"
 
-constdefs nonFinals :: "graph \<Rightarrow> face list"
+definition nonFinals :: "graph \<Rightarrow> face list" where
   "nonFinals g \<equiv> [f \<leftarrow> faces g. \<not> final f]"
 
-constdefs countNonFinals :: "graph \<Rightarrow> nat"
+definition countNonFinals :: "graph \<Rightarrow> nat" where
   "countNonFinals g \<equiv> |nonFinals g|"
 
 defs finalGraph_def: "final g \<equiv> (nonFinals g = [])"
@@ -184,7 +182,7 @@ lemma finalGraph_face: "final g \<Longrightarrow> f \<in> set (faces g) \<Longri
   by (simp only: finalGraph_faces[symmetric]) (simp add: finals_def)
 
 
-constdefs finalVertex :: "graph \<Rightarrow> vertex \<Rightarrow> bool"
+definition finalVertex :: "graph \<Rightarrow> vertex \<Rightarrow> bool" where
   "finalVertex g v \<equiv> \<forall>f \<in> set(facesAt g v). final f"
 
 lemma finalVertex_final_face[dest]:
@@ -196,19 +194,19 @@ lemma finalVertex_final_face[dest]:
 
 text {* counting faces *}
 
-constdefs degree :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
+definition degree :: "graph \<Rightarrow> vertex \<Rightarrow> nat" where
   "degree g v \<equiv> |facesAt g v|"
 
-constdefs tri :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
+definition tri :: "graph \<Rightarrow> vertex \<Rightarrow> nat" where
  "tri g v \<equiv> |[f \<leftarrow> facesAt g v. final f \<and> |vertices f| = 3]|"
 
-constdefs quad :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
+definition quad :: "graph \<Rightarrow> vertex \<Rightarrow> nat" where
  "quad g v \<equiv> |[f \<leftarrow> facesAt g v. final f \<and> |vertices f| = 4]|"
 
-constdefs except :: "graph \<Rightarrow> vertex \<Rightarrow> nat"
+definition except :: "graph \<Rightarrow> vertex \<Rightarrow> nat" where
  "except g v \<equiv> |[f \<leftarrow> facesAt g v. final f \<and> 5 \<le> |vertices f| ]|"
 
-constdefs vertextype :: "graph \<Rightarrow> vertex \<Rightarrow> nat \<times> nat \<times> nat"
+definition vertextype :: "graph \<Rightarrow> vertex \<Rightarrow> nat \<times> nat \<times> nat" where
   "vertextype g v \<equiv> (tri g v, quad g v, except g v)"
 
 lemma[simp]: "0 \<le> tri g v" by (simp add: tri_def)
@@ -218,10 +216,10 @@ lemma[simp]: "0 \<le> quad g v" by (simp add: quad_def)
 lemma[simp]: "0 \<le> except g v" by (simp add: except_def)
 
 
-constdefs exceptionalVertex :: "graph \<Rightarrow> vertex \<Rightarrow> bool"
+definition exceptionalVertex :: "graph \<Rightarrow> vertex \<Rightarrow> bool" where
   "exceptionalVertex g v \<equiv> except g v \<noteq> 0"
 
-constdefs noExceptionals :: "graph \<Rightarrow> vertex set \<Rightarrow> bool"
+definition noExceptionals :: "graph \<Rightarrow> vertex set \<Rightarrow> bool" where
   "noExceptionals g V \<equiv> (\<forall>v \<in> V. \<not> exceptionalVertex g v)"
 
 
@@ -231,7 +229,7 @@ text {* An edge $(a,b)$ is contained in face f,
 defs edges_graph_def: (*>*)
  "edges (g::graph) \<equiv> \<Union>\<^bsub>f \<in> \<F> g\<^esub> edges f"
 
-constdefs neighbors :: "graph \<Rightarrow> vertex \<Rightarrow> vertex list"
+definition neighbors :: "graph \<Rightarrow> vertex \<Rightarrow> vertex list" where
  "neighbors g v \<equiv> [f\<bullet>v. f \<leftarrow> facesAt g v]"
 
 
@@ -242,7 +240,7 @@ The function $s'$ permutating the faces at a vertex,
 is implemeted by the function @{text nextFace}
 *}
 
-constdefs nextFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*) ("_ \<bullet>")(*>*)
+definition nextFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*)("_ \<bullet>") (*>*)where
 (*<*) nextFace_def_aux: "p \<bullet> \<equiv> \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
    (case fs of [] \<Rightarrow> f
            | g#gs \<Rightarrow> nextElem fs (hd fs) f))"  (*>*)
@@ -254,7 +252,7 @@ constdefs nextFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> fa
 (*<*) by (simp add: nextFace_def_aux) (*>*)
 
 (* Unused: *)
-constdefs prevFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*) ("_\<^bsup>-1\<^esup> \<bullet>")(*>*)
+definition prevFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*)("_\<^bsup>-1\<^esup> \<bullet>") (*>*)where
 (*<*) prevFace_def_aux: "p\<^bsup>-1\<^esup> \<bullet> \<equiv>
      \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
     (case fs of [] \<Rightarrow> f
@@ -268,7 +266,7 @@ constdefs prevFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> fa
 
 
 (* precondition a b in f *)
-constdefs directedLength :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> nat"
+definition directedLength :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> nat" where
   "directedLength f a b \<equiv>
   if a = b then 0 else |(between (vertices f) a b)| + 1"
 

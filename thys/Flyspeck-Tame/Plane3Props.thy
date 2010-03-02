@@ -1,5 +1,4 @@
-(*  ID:         $Id: Plane3Props.thy,v 1.2 2007-06-08 12:06:50 nipkow Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
 *)
 
 header{* All About Finalizing Triangles *}
@@ -158,11 +157,11 @@ by(simp add:makeTrianglesFinal_def mk3Fin_lem)
 
 subsection "Completeness"
 
-constdefs
-"in2finals g a b \<equiv>
+definition
+  "in2finals g a b \<equiv>
  \<exists>f \<in> set(finals g). \<exists>f' \<in> set(finals g). (a,b) \<in> \<E> f \<and> (b,a) \<in> \<E> f'"
 
- untame\<^isub>2 :: "graph \<Rightarrow> bool"
+definition untame\<^isub>2 :: "graph \<Rightarrow> bool" where
 "untame\<^isub>2 g \<equiv> \<exists>a b c. is_cycle g [a,b,c] \<and> distinct[a,b,c] \<and>
      (\<forall>f \<in> \<F> g. \<E> f \<noteq> {(c,a), (a,b), (b,c)} \<and>
                    \<E> f \<noteq> {(a,c), (c,b), (b,a)}) \<and>

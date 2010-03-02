@@ -75,7 +75,8 @@ qed
 
 subsection {* The finfun type *}
 
-typedef ('a,'b) finfun = "{f::'a\<Rightarrow>'b. \<exists>b. finite {a. f a \<noteq> b}}"
+typedef ('a,'b) finfun  ("(_ \<Rightarrow>\<^isub>f /_)" [22, 21] 21) =
+  "{f::'a\<Rightarrow>'b. \<exists>b. finite {a. f a \<noteq> b}}"
 proof -
   have "\<exists>f. finite {x. f x \<noteq> undefined}"
   proof
@@ -83,9 +84,6 @@ proof -
   qed
   then show ?thesis by auto
 qed
-
-syntax
-  "finfun"      :: "type \<Rightarrow> type \<Rightarrow> type"         ("(_ \<Rightarrow>\<^isub>f /_)" [22, 21] 21)
 
 lemma fun_upd_finfun: "y(a := b) \<in> finfun \<longleftrightarrow> y \<in> finfun"
 proof -

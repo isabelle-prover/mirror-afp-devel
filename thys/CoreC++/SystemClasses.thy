@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: SystemClasses.thy,v 1.6 2006-11-06 11:54:13 wasserra Exp $
     Author:      Gerwin Klein
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -13,17 +12,16 @@ text {*
   This theory provides definitions for the system exceptions.
 *}
 
-constdefs
-  NullPointerC :: "cdecl"
+definition NullPointerC :: "cdecl" where
   "NullPointerC \<equiv> (NullPointer, ([],[],[]))"
 
-  ClassCastC :: "cdecl"
+definition ClassCastC :: "cdecl" where
   "ClassCastC \<equiv> (ClassCast, ([],[],[]))"
 
-  OutOfMemoryC :: "cdecl"
+definition OutOfMemoryC :: "cdecl" where
   "OutOfMemoryC \<equiv> (OutOfMemory, ([],[],[]))"
 
-  SystemClasses :: "cdecl list"
+definition SystemClasses :: "cdecl list" where
   "SystemClasses \<equiv> [NullPointerC, ClassCastC, OutOfMemoryC]"
 
 end

@@ -198,8 +198,7 @@ lemma bdd_all_bdd_binop:
   shows "bdd_all R (bdd_binop f bdd bdd')"
   using assms by (induct f bdd bdd' rule: bdd_binop.induct) simp+
 
-constdefs
-  insert_list :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list"
+definition insert_list :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
   "insert_list x xs \<equiv> if x mem xs then xs else x # xs"
 
 lemma insert_list_set[simp]:

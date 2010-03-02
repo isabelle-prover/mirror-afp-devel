@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: SubObj.thy,v 1.11 2007-10-05 15:02:21 nipkow Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
@@ -607,17 +606,14 @@ subsection {* Appending paths *}
 
 text{* Avoided name clash by calling one path Path. *}
 
-constdefs
-  path_via    :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool"
-      ("_ \<turnstile> Path _ to _ via _ " [51,51,51,51] 50)
+definition path_via :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" ("_ \<turnstile> Path _ to _ via _ " [51,51,51,51] 50) where
   "P \<turnstile> Path C to D via Cs \<equiv> Subobjs P C Cs \<and> last Cs = D"
 
-  path_unique :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool"
-      ("_ \<turnstile> Path _ to _ unique" [51,51,51] 50)
+definition path_unique :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" ("_ \<turnstile> Path _ to _ unique" [51,51,51] 50) where
   "P \<turnstile> Path C to D unique \<equiv> \<exists>!Cs. Subobjs P C Cs \<and> last Cs = D"
 
-  appendPath :: "path \<Rightarrow> path \<Rightarrow> path"  (infixr "@\<^sub>p" 65)
-	"Cs @\<^sub>p Cs' \<equiv> if (last Cs = hd Cs') then Cs @ (tl Cs') else Cs'"
+definition appendPath :: "path \<Rightarrow> path \<Rightarrow> path" (infixr "@\<^sub>p" 65) where
+  "Cs @\<^sub>p Cs' \<equiv> if (last Cs = hd Cs') then Cs @ (tl Cs') else Cs'"
 
 
 lemma appendPath_last: "Cs \<noteq> [] \<Longrightarrow> last Cs = last (Cs'@\<^sub>pCs)"
@@ -695,49 +691,46 @@ by(erule leq_pathSh)simp
 
 section{* Member lookups *}
 
-constdefs
-  FieldDecls      :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> (path \<times> ty) set"
+definition FieldDecls :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> (path \<times> ty) set" where
   "FieldDecls P C F \<equiv> 
    {(Cs,T). Subobjs P C Cs \<and> (\<exists>Bs fs ms. class P (last Cs) = Some(Bs,fs,ms)
                                     \<and> map_of fs F = Some T)}"
 
-  LeastFieldDecl  :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> path \<Rightarrow> bool"
-    ("_ \<turnstile> _ has least _:_ via _" [51,0,0,0,51] 50)
+definition LeastFieldDecl  :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> path \<Rightarrow> bool"
+    ("_ \<turnstile> _ has least _:_ via _" [51,0,0,0,51] 50) where
   "P \<turnstile> C has least F:T via Cs \<equiv>
    (Cs,T) \<in> FieldDecls P C F \<and>
    (\<forall>(Cs',T') \<in> FieldDecls P C F. P,C \<turnstile> Cs \<sqsubseteq> Cs')"
 
-
-
-  MethodDefs     :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> (path \<times> method)set"
+definition MethodDefs :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> (path \<times> method)set" where
   "MethodDefs P C M \<equiv>
    {(Cs,mthd). Subobjs P C Cs \<and> (\<exists>Bs fs ms. class P (last Cs) = Some(Bs,fs,ms)
                                     \<and> map_of ms M = Some mthd)}"
 
   -- "needed for well formed criterion"
-  HasMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
-    ("_ \<turnstile> _ has _ = _ via _" [51,0,0,0,51] 50)
+definition HasMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
+    ("_ \<turnstile> _ has _ = _ via _" [51,0,0,0,51] 50) where
   "P \<turnstile> C has M = mthd via Cs \<equiv> (Cs,mthd) \<in> MethodDefs P C M"
 
-  LeastMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
-    ("_ \<turnstile> _ has least _ = _ via _" [51,0,0,0,51] 50)
+definition LeastMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
+    ("_ \<turnstile> _ has least _ = _ via _" [51,0,0,0,51] 50) where
   "P \<turnstile> C has least M = mthd via Cs \<equiv>
    (Cs,mthd) \<in> MethodDefs P C M \<and>
    (\<forall>(Cs',mthd') \<in> MethodDefs P C M. P,C \<turnstile> Cs \<sqsubseteq> Cs')"
 
-  MinimalMethodDefs :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> (path \<times> method)set"
+definition MinimalMethodDefs :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> (path \<times> method)set" where
   "MinimalMethodDefs P C M \<equiv> 
       {(Cs,mthd). (Cs,mthd) \<in> MethodDefs P C M \<and> 
          (\<forall>(Cs',mthd')\<in> MethodDefs P C M. P,C \<turnstile> Cs' \<sqsubseteq> Cs \<longrightarrow> Cs' = Cs)}"
 
-  OverriderMethodDefs :: "prog \<Rightarrow> subobj \<Rightarrow> mname \<Rightarrow> (path \<times> method)set"
+definition OverriderMethodDefs :: "prog \<Rightarrow> subobj \<Rightarrow> mname \<Rightarrow> (path \<times> method)set" where
   "OverriderMethodDefs P R M \<equiv>
       {(Cs,mthd). \<exists>Cs' mthd'. P \<turnstile> (ldc R) has least M = mthd' via Cs' \<and>
                       (Cs,mthd) \<in> MinimalMethodDefs P (mdc R) M \<and> 
                       P,mdc R \<turnstile> Cs \<sqsubseteq> (snd R)@\<^sub>pCs'}"
 
-  FinalOverriderMethodDef :: "prog \<Rightarrow> subobj \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
-    ("_ \<turnstile> _ has overrider _ = _ via _" [51,0,0,0,51] 50)
+definition FinalOverriderMethodDef :: "prog \<Rightarrow> subobj \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
+    ("_ \<turnstile> _ has overrider _ = _ via _" [51,0,0,0,51] 50) where
   "P \<turnstile> R has overrider M = mthd via Cs \<equiv> 
       (Cs,mthd) \<in> OverriderMethodDefs P R M \<and> 
       card(OverriderMethodDefs P R M) = 1"

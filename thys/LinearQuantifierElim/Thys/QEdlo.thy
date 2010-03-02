@@ -131,7 +131,7 @@ lemmas [folded DLOe_code_lemmas, code] =
   DLO\<^isub>e.lift_dnfeq_qe_def DLO\<^isub>e.lift_eq_qe_def
 (*>*)
 
-setup {* Sign.revert_abbrev "" @{const_name DLO\<^isub>e.lift_dnfeq_qe} *}
+setup {* Sign.revert_abbrev "" @{const_abbrev DLO\<^isub>e.lift_dnfeq_qe} *}
 
 definition "qe_dlo = DLO\<^isub>e.lift_dnfeq_qe qe_dlo\<^isub>1"
 (*<*)

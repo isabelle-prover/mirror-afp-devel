@@ -20,7 +20,7 @@ by(simp add:indexToVertexList_def)
 
 
 (***************************** List not decreasing ***************************)
-constdefs increasing:: "('a::linorder) list \<Rightarrow> bool"
+definition increasing :: "('a::linorder) list \<Rightarrow> bool" where
  "increasing ls \<equiv> \<forall> x y as bs. ls = as @ x # y # bs \<longrightarrow> x \<le> y"
 
 lemma increasing1: "\<And> as x. increasing ls \<Longrightarrow> ls = as @ x # cs @ y # bs \<Longrightarrow> x \<le> y"
@@ -246,7 +246,7 @@ lemma enumerator_increasing: "ls \<in> set (enumerator m nmax) \<Longrightarrow>
 apply (rule increasing3)
 by (auto dest: enumerator_increase)
 
-constdefs incrIndexList:: "nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
+definition incrIndexList :: "nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
  "incrIndexList ls m nmax \<equiv>
   1 < m \<and> 1 < nmax \<and>
   hd ls = 0 \<and> last ls = (nmax - 1) \<and> length ls = m
