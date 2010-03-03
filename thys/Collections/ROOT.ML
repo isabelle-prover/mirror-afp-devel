@@ -8,7 +8,7 @@ use_thys ["MapGA", "SetGA", "SetByMap", "Algos", "SetIndex"];
 
 (* Implementations *)
 no_document use_thys
- ["While_Combinator", "AssocList", "RBT_add", "Efficient_Nat"];
+ ["While_Combinator", "AssocList", "RBT", "Efficient_Nat"];
 
 use_thys
   ["ListMapImpl", "ListSetImpl", "RBTMapImpl", "RBTSetImpl",

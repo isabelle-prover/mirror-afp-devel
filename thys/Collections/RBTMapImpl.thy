@@ -4,7 +4,7 @@
 *)
 header {* Map Implementation by Red-Black-Trees*}
 theory RBTMapImpl
-imports Main MapSpec RBT RBT_add MapGA
+imports Main MapSpec RBT MapGA
 begin
 text_raw {*\label{thy:RBTMapImpl}*}
 
@@ -24,7 +24,7 @@ definition "rm_update == RBT.insert"
 definition "rm_update_dj == rm_update"
 definition "rm_delete == RBT.delete"
 definition rm_iterate :: "(('k,'v) rm,'k::linorder,'v,'\<sigma>) map_iterator"  
-  where "rm_iterate f t \<sigma>0 == RBT.foldwithkey f t \<sigma>0"
+  where "rm_iterate f t \<sigma>0 == RBT.fold f t \<sigma>0"
 
 (* TODO: The iterator could be defined as in-order traversal. Then we could
   show that iteration is always done in ascending order of keys.*)
@@ -97,11 +97,11 @@ lemma rm_delete_impl: "map_delete rm_\<alpha> rm_invar rm_delete"
 
 lemma rm_iterate_alt: 
   "rm_iterate f t \<sigma> = foldl (\<lambda>x (k, v). f k v x) \<sigma> (RBT.entries t)"
-  by (simp add: rm_iterate_def fold_entries_fold)
+  by (simp add: rm_iterate_def fold_def)
 
 lemma rm_\<alpha>_alist: "rm_invar m \<Longrightarrow> rm_\<alpha> m = Map.map_of (RBT.entries m)"
   by (unfold rm_\<alpha>_def rm_invar_def)
-     (simp add: map_of_entries)
+     (simp add: lookup_map_of_entries)
 
 lemma rm_\<alpha>_finite[simp, intro!]: "finite (dom (rm_\<alpha> m))" 
   by (simp add: rm_\<alpha>_def)
@@ -216,7 +216,7 @@ proof -
         "it \<subseteq> d" 
         "I it \<sigma>"
 
-      from P(3) have "k\<in>keys l" 
+      from P(3) have "k\<in>set (keys l)" 
         by (auto simp add: lookup_keys[symmetric] ST(3))
       with ST(1) tree_less_prop have "k < k'" by auto
       with P(3) have "RBT.lookup (RBT.Branch col l k' v' r) k = Some v"
@@ -240,7 +240,7 @@ proof -
         "it \<subseteq> d" 
         "I it \<sigma>"
 
-      from P(3) have "k\<in>keys r" 
+      from P(3) have "k\<in>set (keys r)" 
         by (auto simp add: lookup_keys[symmetric] ST(4))
       with ST(2) tree_greater_prop have "k' < k" by auto
       with P(3) have "RBT.lookup (RBT.Branch col l k' v' r) k = Some v"
@@ -373,7 +373,7 @@ proof -
           .
         txt {* From these, it's straightforward to show the goal: *}
         hence ?case using C
-          apply (simp only: rbt_dom_node[OF Branch.prems(5)])
+          apply (simp only: dom_lookup_Branch [OF Branch.prems(5)])
           apply (simp add: Diff_insert2[symmetric] set_diff_diff_left)
           apply (simp only: Un_commute)
           apply (erule disjE)
@@ -399,7 +399,7 @@ lemma rm_isEmpty_impl: "map_isEmpty rm_\<alpha> rm_invar rm_isEmpty"
   apply (unfold rm_defs)
   apply (case_tac m)
   apply (fastsimp intro: ext)
-  apply (auto simp add: lookup_entries_aux [OF is_rbt_sorted])
+  apply (auto simp add: lookup_map_of_entries [OF is_rbt_sorted])
   done
 
 lemmas rm_sel_impl = iti_sel_correct[OF rm_iteratei_impl, folded rm_sel_def]

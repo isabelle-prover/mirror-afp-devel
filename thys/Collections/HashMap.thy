@@ -28,7 +28,8 @@ types
   ('k,'v) abs_hashmap = "hashcode \<rightharpoonup> ('k \<rightharpoonup> 'v)"
 
   -- "Map entry of map by function"
-abbreviation "map_entry k f m == m(k := f (m k))"
+abbreviation map_entry where
+  "map_entry k f m == m(k := f (m k))"
 
 
   -- "Invariant: Buckets only contain entries with the right hashcode and there are no empty buckets"
