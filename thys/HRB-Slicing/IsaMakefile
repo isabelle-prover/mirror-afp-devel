@@ -6,9 +6,9 @@ BASE-IMAGE = Jinja
 ## targets
 
 default: $(SESSION-NAME)
-test: $(SESSION-NAME)-test
+test: $(SESSION-NAME)
 # usually empty:
-images:  $(SESSION-NAME)
+images:
 
 all: images
 
