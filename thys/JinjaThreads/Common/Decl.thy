@@ -21,11 +21,11 @@ types
 
 (*<*)
 translations
-  "fdecl"   <= (type) "String.literal \<times> ty"
-  "mdecl c" <= (type) "String.literal \<times> ty list \<times> ty \<times> c"
-  "class c" <= (type) "String.literal \<times> fdecl list \<times> (c mdecl) list"
-  "cdecl c" <= (type) "String.literal \<times> (c class)"
-  "prog  c" <= (type) "(c cdecl) list"
+  (type) "fdecl"   <= (type) "String.literal \<times> ty"
+  (type) "'c mdecl" <= (type) "String.literal \<times> ty list \<times> ty \<times> 'c"
+  (type) "'c class" <= (type) "String.literal \<times> fdecl list \<times> ('c mdecl) list"
+  (type) "'c cdecl" <= (type) "String.literal \<times> ('c class)"
+  (type) "'c prog" <= (type) "('c cdecl) list"
 (*>*)
 
 constdefs

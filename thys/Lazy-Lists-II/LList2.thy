@@ -18,9 +18,13 @@ begin
 
 section{*Preliminaries*}
 
-syntax
-  LCons :: "'a \<Rightarrow> 'a llist \<Rightarrow> 'a llist" (infixr "##" 65)
-  lappend :: "['a llist, 'a llist] => 'a llist" (infixr "@@" 65)
+notation
+  LCons  (infixr "##" 65) and
+  lappend  (infixr "@@" 65)
+
+translations
+  "case p of XCONST LNil \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightleftharpoons> "CONST llist_case a (\<lambda>x l. b) p"
+
 
 lemmas llistE = llist_cases
 
@@ -430,7 +434,7 @@ section{*Length, indexing, prefixes, and suffixes of llists*}
 
 primrec ll2f :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a option" (infix "!!" 100)
 where
-  "l!!0 = (case l of LNil \<Rightarrow> None | LCons x xs \<Rightarrow> Some x)"
+  "l!!0 = (case l of LNil \<Rightarrow> None | x ## xs \<Rightarrow> Some x)"
 | "l!!(Suc i) = (case l of LNil \<Rightarrow> None | x ## xs \<Rightarrow> xs!!i)"
 
 primrec ltake :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"

@@ -34,7 +34,7 @@ types
   J_thread_action = "(addr,thread_id,expr \<times> locals,heap,addr,obs_event option) thread_action"
 
 translations
-  "J_thread_action" <= (type) "(nat,nat,expr \<times> (message_string \<rightharpoonup> val),heap,nat,obs_event option) thread_action"
+  (type) "J_thread_action" <= (type) "(nat,nat,expr \<times> (String.literal \<rightharpoonup> val),heap,nat,obs_event option) thread_action"
 
 definition extNTA2J :: "J_prog \<Rightarrow> (cname \<times> mname \<times> addr) \<Rightarrow> expr \<times> locals"
 where "extNTA2J P = (\<lambda>(C, M, a). let (D,Ts,T,pns,body) = method P C M

@@ -20,11 +20,11 @@ types
 
 
 translations
-  "fdecl" <= (type) "vname \<times> ty"
-  "mdecl" <= (type) "mname \<times> ty list \<times> ty \<times> (vname list \<times> expr)"
-  "class" <= (type) "cname \<times> fdecl list \<times> mdecl list"
-  "cdecl" <= (type) "cname \<times> class"
-  "prog " <= (type) "cdecl list"
+  (type) "fdecl" <= (type) "vname \<times> ty"
+  (type) "mdecl" <= (type) "mname \<times> ty list \<times> ty \<times> (vname list \<times> expr)"
+  (type) "class" <= (type) "cname \<times> fdecl list \<times> mdecl list"
+  (type) "cdecl" <= (type) "cname \<times> class"
+  (type) "prog " <= (type) "cdecl list"
 
 
 definition "class" :: "prog \<Rightarrow> cname \<rightharpoonup> class" where
