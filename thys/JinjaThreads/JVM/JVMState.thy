@@ -26,7 +26,7 @@ types
   -- "program counter within frame"
 
 translations
-  "frame" <= (type) "val list \<times> val list \<times> String.literal \<times> String.literal \<times> nat"
+  (type) "frame" <= (type) "val list \<times> val list \<times> String.literal \<times> String.literal \<times> nat"
 
 section {* Runtime State *}
 types
@@ -42,6 +42,6 @@ types
   jvm_ta_state = "jvm_thread_action \<times> jvm_state"
 
 translations
-  "jvm_thread_action" <= (type) "(nat,nat,nat option \<times> frame list,heap,nat,obs_event option) thread_action"
+  (type) "jvm_thread_action" <= (type) "(nat,nat,nat option \<times> frame list,heap,nat,obs_event option) thread_action"
 
 end

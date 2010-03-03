@@ -21,11 +21,11 @@ types
 
 (*<*)
 translations
-  "fdecl"   <= (type) "vname \<times> ty"
-  "mdecl c" <= (type) "mname \<times> ty list \<times> ty \<times> c"
-  "class c" <= (type) "cname \<times> fdecl list \<times> (c mdecl) list"
-  "cdecl c" <= (type) "cname \<times> (c class)"
-  "prog  c" <= (type) "(c cdecl) list"
+  (type) "fdecl"   <= (type) "vname \<times> ty"
+  (type) "'c mdecl" <= (type) "mname \<times> ty list \<times> ty \<times> 'c"
+  (type) "'c class" <= (type) "cname \<times> fdecl list \<times> ('c mdecl) list"
+  (type) "'c cdecl" <= (type) "cname \<times> ('c class)"
+  (type) "'c prog" <= (type) "('c cdecl) list"
 (*>*)
 
 constdefs

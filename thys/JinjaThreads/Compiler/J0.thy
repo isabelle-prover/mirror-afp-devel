@@ -247,7 +247,7 @@ types
   J0_thread_action = "(addr,thread_id,expr \<times> expr list,heap,addr,obs_event option) thread_action"
 
 translations
-  "J0_thread_action" <= (type) "(nat,nat,expr \<times> expr list,heap,nat,obs_event option) thread_action"
+  (type) "J0_thread_action" <= (type) "(nat,nat,expr \<times> expr list,heap,nat,obs_event option) thread_action"
 
 definition extNTA2J0 :: "J_prog \<Rightarrow> (cname \<times> mname \<times> addr) \<Rightarrow> (expr \<times> expr list)"
 where

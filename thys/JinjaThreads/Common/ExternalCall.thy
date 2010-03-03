@@ -15,7 +15,7 @@ types
   external_thread_action = "(addr,thread_id,cname \<times> mname \<times> addr,heap,addr, obs_event option) thread_action"
 
 translations
-  "external_thread_action" <= (type) "(nat,nat,char list \<times> char list \<times> nat,heap,nat, obs_event option) thread_action"
+  (type) "external_thread_action" <= (type) "(nat,nat,char list \<times> char list \<times> nat,heap,nat, obs_event option) thread_action"
 
 inductive is_external_call :: "'m prog \<Rightarrow> ty \<Rightarrow> mname \<Rightarrow> bool"
 for P :: "'m prog"

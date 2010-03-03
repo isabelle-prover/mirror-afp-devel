@@ -39,8 +39,8 @@ types
   J_prog = "J_mb prog"          -- "Jinja program"
 
 translations
-  "expr" <= (type) "(message_string, unit) exp"
-  "J_prog" <= (type) "(message_string list \<times> expr) prog"
+  (type) "expr" <= (type) "(String.literal, unit) exp"
+  (type) "J_prog" <= (type) "(String.literal list \<times> expr) prog"
 
 
 subsection "Syntactic sugar"
