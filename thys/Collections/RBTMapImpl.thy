@@ -101,7 +101,7 @@ lemma rm_iterate_alt:
 
 lemma rm_\<alpha>_alist: "rm_invar m \<Longrightarrow> rm_\<alpha> m = Map.map_of (RBT.entries m)"
   by (unfold rm_\<alpha>_def rm_invar_def)
-     (simp add: lookup_map_of_entries)
+     (simp add: map_of_entries)
 
 lemma rm_\<alpha>_finite[simp, intro!]: "finite (dom (rm_\<alpha> m))" 
   by (simp add: rm_\<alpha>_def)
@@ -399,7 +399,7 @@ lemma rm_isEmpty_impl: "map_isEmpty rm_\<alpha> rm_invar rm_isEmpty"
   apply (unfold rm_defs)
   apply (case_tac m)
   apply (fastsimp intro: ext)
-  apply (auto simp add: lookup_map_of_entries [OF is_rbt_sorted])
+  apply (auto simp add: map_of_entries [OF is_rbt_sorted, symmetric])
   done
 
 lemmas rm_sel_impl = iti_sel_correct[OF rm_iteratei_impl, folded rm_sel_def]
