@@ -133,7 +133,7 @@ abbreviation
   "b >>= g \<equiv> bbind\<cdot>b\<cdot>g"
 
 lemma bbind_strict1[simp]: "bbind\<cdot>\<bottom> = \<bottom>"
-  by (simp add: bbind_def inst_cfun_pcpo UU_I[OF minimal_up])
+  by (simp add: bbind_def)
 lemma bbind_strict2[simp]: "x >>= \<bottom> = \<bottom>"
   by (cases x, simp_all add: bbind_def)
 
@@ -161,7 +161,7 @@ abbreviation
   "b >=> g \<equiv> bKleisli\<cdot>b\<cdot>g"
 
 lemma bKleisli_strict1[simp]: "bKleisli\<cdot>\<bottom> = \<bottom>"
-  by (simp add: bKleisli_def inst_cfun_pcpo)
+  by (simp add: bKleisli_def)
 lemma bKleisli_strict2[simp]: "b >=> \<bottom> = \<bottom>"
   by (rule ext_cfun, simp add: bKleisli_def)
 
@@ -206,9 +206,9 @@ lemma box_casedist[case_names bottom Box, cases type: Box]:
       and xbox: "\<And>u. x = box\<cdot>u \<Longrightarrow> P"
   shows "P"
 proof(cases x rule: Box.casedist)
-  case 1 with xbot show ?thesis by simp
+  case bottom with xbot show ?thesis by simp
 next
-  case (2 u) with xbox show ?thesis
+  case (Box u) with xbox show ?thesis
     by (cases u, simp_all add: box_def up_def cont_Iup UU_I[OF minimal_up])
 qed
 
@@ -384,9 +384,9 @@ lemma Nat_casedist[case_names bottom zero Suc]:
       and xsuc: "\<And>n. x = n + 1 \<Longrightarrow> P"
   shows "P"
 proof(cases x rule: Box.casedist)
-  case 1 with xbot show ?thesis by simp
+  case bottom with xbot show ?thesis by simp
 next
-  case (2 u) hence xu: "x = Box\<cdot>u" and ubottom: "u \<noteq> \<bottom>" .
+  case (Box u) hence xu: "x = Box\<cdot>u" and ubottom: "u \<noteq> \<bottom>" .
   from ubottom obtain n where ndn: "u = up\<cdot>(Discr n)" apply (cases u) apply simp_all apply (case_tac ua) apply simp done
   show ?thesis
   proof(cases n)

@@ -204,17 +204,17 @@ proof(rule fix_least)
   {
     fix xs have "lrev_body3\<cdot>lrev_work2\<cdot>xs = lrev_work2\<cdot>xs"
     proof(cases xs rule: LList.casedist)
-      case 1 thus ?thesis by simp
+      case bottom thus ?thesis by simp
     next
-      case 2 thus ?thesis
+      case lnil thus ?thesis
 	unfolding lrev_work2_def
 	by (subst fix_eq[where F="lrev_body2"], simp)
     next
-      case (3 y ys)
+      case (lcons y ys)
       hence "lrev_body3\<cdot>lrev_work2\<cdot>xs = lrev_work2\<cdot>ys oo list2H\<cdot>(y :@ lnil)" by simp
       also have "\<dots> = list2H\<cdot>((wrapH\<cdot>lrev_work2)\<cdot>ys) oo list2H\<cdot>(y :@ lnil)"
 	using lrev_wwfusion[where xs=ys] by simp
-      also from 3 have "\<dots> = lrev_body2\<cdot>lrev_work2\<cdot>xs" by simp
+      also from lcons have "\<dots> = lrev_body2\<cdot>lrev_work2\<cdot>xs" by simp
       also have "\<dots> = lrev_work2\<cdot>xs"
 	unfolding lrev_work2_def by (simp only: fix_eq[symmetric])
       finally show ?thesis by simp
@@ -301,7 +301,7 @@ lemma lrev_body_final_lrev_body3_eq': "lrev_body_final\<cdot>r\<cdot>xs = lrev_b
   apply (subst lrev_body_final_unfold)
   apply (subst lrev_body3_unfold)
   apply (cases xs rule: casedist)
-  apply (simp_all add: list2H_def inst_cfun_pcpo ID_def ext_cfun)
+  apply (simp_all add: list2H_def ID_def ext_cfun)
   done
 
 lemma lrev_body_final_lrev_body3_eq: "lrev_body_final = lrev_body3"
