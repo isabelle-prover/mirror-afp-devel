@@ -1223,7 +1223,7 @@ fun init_tr' [Abs (_,_,t)] =
 local
 fun tr' c (upd,v) =
   let
-    val l = Syntax.const antiquoteCur$update_name_tr' upd;
+    val l = Syntax.const antiquoteCur $ update_name_tr' upd;
     val r = quote_tr' antiquoteCur (Abs ("s", dummyT, v));
     val (l', r') = update_tr' l r;
   in (c $ l' $ r') end;
@@ -1440,8 +1440,8 @@ fun proc_tr' ctxt [p] =
           (case res_formals of
             [r] =>
               Syntax.const @{syntax_const "_ProcAss"} $
-                Syntax.const antiquoteCur $
-                Syntax.const (Hoare.remdeco (Long_Name.base_name r)) $
+                (Syntax.const antiquoteCur $
+                  Syntax.const (Hoare.remdeco (Long_Name.base_name r))) $
                 p' $ actuals_tr' (map mkpar val_formals)
           | _ =>
               Syntax.const @{syntax_const "_Proc"} $ p' $

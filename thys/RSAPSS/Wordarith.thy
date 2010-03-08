@@ -95,13 +95,18 @@ next
   qed
 qed
 
+lemma nat_to_bv_helper_legacy_induct:
+  "(\<And>n. n \<noteq> (0::nat) \<longrightarrow> P (n div 2) \<Longrightarrow> P n) \<Longrightarrow> P x"
+unfolding atomize_imp[symmetric]
+by (induction_schema, simp, lexicographic_order)
+
 lemma len_lower_bound:
   assumes "0 < n"
   shows "2^(length (nat_to_bv n) - Suc 0) \<le> n"
 proof (cases "1<n")
   assume l1: "1<n"
   then show ?thesis
-  proof (simp add: nat_to_bv_def, induct n rule: nat_to_bv_helper.induct, auto)
+  proof (simp add: nat_to_bv_def, induct n rule: nat_to_bv_helper_legacy_induct, auto)
     fix n
     assume a: "Suc 0 < (n::nat)" and b: "~Suc 0<n div 2"
     then have "n=2 \<or> n=3"
@@ -202,7 +207,7 @@ lemma hd_append: "x ~= [] \<Longrightarrow> hd (x @ xs) = hd x"
   by (induct x) auto
 
 lemma hd_one: "0<n \<Longrightarrow> hd (nat_to_bv_helper n []) = \<one>"
-proof (induct n rule: nat_to_bv_helper.induct)
+proof (induct n rule: nat_to_bv_helper_legacy_induct)
   fix n
   assume *: "n \<noteq> 0 \<longrightarrow> 0 < n div 2 \<longrightarrow> hd (nat_to_bv_helper (n div 2) []) = \<one>"
     and "0 < n"

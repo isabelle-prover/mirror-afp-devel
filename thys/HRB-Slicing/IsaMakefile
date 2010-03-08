@@ -6,9 +6,9 @@ BASE-IMAGE = Jinja
 ## targets
 
 default: $(SESSION-NAME)
-test: $(SESSION-NAME)-test
+test: $(SESSION-NAME)
 # usually empty:
-images:  $(SESSION-NAME)
+images:
 
 all: images
 
@@ -37,27 +37,17 @@ MAXTIME = 5400
 
 ## dependencies
 
-Jinja:
-	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
-
 # test run and proof document
 
-$(SESSION-NAME)-test: Jinja $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): Jinja $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+
+Jinja:
+	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
 
 $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(OUT)/Jinja ROOT.ML HRBSlicing.thy \
   StaticInter/*.thy Proc/*.thy JinjaVM_Inter/*.thy \
   document/root.tex 
 	cd ..; ulimit -t $(MAXTIME); $(USEDIR) Jinja $(SESSION-NAME)
-
-
-# build image
-
-HRB-Slicing: $(OUT)/HRB-Slicing
-
-$(OUT)/HRB-Slicing: $(OUT)/Jinja ROOT.ML HRBSlicing.thy \
-  StaticInter/*.thy Proc/*.thy JinjaVM_Inter/*.thy \
-  document/root.tex 
-	ulimit -t $(MAXTIME); $(BUILD) Jinja $(SESSION-NAME)
 
 
 

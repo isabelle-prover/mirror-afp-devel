@@ -58,7 +58,7 @@ subsection{* Heap *}
 types heap = "addr \<rightharpoonup> heapobj"
 
 translations
-  "heap" <= (type) "nat \<Rightarrow> heapobj option"
+  (type) "heap" <= (type) "nat \<Rightarrow> heapobj option"
 
 fun the_obj :: "heapobj \<Rightarrow> cname \<times> fields" where
   "the_obj (Obj C fs) = (C, fs)"

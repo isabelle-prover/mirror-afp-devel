@@ -55,28 +55,28 @@ done
 
 
 syntax
-  can_sync_syntax :: "jvm_prog \<Rightarrow> addr option \<times> heap \<times> frame list \<Rightarrow> (addr + thread_id) set \<Rightarrow> bool" ("_ \<turnstile> \<langle>_\<rangle>/ _/ \<wrong>" [50,0,0] 81)
+  "_can_sync" :: "jvm_prog \<Rightarrow> addr option \<times> heap \<times> frame list \<Rightarrow> (addr + thread_id) set \<Rightarrow> bool" ("_ \<turnstile> \<langle>_\<rangle>/ _/ \<wrong>" [50,0,0] 81)
 
 translations
   "P \<turnstile> \<langle>\<sigma>\<rangle> L \<wrong>" => "CONST multithreaded_base.can_sync (CONST mexec P) (CONST fst \<sigma>, CONST snd (CONST snd \<sigma>)) (CONST fst (CONST snd \<sigma>)) L"
   "P \<turnstile> \<langle>(xcp, h, frs)\<rangle> L \<wrong>" <= "CONST multithreaded_base.can_sync (CONST mexec P) (xcp, frs) h L"
 
 syntax
-  must_sync_syntax :: "jvm_prog \<Rightarrow> addr option \<times> heap \<times> frame list \<Rightarrow> bool" ("_ \<turnstile> \<langle>_\<rangle>/ \<wrong>" [50,0] 81)
+  "_must_sync" :: "jvm_prog \<Rightarrow> addr option \<times> heap \<times> frame list \<Rightarrow> bool" ("_ \<turnstile> \<langle>_\<rangle>/ \<wrong>" [50,0] 81)
 
 translations
   "P \<turnstile> \<langle>\<sigma>\<rangle> \<wrong>" => "CONST multithreaded_base.must_sync (CONST mexec P) (CONST fst \<sigma>, CONST snd (CONST snd \<sigma>)) (CONST fst (CONST snd \<sigma>))"
   "P \<turnstile> \<langle>(xcp, h, frs)\<rangle> \<wrong>" <= "CONST multithreaded_base.must_sync (CONST mexec P) (xcp, frs) h"
 
 syntax
-  can_sync_d_syntax :: "jvm_prog \<Rightarrow> addr option \<times> heap \<times> frame list \<Rightarrow> (addr + thread_id) set \<Rightarrow> bool" ("_ \<turnstile> \<langle>_\<rangle>\<^isub>d/ _/ \<wrong>" [50,0,0] 81)
+  "_can_sync_d" :: "jvm_prog \<Rightarrow> addr option \<times> heap \<times> frame list \<Rightarrow> (addr + thread_id) set \<Rightarrow> bool" ("_ \<turnstile> \<langle>_\<rangle>\<^isub>d/ _/ \<wrong>" [50,0,0] 81)
 
 translations
   "P \<turnstile> \<langle>\<sigma>\<rangle>\<^isub>d L \<wrong>" => "CONST multithreaded_base.can_sync (CONST mexecd P) (CONST fst \<sigma>, CONST snd (CONST snd \<sigma>)) (CONST fst (CONST snd \<sigma>)) L"
   "P \<turnstile> \<langle>(xcp, h, frs)\<rangle>\<^isub>d L \<wrong>" <= "CONST multithreaded_base.can_sync (CONST mexecd P) (xcp, frs) h L"
 
 syntax
-  must_sync_d_syntax :: "jvm_prog \<Rightarrow> addr option \<times> heap \<times> frame list \<Rightarrow> bool" ("_ \<turnstile> \<langle>_\<rangle>\<^isub>d/ \<wrong>" [50,0] 81)
+  "_must_sync_d" :: "jvm_prog \<Rightarrow> addr option \<times> heap \<times> frame list \<Rightarrow> bool" ("_ \<turnstile> \<langle>_\<rangle>\<^isub>d/ \<wrong>" [50,0] 81)
 
 translations
   "P \<turnstile> \<langle>\<sigma>\<rangle>\<^isub>d \<wrong>" => "CONST multithreaded_base.must_sync (CONST mexecd P) (CONST fst \<sigma>, CONST snd (CONST snd \<sigma>)) (CONST fst (CONST snd \<sigma>))"

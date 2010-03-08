@@ -13,8 +13,8 @@ types
   locals1 = "val list"
 
 translations
-  "expr1" <= (type) "(nat, nat) exp"
-  "J1_prog" <= (type) "expr1 prog"
+  (type) "expr1" <= (type) "(nat, nat) exp"
+  (type) "J1_prog" <= (type) "expr1 prog"
 
 types
   J1state = "(expr1 \<times> locals1) list"
@@ -23,7 +23,7 @@ types
   J1_thread_action = "(addr,thread_id,(expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list,heap,addr,obs_event option) thread_action"
 
 translations
-  "J1_thread_action" <= (type) "(nat,nat,(expr1 \<times> val list) \<times> (expr1 \<times> val list) list,heap,nat,obs_event option) thread_action"
+  (type) "J1_thread_action" <= (type) "(nat,nat,(expr1 \<times> val list) \<times> (expr1 \<times> val list) list,heap,nat,obs_event option) thread_action"
 
 
 primrec max_vars:: "('a,'b) exp \<Rightarrow> nat"
