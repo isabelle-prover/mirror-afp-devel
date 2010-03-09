@@ -28,21 +28,21 @@ proof -
   from `valid_edge a` `a' \<in> get_return_edges a` 
   obtain Q r p fs where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
     by(fastsimp dest!:only_call_get_return_edges)
-  with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' f' where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+  with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' f' where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     by(fastsimp dest!:call_return_edges)
   from `valid_edge a` `a' \<in> get_return_edges a` have "valid_edge a'" 
     by(rule get_return_edges_valid)
-  from this `kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have "get_proc (sourcenode a') = p" 
+  from this `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have "get_proc (sourcenode a') = p" 
     by(rule get_proc_return)
-  from `valid_edge a'` `kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have "method_exit (sourcenode a')"
+  from `valid_edge a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have "method_exit (sourcenode a')"
     by(fastsimp simp:method_exit_def)
   from `valid_edge a` `a'' \<in> get_return_edges a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-  obtain Q'' f'' where "kind a'' = Q''\<^bsub>p\<^esub>\<hookleftarrow>f''" by(fastsimp dest!:call_return_edges)
+  obtain Q'' f'' where "kind a'' = Q''\<hookleftarrow>\<^bsub>p\<^esub>f''" by(fastsimp dest!:call_return_edges)
   from `valid_edge a` `a'' \<in> get_return_edges a` have "valid_edge a''" 
     by(rule get_return_edges_valid)
-  from this `kind a'' = Q''\<^bsub>p\<^esub>\<hookleftarrow>f''` have "get_proc (sourcenode a'') = p" 
+  from this `kind a'' = Q''\<hookleftarrow>\<^bsub>p\<^esub>f''` have "get_proc (sourcenode a'') = p" 
     by(rule get_proc_return)
-  from `valid_edge a''` `kind a'' = Q''\<^bsub>p\<^esub>\<hookleftarrow>f''` have "method_exit (sourcenode a'')"
+  from `valid_edge a''` `kind a'' = Q''\<hookleftarrow>\<^bsub>p\<^esub>f''` have "method_exit (sourcenode a'')"
     by(fastsimp simp:method_exit_def)
   with `method_exit (sourcenode a')` `get_proc (sourcenode a') = p`
     `get_proc (sourcenode a'') = p` have "sourcenode a' = sourcenode a''"
@@ -81,21 +81,21 @@ proof(atomize_elim)
     by(auto simp:postdominate_def)
   from `valid_node n` obtain asx where "n -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(auto dest:Exit_path)
   then obtain as where "n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)"
-    and "\<forall>a \<in> set as. intra_kind(kind a) \<or> (\<exists>Q f p. kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f)"
+    and "\<forall>a \<in> set as. intra_kind(kind a) \<or> (\<exists>Q f p. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)"
     by -(erule valid_Exit_path_descending_path)
   show "\<exists>as. n -as\<rightarrow>\<^isub>\<iota>* n' \<and> n' \<notin> set (sourcenodes as)"
-  proof(cases "\<exists>a \<in> set as. \<exists>Q f p. kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f")
+  proof(cases "\<exists>a \<in> set as. \<exists>Q f p. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f")
     case True
     then obtain asx ax asx' where [simp]:"as = asx@ax#asx'" 
-      and "\<exists>Q f p. kind ax = Q\<^bsub>p\<^esub>\<hookleftarrow>f" and "\<forall>a \<in> set asx. \<forall>Q f p. kind a \<noteq> Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+      and "\<exists>Q f p. kind ax = Q\<hookleftarrow>\<^bsub>p\<^esub>f" and "\<forall>a \<in> set asx. \<forall>Q f p. kind a \<noteq> Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       by -(erule split_list_first_propE,simp)
-    with `\<forall>a \<in> set as. intra_kind(kind a) \<or> (\<exists>Q f p. kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f)`
+    with `\<forall>a \<in> set as. intra_kind(kind a) \<or> (\<exists>Q f p. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)`
     have "\<forall>a \<in> set asx. intra_kind(kind a)" by auto
     from `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` have "n -asx\<rightarrow>\<^isub>\<surd>* sourcenode ax"
       and "valid_edge ax" by(auto dest:vp_split)
     from `n -asx\<rightarrow>\<^isub>\<surd>* sourcenode ax` `\<forall>a \<in> set asx. intra_kind(kind a)`
     have "n -asx\<rightarrow>\<^isub>\<iota>* sourcenode ax" by(simp add:vp_def intra_path_def)
-    from `valid_edge ax` `\<exists>Q f p. kind ax = Q\<^bsub>p\<^esub>\<hookleftarrow>f` 
+    from `valid_edge ax` `\<exists>Q f p. kind ax = Q\<hookleftarrow>\<^bsub>p\<^esub>f` 
     have "method_exit (sourcenode ax)" by(fastsimp simp:method_exit_def)
     with `n -asx\<rightarrow>\<^isub>\<iota>* sourcenode ax` all have "n' \<in> set (sourcenodes asx)" by fastsimp
     then obtain xs ys where "sourcenodes asx = xs@n'#ys" and "n' \<notin> set xs"
@@ -109,7 +109,7 @@ proof(atomize_elim)
     show ?thesis by fastsimp
   next
     case False
-    with `\<forall>a \<in> set as. intra_kind(kind a) \<or> (\<exists>Q f p. kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f)`
+    with `\<forall>a \<in> set as. intra_kind(kind a) \<or> (\<exists>Q f p. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f)`
     have "\<forall>a \<in> set as. intra_kind(kind a)" by fastsimp
     with `n -as\<rightarrow>\<^isub>\<surd>* (_Exit_)` all have "n' \<in> set (sourcenodes as)"
       by(auto simp:vp_def intra_path_def simp:method_exit_def)
@@ -162,14 +162,14 @@ proof(induct rule:valid_node_cases)
 	by(fastsimp intro:path_sourcenode simp:intra_path_def)
       with `as \<noteq> []`show ?thesis by(fastsimp intro:hd_in_set simp:sourcenodes_def)
     next
-      fix a Q p f assume "pex = sourcenode a" and "valid_edge a" and "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+      fix a Q p f assume "pex = sourcenode a" and "valid_edge a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       from `(_Entry_) -as\<rightarrow>\<^isub>\<iota>* pex` have "get_proc (_Entry_) = get_proc pex"
 	by(rule intra_path_get_procs)
       hence "get_proc pex = Main" by(simp add:get_proc_Entry)
-      from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "get_proc (sourcenode a) = p"
+      from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "get_proc (sourcenode a) = p"
 	by(rule get_proc_return)
       with `pex = sourcenode a` `get_proc pex = Main` have "p = Main" by simp
-      with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have False
+      with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have False
 	by simp (rule Main_no_return_source)
       thus ?thesis by simp
     qed }
@@ -380,7 +380,7 @@ proof(atomize_elim)
 	thus ?thesis by simp
       next
 	fix a' Q f p assume "sourcenode a = sourcenode a'"
-	  and "valid_edge a'" and "kind a' = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+	  and "valid_edge a'" and "kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
 	hence False using `intra_kind (kind a)` `valid_edge a`
 	  by(fastsimp dest:return_edges_only simp:intra_kind_def)
 	thus ?thesis by simp
@@ -448,7 +448,7 @@ proof(atomize_elim)
 	thus ?thesis by simp
       next
 	case (Return Q p f)
-	from `valid_edge a'` `kind a' = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `(_Exit_) = targetnode a'`[THEN sym]
+	from `valid_edge a'` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(_Exit_) = targetnode a'`[THEN sym]
 	have False by(rule Exit_no_return_target)
 	thus ?thesis by simp
       qed
@@ -506,7 +506,7 @@ proof(atomize_elim)
 	with `valid_edge a'` have "get_proc(sourcenode a') = p" 
 	  by(rule get_proc_return)
 	with `(_Entry_) = sourcenode a'` get_proc_Entry have "p = Main" by simp
-	with `kind a' = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "kind a' = Q\<^bsub>Main\<^esub>\<hookleftarrow>f" by simp
+	with `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "kind a' = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
 	with `valid_edge a'` have False by(rule Main_no_return_source)
 	thus ?thesis by simp
       qed

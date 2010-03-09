@@ -14,7 +14,7 @@ proof -
     and "n = targetnode a'" by(fastsimp simp:call_of_return_node_def)
   from `valid_edge a` `a' \<in> get_return_edges a` obtain Q p r fs 
     where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" by(fastsimp dest!:only_call_get_return_edges)
-  with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' f' where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+  with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' f' where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     by(fastsimp dest!:call_return_edges)
   from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `a' \<in> get_return_edges a`
   have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>sum\<^esub> CFG_node (targetnode a')"
@@ -230,7 +230,7 @@ where silent_move_intra:
   \<Longrightarrow> n\<^isub>c,f \<turnstile> (ms,s) -a\<rightarrow>\<^isub>\<tau> (ms',s')"
 
   | silent_move_return:
-  "\<lbrakk>pred (f a) s; transfer (f a) s = s'; valid_edge a; kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'; 
+  "\<lbrakk>pred (f a) s; transfer (f a) s = s'; valid_edge a; kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'; 
     \<exists>m \<in> set (tl ms). \<exists>m'. call_of_return_node m m' \<and> m' \<notin> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>;
     \<forall>m \<in> set (tl ms). return_node m; length ms = length s; length s = Suc(length s');
     s' \<noteq> []; hd ms = sourcenode a; hd(tl ms) = targetnode a; ms' = tl ms\<rbrakk>  
@@ -868,7 +868,7 @@ proof(atomize_elim)
       with `intra_kind(kind a)` have False by(simp add:intra_kind_def)
       thus ?thesis by simp
     next
-      fix Q p f assume "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+      fix Q p f assume "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       with `intra_kind(kind a)` have False by(simp add:intra_kind_def)
       thus ?thesis by simp
     qed
@@ -971,7 +971,7 @@ proof(atomize_elim)
       with `intra_kind(kind a)` have False by(simp add:intra_kind_def)
       thus ?thesis by simp
     next
-      fix Q p f assume "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+      fix Q p f assume "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       with `intra_kind(kind a)` have False by(simp add:intra_kind_def)
       thus ?thesis by simp
     qed
@@ -1055,12 +1055,12 @@ proof -
       from `valid_edge a` `a' \<in> get_return_edges a` have "valid_edge a'"
 	by(rule get_return_edges_valid)
       from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `a' \<in> get_return_edges a`
-      obtain Q' f' where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" by(fastsimp dest!:call_return_edges)
+      obtain Q' f' where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by(fastsimp dest!:call_return_edges)
       from `valid_edge a` `a' \<in> get_return_edges a`
       have "get_proc (sourcenode a) = get_proc (targetnode a')"
 	by(rule get_proc_get_return_edge)
       with `valid_return_list rs m` `hd (m # ms) = sourcenode a`
-	`get_proc (targetnode a) = p` `valid_edge a'` `kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
+	`get_proc (targetnode a) = p` `valid_edge a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
       have "valid_return_list (a' # rs) (targetnode a)"
 	apply(clarsimp simp:valid_return_list_def)
 	apply(case_tac cs') apply auto
@@ -1128,7 +1128,7 @@ proof -
       moreover
       from `ms = x#xs` `hd (tl (m # ms)) = targetnode a`
       have "x = targetnode a" by simp
-      from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+      from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
       have "method_exit (sourcenode a)" by(fastsimp simp:method_exit_def)
       from `valid_return_list rs m` `hd (m # ms) = sourcenode a` 
 	`rs = r'#rs'`
@@ -1144,7 +1144,7 @@ proof -
       with `valid_edge a` `valid_edge r'` `x = targetnode r'` `x = targetnode a`
       have "r' = a" by(fastsimp intro:edge_det)
       with `r' \<in> get_return_edges c'` `valid_path_aux cs' as` `cs = c'#cs'` 
-	`kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+	`kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
       have "valid_path_aux cs (a # as)" by simp
       ultimately show ?case by simp
     qed
@@ -1178,7 +1178,7 @@ inductive observable_move ::
   \<Longrightarrow> n\<^isub>c,f \<turnstile> (ms,s) -a\<rightarrow> (ms',s')"
 
   | observable_move_return:
-  "\<lbrakk>pred (f a) s; transfer (f a) s = s'; valid_edge a; kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'; 
+  "\<lbrakk>pred (f a) s; transfer (f a) s = s'; valid_edge a; kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'; 
     \<forall>m \<in> set (tl ms). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>;
     length ms = length s; length s = Suc(length s'); s' \<noteq> [];
     hd ms = sourcenode a; hd(tl ms) = targetnode a; ms' = tl ms\<rbrakk>  
@@ -1305,7 +1305,7 @@ proof(induct n\<^isub>c f "m#ms" s a "m'#ms'" s' rule:observable_move.induct)
     and "r' \<in> get_return_edges c'" by auto
   from `ms = x#xs` `hd (tl (m # ms)) = targetnode a`
   have "x = targetnode a" by simp
-  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
   have "method_exit (sourcenode a)" by(fastsimp simp:method_exit_def)
   from `valid_return_list rs m` `hd (m # ms) = sourcenode a` 
     `rs = r'#rs'`
@@ -1320,7 +1320,7 @@ proof(induct n\<^isub>c f "m#ms" s a "m'#ms'" s' rule:observable_move.induct)
     by(fastsimp intro:method_exit_unique)
   with `valid_edge a` `valid_edge r'` `x = targetnode r'` `x = targetnode a`
   have "r' = a" by(fastsimp intro:edge_det)
-  with `r' \<in> get_return_edges c'` `cs = c'#cs'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+  with `r' \<in> get_return_edges c'` `cs = c'#cs'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
   show ?case by simp
 qed(auto simp:intra_kind_def)
   
@@ -2140,19 +2140,19 @@ proof -
     case (silent_move_return a s\<^isub>1 s\<^isub>1' Q p f' ms\<^isub>1 n\<^isub>c ms\<^isub>1')
     note obs_eq = `\<forall>a\<in>set (tl ms\<^isub>1'). return_node a \<Longrightarrow>
       obs ms\<^isub>1' \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub> = obs ms\<^isub>2 \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>`
-    from `transfer (kind a) s\<^isub>1 = s\<^isub>1'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `s\<^isub>1 \<noteq> []` `s\<^isub>1' \<noteq> []`
+    from `transfer (kind a) s\<^isub>1 = s\<^isub>1'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `s\<^isub>1 \<noteq> []` `s\<^isub>1' \<noteq> []`
     obtain cf\<^isub>1 cfx\<^isub>1 cfs\<^isub>1 cf\<^isub>1' where [simp]:"s\<^isub>1 = cf\<^isub>1#cfx\<^isub>1#cfs\<^isub>1"
       and "s\<^isub>1' = (f' (fst cf\<^isub>1) (fst cfx\<^isub>1),snd cfx\<^isub>1)#cfs\<^isub>1"
       by(cases s\<^isub>1,auto,case_tac list,fastsimp+)
     from `s\<^isub>2 \<noteq> []` obtain cf\<^isub>2 cfs\<^isub>2 where [simp]:"s\<^isub>2 = cf\<^isub>2#cfs\<^isub>2" by(cases s\<^isub>2) auto
     from `length ms\<^isub>1 = length s\<^isub>1` have "ms\<^isub>1 \<noteq> []" and "tl ms\<^isub>1 \<noteq> []" by(cases ms\<^isub>1,auto)+
-    from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+    from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
     obtain a' Q' r' fs' where "valid_edge a'" and "kind a' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'"
       and "a \<in> get_return_edges a'"
       by -(drule return_needs_call,auto)
     then obtain ins outs where "(p,ins,outs) \<in> set procs"
       by(fastsimp dest!:callee_in_procs)
-    with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+    with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
     have "f' (fst cf\<^isub>1) (fst cfx\<^isub>1) = 
       (fst cfx\<^isub>1)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs)"
       by(rule CFG_return_edge_fun)
@@ -2833,7 +2833,7 @@ proof(atomize_elim)
     have "\<exists>as. n\<^isub>c,slice_kind n\<^isub>c \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)"
     proof(cases "obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub> = {}")
       case True
-      from `valid_edge a` `hd ms\<^isub>1 = sourcenode a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+      from `valid_edge a` `hd ms\<^isub>1 = sourcenode a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
       have "method_exit (hd ms\<^isub>1)" by(fastsimp simp:method_exit_def)
       from `\<forall>m\<in>set ms\<^isub>2. valid_node m` have "valid_node (hd ms\<^isub>2)" by(cases ms\<^isub>2) auto
       then obtain asx where "hd ms\<^isub>2 -asx\<rightarrow>\<^isub>\<surd>* (_Exit_)" by(fastsimp dest!:Exit_path)
@@ -2887,7 +2887,7 @@ proof(atomize_elim)
 	  case (Cons_path m'' as' m' a')
 	  from `\<forall>a\<in>set (a' # as'). intra_kind (kind a)`
 	  have "intra_kind (kind a')" by simp
-	  with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `valid_edge a'` `sourcenode a' = hd ms\<^isub>1`
+	  with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `valid_edge a'` `sourcenode a' = hd ms\<^isub>1`
             `hd ms\<^isub>1 = sourcenode a`
 	  have False by(fastsimp dest:return_edges_only simp:intra_kind_def)
 	  thus ?case by simp
@@ -2906,7 +2906,7 @@ proof(atomize_elim)
     then obtain as where "n\<^isub>c,slice_kind n\<^isub>c \<turnstile> (ms\<^isub>2,s\<^isub>2) =as\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)" by blast
     from `ms\<^isub>1' = tl ms\<^isub>1` `length s\<^isub>1 = Suc(length s\<^isub>1')` 
       `length ms\<^isub>1 = length s\<^isub>1` have "length ms\<^isub>1' = length s\<^isub>1'" by simp
-    from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` obtain a'' Q' r' fs' where "valid_edge a''"
+    from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` obtain a'' Q' r' fs' where "valid_edge a''"
       and "kind a'' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'" and "a \<in> get_return_edges a''"
       by -(drule return_needs_call,auto)
     then obtain ins outs where "(p,ins,outs) \<in> set procs"
@@ -2917,9 +2917,9 @@ proof(atomize_elim)
       by(cases cfs\<^isub>2) auto
     from `length ms\<^isub>1 = length s\<^isub>1` have "tl ms\<^isub>1 = []@hd(tl ms\<^isub>1)#tl(tl ms\<^isub>1)"
       by(auto simp:length_Suc_conv)
-    from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `transfer (kind a) s\<^isub>1 = s\<^isub>1'`
+    from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `transfer (kind a) s\<^isub>1 = s\<^isub>1'`
     have "s\<^isub>1' = (f' (fst cf\<^isub>1) (fst cfx),snd cfx)#cfsx" by simp
-    from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `(p,ins,outs) \<in> set procs`
+    from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs`
     have "f' (fst cf\<^isub>1) (fst cfx) = 
       (fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs)"
       by(rule CFG_return_edge_fun)
@@ -2952,19 +2952,19 @@ proof(atomize_elim)
       ultimately have "pred (kind a) s\<^isub>2"
 	using `valid_edge a` `pred (kind a) s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`
 	by(fastsimp intro:CFG_edge_Uses_pred_equal)
-      with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `(p,ins,outs) \<in> set procs` 
+      with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs` 
 	`sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>`
       show ?thesis by(fastsimp dest:slice_kind_Return_in_slice)
     next
       case False
-      with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` have "slice_kind n\<^isub>c a = (\<lambda>cf. True)\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. cf')"
+      with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` have "slice_kind n\<^isub>c a = (\<lambda>cf. True)\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. cf')"
 	by -(rule slice_kind_Return)
       thus ?thesis by simp
     qed
     from `valid_edge a` `length s\<^isub>1 = length s\<^isub>2` `transfer (kind a) s\<^isub>1 = s\<^isub>1'`
     have "length s\<^isub>1' = length (transfer (slice_kind n\<^isub>c a) s\<^isub>2)"
       by(fastsimp intro:length_transfer_kind_slice_kind)
-    with `pred (slice_kind n\<^isub>c a) s\<^isub>2` `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+    with `pred (slice_kind n\<^isub>c a) s\<^isub>2` `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
       `\<forall>m \<in> set (tl ms\<^isub>1). \<exists>m'. call_of_return_node m m' \<and> m' \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>`
       `hd ms\<^isub>1 = sourcenode a`
       `length ms\<^isub>1 = length s\<^isub>1` `length s\<^isub>1 = length s\<^isub>2`
@@ -2981,7 +2981,7 @@ proof(atomize_elim)
     from `\<forall>i<length ms\<^isub>2. snd (s\<^isub>1 ! (length msx + i)) = snd (s\<^isub>2 ! i)`
       `length ms\<^isub>1 = length ms\<^isub>2` `length ms\<^isub>1 = length s\<^isub>1`
     have "snd cfx = snd cfx'" by(erule_tac x="1" in allE) auto
-    from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `(p,ins,outs) \<in> set procs`
+    from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs`
     have cf2':"\<exists>cf\<^isub>2'. transfer (slice_kind n\<^isub>c a) s\<^isub>2 = cf\<^isub>2'#cfsx' \<and> snd cf\<^isub>2' = snd cfx'"
       by(cases cfx',cases "sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>",
          auto dest:slice_kind_Return slice_kind_Return_in_slice)
@@ -3012,10 +3012,10 @@ proof(atomize_elim)
 	  and "i < length(ParamDefs (targetnode a))"
 	  by(auto simp:in_set_conv_nth)
 	moreover
-	from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `(p,ins,outs) \<in> set procs`
+	from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs`
 	have length:"length(ParamDefs (targetnode a)) = length outs"
 	  by(fastsimp intro:ParamDefs_return_target_length)
-	from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `(p,ins,outs) \<in> set procs`
+	from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs`
 	  `i < length(ParamDefs (targetnode a))` 
 	  `length(ParamDefs (targetnode a)) = length outs`
 	have "valid_SDG_node (Actual_out(targetnode a,i))" by fastsimp
@@ -3095,16 +3095,16 @@ proof(atomize_elim)
 	    by(fastsimp dest:valid_SDG_node_in_slice_parent_node_in_slice)
 	next
 	  case False
-	  with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `valid_edge a''`
+	  with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `valid_edge a''`
 	    `kind a'' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'` `a \<in> get_return_edges a''`
 	    `CFG_node (targetnode a) \<in> HRB_slice n\<^isub>c`
 	  show ?thesis by(rule call_return_nodes_in_slice)
 	qed
 	hence "sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>" by(simp add:SDG_to_CFG_set_def)
-	from `sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>` `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+	from `sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>` `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
 	  `(p,ins,outs) \<in> set procs`
 	have slice_kind:"slice_kind n\<^isub>c a = 
-	  Q\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. rspp (targetnode a) (HRB_slice n\<^isub>c) outs cf' cf)"
+	  Q\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. rspp (targetnode a) (HRB_slice n\<^isub>c) outs cf' cf)"
 	  by(rule slice_kind_Return_in_slice)
 	from `Actual_out(targetnode a,i) \<in> HRB_slice n\<^isub>c`
 	  `i < length(ParamDefs (targetnode a))` `valid_edge a`
@@ -3121,11 +3121,11 @@ proof(atomize_elim)
 	have 1:"(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf\<^isub>1) outs) V = 
 	  (fst cf\<^isub>1)(outs!i)" 
 	  by simp
-	from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `(p,ins,outs) \<in> set procs` 
+	from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs` 
 	  `i < length(ParamDefs (targetnode a))` length
 	have po:"Formal_out(sourcenode a,i) s-p:outs!i\<rightarrow>\<^bsub>out\<^esub> Actual_out(targetnode a,i)"
 	  by(fastsimp intro:sum_SDG_param_out_edge)
-	from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+	from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
 	have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (targetnode a)"
 	  by(fastsimp intro:sum_SDG_return_edge)
 	from `Actual_out(targetnode a,i) \<in> HRB_slice n\<^isub>c`
@@ -3154,7 +3154,7 @@ proof(atomize_elim)
 	    by(fastsimp intro:combine_SDG_slices.combSlice_Return_parent_node)
 	  thus ?case by(simp add:HRB_slice_def)
 	qed
-	with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'` `(p,ins,outs) \<in> set procs` 
+	with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs` 
 	  `i < length(ParamDefs (targetnode a))` length
 	have "outs!i \<in> Use\<^bsub>SDG\<^esub> Formal_out(sourcenode a,i)"
 	  by(fastsimp intro!:Formal_out_SDG_Use get_proc_return)
@@ -3181,10 +3181,10 @@ proof(atomize_elim)
 	show ?thesis
 	proof(cases "sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>")
 	  case True
-	  from `sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>` `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
+	  from `sourcenode a \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>` `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
 	    `(p,ins,outs) \<in> set procs`
 	  have "slice_kind n\<^isub>c a = 
-	    Q\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. rspp (targetnode a) (HRB_slice n\<^isub>c) outs cf' cf)"
+	    Q\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. rspp (targetnode a) (HRB_slice n\<^isub>c) outs cf' cf)"
 	    by(rule slice_kind_Return_in_slice)
 	  with `length s\<^isub>1' = length (transfer (slice_kind n\<^isub>c a) s\<^isub>2)` 
 	    `length s\<^isub>1 = length s\<^isub>2`
@@ -3203,8 +3203,8 @@ proof(atomize_elim)
 	  show ?thesis by(fastsimp simp:length_Suc_conv fun_upds_notin)
 	next
 	  case False
-	  from `sourcenode a \<notin> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f'`
-	  have "slice_kind n\<^isub>c a = (\<lambda>cf. True)\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. cf')"
+	  from `sourcenode a \<notin> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f'`
+	  have "slice_kind n\<^isub>c a = (\<lambda>cf. True)\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. cf')"
 	    by(rule slice_kind_Return)
 	  from `length ms\<^isub>2 = length s\<^isub>2` have "1 < length ms\<^isub>2" by simp
 	  with `\<forall>i < length ms\<^isub>2. \<forall>V \<in> rv n\<^isub>c (CFG_node ((mx#tl ms\<^isub>2)!i)). 
@@ -3221,7 +3221,7 @@ proof(atomize_elim)
 	    `tl ms\<^isub>2 = tl ms\<^isub>1` `length ms\<^isub>2 = length s\<^isub>2`
 	    `V\<in>rv n\<^isub>c (CFG_node (targetnode a))`
 	    `V \<notin> set (ParamDefs (targetnode a))`
-	    `slice_kind n\<^isub>c a = (\<lambda>cf. True)\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. cf')`
+	    `slice_kind n\<^isub>c a = (\<lambda>cf. True)\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. cf')`
 	  show ?thesis by(auto simp:fun_upds_notin)
 	qed
       qed

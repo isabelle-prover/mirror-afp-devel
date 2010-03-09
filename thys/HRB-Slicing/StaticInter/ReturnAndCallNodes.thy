@@ -46,7 +46,7 @@ next
   obtain Q r p fs where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
     by(fastsimp dest!:only_call_get_return_edges)
   with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' p f' 
-    where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" by(fastsimp dest!:call_return_edges)
+    where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by(fastsimp dest!:call_return_edges)
   with `valid_edge a'`
   have "\<exists>!a''. valid_edge a'' \<and> targetnode a'' = targetnode a' \<and> intra_kind(kind a'')"
     by(rule return_only_one_intra_edge)

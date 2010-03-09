@@ -20,7 +20,7 @@ locale CFG_wf = CFG sourcenode targetnode kind valid_edge Entry
     \<Longrightarrow> length(ParamUses (sourcenode a)) = length ins"
   and distinct_ParamDefs:"valid_edge a \<Longrightarrow> distinct (ParamDefs (targetnode a))"
   and ParamDefs_return_target_length:
-    "\<lbrakk>valid_edge a; kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'; (p,ins,outs) \<in> set procs\<rbrakk>
+    "\<lbrakk>valid_edge a; kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'; (p,ins,outs) \<in> set procs\<rbrakk>
     \<Longrightarrow> length(ParamDefs (targetnode a)) = length outs"
   and ParamDefs_in_Def:
     "\<lbrakk>valid_node n; V \<in> set (ParamDefs n)\<rbrakk> \<Longrightarrow> V \<in> Def n"
@@ -32,7 +32,7 @@ locale CFG_wf = CFG sourcenode targetnode kind valid_edge Entry
   and ParamUses_in_Use:
     "\<lbrakk>valid_node n; V \<in> Union (set (ParamUses n))\<rbrakk> \<Longrightarrow> V \<in> Use n"
   and outs_in_Use:
-    "\<lbrakk>valid_edge a; kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f; (p,ins,outs) \<in> set procs; V \<in> set outs\<rbrakk> 
+    "\<lbrakk>valid_edge a; kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f; (p,ins,outs) \<in> set procs; V \<in> set outs\<rbrakk> 
     \<Longrightarrow> V \<in> Use (sourcenode a)"
   and CFG_intra_edge_no_Def_equal:
     "\<lbrakk>valid_edge a; V \<notin> Def (sourcenode a); intra_kind (kind a); pred (kind a) s\<rbrakk>
@@ -60,7 +60,7 @@ locale CFG_wf = CFG sourcenode targetnode kind valid_edge Entry
       \<forall>V \<in> (ParamUses (sourcenode a))!i. state_val s V = state_val s' V\<rbrakk>
     \<Longrightarrow> (params fs (fst (hd s)))!i = (params fs (fst (hd s')))!i"  
   and CFG_return_edge_fun:
-    "\<lbrakk>valid_edge a; kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'; (p,ins,outs) \<in> set procs\<rbrakk>
+    "\<lbrakk>valid_edge a; kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'; (p,ins,outs) \<in> set procs\<rbrakk>
      \<Longrightarrow> f' vmap vmap' = vmap'(ParamDefs (targetnode a) [:=] map vmap outs)"
   and deterministic:"\<lbrakk>valid_edge a; valid_edge a'; sourcenode a = sourcenode a';
     targetnode a \<noteq> targetnode a'; intra_kind (kind a); intra_kind (kind a')\<rbrakk> 
@@ -118,20 +118,20 @@ qed
 
 
 lemma CFG_return_edge_param_out:
-  assumes "valid_edge a" and "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f" and "i < length outs"
+  assumes "valid_edge a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" and "i < length outs"
   and "(p,ins,outs) \<in> set procs" and "state_val s (outs!i) = state_val s' (outs!i)"
   and "s = cf#cfx#cfs" and "s' = cf'#cfx'#cfs'"
   shows "state_val (transfer (kind a) s) ((ParamDefs (targetnode a))!i) =
          state_val (transfer (kind a) s') ((ParamDefs (targetnode a))!i)"
 proof -
-  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `(p,ins,outs) \<in> set procs`
+  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs`
   have [simp]:"(THE outs. \<exists>ins. (p,ins,outs) \<in> set procs) = outs"
     by(rule formal_out_THE)
-  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `(p,ins,outs) \<in> set procs` `s = cf#cfx#cfs`
+  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs` `s = cf#cfx#cfs`
   have transfer:"fst (hd (transfer (kind a) s)) = 
     (fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf) outs)"
     by(fastsimp intro:CFG_return_edge_fun)
-  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `(p,ins,outs) \<in> set procs` `s' = cf'#cfx'#cfs'`
+  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs` `s' = cf'#cfx'#cfs'`
   have transfer':"fst (hd (transfer (kind a) s')) = 
     (fst cfx')(ParamDefs (targetnode a) [:=] map (fst cf') outs)"
     by(fastsimp intro:CFG_return_edge_fun)
@@ -140,7 +140,7 @@ proof -
   have "(fst cf) (outs!i) = (fst cf') (outs!i)" by simp
   from `valid_edge a` have "distinct (ParamDefs (targetnode a))"
     by(fastsimp intro:distinct_ParamDefs)
-  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `(p,ins,outs) \<in> set procs`
+  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs`
   have "length(ParamDefs (targetnode a)) = length outs"
     by(fastsimp intro:ParamDefs_return_target_length)
   with `i < length outs` `distinct (ParamDefs (targetnode a))`
@@ -162,7 +162,7 @@ proof -
   from `valid_edge a` `a' \<in> get_return_edges a` 
   obtain Q r p fs where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
     by(fastsimp dest!:only_call_get_return_edges)
-  with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' f' where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+  with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' f' where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     by(fastsimp dest!:call_return_edges)
   from `valid_edge a` `a' \<in> get_return_edges a` have "valid_edge a'"
     by(rule get_return_edges_valid)
@@ -177,7 +177,7 @@ proof -
     where "transfers (kinds as) (cfx#cf#cfs) = cfx'#cf#cfs"
     by(fastsimp elim:slp_callstack_length_equal)
   moreover
-  from `kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` `valid_edge a'` `(p,ins,outs) \<in> set procs`
+  from `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` `valid_edge a'` `(p,ins,outs) \<in> set procs`
   have "fst (hd (transfer (kind a') (cfx'#cf#cfs))) = 
     (fst cf)(ParamDefs (targetnode a') [:=] map (fst cfx') outs)"
     by(simp,simp only:formal_out_THE,fastsimp intro:CFG_return_edge_fun)
@@ -315,7 +315,7 @@ next
     with `cs = c'#cs'` `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'`
       `length cs = length cfsx` 
     obtain cf' where "s = cf'#cf#cfs" and "s' = cf'#cf#cfs'" by(cases cfsx) auto
-    with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` obtain cf'' where "transfer (kind a) s = []@cf''#cfs"
+    with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` obtain cf'' where "transfer (kind a) s = []@cf''#cfs"
       and "transfer (kind a) s' = []@cf''#cfs'" by auto
     from IH[OF this `length cfs = length cfs'` `\<forall>a \<in> set as. valid_edge a` _ 
       `preds (kinds as) (transfer (kind a) s)`] Nil
@@ -331,7 +331,7 @@ next
     obtain x x' xs where "s = (x#x'#xs)@cf#cfs" and "s' = (x#x'#xs)@cf#cfs'"
       and "length xs = length csx"
       by(cases cfsx,auto,case_tac list,fastsimp+)
-    with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` obtain cf' where "transfer (kind a) s = (cf'#xs)@cf#cfs"
+    with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` obtain cf' where "transfer (kind a) s = (cf'#xs)@cf#cfs"
       and "transfer (kind a) s' = (cf'#xs)@cf#cfs'"
       by fastsimp
     from IH[OF this `length cfs = length cfs'` `\<forall>a \<in> set as. valid_edge a` _ 

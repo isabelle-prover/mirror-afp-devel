@@ -157,7 +157,7 @@ by(induct prog n x\<equiv>"IEdge et" n' rule:Proc_CFG.induct,auto simp:intra_kin
 lemma [dest]:"prog \<turnstile> n -IEdge (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)\<rightarrow>\<^isub>p n' \<Longrightarrow> False"
 by(fastsimp dest:Proc_CFG_IEdge_intra_kind simp:intra_kind_def)
 
-lemma [dest]:"prog \<turnstile> n -IEdge (Q\<^bsub>p\<^esub>\<hookleftarrow>f)\<rightarrow>\<^isub>p n' \<Longrightarrow> False"
+lemma [dest]:"prog \<turnstile> n -IEdge (Q\<hookleftarrow>\<^bsub>p\<^esub>f)\<rightarrow>\<^isub>p n' \<Longrightarrow> False"
 by(fastsimp dest:Proc_CFG_IEdge_intra_kind simp:intra_kind_def)
 
 
@@ -1267,7 +1267,7 @@ where
 | MainReturn:
   "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'; (p,ins,outs,c) \<in> set procs;
     distinct rets; length rets = length outs; length es = length ins\<rbrakk>
-  \<Longrightarrow> prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<^bsub>p\<^esub>\<hookleftarrow>
+  \<Longrightarrow> prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<hookleftarrow>\<^bsub>p\<^esub>
        (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label l')"
 
 | ProcReturn:
@@ -1275,7 +1275,7 @@ where
     c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label l'; (p',ins',outs',c') \<in> set procs; 
     distinct rets'; length rets' = length outs'; length es' = length ins'; 
     containsCall procs prog ps p es rets\<rbrakk>
-  \<Longrightarrow> prog,procs \<turnstile> (p',Exit) -(\<lambda>cf. snd cf = (p,Label l'))\<^bsub>p'\<^esub>\<hookleftarrow>
+  \<Longrightarrow> prog,procs \<turnstile> (p',Exit) -(\<lambda>cf. snd cf = (p,Label l'))\<hookleftarrow>\<^bsub>p'\<^esub>
        (\<lambda>cf cf'. cf'(rets' [:=] map cf outs'))\<rightarrow> (p,Label l')"
 
 | MainCallReturn:

@@ -106,8 +106,8 @@ proof(rule ccontr)
       with `valid_edge a` show False by(rule Exit_source)
     next
       fix a' Q f p
-      assume "pex = sourcenode a'" and "valid_edge a'" and "kind a' = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
-      from `valid_edge a'` `kind a' = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `valid_edge a` `intra_kind (kind a)`
+      assume "pex = sourcenode a'" and "valid_edge a'" and "kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
+      from `valid_edge a'` `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `valid_edge a` `intra_kind (kind a)`
 	`sourcenode a = pex` `pex = sourcenode a'`
       show False by(fastsimp dest:return_edges_only simp:intra_kind_def)
     qed

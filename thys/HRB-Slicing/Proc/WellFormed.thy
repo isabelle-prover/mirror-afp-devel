@@ -234,7 +234,7 @@ proof -
 qed
 
 
-lemma assumes "valid_edge wfp a" and "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+lemma assumes "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
   and "(p, ins, outs) \<in> set (lift_procs wfp)"
   shows ParamDefs_length:"length (ParamDefs wfp (targetnode a)) = length outs"
   (is ?length)
@@ -247,11 +247,11 @@ proof -
   hence wf:"well_formed procs" by(fastsimp intro:wf_wf_prog)
   from assms have "prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
     by(simp add:valid_edge_def)
-  from this `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` wf have "?length \<and> ?update"
+  from this `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` wf have "?length \<and> ?update"
   proof(induct n\<equiv>"sourcenode a" et\<equiv>"kind a" n'\<equiv>"targetnode a" rule:PCFG.induct)
     case (MainReturn l p' es rets l' insx outsx cx)
-    from `\<lambda>cf. snd cf = (Main, Label l')\<^bsub>p'\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(rets [:=] map cf outsx) =
-      kind a` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have "p' = p" 
+    from `\<lambda>cf. snd cf = (Main, Label l')\<hookleftarrow>\<^bsub>p'\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outsx) =
+      kind a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have "p' = p" 
       and f':"f' = (\<lambda>cf cf'. cf'(rets [:=] map cf outsx))" by simp_all
     with `well_formed procs` `(p', insx, outsx, cx) \<in> set procs`
       `(p, ins, outs) \<in> set (lift_procs wfp)`
@@ -263,8 +263,8 @@ proof -
     show ?thesis by simp
   next
     case (ProcReturn i px insx outsx cx l p' es rets l' ins' outs' c')
-    from `\<lambda>cf. snd cf = (px, Label l')\<^bsub>p'\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(rets [:=] map cf outs') =
-      kind a` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
+    from `\<lambda>cf. snd cf = (px, Label l')\<hookleftarrow>\<^bsub>p'\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outs') =
+      kind a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
     have "p' = p" and f':"f' = (\<lambda>cf cf'. cf'(rets [:=] map cf outs'))"
       by simp_all
     with `well_formed procs` `(p', ins', outs', c') \<in> set procs`
@@ -1217,7 +1217,7 @@ proof -
     qed
   next
     fix a Q' p f' ins outs
-    assume "valid_edge wfp a" and "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+    assume "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
       and "(p, ins, outs) \<in> set (lift_procs wfp)"
     thus "length (ParamDefs wfp (targetnode a)) = length outs"
       by(rule ParamDefs_length)
@@ -1289,11 +1289,11 @@ proof -
     thus "V \<in> Use wfp n" by(fastsimp simp:Use_def)
   next
     fix a Q p f ins outs V
-    assume "valid_edge wfp a" and "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+    assume "valid_edge wfp a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       and "(p, ins, outs) \<in> set (lift_procs wfp)" and "V \<in> set outs"
     hence "prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
       by(simp add:valid_edge_def)
-    from this `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `(p, ins, outs) \<in> set (lift_procs wfp)` `V \<in> set outs`
+    from this `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p, ins, outs) \<in> set (lift_procs wfp)` `V \<in> set outs`
     show "V \<in> Use wfp (sourcenode a)"
     proof(induct n\<equiv>"sourcenode a" et\<equiv>"kind a" n'\<equiv>"targetnode a" rule:PCFG.induct)
       case (MainReturn l p' es rets l' insx outsx cx)
@@ -1543,12 +1543,12 @@ proof -
       qed
     next
       case (MainReturn l p es rets l' ins outs c)
-      with `\<lambda>cf. snd cf = (Main, Label l')\<^bsub>p\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(rets [:=] map cf outs) =
+      with `\<lambda>cf. snd cf = (Main, Label l')\<hookleftarrow>\<^bsub>p\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outs) =
 	kind a`[THEN sym]
       show ?case by fastsimp
     next
       case (ProcReturn i p ins outs c l p' es rets l' ins' outs' c')
-      with `\<lambda>cf. snd cf = (p, Label l')\<^bsub>p'\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(rets [:=] map cf outs') =
+      with `\<lambda>cf. snd cf = (p, Label l')\<hookleftarrow>\<^bsub>p'\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outs') =
 	kind a`[THEN sym]
       show ?case by fastsimp
     qed(auto dest:sym)
@@ -1659,7 +1659,7 @@ proof -
     qed auto
   next
     fix a Q' p f' ins outs cf cf'
-    assume "valid_edge wfp a" and "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+    assume "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
       and "(p, ins, outs) \<in> set (lift_procs wfp)"
     thus "f' cf cf' = cf'(ParamDefs wfp (targetnode a) [:=] map cf outs)"
       by(rule Return_update)

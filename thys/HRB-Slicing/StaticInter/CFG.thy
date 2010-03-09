@@ -24,7 +24,7 @@ locale CFG =
     "\<lbrakk>valid_edge a; valid_edge a'; sourcenode a = sourcenode a'; 
       targetnode a = targetnode a'\<rbrakk> \<Longrightarrow> a = a'" 
   and Main_no_call_target:"\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>Main\<^esub>f\<rbrakk> \<Longrightarrow> False" 
-  and Main_no_return_source:"\<lbrakk>valid_edge a; kind a = Q'\<^bsub>Main\<^esub>\<hookleftarrow>f'\<rbrakk> \<Longrightarrow> False" 
+  and Main_no_return_source:"\<lbrakk>valid_edge a; kind a = Q'\<hookleftarrow>\<^bsub>Main\<^esub>f'\<rbrakk> \<Longrightarrow> False" 
   and callee_in_procs: 
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> \<Longrightarrow> \<exists>ins outs. (p,ins,outs) \<in> set procs" 
   and get_proc_intra:"\<lbrakk>valid_edge a; intra_kind(kind a)\<rbrakk>
@@ -32,13 +32,13 @@ locale CFG =
   and get_proc_call:
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> \<Longrightarrow> get_proc (targetnode a) = p"
   and get_proc_return:
-    "\<lbrakk>valid_edge a; kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'\<rbrakk> \<Longrightarrow> get_proc (sourcenode a) = p"
+    "\<lbrakk>valid_edge a; kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'\<rbrakk> \<Longrightarrow> get_proc (sourcenode a) = p"
   and call_edges_only:"\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> 
     \<Longrightarrow> \<forall>a'. valid_edge a' \<and> targetnode a' = targetnode a \<longrightarrow> 
             (\<exists>Qx rx fsx. kind a' = Qx:rx\<hookrightarrow>\<^bsub>p\<^esub>fsx)"
-  and return_edges_only:"\<lbrakk>valid_edge a; kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'\<rbrakk> 
+  and return_edges_only:"\<lbrakk>valid_edge a; kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'\<rbrakk> 
     \<Longrightarrow> \<forall>a'. valid_edge a' \<and> sourcenode a' = sourcenode a \<longrightarrow> 
-            (\<exists>Qx fx. kind a' = Qx\<^bsub>p\<^esub>\<hookleftarrow>fx)" 
+            (\<exists>Qx fx. kind a' = Qx\<hookleftarrow>\<^bsub>p\<^esub>fx)" 
   and get_return_edge_call:
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> \<Longrightarrow> get_return_edges a \<noteq> {}" 
   and get_return_edges_valid:
@@ -47,8 +47,8 @@ locale CFG =
     "\<lbrakk>valid_edge a; a' \<in> get_return_edges a\<rbrakk> \<Longrightarrow> \<exists>Q r p fs. kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" 
   and call_return_edges:
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; a' \<in> get_return_edges a\<rbrakk> 
-    \<Longrightarrow> \<exists>Q' f'. kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" 
-  and return_needs_call: "\<lbrakk>valid_edge a; kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'\<rbrakk>
+    \<Longrightarrow> \<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" 
+  and return_needs_call: "\<lbrakk>valid_edge a; kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'\<rbrakk>
     \<Longrightarrow> \<exists>!a'. valid_edge a' \<and> (\<exists>Q r fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and> a \<in> get_return_edges a'"
   and intra_proc_additional_edge: 
     "\<lbrakk>valid_edge a; a' \<in> get_return_edges a\<rbrakk>
@@ -62,7 +62,7 @@ locale CFG =
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> 
     \<Longrightarrow> \<exists>!a'. valid_edge a' \<and> sourcenode a' = sourcenode a \<and> intra_kind(kind a')"
  and return_only_one_intra_edge:
-    "\<lbrakk>valid_edge a; kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'\<rbrakk> 
+    "\<lbrakk>valid_edge a; kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'\<rbrakk> 
     \<Longrightarrow> \<exists>!a'. valid_edge a' \<and> targetnode a' = targetnode a \<and> intra_kind(kind a')"
   and same_proc_call_unique_target:
     "\<lbrakk>valid_edge a; valid_edge a'; kind a = Q\<^isub>1:r\<^isub>1\<hookrightarrow>\<^bsub>p\<^esub>fs\<^isub>1;  kind a' = Q\<^isub>2:r\<^isub>2\<hookrightarrow>\<^bsub>p\<^esub>fs\<^isub>2\<rbrakk>
@@ -109,7 +109,7 @@ lemma formal_in_THE:
 by(fastsimp dest:distinct_fst_isin_same_fst intro:unique_callers)
 
 lemma formal_out_THE: 
-  "\<lbrakk>valid_edge a; kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f; (p,ins,outs) \<in> set procs\<rbrakk>
+  "\<lbrakk>valid_edge a; kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f; (p,ins,outs) \<in> set procs\<rbrakk>
   \<Longrightarrow> (THE outs. \<exists>ins. (p,ins,outs) \<in> set procs) = outs"
 by(fastsimp dest:distinct_fst_isin_same_fst intro:unique_callers)
 
@@ -137,7 +137,7 @@ where "transfer (\<Up>f) (cf#cfs)    = (f (fst cf),snd cf)#cfs"
   | "transfer (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) (cf#cfs) = 
        (let ins = THE ins. \<exists>outs. (p,ins,outs) \<in> set procs in
                             (empty(ins [:=] params fs (fst cf)),r)#cf#cfs)"
-  | "transfer (Q\<^bsub>p\<^esub>\<hookleftarrow>f )(cf#cfs)    = (case cfs of [] \<Rightarrow> []
+  | "transfer (Q\<hookleftarrow>\<^bsub>p\<^esub>f )(cf#cfs)    = (case cfs of [] \<Rightarrow> []
                                  | cf'#cfs' \<Rightarrow> (f (fst cf) (fst cf'),snd cf')#cfs')"
   | "transfer et [] = []"
 
@@ -151,7 +151,7 @@ fun pred :: "('var,'val,'ret,'pname) edge_kind \<Rightarrow> (('var \<rightharpo
 where "pred (\<Up>f) (cf#cfs) = True"
   | "pred (Q)\<^isub>\<surd> (cf#cfs)   = Q (fst cf)"
   | "pred (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) (cf#cfs) = Q (fst cf,r)"
-  | "pred (Q\<^bsub>p\<^esub>\<hookleftarrow>f) (cf#cfs) = (Q cf \<and> cfs \<noteq> [])"
+  | "pred (Q\<hookleftarrow>\<^bsub>p\<^esub>f) (cf#cfs) = (Q cf \<and> cfs \<noteq> [])"
   | "pred et [] = False"
 
 fun preds :: "('var,'val,'ret,'pname) edge_kind list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
@@ -469,7 +469,7 @@ fun valid_path_aux :: "'edge list \<Rightarrow> 'edge list \<Rightarrow> bool"
   where "valid_path_aux cs [] \<longleftrightarrow> True"
   | "valid_path_aux cs (a#as) \<longleftrightarrow> 
        (case (kind a) of Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Rightarrow> valid_path_aux (a#cs) as
-                       | Q\<^bsub>p\<^esub>\<hookleftarrow>f \<Rightarrow> case cs of [] \<Rightarrow> valid_path_aux [] as
+                       | Q\<hookleftarrow>\<^bsub>p\<^esub>f \<Rightarrow> case cs of [] \<Rightarrow> valid_path_aux [] as
                                      | c'#cs' \<Rightarrow> a \<in> get_return_edges c' \<and>
                                                  valid_path_aux cs' as
                        |    _ \<Rightarrow> valid_path_aux cs as)"
@@ -482,9 +482,9 @@ lemma vpa_induct [consumes 1,case_names vpa_empty vpa_intra vpa_Call vpa_ReturnE
     "\<And>cs a as. \<lbrakk>intra_kind(kind a); valid_path_aux cs as; P cs as\<rbrakk> \<Longrightarrow> P cs (a#as)"
     "\<And>cs a as Q r p fs. \<lbrakk>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; valid_path_aux (a#cs) as; P (a#cs) as\<rbrakk> 
       \<Longrightarrow> P cs (a#as)"
-    "\<And>cs a as Q p f. \<lbrakk>kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f; cs = []; valid_path_aux [] as; P [] as\<rbrakk> 
+    "\<And>cs a as Q p f. \<lbrakk>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f; cs = []; valid_path_aux [] as; P [] as\<rbrakk> 
       \<Longrightarrow> P cs (a#as)"
-    "\<And>cs a as Q p f c' cs' . \<lbrakk>kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f; cs = c'#cs'; valid_path_aux cs' as;
+    "\<And>cs a as Q p f c' cs' . \<lbrakk>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f; cs = c'#cs'; valid_path_aux cs' as;
                               a \<in> get_return_edges c'; P cs' as\<rbrakk>
      \<Longrightarrow> P cs (a#as)"
   shows "P xs ys"
@@ -515,7 +515,7 @@ next
 next
   case (vpa_ReturnEmpty a as Q p f cs'' cs')
   hence "valid_path_aux cs'' as" by simp
-  with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs''@cs' = []` show ?case by simp
+  with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs''@cs' = []` show ?case by simp
 next
   case (vpa_ReturnCons a as Q p f c' cs' csx csx')
   note IH = `\<And>xs ys. cs' = xs@ys \<Longrightarrow> valid_path_aux xs as`
@@ -528,12 +528,12 @@ next
     hence "csx = []" and "csx' = c'#cs'" by simp_all
     from `csx' = c'#cs'` have "cs' = []@tl csx'" by simp
     from IH[OF this] have "valid_path_aux [] as" .
-    with `csx = []` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` show ?thesis by simp
+    with `csx = []` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` show ?thesis by simp
   next
     assume "\<exists>zs. csx = c'#zs \<and> zs@csx' = cs'"
     then obtain zs where "csx = c'#zs" and "cs' = zs@csx'" by auto
     from IH[OF `cs' = zs@csx'`] have "valid_path_aux zs as" .
-    with `csx = c'#zs` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `a \<in> get_return_edges c'` 
+    with `csx = c'#zs` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `a \<in> get_return_edges c'` 
     show ?thesis by simp
   qed
 qed
@@ -543,7 +543,7 @@ fun upd_cs :: "'edge list \<Rightarrow> 'edge list \<Rightarrow> 'edge list"
   where "upd_cs cs [] = cs"
   | "upd_cs cs (a#as) =
        (case (kind a) of Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Rightarrow> upd_cs (a#cs) as
-                       | Q\<^bsub>p\<^esub>\<hookleftarrow>f \<Rightarrow> case cs of [] \<Rightarrow> upd_cs cs as
+                       | Q\<hookleftarrow>\<^bsub>p\<^esub>f \<Rightarrow> case cs of [] \<Rightarrow> upd_cs cs as
                                       | c'#cs' \<Rightarrow> upd_cs cs' as
                        |    _ \<Rightarrow> upd_cs cs as)"
 
@@ -644,11 +644,11 @@ qed
 
 
 lemma upd_cs_snoc_Return_Cons:
-  assumes "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+  assumes "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
   shows "upd_cs cs as = c'#cs' \<Longrightarrow> upd_cs cs (as@[a]) = cs'"
 proof(induct as arbitrary:cs)
   case Nil
-  with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "upd_cs cs [a] = cs'" by simp
+  with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "upd_cs cs [a] = cs'" by simp
  thus ?case by simp
 next
   case (Cons a' as')
@@ -819,7 +819,7 @@ next
       assume "\<exists>xs. a#xs = as'' \<and> as = xs@as'"
       then obtain xs where "a#xs = as''" and "as = xs@as'" by auto
       from IH1[OF `as = xs@as'`] have "valid_path_aux [] xs" .
-      with `a#xs = as''`[THEN sym] `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = []`
+      with `a#xs = as''`[THEN sym] `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = []`
       show ?thesis by simp
     qed
   next
@@ -832,13 +832,13 @@ next
       assume "as'' = [] \<and> a#as = as'"
       hence "as = []@tl as'" by(cases as') auto
       from IH2[OF this] have "valid_path_aux [] (tl as')" by simp
-      with `as'' = [] \<and> a#as = as'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = []`
+      with `as'' = [] \<and> a#as = as'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = []`
       show ?thesis by fastsimp
     next
       assume "\<exists>xs. a#xs = as'' \<and> as = xs@as'"
       then obtain xs where "a#xs = as''" and "as = xs@as'" by auto
       from IH2[OF `as = xs@as'`] have "valid_path_aux (upd_cs [] xs) as'" .
-      from `a#xs = as''`[THEN sym] `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = []`
+      from `a#xs = as''`[THEN sym] `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = []`
       have "upd_cs [] xs = upd_cs cs as''" by simp
       with `valid_path_aux (upd_cs [] xs) as'` show ?thesis by simp
     qed
@@ -859,7 +859,7 @@ next
        assume "\<exists>xs. a#xs = as'' \<and> as = xs@as'"
        then obtain xs where "a#xs = as''" and "as = xs@as'" by auto
        from IH1[OF `as = xs@as'`] have "valid_path_aux cs' xs" .
-       with `a#xs = as''`[THEN sym] `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'`
+       with `a#xs = as''`[THEN sym] `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
 	 `a \<in> get_return_edges c'`
        show ?thesis by simp
      qed
@@ -873,14 +873,14 @@ next
       assume "as'' = [] \<and> a#as = as'"
       hence "as = []@tl as'" by(cases as') auto
       from IH2[OF this] have "valid_path_aux (upd_cs cs' []) (tl as')" .
-       with `as'' = [] \<and> a#as = as'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'`
+       with `as'' = [] \<and> a#as = as'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
 	 `a \<in> get_return_edges c'`
        show ?thesis by fastsimp
     next
       assume "\<exists>xs. a#xs = as'' \<and> as = xs@as'"
       then obtain xs where "a#xs = as''" and "as = xs@as'" by auto
       from IH2[OF `as = xs@as'`] have "valid_path_aux (upd_cs cs' xs) as'" .
-      from `a#xs = as''`[THEN sym] `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'`
+      from `a#xs = as''`[THEN sym] `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
       have "upd_cs cs' xs = upd_cs cs as''" by simp
       with `valid_path_aux (upd_cs cs' xs) as'` show ?thesis by simp
     qed
@@ -914,12 +914,12 @@ next
   thus ?case by simp
 next
   case (vpa_ReturnEmpty cs a' as' Q' p' f')
-  from `valid_path_aux [] (as'@[a])` `kind a' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f'` `cs = []`
+  from `valid_path_aux [] (as'@[a])` `kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'` `cs = []`
   have "valid_path_aux cs (a'#(as'@[a]))" by simp
   thus ?case by simp
 next
   case (vpa_ReturnCons cs a' as' Q' p' f' c' cs')
-  from `valid_path_aux cs' (as'@[a])` `kind a' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f'` `cs = c'#cs'`
+  from `valid_path_aux cs' (as'@[a])` `kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'` `cs = c'#cs'`
     `a' \<in> get_return_edges c'`
   have "valid_path_aux cs (a'#(as'@[a]))" by simp
   thus ?case by simp
@@ -1028,7 +1028,7 @@ qed
 function valid_path_rev_aux :: "'edge list \<Rightarrow> 'edge list \<Rightarrow> bool"
   where "valid_path_rev_aux cs [] \<longleftrightarrow> True"
   | "valid_path_rev_aux cs (as@[a]) \<longleftrightarrow> 
-       (case (kind a) of Q\<^bsub>p\<^esub>\<hookleftarrow>f \<Rightarrow> valid_path_rev_aux (a#cs) as
+       (case (kind a) of Q\<hookleftarrow>\<^bsub>p\<^esub>f \<Rightarrow> valid_path_rev_aux (a#cs) as
                        | Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Rightarrow> case cs of [] \<Rightarrow> valid_path_rev_aux [] as
                                      | c'#cs' \<Rightarrow> c' \<in> get_return_edges a \<and>
                                                  valid_path_rev_aux cs' as
@@ -1044,7 +1044,7 @@ lemma vpra_induct [consumes 1,case_names vpra_empty vpra_intra vpra_Return
   and rules: "\<And>cs. P cs []"
     "\<And>cs a as. \<lbrakk>intra_kind(kind a); valid_path_rev_aux cs as; P cs as\<rbrakk> 
       \<Longrightarrow> P cs (as@[a])"
-    "\<And>cs a as Q p f. \<lbrakk>kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f; valid_path_rev_aux (a#cs) as; P (a#cs) as\<rbrakk> 
+    "\<And>cs a as Q p f. \<lbrakk>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f; valid_path_rev_aux (a#cs) as; P (a#cs) as\<rbrakk> 
       \<Longrightarrow> P cs (as@[a])"
     "\<And>cs a as Q r p fs. \<lbrakk>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; cs = []; valid_path_rev_aux [] as; 
          P [] as\<rbrakk> \<Longrightarrow> P cs (as@[a])"
@@ -1070,7 +1070,7 @@ next
   note IH = `\<And>ds ds'. a#cs@cs' = ds@ds' \<Longrightarrow> valid_path_rev_aux ds as`
   have "a#cs@cs' = (a#cs)@cs'" by simp
   from IH[OF this] have "valid_path_rev_aux (a#cs) as" .
-  with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` show ?case by simp
+  with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` show ?case by simp
 next
   case (vpra_CallEmpty a as Q r p fs)
   hence "valid_path_rev_aux cs as" by simp
@@ -1101,7 +1101,7 @@ qed
 function upd_rev_cs :: "'edge list \<Rightarrow> 'edge list \<Rightarrow> 'edge list"
   where "upd_rev_cs cs [] = cs"
   | "upd_rev_cs cs (as@[a]) =
-       (case (kind a) of Q\<^bsub>p\<^esub>\<hookleftarrow>f \<Rightarrow> upd_rev_cs (a#cs) as
+       (case (kind a) of Q\<hookleftarrow>\<^bsub>p\<^esub>f \<Rightarrow> upd_rev_cs (a#cs) as
                        | Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Rightarrow> case cs of [] \<Rightarrow> upd_rev_cs cs as
                                       | c'#cs' \<Rightarrow> upd_rev_cs cs' as
                        |    _ \<Rightarrow> upd_rev_cs cs as)"
@@ -1175,7 +1175,7 @@ next
       assume "\<exists>xs. as = as''@xs \<and> xs@[a] = as'"
       then obtain xs where "as = as''@xs" and "xs@[a] = as'" by auto
       from IH1[OF `as = as''@xs`] have "valid_path_rev_aux (a#cs) xs" .
-      with `xs@[a] = as'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+      with `xs@[a] = as'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       show ?thesis by fastsimp
     qed
   next
@@ -1189,14 +1189,14 @@ next
       hence "as = butlast as''@[]" by(cases as) auto
       from IH2[OF this] 
       have "valid_path_rev_aux (upd_rev_cs (a#cs) []) (butlast as'')" .
-      with `as' = [] \<and> as@[a] = as''` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+      with `as' = [] \<and> as@[a] = as''` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       show ?thesis by fastsimp
     next
       assume "\<exists>xs. as = as''@xs \<and> xs@[a] = as'"
       then obtain xs where "as = as''@xs" and "xs@[a] = as'" by auto
       from IH2[OF `as = as''@xs`] 
       have "valid_path_rev_aux (upd_rev_cs (a#cs) xs) as''" .
-      from `xs@[a] = as'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+      from `xs@[a] = as'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "upd_rev_cs (a#cs) xs = upd_rev_cs cs as'" by fastsimp
       with `valid_path_rev_aux (upd_rev_cs (a#cs) xs) as''`
       show ?thesis by simp
@@ -1308,11 +1308,11 @@ qed(simp only:append_Cons[THEN sym] valid_path_rev_aux.simps intra_kind_def,fast
 
 
 lemma vpra_Cons_Return:
-  assumes "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+  assumes "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
   shows "valid_path_rev_aux cs as \<Longrightarrow> valid_path_rev_aux cs (a#as)"
 proof(induct rule:vpra_induct)
   case (vpra_empty cs)
-  from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "valid_path_rev_aux cs ([]@[a])"
+  from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "valid_path_rev_aux cs ([]@[a])"
     by(simp only:valid_path_rev_aux.simps,clarsimp)
   thus ?case by simp
 next
@@ -1323,7 +1323,7 @@ next
   thus ?case by simp
 next
   case (vpra_Return cs a' as' Q' p' f')
-  from `valid_path_rev_aux (a'#cs) (a#as')` `kind a' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f'`
+  from `valid_path_rev_aux (a'#cs) (a#as')` `kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'`
   have "valid_path_rev_aux cs ((a#as')@[a'])"
     by(simp only:valid_path_rev_aux.simps,clarsimp)
   thus ?case by simp
@@ -1394,10 +1394,10 @@ qed
 
 
 lemma upd_rev_cs_Cons_Return:
-  assumes "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f" shows "upd_rev_cs cs (a#as) = a#(upd_rev_cs cs as)"
+  assumes "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" shows "upd_rev_cs cs (a#as) = a#(upd_rev_cs cs as)"
 proof(induct as arbitrary:cs rule:rev_induct)
   case Nil
-  with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "upd_rev_cs cs ([]@[a]) = a#(upd_rev_cs cs [])"
+  with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "upd_rev_cs cs ([]@[a]) = a#(upd_rev_cs cs [])"
     by(simp only:upd_rev_cs.simps) clarsimp
   thus ?case by simp
 next
@@ -1534,7 +1534,7 @@ definition valid_call_list :: "'edge list \<Rightarrow> 'node \<Rightarrow> bool
 
 definition valid_return_list :: "'edge list \<Rightarrow> 'node \<Rightarrow> bool"
   where "valid_return_list cs n \<equiv>
-  \<forall>cs' c cs''. cs = cs'@c#cs'' \<longrightarrow> (valid_edge c \<and> (\<exists>Q p f. (kind c = Q\<^bsub>p\<^esub>\<hookleftarrow>f) \<and> 
+  \<forall>cs' c cs''. cs = cs'@c#cs'' \<longrightarrow> (valid_edge c \<and> (\<exists>Q p f. (kind c = Q\<hookleftarrow>\<^bsub>p\<^esub>f) \<and> 
                     p = get_proc (case cs' of [] \<Rightarrow> n | _ \<Rightarrow> last (targetnodes cs'))))"
 
 
@@ -1659,7 +1659,7 @@ next
     \<Longrightarrow> case (upd_cs [] as') 
              of [] \<Rightarrow> \<forall>c\<in>set []. \<exists>a\<in>set as'. a \<in> get_return_edges c
           | cx#csx \<Rightarrow> valid_call_list (cx # csx) n'`
-  from `kind a' = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = []` have "upd_cs [] as' = upd_cs cs (a'#as')"
+  from `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = []` have "upd_cs [] as' = upd_cs cs (a'#as')"
     by simp
   from `n -a'#as'\<rightarrow>* n'` have [simp]:"n = sourcenode a'" and "valid_edge a'"
     and "targetnode a' -as'\<rightarrow>* n'" by(auto elim:path_split_Cons)
@@ -1676,7 +1676,7 @@ next
     \<Longrightarrow> case (upd_cs cs' as') 
              of [] \<Rightarrow> \<forall>c\<in>set cs'. \<exists>a\<in>set as'. a \<in> get_return_edges c
           | cx#csx \<Rightarrow> valid_call_list (cx # csx) n'`
-  from `kind a' = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'` `a' \<in> get_return_edges c'` 
+  from `kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'` `a' \<in> get_return_edges c'` 
   have "upd_cs cs' as' = upd_cs cs (a'#as')" by simp
   from `n -a'#as'\<rightarrow>* n'` have [simp]:"n = sourcenode a'" and "valid_edge a'"
     and "targetnode a' -as'\<rightarrow>* n'" by(auto elim:path_split_Cons)
@@ -1748,7 +1748,7 @@ next
   from IH[OF `valid_call_list cs' (sourcenode c')`
     `valid_return_list as (targetnode a)`]
   have "valid_path_rev_aux as (rev cs')" .
-  with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'` `a \<in> get_return_edges c'` `kind c' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>f'`
+  with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'` `a \<in> get_return_edges c'` `kind c' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>f'`
   show ?case by simp
 qed
  
@@ -1853,7 +1853,7 @@ next
        valid_path_rev_aux (upd_rev_cs cs' as) (rev [])`
   from `n -a#as\<rightarrow>* n'` have "n = sourcenode a" and "valid_edge a"
     and "targetnode a -as\<rightarrow>* n'" by(auto intro:path_split_Cons)
-  from `cs = []` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "upd_cs cs (a#as) = upd_cs [] as"
+  from `cs = []` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "upd_cs cs (a#as) = upd_cs [] as"
     by simp
   with `valid_path_aux (upd_cs cs (a#as)) cs'`
   have "valid_path_aux (upd_cs [] as) cs'" by simp
@@ -1861,7 +1861,7 @@ next
   have "valid_path_rev_aux cs' as" 
     and "valid_path_rev_aux (upd_rev_cs cs' as) (rev [])" 
     by(auto simp:valid_call_list_def)
-  from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `valid_path_rev_aux cs' as`
+  from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `valid_path_rev_aux cs' as`
   have "valid_path_rev_aux cs' (a#as)" by(rule vpra_Cons_Return)
   moreover
   from `cs = []` have "valid_path_rev_aux (upd_rev_cs cs' (a#as)) (rev cs)"
@@ -1886,20 +1886,20 @@ next
     apply(clarsimp simp:valid_call_list_def)
     apply(erule_tac x="cx#cs'" in allE) apply clarsimp
     by(case_tac cs',auto simp:sourcenodes_def)
-  from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` match have "upd_cs cs (a#as) = upd_cs csx as" by simp
+  from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` match have "upd_cs cs (a#as) = upd_cs csx as" by simp
   with `valid_path_aux (upd_cs cs (a#as)) cs'`
   have "valid_path_aux (upd_cs csx as) cs'" by simp
   from IH[OF this `targetnode a -as\<rightarrow>* n'` `valid_call_list csx (targetnode a)`
     `valid_return_list cs' n''`]
   have "valid_path_rev_aux cs' as" 
     and "valid_path_rev_aux (upd_rev_cs cs' as) (rev csx)" by simp_all
-  from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `valid_path_rev_aux cs' as`
+  from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `valid_path_rev_aux cs' as`
   have "valid_path_rev_aux cs' (a#as)" by(rule vpra_Cons_Return)
   from match `valid_edge cx` obtain Q' r' p' f' where "kind cx = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>f'"
     by(fastsimp dest!:only_call_get_return_edges)
-  from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "upd_rev_cs cs' (a#as) = a#(upd_rev_cs cs' as)"
+  from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "upd_rev_cs cs' (a#as) = a#(upd_rev_cs cs' as)"
     by(rule upd_rev_cs_Cons_Return)
-  with `valid_path_rev_aux (upd_rev_cs cs' as) (rev csx)` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` 
+  with `valid_path_rev_aux (upd_rev_cs cs' as) (rev csx)` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` 
     `kind cx = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>f'` match
   have "valid_path_rev_aux (upd_rev_cs cs' (a#as)) (rev cs)"
     by simp
@@ -1922,7 +1922,7 @@ fun same_level_path_aux :: "'edge list \<Rightarrow> 'edge list \<Rightarrow> bo
   where "same_level_path_aux cs [] \<longleftrightarrow> True"
   | "same_level_path_aux cs (a#as) \<longleftrightarrow> 
        (case (kind a) of Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Rightarrow> same_level_path_aux (a#cs) as
-                       | Q\<^bsub>p\<^esub>\<hookleftarrow>f \<Rightarrow> case cs of [] \<Rightarrow> False
+                       | Q\<hookleftarrow>\<^bsub>p\<^esub>f \<Rightarrow> case cs of [] \<Rightarrow> False
                                      | c'#cs' \<Rightarrow> a \<in> get_return_edges c' \<and>
                                              same_level_path_aux cs' as
                        |    _ \<Rightarrow> same_level_path_aux cs as)"
@@ -1936,7 +1936,7 @@ lemma slpa_induct [consumes 1,case_names slpa_empty slpa_intra slpa_Call
       \<Longrightarrow> P cs (a#as)"
     "\<And>cs a as Q r p fs. \<lbrakk>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; same_level_path_aux (a#cs) as; P (a#cs) as\<rbrakk> 
       \<Longrightarrow> P cs (a#as)"
-    "\<And>cs a as Q p f c' cs'. \<lbrakk>kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f; cs = c'#cs'; same_level_path_aux cs' as;
+    "\<And>cs a as Q p f c' cs'. \<lbrakk>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f; cs = c'#cs'; same_level_path_aux cs' as;
                              a \<in> get_return_edges c'; P cs' as\<rbrakk>
      \<Longrightarrow> P cs (a#as)"
   shows "P xs ys"
@@ -1950,14 +1950,14 @@ lemma slpa_cases [consumes 4,case_names intra_path return_intra_path]:
   and "\<forall>c \<in> set cs. valid_edge c" and "\<forall>a \<in> set as. valid_edge a"
   obtains "\<forall>a \<in> set as. intra_kind(kind a)"
   | asx a asx' Q p f c' cs' where "as = asx@a#asx'" and "same_level_path_aux cs asx"
-    and "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f" and "upd_cs cs asx = c'#cs'" and "upd_cs cs (asx@[a]) = []" 
+    and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" and "upd_cs cs asx = c'#cs'" and "upd_cs cs (asx@[a]) = []" 
     and "a \<in> get_return_edges c'" and "valid_edge c'"
     and "\<forall>a \<in> set asx'. intra_kind(kind a)"
 proof(atomize_elim)
   from assms
   show "(\<forall>a\<in>set as. intra_kind (kind a)) \<or>
     (\<exists>asx a asx' Q p f c' cs'. as = asx@a#asx' \<and> same_level_path_aux cs asx \<and>
-       kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f \<and> upd_cs cs asx = c'#cs' \<and> upd_cs cs (asx@[a]) = [] \<and> 
+       kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f \<and> upd_cs cs asx = c'#cs' \<and> upd_cs cs (asx@[a]) = [] \<and> 
        a \<in> get_return_edges c' \<and> valid_edge c' \<and> (\<forall>a\<in>set asx'. intra_kind (kind a)))"
   proof(induct rule:slpa_induct)
     case (slpa_empty cs)
@@ -1968,7 +1968,7 @@ proof(atomize_elim)
     note IH = `\<lbrakk>upd_cs cs as = []; \<forall>c\<in>set cs. valid_edge c; \<forall>a'\<in>set as. valid_edge a'\<rbrakk> 
       \<Longrightarrow> (\<forall>a\<in>set as. intra_kind (kind a)) \<or>
       (\<exists>asx a asx' Q p f c' cs'. as = asx@a#asx' \<and> same_level_path_aux cs asx \<and>
-        kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f \<and>  upd_cs cs asx = c' # cs' \<and> upd_cs cs (asx@[a]) = [] \<and> 
+        kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f \<and>  upd_cs cs asx = c' # cs' \<and> upd_cs cs (asx@[a]) = [] \<and> 
         a \<in> get_return_edges c' \<and> valid_edge c' \<and> (\<forall>a\<in>set asx'. intra_kind (kind a)))`
     from `\<forall>a'\<in>set (a#as). valid_edge a'` have "\<forall>a'\<in>set as. valid_edge a'" by simp
     from `intra_kind (kind a)` `upd_cs cs (a#as) = []`
@@ -1981,13 +1981,13 @@ proof(atomize_elim)
       thus ?case by simp
     next
       assume "\<exists>asx a asx' Q p f c' cs'. as = asx@a#asx' \<and> same_level_path_aux cs asx \<and>
-                kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f \<and> upd_cs cs asx = c'#cs' \<and> upd_cs cs (asx@[a]) = [] \<and> 
+                kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f \<and> upd_cs cs asx = c'#cs' \<and> upd_cs cs (asx@[a]) = [] \<and> 
 	        a \<in> get_return_edges c' \<and> valid_edge c' \<and> 
 	        (\<forall>a\<in>set asx'. intra_kind (kind a))"
       then obtain asx a' Q p f asx' c' cs' where "as = asx@a'#asx'" 
 	and "same_level_path_aux cs asx" and "upd_cs cs (asx@[a']) = []"
 	and "upd_cs cs asx = c'#cs'" and assms:"a' \<in> get_return_edges c'"
-	"kind a' = Q\<^bsub>p\<^esub>\<hookleftarrow>f" "valid_edge c'" "\<forall>a\<in>set asx'. intra_kind (kind a)"
+	"kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f" "valid_edge c'" "\<forall>a\<in>set asx'. intra_kind (kind a)"
 	by blast
       from `as = asx@a'#asx'` have "a#as = (a#asx)@a'#asx'" by simp
       moreover
@@ -2007,7 +2007,7 @@ proof(atomize_elim)
       \<forall>a'\<in>set as. valid_edge a'\<rbrakk> \<Longrightarrow> 
       (\<forall>a'\<in>set as. intra_kind (kind a')) \<or>
       (\<exists>asx a' asx' Q' p' f' c' cs'. as = asx@a'#asx' \<and> 
-        same_level_path_aux (a#cs) asx \<and> kind a' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f' \<and> 
+        same_level_path_aux (a#cs) asx \<and> kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f' \<and> 
         upd_cs (a#cs) asx = c'#cs' \<and> upd_cs (a#cs) (asx@[a']) = [] \<and> 
         a' \<in> get_return_edges c' \<and> valid_edge c' \<and> 
         (\<forall>a'\<in>set asx'. intra_kind (kind a')))`
@@ -2027,14 +2027,14 @@ proof(atomize_elim)
       thus ?case by simp
     next
       assume "\<exists>asx a' asx' Q p f c' cs'. as = asx@a'#asx' \<and> 
-	        same_level_path_aux (a#cs) asx \<and> kind a' = Q\<^bsub>p\<^esub>\<hookleftarrow>f \<and> 
+	        same_level_path_aux (a#cs) asx \<and> kind a' = Q\<hookleftarrow>\<^bsub>p\<^esub>f \<and> 
 	        upd_cs (a#cs) asx = c'#cs' \<and> upd_cs (a#cs) (asx@[a']) = [] \<and> 
 	        a' \<in> get_return_edges c' \<and> valid_edge c' \<and> 
 	        (\<forall>a\<in>set asx'. intra_kind (kind a))"
       then obtain asx a' Q' p' f' asx' c' cs' where "as = asx@a'#asx'" 
 	and "same_level_path_aux (a#cs) asx" and "upd_cs (a#cs) (asx@[a']) = []"
 	and "upd_cs (a#cs) asx = c'#cs'" and assms:"a' \<in> get_return_edges c'"
-	"kind a' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f'" "valid_edge c'" "\<forall>a\<in>set asx'. intra_kind (kind a)"
+	"kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'" "valid_edge c'" "\<forall>a\<in>set asx'. intra_kind (kind a)"
 	by blast
       from `as = asx@a'#asx'` have "a#as = (a#asx)@a'#asx'" by simp
       moreover
@@ -2054,51 +2054,51 @@ proof(atomize_elim)
       \<forall>a'\<in>set as. valid_edge a'\<rbrakk> \<Longrightarrow> 
       (\<forall>a'\<in>set as. intra_kind (kind a')) \<or>
       (\<exists>asx a' asx' Q' p' f' c'' cs''. as = asx@a'#asx' \<and> 
-        same_level_path_aux cs' asx \<and> kind a' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f' \<and> upd_cs cs' asx = c''#cs'' \<and>
+        same_level_path_aux cs' asx \<and> kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f' \<and> upd_cs cs' asx = c''#cs'' \<and>
         upd_cs cs' (asx@[a']) = [] \<and> a' \<in> get_return_edges c'' \<and> valid_edge c'' \<and> 
         (\<forall>a'\<in>set asx'. intra_kind (kind a')))`
     from `\<forall>a'\<in>set (a#as). valid_edge a'` have "valid_edge a" 
       and "\<forall>a'\<in>set as. valid_edge a'" by simp_all
     from `\<forall>c\<in>set cs. valid_edge c` `cs = c' # cs'`
     have "valid_edge c'" and "\<forall>c\<in>set cs'. valid_edge c" by simp_all
-    from `upd_cs cs (a#as) = []` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'` 
+    from `upd_cs cs (a#as) = []` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'` 
       `a \<in> get_return_edges c'` have "upd_cs cs' as = []" by simp
     from IH[OF this `\<forall>c\<in>set cs'. valid_edge c` `\<forall>a'\<in>set as. valid_edge a'`] show ?case
     proof
       assume "\<forall>a'\<in>set as. intra_kind (kind a')"
       hence "upd_cs cs' as = cs'" by(rule upd_cs_intra_path)
       with `upd_cs cs' as = []` have "cs' = []" by simp
-      with `cs = c'#cs'` `a \<in> get_return_edges c'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+      with `cs = c'#cs'` `a \<in> get_return_edges c'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "upd_cs cs [a] = []" by simp
       moreover
       from `cs = c'#cs'` have "upd_cs cs [] \<noteq> []" by simp
       moreover
       have "same_level_path_aux cs []" by simp
       ultimately show ?case 
-	using `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `\<forall>a'\<in>set as. intra_kind (kind a')` `cs = c'#cs'`
+	using `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `\<forall>a'\<in>set as. intra_kind (kind a')` `cs = c'#cs'`
 	  `a \<in> get_return_edges c'` `valid_edge c'`
 	by fastsimp
     next
       assume "\<exists>asx a' asx' Q' p' f' c'' cs''. as = asx@a'#asx' \<and>
-	same_level_path_aux cs' asx \<and> kind a' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f' \<and> upd_cs cs' asx = c''#cs'' \<and>
+	same_level_path_aux cs' asx \<and> kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f' \<and> upd_cs cs' asx = c''#cs'' \<and>
 	upd_cs cs' (asx@[a']) = [] \<and> a' \<in> get_return_edges c'' \<and> valid_edge c'' \<and>
 	(\<forall>a'\<in>set asx'. intra_kind (kind a'))"
       then obtain asx a' asx' Q' p' f' c'' cs'' where "as = asx@a'#asx'"
 	and "same_level_path_aux cs' asx" and "upd_cs cs' asx = c''#cs''" 
 	and "upd_cs cs' (asx@[a']) = []" and assms:"a' \<in> get_return_edges c''" 
-	"kind a' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f'" "valid_edge c''" "\<forall>a'\<in>set asx'. intra_kind (kind a')"
+	"kind a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'" "valid_edge c''" "\<forall>a'\<in>set asx'. intra_kind (kind a')"
 	by blast
       from `as = asx@a'#asx'` have "a#as = (a#asx)@a'#asx'" by simp
       moreover
       from `same_level_path_aux cs' asx` `cs = c'#cs'` `a \<in> get_return_edges c'`
-	`kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+	`kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "same_level_path_aux cs (a#asx)" by simp
       moreover
-      from `upd_cs cs' asx = c''#cs''` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'`
+      from `upd_cs cs' asx = c''#cs''` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
       have "upd_cs cs (a#asx) = c''#cs''" by simp
       moreover
       from `upd_cs cs' (asx@[a']) = []` `cs = c'#cs'` `a \<in> get_return_edges c'`
-	`kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+	`kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "upd_cs cs ((a#asx)@[a']) = []" by simp
       ultimately show ?case using assms by blast
     qed
@@ -2216,10 +2216,10 @@ next
     next
       case (Cons x' xs')
       with `a#as = xs@ys` have "a = x'" and "as = xs'@ys" by simp_all
-      with `upd_cs cs xs = []` Cons `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'`
+      with `upd_cs cs xs = []` Cons `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
       have "upd_cs cs' xs' = []" by simp
       from IH1[OF `as = xs'@ys` this] have "same_level_path_aux cs' xs'" .
-      with `a = x'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'` `a \<in> get_return_edges c'` Cons 
+      with `a = x'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'` `a \<in> get_return_edges c'` Cons 
       show ?thesis by simp
     qed
   next
@@ -2233,7 +2233,7 @@ next
     next
       case (Cons x' xs')
       with `a#as = xs@ys` have "a = x'" and "as = xs'@ys" by simp_all
-      with `upd_cs cs xs = []` Cons `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'`
+      with `upd_cs cs xs = []` Cons `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
       have "upd_cs cs' xs' = []" by simp
       from IH2[OF `as = xs'@ys` this] show ?thesis .
     qed
@@ -2245,7 +2245,7 @@ lemma slpa_number_Calls_eq_number_Returns:
   "\<lbrakk>same_level_path_aux cs as; upd_cs cs as = []; 
     \<forall>a \<in> set as. valid_edge a; \<forall>c \<in> set cs. valid_edge c\<rbrakk>
   \<Longrightarrow> length [a\<leftarrow>as@cs. \<exists>Q r p fs. kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs] = 
-     length [a\<leftarrow>as. \<exists>Q p f. kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f]"
+     length [a\<leftarrow>as. \<exists>Q p f. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f]"
 apply(induct rule:slpa_induct)
 by(auto split:list.split edge_kind.split intro:only_call_get_return_edges 
          simp:intra_kind_def)
@@ -2296,7 +2296,7 @@ next
        get_proc n'`
   from `\<forall>a\<in>set cs. valid_edge a` `cs = c'#cs'`
   have "valid_edge c'" and "\<forall>a\<in>set cs'. valid_edge a" by simp_all
-  from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `upd_cs cs (a#as) = []` `cs = c'#cs'`
+  from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `upd_cs cs (a#as) = []` `cs = c'#cs'`
   have "upd_cs cs' as = []" by simp
   from `n -a#as\<rightarrow>* n'` have "n -[]@a#as\<rightarrow>* n'" by simp
   hence "n = sourcenode a" and "targetnode a -as\<rightarrow>* n'"
@@ -2373,25 +2373,25 @@ next
   show ?case
   proof(cases "as = []")
     case True
-    with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'` `upd_cs cs (a#as) = []`
+    with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'` `upd_cs cs (a#as) = []`
     have "cs' = []" by simp
     with `cs = c'#cs'` `a \<in> get_return_edges c'` True
     show ?thesis by simp
   next
     case False
-    from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'` `upd_cs cs (a#as) = []`
+    from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'` `upd_cs cs (a#as) = []`
     have "upd_cs cs' as = []" by simp
     show ?thesis
     proof(cases "cs' = []")
       case True
-      with `cs = c'#cs'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "upd_cs cs [a] = []" by simp
+      with `cs = c'#cs'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "upd_cs cs [a] = []" by simp
       with `\<forall>xs ys. a#as = xs@ys \<and> ys \<noteq> [] \<longrightarrow> upd_cs cs xs \<noteq> []` False have False
 	apply(erule_tac x="[a]" in allE) by fastsimp
       thus ?thesis by simp
     next
       case False
       from `\<forall>xs ys. a#as = xs@ys \<and> ys \<noteq> [] \<longrightarrow> upd_cs cs xs \<noteq> []`
-	`kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'`
+	`kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
       have "\<forall>xs ys. as = xs@ys \<and> ys \<noteq> [] \<longrightarrow> upd_cs cs' xs \<noteq> []"
 	by(clarsimp,erule_tac x="a#xs" in allE,simp)
       from IH[OF False `upd_cs cs' as = []` this]
@@ -2474,14 +2474,14 @@ proof(atomize_elim)
        \<exists>cfsx' cfx. transfers (kinds as) (cfsx@cf#cfs) = cfsx'@cfx#cfs \<and>
                    transfers (kinds as) (cfsx@cf#cfs') = cfsx'@cfx#cfs' \<and>
                    length cfsx' = length (upd_cs cs' as)`
-     from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c'#cs'`
+     from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c'#cs'`
      have "length (upd_cs cs (a#as)) = length (upd_cs cs' as)" by simp
      show ?case
      proof(cases cs')
        case Nil
        with `cs = c'#cs'` `length cs = length cfsx` obtain cfx
 	 where [simp]:"cfsx = [cfx]" by(cases cfsx) auto
-       with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` obtain cf' 
+       with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` obtain cf' 
 	 where transfer:"transfer (kind a) (cfsx@cf#cfs) = []@cf'#cfs"
 	 "transfer (kind a) (cfsx@cf#cfs') = []@cf'#cfs'"
 	 by fastsimp
@@ -2497,7 +2497,7 @@ proof(atomize_elim)
       with `cs = c'#cs'` `length cs = length cfsx` obtain x x' xs
 	where [simp]:"cfsx = x#x'#xs" and "length xs = length csx"
 	by(cases cfsx,auto,case_tac list,fastsimp+)
-      with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` obtain cf' 
+      with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` obtain cf' 
 	where transfer:"transfer (kind a) ((x#x'#xs)@cf#cfs) = (cf'#xs)@cf#cfs"
 	"transfer (kind a) ((x#x'#xs)@cf#cfs') = (cf'#xs)@cf#cfs'"
 	by fastsimp
@@ -2623,13 +2623,13 @@ next
     \<Longrightarrow> same_level_path_aux [] as \<and> upd_cs [] as = []`
   from `m -a # as\<rightarrow>* m'` have "sourcenode a = m" and "valid_edge a"
     and "targetnode a -as\<rightarrow>* m'" by(auto elim:path_split_Cons)
-  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "get_proc (sourcenode a) = p" 
+  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "get_proc (sourcenode a) = p" 
     by(rule get_proc_return)
   from `get_proc (case cs of [] \<Rightarrow> m | a # list \<Rightarrow> sourcenode (last cs)) = Main`
     `cs = []`
   have "get_proc m = Main" by simp
   with `sourcenode a = m` `get_proc (sourcenode a) = p` have "p = Main" by simp
-  with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "kind a = Q\<^bsub>Main\<^esub>\<hookleftarrow>f" by simp
+  with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "kind a = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
   with `valid_edge a` have False by(rule Main_no_return_source)
   thus ?case by simp
 next
@@ -2639,7 +2639,7 @@ next
     \<Longrightarrow> same_level_path_aux cs' as \<and> upd_cs cs' as = []`
   from `m -a # as\<rightarrow>* m'` have "sourcenode a = m" and "valid_edge a"
     and "targetnode a -as\<rightarrow>* m'" by(auto elim:path_split_Cons)
-  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "get_proc (sourcenode a) = p" 
+  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "get_proc (sourcenode a) = p" 
     by(rule get_proc_return)
   from `valid_call_list cs m` `cs = c' # cs'`
   have "valid_edge c'" 
@@ -2667,7 +2667,7 @@ next
       with `valid_edge cx` have False by(rule Main_no_call_target)
       thus ?thesis by simp
     qed simp
-    with True `cs = c' # cs'` `a \<in> get_return_edges c'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+    with True `cs = c' # cs'` `a \<in> get_return_edges c'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
     show ?thesis by simp
   next
     case False
@@ -2685,7 +2685,7 @@ next
     from IH[OF `targetnode a -as\<rightarrow>* m'` False `valid_call_list cs' (targetnode a)`
       `get_proc m' = Main` this]
     have "same_level_path_aux cs' as \<and> upd_cs cs' as = []" .
-    with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c' # cs'` `a \<in> get_return_edges c'`
+    with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c' # cs'` `a \<in> get_return_edges c'`
     show ?thesis by simp
   qed
 qed
@@ -2709,7 +2709,7 @@ by(fastsimp elim:same_level_path_aux_Append upd_cs_Append simp:same_level_path_d
 
 lemma same_level_path_number_Calls_eq_number_Returns:
   "\<lbrakk>same_level_path as; \<forall>a \<in> set as. valid_edge a\<rbrakk> \<Longrightarrow> 
-  length [a\<leftarrow>as. \<exists>Q r p fs. kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs] = length [a\<leftarrow>as. \<exists>Q p f. kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f]"
+  length [a\<leftarrow>as. \<exists>Q r p fs. kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs] = length [a\<leftarrow>as. \<exists>Q p f. kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f]"
 by(fastsimp dest:slpa_number_Calls_eq_number_Returns simp:same_level_path_def)
 
 
@@ -2887,7 +2887,7 @@ qed
 lemma slp_cases [consumes 1,case_names intra_path return_intra_path]:
   assumes "m -as\<rightarrow>\<^bsub>sl\<^esub>* m'"
   obtains "m -as\<rightarrow>\<^isub>\<iota>* m'"
-  | as' a as'' Q p f where "as = as'@a#as''" and "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+  | as' a as'' Q p f where "as = as'@a#as''" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
   and "m -as'@[a]\<rightarrow>\<^bsub>sl\<^esub>* targetnode a" and "targetnode a -as''\<rightarrow>\<^isub>\<iota>* m'"
 proof(atomize_elim)
   from `m -as\<rightarrow>\<^bsub>sl\<^esub>* m'` have "m -as\<rightarrow>* m'" and "same_level_path_aux [] as"
@@ -2897,7 +2897,7 @@ proof(atomize_elim)
   with `same_level_path_aux [] as` `upd_cs [] as = []` `\<forall>a \<in> set []. valid_edge a`
     `\<forall>a \<in> set as. valid_edge a`
   show "m -as\<rightarrow>\<^isub>\<iota>* m' \<or>
-    (\<exists>as' a as'' Q p f. as = as' @ a # as'' \<and> kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f \<and>
+    (\<exists>as' a as'' Q p f. as = as' @ a # as'' \<and> kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f \<and>
     m -as' @ [a]\<rightarrow>\<^bsub>sl\<^esub>* targetnode a \<and> targetnode a -as''\<rightarrow>\<^isub>\<iota>* m')"
   proof(cases rule:slpa_cases)
     case intra_path
@@ -2910,7 +2910,7 @@ proof(atomize_elim)
       by(auto intro:path_split)
     from `m -as'\<rightarrow>* sourcenode a` `valid_edge a`
     have "m -as'@[a]\<rightarrow>* targetnode a" by(fastsimp intro:path_Append path_edge)
-    with `same_level_path_aux [] as'` `upd_cs [] as' = c' # cs'` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+    with `same_level_path_aux [] as'` `upd_cs [] as' = c' # cs'` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       `a \<in> get_return_edges c'`
     have "same_level_path_aux [] (as'@[a])"
       by(fastsimp intro:same_level_path_aux_Append)
@@ -2919,7 +2919,7 @@ proof(atomize_elim)
     moreover
     from `\<forall>a\<in>set as''. intra_kind (kind a)` `targetnode a -as''\<rightarrow>* m'`
     have "targetnode a -as''\<rightarrow>\<^isub>\<iota>* m'" by(simp add:intra_path_def)
-    ultimately show ?thesis using `as = as' @ a # as''` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` by blast
+    ultimately show ?thesis using `as = as' @ a # as''` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` by blast
   qed
 qed
 
@@ -2927,7 +2927,7 @@ qed
 function same_level_path_rev_aux :: "'edge list \<Rightarrow> 'edge list \<Rightarrow> bool"
   where "same_level_path_rev_aux cs [] \<longleftrightarrow> True"
   | "same_level_path_rev_aux cs (as@[a]) \<longleftrightarrow> 
-       (case (kind a) of Q\<^bsub>p\<^esub>\<hookleftarrow>f \<Rightarrow> same_level_path_rev_aux (a#cs) as
+       (case (kind a) of Q\<hookleftarrow>\<^bsub>p\<^esub>f \<Rightarrow> same_level_path_rev_aux (a#cs) as
                        | Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Rightarrow> case cs of [] \<Rightarrow> False
                                      | c'#cs' \<Rightarrow> c' \<in> get_return_edges a \<and>
                                              same_level_path_rev_aux cs' as
@@ -2942,7 +2942,7 @@ lemma slpra_induct [consumes 1,case_names slpra_empty slpra_intra slpra_Return
   and rules: "\<And>cs. P cs []"
     "\<And>cs a as. \<lbrakk>intra_kind(kind a); same_level_path_rev_aux cs as; P cs as\<rbrakk> 
       \<Longrightarrow> P cs (as@[a])"
-    "\<And>cs a as Q p f. \<lbrakk>kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f; same_level_path_rev_aux (a#cs) as; P (a#cs) as\<rbrakk> 
+    "\<And>cs a as Q p f. \<lbrakk>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f; same_level_path_rev_aux (a#cs) as; P (a#cs) as\<rbrakk> 
       \<Longrightarrow> P cs (as@[a])"
     "\<And>cs a as Q r p fs c' cs'. \<lbrakk>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; cs = c'#cs'; 
                    same_level_path_rev_aux cs' as; c' \<in> get_return_edges a; P cs' as\<rbrakk>
@@ -3011,17 +3011,17 @@ next
      upd_cs (upd_cs [] as) (a#cs) = []`
   from `n -as@[a]\<rightarrow>* n'` have "n -as\<rightarrow>* sourcenode a" and "valid_edge a"
     and "n' = targetnode a" by(auto intro:path_split_snoc)
-  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "p = get_proc (sourcenode a)"
+  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "p = get_proc (sourcenode a)"
      by(rule get_proc_return[THEN sym])
    from `valid_return_list cs n'` `n' = targetnode a`
    have "valid_return_list cs (targetnode a)" by simp
-   with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `p = get_proc (sourcenode a)`
+   with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `p = get_proc (sourcenode a)`
    have "valid_return_list (a#cs) (sourcenode a)"
      apply(clarsimp simp:valid_return_list_def)
      apply(case_tac cs') apply auto
      apply(erule_tac x="list" in allE) apply clarsimp
      by(case_tac list,auto simp:targetnodes_def)
-   from `upd_rev_cs cs (as@[a]) = []` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+   from `upd_rev_cs cs (as@[a]) = []` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
    have "upd_rev_cs (a#cs) as = []" by simp
    from IH[OF this `n -as\<rightarrow>* sourcenode a` `valid_return_list (a#cs) (sourcenode a)`]
    have "same_level_path_aux [] as"
@@ -3030,23 +3030,23 @@ next
    show ?case 
   proof(cases "upd_cs [] as")
     case Nil
-    with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `same_level_path_aux (upd_cs [] as) (a#cs)`
+    with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `same_level_path_aux (upd_cs [] as) (a#cs)`
     have False by simp
     thus ?thesis by simp
   next
     case (Cons cx csx)
-    with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `same_level_path_aux (upd_cs [] as) (a#cs)`
+    with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `same_level_path_aux (upd_cs [] as) (a#cs)`
     obtain Qx fx 
       where match:"a \<in> get_return_edges cx" "same_level_path_aux csx cs" by auto
-    from `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` Cons have "upd_cs [] (as@[a]) = csx"
+    from `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` Cons have "upd_cs [] (as@[a]) = csx"
       by(rule upd_cs_snoc_Return_Cons)
     with `same_level_path_aux (upd_cs [] as) (a#cs)`
-      `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` match
+      `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` match
     have "same_level_path_aux (upd_cs [] (as@[a])) cs" by simp
-    from `upd_cs [] (as@[a]) = csx` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` Cons
+    from `upd_cs [] (as@[a]) = csx` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` Cons
       `upd_cs (upd_cs [] as) (a#cs) = []`
     have "upd_cs (upd_cs [] (as@[a])) cs = []" by simp
-    from Cons `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` match
+    from Cons `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` match
     have "same_level_path_aux (upd_cs [] as) [a]" by simp
     with `same_level_path_aux [] as` have "same_level_path_aux [] (as@[a])"
       by(rule same_level_path_aux_Append)
@@ -3078,15 +3078,15 @@ next
     by simp_all
   from `same_level_path_aux [] as` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
   have "same_level_path_aux [] (as@[a])" by(rule slpa_snoc_Call)
-  from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` match obtain Q' f' where "kind cx = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+  from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` match obtain Q' f' where "kind cx = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     by(fastsimp dest!:call_return_edges)
   from `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` have "upd_cs [] (as@[a]) = a#(upd_cs [] as)"
     by(rule upd_cs_snoc_Call)
   with `same_level_path_aux (upd_cs [] as) csx` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` 
-    `kind cx = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` match
+    `kind cx = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` match
   have "same_level_path_aux (upd_cs [] (as@[a])) cs" by simp
   from `upd_cs (upd_cs [] as) csx = []` `upd_cs [] (as@[a]) = a#(upd_cs [] as)`
-    `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `kind cx = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` match
+    `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `kind cx = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` match
   have "upd_cs (upd_cs [] (as@[a])) cs = []" by simp
   with `same_level_path_aux [] (as@[a])`
     `same_level_path_aux (upd_cs [] (as@[a])) cs` show ?case by simp
@@ -3148,7 +3148,7 @@ qed
 
 lemma Entry_no_inner_return_path: 
   assumes "(_Entry_) -as@[a]\<rightarrow>* n" and "\<forall>a \<in> set as. intra_kind(kind a)"
-  and "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+  and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
   shows "False"
 proof -
   from `(_Entry_) -as@[a]\<rightarrow>* n` have "(_Entry_) -as\<rightarrow>* sourcenode a" 
@@ -3157,9 +3157,9 @@ proof -
   have "(_Entry_) -as\<rightarrow>\<^isub>\<iota>* sourcenode a" by(simp add:intra_path_def)
   hence "get_proc (sourcenode a) = Main"
     by(fastsimp dest:intra_path_get_procs simp:get_proc_Entry)
-  with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "p = Main"
+  with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "p = Main"
     by(fastsimp dest:get_proc_return)
-  with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` show ?thesis
+  with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` show ?thesis
     by(fastsimp intro:Main_no_return_source)
 qed
 
@@ -3168,29 +3168,29 @@ qed
 lemma vpra_no_slpra:
   "\<lbrakk>valid_path_rev_aux cs as; n -as\<rightarrow>* n'; valid_return_list cs n'; cs \<noteq> [];
     \<forall>xs ys. as = xs@ys \<longrightarrow> (\<not> same_level_path_rev_aux cs ys \<or> upd_rev_cs cs ys \<noteq> [])\<rbrakk>
-  \<Longrightarrow> \<exists>a Q f. valid_edge a \<and> kind a = Q\<^bsub>get_proc n\<^esub>\<hookleftarrow>f"
+  \<Longrightarrow> \<exists>a Q f. valid_edge a \<and> kind a = Q\<hookleftarrow>\<^bsub>get_proc n\<^esub>f"
 proof(induct arbitrary:n' rule:vpra_induct)
   case (vpra_empty cs)
   from `valid_return_list cs n'` `cs \<noteq> []` obtain Q f where "valid_edge (hd cs)"
-    and "kind (hd cs) = Q\<^bsub>get_proc n'\<^esub>\<hookleftarrow>f"
+    and "kind (hd cs) = Q\<hookleftarrow>\<^bsub>get_proc n'\<^esub>f"
     apply(unfold valid_return_list_def)
     apply(drule hd_Cons_tl[THEN sym])
     apply(erule_tac x="[]" in allE) 
     apply(erule_tac x="hd cs" in allE)
     by auto
   from `n -[]\<rightarrow>* n'` have "n = n'" by fastsimp
-  with `valid_edge (hd cs)` `kind (hd cs) = Q\<^bsub>get_proc n'\<^esub>\<hookleftarrow>f` show ?case by blast
+  with `valid_edge (hd cs)` `kind (hd cs) = Q\<hookleftarrow>\<^bsub>get_proc n'\<^esub>f` show ?case by blast
 next
   case (vpra_intra cs a as)
   note IH = `\<And>n'. \<lbrakk>n -as\<rightarrow>* n'; valid_return_list cs n'; cs \<noteq> [];
     \<forall>xs ys. as = xs@ys \<longrightarrow> \<not> same_level_path_rev_aux cs ys \<or> upd_rev_cs cs ys \<noteq> []\<rbrakk>
-    \<Longrightarrow> \<exists>a Q f. valid_edge a \<and> kind a = Q\<^bsub>get_proc n\<^esub>\<hookleftarrow>f`
+    \<Longrightarrow> \<exists>a Q f. valid_edge a \<and> kind a = Q\<hookleftarrow>\<^bsub>get_proc n\<^esub>f`
   note all = `\<forall>xs ys. as@[a] = xs@ys 
     \<longrightarrow> \<not> same_level_path_rev_aux cs ys \<or> upd_rev_cs cs ys \<noteq> []`
   from `n -as@[a]\<rightarrow>* n'` have "n -as\<rightarrow>* sourcenode a" and "valid_edge a"
     and "targetnode a = n'" by(auto intro:path_split_snoc)
   from `valid_return_list cs n'` `cs \<noteq> []` obtain Q f where "valid_edge (hd cs)"
-    and "kind (hd cs) = Q\<^bsub>get_proc n'\<^esub>\<hookleftarrow>f"
+    and "kind (hd cs) = Q\<hookleftarrow>\<^bsub>get_proc n'\<^esub>f"
     apply(unfold valid_return_list_def)
     apply(drule hd_Cons_tl[THEN sym])
     apply(erule_tac x="[]" in allE) 
@@ -3198,8 +3198,8 @@ next
     by auto
   from `valid_edge a` `intra_kind (kind a)`
   have "get_proc (sourcenode a) = get_proc (targetnode a)" by(rule get_proc_intra)
-  with `kind (hd cs) = Q\<^bsub>get_proc n'\<^esub>\<hookleftarrow>f` `targetnode a = n'`
-  have "kind (hd cs) = Q\<^bsub>get_proc (sourcenode a)\<^esub>\<hookleftarrow>f" by simp
+  with `kind (hd cs) = Q\<hookleftarrow>\<^bsub>get_proc n'\<^esub>f` `targetnode a = n'`
+  have "kind (hd cs) = Q\<hookleftarrow>\<^bsub>get_proc (sourcenode a)\<^esub>f" by simp
   from `valid_return_list cs n'` `targetnode a = n'`
     `get_proc (sourcenode a) = get_proc (targetnode a)`
   have "valid_return_list cs (sourcenode a)"
@@ -3219,12 +3219,12 @@ next
   note IH = `\<And>n'. \<lbrakk>n -as\<rightarrow>* n'; valid_return_list (a#cs) n'; a#cs \<noteq> [];
    \<forall>xs ys. as = xs @ ys \<longrightarrow>
     \<not> same_level_path_rev_aux (a#cs) ys \<or> upd_rev_cs (a#cs) ys \<noteq> []\<rbrakk>
-  \<Longrightarrow> \<exists>a Q f. valid_edge a \<and> kind a = Q\<^bsub>get_proc n\<^esub>\<hookleftarrow>f`
+  \<Longrightarrow> \<exists>a Q f. valid_edge a \<and> kind a = Q\<hookleftarrow>\<^bsub>get_proc n\<^esub>f`
   from `n -as@[a]\<rightarrow>* n'` have "n -as\<rightarrow>* sourcenode a" and "valid_edge a"
     and "targetnode a = n'" by(auto intro:path_split_snoc)
-  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "get_proc (sourcenode a) = p"
+  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "get_proc (sourcenode a) = p"
     by(rule get_proc_return)
-  with `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `valid_return_list cs n'` `valid_edge a` `targetnode a = n'`
+  with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `valid_return_list cs n'` `valid_edge a` `targetnode a = n'`
   have "valid_return_list (a#cs) (sourcenode a)"
     apply(clarsimp simp:valid_return_list_def)
     apply(case_tac cs') apply auto
@@ -3232,7 +3232,7 @@ next
     apply(erule_tac x="c" in allE)
     by(auto split:list.split simp:targetnodes_def)
   from `\<forall>xs ys. as@[a] = xs@ys \<longrightarrow>
-    \<not> same_level_path_rev_aux cs ys \<or> upd_rev_cs cs ys \<noteq> []` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+    \<not> same_level_path_rev_aux cs ys \<or> upd_rev_cs cs ys \<noteq> []` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
   have "\<forall>xs ys. as = xs@ys \<longrightarrow>
     \<not> same_level_path_rev_aux (a#cs) ys \<or> upd_rev_cs (a#cs) ys \<noteq> []"
     apply clarsimp apply(erule_tac x="xs" in allE)
@@ -3248,7 +3248,7 @@ next
   note IH = `\<And>n'. \<lbrakk>n -as\<rightarrow>* n'; valid_return_list cs' n'; cs' \<noteq> [];
     \<forall>xs ys. as = xs@ys \<longrightarrow>
        \<not> same_level_path_rev_aux cs' ys \<or> upd_rev_cs cs' ys \<noteq> []\<rbrakk>
-    \<Longrightarrow> \<exists>a Q f. valid_edge a \<and> kind a = Q\<^bsub>get_proc n\<^esub>\<hookleftarrow>f`
+    \<Longrightarrow> \<exists>a Q f. valid_edge a \<and> kind a = Q\<hookleftarrow>\<^bsub>get_proc n\<^esub>f`
   note all = `\<forall>xs ys. as@[a] = xs@ys \<longrightarrow>
      \<not> same_level_path_rev_aux cs ys \<or> upd_rev_cs cs ys \<noteq> []`
   from `n -as@[a]\<rightarrow>* n'` have "n -as\<rightarrow>* sourcenode a" and "valid_edge a"
@@ -3329,7 +3329,7 @@ proof -
       case True
       with `valid_path_rev_aux [a'] as'` `(_Entry_) -as'\<rightarrow>* sourcenode a'`
 	`valid_return_list [a'] (sourcenode a')`
-      obtain ax Qx fx where "valid_edge ax" and "kind ax = Qx\<^bsub>get_proc (_Entry_)\<^esub>\<hookleftarrow>fx"
+      obtain ax Qx fx where "valid_edge ax" and "kind ax = Qx\<hookleftarrow>\<^bsub>get_proc (_Entry_)\<^esub>fx"
 	by(fastsimp dest!:vpra_no_slpra)
       hence False by(fastsimp intro:Main_no_return_source simp:get_proc_Entry)
       thus ?thesis by simp

@@ -128,7 +128,7 @@ datatype ('var,'val,'ret,'pname) edge_kind =
   | CallEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'ret" "'pname"  
              "(('var \<rightharpoonup> 'val) \<rightharpoonup> 'val) list"                       ("_:_\<hookrightarrow>\<^bsub>_\<^esub>_" 70)
   | ReturnEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'pname" 
-               "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)" ("_\<^bsub>_\<^esub>\<hookleftarrow>_" 70)
+               "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)" ("_\<hookleftarrow>\<^bsub>_\<^esub>_" 70)
 
 
 definition intra_kind :: "('var,'val,'ret,'pname) edge_kind \<Rightarrow> bool"
@@ -137,7 +137,7 @@ where "intra_kind et \<equiv> (\<exists>f. et = \<Up>f) \<or> (\<exists>Q. et = 
 
 lemma edge_kind_cases [case_names Intra Call Return]:
   "\<lbrakk>intra_kind et \<Longrightarrow> P; \<And>Q r p fs. et = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Longrightarrow> P;
-    \<And>Q p f. et = Q\<^bsub>p\<^esub>\<hookleftarrow>f \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+    \<And>Q p f. et = Q\<hookleftarrow>\<^bsub>p\<^esub>f \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
 by(cases et,auto simp:intra_kind_def)
 
 

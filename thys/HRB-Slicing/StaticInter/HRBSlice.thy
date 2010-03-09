@@ -288,7 +288,7 @@ qed
 
 
 lemma call_return_nodes_in_slice:
-  assumes "valid_edge a" and "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+  assumes "valid_edge a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
   and "valid_edge a'" and "kind a' = Q':r'\<hookrightarrow>\<^bsub>p\<^esub>fs'" and "a \<in> get_return_edges a'"
   and "CFG_node (targetnode a) \<in> HRB_slice n\<^isub>c" and "parent_node n\<^isub>c \<noteq> sourcenode a"
   shows "CFG_node (sourcenode a) \<in> HRB_slice n\<^isub>c"
@@ -309,7 +309,7 @@ proof -
   thus "CFG_node (sourcenode a) \<in> HRB_slice n\<^isub>c"
   proof(induct "CFG_node (targetnode a)" rule:combine_SDG_slices.induct)
     case combSlice_refl
-    from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+    from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
     have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (targetnode a)"
       by(fastsimp intro:sum_SDG_return_edge)
     with `valid_edge a` 
@@ -320,7 +320,7 @@ proof -
     show ?case by(fastsimp intro:combSlice_Return_parent_node simp:HRB_slice_def)
   next
     case (combSlice_Return_parent_node n' n'' p')
-    from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+    from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
     have "CFG_node (sourcenode a) s-p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (targetnode a)"
       by(fastsimp intro:sum_SDG_return_edge)
     with `CFG_node (targetnode a) \<in> sum_SDG_slice2 n'`

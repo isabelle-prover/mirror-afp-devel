@@ -21,7 +21,7 @@ definition valid_edge :: "wf_prog \<Rightarrow> edge \<Rightarrow> bool"
 
 definition get_return_edges :: "wf_prog \<Rightarrow> edge \<Rightarrow> edge set"
   where "get_return_edges wfp a \<equiv> 
-  case kind a of Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Rightarrow> {a'. valid_edge wfp a' \<and> (\<exists>Q' f'. kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f') \<and>
+  case kind a of Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs \<Rightarrow> {a'. valid_edge wfp a' \<and> (\<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f') \<and>
                                  targetnode a' = r}
                      | _ \<Rightarrow> {}"
 
@@ -33,7 +33,7 @@ lemma get_return_edges_non_call_empty:
 
 lemma call_has_return_edge:
   assumes "valid_edge wfp a" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
-  obtains a' where "valid_edge wfp a'" and "\<exists>Q' f'. kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+  obtains a' where "valid_edge wfp a'" and "\<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
   and "targetnode a' = r"
 proof(atomize_elim)
   from `valid_edge wfp a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
@@ -41,21 +41,21 @@ proof(atomize_elim)
     and "prog,procs \<turnstile> sourcenode a -Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rightarrow> targetnode a"
     by(fastsimp simp:valid_edge_def)
   from `prog,procs \<turnstile> sourcenode a -Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rightarrow> targetnode a`
-  show "\<exists>a'. valid_edge wfp a' \<and> (\<exists>Q' f'. kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f') \<and> targetnode a' = r"
+  show "\<exists>a'. valid_edge wfp a' \<and> (\<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f') \<and> targetnode a' = r"
   proof(induct "sourcenode a" "Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" "targetnode a" rule:PCFG.induct)
     case (MainCall l es rets n' ins outs c)
     from `prog \<turnstile> Label l -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` obtain l' 
       where [simp]:"n' = Label l'"
       by(fastsimp dest:Proc_CFG_Call_Labels)
     from MainCall
-    have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<^bsub>p\<^esub>\<hookleftarrow>
+    have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<hookleftarrow>\<^bsub>p\<^esub>
       (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label l')"
       by(fastsimp intro:MainReturn)
     with `Rep_wf_prog wfp = (prog,procs)` `(Main, n') = r` show ?thesis
       by(fastsimp simp:valid_edge_def)
   next
     case (ProcCall i px ins outs c l es' rets' l' ins' outs' c' ps es rets)
-    from ProcCall have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (px,Label l'))\<^bsub>p\<^esub>\<hookleftarrow>
+    from ProcCall have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (px,Label l'))\<hookleftarrow>\<^bsub>p\<^esub>
       (\<lambda>cf cf'. cf'(rets' [:=] map cf outs'))\<rightarrow> (px,Label l')"
       by(fastsimp intro:ProcReturn)
     with `Rep_wf_prog wfp = (prog,procs)` `(px, Label l') = r` show ?thesis
@@ -71,7 +71,7 @@ by -(erule call_has_return_edge,(fastsimp simp:get_return_edges_def)+)
 
 lemma only_return_edges_in_get_return_edges:
   "\<lbrakk>valid_edge wfp a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; a' \<in> get_return_edges wfp a\<rbrakk>
-  \<Longrightarrow> \<exists>Q' f'. kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+  \<Longrightarrow> \<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
 by(cases "kind a",auto simp:get_return_edges_def)
 
 
@@ -116,7 +116,7 @@ proof -
     from this wf show False by(auto elim:PCFG.cases simp:valid_edge_def)
   next
     fix a Q' f'
-    assume "valid_edge wfp a" and "kind a = Q'\<^bsub>Main\<^esub>\<hookleftarrow>f'"
+    assume "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>Main\<^esub>f'"
     from this wf show False by(auto elim:PCFG.cases simp:valid_edge_def)
   next
     fix a Q r p fs
@@ -139,7 +139,7 @@ proof -
     thus "get_proc (targetnode a) = p" by(auto elim:PCFG.cases simp:valid_edge_def) 
   next
     fix a Q' p f'
-    assume "valid_edge wfp a" and "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+    assume "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     thus "get_proc (sourcenode a) = p" by(auto elim:PCFG.cases simp:valid_edge_def) 
   next
     fix a Q r p fs
@@ -168,26 +168,26 @@ proof -
     qed auto
   next
     fix a Q' p f'
-    assume "valid_edge wfp a" and "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+    assume "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     hence "prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
       by(simp add:valid_edge_def)
-    from this `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
+    from this `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
     show "\<forall>a'. valid_edge wfp a' \<and> sourcenode a' = sourcenode a \<longrightarrow>
-      (\<exists>Qx fx. kind a' = Qx\<^bsub>p\<^esub>\<hookleftarrow>fx)"
+      (\<exists>Qx fx. kind a' = Qx\<hookleftarrow>\<^bsub>p\<^esub>fx)"
     proof(induct n\<equiv>"sourcenode a" et\<equiv>"kind a" n'\<equiv>"targetnode a" rule:PCFG.induct)
       case (MainReturn l p' es rets l' ins outs c)
-      from `\<lambda>cf. snd cf = (Main, Label l')\<^bsub>p'\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(rets [:=] map cf outs) =
-	kind a` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have [simp]:"p' = p" by simp
+      from `\<lambda>cf. snd cf = (Main, Label l')\<hookleftarrow>\<^bsub>p'\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outs) =
+	kind a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have [simp]:"p' = p" by simp
       { fix a' assume "valid_edge wfp a'" and "sourcenode a' = (p', Exit)"
-	hence "\<exists>Qx fx. kind a' = Qx\<^bsub>p\<^esub>\<hookleftarrow>fx" 
+	hence "\<exists>Qx fx. kind a' = Qx\<hookleftarrow>\<^bsub>p\<^esub>fx" 
 	  by(auto elim:PCFG.cases simp:valid_edge_def) }
       with `(p', Exit) = sourcenode a` show ?case by simp
     next
       case (ProcReturn i px ins outs c l p' es rets l' ins' outs' c')
-      from `\<lambda>cf. snd cf = (px, Label l')\<^bsub>p'\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(rets [:=] map cf outs') =
-	kind a` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have [simp]:"p' = p" by simp
+      from `\<lambda>cf. snd cf = (px, Label l')\<hookleftarrow>\<^bsub>p'\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outs') =
+	kind a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have [simp]:"p' = p" by simp
       { fix a' assume "valid_edge wfp a'" and "sourcenode a' = (p', Exit)"
-	hence "\<exists>Qx fx. kind a' = Qx\<^bsub>p\<^esub>\<hookleftarrow>fx" 
+	hence "\<exists>Qx fx. kind a' = Qx\<hookleftarrow>\<^bsub>p\<^esub>fx" 
 	  by(auto elim:PCFG.cases simp:valid_edge_def) }
       with `(p', Exit) = sourcenode a` show ?case by simp
     qed auto
@@ -209,29 +209,29 @@ proof -
     fix a Q r p fs a'
     assume "valid_edge wfp a" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
       and "a' \<in> get_return_edges wfp a"
-    thus "\<exists>Q' f'. kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" by(rule only_return_edges_in_get_return_edges)
+    thus "\<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by(rule only_return_edges_in_get_return_edges)
   next
     fix a Q' p f'
-    assume "valid_edge wfp a" and "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+    assume "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     hence "prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
       by(simp add:valid_edge_def)
-    from this `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
+    from this `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
     show "\<exists>!a'. valid_edge wfp a' \<and> (\<exists>Q r fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and>
       a \<in> get_return_edges wfp a'"
     proof(induct n\<equiv>"sourcenode a" et\<equiv>"kind a" n'\<equiv>"targetnode a" rule:PCFG.induct)
       case (MainReturn l px es rets l' ins outs c)
-      from `\<lambda>cf. snd cf = (Main, Label l')\<^bsub>px\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(rets [:=] map cf outs) =
-	kind a` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have [simp]:"px = p" by simp
+      from `\<lambda>cf. snd cf = (Main, Label l')\<hookleftarrow>\<^bsub>px\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outs) =
+	kind a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have [simp]:"px = p" by simp
       from `prog \<turnstile> Label l -CEdge (px, es, rets)\<rightarrow>\<^isub>p Label l'` have "l' = Suc l"
 	by(fastsimp dest:Proc_CFG_Call_Labels)
       from `prog \<turnstile> Label l -CEdge (px, es, rets)\<rightarrow>\<^isub>p Label l'`
 	`(px, ins, outs, c) \<in> set procs`	 `distinct rets` `length rets = length outs`
 	`length es = length ins`
-      have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<^bsub>p\<^esub>\<hookleftarrow>
+      have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<hookleftarrow>\<^bsub>p\<^esub>
 	(\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label l')"
 	by(fastsimp intro:PCFG.MainReturn)
       with `(px, Exit) = sourcenode a` `(Main, Label l') = targetnode a`
-	`\<lambda>cf. snd cf = (Main, Label l')\<^bsub>px\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(rets [:=] map cf outs) =
+	`\<lambda>cf. snd cf = (Main, Label l')\<hookleftarrow>\<^bsub>px\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outs) =
 	kind a`
       have edge:"prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a" by simp
       from `prog \<turnstile> Label l -CEdge (px, es, rets)\<rightarrow>\<^isub>p Label l'`
@@ -243,7 +243,7 @@ proof -
       show ?case
       proof(rule ex_ex1I)
 	from edge edge' `(Main, Label l') = targetnode a` 
-	  `l' = Suc l` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
+	  `l' = Suc l` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
 	show "\<exists>a'. valid_edge wfp a' \<and>
           (\<exists>Q r fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and> a \<in> get_return_edges wfp a'"
 	  by(fastsimp simp:valid_edge_def get_return_edges_def)
@@ -274,19 +274,19 @@ proof -
       qed
     next
       case (ProcReturn i p' ins outs c l px esx retsx l' ins' outs' c' ps es rets)
-      from `\<lambda>cf. snd cf = (p', Label l')\<^bsub>px\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(retsx [:=] map cf outs') =
-	kind a` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have [simp]:"px = p" by simp
+      from `\<lambda>cf. snd cf = (p', Label l')\<hookleftarrow>\<^bsub>px\<^esub>\<lambda>cf cf'. cf'(retsx [:=] map cf outs') =
+	kind a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have [simp]:"px = p" by simp
       from `c \<turnstile> Label l -CEdge (px, esx, retsx)\<rightarrow>\<^isub>p Label l'` have "l' = Suc l"
 	by(fastsimp dest:Proc_CFG_Call_Labels)
       from `i < length procs` `procs ! i = (p',ins,outs,c)`
 	`c \<turnstile> Label l -CEdge (px, esx, retsx)\<rightarrow>\<^isub>p Label l'` 
 	`(px, ins', outs', c') \<in> set procs` `containsCall procs prog ps p' es rets`
 	`distinct retsx` `length retsx = length outs'` `length esx = length ins'`
-      have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (p',Label l'))\<^bsub>p\<^esub>\<hookleftarrow>
+      have "prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (p',Label l'))\<hookleftarrow>\<^bsub>p\<^esub>
 	(\<lambda>cf cf'. cf'(retsx [:=] map cf outs'))\<rightarrow> (p',Label l')"
 	by(fastsimp intro:PCFG.ProcReturn)
       with `(px, Exit) = sourcenode a` `(p', Label l') = targetnode a`
-	`\<lambda>cf. snd cf = (p', Label l')\<^bsub>px\<^esub>\<hookleftarrow>\<lambda>cf cf'. cf'(retsx [:=] map cf outs') =
+	`\<lambda>cf. snd cf = (p', Label l')\<hookleftarrow>\<^bsub>px\<^esub>\<lambda>cf cf'. cf'(retsx [:=] map cf outs') =
 	kind a` have edge:"prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a" by simp
       from `i < length procs` `procs ! i = (p',ins,outs,c)`
 	`c \<turnstile> Label l -CEdge (px, esx, retsx)\<rightarrow>\<^isub>p Label l'`
@@ -298,7 +298,7 @@ proof -
       show ?case
       proof(rule ex_ex1I)
 	from edge edge' `(p', Label l') = targetnode a` `l' = Suc l`
-	  `procs ! i = (p', ins, outs, c)` `i < length procs` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
+	  `procs ! i = (p', ins, outs, c)` `i < length procs` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
 	show "\<exists>a'. valid_edge wfp a' \<and>
           (\<exists>Q r fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and> a \<in> get_return_edges wfp a'"
 	  by(fastsimp simp:valid_edge_def get_return_edges_def)
@@ -337,7 +337,7 @@ proof -
       where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "valid_edge wfp a'"
       by(cases "kind a")(fastsimp simp:valid_edge_def get_return_edges_def)+
     from `valid_edge wfp a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `a' \<in> get_return_edges wfp a`
-    obtain Q' f' where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" 
+    obtain Q' f' where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" 
       by(fastsimp dest!:only_return_edges_in_get_return_edges)
     with `valid_edge wfp a'` have "sourcenode a' = (p,Exit)"
       by(auto elim:PCFG.cases simp:valid_edge_def)
@@ -379,7 +379,7 @@ proof -
       where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "valid_edge wfp a'"
       by(cases "kind a")(fastsimp simp:valid_edge_def get_return_edges_def)+
     from `valid_edge wfp a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `a' \<in> get_return_edges wfp a`
-    obtain Q' f' where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" and "targetnode a' = r"
+    obtain Q' f' where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" and "targetnode a' = r"
       by(auto simp:get_return_edges_def)
     from `valid_edge wfp a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
     have "prog,procs \<turnstile> sourcenode a -Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rightarrow> targetnode a"
@@ -501,10 +501,10 @@ proof -
     qed auto
   next
     fix a Q' p f'
-    assume "valid_edge wfp a" and "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+    assume "valid_edge wfp a" and "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     hence "prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
       by(simp add:valid_edge_def)
-    from this `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
+    from this `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
     show "\<exists>!a'. valid_edge wfp a' \<and>
       targetnode a' = targetnode a \<and> intra_kind (kind a')"
     proof(induct n\<equiv>"sourcenode a" et\<equiv>"kind a" n'\<equiv>"targetnode a" rule:PCFG.induct)
@@ -635,7 +635,7 @@ proof -
     show "get_proc (Main, Exit) = Main" by simp
   next
     fix a Q p f
-    assume "valid_edge wfp a" and "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+    assume "valid_edge wfp a" and "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       and "targetnode a = (Main, Exit)"
     thus False by(auto elim:PCFG.cases simp:valid_edge_def)
   next
