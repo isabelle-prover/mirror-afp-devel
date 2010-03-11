@@ -125,7 +125,7 @@ lemma sum_abs_triangle_ineq:
 "finite S \<Longrightarrow>
   \<bar>\<Sum>l\<in>S. (f::'a \<Rightarrow> 'b::linordered_idom) l\<bar> <= (\<Sum>l\<in>S. \<bar>f l\<bar>)"
   (is "... \<Longrightarrow> ?P S")
-  by (rule Finite_Set.setsum_abs)
+  by (rule setsum_abs)
 
 lemma sum_le:
   "\<lbrakk>finite S ; \<forall> r\<in>S. f r <= b \<rbrakk>
