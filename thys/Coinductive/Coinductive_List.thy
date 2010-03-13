@@ -53,12 +53,12 @@ proof
   qed
 qed
 
-consts
+primrec
   LList_corec_aux :: "nat \<Rightarrow> ('a \<Rightarrow> ('b Datatype.item \<times> 'a) option) \<Rightarrow>
     'a \<Rightarrow> 'b Datatype.item"
-primrec
+where
   "LList_corec_aux 0 f x = {}"
-  "LList_corec_aux (Suc k) f x =
+| "LList_corec_aux (Suc k) f x =
     (case f x of
       None \<Rightarrow> NIL
     | Some (z, w) \<Rightarrow> CONS z (LList_corec_aux k f w))"
