@@ -15,6 +15,21 @@ h1 {
  border-style: none none none none;
 }
 
+h3 {
+ font: normal normal bold larger sans-serif;
+ padding-top: 1ex;
+ margin-bottom: 1ex;
+ margin-left: 2ex;
+ border-style: none none none none;
+}
+
+h4 {
+ font: normal normal bold normal sans-serif;
+ margin-bottom: 0.5ex;
+ border-style: none none none none;
+}
+
+
 h1 font.first {
  font: normal normal bold x-large sans-serif;
 }
@@ -201,6 +216,10 @@ div.date {
 
 div.cite { 
   font-size: small;
+}
+
+div.list {
+  margin: 0ex 0ex 0ex 4ex;
 }
 
 pre.bibtex { 
