@@ -187,17 +187,6 @@ lemma boxI: "Box\<cdot>(up\<cdot>x) = box\<cdot>x" unfolding box_def by simp
 lemma unbox_box[simp]: "unbox\<cdot>(box\<cdot>x) = up\<cdot>x" unfolding box_def by simp
 lemma unbox_Box[simp]: "x \<noteq> \<bottom> \<Longrightarrow> unbox\<cdot>(Box\<cdot>x) = x" by simp
 
-text{* The built-in case distinctions can be improved. Do that
-here. Firstly, let's stop talking about @{term "Ibottom"} and use @{term
-"\<bottom>"} uniformly. *}
-
-lemma lift_casedist[case_names bottom up, cases type: u]:
-  assumes xbot: "x = \<bottom> \<Longrightarrow> P"
-      and xup: "\<And>u. x = up\<cdot>u \<Longrightarrow> P"
-  shows "P"
-  using xbot xup
-  by (cases x, simp_all add: up_def cont_Iup UU_I[OF minimal_up])
-
 text{* If we suceed in @{term "box"}ing something, then clearly that
 something was not @{term "\<bottom>"}. *}
 
@@ -363,7 +352,7 @@ proof -
     unfolding box_def
     apply (cases "n" rule: Box.exhaust)
     apply simp
-    apply (case_tac "u" rule: lift_casedist)
+    apply (case_tac "u")
     apply simp_all
     done
   then obtain u where "nu = Discr u"
@@ -387,7 +376,7 @@ proof(cases x rule: Box.exhaust)
   case bottom with xbot show ?thesis by simp
 next
   case (Box u) hence xu: "x = Box\<cdot>u" and ubottom: "u \<noteq> \<bottom>" .
-  from ubottom obtain n where ndn: "u = up\<cdot>(Discr n)" apply (cases u) apply simp_all apply (case_tac ua) apply simp done
+  from ubottom obtain n where ndn: "u = up\<cdot>(Discr n)" apply (cases u) apply simp_all apply (case_tac x) apply simp done
   show ?thesis
   proof(cases n)
     case 0 with ndn xu xzero show ?thesis unfolding zero_Nat_def by (simp add: boxI zero_discr_def)
