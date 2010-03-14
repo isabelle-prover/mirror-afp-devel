@@ -62,14 +62,16 @@ where
 
 text{* Note ``body'' is the generator of @{term "lrev_def"}. *}
 
-fixpat lrev_strict[simp]: "lrev\<cdot>\<bottom>"
+lemma lrev_strict[simp]: "lrev\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 fixrec lrev_body :: "('a llist \<rightarrow> 'a llist) \<rightarrow> 'a llist \<rightarrow> 'a llist"
 where
   "lrev_body\<cdot>r\<cdot>lnil = lnil"
 | "lrev_body\<cdot>r\<cdot>(x :@ xs) = r\<cdot>xs :++ (x :@ lnil)"
 
-fixpat lrev_body_strict[simp]: "lrev_body\<cdot>r\<cdot>\<bottom>"
+lemma lrev_body_strict[simp]: "lrev_body\<cdot>r\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 text{* This is trivial but syntactically a bit touchy. Would be nicer
 to define @{term "lrev_body"} as the generator of the fixpoint
@@ -147,7 +149,8 @@ where
   "lrev_body2\<cdot>r\<cdot>lnil = ID"
 | "lrev_body2\<cdot>r\<cdot>(x :@ xs) = list2H\<cdot>(wrapH\<cdot>r\<cdot>xs) oo list2H\<cdot>(x :@ lnil)"
 
-fixpat lrev_body2_strict[simp]: "lrev_body2\<cdot>r\<cdot>\<bottom>"
+lemma lrev_body2_strict[simp]: "lrev_body2\<cdot>r\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 definition
   lrev_work2 :: "'a llist \<rightarrow> 'a H" where
@@ -173,7 +176,8 @@ where
   "lrev_body3\<cdot>r\<cdot>lnil = ID"
 | "lrev_body3\<cdot>r\<cdot>(x :@ xs) = r\<cdot>xs oo list2H\<cdot>(x :@ lnil)"
 
-fixpat lrev_body3_strict[simp]: "lrev_body3\<cdot>r\<cdot>\<bottom>"
+lemma lrev_body3_strict[simp]: "lrev_body3\<cdot>r\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 definition
   lrev_work3 :: "'a llist \<rightarrow> 'a H" where
@@ -203,7 +207,7 @@ lemma "lrev_work3 \<sqsubseteq> lrev_work2"
 proof(rule fix_least)
   {
     fix xs have "lrev_body3\<cdot>lrev_work2\<cdot>xs = lrev_work2\<cdot>xs"
-    proof(cases xs rule: LList.casedist)
+    proof(cases xs rule: llist.casedist)
       case bottom thus ?thesis by simp
     next
       case lnil thus ?thesis
@@ -300,7 +304,7 @@ definition
 lemma lrev_body_final_lrev_body3_eq': "lrev_body_final\<cdot>r\<cdot>xs = lrev_body3\<cdot>r\<cdot>xs"
   apply (subst lrev_body_final.unfold)
   apply (subst lrev_body3.unfold)
-  apply (cases xs rule: casedist)
+  apply (cases xs)
   apply (simp_all add: list2H_def ID_def ext_cfun)
   done
 

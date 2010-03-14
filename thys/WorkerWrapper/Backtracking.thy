@@ -31,7 +31,8 @@ where
 | "eval_body\<cdot>r\<cdot>(Disj\<cdot>e1\<cdot>e2) = r\<cdot>e1 :++ r\<cdot>e2"
 | "eval_body\<cdot>r\<cdot>Fail = lnil"
 
-fixpat eval_body_strict_e[simp]: "eval_body\<cdot>r\<cdot>\<bottom>"
+lemma eval_body_strict_e[simp]: "eval_body\<cdot>r\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 text{* The observation type is @{typ "Nat llist"}, which is a little
 less obvious than Gill/Hutton's example. Also note @{text
@@ -52,7 +53,8 @@ where
   "blah\<cdot>lnil\<cdot>s\<cdot>f = f"
 | "blah\<cdot>(x :@ xs)\<cdot>s\<cdot>f = s\<cdot>x\<cdot>(blah\<cdot>xs\<cdot>s\<cdot>f)"
 
-fixpat blah_strict[simp]: "blah\<cdot>\<bottom>"
+lemma blah_strict[simp]: "blah\<cdot>\<bottom> = \<bottom>"
+by (fixrec_simp, simp)
 
 definition unwrap :: "(Expr \<rightarrow> Nat llist) \<rightarrow> (Expr \<rightarrow> K)"
 where
@@ -97,10 +99,8 @@ where
 | "eval_body'\<cdot>r\<cdot>(Disj\<cdot>e1\<cdot>e2)\<cdot>s\<cdot>f = r\<cdot>e1\<cdot>s\<cdot>(r\<cdot>e2\<cdot>s\<cdot>f)"
 | "eval_body'\<cdot>r\<cdot>Fail\<cdot>s\<cdot>f = f"
 
-fixpat eval_body'_strict_e[simp]: "eval_body'\<cdot>r\<cdot>\<bottom>"
-
 lemma eval_body'_strict[simp]: "eval_body'\<cdot>r\<cdot>\<bottom> = \<bottom>"
-  by (rule ext_cfun)+ simp
+  by (fixrec_simp, simp)
 
 lemma FIXME: "blah\<cdot>(xs :++ ys)\<cdot>s\<cdot>f = blah\<cdot>xs\<cdot>s\<cdot>(blah\<cdot>ys\<cdot>s\<cdot>f)"
   apply (induct xs)

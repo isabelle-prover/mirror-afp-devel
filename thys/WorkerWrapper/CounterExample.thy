@@ -27,7 +27,8 @@ fixrec wrap :: "B \<rightarrow> A" where
   "wrap\<cdot>(B\<cdot>a) = a"
 
 (*<*)
-fixpat wrap_strict[simp]: "wrap\<cdot>\<bottom>"
+lemma wrap_strict[simp]: "wrap\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 (*>*)
 
 fixrec unwrap :: "A \<rightarrow> B" where
@@ -50,7 +51,8 @@ fixrec body' :: "B \<rightarrow> B" where
   "body'\<cdot>(B\<cdot>a) = B\<cdot>A"
 
 (*<*)
-fixpat body'_strict[simp]: "body'\<cdot>\<bottom>"
+lemma body'_strict[simp]: "body'\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 (*>*)
 
 lemma "unwrap oo body oo wrap = body' oo unwrap oo wrap"

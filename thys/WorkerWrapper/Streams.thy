@@ -38,7 +38,8 @@ where
   "smap\<cdot>f\<cdot>(x && xs) = f\<cdot>x && smap\<cdot>f\<cdot>xs"
 
 (*<*)
-fixpat smap_strict[simp]: "smap\<cdot>f\<cdot>\<bottom>"
+lemma smap_strict[simp]: "smap\<cdot>f\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 (*>*)
 
 lemma smap_smap: "smap\<cdot>f\<cdot>(smap\<cdot>g\<cdot>xs) = smap\<cdot>(f oo g)\<cdot>xs"
@@ -53,7 +54,8 @@ abbreviation
   "s !! i \<equiv> i_th\<cdot>s\<cdot>i"
 
 (*<*)
-fixpat i_th_strict1[simp]: "\<bottom> !! i"
+lemma i_th_strict1[simp]: "\<bottom> !! i = \<bottom>"
+by (fixrec_simp, simp)
 
 lemma i_th_strict2[simp]: "s !! \<bottom> = \<bottom>" by (subst i_th.unfold, cases s, simp_all)
 lemma i_th_0[simp]: "(s !! 0) = sthead\<cdot>s" by (subst i_th.unfold, cases s, simp_all)

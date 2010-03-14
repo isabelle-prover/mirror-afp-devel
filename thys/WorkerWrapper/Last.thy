@@ -14,7 +14,8 @@ fixrec llast :: "'a llist \<rightarrow> 'a"
 where
   "llast\<cdot>(x :@ yys) = (case yys of lnil \<Rightarrow> x | y :@ ys \<Rightarrow> llast\<cdot>yys)"
 
-fixpat llast_strict[simp]: "llast\<cdot>\<bottom>"
+lemma llast_strict[simp]: "llast\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 fixrec llast_body :: "('a llist \<rightarrow> 'a) \<rightarrow> 'a llist \<rightarrow> 'a"
 where

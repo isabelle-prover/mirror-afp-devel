@@ -21,7 +21,8 @@ where
   "nub\<cdot>lnil = lnil"
 | "nub\<cdot>(x :@ xs) = x :@ nub\<cdot>(lfilter\<cdot>(neg oo (\<Lambda> y. x =\<^sub>B y))\<cdot>xs)"
 
-fixpat nub_strict[simp]: "nub\<cdot>\<bottom>"
+lemma nub_strict[simp]: "nub\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 fixrec nub_body :: "(Nat llist \<rightarrow> Nat llist) \<rightarrow> Nat llist \<rightarrow> Nat llist"
 where
