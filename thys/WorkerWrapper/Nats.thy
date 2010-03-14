@@ -205,7 +205,7 @@ lemma box_casedist[case_names bottom Box, cases type: Box]:
   assumes xbot: "x = \<bottom> \<Longrightarrow> P"
       and xbox: "\<And>u. x = box\<cdot>u \<Longrightarrow> P"
   shows "P"
-proof(cases x rule: Box.casedist)
+proof(cases x)
   case bottom with xbot show ?thesis by simp
 next
   case (Box u) with xbox show ?thesis
@@ -361,7 +361,7 @@ lemma Nat_case_add_1[simp]:
 proof -
   from ndef obtain nu where nu: "n = box\<cdot>nu"
     unfolding box_def
-    apply (cases "n" rule: Box.casedist)
+    apply (cases "n" rule: Box.exhaust)
     apply simp
     apply (case_tac "u" rule: lift_casedist)
     apply simp_all
@@ -383,7 +383,7 @@ lemma Nat_casedist[case_names bottom zero Suc]:
       and xzero: "x = 0 \<Longrightarrow> P"
       and xsuc: "\<And>n. x = n + 1 \<Longrightarrow> P"
   shows "P"
-proof(cases x rule: Box.casedist)
+proof(cases x rule: Box.exhaust)
   case bottom with xbot show ?thesis by simp
 next
   case (Box u) hence xu: "x = Box\<cdot>u" and ubottom: "u \<noteq> \<bottom>" .
@@ -402,7 +402,7 @@ lemma cont_Nat_case[simp]:
   "\<lbrakk>cont (\<lambda>x. f x); \<And>n. cont (\<lambda>x. g x\<cdot>n) \<rbrakk> \<Longrightarrow> cont (\<lambda>x. Nat_case\<cdot>(f x)\<cdot>(g x)\<cdot>n)"
   apply (cases n rule: Nat_casedist)
     apply simp_all
-  apply (case_tac na rule: Box.casedist)
+  apply (case_tac na rule: Box.exhaust)
    apply simp_all
   done
 

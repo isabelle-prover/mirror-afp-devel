@@ -22,8 +22,7 @@ text{* The type of infinite streams. *}
 domain 'a Stream = stcons (lazy sthead :: "'a") (lazy sttail :: "'a Stream") (infixr "&&" 65)
 
 (*<*)
-declare Stream.casedist[case_names bottom stcons, cases type: Stream]
-declare Stream.ind[case_names adm bottom stcons, induct type: Stream]
+declare Stream.induct[case_names adm bottom stcons, induct type: Stream]
 
 lemma Stream_bisimI[intro]:
   "(\<And>xs ys. R xs ys
@@ -43,7 +42,7 @@ by fixrec_simp
 (*>*)
 
 lemma smap_smap: "smap\<cdot>f\<cdot>(smap\<cdot>g\<cdot>xs) = smap\<cdot>(f oo g)\<cdot>xs"
-(*<*) by (induct xs rule: Stream.ind, simp_all) (*>*)
+(*<*) by (induct xs, simp_all) (*>*)
 
 fixrec i_th :: "'a Stream \<rightarrow> Nat \<rightarrow> 'a"
 where
@@ -96,7 +95,7 @@ constructor is manifest. *}
 lemma unwrapS_unwrapS'_eq: "unwrapS = unwrapS'" (is "?lhs = ?rhs")
 proof(rule ext_cfun)
   fix f show "?lhs\<cdot>f = ?rhs\<cdot>f"
-  proof(coinduct rule: Stream.coind)
+  proof(coinduct rule: Stream.coinduct)
     let ?R = "\<lambda>s s'. (\<exists>f. s = f\<cdot>0 && unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))
                         \<and> s' = f\<cdot>0 && smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats)"
     show "Stream_bisim ?R"

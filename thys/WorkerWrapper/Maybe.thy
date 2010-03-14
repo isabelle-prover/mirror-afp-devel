@@ -41,10 +41,10 @@ lemma mbind_strict1[simp]: "\<bottom> >>=\<^sub>M g = \<bottom>" by (simp add: m
 text{* The standard monad laws. *}
 
 lemma leftID[simp]: "Just\<cdot>a >>=\<^sub>M f = f\<cdot>a" by (simp add: mbind_def)
-lemma rightID[simp]: "m >>=\<^sub>M Just = m" by (cases m rule: Maybe.casedist, simp_all add: mbind_def)
+lemma rightID[simp]: "m >>=\<^sub>M Just = m" by (cases m, simp_all add: mbind_def)
 
 lemma assoc[simp]: "(m >>=\<^sub>M f) >>=\<^sub>M g = m >>=\<^sub>M (\<Lambda> x. f\<cdot>x >>=\<^sub>M g)"
-  by (cases m rule: Maybe.casedist, simp_all add: mbind_def)
+  by (cases m, simp_all add: mbind_def)
 
 text{* Reduction for the Maybe monad. *}
 

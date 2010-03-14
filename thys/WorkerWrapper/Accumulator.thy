@@ -134,7 +134,7 @@ lemma lrev_body_lrev_body1_eq: "lrev_body1 = unwrapH oo lrev_body oo wrapH"
   apply (rule ext_cfun)+
   apply (subst lrev_body.unfold)
   apply (subst lrev_body1.unfold)
-  apply (case_tac xa rule: llist.casedist)
+  apply (case_tac xa)
   apply (simp_all add: list2H_def wrapH_def unwrapH_def)
   done
 
@@ -207,7 +207,7 @@ lemma "lrev_work3 \<sqsubseteq> lrev_work2"
 proof(rule fix_least)
   {
     fix xs have "lrev_body3\<cdot>lrev_work2\<cdot>xs = lrev_work2\<cdot>xs"
-    proof(cases xs rule: llist.casedist)
+    proof(cases xs)
       case bottom thus ?thesis by simp
     next
       case lnil thus ?thesis
@@ -242,7 +242,7 @@ lemma lrev_work3_lrev_work2_eq: "lrev_work3 = lrev_work2" (is "?lhs = ?rhs")
 proof(rule ext_cfun)
   fix x
   show "?lhs\<cdot>x = ?rhs\<cdot>x"
-  proof(induct x rule: llist.ind)
+  proof(induct x)
     show "lrev_work3\<cdot>\<bottom> = lrev_work2\<cdot>\<bottom>"
       apply (unfold lrev_work3_def lrev_work2_def)
       apply (subst fix_eq[where F="lrev_body2"])
@@ -271,7 +271,7 @@ text{* Use the combined worker/wrapper-fusion rule. Note we get a weaker lemma. 
 lemma lrev3_2_syntactic: "lrev_body3 oo (unwrapH oo wrapH) = lrev_body2"
   apply (subst lrev_body2.unfold, subst lrev_body3.unfold)
   apply (rule ext_cfun)+
-  apply (case_tac xa rule: llist.casedist)
+  apply (case_tac xa)
     apply (simp_all add: unwrapH_def)
   done
 

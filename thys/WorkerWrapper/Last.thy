@@ -36,7 +36,7 @@ lemma unwrap_strict[simp]: "unwrap\<cdot>\<bottom> = \<bottom>"
 lemma wrap_unwrap_ID: "wrap oo unwrap oo llast_body = llast_body"
   unfolding llast_body_def wrap_def unwrap_def
   apply (rule ext_cfun)+
-  apply (case_tac xa rule: llist.casedist)
+  apply (case_tac xa)
   apply (simp_all add: fix_const)
   done
 
@@ -49,7 +49,7 @@ definition llast' :: "'a llist \<rightarrow> 'a" where
 lemma llast_worker_llast_body: "llast_worker = unwrap oo llast_body oo wrap"
   unfolding llast_worker_def llast_body_def wrap_def unwrap_def
   apply (rule ext_cfun)+
-  apply (case_tac xb rule: llist.casedist)
+  apply (case_tac xb)
   apply (simp_all add: fix_const)
   done
 

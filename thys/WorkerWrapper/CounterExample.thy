@@ -93,11 +93,6 @@ represented by @{term "JY"}.
 domain X = KX
 domain Y = KY | JY
 
-(*<*)
-declare X.casedist[cases type: X]
-declare Y.casedist[cases type: Y]
-(*>*)
-
 text{* There isn't too much choice about how to embed @{typ "X"} into
 @{typ "Y"}, but establishing the worker/wrapper condition will require
 strictness. *}

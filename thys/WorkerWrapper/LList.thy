@@ -43,13 +43,13 @@ lemma lappend_strict[simp]: "lappend\<cdot>\<bottom> = \<bottom>"
   by (rule ext_cfun) (simp add: lappend_strict')
 
 lemma lappend_assoc: "(xs :++ ys) :++ zs = xs :++ (ys :++ zs)"
-  by (induct xs rule: llist.ind, simp_all)
+  by (induct xs, simp_all)
 
 lemma lappend_lnil_id_left[simp]: "lappend\<cdot>lnil = ID"
   by (rule ext_cfun) simp
 
 lemma lappend_lnil_id_right[simp]: "xs :++ lnil = xs"
-  by (induct xs rule: llist.ind) simp_all
+  by (induct xs) simp_all
 
 fixrec lconcat :: "'a llist llist \<rightarrow> 'a llist"
 where
@@ -76,17 +76,17 @@ lemma lfilter_strict[simp]: "lfilter\<cdot>p\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp
 
 lemma lfilter_const_true: "lfilter\<cdot>(\<Lambda> x. TT)\<cdot>xs = xs"
-  by (induct xs rule: llist.ind, simp_all)
+  by (induct xs, simp_all)
 
 lemma lfilter_lnil: "(lfilter\<cdot>p\<cdot>xs = lnil) = (lall\<cdot>(neg oo p)\<cdot>xs = TT)"
-proof(induct xs rule: llist.ind)
+proof(induct xs)
   fix a l assume indhyp: "(lfilter\<cdot>p\<cdot>l = lnil) = (lall\<cdot>(Tr.neg oo p)\<cdot>l = TT)"
   thus "(lfilter\<cdot>p\<cdot>(a :@ l) = lnil) = (lall\<cdot>(Tr.neg oo p)\<cdot>(a :@ l) = TT)"
     by (cases "p\<cdot>a" rule: trE, simp_all)
 qed simp_all
 
 lemma filter_filter: "lfilter\<cdot>p\<cdot>(lfilter\<cdot>q\<cdot>xs) = lfilter\<cdot>(\<Lambda> x. q\<cdot>x andalso p\<cdot>x)\<cdot>xs"
-proof(induct xs rule: llist.ind)
+proof(induct xs)
   fix a l assume "lfilter\<cdot>p\<cdot>(lfilter\<cdot>q\<cdot>l) = lfilter\<cdot>(\<Lambda>(x\<Colon>'a). q\<cdot>x andalso p\<cdot>x)\<cdot>l"
   thus "lfilter\<cdot>p\<cdot>(lfilter\<cdot>q\<cdot>(a :@ l)) = lfilter\<cdot>(\<Lambda>(x\<Colon>'a). q\<cdot>x andalso p\<cdot>x)\<cdot>(a :@ l)"
     by (cases "q\<cdot>a" rule: trE, simp_all)
@@ -101,7 +101,7 @@ lemma ldropWhile_strict[simp]: "ldropWhile\<cdot>p\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp
 
 lemma ldropWhile_lnil: "(ldropWhile\<cdot>p\<cdot>xs = lnil) = (lall\<cdot>p\<cdot>xs = TT)"
-proof(induct xs rule: llist.ind)
+proof(induct xs)
   fix a l assume "(ldropWhile\<cdot>p\<cdot>l = lnil) = (lall\<cdot>p\<cdot>l = TT)"
   thus "(ldropWhile\<cdot>p\<cdot>(a :@ l) = lnil) = (lall\<cdot>p\<cdot>(a :@ l) = TT)"
     by (cases "p\<cdot>a" rule: trE, simp_all)

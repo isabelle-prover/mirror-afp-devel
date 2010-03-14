@@ -70,8 +70,7 @@ lemma wrapC_unwrapC_id: "wrapC oo unwrapC = ID"
 proof(rule ext_cfun)+
   fix g e
   show "(wrapC oo unwrapC)\<cdot>g\<cdot>e = ID\<cdot>g\<cdot>e"
-    by (cases "g\<cdot>e" rule: Maybe.casedist,
-        simp_all add: wrapC_def unwrapC_def)
+    by (cases "g\<cdot>e", simp_all add: wrapC_def unwrapC_def)
 qed
 
 definition
@@ -111,16 +110,16 @@ simplifier's inability to cope with HOLCF's case distinctions. *}
 lemma eval_body'_eval_body_eq: "eval_body' = unwrapC oo eval_body oo wrapC"
   apply (rule ext_cfun)+
   apply (unfold unwrapC_def wrapC_def)
-  apply (case_tac xa rule: Expr.casedist)
+  apply (case_tac xa)
       apply simp_all
     apply (simp add: wrapC_def)
-    apply (case_tac "x\<cdot>Expr1\<cdot>Just\<cdot>Nothing" rule: Maybe.casedist)
+    apply (case_tac "x\<cdot>Expr1\<cdot>Just\<cdot>Nothing")
      apply simp_all
-    apply (case_tac "x\<cdot>Expr2\<cdot>Just\<cdot>Nothing" rule: Maybe.casedist)
+    apply (case_tac "x\<cdot>Expr2\<cdot>Just\<cdot>Nothing")
      apply simp_all
    apply (simp add: mfail_def)
   apply (simp add: mcatch_def wrapC_def)
-  apply (case_tac "x\<cdot>Expr1\<cdot>Just\<cdot>Nothing" rule: Maybe.casedist)
+  apply (case_tac "x\<cdot>Expr1\<cdot>Just\<cdot>Nothing")
    apply simp_all
   done
 
@@ -137,11 +136,11 @@ lemma eval_body_final_strictExpr[simp]: "eval_body_final\<cdot>r\<cdot>\<bottom>
 
 lemma eval_body'_eval_body_final_eq: "eval_body_final oo unwrapC oo wrapC = eval_body'"
   apply (rule ext_cfun)+
-  apply (case_tac xa rule: Expr.casedist)
+  apply (case_tac xa)
      apply (simp_all add: unwrapC_def)
-  apply (case_tac "wrapC\<cdot>x\<cdot>Expr1" rule: Maybe.casedist)
+  apply (case_tac "wrapC\<cdot>x\<cdot>Expr1")
     apply simp_all
-  apply (case_tac "wrapC\<cdot>x\<cdot>Expr2" rule: Maybe.casedist)
+  apply (case_tac "wrapC\<cdot>x\<cdot>Expr2")
     apply simp_all
   done
 
