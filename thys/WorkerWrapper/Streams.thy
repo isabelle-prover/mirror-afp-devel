@@ -55,9 +55,9 @@ abbreviation
 (*<*)
 fixpat i_th_strict1[simp]: "\<bottom> !! i"
 
-lemma i_th_strict2[simp]: "s !! \<bottom> = \<bottom>" by (subst i_th_unfold, cases s, simp_all)
-lemma i_th_0[simp]: "(s !! 0) = sthead\<cdot>s" by (subst i_th_unfold, cases s, simp_all)
-lemma i_th_suc[simp]: "i \<noteq> \<bottom> \<Longrightarrow> (x && xs) !! (i + 1) = xs !! i" by (subst i_th_unfold, simp)
+lemma i_th_strict2[simp]: "s !! \<bottom> = \<bottom>" by (subst i_th.unfold, cases s, simp_all)
+lemma i_th_0[simp]: "(s !! 0) = sthead\<cdot>s" by (subst i_th.unfold, cases s, simp_all)
+lemma i_th_suc[simp]: "i \<noteq> \<bottom> \<Longrightarrow> (x && xs) !! (i + 1) = xs !! i" by (subst i_th.unfold, simp)
 (*>*)
 
 text{* The infinite stream of natural numbers. *}
@@ -67,7 +67,7 @@ where
   "nats = 0 && smap\<cdot>(\<Lambda> x. 1 + x)\<cdot>nats"
 
 (*<*)
-declare nats_simps[simp del]
+declare nats.simps[simp del]
 (*>*)
 
 subsection{* The wrapper/unwrapper functions. *}
@@ -77,14 +77,14 @@ definition
   "unwrapS' \<equiv> \<Lambda> f . smap\<cdot>f\<cdot>nats"
 
 lemma unwrapS'_unfold: "unwrapS'\<cdot>f = f\<cdot>0 && smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats"
-(*<*)by (unfold unwrapS'_def, subst nats_unfold, simp add: smap_smap)(*>*)
+(*<*)by (unfold unwrapS'_def, subst nats.unfold, simp add: smap_smap)(*>*)
 
 fixrec unwrapS :: "(Nat \<rightarrow> 'a) \<rightarrow> 'a Stream"
 where
   "unwrapS\<cdot>f = f\<cdot>0 && unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))"
 
 (*<*)
-declare unwrapS_simps[simp del]
+declare unwrapS.simps[simp del]
 (*>*)
 
 text{* The two versions of @{term "unwrapS"} are equivalent. We could
@@ -105,7 +105,7 @@ proof(rule ext_cfun)
         by blast
       have "?R (unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))) (smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats)"
 	by ( rule exI[where x="f oo (\<Lambda> x. 1 + x)"]
-           , subst unwrapS_unfold, subst nats_unfold, simp add: smap_smap)
+           , subst unwrapS.unfold, subst nats.unfold, simp add: smap_smap)
       with fs fs'
       show "(s = \<bottom> \<and> s' = \<bottom>)
           \<or> (\<exists>h t t'.
@@ -115,7 +115,7 @@ proof(rule ext_cfun)
     qed
     show "?R (?lhs\<cdot>f) (?rhs\<cdot>f)"
     proof -
-      have lhs: "?lhs\<cdot>f = f\<cdot>0 && unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))" by (subst unwrapS_unfold, simp)
+      have lhs: "?lhs\<cdot>f = f\<cdot>0 && unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))" by (subst unwrapS.unfold, simp)
       have rhs: "?rhs\<cdot>f = f\<cdot>0 && smap\<cdot>(f oo (\<Lambda> x. 1 + x))\<cdot>nats" by (rule unwrapS'_unfold)
       from lhs rhs show ?thesis by best
     qed
@@ -140,11 +140,11 @@ using strictF
 proof(induct n arbitrary: f rule: Nat_induct)
   case bottom with strictF show ?case by simp
 next
-  case zero thus ?case by (subst unwrapS_unfold, simp)
+  case zero thus ?case by (subst unwrapS.unfold, simp)
 next
   case (Suc i f)
   have "unwrapS\<cdot>f !! (i + 1) = (f\<cdot>0 && unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x))) !! (i + 1)"
-    by (subst unwrapS_unfold, simp)
+    by (subst unwrapS.unfold, simp)
   also from Suc have "\<dots> = unwrapS\<cdot>(f oo (\<Lambda> x. 1 + x)) !! i" by simp
   also from Suc have "\<dots> = (f oo (\<Lambda> x. 1 + x))\<cdot>i" by simp
   also have "\<dots> = f\<cdot>(i + 1)" by (simp add: plus_commute)
@@ -203,7 +203,7 @@ where
   "fib_work_final = smap\<cdot>fib_f_final\<cdot>nats"
 | "fib_f_final = Nat_case\<cdot>1\<cdot>(Nat_case\<cdot>1\<cdot>(\<Lambda> n'. fib_work_final !! n' + fib_work_final !! (n' + 1)))"
 
-declare fib_f_final_simps[simp del] fib_work_final_simps[simp del]
+declare fib_f_final.simps[simp del] fib_work_final.simps[simp del]
 
 definition
   fib_final :: "Nat \<rightarrow> Nat" where

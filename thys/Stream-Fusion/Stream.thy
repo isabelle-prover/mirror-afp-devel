@@ -84,7 +84,7 @@ lemma unstream_stream [simp]:
   shows "unstream\<cdot>(stream\<cdot>xs) = xs"
 by (induct xs, simp_all add: unfold)
 
-declare stream_simps [simp del]
+declare stream.simps [simp del]
 
 
 subsection {* Bisimilarity relation on streams *}

@@ -146,7 +146,7 @@ lemma unfold_foldrS:
 proof (rule antisym_less)
   show "foldrS\<cdot>f\<cdot>z\<cdot>(Stream\<cdot>h\<cdot>s) \<sqsubseteq> foldrL\<cdot>f\<cdot>z\<cdot>(unfold\<cdot>h\<cdot>s)"
   using `s \<noteq> \<bottom>`
-  apply (induct arbitrary: s rule: foldrS_induct)
+  apply (induct arbitrary: s rule: foldrS.induct)
   apply (simp, simp, simp)
   apply (case_tac "h\<cdot>s", simp_all add: monofun_cfun unfold)
   done
@@ -195,14 +195,14 @@ lemma enumFromToStep_simps' [simp]:
   "\<not> x \<le> y \<Longrightarrow> enumFromToStep\<cdot>(up\<cdot>y)\<cdot>(up\<cdot>(up\<cdot>x)) = Done"
   by simp_all
 
-declare enumFromToStep_simps [simp del]
+declare enumFromToStep.simps [simp del]
 
 fixrec
   enumFromToS :: "int' \<rightarrow> int' \<rightarrow> (int', (int')\<^sub>\<bottom>) Stream"
 where
   "enumFromToS\<cdot>x\<cdot>y = Stream\<cdot>(enumFromToStep\<cdot>y)\<cdot>(up\<cdot>x)"
 
-declare enumFromToS_simps [simp del]
+declare enumFromToS.simps [simp del]
 
 lemma unfold_enumFromToStep:
   "unfold\<cdot>(enumFromToStep\<cdot>(up\<cdot>y))\<cdot>(up\<cdot>n) = enumFromToL\<cdot>n\<cdot>(up\<cdot>y)"
@@ -215,7 +215,7 @@ proof (rule antisym_less)
     done
 next
   show "enumFromToL\<cdot>n\<cdot>(up\<cdot>y) \<sqsubseteq> unfold\<cdot>(enumFromToStep\<cdot>(up\<cdot>y))\<cdot>(up\<cdot>n)"
-    apply (induct arbitrary: n rule: enumFromToL_induct)
+    apply (induct arbitrary: n rule: enumFromToL.induct)
     apply (simp, simp)
     apply (rename_tac e n)
     apply (case_tac n, simp)
@@ -225,14 +225,14 @@ qed
 
 lemma unstream_enumFromToS:
   "unstream\<cdot>(enumFromToS\<cdot>x\<cdot>y) = enumFromToL\<cdot>x\<cdot>y"
-apply (simp add: enumFromToS_simps)
+apply (simp add: enumFromToS.simps)
 apply (induct y, simp add: unfold)
 apply (induct x, simp add: unfold)
 apply (simp add: unfold_enumFromToStep)
 done
 
 lemma enumFromToS_defined: "enumFromToS\<cdot>x\<cdot>y \<noteq> \<bottom>"
-  by (simp add: enumFromToS_simps)
+  by (simp add: enumFromToS.simps)
 
 lemma enumFromToS_cong:
   "x = x' \<Longrightarrow> y = y' \<Longrightarrow> enumFromToS\<cdot>x\<cdot>y \<approx> enumFromToS\<cdot>x'\<cdot>y'"

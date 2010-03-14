@@ -48,10 +48,10 @@ where
 | "eval_body\<cdot>r\<cdot>(Catch\<cdot>x\<cdot>y) = mcatch\<cdot>(r\<cdot>x)\<cdot>(r\<cdot>y)"
 
 lemma eval_body_strictExpr[simp]: "eval_body\<cdot>r\<cdot>\<bottom> = \<bottom>"
-  by (subst eval_body_unfold, simp)
+  by (subst eval_body.unfold, simp)
 
 lemma eval_eval_body_eq: "eval = fix\<cdot>eval_body"
-  by (rule ext_cfun, subst eval_def, subst eval_body_unfold, simp)
+  by (rule ext_cfun, subst eval_def, subst eval_body.unfold, simp)
 
 subsection{* Worker/wrapper *}
 
@@ -99,7 +99,7 @@ where
                                      | Just\<cdot>n \<Rightarrow> s\<cdot>n)"
 
 lemma eval_body'_strictExpr[simp]: "eval_body'\<cdot>r\<cdot>\<bottom>\<cdot>s\<cdot>f = \<bottom>"
-  by (subst eval_body'_unfold, simp)
+  by (subst eval_body'.unfold, simp)
 
 definition
   eval_work' :: "Expr \<rightarrow> (Nat \<rightarrow> Nat Maybe) \<rightarrow> Nat Maybe \<rightarrow> Nat Maybe" where
@@ -133,7 +133,7 @@ where
 | "eval_body_final\<cdot>r\<cdot>(Catch\<cdot>x\<cdot>y)\<cdot>s\<cdot>f = r\<cdot>x\<cdot>s\<cdot>(r\<cdot>y\<cdot>s\<cdot>f)"
 
 lemma eval_body_final_strictExpr[simp]: "eval_body_final\<cdot>r\<cdot>\<bottom>\<cdot>s\<cdot>f = \<bottom>"
-  by (subst eval_body_final_unfold, simp)
+  by (subst eval_body_final.unfold, simp)
 
 lemma eval_body'_eval_body_final_eq: "eval_body_final oo unwrapC oo wrapC = eval_body'"
   apply (rule ext_cfun)+

@@ -21,7 +21,7 @@ where
   "llast_body\<cdot>f\<cdot>(x :@ yys) = (case yys of lnil \<Rightarrow> x | y :@ ys \<Rightarrow> f\<cdot>yys)"
 
 lemma llast_llast_body: "llast = fix\<cdot>llast_body"
-  by (rule ext_cfun, subst llast_def, subst llast_body_unfold, simp)
+  by (rule ext_cfun, subst llast_def, subst llast_body.unfold, simp)
 
 definition wrap :: "('a \<rightarrow> 'a llist \<rightarrow> 'a) \<rightarrow> ('a llist \<rightarrow> 'a)" where
   "wrap \<equiv> \<Lambda> f (x :@ xs). f\<cdot>x\<cdot>xs"

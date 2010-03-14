@@ -29,7 +29,7 @@ where
 | "nub_body\<cdot>f\<cdot>(x :@ xs) = x :@ f\<cdot>(lfilter\<cdot>(neg oo (\<Lambda> y. x =\<^sub>B y))\<cdot>xs)"
 
 lemma nub_nub_body_eq: "nub = fix\<cdot>nub_body"
-  by (rule ext_cfun, subst nub_def, subst nub_body_unfold, simp)
+  by (rule ext_cfun, subst nub_def, subst nub_body.unfold, simp)
 
 (* **************************************** *)
 

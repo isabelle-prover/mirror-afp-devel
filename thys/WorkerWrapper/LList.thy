@@ -107,7 +107,7 @@ fixrec literate :: "('a \<rightarrow> 'a) \<rightarrow> 'a \<rightarrow> 'a llis
 where
   "literate\<cdot>f\<cdot>x = x :@ literate\<cdot>f\<cdot>(f\<cdot>x)"
 
-declare literate_simps[simp del]
+declare literate.simps[simp del]
 
 text{* This order of tests is convenient for the nub proof. I can
 imagine the other would be convenient for other proofs... *}

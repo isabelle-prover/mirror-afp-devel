@@ -56,14 +56,14 @@ lemma enumFromToL_simps' [simp]:
   "\<not> x \<le> y \<Longrightarrow> enumFromToL\<cdot>(up\<cdot>x)\<cdot>(up\<cdot>y) = LNil"
   by simp_all
 
-declare enumFromToL_simps [simp del]
+declare enumFromToL.simps [simp del]
 
 lemma enumFromToL_strict [simp]:
   "enumFromToL\<cdot>\<bottom>\<cdot>y = \<bottom>"
   "enumFromToL\<cdot>x\<cdot>\<bottom> = \<bottom>"
-apply (subst enumFromToL_unfold, simp)
+apply (subst enumFromToL.unfold, simp)
 apply (induct x)
-apply (subst enumFromToL_unfold, simp)+
+apply (subst enumFromToL.unfold, simp)+
 done
 
 fixrec

@@ -76,7 +76,7 @@ to define @{term "lrev_body"} as the generator of the fixpoint
 definition of @{term "lrev"} directly. *}
 
 lemma lrev_lrev_body_eq: "lrev = fix\<cdot>lrev_body"
-  by (rule ext_cfun, subst lrev_def, subst lrev_body_unfold, simp)
+  by (rule ext_cfun, subst lrev_def, subst lrev_body.unfold, simp)
 
 text{* Wrap / unwrap functions. *}
 
@@ -130,8 +130,8 @@ definition
 
 lemma lrev_body_lrev_body1_eq: "lrev_body1 = unwrapH oo lrev_body oo wrapH"
   apply (rule ext_cfun)+
-  apply (subst lrev_body_unfold)
-  apply (subst lrev_body1_unfold)
+  apply (subst lrev_body.unfold)
+  apply (subst lrev_body1.unfold)
   apply (case_tac xa rule: llist.casedist)
   apply (simp_all add: list2H_def wrapH_def unwrapH_def)
   done
@@ -159,7 +159,7 @@ lemma lrev_work2_strict[simp]: "lrev_work2\<cdot>\<bottom> = \<bottom>"
 
 lemma lrev_body2_lrev_body1_eq: "lrev_body2 = lrev_body1"
   by ((rule ext_cfun)+
-     , (subst lrev_body1_unfold, subst lrev_body2_unfold)
+     , (subst lrev_body1.unfold, subst lrev_body2.unfold)
      , (simp add: H_llist_hom_append[symmetric] H_llist_hom_id))
 
 lemma lrev_work2_lrev_work1_eq: "lrev_work2 = lrev_work1"
@@ -243,13 +243,13 @@ proof(rule ext_cfun)
       apply (unfold lrev_work3_def lrev_work2_def)
       apply (subst fix_eq[where F="lrev_body2"])
       apply (subst fix_eq[where F="lrev_body3"])
-      by (simp add: lrev_body3_unfold lrev_body2_unfold)
+      by (simp add: lrev_body3.unfold lrev_body2.unfold)
   next
     show "lrev_work3\<cdot>lnil = lrev_work2\<cdot>lnil"
       apply (unfold lrev_work3_def lrev_work2_def)
       apply (subst fix_eq[where F="lrev_body2"])
       apply (subst fix_eq[where F="lrev_body3"])
-      by (simp add: lrev_body3_unfold lrev_body2_unfold)
+      by (simp add: lrev_body3.unfold lrev_body2.unfold)
   next
     fix a l assume "lrev_work3\<cdot>l = lrev_work2\<cdot>l"
     thus "lrev_work3\<cdot>(a :@ l) = lrev_work2\<cdot>(a :@ l)"
@@ -257,7 +257,7 @@ proof(rule ext_cfun)
       apply (subst fix_eq[where F="lrev_body2"])
       apply (subst fix_eq[where F="lrev_body3"])
       apply (fold lrev_work3_def lrev_work2_def)
-      apply (simp add: lrev_body3_unfold lrev_body2_unfold lrev_wwfusion)
+      apply (simp add: lrev_body3.unfold lrev_body2.unfold lrev_wwfusion)
       done
   qed simp_all
 qed
@@ -265,7 +265,7 @@ qed
 text{* Use the combined worker/wrapper-fusion rule. Note we get a weaker lemma. *}
 
 lemma lrev3_2_syntactic: "lrev_body3 oo (unwrapH oo wrapH) = lrev_body2"
-  apply (subst lrev_body2_unfold, subst lrev_body3_unfold)
+  apply (subst lrev_body2.unfold, subst lrev_body3.unfold)
   apply (rule ext_cfun)+
   apply (case_tac xa rule: llist.casedist)
     apply (simp_all add: unwrapH_def)
@@ -298,8 +298,8 @@ definition
   "lrev_final \<equiv> \<Lambda> xs. lrev_work_final\<cdot>xs\<cdot>lnil"
 
 lemma lrev_body_final_lrev_body3_eq': "lrev_body_final\<cdot>r\<cdot>xs = lrev_body3\<cdot>r\<cdot>xs"
-  apply (subst lrev_body_final_unfold)
-  apply (subst lrev_body3_unfold)
+  apply (subst lrev_body_final.unfold)
+  apply (subst lrev_body3.unfold)
   apply (cases xs rule: casedist)
   apply (simp_all add: list2H_def ID_def ext_cfun)
   done
