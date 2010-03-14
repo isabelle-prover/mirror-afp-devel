@@ -22,8 +22,6 @@ text{* The type of infinite streams. *}
 domain 'a Stream = stcons (lazy sthead :: "'a") (lazy sttail :: "'a Stream") (infixr "&&" 65)
 
 (*<*)
-declare Stream.induct[case_names adm bottom stcons, induct type: Stream]
-
 lemma Stream_bisimI[intro]:
   "(\<And>xs ys. R xs ys
      \<Longrightarrow> (xs = \<bottom> \<and> ys = \<bottom>)
