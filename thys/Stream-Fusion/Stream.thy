@@ -22,7 +22,8 @@ where
 | "s \<noteq> \<bottom> \<Longrightarrow> unfold2\<cdot>u\<cdot>(Skip\<cdot>s) = u\<cdot>s"
 | "s \<noteq> \<bottom> \<Longrightarrow> unfold2\<cdot>u\<cdot>(Yield\<cdot>x\<cdot>s) = LCons\<cdot>x\<cdot>(u\<cdot>s)"
 
-fixpat unfold2_strict [simp]: "unfold2\<cdot>u\<cdot>\<bottom>"
+lemma unfold2_strict [simp]: "unfold2\<cdot>u\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 definition
   unfold1 :: "('s \<rightarrow> ('a, 's) Step) \<rightarrow> ('s \<rightarrow> 'a LList) \<rightarrow> ('s \<rightarrow> 'a LList)"
@@ -58,7 +59,8 @@ fixrec
 where
   "s \<noteq> \<bottom> \<Longrightarrow> unstream\<cdot>(Stream\<cdot>h\<cdot>s) = unfold\<cdot>h\<cdot>s"
 
-fixpat unstream_strict [simp]: "unstream\<cdot>\<bottom>"
+lemma unstream_strict [simp]: "unstream\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 
 subsection {* Converting from lists to streams *}
@@ -69,7 +71,8 @@ where
   "streamStep\<cdot>(up\<cdot>LNil) = Done"
 | "streamStep\<cdot>(up\<cdot>(LCons\<cdot>x\<cdot>xs)) = Yield\<cdot>x\<cdot>(up\<cdot>xs)"
 
-fixpat streamStep_strict [simp]: "streamStep\<cdot>(up\<cdot>\<bottom>)"
+lemma streamStep_strict [simp]: "streamStep\<cdot>(up\<cdot>\<bottom>) = \<bottom>"
+by fixrec_simp
 
 fixrec
   stream :: "'a LList \<rightarrow> ('a, ('a LList)\<^sub>\<bottom>) Stream"

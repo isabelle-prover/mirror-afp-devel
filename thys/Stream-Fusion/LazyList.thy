@@ -25,7 +25,8 @@ where
   "mapL\<cdot>f\<cdot>LNil = LNil"
 | "mapL\<cdot>f\<cdot>(LCons\<cdot>x\<cdot>xs) = LCons\<cdot>(f\<cdot>x)\<cdot>(mapL\<cdot>f\<cdot>xs)"
 
-fixpat mapL_strict [simp]: "mapL\<cdot>f\<cdot>\<bottom>"
+lemma mapL_strict [simp]: "mapL\<cdot>f\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 fixrec
   filterL :: "('a \<rightarrow> tr) \<rightarrow> 'a LList \<rightarrow> 'a LList"
@@ -34,7 +35,8 @@ where
 | "filterL\<cdot>p\<cdot>(LCons\<cdot>x\<cdot>xs) =
     (If p\<cdot>x then LCons\<cdot>x\<cdot>(filterL\<cdot>p\<cdot>xs) else filterL\<cdot>p\<cdot>xs fi)"
 
-fixpat filterL_strict [simp]: "filterL\<cdot>p\<cdot>\<bottom>"
+lemma filterL_strict [simp]: "filterL\<cdot>p\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 fixrec
   foldrL :: "('a \<rightarrow> 'b \<rightarrow> 'b) \<rightarrow> 'b \<rightarrow> 'a LList \<rightarrow> 'b"
@@ -42,7 +44,8 @@ where
   "foldrL\<cdot>f\<cdot>z\<cdot>LNil = z"
 | "foldrL\<cdot>f\<cdot>z\<cdot>(LCons\<cdot>x\<cdot>xs) = f\<cdot>x\<cdot>(foldrL\<cdot>f\<cdot>z\<cdot>xs)"
 
-fixpat foldrL_strict [simp]: "foldrL\<cdot>f\<cdot>z\<cdot>\<bottom>"
+lemma foldrL_strict [simp]: "foldrL\<cdot>f\<cdot>z\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 fixrec
   enumFromToL :: "int\<^sub>\<bottom> \<rightarrow> int\<^sub>\<bottom> \<rightarrow> (int\<^sub>\<bottom>) LList"
@@ -72,7 +75,8 @@ where
   "appendL\<cdot>LNil\<cdot>ys = ys"
 | "appendL\<cdot>(LCons\<cdot>x\<cdot>xs)\<cdot>ys = LCons\<cdot>x\<cdot>(appendL\<cdot>xs\<cdot>ys)"
 
-fixpat appendL_strict [simp]: "appendL\<cdot>\<bottom>\<cdot>ys"
+lemma appendL_strict [simp]: "appendL\<cdot>\<bottom>\<cdot>ys = \<bottom>"
+by fixrec_simp
 
 lemma appendL_LNil_right: "appendL\<cdot>xs\<cdot>LNil = xs"
 by (induct xs) simp_all
@@ -84,9 +88,10 @@ where
 | "zipWithL\<cdot>f\<cdot>(LCons\<cdot>x\<cdot>xs)\<cdot>LNil = LNil"
 | "zipWithL\<cdot>f\<cdot>(LCons\<cdot>x\<cdot>xs)\<cdot>(LCons\<cdot>y\<cdot>ys) = LCons\<cdot>(f\<cdot>x\<cdot>y)\<cdot>(zipWithL\<cdot>f\<cdot>xs\<cdot>ys)"
 
-fixpat zipWithL_strict [simp]:
-  "zipWithL\<cdot>f\<cdot>\<bottom>\<cdot>ys"
-  "zipWithL\<cdot>f\<cdot>(LCons\<cdot>x\<cdot>xs)\<cdot>\<bottom>"
+lemma zipWithL_strict [simp]:
+  "zipWithL\<cdot>f\<cdot>\<bottom>\<cdot>ys = \<bottom>"
+  "zipWithL\<cdot>f\<cdot>(LCons\<cdot>x\<cdot>xs)\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp+
 
 fixrec
   concatMapL :: "('a \<rightarrow> 'b LList) \<rightarrow> 'a LList \<rightarrow> 'b LList"
@@ -94,6 +99,7 @@ where
   "concatMapL\<cdot>f\<cdot>LNil = LNil"
 | "concatMapL\<cdot>f\<cdot>(LCons\<cdot>x\<cdot>xs) = appendL\<cdot>(f\<cdot>x)\<cdot>(concatMapL\<cdot>f\<cdot>xs)"
 
-fixpat concatMapL_strict [simp]: "concatMapL\<cdot>f\<cdot>\<bottom>"
+lemma concatMapL_strict [simp]: "concatMapL\<cdot>f\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 end

@@ -184,10 +184,11 @@ where
   "enumFromToStep\<cdot>(up\<cdot>y)\<cdot>(up\<cdot>(up\<cdot>x)) =
     (if x \<le> y then Yield\<cdot>(up\<cdot>x)\<cdot>(up\<cdot>(up\<cdot>(x+1))) else Done)"
 
-fixpat enumFromToStep_strict [simp]:
-  "enumFromToStep\<cdot>\<bottom>\<cdot>x''"
-  "enumFromToStep\<cdot>(up\<cdot>y)\<cdot>\<bottom>"
-  "enumFromToStep\<cdot>(up\<cdot>y)\<cdot>(up\<cdot>\<bottom>)"
+lemma enumFromToStep_strict [simp]:
+  "enumFromToStep\<cdot>\<bottom>\<cdot>x'' = \<bottom>"
+  "enumFromToStep\<cdot>(up\<cdot>y)\<cdot>\<bottom> = \<bottom>"
+  "enumFromToStep\<cdot>(up\<cdot>y)\<cdot>(up\<cdot>\<bottom>) = \<bottom>"
+by fixrec_simp+
 
 lemma enumFromToStep_simps' [simp]:
   "x \<le> y \<Longrightarrow> enumFromToStep\<cdot>(up\<cdot>y)\<cdot>(up\<cdot>(up\<cdot>x)) =
@@ -261,7 +262,8 @@ where
     | Skip\<cdot>sb' \<Rightarrow> Skip\<cdot>(Right\<cdot>sb')
     | Yield\<cdot>x\<cdot>sb' \<Rightarrow> Yield\<cdot>x\<cdot>(Right\<cdot>sb'))"
 
-fixpat appendStep_strict [simp]: "appendStep\<cdot>ha\<cdot>hb\<cdot>sb0\<cdot>\<bottom>"
+lemma appendStep_strict [simp]: "appendStep\<cdot>ha\<cdot>hb\<cdot>sb0\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 fixrec
   appendS ::
@@ -383,7 +385,8 @@ where
    | Skip\<cdot>sb' \<Rightarrow> Skip\<cdot>(sa :!: sb' :!: Just\<cdot>(L\<cdot>a))
    | Yield\<cdot>b\<cdot>sb' \<Rightarrow> Yield\<cdot>(f\<cdot>a\<cdot>b)\<cdot>(sa :!: sb' :!: Nothing))"
 
-fixpat zipWithStep_strict [simp]: "zipWithStep\<cdot>f\<cdot>ha\<cdot>hb\<cdot>\<bottom>"
+lemma zipWithStep_strict [simp]: "zipWithStep\<cdot>f\<cdot>ha\<cdot>hb\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 fixrec
   zipWithS :: "('a \<rightarrow> 'b \<rightarrow> 'c) \<rightarrow>
@@ -557,7 +560,8 @@ where
     | Skip\<cdot>sb' \<Rightarrow> Skip\<cdot>(sa :!: Just\<cdot>(Stream\<cdot>hb\<cdot>sb'))
     | Yield\<cdot>b\<cdot>sb' \<Rightarrow> Yield\<cdot>b\<cdot>(sa :!: Just\<cdot>(Stream\<cdot>hb\<cdot>sb')))"
 
-fixpat concatMapStep_strict [simp]: "concatMapStep\<cdot>f\<cdot>ha\<cdot>\<bottom>"
+lemma concatMapStep_strict [simp]: "concatMapStep\<cdot>f\<cdot>ha\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 fixrec
   concatMapS ::
@@ -566,7 +570,8 @@ fixrec
 where
   "s \<noteq> \<bottom> \<Longrightarrow> concatMapS\<cdot>f\<cdot>(Stream\<cdot>h\<cdot>s) = Stream\<cdot>(concatMapStep\<cdot>f\<cdot>h)\<cdot>(s :!: Nothing)"
 
-fixpat concatMapS_strict [simp]: "concatMapS\<cdot>f\<cdot>\<bottom>"
+lemma concatMapS_strict [simp]: "concatMapS\<cdot>f\<cdot>\<bottom> = \<bottom>"
+by fixrec_simp
 
 lemma unfold_concatMapStep:
   fixes ha :: "'s \<rightarrow> ('a, 's) Step"
