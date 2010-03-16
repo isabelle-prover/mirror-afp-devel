@@ -713,10 +713,7 @@ fun is_pos t =
 
 
 fun infer_type ctxt t =
-  let val thy = ProofContext.theory_of ctxt;
-  in
-    Syntax.check_term ctxt (Sign.intern_term thy (ProofContext.decode_term ctxt t))
-  end;
+  Syntax.check_term ctxt (ProofContext.decode_term ctxt t);
 
 
 (* NOTE: operations on actual terms *)
