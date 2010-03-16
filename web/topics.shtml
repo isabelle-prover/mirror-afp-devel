@@ -35,11 +35,14 @@
 <p> </p>
 
 <h3>Automata</h3>
+<div class="list">
 <a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
 <a href="entries/Functional-Automata.shtml">Functional-Automata</a> &nbsp;
 <a href="entries/Tree-Automata.shtml">Tree-Automata</a> &nbsp;
+</div>
 
 <h3>Algorithms</h3>
+<div class="list">
 <a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
 <a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
 <a href="entries/FFT.shtml">FFT</a> &nbsp;
@@ -49,8 +52,10 @@
 <a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
 <a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
+</div>
 
 <h3>Data Structures</h3>
+<div class="list">
 <a href="entries/AVL-Trees.shtml">AVL-Trees</a> &nbsp;
 <a href="entries/BDD.shtml">BDD</a> &nbsp;
 <a href="entries/BinarySearchTree.shtml">BinarySearchTree</a> &nbsp;
@@ -61,8 +66,10 @@
 <a href="entries/List-Index.shtml">List-Index</a> &nbsp;
 <a href="entries/Stream-Fusion.shtml">Stream-Fusion</a> &nbsp;
 <a href="entries/Huffman.shtml">Huffman</a> &nbsp;
+</div>
 
 <h3>Logic</h3>
+<div class="list">
 <a href="entries/Verified-Prover.shtml">Verified-Prover</a> &nbsp;
 <a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
 <a href="entries/Completeness.shtml">Completeness</a> &nbsp;
@@ -71,8 +78,10 @@
 <a href="entries/SequentInvertibility.shtml">SequentInvertibility</a> &nbsp;
 <a href="entries/LinearQuantifierElim.shtml">LinearQuantifierElim</a> &nbsp;
 <a href="entries/Recursion-Theory-I.shtml">Recursion-Theory-I</a> &nbsp;
+</div>
 
 <h3>Mathematics</h3>
+<div class="list">
 <a href="entries/CofGroups.shtml">CofGroups</a> &nbsp;
 <a href="entries/ArrowImpossibilityGS.shtml">ArrowImpossibilityGS</a> &nbsp;
 <a href="entries/Category.shtml">Category</a> &nbsp;
@@ -91,8 +100,10 @@
 <a href="entries/SenSocialChoice.shtml">SenSocialChoice</a> &nbsp;
 <a href="entries/SumSquares.shtml">SumSquares</a> &nbsp;
 <a href="entries/Topology.shtml">Topology</a> &nbsp;
+</div>
 
 <h3>Programming Languages</h3>
+<div class="list">
 <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp; 
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
@@ -110,12 +121,15 @@
 <a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
 <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
 <a href="entries/Slicing.shtml">Slicing</a> &nbsp;
+</div>
 
 <h3>Security</h3>
+<div class="list">
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 <a href="entries/HotelKeyCards.shtml">HotelKeyCards</a> &nbsp;
 <a href="entries/RSAPSS.shtml">RSAPSS</a> &nbsp;
 <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
+</div>
 
 </td></tr>    
 </tbody>
