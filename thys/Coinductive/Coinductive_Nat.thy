@@ -15,7 +15,7 @@ text {*
 *}
 
 lemma iSuc_plus: "iSuc n + m = iSuc (n + m)"
-by (metis comm_monoid_add.mult_assoc comm_monoid_add.mult_commute plus_1_iSuc(2))
+by (metis add_assoc add_commute plus_1_iSuc(2))
 
 coinductive_set inat :: "inat \<Rightarrow> bool"
 where "0 \<in> inat"

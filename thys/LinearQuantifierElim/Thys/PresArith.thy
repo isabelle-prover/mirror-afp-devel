@@ -1,5 +1,4 @@
-(*  ID:         $Id: PresArith.thy,v 1.13 2009-07-15 09:26:53 makarius Exp $
-    Author:     Tobias Nipkow, 2007
+(*  Author:     Tobias Nipkow, 2007
 *)
 
 header{* Presburger arithmetic *}
@@ -180,9 +179,9 @@ lemma "\<lbrakk> k \<noteq> 0; k dvd m \<rbrakk> \<Longrightarrow>
   I\<^isub>Z (Dvd (m'*d) (m'*i) (sgn k # (m' *\<^sub>s ks))) (x#e))"
 apply(auto simp:algebra_simps abs_if sgn_if)
  apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
- apply (metis diff_minus comm_monoid_add.mult_left_commute dvd_minus_iff minus_add_distrib)
+ apply (metis diff_minus add_left_commute dvd_minus_iff minus_add_distrib)
 apply(simp add: zdiv_zminus2_eq_if dvd_eq_mod_eq_0[THEN iffD1] algebra_simps)
-apply (metis diff_minus comm_monoid_add.mult_left_commute dvd_minus_iff minus_add_distrib)
+apply (metis diff_minus add_left_commute dvd_minus_iff minus_add_distrib)
 done
 
 
