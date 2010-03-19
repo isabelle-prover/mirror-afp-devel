@@ -497,10 +497,10 @@ next
     with `n'' = n\<^isub>3` show ?thesis by simp
   qed
 next
-  case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 n\<^isub>4 a a')
+  case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 V' n\<^isub>4 a a')
   note IH1 = `n'' \<in> set ns \<Longrightarrow> n'' \<in> sum_SDG_slice2 n\<^isub>1`
   note IH2 = `n'' \<in> set ns' \<Longrightarrow> n'' \<in> sum_SDG_slice2 n\<^isub>3`
-  from `n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2` `matched n\<^isub>2 ns' n\<^isub>3` `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
+  from `n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2` `matched n\<^isub>2 ns' n\<^isub>3` `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
     `a' \<in> get_return_edges a` `valid_edge a`
     `sourcenode a = parent_node n\<^isub>1` `targetnode a = parent_node n\<^isub>2`
     `sourcenode a' = parent_node n\<^isub>3` `targetnode a' = parent_node n\<^isub>4`
@@ -524,11 +524,11 @@ next
   next
     assume "n'' \<in> set ns'"
     from IH2[OF this] have "n'' \<in> sum_SDG_slice2 n\<^isub>3" .
-    with `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` show ?thesis 
+    with `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` show ?thesis 
       by(fastsimp intro:slice2_param_out_slice2 SDG_edge_sum_SDG_edge)
   next
     assume "n'' = n\<^isub>3"
-    from `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 s-p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4" by(rule SDG_edge_sum_SDG_edge)
+    from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 s-p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4" by(rule SDG_edge_sum_SDG_edge)
     hence "n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4"
       by(fastsimp intro:param_out_slice2 refl_slice2 sum_SDG_edge_valid_SDG_node)
     with `n'' = n\<^isub>3` show ?thesis by simp
@@ -615,10 +615,10 @@ next
     thus ?case by(simp add:HRB_slice_def)
   qed
 next
-  case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 n\<^isub>4 a a')
+  case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 V' n\<^isub>4 a a')
   note IH1 = `n'' \<in> set ns \<Longrightarrow> n'' \<in> HRB_slice n\<^isub>1`
   note IH2 = `n'' \<in> set ns' \<Longrightarrow> n'' \<in> HRB_slice n\<^isub>3`
-  from `n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2` `matched n\<^isub>2 ns' n\<^isub>3` `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
+  from `n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2` `matched n\<^isub>2 ns' n\<^isub>3` `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
     `a' \<in> get_return_edges a` `valid_edge a`
     `sourcenode a = parent_node n\<^isub>1` `targetnode a = parent_node n\<^isub>2`
     `sourcenode a' = parent_node n\<^isub>3` `targetnode a' = parent_node n\<^isub>4`
@@ -643,11 +643,11 @@ next
     assume "n'' \<in> set ns'"
     with `matched n\<^isub>2 ns' n\<^isub>3` have "n'' \<in> sum_SDG_slice2 n\<^isub>3"
       by(rule in_matched_in_slice2)
-    with `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n'' \<in> sum_SDG_slice2 n\<^isub>4"
+    with `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n'' \<in> sum_SDG_slice2 n\<^isub>4"
       by(fastsimp intro:slice2_param_out_slice2 SDG_edge_sum_SDG_edge)
-    from `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "valid_SDG_node n\<^isub>4" by(rule SDG_edge_valid_SDG_node)
+    from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "valid_SDG_node n\<^isub>4" by(rule SDG_edge_valid_SDG_node)
     hence "n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4" by(rule refl_slice1)
-    from `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
+    from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
     have "CFG_node (parent_node n\<^isub>3) -p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n\<^isub>4)"
       by(fastsimp elim:SDG_edge.cases intro:SDG_return_edge)
     with `n'' \<in> sum_SDG_slice2 n\<^isub>4` `n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4`
@@ -656,12 +656,12 @@ next
     thus ?case by(simp add:HRB_slice_def)
   next
     assume "n'' = n\<^isub>3"
-    from `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 s-p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4" by(rule SDG_edge_sum_SDG_edge)
-    from `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "valid_SDG_node n\<^isub>4" by(rule SDG_edge_valid_SDG_node)
+    from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 s-p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4" by(rule SDG_edge_sum_SDG_edge)
+    from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "valid_SDG_node n\<^isub>4" by(rule SDG_edge_valid_SDG_node)
     hence "n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4" by(rule refl_slice1)
     from `valid_SDG_node n\<^isub>4` have "n\<^isub>4 \<in> sum_SDG_slice2 n\<^isub>4" by(rule refl_slice2)
-    with `n\<^isub>3 s-p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4" by(rule param_out_slice2)
-    from `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
+    with `n\<^isub>3 s-p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` have "n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4" by(rule param_out_slice2)
+    from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` 
     have "CFG_node (parent_node n\<^isub>3) -p\<rightarrow>\<^bsub>ret\<^esub> CFG_node (parent_node n\<^isub>4)"
       by(fastsimp elim:SDG_edge.cases intro:SDG_return_edge)
     with `n\<^isub>3 \<in> sum_SDG_slice2 n\<^isub>4` `n\<^isub>4 \<in> sum_SDG_slice1 n\<^isub>4` `n'' = n\<^isub>3` show ?thesis
@@ -1023,9 +1023,8 @@ qed
 
 
 theorem HRB_slice_realizable:
-  assumes "n \<in> HRB_slice n'" and "valid_SDG_node n'"
-  obtains "n = n'"
-  | ns where "realizable (CFG_node (_Entry_)) ns n'" and "n \<in> set ns"
+  assumes "n \<in> HRB_slice n'" and "valid_SDG_node n'" and "n \<noteq> n'"
+  obtains ns where "realizable (CFG_node (_Entry_)) ns n'" and "n \<in> set ns"
 using assms
 by(auto intro:combine_SDG_slices_realizable simp:HRB_slice_def)
 

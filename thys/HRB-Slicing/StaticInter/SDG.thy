@@ -1688,7 +1688,7 @@ inductive matched :: "'node SDG_node \<Rightarrow> 'node SDG_node list \<Rightar
   \<Longrightarrow> matched n\<^isub>0 (ns@n\<^isub>1#ns'@[n\<^isub>3]) n\<^isub>4"
   | matched_bracket_param:
   "\<lbrakk>matched n\<^isub>0 ns n\<^isub>1; n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2; matched n\<^isub>2 ns' n\<^isub>3; 
-    n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4; valid_edge a; a' \<in> get_return_edges a;
+    n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4; valid_edge a; a' \<in> get_return_edges a;
     sourcenode a = parent_node n\<^isub>1; targetnode a = parent_node n\<^isub>2; 
     sourcenode a' = parent_node n\<^isub>3; targetnode a' = parent_node n\<^isub>4\<rbrakk>
   \<Longrightarrow> matched n\<^isub>0 (ns@n\<^isub>1#ns'@[n\<^isub>3]) n\<^isub>4"
@@ -1767,7 +1767,7 @@ proof(atomize_elim)
     with `\<exists>as. parent_node n\<^isub>0 -as\<rightarrow>\<^isub>\<iota>* parent_node n\<^isub>1` show ?case
       by(fastsimp intro:intra_path_Append)
   next
-    case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 n\<^isub>4 a a')
+    case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 V' n\<^isub>4 a a')
     from `valid_edge a` `a' \<in> get_return_edges a` `sourcenode a = parent_node n\<^isub>1`
       `targetnode a' = parent_node n\<^isub>4`
     obtain a'' where "valid_edge a''" and "sourcenode a'' = parent_node n\<^isub>1" 
@@ -1847,7 +1847,7 @@ proof(atomize_elim)
     with `sourcenode a = parent_node n\<^isub>1` `sourcenode a' = parent_node n\<^isub>3`
     show ?case by fastsimp
   next
-    case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 n\<^isub>4 a a')
+    case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 V' n\<^isub>4 a a')
     from `valid_edge a` `a' \<in> get_return_edges a`
     obtain Q r p' fs where "kind a = Q:r\<hookrightarrow>\<^bsub>p'\<^esub>fs" 
       by(fastsimp dest!:only_call_get_return_edges)
@@ -2046,8 +2046,7 @@ where
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; a' \<in> get_return_edges a;
       matched (Formal_in (targetnode a,x)) ns (Formal_out (sourcenode a',x'));
       n = Actual_in (sourcenode a,x); n' = Actual_out (targetnode a',x');
-      (p,ins,outs) \<in> set procs; x < length ins; x' < length outs; 
-      ins!x = outs!x'\<rbrakk>
+      (p,ins,outs) \<in> set procs; x < length ins; x' < length outs\<rbrakk>
       \<Longrightarrow> n s-p\<rightarrow>\<^bsub>sum\<^esub> n'"
 
 
@@ -2060,8 +2059,7 @@ lemma sum_edge_cases:
       \<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; a' \<in> get_return_edges a;
        matched (Formal_in (targetnode a,x)) ns (Formal_out (sourcenode a',x'));
        n = Actual_in (sourcenode a,x); n' = Actual_out (targetnode a',x');
-       (p,ins,outs) \<in> set procs; x < length ins; x' < length outs; 
-       ins!x = outs!x'\<rbrakk> \<Longrightarrow> P\<rbrakk>
+       (p,ins,outs) \<in> set procs; x < length ins; x' < length outs\<rbrakk> \<Longrightarrow> P\<rbrakk>
   \<Longrightarrow> P"
 by -(erule sum_SDG_edge.cases,auto,fastsimp+)
 
@@ -2235,12 +2233,12 @@ proof(atomize_elim)
     obtain Q' f' where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by(fastsimp dest!:call_return_edges)
     with `valid_edge a'` have "get_proc (sourcenode a') = p" by(rule get_proc_return)
     from `valid_edge a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p,ins,outs) \<in> set procs`
-      `x' < length outs` `ins!x = outs!x'` `n' = Actual_out (targetnode a',x')`
-    have "Formal_out (sourcenode a',x') -p:ins!x\<rightarrow>\<^bsub>out\<^esub> n'"
+      `x' < length outs` `n' = Actual_out (targetnode a',x')`
+    have "Formal_out (sourcenode a',x') -p:outs!x'\<rightarrow>\<^bsub>out\<^esub> n'"
       by(fastsimp intro:SDG_param_out_edge)
     from `matched n [] n` `n -p:ins!x\<rightarrow>\<^bsub>in\<^esub> Formal_in (targetnode a,x)`
       `matched (Formal_in (targetnode a,x)) ns (Formal_out (sourcenode a',x'))`
-      `Formal_out (sourcenode a',x') -p:ins!x\<rightarrow>\<^bsub>out\<^esub> n'` 
+      `Formal_out (sourcenode a',x') -p:outs!x'\<rightarrow>\<^bsub>out\<^esub> n'` 
       `a' \<in> get_return_edges a` `n = Actual_in (sourcenode a,x)`
       `n' = Actual_out (targetnode a',x')` `valid_edge a`
     have "matched n ([]@n#ns@[Formal_out (sourcenode a',x')]) n'"
@@ -2614,7 +2612,7 @@ proof(atomize_elim)
       thus ?case by blast
     qed
   next
-    case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 n\<^isub>4 a a')
+    case (matched_bracket_param n\<^isub>0 ns n\<^isub>1 p V n\<^isub>2 ns' n\<^isub>3 V' n\<^isub>4 a a')
     from `\<exists>ns'. n\<^isub>0 is-ns'\<rightarrow>\<^isub>d* n\<^isub>1` obtain nsx where "n\<^isub>0 is-nsx\<rightarrow>\<^isub>d* n\<^isub>1" by blast
     from `n\<^isub>1 -p:V\<rightarrow>\<^bsub>in\<^esub> n\<^isub>2` `sourcenode a = parent_node n\<^isub>1`
       `targetnode a = parent_node n\<^isub>2` obtain x ins outs
@@ -2629,10 +2627,10 @@ proof(atomize_elim)
     have [simp]:"p' = p" by -(erule SDG_edge.cases,(fastsimp dest:edge_det)+)
     from `valid_edge a` `a' \<in> get_return_edges a` have "valid_edge a'"
       by(rule get_return_edges_valid)
-    from `n\<^isub>3 -p:V\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` obtain ax Q' f' x' ins' outs' where "valid_edge ax" 
+    from `n\<^isub>3 -p:V'\<rightarrow>\<^bsub>out\<^esub> n\<^isub>4` obtain ax Q' f' x' ins' outs' where "valid_edge ax" 
       and "kind ax = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" and "n\<^isub>3 = Formal_out (sourcenode ax,x')" 
       and "n\<^isub>4 = Actual_out (targetnode ax,x')" and "(p,ins',outs') \<in> set procs"
-      and "V = outs'!x'" and "x' < length outs'"
+      and "V' = outs'!x'" and "x' < length outs'"
       by(fastsimp elim:SDG_edge.cases)
     with `sourcenode a' = parent_node n\<^isub>3` `targetnode a' = parent_node n\<^isub>4`
       `valid_edge a'` have [simp]:"ax = a'" by(fastsimp dest:edge_det)
@@ -2643,7 +2641,7 @@ proof(atomize_elim)
       `a' \<in> get_return_edges a` `matched n\<^isub>2 ns' n\<^isub>3` `n\<^isub>1 = Actual_in (sourcenode a,x)` 
       `n\<^isub>2 = Formal_in (targetnode a,x)` `n\<^isub>3 = Formal_out (sourcenode ax,x')`
       `n\<^isub>4 = Actual_out (targetnode ax,x')` `(p,ins,outs) \<in> set procs`
-      `x < length ins` `x' < length outs'` `V = ins!x` `V = outs'!x'`
+      `x < length ins` `x' < length outs'` `V = ins!x` `V' = outs'!x'`
     have "n\<^isub>1 s-p\<rightarrow>\<^bsub>sum\<^esub> n\<^isub>4" 
       by(fastsimp intro!:sum_SDG_param_summary_edge[of a _ _ _ _ a'])
     with `n\<^isub>0 is-nsx\<rightarrow>\<^isub>d* n\<^isub>1` have "n\<^isub>0 is-nsx@[n\<^isub>1]\<rightarrow>\<^isub>d* n\<^isub>4" by(rule isSp_Append_sum)
@@ -3038,7 +3036,7 @@ proof(atomize_elim)
 	                    (Formal_out (sourcenode a',x'))"
 	and "n'' = Actual_in (sourcenode a,x)" 
 	and "n' = Actual_out (targetnode a',x')" and "(p,ins,outs) \<in> set procs" 
-	and "x < length ins" and "x' < length outs" and "ins!x = outs!x'"
+	and "x < length ins" and "x' < length outs"
       from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `n'' = Actual_in (sourcenode a,x)`
 	`(p,ins,outs) \<in> set procs` `x < length ins`
       have "n'' -p:ins!x\<rightarrow>\<^bsub>in\<^esub> Formal_in (targetnode a,x)"
@@ -3056,7 +3054,7 @@ proof(atomize_elim)
       from `matched n'' [] n''` `n'' -p:ins!x\<rightarrow>\<^bsub>in\<^esub> Formal_in (targetnode a,x)`
 	match' `Formal_out (sourcenode a',x') -p:outs!x'\<rightarrow>\<^bsub>out\<^esub> n'` `valid_edge a` 
 	`a' \<in> get_return_edges a` `n' = Actual_out (targetnode a',x')`
-	`n'' = Actual_in (sourcenode a,x)` `ins!x = outs!x'`
+	`n'' = Actual_in (sourcenode a,x)`
       have "matched n'' ([]@n''#ns''@[Formal_out (sourcenode a',x')]) n'"
 	by(fastsimp intro:matched_bracket_param)
       with `realizable n ns' n''`
