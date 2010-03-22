@@ -1,0 +1,68 @@
+## configurables
+
+SESSION-NAME = InformationFlowSlicing
+BASE-IMAGE1 = Slicing
+BASE-IMAGE2 = HRB-Slicing
+
+## targets
+
+default: InformationFlowSlicing
+test: $(SESSION-NAME)
+# usually empty:
+images: 
+
+all: images test
+
+
+## global settings
+
+SRC = $(ISABELLE_HOME)/src
+OUT = $(ISABELLE_OUTPUT)
+LOG = $(OUT)/log
+
+# turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
+ifeq ($(ISABELLE_IMAGE_PATH),)
+IMAGE1=$(OUT)/$(BASE-IMAGE1)
+IMAGE2=$(OUT)/$(BASE-IMAGE2)
+else
+IMAGE1=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE1)
+IMAGE2=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE2)
+endif
+
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -g true -d pdf
+
+# time limit (in sec)
+MAXTIME = 5400
+
+
+## dependencies
+
+
+# test run and proof document
+
+
+Slicing: 
+	cd ../Slicing; $(ISABELLE_TOOL) make Slicing
+
+HRB-Slicing: 
+	cd ../HRB-Slicing; $(ISABELLE_TOOL) make HRB-Slicing
+
+InformationFlowSlicing: Slicing HRB-Slicing \
+	 			        $(LOG)/$(BASE-IMAGE1)-$(SESSION-NAME).gz \
+                        $(LOG)/$(BASE-IMAGE2)-$(SESSION-NAME).gz
+
+$(LOG)/$(BASE-IMAGE1)-$(SESSION-NAME).gz: $(IMAGE1) ROOT-Intra.ML \
+  *.thy \
+  document/root.tex 
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) -f ROOT-Intra.ML $(IMAGE1) $(SESSION-NAME)
+
+$(LOG)/$(BASE-IMAGE2)-$(SESSION-NAME).gz: $(IMAGE2) ROOT-Inter.ML \
+  *.thy \
+  document/root.tex 
+	cd ..; ulimit -t $(MAXTIME); $(USEDIR) -f ROOT-Inter.ML $(IMAGE2) $(SESSION-NAME)
+
+## clean
+
+clean:
+	@rm -f $(LOG)/$(BASE-IMAGE1)-$(SESSION-NAME).gz
+	@rm -f $(LOG)/$(BASE-IMAGE2)-$(SESSION-NAME).gz
