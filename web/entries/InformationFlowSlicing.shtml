@@ -98,13 +98,13 @@ by Wasserrab et al.
   <td class="links">
 	<a href="<!--#echo var="outline1" -->">Proof outline (intra procedural)</a><br>
 	<a href="<!--#echo var="outline2" -->">Proof outline (inter prodedural)</a><br>
-	<a href="<!--#echo var="doc1" -->">Proof document (intra procedural)</a>
+	<a href="<!--#echo var="doc1" -->">Proof document (intra procedural)</a><br>
 	<a href="<!--#echo var="doc2" -->">Proof document (inter procedural)</a>
   </td>
 	</tr>
     <tr>
   <td class="links">
-	<a href="<!--#echo var="browse1" -->">Browse theories (intra procedural)</a>
+	<a href="<!--#echo var="browse1" -->">Browse theories (intra procedural)</a><br>
 	<a href="<!--#echo var="browse2" -->">Browse theories (inter procedural)</a>
 	</td></tr>
     <tr>
