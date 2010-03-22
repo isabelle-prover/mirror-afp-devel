@@ -7,8 +7,8 @@ BASE-IMAGE = Jinja
 
 default: Slicing
 # usually empty:
-images:
-test: $(SESSION-NAME)
+images: $(SESSION-NAME)
+test: images
 
 all: test
 
@@ -20,10 +20,13 @@ OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
 # turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
+ifeq ($(ISABELLE_IMAGE_PATH),)
 IMAGE=$(OUT)/$(BASE-IMAGE)
+else
+IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
+endif
 
-USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -g true -d pdf
-BUILD = $(ISABELLE_TOOL) usedir -b -v true -i false -g false -d false
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -g true 
 
 # time limit (in sec)
 MAXTIME = 5400
@@ -34,20 +37,20 @@ MAXTIME = 5400
 
 # test run and proof document
 
-$(SESSION-NAME): Jinja $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): Jinja $(OUT)/$(SESSION-NAME)
 
 Jinja:
 	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(OUT)/Jinja ROOT.ML Slicing.thy \
+$(OUT)/$(SESSION-NAME): $(OUT)/Jinja ROOT.ML Slicing.thy \
   Basic/*.thy Dynamic/*.thy StaticIntra/*.thy While/*.thy JinjaVM/*.thy \
   document/root.tex 
-	cd ..; ulimit -t $(MAXTIME); $(USEDIR) Jinja $(SESSION-NAME)
+	ulimit -t $(MAXTIME); $(USEDIR) -b Jinja $(SESSION-NAME)
 
 
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 	@rm -f $(OUT)/$(SESSION-NAME)
+	@rm -f $(LOG)/$(SESSION-NAME).gz
