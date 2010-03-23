@@ -7,8 +7,7 @@ BASE-IMAGE = Jinja
 
 default: $(SESSION-NAME)
 test: $(SESSION-NAME)
-# usually empty:
-images:
+images: $(SESSION-NAME)
 
 all: images
 
@@ -26,10 +25,7 @@ else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
 
-DOCFLAGS = -v true -i true -V outline=/proof,/ML -g true -d pdf
-USEDIR = $(ISABELLE_TOOL) usedir  $(DOCFLAGS)
-BUILD = $(ISABELLE_TOOL) usedir -b $(DOCFLAGS)
-BUILD_PART = $(ISABELLE_TOOL) usedir -b -v true -i false -g false -d false
+USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf 
 
 # time limit (in sec)
 MAXTIME = 5400
@@ -38,22 +34,22 @@ MAXTIME = 5400
 ## dependencies
 
 # test run and proof document
+$(SESSION-NAME): $(OUT)/$(SESSION-NAME)
 
-$(SESSION-NAME): Jinja $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(OUT)/$(SESSION-NAME): Jinja $(LOG)/$(SESSION-NAME).gz
 
 Jinja:
 	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(OUT)/Jinja ROOT.ML HRBSlicing.thy \
-  StaticInter/*.thy Proc/*.thy JinjaVM_Inter/*.thy \
-  document/root.tex 
-	cd ..; ulimit -t $(MAXTIME); $(USEDIR) Jinja $(SESSION-NAME)
-
+$(LOG)/$(SESSION-NAME).gz: $(IMAGE) ROOT.ML HRBSlicing.thy \
+	StaticInter/*.thy Proc/*.thy JinjaVM_Inter/*.thy \
+	document/root.tex
+	ulimit -t $(MAXTIME); $(USEDIR) -b $(IMAGE) $(SESSION-NAME)
 
 
 ## clean
 
 clean:
-	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -f $(LOG)/$(SESSION-NAME).gz
 	@rm -f $(OUT)/$(SESSION-NAME)
 
