@@ -24,14 +24,14 @@
 <p> </p>
 
 <!-- begin entry data: -->
-<h1><!-- Title: -->Information Flow Slicing</h1>
+<h1><!-- Title: -->Information Flow Noninterference via Slicing</h1>
 <p> </p>
 
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
     <td class="data" width="80%">
-<!-- Title: -->Information Flow Slicing
+<!-- Title: -->Information Flow Noninterference via Slicing
     </td></tr>
 		
     <tr><td class="datahead">Author:</td>
