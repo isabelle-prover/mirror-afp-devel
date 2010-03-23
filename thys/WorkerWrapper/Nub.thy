@@ -67,7 +67,7 @@ definition
   nextR :: "R \<rightarrow> (Nat * R) Maybe" where
   "nextR = (\<Lambda> r. case ldropWhile\<cdot>(\<Lambda> x. SetMem\<cdot>x\<cdot>(exceptR\<cdot>r))\<cdot>(resultR\<cdot>r) of
                      lnil \<Rightarrow> Nothing
-                   | x :@ xs \<Rightarrow> Just\<cdot>\<langle>x, R\<cdot>xs\<cdot>(exceptR\<cdot>r)\<rangle>)"
+                   | x :@ xs \<Rightarrow> Just\<cdot>(x, R\<cdot>xs\<cdot>(exceptR\<cdot>r)))"
 
 lemma nextR_strict1[simp]: "nextR\<cdot>\<bottom> = \<bottom>" by (simp add: nextR_def)
 lemma nextR_strict2[simp]: "nextR\<cdot>(R\<cdot>\<bottom>\<cdot>S) = \<bottom>" by (simp add: nextR_def)
@@ -113,26 +113,26 @@ lemma TR_deMorgan: "neg\<cdot>(x orelse y) = (neg\<cdot>x andalso neg\<cdot>y)"
 
 lemma case_maybe_case:
   "(case (case L of lnil \<Rightarrow> Nothing | x :@ xs \<Rightarrow> Just\<cdot>(h\<cdot>x\<cdot>xs)) of
-     Nothing \<Rightarrow> f | Just\<cdot>\<langle>a, b\<rangle> \<Rightarrow> g\<cdot>a\<cdot>b)
+     Nothing \<Rightarrow> f | Just\<cdot>(a, b) \<Rightarrow> g\<cdot>a\<cdot>b)
    =
-   (case L of lnil \<Rightarrow> f | x :@ xs \<Rightarrow> g\<cdot>(cfst\<cdot>(h\<cdot>x\<cdot>xs))\<cdot>(csnd\<cdot>(h\<cdot>x\<cdot>xs)))"
+   (case L of lnil \<Rightarrow> f | x :@ xs \<Rightarrow> g\<cdot>(fst (h\<cdot>x\<cdot>xs))\<cdot>(snd (h\<cdot>x\<cdot>xs)))"
   apply (cases L, simp_all)
-  apply (rule_tac p="h\<cdot>a\<cdot>llist" in cprodE)
+  apply (case_tac "h\<cdot>a\<cdot>llist")
   apply simp
   done
 
 lemma case_a2c_case_caseR:
     "(case a2c\<cdot>w of lnil \<Rightarrow> f | x :@ xs \<Rightarrow> g\<cdot>x\<cdot>xs)
-   = (case nextR\<cdot>w of Nothing \<Rightarrow> f | Just\<cdot>\<langle>x, r\<rangle> \<Rightarrow> g\<cdot>x\<cdot>(a2c\<cdot>r))" (is "?lhs = ?rhs")
+   = (case nextR\<cdot>w of Nothing \<Rightarrow> f | Just\<cdot>(x, r) \<Rightarrow> g\<cdot>x\<cdot>(a2c\<cdot>r))" (is "?lhs = ?rhs")
 proof -
   have "?rhs = (case (case ldropWhile\<cdot>(\<Lambda> x. SetMem\<cdot>x\<cdot>(exceptR\<cdot>w))\<cdot>(resultR\<cdot>w) of
                      lnil \<Rightarrow> Nothing
-                   | x :@ xs \<Rightarrow> Just\<cdot>\<langle>x, R\<cdot>xs\<cdot>(exceptR\<cdot>w)\<rangle>) of Nothing \<Rightarrow> f | Just\<cdot>\<langle>x, r\<rangle> \<Rightarrow> g\<cdot>x\<cdot>(a2c\<cdot>r))"
+                   | x :@ xs \<Rightarrow> Just\<cdot>(x, R\<cdot>xs\<cdot>(exceptR\<cdot>w))) of Nothing \<Rightarrow> f | Just\<cdot>(x, r) \<Rightarrow> g\<cdot>x\<cdot>(a2c\<cdot>r))"
     by (simp add: nextR_def)
   also have "\<dots> = (case ldropWhile\<cdot>(\<Lambda> x. SetMem\<cdot>x\<cdot>(exceptR\<cdot>w))\<cdot>(resultR\<cdot>w) of
                      lnil \<Rightarrow> f | x :@ xs \<Rightarrow> g\<cdot>x\<cdot>(a2c\<cdot>(R\<cdot>xs\<cdot>(exceptR\<cdot>w))))"
     using case_maybe_case[where L="ldropWhile\<cdot>(\<Lambda> x. SetMem\<cdot>x\<cdot>(exceptR\<cdot>w))\<cdot>(resultR\<cdot>w)"
-                            and f=f and g="\<Lambda> x r. g\<cdot>x\<cdot>(a2c\<cdot>r)" and h="\<Lambda> x xs. \<langle>x, R\<cdot>xs\<cdot>(exceptR\<cdot>w)\<rangle>"]
+                            and f=f and g="\<Lambda> x r. g\<cdot>x\<cdot>(a2c\<cdot>r)" and h="\<Lambda> x xs. (x, R\<cdot>xs\<cdot>(exceptR\<cdot>w))"]
     by simp
   also have "\<dots> = ?lhs"
     apply (simp add: a2c_def)
@@ -170,7 +170,7 @@ lemma nub_body_nub_body'_eq: "unwrap oo nub_body oo wrap = nub_body'"
 definition
   nub_body'' :: "(R \<rightarrow> Nat llist) \<rightarrow> R \<rightarrow> Nat llist" where
   "nub_body'' \<equiv> \<Lambda> f r. case nextR\<cdot>r of Nothing \<Rightarrow> lnil
-                                      | Just\<cdot>\<langle>x, xs\<rangle> \<Rightarrow> x :@ f\<cdot>(c2a\<cdot>(lfilter\<cdot>(neg oo (\<Lambda> y. x =\<^sub>B y))\<cdot>(a2c\<cdot>xs)))"
+                                      | Just\<cdot>(x, xs) \<Rightarrow> x :@ f\<cdot>(c2a\<cdot>(lfilter\<cdot>(neg oo (\<Lambda> y. x =\<^sub>B y))\<cdot>(a2c\<cdot>xs)))"
 
 lemma nub_body'_nub_body''_eq: "nub_body' = nub_body''"
 proof(rule ext_cfun)+
@@ -183,7 +183,7 @@ qed
 definition
   nub_body''' :: "(R \<rightarrow> Nat llist) \<rightarrow> R \<rightarrow> Nat llist" where
   "nub_body''' \<equiv> (\<Lambda> f r. case nextR\<cdot>r of Nothing \<Rightarrow> lnil
-                                      | Just\<cdot>\<langle>x, xs\<rangle> \<Rightarrow> x :@ f\<cdot>(filterR\<cdot>x\<cdot>xs))"
+                                      | Just\<cdot>(x, xs) \<Rightarrow> x :@ f\<cdot>(filterR\<cdot>x\<cdot>xs))"
 
 lemma nub_body''_nub_body'''_eq: "nub_body'' = nub_body''' oo (unwrap oo wrap)"
   unfolding nub_body''_def nub_body'''_def wrap_def unwrap_def
