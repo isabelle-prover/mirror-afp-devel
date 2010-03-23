@@ -422,24 +422,24 @@ proof -
     apply (simp add: Q_0)
     apply (simp add: Q_Suc)
     done
-  have "split P (\<Squnion>i. \<langle>iterate i\<cdot>f\<cdot>\<bottom>, iterate i\<cdot>g\<cdot>\<bottom>\<rangle>)"
+  have "split P (\<Squnion>i. (iterate i\<cdot>f\<cdot>\<bottom>, iterate i\<cdot>g\<cdot>\<bottom>))"
     apply (rule admD)
     apply (simp add: split_def adm_P)
     apply simp
-    apply (simp add: cpair_eq_pair 1)
+    apply (simp add: 1)
     done
   then have P: "P x y"
     unfolding x y fix_def2
-    by (simp add: thelub_cprod, simp add: cpair_eq_pair)
-  have "split Q (\<Squnion>i. \<langle>iterate i\<cdot>f\<cdot>\<bottom>, iterate i\<cdot>g\<cdot>\<bottom>\<rangle>)"
+    by (simp add: thelub_cprod)
+  have "split Q (\<Squnion>i. (iterate i\<cdot>f\<cdot>\<bottom>, iterate i\<cdot>g\<cdot>\<bottom>))"
     apply (rule admD)
     apply (simp add: split_def adm_Q)
     apply simp
-    apply (simp add: cpair_eq_pair 1)
+    apply (simp add: 1)
     done
   then have Q: "Q x y"
     unfolding x y fix_def2
-    by (simp add: thelub_cprod, simp add: cpair_eq_pair)
+    by (simp add: thelub_cprod)
   from P Q show ?thesis by simp
 qed
 

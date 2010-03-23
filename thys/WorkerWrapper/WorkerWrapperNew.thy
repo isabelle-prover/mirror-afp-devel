@@ -26,8 +26,8 @@ lemma
       and wb: "u oo b oo w = b' oo u oo w"
   shows "fix\<cdot>(u oo b oo w) = fix\<cdot>(b')"
 proof -
-  let ?P = "\<lambda>xy. cfst\<cdot>xy = csnd\<cdot>xy \<and> u\<cdot>(w\<cdot>(cfst\<cdot>xy)) = cfst\<cdot>xy"
-  let ?F = "\<Lambda> xy. \<langle>(u oo b oo w)\<cdot>(cfst\<cdot>xy), b'\<cdot>(csnd\<cdot>xy)\<rangle>"
+  let ?P = "\<lambda>xy. fst xy = snd xy \<and> u\<cdot>(w\<cdot>(fst xy)) = fst xy"
+  let ?F = "\<Lambda> xy. ((u oo b oo w)\<cdot>(fst xy), b'\<cdot>(snd xy))"
   have "?P (fix\<cdot>?F)"
   proof(induct rule: fix_ind)
     case 2 with retraction_strict us ww show ?case
@@ -56,8 +56,8 @@ lemma worker_wrapper_fusion_new:
       and wb: "u oo b oo w = (\<Lambda> r. b'\<cdot>r\<cdot>(u\<cdot>(w\<cdot>r)))"
   shows "fix\<cdot>(u oo b oo w) = (\<mu> r. b'\<cdot>r\<cdot>r)"
 proof -
-  let ?P = "\<lambda>xy. cfst\<cdot>xy = csnd\<cdot>xy \<and> u\<cdot>(w\<cdot>(cfst\<cdot>xy)) = cfst\<cdot>xy"
-  let ?F = "\<Lambda> xy. \<langle>(u oo b oo w)\<cdot>(cfst\<cdot>xy), b'\<cdot>(csnd\<cdot>xy)\<cdot>(csnd\<cdot>xy)\<rangle>"
+  let ?P = "\<lambda>xy. fst xy = snd xy \<and> u\<cdot>(w\<cdot>(fst xy)) = fst xy"
+  let ?F = "\<Lambda> xy. ((u oo b oo w)\<cdot>(fst xy), b'\<cdot>(snd xy)\<cdot>(snd xy))"
   have "?P (fix\<cdot>?F)"
   proof(induct rule: fix_ind)
     case 2 with retraction_strict us ww show ?case
