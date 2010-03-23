@@ -29,15 +29,15 @@ lemma lfp_fusion:
       and strictg: "g\<cdot>\<bottom> = \<bottom>"
   shows "g\<cdot>(fix\<cdot>f) = fix\<cdot>h"
 proof-
-  let ?P = "\<lambda>xy. g\<cdot>(cfst\<cdot>xy) = csnd\<cdot>xy"
-  let ?F = "\<Lambda> xy. \<langle>f\<cdot>(cfst\<cdot>xy), h\<cdot>(csnd\<cdot>xy)\<rangle>"
+  let ?P = "\<lambda>xy. g\<cdot>(fst xy) = snd xy"
+  let ?F = "\<Lambda> xy. (f\<cdot>(fst xy), h\<cdot>(snd xy))"
   have "?P (fix\<cdot>?F)"
   proof(induct rule: fix_ind)
     case 2 with strictg show ?case by simp
     case (3 x)
-    hence "g\<cdot>(cfst\<cdot>x) = csnd\<cdot>x" .
-    hence "h\<cdot>(g\<cdot>(cfst\<cdot>x)) = h\<cdot>(csnd\<cdot>x)" by simp
-    with fgh have "g\<cdot>(f\<cdot>(cfst\<cdot>x)) = h\<cdot>(csnd\<cdot>x)"
+    hence "g\<cdot>(fst x) = snd x" .
+    hence "h\<cdot>(g\<cdot>(fst x)) = h\<cdot>(snd x)" by simp
+    with fgh have "g\<cdot>(f\<cdot>(fst x)) = h\<cdot>(snd x)"
       using cfcomp2[where f="g" and g="f", symmetric] by simp
     thus ?case by simp
   qed simp
