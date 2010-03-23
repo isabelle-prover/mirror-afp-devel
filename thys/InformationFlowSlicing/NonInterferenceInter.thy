@@ -34,11 +34,11 @@ locale NonInterferenceInterGraph =
   SDG sourcenode targetnode kind valid_edge Entry 
     get_proc get_return_edges procs Main Exit Def Use ParamDefs ParamUses 
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
-  and kind :: "'edge \<Rightarrow> ('var,'val,'ret) edge_kind" 
+  and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
   and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> pname"
+  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
-  and procs :: "(pname \<times> 'var list \<times> 'var list) list" and Main :: "pname"
+  and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname"
   and Exit::"'node"  ("'('_Exit'_')") 
   and Def :: "'node \<Rightarrow> 'var set" and Use :: "'node \<Rightarrow> 'var set"
   and ParamDefs :: "'node \<Rightarrow> 'var list" and ParamUses :: "'node \<Rightarrow> 'var set list" +
@@ -115,16 +115,16 @@ proof(atomize_elim)
   from `(_Entry_) -as\<rightarrow>* n` `inner_node n`
   show "\<exists>a' as'. as = a'#as' \<and> (_High_) -as'\<rightarrow>* n \<and> kind a' = (\<lambda>s. True)\<^isub>\<surd>"
   proof(induct n'\<equiv>"(_Entry_)" as n rule:path.induct)
-    case (Cons_path n'' as n' a n)
+    case (Cons_path n'' as n' a)
     from `n'' -as\<rightarrow>* n'` `inner_node n'` have "n'' \<noteq> (_Exit_)" 
       by(fastsimp simp:inner_node_def)
-    with `valid_edge a` `sourcenode a = n` `n = (_Entry_)` `targetnode a = n''`
+    with `valid_edge a` `sourcenode a = (_Entry_)` `targetnode a = n''`
     have "n'' = (_High_)" by -(drule Entry_edge_Exit_or_High,auto)
     from High_target_Entry_edge
     obtain a' where "valid_edge a'" and "sourcenode a' = (_Entry_)"
       and "targetnode a' = (_High_)" and "kind a' = (\<lambda>s. True)\<^isub>\<surd>"
       by blast
-    with `valid_edge a` `sourcenode a = n` `n = (_Entry_)` `targetnode a = n''`
+    with `valid_edge a` `sourcenode a = (_Entry_)` `targetnode a = n''`
       `n'' = (_High_)`
     have "a = a'" by(auto dest:edge_det)
     with `n'' -as\<rightarrow>* n'` `n'' = (_High_)` `kind a' = (\<lambda>s. True)\<^isub>\<surd>` show ?case by blast
@@ -308,12 +308,12 @@ proof(induct arbitrary:m as' s s' rule:slpa_induct)
   hence "\<forall>V \<in> Use (_Low_). V \<in> rv (CFG_node (_Low_)) (CFG_node m)" by simp
   from `m -as'\<rightarrow>* (_Low_)` `m = (_Low_)` have "as' = []"
   proof(induct m as' m'\<equiv>"(_Low_)" rule:path.induct)
-    case (Cons_path m'' as m' a m)
+    case (Cons_path m'' as a m)
     from `valid_edge a` `sourcenode a = m` `m = (_Low_)`
     have "targetnode a = (_Exit_)" by -(rule Exit_successor_of_Low,simp+)
-    with `targetnode a = m''` `m'' -as\<rightarrow>* m'`
-    have "m' = (_Exit_)" by -(drule path_Exit_source,auto)
-    with `m' = (_Low_)` have False by simp
+    with `targetnode a = m''` `m'' -as\<rightarrow>* (_Low_)`
+    have "(_Low_) = (_Exit_)" by -(drule path_Exit_source,auto)
+    hence False by simp
     thus ?case by simp
   qed simp
   with `\<forall>V \<in> Use (_Low_). V \<in> rv (CFG_node (_Low_)) (CFG_node m)`
@@ -402,7 +402,7 @@ next
       thus ?thesis by simp
     next
       case (Return Q p f)
-      from `valid_edge ax` `kind ax = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `valid_edge a` `intra_kind (kind a)`
+      from `valid_edge ax` `kind ax = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `valid_edge a` `intra_kind (kind a)`
 	`sourcenode a = m` `sourcenode ax = m`
       have False by -(drule return_edges_only,auto simp:intra_kind_def)
       thus ?thesis by simp
@@ -587,7 +587,7 @@ next
       thus ?thesis by simp
     next
       case (Return Q' p' f')
-      from `valid_edge ax` `kind ax = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f'` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+      from `valid_edge ax` `kind ax = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'` `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
 	`sourcenode a = m` `sourcenode ax = m`
       have False by -(drule return_edges_only,auto)
       thus ?thesis by simp
@@ -789,15 +789,15 @@ next
     case (Cons ax asx)
     with `m -as'\<rightarrow>* (_Low_)` have "sourcenode ax = m" and "valid_edge ax"
       and "targetnode ax -asx\<rightarrow>* (_Low_)" by(auto elim:path_split_Cons)
-    from `valid_edge a` `valid_edge ax` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+    from `valid_edge a` `valid_edge ax` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       `sourcenode a = m` `sourcenode ax = m`
-    have "\<exists>Q f. kind ax = Q\<^bsub>p\<^esub>\<hookleftarrow>f" by(auto dest:return_edges_only)
+    have "\<exists>Q f. kind ax = Q\<hookleftarrow>\<^bsub>p\<^esub>f" by(auto dest:return_edges_only)
     with `same_level_path_aux cs as'` `as' = ax#asx` `cs = c' # cs'`
     have "ax \<in> get_return_edges c'" and "same_level_path_aux cs' asx" by auto
     from `valid_edge c'` `ax \<in> get_return_edges c'` `a \<in> get_return_edges c'`
     have [simp]:"ax = a" by(rule get_return_edges_unique)
     from `targetnode ax -asx\<rightarrow>* (_Low_)` have "targetnode a -asx\<rightarrow>* (_Low_)" by simp
-    from `upd_cs cs (a # as) = []` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `cs = c' # cs'`
+    from `upd_cs cs (a # as) = []` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `cs = c' # cs'`
       `a \<in> get_return_edges c'`
     have "upd_cs cs' as = []" by simp
     from `length s = Suc (length cs)` `cs = c' # cs'`
@@ -855,16 +855,16 @@ next
       from `valid_edge c'` `kind c' = Qx:rx\<hookrightarrow>\<^bsub>px\<^esub>fsx`
       have "get_proc (targetnode c') = px" by(rule get_proc_call)
       moreover
-      from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+      from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "get_proc (sourcenode a) = p" by(rule get_proc_return)
       ultimately have [simp]:"px = p" by simp
       from `valid_edge c'` `kind c' = Qx:rx\<hookrightarrow>\<^bsub>px\<^esub>fsx`
       obtain ins outs where "(p,ins,outs) \<in> set procs"
 	by(fastsimp dest!:callee_in_procs)
       with `sourcenode a \<in> \<lfloor>HRB_slice (CFG_node (_Low_))\<rfloor>\<^bsub>CFG\<^esub>`
-	`valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+	`valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have slice_kind:"slice_kind (CFG_node (_Low_)) a = 
-	Q\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. rspp (targetnode a) (HRB_slice (CFG_node (_Low_))) outs cf' cf)"
+	Q\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. rspp (targetnode a) (HRB_slice (CFG_node (_Low_))) outs cf' cf)"
 	by(rule slice_kind_Return_in_slice)
       with `s = cf#cfx#cfs` `s' = cf'#cfx'#cfs'`
       have sx:"transfer (slice_kind (CFG_node (_Low_)) a) s = 
@@ -902,7 +902,7 @@ next
 	  then obtain i where "i < length (ParamDefs (targetnode a))"
 	    and "(ParamDefs (targetnode a))!i = V"
 	    by(fastsimp simp:in_set_conv_nth)
-	  from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `(p,ins,outs) \<in> set procs`
+	  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs`
 	  have "length(ParamDefs (targetnode a)) = length outs"
 	    by(fastsimp intro:ParamDefs_return_target_length)
 	  show ?thesis
@@ -918,7 +918,7 @@ next
 	      (HRB_slice (CFG_node (_Low_))) outs (fst cfx') (fst cf')) V = 
 	      (fst cf')(outs!i)"
 	      by(auto intro:rspp_Actual_out_in_slice)
-	    from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `(p,ins,outs) \<in> set procs`
+	    from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs`
 	    have "\<forall>V \<in> set outs. V \<in> Use (sourcenode a)" by(fastsimp dest:outs_in_Use)
 	    have "\<forall>V \<in> Use (sourcenode a). V \<in> rv CFG_node (_Low_) (CFG_node m)"
 	    proof
@@ -1002,8 +1002,8 @@ next
       show ?thesis by(simp add:slice_kinds_def)
     next
       case False
-      from this `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
-      have slice_kind:"slice_kind (CFG_node (_Low_)) a = (\<lambda>cf. True)\<^bsub>p\<^esub>\<hookleftarrow>(\<lambda>cf cf'. cf')"
+      from this `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+      have slice_kind:"slice_kind (CFG_node (_Low_)) a = (\<lambda>cf. True)\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. cf')"
 	by(rule slice_kind_Return)
       with `s = cf#cfx#cfs` `s' = cf'#cfx'#cfs'`
       have [simp]:"transfer (slice_kind (CFG_node (_Low_)) a) s = cfx#cfs"
@@ -1079,12 +1079,12 @@ proof(cases as)
   from `m -as'\<rightarrow>\<^isub>\<surd>* (_Low_)` have "m -as'\<rightarrow>* (_Low_)" by(simp add:vp_def)
   from `m -as'\<rightarrow>* (_Low_)` `m = (_Low_)` have "as' = []"
   proof(induct m as' m'\<equiv>"(_Low_)" rule:path.induct)
-    case (Cons_path m'' as m' a m)
+    case (Cons_path m'' as a m)
     from `valid_edge a` `sourcenode a = m` `m = (_Low_)`
     have "targetnode a = (_Exit_)" by -(rule Exit_successor_of_Low,simp+)
-    with `targetnode a = m''` `m'' -as\<rightarrow>* m'`
-    have "m' = (_Exit_)" by -(drule path_Exit_source,auto)
-    with `m' = (_Low_)` have False by simp
+    with `targetnode a = m''` `m'' -as\<rightarrow>* (_Low_)`
+    have "(_Low_) = (_Exit_)" by -(drule path_Exit_source,auto)
+    hence False by simp
     thus ?case by simp
   qed simp
   with Nil `\<forall>V \<in> rv (CFG_node (_Low_)) (CFG_node m). cf V = cf' V`
@@ -1313,11 +1313,11 @@ locale NonInterferenceInter =
   SemanticsProperty sourcenode targetnode kind valid_edge Entry get_proc
     get_return_edges procs Main Exit Def Use ParamDefs ParamUses sem identifies
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
-  and kind :: "'edge \<Rightarrow> ('var,'val,'ret) edge_kind" 
+  and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
   and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> pname"
+  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
-  and procs :: "(pname \<times> 'var list \<times> 'var list) list" and Main :: "pname"
+  and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname"
   and Exit::"'node"  ("'('_Exit'_')") 
   and Def :: "'node \<Rightarrow> 'var set" and Use :: "'node \<Rightarrow> 'var set"
   and ParamDefs :: "'node \<Rightarrow> 'var list" and ParamUses :: "'node \<Rightarrow> 'var set list"

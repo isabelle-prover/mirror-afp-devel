@@ -21,18 +21,18 @@ datatype 'node LDCFG_node = Node 'node
   | NewExit
 
 
-types ('edge,'node,'var,'val,'ret) LDCFG_edge = 
-  "'node LDCFG_node \<times> (('var,'val,'ret) edge_kind) \<times> 'node LDCFG_node"
+types ('edge,'node,'var,'val,'ret,'pname) LDCFG_edge = 
+  "'node LDCFG_node \<times> (('var,'val,'ret,'pname) edge_kind) \<times> 'node LDCFG_node"
 
 
 subsubsection {* Lifting basic definitions using @{typ 'edge} and @{typ 'node} *}
 
 inductive lift_valid_edge :: "('edge \<Rightarrow> bool) \<Rightarrow> ('edge \<Rightarrow> 'node) \<Rightarrow> ('edge \<Rightarrow> 'node) \<Rightarrow>
-  ('edge \<Rightarrow> ('var,'val,'ret) edge_kind) \<Rightarrow> 'node \<Rightarrow> 'node \<Rightarrow> 
-  ('edge,'node,'var,'val,'ret) LDCFG_edge \<Rightarrow> 
+  ('edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind) \<Rightarrow> 'node \<Rightarrow> 'node \<Rightarrow> 
+  ('edge,'node,'var,'val,'ret,'pname) LDCFG_edge \<Rightarrow> 
   bool"
 for valid_edge::"'edge \<Rightarrow> bool" and src::"'edge \<Rightarrow> 'node" and trg::"'edge \<Rightarrow> 'node" 
-  and knd::"'edge \<Rightarrow> ('var,'val,'ret) edge_kind" and E::'node and X::'node
+  and knd::"'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" and E::'node and X::'node
 
 where lve_edge:
   "\<lbrakk>valid_edge a; src a \<noteq> E \<or> trg a \<noteq> X; 
@@ -57,20 +57,20 @@ by(auto elim:lift_valid_edge.cases)
 
 
 
-fun lift_get_proc :: "('node \<Rightarrow> pname) \<Rightarrow> pname \<Rightarrow> 'node LDCFG_node \<Rightarrow> pname"
+fun lift_get_proc :: "('node \<Rightarrow> 'pname) \<Rightarrow> 'pname \<Rightarrow> 'node LDCFG_node \<Rightarrow> 'pname"
   where "lift_get_proc get_proc Main (Node n) = get_proc n"
   | "lift_get_proc get_proc Main NewEntry = Main"
   | "lift_get_proc get_proc Main NewExit = Main"
 
 
 inductive_set lift_get_return_edges :: "('edge \<Rightarrow> 'edge set) \<Rightarrow> ('edge \<Rightarrow> bool) \<Rightarrow> 
-  ('edge \<Rightarrow> 'node) \<Rightarrow> ('edge \<Rightarrow> 'node) \<Rightarrow> ('edge \<Rightarrow> ('var,'val,'ret) edge_kind) 
-  \<Rightarrow> ('edge,'node,'var,'val,'ret) LDCFG_edge 
-  \<Rightarrow> ('edge,'node,'var,'val,'ret) LDCFG_edge set"
+  ('edge \<Rightarrow> 'node) \<Rightarrow> ('edge \<Rightarrow> 'node) \<Rightarrow> ('edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind) 
+  \<Rightarrow> ('edge,'node,'var,'val,'ret,'pname) LDCFG_edge 
+  \<Rightarrow> ('edge,'node,'var,'val,'ret,'pname) LDCFG_edge set"
 for get_return_edges :: "'edge \<Rightarrow> 'edge set" and valid_edge :: "'edge \<Rightarrow> bool"
   and src::"'edge \<Rightarrow> 'node" and trg::"'edge \<Rightarrow> 'node" 
-  and knd::"'edge \<Rightarrow> ('var,'val,'ret) edge_kind" 
-  and e::"('edge,'node,'var,'val,'ret) LDCFG_edge"
+  and knd::"'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
+  and e::"('edge,'node,'var,'val,'ret,'pname) LDCFG_edge"
 where lift_get_return_edgesI:
   "\<lbrakk>e = (Node (src a),knd a,Node (trg a)); valid_edge a; a' \<in> get_return_edges a; 
   e' = (Node (src a'),knd a',Node (trg a'))\<rbrakk>
@@ -134,14 +134,14 @@ subsection {* The lifting lemmas *}
 
 subsubsection {* Lifting the CFG locales *}
 
-abbreviation src :: "('edge,'node,'var,'val,'ret) LDCFG_edge \<Rightarrow> 'node LDCFG_node"
+abbreviation src :: "('edge,'node,'var,'val,'ret,'pname) LDCFG_edge \<Rightarrow> 'node LDCFG_node"
   where "src a \<equiv> fst a"
 
-abbreviation trg :: "('edge,'node,'var,'val,'ret) LDCFG_edge \<Rightarrow> 'node LDCFG_node"
+abbreviation trg :: "('edge,'node,'var,'val,'ret,'pname) LDCFG_edge \<Rightarrow> 'node LDCFG_node"
   where "trg a \<equiv> snd(snd a)"
 
-abbreviation knd :: "('edge,'node,'var,'val,'ret) LDCFG_edge \<Rightarrow> 
-  ('var,'val,'ret) edge_kind"
+abbreviation knd :: "('edge,'node,'var,'val,'ret,'pname) LDCFG_edge \<Rightarrow> 
+  ('var,'val,'ret,'pname) edge_kind"
   where "knd a \<equiv> fst(snd a)"
 
 
@@ -191,7 +191,7 @@ proof -
   next
     fix a Q' f'
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-      and "knd a = Q'\<^bsub>Main\<^esub>\<hookleftarrow>f'"
+      and "knd a = Q'\<hookleftarrow>\<^bsub>Main\<^esub>f'"
     thus False by(fastsimp elim:lift_valid_edge.cases dest:Main_no_return_source)
   next
     fix a Q r p fs
@@ -214,7 +214,7 @@ proof -
   next
     fix a Q' p f'
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-      and "knd a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+      and "knd a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     thus "lift_get_proc get_proc Main (src a) = p"
       by(fastsimp elim:lift_valid_edge.cases intro:get_proc_return)
   next
@@ -263,25 +263,25 @@ proof -
   next
     fix a Q' p f'
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-      and "knd a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
-    then obtain ax where "valid_edge ax" and "kind ax = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+      and "knd a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
+    then obtain ax where "valid_edge ax" and "kind ax = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
       and "sourcenode ax \<noteq> Entry \<or> targetnode ax \<noteq> Exit"
       and "src a = Node (sourcenode ax)" and "trg a = Node (targetnode ax)"
       by(fastsimp elim:lift_valid_edge.cases)
-    from `valid_edge ax` `kind ax = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
+    from `valid_edge ax` `kind ax = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
     have all:"\<forall>a'. valid_edge a' \<and> sourcenode a' = sourcenode ax \<longrightarrow> 
-            (\<exists>Qx fx. kind a' = Qx\<^bsub>p\<^esub>\<hookleftarrow>fx)"
+            (\<exists>Qx fx. kind a' = Qx\<hookleftarrow>\<^bsub>p\<^esub>fx)"
       by(auto dest:return_edges_only)
     { fix a' 
       assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a'"
 	and "src a' = src a"
-      hence "\<exists>Qx fx. knd a' = Qx\<^bsub>p\<^esub>\<hookleftarrow>fx"
+      hence "\<exists>Qx fx. knd a' = Qx\<hookleftarrow>\<^bsub>p\<^esub>fx"
       proof(induct rule:lift_valid_edge.induct)
 	case (lve_edge ax' e)
 	note [simp] = `e = (Node (sourcenode ax'), kind ax', Node (targetnode ax'))`
 	from `src e = src a` `src a = Node (sourcenode ax)`
 	have "sourcenode ax' = sourcenode ax" by simp
-	with `valid_edge ax'` all have "\<exists>Qx fx. kind ax' = Qx\<^bsub>p\<^esub>\<hookleftarrow>fx" by blast
+	with `valid_edge ax'` all have "\<exists>Qx fx. kind ax' = Qx\<hookleftarrow>\<^bsub>p\<^esub>fx" by blast
 	thus ?case by simp
       next
 	case (lve_Entry_edge e)
@@ -301,7 +301,7 @@ proof -
 	thus ?case by simp
       qed }
     thus "\<forall>a'. lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a' \<and>
-               src a' = src a \<longrightarrow> (\<exists>Qx fx. knd a' = Qx\<^bsub>p\<^esub>\<hookleftarrow>fx)" by simp
+               src a' = src a \<longrightarrow> (\<exists>Qx fx. knd a' = Qx\<hookleftarrow>\<^bsub>p\<^esub>fx)" by simp
   next
     fix a Q r p fs
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
@@ -336,14 +336,14 @@ proof -
       from `valid_edge ax` `a' \<in> get_return_edges ax` obtain Q r p fs 
 	where "kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" by(fastsimp dest!:only_call_get_return_edges)
       with `valid_edge ax` `a' \<in> get_return_edges ax` obtain Q' f' 
-	where "kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" by(fastsimp dest!:call_return_edges)
-      from `valid_edge a'` `kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have "get_proc(sourcenode a') = p"
+	where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by(fastsimp dest!:call_return_edges)
+      from `valid_edge a'` `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have "get_proc(sourcenode a') = p"
 	by(rule get_proc_return)
       have "sourcenode a' \<noteq> Entry"
       proof
 	assume "sourcenode a' = Entry"
 	with get_proc_Entry `get_proc(sourcenode a') = p` have "p = Main" by simp
-	with `kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have "kind a' = Q'\<^bsub>Main\<^esub>\<hookleftarrow>f'" by simp
+	with `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have "kind a' = Q'\<hookleftarrow>\<^bsub>Main\<^esub>f'" by simp
 	with `valid_edge a'` show False by(rule Main_no_return_source)
       qed
       with `e' = (Node (sourcenode a'), kind a', Node (targetnode a'))` 
@@ -369,13 +369,13 @@ proof -
     assume "a' \<in> lift_get_return_edges get_return_edges 
       valid_edge sourcenode targetnode kind a" and "knd a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
       and "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-    thus "\<exists>Q' f'. knd a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+    thus "\<exists>Q' f'. knd a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     proof (induct rule:lift_get_return_edges.induct)
       case (lift_get_return_edgesI ax a' e')
       from `a = (Node (sourcenode ax), kind ax, Node (targetnode ax))`
 	`knd a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" by simp
-      with `valid_edge ax` `a' \<in> get_return_edges ax` have "\<exists>Q' f'. kind a' = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+      with `valid_edge ax` `a' \<in> get_return_edges ax` have "\<exists>Q' f'. kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
 	by -(rule call_return_edges)
       with `e' = (Node (sourcenode a'), kind a', Node (targetnode a'))`
       show ?case by simp
@@ -383,14 +383,14 @@ proof -
   next
     fix a Q' p f'
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-      and "knd a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+      and "knd a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     thus "\<exists>!a'. lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a' \<and>
       (\<exists>Q r fs. knd a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and> a \<in> lift_get_return_edges get_return_edges 
       valid_edge sourcenode targetnode kind a'"
     proof(induct rule:lift_valid_edge.induct)
       case (lve_edge a e)
       from `e = (Node (sourcenode a), kind a, Node (targetnode a))`
-	`knd e = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` have "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" by simp
+	`knd e = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by simp
       with `valid_edge a`
       have "\<exists>!a'. valid_edge a' \<and> (\<exists>Q r fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and> 
 	a \<in> get_return_edges a'"
@@ -586,13 +586,13 @@ proof -
   next
     fix a Q' p f'
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-      and "knd a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'"
+      and "knd a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     thus "\<exists>!a'. lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a' \<and>
       trg a' = trg a \<and> intra_kind (knd a')"
     proof(induct rule:lift_valid_edge.induct)
       case (lve_edge a e)
-      from `e = (Node (sourcenode a), kind a, Node (targetnode a))` `knd e = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
-      have "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" by simp
+      from `e = (Node (sourcenode a), kind a, Node (targetnode a))` `knd e = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
+      have "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" by simp
       with `valid_edge a` have "\<exists>!a'. valid_edge a' \<and> targetnode a' = targetnode a \<and>
 	intra_kind(kind a')" by(rule return_only_one_intra_edge)
       then obtain a' where "valid_edge a'" and "targetnode a' = targetnode a"
@@ -603,7 +603,7 @@ proof -
       have "targetnode a \<noteq> Exit"
       proof
 	assume "targetnode a = Exit"
-	with `valid_edge a` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` show False
+	with `valid_edge a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` show False
 	  by(rule Exit_no_return_target)
       qed
       with `targetnode a' = targetnode a` have "targetnode a' \<noteq> Exit" by simp
@@ -749,13 +749,13 @@ proof -
   next
     fix a Q' p f' ins outs
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-      and "knd a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" and "(p, ins, outs) \<in> set procs"
+      and "knd a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" and "(p, ins, outs) \<in> set procs"
     thus "length (lift_ParamDefs ParamDefs (trg a)) = length outs"
     proof(induct rule:lift_valid_edge.induct)
       case (lve_edge a e)
       from `e = (Node (sourcenode a), kind a, Node (targetnode a))`
-	`knd e = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
-      have "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" and "trg e = Node (targetnode a)" by simp_all
+	`knd e = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
+      have "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" and "trg e = Node (targetnode a)" by simp_all
       with `valid_edge a` `(p,ins,outs) \<in> set procs`
       have "length(ParamDefs (targetnode a)) = length outs"
 	by -(rule ParamDefs_return_target_length)
@@ -851,13 +851,13 @@ proof -
   next
     fix a Q p f ins outs V
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-      and "knd a = Q\<^bsub>p\<^esub>\<hookleftarrow>f" and "(p, ins, outs) \<in> set procs" and "V \<in> set outs"
+      and "knd a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" and "(p, ins, outs) \<in> set procs" and "V \<in> set outs"
     thus "V \<in> lift_Use Use Entry Exit H L (src a)"
     proof(induct rule:lift_valid_edge.induct)
       case (lve_edge a e)
-      from `e = (Node (sourcenode a), kind a, Node (targetnode a))` `knd e = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
-      have "kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f" by simp
-      from `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` `(p, ins, outs) \<in> set procs` `V \<in> set outs`
+      from `e = (Node (sourcenode a), kind a, Node (targetnode a))` `knd e = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
+      have "kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" by simp
+      from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p, ins, outs) \<in> set procs` `V \<in> set outs`
       have "V \<in> Use (sourcenode a)" by(rule outs_in_Use)
       from `e = (Node (sourcenode a), kind a, Node (targetnode a))`
       have "src e = Node (sourcenode a)" by simp
@@ -1084,13 +1084,13 @@ proof -
   next
     fix a Q' p f' ins outs cf cf'
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-      and "knd a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" and "(p, ins, outs) \<in> set procs"
+      and "knd a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" and "(p, ins, outs) \<in> set procs"
     thus "f' cf cf' = cf'(lift_ParamDefs ParamDefs (trg a) [:=] map cf outs)"
     proof(induct rule:lift_valid_edge.induct)
       case (lve_edge a e)
-      from `e = (Node (sourcenode a), kind a, Node (targetnode a))` `knd e = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'`
-      have "kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'" and "trg e = Node (targetnode a)" by simp_all
-      from `valid_edge a` `kind a = Q'\<^bsub>p\<^esub>\<hookleftarrow>f'` `(p, ins, outs) \<in> set procs`
+      from `e = (Node (sourcenode a), kind a, Node (targetnode a))` `knd e = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
+      have "kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'" and "trg e = Node (targetnode a)" by simp_all
+      from `valid_edge a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` `(p, ins, outs) \<in> set procs`
       have "f' cf cf' = cf'(ParamDefs (targetnode a) [:=] map cf outs)"
 	by(rule CFG_return_edge_fun)
       with `trg e = Node (targetnode a)` show ?case by simp
@@ -1157,7 +1157,7 @@ proof -
   next
     fix a Q p f
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-      and "knd a = Q\<^bsub>p\<^esub>\<hookleftarrow>f" and "trg a = NewExit"
+      and "knd a = Q\<hookleftarrow>\<^bsub>p\<^esub>f" and "trg a = NewExit"
     thus False by(fastsimp elim:lift_valid_edge.cases)
   next
     show "\<exists>a. lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a \<and>
@@ -1426,7 +1426,7 @@ proof -
       have "targetnode a \<noteq> Exit"
       proof
 	assume "targetnode a = Exit"
-	with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` show False by(rule Exit_no_return_target)
+	with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` show False by(rule Exit_no_return_target)
       qed
       with `valid_edge a` 
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e"
@@ -1444,7 +1444,7 @@ proof -
 	and path:"CFG.path src trg
 	(lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
 	(Node (targetnode a)) es (Node m')" by auto
-      from valid_path `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+      from valid_path `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "CFG.valid_path_aux knd
 	(lift_get_return_edges get_return_edges valid_edge sourcenode 
 	targetnode kind) [] (?e#es)" by simp
@@ -1473,7 +1473,7 @@ proof -
       have "targetnode a \<noteq> Exit"
       proof
 	assume "targetnode a = Exit"
-	with `valid_edge a` `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` show False by(rule Exit_no_return_target)
+	with `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` show False by(rule Exit_no_return_target)
       qed
       with `valid_edge a` 
       have "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit ?e"
@@ -1498,7 +1498,7 @@ proof -
       have "?e \<in> lift_get_return_edges get_return_edges valid_edge sourcenode
         targetnode kind (Node (sourcenode c'),kind c',Node (targetnode c'))"
 	by(fastsimp intro:lift_get_return_edgesI)
-      with valid_path `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+      with valid_path `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
       have "CFG.valid_path_aux knd
 	(lift_get_return_edges get_return_edges valid_edge sourcenode targetnode kind)
 	((Node (sourcenode c'),kind c',Node (targetnode c'))#csx) (?e#es)"
@@ -1515,7 +1515,7 @@ proof -
       have "CFG.path src trg
 	(lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit)
 	(Node m) (?e#es) (Node m')" by(fastsimp intro:CFGExit.Cons_path)
-      ultimately show ?case using `kind a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` by blast
+      ultimately show ?case using `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` by blast
     qed }
   hence lift_valid_path:"\<And>m as m'. \<lbrakk>m -as\<rightarrow>\<^isub>\<surd>* m'; m \<noteq> Entry \<or> m' \<noteq> Exit\<rbrakk> 
     \<Longrightarrow> \<exists>es. CFG.CFG.valid_path' src trg knd
@@ -1844,12 +1844,12 @@ proof -
 	fix a Q f p
 	assume "n' = src a"
 	  and "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-	  and "knd a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+	  and "knd a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
 	hence "lift_get_proc get_proc Main (src a) = p"
 	  by -(rule CFGExit.get_proc_return)
 	with CFGExit.get_proc_Exit lift_eq `n' = src a` `n = NewExit`
 	have "p = Main" by simp
-	with `knd a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "knd a = Q\<^bsub>Main\<^esub>\<hookleftarrow>f" by simp
+	with `knd a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "knd a = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
 	with `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a`
 	have False by(rule CFGExit.Main_no_return_source)
 	thus ?thesis by simp
@@ -1858,21 +1858,21 @@ proof -
       fix a Q f p
       assume "n = src a"
 	and "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
-	and "knd a = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+	and "knd a = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
       then obtain x where "valid_edge x" and "src a = Node (sourcenode x)"
-	and "kind x = Q\<^bsub>p\<^esub>\<hookleftarrow>f"
+	and "kind x = Q\<hookleftarrow>\<^bsub>p\<^esub>f"
 	by(fastsimp elim:lift_valid_edge.cases)
       hence "method_exit (sourcenode x)" by(fastsimp simp:method_exit_def)
       from method_exit2 show ?thesis
       proof(rule CFGExit.method_exit_cases)
 	assume "n' = NewExit"
 	from `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a`
-	  `knd a = Q\<^bsub>p\<^esub>\<hookleftarrow>f`
+	  `knd a = Q\<hookleftarrow>\<^bsub>p\<^esub>f`
 	have "lift_get_proc get_proc Main (src a) = p"
 	  by -(rule CFGExit.get_proc_return)
 	with CFGExit.get_proc_Exit lift_eq `n = src a` `n' = NewExit`
 	have "p = Main" by simp
-	with `knd a = Q\<^bsub>p\<^esub>\<hookleftarrow>f` have "knd a = Q\<^bsub>Main\<^esub>\<hookleftarrow>f" by simp
+	with `knd a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` have "knd a = Q\<hookleftarrow>\<^bsub>Main\<^esub>f" by simp
 	with `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a`
 	have False by(rule CFGExit.Main_no_return_source)
 	thus ?thesis by simp
@@ -1880,9 +1880,9 @@ proof -
 	fix a' Q' f' p'
 	assume "n' = src a'"
 	  and "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a'"
-	  and "knd a' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f'"
+	  and "knd a' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'"
 	then obtain x' where "valid_edge x'" and "src a' = Node (sourcenode x')"
-	  and "kind x' = Q'\<^bsub>p'\<^esub>\<hookleftarrow>f'"
+	  and "kind x' = Q'\<hookleftarrow>\<^bsub>p'\<^esub>f'"
 	  by(fastsimp elim:lift_valid_edge.cases)
 	hence "method_exit (sourcenode x')" by(fastsimp simp:method_exit_def)
 	with `method_exit (sourcenode x)` lift_eq `n = src a` `n' = src a'`

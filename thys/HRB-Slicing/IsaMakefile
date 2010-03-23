@@ -5,11 +5,12 @@ BASE-IMAGE = Jinja
 
 ## targets
 
+
 default: $(SESSION-NAME)
 test: $(SESSION-NAME)
 images: $(SESSION-NAME)
 
-all: images
+all: test
 
 
 ## global settings
@@ -24,6 +25,7 @@ IMAGE=$(OUT)/$(BASE-IMAGE)
 else
 IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
 endif
+
 
 USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf 
 
@@ -40,6 +42,7 @@ $(OUT)/$(SESSION-NAME): Jinja $(LOG)/$(SESSION-NAME).gz
 
 Jinja:
 	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
+
 
 $(LOG)/$(SESSION-NAME).gz: $(IMAGE) ROOT.ML HRBSlicing.thy \
 	StaticInter/*.thy Proc/*.thy JinjaVM_Inter/*.thy \
