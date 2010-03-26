@@ -1,2 +1,2 @@
-no_document use_thy "Nat_Int_Bij";
+no_document use_thy "Nat_Bijection";
 use_thy "./CofGroups"
