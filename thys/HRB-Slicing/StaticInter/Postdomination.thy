@@ -517,6 +517,22 @@ proof(atomize_elim)
 qed
 
 
+lemma intra_path_to_matching_method_exit:
+  assumes "method_exit n'" and "get_proc n = get_proc n'" and "valid_node n"
+  obtains as where "n -as\<rightarrow>\<^isub>\<iota>* n'"
+proof(atomize_elim)
+  from `valid_node n` obtain as' where "n -as'\<rightarrow>\<^isub>\<surd>* (_Exit_)"
+    by(fastsimp dest:Exit_path)
+  then obtain as mex where "n -as\<rightarrow>\<^isub>\<iota>* mex" and "method_exit mex"
+    by(fastsimp elim:valid_Exit_path_intra_path)
+  from `n -as\<rightarrow>\<^isub>\<iota>* mex` have "get_proc n = get_proc mex" 
+    by(rule intra_path_get_procs)
+  with `method_exit n'` `get_proc n = get_proc n'` `method_exit mex`
+  have "mex = n'" by(fastsimp intro:method_exit_unique)
+  with `n -as\<rightarrow>\<^isub>\<iota>* mex` show "\<exists>as. n -as\<rightarrow>\<^isub>\<iota>* n'" by fastsimp
+qed
+
+
 end
 
 end

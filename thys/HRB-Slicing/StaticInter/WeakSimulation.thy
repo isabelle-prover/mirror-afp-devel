@@ -887,13 +887,15 @@ proof(atomize_elim)
 qed
 
 
-
 lemma silent_moves_intra_path_no_obs:
-  assumes "m -as\<rightarrow>\<^isub>\<iota>* m'" and "obs_intra m \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub> = {}" and "method_exit m'" 
-  and "length s = length (m#msx')" and "\<forall>m \<in> set msx'. return_node m"
-  obtains as' where "n\<^isub>c,slice_kind n\<^isub>c \<turnstile> (m#msx',s) =as'\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
+  assumes "obs_intra m \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub> = {}" and "method_exit m'"
+  and "get_proc m = get_proc m'" and "valid_node m" and "length s = length (m#msx')"
+  and "\<forall>m \<in> set msx'. return_node m"
+  obtains as where "n\<^isub>c,slice_kind n\<^isub>c \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)"
 proof(atomize_elim)
-  from `m -as\<rightarrow>\<^isub>\<iota>* m'` obtain x where "distance m m' x" and "x \<le> length as"
+  from `method_exit m'` `get_proc m = get_proc m'` `valid_node m`
+  obtain as where "m -as\<rightarrow>\<^isub>\<iota>* m'" by(erule intra_path_to_matching_method_exit)
+  then obtain x where "distance m m' x" and "x \<le> length as"
     by(erule every_path_distance)
   from `distance m m' x` `m -as\<rightarrow>\<^isub>\<iota>* m'` `obs_intra m \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub> = {}`
     `length s = length (m#msx')` `\<forall>m \<in> set msx'. return_node m`
@@ -907,7 +909,7 @@ proof(atomize_elim)
     hence [simp]:"m = m'" by(fastsimp elim:path.cases simp:intra_path_def)
     with `length s = length (m#msx')`[THEN sym]
     have "n\<^isub>c,slice_kind n\<^isub>c \<turnstile> (m#msx',s) =[]\<Rightarrow>\<^isub>\<tau> (m#msx',s)" 
-      by -(rule silent_moves_Nil)
+      by(fastsimp intro:silent_moves_Nil)
     thus "\<exists>as. n\<^isub>c,slice_kind n\<^isub>c \<turnstile> (m#msx',s) =as\<Rightarrow>\<^isub>\<tau> (m'#msx',s)" by simp blast
   next
     fix x m as fix s::"(('var \<rightharpoonup> 'val) \<times> 'ret) list"
@@ -1025,7 +1027,8 @@ proof -
 	apply(erule_tac x="cs'" in allE) apply clarsimp
 	by(case_tac cs') auto
       from `valid_edge a` have "valid_node (targetnode a)" by simp
-      from IH[OF `msx' = targetnode a # ms` this `\<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i)`
+      from IH[OF `msx' = targetnode a # ms` this 
+        `\<forall>i<length rs. rs ! i \<in> get_return_edges (cs ! i)`
 	`ms = targetnodes rs` `valid_return_list rs (targetnode a)`
 	`length rs = length cs`]
       have "targetnode a -as\<rightarrow>* m'" and "valid_path_aux cs as" by simp_all
@@ -2845,13 +2848,13 @@ proof(atomize_elim)
       have "get_proc mx = get_proc pex" by simp
       with `method_exit (hd ms\<^isub>1)` ` hd ms\<^isub>1 = sourcenode a` `method_exit pex`
       have [simp]:"pex = hd ms\<^isub>1" by(fastsimp intro:method_exit_unique)
-      from `hd ms\<^isub>2 -as\<rightarrow>\<^isub>\<iota>* pex` `obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub> = {}`
-	`method_exit (hd ms\<^isub>1)` `length ms\<^isub>2 = length s\<^isub>2` 
-	`\<forall>m\<in>set (tl ms\<^isub>1). return_node m` `ms\<^isub>2 \<noteq> []`
+      from `obs_intra (hd ms\<^isub>2) \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub> = {}` `method_exit pex`
+        `get_proc (hd ms\<^isub>2) = get_proc pex` `valid_node (hd ms\<^isub>2)`
+        `length ms\<^isub>2 = length s\<^isub>2` `\<forall>m\<in>set (tl ms\<^isub>1). return_node m` `ms\<^isub>2 \<noteq> []`
       obtain as' 
 	where "n\<^isub>c,slice_kind n\<^isub>c \<turnstile> (hd ms\<^isub>2#tl ms\<^isub>2,s\<^isub>2) =as'\<Rightarrow>\<^isub>\<tau> (hd ms\<^isub>1#tl ms\<^isub>1,s\<^isub>2)"
-	by(fastsimp elim!:silent_moves_intra_path_no_obs[of _ _ _ _ s\<^isub>2 "tl ms\<^isub>2"]
-	             dest:hd_Cons_tl)
+        by(fastsimp elim!:silent_moves_intra_path_no_obs[of _ _ _ s\<^isub>2 "tl ms\<^isub>2"]
+                     dest:hd_Cons_tl)
       with `ms\<^isub>2 \<noteq> []` have "n\<^isub>c,slice_kind n\<^isub>c \<turnstile> (ms\<^isub>2,s\<^isub>2) =as'\<Rightarrow>\<^isub>\<tau> (ms\<^isub>1,s\<^isub>2)"
 	by(fastsimp dest!:hd_Cons_tl)
       thus ?thesis by blast
