@@ -14,6 +14,7 @@
 
 ISABELLE_RELEASES=/home/isabelle
 ISABELLE_DEVEL=~/isadist/Isabelle
+ISABELLE_IDENT=~/isadist/ISABELLE_IDENT
 WORKING_COPY=~/afp
 DATE=$(date "+%Y-%m-%d")
 
@@ -64,7 +65,7 @@ if [ "$1" == "-" ]; then
   AFP_VER="development"
   WORKING_COPY=$WORKING_COPY/devel
   ISABELLE_TOOL=$ISABELLE_DEVEL/bin/isabelle
-    
+
   ERRORDIR=$HOME/var
   RUNNING=$HOME/var/running
   if [ -f "$RUNNING/$SHORT.running" -o -e $ERRORDIR/$SHORT*.log ]; then
@@ -81,6 +82,8 @@ if [ "$1" == "-" ]; then
   BROWSER_INFO=`$ISABELLE_TOOL getenv -b ISABELLE_BROWSER_INFO` || fail "could not find browser info"
   [ -e "$BROWSER_INFO" ] && rm -rf $BROWSER_INFO
 
+  ISABELLE_HG_ID="$(cat $ISABELLE_IDENT)"
+  ISABELLE_VER="devel -- hg id $ISABELLE_HG_ID"
 else
   AFP_VER="release ($1)"
   WORKING_COPY=$WORKING_COPY/release
@@ -89,6 +92,8 @@ else
   export ISABELLE_IMAGE_PATH="$ISABELLE_RELEASES/$1/heaps/$ML_IDENTIFIER/"
   LOG=$LOG-$1-$DATE.log
   REPORT=$REPORT-$1
+  
+  ISABELLE_VER="release -- $($ISABELLE_TOOL version)"
 fi
 
 . $WORKING_COPY/admin/main-config || fail "could not read main-config."
@@ -103,6 +108,14 @@ cd $WORKING_COPY || fail "could not cd to $WORKING_COPY"
 hg pull -u -q >> $LOG 2>&1 || fail "could not hg pull."
 
 echo "end hg pull/update" >> $LOG
+echo >> $LOG
+
+AFP_HG_ID="$(hg id -i)"
+AFP_VERSION="AFP version: $AFP_VER -- hg id $AFP_HG_ID"
+ISA_VERSION="Isabelle version: $ISABELLE_VER"
+
+echo "$AFP_VERSION" >> $LOG
+echo "$ISA_VERSION" >> $LOG
 echo >> $LOG
 
 # run test
@@ -123,7 +136,8 @@ if [ -n "$DIFF" ]; then
 The status of the following AFP entries changed or remains FAIL: 
 $DIFF
 
-Tested version: $AFP_VER
+$AFP_VERSION
+$ISA_VERSION
 Test ended on: $HOSTNAME, `date`.
 
 Have a nice day,
@@ -138,14 +152,16 @@ fi
 # send email to maintainer if there was a problem
 if [ "$FAILURE" != "0" ]; then
   FAIL=`tail -4 $LOG | head -1`
-  echo "`date`, $HOSTNAME, $AFP_VER: test failed on [$FAIL]. Elapsed time: $ELAPSED" >> $MASTERLOG
+  echo "`date`, $HOSTNAME, $AFP_VER [afp: $AFP_HG_ID, isa: $ISABELLE_VER]: test failed on [$FAIL]. Elapsed time: $ELAPSED" >> $MASTERLOG
   for E in $FAIL; do
     (
       . $WORKING_COPY/thys/$E/config || fail "error reading config for $E"
       if [ "$FREQUENT" == "yes" ]; then
         cat > $TMP <<EOF
 Session [$E] in the automated afp test failed. 
-Tested version: $AFP_VER
+
+$AFP_VERSION
+$ISA_VERSION
 Test ended on: $HOSTNAME, `date`.
 
 To reproduce the error, check out the $AFP_VER version of the
@@ -165,7 +181,7 @@ EOF
     )
   done
 else
-  echo "`date`, $HOSTNAME, $AFP_VER: All tests successful. Elapsed time: $ELAPSED" >> $MASTERLOG
+  echo "`date`, $HOSTNAME, $AFP_VER [afp: $AFP_HG_ID, isa: $ISABELLE_VER]: All tests successful. Elapsed time: $ELAPSED" >> $MASTERLOG
 fi
 
 # clean up tmp
