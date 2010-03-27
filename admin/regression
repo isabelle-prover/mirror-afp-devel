@@ -110,7 +110,7 @@ hg pull -u -q >> $LOG 2>&1 || fail "could not hg pull."
 echo "end hg pull/update" >> $LOG
 echo >> $LOG
 
-AFP_HG_ID="$(hg id)"
+AFP_HG_ID="$(hg id -i)"
 AFP_VERSION="AFP version: $AFP_VER -- hg id $AFP_HG_ID"
 ISA_VERSION="Isabelle version: $(ISABELLE_VER)"
 
