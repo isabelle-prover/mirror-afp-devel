@@ -112,7 +112,7 @@ echo >> $LOG
 
 AFP_HG_ID="$(hg id -i)"
 AFP_VERSION="AFP version: $AFP_VER -- hg id $AFP_HG_ID"
-ISA_VERSION="Isabelle version: $(ISABELLE_VER)"
+ISA_VERSION="Isabelle version: $ISABELLE_VER"
 
 echo "$AFP_VERSION" >> $LOG
 echo "$ISA_VERSION" >> $LOG
