@@ -22,7 +22,7 @@ LOG=~/afp-log/afp-test
 MASTERLOG=~/afp-log/afp-test.log
 REPORT=~/afp-log/report
 
-SHORT=at-poly
+SHORT=at-poly-test
 SETTINGS=~/settings/$SHORT
 
 function fail()
@@ -75,6 +75,12 @@ if [ "$1" == "-" ]; then
   cat $SETTINGS >> $ISABELLE_DEVEL/etc/settings
   ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
+  
+  if [ ! -r "$ISABELLE_IMAGE_PATH/HOL" -o ! -r "$ISABELLE_IMAGE_PATH/HOLCF" ]; then
+    echo "`date` $HOSTNAME: Skipped test. Isabelle devel version broken (HOL or HOLCF image not readable)." 
+    exit 1
+  fi
+  
   LOG=$LOG-devel-$DATE.log
   SNAPSHOT=1;
   REPORT=$REPORT-devel
@@ -119,7 +125,7 @@ echo "$ISA_VERSION" >> $LOG
 echo >> $LOG
 
 # run test
-nice $WORKING_COPY/admin/testall $FRQ -t $ISABELLE_TOOL -c >> $LOG 2>&1
+$WORKING_COPY/admin/testall $FRQ -t $ISABELLE_TOOL -c >> $LOG 2>&1
 FAILURE=$?
 
 ELAPSED=$("$HOME/bin/showtime" "$SECONDS")
