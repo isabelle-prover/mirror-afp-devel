@@ -68,16 +68,16 @@ if [ "$1" == "-" ]; then
 
   ERRORDIR=$HOME/var
   RUNNING=$HOME/var/running
-  if [ -f "$RUNNING/$SHORT.running" -o -e $ERRORDIR/$SHORT*.log ]; then
-    echo "`date` $HOSTNAME: Skipped test. Isabelle devel version broken." >> $MASTERLOG
+  if [ -f "$RUNNING/$SHORT.running" ]; then
+    echo "`date` $HOSTNAME: Skipped test. Isabelle test still running." >> $MASTERLOG
     exit 1
   fi
   cat $SETTINGS >> $ISABELLE_DEVEL/etc/settings
   ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
   
-  if [ ! -r "$ISABELLE_IMAGE_PATH/HOL" -o ! -r "$ISABELLE_IMAGE_PATH/HOLCF" ]; then
-    echo "`date` $HOSTNAME: Skipped test. Isabelle devel version broken (HOL or HOLCF image not readable)." 
+  if [ ! -r "$ISABELLE_IMAGE_PATH/HOL" -o ! -r "$ISABELLE_IMAGE_PATH/HOLCF" -o ! -r "$ISABELLE_IMAGE_PATH/HOL-Nominal"]; then
+    echo "`date` $HOSTNAME: Skipped test. Isabelle devel version broken (HOL, HOLCF, or HOL-Nominal image not readable)." 
     exit 1
   fi
   
