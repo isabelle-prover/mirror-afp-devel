@@ -49,7 +49,7 @@ href="http://web.cecs.pdx.edu/~brianh/">Brian Huffman</a>
 <!-- Abstract: -->	
 This theory defines a type constructor representing the free Boolean
 algebra over a set of generators.  Values of type
-(&alpha;)formula represent propositional formulas with
+(&alpha;)<i>formula</i> represent propositional formulas with
 uninterpreted variables from type &alpha;, ordered by implication.
 In addition to all the standard Boolean algebra operations, the
 library also provides a function for building homomorphisms to any
