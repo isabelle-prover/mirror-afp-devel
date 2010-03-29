@@ -56,6 +56,13 @@ is available <a href="citing.shtml">[here]</a>. A
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2010-03-29:
+<a href="entries/Free-Boolean-Algebra.shtml">Free Boolean Algebra</a>
+<br>Author:
+<a href="http://web.cecs.pdx.edu/~brianh/">Brian Huffman</a>
+</td></tr>
+
+<tr><td class="entry">
 2010-03-23:
 <a href="entries/InformationFlowSlicing.shtml">Information Flow Noninterference via Slicing</a>
 <br>Author:
