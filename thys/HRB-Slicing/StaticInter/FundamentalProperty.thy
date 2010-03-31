@@ -715,9 +715,7 @@ qed
 
 
 lemma silent_moves_slp:
-  "\<lbrakk>n\<^isub>c,f \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s'); valid_node m; valid_call_list cs m;
-  \<forall>i < length rs. rs!i \<in> get_return_edges (cs!i); valid_return_list rs m; 
-  length rs = length cs; ms'' = targetnodes rs;
+  "\<lbrakk>n\<^isub>c,f \<turnstile> (m#ms,s) =as\<Rightarrow>\<^isub>\<tau> (m'#ms',s'); valid_node m; 
   \<forall>mx \<in> set ms. \<exists>mx'. call_of_return_node mx mx' \<and> mx' \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>;
   \<forall>mx \<in> set ms'. \<exists>mx'. call_of_return_node mx mx' \<and> mx' \<in> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>\<rbrakk>
   \<Longrightarrow> m -as\<rightarrow>\<^bsub>sl\<^esub>* m' \<and> ms = ms'"
@@ -3260,9 +3258,7 @@ proof(atomize_elim)
     with `CFG_node m',kind \<turnstile> ([m],[cf]) =as'\<Rightarrow>\<^isub>\<tau> (m'#ms',transfers (kinds as) [cf])`
     have "CFG_node m',kind \<turnstile> ([m],[cf]) =as'\<Rightarrow>\<^isub>\<tau> ([m'],transfers (kinds as) [cf])"
       by simp
-    with `valid_node m` have "m -as'\<rightarrow>\<^bsub>sl\<^esub>* m'"
-      by(auto dest!:silent_moves_slp simp:valid_call_list_def valid_return_list_def 
-	targetnodes_def slp_def same_level_path_def)
+    with `valid_node m` have "m -as'\<rightarrow>\<^bsub>sl\<^esub>* m'" by(fastsimp dest:silent_moves_slp)
     from this `slice_edges (CFG_node m') [] as' = []` 
     obtain asx where "m -asx\<rightarrow>\<^isub>\<iota>* m'" and "slice_edges (CFG_node m') [] asx = []"
       by(erule slp_to_intra_path_with_slice_edges)
