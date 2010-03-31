@@ -76,7 +76,7 @@ if [ "$1" == "-" ]; then
   ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
   export ISABELLE_IMAGE_PATH="$HOME/isabelle-$SHORT/heaps/$ML_IDENTIFIER/"
   
-  if [ ! -r "$ISABELLE_IMAGE_PATH/HOL" -o ! -r "$ISABELLE_IMAGE_PATH/HOLCF" -o ! -r "$ISABELLE_IMAGE_PATH/HOL-Nominal"]; then
+  if [ ! -r "$ISABELLE_IMAGE_PATH/HOL" -o ! -r "$ISABELLE_IMAGE_PATH/HOLCF" -o ! -r "$ISABELLE_IMAGE_PATH/HOL-Nominal" ]; then
     echo "`date` $HOSTNAME: Skipped test. Isabelle devel version broken (HOL, HOLCF, or HOL-Nominal image not readable)." 
     exit 1
   fi
