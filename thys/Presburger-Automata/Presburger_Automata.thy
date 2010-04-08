@@ -202,7 +202,7 @@ definition insert_list :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
   "insert_list x xs \<equiv> if x mem xs then xs else x # xs"
 
 lemma insert_list_set[simp]:
-  "y \<in> set (insert_list x xs) = (y = x \<or> y \<in> set xs)"
+  "set (insert_list x xs) = insert x (set xs)"
   by (auto simp add: insert_list_def mem_iff)
 
 lemma insert_list_idemp[simp]:
@@ -251,14 +251,6 @@ lemma add_leaves_binop_subset:
    (\<Union>x\<in>set (add_leaves b xs). \<Union>y\<in>set (add_leaves b' ys). {f x y})"
   apply (induct f b b' arbitrary: xs ys rule: bdd_binop.induct)
   apply auto
-  apply (rule_tac x=x in bexI)
-  apply (rule_tac x=y in bexI)
-  apply (rule refl)
-  apply simp+
-  apply (rule_tac x=a in bexI)
-  apply (rule_tac x=xb in bexI)
-  apply (rule refl)
-  apply simp+
   apply (drule_tac ys="[f x y. x \<leftarrow> add_leaves l xs, y \<leftarrow> insert_list y ys]" in
     rev_subsetD [OF _ add_leaves_mono, standard])
   apply (simp add: image_eq_UN)
