@@ -15,10 +15,18 @@ h1 {
  border-style: none none none none;
 }
 
+h2 {
+ font: normal normal bold huge sans-serif;
+ padding-top: 0ex;
+ margin-top: 0ex;
+ margin-bottom: 0.5ex;
+ border-style: none none none none;
+}
+
 h3 {
  font: normal normal bold larger sans-serif;
- padding-top: 1ex;
- margin-bottom: 1ex;
+ padding-top: 0ex;
+ margin-bottom: 0.5ex;
  margin-left: 2ex;
  border-style: none none none none;
 }
