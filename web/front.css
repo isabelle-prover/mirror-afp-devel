@@ -17,17 +17,15 @@ h1 {
 
 h2 {
  font: normal normal bold huge sans-serif;
- padding-top: 0ex;
- margin-top: 0ex;
- margin-bottom: 0.5ex;
+ padding: 0ex 0ex 0ex 0ex;
+ margin: 0ex 0ex 1ex 0ex;
  border-style: none none none none;
 }
 
 h3 {
  font: normal normal bold larger sans-serif;
- padding-top: 0ex;
- margin-bottom: 0.5ex;
- margin-left: 2ex;
+ padding: 0ex 0ex 0ex 0ex;
+ margin: 1ex 0ex 0.2ex 2ex;
  border-style: none none none none;
 }
 
@@ -228,6 +226,7 @@ div.cite {
 
 div.list {
   margin: 0ex 0ex 0ex 4ex;
+  padding: 0ex 0ex 0ex 0ex;
 }
 
 pre.bibtex { 

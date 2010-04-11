@@ -110,15 +110,9 @@
 <h3>Security</h3>
 
 <div class="list">
-  <strong>Language-Based Security:</strong> &nbsp;
-
   <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
   <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
-
-  <strong>Access Control:</strong> &nbsp;
   <a href="entries/HotelKeyCards.shtml">HotelKeyCards</a> &nbsp;
-
-  <strong>Cryptography:</strong> &nbsp;
   <a href="entries/RSAPSS.shtml">RSAPSS</a> &nbsp;
 </div>
 
