@@ -102,6 +102,7 @@
   <a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a> &nbsp;
   <a href="entries/Slicing.shtml">Slicing</a> &nbsp;
   <a href="entries/HRB-Slicing.shtml">HRB-Slicing</a> &nbsp;
+  <a href="entries/InformationFlowSlicing.shtml">InformationFlowSlicing</a> &nbsp;
 
   <strong>Misc:</strong> &nbsp;
   <a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
@@ -129,6 +130,7 @@
 <a href="entries/SequentInvertibility.shtml">SequentInvertibility</a> &nbsp;
 <a href="entries/LinearQuantifierElim.shtml">LinearQuantifierElim</a> &nbsp;
 <a href="entries/Recursion-Theory-I.shtml">Recursion-Theory-I</a> &nbsp;
+<a href="entries/Free-Boolean-Algebra.shtml">Free-Boolean-Algebra</a> &bsp;
 </div>
 
 <p>&nbsp;</p>
