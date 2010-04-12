@@ -96,7 +96,6 @@
   <strong>Static&nbsp;Analysis:</strong>&nbsp;<a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a> &nbsp;
   <a href="entries/Slicing.shtml">Slicing</a> &nbsp;
   <a href="entries/HRB-Slicing.shtml">HRB-Slicing</a> &nbsp;
-  <a href="entries/InformationFlowSlicing.shtml">InformationFlowSlicing</a> &nbsp;
 
   <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
 </div>
@@ -108,6 +107,7 @@
   <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
   <a href="entries/HotelKeyCards.shtml">HotelKeyCards</a> &nbsp;
   <a href="entries/RSAPSS.shtml">RSAPSS</a> &nbsp;
+  <a href="entries/InformationFlowSlicing.shtml">InformationFlowSlicing</a> &nbsp;
 </div>
 
 <p>&nbsp;</p>
