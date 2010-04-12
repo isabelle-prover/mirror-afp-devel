@@ -70,7 +70,6 @@
 <div class="list">
 <a href="entries/Coinductive.shtml">Coinductive</a> &nbsp;
 <a href="entries/Stream-Fusion.shtml">Stream-Fusion</a> &nbsp;
-<a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
 </div>
 
 <h3>Programming Languages</h3>
@@ -96,6 +95,8 @@
   <strong>Static&nbsp;Analysis:</strong>&nbsp;<a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a> &nbsp;
   <a href="entries/Slicing.shtml">Slicing</a> &nbsp;
   <a href="entries/HRB-Slicing.shtml">HRB-Slicing</a> &nbsp;
+
+  <strong>Transformations:</strong>&nbsp;<a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
 
   <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
 </div>
