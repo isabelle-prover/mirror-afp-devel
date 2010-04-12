@@ -229,6 +229,13 @@ div.list {
   padding: 0ex 0ex 0ex 0ex;
 }
 
+div.list a:link { text-decoration:none }
+div.list a:visited { text-decoration:none }
+div.list a:hover { text-decoration:underline }
+div.list a:active { text-decoration:underline
+}
+div.list a:focus { text-decoration:underline }
+
 pre.bibtex { 
   white-space: pre;
 	border-width: thin thin thin thin;
