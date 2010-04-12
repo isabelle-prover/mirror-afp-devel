@@ -47,8 +47,7 @@
 <a href="entries/SATSolverVerification.shtml">SATSolverVerification</a> &nbsp;
 <a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
 
-<strong>Distributed:</strong> &nbsp;
-<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
+<strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
 <a href="entries/ClockSynchInst.shtml">ClockSynchInst</a> &nbsp;
 </div>
@@ -76,36 +75,30 @@
 
 <h3>Programming Languages</h3>
 <div class="list">
-  <strong>Language Definitions:</strong> &nbsp;
-  <a href="entries/CoreC++.shtml">CoreC++</a> &nbsp;
+  <strong>Language Definitions:</strong>&nbsp;<a href="entries/CoreC++.shtml">CoreC++</a> &nbsp;
   <a href="entries/FeatherweightJava.shtml">FeatherweightJava</a> &nbsp;
   <a href="entries/Jinja.shtml">Jinja</a> &nbsp;
   <a href="entries/JinjaThreads.shtml">JinjaThreads</a> &nbsp;
   <a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
   <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
 
-  <strong>Type Systems:</strong> &nbsp;
-  <a href="entries/MiniML.shtml">MiniML</a> &nbsp;
+  <strong>Type Systems:</strong>&nbsp;<a href="entries/MiniML.shtml">MiniML</a> &nbsp;
   <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 
-  <strong>Logics:</strong> &nbsp;
-  <a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
+  <strong>Logics:</strong>&nbsp;<a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
   <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp; 
   <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
   <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
 
-  <strong>Compiling:</strong> &nbsp;
-  <a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling-Exceptions-Correctly</a> &nbsp;
+  <strong>Compiling:</strong>&nbsp;<a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling-Exceptions-Correctly</a> &nbsp;
   <a href="entries/NormByEval.shtml">NormByEval</a> &nbsp;
 
-  <strong>Static Analysis:</strong> &nbsp;
-  <a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a> &nbsp;
+  <strong>Static&nbsp;Analysis:</strong>&nbsp;<a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a> &nbsp;
   <a href="entries/Slicing.shtml">Slicing</a> &nbsp;
   <a href="entries/HRB-Slicing.shtml">HRB-Slicing</a> &nbsp;
   <a href="entries/InformationFlowSlicing.shtml">InformationFlowSlicing</a> &nbsp;
 
-  <strong>Misc:</strong> &nbsp;
-  <a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
+  <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
 </div>
 
 <h3>Security</h3>
