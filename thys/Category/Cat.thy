@@ -19,7 +19,8 @@ record ('o, 'a) category =
   comp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl "\<bullet>\<index>" 60)
 
 definition
-  hom :: "[('o,'a,'m) category_scheme, 'o, 'o] \<Rightarrow> 'a set"  ("Hom\<index> _ _") where
+  hom :: "[('o,'a,'m) category_scheme, 'o, 'o] \<Rightarrow> 'a set"
+    ("Hom\<index> _ _" [81,81] 80) where
   "hom CC A B = { f. f\<in>ar CC & dom CC f = A & cod CC f = B }"
 
 locale category =
