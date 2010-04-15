@@ -4,7 +4,7 @@
 *)
 header {* Map Implementation by Red-Black-Trees*}
 theory RBTMapImpl
-imports Main MapSpec RBT MapGA
+imports Main MapSpec RBT_Impl MapGA
 begin
 text_raw {*\label{thy:RBTMapImpl}*}
 
@@ -13,18 +13,18 @@ text {*
   The abbreviations used by this implementation are rm,r.
 *}
 
-types ('k,'v) rm = "('k,'v) rbt"
+types ('k,'v) rm = "('k,'v) RBT_Impl.rbt"
 
 subsection "Definitions"
-definition "rm_\<alpha> == RBT.lookup"
-definition "rm_invar == RBT.is_rbt"
-definition "rm_empty == RBT.Empty"
-definition "rm_lookup k m == RBT.lookup m k"
-definition "rm_update == RBT.insert"
+definition "rm_\<alpha> == RBT_Impl.lookup"
+definition "rm_invar == RBT_Impl.is_rbt"
+definition "rm_empty == RBT_Impl.Empty"
+definition "rm_lookup k m == RBT_Impl.lookup m k"
+definition "rm_update == RBT_Impl.insert"
 definition "rm_update_dj == rm_update"
-definition "rm_delete == RBT.delete"
+definition "rm_delete == RBT_Impl.delete"
 definition rm_iterate :: "(('k,'v) rm,'k::linorder,'v,'\<sigma>) map_iterator"  
-  where "rm_iterate f t \<sigma>0 == RBT.fold f t \<sigma>0"
+  where "rm_iterate f t \<sigma>0 == RBT_Impl.fold f t \<sigma>0"
 
 (* TODO: The iterator could be defined as in-order traversal. Then we could
   show that iteration is always done in ascending order of keys.*)
@@ -35,8 +35,8 @@ definition rm_iterate :: "(('k,'v) rm,'k::linorder,'v,'\<sigma>) map_iterator"
 fun rm_iteratei 
   :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('k \<Rightarrow> 'v \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> ('k,'v) rm \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
   where
-  "rm_iteratei c f RBT.Empty \<sigma> = \<sigma>" |
-  "rm_iteratei c f (RBT.Branch col l k v r) \<sigma> = (
+  "rm_iteratei c f RBT_Impl.Empty \<sigma> = \<sigma>" |
+  "rm_iteratei c f (RBT_Impl.Branch col l k v r) \<sigma> = (
     if (c \<sigma>) then
       rm_iteratei c f l (rm_iteratei c f r (f k v \<sigma>))
     else 
@@ -45,7 +45,7 @@ fun rm_iteratei
 
 definition "rm_add == it_add rm_update rm_iterate"
 definition "rm_add_dj == rm_add"
-definition "rm_isEmpty m == m=RBT.Empty"
+definition "rm_isEmpty m == m=RBT_Impl.Empty"
 definition "rm_sel == iti_sel rm_iteratei"
 
 definition "rm_ball == sel_ball rm_sel"
@@ -76,30 +76,30 @@ lemmas rm_defs =
 
 lemma rm_empty_impl: "map_empty rm_\<alpha> rm_invar rm_empty"
   by (unfold_locales, unfold rm_defs)
-     (simp_all add: RBT.lookup_Empty RBT.lookup_insert RBT.insert_is_rbt)
+     (simp_all add: RBT_Impl.lookup_Empty RBT_Impl.lookup_insert RBT_Impl.insert_is_rbt)
 
 lemma rm_lookup_impl: "map_lookup rm_\<alpha> rm_invar rm_lookup"
   by (unfold_locales, unfold rm_defs)
-     (simp_all add: RBT.lookup_Empty RBT.lookup_insert RBT.insert_is_rbt)
+     (simp_all add: RBT_Impl.lookup_Empty RBT_Impl.lookup_insert RBT_Impl.insert_is_rbt)
 
 lemma rm_update_impl: "map_update rm_\<alpha> rm_invar rm_update"
   by (unfold_locales, unfold rm_defs)
-     (simp_all add: RBT.lookup_Empty RBT.lookup_insert RBT.insert_is_rbt)
+     (simp_all add: RBT_Impl.lookup_Empty RBT_Impl.lookup_insert RBT_Impl.insert_is_rbt)
 
 lemma rm_update_dj_impl: "map_update_dj rm_\<alpha> rm_invar rm_update_dj"
   by (unfold_locales, unfold rm_defs)
-     (simp_all add: RBT.lookup_Empty RBT.lookup_insert RBT.insert_is_rbt)
+     (simp_all add: RBT_Impl.lookup_Empty RBT_Impl.lookup_insert RBT_Impl.insert_is_rbt)
 
 lemma rm_delete_impl: "map_delete rm_\<alpha> rm_invar rm_delete"
   by (unfold_locales, unfold rm_defs)
-     (simp_all add: RBT.lookup_Empty RBT.lookup_insert RBT.insert_is_rbt
-       RBT.lookup_delete)
+     (simp_all add: RBT_Impl.lookup_Empty RBT_Impl.lookup_insert RBT_Impl.insert_is_rbt
+       RBT_Impl.lookup_delete)
 
 lemma rm_iterate_alt: 
-  "rm_iterate f t \<sigma> = foldl (\<lambda>x (k, v). f k v x) \<sigma> (RBT.entries t)"
+  "rm_iterate f t \<sigma> = foldl (\<lambda>x (k, v). f k v x) \<sigma> (RBT_Impl.entries t)"
   by (simp add: rm_iterate_def fold_def)
 
-lemma rm_\<alpha>_alist: "rm_invar m \<Longrightarrow> rm_\<alpha> m = Map.map_of (RBT.entries m)"
+lemma rm_\<alpha>_alist: "rm_invar m \<Longrightarrow> rm_\<alpha> m = Map.map_of (RBT_Impl.entries m)"
   by (unfold rm_\<alpha>_def rm_invar_def)
      (simp add: map_of_entries)
 
@@ -118,28 +118,28 @@ lemma rm_iterate_impl:
 proof -
   case goal1 thus ?case 
   proof (rule_tac 
-      distinct_foldl_invar[of "RBT.entries m" "\<lambda>S \<sigma>. I (fst ` S) \<sigma>" 
+      distinct_foldl_invar[of "RBT_Impl.entries m" "\<lambda>S \<sigma>. I (fst ` S) \<sigma>" 
                               \<sigma>0 "\<lambda>\<sigma> (k,v). f k v \<sigma>", 
                            simplified]
     )
     assume A: 
       "rm_invar m" 
-      "I (fst ` set (RBT.entries m)) \<sigma>0"
+      "I (fst ` set (RBT_Impl.entries m)) \<sigma>0"
       "\<And>k it v \<sigma>.
-         \<lbrakk>k \<in> it; Map.map_of (RBT.entries m) k = Some v;
-          it \<subseteq> fst ` set (RBT.entries m); I it \<sigma>\<rbrakk>
+         \<lbrakk>k \<in> it; Map.map_of (RBT_Impl.entries m) k = Some v;
+          it \<subseteq> fst ` set (RBT_Impl.entries m); I it \<sigma>\<rbrakk>
          \<Longrightarrow> I (it - {k}) (f k v \<sigma>)"
 
-    from A(1) have ST: "RBT.sorted m" by (simp add: rm_invar_def)
-    with distinct_entries have "distinct (List.map fst (RBT.entries m))" .
-    thus DAL: "distinct (RBT.entries m)" by (rule distinct_map)
-    from A(2) show "I (fst ` set (RBT.entries m)) \<sigma>0" .
+    from A(1) have ST: "RBT_Impl.sorted m" by (simp add: rm_invar_def)
+    with distinct_entries have "distinct (List.map fst (RBT_Impl.entries m))" .
+    thus DAL: "distinct (RBT_Impl.entries m)" by (rule distinct_map)
+    from A(2) show "I (fst ` set (RBT_Impl.entries m)) \<sigma>0" .
     
     fix x it \<sigma>
-    assume B: "x \<in> it" "it \<subseteq> set (RBT.entries m)" "I (fst ` it) \<sigma>"
+    assume B: "x \<in> it" "it \<subseteq> set (RBT_Impl.entries m)" "I (fst ` it) \<sigma>"
 
     have 
-      ALD: "!!k v v'. \<lbrakk>(k,v)\<in>set (RBT.entries m); (k,v')\<in>set (RBT.entries m)\<rbrakk> \<Longrightarrow> v=v'" 
+      ALD: "!!k v v'. \<lbrakk>(k,v)\<in>set (RBT_Impl.entries m); (k,v')\<in>set (RBT_Impl.entries m)\<rbrakk> \<Longrightarrow> v=v'" 
       using distinct_map_eq[OF distinct_entries[OF ST]]
       by auto
     hence ALD': "!!k v v'. \<lbrakk>(k,v)\<in>it; (k,v')\<in>it\<rbrakk> \<Longrightarrow> v=v'" using B(2) by blast
@@ -147,19 +147,19 @@ proof -
     obtain k v where [simp]: "x=(k,v)" by force
     have "I (fst ` it - {k}) (f k v \<sigma>)" proof (rule A(3))
       from B(1) show "k\<in>fst ` it" by force
-      show "Map.map_of (RBT.entries m) k = Some v" using B(1,2)
+      show "Map.map_of (RBT_Impl.entries m) k = Some v" using B(1,2)
         apply (rule_tac ccontr)
-        apply (case_tac "Map.map_of (RBT.entries m) k")
+        apply (case_tac "Map.map_of (RBT_Impl.entries m) k")
         apply auto
-        apply (subgoal_tac "(k,v)\<in>set (RBT.entries m)")
+        apply (subgoal_tac "(k,v)\<in>set (RBT_Impl.entries m)")
         apply (drule split_list)
         apply force
         apply blast
-        apply (subgoal_tac "(k,a)\<in>set (RBT.entries m)")
+        apply (subgoal_tac "(k,a)\<in>set (RBT_Impl.entries m)")
         apply (blast dest: ALD)
         apply (auto dest: map_of_SomeD)
         done
-      from B(2) show "fst ` it \<subseteq> fst ` set (RBT.entries m)" by auto
+      from B(2) show "fst ` it \<subseteq> fst ` set (RBT_Impl.entries m)" by auto
       from B(3) show "I (fst ` it) \<sigma>" .
     qed
     moreover have "fst ` (it - {(k, v)}) = fst ` it - {k}" using ALD' B(1)
@@ -179,7 +179,7 @@ proof -
     parameterized by the map and the overall set of keys *}
   def ipres == "\<lambda>m d. \<forall>\<sigma> k v it. 
       ( c \<sigma> 
-        \<and> k \<in> it \<and> RBT.lookup m k = Some v 
+        \<and> k \<in> it \<and> RBT_Impl.lookup m k = Some v 
         \<and> it \<subseteq> d \<and> I it \<sigma> 
       ) \<longrightarrow> I (it - {k}) (f k v \<sigma>)"
 
@@ -198,10 +198,10 @@ proof -
       *}
     fix col l k' v' r d
     assume A:
-      "RBT.sorted (RBT.Branch col l k' v' r)"
-      "ipres (RBT.Branch col l k' v' r) d"
+      "RBT_Impl.sorted (RBT_Impl.Branch col l k' v' r)"
+      "ipres (RBT_Impl.Branch col l k' v' r) d"
 
-    from A(1) have ST: "l |\<guillemotleft> k'" "k' \<guillemotleft>| r" "RBT.sorted l" "RBT.sorted r" 
+    from A(1) have ST: "l |\<guillemotleft> k'" "k' \<guillemotleft>| r" "RBT_Impl.sorted l" "RBT_Impl.sorted r" 
       by simp_all
 
     have L: "ipres l d"
@@ -212,14 +212,14 @@ proof -
       assume P:
         "c \<sigma>" 
         "k\<in>it" 
-        "RBT.lookup l k = Some v" 
+        "RBT_Impl.lookup l k = Some v" 
         "it \<subseteq> d" 
         "I it \<sigma>"
 
-      from P(3) have "k\<in>set (keys l)" 
-        by (auto simp add: lookup_keys[symmetric] ST(3))
+      from P(3) have "k\<in>set (RBT_Impl.keys l)"
+        by (auto simp add: lookup_keys [symmetric] ST(3))
       with ST(1) tree_less_prop have "k < k'" by auto
-      with P(3) have "RBT.lookup (RBT.Branch col l k' v' r) k = Some v"
+      with P(3) have "RBT_Impl.lookup (RBT_Impl.Branch col l k' v' r) k = Some v"
         by (simp)
       thus "I (it - {k}) (f k v \<sigma>)"
         using P(1,2,4,5) A(2)
@@ -236,14 +236,14 @@ proof -
       assume P:
         "c \<sigma>" 
         "k\<in>it" 
-        "RBT.lookup r k = Some v" 
+        "RBT_Impl.lookup r k = Some v" 
         "it \<subseteq> d" 
         "I it \<sigma>"
 
-      from P(3) have "k\<in>set (keys r)" 
+      from P(3) have "k\<in>set (RBT_Impl.keys r)" 
         by (auto simp add: lookup_keys[symmetric] ST(4))
       with ST(2) tree_greater_prop have "k' < k" by auto
-      with P(3) have "RBT.lookup (RBT.Branch col l k' v' r) k = Some v"
+      with P(3) have "RBT_Impl.lookup (RBT_Impl.Branch col l k' v' r) k = Some v"
         by auto
       thus "I (it - {k}) (f k v \<sigma>)"
         using P(1,2,4,5) A(2)
@@ -285,7 +285,7 @@ proof -
         we are in the second case (interrupt) of our proposition: *}
       from Branch.prems(3) have "it\<noteq>{}" by auto
       with C have ?case
-        apply (simp del: RBT.lookup.simps)
+        apply (simp del: RBT_Impl.lookup.simps)
         apply (rule_tac disjI2)
         apply (rule_tac x=it in exI)
         apply (simp add: Branch.prems(1))
@@ -305,14 +305,14 @@ proof -
       note IPR = ipres_split[OF Branch.prems(5,2)]
 
       txt {* Also the sorted tree properties can be transferred to the subtrees*}
-      from Branch.prems(5) have ST: "m1 |\<guillemotleft> a" "a \<guillemotleft>| m2" "RBT.sorted m1" "RBT.sorted m2"
+      from Branch.prems(5) have ST: "m1 |\<guillemotleft> a" "a \<guillemotleft>| m2" "RBT_Impl.sorted m1" "RBT_Impl.sorted m2"
         by simp_all
 
       txt {* As @{term a} is the key of the original tree, the subtrees, 
         in particular the right one, does not contain @{term a}. 
         With @{thm Branch.prems(3)} we thus get:
         *}
-      from Branch.prems(3,5) have DSS: "dom (RBT.lookup m2) \<subseteq> it - {a}"
+      from Branch.prems(3,5) have DSS: "dom (RBT_Impl.lookup m2) \<subseteq> it - {a}"
         apply (simp only: lookup_keys ST)
         apply (auto simp add: tree_greater_prop tree_less_prop)
         done
@@ -321,7 +321,7 @@ proof -
       
       txt {* Now we can apply the induction hypothesis for the right subtree: *}
       from Branch.hyps(2)[OF I' IPR(2) DSS IMAS ST(4)] have 
-        "I (it - {a} - dom (RBT.lookup m2)) (rm_iteratei c f m2 (f a b \<sigma>)) 
+        "I (it - {a} - dom (RBT_Impl.lookup m2)) (rm_iteratei c f m2 (f a b \<sigma>)) 
          \<or> (\<exists>it'. it' \<subseteq> it - {a} \<and> it' \<noteq> {} 
               \<and> \<not> c (rm_iteratei c f m2 (f a b \<sigma>)) 
               \<and> I it' (rm_iteratei c f m2 (f a b \<sigma>)))" (is "?C1 \<or> ?C2") .
@@ -353,20 +353,20 @@ proof -
           *}
 
         from Branch.prems(3,5) have 
-          DSS: "dom (RBT.lookup m1) \<subseteq> it - {a} - dom (RBT.lookup m2)"
+          DSS: "dom (RBT_Impl.lookup m1) \<subseteq> it - {a} - dom (RBT_Impl.lookup m2)"
           apply (simp only: lookup_keys ST)
           apply (force simp add: tree_greater_prop tree_less_prop)
           done
 
-        from Branch.prems(4) have IMAS: "it - {a} - dom (RBT.lookup m2) \<subseteq> d" by auto
+        from Branch.prems(4) have IMAS: "it - {a} - dom (RBT_Impl.lookup m2) \<subseteq> d" by auto
 
         txt {* Finally, we can apply the induction hypothesis on the iteration over
           the left subtree, and get two cases: Ordinary termination or interrupt.*}
         from Branch.hyps(1)[OF C1 IPR(1) DSS IMAS ST(3)] have
-          "I (it - {a} - dom (RBT.lookup m2) - dom (RBT.lookup m1)) 
+          "I (it - {a} - dom (RBT_Impl.lookup m2) - dom (RBT_Impl.lookup m1)) 
              (rm_iteratei c f m1 (rm_iteratei c f m2 (f a b \<sigma>))) 
           \<or> (\<exists>it'. 
-               it' \<subseteq> it - {a} - dom (RBT.lookup m2) 
+               it' \<subseteq> it - {a} - dom (RBT_Impl.lookup m2) 
                \<and> it' \<noteq> {} 
                \<and> \<not> c (rm_iteratei c f m1 (rm_iteratei c f m2 (f a b \<sigma>))) 
                \<and> I it' (rm_iteratei c f m1 (rm_iteratei c f m2 (f a b \<sigma>))))"
