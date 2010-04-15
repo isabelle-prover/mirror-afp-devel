@@ -31,7 +31,7 @@ locale endoNT = natural_transformation + one_cat
 theorem (in endoNT) id_restrict_natural:
   "(\<lambda>A\<in>Ob. Id A) : (id_func AA) \<Rightarrow> (id_func AA) in Func(AA,AA)"
 proof (intro natural_transformation.intro natural_transformation_axioms.intro 
-    two_cats.intro two_cats_axioms.intro ballI)
+    two_cats.intro ballI)
   show "(\<lambda>A\<in>Ob. Id A) : Ob \<rightarrow> Ar"
     by (rule funcsetI) auto
   show "(\<lambda>A\<in>Ob. Id A) \<in> extensional (Ob)"

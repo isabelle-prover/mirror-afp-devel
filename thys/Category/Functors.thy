@@ -27,8 +27,8 @@ abbreviation
 
 locale two_cats = AA: category AA + BB: category BB
     for AA (structure) and BB (structure) + 
-  assumes "AA = (AA :: ('o1,'a1,'m1)category_scheme)"
-  assumes "BB = (BB :: ('o2,'a2,'m2)category_scheme)"
+  constrains AA :: "('o1,'a1,'m1)category_scheme"
+  constrains BB :: "('o2,'a2,'m2)category_scheme"
   fixes preserves_dom  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
   and  preserves_cod  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"
   and  preserves_id  ::  "('o1,'a1,'o2,'a2)functor \<Rightarrow> bool"

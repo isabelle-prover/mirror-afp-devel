@@ -12,7 +12,7 @@ begin
 subsection {* The Sandwich Natural Transformation *}
 
 locale Yoneda = functor + into_set +
-  assumes "AA = (AA::('o,'a,'m)category_scheme)"
+  constrains AA :: "('o,'a,'m)category_scheme"
   fixes sandwich :: "['o,'a,'o] \<Rightarrow> 'a set_arrow"  ("\<sigma>'(_,_')")
   defines "sandwich A a \<equiv> (\<lambda>B\<in>Ob. \<lparr>
   set_dom=Hom A B,
@@ -187,7 +187,7 @@ proof (intro natural_transformation.intro natural_transformation_axioms.intro tw
   show "\<forall>B\<in>Ob. \<forall>C\<in>Ob. \<forall>f\<in>Hom B C.
     comp Set (F \<^sub>\<a> f) (\<sigma>(A,a) B) = comp Set (\<sigma>(A,a) C) (Hom(A,_) \<^sub>\<a> f)"
     using assms by (auto simp add: Set_def intro: sandwich_commutes)
-qed (intro two_cats_axioms.intro, simp_all)
+qed
 
 
 subsection {* Sandwich Components are Bijective *}

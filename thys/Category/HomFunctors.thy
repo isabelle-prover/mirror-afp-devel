@@ -12,7 +12,7 @@ imports SetCat Functors
 begin
 
 locale into_set = two_cats +
-  assumes "AA = (AA::('o,'a,'m)category_scheme)"
+  constrains AA :: "('o,'a,'m)category_scheme"
   fixes U and Set 
   defines "U \<equiv> (UNIV::'a set)"
   defines "Set \<equiv> set_cat U"
@@ -191,8 +191,6 @@ proof (intro functor.intro functor_axioms.intro)
   proof intro_locales
     show "category Set" 
       by (unfold Set_def, rule set_cat_cat)
-    show "two_cats_axioms AA Set"
-      proof qed rule+
   qed
 qed
 
