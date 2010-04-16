@@ -30,7 +30,7 @@ USA
 header {* Proof of Procedure Repoint *}
 theory RepointProof imports ProcedureSpecs begin
 
-hide (open) const DistinctTreeProver.set_of tree.Node tree.Tip
+hide_const (open) DistinctTreeProver.set_of tree.Node tree.Tip
 
 lemma (in Repoint_impl) Repoint_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>p :==  PROC Repoint (\<acute>p)

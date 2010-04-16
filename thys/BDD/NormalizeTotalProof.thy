@@ -30,7 +30,7 @@ header {* Proof of Procedure Normalize *}
 theory NormalizeTotalProof imports LevellistProof ShareReduceRepListProof 
                         RepointProof begin
 
-hide (open) const DistinctTreeProver.set_of tree.Node tree.Tip
+hide_const (open) DistinctTreeProver.set_of tree.Node tree.Tip
 
 lemma  (in Normalize_impl) Normalize_modifies:
   shows

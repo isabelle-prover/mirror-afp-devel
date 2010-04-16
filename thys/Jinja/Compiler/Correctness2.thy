@@ -10,7 +10,7 @@ theory Correctness2
 imports List_Prefix Compiler2
 begin
 
-(*<*)hide (open) const Throw(*>*)
+(*<*)hide_const (open) Throw(*>*)
 
 subsection{* Instruction sequences *}
 

@@ -28,7 +28,7 @@ theory Algebra4
 imports Algebra3 "~~/src/HOL/Library/Binomial" Zorn
 begin
 
-(*<*)hide const ring(*>*)
+(*<*)hide_const ring(*>*)
 
 section "20. Abelian groups"
 

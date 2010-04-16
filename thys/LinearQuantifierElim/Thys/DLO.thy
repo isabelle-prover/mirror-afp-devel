@@ -70,7 +70,7 @@ definition [code del]: "qelim = ATOM.qelim depends\<^isub>d\<^isub>l\<^isub>o de
 definition [code del]: "lift_dnf_qe = ATOM.lift_dnf_qe neg\<^isub>d\<^isub>l\<^isub>o depends\<^isub>d\<^isub>l\<^isub>o decr\<^isub>d\<^isub>l\<^isub>o"
 definition [code del]: "lift_nnf_qe = ATOM.lift_nnf_qe neg\<^isub>d\<^isub>l\<^isub>o"
 
-hide const nnf qelim lift_dnf_qe lift_nnf_qe
+hide_const nnf qelim lift_dnf_qe lift_nnf_qe
 
 lemmas DLO_code_lemmas = nnf_def qelim_def lift_dnf_qe_def lift_nnf_qe_def
 

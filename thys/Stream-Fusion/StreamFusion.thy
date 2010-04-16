@@ -10,7 +10,7 @@ domain Switch = S1 | S2
 
 domain 'a Maybe = Nothing | Just 'a
 
-hide (open) const Left Right
+hide_const (open) Left Right
 
 domain ('a, 'b) Either = Left 'a | Right 'b
 

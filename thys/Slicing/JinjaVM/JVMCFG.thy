@@ -22,8 +22,7 @@ proof
     by (auto intro: wf_prog)
 qed
 
-hide const Phi
-hide const E
+hide_const Phi E
 
 abbreviation rep_jvmprog_jvm_prog :: "wf_jvmprog \<Rightarrow> jvm_prog"
 ("_\<^bsub>wf\<^esub>")

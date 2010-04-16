@@ -466,7 +466,7 @@ code_const concat
   (Haskell "concat")
   (OCaml "String.concat \"\"")
 
-hide (open) const concat
+hide_const (open) concat
 
 lemma map_le_SomeD: "\<lbrakk> m \<subseteq>\<^sub>m m'; m x = \<lfloor>y\<rfloor> \<rbrakk> \<Longrightarrow> m' x = \<lfloor>y\<rfloor>"
 by(auto simp add: map_le_def dest: bspec)

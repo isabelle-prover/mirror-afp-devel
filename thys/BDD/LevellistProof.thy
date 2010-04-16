@@ -30,7 +30,7 @@ USA
 header {* Proof of Procedure Levellist *}
 theory LevellistProof imports ProcedureSpecs "../HeapList"  begin
 
-hide (open) const DistinctTreeProver.set_of tree.Node tree.Tip
+hide_const (open) DistinctTreeProver.set_of tree.Node tree.Tip
 
 lemma (in Levellist_impl) Levellist_modifies:
   shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>levellist :== PROC Levellist (\<acute>p, \<acute>m, \<acute>levellist) 

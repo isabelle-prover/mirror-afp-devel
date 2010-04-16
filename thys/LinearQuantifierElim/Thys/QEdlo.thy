@@ -112,7 +112,7 @@ definition [code del]:
 
 lemmas DLOe_code_lemmas = DLO_code_lemmas lift_dnfeq_qe_def lift_eq_qe_def
 
-hide const lift_dnfeq_qe lift_eq_qe
+hide_const lift_dnfeq_qe lift_eq_qe
 (*>*)
 
 interpretation DLO\<^isub>e!:

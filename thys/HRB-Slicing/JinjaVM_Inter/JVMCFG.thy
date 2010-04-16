@@ -18,8 +18,7 @@ proof
     by (auto intro: wf_prog)
 qed
 
-hide const Phi
-hide const E
+hide_const Phi E
 
 abbreviation PROG :: "wf_jvmprog \<Rightarrow> jvm_prog"
   where "PROG P \<equiv> fst(Rep_wf_jvmprog(P))"
