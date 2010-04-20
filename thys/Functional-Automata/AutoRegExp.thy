@@ -17,15 +17,17 @@ by (simp add: NAe_DA_equiv accepts_rexp2nae)
 
 (* Testing code generation: *)
 
-declare RegExp2NA.star_def [unfolded epsilon_def, code]
+declare RegExp2NA.star_def [unfolded RegExp2NA.epsilon_def, code]
+declare rexp2na.simps(2) [unfolded RegExp2NA.epsilon_def, code]
+        rexp2na.simps(1,3-)[code]
 
 code_module Generated
 contains
   test =
   "let r0 = Atom(0::nat);
        r1 = Atom(1::nat);
-       re = Conc (Star(Or(Conc r1 r1)r0))
-              (Star(Or(Conc r0 r0)r1));
+       re = Times (Star(Plus(Times r1 r1)r0))
+              (Star(Plus(Times r0 r0)r1));
        N = rexp2na re;
        D = na2da N
   in (NA.accepts N [0,1,1,0,0,1], DA.accepts D [0,1,1,0,0,1])"

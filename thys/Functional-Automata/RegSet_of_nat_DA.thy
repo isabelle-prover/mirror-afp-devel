@@ -15,7 +15,7 @@ regexp as d i j 0 = (if i=j then Union (Star Empty) (atoms d i j as)
 header "From deterministic automata to regular sets"
 
 theory RegSet_of_nat_DA
-imports RegSet DA
+imports Regular_Set DA
 begin
 
 types 'a nat_next = "'a => nat => nat"
@@ -35,10 +35,9 @@ consts regset :: "'a nat_next => nat => nat => nat => 'a list set"
 primrec
 "regset d i j 0 = (if i=j then insert [] {[a] | a. d a i = j}
                           else {[a] | a. d a i = j})"
-"regset d i j (Suc k) = regset d i j k Un
-                        conc (regset d i k k)
-                             (conc (star(regset d k k k))
-                                   (regset d k j k))"
+"regset d i j (Suc k) =
+  regset d i j k Un
+  (regset d i k k) @@ (star(regset d k k k)) @@ (regset d k j k)"
 
 definition
  regset_of_DA :: "('a,nat)da => nat => 'a list set" where
@@ -171,7 +170,7 @@ apply (rule iffI)
  apply (subgoal_tac
       "(!m:set(butlast(trace d k xsb)). m < Suc k) & deltas d xsb k = k")
   apply (simp add: set_trace_conv butlast_append ball_Un)
- apply (erule star.induct)
+ apply (erule star_induct)
   apply (simp)
  apply (simp add: set_trace_conv butlast_append ball_Un)
 apply (case_tac "k : set(butlast(trace d i xs))")
@@ -192,9 +191,7 @@ apply (rule_tac x = "concat mids" in exI)
 apply (simp)
 apply (rule conjI)
  apply (rule concat_in_star)
- apply simp
- apply (rule ballI)
- apply (rule ballI)
+ apply (clarsimp simp: subset_iff)
  apply (rule lem)
   prefer 2 apply simp
  apply (drule bspec) prefer 2 apply assumption
