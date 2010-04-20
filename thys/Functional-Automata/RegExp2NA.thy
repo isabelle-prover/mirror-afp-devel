@@ -6,7 +6,7 @@
 header "From regular expressions directly to nondeterministic automata"
 
 theory RegExp2NA
-imports RegExp NA
+imports Regular_Exp NA
 begin
 
 types 'a bitsNA = "('a,bool list)na"
@@ -57,10 +57,11 @@ definition
 
 consts rexp2na :: "'a rexp => 'a bitsNA"
 primrec
-"rexp2na Empty      = ([], %a s. {}, %s. False)"
+"rexp2na Zero       = ([], %a s. {}, %s. False)"
+"rexp2na One        = epsilon"
 "rexp2na(Atom a)    = atom a"
-"rexp2na(Or r s)    = or   (rexp2na r) (rexp2na s)"
-"rexp2na(Conc r s)  = conc (rexp2na r) (rexp2na s)"
+"rexp2na(Plus r s)  = or (rexp2na r) (rexp2na s)"
+"rexp2na(Times r s) = conc (rexp2na r) (rexp2na s)"
 "rexp2na(Star r)    = star (rexp2na r)"
 
 declare split_paired_all[simp]
@@ -436,11 +437,12 @@ done
 lemma accepts_rexp2na:
  "!!w. accepts (rexp2na r) w = (w : lang r)"
 apply (induct "r")
-    apply (simp add: accepts_conv_steps)
+     apply (simp add: accepts_conv_steps)
+    apply simp
    apply (simp add: accepts_atom)
   apply (simp)
- apply (simp add: accepts_conc RegSet.conc_def)
-apply (simp add: accepts_star in_star)
+ apply (simp add: accepts_conc Regular_Set.conc_def)
+apply (simp add: accepts_star in_star_iff_concat subset_iff Ball_def)
 done
 
 end

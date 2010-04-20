@@ -6,7 +6,7 @@
 header "From regular expressions to nondeterministic automata with epsilon"
 
 theory RegExp2NAe
-imports RegExp NAe
+imports Regular_Exp NAe
 begin
 
 types 'a bitsNAe = "('a,bool list)nae"
@@ -14,6 +14,10 @@ types 'a bitsNAe = "('a,bool list)nae"
 abbreviation
   Cons_syn :: "'a => 'a list set => 'a list set" (infixr "##" 65) where
   "x ## S == Cons x ` S"
+
+definition
+ epsilon :: "'a bitsNAe" where
+"epsilon = ([],%a s. {}, %s. s=[])"
 
 definition
 "atom"  :: "'a => 'a bitsNAe" where
@@ -55,13 +59,29 @@ definition
 
 consts rexp2nae :: "'a rexp => 'a bitsNAe"
 primrec
-"rexp2nae Empty      = ([], %a s. {}, %s. False)"
+"rexp2nae Zero       = ([], %a s. {}, %s. False)"
+"rexp2nae One        = epsilon"
 "rexp2nae(Atom a)    = atom a"
-"rexp2nae(Or r s)    = or   (rexp2nae r) (rexp2nae s)"
-"rexp2nae(Conc r s)  = conc (rexp2nae r) (rexp2nae s)"
+"rexp2nae(Plus r s)  = or   (rexp2nae r) (rexp2nae s)"
+"rexp2nae(Times r s) = conc (rexp2nae r) (rexp2nae s)"
 "rexp2nae(Star r)    = star (rexp2nae r)"
 
 declare split_paired_all[simp]
+
+(******************************************************)
+(*                     epsilon                        *)
+(******************************************************)
+
+lemma step_epsilon[simp]: "step epsilon a = {}"
+by(simp add:epsilon_def step_def)
+
+lemma steps_epsilon: "((p,q) : steps epsilon w) = (w=[] & p=q)"
+by (induct "w") auto
+
+lemma accepts_epsilon[simp]: "accepts epsilon w = (w = [])"
+apply (simp add: steps_epsilon accepts_def)
+apply (simp add: epsilon_def)
+done
 
 (******************************************************)
 (*                       atom                         *)
@@ -616,11 +636,12 @@ done
 lemma accepts_rexp2nae:
  "!!w. accepts (rexp2nae r) w = (w : lang r)"
 apply (induct "r")
-    apply (simp add: accepts_def)
+     apply (simp add: accepts_def)
+    apply simp
    apply (simp add: accepts_atom)
   apply (simp add: accepts_or)
- apply (simp add: accepts_conc RegSet.conc_def)
-apply (simp add: accepts_star in_star)
+ apply (simp add: accepts_conc Regular_Set.conc_def)
+apply (simp add: accepts_star in_star_iff_concat subset_iff Ball_def)
 done
 
 end
