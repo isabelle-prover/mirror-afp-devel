@@ -54,13 +54,13 @@ Limits, adjunctions and other important concepts are not
 included.
    </td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
 <tr>
 <td class="datahead"> </td>
 <td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
+    <a href="../download.shtml">development version</a> of AFP.
+    The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/8c2b5b3c995f">8c2b5b3c995f [2010-04-23]</a>.
+    </td>
 </tr> 
--->
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
