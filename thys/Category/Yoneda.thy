@@ -336,14 +336,18 @@ definition
 
 definition
   equinumerous :: "['a set, 'b set] \<Rightarrow> bool"  (infix "\<cong>" 40) where
-  "equinumerous A B \<longleftrightarrow> (\<exists>f. bij_on f A B)"
+  "equinumerous A B \<longleftrightarrow> (\<exists>f. bij_betw f A B)"
+
+lemma bij_betw_eq:
+  "bij_betw f A B \<longleftrightarrow>
+    inj_on f A \<and> (\<forall>y\<in>B. \<exists>x\<in>A. f(x)=y) \<and> (\<forall>x\<in>A. f x \<in> B)"
+unfolding bij_betw_def by auto
 
 theorem (in Yoneda) Yoneda:
   assumes 1: "A \<in> Ob"
   shows "F\<^sub>\<o> A \<cong> {u. u : Hom(A,_) \<Rightarrow> F in Func(AA,Set)}"
-apply (unfold equinumerous_def bij_on_def surj_on_def inj_on_def)
-apply (intro exI conjI bexI ballI impI)
-proof-
+unfolding equinumerous_def bij_betw_eq inj_on_def
+proof (intro exI conjI bexI ballI impI)
   -- "Sandwich is injective"
   fix x and y
   assume 2: "x \<in> F\<^sub>\<o> A" and 3: "y \<in> F\<^sub>\<o> A"
@@ -373,6 +377,13 @@ next
   with uAfuncset 
   show "\<sigma>\<^sup>\<leftarrow>(A,u) \<in> F\<^sub>\<o> A"
     by (simp add: unsandwich_def, rule funcset_mem)
+next
+  fix x
+  assume "x \<in> F \<^sub>\<o> A"
+  with 1 have "\<sigma>(A,x) : Hom(A,_) \<Rightarrow> F in Func (AA,Set)"
+    by (rule sandwich_natural)
+  thus "\<sigma>(A,x) \<in> {y. y : Hom(A,_) \<Rightarrow> F in Func (AA,Set)}"
+    by simp
 qed
 
 end
