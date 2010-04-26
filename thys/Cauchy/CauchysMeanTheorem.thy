@@ -110,7 +110,7 @@ next
       moreover with ant have "\<forall>x\<in>set ys. x < m" by simp
       moreover with calculation Cons have "\<Sum>:ys < m*real (length ys)" by simp
       hence "\<Sum>:ys + y < m*real(length ys) + y" by simp
-      with ylm have "\<Sum>:(y#ys) < m*(real(length ys) + 1)" by(simp add:ring_simps)
+      with ylm have "\<Sum>:(y#ys) < m*(real(length ys) + 1)" by(simp add:field_simps)
       with real_of_nat_Suc have "\<Sum>:(y#ys) < m*(real(length ys + 1))"
         apply -
         apply (drule meta_spec [of _ "length ys"])
@@ -147,7 +147,7 @@ next
       moreover with ant have "\<forall>x\<in>set ys. x > m" by simp
       moreover with calculation Cons have "\<Sum>:ys > m*real (length ys)" by simp
       hence "\<Sum>:ys + y > m*real(length ys) + y" by simp
-      with ylm have "\<Sum>:(y#ys) > m*(real(length ys) + 1)" by(simp add:ring_simps)
+      with ylm have "\<Sum>:(y#ys) > m*(real(length ys) + 1)" by(simp add:field_simps)
       with real_of_nat_Suc have "\<Sum>:(y#ys) > m*(real(length ys + 1))"
         apply -
         apply (drule meta_spec [of _ "length ys"])
@@ -194,13 +194,13 @@ next
       by simp
     also have
       "\<dots> = x/n + (1+(1/n)- 1)*\<Sum>:xs + \<Sum>:(x#xs)"
-      by (subst real_mult_1 [symmetric, of "\<Sum>:xs"], simp only: ring_simps)
+      by (subst real_mult_1 [symmetric, of "\<Sum>:xs"], simp only: field_simps)
     also have
       "\<dots> = x/n + (1/n)*\<Sum>:xs + \<Sum>:(x#xs)"
       by simp
     also have
-      "\<dots> = (1/n)*\<Sum>:(x#xs) + 1*\<Sum>:(x#xs)" by(simp add:ring_simps)
-    finally show ?thesis by (simp only: ring_simps)
+      "\<dots> = (1/n)*\<Sum>:(x#xs) + 1*\<Sum>:(x#xs)" by(simp add:field_simps)
+    finally show ?thesis by (simp only: field_simps)
   qed
 qed
 
@@ -402,7 +402,7 @@ proof
     apply -
     apply (drule mult_divide_mult_cancel_left
       [symmetric, where c="len" and a="(1 + 1 / len) * \<Sum>:xs" and b="1+len"])
-    apply (clarsimp simp:ring_simps)
+    apply (clarsimp simp:field_simps)
     done
   also from l1nez have "\<dots> = \<Sum>:xs / len"
     apply (subst real_mult_commute [where z="len"])
@@ -534,7 +534,7 @@ apply (induct_tac xs)
 apply simp
 apply clarsimp
 apply (subst real_of_nat_Suc)
-apply (simp add:ring_simps)
+apply (simp add:field_simps)
 done
 
 lemma list_eq_prod [simp]:
@@ -600,7 +600,7 @@ proof (rule ccontr)
     "(\<Sum>:?neq) + (\<Sum>:?eq) < ?m * (real (length ?neq)) + (\<Sum>:?eq)" by simp
   also have
     "\<dots> = (?m * ((real (length ?neq) + (real (length ?eq)))))"
-      by (simp add:ring_simps)
+      by (simp add:field_simps)
   also have
     "\<dots> = (?m * (real (length xs)))"
       apply (subst real_of_nat_add [symmetric])
@@ -637,7 +637,7 @@ proof (rule ccontr) -- "reductio ad absurdum"
     by simp
   also have
     "\<dots> = (?m * ((real (length ?neq) + (real (length ?eq)))))"
-      by (simp add:ring_simps)
+      by (simp add:field_simps)
   also have
     "\<dots> = (?m * (real (length xs)))"
       apply (subst real_of_nat_add [symmetric])

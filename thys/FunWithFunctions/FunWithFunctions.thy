@@ -131,11 +131,11 @@ proof -
       case (Suc n)
       have "real(Suc(Suc n))*r + real(Suc n) =
             r + (real(Suc n)*r + real n) + 1" (is "?a = ?b")
-	by(simp add:real_of_nat_Suc ring_simps)
+	by(simp add:real_of_nat_Suc field_simps)
       hence "f ?a = f ?b" by simp
       also have "\<dots> = f r + f(real(Suc n)*r + real n)" by(rule f_add)
       also have "\<dots> = f r + real(Suc n) * f r" by(simp only:Suc)
-      finally show ?case by(simp add:real_of_nat_Suc ring_simps)
+      finally show ?case by(simp add:real_of_nat_Suc field_simps)
     qed }
   note 1 = this
   { fix n::nat and r assume "n\<noteq>0"

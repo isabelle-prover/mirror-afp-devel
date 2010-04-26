@@ -100,11 +100,11 @@ subsection {* Multiplication and division *}
 
 lemma qfN_mult1: "((a::int)^2 + N*b^2)*(c^2 + N*d^2) 
   = (a*c+N*b*d)^2 + N*(a*d-b*c)^2"
-  by (simp add: nat_number ring_simps)
+  by (simp add: nat_number field_simps)
 
 lemma qfN_mult2: "((a::int)^2 + N*b^2)*(c^2 + N*d^2) 
   = (a*c-N*b*d)^2 + N*(a*d+b*c)^2"
-  by (simp add: nat_number ring_simps)
+  by (simp add: nat_number field_simps)
 
 corollary is_qfN_mult: "is_qfN A N \<Longrightarrow> is_qfN B N \<Longrightarrow> is_qfN (A*B) N" 
   by (unfold is_qfN_def, auto, auto simp only: qfN_mult1)
@@ -125,8 +125,8 @@ proof -
     have "?P dvd (b*p + a*q)*(b*p - a*q)"
     proof -
       have "(b*p + a*q)*(b*p - a*q)= b^2*?P - q^2*?A"  
-	by (simp add: nat_number ring_simps)
-      also from U have "\<dots> = (b^2 - q^2*U)*?P" by (simp add: ring_simps)
+	by (simp add: nat_number field_simps)
+      also from U have "\<dots> = (b^2 - q^2*U)*?P" by (simp add: field_simps)
       finally show ?thesis by simp
     qed
     with ass have "?P dvd (b*p + a*q) \<or> ?P dvd (b*p - a*q)" 
@@ -456,7 +456,7 @@ proof -
   have suc23: "3 = Suc 2" by simp
   let ?a = "p*(p^2 - 3*N*q^2)"
   let ?b = "q*(3*p^2 - N*q^2)"
-  have abP: "?P^3 = ?a^2 + N*?b^2" by (simp add: nat_number ring_simps)
+  have abP: "?P^3 = ?a^2 + N*?b^2" by (simp add: nat_number field_simps)
   have "zgcd ?b ?a \<noteq>  1 \<Longrightarrow> ?P dvd p"
   proof -
     let ?h = "zgcd ?b ?a" 
@@ -653,8 +653,8 @@ proof -
   have mult: "(a*d+b*c)*(a*d-b*c) = ?P*(d^2-b^2)"
   proof -
     have "(a*d+b*c)*(a*d-b*c) = (a^2 + N*b^2)*d^2 - b^2*(c^2 + N*d^2)"
-      by (simp add: nat_number ring_simps)
-    with abcdN show ?thesis by (simp add: ring_simps)
+      by (simp add: nat_number field_simps)
+    with abcdN show ?thesis by (simp add: field_simps)
   qed
   have "?P dvd a*d+b*c \<or> ?P dvd a*d-b*c" 
   proof -
@@ -855,9 +855,9 @@ proof -
       with abcd have e1: "a-b = 4*e" by arith
       hence e2: "a+3*b = 4*(e+b)" by auto
       have "4*?A = (a+3*b)^2 + 3*(a-b)^2" 
-	by (simp add: nat_number ring_simps)
+	by (simp add: nat_number field_simps)
       also with e1 e2 have "\<dots> = (4*(e+b))^2+3*(4*e)^2" by (simp(no_asm_simp))
-      finally have "?A = 4*((e+b)^2 + 3*e^2)" by (simp add: nat_number ring_simps)
+      finally have "?A = 4*((e+b)^2 + 3*e^2)" by (simp add: nat_number field_simps)
       moreover have "is_qfN ((e+b)^2 + 3*e^2) 3" by (unfold is_qfN_def, auto)
       ultimately have ?thesis by blast }
     moreover
@@ -866,11 +866,11 @@ proof -
       with abcd have e1: "a+b = 4*(e+d+1)" by auto
       hence e2: "a- 3*b = 4*(e+d-b+1)" by auto
       have "4*?A = (a- 3*b)^2 + 3*(a+b)^2"
-	by (simp add: nat_number ring_simps)
+	by (simp add: nat_number field_simps)
       also with e1 e2 have "\<dots> = (4*(e+d-b+1))^2 +3*(4*(e+d+1))^2"
 	by (simp (no_asm_simp))
       finally have "?A = 4*((e+d-b+1)^2+3*(e+d+1)^2)"
-	by (simp add: nat_number ring_simps)
+	by (simp add: nat_number field_simps)
       moreover have "is_qfN ((e+d-b+1)^2 + 3*(e+d+1)^2) 3" 
 	by (unfold is_qfN_def, auto)
       ultimately have ?thesis by blast }
@@ -1209,7 +1209,7 @@ proof -
     have "?t^3 - 9*?t*?u^2 = p^3*r^3 + e*9*p^2*q*r^2*s + e^2*27*p*q^2*r*s^2 
       + e^3*27*q^3*s^3 - 9*p*p^2*r*s^2 + e*18*p^2*q*r^2*s - e^2*9*p*q^2*(r*r^2)
       - e*27*p^2*q*(s*s^2) + e^2*54*p*q^2*r*s^2 - e*e^2*27*(q*q^2)*r^2*s" 
-      by (simp add: nat_number ring_simps)
+      by (simp add: nat_number field_simps)
     also with e2 e3 have "\<dots> = 
       p^3*r^3 + e*27*p^2*q*r^2*s + 81*p*q^2*r*s^2 + e*27*q^3*s^3 
       - 9*p^3*r*s^2 - 9*p*q^2*r^3 - e*27*p^2*q*s^3 - e*27*q^3*r^2*s" 
@@ -1224,7 +1224,7 @@ proof -
       3*(p*p^2)*r^2*s - e*3*p^2*q*(r*r^2) + e*18*p^2*q*r*s^2 
       - e^2*18*p*q^2*r^2*s + e^2*27*p*q^2*(s*s^2) - e*e^2*27*(q*q^2)*r*s^2 
       - 3*p^3*s^3 + e*9*p^2*q*r*s^2 - e^2*9*p*q^2*r^2*s + e^3*3*r^3*q^3" 
-      by (simp add: nat_number ring_simps)
+      by (simp add: nat_number field_simps)
     also with e2 e3 have "\<dots> = 3*p^3*r^2*s - e*3*p^2*q*r^3 + e*18*p^2*q*r*s^2
       - 18*p*q^2*r^2*s + 27*p*q^2*s^3 - e*27*q^3*r*s^2 - 3*p^3*s^3 
       + e*9*p^2*q*r*s^2 - 9*p*q^2*r^2*s + e*3*r^3*q^3" 
@@ -1274,7 +1274,7 @@ next
   have "is_qfN ?p 3"
   proof -
     from ass have "a^2+3*b^2 = (?p*?X)^3" by (simp add: zmult_int)
-    hence "?p dvd a^2+3*b^2" by (simp add: nat_number ring_simps)
+    hence "?p dvd a^2+3*b^2" by (simp add: nat_number field_simps)
     moreover from ass have "zprime ?p" and "zgcd a b=1" by simp_all
     moreover from pw have "?p \<in> zOdd" by simp
     ultimately show ?thesis by (simp only: qf3_oddprimedivisor)

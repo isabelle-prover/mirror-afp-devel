@@ -651,13 +651,13 @@ done
 subsection {* Facts about small powers of integers *}
 
 lemma zadd_power2: "((a::int)+b)^2 = a^2 + 2*a*b + b^2"
-  by (simp add: nat_number ring_simps)
+  by (simp add: nat_number field_simps)
 
 lemma zdiff_power2: "((a::int)-b)^2 = a^2 - 2*a*b + b^2"
-  by (simp add: nat_number ring_simps)
+  by (simp add: nat_number field_simps)
 
 lemma zspecial_product: "((a::int) + b) * (a - b) = a^2 - b^2"
-  by (simp add: nat_number ring_simps)
+  by (simp add: nat_number field_simps)
 
 lemma abs_power2_distrib: "\<bar>a^2\<bar> = \<bar>a::int\<bar>^2" 
   by (simp add: power2_eq_square abs_mult)
@@ -678,10 +678,10 @@ lemma power2_eq1_iff: "(a::int)^2 = 1 \<Longrightarrow> \<bar>a\<bar>=1"
   by (auto simp add: zmult_eq_1_iff power2_eq_square abs_mult)
 
 lemma zadd_power3: "((a::int)+b)^3 = a^3 + 3*a^2*b + 3*a*b^2 + b^3" 
-  by (simp add: nat_number ring_simps)
+  by (simp add: nat_number field_simps)
   
 lemma zdiff_power3: "((a::int)-b)^3 = a^3 - 3*a^2*b + 3*a*b^2 - b^3"
-  by (simp add: nat_number ring_simps)
+  by (simp add: nat_number field_simps)
 
 lemma power3_minus: "(-a::int)^3 = -(a^3)"
 proof -
@@ -691,13 +691,13 @@ proof -
 qed
 
 lemma abs_power3_distrib: "\<bar>(x::int)^3\<bar> = \<bar>x\<bar>^3" 
-  by (simp add: nat_number ring_simps abs_mult)
+  by (simp add: nat_number field_simps abs_mult)
 
 lemma cube_square: "(a::int)*a^2 = a^3" 
-  by (simp add: nat_number ring_simps)
+  by (simp add: nat_number field_simps)
 
 lemma quartic_square_square: "(x^2)^2 = (x::int)^4"
-  by (simp add: nat_number ring_simps)
+  by (simp add: nat_number field_simps)
 
 lemma power2_ge_self: "x^2 \<ge> (x::int)"
 proof (cases)

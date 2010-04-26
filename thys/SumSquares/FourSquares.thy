@@ -28,7 +28,7 @@ definition
 lemma mult_sum4sq: "sum4sq(a,b,c,d) * sum4sq(p,q,r,s) = 
   sum4sq(a*p+b*q+c*r+d*s, a*q-b*p-c*s+d*r, 
          a*r+b*s-c*p-d*q, a*s-b*r+c*q-d*p)"
-  by (unfold sum4sq_def, simp add: nat_number ring_simps)
+  by (unfold sum4sq_def, simp add: nat_number field_simps)
 
 lemma is_mult_sum4sq: "is_sum4sq x \<Longrightarrow> is_sum4sq y \<Longrightarrow> is_sum4sq (x*y)"
   by (unfold is_sum4sq_def, auto simp only: mult_sum4sq, blast)
