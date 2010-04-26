@@ -1,35 +1,29 @@
+
 ## configurables
 
-SESSION-NAME = Slicing
-BASE-IMAGE = Jinja
+SESSION_NAME = Slicing
+BASE_NAME = Jinja
+
+# time limit (in sec)
+MAXTIME = 5400
+
 
 ## targets
 
-default: Slicing
-# usually empty:
-images: $(SESSION-NAME)
+default: $(SESSION_NAME)
+images: images
 test: images
 
-all: test
+all: images
 
 
 ## global settings
 
-SRC = $(ISABELLE_HOME)/src
-OUT = $(ISABELLE_OUTPUT)
-LOG = $(OUT)/log
-
-# turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
-ifeq ($(ISABELLE_IMAGE_PATH),)
-IMAGE=$(OUT)/$(BASE-IMAGE)
-else
-IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
-endif
+BASE_IMAGE=$(ISABELLE_OUTPUT)/$(BASE_NAME)
+SESSION_IMAGE=$(ISABELLE_OUTPUT)/$(SESSION_NAME)
+SESSION_LOG=$(ISABELLE_OUTPUT)/log/$(SESSION_NAME).gz
 
 USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -g true 
-
-# time limit (in sec)
-MAXTIME = 5400
 
 
 ## dependencies
@@ -37,20 +31,19 @@ MAXTIME = 5400
 
 # test run and proof document
 
-$(SESSION-NAME): Jinja $(OUT)/$(SESSION-NAME)
+$(SESSION_NAME): $(SESSION_IMAGE)
 
-Jinja:
+$(BASE_IMAGE):
 	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
 
-$(OUT)/$(SESSION-NAME): $(OUT)/Jinja ROOT.ML Slicing.thy \
+$(SESSION_IMAGE): $(BASE_IMAGE) ROOT.ML Slicing.thy \
   Basic/*.thy Dynamic/*.thy StaticIntra/*.thy While/*.thy JinjaVM/*.thy \
-  document/root.tex 
-	ulimit -t $(MAXTIME); $(USEDIR) -b Jinja $(SESSION-NAME)
-
+  document/root.tex
+	ulimit -t $(MAXTIME); $(USEDIR) -b $(BASE_NAME) $(SESSION_NAME)
 
 
 ## clean
 
 clean:
-	@rm -f $(OUT)/$(SESSION-NAME)
-	@rm -f $(LOG)/$(SESSION-NAME).gz
+	@rm -f $(SESSION_IMAGE)
+	@rm -f $(SESSION_LOG)
