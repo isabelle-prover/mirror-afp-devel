@@ -34,7 +34,7 @@ USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -V outline=/proof,/ML -d pdf -g
 $(SESSION_NAME): $(BASE_NAME) $(SESSION_IMAGE)
 
 $(BASE_NAME): $(BASE_IMAGE)
-	cd ../Jinja; $(ISABELLE_TOOL) make Jinja
+	cd ../$(BASE_NAME); $(ISABELLE_TOOL) make $(BASE_NAME)
 
 $(SESSION_IMAGE): $(BASE_IMAGE) ROOT.ML Slicing.thy \
   Basic/*.thy Dynamic/*.thy StaticIntra/*.thy While/*.thy JinjaVM/*.thy \
