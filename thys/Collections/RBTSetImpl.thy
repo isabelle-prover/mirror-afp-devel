@@ -15,7 +15,7 @@ text {*
 
 subsection "Definitions"
 types
-  'a rs = "('a::linorder,unit) rm"
+  'a rs = "('a,unit) rm"
 
 definition rs_\<alpha> :: "'a::linorder rs \<Rightarrow> 'a set" where "rs_\<alpha> == s_\<alpha> rm_\<alpha>"
 definition rs_invar :: "'a::linorder rs \<Rightarrow> bool" where "rs_invar == rm_invar"
