@@ -26,7 +26,7 @@ Note: we default to just CPOs (not pointed CPOs) in this theory. We
 adopt bothg the Isabelle syntax for overloaded arithmetic and the
 notation for unboxed operators of \citet{SPJ-JL:1991}. *}
 
-defaultsort cpo
+default_sort cpo
 
 types UNat = "nat discr"
 
@@ -462,7 +462,7 @@ qed
 
 text{* Restore the HOLCF default sort. *}
 
-defaultsort pcpo
+default_sort pcpo
 
 (*<*)
 end
