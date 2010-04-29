@@ -861,7 +861,7 @@ fun mk_free ctxt name =
   let
     val ctxt' = Context.proof_of ctxt;
     val n' = lookupI (op =) (Variable.fixes_of ctxt') name
-    val T' = ProofContext.infer_type ctxt' n' handle ERROR _ => dummyT
+    val T' = ProofContext.infer_type ctxt' (n', dummyT) handle ERROR _ => dummyT
   in (Free (n',T')) end;
 
 
