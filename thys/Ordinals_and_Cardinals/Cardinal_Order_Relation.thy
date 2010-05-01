@@ -776,16 +776,11 @@ qed
 lemma card_of_Times1: 
 assumes "A \<noteq> {}"   
 shows "|B| \<le>o |B \<times> A|"
-proof(cases "B = {}", simp add: card_of_empty)
-  assume *: "B \<noteq> {}"
-  have "fst `(B \<times> A) = B"
-  proof(auto)
-    fix b assume "b \<in> B"
-    moreover obtain a where "a \<in> A" using assms by blast
-    ultimately  show "b \<in> fst`(B \<times> A)" by force
-  qed
-  thus ?thesis using inj_on_iff_surjective[of B "B \<times> A"] 
-                     card_of_ordLeq[of B "B \<times> A"] * by auto
+proof -
+  from assms obtain x where "x \<in> A" by auto
+  hence "inj_on (\<lambda>y. (y, x)) B \<and> (\<lambda>y. (y, x)) ` B \<subseteq> B \<times> A"
+    by (blast intro!: inj_onI)
+  thus ?thesis using card_of_ordLeq by blast
 qed
 
 
