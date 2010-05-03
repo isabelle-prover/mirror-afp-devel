@@ -1009,7 +1009,7 @@ fun generate_guard ctxt = snd (#generate_guard (get_data ctxt)) ctxt;
 fun check_procedures_definition procs thy =
     let
         val _ = Theory.requires thy "Hoare" "Hoare definitions";
-        val ctxt = ProofContext.init thy;
+        val ctxt = ProofContext.init_global thy;
 
         fun already_defined name =
             if is_some (get_params name ctxt)
@@ -1091,7 +1091,7 @@ fun add_variable_statespaces prep_typ (cname,(inpars,outpars,locvars)) thy =
     val inpars'  = if forall (fn (_,T) => T = "") inpars then [] else inpars;
     val outpars' = if forall (fn (_,T) => T = "") outpars then [] else outpars;
     fun prep_comp (n,T) env =
-      let val (T', env') = prep_typ (ProofContext.init thy) T env handle ERROR msg =>
+      let val (T', env') = prep_typ (ProofContext.init_global thy) T env handle ERROR msg =>
        cat_error msg ("The error(s) above occured in component " ^ quote n)
       in ((n,T'), env') end;
 
