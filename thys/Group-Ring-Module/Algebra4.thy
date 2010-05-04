@@ -28,8 +28,6 @@ theory Algebra4
 imports Algebra3 "~~/src/HOL/Library/Binomial" Zorn
 begin
 
-(*<*)hide_const ring(*>*)
-
 section "20. Abelian groups"
 
 record 'a aGroup = "'a carrier" + 
