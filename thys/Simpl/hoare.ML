@@ -732,7 +732,7 @@ fun dest_string' t =
 fun is_state_space_var Tids t =
     let
       fun is_stateT T = (case stateT_id T of NONE => 0
-                         | SOME id => if id mem Tids then ~1 else 0);
+                         | SOME id => if member (op =) Tids id then ~1 else 0);
     in
       (case t of
          Const _ $ Abs (_,T,_) => is_stateT T
@@ -1212,7 +1212,7 @@ fun procedures_definition locname procs thy =
           (case try dest_call t of
              SOME (_,p,_,_,m,_) => SOME (proc_name m p)
            | _ => NONE);
-        fun in_names x = if x mem names then SOME x else NONE;
+        fun in_names x = if member (op =) names x then SOME x else NONE;
         fun add_edges n = fold (fn x => Graph.add_edge (n, x));
 
         val all_callss = map (map snd o max_subterms_dest dcall) bodies;
@@ -1245,7 +1245,7 @@ fun procedures_definition locname procs thy =
     (* cliques may only depend on ones to the left, so it is safe to
      * add the locales from the left to the right. *)
 
-    fun my_clique n = Library.find_first (fn c => n mem c) cliques;
+    fun my_clique n = Library.find_first (fn c => member (op =) c n) cliques;
 
     fun lname sfx clique = suffix sfx (clique_name clique);
     fun cname n = clique_name (the (my_clique n));
@@ -1253,7 +1253,7 @@ fun procedures_definition locname procs thy =
 
 
     fun get_loc sfx clique n =
-        if n mem clique then NONE else SOME (resuffix proc_deco sfx n);
+        if member (op =) clique n then NONE else SOME (resuffix proc_deco sfx n);
 
     fun parent_locales thy sfx clique =
       let
@@ -1864,7 +1864,7 @@ fun gen_call_rec_rule specs_name n rule =
            |> full_simplify ((global_simpset_of Main_thy)
                   addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
                             image_Un,image_Un_single_simp] )
-           |> rename_bvars (fn s => if s mem_string ["s","\<sigma>"] then s else "Z")
+           |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
   in rule'
   end;
 

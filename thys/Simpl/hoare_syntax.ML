@@ -303,7 +303,7 @@ fun antiquote_tr' name =
       (case t of
         Bound j => i = j
       | Const (g,_) $ Bound j =>
-          i = j andalso Long_Name.base_name g mem_string [globalsN, localsN]
+          i = j andalso member (op =) [globalsN, localsN] (Long_Name.base_name g)
       | _ => false);
     fun tr' i (t $ u) =
        if is_state i u then Syntax.const name $ tr' i (Hoare.undeco t)
@@ -321,7 +321,7 @@ fun quote_tr' name (Abs (_, _, t)) = Term.incr_boundvars ~1 (antiquote_tr' name 
 
 local
 fun state_test (t as Const (g,_) $ u) f  =
-      if Long_Name.base_name g mem_string [localsN, globalsN] then f u else f t
+      if member (op =) [localsN, globalsN] (Long_Name.base_name g) then f u else f t
   | state_test u f = f u;
 in
 
@@ -1115,10 +1115,10 @@ fun update_tr' l (r as Const (@{const_syntax fun_upd}, _) $
 
 
 fun dest_K_rec (Abs (_, _, v)) =
-      if 0 mem_int (loose_bnos v) then NONE else SOME (incr_boundvars ~1 v)
+      if member (op =) (loose_bnos v) 0 then NONE else SOME (incr_boundvars ~1 v)
   | dest_K_rec (Abs (_, _, Abs (_, _, v) $ Bound 0)) = (* eta expanded version *)
       let val lbv = loose_bnos v;
-      in if 0 mem_int lbv orelse 1 mem_int lbv
+      in if member (op =) lbv 0 orelse member (op =) lbv 1
          then NONE else SOME (incr_boundvars ~2 v)
       end
   | dest_K_rec _ = NONE;
@@ -1127,9 +1127,9 @@ local
 fun uncover (upd,v) =
   (case (upd, v) of
     (Const (cupd, _), upd' $ dest $ constr $ n $ (Const (@{const_syntax K_statefun}, _) $ v') $ s) =>
-      if Long_Name.base_name cupd mem_string [globals_updateN, locals_updateN]
+      if member (op =) [globals_updateN, locals_updateN] (Long_Name.base_name cupd)
       then (case s of (Const (g, _) $ _) =>
-               if Long_Name.base_name g mem_string [globalsN, localsN]
+               if member (op =) [localsN, globalsN] (Long_Name.base_name g)
                then (n, v')
                else raise Match
              | _ => raise Match)
@@ -1164,7 +1164,7 @@ end;
 fun dest_updates (t as (upd as Const (u, _)) $ k $ state) =
       (case dest_K_rec k of
         SOME value =>
-          if Long_Name.base_name u mem_string [globals_updateN,locals_updateN]
+          if member (op =) [globals_updateN, locals_updateN] (Long_Name.base_name u)
           then dest_updates value
           else if can (unsuffix Record.updateN) u orelse Long_Name.base_name u = upd_globalsN
           then (upd,value)::dest_updates state
@@ -1173,7 +1173,7 @@ fun dest_updates (t as (upd as Const (u, _)) $ k $ state) =
   | dest_updates (t as (upd as Const (u,_))$k) =
       (case dest_K_rec k of
         SOME value =>
-          if Long_Name.base_name u mem_string [globals_updateN,locals_updateN]
+          if member (op =) [globals_updateN, locals_updateN] (Long_Name.base_name u)
           then dest_updates value
           else if can (unsuffix Record.updateN) u orelse Long_Name.base_name u = upd_globalsN
           then [(upd,value)]
