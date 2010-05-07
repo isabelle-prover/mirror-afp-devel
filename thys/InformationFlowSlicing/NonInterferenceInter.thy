@@ -391,8 +391,7 @@ next
       next
 	case False
 	with `kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `sourcenode a = m` `sourcenode ax = m`
-	have "slice_kind (CFG_node (_Low_)) ax = 
-	  (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
+	have "slice_kind (CFG_node (_Low_)) ax = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>fs"
 	  by(fastsimp intro:slice_kind_Call)
 	with `as' = ax # asx` 
 	  `preds (slice_kinds (CFG_node (_Low_)) as') s'`
@@ -577,8 +576,7 @@ next
       next
 	case False
 	with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `sourcenode ax = m` `sourcenode a = m`
-	have "slice_kind (CFG_node (_Low_)) a = 
-	  (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
+	have "slice_kind (CFG_node (_Low_)) a = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>fs"
 	  by(fastsimp intro:slice_kind_Call)
 	with `preds (slice_kinds (CFG_node (_Low_)) (a # as)) s`
 	have False by(simp add:slice_kinds_def)
@@ -596,8 +594,7 @@ next
     proof(rule ccontr)
       assume "sourcenode a \<notin> \<lfloor>HRB_slice (CFG_node (_Low_))\<rfloor>\<^bsub>CFG\<^esub>"
       from this `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-      have "slice_kind (CFG_node (_Low_)) a = 
-	(\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
+      have "slice_kind (CFG_node (_Low_)) a = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>fs"
 	by(rule slice_kind_Call)
       with `preds (slice_kinds (CFG_node (_Low_)) (a # as)) s`
       show False by(simp add:slice_kinds_def)
@@ -621,11 +618,14 @@ next
 	by(auto intro!:rvI CFG_Use_SDG_Use simp:SDG_to_CFG_set_def sourcenodes_def) }
     with `\<forall>V\<in>rv CFG_node (_Low_) (CFG_node m). state_val s V = state_val s' V`
       `sourcenode a = m`
-    have "\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V" by simp
+    have Use:"\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V" by simp
+    from `\<forall>i<Suc (length cs). snd (s ! i) = snd (s' ! i)`
+    have "snd (hd s) = snd (hd s')"  by fastsimp
     with `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `valid_edge ax`
       `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `sourcenode a = m` `sourcenode ax = m`
-      `pred (kind a) s` `pred (kind ax) s'`
-    have [simp]:"ax = a" by(fastsimp intro!:CFG_equal_Use_equal_Call)
+      `pred (kind a) s` `pred (kind ax) s'` Use `length s = Suc (length cs)`
+      `length s' = Suc (length cs)`
+    have [simp]:"ax = a" by(fastsimp intro!:CFG_equal_Use_equal_call)
     from `same_level_path_aux cs as'` `as' = ax#asx` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       `\<exists>Q r p fs. kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
     have "same_level_path_aux (a # cs) asx" by simp

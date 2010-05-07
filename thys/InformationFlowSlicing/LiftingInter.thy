@@ -1035,8 +1035,7 @@ proof -
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
       and "knd a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "knd a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'"
       and "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a'"
-      and "src a = src a'" and "pred (knd a) s" and "pred (knd a') s'"
-      and "\<forall>V\<in>lift_Use Use Entry Exit H L (src a). state_val s V = state_val s' V"
+      and "src a = src a'" and "pred (knd a) s" and "pred (knd a') s"
     from `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a`
       `knd a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `pred (knd a) s`
     obtain x where a:"a = (Node (sourcenode x),kind x,Node (targetnode x))" 
@@ -1044,21 +1043,17 @@ proof -
       and "kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "pred (kind x) s"
       by(fastsimp elim:lift_valid_edge.cases)
     from `lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a'`
-      `knd a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'` `pred (knd a') s'`
+      `knd a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'` `pred (knd a') s`
     obtain x' where a':"a' = (Node (sourcenode x'),kind x',Node (targetnode x'))" 
       and "valid_edge x'" and "src a' = Node (sourcenode x')" 
-      and "kind x' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'" and "pred (kind x') s'"
+      and "kind x' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'" and "pred (kind x') s"
       by(fastsimp elim:lift_valid_edge.cases)
     from `src a = Node (sourcenode x)` `src a' = Node (sourcenode x')` 
       `src a = src a'`
     have "sourcenode x = sourcenode x'" by simp
-    from `\<forall>V\<in>lift_Use Use Entry Exit H L (src a). state_val s V = state_val s' V`
-      `src a = Node (sourcenode x)`
-    have "\<forall>V \<in> Use (sourcenode x). state_val s V = state_val s' V"
-      by(auto dest:lift_Use_node)
-    with `valid_edge x` `kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `valid_edge x'` `kind x' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'`
-      `sourcenode x = sourcenode x'` `pred (kind x) s` `pred (kind x') s'`
-    have "x = x'" by(rule CFG_equal_Use_equal_Call)
+    from `valid_edge x` `kind x = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `valid_edge x'` `kind x' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'`
+      `sourcenode x = sourcenode x'` `pred (kind x) s` `pred (kind x') s`
+    have "x = x'" by(rule CFG_call_determ)
     with a a' show "a = a'" by simp
   next
     fix a Q r p fs i ins outs s s'

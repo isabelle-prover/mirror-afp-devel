@@ -108,7 +108,7 @@ where "slice_kind_aux m m' S \<Up>f = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG
                                   targetnode a' = mx'))) 
           then (\<lambda>cf. True)\<^isub>\<surd> else (\<lambda>cf. False)\<^isub>\<surd>))))"
   | "slice_kind_aux m m' S (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then (Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp m' S fs))
-                           else ((\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty))"
+                           else ((\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>fs))"
   | "slice_kind_aux m m' S (Q\<hookleftarrow>\<^bsub>p\<^esub>f) = (if m \<in> \<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> then 
       (let outs = THE outs. \<exists>ins. (p,ins,outs) \<in> set procs in
          (Q\<hookleftarrow>\<^bsub>p\<^esub>(\<lambda>cf cf'. rspp m' S outs cf' cf)))
@@ -366,7 +366,7 @@ qed
 
 lemma slice_kind_Call:
   "\<lbrakk>sourcenode a \<notin> \<lfloor>HRB_slice n'\<rfloor>\<^bsub>CFG\<^esub>; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<rbrakk> 
-  \<Longrightarrow> slice_kind n' a = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
+  \<Longrightarrow> slice_kind n' a = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>fs"
 by(simp add:slice_kind_def)
 
 

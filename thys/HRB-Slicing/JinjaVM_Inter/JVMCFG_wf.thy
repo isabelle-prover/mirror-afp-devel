@@ -726,12 +726,10 @@ next
     and kind_a': "kind a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'"
     and src: "sourcenode a = sourcenode a'"
     and pred_s: "JVMCFG_Interpret.pred (kind a) s"
-    and pred_s': "JVMCFG_Interpret.pred (kind a') s'"
-    and use_Eq: "\<forall>V\<in>Use P (sourcenode a).
-           JVMCFG_Interpret.state_val s V = JVMCFG_Interpret.state_val s' V"
-  then obtain cfs C M pc cs cfs' C' M' pc' cs' where [simp]: "s = (cfs, (C, M, pc)) # cs"
-    and [simp]: "s' = (cfs', (C', M', pc')) # cs'"
-    by (cases s, fastsimp) (cases s', fastsimp+)
+    and pred_s': "JVMCFG_Interpret.pred (kind a') s"
+  then obtain cfs C M pc cs cfs' C' M' pc' cs' 
+    where [simp]: "s = (cfs, (C, M, pc)) # cs" 
+    by (cases s) fastsimp+
   with ve_a kind_a show "a = a'" unfolding valid_edge_def
   proof cases
     case Main_Call with ve_a' kind_a' src pred_s pred_s' show ?thesis unfolding valid_edge_def
