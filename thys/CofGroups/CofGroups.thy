@@ -1,5 +1,4 @@
 (*  Title:       An Example of a Cofinitary Group in Isabelle/HOL
-    ID:          $Id: CofGroups.thy,v 1.6 2009-09-05 14:20:05 lsf37 Exp $
     Author:      Bart.Kastermans at colorado.edu, 2009
     Maintainer:  Bart.Kastermans at colorado.edu
 *)
@@ -75,7 +74,8 @@ since we only define it for sets of permutations on the natural
 numbers).  In Section \ref {sect:moveNN} we show the general theorem that
 conjugating a permutation by a bijection does the expected thing to
 the set of fixed points.  In Section \ref {sect:bijN} we define the
-function @{term CONJ} that is conjugation by @{term ni_bij} (a bijection from @{typ nat} to @{typ int}), show that
+function @{term CONJ} that is conjugation by @{term ni_bij}
+(a bijection from @{typ nat} to @{typ int}), show that
 is acts well with respect to the group operations, use it to define
 @{term Ex2} which is the underlying set of the cofinitary group we are
 construction, and show the basic properties of @{term Ex2}.  Finally
@@ -248,8 +248,8 @@ next
   with fa_k show "\<exists>k. \<forall>n. (inv upOne \<circ> fa) n = n + k" by auto;
 qed;
 
-text {* Now we'll show the other direction.  Then we apply rule @{term
-int_induct} which allows us to do the induction by first showing it
+text {* Now we'll show the other direction.  Then we apply rule @{text
+int_bidirectional_induct} which allows us to do the induction by first showing it
 true for $k = 1$, then showing that if true for $k = i$ it is also
 true for $k = i+1$ and finally showing that if true for $k = i$ then
 it is also true for $k = i - 1$.
@@ -266,7 +266,7 @@ defining the predicate @{text "?P"}. *}
 
 lemma Ex1_Normal_form_part2: 
   "(\<forall>f. ((\<forall>n. f n = n + k) \<longrightarrow> f \<in> Ex1))" (is "?P k");
-proof (rule int_induct [of "?P" 1])
+proof (rule int_bidirectional_induct [of "?P" 1])
   show "\<forall>f. (\<forall>n. f n = n + 1) \<longrightarrow> f \<in> Ex1";
   proof
     fix f:: "int \<Rightarrow> int"
