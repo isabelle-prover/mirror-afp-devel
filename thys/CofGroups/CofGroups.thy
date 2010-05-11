@@ -249,7 +249,7 @@ next
 qed;
 
 text {* Now we'll show the other direction.  Then we apply rule @{text
-int_bidirectional_induct} which allows us to do the induction by first showing it
+int_induct} which allows us to do the induction by first showing it
 true for $k = 1$, then showing that if true for $k = i$ it is also
 true for $k = i+1$ and finally showing that if true for $k = i$ then
 it is also true for $k = i - 1$.
@@ -266,7 +266,7 @@ defining the predicate @{text "?P"}. *}
 
 lemma Ex1_Normal_form_part2: 
   "(\<forall>f. ((\<forall>n. f n = n + k) \<longrightarrow> f \<in> Ex1))" (is "?P k");
-proof (rule int_bidirectional_induct [of "?P" 1])
+proof (rule int_induct [of "?P" 1])
   show "\<forall>f. (\<forall>n. f n = n + 1) \<longrightarrow> f \<in> Ex1";
   proof
     fix f:: "int \<Rightarrow> int"
