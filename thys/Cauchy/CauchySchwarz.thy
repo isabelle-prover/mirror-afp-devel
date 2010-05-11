@@ -202,10 +202,7 @@ theorem CauchySchwarzReal:
   assumes "vlen x = vlen y"
   shows "\<bar>x\<cdot>y\<bar> \<le> \<parallel>x\<parallel>*\<parallel>y\<parallel>"
 proof -
-  have "0 \<le> \<bar>x\<cdot>y\<bar>" by simp
-  moreover have "0 \<le> \<parallel>x\<parallel>*\<parallel>y\<parallel>"
-    by (auto simp add: norm_pos intro: mult_nonneg_nonneg)
-  moreover have "\<bar>x\<cdot>y\<bar>^2 \<le> (\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2"
+  have "\<bar>x\<cdot>y\<bar>^2 \<le> (\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2"
   proof -
     txt {* We can rewrite the goal in the following form ...*}
     have "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 - \<bar>x\<cdot>y\<bar>^2 \<ge> 0"
@@ -319,7 +316,9 @@ proof -
     qed
     thus ?thesis by simp
   qed
-  ultimately show ?thesis by (rule real_sq_order)
+  moreover have "0 \<le> \<parallel>x\<parallel>*\<parallel>y\<parallel>"
+    by (auto simp add: norm_pos intro: mult_nonneg_nonneg)
+  ultimately show ?thesis by (rule power2_le_imp_le)
 qed
 
 end
