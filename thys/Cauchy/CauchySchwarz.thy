@@ -16,57 +16,8 @@ begin
 
 
 lemmas real_sq = power2_eq_square [where 'a = real, symmetric]
-lemmas real_mult_wkorder = mult_nonneg_nonneg [where 'a = real]
-
-lemma real_add_mult_distrib2:
-  fixes x::real
-  shows "x*(y+z) = x*y + x*z"
-proof -
-  have "x*(y+z) = (y+z)*x" by simp
-  also have "\<dots> = y*x + z*x" by (rule real_add_mult_distrib)
-  also have "\<dots> = x*y + x*z" by simp
-  finally show ?thesis .
-qed
-
-lemma real_add_mult_distrib_ex:
-  fixes x::real
-  shows "(x+y)*(z+w) = x*z + y*z + x*w + y*w"
-proof -
-  have "(x+y)*(z+w) = x*(z+w) + y*(z+w)" by (rule real_add_mult_distrib)
-  also have "\<dots> = x*z + x*w + y*z + y*w" by (simp add: real_add_mult_distrib2)
-  finally show ?thesis by simp
-qed
-
-lemma real_sub_mult_distrib_ex:
-  fixes x::real
-  shows "(x-y)*(z-w) = x*z - y*z - x*w + y*w"
-proof -
-  have zw: "(z-w) = (z+ -w)" by simp
-  have "(x-y)*(z-w) = (x + -y)*(z-w)" by simp
-  also have "\<dots> = x*(z-w) + -y*(z-w)" by (rule real_add_mult_distrib)
-  also from zw have "\<dots> = x*(z+ -w) + -y*(z+ -w)"
-    apply -
-    apply (erule subst)
-    by simp
-  also have "\<dots> = x*z + x*-w + -y*z + -y*-w" by (simp add: real_add_mult_distrib2)
-  finally show ?thesis by simp
-qed
-
-lemma setsum_product_expand:
-  fixes f::"nat \<Rightarrow> real"
-  shows "(\<Sum>j\<in>{1..n}. f j)*(\<Sum>j\<in>{1..n}. g j) = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j))"
-  by (simp add: setsum_right_distrib setsum_left_distrib) (rule setsum_commute)
 
 lemmas real_sq_exp = power_mult_distrib [where 'a = real and ?n = 2]
-
-lemma real_diff_exp:
-  fixes x::real
-  shows "(x - y)^2 = x^2 + y^2 - 2*x*y"
-proof -
-  have "(x - y)^2 = (x-y)*(x-y)" by (simp only: real_sq)
-  also from real_sub_mult_distrib_ex have "\<dots> = x*x - x*y - y*x + y*y" by simp
-  finally show ?thesis by (auto simp add: real_sq)
-qed
 
 lemma double_sum_equiv:
   fixes f::"nat \<Rightarrow> real"
@@ -232,7 +183,7 @@ proof -
         also from xp yp have
           "\<dots> = (\<Sum>j\<in>{1..n}. x\<^sub>j^2)*(\<Sum>j\<in>{1..n}. y\<^sub>j^2)"
           by simp
-        also from setsum_product_expand have
+        also from setsum_product have
           "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k^2)*(y\<^sub>j^2)))" .
         finally have
           "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k^2)*(y\<^sub>j^2)))" .
@@ -249,9 +200,8 @@ proof -
         also from real_sq have
           "\<dots> = (\<Sum>j\<in>{1..n}. x\<^sub>j*y\<^sub>j)*(\<Sum>j\<in>{1..n}. x\<^sub>j*y\<^sub>j)"
           by simp
-        also from setsum_product_expand have
-          "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k*y\<^sub>k)*(x\<^sub>j*y\<^sub>j)))"
-          by simp
+        also from setsum_product have
+          "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k*y\<^sub>k)*(x\<^sub>j*y\<^sub>j)))" .
         finally have
           "\<bar>x\<cdot>y\<bar>^2 = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k*y\<^sub>k)*(x\<^sub>j*y\<^sub>j)))" .
       }
@@ -299,7 +249,7 @@ proof -
       also have
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^sub>k*y\<^sub>j - x\<^sub>j*y\<^sub>k)^2))"
-        by (simp only: real_diff_exp real_sq_exp, auto simp add: mult_ac)
+        by (simp only: power2_diff real_sq_exp, auto simp add: mult_ac)
       also have "\<dots> \<ge> 0"
       proof -
         {
