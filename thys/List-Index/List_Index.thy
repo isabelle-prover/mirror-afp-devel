@@ -149,11 +149,6 @@ by (simp add:inj_on_def)
 lemma index_conv_takeWhile: "index xs x = size(takeWhile (\<lambda>y. x\<noteq>y) xs)"
 by(induct xs) auto
 
-(* FIXME already in List in later Isabelle versions: *)
-lemma set_take_subset_set_take:
-  "m <= n \<Longrightarrow> set(take m xs) <= set(take n xs)"
-by(induct xs arbitrary: m n)(auto simp:take_Cons split:nat.split)
-
 lemma index_take: "\<lbrakk> x \<in> set xs; index xs x >= i \<rbrakk> \<Longrightarrow> x \<notin> set(take i xs)"
 apply(subst (asm) index_conv_takeWhile)
 apply(subgoal_tac "set(take i xs) <= set(takeWhile (op \<noteq> x) xs)")
