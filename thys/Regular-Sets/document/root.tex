@@ -1,0 +1,52 @@
+% $Id: root.tex,v 1.2 2007-11-12 21:00:45 nipkow Exp $
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also isabellesym.sty)
+% use only when needed
+%\usepackage{amssymb}                  % for \<leadsto>, \<box>, \<diamond>,
+                                       % \<sqsupset>, \<mho>, \<Join>, 
+                                       % \<lhd>, \<lesssim>, \<greatersim>,
+                                       % \<lessapprox>, \<greaterapprox>,
+                                       % \<triangleq>, \<yen>, \<lozenge>
+%\usepackage[greek,english]{babel}     % greek for \<euro>,
+                                       % english for \<guillemotleft>, 
+                                       %             \<guillemotright>
+                                       % default language = last
+%\usepackage[latin1]{inputenc}         % for \<onesuperior>, \<onequarter>,
+                                       % \<twosuperior>, \<onehalf>,
+                                       % \<threesuperior>, \<threequarters>,
+                                       % \<degree>
+%\usepackage[only,bigsqcap]{stmaryrd}  % for \<Sqinter>
+%\usepackage{eufrak}                   % for \<AA> ... \<ZZ>, \<aa> ... \<zz>
+                                       % (only needed if amssymb not used)
+%\usepackage{textcomp}                 % for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Regular Sets}
+\author{Alexander Krauss and Tobias Nipkow}
+\maketitle
+
+\begin{abstract}
+This is a library of constructions on languages, i.e.\ sets of words, i.e.\
+lists. It provides the regular operations of concatenation, iteration,
+Kleene star and derivative. A datatype of regular expressions and a mapping
+to regular sets is also given.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\end{document}

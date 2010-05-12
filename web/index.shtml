@@ -66,6 +66,13 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2010-05-12:
+<a href="entries/Regular-Sets.shtml">Regular Sets</a>
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
 2010-03-29:
 <a href="entries/Free-Boolean-Algebra.shtml">Free Boolean Algebra</a>
 <br>Author:
