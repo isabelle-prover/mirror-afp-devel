@@ -75,12 +75,13 @@
 
 <h3>Programming Languages</h3>
 <div class="list">
-  <strong>Language Definitions:</strong> <a href="entries/CoreC++.shtml">CoreC++</a>  
-  <a href="entries/FeatherweightJava.shtml">FeatherweightJava</a>  
-  <a href="entries/Jinja.shtml">Jinja</a>  
-  <a href="entries/JinjaThreads.shtml">JinjaThreads</a>  
-  <a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a>  
-  <a href="entries/Simpl.shtml">Simpl</a>  
+  <strong>Language Definitions:</strong>&nbsp;<a href="entries/CoreC++.shtml">CoreC++</a> &nbsp;
+  <a href="entries/FeatherweightJava.shtml">FeatherweightJava</a> &nbsp;
+  <a href="entries/Jinja.shtml">Jinja</a> &nbsp;
+  <a href="entries/JinjaThreads.shtml">JinjaThreads</a> &nbsp;
+  <a href="entries/Locally-Nameless-Sigma.shtml">Locally-Nameless-Sigma</a> &nbsp;
+  <a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
+  <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
 
   <strong>Type Systems:</strong> <a href="entries/MiniML.shtml">MiniML</a>  
   <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a>  
