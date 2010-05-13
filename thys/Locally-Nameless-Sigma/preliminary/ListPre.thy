@@ -115,13 +115,11 @@ proof (induct xs, simp)
   show ?case by simp
 qed
 
-consts
-  list_insert :: "'a list \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a list"
-primrec
+primrec list_insert :: "'a list \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a list" where
   "list_insert (ah#as) i a = 
   (case i of 
         0      \<Rightarrow> a#ah#as
-       |Suc j  \<Rightarrow> ah#(list_insert as j a))"
+       |Suc j  \<Rightarrow> ah#(list_insert as j a))" |
 
   "list_insert [] i a = [a]"
 

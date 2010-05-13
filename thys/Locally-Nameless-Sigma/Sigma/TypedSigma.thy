@@ -461,15 +461,9 @@ lemma obj_inv_elim':
                                \<turnstile> (the(f l)\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(U^l)))"
   using assms
 proof (cases rule: typing.cases)
-  case T_Var thus ?thesis by simp (* contradiction *)
-next
-  case T_Upd thus ?thesis by simp (* contradiction *)
-next
-  case T_Call thus ?thesis by simp (* contradiction *)
-next
-  case (T_Obj env f' T F)
-  from `e = env` `Obj f U = Obj f' T` `dom f' = do T`
-  have "dom f = do U" by simp
+  case (T_Obj F)
+(*  from `e = env` `Obj f U = Obj f' T` `dom f' = do T`
+  have "dom f = do U" by simp*)
   thus ?thesis 
   proof (simp, intro strip)
     fix l assume "l \<in> do U"
@@ -480,13 +474,13 @@ next
       "sa \<noteq> pa" and
       nin_sa: "sa \<notin> F \<union> FV (Obj f U)" and
       nin_pa: "pa \<notin> F \<union> FV (Obj f U)" by auto
-    with `e = env` `Obj f U = Obj f' T` `U = T` `l \<in> do U` prems(11)
+    with `l \<in> do U` prems
     have 
       "e\<lparr>sa:U\<rparr>\<lparr>pa:param(the(U^l))\<rparr> 
        \<turnstile> (the(f l)\<^bsup>[Fvar sa,Fvar pa]\<^esup>) : return(the(U^l))"
       by simp
     moreover
-    from `l \<in> do U` `Obj f U = Obj f' T` `U = T` `dom f' = do T`  
+    from `l \<in> do U` `dom f = do U`  
     have "l \<in> dom f" by simp
     with nin_s nin_p nin_sa nin_pa FV_option_lem[of f]
     have 
@@ -514,21 +508,15 @@ lemma abs_typeE:
   \<Longrightarrow> P"
   using assms
 proof (cases rule: typing.cases)
-  case T_Var thus ?thesis by simp (* contradiction *)
-next
-  case T_Obj thus ?thesis by simp (* contradiction *)
-next
-  case T_Upd thus ?thesis by simp (* contradiction *)
-next
-  case (T_Call env t1 Ta t2 la)
+  case (T_Call A (*env t1 t2=b*))
   assume 
     cof: "\<exists>F. finite F 
             \<and> (\<forall>s p. s \<notin> F \<and> p \<notin> F \<and> s \<noteq> p 
                 \<longrightarrow> e\<lparr>s:U\<rparr>\<lparr>p: param(the(U^l))\<rparr> \<turnstile> (the(f l)\<^bsup>[Fvar s,Fvar p]\<^esup>) : T) 
           \<Longrightarrow> P"
   from 
-    `e = env` `Call (Obj f U) l b = Call t1 la t2` `T = return(the(Ta^la))`
-    `env \<turnstile> t1 : Ta` `la \<in> do Ta` obj_inv[of e f U Ta]
+    `T = return(the(A^l))`
+    `e \<turnstile> Obj f U : A` `l \<in> do A` obj_inv[of e f U A]
   obtain "e \<turnstile> (Obj f U) : U" and "T = return(the(U^l))" and "l \<in> do U" 
     by simp
   from obj_inv_elim[OF this(1)] this(2-3) cof show ?thesis by blast

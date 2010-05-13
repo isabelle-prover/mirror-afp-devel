@@ -72,14 +72,6 @@ lemma Upd_par_red[consumes 1, case_names upd obj]:
   shows Q
   using assms
 proof (cases rule: par_beta.cases)
-  case pbeta_Fvar thus ?thesis by simp (* contradiction *)
-next
-  case pbeta_Call thus ?thesis by simp (* contradiction *)
-next
-  case pbeta_beta thus ?thesis by simp (* contradiction *)
-next
-  case pbeta_Obj thus ?thesis by simp (* contradiction *)
-next
   case pbeta_Upd thus ?thesis using assms(2) by force
 next
   case pbeta_Upd'
@@ -99,14 +91,6 @@ lemma Call_par_red[consumes 1, case_names call beta]:
   shows Q
   using assms
 proof (cases rule: par_beta.cases)
-  case pbeta_Fvar thus ?thesis by simp (* contradiction *)
-next
-  case pbeta_Obj thus ?thesis by simp (* contradiction *)
-next
-  case pbeta_Upd thus ?thesis by simp (* contradiction *)
-next
-  case pbeta_Upd' thus ?thesis by simp (* contradiction *)
-next
   case pbeta_Call thus ?thesis using assms(2) by force
 next
   case pbeta_beta

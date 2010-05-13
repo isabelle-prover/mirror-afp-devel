@@ -14,20 +14,15 @@ header {* Finite maps with axclasses *}
 
 theory FMap imports ListPre begin
 
-axclass fintype < type
+types ('a, 'b) fmap = "('a :: finite) ~=> 'b" (infixl "-~>" 50)
 
-finite_set: " finite (UNIV)"
-
-types ('a, 'b) fmap = "('a :: fintype) ~=> 'b" (infixl "-~>" 50)
-
-axclass inftype < type
-
-infinite: "\<not>finite UNIV"
+class inftype =
+assumes infinite: "\<not>finite UNIV"
 
 theorem fset_induct:
-  "P {} \<Longrightarrow> (\<And>x (F::('a::fintype)set). x \<notin> F \<Longrightarrow> P F \<Longrightarrow> P (insert x F)) \<Longrightarrow> P F"
+  "P {} \<Longrightarrow> (\<And>x (F::('a::finite)set). x \<notin> F \<Longrightarrow> P F \<Longrightarrow> P (insert x F)) \<Longrightarrow> P F"
 proof (rule_tac P=P and F=F in finite_induct)
-  from finite_subset[OF subset_UNIV] finite_set show "finite F" by auto
+  from finite_subset[OF subset_UNIV] show "finite F" by auto
 next
   assume "P {}" thus "P {}" by simp
 next
@@ -115,7 +110,7 @@ next
 qed
 
 lemma set_fmap_minus_iff: 
-  "set_fmap ((F::(('a::fintype) -~> 'b)) -- x) = set_fmap F - {x}"
+  "set_fmap ((F::(('a::finite) -~> 'b)) -- x) = set_fmap F - {x}"
   unfolding set_fmap_def 
 proof (auto)
   fix a b assume "(F -- x) a = Some b" from fmap_minus_fmap[OF this]
@@ -140,7 +135,7 @@ next
 qed
 
 lemma set_fmap_minus_insert:
-  fixes F :: "('a::fintype * 'b)set" and  F':: "('a::fintype) -~> 'b" and x
+  fixes F :: "('a::finite * 'b)set" and  F':: "('a::finite) -~> 'b" and x
   assumes "x \<notin> F" and "insert x F = set_fmap F'"
   shows "F = set_fmap (F' -- x)"
 proof -
@@ -148,11 +143,11 @@ proof -
   show ?thesis by simp
 qed
 
-lemma notin_fmap_minus: "x \<notin> set_fmap ((F::(('a::fintype) -~> 'b)) -- x)"
+lemma notin_fmap_minus: "x \<notin> set_fmap ((F::(('a::finite) -~> 'b)) -- x)"
   by (auto simp: set_fmap_minus_iff)
 
 lemma fst_notin_fmap_minus_dom:
-  fixes F x and F' :: "('a::fintype) -~> 'b"
+  fixes F x and F' :: "('a::finite) -~> 'b"
   assumes "insert x F = set_fmap F'"
   shows "fst x \<notin> dom (F' -- x)"
 proof (rule ccontr, auto)
@@ -265,15 +260,15 @@ proof -
   from rep_fmap_base show ?thesis by blast
 qed
 
-theorem finite_fsets: "finite (F::('a::fintype)set)"
+theorem finite_fsets: "finite (F::('a::finite)set)"
 proof -
-  from finite_subset[OF subset_UNIV] finite_set show "finite F" by auto
+  from finite_subset[OF subset_UNIV] show "finite F" by auto
 qed
 
-lemma finite_dom_fmap: "finite (dom (F::('a -~> 'b))::('a::fintype)set)"
+lemma finite_dom_fmap: "finite (dom (F::('a -~> 'b))::('a::finite)set)"
   by (rule finite_fsets)
 
-lemma finite_fmap_ran: "finite (ran (F::(('a::fintype) -~> 'b)))"
+lemma finite_fmap_ran: "finite (ran (F::(('a::finite) -~> 'b)))"
   unfolding ran_def
 proof -
   from finite_dom_fmap finite_imageI 
@@ -286,10 +281,10 @@ proof -
   show "finite {b. \<exists>a. F a = Some b}"  by simp
 qed
 
-lemma finite_fset_map: "finite (set_fmap (F::(('a::fintype) -~> 'b)))"
+lemma finite_fset_map: "finite (set_fmap (F::(('a::finite) -~> 'b)))"
 proof -
-  from finite_cartesian_product finite_dom_fmap finite_fmap_ran
-  have "finite (dom F \<times> ran F)" by auto
+  from finite_cartesian_product[OF finite_dom_fmap finite_fmap_ran]
+  have "finite (dom F \<times> ran F)" .
   moreover
   have "set_fmap F \<subseteq> dom F \<times> ran F"
     unfolding set_fmap_def dom_def ran_def by fastsimp
@@ -332,7 +327,7 @@ proof
 qed
 
 theorem fmap_induct[rule_format, case_names empty insert]:
-  fixes  P  :: "(('a :: fintype) -~> 'b) \<Rightarrow> bool" and  F' :: "('a  -~> 'b)"
+  fixes  P  :: "(('a :: finite) -~> 'b) \<Rightarrow> bool" and  F' :: "('a  -~> 'b)"
   assumes 
   "P empty" and
   "\<forall>(F::('a -~> 'b)) x z. x \<notin> dom F \<longrightarrow> P F \<longrightarrow> P (F(x \<mapsto> z))"
@@ -385,7 +380,7 @@ proof -
 qed
 
 lemma fmap_induct3[consumes 2, case_names empty insert]:
-  "\<And>(F2::('a::fintype) -~> 'b) (F3::('a -~> 'b)).
+  "\<And>(F2::('a::finite) -~> 'b) (F3::('a -~> 'b)).
    \<lbrakk> dom (F1::('a -~> 'b)) = dom F2; dom F3 = dom F1; 
      P empty empty empty;
      \<And>x a b c (F1::('a -~> 'b)) (F2::('a -~> 'b)) (F3::('a -~> 'b)).
@@ -463,7 +458,7 @@ qed
 
 lemma fmap_ex_cof2:
   "\<And>(P::'c \<Rightarrow> 'c \<Rightarrow> 'b option \<Rightarrow> 'b option \<Rightarrow> 'a \<Rightarrow> bool)
-     (f'::('a::fintype) -~> 'b).
+     (f'::('a::finite) -~> 'b).
   \<lbrakk> dom f' = dom (f::('a -~> 'b)); 
     \<forall>l\<in>dom f. (\<exists>L. finite L 
                   \<and> (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p
@@ -534,7 +529,7 @@ qed
 
 lemma fmap_ex_cof:
   fixes
-  P :: "'c \<Rightarrow> 'c \<Rightarrow> 'b option \<Rightarrow> ('a::fintype) \<Rightarrow> bool"
+  P :: "'c \<Rightarrow> 'c \<Rightarrow> 'b option \<Rightarrow> ('a::finite) \<Rightarrow> bool"
   assumes
   "\<forall>l\<in>dom (f::('a -~> 'b)).
   (\<exists>L. finite L \<and> (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> P s p (f l) l))"
@@ -547,7 +542,7 @@ lemma fmap_ball_all2:
   Px :: "'c \<Rightarrow> 'd \<Rightarrow> bool" and 
   P :: "'c \<Rightarrow> 'd \<Rightarrow> 'b option \<Rightarrow> bool"
   assumes
-  "\<forall>l\<in>dom (f::('a::fintype) -~> 'b). \<forall>(x::'c) (y::'d). Px x y \<longrightarrow> P x y (f l)"
+  "\<forall>l\<in>dom (f::('a::finite) -~> 'b). \<forall>(x::'c) (y::'d). Px x y \<longrightarrow> P x y (f l)"
   shows
   "\<forall>x y. Px x y \<longrightarrow> (\<forall>l\<in>dom f. P x y (f l))"
 proof (intro strip)
@@ -558,7 +553,7 @@ qed
 lemma fmap_ball_all2':
   fixes 
   Px :: "'c \<Rightarrow> 'd \<Rightarrow> bool" and 
-  P :: "'c \<Rightarrow> 'd \<Rightarrow> 'b option \<Rightarrow> ('a::fintype) \<Rightarrow> bool"
+  P :: "'c \<Rightarrow> 'd \<Rightarrow> 'b option \<Rightarrow> ('a::finite) \<Rightarrow> bool"
   assumes
   "\<forall>l\<in>dom (f::('a -~> 'b)). \<forall>(x::'c) (y::'d). Px x y \<longrightarrow> P x y (f l) l"
   shows
@@ -572,7 +567,7 @@ lemma fmap_ball_all3:
   fixes 
   Px :: "'c \<Rightarrow> 'd \<Rightarrow> 'e \<Rightarrow> bool" and 
   P :: "'c \<Rightarrow> 'd \<Rightarrow> 'e \<Rightarrow> 'b option \<Rightarrow> 'b option \<Rightarrow> bool" and
-  f :: "('a::fintype) -~> 'b" and f' :: "'a -~> 'b"
+  f :: "('a::finite) -~> 'b" and f' :: "'a -~> 'b"
   assumes
   "dom f' = dom f" and
   "\<forall>l\<in>dom f.
@@ -587,7 +582,7 @@ qed
 lemma fmap_ball_all4':
   fixes 
   Px :: "'c \<Rightarrow> 'd \<Rightarrow> 'e \<Rightarrow> 'f \<Rightarrow> bool" and 
-  P :: "'c \<Rightarrow> 'd \<Rightarrow> 'e \<Rightarrow> 'f \<Rightarrow> 'b option \<Rightarrow> ('a::fintype) \<Rightarrow> bool"
+  P :: "'c \<Rightarrow> 'd \<Rightarrow> 'e \<Rightarrow> 'f \<Rightarrow> 'b option \<Rightarrow> ('a::finite) \<Rightarrow> bool"
   assumes
   "\<forall>l\<in>dom (f::('a -~> 'b)). 
     \<forall>(x::'c) (y::'d) (z::'e) (a::'f). Px x y z a \<longrightarrow> P x y z a (f l) l"

@@ -31,7 +31,7 @@ qed
 lemma finite_Label: "finite (UNIV :: (Label set))"
   by (simp add: Univ_abs_label finite_Label_set)
 
-instance Label :: "fintype"
+instance Label :: finite
 proof
   show "finite (UNIV :: (Label set))" by (rule finite_Label)
 qed
@@ -41,15 +41,13 @@ Lsuc :: "(Label set) \<Rightarrow> Label \<Rightarrow> Label"
 Lmin :: "(Label set) \<Rightarrow> Label"
 Lmax :: "(Label set) \<Rightarrow> Label"
 
-constdefs
-Llt :: "[Label, Label] \<Rightarrow> bool" (infixl "<" 50)
+definition Llt :: "[Label, Label] \<Rightarrow> bool" (infixl "<" 50) where
   "Llt a b == Rep_Label a < Rep_Label b"
-Lle :: "[Label, Label] \<Rightarrow> bool" (infixl "\<le>" 50)
+definition Lle :: "[Label, Label] \<Rightarrow> bool" (infixl "\<le>" 50) where
   "Lle a b == Rep_Label a \<le> Rep_Label b"
 
-constdefs
-Ltake_eq :: "[Label set, (Label ~=> 'a),  (Label ~=> 'a)] \<Rightarrow> bool"
-  "Ltake_eq L f g  == \<forall>l\<in>L. f l = g l"
+definition Ltake_eq :: "[Label set, (Label ~=> 'a),  (Label ~=> 'a)] \<Rightarrow> bool"
+where  "Ltake_eq L f g  == \<forall>l\<in>L. f l = g l"
 
 lemma Ltake_eq_all:
   fixes f g
@@ -217,13 +215,7 @@ constdefs closed :: "sterm \<Rightarrow> bool"
 
 (* finiteness of FV *)
 lemma finite_FV_FVoption: "finite (FV t) \<and> finite (FVoption s)"
-proof (induct _ t _ s rule: sterm.induct, simp_all)
-  fix f :: "Label -~> sterm"
-  have "finite (dom f)" by (simp add: finite_Label finite_dom_fmap)
-  moreover
-  assume "\<And>x. finite (FVoption (f x))"
-  ultimately show "finite (\<Union>l\<in>dom f. FVoption (f l))" by simp
-qed
+by(induct _ t _ s rule: sterm.induct, simp_all)
 
 (* for infiniteness of string sets see
     List.infinite_UNIV_listI *)
@@ -2616,10 +2608,10 @@ lemma SizeOfObjectPos: "ssize (Obj (f::Label -~> sterm) T) > 0"
 proof (simp)
   from finite_dom_fmap have "finite (dom f)" by auto
   thus "0 < fold (\<lambda>x y. y + ssize_option (f x)) (Suc 0) (dom f)"
-  proof (induct "dom f" rule: finite.induct)
-    case emptyI thus ?case by simp
+  proof (induct)
+    case empty thus ?case by simp
   next
-    case (insertI A a) thus ?case by (case_tac "a \<in> A", auto simp: insert_absorb)
+    case (insert A a) thus ?case by auto
   qed
 qed
 
