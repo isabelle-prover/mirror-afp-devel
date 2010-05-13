@@ -161,7 +161,7 @@ proof -
     apply(rule perm_weak_filter[OF perm weak]) .
 qed
 
-
+(* No, not used
 subsection "Following used in Soundness"
 
 primrec multiset_of_list :: "'a list \<Rightarrow> 'a multiset"
@@ -174,11 +174,11 @@ lemma count_count[symmetric]: "count x A = Multiset.count (multiset_of_list A) x
 
 lemma perm_multiset: "A <~~> B = (multiset_of_list A = multiset_of_list B)"
   apply(simp add: perm_count_conv)
-  apply(simp add: multiset_eq_conv_count_eq)
+  apply(simp add: multiset_ext_iff)
   apply(simp add: count_count)
   done
 
 lemma set_of_multiset_of_list: "set_of (multiset_of_list A) = set A"
   by (induct A) auto
-
+*)
 end

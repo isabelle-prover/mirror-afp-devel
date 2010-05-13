@@ -199,11 +199,11 @@ proof-
       then have "A \<in> set_of \<Gamma>'" using assms by auto
       thus "A :# \<Gamma>'" by simp
       qed
-  then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_eq_conv_count_eq)
+  then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_ext_iff)
   then have "\<exists> \<Gamma>''. \<Gamma>' = \<Gamma>'' \<oplus> A" apply (rule_tac x="\<Gamma>' \<ominus> A" in exI) by auto
   then obtain \<Gamma>'' where eq1:"\<Gamma>' = \<Gamma>'' \<oplus> A" by blast
   from `\<Gamma> \<oplus> A = \<Gamma>' \<oplus> B` eq1 have "\<Gamma> \<oplus> A = \<Gamma>'' \<oplus> A \<oplus> B" by auto
-  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by (auto simp add:multiset_eq_conv_count_eq)
+  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by (auto simp add:multiset_ext_iff)
   thus ?thesis using eq1 by blast
 qed
 
