@@ -36,8 +36,9 @@
 		
     <tr><td class="datahead">Author:</td>
 <td class="data">
-<!-- Author: --><a
-href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+<!-- Author: -->
+<a href="http://www.in.tum.de/~krauss">Alexander Krauss</a> and
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
 </td></tr>		
     
 	<tr><td class="datahead">Submission date:</td>
