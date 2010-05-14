@@ -246,6 +246,8 @@ if [ "$SNAPSHOT" == "1" ]; then
     done
     cp $EXPORT/web/index.shtml $WEB/devel.shtml
     perl -pi -e "s:entries/:devel-entries/:g" $WEB/devel.shtml
+
+    perl -pi -e "s:index:devel:" $DEVENTRIES/nav.html
       
     # prepare generated html
     BROWSER_DEVEL=$WEB/browser_info/devel
