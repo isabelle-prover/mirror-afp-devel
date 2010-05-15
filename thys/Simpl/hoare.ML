@@ -1671,7 +1671,7 @@ fun cond_rename_bvars cond name thm =
                                          else Abs (x,T,ren t)
         | ren (t $ u) = ren t $ ren u
         | ren t = t;
-    in equal_elim (reflexive (cterm_of thy (ren prop))) thm end;
+    in Thm.equal_elim (Thm.reflexive (cterm_of thy (ren prop))) thm end;
 
 val rename_bvars = cond_rename_bvars (K true);
 

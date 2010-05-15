@@ -181,13 +181,13 @@ fun decomp ctxt (Const ("op &", _) $ t $ t', ct) =
                        let val P = HOLogic.dest_Trueprop (dest_prop (prem_of thm));
                            val thm' = split_thm Hol_all ctxt x' T P;
                            val thm1 = genAllShift' OF_RAW 
-                                        Goal.protect (forall_intr cx' (Goal.conclude thm'));
+                                        Goal.protect (Thm.forall_intr cx' (Goal.conclude thm'));
                            val thm2 = genAll' OF_RAW 
-                                        Goal.protect (forall_intr cx' (Goal.conclude thm));
+                                        Goal.protect (Thm.forall_intr cx' (Goal.conclude thm));
                        in genTrans SIMPLE_OF [thm1,thm2]
                        end)
           else ([term_of cb],[cb], fn [thm] => 
-                        genAll' OF_RAW Goal.protect (forall_intr cx' (Goal.conclude thm)))
+                        genAll' OF_RAW Goal.protect (Thm.forall_intr cx' (Goal.conclude thm)))
        end
   | decomp ctxt ((exc as Const ("Ex",_)) $ f, ct) =
        let
@@ -203,7 +203,7 @@ fun decomp ctxt (Const ("op &", _) $ t $ t', ct) =
                            val thm' = split_thm Hol_ex ctxt x' T P;
                        in protectImp SIMPLE_OF_RAW Goal.protect thm' end )
           else ([term_of cb],[cb], fn [thm] => 
-                       genEx' OF_RAW Goal.protect (forall_intr cx' (Goal.conclude thm)))
+                       genEx' OF_RAW Goal.protect (Thm.forall_intr cx' (Goal.conclude thm)))
        end
   | decomp ctxt (Const ("op -->",_)$P$Q, ct) =
        let 
@@ -244,13 +244,13 @@ fun decomp ctxt (Const ("op &", _) $ t $ t', ct) =
                        let val P = dest_prop (prem_of thm);
                            val thm' = split_thm Meta_all ctxt x' T P;
                            val thm1 = gen_allShift' OF_RAW 
-                                       Goal.protect (forall_intr cx' (Goal.conclude thm'));
+                                       Goal.protect (Thm.forall_intr cx' (Goal.conclude thm'));
                            val thm2 = gen_all' OF_RAW 
-                                       Goal.protect (forall_intr cx' (Goal.conclude thm));
+                                       Goal.protect (Thm.forall_intr cx' (Goal.conclude thm));
                        in genTrans SIMPLE_OF [thm1,thm2]
                        end)
           else ([term_of cb],[cb], fn [thm] => 
-                    gen_all' OF_RAW Goal.protect (forall_intr cx' (Goal.conclude thm)))
+                    gen_all' OF_RAW Goal.protect (Thm.forall_intr cx' (Goal.conclude thm)))
        end
   | decomp ctxt (Const ("Trueprop",_)$P, ct) = ([P],snd (Drule.strip_comb ct),fn [thm] => thm)
   | decomp ctxt (t, ct) = ([],[], fn [] => 
