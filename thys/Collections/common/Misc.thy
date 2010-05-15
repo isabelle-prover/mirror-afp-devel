@@ -334,7 +334,7 @@ subsubsection {* Count *}
 	lemma count_ne_remove: "\<lbrakk> x ~= t\<rbrakk> \<Longrightarrow> count S x = count (S-{#t#}) x"
 	  by (auto)
   lemma mset_empty_count[simp]: "(\<forall>p. count M p = 0) = (M={#})"
-    by (auto simp add: multiset_eq_conv_count_eq)
+    by (auto simp add: multiset_ext_iff)
 
 subsubsection {* Union, difference and intersection *}
 
@@ -373,31 +373,11 @@ subsubsection {* Union, difference and intersection *}
     hence "count (S+T) t = count (S-{#t#}+T) t + 1" by auto
     hence "count (S+T-{#t#}) t = count (S-{#t#}+T) t" by (simp)
     moreover have "ALL x. x~=t \<longrightarrow> count (S+T-{#t#}) x = count (S-{#t#}+T) x" by auto
-    ultimately show ?thesis by (auto simp add: union_ac iff add: multiset_eq_conv_count_eq)
+    ultimately show ?thesis by (auto simp add: union_ac iff add: multiset_ext_iff)
   qed
 
   lemma mset_diff_union_cancel[simp]: "t :# S \<Longrightarrow> (S - {#t#}) + {#t#} = S"
     by (auto simp add: mset_union_diff_comm union_ac)
-
-  lemma mset_diff_diff_left: "A-B-C = A-((B::'a multiset)+C)" proof -
-    have "ALL e . count (A-B-C) e = count (A-(B+C)) e" by auto
-    thus ?thesis by (simp add: multiset_eq_conv_count_eq)
-  qed
-
-  lemma mset_diff_commute: "A-B-C = A-C-(B::'a multiset)" proof -
-    have "A-B-C = A-(B+C)" by (simp add: mset_diff_diff_left)
-    also have "\<dots> = A-(C+B)" by (simp add: union_commute)
-    thus ?thesis by (simp add: mset_diff_diff_left)
-  qed
-
-  (* Todo: This should be more simply to prove, should'nt it ??*)
-  lemma mset_diff_same_empty[simp]: "(S::'a multiset) - S = {#}"
-  proof -
-    have "ALL e . count (S-S) e = 0" by auto
-    hence "ALL e . ~ (e : set_of (S-S))" by auto
-    hence "set_of (S-S) = {}" by blast
-    thus ?thesis by (auto)
-  qed
 
   lemma mset_right_cancel_union: "\<lbrakk>a :# A+B; ~(a :# B)\<rbrakk> \<Longrightarrow> a:#A"
     by (simp)
@@ -422,23 +402,17 @@ subsubsection {* Union, difference and intersection *}
     assume A: "~(a :# B)"
     hence "count ({#a#}-B) a = count ({#a#}) a" by auto
     moreover have "ALL e . e~=a \<longrightarrow> count ({#a#}-B) e = count ({#a#}) e" by auto
-    ultimately show ?thesis by (auto simp add: multiset_eq_conv_count_eq)
+    ultimately show ?thesis by (auto simp add: multiset_ext_iff)
   qed
 
-  lemma diff_union_inverse[simp]: "A + B - B = (A::'a multiset)"
-    by (auto iff add: multiset_eq_conv_count_eq)
-
-  lemma diff_union_inverse2[simp]: "B + A - B = (A::'a multiset)"
-    by (auto iff add: multiset_eq_conv_count_eq)
-
 	lemma union_diff_assoc_se: "t :# B \<Longrightarrow> (A+B)-{#t#} = A + (B-{#t#})"
-	  by (auto iff add: multiset_eq_conv_count_eq)
+	  by (auto iff add: multiset_ext_iff)
   (*lemma union_diff_assoc_se2: "t :# A \<Longrightarrow> (A+B)-{#t#} = (A-{#t#}) + B"
-    by (auto iff add: multiset_eq_conv_count_eq)
+    by (auto iff add: multiset_ext_iff)
   lemmas union_diff_assoc_se = union_diff_assoc_se1 union_diff_assoc_se2*)
 
 	lemma union_diff_assoc: "C-B={#} \<Longrightarrow> (A+B)-C = A + (B-C)"
-	  by (simp add: multiset_eq_conv_count_eq)
+	  by (simp add: multiset_ext_iff)
 
   lemma mset_union_1_elem1[simp]: "({#a#} = M+{#b#}) = (a=b & M={#})" proof
     assume A: "{#a#} = M+{#b#}"
