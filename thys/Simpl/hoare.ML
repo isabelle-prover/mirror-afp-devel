@@ -1460,9 +1460,9 @@ fun procedures_definition locname procs thy =
 
 (* outer syntax *)
 
-structure P = OuterParse
+structure P = Parse
 
-local structure S = SpecParse and K = OuterKeyword in
+local structure S = Parse_Spec and K = Keyword in
 
 val valuePar = "val"
 val resultPar = "res"
@@ -1504,7 +1504,7 @@ val par_loc = Scan.option (P.$$$ "(" |-- P.$$$ "imports" |-- P.name --| P.$$$ ")
 val proceduresP =
      (par_loc -- (P.and_list1 (proc_decl -- loc_decl -- proc_body -- proc_specs)))
 
-val procs_command = OuterSyntax.command "procedures" "define procedures" K.thy_decl
+val procs_command = Outer_Syntax.command "procedures" "define procedures" K.thy_decl
   (proceduresP
     >> (fn (loc,decls) =>
         let
@@ -1516,7 +1516,7 @@ val procs_command = OuterSyntax.command "procedures" "define procedures" K.thy_d
 
 
 val hoare_statespace_command =
-  OuterSyntax.command "hoarestate" "define state space for hoare logic" K.thy_decl
+  Outer_Syntax.command "hoarestate" "define state space for hoare logic" K.thy_decl
   (StateSpace.statespace_decl >> (fn ((args,name),(parents,comps)) =>
     Toplevel.theory
       (StateSpace.define_statespace args name parents (map (apfst (suffix deco)) comps))));
