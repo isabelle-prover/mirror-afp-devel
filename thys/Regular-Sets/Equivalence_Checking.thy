@@ -4,6 +4,8 @@ theory Equivalence_Checking
 imports Regular_Exp While_Combinator
 begin
 
+text{* This theory is based on work by Jan Rutten \cite{?}. *}
+
 subsection {* Term ordering *}
 
 fun rexp_le :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> bool"
