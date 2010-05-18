@@ -7,7 +7,7 @@ header {* The quadratic form $x^2 + Ny^2$ *}
 
 theory QuadForm
 imports 
-  "~~/src/HOL/Number_Theory/Quadratic_Reciprocity" 
+  "~~/src/HOL/Old_Number_Theory/Quadratic_Reciprocity" 
   IntNatAux
 begin
 
