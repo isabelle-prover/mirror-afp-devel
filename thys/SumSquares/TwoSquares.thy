@@ -7,7 +7,7 @@ header {* Sums of two squares *}
 
 theory TwoSquares
   imports "../Fermat3_4/IntNatAux"
-  "~~/src/HOL/Number_Theory/Euler"
+  "~~/src/HOL/Old_Number_Theory/Euler"
 begin
 
 text {* Show that $(\frac{-1}{p}) = +1$ for primes $p \equiv 1 \bmod 4$. *}
@@ -227,7 +227,7 @@ proof -
 	      have "v^2 \<ge> 0 \<and> w^2 \<ge> 0" by (auto simp only: zero_le_power2)
 	      thus ?thesis by arith
 	    qed
-	    ultimately have vwpos: "v^2 + w^2 > 0" by simp
+	    ultimately have vwpos: "v^2 + w^2 > 0" by arith
 	    with m1 have "m1 \<noteq> 0" by auto
 	    moreover have "m1 \<ge> 0"
 	    proof (rule ccontr)
