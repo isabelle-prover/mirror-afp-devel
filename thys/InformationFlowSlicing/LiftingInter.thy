@@ -2016,8 +2016,6 @@ proof -
     from `H \<inter> L = {}` show "H \<inter> L = {}" .
   next
     from `H \<union> L = UNIV` show "H \<union> L = UNIV" .
-  next
-    show "Node Exit \<noteq> NewExit" by simp
   qed
 qed
 
