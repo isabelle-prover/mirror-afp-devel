@@ -4,7 +4,7 @@ theory Equivalence_Checking
 imports Regular_Exp While_Combinator
 begin
 
-text{* This theory is based on work by Jan Rutten \cite{?}. *}
+text{* This theory is based on work by Jan Rutten \cite{Rutten98}. *}
 
 subsection {* Term ordering *}
 
