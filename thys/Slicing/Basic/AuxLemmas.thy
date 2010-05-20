@@ -19,10 +19,10 @@ proof(atomize_elim)
     note IH = `\<exists>a\<in>set xs'. P a
       \<Longrightarrow> \<exists>zs x' ys. xs' = zs@x'#ys \<and> P x' \<and> (\<forall>z\<in>set zs. \<not> P z)`
     show ?case
-    proof(cases "P x'")
+    proof (cases "P x'")
       case True
-      thus ?thesis
-	by (metis mem_iff member.simps(1) self_append_conv2)
+      then have "(\<exists>ys. x' # xs' = [] @ x' # ys) \<and> P x' \<and> (\<forall>x\<in>set []. \<not> P x)" by simp
+      then show ?thesis by blast
     next
       case False
       with `\<exists>y\<in>set (x'#xs'). P y` have "\<exists>y\<in>set xs'. P y" by simp
@@ -132,6 +132,5 @@ proof(atomize_elim)
     qed
   qed
 qed
-
 
 end
