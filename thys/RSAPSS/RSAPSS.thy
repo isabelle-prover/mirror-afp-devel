@@ -1,5 +1,4 @@
 (*  Title:      RSAPSS/RSAPSS.thy
-    ID:         $Id: RSAPSS.thy,v 1.11 2009-08-29 12:36:18 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)

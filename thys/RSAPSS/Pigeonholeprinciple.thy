@@ -1,5 +1,4 @@
 (*  Title:      RSAPSS/Pigeonholeprinciple.thy
-    ID:         $Id: Pigeonholeprinciple.thy,v 1.9 2008-07-10 21:20:00 makarius Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -123,7 +122,7 @@ lemma memeqsort: "x mem xs = x mem (sort xs)"
   done
 
 lemma permmember: "\<lbrakk>perm xs ys; x mem xs\<rbrakk> \<Longrightarrow> x mem ys"
-  by (simp add: perm_def memeqsort [of x xs] memeqsort [of x ys])
+  by (simp add: perm_def memeqsort [of xs x] memeqsort [of ys x])
 
 lemma alllesseqdelete: "\<lbrakk>alldistinct (x#xs); alllesseq (x#xs) (length(x#xs))\<rbrakk>
     \<Longrightarrow> alllesseq (del (length(x#xs)) (x#xs)) (length (xs))"
@@ -134,7 +133,7 @@ lemma alllesseqdelete: "\<lbrakk>alldistinct (x#xs); alllesseq (x#xs) (length(x#
 lemma perminsert: "perm xs ys \<Longrightarrow> perm (a#xs) (a#ys)"
   by (simp add: perm_def)
 
-lemma lengthdel2: "a  mem xs \<Longrightarrow> length(del a (x#xs)) = length xs"
+lemma lengthdel2: "a mem xs \<Longrightarrow> length (del a (x#xs)) = length xs"
   by (induct xs) auto
 
 lemma dellengthinalllesseq:
@@ -142,7 +141,7 @@ lemma dellengthinalllesseq:
   \<Longrightarrow> alllesseq (del (length (x#xs)) (x#xs))(length (del (length (x#xs)) (x#xs)))"
   apply (drule alllesseqdelete)
    apply simp
-  apply (insert lengthdel2 [of "length (x#xs)" xs x])
+  apply (insert lengthdel2 [of xs "length (x#xs)" x])
   apply simp
   done
 
@@ -174,7 +173,7 @@ lemma permSuclengthdel2:
   \<Longrightarrow> perm (Suc (length xs) # positives (length xs)) (x # xs)"
   apply (simp add: perm_def)
   apply (subst insortsym)
-  apply (insert insortsortdel [of "Suc (length xs)" xs, symmetric])
+  apply (insert insortsortdel [of xs "Suc (length xs)", symmetric])
   apply auto
   done
 
@@ -186,7 +185,7 @@ lemma dellengthinperm:
    apply simp
    apply (drule perminsert)
    apply simp
-  apply (insert lengthdel2 [of "length (x # xs)" xs x])
+  apply (insert lengthdel2 [of xs "length (x # xs)" x])
   apply (simp del: perm_def positives.simps)
   apply (simp only: positives.simps)
   apply (frule permSuclengthdel)
