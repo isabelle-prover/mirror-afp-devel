@@ -1,6 +1,7 @@
-(* $Id: Prover.thy,v 1.21 2009-03-06 14:57:44 fhaftmann Exp $ *)
 
-theory Prover imports Main Infinite_Set begin
+theory Prover
+imports Main Infinite_Set
+begin
 
 subsection "Formulas"
 
@@ -1214,7 +1215,7 @@ definition my_f :: "form" where
 
   -- "we compute by rewriting"
 
-lemmas ss = list.simps if_True if_False flatten.simps map.simps bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def Let_def newvar_def subs.simps split_beta append_Nil append_Cons subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms mem_iff[symmetric] List.member.simps
+lemmas ss = list.simps if_True if_False flatten.simps map.simps bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def Let_def newvar_def subs.simps split_beta append_Nil append_Cons subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms mem_iff[symmetric] List.member_simps
 
 
 lemmas prove'_Nil = prove' [of "[]", simplified, standard]
