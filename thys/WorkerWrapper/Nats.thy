@@ -245,7 +245,7 @@ definition plus_Box_def: "x + y \<equiv> bliftM2 (\<Lambda> a b. a + b)\<cdot>x\
 instance ..
 end
 
-lemma plus_Box_cont[cont2cont]:
+lemma plus_Box_cont[simp, cont2cont]:
   "\<lbrakk>cont g; cont h\<rbrakk> \<Longrightarrow> cont (\<lambda>x. (g x :: 'a :: {cpo, plus} Box) + h x)"
   unfolding plus_Box_def by simp
 
@@ -260,7 +260,7 @@ definition minus_Box_def: "x - y \<equiv> bliftM2 (\<Lambda> a b. a - b)\<cdot>x
 instance ..
 end
 
-lemma minus_Box_cont[cont2cont]:
+lemma minus_Box_cont[simp, cont2cont]:
   "\<lbrakk>cont g; cont h\<rbrakk> \<Longrightarrow> cont (\<lambda>x. (g x :: 'a :: {cpo, minus} Box) - h x)"
   unfolding minus_Box_def by simp
 
@@ -275,7 +275,7 @@ definition times_Box_def: "x * y \<equiv> bliftM2 (\<Lambda> a b. a * b)\<cdot>x
 instance ..
 end
 
-lemma times_Box_cont[cont2cont]:
+lemma times_Box_cont[simp, cont2cont]:
   "\<lbrakk>cont g; cont h\<rbrakk> \<Longrightarrow> cont (\<lambda>x. (g x :: 'a :: {cpo, times} Box) * h x)"
   unfolding times_Box_def by simp
 

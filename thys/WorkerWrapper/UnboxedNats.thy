@@ -36,7 +36,7 @@ where
 declare fac.simps[simp del]
 
 lemma fac_strict[simp]: "fac\<cdot>\<bottom> = \<bottom>"
-by (fixrec_simp, simp)
+by fixrec_simp
 
 definition
   fac_body :: "(Nat \<rightarrow> Nat) \<rightarrow> Nat \<rightarrow> Nat" where
