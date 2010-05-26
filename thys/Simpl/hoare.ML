@@ -1,5 +1,4 @@
-(*  Title:      hoare_package.ML
-    ID:         $Id$
+(*  Title:      hoare.ML
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -495,7 +494,7 @@ val normalize_simps = [while_def,thm "Language.bseq_def",thm "List.append_Nil",t
                       thms "Language.sequence.simps"@
                       thms "Language.normalize_simps"@
                       thms "Language.guards.simps"@
-                      [fst_conv, snd_conv]
+                      [@{thm fst_conv}, @{thm snd_conv}]
 val merge_guards_simps = thms "Language.merge_guards_simps"
 val mark_guards_simps  = thms "Language.mark_guards.simps"
 val guards_simps = thms "Language.guards.simps"
@@ -1738,7 +1737,7 @@ fun split_pair_apps thm =
 
   val subst = map (fn (v,t) => (cterm_of thy v,cterm_of thy t)) (mk_subst [] t);
 
-  in full_simplify (HOL_basic_ss addsimps [fst_conv, snd_conv])
+  in full_simplify (HOL_basic_ss addsimps [@{thm fst_conv}, @{thm snd_conv}])
        (instantiate ([],subst) thm)
   end;
 
@@ -1784,9 +1783,9 @@ fun mk_split_thms ctxt (vars as _::_)  =
     fun prove_simp simps prop =
       Goal.prove_global thy [] [] prop (K (simp_all_tac (HOL_basic_ss) simps));
 
-    val split_meta   = prove_simp [split_paired_all] split_meta_prop;
-    val split_object = prove_simp [split_paired_All] split_object_prop;
-    val split_ex     = prove_simp [split_paired_Ex] split_ex_prop;
+    val split_meta   = prove_simp [@{thm split_paired_all}] split_meta_prop;
+    val split_object = prove_simp [@{thm split_paired_All}] split_object_prop;
+    val split_ex     = prove_simp [@{thm split_paired_Ex}] split_ex_prop;
     val split_UN     = prove_simp [split_paired_UN] split_UN_prop;
   in [split_meta,split_object,split_ex,split_UN]
   end
@@ -2673,7 +2672,7 @@ val wf_tac = simp_tac (HOL_basic_ss addsimps [wf_measure,wf_lex_prod,wf_same_fst
                                               wf_measure_lex_prod,wf_inv_image])
 val in_rel_simp = simp_tac (HOL_basic_ss addsimps
                               [in_measure_iff,in_lex_iff,in_mlex_iff,in_inv_image_iff,
-                               split_conv])
+                               @{thm split_conv}])
 
 fun while_annotate_tac ctxt inv i st =
   let
@@ -2779,10 +2778,10 @@ fun gen_Anno_tac dest rules tac cont_tac ctxt state_kind (t,i) st =
                   |(xs::_) => adapt_aux_var ctxt false (map fst xs) (map get_aux_tvar rules));
   in EVERY [resolve_tac rules' i,
             tac,
-            simp_tac (HOL_basic_ss' addsimps ([split_conv, refl, triv_All_eq]@anno_defs)
+            simp_tac (HOL_basic_ss' addsimps ([@{thm split_conv}, refl, triv_All_eq]@anno_defs)
                       addsimprocs [split_beta_proc]) (i+2),
-            simp_tac (HOL_basic_ss' addsimps [split_conv]) (i+1),
-            simp_tac (HOL_basic_ss' addsimps [split_conv]) i,
+            simp_tac (HOL_basic_ss' addsimps [@{thm split_conv}]) (i+1),
+            simp_tac (HOL_basic_ss' addsimps [@{thm split_conv}]) i,
             REPEAT (rtac allI (i+1)),
             cont_tac (i+1),
             conseq_simp_tac ctxt state_kind [] i] st
@@ -2805,7 +2804,7 @@ fun whileAnnoFix_tac ctxt state_kind cont_tac mode (t,i) =
 
     val rules = [WhileAnnoFix mode];
     fun wf_tac' i = EVERY [REPEAT (rtac allI i),
-                           simp_tac (HOL_basic_ss addsimps [split_conv]) i,
+                           simp_tac (HOL_basic_ss addsimps [@{thm split_conv}]) i,
                            wf_tac i];
     val tac = if mode=Total
               then EVERY [wf_tac' (i+3),in_rel_simp (i+1)]
@@ -2950,7 +2949,7 @@ fun HoareTac annotate_inv strip_guards mode state_kind state_space spec_sfx ctxt
                     EVERY[rtac (SpecIf mode) i, trace_tac "SpecIf",
                           assertion_simp_tac ctxt state_kind [] i],
                     (rtac (Spec mode) i THEN trace_tac "Spec")
-                        THEN_MAYBE (assertion_simp_tac ctxt state_kind [split_conv] i),
+                        THEN_MAYBE (assertion_simp_tac ctxt state_kind [@{thm split_conv}] i),
                     EVERY[rtac (BindR mode) i, trace_tac "Bind",rtac allI (i+1),
                           HoareRuleTac tac false (i+1)],
                     EVERY[rtac (DynCom mode) i,trace_tac "DynCom"],
@@ -3032,7 +3031,7 @@ fun HoareStepTac strip_guards mode state_kind state_space spec_sfx ctxt tac st =
            EVERY[rtac (SpecIf mode) 1,trace_tac "SpecIf",
                  TRY (BasicSimpTac ctxt state_kind false [] tac 1)],
            EVERY[rtac (Spec mode) 1,
-                 TRY (BasicSimpTac ctxt state_kind false [split_conv] tac 1)],
+                 TRY (BasicSimpTac ctxt state_kind false [@{thm split_conv}] tac 1)],
            EVERY[rtac (BindR mode) 1, rtac allI 2, prefer_tac 2],
            EVERY[rtac (FCall mode) 1],
            EVERY[rtac (DynCom mode) 1],
