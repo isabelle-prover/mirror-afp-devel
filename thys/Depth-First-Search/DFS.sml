@@ -9,8 +9,8 @@ fun nexts [] n = []
   | nexts (e :: es) n =
     (if (fst e = n) then (snd e :: nexts es n) else nexts es n);
 
-fun member (x :: xs) y = ((x = y) orelse member xs y)
-  | member [] y = false;
+fun member [] y = false
+  | member (x :: xs) y = ((x = y) orelse member xs y);
 
 fun dfs2 g [] ys = ys
   | dfs2 g (x :: xs) ys =
