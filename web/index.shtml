@@ -56,6 +56,22 @@ is available <a href="citing.shtml">[here]</a>. A
 -- entry template end (delete this line) -->
 
 <tr><td class="entry">
+2010-05-28:
+<a href="entries/GraphMarkingIBP.shtml">Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</a>
+<br>Author:
+<a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a> and
+<a href="http://users.abo.fi/Ralph-Johan.Back/">Ralph-Johan Back</a>
+</td></tr>
+
+<tr><td class="entry">
+2010-05-28:
+<a href="entries/DataRefinementIBP.shtml">Semantics and Data Refinement of Invariant Based Programs</a>
+<br>Author:
+<a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a> and
+<a href="http://users.abo.fi/Ralph-Johan.Back/">Ralph-Johan Back</a>
+</td></tr>
+
+<tr><td class="entry">
 2010-05-26:
 <a href="entries/Robbins-Conjecture.shtml">A Complete Proof of the Robbins Conjecture</a>
 <br>Author:
