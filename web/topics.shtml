@@ -42,11 +42,12 @@
 <h3>Algorithms</h3>
 
 <div class="list">
-<a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a>  
-<a href="entries/Depth-First-Search.shtml">Depth-First-Search</a>  
-<a href="entries/FFT.shtml">FFT</a>  
-<a href="entries/SATSolverVerification.shtml">SATSolverVerification</a>  
-<a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a>  
+<a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
+<a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
+<a href="entries/FFT.shtml">FFT</a> &nbsp;
+<a href="entries/GraphMarkingIBP.shtml">GraphMarkingIBP</a> &nbsp;
+<a href="entries/SATSolverVerification.shtml">SATSolverVerification</a> &nbsp;
+<a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
 
 <strong>Distributed:</strong> <a href="entries/DiskPaxos.shtml">DiskPaxos</a>  
 <a href="entries/GenClock.shtml">GenClock</a>  
@@ -86,10 +87,11 @@
   <strong>Type Systems:</strong> <a href="entries/MiniML.shtml">MiniML</a>  
   <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a>  
 
-  <strong>Logics:</strong> <a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a>  
-  <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a>   
-  <a href="entries/SIFPL.shtml">SIFPL</a>  
-  <a href="entries/Simpl.shtml">Simpl</a>  
+  <strong>Logics:</strong>&nbsp;<a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
+  <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp; 
+  <a href="entries/DataRefinementIBP.shtml">DataRefinementIBP</a> &nbsp;
+  <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
+  <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
 
   <strong>Compiling:</strong> <a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling-Exceptions-Correctly</a>  
   <a href="entries/NormByEval.shtml">NormByEval</a>  
@@ -135,9 +137,10 @@
 
 <h3>Algebra</h3>
 <div class="list">
-<a href="entries/CofGroups.shtml">CofGroups</a>  
-<a href="entries/Group-Ring-Module.shtml">Group-Ring-Module</a>  
-<a href="entries/Valuation.shtml">Valuation</a>  
+<a href="entries/CofGroups.shtml">CofGroups</a> &nbsp;
+<a href="entries/Group-Ring-Module.shtml">Group-Ring-Module</a> &nbsp;
+<a href="entries/Robbins-Conjecture.shtml">Robbins-Conjecture</a> &nbsp;
+<a href="entries/Valuation.shtml">Valuation</a> &nbsp;
 </div>
 
 <h3>Analysis</h3>
