@@ -32,10 +32,7 @@ theorem datarefinement1:
   apply auto;
   apply (simp_all add: mem_def);
   apply (simp add: mono_def);
-  apply (drule_tac x = "Q xb" in spec);
-  apply (drule_tac x = "xb" in spec);
-  apply (drule_tac x = "xa" and P = "\<lambda> x . R x xb \<and> p xb \<longrightarrow> S (Q xb) x" in spec);
-  by auto;
+  by (metis rev_predicate1D)
 
 theorem datarefinement2:
   "mono S \<Longrightarrow> ((angelic R) o (assert p) o (demonic Q) \<le> (S o (angelic R'))) = DataRefinement p Q R R' S";

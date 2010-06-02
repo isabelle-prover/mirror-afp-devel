@@ -130,11 +130,7 @@ theorem angelic_bottom [simp]:
 
 theorem angelic_disjunctive:
   "angelic R ((p::'a::boolean_algebra) \<squnion> q) = angelic R p \<squnion> angelic R q";
-  apply (simp add: expand_fun_eq inf_fun_eq sup_fun_eq angelic_def simp_set_function inf_bool_eq sup_bool_eq inf_sup_distrib1);
-  apply auto;
-  apply (simp add: sup_eq_bot_eq1);
-  by (simp add: sup_eq_bot_eq2);
-
+by (simp add: expand_fun_eq inf_fun_eq sup_fun_eq angelic_def simp_set_function inf_bool_eq sup_bool_eq inf_sup_distrib1)
 
 theorem angelic_udisjunctive1:
   "angelic R ((Sup P)::'a::distributive_complete_lattice) = (SUP p:P . (angelic R p))";
