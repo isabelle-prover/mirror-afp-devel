@@ -11,7 +11,7 @@ MAXTIME = 5400
 ## targets
 
 default: $(SESSION_NAME)
-images: images
+images: $(SESSION_NAME)
 test: images
 
 all: images

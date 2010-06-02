@@ -52,7 +52,7 @@ abbreviation
 
 (*<*)
 lemma i_th_strict1[simp]: "\<bottom> !! i = \<bottom>"
-by (fixrec_simp, simp)
+by fixrec_simp
 
 lemma i_th_strict2[simp]: "s !! \<bottom> = \<bottom>" by (subst i_th.unfold, cases s, simp_all)
 lemma i_th_0[simp]: "(s !! 0) = sthead\<cdot>s" by (subst i_th.unfold, cases s, simp_all)

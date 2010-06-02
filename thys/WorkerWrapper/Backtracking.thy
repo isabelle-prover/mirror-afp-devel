@@ -54,7 +54,7 @@ where
 | "blah\<cdot>(x :@ xs)\<cdot>s\<cdot>f = s\<cdot>x\<cdot>(blah\<cdot>xs\<cdot>s\<cdot>f)"
 
 lemma blah_strict[simp]: "blah\<cdot>\<bottom> = \<bottom>"
-by (fixrec_simp, simp)
+by fixrec_simp
 
 definition unwrap :: "(Expr \<rightarrow> Nat llist) \<rightarrow> (Expr \<rightarrow> K)"
 where
@@ -100,7 +100,7 @@ where
 | "eval_body'\<cdot>r\<cdot>Fail\<cdot>s\<cdot>f = f"
 
 lemma eval_body'_strict[simp]: "eval_body'\<cdot>r\<cdot>\<bottom> = \<bottom>"
-  by (fixrec_simp, simp)
+  by fixrec_simp
 
 lemma FIXME: "blah\<cdot>(xs :++ ys)\<cdot>s\<cdot>f = blah\<cdot>xs\<cdot>s\<cdot>(blah\<cdot>ys\<cdot>s\<cdot>f)"
   apply (induct xs)

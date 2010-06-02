@@ -1,5 +1,4 @@
 (*  Title:      RSAPSS/Wordarith.thy
-    ID:         $Id: Wordarith.thy,v 1.10 2009-09-01 19:44:51 fhaftmann Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt
 *)

@@ -281,7 +281,7 @@ next
 	  have Aqf3: "is_qfN ?A 3" by (auto simp add: is_qfN_def)
 	  moreover have triv3b: "(3::int) \<ge> 1" by simp
 	  ultimately have "?A \<ge> 0" by (simp only: qfN_pos)
-	  hence "?A > 1 \<or> ?A = 0 \<or> ?A =1" by auto
+	  hence "?A > 1 \<or> ?A = 0 \<or> ?A =1" by arith
 	  moreover
 	  { assume "?A = 0" with triv3b have "p = 0 \<and> q = 0" by (rule qfN_zero)
 	    with vwpq vwx have False by auto }

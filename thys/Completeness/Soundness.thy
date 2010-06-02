@@ -1,6 +1,6 @@
 header "Soundness"
 
-theory Soundness imports Completeness Multiset begin
+theory Soundness imports Completeness begin
 
 lemma permutation_validS: "fs <~~> gs --> (validS fs = validS gs)"
   apply(simp add: validS_def)

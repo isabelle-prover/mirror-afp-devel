@@ -285,8 +285,8 @@ definition data_dependence :: "'node SDG_node \<Rightarrow> 'var \<Rightarrow> '
 ("_ influences _ in _" [51,0,0])
   where "n influences V in n' \<equiv> \<exists>as. (V \<in> Def\<^bsub>SDG\<^esub> n) \<and> (V \<in> Use\<^bsub>SDG\<^esub> n') \<and> 
   (parent_node n -as\<rightarrow>\<^isub>\<iota>* parent_node n') \<and>
-  (as \<noteq> [] \<longrightarrow> (\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes (tl as))
-         \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n''))"
+  (\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes (tl as))
+         \<longrightarrow> V \<notin> Def\<^bsub>SDG\<^esub> n'')"
 
 
 subsection {* Control dependence *}

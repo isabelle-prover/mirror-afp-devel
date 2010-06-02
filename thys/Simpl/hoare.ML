@@ -1,5 +1,4 @@
-(*  Title:      hoare_package.ML
-    ID:         $Id$
+(*  Title:      hoare.ML
     Author:     Norbert Schirmer, TU Muenchen
 
 Copyright (C) 2004-2007 Norbert Schirmer
@@ -495,7 +494,7 @@ val normalize_simps = [while_def,thm "Language.bseq_def",thm "List.append_Nil",t
                       thms "Language.sequence.simps"@
                       thms "Language.normalize_simps"@
                       thms "Language.guards.simps"@
-                      [fst_conv, snd_conv]
+                      [@{thm fst_conv}, @{thm snd_conv}]
 val merge_guards_simps = thms "Language.merge_guards_simps"
 val mark_guards_simps  = thms "Language.mark_guards.simps"
 val guards_simps = thms "Language.guards.simps"
@@ -732,7 +731,7 @@ fun dest_string' t =
 fun is_state_space_var Tids t =
     let
       fun is_stateT T = (case stateT_id T of NONE => 0
-                         | SOME id => if id mem Tids then ~1 else 0);
+                         | SOME id => if member (op =) Tids id then ~1 else 0);
     in
       (case t of
          Const _ $ Abs (_,T,_) => is_stateT T
@@ -861,7 +860,7 @@ fun mk_free ctxt name =
   let
     val ctxt' = Context.proof_of ctxt;
     val n' = lookupI (op =) (Variable.fixes_of ctxt') name
-    val T' = ProofContext.infer_type ctxt' n' handle ERROR _ => dummyT
+    val T' = ProofContext.infer_type ctxt' (n', dummyT) handle ERROR _ => dummyT
   in (Free (n',T')) end;
 
 
@@ -1009,7 +1008,7 @@ fun generate_guard ctxt = snd (#generate_guard (get_data ctxt)) ctxt;
 fun check_procedures_definition procs thy =
     let
         val _ = Theory.requires thy "Hoare" "Hoare definitions";
-        val ctxt = ProofContext.init thy;
+        val ctxt = ProofContext.init_global thy;
 
         fun already_defined name =
             if is_some (get_params name ctxt)
@@ -1091,7 +1090,7 @@ fun add_variable_statespaces prep_typ (cname,(inpars,outpars,locvars)) thy =
     val inpars'  = if forall (fn (_,T) => T = "") inpars then [] else inpars;
     val outpars' = if forall (fn (_,T) => T = "") outpars then [] else outpars;
     fun prep_comp (n,T) env =
-      let val (T', env') = prep_typ (ProofContext.init thy) T env handle ERROR msg =>
+      let val (T', env') = prep_typ (ProofContext.init_global thy) T env handle ERROR msg =>
        cat_error msg ("The error(s) above occured in component " ^ quote n)
       in ((n,T'), env') end;
 
@@ -1212,7 +1211,7 @@ fun procedures_definition locname procs thy =
           (case try dest_call t of
              SOME (_,p,_,_,m,_) => SOME (proc_name m p)
            | _ => NONE);
-        fun in_names x = if x mem names then SOME x else NONE;
+        fun in_names x = if member (op =) names x then SOME x else NONE;
         fun add_edges n = fold (fn x => Graph.add_edge (n, x));
 
         val all_callss = map (map snd o max_subterms_dest dcall) bodies;
@@ -1245,7 +1244,7 @@ fun procedures_definition locname procs thy =
     (* cliques may only depend on ones to the left, so it is safe to
      * add the locales from the left to the right. *)
 
-    fun my_clique n = Library.find_first (fn c => n mem c) cliques;
+    fun my_clique n = Library.find_first (fn c => member (op =) c n) cliques;
 
     fun lname sfx clique = suffix sfx (clique_name clique);
     fun cname n = clique_name (the (my_clique n));
@@ -1253,7 +1252,7 @@ fun procedures_definition locname procs thy =
 
 
     fun get_loc sfx clique n =
-        if n mem clique then NONE else SOME (resuffix proc_deco sfx n);
+        if member (op =) clique n then NONE else SOME (resuffix proc_deco sfx n);
 
     fun parent_locales thy sfx clique =
       let
@@ -1460,9 +1459,9 @@ fun procedures_definition locname procs thy =
 
 (* outer syntax *)
 
-structure P = OuterParse
+structure P = Parse
 
-local structure S = SpecParse and K = OuterKeyword in
+local structure S = Parse_Spec and K = Keyword in
 
 val valuePar = "val"
 val resultPar = "res"
@@ -1504,7 +1503,7 @@ val par_loc = Scan.option (P.$$$ "(" |-- P.$$$ "imports" |-- P.name --| P.$$$ ")
 val proceduresP =
      (par_loc -- (P.and_list1 (proc_decl -- loc_decl -- proc_body -- proc_specs)))
 
-val procs_command = OuterSyntax.command "procedures" "define procedures" K.thy_decl
+val procs_command = Outer_Syntax.command "procedures" "define procedures" K.thy_decl
   (proceduresP
     >> (fn (loc,decls) =>
         let
@@ -1516,7 +1515,7 @@ val procs_command = OuterSyntax.command "procedures" "define procedures" K.thy_d
 
 
 val hoare_statespace_command =
-  OuterSyntax.command "hoarestate" "define state space for hoare logic" K.thy_decl
+  Outer_Syntax.command "hoarestate" "define state space for hoare logic" K.thy_decl
   (StateSpace.statespace_decl >> (fn ((args,name),(parents,comps)) =>
     Toplevel.theory
       (StateSpace.define_statespace args name parents (map (apfst (suffix deco)) comps))));
@@ -1671,7 +1670,7 @@ fun cond_rename_bvars cond name thm =
                                          else Abs (x,T,ren t)
         | ren (t $ u) = ren t $ ren u
         | ren t = t;
-    in equal_elim (reflexive (cterm_of thy (ren prop))) thm end;
+    in Thm.equal_elim (Thm.reflexive (cterm_of thy (ren prop))) thm end;
 
 val rename_bvars = cond_rename_bvars (K true);
 
@@ -1738,7 +1737,7 @@ fun split_pair_apps thm =
 
   val subst = map (fn (v,t) => (cterm_of thy v,cterm_of thy t)) (mk_subst [] t);
 
-  in full_simplify (HOL_basic_ss addsimps [fst_conv, snd_conv])
+  in full_simplify (HOL_basic_ss addsimps [@{thm fst_conv}, @{thm snd_conv}])
        (instantiate ([],subst) thm)
   end;
 
@@ -1784,9 +1783,9 @@ fun mk_split_thms ctxt (vars as _::_)  =
     fun prove_simp simps prop =
       Goal.prove_global thy [] [] prop (K (simp_all_tac (HOL_basic_ss) simps));
 
-    val split_meta   = prove_simp [split_paired_all] split_meta_prop;
-    val split_object = prove_simp [split_paired_All] split_object_prop;
-    val split_ex     = prove_simp [split_paired_Ex] split_ex_prop;
+    val split_meta   = prove_simp [@{thm split_paired_all}] split_meta_prop;
+    val split_object = prove_simp [@{thm split_paired_All}] split_object_prop;
+    val split_ex     = prove_simp [@{thm split_paired_Ex}] split_ex_prop;
     val split_UN     = prove_simp [split_paired_UN] split_UN_prop;
   in [split_meta,split_object,split_ex,split_UN]
   end
@@ -1864,7 +1863,7 @@ fun gen_call_rec_rule specs_name n rule =
            |> full_simplify ((global_simpset_of Main_thy)
                   addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
                             image_Un,image_Un_single_simp] )
-           |> rename_bvars (fn s => if s mem_string ["s","\<sigma>"] then s else "Z")
+           |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
   in rule'
   end;
 
@@ -2673,7 +2672,7 @@ val wf_tac = simp_tac (HOL_basic_ss addsimps [wf_measure,wf_lex_prod,wf_same_fst
                                               wf_measure_lex_prod,wf_inv_image])
 val in_rel_simp = simp_tac (HOL_basic_ss addsimps
                               [in_measure_iff,in_lex_iff,in_mlex_iff,in_inv_image_iff,
-                               split_conv])
+                               @{thm split_conv}])
 
 fun while_annotate_tac ctxt inv i st =
   let
@@ -2779,10 +2778,10 @@ fun gen_Anno_tac dest rules tac cont_tac ctxt state_kind (t,i) st =
                   |(xs::_) => adapt_aux_var ctxt false (map fst xs) (map get_aux_tvar rules));
   in EVERY [resolve_tac rules' i,
             tac,
-            simp_tac (HOL_basic_ss' addsimps ([split_conv, refl, triv_All_eq]@anno_defs)
+            simp_tac (HOL_basic_ss' addsimps ([@{thm split_conv}, refl, triv_All_eq]@anno_defs)
                       addsimprocs [split_beta_proc]) (i+2),
-            simp_tac (HOL_basic_ss' addsimps [split_conv]) (i+1),
-            simp_tac (HOL_basic_ss' addsimps [split_conv]) i,
+            simp_tac (HOL_basic_ss' addsimps [@{thm split_conv}]) (i+1),
+            simp_tac (HOL_basic_ss' addsimps [@{thm split_conv}]) i,
             REPEAT (rtac allI (i+1)),
             cont_tac (i+1),
             conseq_simp_tac ctxt state_kind [] i] st
@@ -2805,7 +2804,7 @@ fun whileAnnoFix_tac ctxt state_kind cont_tac mode (t,i) =
 
     val rules = [WhileAnnoFix mode];
     fun wf_tac' i = EVERY [REPEAT (rtac allI i),
-                           simp_tac (HOL_basic_ss addsimps [split_conv]) i,
+                           simp_tac (HOL_basic_ss addsimps [@{thm split_conv}]) i,
                            wf_tac i];
     val tac = if mode=Total
               then EVERY [wf_tac' (i+3),in_rel_simp (i+1)]
@@ -2950,7 +2949,7 @@ fun HoareTac annotate_inv strip_guards mode state_kind state_space spec_sfx ctxt
                     EVERY[rtac (SpecIf mode) i, trace_tac "SpecIf",
                           assertion_simp_tac ctxt state_kind [] i],
                     (rtac (Spec mode) i THEN trace_tac "Spec")
-                        THEN_MAYBE (assertion_simp_tac ctxt state_kind [split_conv] i),
+                        THEN_MAYBE (assertion_simp_tac ctxt state_kind [@{thm split_conv}] i),
                     EVERY[rtac (BindR mode) i, trace_tac "Bind",rtac allI (i+1),
                           HoareRuleTac tac false (i+1)],
                     EVERY[rtac (DynCom mode) i,trace_tac "DynCom"],
@@ -3032,7 +3031,7 @@ fun HoareStepTac strip_guards mode state_kind state_space spec_sfx ctxt tac st =
            EVERY[rtac (SpecIf mode) 1,trace_tac "SpecIf",
                  TRY (BasicSimpTac ctxt state_kind false [] tac 1)],
            EVERY[rtac (Spec mode) 1,
-                 TRY (BasicSimpTac ctxt state_kind false [split_conv] tac 1)],
+                 TRY (BasicSimpTac ctxt state_kind false [@{thm split_conv}] tac 1)],
            EVERY[rtac (BindR mode) 1, rtac allI 2, prefer_tac 2],
            EVERY[rtac (FCall mode) 1],
            EVERY[rtac (DynCom mode) 1],
@@ -3408,7 +3407,7 @@ fun generalise Record = GeneraliseRecord.GENERALISE
 fun record_vanish_tac ctxt state_kind state_space i =
     let
         val rem_useless_vars_simps = [triv_forall_equality,triv_All_eq,triv_Ex_eq];
-        val rem_useless_vars_ss = (empty_ss setmksimps single)
+        val rem_useless_vars_ss = (empty_ss setmksimps (K single))
                                    addsimps rem_useless_vars_simps;
         fun no_spec (t as (Const (@{const_name All},_)$_)) =
               is_none (try dest_hoare_raw (strip_qnt_body @{const_name All} t))

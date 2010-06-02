@@ -7,7 +7,7 @@ header {* The quadratic form $x^2 + Ny^2$ *}
 
 theory QuadForm
 imports 
-  "~~/src/HOL/Number_Theory/Quadratic_Reciprocity" 
+  "~~/src/HOL/Old_Number_Theory/Quadratic_Reciprocity" 
   IntNatAux
 begin
 
@@ -970,8 +970,8 @@ next
   have C0: "?C > 0"
   proof -
     have hlp: "(3::int) \<ge> 1" by simp
-    with C3 have "?C \<ge> 0" by (simp only: qfN_pos)
-    hence "?C = 0 \<or> ?C > 0" by auto
+    have "?C \<ge> 0" by simp
+    hence "?C = 0 \<or> ?C > 0" by arith
     moreover 
     { assume "?C = 0"
       with hlp have "c=0 \<and> d=0" by (rule qfN_zero)

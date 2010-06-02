@@ -44,4 +44,4 @@ $(OUT)/$(SESSION-NAME): $(IMAGE) ROOT.ML *.thy document/*.tex document/*.bib
 ## clean
 
 clean:
-	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+	@rm -f $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz $(OUT)/$(SESSION-NAME)

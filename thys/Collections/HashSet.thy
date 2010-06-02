@@ -16,7 +16,7 @@ text {*
 
 subsection "Definitions"
 types
-  'a hs = "('a::hashable,unit) hm"
+  'a hs = "('a,unit) hm"
 
 definition hs_\<alpha> :: "'a::hashable hs \<Rightarrow> 'a set" where "hs_\<alpha> == s_\<alpha> hm_\<alpha>"
 definition hs_invar :: "'a::hashable hs \<Rightarrow> bool" where "hs_invar == hm_invar"

@@ -988,7 +988,7 @@ fun inc_decision_priority (s : solver) lit =
       PriorityQueue.inc_priority (!(#decision_queue s)) var (!(#var_increment s))
   end
 
-fun is_conflict_lit (s : solver) lit = (abs lit) mem (!(#conflict_vars s))
+fun is_conflict_lit (s : solver) lit = member (op =) (!(#conflict_vars s)) (abs lit)
 
 fun add_conflict_lit (s : solver) lit = 
 (

@@ -3872,7 +3872,6 @@ apply (thin_tac "ant w + an (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1))
        thin_tac "aasc_seq A (ant w) (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1)) \<in> A",
        thin_tac "aasc_seq A (ant w) (nat (\<bar>w\<bar> + \<bar>z\<bar> + 1)) \<le> ant z",
        simp add:an_def a_zpz);
-apply (subgoal_tac "0 \<le> \<bar>w\<bar> + \<bar>z\<bar> + 1", simp, arith);
  apply (cut_tac a = a in mem_ant, erule disjE, simp, erule disjE, erule exE,
         simp, simp add:UBset_def, frule subsetD[of "A" "{x. x \<le> ant z}" "\<infinity>"],
         assumption+, simp, cut_tac inf_ge_any[of "ant z"], 

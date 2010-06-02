@@ -1336,7 +1336,7 @@ proof(rule ccontr)
     have "sourcenode ax \<notin> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>" and "pred (slice_kind n\<^isub>c ax) sx"
       by(auto elim!:silent_move.cases simp:intra_kind_def)
     from `sourcenode ax \<notin> \<lfloor>HRB_slice n\<^isub>c\<rfloor>\<^bsub>CFG\<^esub>` `kind ax = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-    have "slice_kind n\<^isub>c ax = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
+    have "slice_kind n\<^isub>c ax = (\<lambda>cf. False):r\<hookrightarrow>\<^bsub>p\<^esub>fs"
       by(rule slice_kind_Call)
     with `pred (slice_kind n\<^isub>c ax) sx` show False by(cases sx) auto
   next

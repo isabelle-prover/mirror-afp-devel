@@ -1,7 +1,7 @@
 header {* \isaheader{Framework Graph Lifting for Noninterference} *}
 
 theory LiftingIntra 
-  imports NonInterferenceIntra "~/StaticIntra/CDepInstantiations" 
+  imports NonInterferenceIntra "../Slicing/StaticIntra/CDepInstantiations" 
 begin
 
 text {* In this section, we show how a valid CFG from the slicing framework in
@@ -439,8 +439,6 @@ proof -
     from `H \<inter> L = {}` show "H \<inter> L = {}" .
   next
     from `H \<union> L = UNIV` show "H \<union> L = UNIV" .
-  next
-    show "Node Exit \<noteq> NewExit" by simp
   qed
 qed
 
@@ -1111,8 +1109,6 @@ proof -
     from `H \<inter> L = {}` show "H \<inter> L = {}" .
   next
     from `H \<union> L = UNIV` show "H \<union> L = UNIV" .
-  next
-    show "Node Exit \<noteq> NewExit" by simp
   qed
 qed
 
@@ -1463,8 +1459,6 @@ proof -
     from `H \<inter> L = {}` show "H \<inter> L = {}" .
   next
     from `H \<union> L = UNIV` show "H \<union> L = UNIV" .
-  next
-    show "Node Exit \<noteq> NewExit" by simp
   qed
 qed
 

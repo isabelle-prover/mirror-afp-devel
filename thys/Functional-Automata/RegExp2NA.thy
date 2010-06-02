@@ -6,7 +6,7 @@
 header "From regular expressions directly to nondeterministic automata"
 
 theory RegExp2NA
-imports Regular_Exp NA
+imports "../Regular-Sets/Regular_Exp" NA
 begin
 
 types 'a bitsNA = "('a,bool list)na"

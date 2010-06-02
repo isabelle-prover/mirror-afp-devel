@@ -4,6 +4,6 @@
     Copyright   1998 TUM
 *)
 
-no_document use_thy "List_Prefix";
+no_document use_thys ["List_Prefix", "../Regular-Sets/Regular_Exp"];
 
 use_thys ["AutoRegExp", "AutoMaxChop", "RegSet_of_nat_DA"];

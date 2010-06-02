@@ -68,12 +68,15 @@ locale NonInterferenceIntraGraph =
   and UseLow: "Use (_Low_) = L"
   and HighLowDistinct: "H \<inter> L = {}"
   and HighLowUNIV: "H \<union> L = UNIV"
-  and Low_neq_Exit:"(_Low_) \<noteq> (_Exit_)"
 
 begin
 
-lemmas [simp] = Low_neq_Exit Low_neq_Exit[symmetric]
-
+lemma Low_neq_Exit: assumes "L \<noteq> {}" shows "(_Low_) \<noteq> (_Exit_)"
+proof
+  assume "(_Low_) = (_Exit_)"
+  have "Use (_Exit_) = {}" by fastsimp
+  with UseLow `L \<noteq> {}` `(_Low_) = (_Exit_)` show False by simp
+qed
 
 lemma Entry_path_High_path:
   assumes "(_Entry_) -as\<rightarrow>* n" and "inner_node n"
@@ -236,19 +239,25 @@ proof(induct n as n\<equiv>"(_Low_)" arbitrary:as' s s' rule:path.induct)
     ultimately have "V \<in> rv (_Low_) (_Low_)"
       by(fastsimp intro:rvI simp:sourcenodes_def) }
   hence "\<forall>V \<in> Use (_Low_). V \<in> rv (_Low_) (_Low_)" by simp
-  from `(_Low_) -as'\<rightarrow>* (_Low_)` have "as' = []"
-  proof(induct n\<equiv>"(_Low_)" as' n'\<equiv>"(_Low_)" rule:path.induct)
-    case (Cons_path n'' as a)
-    from `valid_edge a` `sourcenode a = (_Low_)`
-    have "targetnode a = (_Exit_)" by -(rule Exit_successor_of_Low,simp+)
-    with `targetnode a = n''` `n'' -as\<rightarrow>* (_Low_)`
-    have "(_Low_) = (_Exit_)" by -(rule path_Exit_source,fastsimp)
-    hence False by simp
-    thus ?case by simp
-  qed simp
-  with `\<forall>V \<in> Use (_Low_). V \<in> rv (_Low_) (_Low_)` 
-    `\<forall>V\<in>rv (_Low_) (_Low_). state_val s V = state_val s' V`
-  show ?case by(auto simp:slice_kinds_def)
+  show ?case
+  proof(cases "L = {}")
+    case True with UseLow show ?thesis by simp
+  next
+    case False
+    from `(_Low_) -as'\<rightarrow>* (_Low_)` have "as' = []"
+    proof(induct n\<equiv>"(_Low_)" as' n'\<equiv>"(_Low_)" rule:path.induct)
+      case (Cons_path n'' as a)
+      from `valid_edge a` `sourcenode a = (_Low_)`
+      have "targetnode a = (_Exit_)" by -(rule Exit_successor_of_Low,simp+)
+      with `targetnode a = n''` `n'' -as\<rightarrow>* (_Low_)`
+      have "(_Low_) = (_Exit_)" by -(rule path_Exit_source,fastsimp)
+      with False have False by -(drule Low_neq_Exit,simp)
+      thus ?case by simp
+    qed simp
+    with `\<forall>V \<in> Use (_Low_). V \<in> rv (_Low_) (_Low_)` 
+      `\<forall>V\<in>rv (_Low_) (_Low_). state_val s V = state_val s' V`
+    show ?thesis by(auto simp:slice_kinds_def)
+  qed
 next
   case (Cons_path n'' as a n)
   note IH = `\<And>as' s s'. \<lbrakk>n'' -as'\<rightarrow>* (_Low_); 
@@ -257,55 +266,61 @@ next
   \<Longrightarrow> \<forall>V\<in>Use (_Low_). state_val (transfers (slice_kinds (_Low_) as) s) V =
                      state_val (transfers (slice_kinds (_Low_) as') s') V`
   show ?case
-  proof(cases as')
-    case Nil
-    with `n -as'\<rightarrow>* (_Low_)` have "n = (_Low_)" by fastsimp
-    with `valid_edge a` `sourcenode a = n` have "targetnode a = (_Exit_)"
-      by -(rule Exit_successor_of_Low,simp+)
-    from Low_source_Exit_edge obtain ax where "valid_edge ax"
-      and "sourcenode ax = (_Low_)" and "targetnode ax = (_Exit_)"
-      and "kind ax = (\<lambda>s. True)\<^isub>\<surd>" by blast
-    from `valid_edge a` `sourcenode a = n` `n = (_Low_)` `targetnode a = (_Exit_)`
-      `valid_edge ax` `sourcenode ax = (_Low_)` `targetnode ax = (_Exit_)`
-    have "a = ax" by(fastsimp dest:edge_det)
-    with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` have "kind a = (\<lambda>s. True)\<^isub>\<surd>" by simp
-    with `targetnode a = (_Exit_)` `targetnode a = n''` `n'' -as\<rightarrow>* (_Low_)`
-    have "(_Low_) = (_Exit_)" by -(rule path_Exit_source,auto)
-    hence False by simp
-    thus ?thesis by simp
+  proof(cases "L = {}")
+    case True with UseLow show ?thesis by simp
   next
-    case (Cons ax asx)
-    with `n -as'\<rightarrow>* (_Low_)` have "n = sourcenode ax" and "valid_edge ax" 
-      and "targetnode ax -asx\<rightarrow>* (_Low_)" by(auto elim:path_split_Cons)
+    case False
     show ?thesis
-    proof(cases "targetnode ax = n''")
-      case True
-      with `targetnode ax -asx\<rightarrow>* (_Low_)` have "n'' -asx\<rightarrow>* (_Low_)" by simp
-      from `valid_edge ax` `valid_edge a` `n = sourcenode ax` `sourcenode a = n`
-	True `targetnode a = n''` have "ax = a"	by(fastsimp intro:edge_det)
-      from `preds (slice_kinds (_Low_) (a#as)) s` 
-      have preds1:"preds (slice_kinds (_Low_) as) (transfer (slice_kind (_Low_) a) s)"
-	by(simp add:slice_kinds_def)
-      from `preds (slice_kinds (_Low_) as') s'` Cons `ax = a`
-      have preds2:"preds (slice_kinds (_Low_) asx) 
-	                 (transfer (slice_kind (_Low_) a) s')"
-	by(simp add:slice_kinds_def)
-      from `valid_edge a` `sourcenode a = n` `targetnode a = n''`
-	`preds (slice_kinds (_Low_) (a#as)) s` `preds (slice_kinds (_Low_) as') s'`
-	`ax = a` Cons `\<forall>V\<in>rv (_Low_) n. state_val s V = state_val s' V`
-      have "\<forall>V\<in>rv (_Low_) n''. state_val (transfer (slice_kind (_Low_) a) s) V =
-	                       state_val (transfer (slice_kind (_Low_) a) s') V"
-	by -(rule rv_edge_slice_kinds,auto)
-      from IH[OF `n'' -asx\<rightarrow>* (_Low_)` this preds1 preds2] 
-	Cons `ax = a` show ?thesis by(simp add:slice_kinds_def)
-    next
-      case False
-      with `valid_edge a` `valid_edge ax` `sourcenode a = n` `n = sourcenode ax`
-	`targetnode a = n''` `preds (slice_kinds (_Low_) (a#as)) s`
-	`preds (slice_kinds (_Low_) as') s'` Cons
-	`\<forall>V\<in>rv (_Low_) n. state_val s V = state_val s' V`
-      have False by -(rule rv_branching_edges_slice_kinds_False,auto)
+    proof(cases as')
+      case Nil
+      with `n -as'\<rightarrow>* (_Low_)` have "n = (_Low_)" by fastsimp
+      with `valid_edge a` `sourcenode a = n` have "targetnode a = (_Exit_)"
+        by -(rule Exit_successor_of_Low,simp+)
+      from Low_source_Exit_edge obtain ax where "valid_edge ax"
+        and "sourcenode ax = (_Low_)" and "targetnode ax = (_Exit_)"
+        and "kind ax = (\<lambda>s. True)\<^isub>\<surd>" by blast
+      from `valid_edge a` `sourcenode a = n` `n = (_Low_)` `targetnode a = (_Exit_)`
+        `valid_edge ax` `sourcenode ax = (_Low_)` `targetnode ax = (_Exit_)`
+      have "a = ax" by(fastsimp dest:edge_det)
+      with `kind ax = (\<lambda>s. True)\<^isub>\<surd>` have "kind a = (\<lambda>s. True)\<^isub>\<surd>" by simp
+      with `targetnode a = (_Exit_)` `targetnode a = n''` `n'' -as\<rightarrow>* (_Low_)`
+      have "(_Low_) = (_Exit_)" by -(rule path_Exit_source,auto)
+      with False have False by -(drule Low_neq_Exit,simp)
       thus ?thesis by simp
+    next
+      case (Cons ax asx)
+      with `n -as'\<rightarrow>* (_Low_)` have "n = sourcenode ax" and "valid_edge ax" 
+        and "targetnode ax -asx\<rightarrow>* (_Low_)" by(auto elim:path_split_Cons)
+      show ?thesis
+      proof(cases "targetnode ax = n''")
+        case True
+        with `targetnode ax -asx\<rightarrow>* (_Low_)` have "n'' -asx\<rightarrow>* (_Low_)" by simp
+        from `valid_edge ax` `valid_edge a` `n = sourcenode ax` `sourcenode a = n`
+	  True `targetnode a = n''` have "ax = a"	by(fastsimp intro:edge_det)
+        from `preds (slice_kinds (_Low_) (a#as)) s` 
+        have preds1:"preds (slice_kinds (_Low_) as) (transfer (slice_kind (_Low_) a) s)"
+	  by(simp add:slice_kinds_def)
+        from `preds (slice_kinds (_Low_) as') s'` Cons `ax = a`
+        have preds2:"preds (slice_kinds (_Low_) asx) 
+	  (transfer (slice_kind (_Low_) a) s')"
+	  by(simp add:slice_kinds_def)
+        from `valid_edge a` `sourcenode a = n` `targetnode a = n''`
+	  `preds (slice_kinds (_Low_) (a#as)) s` `preds (slice_kinds (_Low_) as') s'`
+	  `ax = a` Cons `\<forall>V\<in>rv (_Low_) n. state_val s V = state_val s' V`
+        have "\<forall>V\<in>rv (_Low_) n''. state_val (transfer (slice_kind (_Low_) a) s) V =
+	                         state_val (transfer (slice_kind (_Low_) a) s') V"
+	  by -(rule rv_edge_slice_kinds,auto)
+        from IH[OF `n'' -asx\<rightarrow>* (_Low_)` this preds1 preds2] 
+	  Cons `ax = a` show ?thesis by(simp add:slice_kinds_def)
+      next
+        case False
+        with `valid_edge a` `valid_edge ax` `sourcenode a = n` `n = sourcenode ax`
+	  `targetnode a = n''` `preds (slice_kinds (_Low_) (a#as)) s`
+	  `preds (slice_kinds (_Low_) as') s'` Cons
+	  `\<forall>V\<in>rv (_Low_) n. state_val s V = state_val s' V`
+        have False by -(rule rv_branching_edges_slice_kinds_False,auto)
+        thus ?thesis by simp
+      qed
     qed
   qed
 qed

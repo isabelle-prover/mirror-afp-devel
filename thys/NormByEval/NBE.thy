@@ -1887,31 +1887,6 @@ qed
 
 declare [[simp_depth_limit = 50]]
 
-(* FIXME move *)
-
-lemma listsimps_eq_0_iff: "listsum ns = (0::nat) \<longleftrightarrow> (\<forall> n \<in> set ns. n = 0)"
-by(metis listsum sum_eq_0_conv)
-
-(* Generalize to suitable type class? *)
-lemma elem_le_listsum_nat: "k<size ns \<Longrightarrow> ns!k <= listsum(ns::nat list)"
-apply(induct ns arbitrary: k)
-apply(auto simp:nth_Cons')
-apply(metis diff_less less_imp_diff_less nat_neq_iff not_less_eq trans_le_add2)
-done
-
-lemma listsum_update: "k<size ns \<Longrightarrow>
-  listsum (ns[k := (n::nat)]) = listsum ns + n - ns!k"
-apply(induct ns arbitrary:k)
-apply (auto split:nat.split)
-apply(drule elem_le_listsum_nat)
-apply arith
-done
-(*
-lemma lem: "finite A \<Longrightarrow>
-  (\<Sum>x\<in>A. if P x then f x else g x) =
-  setsum f {a:A. P a} + setsum g {a:A. ~P a}"
-*)
-
 lemma Red_term_pres_no_match_it:
   "\<lbrakk> \<forall> i < length ts. (ts ! i, ts' ! i) : Red_term ^^ (ns!i);
     size ts' = size ts; size ns = size ts;
@@ -1919,17 +1894,16 @@ lemma Red_term_pres_no_match_it:
    \<Longrightarrow> no_match ps (map dterm ts')"
 proof(induct "listsum ns" arbitrary: ts ns)
   case 0
-  hence "\<forall>i < size ts. ns!i = 0" by (simp add:listsimps_eq_0_iff)
+  hence "\<forall>i < size ts. ns!i = 0" by simp
   with 0 show ?case by simp (metis nth_equalityI)
 next
   case (Suc n)
   then have "listsum ns \<noteq> 0" by arith
   then obtain k l where "k<size ts" and [simp]: "ns!k = Suc l"
-    by(simp add:listsimps_eq_0_iff)
-      (metis `length ns = length ts` gr0_implies_Suc in_set_conv_nth)
+    by simp (metis `length ns = length ts` gr0_implies_Suc in_set_conv_nth)
   let ?ns = "ns[k := l]"
   have "n = listsum ?ns" using `Suc n = listsum ns` `k<size ts` `size ns = size ts`
-    by (simp add:listsum_update)
+    by (simp add:listsum_update_nat)
   obtain t' where "ts!k \<Rightarrow> t'" "(t', ts'!k) : Red_term^^l"
     using Suc(3) `k<size ts` `size ns = size ts` `ns!k = Suc l`
     by (metis rel_pow_Suc_E2)
@@ -1983,7 +1957,6 @@ done
 lemma C_Red_term_ML:
   "v \<Rightarrow> v' \<Longrightarrow> C_normal\<^bsub>ML\<^esub> v \<Longrightarrow> dterm\<^bsub>ML\<^esub> v = C nm \<bullet>\<bullet> ts
    \<Longrightarrow> dterm\<^bsub>ML\<^esub> v' = C nm \<bullet>\<bullet> map dterm (C\<^isub>U_args(term v')) \<and>
-      (\<forall>t\<in>set(C\<^isub>U_args(term v)). C_normal t) \<and>
       C\<^isub>U_args(term v) [\<Rightarrow>*] C\<^isub>U_args(term v') \<and>
       ts = map dterm (C\<^isub>U_args(term v))" and
   "(vs:: ml list) \<Rightarrow> vs' \<Longrightarrow> i < length vs \<Longrightarrow> vs ! i \<Rightarrow>* vs' ! i"
@@ -1995,51 +1968,66 @@ apply(simp_all add:Red_ml_list_length del: map_map)
 apply(simp add:nth_Cons')
 done
 
+
+lemma C_normal_subterm:
+  "C_normal t \<Longrightarrow> dterm t = C nm \<bullet>\<bullet> ts \<Longrightarrow> s \<in> set(C\<^isub>U_args t) \<Longrightarrow> C_normal s"
+apply(induct rule: C_normal.induct)
+apply auto
+apply(case_tac v)
+apply auto
+done
+
+lemma C_normal_subterms:
+  "C_normal t \<Longrightarrow> dterm t = C nm \<bullet>\<bullet> ts \<Longrightarrow> ts = map dterm (C\<^isub>U_args t)"
+apply(induct rule: C_normal.induct)
+apply auto
+apply(case_tac v)
+apply auto
+done
+
 lemma C_redt: "t \<Rightarrow> t' \<Longrightarrow> C_normal t \<Longrightarrow> 
     C_normal t' \<and> (dterm t = C nm \<bullet>\<bullet> ts \<longrightarrow>
-    (\<exists>ts'. ts' = map dterm (C\<^isub>U_args t') \<and> dterm t' = C nm \<bullet>\<bullet> ts' &
-     (\<forall>t\<in>set(C\<^isub>U_args t). C_normal t) \<and>
-     C\<^isub>U_args t [\<Rightarrow>*] C\<^isub>U_args t' \<and> ts = map dterm (C\<^isub>U_args t)))"
+    (\<exists>ts'. ts' = map dterm (C\<^isub>U_args t') \<and> dterm t' = C nm \<bullet>\<bullet> ts' \<and>
+     C\<^isub>U_args t [\<Rightarrow>*] C\<^isub>U_args t'))"
 apply(induct arbitrary: ts nm rule:Red_term_hnf_induct)
 apply (simp_all del: map_map)
-apply (metis no_match_R_coincide rev_rev_ident)
-apply clarsimp
-apply rule
-apply (metis C_normal_ML_inv)
-apply clarify
-apply(drule (2) C_Red_term_ML)
-apply clarsimp
-apply clarsimp
-apply (metis List.set.simps(2) insert_code mem_def predicate1D set_update_subset_insert)
+   apply (metis no_match_R_coincide rev_rev_ident)
+  apply clarsimp
+  apply rule
+   apply (metis C_normal_ML_inv)
+  apply clarify
+  apply(drule (2) C_Red_term_ML)
+  apply clarsimp
+ apply clarsimp
+ apply (metis List.set.simps(2) insert_code mem_def predicate1D set_update_subset_insert)
 apply clarsimp
 apply(rule)
-apply (metis List.set.simps(2) insert_code mem_def predicate1D set_update_subset_insert)
+ apply (metis List.set.simps(2) insert_code mem_def predicate1D set_update_subset_insert)
 apply rule
-apply clarify
-apply(drule bspec, assumption)
-apply simp
-apply(subst no_match.simps)
-apply(subst (asm) no_match.simps)
-apply clarsimp
-apply(rename_tac j nm nm' rs rs')
-apply(rule_tac x=j in exI)
-apply simp
-apply(case_tac "i=j")
-apply simp
-apply(rule_tac x=nm' in exI)
-apply(erule_tac x=rs' in meta_allE)
-apply(erule_tac x=nm' in meta_allE)
-apply clarsimp
-apply(metis Red_term_pres_no_match_star)
-apply (auto simp:nth_list_update)
+ apply clarify
+ apply(drule bspec, assumption)
+ apply simp
+ apply(subst no_match.simps)
+ apply(subst (asm) no_match.simps)
+ apply clarsimp
+ apply(rename_tac j nm nm' rs rs')
+ apply(rule_tac x=j in exI)
+ apply simp
+ apply(case_tac "i=j")
+  apply simp
+  apply(rule_tac x=nm' in exI)
+  apply(erule_tac x=rs' in meta_allE)
+  apply(erule_tac x=nm' in meta_allE)
+  apply (clarsimp simp: all_set_conv_all_nth)
+  apply(metis C_normal_subterms Red_term_pres_no_match_star)
+ apply (auto simp:nth_list_update)
 done
 
 
 lemma C_redts: "t \<Rightarrow>* t' \<Longrightarrow> C_normal t \<Longrightarrow>
     C_normal t' \<and> (dterm t = C nm \<bullet>\<bullet> ts \<longrightarrow>
-    (\<exists>ts'. dterm t' = C nm \<bullet>\<bullet> ts' \<and>
-     (\<forall>t\<in>set(C\<^isub>U_args t). C_normal t) \<and> C\<^isub>U_args t [\<Rightarrow>*] C\<^isub>U_args t' \<and>
-     ts' = map dterm (C\<^isub>U_args t') \<and> ts = map dterm (C\<^isub>U_args t)))"
+    (\<exists>ts'. dterm t' = C nm \<bullet>\<bullet> ts' \<and> C\<^isub>U_args t [\<Rightarrow>*] C\<^isub>U_args t' \<and>
+     ts' = map dterm (C\<^isub>U_args t')))"
 apply(induct arbitrary: nm ts rule:converse_rtrancl_induct)
 apply simp
 using tm_vector_cases[of t']
@@ -2067,7 +2055,6 @@ apply clarify
 apply simp
 apply rule
 apply metis
-apply simp
 apply (metis rtrancl_trans)
 done
 
@@ -2083,8 +2070,11 @@ proof(induct ps os arbitrary: ts ts' rule: no_match.induct)
   have "ts!i \<Rightarrow>* ts'!i" using 1(3) `i < size os` by auto
   have "dterm (ts ! i) = C nm' \<bullet>\<bullet> os'" using `os!i = C nm' \<bullet>\<bullet> os'` `i < size os`
     by (simp add:nth_map)
-  from C_redts [OF `ts!i \<Rightarrow>* ts'!i` `C_normal (ts!i)`] this obtain ss' rs rs' :: "tm list"
-    where "\<forall>t\<in>set rs. C_normal t" 
+  with C_redts [OF `ts!i \<Rightarrow>* ts'!i` `C_normal (ts!i)`]
+    C_normal_subterm[OF `C_normal (ts!i)`]
+    C_normal_subterms[OF `C_normal (ts!i)`]
+  obtain ss' rs rs' :: "tm list"
+    where "\<forall>t\<in>set rs. C_normal t"
     "dterm (ts' ! i) = C nm' \<bullet>\<bullet> ss'" "length rs = length rs'"
     "\<forall>i<length rs. rs ! i \<Rightarrow>* rs' ! i" "ss' = map dterm rs'" "os' = map dterm rs"
     by fastsimp
@@ -2486,7 +2476,7 @@ apply(subgoal_tac "no_match\<^bsub>ML\<^esub> (map comp_pat ts') (rev vs')")
   apply simp
  apply assumption
 apply(erule_tac meta_mp)
-apply (metis rev_map rev_rev_ident)
+apply (metis rev_rev_ident)
 done
 
 

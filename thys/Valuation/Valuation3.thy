@@ -293,8 +293,8 @@ apply (frule_tac x = "f n \<plusminus> -\<^sub>a b" and n = "an (nat (\<bar>L\<b
        n_value_x_1[of "v"],
        thin_tac "f n \<plusminus> -\<^sub>a b \<in> vp K v\<^bsup>(Vr K v) (an (nat (\<bar>L\<bar> + 1)))\<^esup>")
 apply (simp add:an_def) 
- apply (subgoal_tac "0 \<le>  \<bar>L\<bar> + 1", simp) apply (simp add:zpos_apos)
- apply arith apply assumption
+ apply (simp add: zpos_apos [symmetric])
+ apply assumption
 
  apply (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"])
  apply (frule aGroup.ag_mOp_closed[of "K" "b"], assumption+)

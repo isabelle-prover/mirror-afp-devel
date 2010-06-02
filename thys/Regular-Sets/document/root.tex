@@ -1,0 +1,59 @@
+% $Id: root.tex,v 1.2 2007-11-12 21:00:45 nipkow Exp $
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also isabellesym.sty)
+% use only when needed
+%\usepackage{amssymb}                  % for \<leadsto>, \<box>, \<diamond>,
+                                       % \<sqsupset>, \<mho>, \<Join>, 
+                                       % \<lhd>, \<lesssim>, \<greatersim>,
+                                       % \<lessapprox>, \<greaterapprox>,
+                                       % \<triangleq>, \<yen>, \<lozenge>
+%\usepackage[greek,english]{babel}     % greek for \<euro>,
+                                       % english for \<guillemotleft>, 
+                                       %             \<guillemotright>
+                                       % default language = last
+%\usepackage[latin1]{inputenc}         % for \<onesuperior>, \<onequarter>,
+                                       % \<twosuperior>, \<onehalf>,
+                                       % \<threesuperior>, \<threequarters>,
+                                       % \<degree>
+%\usepackage[only,bigsqcap]{stmaryrd}  % for \<Sqinter>
+%\usepackage{eufrak}                   % for \<AA> ... \<ZZ>, \<aa> ... \<zz>
+                                       % (only needed if amssymb not used)
+%\usepackage{textcomp}                 % for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Regular Sets and Expressions}
+\author{Alexander Krauss and Tobias Nipkow}
+\maketitle
+
+\begin{abstract}
+This is a library of constructions on regular expressions and languages.  It
+provides the operations of concatenation, Kleene star and derivative on
+languages. Regular expressions and their meaning are defined.  An executable
+equivalence checker for regular expressions is verified; it does not need
+automata but works directly on regular expressions. \emph{By mapping regular
+expressions to binary relations, an automatic and complete proof method for
+(in)equalities of binary relations over union, concatenation and (reflexive)
+transitive closure is obtained.}
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

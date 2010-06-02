@@ -15,8 +15,8 @@ section{* General redefinitions *}
 lemma [code_unfold del]: "op = = Executable_Set.set_eq"
   by simp
 
-lemma [code_unfold]: "op mem = ListMem"
-  by (simp add: expand_fun_eq mem_iff ListMem_iff)
+lemma [code_unfold]: "member = (\<lambda> xs x. ListMem x xs)"
+  by (simp add: ListMem_iff mem_iff [symmetric])
 
 inductive app :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
 where

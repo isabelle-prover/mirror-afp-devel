@@ -2694,7 +2694,7 @@ proof(atomize_elim)
 	with `V \<in> Def\<^bsub>SDG\<^esub> (Formal_in (targetnode a,i))` 
 	  `V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (targetnode a))` `targetnode a = parent_node nx`
 	have "Formal_in (targetnode a,i) influences V in (CFG_node (targetnode a))"
-	  by(fastsimp simp:data_dependence_def)
+	  by(fastsimp simp:data_dependence_def sourcenodes_def)
 	hence ddep:"Formal_in (targetnode a,i) s-V\<rightarrow>\<^bsub>dd\<^esub> (CFG_node (targetnode a))"
 	  by(rule sum_SDG_ddep_edge)
 	from `targetnode a = parent_node nx` `nx \<in> HRB_slice n\<^isub>c`
@@ -3047,7 +3047,7 @@ proof(atomize_elim)
 	with `V \<in> Def\<^bsub>SDG\<^esub> (Actual_out(targetnode a,i))` 
 	  `V \<in> Use\<^bsub>SDG\<^esub> (CFG_node (targetnode a))` `targetnode a = parent_node nx`
 	have "Actual_out(targetnode a,i) influences V in (CFG_node (targetnode a))"
-	  by(fastsimp simp:data_dependence_def)
+	  by(fastsimp simp:data_dependence_def sourcenodes_def)
 	hence ddep:"Actual_out(targetnode a,i) s-V\<rightarrow>\<^bsub>dd\<^esub> (CFG_node (targetnode a))"
 	  by(rule sum_SDG_ddep_edge)
 	from `targetnode a = parent_node nx` `nx \<in> HRB_slice n\<^isub>c`

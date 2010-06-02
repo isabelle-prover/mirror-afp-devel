@@ -48,12 +48,11 @@ locale CFG_wf = CFG sourcenode targetnode kind valid_edge Entry
     \<Longrightarrow> pred (kind a) s'"
   and CFG_call_edge_length:
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; (p,ins,outs) \<in> set procs\<rbrakk>
-  \<Longrightarrow> length fs = length ins"
-  and CFG_equal_Use_equal_Call:
+    \<Longrightarrow> length fs = length ins"
+  and CFG_call_determ:
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; valid_edge a'; kind a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs';
-      sourcenode a = sourcenode a'; pred (kind a) s; pred (kind a') s'; 
-      \<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V\<rbrakk>
-  \<Longrightarrow> a = a'"
+      sourcenode a = sourcenode a'; pred (kind a) s; pred (kind a') s\<rbrakk>
+    \<Longrightarrow> a = a'"
   and CFG_call_edge_params:
     "\<lbrakk>valid_edge a; kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs; i < length ins; 
       (p,ins,outs) \<in> set procs; pred (kind a) s; pred (kind a) s';
@@ -68,6 +67,23 @@ locale CFG_wf = CFG sourcenode targetnode kind valid_edge Entry
              (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
 
 begin
+
+
+lemma CFG_equal_Use_equal_call:
+  assumes "valid_edge a" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs" and "valid_edge a'"
+  and "kind a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'" and "sourcenode a = sourcenode a'"
+  and "pred (kind a) s" and "pred (kind a') s'" 
+  and "snd (hd s) = snd (hd s')" and "length s = length s'"
+  and "\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V"
+  shows "a = a'"
+proof -
+  from `valid_edge a` `pred (kind a) s` `snd (hd s) = snd (hd s')`
+    `\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V` `length s = length s'`
+  have "pred (kind a) s'" by(rule CFG_edge_Uses_pred_equal)
+  with `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `valid_edge a'` `kind a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'`
+    `sourcenode a = sourcenode a'` `pred (kind a') s'`
+  show ?thesis by -(rule CFG_call_determ)
+qed
 
 
 lemma CFG_call_edge_param_in:

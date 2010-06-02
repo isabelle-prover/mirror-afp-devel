@@ -25,4 +25,13 @@ primrec lang :: "'a rexp => 'a list set" where
 "lang (Times el er) = conc (lang el) (lang er)" |
 "lang (Star e) = star(lang e)"
 
+primrec atoms :: "'a rexp \<Rightarrow> 'a set"
+where
+"atoms Zero = {}" |
+"atoms One = {}" |
+"atoms (Atom a) = {a}" |
+"atoms (Plus r s) = atoms r \<union> atoms s" |
+"atoms (Times r s) = atoms r \<union> atoms s" |
+"atoms (Star r) = atoms r"
+
 end

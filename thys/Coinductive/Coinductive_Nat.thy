@@ -17,6 +17,11 @@ text {*
 lemma iSuc_plus: "iSuc n + m = iSuc (n + m)"
 by (metis add_assoc add_commute plus_1_iSuc(2))
 
+lemma plus_inat_eq_0_conv:
+  fixes n :: inat 
+  shows "n + m = 0 \<longleftrightarrow> n = 0 \<and> m = 0"
+by(cases n, cases m)(simp_all add: zero_inat_def)
+
 coinductive_set inat :: "inat \<Rightarrow> bool"
 where "0 \<in> inat"
   | "n \<in> inat \<Longrightarrow> (iSuc n) \<in> inat"
@@ -336,5 +341,6 @@ by(simp add: iSuc_def split: inat.split)
 
 lemma iSuc_minus_1 [simp]: "iSuc n - 1 = n"
 by(simp add: one_inat_def iSuc_Fin[symmetric] zero_inat_def[symmetric])
+
 
 end

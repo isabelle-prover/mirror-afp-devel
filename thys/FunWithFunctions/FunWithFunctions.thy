@@ -108,7 +108,7 @@ assumes 0: "f 0 = 1" and f_add: "\<And>x y. f(x+y+1) = f x + f y"
 assumes "r : \<rat>" shows "f(r) = r + 1"
 proof -
   { fix i :: int have "f(real i) = real i + 1"
-    proof (induct i rule: Presburger.int_induct[where k=0])
+    proof (induct i rule: int_induct [where k=0])
       case base show ?case using 0 by simp
     next
       case (step1 i)
