@@ -91,17 +91,15 @@ theorem (in graph) init_nil [simp]:
    
 theorem (in graph) init_root [simp]:
   "DataRefinement Init Q2 R1 R2 (demonic Q2')";
-   by (simp add: DataRefinement_def hoare_demonic Q2'_def Init_def 
-     R1_def Loop'_def R1_def R2_def Q2_def angelic_def subset_eq);
+by (auto simp: DataRefinement_def hoare_demonic Q2'_def Init_def
+     Loop'_def R1_def R2_def Q2_def angelic_def subset_eq)
 
 theorem (in graph) step1 [simp]:
   "DataRefinement Loop Q3 R2 R2 (demonic Q3')";
   apply (simp add: DataRefinement_def hoare_demonic Loop_def 
     Loop'_def R2_def Q3_def Q3'_def angelic_def subset_eq);
   apply (simp add: simp_eq_emptyset);
-  apply clarify;
-  apply (case_tac a);
-  by auto;  
+by (metis Collect_def List.set.simps(2) hd_in_set mem_def member_set simps(2))
 
 theorem (in graph) step2 [simp]:
   "DataRefinement Loop Q4 R2 R2 (demonic Q4')";
