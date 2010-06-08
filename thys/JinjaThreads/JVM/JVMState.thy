@@ -8,8 +8,6 @@ header {*
 *}
 
 theory JVMState imports
-  "../Common/Objects"
-  "../Framework/FWState"
   "../Common/Observable_Events"
 begin
 
@@ -30,7 +28,7 @@ translations
 
 section {* Runtime State *}
 types
-  jvm_state = "addr option \<times> heap \<times> frame list"  
+  'heap jvm_state = "addr option \<times> 'heap \<times> frame list"  
   -- "exception flag, heap, frames"
 
 types
@@ -38,10 +36,10 @@ types
   -- "exception flag, frames, thread lock state"
 
 types
-  jvm_thread_action = "(addr,thread_id,jvm_thread_state,heap,addr,obs_event option) thread_action"
-  jvm_ta_state = "jvm_thread_action \<times> jvm_state"
+  'heap jvm_thread_action = "(jvm_thread_state,'heap) Jinja_thread_action"
+  'heap jvm_ta_state = "'heap jvm_thread_action \<times> 'heap jvm_state"
 
 translations
-  (type) "jvm_thread_action" <= (type) "(nat,nat,nat option \<times> frame list,heap,nat,obs_event option) thread_action"
+  (type) "'heap jvm_thread_action" <= (type) "((nat option \<times> frame list), 'heap) Jinja_thread_action"
 
 end

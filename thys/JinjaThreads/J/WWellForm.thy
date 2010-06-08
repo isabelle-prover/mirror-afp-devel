@@ -6,8 +6,9 @@ header {* \isaheader{Weak well-formedness of Jinja programs} *}
 
 theory WWellForm imports "../Common/WellForm" Expr begin
 
-constdefs
+definition
   wwf_J_mdecl :: "J_prog \<Rightarrow> cname \<Rightarrow> J_mb mdecl \<Rightarrow> bool"
+where
   "wwf_J_mdecl P C  \<equiv>  \<lambda>(M,Ts,T,(pns,body)).
   length Ts = length pns \<and> distinct pns \<and> this \<notin> set pns \<and> fv body \<subseteq> {this} \<union> set pns"
 

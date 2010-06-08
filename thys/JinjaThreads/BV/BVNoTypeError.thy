@@ -8,11 +8,6 @@ theory BVNoTypeError
 imports "../JVM/JVMDefensive" BVSpecTypeSafe
 begin
 
-declare is_IntgI[intro, simp]
-declare is_BoolI[intro, simp]
-declare is_RefI [simp]
-declare defs1 [simp del]
-
 lemma wt_jvm_prog_states:
   "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P \<turnstile> C sees M: Ts\<rightarrow>T = (mxs, mxl, ins, et) in C; 
      \<Phi> C M ! pc = \<tau>; pc < size ins \<rbrakk>
@@ -25,14 +20,19 @@ lemma wt_jvm_prog_states:
   done
 (*>*)
 
+context JVM_heap_conf_base' begin
+
+declare is_IntgI [simp, intro]
+declare is_BoolI [simp, intro]
+declare is_RefI [simp]
+
 text {*
   The main theorem: welltyped programs do not produce type errors if they
   are started in a conformant state.
 *}
 theorem no_type_error:
-  fixes \<sigma> :: jvm_state
-  assumes welltyped: "wf_jvm_prog\<^sub>\<Phi> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>"
-  shows "exec_d P \<sigma> \<noteq> TypeError"
+  assumes welltyped: "wf_jvm_prog\<^sub>\<Phi> P" and conforms: "\<Phi> \<turnstile> t:\<sigma> \<surd>"
+  shows "exec_d P t \<sigma> \<noteq> TypeError"
 (*<*)
 proof -
   from welltyped obtain mb where wf: "wf_prog mb P" by (fast dest: wt_jvm_progD)
@@ -48,7 +48,8 @@ proof -
       and f: "f = (stk,reg,C,M,pc)" by(cases f) fastsimp
 
     from conforms obtain  ST LT Ts T mxs mxl ins xt where
-      hconf:  "P \<turnstile> h \<surd>" and
+      hconf:  "hconf h" and
+      tconf:  "P,h \<turnstile> t \<surd>t" and
       meth:   "P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl, ins, xt) in C" and
       \<Phi>:      "\<Phi> C M ! pc = Some (ST,LT)" and
       frame:  "conf_f P h (ST,LT) ins (stk,reg,C,M,pc)" and
@@ -64,7 +65,7 @@ proof -
     from welltyped meth \<Phi> pc
     have "OK (Some (ST, LT)) \<in> states P mxs (1+size Ts+mxl)"
       by (rule wt_jvm_prog_states)
-    hence "size ST \<le> mxs" by (auto simp add: JVM_states_unfold)
+    hence "size ST \<le> mxs" by (auto simp add: JVM_states_unfold listE_length)
     with stk have mxs: "size stk \<le> mxs" 
       by (auto dest: list_all2_lengthD)
 
@@ -97,17 +98,17 @@ proof -
 	from stk ST obtain i stk' ref where
 	  stk': "stk = Intg i # ref # stk'" and
 	  ref: "P,h \<turnstile> ref :\<le> T"
-	  by(auto simp add: conf_def)
+	  by(auto simp add: conf_def list_all2_Cons2)
 	
 	from ref TNT have is_Ref: "is_Ref ref"
-	  by(auto)
+          by(cases ref)(auto simp add: is_Ref_def conf_def)
 	moreover
 	{ assume refN: "ref \<noteq> Null"
 	  with ref have "T \<noteq> NT" by auto
 	  with TNT obtain T' where T': "T = T'\<lfloor>\<rceil>" by auto
           with ref refN is_Ref wf
-	  have "\<exists>T el. h (the_Addr ref) = \<lfloor>Arr T el\<rfloor>"
-	    by(auto simp add:conf_def widen_Array) }
+	  have "\<exists>T. typeof_addr h (the_Addr ref) = \<lfloor>Array T\<rfloor>"
+            by(cases ref)(auto simp add:conf_def widen_Array dest: typeof_addr_eq_Some_conv) }
 	ultimately show ?thesis using ALoad stk'
 	  by(auto)
       next
@@ -120,17 +121,17 @@ proof -
 	  stk': "stk = e # Intg i # ref # stk'" and
 	  ref: "P,h \<turnstile> ref :\<le> U" and
 	  e: "P,h \<turnstile> e :\<le> T"
-	  by(fastsimp simp add: conf_def)
+	  by(fastsimp simp add: conf_def list_all2_Cons2)
 	
 	from ref TNT have is_Ref: "is_Ref ref"
-	  by(auto)
+	  by(cases ref)(auto simp add: is_Ref_def conf_def)
 	moreover
 	{ assume refN: "ref \<noteq> Null"
 	  with ref have "U \<noteq> NT" by auto
 	  with TNT obtain T' where T': "U = T'\<lfloor>\<rceil>" by auto
           with ref refN is_Ref wf
-	  have "\<exists>T el. h (the_Addr ref) = \<lfloor>Arr T el\<rfloor>"
-	    by(auto simp add:conf_def widen_Array) }
+	  have "\<exists>T. typeof_addr h (the_Addr ref) = \<lfloor>Array T\<rfloor>"
+	    by(cases ref)(auto simp add:conf_def widen_Array dest: typeof_addr_eq_Some_conv) }
 	ultimately show ?thesis using AStore stk'
 	  by(auto)
       next
@@ -142,17 +143,17 @@ proof -
 	from stk ST obtain stk' ref where
 	  stk': "stk = ref # stk'" and
 	  ref: "P,h \<turnstile> ref :\<le> T"
-	  by(auto simp add: conf_def)
+	  by(auto simp add: conf_def list_all2_Cons2)
       
 	from ref TNT have is_Ref: "is_Ref ref"
-	  by(auto)
+	  by(cases ref)(auto simp add: is_Ref_def conf_def)
 	moreover
 	{ assume refN: "ref \<noteq> Null"
 	  with ref have "T \<noteq> NT" by auto
 	  with TNT obtain T' where T': "T = T'\<lfloor>\<rceil>" by auto
           with ref refN is_Ref wf
-	  have "\<exists>T el. h (the_Addr ref) = \<lfloor>Arr T el\<rfloor>"
-	    by(auto simp add:conf_def widen_Array) }
+	  have "\<exists>T. typeof_addr h (the_Addr ref) = \<lfloor>Array T\<rfloor>"
+	    by(cases ref)(auto simp add:conf_def widen_Array dest: typeof_addr_eq_Some_conv) }
 	ultimately show ?thesis using ALength stk'
 	  by(auto)
       next
@@ -161,26 +162,17 @@ proof -
           field: "P \<turnstile> C sees F:vT in C" and
           stk:   "stk = v # stk'" and
           conf:  "P,h \<turnstile> v :\<le> Class C"
-          by auto
+          by(fastsimp simp add: list_all2_Cons2)
 	from field wf have CObject: "C \<noteq> Object"
 	  by(auto dest: wf_Object_field_empty has_fields_fun simp add: sees_field_def)
-	from conf have is_Ref: "is_Ref v" by auto
+	from conf have is_Ref: "is_Ref v" by(cases v)(auto simp add: is_Ref_def conf_def)
 	moreover {
           assume "v \<noteq> Null" 
           with conf field is_Ref wf CObject
-          have "\<exists>D vs. h (the_Addr v) = Some (Obj D vs) \<and> P \<turnstile> D \<preceq>\<^sup>* C"
+          have "\<exists>D. typeof_addr h (the_Addr v) = Some (Class D) \<and> P \<turnstile> D \<preceq>\<^sup>* C"
 	    by (auto dest!: non_npD)
 	}
-	ultimately show ?thesis using Getfield field stk hconf
-          apply clarsimp
-          apply (rule conjI, fastsimp)
-          apply clarsimp
-          apply (drule has_visible_field)
-          apply (drule (1) has_field_mono)
-	  apply (drule (1) hconfD)
-	  apply (unfold oconf_def has_field_def)
-          apply (fastsimp dest: has_fields_fun)
-          done                            
+	ultimately show ?thesis using Getfield field stk by auto
       next
 	case (Putfield F C)
 	with app stk reg \<Phi> obtain v ref vT stk' where
@@ -188,18 +180,19 @@ proof -
           stk:   "stk = v # ref # stk'" and
           confv: "P,h \<turnstile> v :\<le> vT" and
           confr: "P,h \<turnstile> ref :\<le> Class C"
-          by fastsimp
+          by(fastsimp simp add: list_all2_Cons2)
 	from field wf have CObject: "C \<noteq> Object"
 	  by(auto dest: wf_Object_field_empty has_fields_fun simp add: sees_field_def)
-	from confr have is_Ref: "is_Ref ref" by simp
+	from confr have is_Ref: "is_Ref ref"
+          by(cases ref)(auto simp add: is_Ref_def conf_def)
 	moreover {
           assume "ref \<noteq> Null" 
           with confr field is_Ref wf CObject
-          have "\<exists>D vs. h (the_Addr ref) = Some (Obj D vs) \<and> P \<turnstile> D \<preceq>\<^sup>* C"
+          have "\<exists>D. typeof_addr h (the_Addr ref) = Some (Class D) \<and> P \<turnstile> D \<preceq>\<^sup>* C"
             by (auto dest: non_npD)
 	}
 	ultimately show ?thesis using Putfield field stk confv by fastsimp
-      next      
+      next
 	case (Invoke M' n)
 	with app have n: "n < size ST" by simp
 	
@@ -215,7 +208,7 @@ proof -
           assume Null: "stk!n \<noteq> Null" and NT: "ST!n \<noteq> NT"
 	  
 	  from NT app Invoke
-	  have "if is_external_call P (ST ! n) M' then \<exists>U. P \<turnstile> ST ! n\<bullet>M'(rev (take n ST)) :: U
+	  have "if is_external_call P (ST ! n) M' then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M'(Ts) :: U
 	        else \<exists>D D' Ts T m. ST!n = Class D \<and> P \<turnstile> D sees M': Ts\<rightarrow>T = m in D' \<and> P \<turnstile> rev (take n ST) [\<le>] Ts"
 	    by auto
  	  moreover
@@ -228,11 +221,10 @@ proof -
 	      by(auto dest: wf_Object_method_empty)
             from D stk n have "P,h \<turnstile> stk!n :\<le> Class D" 
               by (auto simp: list_all2_conv_all_nth)
-            with Null DObject obtain a C' fs where 
-              [simp]: "stk!n = Addr a" "h a = Some (Obj C' fs)" and
+            with Null DObject obtain a C' where 
+              [simp]: "stk!n = Addr a" "typeof_addr h a = Some (Class C')" and
 		"P \<turnstile> C' \<preceq>\<^sup>* D"
-	      apply(auto dest!: conf_ClassD)
-	      by(case_tac obj, auto simp add: widen_Class)
+              by(cases "stk ! n")(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
 	    with `P \<turnstile> C' \<preceq>\<^sup>* D` wf M' obtain m' Ts' T' D'' where 
               C': "P \<turnstile> C' sees M': Ts'\<rightarrow>T' = m' in D''" and
               Ts': "P \<turnstile> Ts [\<le>] Ts'"
@@ -243,169 +235,96 @@ proof -
             also note Ts also note Ts'
             finally have "P,h \<turnstile> rev (take n stk) [:\<le>] Ts'" .
 	    moreover from C' have "\<not> is_external_call P (Class C') M'"
-	      by(auto dest: external_call_not_sees_method[OF wf])
+	      by(auto dest: external_call_not_sees_method)
 	    ultimately have ?thesis using Invoke Null n C' nec
 	      by (auto simp add: is_Ref_def2 has_methodI) }
 	  moreover
-	  { fix U
+	  { fix U Ts'
 	    assume iec: "is_external_call P (ST ! n) M'"
-	      and wtext: "P \<turnstile> ST ! n\<bullet>M'(rev (take n ST)) :: U"
+	      and wtext: "P \<turnstile> ST ! n\<bullet>M'(Ts') :: U" and sub: "P \<turnstile> rev (take n ST) [\<le>] Ts'"
 	    from iec have "is_refT (ST ! n)" by(rule is_external_call_is_refT)
 	    moreover from stk n have "P,h \<turnstile> stk ! n :\<le> ST ! n" by(rule list_all2_nthD2)
-	    ultimately obtain a ao where "stk ! n = Addr a" "h a = \<lfloor>ao\<rfloor>"
-	      using Null by(auto simp add: conf_def elim!: is_refT.cases simp add: widen_Class widen_Array)
-	    moreover with `P,h \<turnstile> stk ! n :\<le> ST ! n` obtain Ta
-	      where "P \<turnstile> Ta \<le> ST ! n" "typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>" "Ta \<noteq> NT"
-	      by(auto simp add: conf_def split: heapobj.split_asm)
-	    with wtext `P,h \<turnstile> stk ! n :\<le> ST ! n` obtain U' 
-	      where "P \<turnstile> Ta\<bullet>M'(rev (take n ST)) :: U'" "P \<turnstile> U' \<le> U"
-	      by(auto intro: widens_refl dest: external_WTrt_widen_mono)
-	    with n have "is_external_call P Ta M'" by(auto dest: external_WT_is_external_call)
-	    moreover from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
-	    then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
-	      by(auto simp add: confs_conv_map)
-	    moreover hence "P \<turnstile> rev Us [\<le>] rev (take n ST)" by simp
-	    with `P \<turnstile> Ta\<bullet>M'(rev (take n ST)) :: U'` `Ta \<noteq> NT` obtain U'' where "P \<turnstile> Ta\<bullet>M'(rev Us) :: U''"
-	      by(auto dest: external_WTrt_widen_mono)
-	    moreover note Invoke Null n `stk ! n = Addr a` `typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>`
-	    ultimately have ?thesis
-	      by(force simp add: is_Ref_def rev_map[symmetric] split: heapobj.splits intro!: external_WT'.intros) }
+	    ultimately obtain a where a: "stk ! n = Addr a" "typeof_addr h a \<noteq> None"
+	      using Null
+              by(cases "stk ! n")(auto simp add: conf_def elim!: is_refT.cases simp add: widen_Class widen_Array)
+	    with `P,h \<turnstile> stk ! n :\<le> ST ! n` obtain Ta
+	      where Ta: "P \<turnstile> Ta \<le> ST ! n" "typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>" "Ta \<noteq> NT"
+	      by(auto simp add: conf_def dest: typeof_addr_eq_Some_conv)
+            have ?thesis
+            proof(cases "is_external_call P Ta M'")
+              case True
+              moreover
+	      with wtext `P,h \<turnstile> stk ! n :\<le> ST ! n` Ta
+              obtain U' where "P \<turnstile> Ta\<bullet>M'(Ts') :: U'" "P \<turnstile> U' \<le> U"
+	        by(auto dest: external_WT_widen_mono split: ty.splits simp add: is_external_call_def)
+              moreover from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
+	      then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
+	        by(auto simp add: confs_conv_map)
+	      moreover with sub have "P \<turnstile> rev Us [\<le>] Ts'" by(auto intro: widens_trans)
+	      moreover note Invoke Null n `stk ! n = Addr a` `typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>`
+	      ultimately show ?thesis
+	        by(force simp add: is_Ref_def rev_map[symmetric] intro!: external_WT'.intros)
+            next
+              case False
+              then obtain C' where C': "Ta = Class C'" and "P \<turnstile> C' has M'"
+                using wtext sub Ta
+                apply(auto simp add: is_external_call_def split: ty.splits)
+                apply(auto elim!: external_WT.cases)
+                apply(erule allE, erule (2) impE[OF _ widen_trans], fastsimp)+
+                done
+              then obtain Ts'' T'' meth D''
+                where sees'': "P \<turnstile> C' sees M':Ts'' \<rightarrow> T''=meth in D''"
+                unfolding has_method_def by auto
+              moreover 
+              from C' Ta obtain C'' where C'': "ST ! n = Class C''" by(auto dest: Class_widen)
+              with C' Ta have "P \<turnstile> C' \<preceq>\<^sup>* C''" by simp
+              from external_WT_widen_sees_method_contravariant[OF wf sees'' this, of Ts' U] wtext C''
+              have "P \<turnstile> Ts' [\<le>] Ts''" by simp
+              from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" ..
+              hence "P,h \<turnstile> rev (take n stk) [:\<le>] rev (take n ST)" by simp
+              with sub `P \<turnstile> Ts' [\<le>] Ts''`
+              have "P,h \<turnstile> rev (take n stk) [:\<le>] Ts''" by(auto intro: widens_trans)
+              ultimately show ?thesis using Invoke Null n `stk ! n = Addr a` Ta False C'
+                by(simp add: is_Ref_def has_methodI)
+            qed }
 	  ultimately have ?thesis by(auto split: split_if_asm) }
 	ultimately show ?thesis by blast      
       next
 	case Return with stk app \<Phi> meth frames 
-	show ?thesis by (auto simp add: has_methodI)
+	show ?thesis by (fastsimp simp add: has_methodI list_all2_Cons2)
       next
-	case ThrowExc with stk app \<Phi> meth frames 
+	case ThrowExc with stk app \<Phi> meth frames
 	show ?thesis
-	  by(fastsimp simp add: xcpt_app_def conf_def intro: widen_trans[OF _ widen_subcls])
+	  by(fastsimp simp add: xcpt_app_def conf_def list_all2_Cons2 intro: widen_trans[OF _ widen_subcls])
       next
 	case (BinOpInstr bop) with stk app \<Phi> meth frames
-	show ?thesis by(auto simp add: conf_def)(force dest: WTrt_binop_widen_mono)
-      qed (auto simp add: list_all2_lengthD)
+	show ?thesis by(auto simp add: conf_def list_all2_Cons2)(force dest: WTrt_binop_widen_mono)
+      qed (auto simp add: list_all2_lengthD list_all2_Cons2)
       thus "check P \<sigma>" using meth pc mxs by (simp add: check_def has_methodI)
     next
       case (Some a)
       with meth pc mxs show ?thesis by(simp add: check_def has_methodI)
     qed
   qed
-  thus "exec_d P \<sigma> \<noteq> TypeError" ..
+  thus "exec_d P t \<sigma> \<noteq> TypeError" ..
 qed
 
 lemma welltyped_commute:
-  "\<lbrakk>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P,\<Phi> \<turnstile> \<sigma> \<surd>\<rbrakk> \<Longrightarrow> P \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>' = P \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>'"
+  "\<lbrakk>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; \<Phi> \<turnstile> t:\<sigma> \<surd>\<rbrakk> \<Longrightarrow> P,t \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>' = P,t \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>'"
 apply(rule iffI)
  apply(erule exec_1_d.cases, simp, fastsimp simp add: exec_d_def exec_1_iff split: split_if_asm)
 by(auto dest!: no_type_error intro!: exec_1_d.intros simp add: exec_d_def exec_1_iff split: split_if_asm)
 
+end
 
-lemma BV_correct_d_1:
-  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>'; P,\<Phi> \<turnstile> \<sigma> \<surd> \<rbrakk> \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>' \<surd>"
+lemma (in JVM_conf_read) BV_correct_d_1:
+  "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; P,t \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>'; \<Phi> \<turnstile> t:\<sigma> \<surd> \<rbrakk> \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>' \<surd>"
   unfolding welltyped_commute
   by(rule BV_correct_1)
-
-
-text {*
-  The theorem above tells us that, in welltyped programs, the
-  defensive machine reaches the same result as the aggressive
-  one (after arbitrarily many steps).
-*}
-theorem welltyped_aggressive_imp_defensive:
-  "P \<turnstile> \<sigma> -tas-jvm\<rightarrow>* \<sigma>' \<Longrightarrow> wf_jvm_prog\<^sub>\<Phi> P \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma> \<surd>
-  \<Longrightarrow> P \<turnstile> (Normal \<sigma>) -tas-jvmd\<rightarrow>* (Normal \<sigma>')"
-apply(simp only: exec_star_def)
-apply(induct rule: rtrancl3p.induct)
- apply(simp add: exec_star_d_def)
-apply(simp)
-apply(simp only: exec_star_def[symmetric])
-apply(frule BV_correct, assumption+)
-apply (drule_tac \<sigma>="a'" in no_type_error)
- apply(assumption)
-apply(drule no_type_error_commutes)
-apply (simp add: exec_star_d_def)
-apply(rule rtrancl3p_trans)
- apply(assumption)
-apply (drule exec_1_d_NormalI)
-apply(unfold exec_1_iff)
-apply(assumption)
-apply(rule rtrancl3p_step_converse)
- apply(assumption)
-apply(rule rtrancl3p_refl)
-done
-
-
-text {*
-  As corollary we get that the aggressive and the defensive machine
-  are equivalent for welltyped programs (if started in a conformant
-  state or in the canonical start state)
-*} 
-corollary welltyped_commutes:
-  fixes \<sigma> :: jvm_state
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P" and conforms: "P,\<Phi> \<turnstile> \<sigma> \<surd>" 
-  shows "P \<turnstile> (Normal \<sigma>) -tas-jvmd\<rightarrow>* (Normal \<sigma>') = P \<turnstile> \<sigma> -tas-jvm\<rightarrow>* \<sigma>'"
-  apply (rule iffI)
-  apply (erule defensive_imp_aggressive)
-  apply (erule welltyped_aggressive_imp_defensive)
-  apply (rule wf)
-  apply (rule conforms)
-  done
-
-corollary welltyped_initial_commutes:
-  assumes wf: "wf_jvm_prog P"  
-  assumes meth: "P \<turnstile> C sees M:[]\<rightarrow>T = b in C" 
-  defines start: "\<sigma> \<equiv> start_state P C M"
-  shows "P \<turnstile> (Normal \<sigma>) -tas-jvmd\<rightarrow>* (Normal \<sigma>') = P \<turnstile> \<sigma> -tas-jvm\<rightarrow>* \<sigma>'"
-proof -
-  from wf obtain \<Phi> where wf': "wf_jvm_prog\<^sub>\<Phi> P" by (auto simp: wf_jvm_prog_def)
-  from this meth have "P,\<Phi> \<turnstile> \<sigma> \<surd>" unfolding start by (rule BV_correct_initial)
-  with wf' show ?thesis by (rule welltyped_commutes)
-qed
 
 
 lemma not_TypeError_eq [iff]:
   "x \<noteq> TypeError = (\<exists>t. x = Normal t)"
   by (cases x) auto
 
-locale cnf =
-  fixes P and \<Phi> and \<sigma>
-  assumes wf: "wf_jvm_prog\<^sub>\<Phi> P"  
-  assumes cnf: "correct_state P \<Phi> \<sigma>" 
-
-
-theorem (in cnf) no_type_errors:
-  "P \<turnstile> (Normal \<sigma>) -tas-jvmd\<rightarrow>* \<sigma>' \<Longrightarrow> \<sigma>' \<noteq> TypeError"
-apply (unfold exec_star_d_def)
-apply(insert cnf)
-apply(erule rtrancl3p_induct1)
- apply(simp)
-apply(fold exec_star_d_def)
-apply(insert wf)
-apply(clarsimp)
-apply(drule defensive_imp_aggressive)
-apply (frule (2) BV_correct)
-apply (drule (1) no_type_error) back
-apply(erule exec_1_d.cases)
- apply(simp)
-apply(fastsimp)
-done
-
-locale start =
-  fixes P and C and M and \<sigma> and T and b
-  assumes wf: "wf_jvm_prog P"  
-  assumes sees: "P \<turnstile> C sees M:[]\<rightarrow>T = b in C" 
-  defines "\<sigma> \<equiv> Normal (start_state P C M)"
-
-corollary (in start) bv_no_type_error:
-  shows "P \<turnstile> \<sigma> -tas-jvmd\<rightarrow>* \<sigma>' \<Longrightarrow> \<sigma>' \<noteq> TypeError"
-proof -
-  from wf obtain \<Phi> where "wf_jvm_prog\<^sub>\<Phi> P" by (auto simp: wf_jvm_prog_def)
-  moreover
-  with sees have "correct_state P \<Phi> (start_state P C M)" 
-    by - (rule BV_correct_initial)
-  ultimately have "cnf P \<Phi> (start_state P C M)" by (rule cnf.intro)
-  moreover assume "P \<turnstile> \<sigma> -tas-jvmd\<rightarrow>* \<sigma>'"
-  ultimately show ?thesis by (unfold \<sigma>_def) (rule cnf.no_type_errors) 
-qed
-
- 
 end  

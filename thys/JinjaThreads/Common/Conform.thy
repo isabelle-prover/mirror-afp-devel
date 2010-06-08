@@ -7,95 +7,127 @@
 header {* \isaheader{Conformance Relations for Type Soundness Proofs} *}
 
 theory Conform
-imports ExternalCall
+imports
+  StartConfig
 begin
 
-definition conf :: "'m prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50)
+context heap_base begin
+
+definition conf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50)
 where "P,h \<turnstile> v :\<le> T  \<equiv> \<exists>T'. typeof\<^bsub>h\<^esub> v = Some T' \<and> P \<turnstile> T' \<le> T"
 
-definition oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> heapobj \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>" [51,51,51] 50)
-where
-  "P,h \<turnstile> obj \<surd>  \<equiv>
-   (case obj of Obj C fs \<Rightarrow> is_class P C \<and> (\<forall>F D T. P \<turnstile> C has F:T in D \<longrightarrow> (\<exists>v. fs(F,D) = Some v \<and> P,h \<turnstile> v :\<le> T))
-              | Arr T el \<Rightarrow> is_type P T \<and> (\<forall>v \<in> set el. P,h \<turnstile> v :\<le> T))"
-
-definition hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile> _ \<surd>" [51,51] 50)
-where "P \<turnstile> h \<surd> \<equiv> (\<forall>a obj. h a = Some obj \<longrightarrow> P,h \<turnstile> obj \<surd>) \<and> preallocated h"
-
-definition lconf :: "'m prog \<Rightarrow> heap \<Rightarrow> (vname \<rightharpoonup> val) \<Rightarrow> (vname \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50)
+definition lconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> (vname \<rightharpoonup> val) \<Rightarrow> (vname \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50)
 where "P,h \<turnstile> l (:\<le>) E  \<equiv> \<forall>V v. l V = Some v \<longrightarrow> (\<exists>T. E V = Some T \<and> P,h \<turnstile> v :\<le> T)"
 
-abbreviation confs :: "'m prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
+abbreviation confs :: "'m prog \<Rightarrow> 'heap \<Rightarrow> val list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
 where "P,h \<turnstile> vs [:\<le>] Ts  ==  list_all2 (conf P h) vs Ts"
+
+definition tconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> thread_id \<Rightarrow> bool" ("_,_ \<turnstile> _ \<surd>t" [51,51,51] 50)
+where "P,h \<turnstile> t \<surd>t \<equiv> \<exists>C. typeof_addr h t = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+
+end
+
+locale heap_conf_base =
+  heap_base +
+  constrains empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+  fixes hconf :: "'heap \<Rightarrow> bool"
+  and P :: "'m prog"
+
+locale heap_conf = heap _ _ _ _ _ _ heap_write +
+  heap_conf_base empty_heap new_obj new_arr typeof_addr array_length heap_read heap_write hconf P
+  for heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+  and hconf :: "'heap \<Rightarrow> bool" 
+  and P :: "'m prog" +
+  assumes hconf_empty [iff]: "hconf empty_heap"
+  and typeof_addr_is_type: "\<lbrakk> typeof_addr h a = \<lfloor>T\<rfloor>; hconf h \<rbrakk> \<Longrightarrow> is_type P T"
+  and hconf_new_obj_mono: "\<And>a. \<lbrakk> new_obj h C = (h', a); hconf h; is_class P C \<rbrakk> \<Longrightarrow> hconf h'"
+  and hconf_new_arr_mono: "\<And>a. \<lbrakk> new_arr h T n  = (h', a); hconf h; is_type P T \<rbrakk> \<Longrightarrow> hconf h'"
+  and hconf_heap_write_mono:
+  "\<lbrakk> heap_write h a al v h'; hconf h; P,h \<turnstile> a@al : T; P,h \<turnstile> v :\<le> T \<rbrakk> \<Longrightarrow> hconf h'"
+
+locale heap_progress =
+  heap_conf _ _ _ _ _ _ _ hconf P 
+  for hconf :: "'heap \<Rightarrow> bool"
+  and P :: "'m prog" +
+  assumes heap_read_total: "\<lbrakk> hconf h; P,h \<turnstile> a@al : T \<rbrakk> \<Longrightarrow> \<exists>v. heap_read h a al v \<and> P,h \<turnstile> v :\<le> T"
+  and heap_write_total: "P,h \<turnstile> a@al : T \<Longrightarrow> \<exists>h'. heap_write h a al v h'"
+
+locale heap_conf_read =
+  heap_conf _ _ _ _ _ _ _ hconf P 
+  for hconf :: "'heap \<Rightarrow> bool"
+  and P :: "'m prog" +
+  assumes heap_read_conf: "\<lbrakk> heap_read h a al v; P,h \<turnstile> a@al : T; hconf h \<rbrakk> \<Longrightarrow> P,h \<turnstile> v :\<le> T"
+
+locale heap_typesafe =
+  heap_conf_read +
+  heap_progress +
+  constrains empty_heap :: "'heap"
+  and new_obj :: "'heap \<Rightarrow> cname \<Rightarrow> ('heap \<times> addr option)"
+  and new_arr :: "'heap \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> ('heap \<times> addr option)"
+  and typeof_addr :: "'heap \<Rightarrow> addr \<rightharpoonup> ty"
+  and array_length :: "'heap \<Rightarrow> addr \<Rightarrow> nat"
+  and heap_read :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> bool"
+  and heap_write :: "'heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> val \<Rightarrow> 'heap \<Rightarrow> bool"
+  and hconf :: "'heap \<Rightarrow> bool"
+  and P :: "'m prog"
+
+context heap_conf begin
+
+lemmas hconf_heap_ops_mono = 
+  hconf_new_obj_mono hconf_new_arr_mono
+  hconf_heap_write_mono
+
+lemma hconf_new_obj_mono': "\<lbrakk> hconf h; is_class P C \<rbrakk> \<Longrightarrow> hconf (fst (new_obj h C))"
+by(rule hconf_new_obj_mono[where a="snd (new_obj h C)"]) auto
+
+end
 
 section{* Value conformance @{text":\<le>"} *}
 
+context heap_base begin
+
 lemma conf_Null [simp]: "P,h \<turnstile> Null :\<le> T  =  P \<turnstile> NT \<le> T"
-(*<*)
-apply (unfold conf_def)
-apply (simp (no_asm))
-done
-(*>*)
+unfolding conf_def by(simp (no_asm))
 
 lemma typeof_conf[simp]: "typeof\<^bsub>h\<^esub> v = Some T \<Longrightarrow> P,h \<turnstile> v :\<le> T"
-(*<*)
-apply (unfold conf_def)
-apply (induct v)
-apply auto
-done
-(*>*)
+unfolding conf_def by (cases v) auto
 
 lemma typeof_lit_conf[simp]: "typeof v = Some T \<Longrightarrow> P,h \<turnstile> v :\<le> T"
-(*<*)by (rule typeof_conf[OF typeof_lit_typeof])(*>*)
+by (rule typeof_conf[OF typeof_lit_typeof])
 
 lemma defval_conf[simp]: "P,h \<turnstile> default_val T :\<le> T"
-(*<*)
-apply (unfold conf_def)
-apply (cases T)
-apply auto
-done
-(*>*)
-
-lemma conf_upd_obj: "h a = Some(Obj C fs) \<Longrightarrow> (P,h(a\<mapsto>(Obj C fs')) \<turnstile> x :\<le> T) = (P,h \<turnstile> x :\<le> T)"
-(*<*)
-apply (unfold conf_def)
-apply (rule val.induct)
-apply (auto simp:fun_upd_apply)
-done
-(*>*)
-
-lemma conf_upd_arr: "h a = Some(Arr T el) \<Longrightarrow> (P,h(a\<mapsto>(Arr T el')) \<turnstile> x :\<le> T') = (P,h \<turnstile> x :\<le> T')"
-apply(unfold conf_def)
-apply (rule val.induct)
-by (auto simp:fun_upd_apply)
-
+unfolding conf_def by (cases T) auto
 
 lemma conf_widen: "P,h \<turnstile> v :\<le> T \<Longrightarrow> P \<turnstile> T \<le> T' \<Longrightarrow> P,h \<turnstile> v :\<le> T'"
-(*<*)
-apply (unfold conf_def)
-apply (induct v)
-apply (auto intro: widen_trans)
-done
-(*>*)
+unfolding conf_def by (cases v) (auto intro: widen_trans)
 
-lemma conf_hext: "h \<unlhd> h' \<Longrightarrow> P,h \<turnstile> v :\<le> T \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
-unfolding conf_def
-by(induct v)(auto split: heapobj.splits dest: hext_objD hext_arrD)
+lemma conf_sys_xcpt:
+  "\<lbrakk>preallocated h; C \<in> sys_xcpts\<rbrakk> \<Longrightarrow> P,h \<turnstile> Addr (addr_of_sys_xcpt C) :\<le> Class C"
+by(simp add: conf_def typeof_addr_sys_xcp)
 
-lemma conf_ClassD: "P,h \<turnstile> v :\<le> Class C \<Longrightarrow>
-  v = Null \<or> (\<exists>a obj T. v = Addr a \<and> h a = Some obj \<and> obj_ty obj = T \<and> P \<turnstile> T \<le> Class C)"
-(*<*)
-apply (unfold conf_def)
-apply(induct "v")
-apply(auto)
-apply(case_tac a)
- apply(simp)
-apply(simp)
-done
-(*>*)
+end
+
+context heap begin
+
+lemma conf_hext: "\<lbrakk> h \<unlhd> h'; P,h \<turnstile> v :\<le> T \<rbrakk> \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
+unfolding conf_def by(cases v)(auto dest: typeof_addr_hext_mono)
+
+lemma conf_heap_ops_mono:
+  assumes "P,h \<turnstile> v :\<le> T"
+  shows conf_new_obj_mono: "\<And>a. new_obj h C = (h', a) \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
+  and conf_new_arr_mono: "\<And>a. new_arr h T n = (h', a) \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
+  and conf_heap_write_mono: "heap_write h a al v' h' \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
+using assms
+by(auto intro: conf_hext dest: hext_heap_ops)
 
 lemma conf_NT [iff]: "P,h \<turnstile> v :\<le> NT = (v = Null)"
-(*<*)by (auto simp add: conf_def)(*>*)
+by (auto simp add: conf_def)
 
 lemma is_IntgI: "P,h \<turnstile> v :\<le> Integer \<Longrightarrow> is_Intg v"
 by (unfold conf_def) auto
@@ -104,137 +136,106 @@ lemma is_BoolI: "P,h \<turnstile> v :\<le> Boolean \<Longrightarrow> is_Bool v"
 by (unfold conf_def) auto
 
 lemma is_RefI: "P,h \<turnstile> v :\<le> T \<Longrightarrow> is_refT T \<Longrightarrow> is_Ref v"
-  apply (cases T)
-  apply (auto simp add: is_Ref_def dest: conf_ClassD elim: is_refT.cases)
-  apply(auto simp add: conf_def widen_Array)
-  done
+by(cases v)(auto elim: is_refT.cases simp add: conf_def is_Ref_def)
+
+lemma non_npD:
+  "\<lbrakk> v \<noteq> Null; P,h \<turnstile> v :\<le> Class C; C \<noteq> Object \<rbrakk> 
+  \<Longrightarrow> \<exists>a C'. v = Addr a \<and> typeof_addr h a = \<lfloor>Class C'\<rfloor> \<and> P \<turnstile> C' \<preceq>\<^sup>* C"
+by(cases v)(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
+
+end
 
 section{* Value list conformance @{text"[:\<le>]"} *}
 
+context heap_base begin
+
 lemma confs_widens [trans]: "\<lbrakk>P,h \<turnstile> vs [:\<le>] Ts; P \<turnstile> Ts [\<le>] Ts'\<rbrakk> \<Longrightarrow> P,h \<turnstile> vs [:\<le>] Ts'"
-(*<*)
-  apply (rule list_all2_trans)
-    by(rule conf_widen)
-(*>*)
+by (rule list_all2_trans)(rule conf_widen)
 
 lemma confs_rev: "P,h \<turnstile> rev s [:\<le>] t = (P,h \<turnstile> s [:\<le>] rev t)"
-(*<*)
-  apply rule
-  apply (rule subst [OF list_all2_rev])
-  apply simp
-  apply (rule subst [OF list_all2_rev])
-  apply simp
-  done
-(*>*)
+by(rule list_all2_rev1)
 
 lemma confs_conv_map:
-  "\<And>Ts'. P,h \<turnstile> vs [:\<le>] Ts' = (\<exists>Ts. map typeof\<^bsub>h\<^esub> vs = map Some Ts \<and> P \<turnstile> Ts [\<le>] Ts')"
-(*<*)
-apply(induct vs)
+  "P,h \<turnstile> vs [:\<le>] Ts' = (\<exists>Ts. map typeof\<^bsub>h\<^esub> vs = map Some Ts \<and> P \<turnstile> Ts [\<le>] Ts')"
+apply(induct vs arbitrary: Ts')
  apply simp
 apply(case_tac Ts')
 apply(auto simp add:conf_def)
 apply(rule_tac x="T' # Ts" in exI)
 apply(simp add: fun_of_def)
 done
-(*>*)
-
-lemma confs_hext: "P,h \<turnstile> vs [:\<le>] Ts \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,h' \<turnstile> vs [:\<le>] Ts"
-(*<*)by (erule list_all2_mono, erule conf_hext, assumption)(*>*)
 
 lemma confs_Cons2: "P,h \<turnstile> xs [:\<le>] y#ys = (\<exists>z zs. xs = z#zs \<and> P,h \<turnstile> z :\<le> y \<and> P,h \<turnstile> zs [:\<le>] ys)"
-(*<*)by (rule list_all2_Cons2)(*>*)
+by (rule list_all2_Cons2)
 
+end
 
-section "Object conformance"
+context heap begin
 
-lemma oconf_hext: "P,h \<turnstile> obj \<surd> \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,h' \<turnstile> obj \<surd>"
-(*<*)
-apply (unfold oconf_def)
-apply(cases obj)
-apply (fastsimp elim:conf_hext)+
-done
-(*>*)
+lemma confs_hext: "P,h \<turnstile> vs [:\<le>] Ts \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,h' \<turnstile> vs [:\<le>] Ts"
+by (erule list_all2_mono, erule conf_hext, assumption)
 
-lemma oconf_init_fields:
- "P \<turnstile> C has_fields FDTs \<Longrightarrow> P,h \<turnstile> (Obj C (init_fields FDTs)) \<surd>"
-apply(frule has_fields_is_class)
-by(fastsimp simp add: has_field_def oconf_def init_fields_def map_of_map
-            dest: has_fields_fun)
+end
 
-lemma oconf_init_arr:
- "is_type P U \<Longrightarrow> P,h \<turnstile> (Arr U (replicate n (default_val U))) \<surd>"
-by(simp add: oconf_def set_replicate_conv_if)
+section {* Local variable conformance *}
 
-lemma oconf_fupd [intro?]:
-  "\<lbrakk> P \<turnstile> C has F:T in D; P,h \<turnstile> v :\<le> T; P,h \<turnstile> (Obj C fs) \<surd> \<rbrakk> 
-  \<Longrightarrow> P,h \<turnstile> (Obj C (fs((F,D)\<mapsto>v))) \<surd>"
-(*<*)
-  apply (unfold oconf_def has_field_def)
-  apply clarsimp
-  apply (drule (1) has_fields_fun)
-  apply (auto simp add: fun_upd_apply)
-  done                                    
-(*>*)
-
-lemma oconf_fupd_arr [intro?]:
-  "\<lbrakk> P,h \<turnstile> v :\<le> T; P,h \<turnstile> (Arr T el) \<surd> \<rbrakk>
-  \<Longrightarrow> P,h \<turnstile> (Arr T (el[i := v])) \<surd>"
-apply(unfold oconf_def)
-apply(auto dest: subsetD[OF set_update_subset_insert])
-done
-
-
-lemmas oconf_new = oconf_hext [OF _ hext_new]
-lemmas oconf_upd_obj = oconf_hext [OF _ hext_upd_obj]
-
-lemma oconf_upd_arr:
-  "\<lbrakk> P,h \<turnstile> obj \<surd>; h a = \<lfloor>Arr T el\<rfloor> \<rbrakk> \<Longrightarrow> P,h(a \<mapsto> Arr T el') \<turnstile> obj \<surd>"
-by(auto simp add: oconf_def conf_upd_arr split: heapobj.split)
-
-section "Heap conformance"
-
-lemma hconfD: "\<lbrakk> P \<turnstile> h \<surd>; h a = Some obj \<rbrakk> \<Longrightarrow> P,h \<turnstile> obj \<surd>"
-(*<*)
-apply (unfold hconf_def)
-apply (fast)
-done
-(*>*)
-
-lemma hconf_new: "\<lbrakk> P \<turnstile> h \<surd>; h a = None; P,h \<turnstile> obj \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> h(a\<mapsto>obj) \<surd>"
-(*<*)by (unfold hconf_def) (auto intro: oconf_new preallocated_new)(*>*)
-
-lemma hconf_upd_obj: "\<lbrakk> P \<turnstile> h\<surd>; h a = Some(Obj C fs); P,h \<turnstile> (Obj C fs') \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> h(a\<mapsto>(Obj C fs'))\<surd>"
-(*<*)by (unfold hconf_def) (auto intro: oconf_upd_obj preallocated_upd_obj)(*>*)
-
-lemma hconf_upd_arr: "\<lbrakk> P \<turnstile> h \<surd>; h a = Some(Arr T el); P,h \<turnstile> (Arr T el') \<surd> \<rbrakk> \<Longrightarrow> P \<turnstile> h(a\<mapsto>(Arr T el')) \<surd>"
-apply(unfold hconf_def)
-apply(auto intro: oconf_upd_arr preallocated_upd_arr)
-done
-
-
-section "Local variable conformance"
-
-lemma lconf_hext: "\<lbrakk> P,h \<turnstile> l (:\<le>) E; h \<unlhd> h' \<rbrakk> \<Longrightarrow> P,h' \<turnstile> l (:\<le>) E"
-(*<*)
-apply (unfold lconf_def)
-apply  (fast elim: conf_hext)
-done
-(*>*)
+context heap_base begin
 
 lemma lconf_upd:
   "\<lbrakk> P,h \<turnstile> l (:\<le>) E; P,h \<turnstile> v :\<le> T; E V = Some T \<rbrakk> \<Longrightarrow> P,h \<turnstile> l(V\<mapsto>v) (:\<le>) E"
-(*<*)
-apply (unfold lconf_def)
-apply auto
-done
-(*>*)
+unfolding lconf_def by auto
 
-lemma lconf_empty[iff]: "P,h \<turnstile> empty (:\<le>) E"
-(*<*)by(simp add:lconf_def)(*>*)
+lemma lconf_empty [iff]: "P,h \<turnstile> empty (:\<le>) E"
+by(simp add:lconf_def)
 
 lemma lconf_upd2: "\<lbrakk>P,h \<turnstile> l (:\<le>) E; P,h \<turnstile> v :\<le> T\<rbrakk> \<Longrightarrow> P,h \<turnstile> l(V\<mapsto>v) (:\<le>) E(V\<mapsto>T)"
-(*<*)by(simp add:lconf_def)(*>*)
+by(simp add:lconf_def)
 
+end
+
+context heap begin
+
+lemma lconf_hext: "\<lbrakk> P,h \<turnstile> l (:\<le>) E; h \<unlhd> h' \<rbrakk> \<Longrightarrow> P,h' \<turnstile> l (:\<le>) E"
+unfolding lconf_def by(fast elim: conf_hext)
+
+end
+
+section {* Thread object conformance *}
+
+context heap_base begin
+
+lemma tconfI: "\<lbrakk> typeof_addr h t = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread \<rbrakk> \<Longrightarrow> P,h \<turnstile> t \<surd>t"
+by(simp add: tconf_def)
+
+lemma tconfD: "P,h \<turnstile> t \<surd>t \<Longrightarrow> \<exists>C. typeof_addr h t = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+by(auto simp add: tconf_def)
+
+end
+
+context heap begin
+ 
+lemma tconf_hext_mono: "\<lbrakk> P,h \<turnstile> t \<surd>t; h \<unlhd> h' \<rbrakk> \<Longrightarrow> P,h' \<turnstile> t \<surd>t"
+by(auto simp add: tconf_def dest: typeof_addr_hext_mono)
+
+lemma tconf_heap_ops_mono:
+  assumes "P,h \<turnstile> t \<surd>t"
+  shows tconf_new_obj_mono: "\<And>a. new_obj h C = (h', a) \<Longrightarrow> P,h' \<turnstile> t \<surd>t"
+  and tconf_new_arr_mono: "\<And>a. new_arr h T n = (h', a) \<Longrightarrow> P,h' \<turnstile> t \<surd>t"
+  and tconf_heap_write_mono: "heap_write h a al v h' \<Longrightarrow> P,h' \<turnstile> t \<surd>t"
+using tconf_hext_mono[OF assms, of h']
+by(blast intro: hext_heap_ops)+
+
+lemma tconf_start_heap_start_tid:
+  "start_heap_ok \<Longrightarrow> P,start_heap \<turnstile> start_tid \<surd>t"
+unfolding start_tid_def start_heap_def start_heap_ok_def
+apply clarsimp
+apply(drule new_obj_SomeD)
+apply(rule tconfI)
+ apply(erule typeof_addr_hext_mono[OF hext_new_obj])+
+ apply(blast)
+apply blast
+done
+
+end
 
 end

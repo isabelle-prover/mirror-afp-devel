@@ -12,7 +12,7 @@ begin
 definition flip :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> 'c"
 where "flip f = (\<lambda>b a. f a b)"
 
-(* Create a dynamic list flip_simps of theorems for flip *)
+text {* Create a dynamic list @{text "flip_simps"} of theorems for flip *}
 ML {*
   structure FlipSimpRules = Named_Thms
     (val name = "flip_simps"
@@ -377,7 +377,7 @@ proof(atomize_elim)
     case (\<tau>rtrancl3p_step s s' s'')
     from `s -tl\<rightarrow> s'` `\<not> \<tau>move s tl s'` `s' -\<tau>-[]\<rightarrow>* s''` show ?case
       by(auto simp add: \<tau>rtrancl3p_Nil_eq_\<tau>moves)
-  next
+   next
     case (\<tau>rtrancl3p_\<tau>step s s' s'' tl')
     then obtain t' t'' where "s' -\<tau>\<rightarrow>* t'" "t' -tl\<rightarrow> t''" "\<not> \<tau>move t' tl t''" "t'' -\<tau>\<rightarrow>* s''" by auto
     moreover
@@ -711,7 +711,6 @@ abbreviation Tlsiml :: "('tl1 llist, 'tl2 llist) bisim" ("_/ [[\<sim>]] _" [50, 
 where "Tlsiml tl1 tl2 \<equiv> llist_all2 tlsim tl1 tl2"
 
 end
-
 
 locale bisimulation = bisimulation_base +
   constrains trsys1 :: "('s1, 'tl1) trsys"
@@ -1559,7 +1558,7 @@ subsection {* Transitivity for bisimulations *}
 definition bisim_compose :: "('s1, 's2) bisim \<Rightarrow> ('s2, 's3) bisim \<Rightarrow> ('s1, 's3) bisim" (infixr "\<circ>\<^isub>B" 60)
 where "(bisim1 \<circ>\<^isub>B bisim2) s1 s3 \<equiv> \<exists>s2. bisim1 s1 s2 \<and> bisim2 s2 s3"
 
-lemma bisim_composeI [intro?]:
+lemma bisim_composeI [intro]:
   "\<lbrakk> bisim12 s1 s2; bisim23 s2 s3 \<rbrakk> \<Longrightarrow> (bisim12 \<circ>\<^isub>B bisim23) s1 s3"
 by(auto simp add: bisim_compose_def)
 
@@ -1575,6 +1574,11 @@ by(auto simp add: expand_fun_eq intro: bisim_composeI)
 lemma bisim_compose_conv_rel_comp:
   "split (bisim_compose bisim12 bisim23) = rel_comp (split bisim12) (split bisim23)"
 by(auto simp add: rel_comp_def mem_def intro: bisim_composeI)
+
+lemma list_all2_bisim_composeI:
+  "\<lbrakk> list_all2 A xs ys; list_all2 B ys zs \<rbrakk>
+  \<Longrightarrow> list_all2 (A \<circ>\<^isub>B B) xs zs"
+by(rule list_all2_trans)(auto intro: bisim_composeI)+
 
 lemma delay_bisimulation_diverge_compose:
   assumes wbisim12: "delay_bisimulation_diverge trsys1 trsys2 bisim12 tlsim12 \<tau>move1 \<tau>move2"

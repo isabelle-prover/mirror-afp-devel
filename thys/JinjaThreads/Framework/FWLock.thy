@@ -10,7 +10,8 @@ fun has_locks :: "'t lock \<Rightarrow> 't \<Rightarrow> nat" where
   "has_locks None t = 0"
 | "has_locks \<lfloor>(t', n)\<rfloor> t = (if t = t' then Suc n else 0)"
 
-lemma has_locks_iff: "has_locks l t = n \<longleftrightarrow> (l = None \<and> n = 0) \<or> (\<exists>n'. l = \<lfloor>(t, n')\<rfloor> \<and> Suc n' = n) \<or> (\<exists>t' n'. l = \<lfloor>(t', n')\<rfloor> \<and> t' \<noteq> t \<and> n = 0)"
+lemma has_locks_iff: 
+  "has_locks l t = n \<longleftrightarrow> (l = None \<and> n = 0) \<or> (\<exists>n'. l = \<lfloor>(t, n')\<rfloor> \<and> Suc n' = n) \<or> (\<exists>t' n'. l = \<lfloor>(t', n')\<rfloor> \<and> t' \<noteq> t \<and> n = 0)"
 by(cases l, auto)
 
 lemma has_locksE:

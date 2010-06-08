@@ -14,6 +14,7 @@ datatype ('a,'b) exp
   = new cname      -- "class instance creation"
   | newArray ty "('a,'b) exp" ("newA _\<lfloor>_\<rceil>" [99,0] 90)    -- "array instance creation: type, size in outermost dimension"
   | Cast ty "('a,'b) exp"      -- "type cast"
+  | InstanceOf "('a, 'b) exp" ty ("_ instanceof _" [99, 99] 90) -- "instance of"
   | Val val      -- "value"
   | BinOp "('a,'b) exp" bop "('a,'b) exp"     ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)      -- "binary operation"
   | Var 'a                                               -- "local variable (incl. parameter)"
@@ -63,7 +64,7 @@ where "false == Val (Bool False)"
 abbreviation Throw :: "addr \<Rightarrow> ('a,'b) exp"
 where "Throw a == throw (Val (Addr a))"
 
-abbreviation THROW :: "cname \<Rightarrow> ('a,'b) exp"
+abbreviation (in heap_base) THROW :: "cname \<Rightarrow> ('a,'b) exp"
 where "THROW xc == Throw (addr_of_sys_xcpt xc)"
 
 abbreviation sync_unit_syntax :: "('a,unit) exp \<Rightarrow> ('a,unit) exp \<Rightarrow> ('a,unit) exp" ("sync'(_') _" [99,90] 90)
@@ -80,34 +81,34 @@ by(induct e) auto
 
 subsection{*Free Variables*}
 
-consts
-  fv  :: "('a,'b) exp      \<Rightarrow> 'a set"
-  fvs :: "('a,'b) exp list \<Rightarrow> 'a set"
-primrec
+primrec fv  :: "('a,'b) exp      \<Rightarrow> 'a set"
+  and fvs :: "('a,'b) exp list \<Rightarrow> 'a set"
+where
   "fv(new C) = {}"
-  "fv(newA T\<lfloor>e\<rceil>) = fv e"
-  "fv(Cast C e) = fv e"
-  "fv(Val v) = {}"
-  "fv(e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
-  "fv(Var V) = {V}"
-  "fv(a\<lfloor>i\<rceil>) = fv a \<union> fv i"
-  "fv(AAss a i e) = fv a \<union> fv i \<union> fv e"
-  "fv(a\<bullet>length) = fv a"
-  "fv(LAss V e) = {V} \<union> fv e"
-  "fv(e\<bullet>F{D}) = fv e"
-  "fv(FAss e\<^isub>1 F D e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
-  "fv(e\<bullet>M(es)) = fv e \<union> fvs es"
-  "fv({V:T=vo; e}) = fv e - {V}"
-  "fv(sync\<^bsub>V\<^esub> (h) e) = fv h \<union> fv e"
-  "fv(insync\<^bsub>V\<^esub> (a) e) = fv e"
-  "fv(e\<^isub>1;;e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
-  "fv(if (b) e\<^isub>1 else e\<^isub>2) = fv b \<union> fv e\<^isub>1 \<union> fv e\<^isub>2"
-  "fv(while (b) e) = fv b \<union> fv e"
-  "fv(throw e) = fv e"
-  "fv(try e\<^isub>1 catch(C V) e\<^isub>2) = fv e\<^isub>1 \<union> (fv e\<^isub>2 - {V})"
+| "fv(newA T\<lfloor>e\<rceil>) = fv e"
+| "fv(Cast C e) = fv e"
+| "fv(e instanceof T) = fv e"
+| "fv(Val v) = {}"
+| "fv(e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
+| "fv(Var V) = {V}"
+| "fv(a\<lfloor>i\<rceil>) = fv a \<union> fv i"
+| "fv(AAss a i e) = fv a \<union> fv i \<union> fv e"
+| "fv(a\<bullet>length) = fv a"
+| "fv(LAss V e) = {V} \<union> fv e"
+| "fv(e\<bullet>F{D}) = fv e"
+| "fv(FAss e\<^isub>1 F D e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
+| "fv(e\<bullet>M(es)) = fv e \<union> fvs es"
+| "fv({V:T=vo; e}) = fv e - {V}"
+| "fv(sync\<^bsub>V\<^esub> (h) e) = fv h \<union> fv e"
+| "fv(insync\<^bsub>V\<^esub> (a) e) = fv e"
+| "fv(e\<^isub>1;;e\<^isub>2) = fv e\<^isub>1 \<union> fv e\<^isub>2"
+| "fv(if (b) e\<^isub>1 else e\<^isub>2) = fv b \<union> fv e\<^isub>1 \<union> fv e\<^isub>2"
+| "fv(while (b) e) = fv b \<union> fv e"
+| "fv(throw e) = fv e"
+| "fv(try e\<^isub>1 catch(C V) e\<^isub>2) = fv e\<^isub>1 \<union> (fv e\<^isub>2 - {V})"
 
-  "fvs([]) = {}"
-  "fvs(e#es) = fv e \<union> fvs es"
+| "fvs([]) = {}"
+| "fvs(e#es) = fv e \<union> fvs es"
 
 lemma [simp]: "fvs(es @ es') = fvs es \<union> fvs es'"
 by(induct es) auto
@@ -117,34 +118,34 @@ by (induct vs) auto
 
 subsection{*Locks and addresses*}
 
-consts
-  expr_locks :: "('a,'b) exp \<Rightarrow> addr \<Rightarrow> nat"
-  expr_lockss :: "('a,'b) exp list \<Rightarrow> addr \<Rightarrow> nat"
+primrec expr_locks :: "('a,'b) exp \<Rightarrow> addr \<Rightarrow> nat"
+  and expr_lockss :: "('a,'b) exp list \<Rightarrow> addr \<Rightarrow> nat"
+where
+  "expr_locks (new C) = (\<lambda>ad. 0)"
+| "expr_locks (newA T\<lfloor>e\<rceil>) = expr_locks e"
+| "expr_locks (Cast T e) = expr_locks e"
+| "expr_locks (e instanceof T) = expr_locks e"
+| "expr_locks (Val v) = (\<lambda>ad. 0)"
+| "expr_locks (Var v) = (\<lambda>ad. 0)"
+| "expr_locks (e \<guillemotleft>bop\<guillemotright> e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
+| "expr_locks (V := e) = expr_locks e"
+| "expr_locks (a\<lfloor>i\<rceil>) = (\<lambda>ad. expr_locks a ad + expr_locks i ad)"
+| "expr_locks (AAss a i e) = (\<lambda>ad. expr_locks a ad + expr_locks i ad + expr_locks e ad)"
+| "expr_locks (a\<bullet>length) = expr_locks a"
+| "expr_locks (e\<bullet>F{D}) = expr_locks e"
+| "expr_locks (FAss e F D e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
+| "expr_locks (e\<bullet>m(ps)) = (\<lambda>ad. expr_locks e ad + expr_lockss ps ad)"
+| "expr_locks ({V : T=vo; e}) = expr_locks e"
+| "expr_locks (sync\<^bsub>V\<^esub> (o') e) = (\<lambda>ad. expr_locks o' ad + expr_locks e ad)"
+| "expr_locks (insync\<^bsub>V\<^esub> (a) e) = (\<lambda>ad. if (a = ad) then Suc (expr_locks e ad) else expr_locks e ad)"
+| "expr_locks (e;;e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
+| "expr_locks (if (b) e else e') = (\<lambda>ad. expr_locks b ad + expr_locks e ad + expr_locks e' ad)"
+| "expr_locks (while (b) e) = (\<lambda>ad. expr_locks b ad + expr_locks e ad)"
+| "expr_locks (throw e) = expr_locks e"
+| "expr_locks (try e catch(C v) e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
 
-primrec
-"expr_locks (new C) = (\<lambda>ad. 0)"
-"expr_locks (newA T\<lfloor>e\<rceil>) = expr_locks e"
-"expr_locks (Cast T e) = expr_locks e"
-"expr_locks (Val v) = (\<lambda>ad. 0)"
-"expr_locks (Var v) = (\<lambda>ad. 0)"
-"expr_locks (e \<guillemotleft>bop\<guillemotright> e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
-"expr_locks (V := e) = expr_locks e"
-"expr_locks (a\<lfloor>i\<rceil>) = (\<lambda>ad. expr_locks a ad + expr_locks i ad)"
-"expr_locks (AAss a i e) = (\<lambda>ad. expr_locks a ad + expr_locks i ad + expr_locks e ad)"
-"expr_locks (a\<bullet>length) = expr_locks a"
-"expr_locks (e\<bullet>F{D}) = expr_locks e"
-"expr_locks (FAss e F D e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
-"expr_locks (e\<bullet>m(ps)) = (\<lambda>ad. expr_locks e ad + expr_lockss ps ad)"
-"expr_locks ({V : T=vo; e}) = expr_locks e"
-"expr_locks (sync\<^bsub>V\<^esub> (o') e) = (\<lambda>ad. expr_locks o' ad + expr_locks e ad)"
-"expr_locks (insync\<^bsub>V\<^esub> (a) e) = (\<lambda>ad. if (a = ad) then Suc (expr_locks e ad) else expr_locks e ad)"
-"expr_locks (e;;e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
-"expr_locks (if (b) e else e') = (\<lambda>ad. expr_locks b ad + expr_locks e ad + expr_locks e' ad)"
-"expr_locks (while (b) e) = (\<lambda>ad. expr_locks b ad + expr_locks e ad)"
-"expr_locks (throw e) = expr_locks e"
-"expr_locks (try e catch(C v) e') = (\<lambda>ad. expr_locks e ad + expr_locks e' ad)"
-"expr_lockss [] = (\<lambda>a. 0)"
-"expr_lockss (x#xs) = (\<lambda>ad. expr_locks x ad + expr_lockss xs ad)"
+| "expr_lockss [] = (\<lambda>a. 0)"
+| "expr_lockss (x#xs) = (\<lambda>ad. expr_locks x ad + expr_lockss xs ad)"
 
 lemma expr_lockss_append [simp]:
   "expr_lockss (es @ es') = (\<lambda>ad. expr_lockss es ad + expr_lockss es' ad)"
@@ -157,34 +158,34 @@ apply(induct vs)
 apply(auto)
 done
 
-consts
-  contains_insync :: "('a,'b) exp \<Rightarrow> bool"
-  contains_insyncs :: "('a,'b) exp list \<Rightarrow> bool"
-
-primrec
+primrec contains_insync :: "('a,'b) exp \<Rightarrow> bool"
+  and contains_insyncs :: "('a,'b) exp list \<Rightarrow> bool"
+where
   "contains_insync (new C) = False"
-  "contains_insync (newA T\<lfloor>i\<rceil>) = contains_insync i"
-  "contains_insync (Cast T e) = contains_insync e"
-  "contains_insync (Val v) = False"
-  "contains_insync (Var v) = False"
-  "contains_insync (e \<guillemotleft>bop\<guillemotright> e') = (contains_insync e \<or> contains_insync e')"
-  "contains_insync (V := e) = contains_insync e"
-  "contains_insync (a\<lfloor>i\<rceil>) = (contains_insync a \<or> contains_insync i)"
-  "contains_insync (AAss a i e) = (contains_insync a \<or> contains_insync i \<or> contains_insync e)"
-  "contains_insync (a\<bullet>length) = contains_insync a"
-  "contains_insync (e\<bullet>F{D}) = contains_insync e"
-  "contains_insync (FAss e F D e') = (contains_insync e \<or> contains_insync e')"
-  "contains_insync (e\<bullet>m(pns)) = (contains_insync e \<or> contains_insyncs pns)"
-  "contains_insync ({V : T=vo; e}) = contains_insync e"
-  "contains_insync (sync\<^bsub>V\<^esub> (o') e) = (contains_insync o' \<or> contains_insync e)"
-  "contains_insync (insync\<^bsub>V\<^esub> (a) e) = True"
-  "contains_insync (e;;e') = (contains_insync e \<or> contains_insync e')"
-  "contains_insync (if (b) e else e') = (contains_insync b \<or> contains_insync e \<or> contains_insync e')"
-  "contains_insync (while (b) e) = (contains_insync b \<or> contains_insync e)"
-  "contains_insync (throw e) = contains_insync e"
-  "contains_insync (try e catch(C v) e') = (contains_insync e \<or> contains_insync e')"
-  "contains_insyncs [] = False"
-  "contains_insyncs (x # xs) = (contains_insync x \<or> contains_insyncs xs)"
+| "contains_insync (newA T\<lfloor>i\<rceil>) = contains_insync i"
+| "contains_insync (Cast T e) = contains_insync e"
+| "contains_insync (e instanceof T) = contains_insync e"
+| "contains_insync (Val v) = False"
+| "contains_insync (Var v) = False"
+| "contains_insync (e \<guillemotleft>bop\<guillemotright> e') = (contains_insync e \<or> contains_insync e')"
+| "contains_insync (V := e) = contains_insync e"
+| "contains_insync (a\<lfloor>i\<rceil>) = (contains_insync a \<or> contains_insync i)"
+| "contains_insync (AAss a i e) = (contains_insync a \<or> contains_insync i \<or> contains_insync e)"
+| "contains_insync (a\<bullet>length) = contains_insync a"
+| "contains_insync (e\<bullet>F{D}) = contains_insync e"
+| "contains_insync (FAss e F D e') = (contains_insync e \<or> contains_insync e')"
+| "contains_insync (e\<bullet>m(pns)) = (contains_insync e \<or> contains_insyncs pns)"
+| "contains_insync ({V : T=vo; e}) = contains_insync e"
+| "contains_insync (sync\<^bsub>V\<^esub> (o') e) = (contains_insync o' \<or> contains_insync e)"
+| "contains_insync (insync\<^bsub>V\<^esub> (a) e) = True"
+| "contains_insync (e;;e') = (contains_insync e \<or> contains_insync e')"
+| "contains_insync (if (b) e else e') = (contains_insync b \<or> contains_insync e \<or> contains_insync e')"
+| "contains_insync (while (b) e) = (contains_insync b \<or> contains_insync e)"
+| "contains_insync (throw e) = contains_insync e"
+| "contains_insync (try e catch(C v) e') = (contains_insync e \<or> contains_insync e')"
+
+| "contains_insyncs [] = False"
+| "contains_insyncs (x # xs) = (contains_insync x \<or> contains_insyncs xs)"
   
 lemma contains_insyncs_append [simp]:
   "contains_insyncs (es @ es') \<longleftrightarrow> contains_insyncs es \<or> contains_insyncs es'"
@@ -244,5 +245,112 @@ declare is_addr.cases[elim!]
 lemma [simp]: "(is_addr e) \<longleftrightarrow> (\<exists>a. e = addr a)"
 by auto
 
+subsection {* @{text "blocks"} *}
+
+fun blocks :: "'a list \<Rightarrow> ty list \<Rightarrow> val list \<Rightarrow> ('a,'b) exp \<Rightarrow> ('a,'b) exp"
+where
+  "blocks (V # Vs) (T # Ts) (v # vs) e = {V:T=\<lfloor>v\<rfloor>; blocks Vs Ts vs e}"
+| "blocks []       []       []       e = e"
+
+lemma [simp]:
+  "\<lbrakk> size vs = size Vs; size Ts = size Vs \<rbrakk> \<Longrightarrow> fv (blocks Vs Ts vs e) = fv e - set Vs"
+apply(induct rule:blocks.induct)
+apply simp_all
+apply blast
+done
+
+lemma expr_locks_blocks:
+  "\<lbrakk> length vs = length pns; length Ts = length pns \<rbrakk>
+  \<Longrightarrow> expr_locks (blocks pns Ts vs e) = expr_locks e"
+by(induct pns Ts vs e rule: blocks.induct)(auto)
+
+subsection {* Final expressions *}
+
+inductive final :: "('a,'b) exp \<Rightarrow> bool" where
+  "final (Val v)"
+| "final (Throw a)"
+
+declare final.cases [elim]
+declare final.intros[simp]
+
+lemmas finalE[consumes 1, case_names Val Throw] = final.cases
+
+lemma final_iff: "final e \<longleftrightarrow> (\<exists>v. e = Val v) \<or> (\<exists>a. e = Throw a)"
+by(auto)
+
+lemma final_locks: "final e \<Longrightarrow> expr_locks e l = 0"
+by(auto elim: finalE)
+
+definition finals:: "('a,'b) exp list \<Rightarrow> bool"
+where "finals es  \<equiv>  (\<exists>vs. es = map Val vs) \<or> (\<exists>vs a es'. es = map Val vs @ Throw a # es')"
+
+lemma [iff]: "finals []"
+by(simp add:finals_def)
+
+lemma [iff]: "finals (Val v # es) = finals es"
+apply(clarsimp simp add: finals_def)
+apply(rule iffI)
+ apply(erule disjE)
+  apply fastsimp
+ apply(rule disjI2)
+ apply clarsimp
+ apply(case_tac vs)
+  apply simp
+ apply fastsimp
+apply(erule disjE)
+ apply clarsimp
+ apply(rule_tac x="v#vs" in exI)
+ apply(simp)
+apply(rule disjI2)
+apply clarsimp
+apply(rule_tac x = "v#vs" in exI)
+apply simp
+done
+
+lemma finals_app_map[iff]: "finals (map Val vs @ es) = finals es"
+(*<*)by(induct_tac vs, auto)(*>*)
+
+lemma [iff]: "finals (map Val vs)"
+(*<*)using finals_app_map[of vs "[]"]by(simp)(*>*)
+
+lemma [iff]: "finals (throw e # es) = (\<exists>a. e = addr a)"
+(*<*)
+apply(simp add:finals_def)
+apply(rule iffI)
+ apply(erule disjE)
+  apply(fastsimp)
+ apply clarsimp
+ apply(case_tac vs)
+  apply simp
+ apply fastsimp
+apply clarsimp
+apply(rule_tac x = "[]" in exI)
+apply simp
+apply(erule_tac x="[]" in allE)
+apply(fastsimp)
+done
+(*>*)
+
+lemma not_finals_ConsI: "\<not> final e \<Longrightarrow> \<not> finals(e#es)"
+ (*<*)
+apply(clarsimp simp add:finals_def final_iff)
+apply(rule conjI)
+ apply(fastsimp)
+apply(clarsimp)
+apply(case_tac vs)
+apply auto
+done
+(*>*)
+
+subsection {* converting results from external calls *}
+
+primrec extRet2J :: "('a, 'b) exp \<Rightarrow> extCallRet \<Rightarrow> ('a, 'b) exp"
+where
+  "extRet2J e (RetVal v) = Val v"
+| "extRet2J e (RetExc a) = Throw a"
+| "extRet2J e RetStaySame = e"
+
+lemma fv_extRet2J [simp]: "fv (extRet2J e va) \<subseteq> fv e"
+by(cases va) simp_all
 
 end

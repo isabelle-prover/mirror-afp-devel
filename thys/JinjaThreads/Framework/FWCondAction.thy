@@ -10,10 +10,12 @@ locale final_thread =
   fixes final :: "'x \<Rightarrow> bool"
 begin
 
-fun cond_action_ok :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action \<Rightarrow> bool" where
+primrec cond_action_ok :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action \<Rightarrow> bool" where
   "cond_action_ok s t (Join T) = (case thr s T of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> t \<noteq> T \<and> final x \<and> ln = no_wait_locks \<and> wset s T = None)"
+| "cond_action_ok _ _ Notified = False"
+| "cond_action_ok _ _ Interrupted = False"
 
-fun cond_action_oks :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action list \<Rightarrow> bool" where
+primrec cond_action_oks :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action list \<Rightarrow> bool" where
   "cond_action_oks s t [] = True"
 | "cond_action_oks s t (ct#cts) = (cond_action_ok s t ct \<and> cond_action_oks s t cts)"
 
@@ -42,10 +44,12 @@ next
   with Cons show ?case by(auto simp del: fun_upd_apply)
 qed
 
-fun cond_action_ok' :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action \<Rightarrow> bool" where
-  "cond_action_ok' _ _ _ = True"
+primrec cond_action_ok' :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action \<Rightarrow> bool" where
+  "cond_action_ok' _ _ (Join t) = True"
+| "cond_action_ok' _ _ Notified = False"
+| "cond_action_ok' _ _ Interrupted = False"
 
-fun cond_action_oks' :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action list \<Rightarrow> bool" where
+primrec cond_action_oks' :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action list \<Rightarrow> bool" where
   "cond_action_oks' s t [] = True"
 | "cond_action_oks' s t (ct#cts) = (cond_action_ok' s t ct \<and> cond_action_oks' s t cts)"
 
@@ -53,14 +57,13 @@ lemma cond_action_oks'_append [simp]:
   "cond_action_oks' s t (cts @ cts') \<longleftrightarrow> cond_action_oks' s t cts \<and> cond_action_oks' s t cts'"
 by(induct cts, auto)
 
-lemma cond_action_oks'_True [simp]:
-  "cond_action_oks' s t cts"
-by(induct cts, auto)
-
-lemma cond_action_oks'_iff:
-  "cond_action_oks' s t cas = True"
-by(auto)
-
+lemma cond_action_oks'_subset_Join:
+  "cond_action_oks' s t cts \<longleftrightarrow> set cts \<subseteq> range Join"
+apply(induct cts)
+apply(auto)
+apply(case_tac a)
+apply auto
+done
 
 definition collect_cond_actions :: "'t conditional_action list \<Rightarrow> 't set" where
   "collect_cond_actions cts = {t. Join t \<in> set cts}"

@@ -5,8 +5,12 @@
 header {* \isaheader{BV Type Safety Proof}\label{sec:BVSpecTypeSafe} *}
 
 theory BVSpecTypeSafe
-imports BVConform "../Common/ExternalCallWF"
+imports
+  BVConform
+  "../Common/ExternalCallWF"
 begin
+
+declare listE_length [simp del]
 
 text {*
   This theory contains proof that the specification of the bytecode
@@ -18,10 +22,11 @@ section {* Preliminaries *}
 text {*
   Simp and intro setup for the type safety proof:
 *}
-lemmas defs1 = correct_state_def conf_f_def wt_instr_def eff_def norm_eff_def app_def xcpt_app_def
+context JVM_heap_conf_base begin
 
 lemmas widen_rules [intro] = conf_widen confT_widen confs_widens confTs_widen
 
+end
   
 section {* Exception Handling *}
 
@@ -37,151 +42,6 @@ lemma Invoke_handlers:
   by (induct xt) (auto simp add: relevant_entries_def matches_ex_entry_def 
                                  is_relevant_entry_def split: split_if_asm)
 
-lemma non_npD: "\<lbrakk> v \<noteq> Null; P,h \<turnstile> v :\<le> Class C; C \<noteq> Object \<rbrakk> \<Longrightarrow> \<exists>a C' fs. v = Addr a \<and> h a = Some(Obj C' fs) \<and> P \<turnstile> C' \<preceq>\<^sup>* C"
-(*<*)
-apply (drule conf_ClassD)
-apply auto
-apply(case_tac obj)
-apply(auto dest: Array_widen)
-done
-(*>*)
-
-lemma wf_preallocatedE:
-  assumes "wf_prog wf_md P"
-  and "preallocated h"
-  and "C \<in> sys_xcpts"
-  obtains fs where "h (addr_of_sys_xcpt C) = \<lfloor>Obj C fs\<rfloor>" "P \<turnstile> C \<preceq>\<^sup>* Throwable"
-proof -
-  from `preallocated h` `C \<in> sys_xcpts` obtain fs
-    where "h (addr_of_sys_xcpt C) = \<lfloor>Obj C fs\<rfloor>" by(rule preallocatedE)
-  moreover from `C \<in> sys_xcpts` `wf_prog wf_md P` have "P \<turnstile> C \<preceq>\<^sup>* Throwable" by(rule xcpt_subcls_Throwable)
-  ultimately show thesis by(rule that)
-qed
-
-lemma exec_instr_xcpt_h:
-  assumes wf: "wf_prog wf_md P"
-  shows
-  "\<lbrakk>  (tas, (\<lfloor>xcp\<rfloor>, \<sigma>)) \<in> set (exec_instr (ins!pc) P h stk vars Cl M pc frs);
-       P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M;
-       P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk>
-  \<Longrightarrow> \<exists>xcpC xcpFs. h xcp = Some (Obj xcpC xcpFs) \<and> P \<turnstile> xcpC \<preceq>\<^sup>* Throwable" 
-  (is "\<lbrakk> ?xcpt; ?wt; ?correct \<rbrakk> \<Longrightarrow> ?thesis")
-proof -
-  note [simp] = split_beta
-  note [split] = split_if_asm option.split_asm 
-  
-  assume wt: ?wt ?correct
-  hence pre: "preallocated h" by (simp add: correct_state_def hconf_def)
-
-  assume xcpt: ?xcpt with pre show ?thesis 
-  proof (cases "ins!pc")
-    case ThrowExc with xcpt wt pre show ?thesis 
-      apply (clarsimp iff: list_all2_Cons2 simp add: defs1) 
-      apply(auto dest: non_npD simp: is_refT_def elim: wf_preallocatedE[OF wf, where C=NullPointer])
-      done
-  next
-    case (Invoke M' n)
-
-    with wt obtain ST LT where phi: "\<Phi> C M ! pc = \<lfloor>(ST, LT)\<rfloor>"
-      and stk_conf: "P,h \<turnstile> stk [:\<le>] ST"
-      by(auto simp add: correct_state_def conf_f_def)
-    from phi wt Invoke have app: "app\<^isub>i (Invoke M' n, P, pc, mxs, T, (ST,LT))"
-      by(auto simp add: wt_instr_def app_def)
-    show ?thesis
-    proof(cases "stk ! n = Null")
-      case True
-      with xcpt pre Invoke show ?thesis
-	by(fastsimp elim!: wf_preallocatedE[OF wf, where C=NullPointer])
-    next
-      case False
-      from app have n: "n < length ST" by simp
-      with stk_conf have "P,h \<turnstile> stk ! n :\<le> ST ! n" by(rule list_all2_nthD2)
-      moreover from app have "is_refT (ST ! n)" by(auto intro: is_external_call_is_refT)
-      ultimately obtain a where a: "stk ! n = Addr a" using False
-	by(auto elim!: is_refT.cases simp add: conf_def widen_Class widen_Array)
-      with `P,h \<turnstile> stk ! n :\<le> ST ! n` obtain ao Ta where ha: "h a = \<lfloor>ao\<rfloor>" 
-	and Ta: "typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>" and "P \<turnstile> Ta \<le> ST ! n" by(auto simp add: conf_def)
-      show ?thesis
-      proof(cases "is_external_call P Ta M'")
-	case False
-	with xcpt wt pre Invoke Ta a list_all2_lengthD[OF stk_conf] n
-	show ?thesis by(auto elim: preallocatedE simp add: min_def)
-      next
-	case True
-	with app a Ta False `P,h \<turnstile> stk ! n :\<le> ST ! n` obtain U
-	  where iexST: "is_external_call P (ST ! n) M'"
-	  and wtext: "P \<turnstile> ST ! n\<bullet>M'(rev (take n ST)) :: U"
-	  by(fastsimp split: heapobj.split_asm simp add: conf_def dest: external_call_not_sees_method[OF wf] Array_widen wf_Object_method_empty[OF wf])
-	from stk_conf have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
-	then obtain Us where Us: "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
-	  by(auto simp add: confs_conv_map)
-	hence "P \<turnstile> rev Us [\<le>] rev (take n ST)" by simp
-	with wtext False `P \<turnstile> Ta \<le> ST ! n` Ta obtain U' where wtext: "P \<turnstile> Ta\<bullet>M'(rev Us) :: U'"
-	  by(auto split: heapobj.split_asm dest:  external_WTrt_widen_mono)
-	from Us have "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)" by(simp only: rev_map[symmetric])
-	with Ta have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U'" using wtext by(rule external_WT'.intros)
-	with xcpt Ta True False Invoke a `P \<turnstile> Ta\<bullet>M'(rev Us) :: U'` pre show ?thesis
-	  apply(auto simp add: extRet2JVM_def[folded sum_case_def] split: sum.splits simp del: typeof_h.simps)
-	  apply(drule (1) WT_red_external_list_imp_red_external)
-	  apply(frule (2) red_external_conf_extRet[OF wf])
-	  apply(drule red_external_xcp_heap_unchanged)
-	  apply(auto simp add: conf_def widen_Class split: heapobj.split_asm)
-	  done
-      qed
-    qed
-  next
-    case (New C)
-    with xcpt pre show ?thesis
-      by(fastsimp elim!: wf_preallocatedE[OF wf, where C=OutOfMemory])
-  next
-    case (NewArray T)
-    with xcpt pre show ?thesis
-      by(auto elim: wf_preallocatedE[OF wf, where C=OutOfMemory] wf_preallocatedE[OF wf, where C=NegativeArraySize])
-  next
-    case ALoad
-    with xcpt pre show ?thesis
-      by(auto elim: wf_preallocatedE[OF wf, where C=NullPointer] wf_preallocatedE[OF wf, where C=ArrayIndexOutOfBounds])
-  next
-    case AStore
-    with xcpt pre show ?thesis
-      by(auto elim: wf_preallocatedE[OF wf, where C=NullPointer] wf_preallocatedE[OF wf, where C=ArrayIndexOutOfBounds] wf_preallocatedE[OF wf, where C=ArrayStore])
-  next
-    case ALength
-    with xcpt pre show ?thesis
-      by(auto elim: wf_preallocatedE[OF wf, where C=NullPointer])
-  next
-    case Getfield
-    with xcpt pre show ?thesis
-      by(auto elim: wf_preallocatedE[OF wf, where C=NullPointer])
-  next
-    case Putfield
-    with xcpt pre show ?thesis
-      by(auto elim: wf_preallocatedE[OF wf, where C=NullPointer])
-  next
-    case Checkcast
-    with xcpt pre show ?thesis
-      by(auto elim: wf_preallocatedE[OF wf, where C=ClassCast])
-  next
-    case MEnter
-    with xcpt pre show ?thesis
-      by(auto elim: wf_preallocatedE[OF wf, where C=NullPointer])
-  next
-    case MExit
-    with xcpt pre show ?thesis
-      by(auto elim: wf_preallocatedE[OF wf, where C=NullPointer] wf_preallocatedE[OF wf, where C=IllegalMonitorState])
-  qed auto
-qed
-
-
-lemma conf_sys_xcpt:
-  "\<lbrakk>preallocated h; C \<in> sys_xcpts\<rbrakk> \<Longrightarrow> P,h \<turnstile> Addr (addr_of_sys_xcpt C) :\<le> Class C"
-  by (auto elim: preallocatedE)
-
-lemma match_ex_table_SomeD:
-  "match_ex_table P C pc xt = Some (pc',d') \<Longrightarrow> 
-  \<exists>(f,t,D,h,d) \<in> set xt. matches_ex_entry P C pc (f,t,D,h,d) \<and> h = pc' \<and> d=d'"
-  by (induct xt) (auto split: split_if_asm)
-
 lemma match_is_relevant:
   assumes rv: "\<And>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<Longrightarrow> is_relevant_class (ins ! i) P D'"
   assumes match: "match_ex_table P D pc xt = Some (pc',d')"
@@ -189,28 +49,33 @@ lemma match_is_relevant:
 using rv match
 by(fastsimp simp add: relevant_entries_def is_relevant_entry_def matches_ex_entry_def dest: match_ex_table_SomeD)
 
+
+context JVM_heap_conf_base begin
+
 lemma exception_step_conform:
-  fixes \<sigma>' :: jvm_state
+  fixes \<sigma>' :: "'heap jvm_state"
   assumes wtp: "wf_jvm_prog\<^sub>\<Phi> P"
-  assumes correct: "P,\<Phi> \<turnstile> (\<lfloor>xcp\<rfloor>, h, (stk, loc, C, M, pc) # frs) \<surd>"
+  assumes correct: "\<Phi> \<turnstile> t:(\<lfloor>xcp\<rfloor>, h, (stk, loc, C, M, pc) # frs) \<surd>"
   and \<sigma>': "(ta', \<sigma>') = exception_step P (ta, \<lfloor>xcp\<rfloor>, h, (stk, loc, C, M, pc) # frs)"
-  shows "P,\<Phi> \<turnstile> \<sigma>' \<surd>"
+  shows "\<Phi> \<turnstile> t:\<sigma>' \<surd>"
 proof -
   from correct obtain Ts T mxs mxl\<^isub>0 ins xt 
     where meth: "P \<turnstile> C sees M:Ts \<rightarrow> T = (mxs,mxl\<^isub>0,ins,xt) in C"
     by (simp add: correct_state_def, blast)
 
-  from correct meth obtain D fs where hxcp: "h xcp = \<lfloor>Obj D fs\<rfloor>" and DsubThrowable: "P \<turnstile> D \<preceq>\<^sup>* Throwable"
+  from correct meth obtain D where hxcp: "typeof_addr h xcp = \<lfloor>Class D\<rfloor>" and DsubThrowable: "P \<turnstile> D \<preceq>\<^sup>* Throwable"
     and rv: "\<And>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<Longrightarrow> is_relevant_class (instrs_of P C M ! pc) P D'"
     by(fastsimp simp add: correct_state_def dest: sees_method_fun)
   
   from meth have [simp]: "ex_table_of P C M = xt" by simp
 
+  from correct have tconf: "P,h \<turnstile> t \<surd>t" by(simp add: correct_state_def)
+
   show ?thesis
   proof(cases "match_ex_table P D pc xt")
     case None
     with correct \<sigma>' meth hxcp show ?thesis
-      by(fastsimp simp add: correct_state_def split: list.split)
+      by(fastsimp simp add: correct_state_def cname_of_def split: list.split)
   next
     case (Some pc_d)
     then obtain pc' d' where pcd: "pc_d = (pc', d')"
@@ -220,13 +85,12 @@ proof -
       and DsubD': "(case D' of None \<Rightarrow> True | Some D'' \<Rightarrow> P \<turnstile> D \<preceq>\<^sup>* D'')" and pc: "pc \<in> {f..<t}" by(auto)
 
     from correct meth obtain ST LT
-      where h_ok:  "P \<turnstile> h \<surd>"
+      where h_ok:  "hconf h"
       and \<Phi>_pc: "\<Phi> C M ! pc = Some (ST, LT)"
       and frame:  "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)"
       and frames: "conf_fs P h \<Phi> M (size Ts) T frs"
+      and preh: "preallocated h"
       unfolding correct_state_def by(auto dest: sees_method_fun)
-
-    from h_ok have preh: "preallocated h" by (simp add: hconf_def)
 
     from frame obtain stk: "P,h \<turnstile> stk [:\<le>] ST"
       and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and pc:  "pc < size ins" 
@@ -267,74 +131,50 @@ proof -
     with conf loc stk hxcp have "conf_f P h (ST',LT') ins ?f" 
       by (auto simp add: defs1 conf_def intro: list_all2_dropI)
 
-    with meth h_ok frames \<Phi>_pc' \<sigma>' match hxcp
-    show ?thesis unfolding correct_state_def by(fastsimp dest: sees_method_fun)
+    with meth h_ok frames \<Phi>_pc' \<sigma>' match hxcp tconf preh
+    show ?thesis unfolding correct_state_def
+      by(fastsimp dest: sees_method_fun simp add: cname_of_def)
   qed
 qed
 
+end
+
+context JVM_heap begin
+
 lemma exec_instr_relevant_class:
   assumes preh: "preallocated h"
-  assumes exec: "(ta, \<lfloor>xcp\<rfloor>, h', frs') \<in> set (exec_instr (ins ! pc) P h stk loc C M pc frs)"
-  assumes sub: "P \<turnstile> cname_of h xcp \<preceq>\<^sup>* D"
+  assumes exec: "(ta, \<lfloor>xcp\<rfloor>, h', frs') \<in> exec_instr (ins ! pc) P t h stk loc C M pc frs"
+  assumes sub: "P \<turnstile> cname_of h' xcp \<preceq>\<^sup>* D"
   shows "is_relevant_class (ins ! pc) P D"
 using assms
 apply(cases "ins ! pc")
-apply(simp_all add: relevant_entries_def is_relevant_entry_def split_beta split: split_if_asm)
+apply(simp_all add: relevant_entries_def is_relevant_entry_def split_beta cname_of_def preallocated_hext[OF _ hext_new_obj'] preallocated_hext[OF _ hext_new_arr'] split: split_if_asm)
 done
 
-
-text {*
-  Finally we can state that, whenever an exception occurs, the
-  next state always conforms:
-*}
-
-
-lemma exec_instr_xcp_correct:
-  fixes \<sigma>' :: jvm_state
-  assumes wtp: "wf_jvm_prog\<^sub>\<Phi> P"
-  and meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
-  assumes correct: "P,\<Phi> \<turnstile> (None, h, (stk, loc, C, M, pc) # frs) \<surd>"
-  and exec: "(ta, \<lfloor>xcp\<rfloor>, h', frs') \<in> set (exec_instr (instrs_of P C M ! pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> (\<lfloor>xcp\<rfloor>, h', frs') \<surd>"
-proof -
-  from wtp obtain wf_md where wf: "wf_prog wf_md P" by(blast dest: wt_jvm_progD)
-  from wtp meth correct
-  have wti: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M" 
-    by (fastsimp simp add: correct_state_def conf_f_def dest: sees_method_fun elim!: wt_jvm_prog_impl_wt_instr)
-  with exec correct meth obtain xcpC xcpFs where hxcp: "h xcp = Some (Obj xcpC xcpFs)" "P \<turnstile> xcpC \<preceq>\<^sup>* Throwable"
-    by(fastsimp dest: exec_instr_xcpt_h[OF wf])
-
-  from exec_instr_xcp_unchanged[OF exec] 
-  have h: "h' = h" and frs': "frs' = (stk, loc, C, M, pc) # frs" by simp_all
-  from correct have "preallocated h" by(simp add: correct_state_def hconf_def)
-  from exec_instr_relevant_class[OF this exec] correct h frs' meth hxcp
-  have "P,\<Phi> \<turnstile> (\<lfloor>xcp\<rfloor>, h, (stk, loc, C, M, pc) # frs) \<surd>"
-    by(force simp add: correct_state_def dest: sees_method_fun)
-  with h frs' show ?thesis by simp
-qed
-
+end
 
 section {* Single Instructions *}
 
 text {*
   In this section we prove for each single (welltyped) instruction
   that the state after execution of the instruction still conforms.
-  Since we have already handled exceptions above, we can now assume that
-  no exception occurs in this step.
+  Since we have already handled raised exceptions above, we can now assume that
+  no exception has been raised in this step.
 *}
+
+context JVM_conf_read begin
 
 declare defs1 [simp]
 
 lemma Invoke_correct: 
-  fixes \<sigma>' :: jvm_state
+  fixes \<sigma>' :: "'heap jvm_state"
   assumes wtprog: "wf_jvm_prog\<^sub>\<Phi> P"
   assumes meth_C: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:    "ins ! pc = Invoke M' n"
   assumes wti:    "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes approx: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes no_xcp: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> (None, \<sigma>) \<surd>" 
-(*<*)
+  assumes approx: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes exec: "(tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t:\<sigma> \<surd>"
 proof -
   note split_paired_Ex [simp del]
   
@@ -342,31 +182,33 @@ proof -
     by (simp add: wf_jvm_prog_phi_def)
       
   from ins meth_C approx obtain ST LT where
-    heap_ok: "P\<turnstile> h\<surd>" and
+    heap_ok: "hconf h" and
+    tconf:   "P,h \<turnstile> t \<surd>t" and
     \<Phi>_pc:    "\<Phi> C M!pc = Some (ST,LT)" and
     frame:   "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
-    frames:  "conf_fs P h \<Phi> M (size Ts) T frs"
+    frames:  "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh:    "preallocated h"
     by (fastsimp dest: sees_method_fun)
 
   from ins wti \<Phi>_pc
   have n: "n < size ST" by simp
   
-  { assume "stk!n = Null"
-    with ins no_xcp have False by (simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover
-  { assume "ST!n = NT"
-    moreover 
-    from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
-    with n have "P,h \<turnstile> stk!n :\<le> ST!n" by (simp add: list_all2_conv_all_nth)
-    ultimately 
-    have "stk!n = Null" by simp
-    with ins no_xcp have False by (simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover
-  { assume NT: "ST!n \<noteq> NT" and Null: "stk!n \<noteq> Null"
+  show ?thesis
+  proof(cases "stk!n = Null")
+    case True
+    with ins heap_ok \<Phi>_pc frame frames exec meth_C tconf preh show ?thesis
+      by(fastsimp elim: wf_preallocatedE[OF wfprog, where C=NullPointer])
+  next
+    case False
+    note Null = this
+    have NT: "ST!n \<noteq> NT"
+    proof
+      assume "ST!n = NT"
+      moreover from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
+      with n have "P,h \<turnstile> stk!n :\<le> ST!n" by (simp add: list_all2_conv_all_nth)
+      ultimately have "stk!n = Null" by simp
+      with Null show False by contradiction
+    qed
 
     from frame obtain 
       stk: "P,h \<turnstile> stk [:\<le>] ST" and
@@ -380,7 +222,7 @@ proof -
       and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'"
       by(auto simp add: neq_Nil_conv sup_state_opt_any_Some split: split_if_asm)
     with NT ins wti \<Phi>_pc
-    have "if is_external_call P (ST ! n) M' then \<exists>U. P \<turnstile> ST ! n\<bullet>M'(rev (take n ST)) :: U
+    have "if is_external_call P (ST ! n) M' then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M'(Ts) :: U
           else \<exists>D D' Ts T m. ST!n = Class D \<and> P \<turnstile> D sees M': Ts\<rightarrow>T = m in D' \<and> P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> (T # drop (n+1) ST) [\<le>] ST'"
       by(fastsimp split: split_if_asm simp add: split_beta)
     moreover
@@ -396,11 +238,11 @@ proof -
       from m_D wtprog have DObject: "D \<noteq> Object"
 	by(auto dest: wf_Object_method_empty simp add: wf_jvm_prog_phi_def)
       from `P,h \<turnstile> stk!n :\<le> Class D` Null DObject 
-      obtain a C' fs where
+      obtain a C' where
 	Addr:   "stk!n = Addr a" and
-	obj:    "h a = Some (Obj C' fs)" and
+	obj:    "typeof_addr h a = Some (Class C')" and
 	C'subD: "P \<turnstile> C' \<preceq>\<^sup>* D"
-	by(auto dest!: conf_ClassD, case_tac obj, auto dest: Array_widen)
+        by(cases "stk ! n")(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
 
       with wfprog m_D
       obtain Ts' T' m' D'' mxs' mxl' ins' xt' where
@@ -413,9 +255,9 @@ proof -
       let ?f' = "([], ?loc', D'', M', 0)"
       let ?f  = "(stk, loc, C, M, pc)"
       
-      from Addr obj m_C' ins meth_C no_xcp
-      have s': "\<sigma> = (h, ?f' # ?f # frs)"
-	by(auto split: split_if_asm dest: external_call_not_sees_method[OF wfprog])
+      from Addr obj m_C' ins meth_C exec
+      have s': "\<sigma> = (None, h, ?f' # ?f # frs)"
+	by(auto split: split_if_asm dest: external_call_not_sees_method)
       
       from Ts n have [simp]: "size Ts = n" 
 	by (auto dest: list_all2_lengthD simp: min_def)
@@ -452,74 +294,158 @@ proof -
 	thus ?thesis using ins' by simp
       qed
       ultimately
-      have ?thesis using s' \<Phi>_pc approx meth_C m_D T' ins D 
+      have ?thesis using s' \<Phi>_pc approx meth_C m_D T' ins D tconf
 	by (fastsimp dest: sees_method_fun [of _ C]) }
     moreover
-    { fix U
+    { fix U TS
       assume iec: "is_external_call P (ST ! n) M'"
-	and wtext: "P \<turnstile> ST ! n\<bullet>M'(rev (take n ST)) :: U"
+	and wtext: "P \<turnstile> ST ! n\<bullet>M'(TS) :: U" and sub: "P \<turnstile> rev (take n ST) [\<le>] TS"
       from n stk have "P,h \<turnstile> stk!n :\<le> ST ! n" by-(rule list_all2_nthD2)
       moreover from iec have "is_refT (ST ! n)" by(rule is_external_call_is_refT)
       ultimately obtain a where a: "stk ! n = Addr a" using Null
-	by(auto simp add: conf_def widen_Class widen_Array elim!: is_refT.cases)
+	by(cases "stk ! n")(auto simp add: conf_def widen_Class elim!: is_refT.cases)
       with `P,h \<turnstile> stk!n :\<le> ST ! n` obtain Ta ao
-	where Ta: "typeof\<^bsub>h\<^esub> (Addr a) = \<lfloor>Ta\<rfloor>" "P \<turnstile> Ta \<le> ST ! n" "Ta \<noteq> NT" and ha: "h a = \<lfloor>ao\<rfloor>"
-	by(fastsimp split: heapobj.split_asm simp add: conf_def)
+	where Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>" "P \<turnstile> Ta \<le> ST ! n" "Ta \<noteq> NT"
+	by(auto simp add: conf_def dest: typeof_addr_eq_Some_conv)
       from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
       then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
 	by(auto simp add: confs_conv_map)
-      hence "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)" "P \<turnstile> rev Us [\<le>] rev (take n ST)"
-	by- (simp only: rev_map[symmetric], simp) 
-      with wtext `P \<turnstile> Ta \<le> ST ! n` `Ta \<noteq> NT` obtain U'
-	where "P \<turnstile> Ta\<bullet>M'(rev Us) :: U'" "P \<turnstile> U' \<le> U"
-	by(auto dest: external_WTrt_widen_mono)
-      moreover from `P \<turnstile> Us [\<le>] take n ST` n have "length Us = n" by(auto dest: list_all2_lengthD)
-      ultimately have "is_external_call P Ta M'" by-(drule external_WT_is_external_call, simp)
+      hence Us: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)" "P \<turnstile> rev Us [\<le>] rev (take n ST)"
+	by- (simp only: rev_map[symmetric], simp)
+      with sub have "P \<turnstile> rev Us [\<le>] TS" by(auto intro: widens_trans)
+      have ?thesis
+      proof(cases "\<exists>D. Ta = Class D \<and> P \<turnstile> D has M'")
+        case False
+        with wtext `P \<turnstile> Ta \<le> ST ! n` `Ta \<noteq> NT` obtain U'
+	  where "P \<turnstile> Ta\<bullet>M'(TS) :: U'" "P \<turnstile> U' \<le> U"
+	  by(auto dest: external_WT_widen_mono split: ty.splits)
+        moreover from `P \<turnstile> Us [\<le>] take n ST` n have "length Us = n" by(auto dest: list_all2_lengthD)
+        ultimately have iec': "is_external_call P Ta M'" by-(drule external_WT_is_external_call, simp)
 
-      with Ta ha no_xcp ins iec ha a n list_all2_lengthD[OF stk] obtain h' v tas'
-	where \<sigma>: "\<sigma> = (h', (v # drop (n+1) stk, loc, C, M, pc+1) # frs)"
-	and v: "(tas', Inl v, h') \<in> set (red_external_list P a M' (rev (take n stk)) h)"
-	by(fastsimp split: split_if_asm sum.split_asm simp add: extRet2JVM_def[folded sum_case_def] min_def)
-      from Ta(1) `map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)` `P \<turnstile> Ta\<bullet>M'(rev Us) :: U'`
-      have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U'" by(rule external_WT'.intros)
-      from v have v': "P \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h\<rangle> -tas'\<rightarrow>ext \<langle>Inl v,h'\<rangle>"
-	by(unfold WT_red_external_list_conv[OF wtext'])
-      with heap_ok wtext' have "P,h' \<turnstile> v :\<le> U'" "P \<turnstile> h' \<surd>"
-	by(auto dest: red_external_conf_extRet[OF wfprog] external_call_hconf simp add: hconf_def)
-      from stk have "P,h \<turnstile> drop (n + 1) stk [:\<le>] drop (n+1) ST" by(rule list_all2_dropI)
-      moreover from v' have hext: "hext h h'" by(rule red_external_hext)
-      ultimately have "P,h' \<turnstile> drop (n + 1) stk [:\<le>] drop (n+1) ST" by(rule confs_hext)
-      with `P,h' \<turnstile> v :\<le> U'` `P \<turnstile> U' \<le> U`
-      have "P,h' \<turnstile> v # drop (n + 1) stk [:\<le>] U # drop (n+1) ST"
-	by(auto simp add: conf_def intro: widen_trans)
-      also from wtext have "(THE U. P \<turnstile> ST ! n\<bullet>M'(rev (take n ST)) :: U) = U" by(auto dest: external_WT_determ)
-      with NT ins wti \<Phi>_pc \<Phi>' iec wtext have "P \<turnstile> (U # drop (n + 1) ST) [\<le>] ST'" by auto
-      also from loc hext have "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT" by(rule confTs_hext)
-      hence "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" using LT' by(rule confTs_widen)
-      moreover from frames hext have "conf_fs P h' \<Phi> M (length Ts) T frs" by(rule conf_fs_hext)
-      ultimately have ?thesis using `P \<turnstile> h' \<surd>` \<sigma> meth_C \<Phi>' pc' by fastsimp }
-    ultimately have ?thesis
-      by -(erule disjE | clarify, clarsimp split: list.split split_if_asm)+ }
-  ultimately show ?thesis by blast
+        with ins iec a n Ta exec
+        obtain va h' tas' where va: "(tas', va, h') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
+          and \<sigma>: "\<sigma> = extRet2JVM n h' stk loc C M pc frs va" by(auto)
+        from Ta(1) `map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)` `P \<turnstile> Ta\<bullet>M'(TS) :: U'` `P \<turnstile> rev Us [\<le>] TS`
+        have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U'" by(rule external_WT'.intros)
+        from va have va': "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h\<rangle> -tas'\<rightarrow>ext \<langle>va,h'\<rangle>"
+          by(unfold WT_red_external_list_conv[OF wfprog wtext' tconf])
+        with heap_ok wtext' tconf wfprog have heap_ok': "hconf h'" by(auto dest: external_call_hconf)
+        from va' have hext: "h \<unlhd> h'" by(rule red_external_hext)
+        with frames have frames': "conf_fs P h' \<Phi> M (length Ts) T frs" by(rule conf_fs_hext)
+        from va iec' Ta tconf have tconf': "P,h' \<turnstile> t \<surd>t"
+          by(auto dest: red_external_aggr_preserves_tconf)
+        from preh hext have preh': "preallocated h'" by(rule preallocated_hext)
+        from hext Ta(1) have Ta': "typeof_addr h' a = \<lfloor>Ta\<rfloor>" by(rule typeof_addr_hext_mono)
+        
+        show ?thesis
+        proof(cases va)
+          case (RetExc a')
+          from frame hext have "conf_f P h' (ST, LT) ins (stk, loc, C, M, pc)" by(rule conf_f_hext)
+          with \<sigma> tconf' heap_ok' meth_C \<Phi>_pc frames' RetExc red_external_conf_extRet[OF wfprog va' wtext' preh] ins preh'
+          show ?thesis by(fastsimp simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
+        next
+          case RetStaySame
+          from frame hext have "conf_f P h' (ST, LT) ins (stk, loc, C, M, pc)" by(rule conf_f_hext)
+          with \<sigma> heap_ok' meth_C \<Phi>_pc RetStaySame frames' tconf' preh' show ?thesis by fastsimp
+        next
+          case (RetVal v)
+          with \<sigma> have \<sigma>: "\<sigma> = (None, h', (v # drop (n+1) stk, loc, C, M, pc+1) # frs)" by simp
+          from heap_ok wtext' va' RetVal preh have "P,h' \<turnstile> v :\<le> U'"
+	    by(auto dest: red_external_conf_extRet[OF wfprog])
+          from stk have "P,h \<turnstile> drop (n + 1) stk [:\<le>] drop (n+1) ST" by(rule list_all2_dropI)
+          hence "P,h' \<turnstile> drop (n + 1) stk [:\<le>] drop (n+1) ST" using hext by(rule confs_hext)
+          with `P,h' \<turnstile> v :\<le> U'` `P \<turnstile> U' \<le> U`
+          have "P,h' \<turnstile> v # drop (n + 1) stk [:\<le>] U # drop (n+1) ST"
+	    by(auto simp add: conf_def intro: widen_trans)
+          also from wtext sub have "(THE U. \<exists>Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M'(Ts) :: U) = U"
+            by(auto dest: external_WT_determ)
+          with NT ins wti \<Phi>_pc \<Phi>' iec wtext have "P \<turnstile> (U # drop (n + 1) ST) [\<le>] ST'" by auto
+          also from loc hext have "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT" by(rule confTs_hext)
+          hence "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" using LT' by(rule confTs_widen)
+          ultimately show ?thesis using `hconf h'` \<sigma> meth_C \<Phi>' pc' frames' tconf' preh' by fastsimp
+        qed
+      next
+        case True
+        then obtain C' Ts' T' D' mxs' mxl' ins' xt' where C': "Ta = Class C'"
+          and sees: "P \<turnstile> C' sees M':Ts'\<rightarrow>T'=(mxs',mxl',ins',xt') in D'"
+          unfolding has_method_def by auto
+
+        from `P \<turnstile> Ta \<le> ST ! n` C' obtain D
+          where D: "ST ! n = Class D" by(auto dest: Class_widen)
+        with `P \<turnstile> Ta \<le> ST ! n` C' have "P \<turnstile> C' \<preceq>\<^sup>* D" by auto
+        from wtext external_WT_widen_sees_method_contravariant[OF wfprog sees this, of TS U] D
+        have Ts: "P \<turnstile> TS [\<le>] Ts'" and T': "P \<turnstile> T' \<le> U" by auto
+
+        from sees wtprog have C'Object: "C' \<noteq> Object"
+	  by(auto dest: wf_Object_method_empty simp add: wf_jvm_prog_phi_def)
+        from `P,h \<turnstile> stk!n :\<le> ST ! n` Ta C' Null C'Object D
+        have obj: "typeof_addr h a = Some (Class C')" and C'subD: "P \<turnstile> C' \<preceq>\<^sup>* D"
+	  by(auto simp add: conf_def dest: typeof_addr_eq_Some_conv)
+
+        let ?loc' = "Addr a # rev (take n stk) @ replicate mxl' undefined"
+        let ?f' = "([], ?loc', D', M', 0)"
+        let ?f  = "(stk, loc, C, M, pc)"
+      
+        from a obj sees ins meth_C exec Ta D C'
+        have s': "\<sigma> = (None, h, ?f' # ?f # frs)"
+	  by(auto split: split_if_asm dest: external_call_not_sees_method)
+
+        from sub n have [simp]: "size TS = n"
+          by (auto dest: list_all2_lengthD simp: min_def)
+        with Ts have [simp]: "size Ts' = n" 
+	  by (auto dest: list_all2_lengthD)
+
+        from sees have sees': "P \<turnstile> D' sees M': Ts'\<rightarrow>T' = (mxs', mxl', ins', xt') in D'"
+          by(rule sees_method_idemp)
+        moreover 
+        with wtprog 
+        have start: "wt_start P D' Ts' mxl' (\<Phi> D' M')" and ins': "ins' \<noteq> []"
+	  by (auto dest: wt_jvm_prog_impl_wt_start)
+        then obtain LT\<^isub>0 where LT\<^isub>0: "\<Phi> D' M' ! 0 = Some ([], LT\<^isub>0)"
+	  by (clarsimp simp add: wt_start_def defs1 sup_state_opt_any_Some)
+        moreover
+        have "conf_f P h ([], LT\<^isub>0) ins' ?f'"
+        proof -
+	  let ?LT = "OK (Class D') # (map OK Ts') @ (replicate mxl' Err)"
+
+	  from stk have "P,h \<turnstile> take n stk [:\<le>] take n ST" ..
+	  hence "P,h \<turnstile> rev (take n stk) [:\<le>] rev (take n ST)" by simp
+	  also note sub also note Ts finally
+	  have "P,h \<turnstile> rev (take n stk) [:\<le>\<^sub>\<top>] map OK Ts'" by simp 
+	  also
+	  have "P,h \<turnstile> replicate mxl' undefined [:\<le>\<^sub>\<top>] replicate mxl' Err" 
+            by simp
+	  also from sees have "P \<turnstile> C' \<preceq>\<^sup>* D'" by (rule sees_method_decl_above)
+	  with obj have "P,h \<turnstile> Addr a :\<le> Class D'" by (simp add: conf_def)
+	  ultimately
+	  have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] ?LT" by simp
+	  also from start LT\<^isub>0 have "P \<turnstile> \<dots> [\<le>\<^sub>\<top>] LT\<^isub>0" by (simp add: wt_start_def)
+	  finally have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] LT\<^isub>0" .
+	  thus ?thesis using ins' by simp
+        qed
+        ultimately show ?thesis using s' \<Phi>_pc approx ins sees sees' T' D meth_C wtext \<Phi>' pc' preh
+	  by (fastsimp dest: sees_method_fun [of _ C])
+      qed }
+    ultimately show ?thesis
+      by(split split_if_asm) blast+
+  qed
 qed
-(*>*)
 
 declare list_all2_Cons2 [iff]
 
 lemma Return_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wt_prog: "wf_jvm_prog\<^sub>\<Phi> P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins: "ins ! pc = Return"
   assumes wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes s': "(tas, \<sigma>') \<in> set (exec P (None, h, (stk,loc,C,M,pc)#frs))"
-  assumes correct: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  shows "P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+  assumes correct: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes s': "(tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs)"
+  shows "\<Phi> \<turnstile> t:\<sigma>'\<surd>"
 proof -
   from wt_prog 
   obtain wfmb where wf: "wf_prog wfmb P" by (simp add: wf_jvm_prog_phi_def)
 
-  from meth ins s'
+  from meth ins s' correct
   have "frs = [] \<Longrightarrow> ?thesis" by (simp add: correct_state_def)
   moreover
   { fix f frs' assume frs': "frs = f#frs'"
@@ -534,11 +460,13 @@ proof -
     
     from correct meth
     obtain ST LT where
-      h_ok:   "P \<turnstile> h \<surd>" and
+      h_ok:   "hconf h" and
+      tconf: "P,h \<turnstile> t \<surd>t" and
       \<Phi>_pc: "\<Phi> C M ! pc = Some (ST, LT)" and
       frame:  "conf_f P h (ST, LT) ins (stk,loc,C,M,pc)" and
-      frames: "conf_fs P h \<Phi> M (size Ts) T frs"
-      by (auto dest: sees_method_fun simp add: correct_state_def)
+      frames: "conf_fs P h \<Phi> M (size Ts) T frs" and
+      preh: "preallocated h"
+      by (auto dest: sees_method_fun)
 
     from \<Phi>_pc ins wt
     obtain U ST\<^isub>0 where "ST = U # ST\<^isub>0" "P \<turnstile> U \<le> T"
@@ -551,8 +479,7 @@ proof -
       \<Phi>': "\<Phi> C' M' ! pc' = Some (ST', LT')" and
       meth_C':  "P \<turnstile> C' sees M':Ts''\<rightarrow>T''=(mxs',mxl\<^isub>0',ins',xt') in C'" and
       ins': "ins' ! pc' = Invoke M (size Ts)" and
-      D: "ST' ! (size Ts) = Class D" and
-      meth_D: "P \<turnstile> D sees M: Ts'\<rightarrow>T' = m in D'" and
+      D: "ST' ! (size Ts) = Class D \<and> P \<turnstile> D sees M: Ts'\<rightarrow>T' = m in D' \<or> P \<turnstile> ST' ! (size Ts)\<bullet>M(Ts') :: T'" and
       T': "P \<turnstile> T \<le> T'" and
       frame':   "conf_f P h (ST',LT') ins' f" and
       conf_fs:  "conf_fs P h \<Phi> M' (size Ts'') T'' frs'"
@@ -567,12 +494,18 @@ proof -
     from wt_prog meth_C' pc'  
     have "P,T'',mxs',size ins',xt' \<turnstile> ins'!pc',pc' :: \<Phi> C' M'"
       by (rule wt_jvm_prog_impl_wt_instr)
-    with ins' \<Phi>' D meth_D
+    with ins' \<Phi>' D T'
     obtain aTs ST'' LT'' where
       \<Phi>_suc:   "\<Phi> C' M' ! Suc pc' = Some (ST'', LT'')" and
       less:    "P \<turnstile> (T' # drop (size Ts+1) ST', LT') \<le>\<^sub>i (ST'', LT'')" and
       suc_pc': "Suc pc' < size ins'"
-      by(auto simp add: sup_state_opt_any_Some split: split_if_asm dest: external_call_not_sees_method[OF wf])
+      apply -
+      apply(erule disjE)
+      apply(fastsimp simp add: sup_state_opt_any_Some split: split_if_asm dest: external_call_not_sees_method)
+      apply(frule external_WT_is_external_call)
+      apply(frule external_WT_not_NT)
+      apply(fastsimp simp add: external_WT_The_Ex_conv2 sup_state_opt_any_Some split: split_if_asm dest: external_call_not_sees_method external_WT_determ)
+      done
 
     from hd_stk T' have hd_stk': "P,h \<turnstile> hd stk :\<le> T'"  ..
         
@@ -590,7 +523,7 @@ proof -
       ultimately show ?thesis by (simp add: conf_f_def)
     qed
 
-    with \<sigma>' frs' f meth h_ok hd_stk \<Phi>_suc frames meth_C' \<Phi>'  
+    with \<sigma>' frs' f meth h_ok hd_stk \<Phi>_suc frames meth_C' \<Phi>'  tconf preh
     have ?thesis by (fastsimp dest: sees_method_fun [of _ C'])
   }
   ultimately
@@ -605,9 +538,9 @@ lemma Load_correct:
     P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
     ins!pc = Load idx; 
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-    (tas, \<sigma>') \<in> set (exec P (None, h, (stk,loc,C,M,pc)#frs)); 
-    P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk>
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+    \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd> ;
+    (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>' \<surd>"
   by (fastsimp dest: sees_method_fun [of _ C] elim!: confTs_confT_sup)
 
 lemma Store_correct:
@@ -615,84 +548,86 @@ lemma Store_correct:
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C;
   ins!pc = Store idx;
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M;
-  (tas, \<sigma>') \<in> set (exec P (None, h, (stk,loc,C,M,pc)#frs));
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk>
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-(*<*)
+  \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
+  (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
   apply clarsimp 
   apply (drule (1) sees_method_fun)
   apply clarsimp
   apply (blast intro!: list_all2_update_cong2)
   done
-(*>*)
-
 
 lemma Push_correct:
 "\<lbrakk> wf_prog wt P;
     P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
     ins!pc = Push v;
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-    (tas, \<sigma>') \<in> set (exec P (None, h, (stk,loc,C,M,pc)#frs));
-    P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk>
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>" 
-(*<*)
+    \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>; 
+    (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>" 
   apply clarsimp 
   apply (drule (1) sees_method_fun)
   apply clarsimp
   apply (blast dest: typeof_lit_conf)
   done
-(*>*)
-
-
-lemma Cast_conf2:
-  "\<lbrakk> wf_prog ok P; P,h \<turnstile> v :\<le> T; (* is_refT T; *) cast_ok P C h v; 
-     P \<turnstile> C \<le> T'; is_type P C\<rbrakk> 
-  \<Longrightarrow> P,h \<turnstile> v :\<le> T'"
-(*<*)
-  apply (unfold cast_ok_def is_refT_def)
-  apply(auto simp add: conf_def intro: widen_trans)
-  done
-(*>*)
-
 
 lemma Checkcast_correct:
 "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P;
     P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
     ins!pc = Checkcast D; 
     P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-    P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>;
-    (tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs) \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> (None, \<sigma>) \<surd>"
-(*<*)
+    \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
+    (tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs \<rbrakk> 
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma> \<surd>"
+using wf_preallocatedD[of "\<lambda>P C (M, Ts, T\<^isub>r, mxs, mxl\<^isub>0, is, xt). wt_method P C Ts T\<^isub>r mxs mxl\<^isub>0 is xt (\<Phi> C M)" P h ClassCast]
+apply (clarsimp simp add: wf_jvm_prog_phi_def split: split_if_asm)
+ apply(drule (1) sees_method_fun)
+ apply(fastsimp simp add: conf_def intro: widen_trans)
+apply (drule (1) sees_method_fun)
+apply(fastsimp simp add: conf_def intro: widen_trans)
+done
+
+lemma Instanceof_correct:
+"\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P;
+    P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
+    ins!pc = Instanceof Ty; 
+    P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
+    \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
+    (tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs \<rbrakk> 
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma> \<surd>"
   apply (clarsimp simp add: wf_jvm_prog_phi_def split: split_if_asm)
   apply (drule (1) sees_method_fun)
-  apply (blast intro: Cast_conf2)
+  apply fastsimp
   done
-(*>*)
 
 declare split_paired_All [simp del]
 
-lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P", standard]
+end
+
+lemma widens_Cons [iff]:
+  "P \<turnstile> (T # Ts) [\<le>] Us = (\<exists>z zs. Us = z # zs \<and> P \<turnstile> T \<le> z \<and> P \<turnstile> Ts [\<le>] zs)"
+by(rule list_all2_Cons1)
+
+context JVM_conf_read begin
 
 lemma Getfield_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wf: "wf_prog wt P"
   assumes mC: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes i:  "ins!pc = Getfield F D"
   assumes wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes s': "\<sigma>' = (None, \<sigma>)"
-  assumes cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes xc: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
+  assumes cf: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes xc: "(tas, \<sigma>') \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
 
-  shows "P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-(*<*)
+  shows "\<Phi> \<turnstile> t:\<sigma>'\<surd>"
 proof -
   from mC cf obtain ST LT where    
-    "h\<surd>": "P \<turnstile> h \<surd>" and
+    "h\<surd>": "hconf h" and
+    tconf: "P,h \<turnstile> t \<surd>t" and
     \<Phi>: "\<Phi> C M ! pc = Some (ST,LT)" and
     stk: "P,h \<turnstile> stk [:\<le>] ST" and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and
     pc: "pc < size ins" and 
-    fs: "conf_fs P h \<Phi> M (size Ts) T frs"
+    fs: "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh: "preallocated h"
     by (fastsimp dest: sees_method_fun)
        
   from i \<Phi> wt obtain oT ST'' vT ST' LT' vT' where 
@@ -713,54 +648,58 @@ proof -
 
   from F wf have DObject: "D \<noteq> Object"
     by(auto dest: wf_Object_field_empty has_fields_fun simp add: sees_field_def)
-  moreover
-  from stk' i mC s' xc have "ref \<noteq> Null"
-    by (simp add: split_beta split:split_if_asm)
-  moreover from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
-  ultimately obtain a D' fs where 
-    a: "ref = Addr a" and h: "h a = Some (Obj D' fs)" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
-    by (blast dest: non_npD)
-
-  from D' F have has_field: "P \<turnstile> D' has F:vT in D"      
-    by (blast intro: has_field_mono has_visible_field)
-  moreover from "h\<surd>" h have "P,h \<turnstile> (Obj D' fs) \<surd>" by (rule hconfD)
-  ultimately obtain v where v: "fs (F, D) = Some v" "P,h \<turnstile> v :\<le> vT"
-    by (clarsimp simp add: oconf_def has_field_def)        
-       (blast dest: has_fields_fun)
-
-  from a h i mC s' stk' v xc
-  have "\<sigma>' = (None, h, (v#stk',loc,C,M,pc+1)#frs)" by simp
-  moreover
-  from ST'' ST' have "P,h \<turnstile> stk' [:\<le>] ST'" ..
-  moreover
-  from v vT' have "P,h \<turnstile> v :\<le> vT'" by blast
-  moreover
-  from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
-  moreover
-  note "h\<surd>" mC \<Phi>' pc' v fs
-  ultimately
-  show "P,\<Phi> \<turnstile> \<sigma>' \<surd>" by fastsimp
+  show ?thesis
+  proof(cases "ref = Null")
+    case True
+    with tconf "h\<surd>" i xc stk' mC fs \<Phi> ST'' ref ST loc pc' 
+      wf_preallocatedD[OF wf, of h NullPointer] preh
+    show ?thesis by(fastsimp)
+  next
+    case False
+    from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
+    with False DObject obtain a D' where 
+      a: "ref = Addr a" and h: "typeof_addr h a = Some (Class D')" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+      by (blast dest: non_npD)
+    
+    {
+      fix v
+      assume read: "heap_read h a (CField D F) v"
+      from D' F have has_field: "P \<turnstile> D' has F:vT in D"      
+        by (blast intro: has_field_mono has_visible_field)
+      with h have "P,h \<turnstile> a@CField D F : vT" ..
+      with read have v: "P,h \<turnstile> v :\<le> vT" using "h\<surd>"
+        by(rule heap_read_conf)
+      
+      from ST'' ST' have "P,h \<turnstile> stk' [:\<le>] ST'" ..
+      moreover
+      from v vT' have "P,h \<turnstile> v :\<le> vT'" by blast
+      moreover
+      from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
+      moreover
+      note "h\<surd>" mC \<Phi>' pc' v fs tconf preh
+      ultimately have "\<Phi> \<turnstile> t:(None, h, (v#stk',loc,C,M,pc+1)#frs) \<surd>" by fastsimp }
+    with a h i mC stk' xc
+    show ?thesis by auto
+  qed
 qed
-(*>*)
 
 lemma Putfield_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wf: "wf_prog wt P"
   assumes mC: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes i:  "ins!pc = Putfield F D"
   assumes wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes s': "\<sigma>' = (None, \<sigma>)"
-  assumes cf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes xc: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-(*<*)
+  assumes cf: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes xc: "(tas, \<sigma>') \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t:\<sigma>' \<surd>"
 proof -
   from mC cf obtain ST LT where    
-    "h\<surd>": "P \<turnstile> h \<surd>" and    
+    "h\<surd>": "hconf h" and    
+    tconf: "P,h \<turnstile> t \<surd>t" and
     \<Phi>: "\<Phi> C M ! pc = Some (ST,LT)" and
     stk: "P,h \<turnstile> stk [:\<le>] ST" and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and
     pc: "pc < size ins" and 
-    fs: "conf_fs P h \<Phi> M (size Ts) T frs"
+    fs: "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh: "preallocated h"
     by (fastsimp dest: sees_method_fun)
   
   from i \<Phi> wt obtain vT vT' oT ST'' ST' LT' where 
@@ -781,61 +720,68 @@ proof -
 
   from field wf have DObject: "D \<noteq> Object"
     by(auto dest: wf_Object_field_empty has_fields_fun simp add: sees_field_def)
-  moreover
-  from stk' i mC s' xc have "ref \<noteq> Null" by (auto simp add: split_beta)
-  moreover from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
-  ultimately obtain a D' fs where 
-    a: "ref = Addr a" and h: "h a = Some (Obj D' fs)" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
-    by (blast dest: non_npD)
 
-  from v vT have vT': "P,h \<turnstile> v :\<le> vT'" ..
+  show ?thesis
+  proof(cases "ref = Null")
+    case True
+    with tconf "h\<surd>" i xc stk' mC fs \<Phi> ST'' ref ST loc pc' v
+      wf_preallocatedD[OF wf, of h NullPointer] preh
+    show ?thesis by(fastsimp)
+  next
+    case False
+    from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
+    with False DObject obtain a D' where 
+      a: "ref = Addr a" and h: "typeof_addr h a = Some (Class D')" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+      by (blast dest: non_npD)
+    
+    from v vT have vT': "P,h \<turnstile> v :\<le> vT'" ..
+    
+    from field D' have has_field: "P \<turnstile> D' has F:vT' in D"
+      by (blast intro: has_field_mono has_visible_field)
+    with h have al: "P,h \<turnstile> a@CField D F : vT'" ..
+    let ?f' = "(stk',loc,C,M,pc+1)"
 
-  from field D' have has_field: "P \<turnstile> D' has F:vT' in D"
-    by (blast intro: has_field_mono has_visible_field)
-
-  let ?h' = "h(a\<mapsto>(Obj D' (fs((F, D)\<mapsto>v))))" and ?f' = "(stk',loc,C,M,pc+1)"
-  from h have hext: "h \<unlhd> ?h'" by (rule hext_upd_obj) 
-
-  from a h i mC s' stk' xc
-  have "\<sigma>' = (None, ?h', ?f'#frs)" by simp
-  moreover
-  from "h\<surd>" h have "P,h \<turnstile> (Obj D' fs)\<surd>" by (rule hconfD) 
-  with has_field vT' have "P,h \<turnstile> (Obj D' (fs((F, D)\<mapsto>v)))\<surd>" ..
-  with "h\<surd>" h have "P \<turnstile> ?h'\<surd>" by (rule hconf_upd_obj)
-  moreover
-  from ST'' ST' have "P,h \<turnstile> stk' [:\<le>] ST'" ..
-  from this hext have "P,?h' \<turnstile> stk' [:\<le>] ST'" by (rule confs_hext)
-  moreover
-  from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
-  from this hext have "P,?h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" by (rule confTs_hext)
-  moreover
-  from fs hext
-  have "conf_fs P ?h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)
-  moreover
-  note mC \<Phi>' pc' 
-  ultimately
-  show "P,\<Phi> \<turnstile> \<sigma>' \<surd>" by fastsimp
+    { fix h'
+      assume "write": "heap_write h a (CField D F) v h'"
+      hence hext: "h \<unlhd> h'" by(rule hext_heap_write)
+      with preh have "preallocated h'" by(rule preallocated_hext)
+      moreover
+      from "write" "h\<surd>" al vT' have "hconf h'" by(rule hconf_heap_write_mono)
+      moreover
+      from ST'' ST' have "P,h \<turnstile> stk' [:\<le>] ST'" ..
+      from this hext have "P,h' \<turnstile> stk' [:\<le>] ST'" by (rule confs_hext)
+      moreover
+      from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
+      from this hext have "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" by (rule confTs_hext)
+      moreover
+      from fs hext
+      have "conf_fs P h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)
+      moreover
+      note mC \<Phi>' pc' 
+      moreover
+      from tconf hext have "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
+      ultimately have "\<Phi> \<turnstile> t:(None, h', ?f'#frs) \<surd>" by fastsimp }
+    with a h i mC stk' xc show ?thesis by(auto simp del: correct_state_def)
+  qed
 qed
-(*>*)
-  
 
 lemma New_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wf:   "wf_prog wt P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:  "ins!pc = New X"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes conf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes no_x: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> (None, \<sigma>)\<surd>"
-(*<*)
+  assumes conf: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes no_x: "(tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t:\<sigma> \<surd>"
 proof - 
   from ins conf meth
   obtain ST LT where
-    heap_ok: "P\<turnstile> h\<surd>" and
+    heap_ok: "hconf h" and
+    tconf:   "P,h \<turnstile> t \<surd>t" and
     \<Phi>_pc:    "\<Phi> C M!pc = Some (ST,LT)" and
     frame:   "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
-    frames:  "conf_fs P h \<Phi> M (size Ts) T frs"
+    frames:  "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh:    "preallocated h"
     by (auto dest: sees_method_fun)
 
   from \<Phi>_pc ins wt
@@ -846,46 +792,54 @@ proof -
     \<Phi>_suc:      "\<Phi> C M!(pc+1) = Some (ST', LT')" and
     less:       "P \<turnstile> (Class X # ST, LT) \<le>\<^sub>i (ST', LT')"
     by auto
-
-  from ins no_x obtain oref where new_Addr: "new_Addr h = Some oref" by auto
-  hence h: "h oref = None" by (rule new_Addr_SomeD) 
+  obtain h' ao where new: "new_obj h X = (h', ao)" by(cases "new_obj h X")
+  hence hext: "h \<unlhd> h'" by(rule hext_new_obj)
+  with preh have preh': "preallocated h'" by(rule preallocated_hext)
+  from new heap_ok is_class_X have heap_ok': "hconf h'"
+    by(rule hconf_new_obj_mono)
+  show ?thesis
+  proof(cases "ao")
+    case None
+    with frame frames tconf suc_pc no_x ins meth \<Phi>_pc new hext
+      wf_preallocatedD[OF wf, of h' OutOfMemory] preh' is_class_X heap_ok'
+    show ?thesis
+      by(fastsimp intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext)
+  next
+    case (Some oref)
+    with new have h: "typeof_addr h oref = None"
+      and h': "typeof_addr h' oref = \<lfloor>Class X\<rfloor>" by(auto dest: new_obj_SomeD)
   
-  with ins meth new_Addr no_x have \<sigma>':
-    "\<sigma> = (h(oref \<mapsto> blank P X), (Addr oref#stk,loc,C,M,pc+1)#frs)"
-    (is "\<sigma> = (?h', ?f # frs)")
-    by simp    
-  moreover
-  from wf h heap_ok is_class_X have h': "P \<turnstile> ?h' \<surd>"
-    by (auto intro: hconf_new)
-  moreover
-  from h frame less suc_pc wf
-  have "conf_f P ?h' (ST', LT') ins ?f"
-    apply (clarsimp simp add: fun_upd_apply conf_def blank_def split_beta)
-    apply (auto intro: confs_hext confTs_hext)
-    done      
-  moreover
-  from h have "h \<unlhd> ?h'" by simp
-  with frames have "conf_fs P ?h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)
-  ultimately
-  show ?thesis using meth \<Phi>_suc by fastsimp 
+    with ins meth Some no_x new have \<sigma>':
+      "\<sigma> = (None, h', (Addr oref#stk,loc,C,M,pc+1)#frs)"
+      (is "\<sigma> = (None, h', ?f # frs)")
+      by simp
+    moreover note heap_ok'
+    moreover
+    from h frame less suc_pc wf h' hext
+    have "conf_f P h' (ST', LT') ins ?f"
+      apply (clarsimp simp add: fun_upd_apply conf_def split_beta)
+      apply (auto intro: confs_hext confTs_hext)
+      done
+    moreover
+    from frames hext have "conf_fs P h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)
+    moreover from tconf hext have "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
+    ultimately
+    show ?thesis using meth \<Phi>_suc preh' by fastsimp
+  qed 
 qed
-(*>*)
-
 
 lemma Goto_correct:
 "\<lbrakk> wf_prog wt P; 
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
   ins ! pc = Goto branch; 
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-  (tas, \<sigma>') \<in> set (exec P (None, h, (stk,loc,C,M,pc)#frs)) ; 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-(*<*)
+  \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>; 
+  (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>' \<surd>"
 apply clarsimp 
 apply (drule (1) sees_method_fun)
 apply fastsimp
 done
-(*>*)
 
 
 lemma IfFalse_correct:
@@ -893,24 +847,22 @@ lemma IfFalse_correct:
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
   ins ! pc = IfFalse branch; 
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-  (tas, \<sigma>') \<in> set (exec P (None, h, (stk,loc,C,M,pc)#frs)); 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-(*<*)
+  \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
+  (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
 apply clarsimp
 apply (drule (1) sees_method_fun)
 apply fastsimp
 done
-(*>*)
 
 lemma BinOp_correct:
 "\<lbrakk> wf_prog wt P; 
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
   ins ! pc = BinOpInstr bop;
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-  (tas, \<sigma>') \<in> set (exec P (None, h, (stk,loc,C,M,pc)#frs));
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+  \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
+  (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
 apply clarsimp
 apply (drule (1) sees_method_fun)
 apply(clarsimp simp add: conf_def)
@@ -925,45 +877,64 @@ lemma Pop_correct:
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
   ins ! pc = Pop;
   P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
-  (tas, \<sigma>') \<in> set (exec P (None, h, (stk,loc,C,M,pc)#frs)); 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-(*<*)
+  \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
+  (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
 apply clarsimp
 apply (drule (1) sees_method_fun)
 apply fastsimp
 done
-(*>*)
+
+lemma Dup_correct:
+"\<lbrakk> wf_prog wt P; 
+  P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
+  ins ! pc = Dup;
+  P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
+  \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
+  (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs) \<rbrakk>
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
+apply clarsimp
+apply (drule (1) sees_method_fun)
+apply fastsimp
+done
 
 lemma Throw_correct:
 "\<lbrakk> wf_prog wt P; 
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C; 
   ins ! pc = ThrowExc; 
-  \<sigma>' = (None, \<sigma>);
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>;
-  (tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)\<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-  by simp
+  P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M; 
+  \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
+  (tas, \<sigma>') \<in> exec_instr (ins!pc) P t h stk loc C M pc frs \<rbrakk> 
+\<Longrightarrow> \<Phi> \<turnstile> t:\<sigma>'\<surd>"
+using wf_preallocatedD[of wt P h NullPointer]
+apply(clarsimp)
+apply(drule (1) sees_method_fun)
+apply(auto)
+  apply fastsimp
+ apply fastsimp
+apply(drule (1) non_npD)
+apply fastsimp+
+done
 
 lemma NewArray_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wf:   "wf_prog wt P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:  "ins!pc = NewArray X"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes conf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes no_x: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> (None, \<sigma>) \<surd>"
-(*<*)
+  assumes conf: "\<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes no_x: "(tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t:\<sigma> \<surd>"
 proof - 
   from ins conf meth
   obtain ST LT where
-    heap_ok: "P\<turnstile> h\<surd>" and
+    heap_ok: "hconf h" and
+    tconf: "P,h \<turnstile> t \<surd>t" and
     \<Phi>_pc:    "\<Phi> C M!pc = Some (ST,LT)" and
     stk: "P,h \<turnstile> stk [:\<le>] ST" and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and
     pc: "pc < size ins" and 
     frame:   "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
-    frames:  "conf_fs P h \<Phi> M (size Ts) T frs"
+    frames:  "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh:    "preallocated h"
     by (auto dest: sees_method_fun)
 
   from ins \<Phi>_pc wt obtain ST'' X' ST' LT' where 
@@ -978,78 +949,89 @@ proof -
 
   from stk ST obtain si stk' where si: "stk = Intg si # stk'"
     by(auto simp add: conf_def)
-  with ins no_x have si': "si \<ge> 0"
-    by(auto split: split_if_asm)
+  
+  obtain h' ao where new: "new_arr h X (nat (sint si)) = (h', ao)" by(cases "new_arr h X (nat (sint si))")
+  hence hext: "h \<unlhd> h'" by(rule hext_new_arr)
+  with preh have preh': "preallocated h'" by(rule preallocated_hext)
+  from new heap_ok is_type_X have heap_ok': "hconf h'" by(rule hconf_new_arr_mono)
 
-  from ins no_x obtain oref where new_Addr: "new_Addr h = Some oref" 
-    by(auto split: split_if_asm)
-  hence h: "h oref = None" by (rule new_Addr_SomeD) 
+  show ?thesis
+  proof(cases "si <s 0 \<or> ao = None")
+    case True
+    with frame frames tconf heap_ok heap_ok' suc_pc no_x ins meth \<Phi>_pc si new preh' preh hext
+      wf_preallocatedD[OF wf, of h' OutOfMemory] wf_preallocatedD[OF wf, of h NegativeArraySize]
+    show ?thesis
+      by(fastsimp intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext split: split_if_asm)+
+  next
+    case False
+    then obtain oref where new_Addr: "ao = Some oref" 
+      and si': "0 <=s si"
+      by(auto)
+    with new have h: "typeof_addr h oref = None" 
+      and h': "typeof_addr h' oref = \<lfloor>Array X\<rfloor>" and "array_length h' oref = nat (sint si)"
+      by(auto dest: new_arr_SomeD)
 
-  with ins meth new_Addr si si' no_x have \<sigma>':
-    "\<sigma> = (h(oref \<mapsto> Arr X (replicate (nat si) (default_val X))), (Addr oref#tl stk,loc,C,M,pc+1)#frs)"
-    (is "\<sigma> = (?h', ?f # frs)")
-    by(auto split: split_if_asm)
-  moreover
-  from is_type_X have "P,h \<turnstile> Arr X (replicate (nat si) (default_val X)) \<surd>"
-    by(simp add: oconf_def set_replicate_conv_if)
-  with wf h heap_ok have h': "P \<turnstile> ?h' \<surd>"
-    by -(rule hconf_new)
-  moreover
-  from h frame ST' ST LT' suc_pc wf XX'
-  have "conf_f P ?h' (X' # ST', LT') ins ?f"
-    apply (clarsimp simp add: fun_upd_apply conf_def blank_def split_beta)
-    by(auto intro: confs_hext confTs_hext)
-  moreover
-  from h have "h \<unlhd> ?h'" by simp
-  with frames have "conf_fs P ?h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)
-  ultimately
-  show ?thesis using meth \<Phi>' by fastsimp 
+    with ins meth new_Addr si si' no_x new have \<sigma>':
+      "\<sigma> = (None, h', (Addr oref#tl stk,loc,C,M,pc+1)#frs)"
+      (is "\<sigma> = (None, h', ?f # frs)")
+      by(auto split: split_if_asm)
+    moreover note heap_ok'
+    moreover
+    from frame ST' ST LT' suc_pc wf XX' h' hext
+    have "conf_f P h' (X' # ST', LT') ins ?f"
+      by(clarsimp simp add: fun_upd_apply conf_def split_beta)(auto intro: confs_hext confTs_hext)
+    moreover
+    from frames hext have "conf_fs P h' \<Phi> M (size Ts) T frs" by (rule conf_fs_hext)
+    moreover from tconf hext have "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
+    ultimately
+    show ?thesis using meth \<Phi>' preh' by fastsimp
+  qed 
 qed
-(*>*)
 
 lemma ALoad_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wf:   "wf_prog wt P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:  "ins!pc = ALoad"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes conf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes no_x: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> (None, \<sigma>) \<surd>"
+  assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes no_x: "(tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t:\<sigma> \<surd>"
 proof - 
   from ins conf meth
   obtain ST LT where
-    heap_ok: "P\<turnstile> h\<surd>" and
+    heap_ok: "hconf h" and
+    tconf:   "P,h \<turnstile> t \<surd>t" and
     \<Phi>_pc:    "\<Phi> C M!pc = Some (ST,LT)" and
     stk: "P,h \<turnstile> stk [:\<le>] ST" and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and
     pc: "pc < size ins" and 
     frame:   "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
-    frames:  "conf_fs P h \<Phi> M (size Ts) T frs"
+    frames:  "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh:    "preallocated h"
     by (auto dest: sees_method_fun)
 
   from ins wt \<Phi>_pc have lST: "length ST > 1" by(auto)
 
-  { assume "hd (tl stk) = Null"
-    with ins no_x have False
-      by(simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover
-  { assume "hd (tl ST) = NT"
-    moreover 
-    from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
-    with lST have "P,h \<turnstile> hd (tl stk) :\<le> hd (tl ST)"
-      by (cases ST, auto, case_tac list, auto)
-    ultimately 
-    have "hd (tl stk) = Null" by simp
-    with ins no_x have False by (simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover {
-    assume stkNN: "hd (tl stk) \<noteq> Null"
-      and STNN: "hd (tl ST) \<noteq> NT"
+  show ?thesis
+  proof(cases "hd (tl stk) = Null")
+    case True
+    with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
+    show ?thesis by(fastsimp)
+  next
+    case False
+    note stkNN = this
+    have STNN: "hd (tl ST) \<noteq> NT"
+    proof
+      assume "hd (tl ST) = NT"
+      moreover 
+      from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
+      with lST have "P,h \<turnstile> hd (tl stk) :\<le> hd (tl ST)"
+        by (cases ST, auto, case_tac list, auto)
+      ultimately 
+      have "hd (tl stk) = Null" by simp
+      with stkNN show False by contradiction
+    qed
 
-    with ins \<Phi>_pc wt obtain ST'' X X' ST' LT' where 
+    with stkNN ins \<Phi>_pc wt obtain ST'' X X' ST' LT' where 
       ST: "ST = Integer # X\<lfloor>\<rceil> # ST''" and
       pc': "pc+1 < size ins"  and
       \<Phi>': "\<Phi> C M ! (pc+1) = Some (X'#ST', LT')" and
@@ -1066,76 +1048,89 @@ proof -
       by auto
 
     from stkNN stk' have "ref \<noteq> Null" by(simp)
-    with ref obtain a Xel el 
+    with ref obtain a Xel
       where a: "ref = Addr a"
-      and ha: "h a = \<lfloor>Arr Xel el\<rfloor>"
+      and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
       and Xel: "P \<turnstile> Xel \<le> X"
-      by(fastsimp simp add: conf_def widen_Array)
-    from heap_ok ha have objok: "P,h \<turnstile> Arr Xel el \<surd>"
-      by(auto simp add: hconf_def)
+      by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
 
     from idx obtain idxI where idxI: "idx = Intg idxI"
       by(auto simp add: conf_def)
-    with ins idxI idx no_x a ha stk' have si': "idxI \<ge> 0" "idxI < int (length el)"
-      by(auto simp add: split_beta split: split_if_asm)
+    show ?thesis
+    proof(cases "0 <=s idxI \<and> sint idxI < int (array_length h a)")
+      case True
+      hence si': "0 <=s idxI" "sint idxI < int (array_length h a)" by auto
+      hence "nat (sint idxI) < array_length h a"
+        by(metis nat_less_iff  sint_0 word_sle_def)
+      with ha have al: "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
 
-    with ins meth si' stk' a ha no_x idxI idx have \<sigma>':
-      "\<sigma> = (h, (el ! nat (the_Intg idx) # stk', loc, C, M, pc + 1) # frs)"
-      (is "\<sigma> = (?h', ?f # frs)")
-      by(simp)
-    moreover
-    from ST stk stk' ST' have "P,h \<turnstile> stk' [:\<le>] ST'" by(auto)
-    with frame ST' ST LT' suc_pc wf XX' Xel idxI si' objok
-    have "conf_f P ?h' (X' # ST', LT') ins ?f"
-      by(fastsimp intro: widen_trans simp add: fun_upd_apply conf_def blank_def split_beta oconf_def)
-    ultimately have ?thesis using meth \<Phi>' heap_ok \<Phi>_pc frames by fastsimp }
-  ultimately show ?thesis by blast
+      { fix v
+        assume read: "heap_read h a (ACell (nat (sint idxI))) v"
+        hence v: "P,h \<turnstile> v :\<le> Xel" using al heap_ok by(rule heap_read_conf)
+
+        let ?f = "(v # stk', loc, C, M, pc + 1)"
+        
+        from frame ST' ST LT' suc_pc wf XX' Xel idxI si' v ST''
+        have "conf_f P h (X' # ST', LT') ins ?f"
+          by(auto intro: widen_trans simp add: conf_def)
+        hence "\<Phi> \<turnstile> t:(None, h, ?f # frs) \<surd>"
+          using meth \<Phi>' heap_ok \<Phi>_pc frames tconf preh by fastsimp }
+      with ins meth si' stk' a ha no_x idxI idx 
+      show ?thesis by(auto simp del: correct_state_def split: split_if_asm)
+    next
+      case False
+      with stk' idxI ins no_x heap_ok tconf meth a ha Xel \<Phi>_pc frame frames
+        wf_preallocatedD[OF wf, of h ArrayIndexOutOfBounds] preh
+      show ?thesis by(fastsimp split: split_if_asm)
+    qed
+  qed
 qed
 
 
 lemma AStore_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wf:   "wf_prog wt P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:  "ins!pc = AStore"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes conf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes no_x: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> (None, \<sigma>) \<surd>"
+  assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes no_x: "(tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t: \<sigma> \<surd>"
 proof - 
   from ins conf meth
   obtain ST LT where
-    heap_ok: "P\<turnstile> h\<surd>" and
+    heap_ok: "hconf h" and
+    tconf: "P,h \<turnstile> t \<surd>t" and
     \<Phi>_pc:    "\<Phi> C M!pc = Some (ST,LT)" and
     stk: "P,h \<turnstile> stk [:\<le>] ST" and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and
     pc: "pc < size ins" and 
     frame:   "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
-    frames:  "conf_fs P h \<Phi> M (size Ts) T frs"
+    frames:  "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh:    "preallocated h"
     by (auto dest: sees_method_fun)
 
   from ins wt \<Phi>_pc have lST: "length ST > 2" by(auto)
+  
+  show ?thesis
+  proof(cases "hd (tl (tl stk)) = Null")
+    case True
+    with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
+    show ?thesis by(fastsimp)
+  next
+    case False
+    note stkNN = this
+    have STNN: "hd (tl (tl ST)) \<noteq> NT"       
+    proof
+      assume "hd (tl (tl ST)) = NT"
+      moreover 
+      from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
+      with lST have "P,h \<turnstile> hd (tl (tl stk)) :\<le> hd (tl (tl ST))"
+        by (cases ST, auto, case_tac list, auto, case_tac lista, auto)
+      ultimately 
+      have "hd (tl (tl stk)) = Null" by simp
+      with stkNN show False by contradiction
+    qed
 
-  { assume "hd (tl (tl stk)) = Null"
-    with ins no_x have False
-      by(simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover
-  { assume "hd (tl (tl ST)) = NT"
-    moreover 
-    from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
-    with lST have "P,h \<turnstile> hd (tl (tl stk)) :\<le> hd (tl (tl ST))"
-      by (cases ST, auto, case_tac list, auto, case_tac lista, auto)
-    ultimately 
-    have "hd (tl (tl stk)) = Null" by simp
-    with ins no_x have False by (simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover {
-    assume stkNN: "hd (tl (tl stk)) \<noteq> Null"
-      and STNN: "hd (tl (tl ST)) \<noteq> NT"
-
-    with ins \<Phi>_pc wt obtain ST'' Y X ST' LT' where 
+    with ins stkNN \<Phi>_pc wt obtain ST'' Y X ST' LT' where 
       ST: "ST = Y # Integer # X\<lfloor>\<rceil> # ST''" and
       pc': "pc+1 < size ins"  and
       \<Phi>': "\<Phi> C M ! (pc+1) = Some (ST', LT')" and
@@ -1152,93 +1147,118 @@ proof -
       by auto
 
     from stkNN stk' have "ref \<noteq> Null" by(simp)
-    with ref obtain a Xel el 
+    with ref obtain a Xel 
       where a: "ref = Addr a"
-      and ha: "h a = \<lfloor>Arr Xel el\<rfloor>"
+      and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
       and Xel: "P \<turnstile> Xel \<le> X"
-      by(fastsimp simp add: conf_def widen_Array)
+      by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
 
     from idx obtain idxI where idxI: "idx = Intg idxI"
       by(auto simp add: conf_def)
-    with ins idx no_x a ha stk' have si': "idxI \<ge> 0" "idxI < int (length el)"
-      by(auto simp add: split_beta split: split_if_asm)
+    
+    show ?thesis
+    proof(cases "0 <=s idxI \<and> sint idxI < int (array_length h a)")
+      case True
+      hence si': "0 <=s idxI" "sint idxI < int (array_length h a)" by simp_all
 
-    from ins idx idxI no_x a ha stk' have cast: "cast_ok P Xel h e"
-      by(auto simp add: split_beta split: split_if_asm)
-    hence eXel: "P,h \<turnstile> e :\<le> Xel"
-      by(auto simp add: cast_ok_def conf_def)
+      from e obtain Te where Te: "typeof\<^bsub>h\<^esub> e = \<lfloor>Te\<rfloor>" "P \<turnstile> Te \<le> Y"
+        by(auto simp add: conf_def)
 
-    from cast si' ins meth stk' a ha no_x idxI idx have \<sigma>':
-      "\<sigma> = (h(a \<mapsto> Arr Xel (el[nat idxI := e])), (stk', loc, C, M, pc + 1) # frs)"
-      (is "\<sigma> = (?h', ?f # frs)") by(auto)
-    moreover
-    from heap_ok ha si' idx idxI ha eXel have "P,h \<turnstile> Arr Xel (el[nat idxI := e]) \<surd>"
-      by(auto dest!: hconfD simp add: oconf_def fun_upd_def dest: subsetD[OF set_update_subset_insert])
-    with heap_ok ha have "P \<turnstile> ?h' \<surd>"
-      by(auto intro!: hconf_upd_arr)
-    moreover
-    from ha have hext: "h \<unlhd> ?h'"
-      by(auto intro!: hextI simp add: fun_upd_def)
-    from ST stk stk' ST' have "P,h \<turnstile> stk' [:\<le>] ST'" by auto
-    with hext have stk'': "P,?h' \<turnstile> stk' [:\<le>] ST'"
-      by- (rule confs_hext)
-    moreover
-    from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
-    with hext have "P,?h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" by - (rule confTs_hext)
-    moreover
-    with frame ST' ST LT' suc_pc wf Xel idxI si' stk''
-    have "conf_f P ?h' (ST', LT') ins ?f"
-      by(clarsimp)
-    with frames hext have "conf_fs P ?h' \<Phi> M (size Ts) T frs" by- (rule conf_fs_hext)
-    ultimately have ?thesis using meth \<Phi>' heap_ok \<Phi>_pc suc_pc
-      by(fastsimp) }
-  ultimately show ?thesis by blast
+      show ?thesis
+      proof(cases "P \<turnstile> Te \<le> Xel")
+        case True
+        with Te have eXel: "P,h \<turnstile> e :\<le> Xel"
+          by(auto simp add: conf_def intro: widen_trans)
+
+        { fix h'
+          assume "write": "heap_write h a (ACell (nat (sint idxI))) e h'"
+          hence hext: "h \<unlhd> h'" by(rule hext_heap_write)
+          with preh have preh': "preallocated h'" by(rule preallocated_hext)
+
+          let ?f = "(stk', loc, C, M, pc + 1)"
+
+          from si' have "nat (sint idxI) < array_length h a"
+            by(metis nat_less_iff  sint_0 word_sle_def)
+          with ha have "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
+          with "write" heap_ok have heap_ok': "hconf h'" using eXel
+            by(rule hconf_heap_write_mono)
+          moreover
+          from ST stk stk' ST' have "P,h \<turnstile> stk' [:\<le>] ST'" by auto
+          with hext have stk'': "P,h' \<turnstile> stk' [:\<le>] ST'"
+            by- (rule confs_hext)
+          moreover
+          from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
+          with hext have "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" by - (rule confTs_hext)
+          moreover
+          with frame ST' ST LT' suc_pc wf Xel idxI si' stk''
+          have "conf_f P h' (ST', LT') ins ?f"
+            by(clarsimp)
+          with frames hext have "conf_fs P h' \<Phi> M (size Ts) T frs" by- (rule conf_fs_hext)
+          moreover from tconf hext have "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
+          ultimately have "\<Phi> \<turnstile> t:(None, h', ?f # frs) \<surd>" using meth \<Phi>' \<Phi>_pc suc_pc preh'
+            by(fastsimp) }
+        with True si' ins meth stk' a ha no_x idxI idx Te
+        show ?thesis
+          by(auto split: split_if_asm simp del: correct_state_def intro: widen_trans)
+      next
+        case False
+        with stk' idxI ins no_x heap_ok tconf meth a ha Xel Te \<Phi>_pc frame frames si' preh
+          wf_preallocatedD[OF wf, of h ArrayStore]
+        show ?thesis by(fastsimp split: split_if_asm)
+      qed
+    next
+      case False
+      with stk' idxI ins no_x heap_ok tconf meth a ha Xel \<Phi>_pc frame frames preh
+        wf_preallocatedD[OF wf, of h ArrayIndexOutOfBounds]
+      show ?thesis by(fastsimp split: split_if_asm)
+    qed
+  qed
 qed
 
-
 lemma ALength_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wf:   "wf_prog wt P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:  "ins!pc = ALength"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes conf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes no_x: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> (None, \<sigma>) \<surd>"
+  assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes no_x: "(tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t: \<sigma> \<surd>"
 proof - 
   from ins conf meth
   obtain ST LT where
-    heap_ok: "P\<turnstile> h\<surd>" and
+    heap_ok: "hconf h" and
+    tconf:   "P,h \<turnstile> t \<surd>t" and
     \<Phi>_pc:    "\<Phi> C M!pc = Some (ST,LT)" and
     stk: "P,h \<turnstile> stk [:\<le>] ST" and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and
     pc: "pc < size ins" and 
     frame:   "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
-    frames:  "conf_fs P h \<Phi> M (size Ts) T frs"
+    frames:  "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh:    "preallocated h"
     by (auto dest: sees_method_fun)
 
   from ins wt \<Phi>_pc have lST: "length ST > 0" by(auto)
+  
+  show ?thesis
+  proof(cases "hd stk = Null")
+    case True
+    with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
+    show ?thesis by(fastsimp)
+  next
+    case False
+    note stkNN = this
+    have STNN: "hd ST \<noteq> NT"
+    proof
+      assume "hd ST = NT"
+      moreover 
+      from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
+      with lST have "P,h \<turnstile> hd stk :\<le> hd ST"
+        by (cases ST, auto)
+      ultimately 
+      have "hd stk = Null" by simp
+      with stkNN show False by contradiction
+    qed
 
-  { assume "hd stk = Null"
-    with ins no_x have False
-      by(simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover
-  { assume "hd ST = NT"
-    moreover 
-    from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
-    with lST have "P,h \<turnstile> hd stk :\<le> hd ST"
-      by (cases ST, auto)
-    ultimately 
-    have "hd stk = Null" by simp
-    with ins no_x have False by (simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover {
-    assume stkNN: "hd stk \<noteq> Null"
-      and STNN: "hd ST \<noteq> NT"
-
-    with ins \<Phi>_pc wt obtain ST'' X ST' LT' where 
+    with stkNN ins \<Phi>_pc wt obtain ST'' X ST' LT' where 
       ST: "ST = (X\<lfloor>\<rceil>) # ST''" and
       pc': "pc+1 < size ins"  and
       \<Phi>': "\<Phi> C M ! (pc+1) = Some (ST', LT')" and
@@ -1253,69 +1273,70 @@ proof -
       by auto
 
     from stkNN stk' have "ref \<noteq> Null" by(simp)
-    with ref obtain a Xel el 
+    with ref obtain a Xel 
       where a: "ref = Addr a"
-      and ha: "h a = \<lfloor>Arr Xel el\<rfloor>"
+      and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
       and Xel: "P \<turnstile> Xel \<le> X"
-      by(fastsimp simp add: conf_def widen_Array)
+      by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
 
     from ins meth stk' a ha no_x have \<sigma>':
-      "\<sigma> = (h, (Intg (int (length el)) # stk', loc, C, M, pc + 1) # frs)"
-      (is "\<sigma> = (?h', ?f # frs)")
+      "\<sigma> = (None, h, (Intg (word_of_int (int (array_length h a))) # stk', loc, C, M, pc + 1) # frs)"
+      (is "\<sigma> = (None, h, ?f # frs)")
       by(auto)
     moreover
     from ST stk stk' ST' have "P,h \<turnstile> Intg si # stk' [:\<le>] ST'" by(auto)
     with frame ST' ST LT' suc_pc wf
-    have "conf_f P ?h' (ST', LT') ins ?f"
-      by(fastsimp intro: widen_trans simp add: fun_upd_apply blank_def split_beta)
-    ultimately have ?thesis using meth \<Phi>' heap_ok \<Phi>_pc frames by fastsimp }
-  ultimately show ?thesis by blast
+    have "conf_f P h (ST', LT') ins ?f"
+      by(fastsimp intro: widen_trans)
+    ultimately show ?thesis using meth \<Phi>' heap_ok \<Phi>_pc frames tconf preh by fastsimp
+  qed
 qed
 
 
 lemma MEnter_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wf:   "wf_prog wt P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:  "ins!pc = MEnter"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes conf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes no_x: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> (None, \<sigma>) \<surd>"
+  assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes no_x: "(tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t: \<sigma> \<surd>"
 proof - 
   from ins conf meth
   obtain ST LT where
-    heap_ok: "P\<turnstile> h\<surd>" and
+    heap_ok: "hconf h" and
+    tconf:   "P,h \<turnstile> t \<surd>t" and
     \<Phi>_pc:    "\<Phi> C M!pc = Some (ST,LT)" and
     stk: "P,h \<turnstile> stk [:\<le>] ST" and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and
     pc: "pc < size ins" and 
     frame:   "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
-    frames:  "conf_fs P h \<Phi> M (size Ts) T frs"
+    frames:  "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh:    "preallocated h"
     by (auto dest: sees_method_fun)
 
   from ins wt \<Phi>_pc have lST: "length ST > 0" by(auto)
 
-  { assume "hd stk = Null"
-    with ins no_x have False
-      by(simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover
-  { assume "hd ST = NT"
-    moreover 
-    from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
-    with lST have "P,h \<turnstile> hd stk :\<le> hd ST"
-      by (cases ST, auto)
-    ultimately 
-    have "hd stk = Null" by simp
-    with ins no_x have False by (simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover {
-    assume stkNN: "hd stk \<noteq> Null"
-      and STNN: "hd ST \<noteq> NT"
+  show ?thesis
+  proof(cases "hd stk = Null")
+    case True
+    with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
+    show ?thesis by(fastsimp)
+  next
+    case False
+    note stkNN = this
+    have STNN: "hd ST \<noteq> NT"
+    proof
+      assume "hd ST = NT"
+      moreover 
+      from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
+      with lST have "P,h \<turnstile> hd stk :\<le> hd ST"
+        by (cases ST, auto)
+      ultimately 
+      have "hd stk = Null" by simp
+      with stkNN show False by contradiction
+    qed
 
-    with ins \<Phi>_pc wt obtain ST'' X ST' LT' where 
+    with stkNN ins \<Phi>_pc wt obtain ST'' X ST' LT' where 
       ST: "ST = X # ST''" and
       refT: "is_refT X" and
       pc': "pc+1 < size ins"  and
@@ -1330,65 +1351,60 @@ proof -
       by auto
 
     from stkNN stk' have "ref \<noteq> Null" by(simp)
-    with ref refT obtain a obj
-      where a: "ref = Addr a"
-      and ha: "h a = obj"
-      by(auto elim!: refTE simp add: conf_def widen_Array widen_Class)
-
     moreover
     from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
     moreover
     from ST stk stk' ST'
     have "P,h \<turnstile> stk' [:\<le>] ST'" by(auto)
-    ultimately 
-    have ?thesis using meth \<Phi>' heap_ok \<Phi>_pc suc_pc frames loc LT' no_x ins stk' ST'
-      by(fastsimp) }
-  ultimately show ?thesis by blast
+    ultimately show ?thesis using meth \<Phi>' heap_ok \<Phi>_pc suc_pc frames loc LT' no_x ins stk' ST' tconf preh
+      by(fastsimp)
+  qed
 qed
 
 lemma MExit_correct:
-  fixes \<sigma>' :: jvm_state
   assumes wf:   "wf_prog wt P"
   assumes meth: "P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C"
   assumes ins:  "ins!pc = MExit"
   assumes wt:   "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
-  assumes conf: "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
-  assumes no_x: "(tas, None, \<sigma>) \<in> set (exec_instr (ins!pc) P h stk loc C M pc frs)"
-  shows "P,\<Phi> \<turnstile> (None, \<sigma>) \<surd>"
+  assumes conf: "\<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd>"
+  assumes no_x: "(tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs"
+  shows "\<Phi> \<turnstile> t: \<sigma> \<surd>"
 proof - 
   from ins conf meth
   obtain ST LT where
-    heap_ok: "P\<turnstile> h\<surd>" and
+    heap_ok: "hconf h" and
+    tconf:   "P,h \<turnstile> t \<surd>t" and
     \<Phi>_pc:    "\<Phi> C M!pc = Some (ST,LT)" and
     stk: "P,h \<turnstile> stk [:\<le>] ST" and loc: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT" and
     pc: "pc < size ins" and 
     frame:   "conf_f P h (ST,LT) ins (stk,loc,C,M,pc)" and
-    frames:  "conf_fs P h \<Phi> M (size Ts) T frs"
+    frames:  "conf_fs P h \<Phi> M (size Ts) T frs" and
+    preh:    "preallocated h"
     by (auto dest: sees_method_fun)
 
   from ins wt \<Phi>_pc have lST: "length ST > 0" by(auto)
 
-  { assume "hd stk = Null"
-    with ins no_x have False
-      by(simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover
-  { assume "hd ST = NT"
-    moreover 
-    from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
-    with lST have "P,h \<turnstile> hd stk :\<le> hd ST"
-      by (cases ST, auto)
-    ultimately 
-    have "hd stk = Null" by simp
-    with ins no_x have False by (simp add: split_beta)
-    hence ?thesis ..
-  } 
-  moreover {
-    assume stkNN: "hd stk \<noteq> Null"
-      and STNN: "hd ST \<noteq> NT"
+  show ?thesis
+  proof(cases "hd stk = Null")
+    case True
+    with ins no_x heap_ok tconf \<Phi>_pc stk loc frame frames meth wf_preallocatedD[OF wf, of h NullPointer] preh
+    show ?thesis by(fastsimp)
+  next
+    case False
+    note stkNN = this
+    have STNN: "hd ST \<noteq> NT"
+    proof
+      assume "hd ST = NT"
+      moreover 
+      from frame have "P,h \<turnstile> stk [:\<le>] ST" by simp
+      with lST have "P,h \<turnstile> hd stk :\<le> hd ST"
+        by (cases ST, auto)
+      ultimately 
+      have "hd stk = Null" by simp
+      with stkNN show False by contradiction
+    qed
 
-    with ins \<Phi>_pc wt obtain ST'' X ST' LT' where 
+    with stkNN ins \<Phi>_pc wt obtain ST'' X ST' LT' where 
       ST: "ST = X # ST''" and
       refT: "is_refT X" and
       pc': "pc+1 < size ins"  and
@@ -1403,20 +1419,16 @@ proof -
       by auto
 
     from stkNN stk' have "ref \<noteq> Null" by(simp)
-    with ref refT obtain a obj
-      where a: "ref = Addr a"
-      and ha: "h a = obj"
-      by(auto elim!: refTE simp add: conf_def widen_Array widen_Class)
-
     moreover
     from loc LT' have "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" ..
     moreover
     from ST stk stk' ST'
     have "P,h \<turnstile> stk' [:\<le>] ST'" by(auto)
     ultimately 
-    have ?thesis using meth \<Phi>' heap_ok \<Phi>_pc suc_pc frames loc LT' no_x ins stk' ST'
-      by(fastsimp) }
-  ultimately show ?thesis by blast
+    show ?thesis using meth \<Phi>' heap_ok \<Phi>_pc suc_pc frames loc LT' no_x ins stk' ST' tconf frame preh
+      wf_preallocatedD[OF wf, of h IllegalMonitorState]
+      by(fastsimp)
+  qed
 qed
 
 text {*
@@ -1429,83 +1441,50 @@ text {*
 theorem instr_correct:
 "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P;
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^isub>0,ins,xt) in C;
-  (tas, \<sigma>') \<in> set (exec P (None, h, (stk,loc,C,M,pc)#frs)); 
-  P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk> 
-\<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-(*<*)
+  (tas, \<sigma>') \<in> exec P t (None, h, (stk,loc,C,M,pc)#frs); 
+  \<Phi> \<turnstile> t: (None, h, (stk,loc,C,M,pc)#frs)\<surd> \<rbrakk> 
+\<Longrightarrow> \<Phi> \<turnstile> t: \<sigma>'\<surd>"
 apply (subgoal_tac "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M")
  prefer 2
  apply (erule wt_jvm_prog_impl_wt_instr, assumption)
  apply clarsimp
  apply (drule (1) sees_method_fun)
  apply simp
-apply(cases \<sigma>')
-apply(clarify)
-apply(rename_tac xcpt' h' \<sigma>')
 apply(unfold exec.simps Let_def set_map)
-apply(case_tac xcpt')
- prefer 2
- apply(blast intro: exec_instr_xcp_correct)
-apply(clarify)
 apply (frule wt_jvm_progD, erule exE)
 apply (cases "ins ! pc")
-apply (rule Load_correct, assumption+)
- prefer 2
- apply(assumption, fastsimp)
-apply (rule Store_correct, assumption+)
- prefer 2
- apply(assumption, fastsimp)
-apply (rule Push_correct, assumption+)
- prefer 2
- apply(assumption, fastsimp)
+apply (rule Load_correct, assumption+, fastsimp)
+apply (rule Store_correct, assumption+, fastsimp)
+apply (rule Push_correct, assumption+, fastsimp)
 apply (rule New_correct, assumption+, fastsimp)
 apply (rule NewArray_correct, assumption+, fastsimp)
 apply (rule ALoad_correct, assumption+, fastsimp)
 apply (rule AStore_correct, assumption+, fastsimp)
 apply (rule ALength_correct, assumption+, fastsimp)
-apply (rule Getfield_correct, assumption+, fastsimp, fastsimp, fastsimp)
-apply (rule Putfield_correct, assumption+, fastsimp, fastsimp, fastsimp)
+apply (rule Getfield_correct, assumption+, fastsimp)
+apply (rule Putfield_correct, assumption+, fastsimp)
 apply (rule Checkcast_correct, assumption+, fastsimp)
+apply (rule Instanceof_correct, assumption+, fastsimp)
 apply (rule Invoke_correct, assumption+, fastsimp)
-apply (rule Return_correct, assumption+)
- prefer 2
- apply(assumption)
- apply(fastsimp simp add: split_beta)
-apply (rule Pop_correct, assumption+)
- prefer 2
- apply(assumption)
- apply(fastsimp)
-apply (rule BinOp_correct, assumption+)
- prefer 2
- apply(assumption)
- apply(fastsimp)
-apply (rule Goto_correct, assumption+)
- prefer 2
- apply(assumption)
- apply(fastsimp)
-apply (rule IfFalse_correct, assumption+)
- prefer 2
- apply(assumption)
- apply(fastsimp)
-apply (rule Throw_correct, assumption+)
- prefer 2
- apply(assumption)
- apply fastsimp
- apply fastsimp
+apply (rule Return_correct, assumption+, fastsimp simp add: split_beta)
+apply (rule Pop_correct, assumption+, fastsimp)
+apply (rule Dup_correct, assumption+, fastsimp)
+apply (rule BinOp_correct, assumption+, fastsimp)
+apply (rule Goto_correct, assumption+, fastsimp)
+apply (rule IfFalse_correct, assumption+, fastsimp)
+apply (rule Throw_correct, assumption+, fastsimp)
 apply (rule MEnter_correct, assumption+, fastsimp)
 apply (rule MExit_correct, assumption+, fastsimp)
 done
-(*>*)
+
+declare defs1 [simp del]
+
+end
 
 section {* Main *}
 
-lemma correct_state_impl_Some_method:
-  "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> 
-  \<Longrightarrow> \<exists>m Ts T. P \<turnstile> C sees M:Ts\<rightarrow>T = m in C"
-  by fastsimp
-
-lemma BV_correct_1 [rule_format]:
-"\<And>\<sigma>. \<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P,\<Phi> \<turnstile> \<sigma>\<surd>\<rbrakk> \<Longrightarrow> P \<turnstile> \<sigma> -tas-jvm\<rightarrow> \<sigma>' \<longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
+lemma (in JVM_conf_read) BV_correct_1 [rule_format]:
+"\<And>\<sigma>. \<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; \<Phi> \<turnstile> t: \<sigma>\<surd>\<rbrakk> \<Longrightarrow> P,t \<turnstile> \<sigma> -tas-jvm\<rightarrow> \<sigma>' \<longrightarrow> \<Phi> \<turnstile> t: \<sigma>'\<surd>"
 apply (simp only: split_tupled_all exec_1_iff)
 apply (rename_tac xp h frs)
 apply (case_tac xp)
@@ -1523,80 +1502,295 @@ apply(case_tac frs)
 apply(clarsimp simp only: exec.simps set.simps)
 apply(erule (2) exception_step_conform)
 done
-(*>*)
 
-lemma ex_set_conv: "(\<exists>x. x \<in> set xs) \<longleftrightarrow> xs \<noteq> []"
+lemma ex_set_conv: "(\<exists>x. x \<in> set xs) \<longleftrightarrow> xs \<noteq> []" -- "Move to Aux"
 apply(auto)
 apply(auto simp add: neq_Nil_conv)
 done
 
-
-theorem progress:
-  assumes frs: " frs \<noteq> []"
-  shows "\<exists>ta \<sigma>'. P \<turnstile> (xp,h,frs) -ta-jvm\<rightarrow> \<sigma>'"
-using frs
-proof(cases xp)
-  case None
-  from frs obtain stk loc C M pc frs' where frs: "frs = (stk, loc, C, M, pc) # frs'" by(fastsimp simp add: neq_Nil_conv)
-  moreover have "exec_instr (instrs_of P C M ! pc) P h stk loc C M pc frs' \<noteq> []" by(rule exec_instr_not_empty)
-  ultimately show ?thesis using None by(fastsimp simp add: exec_1_iff neq_Nil_conv)
-qed(auto simp add: exec_1_iff neq_Nil_conv)
-
-
-theorem BV_correct [rule_format]:
-"\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P \<turnstile> \<sigma> -tas-jvm\<rightarrow>* \<sigma>' \<rbrakk> \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>\<surd> \<longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
-(*<*)
-apply (simp only: exec_star_def)
-apply(erule rtrancl3p.induct)
- apply(simp)
-apply(clarify)
-apply(erule (2) BV_correct_1)
-done
-(*>*)
-
-lemma hconf_start:   
-  assumes wf: "wf_prog wf_mb P"
-  shows "P \<turnstile> (start_heap P) \<surd>"
-(*<*)
-  apply (unfold hconf_def)
-  apply (simp add: preallocated_start)
-  apply (clarify)
-  apply (drule sym)
-  apply (unfold start_heap_def)
-  apply (insert wf)
-  apply (auto simp add: fun_upd_apply is_class_xcpt split: split_if_asm)
-  done
-(*>*)
-    
-lemma BV_correct_initial: 
-  shows "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; P \<turnstile> C sees M:[]\<rightarrow>T = m in C \<rbrakk>
-  \<Longrightarrow> P,\<Phi> \<turnstile> start_state P C M \<surd>"
-(*<*)
-  apply (cases m)                            
-  apply (unfold  start_state_def)
-  apply (unfold correct_state_def)
-  apply (simp del: defs1)
-  apply (rule conjI)
-   apply (simp add: wf_jvm_prog_phi_def hconf_start) 
-  apply (drule wt_jvm_prog_impl_wt_start, assumption+)
-  apply (unfold conf_f_def wt_start_def)
-  apply fastsimp
-  done
-(*>*)
-
-theorem typesafe:
-  assumes welltyped:   "wf_jvm_prog\<^sub>\<Phi> P"
-  assumes main_method: "P \<turnstile> C sees M:[]\<rightarrow>T = m in C"
-  shows "P \<turnstile> start_state P C M -tas-jvm\<rightarrow>* \<sigma>  \<Longrightarrow>  P,\<Phi> \<turnstile> \<sigma> \<surd>"
-(*<*)
+theorem (in JVM_progress) progress:
+  assumes wt: "wf_jvm_prog\<^sub>\<Phi> P"
+  and cs: "\<Phi> \<turnstile> t: (xcp, h, f # frs)\<surd>"
+  shows "\<exists>ta \<sigma>'. P,t \<turnstile> (xcp, h, f # frs) -ta-jvm\<rightarrow> \<sigma>'"
 proof -
-  from welltyped main_method
-  have "P,\<Phi> \<turnstile> start_state P C M \<surd>" by (rule BV_correct_initial)
-  moreover
-  assume "P \<turnstile> start_state P C M -tas-jvm\<rightarrow>* \<sigma>"
-  ultimately  
-  show "P,\<Phi> \<turnstile> \<sigma> \<surd>" using welltyped by - (rule BV_correct)
-qed
-(*>*)
+  obtain stk loc C M pc where f: "f = (stk, loc, C, M, pc)" by(cases f)
+  with cs obtain Ts T mxs mxl\<^isub>0 "is" xt ST LT
+    where hconf: "hconf h"
+    and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = (mxs, mxl\<^isub>0, is, xt) in C"
+    and \<Phi>_pc: "\<Phi> C M ! pc = \<lfloor>(ST, LT)\<rfloor>"
+    and ST: "P,h \<turnstile> stk [:\<le>] ST"
+    and LT: "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT"
+    and pc: "pc < length is"
+    by(auto simp add: defs1) blast
+  show ?thesis
+  proof(cases xcp)
+    case Some thus ?thesis
+      unfolding f exec_1_iff by auto
+  next
+    case None [simp]
+    note [simp del] = split_paired_Ex
+    note [simp] = defs1 list_all2_Cons2
+
+
+    from wt obtain wf_md where wf: "wf_prog wf_md P" by(auto dest: wt_jvm_progD)
+    from wt sees pc have wt: "P,T,mxs,size is,xt \<turnstile> is!pc,pc :: \<Phi> C M"
+      by(rule wt_jvm_prog_impl_wt_instr)
+
+
+    have "\<exists>ta \<sigma>'. (ta, \<sigma>') \<in> exec_instr (is ! pc) P t h stk loc C M pc frs"
+    proof(cases "is ! pc")
+      case ALoad [simp]
+      with wt \<Phi>_pc have lST: "length ST > 1" by(auto)
+      show ?thesis
+      proof(cases "hd (tl stk) = Null")
+        case True thus ?thesis by simp
+      next
+        case False
+        have STNN: "hd (tl ST) \<noteq> NT"
+        proof
+          assume "hd (tl ST) = NT"
+          moreover 
+          from ST lST have "P,h \<turnstile> hd (tl stk) :\<le> hd (tl ST)"
+            by (cases ST)(auto, case_tac list, auto)
+          ultimately have "hd (tl stk) = Null" by simp
+          with False show False by contradiction
+        qed
+        
+        with False \<Phi>_pc wt obtain ST'' X where "ST = Integer # X\<lfloor>\<rceil> # ST''" by auto
+        with ST obtain ref idx stk' where stk': "stk = idx#ref#stk'" and idx: "P,h \<turnstile> idx :\<le> Integer" 
+          and ref:  "P,h \<turnstile> ref :\<le> X\<lfloor>\<rceil>" by(auto)
+
+        from False stk' have "ref \<noteq> Null" by(simp)
+        with ref obtain a Xel where a: "ref = Addr a"
+          and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
+          and Xel: "P \<turnstile> Xel \<le> X"
+          by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
+        
+        from idx obtain idxI where idxI: "idx = Intg idxI"
+          by(auto simp add: conf_def)
+        show ?thesis
+        proof(cases "0 <=s idxI \<and> sint idxI < int (array_length h a)")
+          case True
+          hence si': "0 <=s idxI" "sint idxI < int (array_length h a)" by auto
+          hence "nat (sint idxI) < array_length h a"
+            by(metis nat_less_iff  sint_0 word_sle_def)
+          with ha have al: "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
+          from heap_read_total[OF hconf this] True False ha stk' idxI a
+          show ?thesis by auto
+        next
+          case False with ha stk' idxI a show ?thesis by auto
+        qed
+      qed
+    next
+      case AStore [simp]
+      from wt \<Phi>_pc have lST: "length ST > 2" by(auto)
+      
+      show ?thesis
+      proof(cases "hd (tl (tl stk)) = Null")
+        case True thus ?thesis by(fastsimp)
+      next
+        case False
+        note stkNN = this
+        have STNN: "hd (tl (tl ST)) \<noteq> NT"       
+        proof
+          assume "hd (tl (tl ST)) = NT"
+          moreover 
+          from ST lST have "P,h \<turnstile> hd (tl (tl stk)) :\<le> hd (tl (tl ST))"
+            by (cases ST, auto, case_tac list, auto, case_tac lista, auto)
+          ultimately have "hd (tl (tl stk)) = Null" by simp
+          with stkNN show False by contradiction
+        qed
+
+        with stkNN \<Phi>_pc wt obtain ST'' Y X
+          where "ST = Y # Integer # X\<lfloor>\<rceil> # ST''" by(fastsimp)
+
+        with ST obtain ref e idx stk' where stk': "stk = e#idx#ref#stk'" 
+          and idx: "P,h \<turnstile> idx :\<le> Integer" and ref:  "P,h \<turnstile> ref :\<le> X\<lfloor>\<rceil>" 
+          and e: "P,h \<turnstile> e :\<le> Y" by auto
+
+        from stkNN stk' have "ref \<noteq> Null" by(simp)
+        with ref obtain a Xel where a: "ref = Addr a"
+          and ha: "typeof_addr h a = \<lfloor>Array Xel\<rfloor>"
+          and Xel: "P \<turnstile> Xel \<le> X"
+          by(cases ref)(auto simp add: conf_def widen_Array dest: typeof_addr_eq_Some_conv)
+
+        from idx obtain idxI where idxI: "idx = Intg idxI"
+          by(auto simp add: conf_def)
+        
+        show ?thesis
+        proof(cases "0 <=s idxI \<and> sint idxI < int (array_length h a)")
+          case True
+          hence si': "0 <=s idxI" "sint idxI < int (array_length h a)" by simp_all
+          hence "nat (sint idxI) < array_length h a"
+            by(metis nat_less_iff  sint_0 word_sle_def)
+          with ha have "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
+          from heap_write_total[OF this] ha stk' idxI a show ?thesis by auto
+        next
+          case False with ha stk' idxI a show ?thesis by auto
+        qed
+      qed
+    next
+      case (Getfield F D)[simp]
+
+      from \<Phi>_pc wt obtain oT ST'' vT where oT: "P \<turnstile> oT \<le> Class D" 
+        and "ST = oT # ST''" and F: "P \<turnstile> D sees F:vT in D" 
+        by fastsimp
+
+      with ST obtain ref stk' where stk': "stk = ref#stk'" 
+        and ref:  "P,h \<turnstile> ref :\<le> oT" by auto
+
+      from F wf have DObject: "D \<noteq> Object"
+        by(auto dest: wf_Object_field_empty has_fields_fun simp add: sees_field_def)
+      show ?thesis
+      proof(cases "ref = Null")
+        case True thus ?thesis using stk' by auto
+      next
+        case False
+        from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
+        with False DObject obtain a D' where 
+          a: "ref = Addr a" and h: "typeof_addr h a = Some (Class D')" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+          by (blast dest: non_npD)
+    
+        from D' F have has_field: "P \<turnstile> D' has F:vT in D"      
+          by (blast intro: has_field_mono has_visible_field)
+        with h have "P,h \<turnstile> a@CField D F : vT" ..
+        from heap_read_total[OF hconf this]
+        show ?thesis using stk' a by auto
+      qed
+    next
+      case (Putfield F D)[simp]
+
+      from \<Phi>_pc wt obtain vT vT' oT ST'' where "ST = vT # oT # ST''" 
+        and field: "P \<turnstile> D sees F:vT' in D"
+        and oT: "P \<turnstile> oT \<le> Class D" by fastsimp
+      with ST obtain v ref stk' where stk': "stk = v#ref#stk'" 
+        and ref:  "P,h \<turnstile> ref :\<le> oT" by auto
+
+      from field wf have DObject: "D \<noteq> Object"
+        by(auto dest: wf_Object_field_empty has_fields_fun simp add: sees_field_def)
+
+      show ?thesis
+      proof(cases "ref = Null")
+        case True with stk' show ?thesis by auto
+      next
+        case False
+        from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
+        with False DObject obtain a D' where 
+          a: "ref = Addr a" and h: "typeof_addr h a = Some (Class D')" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
+          by (blast dest: non_npD)
+
+        from field D' have has_field: "P \<turnstile> D' has F:vT' in D"
+          by (blast intro: has_field_mono has_visible_field)
+        with h have al: "P,h \<turnstile> a@CField D F : vT'" ..
+        from heap_write_total[OF this] a stk' h show ?thesis by auto
+      qed
+    next
+      case (Invoke M' n)[simp]
+
+      from wt \<Phi>_pc have n: "n < size ST" by simp
   
+      show ?thesis
+      proof(cases "stk!n = Null")
+        case True thus ?thesis by simp
+      next
+        case False
+        note Null = this
+        have NT: "ST!n \<noteq> NT"
+        proof
+          assume "ST!n = NT"
+          moreover from ST n have "P,h \<turnstile> stk!n :\<le> ST!n" by (simp add: list_all2_conv_all_nth)
+          ultimately have "stk!n = Null" by simp
+          with Null show False by contradiction
+        qed
+
+        from NT wt \<Phi>_pc
+        have iec: "if is_external_call P (ST ! n) M' then \<exists>U Ts. P \<turnstile> rev (take n ST) [\<le>] Ts \<and> P \<turnstile> ST ! n\<bullet>M'(Ts) :: U
+          else \<exists>D D' Ts T m. ST!n = Class D \<and> P \<turnstile> D sees M': Ts\<rightarrow>T = m in D' \<and> P \<turnstile> rev (take n ST) [\<le>] Ts"
+          by(fastsimp split: split_if_asm simp add: split_beta)
+        show ?thesis
+        proof(cases "is_external_call P (ST ! n) M'")
+          case False
+          with iec obtain D D' Ts T m
+            where D: "ST!n = Class D"
+	    and m_D: "P \<turnstile> D sees M': Ts\<rightarrow>T = m in D'"
+	    and Ts:  "P \<turnstile> rev (take n ST) [\<le>] Ts"
+            by auto
+          from n ST D have "P,h \<turnstile> stk!n :\<le> Class D"
+	    by (auto simp add: list_all2_conv_all_nth)
+          from m_D wf have DObject: "D \<noteq> Object"
+	    by(auto dest: wf_Object_method_empty simp add: wf_jvm_prog_phi_def)
+          from `P,h \<turnstile> stk!n :\<le> Class D` Null DObject 
+          obtain a C' where
+	    Addr:   "stk!n = Addr a" and
+	    obj:    "typeof_addr h a = Some (Class C')" and
+	    C'subD: "P \<turnstile> C' \<preceq>\<^sup>* D"
+            by(cases "stk ! n")(auto simp add: conf_def widen_Class dest: typeof_addr_eq_Some_conv)
+          with Call_lemma[OF m_D C'subD wf] show ?thesis by(auto dest: external_call_not_sees_method)
+        next
+          case True
+          then obtain U TS where iec: "is_external_call P (ST ! n) M'"
+	    and wtext: "P \<turnstile> ST ! n\<bullet>M'(TS) :: U" and sub: "P \<turnstile> rev (take n ST) [\<le>] TS"
+            using iec by auto
+          
+          from n ST have "P,h \<turnstile> stk!n :\<le> ST ! n" by-(rule list_all2_nthD2)
+          moreover from iec have "is_refT (ST ! n)" by(rule is_external_call_is_refT)
+          ultimately obtain a where a: "stk ! n = Addr a" using Null
+	    by(cases "stk ! n")(auto simp add: conf_def widen_Class elim!: is_refT.cases)
+          with `P,h \<turnstile> stk!n :\<le> ST ! n` obtain Ta ao
+	    where Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>" "P \<turnstile> Ta \<le> ST ! n" "Ta \<noteq> NT"
+	    by(auto simp add: conf_def dest: typeof_addr_eq_Some_conv)
+          
+          from ST have "P,h \<turnstile> take n stk [:\<le>] take n ST" by(rule list_all2_takeI)
+          then obtain Us where "map typeof\<^bsub>h\<^esub> (take n stk) = map Some Us" "P \<turnstile> Us [\<le>] take n ST"
+	    by(auto simp add: confs_conv_map)
+          hence Us: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)" "P \<turnstile> rev Us [\<le>] rev (take n ST)"
+	    by- (simp only: rev_map[symmetric], simp)
+          with sub have "P \<turnstile> rev Us [\<le>] TS" by(auto intro: widens_trans)
+          show ?thesis
+          proof(cases "\<exists>D. Ta = Class D \<and> P \<turnstile> D has M'")
+            case False
+            with wtext `P \<turnstile> Ta \<le> ST ! n` `Ta \<noteq> NT` obtain U'
+	      where "P \<turnstile> Ta\<bullet>M'(TS) :: U'" "P \<turnstile> U' \<le> U"
+	      by(auto dest: external_WT_widen_mono split: ty.splits)
+            moreover from `P \<turnstile> Us [\<le>] take n ST` n have "length Us = n" by(auto dest: list_all2_lengthD)
+            ultimately have iec': "is_external_call P Ta M'" by-(drule external_WT_is_external_call, simp)
+            
+            from Ta Us `P \<turnstile> Ta\<bullet>M'(TS) :: U'` `P \<turnstile> Us [\<le>] take n ST` sub
+            have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : U'"
+              by(auto intro!: external_WT'.intros simp add: list_all2_rev1 intro: widens_trans)
+            from external_call_progress[OF wf this hconf, of t] Ta a iec'
+            show ?thesis by(auto dest!: red_external_imp_red_external_aggr)
+          next
+            case True
+            with Ta a show ?thesis unfolding has_method_def
+              by(auto dest: external_call_not_sees_method)
+          qed
+        qed
+      qed
+    qed(auto simp add: split_beta split: split_if_asm)
+    thus ?thesis using sees None
+      unfolding f exec_1_iff by(simp del: split_paired_Ex)
+  qed
+qed
+
+lemma (in JVM_heap_conf) BV_correct_initial:
+  shows "\<lbrakk> wf_jvm_prog\<^sub>\<Phi> P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = m in C; P,start_heap \<turnstile> vs [:\<le>] Ts \<rbrakk>
+  \<Longrightarrow> \<Phi> \<turnstile> start_tid:JVM_start_state' P C M vs \<surd>"
+  apply (cases m)                            
+  apply (unfold  JVM_start_state'_def)
+  apply (unfold correct_state_def)
+  apply (simp)
+  apply (rule conjI)
+   apply(erule tconf_start_heap_start_tid)
+  apply(rule conjI)
+   apply (simp add: wf_jvm_prog_phi_def hconf_start_heap) 
+  apply (frule wt_jvm_prog_impl_wt_start, assumption+)
+  apply (unfold conf_f_def wt_start_def)
+  apply(auto simp add: sup_state_opt_any_Some)
+   apply(erule preallocated_start_heap)
+  apply(rule exI conjI|assumption)+
+  apply(auto simp add: list_all2_append1)
+  apply(auto dest: list_all2_lengthD intro!: exI)
+  done
+
 end

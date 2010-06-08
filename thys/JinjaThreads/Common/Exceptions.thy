@@ -6,62 +6,46 @@
 
 header {* \isaheader{Exceptions} *}
 
-theory Exceptions imports Objects begin
+theory Exceptions imports Value begin
 
 definition NullPointer :: cname
-where [code_inline]: "NullPointer = STR ''NullPointer''"
+where [code_inline]: "NullPointer = STR ''java/lang/NullPointerException''"
 
 definition ClassCast :: cname
-where [code_inline]: "ClassCast = STR ''ClassCast''"
+where [code_inline]: "ClassCast = STR ''java/lang/ClassCastException''"
 
 definition OutOfMemory :: cname
-where [code_inline]: "OutOfMemory = STR ''OutOfMemory''"
+where [code_inline]: "OutOfMemory = STR ''java/lang/OutOfMemoryError''"
 
 definition ArrayIndexOutOfBounds :: cname
-where [code_inline]: "ArrayIndexOutOfBounds = STR ''ArrayIndexOutOfBounds''"
+where [code_inline]: "ArrayIndexOutOfBounds = STR ''java/lang/ArrayIndexOutOfBoundsException''"
 
 definition ArrayStore :: cname
-where [code_inline]: "ArrayStore = STR ''ArrayStore''"
+where [code_inline]: "ArrayStore = STR ''java/lang/ArrayStoreException''"
 
 definition NegativeArraySize :: cname
-where [code_inline]: "NegativeArraySize = STR ''NegativeArraySize''"
+where [code_inline]: "NegativeArraySize = STR ''java/lang/NegativeArraySizeException''"
 
 definition IllegalMonitorState :: cname
-where [code_inline]: "IllegalMonitorState = STR ''IllegalMonitorState''"
+where [code_inline]: "IllegalMonitorState = STR ''java/lang/IllegalMonitorStateException''"
 
 definition IllegalThreadState :: cname
-where [code_inline]: "IllegalThreadState = STR ''IllegalThreadState''"
+where [code_inline]: "IllegalThreadState = STR ''java/lang/IllegalThreadStateException''"
+
+definition CloneNotSupported :: cname
+where [code_inline]: "CloneNotSupported = STR ''java/lang/CloneNotSupportedException''"
+
+definition InterruptedException :: cname
+where [code_inline]: "InterruptedException = STR ''java/lang/InterruptedException''"
 
 definition sys_xcpts :: "cname set"
-where [code_inline]: "sys_xcpts = {NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds,
-                                   ArrayStore, NegativeArraySize, IllegalMonitorState, IllegalThreadState}"
-
-definition addr_of_sys_xcpt :: "cname \<Rightarrow> addr"
-where "addr_of_sys_xcpt s \<equiv> if s = NullPointer then 0 else
-                            if s = ClassCast then 1 else
-                            if s = OutOfMemory then 2 else
-                            if s = ArrayIndexOutOfBounds then 3 else
-                            if s = ArrayStore then 4 else
-                            if s = NegativeArraySize then 5 else 
-                            if s = IllegalMonitorState then 6 else 
-                            if s = IllegalThreadState then 7 else undefined"
-
-definition start_heap :: "'c prog \<Rightarrow> heap"
-where "start_heap G \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank G NullPointer)
-                            (addr_of_sys_xcpt ClassCast \<mapsto> blank G ClassCast)
-                            (addr_of_sys_xcpt OutOfMemory \<mapsto> blank G OutOfMemory)
-                            (addr_of_sys_xcpt ArrayIndexOutOfBounds \<mapsto> blank G ArrayIndexOutOfBounds)
-                            (addr_of_sys_xcpt ArrayStore \<mapsto> blank G ArrayStore)
-                            (addr_of_sys_xcpt NegativeArraySize \<mapsto> blank G NegativeArraySize)
-                            (addr_of_sys_xcpt IllegalMonitorState \<mapsto> blank G IllegalMonitorState)
-                            (addr_of_sys_xcpt IllegalThreadState \<mapsto> blank G IllegalThreadState)"
-
-definition preallocated :: "heap \<Rightarrow> bool"
-where "preallocated h \<equiv> \<forall>C \<in> sys_xcpts. \<exists>fs. h(addr_of_sys_xcpt C) = Some (Obj C fs)"
+where "sys_xcpts = {NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds,
+                    ArrayStore, NegativeArraySize, IllegalMonitorState, IllegalThreadState,
+                    CloneNotSupported, InterruptedException}"
 
 lemma sys_xcpts_code [code_inline]:
   "sys_xcpts = set [NullPointer, ClassCast, OutOfMemory, ArrayIndexOutOfBounds, ArrayStore,
-                    NegativeArraySize, IllegalMonitorState, IllegalThreadState]"
+                    NegativeArraySize, IllegalMonitorState, IllegalThreadState, CloneNotSupported, InterruptedException]"
 by(simp add: sys_xcpts_def)
 
 section "System exceptions"
@@ -74,14 +58,16 @@ lemma [simp]:
    ArrayStore \<in> sys_xcpts \<and> 
    NegativeArraySize \<in> sys_xcpts \<and> 
    IllegalMonitorState \<in> sys_xcpts \<and>
-   IllegalThreadState \<in> sys_xcpts"
-(*<*)by(simp add: sys_xcpts_def)(*>*)
+   IllegalThreadState \<in> sys_xcpts \<and>
+   CloneNotSupported \<in> sys_xcpts \<and>
+   InterruptedException \<in> sys_xcpts"
+by(simp add: sys_xcpts_def)
 
 lemma sys_xcpts_cases [consumes 1, cases set]:
   "\<lbrakk> C \<in> sys_xcpts; P NullPointer; P OutOfMemory; P ClassCast; 
      P ArrayIndexOutOfBounds; P ArrayStore; P NegativeArraySize;
-     P IllegalMonitorState; P IllegalThreadState \<rbrakk> \<Longrightarrow> P C"
-(*<*)by (auto simp add: sys_xcpts_def)(*>*)
+     P IllegalMonitorState; P IllegalThreadState; P CloneNotSupported; P InterruptedException \<rbrakk> \<Longrightarrow> P C"
+by (auto simp add: sys_xcpts_def)
 
 lemma OutOfMemory_not_Object[simp]: "OutOfMemory \<noteq> Object"
 by(simp add: OutOfMemory_def Object_def)
@@ -107,106 +93,33 @@ by(simp add: IllegalMonitorState_def Object_def)
 lemma IllegalThreadState_not_Object[simp]: "IllegalThreadState \<noteq> Object"
 by(simp add: IllegalThreadState_def Object_def)
 
-section "@{term preallocated}"
+lemma CloneNotSupported_not_Object[simp]: "CloneNotSupported \<noteq> Object"
+by(simp add: CloneNotSupported_def Object_def)
 
-lemma preallocated_dom [simp]: 
-  "\<lbrakk> preallocated h; C \<in> sys_xcpts \<rbrakk> \<Longrightarrow> addr_of_sys_xcpt C \<in> dom h"
-(*<*)by (fastsimp simp:preallocated_def dom_def)(*>*)
+lemma InterruptedException_not_Object[simp]: "InterruptedException \<noteq> Object"
+by(simp add: InterruptedException_def Object_def)
 
-lemma preallocatedD:
-  "\<lbrakk> preallocated h; C \<in> sys_xcpts \<rbrakk>
-  \<Longrightarrow> \<exists>fs. h(addr_of_sys_xcpt C) = Some (Obj C fs)"
-(*<*)by(auto simp add: preallocated_def sys_xcpts_def)(*>*)
+lemma sys_xcpts_neqs_aux:
+  "NullPointer \<noteq> ClassCast" "NullPointer \<noteq> OutOfMemory" "NullPointer \<noteq> ArrayIndexOutOfBounds"
+  "NullPointer \<noteq> ArrayStore" "NullPointer \<noteq> NegativeArraySize" "NullPointer \<noteq> IllegalMonitorState"
+  "NullPointer \<noteq> IllegalThreadState" "NullPointer \<noteq> CloneNotSupported" "NullPointer \<noteq> InterruptedException"
+  "ClassCast \<noteq> OutOfMemory" "ClassCast \<noteq> ArrayIndexOutOfBounds"
+  "ClassCast \<noteq> ArrayStore" "ClassCast \<noteq> NegativeArraySize" "ClassCast \<noteq> IllegalMonitorState"
+  "ClassCast \<noteq> IllegalThreadState" "ClassCast \<noteq> CloneNotSupported" "ClassCast \<noteq> InterruptedException"
+  "OutOfMemory \<noteq> ArrayIndexOutOfBounds"
+  "OutOfMemory \<noteq> ArrayStore" "OutOfMemory \<noteq> NegativeArraySize" "OutOfMemory \<noteq> IllegalMonitorState"
+  "OutOfMemory \<noteq> IllegalThreadState" "OutOfMemory \<noteq> CloneNotSupported" "OutOfMemory \<noteq> InterruptedException"
+  "ArrayIndexOutOfBounds \<noteq> ArrayStore" "ArrayIndexOutOfBounds \<noteq> NegativeArraySize" "ArrayIndexOutOfBounds \<noteq> IllegalMonitorState"
+  "ArrayIndexOutOfBounds \<noteq> IllegalThreadState" "ArrayIndexOutOfBounds \<noteq> CloneNotSupported" "ArrayIndexOutOfBounds \<noteq> InterruptedException"
+  "ArrayStore \<noteq> NegativeArraySize" "ArrayStore \<noteq> IllegalMonitorState"
+  "ArrayStore \<noteq> IllegalThreadState" "ArrayStore \<noteq> CloneNotSupported" "ArrayStore \<noteq> InterruptedException"
+  "NegativeArraySize \<noteq> IllegalMonitorState"
+  "NegativeArraySize \<noteq> IllegalThreadState" "NegativeArraySize \<noteq> CloneNotSupported" "NegativeArraySize \<noteq> InterruptedException"
+  "IllegalMonitorState \<noteq> IllegalThreadState" "IllegalMonitorState \<noteq> CloneNotSupported" "IllegalMonitorState \<noteq> InterruptedException"
+  "IllegalThreadState \<noteq> CloneNotSupported" "IllegalThreadState \<noteq> InterruptedException"
+  "CloneNotSupported \<noteq> InterruptedException"
+by(simp_all add: NullPointer_def ClassCast_def OutOfMemory_def ArrayIndexOutOfBounds_def ArrayStore_def NegativeArraySize_def IllegalMonitorState_def IllegalThreadState_def CloneNotSupported_def InterruptedException_def)
 
-lemma preallocatedE [elim?]:
-  "\<lbrakk> preallocated h; C \<in> sys_xcpts;
-     \<And>fs. h(addr_of_sys_xcpt C) = Some (Obj C fs) \<Longrightarrow> P h C\<rbrakk>
-  \<Longrightarrow> P h C"
-(*<*)by (fast dest: preallocatedD)(*>*)
-
-lemma cname_of_xcp [simp]:
-  "\<lbrakk> preallocated h; C \<in> sys_xcpts \<rbrakk> \<Longrightarrow> cname_of h (addr_of_sys_xcpt C) = C"
-apply(erule preallocatedE)
-apply(auto elim: preallocatedE)
-done
-
-
-lemma typeof_ClassCast [simp]:
-  "preallocated h \<Longrightarrow>
-  typeof\<^bsub>h\<^esub> (Addr(addr_of_sys_xcpt ClassCast)) = Some(Class ClassCast)" 
-by(erule preallocatedE, auto split:heapobj.split if_splits simp add: addr_of_sys_xcpt_def preallocated_def)
-
-lemma typeof_OutOfMemory [simp]:
-  "preallocated h \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr(addr_of_sys_xcpt OutOfMemory)) = Some(Class OutOfMemory)" 
-by(erule preallocatedE, auto split:heapobj.split if_splits simp add: addr_of_sys_xcpt_def preallocated_def)
-
-lemma typeof_NullPointer [simp]:
-  "preallocated h \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr(addr_of_sys_xcpt NullPointer)) = Some(Class NullPointer)" 
-by(erule preallocatedE, auto split:heapobj.split if_splits simp add: addr_of_sys_xcpt_def preallocated_def)
-
-lemma typeof_ArrayIndexOutOfBounds [simp]:
-  "preallocated h \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr(addr_of_sys_xcpt ArrayIndexOutOfBounds)) = Some(Class ArrayIndexOutOfBounds)" 
-by(erule preallocatedE, auto split:heapobj.split if_splits simp add: addr_of_sys_xcpt_def preallocated_def)
-
-lemma typeof_ArrayStore [simp]:
-  "preallocated h \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr(addr_of_sys_xcpt ArrayStore)) = Some(Class ArrayStore)" 
-by(erule preallocatedE, auto split:heapobj.split if_splits simp add: addr_of_sys_xcpt_def preallocated_def)
-
-lemma typeof_NegativeArraySize [simp]:
-  "preallocated h \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr(addr_of_sys_xcpt NegativeArraySize)) = Some(Class NegativeArraySize)" 
-by(erule preallocatedE, auto split:heapobj.split if_splits simp add: addr_of_sys_xcpt_def preallocated_def)
-
-lemma typeof_IllegalMonitorState [simp]:
-  "preallocated h \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr(addr_of_sys_xcpt IllegalMonitorState)) = Some(Class IllegalMonitorState)" 
-by(erule preallocatedE, auto split:heapobj.split if_splits simp add: addr_of_sys_xcpt_def preallocated_def)
-
-lemma typeof_IllegalThreadState [simp]:
-  "preallocated h \<Longrightarrow> typeof\<^bsub>h\<^esub> (Addr(addr_of_sys_xcpt IllegalThreadState)) = Some(Class IllegalThreadState)" 
-by(erule preallocatedE, auto split:heapobj.split if_splits simp add: addr_of_sys_xcpt_def preallocated_def)
-
-lemma preallocated_hext:
-  "\<lbrakk> preallocated h; h \<unlhd> h' \<rbrakk> \<Longrightarrow> preallocated h'"
-(*<*)by (simp add: preallocated_def hext_def)(*>*)
-
-(*<*)
-lemmas preallocated_upd_obj = preallocated_hext [OF _ hext_upd_obj]
-lemmas preallocated_new  = preallocated_hext [OF _ hext_new]
-(*>*)
-
-lemma preallocated_upd_arr:
-  "\<lbrakk> preallocated h; h a = \<lfloor>Arr T el\<rfloor> \<rbrakk> \<Longrightarrow> preallocated (h(a \<mapsto> Arr T el'))"
-by(auto simp add: preallocated_def)
-
-
-lemma addrNullPointer: "addr_of_sys_xcpt NullPointer = 0"
-by (simp add: addr_of_sys_xcpt_def)
-
-lemma addrClassCast: "addr_of_sys_xcpt ClassCast = 1"
-by (simp add: addr_of_sys_xcpt_def ClassCast_def NullPointer_def)
-
-lemma addrOutOfMemory: "addr_of_sys_xcpt OutOfMemory = 2"
-by (simp add: addr_of_sys_xcpt_def ClassCast_def NullPointer_def OutOfMemory_def)
-
-lemma addrArrayIndex: "addr_of_sys_xcpt ArrayIndexOutOfBounds = 3"
-by (simp add: addr_of_sys_xcpt_def ClassCast_def NullPointer_def OutOfMemory_def ArrayIndexOutOfBounds_def)
-
-lemma addrArrayStore: "addr_of_sys_xcpt ArrayStore = 4"
-by (simp add: addr_of_sys_xcpt_def ClassCast_def NullPointer_def OutOfMemory_def ArrayIndexOutOfBounds_def ArrayStore_def)
-
-lemma addrNegativeArray: "addr_of_sys_xcpt NegativeArraySize = 5"
-by (simp add: addr_of_sys_xcpt_def ClassCast_def NullPointer_def OutOfMemory_def ArrayIndexOutOfBounds_def ArrayStore_def NegativeArraySize_def)
-
-lemma addrIllegalMonitorState: "addr_of_sys_xcpt IllegalMonitorState = 6"
-by (simp add: addr_of_sys_xcpt_def ClassCast_def NullPointer_def OutOfMemory_def ArrayIndexOutOfBounds_def ArrayStore_def NegativeArraySize_def IllegalMonitorState_def)
-
-lemma addrIllegalThreadState: "addr_of_sys_xcpt IllegalThreadState = 7"
-by (simp add: addr_of_sys_xcpt_def ClassCast_def NullPointer_def OutOfMemory_def ArrayIndexOutOfBounds_def ArrayStore_def NegativeArraySize_def IllegalMonitorState_def IllegalThreadState_def)
-
-lemma preallocated_start:
-  "preallocated (start_heap P)"
-apply(clarsimp simp add: preallocated_def)
-apply(erule sys_xcpts_cases)
-apply(simp, simp only: addrNullPointer addrClassCast addrOutOfMemory addrArrayIndex addrArrayStore addrNegativeArray addrIllegalMonitorState addrIllegalThreadState start_heap_def fun_upd_apply addr_of_sys_xcpt_def, simp only: NegativeArraySize_def NullPointer_def ClassCast_def OutOfMemory_def ArrayIndexOutOfBounds_def NegativeArraySize_def ArrayStore_def IllegalMonitorState_def IllegalThreadState_def, simp add: blank_def)+
-done
+lemmas sys_xcpts_neqs = sys_xcpts_neqs_aux sys_xcpts_neqs_aux[symmetric]
 
 end

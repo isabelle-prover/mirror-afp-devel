@@ -15,53 +15,54 @@ types ty\<^isub>i' = "ty\<^isub>i option"
 types ty\<^isub>m = "ty\<^isub>i' list"
 types ty\<^isub>P = "mname \<Rightarrow> cname \<Rightarrow> ty\<^isub>m"
 
-
-constdefs
-  stk_esl :: "'c prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>s esl"
+definition stk_esl :: "'c prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>s esl"
+where
   "stk_esl P mxs \<equiv> upto_esl mxs (SemiType.esl P)"
 
-  loc_sl :: "'c prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>l sl"
+definition loc_sl :: "'c prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>l sl"
+where
   "loc_sl P mxl \<equiv> Listn.sl mxl (Err.sl (SemiType.esl P))"
 
-  sl :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err sl"
+definition sl :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err sl"
+where
   "sl P mxs mxl \<equiv>
   Err.sl(Opt.esl(Product.esl (stk_esl P mxs) (Err.esl(loc_sl P mxl))))"
 
-
-constdefs
-  states :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err set"
+definition "states" :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err set"
+where
   "states P mxs mxl \<equiv> fst(sl P mxs mxl)"
 
-  le :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err ord"
+definition le :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err ord"
+where
   "le P mxs mxl \<equiv> fst(snd(sl P mxs mxl))"
 
-  sup :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err binop"
+definition sup :: "'c prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^isub>i' err binop"
+where
   "sup P mxs mxl \<equiv> snd(snd(sl P mxs mxl))"
 
-
-constdefs
-  sup_ty_opt :: "['c prog,ty err,ty err] \<Rightarrow> bool" 
+definition sup_ty_opt :: "['c prog,ty err,ty err] \<Rightarrow> bool" 
                  ("_ |- _ <=T _" [71,71,71] 70)
+where
   "sup_ty_opt P \<equiv> Err.le (widen P)"
 
-  sup_state :: "['c prog,ty\<^isub>i,ty\<^isub>i] \<Rightarrow> bool"   
+definition sup_state :: "['c prog,ty\<^isub>i,ty\<^isub>i] \<Rightarrow> bool"   
                  ("_ |- _ <=i _"  [71,71,71] 70)
+where
   "sup_state P \<equiv> Product.le (Listn.le (widen P)) (Listn.le (sup_ty_opt P))"
 
-  sup_state_opt :: "['c prog,ty\<^isub>i',ty\<^isub>i'] \<Rightarrow> bool" 
+definition sup_state_opt :: "['c prog,ty\<^isub>i',ty\<^isub>i'] \<Rightarrow> bool" 
                  ("_ |- _ <=' _"  [71,71,71] 70)
+where
   "sup_state_opt P \<equiv> Opt.le (sup_state P)"
 
-abbreviation
-  sup_loc :: "['c prog,ty\<^isub>l,ty\<^isub>l] \<Rightarrow> bool"  ("_ |- _ [<=T] _"  [71,71,71] 70)
-  where "P |- LT [<=T] LT' \<equiv> list_all2 (sup_ty_opt P) LT LT'"
+abbreviation sup_loc :: "['c prog,ty\<^isub>l,ty\<^isub>l] \<Rightarrow> bool" ("_ |- _ [<=T] _"  [71,71,71] 70)
+where "P |- LT [<=T] LT' \<equiv> list_all2 (sup_ty_opt P) LT LT'"
 
 notation (xsymbols)
-  sup_ty_opt  ("_ \<turnstile> _ \<le>\<^sub>\<top> _" [71,71,71] 70) and
-  sup_state  ("_ \<turnstile> _ \<le>\<^sub>i _" [71,71,71] 70) and
-  sup_state_opt  ("_ \<turnstile> _ \<le>' _" [71,71,71] 70) and
-  sup_loc  ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70)
-
+  sup_ty_opt ("_ \<turnstile> _ \<le>\<^sub>\<top> _" [71,71,71] 70) and
+  sup_state ("_ \<turnstile> _ \<le>\<^sub>i _" [71,71,71] 70) and
+  sup_state_opt ("_ \<turnstile> _ \<le>' _" [71,71,71] 70) and
+  sup_loc ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70)
 
 section "Unfolding"
 

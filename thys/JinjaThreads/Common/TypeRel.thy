@@ -7,7 +7,7 @@
 
 header {* \isaheader{Relations between Jinja Types} *}
 
-theory TypeRel imports Decl begin
+theory TypeRel imports Decl "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs" begin
 
 subsection{* The subclass relations *}
 
@@ -448,13 +448,14 @@ qed
 (*>*)
 
 
-constdefs
-  Method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> cname \<Rightarrow> bool"
+definition Method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> cname \<Rightarrow> bool"
             ("_ \<turnstile> _ sees _: _\<rightarrow>_ = _ in _" [51,51,51,51,51,51,51] 50)
+where
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D  \<equiv>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and> Mm M = Some((Ts,T,m),D)"
 
-  has_method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" ("_ \<turnstile> _ has _" [51,0,51] 50)
+definition has_method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" ("_ \<turnstile> _ has _" [51,0,51] 50)
+where
   "P \<turnstile> C has M \<equiv> \<exists>Ts T m D. P \<turnstile> C sees M:Ts\<rightarrow>T = m in D"
 
 lemma has_methodI:
@@ -619,9 +620,10 @@ lemma has_fields_is_class:
 
 
 (* FIXME why is Field not displayed correctly? TypeRel qualifier seems to confuse printer*)
-constdefs
+definition
   has_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
                    ("_ \<turnstile> _ has _:_ in _" [51,51,51,51,51] 50)
+where
   "P \<turnstile> C has F:T in D  \<equiv>
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and> map_of FDTs (F,D) = Some T"
 
@@ -643,9 +645,14 @@ lemma has_field_decl_above:
 unfolding has_field_def
 by(auto dest: map_of_SomeD has_fields_decl_above)
 
-constdefs
+lemma has_field_fun:
+  "\<lbrakk>P \<turnstile> C has F:T in D; P \<turnstile> C has F:T' in D\<rbrakk> \<Longrightarrow> T' = T"
+by(auto simp:has_field_def dest:has_fields_fun)
+
+definition
   sees_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
                   ("_ \<turnstile> _ sees _:_ in _" [51,51,51,51,51] 50)
+where
   "P \<turnstile> C sees F:T in D  \<equiv>
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and>
             map_of (map (\<lambda>((F,D),T). (F,(D,T))) FDTs) F = Some(D,T)"
@@ -697,15 +704,14 @@ lemma sees_field_idemp:
 
 subsection "Functional lookup"
 
-constdefs
-  method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> cname \<times> ty list \<times> ty \<times> 'm"
-  "method P C M  \<equiv>  THE (D,Ts,T,m). P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
+definition method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> cname \<times> ty list \<times> ty \<times> 'm"
+where "method P C M  \<equiv>  THE (D,Ts,T,m). P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
 
-  field  :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> cname \<times> ty"
-  "field P C F  \<equiv>  THE (D,T). P \<turnstile> C sees F:T in D"
+definition field  :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> cname \<times> ty"
+where "field P C F  \<equiv>  THE (D,T). P \<turnstile> C sees F:T in D"
                                                         
-  fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> ty) list" 
-  "fields P C  \<equiv>  THE FDTs. P \<turnstile> C has_fields FDTs"                
+definition fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> ty) list" 
+where "fields P C  \<equiv>  THE FDTs. P \<turnstile> C has_fields FDTs"                
 
 lemma [simp]: "P \<turnstile> C has_fields FDTs \<Longrightarrow> fields P C = FDTs"
 (*<*)by (unfold fields_def) (auto dest: has_fields_fun)(*>*)
@@ -721,6 +727,143 @@ lemma has_fields_b_fields:
 unfolding fields_def
 by (blast intro: the_equality has_fields_fun)
 
+subsection {* Code generation *}
+
+text {* New introduction rules for subcls1 *}
+
+lemma subcls1_intros:
+ "C \<noteq> Object \<Longrightarrow> subcls1 ((C, D, rest) # P) C D"
+ "\<lbrakk> subcls1 P C D; C \<noteq> Object; C \<noteq> C' \<rbrakk> \<Longrightarrow> subcls1 ((C', D', rest) # P) C D"
+apply -
+ apply(rule subcls1I)
+  apply(simp add: class_def)
+ apply assumption
+apply(erule subcls1.cases)
+apply(rule subcls1I)
+ apply(simp add: class_def)
+apply assumption
+done
+
+lemma subcls1_cases:
+  assumes "subcls1 P C D"
+  obtains rest P' where "P = (C, D, rest) # P'" "C \<noteq> Object"
+  | rest C' D' P' where "P = (C', D', rest) # P'" "subcls1 P' C D" "C \<noteq> Object" "C \<noteq> C'"
+proof(atomize_elim)
+  from assms
+  show "(\<exists>rest P'. P = (C, D, rest) # P' \<and> C \<noteq> Object) \<or>
+    (\<exists>C' D' rest P'. P = (C', D', rest) # P' \<and> P' \<turnstile> C \<prec>\<^sup>1 D \<and> C \<noteq> Object \<and> C \<noteq> C')"
+  proof(induct P)
+    case Nil thus ?case
+      by(auto elim: subcls1.cases simp add: class_def)
+  next
+    case (Cons a P)
+    obtain C' D' rest where [simp]: "a = (C', D', rest)" by(cases a)
+    show ?case
+    proof(cases "C = C'")
+      case True
+      with `(a # P) \<turnstile> C \<prec>\<^sup>1 D` show ?thesis
+        by(auto elim: subcls1.cases simp add: class_def)
+    next
+      case False
+      with `(a # P) \<turnstile> C \<prec>\<^sup>1 D` have "P \<turnstile> C \<prec>\<^sup>1 D"
+        by(auto elim!: subcls1.cases simp add: class_def intro: subcls1I)
+      with Cons have "(\<exists>C' D' rest P'. a # P = (C', D', rest) # P' \<and> P' \<turnstile> C \<prec>\<^sup>1 D \<and> C \<noteq> Object \<and> C \<noteq> C')"
+        using False by(auto)
+      thus ?thesis ..
+    qed
+  qed
+qed
+
+declare subcls1_intros [code_pred_intro]
+code_pred subcls1
+proof -
+  case subcls1
+  thus thesis
+    by(rule subcls1_cases)(assumption|rule refl)+
+qed
+
+text {*
+  Introduce proper constant @{text "subcls'"} for @{term "subcls"}
+  and generate executable equation for @{text "subcls'"} 
+*}
+
+definition subcls' where "subcls' = subcls"
+
+code_pred [inductify] subcls' .
+
+lemma subcls_conv_subcls' [code_inline]:
+  "(subcls1 P)^** = subcls' P"
+by(simp add: subcls'_def)
+
+text {* 
+  Change rule @{thm widen_array_object} such that predicate compiler
+  tests on class @{term Object} first. Otherwise @{text "widen_i_o_i"} never terminates.
+*}
+
+lemma widen_array_object_code:
+  "\<lbrakk> C = Object; is_type P A \<rbrakk> \<Longrightarrow> P \<turnstile> Array A \<le> Class C"
+by(auto intro: widen.intros)
+
+(* lemmas [code_pred_intro] =
+  widen_refl widen_subcls widen_null widen_null_array widen_array_object_code widen_array_array
+code_pred [show_modes] widen 
+by(erule widen.cases) auto  *)
+
+lemmas [code_pred_def] =
+  widen_refl widen_subcls widen_null widen_null_array widen_array_object_code widen_array_array
+code_pred [inductify] widen . 
+
+code_pred Methods .
+
+code_pred [inductify] Method .
+
+code_pred [inductify] has_method .
+
+(* FIXME: Necessary only because of bug in code_pred *)
+declare fun_upd_def [code_pred_inline]
+
+code_pred Fields .
+
+code_pred [inductify, skip_proof] has_field .
+
+code_pred [inductify, skip_proof] sees_field .
+
+lemma eval_Method_i_i_i_o_o_o_o_conv:
+  "Predicate.eval (Method_i_i_i_o_o_o_o P C M) = (\<lambda>(Ts, T, m, D). P \<turnstile> C sees M:Ts\<rightarrow>T=m in D)"
+by(auto intro: Method_i_i_i_o_o_o_oI elim: Method_i_i_i_o_o_o_oE intro!: ext)
+
+lemma method_code [code]:
+  "method P C M = 
+  Predicate.the (Predicate.bind (Method_i_i_i_o_o_o_o P C M) (\<lambda>(Ts, T, m, D). Predicate.single (D, Ts, T, m)))"
+apply(simp add: method_def Predicate.the_def Predicate.bind_def Predicate.single_def eval_Method_i_i_i_o_o_o_o_conv)
+apply(rule arg_cong[where f=The])
+apply(rule ext)
+apply clarsimp
+done
+
+lemma eval_sees_field_i_i_i_o_o_conv:
+  "Predicate.eval (sees_field_i_i_i_o_o P C F) = (\<lambda>(T, D). P \<turnstile> C sees F:T in D)"
+by(auto intro!: ext intro: sees_field_i_i_i_o_oI elim: sees_field_i_i_i_o_oE)
+
+lemma eval_sees_field_i_i_i_o_i_conv:
+  "Predicate.eval (sees_field_i_i_i_o_i P C F D) = (\<lambda>T. P \<turnstile> C sees F:T in D)"
+by(auto intro!: ext intro: sees_field_i_i_i_o_iI elim: sees_field_i_i_i_o_iE)
+
+lemma field_code [code]:
+  "field P C F = Predicate.the (Predicate.bind (sees_field_i_i_i_o_o P C F) (\<lambda>(T, D). Predicate.single (D, T)))"
+apply(simp add: field_def Predicate.the_def Predicate.bind_def Predicate.single_def eval_sees_field_i_i_i_o_o_conv)
+apply(rule arg_cong[where f=The])
+apply(rule ext)
+apply clarsimp
+done
+
+lemma eval_Fields_conv:
+  "Predicate.eval (Fields_i_i_o P C) = (\<lambda>FDTs. P \<turnstile> C has_fields FDTs)"
+by(auto intro: Fields_i_i_oI elim: Fields_i_i_oE intro!: ext)
+
+lemma fields_code [code]:
+  "fields P C = Predicate.the (Fields_i_i_o P C)"
+by(simp add: fields_def Predicate.the_def eval_Fields_conv)
 
 end
 

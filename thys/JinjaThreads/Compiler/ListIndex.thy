@@ -15,16 +15,14 @@ variable names is maintained. To find the index of some variable
 @{term V}, we have to find the index of the \emph{last} occurrence of
 @{term V} in @{term Vs}. This is what @{term index} does: *}
 
-consts
-  index :: "'a list \<Rightarrow> 'a \<Rightarrow> nat"
-primrec
+primrec index :: "'a list \<Rightarrow> 'a \<Rightarrow> nat"
+where
   "index [] y = 0"
-  "index (x#xs) y =
+| "index (x#xs) y =
   (if x=y then if x \<in> set xs then index xs y + 1 else 0 else index xs y + 1)"
 
-constdefs
-  hidden :: "'a list \<Rightarrow> nat \<Rightarrow> bool"
-  "hidden xs i  \<equiv>  i < size xs \<and> xs!i \<in> set(drop (i+1) xs)"
+definition hidden :: "'a list \<Rightarrow> nat \<Rightarrow> bool"
+where "hidden xs i  \<equiv>  i < size xs \<and> xs!i \<in> set(drop (i+1) xs)"
 
 subsection {* @{term index} *}
 
@@ -146,5 +144,79 @@ apply(simp add:fun_upds_apply index_less_aux eq_sym_conv Let_def)
 done
 (*>*)
 
+lemma image_index:
+  "A \<subseteq> set(xs@[x]) \<Longrightarrow> index (xs @ [x]) ` A =
+  (if x \<in> A then insert (size xs) (index xs ` (A-{x})) else index xs ` A)"
+(*<*)
+apply(auto simp:image_def)
+   apply(rule bexI)
+    prefer 2 apply blast
+   apply simp
+  apply(rule ccontr)
+  apply(erule_tac x=xa in ballE)
+   prefer 2 apply blast
+  apply(fastsimp simp add:neq_commute)
+ apply(subgoal_tac "x \<noteq> xa")
+  prefer 2 apply blast
+ apply(fastsimp simp add:neq_commute)
+apply(subgoal_tac "x \<noteq> xa")
+ prefer 2 apply blast
+apply(force)
+done
+(*>*)
+
+lemma index_le_lengthD: "index xs x < length xs \<Longrightarrow> x \<in> set xs"
+by(erule contrapos_pp)(simp)
+
+lemma not_hidden_index_nth: "\<lbrakk> i < length Vs; \<not> hidden Vs i \<rbrakk> \<Longrightarrow> index Vs (Vs ! i) = i"
+by(induct Vs arbitrary: i)(auto split: split_if_asm nat.split_asm simp add: nth_Cons hidden_def)
+
+lemma hidden_snoc_nth:
+  assumes len: "i < length Vs"
+  shows "hidden (Vs @ [Vs ! i]) i"
+proof(cases "hidden Vs i")
+  case True thus ?thesis by simp
+next
+  case False
+  with len have "index Vs (Vs ! i) = i" by(rule not_hidden_index_nth)
+  moreover from len have "hidden (Vs @ [Vs ! i]) (index Vs (Vs ! i))"
+    by(auto intro: hidden_index)
+  ultimately show ?thesis by simp
+qed
+
+lemma map_upds_Some_eq_nth_index:
+  assumes "[Vs [\<mapsto>] vs] V = Some v" "length Vs \<le> length vs"
+  shows "vs ! index Vs V = v"
+proof -
+  from `[Vs [\<mapsto>] vs] V = Some v` have "V \<in> set Vs"
+    by -(rule classical, auto)
+  with `[Vs [\<mapsto>] vs] V = Some v` `length Vs \<le> length vs` show ?thesis
+  proof(induct Vs arbitrary: vs)
+    case Nil thus ?case by simp
+  next
+    case (Cons x xs ys)
+    note IH = `\<And>vs. \<lbrakk> [xs [\<mapsto>] vs] V = Some v; length xs \<le> length vs; V \<in> set xs \<rbrakk> \<Longrightarrow> vs ! index xs V = v`
+    from `[x # xs [\<mapsto>] ys] V = Some v` obtain y Ys where "ys = y # Ys" by(cases ys, auto)
+    with `length (x # xs) \<le> length ys` have "length xs \<le> length Ys" by simp
+    show ?case
+    proof(cases "V \<in> set xs")
+      case True
+      with `[x # xs [\<mapsto>] ys] V = Some v` `length xs \<le> length Ys` `ys = y # Ys`
+      have "[xs [\<mapsto>] Ys] V = Some v"
+	apply(auto simp add: map_upds_def map_of_eq_None_iff set_zip image_Collect split: split_if_asm)
+	apply(clarsimp simp add: in_set_conv_decomp)
+	apply(erule_tac x="length ys" in allE)
+	by(simp)
+      with IH[OF this `length xs \<le> length Ys` True] `ys = y # Ys` True
+      show ?thesis by(simp)
+    next
+      case False with `V \<in> set (x # xs)` have "x = V" by auto
+      with False `[x # xs [\<mapsto>] ys] V = Some v` `ys = y # Ys` have "y = v"
+	by(auto)
+      with False `x = V` `ys = y # Ys` 
+      show ?thesis by(simp)
+    qed
+  qed
+qed
 
 end
