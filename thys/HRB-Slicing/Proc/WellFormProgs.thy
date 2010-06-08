@@ -15,28 +15,11 @@ definition well_formed :: "procs \<Rightarrow> bool"
 lemma [dest]:"\<lbrakk>well_formed procs; (Main,ins,outs,c) \<in> set procs\<rbrakk> \<Longrightarrow> False"
   by(fastsimp simp:well_formed_def wf_proc_def)
 
-lemma [dest]:"\<lbrakk>well_formed procs; i < length procs; procs!i = (Main,ins,outs,c)\<rbrakk>
-  \<Longrightarrow> False"
-  by(fastsimp dest:nth_mem)
-
 lemma well_formed_same_procs [dest]:
   "\<lbrakk>well_formed procs; (p,ins,outs,c) \<in> set procs; (p,ins',outs',c') \<in> set procs\<rbrakk>
   \<Longrightarrow> ins = ins' \<and> outs = outs' \<and> c = c'"
   apply(auto simp:well_formed_def distinct_fst_def distinct_map inj_on_def)
 by(erule_tac x="(p,ins,outs,c)" in ballE,auto)+
-
-lemma well_formed_same_procs_nth [dest]:
-  "\<lbrakk>well_formed procs; (p,ins,outs,c) \<in> set procs; i < length procs;
-    procs!i = (p,ins',outs',c')\<rbrakk> 
-  \<Longrightarrow> ins = ins' \<and> outs = outs' \<and> c = c'"
-  by(fastsimp dest:nth_mem)
-
-lemma well_formed_same_procs_nth_nth:
-  "\<lbrakk>well_formed procs; i < length procs; j < length procs; procs!i = (p,ins,outs,c);
-    procs!j = (p,ins',outs',c')\<rbrakk>
-  \<Longrightarrow> ins = ins' \<and> outs = outs' \<and> c = c' \<and> i = j"
-  by(fastsimp simp:well_formed_def distinct_fst_def distinct_map distinct_conv_nth)
-
 
 
 lemma PCFG_sourcelabel_None_less_num_nodes:
@@ -67,11 +50,11 @@ proof(induct "(p,Label l)" et n' arbitrary:l rule:PCFG.induct)
     `(p,ins',outs',c') \<in> set procs`
   show ?case by fastsimp
 next
-  case (ProcCall i ins' outs' c' l p' es rets l' ins'' outs'' c'')
-  from `c' \<turnstile> Label l -CEdge (p',es,rets)\<rightarrow>\<^isub>p Label l'` have "l < #:c'"
+  case (ProcCall ins' outs' c' l' p' es rets l'' ins'' outs'' c'' ps)
+  from `c' \<turnstile> Label l' -CEdge (p',es,rets)\<rightarrow>\<^isub>p Label l''` have "l' < #:c'"
     by(fastsimp intro:Proc_CFG_sourcelabel_less_num_nodes)
   with `well_formed procs` `(p,ins,outs,c) \<in> set procs` 
-    `i < length procs` `procs ! i = (p, ins', outs', c')`
+    `(p, ins', outs', c') \<in> set procs`
   show ?case by fastsimp
 next
   case (ProcCallReturn ins' outs' c' p' es rets n')
@@ -112,11 +95,11 @@ proof(induct n et "(p,Label l)" arbitrary:l rule:PCFG.induct)
     `(p,ins',outs',c') \<in> set procs`
   show ?case by fastsimp
 next
-  case (ProcReturn i ins' outs' c' l' p'' es rets l ins'' outs'' c'')
-  from `c' \<turnstile> Label l' -CEdge (p'',es,rets)\<rightarrow>\<^isub>p Label l` have "l < #:c'"
+  case (ProcReturn ins' outs' c' l' p' es rets l ins'' outs'' c'' ps)
+  from `c' \<turnstile> Label l' -CEdge (p',es,rets)\<rightarrow>\<^isub>p Label l` have "l < #:c'"
     by(fastsimp intro:Proc_CFG_targetlabel_less_num_nodes)
   with `well_formed procs` `(p,ins,outs,c) \<in> set procs` 
-    `i < length procs` `procs ! i = (p, ins', outs', c')`
+    `(p, ins', outs', c') \<in> set procs`
   show ?case by fastsimp
 next
   case (ProcCallReturn ins' outs' c' n p'' es rets)
@@ -152,18 +135,16 @@ next
   with `et' = (\<lambda>s. True):(Main,n'')\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es'` `ins = ins'`
   show ?case by simp
 next
-  case (ProcCall i p ins outs c l p' es' rets' l' ins' outs' c' es rets)
-  from `prog,procs \<turnstile> (p,Label l) -et'\<rightarrow> (p',Entry)`
-    `(p',ins',outs',c') \<in> set procs` `well_formed procs`
-    `i < length procs` `procs ! i = (p, ins, outs, c)` `well_formed procs`
+  case (ProcCall p ins outs c l p' es' rets' l' ins' outs' c' ps)
+  from `prog,procs \<turnstile> (p,Label l) -et'\<rightarrow> (p',Entry)` `(p',ins',outs',c') \<in> set procs` 
+    `(p, ins, outs, c) \<in> set procs` `well_formed procs`
     `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
   show ?case
   proof(induct "(p,Label l)" et' "(p',Entry)" rule:PCFG.induct)
-    case (ProcCall ix insx outsx cx es'x rets'x l'x ins'x outs'x c'x ps
-      esx retsx)
-    from `well_formed procs` `ix < length procs` `i < length procs` 
-      `procs ! ix = (p, insx, outsx, cx)` `procs ! i = (p, ins, outs, c)`
-    have [simp]:"ix = i" "cx = c" by(auto dest:well_formed_same_procs_nth_nth)
+    case (ProcCall insx outsx cx es'x rets'x l'x ins'x outs'x c'x ps)
+    from `well_formed procs` `(p, insx, outsx, cx) \<in> set procs` 
+      `(p, ins, outs, c) \<in> set procs`
+    have [simp]:"cx = c" by auto
     from `cx \<turnstile> Label l -CEdge (p', es'x, rets'x)\<rightarrow>\<^isub>p Label l'x`
       `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
     have [simp]:"es'x = es'" "l'x = l'" by(auto dest:Proc_CFG_Call_nodes_eq)
@@ -173,22 +154,20 @@ next
   case MainReturn
   thus ?case by -(erule PCFG.cases,auto dest:Proc_CFG_Call_nodes_eq')
 next
-  case (ProcReturn i p ins outs c l p' es' rets' l' ins' outs' c' ps es rets)
+  case (ProcReturn p ins outs c l p' es' rets' l' ins' outs' c' ps)
   from `prog,procs \<turnstile> (p',Exit) -et'\<rightarrow> (p, Label l')`
-    `i < length procs` `procs ! i = (p, ins, outs, c)`
+    `(p, ins, outs, c) \<in> set procs` `(p', ins', outs', c') \<in> set procs`
     `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'` 
-    `(p', ins', outs', c') \<in> set procs`
-    `containsCall procs prog ps p es rets` `well_formed procs`
+    `containsCall procs prog ps p` `well_formed procs`
   show ?case
   proof(induct "(p',Exit)" et' "(p,Label l')" rule:PCFG.induct)
-    case (ProcReturn ix insx outsx cx lx es'x rets'x ins'x outs'x c'x psx
-      esx retsx)
+    case (ProcReturn insx outsx cx lx es'x rets'x ins'x outs'x c'x psx)
     from `(p', ins'x, outs'x, c'x) \<in> set procs`
       `(p', ins', outs', c') \<in> set procs` `well_formed procs`
     have [simp]:"outs'x = outs'" by fastsimp
-    from `ix < length procs` `procs ! ix = (p, insx, outsx, cx)`
-      `i < length procs` `procs ! i = (p, ins, outs, c)` `well_formed procs`
-    have [simp]:"ix = i" "cx = c" by(auto dest:well_formed_same_procs_nth_nth)
+    from `(p, insx, outsx, cx) \<in> set procs` `(p, ins, outs, c) \<in> set procs`
+      `well_formed procs`
+    have [simp]:"cx = c" by auto
     from `cx \<turnstile> Label lx -CEdge (p', es'x, rets'x)\<rightarrow>\<^isub>p Label l'`
       `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
     have [simp]:"rets'x = rets'" by(fastsimp dest:Proc_CFG_Call_nodes_eq')
@@ -270,7 +249,7 @@ next
     show ?thesis by(fastsimp dest:Proc_CFG_Call_nodes_eq)
   qed
 next
-  case (ProcCallReturn p ins outs c n p' es rets n' n\<^isub>2 n\<^isub>2')
+  case (ProcCallReturn p ins outs c n p' es rets n' ps n\<^isub>2 n\<^isub>2')
   from `prog,procs \<turnstile> n\<^isub>2 -et\<^isub>2\<rightarrow> n\<^isub>2'` `(p,n) = n\<^isub>2` `intra_kind et\<^isub>2`
     `(p,ins,outs,c) \<in> set procs` `well_formed procs`
   obtain m m' where "(p,m) = n\<^isub>2" and "(p,m') = n\<^isub>2'"
@@ -297,10 +276,9 @@ subsection {* Well-formedness of programs in combination with a procedure list. 
 
 definition wf :: "cmd \<Rightarrow> procs \<Rightarrow> bool"
   where "wf prog procs \<equiv> well_formed procs \<and> 
-  (\<forall>ps p es rets. containsCall procs prog ps p es rets 
-   \<longrightarrow> (distinct rets \<and> 
-      (\<exists>ins outs c. (p,ins,outs,c) \<in> set procs \<and> length rets = length outs \<and>
-                    length es = length ins)))"
+  (\<forall>ps p. containsCall procs prog ps p \<longrightarrow> (\<exists>ins outs c. (p,ins,outs,c) \<in> set procs \<and> 
+          (\<forall>c' n n' es rets. c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n' \<longrightarrow>
+               distinct rets \<and> length rets = length outs \<and> length es = length ins)))"
 
 
 lemma wf_well_formed [intro]:"wf prog procs \<Longrightarrow> well_formed procs"
@@ -308,18 +286,19 @@ lemma wf_well_formed [intro]:"wf prog procs \<Longrightarrow> well_formed procs"
 
 
 lemma wf_distinct_rets [intro]:
-  "\<lbrakk>wf prog procs; containsCall procs prog ps p es rets\<rbrakk> \<Longrightarrow> distinct rets"
+  "\<lbrakk>wf prog procs; containsCall procs prog ps p; (p,ins,outs,c) \<in> set procs;
+    c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'\<rbrakk> \<Longrightarrow> distinct rets"
 by(fastsimp simp:wf_def)
 
 
 lemma
-  assumes "wf prog procs" and "containsCall procs prog ps p es rets"
-  and "(p,ins,outs,c) \<in> set procs"
-  shows wf_length_retsI:"length rets = length outs"
-  and wf_length_esI:"length es = length ins"
+  assumes "wf prog procs" and "containsCall procs prog ps p"
+  and "(p,ins,outs,c) \<in> set procs" and "c' \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'"
+  shows wf_length_retsI [intro]:"length rets = length outs"
+  and wf_length_esI [intro]:"length es = length ins"
 proof -
   from `wf prog procs` have "well_formed procs" by fastsimp
-  from `wf prog procs` `containsCall procs prog ps p es rets`
+  from assms
   obtain ins' outs' c' where "(p,ins',outs',c') \<in> set procs"
     and lengths:"length rets = length outs'" "length es = length ins'"
     by(simp add:wf_def) blast
@@ -376,7 +355,7 @@ apply(erule_tac x="Abs_wf_prog (c', procs)" in meta_allE)
 by(auto elim:meta_mp simp:Abs_wf_prog_inverse wf_prog_def wf_def)
 
 lemma wfp_Call: assumes "Rep_wf_prog wfp = (prog,procs)"
-  and "(p,ins,outs,c) \<in> set procs" and "containsCall procs prog ps p es rets"
+  and "(p,ins,outs,c) \<in> set procs" and "containsCall procs prog ps p"
   obtains wfp' where "Rep_wf_prog wfp' = (c,procs)"
 using assms
 apply(cases wfp) apply(auto simp:Abs_wf_prog_inverse wf_prog_def wf_def)

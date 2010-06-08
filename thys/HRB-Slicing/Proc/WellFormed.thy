@@ -68,7 +68,7 @@ lemma Proc_CFG_Call_source_fst_cmd_Call:
 proof(induct arbitrary:n' rule:labels.induct)
   case (Labels_Base c n')
   from `c \<turnstile> Label 0 -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` show ?case
-    by(induct c n\<equiv>"Label 0" et\<equiv>"CEdge (p, es, rets)" n' rule:Proc_CFG.induct) auto
+    by(induct c "Label 0" "CEdge (p, es, rets)" n' rule:Proc_CFG.induct) auto
 next
   case (Labels_LAss V e n')
   from `V:=e \<turnstile> Label 1 -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'` show ?case
@@ -244,11 +244,12 @@ proof -
   from Rep_wf_prog[of wfp]
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)" 
     by(fastsimp simp:wf_prog_def)
-  hence wf:"well_formed procs" by(fastsimp intro:wf_wf_prog)
+  hence "wf prog procs" by(rule wf_wf_prog)
+  hence wf:"well_formed procs" by fastsimp
   from assms have "prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
     by(simp add:valid_edge_def)
   from this `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` wf have "?length \<and> ?update"
-  proof(induct n\<equiv>"sourcenode a" et\<equiv>"kind a" n'\<equiv>"targetnode a" rule:PCFG.induct)
+  proof(induct "sourcenode a" "kind a" "targetnode a" rule:PCFG.induct)
     case (MainReturn l p' es rets l' insx outsx cx)
     from `\<lambda>cf. snd cf = (Main, Label l')\<hookleftarrow>\<^bsub>p'\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outsx) =
       kind a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` have "p' = p" 
@@ -257,12 +258,17 @@ proof -
       `(p, ins, outs) \<in> set (lift_procs wfp)`
     have [simp]:"outsx = outs" by fastsimp
     from `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p Label l'`
+    have "containsCall procs prog [] p'" by(rule Proc_CFG_Call_containsCall)
+    with `wf prog procs` `(p', insx, outsx, cx) \<in> set procs` 
+      `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p Label l'`
+    have "length rets = length outs" by fastsimp
+    from `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p Label l'`
     have "ParamDefs wfp (Main,Label l') = rets"
       by(fastsimp intro:ParamDefs_Main_Return_target)
-    with `(Main, Label l') = targetnode a` f' `length rets = length outsx`
+    with `(Main, Label l') = targetnode a` f' `length rets = length outs`
     show ?thesis by simp
   next
-    case (ProcReturn i px insx outsx cx l p' es rets l' ins' outs' c')
+    case (ProcReturn px insx outsx cx l p' es rets l' ins' outs' c' ps)
     from `\<lambda>cf. snd cf = (px, Label l')\<hookleftarrow>\<^bsub>p'\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outs') =
       kind a` `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
     have "p' = p" and f':"f' = (\<lambda>cf cf'. cf'(rets [:=] map cf outs'))"
@@ -270,11 +276,18 @@ proof -
     with `well_formed procs` `(p', ins', outs', c') \<in> set procs`
       `(p, ins, outs) \<in> set (lift_procs wfp)`
     have [simp]:"outs' = outs" by fastsimp
-    from `i < length procs` `procs ! i = (px, insx, outsx, cx)`[THEN sym]
+    from `cx \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p Label l'`
+    have "containsCall procs cx [] p'" by(rule Proc_CFG_Call_containsCall)
+    with `containsCall procs prog ps px` `(px, insx, outsx, cx) \<in> set procs`
+    have "containsCall procs prog (ps@[px]) p'" by(rule containsCall_in_proc)
+    with `wf prog procs` `(p', ins', outs', c') \<in> set procs`
+      `cx \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p Label l'`
+    have "length rets = length outs" by fastsimp
+    from `(px, insx, outsx, cx) \<in> set procs`
       `cx \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p Label l'`
     have "ParamDefs wfp (px,Label l') = rets"
       by(fastsimp intro:ParamDefs_Proc_Return_target simp:set_conv_nth)
-    with `(px, Label l') = targetnode a` f' `length rets = length outs'`
+    with `(px, Label l') = targetnode a` f' `length rets = length outs`
     show ?thesis by simp
   qed auto
   thus "?length" and "?update" by simp_all
@@ -951,7 +964,8 @@ proof -
     then obtain c' where "labels c\<^isub>1 l c'" by(erule less_num_inner_nodes_label)
     hence "labels (c\<^isub>1;;c\<^isub>2) l (c';;c\<^isub>2)" by(rule Labels_Seq1)
     with `labels c\<^isub>1 l c'` `\<forall>V\<in>rhs (label (c\<^isub>1;; c\<^isub>2) l). state_val s V = state_val s' V`
-    have "\<forall>V\<in>rhs (label c\<^isub>1 l). state_val s V = state_val s' V" by(fastsimp dest:labels_label)
+    have "\<forall>V\<in>rhs (label c\<^isub>1 l). state_val s V = state_val s' V" 
+      by(fastsimp dest:labels_label)
     with `IEdge et = et'` show ?case by (rule IH)
   next
     case (Proc_CFG_SeqConnect c\<^isub>1 et' c\<^isub>2)
@@ -1119,7 +1133,8 @@ proof -
   from Rep_wf_prog[of wfp]
   obtain prog procs where [simp]:"Rep_wf_prog wfp = (prog,procs)" 
     by(fastsimp simp:wf_prog_def)
-  hence wf:"well_formed procs" by(fastsimp intro:wf_wf_prog)
+  hence "wf prog procs" by(rule wf_wf_prog)
+  hence wf:"well_formed procs" by fastsimp
   show "CFG_wf sourcenode targetnode kind (valid_edge wfp)
     (Main, Entry) get_proc (get_return_edges wfp) (lift_procs wfp) Main 
     (Def wfp) (Use wfp) (ParamDefs wfp) (ParamUses wfp)"
@@ -1138,18 +1153,30 @@ proof -
       case (MainCall l p' es rets n' insx outsx cx)
       with wf have [simp]:"insx = ins" by fastsimp
       from `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p n'`
+      have "containsCall procs prog [] p'" by(rule Proc_CFG_Call_containsCall)
+      with `wf prog procs` `(p', insx, outsx, cx) \<in> set procs` 
+        `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p n'`
+      have "length es = length ins" by fastsimp
+      from `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p n'`
       have "ParamUses wfp (Main, Label l) = map fv es"
 	by(fastsimp intro:ParamUses_Main_Return_target)
-      with `(Main, Label l) = sourcenode a` `length es = length insx`
+      with `(Main, Label l) = sourcenode a` `length es = length ins`
       show ?case by simp
     next
-      case (ProcCall i px insx outsx cx l p' es rets l' ins' outs' c')
+      case (ProcCall px insx outsx cx l p' es rets l' ins' outs' c' ps)
       with wf have [simp]:"ins' = ins" by fastsimp
-      from `i < length procs` `procs ! i = (px, insx, outsx, cx)`[THEN sym]
+      from `cx \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p Label l'`
+      have "containsCall procs cx [] p'" by(rule Proc_CFG_Call_containsCall)
+      with `containsCall procs prog ps px` `(px, insx, outsx, cx) \<in> set procs`
+      have "containsCall procs prog (ps@[px]) p'" by(rule containsCall_in_proc)
+      with `wf prog procs` `(p', ins', outs', c') \<in> set procs`
+        `cx \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p Label l'`
+      have "length es = length ins" by fastsimp
+      from `(px, insx, outsx, cx) \<in> set procs`
 	`cx \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p Label l'`
       have "ParamUses wfp (px,Label l) = map fv es"
 	by(fastsimp intro:ParamUses_Proc_Return_target simp:set_conv_nth)
-      with `(px, Label l) = sourcenode a` `length es = length ins'`
+      with `(px, Label l) = sourcenode a` `length es = length ins`
       show ?case by simp
     qed auto
   next
@@ -1177,7 +1204,7 @@ proof -
       with `(p, Entry) = targetnode a`[THEN sym] show ?case 
 	by(auto simp:ParamDefs_def ParamDefs_proc_def)
     next
-      case (ProcCall i p ins outs c l p' es' rets' l' ins' outs' c' es rets)
+      case (ProcCall p ins outs c l p' es' rets' l' ins' outs' c')
       with `(p', ins', outs', c') \<in> set procs` wf 
       have [simp]:"p' \<noteq> Main" by fastsimp
       from wf `(p', ins', outs', c') \<in> set procs`
@@ -1188,13 +1215,25 @@ proof -
     next
       case (MainReturn l p es rets l' ins outs c)
       from `prog \<turnstile> Label l -CEdge (p, es, rets)\<rightarrow>\<^isub>p Label l'`
+      have "containsCall procs prog [] p" by(rule Proc_CFG_Call_containsCall)
+      with `wf prog procs` `(p, ins, outs, c) \<in> set procs` 
+        `prog \<turnstile> Label l -CEdge (p, es, rets)\<rightarrow>\<^isub>p Label l'`
+      have "distinct rets" by fastsimp
+      from `prog \<turnstile> Label l -CEdge (p, es, rets)\<rightarrow>\<^isub>p Label l'`
       have "ParamDefs wfp (Main,Label l') = rets"
 	by(fastsimp intro:ParamDefs_Main_Return_target)
       with `distinct rets` `(Main, Label l') = targetnode a` show ?case
 	by(fastsimp simp:distinct_map inj_on_def)
     next
-      case (ProcReturn i p ins outs c l p' es' rets' l' ins' outs' c' es rets)
-      from `i < length procs` `procs ! i = (p, ins, outs, c)`[THEN sym]
+      case (ProcReturn p ins outs c l p' es' rets' l' ins' outs' c' ps)
+      from `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
+      have "containsCall procs c [] p'" by(rule Proc_CFG_Call_containsCall)
+      with `containsCall procs prog ps p` `(p, ins, outs, c) \<in> set procs`
+      have "containsCall procs prog (ps@[p]) p'" by(rule containsCall_in_proc)
+      with `wf prog procs` `(p', ins', outs', c') \<in> set procs`
+        `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
+      have "distinct rets'" by fastsimp
+      from `(p, ins, outs, c) \<in> set procs`
 	`c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
       have "ParamDefs wfp (p,Label l') = rets'"
 	by(fastsimp intro:ParamDefs_Proc_Return_target simp:set_conv_nth)
@@ -1203,12 +1242,34 @@ proof -
     next
       case (MainCallReturn n p es rets n')
       from `prog \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
+      have "containsCall procs prog [] p" by(rule Proc_CFG_Call_containsCall)
+      with `wf prog procs` obtain ins outs c where "(p, ins, outs, c) \<in> set procs"
+        by(simp add:wf_def) blast
+      with `wf prog procs` `containsCall procs prog [] p`
+        `prog \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
+      have "distinct rets" by fastsimp
+      from `prog \<turnstile> n -CEdge (p, es, rets)\<rightarrow>\<^isub>p n'`
       have "ParamDefs wfp (Main,n') = rets"
 	by(fastsimp intro:ParamDefs_Main_Return_target)
       with `distinct rets` `(Main, n') = targetnode a` show ?case
 	by(fastsimp simp:distinct_map inj_on_def)
     next
-      case (ProcCallReturn p ins outs c n p' es' rets' n' es rets)
+      case (ProcCallReturn p ins outs c n p' es' rets' n' ps)
+      from `c \<turnstile> n -CEdge (p', es', rets')\<rightarrow>\<^isub>p n'`
+      have "containsCall procs c [] p'" by(rule Proc_CFG_Call_containsCall)
+      from `Rep_wf_prog wfp = (prog,procs)` `(p, ins, outs, c) \<in> set procs`
+        `containsCall procs prog ps p`
+      obtain wfp' where "Rep_wf_prog wfp' = (c,procs)" by(erule wfp_Call)
+      hence "wf c procs" by(rule wf_wf_prog)
+      with `containsCall procs c [] p'` obtain ins' outs' c'
+        where "(p', ins', outs', c') \<in> set procs"
+        by(simp add:wf_def) blast
+      from `containsCall procs prog ps p` `(p, ins, outs, c) \<in> set procs`
+        `containsCall procs c [] p'`
+      have "containsCall procs prog (ps@[p]) p'" by(rule containsCall_in_proc)
+      with `wf prog procs` `(p', ins', outs', c') \<in> set procs`
+        `c \<turnstile> n -CEdge (p', es', rets')\<rightarrow>\<^isub>p n'`
+      have "distinct rets'" by fastsimp
       from `(p, ins, outs, c) \<in> set procs` `c \<turnstile> n -CEdge (p', es', rets')\<rightarrow>\<^isub>p n'`
       have "ParamDefs wfp (p,n') = rets'"
 	by(fastsimp intro:ParamDefs_Proc_Return_target)
@@ -1242,7 +1303,7 @@ proof -
       with `(p', Entry) = targetnode a`[THEN sym] `V \<in> set ins`
 	`(p', insx, outsx, cx) \<in> set procs` show ?case by(auto simp:Def_def)
     next
-      case (ProcCall i px insx outsx cx l p' es rets l' ins' outs' c')
+      case (ProcCall px insx outsx cx l p' es rets l' ins' outs' c')
       with wf have [simp]:"ins' = ins" by fastsimp
       from wf `(p', ins', outs', c') \<in> set procs` 
       have "(THE insx. \<exists>cx outsx. (p',insx,outsx,cx) \<in> set procs) = 
@@ -1266,10 +1327,9 @@ proof -
 	`(Main, Label l) = sourcenode a`[THEN sym]
       show ?case by(fastsimp dest:Proc_CFG_Call_source_empty_lhs simp:Def_def)
     next
-      case (ProcCall i px insx outsx cx l p' es' rets' l' ins' outs' c' es rets)
-      from `i < length procs` `procs ! i = (px, insx, outsx, cx)`[THEN sym]
-      have "(px, insx, outsx, cx) \<in> set procs" by(auto simp:set_conv_nth)
-      with wf have [simp]:"px \<noteq> Main" by fastsimp
+      case (ProcCall px insx outsx cx l p' es' rets' l' ins' outs' c')
+      from `(px, insx, outsx, cx) \<in> set procs` wf
+      have [simp]:"px \<noteq> Main" by fastsimp
       from `cx \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
       have "lhs (label cx l) = {}" by(rule Proc_CFG_Call_source_empty_lhs)
       from wf `(px, insx, outsx, cx) \<in> set procs`
@@ -1295,7 +1355,7 @@ proof -
       by(simp add:valid_edge_def)
     from this `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p, ins, outs) \<in> set (lift_procs wfp)` `V \<in> set outs`
     show "V \<in> Use wfp (sourcenode a)"
-    proof(induct n\<equiv>"sourcenode a" et\<equiv>"kind a" n'\<equiv>"targetnode a" rule:PCFG.induct)
+    proof(induct "sourcenode a" "kind a" "targetnode a" rule:PCFG.induct)
       case (MainReturn l p' es rets l' insx outsx cx)
       with wf have [simp]:"outsx = outs" by fastsimp
       from wf `(p', insx, outsx, cx) \<in> set procs` 
@@ -1304,7 +1364,7 @@ proof -
       with `(p', Exit) = sourcenode a`[THEN sym] `V \<in> set outs`
 	`(p', insx, outsx, cx) \<in> set procs` show ?case by(auto simp:Use_def)
     next
-      case (ProcReturn i px insx outsx cx l p' es' rets' l' ins' outs' c' es rets)
+      case (ProcReturn px insx outsx cx l p' es' rets' l' ins' outs' c')
       with wf have [simp]:"outs' = outs" by fastsimp
       from wf `(p', ins', outs', c') \<in> set procs` 
       have "(THE outsx. \<exists>cx insx. (p',insx,outsx,cx) \<in> set procs) = 
@@ -1547,7 +1607,7 @@ proof -
 	kind a`[THEN sym]
       show ?case by fastsimp
     next
-      case (ProcReturn i p ins outs c l p' es rets l' ins' outs' c')
+      case (ProcReturn p ins outs c l p' es rets l' ins' outs' c')
       with `\<lambda>cf. snd cf = (p, Label l')\<hookleftarrow>\<^bsub>p'\<^esub>\<lambda>cf cf'. cf'(rets [:=] map cf outs') =
 	kind a`[THEN sym]
       show ?case by fastsimp
@@ -1558,9 +1618,35 @@ proof -
       and "(p, ins, outs) \<in> set (lift_procs wfp)"
     hence "prog,procs \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
       by(simp add:valid_edge_def)
-    with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p, ins, outs) \<in> set (lift_procs wfp)` wf
-    show "length fs = length ins" 
-      apply(auto simp:valid_edge_def) apply(erule PCFG.cases) by fastsimp+
+    from this `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p, ins, outs) \<in> set (lift_procs wfp)`
+    show "length fs = length ins"
+    proof(induct rule:PCFG.induct)
+      case (MainCall l p' es rets n' ins' outs' c)
+      hence "fs = map interpret es" and "p' = p" by simp_all
+      with wf `(p, ins, outs) \<in> set (lift_procs wfp)`
+        `(p', ins', outs', c) \<in> set procs`
+      have [simp]:"ins' = ins" by fastsimp
+      from `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p n'`
+      have "containsCall procs prog [] p'" by(rule Proc_CFG_Call_containsCall)
+      with `wf prog procs` `(p', ins', outs', c) \<in> set procs`
+        `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p n'`
+      have "length es = length ins" by fastsimp
+      with `fs = map interpret es` show ?case by simp
+    next
+      case (ProcCall px insx outsx c l p' es' rets' l' ins' outs' c' ps)
+      hence "fs = map interpret es'" and "p' = p" by simp_all
+      with wf `(p, ins, outs) \<in> set (lift_procs wfp)`
+        `(p', ins', outs', c') \<in> set procs`
+      have [simp]:"ins' = ins" by fastsimp
+      from `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
+      have "containsCall procs c [] p'" by(rule Proc_CFG_Call_containsCall)
+      with `containsCall procs prog ps px` `(px, insx, outsx, c) \<in> set procs`
+      have "containsCall procs prog (ps@[px]) p'" by(rule containsCall_in_proc)
+      with `wf prog procs` `(p', ins', outs', c') \<in> set procs`
+        `c \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
+      have "length es' = length ins" by fastsimp
+      with `fs = map interpret es'` show ?case by simp
+    qed auto
   next
     fix a Q r p fs a' Q' r' p' fs' s s'
     assume "valid_edge wfp a" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
@@ -1570,7 +1656,7 @@ proof -
       and "prog,procs \<turnstile> sourcenode a' -kind a'\<rightarrow> targetnode a'"
       by(simp_all add:valid_edge_def)
     from this `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `kind a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'` show "a = a'"
-    proof(induct n\<equiv>"sourcenode a" et\<equiv>"kind a" n'\<equiv>"targetnode a" rule:PCFG.induct)
+    proof(induct "sourcenode a" "kind a" "targetnode a" rule:PCFG.induct)
       case (MainCall l px es rets n' insx outsx cx)
       from `prog,procs \<turnstile> sourcenode a' -kind a'\<rightarrow> targetnode a'`
 	`kind a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'` 
@@ -1585,22 +1671,19 @@ proof -
 	`targetnode a' = (px, Entry)`
       show ?case by(cases a,cases a',auto)
     next
-      case (ProcCall i px ins outs c l px' es rets l' insx outsx cx)
+      case (ProcCall px ins outs c l px' es rets l' insx outsx cx)
       with wf have "px \<noteq> Main" by fastsimp
       with `prog,procs \<turnstile> sourcenode a' -kind a'\<rightarrow> targetnode a'`
 	`kind a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'`
 	`(px, Label l) = sourcenode a` `sourcenode a = sourcenode a'`
 	`c \<turnstile> Label l -CEdge (px', es, rets)\<rightarrow>\<^isub>p Label l'`
-	`(px', insx, outsx, cx) \<in> set procs` `i < length procs`
-	`procs ! i = (px, ins, outs, c)`
+	`(px', insx, outsx, cx) \<in> set procs` `(px, ins, outs, c) \<in> set procs`
       have "targetnode a' = (px', Entry)"
       proof(induct n\<equiv>"sourcenode a'" et\<equiv>"kind a'" n'\<equiv>"targetnode a'" rule:PCFG.induct)
-	case (ProcCall ia p insa outsa ca la p'a es' rets' l'a ins' outs' c')
+	case (ProcCall p insa outsa ca la p'a es' rets' l'a ins' outs' c')
 	hence [simp]:"px = p" "l = la" by(auto dest:sym)
-	from `ia < length procs` `i < length procs`
-	  `procs ! ia = (p, insa, outsa, ca)`
-	  `procs ! i = (px, ins, outs, c)` wf have [simp]:"ca = c" 
-	  by(fastsimp dest:well_formed_same_procs_nth_nth[of _ i ia])
+	from `(p, insa, outsa, ca) \<in> set procs`
+	  `(px, ins, outs, c) \<in> set procs` wf have [simp]:"ca = c"  by auto
 	from `ca \<turnstile> Label la -CEdge (p'a, es', rets')\<rightarrow>\<^isub>p Label l'a`
 	  `c \<turnstile> Label l -CEdge (px', es, rets)\<rightarrow>\<^isub>p Label l'`
 	have "p'a = px'" by(fastsimp dest:Proc_CFG_Call_nodes_eq)
@@ -1623,11 +1706,15 @@ proof -
       `(p, ins, outs) \<in> set (lift_procs wfp)` 
       `\<forall>V\<in>ParamUses wfp (sourcenode a) ! i. state_val s V = state_val s' V`
     show "CFG.params fs (state_val s) ! i = CFG.params fs (state_val s') ! i"
-    proof(induct n\<equiv>"sourcenode a" et\<equiv>"kind a" n'\<equiv>"targetnode a" rule:PCFG.induct)
+    proof(induct "sourcenode a" "kind a" "targetnode a" rule:PCFG.induct)
       case (MainCall l p' es rets n' insx outsx cx)
       with wf have [simp]:"insx = ins" "fs = map interpret es" by auto
-      from `i < length ins` `length es = length insx` 
-      have "i < length (map interpret es)" by simp
+      from `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p n'`
+      have "containsCall procs prog [] p'" by(rule Proc_CFG_Call_containsCall)
+      with `wf prog procs` `(p', insx, outsx, cx) \<in> set procs` 
+        `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p n'`
+      have "length es = length ins" by fastsimp
+      with `i < length ins` have "i < length (map interpret es)" by simp
       from `prog \<turnstile> Label l -CEdge (p', es, rets)\<rightarrow>\<^isub>p n'`
       have "ParamUses wfp (Main,Label l) = map fv es"
 	by(fastsimp intro:ParamUses_Main_Return_target)
@@ -1638,13 +1725,20 @@ proof -
 	by(cases "interpret (es ! i) (fst (hd s))")(auto dest:rhs_interpret_eq)
       with `i < length (map interpret es)` show ?case by(simp add:ProcCFG.params_nth)
     next
-      case (ProcCall ix px insx outsx cx l p' es' rets' l' ins' outs' c' es rets)
+      case (ProcCall px insx outsx cx l p' es' rets' l' ins' outs' c' ps)
       with wf have [simp]:"ins' = ins" by fastsimp
+      from `cx \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
+      have "containsCall procs cx [] p'" by(rule Proc_CFG_Call_containsCall)
+      with `containsCall procs prog ps px` `(px, insx, outsx, cx) \<in> set procs`
+      have "containsCall procs prog (ps@[px]) p'" by(rule containsCall_in_proc)
+      with `wf prog procs` `(p', ins', outs', c') \<in> set procs`
+        `cx \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
+      have "length es' = length ins" by fastsimp
       from `\<lambda>s. True:(px, Label l')\<hookrightarrow>\<^bsub>p'\<^esub>map interpret es' = kind a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
       have "fs = map interpret es'" by simp_all
       from `i < length ins` `fs = map interpret es'` 
-	`length es' = length ins'` have "i < length fs" by simp
-      from `ix < length procs` `procs ! ix = (px, insx, outsx, cx)`[THEN sym]
+	`length es' = length ins` have "i < length fs" by simp
+      from `(px, insx, outsx, cx) \<in> set procs`
 	`cx \<turnstile> Label l -CEdge (p', es', rets')\<rightarrow>\<^isub>p Label l'`
       have "ParamUses wfp (px,Label l) = map fv es'"
 	by(auto intro!:ParamUses_Proc_Return_target simp:set_conv_nth)
