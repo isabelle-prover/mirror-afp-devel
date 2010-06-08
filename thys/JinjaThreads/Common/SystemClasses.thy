@@ -6,11 +6,13 @@
 
 header {* \isaheader{System Classes} *}
 
-theory SystemClasses imports Decl Exceptions begin
+theory SystemClasses imports Exceptions begin
 
 text {*
   This theory provides definitions for the @{text Object} class,
   and the system exceptions.
+
+  Inline SystemClasses definition because they are polymorphic values that violate ML's value restriction.
 *}
 
 definition ObjectC :: "'m cdecl"
@@ -43,10 +45,19 @@ where [code_inline]: "IllegalMonitorStateC \<equiv> (IllegalMonitorState, (Throw
 definition IllegalThreadStateC :: "'m cdecl"
 where [code_inline]: "IllegalThreadStateC \<equiv> (IllegalThreadState, (Throwable,[],[]))"
 
+definition CloneNotSupportedC :: "'m cdecl"
+where [code_inline]: "CloneNotSupportedC \<equiv> (CloneNotSupported, (Throwable,[],[]))"
+
+definition InterruptedExceptionC :: "'m cdecl"
+where [code_inline]: "InterruptedExceptionC \<equiv> (InterruptedException, (Throwable,[],[]))"
+
+definition StringC :: "'m cdecl"
+where [code_inline]: "StringC \<equiv> (String, (Object, [], []))"
+
 definition SystemClasses :: "'m cdecl list"
 where [code_inline]: 
   "SystemClasses \<equiv> [ObjectC, ThrowableC, NullPointerC, ClassCastC, OutOfMemoryC,
                     ArrayIndexOutOfBoundsC, ArrayStoreC, NegativeArraySizeC,
-                    IllegalMonitorStateC, IllegalThreadStateC]"
+                    IllegalMonitorStateC, IllegalThreadStateC, CloneNotSupportedC, InterruptedExceptionC, StringC]"
 
 end

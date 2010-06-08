@@ -99,6 +99,7 @@ where
   "compT E A ST (new C) = []"
 | "compT E A ST (newA T\<lfloor>e\<rceil>) = compT E A ST e @ [after E A ST e]"
 | "compT E A ST (Cast C e) = compT E A ST e @ [after E A ST e]"
+| "compT E A ST (e instanceof T) = compT E A ST e @ [after E A ST e]"
 | "compT E A ST (Val v) = []"
 | "compT E A ST (e1 \<guillemotleft>bop\<guillemotright> e2) =
   (let ST1 = ty E e1#ST; A1 = A \<squnion> \<A> e1 in
@@ -124,9 +125,16 @@ where
 
 | "compT E A ST (sync\<^bsub>i\<^esub> (e1) e2) =
   (let A1 = A \<squnion> \<A> e1 \<squnion> \<lfloor>{i}\<rfloor>; E1 = E @ [Class Object]; ST2 = ty E1 e2 # ST; A2 = A1 \<squnion> \<A> e2
-   in  compT E A ST e1 @ [after E A ST e1, ty\<^isub>i' ST E1 A1, ty\<^isub>i' (Class Object # ST) E1 A1, ty\<^isub>i' ST E1 A1] @ compT E1 A1 ST e2 @ 
+   in  compT E A ST e1 @
+       [after E A ST e1,
+        ty\<^isub>i' (Class Object # Class Object # ST) E (A \<squnion> \<A> e1),
+        ty\<^isub>i' (Class Object # ST) E1 A1,
+        ty\<^isub>i' ST E1 A1] @
+       compT E1 A1 ST e2 @ 
        [ty\<^isub>i' ST2 E1 A2, ty\<^isub>i' (Class Object # ST2) E1 A2, ty\<^isub>i' ST2 E1 A2, 
-        ty\<^isub>i' (Class Throwable # ST) E1 A1, ty\<^isub>i' (Class Object # Class Throwable # ST) E1 A1, ty\<^isub>i' (Class Throwable # ST) E1 A1])"
+        ty\<^isub>i' (Class Throwable # ST) E1 A1,
+        ty\<^isub>i' (Class Object # Class Throwable # ST) E1 A1,
+        ty\<^isub>i' (Class Throwable # ST) E1 A1])"
 | "compT E A ST (insync\<^bsub>i\<^esub> (a) e) = []"
 
 | "compT E A ST (e1;;e2) =
@@ -253,27 +261,19 @@ next
   from `\<lfloor>(ST, LT)\<rfloor> \<in> set (compT E A ST0 (sync\<^bsub>i\<^esub> (exp1) exp2))` 
   have "\<lfloor>(ST, LT)\<rfloor> \<in> set (compT E A ST0 exp1) \<or>
         \<lfloor>(ST, LT)\<rfloor> = after E A ST0 exp1 \<or>
-        \<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' ST0 (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>) \<or>
+        \<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (Class Object # Class Object # ST0) E (A \<squnion> \<A> exp1) \<or>
         \<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (Class Object # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>) \<or>
+        \<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' ST0 (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>) \<or>
         \<lfloor>(ST, LT)\<rfloor> \<in> set (compT (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>) ST0 exp2)  \<or>
         \<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (ty (E @ [Class Object]) exp2 # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor> \<squnion> \<A> exp2) \<or>
         \<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (Class Object # ty (E @ [Class Object]) exp2 # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor> \<squnion> \<A> exp2) \<or>
         \<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (Class Throwable # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>) \<or>
         \<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (Class Object # Class Throwable # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>)"
     by(auto simp only: compT_compTs.simps Let_def set_append set.simps mem_simps)
-  thus ?case unfolding disj_assoc[symmetric] apply -
-  proof(erule disjE)+
+  thus ?case
+  proof(elim disjE)
     assume "\<lfloor>(ST, LT)\<rfloor> \<in> set (compT E A ST0 exp1)"
     from IH1[OF this B1] show ?thesis by simp
-  next
-    assume "\<lfloor>(ST, LT)\<rfloor> = after E A ST0 exp1"
-    thus ?thesis by(auto simp add: hyperset_defs)
-  next
-    assume "\<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' ST0 (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>)"
-    thus ?thesis by(auto simp add: hyperset_defs intro: sup_state_opt_trans[OF ty\<^isub>i'_incr])
-  next
-    assume "\<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (Class Object # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>)"
-    thus ?thesis by(auto simp add: hyperset_defs intro: sup_state_opt_trans[OF ty\<^isub>i'_incr])
   next
     assume "\<lfloor>(ST, LT)\<rfloor> \<in> set (compT (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>) ST0 exp2)"
     from IH2[OF this B2] show ?thesis
@@ -281,16 +281,7 @@ next
   next
     assume "\<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (Class Object # ty (E @ [Class Object]) exp2 # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor> \<squnion> \<A> exp2)"
     thus ?thesis by(auto simp add: hyperset_defs intro: sup_state_opt_trans[OF ty\<^isub>i'_incr])
-  next
-    assume "\<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (ty (E @ [Class Object]) exp2 # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor> \<squnion> \<A> exp2)"
-    thus ?thesis by(auto simp add: hyperset_defs intro: sup_state_opt_trans[OF ty\<^isub>i'_incr])
-  next
-    assume "\<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (Class Throwable # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>)"
-    thus ?thesis by(auto simp add: hyperset_defs intro: sup_state_opt_trans[OF ty\<^isub>i'_incr])
-  next
-    assume "\<lfloor>(ST, LT)\<rfloor> = ty\<^isub>i' (Class Object # Class Throwable # ST0) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>)"
-    thus ?thesis by(auto simp add: hyperset_defs intro: sup_state_opt_trans[OF ty\<^isub>i'_incr])
-  qed
+  qed(auto simp add: hyperset_defs intro: sup_state_opt_trans[OF ty\<^isub>i'_incr])
 qed (auto simp:hyperset_defs)
 
 declare ty\<^isub>i'_antimono [rule del] after_def[simp del] pair_conv_ty\<^isub>i'[simp del] pair_eq_ty\<^isub>i'_conv[simp del]
@@ -353,6 +344,8 @@ proof(induct e and es arbitrary: E T A ST and E Ts A ST)
   case new thus ?case by(simp)
 next
   case (Cast C e) thus ?case by (auto simp:after_in_states)
+next
+  case InstanceOf thus ?case by (auto simp:after_in_states)
 next
   case Val thus  ?case by(simp)
 next
@@ -448,18 +441,18 @@ next
     by(rule converse_subcls_is_class[where C=OutOfMemory])(auto intro: xcpt_subcls_Throwable wf_prog is_class_xcpt)
   show ?case
     unfolding compT_compTs.simps Let_def set.simps set_append image_insert image_Un image_empty 
-      Un_subset_iff insert_subset conj_assoc[symmetric] apply -
-  proof(rule conjI)+
+      Un_subset_iff insert_subset
+  proof(intro conjI)
     from IH1[OF wt1 E ST lenST1 lenE1] show "OK ` set (compT E A ST exp1) \<subseteq> states P mxs mxl" .
   next
     from wt1 E ST lenST1 show "OK (after E A ST exp1) \<in> states P mxs mxl" by(auto simp add: after_in_states)
   next
     from E' ST lenST1 show "OK (ty\<^isub>i' ST (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>)) \<in> states P mxs mxl" by(simp)
   next
+    from E' ST lenSTS show "OK (ty\<^isub>i' (Class Object # Class Object # ST) E (A \<squnion> \<A> exp1)) \<in> states P mxs mxl" by simp
+  next
     from lenSTS E' ST'
     show "OK (ty\<^isub>i' (Class Object # ST) (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>)) \<in> states P mxs mxl" by simp
-  next
-    from E' ST lenST1 show "OK (ty\<^isub>i' ST (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>)) \<in> states P mxs mxl" by(simp)
   next
     from IH2[OF wt2 E' ST lenST2 lenE2]
     show "OK ` set (compT (E @ [Class Object]) (A \<squnion> \<A> exp1 \<squnion> \<lfloor>{i}\<rfloor>) ST exp2) \<subseteq> states P mxs mxl" .
@@ -773,6 +766,10 @@ lemma wt_Cast:
    \<turnstile> [Checkcast T],[] [::] [ty\<^isub>i' (U # ST) E A, ty\<^isub>i' (T # ST) E A]"
 by(simp add: ty\<^isub>i'_def wt_defs)
 
+lemma wt_Instanceof:
+  "\<lbrakk> is_type P T; is_refT U \<rbrakk> \<Longrightarrow>
+   \<turnstile> [Instanceof T],[] [::] [ty\<^isub>i' (U # ST) E A, ty\<^isub>i' (Boolean # ST) E A]"
+by(simp add: ty\<^isub>i'_def wt_defs)
 
 lemma wt_Push:
   "\<lbrakk> size ST < mxs; typeof v = Some T \<rbrakk>
@@ -840,7 +837,7 @@ lemma wt_Invoke:
   "\<lbrakk> size es = size Ts'; P \<turnstile> C sees M: Ts\<rightarrow>T = m in D; P \<turnstile> Ts' [\<le>] Ts \<rbrakk>
   \<Longrightarrow> \<turnstile> [Invoke M (size es)],[] [::] [ty\<^isub>i' (rev Ts' @ Class C # ST) E A, ty\<^isub>i' (T#ST) E A]"
 apply(clarsimp simp add: ty\<^isub>i'_def wt_defs)
-apply(fastsimp dest: external_call_not_sees_method[OF wf_prog] intro: widens_refl)
+apply(fastsimp dest: external_call_not_sees_method intro: widens_refl)
 done
 
 end
@@ -1032,6 +1029,8 @@ next
 next
   case Cast thus ?case by auto
 next
+  case InstanceOf thus ?case by auto
+next
   case Var thus ?case by auto
 next
   case LAss thus ?case by auto
@@ -1168,8 +1167,10 @@ next
   let ?A3 = "?A2 \<squnion> \<A> e2" let ?A4 = "?A1 \<squnion> \<A> e2"
   let ?E1 = "E @ [Class Object]"
   let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s1 = "compT E A ST e1"
-  let ?\<tau>1 = "ty\<^isub>i' (U#ST) E ?A1" let ?\<tau>1' = "ty\<^isub>i' ST ?E1 ?A2"
-  let ?\<tau>1'' = "ty\<^isub>i' (Class Object#ST) ?E1 ?A2" let ?\<tau>1''' = "ty\<^isub>i' ST ?E1 ?A2"
+  let ?\<tau>1 = "ty\<^isub>i' (U#ST) E ?A1"
+  let ?\<tau>1' = "ty\<^isub>i' (Class Object # Class Object # ST) E ?A1"
+  let ?\<tau>1'' = "ty\<^isub>i' (Class Object#ST) ?E1 ?A2"
+  let ?\<tau>1''' = "ty\<^isub>i' ST ?E1 ?A2"
   let ?\<tau>s2 = "compT ?E1 ?A2 ST e2"
   let ?\<tau>2 = "ty\<^isub>i' (T#ST) ?E1 ?A3" let ?\<tau>2' = "ty\<^isub>i' (Class Object#T#ST) ?E1 ?A3"
   let ?\<tau>2'' = ?\<tau>2
@@ -1227,9 +1228,9 @@ next
   also from wt1 `set E \<subseteq> is_type P` have "is_type P U" by(rule WT1_is_type[OF wf_prog])
   with U have "P \<turnstile> U \<le> Class Object" by(auto elim!: is_refT.cases intro: subcls_C_Object[OF _ wf_prog] widen_array_object)
   with lenE lenST max_stack1[of e2]
-  have "\<turnstile> [Store i, Load i, MEnter], [] [::] [?\<tau>1, ?\<tau>1', ?\<tau>1''] @ [?\<tau>1''']"
+  have "\<turnstile> [Dup, Store i, MEnter], [] [::] [?\<tau>1, ?\<tau>1', ?\<tau>1''] @ [?\<tau>1''']"
     by(auto simp add: ty\<^isub>i'_def ty\<^isub>l_def wt_defs hyperset_defs nth_Cons nth_list_update list_all2_conv_all_nth split: nat.split)
-  finally have "\<turnstile> Store i # Load i # MEnter # compE2 e2 @ [Load i, MExit, Goto 4, Load i, MExit, ThrowExc],
+  finally have "\<turnstile> Dup # Store i # MEnter # compE2 e2 @ [Load i, MExit, Goto 4, Load i, MExit, ThrowExc],
                compxE2 e2 3 (size ST) @ [(3, 3 + size (compE2 e2), None, 6 + size (compE2 e2), size ST)]
             [::] ?\<tau>1 # ?\<tau>1' # ?\<tau>1'' # ?\<tau>1''' # ?\<tau>s2 @ [?\<tau>2, ?\<tau>2', ?\<tau>2'', ?\<tau>3, ?\<tau>3', ?\<tau>3'', ?\<tau>']"
     by(simp add: nat_number shift_def)
@@ -1301,6 +1302,8 @@ next
   case Val thus ?case by(auto simp:after_def wt_Push)
 next
   case (Cast T exp) thus ?case by (auto simp:after_def wt_Cast)
+next
+  case InstanceOf thus ?case by (auto simp:after_def wt_Instanceof)
 next
   case (Block i Ti vo e)
   note IH = `\<And>E T A ST. PROP ?P e E T A ST`
@@ -1481,9 +1484,9 @@ next
     finally show ?thesis using Call.prems C
       by(simp add:after_def hyperUn_assoc shift_compxEs2 stack_xlift_compxEs2 del: compxEs2_stack_xlift_convs compxEs2_size_convs)
   next
-    fix Te Ts
+    fix Te Ts Ts'
     assume wte: "P,E \<turnstile>1 e :: Te" and wtes: "P,E \<turnstile>1 es [::] Ts"
-      and wtext: "P \<turnstile> Te\<bullet>M(Ts) :: T"
+      and wtext: "P \<turnstile> Te\<bullet>M(Ts') :: T" and sub: "P \<turnstile> Ts [\<le>] Ts'"
     from wtes have same_size: "size es = size Ts" by(rule WTs1_same_size)
     let ?A\<^isub>0 = "A \<squnion> \<A> e" let ?A\<^isub>1 = "?A\<^isub>0 \<squnion> \<A>s es"
     let ?\<tau> = "ty\<^isub>i' ST E A" let ?\<tau>s\<^isub>e = "compT E A ST e"
@@ -1491,9 +1494,9 @@ next
     let ?\<tau>s\<^isub>e\<^isub>s = "compTs E ?A\<^isub>0 (Te # ST) es"
     let ?\<tau>\<^isub>1 = "ty\<^isub>i' (rev Ts @ Te # ST) E ?A\<^isub>1"
     let ?\<tau>' = "ty\<^isub>i' (T # ST) E ?A\<^isub>1"
-    from wte wtext same_size external_WT_is_external_call[OF wtext]
+    from wte wtext same_size external_WT_is_external_call[OF wtext] sub
     have "\<turnstile> [Invoke M (size es)],[] [::] [?\<tau>\<^isub>1,?\<tau>']"
-      by(auto simp add: ty\<^isub>i'_def wt_defs external_WT_The_conv)
+      by(fastsimp simp add: ty\<^isub>i'_def wt_defs external_WT_The_Ex_conv2)
     also
     have "PROP ?Ps es E Ts ?A\<^isub>0 (Te # ST)" by fact
     hence "\<turnstile> compEs2 es,compxEs2 es 0 (size ST+1) [::] ?\<tau>\<^isub>e # ?\<tau>s\<^isub>e\<^isub>s"
@@ -1566,14 +1569,8 @@ qed
 
 end
 
-lemma [simp]: "is_type (compP f P) = is_type P"
-by(auto simp add: mem_def)
-
 lemma states_compP [simp]: "states (compP f P) mxs mxl = states P mxs mxl"
 by (simp add: JVM_states_unfold)
-
-lemma WT_external_compP' [simp]: "external_WT (compP f P) = external_WT P"
-by(auto simp add: expand_fun_eq)
 
 lemma [simp]: "app\<^isub>i (i, compP f P, pc, mpc, T, \<tau>) = app\<^isub>i (i, P, pc, mpc, T, \<tau>)"
 proof -

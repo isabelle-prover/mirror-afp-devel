@@ -47,7 +47,7 @@ proof -
       assume ST: "ST!n \<noteq> NT" and ST': "ST'!n \<noteq> NT" 
 
       from ST' app Invoke
-      have "if is_external_call P (ST' ! n) M then \<exists>U. P \<turnstile> ST' ! n\<bullet>M(rev (take n ST')) :: U
+      have "if is_external_call P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
 	    else \<exists>D Ts T m C'. ST' ! n = Class D \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
 	by fastsimp
       moreover
@@ -74,17 +74,39 @@ proof -
 	also note Ts also note Ts' 
 	finally have "P \<turnstile> rev (take n ST) [\<le>] Ts'" .
 	with D'_M D' app less Invoke D nec have ?thesis
-	  by(auto dest: external_call_not_sees_method[OF wf]) }
+	  by(auto dest: external_call_not_sees_method) }
       moreover {
-	fix U
+	fix Ts U
 	assume exc: "is_external_call P (ST' ! n) M"
-	  and wtext: "P \<turnstile> ST' ! n\<bullet>M(rev (take n ST')) :: U"
-	from exc have "is_external_call P (ST ! n) M"
-	  using `P \<turnstile> ST!n \<le> ST'!n` ST by(rule is_external_call_widen_mono)
-	moreover from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
-	with wtext `P \<turnstile> ST!n \<le> ST'!n` ST obtain U' where "P \<turnstile> ST ! n\<bullet>M(rev (take n ST)) :: U'" 
-	  and "P \<turnstile> U' \<le> U" by(auto dest: external_WTrt_widen_mono)
-	ultimately have ?thesis using app Invoke by auto }
+	  and wtext: "P \<turnstile> ST' ! n\<bullet>M(Ts) :: U"
+          and sub: "P \<turnstile> rev (take n ST') [\<le>] Ts"
+        have ?thesis
+        proof(cases "\<exists>C. ST ! n = Class C \<and> P \<turnstile> C has M")
+          case False
+          with exc have "is_external_call P (ST ! n) M"
+	    using `P \<turnstile> ST!n \<le> ST'!n` ST
+            by(auto intro: is_external_call_widen_mono split: ty.splits)
+	  moreover from wtext `P \<turnstile> ST!n \<le> ST'!n` ST False
+          obtain U' where "P \<turnstile> ST!n\<bullet>M(Ts) :: U'" "P \<turnstile> U' \<le> U"
+            by(auto dest: external_WT_widen_mono split: ty.splits)
+          moreover from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
+          with sub have "P \<turnstile> rev (take n ST) [\<le>] Ts" by-(rule widens_trans)
+	  ultimately show ?thesis using app Invoke by auto
+        next
+          case True
+          then obtain C Ts' T' meth D where "ST ! n = Class C"
+            and sees: "P \<turnstile> C sees M:Ts'\<rightarrow>T'=meth in D"
+            unfolding has_method_def by auto
+          moreover
+          from `ST ! n = Class C` `P \<turnstile> ST!n \<le> ST'!n`
+          obtain C' where "ST' ! n = Class C'" by(auto dest: Class_widen)
+          with `P \<turnstile> ST!n \<le> ST'!n` `ST ! n = Class C` have "P \<turnstile> C \<preceq>\<^sup>* C'" by simp
+          with wtext external_WT_widen_sees_method_contravariant[OF wf sees this, of Ts U] `ST' ! n = Class C'`
+          have "P \<turnstile> Ts [\<le>] Ts'" "P \<turnstile> T' \<le> U" by auto
+          from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
+          with `P \<turnstile> Ts [\<le>] Ts'` sub have "P \<turnstile> rev (take n ST) [\<le>] Ts'" by(auto intro: widens_trans)
+          ultimately show ?thesis using app Invoke `P \<turnstile> T' \<le> U` by(auto dest: external_call_not_sees_method)
+        qed }
       ultimately have ?thesis by(auto split: split_if_asm) }
     ultimately show ?thesis by blast
   next 
@@ -116,6 +138,10 @@ proof -
     with app less show ?thesis
       by(auto elim!: refTE simp: widen_Array)
   next
+    case (Instanceof T)
+    with app less show ?thesis
+      by(auto elim!: refTE simp: widen_Array)
+  next
     case ThrowExc
     with app less show ?thesis
       by(auto elim!: refTE simp: widen_Array)
@@ -130,6 +156,10 @@ proof -
   next
     case (BinOpInstr bop)
     with app less show ?thesis by(force dest: WTrt_binop_widen_mono)
+  next
+    case Dup
+    with app less show ?thesis
+      by(auto dest: list_all2_lengthD)
   qed (auto elim!: refTE not_refTE)
 qed
 (*>*)
@@ -289,7 +319,7 @@ proof -
       by (auto)
     
     from ST' app\<^isub>i Invoke
-    have "if is_external_call P (ST' ! n) M then \<exists>U. P \<turnstile> ST' ! n\<bullet>M(rev (take n ST')) :: U
+    have "if is_external_call P (ST' ! n) M then \<exists>U Ts. P \<turnstile> rev (take n ST') [\<le>] Ts \<and> P \<turnstile> ST' ! n\<bullet>M(Ts) :: U
           else \<exists>D Ts T m C'. ST' ! n = Class D \<and> P \<turnstile> D sees M:Ts \<rightarrow> T = m in C' \<and> P \<turnstile> rev (take n ST') [\<le>] Ts"
       by fastsimp
     moreover
@@ -304,26 +334,52 @@ proof -
       with `P \<turnstile> ST!n \<le> ST'!n` obtain D' where
 	D': "ST!n = Class D'" and DsubC: "P \<turnstile> D' \<preceq>\<^sup>* D"
 	using D ST by(auto simp: widen_Class)
-      from D_M `P \<turnstile> ST!n \<le> ST'!n` D ST D'
-      have nexc: "\<not> is_external_call P (ST ! n) M"
-	by(auto dest!: external_call_not_sees_method[OF wf])
       from wf D_M DsubC obtain Ts' T' m' C'' where
 	D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
 	Ts': "P \<turnstile> T' \<le> T" by (blast dest: sees_method_mono)
-
-      with Invoke n D D' D_M less nexc nec
-      have ?thesis by(auto intro: list_all2_dropI) }
+      moreover
+      with D_M `P \<turnstile> ST!n \<le> ST'!n` D ST D'
+      have "\<not> is_external_call P (ST ! n) M"
+        by(auto dest: external_call_not_sees_method)
+      ultimately have ?thesis using Invoke n D D' D_M less nec
+        by(auto intro: list_all2_dropI) }
     moreover
-    { fix U
+    { fix Ts U
       assume nexc': "is_external_call P (ST' ! n) M"
-	and wtext: "P \<turnstile> ST' ! n\<bullet>M(rev (take n ST')) :: U"
-      moreover with `P \<turnstile> ST!n \<le> ST'!n` ST
-      have "is_external_call P (ST ! n) M"
-	by-(rule is_external_call_widen_mono)
-      moreover from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
-      with wtext `P \<turnstile> ST!n \<le> ST'!n` ST obtain U' where "P \<turnstile> ST ! n\<bullet>M(rev (take n ST)) :: U'"
-	and "P \<turnstile> U' \<le> U" by(auto dest: external_WTrt_widen_mono)
-      ultimately have ?thesis using Invoke ST less by(auto dest: external_WT_The_conv) }
+	and wtext: "P \<turnstile> ST' ! n\<bullet>M(Ts) :: U"
+        and sub: "P \<turnstile> rev (take n ST') [\<le>] Ts"
+      have ?thesis
+      proof(cases "\<exists>C. ST ! n = Class C \<and> P \<turnstile> C has M")
+        case False
+        with `P \<turnstile> ST!n \<le> ST'!n` ST nexc'
+        have "is_external_call P (ST ! n) M"
+          by(auto intro: is_external_call_widen_mono split: ty.splits)
+        moreover from wtext `P \<turnstile> ST!n \<le> ST'!n` ST False obtain U' 
+          where "P \<turnstile> ST ! n\<bullet>M(Ts) :: U'" and "P \<turnstile> U' \<le> U"
+          by(auto dest: external_WT_widen_mono split: ty.splits)
+        moreover from less have "P \<turnstile> rev (take n ST) [\<le>] rev (take n ST')" by auto
+        with sub have "P \<turnstile> rev (take n ST) [\<le>] Ts" by(auto intro: widens_trans)
+        moreover hence "(THE U. \<exists>Ts'. P \<turnstile> rev (take n ST) [\<le>] Ts' \<and> P \<turnstile> ST ! n\<bullet>M(Ts') :: U) = U'"
+          using `P \<turnstile> ST ! n\<bullet>M(Ts) :: U'` by(auto dest: external_WT_determ)
+        moreover have "(THE U. \<exists>Ts'. P \<turnstile> rev (take n ST') [\<le>] Ts' \<and> P \<turnstile> ST' ! n\<bullet>M(Ts') :: U) = U"
+          using wtext sub by(auto dest: external_WT_determ)
+        ultimately show ?thesis using Invoke ST less nexc' wtext by(simp)
+      next
+        case True
+        then obtain C Ts' T' meth D where C: "ST ! n = Class C"
+          and sees: "P \<turnstile> C sees M:Ts'\<rightarrow>T'=meth in D"
+          unfolding has_method_def by auto
+        moreover hence "\<not> is_external_call P (Class C) M"
+          by(auto dest: external_call_not_sees_method)
+        moreover from C `P \<turnstile> ST!n \<le> ST'!n` obtain C'
+          where C': "ST' ! n = Class C'" by(auto dest: Class_widen)
+        with C `P \<turnstile> ST!n \<le> ST'!n` have "P \<turnstile> C \<preceq>\<^sup>* C'" by simp
+        from wtext external_WT_widen_sees_method_contravariant[OF wf sees this, of Ts U] C'
+        have "P \<turnstile> Ts [\<le>] Ts'" "P \<turnstile> T' \<le> U" by simp_all
+        moreover have "(THE U. \<exists>Ts'. P \<turnstile> rev (take n ST') [\<le>] Ts' \<and> P \<turnstile> ST' ! n\<bullet>M(Ts') :: U) = U"
+          using sub wtext by(auto dest: external_WT_determ)
+        ultimately show ?thesis using Invoke ST nexc' less by simp
+      qed }
     ultimately show ?thesis by(auto split: split_if_asm)
   next
     case ALoad with less app app\<^isub>i succs

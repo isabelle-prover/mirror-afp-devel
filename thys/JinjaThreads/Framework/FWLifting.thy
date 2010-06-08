@@ -9,79 +9,52 @@ theory FWLifting imports FWWellform begin
 text{* Lifting for properties that only involve thread-local state information and the shared memory. *}
 
 definition
-  ts_ok :: "('x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('l, 't,'x) thread_info \<Rightarrow> 'm \<Rightarrow> bool"
+  ts_ok :: "('t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('l, 't,'x) thread_info \<Rightarrow> 'm \<Rightarrow> bool"
 where
-  "ts_ok P ts m \<equiv> \<forall>t. case (ts t) of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> P x m"
+  "ts_ok P ts m \<equiv> \<forall>t. case (ts t) of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> P t x m"
 
 lemma ts_okI:
-  "\<lbrakk> \<And>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> P x m \<rbrakk> \<Longrightarrow> ts_ok P ts m"
+  "\<lbrakk> \<And>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> P t x m \<rbrakk> \<Longrightarrow> ts_ok P ts m"
 by(auto simp add: ts_ok_def)
 
 lemma ts_okE:
-  "\<lbrakk> ts_ok P ts m; \<lbrakk> \<And>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> P x m \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
+  "\<lbrakk> ts_ok P ts m; \<lbrakk> \<And>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> P t x m \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
 by(auto simp add: ts_ok_def)
 
 lemma ts_okD:
-  "\<lbrakk> ts_ok P ts m; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> P x m"
+  "\<lbrakk> ts_ok P ts m; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> P t x m"
 by(auto simp add: ts_ok_def)
 
 lemma ts_ok_True [simp]:
-  "ts_ok (\<lambda>m x. True) ts m"
+  "ts_ok (\<lambda>t m x. True) ts m"
 by(auto intro: ts_okI)
 
 lemma ts_ok_conj:
-  "ts_ok (\<lambda>x m. P x m \<and> Q x m) = (\<lambda>ts m. ts_ok P ts m \<and> ts_ok Q ts m)"
-apply(auto intro: ts_okI intro!: ext dest: ts_okD) 
-done
+  "ts_ok (\<lambda>t x m. P t x m \<and> Q t x m) = (\<lambda>ts m. ts_ok P ts m \<and> ts_ok Q ts m)"
+by(auto intro: ts_okI intro!: ext dest: ts_okD)
+
+lemma ts_ok_mono:
+  "\<lbrakk> ts_ok P ts m; \<And>t x. P t x m \<Longrightarrow> Q t x m \<rbrakk> \<Longrightarrow> ts_ok Q ts m"
+by(auto intro!: ts_okI dest: ts_okD)
 
 text{* Lifting for properites, that also require additional data that does not change during execution *}
 
 definition
-  ts_inv :: "('i \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('t \<rightharpoonup> 'i) \<Rightarrow> ('l,'t,'x) thread_info \<Rightarrow> 'm \<Rightarrow> bool"
+  ts_inv :: "('i \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('t \<rightharpoonup> 'i) \<Rightarrow> ('l,'t,'x) thread_info \<Rightarrow> 'm \<Rightarrow> bool"
 where
-  "ts_inv P I ts m \<equiv> \<forall>t. case (ts t) of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i x m" 
+  "ts_inv P I ts m \<equiv> \<forall>t. case (ts t) of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m" 
 
 lemma ts_invI:
-  "\<lbrakk> \<And>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i x m \<rbrakk> \<Longrightarrow> ts_inv P I ts m"
+  "\<lbrakk> \<And>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m \<rbrakk> \<Longrightarrow> ts_inv P I ts m"
 by(simp add: ts_inv_def)
 
 lemma ts_invE:
-  "\<lbrakk> ts_inv P I ts m; \<forall>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<longrightarrow> (\<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i x m) \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
+  "\<lbrakk> ts_inv P I ts m; \<forall>t x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<longrightarrow> (\<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m) \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
 by(auto simp add: ts_inv_def)
 
 lemma ts_invD:
-  "\<lbrakk> ts_inv P I ts m; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i x m"
+  "\<lbrakk> ts_inv P I ts m; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m"
 by(auto simp add: ts_inv_def)
-
-definition
-  inv_ext :: "('t \<rightharpoonup> 'i) \<Rightarrow> ('t \<rightharpoonup> 'i) \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50)
-where
-  "I \<unlhd> I'  \<equiv> (\<forall>t. case I t of None \<Rightarrow> True | \<lfloor>i\<rfloor> \<Rightarrow> I' t = \<lfloor>i\<rfloor>)"
-
-lemma inv_extI:
-  "(\<And>t i. I t = \<lfloor>i\<rfloor> \<Longrightarrow> I' t = \<lfloor>i\<rfloor>) \<Longrightarrow> I \<unlhd> I'"
-by(simp add: inv_ext_def)
-
-lemma inv_extE:
-  "\<lbrakk> I \<unlhd> I'; \<forall>t i. I t = \<lfloor>i\<rfloor> \<longrightarrow> I' t = \<lfloor>i\<rfloor> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-by(simp add: inv_ext_def)
-
-lemma inv_extD:
-  "\<lbrakk> I \<unlhd> I'; I t = \<lfloor>i\<rfloor> \<rbrakk> \<Longrightarrow> I' t = \<lfloor>i\<rfloor>"
-by(simp add: inv_ext_def)
-
-lemma inv_ext_refl [iff]:
-  fixes I:: "'t \<rightharpoonup> 'i"
-  shows "I \<unlhd> I"
-by(auto intro: inv_extI)
-
-lemma inv_ext_trans [trans]:
-  fixes I :: "'t \<rightharpoonup> 'i"
-  shows "\<lbrakk> I \<unlhd> I'; I' \<unlhd> I'' \<rbrakk> \<Longrightarrow> I \<unlhd> I''" 
-by(auto intro: inv_extI dest: inv_extD)
-
-lemma inv_ext_upd: "I t = None \<Longrightarrow> I \<unlhd> I(t := v)"
-by(auto intro!: inv_extI)
 
 text {* Wellformedness properties for lifting *}
 
@@ -92,60 +65,56 @@ where
 
 lemma ts_inv_okI:
   "(\<And>t. ts t = None \<longleftrightarrow> I t = None) \<Longrightarrow> ts_inv_ok ts I"
-apply(clarsimp simp add: ts_inv_ok_def)
-done
+by(clarsimp simp add: ts_inv_ok_def)
 
 lemma ts_inv_okI2:
   "(\<And>t. (\<exists>v. ts t = \<lfloor>v\<rfloor>) \<longleftrightarrow> (\<exists>v. I t = \<lfloor>v\<rfloor>)) \<Longrightarrow> ts_inv_ok ts I"
-apply(force simp add: ts_inv_ok_def)
-done
+by(force simp add: ts_inv_ok_def)
 
 lemma ts_inv_okE:
   "\<lbrakk> ts_inv_ok ts I; \<forall>t. ts t = None \<longleftrightarrow> I t = None \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-apply(force simp add: ts_inv_ok_def)
-done
+by(force simp add: ts_inv_ok_def)
 
 lemma ts_inv_okE2:
   "\<lbrakk> ts_inv_ok ts I; \<forall>t. (\<exists>v. ts t = \<lfloor>v\<rfloor>) \<longleftrightarrow> (\<exists>v. I t = \<lfloor>v\<rfloor>) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-apply(force simp add: ts_inv_ok_def)
-done
+by(force simp add: ts_inv_ok_def)
 
 lemma ts_inv_okD:
   "ts_inv_ok ts I \<Longrightarrow> (ts t = None) \<longleftrightarrow> (I t = None)"
-apply(erule ts_inv_okE, blast)
-done
+by(erule ts_inv_okE, blast)
 
 lemma ts_inv_okD2:
   "ts_inv_ok ts I \<Longrightarrow> (\<exists>v. ts t = \<lfloor>v\<rfloor>) \<longleftrightarrow> (\<exists>v. I t = \<lfloor>v\<rfloor>)"
-apply(erule ts_inv_okE2, blast)
-done
+by(erule ts_inv_okE2, blast)
 
 lemma ts_inv_ok_upd_ts:
   "\<lbrakk> ts t = \<lfloor>x\<rfloor>; ts_inv_ok ts I \<rbrakk> \<Longrightarrow> ts_inv_ok (ts(t \<mapsto> x')) I"
 by(auto dest!: ts_inv_okD intro!: ts_inv_okI split: if_splits)
 
+lemma ts_inv_upd_option_map:
+  assumes "ts_inv P I ts m"
+  and "\<And>x ln. ts t = \<lfloor>(x, ln)\<rfloor> \<Longrightarrow> P (the (I t)) t (fst (f (x, ln))) m"
+  shows "ts_inv P I (ts(t := (Option.map f (ts t)))) m"
+using assms
+by(fastsimp intro!: ts_invI split: split_if_asm dest: ts_invD)
 
-fun upd_inv :: "('t \<rightharpoonup> 'i) \<Rightarrow> ('i \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> ('t \<rightharpoonup> 'i)"
+fun upd_inv :: "('t \<rightharpoonup> 'i) \<Rightarrow> ('i \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> ('t \<rightharpoonup> 'i)"
 where
-  "upd_inv I P (NewThread t x m) = I(t \<mapsto> SOME i. P i x m)"
+  "upd_inv I P (NewThread t x m) = I(t \<mapsto> SOME i. P i t x m)"
 | "upd_inv I P _ = I"
 
-fun upd_invs :: "('t \<rightharpoonup> 'i) \<Rightarrow> ('i \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('t,'x,'m) new_thread_action list \<Rightarrow> ('t \<rightharpoonup> 'i)"
+fun upd_invs :: "('t \<rightharpoonup> 'i) \<Rightarrow> ('i \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('t,'x,'m) new_thread_action list \<Rightarrow> ('t \<rightharpoonup> 'i)"
 where
   "upd_invs I P [] = I"
 | "upd_invs I P (ta#tas) = upd_invs (upd_inv I P ta) P tas"
 
 lemma upd_invs_append [simp]:
   "upd_invs I P (xs @ ys) = upd_invs (upd_invs I P xs) P ys"
-apply(induct xs arbitrary: I)
-apply(auto)
-done
+by(induct xs arbitrary: I)(auto)
 
 lemma ts_inv_ok_upd_inv':
  "ts_inv_ok ts I \<Longrightarrow> ts_inv_ok (redT_updT' ts ta) (upd_inv I P ta)"
-apply(cases ta)
-apply(auto intro!: ts_inv_okI elim: ts_inv_okD del: iffI)
-done
+by(cases ta)(auto intro!: ts_inv_okI elim: ts_inv_okD del: iffI)
 
 lemma ts_inv_ok_upd_invs':
   "ts_inv_ok ts I \<Longrightarrow> ts_inv_ok (redT_updTs' ts tas) (upd_invs I P tas)"
@@ -184,27 +153,26 @@ next
 qed
 
 lemma ts_inv_ok_inv_ext_upd_inv:
-  "\<lbrakk> ts_inv_ok ts I; thread_ok ts ta \<rbrakk> \<Longrightarrow> I \<unlhd> upd_inv I P ta"
-apply(cases ta, auto intro!: inv_ext_upd dest: ts_inv_okD)
-done
+  "\<lbrakk> ts_inv_ok ts I; thread_ok ts ta \<rbrakk> \<Longrightarrow> I \<subseteq>\<^sub>m upd_inv I P ta"
+by(cases ta)(auto intro!: map_le_same_upd dest: ts_inv_okD)
 
 lemma ts_inv_ok_inv_ext_upd_invs:
   "\<lbrakk> ts_inv_ok ts I; thread_oks ts tas\<rbrakk>
-  \<Longrightarrow> I \<unlhd> upd_invs I P tas"
+  \<Longrightarrow> I \<subseteq>\<^sub>m upd_invs I P tas"
 proof(induct tas arbitrary: ts I)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS I)
-  note IH = `\<And>ts I. \<lbrakk> ts_inv_ok ts I; thread_oks ts TAS\<rbrakk> \<Longrightarrow> I \<unlhd> upd_invs I P TAS`
+  note IH = `\<And>ts I. \<lbrakk> ts_inv_ok ts I; thread_oks ts TAS\<rbrakk> \<Longrightarrow> I \<subseteq>\<^sub>m upd_invs I P TAS`
   note esinv = `ts_inv_ok TS I`
   note cct = `thread_oks TS (TA # TAS)`
-  from esinv cct have "ts_inv_ok (redT_updT' TS TA) (upd_inv I P TA)"
-    by(auto intro: ts_inv_ok_upd_inv')
-  with cct have "upd_inv I P TA \<unlhd> upd_invs (upd_inv I P TA) P TAS"
-    by(auto intro: IH)
-  moreover from esinv cct have "I \<unlhd> upd_inv I P TA"
+  from esinv cct have "I \<subseteq>\<^sub>m upd_inv I P TA"
     by(auto intro: ts_inv_ok_inv_ext_upd_inv)
-  ultimately show ?case by(auto elim: inv_ext_trans)
+  also from esinv cct have "ts_inv_ok (redT_updT' TS TA) (upd_inv I P TA)"
+    by(auto intro: ts_inv_ok_upd_inv')
+  with cct have "upd_inv I P TA \<subseteq>\<^sub>m upd_invs (upd_inv I P TA) P TAS"
+    by(auto intro: IH)
+  finally show ?case by simp
 qed
 
 lemma upd_invs_Some:
@@ -251,18 +219,19 @@ next
 qed
 
 
+
 lemma SOME_new_thread_upd_invs:
-  assumes Qsome: "Q (SOME i. Q i x m) x m"
+  assumes Qsome: "Q (SOME i. Q i t x m) t x m"
   and nt: "NewThread t x m \<in> set tas"
   and cct: "thread_oks ts tas"
-  shows "\<exists>i. upd_invs I Q tas t = \<lfloor>i\<rfloor> \<and> Q i x m"
-proof(rule exI[where x="SOME i. Q i x m"])
-  from nt cct have "upd_invs I Q tas t = \<lfloor>SOME i. Q i x m\<rfloor>"
+  shows "\<exists>i. upd_invs I Q tas t = \<lfloor>i\<rfloor> \<and> Q i t x m"
+proof(rule exI[where x="SOME i. Q i t x m"])
+  from nt cct have "upd_invs I Q tas t = \<lfloor>SOME i. Q i t x m\<rfloor>"
   proof(induct tas arbitrary: ts I)
     case Nil thus ?case by simp
   next
     case (Cons TA TAS TS I)
-    note IH = `\<And>ts I. \<lbrakk> NewThread t x m \<in> set TAS; thread_oks ts TAS \<rbrakk> \<Longrightarrow> upd_invs I Q TAS t = \<lfloor>SOME i. Q i x m\<rfloor>`
+    note IH = `\<And>ts I. \<lbrakk> NewThread t x m \<in> set TAS; thread_oks ts TAS \<rbrakk> \<Longrightarrow> upd_invs I Q TAS t = \<lfloor>SOME i. Q i t x m\<rfloor>`
     note nt = `NewThread t x m \<in> set (TA # TAS)`
     note cct = `thread_oks TS (TA # TAS)`
     { assume nt': "NewThread t x m \<in> set TAS"
@@ -274,13 +243,13 @@ proof(rule exI[where x="SOME i. Q i x m"])
       with cct have rup: "redT_updT' TS TA t = \<lfloor>(undefined, no_wait_locks)\<rfloor>"
 	by(simp)
       from cct have cctta: "thread_oks (redT_updT' TS TA) TAS" by simp
-      from ta have "upd_inv I Q TA t = \<lfloor>SOME i. Q i x m\<rfloor>"
+      from ta have "upd_inv I Q TA t = \<lfloor>SOME i. Q i t x m\<rfloor>"
 	by(simp)
       hence ?case 
 	by(clarsimp simp add: upd_invs_Some_eq[OF cctta, OF rup]) }
     ultimately show ?case using nt by auto
   qed
-  with Qsome show "upd_invs I Q tas t = \<lfloor>SOME i. Q i x m\<rfloor> \<and> Q (SOME i. Q i x m) x m"
+  with Qsome show "upd_invs I Q tas t = \<lfloor>SOME i. Q i t x m\<rfloor> \<and> Q (SOME i. Q i t x m) t x m"
     by(simp)
 qed
 

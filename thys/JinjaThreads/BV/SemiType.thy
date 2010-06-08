@@ -712,4 +712,17 @@ proof -
   ultimately show ?thesis by (simp add: esl_def semilat_def sl_def Err.sl_def)
 qed
 
+subsection {* Code generator setup *}
+
+code_pred widen1p .
+lemmas [code] = widen1_def
+
+lemma eval_widen1p_i_i_o_conv:
+  "Predicate.eval (widen1p_i_i_o P T) = (\<lambda>U. P \<turnstile> T <\<^sup>1 U)"
+by(auto elim: widen1p_i_i_oE intro: widen1p_i_i_oI simp add: widen1_def expand_fun_eq)
+
+lemma rtrancl_widen1_code [code_inline]:
+  "(widen1 P)^* = (\<lambda>(a, b). Predicate.holds (rtrancl_tab_FioB_i_i_i (widen1p_i_i_o P) [] a b))"
+by(auto simp add: expand_fun_eq Predicate.holds_eq widen1_def Collect_def rtrancl_def mem_def rtranclp_eq_rtrancl_tab_nil eval_widen1p_i_i_o_conv intro!: rtrancl_tab_FioB_i_i_iI elim!: rtrancl_tab_FioB_i_i_iE)
+
 end

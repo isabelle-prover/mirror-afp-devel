@@ -35,6 +35,25 @@ declare
  subset_insertI2 [simp]
 (*>*)
 
+lemma map_upds_xchg_snd:
+  "\<lbrakk> length xs \<le> length ys; length xs \<le> length zs; \<forall>i. i < length xs \<longrightarrow> ys ! i = zs ! i \<rbrakk>
+  \<Longrightarrow> f(xs [\<mapsto>] ys) = f(xs [\<mapsto>] zs)"
+proof(induct xs arbitrary: ys zs f)
+  case Nil thus ?case by simp
+next
+  case (Cons x xs)
+  note IH = `\<And>f ys zs. \<lbrakk> length xs \<le> length ys; length xs \<le> length zs; \<forall>i<length xs. ys ! i = zs ! i\<rbrakk>
+             \<Longrightarrow> f(xs [\<mapsto>] ys) = f(xs [\<mapsto>] zs)`
+  note leny = `length (x # xs) \<le> length ys`
+  note lenz = `length (x # xs) \<le> length zs`
+  note nth = `\<forall>i<length (x # xs). ys ! i = zs ! i`
+  from lenz obtain z zs' where zs [simp]: "zs = z # zs'" by(cases zs, auto)
+  from leny obtain y ys' where ys [simp]: "ys = y # ys'" by(cases ys, auto)
+  from lenz leny nth have "(f(x \<mapsto> y))(xs [\<mapsto>] ys') = (f(x \<mapsto> y))(xs [\<mapsto>] zs')"
+    by-(rule IH, auto)
+  moreover from nth have "y = z" by auto
+  ultimately show ?case by(simp add: map_upds_def)
+qed
 
 subsection {*@{text distinct_fst}*}
  
@@ -338,6 +357,10 @@ apply(induct rule: rtrancl3p.induct)
 apply(auto)
 done
 
+inductive_cases rtrancl3p_cases:
+  "rtrancl3p r x [] y"
+  "rtrancl3p r x (b # bs) y"
+
 lemma rtrancl3p_trans [trans]:
   assumes one: "rtrancl3p r a bs a'"
   and two: "rtrancl3p r a' bs' a''"
@@ -439,12 +462,16 @@ proof -
   with refl step show ?thesis by blast
 qed
 
+lemma r_into_rtrancl3p:
+  "r a b a' \<Longrightarrow> rtrancl3p r a [b] a'"
+by(rule rtrancl3p_step_converse) auto
+
 
 
 lemma list_all2_induct[consumes 1, case_names Nil Cons]:
   assumes major: "list_all2 P xs ys"
   and Nil: "Q [] []"
-  and Cons: "\<And>x xs y ys. \<lbrakk> P x y; Q xs ys \<rbrakk> \<Longrightarrow> Q (x # xs) (y # ys)"
+  and Cons: "\<And>x xs y ys. \<lbrakk> P x y; list_all2 P xs ys; Q xs ys \<rbrakk> \<Longrightarrow> Q (x # xs) (y # ys)"
   shows "Q xs ys"
 using major
 by(induct xs arbitrary: ys)(auto simp add: list_all2_Cons1 Nil intro!: Cons)
@@ -471,6 +498,10 @@ hide_const (open) concat
 lemma map_le_SomeD: "\<lbrakk> m \<subseteq>\<^sub>m m'; m x = \<lfloor>y\<rfloor> \<rbrakk> \<Longrightarrow> m' x = \<lfloor>y\<rfloor>"
 by(auto simp add: map_le_def dest: bspec)
 
+lemma map_le_same_upd:
+  "f x = None \<Longrightarrow> f \<subseteq>\<^sub>m f(x \<mapsto> y)"
+by(auto simp add: map_le_def)
+
 lemma take_eq_take_le_eq:
   "\<lbrakk> take n xs = take n ys; m \<le> n \<rbrakk> \<Longrightarrow> take m xs = take m ys"
 by(metis min_max.le_iff_inf take_take)
@@ -483,5 +514,17 @@ lemma nat_fun_sum_eq_conv:
   fixes f :: "'a \<Rightarrow> nat"
   shows "(\<lambda>a. f a + g a) = (\<lambda>a. 0) \<longleftrightarrow> f = (\<lambda>a .0) \<and> g = (\<lambda>a. 0)"
 by(auto simp add: expand_fun_eq)
+
+lemma list_all2_op_eq [simp]:
+  "list_all2 op = xs ys \<longleftrightarrow> xs = ys"
+by(induct xs arbitrary: ys)(auto simp add: list_all2_Cons1)
+
+lemma subset_code [code_unfold]:
+  "set xs \<subseteq> set ys \<longleftrightarrow> (\<forall>x \<in> set xs. x \<in> set ys)"
+by(rule subset_eq)
+
+lemma eval_bot [simp]:
+  "Predicate.eval bot = (\<lambda>_. False)"
+by(rule ext)(auto elim: botE)
 
 end

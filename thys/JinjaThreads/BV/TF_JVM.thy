@@ -4,15 +4,17 @@
 
 header {* \isaheader{The Typing Framework for the JVM}\label{sec:JVM} *}
 
-theory TF_JVM
-imports "../../Jinja/DFA/Typing_Framework_err" EffectMono BVSpec
+theory TF_JVM imports
+  "../../Jinja/DFA/Typing_Framework_err" 
+  EffectMono 
+  BVSpec
+  "../Common/ExternalCallWF"
 begin
 
-constdefs
-  exec :: "jvm_prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> instr list \<Rightarrow> ty\<^isub>i' err step_type"
+definition exec :: "jvm_prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> ex_table \<Rightarrow> instr list \<Rightarrow> ty\<^isub>i' err step_type"
+where
   "exec G maxs rT et bs \<equiv>
-  err_step (size bs) (\<lambda>pc. app (bs!pc) G maxs rT pc (size bs) et) 
-                     (\<lambda>pc. eff (bs!pc) G pc et)"
+   err_step (size bs) (\<lambda>pc. app (bs!pc) G maxs rT pc (size bs) et) (\<lambda>pc. eff (bs!pc) G pc et)"
 
 locale JVM_sl =
   fixes P :: jvm_prog and mxs and mxl\<^isub>0
@@ -222,12 +224,30 @@ theorem (in start_context) exec_pres_type:
    apply(fastsimp split: option.splits)
   apply fastsimp
 
+  -- Instanceof
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
+  apply fastsimp
+
   defer 
   
   -- Return
   apply(fastsimp split: option.splits)
 
   -- Pop
+  apply(clarsimp)
+  apply(erule disjE)
+   apply(fastsimp)
+  apply clarsimp
+  apply(rule conjI)
+   apply(fastsimp split: option.splits)
+  apply fastsimp
+
+  -- Dup
   apply(clarsimp)
   apply(erule disjE)
    apply(fastsimp)
@@ -293,15 +313,13 @@ theorem (in start_context) exec_pres_type:
      apply(fastsimp split: option.splits)
     apply fastsimp
    apply (erule disjE)
-    apply(clarsimp simp add: external_WT_The_conv)
+    apply(clarsimp simp add: external_WT_The_Ex_conv2)
     apply(rule conjI)
      apply(erule in_listE)+
-     apply(erule WT_external_is_type)
-      apply simp
-      apply(drule_tac c="a!n" in subsetD, simp)
-      apply simp
+     apply(erule WT_external_is_type[OF wf])
      apply simp
-     apply(blast intro: set_take_subset subset_trans del: subsetI)
+     apply(drule_tac c="a!n" in subsetD, simp)
+     apply simp
     apply simp
    apply clarsimp
    apply(rule conjI)

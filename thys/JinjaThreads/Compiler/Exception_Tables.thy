@@ -6,10 +6,8 @@ header {* \isaheader{Various Operations for Exception Tables} *}
 
 theory Exception_Tables imports
   Compiler2
-  Correctness1
-  "../Common/Conform"
-  "../J/DefAss"
-  "../Common/ExternalCallWF" 
+  "../Common/ExternalCallWF"
+  "../JVM/JVMExceptions"
 begin
 
 definition pcs :: "ex_table \<Rightarrow> nat set"
@@ -102,9 +100,8 @@ lemma pcs_compxEs2D [dest]:
   "pc \<in> pcs (compxEs2 es pc' d) \<Longrightarrow> pc' \<le> pc \<and> pc < pc' + length (compEs2 es)"
 using pcs_subset by(fastsimp)
 
-
-constdefs
-  shift :: "nat \<Rightarrow> ex_table \<Rightarrow> ex_table"
+definition shift :: "nat \<Rightarrow> ex_table \<Rightarrow> ex_table"
+where
   "shift n xt \<equiv> map (\<lambda>(from,to,C,handler,depth). (n+from,n+to,C,n+handler,depth)) xt"
 
 lemma shift_0 [simp]: "shift 0 xt = xt"
@@ -169,8 +166,6 @@ by(simp add: match_ex_table_shift_eq_Some_conv)
 
 lemma match_ex_table_pcsD: "match_ex_table P C pc xt = \<lfloor>(pc', D)\<rfloor> \<Longrightarrow> pc \<in> pcs xt"
 by(induct xt)(auto split: split_if_asm simp add: match_ex_entry)
-
-
 
 
 definition stack_xlift :: "nat \<Rightarrow> ex_table \<Rightarrow> ex_table"

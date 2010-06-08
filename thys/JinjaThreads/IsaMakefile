@@ -1,7 +1,7 @@
 ## configurables
 
 SESSION-NAME = JinjaThreads
-BASE-IMAGE = Coinductive
+BASE-IMAGE = HOL-Word
 
 ## targets
 
@@ -32,12 +32,12 @@ USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -V outline=/proo
 
 # test run and proof document
 
-$(SESSION-NAME): Coinductive $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
+$(SESSION-NAME): HOL-Word $(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz
 
-Coinductive:
-	cd ../Coinductive; $(ISABELLE_TOOL) make Coinductive
+HOL-Word: 
+	cd $(ISABELLE_HOME)/src/HOL; $(ISABELLE_TOOL) make HOL-Word
 
-$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Common/*.thy J/*.thy Framework/*.thy document/*.tex BV/*.thy JVM/*.thy Compiler/*.thy
+$(LOG)/$(BASE-IMAGE)-$(SESSION-NAME).gz: $(IMAGE) ROOT.ML Common/*.thy J/*.thy Framework/*.thy document/*.tex BV/*.thy JVM/*.thy Compiler/*.thy MM/*.thy DFA/*.thy ../Jinja/DFA/*.thy ../Coinductive/*.thy ../FinFun/*.thy
 	cd ..; $(USEDIR) $(IMAGE) $(SESSION-NAME)
 
 ## clean

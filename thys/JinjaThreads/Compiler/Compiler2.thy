@@ -5,7 +5,7 @@
 header {* \isaheader{Compilation Stage 2} *}
 
 theory Compiler2
-imports PCompiler J1 "../JVM/JVMExec"
+imports PCompiler J1State "../JVM/JVMInstructions"
 begin
 
 primrec compE2  :: "expr1      \<Rightarrow> instr list"
@@ -14,6 +14,7 @@ where
   "compE2 (new C) = [New C]"
 | "compE2 (newA T\<lfloor>e\<rceil>) = compE2 e @ [NewArray T]"
 | "compE2 (Cast T e) = compE2 e @ [Checkcast T]"
+| "compE2 (e instanceof T) = compE2 e @ [Instanceof T]"
 | "compE2 (Val v) = [Push v]"
 | "compE2 (e1 \<guillemotleft>bop\<guillemotright> e2) = compE2 e1 @ compE2 e2 @ [BinOpInstr bop]"
 | "compE2 (Var i) = [Load i]"
@@ -25,7 +26,7 @@ where
 | "compE2 (e1\<bullet>F{D} := e2) = compE2 e1 @ compE2 e2 @ [Putfield F D, Push Unit]"
 | "compE2 (e\<bullet>M(es)) = compE2 e @ compEs2 es @ [Invoke M (size es)]"
 | "compE2 ({i:T=vo; e}) = (case vo of None \<Rightarrow> [] | \<lfloor>v\<rfloor> \<Rightarrow> [Push v, Store i]) @ compE2 e"
-| "compE2 (sync\<^bsub>V\<^esub> (o') e) = compE2 o' @ [Store V, Load V, MEnter] @
+| "compE2 (sync\<^bsub>V\<^esub> (o') e) = compE2 o' @ [Dup, Store V, MEnter] @
                            compE2 e @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc]"
 | "compE2 (insync\<^bsub>V\<^esub> (a) e) = [Goto 1]" -- "Define insync sensibly"
 | "compE2 (e1;;e2) = compE2 e1 @ [Pop] @ compE2 e2"
@@ -55,49 +56,48 @@ text{* Compilation of exception table. Is given start address of code
 to compute absolute addresses necessary in exception table. *}
 
 
-consts
-  compxE2  :: "expr1      \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
-  compxEs2 :: "expr1 list \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
-
-primrec
-"compxE2 (new C) pc d = []"
-"compxE2 (newA T\<lfloor>e\<rceil>) pc d = compxE2 e pc d"
-"compxE2 (Cast T e) pc d = compxE2 e pc d"
-"compxE2 (Val v) pc d = []"
-"compxE2 (e1 \<guillemotleft>bop\<guillemotright> e2) pc d =
+primrec compxE2  :: "expr1      \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
+  and compxEs2 :: "expr1 list \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
+where
+  "compxE2 (new C) pc d = []"
+| "compxE2 (newA T\<lfloor>e\<rceil>) pc d = compxE2 e pc d"
+| "compxE2 (Cast T e) pc d = compxE2 e pc d"
+| "compxE2 (e instanceof T) pc d = compxE2 e pc d"
+| "compxE2 (Val v) pc d = []"
+| "compxE2 (e1 \<guillemotleft>bop\<guillemotright> e2) pc d =
    compxE2 e1 pc d @ compxE2 e2 (pc + size(compE2 e1)) (d+1)"
-"compxE2 (Var i) pc d = []"
-"compxE2 (i:=e) pc d = compxE2 e pc d"
-"compxE2 (a\<lfloor>i\<rceil>) pc d = compxE2 a pc d @ compxE2 i (pc + size (compE2 a)) (d + 1)"
-"compxE2 (a\<lfloor>i\<rceil> := e) pc d =
+| "compxE2 (Var i) pc d = []"
+| "compxE2 (i:=e) pc d = compxE2 e pc d"
+| "compxE2 (a\<lfloor>i\<rceil>) pc d = compxE2 a pc d @ compxE2 i (pc + size (compE2 a)) (d + 1)"
+| "compxE2 (a\<lfloor>i\<rceil> := e) pc d =
          (let pc1 = pc  + size (compE2 a);
               pc2 = pc1 + size (compE2 i)
           in compxE2 a pc d @ compxE2 i pc1 (d + 1) @ compxE2 e pc2 (d + 2))"
-"compxE2 (a\<bullet>length) pc d = compxE2 a pc d"
-"compxE2 (e\<bullet>F{D}) pc d = compxE2 e pc d"
-"compxE2 (e1\<bullet>F{D} := e2) pc d = compxE2 e1 pc d @ compxE2 e2 (pc + size (compE2 e1)) (d + 1)"
-"compxE2 (e\<bullet>M(es)) pc d = compxE2 e pc d @ compxEs2 es (pc + size(compE2 e)) (d+1)"
-"compxE2 ({i:T=vo; e}) pc d = compxE2 e (case vo of None \<Rightarrow> pc | \<lfloor>v\<rfloor> \<Rightarrow> Suc (Suc pc)) d"
-"compxE2 (sync\<^bsub>V\<^esub> (o') e) pc d =
-         (let pc1 = pc + size (compE2 o') + 3;
-              pc2 = pc1 + size(compE2 e)
-          in compxE2 o' pc d @ compxE2 e pc1 d @ [(pc1, pc2, None, Suc (Suc (Suc pc2)), d)])"
-"compxE2 (insync\<^bsub>V\<^esub> (a) e) pc d = []"
-"compxE2 (e1;;e2) pc d =
+| "compxE2 (a\<bullet>length) pc d = compxE2 a pc d"
+| "compxE2 (e\<bullet>F{D}) pc d = compxE2 e pc d"
+| "compxE2 (e1\<bullet>F{D} := e2) pc d = compxE2 e1 pc d @ compxE2 e2 (pc + size (compE2 e1)) (d + 1)"
+| "compxE2 (e\<bullet>M(es)) pc d = compxE2 e pc d @ compxEs2 es (pc + size(compE2 e)) (d+1)"
+| "compxE2 ({i:T=vo; e}) pc d = compxE2 e (case vo of None \<Rightarrow> pc | \<lfloor>v\<rfloor> \<Rightarrow> Suc (Suc pc)) d"
+| "compxE2 (sync\<^bsub>V\<^esub> (o') e) pc d =
+           (let pc1 = pc + size (compE2 o') + 3;
+                pc2 = pc1 + size(compE2 e)
+            in compxE2 o' pc d @ compxE2 e pc1 d @ [(pc1, pc2, None, Suc (Suc (Suc pc2)), d)])"
+| "compxE2 (insync\<^bsub>V\<^esub> (a) e) pc d = []"
+| "compxE2 (e1;;e2) pc d =
    compxE2 e1 pc d @ compxE2 e2 (pc+size(compE2 e1)+1) d"
-"compxE2 (if (e) e\<^isub>1 else e\<^isub>2) pc d =
-	(let pc\<^isub>1   = pc + size(compE2 e) + 1;
-	     pc\<^isub>2   = pc\<^isub>1 + size(compE2 e\<^isub>1) + 1
-	 in compxE2 e pc d @ compxE2 e\<^isub>1 pc\<^isub>1 d @ compxE2 e\<^isub>2 pc\<^isub>2 d)"
-"compxE2 (while (b) e) pc d =
+| "compxE2 (if (e) e\<^isub>1 else e\<^isub>2) pc d =
+	   (let pc\<^isub>1   = pc + size(compE2 e) + 1;
+	        pc\<^isub>2   = pc\<^isub>1 + size(compE2 e\<^isub>1) + 1
+            in compxE2 e pc d @ compxE2 e\<^isub>1 pc\<^isub>1 d @ compxE2 e\<^isub>2 pc\<^isub>2 d)"
+| "compxE2 (while (b) e) pc d =
    compxE2 b pc d @ compxE2 e (pc+size(compE2 b)+1) d"
-"compxE2 (throw e) pc d = compxE2 e pc d"
-"compxE2 (try e1 catch(C i) e2) pc d =
+| "compxE2 (throw e) pc d = compxE2 e pc d"
+| "compxE2 (try e1 catch(C i) e2) pc d =
    (let pc1 = pc + size(compE2 e1)
     in compxE2 e1 pc d @ compxE2 e2 (pc1+2) d @ [(pc,pc1,Some C,pc1+1,d)])"
 
-"compxEs2 [] pc d    = []"
-"compxEs2 (e#es) pc d = compxE2 e pc d @ compxEs2 es (pc+size(compE2 e)) (d+1)"
+| "compxEs2 [] pc d    = []"
+| "compxEs2 (e#es) pc d = compxE2 e pc d @ compxEs2 es (pc+size(compE2 e)) (d+1)"
 
 lemma compE2_neq_Nil [simp]: "compE2 e \<noteq> []"
 by(induct e) auto
@@ -144,6 +144,7 @@ where
   "max_stack (new C) = 1"
 | "max_stack (newA T\<lfloor>e\<rceil>) = max_stack e"
 | "max_stack (Cast C e) = max_stack e"
+| "max_stack (e instanceof T) = max_stack e"
 | "max_stack (Val v) = 1"
 | "max_stack (e1 \<guillemotleft>bop\<guillemotright> e2) = max (max_stack e1) (max_stack e2) + 1"
 | "max_stack (Var i) = 1"
@@ -174,6 +175,9 @@ lemma max_stack1: "1 \<le> max_stack e"
 lemma max_stacks_ge_length: "max_stacks es \<ge> length es"
 by(induct es, auto)
 
+lemma max_stack_blocks1 [simp]:
+  "max_stack (blocks1 n Ts body) = max_stack body"
+by(induct n Ts body rule: blocks1.induct) auto
 
 definition compMb2 :: "expr1 \<Rightarrow> jvm_method"
 where
@@ -183,11 +187,10 @@ where
   in (max_stack body, max_vars body, ins, xt)"
 
 definition compP2 :: "J1_prog \<Rightarrow> jvm_prog"
-where "compP2  \<equiv>  compP compMb2"
+where "compP2  \<equiv>  compP (\<lambda>C M Ts T. compMb2)"
 
 lemma compMb2:
   "compMb2 e = (max_stack e, max_vars e, (compE2 e @ [Return]), compxE2 e 0 0)"
 by (simp add: compMb2_def)
-
 
 end

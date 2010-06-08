@@ -6,111 +6,156 @@ header{* \isaheader{The source language as an instance of the framework} *}
 
 theory Threaded imports
   SmallStep
-  "../Framework/FWLiftingSem"
   JWellForm
-  "../Common/ConformThreaded" 
+  "../Common/ConformThreaded"
+  "../Common/ExternalCallWF"
+  "../Framework/FWLiftingSem"
   "../Framework/FWProgressAux"
 begin
-
 
 abbreviation final_expr :: "expr \<times> locals \<Rightarrow> bool"where
   "final_expr \<equiv> \<lambda>(e, x). final e"
 
-abbreviation
-  mred :: "J_prog \<Rightarrow> (addr, thread_id, expr \<times> locals, heap, addr, obs_event) semantics"
+context J_heap_base begin
+
+abbreviation mred :: "J_prog \<Rightarrow> (addr, thread_id, expr \<times> locals, 'heap, addr, obs_event) semantics"
 where
-  "mred P \<equiv> (\<lambda>((e, l), h)  ta ((e', l'), h'). P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>)"
+  "mred P t \<equiv> (\<lambda>((e, l), h)  ta ((e', l'), h'). P,t \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>)"
 
 lemma red_new_thread_heap:
-  "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t'' ex'' h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> h'' = hp s'"
+  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t'' ex'' h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> h'' = hp s'"
   and reds_new_thread_heap:
-  "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t'' ex'' h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> h'' = hp s'"
+  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t'' ex'' h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> h'' = hp s'"
 apply(induct rule: red_reds.inducts)
-apply(fastsimp dest: red_ext_new_thread_heap)+
+apply(fastsimp dest: red_ext_new_thread_heap simp add: ta_upd_simps)+
 done
 
-lemma red_mthr: "multithreaded (mred P)"
-by(unfold_locales)(auto dest: red_new_thread_heap)
+lemma red_ta_Suspend_last: "convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> Suspend w \<notin> set (butlast \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
+  and reds_ta_Suspend_last: "convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> Suspend w \<notin> set (butlast \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
+by(induct rule: red_reds.inducts)(auto dest: red_external_Suspend_last simp add: ta_upd_simps)
 
-interpretation red_mthr: multithreaded "final_expr" "mred P"
+lemma red_mthr: "multithreaded (mred P)"
+by(unfold_locales)(auto dest: red_new_thread_heap red_ta_Suspend_last)
+
+end
+
+sublocale J_heap_base < red_mthr!: multithreaded "final_expr" "mred P" for P
 by(rule red_mthr)
 
-lemmas red_mthr_redT_elims4 = red_mthr.redT_elims4[consumes 1, case_names normal acquire]
+context J_heap_base begin
 
 abbreviation
-  mredT :: "J_prog \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) state \<Rightarrow> (thread_id \<times> (addr,thread_id,expr \<times> locals,heap,addr,(addr, obs_event) observable) thread_action) \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) state \<Rightarrow> bool"
+  mredT :: "J_prog \<Rightarrow> (addr,thread_id,expr \<times> locals,'heap,addr) state \<Rightarrow> (thread_id \<times> (expr \<times> locals,'heap) JT_thread_action) \<Rightarrow> (addr,thread_id,expr \<times> locals,'heap,addr) state \<Rightarrow> bool"
 where
-  "mredT P \<equiv> multithreaded_base.redT final_expr (mred P)"
+  "mredT P \<equiv> red_mthr.redT P"
 
 abbreviation
-  mredT_syntax1 :: "J_prog \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) state
-                  \<Rightarrow> thread_id \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr,(addr, obs_event) observable) thread_action
-                  \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) state \<Rightarrow> bool"
+  mredT_syntax1 :: "J_prog \<Rightarrow> (addr,thread_id,expr \<times> locals,'heap,addr) state
+                  \<Rightarrow> thread_id \<Rightarrow> (expr \<times> locals,'heap) JT_thread_action
+                  \<Rightarrow> (addr,thread_id,expr \<times> locals,'heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -_\<triangleright>_\<rightarrow> _" [50,0,0,0,50] 80)
 where
   "mredT_syntax1 P s t ta s' \<equiv> mredT P s (t, ta) s'"
 
 abbreviation
-  mredT_syntax2 :: "J_prog \<Rightarrow> (addr,thread_id) locks \<Rightarrow> (addr,thread_id,expr \<times> locals) thread_info \<times> heap \<Rightarrow> (addr,thread_id) wait_sets
-                  \<Rightarrow> thread_id \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr,(addr,obs_event) observable) thread_action
-                  \<Rightarrow> (addr,thread_id) locks \<Rightarrow> (addr,thread_id,expr \<times> locals) thread_info \<times> heap \<Rightarrow> (addr,thread_id) wait_sets \<Rightarrow> bool"
+  mredT_syntax2 :: "J_prog \<Rightarrow> (addr,thread_id) locks \<Rightarrow> (addr,thread_id,expr \<times> locals) thread_info \<times> 'heap \<Rightarrow> (addr,thread_id) wait_sets
+                  \<Rightarrow> thread_id \<Rightarrow> (expr \<times> locals,'heap) JT_thread_action
+                  \<Rightarrow> (addr,thread_id) locks \<Rightarrow> (addr,thread_id,expr \<times> locals) thread_info \<times> 'heap \<Rightarrow> (addr,thread_id) wait_sets \<Rightarrow> bool"
                     ("_ \<turnstile> \<langle>_, _, _\<rangle> -_\<triangleright>_\<rightarrow> \<langle>_, _, _\<rangle>" [50,0,0,0,0,0,0,0,0] 80)
 where
   "P \<turnstile> \<langle>ls, tsm, ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', tsm', ws'\<rangle> \<equiv> P \<turnstile> (ls, tsm, ws) -t\<triangleright>ta\<rightarrow> (ls', tsm', ws')"
 
 
 abbreviation
-  mRedT_syntax1 :: "J_prog \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) state
-                  \<Rightarrow> (thread_id \<times> (addr,thread_id,expr \<times> locals,heap,addr,(addr, obs_event) observable) thread_action) list
-                  \<Rightarrow> (addr,thread_id,expr \<times> locals,heap,addr) state \<Rightarrow> bool"
+  mRedT_syntax1 :: "J_prog \<Rightarrow> (addr,thread_id,expr \<times> locals,'heap,addr) state
+                  \<Rightarrow> (thread_id \<times> (expr \<times> locals,'heap) JT_thread_action) list
+                  \<Rightarrow> (addr,thread_id,expr \<times> locals,'heap,addr) state \<Rightarrow> bool"
                     ("_ \<turnstile> _ -\<triangleright>_\<rightarrow>* _" [50,0,0,50] 80)
 where
-  "P \<turnstile> s -\<triangleright>ttas\<rightarrow>* s' \<equiv> multithreaded_base.RedT final_expr (mred P) s ttas s'"
+  "P \<turnstile> s -\<triangleright>ttas\<rightarrow>* s' \<equiv> red_mthr.RedT P s ttas s'"
 
 abbreviation
-  mRedT_syntax2 :: "J_prog \<Rightarrow> (addr,thread_id) locks \<Rightarrow> (addr,thread_id,expr \<times> locals) thread_info \<times> heap \<Rightarrow> (addr,thread_id) wait_sets
-                  \<Rightarrow> (thread_id \<times> (addr,thread_id,expr \<times> locals,heap,addr,(addr, obs_event) observable) thread_action) list
-                  \<Rightarrow> (addr,thread_id) locks \<Rightarrow> (addr,thread_id,expr \<times> locals) thread_info \<times> heap \<Rightarrow> (addr,thread_id) wait_sets \<Rightarrow> bool"
+  mRedT_syntax2 :: "J_prog \<Rightarrow> (addr,thread_id) locks \<Rightarrow> (addr,thread_id,expr \<times> locals) thread_info \<times> 'heap \<Rightarrow> (addr,thread_id) wait_sets
+                  \<Rightarrow> (thread_id \<times> (expr \<times> locals,'heap) JT_thread_action) list
+                  \<Rightarrow> (addr,thread_id) locks \<Rightarrow> (addr,thread_id,expr \<times> locals) thread_info \<times> 'heap \<Rightarrow> (addr,thread_id) wait_sets \<Rightarrow> bool"
                     ("_ \<turnstile> \<langle>_, _, _\<rangle> -\<triangleright>_\<rightarrow>* \<langle>_, _, _\<rangle>" [50,0,0,0,0,0,0,0] 80)
 where
   "P \<turnstile> \<langle>ls, tsm, ws\<rangle> -\<triangleright>ttas\<rightarrow>* \<langle>ls', tsm', ws'\<rangle> \<equiv> P \<turnstile> (ls, tsm, ws) -\<triangleright>ttas\<rightarrow>* (ls', tsm', ws')"
 
+end
 
+context J_heap begin
+
+lemma redTW_hext_incr:
+  "red_mthr.redTW P t wa s obs s' \<Longrightarrow> shr s \<unlhd> shr s'"
+by(auto elim!: red_mthr.redTW.cases dest!: red_hext_incr)
+
+lemma redTWs_hext_incr:
+  assumes "red_mthr.redTWs P t wa s obs s'"
+  shows "shr s \<unlhd> shr s'"
+using assms
+by induct(auto dest: redTW_hext_incr intro: hext_trans)
 
 lemma redT_hext_incr:
-  "P \<turnstile> s -t\<triangleright>ta\<rightarrow> s' \<Longrightarrow> hext (shr s) (shr s')"
-by(erule red_mthr.redT.cases, auto dest: red_hext_incr)
+  "P \<turnstile> s -t\<triangleright>ta\<rightarrow> s' \<Longrightarrow> shr s \<unlhd> shr s'"
+by(erule red_mthr.redT.cases)(auto dest!: red_hext_incr redTWs_hext_incr intro: hext_trans)
+
+lemma RedT_hext_incr:
+  assumes "P \<turnstile> s -\<triangleright>tta\<rightarrow>* s'"
+  shows "shr s \<unlhd> shr s'"
+using assms unfolding red_mthr.RedT_def
+by(induct)(auto dest: redT_hext_incr intro: hext_trans)
+
+end
+
+subsection {* Lifting @{term "tconf"} to multithreaded states *}
+
+lemma (in J_heap_base) red_NewThread_Thread_Object:
+  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t' x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> 
+  \<Longrightarrow> \<exists>C. typeof_addr (hp s') t' = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+  and reds_NewThread_Thread_Object:
+  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t' x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
+  \<Longrightarrow> \<exists>C. typeof_addr (hp s') t' = \<lfloor>Class C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
+apply(induct rule: red_reds.inducts)
+apply(fastsimp dest: red_external_new_thread_exists_thread_object simp add: ta_upd_simps)+
+done
+
+lemma (in J_heap) lifting_wf_tconf:
+  "lifting_wf (mred P) (\<lambda>t ex h. P,h \<turnstile> t \<surd>t)"
+by(unfold_locales)(fastsimp dest: red_hext_incr red_NewThread_Thread_Object elim!: tconf_hext_mono intro: tconfI)+
+
+sublocale J_heap < red_tconf!: lifting_wf final_expr "mred P" "\<lambda>t ex h. P,h \<turnstile> t \<surd>t" for P
+by(rule lifting_wf_tconf)
 
 section {* Towards agreement between the framework semantics' lock state and the locks stored in the expressions *}
 
-consts
-  sync_ok :: "('a,'b) exp \<Rightarrow> bool"
-  sync_oks :: "('a,'b) exp list \<Rightarrow> bool"
-
-primrec
+primrec sync_ok :: "('a,'b) exp \<Rightarrow> bool"
+  and sync_oks :: "('a,'b) exp list \<Rightarrow> bool"
+where
   "sync_ok (new C) = True"
-  "sync_ok (newA T\<lfloor>i\<rceil>) = sync_ok i"
-  "sync_ok (Cast T e) = sync_ok e"
-  "sync_ok (Val v) = True"
-  "sync_ok (Var v) = True"
-  "sync_ok (e \<guillemotleft>bop\<guillemotright> e') = (sync_ok e \<and> sync_ok e' \<and> (contains_insync e' \<longrightarrow> is_val e))"
-  "sync_ok (V := e) = sync_ok e"
-  "sync_ok (a\<lfloor>i\<rceil>) = (sync_ok a \<and> sync_ok i \<and> (contains_insync i \<longrightarrow> is_val a))"
-  "sync_ok (AAss a i e) = (sync_ok a \<and> sync_ok i \<and> sync_ok e \<and> (contains_insync i \<longrightarrow> is_val a) \<and> (contains_insync e \<longrightarrow> is_val a \<and> is_val i))"
-  "sync_ok (a\<bullet>length) = sync_ok a"
-  "sync_ok (e\<bullet>F{D}) = sync_ok e"
-  "sync_ok (FAss e F D e') = (sync_ok e \<and> sync_ok e' \<and> (contains_insync e' \<longrightarrow> is_val e))"
-  "sync_ok (e\<bullet>m(pns)) = (sync_ok e \<and> sync_oks pns \<and> (contains_insyncs pns \<longrightarrow> is_val e))"
-  "sync_ok ({V : T=vo; e}) = sync_ok e"
-  "sync_ok (sync\<^bsub>V\<^esub> (o') e) = (sync_ok o' \<and> \<not> contains_insync e)"
-  "sync_ok (insync\<^bsub>V\<^esub> (a) e) = sync_ok e"
-  "sync_ok (e;;e') = (sync_ok e \<and> sync_ok e' \<and> (contains_insync e' \<longrightarrow> is_val e))"
-  "sync_ok (if (b) e else e') = (sync_ok b \<and> \<not> contains_insync e \<and> \<not> contains_insync e')"
-  "sync_ok (while (b) e) = (\<not> contains_insync b \<and> \<not> contains_insync e)"
-  "sync_ok (throw e) = sync_ok e"
-  "sync_ok (try e catch(C v) e') = (sync_ok e \<and> \<not> contains_insync e')"
-  "sync_oks [] = True"
-  "sync_oks (x # xs) = (sync_ok x \<and> sync_oks xs \<and> (contains_insyncs xs \<longrightarrow> is_val x))"
+| "sync_ok (newA T\<lfloor>i\<rceil>) = sync_ok i"
+| "sync_ok (Cast T e) = sync_ok e"
+| "sync_ok (e instanceof T) = sync_ok e"
+| "sync_ok (Val v) = True"
+| "sync_ok (Var v) = True"
+| "sync_ok (e \<guillemotleft>bop\<guillemotright> e') = (sync_ok e \<and> sync_ok e' \<and> (contains_insync e' \<longrightarrow> is_val e))"
+| "sync_ok (V := e) = sync_ok e"
+| "sync_ok (a\<lfloor>i\<rceil>) = (sync_ok a \<and> sync_ok i \<and> (contains_insync i \<longrightarrow> is_val a))"
+| "sync_ok (AAss a i e) = (sync_ok a \<and> sync_ok i \<and> sync_ok e \<and> (contains_insync i \<longrightarrow> is_val a) \<and> (contains_insync e \<longrightarrow> is_val a \<and> is_val i))"
+| "sync_ok (a\<bullet>length) = sync_ok a"
+| "sync_ok (e\<bullet>F{D}) = sync_ok e"
+| "sync_ok (FAss e F D e') = (sync_ok e \<and> sync_ok e' \<and> (contains_insync e' \<longrightarrow> is_val e))"
+| "sync_ok (e\<bullet>m(pns)) = (sync_ok e \<and> sync_oks pns \<and> (contains_insyncs pns \<longrightarrow> is_val e))"
+| "sync_ok ({V : T=vo; e}) = sync_ok e"
+| "sync_ok (sync\<^bsub>V\<^esub> (o') e) = (sync_ok o' \<and> \<not> contains_insync e)"
+| "sync_ok (insync\<^bsub>V\<^esub> (a) e) = sync_ok e"
+| "sync_ok (e;;e') = (sync_ok e \<and> sync_ok e' \<and> (contains_insync e' \<longrightarrow> is_val e))"
+| "sync_ok (if (b) e else e') = (sync_ok b \<and> \<not> contains_insync e \<and> \<not> contains_insync e')"
+| "sync_ok (while (b) e) = (\<not> contains_insync b \<and> \<not> contains_insync e)"
+| "sync_ok (throw e) = sync_ok e"
+| "sync_ok (try e catch(C v) e') = (sync_ok e \<and> \<not> contains_insync e')"
+| "sync_oks [] = True"
+| "sync_oks (x # xs) = (sync_ok x \<and> sync_oks xs \<and> (contains_insyncs xs \<longrightarrow> is_val x))"
 
 lemma sync_oks_append [simp]:
   "sync_oks (xs @ ys) \<longleftrightarrow> sync_oks xs \<and> sync_oks ys \<and> (contains_insyncs ys \<longrightarrow> (\<exists>vs. xs = map Val vs))"
@@ -126,15 +171,25 @@ lemma expr_locks_sync_ok: "(\<And>ad. expr_locks e ad = 0) \<Longrightarrow> syn
 by(auto intro!: not_contains_insync_sync_ok not_contains_insyncs_sync_oks
         simp add: contains_insync_conv contains_insyncs_conv)
 
-lemma sync_ok_extRet2J [simp]: "sync_ok (extRet2J va)"
+lemma sync_ok_extRet2J [simp, intro!]: "sync_ok e \<Longrightarrow> sync_ok (extRet2J e va)"
 by(cases va) auto
 
-lemma 
-  assumes wf: "wf_J_prog P"
-  shows red_preserve_sync_ok: "\<lbrakk> extTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk> \<Longrightarrow> sync_ok e'"
-  and reds_preserve_sync_oks: "\<lbrakk> extTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk> \<Longrightarrow> sync_oks es'"
+abbreviation
+  sync_es_ok :: "(addr,thread_id,('a,'b) exp\<times>'c) thread_info \<Rightarrow> 'heap \<Rightarrow> bool"
+where
+  "sync_es_ok \<equiv> ts_ok (\<lambda>t (e, x) m. sync_ok e)"
+
+lemma sync_es_ok_blocks [simp]:
+  "\<lbrakk> length pns = length Ts; length Ts = length vs \<rbrakk> \<Longrightarrow> sync_ok (blocks pns Ts vs e) = sync_ok e"
+by(induct pns Ts vs e rule: blocks.induct) auto
+
+context J_heap_base begin
+
+lemma assumes wf: "wf_J_prog P"
+  shows red_preserve_sync_ok: "\<lbrakk> extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk> \<Longrightarrow> sync_ok e'"
+  and reds_preserve_sync_oks: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk> \<Longrightarrow> sync_oks es'"
 proof(induct rule: red_reds.inducts)
-  case (RedCall s a C fs M Ts T pns body D vs)
+  case (RedCall s a C M Ts T pns body D vs)
   from wf `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
   have "wf_mdecl wf_J_mdecl P D (M,Ts,T,pns,body)"
     by(rule sees_wf_mdecl)
@@ -142,40 +197,35 @@ proof(induct rule: red_reds.inducts)
     by(auto simp add: wf_mdecl_def)
   hence "expr_locks body = (\<lambda>ad. 0)" by(rule WT_expr_locks)
   with `length vs = length pns` `length Ts = length pns` 
-  have "expr_locks (blocks (pns, Ts, vs, body)) = (\<lambda>ad. 0)"
+  have "expr_locks (blocks pns Ts vs body) = (\<lambda>ad. 0)"
     by(simp add: expr_locks_blocks)
   thus ?case by(auto intro: expr_locks_sync_ok)
 qed(fastsimp intro: not_contains_insync_sync_ok)+
 
 lemma assumes wf: "wf_J_prog P"
   shows expr_locks_new_thread:
-  "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t (e'', x'') h \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> expr_locks e'' = (\<lambda>ad. 0)"
+  "\<lbrakk> P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t'' (e'', x'') h \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> expr_locks e'' = (\<lambda>ad. 0)"
 
   and expr_locks_new_thread':
-  "\<lbrakk> P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t (e'', x'') h \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> expr_locks e'' = (\<lambda>ad. 0)"
+  "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t'' (e'', x'') h \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> expr_locks e'' = (\<lambda>ad. 0)"
 proof(induct rule: red_reds.inducts)
   case (RedCallExternal s a T M vs ta va h' ta' e' s')
-  then obtain C fs where subThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" and ext: "extNTA2J P (C, run, t) = (e'', x'')"
-    by(fastsimp elim!: red_external.cases split: heapobj.split_asm dest: Array_widen)
+  then obtain C fs a where subThread: "P \<turnstile> C \<preceq>\<^sup>* Thread" and ext: "extNTA2J P (C, run, a) = (e'', x'')"
+    by(fastsimp dest: red_external_new_thread_sub_thread)
   from sub_Thread_sees_run[OF wf subThread] obtain D pns body
     where sees: "P \<turnstile> C sees run: []\<rightarrow>Void = (pns, body) in D" by auto
   from sees_wf_mdecl[OF wf this] obtain T where "P,[this \<mapsto> Class D] \<turnstile> body :: T"
     by(auto simp add: wf_mdecl_def)
   hence "expr_locks body = (\<lambda>ad. 0)" by(rule WT_expr_locks)
   with sees ext show ?case by(auto simp add: extNTA2J_def)
-qed(auto)
+qed(auto simp add: ta_upd_simps)
 
 lemma assumes wf: "wf_J_prog P"
-  shows red_new_thread_sync_ok: "\<lbrakk> P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t'' (e'', x'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> sync_ok e''"
-  and reds_new_thread_sync_ok: "\<lbrakk> P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t'' (e'', x'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> sync_ok e''"
+  shows red_new_thread_sync_ok: "\<lbrakk> P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t'' (e'', x'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> sync_ok e''"
+  and reds_new_thread_sync_ok: "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t'' (e'', x'') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> sync_ok e''"
 by(auto dest!: expr_locks_new_thread[OF wf] expr_locks_new_thread'[OF wf] intro: expr_locks_sync_ok expr_lockss_sync_oks)
 
-abbreviation
-  sync_es_ok :: "(addr,thread_id,('a,'b) exp\<times>'c) thread_info \<Rightarrow> heap \<Rightarrow> bool"
-where
-  "sync_es_ok \<equiv> ts_ok (\<lambda>(e, x) m. sync_ok e)"
-
-lemma lifting_wf_sync_ok: "wf_J_prog P \<Longrightarrow> lifting_wf (mred P) (\<lambda>(e, x) m. sync_ok e)"
+lemma lifting_wf_sync_ok: "wf_J_prog P \<Longrightarrow> lifting_wf (mred P) (\<lambda>t (e, x) m. sync_ok e)"
 by(unfold_locales)(auto intro: red_preserve_sync_ok red_new_thread_sync_ok)
 
 lemma redT_preserve_sync_ok:
@@ -183,11 +233,28 @@ lemma redT_preserve_sync_ok:
   shows "\<lbrakk> wf_J_prog P; sync_es_ok (thr s) (shr s) \<rbrakk> \<Longrightarrow> sync_es_ok (thr s') (shr s')"
 by(rule lifting_wf.redT_preserves[OF lifting_wf_sync_ok red])
 
-lemmas RedT_preserves_sync_ok = lifting_wf.RedT_preserves[OF lifting_wf_sync_ok]
+lemma RedT_preserves_sync_ok:
+  "\<lbrakk>wf_J_prog P; P \<turnstile> s -\<triangleright>ttas\<rightarrow>* s'; sync_es_ok (thr s) (shr s)\<rbrakk>
+   \<Longrightarrow> sync_es_ok (thr s') (shr s')"
+by(rule lifting_wf.RedT_preserves[OF lifting_wf_sync_ok])
+
+lemma sync_es_ok_J_start_state:
+  "\<lbrakk> wf_J_prog P; P \<turnstile> C sees M:Ts\<rightarrow>T=(pns, body) in D; length Ts = length vs \<rbrakk>
+  \<Longrightarrow> sync_es_ok (thr (J_start_state P C M vs)) m"
+apply(rule ts_okI)
+apply(clarsimp simp add: start_state_def split_beta split: split_if_asm)
+apply(drule (1) sees_wf_mdecl)
+apply(clarsimp simp add: wf_mdecl_def)
+apply(drule WT_expr_locks)
+apply(rule expr_locks_sync_ok)
+apply simp
+done
+
+end
 
 text {* Framework lock state agrees with locks stored in the expression *}
 
-definition lock_ok :: "(addr,thread_id) locks \<Rightarrow> (addr,thread_id,expr \<times> locals) thread_info \<Rightarrow> bool" where
+definition lock_ok :: "(addr,thread_id) locks \<Rightarrow> (addr,thread_id,('a, 'b) exp \<times> 'x) thread_info \<Rightarrow> bool" where
   "lock_ok ls ts \<equiv> \<forall>t. (case (ts t) of None    \<Rightarrow> (\<forall>l. has_locks (ls\<^sub>f l) t = 0)
                                      | \<lfloor>((e, x), ln)\<rfloor> \<Rightarrow> (\<forall>l. has_locks (ls\<^sub>f l) t + ln\<^sub>f l = expr_locks e l))"
 
@@ -232,6 +299,17 @@ proof(rule lock_thread_okI)
   qed
 qed
 
+lemma (in J_heap_base) lock_ok_J_start_state:
+  "\<lbrakk> wf_J_prog P; P \<turnstile> C sees M:Ts\<rightarrow>T=(pns, body) in D; length Ts = length vs \<rbrakk>
+  \<Longrightarrow> lock_ok (locks (J_start_state P C M vs)) (thr (J_start_state P C M vs))"
+apply(rule lock_okI)
+apply(auto simp add: start_state_def split: split_if_asm)
+apply(drule (1) sees_wf_mdecl)
+apply(clarsimp simp add: wf_mdecl_def)
+apply(drule WT_expr_locks)
+apply(simp add: expr_locks_blocks)
+done
+
 section {* Preservation of lock state agreement *}
 
 fun upd_expr_lock_action :: "int \<Rightarrow> lock_action \<Rightarrow> int"
@@ -268,19 +346,24 @@ lemma upd_expr_locks_add [simp]:
   "upd_expr_locks (\<lambda>a. x a + y a) las = (\<lambda>a. upd_expr_locks x las a + y a)"
 by(auto intro: ext)
 
-lemma expr_locks_extRet2J [simp]: "expr_locks (extRet2J va) = (\<lambda>ad. 0)"
+lemma expr_locks_extRet2J [simp, intro!]: "expr_locks e = (\<lambda>ad. 0) \<Longrightarrow> expr_locks (extRet2J e va) = (\<lambda>ad. 0)"
 by(cases va) auto
 
-lemma assumes wf: "wf_J_prog P"
+lemma (in J_heap_base)
+  assumes wf: "wf_J_prog P"
   shows red_update_expr_locks:
-  "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk> \<Longrightarrow> upd_expr_locks (int o expr_locks e) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int o expr_locks e'"
+  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk> 
+  \<Longrightarrow> upd_expr_locks (int o expr_locks e) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int o expr_locks e'"
   and reds_update_expr_lockss:
-  "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk> \<Longrightarrow> upd_expr_locks (int o expr_lockss es) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int o expr_lockss es'"
+  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk>
+  \<Longrightarrow> upd_expr_locks (int o expr_lockss es) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int o expr_lockss es'"
 proof -
-  have "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk> \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = (\<lambda>ad. (int o expr_locks e') ad - (int o expr_locks e) ad)"
-    and "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk> \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = (\<lambda>ad. (int o expr_lockss es') ad - (int o expr_lockss es) ad)"
+  have "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk> 
+       \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = (\<lambda>ad. (int o expr_locks e') ad - (int o expr_locks e) ad)"
+    and "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk>
+        \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = (\<lambda>ad. (int o expr_lockss es') ad - (int o expr_lockss es) ad)"
   proof(induct rule: red_reds.inducts)
-    case (RedCall s a C fs M Ts T pns body D vs)
+    case (RedCall s a C M Ts T pns body D vs)
     from wf `P \<turnstile> C sees M: Ts\<rightarrow>T = (pns, body) in D`
     have "wf_mdecl wf_J_mdecl P D (M,Ts,T,pns,body)"
       by(rule sees_wf_mdecl)
@@ -288,18 +371,22 @@ proof -
       by(auto simp add: wf_mdecl_def)
     hence "expr_locks body = (\<lambda>ad. 0)" by(rule WT_expr_locks)
     with `length vs = length pns` `length Ts = length pns` 
-    have "expr_locks (blocks (pns, Ts, vs, body)) = (\<lambda>ad. 0)"
+    have "expr_locks (blocks pns Ts vs body) = (\<lambda>ad. 0)"
       by(simp add: expr_locks_blocks)
     thus ?case by(auto intro: expr_locks_sync_ok)
   next
     case RedCallExternal thus ?case
-      by(auto simp add: expand_fun_eq contains_insync_conv contains_insyncs_conv finfun_upd_apply elim!: red_external.cases)
-  qed(fastsimp simp add: expand_fun_eq contains_insync_conv contains_insyncs_conv finfun_upd_apply)+
-  hence "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk> \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0 + (int \<circ> expr_locks e) ad) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_locks e'"
-    and "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk> \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0 + (int \<circ> expr_lockss es) ad) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_lockss es'"
+      by(auto simp add: expand_fun_eq contains_insync_conv contains_insyncs_conv finfun_upd_apply ta_upd_simps elim!: red_external.cases)
+  qed(fastsimp simp add: expand_fun_eq contains_insync_conv contains_insyncs_conv finfun_upd_apply ta_upd_simps)+
+  hence "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk>
+        \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0 + (int \<circ> expr_locks e) ad) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_locks e'"
+    and "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk>
+        \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0 + (int \<circ> expr_lockss es) ad) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int \<circ> expr_lockss es'"
     by(auto intro: ext simp only: upd_expr_locks_add)
-  thus "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk> \<Longrightarrow> upd_expr_locks (int o expr_locks e) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int o expr_locks e'"
-    and "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk> \<Longrightarrow> upd_expr_locks (int o expr_lockss es) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int o expr_lockss es'"
+  thus "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; sync_ok e \<rbrakk>
+       \<Longrightarrow> upd_expr_locks (int o expr_locks e) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int o expr_locks e'"
+    and "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk>
+        \<Longrightarrow> upd_expr_locks (int o expr_lockss es) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = int o expr_lockss es'"
     by(auto simp add: o_def)
 qed
 
@@ -356,7 +443,8 @@ lemma ls_els_okD:
 by(auto simp add: ls_els_ok_def)
 
 lemma redT_updLs_upd_expr_locks_preserves_ls_els_ok:  
- "\<lbrakk> ls_els_ok ls t ln els; lock_ok_las ls t las \<rbrakk> \<Longrightarrow> ls_els_ok (redT_updLs ls t las) t (redT_updLns ls t ln las) (upd_expr_locks els las)"
+ "\<lbrakk> ls_els_ok ls t ln els; lock_ok_las ls t las \<rbrakk>
+  \<Longrightarrow> ls_els_ok (redT_updLs ls t las) t (redT_updLns ls t ln las) (upd_expr_locks els las)"
 by(auto intro!: ls_els_okI upd_locks_upd_expr_lock_preserve_lock_expr_locks_ok elim!: ls_els_okE simp add: redT_updLs_def lock_ok_las_def)
 
 lemma sync_ok_redT_updT: 
@@ -383,7 +471,8 @@ proof(induct tas arbitrary: ts)
   case Nil thus ?case by(auto intro: ts_okI dest: ts_okD)
 next
   case (Cons TA TAS TS)
-  note IH = `\<And>ts. \<lbrakk>sync_es_ok ts h; \<And>t e x h''. NewThread t (e, x) h'' \<in> set TAS \<Longrightarrow> sync_ok e\<rbrakk> \<Longrightarrow> sync_es_ok (redT_updTs ts TAS) h'`
+  note IH = `\<And>ts. \<lbrakk>sync_es_ok ts h; \<And>t e x h''. NewThread t (e, x) h'' \<in> set TAS \<Longrightarrow> sync_ok e\<rbrakk> 
+            \<Longrightarrow> sync_es_ok (redT_updTs ts TAS) h'`
   note nt = `\<And>t e x h. NewThread t (e, x) h \<in> set (TA # TAS) \<Longrightarrow> sync_ok e`
   from `sync_es_ok TS h` nt
   have "sync_es_ok (redT_updT TS TA) h"
@@ -392,6 +481,55 @@ next
     by(rule IH)(auto intro: nt)
   thus ?case by simp
 qed
+
+lemma lock_ok_thr_updI:
+  "\<lbrakk> lock_ok ls ts; ts t = \<lfloor>((e, xs), ln)\<rfloor>; expr_locks e = expr_locks e' \<rbrakk>
+  \<Longrightarrow> lock_ok ls (ts(t \<mapsto> ((e', xs'), ln)))"
+by(rule lock_okI)(auto split: split_if_asm dest: lock_okD2 lock_okD1)
+
+context J_heap_base begin 
+
+lemma redTWs_preserves_sync_es_ok:
+  assumes wf: "wf_J_prog P"
+  and "red_mthr.redTWs P t wa s obs s'"
+  and "sync_es_ok (thr s) (shr s)"
+  shows "sync_es_ok (thr s') (shr s')"
+using assms
+by(rule lifting_wf.redTWs_preserves[OF lifting_wf_sync_ok])
+
+lemma redTW_preserves_lock_ok:
+  assumes wf: "wf_J_prog P"
+  and "red_mthr.redTW P t wa s obs s'"
+  and "lock_ok (locks s) (thr s)"
+  and "sync_es_ok (thr s) (shr s)"
+  shows "lock_ok (locks s') (thr s')"
+using assms
+apply(auto elim!: red_mthr.redTW.cases simp add: Option.map_def fun_upd_idem)
+  apply(erule (1) lock_ok_thr_updI)
+  apply(drule (1) red_update_expr_locks)
+   apply(drule (1) ts_okD, simp)
+  apply(simp add: o_def expand_fun_eq ta_upd_simps)
+ prefer 2
+ apply(erule (1) lock_ok_thr_updI)
+ apply(drule (1) red_update_expr_locks)
+  apply(drule (1) ts_okD, simp)
+ apply(simp add: o_def expand_fun_eq ta_upd_simps is_Interrupted_ta_def)
+apply(rule lock_okI)
+ apply(auto split: split_if_asm dest: lock_okD1 lock_okD2)
+apply(erule allE, erule (1) impE)
+apply clarsimp
+apply(drule (1) lock_okD2)
+apply(drule (1) red_update_expr_locks)
+ apply(drule (1) ts_okD, simp)
+apply(simp add: o_def expand_fun_eq ta_upd_simps)
+done
+
+lemma redTWs_preserves_lock_ok:
+  assumes wf: "wf_J_prog P"
+  and rest: "red_mthr.redTWs P t was s obs s'" "lock_ok (locks s) (thr s)" "sync_es_ok (thr s) (shr s)"
+  shows "lock_ok (locks s') (thr s')"
+using rest
+by(induct rule: red_mthr.redTWs_converse_induct)(auto dest: redTW_preserves_lock_ok[OF wf] redTWs_preserves_sync_es_ok[OF wf])
 
 lemma redT_preserves_lock_ok:
   assumes wf: "wf_J_prog P"
@@ -406,47 +544,47 @@ proof -
     and loes: "lock_ok ls ts"
     and aoes: "sync_es_ok ts h" by auto
   from redT have "lock_ok ls' ts'"
-  proof(induct rule: red_mthr_redT_elims4)
-    case (normal a a' ta')
+  proof(cases rule: red_mthr.redT_elims)
+    case (normal a a' ta' m' obs)
     moreover obtain e x where "a = (e, x)" by (cases a, auto)
     moreover obtain e' x' where "a' = (e', x')" by (cases a', auto)
-    ultimately have P: "P \<turnstile> \<langle>e,(h, x)\<rangle> -ta'\<rightarrow> \<langle>e',(h', x')\<rangle>"
+    ultimately have P: "P,t \<turnstile> \<langle>e,(h, x)\<rangle> -ta'\<rightarrow> \<langle>e',(m', x')\<rangle>"
       and est: "ts t = \<lfloor>((e, x), no_wait_locks)\<rfloor>"
       and lota: "lock_ok_las ls t \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>"
       and cctta: "thread_oks ts \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>"
       and ls': "ls' = redT_updLs ls t \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>"
-      and es': "ts' = redT_updTs ts \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> ((e', x'), redT_updLns ls t no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>))"
-      and ws': "ws' = redT_updWs ws t \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>"
-      and ta [simp]: "ta = observable_ta_of ta'"
+      and s': "red_mthr.redTWs P t \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> (ls', (redT_updTs ts \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> ((e', x'), redT_updLns ls t no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>)), m'), ws) obs (ls', (ts', h'), ws')"
+      and ta [simp]: "ta = observable_ta_of ta' obs"
       by auto
+    let ?ts' = "redT_updTs ts \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> ((e', x'), redT_updLns ls t no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>))"
     from est aoes have aoe: "sync_ok e" by(auto dest: ts_okD)
     from aoe P have aoe': "sync_ok e'" by(auto dest: red_preserve_sync_ok[OF wf])
     from aoes red_new_thread_sync_ok[OF wf P]
     have "sync_es_ok (redT_updTs ts \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>) h'"
       by(rule sync_ok_redT_updTs)
-    with aoe' have aoes': "sync_es_ok (redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> ((e', x'), redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) h"
+    with aoe' have aoes': "sync_es_ok ?ts' m'"
       by(auto intro!: ts_okI dest: ts_okD split: split_if_asm)
-    show ?thesis
+    have "lock_ok ls' ?ts'"
     proof(rule lock_okI)
       fix t'' l
-      assume "ts' t'' = None"
-      with es' have "ts t'' = None"
+      assume "?ts' t'' = None"
+      hence "ts t'' = None"
 	by(auto split: split_if_asm intro: redT_updTs_None)
       with loes have "has_locks (ls\<^sub>f l) t'' = 0"
 	by(auto dest: lock_okD1)
-      moreover from `ts' t'' = None` es'
+      moreover from `?ts' t'' = None` 
       have "t \<noteq> t''" by(simp split: split_if_asm)
       ultimately show "has_locks (ls'\<^sub>f l) t'' = 0"
 	by(simp add: red_mthr.redT_has_locks_inv[OF redT])
     next
       fix t'' e'' x'' l ln''
-      assume ts't'': "ts' t'' = \<lfloor>((e'', x''), ln'')\<rfloor>"
-      with aoes' es' have aoe'': "sync_ok e''" by(auto dest: ts_okD)
+      assume ts't'': "?ts' t'' = \<lfloor>((e'', x''), ln'')\<rfloor>"
+      with aoes' have aoe'': "sync_ok e''" by(auto dest: ts_okD)
       show "has_locks (ls'\<^sub>f l) t'' + ln''\<^sub>f l = expr_locks e'' l"
       proof(cases "t = t''")
 	case True
 	note tt'' = `t = t''`
-	with ts't'' es' have  e'': "e'' = e'" and x'': "x'' = x'"
+	with ts't'' have  e'': "e'' = e'" and x'': "x'' = x'"
 	  and ln'': "ln'' = redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" by auto
 	have "ls_els_ok ls t no_wait_locks (int o expr_locks e)"
 	proof(rule ls_els_okI)
@@ -469,11 +607,11 @@ proof -
 	show ?thesis
 	proof(cases "ts t''")
 	  case None
-	  with est ts't'' es' tt'' cctta
-	  obtain m' where "NewThread t'' (e'', x'') m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" and ln'': "ln'' = no_wait_locks"
+	  with est ts't'' tt'' cctta
+	  obtain m where "NewThread t'' (e'', x'') m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" and ln'': "ln'' = no_wait_locks"
 	    by(auto dest: redT_updTs_new_thread)
-	  moreover with P have "m' = h'" by(auto dest: red_new_thread_heap)
-	  ultimately have "NewThread t'' (e'', x'') h' \<in> set \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>" by simp
+	  moreover with P have "m' = m" by(auto dest: red_new_thread_heap)
+	  ultimately have "NewThread t'' (e'', x'') m' \<in> set \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>" by simp
 	  with wf P ln'' have "expr_locks e'' = (\<lambda>ad. 0)"
 	    by -(rule expr_locks_new_thread)
 	  hence elel: "expr_locks e'' l = 0" by simp
@@ -488,24 +626,26 @@ proof -
 	  then obtain E X LN where est'': "ts t'' = \<lfloor>((E, X), LN)\<rfloor>" by(cases a, auto)
 	  with loes have IH: "has_locks (ls\<^sub>f l) t'' + LN\<^sub>f l = expr_locks E l"
 	    by(auto dest: lock_okD2)
-	  from est est'' es' tt'' cctta have "ts' t'' = \<lfloor>((E, X), LN)\<rfloor>"
-	    apply(simp)
-	    apply(rule redT_updTs_Some)
-	    by(simp_all)
-	  with ts't'' es' have e'': "E = e''" and x'': "X = x''"
+	  from est est'' tt'' cctta have "?ts' t'' = \<lfloor>((E, X), LN)\<rfloor>"
+            by(simp)(rule redT_updTs_Some, simp_all)
+	  with ts't'' have e'': "E = e''" and x'': "X = x''"
 	    and ln'': "ln'' = LN" by(simp_all)
 	  with lock_actions_ok_has_locks_upd_locks_eq_has_locks[OF lao tt''[symmetric]] IH ls'
 	  show ?thesis by(clarsimp simp add: redT_updLs_def expand_fun_eq)
 	qed
       qed
     qed
+    with redTWs_preserves_lock_ok[OF wf s'] aoes' show ?thesis by simp    
   next
     case (acquire a ln n)
-    note [simp] = `ta = (\<lambda>\<^isup>f [], [], [], [], ReacquireLocks ln)` `ws' = ws` `h' = h`
+    hence [simp]: "ta = (\<lambda>\<^isup>f [], [], [], [], [ReacquireLocks ln])" "ws' = ws" "h' = h" 
+      and ls': "ls' = acquire_all ls t ln"
+      and ts': "ts' = ts(t \<mapsto> (a, no_wait_locks))"
+      and "ts t = \<lfloor>(a, ln)\<rfloor>"
+      and "may_acquire_all ls t ln"
+      by auto
     obtain e x where [simp]: "a = (e, x)" by (cases a, auto)
-    note ls' = `ls' = acquire_all ls t ln`
-    from `ts' = ts(t \<mapsto> (a, no_wait_locks))`
-    have ts': "ts' = ts(t \<mapsto> ((e, x), no_wait_locks))" by simp
+    from ts' have ts': "ts' = ts(t \<mapsto> ((e, x), no_wait_locks))" by simp
     from `ts t = \<lfloor>(a, ln)\<rfloor>` have tst: "ts t = \<lfloor>((e, x), ln)\<rfloor>" by simp
     show ?thesis
     proof(rule lock_okI)
@@ -591,71 +731,32 @@ next
     by(auto dest: RedT_preserves_sync_ok[OF wf])
 qed
 
-lemma red_NewThread_Thread_Object:
-  "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> \<exists>C fs. hp s' t = \<lfloor>Obj C fs\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
-  and reds_NewThread_Thread_Object:
-  "\<lbrakk> convert_extTA extNTA,P \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> \<exists>C fs. hp s' t = \<lfloor>Obj C fs\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
-apply(induct rule: red_reds.inducts)
-apply(fastsimp dest: red_external_new_thread_exists_thread_object)+
-done
-
-lemma redT_NewThread_Thread_Object:
-  "\<lbrakk> P \<turnstile> s -t'\<triangleright>ta\<rightarrow> s'; NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> \<exists>C fs. shr s' t = \<lfloor>Obj C fs\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
-by(auto elim!: red_mthr.redT.cases dest:red_NewThread_Thread_Object)
-
-lemma redT_preserves_thread_conf:
-  assumes red: "P \<turnstile> s -t'\<triangleright>ta\<rightarrow> s'"
-  and tc: "thread_conf P (thr s) (shr s)"
-  shows "thread_conf P (thr s') (shr s')"
-proof(rule thread_confI)
-  fix t xln
-  assume tst': "thr s' t = \<lfloor>xln\<rfloor>"
-  obtain e x ln where xln [simp]: "xln = ((e, x), ln)" by(cases xln, auto)
-  show "\<exists>T. typeof\<^bsub>shr s'\<^esub> (Addr t) = \<lfloor>T\<rfloor> \<and> P \<turnstile> T \<le> Class Thread"
-  proof(cases "thr s t")
-    case None
-    with red tst' have nt: "NewThread t (e, x) (shr s') \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" 
-      and [simp]: "ln = no_wait_locks" by(auto dest: red_mthr.redT_new_thread)
-    from red nt obtain C fs where "shr s' t = \<lfloor>Obj C fs\<rfloor>" "P \<turnstile> Class C \<le> Class Thread"
-      by(auto dest!: redT_NewThread_Thread_Object)
-    thus ?thesis by(clarsimp)
-  next
-    case (Some Xln)
-    with tc obtain T where "typeof\<^bsub>shr s\<^esub> (Addr t) = \<lfloor>T\<rfloor>" "P \<turnstile> T \<le> Class Thread"
-      by(rule thread_confDE)
-    moreover from red have "hext (shr s) (shr s')"
-      by(cases s, cases s')(auto intro: redT_hext_incr)
-    ultimately have "typeof\<^bsub>shr s'\<^esub> (Addr t) = \<lfloor>T\<rfloor>"
-      by(blast dest: type_of_hext_type_of hext_objarrD)
-    with `P \<turnstile> T \<le> Class Thread` show ?thesis by blast
-  qed
-qed
-    
-lemma RedT_preserves_thread_conf:
-  "\<lbrakk> P \<turnstile> s -\<triangleright>tta\<rightarrow>* s'; thread_conf P (thr s) (shr s) \<rbrakk> \<Longrightarrow> thread_conf P (thr s') (shr s')"
-by(rule red_mthr.RedT_lift_preserveD[OF _ _ redT_preserves_thread_conf])
+end
 
 section {* Interpreting final\_thread\_wf with final *}
-
-lemma final_no_red [elim]:
-  "final e \<Longrightarrow> \<not> P \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>"
-apply(auto elim: red.cases finalE)
-done
 
 lemma final_locks: "final e \<Longrightarrow> expr_locks e l = 0"
 by(auto elim: finalE)
 
+context J_heap_base begin
+
+lemma final_no_red [elim]:
+  "final e \<Longrightarrow> \<not> P,t \<turnstile> \<langle>e, (h, l)\<rangle> -ta\<rightarrow> \<langle>e', (h', l')\<rangle>"
+by(auto elim: red.cases finalE)
+
 lemma final_thread_wf_interp: "final_thread_wf final_expr (mred P)"
 proof(unfold_locales)
-  fix x m ta x' m'
-  assume "final_expr x" "mred P (x, m) ta (x', m')"
+  fix x t m ta x' m'
+  assume "final_expr x" "mred P t (x, m) ta (x', m')"
   moreover obtain e l where e: "x = (e, l)" by (cases x, auto)
   ultimately have "final e" by simp
   moreover obtain e' :: expr and l' :: locals where e': "x' = (e', l')" by (cases x', auto)
-  ultimately show "False" using e `mred P (x, m) ta (x', m')` by(auto)
+  ultimately show "False" using e `mred P t (x, m) ta (x', m')` by(auto)
 qed
 
-interpretation red_mthr: final_thread_wf "final_expr" "mred P" for P
+end
+
+sublocale J_heap_base < red_mthr!: final_thread_wf "final_expr" "mred P" for P
 by(rule final_thread_wf_interp)
 
 end

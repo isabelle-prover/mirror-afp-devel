@@ -3,24 +3,30 @@
 *)
 header {* \isaheader{Preservation of definite assignment} *}
 
-theory DefAssPreservation imports DefAss JWellForm SmallStep begin
+theory DefAssPreservation imports
+  DefAss
+  JWellForm
+  SmallStep
+begin
 
 text{* Preservation of definite assignment more complex and requires a
 few lemmas first. *}
 
-lemma D_extRetJ [iff]: "\<D> (extRet2J va) A"
+lemma D_extRetJ [intro!]: "\<D> e A \<Longrightarrow> \<D> (extRet2J e va) A"
 by(cases va) simp_all
 
 lemma blocks_defass [iff]: "\<And>A. \<lbrakk> length Vs = length Ts; length vs = length Ts\<rbrakk> \<Longrightarrow>
- \<D> (blocks (Vs,Ts,vs,e)) A = \<D> e (A \<squnion> \<lfloor>set Vs\<rfloor>)"
+ \<D> (blocks Vs Ts vs e) A = \<D> e (A \<squnion> \<lfloor>set Vs\<rfloor>)"
 (*<*)
 apply(induct Vs Ts vs e rule:blocks.induct)
 apply(simp_all add:hyperset_defs)
 done
 (*>*)
 
-lemma red_lA_incr: "extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> \<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> e \<sqsubseteq>  \<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> e'"
-  and reds_lA_incr: "extTA,P \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> \<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A>s es \<sqsubseteq>  \<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A>s es'"
+context J_heap_base begin
+
+lemma red_lA_incr: "extTA,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> \<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A> e \<sqsubseteq>  \<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A> e'"
+  and reds_lA_incr: "extTA,P,t \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> \<lfloor>dom (lcl s)\<rfloor> \<squnion> \<A>s es \<sqsubseteq>  \<lfloor>dom (lcl s')\<rfloor> \<squnion> \<A>s es'"
 apply(induct rule:red_reds.inducts)
 apply(simp_all del:fun_upd_apply add:hyperset_defs)
 apply blast
@@ -45,21 +51,25 @@ apply(blast dest: red_lcl_incr)
 apply(blast dest: red_lcl_incr)
 by blast+
 
+end
+
 text{* Now preservation of definite assignment. *}
 
 declare hyperUn_comm [simp del]
 declare hyperUn_leftComm [simp del]
 
+context J_heap_base begin
+
 lemma assumes wf: "wf_J_prog P"
-  shows red_preserves_defass: "extTA,P \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> \<D> e \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom (lcl s')\<rfloor>"
-  and reds_preserves_defass: "extTA,P \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> \<D>s es \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D>s es' \<lfloor>dom (lcl s')\<rfloor>"
+  shows red_preserves_defass: "extTA,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> \<D> e \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D> e' \<lfloor>dom (lcl s')\<rfloor>"
+  and reds_preserves_defass: "extTA,P,t \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> \<D>s es \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D>s es' \<lfloor>dom (lcl s')\<rfloor>"
 proof (induct rule:red_reds.inducts)
   case BinOpRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
 next
   case AAccRed1 thus ?case by (auto elim!: D_mono[OF red_lA_incr])
 next
   case (AAssRed1 a s ta a' s' i e)
-  have ss: "extTA,P \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>"
+  have ss: "extTA,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>"
     and IH: "\<D> a \<lfloor>dom (lcl s)\<rfloor> \<Longrightarrow> \<D> a' \<lfloor>dom (lcl s')\<rfloor>"
     and D: "\<D> (a\<lfloor>i\<rceil> := e) \<lfloor>dom (lcl s)\<rfloor>" by fact+
   from D have "\<D> a \<lfloor>dom (lcl s)\<rfloor>" by simp
@@ -98,5 +108,7 @@ next
 next
   case ListRed1 thus ?case by (auto elim!: Ds_mono[OF red_lA_incr])
 qed (auto simp:hyperset_defs)
+
+end
 
 end

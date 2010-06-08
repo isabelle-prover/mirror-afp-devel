@@ -32,9 +32,9 @@ lemma must_wait_iff:
                                     | Inr t'' \<Rightarrow> t' = t'' \<and> not_final_thread s t'')"
 by(cases lt)(auto)
 
-text{* Deadlock as a system-wide property *}
-
 end
+
+text{* Deadlock as a system-wide property *}
 
 context multithreaded_base begin
 
@@ -44,18 +44,14 @@ where
   "deadlock s
    \<equiv> (\<exists>t. not_final_thread s t)
      \<and> (\<forall>t x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> \<not> final x \<and> wset s t = None
-        \<longrightarrow> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t'))))
+        \<longrightarrow> t \<turnstile> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t'))))
      \<and> (\<forall>t x ln. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> (\<exists>l. ln\<^sub>f l > 0) \<and> wset s t = None
         \<longrightarrow> (\<exists>l t'. ln\<^sub>f l > 0 \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s)\<^sub>f l) t'))"
-
-end
-
-context final_thread_wf begin
 
 lemma deadlockI:
   "\<lbrakk> not_final_thread s t;
     \<And>t x. \<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; \<not> final x; wset s t = None \<rbrakk>
-    \<Longrightarrow> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t')));
+    \<Longrightarrow> t \<turnstile> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t')));
     \<And>t x ln l. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; ln\<^sub>f l > 0; wset s t = None \<rbrakk>
     \<Longrightarrow> \<exists>l t'. ln\<^sub>f l > 0 \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s)\<^sub>f l) t' \<rbrakk>
   \<Longrightarrow> deadlock s"
@@ -67,20 +63,19 @@ lemma deadlockE:
   where "thr s t = \<lfloor>(x, ln)\<rfloor>"
   and "not_final_thread s t"
   and "\<forall>t x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> \<not> final x \<and> wset s t = None
-        \<longrightarrow> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t')))"
-  and "\<forall>t x ln. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> (\<exists>l. ln\<^sub>f l > 0) \<and> wset s t = None \<longrightarrow> (\<exists>l t'. ln\<^sub>f l > 0 \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s)\<^sub>f l) t')"
-using assms unfolding deadlock_def
-by(blast)
+        \<longrightarrow> t \<turnstile> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t')))"
+  and "\<forall>t x ln. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> (\<exists>l. ln\<^sub>f l > 0) \<and> wset s t = None 
+                \<longrightarrow> (\<exists>l t'. ln\<^sub>f l > 0 \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s)\<^sub>f l) t')"
+using assms unfolding deadlock_def by(blast)
 
 lemma deadlockD1:
   assumes "deadlock s"
   and "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
   and "\<not> final x"
   and "wset s t = None"
-  obtains "\<langle>x, shr s\<rangle> \<wrong>"
-  and "\<forall>LT. \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t'))"
-using assms
-unfolding deadlock_def by(blast)
+  obtains "t \<turnstile> \<langle>x, shr s\<rangle> \<wrong>"
+  and "\<forall>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t'))"
+using assms unfolding deadlock_def by(blast)
 
 lemma deadlockD2:
   assumes "deadlock s"
@@ -94,7 +89,7 @@ lemma all_waiting_implies_deadlock:
   assumes "not_final_thread s t"
   and "lock_thread_ok (locks s) (thr s)"
   and normal: "\<And>t x. \<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; \<not> final x; wset s t = None \<rbrakk> 
-               \<Longrightarrow> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t')))"
+               \<Longrightarrow> t \<turnstile> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t lt t')))"
   and acquire: "\<And>t x ln l. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; wset s t = None; ln\<^sub>f l > 0 \<rbrakk> \<Longrightarrow> \<exists>l'. ln\<^sub>f l' > 0 \<and> \<not> may_lock ((locks s)\<^sub>f l') t"
   shows "deadlock s"
 proof(rule deadlockI)
@@ -104,7 +99,7 @@ next
   assume tsT: "thr s T = \<lfloor>(X, no_wait_locks)\<rfloor>"
     and "\<not> final X" 
     and "wset s T = None"
-  show "\<langle>X, shr s\<rangle> \<wrong> \<and> (\<forall>LT. \<langle>X, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt\<in>LT. must_wait s T lt t')))"
+  show "T \<turnstile> \<langle>X, shr s\<rangle> \<wrong> \<and> (\<forall>LT. T \<turnstile> \<langle>X, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt\<in>LT. must_wait s T lt t')))"
     by(rule normal[OF tsT `\<not> final X` `wset s T = None`])
 next
   fix T X LN l'
@@ -153,26 +148,26 @@ context multithreaded_base begin
 coinductive deadlocked :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> bool"
   for s :: "('l,'t,'x,'m,'w) state" where
   deadlockedLock:
-    "\<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; \<langle>x, shr s\<rangle> \<wrong>; wset s t = None;
-       \<And>LT. \<langle>x, shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t'. (deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt \<in> LT. must_wait s t lt t') \<rbrakk>
+    "\<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> \<langle>x, shr s\<rangle> \<wrong>; wset s t = None;
+       \<And>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t'. (deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt \<in> LT. must_wait s t lt t') \<rbrakk>
      \<Longrightarrow> deadlocked s t"
 
 | deadlockedWait:
     "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; all_final_except s (deadlocked s); wset s t = \<lfloor>w\<rfloor> \<rbrakk> \<Longrightarrow> deadlocked s t"
 
 | deadlockedAcquire:
-    "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; ln\<^sub>f l > 0; has_lock ((locks s)\<^sub>f l) t'; t' \<noteq> t;
+    "\<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; wset s t = None; ln\<^sub>f l > 0; has_lock ((locks s)\<^sub>f l) t'; t' \<noteq> t; 
        deadlocked s t' \<or> final_thread s t' \<rbrakk> 
      \<Longrightarrow> deadlocked s t"
 
 
 lemma deadlocked_elims [consumes 1, case_names lock wait acquire]:
   assumes "deadlocked s t"
-  and lock: "\<And>x. \<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; \<langle>x, shr s\<rangle> \<wrong>; wset s t = None;
-                   \<And>LT. \<langle>x, shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t'. (deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt \<in> LT. must_wait s t lt t') \<rbrakk>
+  and lock: "\<And>x. \<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; t \<turnstile> \<langle>x, shr s\<rangle> \<wrong>; wset s t = None;
+                   \<And>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t'. (deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt \<in> LT. must_wait s t lt t') \<rbrakk>
              \<Longrightarrow> thesis"
   and wait: "\<And>x ln w. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; all_final_except s (deadlocked s); wset s t = \<lfloor>w\<rfloor>\<rbrakk> \<Longrightarrow> thesis"
-  and acquire: "\<And>x ln l t'. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; 0 < ln\<^sub>f l; has_lock ((locks s)\<^sub>f l) t'; t \<noteq> t';
+  and acquire: "\<And>x ln l t'. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; wset s t = None; 0 < ln\<^sub>f l; has_lock ((locks s)\<^sub>f l) t'; t \<noteq> t';
                               deadlocked s t' \<or> final_thread s t' \<rbrakk> \<Longrightarrow> thesis"
   shows thesis
 using `deadlocked s t`
@@ -225,15 +220,15 @@ proof -
   obtain ls' ts' m' ws' where s': "s' = (ls', (ts', m'), ws')" by (cases s', auto)
   with P s have "\<langle>ls, (ts, m), ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws'\<rangle>" by simp
   thus False
-  proof(induct rule: redT_elims4)
-    case (normal x x' ta')
-    with ta have Pe: "\<langle>x, m\<rangle> -ta'\<rightarrow> \<langle>x', m'\<rangle>"
+  proof(cases rule: redT_elims)
+    case (normal x x' ta' M' obs)
+    with ta have Pe: "t \<turnstile> \<langle>x, m\<rangle> -ta'\<rightarrow> \<langle>x', M'\<rangle>"
       and est: "ts t = \<lfloor>(x, no_wait_locks)\<rfloor>"
       and lot: "lock_ok_las ls t las"
       and cct: "thread_oks ts tas"
       and cdt: "cond_action_oks (ls, (ts, m), ws) t cas"
       and wst: "ws t = None"
-      and [simp]: "ta = observable_ta_of ta'"
+      and [simp]: "ta = observable_ta_of ta' obs"
       by(auto)
     show False
     proof(cases "all_final_except s (deadlocked s) \<and> (\<exists>w. ws t = \<lfloor>w\<rfloor>)")
@@ -241,16 +236,16 @@ proof -
     next
       case False
       with dead est s
-      have mle: "\<langle>x, m\<rangle> \<wrong>"
-	and cledead: "\<forall>LT. \<langle>x, m\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. (deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt \<in> LT. must_wait s t lt t'))"
+      have mle: "t \<turnstile> \<langle>x, m\<rangle> \<wrong>"
+	and cledead: "\<forall>LT. t \<turnstile> \<langle>x, m\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. (deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt \<in> LT. must_wait s t lt t'))"
 	by - (erule deadlocked.cases, fastsimp+)+
       let ?LT = "collect_locks las <+> {t. Join t \<in> set cas}"
-      from Pe ta have "\<langle>x, m\<rangle> ?LT \<wrong>" by(auto intro: can_syncI simp add: observable_ta_of_def)
+      from Pe ta have "t \<turnstile> \<langle>x, m\<rangle> ?LT \<wrong>" by(auto intro: can_syncI simp add: observable_ta_of_def)
       then obtain t' lt where "deadlocked s t' \<or> final_thread s t'"
 	and lt: "lt \<in> ?LT" and mw: "must_wait s t lt t'"
 	by(blast dest: cledead[rule_format])
       from mw show False
-      proof(induct rule: must_wait_elims)
+      proof(cases rule: must_wait_elims)
 	case (lock l)
 	from `lt = Inl l` lt have "l \<in> collect_locks las" by(auto)
 	with lot have "may_lock (ls\<^sub>f l) t"
@@ -271,6 +266,7 @@ proof -
     qed
   next
     case (acquire x ln n)
+    hence "ws t = None" and "ts t = \<lfloor>(x, ln)\<rfloor>" and "may_acquire_all ls t ln" by auto
     show False
     proof(cases "all_final_except s (deadlocked s) \<and> (\<exists>w. ws t = \<lfloor>w\<rfloor>)")
       case True with `ws t = None` show ?thesis by simp
@@ -304,7 +300,7 @@ lemma all_waiting_deadlocked:
   assumes "not_final_thread s t"
   and "lock_thread_ok (locks s) (thr s)" 
   and normal: "\<And>t x. \<lbrakk> thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>; \<not> final x; wset s t = None \<rbrakk> 
-               \<Longrightarrow> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt\<in>LT. must_wait s t lt t')))"
+               \<Longrightarrow> t \<turnstile> \<langle>x, shr s\<rangle> \<wrong> \<and> (\<forall>LT. t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt\<in>LT. must_wait s t lt t')))"
   and acquire: "\<And>t x ln l. \<lbrakk> thr s t = \<lfloor>(x, ln)\<rfloor>; wset s t = None; ln\<^sub>f l > 0 \<rbrakk> \<Longrightarrow> \<exists>l'. ln\<^sub>f l' > 0 \<and> \<not> may_lock ((locks s)\<^sub>f l') t"
   shows "deadlocked s t"
 proof -
@@ -318,12 +314,12 @@ proof -
     { assume "ws z = None" "\<not> final x'"
       and [simp]: "ln' = no_wait_locks"
       with `ts z = \<lfloor>(x', ln')\<rfloor>`
-      have "\<langle>x', m\<rangle> \<wrong> \<and> (\<forall>LT. \<langle>x', m\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s z lt t')))"
+      have "z \<turnstile> \<langle>x', m\<rangle> \<wrong> \<and> (\<forall>LT. z \<turnstile> \<langle>x', m\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s z lt t')))"
 	by(auto dest: normal[simplified])
-      then obtain "\<langle>x', m\<rangle> \<wrong>"
-	and clnml: "\<And>LT. \<langle>x', m\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s z lt t')" by(blast)
+      then obtain "z \<turnstile> \<langle>x', m\<rangle> \<wrong>"
+	and clnml: "\<And>LT. z \<turnstile> \<langle>x', m\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s z lt t')" by(blast)
       { fix LT
-	assume "\<langle>x', m\<rangle> LT \<wrong>"
+	assume "z \<turnstile> \<langle>x', m\<rangle> LT \<wrong>"
 	then obtain t' where "thr s t' \<noteq> None" "\<exists>lt \<in> LT. must_wait s z lt t'"
 	  by(blast dest: clnml)
 	from `thr s t' \<noteq> None` obtain xln where "thr s t' = \<lfloor>xln\<rfloor>" by auto
@@ -332,7 +328,7 @@ proof -
 	with `\<exists>lt \<in> LT. must_wait s z lt t'`
 	have "\<exists>t'. (not_final_thread s t' \<or> deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt \<in> LT. must_wait s z lt t')"
 	  by blast }
-      with `\<langle>x', m\<rangle> \<wrong>` `ts z = \<lfloor>(x', ln')\<rfloor>` `ws z = None` have ?case by(simp) }
+      with `z \<turnstile> \<langle>x', m\<rangle> \<wrong>` `ts z = \<lfloor>(x', ln')\<rfloor>` `ws z = None` have ?case by(simp) }
     note c1 = this
     { assume "ws z = None"
       and "ln' \<noteq> no_wait_locks"
@@ -430,19 +426,19 @@ proof -
 	moreover
 	with `not_final_thread s t''` tst''
 	have "\<not> final x''" by(auto)
-	ultimately obtain "\<langle>x'', shr s\<rangle> \<wrong>"
-	  and clnml: "\<And>LT. \<langle>x'', shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt\<in>LT. must_wait s t'' lt t')"
+	ultimately obtain "t'' \<turnstile> \<langle>x'', shr s\<rangle> \<wrong>"
+	  and clnml: "\<And>LT. t'' \<turnstile> \<langle>x'', shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t'. thr s t' \<noteq> None \<and> (\<exists>lt\<in>LT. must_wait s t'' lt t')"
 	  using `thr s t'' = \<lfloor>(x'', ln'')\<rfloor>` `deadlock s`
 	  by(blast elim: deadlockD1)
 	{ fix LT
-	  assume "\<langle>x'', shr s\<rangle> LT \<wrong>"
+	  assume "t'' \<turnstile> \<langle>x'', shr s\<rangle> LT \<wrong>"
 	  then obtain t' where "thr s t' \<noteq> None"
 	    and mw: "\<exists>lt\<in>LT. must_wait s t'' lt t'" by(blast dest: clnml)
 	  from `thr s t' \<noteq> None` have "not_final_thread s t' \<or> final_thread s t'"
 	    by(auto simp add: final_thread_def not_final_thread_iff)
 	  with mw have "\<exists>t'.(not_final_thread s t' \<or> deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt\<in>LT. must_wait s t'' lt t')"
 	    by fastsimp }
-	with `\<langle>x'', shr s\<rangle> \<wrong>` tst'' `wset s t'' = None` have ?case by(simp) }
+	with `t'' \<turnstile> \<langle>x'', shr s\<rangle> \<wrong>` tst'' `wset s t'' = None` have ?case by(simp) }
       note c3 = this
       from `not_final_thread s t''` tst'' show ?case
       proof(induct rule: not_final_thread_cases2)
@@ -490,16 +486,16 @@ proof -
       and "wset s t' = None"
     hence "not_final_thread s t'" by(auto intro: not_final_thread_final)
     hence "deadlocked s t'" by(rule deadlocked)
-    thus "\<langle>x', shr s\<rangle> \<wrong> \<and> (\<forall>LT. \<langle>x', shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t''. thr s t'' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t' lt t'')))"
+    thus "t' \<turnstile> \<langle>x', shr s\<rangle> \<wrong> \<and> (\<forall>LT. t' \<turnstile> \<langle>x', shr s\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t''. thr s t'' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t' lt t'')))"
     proof(cases rule: deadlocked_elims)
       case (lock x'')
-      hence lock: "\<And>LT. \<langle>x'', shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>T. (deadlocked s T \<or> final_thread s T) \<and> (\<exists>lt \<in> LT. must_wait s t' lt T)"
+      hence lock: "\<And>LT. t' \<turnstile> \<langle>x'', shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>T. (deadlocked s T \<or> final_thread s T) \<and> (\<exists>lt \<in> LT. must_wait s t' lt T)"
 	by blast
       from `thr s t' = \<lfloor>(x'', no_wait_locks)\<rfloor>` `thr s t' = \<lfloor>(x', no_wait_locks)\<rfloor>`
       have [simp]: "x' = x''" by auto
-      have "\<And>LT. \<langle>x'', shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t''. thr s t'' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t' lt t'')"
+      have "\<And>LT. t' \<turnstile> \<langle>x'', shr s\<rangle> LT \<wrong> \<Longrightarrow> \<exists>t''. thr s t'' \<noteq> None \<and> (\<exists>lt \<in> LT. must_wait s t' lt t'')"
 	by -(drule lock, auto elim!: deadlocked_thread_exists final_threadE)
-      with `\<langle>x'', shr s\<rangle> \<wrong>` show ?thesis by(auto)
+      with `t' \<turnstile> \<langle>x'', shr s\<rangle> \<wrong>` show ?thesis by(auto)
     next
       case (wait x'' ln'' w'')
       from `wset s t' = None` `wset s t' = \<lfloor>w''\<rfloor>`
@@ -551,6 +547,288 @@ lemma deadlock_no_red:
   "\<lbrakk> s -t\<triangleright>ta\<rightarrow> s'; deadlock s \<rbrakk> \<Longrightarrow> False"
 unfolding deadlock_eq_deadlocked'
 by(rule deadlocked'_no_red)
+
+end
+
+locale preserve_deadlocked = 
+  final_thread_wf _ r + 
+  multithreaded_start _ r start_state
+  for r :: "('l,'t,'x,'m,'w,'o) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and start_state :: "('l,'t,'x,'m,'w) state" +
+  assumes can_lock_preserved: 
+    "\<lbrakk> start_state -\<triangleright>tta\<rightarrow>* s; s -t'\<triangleright>ta'\<rightarrow> s';
+       thr s t = \<lfloor>(x, ln)\<rfloor>; t \<turnstile> \<langle>x, shr s\<rangle> L \<wrong>; L \<noteq> {} \<rbrakk>
+    \<Longrightarrow> t \<turnstile> \<langle>x, shr s'\<rangle> \<wrong>"
+  and can_lock_devreserp:
+    "\<lbrakk> RedT start_state tta s; s -t'\<triangleright>ta'\<rightarrow> s';
+       thr s t = \<lfloor>(x, ln)\<rfloor>; t \<turnstile> \<langle>x, shr s'\<rangle> L \<wrong> \<rbrakk>
+    \<Longrightarrow> \<exists>L'\<subseteq>L. t \<turnstile> \<langle>x, shr s\<rangle> L' \<wrong>"
+begin
+
+lemma redT_deadlocked_subset:
+  assumes Red': "start_state -\<triangleright>ttas\<rightarrow>* s"
+  and Red: "s -t\<triangleright>ta\<rightarrow> s'"
+  and t'dead: "deadlocked s t'"
+  shows "deadlocked s' t'"
+proof -
+  from Red have tndead: "\<not> deadlocked s t"
+    by(auto dest: red_no_deadlock)
+  with t'dead have t't: "t' \<noteq> t" by auto
+  obtain las tas cas was obs where ta: "ta = (las, tas, cas, was, obs)" by (cases ta)
+  obtain ls ts m ws where s [simp]: "s = (ls, (ts, m), ws)" by (cases s, auto)
+  obtain ls' ts' m' ws' where s' [simp]: "s' = (ls', (ts', m'), ws')" by (cases s', auto)
+  with s Red have "\<langle>ls, (ts, m), ws\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', (ts', m'), ws'\<rangle>" by simp
+  thus "deadlocked s' t'"
+  proof(cases rule: redT_elims)
+    case (normal x x' ta' M obs)
+    with ta s s' Red have red: "t \<turnstile> \<langle>x, m\<rangle> -ta'\<rightarrow> \<langle>x', M\<rangle>"
+      and est: "ts t = \<lfloor>(x, no_wait_locks)\<rfloor>"
+      and lot: "lock_ok_las ls t las"
+      and cct: "thread_oks ts tas"
+      and cdt: "cond_action_oks (ls, (ts, m), ws) t cas"
+      and wst: "ws t = None"
+      and redTWs: "redTWs t \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> (redT_updLs ls t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, (redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)), M), ws) obs (ls', (ts', m'), ws')"
+      and [simp]: "ta = observable_ta_of ta' obs"
+      by auto
+    from red have "\<not> final x" by(auto dest: final_no_red)
+    with tndead est s est wst have nafe: "\<not> all_final_except s (deadlocked s)"
+      by(fastsimp simp add: all_final_except_def not_final_thread_iff)
+    from t'dead show ?thesis
+    proof(coinduct)
+      case (deadlocked t'')
+      note t''dead = this
+      with Red have t''t: "t'' \<noteq> t"
+	by(auto dest: red_no_deadlock)
+      from t''dead show ?case
+      proof(cases rule: deadlocked_elims)
+	case (lock X)
+	hence est'': "ts t'' = \<lfloor>(X, no_wait_locks)\<rfloor>"
+	  and msE: "t'' \<turnstile> \<langle>X, m\<rangle> \<wrong>"
+	  and csexdead: "\<forall>LT. t'' \<turnstile> \<langle>X, m\<rangle> LT \<wrong> \<longrightarrow> (\<exists>t'. (deadlocked s t' \<or> final_thread s t') \<and>
+                                                        (\<exists>lt \<in> LT. must_wait s t'' lt t'))"
+	  by auto
+	from t''t Red est'' s s' `wset s t'' = None`
+	have es't'': "ts' t'' = \<lfloor>(X, no_wait_locks)\<rfloor>"
+	  by(auto elim!: redT_ts_Some_inv_no_wait)
+	note es't'' moreover
+	from msE obtain X' M' ta where red': "t'' \<turnstile> \<langle>X, m\<rangle> -ta\<rightarrow> \<langle>X', M'\<rangle>"
+	  by(auto elim: must_syncE)
+	let ?LT = "collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> <+> {t. Join t \<in> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>}"
+	from red' have csLT: "t'' \<turnstile> \<langle>X, m\<rangle> ?LT \<wrong>" by(auto intro: can_syncI)
+	with csexdead[rule_format] have "?LT \<noteq> {}" by auto
+	with est'' csLT have msE': "t'' \<turnstile> \<langle>X, m'\<rangle> \<wrong>"
+	  by(rule can_lock_preserved[OF Red' Red, simplified])
+	moreover
+	{ fix LT
+	  assume clL'': "t'' \<turnstile> \<langle>X, m'\<rangle> LT \<wrong>"
+	  with clL'' est'' have "\<exists>LT'\<subseteq>LT. t'' \<turnstile> \<langle>X, m\<rangle> LT' \<wrong>"
+	    by - (rule can_lock_devreserp[OF Red' Red, simplified shr_conv s], auto)
+	  then obtain LT' where clL': "t'' \<turnstile> \<langle>X, m\<rangle> LT' \<wrong>"
+	    and LL': "LT' \<subseteq> LT" by blast
+	  with csexdead obtain t' lt
+	    where t'dead: "deadlocked s t' \<or> final_thread s t'"
+	    and lt: "lt \<in> LT" and mw: "must_wait s t'' lt t'"
+	    by blast
+	  from t'dead Red s have tt': "t \<noteq> t'"
+	    by(auto dest: red_no_deadlock final_no_redT elim: final_threadE)
+	  from mw have "must_wait s' t'' lt t'"
+	  proof(cases rule: must_wait_elims)
+	    case (lock l)
+ 	    from lot have "lock_actions_ok (ls\<^sub>f l) t (las\<^sub>f l)"
+ 	      by(simp add: lock_ok_las_def)
+ 	    with tt' redTWs_locks_unchanged[OF redTWs] `has_lock ((locks s)\<^sub>f l) t'` 
+	    have hl't': "has_lock (ls'\<^sub>f l) t'" unfolding ta by(auto)
+	    with `lt = Inl l` `t' \<noteq> t''` show ?thesis by auto
+	  next
+	    case thread
+	    note nftt' = `not_final_thread s t'`
+	    hence "thr s t' \<noteq> None" by(auto)
+	    with nftt' t'dead have "deadlocked s t'"
+	      by(simp add: not_final_thread_final_thread_conv[symmetric])
+	    hence "not_final_thread s' t'"
+	    proof(cases rule: deadlocked_elims)
+	      case (lock x'')
+	      from `t' \<turnstile> \<langle>x'', shr s\<rangle> \<wrong>` have "\<not> final x''"
+		by(auto elim: must_syncE)
+              moreover from redTWs_no_wait_thr_unchanged[OF redTWs _ `t \<noteq> t'`[symmetric]] `wset s t' = None`
+              have "ts' t' = (redT_updTs ts \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns ls t no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>))) t'" by auto
+              with tt' t'dead Red cct ta have ts't': "ts' t' = ts t'"
+	        by(auto elim!: deadlocked_thread_exists final_threadE intro: redT_updTs_Some simp add: observable_ta_of_def)
+              ultimately show ?thesis using `thr s t' = \<lfloor>(x'', no_wait_locks)\<rfloor>`
+		by(auto intro: not_final_thread.intros)
+	    next
+	      case (wait x'' ln'' w'')
+	      from `\<not> final x` est `all_final_except s (deadlocked s)` wst
+	      have "deadlocked s t" by(fastsimp dest: all_final_exceptD simp add: not_final_thread_iff)
+	      with Red have False by(auto dest: red_no_deadlock)
+	      thus ?thesis ..
+	    next
+	      case (acquire x'' ln'' l'' T'')
+              from redTWs_no_wait_thr_unchanged[OF redTWs _ `t \<noteq> t'`[symmetric]] `wset s t' = None`
+              have "ts' t' = (redT_updTs ts \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns ls t no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>))) t'" by auto
+              with tt' t'dead Red cct ta have ts't': "ts' t' = ts t'"
+	        by(auto elim!: deadlocked_thread_exists final_threadE intro: redT_updTs_Some simp add: observable_ta_of_def)
+              with `thr s t' = \<lfloor>(x'', ln'')\<rfloor>` `0 < ln''\<^sub>f l''`
+	      show ?thesis by(auto intro: not_final_thread.intros)
+	    qed
+	    with `lt = Inr t'` show ?thesis by auto
+	  qed
+	  moreover
+	  { assume "final_thread s t'"
+	    from t'dead have "thr s t' \<noteq> None"
+	      by(auto elim: deadlocked_elims final_threadE)
+	    then obtain x' ln' where tst': "thr s t' = \<lfloor>(x', ln')\<rfloor>" by auto
+	    with `final_thread s t'` have "final x'" 
+	      and "wset s t' = None" and [simp]: "ln' = no_wait_locks"
+	      by(auto elim: final_threadE)
+	    with red have "x \<noteq> x'" by(auto dest: final_no_red)
+	    with est tst' have "t \<noteq> t'" by auto
+            with redTWs_no_wait_thr_unchanged[OF redTWs _ `t \<noteq> t'`[symmetric]] `wset s t' = None` Red cct tst' ta
+            have "thr s' t' = \<lfloor>(x', ln')\<rfloor>"
+	      by(auto intro: redT_updTs_Some simp add: observable_ta_of_def)
+	    moreover from redTWs_no_wait_thr_other[OF redTWs `t \<noteq> t'`] `wset s t' = None`
+	    have "ws' t' = None" by auto
+	    ultimately have "final_thread s' t'" using tst' `final x'`
+	      by(auto simp add: final_thread_def) }
+	  ultimately have "((deadlocked s t' \<or> deadlocked s' t') \<or> final_thread s' t') \<and> (\<exists>lt \<in> LT. must_wait s' t'' lt t')"
+	    using t'dead `lt \<in> LT` by blast
+	  hence "\<exists>t'. ((deadlocked s t' \<or> deadlocked s' t') \<or> final_thread s' t') \<and> (\<exists>lt \<in> LT. must_wait s' t'' lt t')"
+	    by blast }
+	moreover from redTWs_no_wait_thr_other[OF redTWs `t'' \<noteq> t`[symmetric]] `wset s t'' = None` 
+        have "ws' t'' = None" by auto
+	ultimately show ?thesis by(auto)
+      next
+	case (wait x ln w)
+	from `all_final_except s (deadlocked s)` nafe have False by simp
+	thus ?thesis by simp
+      next
+	case (acquire X ln l T)
+	from t''t Red `thr s t'' = \<lfloor>(X, ln)\<rfloor>` s s' `wset s t'' = None`
+	have es't'': "ts' t'' = \<lfloor>(X, ln)\<rfloor>"
+	  by(auto elim!: redT_ts_Some_inv_no_wait)
+	moreover
+	from `deadlocked s T \<or> final_thread s T`
+	have "T \<noteq> t"
+	proof(rule disjE)
+	  assume "deadlocked s T"
+	  with Red show ?thesis by(auto dest: red_no_deadlock)
+	next
+	  assume "final_thread s T"
+	  with Red show ?thesis
+	    by(auto dest!: final_no_redT simp add: final_thread_def)
+	qed
+	with Red `has_lock ((locks s)\<^sub>f l) T` have "has_lock ((locks s')\<^sub>f l) T"
+	  by(simp add: redT_has_lock_inv)
+	moreover
+	from redTWs_no_wait_thr_other[OF redTWs `T \<noteq> t`[symmetric]]
+        have wset: "ws T = None \<Longrightarrow> ws' T = None" by(auto)
+	{ fix x
+	  assume "thr s T = \<lfloor>(x, no_wait_locks)\<rfloor>"
+          with redTWs_thr_None[OF redTWs, of T] have "thr s' T \<noteq> None"
+            by(auto dest!: redT_updTs_None) }
+	moreover
+        with redTWs_no_wait_thr_unchanged[OF redTWs _ `T \<noteq> t`, symmetric] `T \<noteq> t` cct
+	have "final_thread s T \<Longrightarrow> final_thread s' T" unfolding ta
+	  by(auto simp add: final_thread_def intro: wset dest: redT_updTs_Some)
+        moreover from redTWs_no_wait_thr_other[OF redTWs `t'' \<noteq> t`[symmetric]] `wset s t'' = None`
+        have "ws' t'' = None" by simp
+	ultimately have ?deadlockedAcquire
+	  using `0 < ln\<^sub>f l` `t'' \<noteq> T` `deadlocked s T \<or> final_thread s T` by(auto)
+        thus ?thesis by simp
+      qed
+    qed
+  next
+    case (acquire x ln n)
+    hence [simp]: "ta = (\<lambda>\<^isup>f [], [], [], [], [ReacquireLocks ln])" "ws' = ws" "m' = m"
+      and ts': "ts' = ts(t \<mapsto> (x, no_wait_locks))"
+      and ls': "ls' = acquire_all ls t ln"
+      and tst: "ts t = \<lfloor>(x, ln)\<rfloor>" 
+      and wst: "ws t = None" by auto
+    from t'dead show ?thesis
+    proof(coinduct)
+      case (deadlocked t'')
+      note t''dead = this
+      with Red have t''t: "t'' \<noteq> t"
+	by(auto dest: red_no_deadlock)
+      from t''dead show ?case
+      proof(cases rule: deadlocked_elims)
+	case (lock X)
+	hence clnml: "\<And>LT. t'' \<turnstile> \<langle>X, shr s\<rangle> LT \<wrong>
+                      \<Longrightarrow> \<exists>t'. (deadlocked s t' \<or> final_thread s t') \<and> (\<exists>lt \<in> LT. must_wait s t'' lt t')"
+	  by blast
+	note tst'' = `thr s t'' = \<lfloor>(X, no_wait_locks)\<rfloor>`
+	with ts' t''t have ts't'': "thr s' t'' = \<lfloor>(X, no_wait_locks)\<rfloor>" by simp
+	moreover 
+	{ fix LT
+	  assume "t'' \<turnstile> \<langle>X, shr s'\<rangle> LT \<wrong>"
+	  hence "t'' \<turnstile> \<langle>X, shr s\<rangle> LT \<wrong>" by simp
+	  then obtain T lt where Tdead: "deadlocked s T \<or> final_thread s T"
+	    and "lt \<in> LT" and hlnft: "must_wait s t'' lt T"
+	    by(blast dest: clnml)
+	  from Tdead tst ts'
+	  have "deadlocked s T \<or> final_thread s' T"
+	    by(clarsimp simp add: final_thread_def)
+	  hence "(deadlocked s T \<or> deadlocked s' T) \<or> final_thread s' T" by blast
+	  moreover from hlnft have "must_wait s' t'' lt T"
+	  proof(induct rule: must_wait_elims)
+	    case (lock l')
+	    from `has_lock ((locks s)\<^sub>f l') T` ls'
+	    have "has_lock ((locks s')\<^sub>f l') T"
+	      by(auto intro: has_lock_has_lock_acquire_locks)
+	    with `T \<noteq> t''` `lt = Inl l'` show ?thesis by auto
+	  next
+	    case thread
+	    from Tdead have "ts T \<noteq> None"
+	      by(auto elim: deadlocked_elims final_threadE)
+	    moreover from Tdead have "T \<noteq> t"
+	    proof(rule disjE)
+	      assume "deadlocked s T"
+	      with Red show ?thesis by(auto dest: red_no_deadlock)
+	    next
+	      assume "final_thread s T"
+	      with `0 < ln\<^sub>f n` tst show ?thesis
+		by(auto simp add: final_thread_def)
+	    qed
+	    ultimately have "not_final_thread s' T" using `not_final_thread s T` ts'
+	      by(auto simp add: not_final_thread_iff)
+	    with `lt = Inr T` show ?thesis by auto
+	  qed
+	  ultimately have "\<exists>T. ((deadlocked s T \<or> deadlocked s' T) \<or> final_thread s' T) \<and> (\<exists>lt \<in> LT. must_wait s' t'' lt T)"
+	    using `lt \<in> LT` by blast }
+	moreover from `wset s t'' = None` have "wset s' t'' = None" by simp
+	ultimately show ?thesis using `thr s t'' = \<lfloor>(X, no_wait_locks)\<rfloor>` `t'' \<turnstile> \<langle>X, shr s\<rangle> \<wrong>` by fastsimp
+      next
+	case (wait X LN w)
+	have "all_final_except (ls', (ts(t \<mapsto> (x, no_wait_locks)), m), ws) (deadlocked s)"
+	proof(rule all_final_exceptI)
+	  fix T
+	  assume "not_final_thread (ls', (ts(t \<mapsto> (x, no_wait_locks)), m), ws) T"
+	  hence "not_final_thread s T" using wst tst
+	    by(auto simp add: not_final_thread_iff split: split_if_asm)
+	  with `all_final_except s (deadlocked s)` `ts t = \<lfloor>(x, ln)\<rfloor>`
+	  show "deadlocked s T" by -(erule all_final_exceptD)
+	qed
+	hence "all_final_except s' (deadlocked s)" by(simp add: ts')
+	have "all_final_except s' (\<lambda>x. deadlocked s x \<or> deadlocked s' x)"
+	  by(blast intro: all_final_except_mono[rule_format, OF _ `all_final_except s' (deadlocked s)`])
+	with t''t `thr s t'' = \<lfloor>(X, LN)\<rfloor>` `wset s t'' = \<lfloor>w\<rfloor>` ts' show ?thesis
+	  by-(rule disjI2, rule disjI1, simp)
+      next
+	case (acquire X LN l T)
+	from `thr s t'' = \<lfloor>(X, LN)\<rfloor>` t''t ts'
+	have "thr s' t'' = \<lfloor>(X, LN)\<rfloor>" by(simp)
+	moreover from `deadlocked s T \<or> final_thread s T` ts' tst 
+	have "deadlocked s T \<or> final_thread s' T"
+	  by(clarsimp simp add: final_thread_def)
+	moreover from `has_lock ((locks s)\<^sub>f l) T` ls'
+	have "has_lock ((locks s')\<^sub>f l) T"
+	  by(auto intro: has_lock_has_lock_acquire_locks)
+        moreover have "wset s' t'' = None" using `wset s t'' = None` by simp
+	ultimately show ?thesis using `0 < LN\<^sub>f l` `t'' \<noteq> T` by blast
+      qed
+    qed
+  qed
+qed
 
 end
 

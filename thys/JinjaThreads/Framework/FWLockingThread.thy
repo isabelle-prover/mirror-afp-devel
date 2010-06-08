@@ -11,7 +11,7 @@ where
   "upd_threadR n l t ReleaseAcquire = n + has_locks l t"
 | "upd_threadR n l t _ = n"
 
-fun upd_threadRs :: "nat \<Rightarrow> 't lock \<Rightarrow> 't \<Rightarrow> lock_action list \<Rightarrow> nat"
+primrec upd_threadRs :: "nat \<Rightarrow> 't lock \<Rightarrow> 't \<Rightarrow> lock_action list \<Rightarrow> nat"
 where
   "upd_threadRs n l t [] = n"
 | "upd_threadRs n l t (la # las) = upd_threadRs (upd_threadR n l t la) (upd_lock l t la) t las"
