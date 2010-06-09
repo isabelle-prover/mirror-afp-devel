@@ -15,52 +15,52 @@ text {*
   the preservation of the first conjunct.
 *}
 
-constdefs
-  rdBy :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> BlockProc set"
-  "rdBy s p q d \<equiv>
+definition rdBy :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> BlockProc set"
+where
+  "rdBy s p q d =
     {br . br \<in> blocksRead s q d \<and> proc br = p}"
 
-  blocksOf :: "state \<Rightarrow> Proc \<Rightarrow> DiskBlock set"
-  "blocksOf s p \<equiv>
+definition blocksOf :: "state \<Rightarrow> Proc \<Rightarrow> DiskBlock set"
+where
+  "blocksOf s p =
       {dblock s p}
    \<union> {disk s d p | d . d \<in> UNIV}
    \<union> {block br | br . br \<in> (UN q d. rdBy s p q d) }"
 
-constdefs
-  allBlocks :: "state \<Rightarrow> DiskBlock set"
-  "allBlocks s \<equiv> UN p. blocksOf s p"
+definition allBlocks :: "state \<Rightarrow> DiskBlock set"
+  where "allBlocks s = (UN p. blocksOf s p)"
 
-constdefs
-  Inv2a_innermost :: "state \<Rightarrow> Proc \<Rightarrow> DiskBlock \<Rightarrow> bool"
-  "Inv2a_innermost s p bk \<equiv>
-     mbal bk \<in> (Ballot p) \<union> {0}
+definition Inv2a_innermost :: "state \<Rightarrow> Proc \<Rightarrow> DiskBlock \<Rightarrow> bool"
+where
+  "Inv2a_innermost s p bk =
+    (mbal bk \<in> (Ballot p) \<union> {0}
    \<and> bal bk \<in> (Ballot p) \<union> {0}
    \<and> (bal bk = 0) = (inp bk = NotAnInput)
    \<and> bal bk \<le> mbal bk
-   \<and> inp bk \<in> (allInput s) \<union> {NotAnInput}"
+   \<and> inp bk \<in> (allInput s) \<union> {NotAnInput})"
 
-  Inv2a_inner :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "Inv2a_inner s p \<equiv> \<forall>bk \<in> blocksOf s p. Inv2a_innermost  s p bk"
+definition Inv2a_inner :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+  where "Inv2a_inner s p = (\<forall>bk \<in> blocksOf s p. Inv2a_innermost  s p bk)"
 
-  Inv2a :: "state \<Rightarrow> bool"
-  "Inv2a s \<equiv> \<forall>p. Inv2a_inner s p"
+definition Inv2a :: "state \<Rightarrow> bool"
+  where "Inv2a s = (\<forall>p. Inv2a_inner s p)"
 
-constdefs
-  Inv2b_inner :: "state \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> bool"
-  "Inv2b_inner s p d \<equiv>
-     (d \<in> disksWritten s p \<longrightarrow>
+definition Inv2b_inner :: "state \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> bool"
+where
+  "Inv2b_inner s p d =
+     ((d \<in> disksWritten s p \<longrightarrow>
         (phase s p \<in> {1,2} \<and> disk s d p = dblock s p))
    \<and> (phase s p \<in> {1,2} \<longrightarrow>
         (  (blocksRead s p d \<noteq> {} \<longrightarrow> d \<in> disksWritten s p)
-         \<and> \<not> hasRead s p d p))"
+         \<and> \<not> hasRead s p d p)))"
 
-  Inv2b :: "state \<Rightarrow> bool"
-  "Inv2b s \<equiv> \<forall>p d. Inv2b_inner s p d"
+definition Inv2b :: "state \<Rightarrow> bool"
+  where "Inv2b s = (\<forall>p d. Inv2b_inner s p d)"
 
-constdefs
-  Inv2c_inner :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "Inv2c_inner s p \<equiv>
-     (phase s p = 0 \<longrightarrow>
+definition Inv2c_inner :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+where
+  "Inv2c_inner s p =
+    ((phase s p = 0 \<longrightarrow>
        (  dblock s p = InitDB
         \<and> disksWritten s p = {}
         \<and> (\<forall> d. \<forall> br \<in> blocksRead s p d.
@@ -74,14 +74,13 @@ constdefs
    \<and> outpt s p = (if phase s p = 3 then inp(dblock s p) else NotAnInput)
    \<and> chosen s \<in> allInput s \<union> {NotAnInput}
    \<and> (\<forall>p.   inpt s p \<in> allInput s
-          \<and> (chosen s = NotAnInput \<longrightarrow> outpt s p = NotAnInput))"
+          \<and> (chosen s = NotAnInput \<longrightarrow> outpt s p = NotAnInput)))"
 
-  Inv2c :: "state \<Rightarrow> bool"
-  "Inv2c s \<equiv> \<forall>p. Inv2c_inner s p"
+definition Inv2c :: "state \<Rightarrow> bool"
+  where "Inv2c s = (\<forall>p. Inv2c_inner s p)"
 
-constdefs
-  HInv2 :: "state \<Rightarrow> bool"
-  "HInv2 s \<equiv> Inv2a s \<and> Inv2b s \<and> Inv2c s"
+definition HInv2 :: "state \<Rightarrow> bool"
+  where "HInv2 s = (Inv2a s \<and> Inv2b s \<and> Inv2c s)"
 
 
 subsubsection {* Proofs of Invariant 2 a *}
