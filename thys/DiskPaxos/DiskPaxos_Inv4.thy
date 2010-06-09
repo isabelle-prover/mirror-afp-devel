@@ -23,32 +23,31 @@ text {*
   large as the $mbal$ field of all its disk blocks on some majority set of disks.
 *}
 
-constdefs
-  MajoritySet :: "Disk set set"
-  "MajoritySet \<equiv> {D. IsMajority(D) }"
+definition MajoritySet :: "Disk set set"
+  where "MajoritySet = {D. IsMajority(D) }"
 
-constdefs
-  HInv4a1 :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "HInv4a1 s p \<equiv>   (\<forall>bk \<in> blocksOf s p. bal bk  \<le> mbal (dblock s p))"
+definition HInv4a1 :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+  where "HInv4a1 s p = (\<forall>bk \<in> blocksOf s p. bal bk  \<le> mbal (dblock s p))"
 
-  HInv4a2 :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "HInv4a2 s p \<equiv> \<forall>D \<in> MajoritySet.(\<exists>d \<in> D.  mbal(disk s d p) \<le> mbal(dblock s p)
-                                           \<and> bal(disk s d p) \<le> bal(dblock s p))"
+definition HInv4a2 :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+where
+  "HInv4a2 s p = (\<forall>D \<in> MajoritySet.(\<exists>d \<in> D.  mbal(disk s d p) \<le> mbal(dblock s p)
+                                           \<and> bal(disk s d p) \<le> bal(dblock s p)))"
 
-  HInv4a :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "HInv4a s p \<equiv>  phase s p \<noteq> 0 \<longrightarrow> HInv4a1 s p \<and> HInv4a2 s p"
+definition HInv4a :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+  where "HInv4a s p = (phase s p \<noteq> 0 \<longrightarrow> HInv4a1 s p \<and> HInv4a2 s p)"
 
-  HInv4b :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "HInv4b s p \<equiv> phase s p = 1 \<longrightarrow> (\<forall>bk \<in> blocksOf s p. bal bk < mbal(dblock s p))"
+definition HInv4b :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+  where "HInv4b s p = (phase s p = 1 \<longrightarrow> (\<forall>bk \<in> blocksOf s p. bal bk < mbal(dblock s p)))"
 
-  HInv4c :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "HInv4c s p \<equiv> phase s p \<in> {2,3} \<longrightarrow> (\<exists>D\<in>MajoritySet. \<forall>d\<in>D. mbal(disk s d p) = bal (dblock s p))" 
+definition HInv4c :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+  where "HInv4c s p = (phase s p \<in> {2,3} \<longrightarrow> (\<exists>D\<in>MajoritySet. \<forall>d\<in>D. mbal(disk s d p) = bal (dblock s p)))" 
 
-  HInv4d :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "HInv4d s p \<equiv> \<forall>bk \<in> blocksOf s p. \<exists>D\<in>MajoritySet. \<forall>d\<in>D. bal bk \<le> mbal (disk s d p)" 
+definition HInv4d :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+  where "HInv4d s p = (\<forall>bk \<in> blocksOf s p. \<exists>D\<in>MajoritySet. \<forall>d\<in>D. bal bk \<le> mbal (disk s d p))"
 
-  HInv4 :: "state \<Rightarrow> bool"
-  "HInv4 s \<equiv> \<forall>p. HInv4a s p \<and> HInv4b s p \<and> HInv4c s p \<and> HInv4d s p"
+definition HInv4 :: "state \<Rightarrow> bool"
+  where "HInv4 s = (\<forall>p. HInv4a s p \<and> HInv4b s p \<and> HInv4c s p \<and> HInv4d s p)"
 
 text {* The initial state implies Invariant 4. *}
 

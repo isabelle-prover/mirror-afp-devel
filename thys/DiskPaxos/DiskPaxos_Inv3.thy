@@ -14,22 +14,23 @@ text {*
   has read the other's current block.
 *}
 
-constdefs
-  HInv3_L :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> bool"
-  "HInv3_L s p q d \<equiv>   phase s p \<in> {1,2}
+definition HInv3_L :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> bool"
+where
+  "HInv3_L s p q d =  (phase s p \<in> {1,2}
                      \<and> phase s q \<in> {1,2}      
                      \<and> hasRead s p d q
-                     \<and> hasRead s q d p"
+                     \<and> hasRead s q d p)"
 
-  HInv3_R :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> bool"
-  "HInv3_R s p q d \<equiv>   \<lparr>block= dblock s q, proc= q\<rparr> \<in> blocksRead s p d
-                     \<or> \<lparr>block= dblock s p, proc= p\<rparr> \<in> blocksRead s q d"
+definition HInv3_R :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> bool"
+where
+  "HInv3_R s p q d =  (\<lparr>block= dblock s q, proc= q\<rparr> \<in> blocksRead s p d
+                     \<or> \<lparr>block= dblock s p, proc= p\<rparr> \<in> blocksRead s q d)"
 
-  HInv3_inner :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> bool"
-  "HInv3_inner s p q d \<equiv>  HInv3_L s p q d \<longrightarrow> HInv3_R s p q d "
+definition HInv3_inner :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> bool"
+  where "HInv3_inner s p q d = (HInv3_L s p q d \<longrightarrow> HInv3_R s p q d)"
 
-  HInv3 :: "state \<Rightarrow> bool"
-  "HInv3 s \<equiv> \<forall>p q d. HInv3_inner s p q d"
+definition HInv3 :: "state \<Rightarrow> bool"
+  where "HInv3 s = (\<forall>p q d. HInv3_inner s p q d)"
 
 subsubsection{* Proofs of Invariant 3 *}
 

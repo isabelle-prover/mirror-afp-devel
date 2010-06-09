@@ -18,22 +18,21 @@ text {*
   than $bal(dblock s p)$.
 *}
 
-constdefs
-  maxBalInp :: "state \<Rightarrow> nat \<Rightarrow> InputsOrNi \<Rightarrow> bool"
-  "maxBalInp s b v \<equiv> \<forall>bk\<in>allBlocks s. b \<le> bal bk \<longrightarrow> inp bk = v"
+definition maxBalInp :: "state \<Rightarrow> nat \<Rightarrow> InputsOrNi \<Rightarrow> bool"
+  where "maxBalInp s b v = (\<forall>bk\<in>allBlocks s. b \<le> bal bk \<longrightarrow> inp bk = v)"
 
-constdefs
-  HInv5_inner_R :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "HInv5_inner_R s p \<equiv>    
-          maxBalInp s (bal(dblock s p)) (inp(dblock s p))
+definition HInv5_inner_R :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+where
+  "HInv5_inner_R s p =
+          (maxBalInp s (bal(dblock s p)) (inp(dblock s p))
         \<or> (\<exists>D\<in>MajoritySet. \<exists>q. (\<forall>d\<in>D.  bal(dblock s p) < mbal(disk s d q)
-                                      \<and> \<not>hasRead s p d q)) "
+                                      \<and> \<not>hasRead s p d q)))"
 
-  HInv5_inner :: "state \<Rightarrow> Proc \<Rightarrow> bool"
-  "HInv5_inner s p \<equiv> phase s p = 2 \<longrightarrow> HInv5_inner_R s p"
+definition HInv5_inner :: "state \<Rightarrow> Proc \<Rightarrow> bool"
+  where "HInv5_inner s p = (phase s p = 2 \<longrightarrow> HInv5_inner_R s p)"
 
-  HInv5  :: "state \<Rightarrow> bool"
-  "HInv5 s \<equiv>  \<forall>p. HInv5_inner s p"
+definition HInv5 :: "state \<Rightarrow> bool"
+  where "HInv5 s = (\<forall>p. HInv5_inner s p)"
 
 subsubsection {* Proof of Invariant 5 *}
 

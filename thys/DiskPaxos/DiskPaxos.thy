@@ -15,35 +15,36 @@ Istate =
   ichosen :: InputsOrNi
   iallInput :: "InputsOrNi set"
 
-constdefs
-  IInit :: "Istate \<Rightarrow> bool"
-  "IInit s \<equiv>   range (iinput s) \<subseteq> Inputs
+definition IInit :: "Istate \<Rightarrow> bool"
+where
+  "IInit s =  (range (iinput s) \<subseteq> Inputs
              \<and> ioutput s = (\<lambda>p. NotAnInput)
              \<and> ichosen s = NotAnInput
-             \<and> iallInput s = range (iinput s)"
+             \<and> iallInput s = range (iinput s))"
 
-  IChoose :: "Istate \<Rightarrow> Istate \<Rightarrow> Proc \<Rightarrow> bool"
-  "IChoose s s' p \<equiv>  ioutput s p = NotAnInput
+definition IChoose :: "Istate \<Rightarrow> Istate \<Rightarrow> Proc \<Rightarrow> bool"
+where
+  "IChoose s s' p = (ioutput s p = NotAnInput
                    \<and> (if (ichosen s = NotAnInput)
                         then (\<exists>ip \<in> iallInput s.  ichosen s' = ip
                                             \<and> ioutput s' = (ioutput s) (p := ip))
                         else (  ioutput s' = (ioutput s) (p:= ichosen s)
                                \<and> ichosen s' = ichosen s))
-                    \<and> iinput s' = iinput s \<and> iallInput s'= iallInput s"
+                    \<and> iinput s' = iinput s \<and> iallInput s'= iallInput s)"
 
-  IFail :: "Istate \<Rightarrow> Istate \<Rightarrow> Proc \<Rightarrow> bool"
-  "IFail s s' p \<equiv>    ioutput s' = (ioutput s) (p:= NotAnInput)
+definition IFail :: "Istate \<Rightarrow> Istate \<Rightarrow> Proc \<Rightarrow> bool"
+where
+  "IFail s s' p =   (ioutput s' = (ioutput s) (p:= NotAnInput)
                   \<and> (\<exists>ip \<in> Inputs.  iinput s' = (iinput s)(p:= ip)
                                    \<and> iallInput s' = iallInput s \<union> {ip})
-                  \<and> ichosen s' = ichosen s"
+                  \<and> ichosen s' = ichosen s)"
 
-constdefs
-  INext :: "Istate \<Rightarrow> Istate \<Rightarrow> bool"
-  "INext s s' \<equiv> \<exists>p. IChoose s s' p \<or> IFail s s' p"
+definition INext :: "Istate \<Rightarrow> Istate \<Rightarrow> bool"
+  where "INext s s' = (\<exists>p. IChoose s s' p \<or> IFail s s' p)"
 
-constdefs
-  s2is :: "state \<Rightarrow> Istate"
-  "s2is s \<equiv> \<lparr>iinput = inpt s, 
+definition s2is :: "state \<Rightarrow> Istate"
+where
+  "s2is s = \<lparr>iinput = inpt s, 
              ioutput = outpt s, 
              ichosen=chosen s,
              iallInput = allInput s\<rparr>"

@@ -8,14 +8,14 @@ theory DiskPaxos_Invariant imports DiskPaxos_Inv6 begin
 
 subsection {* The Complete Invariant *}
 
-constdefs
-  HInv :: "state \<Rightarrow> bool"
-  "HInv s \<equiv>   HInv1 s 
+definition HInv :: "state \<Rightarrow> bool"
+where
+  "HInv s =  (HInv1 s 
             \<and> HInv2 s
             \<and> HInv3 s
             \<and> HInv4 s
             \<and> HInv5 s
-            \<and> HInv6 s"
+            \<and> HInv6 s)"
 
 theorem I1:
   "HInit s \<Longrightarrow> HInv s"

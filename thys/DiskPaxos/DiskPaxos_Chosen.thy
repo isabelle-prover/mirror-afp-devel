@@ -16,9 +16,9 @@ text {*
   at least $b$.
 *}
 
-constdefs
-  valueChosen :: "state \<Rightarrow> InputsOrNi \<Rightarrow> bool"
-  "valueChosen s v \<equiv> 
+definition valueChosen :: "state \<Rightarrow> InputsOrNi \<Rightarrow> bool"
+where
+  "valueChosen s v =
   (\<exists>b\<in> (UN p. Ballot p). 
          maxBalInp s b v
       \<and> (\<exists>p. \<exists>D\<in>MajoritySet.(\<forall>d\<in>D.  b \<le> bal(disk s d p)

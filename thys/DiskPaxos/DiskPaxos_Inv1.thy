@@ -12,18 +12,18 @@ subsection {* Invariant 1 *}
 
 text{* This is just a type Invariant. *}
 
-constdefs
-  Inv1 :: "state \<Rightarrow> bool"
-  "Inv1 s \<equiv> \<forall>p.
+definition Inv1 :: "state \<Rightarrow> bool"
+where
+  "Inv1 s = (\<forall>p.
      inpt s p \<in> Inputs
    \<and> phase s p \<le> 3
-   \<and> finite (allRdBlks s p)"
+   \<and> finite (allRdBlks s p))"
 
-constdefs
-  HInv1 :: "state \<Rightarrow> bool"
-  "HInv1 s \<equiv>  
-     Inv1 s
-    \<and> allInput s \<subseteq> Inputs"
+definition HInv1 :: "state \<Rightarrow> bool"
+where
+  "HInv1 s =
+     (Inv1 s
+    \<and> allInput s \<subseteq> Inputs)"
 
 declare HInv1_def [simp]
 
