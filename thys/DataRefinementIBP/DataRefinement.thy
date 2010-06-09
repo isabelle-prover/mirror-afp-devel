@@ -12,7 +12,7 @@ to $S$ using the data abstractions $R$ and $R'$.
 *}
 
 definition
-  "DataRefinement p Q R R' S \<equiv>  (\<forall> s . \<Turnstile> {s' . s \<in> R s' \<and> s \<in> p} {| S |} (angelic R' (Q s)))"
+  "DataRefinement p Q R R' S = (\<forall> s . \<Turnstile> {s' . s \<in> R s' \<and> s \<in> p} {| S |} (angelic R' (Q s)))"
 
 text{*
 The definition of the data refinement above is justified by the follwing two theorems.

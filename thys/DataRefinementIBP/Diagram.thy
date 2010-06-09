@@ -35,7 +35,7 @@ $i$ ends in one of the situations $j$ such that $Q \, j$ is true.
 *}
 
 definition
-  "step D Q i \<equiv> INF j . D (i, j) (Q j)"
+  "step D Q i = (INF j . D (i, j) (Q j))"
 
 definition
   "dmono D = (\<forall> ij . mono (D ij))"
@@ -89,7 +89,7 @@ theorem mono_mono_dgr [simp]: "dmono D \<Longrightarrow> mono_mono (dgr D)"
   by simp
 
 definition
-  "pt D  = lfp (dgr D)"
+  "pt D = lfp (dgr D)"
 
 text {*
 If $U$ is an indexed predicate transformer and if $P, Q:I\to \mathit{State} \ \mathit{set}$

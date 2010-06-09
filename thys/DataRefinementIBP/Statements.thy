@@ -53,7 +53,7 @@ if $s\not\in p$ and behaves as skip otherwise.
 *}
 
 definition
-  "assume (P::'a::boolean_algebra) Q \<equiv>  -P \<squnion> Q"
+  "assume (P::'a::boolean_algebra) Q = -P \<squnion> Q"
 
 lemma mono_assume [simp]: "mono (assume P)"
   apply (simp add: assume_def mono_def)
