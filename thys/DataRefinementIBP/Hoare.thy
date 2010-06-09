@@ -21,68 +21,68 @@ over a complete lattice.
 
 definition
   Hoare :: "'a::complete_lattice \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool" ("\<Turnstile> (_){| _ |}(_)" [0,0,900] 900) where
-  "\<Turnstile> p {|S|} q = (p \<le> (S q))";
+  "\<Turnstile> p {|S|} q = (p \<le> (S q))"
 
 theorem hoare_sequential:
-  "mono S \<Longrightarrow> (\<Turnstile> p {| S o T |} r) = ( (\<exists> q. \<Turnstile> p {| S |} q \<and> \<Turnstile> q {| T |} r))"; 
-  apply safe;
-  apply (simp_all add: Hoare_def mono_def);
-  apply (rule_tac x = "T r" in exI);
-  apply simp;
+  "mono S \<Longrightarrow> (\<Turnstile> p {| S o T |} r) = ( (\<exists> q. \<Turnstile> p {| S |} q \<and> \<Turnstile> q {| T |} r))" 
+  apply safe
+  apply (simp_all add: Hoare_def mono_def)
+  apply (rule_tac x = "T r" in exI)
+  apply simp
   apply (rule_tac y = "S q" in order_trans)
-  by auto;
+  by auto
 
 theorem hoare_choice:
   "\<Turnstile> p {| S \<sqinter> T |} q = (\<Turnstile> p {| S |} q \<and> \<Turnstile> p {| T |} q)"
-  by (simp_all add: Hoare_def inf_fun_eq);
+  by (simp_all add: Hoare_def inf_fun_eq)
 
 theorem hoare_assume:
-  "(\<Turnstile> P {| assume R |} Q) = (P \<sqinter> R \<le> Q)";
-  apply (simp add: Hoare_def assume_def);
-  apply safe;
-  apply (case_tac "(inf P R) \<le> (inf (sup (- R) Q) R)");
-  apply (simp add: inf_sup_distrib2 compl_inf_bot);
-  apply (simp add: le_infI1);
-  apply (case_tac "(sup (-R) (inf P R)) \<le> sup (- R) Q");
-  apply (simp add: sup_inf_distrib1 compl_sup_top);
-  by (simp add: le_supI2);
+  "(\<Turnstile> P {| assume R |} Q) = (P \<sqinter> R \<le> Q)"
+  apply (simp add: Hoare_def assume_def)
+  apply safe
+  apply (case_tac "(inf P R) \<le> (inf (sup (- R) Q) R)")
+  apply (simp add: inf_sup_distrib2 compl_inf_bot)
+  apply (simp add: le_infI1)
+  apply (case_tac "(sup (-R) (inf P R)) \<le> sup (- R) Q")
+  apply (simp add: sup_inf_distrib1 compl_sup_top)
+  by (simp add: le_supI2)
 
 theorem hoare_mono:
-  "mono S \<Longrightarrow> Q \<le> R \<Longrightarrow> \<Turnstile> P {| S |} Q \<Longrightarrow> \<Turnstile> P {| S |} R";
-  apply (simp add: mono_def Hoare_def);
+  "mono S \<Longrightarrow> Q \<le> R \<Longrightarrow> \<Turnstile> P {| S |} Q \<Longrightarrow> \<Turnstile> P {| S |} R"
+  apply (simp add: mono_def Hoare_def)
   apply (rule_tac y = "S Q" in order_trans)
-  by auto;
+  by auto
 
 theorem hoare_pre:
-  "R \<le> P \<Longrightarrow> \<Turnstile> P {| S |} Q \<Longrightarrow> \<Turnstile> R {| S |} Q";
-  by (simp add: Hoare_def);
+  "R \<le> P \<Longrightarrow> \<Turnstile> P {| S |} Q \<Longrightarrow> \<Turnstile> R {| S |} Q"
+  by (simp add: Hoare_def)
 
 theorem hoare_Sup:
-  "(\<forall> p \<in> P . \<Turnstile> p {| S |} q) \<Longrightarrow> \<Turnstile> Sup P {| S |} q";
-  by (simp add: Hoare_def Sup_least);
+  "(\<forall> p \<in> P . \<Turnstile> p {| S |} q) \<Longrightarrow> \<Turnstile> Sup P {| S |} q"
+  by (simp add: Hoare_def Sup_least)
   
-lemma hoare_magic [simp]: "\<Turnstile> P {| top |} Q"; 
-  by (simp add: Hoare_def top_fun_eq);
+lemma hoare_magic [simp]: "\<Turnstile> P {| top |} Q" 
+  by (simp add: Hoare_def top_fun_eq)
 
-lemma hoare_demonic: "\<Turnstile> P {| demonic R |} Q = (\<forall> s . s \<in> P \<longrightarrow>  R s \<subseteq> Q)";
-  apply (unfold Hoare_def demonic_def);
-  by auto;
+lemma hoare_demonic: "\<Turnstile> P {| demonic R |} Q = (\<forall> s . s \<in> P \<longrightarrow>  R s \<subseteq> Q)"
+  apply (unfold Hoare_def demonic_def)
+  by auto
 
 lemma hoare_not_guard:
-  "mono S \<Longrightarrow> \<Turnstile> p {| S |} q \<Longrightarrow> \<Turnstile> (p \<squnion> (- grd S)) {| S |} q";
-  apply (simp add: Hoare_def grd_def);
-  apply (drule monoD);
-  by auto;
+  "mono S \<Longrightarrow> \<Turnstile> p {| S |} q \<Longrightarrow> \<Turnstile> (p \<squnion> (- grd S)) {| S |} q"
+  apply (simp add: Hoare_def grd_def)
+  apply (drule monoD)
+  by auto
 
 subsection {* Hoare rule for recursive statements *}
 
 theorem fp_wf_induction:
-  "mono f \<Longrightarrow> (\<forall> w . (p w) \<le> f (SUP_L p w)) \<Longrightarrow> f x = x \<Longrightarrow> SUP p \<le> x";
-  apply (rule SUP_least);
-  apply (rule less_induct1, simp_all);
+  "mono f \<Longrightarrow> (\<forall> w . (p w) \<le> f (SUP_L p w)) \<Longrightarrow> f x = x \<Longrightarrow> SUP p \<le> x"
+  apply (rule SUP_least)
+  apply (rule less_induct1, simp_all)
   apply (rule_tac y = "f (SUP_L p xa)" in order_trans, simp)
-  apply (drule_tac x = "SUP_L p xa" and y = "x" in monoD);
-  by (simp_all add: SUP_L_least);
+  apply (drule_tac x = "SUP_L p xa" and y = "x" in monoD)
+  by (simp_all add: SUP_L_least)
 
 text {*
 A statement $S$ is refined by another statement $S'$ if $\models p \{| S' |\} q$ 
@@ -96,35 +96,35 @@ transformers to predicate transformers.
 
 theorem lfp_wf_induction:
   "mono f \<Longrightarrow> (\<forall> w . (p w) \<le> f (SUP_L p w)) \<Longrightarrow> SUP p \<le> lfp f"
- apply (frule fp_wf_induction);
- apply simp_all;
- apply (drule lfp_unfold);
- by simp;
+ apply (frule fp_wf_induction)
+ apply simp_all
+ apply (drule lfp_unfold)
+ by simp
 
 definition alpha_def:
-  "\<alpha> x y z = (if y \<le> z then x else bot)";
+  "\<alpha> x y z = (if y \<le> z then x else bot)"
 
-lemma alpha_mono [simp]: "mono (\<alpha> x y)";
-  apply (simp add: mono_def alpha_def);
-  apply auto;
+lemma alpha_mono [simp]: "mono (\<alpha> x y)"
+  apply (simp add: mono_def alpha_def)
+  apply auto
   apply (drule_tac x = "y" and y = "xa" and z = "ya" in order_trans)
-  by simp_all;
+  by simp_all
 
 lemma alpha_continous: 
   "\<alpha> (Sup X) y = Sup ((\<lambda> x . \<alpha> x y) ` X)"
-  apply (rule antisym);
-  apply (simp_all add: le_fun_def);
-  apply auto;
-  apply (simp_all add: alpha_def);
-  apply auto;
-  apply (simp_all add: Sup_fun_def);
-  apply (simp_all add: alpha_def);
+  apply (rule antisym)
+  apply (simp_all add: le_fun_def)
+  apply auto
+  apply (simp_all add: alpha_def)
+  apply auto
+  apply (simp_all add: Sup_fun_def)
+  apply (simp_all add: alpha_def)
   apply (rule Sup_least)
-  by auto;
+  by auto
 
 lemma alpha_continous1: 
   "\<alpha> (SUP X) y = SUP ((\<lambda> x . \<alpha> x y) o X)"
-  by (simp add: expand_fun_eq alpha_def SUP_fun_eq, simp);
+  by (simp add: expand_fun_eq alpha_def SUP_fun_eq, simp)
 
 text {*
 Next theorem shows the equivalence between the validity of Hoare
@@ -135,23 +135,23 @@ a Hoare rule for recursive programs.
 
 theorem hoare_refinement_alpha:
   "mono f \<Longrightarrow>  (\<Turnstile> x {| f |} y) = (\<alpha> x y \<le> f)"
-  apply safe;
-  apply (simp_all add: Hoare_def);
-  apply (simp_all add: le_fun_def);
-  apply (simp add: alpha_def);
-  apply auto;
-  apply (drule_tac x = "y" and y = "xa" in monoD);
-  apply auto;
-  apply (case_tac "\<alpha> x y y \<le> f y");
-  apply (simp add: alpha_def);
-  apply (erule notE);
-  by auto;
+  apply safe
+  apply (simp_all add: Hoare_def)
+  apply (simp_all add: le_fun_def)
+  apply (simp add: alpha_def)
+  apply auto
+  apply (drule_tac x = "y" and y = "xa" in monoD)
+  apply auto
+  apply (case_tac "\<alpha> x y y \<le> f y")
+  apply (simp add: alpha_def)
+  apply (erule notE)
+  by auto
 
 lemma alpha_continous2:
- "SUP_L ((\<lambda>x. \<alpha> x y) \<circ> p) w =  \<alpha> (SUP_L p w) y";
-  apply (simp add: SUP_L_def SUPR_def alpha_continous);
-  apply (case_tac "((\<lambda> x. \<alpha> x y) \<circ> p) ` {v . v < w} = ((\<lambda>x . \<alpha> x y) ` p ` {v. v < w})");
-  by auto;
+ "SUP_L ((\<lambda>x. \<alpha> x y) \<circ> p) w =  \<alpha> (SUP_L p w) y"
+  apply (simp add: SUP_L_def SUPR_def alpha_continous)
+  apply (case_tac "((\<lambda> x. \<alpha> x y) \<circ> p) ` {v . v < w} = ((\<lambda>x . \<alpha> x y) ` p ` {v. v < w})")
+  by auto
 
 text {*
 Next theorem gives a Hoare rule for recursive programs. If we can prove correct the unfolding 
@@ -163,12 +163,12 @@ the recursive program is correct $\models SUP\ p\ \{| lfp\  F |\}\  y$
 theorem hoare_fixpoint:
   "mono_mono F \<Longrightarrow>
    (!! w f . mono f \<and> \<Turnstile> SUP_L p w {| f |} y \<Longrightarrow> \<Turnstile> p w {| F f |} y) \<Longrightarrow> \<Turnstile> SUP p {| lfp F |} y"
-  apply (simp add: mono_mono_def hoare_refinement_alpha);
-  apply (simp add: alpha_continous1);
-  apply (rule lfp_wf_induction);
-  apply auto;
-  apply (simp add: alpha_continous2);
-  apply (drule_tac x = "\<alpha> (SUP_L p w) y" in spec);
-  by (simp add: hoare_refinement_alpha);
+  apply (simp add: mono_mono_def hoare_refinement_alpha)
+  apply (simp add: alpha_continous1)
+  apply (rule lfp_wf_induction)
+  apply auto
+  apply (simp add: alpha_continous2)
+  apply (drule_tac x = "\<alpha> (SUP_L p w) y" in spec)
+  by (simp add: hoare_refinement_alpha)
 
-end;
+end
