@@ -35,18 +35,18 @@ text {* The redex of a statement is the substatement, which is actually altered
 by the next step in the small-step semantics.
 *}
 
-consts redex:: "('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com"
-primrec
-"redex Skip = Skip"
-"redex (Basic f) = (Basic f)"
-"redex (Spec r) = (Spec r)"
-"redex (Seq c\<^isub>1 c\<^isub>2) = redex c\<^isub>1"
-"redex (Cond b c\<^isub>1 c\<^isub>2) = (Cond b c\<^isub>1 c\<^isub>2)"
-"redex (While b c) = (While b c)"
-"redex (Call p) = (Call p)"
-"redex (DynCom d) = (DynCom d)"
-"redex (Guard f b c) = (Guard f b c)"
-"redex (Throw) = Throw"
+primrec redex:: "('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com"
+where
+"redex Skip = Skip" |
+"redex (Basic f) = (Basic f)" |
+"redex (Spec r) = (Spec r)" |
+"redex (Seq c\<^isub>1 c\<^isub>2) = redex c\<^isub>1" |
+"redex (Cond b c\<^isub>1 c\<^isub>2) = (Cond b c\<^isub>1 c\<^isub>2)" |
+"redex (While b c) = (While b c)" |
+"redex (Call p) = (Call p)" |
+"redex (DynCom d) = (DynCom d)" |
+"redex (Guard f b c) = (Guard f b c)" |
+"redex (Throw) = Throw" |
 "redex (Catch c\<^isub>1 c\<^isub>2) = redex c\<^isub>1"
 
 
@@ -145,8 +145,8 @@ model abrupt termination, in contrast to the big-step semantics. Only if the
 program starts in an @{const "Abrupt"} states it ends in the same @{term "Abrupt"}
 state.*}
 
-constdefs final:: "('s,'p,'f) config \<Rightarrow> bool"
-"final cfg \<equiv> fst cfg=Skip \<or> (fst cfg=Throw \<and> (\<exists>s. snd cfg=Normal s))"
+definition final:: "('s,'p,'f) config \<Rightarrow> bool" where
+"final cfg = (fst cfg=Skip \<or> (fst cfg=Throw \<and> (\<exists>s. snd cfg=Normal s)))"
 
 
 abbreviation 
@@ -970,8 +970,8 @@ qed
 subsection {* Infinite Computations: @{text "\<Gamma>\<turnstile>(c, s) \<rightarrow> \<dots>(\<infinity>)"}*}
 (* ************************************************************************ *)
 
-constdefs inf:: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) config \<Rightarrow> bool"
- ("_\<turnstile> _ \<rightarrow> \<dots>'(\<infinity>')" [60,80] 100)
+definition inf:: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) config \<Rightarrow> bool"
+ ("_\<turnstile> _ \<rightarrow> \<dots>'(\<infinity>')" [60,80] 100) where
 "\<Gamma>\<turnstile> cfg \<rightarrow> \<dots>(\<infinity>) \<equiv> (\<exists>f. f (0::nat) = cfg \<and> (\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (i+1)))" 
 
 lemma not_infI: "\<lbrakk>\<And>f. \<lbrakk>f 0 = cfg; \<And>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)\<rbrakk> \<Longrightarrow> False\<rbrakk>  
@@ -1111,16 +1111,17 @@ qed
 
 
 
-constdefs head_com:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
-"head_com c \<equiv>
+definition head_com:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
+where
+"head_com c =
   (case c of
      Seq c\<^isub>1 c\<^isub>2 \<Rightarrow> c\<^isub>1
    | Catch c\<^isub>1 c\<^isub>2 \<Rightarrow> c\<^isub>1
    | _ \<Rightarrow> c)"
 
   
-constdefs head:: "('s,'p,'f) config \<Rightarrow> ('s,'p,'f) config"
-"head cfg \<equiv> (head_com (fst cfg), snd cfg)"
+definition head:: "('s,'p,'f) config \<Rightarrow> ('s,'p,'f) config"
+  where "head cfg = (head_com (fst cfg), snd cfg)"
 
 lemma le_Suc_cases: "\<lbrakk>\<And>i. \<lbrakk>i < k\<rbrakk> \<Longrightarrow> P i; P k\<rbrakk> \<Longrightarrow> \<forall>i<(Suc k). P i"
   apply clarify
@@ -2102,25 +2103,26 @@ next
 qed
 
 
-constdefs
+definition
  termi_call_steps :: "('s,'p,'f) body \<Rightarrow> (('s \<times> 'p) \<times> ('s \<times> 'p))set"
-"termi_call_steps \<Gamma> \<equiv>
+where
+"termi_call_steps \<Gamma> =
  {((t,q),(s,p)). \<Gamma>\<turnstile>Call p\<down>Normal s \<and> 
        (\<exists>c. \<Gamma>\<turnstile>(Call p,Normal s) \<rightarrow>\<^sup>+ (c,Normal t) \<and> redex c = Call q)}"
 
 
-consts subst_redex:: "('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com"
-primrec
-"subst_redex Skip c = c"
-"subst_redex (Basic f) c = c"
-"subst_redex (Spec r) c = c"
-"subst_redex (Seq c\<^isub>1 c\<^isub>2) c  = Seq (subst_redex c\<^isub>1 c) c\<^isub>2"
-"subst_redex (Cond b c\<^isub>1 c\<^isub>2) c = c"
-"subst_redex (While b c') c = c"
-"subst_redex (Call p) c = c"
-"subst_redex (DynCom d) c = c"
-"subst_redex (Guard f b c') c = c"
-"subst_redex (Throw) c = c"
+primrec subst_redex:: "('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com"
+where
+"subst_redex Skip c = c" |
+"subst_redex (Basic f) c = c" |
+"subst_redex (Spec r) c = c" |
+"subst_redex (Seq c\<^isub>1 c\<^isub>2) c  = Seq (subst_redex c\<^isub>1 c) c\<^isub>2" |
+"subst_redex (Cond b c\<^isub>1 c\<^isub>2) c = c" |
+"subst_redex (While b c') c = c" |
+"subst_redex (Call p) c = c" |
+"subst_redex (DynCom d) c = c" |
+"subst_redex (Guard f b c') c = c" |
+"subst_redex (Throw) c = c" |
 "subst_redex (Catch c\<^isub>1 c\<^isub>2) c = Catch (subst_redex c\<^isub>1 c) c\<^isub>2"
 
 lemma subst_redex_redex:
@@ -2182,9 +2184,9 @@ next
   finally show "\<Gamma>\<turnstile> (subst_redex c r, s) \<rightarrow>\<^sup>+ (subst_redex c r'', s'')" .
 qed
 
-consts seq:: "(nat \<Rightarrow> ('s,'p,'f)com) \<Rightarrow> 'p \<Rightarrow> nat \<Rightarrow> ('s,'p,'f)com"
-primrec 
-"seq c p 0 = Call p"
+primrec seq:: "(nat \<Rightarrow> ('s,'p,'f)com) \<Rightarrow> 'p \<Rightarrow> nat \<Rightarrow> ('s,'p,'f)com"
+where
+"seq c p 0 = Call p" |
 "seq c p (Suc i) = subst_redex (seq c p i) (c i)"
 
 
@@ -2786,18 +2788,18 @@ total correctness we need a generalisation of @{const "redex"} that not only
 yield the redex itself but all the enclosing statements as well.
 *}
 
-consts redexes:: "('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com set"
-primrec
-"redexes Skip = {Skip}"
-"redexes (Basic f) = {Basic f}"
-"redexes (Spec r) = {Spec r}"
-"redexes (Seq c\<^isub>1 c\<^isub>2) = {Seq c\<^isub>1 c\<^isub>2} \<union> redexes c\<^isub>1"
-"redexes (Cond b c\<^isub>1 c\<^isub>2) = {Cond b c\<^isub>1 c\<^isub>2}"
-"redexes (While b c) = {While b c}"
-"redexes (Call p) = {Call p}"
-"redexes (DynCom d) = {DynCom d}"
-"redexes (Guard f b c) = {Guard f b c}"
-"redexes (Throw) = {Throw}"
+primrec redexes:: "('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com set"
+where
+"redexes Skip = {Skip}" |
+"redexes (Basic f) = {Basic f}" |
+"redexes (Spec r) = {Spec r}" |
+"redexes (Seq c\<^isub>1 c\<^isub>2) = {Seq c\<^isub>1 c\<^isub>2} \<union> redexes c\<^isub>1" |
+"redexes (Cond b c\<^isub>1 c\<^isub>2) = {Cond b c\<^isub>1 c\<^isub>2}" |
+"redexes (While b c) = {While b c}" |
+"redexes (Call p) = {Call p}" |
+"redexes (DynCom d) = {DynCom d}" |
+"redexes (Guard f b c) = {Guard f b c}" |
+"redexes (Throw) = {Throw}" |
 "redexes (Catch c\<^isub>1 c\<^isub>2) = {Catch c\<^isub>1 c\<^isub>2} \<union> redexes c\<^isub>1"
 
 lemma root_in_redexes: "c \<in> redexes c"

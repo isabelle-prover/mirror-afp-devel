@@ -86,9 +86,9 @@ apply simp_all
 apply arith
 done
 
-consts fac:: "nat \<Rightarrow> nat"
-primrec
-"fac 0 = 1"
+primrec fac:: "nat \<Rightarrow> nat"
+where
+"fac 0 = 1" |
 "fac (Suc n) = (Suc n) * fac n"
 
 lemma fac_simp [simp]: "0 < i \<Longrightarrow>  fac i = i * fac (i - 1)"

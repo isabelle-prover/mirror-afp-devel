@@ -35,8 +35,8 @@ restrict_map  ("_|\<^bsub>_\<^esub>" [90, 91] 90)
 
 datatype ('s,'f) xstate = Normal 's | Abrupt 's | Fault 'f | Stuck
 
-constdefs isAbr::"('s,'f) xstate \<Rightarrow> bool"
-"isAbr S \<equiv> \<exists>s. S=Abrupt s"
+definition isAbr::"('s,'f) xstate \<Rightarrow> bool"
+  where "isAbr S = (\<exists>s. S=Abrupt s)"
  
 lemma isAbr_simps [simp]:
 "isAbr (Normal s) = False"
@@ -52,8 +52,8 @@ lemma not_isAbrD:
 "\<not> isAbr s \<Longrightarrow> (\<exists>s'. s=Normal s') \<or> s = Stuck \<or> (\<exists>f. s=Fault f)"
   by (cases s) auto
 
-constdefs isFault:: "('s,'f) xstate \<Rightarrow> bool"
-"isFault S \<equiv> \<exists>f. S=Fault f"
+definition isFault:: "('s,'f) xstate \<Rightarrow> bool"
+  where "isFault S = (\<exists>f. S=Fault f)"
 
 lemma isFault_simps [simp]:
 "isFault (Normal s) = False"
@@ -890,15 +890,15 @@ theorem exec_iff_execn: "(\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow
   by (iprover intro: exec_to_execn execn_to_exec)
 
 
-constdefs nfinal_notin:: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'f) xstate \<Rightarrow>  nat 
+definition nfinal_notin:: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'f) xstate \<Rightarrow>  nat 
                        \<Rightarrow> ('s,'f) xstate set \<Rightarrow> bool"
-  ("_\<turnstile> \<langle>_,_\<rangle> =_\<Rightarrow>\<notin>_"  [60,20,98,65,60] 89)
-"\<Gamma>\<turnstile> \<langle>c,s\<rangle> =n\<Rightarrow>\<notin>T \<equiv> \<forall>t. \<Gamma>\<turnstile> \<langle>c,s\<rangle> =n\<Rightarrow> t \<longrightarrow> t\<notin>T"
+  ("_\<turnstile> \<langle>_,_\<rangle> =_\<Rightarrow>\<notin>_"  [60,20,98,65,60] 89) where
+"\<Gamma>\<turnstile> \<langle>c,s\<rangle> =n\<Rightarrow>\<notin>T = (\<forall>t. \<Gamma>\<turnstile> \<langle>c,s\<rangle> =n\<Rightarrow> t \<longrightarrow> t\<notin>T)"
 
-constdefs final_notin:: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'f) xstate  
+definition final_notin:: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'f) xstate  
                        \<Rightarrow> ('s,'f) xstate set \<Rightarrow> bool"
-  ("_\<turnstile> \<langle>_,_\<rangle> \<Rightarrow>\<notin>_"  [60,20,98,60] 89)
-"\<Gamma>\<turnstile> \<langle>c,s\<rangle> \<Rightarrow>\<notin>T \<equiv> \<forall>t. \<Gamma>\<turnstile> \<langle>c,s\<rangle> \<Rightarrow>t \<longrightarrow> t\<notin>T"
+  ("_\<turnstile> \<langle>_,_\<rangle> \<Rightarrow>\<notin>_"  [60,20,98,60] 89) where
+"\<Gamma>\<turnstile> \<langle>c,s\<rangle> \<Rightarrow>\<notin>T = (\<forall>t. \<Gamma>\<turnstile> \<langle>c,s\<rangle> \<Rightarrow>t \<longrightarrow> t\<notin>T)"
 
 lemma final_notinI: "\<lbrakk>\<And>t. \<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> t \<Longrightarrow> t \<notin> T\<rbrakk> \<Longrightarrow> \<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow>\<notin>T"
   by (simp add: final_notin_def)

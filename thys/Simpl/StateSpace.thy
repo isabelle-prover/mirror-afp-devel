@@ -32,9 +32,10 @@ begin
 
 record 'g state = "globals"::'g
 
-constdefs 
+definition
   upd_globals:: "('g \<Rightarrow> 'g) \<Rightarrow> ('g,'z) state_scheme \<Rightarrow> ('g,'z) state_scheme"
-  "upd_globals upd s \<equiv> s\<lparr>globals := upd (globals s)\<rparr>" 
+where
+  "upd_globals upd s = s\<lparr>globals := upd (globals s)\<rparr>" 
 
 record ('g, 'n, 'val) stateSP = "'g state" +
   locals :: "'n \<Rightarrow> 'val"

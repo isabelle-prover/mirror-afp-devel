@@ -321,11 +321,11 @@ text {*
  the problem.
 *}
 
-consts
-  sum :: "(nat => nat) => nat => nat"
 primrec
+  sum :: "(nat => nat) => nat => nat"
+where
   "sum f 0 = 0"
-  "sum f (Suc n) = f n + sum f n"
+| "sum f (Suc n) = f n + sum f n"
 
 syntax
   "_sum" :: "idt => nat => nat => nat"
@@ -457,9 +457,9 @@ text {* We want to define a procedure for the factorial. We first
 define a HOL functions that calculates it to specify the procedure later on.
 *}
 
-consts fac:: "nat \<Rightarrow> nat"
-primrec
-"fac 0 = 1"
+primrec fac:: "nat \<Rightarrow> nat"
+where
+"fac 0 = 1" |
 "fac (Suc n) = (Suc n) * fac n"
 
 lemma fac_simp [simp]: "0 < i \<Longrightarrow>  fac i = i * fac (i - 1)"
@@ -864,9 +864,9 @@ clause to prove the functional specifications.
  
 subsubsection {*Insertion Sort*}
 
-consts sorted:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list  \<Rightarrow> bool"
-primrec 
-"sorted le [] = True"
+primrec sorted:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list  \<Rightarrow> bool"
+where
+"sorted le [] = True" |
 "sorted le (x#xs) = ((\<forall>y\<in>set xs. le x y) \<and> sorted le xs)"
 
 
@@ -1021,7 +1021,7 @@ hoarestate locals_list_alloc =
   tmp::ref 
 locale list_alloc = globals_list_alloc + locals_list_alloc
 
-constdefs "sz \<equiv> 2::nat"
+definition "sz = (2::nat)"
 
 lemma (in list_alloc)
  shows  
@@ -1246,9 +1246,10 @@ Example: @{term "WHILE  \<lbrace>\<acute>p\<noteq>Null\<rbrace>\<longmapsto> \<a
 end
 
 subsection {* Cicular Lists *}
-constdefs
-  distPath :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> ref \<Rightarrow> ref list \<Rightarrow> bool" 
-  "distPath x next y as    \<equiv>   Path x next y as  \<and>  distinct as"
+definition
+  distPath :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> ref \<Rightarrow> ref list \<Rightarrow> bool" where
+  "distPath x next y as = (Path x next y as  \<and>  distinct as)"
+
 
 lemma neq_dP: "\<lbrakk>p \<noteq> q; Path p h q Ps; distinct Ps\<rbrakk> \<Longrightarrow>
  \<exists>Qs. p\<noteq>Null \<and> Ps = p#Qs \<and> p \<notin> set Qs"

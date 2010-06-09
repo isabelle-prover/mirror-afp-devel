@@ -21,15 +21,15 @@ section {* Auxiliary functions for the concrete syntax *}
 (* =================================================== *)
 
 
-consts pfilter:: "bool list \<Rightarrow> 'a list \<Rightarrow> 'a list"
-primrec
-"pfilter c [] = []"
+primrec pfilter:: "bool list \<Rightarrow> 'a list \<Rightarrow> 'a list"
+where
+"pfilter c [] = []" |
 "pfilter c (v#vs) = (if hd c then v#pfilter (tl c) vs else pfilter (tl c) vs)" 
 
 
-consts pmask:: "nat \<Rightarrow> bool list \<Rightarrow> nat list"
-primrec
-"pmask i  [] = []"
+primrec pmask:: "nat \<Rightarrow> bool list \<Rightarrow> nat list"
+where
+"pmask i  [] = []" |
 "pmask i (b#bs) = (if b then i#(pmask (Suc i) bs) else pmask (Suc i) bs)"
 
 

@@ -91,8 +91,8 @@ lemma "\<Gamma>\<turnstile> \<lbrace>\<acute>A = 0\<rbrace>
 apply vcg
 oops
 
-constdefs foo:: "nat \<Rightarrow> (nat \<times> nat \<times> nat)"
-"foo n \<equiv> (n,n+1,n+2)"
+definition foo:: "nat \<Rightarrow> (nat \<times> nat \<times> nat)"
+  where "foo n = (n,n+1,n+2)"
 
 lemma "\<Gamma>\<turnstile> \<lbrace>\<acute>A = 0\<rbrace> 
       \<lbrace>\<acute>A < 0\<rbrace> \<longmapsto> BASIC

@@ -74,9 +74,9 @@ lemma (in append_impl) append_spec:
   apply fastsimp
   done
 
-consts sorted:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list  \<Rightarrow> bool"
-primrec 
-"sorted le [] = True"
+primrec sorted:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list  \<Rightarrow> bool"
+where
+"sorted le [] = True" |
 "sorted le (x#xs) = ((\<forall>y\<in>set xs. le x y) \<and> sorted le xs)"
 
 lemma perm_set_eq: 

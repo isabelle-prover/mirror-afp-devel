@@ -212,9 +212,9 @@ next
     by (induct t) auto
 qed
 
-consts Dag:: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> dag \<Rightarrow> bool"
-primrec
-"Dag p l r Tip = (p = Null)"
+primrec Dag:: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> dag \<Rightarrow> bool"
+where
+"Dag p l r Tip = (p = Null)" |
 "Dag p l r (Node lt a rt) = (p = a \<and> p \<noteq> Null \<and> 
                               Dag (l p) l r lt \<and> Dag (r p) l r  rt)"
 
@@ -406,11 +406,11 @@ apply (induct t)
 apply auto
 done
 
-constdefs
-  isDag::"ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
-  "isDag p l r \<equiv> (\<exists>t. Dag p l r t)"
-  dag:: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> dag"
-  "dag p l r \<equiv> THE t. Dag p l r t"
+definition isDag::"ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
+  where "isDag p l r = (\<exists>t. Dag p l r t)"
+
+definition dag:: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> dag"
+  where "dag p l r = (THE t. Dag p l r t)"
 
 lemma Dag_conv_isDag_dag: "Dag p l r t = (isDag p l r \<and> t=dag p l r)"
   apply (simp add: isDag_def dag_def)

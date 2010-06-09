@@ -30,15 +30,14 @@ header {* General Lemmas on BDD Abstractions*}
 
 theory General imports BinDag begin
 
-consts subdag_eq:: "dag \<Rightarrow> dag \<Rightarrow> bool"
-defs subdag_eq_def:
-"subdag_eq t\<^isub>1 t\<^isub>2 == (t\<^isub>1 = t\<^isub>2 \<or> subdag t\<^isub>1 t\<^isub>2)"
+definition subdag_eq:: "dag \<Rightarrow> dag \<Rightarrow> bool" where
+"subdag_eq t\<^isub>1 t\<^isub>2 = (t\<^isub>1 = t\<^isub>2 \<or> subdag t\<^isub>1 t\<^isub>2)"
 (*"subtree_eq Tip t = (if t = Tip then True else False)"
 "subtree_eq (Node l a r) t = (t=(Node l a r) \<or> subtree_eq l t \<or> subtree_eq r t)"*)
 
-consts root :: "dag \<Rightarrow> ref"
-primrec
-"root Tip = Null"
+primrec root :: "dag \<Rightarrow> ref"
+where
+"root Tip = Null" |
 "root (Node l a r) = a"
 
 fun isLeaf :: "dag \<Rightarrow> bool" where
@@ -82,10 +81,10 @@ regeln dazunehmen.
 *)
 abbreviation "bdt == bdt_fn"
 
-consts eval :: "bdt \<Rightarrow> bool list \<Rightarrow> bool"
-primrec
-"eval Zero env = False"
-"eval One env  = True"
+primrec eval :: "bdt \<Rightarrow> bool list \<Rightarrow> bool"
+where
+"eval Zero env = False" |
+"eval One env  = True" |
 "eval (Bdt_Node l v r) env  = (if (env ! v) then eval r env else eval l env)"
  
 (*A given bdt is ordered if it is a One or Zero or its value is smaller than
@@ -117,10 +116,10 @@ fun ordered:: "dag \<Rightarrow> (ref\<Rightarrow>nat) \<Rightarrow> bool" where
 
 (*Calculates maximal value in a non ordered bdt. Does not test parents of the 
 given bdt*)
-consts max_var :: "bdt \<Rightarrow> nat"
-primrec
-"max_var Zero = 0"
-"max_var One = 1"
+primrec max_var :: "bdt \<Rightarrow> nat"
+where
+"max_var Zero = 0" |
+"max_var One = 1" |
 "max_var (Bdt_Node l v r) = max v (max (max_var l) (max_var r))"
 
 lemma eval_zero: "\<lbrakk>bdt (Node l v r) var = Some x; 
@@ -221,22 +220,23 @@ next
   qed
 qed
 
-consts dag_map :: "(ref \<Rightarrow> ref) \<Rightarrow> dag \<Rightarrow> dag"
-primrec
-"dag_map f Tip = Tip"
+primrec dag_map :: "(ref \<Rightarrow> ref) \<Rightarrow> dag \<Rightarrow> dag"
+where
+"dag_map f Tip = Tip" |
 "dag_map f (Node l a r) = (Node (dag_map f l) (f a) (dag_map f r))"
 
 
-consts wf_marking :: "dag \<Rightarrow> (ref \<Rightarrow> bool) \<Rightarrow> (ref \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> bool"
-defs wf_marking_def: "wf_marking t mark_old mark_new marked ==
-case t of Tip \<Rightarrow> mark_new = mark_old
+definition wf_marking :: "dag \<Rightarrow> (ref \<Rightarrow> bool) \<Rightarrow> (ref \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> bool"
+where
+"wf_marking t mark_old mark_new marked =
+(case t of Tip \<Rightarrow> mark_new = mark_old
 | (Node lt p rt) \<Rightarrow>
   (\<forall> n. n \<notin> set_of t \<longrightarrow> mark_new n = mark_old n) \<and>
-  (\<forall> n. n \<in> set_of t \<longrightarrow> mark_new n = marked)"
+  (\<forall> n. n \<in> set_of t \<longrightarrow> mark_new n = marked))"
 
-consts dag_in_levellist:: "dag \<Rightarrow> (ref list list) \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
-defs dag_in_levellist_def : "dag_in_levellist t levellist var == t \<noteq> Tip \<longrightarrow>
-       (\<forall> st. subdag_eq t st \<longrightarrow> root st \<in> set (levellist ! (var (root st))))"
+definition dag_in_levellist:: "dag \<Rightarrow> (ref list list) \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
+where "dag_in_levellist t levellist var = (t \<noteq> Tip \<longrightarrow>
+       (\<forall> st. subdag_eq t st \<longrightarrow> root st \<in> set (levellist ! (var (root st)))))"
 
 lemma set_of_nn: "\<lbrakk> Dag p low high t; n \<in> set_of t\<rbrakk> \<Longrightarrow> n \<noteq> Null"
 apply (induct t)
@@ -602,13 +602,14 @@ the value which is assumed for a node to be marked.
 (\<exists> nt. Dag n \<^bsup>\<sigma>\<^esup>low \<^bsup>\<sigma>\<^esup>high nt \<and> 
                         {\<^bsup>\<sigma>\<^esup>m} = set_of (dag_map \<^bsup>\<sigma>\<^esup>mark nt))*)
 
-constdefs wf_ll :: "dag \<Rightarrow> ref list list \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
-"wf_ll t levellist var == 
-  (\<forall>p. p \<in> set_of t \<longrightarrow> p \<in> set (levellist ! var p)) \<and>
-  (\<forall>k < length levellist. \<forall>p \<in> set (levellist ! k). p \<in> set_of t \<and> var p = k)"
+definition wf_ll :: "dag \<Rightarrow> ref list list \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
+where
+"wf_ll t levellist var =
+  ((\<forall>p. p \<in> set_of t \<longrightarrow> p \<in> set (levellist ! var p)) \<and>
+   (\<forall>k < length levellist. \<forall>p \<in> set (levellist ! k). p \<in> set_of t \<and> var p = k))"
 
-constdefs cong_eval :: "bdt \<Rightarrow> bdt \<Rightarrow> bool" (infix "\<sim>" 60)
-  "cong_eval bdt\<^isub>1 bdt\<^isub>2 \<equiv> eval bdt\<^isub>1 = eval bdt\<^isub>2"  
+definition cong_eval :: "bdt \<Rightarrow> bdt \<Rightarrow> bool" (infix "\<sim>" 60)
+  where "cong_eval bdt\<^isub>1 bdt\<^isub>2 = (eval bdt\<^isub>1 = eval bdt\<^isub>2)"
 
 lemma cong_eval_sym: "l \<sim> r = r \<sim> l"
   by (auto simp add: cong_eval_def)
@@ -631,8 +632,8 @@ lemma cong_eval_child_low: " l \<sim> r \<Longrightarrow> l \<sim> (Bdt_Node l v
 
 
 
-constdefs null_comp :: "(ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref)" (infix "\<propto>" 60)
-  "null_comp a b == (\<lambda> p. (if (b p) = Null then Null else ((a \<circ> b) p)))"
+definition null_comp :: "(ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref)" (infix "\<propto>" 60)
+  where "null_comp a b = (\<lambda> p. (if (b p) = Null then Null else ((a \<circ> b) p)))"
 
 lemma null_comp_not_Null [simp]: "h q \<noteq> Null \<Longrightarrow> (g \<propto> h) q = g (h q)"
   by (simp add: null_comp_def)
@@ -640,8 +641,8 @@ lemma null_comp_not_Null [simp]: "h q \<noteq> Null \<Longrightarrow> (g \<propt
 lemma id_trans: "(a \<propto> id) (b (c p)) = (a \<propto> b) (c p)"
   by (simp add: null_comp_def)
 
-constdefs Nodes :: "nat \<Rightarrow> ref list list \<Rightarrow> ref set"
-  "Nodes i levellist == \<Union>k\<in>{k. k < i} . set (levellist ! k)"
+definition Nodes :: "nat \<Rightarrow> ref list list \<Rightarrow> ref set"
+  where "Nodes i levellist = (\<Union>k\<in>{k. k < i} . set (levellist ! k))"
 
 
 inductive_set 
@@ -661,19 +662,19 @@ lemma empty_Dags [simp]: "Dags {} low high = {}"
   apply rule
   done
 
-consts isLeaf_pt :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
-defs isLeaf_pt_def : "isLeaf_pt p low high == (low p = Null \<and> high p = Null)"
+definition isLeaf_pt :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
+  where "isLeaf_pt p low high = (low p = Null \<and> high p = Null)"
 
-consts repNodes_eq :: "ref \<Rightarrow> ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
-defs repNodes_eq : 
+definition repNodes_eq :: "ref \<Rightarrow> ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
+where
  "repNodes_eq p q low high rep == 
       (rep \<propto> high) p = (rep \<propto> high) q \<and> (rep \<propto> low) p = (rep \<propto> low) q"
 
-consts isomorphic_dags_eq :: "dag \<Rightarrow> dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
-defs isomorphic_dags_eq_def: 
-"isomorphic_dags_eq st\<^isub>1 st\<^isub>2 var == 
-    \<forall>bdt\<^isub>1 bdt\<^isub>2. (bdt st\<^isub>1 var = Some bdt\<^isub>1 \<and> bdt st\<^isub>2 var = Some bdt\<^isub>2 \<and> (bdt\<^isub>1 = bdt\<^isub>2))
-                 \<longrightarrow> st\<^isub>1 = st\<^isub>2"
+definition isomorphic_dags_eq :: "dag \<Rightarrow> dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
+where
+"isomorphic_dags_eq st\<^isub>1 st\<^isub>2 var =
+    (\<forall>bdt\<^isub>1 bdt\<^isub>2. (bdt st\<^isub>1 var = Some bdt\<^isub>1 \<and> bdt st\<^isub>2 var = Some bdt\<^isub>2 \<and> (bdt\<^isub>1 = bdt\<^isub>2))
+                 \<longrightarrow> st\<^isub>1 = st\<^isub>2)"
 
 lemma isomorphic_dags_eq_sym: "isomorphic_dags_eq st\<^isub>1 st\<^isub>2 var = isomorphic_dags_eq st\<^isub>2 st\<^isub>1  var"
   by (auto simp add: isomorphic_dags_eq_def)
@@ -685,9 +686,8 @@ defs subdags_shared_def : "subdags_shared t1 t2 var == \<forall> st1 st2. (st1 <
 consts shared :: " dag \<Rightarrow> dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
 defs shared_def: "shared t1 t2 var == subdags_shared t1 t1 var \<and> subdags_shared t2 t2 var \<and> subdags_shared t1 t2 var"*)
 
-consts shared :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
-defs shared_def: 
-"shared t var == \<forall>st\<^isub>1 st\<^isub>2. (st\<^isub>1 <= t \<and> st\<^isub>2 <= t) \<longrightarrow> isomorphic_dags_eq st\<^isub>1 st\<^isub>2 var"
+definition shared :: "dag \<Rightarrow> (ref \<Rightarrow> nat) \<Rightarrow> bool"
+  where "shared t var = (\<forall>st\<^isub>1 st\<^isub>2. (st\<^isub>1 <= t \<and> st\<^isub>2 <= t) \<longrightarrow> isomorphic_dags_eq st\<^isub>1 st\<^isub>2 var)"
 
 (* shared returns True if the Dag has no different subdags which represent the same 
 bdts. 
@@ -707,10 +707,10 @@ fun reduced :: "dag \<Rightarrow> bool" where
 | "reduced (Node Tip v Tip) = True"
 | "reduced (Node l v r) = (l \<noteq> r \<and> reduced l \<and> reduced r)"  
 
-consts reduced_bdt :: "bdt \<Rightarrow> bool"
-primrec
-"reduced_bdt Zero = True"
-"reduced_bdt One = True"
+primrec reduced_bdt :: "bdt \<Rightarrow> bool"
+where
+"reduced_bdt Zero = True" |
+"reduced_bdt One = True" |
 "reduced_bdt (Bdt_Node lbdt v rbdt) = (if lbdt = rbdt then False 
                                        else (reduced_bdt lbdt \<and> reduced_bdt rbdt))"
 
@@ -1844,7 +1844,7 @@ done
 lemma repNodes_eq_ext_rep: "\<lbrakk>low no \<noteq> nodeslist! n; high no \<noteq> nodeslist ! n; 
   low sn \<noteq> nodeslist ! n; high sn \<noteq> nodeslist ! n\<rbrakk>
   \<Longrightarrow> repNodes_eq sn no low high repa = repNodes_eq sn no low high (repa(nodeslist ! n := repa (low (nodeslist ! n))))"
-  by (simp add: repNodes_eq null_comp_def)
+  by (simp add: repNodes_eq_def null_comp_def)
 
 
 lemma filter_not_empty: "\<lbrakk>x \<in> set xs; P x\<rbrakk> \<Longrightarrow> filter P xs \<noteq> []"

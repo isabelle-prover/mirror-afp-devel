@@ -698,10 +698,10 @@ corollary steps_eq_exec: "\<Gamma>\<turnstile>([c],[],s) \<rightarrow>\<^sup>* (
 
 subsection {* Infinite Computations: @{text "inf \<Gamma> cs css s"}*}
 
-constdefs inf :: 
+definition inf :: 
  "[('s,'p,'f) body,('s,'p,'f) com list,('s,'p,'f) continuation list,('s,'f) xstate]
   \<Rightarrow> bool"
-"inf \<Gamma> cs css s \<equiv> \<exists>f. f 0 = (cs,css,s) \<and> (\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f(Suc i))"
+where "inf \<Gamma> cs css s = (\<exists>f. f 0 = (cs,css,s) \<and> (\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f(Suc i)))"
 
 lemma not_infI: "\<lbrakk>\<And>f. \<lbrakk>f 0 = (cs,css,s); \<And>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)\<rbrakk> \<Longrightarrow> False\<rbrakk>  
                 \<Longrightarrow> \<not>inf \<Gamma> cs css s"
@@ -2548,16 +2548,17 @@ corollary terminates_impl_no_inf_chain:
   by (rule terminatess_impl_no_inf_chain) (iprover intro: terminatess.intros)
 
 
-constdefs
+definition
  termi_call_steps :: "('s,'p,'f) body \<Rightarrow> (('s \<times> 'p) \<times> ('s \<times> 'p))set"
-"termi_call_steps \<Gamma> \<equiv>
+where
+"termi_call_steps \<Gamma> =
  {((t,q),(s,p)). \<Gamma>\<turnstile>the (\<Gamma> p)\<down>Normal s \<and> 
        (\<exists>css. \<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal s) \<rightarrow>\<^sup>+ ([the (\<Gamma> q)],css,Normal t))}"
 
 text {* Sequencing computations, or more exactly continuation stacks *}
-consts seq:: "(nat \<Rightarrow> 'a list) \<Rightarrow> nat \<Rightarrow> 'a list"
-primrec 
-"seq css 0 = []"
+primrec seq:: "(nat \<Rightarrow> 'a list) \<Rightarrow> nat \<Rightarrow> 'a list"
+where
+"seq css 0 = []" |
 "seq css (Suc i) = css i@seq css i"
 
 

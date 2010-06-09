@@ -161,7 +161,7 @@ proof -
       using [[simp_depth_limit=2]]
       by auto
     with p_not_Null p_Leaf have "repNodes_eq nodeslist p low high rep"
-      by (simp add: repNodes_eq isLeaf_pt_def null_comp_def)
+      by (simp add: repNodes_eq_def isLeaf_pt_def null_comp_def)
     with ns' var_eq
     show ?thesis
       by simp
@@ -187,7 +187,7 @@ next
     with p_in_ns have ex_match: "(\<exists>pt\<in>set prx. repNodes_eq pt p low high rep)"
       apply -
       apply (rule_tac x=p in bexI)
-      apply  (simp add: repNodes_eq)
+      apply  (simp add: repNodes_eq_def)
       apply simp
       done
     hence not_empty: "[sn\<leftarrow>prx . repNodes_eq sn p low high rep] \<noteq> []"

@@ -60,85 +60,99 @@ datatype ('s, 'p, 'f) com =
 
 subsection {* Derived Language Constructs *}
 
-constdefs 
-  raise:: "('s \<Rightarrow> 's) \<Rightarrow> ('s,'p,'f) com"
-  "raise f \<equiv> Seq (Basic f) Throw"
+definition
+  raise:: "('s \<Rightarrow> 's) \<Rightarrow> ('s,'p,'f) com" where
+  "raise f = Seq (Basic f) Throw"
 
-  condCatch:: "('s,'p,'f) com \<Rightarrow> 's bexp \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
-  "condCatch c\<^isub>1 b c\<^isub>2 \<equiv> Catch c\<^isub>1 (Cond b c\<^isub>2 Throw)"
+definition
+  condCatch:: "('s,'p,'f) com \<Rightarrow> 's bexp \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com" where
+  "condCatch c\<^isub>1 b c\<^isub>2 = Catch c\<^isub>1 (Cond b c\<^isub>2 Throw)"
 
-  bind:: "('s \<Rightarrow> 'v) \<Rightarrow> ('v \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> ('s,'p,'f) com"      
-  "bind e c \<equiv> DynCom (\<lambda>s. c (e s))"
+definition
+  bind:: "('s \<Rightarrow> 'v) \<Rightarrow> ('v \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> ('s,'p,'f) com" where
+  "bind e c = DynCom (\<lambda>s. c (e s))"
 
-  bseq:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
-  "bseq \<equiv> Seq"
+definition
+  bseq:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com" where
+  "bseq = Seq"
  
+definition
   block:: "['s\<Rightarrow>'s,('s,'p,'f) com,'s\<Rightarrow>'s\<Rightarrow>'s,'s\<Rightarrow>'s\<Rightarrow>('s,'p,'f) com]\<Rightarrow>('s,'p,'f) com"
-  "block init bdy return c \<equiv>
+where
+  "block init bdy return c =
     DynCom (\<lambda>s. (Seq (Catch (Seq (Basic init) bdy) (Seq (Basic (return s)) Throw)) 
                             (DynCom (\<lambda>t. Seq (Basic (return s)) (c s t))))
                         )" 
 
-  call:: "('s\<Rightarrow>'s) \<Rightarrow> 'p \<Rightarrow> ('s \<Rightarrow> 's \<Rightarrow> 's)\<Rightarrow>('s\<Rightarrow>'s\<Rightarrow>('s,'p,'f) com)\<Rightarrow>('s,'p,'f)com"
-  "call init p return c \<equiv> block init (Call p) return c"
+definition
+  call:: "('s\<Rightarrow>'s) \<Rightarrow> 'p \<Rightarrow> ('s \<Rightarrow> 's \<Rightarrow> 's)\<Rightarrow>('s\<Rightarrow>'s\<Rightarrow>('s,'p,'f) com)\<Rightarrow>('s,'p,'f)com" where
+  "call init p return c = block init (Call p) return c"
 
+definition
   dynCall:: "('s \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 'p) \<Rightarrow> 
-             ('s \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 's \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> ('s,'p,'f) com"
-  "dynCall init p return c \<equiv> DynCom (\<lambda>s. call init (p s) return c)"
+             ('s \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 's \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> ('s,'p,'f) com" where
+  "dynCall init p return c = DynCom (\<lambda>s. call init (p s) return c)"
 
+definition
   fcall:: "('s\<Rightarrow>'s) \<Rightarrow> 'p \<Rightarrow> ('s \<Rightarrow> 's \<Rightarrow> 's)\<Rightarrow>('s \<Rightarrow> 'v) \<Rightarrow> ('v\<Rightarrow>('s,'p,'f) com)
-            \<Rightarrow>('s,'p,'f)com"
-  "fcall init p return result c \<equiv> call init p return (\<lambda>s t. c (result t))"
+            \<Rightarrow>('s,'p,'f)com" where
+  "fcall init p return result c = call init p return (\<lambda>s t. c (result t))"
 
-  lem:: "'x \<Rightarrow> ('s,'p,'f)com \<Rightarrow>('s,'p,'f)com"
-  "lem x c == c"
+definition
+  lem:: "'x \<Rightarrow> ('s,'p,'f)com \<Rightarrow>('s,'p,'f)com" where
+  "lem x c = c"
 
-consts switch:: "('s \<Rightarrow> 'v) \<Rightarrow> ('v set \<times> ('s,'p,'f) com) list \<Rightarrow> ('s,'p,'f) com" 
-primrec
-"switch v [] = Skip"
+primrec switch:: "('s \<Rightarrow> 'v) \<Rightarrow> ('v set \<times> ('s,'p,'f) com) list \<Rightarrow> ('s,'p,'f) com" 
+where
+"switch v [] = Skip" |
 "switch v (Vc#vs) = Cond {s. v s \<in> fst Vc} (snd Vc) (switch v vs)"
 
-constdefs guaranteeStrip:: "'f \<Rightarrow> 's set \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
-"guaranteeStrip f g c \<equiv> Guard f g c"
+definition guaranteeStrip:: "'f \<Rightarrow> 's set \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
+  where "guaranteeStrip f g c = Guard f g c"
 
-constdefs guaranteeStripPair:: "'f \<Rightarrow> 's set \<Rightarrow> ('f \<times> 's set)"
-"guaranteeStripPair f g \<equiv> (f,g)"
+definition guaranteeStripPair:: "'f \<Rightarrow> 's set \<Rightarrow> ('f \<times> 's set)"
+  where "guaranteeStripPair f g = (f,g)"
 
-consts guards:: "('f \<times> 's set ) list \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
-primrec
-"guards [] c = c" 
+primrec guards:: "('f \<times> 's set ) list \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
+where
+"guards [] c = c" |
 "guards (g#gs) c = Guard (fst g) (snd g) (guards gs c)"
 
-constdefs 
+definition
   while::  "('f \<times> 's set) list \<Rightarrow> 's bexp \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s, 'p, 'f) com"
-  "while gs b c \<equiv> guards gs (While b (Seq c (guards gs Skip)))"
+where
+  "while gs b c = guards gs (While b (Seq c (guards gs Skip)))"
 
-constdefs 
+definition
   whileAnno:: 
-  "'s bexp \<Rightarrow> 's assn \<Rightarrow> ('s \<times> 's) assn \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
-  "whileAnno b I V c \<equiv> While b c"
+  "'s bexp \<Rightarrow> 's assn \<Rightarrow> ('s \<times> 's) assn \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com" where
+  "whileAnno b I V c = While b c"
 
+definition
   whileAnnoG:: 
   "('f \<times> 's set) list \<Rightarrow> 's bexp \<Rightarrow> 's assn \<Rightarrow> ('s \<times> 's) assn \<Rightarrow> 
-     ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
-  "whileAnnoG gs b I V c \<equiv> while gs b c"
+     ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com" where
+  "whileAnnoG gs b I V c = while gs b c"
  
+definition
   specAnno::  "('a \<Rightarrow> 's assn) \<Rightarrow> ('a \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> 
                          ('a \<Rightarrow> 's assn) \<Rightarrow> ('a \<Rightarrow> 's assn) \<Rightarrow> ('s,'p,'f) com"
-  "specAnno P c Q A \<equiv> (c undefined)"
+  where "specAnno P c Q A = (c undefined)"
 
+definition
   whileAnnoFix:: 
   "'s bexp \<Rightarrow> ('a \<Rightarrow> 's assn) \<Rightarrow> ('a \<Rightarrow> ('s \<times> 's) assn) \<Rightarrow> ('a \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> 
-     ('s,'p,'f) com"
-  "whileAnnoFix b I V c \<equiv> While b (c undefined)"
+     ('s,'p,'f) com" where
+  "whileAnnoFix b I V c = While b (c undefined)"
 
+definition
   whileAnnoGFix:: 
   "('f \<times> 's set) list \<Rightarrow> 's bexp \<Rightarrow> ('a \<Rightarrow> 's assn) \<Rightarrow> ('a \<Rightarrow> ('s \<times> 's) assn) \<Rightarrow> 
-     ('a \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> ('s,'p,'f) com"
-  "whileAnnoGFix gs b I V c \<equiv> while gs b (c undefined)"
+     ('a \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> ('s,'p,'f) com" where
+  "whileAnnoGFix gs b I V c = while gs b (c undefined)"
 
-constdefs if_rel::"('s \<Rightarrow> bool) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<times> 's) set" 
-"if_rel b f g h \<equiv> {(s,t). if b s then t = f s else t = g s \<or> t = h s}"
+definition if_rel::"('s \<Rightarrow> bool) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<times> 's) set" 
+  where "if_rel b f g h = {(s,t). if b s then t = f s else t = g s \<or> t = h s}"
 
 lemma fst_guaranteeStripPair: "fst (guaranteeStripPair f g) = f"
   by (simp add: guaranteeStripPair_def)
@@ -152,41 +166,41 @@ subsection {* Operations on Simpl-Syntax *}
 
 subsubsection {* Normalisation of Sequential Composition: @{text "sequence"}, @{text "flatten"} and @{text "normalize"} *}
 
-consts flatten:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com list" 
-primrec
-"flatten Skip = [Skip]"
-"flatten (Basic f) = [Basic f]"
-"flatten (Spec r) = [Spec r]"
-"flatten (Seq c\<^isub>1 c\<^isub>2)  = flatten c\<^isub>1 @ flatten c\<^isub>2"
-"flatten (Cond b c\<^isub>1 c\<^isub>2) = [Cond b c\<^isub>1 c\<^isub>2]"
-"flatten (While b c) = [While b c]"
-"flatten (Call p) = [Call p]"
-"flatten (DynCom c) = [DynCom c]"
-"flatten (Guard f g c) = [Guard f g c]"
-"flatten Throw = [Throw]"
+primrec flatten:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com list" 
+where
+"flatten Skip = [Skip]" |
+"flatten (Basic f) = [Basic f]" |
+"flatten (Spec r) = [Spec r]" |
+"flatten (Seq c\<^isub>1 c\<^isub>2)  = flatten c\<^isub>1 @ flatten c\<^isub>2" |
+"flatten (Cond b c\<^isub>1 c\<^isub>2) = [Cond b c\<^isub>1 c\<^isub>2]" |
+"flatten (While b c) = [While b c]" |
+"flatten (Call p) = [Call p]" |
+"flatten (DynCom c) = [DynCom c]" |
+"flatten (Guard f g c) = [Guard f g c]" |
+"flatten Throw = [Throw]" |
 "flatten (Catch c\<^isub>1 c\<^isub>2) = [Catch c\<^isub>1 c\<^isub>2]"
 
-consts sequence:: "(('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> 
+primrec sequence:: "(('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com) \<Rightarrow> 
                       ('s,'p,'f) com list \<Rightarrow> ('s,'p,'f) com"
-primrec
-"sequence seq [] = Skip"
+where
+"sequence seq [] = Skip" |
 "sequence seq (c#cs) = (case cs of [] \<Rightarrow> c
                         | _ \<Rightarrow> seq c (sequence seq cs))" 
 
 
-consts normalize:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com" 
-primrec
-"normalize Skip = Skip"
-"normalize (Basic f) = Basic f"
-"normalize (Spec r) = Spec r"
+primrec normalize:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
+where
+"normalize Skip = Skip" |
+"normalize (Basic f) = Basic f" |
+"normalize (Spec r) = Spec r" |
 "normalize (Seq c\<^isub>1 c\<^isub>2)  = sequence Seq
-                            ((flatten (normalize c\<^isub>1)) @ (flatten (normalize c\<^isub>2)))"
-"normalize (Cond b c\<^isub>1 c\<^isub>2) = Cond b (normalize c\<^isub>1) (normalize c\<^isub>2)"
-"normalize (While b c) = While b (normalize c)"
-"normalize (Call p) = Call p"
-"normalize (DynCom c) = DynCom (\<lambda>s. (normalize (c s)))"
-"normalize (Guard f g c) = Guard f g (normalize c)"
-"normalize Throw = Throw"
+                            ((flatten (normalize c\<^isub>1)) @ (flatten (normalize c\<^isub>2)))" |
+"normalize (Cond b c\<^isub>1 c\<^isub>2) = Cond b (normalize c\<^isub>1) (normalize c\<^isub>2)" |
+"normalize (While b c) = While b (normalize c)" |
+"normalize (Call p) = Call p" |
+"normalize (DynCom c) = DynCom (\<lambda>s. (normalize (c s)))" |
+"normalize (Guard f g c) = Guard f g (normalize c)" |
+"normalize Throw = Throw" |
 "normalize (Catch c\<^isub>1 c\<^isub>2) = Catch (normalize c\<^isub>1) (normalize c\<^isub>2)"
 
 
@@ -441,24 +455,24 @@ lemmas normalize_simps =
 
 subsubsection {* Stripping Guards: @{text "strip_guards"} *}
 
-consts strip_guards:: "'f set \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
-primrec
-"strip_guards F Skip = Skip"
-"strip_guards F (Basic f) = Basic f"
-"strip_guards F (Spec r) = Spec r"
-"strip_guards F (Seq c\<^isub>1 c\<^isub>2)  = (Seq (strip_guards F c\<^isub>1) (strip_guards F c\<^isub>2))"
-"strip_guards F (Cond b c\<^isub>1 c\<^isub>2) = Cond b (strip_guards F c\<^isub>1) (strip_guards F c\<^isub>2)"
-"strip_guards F (While b c) = While b (strip_guards F c)"
-"strip_guards F (Call p) = Call p"
-"strip_guards F (DynCom c) = DynCom (\<lambda>s. (strip_guards F (c s)))"
-"strip_guards F (Guard f g c) = (if f \<in> F then strip_guards F c 
-                                  else Guard f g (strip_guards F c))"
-"strip_guards F Throw = Throw"
+primrec strip_guards:: "'f set \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
+where
+"strip_guards F Skip = Skip" |
+"strip_guards F (Basic f) = Basic f" |
+"strip_guards F (Spec r) = Spec r" |
+"strip_guards F (Seq c\<^isub>1 c\<^isub>2)  = (Seq (strip_guards F c\<^isub>1) (strip_guards F c\<^isub>2))" |
+"strip_guards F (Cond b c\<^isub>1 c\<^isub>2) = Cond b (strip_guards F c\<^isub>1) (strip_guards F c\<^isub>2)" |
+"strip_guards F (While b c) = While b (strip_guards F c)" |
+"strip_guards F (Call p) = Call p" |
+"strip_guards F (DynCom c) = DynCom (\<lambda>s. (strip_guards F (c s)))" |
+"strip_guards F (Guard f g c) = (if f \<in> F then strip_guards F c
+                                  else Guard f g (strip_guards F c))" |
+"strip_guards F Throw = Throw" |
 "strip_guards F (Catch c\<^isub>1 c\<^isub>2) = Catch (strip_guards F c\<^isub>1) (strip_guards F c\<^isub>2)"
 
-constdefs strip:: "'f set \<Rightarrow> 
+definition strip:: "'f set \<Rightarrow> 
                    ('p \<Rightarrow> ('s,'p,'f) com option) \<Rightarrow> ('p \<Rightarrow> ('s,'p,'f) com option)"
- "strip F \<Gamma> \<equiv> (\<lambda>p. Option.map (strip_guards F) (\<Gamma> p))"
+  where "strip F \<Gamma> = (\<lambda>p. Option.map (strip_guards F) (\<Gamma> p))"
 
 
 lemma strip_simp [simp]: "(strip F \<Gamma>) p = Option.map (strip_guards F) (\<Gamma> p)"
@@ -559,18 +573,18 @@ lemmas strip_guards_simps = strip_guards.simps strip_guards_raise
 
 subsubsection {* Marking Guards: @{text "mark_guards"} *}
 
-consts mark_guards:: "'f \<Rightarrow> ('s,'p,'g) com \<Rightarrow> ('s,'p,'f) com"
-primrec
-"mark_guards f Skip = Skip"
-"mark_guards f (Basic g) = Basic g"
-"mark_guards f (Spec r) = Spec r"
-"mark_guards f (Seq c\<^isub>1 c\<^isub>2)  = (Seq (mark_guards f c\<^isub>1) (mark_guards f c\<^isub>2))"
-"mark_guards f (Cond b c\<^isub>1 c\<^isub>2) = Cond b (mark_guards f c\<^isub>1) (mark_guards f c\<^isub>2)"
-"mark_guards f (While b c) = While b (mark_guards f c)"
-"mark_guards f (Call p) = Call p"
-"mark_guards f (DynCom c) = DynCom (\<lambda>s. (mark_guards f (c s)))"
-"mark_guards f (Guard f' g c) = Guard f g (mark_guards f c)"
-"mark_guards f Throw = Throw"
+primrec mark_guards:: "'f \<Rightarrow> ('s,'p,'g) com \<Rightarrow> ('s,'p,'f) com"
+where
+"mark_guards f Skip = Skip" |
+"mark_guards f (Basic g) = Basic g" |
+"mark_guards f (Spec r) = Spec r" |
+"mark_guards f (Seq c\<^isub>1 c\<^isub>2)  = (Seq (mark_guards f c\<^isub>1) (mark_guards f c\<^isub>2))" |
+"mark_guards f (Cond b c\<^isub>1 c\<^isub>2) = Cond b (mark_guards f c\<^isub>1) (mark_guards f c\<^isub>2)" |
+"mark_guards f (While b c) = While b (mark_guards f c)" |
+"mark_guards f (Call p) = Call p" |
+"mark_guards f (DynCom c) = DynCom (\<lambda>s. (mark_guards f (c s)))" |
+"mark_guards f (Guard f' g c) = Guard f g (mark_guards f c)" |
+"mark_guards f Throw = Throw" |
 "mark_guards f (Catch c\<^isub>1 c\<^isub>2) = Catch (mark_guards f c\<^isub>1) (mark_guards f c\<^isub>2)"
 
 lemma mark_guards_raise: "mark_guards f (raise g) = raise g"
@@ -648,8 +662,8 @@ lemmas mark_guards_simps = mark_guards.simps mark_guards_raise
   mark_guards_while mark_guards_whileAnno mark_guards_whileAnnoG
   mark_guards_specAnno
 
-constdefs is_Guard:: "('s,'p,'f) com \<Rightarrow> bool"
-"is_Guard c \<equiv> (case c of Guard f g c' \<Rightarrow> True | _ \<Rightarrow> False)"
+definition is_Guard:: "('s,'p,'f) com \<Rightarrow> bool"
+  where "is_Guard c = (case c of Guard f g c' \<Rightarrow> True | _ \<Rightarrow> False)"
 lemma is_Guard_basic_simps [simp]:
  "is_Guard Skip = False"
  "is_Guard (Basic f) = False"
@@ -682,9 +696,8 @@ lemma is_Guard_switch [simp]:
 
 lemmas is_Guard_simps = is_Guard_basic_simps is_Guard_switch
 
-consts dest_Guard:: "('s,'p,'f) com \<Rightarrow> ('f \<times> 's set \<times> ('s,'p,'f) com)"
-primrec
-"dest_Guard (Guard f g c) = (f,g,c)"
+primrec dest_Guard:: "('s,'p,'f) com \<Rightarrow> ('f \<times> 's set \<times> ('s,'p,'f) com)"
+  where "dest_Guard (Guard f g c) = (f,g,c)"
 
 lemma dest_Guard_guaranteeStrip [simp]: "dest_Guard (guaranteeStrip f g c) = (f,g,c)"
   by (simp add: guaranteeStrip_def)
@@ -693,16 +706,16 @@ lemmas dest_Guard_simps = dest_Guard.simps dest_Guard_guaranteeStrip
 
 subsubsection {* Merging Guards: @{text merge_guards}*}
 
-consts merge_guards:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
-primrec
-"merge_guards Skip = Skip"
-"merge_guards (Basic g) = Basic g"
-"merge_guards (Spec r) = Spec r"
-"merge_guards (Seq c\<^isub>1 c\<^isub>2)  = (Seq (merge_guards c\<^isub>1) (merge_guards c\<^isub>2))"
-"merge_guards (Cond b c\<^isub>1 c\<^isub>2) = Cond b (merge_guards c\<^isub>1) (merge_guards c\<^isub>2)"
-"merge_guards (While b c) = While b (merge_guards c)"
-"merge_guards (Call p) = Call p"
-"merge_guards (DynCom c) = DynCom (\<lambda>s. (merge_guards (c s)))"
+primrec merge_guards:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
+where
+"merge_guards Skip = Skip" |
+"merge_guards (Basic g) = Basic g" |
+"merge_guards (Spec r) = Spec r" |
+"merge_guards (Seq c\<^isub>1 c\<^isub>2)  = (Seq (merge_guards c\<^isub>1) (merge_guards c\<^isub>2))" |
+"merge_guards (Cond b c\<^isub>1 c\<^isub>2) = Cond b (merge_guards c\<^isub>1) (merge_guards c\<^isub>2)" |
+"merge_guards (While b c) = While b (merge_guards c)" |
+"merge_guards (Call p) = Call p" |
+"merge_guards (DynCom c) = DynCom (\<lambda>s. (merge_guards (c s)))" |
 (*"merge_guards (Guard f g c) = 
     (case (merge_guards c) of
       Guard f' g' c' \<Rightarrow> if f=f' then Guard f (g \<inter> g') c' 
@@ -715,8 +728,8 @@ primrec
         then let (f',g',c'') = dest_Guard c' 
              in if f=f' then Guard f (g \<inter> g') c'' 
                         else Guard f g (Guard f' g' c'')
-        else Guard f g c')"
-"merge_guards Throw = Throw"
+        else Guard f g c')" |
+"merge_guards Throw = Throw" |
 "merge_guards (Catch c\<^isub>1 c\<^isub>2) = Catch (merge_guards c\<^isub>1) (merge_guards c\<^isub>2)"
 
 lemma merge_guards_res_Skip: "merge_guards c = Skip \<Longrightarrow> c = Skip"
@@ -833,37 +846,35 @@ lemmas merge_guards_simps = merge_guards.simps merge_guards_raise
   merge_guards_dynCall merge_guards_fcall merge_guards_switch 
   merge_guards_guaranteeStrip merge_guards_whileAnno merge_guards_specAnno
 
-consts noguards:: "('s,'p,'f) com \<Rightarrow> bool"
-
-primrec
-"noguards Skip = True"
-"noguards (Basic f) = True"
-"noguards (Spec r ) = True"
-"noguards (Seq c\<^isub>1 c\<^isub>2)  = (noguards c\<^isub>1 \<and> noguards c\<^isub>2)"
-"noguards (Cond b c\<^isub>1 c\<^isub>2) = (noguards c\<^isub>1 \<and> noguards c\<^isub>2)"
-"noguards (While b c) = (noguards c)"
-"noguards (Call p) = True"
-"noguards (DynCom c) = (\<forall>s. noguards (c s))"
-"noguards (Guard f g c) = False"
-"noguards Throw = True"
+primrec noguards:: "('s,'p,'f) com \<Rightarrow> bool"
+where
+"noguards Skip = True" |
+"noguards (Basic f) = True" |
+"noguards (Spec r ) = True" |
+"noguards (Seq c\<^isub>1 c\<^isub>2)  = (noguards c\<^isub>1 \<and> noguards c\<^isub>2)" |
+"noguards (Cond b c\<^isub>1 c\<^isub>2) = (noguards c\<^isub>1 \<and> noguards c\<^isub>2)" |
+"noguards (While b c) = (noguards c)" |
+"noguards (Call p) = True" |
+"noguards (DynCom c) = (\<forall>s. noguards (c s))" |
+"noguards (Guard f g c) = False" |
+"noguards Throw = True" |
 "noguards (Catch c\<^isub>1 c\<^isub>2) = (noguards c\<^isub>1 \<and> noguards c\<^isub>2)"
 
 lemma noguards_strip_guards: "noguards (strip_guards UNIV c)"
   by (induct c) auto
 
-consts nothrows:: "('s,'p,'f) com \<Rightarrow> bool"
-
-primrec
-"nothrows Skip = True"
-"nothrows (Basic f) = True"
-"nothrows (Spec r) = True"
-"nothrows (Seq c\<^isub>1 c\<^isub>2)  = (nothrows c\<^isub>1 \<and> nothrows c\<^isub>2)"
-"nothrows (Cond b c\<^isub>1 c\<^isub>2) = (nothrows c\<^isub>1 \<and> nothrows c\<^isub>2)"
-"nothrows (While b c) = nothrows c"
-"nothrows (Call p) = True"
-"nothrows (DynCom c) = (\<forall>s. nothrows (c s))"
-"nothrows (Guard f g c) = nothrows c"
-"nothrows Throw = False"
+primrec nothrows:: "('s,'p,'f) com \<Rightarrow> bool"
+where
+"nothrows Skip = True" |
+"nothrows (Basic f) = True" |
+"nothrows (Spec r) = True" |
+"nothrows (Seq c\<^isub>1 c\<^isub>2)  = (nothrows c\<^isub>1 \<and> nothrows c\<^isub>2)" |
+"nothrows (Cond b c\<^isub>1 c\<^isub>2) = (nothrows c\<^isub>1 \<and> nothrows c\<^isub>2)" |
+"nothrows (While b c) = nothrows c" |
+"nothrows (Call p) = True" |
+"nothrows (DynCom c) = (\<forall>s. nothrows (c s))" |
+"nothrows (Guard f g c) = nothrows c" |
+"nothrows Throw = False" |
 "nothrows (Catch c\<^isub>1 c\<^isub>2) = (nothrows c\<^isub>1 \<and> nothrows c\<^isub>2)"
 
 subsubsection {* Intersecting Guards: @{text "c\<^isub>1 \<inter>\<^sub>g c\<^isub>2"}*}

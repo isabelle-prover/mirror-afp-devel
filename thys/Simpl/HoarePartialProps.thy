@@ -1195,31 +1195,31 @@ apply  iprover
 apply auto
 done
 
-consts procs:: "('s,'p,'f) com \<Rightarrow> 'p set"
-primrec
-"procs Skip = {}"
-"procs (Basic f) = {}"
-"procs (Seq c\<^isub>1 c\<^isub>2)  = (procs c\<^isub>1 \<union> procs c\<^isub>2)"
-"procs (Cond b c\<^isub>1 c\<^isub>2) = (procs c\<^isub>1 \<union> procs c\<^isub>2)"
-"procs (While b c) = procs c"
-"procs (Call p) = {p}"
-"procs (DynCom c) = (\<Union>s. procs (c s))"
-"procs (Guard f g c) = procs c"
-"procs Throw = {}"
+primrec procs:: "('s,'p,'f) com \<Rightarrow> 'p set"
+where
+"procs Skip = {}" |
+"procs (Basic f) = {}" |
+"procs (Seq c\<^isub>1 c\<^isub>2)  = (procs c\<^isub>1 \<union> procs c\<^isub>2)" |
+"procs (Cond b c\<^isub>1 c\<^isub>2) = (procs c\<^isub>1 \<union> procs c\<^isub>2)" |
+"procs (While b c) = procs c" |
+"procs (Call p) = {p}" |
+"procs (DynCom c) = (\<Union>s. procs (c s))" |
+"procs (Guard f g c) = procs c" |
+"procs Throw = {}" |
 "procs (Catch c\<^isub>1 c\<^isub>2) = (procs c\<^isub>1 \<union> procs c\<^isub>2)"
 
-consts noSpec:: "('s,'p,'f) com \<Rightarrow> bool"
-primrec
-"noSpec Skip = True"
-"noSpec (Basic f) = True"
-"noSpec (Spec r) = False"
-"noSpec (Seq c\<^isub>1 c\<^isub>2)  = (noSpec c\<^isub>1 \<and> noSpec c\<^isub>2)"
-"noSpec (Cond b c\<^isub>1 c\<^isub>2) = (noSpec c\<^isub>1 \<and> noSpec c\<^isub>2)"
-"noSpec (While b c) = noSpec c"
-"noSpec (Call p) = True"
-"noSpec (DynCom c) = (\<forall>s. noSpec (c s))"
-"noSpec (Guard f g c) = noSpec c"
-"noSpec Throw = True"
+primrec noSpec:: "('s,'p,'f) com \<Rightarrow> bool"
+where
+"noSpec Skip = True" |
+"noSpec (Basic f) = True" |
+"noSpec (Spec r) = False" |
+"noSpec (Seq c\<^isub>1 c\<^isub>2)  = (noSpec c\<^isub>1 \<and> noSpec c\<^isub>2)" |
+"noSpec (Cond b c\<^isub>1 c\<^isub>2) = (noSpec c\<^isub>1 \<and> noSpec c\<^isub>2)" |
+"noSpec (While b c) = noSpec c" |
+"noSpec (Call p) = True" |
+"noSpec (DynCom c) = (\<forall>s. noSpec (c s))" |
+"noSpec (Guard f g c) = noSpec c" |
+"noSpec Throw = True" |
 "noSpec (Catch c\<^isub>1 c\<^isub>2) = (noSpec c\<^isub>1 \<and> noSpec c\<^isub>2)"
 
 lemma exec_noSpec_no_Stuck:

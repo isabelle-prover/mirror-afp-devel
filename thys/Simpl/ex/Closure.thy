@@ -33,11 +33,12 @@ imports "../Hoare"
 begin
 
 
-constdefs
-"callClosure upd cl \<equiv> Seq (Basic (upd (fst cl))) (Call (snd cl))"
+definition
+"callClosure upd cl = Seq (Basic (upd (fst cl))) (Call (snd cl))"
 
 
-"dynCallClosure init upd cl return c \<equiv>
+definition
+"dynCallClosure init upd cl return c =
   DynCom (\<lambda>s. call (upd (fst (cl s)) \<circ> init) (snd (cl s)) return c)"
 
 
@@ -304,8 +305,8 @@ lemma app_closure_spec:
 
 text {* Implementation of closures as association lists. *}
 
-constdefs "gen_upd var es s \<equiv> foldl (\<lambda>s (x,i). the (var x) i s) s es"
-          "ap es c \<equiv> (es@fst c,snd c)"
+definition "gen_upd var es s = foldl (\<lambda>s (x,i). the (var x) i s) s es"
+definition "ap es c \<equiv> (es@fst c,snd c)"
 
 lemma gen_upd_app: "\<And>es'. gen_upd var (es@es') = gen_upd var es' \<circ> gen_upd var es"
   apply (induct es)

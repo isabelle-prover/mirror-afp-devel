@@ -96,8 +96,8 @@ procedures
 
 
 
-constdefs mx:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
-"mx leq a b \<equiv> if leq a b then a else b"
+definition mx:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
+  where "mx leq a b = (if leq a b then a else b)"
 
 ML "Toplevel.debug := false"
 procedures (imports compare_signature)

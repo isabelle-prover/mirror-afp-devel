@@ -465,9 +465,9 @@ text {* We want to define a procedure for the factorial. We first
 define a HOL function that calculates it, to specify the procedure later on.
 *}
 
-consts fac:: "nat \<Rightarrow> nat"
-primrec
-"fac 0 = 1"
+primrec fac:: "nat \<Rightarrow> nat"
+where
+"fac 0 = 1" |
 "fac (Suc n) = (Suc n) * fac n"
 
 (*<*)
@@ -991,9 +991,9 @@ text {* We look at some issues regarding the modifies clause with the example
 of insertion sort for heap lists.
 *}
 
-consts sorted:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list  \<Rightarrow> bool"
-primrec 
-"sorted le [] = True"
+primrec sorted:: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list  \<Rightarrow> bool"
+where
+"sorted le [] = True" |
 "sorted le (x#xs) = ((\<forall>y\<in>set xs. le x y) \<and> sorted le xs)"
 
 procedures (imports globals_heap)

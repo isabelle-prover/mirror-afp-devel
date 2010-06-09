@@ -42,35 +42,33 @@ subsection {* Changing the State-Space *}
 
 (* Lift a command on statespace 'b to work on statespace 'a *)
  
-consts lift\<^isub>c:: "('S \<Rightarrow> 's) \<Rightarrow> ('S \<Rightarrow> 's \<Rightarrow> 'S) \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('S,'p,'f) com"
- 
+definition lift\<^isub>f:: "('S \<Rightarrow> 's) \<Rightarrow> ('S \<Rightarrow> 's \<Rightarrow> 'S) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('S \<Rightarrow> 'S)"
+  where "lift\<^isub>f prj inject f = (\<lambda>S. inject S (f (prj S)))"
 
+definition lift\<^isub>s:: "('S \<Rightarrow> 's) \<Rightarrow> 's set \<Rightarrow> 'S set"
+  where "lift\<^isub>s prj A = {S. prj S \<in> A}"
 
-constdefs lift\<^isub>f:: "('S \<Rightarrow> 's) \<Rightarrow> ('S \<Rightarrow> 's \<Rightarrow> 'S) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('S \<Rightarrow> 'S)"
-"lift\<^isub>f prj inject f \<equiv> \<lambda>S. inject S (f (prj S))"  
-
-constdefs lift\<^isub>s:: "('S \<Rightarrow> 's) \<Rightarrow> 's set \<Rightarrow> 'S set"
-"lift\<^isub>s prj A \<equiv> {S. prj S \<in> A}"
-
-constdefs lift\<^isub>r:: "('S \<Rightarrow> 's) \<Rightarrow> ('S \<Rightarrow> 's \<Rightarrow> 'S) \<Rightarrow> ('s \<times> 's) set 
+definition lift\<^isub>r:: "('S \<Rightarrow> 's) \<Rightarrow> ('S \<Rightarrow> 's \<Rightarrow> 'S) \<Rightarrow> ('s \<times> 's) set 
                        \<Rightarrow> ('S \<times> 'S) set"
-"lift\<^isub>r prj inject R \<equiv> {(S,T). (prj S,prj T) \<in> R \<and> T=inject S (prj T)}"
+where
+"lift\<^isub>r prj inject R = {(S,T). (prj S,prj T) \<in> R \<and> T=inject S (prj T)}"
 
 
-primrec
-"lift\<^isub>c prj inject Skip = Skip"
-"lift\<^isub>c prj inject (Basic f) = Basic (lift\<^isub>f prj inject f)"
-"lift\<^isub>c prj inject (Spec r) = Spec (lift\<^isub>r prj inject r)"
+primrec lift\<^isub>c:: "('S \<Rightarrow> 's) \<Rightarrow> ('S \<Rightarrow> 's \<Rightarrow> 'S) \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('S,'p,'f) com"
+where
+"lift\<^isub>c prj inject Skip = Skip" |
+"lift\<^isub>c prj inject (Basic f) = Basic (lift\<^isub>f prj inject f)" |
+"lift\<^isub>c prj inject (Spec r) = Spec (lift\<^isub>r prj inject r)" |
 "lift\<^isub>c prj inject (Seq c\<^isub>1 c\<^isub>2)  = 
-  (Seq (lift\<^isub>c prj inject c\<^isub>1) (lift\<^isub>c prj inject c\<^isub>2))"
+  (Seq (lift\<^isub>c prj inject c\<^isub>1) (lift\<^isub>c prj inject c\<^isub>2))" |
 "lift\<^isub>c prj inject (Cond b c\<^isub>1 c\<^isub>2) = 
-  Cond (lift\<^isub>s prj b) (lift\<^isub>c prj inject c\<^isub>1) (lift\<^isub>c prj inject c\<^isub>2)"
+  Cond (lift\<^isub>s prj b) (lift\<^isub>c prj inject c\<^isub>1) (lift\<^isub>c prj inject c\<^isub>2)" |
 "lift\<^isub>c prj inject (While b c) = 
-  While (lift\<^isub>s prj b) (lift\<^isub>c prj inject c)"
-"lift\<^isub>c prj inject (Call p) = Call p"
-"lift\<^isub>c prj inject (DynCom c) = DynCom (\<lambda>s. lift\<^isub>c prj inject (c (prj s)))"
-"lift\<^isub>c prj inject (Guard f g c) = Guard f (lift\<^isub>s prj g) (lift\<^isub>c prj inject c)"
-"lift\<^isub>c prj inject Throw = Throw"
+  While (lift\<^isub>s prj b) (lift\<^isub>c prj inject c)" |
+"lift\<^isub>c prj inject (Call p) = Call p" |
+"lift\<^isub>c prj inject (DynCom c) = DynCom (\<lambda>s. lift\<^isub>c prj inject (c (prj s)))" |
+"lift\<^isub>c prj inject (Guard f g c) = Guard f (lift\<^isub>s prj g) (lift\<^isub>c prj inject c)" |
+"lift\<^isub>c prj inject Throw = Throw" |
 "lift\<^isub>c prj inject (Catch c\<^isub>1 c\<^isub>2) = 
   Catch (lift\<^isub>c prj inject c\<^isub>1) (lift\<^isub>c prj inject c\<^isub>2)"
 
@@ -132,8 +130,9 @@ lemma lift\<^isub>c_Catch:
 
 
 
-constdefs xstate_map:: "('S \<Rightarrow> 's) \<Rightarrow> ('S,'f) xstate \<Rightarrow> ('s,'f) xstate"
-"xstate_map g x \<equiv> (case x of
+definition xstate_map:: "('S \<Rightarrow> 's) \<Rightarrow> ('S,'f) xstate \<Rightarrow> ('s,'f) xstate"
+where
+"xstate_map g x = (case x of
                       Normal s \<Rightarrow> Normal (g s)
                     | Abrupt s \<Rightarrow> Abrupt (g s)
                     | Fault f \<Rightarrow> Fault f
@@ -165,8 +164,9 @@ lemma xstate_map_Stuck_conv:
 lemmas xstate_map_convs = xstate_map_Normal_conv xstate_map_Abrupt_conv
  xstate_map_Fault_conv xstate_map_Stuck_conv
 
-constdefs state:: "('s,'f) xstate \<Rightarrow> 's"
-"state x \<equiv> (case x of
+definition state:: "('s,'f) xstate \<Rightarrow> 's"
+where
+"state x = (case x of
                Normal s \<Rightarrow> s
              | Abrupt s \<Rightarrow> s
              | Fault g \<Rightarrow> undefined
@@ -927,18 +927,18 @@ done
 
 subsection {* Renaming Procedures *}
 
-consts rename:: "('p \<Rightarrow> 'q) \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'q,'f) com"
-primrec
-"rename N Skip = Skip"
-"rename N (Basic f) = Basic f"
-"rename N (Spec r) = Spec r"
-"rename N (Seq c\<^isub>1 c\<^isub>2)  = (Seq (rename N c\<^isub>1) (rename N c\<^isub>2))"
-"rename N (Cond b c\<^isub>1 c\<^isub>2) = Cond b (rename N c\<^isub>1) (rename N c\<^isub>2)"
-"rename N (While b c) = While b (rename N c)"
-"rename N (Call p) = Call (N p)"
-"rename N (DynCom c) = DynCom (\<lambda>s. rename N (c s))"
-"rename N (Guard f g c) = Guard f g (rename N c)"
-"rename N Throw = Throw"
+primrec rename:: "('p \<Rightarrow> 'q) \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'q,'f) com"
+where
+"rename N Skip = Skip" |
+"rename N (Basic f) = Basic f" |
+"rename N (Spec r) = Spec r" |
+"rename N (Seq c\<^isub>1 c\<^isub>2)  = (Seq (rename N c\<^isub>1) (rename N c\<^isub>2))" |
+"rename N (Cond b c\<^isub>1 c\<^isub>2) = Cond b (rename N c\<^isub>1) (rename N c\<^isub>2)" |
+"rename N (While b c) = While b (rename N c)" |
+"rename N (Call p) = Call (N p)" |
+"rename N (DynCom c) = DynCom (\<lambda>s. rename N (c s))" |
+"rename N (Guard f g c) = Guard f g (rename N c)" |
+"rename N Throw = Throw" |
 "rename N (Catch c\<^isub>1 c\<^isub>2) = Catch (rename N c\<^isub>1) (rename N c\<^isub>2)"
 
 lemma rename_Skip: "rename h c = Skip = (c=Skip)"
