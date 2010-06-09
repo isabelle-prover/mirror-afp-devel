@@ -1044,23 +1044,22 @@ text {* @{text "containsCall"} guarantees that a call to procedure p is in
 declare conj_cong[fundef_cong]
 
 function containsCall :: 
-  "procs \<Rightarrow> cmd \<Rightarrow> pname list \<Rightarrow> pname \<Rightarrow> expr list \<Rightarrow> vname list \<Rightarrow> bool"
-where "containsCall procs Skip ps p es rets \<longleftrightarrow> False"
-  | "containsCall procs (V:=e) ps p es rets \<longleftrightarrow> False"
-  | "containsCall procs (c\<^isub>1;;c\<^isub>2) ps p es rets \<longleftrightarrow> 
-       containsCall procs c\<^isub>1 ps p es rets \<or> containsCall procs c\<^isub>2 ps p es rets"
-  | "containsCall procs (if (b) c\<^isub>1 else c\<^isub>2) ps p es rets \<longleftrightarrow> 
-       containsCall procs c\<^isub>1 ps p es rets \<or> containsCall procs c\<^isub>2 ps p es rets"
-  | "containsCall procs (while (b) c) ps p es rets \<longleftrightarrow> 
-       containsCall procs c ps p es rets"
-  | "containsCall procs (Call q es' rets') ps p es rets \<longleftrightarrow> 
-        p = q \<and> es = es' \<and> rets = rets' \<and> ps = [] \<or> 
+  "procs \<Rightarrow> cmd \<Rightarrow> pname list \<Rightarrow> pname \<Rightarrow> bool"
+where "containsCall procs Skip ps p \<longleftrightarrow> False"
+  | "containsCall procs (V:=e) ps p \<longleftrightarrow> False"
+  | "containsCall procs (c\<^isub>1;;c\<^isub>2) ps p \<longleftrightarrow> 
+       containsCall procs c\<^isub>1 ps p \<or> containsCall procs c\<^isub>2 ps p"
+  | "containsCall procs (if (b) c\<^isub>1 else c\<^isub>2) ps p \<longleftrightarrow> 
+       containsCall procs c\<^isub>1 ps p \<or> containsCall procs c\<^isub>2 ps p"
+  | "containsCall procs (while (b) c) ps p \<longleftrightarrow> 
+       containsCall procs c ps p"
+  | "containsCall procs (Call q es' rets') ps p \<longleftrightarrow> p = q \<and> ps = [] \<or> 
        (\<exists>ins outs c ps'. ps = q#ps' \<and> (q,ins,outs,c) \<in> set procs \<and>
-                     containsCall procs c ps' p es rets)"
+                     containsCall procs c ps' p)"
 by pat_completeness auto
 termination containsCall
-by(relation "measures [\<lambda>(procs,c,ps,p,es,rets). length ps, 
-  \<lambda>(procs,c,ps,p,es,rets). size c]") auto
+by(relation "measures [\<lambda>(procs,c,ps,p). length ps, 
+  \<lambda>(procs,c,ps,p). size c]") auto
 
 
 lemmas containsCall_induct[case_names Skip LAss Seq Cond While Call] = 
@@ -1068,55 +1067,53 @@ lemmas containsCall_induct[case_names Skip LAss Seq Cond While Call] =
 
 
 lemma containsCallcases: 
-  "containsCall procs prog ps p es rets
-  \<Longrightarrow> ps = [] \<and> containsCall procs prog ps p es rets \<or> 
-  (\<exists>q ins outs c es' rets' ps'. ps = ps'@[q] \<and> (q,ins,outs,c) \<in> set procs \<and>
-  containsCall procs c [] p es rets \<and> 
-  containsCall procs prog ps' q es' rets')"
-proof(induct procs prog ps p es rets rule:containsCall_induct)
-  case (Call procs q es' rets' ps p es rets)
+  "containsCall procs prog ps p
+  \<Longrightarrow> ps = [] \<and> containsCall procs prog ps p \<or> 
+  (\<exists>q ins outs c ps'. ps = ps'@[q] \<and> (q,ins,outs,c) \<in> set procs \<and>
+  containsCall procs c [] p \<and> containsCall procs prog ps' q)"
+proof(induct procs prog ps p rule:containsCall_induct)
+  case (Call procs q es' rets' ps p)
   note IH = `\<And>x y z ps'. \<lbrakk>ps = q#ps'; (q,x,y,z) \<in> set procs;
-    containsCall procs z ps' p es rets\<rbrakk>
-    \<Longrightarrow> ps' = [] \<and> containsCall procs z ps' p es rets \<or> 
-    (\<exists>qx ins outs c esx retsx psx. ps' = psx@[qx] \<and> (qx,ins,outs,c) \<in> set procs \<and>
-    containsCall procs c [] p es rets \<and> 
-    containsCall procs z psx qx esx retsx)`
-  from `containsCall procs (Call q es' rets') ps p es rets`
-  have "p = q \<and> es = es' \<and> rets = rets' \<and> ps = [] \<or> 
+    containsCall procs z ps' p\<rbrakk>
+    \<Longrightarrow> ps' = [] \<and> containsCall procs z ps' p \<or> 
+    (\<exists>qx ins outs c psx. ps' = psx@[qx] \<and> (qx,ins,outs,c) \<in> set procs \<and>
+    containsCall procs c [] p \<and> 
+    containsCall procs z psx qx)`
+  from `containsCall procs (Call q es' rets') ps p`
+  have "p = q \<and> ps = [] \<or> 
     (\<exists>ins outs c ps'. ps = q#ps' \<and> (q,ins,outs,c) \<in> set procs \<and>
-                  containsCall procs c ps' p es rets)" by simp
+                  containsCall procs c ps' p)" by simp
   thus ?case
   proof
-    assume assms:"p = q \<and> es = es' \<and> rets = rets' \<and> ps = []"
-    hence "containsCall procs (Call q es' rets') ps p es rets" by simp
+    assume assms:"p = q \<and> ps = []"
+    hence "containsCall procs (Call q es' rets') ps p" by simp
     with assms show ?thesis by simp
   next
     assume "\<exists>ins outs c ps'. ps = q#ps' \<and> (q,ins,outs,c) \<in> set procs \<and>
-      containsCall procs c ps' p es rets"
+      containsCall procs c ps' p"
     then obtain ins outs c ps' where "ps = q#ps'" and "(q,ins,outs,c) \<in> set procs"
-      and "containsCall procs c ps' p es rets" by blast
-    from IH[OF this] have "ps' = [] \<and> containsCall procs c ps' p es rets \<or>
-      (\<exists>qx insx outsx cx esx retsx psx. 
+      and "containsCall procs c ps' p" by blast
+    from IH[OF this] have "ps' = [] \<and> containsCall procs c ps' p \<or>
+      (\<exists>qx insx outsx cx psx. 
          ps' = psx @ [qx] \<and> (qx,insx,outsx,cx) \<in> set procs \<and>
-         containsCall procs cx [] p es rets \<and> 
-         containsCall procs c psx qx esx retsx)" .
+         containsCall procs cx [] p \<and> containsCall procs c psx qx)" .
     thus ?thesis
     proof
-      assume assms:"ps' = [] \<and> containsCall procs c ps' p es rets"
-      have "containsCall procs (Call q es' rets') [] q es' rets'" by simp
+      assume assms:"ps' = [] \<and> containsCall procs c ps' p"
+      have "containsCall procs (Call q es' rets') [] q" by simp
       with assms `ps = q#ps'` `(q,ins,outs,c) \<in> set procs` show ?thesis by fastsimp
     next
-      assume "\<exists>qx insx outsx cx esx retsx psx. 
+      assume "\<exists>qx insx outsx cx psx. 
         ps' = psx@[qx] \<and> (qx,insx,outsx,cx) \<in> set procs \<and>
-        containsCall procs cx [] p es rets \<and> containsCall procs c psx qx esx retsx"
-      then obtain qx insx outsx cx esx retsx psx
+        containsCall procs cx [] p \<and> containsCall procs c psx qx"
+      then obtain qx insx outsx cx psx
 	where "ps' = psx@[qx]" and "(qx,insx,outsx,cx) \<in> set procs"
-	and "containsCall procs cx [] p es rets"
-	and "containsCall procs c psx qx esx retsx" by blast
-      from `(q,ins,outs,c) \<in> set procs` `containsCall procs c psx qx esx retsx`
-      have "containsCall procs (Call q es' rets') (q#psx) qx esx retsx" by fastsimp
+	and "containsCall procs cx [] p"
+	and "containsCall procs c psx qx" by blast
+      from `(q,ins,outs,c) \<in> set procs` `containsCall procs c psx qx`
+      have "containsCall procs (Call q es' rets') (q#psx) qx" by fastsimp
       with `ps' = psx@[qx]` `ps = q#ps'` `(qx,insx,outsx,cx) \<in> set procs`
-	`containsCall procs cx [] p es rets` show ?thesis by fastsimp
+	`containsCall procs cx [] p` show ?thesis by fastsimp
     qed
   qed
 qed auto
@@ -1124,42 +1121,42 @@ qed auto
 
 
 lemma containsCallE:
-  "\<lbrakk>containsCall procs prog ps p es rets; 
-    \<lbrakk>ps = []; containsCall procs prog ps p es rets\<rbrakk> \<Longrightarrow> P procs prog ps p es rets;
+  "\<lbrakk>containsCall procs prog ps p; 
+    \<lbrakk>ps = []; containsCall procs prog ps p\<rbrakk> \<Longrightarrow> P procs prog ps p;
     \<And>q ins outs c es' rets' ps'. \<lbrakk>ps = ps'@[q]; (q,ins,outs,c) \<in> set procs; 
-      containsCall procs c [] p es rets; containsCall procs prog ps' q es' rets'\<rbrakk> 
-     \<Longrightarrow> P procs prog ps p es rets\<rbrakk> \<Longrightarrow> P procs prog ps p es rets"
+      containsCall procs c [] p; containsCall procs prog ps' q\<rbrakk> 
+     \<Longrightarrow> P procs prog ps p\<rbrakk> \<Longrightarrow> P procs prog ps p"
   by(auto dest:containsCallcases)
 
 
 lemma containsCall_in_proc: 
-  "\<lbrakk>containsCall procs prog qs q es' rets'; (q,ins,outs,c) \<in> set procs; 
-  containsCall procs c [] p es rets\<rbrakk>
-  \<Longrightarrow> containsCall procs prog (qs@[q]) p es rets"
-proof(induct procs prog qs q es' rets' rule:containsCall_induct)
-  case (Call procs qx esx retsx ps p' es' rets')
+  "\<lbrakk>containsCall procs prog qs q; (q,ins,outs,c) \<in> set procs; 
+  containsCall procs c [] p\<rbrakk>
+  \<Longrightarrow> containsCall procs prog (qs@[q]) p"
+proof(induct procs prog qs q rule:containsCall_induct)
+  case (Call procs qx esx retsx ps p')
   note IH = `\<And>x y z psx. \<lbrakk>ps = qx#psx; (qx,x,y,z) \<in> set procs;
-    containsCall procs z psx p' es' rets'; (p',ins,outs,c) \<in> set procs; 
-    containsCall procs c [] p es rets\<rbrakk> \<Longrightarrow> containsCall procs z (psx@[p']) p es rets`
-  from `containsCall procs (Call qx esx retsx) ps p' es' rets'`
-  have "p' = qx \<and> es' = esx \<and> rets' = retsx \<and> ps = [] \<or>
+    containsCall procs z psx p'; (p',ins,outs,c) \<in> set procs; 
+    containsCall procs c [] p\<rbrakk> \<Longrightarrow> containsCall procs z (psx@[p']) p`
+  from `containsCall procs (Call qx esx retsx) ps p'`
+  have "p' = qx \<and> ps = [] \<or>
     (\<exists>insx outsx cx psx. ps = qx#psx \<and> (qx,insx,outsx,cx) \<in> set procs \<and>
-    containsCall procs cx psx p' es' rets')" by simp
+    containsCall procs cx psx p')" by simp
   thus ?case
   proof
-    assume assms:"p' = qx \<and> es' = esx \<and> rets' = retsx \<and> ps = []"
-    with `(p', ins, outs, c) \<in> set procs` `containsCall procs c [] p es rets`
-    have "containsCall procs (Call qx esx retsx) [p'] p es rets" by fastsimp
+    assume assms:"p' = qx \<and> ps = []"
+    with `(p', ins, outs, c) \<in> set procs` `containsCall procs c [] p`
+    have "containsCall procs (Call qx esx retsx) [p'] p" by fastsimp
     with assms show ?thesis by simp
   next
     assume "\<exists>insx outsx cx psx. ps = qx#psx \<and> (qx,insx,outsx,cx) \<in> set procs \<and>
-      containsCall procs cx psx p' es' rets'"
+      containsCall procs cx psx p'"
     then obtain insx outsx cx psx where "ps = qx#psx" 
       and "(qx,insx,outsx,cx) \<in> set procs"
-      and "containsCall procs cx psx p' es' rets'" by blast
+      and "containsCall procs cx psx p'" by blast
     from IH[OF this `(p', ins, outs, c) \<in> set procs` 
-      `containsCall procs c [] p es rets`] 
-    have "containsCall procs cx (psx @ [p']) p es rets" .
+      `containsCall procs c [] p`] 
+    have "containsCall procs cx (psx @ [p']) p" .
     with `ps = qx#psx` `(qx,insx,outsx,cx) \<in> set procs`
     show ?thesis by fastsimp
   qed
@@ -1167,33 +1164,33 @@ qed auto
     
 
 lemma containsCall_indirection:
-  "\<lbrakk>containsCall procs prog qs q es' rets'; containsCall procs c ps p es rets;
+  "\<lbrakk>containsCall procs prog qs q; containsCall procs c ps p;
   (q,ins,outs,c) \<in> set procs\<rbrakk>
-  \<Longrightarrow> containsCall procs prog (qs@q#ps) p es rets"
-proof(induct procs prog qs q es' rets' rule:containsCall_induct)
-  case (Call procs px esx retsx ps' p' es' rets')
+  \<Longrightarrow> containsCall procs prog (qs@q#ps) p"
+proof(induct procs prog qs q rule:containsCall_induct)
+  case (Call procs px esx retsx ps' p')
   note IH = `\<And>x y z psx. \<lbrakk>ps' = px # psx; (px, x, y, z) \<in> set procs;
-    containsCall procs z psx p' es' rets'; containsCall procs c ps p es rets;
+    containsCall procs z psx p'; containsCall procs c ps p;
     (p', ins, outs, c) \<in> set procs\<rbrakk>
-    \<Longrightarrow> containsCall procs z (psx @ p' # ps) p es rets`
-  from `containsCall procs (Call px esx retsx) ps' p' es' rets'`
-  have "p' = px \<and> es' = esx \<and> rets' = retsx \<and> ps' = [] \<or>
+    \<Longrightarrow> containsCall procs z (psx @ p' # ps) p`
+  from `containsCall procs (Call px esx retsx) ps' p'`
+  have "p' = px \<and> ps' = [] \<or>
     (\<exists>insx outsx cx psx. ps' = px#psx \<and> (px,insx,outsx,cx) \<in> set procs \<and>
-    containsCall procs cx psx p' es' rets')" by simp
+    containsCall procs cx psx p')" by simp
   thus ?case
   proof
-    assume "p' = px \<and> es' = esx \<and> rets' = retsx \<and> ps' = []"
-    with `containsCall procs c ps p es rets` `(p', ins, outs, c) \<in> set procs`
+    assume "p' = px \<and> ps' = []"
+    with `containsCall procs c ps p` `(p', ins, outs, c) \<in> set procs`
     show ?thesis by fastsimp
   next
     assume "\<exists>insx outsx cx psx. ps' = px#psx \<and> (px,insx,outsx,cx) \<in> set procs \<and>
-      containsCall procs cx psx p' es' rets'"
+      containsCall procs cx psx p'"
     then obtain insx outsx cx psx where "ps' = px#psx" 
       and "(px,insx,outsx,cx) \<in> set procs"
-      and "containsCall procs cx psx p' es' rets'" by blast
-    from IH[OF this `containsCall procs c ps p es rets`
+      and "containsCall procs cx psx p'" by blast
+    from IH[OF this `containsCall procs c ps p`
       `(p', ins, outs, c) \<in> set procs`] 
-    have "containsCall procs cx (psx @ p' # ps) p es rets" .
+    have "containsCall procs cx (psx @ p' # ps) p" .
     with `ps' = px#psx` `(px,insx,outsx,cx) \<in> set procs`
     show ?thesis by fastsimp
   qed
@@ -1201,17 +1198,17 @@ qed auto
 
 
 lemma Proc_CFG_Call_containsCall:
-  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n' \<Longrightarrow> containsCall procs prog [] p es rets"
+  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n' \<Longrightarrow> containsCall procs prog [] p"
 by(induct prog n et\<equiv>"CEdge (p,es,rets)" n' rule:Proc_CFG.induct,auto)
 
 
 lemma containsCall_empty_Proc_CFG_Call_edge: 
-  assumes "containsCall procs prog [] p es rets"
-  obtains l l' where "prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'"
+  assumes "containsCall procs prog [] p"
+  obtains l es rets l' where "prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'"
 proof(atomize_elim)
-  from `containsCall procs prog [] p es rets`
-  show "\<exists>l l'. prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'"
-  proof(induct procs prog ps\<equiv>"[]::pname list" p es rets rule:containsCall_induct)
+  from `containsCall procs prog [] p`
+  show "\<exists>l es rets l'. prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'"
+  proof(induct procs prog ps\<equiv>"[]::pname list" p rule:containsCall_induct)
     case Seq thus ?case
       by auto(fastsimp dest:Proc_CFG_SeqFirst,fastsimp dest:Proc_CFG_SeqSecond)
   next
@@ -1245,46 +1242,39 @@ where
 
 | Proc:
   "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> n -IEdge et\<rightarrow>\<^isub>p n'; 
-    containsCall procs prog ps p es rets\<rbrakk> 
+    containsCall procs prog ps p\<rbrakk> 
   \<Longrightarrow> prog,procs \<turnstile> (p,n) -et\<rightarrow> (p,n')"
 
 
 | MainCall:
-  "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; (p,ins,outs,c) \<in> set procs;
-    distinct rets; length rets = length outs; length es = length ins\<rbrakk>
+  "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; (p,ins,outs,c) \<in> set procs\<rbrakk>
   \<Longrightarrow> prog,procs \<turnstile> (Main,Label l) 
                   -(\<lambda>s. True):(Main,n')\<hookrightarrow>\<^bsub>p\<^esub>map (\<lambda>e cf. interpret e cf) es\<rightarrow> (p,Entry)"
 
 | ProcCall:
-  "\<lbrakk>i < length procs; procs!i = (p,ins,outs,c); 
-    c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label l';
-    (p',ins',outs',c') \<in> set procs; distinct rets'; 
-    length rets' = length outs'; length es' = length ins'; 
-    containsCall procs prog ps p es rets\<rbrakk>
+  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label l';
+    (p',ins',outs',c') \<in> set procs; containsCall procs prog ps p\<rbrakk>
   \<Longrightarrow> prog,procs \<turnstile> (p,Label l) 
                -(\<lambda>s. True):(p,Label l')\<hookrightarrow>\<^bsub>p'\<^esub>map (\<lambda>e cf. interpret e cf) es'\<rightarrow> (p',Entry)"
 
 | MainReturn:
-  "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'; (p,ins,outs,c) \<in> set procs;
-    distinct rets; length rets = length outs; length es = length ins\<rbrakk>
+  "\<lbrakk>prog \<turnstile> Label l -CEdge (p,es,rets)\<rightarrow>\<^isub>p Label l'; (p,ins,outs,c) \<in> set procs\<rbrakk>
   \<Longrightarrow> prog,procs \<turnstile> (p,Exit) -(\<lambda>cf. snd cf = (Main,Label l'))\<hookleftarrow>\<^bsub>p\<^esub>
        (\<lambda>cf cf'. cf'(rets [:=] map cf outs))\<rightarrow> (Main,Label l')"
 
 | ProcReturn:
-  "\<lbrakk>i < length procs; procs!i = (p,ins,outs,c);
-    c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label l'; (p',ins',outs',c') \<in> set procs; 
-    distinct rets'; length rets' = length outs'; length es' = length ins'; 
-    containsCall procs prog ps p es rets\<rbrakk>
+  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> Label l -CEdge (p',es',rets')\<rightarrow>\<^isub>p Label l'; 
+   (p',ins',outs',c') \<in> set procs; containsCall procs prog ps p\<rbrakk>
   \<Longrightarrow> prog,procs \<turnstile> (p',Exit) -(\<lambda>cf. snd cf = (p,Label l'))\<hookleftarrow>\<^bsub>p'\<^esub>
        (\<lambda>cf cf'. cf'(rets' [:=] map cf outs'))\<rightarrow> (p,Label l')"
 
 | MainCallReturn:
-  "\<lbrakk>prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'; distinct rets\<rbrakk>
+  "prog \<turnstile> n -CEdge (p,es,rets)\<rightarrow>\<^isub>p n'
   \<Longrightarrow> prog,procs \<turnstile> (Main,n) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (Main,n')"
 
 | ProcCallReturn:
-  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'; distinct rets';
-    containsCall procs prog ps p es rets\<rbrakk> 
+  "\<lbrakk>(p,ins,outs,c) \<in> set procs; c \<turnstile> n -CEdge (p',es',rets')\<rightarrow>\<^isub>p n'; 
+    containsCall procs prog ps p\<rbrakk> 
   \<Longrightarrow> prog,procs \<turnstile> (p,n) -(\<lambda>s. False)\<^isub>\<surd>\<rightarrow> (p,n')"
 
 
