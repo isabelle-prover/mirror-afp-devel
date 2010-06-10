@@ -32,18 +32,17 @@ by(simp add:ldc_def)
 
 section {* Subobjects according to Rossie-Friedman *}
 
-consts
-  is_subobj :: "prog \<times> subobj \<Rightarrow> bool" -- "legal subobject to class hierarchie"
+fun is_subobject :: "prog \<Rightarrow> subobj \<Rightarrow> bool" -- "legal subobject to class hierarchie" where
+  "is_subobject P (C, []) \<longleftrightarrow> False"
+| "is_subobject P (C, [D]) \<longleftrightarrow> (is_class P C \<and> C = D) 
+                                \<or> (\<exists> X. P \<turnstile> C \<preceq>\<^sup>* X \<and> P \<turnstile> X \<prec>\<^sub>S D)"
+| "is_subobject P (C, D # E # Xs) = (let Ys=butlast (D # E # Xs); 
+                                      Y=last (D # E # Xs); 
+                                      X=last Ys 
+                                in is_subobject P (C, Ys) \<and> P \<turnstile> X \<prec>\<^sub>R Y)"
 
-recdef is_subobj "measure (\<lambda> (P,(C,Xs)).length Xs)"
-  "is_subobj (P,(C,[])) = False"
-  "is_subobj (P,(C,[D])) = ((is_class P C \<and> C = D) 
-                                \<or> (\<exists> X. P \<turnstile> C \<preceq>\<^sup>* X \<and> P \<turnstile> X \<prec>\<^sub>S D))"
-  "is_subobj (P, (C,D#E#Xs)) = (let Ys=butlast(D#E#Xs); 
-                                    Y=last (D#E#Xs); 
-                                    X=last Ys 
-                                in is_subobj (P, (C,Ys)) \<and> P \<turnstile> X \<prec>\<^sub>R Y)"
-
+abbreviation (input) is_subobj' :: "prog \<Rightarrow> subobj \<Rightarrow> bool" ("is'_subobj '(_, _')") where
+  "is_subobj' \<equiv> is_subobject"
 
 lemma subobj_aux_rev:
 assumes 1:"is_subobj(P,(C,C'#rev Cs@[C'']))"
@@ -106,7 +105,7 @@ proof (induct Cs')
   with last butlast Cs'2 show ?case by simp
 next
   case (Cons C'' Cs'')
-  have IH:"is_subobj (P, C, Cs @ [D, D'] @ rev Cs'') \<Longrightarrow> P \<turnstile> D \<prec>\<^sub>R D'" by fact
+  have IH:"is_subobj (P, (C, Cs @ [D, D'] @ rev Cs'')) \<Longrightarrow> P \<turnstile> D \<prec>\<^sub>R D'" by fact
   from Cons obtain Cs' X Y Xs where Cs'1:"Cs' = Cs@[D,D']@(rev (C''#Cs''))" 
     and "X = hd(Cs@[D,D']@(rev (C''#Cs'')))" 
     and "Y = hd(tl(Cs@[D,D']@(rev (C''#Cs''))))"
@@ -157,9 +156,9 @@ proof (induct Cs')
     qed
   next
     case (Cons C'' Cs'')
-    have IH:"is_subobj (P, C, C' # rev Cs'') \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* last (C' # rev Cs'')"
-      and subo:"is_subobj (P, C, C' # rev (C'' # Cs''))" by fact+
-    hence "is_subobj (P, C, C' # rev Cs'')" by (simp add:subobj_aux_rev)
+    have IH:"is_subobj (P, (C, C' # rev Cs'')) \<Longrightarrow> P \<turnstile> C \<preceq>\<^sup>* last (C' # rev Cs'')"
+      and subo:"is_subobj (P, (C, C' # rev (C'' # Cs'')))" by fact+
+    hence "is_subobj (P, (C, C' # rev Cs''))" by (simp add:subobj_aux_rev)
     with IH have rel:"P \<turnstile> C \<preceq>\<^sup>* last (C' # rev Cs'')" by simp
     from subo obtain D Ds where DDs:"C' # rev Cs'' = Ds@[D]"
       by (cases Cs'') auto
@@ -257,7 +256,7 @@ next
   from E_Es suboD have suboDE:"is_subobj (P,(D,D#E#Es))" by simp
   hence "is_subobj (P,(D,butlast (D#E#Es)))" by simp
   with butlast have "is_subobj (P,(D,D#rev Cs'))" by simp
-  with IH have suboCD:"is_subobj (P, C, C#D#rev Cs')" by simp
+  with IH have suboCD:"is_subobj (P, (C, C#D#rev Cs'))" by simp
   from suboDE obtain Xs X Y Xs' where Xs':"Xs' = D#E#Es"
     and bb:"Xs = butlast (butlast (D#E#Es))" 
     and lb:"X = last(butlast (D#E#Es))" and l:"Y = last (D#E#Es)" by simp
@@ -585,7 +584,7 @@ apply (subgoal_tac "is_subobj(P,(C,[D]))")
  apply (frule hd_SubobjsR)
  apply (drule SubobjsR_isSubobj)
  apply (erule exE)
- apply (simp del:is_subobj.simps)
+ apply (simp del: is_subobject.simps)
  apply (erule isSubobj_isSubobj_isSubobj)
  apply simp
 apply auto

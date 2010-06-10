@@ -1,5 +1,4 @@
-(*  ID:          $Id: UserGuide.thy,v 1.11 2009-09-11 07:50:00 norbertschirmer Exp $
-    Author:      Norbert Schirmer
+(*  Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
 *)
@@ -747,9 +746,7 @@ certain states get smaller according to this relation. Proving that a
 relation is well-founded can be quite hard. But fortunately there are
 ways to construct and stick together relations so that they are
 well-founded by construction. This infrastructure is already present
-in Isabelle/HOL, since the \isacommand{recdef} command for general
-recursive functions builds on it (cf. \cite{Nipkow-02-hol} pages 46
-ff, 178 ff).  For example, @{term "measure f"} is always well-founded;
+in Isabelle/HOL.  For example, @{term "measure f"} is always well-founded;
 the lexicographic product of two well-founded relations is again
 well-founded and the inverse image construction @{term "inv_image"} of
 a well-founded relation is again well-founded. The constructions are

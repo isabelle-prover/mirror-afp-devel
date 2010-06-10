@@ -1020,7 +1020,7 @@ proof -
       assume A: "univ_for_pr (c_fst z) = c_snd z"
       let ?n = "c_fst (c_fst z)"
       let ?x = "c_snd (c_fst z)"
-      let ?y = "loc_upb (?n, ?x)"
+      let ?y = "loc_upb ?n ?x"
       have S5_1: "c_assoc_have_key (pr_gr ?y) (c_pair ?n ?x) = 0" by (rule loc_upb_main)
       have S5_2: "c_assoc_value (pr_gr ?y) (c_pair ?n ?x) = univ_for_pr (c_pair ?n ?x)" by (rule pr_gr_value)
       from S5_1 have S5_3: "c_assoc_have_key (pr_gr ?y) (c_fst z) = 0" by simp

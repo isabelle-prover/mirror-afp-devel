@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: Expr.thy,v 1.7 2008-06-23 21:24:36 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
     Based on the Jinja theory J/Expr.thy by Tobias Nipkow 
@@ -50,23 +49,18 @@ abbreviation (input)
 
 text{* The semantics of binary operators: *}
 
-consts
-  binop :: "bop \<times> val \<times> val \<Rightarrow> val option"
-
-recdef binop "{}"
+fun binop :: "bop \<times> val \<times> val \<Rightarrow> val option" where
   "binop(Eq,v\<^isub>1,v\<^isub>2) = Some(Bool (v\<^isub>1 = v\<^isub>2))"
-  "binop(Add,Intg i\<^isub>1,Intg i\<^isub>2) = Some(Intg(i\<^isub>1+i\<^isub>2))"
-  "binop(bop,v\<^isub>1,v\<^isub>2) = None"
+| "binop(Add,Intg i\<^isub>1,Intg i\<^isub>2) = Some(Intg(i\<^isub>1+i\<^isub>2))"
+| "binop(bop,v\<^isub>1,v\<^isub>2) = None"
 
 lemma [simp]:
   "(binop(Add,v\<^isub>1,v\<^isub>2) = Some v) = (\<exists>i\<^isub>1 i\<^isub>2. v\<^isub>1 = Intg i\<^isub>1 \<and> v\<^isub>2 = Intg i\<^isub>2 \<and> v = Intg(i\<^isub>1+i\<^isub>2))"
-
 apply(cases v\<^isub>1)
 apply auto
 apply(cases v\<^isub>2)
 apply auto
 done
-
 
 lemma binop_not_ref[simp]:
   "binop(bop,v\<^isub>1,v\<^isub>2) = Some (Ref r) \<Longrightarrow> False"

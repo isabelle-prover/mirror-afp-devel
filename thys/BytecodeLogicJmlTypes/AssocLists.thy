@@ -118,10 +118,10 @@ where "contained L M = (\<forall> a b . L\<down>a = Some b \<longrightarrow> M\<
 
 text{*The following operation defined the cardinality of a map.*}
 
-consts AL_Size::"('a,'b) AssList \<Rightarrow> nat"  ("|_|" [1000] 1000)
-recdef AL_Size "measure (\<lambda> l . length l)"
-"AL_Size [] = 0"
-"AL_Size (h # t) = Suc (AL_Size (delete t (fst h)))"
+fun AL_Size :: "('a, 'b) AssList \<Rightarrow> nat"  ("|_|" [1000] 1000) where
+  "AL_Size [] = 0"
+| "AL_Size (h # t) = Suc (AL_Size (delete t (fst h)))"
+
 (*<*)
 lemma AL_Size_Zero: "|L| = 0 \<Longrightarrow> None = L\<down>a"
 by (induct L, simp, simp)
