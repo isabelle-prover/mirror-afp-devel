@@ -14,10 +14,10 @@ $valueChosen(chosen)$ holds, and each processor's output equals either $chosen$ 
 $NotAnInput$.
 *}
 
-constdefs
-  HInv6 :: "state \<Rightarrow> bool"
-  "HInv6 s \<equiv>   (chosen s \<noteq> NotAnInput \<longrightarrow> valueChosen s (chosen s))
-             \<and> (\<forall>p. outpt s p \<in> {chosen s, NotAnInput})"
+definition HInv6 :: "state \<Rightarrow> bool"
+where
+  "HInv6 s = ((chosen s \<noteq> NotAnInput \<longrightarrow> valueChosen s (chosen s))
+              \<and> (\<forall>p. outpt s p \<in> {chosen s, NotAnInput}))"
 
 theorem HInit_HInv6: "HInit s \<Longrightarrow> HInv6 s"
   by(auto simp add: HInit_def Init_def InitDB_def HInv6_def)

@@ -31,8 +31,7 @@ imports StateSpace "~~/src/HOL/Statespace/StateSpaceLocale" Generalise
 uses ("hoare.ML") ("hoare_syntax.ML")
 begin
 
-consts NoBody::"('s,'p,'f) com"
-finalconsts NoBody
+axiomatization NoBody::"('s,'p,'f) com"
 
 use "hoare.ML"
 setup Hoare.setup
@@ -59,11 +58,11 @@ typical variable names, we append a unusual suffix at the end of each name by
 parsing
 *}
 
-constdefs list_multsel:: "'a list \<Rightarrow> nat list \<Rightarrow> 'a list" (infixl "!!" 100)
-"xs !! ns \<equiv> map (nth xs) ns"
+definition list_multsel:: "'a list \<Rightarrow> nat list \<Rightarrow> 'a list" (infixl "!!" 100)
+  where "xs !! ns = map (nth xs) ns"
 
-constdefs list_multupd:: "'a list \<Rightarrow> nat list \<Rightarrow> 'a list \<Rightarrow> 'a list"
-"list_multupd xs ns ys \<equiv> foldl (\<lambda>xs (n,v). xs[n:=v]) xs (zip ns ys)"
+definition list_multupd:: "'a list \<Rightarrow> nat list \<Rightarrow> 'a list \<Rightarrow> 'a list"
+  where "list_multupd xs ns ys = foldl (\<lambda>xs (n,v). xs[n:=v]) xs (zip ns ys)"
 
 nonterminals lmupdbinds lmupdbind
 
@@ -87,8 +86,8 @@ subsection {* Some Fancy Syntax *}
  *)
 
 text {* reverse application *}
-constdefs rapp:: "'a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b" (infixr "|>" 60)
-"rapp x f \<equiv> f x"
+definition rapp:: "'a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b" (infixr "|>" 60)
+  where "rapp x f = f x"
 
 
 nonterminals newinit newinits locinit locinits switchcase switchcases
@@ -398,8 +397,8 @@ translations
 "s may_only_modify_globals Z in []" => "s may_not_modify_globals Z"
 
 
-constdefs Let':: "['a, 'a => 'b] => 'b"
-"Let' \<equiv> Let"
+definition Let':: "['a, 'a => 'b] => 'b"
+  where "Let' = Let"
 
 use "hoare_syntax.ML"
 setup Hoare_Syntax.setup

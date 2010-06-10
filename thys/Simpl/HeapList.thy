@@ -34,10 +34,10 @@ text {* Adapted from 'HOL/Hoare/Heap.thy'. *}
 
 subsection "Paths in The Heap"
 
-consts
- Path :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> ref \<Rightarrow>  ref list  \<Rightarrow> bool"
 primrec
-"Path x h y [] = (x = y)"
+ Path :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> ref \<Rightarrow>  ref list  \<Rightarrow> bool"
+where
+"Path x h y [] = (x = y)" |
 "Path x h y (p#ps) = (x = p \<and> x \<noteq> Null \<and> Path (h x) h y ps)"
 
 lemma Path_Null_iff [iff]: "Path Null h y xs  = (xs = [] \<and> y = Null)"
@@ -91,9 +91,9 @@ subsection "Lists on The Heap"
 
 subsubsection "Relational Abstraction"
 
-constdefs
- List :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> ref list \<Rightarrow> bool"
-"List p h ps == Path p h Null ps "
+definition
+ List :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> ref list \<Rightarrow> bool" where
+"List p h ps = Path p h Null ps "
 
 lemma List_empty [simp]: "List p h [] = (p = Null)"
 by(simp add:List_def)
@@ -212,11 +212,13 @@ by (auto dest: List_unique)
 
 subsection "Functional abstraction"
 
-constdefs
- islist :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
-"islist p h == \<exists>ps. List p h ps"
- list :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> ref list"
-"list p h == THE ps. List p h ps"
+definition
+ islist :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool" where
+"islist p h = (\<exists>ps. List p h ps)"
+
+definition
+ list :: "ref \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> ref list" where
+"list p h = (THE ps. List p h ps)"
 
 lemma List_conv_islist_list: "List p h ps = (islist p h \<and> ps = list p h)"
 apply(simp add:islist_def list_def)

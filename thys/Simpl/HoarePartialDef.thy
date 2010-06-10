@@ -34,30 +34,37 @@ types
 
 subsection {* Validity of Hoare Tuples: @{text "\<Gamma>,\<Theta>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A"} *}
 
-constdefs
+definition
   valid :: "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com,'s assn,'s assn] => bool"
                 ("_\<Turnstile>\<^bsub>'/_\<^esub>/ _ _ _,_"  [61,60,1000, 20, 1000,1000] 60)
+where
  "\<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A \<equiv> \<forall>s t. \<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> t \<longrightarrow> s \<in> Normal ` P \<longrightarrow> t \<notin> Fault ` F  
                       \<longrightarrow>  t \<in>  Normal ` Q \<union> Abrupt ` A"
 
+definition
   cvalid::
   "[('s,'p,'f) body,('s,'p) quadruple set,'f set,
       's assn,('s,'p,'f) com,'s assn,'s assn] =>bool"
                 ("_,_\<Turnstile>\<^bsub>'/_\<^esub>/ _ _ _,_"  [61,60,60,1000, 20, 1000,1000] 60)
+where
  "\<Gamma>,\<Theta>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A \<equiv> (\<forall>(P,p,Q,A)\<in>\<Theta>. \<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P (Call p) Q,A) \<longrightarrow> \<Gamma> \<Turnstile>\<^bsub>/F\<^esub> P c Q,A"
 
 
+definition
   nvalid :: "[('s,'p,'f) body,nat,'f set, 
                 's assn,('s,'p,'f) com,'s assn,'s assn] => bool"
                 ("_\<Turnstile>_:\<^bsub>'/_\<^esub>/ _ _ _,_"  [61,60,60,1000, 20, 1000,1000] 60)
+where
  "\<Gamma>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A \<equiv> \<forall>s t. \<Gamma>\<turnstile>\<langle>c,s \<rangle> =n\<Rightarrow> t \<longrightarrow> s \<in> Normal ` P \<longrightarrow> t \<notin> Fault ` F 
                         \<longrightarrow> t \<in>  Normal ` Q \<union> Abrupt ` A"
 
 
+definition
   cnvalid::
   "[('s,'p,'f) body,('s,'p) quadruple set,nat,'f set, 
      's assn,('s,'p,'f) com,'s assn,'s assn] \<Rightarrow> bool"
                 ("_,_\<Turnstile>_:\<^bsub>'/_\<^esub>/ _ _ _,_"  [61,60,60,60,1000, 20, 1000,1000] 60)
+where
  "\<Gamma>,\<Theta>\<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A \<equiv> (\<forall>(P,p,Q,A)\<in>\<Theta>. \<Gamma>\<Turnstile>n:\<^bsub>/F\<^esub> P (Call p) Q,A) \<longrightarrow> \<Gamma> \<Turnstile>n:\<^bsub>/F\<^esub> P c Q,A"
 
 

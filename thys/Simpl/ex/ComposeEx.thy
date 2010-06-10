@@ -89,21 +89,23 @@ record state = "globals state" +
   r_'    :: "ref"
 
 
-constdefs project_globals_str:: "globals \<Rightarrow> globals_list"
-  "project_globals_str g \<equiv> \<lparr>next_' = strnext_' g\<rparr>"
+definition project_globals_str:: "globals \<Rightarrow> globals_list"
+  where "project_globals_str g = \<lparr>next_' = strnext_' g\<rparr>"
 
-constdefs project_str:: "state \<Rightarrow> state_list"
-"project_str s \<equiv> 
+definition project_str:: "state \<Rightarrow> state_list"
+where
+"project_str s =
   \<lparr>globals = project_globals_str (globals s),
    state_list.p_' = str_' s, sl_q_' = q_' s, state_list.r_' = r_' s\<rparr>"
 
-constdefs inject_globals_str:: 
+definition inject_globals_str:: 
   "globals \<Rightarrow> globals_list \<Rightarrow> globals"
-"inject_globals_str G g \<equiv> 
+where
+  "inject_globals_str G g =
    G\<lparr>strnext_' := next_' g\<rparr>"
 
-constdefs "inject_str"::"state \<Rightarrow> state_list \<Rightarrow> state"
-"inject_str S s \<equiv> S\<lparr>globals := inject_globals_str (globals S) (globals s),
+definition "inject_str"::"state \<Rightarrow> state_list \<Rightarrow> state" where
+"inject_str S s = S\<lparr>globals := inject_globals_str (globals S) (globals s),
                 str_' := state_list.p_' s, q_' := sl_q_' s,
                 r_' := state_list.r_' s\<rparr>"
 
@@ -129,8 +131,8 @@ lemma inject_str_last:
   "inject_str (inject_str S s) s' = inject_str S s'"
   by (simp add: inject_str_def globals_inject_str_last)
 
-constdefs 
-  "lift\<^isub>e  \<equiv> \<lambda>\<Gamma> p. Option.map (lift\<^isub>c project_str inject_str) (\<Gamma> p)"
+definition
+  "lift\<^isub>e = (\<lambda>\<Gamma> p. Option.map (lift\<^isub>c project_str inject_str) (\<Gamma> p))"
 print_locale lift_state_space
 interpretation ex!: lift_state_space project_str inject_str
   "xstate_map project_str" lift\<^isub>e "lift\<^isub>c project_str inject_str"
@@ -177,7 +179,7 @@ lemmas Rev_lift_spec = ex.lift_hoarep' [OF Rev_impl.Rev_spec,simplified lift\<^i
 print_theorems
 
 
-constdefs "\<N> p' p \<equiv> (if p=''Rev'' then p' else '''')"
+definition "\<N> p' p = (if p=''Rev'' then p' else '''')"
 
 
 procedures RevStr(str|q) = "rename (\<N> RevStr_'proc)

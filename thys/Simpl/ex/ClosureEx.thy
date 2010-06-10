@@ -45,9 +45,9 @@ record 'g vars = "'g state" +
  e_':: "(string \<times> nat) list \<times> string"
 
 
-constdefs "var\<^isub>n == [''n''\<mapsto> (\<lambda>x. n_'_update (\<lambda>_. x)),
+definition "var\<^isub>n = [''n''\<mapsto> (\<lambda>x. n_'_update (\<lambda>_. x)),
                     ''m''\<mapsto> (\<lambda>x. m_'_update (\<lambda>_. x))]"
-constdefs "upd\<^isub>n == gen_upd var\<^isub>n"
+definition "upd\<^isub>n = gen_upd var\<^isub>n"
 
 lemma upd\<^isub>n_ap: "upd\<^isub>n (fst (ap es (es',p))) = upd\<^isub>n es' \<circ> upd\<^isub>n es"
   by (simp add: upd\<^isub>n_def gen_upd_ap)
@@ -72,8 +72,8 @@ apply (simp add: upd\<^isub>n_def gen_upd_def var\<^isub>n_def)
 done
 
 
-constdefs "var == [''p''\<mapsto> (\<lambda>x. p_'_update (\<lambda>_. x))]"
-constdefs "upd == gen_upd var"
+definition "var = [''p''\<mapsto> (\<lambda>x. p_'_update (\<lambda>_. x))]"
+definition "upd = gen_upd var"
 
 procedures Inc(p|r) =
  "\<acute>p\<rightarrow>\<acute>cnt :== \<acute>p\<rightarrow>\<acute>cnt + 1;;

@@ -8,20 +8,18 @@ header {* SHORTENED! Parallel expressions in DPC/Hoare. *}
 
 theory DPC0Expressions imports Main begin
 
-constdefs
-  p_not :: "bool list => bool list"
-  "p_not == map Not"
+definition p_not :: "bool list => bool list"
+  where "p_not = map Not"
 
 notation (xsymbols)
   p_not   ("\<not>\<^sub>p")
 
-constdefs
-  elem_wise :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'c list"
-  "elem_wise f xs ys == map (\<lambda> (x, y). f x y) (zip xs ys)"
+definition elem_wise :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'c list"
+  where "elem_wise f xs ys = map (\<lambda> (x, y). f x y) (zip xs ys)"
 
-constdefs
-  p_and  :: "bool list => bool list => bool list"	(infixl "pand"  35)
-  "p_and  == elem_wise op&"
+definition
+  p_and  :: "bool list => bool list => bool list"  (infixl "pand"  35)
+  where "p_and = elem_wise op&"
 
 notation (xsymbols)
   p_and  (infixl "\<and>\<^sub>p"  35)

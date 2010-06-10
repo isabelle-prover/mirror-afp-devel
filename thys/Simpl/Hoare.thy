@@ -218,9 +218,9 @@ locale hoare =
   fixes \<Gamma>::"('s,'p,'f) body" 
 
 
-consts assoc:: "('a \<times>'b) list \<Rightarrow> 'a \<Rightarrow> 'b "
-primrec
-"assoc [] x = undefined"
+primrec assoc:: "('a \<times>'b) list \<Rightarrow> 'a \<Rightarrow> 'b "
+where
+"assoc [] x = undefined" |
 "assoc (p#ps) x = (if fst p = x then (snd p) else assoc ps x)"
 
 lemma conjE_simp: "(P \<and> Q \<Longrightarrow> PROP R) \<equiv> (P \<Longrightarrow> Q \<Longrightarrow> PROP R)"
@@ -250,11 +250,11 @@ lemma Ex_True: "\<exists>b. b"
 lemma Ex_False: "\<exists>b. \<not>b"
   by blast
 
-constdefs mex::"('a \<Rightarrow> bool) \<Rightarrow> bool"
-"mex P \<equiv> Ex P"
+definition mex::"('a \<Rightarrow> bool) \<Rightarrow> bool"
+  where "mex P = Ex P"
 
-constdefs meq::"'a \<Rightarrow> 'a \<Rightarrow> bool"
-"meq s Z \<equiv> s = Z"
+definition meq::"'a \<Rightarrow> 'a \<Rightarrow> bool"
+  where "meq s Z = (s = Z)"
 
 lemma subset_unI1: "A \<subseteq> B \<Longrightarrow> A \<subseteq> B \<union> C" 
   by blast

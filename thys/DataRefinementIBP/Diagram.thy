@@ -35,24 +35,24 @@ $i$ ends in one of the situations $j$ such that $Q \, j$ is true.
 *}
 
 definition
-  "step D Q i \<equiv> INF j . D (i, j) (Q j)";
+  "step D Q i = (INF j . D (i, j) (Q j))"
 
 definition
   "dmono D = (\<forall> ij . mono (D ij))"
 
-lemma dmono_mono [simp]: "dmono D \<Longrightarrow> mono (D ij)";
-  by (simp add: dmono_def);
+lemma dmono_mono [simp]: "dmono D \<Longrightarrow> mono (D ij)"
+  by (simp add: dmono_def)
 
 theorem mono_step [simp]:
   "dmono D \<Longrightarrow> mono (step D)"
-  apply (simp add: dmono_def mono_def le_fun_def step_def Inf_fun_def);
-  apply auto;
-  apply (rule le_INFI);
-  apply auto;
+  apply (simp add: dmono_def mono_def le_fun_def step_def Inf_fun_def)
+  apply auto
+  apply (rule le_INFI)
+  apply auto
   apply (rule_tac y = "D(xa, j) (x j)" in order_trans)
-  apply auto;
-  apply (rule INF_leI);
-  by auto;
+  apply auto
+  apply (rule INF_leI)
+  by auto
 
 text {*
 The indexed predicate transformer of a transition diagram is defined as the least
@@ -63,33 +63,33 @@ $U$ ($(\mathit{step}\ D)\circ U$) or skip if no transion of $D$ is enabled
 *}
 
 definition
-  "dgr D U = ((step D) o U) \<sqinter> (assume (-(grd (step D))))";
+  "dgr D U = ((step D) o U) \<sqinter> (assume (-(grd (step D))))"
 
-theorem mono_mono_dgr [simp]: "dmono D \<Longrightarrow> mono_mono (dgr D)";
-  apply (simp add: mono_mono_def mono_def);
-  apply safe;
-  apply (simp_all add: dgr_def);
+theorem mono_mono_dgr [simp]: "dmono D \<Longrightarrow> mono_mono (dgr D)"
+  apply (simp add: mono_mono_def mono_def)
+  apply safe
+  apply (simp_all add: dgr_def)
   apply (simp_all add: le_fun_def inf_fun_eq)
-  apply safe;
+  apply safe
   apply (rule_tac y = "(step D (x xa) xb)" in order_trans)
-  apply simp_all;
-  apply (case_tac "mono (step D)");
-  apply (simp add: mono_def);
-  apply (simp add: le_fun_def);
-  apply simp;
+  apply simp_all
+  apply (case_tac "mono (step D)")
+  apply (simp add: mono_def)
+  apply (simp add: le_fun_def)
+  apply simp
   apply (rule_tac y = "(step D (f x) xa)" in order_trans)
-  apply simp_all;
-  apply (case_tac "mono (step D)");
-  apply (simp add: mono_def);
+  apply simp_all
+  apply (case_tac "mono (step D)")
+  apply (simp add: mono_def)
   apply (simp_all add: le_fun_def)
   apply (rule_tac y = "(assume (- grd (step D)) x xa)" in order_trans)
-  apply simp_all;
-  apply (case_tac "mono (assume (- grd (step D)))");
+  apply simp_all
+  apply (case_tac "mono (assume (- grd (step D)))")
   apply (simp add: mono_def le_fun_def)
-  by simp;
+  by simp
 
 definition
-  "pt D  = lfp (dgr D)";
+  "pt D = lfp (dgr D)"
 
 text {*
 If $U$ is an indexed predicate transformer and if $P, Q:I\to \mathit{State} \ \mathit{set}$
@@ -107,17 +107,17 @@ if and only if $\mathit{step}\ D$ is correct.
 
 theorem hoare_step:
   "(\<forall> i j . \<Turnstile> (P i) {| D(i,j) |} (Q j) ) = (\<Turnstile> P {| step D |} Q)"
-  apply safe;
+  apply safe
   apply (simp add: le_fun_def Hoare_def step_def)
-  apply safe;
-  apply (rule le_INFI);
-  apply auto;
+  apply safe
+  apply (rule le_INFI)
+  apply auto
   apply (simp add: le_fun_def Hoare_def step_def)
-  apply (erule_tac x = i in allE);
+  apply (erule_tac x = i in allE)
   apply (rule_tac y = "INF j. D(i, j) (Q j)" in order_trans)
-  apply auto;
-  apply (rule INF_leI);
-  by auto;
+  apply auto
+  apply (rule INF_leI)
+  by auto
 
 text {*
 Next theorem provides the first proof rule for total correctnes of transition
@@ -128,18 +128,18 @@ must decrease according to a well founded and transitive relation.
 
 theorem hoare_diagram:
   "dmono D \<Longrightarrow> (\<forall> w i j . \<Turnstile> X w i  {| D(i,j) |} SUP_L X w j) \<Longrightarrow> 
-    \<Turnstile> SUP X {| pt D |} ((SUP X) \<sqinter> -(grd (step D)))";
-  apply (simp add: hoare_step pt_def);
-  apply (rule hoare_fixpoint);
-  apply auto;
-  apply (simp add: dgr_def);
-  apply (simp add: hoare_choice);
-  apply safe;
-  apply (simp add: hoare_sequential);
-  apply auto;
-  apply (simp add: hoare_assume);
-  apply (rule le_infI1);
-  by (rule SUP_upper);
+    \<Turnstile> SUP X {| pt D |} ((SUP X) \<sqinter> -(grd (step D)))"
+  apply (simp add: hoare_step pt_def)
+  apply (rule hoare_fixpoint)
+  apply auto
+  apply (simp add: dgr_def)
+  apply (simp add: hoare_choice)
+  apply safe
+  apply (simp add: hoare_sequential)
+  apply auto
+  apply (simp add: hoare_assume)
+  apply (rule le_infI1)
+  by (rule SUP_upper)
 
 text{*
 This theorem is a more general form of the more familiar form with a variant $t$
@@ -169,83 +169,83 @@ locale DiagramTermination =
 begin
 
 definition
-  "SUP_L_P X u i = SUPR {v . pair v i < u} (\<lambda> v . X v i)"; 
+  "SUP_L_P X u i = SUPR {v . pair v i < u} (\<lambda> v . X v i)" 
 
 definition 
-  "SUP_LE_P X u i = SUPR {v . pair v i \<le> u} (\<lambda> v . X v i)";
+  "SUP_LE_P X u i = SUPR {v . pair v i \<le> u} (\<lambda> v . X v i)"
 
 lemma SUP_L_P_upper:
-  "pair v i < u \<Longrightarrow> P v i \<le> SUP_L_P P u i";
-  by (simp add: SUP_L_P_def SUPR_def Sup_upper);
+  "pair v i < u \<Longrightarrow> P v i \<le> SUP_L_P P u i"
+  by (simp add: SUP_L_P_def SUPR_def Sup_upper)
 
 lemma SUP_L_P_least:
-  "(!! v . pair v i < u \<Longrightarrow> P v i \<le> Q) \<Longrightarrow> SUP_L_P P u i \<le> Q";
-  by (simp add: SUP_L_P_def SUPR_def, rule Sup_least, auto);
+  "(!! v . pair v i < u \<Longrightarrow> P v i \<le> Q) \<Longrightarrow> SUP_L_P P u i \<le> Q"
+  by (simp add: SUP_L_P_def SUPR_def, rule Sup_least, auto)
 
 lemma SUP_LE_P_upper:
-  "pair v i \<le> u \<Longrightarrow> P v i \<le> SUP_LE_P P u i";
-  by (simp add: SUP_LE_P_def SUPR_def Sup_upper);
+  "pair v i \<le> u \<Longrightarrow> P v i \<le> SUP_LE_P P u i"
+  by (simp add: SUP_LE_P_def SUPR_def Sup_upper)
 
 lemma SUP_LE_P_least:
-  "(!! v . pair v i \<le> u \<Longrightarrow> P v i \<le> Q) \<Longrightarrow> SUP_LE_P P u i \<le> Q";
-  by (simp add: SUP_LE_P_def SUPR_def, rule Sup_least, auto);
+  "(!! v . pair v i \<le> u \<Longrightarrow> P v i \<le> Q) \<Longrightarrow> SUP_LE_P P u i \<le> Q"
+  by (simp add: SUP_LE_P_def SUPR_def, rule Sup_least, auto)
 
 lemma SUP_SUP_L [simp]:
   "SUP (SUP_LE_P X) = SUP X"
-  apply (simp add: expand_fun_eq SUP_fun_eq, clarify);
-  apply (rule antisym);
-  apply (rule SUP_least);
-  apply (rule SUP_LE_P_least);
-  apply (rule SUP_upper);
-  apply (rule SUP_least);
-  apply (rule_tac y = "SUP_LE_P X (pair w x) x" in  order_trans);
-  apply (rule SUP_LE_P_upper, simp);
-  by (rule SUP_upper);
+  apply (simp add: expand_fun_eq SUP_fun_eq, clarify)
+  apply (rule antisym)
+  apply (rule SUP_least)
+  apply (rule SUP_LE_P_least)
+  apply (rule SUP_upper)
+  apply (rule SUP_least)
+  apply (rule_tac y = "SUP_LE_P X (pair w x) x" in  order_trans)
+  apply (rule SUP_LE_P_upper, simp)
+  by (rule SUP_upper)
 
 lemma SUP_L_SUP_LE_P [simp]:
-  "SUP_L (SUP_LE_P X) = SUP_L_P X";
-  apply (simp add: expand_fun_eq SUP_fun_eq SUP_L_fun_eq, clarify);
-  apply (rule antisym);
-  apply (rule SUP_L_least);
-  apply (rule SUP_LE_P_least);
-  apply (rule SUP_L_P_upper, simp);
-  apply (rule SUP_L_P_least);
+  "SUP_L (SUP_LE_P X) = SUP_L_P X"
+  apply (simp add: expand_fun_eq SUP_fun_eq SUP_L_fun_eq, clarify)
+  apply (rule antisym)
+  apply (rule SUP_L_least)
+  apply (rule SUP_LE_P_least)
+  apply (rule SUP_L_P_upper, simp)
+  apply (rule SUP_L_P_least)
   apply (rule_tac y = "SUP_LE_P X (pair v xa) xa" in order_trans)
-  apply (rule SUP_LE_P_upper, simp);
-  by (rule SUP_L_upper);
+  apply (rule SUP_LE_P_upper, simp)
+  by (rule SUP_L_upper)
   
-end;
+end
     
 theorem (in DiagramTermination) hoare_diagram2:
   "dmono D \<Longrightarrow> (\<forall> u i j . \<Turnstile> X u i  {| D(i, j) |} SUP_L_P X (pair u i) j) \<Longrightarrow> 
-    \<Turnstile> SUP X {| pt D |} ((SUP X) \<sqinter> (-(grd (step D))))";
-  apply (frule_tac X = "SUP_LE_P X" in hoare_diagram);
-  apply auto;
-  apply (simp add: SUP_LE_P_def SUPR_def);
-  apply (rule hoare_Sup);
-  apply auto;
-  apply (rule_tac Q = "SUP_L_P X (pair p i) j" in hoare_mono);
-  apply auto;
-  apply (rule SUP_L_P_least);
-  apply (rule SUP_L_P_upper);
-  apply (rule order_trans3);
-  by auto;
+    \<Turnstile> SUP X {| pt D |} ((SUP X) \<sqinter> (-(grd (step D))))"
+  apply (frule_tac X = "SUP_LE_P X" in hoare_diagram)
+  apply auto
+  apply (simp add: SUP_LE_P_def SUPR_def)
+  apply (rule hoare_Sup)
+  apply auto
+  apply (rule_tac Q = "SUP_L_P X (pair p i) j" in hoare_mono)
+  apply auto
+  apply (rule SUP_L_P_least)
+  apply (rule SUP_L_P_upper)
+  apply (rule order_trans3)
+  by auto
 
-lemma mono_pt [simp]: "dmono D \<Longrightarrow> mono (pt D)";
-  apply (drule mono_mono_dgr);
-  by (simp add: pt_def);
+lemma mono_pt [simp]: "dmono D \<Longrightarrow> mono (pt D)"
+  apply (drule mono_mono_dgr)
+  by (simp add: pt_def)
 
 theorem (in DiagramTermination) hoare_diagram3:
   "dmono D \<Longrightarrow> 
      (\<forall> u i j . \<Turnstile> X u i  {| D(i, j) |} SUP_L_P X (pair u i) j) \<Longrightarrow> 
       P \<le> SUP X \<Longrightarrow>  ((SUP X) \<sqinter> (-(grd (step D)))) \<le> Q \<Longrightarrow>
-      \<Turnstile> P {| pt D |} Q";
-  apply (rule hoare_mono);
-  apply auto;
-  apply (rule hoare_pre);
-  apply auto;
-  apply (rule hoare_diagram2);
-  by auto;
+      \<Turnstile> P {| pt D |} Q"
+  apply (rule hoare_mono)
+  apply auto
+  apply (rule hoare_pre)
+  apply auto
+  apply (rule hoare_diagram2)
+  by auto
 
 text{*
 The following definition introduces the concept of correct Hoare triples for diagrams.
@@ -255,84 +255,84 @@ definition (in DiagramTermination)
   Hoare_dgr :: "('b \<Rightarrow> ('u::{complete_lattice, boolean_algebra})) \<Rightarrow> ('b \<times> 'b \<Rightarrow> 'u \<Rightarrow> 'u) \<Rightarrow> ('b \<Rightarrow> 'u) \<Rightarrow> bool" ("\<turnstile> (_){| _ |}(_) " 
   [0,0,900] 900) where
   "\<turnstile> P {| D |} Q \<equiv> (\<exists> X . (\<forall> u i j . \<Turnstile> X u i  {| D(i, j) |} SUP_L_P X (pair u i) j) \<and> 
-       P = SUP X \<and> Q = ((SUP X) \<sqinter> (-(grd (step D)))))";
+       P = SUP X \<and> Q = ((SUP X) \<sqinter> (-(grd (step D)))))"
 
 definition (in DiagramTermination)
   Hoare_dgr1 :: "('b \<Rightarrow> ('u::{complete_lattice, boolean_algebra})) \<Rightarrow> ('b \<times> 'b \<Rightarrow> 'u \<Rightarrow> 'u) \<Rightarrow> ('b \<Rightarrow> 'u) \<Rightarrow> bool" ("\<turnstile>1 (_){| _ |}(_) " 
   [0,0,900] 900) where
   "\<turnstile>1 P {| D |} Q \<equiv> (\<exists> X . (\<forall> u i j . \<Turnstile> X u i  {| D(i, j) |} SUP_L_P X (pair u i) j) \<and> 
-      P \<le> SUP X \<and> ((SUP X) \<sqinter> (-(grd (step D)))) \<le> Q)";
+      P \<le> SUP X \<and> ((SUP X) \<sqinter> (-(grd (step D)))) \<le> Q)"
 
 
 theorem (in DiagramTermination) hoare_dgr_correctness: 
-  "dmono D \<Longrightarrow> (\<turnstile> P {| D |} Q) \<Longrightarrow> (\<Turnstile> P {| pt D |} Q)";
-  apply (simp add: Hoare_dgr_def);
-  apply safe;
-  apply (rule hoare_diagram3);
-  by auto;
+  "dmono D \<Longrightarrow> (\<turnstile> P {| D |} Q) \<Longrightarrow> (\<Turnstile> P {| pt D |} Q)"
+  apply (simp add: Hoare_dgr_def)
+  apply safe
+  apply (rule hoare_diagram3)
+  by auto
 
 theorem  (in DiagramTermination) hoare_dgr_correctness1:
-  "dmono D \<Longrightarrow> (\<turnstile>1 P {| D |} Q) \<Longrightarrow> (\<Turnstile> P {| pt D |} Q)";
-  apply (simp add: Hoare_dgr1_def);
-  apply safe;
-  apply (rule hoare_diagram3);
-  by auto;
+  "dmono D \<Longrightarrow> (\<turnstile>1 P {| D |} Q) \<Longrightarrow> (\<Turnstile> P {| pt D |} Q)"
+  apply (simp add: Hoare_dgr1_def)
+  apply safe
+  apply (rule hoare_diagram3)
+  by auto
 
 definition
-  "dgr_demonic Q ij = demonic (Q ij)";
+  "dgr_demonic Q ij = demonic (Q ij)"
 
 theorem dgr_demonic_mono[simp]:
-  "dmono (dgr_demonic Q)";
-  by (simp add: dmono_def dgr_demonic_def);
+  "dmono (dgr_demonic Q)"
+  by (simp add: dmono_def dgr_demonic_def)
 
 definition
-  "dangelic R Q i = angelic (R i) (Q i)";
+  "dangelic R Q i = angelic (R i) (Q i)"
 
 theorem dangelic_udisjunctive:
-  "dangelic R ((SUP P)::('b\<Rightarrow>('a::distributive_complete_lattice))) = SUP (\<lambda> w . dangelic R (P w))";
-  by (simp add: expand_fun_eq SUP_fun_eq dangelic_def angelic_udisjunctive);
+  "dangelic R ((SUP P)::('b\<Rightarrow>('a::distributive_complete_lattice))) = SUP (\<lambda> w . dangelic R (P w))"
+  by (simp add: expand_fun_eq SUP_fun_eq dangelic_def angelic_udisjunctive)
 
 theorem dangelic_udisjunctive1:
-  "dangelic R ((Sup P)::('b\<Rightarrow>('a::distributive_complete_lattice))) = (SUP p:P . dangelic R p)";
-  apply (simp add: expand_fun_eq SUPR_def Sup_fun_def dangelic_def angelic_udisjunctive1 Sup_bool_def);
-  by auto;
+  "dangelic R ((Sup P)::('b\<Rightarrow>('a::distributive_complete_lattice))) = (SUP p:P . dangelic R p)"
+  apply (simp add: expand_fun_eq SUPR_def Sup_fun_def dangelic_def angelic_udisjunctive1 Sup_bool_def)
+  by auto
 
 theorem (in DiagramTermination) dangelic_udisjunctive2:
-  "SUP_L_P (\<lambda>w. (dangelic R) ((P w)::('b \<Rightarrow> ('u::distributive_complete_lattice))) )(pair u i) = dangelic R (SUP_L_P P (pair u i))";
-  apply (simp add: expand_fun_eq);
-  apply (simp add: dangelic_def);
-  apply (simp add: SUP_L_P_def);
-  apply (unfold SUPR_def);
-  apply (unfold Union_def);
-  apply (simp add: dangelic_def);
-  apply (unfold angelic_udisjunctive1);
-  by auto;
+  "SUP_L_P (\<lambda>w. (dangelic R) ((P w)::('b \<Rightarrow> ('u::distributive_complete_lattice))) )(pair u i) = dangelic R (SUP_L_P P (pair u i))"
+  apply (simp add: expand_fun_eq)
+  apply (simp add: dangelic_def)
+  apply (simp add: SUP_L_P_def)
+  apply (unfold SUPR_def)
+  apply (unfold Union_def)
+  apply (simp add: dangelic_def)
+  apply (unfold angelic_udisjunctive1)
+  by auto
 
 lemma  grd_dgr:
   "((grd (step D) i)::('a::complete_boolean_algebra)) = \<Squnion> {P . \<exists> j . P = grd (D(i,j))}"
-  apply (simp add: grd_def step_def);
-  apply (simp add: neg_fun_pred);
-  apply (unfold  step_def);
-  apply (unfold INFI_def);
-  apply (unfold compl_Inf);
-  apply (unfold SUPR_def);
-  apply (simp_all add: bot_fun_eq);
-  apply (case_tac "(uminus ` range (\<lambda>j\<Colon>'b. D (i, j) \<bottom>)) = {P\<Colon>'a. \<exists>j\<Colon>'b. P = - D (i, j) \<bottom>}");
-  by auto;
+  apply (simp add: grd_def step_def)
+  apply (simp add: neg_fun_pred)
+  apply (unfold  step_def)
+  apply (unfold INFI_def)
+  apply (unfold compl_Inf)
+  apply (unfold SUPR_def)
+  apply (simp_all add: bot_fun_eq)
+  apply (case_tac "(uminus ` range (\<lambda>j\<Colon>'b. D (i, j) \<bottom>)) = {P\<Colon>'a. \<exists>j\<Colon>'b. P = - D (i, j) \<bottom>}")
+  by auto
 
 lemma  grd_dgr_set:
   "((grd (step D) i)::('a set)) = Union {P . \<exists> j . P = grd (D(i,j))}"
-  by (simp add: grd_dgr);
+  by (simp add: grd_dgr)
 
-lemma not_grd_dgr [simp]: "(a \<in> (- grd (step D) i)) = (\<forall> j . a \<notin> grd (D(i,j)))";
- apply (simp add: grd_dgr);
-  by auto;
+lemma not_grd_dgr [simp]: "(a \<in> (- grd (step D) i)) = (\<forall> j . a \<notin> grd (D(i,j)))"
+ apply (simp add: grd_dgr)
+  by auto
 
-lemma not_grd_dgr2 [simp]: "(- grd (step D) i a) = (\<forall> j . a \<notin> grd (D(i,j)))";
- apply (case_tac "(- grd (step D) i a) = (a \<in> (- grd (step D) i))");
-  apply(simp add: not_grd_dgr);
- apply (simp add: grd_dgr);
- apply auto;
-  by (simp_all add: mem_def bool_Compl_def);
+lemma not_grd_dgr2 [simp]: "(- grd (step D) i a) = (\<forall> j . a \<notin> grd (D(i,j)))"
+ apply (case_tac "(- grd (step D) i a) = (a \<in> (- grd (step D) i))")
+  apply(simp add: not_grd_dgr)
+ apply (simp add: grd_dgr)
+ apply auto
+  by (simp_all add: mem_def bool_Compl_def)
 
-end;
+end
