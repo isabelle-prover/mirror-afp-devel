@@ -3,12 +3,12 @@
                  lfilter by Larry Paulson
     Maintainer:  Andreas Lochbihler
 *)
+header {* A library of functions on lazy lists *}
+
 theory Coinductive_List_Lib imports
   Coinductive_List
   Coinductive_Nat
 begin
-
-section {* A library of functions on lazy lists *}
 
 subsection {* Library function definitions *}
 
@@ -187,6 +187,14 @@ unfolding lmap_eq_LCons_conv by auto
 
 lemma iterates_neq_LNil [simp]: "iterates f x \<noteq> LNil"
 by(subst iterates) simp
+
+lemma lmap_id: 
+  "lmap id = id"
+proof
+  fix xs :: "'a llist"
+  show "lmap id xs = id xs"
+    by(coinduct xs rule: llist_fun_equalityI) simp_all
+qed
 
 subsection {* Corecursion with termination: @{term "llist_corec2"} *}
 
@@ -1527,6 +1535,52 @@ lemma llist_all2_conv_all_lnth:
    (\<forall>n. Fin n < llength ys \<longrightarrow> P (lnth xs n) (lnth ys n))"
 by(auto dest: llist_all2_llengthD llist_all2_lnthD2 intro: llist_all2_all_lnthI)
 
+lemma llist_all2_reflI:
+  "(\<And>x. x \<in> lset xs \<Longrightarrow> P x x) \<Longrightarrow> llist_all2 P xs xs"
+by(simp add: llist_all2_conv_all_lnth lset_def)
+
+lemma llist_all2_LNil1: "llist_all2 P LNil xs \<longleftrightarrow> xs = LNil" 
+by(cases xs) simp_all
+
+lemma llist_all2_LNil2: "llist_all2 P xs LNil \<longleftrightarrow> xs = LNil"
+by(cases xs) simp_all 
+
+lemma llist_all2_lmap1:
+  "llist_all2 P (lmap f xs) ys \<longleftrightarrow> llist_all2 (\<lambda>x. P (f x)) xs ys"
+by(auto simp add: llist_all2_conv_all_lnth)
+
+lemma llist_all2_lmap2:
+  "llist_all2 P xs (lmap g ys) \<longleftrightarrow> llist_all2 (\<lambda>x y. P x (g y)) xs ys"
+by(auto simp add: llist_all2_conv_all_lnth)
+
+lemma lmap_eq_lmap_conv_llist_all2:
+  "lmap f xs = lmap g ys \<longleftrightarrow> llist_all2 (\<lambda>x y. f x = g y) xs ys" (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume "?lhs"
+  have "llength xs = llength (lmap f xs)" by simp
+  also note `?lhs`
+  also have "llength (lmap g ys) = llength ys" by simp
+  finally show ?rhs
+  proof(rule llist_all2_all_lnthI)
+    fix n
+    assume n: "Fin n < llength xs"
+    with `llength xs = llength ys` 
+    have "lnth (lmap f xs) n = f (lnth xs n)" 
+      and "lnth (lmap g ys) n = g (lnth ys n)" by simp_all
+    with `?lhs` show "f (lnth xs n) = g (lnth ys n)" by simp
+  qed
+next
+  assume "?rhs"
+  hence "(lmap f xs, lmap g ys) \<in>
+         {(lmap f xs, lmap g ys)|xs ys. llist_all2 (\<lambda>x y. f x = g y) xs ys}" by blast
+  thus "?lhs"
+  proof(coinduct rule: llist_equalityI)
+    case (Eqllist q)
+    then obtain xs ys where "q = (lmap f xs, lmap g ys)"
+      and "llist_all2 (\<lambda>x y. f x = g y) xs ys" by blast
+    thus ?case by(cases xs)(case_tac [2] ys, auto simp add: llist_all2_LNil1 llist_all2_LNil2)
+  qed
+qed
 
 subsection {* Head and tail: @{term "lhd"} and @{term "ltl"} *}
 
