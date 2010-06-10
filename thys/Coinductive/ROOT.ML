@@ -1,3 +1,3 @@
-no_document use_thys ["Nat_Infinity", "List_Prefix"];
+no_document use_thys ["Nat_Infinity", "List_Prefix", "Quotient_Syntax"];
 
-use_thy "Coinductive_List_Prefix";
+use_thy "Coinductive";
