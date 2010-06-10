@@ -1,5 +1,4 @@
-(*  ID:         $Id: ArchCompAux.thy,v 1.1 2008-10-09 13:28:03 fhaftmann Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
 *)
 
 header {* Comparing Enumeration and Archive *}

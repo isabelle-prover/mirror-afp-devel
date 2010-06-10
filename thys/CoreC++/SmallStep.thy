@@ -1,5 +1,4 @@
 (*  Title:       CoreC++
-    ID:          $Id: SmallStep.thy,v 1.15 2007-07-19 21:23:09 makarius Exp $
     Author:      Daniel Wasserrab
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 

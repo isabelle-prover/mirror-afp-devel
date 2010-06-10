@@ -1,25 +1,22 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExec.thy
-    ID:         $Id: JVMExec.thy,v 1.8 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Cornelia Pusch, Gerwin Klein
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Program Execution in the JVM} *}
 
-theory JVMExec imports JVMExecInstr JVMExceptions begin
+theory JVMExec
+imports JVMExecInstr JVMExceptions
+begin
 
 abbreviation
   instrs_of :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> instr list" where
   "instrs_of P C M == fst(snd(snd(snd(snd(snd(method P C M))))))"
 
-
--- "single step execution:"
-consts
-  exec :: "jvm_prog \<times> jvm_state => jvm_state option"
-recdef exec "{}"
+fun exec :: "jvm_prog \<times> jvm_state => jvm_state option" where -- "single step execution"
   "exec (P, xp, h, []) = None"
 
-  "exec (P, None, h, (stk,loc,C,M,pc)#frs) =
+| "exec (P, None, h, (stk,loc,C,M,pc)#frs) =
   (let 
      i = instrs_of P C M ! pc;
      (xcpt', h', frs') = exec_instr i P h stk loc C M pc frs
@@ -27,11 +24,7 @@ recdef exec "{}"
              None \<Rightarrow> (None,h',frs')
            | Some a \<Rightarrow> find_handler P a h ((stk,loc,C,M,pc)#frs)))"
 
-  "exec (P, Some xa, h, frs) = None" 
-
-(* Needed because recdef splits clauses further up *)
-lemma [simp]: "exec (P, x, h, []) = None"
-by(cases x) simp+
+| "exec (P, Some xa, h, frs) = None" 
 
 -- "relational view"
 inductive_set
@@ -44,14 +37,13 @@ where
 | exec_1I: "exec (P,\<sigma>) = Some \<sigma>' \<Longrightarrow> P \<turnstile> \<sigma> -jvm\<rightarrow>\<^isub>1 \<sigma>'"
 
 -- "reflexive transitive closure:"
-consts
-  exec_all :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
-              ("_ |-/ _ -jvm->/ _" [61,61,61]60)
+definition exec_all :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
+              ("_ |-/ _ -jvm->/ _" [61,61,61]60) where
 (* FIXME exec_all \<rightarrow> exec_star, also in Def.JVM *)
+  exec_all_def1: "P |- \<sigma> -jvm-> \<sigma>' \<longleftrightarrow> (\<sigma>,\<sigma>') \<in> (exec_1 P)\<^sup>*"
+
 notation (xsymbols)
   exec_all  ("(_ \<turnstile>/ _ -jvm\<rightarrow>/ _)" [61,61,61]60)
-defs
-  exec_all_def1: "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> (exec_1 P)\<^sup>*"
 
 
 lemma exec_1_eq:
@@ -111,10 +103,9 @@ text {*
   @{text this} pointer of the frame is set to @{text Null} to simulate
   a static method invokation.
 *}
-constdefs  
-  start_state :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> jvm_state"
-  "start_state P C M \<equiv>
-  let (D,Ts,T,mxs,mxl\<^isub>0,b) = method P C M in
-    (None, start_heap P, [([], Null # replicate mxl\<^isub>0 undefined, C, M, 0)])"
+definition start_state :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> jvm_state" where
+  "start_state P C M =
+  (let (D,Ts,T,mxs,mxl\<^isub>0,b) = method P C M in
+    (None, start_heap P, [([], Null # replicate mxl\<^isub>0 undefined, C, M, 0)]))"
 
 end

@@ -1,5 +1,4 @@
 (*  Title:      Jinja/Compiler/Correctness2.thy
-    ID:         $Id: Correctness2.thy,v 1.9 2008-06-24 22:23:29 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   TUM 2003
 *)
@@ -18,14 +17,13 @@ text{* How to select individual instructions and subsequences of
 instructions from a program given the class, method and program
 counter. *}
 
-constdefs
- before :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr list \<Rightarrow> bool"
-   ("(_,_,_,_/ \<rhd> _)" [51,0,0,0,51] 50)
- "P,C,M,pc \<rhd> is  \<equiv>  is \<le> drop pc (instrs_of P C M)"
+definition before :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr list \<Rightarrow> bool"
+   ("(_,_,_,_/ \<rhd> _)" [51,0,0,0,51] 50) where
+ "P,C,M,pc \<rhd> is \<longleftrightarrow> is \<le> drop pc (instrs_of P C M)"
 
- at :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr \<Rightarrow> bool"
-   ("(_,_,_,_/ \<triangleright> _)" [51,0,0,0,51] 50)
- "P,C,M,pc \<triangleright> i  \<equiv>  \<exists>is. drop pc (instrs_of P C M) = i#is"
+definition at :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr \<Rightarrow> bool"
+   ("(_,_,_,_/ \<triangleright> _)" [51,0,0,0,51] 50) where
+ "P,C,M,pc \<triangleright> i \<longleftrightarrow> (\<exists>is. drop pc (instrs_of P C M) = i#is)"
 
 lemma [simp]: "P,C,M,pc \<rhd> []"
 (*<*)by(simp add:before_def)(*>*)
@@ -178,19 +176,18 @@ lemma match_ex_entry:
 (*<*)by(simp add:matches_ex_entry_def)(*>*)
 
 
-constdefs
-  caught :: "jvm_prog \<Rightarrow> pc \<Rightarrow> heap \<Rightarrow> addr \<Rightarrow> ex_table \<Rightarrow> bool"
-  "caught P pc h a xt  \<equiv>
+definition caught :: "jvm_prog \<Rightarrow> pc \<Rightarrow> heap \<Rightarrow> addr \<Rightarrow> ex_table \<Rightarrow> bool" where
+  "caught P pc h a xt \<longleftrightarrow>
   (\<exists>entry \<in> set xt. matches_ex_entry P (cname_of h a) pc entry)"
 
-  beforex :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table \<Rightarrow> nat set \<Rightarrow> nat \<Rightarrow> bool"
-              ("(2_,/_,/_ \<rhd>/ _ /'/ _,/_)" [51,0,0,0,0,51] 50)
-  "P,C,M \<rhd> xt / I,d \<equiv>
-  \<exists>xt\<^isub>0 xt\<^isub>1. ex_table_of P C M = xt\<^isub>0 @ xt @ xt\<^isub>1 \<and> pcs xt\<^isub>0 \<inter> I = {} \<and> pcs xt \<subseteq> I \<and>
-    (\<forall>pc \<in> I. \<forall>C pc' d'. match_ex_table P C pc xt\<^isub>1 = \<lfloor>(pc',d')\<rfloor> \<longrightarrow> d' \<le> d)"
+definition beforex :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table \<Rightarrow> nat set \<Rightarrow> nat \<Rightarrow> bool"
+              ("(2_,/_,/_ \<rhd>/ _ /'/ _,/_)" [51,0,0,0,0,51] 50) where
+  "P,C,M \<rhd> xt / I,d \<longleftrightarrow>
+  (\<exists>xt\<^isub>0 xt\<^isub>1. ex_table_of P C M = xt\<^isub>0 @ xt @ xt\<^isub>1 \<and> pcs xt\<^isub>0 \<inter> I = {} \<and> pcs xt \<subseteq> I \<and>
+    (\<forall>pc \<in> I. \<forall>C pc' d'. match_ex_table P C pc xt\<^isub>1 = \<lfloor>(pc',d')\<rfloor> \<longrightarrow> d' \<le> d))"
 
-  dummyx :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table \<Rightarrow> nat set \<Rightarrow> nat \<Rightarrow> bool"  ("(2_,_,_ \<triangleright>/ _ '/_,_)" [51,0,0,0,0,51] 50)
-  "P,C,M \<triangleright> xt/I,d \<equiv> P,C,M \<rhd> xt/I,d"
+definition dummyx :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table \<Rightarrow> nat set \<Rightarrow> nat \<Rightarrow> bool"  ("(2_,_,_ \<triangleright>/ _ '/_,_)" [51,0,0,0,0,51] 50) where
+  "P,C,M \<triangleright> xt/I,d \<longleftrightarrow> P,C,M \<rhd> xt/I,d"
 
 lemma beforexD1: "P,C,M \<rhd> xt / I,d \<Longrightarrow> pcs xt \<subseteq> I"
 (*<*)by(auto simp add:beforex_def)(*>*)
@@ -288,10 +285,10 @@ declare fun_upd_apply[simp del]
 (*>*)
 
 
-constdefs
+definition
   handle :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> val list \<Rightarrow> nat \<Rightarrow> frame list
-                \<Rightarrow> jvm_state"
-  "handle P C M a h vs ls pc frs  \<equiv>  find_handler P a h ((vs,ls,C,M,pc) # frs)"
+                \<Rightarrow> jvm_state" where
+  "handle P C M a h vs ls pc frs = find_handler P a h ((vs,ls,C,M,pc) # frs)"
 
 lemma handle_Cons:
  "\<lbrakk> P,C,M \<rhd> xt/I,d; d \<le> size vs; pc \<in> I;
@@ -1053,10 +1050,9 @@ by auto
 lemma atLeast0LessThan[simp]: "{0::nat..<n} = {..<n}"
 by auto
 
-consts exception :: "'a exp \<Rightarrow> addr option"
-recdef exception "{}"
-"exception(Throw a) = Some a"
-"exception e = None"
+fun exception :: "'a exp \<Rightarrow> addr option" where
+  "exception (Throw a) = Some a"
+| "exception e = None"
 
 
 lemma comp\<^isub>2_correct:

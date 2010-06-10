@@ -1,12 +1,13 @@
 (*  Title:      Jinja/J/SmallStep.thy
-    ID:         $Id: SmallStep.thy,v 1.7 2007-07-19 21:23:12 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
 header {* \isaheader{Small Step Semantics} *}
 
-theory SmallStep imports Expr State begin
+theory SmallStep
+imports Expr State
+begin
 
 consts blocks :: "vname list * ty list * val list * expr \<Rightarrow> expr"
 recdef blocks "measure(\<lambda>(Vs,Ts,vs,e). size Vs)"
