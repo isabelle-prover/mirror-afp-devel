@@ -8,7 +8,9 @@
 
 header {* \isaheader{Generic Well-formedness of programs} *}
 
-theory WellForm imports SystemClasses TypeRel WellType begin
+theory WellForm
+imports SystemClasses TypeRel WellType
+begin
 
 
 text {*\noindent This theory defines global well-formedness conditions
@@ -345,7 +347,7 @@ next
   with Ds' subo have "is_subobj(P,(C,C'#D#Ds))" by simp
   hence subobl:"is_subobj(P,(C,butlast(C'#D#Ds)))" 
     and subRbl:"P \<turnstile> last(butlast(C'#D#Ds)) \<prec>\<^sub>R last(C'#D#Ds)" by simp+
-  with DDs Ds' have "is_subobj(P,(C,C'#rev Cs''))" by (simp del:is_subobj.simps)
+  with DDs Ds' have "is_subobj(P,(C,C'#rev Cs''))" by (simp del: is_subobject.simps)
   with IH have suborev:"Subobjs P C (C'#rev Cs'')" by simp
   from subRbl DDs Ds' have subR:"P \<turnstile> last(C'#rev Cs'') \<prec>\<^sub>R C''" by simp
   with suborev wf show ?case by (fastsimp dest:converse_Subobjs_Rep)
