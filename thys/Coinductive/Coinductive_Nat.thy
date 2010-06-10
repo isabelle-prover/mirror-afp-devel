@@ -2,11 +2,12 @@
     Author:      Andreas Lochbihler
     Maintainer:  Andreas Lochbihler
 *)
+
+header {* Coinductive natural numbers *}
+
 theory Coinductive_Nat imports
   Nat_Infinity
 begin
-
-section {* Coinductive natural numbers *}
 
 text {*
   Coinductive natural numbers are isomorphic to natural numbers with infinity:
