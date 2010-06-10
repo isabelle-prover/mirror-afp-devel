@@ -1,5 +1,4 @@
 (*  Title:      HOL/MicroJava/BV/Effect.thy
-    ID:         $Id: Effect.thy,v 1.3 2007-07-19 21:23:10 makarius Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -26,108 +25,97 @@ locale jvm_method = prog +
   defines mxl_def: "mxl \<equiv> 1+size Ts+mxl\<^isub>0"
 
 text {* Program counter of successor instructions: *}
-consts
-  succs :: "instr \<Rightarrow> ty\<^isub>i \<Rightarrow> pc \<Rightarrow> pc list"
-primrec 
+primrec succs :: "instr \<Rightarrow> ty\<^isub>i \<Rightarrow> pc \<Rightarrow> pc list" where
   "succs (Load idx) \<tau> pc     = [pc+1]"
-  "succs (Store idx) \<tau> pc    = [pc+1]"
-  "succs (Push v) \<tau> pc       = [pc+1]"
-  "succs (Getfield F C) \<tau> pc = [pc+1]"
-  "succs (Putfield F C) \<tau> pc = [pc+1]"
-  "succs (New C) \<tau> pc        = [pc+1]"
-  "succs (Checkcast C) \<tau> pc  = [pc+1]"
-  "succs Pop \<tau> pc            = [pc+1]"
-  "succs IAdd \<tau> pc           = [pc+1]"
-  "succs CmpEq \<tau> pc          = [pc+1]"
-succs_IfFalse:
-  "succs (IfFalse b) \<tau> pc    = [pc+1, nat (int pc + b)]"
-succs_Goto:
-  "succs (Goto b) \<tau> pc       = [nat (int pc + b)]"
-succs_Return:
-  "succs Return \<tau> pc         = []"  
-succs_Invoke:
-  "succs (Invoke M n) \<tau> pc   = (if (fst \<tau>)!n = NT then [] else [pc+1])"
-succs_Throw:
-  "succs Throw \<tau> pc          = []"
+| "succs (Store idx) \<tau> pc    = [pc+1]"
+| "succs (Push v) \<tau> pc       = [pc+1]"
+| "succs (Getfield F C) \<tau> pc = [pc+1]"
+| "succs (Putfield F C) \<tau> pc = [pc+1]"
+| "succs (New C) \<tau> pc        = [pc+1]"
+| "succs (Checkcast C) \<tau> pc  = [pc+1]"
+| "succs Pop \<tau> pc            = [pc+1]"
+| "succs IAdd \<tau> pc           = [pc+1]"
+| "succs CmpEq \<tau> pc          = [pc+1]"
+| succs_IfFalse:
+    "succs (IfFalse b) \<tau> pc    = [pc+1, nat (int pc + b)]"
+| succs_Goto:
+    "succs (Goto b) \<tau> pc       = [nat (int pc + b)]"
+| succs_Return:
+    "succs Return \<tau> pc         = []"  
+| succs_Invoke:
+    "succs (Invoke M n) \<tau> pc   = (if (fst \<tau>)!n = NT then [] else [pc+1])"
+| succs_Throw:
+    "succs Throw \<tau> pc          = []"
 
 text "Effect of instruction on the state type:"
 
-consts the_class:: "ty \<Rightarrow> cname"
-recdef the_class "{}"
-"the_class(Class C) = C"
+fun the_class:: "ty \<Rightarrow> cname" where
+  "the_class (Class C) = C"
 
-consts 
-eff\<^isub>i :: "instr \<times> 'm prog \<times> ty\<^isub>i \<Rightarrow> ty\<^isub>i"
+fun eff\<^isub>i :: "instr \<times> 'm prog \<times> ty\<^isub>i \<Rightarrow> ty\<^isub>i" where
+  eff\<^isub>i_Load:
+    "eff\<^isub>i (Load n,  P, (ST, LT))          = (ok_val (LT ! n) # ST, LT)"
+| eff\<^isub>i_Store:
+    "eff\<^isub>i (Store n, P, (T#ST, LT))        = (ST, LT[n:= OK T])"
+| eff\<^isub>i_Push:
+    "eff\<^isub>i (Push v, P, (ST, LT))             = (the (typeof v) # ST, LT)"
+| eff\<^isub>i_Getfield:
+    "eff\<^isub>i (Getfield F C, P, (T#ST, LT))    = (snd (field P C F) # ST, LT)"
+| eff\<^isub>i_Putfield:
+   "eff\<^isub>i (Putfield F C, P, (T\<^isub>1#T\<^isub>2#ST, LT)) = (ST,LT)"
+| eff\<^isub>i_New:
+   "eff\<^isub>i (New C, P, (ST,LT))               = (Class C # ST, LT)"
+| eff\<^isub>i_Checkcast:
+   "eff\<^isub>i (Checkcast C, P, (T#ST,LT))       = (Class C # ST,LT)"
+| eff\<^isub>i_Pop:
+   "eff\<^isub>i (Pop, P, (T#ST,LT))               = (ST,LT)"
+| eff\<^isub>i_IAdd:
+   "eff\<^isub>i (IAdd, P,(T\<^isub>1#T\<^isub>2#ST,LT))           = (Integer#ST,LT)"
+| eff\<^isub>i_CmpEq:
+   "eff\<^isub>i (CmpEq, P, (T\<^isub>1#T\<^isub>2#ST,LT))         = (Boolean#ST,LT)"
+| eff\<^isub>i_IfFalse:
+   "eff\<^isub>i (IfFalse b, P, (T\<^isub>1#ST,LT))        = (ST,LT)"
+| eff\<^isub>i_Invoke:
+   "eff\<^isub>i (Invoke M n, P, (ST,LT))          =
+    (let C = the_class (ST!n); (D,Ts,T\<^isub>r,b) = method P C M
+     in (T\<^isub>r # drop (n+1) ST, LT))"
+| eff\<^isub>i_Goto:
+   "eff\<^isub>i (Goto n, P, s)                    = s"
 
-recdef eff\<^isub>i "{}"
-eff\<^isub>i_Load:
-"eff\<^isub>i (Load n,  P, (ST, LT))          = (ok_val (LT ! n) # ST, LT)"
-eff\<^isub>i_Store:
-"eff\<^isub>i (Store n, P, (T#ST, LT))        = (ST, LT[n:= OK T])"
-eff\<^isub>i_Push:
-"eff\<^isub>i (Push v, P, (ST, LT))             = (the (typeof v) # ST, LT)"
-eff\<^isub>i_Getfield:
-"eff\<^isub>i (Getfield F C, P, (T#ST, LT))    = (snd (field P C F) # ST, LT)"
-eff\<^isub>i_Putfield:
-"eff\<^isub>i (Putfield F C, P, (T\<^isub>1#T\<^isub>2#ST, LT)) = (ST,LT)"
-eff\<^isub>i_New:
-"eff\<^isub>i (New C, P, (ST,LT))               = (Class C # ST, LT)"
-eff\<^isub>i_Checkcast:
-"eff\<^isub>i (Checkcast C, P, (T#ST,LT))       = (Class C # ST,LT)"
-eff\<^isub>i_Pop:
-"eff\<^isub>i (Pop, P, (T#ST,LT))               = (ST,LT)"
-eff\<^isub>i_IAdd:
-"eff\<^isub>i (IAdd, P,(T\<^isub>1#T\<^isub>2#ST,LT))           = (Integer#ST,LT)"
-eff\<^isub>i_CmpEq:
-"eff\<^isub>i (CmpEq, P, (T\<^isub>1#T\<^isub>2#ST,LT))         = (Boolean#ST,LT)"
-eff\<^isub>i_IfFalse:
-"eff\<^isub>i (IfFalse b, P, (T\<^isub>1#ST,LT))        = (ST,LT)"
-eff\<^isub>i_Invoke:
-"eff\<^isub>i (Invoke M n, P, (ST,LT))          =
-  (let C = the_class (ST!n); (D,Ts,T\<^isub>r,b) = method P C M
-   in (T\<^isub>r # drop (n+1) ST, LT))"
-eff\<^isub>i_Goto:
-"eff\<^isub>i (Goto n, P, s)                    = s"
+fun is_relevant_class :: "instr \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> bool" where
+  rel_Getfield:
+    "is_relevant_class (Getfield F D) = (\<lambda>P C. P \<turnstile> NullPointer \<preceq>\<^sup>* C)" 
+| rel_Putfield:
+    "is_relevant_class (Putfield F D) = (\<lambda>P C. P \<turnstile> NullPointer \<preceq>\<^sup>* C)" 
+| rel_Checcast:
+    "is_relevant_class (Checkcast D)  = (\<lambda>P C. P \<turnstile> ClassCast \<preceq>\<^sup>* C)" 
+| rel_New:
+    "is_relevant_class (New D)        = (\<lambda>P C. P \<turnstile> OutOfMemory \<preceq>\<^sup>* C)" 
+| rel_Throw:
+    "is_relevant_class Throw          = (\<lambda>P C. True)"
+| rel_Invoke:
+    "is_relevant_class (Invoke M n)   = (\<lambda>P C. True)"
+| rel_default:
+    "is_relevant_class i              = (\<lambda>P C. False)"
 
+definition is_relevant_entry :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool" where
+  "is_relevant_entry P i pc e \<longleftrightarrow> (let (f,t,C,h,d) = e in is_relevant_class i P C \<and> pc \<in> {f..<t})"
 
-consts
-  is_relevant_class :: "instr \<Rightarrow> 'm prog \<Rightarrow> cname \<Rightarrow> bool" 
-recdef is_relevant_class "{}"
-rel_Getfield:
-  "is_relevant_class (Getfield F D) = (\<lambda>P C. P \<turnstile> NullPointer \<preceq>\<^sup>* C)" 
-rel_Putfield:
-  "is_relevant_class (Putfield F D) = (\<lambda>P C. P \<turnstile> NullPointer \<preceq>\<^sup>* C)" 
-rel_Checcast:
-  "is_relevant_class (Checkcast D)  = (\<lambda>P C. P \<turnstile> ClassCast \<preceq>\<^sup>* C)" 
-rel_New:
-  "is_relevant_class (New D)        = (\<lambda>P C. P \<turnstile> OutOfMemory \<preceq>\<^sup>* C)" 
-rel_Throw:
-  "is_relevant_class Throw          = (\<lambda>P C. True)"
-rel_Invoke:
-  "is_relevant_class (Invoke M n)   = (\<lambda>P C. True)"
-rel_default:
-  "is_relevant_class i              = (\<lambda>P C. False)"
+definition relevant_entries :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ex_table" where
+  "relevant_entries P i pc = filter (is_relevant_entry P i pc)"
 
-constdefs
-  is_relevant_entry :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool" 
-  "is_relevant_entry P i pc e \<equiv> let (f,t,C,h,d) = e in is_relevant_class i P C \<and> pc \<in> {f..<t}"
+definition xcpt_eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ty\<^isub>i 
+               \<Rightarrow> ex_table \<Rightarrow> (pc \<times> ty\<^isub>i') list" where    
+  "xcpt_eff i P pc \<tau> et = (let (ST,LT) = \<tau> in 
+  map (\<lambda>(f,t,C,h,d). (h, Some (Class C#drop (size ST - d) ST, LT))) (relevant_entries P i pc et))"
 
-  relevant_entries :: "'m prog \<Rightarrow> instr \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ex_table" 
-  "relevant_entries P i pc \<equiv> filter (is_relevant_entry P i pc)"
+definition norm_eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>i \<Rightarrow> (pc \<times> ty\<^isub>i') list" where
+  "norm_eff i P pc \<tau> = map (\<lambda>pc'. (pc',Some (eff\<^isub>i (i,P,\<tau>)))) (succs i \<tau> pc)"
 
-  xcpt_eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ty\<^isub>i 
-               \<Rightarrow> ex_table \<Rightarrow> (pc \<times> ty\<^isub>i') list"                               
-  "xcpt_eff i P pc \<tau> et \<equiv> let (ST,LT) = \<tau> in 
-  map (\<lambda>(f,t,C,h,d). (h, Some (Class C#drop (size ST - d) ST, LT))) (relevant_entries P i pc et)"
-
-  norm_eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty\<^isub>i \<Rightarrow> (pc \<times> ty\<^isub>i') list"
-  "norm_eff i P pc \<tau> \<equiv> map (\<lambda>pc'. (pc',Some (eff\<^isub>i (i,P,\<tau>)))) (succs i \<tau> pc)"
-
-  eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' \<Rightarrow> (pc \<times> ty\<^isub>i') list"
-  "eff i P pc et t \<equiv>
-  case t of           
+definition eff :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' \<Rightarrow> (pc \<times> ty\<^isub>i') list" where
+  "eff i P pc et t = (case t of           
     None \<Rightarrow> []          
-  | Some \<tau> \<Rightarrow> (norm_eff i P pc \<tau>) @ (xcpt_eff i P pc \<tau> et)"
+  | Some \<tau> \<Rightarrow> (norm_eff i P pc \<tau>) @ (xcpt_eff i P pc \<tau> et))"
 
 
 lemma eff_None:
@@ -141,71 +129,67 @@ by (simp add: eff_def)
 (* FIXME: getfield, \<exists>T D. P \<turnstile> C sees F:T in D \<and> .. *)
 
 text "Conditions under which eff is applicable:"
-consts
-app\<^isub>i :: "instr \<times> 'm prog \<times> pc \<times> nat \<times> ty \<times> ty\<^isub>i \<Rightarrow> bool"
 
-recdef app\<^isub>i "{}" 
-app\<^isub>i_Load:
-"app\<^isub>i (Load n, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
-  (n < length LT \<and> LT ! n \<noteq> Err \<and> length ST < mxs)"
-app\<^isub>i_Store:
-"app\<^isub>i (Store n, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
-  (n < length LT)"
-app\<^isub>i_Push:
-"app\<^isub>i (Push v, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
-  (length ST < mxs \<and> typeof v \<noteq> None)"
-app\<^isub>i_Getfield:
-"app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
-  (\<exists>T\<^isub>f. P \<turnstile> C sees F:T\<^isub>f in C \<and> P \<turnstile> T \<le> Class C)"
-app\<^isub>i_Putfield:
-"app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) = 
-  (\<exists>T\<^isub>f. P \<turnstile> C sees F:T\<^isub>f in C \<and> P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f)" 
-app\<^isub>i_New:
-"app\<^isub>i (New C, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
-  (is_class P C \<and> length ST < mxs)"
-app\<^isub>i_Checkcast:
-"app\<^isub>i (Checkcast C, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
-  (is_class P C \<and> is_refT T)"
-app\<^isub>i_Pop:
-"app\<^isub>i (Pop, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
-  True"
-app\<^isub>i_IAdd:
-"app\<^isub>i (IAdd, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST,LT)) = (T\<^isub>1 = T\<^isub>2 \<and> T\<^isub>1 = Integer)"
-app\<^isub>i_CmpEq:
-"app\<^isub>i (CmpEq, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST,LT)) =
-  (T\<^isub>1 = T\<^isub>2 \<or> is_refT T\<^isub>1 \<and> is_refT T\<^isub>2)"
-app\<^isub>i_IfFalse:
-"app\<^isub>i (IfFalse b, P, pc, mxs, T\<^isub>r, (Boolean#ST,LT)) = 
-  (0 \<le> int pc + b)"
-app\<^isub>i_Goto:
-"app\<^isub>i (Goto b, P, pc, mxs, T\<^isub>r, s) = 
-  (0 \<le> int pc + b)"
-app\<^isub>i_Return:
-"app\<^isub>i (Return, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
-  (P \<turnstile> T \<le> T\<^isub>r)"
-app\<^isub>i_Throw:
-"app\<^isub>i (Throw, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
-  is_refT T"
-app\<^isub>i_Invoke:
-"app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
-  (n < length ST \<and> 
-  (ST!n \<noteq> NT \<longrightarrow>
-    (\<exists>C D Ts T m. ST!n = Class C \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and>
-                  P \<turnstile> rev (take n ST) [\<le>] Ts)))"
+fun app\<^isub>i :: "instr \<times> 'm prog \<times> pc \<times> nat \<times> ty \<times> ty\<^isub>i \<Rightarrow> bool" where
+  app\<^isub>i_Load:
+    "app\<^isub>i (Load n, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
+    (n < length LT \<and> LT ! n \<noteq> Err \<and> length ST < mxs)"
+| app\<^isub>i_Store:
+    "app\<^isub>i (Store n, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
+    (n < length LT)"
+| app\<^isub>i_Push:
+    "app\<^isub>i (Push v, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
+     (length ST < mxs \<and> typeof v \<noteq> None)"
+| app\<^isub>i_Getfield:
+    "app\<^isub>i (Getfield F C, P, pc, mxs, T\<^isub>r, (T#ST, LT)) = 
+    (\<exists>T\<^isub>f. P \<turnstile> C sees F:T\<^isub>f in C \<and> P \<turnstile> T \<le> Class C)"
+| app\<^isub>i_Putfield:
+    "app\<^isub>i (Putfield F C, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST, LT)) = 
+    (\<exists>T\<^isub>f. P \<turnstile> C sees F:T\<^isub>f in C \<and> P \<turnstile> T\<^isub>2 \<le> (Class C) \<and> P \<turnstile> T\<^isub>1 \<le> T\<^isub>f)" 
+| app\<^isub>i_New:
+    "app\<^isub>i (New C, P, pc, mxs, T\<^isub>r, (ST,LT)) = 
+    (is_class P C \<and> length ST < mxs)"
+| app\<^isub>i_Checkcast:
+    "app\<^isub>i (Checkcast C, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+    (is_class P C \<and> is_refT T)"
+| app\<^isub>i_Pop:
+    "app\<^isub>i (Pop, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+    True"
+| app\<^isub>i_IAdd:
+    "app\<^isub>i (IAdd, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST,LT)) = (T\<^isub>1 = T\<^isub>2 \<and> T\<^isub>1 = Integer)"
+| app\<^isub>i_CmpEq:
+    "app\<^isub>i (CmpEq, P, pc, mxs, T\<^isub>r, (T\<^isub>1#T\<^isub>2#ST,LT)) =
+    (T\<^isub>1 = T\<^isub>2 \<or> is_refT T\<^isub>1 \<and> is_refT T\<^isub>2)"
+| app\<^isub>i_IfFalse:
+    "app\<^isub>i (IfFalse b, P, pc, mxs, T\<^isub>r, (Boolean#ST,LT)) = 
+    (0 \<le> int pc + b)"
+| app\<^isub>i_Goto:
+    "app\<^isub>i (Goto b, P, pc, mxs, T\<^isub>r, s) = 
+    (0 \<le> int pc + b)"
+| app\<^isub>i_Return:
+    "app\<^isub>i (Return, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+    (P \<turnstile> T \<le> T\<^isub>r)"
+| app\<^isub>i_Throw:
+    "app\<^isub>i (Throw, P, pc, mxs, T\<^isub>r, (T#ST,LT)) = 
+    is_refT T"
+| app\<^isub>i_Invoke:
+    "app\<^isub>i (Invoke M n, P, pc, mxs, T\<^isub>r, (ST,LT)) =
+    (n < length ST \<and> 
+    (ST!n \<noteq> NT \<longrightarrow>
+      (\<exists>C D Ts T m. ST!n = Class C \<and> P \<turnstile> C sees M:Ts \<rightarrow> T = m in D \<and>
+                    P \<turnstile> rev (take n ST) [\<le>] Ts)))"
   
-app\<^isub>i_default:
-"app\<^isub>i (i,P, pc,mxs,T\<^isub>r,s) = False"
+| app\<^isub>i_default:
+    "app\<^isub>i (i,P, pc,mxs,T\<^isub>r,s) = False"
 
 
-constdefs
-  xcpt_app :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i \<Rightarrow> bool"
-  "xcpt_app i P pc mxs xt \<tau> \<equiv> \<forall>(f,t,C,h,d) \<in> set (relevant_entries P i pc xt). is_class P C \<and> d \<le> size (fst \<tau>) \<and> d < mxs"
+definition xcpt_app :: "instr \<Rightarrow> 'm prog \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i \<Rightarrow> bool" where
+  "xcpt_app i P pc mxs xt \<tau> \<longleftrightarrow> (\<forall>(f,t,C,h,d) \<in> set (relevant_entries P i pc xt). is_class P C \<and> d \<le> size (fst \<tau>) \<and> d < mxs)"
 
-  app :: "instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> 
-           ty\<^isub>i' \<Rightarrow> bool"                                          
-  "app i P mxs T\<^isub>r pc mpc xt t \<equiv> case t of None \<Rightarrow> True | Some \<tau> \<Rightarrow> 
+definition app :: "instr \<Rightarrow> 'm prog \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ex_table \<Rightarrow> ty\<^isub>i' \<Rightarrow> bool" where
+  "app i P mxs T\<^isub>r pc mpc xt t = (case t of None \<Rightarrow> True | Some \<tau> \<Rightarrow> 
   app\<^isub>i (i,P,pc,mxs,T\<^isub>r,\<tau>) \<and> xcpt_app i P pc mxs xt \<tau> \<and> 
-  (\<forall>(pc',\<tau>') \<in> set (eff i P pc xt t). pc' < mpc)"
+  (\<forall>(pc',\<tau>') \<in> set (eff i P pc xt t). pc' < mpc))"
 
 
 lemma app_Some:
@@ -390,9 +374,6 @@ lemma effNone:
 
 
 text {* some helpers to make the specification directly executable: *}
-declare list_all2_Nil [code]
-declare list_all2_Cons [code]
-
 lemma relevant_entries_append [simp]:
   "relevant_entries P i pc (xt @ xt') = relevant_entries P i pc xt @ relevant_entries P i pc xt'"
   by (unfold relevant_entries_def) simp
