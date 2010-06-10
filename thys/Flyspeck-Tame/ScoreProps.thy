@@ -201,26 +201,6 @@ next
   qed
 qed
 
-
-
-(*consts ExcessNotAtRecList :: "(vertex, nat) table \<Rightarrow> graph \<Rightarrow> vertex list"
-recdef ExcessNotAtRecList "measure (\<lambda>ps. size ps)"
-"ExcessNotAtRecList [] = (%g. [])"
-"ExcessNotAtRecList (p#ps) = (%g.
-  let l1 = ExcessNotAtRecList ps g;
-  l2 = ExcessNotAtRecList (deleteAround g (fst p) ps) g in
-  if ExcessNotAtRec ps g
-   \<le> snd p + ExcessNotAtRec (deleteAround g (fst p) ps) g
-  then fst p#l2 else l1)"
-(hints recdef_simp: less_Suc_eq_le length_deleteAround)
-thm ExcessNotAtRecList.induct
-
-lemma ExcessNotAtRecList_induct'
-(?P\<Colon>(nat \<times> nat) list \<Rightarrow> bool) [] \<Longrightarrow>
-(\<And>(a\<Colon>nat) (b\<Colon>nat) ps\<Colon>(nat \<times> nat) list.
-    \<forall>:000\<Colon>graph. ?P (deleteAround :000 a ps) \<Longrightarrow> ?P ps \<Longrightarrow> ?P ((a, b) # ps)) \<Longrightarrow>
-?P (?x\<Colon>(nat \<times> nat) list)*)
-
 function ExcessNotAtRecList :: "(vertex, nat) table \<Rightarrow> graph \<Rightarrow> vertex list" where
   "ExcessNotAtRecList [] = (%g. [])"
   | "ExcessNotAtRecList ((x, y) # ps) = (%g.
