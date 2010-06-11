@@ -314,7 +314,7 @@ by (induct rule:Subobjs.induct, fastsimp dest:converse_SubobjsR_Rep Subobjs_Rep,
 
 
 lemma isSubobj_Subobjs_rev:
-assumes subo:"is_subobj(P,(C,C'#rev Cs'))" and wf:"wf_prog wf_md P"
+assumes subo:"is_subobj P ((C,C'#rev Cs'))" and wf:"wf_prog wf_md P"
 shows "Subobjs P C (C'#rev Cs')"
 using subo
 proof (induct Cs')
@@ -322,14 +322,14 @@ proof (induct Cs')
   show ?case
   proof (cases "C=C'")
     case True
-    have "is_subobj (P,(C,C'#rev []))" by fact
-    with True have "is_subobj (P,(C,[C]))" by simp
+    have "is_subobj P ((C,C'#rev []))" by fact
+    with True have "is_subobj P ((C,[C]))" by simp
     hence "is_class P C"
       by (fastsimp elim:converse_rtranclE dest:subclsS_subcls1 elim:subcls1_class)
     with True show ?thesis by (fastsimp intro:Subobjs_Base)
   next
     case False
-    have "is_subobj (P,(C,C'#rev []))" by fact
+    have "is_subobj P ((C,C'#rev []))" by fact
     with False obtain D where sup:"P \<turnstile> C \<preceq>\<^sup>* D" and subS:"P \<turnstile> D \<prec>\<^sub>S C'"
       by fastsimp
     with wf have "is_class P C'"
@@ -340,14 +340,14 @@ proof (induct Cs')
   qed 
 next 
   case (Cons C'' Cs'')
-  have IH:"is_subobj (P,(C,C'#rev Cs'')) \<Longrightarrow> Subobjs P C (C'#rev Cs'')"
-    and subo:"is_subobj (P,(C,C'#rev(C''# Cs'')))" by fact+
+  have IH:"is_subobj P ((C,C'#rev Cs'')) \<Longrightarrow> Subobjs P C (C'#rev Cs'')"
+    and subo:"is_subobj P ((C,C'#rev(C''# Cs'')))" by fact+
   obtain Ds' where Ds':"Ds' = rev Cs''" by simp
   obtain D Ds where DDs:"D#Ds = Ds'@[C'']" by (cases Ds') auto
-  with Ds' subo have "is_subobj(P,(C,C'#D#Ds))" by simp
-  hence subobl:"is_subobj(P,(C,butlast(C'#D#Ds)))" 
+  with Ds' subo have "is_subobj P ((C,C'#D#Ds))" by simp
+  hence subobl:"is_subobj P ((C,butlast(C'#D#Ds)))" 
     and subRbl:"P \<turnstile> last(butlast(C'#D#Ds)) \<prec>\<^sub>R last(C'#D#Ds)" by simp+
-  with DDs Ds' have "is_subobj(P,(C,C'#rev Cs''))" by (simp del: is_subobject.simps)
+  with DDs Ds' have "is_subobj P ((C,C'#rev Cs''))" by (simp del: is_subobj.simps)
   with IH have suborev:"Subobjs P C (C'#rev Cs'')" by simp
   from subRbl DDs Ds' have subR:"P \<turnstile> last(C'#rev Cs'') \<prec>\<^sub>R C''" by simp
   with suborev wf show ?case by (fastsimp dest:converse_Subobjs_Rep)
@@ -356,7 +356,7 @@ qed
 
 
 lemma isSubobj_Subobjs:
-assumes subo:"is_subobj(P,(C,Cs))" and wf:"wf_prog wf_md P"
+assumes subo:"is_subobj P ((C,Cs))" and wf:"wf_prog wf_md P"
 shows "Subobjs P C Cs"
 
 using subo
@@ -365,9 +365,9 @@ proof (induct Cs)
   thus ?case by simp
 next
   case (Cons C' Cs')
-  have subo:"is_subobj(P,(C,C'#Cs'))" by fact
+  have subo:"is_subobj P ((C,C'#Cs'))" by fact
   obtain Cs'' where Cs'':"Cs'' = rev Cs'" by simp
-  with subo have "is_subobj(P,(C,C'#rev Cs''))" by simp
+  with subo have "is_subobj P ((C,C'#rev Cs''))" by simp
   with wf have "Subobjs P C (C'#rev Cs'')" by - (rule isSubobj_Subobjs_rev)
   with Cs'' show ?case by simp
 qed
@@ -375,7 +375,7 @@ qed
 
 
 lemma isSubobj_eq_Subobjs:
-  "wf_prog wf_md P \<Longrightarrow> is_subobj(P,(C,Cs)) = (Subobjs P C Cs)"
+  "wf_prog wf_md P \<Longrightarrow> is_subobj P ((C,Cs)) = (Subobjs P C Cs)"
 by(auto elim:isSubobj_Subobjs Subobjs_isSubobj)
 
 
