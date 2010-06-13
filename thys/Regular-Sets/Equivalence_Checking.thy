@@ -107,11 +107,26 @@ lemma deriv_no_occurrence:
   "x \<notin> atoms r \<Longrightarrow> ederiv x r = Zero"
 by (induct r) auto
 
+lemma atoms_nPlus[simp]: "atoms(nPlus r s) = atoms r \<union> atoms s"
+by(induct r s rule: nPlus.induct) auto
+
+lemma atoms_nTimes: "atoms(nTimes r s) \<subseteq> atoms r \<union> atoms s"
+by(induct r s rule: nTimes.induct) auto
+
+lemma atoms_norm: "atoms(norm r) \<subseteq> atoms(r)"
+by (induct r) (auto dest!:subsetD[OF atoms_nTimes])
+
+lemma atoms_ederiv: "atoms(ederiv a r) \<subseteq> atoms r"
+by (induct r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
+
 
 subsection {* Bisimulation between regular expressions *}
 
+types rexp_pair = "nat rexp * nat rexp"
+types rexp_pairs = "rexp_pair list"
+
 definition is_bisimulation :: 
-  "nat list \<Rightarrow> (nat rexp * nat rexp) list \<Rightarrow> bool"
+  "nat list \<Rightarrow> rexp_pairs \<Rightarrow> bool"
 where
 "is_bisimulation as ps =
   (\<forall>(r,s)\<in> set ps. (final r \<longleftrightarrow> final s) \<and>
@@ -164,27 +179,25 @@ qed
 
 subsection {* Closure computation *}
 
-types rexp_pair = "nat rexp * nat rexp"
-
-fun succs :: "nat list \<Rightarrow> rexp_pair \<Rightarrow> rexp_pair list" where
+fun succs :: "nat list \<Rightarrow> rexp_pair \<Rightarrow> rexp_pairs" where
 "succs as (r, s) = map (\<lambda>a. (ederiv a r, ederiv a s)) as"
 
-definition test :: "rexp_pair list * rexp_pair list \<Rightarrow> bool"
+definition test :: "rexp_pairs * rexp_pairs \<Rightarrow> bool"
 where "test = (\<lambda>([],_) \<Rightarrow> False | ((p,q)#_, _) \<Rightarrow> final p = final q)"
 
-definition step :: "nat list \<Rightarrow> rexp_pair list * rexp_pair list \<Rightarrow> rexp_pair list * rexp_pair list"
+definition step :: "nat list \<Rightarrow> rexp_pairs * rexp_pairs \<Rightarrow> rexp_pairs * rexp_pairs"
 where "step as = (\<lambda>(ws,ps).
     let 
       ps' = hd ws # ps;
-      new = [ p. p \<leftarrow> succs as (hd ws), p \<notin> set ps' ]
+      new = filter (\<lambda>p. p \<notin> set ps') (succs as (hd ws))
     in (new @ tl ws, ps'))"
 
 definition closure ::
-  "nat list \<Rightarrow> (rexp_pair list * rexp_pair list)
-   \<Rightarrow> (rexp_pair list * rexp_pair list) option" where
+  "nat list \<Rightarrow> rexp_pairs * rexp_pairs
+   \<Rightarrow> (rexp_pairs * rexp_pairs) option" where
 "closure as = while test (step as)"
 
-definition pre_bisim :: "nat list \<Rightarrow> rexp_pair list * rexp_pair list \<Rightarrow> bool"
+definition pre_bisim :: "nat list \<Rightarrow> rexp_pairs * rexp_pairs \<Rightarrow> bool"
 where
 "pre_bisim as = (\<lambda>(ws,ps).
  (\<forall>(r,s)\<in> set ps. (final r \<longleftrightarrow> final s) \<and>
@@ -218,18 +231,6 @@ proof-
     using while_rule[of ?I, OF _ assms[unfolded closure_def]]  by simp
   thus "set ws <= set ps" by simp
 qed
-
-lemma atoms_nPlus[simp]: "atoms(nPlus r s) = atoms r \<union> atoms s"
-by(induct r s rule: nPlus.induct) auto
-
-lemma atoms_nTimes: "atoms(nTimes r s) <= atoms r \<union> atoms s"
-by(induct r s rule: nTimes.induct) auto
-
-lemma atoms_norm: "atoms(norm r) \<subseteq> atoms(r)"
-by (induct r) (auto dest!:subsetD[OF atoms_nTimes])
-
-lemma atoms_ederiv: "atoms(ederiv a r) <= atoms r"
-by (induct r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
 
 theorem closure_sound_atoms:
 assumes "closure as (ws,[]) = Some([],ps)"
