@@ -1,7 +1,7 @@
 header {* Deciding Regular Expression Equivalence *}
 
 theory Equivalence_Checking
-imports Regular_Exp While_Combinator
+imports Regular_Exp While_Option
 begin
 
 text{* This theory is based on work by Jan Rutten \cite{Rutten98}. *}
@@ -108,7 +108,7 @@ lemma deriv_no_occurrence:
 by (induct r) auto
 
 
-subsection {* Certificate Checking *}
+subsection {* Bisimulation between regular expressions *}
 
 definition is_bisimulation :: 
   "nat list \<Rightarrow> (nat rexp * nat rexp) list \<Rightarrow> bool"
@@ -117,7 +117,7 @@ where
   (\<forall>(r,s)\<in> set ps. (final r \<longleftrightarrow> final s) \<and>
     (\<forall>a\<in>set as. (ederiv a r, ederiv a s) \<in> set ps))"
 
-lemma check_soundness:
+lemma bisim_lang_eq:
 assumes atoms: "\<forall>(r,s) \<in> set ps. atoms r \<union> atoms s \<subseteq> set as"
 assumes bisim: "is_bisimulation as ps"
 assumes "(r, s) \<in> set ps"
@@ -127,7 +127,6 @@ proof -
   with atoms bisim 
   have atoms': "\<forall>(r,s) \<in> set ps'. atoms r \<union> atoms s \<subseteq> set as"and bisim': "is_bisimulation as ps'"
     by (auto simp: is_bisimulation_def)
-  
   let ?R = "\<lambda>K L. (\<exists>(r,s)\<in>set ps'. K = lang r \<and> L = lang s)"
   show ?thesis
   proof (rule language_coinduct[where R="?R"])
@@ -141,7 +140,6 @@ proof -
     with bisim' have "final r \<longleftrightarrow> final s"
       by (auto simp: is_bisimulation_def)
     thus "[] \<in> K \<longleftrightarrow> [] \<in> L" by (auto simp: lang_final KL)
-
     fix a
     show "?R (deriv a K) (deriv a L)"
     proof cases
@@ -166,21 +164,89 @@ qed
 
 subsection {* Closure computation *}
 
-text {* The following functions are not verified, but the 
-result is checked dynamically *}
-
 types rexp_pair = "nat rexp * nat rexp"
 
 fun succs :: "nat list \<Rightarrow> rexp_pair \<Rightarrow> rexp_pair list" where
 "succs as (r, s) = map (\<lambda>a. (ederiv a r, ederiv a s)) as"
 
-definition closure :: "nat list \<Rightarrow> (rexp_pair list * rexp_pair list) \<Rightarrow> rexp_pair list" where
-"closure as = snd o while (\<lambda>(ws,ps). ws \<noteq> []) (\<lambda>(ws,ps).
+definition test :: "rexp_pair list * rexp_pair list \<Rightarrow> bool"
+where "test = (\<lambda>([],_) \<Rightarrow> False | ((p,q)#_, _) \<Rightarrow> final p = final q)"
+
+definition step :: "nat list \<Rightarrow> rexp_pair list * rexp_pair list \<Rightarrow> rexp_pair list * rexp_pair list"
+where "step as = (\<lambda>(ws,ps).
     let 
       ps' = hd ws # ps;
       new = [ p. p \<leftarrow> succs as (hd ws), p \<notin> set ps' ]
     in (new @ tl ws, ps'))"
 
+definition closure ::
+  "nat list \<Rightarrow> (rexp_pair list * rexp_pair list)
+   \<Rightarrow> (rexp_pair list * rexp_pair list) option" where
+"closure as = while test (step as)"
+
+definition pre_bisim :: "nat list \<Rightarrow> rexp_pair list * rexp_pair list \<Rightarrow> bool"
+where
+"pre_bisim as = (\<lambda>(ws,ps).
+ (\<forall>(r,s)\<in> set ps. (final r \<longleftrightarrow> final s) \<and>
+   (\<forall>a\<in>set as. (ederiv a r, ederiv a s) \<in> set ps \<union> set ws)))"
+
+lemma closure_sound_bisim:
+assumes "closure as (ws,[]) = Some([],ps)"
+shows "is_bisimulation as ps"
+proof-
+  { fix s have "pre_bisim as s \<Longrightarrow> test s \<Longrightarrow> pre_bisim as (step as s)"
+      unfolding pre_bisim_def test_def step_def
+      by(cases s) (auto simp: split_def split: list.splits) }
+  moreover
+  have "pre_bisim as (ws,[])" by(simp add: pre_bisim_def)
+  ultimately have "pre_bisim as ([],ps)"
+    by(metis while_rule[of "pre_bisim as", OF _ assms[unfolded closure_def]])
+  thus "is_bisimulation as ps"
+    by(simp add: pre_bisim_def is_bisimulation_def test_def)
+qed
+
+theorem closure_sound_subset:
+assumes "closure as (ws,[]) = Some([],ps)"
+shows "set ws \<subseteq> set ps"
+proof-
+  let ?I = "%s. set ws <= set(fst s @ snd s)"
+  { fix s have "?I s \<Longrightarrow> test s \<Longrightarrow> ?I (step as s)"
+      unfolding test_def step_def by (fastsimp split: list.splits) }
+  moreover
+  have "?I (ws,[])" by simp
+  ultimately have "?I ([],ps)"
+    using while_rule[of ?I, OF _ assms[unfolded closure_def]]  by simp
+  thus "set ws <= set ps" by simp
+qed
+
+lemma atoms_nPlus[simp]: "atoms(nPlus r s) = atoms r \<union> atoms s"
+by(induct r s rule: nPlus.induct) auto
+
+lemma atoms_nTimes: "atoms(nTimes r s) <= atoms r \<union> atoms s"
+by(induct r s rule: nTimes.induct) auto
+
+lemma atoms_norm: "atoms(norm r) \<subseteq> atoms(r)"
+by (induct r) (auto dest!:subsetD[OF atoms_nTimes])
+
+lemma atoms_ederiv: "atoms(ederiv a r) <= atoms r"
+by (induct r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
+
+theorem closure_sound_atoms:
+assumes "closure as (ws,[]) = Some([],ps)"
+and "\<forall>(r,s) \<in> set ws. atoms r \<union> atoms s \<subseteq> set as"
+shows "\<forall>(r,s) \<in> set ps. atoms r \<union> atoms s \<subseteq> set as"
+proof-
+  let ?I = "%s. \<forall>(r,s) \<in> set(fst s @ snd s). atoms r \<union> atoms s \<subseteq> set as"
+  { fix s have "?I s \<Longrightarrow> test s \<Longrightarrow> ?I (step as s)"
+      unfolding test_def step_def
+      by(fastsimp split: list.splits dest!: subsetD[OF atoms_ederiv]) }
+  moreover
+  have "?I (ws,[])" using assms(2) by simp
+  ultimately have "?I ([],ps)"
+    using while_rule[of ?I, OF _ assms(1)[unfolded closure_def]]
+    using [[simp_depth_limit = 5]] by simp
+  thus ?thesis by simp
+qed
 
 subsection {* The overall procedure *}
 
@@ -193,37 +259,32 @@ where
 | "add_atoms (Times r s) = add_atoms s o add_atoms r"
 | "add_atoms (Star r) = add_atoms r"
 
-lemma add_atoms_conv: "set (add_atoms r as) = atoms r \<union> set as"
+lemma set_add_atoms: "set (add_atoms r as) = atoms r \<union> set as"
 by (induct r arbitrary: as) auto
 
 definition check_eqv :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> bool"
 where
 "check_eqv r s =
-  (let as = add_atoms r (add_atoms s []);
-     ps = closure as ([(norm r, norm s)], [])
-   in
-    ((\<forall>(r,s) \<in> set ps. 
-      set (add_atoms r (add_atoms s [])) \<subseteq> set as) \<and>
-    is_bisimulation as ps \<and>
-    (norm r, norm s) \<in> set ps))"
-
-declare subset_eq[code_unfold]
+  (case closure (add_atoms r (add_atoms s [])) ([(norm r, norm s)], []) of
+     Some([],_) \<Rightarrow> True | _ \<Rightarrow> False)"
 
 lemma soundness: 
 assumes "check_eqv r s" shows "lang r = lang s"
 proof -
+  let ?as = "add_atoms r (add_atoms s [])"
+  obtain ps where 1: "closure ?as ([(norm r,norm s)],[]) = Some([],ps)"
+    using assms by(auto simp: check_eqv_def split:option.splits list.splits)
   have "lang (norm r) = lang (norm s)"
-  proof (rule check_soundness)
-    let ?as = "add_atoms r (add_atoms s [])"
-    let ?ps = "closure ?as ([(norm r, norm s)], [])"
-    from `check_eqv r s`
-    show "\<forall>(r, s)\<in>set ?ps. atoms r \<union> atoms s \<subseteq> set ?as" 
-      "is_bisimulation ?as ?ps"
-      "(norm r, norm s) \<in> set ?ps"
-      unfolding check_eqv_def Let_def 
-      by (auto simp: add_atoms_conv)
+  proof (rule bisim_lang_eq[OF _ closure_sound_bisim[OF 1]])
+    show "\<forall>(r, s)\<in>set ps. atoms r \<union> atoms s \<subseteq> set ?as"
+      using closure_sound_atoms[OF 1]
+      by (fastsimp simp: set_add_atoms dest!: subsetD[OF atoms_norm])
+    show "(norm r, norm s) \<in> set ps" using closure_sound_subset[OF 1] by simp
   qed
   thus "lang r = lang s" by simp
 qed
+
+lemma "check_eqv (Plus One (Times (Atom 0) (Star(Atom 0)))) (Star(Atom 0))"
+by eval
 
 end
