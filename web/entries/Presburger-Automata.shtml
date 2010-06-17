@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,60 +22,46 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Formalizing the Logic-Automaton Connection</h1>
-<p> </p>
-
+<h1><font class="first">F</font>ormalizing
+the
+<font class="first">L</font>ogic-Automaton
+<font class="first">C</font>onnection
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Formalizing the Logic-Automaton Connection
-    </td></tr>
-		
+        <td class="data" width="80%">Formalizing the Logic-Automaton Connection</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://www.in.tum.de/~berghofe">Stefan Berghofer</a> and Markus Reiter
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2009-12-03</td></tr>
+        <td class="data"><a href="http://www.in.tum.de/~berghofe">Stefan Berghofer</a> and  Markus Reiter</td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This work presents a formalization of a library for automata on bit strings.
-It forms the basis of a reflection-based
-decision procedure for Presburger arithmetic, which is efficiently executable
-thanks to Isabelle's code generator. With this work, we therefore provide a
-mechanized proof of a well-known connection between logic and automata theory.
-The formalization is also described in a publication [TPHOLs 2009].
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2009-12-03</td></tr>
 
-   </td></tr>
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+This work presents a formalization of a library for automata on bit strings. It
+forms the basis of a reflection-based decision procedure for Presburger
+arithmetic, which is efficiently executable thanks to Isabelle's code generator.
+With this work, we therefore provide a mechanized proof of a well-known
+connection between logic and automata theory. The formalization is also
+described in a publication [TPHOLs 2009].
+        </td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Presburger-Automata" -->
-<!--#set var="base" value="HOL" --> <!--- ??? could be HOLCF etc --->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -101,12 +86,12 @@ The formalization is also described in a publication [TPHOLs 2009].
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
-	</td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

@@ -33,10 +33,10 @@
 <h3>Automata and Formal Languages</h3>
 
 <div class="list">
-<a href="entries/Presburger-Automata.shtml">Regular-Sets-and-Expressions</a>  
-<a href="entries/Presburger-Automata.shtml">Presburger-Automata</a>  
-<a href="entries/Functional-Automata.shtml">Functional-Automata</a>  
-<a href="entries/Tree-Automata.shtml">Tree-Automata</a>  
+<a href="entries/Regular-Sets.shtml">Regular-Sets</a> &nbsp;
+<a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
+<a href="entries/Functional-Automata.shtml">Functional-Automata</a> &nbsp;
+<a href="entries/Tree-Automata.shtml">Tree-Automata</a> &nbsp;
 </div>
 
 <h3>Algorithms</h3>
@@ -49,93 +49,94 @@
 <a href="entries/SATSolverVerification.shtml">SATSolverVerification</a> &nbsp;
 <a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
 
-<strong>Distributed:</strong> <a href="entries/DiskPaxos.shtml">DiskPaxos</a>  
-<a href="entries/GenClock.shtml">GenClock</a>  
-<a href="entries/ClockSynchInst.shtml">ClockSynchInst</a>  
+<strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
+<a href="entries/GenClock.shtml">GenClock</a> &nbsp;
+<a href="entries/ClockSynchInst.shtml">ClockSynchInst</a> &nbsp;
 </div>
 
 <h3>Data Structures</h3>
 
 <div class="list">
-<a href="entries/AVL-Trees.shtml">AVL-Trees</a>  
-<a href="entries/BDD.shtml">BDD</a>  
-<a href="entries/BinarySearchTree.shtml">BinarySearchTree</a>  
-<a href="entries/FinFun.shtml">FinFun</a>  
-<a href="entries/Collections.shtml">Collections</a>  
-<a href="entries/FileRefinement.shtml">FileRefinement</a>  
-<a href="entries/List-Index.shtml">List-Index</a>  
-<a href="entries/Huffman.shtml">Huffman</a>  
+<a href="entries/AVL-Trees.shtml">AVL-Trees</a> &nbsp;
+<a href="entries/BDD.shtml">BDD</a> &nbsp;
+<a href="entries/BinarySearchTree.shtml">BinarySearchTree</a> &nbsp;
+<a href="entries/FinFun.shtml">FinFun</a> &nbsp;
+<a href="entries/Collections.shtml">Collections</a> &nbsp;
+<a href="entries/FileRefinement.shtml">FileRefinement</a> &nbsp;
+<a href="entries/List-Index.shtml">List-Index</a> &nbsp;
+<a href="entries/Huffman.shtml">Huffman</a> &nbsp;
+<a href="entries/Lazy-Lists-II.shtml">Lazy-Lists-II</a> &nbsp;
 </div>
 
 <h3>Functional Programming</h3>
 
 <div class="list">
-<a href="entries/Coinductive.shtml">Coinductive</a>  
-<a href="entries/Stream-Fusion.shtml">Stream-Fusion</a>  
+<a href="entries/Coinductive.shtml">Coinductive</a> &nbsp;
+<a href="entries/Stream-Fusion.shtml">Stream-Fusion</a> &nbsp;
 </div>
 
 <h3>Programming Languages</h3>
+
 <div class="list">
-  <strong>Language Definitions:</strong>&nbsp;<a href="entries/CoreC++.shtml">CoreC++</a> &nbsp;
-  <a href="entries/FeatherweightJava.shtml">FeatherweightJava</a> &nbsp;
-  <a href="entries/Jinja.shtml">Jinja</a> &nbsp;
-  <a href="entries/JinjaThreads.shtml">JinjaThreads</a> &nbsp;
-  <a href="entries/Locally-Nameless-Sigma.shtml">Locally-Nameless-Sigma</a> &nbsp;
-  <a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
-  <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
 
-  <strong>Type Systems:</strong> <a href="entries/MiniML.shtml">MiniML</a>  
-  <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a>  
+<strong>Language Definitions:</strong>&nbsp;<a href="entries/CoreC++.shtml">CoreC++</a> &nbsp;
+<a href="entries/FeatherweightJava.shtml">FeatherweightJava</a> &nbsp;
+<a href="entries/Jinja.shtml">Jinja</a> &nbsp;
+<a href="entries/JinjaThreads.shtml">JinjaThreads</a> &nbsp;
+<a href="entries/Locally-Nameless-Sigma.shtml">Locally-Nameless-Sigma</a> &nbsp;
+<a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
+<a href="entries/Simpl.shtml">Simpl</a> &nbsp;
 
-  <strong>Logics:</strong>&nbsp;<a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
-  <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp; 
-  <a href="entries/DataRefinementIBP.shtml">DataRefinementIBP</a> &nbsp;
-  <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
-  <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
+<strong>Type Systems:</strong>&nbsp;<a href="entries/MiniML.shtml">MiniML</a> &nbsp;
+<a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
 
-  <strong>Compiling:</strong> <a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling-Exceptions-Correctly</a>  
-  <a href="entries/NormByEval.shtml">NormByEval</a>  
+<strong>Logics:</strong>&nbsp;<a href="entries/Simpl.shtml">Simpl</a> &nbsp;
+<a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
+<a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp;
+<a href="entries/DataRefinementIBP.shtml">DataRefinementIBP</a> &nbsp;
+<a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
 
-  <strong>Static Analysis:</strong> <a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a>  
-  <a href="entries/Slicing.shtml">Slicing</a>  
-  <a href="entries/HRB-Slicing.shtml">HRB-Slicing</a>  
+<strong>Compiling:</strong>&nbsp;<a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling-Exceptions-Correctly</a> &nbsp;
+<a href="entries/NormByEval.shtml">NormByEval</a> &nbsp;
 
-  <strong>Transformations:</strong> <a href="entries/WorkerWrapper.shtml">WorkerWrapper</a>  
+<strong>Static Analysis:</strong>&nbsp;<a href="entries/Program-Conflict-Analysis.shtml">Program-Conflict-Analysis</a> &nbsp;
+<a href="entries/Slicing.shtml">Slicing</a> &nbsp;
+<a href="entries/HRB-Slicing.shtml">HRB-Slicing</a> &nbsp;
 
-  <strong>Misc:</strong> <a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a>  
+<strong>Transformations:</strong>&nbsp;<a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
+
+<strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
 </div>
 
 <h3>Security</h3>
 
 <div class="list">
-  <a href="entries/SIFPL.shtml">SIFPL</a>  
-  <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a>  
-  <a href="entries/HotelKeyCards.shtml">HotelKeyCards</a>  
-  <a href="entries/RSAPSS.shtml">RSAPSS</a>  
-  <a href="entries/InformationFlowSlicing.shtml">InformationFlowSlicing</a>  
+<a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
+<a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
+<a href="entries/HotelKeyCards.shtml">HotelKeyCards</a> &nbsp;
+<a href="entries/RSAPSS.shtml">RSAPSS</a> &nbsp;
+<a href="entries/InformationFlowSlicing.shtml">InformationFlowSlicing</a> &nbsp;
 </div>
-
-<p> </p>
 
 <h2>Logic</h2>
-<div class="list">
-<a href="entries/Verified-Prover.shtml">Verified-Prover</a>  
-<a href="entries/Completeness.shtml">Completeness</a>  
-<a href="entries/Ordinal.shtml">Countable Ordinals</a>  
-<a href="entries/Ordinals_and_Cardinals.shtml">Ordinals_and_Cardinals</a>  
-<a href="entries/Presburger-Automata.shtml">Presburger-Automata</a>  
-<a href="entries/FOL-Fitting.shtml">FOL-Fitting</a>  
-<a href="entries/SequentInvertibility.shtml">SequentInvertibility</a>  
-<a href="entries/LinearQuantifierElim.shtml">LinearQuantifierElim</a>  
-<a href="entries/Recursion-Theory-I.shtml">Recursion-Theory-I</a>  
-<a href="entries/Free-Boolean-Algebra.shtml">Free-Boolean-Algebra</a>  
-</div>
 
-<p> </p>
+<div class="list">
+<a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
+<a href="entries/Verified-Prover.shtml">Verified-Prover</a> &nbsp;
+<a href="entries/Completeness.shtml">Completeness</a> &nbsp;
+<a href="entries/Ordinal.shtml">Ordinal</a> &nbsp;
+<a href="entries/Ordinals_and_Cardinals.shtml">Ordinals_and_Cardinals</a> &nbsp;
+<a href="entries/FOL-Fitting.shtml">FOL-Fitting</a> &nbsp;
+<a href="entries/SequentInvertibility.shtml">SequentInvertibility</a> &nbsp;
+<a href="entries/LinearQuantifierElim.shtml">LinearQuantifierElim</a> &nbsp;
+<a href="entries/Recursion-Theory-I.shtml">Recursion-Theory-I</a> &nbsp;
+<a href="entries/Free-Boolean-Algebra.shtml">Free-Boolean-Algebra</a> &nbsp;
+</div>
 
 <h2>Mathematics</h2>
 
 <h3>Algebra</h3>
+
 <div class="list">
 <a href="entries/CofGroups.shtml">CofGroups</a> &nbsp;
 <a href="entries/Group-Ring-Module.shtml">Group-Ring-Module</a> &nbsp;
@@ -144,49 +145,58 @@
 </div>
 
 <h3>Analysis</h3>
+
 <div class="list">
-<a href="entries/Cauchy.shtml">Cauchy</a>  
-<a href="entries/Integration.shtml">Integration</a>  
+<a href="entries/Cauchy.shtml">Cauchy</a> &nbsp;
+<a href="entries/Integration.shtml">Integration</a> &nbsp;
 </div>
 
 <h3>Number Theory</h3>
+
 <div class="list">
-<a href="entries/Fermat3_4.shtml">Fermat3_4</a>  
-<a href="entries/Perfect-Number-Thm.shtml">Perfect-Number-Thm</a>  
-<a href="entries/SumSquares.shtml">SumSquares</a>  
+<a href="entries/Fermat3_4.shtml">Fermat3_4</a> &nbsp;
+<a href="entries/Perfect-Number-Thm.shtml">Perfect-Number-Thm</a> &nbsp;
+<a href="entries/SumSquares.shtml">SumSquares</a> &nbsp;
 </div>
 
 <h3>Social Choice Theory</h3>
+
 <div class="list">
-<a href="entries/ArrowImpossibilityGS.shtml">ArrowImpossibilityGS</a>  
-<a href="entries/SenSocialChoice.shtml">SenSocialChoice</a>  
+<a href="entries/ArrowImpossibilityGS.shtml">ArrowImpossibilityGS</a> &nbsp;
+<a href="entries/SenSocialChoice.shtml">SenSocialChoice</a> &nbsp;
 </div>
 
 <h3>Topology</h3>
+
 <div class="list">
-<a href="entries/Topology.shtml">Topology</a>  
+<a href="entries/Topology.shtml">Topology</a> &nbsp;
 </div>
 
 <h3>Graph Theory</h3>
+
 <div class="list">
-<a href="entries/Flyspeck-Tame.shtml">Flyspeck-Tame</a>  
+<a href="entries/Flyspeck-Tame.shtml">Flyspeck-Tame</a> &nbsp;
 </div>
 
 <h3>Combinatorics</h3>
+
 <div class="list">
-<a href="entries/Ramsey-Infinite.shtml">Ramsey-Infinite</a>  
+<a href="entries/Ramsey-Infinite.shtml">Ramsey-Infinite</a> &nbsp;
 </div>
 
 <h3>Category Theory</h3>
+
 <div class="list">
-<a href="entries/Category.shtml">Category</a>  
+<a href="entries/Category.shtml">Category</a> &nbsp;
 </div>
 
 <h3>Misc</h3>
+
 <div class="list">
-<a href="entries/FunWithFunctions.shtml">FunWithFunctions</a>  
-<a href="entries/FunWithTilings.shtml">FunWithTilings</a>  
+<a href="entries/FunWithFunctions.shtml">FunWithFunctions</a> &nbsp;
+<a href="entries/FunWithTilings.shtml">FunWithTilings</a> &nbsp;
 </div>
+
 
 </td></tr>    
 </tbody>

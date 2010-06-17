@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,60 +22,59 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</h1>
-<p> </p>
-
+<h1><font class="first">A</font>
+<font class="first">M</font>echanically
+<font class="first">V</font>erified,
+<font class="first">E</font>fficient,
+<font class="first">S</font>ound
+and
+<font class="first">C</font>omplete
+<font class="first">T</font>heorem
+<font class="first">P</font>rover
+<font class="first">F</font>or
+<font class="first">F</font>irst
+<font class="first">O</font>rder
+<font class="first">L</font>ogic
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
-    </td></tr>
-		
+        <td class="data" width="80%">A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2004-09-28</td></tr>
+        <td class="data"><a href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-  Soundness and completeness for a system of first order logic are formally
-  proved, building on James Margetson's formalization of work by Wainer and
-  Wallen. The completeness proofs naturally suggest an
-  algorithm to derive proofs. This algorithm, which can be implemented 
-  tail recursively, is formalized in Isabelle/HOL.
-  The algorithm can be executed via the rewriting tactics of Isabelle.
-  Alternatively, the definitions can be exported to OCaml, yielding a
-  directly executable program.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2004-09-28</td></tr>
 
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+Soundness and completeness for a system of first order logic are formally
+proved, building on James Margetson's formalization of work by Wainer and
+Wallen. The completeness proofs naturally suggest an algorithm to derive proofs.
+This algorithm, which can be implemented tail recursively, is formalized in
+Isabelle/HOL. The algorithm can be executed via the rewriting tactics of
+Isabelle. Alternatively, the definitions can be exported to OCaml, yielding a
+directly executable program.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Verified-Prover" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -97,19 +95,20 @@ href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:	
-    <ul>
-    <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
-    <li>Isabelle 2007: <a href="../release/afp-Verified-Prover-2007-11-27.tar.gz">afp-Verified-Prover-2007-11-27.tar.gz</a></li>
-    <li>Isabelle 2005: <a href="../release/afp-Verified-Prover-2005-10-14.tar.gz">afp-Verified-Prover-2005-10-14.tar.gz</a></li>
-    <li>Isabelle 2004: <a href="../release/afp-Verified-Prover-2004-09-28.tar.gz">afp-Verified-Prover-2004-09-28.tar.gz</a></li>
-    </ul>
-    </td></tr>
+    <tr><td class="links">Older releases:
+<ul>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2007-11-27.tar.gz">afp-<!--#echo var="name" -->-2007-11-27.tar.gz</a></li>
+<li>Isabelle 2005: <a href="../release/afp-<!--#echo var="name" -->-2005-10-14.tar.gz">afp-<!--#echo var="name" -->-2005-10-14.tar.gz</a></li>
+<li>Isabelle 2004: <a href="../release/afp-<!--#echo var="name" -->-2004-09-28.tar.gz">afp-<!--#echo var="name" -->-2004-09-28.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

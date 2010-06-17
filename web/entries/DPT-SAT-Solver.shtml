@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,58 +22,50 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->A Fast SAT Solver for Isabelle in Standard ML</h1>
-<p> </p>
-
+<h1><font class="first">A</font>
+<font class="first">F</font>ast
+<font class="first">S</font>AT
+<font class="first">S</font>olver
+for
+<font class="first">I</font>sabelle
+in
+<font class="first">S</font>tandard
+<font class="first">M</font>L
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->A Fast SAT Solver for Isabelle in Standard ML
-    </td></tr>
-		
+        <td class="data" width="80%">A Fast SAT Solver for Isabelle in Standard ML</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: -->Armin Heller
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2009-12-09</td></tr>
+        <td class="data">Armin Heller</td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This contribution contains a fast SAT solver for Isabelle written
-in Standard ML.  By loading the theory <tt>DPT_SAT_Solver</tt>,
-the SAT solver installs itself (under the name ``dptsat'') and certain
-Isabelle tools like Refute will start using it automatically.
-This is a port of the DPT (Decision Procedure Toolkit) SAT Solver written in
-OCaml.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2009-12-09</td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+This contribution contains a fast SAT solver for Isabelle written in Standard
+ML. By loading the theory <tt>DPT_SAT_Solver</tt>, the SAT solver installs
+itself (under the name ``dptsat'') and certain Isabelle tools like Refute will
+start using it automatically. This is a port of the DPT (Decision Procedure
+Toolkit) SAT Solver written in OCaml.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="DPT-SAT-Solver" -->
-<!--#set var="base" value="HOL" --> <!--- ??? could be HOLCF etc --->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -99,12 +90,12 @@ OCaml.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
-	</td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

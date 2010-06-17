@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,62 +22,54 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</h1>
-<p> </p>
-
+<h1><font class="first">V</font>erification
+of
+the
+<font class="first">D</font>eutsch-Schorr-Waite
+<font class="first">G</font>raph
+<font class="first">M</font>arking
+<font class="first">A</font>lgorithm
+using
+<font class="first">D</font>ata
+<font class="first">R</font>efinement
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement
-    </td></tr>
-		
+        <td class="data" width="80%">Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: -->
-<a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a> and
-<a href="http://users.abo.fi/Ralph-Johan.Back/">Ralph-Johan Back</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2010-05-28</td></tr>
+        <td class="data"><a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a> and  <a href="http://users.abo.fi/Ralph-Johan.Back/">Ralph-Johan Back</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as a 
-benchmark in many formalizations of pointer programs. The main purpose of this 
-mechanization is to show how data refinement of invariant based programs
-can be used in verifying practical algorithms. The verification starts
-with an abstract algorithm working on a graph given by a relation {\em next}
-on nodes. Gradually the abstract program is refined into Deutsch-Schorr-Waite
-graph marking algorithm where only one bit per graph node of additional memory
-is used for marking.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2010-05-28</td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as
+a benchmark in many formalizations of pointer programs. The main purpose of this
+mechanization is to show how data refinement of invariant based programs can be
+used in verifying practical algorithms. The verification starts with an abstract
+algorithm working on a graph given by a relation <i>next</i> on nodes. Gradually
+the abstract program is refined into Deutsch-Schorr-Waite graph marking
+algorithm where only one bit per graph node of additional memory is used for
+marking.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="GraphMarkingIBP" -->
-<!--#set var="base" value="HOL" --> <!--- ??? could be HOLCF etc --->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -103,12 +94,12 @@ is used for marking.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
-	</td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

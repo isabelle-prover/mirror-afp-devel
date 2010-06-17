@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,60 +22,49 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Sums of Two and Four Squares</h1>
-<p> </p>
-
+<h1><font class="first">S</font>ums
+of
+<font class="first">T</font>wo
+and
+<font class="first">F</font>our
+<font class="first">S</font>quares
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Sums of Two and Four Squares
-    </td></tr>
-		
+        <td class="data" width="80%">Sums of Two and Four Squares</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://www.roelofoosterhuis.nl/">Roelof Oosterhuis</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2007-08-12</td></tr>
+        <td class="data"><a href="http://www.roelofoosterhuis.nl/">Roelof Oosterhuis</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This document presents the mechanised proofs of the following results:
-<ul>
-<li>any prime number of the form 4m+1 can be written as the sum of two squares;</li>
-<li>any natural number can be written as the sum of four squares</li>
-</ul>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2007-08-12</td></tr>
 
-   </td></tr>
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+This document presents the mechanised proofs of the following
+results:<ul><li>any prime number of the form 4m+1 can be written as the sum of
+two squares;</li><li>any natural number can be written as the sum of four
+squares</li></ul>
+        </td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="SumSquares" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -98,16 +86,17 @@ This document presents the mechanised proofs of the following results:
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	    <ul>
-	    <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-	    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
-	    <li>Isabelle 2007: <a href="../release/afp-SumSquares-2007-11-27.tar.gz">afp-SumSquares-2007-11-27.tar.gz</a></li>
-		</ul>
-	</td></tr>
+<ul>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2007-11-27.tar.gz">afp-<!--#echo var="name" -->-2007-11-27.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

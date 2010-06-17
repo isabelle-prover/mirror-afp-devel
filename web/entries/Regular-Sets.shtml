@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,62 +22,48 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Regular Sets and Expressions</h1>
-<p> </p>
-
+<h1><font class="first">R</font>egular
+<font class="first">S</font>ets
+and
+<font class="first">E</font>xpressions
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Regular Sets and Expressions
-    </td></tr>
-		
-    <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: -->
-<a href="http://www.in.tum.de/~krauss">Alexander Krauss</a> and
-<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2010-05-12</td></tr>
+        <td class="data" width="80%">Regular Sets and Expressions</td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This is a library of constructions on regular expressions and languages.  It
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://www.in.tum.de/~krauss">Alexander Krauss</a> and  <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2010-05-12</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+This is a library of constructions on regular expressions and languages. It
 provides the operations of concatenation, Kleene star and derivative on
-languages. Regular expressions and their meaning are defined.  An executable
+languages. Regular expressions and their meaning are defined. An executable
 equivalence checker for regular expressions is verified; it does not need
 automata but works directly on regular expressions. <i>By mapping regular
 expressions to binary relations, an automatic and complete proof method for
 (in)equalities of binary relations over union, concatenation and (reflexive)
 transitive closure is obtained.</i>
-   </td></tr>
+        </td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Regular-Sets" -->
-<!--#set var="base" value="HOL" --> <!--- ??? could be HOLCF etc --->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -103,12 +88,12 @@ transitive closure is obtained.</i>
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
-	</td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

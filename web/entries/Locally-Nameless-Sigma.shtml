@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,66 +22,49 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Locally Nameless Sigma Calculus</h1>
-<p> </p>
-
+<h1><font class="first">L</font>ocally
+<font class="first">N</font>ameless
+<font class="first">S</font>igma
+<font class="first">C</font>alculus
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Locally Nameless Sigma Calculus
-    </td></tr>
-		
+        <td class="data" width="80%">Locally Nameless Sigma Calculus</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: -->
-Ludovic Henrio (Ludovic.Henrio [at] sophia.inria.fr),
-Florian Kammüller (flokam [at] cs.tu-berlin.de),
-Bianca Lutz (sowilo [at] cs.tu-berlin.de),
-Henry Sudhof (hsudhof [at] cs.tu-berlin.de)
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2010-04-30</td></tr>
+        <td class="data">Ludovic Henrio (Ludovic /dot/ Henrio /at/ sophia /dot/ inria /dot/ fr), Florian Kamm&uuml;ller (flokam /at/ cs /dot/ tu-berlin /dot/ de), Bianca Lutz (sowilo /at/ cs /dot/ tu-berlin /dot/ de) and  Henry Sudhof (hsudhof /at/ cs /dot/ tu-berlin /dot/ de)</td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-We present a Theory of Objects based on the original functional
-sigma-calculus by Abadi and Cardelli but with an additional parameter to
-methods. We prove confluence of the operational semantics following the
-outline of Nipkow's proof of confluence for the lambda-calculus reusing his
-theory Commutation, a generic diamond lemma reduction. We furthermore
-formalize a simple type system for our sigma-calculus including a proof of
-type safety. The entire development uses the concept of Locally Nameless
-representation for binders. We reuse an earlier proof of
-confluence for a simpler sigma-calculus based on de Bruijn indices and lists
-to represent objects.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2010-04-30</td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+We present a Theory of Objects based on the original functional sigma-calculus
+by Abadi and Cardelli but with an additional parameter to methods. We prove
+confluence of the operational semantics following the outline of Nipkow's proof
+of confluence for the lambda-calculus reusing his theory Commutation, a generic
+diamond lemma reduction. We furthermore formalize a simple type system for our
+sigma-calculus including a proof of type safety. The entire development uses the
+concept of Locally Nameless representation for binders. We reuse an earlier
+proof of confluence for a simpler sigma-calculus based on de Bruijn indices and
+lists to represent objects.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Locally-Nameless-Sigma" -->
-<!--#set var="base" value="HOL" --> <!--- ??? could be HOLCF etc --->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -107,12 +89,12 @@ to represent objects.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
-	</td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>
