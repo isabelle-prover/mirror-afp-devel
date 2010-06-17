@@ -128,10 +128,10 @@
 <a href="entries/LinearQuantifierElim.shtml">LinearQuantifierElim</a>  
 <a href="entries/Recursion-Theory-I.shtml">Recursion-Theory-I</a>  
 <a href="entries/Free-Boolean-Algebra.shtml">Free-Boolean-Algebra</a>  
-<div class="list">
-<h3>Rewriting</h3>
-  <a href="entries/Abstract-Rewriting.shtml">Abstract-Rewriting</a>
 </div>
+<h3>Rewriting</h3>
+<div class="list">
+  <a href="entries/Abstract-Rewriting.shtml">Abstract-Rewriting</a>
 </div>
 
 <p> </p>
