@@ -33,21 +33,21 @@
 <h3>Automata and Formal Languages</h3>
 
 <div class="list">
-<a href="entries/Presburger-Automata.shtml">Regular-Sets-and-Expressions</a>  
-<a href="entries/Presburger-Automata.shtml">Presburger-Automata</a>  
 <a href="entries/Functional-Automata.shtml">Functional-Automata</a>  
+<a href="entries/Presburger-Automata.shtml">Presburger-Automata</a>  
+<a href="entries/Regular-Sets.shtml">Regular-Sets-and-Expressions</a>  
 <a href="entries/Tree-Automata.shtml">Tree-Automata</a>  
 </div>
 
 <h3>Algorithms</h3>
 
 <div class="list">
-<a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a> &nbsp;
-<a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
-<a href="entries/FFT.shtml">FFT</a> &nbsp;
-<a href="entries/GraphMarkingIBP.shtml">GraphMarkingIBP</a> &nbsp;
-<a href="entries/SATSolverVerification.shtml">SATSolverVerification</a> &nbsp;
-<a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a> &nbsp;
+<a href="entries/DPT-SAT-Solver.shtml">DPT-SAT-Solver</a>  
+<a href="entries/Depth-First-Search.shtml">Depth-First-Search</a>  
+<a href="entries/FFT.shtml">FFT</a>  
+<a href="entries/GraphMarkingIBP.shtml">GraphMarkingIBP</a>  
+<a href="entries/SATSolverVerification.shtml">SATSolverVerification</a>  
+<a href="entries/MuchAdoAboutTwo.shtml">MuchAdoAboutTwo</a>  
 
 <strong>Distributed:</strong> <a href="entries/DiskPaxos.shtml">DiskPaxos</a>  
 <a href="entries/GenClock.shtml">GenClock</a>  
@@ -63,8 +63,9 @@
 <a href="entries/FinFun.shtml">FinFun</a>  
 <a href="entries/Collections.shtml">Collections</a>  
 <a href="entries/FileRefinement.shtml">FileRefinement</a>  
-<a href="entries/List-Index.shtml">List-Index</a>  
 <a href="entries/Huffman.shtml">Huffman</a>  
+<a href="entries/List-Index.shtml">List-Index</a>  
+<a href="entries/Huffman.shtml">Matrix</a>  
 </div>
 
 <h3>Functional Programming</h3>
@@ -76,22 +77,22 @@
 
 <h3>Programming Languages</h3>
 <div class="list">
-  <strong>Language Definitions:</strong>&nbsp;<a href="entries/CoreC++.shtml">CoreC++</a> &nbsp;
-  <a href="entries/FeatherweightJava.shtml">FeatherweightJava</a> &nbsp;
-  <a href="entries/Jinja.shtml">Jinja</a> &nbsp;
-  <a href="entries/JinjaThreads.shtml">JinjaThreads</a> &nbsp;
-  <a href="entries/Locally-Nameless-Sigma.shtml">Locally-Nameless-Sigma</a> &nbsp;
-  <a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
-  <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
+  <strong>Language Definitions:</strong> <a href="entries/CoreC++.shtml">CoreC++</a>  
+  <a href="entries/FeatherweightJava.shtml">FeatherweightJava</a>  
+  <a href="entries/Jinja.shtml">Jinja</a>  
+  <a href="entries/JinjaThreads.shtml">JinjaThreads</a>  
+  <a href="entries/Locally-Nameless-Sigma.shtml">Locally-Nameless-Sigma</a>  
+  <a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a>  
+  <a href="entries/Simpl.shtml">Simpl</a>  
 
   <strong>Type Systems:</strong> <a href="entries/MiniML.shtml">MiniML</a>  
   <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a>  
 
-  <strong>Logics:</strong>&nbsp;<a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a> &nbsp;
-  <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a> &nbsp; 
-  <a href="entries/DataRefinementIBP.shtml">DataRefinementIBP</a> &nbsp;
-  <a href="entries/SIFPL.shtml">SIFPL</a> &nbsp;
-  <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
+  <strong>Logics:</strong> <a href="entries/Abstract-Hoare-Logics.shtml">Abstract-Hoare-Logics</a>  
+  <a href="entries/BytecodeLogicJmlTypes.shtml">BytecodeLogicJmlTypes</a>   
+  <a href="entries/DataRefinementIBP.shtml">DataRefinementIBP</a>  
+  <a href="entries/SIFPL.shtml">SIFPL</a>  
+  <a href="entries/Simpl.shtml">Simpl</a>  
 
   <strong>Compiling:</strong> <a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling-Exceptions-Correctly</a>  
   <a href="entries/NormByEval.shtml">NormByEval</a>  
@@ -131,16 +132,21 @@
 <a href="entries/Free-Boolean-Algebra.shtml">Free-Boolean-Algebra</a>  
 </div>
 
+<h3>Rewriting</h3>
+<div class="list">
+  <a href="entries/Abstract-Rewriting.shtml">Abstract-Rewriting</a>
+</div>
+
 <p> </p>
 
 <h2>Mathematics</h2>
 
 <h3>Algebra</h3>
 <div class="list">
-<a href="entries/CofGroups.shtml">CofGroups</a> &nbsp;
-<a href="entries/Group-Ring-Module.shtml">Group-Ring-Module</a> &nbsp;
-<a href="entries/Robbins-Conjecture.shtml">Robbins-Conjecture</a> &nbsp;
-<a href="entries/Valuation.shtml">Valuation</a> &nbsp;
+<a href="entries/CofGroups.shtml">CofGroups</a>  
+<a href="entries/Group-Ring-Module.shtml">Group-Ring-Module</a>  
+<a href="entries/Robbins-Conjecture.shtml">Robbins-Conjecture</a>  
+<a href="entries/Valuation.shtml">Valuation</a>  
 </div>
 
 <h3>Analysis</h3>
