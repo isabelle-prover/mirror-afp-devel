@@ -1,0 +1,105 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="front.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p> </p>
+
+<h1><font class="first">E</font>xecutable
+<font class="first">M</font>atrix
+<font class="first">O</font>perations
+on
+<font class="first">M</font>atrices
+of
+<font class="first">A</font>rbitrary
+<font class="first">D</font>imensions
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Executable Matrix Operations on Matrices of Arbitrary Dimensions</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Christian Sternagel (christian /dot/ sternagel /at/ uibk /dot/ ac /dot/ at) and  Ren&eacute; Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2010-06-14</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+We provide the operations of matrix addition, multiplication, transposition, and
+matrix comparisons as executable functions over ordered semirings. Moreover, it
+is proven that strongly normalizing (monotone) orders can be lifted to strongly
+normalizing (monotone) orders over matrices. We further show that the standard
+semirings over the naturals, integers, and rationals, as well as the arctic
+semirings satisfy the axioms that are required by our matrix theory. Our
+formalization is part of the <a href="http://cl-
+informatik.uibk.ac.at/software/ceta">CeTA</a> system which contains several
+termination techniques. The provided theories have been essential to formalize
+matrix-interpretations and arctic interpretations.
+        </td></tr>
+
+
+<!--#set var="status" value="-STATUS-" -->
+<!--#set var="version" value="-VERSION-" -->
+<!---INCLUDE- file="devel-warning.shtml"-->
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Matrix" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	<!-- link to README.hmtl if no document exists -->	
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+    <tr><td class="links">Older releases:
+None    </td></tr>
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

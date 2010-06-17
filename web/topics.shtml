@@ -64,6 +64,7 @@
 <a href="entries/Collections.shtml">Collections</a> &nbsp;
 <a href="entries/FileRefinement.shtml">FileRefinement</a> &nbsp;
 <a href="entries/List-Index.shtml">List-Index</a> &nbsp;
+<a href="entries/Matrix.shtml">Matrix</a> &nbsp;
 <a href="entries/Huffman.shtml">Huffman</a> &nbsp;
 <a href="entries/Lazy-Lists-II.shtml">Lazy-Lists-II</a> &nbsp;
 </div>
@@ -131,6 +132,12 @@
 <a href="entries/LinearQuantifierElim.shtml">LinearQuantifierElim</a> &nbsp;
 <a href="entries/Recursion-Theory-I.shtml">Recursion-Theory-I</a> &nbsp;
 <a href="entries/Free-Boolean-Algebra.shtml">Free-Boolean-Algebra</a> &nbsp;
+</div>
+
+<h3>Rewriting</h3>
+
+<div class="list">
+<a href="entries/Abstract-Rewriting.shtml">Abstract-Rewriting</a> &nbsp;
 </div>
 
 <h2>Mathematics</h2>
