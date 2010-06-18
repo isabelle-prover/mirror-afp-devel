@@ -195,21 +195,27 @@ qed simp_all
 lemma plus_inf:
   "nqfree f \<Longrightarrow> \<exists>x.\<forall>y\<ge>x. DLO.I (inf\<^isub>+ f) xs = DLO.I f (y # xs)"
   (is "_ \<Longrightarrow> \<exists>x. ?P f x")
-proof(induct f)
+proof (induct f)
+  have dlo_bound: "\<And>z::'a. \<exists>x. \<forall>y\<ge>x. y > z"
+  proof -
+    fix z
+    from no_ub obtain w :: 'a where "w > z" ..
+    then have "\<forall>y\<ge>w. y > z" by auto
+    then show "?thesis z" ..
+  qed
   case (Atom a)
   show ?case
   proof (cases a rule: aplus_inf.cases)
     case 1 thus ?thesis
-      by(simp add:nth_Cons')
-        (metis no_ub linorder_not_less antisym order_less_trans)
+      by (simp add: nth_Cons') (metis linorder_not_less)
   next
-    case 2 thus ?thesis
-      by (simp) (metis no_ub linorder_not_less order_less_le_trans)
+    case 2 thus ?thesis by (auto intro: dlo_bound)
   next
-    case 5 thus ?thesis
-      by(simp add:nth_Cons') (metis no_ub linorder_not_less)
+    case 5 thus ?thesis 
+      by simp (metis dlo_bound less_imp_neq)
   next
-    case 6 thus ?thesis by simp (metis no_ub linorder_not_less)
+    case 6 thus ?thesis
+      by simp (metis dlo_bound less_imp_neq)
   qed simp_all
 next
   case (And f1 f2)
@@ -222,7 +228,6 @@ next
   hence "?P (Or f1 f2) (max x1 x2)" by(force simp:or_def)
   thus ?case ..
 qed simp_all
-
 
 declare[[simp_depth_limit=2]]
 lemma LBex:
