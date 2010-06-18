@@ -1312,7 +1312,7 @@ shows "\<forall>\<sigma> t. \<Gamma>,\<Theta>\<turnstile>\<^sub>t
          wf_marking t \<^bsup>\<sigma>\<^esup>mark \<acute>mark \<^bsup>\<sigma>\<^esup>m \<and>
          (\<forall>p. p \<notin> set_of t \<longrightarrow> \<^bsup>\<sigma>\<^esup>next p = \<acute>next p)\<rbrace>"
 apply (hoare_rule HoareTotal.conseq)
-apply (rule_tac ll="replicate (\<^bsup>\<sigma>\<^esup>p\<rightarrow>\<^bsup>\<sigma>\<^esup>var + 1) []" in allD [OF Levellist_spec_total'])
+apply  (rule_tac ll="replicate (\<^bsup>\<sigma>\<^esup>p\<rightarrow>\<^bsup>\<sigma>\<^esup>var + 1) []" in allD [OF Levellist_spec_total'])
 apply (intro allI impI)
 apply (rule_tac x=\<sigma> in exI)
 apply (rule_tac x=t in exI)
@@ -1320,13 +1320,9 @@ apply (rule conjI)
 apply  (clarsimp split:split_if_asm simp del: concat_replicate_trivial)
 apply  (frule replicate_spec [symmetric])
 apply   (simp)
-apply   (rule conjI)
-apply   (clarsimp simp add: Levellist_def )
-apply    (case_tac i)
-apply     simp
-apply    simp
-apply  clarsimp
-apply  (drule in_set_replicateD)
+apply  (clarsimp simp add: Levellist_def )
+apply  (case_tac i)
+apply   simp
 apply  simp
 apply (simp add: mem_Collect_eq Collect_conv_if split:split_if_asm)
 apply vcg_step
@@ -1362,7 +1358,7 @@ apply (erule_tac x="k" in allE)
 apply (subgoal_tac "k <= var ref")
 prefer 2
 apply  (subgoal_tac "ref = p")
-apply   (simp )
+apply   simp
 apply  clarify
 apply  (erule_tac ?P = "Dag p low high (Node dag1 ref dag2)" in rev_mp)
 apply  (simp (no_asm))
