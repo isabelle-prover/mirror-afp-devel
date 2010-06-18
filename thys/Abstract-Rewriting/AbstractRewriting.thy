@@ -1628,12 +1628,6 @@ proof -
   with `?P ?i` show ?thesis by best
 qed
 
-fun
-  idx :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat"
-where
-  "idx f 0 = 0" |
-  "idx f (Suc i) = Suc (f (idx f i))"
-
 lemma non_strict_ending:
   assumes seq: "\<forall>i. (t i,t(Suc i)) \<in> R \<union> S"
     and comp: "R O S \<subseteq> S"
@@ -1643,7 +1637,7 @@ proof (rule ccontr)
   assume "\<not> ?thesis"
   with seq have "\<forall>j.\<exists>i. i\<ge>j \<and> (t i,t(Suc i)) \<in> S" by blast
   from choice[OF this] obtain f where S_steps: "\<forall>i. i\<le>f i \<and> (t(f i),t(Suc(f i))) \<in> S" ..
-  let ?t = "\<lambda>i. t(idx f i)"
+  let ?t = "\<lambda>i. t(((Suc o f)^^i) 0)"
   have S_seq: "\<forall>i. (t i,t(Suc(f i))) \<in> S^+"
   proof
     fix i
@@ -1656,8 +1650,6 @@ proof (rule ccontr)
   moreover have "SN_elt (S^+) (?t 0)" using SN_elt_imp_SN_elt_trancl[OF SN] by simp
   ultimately show False unfolding SN_defs by best
 qed
-
-hide const idx
 
 lemma SN_elt_subset:
   assumes "SN_elt R' x" and "rR' \<subseteq> R'" shows "SN_elt rR' x" unfolding SN_elt_def
