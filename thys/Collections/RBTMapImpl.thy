@@ -4,7 +4,7 @@
 *)
 header {* Map Implementation by Red-Black-Trees*}
 theory RBTMapImpl
-imports Main MapSpec RBT_Impl MapGA
+imports Main MapSpec More_List RBT_Impl MapGA
 begin
 text_raw {*\label{thy:RBTMapImpl}*}
 
@@ -23,8 +23,7 @@ definition "rm_lookup k m == RBT_Impl.lookup m k"
 definition "rm_update == RBT_Impl.insert"
 definition "rm_update_dj == rm_update"
 definition "rm_delete == RBT_Impl.delete"
-definition rm_iterate :: "(('k,'v) rm,'k::linorder,'v,'\<sigma>) map_iterator"  
-  where "rm_iterate f t \<sigma>0 == RBT_Impl.fold f t \<sigma>0"
+definition "rm_iterate == RBT_Impl.fold"
 
 (* TODO: The iterator could be defined as in-order traversal. Then we could
   show that iteration is always done in ascending order of keys.*)
@@ -97,7 +96,7 @@ lemma rm_delete_impl: "map_delete rm_\<alpha> rm_invar rm_delete"
 
 lemma rm_iterate_alt: 
   "rm_iterate f t \<sigma> = foldl (\<lambda>x (k, v). f k v x) \<sigma> (RBT_Impl.entries t)"
-  by (simp add: rm_iterate_def fold_def)
+  by (simp add: rm_iterate_def RBT_Impl.fold_def foldl_fold prod_case_split split_def)
 
 lemma rm_\<alpha>_alist: "rm_invar m \<Longrightarrow> rm_\<alpha> m = Map.map_of (RBT_Impl.entries m)"
   by (unfold rm_\<alpha>_def rm_invar_def)
