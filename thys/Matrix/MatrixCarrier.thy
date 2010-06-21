@@ -5,7 +5,7 @@
 *)
 
 (*
-Copyright 2010 Christian Sternagel, Ren√\<copyright> Thiemann
+Copyright 2010 Christian Sternagel, Rene Thiemann
 
 This file is part of IsaFoR/CeTA.
 
