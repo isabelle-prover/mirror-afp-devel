@@ -8,24 +8,24 @@ text{* This theory is based on work by Jan Rutten \cite{Rutten98}. *}
 
 subsection {* Term ordering *}
 
-fun rexp_le :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> bool"
+fun le_rexp :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> bool"
 where
-  "rexp_le Zero _ = True"
-| "rexp_le _ Zero = False"
-| "rexp_le One _ = True"
-| "rexp_le _ One = False"
-| "rexp_le (Atom i) (Atom j) = (i <= j)"
-| "rexp_le (Atom _) _ = True"
-| "rexp_le _ (Atom _) = False"
-| "rexp_le (Star r) (Star s) = rexp_le r s"
-| "rexp_le (Star _) _ = True"
-| "rexp_le _ (Star _) = False"
-| "rexp_le (Plus r r') (Plus s s') =
-    (if r = s then rexp_le r' s' else rexp_le r s)"
-| "rexp_le (Plus _ _) _ = True"
-| "rexp_le _ (Plus _ _) = False"
-| "rexp_le (Times r r') (Times s s') =
-    (if r = s then rexp_le r' s' else rexp_le r s)"
+  "le_rexp Zero _ = True"
+| "le_rexp _ Zero = False"
+| "le_rexp One _ = True"
+| "le_rexp _ One = False"
+| "le_rexp (Atom i) (Atom j) = (i <= j)"
+| "le_rexp (Atom _) _ = True"
+| "le_rexp _ (Atom _) = False"
+| "le_rexp (Star r) (Star s) = le_rexp r s"
+| "le_rexp (Star _) _ = True"
+| "le_rexp _ (Star _) = False"
+| "le_rexp (Plus r r') (Plus s s') =
+    (if r = s then le_rexp r' s' else le_rexp r s)"
+| "le_rexp (Plus _ _) _ = True"
+| "le_rexp _ (Plus _ _) = False"
+| "le_rexp (Times r r') (Times s s') =
+    (if r = s then le_rexp r' s' else le_rexp r s)"
 
 subsection {* Normalizing operations *}
 
@@ -38,11 +38,11 @@ where
 | "nPlus (Plus r s) t = nPlus r (nPlus s t)"
 | "nPlus r (Plus s t) =
      (if r = s then (Plus s t)
-     else if rexp_le r s then Plus r (Plus s t)
+     else if le_rexp r s then Plus r (Plus s t)
      else Plus s (nPlus r t))"
 | "nPlus r s =
      (if r = s then r
-      else if rexp_le r s then Plus r s
+      else if le_rexp r s then Plus r s
       else Plus s r)"
 
 lemma lang_nPlus[simp]: "lang (nPlus r s) = lang (Plus r s)"
