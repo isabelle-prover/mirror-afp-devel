@@ -5,7 +5,7 @@
 *)
 
 (*
-Copyright 2010 Christian Sternagel, René Thiemann
+Copyright 2010 Christian Sternagel, Rene Thiemann
 
 This file is part of IsaFoR/CeTA.
 
@@ -24,7 +24,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 
 header {* Matrix Carrier *}
 
-theory MatrixCarrier imports Matrix Rational
+theory MatrixCarrier imports Matrix Rat
 begin
 
 text {*

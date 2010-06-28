@@ -8,24 +8,24 @@ text{* This theory is based on work by Jan Rutten \cite{Rutten98}. *}
 
 subsection {* Term ordering *}
 
-fun rexp_le :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> bool"
+fun le_rexp :: "nat rexp \<Rightarrow> nat rexp \<Rightarrow> bool"
 where
-  "rexp_le Zero _ = True"
-| "rexp_le _ Zero = False"
-| "rexp_le One _ = True"
-| "rexp_le _ One = False"
-| "rexp_le (Atom i) (Atom j) = (i <= j)"
-| "rexp_le (Atom _) _ = True"
-| "rexp_le _ (Atom _) = False"
-| "rexp_le (Star r) (Star s) = rexp_le r s"
-| "rexp_le (Star _) _ = True"
-| "rexp_le _ (Star _) = False"
-| "rexp_le (Plus r r') (Plus s s') =
-    (if r = s then rexp_le r' s' else rexp_le r s)"
-| "rexp_le (Plus _ _) _ = True"
-| "rexp_le _ (Plus _ _) = False"
-| "rexp_le (Times r r') (Times s s') =
-    (if r = s then rexp_le r' s' else rexp_le r s)"
+  "le_rexp Zero _ = True"
+| "le_rexp _ Zero = False"
+| "le_rexp One _ = True"
+| "le_rexp _ One = False"
+| "le_rexp (Atom i) (Atom j) = (i <= j)"
+| "le_rexp (Atom _) _ = True"
+| "le_rexp _ (Atom _) = False"
+| "le_rexp (Star r) (Star s) = le_rexp r s"
+| "le_rexp (Star _) _ = True"
+| "le_rexp _ (Star _) = False"
+| "le_rexp (Plus r r') (Plus s s') =
+    (if r = s then le_rexp r' s' else le_rexp r s)"
+| "le_rexp (Plus _ _) _ = True"
+| "le_rexp _ (Plus _ _) = False"
+| "le_rexp (Times r r') (Times s s') =
+    (if r = s then le_rexp r' s' else le_rexp r s)"
 
 subsection {* Normalizing operations *}
 
@@ -38,11 +38,11 @@ where
 | "nPlus (Plus r s) t = nPlus r (nPlus s t)"
 | "nPlus r (Plus s t) =
      (if r = s then (Plus s t)
-     else if rexp_le r s then Plus r (Plus s t)
+     else if le_rexp r s then Plus r (Plus s t)
      else Plus s (nPlus r t))"
 | "nPlus r s =
      (if r = s then r
-      else if rexp_le r s then Plus r s
+      else if le_rexp r s then Plus r s
       else Plus s r)"
 
 lemma lang_nPlus[simp]: "lang (nPlus r s) = lang (Plus r s)"
@@ -107,16 +107,16 @@ lemma deriv_no_occurrence:
   "x \<notin> atoms r \<Longrightarrow> ederiv x r = Zero"
 by (induct r) auto
 
-lemma atoms_nPlus[simp]: "atoms(nPlus r s) = atoms r \<union> atoms s"
-by(induct r s rule: nPlus.induct) auto
+lemma atoms_nPlus[simp]: "atoms (nPlus r s) = atoms r \<union> atoms s"
+by (induct r s rule: nPlus.induct) auto
 
-lemma atoms_nTimes: "atoms(nTimes r s) \<subseteq> atoms r \<union> atoms s"
-by(induct r s rule: nTimes.induct) auto
+lemma atoms_nTimes: "atoms (nTimes r s) \<subseteq> atoms r \<union> atoms s"
+by (induct r s rule: nTimes.induct) auto
 
-lemma atoms_norm: "atoms(norm r) \<subseteq> atoms(r)"
+lemma atoms_norm: "atoms (norm r) \<subseteq> atoms r"
 by (induct r) (auto dest!:subsetD[OF atoms_nTimes])
 
-lemma atoms_ederiv: "atoms(ederiv a r) \<subseteq> atoms r"
+lemma atoms_ederiv: "atoms (ederiv a r) \<subseteq> atoms r"
 by (induct r) (auto simp: Let_def dest!:subsetD[OF atoms_nTimes])
 
 
@@ -209,13 +209,13 @@ shows "is_bisimulation as ps"
 proof-
   { fix s have "pre_bisim as s \<Longrightarrow> test s \<Longrightarrow> pre_bisim as (step as s)"
       unfolding pre_bisim_def test_def step_def
-      by(cases s) (auto simp: split_def split: list.splits) }
+      by (cases s) (auto simp: split_def split: list.splits) }
   moreover
-  have "pre_bisim as (ws,[])" by(simp add: pre_bisim_def)
+  have "pre_bisim as (ws,[])" by (simp add: pre_bisim_def)
   ultimately have "pre_bisim as ([],ps)"
-    by(metis while_rule[of "pre_bisim as", OF _ assms[unfolded closure_def]])
+    by (rule while_rule[OF _ assms[unfolded closure_def]])
   thus "is_bisimulation as ps"
-    by(simp add: pre_bisim_def is_bisimulation_def test_def)
+    by (simp add: pre_bisim_def is_bisimulation_def test_def)
 qed
 
 theorem closure_sound_subset:
@@ -228,7 +228,8 @@ proof-
   moreover
   have "?I (ws,[])" by simp
   ultimately have "?I ([],ps)"
-    using while_rule[of ?I, OF _ assms[unfolded closure_def]]  by simp
+    by (rule while_rule[OF _ assms[unfolded closure_def]])
+
   thus "set ws <= set ps" by simp
 qed
 
@@ -240,12 +241,11 @@ proof-
   let ?I = "%s. \<forall>(r,s) \<in> set(fst s @ snd s). atoms r \<union> atoms s \<subseteq> set as"
   { fix s have "?I s \<Longrightarrow> test s \<Longrightarrow> ?I (step as s)"
       unfolding test_def step_def
-      by(fastsimp split: list.splits dest!: subsetD[OF atoms_ederiv]) }
+      by (fastsimp split: list.splits dest!: subsetD[OF atoms_ederiv]) }
   moreover
   have "?I (ws,[])" using assms(2) by simp
   ultimately have "?I ([],ps)"
-    using while_rule[of ?I, OF _ assms(1)[unfolded closure_def]]
-    using [[simp_depth_limit = 5]] by simp
+    by (rule while_rule[of ?I, OF _ assms(1)[unfolded closure_def]]) simp
   thus ?thesis by simp
 qed
 
@@ -274,7 +274,7 @@ assumes "check_eqv r s" shows "lang r = lang s"
 proof -
   let ?as = "add_atoms r (add_atoms s [])"
   obtain ps where 1: "closure ?as ([(norm r,norm s)],[]) = Some([],ps)"
-    using assms by(auto simp: check_eqv_def split:option.splits list.splits)
+    using assms by (auto simp: check_eqv_def split:option.splits list.splits)
   have "lang (norm r) = lang (norm s)"
   proof (rule bisim_lang_eq[OF _ closure_sound_bisim[OF 1]])
     show "\<forall>(r, s)\<in>set ps. atoms r \<union> atoms s \<subseteq> set ?as"
