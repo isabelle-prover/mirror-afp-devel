@@ -85,7 +85,10 @@ following A. Mann, <i>A Complete Proof of the Robbins Conjecture</i>, 2003.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2010-05-27.tar.gz">afp-<!--#echo var="name" -->-2010-05-27.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

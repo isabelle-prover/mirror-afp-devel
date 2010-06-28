@@ -85,7 +85,10 @@ href="http://www.srcf.ucam.org/~apk32/Isabelle/Category/Cat.pdf">here [pdf]</a>.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2010-06-21.tar.gz">afp-<!--#echo var="name" -->-2010-06-21.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
