@@ -96,7 +96,7 @@ lemma rm_delete_impl: "map_delete rm_\<alpha> rm_invar rm_delete"
 
 lemma rm_iterate_alt: 
   "rm_iterate f t \<sigma> = foldl (\<lambda>x (k, v). f k v x) \<sigma> (RBT_Impl.entries t)"
-  by (simp add: rm_iterate_def RBT_Impl.fold_def foldl_fold prod_case_split split_def)
+  by (simp add: rm_iterate_def RBT_Impl.fold_def foldl_fold split_def)
 
 lemma rm_\<alpha>_alist: "rm_invar m \<Longrightarrow> rm_\<alpha> m = Map.map_of (RBT_Impl.entries m)"
   by (unfold rm_\<alpha>_def rm_invar_def)

@@ -7,7 +7,7 @@ header {* \isaheader{Semantics of the intermediate language} *}
 theory J1 imports
   "J1State"
   "J1Heap"
-  "/Framework/FWBisimulation"
+  "../Framework/FWBisimulation"
 begin
 
 abbreviation final_expr1 :: "(expr1 \<times> locals1) \<times> (expr1 \<times> locals1) list \<Rightarrow> bool" where

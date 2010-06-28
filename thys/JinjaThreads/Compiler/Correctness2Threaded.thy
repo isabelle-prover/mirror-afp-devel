@@ -491,7 +491,7 @@ proof -
       and red: "P,t \<turnstile>1 \<langle>(e1, xs1)/exs1, m2\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace>\<rightarrow> \<langle>(e1', xs1')/exs1', m1\<rangle>"
       and call: "call1 e1 \<noteq> None" 
                 "case frs of [] \<Rightarrow> False | (stk, loc, C, M, pc) # frs' \<Rightarrow> \<exists>M' n. instrs_of (compP2 P) C M ! pc = Invoke M' n"
-      by(auto simp add: bisim_wait1JVM_def)
+      by (auto simp add: bisim_wait1JVM_def split_def)
     from red have "\<not> \<tau>Move1 P m2 ((e1, xs1), exs1)"
       by(auto elim!: Red1.cases dest: red1_\<tau>_taD simp add: split_beta ta_upd_simps)
     from exec_1_simulates_Red1_not_\<tau>[OF wf red bisim this] call
@@ -510,7 +510,7 @@ proof -
       and exec: "compP2 P,t \<turnstile> Normal (xcp, m2, frs) -\<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace>-jvmd\<rightarrow> Normal (xcp', m2, frs')"
       and call: "call1 e1 \<noteq> None" 
                 "case frs of [] \<Rightarrow> False | (stk, loc, C, M, pc) # frs' \<Rightarrow> \<exists>M' n. instrs_of (compP2 P) C M ! pc = Invoke M' n"
-      by(auto simp add: bisim_wait1JVM_def)
+      by (auto simp add: bisim_wait1JVM_def split_def)
     from exec have "\<not> \<tau>Move2 (compP2 P) (xcp, m2, frs)"
       by(auto dest: \<tau>exec_1_taD simp add: split_beta ta_upd_simps)
     from \<tau>Red1_simulates_exec_1_not_\<tau>[OF wf exec bisim this] call
@@ -530,7 +530,7 @@ proof -
       and red: "P,t \<turnstile>1 \<langle>(e1, xs1)/exs1, m2\<rangle> -ta1\<rightarrow> \<langle>(e1', xs1')/exs1', m1'\<rangle>"
       and call: "call1 e1 \<noteq> None" 
                 "case frs of [] \<Rightarrow> False | (stk, loc, C, M, pc) # frs' \<Rightarrow> \<exists>M' n. instrs_of (compP2 P) C M ! pc = Invoke M' n"
-      by(auto simp add: bisim_wait1JVM_def)
+      by(auto simp add: bisim_wait1JVM_def split_def)
     from red `is_Interrupted_ta ta1` have "\<not> \<tau>Move1 P m2 ((e1, xs1), exs1)"
       by(auto elim!: Red1.cases dest: red1_\<tau>_taD simp add: ta_upd_simps is_Interrupted_ta_def)
     from exec_1_simulates_Red1_not_\<tau>[OF wf red bisim this] call
@@ -550,7 +550,7 @@ proof -
       and exec: "compP2 P,t \<turnstile> Normal (xcp, m2, frs) -ta2-jvmd\<rightarrow> Normal (xcp', m2', frs')"
       and call: "call1 e1 \<noteq> None" 
                 "case frs of [] \<Rightarrow> False | (stk, loc, C, M, pc) # frs' \<Rightarrow> \<exists>M' n. instrs_of (compP2 P) C M ! pc = Invoke M' n"
-      by(auto simp add: bisim_wait1JVM_def)
+      by(auto simp add: bisim_wait1JVM_def split_def)
     from exec `is_Interrupted_ta ta2` have "\<not> \<tau>Move2 (compP2 P) (xcp, m2, frs)"
       by(auto dest: \<tau>exec_1_taD simp add: ta_upd_simps is_Interrupted_ta_def)
     from \<tau>Red1_simulates_exec_1_not_\<tau>[OF wf exec bisim this] call
