@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,53 +22,49 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->The Textbook Proof of Huffman's Algorithm</h1>
-<p> </p>
-
+<h1><font class="first">T</font>he
+<font class="first">T</font>extbook
+<font class="first">P</font>roof
+of
+<font class="first">H</font>uffman's
+<font class="first">A</font>lgorithm
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->The Textbook Proof of Huffman's Algorithm
-    </td></tr>
-		
+        <td class="data" width="80%">The Textbook Proof of Huffman's Algorithm</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://www4.in.tum.de/~blanchet">Jasmin Christian Blanchette</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2008-10-15</td></tr>
+        <td class="data"><a href="http://www4.in.tum.de/~blanchet">Jasmin Christian Blanchette</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-Huffman's algorithm is a procedure for constructing a binary tree with minimum weighted path length. This report presents a formal proof of the correctness of Huffman's algorithm written using Isabelle/HOL. Our proof closely follows the sketches found in standard algorithms textbooks, uncovering a few snags in the process. Another distinguishing feature of our formalization is the use of custom induction rules to help Isabelle's automatic tactics, leading to very short proofs for most of the lemmas.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2008-10-15</td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+Huffman's algorithm is a procedure for constructing a binary tree with minimum
+weighted path length. This report presents a formal proof of the correctness of
+Huffman's algorithm written using Isabelle/HOL. Our proof closely follows the
+sketches found in standard algorithms textbooks, uncovering a few snags in the
+process. Another distinguishing feature of our formalization is the use of
+custom induction rules to help Isabelle's automatic tactics, leading to very
+short proofs for most of the lemmas.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Huffman" -->
-
 <!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -93,17 +88,18 @@ Huffman's algorithm is a procedure for constructing a binary tree with minimum w
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases: 
-    <ul>
-    <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-10-21.tar.gz">afp-<!--#echo var="name" -->-2008-10-21.tar.gz</a></li>
-    <li>Isabelle 2008: <a href="../release/afp-Huffman-2008-10-15.tar.gz">afp-Huffman-2008-10-15.tar.gz</a></li>
-    </ul>
-	</td></tr>
+    <tr><td class="links">Older releases:
+<ul>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-10-21.tar.gz">afp-<!--#echo var="name" -->-2008-10-21.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-10-15.tar.gz">afp-<!--#echo var="name" -->-2008-10-15.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

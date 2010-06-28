@@ -22,49 +22,7 @@
 <div align="center">
 <p> </p>
 
-<h1><font class="first">A</font>
-<font class="first">F</font>ast
-<font class="first">S</font>AT
-<font class="first">S</font>olver
-for
-<font class="first">I</font>sabelle
-in
-<font class="first">S</font>tandard
-<font class="first">M</font>L
-</h1>
-<p></p>
-<table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">A Fast SAT Solver for Isabelle in Standard ML</td></tr>
-
-    <tr><td class="datahead">Author:</td>
-        <td class="data">Armin Heller</td></tr>
-
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">2009-12-09</td></tr>
-
-    <tr><td class="datahead" valign="top">Abstract:</td>
-        <td class="abstract">
-This contribution contains a fast SAT solver for Isabelle written in Standard
-ML. By loading the theory <tt>DPT_SAT_Solver</tt>, the SAT solver installs
-itself (under the name ``dptsat'') and certain Isabelle tools like Refute will
-start using it automatically. This is a port of the DPT (Decision Procedure
-Toolkit) SAT Solver written in OCaml.
-        </td></tr>
-
-
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
-
-  </tbody>
-</table>
-
-<p></p>
-
-<!--#set var="name" value="DPT-SAT-Solver" -->
-<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+  <!--gen:header-->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
@@ -90,7 +48,8 @@ Toolkit) SAT Solver written in OCaml.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<!--gen:older-->
+    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

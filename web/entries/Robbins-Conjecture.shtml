@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,55 +22,45 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->A Complete Proof of the Robbins Conjecture</h1>
-<p> </p>
-
+<h1><font class="first">A</font>
+<font class="first">C</font>omplete
+<font class="first">P</font>roof
+of
+the
+<font class="first">R</font>obbins
+<font class="first">C</font>onjecture
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->A Complete Proof of the Robbins Conjecture
-    </td></tr>
-		
+        <td class="data" width="80%">A Complete Proof of the Robbins Conjecture</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a href="http://www.w-d.org/">Matthew Wampler-Doty</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2010-05-22</td></tr>
+        <td class="data"><a href="http://www.w-d.org/">Matthew Wampler-Doty</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This document gives a formalization of the proof of the Robbins 
-conjecture, following A. Mann, <i>A Complete Proof of the 
-Robbins Conjecture</i>, 2003.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2010-05-22</td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+This document gives a formalization of the proof of the Robbins conjecture,
+following A. Mann, <i>A Complete Proof of the Robbins Conjecture</i>, 2003.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Robbins-Conjecture" -->
-<!--#set var="base" value="HOL" --> <!--- ??? could be HOLCF etc --->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -96,12 +85,12 @@ Robbins Conjecture</i>, 2003.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
-	</td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

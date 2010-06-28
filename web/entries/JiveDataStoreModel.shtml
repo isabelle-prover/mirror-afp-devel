@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,58 +22,47 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Jive Data and Store Model</h1>
-<p> </p>
-
+<h1><font class="first">J</font>ive
+<font class="first">D</font>ata
+and
+<font class="first">S</font>tore
+<font class="first">M</font>odel
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Jive Data and Store Model
-    </td></tr>
-		
+        <td class="data" width="80%">Jive Data and Store Model</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a href="mailto:rauch@informatik.uni-kl.de">Nicole Rauch</a> and 
-<a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a> and 
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2005-06-20</td></tr>
+        <td class="data">Nicole Rauch (rauch /at/ informatik /dot/ uni-kl /dot/ de) and  <a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This document presents the formalization of an object-oriented data  
-and store model in Isabelle/HOL.
-This model is being used in the Java Interactive Verification  
-Environment, Jive.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2005-06-20</td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+This document presents the formalization of an object-oriented data and store
+model in Isabelle/HOL. This model is being used in the Java Interactive
+Verification Environment, Jive.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="JiveDataStoreModel" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -96,17 +84,18 @@ Environment, Jive.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-    <ul>
-        <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-	    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
-	    <li>Isabelle 2007: <a href="../release/afp-JiveDataStoreModel-2007-11-27.tar.gz">afp-JiveDataStoreModel-2007-11-27.tar.gz</a>
-    	<li>Isabelle 2005: <a href="../release/afp-JiveDataStoreModel-2005-10-14.tar.gz">afp-JiveDataStoreModel-2005-10-14.tar.gz</a>
-    </ul>
-    </td></tr>
+<ul>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2007-11-27.tar.gz">afp-<!--#echo var="name" -->-2007-11-27.tar.gz</a></li>
+<li>Isabelle 2005: <a href="../release/afp-<!--#echo var="name" -->-2005-10-14.tar.gz">afp-<!--#echo var="name" -->-2005-10-14.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

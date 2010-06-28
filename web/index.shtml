@@ -49,45 +49,35 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 </tbody>
 </table>
 
-<p> </p>
+
+<p> </p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2010</td>
-    </tr>
-
-<!-- entry template begin (delete this line) --
-<tr><td class="entry">
-????-??-??:
-<a href="entries/???.shtml">???</a>
-<br>Author:
-<a href="???">???</a>
-</td></tr>
--- entry template end (delete this line) -->
+	  <td class="head">2010</td>
+	</tr>
 
 <tr><td class="entry">
-2010-06-21:
-<a href="entries/Category2.shtml">Category Theory</a>
-<br>Author: Alexander Katovsky
-</td></tr>
-
-<tr><td class="entry">
-2010-06-17:
+2010-06-14:
 <a href="entries/Matrix.shtml">Executable Matrix Operations on Matrices of Arbitrary Dimensions</a>
-<br>Author: Christian Sternagel and Ren&eacute; Thiemann
+<br>Author:
+Christian Sternagel and 
+Ren&eacute; Thiemann
 </td></tr>
 
 <tr><td class="entry">
-2010-06-17:
+2010-06-14:
 <a href="entries/Abstract-Rewriting.shtml">Abstract Rewriting</a>
-<br>Author: Christian Sternagel and Ren&eacute; Thiemann
+<br>Author:
+Christian Sternagel and 
+Ren&eacute; Thiemann
 </td></tr>
 
 <tr><td class="entry">
 2010-05-28:
 <a href="entries/GraphMarkingIBP.shtml">Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</a>
 <br>Author:
-<a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a> and
+<a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a> and 
 <a href="http://users.abo.fi/Ralph-Johan.Back/">Ralph-Johan Back</a>
 </td></tr>
 
@@ -95,12 +85,12 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 2010-05-28:
 <a href="entries/DataRefinementIBP.shtml">Semantics and Data Refinement of Invariant Based Programs</a>
 <br>Author:
-<a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a> and
+<a href="http://users.abo.fi/vpreotea/">Viorel Preoteasa</a> and 
 <a href="http://users.abo.fi/Ralph-Johan.Back/">Ralph-Johan Back</a>
 </td></tr>
 
 <tr><td class="entry">
-2010-05-26:
+2010-05-22:
 <a href="entries/Robbins-Conjecture.shtml">A Complete Proof of the Robbins Conjecture</a>
 <br>Author:
 <a href="http://www.w-d.org/">Matthew Wampler-Doty</a>
@@ -110,17 +100,17 @@ is available <a href="citing.shtml">[here]</a>.</td></tr>
 2010-05-12:
 <a href="entries/Regular-Sets.shtml">Regular Sets and Expressions</a>
 <br>Author:
-<a href="http://www.in.tum.de/~krauss">Alexander Krauss</a> and
+<a href="http://www.in.tum.de/~krauss">Alexander Krauss</a> and 
 <a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
-2010-05-03:
+2010-04-30:
 <a href="entries/Locally-Nameless-Sigma.shtml">Locally Nameless Sigma Calculus</a>
 <br>Author:
 Ludovic Henrio,
-Florian Kammüller,
-Bianca Lutz,
+Florian Kamm&uuml;ller,
+Bianca Lutz and 
 Henry Sudhof
 </td></tr>
 
@@ -146,55 +136,63 @@ Henry Sudhof
 </td></tr>
 
 <tr><td class="entry">
-2010-02-14:
+2010-02-12:
 <a href="entries/Coinductive.shtml">Coinductive</a>
 <br>Author:
 <a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
 </td></tr>
+
+
+
+  </tbody>
 </table>
 
-<p> </p>
+<p> </p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2009</td>
-    </tr>
+	  <td class="head">2009</td>
+	</tr>
 
 <tr><td class="entry">
-2009-12-10:
+2009-12-09:
 <a href="entries/DPT-SAT-Solver.shtml">A Fast SAT Solver for Isabelle in Standard ML</a>
-<br>Author: Armin Heller
+<br>Author:
+Armin Heller
 </td></tr>
 
 <tr><td class="entry">
 2009-12-03:
 <a href="entries/Presburger-Automata.shtml">Formalizing the Logic-Automaton Connection</a>
 <br>Author:
-<a href="http://www.in.tum.de/~berghofe">Stefan Berghofer</a> and Markus Reiter
+<a href="http://www.in.tum.de/~berghofe">Stefan Berghofer</a> and 
+Markus Reiter
 </td></tr>
 
 <tr><td class="entry">
-2009-11-29:
+2009-11-25:
 <a href="entries/Tree-Automata.shtml">Tree Automata</a>
-<br>Author: Peter Lammich
+<br>Author:
+Peter Lammich
 </td></tr>
 
 <tr><td class="entry">
-2009-11-28:
+2009-11-25:
 <a href="entries/Collections.shtml">Collections Framework</a>
-<br>Author: Peter Lammich
+<br>Author:
+Peter Lammich
 </td></tr>
 
 <tr><td class="entry">
-2009-11-24:
+2009-11-22:
 <a href="entries/Perfect-Number-Thm.shtml">Perfect Number Theorem</a>
-<br>Author: Mark IJbema
+<br>Author:
+Mark Ijbema
 </td></tr>
 
 <tr><td class="entry">
-2009-11-19:
-<a href="entries/HRB-Slicing.shtml">Backing up Slicing: Verifying the Interprocedural
-Two-Phase Horwitz-Reps-Binkley Slicer</a>
+2009-11-13:
+<a href="entries/HRB-Slicing.shtml">Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</a>
 <br>Author:
 <a href="http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php">Daniel Wasserrab</a>
 </td></tr>
@@ -207,14 +205,14 @@ Two-Phase Horwitz-Reps-Binkley Slicer</a>
 </td></tr>
 
 <tr><td class="entry">
-2009-09-07:
+2009-09-01:
 <a href="entries/Ordinals_and_Cardinals.shtml">Ordinals and Cardinals</a>
 <br>Author:
 Andrei Popescu
 </td></tr>
 
 <tr><td class="entry">
-2009-09-01:
+2009-08-28:
 <a href="entries/SequentInvertibility.shtml">Invertibility in Sequent Calculi</a>
 <br>Author:
 <a href="http://www.cs.st-andrews.ac.uk/~pc">Peter Chapman</a>
@@ -224,61 +222,63 @@ Andrei Popescu
 2009-08-04:
 <a href="entries/CofGroups.shtml">An Example of a Cofinitary Group in Isabelle/HOL</a>
 <br>Author:
-<a href="http://www.bartk.nl">Bart Kastermans</a>
-</td></tr>
-
-<tr><td class="entry">
-2009-05-11:
-<a href="entries/Stream-Fusion.shtml">Stream Fusion</a>
-<br>Author:
-<a href="http://cs.pdx.edu/~brianh">Brian Huffman</a>
+<a href="http://www.bartk.nl/">Bart Kastermans</a>
 </td></tr>
 
 <tr><td class="entry">
 2009-05-06:
 <a href="entries/FinFun.shtml">Code Generation for Functions as Data</a>
 <br>Author:
-<a
-href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
+<a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
 </td></tr>
+
+<tr><td class="entry">
+2009-04-29:
+<a href="entries/Stream-Fusion.shtml">Stream Fusion</a>
+<br>Author:
+<a href="http://cs.pdx.edu/~brianh">Brian Huffman</a>
+</td></tr>
+
+
+
+  </tbody>
 </table>
 
-<p> </p>
+<p> </p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2008</td>
-    </tr>
+	  <td class="head">2008</td>
+	</tr>
 
 <tr><td class="entry">
-2008-12-22:
+2008-12-12:
 <a href="entries/BytecodeLogicJmlTypes.shtml">A Bytecode Logic for JML and Types</a>
 <br>Author:
-<a href="http://www.tcs.informatik.uni-muenchen.de/~beringer">Lennart
-Beringer</a> and <a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">Martin Hofmann</a>
+<a href="http://www.tcs.informatik.uni-muenchen.de/~beringer">Lennart Beringer</a> and 
+<a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">Martin Hofmann</a>
 </td></tr>
 
 <tr><td class="entry">
-2008-11-17:
+2008-11-10:
+<a href="entries/SIFPL.shtml">Secure information flow and program logics</a>
+<br>Author:
+<a href="http://www.tcs.informatik.uni-muenchen.de/~beringer">Lennart Beringer</a> and 
+<a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">Martin Hofmann</a>
+</td></tr>
+
+<tr><td class="entry">
+2008-11-09:
 <a href="entries/SenSocialChoice.shtml">Some classical results in Social Choice Theory</a>
 <br>Author:
 <a href="http://peteg.org/">Peter Gammie</a>
 </td></tr>
 
 <tr><td class="entry">
-2008-11-12:
-<a href="entries/SIFPL.shtml">Secure Information Flow and Program Logics</a>
-<br>Author:
-<a href="http://www.tcs.informatik.uni-muenchen.de/~beringer">Lennart
-Beringer</a> and <a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">M
-artin Hofmann</a>
-</td></tr>
-
-<tr><td class="entry">
 2008-11-07:
 <a href="entries/FunWithTilings.shtml">Fun With Tilings</a>
 <br>Author:
-<a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a> and
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a> and 
 <a href="http://www.cl.cam.ac.uk/users/lcp/">Lawrence Paulson</a>
 </td></tr>
 
@@ -290,13 +290,6 @@ artin Hofmann</a>
 </td></tr>
 
 <tr><td class="entry">
-2008-09-01:
-<a href="entries/ArrowImpossibilityGS.shtml">Arrow and Gibbard-Satterthwaite</a>
-<br>Author:
-<a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
-</td></tr>
-
-<tr><td class="entry">
 2008-09-16:
 <a href="entries/Slicing.shtml">Towards Certified Slicing</a>
 <br>Author:
@@ -304,19 +297,25 @@ artin Hofmann</a>
 </td></tr>
 
 <tr><td class="entry">
-2008-09-05:
+2008-09-02:
 <a href="entries/VolpanoSmith.shtml">A Correctness Proof for the Volpano/Smith Security Typing System</a>
 <br>Author:
-<a href="http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php">Gregor Snelting</a>
-and
+<a href="http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php">Gregor Snelting</a> and 
 <a href="http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php">Daniel Wasserrab</a>
+</td></tr>
+
+<tr><td class="entry">
+2008-09-01:
+<a href="entries/ArrowImpossibilityGS.shtml">Arrow and Gibbard-Satterthwaite</a>
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
 2008-08-26:
 <a href="entries/FunWithFunctions.shtml">Fun With Functions</a>
 <br>Author:
-<a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -336,8 +335,9 @@ Michael Nedzelsky
 <tr><td class="entry">
 2008-02-29:
 <a href="entries/BDD.shtml">BDD Normalisation</a>
-<br>Author: Veronika Ortner and <a
-href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
+<br>Author:
+Veronika Ortner and 
+<a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -348,77 +348,66 @@ href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
 </td></tr>
 
 <tr><td class="entry">
-2008-02-18
+2008-02-18:
 <a href="entries/NormByEval.shtml">Normalization by Evaluation</a>
 <br>Author:
-<a href="http://www.linta.de/~aehlig/">Klaus Aehlig</a> and
-<a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+<a href="http://www.linta.de/~aehlig/">Klaus Aehlig</a> and 
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
 2008-01-11:
 <a href="entries/LinearQuantifierElim.shtml">Quantifier Elimination for Linear Arithmetic</a>
 <br>Author:
-<a href="http://www4.in.tum.de/~nipkow">Tobias Nipkow</a>
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
+
+
+
+  </tbody>
 </table>
 
-<p> </p>
+<p> </p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2007</td>
-    </tr>
+	  <td class="head">2007</td>
+	</tr>
 
 <tr><td class="entry">
-2007-12-20:
+2007-12-14:
 <a href="entries/Program-Conflict-Analysis.shtml">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</a>
 <br>Author:
-<a href="http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/">Peter Lammich</a>
-and <a href="http://wwwmath.uni-muenster.de/u/mmo/">Markus Müller-Olm</a>
+<a href="http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/">Peter Lammich</a> and 
+<a href="http://wwwmath.uni-muenster.de/u/mmo/">Markus M&uuml;ller-Olm</a>
 </td></tr>
 
 <tr><td class="entry">
 2007-12-03:
-<a href="entries/JinjaThreads.shtml">Jinja With Threads</a>
+<a href="entries/JinjaThreads.shtml">Jinja with Threads</a>
 <br>Author:
-<a href="http://www.fim.uni-passau.de/index.php?id=815">Andreas Lochbihler</a>
+<a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
 </td></tr>
 
 <tr><td class="entry">
 2007-11-06:
 <a href="entries/MuchAdoAboutTwo.shtml">Much Ado About Two</a>
 <br>Author:
-<a href="http://www4.in.tum.de/~boehmes/">Sascha Böhme</a>
+<a href="http://www4.in.tum.de/~boehmes/">Sascha B&ouml;hme</a>
 </td></tr>
 
 <tr><td class="entry">
-2007-08-27:
+2007-08-12:
+<a href="entries/Fermat3_4.shtml">Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples</a>
+<br>Author:
+<a href="http://www.roelofoosterhuis.nl/">Roelof Oosterhuis</a>
+</td></tr>
+
+<tr><td class="entry">
+2007-08-12:
 <a href="entries/SumSquares.shtml">Sums of Two and Four Squares</a>
 <br>Author:
 <a href="http://www.roelofoosterhuis.nl/">Roelof Oosterhuis</a>
-</td></tr>
-
-<tr><td class="entry">
-2007-08-27:
-<a href="entries/Fermat3_4.shtml">Fermat's Last Theorem for Exponents 3 and 4
-and the Parametrisation of Pythagorean Triples</a>
-<br>Author:
-<a href="http://www.roelofoosterhuis.nl/">Roelof Oosterhuis</a>
-</td></tr>
-
-<tr><td class="entry">
-2007-08-16:
-<a href="entries/POPLmark-deBruijn.shtml">POPLmark Challenge Via de Bruijn Indices</a>
-<br>Author:
-<a href="http://www4.in.tum.de/~berghofe">Stefan Berghofer</a>
-</td></tr>
-
-<tr><td class="entry">
-2007-08-14:
-<a href="entries/FOL-Fitting.shtml">First-Order Logic According to Fitting</a>
-<br>Author:
-<a href="http://www4.in.tum.de/~berghofe/">Stefan Berghofer</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -427,82 +416,101 @@ and the Parametrisation of Pythagorean Triples</a>
 <br>Author:
 Hidetsune Kobayashi
 </td></tr>
+
+<tr><td class="entry">
+2007-08-02:
+<a href="entries/POPLmark-deBruijn.shtml">POPLmark Challenge Via de Bruijn Indices</a>
+<br>Author:
+<a href="http://www.in.tum.de/~berghofe">Stefan Berghofer</a>
+</td></tr>
+
+<tr><td class="entry">
+2007-08-02:
+<a href="entries/FOL-Fitting.shtml">First-Order Logic According to Fitting</a>
+<br>Author:
+<a href="http://www.in.tum.de/~berghofe">Stefan Berghofer</a>
+</td></tr>
+
+
+
+  </tbody>
 </table>
 
-<p> </p>
+<p> </p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2006</td>
-    </tr>
+	  <td class="head">2006</td>
+	</tr>
 
 <tr><td class="entry">
 2006-09-09:
 <a href="entries/HotelKeyCards.shtml">Hotel Key Card System</a>
 <br>Author:
-<a href="http://www4.in.tum.de/~nipkow">Tobias Nipkow</a>
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
 2006-08-08:
 <a href="entries/Abstract-Hoare-Logics.shtml">Abstract Hoare Logics</a>
 <br>Author:
-<a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+<a href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
 2006-05-22:
 <a href="entries/Flyspeck-Tame.shtml">Flyspeck I: Tame Graphs</a>
-<br>
-Author: Gertrud Bauer and <a href="http://www4.in.tum.de/~nipkow">Tobias Nipkow</a>
+<br>Author:
+Gertrud Bauer and 
+<a href="http://www4.in.tum.de/~nipkow">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
-2006-05-16:
+2006-05-15:
 <a href="entries/CoreC++.shtml">CoreC++</a>
 <br>Author:
-<a href="http://www.infosun.fmi.uni-passau.de/st/staff/wasserra/">Daniel Wasserrab</a>
+<a href="http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php">Daniel Wasserrab</a>
 </td></tr>
 
 <tr><td class="entry">
 2006-03-31:
 <a href="entries/FeatherweightJava.shtml">A Theory of Featherweight Java in Isabelle/HOL</a>
 <br>Author:
-<a
-href="http://www.cis.upenn.edu/~jnfoster">J. Nathan Foster</a> and
-<a
-href="http://www.cis.upenn.edu/~dimitriv">Dimitrios Vytiniotis</a>
+<a href="http://www.cis.upenn.edu/~jnfoster">J. Nathan Foster</a> and 
+<a href="http://www.cis.upenn.edu/~dimitriv">Dimitrios Vytiniotis</a>
 </td></tr>
 
 <tr><td class="entry">
 2006-03-15:
-<a href="entries/ClockSynchInst.shtml">Instances of Schneider's generalized protocol of clock 
-synchronization</a>
+<a href="entries/ClockSynchInst.shtml">Instances of Schneider's generalized protocol of clock synchronization</a>
 <br>Author:
-<a href="http://www.cs.famaf.unc.edu.ar/~damian/">Damián Barsotti</a>
+<a href="http://www.cs.famaf.unc.edu.ar/~damian/">Dami&aacute;n Barsotti</a>
 </td></tr>
-
 
 <tr><td class="entry">
 2006-03-14:
 <a href="entries/Cauchy.shtml">Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality</a>
-<br>Author: Benjamin Porter
+<br>Author:
+Benjamin Porter
 </td></tr>
-</table>
-    
-<p> </p>
 
+
+
+  </tbody>
+</table>
+
+<p> </p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2005</td>
-    </tr>
+	  <td class="head">2005</td>
+	</tr>
 
 <tr><td class="entry">
 2005-11-11:
 <a href="entries/Ordinal.shtml">Countable Ordinals</a>
 <br>Author:
-Brian Huffman
+<a href="http://web.cecs.pdx.edu/~brianh/">Brian Huffman</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -513,17 +521,9 @@ Brian Huffman
 </td></tr>
 
 <tr><td class="entry">
-2005-06-20:
-<a href="entries/JiveDataStoreModel.shtml">Jive Data and Store Model</a>
-<br>Author:
-<a href="mailto:rauch@informatik.uni-kl.de">Nicole Rauch</a> and 
-<a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a> 
-</td></tr>
-
-<tr><td class="entry">
 2005-06-24:
 <a href="entries/GenClock.shtml">Formalization of a Generalized Protocol for Clock Synchronization</a>
-<br>Author: 
+<br>Author:
 <a href="http://www.loria.fr/~tiu/">Alwen Tiu</a>
 </td></tr>
 
@@ -531,24 +531,31 @@ Brian Huffman
 2005-06-22:
 <a href="entries/DiskPaxos.shtml">Proving the Correctness of Disk Paxos</a>
 <br>Author:
-<a href="http://www.fceia.unr.edu.ar/~mauro/">Mauro Jaskelioff</a> and
+<a href="http://www.fceia.unr.edu.ar/~mauro/">Mauro Jaskelioff</a> and 
 <a href="http://www.loria.fr/~merz/">Stephan Merz</a>
+</td></tr>
+
+<tr><td class="entry">
+2005-06-20:
+<a href="entries/JiveDataStoreModel.shtml">Jive Data and Store Model</a>
+<br>Author:
+Nicole Rauch and 
+<a href="http://www4.in.tum.de/~schirmer/">Norbert Schirmer</a>
 </td></tr>
 
 <tr><td class="entry">
 2005-06-01:
 <a href="entries/Jinja.shtml">Jinja is not Java</a>
-<br>Author: 
+<br>Author:
 <a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a> and 
-<a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
-2005-05-10:
+2005-05-02:
 <a href="entries/RSAPSS.shtml">SHA1, RSA, PSS and more</a>
 <br>Author:
-<a href="http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/lindenberg.html">Christina
-Lindenberg</a> and
+<a href="http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/lindenberg.html">Christina Lindenberg</a> and 
 <a href="http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/wirt.html">Kai Wirt</a>
 </td></tr>
 
@@ -558,26 +565,29 @@ Lindenberg</a> and
 <br>Author:
 <a href="http://users.rsise.anu.edu.au/~okeefe/">Greg O'Keefe</a>
 </td></tr>
-</table>
-    
-<p> </p>
 
+
+
+  </tbody>
+</table>
+
+<p> </p>
 <table width="80%" class="entries">
   <tbody>
     <tr>
-      <td class="head">2004</td>
-    </tr>
+	  <td class="head">2004</td>
+	</tr>
 
 <tr><td class="entry">
-2004-12-15:
+2004-12-09:
 <a href="entries/FileRefinement.shtml">File Refinement</a>
 <br>Author:
-<a href="http://www.mit.edu/~kkz/">Karen Zee</a> and
+<a href="http://www.mit.edu/~kkz/">Karen Zee</a> and 
 <a href="http://cag.csail.mit.edu/~vkuncak/">Viktor Kuncak</a>
 </td></tr>
 
 <tr><td class="entry">
-2004-11-22:
+2004-11-19:
 <a href="entries/Integration.shtml">Integration theory and random variables</a>
 <br>Author:
 <a href="http://www-lti.informatik.rwth-aachen.de/~richter/">Stefan Richter</a>
@@ -592,79 +602,88 @@ Lindenberg</a> and
 
 <tr><td class="entry">
 2004-09-20:
-<a href="entries/Ramsey-Infinite.shtml">Ramsey's theorem, infinitary version</a
+<a href="entries/Completeness.shtml">Completeness theorem</a>
 <br>Author:
-<a href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a></td></tr>
+James Margetson and 
+<a href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
+</td></tr>
 
 <tr><td class="entry">
 2004-09-20:
-<a href="entries/Completeness.shtml">Completeness theorem</a>
-<br>Author:  
-James Margetson and 
-<a href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a></td></tr>
+<a href="entries/Ramsey-Infinite.shtml">Ramsey's theorem, infinitary version</a>
+<br>Author:
+<a href="http://homepages.inf.ed.ac.uk/s0128214/">Tom Ridge</a>
+</td></tr>
 
 <tr><td class="entry">
 2004-07-09:
 <a href="entries/Compiling-Exceptions-Correctly.shtml">Compiling Exceptions Correctly</a>
-<br>Author:  
- <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
 <tr><td class="entry">
-2004-06-24:  
+2004-06-24:
 <a href="entries/Depth-First-Search.shtml">Depth First Search</a>
-<br>Author:  
-Toshiaki Nishihara and <a
-href="http://www.score.is.tsukuba.ac.jp/~minamide/">Yasuhiko Minamide</a>
+<br>Author:
+Toshiaki Nishihara and 
+<a href="http://www.score.is.tsukuba.ac.jp/~minamide/">Yasuhiko Minamide</a>
 </td></tr>
 
 <tr><td class="entry">
-2004-05-18:  
+2004-05-18:
 <a href="entries/Group-Ring-Module.shtml">Groups, Rings and Modules</a>
-<br>Author: Hidetsune Kobayashi, L. Chen and H. Murao
+<br>Author:
+Hidetsune Kobayashi,
+L. Chen and 
+H. Murao
 </td></tr>
 
-<tr><td class="entry">2004-04-26:   <a href="entries/Lazy-Lists-II.shtml">Lazy
-Lists II</a><br>
-Author:  
-<a href="http://www.informatik.uni-freiburg.de/~friedric/">Stefan Friedrich</a></td></tr>
+<tr><td class="entry">
+2004-04-26:
+<a href="entries/Topology.shtml">Topology</a>
+<br>Author:
+Stefan Friedrich
+</td></tr>
 
-<tr><td class="entry">2004-04-26:   <a href="entries/Topology.shtml">Topology</a><br>
-Author:  
-<a href="http://www.informatik.uni-freiburg.de/~friedric/">Stefan Friedrich</a></td></tr>
+<tr><td class="entry">
+2004-04-26:
+<a href="entries/Lazy-Lists-II.shtml">Lazy Lists II</a>
+<br>Author:
+Stefan Friedrich
+</td></tr>
 
 <tr><td class="entry">
 2004-04-05:
 <a href="entries/BinarySearchTree.shtml">Binary Search Trees</a>
-<br>Author:  
-<a href="http://www.mit.edu/people/vkuncak/">Viktor Kuncak</a></td></tr>
+<br>Author:
+<a href="http://www.mit.edu/people/vkuncak/">Viktor Kuncak</a>
+</td></tr>
 
 <tr><td class="entry">
-2004-03-30:  
+2004-03-30:
 <a href="entries/Functional-Automata.shtml">Functional Automata</a>
-<br>Author:  
+<br>Author:
+<a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>
+</td></tr>
+
+<tr><td class="entry">
+2004-03-19:
+<a href="entries/AVL-Trees.shtml">AVL Trees</a>
+<br>Author:
+<a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a> and 
+Cornelia Pusch
+</td></tr>
+
+<tr><td class="entry">
+2004-03-19:
+<a href="entries/MiniML.shtml">Mini ML</a>
+<br>Author:
+Wolfgang Naraschewski and 
 <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
 </td></tr>
 
-<tr><td class="entry">
-2003-03-19:  
-<a href="entries/MiniML.shtml">Mini ML</a>
-<br>Author: Wolfgang Naraschewski and <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
-</td></tr>
 
-<tr><td class="entry">
-2004-03-19:  
-<a href="entries/AVL-Trees.shtml">AVL Trees</a>
-<br>Author: <a href="http://www4.in.tum.de/~nipkow/">Tobias Nipkow</a>
-and Cornelia Pusch
-</td></tr>
-
-<tr><td class="entry">
-2004-02-25:  
-<a href="entries/Example-Submission.shtml">Example Submission</a>
-<br>Author:  
-<a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>
-</td></tr>    
 
   </tbody>
 </table>

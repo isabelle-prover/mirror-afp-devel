@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,80 +22,65 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->A Bytecode Logic for JML and Types</h1>
-<p> </p>
-
+<h1><font class="first">A</font>
+<font class="first">B</font>ytecode
+<font class="first">L</font>ogic
+for
+<font class="first">J</font>ML
+and
+<font class="first">T</font>ypes
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->A Bytecode Logic for JML and Types
-    </td></tr>
-		
+        <td class="data" width="80%">A Bytecode Logic for JML and Types</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<a href="http://www.tcs.informatik.uni-muenchen.de/~beringer">Lennart
-Beringer</a> and <a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">Martin Hofmann</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2008-12-12</td></tr>
+        <td class="data"><a href="http://www.tcs.informatik.uni-muenchen.de/~beringer">Lennart Beringer</a> and  <a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">Martin Hofmann</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-  This document contains the Isabelle/HOL sources underlying the paper
-  <em>A bytecode logic for JML and types</em> by Beringer and Hofmann,
-  updated to Isabelle
-  2008. We present a program logic for a subset of sequential Java
-  bytecode that is suitable for representing both, features found in
-  high-level specification language JML as well as interpretations of
-  high-level type systems. To this end, we introduce a fine-grained
-  collection of assertions, including strong invariants, local
-  annotations and VDM-reminiscent partial-correctness specifications.
-  Thanks to a goal-oriented structure and interpretation of
-  judgements, verification may proceed without recourse to an
-  additional control flow analysis. The suitability for interpreting
-  intensional type systems is illustrated by the proof-carrying-code
-  style encoding of a type system for a first-order functional
-  language which guarantees a constant upper bound on the number of
-  objects allocated throughout an execution, be the execution
-  terminating or non-terminating.
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2008-12-12</td></tr>
 
-  Like the published paper, the formal development is restricted to a
-  comparatively small subset of the JVML, lacking (among other
-  features) exceptions, arrays, virtual methods, and static fields.
-  This shortcoming has been overcome meanwhile, as our paper has
-  formed the basis of the Mobius base logic, a program logic for the full
-  sequential fragment of the JVML. Indeed, the present formalisation
-  formed the basis of a subsequent formalisation of the Mobius
-  base logic in the proof assistant Coq, which includes a proof of
-  soundness with respect to the Bicolano operational
-  semantics by Pichardie.
-   </td></tr>
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+This document contains the Isabelle/HOL sources underlying the paper <i>A
+bytecode logic for JML and types</i> by Beringer and Hofmann, updated to
+Isabelle 2008. We present a program logic for a subset of sequential Java
+bytecode that is suitable for representing both, features found in high-level
+specification language JML as well as interpretations of high-level type
+systems. To this end, we introduce a fine-grained collection of assertions,
+including strong invariants, local annotations and VDM-reminiscent partial-
+correctness specifications. Thanks to a goal-oriented structure and
+interpretation of judgements, verification may proceed without recourse to an
+additional control flow analysis. The suitability for interpreting intensional
+type systems is illustrated by the proof-carrying-code style encoding of a type
+system for a first-order functional language which guarantees a constant upper
+bound on the number of objects allocated throughout an execution, be the
+execution terminating or non-terminating. Like the published paper, the formal
+development is restricted to a comparatively small subset of the JVML, lacking
+(among other features) exceptions, arrays, virtual methods, and static fields.
+This shortcoming has been overcome meanwhile, as our paper has formed the basis
+of the Mobius base logic, a program logic for the full sequential fragment of
+the JVML. Indeed, the present formalisation formed the basis of a subsequent
+formalisation of the Mobius base logic in the proof assistant Coq, which
+includes a proof of soundness with respect to the Bicolano operational semantics
+by Pichardie.
+        </td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="BytecodeLogicJmlTypes" -->
-
 <!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -121,15 +105,16 @@ Beringer</a> and <a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">M
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-		<ul>
-    	<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-	    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-12-22.tar.gz">afp-<!--#echo var="name" -->-2008-12-22.tar.gz</a></li>
-		</ul>
-	</td></tr>
+<ul>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-12-22.tar.gz">afp-<!--#echo var="name" -->-2008-12-22.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

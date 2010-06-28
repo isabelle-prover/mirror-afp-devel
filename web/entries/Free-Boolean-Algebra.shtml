@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,61 +22,45 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Free Boolean Algebra</h1>
-<p> </p>
-
+<h1><font class="first">F</font>ree
+<font class="first">B</font>oolean
+<font class="first">A</font>lgebra
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Free Boolean Algebra
-    </td></tr>
-		
+        <td class="data" width="80%">Free Boolean Algebra</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://web.cecs.pdx.edu/~brianh/">Brian Huffman</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2010-03-29</td></tr>
+        <td class="data"><a href="http://web.cecs.pdx.edu/~brianh/">Brian Huffman</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This theory defines a type constructor representing the free Boolean
-algebra over a set of generators.  Values of type
-(&alpha;)<i>formula</i> represent propositional formulas with
-uninterpreted variables from type &alpha;, ordered by implication.
-In addition to all the standard Boolean algebra operations, the
-library also provides a function for building homomorphisms to any
-other Boolean algebra type.
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2010-03-29</td></tr>
 
-   </td></tr>
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+This theory defines a type constructor representing the free Boolean algebra
+over a set of generators. Values of type (&alpha;)<i>formula</i> represent
+propositional formulas with uninterpreted variables from type &alpha;, ordered
+by implication. In addition to all the standard Boolean algebra operations, the
+library also provides a function for building homomorphisms to any other Boolean
+algebra type.
+        </td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Free-Boolean-Algebra" -->
-<!--#set var="base" value="HOL" --> <!--- ??? could be HOLCF etc --->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -102,12 +85,12 @@ other Boolean algebra type.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
-	</td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>
