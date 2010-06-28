@@ -540,3 +540,9 @@ author = Stefan Friedrich
 date = 2004-04-26
 topic = Computer Science/Data Structures
 abstract = This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
+
+[Example-Submission]
+title = Example Submission
+author = Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>
+date = 2004-02-25
+abstract = This is an example submission to the Archive of Formal Proof. It shows submission requirements and explains the structure of a simple typical submission.
