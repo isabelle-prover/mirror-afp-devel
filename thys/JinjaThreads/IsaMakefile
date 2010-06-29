@@ -19,12 +19,8 @@ OUT = $(ISABELLE_OUTPUT)
 LOG = $(OUT)/log
 
 
-# turn image into absolute path according to ISABELLE_IMAGE_PATH or OUT
-ifeq ($(ISABELLE_IMAGE_PATH),)
+# base image is not an Isabelle release image, so always source from $(OUT)
 IMAGE=$(OUT)/$(BASE-IMAGE)
-else
-IMAGE=$(ISABELLE_IMAGE_PATH)$(BASE-IMAGE)
-endif
 
 USEDIR = $(ISABELLE_TOOL) usedir -v true -i true -g true -d pdf -V outline=/proof,/ML
 
