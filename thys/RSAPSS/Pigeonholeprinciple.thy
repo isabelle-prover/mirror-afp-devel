@@ -15,10 +15,8 @@ text {*
   in n holes there is at least one hole with more than one pigeon.
 *}
 
-primrec alldistinct :: "nat list \<Rightarrow> bool"
-where
-  "alldistinct [] = True"
-| "alldistinct (x # xs) = (\<not> x mem xs \<and> alldistinct xs)"
+abbreviation (input) "alldistinct \<equiv> distinct"
+abbreviation (input) mem (infixl "mem" 55) where "x mem xs \<equiv> x \<in> set xs"
 
 primrec alllesseq :: "nat list \<Rightarrow> nat \<Rightarrow> bool"
 where
@@ -114,15 +112,10 @@ lemma ainsort: "a mem (insort a b)"
   by (induct b) auto
 
 lemma memeqsort: "x mem xs = x mem (sort xs)"
-  apply (induct xs)
-   apply simp
-  apply (case_tac "x=a")
-   apply (simp add: ainsort)+
-  apply (rule anotinsort, simp)
-  done
+  by (simp add: set_sort)
 
 lemma permmember: "\<lbrakk>perm xs ys; x mem xs\<rbrakk> \<Longrightarrow> x mem ys"
-  by (simp add: perm_def memeqsort [of xs x] memeqsort [of ys x])
+  by (simp only: perm_def memeqsort [of x xs] memeqsort [of x ys])
 
 lemma alllesseqdelete: "\<lbrakk>alldistinct (x#xs); alllesseq (x#xs) (length(x#xs))\<rbrakk>
     \<Longrightarrow> alllesseq (del (length(x#xs)) (x#xs)) (length (xs))"
@@ -141,7 +134,7 @@ lemma dellengthinalllesseq:
   \<Longrightarrow> alllesseq (del (length (x#xs)) (x#xs))(length (del (length (x#xs)) (x#xs)))"
   apply (drule alllesseqdelete)
    apply simp
-  apply (insert lengthdel2 [of xs "length (x#xs)" x])
+  apply (insert lengthdel2 [of "length (x#xs)" xs x])
   apply simp
   done
 
@@ -173,7 +166,7 @@ lemma permSuclengthdel2:
   \<Longrightarrow> perm (Suc (length xs) # positives (length xs)) (x # xs)"
   apply (simp add: perm_def)
   apply (subst insortsym)
-  apply (insert insortsortdel [of xs "Suc (length xs)", symmetric])
+  apply (insert insortsortdel [of "Suc (length xs)" xs, symmetric])
   apply auto
   done
 
@@ -185,7 +178,7 @@ lemma dellengthinperm:
    apply simp
    apply (drule perminsert)
    apply simp
-  apply (insert lengthdel2 [of xs "length (x # xs)" x])
+  apply (insert lengthdel2 [of "length (x # xs)" xs x])
   apply (simp del: perm_def positives.simps)
   apply (simp only: positives.simps)
   apply (frule permSuclengthdel)
@@ -205,16 +198,7 @@ lemma memsetpositives:
   apply auto
   done
 
-lemma pigeonholeprinciple:
-  "allnonzero xs \<Longrightarrow> alldistinct xs \<Longrightarrow> alllesseq xs (length xs) \<Longrightarrow> perm (positives (length xs)) xs"
-proof (induct xs rule: pigeonholeinduction.induct)
-  case 1 then show ?case by (simp add: perm_def)
-next
-  case (2 x xs) then show ?case
-  thm notE [of "allnonzero (del (length (x # xs)) (x # xs))"]
-  oops
-
-lemmas seteqmem = mem_iff [symmetric]
+lemmas seteqmem = List.member_def [symmetric]
 
 lemma pigeonholeprinciple:
   "allnonzero xs \<Longrightarrow> alldistinct xs \<Longrightarrow> alllesseq xs (length xs) \<Longrightarrow> perm (positives (length xs)) xs"
@@ -251,7 +235,7 @@ lemma pigeonholeprinciple:
   apply (erule_tac P="x mem xs" in notE)
   apply (simp add:seteqmem [symmetric])
   apply (frule memsetpositives)
-  apply (simp add:seteqmem)+
+  apply simp+
   apply (rule permmember)
   apply (simp)
   apply (simp)
@@ -290,9 +274,8 @@ lemma pigeonholeprinciple:
   apply (drule le_neq_implies_less)
   apply (simp add:less_Suc_eq_le)+
   apply (erule_tac P="x mem xs" in notE)
-  apply (simp add:seteqmem [symmetric])
   apply (frule memsetpositives)
-  apply (simp add:seteqmem)+
+  apply simp+
   apply (rule permmember)
   apply (simp)+
   apply (case_tac "Suc (length xs) = x")
@@ -302,9 +285,8 @@ lemma pigeonholeprinciple:
   apply (drule le_neq_implies_less)
   apply (simp add:less_Suc_eq_le)+
   apply (erule_tac P="x mem xs" in notE)
-  apply (simp add:seteqmem [symmetric])
   apply (frule memsetpositives)
-  apply (simp add:seteqmem)+
+  apply simp+
   apply (rule permmember)
   apply (simp)+
   done
