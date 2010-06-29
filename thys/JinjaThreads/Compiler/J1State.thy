@@ -53,7 +53,7 @@ where
 | "max_vars (FAss e\<^isub>1 F D e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2)"
 | "max_vars (e\<bullet>M(es)) = max (max_vars e) (max_varss es)"
 | "max_vars ({V:T=vo; e}) = max_vars e + 1"
-(* sync and insync will need an extra local variable when compiling to bytecode to store the object that is being synchronized on until its release *)
+-- "sync and insync will need an extra local variable when compiling to bytecode to store the object that is being synchronized on until its release"
 | "max_vars (sync\<^bsub>V\<^esub> (e') e) = max (max_vars e') (max_vars e + 1)"
 | "max_vars (insync\<^bsub>V\<^esub> (a) e) = max_vars e + 1"
 | "max_vars (e\<^isub>1;;e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2)"

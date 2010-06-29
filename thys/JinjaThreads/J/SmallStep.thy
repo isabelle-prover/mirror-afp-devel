@@ -470,6 +470,21 @@ proof (induct rule:red_reds.inducts)
   thus ?case by(clarsimp)(fastsimp split:split_if_asm)
 qed auto
 
+lemma red_Suspend_is_call:
+  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
+  \<Longrightarrow> \<exists>a vs T. call e' = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_external_call P T wait"
+  and reds_Suspend_is_calls:
+  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
+  \<Longrightarrow> \<exists>a vs T. calls es' = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_external_call P T wait"
+proof(induct rule: red_reds.inducts)
+  case RedCallExternal
+  thus ?case
+    apply clarsimp
+    apply(frule red_external_Suspend_StaySame, simp)
+    apply(drule red_external_Suspend_waitD, simp_all)
+    done
+qed auto
+
 end
 
 context J_heap begin

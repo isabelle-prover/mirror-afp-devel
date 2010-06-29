@@ -39,28 +39,28 @@ apply(case_tac af, auto simp add: exception_step_def_raw split: list.split_asm)
 apply(drule NewThread_memory_exec_instr, simp+)
 done
 
-lemma exec_instr_Suspend_last:
-  "(ta, s) \<in> exec_instr I P t h stk loc C M pc frs \<Longrightarrow> Suspend w \<notin> set (butlast \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
+lemma exec_instr_Wakeup_no_Join:
+  "\<lbrakk> (ta, s) \<in> exec_instr I P t h stk loc C M pc frs; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
+  \<Longrightarrow> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
 apply(cases I)
-apply(auto split: split_if_asm simp add: split_beta ta_upd_simps)
-apply(auto dest!: red_external_aggr_Suspend_last)
+apply(auto split: split_if_asm simp add: split_beta ta_upd_simps dest: red_external_aggr_Wakeup_no_Join)
 done
 
-lemma mexec_Suspend_last:
-  "P,t \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>' \<Longrightarrow> Suspend w \<notin> set (butlast \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
+lemma mexec_instr_Wakeup_no_Join:
+  "\<lbrakk> P,t \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>'; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
+  \<Longrightarrow> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
 apply(erule exec_1.cases)
 apply(clarsimp)
 apply(case_tac bb, simp)
-apply(case_tac af, auto simp add: exception_step_def_raw split: list.split_asm)
-apply(drule exec_instr_Suspend_last)
+apply(case_tac af, clarsimp simp add: exception_step_def_raw split: list.split_asm del: disjE)
+apply(drule exec_instr_Wakeup_no_Join)
 apply auto
 done
-
 
 lemma exec_mthr: "multithreaded (mexec P)"
 apply(unfold_locales)
 apply(clarsimp, drule NewThread_memory_exec, fastsimp, simp)
-apply(clarsimp, drule mexec_Suspend_last, fastsimp)
+apply(clarsimp del: disjE, drule mexec_instr_Wakeup_no_Join, fastsimp+)
 done
 
 end
@@ -109,16 +109,16 @@ where
 
 
 lemma execd_mthr: "multithreaded (mexecd P)"
-apply(unfold_locales, auto)
+apply(unfold_locales)
+ apply clarsimp
  apply(erule jvmd_NormalE)
  apply(clarsimp)
  apply(case_tac xcp, auto simp add: exception_step_def_raw split: list.split_asm)[1]
  apply(drule NewThread_memory_exec_instr, simp, simp)
+apply clarsimp
 apply(erule jvmd_NormalE)
 apply clarsimp
-apply(case_tac xcp, auto)
-apply(drule exec_instr_Suspend_last)
-apply fastsimp
+apply(case_tac xcp, auto dest: exec_instr_Wakeup_no_Join)
 done
 
 end
@@ -175,6 +175,20 @@ apply(case_tac [!] frs)
 apply(auto simp add: check_def elim!: jvmd_NormalE dest!: exec_instr_New_Thread_exists_thread_object)
 done
 
+lemma mexecd_Suspend_Invoke:
+  "\<lbrakk> mexecd P t (x, m) ta (x', m'); Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
+  \<Longrightarrow> \<exists>stk loc C M pc frs' n a T. x' = (None, (stk, loc, C, M, pc) # frs') \<and> instrs_of P C M ! pc = Invoke wait n \<and> stk ! n = Addr a \<and> typeof_addr m a = \<lfloor>T\<rfloor> \<and> is_external_call P T wait"
+apply(cases x')
+apply(cases x)
+apply(cases "fst x")
+apply(auto elim!: jvmd_NormalE simp add: split_beta)
+apply(rename_tac [!] stk loc C M pc frs)
+apply(case_tac [!] "instrs_of P C M ! pc")
+apply(auto split: split_if_asm simp add: split_beta)
+apply(frule (1) red_external_aggr_Suspend_StaySame, simp, drule (1) red_external_aggr_Suspend_waitD, simp, simp)+
+apply(auto simp add: check_def is_Ref_def)
+done
+
 end
 
 context JVM_heap begin
@@ -198,6 +212,8 @@ done
 lemma lifting_wf_thread_conf: "lifting_wf (mexecd P) (\<lambda>t x m. P,m \<turnstile> t \<surd>t)"
 by(unfold_locales)(auto intro: exec_preserve_tconf dest: exec_New_Thread_exists_thread_object intro: tconfI)
 
+
+
 end
 
 sublocale JVM_heap < execd_tconf!: lifting_wf JVM_final "mexecd P" "\<lambda>t x m. P,m \<turnstile> t \<surd>t" for P
@@ -205,19 +221,9 @@ by(rule lifting_wf_thread_conf)
 
 context JVM_heap begin
 
-lemma redTW_hext_d:
-  "execd_mthr.redTW P t wa s obs s' \<Longrightarrow> shr s \<unlhd> shr s'"
-by(fastsimp elim!: execd_mthr.redTW.cases dest: ts_okD tconfD intro: exec_1_d_hext)
-
-lemma redTWs_hext_d:
-  assumes "execd_mthr.redTWs P t wa s obs s'"
-  shows "shr s \<unlhd> shr s'"
-using assms
-by(induct rule: execd_mthr.redTWs_converse_induct)(auto dest: redTW_hext_d execd_tconf.redTWs_preserves intro: hext_trans)
-
 lemma execd_hext:
   "P \<turnstile> s -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s' \<Longrightarrow> shr s \<unlhd> shr s'"
-by(auto elim!: execd_mthr.redT.cases dest!: exec_1_d_hext redTWs_hext_d intro: hext_trans)
+by(auto elim!: execd_mthr.redT.cases dest!: exec_1_d_hext intro: hext_trans)
 
 lemma Execd_hext:
   assumes "P \<turnstile> s -\<triangleright>tta\<rightarrow>\<^bsub>jvmd\<^esub>* s'"

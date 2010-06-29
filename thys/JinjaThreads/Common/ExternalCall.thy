@@ -241,7 +241,7 @@ where
   "P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>\<rightarrow>ext \<langle>RetEXC IllegalMonitorState, h\<rangle>"
 
 | RedWaitNotified:
-  "P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub> Notified \<rbrace>\<rightarrow>ext \<langle>RetVal Unit, h\<rangle>"
+  "P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notified \<rbrace>\<rightarrow>ext \<langle>RetVal Unit, h\<rangle>"
 
     -- {*
     This rule does not explicitly check that the interrupted flag is set on the heap.
@@ -252,7 +252,7 @@ where
 | RedWaitInterrupted:
   "\<lbrakk> typeof_addr h t = \<lfloor>Class C\<rfloor>; P \<turnstile> C \<preceq>\<^sup>* Thread; 
      heap_write h t interrupted_flag_loc (Bool False) h' \<rbrakk>
-  \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub> Interrupted \<rbrace>
+  \<Longrightarrow> P,t \<turnstile> \<langle>a\<bullet>wait([]), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>
                             \<lbrace>\<^bsub>o\<^esub>  WriteMem t interrupted_flag_loc (Bool False)\<rbrace>\<rightarrow>ext
            \<langle>RetEXC InterruptedException, h'\<rangle>"
 
@@ -305,9 +305,9 @@ where
         else {})
        \<union>
        {(\<epsilon>\<lbrace>\<^bsub>l\<^esub> UnlockFail\<rightarrow>a \<rbrace>, RetEXC IllegalMonitorState, h),
-        (\<epsilon>\<lbrace>\<^bsub>c\<^esub> Notified \<rbrace>, RetVal Unit, h)}
+        (\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notified \<rbrace>, RetVal Unit, h)}
        \<union>
-       {(\<epsilon>\<lbrace>\<^bsub>c\<^esub> Interrupted \<rbrace>\<lbrace>\<^bsub>o\<^esub> WriteMem t interrupted_flag_loc (Bool False)\<rbrace>,
+       {(\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>\<lbrace>\<^bsub>o\<^esub> WriteMem t interrupted_flag_loc (Bool False)\<rbrace>,
          RetEXC InterruptedException, h')
         |h'. heap_write h t (CField Thread interrupted_flag) (Bool False) h'}
     else if M = notify then {(\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notify a \<rbrace>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a \<rbrace>, RetVal Unit, h),
@@ -416,15 +416,17 @@ end
 
 context heap_base begin
 
-lemma red_external_Suspend_last:
-  "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<Longrightarrow> Suspend w \<notin> set (butlast \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
-by(auto elim!: red_external.cases simp add: ta_upd_simps)
+lemma red_external_Wakeup_no_Join_no_Lock:
+  "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow>
+  \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
+by(auto elim!: red_external.cases simp add: ta_upd_simps collect_locks_def)
 
-lemma red_external_aggr_Suspend_last:
-  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; is_external_call P (the (typeof_addr h a)) M \<rbrakk>
-  \<Longrightarrow> Suspend w \<notin> set (butlast \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
+lemma red_external_aggr_Wakeup_no_Join:
+  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; is_external_call P (the (typeof_addr h a)) M; 
+     Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
+  \<Longrightarrow> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
 apply(auto simp add: red_external_aggr_def is_external_call_def split_beta ta_upd_simps split: split_if_asm)
-apply(auto elim!: external_WT_defs.cases simp add: ta_upd_simps)
+apply(auto elim!: external_WT_defs.cases simp add: ta_upd_simps collect_locks_def)
 done
 
 lemma red_external_Suspend_StaySame:
@@ -434,6 +436,17 @@ by(auto elim!: red_external.cases simp add: ta_upd_simps)
 lemma red_external_aggr_Suspend_StaySame:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; is_external_call P (the (typeof_addr h a)) M;
      Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> va = RetStaySame" 
+apply(auto simp add: red_external_aggr_def is_external_call_def split_beta ta_upd_simps split: split_if_asm)
+apply(auto elim!: external_WT_defs.cases simp add: ta_upd_simps)
+done
+
+lemma red_external_Suspend_waitD:
+  "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> M = wait"
+by(auto elim!: red_external.cases simp add: ta_upd_simps)
+
+lemma red_external_aggr_Suspend_waitD:
+  "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; is_external_call P (the (typeof_addr h a)) M;
+     Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> M = wait"
 apply(auto simp add: red_external_aggr_def is_external_call_def split_beta ta_upd_simps split: split_if_asm)
 apply(auto elim!: external_WT_defs.cases simp add: ta_upd_simps)
 done

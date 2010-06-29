@@ -11,7 +11,9 @@ fun has_locks :: "'t lock \<Rightarrow> 't \<Rightarrow> nat" where
 | "has_locks \<lfloor>(t', n)\<rfloor> t = (if t = t' then Suc n else 0)"
 
 lemma has_locks_iff: 
-  "has_locks l t = n \<longleftrightarrow> (l = None \<and> n = 0) \<or> (\<exists>n'. l = \<lfloor>(t, n')\<rfloor> \<and> Suc n' = n) \<or> (\<exists>t' n'. l = \<lfloor>(t', n')\<rfloor> \<and> t' \<noteq> t \<and> n = 0)"
+  "has_locks l t = n \<longleftrightarrow>
+  (l = None \<and> n = 0) \<or> 
+  (\<exists>n'. l = \<lfloor>(t, n')\<rfloor> \<and> Suc n' = n) \<or> (\<exists>t' n'. l = \<lfloor>(t', n')\<rfloor> \<and> t' \<noteq> t \<and> n = 0)"
 by(cases l, auto)
 
 lemma has_locksE:
@@ -464,7 +466,9 @@ lemma lock_actions_ok'E[consumes 1, case_names ok Lock]:
 by(auto simp add: lock_actions_ok'_iff)
 
 lemma not_lock_actions_ok'_conv: 
-  "(\<not> lock_actions_ok' l t las) \<longleftrightarrow> \<not> lock_actions_ok l t las \<and> (\<forall>xs ys. las = xs @ Lock # ys \<and> lock_actions_ok l t xs \<longrightarrow> may_lock (upd_locks l t xs) t)"
+  "(\<not> lock_actions_ok' l t las) \<longleftrightarrow>
+   \<not> lock_actions_ok l t las \<and> 
+  (\<forall>xs ys. las = xs @ Lock # ys \<and> lock_actions_ok l t xs \<longrightarrow> may_lock (upd_locks l t xs) t)"
 by(auto simp add: lock_actions_ok'_iff)
 
 end

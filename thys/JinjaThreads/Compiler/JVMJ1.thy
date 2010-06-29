@@ -8,6 +8,8 @@ theory JVMJ1 imports
   J1JVMBisim
 begin
 
+declare split_paired_Ex[simp del]
+
 context J1_JVM_heap_base begin
 
 lemma assumes ha: "typeof_addr h a = \<lfloor>Class D\<rfloor>"
@@ -1658,7 +1660,7 @@ next
         have "call1 (obj'\<bullet>M'(ps)) \<noteq> None \<Longrightarrow> Val v\<bullet>M'(ps) = obj'\<bullet>M'(ps) \<and> loc = xs"
           by(auto split: split_if_asm)
 	ultimately show ?thesis using red \<tau> pc xcp stk Ta call
-          apply(auto simp del: split_paired_Ex call1_calls1.simps)
+          apply(auto simp del: call1_calls1.simps)
           apply(fastsimp intro: rtranclp.rtrancl_into_rtrancl rtranclp_into_tranclp1)+
           done
       qed
@@ -3331,7 +3333,6 @@ qed
 end
 
 declare split_beta [simp del]
-
 
 context J1_JVM_conf_read begin
 

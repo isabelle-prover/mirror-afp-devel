@@ -4,7 +4,7 @@
 
 header {* \isaheader{Wellformedness conditions for the multithreaded state } *}
 
-theory FWWellform imports FWLocking FWThread begin
+theory FWWellform imports FWLocking FWThread FWWait begin
 
 text{* Well-formedness property: Locks are held by real threads *}
 
@@ -102,7 +102,7 @@ lemma acquire_all_preserves_lock_thread_ok:
   "\<lbrakk> lock_thread_ok ls ts; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> lock_thread_ok (acquire_all ls t ln) (ts(t \<mapsto> xw))"
 by(rule lock_thread_okI, auto dest!: has_lock_acquire_locks_implies_has_lock dest: lock_thread_okD)
 
-text {* Well-formedness condition: Wait sets contain only real sets *}
+text {* Well-formedness condition: Wait sets contain only real threads *}
 
 definition wset_thread_ok :: "('w, 't) wait_sets \<Rightarrow> ('l, 't, 'x) thread_info \<Rightarrow> bool"
 where "wset_thread_ok ws ts \<equiv> \<forall>t. ts t = None \<longrightarrow> ws t = None"
@@ -127,6 +127,14 @@ lemma wset_thread_ok_upd_Some:
   "wset_thread_ok ws ts \<Longrightarrow> wset_thread_ok (ws(t := wo)) (ts(t \<mapsto> xln))"
 by(auto intro!: wset_thread_okI dest: wset_thread_okD split: split_if_asm)
 
+lemma wset_thread_ok_upd_ws:
+  "\<lbrakk> wset_thread_ok ws ts; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok (ws(t := w)) ts"
+by(auto intro!: wset_thread_okI dest: wset_thread_okD)
+
+lemma wset_thread_ok_NotifyAllI: 
+  "wset_thread_ok ws ts \<Longrightarrow> wset_thread_ok (\<lambda>t. if ws t = \<lfloor>w t\<rfloor> then \<lfloor>w' t\<rfloor> else ws t) ts"
+by(simp add: wset_thread_ok_def)
+
 lemma redT_updTs_preserves_wset_thread_ok:
   assumes wto: "wset_thread_ok ws ts"
   shows "wset_thread_ok ws (redT_updTs ts nts)"
@@ -136,5 +144,19 @@ proof(rule wset_thread_okI)
   hence "ts t = None" by(rule redT_updTs_None)
   with wto show "ws t = None" by(rule wset_thread_okD)
 qed
+
+lemma redT_updW_preserve_wset_thread_ok: 
+  "\<lbrakk> wset_thread_ok ws ts; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok (redT_updW ws t wa) ts"
+apply(cases wa)
+apply(simp_all add: wset_thread_ok_upd_ws wset_thread_ok_NotifyAllI)
+apply clarify
+apply(rule wset_thread_okI)
+apply(drule (1) wset_thread_okD)
+apply(auto dest: someI[where P="\<lambda>t. ws t = Some (InWS w)", standard])
+done
+
+lemma redT_updWs_preserve_wset_thread_ok:
+  "\<lbrakk> wset_thread_ok ws ts; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok (redT_updWs ws t was) ts"
+by(induct was arbitrary: ws)(auto intro: redT_updW_preserve_wset_thread_ok)
 
 end

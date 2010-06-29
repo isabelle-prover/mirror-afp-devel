@@ -400,7 +400,7 @@ next
     `length Vs + max_vars (Val a\<lfloor>i\<rceil>) \<le> length xs` `?synth (Val a\<lfloor>i\<rceil>) s` `extTA2J0 P,P,t \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>`
   show ?case by(fastsimp elim!: sim_move01_expr)
 next
-  case RedAAcc thus ?case by auto
+  case RedAAcc thus ?case by(auto simp del: split_paired_Ex)
 next
   case (AAssRed1 a s ta a' s' i e Vs E2 xs)
   note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs a e2 XS; fv a \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars a \<le> length XS;
@@ -2199,46 +2199,11 @@ proof -
     from red0 red1 Suspend show "bisim_wait01 x1'' x2''"
       by(cases x2')(cases x2'', auto dest: Red_Suspend_is_call Red1_Suspend_is_call simp add: split_beta bisim_wait01_def is_call_def)
   next
-    fix t x1 m1 x2 m2 x1'
-    assume "bisim_red0_Red1 (x1, m1) (x2, m2)"
-      and "bisim_wait01 x1 x2"
-      and "mred0 P t (x1, m1) \<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace> (x1', m1)"
-    moreover obtain e0 es0 where [simp]: "x1 = (e0, es0)" by(cases x1)
-    moreover obtain e0' es0' where [simp]: "x1' = (e0', es0')" by(cases x1')
-    moreover obtain e1 xs1 exs1 where [simp]: "x2 = ((e1, xs1), exs1)" by(cases x2) auto
-    ultimately have bisim: "bisim_list1 (e0, es0) ((e1, xs1), exs1)"
-      and m1: "m2 = m1"
-      and call: "call e0 \<noteq> None" "call1 e1 \<noteq> None"
-      and red: "P,t \<turnstile>0 \<langle>e0/es0, m1\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace>\<rightarrow> \<langle>e0'/es0', m1\<rangle>"
-      by(auto simp add: bisim_wait01_def bisim_red0_Red1_def)
-    from red have "\<not> \<tau>Move0 P m1 (e0, es0)"
-      by(auto simp add: ta_upd_simps elim!: red0.cases dest: red_\<tau>_taD[where extTA="extTA2J0 P", simplified])
-    with Red1_simulates_red0[OF wf red bisim] call m1
-    show "\<exists>x2'. mred1' (compP1 P) t (x2, m2) \<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace> (x2', m2) \<and> bisim_red0_Red1 (x1', m1) (x2', m2)"
-      by(fastsimp simp add: bisim_red0_Red1_def ta_bisim_def ta_upd_simps)
-  next
-    fix t x1 m1 x2 m2 x2'
-    assume "bisim_red0_Red1 (x1, m1) (x2, m2)" "bisim_wait01 x1 x2" "mred1' (compP1 P) t (x2, m2) \<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace> (x2', m2)"
-    moreover obtain e0 es0 where [simp]: "x1 = (e0, es0)" by(cases x1)
-    moreover obtain e1 xs1 exs1 where [simp]: "x2 = ((e1, xs1), exs1)" by(cases x2) auto
-    moreover obtain e1' xs1' exs1' where [simp]: "x2' = ((e1', xs1'), exs1')" by(cases x2') auto
-    ultimately have bisim: "bisim_list1 (e0, es0) ((e1, xs1), exs1)"
-      and m1: "m2 = m1"
-      and call: "call e0 \<noteq> None" "call1 e1 \<noteq> None"
-      and red: "compP1 P,t \<turnstile>1 \<langle>(e1, xs1)/exs1, m1\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace>\<rightarrow> \<langle>(e1', xs1')/exs1', m1\<rangle>"
-      and IUF: "\<not> IUFL (e1, xs1) exs1 (\<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace> :: 'heap J1_thread_action) (e1', xs1') exs1'"
-      by(auto simp add: bisim_wait01_def bisim_red0_Red1_def)
-    from red have "\<not> \<tau>Move1 P m1 ((e1, xs1), exs1)"
-      by(auto elim!: Red1.cases dest: red1_\<tau>_taD simp add: ta_upd_simps)
-    with red0_simulates_Red1[OF wf red bisim IUF] m1 call
-    show "\<exists>x1'. mred0 P t (x1, m1) \<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace> (x1', m1) \<and> bisim_red0_Red1 (x1', m1) (x2', m2)"
-      by(fastsimp simp add: bisim_red0_Red1_def ta_bisim_def ta_upd_simps)
-  next
     fix t x1 m1 x2 m2 ta1 x1' m1'
     assume "bisim_red0_Red1 (x1, m1) (x2, m2)"
       and "bisim_wait01 x1 x2"
       and "mred0 P t (x1, m1) ta1 (x1', m1')"
-      and "is_Interrupted_ta ta1"
+      and wakeup: "Notified \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub>"
     moreover obtain e0 es0 where [simp]: "x1 = (e0, es0)" by(cases x1)
     moreover obtain e0' es0' where [simp]: "x1' = (e0', es0')" by(cases x1')
     moreover obtain e1 xs1 exs1 where [simp]: "x2 = ((e1, xs1), exs1)" by(cases x2) auto
@@ -2247,15 +2212,17 @@ proof -
       and call: "call e0 \<noteq> None" "call1 e1 \<noteq> None"
       and red: "P,t \<turnstile>0 \<langle>e0/es0, m1\<rangle> -ta1\<rightarrow> \<langle>e0'/es0', m1'\<rangle>"
       by(auto simp add: bisim_wait01_def bisim_red0_Red1_def)
-    from red `is_Interrupted_ta ta1` have "\<not> \<tau>Move0 P m1 (e0, es0)"
-      by(auto elim!: red0.cases dest: red_\<tau>_taD[where extTA="extTA2J0 P", simplified] simp add: is_Interrupted_ta_def)
+    from red wakeup have "\<not> \<tau>Move0 P m1 (e0, es0)"
+      by(auto elim!: red0.cases dest: red_\<tau>_taD[where extTA="extTA2J0 P", simplified])
     with Red1_simulates_red0[OF wf red bisim] call m1
-    show "\<exists>x2' m2' ta2. mred1' (compP1 P) t (x2, m2) ta2 (x2', m2') \<and> bisim_red0_Red1 (x1', m1') (x2', m2') \<and> ta_bisim01 ta1 ta2"
+    show "\<exists>ta2 x2' m2'. mred1' (compP1 P) t (x2, m2) ta2 (x2', m2') \<and> bisim_red0_Red1 (x1', m1') (x2', m2') \<and> ta_bisim01 ta1 ta2"
       by(auto simp add: bisim_red0_Red1_def)
   next
     fix t x1 m1 x2 m2 ta2 x2' m2'
-    assume "bisim_red0_Red1 (x1, m1) (x2, m2)" "bisim_wait01 x1 x2"
-      and "mred1' (compP1 P) t (x2, m2) ta2 (x2', m2')" "is_Interrupted_ta ta2"
+    assume "bisim_red0_Red1 (x1, m1) (x2, m2)"
+      and "bisim_wait01 x1 x2" 
+      and "mred1' (compP1 P) t (x2, m2) ta2 (x2', m2')"
+      and wakeup: "Notified \<in> set \<lbrace>ta2\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta2\<rbrace>\<^bsub>w\<^esub>"
     moreover obtain e0 es0 where [simp]: "x1 = (e0, es0)" by(cases x1)
     moreover obtain e1 xs1 exs1 where [simp]: "x2 = ((e1, xs1), exs1)" by(cases x2) auto
     moreover obtain e1' xs1' exs1' where [simp]: "x2' = ((e1', xs1'), exs1')" by(cases x2') auto
@@ -2265,10 +2232,10 @@ proof -
       and red: "compP1 P,t \<turnstile>1 \<langle>(e1, xs1)/exs1, m1\<rangle> -ta2\<rightarrow> \<langle>(e1', xs1')/exs1', m2'\<rangle>"
       and IUF: "\<not> IUFL (e1, xs1) exs1 ta2 (e1', xs1') exs1'"
       by(auto simp add: bisim_wait01_def bisim_red0_Red1_def)
-    from red `is_Interrupted_ta ta2` have "\<not> \<tau>Move1 P m1 ((e1, xs1), exs1)"
-      by(auto elim!: Red1.cases dest: red1_\<tau>_taD simp add: is_Interrupted_ta_def)
+    from red wakeup have "\<not> \<tau>Move1 P m1 ((e1, xs1), exs1)"
+      by(auto elim!: Red1.cases dest: red1_\<tau>_taD)
     with red0_simulates_Red1[OF wf red bisim IUF] m1 call
-    show "\<exists>x1' m1' ta1. mred0 P t (x1, m1) ta1 (x1', m1') \<and> bisim_red0_Red1 (x1', m1') (x2', m2') \<and> ta_bisim01 ta1 ta2"
+    show "\<exists>ta1 x1' m1'. mred0 P t (x1, m1) ta1 (x1', m1') \<and> bisim_red0_Red1 (x1', m1') (x2', m2') \<and> ta_bisim01 ta1 ta2"
       by(auto simp add: bisim_red0_Red1_def)
   qed
 qed

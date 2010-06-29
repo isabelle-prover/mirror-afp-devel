@@ -48,13 +48,13 @@ context heap_progress begin
 
 lemma red_external_Suspend_Notified_Interrupted:
   assumes wf: "wf_prog wf_md P"
-  and "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
-  and "Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "h' \<unlhd> h''"
-  shows "\<exists>va'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h''\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace>\<rightarrow>ext \<langle>va', h''\<rangle>" (is ?thesis1)
-  and "\<exists>ta' va' h'''. P,t \<turnstile> \<langle>a\<bullet>M(vs), h''\<rangle> -ta'\<rightarrow>ext \<langle>va', h'''\<rangle> \<and> is_Interrupted_ta ta'" (is ?thesis2)
+  and red: "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
+  and suspend: "Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "h' \<unlhd> h''"
+  shows "\<exists>ta' va'. P,t \<turnstile> \<langle>a\<bullet>M(vs), h''\<rangle> -ta'\<rightarrow>ext \<langle>va', h''\<rangle> \<and> Notified \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> \<and> collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = {}" (is ?thesis1)
+  and "\<exists>ta' va' h'''. P,t \<turnstile> \<langle>a\<bullet>M(vs), h''\<rangle> -ta'\<rightarrow>ext \<langle>va', h'''\<rangle> \<and> Interrupted \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> \<and> collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = {}" (is ?thesis2)
 proof -
-  from assms RedWaitNotified show ?thesis1
-    by(auto elim!: red_external.cases simp add: ta_upd_simps) blast
+  from red suspend RedWaitNotified show ?thesis1
+    by cases(fastsimp simp del: split_paired_Ex simp add: collect_locks_def)+
 next
   from assms obtain C where [simp]: "h' = h" "M = wait" "vs = []"
     and "typeof_addr h t = \<lfloor>Class C\<rfloor>" "P \<turnstile> C \<preceq>\<^sup>* Thread"
@@ -68,11 +68,11 @@ next
   from heap_write_total[OF this, of "Bool False"]
   obtain h''' where "heap_write h'' t interrupted_flag_loc (Bool False) h'''" ..
   with `typeof_addr h'' t = \<lfloor>Class C\<rfloor>` `P \<turnstile> C \<preceq>\<^sup>* Thread`
-  have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub> Interrupted \<rbrace>
+  have "P,t \<turnstile> \<langle>a\<bullet>wait([]), h''\<rangle> -\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>
                                 \<lbrace>\<^bsub>o\<^esub>  WriteMem t interrupted_flag_loc (Bool False)\<rbrace>\<rightarrow>ext
               \<langle>RetEXC InterruptedException, h'''\<rangle>"
     by(rule RedWaitInterrupted)
-  thus ?thesis2 by(auto simp add: is_Interrupted_ta_def ta_upd_simps)
+  thus ?thesis2 by(fastsimp simp del: split_paired_Ex simp add: collect_locks_def)
 qed
 
 lemma heap_copy_loc_progress:
@@ -635,6 +635,7 @@ lemma red_external_wf_red:
   and red: "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>"
   and tconf: "P,h \<turnstile> t \<surd>t"
   and hconf: "hconf h"
+  and wst: "wset s t = None \<or> (M = wait \<and> (\<exists>w. wset s t = \<lfloor>WokenUp w\<rfloor>))"
   obtains ta' va' h''
   where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta'\<rightarrow>ext \<langle>va', h''\<rangle>" 
   and "final_thread.actions_ok' s t ta'"
@@ -668,149 +669,190 @@ proof(atomize_elim)
       final_thread.actions_subset_iff ta_upd_simps
     note [rule del] = subsetI
     note [intro] = collect_locks'_subset_collect_locks red_external.intros[simplified]
-    
-    from red False show ?thesis
-    proof cases
-      case (RedNewThread C)
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a (C, run, a) h\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>"
-      from ta False have "final_thread.actions_ok' s t ?ta'" by(auto)
-      moreover from ta have "final_thread.actions_subset ?ta' ta" by(auto)
-      ultimately show ?thesis using RedNewThread by(fastsimp)
-    next
-      case RedNewThreadFail
-      then obtain va' h' x where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>\<rightarrow>ext \<langle>va', h'\<rangle>" by(fastsimp)
-      moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>` False
-      have "final_thread.actions_ok' s t \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>" by(auto)
-      moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>`
-      have "final_thread.actions_subset \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace> ta" by(auto)
-      ultimately show ?thesis by blast
-    next
-      case RedJoin thus ?thesis by fastsimp
-    next
-      case RedInterrupt thus ?thesis by fastsimp
-    next
-      case RedWaitInterrupt
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), WriteMem t interrupted_flag_loc (Bool False)\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-      from ta False have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
-	by(auto simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
-      hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
-      hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
-      moreover from ta have "final_thread.actions_subset ?ta' ta"
-	by(auto simp add: collect_locks'_def finfun_upd_apply)
-      moreover from RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
-      ultimately show ?thesis by blast
-    next
-      case RedWait
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-      from ta False have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
-	by(auto simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
-      hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
-      hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
-      moreover from ta have "final_thread.actions_subset ?ta' ta"
-	by(auto simp add: collect_locks'_def finfun_upd_apply)
-      moreover from RedWait obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
-      ultimately show ?thesis by blast
-    next
-      case RedWaitFail
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
 
-      let ?ta' = "if b
-                 then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
-                       \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
-                          WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
-                 else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
-                       \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>"
-      from ta False have "has_lock ((locks s)\<^sub>f a) t" by(auto simp add: finfun_upd_apply split: split_if_asm)
-      hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: finfun_upd_apply intro: has_lock_may_lock)
-      moreover from ta have "final_thread.actions_subset ?ta' ta"
-	by(auto simp add: collect_locks'_def finfun_upd_apply)
-      moreover from RedWaitFail ht sub read writeF
-      obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(cases b)(auto)
-      ultimately show ?thesis by blast
+    show ?thesis
+    proof(cases "wset s t")
+      case (Some w)[simp]
+      with wst obtain w' where [simp]: "w = WokenUp w'" "M = wait" by auto
+      from red have [simp]: "vs = []" by(auto elim: red_external.cases)
+      show ?thesis
+      proof(cases w')
+        case WSInterrupted[simp]
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub> Interrupted \<rbrace>\<lbrace>\<^bsub>o\<^esub> WriteMem t interrupted_flag_loc (Bool False)\<rbrace>"
+        have "final_thread.actions_ok' s t ?ta'" by(simp add: wset_actions_ok_def)
+        moreover have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
+        moreover from RedWaitInterrupted ht sub read writeF 
+        have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
+        ultimately show ?thesis by blast
+      next
+        case WSNotified[simp]
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub> Notified \<rbrace>"
+        have "final_thread.actions_ok' s t ?ta'" by(simp add: wset_actions_ok_def)
+        moreover have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
+        moreover from RedWaitNotified ht sub
+        have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by auto
+        ultimately show ?thesis by blast
+      qed
     next
-      case RedWaitNotified
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace>`
-      let ?ta' = "if has_lock ((locks s)\<^sub>f a) t
-                 then (if b 
-                       then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
-                             \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
-                                WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
-                       else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
-                             \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>)
-                 else \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-      have "final_thread.actions_ok' s t ?ta'" by(auto simp add: finfun_upd_apply intro: has_lock_may_lock)
-      moreover from ta have "final_thread.actions_subset ?ta' ta"
-	by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
-      moreover from RedWaitNotified ht sub read writeF 
-        RedWait[of h t C P a] RedWaitInterrupt[of h t C P hF a] RedWaitFail[of P t h a]
-      have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by fastsimp
-      ultimately show ?thesis by blast
-    next
-      case RedWaitInterrupted
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>c\<^esub>Interrupted\<rbrace>\<lbrace>\<^bsub>o\<^esub> WriteMem t interrupted_flag_loc (Bool False)\<rbrace>`
-      let ?ta' = "if has_lock ((locks s)\<^sub>f a) t
-                 then (if b 
-                       then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
-                             \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
-                                WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
-                       else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
-                             \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>)
-                 else \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-      have "final_thread.actions_ok' s t ?ta'" by(auto simp add: finfun_upd_apply intro: has_lock_may_lock)
-      moreover from ta have "final_thread.actions_subset ?ta' ta"
-	by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
-      moreover from RedWaitInterrupted ht sub read writeF
-        RedWait[of h t C P a] RedWaitInterrupt[of h t C P hF a] RedWaitFail[of P t h a]
-      have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by fastsimp
-      ultimately show ?thesis by blast
-    next
-      case RedNotify
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-      from ta False have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
-	by(auto simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
-      hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
-      hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
-      moreover from ta have "final_thread.actions_subset ?ta' ta"
-	by(auto simp add: collect_locks'_def finfun_upd_apply)
-      moreover from RedNotify obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
-      ultimately show ?thesis by blast
-    next
-      case RedNotifyFail
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
-      from ta False have "has_lock ((locks s)\<^sub>f a) t" by(auto simp add: finfun_upd_apply split: split_if_asm)
-      hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: finfun_upd_apply intro: has_lock_may_lock)
-      moreover from ta have "final_thread.actions_subset ?ta' ta"
-	by(auto simp add: collect_locks'_def finfun_upd_apply)
-      moreover from RedNotifyFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
-      ultimately show ?thesis by blast
-    next
-      case RedNotifyAll
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
-      from ta False have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
-	by(auto simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
-      hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
-      hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
-      moreover from ta have "final_thread.actions_subset ?ta' ta"
-	by(auto simp add: collect_locks'_def finfun_upd_apply)
-      moreover from RedNotifyAll obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
-      ultimately show ?thesis by blast
-    next
-      case RedNotifyAllFail
-      note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
-      let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
-      from ta False have "has_lock ((locks s)\<^sub>f a) t" by(auto simp add: finfun_upd_apply split: split_if_asm)
-      hence "final_thread.actions_ok' s t ?ta'" by(auto simp add: finfun_upd_apply intro: has_lock_may_lock)
-      moreover from ta have "final_thread.actions_subset ?ta' ta"
-	by(auto simp add: collect_locks'_def finfun_upd_apply)
-      moreover from RedNotifyAllFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
-      ultimately show ?thesis by blast
-    qed auto
+      case None
+
+      from red False show ?thesis
+      proof cases
+        case (RedNewThread C)
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a (C, run, a) h\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>`
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>"
+        from ta False None have "final_thread.actions_ok' s t ?ta'" by(auto)
+        moreover from ta have "final_thread.actions_subset ?ta' ta" by(auto)
+        ultimately show ?thesis using RedNewThread by(fastsimp)
+      next
+        case RedNewThreadFail
+        then obtain va' h' x where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -\<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>\<rightarrow>ext \<langle>va', h'\<rangle>" by(fastsimp)
+        moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>` False None
+        have "final_thread.actions_ok' s t \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace>" by(auto)
+        moreover from `ta = \<epsilon>\<lbrace>\<^bsub>t\<^esub>ThreadExists a\<rbrace>`
+        have "final_thread.actions_subset \<epsilon>\<lbrace>\<^bsub>t\<^esub>NewThread a x h'\<rbrace>\<lbrace>\<^bsub>o\<^esub>ThreadStart a\<rbrace> ta" by(auto)
+        ultimately show ?thesis by blast
+      next
+        case RedJoin thus ?thesis using None by fastsimp
+      next
+        case RedInterrupt thus ?thesis using None
+          by(fastsimp simp del: split_paired_Ex simp add: wset_actions_ok_def)
+      next
+        case RedWaitInterrupt
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), WriteMem t interrupted_flag_loc (Bool False)\<rbrace>`
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
+        from ta False None have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
+	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
+        hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
+        hence "final_thread.actions_ok' s t ?ta'" using None
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
+        moreover from ta have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+        moreover from RedWaitInterrupt obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        ultimately show ?thesis by blast
+      next
+        case RedWait
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>`
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
+        from ta False None have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
+	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
+        hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
+        hence "final_thread.actions_ok' s t ?ta'" using None
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
+        moreover from ta have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+        moreover from RedWait obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        ultimately show ?thesis by blast
+      next
+        case RedWaitFail
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
+        let ?ta' = "if b
+                   then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
+                         \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
+                            WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
+                   else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
+                         \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>"
+        from ta False None have "has_lock ((locks s)\<^sub>f a) t"
+          by(auto simp add: finfun_upd_apply split: split_if_asm)
+        hence "final_thread.actions_ok' s t ?ta'" using None
+          by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
+        moreover from ta have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+        moreover from RedWaitFail ht sub read writeF
+        obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(cases b)(auto)
+        ultimately show ?thesis by blast
+      next
+        case RedWaitNotified
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Notified\<rbrace>`
+        let ?ta' = "if has_lock ((locks s)\<^sub>f a) t
+                   then (if b 
+                         then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
+                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
+                                  WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
+                         else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
+                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>)
+                   else \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
+        have "final_thread.actions_ok' s t ?ta'"
+          using None by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
+        moreover from ta have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
+        moreover from RedWaitNotified ht sub read writeF 
+          RedWait[of h t C P a] RedWaitInterrupt[of h t C P hF a] RedWaitFail[of P t h a]
+        have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by fastsimp
+        ultimately show ?thesis by blast
+      next
+        case RedWaitInterrupted
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Interrupted\<rbrace>\<lbrace>\<^bsub>o\<^esub> WriteMem t interrupted_flag_loc (Bool False)\<rbrace>`
+        let ?ta' = "if has_lock ((locks s)\<^sub>f a) t
+                   then (if b 
+                         then \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>
+                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True),
+                                  WriteMem t interrupted_flag_loc (Bool False)\<rbrace>
+                         else \<epsilon>\<lbrace>\<^bsub>w\<^esub>Suspend a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a\<rbrace>
+                               \<lbrace>\<^bsub>o\<^esub> ReadMem t interrupted_flag_loc (Bool True), SyncUnlock a\<rbrace>)
+                   else \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
+        have "final_thread.actions_ok' s t ?ta'" using None
+          by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
+        moreover from ta have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply final_thread.collect_cond_actions_def)
+        moreover from RedWaitInterrupted ht sub read writeF
+          RedWait[of h t C P a] RedWaitInterrupt[of h t C P hF a] RedWaitFail[of P t h a]
+        have "\<exists>va h'. P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by fastsimp
+        ultimately show ?thesis by blast
+      next
+        case RedNotify
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
+        from ta False None have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
+	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
+        hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
+        hence "final_thread.actions_ok' s t ?ta'" using None
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
+        moreover from ta have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+        moreover from RedNotify obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        ultimately show ?thesis by blast
+      next
+        case RedNotifyFail
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>Notify a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
+        from ta False None have "has_lock ((locks s)\<^sub>f a) t"
+          by(auto simp add: finfun_upd_apply split: split_if_asm)
+        hence "final_thread.actions_ok' s t ?ta'" using None
+          by(auto simp add: finfun_upd_apply simp add: wset_actions_ok_def intro: has_lock_may_lock)
+        moreover from ta have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+        moreover from RedNotifyFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        ultimately show ?thesis by blast
+      next
+        case RedNotifyAll
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>"
+        from ta False None have "\<not> may_lock ((locks s)\<^sub>f a) t \<or> \<not> has_lock ((locks s)\<^sub>f a) t"
+	  by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
+        hence "\<not> has_lock ((locks s)\<^sub>f a) t" by(metis has_lock_may_lock)
+        hence "final_thread.actions_ok' s t ?ta'" using None
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
+        moreover from ta have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+        moreover from RedNotifyAll obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        ultimately show ?thesis by blast
+      next
+        case RedNotifyAllFail
+        note ta = `ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub>UnlockFail\<rightarrow>a\<rbrace>`
+        let ?ta' = "\<epsilon>\<lbrace>\<^bsub>w\<^esub>NotifyAll a\<rbrace>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
+        from ta False None have "has_lock ((locks s)\<^sub>f a) t"
+          by(auto simp add: finfun_upd_apply split: split_if_asm)
+        hence "final_thread.actions_ok' s t ?ta'" using None
+          by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
+        moreover from ta have "final_thread.actions_subset ?ta' ta"
+	  by(auto simp add: collect_locks'_def finfun_upd_apply)
+        moreover from RedNotifyAllFail obtain va h' where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -?ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by(fastsimp)
+        ultimately show ?thesis by blast
+      qed(auto simp add: None)
+    qed
   qed
 qed
 

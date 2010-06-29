@@ -12,8 +12,6 @@ begin
 
 primrec cond_action_ok :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action \<Rightarrow> bool" where
   "cond_action_ok s t (Join T) = (case thr s T of None \<Rightarrow> True | \<lfloor>(x, ln)\<rfloor> \<Rightarrow> t \<noteq> T \<and> final x \<and> ln = no_wait_locks \<and> wset s T = None)"
-| "cond_action_ok _ _ Notified = False"
-| "cond_action_ok _ _ Interrupted = False"
 
 primrec cond_action_oks :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action list \<Rightarrow> bool" where
   "cond_action_oks s t [] = True"
@@ -28,7 +26,8 @@ lemma cond_action_ok_Join:
 by(auto)
 
 lemma cond_action_oks_Join:
-  "\<lbrakk> cond_action_oks s t cas; Join T \<in> set cas; thr s T = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> final x \<and> ln = no_wait_locks \<and> wset s T = None \<and> t \<noteq> T"
+  "\<lbrakk> cond_action_oks s t cas; Join T \<in> set cas; thr s T = \<lfloor>(x, ln)\<rfloor> \<rbrakk> 
+  \<Longrightarrow> final x \<and> ln = no_wait_locks \<and> wset s T = None \<and> t \<noteq> T"
 by(induct cas)(auto)
 
 
@@ -46,8 +45,6 @@ qed
 
 primrec cond_action_ok' :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action \<Rightarrow> bool" where
   "cond_action_ok' _ _ (Join t) = True"
-| "cond_action_ok' _ _ Notified = False"
-| "cond_action_ok' _ _ Interrupted = False"
 
 primrec cond_action_oks' :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> 't conditional_action list \<Rightarrow> bool" where
   "cond_action_oks' s t [] = True"

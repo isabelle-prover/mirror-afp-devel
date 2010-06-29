@@ -302,7 +302,7 @@ proof(induct arbitrary: e' h' xs' Env T Env' T' and es' h' xs' Env Ts Env' Ts' r
     with Ta iec redex'
     have "exec_move_a P t (obj\<bullet>M'(ps)) h (rev vs @ [Addr a], loc, length (compE2 obj) + length (compEs2 ps), None) (extTA2JVM (compP2 P) ta) h' (?stk', loc, ?pc', ?xcp')"
       unfolding exec_move_def
-      by-(rule exec_instr,cases va,(force simp add: compP2_def )+)
+      by-(rule exec_instr,cases va,(force simp add: compP2_def simp del: split_paired_Ex)+)
     moreover have "P,obj\<bullet>M'(ps),n,h' \<turnstile> (extRet2J1 (addr a\<bullet>M'(map Val vs)) va, loc) \<leftrightarrow> (?stk', loc, ?pc', ?xcp')"
     proof(cases va)
       case (RetVal v)
@@ -2609,7 +2609,7 @@ next
     with Ta iec
     have "exec_move_a P t (obj\<bullet>M'(ps)) h (rev vs @ [Addr a], loc, length (compE2 obj) + length (compEs2 ps), None) (extTA2JVM (compP2 P) ta) h' (?stk', loc, ?pc', ?xcp')"
       unfolding exec_move_def
-      by -(rule exec_instr,cases va,(force simp add: compP2_def is_Ref_def intro: external_WT'.intros)+)
+      by -(rule exec_instr,cases va,(force simp add: compP2_def is_Ref_def simp del: split_paired_Ex intro: external_WT'.intros)+)
     moreover have "P,obj\<bullet>M'(ps),n,h' \<turnstile> (extRet2J1 (addr a\<bullet>M'(map Val vs)) va, loc) \<leftrightarrow> (?stk', loc, ?pc', ?xcp')"
     proof(cases va)
       case (RetVal v)

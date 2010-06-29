@@ -242,46 +242,44 @@ end
 
 text {* @{term "wf_red"} *}
 
-context J_heap begin
-
-lemma interrupted_mem_red_hext: "red_mthr.interrupted_mem_red P ts ws h h' \<Longrightarrow> h \<unlhd> h'"
-by(auto elim!: red_mthr.interrupted_mem_red.cases dest: red_hext_incr)
-
-lemma interrupted_mem_reds_hext:
-  assumes "red_mthr.interrupted_mem_reds P ts ws h h'"
-  shows "h \<unlhd> h'"
-using assms
-by(induct)(auto dest: interrupted_mem_red_hext intro: hext_trans)
-
-end
-
 context J_progress begin
 
 lemma assumes wf: "wf_prog wf_md P"
   shows red_wf_red_aux:
   "\<lbrakk> P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>; \<not> red_mthr.actions_ok' (ls, (ts, m), ws) t ta; sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
-     \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_locks e l \<rbrakk>
+     \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_locks e l;
+     ws t = None \<or> 
+     (\<exists>a vs w T. call e = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_external_call P T wait \<and> ws t = \<lfloor>WokenUp w\<rfloor>) \<rbrakk>
     \<Longrightarrow> \<exists>e'' s'' ta'. P,t \<turnstile> \<langle>e, s\<rangle> -ta'\<rightarrow> \<langle>e'',s''\<rangle> \<and> red_mthr.actions_ok' (ls, (ts, m), ws) t ta' \<and> red_mthr.actions_subset ta' ta"
-  (is "\<lbrakk> _; _; _; _; _; _ \<rbrakk> \<Longrightarrow> ?concl e s ta")
+  (is "\<lbrakk> _; _; _; _; _; _; ?wakeup e s \<rbrakk> \<Longrightarrow> ?concl e s ta")
     and reds_wf_red_aux:
   "\<lbrakk> P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>; \<not> red_mthr.actions_ok' (ls, (ts, m), ws) t ta; sync_oks es; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
-     \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_lockss es l \<rbrakk>
+     \<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_lockss es l;
+     ws t = None \<or> 
+     (\<exists>a vs w T. calls es = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<and> is_external_call P T wait \<and> ws t = \<lfloor>WokenUp w\<rfloor>) \<rbrakk>
     \<Longrightarrow> \<exists>es'' s'' ta'. P,t \<turnstile> \<langle>es, s\<rangle> [-ta'\<rightarrow>] \<langle>es'',s''\<rangle> \<and> final_thread.actions_ok' (ls, (ts, m), ws) t ta' \<and> final_thread.actions_subset ta' ta"
 proof(induct rule: red_reds.inducts)
   case (SynchronizedRed2 e s ta e' s' a)
   note IH = `\<lbrakk>\<not> red_mthr.actions_ok' (ls, (ts, m), ws) t ta; sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
-              \<forall>l. expr_locks e l \<le> has_locks (ls\<^sub>f l) t\<rbrakk>
+              \<forall>l. expr_locks e l \<le> has_locks (ls\<^sub>f l) t; ?wakeup e s\<rbrakk>
             \<Longrightarrow> ?concl e s ta`
   note `\<not> red_mthr.actions_ok' (ls, (ts, m), ws) t ta`
   moreover from `sync_ok (insync(a) e)` have "sync_ok e" by simp
   moreover note `hconf (hp s)` `P,hp s \<turnstile> t \<surd>t`
   moreover from `\<forall>l. expr_locks (insync(a) e) l \<le> has_locks (ls\<^sub>f l) t`
   have "\<forall>l. expr_locks e l \<le> has_locks (ls\<^sub>f l) t" by(force split: split_if_asm)
+  moreover from `?wakeup (insync(a) e) s` have "?wakeup e s" by auto
   ultimately have "?concl e s ta" by(rule IH)
   thus ?case by(fastsimp intro: red_reds.SynchronizedRed2)
 next
+  case RedCall
+  thus ?case
+    by(auto simp add: is_val_iff contains_insync_expr_locks_conv contains_insyncs_expr_lockss_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs)
+next
   case (RedCallExternal s a T M vs ta va h' ta' e' s')
-  from wf  `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>` `P,hp s \<turnstile> t \<surd>t` `hconf (hp s)` 
+  from `?wakeup (addr a\<bullet>M(map Val vs)) s`
+  have "wset (ls, (ts, m), ws) t = None \<or> (M = wait \<and> (\<exists>w. wset (ls, (ts, m), ws) t = \<lfloor>WokenUp w\<rfloor>))" by auto
+  with wf  `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>` `P,hp s \<turnstile> t \<surd>t` `hconf (hp s)` 
   obtain ta'' va' h'' where red': "P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta''\<rightarrow>ext \<langle>va',h''\<rangle>"
     and aoe': "red_mthr.actions_ok' (ls, (ts, m), ws) t ta''"
     and sub: "final_thread.actions_subset ta'' ta" by(rule red_external_wf_red)
@@ -311,47 +309,21 @@ next
   with SynchronizedThrow2 have False
     by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
   thus ?case ..
-qed (simp_all add: is_val_iff contains_insync_expr_locks_conv contains_insyncs_expr_lockss_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs, (fastsimp intro: red_reds.intros)+)
-
-lemma
-  assumes wf: "wf_prog wf_md P"
-  shows red_Suspend_ex_Interrupted_Notified:
-  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>; hp s' \<unlhd> h \<rbrakk> 
-  \<Longrightarrow> (\<exists>e'' xs''. convert_extTA extNTA,P,t \<turnstile> \<langle>e', (h, lcl s')\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub> Notified \<rbrace>\<rightarrow> \<langle>e'', (h, xs'')\<rangle>) \<and>
-     (\<exists>e'' s''. \<exists>ta' :: 'heap J_thread_action. convert_extTA extNTA,P,t \<turnstile> \<langle>e', (h, lcl s')\<rangle> -ta'\<rightarrow> \<langle>e'', s''\<rangle> \<and> is_Interrupted_ta ta')"
-  and reds_Suspend_ex_Interrupted_Notified:
-  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>; hp s' \<unlhd> h \<rbrakk> 
-  \<Longrightarrow> (\<exists>es'' xs''. convert_extTA extNTA,P,t \<turnstile> \<langle>es', (h, lcl s')\<rangle> [-\<epsilon>\<lbrace>\<^bsub>c\<^esub> Notified \<rbrace>\<rightarrow>] \<langle>es'', (h, xs'')\<rangle>) \<and>
-     (\<exists>es'' s'' ta'. convert_extTA extNTA,P,t \<turnstile> \<langle>es', (h, lcl s')\<rangle> [-ta'\<rightarrow>] \<langle>es'', s''\<rangle> \<and> is_Interrupted_ta ta')"
-proof(induct rule: red_reds.inducts)
-  case (RedCallExternal s a T M vs ta va h' ta' e' s')
-  from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` have "hp s \<unlhd> h'" by(rule red_external_hext)
-  hence "hp s \<unlhd> h" using `hp s' \<unlhd> h` `s' = (h', lcl s)` by(auto intro: hext_trans)
-  hence "typeof_addr h a = \<lfloor>T\<rfloor>" using `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
-    by(rule typeof_addr_hext_mono)
-  moreover from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `ta' = convert_extTA extNTA ta` `Suspend w \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>`
-  have "va = RetStaySame" by(auto dest: red_external_Suspend_StaySame)
-  moreover
-  from red_external_Suspend_Notified_Interrupted[OF wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`, of w h]
-    `ta' = convert_extTA extNTA ta` `Suspend w \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>` `hp s' \<unlhd> h` `s' = (h', lcl s)`
-  obtain va' va'' h''' and ta'' :: "'heap external_thread_action" where "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -\<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace>\<rightarrow>ext \<langle>va',h\<rangle>" 
-    and "P,t \<turnstile> \<langle>a\<bullet>M(vs),h\<rangle> -ta''\<rightarrow>ext \<langle>va'',h'''\<rangle>" "is_Interrupted_ta ta''" by auto
-  ultimately show ?case using RedCallExternal
-    by(cases ta'')(fastsimp intro!: red_reds.RedCallExternal simp add: ta_upd_simps is_Interrupted_ta_def)
-qed(fastsimp simp del: fun_upd_apply split_paired_Ex intro: red_reds.intros simp add: ta_upd_simps)+
+qed(simp_all add: is_val_iff contains_insync_expr_locks_conv contains_insyncs_expr_lockss_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs split: split_if_asm del: split_paired_Ex, (fastsimp intro: red_reds.intros del: disjE simp del: split_paired_Ex)+)
 
 end
 
 context J_typesafe begin
 
-lemma red_wf_red:
+lemma wf_progress: 
   assumes wf: "wf_J_prog P"
   and "sync_es_ok (thr S) (shr S)"
+  and "sconf_type_ts_ok Es (thr S) (shr S)"
+  and "thread_conf P (thr S) (shr S)"
   and "lock_ok (locks S) (thr S)"
   and "wset S = empty"
-  and "thread_conf P (thr S) (shr S)"
-  and "sconf_type_ts_ok Es (thr S) (shr S)"
-  shows "wf_red final_expr (mred P) S"
+  and "def_ass_ts_ok (thr S) (shr S)"
+  shows "progress final_expr (mred P) S"
 proof -
   interpret red_mthr!: multithreaded_start final_expr "mred P" S
     using `lock_ok (locks S) (thr S)` `wset S = empty`
@@ -362,6 +334,7 @@ proof -
     assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
       and "thr s t = \<lfloor>(ex, no_wait_locks)\<rfloor>"
       and "mred P t (ex, shr s) ta (e'x', m')"
+      and wait: "\<not> waiting (wset s t)"
     moreover obtain ls ts m ws where s: "s = (ls, (ts, m), ws)" by(cases s, auto)
     moreover obtain e x where ex: "ex = (e, x)" by(cases ex, auto)
     moreover obtain e' x' where e'x': "e'x' = (e', x')" by(cases e'x', auto)
@@ -393,137 +366,112 @@ proof -
     next
       case False
       from lock_okD2[OF lockok, OF tst[unfolded ex]]
-      have "\<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_locks e l" by simp
-      from red_wf_red_aux[OF wf red False[unfolded s] aoe _ _ this] `hconf m` `P,shr s \<turnstile> t \<surd>t` ex s show ?thesis
-        by(fastsimp simp add: split_beta)
+      have locks: "\<forall>l. has_locks (ls\<^sub>f l) t \<ge> expr_locks e l" by simp
+      have "ws t = None \<or> (\<exists>a vs w T. call e = \<lfloor>(a, wait, vs)\<rfloor> \<and> typeof_addr (hp (m, x)) a = \<lfloor>T\<rfloor> \<and> is_external_call P T wait \<and> ws t = \<lfloor>WokenUp w\<rfloor>)"
+      proof(cases "ws t")
+        case None thus ?thesis ..
+      next
+        case (Some w)
+        with red_mthr.in_wait_SuspendD[OF Red `thr s t = \<lfloor>(ex, no_wait_locks)\<rfloor>`, of w] `wset S = empty` ex s
+        obtain e0 x0 m0 ta0 w' s1 tta1 
+          where red0: "P,t \<turnstile> \<langle>e0, (m0, x0)\<rangle> -ta0\<rightarrow> \<langle>e, (shr s1, x)\<rangle>"
+          and Suspend: "Suspend w' \<in> set \<lbrace>ta0\<rbrace>\<^bsub>w\<^esub>" 
+          and s1: "P \<turnstile> s1 -\<triangleright>tta1\<rightarrow>* s" by auto
+        from red_Suspend_is_call[OF red0 Suspend] obtain a vs T
+          where call: "call e = \<lfloor>(a, wait, vs)\<rfloor>"
+          and type: "typeof_addr m0 a = \<lfloor>T\<rfloor>" 
+          and iec: "is_external_call P T wait" by auto
+        from red0 have "m0 \<unlhd> shr s1" by(auto dest: red_hext_incr)
+        also from s1 have "shr s1 \<unlhd> shr s" by(rule RedT_hext_incr)
+        finally have "typeof_addr (shr s) a = \<lfloor>T\<rfloor>" using type
+          by(rule typeof_addr_hext_mono)
+        moreover from Some wait s obtain w' where "ws t = \<lfloor>WokenUp w'\<rfloor>"
+          by(auto simp add: not_waiting_iff)
+        ultimately show ?thesis using call iec s by auto
+      qed
+      from red_wf_red_aux[OF wf red False[unfolded s] aoe _ _ locks, OF _ _ this] `hconf m` `P,shr s \<turnstile> t \<surd>t` ex s
+      show ?thesis by fastsimp
     qed
   next
-    fix tta s t x ln w t' x' ta x'' m'' m'''
-    assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
-      and t: "thr s t = \<lfloor>(x, ln)\<rfloor>" "wset s t = \<lfloor>w\<rfloor>"
-      and t': "thr s t' = \<lfloor>(x', no_wait_locks)\<rfloor>" "wset s t' = None"
-      and red: "mred P t' (x', shr s) ta (x'', m'')" 
-      and "red_mthr.interrupted_mem_reds P (thr s) (wset s) m'' m'''"
+    fix tta s t x w
+    assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s" 
+      and t: "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" "wset s t = \<lfloor>WokenUp w\<rfloor>"
+
     from red_mthr.in_wait_SuspendD[OF Red t, unfolded `wset S = empty`]
-    obtain s0 s1 tta0 tta1 e0 xs0 e1 xs1 m1 ta obs
-      where x [simp]: "x = (e1, xs1)"
-      and "P \<turnstile> S -\<triangleright>tta0\<rightarrow>* s0" "P \<turnstile> s0 -t\<triangleright>observable_ta_of ta obs\<rightarrow> s1" "P \<turnstile> s1 -\<triangleright>tta1\<rightarrow>* s"
-      and "tta = tta0 @ (t, observable_ta_of ta obs) # tta1"
-      and "thr s0 t = \<lfloor>((e0, xs0), no_wait_locks)\<rfloor>" "wset s0 t = None" 
-      and "P,t \<turnstile> \<langle>e0,(shr s0, xs0)\<rangle> -ta\<rightarrow> \<langle>e1,(m1, xs1)\<rangle>"
-      and "Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>" "red_mthr.actions_ok s0 t ta"
-      and "thr s1 t = \<lfloor>((e1, xs1), ln)\<rfloor>"
-      and "red_mthr.interrupted_mem_reds P (thr s0) (wset s0) m1 (shr s1)"
-      by(cases x') fastsimp
-    from `red_mthr.interrupted_mem_reds P (thr s0) (wset s0) m1 (shr s1)`
-    have "m1 \<unlhd> shr s1" by(rule interrupted_mem_reds_hext)
-    also from `P \<turnstile> s1 -\<triangleright>tta1\<rightarrow>* s` have "shr s1 \<unlhd> shr s"
-      by(rule RedT_hext_incr)
-    also (hext_trans) from red have "shr s \<unlhd> m''"
-      by(auto dest: red_hext_incr simp add: split_def)
-    also (hext_trans) from `red_mthr.interrupted_mem_reds P (thr s) (wset s) m'' m'''`
-    have "m'' \<unlhd> m'''" by(rule interrupted_mem_reds_hext)
-    finally (hext_trans)
-    show "(\<exists>x'. mred P t (x, m''') \<epsilon>\<lbrace>\<^bsub>c\<^esub>Notified\<rbrace> (x', m''')) \<and>
-          (\<exists>x' ta m. mred P t (x, m''') ta (x', m) \<and> is_Interrupted_ta ta)"
-      using red_Suspend_ex_Interrupted_Notified[OF wf `P,t \<turnstile> \<langle>e0,(shr s0, xs0)\<rangle> -ta\<rightarrow> \<langle>e1,(m1, xs1)\<rangle>` `Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>`, where h=m''']
-      by fastsimp
+    obtain s0 s1 e0 xs0 ta w' e xs
+      where x: "x = (e, xs)" 
+      and red: "P,t \<turnstile> \<langle>e0, (shr s0, xs0)\<rangle> -ta\<rightarrow> \<langle>e, (shr s1, xs)\<rangle>"
+      and Suspend: "Suspend w' \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
+      by(cases x) fastsimp
+    from red_Suspend_is_call[OF red Suspend] x
+    show "\<not> final_expr x" by auto
+  next
+    fix tta s t ex ln
+    assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
+      and "thr s t = \<lfloor>(ex, ln)\<rfloor>"
+      and "\<not> final_expr ex"
+    moreover obtain ls ts m ws where s: "s = (ls, (ts, m), ws)" by(cases s, auto)
+    moreover obtain e x where ex: "ex = (e, x)" by(cases ex, auto)
+    ultimately have tst: "ts t = \<lfloor>(ex, ln)\<rfloor>" 
+      and nfine: "\<not> final e" by auto
+    from wf have wwf: "wwf_J_prog P" by(rule wf_prog_wwf_prog)
+    from `sconf_type_ts_ok Es (thr S) (shr S)` Red s `thread_conf P (thr S) (shr S)`
+    have "sconf_type_ts_ok (upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (\<down>map (thr_a \<circ> snd) tta\<down>)) ts m"
+      by(auto dest: lifting_inv.RedT_invariant[OF lifting_inv_sconf_subject_ok, OF wf])
+    with tst ex obtain E T where "sconf_type_ok (E, T) e m x"
+      by -((drule ts_invD, assumption),(clarify,blast))
+    then obtain T' where "hconf m" "P,E,m \<turnstile> e : T'" "preallocated m"
+      by(auto simp add: sconf_type_ok_def sconf_def type_ok_def)
+    moreover
+    from `def_ass_ts_ok (thr S) (shr S)` s Red have "def_ass_ts_ok ts m"
+      by(cases S)(auto dest: lifting_wf.RedT_preserves[OF lifting_wf_def_ass, OF wf])
+    with tst ex have "\<D> e \<lfloor>dom x\<rfloor>" by(auto dest: ts_okD)
+    ultimately obtain e' m' x' ta' where "P,t \<turnstile> \<langle>e, (m, x)\<rangle> -ta'\<rightarrow> \<langle>e', (m', x')\<rangle>"
+      using nfine by(auto dest: red_progress[OF wwf, where extTA="extTA2J P" and t=t])
+    thus "\<exists>ta x' m'. mred P t (ex, shr s) ta (x', m')" using ex s
+      by(fastsimp)
   qed
 qed
 
-lemma wf_progress: 
-  assumes wf: "wf_J_prog P"
-  and "sconf_type_ts_ok Es (thr S) (shr S)"
-  and "thread_conf P (thr S) (shr S)"
-  and "lock_thread_ok (locks S) (thr S)"
-  and "def_ass_ts_ok (thr S) (shr S)"
-  and "wset_thread_ok (wset S) (thr S)"
-  shows "wf_progress final_expr (mred P) S"
-proof(unfold_locales)
-  fix tta s t ex ln
-  assume Red: "P \<turnstile> S -\<triangleright>tta\<rightarrow>* s"
-    and "thr s t = \<lfloor>(ex, ln)\<rfloor>"
-    and "\<not> final_expr ex"
-  moreover obtain ls ts m ws where s: "s = (ls, (ts, m), ws)" by(cases s, auto)
-  moreover obtain e x where ex: "ex = (e, x)" by(cases ex, auto)
-  ultimately have tst: "ts t = \<lfloor>(ex, ln)\<rfloor>" 
-    and nfine: "\<not> final e" by auto
-  from wf have wwf: "wwf_J_prog P" by(rule wf_prog_wwf_prog)
-  from `sconf_type_ts_ok Es (thr S) (shr S)` Red s `thread_conf P (thr S) (shr S)`
-  have "sconf_type_ts_ok (upd_invs Es (\<lambda>ET t (e, x) m. sconf_type_ok ET e m x) (\<down>map (thr_a \<circ> snd) tta\<down>)) ts m"
-    by(auto dest: lifting_inv.RedT_invariant[OF lifting_inv_sconf_subject_ok, OF wf])
-  with tst ex obtain E T where "sconf_type_ok (E, T) e m x"
-    by -((drule ts_invD, assumption),(clarify,blast))
-  then obtain T' where "hconf m" "P,E,m \<turnstile> e : T'" "preallocated m"
-    by(auto simp add: sconf_type_ok_def sconf_def type_ok_def)
-  moreover
-  from `def_ass_ts_ok (thr S) (shr S)` s Red have "def_ass_ts_ok ts m"
-    by(cases S)(auto dest: lifting_wf.RedT_preserves[OF lifting_wf_def_ass, OF wf])
-  with tst ex have "\<D> e \<lfloor>dom x\<rfloor>" by(auto dest: ts_okD)
-  ultimately obtain e' m' x' ta' where "P,t \<turnstile> \<langle>e, (m, x)\<rangle> -ta'\<rightarrow> \<langle>e', (m', x')\<rangle>"
-    using nfine by(auto dest: red_progress[OF wwf, where extTA="extTA2J P" and t=t])
-  thus "\<exists>ta x' m'. mred P t (ex, shr s) ta (x', m')" using ex s
-    by(fastsimp)
-qed fact+
-
-lemma progress_deadlock: 
-  assumes wf: "wf_J_prog P"
-  and "sync_es_ok (thr s) (shr s)"
-  and "sconf_type_ts_ok Es (thr s) (shr s)"
-  and "thread_conf P (thr s) (shr s)"
-  and "def_ass_ts_ok (thr s) (shr s)"
-  and "lock_ok (locks s) (thr s)"
-  and "wset s = empty"
-  shows "progress final_expr (mred P) s (red_mthr.deadlock P)"
-using assms
-apply -
-apply(rule red_mthr.progress_deadlock)
- apply(rule wf_progress, assumption+)
-  apply(rule lock_ok_lock_thread_ok, assumption+)
- apply(fastsimp intro: wset_thread_okI)
-by(rule red_wf_red)
-
-lemma progress_deadlocked': 
-  "\<lbrakk> wf_J_prog P; sync_es_ok (thr s) (shr s); sconf_type_ts_ok Es (thr s) (shr s); thread_conf P (thr s) (shr s);
-    def_ass_ts_ok (thr s) (shr s); lock_ok (locks s) (thr s); wset s = empty \<rbrakk>
-  \<Longrightarrow> progress final_expr (mred P) s (red_mthr.deadlocked' P)"
-unfolding red_mthr.deadlock_eq_deadlocked'[symmetric]
-by(rule progress_deadlock)
+lemma redT_progress_deadlock:
+  "\<lbrakk> wf_J_prog P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D; P,start_heap \<turnstile> vs [:\<le>] Ts;
+     P \<turnstile> J_start_state P C M vs -\<triangleright>ttas\<rightarrow>* s; final_thread.not_final_thread final_expr s t;
+     \<not> red_mthr.deadlock P s\<rbrakk>
+  \<Longrightarrow> \<exists>t' ta' s'. P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
+apply(rule progress.redT_progress)
+   apply(rule wf_progress)
+         apply(assumption)+
+        apply(rule sync_es_ok_J_start_state, assumption+)
+        apply(erule list_all2_lengthD[THEN sym])
+       apply(rule sconf_type_ts_ok_J_start_state, assumption+)
+      apply(erule thread_conf_start_state)
+     apply(rule lock_ok_J_start_state, assumption+)
+     apply(erule list_all2_lengthD[THEN sym])
+    apply(simp add: start_state_def)
+   apply(rule def_ass_ts_ok_J_start_state, assumption+)
+   apply(erule list_all2_lengthD)
+  apply assumption+
+done
 
 lemma redT_progress_deadlocked:
   "\<lbrakk> wf_J_prog P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D; P,start_heap \<turnstile> vs [:\<le>] Ts;
      P \<turnstile> J_start_state P C M vs -\<triangleright>ttas\<rightarrow>* s; final_thread.not_final_thread final_expr s t;
      \<not> red_mthr.deadlocked P s t\<rbrakk>
   \<Longrightarrow> \<exists>t' ta' s'. P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
-apply(rule progress.redT_progress[OF progress_deadlocked' _ _ red_mthr.not_deadlocked'I], assumption+)
-         apply(rule sync_es_ok_J_start_state, assumption+)
-         apply(erule list_all2_lengthD[THEN sym])
-        apply(rule sconf_type_ts_ok_J_start_state, assumption+)
-       apply(erule thread_conf_start_state)
-      apply(rule def_ass_ts_ok_J_start_state, assumption+)
-      apply(erule list_all2_lengthD)
+apply(rule progress.redT_progress_deadlocked')
+   apply(rule wf_progress)
+         apply(assumption)+
+        apply(rule sync_es_ok_J_start_state, assumption+)
+        apply(erule list_all2_lengthD[THEN sym])
+       apply(rule sconf_type_ts_ok_J_start_state, assumption+)
+      apply(erule thread_conf_start_state)
      apply(rule lock_ok_J_start_state, assumption+)
      apply(erule list_all2_lengthD[THEN sym])
     apply(simp add: start_state_def)
-   apply assumption+
-done
-
-lemma redT_pregress_deadlock:
-  "\<lbrakk> wf_J_prog P; start_heap_ok; P \<turnstile> C sees M:Ts\<rightarrow>T = (pns, body) in D; P,start_heap \<turnstile> vs [:\<le>] Ts;
-     P \<turnstile> J_start_state P C M vs -\<triangleright>ttas\<rightarrow>* s;
-     final_thread.not_final_thread final_expr s t; \<not> red_mthr.deadlock P s\<rbrakk>
-  \<Longrightarrow> \<exists>t' ta' s'. P \<turnstile> s -t'\<triangleright>ta'\<rightarrow> s'"
-apply(rule progress.redT_progress[OF progress_deadlock], assumption+)
-         apply(rule sync_es_ok_J_start_state, assumption+)
-         apply(erule list_all2_lengthD[THEN sym])
-        apply(rule sconf_type_ts_ok_J_start_state, assumption+)
-       apply(erule thread_conf_start_state)
-      apply(rule def_ass_ts_ok_J_start_state, assumption+)
-      apply(erule list_all2_lengthD)
-     apply(rule lock_ok_J_start_state, assumption+)
-     apply(erule list_all2_lengthD[THEN sym])
-    apply(simp add: start_state_def)
-   apply assumption+
+   apply(rule def_ass_ts_ok_J_start_state, assumption+)
+   apply(erule list_all2_lengthD)
+  apply assumption+
+apply(auto simp add: red_mthr.deadlocked'_def)
 done
 
 section {* Type safety proof *}

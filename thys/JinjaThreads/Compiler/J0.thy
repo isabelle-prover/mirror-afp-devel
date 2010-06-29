@@ -3,7 +3,6 @@
 *)
 
 header {*
-  \chapter{Compilation}\label{cha:comp}
   \isaheader{The JinjaThreads source language with explicit call stacks}
 *}
 theory J0 imports
@@ -833,19 +832,13 @@ proof
   thus "False" by induct auto
 qed auto
 
-lemma red_Suspend_is_call:
-  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> is_call e'"
-  and reds_Suspend_is_calls:
-  "\<lbrakk> convert_extTA extNTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> is_calls es'"
-by(induct rule: red_reds.inducts)(auto simp add: is_call_def is_calls_def ta_upd_simps dest: red_external_Suspend_StaySame)
-
 lemma Red_Suspend_is_call:
   "\<lbrakk> P,t \<turnstile>0 \<langle>e/exs, h\<rangle> -ta\<rightarrow> \<langle>e'/exs', h'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> is_call e'"
-by(auto elim!: red0.cases dest: red_Suspend_is_call)
+by(auto elim!: red0.cases dest: red_Suspend_is_call simp add: is_call_def)
 
 
 lemma red0_mthr: "multithreaded (mred0 P)"
-by(unfold_locales)(auto elim!: red0.cases dest: red_new_thread_heap red_ta_Suspend_last)
+by(unfold_locales)(auto elim!: red0.cases dest: red_new_thread_heap red_ta_Wakeup_no_Join_no_Lock)
 
 lemma red0_final_thread_wf: "final_thread_wf final_expr0 (mred0 P)"
 proof -

@@ -275,4 +275,8 @@ proof(rule lock_ok_lasI)
   qed
 qed
 
+lemma lock_ok_las'_into_lock_on_las:
+  "\<lbrakk>lock_ok_las' ls t las; \<And>l. l \<in> collect_locks' las \<Longrightarrow> may_lock (ls\<^sub>f l) t\<rbrakk> \<Longrightarrow> lock_ok_las ls t las"
+by (metis lock_ok_las'_collect_locks'_may_lock lock_ok_las'_collect_locks_lock_ok_las)
+
 end

@@ -1481,9 +1481,15 @@ proof
   thus "False" by induct auto
 qed auto
 
-lemma red1_ta_Suspend_last: "P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> Suspend w \<notin> set (butlast \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
-  and reds1_ta_Suspend_last: "P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> Suspend w \<notin> set (butlast \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>)"
-by(induct rule: red1_reds1.inducts)(auto dest: red_external_Suspend_last simp add: ta_upd_simps)
+lemma red1_ta_Wakeup_no_Join_no_Lock:
+  "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
+  \<Longrightarrow> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
+  and reds1_ta_Wakeup_no_Join_no_Lock:
+  "\<lbrakk> P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
+  \<Longrightarrow> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
+apply(induct rule: red1_reds1.inducts)
+apply(auto simp add: ta_upd_simps dest: red_external_Wakeup_no_Join_no_Lock)
+done
 
 lemma red1_Suspend_is_call:
   "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> call1 e' \<noteq> None"
@@ -1495,12 +1501,17 @@ lemma Red1_Suspend_is_call:
   "\<lbrakk> P,t \<turnstile>1 \<langle>(e, xs)/exs, h\<rangle> -ta\<rightarrow> \<langle>(e', xs')/exs', h'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> call1 e' \<noteq> None"
 by(auto elim!: Red1.cases dest: red1_Suspend_is_call)
 
+lemma Red1_ta_Wakeup_no_Join_no_Lock:
+  "\<lbrakk> P,t \<turnstile>1 \<langle>(e, xs)/exs, h\<rangle> -ta\<rightarrow> \<langle>(e', xs')/exs', h'\<rangle>; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> Interrupted \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
+  \<Longrightarrow> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [] \<and> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {}"
+by(auto elim!: Red1.cases dest: red1_ta_Wakeup_no_Join_no_Lock)
+
 lemma Red1'_mthr: "multithreaded (mred1' P)"
-by(unfold_locales)(fastsimp elim!: Red1.cases dest: red1_new_thread_heap red1_ta_Suspend_last)+
+by(unfold_locales)(fastsimp elim!: Red1.cases dest: red1_new_thread_heap red1_ta_Wakeup_no_Join_no_Lock)+
 
 lemma Red1_mthr: "multithreaded (mred1 P)"
 apply(unfold_locales)
-apply(fastsimp elim!: Red1.cases dest: red1_new_thread_heap red1_ta_Suspend_last)+
+apply(fastsimp elim!: Red1.cases dest: red1_new_thread_heap red1_ta_Wakeup_no_Join_no_Lock)+
 done
 
 lemma red1_\<tau>move1_heap_unchanged: "\<lbrakk> P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; \<tau>move1 P (hp s) e \<rbrakk> \<Longrightarrow> hp s' = hp s"

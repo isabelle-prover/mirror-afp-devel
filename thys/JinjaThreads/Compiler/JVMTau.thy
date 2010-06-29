@@ -139,7 +139,7 @@ where
 
 | \<tau>move2Cond:
   "\<tau>move2 P h stk e pc xcp \<Longrightarrow> \<tau>move2 P h stk (if (e) e1 else e2) pc xcp"
-| \<tau>move2CondRed: (* new *)
+| \<tau>move2CondRed:
   "\<tau>move2 P h stk (if (e) e1 else e2) (length (compE2 e)) None"
 | \<tau>move2CondThen:
   "\<tau>move2 P h stk e1 pc xcp

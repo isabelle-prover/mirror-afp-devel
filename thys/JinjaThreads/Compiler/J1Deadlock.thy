@@ -1,3 +1,9 @@
+(*  Title:      JinjaThreads/Compiler/J1Deadlock.thy
+    Author:     Andreas Lochbihler
+*)
+
+header {* \isaheader{Deadlock perservation for the intermediate language} *}
+
 theory J1Deadlock imports
   J1
   "../Framework/FWDeadlock"
@@ -34,7 +40,7 @@ next
   from `xs ! V = Addr a'` `V < length xs` 
   have "P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Val v,(h, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a'\<rbrace>\<lbrace>\<^bsub>o\<^esub>SyncUnlock a'\<rbrace>\<rightarrow> \<langle>Val v,(h, xs)\<rangle>"
     by(rule Unlock1Synchronized)
-  thus ?case by(auto intro!: exI simp add: collect_locks_def finfun_upd_apply split: split_if_asm)
+  thus ?case by(auto intro!: exI simp add: collect_locks_def finfun_upd_apply ta_upd_simps split: split_if_asm)
 next
   case (Synchronized1Throw2Fail xs V a' a ad h)
   from `xs ! V = Addr a'` `V < length xs`
@@ -63,7 +69,7 @@ lemma mred1'_mred1_must_sync_eq:
 proof
   assume "Red1'_mthr.must_sync P t x (shr s)"
   thus "Red1_mthr.must_sync P t x (shr s)"
-    by(rule Red1'_mthr.must_syncE)(rule Red1_mthr.must_syncI, auto simp add: split_def)
+    by(rule Red1'_mthr.must_syncE)(rule Red1_mthr.must_syncI, auto simp add: split_def simp del: split_paired_Ex)
 next
   assume "Red1_mthr.must_sync P t x (shr s)"
   thus "Red1'_mthr.must_sync P t x (shr s)"
@@ -131,9 +137,14 @@ proof(rule iffI)
     qed
   next
     fix t x ln l
-    assume "thr s t = \<lfloor>(x, ln)\<rfloor>" "0 < ln\<^sub>f l" "wset s t = None"
+    assume "thr s t = \<lfloor>(x, ln)\<rfloor>" "0 < ln\<^sub>f l" "\<not> waiting (wset s t)"
     thus "\<exists>l t'. 0 < ln\<^sub>f l \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s)\<^sub>f l) t'"
       by(rule Red1_mthr.deadlockD2[OF dead]) blast
+  next
+    fix t x w
+    assume "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
+    thus "wset s t \<noteq> \<lfloor>WokenUp w\<rfloor>"
+      by(rule Red1_mthr.deadlockD3[OF dead, rule_format])
   qed
 next
   assume dead: "Red1'_mthr.deadlock P s"
@@ -200,9 +211,14 @@ next
     qed
   next
     fix t x ln l
-    assume "thr s t = \<lfloor>(x, ln)\<rfloor>" "0 < ln\<^sub>f l" "wset s t = None"
+    assume "thr s t = \<lfloor>(x, ln)\<rfloor>" "0 < ln\<^sub>f l" "\<not> waiting (wset s t)"
     thus "\<exists>l t'. 0 < ln\<^sub>f l \<and> t \<noteq> t' \<and> thr s t' \<noteq> None \<and> has_lock ((locks s)\<^sub>f l) t'"
       by(rule Red1'_mthr.deadlockD2[OF dead]) blast
+  next
+    fix t x w
+    assume "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>"
+    thus "wset s t \<noteq> \<lfloor>WokenUp w\<rfloor>"
+      by(rule Red1'_mthr.deadlockD3[OF dead, rule_format])
   qed
 qed
 

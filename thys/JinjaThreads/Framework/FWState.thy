@@ -23,14 +23,14 @@ datatype ('t,'x,'m) new_thread_action =
 
 datatype 't conditional_action = 
     Join 't
-  | Notified
-  | Interrupted
 
 datatype ('t, 'w) wait_set_action =
     Suspend 'w
   | Notify 'w
   | NotifyAll 'w
   | Interrupt 't
+  | Notified
+  | Interrupted
 
 types 'l lock_actions = "'l \<Rightarrow>\<^isub>f lock_action list"
 
@@ -179,13 +179,22 @@ lemmas ta_upd_simps =
 
 declare ta_upd_simps [simp del]
 
+datatype wake_up_status =
+  WSNotified
+| WSInterrupted
+
+datatype 'w wait_set_status =
+  InWS 'w
+| WokenUp wake_up_status
+
 types
   't lock = "('t \<times> nat) option"
   ('l,'t) locks = "'l \<Rightarrow>\<^isub>f 't lock"
   'l released_locks = "'l \<Rightarrow>\<^isub>f nat"
   ('l,'t,'x) thread_info = "'t \<rightharpoonup> ('x \<times> 'l released_locks)"
-  ('w,'t) wait_sets = "'t \<rightharpoonup> 'w"
+  ('w,'t) wait_sets = "'t \<rightharpoonup> 'w wait_set_status"
   ('l,'t,'x,'m,'w) state = "('l,'t) locks \<times> (('l,'t,'x) thread_info \<times> 'm) \<times> ('w,'t) wait_sets"
+
 translations
   (type) "('l, 't) locks" <= (type) "'l \<Rightarrow>\<^isub>f ('t \<times> nat) option"
   (type) "('l, 't, 'x) thread_info" <= (type) "'t \<rightharpoonup> ('x \<times> ('l \<Rightarrow>\<^isub>f nat))"
@@ -203,14 +212,15 @@ print_translation {*
               (Const (@{type_syntax option}, _) $
                 (Const (@{type_syntax "*"}, _) $ x $
                   (Const (@{type_syntax finfun}, _) $ l2 $ Const (@{type_syntax nat}, _))))) $ m) $
-               (Const (@{type_syntax fun}, _) $ t3 $ (Const (@{type_syntax option}, _) $ w))] =
+               (Const (@{type_syntax fun}, _) $ t3 $ 
+                  (Const (@{type_syntax option}, _) $ (Const (@{type_syntax wait_set_status}, _) $ w)))] =
       if t1 = t2 andalso t1 = t3 andalso l1 = l2
       then Syntax.const @{type_syntax state} $ l1 $ t1 $ x $ m $ w
       else raise Match;
   in [(@{type_syntax "*"}, tr')]
   end
 *}
-(* typ "('l,'t,'x,'m,'w) state" *)
+typ "('l,'t,'x,'m,'w) state"
 
 lemma ta_upd_proj_simps [simp]:
   shows ta_obs_proj_simps:
@@ -330,27 +340,28 @@ datatype ('l,'o) observable =
 abbreviation observable_of :: "'o list \<Rightarrow> ('l, 'o) observable list"
 where "observable_of obs \<equiv> map Observable obs"
 
-definition observable_ta_of :: "('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> ('l, 'o) observable list \<Rightarrow> ('l,'t,'x,'m,'w,('l,'o) observable list) thread_action"
-where "observable_ta_of ta obs = (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>, observable_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> @ obs)"
+definition observable_ta_of :: "('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> 
+                             ('l,'t,'x,'m,'w, ('l,'o) observable list) thread_action"
+where "observable_ta_of ta = (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>, \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>, observable_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)"
 
 lemma locks_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta obs\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
+  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>l\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>"
 by(simp add: observable_ta_of_def)
 
 lemma thr_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta obs\<rbrace>\<^bsub>t\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
+  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>t\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
 by(simp add: observable_ta_of_def)
 
 lemma cond_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta obs\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
+  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>c\<^esub>"
 by(simp add: observable_ta_of_def)
 
 lemma wset_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta obs\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
+  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>w\<^esub> = \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
 by(simp add: observable_ta_of_def)
 
 lemma obs_a_observable_ta_of [simp]:
-  "\<lbrace>observable_ta_of ta obs\<rbrace>\<^bsub>o\<^esub> = observable_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> @ obs"
+  "\<lbrace>observable_ta_of ta\<rbrace>\<^bsub>o\<^esub> = observable_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 by(simp add: observable_ta_of_def)
 
 lemma observable_of_inject [simp]:
@@ -361,28 +372,20 @@ apply(case_tac obs')
 apply fastsimp+
 done
 
-lemma observable_ta_of_inject1 [simp]:
-  "observable_ta_of ta obs = observable_ta_of ta' obs \<longleftrightarrow> ta = ta'"  
-by(cases ta, cases ta')(auto simp add: observable_ta_of_def)
-
-lemma observable_ta_of_inject2 [simp]:
-  "observable_ta_of ta obs = observable_ta_of ta obs' \<longleftrightarrow> obs = obs'"  
-by(auto simp add: observable_ta_of_def)
-
-lemma observable_ta_of_empty_Nil [simp]: "observable_ta_of \<epsilon> [] = \<epsilon>"
+lemma observable_ta_of_empty [simp]: "observable_ta_of \<epsilon> = \<epsilon>"
 by(simp add: observable_ta_of_def)
 
 lemma observable_ta_of_eq_empty [simp]: 
-  "observable_ta_of ta obs = \<epsilon> \<longleftrightarrow> ta = \<epsilon> \<and> obs = []"
+  "observable_ta_of ta = \<epsilon> \<longleftrightarrow> ta = \<epsilon>"
 by(cases ta)(simp add: observable_ta_of_def)
 
 lemma empty_eq_observable_ta_of [simp]: 
-  "\<epsilon> = observable_ta_of ta obs \<longleftrightarrow> ta = \<epsilon> \<and> obs = []"
+  "\<epsilon> = observable_ta_of ta \<longleftrightarrow> ta = \<epsilon>"
 by(cases ta)(auto simp add: observable_ta_of_def)
 
-definition is_Interrupted_ta :: "('l,'t,'x,'m,'w,'o list) thread_action \<Rightarrow> bool"
-where "is_Interrupted_ta ta \<longleftrightarrow> \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = (\<lambda>\<^isup>f []) \<and> \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> = [] \<and> \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = [Interrupted] \<and> \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> = []"
-
+lemma observable_ta_of_inject [simp]:
+  "observable_ta_of ta = observable_ta_of ta' \<longleftrightarrow> ta = ta'"
+by(cases ta, cases ta')(auto simp add: observable_ta_of_def)
 
 types
   ('l,'t,'x,'m,'w,'o) semantics =
@@ -404,8 +407,8 @@ print_translation {*
                 (Const (@{type_syntax "*"}, _) $
                   (Const (@{type_syntax list}, _) $ (Const (@{type_syntax conditional_action}, _) $ t2)) $
                   (Const (@{type_syntax "*"}, _) $
-                    (Const (@{type_syntax list}, _) $ (Const (@{type_syntax wait_set_action}, _) $ t3 $ w)) $
-                    (Const (@{type_syntax list}, _) $ o1))))) $
+                    (Const (@{type_syntax list}, _) $ (Const (@{type_syntax wait_set_action}, _) $ t3 $ w)) $ 
+                      (Const (@{type_syntax list}, _) $ o1))))) $
             (Const (@{type_syntax fun}, _) $ (Const (@{type_syntax "*"}, _) $ x3 $ m3) $
               Const (@{type_syntax bool}, _)))] =
       if x1 = x2 andalso x1 = x3 andalso m1 = m2 andalso m1 = m3 andalso t1 = t2 andalso t2 = t3 andalso t3 = t4
@@ -414,7 +417,7 @@ print_translation {*
   in [(@{type_syntax fun}, tr')]
   end
 *}
-(* typ "('l,'t,'x,'m,'w,'o) semantics" *)
+typ "('l,'t,'x,'m,'w,'o) semantics"
 
 types ('a, 'b) trsys = "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
 types ('a, 'b) bisim = "'a \<Rightarrow> 'b \<Rightarrow> bool"

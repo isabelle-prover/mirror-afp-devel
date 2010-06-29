@@ -62,11 +62,6 @@ where
                                       LCons tl tls' \<Rightarrow> let s' = SOME s'. trsys s tl s' \<and> s' -tls'\<rightarrow>* \<infinity>
                                                     in Some ((s, tl, s'), (s', tls')))"
 
-coinductive Rtrancl3p :: "'s \<Rightarrow> 'tl llist \<Rightarrow> 's \<Rightarrow> bool"
-where
-  Rtrancl3p_refl: "Rtrancl3p a LNil a"
-| Rtrancl3p_into_Rtrancl3p: "\<lbrakk> trsys a b a'; Rtrancl3p a' bs a'' \<rbrakk> \<Longrightarrow> Rtrancl3p a (LCons b bs) a''"
-
 
 lemma inf_step_not_finite_llist:
   assumes r: "s -bs\<rightarrow>* \<infinity>"
@@ -146,53 +141,6 @@ proof -
     qed
   qed
   thus ?thesis unfolding tls .
-qed
-
-lemma Rtrancl3p_trans [trans]:
-  assumes one: "Rtrancl3p a bs a'"
-  and two: "Rtrancl3p a' bs' a''"
-  shows "Rtrancl3p a (lappend bs bs') a''"
-proof -
-  def bs'' \<equiv> "lappend bs bs'"
-  with one two have "\<exists>a' bs bs'. Rtrancl3p a bs a' \<and> Rtrancl3p a' bs' a'' \<and> bs'' = lappend bs bs'" by auto
-  thus "Rtrancl3p a bs'' a''"
-    by(coinduct a bs'' a'')(fastsimp elim: Rtrancl3p.cases)
-qed
-
-lemma rtrancl3p_into_Rtrancl3p:
-  "rtrancl3p trsys a bs a' \<Longrightarrow> Rtrancl3p a (llist_of bs) a'"
-by(induct rule: rtrancl3p_converse_induct)(auto intro: Rtrancl3p.intros)
-
-lemma Rtrancl3p_into_rtrancl3p:
-  assumes fin: "lfinite bs"
-  and absa': "Rtrancl3p a bs a'"
-  shows "rtrancl3p trsys a (list_of bs) a'"
-using fin absa'
-proof(induct arbitrary: a)
-  case lfinite_LNil thus ?case by(auto elim: Rtrancl3p.cases intro: rtrancl3p_refl)
-next
-  case (lfinite_LConsI xs x)
-  note fin = `lfinite xs`
-  from `Rtrancl3p a (LCons x xs) a'` obtain a'' where r: "trsys a x a''"
-    and R: "Rtrancl3p a'' xs a'" by(auto elim: Rtrancl3p.cases)
-  note r moreover from R `Rtrancl3p a'' xs a' \<Longrightarrow> rtrancl3p trsys a'' (list_of xs) a'`
-  have "rtrancl3p trsys a'' (list_of xs) a'" by -
-  ultimately show ?case unfolding list_of_LCons[OF fin] by(rule rtrancl3p_step_converse)
-qed
-
-lemma Rtrancl3p_cases:
-  assumes red: "Rtrancl3p s tls s'"
-  obtains (rtrancl3p) "lfinite tls" "rtrancl3p trsys s (list_of tls) s'"
-         | (inf_step) "s -tls\<rightarrow>* \<infinity>"
-proof(cases "lfinite tls")
-  case True
-  hence "rtrancl3p trsys s (list_of tls) s'" using red by(rule Rtrancl3p_into_rtrancl3p)
-  with True show ?thesis by(rule that)
-next
-  case False
-  with red have "\<exists>s'. \<not> lfinite tls \<and> Rtrancl3p s tls s'" by blast
-  hence "s -tls\<rightarrow>* \<infinity>" by coinduct(force elim: Rtrancl3p.cases)
-  thus thesis by(rule that)
 qed
 
 end
