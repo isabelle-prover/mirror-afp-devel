@@ -78,33 +78,33 @@ primrec
   stack:: "('index \<Rightarrow> 'node \<Rightarrow> 'node) \<Rightarrow> ('node \<Rightarrow> 'index) \<Rightarrow> 'node \<Rightarrow> ('node list) \<Rightarrow> bool" where
   "stack lnk lbl x []       = (x = nil)" |
   "stack lnk lbl x (y # l)  = 
-      (x \<noteq> nil \<and> x = y \<and> \<not> x mem l \<and> stack lnk lbl (lnk (lbl x) x) l)";
+      (x \<noteq> nil \<and> x = y \<and> \<not> x \<in> set l \<and> stack lnk lbl (lnk (lbl x) x) l)";
 
 
 lemma label_out_range0 [simp]:
-  "\<not> x mem S \<Longrightarrow> label_0 lbl S x = lbl x";
-  apply (rule_tac P="\<forall> label . \<not> x mem S \<longrightarrow> label_0 label S x = label x" in mp);
+  "\<not> x \<in> set S \<Longrightarrow> label_0 lbl S x = lbl x";
+  apply (rule_tac P="\<forall> label . \<not> x \<in> set S \<longrightarrow> label_0 label S x = label x" in mp);
   by (simp, induct_tac S, auto);
 
 lemma link_out_range0 [simp]:
-  "\<not> x mem S \<Longrightarrow> link_0 link label p S i x = link i x";
-  apply (rule_tac P="\<forall> link p . \<not> x mem S \<longrightarrow> link_0 link label p S i x = link i x" in mp);
+  "\<not> x \<in> set S \<Longrightarrow> link_0 link label p S i x = link i x";
+  apply (rule_tac P="\<forall> link p . \<not> x \<in> set S \<longrightarrow> link_0 link label p S i x = link i x" in mp);
   by (simp, induct_tac S, auto);
 
 
-lemma link_out_range [simp]: "\<not> x mem S \<Longrightarrow> link_0 link (label(x := y)) p S = link_0 link label p S";
-  apply (rule_tac P="\<forall> link p . \<not> x mem S \<longrightarrow> link_0 link (label(x := y)) p S = link_0 link label p S" in mp);
+lemma link_out_range [simp]: "\<not> x \<in> set S \<Longrightarrow> link_0 link (label(x := y)) p S = link_0 link label p S";
+  apply (rule_tac P="\<forall> link p . \<not> x \<in> set S \<longrightarrow> link_0 link (label(x := y)) p S = link_0 link label p S" in mp);
   by (simp, induct_tac S, auto);
 
 lemma empty_stack [simp]: "stack link label nil S = (S = [])";
   by (case_tac S, simp_all);
 
-lemma stack_out_link_range [simp]: "\<not> p mem S \<Longrightarrow> stack (link(i := (link i)(p := q))) label x S = stack link label x S";
-  apply (rule_tac P = "\<forall> link x . \<not> p mem S \<longrightarrow> stack (link(i := (link i)(p := q))) label x S = stack link label x S" in mp);
+lemma stack_out_link_range [simp]: "\<not> p \<in> set S \<Longrightarrow> stack (link(i := (link i)(p := q))) label x S = stack link label x S";
+  apply (rule_tac P = "\<forall> link x . \<not> p \<in> set S \<longrightarrow> stack (link(i := (link i)(p := q))) label x S = stack link label x S" in mp);
   by (simp, induct_tac S, auto);
 
-lemma stack_out_label_range [simp]: "\<not> p mem S \<Longrightarrow> stack link (label(p := q)) x S = stack link label x S";
-  apply (rule_tac P = "\<forall> link x . \<not> p mem S \<longrightarrow> stack link (label(p := q)) x S = stack link label x S" in mp);
+lemma stack_out_label_range [simp]: "\<not> p \<in> set S \<Longrightarrow> stack link (label(p := q)) x S = stack link label x S";
+  apply (rule_tac P = "\<forall> link x . \<not> p \<in> set S \<longrightarrow> stack link (label(p := q)) x S = stack link label x S" in mp);
   by (simp, induct_tac S, auto);
 
 definition
@@ -172,7 +172,7 @@ definition
        stack lnk lbl t (tail stk) \<and> 
        link0 = link_0 lnk lbl p (tail stk) \<and> 
        label0 = label_0 lbl (tail stk) \<and>
-       \<not> nil mem stk \<and> 
+       \<not> nil \<in> set stk \<and> 
        mrk' = mrk})";
 
 definition [simp]:

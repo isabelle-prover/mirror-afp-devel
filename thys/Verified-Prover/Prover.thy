@@ -1215,8 +1215,12 @@ definition my_f :: "form" where
 
   -- "we compute by rewriting"
 
-lemmas ss = list.simps if_True if_False flatten.simps map.simps bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def Let_def newvar_def subs.simps split_beta append_Nil append_Cons subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms mem_iff[symmetric] List.member_simps
+lemma membership_simps:
+  "x \<in> set [] \<longleftrightarrow> False"
+  "x \<in> set (y # ys) \<longleftrightarrow> x = y \<or> x \<in> set ys"
+  by simp_all
 
+lemmas ss = list.simps if_True if_False flatten.simps map.simps bump_def sfv_def filter.simps is_axiom.simps fst_conv snd_conv form.simps collect_disj inc_def finst_def ns_of_s_def s_of_ns_def Let_def newvar_def subs.simps split_beta append_Nil append_Cons subst.simps nat.simps fv.simps maxvar.simps preSuc.simps simp_thms membership_simps
 
 lemmas prove'_Nil = prove' [of "[]", simplified, standard]
 lemmas prove'_Cons = prove' [of "x#l", simplified, standard]
@@ -1225,6 +1229,5 @@ lemma search: "finite (deriv [(0,my_f)])"
   apply(simp add: my_f_def finite_deriv_prove prove_def)
   apply(simp only: prove'_Nil prove'_Cons ss)
   done
-
 
 end

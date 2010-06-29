@@ -24,7 +24,7 @@ definition fgraph :: "graph \<Rightarrow> nat fgraph" where
 definition hash :: "nat fgraph \<Rightarrow> nat list" where
   "hash fs = (let n = nof_vertices fs in
      [n, size fs] @
-     qsort (%x y. y < x) (map (%i. foldl (op +) 0 (map size [f\<leftarrow>fs. i mem f]))
+     qsort (%x y. y < x) (map (%i. foldl (op +) 0 (map size [f\<leftarrow>fs. i \<in> set f]))
                              [0..<n]))"
 
 primrec enum_finals :: "(graph \<Rightarrow> graph list) \<Rightarrow> nat \<Rightarrow> graph list \<Rightarrow> nat fgraph list

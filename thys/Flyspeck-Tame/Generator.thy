@@ -40,8 +40,8 @@ definition ExcessTable :: "graph \<Rightarrow> vertex list \<Rightarrow> (vertex
 text{* Implementation: *}
 lemma [code]:
   "ExcessTable g =
-   filtermap (\<lambda>v. let e = ExcessAt g v in if 0 < e then Some (v, e) else None)"
- by (rule ext) (simp add: ExcessTable_def filtermap_conv)
+   List.map_filter (\<lambda>v. let e = ExcessAt g v in if 0 < e then Some (v, e) else None)"
+ by (rule ext) (simp add: ExcessTable_def map_filter_def)
 
 (* FIXME delete stupid removeKeyList *)
 definition deleteAround :: "graph \<Rightarrow> vertex \<Rightarrow> (vertex \<times> nat) list \<Rightarrow> (vertex \<times> nat) list" where

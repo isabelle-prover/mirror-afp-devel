@@ -32,7 +32,7 @@ lemma [code]:
 
 subsection {* Lists *}
 
-declare mem_iff[simp] list_all_iff[simp] list_ex_iff[simp]
+declare List.member_def[simp] list_all_iff[simp] list_ex_iff[simp]
 
 
 subsubsection{* @{text length} *}
@@ -1284,7 +1284,7 @@ subsection {* @{text between} *}
 definition between :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list" where
  "between vs ram\<^isub>1 ram\<^isub>2 \<equiv>
      let (pre\<^isub>1, post\<^isub>1) = splitAt ram\<^isub>1 vs in
-     if ram\<^isub>2 mem post\<^isub>1
+     if ram\<^isub>2 \<in> set post\<^isub>1
      then let (pre\<^isub>2, post\<^isub>2) = splitAt ram\<^isub>2 post\<^isub>1 in pre\<^isub>2
      else let (pre\<^isub>2, post\<^isub>2) = splitAt ram\<^isub>2 pre\<^isub>1 in post\<^isub>1 @ pre\<^isub>2"
 

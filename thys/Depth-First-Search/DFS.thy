@@ -54,7 +54,7 @@ function
   dfs :: "graph \<Rightarrow> node list \<Rightarrow> node list \<Rightarrow> node list"
 where
   dfs_base: "dfs g [] ys = ys"
-| dfs_inductive: "dfs g (x#xs) ys = (if x mem ys then dfs g xs ys 
+| dfs_inductive: "dfs g (x#xs) ys = (if List.member ys x then dfs g xs ys 
                         else dfs g (nexts g x@xs) (x#ys))"
 by pat_completeness auto
 
@@ -65,7 +65,7 @@ apply (relation "inv_image (finite_psubset <*lex*> less_than)
                    (\<lambda>(g,xs,ys). (nodes_of g - set ys, size xs))")
 apply auto[1]
 apply (simp_all add: finite_psubset_def)
-by (case_tac  "x \<in> nodes_of g") (auto simp add: mem_iff)
+by (case_tac  "x \<in> nodes_of g") (auto simp add: List.member_def)
 
 text {*
   \begin{itemize}
@@ -84,7 +84,7 @@ function
 where
   "dfs2 g [] ys = ys"
 |  dfs2_inductive: 
-          "dfs2 g (x#xs) ys = (if x mem ys then dfs2 g xs ys 
+          "dfs2 g (x#xs) ys = (if List.member ys x then dfs2 g xs ys 
                                else dfs2 g xs (dfs2 g (nexts g x) (x#ys)))"
 by pat_completeness auto
 
@@ -97,7 +97,7 @@ apply (relation "inv_image (finite_psubset <*lex*> less_than)
 apply auto[1]
 apply (simp_all add: finite_psubset_def)
 apply (case_tac  "x \<in> nodes_of g") 
-apply (auto simp add: mem_iff)[2]
+apply (auto simp add: List.member_def)[2]
 by (insert dfs2_invariant) force
 
 (*lemma dfs2_induct[induct type]:
@@ -146,20 +146,20 @@ proof(induct g xs ys rule:dfs.induct)
     have "set ys \<subseteq> set (dfs g xs ys)"
       by (rule visit_subset_dfs)
     with 2 and True show ?thesis
-      by (auto simp add: mem_iff)
+      by (auto simp add: List.member_def)
   next
     case False
     have "set (x#ys) \<subseteq> set (dfs g (nexts g x @ xs) (x#ys))"
       by(rule visit_subset_dfs)
     with 2 and False show ?thesis
-      by (auto simp add: mem_iff)
+      by (auto simp add: List.member_def)
   qed
 qed(simp)
 
 
 lemma nextss_closed_dfs'[rule_format]: 
  "nextss g ys \<subseteq> set xs \<union> set ys \<longrightarrow> nextss g (dfs g xs ys) \<subseteq> set (dfs g xs ys)"
-  by (induct g xs ys rule:dfs.induct, auto simp add:nextss_Cons mem_iff)
+  by (induct g xs ys rule:dfs.induct, auto simp add:nextss_Cons List.member_def)
 
 lemma nextss_closed_dfs: "nextss g (dfs g xs []) \<subseteq> set (dfs g xs [])"
   by (rule nextss_closed_dfs', simp add: nextss_def)
@@ -203,7 +203,7 @@ proof(induct g xs ys rule: dfs.induct)
   proof(cases "x \<in> set ys")
     case True
     with 2 show "set (dfs g (x#xs) ys) \<subseteq> reachable g (x#xs) \<union> set ys"
-      by (auto simp add:reachable_def mem_iff)
+      by (auto simp add:reachable_def List.member_def)
   next
     case False
     have "reachable g (nexts g x) \<subseteq> reachable g [x]" 
@@ -212,7 +212,7 @@ proof(induct g xs ys rule: dfs.induct)
       by(simp add: reachable_append, auto simp add: reachable_def)
     with False 2
     show "set (dfs g (x#xs) ys) \<subseteq> reachable g (x#xs) \<union> set ys"
-      by (auto simp add: reachable_def mem_iff) blast
+      by (auto simp add: reachable_def List.member_def) blast
   qed
 qed(unfold reachable_def,simp)
 

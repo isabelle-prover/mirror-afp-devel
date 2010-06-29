@@ -1,5 +1,4 @@
 (*    Title:              SatSolverVerification/SatSolverCode.thy
-      ID:                 $Id: SatSolverCode.thy,v 1.2 2009-07-14 09:00:10 fhaftmann Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -14,11 +13,9 @@ subsection{* Specification *}
 (******************************************************************************)
 
 lemma [code_inline]:
-fixes
-literal :: Literal and clause :: Clause
-shows
-"literal el clause = literal mem clause"
-by (auto simp add: mem_iff)
+  fixes literal :: Literal and clause :: Clause
+  shows "literal el clause = List.member clause literal"
+  by (auto simp add: member_def)
 
 datatype ExtendedBool = TRUE | FALSE | UNDEF
 

@@ -1,11 +1,13 @@
 header {* Locally Nameless representation of basic Sigma calculus enriched with formal parameter *}
 
-theory Sigma imports "../preliminary/FMap" begin
+theory Sigma
+imports "../preliminary/FMap"
+begin
 
 subsection {* Infrastructure for the finite maps *}
-consts max_label :: nat
 
-axioms LabelAvail: "max_label > 10"
+axiomatization max_label :: nat where
+  LabelAvail: "max_label > 10"
 
 typedef Label = "{n :: nat. n \<le> max_label}"
   by auto
@@ -2299,7 +2301,7 @@ lemma rtrancl_beta_obj_lem00:
   shows 
   "\<forall>k \<le> (card (dom f)). 
     (\<exists>ob. length ob = (k + 1)
-        \<and> (\<forall>obi. obi mem ob \<longrightarrow> dom (fst(obi)) = dom f \<and> ((snd obi) \<subseteq> dom f)) 
+        \<and> (\<forall>obi. obi \<in> set ob \<longrightarrow> dom (fst(obi)) = dom f \<and> ((snd obi) \<subseteq> dom f)) 
         \<and> (fst (ob!0) = f)
         \<and> (card (snd (ob!k)) = k)
         \<and> (\<forall>i < k. snd (ob!i) \<subset> snd (ob!k))
@@ -2312,7 +2314,7 @@ proof
   show 
     "k \<le> card (dom f) 
     \<longrightarrow> (\<exists>ob. length ob = k + 1 
-            \<and> (\<forall>obi. obi mem ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f) 
+            \<and> (\<forall>obi. obi \<in> set ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f) 
             \<and> fst (ob ! 0) = f 
             \<and> card (snd (ob ! k)) = k 
             \<and> (\<forall>i<k. snd (ob ! i) \<subset> snd (ob ! k)) 
@@ -2330,7 +2332,7 @@ proof
       with Suc.hyps
       obtain ob where 
 	"length ob = k + 1" and
-	mem_ob: "\<forall>obi. obi mem ob 
+	mem_ob: "\<forall>obi. obi \<in> set ob 
 	          \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f" and
 	"fst (ob ! 0) = f" and
 	"card (snd (ob ! k)) = k" and
@@ -2340,7 +2342,7 @@ proof
 	         \<longrightarrow> Ltake_eq (snd (ob ! k)) (fst (ob ! k)) g 
 	             \<and> Ltake_eq (dom f - snd (ob ! k)) (fst (ob ! k)) f"
 	by auto
-      from `length ob = k + 1` have obkmem: "(ob!k) mem ob" by auto
+      from `length ob = k + 1` have obkmem: "(ob!k) \<in> set ob" by auto
 
       with mem_ob have obksnd: "snd(ob!k) \<subseteq> dom f" by blast
       from 
@@ -2377,15 +2379,15 @@ proof
 
 	(* prop#2 *)
       moreover
-      have "\<forall>obi. obi mem ob' \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f"
+      have "\<forall>obi. obi \<in> set ob' \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f"
 	unfolding ob'_def
       proof (intro strip)
 	fix obi :: "(Label -~> sterm) \<times> (Label \<Rightarrow> bool)"
-	assume "obi mem ob @ [(fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd (ob!k)))]"
+	assume "obi \<in> set (ob @ [(fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd (ob!k)))])"
 	note mem_append_lem'[OF this]
 	thus "dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f"
 	proof (rule disjE, simp_all)
-	  assume "obi mem ob" 
+	  assume "obi \<in> set ob" 
 	  with mem_ob show "dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f"
 	    by blast
 	next
@@ -2518,7 +2520,7 @@ proof
       ultimately
       show 
 	"\<exists>ob. length ob = Suc k + 1 
-	    \<and> (\<forall>obi. obi mem ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f) 
+	    \<and> (\<forall>obi. obi \<in> set ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f) 
 	    \<and> fst (ob ! 0) = f 
 	    \<and> card (snd (ob ! Suc k)) = Suc k 
 	    \<and> (\<forall>i<Suc k. snd (ob ! i) \<subset> snd (ob ! Suc k)) 
@@ -2548,14 +2550,14 @@ next
   obtain ob :: "((Label -~> sterm) \<times> (Label \<Rightarrow> bool)) list" 
     where 
     "length ob = card(dom f) + 1" and
-    "\<forall>obi. obi mem ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f" and
+    "\<forall>obi. obi \<in> set ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f" and
     "fst(ob!0) = f" and
     "card (snd(ob!card(dom f))) = card(dom f)" and
     "Obj (fst(ob!0)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (fst(ob!card(dom f))) T" and
     "Ltake_eq (snd(ob!card(dom f))) (fst(ob!card(dom f))) g"
     by blast
-  from `length ob = card (dom f) + 1` have "(ob!card(dom f)) mem ob" by auto
-  with `\<forall>obi. obi mem ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f`
+  from `length ob = card (dom f) + 1` have "(ob!card(dom f)) \<in> set ob" by auto
+  with `\<forall>obi. obi \<in> set ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f`
   have "dom (fst(ob!card(dom f))) = dom f" and "snd(ob!card(dom f)) \<subseteq> dom f"
     by blast+
 
