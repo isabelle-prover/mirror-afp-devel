@@ -17,12 +17,6 @@ the list is empty.
 The data refinement relation of the two diagrams is true if the list
 has distinct elements and the elements of the list and the set are the same.
 *}
-consts
-  "dist":: "'a list \<Rightarrow> bool";
-
-primrec
-  "dist []     = True"
-  "dist (a # L)= (\<not> a mem L \<and> dist L)";
 
 subsection {* Transitions *}
 
@@ -50,7 +44,7 @@ definition
   "Init' \<equiv> UNIV";
 
 definition
-  "Loop' \<equiv> { (stk, mrk) . dist stk}";
+  "Loop' \<equiv> { (stk, mrk) . distinct stk}";
 
 definition
   "Final' \<equiv> UNIV";
@@ -67,7 +61,7 @@ definition
   "R1 \<equiv> \<lambda> (stk, mrk) . {(X, mrk') . mrk' = mrk}";
 
 definition
-  "R2 \<equiv> \<lambda> (stk, mrk) . {(X, mrk') . X = {x . x mem stk} \<and> (stk, mrk) \<in> Loop' \<and> mrk' = mrk}";
+  "R2 \<equiv> \<lambda> (stk, mrk) . {(X, mrk') . X = {x . x \<in> set stk} \<and> (stk, mrk) \<in> Loop' \<and> mrk' = mrk}";
 
 definition [simp]:
   "R i = (case i of
@@ -99,7 +93,7 @@ theorem (in graph) step1 [simp]:
   apply (simp add: DataRefinement_def hoare_demonic Loop_def 
     Loop'_def R2_def Q3_def Q3'_def angelic_def subset_eq);
   apply (simp add: simp_eq_emptyset);
-by (metis Collect_def List.set.simps(2) hd_in_set mem_def member_set simps(2))
+by (metis Collect_def List.set.simps(2) hd_in_set mem_def member_set distinct.simps(2))
 
 theorem (in graph) step2 [simp]:
   "DataRefinement Loop Q4 R2 R2 (demonic Q4')";
