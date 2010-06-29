@@ -286,8 +286,8 @@ definition final_graph :: "graph \<Rightarrow> bool" where
   [code del]: "final_graph = final"
 declare final_graph_def [symmetric, code_unfold]
 
-lemma final_graph_code [code]: "final_graph g = null (nonFinals g)"
-  unfolding final_graph_def finalGraph_def null_empty ..
+lemma final_graph_code [code]: "final_graph g = List.null (nonFinals g)"
+  unfolding final_graph_def finalGraph_def null_def ..
 
 definition vertices_face :: "face \<Rightarrow> vertex list" where
   [code del]: "vertices_face = vertices"
