@@ -23,7 +23,7 @@ where
 "lookup (h # t) l = (if fst h = l then Some(snd h) else lookup t l)"
 
 (*<*)
-lemma AL_lookup1[rule_format]:"\<forall> a b . (L\<down>a = Some b) \<longrightarrow> ((a,b) mem L)"
+lemma AL_lookup1[rule_format]:"\<forall> a b . (L\<down>a = Some b) \<longrightarrow> ((a,b) \<in> set L)"
 by (induct L, simp_all)(* add: set_mem_eq)*)
 
 lemma AL_Triv1:"a=b \<Longrightarrow> L\<down>a = L\<down>b" by simp

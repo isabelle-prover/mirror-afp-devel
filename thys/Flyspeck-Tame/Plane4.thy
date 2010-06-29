@@ -13,7 +13,7 @@ definition norm_subset :: "vertex list list \<Rightarrow> vertex list list \<Rig
 
 primrec remrevdups :: "'a list list \<Rightarrow> 'a list list" where
   "remrevdups [] = []"
-| "remrevdups (xs#xss) = (if xs mem xss \<or> rev xs mem xss then remrevdups xss
+| "remrevdups (xs#xss) = (if xs \<in> set xss \<or> rev xs \<in> set xss then remrevdups xss
                         else xs # remrevdups xss)"
 
 definition find_cycles1 :: "nat \<Rightarrow> graph \<Rightarrow> vertex \<Rightarrow> vertex list list" where

@@ -22,7 +22,7 @@ definition nof_vertices :: "'a fgraph \<Rightarrow> nat" where
 definition hash :: "nat fgraph \<Rightarrow> nat list" where
 "hash fs = (let n = nof_vertices fs in
    [n, size fs] @
-   qsort (%x y. y < x) (map (%i. foldl (op +) 0 (map size [f:fs. i mem f]))
+   qsort (%x y. y < x) (map (%i. foldl (op +) 0 (map size [f:fs. i \<in> set f]))
                            [0..<n]))"
 
 primrec

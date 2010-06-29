@@ -198,20 +198,13 @@ lemma bdd_all_bdd_binop:
   shows "bdd_all R (bdd_binop f bdd bdd')"
   using assms by (induct f bdd bdd' rule: bdd_binop.induct) simp+
 
-definition insert_list :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-  "insert_list x xs \<equiv> if x mem xs then xs else x # xs"
-
-lemma insert_list_set[simp]:
-  "set (insert_list x xs) = insert x (set xs)"
-  by (auto simp add: insert_list_def mem_iff)
-
 lemma insert_list_idemp[simp]:
-  "insert_list x (insert_list x xs) = insert_list x xs"
-  by (simp add: insert_list_def)
+  "List.insert x (List.insert x xs) = List.insert x xs"
+  by simp
 
 primrec add_leaves :: "'a bdd \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where
-  "add_leaves (Leaf x) xs = insert_list x xs"
+  "add_leaves (Leaf x) xs = List.insert x xs"
 | "add_leaves (Branch b c) xs = add_leaves c (add_leaves b xs)"
 
 lemma add_leaves_bdd_lookup:
@@ -236,8 +229,8 @@ lemma add_leaves_bdd_lookup:
   done
 
 lemma add_leaves_bdd_all_eq:
-  "list_all P (add_leaves tr xs) = (bdd_all P tr \<and> list_all P xs)"
-  by (induct tr arbitrary: xs) (auto simp add: insert_list_def mem_iff list_all_iff)
+  "list_all P (add_leaves tr xs) \<longleftrightarrow> bdd_all P tr \<and> list_all P xs"
+  by (induct tr arbitrary: xs) (auto simp add: list_all_iff)
 
 lemmas add_leaves_bdd_all_eq' =
   add_leaves_bdd_all_eq [where xs="[]", simplified, symmetric]
@@ -251,12 +244,12 @@ lemma add_leaves_binop_subset:
    (\<Union>x\<in>set (add_leaves b xs). \<Union>y\<in>set (add_leaves b' ys). {f x y})"
   apply (induct f b b' arbitrary: xs ys rule: bdd_binop.induct)
   apply auto
-  apply (drule_tac ys="[f x y. x \<leftarrow> add_leaves l xs, y \<leftarrow> insert_list y ys]" in
+  apply (drule_tac ys="[f x y. x \<leftarrow> add_leaves l xs, y \<leftarrow> List.insert y ys]" in
     rev_subsetD [OF _ add_leaves_mono, standard])
   apply (simp add: image_eq_UN)
   apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
   apply (simp add: image_eq_UN)
-  apply (drule_tac ys="[f x y. x \<leftarrow> insert_list x xs, y \<leftarrow> add_leaves l ys]" in
+  apply (drule_tac ys="[f x y. x \<leftarrow> List.insert x xs, y \<leftarrow> add_leaves l ys]" in
     rev_subsetD [OF _ add_leaves_mono, standard])
   apply (simp add: image_eq_UN)
   apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
@@ -3654,7 +3647,7 @@ lemma mk_nat_vecs_mod_eq: "xs \<in> set (mk_nat_vecs n) \<Longrightarrow> map (\
   done
 
 definition
-  "dioph_succs n ks m \<equiv> filtermap (\<lambda>xs.
+  "dioph_succs n ks m \<equiv> List.map_filter (\<lambda>xs.
      if eval_dioph ks xs mod 2 = m mod 2
      then Some ((m - eval_dioph ks xs) div 2)
      else None) (mk_nat_vecs n)"
@@ -3699,7 +3692,7 @@ next
 next
   case goal3
   then show ?case
-    apply (simp add: dioph_succs_def filtermap_conv list_all_iff dioph_is_node_def)
+    apply (simp add: dioph_succs_def map_filter_def list_all_iff dioph_is_node_def)
     apply (rule allI impI)+
     apply (erule subst [OF mk_nat_vecs_mod_eq])
     apply (drule dioph_rhs_invariant)
@@ -3994,7 +3987,7 @@ next
     moreover have "(l, (m - eval_dioph ks (map nat_of_bool bs)) div 2) \<in> (succsr (dioph_succs n ks))\<^sup>*"
       apply (rule rtrancl_into_rtrancl)
       apply (rule Cons)
-      apply (simp add: dioph_succs_def succsr_def filtermap_conv)
+      apply (simp add: dioph_succs_def succsr_def map_filter_def)
       apply (rule image_eqI [of _ _ "map nat_of_bool bs"])
       using Cons
       apply (simp_all add: True nat_of_bool_mk_nat_vecs is_alph_def)
@@ -4048,13 +4041,13 @@ proof -
       by (simp add: dioph_dfs.dfs_eq_rtrancl dioph_dfs_def)
     then have "(l, (x - eval_dioph ks ys) div 2) \<in> (succsr (dioph_succs n ks))\<^sup>*"
       apply (rule rtrancl_into_rtrancl)
-      apply (simp add: succsr_def dioph_succs_def filtermap_conv)
+      apply (simp add: succsr_def dioph_succs_def map_filter_def)
       apply (rule image_eqI [of _ _ ys])
       apply (simp_all add: ys ys')
       done
     moreover from dioph_dfs.succs_is_node [OF k', of n] ys ys'
     have x': "dioph_is_node ks l ((x - eval_dioph ks ys) div 2)"
-      by (auto simp add: dioph_succs_def filtermap_conv list_all_iff)
+      by (auto simp add: dioph_succs_def map_filter_def list_all_iff)
     ultimately have "dioph_memb ((x - eval_dioph ks ys) div 2) (dioph_dfs n ks l)"
       by (simp add: dioph_dfs.dfs_eq_rtrancl dioph_dfs_def ll)
     then obtain k' where k': "fst (dioph_dfs n ks l) !
@@ -4097,7 +4090,7 @@ next
 next
   case goal3
   then show ?case
-    apply (simp add: dioph_ineq_succs_def filtermap_conv list_all_iff dioph_is_node_def)
+    apply (simp add: dioph_ineq_succs_def map_filter_def list_all_iff dioph_is_node_def)
     apply (rule ballI)
     apply (erule subst [OF mk_nat_vecs_mod_eq])
     apply (drule dioph_rhs_invariant)

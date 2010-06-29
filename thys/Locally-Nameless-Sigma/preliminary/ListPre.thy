@@ -1,5 +1,4 @@
 (*  Title:      ListPre.thy
-    ID:         $Id: ListPre.thy,v 1.1 2009/11/12 11:55:49 flokam Exp $
     Author:     Ludovic Henrio and Florian Kammuller
                 2006
 
@@ -8,7 +7,9 @@
 
 header {* List features *}
 
-theory ListPre imports Main begin
+theory ListPre
+imports Main
+begin
 
 lemma drop_lem[rule_format]: 
   fixes n :: nat and l :: "'a list" and g :: "'a list"
@@ -22,11 +23,8 @@ proof -
   thus ?thesis by simp
 qed
 
-lemma nth_mem' [simp]: "n < length xs \<Longrightarrow> xs!n mem xs"
-  by (auto simp add: set_conv_nth mem_iff)
-
-lemma mem_append_lem': "x mem (l @ [y]) \<Longrightarrow> x mem l \<or> x = y"
-  by (induct l, auto)
+lemma mem_append_lem': "x \<in> set (l @ [y]) \<Longrightarrow> x \<in> set l \<or> x = y"
+  by auto
 
 lemma nth_last: "length l = n \<Longrightarrow> (l @ [x])!n = x"
   by auto

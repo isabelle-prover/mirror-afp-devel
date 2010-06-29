@@ -1,6 +1,6 @@
 (*  Title:       Executable Matrix Operations on Matrices of Arbitrary Dimensions
     Author:      Christian Sternagel <christian.sternagel@uibk.ac.at>
-                 Ren√\<copyright> Thiemann       <rene.thiemann@uibk.ac.at>
+                 Rene Thiemann       <rene.thiemann@uibk.ac.at>
     Maintainer:  Christian Sternagel and Ren√\<copyright> Thiemann
 *)
 

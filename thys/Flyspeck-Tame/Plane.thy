@@ -16,7 +16,7 @@ declare maxGon_def [simp]
 
 definition duplicateEdge :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> bool" where
  "duplicateEdge g f a b \<equiv> 
-  2 \<le> directedLength f a b \<and> 2 \<le> directedLength f b a \<and> b mem (neighbors g a)"
+  2 \<le> directedLength f a b \<and> 2 \<le> directedLength f b a \<and> b \<in> set (neighbors g a)"
 
 consts containsUnacceptableEdgeSnd :: 
       "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool"

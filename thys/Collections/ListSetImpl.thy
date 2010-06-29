@@ -21,9 +21,9 @@ subsection "Definitions"
 definition ls_\<alpha> :: "'a ls \<Rightarrow> 'a set" where "ls_\<alpha> == set"
 definition ls_invar :: "'a ls \<Rightarrow> bool" where "ls_invar == distinct"
 definition ls_empty :: "'a ls" where "ls_empty == []"
-definition ls_memb :: "'a \<Rightarrow> 'a ls \<Rightarrow> bool" where "ls_memb == op mem"
-definition ls_ins :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_ins x l == if x mem l then l else x#l"
-definition ls_ins_dj :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_ins_dj x l == x#l"
+definition ls_memb :: "'a \<Rightarrow> 'a ls \<Rightarrow> bool" where "ls_memb == (\<lambda> x xs. List.member xs x)"
+definition ls_ins :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_ins == List.insert"
+definition ls_ins_dj :: "'a \<Rightarrow> 'a ls \<Rightarrow> 'a ls" where "ls_ins_dj == Cons"
 
 (* Tail recursive version *)
 fun ls_delete_aux where
@@ -98,12 +98,12 @@ lemma ls_empty_impl: "set_empty ls_\<alpha> ls_invar ls_empty"
 
 lemma ls_memb_impl: "set_memb ls_\<alpha> ls_invar ls_memb"
   apply (unfold_locales)                                     
-  apply (auto simp add: ls_defs mem_iff)                             
+  apply (auto simp add: ls_defs member_def)
   done                                                       
 
 lemma ls_ins_impl: "set_ins ls_\<alpha> ls_invar ls_ins"
   apply (unfold_locales)                                  
-  apply (auto simp add: ls_defs mem_iff)                          
+  apply (auto simp add: ls_defs member_def)
   done                                                    
 
 lemma ls_ins_dj_impl: "set_ins_dj ls_\<alpha> ls_invar ls_ins_dj"

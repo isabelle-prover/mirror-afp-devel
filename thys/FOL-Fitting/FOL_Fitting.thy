@@ -1,5 +1,4 @@
-(*  ID:         $Id: FOL_Fitting.thy,v 1.8 2009-03-10 10:26:14 fhaftmann Exp $
-    Author:     Stefan Berghofer, TU Muenchen, 2003
+(*  Author:     Stefan Berghofer, TU Muenchen, 2003
 *)
 
 theory FOL_Fitting
@@ -404,7 +403,7 @@ The derivability judgement @{text "G \<turnstile> a"} is defined as an inductive
 inductive
   deriv :: "('a, 'b) form list \<Rightarrow> ('a, 'b) form \<Rightarrow> bool" ("_ \<turnstile> _" [50,50] 50)
 where
-  Assum: "a mem G \<Longrightarrow> G \<turnstile> a"
+  Assum: "a \<in> set G \<Longrightarrow> G \<turnstile> a"
 | TTI: "G \<turnstile> TT"
 | FFE: "G \<turnstile> FF \<Longrightarrow> G \<turnstile> a"
 | NegI: "a # G \<turnstile> FF \<Longrightarrow> G \<turnstile> Neg a"
@@ -546,7 +545,7 @@ theorem correctness: "G \<turnstile> p \<Longrightarrow> \<forall>e f g. e,f,g,G
   apply (unfold model_def)
   apply (erule deriv.induct)
   apply (rule allI impI)+
-  apply (simp add: list_all_iff mem_iff)
+  apply (simp add: list_all_iff)
   apply simp_all
   apply blast+
   apply (rule allI impI)+
@@ -2048,20 +2047,20 @@ theorem deriv_consistency:
   apply (rule FFE)
   apply (rule_tac a="Pred p ts" in NegE)
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply (rule conjI notI)+
   apply (erule notE)
   apply (rule FFE)
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply (rule conjI notI)+
   apply (erule notE)
   apply (rule FFE)
   apply (rule_tac a="TT" in NegE)
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply (rule TTI)
   apply (rule conjI allI impI)+
   apply (rule_tac x="Z # G" in exI)
@@ -2072,7 +2071,7 @@ theorem deriv_consistency:
   apply (rule Class)
   apply (rule_tac a="Neg Z" in NegE)
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply (rule Assum)
   apply simp
   apply (rule allI impI conjI)+
@@ -2083,10 +2082,10 @@ theorem deriv_consistency:
   apply (erule cut' [OF cut'])
   apply (rule_tac b=B in AndE1)
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply (rule_tac a=A in AndE2)
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply (rule allI impI conjI)+
   apply (rule_tac x="Neg A # Neg B # G" in exI)
   apply simp
@@ -2096,14 +2095,14 @@ theorem deriv_consistency:
   apply (rule NegI)
   apply (rule_tac a="Or A B" in NegE)
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply (rule OrI1)
   apply (rule Assum)
   apply simp
   apply (rule NegI)
   apply (rule_tac a="Or A B" in NegE)
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply (rule OrI2)
   apply (rule Assum)
   apply simp
@@ -2113,7 +2112,7 @@ theorem deriv_consistency:
   apply (erule conjE notE)+
   apply (rule_tac a=A and b=B in OrE)
   apply (rule Assum)
-  apply (simp add: mem_iff)
+  apply simp
   apply simp
   apply simp
   apply (rule allI impI conjI)+
@@ -2132,7 +2131,7 @@ theorem deriv_consistency:
   apply (rule OrI2)
   apply (rule NegI)
   apply (rule_tac a="And A B" in NegE)
-  apply (rule Assum, simp add: mem_iff)
+  apply (rule Assum, simp)
   apply (rule AndI)
   apply (rule Assum, simp)
   apply (rule Assum, simp)
@@ -2151,7 +2150,7 @@ theorem deriv_consistency:
   apply (rule Assum, simp)
   apply (rule OrI2)
   apply (rule_tac a=A in ImplE)
-  apply (rule Assum, simp add: mem_iff)
+  apply (rule Assum, simp)
   apply (rule Assum, simp)
   apply (rule allI impI conjI)+
   apply (rule_tac x="A # Neg B # G" in exI)
@@ -2161,7 +2160,7 @@ theorem deriv_consistency:
   apply (erule cut' [OF cut'])
   apply (rule Class)
   apply (rule_tac a="Impl A B" in NegE)
-  apply (rule Assum, simp add: mem_iff)
+  apply (rule Assum, simp)
   apply (rule ImplI)
   apply (rule FFE)
   apply (rule_tac a=A in NegE)
@@ -2169,7 +2168,7 @@ theorem deriv_consistency:
   apply (rule Assum, simp)
   apply (rule NegI)
   apply (rule_tac a="Impl A B" in NegE)
-  apply (rule Assum, simp add: mem_iff)
+  apply (rule Assum, simp)
   apply (rule ImplI)
   apply (rule Assum, simp)
   apply (rule allI impI conjI)+
@@ -2179,7 +2178,7 @@ theorem deriv_consistency:
   apply (erule notE)
   apply (erule cut')
   apply (rule ForallE)
-  apply (rule Assum, simp add: mem_iff)
+  apply (rule Assum, simp)
   apply (rule allI impI conjI)+
   apply (rule_tac x="Neg (subst P t 0) # G" in exI)
   apply simp
@@ -2188,7 +2187,7 @@ theorem deriv_consistency:
   apply (erule cut')
   apply (rule NegI)
   apply (rule_tac a="Exists P" in NegE)
-  apply (rule Assum, simp add: mem_iff)
+  apply (rule Assum, simp)
   apply (rule_tac t=t in ExistsI)
   apply (rule Assum, simp)
   apply (rule allI impI conjI)+
@@ -2201,7 +2200,7 @@ theorem deriv_consistency:
   apply (rule notI)
   apply (erule notE)
   apply (rule_tac a=P in ExistsE)
-  apply (rule Assum, simp add: mem_iff)
+  apply (rule Assum, simp)
   apply assumption
   apply (simp add: list_all_iff)
   apply simp
@@ -2223,7 +2222,7 @@ theorem deriv_consistency:
   apply (rule_tac a="Neg P" and n=x in ExistsE)
   apply (rule Class)
   apply (rule_tac a="Forall P" in NegE)
-  apply (rule Assum, simp add: mem_iff)
+  apply (rule Assum, simp)
   apply (rule_tac n=x in ForallI)
   apply (rule Class)
   apply (rule_tac a="Exists (Neg P)" in NegE)

@@ -1,5 +1,4 @@
 (*  Title:      HOL/MicroJava/BV/LBVComplete.thy
-    ID:         $Id: LBVComplete.thy,v 1.10 2008-12-30 15:30:13 ballarin Exp $
     Author:     Gerwin Klein
     Copyright   2000 Technische Universitaet Muenchen
 *)
@@ -10,20 +9,17 @@ theory LBVComplete
 imports LBVSpec Typing_Framework
 begin
 
-constdefs
-  is_target :: "['s step_type, 's list, nat] \<Rightarrow> bool" 
-  "is_target step \<tau>s pc' \<equiv>
-     \<exists>pc s'. pc' \<noteq> pc+1 \<and> pc < size \<tau>s \<and> (pc',s') \<in> set (step pc (\<tau>s!pc))"
+definition is_target :: "'s step_type \<Rightarrow> 's list \<Rightarrow> nat \<Rightarrow> bool" where
+  "is_target step \<tau>s pc' \<longleftrightarrow> (\<exists>pc s'. pc' \<noteq> pc+1 \<and> pc < size \<tau>s \<and> (pc',s') \<in> set (step pc (\<tau>s!pc)))"
 
-  make_cert :: "['s step_type, 's list, 's] \<Rightarrow> 's certificate"
-  "make_cert step \<tau>s B \<equiv> 
-     map (\<lambda>pc. if is_target step \<tau>s pc then \<tau>s!pc else B) [0..<size \<tau>s] @ [B]"
+definition make_cert :: "'s step_type \<Rightarrow> 's list \<Rightarrow> 's \<Rightarrow> 's certificate" where
+  "make_cert step \<tau>s B = map (\<lambda>pc. if is_target step \<tau>s pc then \<tau>s!pc else B) [0..<size \<tau>s] @ [B]"
 
 lemma [code]:
   "is_target step \<tau>s pc' =
-  list_ex (\<lambda>pc. pc' \<noteq> pc+1 \<and> pc' mem (map fst (step pc (\<tau>s!pc)))) [0..<size \<tau>s]"
+  list_ex (\<lambda>pc. pc' \<noteq> pc+1 \<and> List.member (map fst (step pc (\<tau>s!pc))) pc') [0..<size \<tau>s]"
 (*<*)
-  apply (simp add: list_ex_iff is_target_def mem_iff)
+  apply (simp add: list_ex_iff is_target_def member_def)
   apply force
   done
 (*>*)
