@@ -402,6 +402,19 @@ date = 2010-06-14
 author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
 abstract = We present an Isabelle formalization of abstract rewriting (see, e.g., the book by Baader and Nipkow). First, we define standard relations like <i>joinability</i>, <i>meetability</i>, <i>conversion</i>, etc. Then, we formalize important properties of abstract rewrite systems, e.g., confluence and strong normalization. Our main concern is on strong normalization, since this formalization is the basis of <a href="http://cl-informatik.uibk.ac.at/software/ceta">CeTA</a> (which is mainly about strong normalization of term rewrite systems). Hence lemmas involving strong normalization constitute by far the biggest part of this theory. One of those is Newman's lemma.
 
+[Free-Groups]
+title = Free Groups
+author = Joachim Breitner <mailto:mail@joachim-breitner.de>
+date = 2010-06-24
+topic = Mathematics/Algebra
+abstract =
+ Free Groups are, in a sense, the most generic kind of group. They
+ are defined over a set of generators with no additional relations in between
+ them. They play an important role in the definition of group presentations
+ and in other fields. This theory provides the definition of Free Group as
+ the set of fully canceled words in the generators. The universal property is
+ proven, as well as some isomorphisms results about Free Groups.
+
 [CofGroups]
 title = An Example of a Cofinitary Group in Isabelle/HOL
 author = Bart Kastermans <http://www.bartk.nl/>
