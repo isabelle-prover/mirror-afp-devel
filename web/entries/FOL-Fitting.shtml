@@ -42,11 +42,8 @@ to
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-We present a formalization of parts of Melvin Fitting's book ``First-Order Logic
-and Automated Theorem Proving''. The formalization covers the syntax of first-
-order logic, its semantics, the model existence theorem, a natural deduction
-proof calculus together with a proof of correctness and completeness, as well as
-the L&ouml;wenheim-Skolem theorem.
+
+We present a formalization of parts of Melvin Fitting's book ``First-Order Logic and Automated Theorem Proving''. The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the L&ouml;wenheim-Skolem theorem.
         </td></tr>
 
 

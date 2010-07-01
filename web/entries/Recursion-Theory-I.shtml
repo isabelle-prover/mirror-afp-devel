@@ -40,11 +40,8 @@
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-This document presents the formalization of introductory material from
-recursion theory --- definitions and basic properties of primitive recursive
-functions, Cantor pairing function and computably enumerable sets  (including a
-proof of existence of a one-complete computably enumerable set  and a proof of
-the Rice's theorem).
+
+This document presents the formalization of introductory material from  recursion theory --- definitions and basic properties of primitive recursive  functions, Cantor pairing function and computably enumerable sets  (including a proof of existence of a one-complete computably enumerable set  and a proof of the Rice's theorem).
         </td></tr>
 
 

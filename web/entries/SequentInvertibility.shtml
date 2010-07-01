@@ -41,12 +41,8 @@ in
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-The invertibility of the rules of a sequent calculus is important for guiding
-proof search and can be used in some formalised proofs of Cut admissibility. We
-present sufficient conditions for when a rule is invertible with respect to a
-calculus. We illustrate the conditions with examples. It must be noted we give
-purely syntactic criteria; no guarantees are given as to the suitability of the
-rules.
+
+The invertibility of the rules of a sequent calculus is important for guiding proof search and can be used in some formalised proofs of Cut admissibility. We present sufficient conditions for when a rule is invertible with respect to a calculus. We illustrate the conditions with examples. It must be noted we give purely syntactic criteria; no guarantees are given as to the suitability of the rules.
         </td></tr>
 
 

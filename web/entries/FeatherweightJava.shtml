@@ -44,9 +44,8 @@ in
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-We formalize the type system, small-step operational semantics, and type
-soundness proof for Featherweight Java, a simple object calculus, in
-Isabelle/HOL.
+
+We formalize the type system, small-step operational semantics, and type soundness proof for Featherweight Java, a simple object calculus, in Isabelle/HOL.
         </td></tr>
 
 

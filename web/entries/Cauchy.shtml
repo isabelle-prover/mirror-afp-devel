@@ -44,9 +44,8 @@ the
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-This document presents the mechanised proofs of two popular theorems attributed
-to Augustin Louis Cauchy - Cauchy's Mean Theorem and the Cauchy-Schwarz
-Inequality.
+
+This document presents the mechanised proofs of two popular theorems attributed to Augustin Louis Cauchy - Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality.
         </td></tr>
 
 

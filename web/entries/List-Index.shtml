@@ -39,8 +39,8 @@
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-This theory provides functions for finding the index of an element in a list, by
-predicate and by value.
+
+This theory provides functions for finding the index of an element in a list, by predicate and by value.
         </td></tr>
 
 

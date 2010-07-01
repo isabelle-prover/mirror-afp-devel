@@ -619,8 +619,7 @@ def generate_index(entries):
 
 def format_entry_text(title, text):
 	return html_entry_text_wrapper.format(
-		title,
-		"\n".join(textwrap.wrap(text, 80))
+		title, "\n" + text
 	)
 
 # HTML formatting for entry page

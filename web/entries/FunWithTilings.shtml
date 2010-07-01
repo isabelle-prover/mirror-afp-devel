@@ -40,9 +40,8 @@
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-Tilings are defined inductively. It is shown that one form of mutilated chess
-board cannot be tiled with dominoes, while another one can be tiled with
-L-shaped tiles. Please add further fun examples of this kind!
+
+Tilings are defined inductively. It is shown that one form of mutilated chess board cannot be tiled with dominoes, while another one can be tiled with L-shaped tiles. Please add further fun examples of this kind!
         </td></tr>
 
 

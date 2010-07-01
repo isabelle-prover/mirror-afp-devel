@@ -42,9 +42,8 @@ and
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-This document presents the formalization of an object-oriented data and store
-model in Isabelle/HOL. This model is being used in the Java Interactive
-Verification Environment, Jive.
+
+This document presents the formalization of an object-oriented data and store model in Isabelle/HOL. This model is being used in the Java Interactive Verification Environment, Jive.
         </td></tr>
 
 

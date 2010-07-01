@@ -40,10 +40,8 @@
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-Depth-first search of a graph is formalized with recdef. It is shown that it
-visits all of the reachable nodes from a given list of nodes. Executable ML code
-of depth-first search is obtained using the code generation feature of
-Isabelle/HOL.
+
+Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL.
         </td></tr>
 
 

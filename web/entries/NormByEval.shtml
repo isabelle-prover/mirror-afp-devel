@@ -40,10 +40,8 @@ by
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-This article formalizes normalization by evaluation as implemented in Isabelle.
-Lambda calculus plus term rewriting is compiled into a functional program with
-pattern matching. It is proved that the result of a successful evaluation is a)
-correct, i.e. equivalent to the input, and b) in normal form.
+
+This article formalizes normalization by evaluation as implemented in Isabelle. Lambda calculus plus term rewriting is compiled into a functional program with pattern matching. It is proved that the result of a successful evaluation is a) correct, i.e. equivalent to the input, and b) in normal form.
         </td></tr>
 
 

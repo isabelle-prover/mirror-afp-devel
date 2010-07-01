@@ -45,16 +45,8 @@ of
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-We provide the operations of matrix addition, multiplication, transposition, and
-matrix comparisons as executable functions over ordered semirings. Moreover, it
-is proven that strongly normalizing (monotone) orders can be lifted to strongly
-normalizing (monotone) orders over matrices. We further show that the standard
-semirings over the naturals, integers, and rationals, as well as the arctic
-semirings satisfy the axioms that are required by our matrix theory. Our
-formalization is part of the <a href="http://cl-
-informatik.uibk.ac.at/software/ceta">CeTA</a> system which contains several
-termination techniques. The provided theories have been essential to formalize
-matrix-interpretations and arctic interpretations.
+
+We provide the operations of matrix addition, multiplication, transposition, and matrix comparisons as executable functions over ordered semirings. Moreover, it is proven that strongly normalizing (monotone) orders can be lifted to strongly normalizing (monotone) orders over matrices. We further show that the standard semirings over the naturals, integers, and rationals, as well as the arctic semirings satisfy the axioms that are required by our matrix theory. Our formalization is part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">CeTA</a> system which contains several termination techniques. The provided theories have been essential to formalize matrix-interpretations and arctic interpretations.
         </td></tr>
 
 

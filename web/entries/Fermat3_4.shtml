@@ -51,9 +51,8 @@ of
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-This document presents the mechanised proofs of<ul><li>Fermat's Last Theorem for
-exponents 3 and 4 and</li><li>the parametrisation of Pythagorean
-Triples.</li></ul>
+
+This document presents the mechanised proofs of<ul><li>Fermat's Last Theorem for exponents 3 and 4 and</li><li>the parametrisation of Pythagorean Triples.</li></ul>
         </td></tr>
 
 

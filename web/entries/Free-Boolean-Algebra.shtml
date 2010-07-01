@@ -40,12 +40,8 @@
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
-This theory defines a type constructor representing the free Boolean algebra
-over a set of generators. Values of type (&alpha;)<i>formula</i> represent
-propositional formulas with uninterpreted variables from type &alpha;, ordered
-by implication. In addition to all the standard Boolean algebra operations, the
-library also provides a function for building homomorphisms to any other Boolean
-algebra type.
+
+This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (&alpha;)<i>formula</i> represent propositional formulas with uninterpreted variables from type &alpha;, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
         </td></tr>
 
 
