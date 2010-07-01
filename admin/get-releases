@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -n "$SF_LOGIN" ]; then
+    LN=$SF_LOGIN
+else
+    LN=$LOGNAME
+fi
+
+TMP=/tmp/releases
+
+ssh $LN,afp@shell.sourceforge.net "ls /home/groups/a/af/afp/htdocs/release" > $TMP
+cat $TMP | grep -v "current\\.tar\\.gz\\|devel\\.tar\\.gz\\|entry-status\\.txt\\|afp-....-..-..\\.tar\\.gz" 
