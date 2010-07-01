@@ -34,7 +34,7 @@ step is really important):
 
    The section header and the keys must not contain leading whitespaces.
    When continuing a value on a second line, this and the following lines must
-   be preceded by a whitespace.
+   be preceded by a whitespace. The date is the submission date of the entry.
 
    If you've chosen multiple topics, you can comma-separate them.
    The key 'base' can be omitted if you simply use HOL (which is the
