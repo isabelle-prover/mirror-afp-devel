@@ -1,7 +1,22 @@
 syntax: glob
+
 thys/Collections/generated
 thys/Huffman/generated
+
 thys/Tree-Automata/code/haskell/generated/Nat.hs
 thys/Tree-Automata/code/haskell/generated/Ta.hs
 thys/Tree-Automata/code/ml/generated/Ta.ML
 thys/Tree-Automata/code/ocaml/generated/Ta.ml
+
+thys/BinarySearchTree/BinaryTree_Code.ML
+thys/BinarySearchTree/BinaryTree_TacticStyle_Code.ML
+
+thys/ClockSynchInst/document/abs_distrib_mult.cvc
+thys/ClockSynchInst/document/abs_distrib_mult.ics
+thys/ClockSynchInst/document/abs_distrib_mult2.cvc
+thys/ClockSynchInst/document/accur_pres.cvc
+thys/ClockSynchInst/document/accur_pres.ics
+thys/ClockSynchInst/document/bound_prec_enh.cvc
+thys/ClockSynchInst/document/bound_prec_enh.ics
+thys/ClockSynchInst/document/bound_prec_enh4.cvc
+thys/ClockSynchInst/document/bound_prec_enh7.cvc

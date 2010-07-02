@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,46 +22,44 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Lazy Lists II</h1>
-							<p> </p>
-							<table width="80%" class="data">
-								<tbody>
-									<tr>
-										<td class="datahead" width="20%">Title:</td>
-										<td class="data" width="80%"><!-- Title: -->Lazy Lists II</td>
-									</tr>
-									<tr>
-										<td class="datahead">Author:</td>
-										<td class="data"><!-- Author: --><a href="http://www.informatik.uni-freiburg.de/%7efriedric/">Stefan Friedrich</a></td>
-									</tr>
-									<tr>
-										<td class="datahead">Submission date:</td>
-										<td class="data"><!-- Submission date: -->2004-04-26</td>
-									</tr>
-									<tr>
-										<td class="datahead" valign="top">Abstract:</td>
-<td class="abstract"><!-- Abstract: -->This theory contains some useful
-extensions to the LList (lazy list) theory by <a
-href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including
-finite, infinite, and positive llists over an alphabet, as well as the new
-constants take and drop and the prefix order of llists. Finally, the
-notions of safety and liveness in the sense of Alpern and Schneider (1985)
-are defined.</td>
-									</tr>
+<h1><font class="first">L</font>azy
+<font class="first">L</font>ists
+<font class="first">I</font>I
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Lazy Lists II</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Stefan Friedrich</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2004-04-26</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-								</tbody>
-							</table>
-							<p> </p>
-							<!-- entry directory name: -->
-<!--#set var="name" value="Lazy-Lists-II" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Lazy-Lists-II" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -84,18 +81,21 @@ are defined.</td>
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-    <ul>
-    <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
-    <li>Isabelle 2007: <a href="../release/afp-Lazy-Lists-II-2007-11-27.tar.gz">afp-Lazy-Lists-II-2007-11-27.tar.gz</a></li>
-    <li>Isabelle 2005: <a href="../release/afp-Lazy-Lists-II-2005-10-14.tar.gz">afp-Lazy-Lists-II-2005-10-14.tar.gz</a></li>
-    <li>Isabelle 2004: <a href="../release/afp-Lazy-Lists-II-2004-05-21.tar.gz">afp-Lazy-Lists-II-2004-05-21.tar.gz</a></li>
-    </ul>
-    </td></tr>
+<ul>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2009-12-12.tar.gz">afp-<!--#echo var="name" -->-2009-12-12.tar.gz</a></li>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2007-11-27.tar.gz">afp-<!--#echo var="name" -->-2007-11-27.tar.gz</a></li>
+<li>Isabelle 2005: <a href="../release/afp-<!--#echo var="name" -->-2005-10-14.tar.gz">afp-<!--#echo var="name" -->-2005-10-14.tar.gz</a></li>
+<li>Isabelle 2004: <a href="../release/afp-<!--#echo var="name" -->-2004-05-21.tar.gz">afp-<!--#echo var="name" -->-2004-05-21.tar.gz</a></li>
+<li>Isabelle 2004: <a href="../release/afp-<!--#echo var="name" -->-2004-04-27.tar.gz">afp-<!--#echo var="name" -->-2004-04-27.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

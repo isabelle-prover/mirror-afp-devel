@@ -1,0 +1,562 @@
+[Regular-Sets]
+title = Regular Sets and Expressions
+author = Alexander Krauss <http://www.in.tum.de/~krauss>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+topic = Computer Science/Automata and Formal Languages
+date = 2010-05-12
+abstract = This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i>
+
+[Presburger-Automata]
+title = Formalizing the Logic-Automaton Connection
+author = Stefan Berghofer <http://www.in.tum.de/~berghofe>, Markus Reiter
+date = 2009-12-03
+topic = Computer Science/Automata and Formal Languages, Logic
+abstract = This work presents a formalization of a library for automata on bit strings. It forms the basis of a reflection-based decision procedure for Presburger arithmetic, which is efficiently executable thanks to Isabelle's code generator. With this work, we therefore provide a mechanized proof of a well-known connection between logic and automata theory. The formalization is also described in a publication [TPHOLs 2009].
+
+[Functional-Automata]
+title = Functional Automata
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2004-03-30
+topic = Computer Science/Automata and Formal Languages
+abstract = This theory defines deterministic and nondeterministic automata in a functional representation: the transition function/relation and the finality predicate are just functions. Hence the state space may be infinite. It is shown how to convert regular expressions into such automata. A scanner (generator) is implemented with the help of functional automata: the scanner chops the input up into longest recognized substrings. Finally we also show how to convert a certain subclass of functional automata (essentially the finite deterministic ones) into regular sets.
+
+[Tree-Automata]
+title = Tree Automata
+author = Peter Lammich <mailto:peter.lammich@uni-muenster.de>
+date = 2009-11-25
+topic = Computer Science/Automata and Formal Languages
+abstract = This work presents a machine-checked tree automata library for Standard-ML, OCaml and Haskell. The algorithms are efficient by using appropriate data structures like RB-trees. The available algorithms for non-deterministic automata include membership query, reduction, intersection, union, and emptiness check with computation of a witness for non-emptiness. The executable algorithms are derived from less-concrete, non-executable algorithms using data-refinement techniques. The concrete data structures are from the Isabelle Collections Framework. Moreover, this work contains a formalization of the class of tree-regular languages and its closure properties under set operations.
+
+[DPT-SAT-Solver]
+title = A Fast SAT Solver for Isabelle in Standard ML
+topic = Computer Science/Algorithms
+author = Armin Heller
+date = 2009-12-09
+abstract = This contribution contains a fast SAT solver for Isabelle written in Standard ML. By loading the theory <tt>DPT_SAT_Solver</tt>, the SAT solver installs itself (under the name ``dptsat'') and certain Isabelle tools like Refute will start using it automatically. This is a port of the DPT (Decision Procedure Toolkit) SAT Solver written in OCaml. 
+
+[Depth-First-Search]
+title = Depth First Search
+author = Toshiaki Nishihara, Yasuhiko Minamide <http://www.score.is.tsukuba.ac.jp/~minamide/>
+date = 2004-06-24
+topic = Computer Science/Algorithms
+abstract = Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL.
+
+[FFT]
+title = Fast Fourier Transform 
+author = Clemens Ballarin <http://www4.in.tum.de/~ballarin/>
+date = 2005-10-12
+topic = Computer Science/Algorithms
+abstract = We formalise a functional implementation of the FFT algorithm over the complex numbers, and its inverse. Both are shown equivalent to the usual definitions of these operations through Vandermonde matrices. They are also shown to be inverse to each other, more precisely, that composition of the inverse and the transformation yield the identity up to a scalar.
+
+[GraphMarkingIBP]
+title = Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement
+author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <http://users.abo.fi/Ralph-Johan.Back/>
+date = 2010-05-28
+topic = Computer Science/Algorithms
+abstract = The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as a benchmark in many formalizations of pointer programs. The main purpose of this mechanization is to show how data refinement of invariant based programs can be used in verifying practical algorithms. The verification starts with an abstract algorithm working on a graph given by a relation <i>next</i> on nodes. Gradually the abstract program is refined into Deutsch-Schorr-Waite graph marking algorithm where only one bit per graph node of additional memory is used for marking. 
+
+[SATSolverVerification]
+title = Formal Verification of Modern SAT Solvers 
+author = Filip Maric <http://www.matf.bg.ac.yu/~filip>
+date = 2008-07-23
+topic = Computer Science/Algorithms
+abstract = This document contains formal correctness proofs of modern SAT solvers. Following (Krstic et al, 2007) and (Nieuwenhuis et al., 2006), solvers are described using state-transition systems. Several different SAT solver descriptions are given and their partial correctness and termination is proved. These include: <ul> <li> a solver based on classical DPLL procedure (using only a backtrack-search with unit propagation),</li> <li> a very general solver with backjumping and learning (similar to the description given in (Nieuwenhuis et al., 2006)), and</li> <li> a solver with a specific conflict analysis algorithm (similar to the description given in (Krstic et al., 2007)).</li> </ul> Within the SAT solver correctness proofs, a large number of lemmas about propositional logic and CNF formulae are proved. This theory is self-contained and could be used for further exploring of properties of CNF based SAT algorithms.
+
+[MuchAdoAboutTwo]
+title = Much Ado About Two 
+author = Sascha B&ouml;hme <http://www4.in.tum.de/~boehmes/>
+date = 2007-11-06
+topic = Computer Science/Algorithms
+abstract = This article is an Isabelle formalisation of a paper with the same title. In a similar way as Knuth's 0-1-principle for sorting algorithms, that paper develops a 0-1-2-principle for parallel prefix computations.
+
+[DiskPaxos]
+title = Proving the Correctness of Disk Paxos
+date = 2005-06-22
+author = Mauro Jaskelioff <http://www.fceia.unr.edu.ar/~mauro/>, Stephan Merz <http://www.loria.fr/~merz/>
+topic = Computer Science/Algorithms/Distributed
+abstract = Disk Paxos is an algorithm for building arbitrary fault-tolerant distributed systems. The specification of Disk Paxos has been proved correct informally and tested using the TLC model checker, but up to now, it has never been fully formally verified. In this work we have formally verified its correctness using the Isabelle theorem prover and the HOL logic system, showing that Isabelle is a practical tool for verifying properties of TLA+ specifications.
+
+[GenClock]
+title = Formalization of a Generalized Protocol for Clock Synchronization
+author = Alwen Tiu <http://www.loria.fr/~tiu/>
+date = 2005-06-24
+topic = Computer Science/Algorithms/Distributed
+abstract = We formalize the generalized Byzantine fault-tolerant clock synchronization protocol of Schneider. This protocol abstracts from particular algorithms or implementations for clock synchronization. This abstraction includes several assumptions on the behaviors of physical clocks and on general properties of concrete algorithms/implementations. Based on these assumptions the correctness of the protocol is proved by Schneider. His proof was later verified by Shankar using the theorem prover EHDM (precursor to PVS). Our formalization in Isabelle/HOL is based on Shankar's formalization.
+
+[ClockSynchInst]
+title = Instances of Schneider's generalized protocol of clock synchronization 
+author = Dami&aacute;n Barsotti <http://www.cs.famaf.unc.edu.ar/~damian/>
+date = 2006-03-15
+topic = Computer Science/Algorithms/Distributed
+abstract = F. B. Schneider ("Understanding protocols for Byzantine clock synchronization") generalizes a number of protocols for Byzantine fault-tolerant clock synchronization and presents a uniform proof for their correctness. In Schneider's schema, each processor maintains a local clock by periodically adjusting each value to one computed by a convergence function applied to the readings of all the clocks. Then, correctness of an algorithm, i.e. that the readings of two clocks at any time are within a fixed bound of each other, is based upon some conditions on the convergence function. To prove that a particular clock synchronization algorithm is correct it suffices to show that the convergence function used by the algorithm meets Schneider's conditions. Using the theorem prover Isabelle, we formalize the proofs that the convergence functions of two algorithms, namely, the Interactive Convergence Algorithm (ICA) of Lamport and Melliar-Smith and the Fault-tolerant Midpoint algorithm of Lundelius-Lynch, meet Schneider's conditions. Furthermore, we experiment on handling some parts of the proofs with fully automatic tools like ICS and CVC-lite. These theories are part of a joint work with Alwen Tiu and Leonor P. Nieto <a href="http://users.rsise.anu.edu.au/~tiu/clocksync.pdf">"Verification of Clock Synchronization Algorithms: Experiments on a combination of deductive tools"</a> in proceedings of AVOCS 2005. In this work the correctness of Schneider schema was also verified using Isabelle (entry <a href="GenClock.shtml">GenClock</a> in AFP). 
+
+[AVL-Trees]
+title = AVL Trees
+author = Tobias Nipkow <http://www4.in.tum.de/~nipkow/>, Cornelia Pusch 
+date = 2004-03-19
+topic = Computer Science/Data Structures
+abstract = Two formalizations of AVL trees with room for extensions. The first formalization is monolithic and shorter, the second one in two stages, longer and a bit simpler. The final implementation is the same. If you are interested in developing this further, please contact <tt>gerwin.klein@nicta.com.au</tt>.
+
+[BDD]
+title = BDD Normalisation
+author = Veronika Ortner, Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
+date = 2008-02-29
+topic = Computer Science/Data Structures
+abstract = We present the verification of the normalisation of a binary decision diagram (BDD). The normalisation follows the original algorithm presented by Bryant in 1986 and transforms an ordered BDD in a reduced, ordered and shared BDD. The verification is based on Hoare logics.
+
+[BinarySearchTree]
+title = Binary Search Trees
+author = Viktor Kuncak <http://www.mit.edu/people/vkuncak/>
+date = 2004-04-05
+topic = Computer Science/Data Structures
+abstract = The correctness is shown of binary search tree operations (lookup, insert and remove) implementing a set. Two versions are given, for both structured and linear (tactic-style) proofs. An implementation of integer-indexed maps is also verified.
+
+[FinFun]
+title = Code Generation for Functions as Data 
+author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
+date = 2009-05-06
+topic = Computer Science/Data Structures
+abstract = FinFuns are total functions that are constant except for a finite set of points, i.e. a generalisation of finite maps. They are formalised as a new type in Isabelle/HOL such that the code generator can handle equality tests and quantification on FinFuns. On the code output level, FinFuns are explicitly represented by constant functions and pointwise updates, similarly to associative lists. Inside the logic, they behave like ordinary functions with extensionality. Via the update/constant pattern, a recursion combinator and an induction rule for FinFuns allow for defining and reasoning about operators on FinFun that are also executable.
+
+[Collections]
+title = Collections Framework
+author = Peter Lammich <mailto:peter.lammich@uni-muenster.de>
+date = 2009-11-25
+topic = Computer Science/Data Structures
+abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
+
+[FileRefinement]
+title = File Refinement
+author = Karen Zee <http://www.mit.edu/~kkz/>, Viktor Kuncak <http://cag.csail.mit.edu/~vkuncak/>
+date = 2004-12-09
+topic = Computer Science/Data Structures
+abstract = These theories illustrates the verification of basic file operations (file creation, file read and file write) in the Isabelle theorem prover. We describe a file at two levels of abstraction: an abstract file represented as a resizable array, and a concrete file represented using data blocks. 
+
+[List-Index]
+title = List Index
+date = 2010-02-20
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
+topic = Computer Science/Data Structures
+abstract = This theory provides functions for finding the index of an element in a list, by predicate and by value.
+
+[Matrix]
+title = Executable Matrix Operations on Matrices of Arbitrary Dimensions
+topic = Computer Science/Data Structures
+date = 2010-06-17
+author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+abstract = We provide the operations of matrix addition, multiplication, transposition, and matrix comparisons as executable functions over ordered semirings. Moreover, it is proven that strongly normalizing (monotone) orders can be lifted to strongly normalizing (monotone) orders over matrices. We further show that the standard semirings over the naturals, integers, and rationals, as well as the arctic semirings satisfy the axioms that are required by our matrix theory. Our formalization is part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">CeTA</a> system which contains several termination techniques. The provided theories have been essential to formalize matrix-interpretations and arctic interpretations.
+
+[Huffman]
+title = The Textbook Proof of Huffman's Algorithm 
+author = Jasmin Christian Blanchette <http://www4.in.tum.de/~blanchet>
+date = 2008-10-15
+topic = Computer Science/Data Structures
+abstract = Huffman's algorithm is a procedure for constructing a binary tree with minimum weighted path length. This report presents a formal proof of the correctness of Huffman's algorithm written using Isabelle/HOL. Our proof closely follows the sketches found in standard algorithms textbooks, uncovering a few snags in the process. Another distinguishing feature of our formalization is the use of custom induction rules to help Isabelle's automatic tactics, leading to very short proofs for most of the lemmas.
+
+[Coinductive]
+title = Coinductive
+topic = Computer Science/Functional Programming
+author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
+date = 2010-02-12
+abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, and a library of operations on coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome. 
+
+[Stream-Fusion]
+title = Stream Fusion
+author = Brian Huffman <http://cs.pdx.edu/~brianh>
+topic = Computer Science/Functional Programming
+date = 2009-04-29
+base = HOLCF
+abstract = Stream Fusion is a system for removing intermediate list structures from Haskell programs; it consists of a Haskell library along with several compiler rewrite rules. (The library is available <a href="http://www.cse.unsw.edu.au/~dons/streams.html">online</a>.)<br><br>These theories contain a formalization of much of the Stream Fusion library in HOLCF. Lazy list and stream types are defined, along with coercions between the two types, as well as an equivalence relation for streams that generate the same list. List and stream versions of map, filter, foldr, enumFromTo, append, zipWith, and concatMap are defined, and the stream versions are shown to respect stream equivalence. 
+
+[CoreC++]
+title = CoreC++
+author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
+date = 2006-05-15
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = We present an operational semantics and type safety proof for multiple inheritance in C++. The semantics models the behavior of method calls, field accesses, and two forms of casts in C++ class hierarchies. For explanations see the OOPSLA 2006 paper by Wasserrab, Nipkow, Snelting and Tip.
+
+[FeatherweightJava]
+title = A Theory of Featherweight Java in Isabelle/HOL 
+author = J. Nathan Foster <http://www.cis.upenn.edu/~jnfoster>, Dimitrios Vytiniotis <http://www.cis.upenn.edu/~dimitriv>
+date = 2006-03-31
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = We formalize the type system, small-step operational semantics, and type soundness proof for Featherweight Java, a simple object calculus, in Isabelle/HOL.
+
+[Jinja]
+title = Jinja is not Java
+author = Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2005-06-01
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = We introduce Jinja, a Java-like programming language with a formal semantics designed to exhibit core features of the Java language architecture. Jinja is a compromise between realism of the language and tractability and clarity of the formal semantics. The following aspects are formalised: a big and a small step operational semantics for Jinja and a proof of their equivalence; a type system and a definite initialisation analysis; a type safety proof of the small step semantics; a virtual machine (JVM), its operational semantics and its type system; a type safety proof for the JVM; a bytecode verifier, i.e. data flow analyser for the JVM; a correctness proof of the bytecode verifier w.r.t. the type system; a compiler and a proof that it preserves semantics and well-typedness. The emphasis of this work is not on particular language features but on providing a unified model of the source language, the virtual machine and the compiler. The whole development has been carried out in the theorem prover Isabelle/HOL. 
+
+[JinjaThreads]
+title = Jinja with Threads
+author = Andreas Lochbihler <http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php>
+date = 2007-12-03
+base = HOL/HOL-Word
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. For explanations on the framework semantics and the source code instantiation, see the FOOL 2008 paper by A. Lochbihler.
+
+[Locally-Nameless-Sigma]
+title = Locally Nameless Sigma Calculus
+author = Ludovic Henrio <mailto:Ludovic.Henrio@sophia.inria.fr>, Florian Kamm&uuml;ller <mailto:flokam@cs.tu-berlin.de>, Bianca Lutz <mailto:sowilo@cs.tu-berlin.de>, Henry Sudhof <mailto:hsudhof@cs.tu-berlin.de>
+date = 2010-04-30
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = We present a Theory of Objects based on the original functional sigma-calculus by Abadi and Cardelli but with an additional parameter to methods. We prove confluence of the operational semantics following the outline of Nipkow's proof of confluence for the lambda-calculus reusing his theory Commutation, a generic diamond lemma reduction. We furthermore formalize a simple type system for our sigma-calculus including a proof of type safety. The entire development uses the concept of Locally Nameless representation for binders. We reuse an earlier proof of confluence for a simpler sigma-calculus based on de Bruijn indices and lists to represent objects.
+
+[POPLmark-deBruijn]
+title = POPLmark Challenge Via de Bruijn Indices 
+author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
+date = 2007-08-02
+topic = Computer Science/Programming Languages/Language Definitions
+abstract = We present a solution to the POPLmark challenge designed by Aydemir et al., which has as a goal the formalization of the meta-theory of System F<sub>&lt;:</sub>. The formalization is carried out in the theorem prover Isabelle/HOL using an encoding based on de Bruijn indices. We start with a relatively simple formalization covering only the basic features of System F<sub>&lt;:</sub>, and explain how it can be extended to also cover records and more advanced binding constructs. 
+
+[MiniML]
+title = Mini ML
+author = Wolfgang Naraschewski, Tobias Nipkow <http://www4.in.tum.de/~nipkow/>
+date = 2004-03-19
+topic = Computer Science/Programming Languages/Type Systems
+abstract = This theory defines the type inference rules and the type inference algorithm <i>W</i> for MiniML (simply-typed lambda terms with <tt>let</tt>) due to Milner. It proves the soundness and completeness of <i>W</i> w.r.t. the rules. 
+
+[Simpl]
+title = A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment
+author = Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
+date = 2008-02-29
+topic = Computer Science/Programming Languages/Language Definitions, Computer Science/Programming Languages/Logics
+abstract = We present the theory of Simpl, a sequential imperative programming language. We introduce its syntax, its semantics (big and small-step operational semantics) and Hoare logics for both partial as well as total correctness. We prove soundness and completeness of the Hoare logic. We integrate and automate the Hoare logic in Isabelle/HOL to obtain a practically usable verification environment for imperative programs. Simpl is independent of a concrete programming language but expressive enough to cover all common language features: mutually recursive procedures, abrupt termination and exceptions, runtime faults, local and global variables, pointers and heap, expressions with side effects, pointers to procedures, partial application and closures, dynamic method invocation and also unbounded nondeterminism.
+
+[VolpanoSmith]
+title = A Correctness Proof for the Volpano/Smith Security Typing System
+author = Gregor Snelting <http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php>, Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
+date = 2008-09-02
+topic = Computer Science/Programming Languages/Type Systems, Computer Science/Security
+abstract = The Volpano/Smith/Irvine security type systems requires that variables are annotated as high (secret) or low (public), and provides typing rules which guarantee that secret values cannot leak to public output ports. This property of a program is called confidentiality. For a simple while-language without threads, our proof shows that typeability in the Volpano/Smith system guarantees noninterference. Noninterference means that if two initial states for program execution are low-equivalent, then the final states are low-equivalent as well. This indeed implies that secret values cannot leak to public ports. The proof defines an abstract syntax and operational semantics for programs, formalizes noninterference, and then proceeds by rule induction on the operational semantics. The mathematically most intricate part is the treatment of implicit flows. Note that the Volpano/Smith system is not flow-sensitive and thus quite unprecise, resulting in false alarms. However, due to the correctness property, all potential breaks of confidentiality are discovered. 
+
+[Abstract-Hoare-Logics]
+title = Abstract Hoare Logics
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
+date = 2006-08-08
+topic = Computer Science/Programming Languages/Logics
+abstract = These therories describe Hoare logics for a number of imperative language constructs, from while-loops to mutually recursive procedures. Both partial and total correctness are treated. In particular a proof system for total correctness of recursive procedures in the presence of unbounded nondeterminism is presented.
+
+[BytecodeLogicJmlTypes]
+title = A Bytecode Logic for JML and Types
+author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
+date = 2008-12-12
+topic = Computer Science/Programming Languages/Logics
+abstract = This document contains the Isabelle/HOL sources underlying the paper <i>A bytecode logic for JML and types</i> by Beringer and Hofmann, updated to Isabelle 2008. We present a program logic for a subset of sequential Java bytecode that is suitable for representing both, features found in high-level specification language JML as well as interpretations of high-level type systems. To this end, we introduce a fine-grained collection of assertions, including strong invariants, local annotations and VDM-reminiscent partial-correctness specifications. Thanks to a goal-oriented structure and interpretation of judgements, verification may proceed without recourse to an additional control flow analysis. The suitability for interpreting intensional type systems is illustrated by the proof-carrying-code style encoding of a type system for a first-order functional language which guarantees a constant upper bound on the number of objects allocated throughout an execution, be the execution terminating or non-terminating. Like the published paper, the formal development is restricted to a comparatively small subset of the JVML, lacking (among other features) exceptions, arrays, virtual methods, and static fields. This shortcoming has been overcome meanwhile, as our paper has formed the basis of the Mobius base logic, a program logic for the full sequential fragment of the JVML. Indeed, the present formalisation formed the basis of a subsequent formalisation of the Mobius base logic in the proof assistant Coq, which includes a proof of soundness with respect to the Bicolano operational semantics by Pichardie. 
+
+[DataRefinementIBP]
+title = Semantics and Data Refinement of Invariant Based Programs
+author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <http://users.abo.fi/Ralph-Johan.Back/>
+date = 2010-05-28
+topic = Computer Science/Programming Languages/Logics
+abstract = The invariant based programming is a technique of constructing correct programs by first identifying the basic situations (pre- and post-conditions and invariants) that can occur during the execution of the program, and then defining the transitions and proving that they preserve the invariants. Data refinement is a technique of building correct programs working on concrete datatypes as refinements of more abstract programs. In the theories presented here we formalize the predicate transformer semantics for invariant based programs and their data refinement.
+
+[SIFPL]
+title = Secure information flow and program logics
+author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
+date = 2008-11-10
+topic = Computer Science/Programming Languages/Logics, Computer Science/Security
+abstract = We present interpretations of type systems for secure information flow in Hoare logic, complementing previous encodings in relational program logics. We first treat the imperative language IMP, extended by a simple procedure call mechanism. For this language we consider base-line non-interference in the style of Volpano et al. and the flow-sensitive type system by Hunt and Sands. In both cases, we show how typing derivations may be used to automatically generate proofs in the program logic that certify the absence of illicit flows. We then add instructions for object creation and manipulation, and derive appropriate proof rules for base-line non-interference. As a consequence of our work, standard verification technology may be used for verifying that a concrete program satisfies the non-interference property.<br><br>The present proof development represents an update of the formalisation underlying our paper [CSF 2007] and is intended to resolve any ambiguities that may be present in the paper. 
+
+[Compiling-Exceptions-Correctly]
+title = Compiling Exceptions Correctly
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2004-07-09
+topic = Computer Science/Programming Languages/Compiling
+abstract = An exception compilation scheme that dynamically creates and removes exception handler entries on the stack. A formalization of an article of the same name by <a href="http://www.cs.nott.ac.uk/~gmh/">Hutton</a> and Wright.
+
+[NormByEval]
+title = Normalization by Evaluation 
+author = Klaus Aehlig <http://www.linta.de/~aehlig/>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2008-02-18
+topic = Computer Science/Programming Languages/Compiling
+abstract = This article formalizes normalization by evaluation as implemented in Isabelle. Lambda calculus plus term rewriting is compiled into a functional program with pattern matching. It is proved that the result of a successful evaluation is a) correct, i.e. equivalent to the input, and b) in normal form. 
+
+[Program-Conflict-Analysis]
+title = Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors
+topic = Computer Science/Programming Languages/Static Analysis
+author = Peter Lammich <http://wwwmath.uni-muenster.de/u/mmo/staff/lammich/>, Markus M&uuml;ller-Olm <http://wwwmath.uni-muenster.de/u/mmo/>
+date = 2007-12-14
+abstract = In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e. g. data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. The formalization is based upon a flowgraph-based program model with an operational semantics as reference point. 
+
+[Slicing]
+title = Towards Certified Slicing 
+author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
+date = 2008-09-16
+topic = Computer Science/Programming Languages/Static Analysis
+abstract = Slicing is a widely-used technique with applications in e.g. compiler technology and software security. Thus verification of algorithms in these areas is often based on the correctness of slicing, which should ideally be proven independent of concrete programming languages and with the help of well-known verifying techniques such as proof assistants. As a first step in this direction, this contribution presents a framework for dynamic and static intraprocedural slicing based on control flow and program dependence graphs. Abstracting from concrete syntax we base the framework on a graph representation of the program fulfilling certain structural and well-formedness properties.<br><br>The formalization consists of the basic framework (in subdirectory Basic/), the correctness proof for dynamic slicing (in subdirectory Dynamic/), the correctness proof for static intraprocedural slicing (in subdirectory StaticIntra/) and instantiations of the framework with a simple While language (in subdirectory While/) and the sophisticated object-oriented bytecode language of Jinja (in subdirectory JinjaVM/). For more information on the framework, see the TPHOLS 2008 paper by Wasserrab and Lochbihler and the PLAS 2009 paper by Wasserrab et al. 
+
+[HRB-Slicing]
+title = Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer
+author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
+date = 2009-11-13
+topic = Computer Science/Programming Languages/Static Analysis
+abstract = After verifying <a href="Slicing.shtml">dynamic and static interprocedural slicing</a>, we present a modular framework for static interprocedural slicing. To this end, we formalized the standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together with summary edges as presented by Reps et al. (see FSE 1994). The framework is again modular in the programming language by using an abstract CFG, defined via structural and well-formedness properties. Using a weak simulation between the original and sliced graph, we were able to prove the correctness of static interprocedural slicing. We also instantiate our framework with a simple While language with procedures. This shows that the chosen abstractions are indeed valid. 
+
+[WorkerWrapper]
+title = The Worker/Wrapper Transformation
+author = Peter Gammie <http://peteg.org/>
+date = 2009-10-30
+base = HOLCF
+topic = Computer Science/Programming Languages/Transformations
+abstract = Gill and Hutton formalise the worker/wrapper transformation, building on the work of Launchbury and Peyton-Jones who developed it as a way of changing the type at which a recursive function operates. This development establishes the soundness of the technique and several examples of its use.
+
+[JiveDataStoreModel]
+title = Jive Data and Store Model
+author = Nicole Rauch <mailto:rauch@informatik.uni-kl.de>, Norbert Schirmer <http://www4.in.tum.de/~schirmer/>
+date = 2005-06-20
+topic = Computer Science/Programming Languages/Misc
+abstract = This document presents the formalization of an object-oriented data and store model in Isabelle/HOL. This model is being used in the Java Interactive Verification Environment, Jive.
+
+[HotelKeyCards]
+title = Hotel Key Card System 
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow>
+date = 2006-09-09
+topic = Computer Science/Security
+abstract = Two models of an electronic hotel key card system are contrasted: a state based and a trace based one. Both are defined, verified, and proved equivalent in the theorem prover Isabelle/HOL. It is shown that if a guest follows a certain safety policy regarding her key cards, she can be sure that nobody but her can enter her room.
+
+[RSAPSS]
+title = SHA1, RSA, PSS and more
+author = Christina Lindenberg <http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/lindenberg.html>, Kai Wirt <http://www.cdc.informatik.tu-darmstadt.de/mitarbeiter/wirt.html>
+date = 2005-05-02
+topic = Computer Science/Security
+abstract = Formal verification is getting more and more important in computer science. However the state of the art formal verification methods in cryptography are very rudimentary. These theories are one step to provide a tool box allowing the use of formal methods in every aspect of cryptography. Moreover we present a proof of concept for the feasibility of verification techniques to a standard signature algorithm.
+
+; todo: multiple entries with different naming scheme
+[InformationFlowSlicing]
+title = Information Flow Noninterference via Slicing
+author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php>
+date = 2010-03-23
+topic = Computer Science/Security
+ignore = entry
+abstract = In this contribution, we show how correctness proofs for <a href="Slicing.shtml">intra-</a> and <a href="HRB-Slicing.shtml">interprocedural slicing</a> can be used to prove that slicing is able to guarantee information flow noninterference.  Moreover, we also illustrate how to lift the control flow graphs of the respective frameworks such that they fulfil the additional assumptions needed in the noninterference proofs. A detailed description of the intraprocedural proof and its interplay with the slicing framework can be found in the PLAS'09 paper by Wasserrab et al.
+
+[Verified-Prover]
+title = A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
+author = Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
+date = 2004-09-28
+topic = Logic
+abstract = Soundness and completeness for a system of first order logic are formally proved, building on James Margetson's formalization of work by Wainer and Wallen. The completeness proofs naturally suggest an algorithm to derive proofs. This algorithm, which can be implemented tail recursively, is formalized in Isabelle/HOL. The algorithm can be executed via the rewriting tactics of Isabelle. Alternatively, the definitions can be exported to OCaml, yielding a directly executable program.
+
+[Completeness]
+title = Completeness theorem 
+author = James Margetson, Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
+date = 2004-09-20
+topic = Logic
+abstract = The completeness of first-order logic is proved, following the first five pages of Wainer and Wallen's chapter of the book <i>Proof Theory</i> by Aczel et al., CUP, 1992. Their presentation of formulas allows the proofs to use symmetry arguments. Margetson formalized this theorem by early 2000. The Isar conversion is thanks to Tom Ridge. A paper describing the formalization is available <a href="Completeness-paper.pdf">[pdf]</a>. 
+
+[Ordinal]
+title = Countable Ordinals
+author = Brian Huffman <http://web.cecs.pdx.edu/~brianh/>
+date = 2005-11-11
+topic = Logic
+abstract = This development defines a well-ordered type of countable ordinals. It includes notions of continuous and normal functions, recursively defined functions over ordinals, least fixed-points, and derivatives. Much of ordinal arithmetic is formalized, including exponentials and logarithms. The development concludes with formalizations of Cantor Normal Form and Veblen hierarchies over normal functions.
+
+[Ordinals_and_Cardinals]
+title = Ordinals and Cardinals
+author = Andrei Popescu
+date = 2009-09-01
+topic = Logic
+abstract = We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the point where some cardinality facts relevant for the ``working mathematician" become available. Unlike in set theory, here we do not have at hand canonical notions of ordinal and cardinal. Therefore, here an ordinal is merely a well-order relation and a cardinal is an ordinal minim w.r.t. order embedding on its field. 
+
+[FOL-Fitting]
+title = First-Order Logic According to Fitting 
+author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
+date = 2007-08-02
+topic = Logic
+abstract = We present a formalization of parts of Melvin Fitting's book ``First-Order Logic and Automated Theorem Proving''. The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the L&ouml;wenheim-Skolem theorem.
+
+[SequentInvertibility]
+title = Invertibility in Sequent Calculi
+author = Peter Chapman <http://www.cs.st-andrews.ac.uk/~pc>
+date = 2009-08-28
+topic = Logic
+base = HOL/HOL-Nominal
+abstract = The invertibility of the rules of a sequent calculus is important for guiding proof search and can be used in some formalised proofs of Cut admissibility. We present sufficient conditions for when a rule is invertible with respect to a calculus. We illustrate the conditions with examples. It must be noted we give purely syntactic criteria; no guarantees are given as to the suitability of the rules.
+
+[LinearQuantifierElim]
+title = Quantifier Elimination for Linear Arithmetic
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2008-01-11
+topic = Logic
+abstract = This article formalizes quantifier elimination procedures for dense linear orders, linear real arithmetic and Presburger arithmetic. In each case both a DNF-based non-elementary algorithm and one or more (doubly) exponential NNF-based algorithms are formalized, including the well-known algorithms by Ferrante and Rackoff and by Cooper. The NNF-based algorithms for dense linear orders are new but based on Ferrante and Rackoff and on an algorithm by Loos and Weisspfenning which simulates infenitesimals. All algorithms are directly executable. In particular, they yield reflective quantifier elimination procedures for HOL itself. The formalization makes heavy use of locales and is therefore highly modular.
+
+[Recursion-Theory-I]
+title = Recursion Theory I 
+author = Michael Nedzelsky
+date = 2008-04-05
+topic = Logic
+abstract = This document presents the formalization of introductory material from  recursion theory --- definitions and basic properties of primitive recursive  functions, Cantor pairing function and computably enumerable sets  (including a proof of existence of a one-complete computably enumerable set  and a proof of the Rice's theorem).
+
+[Free-Boolean-Algebra]
+topic = Logic
+title = Free Boolean Algebra
+author = Brian Huffman <http://web.cecs.pdx.edu/~brianh/>
+date = 2010-03-29
+abstract = This theory defines a type constructor representing the free Boolean algebra over a set of generators. Values of type (&alpha;)<i>formula</i> represent propositional formulas with uninterpreted variables from type &alpha;, ordered by implication. In addition to all the standard Boolean algebra operations, the library also provides a function for building homomorphisms to any other Boolean algebra type.
+
+[Abstract-Rewriting]
+title = Abstract Rewriting
+topic = Logic/Rewriting
+date = 2010-06-14
+author = Christian Sternagel <mailto:christian.sternagel@uibk.ac.at>, Ren&eacute; Thiemann <mailto:rene.thiemann@uibk.ac.at>
+abstract = We present an Isabelle formalization of abstract rewriting (see, e.g., the book by Baader and Nipkow). First, we define standard relations like <i>joinability</i>, <i>meetability</i>, <i>conversion</i>, etc. Then, we formalize important properties of abstract rewrite systems, e.g., confluence and strong normalization. Our main concern is on strong normalization, since this formalization is the basis of <a href="http://cl-informatik.uibk.ac.at/software/ceta">CeTA</a> (which is mainly about strong normalization of term rewrite systems). Hence lemmas involving strong normalization constitute by far the biggest part of this theory. One of those is Newman's lemma.
+
+[Free-Groups]
+title = Free Groups
+author = Joachim Breitner <mailto:mail@joachim-breitner.de>
+date = 2010-06-24
+topic = Mathematics/Algebra
+abstract =
+ Free Groups are, in a sense, the most generic kind of group. They
+ are defined over a set of generators with no additional relations in between
+ them. They play an important role in the definition of group presentations
+ and in other fields. This theory provides the definition of Free Group as
+ the set of fully canceled words in the generators. The universal property is
+ proven, as well as some isomorphisms results about Free Groups.
+
+[CofGroups]
+title = An Example of a Cofinitary Group in Isabelle/HOL
+author = Bart Kastermans <http://www.bartk.nl/>
+date = 2009-08-04
+topic = Mathematics/Algebra
+abstract = We formalize the usual proof that the group generated by the function k -> k + 1 on the integers gives rise to a cofinitary group.
+
+; todo: no proof document
+[Group-Ring-Module]
+title = Groups, Rings and Modules
+author = Hidetsune Kobayashi, L. Chen, H. Murao 
+date = 2004-05-18
+topic = Mathematics/Algebra
+ignore = entry
+abstract = The theory of groups, rings and modules is developed to a great depth. Group theory results include Zassenhaus's theorem and the Jordan-Hoelder theorem. The ring theory development includes ideals, quotient rings and the Chinese remainder theorem. The module development includes the Nakayama lemma, exact sequences and Tensor products.
+
+[Robbins-Conjecture]
+title = A Complete Proof of the Robbins Conjecture
+author = Matthew Wampler-Doty <http://www.w-d.org/>
+date = 2010-05-22
+topic = Mathematics/Algebra
+abstract = This document gives a formalization of the proof of the Robbins conjecture, following A. Mann, <i>A Complete Proof of the Robbins Conjecture</i>, 2003.
+
+; todo: no proof document
+[Valuation]
+title = Fundamental Properties of Valuation Theory and Hensel's Lemma
+author = Hidetsune Kobayashi
+date = 2007-08-08
+topic = Mathematics/Algebra
+ignore = entry
+abstract = Convergence with respect to a valuation is discussed as convergence of a Cauchy sequence. Cauchy sequences of polynomials are defined. They are used to formalize Hensel's lemma.
+
+[Cauchy]
+title = Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality 
+author = Benjamin Porter 
+date = 2006-03-14
+topic = Mathematics/Analysis
+abstract = This document presents the mechanised proofs of two popular theorems attributed to Augustin Louis Cauchy - Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality.
+
+[Integration]
+title = Integration theory and random variables
+author = Stefan Richter <http://www-lti.informatik.rwth-aachen.de/~richter/>
+date = 2004-11-19
+topic = Mathematics/Analysis
+abstract = Lebesgue-style integration plays a major role in advanced probability. We formalize concepts of elementary measure theory, real-valued random variables as Borel-measurable functions, and a stepwise inductive definition of the integral itself. All proofs are carried out in human readable style using the Isar language.
+extra-note = Note: This article is of historical interest only. Lebesgue-style integration and probability theory are now available as part of the Isabelle/HOL distribution (directory Probability). 
+
+[Fermat3_4]
+title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
+author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>
+date = 2007-08-12
+topic = Mathematics/Number Theory
+abstract = This document presents the mechanised proofs of<ul><li>Fermat's Last Theorem for exponents 3 and 4 and</li><li>the parametrisation of Pythagorean Triples.</li></ul>
+
+[Perfect-Number-Thm]
+title = Perfect Number Theorem 
+author = Mark Ijbema <mailto:ijbema@fmf.nl>
+date = 2009-11-22
+topic = Mathematics/Number Theory
+abstract = These theories present the mechanised proof of the Perfect Number Theorem. 
+
+[SumSquares]
+title = Sums of Two and Four Squares 
+author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>
+date = 2007-08-12
+topic = Mathematics/Number Theory
+abstract = This document presents the mechanised proofs of the following results:<ul><li>any prime number of the form 4m+1 can be written as the sum of two squares;</li><li>any natural number can be written as the sum of four squares</li></ul>
+
+[ArrowImpossibilityGS]
+title = Arrow and Gibbard-Satterthwaite 
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2008-09-01
+topic = Mathematics/Social Choice Theory
+abstract = This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href="http://www.in.tum.de/~nipkow/pubs/arrow.html">here</a>. 
+
+[SenSocialChoice]
+title = Some classical results in Social Choice Theory
+author = Peter Gammie <http://peteg.org/>
+date = 2008-11-09
+topic = Mathematics/Social Choice Theory
+abstract = Drawing on Sen's landmark work "Collective Choice and Social Welfare" (1970), this development proves Arrow's General Possibility Theorem, Sen's Liberal Paradox and May's Theorem in a general setting. The goal was to make precise the classical statements and proofs of these results, and to provide a foundation for more recent results such as the Gibbard-Satterthwaite and Duggan-Schwartz theorems. 
+
+[Topology]
+title = Topology
+author = Stefan Friedrich
+date = 2004-04-26
+topic = Mathematics/Topology
+abstract = This entry contains two theories. The first, <tt>Topology</tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <tt>LList_Topology</tt>. It develops the topology of lazy lists.
+
+[Flyspeck-Tame]
+title = Flyspeck I: Tame Graphs 
+author = Gertrud Bauer, Tobias Nipkow <http://www4.in.tum.de/~nipkow>
+date = 2006-05-22
+topic = Mathematics/Graph Theory
+abstract = These theories present the verified enumeration of <i>tame</i> plane graphs as defined by Thomas C. Hales in his proof of the Kepler Conjecture. For explanations see the IJCAR 2006 paper by Nipkow, Bauer and Schultz. 
+
+[Ramsey-Infinite]
+title = Ramsey's theorem, infinitary version
+author = Tom Ridge <http://homepages.inf.ed.ac.uk/s0128214/>
+date = 2004-09-20
+topic = Mathematics/Combinatorics
+abstract = This formalization of Ramsey's theorem (infinitary version) is taken from Boolos and Jeffrey, <i>Computability and Logic</i>, 3rd edition, Chapter 26. It differs slightly from the text by assuming a slightly stronger hypothesis. In particular, the induction hypothesis is stronger, holding for any infinite subset of the naturals. This avoids the rather peculiar mapping argument between kj and aikj on p.263, which is unnecessary and slightly mars this really beautiful result. 
+
+[Category]
+title = Category Theory to Yoneda's Lemma 
+author = Greg O'Keefe <http://users.rsise.anu.edu.au/~okeefe/>
+date = 2005-04-21
+topic = Mathematics/Category Theory
+abstract = This development proves Yoneda's lemma and aims to be readable by humans. It only defines what is needed for the lemma: categories, functors and natural transformations. Limits, adjunctions and other important concepts are not included.
+extra-history = Change history: [2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/8c2b5b3c995f">8c2b5b3c995f</a>.
+
+[Category2]
+title = Category Theory
+author = Alexander Katovsky <mailto:apk32@cam.ac.uk>
+date = 2010-06-20
+topic = Mathematics/Category Theory
+abstract = This article presents a development of Category Theory in Isabelle/HOL. A Category is defined using records and locales. Functors and Natural Transformations are also defined. The main result that has been formalized is that the Yoneda functor is a full and faithful embedding. We also formalize the completeness of many sorted monadic equational logic. Extensive use is made of the HOLZF theory in both cases. For an informal description see <a href="http://www.srcf.ucam.org/~apk32/Isabelle/Category/Cat.pdf">here [pdf]</a>.
+
+[FunWithFunctions]
+title = Fun With Functions
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+date = 2008-08-26
+topic = Mathematics/Misc
+abstract = This is a collection of cute puzzles of the form ``Show that if a function satisfies the following constraints, it must be ...'' Please add further examples to this collection!
+
+[FunWithTilings]
+title = Fun With Tilings
+author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Lawrence Paulson <http://www.cl.cam.ac.uk/users/lcp/>
+date = 2008-11-07
+topic = Mathematics/Misc
+abstract = Tilings are defined inductively. It is shown that one form of mutilated chess board cannot be tiled with dominoes, while another one can be tiled with L-shaped tiles. Please add further fun examples of this kind!
+
+[Lazy-Lists-II]
+title = Lazy Lists II
+author = Stefan Friedrich
+date = 2004-04-26
+topic = Computer Science/Data Structures
+abstract = This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
+
+[Example-Submission]
+title = Example Submission
+author = Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>
+date = 2004-02-25
+abstract = This is an example submission to the Archive of Formal Proof. It shows submission requirements and explains the structure of a simple typical submission.

@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,67 +22,46 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Quantifier Elimination for Linear Arithmetic</h1>
-<p> </p>
-
+<h1><font class="first">Q</font>uantifier
+<font class="first">E</font>limination
+for
+<font class="first">L</font>inear
+<font class="first">A</font>rithmetic
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Quantifier Elimination for Linear Arithmetic
-    </td></tr>
-		
+        <td class="data" width="80%">Quantifier Elimination for Linear Arithmetic</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://www.in.tum.de/~nipkow">Tobias Nipkow</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2008-01-11</td></tr>
+        <td class="data"><a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This article formalizes quantifier elimination procedures for dense
-linear orders, linear real arithmetic and Presburger arithmetic.  In
-each case both a DNF-based non-elementary algorithm and one or more
-(doubly) exponential NNF-based algorithms are formalized, including
-the well-known algorithms by Ferrante and Rackoff and by Cooper. The
-NNF-based algorithms for dense linear orders are new but based on
-Ferrante and Rackoff and on an algorithm by Loos and Weisspfenning
-which simulates infenitesimals.
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2008-01-11</td></tr>
 
-All algorithms are directly executable. In particular, they yield
-reflective quantifier elimination procedures for HOL itself.
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
 
-The formalization makes heavy use of locales and is therefore highly modular.
-   </td></tr>
+This article formalizes quantifier elimination procedures for dense linear orders, linear real arithmetic and Presburger arithmetic. In each case both a DNF-based non-elementary algorithm and one or more (doubly) exponential NNF-based algorithms are formalized, including the well-known algorithms by Ferrante and Rackoff and by Cooper. The NNF-based algorithms for dense linear orders are new but based on Ferrante and Rackoff and on an algorithm by Loos and Weisspfenning which simulates infenitesimals. All algorithms are directly executable. In particular, they yield reflective quantifier elimination procedures for HOL itself. The formalization makes heavy use of locales and is therefore highly modular.
+        </td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="LinearQuantifierElim" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -105,16 +83,20 @@ The formalization makes heavy use of locales and is therefore highly modular.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	    <ul>
-        <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-	    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
-	    <li>Isabelle 2007: <a href="../release/afp-LinearQuantifierElim-2008-02-12.tar.gz">afp-LinearQuantifierElim-2008-02-12.tar.gz</a></li>
-		</ul>
-	</td></tr>
+<ul>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2009-12-12.tar.gz">afp-<!--#echo var="name" -->-2009-12-12.tar.gz</a></li>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2008-02-12.tar.gz">afp-<!--#echo var="name" -->-2008-02-12.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2008-01-24.tar.gz">afp-<!--#echo var="name" -->-2008-01-24.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2008-01-11.tar.gz">afp-<!--#echo var="name" -->-2008-01-11.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

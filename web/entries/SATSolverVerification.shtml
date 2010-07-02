@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,69 +22,44 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Formal Verification of Modern SAT Solvers</h1>
-<p> </p>
-
+<h1><font class="first">F</font>ormal
+<font class="first">V</font>erification
+of
+<font class="first">M</font>odern
+<font class="first">S</font>AT
+<font class="first">S</font>olvers
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Formal Verification of Modern SAT Solvers
-    </td></tr>
-		
+        <td class="data" width="80%">Formal Verification of Modern SAT Solvers</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://www.matf.bg.ac.yu/~filip">Filip Maric</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2007-07-23</td></tr>
+        <td class="data"><a href="http://www.matf.bg.ac.yu/~filip">Filip Maric</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This document contains formal correctness proofs of modern SAT solvers.
-Following (Krstic et al, 2007) and (Nieuwenhuis et al., 2006), solvers are
-described using state-transition systems. Several different SAT solver
-descriptions are given and their partial correctness and termination is
-proved. These include:
-<ul>
- <li> a solver based on classical DPLL procedure (using only a
-backtrack-search with unit propagation),</li>
- <li> a very general solver with backjumping and learning (similar to the
-description given in (Nieuwenhuis et al., 2006)), and</li>
- <li> a solver with a specific conflict analysis algorithm (similar to the
-description given in (Krstic et al., 2007)).</li>
-</ul>
-Within the SAT solver correctness proofs, a large number of lemmas
-about propositional logic and CNF formulae are proved. This theory is
-self-contained and could be used for further exploring of properties of
-CNF based SAT algorithms.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2008-07-23</td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+This document contains formal correctness proofs of modern SAT solvers. Following (Krstic et al, 2007) and (Nieuwenhuis et al., 2006), solvers are described using state-transition systems. Several different SAT solver descriptions are given and their partial correctness and termination is proved. These include: <ul> <li> a solver based on classical DPLL procedure (using only a backtrack-search with unit propagation),</li> <li> a very general solver with backjumping and learning (similar to the description given in (Nieuwenhuis et al., 2006)), and</li> <li> a solver with a specific conflict analysis algorithm (similar to the description given in (Krstic et al., 2007)).</li> </ul> Within the SAT solver correctness proofs, a large number of lemmas about propositional logic and CNF formulae are proved. This theory is self-contained and could be used for further exploring of properties of CNF based SAT algorithms.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="SATSolverVerification" -->
-
 <!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
+
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -110,15 +84,17 @@ CNF based SAT algorithms.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	<ul>
-        <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-	    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-07-27.tar.gz">afp-<!--#echo var="name" -->-2008-07-27.tar.gz</a></li>
-	</ul>
-	</td></tr>
+<ul>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2009-12-12.tar.gz">afp-<!--#echo var="name" -->-2009-12-12.tar.gz</a></li>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-07-27.tar.gz">afp-<!--#echo var="name" -->-2008-07-27.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

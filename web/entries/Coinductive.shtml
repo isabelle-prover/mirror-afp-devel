@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,60 +22,39 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Coinductive</h1>
-<p> </p>
-
+<h1><font class="first">C</font>oinductive
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Coinductive
-    </td></tr>
-		
+        <td class="data" width="80%">Coinductive</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2010-02-12</td></tr>
+        <td class="data"><a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This article collects formalisations of general-purpose coinductive data
-types and sets. Currently, it contains coinductive natural numbers,
-coinductive lists, i.e. lazy lists or streams, and a library of operations on
-coinductive lists.
-<br>
-The initial theory was contributed by Paulson and Wenzel.  Extensions
-and other coinductive formalisations of general interest are welcome.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2010-02-12</td></tr>
 
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, and a library of operations on coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Coinductive" -->
-<!--#set var="base" value="HOL" --> <!--- ??? could be HOLCF etc --->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="binfo" value="../browser_info/current/${base}/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
@@ -101,12 +79,16 @@ and other coinductive formalisations of general interest are welcome.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	None
-	</td></tr>
+<ul>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2010-02-15.tar.gz">afp-<!--#echo var="name" -->-2010-02-15.tar.gz</a></li>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2010-02-14.tar.gz">afp-<!--#echo var="name" -->-2010-02-14.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

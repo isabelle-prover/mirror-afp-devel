@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,50 +22,44 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Depth First Search</h1>
-<p> </p>
-
+<h1><font class="first">D</font>epth
+<font class="first">F</font>irst
+<font class="first">S</font>earch
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Depth First Search
-    </td></tr>
-		
-    <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: -->Toshiaki Nishihara and <a
-href="http://www.score.is.tsukuba.ac.jp/~minamide/">Yasuhiko Minamide</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2004-06-24</td></tr>
+        <td class="data" width="80%">Depth First Search</td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-Depth-first search of a graph is formalized with recdef. 
-It is shown that it visits all of the reachable nodes from a given list of 
-nodes. Executable ML code of depth-first search is obtained using the code 
-generation feature of Isabelle/HOL.
-   </td></tr>
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Toshiaki Nishihara and  <a href="http://www.score.is.tsukuba.ac.jp/~minamide/">Yasuhiko Minamide</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2004-06-24</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Depth-First-Search" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -88,18 +81,20 @@ generation feature of Isabelle/HOL.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-    <ul>
-    <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
-    <li>Isabelle 2007: <a href="../release/afp-Depth-First-Search-2007-11-27.tar.gz">afp-Depth-First-Search-2007-11-27.tar.gz</a></li>	
-    <li>Isabelle 2005: <a href="../release/afp-Depth-First-Search-2005-10-14.tar.gz">afp-Depth-First-Search-2005-10-14.tar.gz</a></li>
-    <li>Isabelle 2004: <a href="../release/afp-Depth-First-Search-2004-06-24.tar.gz">afp-Depth-First-Search-2004-06-24.tar.gz</a></li>
-    </ul>
-    </td></tr>
+<ul>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2009-12-12.tar.gz">afp-<!--#echo var="name" -->-2009-12-12.tar.gz</a></li>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2007-11-27.tar.gz">afp-<!--#echo var="name" -->-2007-11-27.tar.gz</a></li>
+<li>Isabelle 2005: <a href="../release/afp-<!--#echo var="name" -->-2005-10-14.tar.gz">afp-<!--#echo var="name" -->-2005-10-14.tar.gz</a></li>
+<li>Isabelle 2004: <a href="../release/afp-<!--#echo var="name" -->-2004-06-24.tar.gz">afp-<!--#echo var="name" -->-2004-06-24.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

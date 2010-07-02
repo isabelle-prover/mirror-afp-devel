@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,65 +22,52 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Category Theory to Yoneda's Lemma</h1>
-<p> </p>
-
+<h1><font class="first">C</font>ategory
+<font class="first">T</font>heory
+to
+<font class="first">Y</font>oneda's
+<font class="first">L</font>emma
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Category Theory to Yoneda's Lemma
-    </td></tr>
-		
+        <td class="data" width="80%">Category Theory to Yoneda's Lemma</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://users.rsise.anu.edu.au/~okeefe/">Greg O'Keefe</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2005-04-21</td></tr>
+        <td class="data"><a href="http://users.rsise.anu.edu.au/~okeefe/">Greg O'Keefe</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->	
-This development proves Yoneda's lemma and aims to be 
-readable by humans.  It only defines what is needed for 
-the lemma: categories, functors and natural transformations.
-Limits, adjunctions and other important concepts are not 
-included.
-   </td></tr>
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2005-04-21</td></tr>
 
-	<tr><td class="datahead" valign="top">Change history:</td>
-  <td class="abstract"> 
-     [2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/8c2b5b3c995f">8c2b5b3c995f</a>.
-   </td></tr>
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
 
-<!-- uncomment for versions significantly updated in devel version
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.
-    </td>
-</tr> 
--->
+This development proves Yoneda's lemma and aims to be readable by humans. It only defines what is needed for the lemma: categories, functors and natural transformations. Limits, adjunctions and other important concepts are not included.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/8c2b5b3c995f">8c2b5b3c995f</a>.
+        </td></tr>
+
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="Category" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/${name}" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -103,18 +89,21 @@ included.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-    <ul>
-	<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
-	<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
-	<li>Isabelle 2007: <a href="../release/afp-Category-2007-11-27.tar.gz">afp-Category-2007-11-27.tar.gz</a></li>
-    <li>Isabelle 2005: <a href="../release/afp-Category-2005-10-14.tar.gz">afp-Category-2005-10-14.tar.gz</a></li>
-    <li>Isabelle 2004: <a href="../release/afp-Category-2005-05-01.tar.gz">afp-Category-2005-05-01.tar.gz</a></li>
-    </ul>
-    </td></tr>
+<ul>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2009-12-12.tar.gz">afp-<!--#echo var="name" -->-2009-12-12.tar.gz</a></li>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2007-11-27.tar.gz">afp-<!--#echo var="name" -->-2007-11-27.tar.gz</a></li>
+<li>Isabelle 2005: <a href="../release/afp-<!--#echo var="name" -->-2005-10-14.tar.gz">afp-<!--#echo var="name" -->-2005-10-14.tar.gz</a></li>
+<li>Isabelle 2004: <a href="../release/afp-<!--#echo var="name" -->-2005-05-01.tar.gz">afp-<!--#echo var="name" -->-2005-05-01.tar.gz</a></li>
+<li>Isabelle 2004: <a href="../release/afp-<!--#echo var="name" -->-2005-04-21.tar.gz">afp-<!--#echo var="name" -->-2005-04-21.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>

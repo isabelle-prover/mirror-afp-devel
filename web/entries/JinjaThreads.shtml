@@ -6,7 +6,6 @@
   <link rel="stylesheet" type="text/css" href="front.css">
   <link rel="icon" href="../images/favicon.ico" type="image/icon">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR" content="Quanta Plus">
 </head>
 <body>
 
@@ -23,72 +22,44 @@
 <div align="center">
 <p> </p>
 
-<!-- begin entry data: -->
-<h1><!-- Title: -->Jinja with Threads</h1>
-<p> </p>
-
+<h1><font class="first">J</font>inja
+with
+<font class="first">T</font>hreads
+</h1>
+<p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-    <td class="data" width="80%">
-<!-- Title: -->Jinja with Threads
-    </td></tr>
-		
+        <td class="data" width="80%">Jinja with Threads</td></tr>
+
     <tr><td class="datahead">Author:</td>
-<td class="data">
-<!-- Author: --><a
-href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a>
-</td></tr>		
-    
-	<tr><td class="datahead">Submission date:</td>
-	
-<td class="data"><!-- Submission date: -->2007-12-03</td></tr>
+        <td class="data"><a href="http://pp.info.uni-karlsruhe.de/personhp/andreas_lochbihler.php">Andreas Lochbihler</a></td></tr>
 
-	<tr><td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"> 
-<!-- Abstract: -->
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2007-12-03</td></tr>
 
-We extend the Jinja source code semantics by Klein and Nipkow with
-Java-style arrays and threads.  Concurrency is captured in a generic
-framework semantics for adding concurrency through interleaving to a
-sequential semantics, which features dynamic thread creation,
-inter-thread communication via shared memory, lock synchronisation
-and joins.  Also, threads can suspend themselves and be notified by
-others.
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
 
-We instantiate the framework with the adapted versions of both Jinja
-source and byte code and show type safety for the multithreaded
-case. Equally, the compiler from source to byte code is extended, for
-which we prove weak bisimilarity between the source code small step
-semantics and the defensive Jinja virtual machine.
+We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. For explanations on the framework semantics and the source code instantiation, see the FOOL 2008 paper by A. Lochbihler.
+        </td></tr>
 
-For explanations on the framework semantics and the source code
-instantiation, see the FOOL 2008 paper by A. Lochbihler.
-
-</td></tr>
-
-<!-- uncomment for entries significantly updated in devel version:
-<tr>
-<td class="datahead"> </td>
-<td class="data">An updated version of this entry is available in the 
-    <a href="../download.shtml">development version</a> of AFP.</td>
-</tr> 
--->
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!---INCLUDE- file="devel-warning.shtml"-->
-</tbody>
+
+  </tbody>
 </table>
 
-<p> </p>
+<p></p>
 
-<!-- entry directory name: -->
 <!--#set var="name" value="JinjaThreads" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Word/${name}" -->
 
-<!--#set var="doc" value="../browser_info/current/HOL/${name}/document.pdf" -->
-<!--#set var="outline" value="../browser_info/current/HOL/${name}/outline.pdf" -->
-<!--#set var="browse" value="../browser_info/current/HOL/${name}/index.html" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
 <!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
 
 <table class="links">
@@ -110,16 +81,19 @@ instantiation, see the FOOL 2008 paper by A. Lochbihler.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-	    <ul>
-        <li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-30.tar.gz">afp-<!--#echo var="name" -->-2009-04-30.tar.gz</a></li>
-	    <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
-	    <li>Isabelle 2007: <a href="../release/afp-JinjaThreads-2007-12-03.tar.gz">afp-JinjaThreads-2007-12-03.tar.gz</a>
-		</ul>
-	</td></tr>
+<ul>
+<li>Isabelle 2009-1: <a href="../release/afp-<!--#echo var="name" -->-2009-12-12.tar.gz">afp-<!--#echo var="name" -->-2009-12-12.tar.gz</a></li>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-30.tar.gz">afp-<!--#echo var="name" -->-2009-04-30.tar.gz</a></li>
+<li>Isabelle 2009: <a href="../release/afp-<!--#echo var="name" -->-2009-04-29.tar.gz">afp-<!--#echo var="name" -->-2009-04-29.tar.gz</a></li>
+<li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
+<li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2007-12-03.tar.gz">afp-<!--#echo var="name" -->-2007-12-03.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
 
 </td> </tr> </table>
+
 </body>
 </html>
