@@ -46,15 +46,15 @@ print_translation {*
     fun tr'
        [Const (@{type_syntax finfun}, _) $ l $
           (Const (@{type_syntax list}, _) $ Const (@{type_syntax lock_action}, _)),
-        Const (@{type_syntax "*"}, _) $
+        Const (@{type_syntax prod}, _) $
           (Const (@{type_syntax list}, _) $ (Const (@{type_syntax new_thread_action}, _) $ t1 $ x $ m)) $
-          (Const (@{type_syntax "*"}, _) $
+          (Const (@{type_syntax prod}, _) $
             (Const (@{type_syntax list}, _) $ (Const (@{type_syntax conditional_action}, _) $ t2)) $
-            (Const (@{type_syntax "*"}, _) $
+            (Const (@{type_syntax prod}, _) $
               (Const (@{type_syntax list}, _) $ (Const (@{type_syntax wait_set_action}, _) $ t3 $ w)) $ o1))] =
       if t1 = t2 andalso t2 = t3 then Syntax.const @{type_syntax thread_action} $ l $ t1 $ x $ m $ w $ o1
       else raise Match;
-  in [(@{type_syntax "*"}, tr')]
+  in [(@{type_syntax prod}, tr')]
   end
 *}
 typ "('l,'t,'x,'m,'w,'o) thread_action"
@@ -205,19 +205,19 @@ print_translation {*
     fun tr'
        [Const (@{type_syntax finfun}, _) $ l1 $
         (Const (@{type_syntax option}, _) $
-          (Const (@{type_syntax "*"}, _) $ t1 $ Const (@{type_syntax nat}, _))),
-        Const (@{type_syntax "*"}, _) $
-          (Const (@{type_syntax "*"}, _) $
+          (Const (@{type_syntax prod}, _) $ t1 $ Const (@{type_syntax nat}, _))),
+        Const (@{type_syntax prod}, _) $
+          (Const (@{type_syntax prod}, _) $
             (Const (@{type_syntax fun}, _) $ t2 $
               (Const (@{type_syntax option}, _) $
-                (Const (@{type_syntax "*"}, _) $ x $
+                (Const (@{type_syntax prod}, _) $ x $
                   (Const (@{type_syntax finfun}, _) $ l2 $ Const (@{type_syntax nat}, _))))) $ m) $
                (Const (@{type_syntax fun}, _) $ t3 $ 
                   (Const (@{type_syntax option}, _) $ (Const (@{type_syntax wait_set_status}, _) $ w)))] =
       if t1 = t2 andalso t1 = t3 andalso l1 = l2
       then Syntax.const @{type_syntax state} $ l1 $ t1 $ x $ m $ w
       else raise Match;
-  in [(@{type_syntax "*"}, tr')]
+  in [(@{type_syntax prod}, tr')]
   end
 *}
 typ "('l,'t,'x,'m,'w) state"
@@ -397,19 +397,19 @@ print_translation {*
     fun tr'
        [t4,
         Const (@{type_syntax fun}, _) $
-          (Const (@{type_syntax "*"}, _) $ x1 $ m1) $
+          (Const (@{type_syntax prod}, _) $ x1 $ m1) $
           (Const (@{type_syntax fun}, _) $
-            (Const (@{type_syntax "*"}, _) $
+            (Const (@{type_syntax prod}, _) $
               (Const (@{type_syntax finfun}, _) $ l $
                 (Const (@{type_syntax list}, _) $ Const (@{type_syntax lock_action}, _))) $
-              (Const (@{type_syntax "*"}, _) $
+              (Const (@{type_syntax prod}, _) $
                 (Const (@{type_syntax list}, _) $ (Const (@{type_syntax new_thread_action}, _) $ t1 $ x2 $ m2)) $
-                (Const (@{type_syntax "*"}, _) $
+                (Const (@{type_syntax prod}, _) $
                   (Const (@{type_syntax list}, _) $ (Const (@{type_syntax conditional_action}, _) $ t2)) $
-                  (Const (@{type_syntax "*"}, _) $
+                  (Const (@{type_syntax prod}, _) $
                     (Const (@{type_syntax list}, _) $ (Const (@{type_syntax wait_set_action}, _) $ t3 $ w)) $ 
                       (Const (@{type_syntax list}, _) $ o1))))) $
-            (Const (@{type_syntax fun}, _) $ (Const (@{type_syntax "*"}, _) $ x3 $ m3) $
+            (Const (@{type_syntax fun}, _) $ (Const (@{type_syntax prod}, _) $ x3 $ m3) $
               Const (@{type_syntax bool}, _)))] =
       if x1 = x2 andalso x1 = x3 andalso m1 = m2 andalso m1 = m3 andalso t1 = t2 andalso t2 = t3 andalso t3 = t4
       then Syntax.const @{type_syntax semantics} $ l $ t1 $ x1 $ m1 $ w $ o1

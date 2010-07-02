@@ -359,20 +359,20 @@ types
 text {* pretty printing for @{text "\<tau>moves"} *}
 print_translation {*
   let
-    fun tr' [(Const (@{type_syntax "*"}, _) $ x1 $ m1),
+    fun tr' [(Const (@{type_syntax prod}, _) $ x1 $ m1),
              (Const (@{type_syntax "fun"}, _) $
-               (Const (@{type_syntax "*"}, _) $ 
+               (Const (@{type_syntax prod}, _) $ 
                  (Const (@{type_syntax "finfun"}, _) $ l $ 
                    (Const (@{type_syntax "list"}, _) $ Const (@{type_syntax "lock_action"}, _))) $
-                 (Const (@{type_syntax "*"},_) $ 
+                 (Const (@{type_syntax prod},_) $ 
                    (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "new_thread_action"}, _) $ t1 $ x2 $ m2)) $
-                   (Const (@{type_syntax "*"}, _) $ 
+                   (Const (@{type_syntax prod}, _) $ 
                      (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "conditional_action"}, _) $ t2)) $
-                     (Const (@{type_syntax "*"}, _) $ 
+                     (Const (@{type_syntax prod}, _) $ 
                        (Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "wait_set_action"}, _) $ t3 $ w)) $
                        (Const (@{type_syntax "list"}, _) $ o1))))) $
                (Const (@{type_syntax "fun"}, _) $ 
-                 (Const (@{type_syntax "*"}, _) $ x3 $ m3) $
+                 (Const (@{type_syntax prod}, _) $ x3 $ m3) $
                  (Const (@{type_syntax "bool"}, _))))] =
       if x1 = x2 andalso x1 = x3 andalso m1 = m2 andalso m1 = m3 andalso t1 = t2 andalso t2 = t3
       then Syntax.const (@{type_syntax "\<tau>moves"}) $ l $ t1 $ x1 $ m1 $ w $ o1

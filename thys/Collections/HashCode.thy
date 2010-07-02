@@ -45,7 +45,7 @@ begin
 end
 
 
-instantiation "*" :: (hashable, hashable) hashable
+instantiation prod :: (hashable, hashable) hashable
 begin
   definition hashcode_prod_def: 
     "hashcode x == case x of (a,b) \<Rightarrow> hashcode a + hashcode b"

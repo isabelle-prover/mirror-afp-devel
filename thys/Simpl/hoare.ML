@@ -1707,7 +1707,7 @@ fun split_pair_apps thm =
                 val z = Name.variant (fold Term.add_free_names args []) "z";
                 val frees = map (apfst (fn i => z^string_of_int i))
                                 (0 upto (len - 1) ~~ argTs);
-                fun splitT (Type (@{type_name "*"}, [T1, T2])) = T1::splitT T2
+                fun splitT (Type (@{type_name Product_Type.prod}, [T1, T2])) = T1::splitT T2
                   | splitT T = [T];
 
                 fun pair_depth (Const (@{const_name Pair},aT)$t1$t2) = 1 + (pair_depth t2)

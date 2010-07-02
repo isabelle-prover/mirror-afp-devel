@@ -53,7 +53,7 @@ lemma SUP_L_fun_eq:
 
 end
 
-instantiation "*":: (well_founded_transitive, well_founded_transitive) well_founded_transitive
+instantiation prod:: (well_founded_transitive, well_founded_transitive) well_founded_transitive
 begin
 
 definition

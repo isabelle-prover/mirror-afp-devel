@@ -1867,7 +1867,7 @@ subsection {* Ordering on @{text "option"}-Datatype *}
 
 subsection "Ordering on Pair"
 
-instantiation "*" :: (ord, ord) ord
+instantiation prod :: (ord, ord) ord
 begin
   fun less_eq_prod_aux where "less_eq_prod_aux (a1,a2) (b1,b2) = (a1<b1 \<or> (a1=b1 \<and> a2 \<le> b2))"
 
@@ -1877,13 +1877,13 @@ begin
   instance ..
 end
 
-instance "*" :: (order, order) order
+instance prod :: (order, order) order
   apply intro_classes
   apply (unfold less_eq_prod_def less_prod_def)
   apply (auto dest: less_trans)
   done
 
-instance "*" :: (linorder, linorder) linorder
+instance prod :: (linorder, linorder) linorder
   apply intro_classes
   apply (unfold less_eq_prod_def less_prod_def)
   apply auto

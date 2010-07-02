@@ -1203,7 +1203,7 @@ end
 
 subsubsection {* @{typ "'a \<times> 'b"} *}
 
-instantiation * :: (card_UNIV, card_UNIV) card_UNIV begin
+instantiation prod :: (card_UNIV, card_UNIV) card_UNIV begin
 
 definition card_UNIV_product_def: 
   "card_UNIV_class.card_UNIV = (\<lambda>a :: ('a \<times> 'b) itself. card_UNIV (TYPE('a)) * card_UNIV (TYPE('b)))"
@@ -1218,7 +1218,7 @@ end
 
 subsubsection {* @{typ "'a + 'b"} *}
 
-instantiation "+" :: (card_UNIV, card_UNIV) card_UNIV begin
+instantiation sum :: (card_UNIV, card_UNIV) card_UNIV begin
 
 definition card_UNIV_sum_def: 
   "card_UNIV_class.card_UNIV = (\<lambda>a :: ('a + 'b) itself. let ca = card_UNIV (TYPE('a)); cb = card_UNIV (TYPE('b))
