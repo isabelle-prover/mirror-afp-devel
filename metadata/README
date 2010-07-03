@@ -1,0 +1,178 @@
+Metadata format
+---------------
+
+We're using a simple INI-like format for configuration
+files.
+
+  * File 'metadata'
+
+    Master storage for entry metadata. Format:
+
+    [<short-name>]
+    title = <title>
+    author = <author1> [<<url1>>], <author2> ...
+    date = <YYYY>-<MM>-<HH>
+    topic = <topic>/<subtopic>/..., <topic2>/...
+    base = <base-theory>
+    abstract = <text>
+
+    Example:
+
+    [Presburger-Automata]
+    title = Formalizing the Logic-Automaton Connection
+    author = Stefan Berghofer <http://www.in.tum.de/~berghofe>, Markus Reiter
+    date = 2009-12-03
+    topic = Computer Science/Automata, Logic
+    base = HOL
+    abstract = This abstract has
+      multiple lines ...
+
+    The section name (<short-name> in this terminology) must correspond to
+    the folder name in 'thys' directory. This short name is used as entry
+    identifier during the whole process.
+
+    The key 'base' can be omitted. In this case, the script assumes 'HOL'.
+    If the entry uses e. g. HOLCF, you have to specify that explicitly as
+    this information is used to generate the links.
+
+    Currently, only three levels of topics and subtopics are allowed, but
+    you may specify as many topics as you wish. If multiple topics are
+    specified, the entry will appear under each of them. Note that the
+    short name must be the same as their name in the 'thys' folder.
+
+    For each author, you may provide an URI (either a web page or a mail
+    address, the latter prepended with 'mailto:') in standard <protocol:uri>
+    notation.
+
+    The section header and the keys must not contain leading whitespaces. When
+    continuing a value on a second line, this and the following lines must be
+    preceded by a whitespace. The date is the submission date of the entry.
+
+    If you've chosen multiple topics, you can comma-separate them. The key
+    'base' can be omitted if you simply use HOL (which is the default).
+    
+    If you want to have some additional text fields like 'Note' or 'Change
+    history' below the 'Abstract' column, you can use the 'extra' facility:
+    
+     extra-<key> = <heading>: <text>
+    
+    where <key> denotes an identifier (most cases 0, 1, ...) unique for each
+    entry. The particular <key> has no impact on output and is solely used for
+    disambiguating multiple extra fields.
+    
+     Example:
+    
+     extra-0 = Warning: Untested... 
+     extra-1 = History: [2010-01-01] new year
+
+    There is another special treatment at the moment: Some entries have a
+    custom format, e. g. InformationFlowSlicing, which contains multiple
+    proofs, or Valuation which doesn't contain a proof document. For these
+    entries, no entry file should be generated, but they should be listed on
+    index and topics page. These entries have another pair 'ignore = entry' in
+    the metadata file which simply means 'don't generate template 'entry.tpl'
+    for this entry'.
+
+  * File 'release-dates'
+  
+    To list the older releases, a mapping between date and Isabelle version
+    is necessary.
+    Format:
+    
+    <isabelle-version> = <release-date>
+    
+    Example:
+    
+    2003 = 2003-05-13
+    2004 = 2004-04-19
+    
+    So, all tarballs between 2003-05-13 (inclusive) and 2004-04-19 (exclusive)
+    will be treated as older release for 'Isabelle 2003'.
+    
+  * File 'releases'
+    
+    Contains a list of all released tarballs. The youngest release is always
+    ignored, so don't forget to add new releases when a new Isabelle version
+    has been added to the 'release-dates' file.
+    
+    Example:
+    
+    afp-AVL-Trees-2009-04-29.tar.gz
+    afp-Abstract-Hoare-Logics-2007-11-27.tar.gz
+    afp-Abstract-Hoare-Logics-2008-06-10.tar.gz
+
+Metadata directory
+------------------
+
+The metadata file resides in this folder, additionally to the HTML template
+files. Currently, the script supports generation of '*.shtml' files, if a
+corresponding '*.tpl' file is located in the metadata folder. Each '*.tpl'
+file should contain a line
+
+  <!--gen-->
+  
+or
+
+  <!--gen:param-->
+
+which will be replaced by the output of a so-called generator function. The
+appropriate function is inferred from the filename of the template and the
+corresponding configuration in the script. Some generators (at the moment,
+only for 'entry.tpl') require a parameter which denotes which subpart of the
+page should be rendered. For available parameters, consult the comments in
+the script.
+
+In most cases, you don't have to change these generator lines.
+
+
+Invoking sitegen.py
+-------------------
+
+When invoking without arguments, the following help is displayed:
+
+  Usage: sitegen.py [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR] metadata-dir
+
+The script requires one parameter to pass specifying the metadata folder.
+Secondly, you must specify at least one action (--check or --dest)
+(examples assume that you are in the root of the repository):
+
+  --check=THYS_DIR
+
+    If you specify the 'thys' folder, the script will perform a check whether
+    the entries in the metadata file corresponds to the folders in the
+    filesystem. 
+    Example:
+
+      admin/sitegen.py --check=thys metadata
+
+    You might want to specify --no-warn when using --check if you're only
+    interested in checking the rough structure of the metadata file.
+
+  --dest=DEST_DIR
+
+    If you specify a destination folder, the script will look for templates in
+    the metadata folder and generate a corresponding file in the destination
+    folder.
+    
+    Example:
+
+      admin/sitegen.py --dest=/tmp/web metadata
+
+You may wish to supply both --check and --dest.
+
+The other parameters are optional. Provide --help to get an explanation.
+
+  --no-warn
+  
+    Disable warnings. The script will occasionally complain about 
+    various things:
+    
+      * missing keys in metadata file
+      * release of unknown entry
+      * release matches no known Isabelle version 
+        (i.e. release is 'too early')
+      
+  --debug
+  
+    Enables debug output. Each generator will print its representation of 
+    the data.
