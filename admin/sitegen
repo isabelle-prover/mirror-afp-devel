@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# standard invocation of sitegen.py
+
+cd $(hg root)
+admin/sitegen.py --dest=web metadata
