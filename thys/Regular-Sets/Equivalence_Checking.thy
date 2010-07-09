@@ -1,7 +1,7 @@
 header {* Deciding Regular Expression Equivalence *}
 
 theory Equivalence_Checking
-imports Regular_Exp While_Option
+imports Regular_Exp While_Combinator
 begin
 
 text{* This theory is based on work by Jan Rutten \cite{Rutten98}. *}
@@ -195,7 +195,7 @@ where "step as = (\<lambda>(ws,ps).
 definition closure ::
   "nat list \<Rightarrow> rexp_pairs * rexp_pairs
    \<Rightarrow> (rexp_pairs * rexp_pairs) option" where
-"closure as = while test (step as)"
+"closure as = while_option test (step as)"
 
 definition pre_bisim :: "nat list \<Rightarrow> rexp_pairs * rexp_pairs \<Rightarrow> bool"
 where
@@ -213,7 +213,7 @@ proof-
   moreover
   have "pre_bisim as (ws,[])" by (simp add: pre_bisim_def)
   ultimately have "pre_bisim as ([],ps)"
-    by (rule while_rule[OF _ assms[unfolded closure_def]])
+    by (rule while_option_rule[OF _ assms[unfolded closure_def]])
   thus "is_bisimulation as ps"
     by (simp add: pre_bisim_def is_bisimulation_def test_def)
 qed
@@ -228,7 +228,7 @@ proof-
   moreover
   have "?I (ws,[])" by simp
   ultimately have "?I ([],ps)"
-    by (rule while_rule[OF _ assms[unfolded closure_def]])
+    by (rule while_option_rule[OF _ assms[unfolded closure_def]])
 
   thus "set ws <= set ps" by simp
 qed
@@ -245,7 +245,7 @@ proof-
   moreover
   have "?I (ws,[])" using assms(2) by simp
   ultimately have "?I ([],ps)"
-    by (rule while_rule[of ?I, OF _ assms(1)[unfolded closure_def]]) simp
+    by (rule while_option_rule[of ?I, OF _ assms(1)[unfolded closure_def]]) simp
   thus ?thesis by simp
 qed
 
