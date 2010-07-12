@@ -57,12 +57,10 @@ lemma check_types_code [code]:
   "check_types P mxs mxl \<tau>s = (list_all (states P mxs mxl) \<tau>s)"
 unfolding check_types_def by(auto simp add: list_all_iff mem_def)
 
-lemma wf_jvm_prog_code [code_inline]:
+lemma wf_jvm_prog_code [code]:
   "wf_jvm_prog = wf_jvm_prog\<^isub>k"
-by(simp add: expand_fun_eq jvm_kildall_correct)
+  by (simp add: expand_fun_eq jvm_kildall_correct)
 
-definition "wf_jvm_prog' = wf_jvm_prog"
-
-export_code wf_jvm_prog' in SML
+ML {* @{code wf_jvm_prog} *}
 
 end
