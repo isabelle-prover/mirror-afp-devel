@@ -211,8 +211,7 @@ proof -
 qed
 
 subsection "Code Generation"
-export_code hs_dfs in SML module_name DFS file -
-export_code hs_dfs in OCaml module_name DFS file -
-export_code hs_dfs in Haskell module_name DFS file -
+
+export_code hs_dfs checking SML OCaml? Haskell?
 
 end
