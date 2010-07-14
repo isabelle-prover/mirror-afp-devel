@@ -97,7 +97,9 @@ case `uname -s` in
     SunOs)
         print_body "$SUBJECT" "$BODY" $@ | mail -t "$TO"
         ;;
-    Linux)
+    Linux|Darwin)
         print_body "$SUBJECT" "$BODY" $@ | /usr/sbin/sendmail "$TO"
         ;;
+	*)
+		fail "Unknown platform." 
 esac
