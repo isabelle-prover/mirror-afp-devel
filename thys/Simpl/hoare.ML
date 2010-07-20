@@ -522,8 +522,6 @@ val K_rec_congs = [];
 val K_fun_congs = [thm "StateFun.K_statefun_cong"];
 val K_congs = K_rec_congs @ K_fun_congs;
 
-val Set_thy = theory "Set";
-val Main_thy = theory "Main";
 val fun_upd_apply = thm "Fun.fun_upd_apply";
 
 (* misc. aux. functions *)
@@ -1860,7 +1858,7 @@ fun gen_call_rec_rule specs_name n rule =
      val Specs = foldr1 (mk_Un quadT_set) (map mk_spec (1 upto n));
      val rule' =
            instantiate' [] [SOME (cterm_of thy Specs)] rule
-           |> full_simplify ((global_simpset_of Main_thy)
+           |> full_simplify ((global_simpset_of @{theory Main})
                   addsimps [conjE_simp,in_Specs_simp,in_set_Un_simp,split_all_conj,
                             image_Un,image_Un_single_simp] )
            |> rename_bvars (fn s => if member (op =) ["s","\<sigma>"] s then s else "Z")
@@ -2520,8 +2518,8 @@ fun gen_call_tac cont_tac mode cmode state_kind state_space ctxt asms spec_sfx
 
           fun solve_modifies_tac i =
                 (clarsimp_tac
-                  (global_claset_of Set_thy,
-                     (Simplifier.context ctxt (global_simpset_of Set_thy))
+                  (global_claset_of @{theory Set},
+                     (Simplifier.context ctxt (global_simpset_of @{theory Set}))
                      addsimps ([mex_def,meq_def,upd_globals_def]@K_convs)
                      addsimprocs (state_upd_simproc Record::(state_simprocs state_kind))
                      addcongs K_congs) i)
@@ -2634,7 +2632,7 @@ fun call_tac cont_tac mode state_kind state_space ctxt asms spec_sfx t =
 fun solve_in_Faults_tac i =
     resolve_tac [UNIV_I, in_insert_hd] i
     ORELSE
-    SELECT_GOAL (SOLVE (simp_tac (global_simpset_of Set_thy) 1)) i;
+    SELECT_GOAL (SOLVE (simp_tac (global_simpset_of @{theory Set}) 1)) i;
 
 local
 val triv_simp = merge_assertion_simp_tac [mem_Collect_eq] THEN'
@@ -3498,7 +3496,7 @@ fun solve_modifies_tac ctxt state_kind state_space i =
   in
     (trace_tac "solve_modifies_tac" THEN
      clarsimp_tac (global_claset_of HOL.thy,
-                        (Simplifier.context ctxt (global_simpset_of Set_thy))
+                        (Simplifier.context ctxt (global_simpset_of @{theory Set}))
                          addsimps ([mex_def,meq_def]@K_convs)
                          addsimprocs (state_upd_simproc Record::(state_simprocs Record))
                          addcongs K_congs) i)
