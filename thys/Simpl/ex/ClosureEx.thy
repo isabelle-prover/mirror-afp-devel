@@ -27,7 +27,7 @@ USA
 *)
 
 theory ClosureEx
-imports "../Vcg" "../Heap" Closure
+imports "../Vcg" "../Simpl_Heap" Closure
 begin
 
 
