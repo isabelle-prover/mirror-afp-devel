@@ -1,5 +1,4 @@
-(*  ID:          $Id: Heap.thy,v 1.6 2008-06-12 06:57:26 lsf37 Exp $
-    Author:      Norbert Schirmer
+(*  Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
 *)
@@ -26,12 +25,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-theory Heap 
-imports "Ref"
+theory Simpl_Heap 
+imports Main
 begin
 
 subsection "References"
 
+typedef ref = "UNIV::nat set" by simp
+
+types_code
+  ref ("int") 
+attach (term_of) {*
+ val term_of_ref = HOLogic.mk_int o IntInf.fromInt;
+*}
 
 lemma finite_nat_ex_max: 
   assumes fin: "finite (N::nat set)"
@@ -83,22 +89,33 @@ proof
     by (simp add: ref_def infinite_nat)
 qed
 
+consts Null :: ref 
 
-defs new_def: "new A == SOME a. a \<notin> {Null} \<union> A"
+definition new :: "ref set \<Rightarrow> ref" where
+  "new A = (SOME a. a \<notin> {Null} \<union> A)"
+
+text {*
+  Constant @{const "Null"} can be defined later on.  Conceptually
+  @{const "Null"} and @{const "new"} are @{text "fixes"} of a locale
+  with @{prop "finite A \<Longrightarrow> new A \<notin> A \<union> {Null}"}.  But since definitions
+  relative to a locale do not yet work in Isabelle2005 we use this
+  workaround to avoid lots of parameters in definitions.
+*}
 
 lemma new_notin [simp,intro]:
- "\<lbrakk>finite A\<rbrakk> \<Longrightarrow> new (A) \<notin> A"
-apply(unfold new_def)
-apply(rule someI2_ex)
-apply (fastsimp intro: ex_new_if_finite)
-apply simp
-done
+ "finite A \<Longrightarrow> new (A) \<notin> A"
+  apply (unfold new_def)
+  apply (rule someI2_ex)
+  apply (fastsimp intro: ex_new_if_finite)
+  apply simp
+  done
 
-lemma new_not_Null [simp,intro]: "\<lbrakk>finite A\<rbrakk> \<Longrightarrow> new (A) \<noteq> Null"
-apply(unfold new_def)
-apply(rule someI2_ex)
-apply (fastsimp intro: ex_new_if_finite)
-apply simp
+lemma new_not_Null [simp,intro]:
+  "finite A \<Longrightarrow> new (A) \<noteq> Null"
+  apply (unfold new_def)
+  apply (rule someI2_ex)
+  apply (fastsimp intro: ex_new_if_finite)
+  apply simp
 done
 
 end

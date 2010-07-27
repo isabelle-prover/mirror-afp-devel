@@ -1,5 +1,4 @@
-(*  ID:          $Id: HeapList.thy,v 1.3 2008-03-07 15:23:43 lsf37 Exp $
-    Author:      Norbert Schirmer
+(*  Author:      Norbert Schirmer
     Maintainer:  Norbert Schirmer, norbert.schirmer at web de
     License:     LGPL
 *)
@@ -27,7 +26,9 @@ USA
 *)
 
 header {* Paths and Lists in the Heap *}
-theory HeapList imports "Heap" begin
+theory HeapList
+imports Simpl_Heap
+begin
 
 text {* Adapted from 'HOL/Hoare/Heap.thy'. *}
 

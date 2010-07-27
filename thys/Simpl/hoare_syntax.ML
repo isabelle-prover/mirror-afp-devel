@@ -89,6 +89,8 @@ val upd_globalsN = "upd_globals";   (* FIXME authentic syntax !? *)
 val allocN = "alloc_'";
 val freeN = "free_'";
 
+val Null = Syntax.free "Simpl_Heap.Null";   (* FIXME ?? *)
+
 
 (** utils **)
 
@@ -576,8 +578,6 @@ fun new_tr ctxt (ts as [var,size,init]) =
         val free = lookup_comp ctxt [] freeN (Bound 0);
         val freetest = Syntax.const @{const_syntax Orderings.less_eq} $ size $ free;
 
-        val null = Syntax.free "Ref.Null";   (* FIXME ?? *)
-
         val alloc_upd =
           update_comp ctxt [] false false allocN
             (Syntax.const @{const_syntax Cons} $ new $ alloc);
@@ -592,7 +592,7 @@ fun new_tr ctxt (ts as [var,size,init]) =
         val cond =
           Syntax.const @{const_syntax If} $ freetest $
             update_tr ctxt [] offset offset new var g' $
-            update_tr ctxt [] offset offset null var (Bound 0);
+            update_tr ctxt [] offset offset Null var (Bound 0);
 
       in Syntax.const @{const_syntax Basic} $ Abs ("s", dummyT, cond)
       end
@@ -627,8 +627,6 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
         val free = lookup_comp ctxt [] freeN (Bound 0);
         val freetest = Syntax.const @{const_syntax Orderings.less_eq} $ size $ free;
 
-        val null = Syntax.free "Ref.Null";   (* FIXME ?? *)
-
         val alloc_upd =
           update_comp ctxt [] false false allocN
             (Syntax.const @{const_syntax Cons} $ new $ alloc);
@@ -643,7 +641,7 @@ fun nnew_tr ctxt (ts as [var,size,init]) =
         val cond =
           Syntax.const @{const_syntax if_rel} $ Abs ("s", dummyT, freetest) $
             Abs ("s", dummyT, update_tr ctxt [] offset offset new var g') $
-            Abs ("s", dummyT, update_tr ctxt [] offset offset null var (Bound 0)) $
+            Abs ("s", dummyT, update_tr ctxt [] offset offset Null var (Bound 0)) $
             Abs ("s", dummyT, update_tr ctxt [] offset offset new var g');
 
       in Syntax.const @{const_syntax Spec} $ cond
@@ -702,7 +700,7 @@ fun not_zero t =
 
 fun not_Null t =
   Syntax.const @{const_syntax Not} $
-    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.free "Ref.Null");   (* FIXME ?? *)
+    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.free "Simpl_Heap.Null");   (* FIXME ?? *)
 
 fun in_length i l =
   Syntax.const @{const_syntax Orderings.less} $ i $

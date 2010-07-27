@@ -1,5 +1,4 @@
 (*  Title:       BDD
-    ID:          $Id: BinDag.thy,v 1.6 2008-07-25 10:03:56 fhaftmann Exp $
     Author:      Veronika Ortner and Norbert Schirmer, 2004
     Maintainer:  Norbert Schirmer,  norbert.schirmer at web de
     License:     LGPL
@@ -30,7 +29,7 @@ USA
 header {* BDD Abstractions *}
 
 theory BinDag
-imports "../Simpl/Heap"
+imports "../Simpl/Simpl_Heap"
 begin
 
 datatype dag = Tip | Node dag ref dag
