@@ -106,7 +106,7 @@ abbreviation src :: "('edge,'node,'state) LDCFG_edge \<Rightarrow> 'node LDCFG_n
 abbreviation trg :: "('edge,'node,'state) LDCFG_edge \<Rightarrow> 'node LDCFG_node"
   where "trg a \<equiv> snd(snd a)"
 
-abbreviation knd :: "('edge,'node,'state) LDCFG_edge \<Rightarrow> 'state edge_kind"
+definition knd :: "('edge,'node,'state) LDCFG_edge \<Rightarrow> 'state edge_kind"
   where "knd a \<equiv> fst(snd a)"
 
 
@@ -162,8 +162,9 @@ proof -
     thus "state_val (transfer (knd a) s) V = state_val s V"
     proof(induct rule:lift_valid_edge.induct)
       case lve_edge
-      thus ?case by(fastsimp intro:CFG_edge_no_Def_equal dest:lift_Def_node[of _ Def])
-    qed auto
+      thus ?case by(fastsimp intro:CFG_edge_no_Def_equal dest:lift_Def_node[of _ Def]
+        simp:knd_def)
+    qed(auto simp:knd_def)
   next
     fix a s s'
     assume assms:"lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
@@ -209,7 +210,7 @@ proof -
 	  have "state_val s V = state_val s' V" by simp
 	  with `e = (Node (sourcenode a), kind a, Node (targetnode a))` 
 	    `\<exists>Q. kind a = (Q)\<^isub>\<surd>`
-	  show ?thesis by fastsimp
+	  show ?thesis by(fastsimp simp:knd_def)
 	next
 	  case False
 	  { fix V' assume "V' \<in> Use (sourcenode a)"
@@ -225,14 +226,14 @@ proof -
 	    `e = (Node (sourcenode a), kind a, Node (targetnode a))`
 	  have "\<forall>V \<in> Def (sourcenode a). state_val (transfer (kind a) s) V =
             state_val (transfer (kind a) s') V"
-	    by -(erule CFG_edge_transfer_uses_only_Use,auto)
+	    by -(erule CFG_edge_transfer_uses_only_Use,auto simp:knd_def)
 	  from `V \<in> lift_Def Def Entry Exit H L (src e)` False
 	    `e = (Node (sourcenode a), kind a, Node (targetnode a))`
 	  have "V \<in> Def (sourcenode a)" by(fastsimp elim:lift_Def_set.cases)
 	  with `\<forall>V \<in> Def (sourcenode a). state_val (transfer (kind a) s) V =
             state_val (transfer (kind a) s') V`
 	    `e = (Node (sourcenode a), kind a, Node (targetnode a))`
-	  show ?thesis by simp
+	  show ?thesis by(simp add:knd_def)
 	qed
       next
 	case (lve_Entry_edge e)
@@ -247,7 +248,7 @@ proof -
 	have False
 	  by(fastsimp elim:lift_Def_set.cases intro!:Entry_noteq_Exit simp:Exit_empty)
 	thus ?case  by simp
-      qed simp
+      qed(simp add:knd_def)
     qed
   next
     fix a s s'
@@ -256,7 +257,7 @@ proof -
       and "\<forall>V\<in>lift_Use Use Entry Exit H L (src a). state_val s V = state_val s' V"
     thus "pred (knd a) s'"
       by(induct rule:lift_valid_edge.induct,
-	 auto elim!:CFG_edge_Uses_pred_equal dest:lift_Use_node)
+	 auto elim!:CFG_edge_Uses_pred_equal dest:lift_Use_node simp:knd_def)
   next
     fix a a'
     assume "lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a"
@@ -271,7 +272,7 @@ proof -
 	`src e = src a'` `trg e \<noteq> trg a'`
       show ?case
       proof(induct rule:lift_valid_edge.induct)
-	case lve_edge thus ?case by(auto dest:deterministic)
+	case lve_edge thus ?case by(auto dest:deterministic simp:knd_def)
       next
 	case (lve_Exit_edge e')
 	from `e = (Node (sourcenode a), kind a, Node (targetnode a))`
@@ -280,7 +281,7 @@ proof -
 	with `valid_edge a` have False by(rule Exit_source)
 	thus ?case by simp
       qed auto
-    qed (fastsimp elim:lift_valid_edge.cases)+
+    qed (fastsimp elim:lift_valid_edge.cases simp:knd_def)+
   qed
 qed
 
@@ -307,7 +308,7 @@ proof -
     from lve_Entry_Exit_edge
     show "\<exists>a. lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit a \<and>
               src a = NewEntry \<and> trg a = NewExit \<and> knd a = (\<lambda>s. False)\<^isub>\<surd>"
-      by fastsimp
+      by(fastsimp simp:knd_def)
   qed
 qed
 
@@ -411,7 +412,7 @@ proof -
   next
     from lve_Entry_edge lve
     show "\<exists>a. lve a \<and> src a = NewEntry \<and> trg a = Node Entry \<and> knd a = (\<lambda>s. True)\<^isub>\<surd>"
-      by fastsimp
+      by(fastsimp simp:knd_def)
   next
     fix a assume "lve a" and "trg a = Node Entry"
     with lve show "src a = NewEntry" by(fastsimp elim:lift_valid_edge.cases)
@@ -422,7 +423,7 @@ proof -
   next
     from lve_Exit_edge lve
     show "\<exists>a. lve a \<and> src a = Node Exit \<and> trg a = NewExit \<and> knd a = (\<lambda>s. True)\<^isub>\<surd>"
-      by fastsimp
+      by(fastsimp simp:knd_def)
   next
     fix a assume "lve a" and "src a = Node Exit"
     with lve show "trg a = NewExit" by(fastsimp elim:lift_valid_edge.cases)
@@ -1081,7 +1082,7 @@ proof -
   next
     from lve_Entry_edge lve
     show "\<exists>a. lve a \<and> src a = NewEntry \<and> trg a = Node Entry \<and> knd a = (\<lambda>s. True)\<^isub>\<surd>"
-      by fastsimp
+      by(fastsimp simp:knd_def)
   next
     fix a assume "lve a" and "trg a = Node Entry"
     with lve show "src a = NewEntry" by(fastsimp elim:lift_valid_edge.cases)
@@ -1092,7 +1093,7 @@ proof -
   next
     from lve_Exit_edge lve
     show "\<exists>a. lve a \<and> src a = Node Exit \<and> trg a = NewExit \<and> knd a = (\<lambda>s. True)\<^isub>\<surd>"
-      by fastsimp
+      by(fastsimp simp:knd_def)
   next
     fix a assume "lve a" and "src a = Node Exit"
     with lve show "trg a = NewExit" by(fastsimp elim:lift_valid_edge.cases)
@@ -1431,7 +1432,7 @@ proof -
   next
     from lve_Entry_edge lve
     show "\<exists>a. lve a \<and> src a = NewEntry \<and> trg a = Node Entry \<and> knd a = (\<lambda>s. True)\<^isub>\<surd>"
-      by fastsimp
+      by(fastsimp simp:knd_def)
   next
     fix a assume "lve a" and "trg a = Node Entry"
     with lve show "src a = NewEntry" by(fastsimp elim:lift_valid_edge.cases)
@@ -1442,7 +1443,7 @@ proof -
   next
     from lve_Exit_edge lve
     show "\<exists>a. lve a \<and> src a = Node Exit \<and> trg a = NewExit \<and> knd a = (\<lambda>s. True)\<^isub>\<surd>"
-      by fastsimp
+      by(fastsimp simp:knd_def)
   next
     fix a assume "lve a" and "src a = Node Exit"
     with lve show "trg a = NewExit" by(fastsimp elim:lift_valid_edge.cases)

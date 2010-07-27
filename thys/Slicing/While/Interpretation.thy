@@ -1,6 +1,9 @@
 header {* \isaheader{Instantiate CFG locale with While CFG} *}
 
-theory Interpretation imports WCFG "../Basic/CFGExit" begin
+theory Interpretation imports 
+  WCFG 
+  "../Basic/CFGExit" 
+begin
 
 subsection {* Instatiation of the @{text CFG} locale *}
 
@@ -22,9 +25,8 @@ definition valid_node ::"cmd \<Rightarrow> w_node \<Rightarrow> bool"
     (\<exists>a. valid_edge prog a \<and> (n = sourcenode a \<or> n = targetnode a))"
 
 
-interpretation While_CFG:
-  CFG sourcenode targetnode kind "valid_edge prog" Entry
-  for prog
+lemma While_CFG_aux:
+  "CFG sourcenode targetnode (valid_edge prog) Entry"
 proof(unfold_locales)
   fix a assume "valid_edge prog a" and "targetnode a = (_Entry_)"
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
@@ -43,9 +45,14 @@ next
   show "a = a'" by simp
 qed
 
-interpretation While_CFGExit:CFGExit sourcenode targetnode kind 
-  "valid_edge prog" Entry Exit
+interpretation While_CFG:
+  CFG sourcenode targetnode kind "valid_edge prog" Entry
   for prog
+  by(rule While_CFG_aux)
+
+
+lemma While_CFGExit_aux:
+  "CFGExit sourcenode targetnode kind (valid_edge prog) Entry Exit"
 proof(unfold_locales)
   fix a assume "valid_edge prog a" and "sourcenode a = (_Exit_)"
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
@@ -59,5 +66,9 @@ next
     by(fastsimp simp:valid_edge_def)
 qed
 
+interpretation While_CFGExit:
+  CFGExit sourcenode targetnode kind "valid_edge prog" Entry Exit
+  for prog
+by(rule While_CFGExit_aux)
 
 end

@@ -700,7 +700,7 @@ proof(rule ccontr)
 qed
 
 
-lemma WOD_valid_backward_slice: 
+lemma WODBackwardSliceCorrect:
   "BackwardSlice sourcenode targetnode kind valid_edge
         (_Entry_) Def Use state_val wod_backward_slice"
 proof(unfold_locales)
