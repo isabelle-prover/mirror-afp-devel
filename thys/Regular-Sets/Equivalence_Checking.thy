@@ -14,7 +14,7 @@ where
 | "le_rexp _ Zero = False"
 | "le_rexp One _ = True"
 | "le_rexp _ One = False"
-| "le_rexp (Atom i) (Atom j) = (i <= j)"
+| "le_rexp (Atom a) (Atom b) = (a <= b)"
 | "le_rexp (Atom _) _ = True"
 | "le_rexp _ (Atom _) = False"
 | "le_rexp (Star r) (Star s) = le_rexp r s"
@@ -66,7 +66,7 @@ primrec norm :: "nat rexp \<Rightarrow> nat rexp"
 where
   "norm Zero = Zero"
 | "norm One = One"
-| "norm (Atom i) = Atom i"
+| "norm (Atom a) = Atom a"
 | "norm (Plus r s) = nPlus (norm r) (norm s)"
 | "norm (Times r s) = nTimes (norm r) (norm s)"
 | "norm (Star r) = Star (norm r)"
@@ -93,12 +93,12 @@ primrec ederiv :: "nat \<Rightarrow> nat rexp \<Rightarrow> nat rexp"
 where
   "ederiv _ Zero = Zero"
 | "ederiv _ One = Zero"
-| "ederiv i (Atom j) = (if i = j then One else Zero)"
-| "ederiv i (Plus r s) = nPlus (ederiv i r) (ederiv i s)"
-| "ederiv i (Times r s) =
-    (let r's = nTimes (ederiv i r) s
-     in if final r then nPlus r's (ederiv i s) else r's)"
-| "ederiv i (Star r) = nTimes (ederiv i r) (Star r)"
+| "ederiv a (Atom b) = (if a = b then One else Zero)"
+| "ederiv a (Plus r s) = nPlus (ederiv a r) (ederiv a s)"
+| "ederiv a (Times r s) =
+    (let r's = nTimes (ederiv a r) s
+     in if final r then nPlus r's (ederiv a s) else r's)"
+| "ederiv a (Star r) = nTimes (ederiv a r) (Star r)"
 
 lemma lang_ederiv: "lang (ederiv a r) = deriv a (lang r)"
 by (induct r) (auto simp: Let_def deriv_conc1 deriv_conc2 lang_final)
