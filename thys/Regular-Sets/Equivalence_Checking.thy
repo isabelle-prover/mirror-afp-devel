@@ -129,19 +129,18 @@ definition is_bisimulation ::
   "nat list \<Rightarrow> rexp_pairs \<Rightarrow> bool"
 where
 "is_bisimulation as ps =
-  (\<forall>(r,s)\<in> set ps. (final r \<longleftrightarrow> final s) \<and>
+  (\<forall>(r,s)\<in> set ps. (atoms r \<union> atoms s \<subseteq> set as) \<and> (final r \<longleftrightarrow> final s) \<and>
     (\<forall>a\<in>set as. (ederiv a r, ederiv a s) \<in> set ps))"
 
 lemma bisim_lang_eq:
-assumes atoms: "\<forall>(r,s) \<in> set ps. atoms r \<union> atoms s \<subseteq> set as"
 assumes bisim: "is_bisimulation as ps"
 assumes "(r, s) \<in> set ps"
 shows "lang r = lang s"
 proof -
   def ps' \<equiv> "(Zero, Zero) # ps"
-  with atoms bisim 
-  have atoms': "\<forall>(r,s) \<in> set ps'. atoms r \<union> atoms s \<subseteq> set as"and bisim': "is_bisimulation as ps'"
-    by (auto simp: is_bisimulation_def)
+  from bisim have bisim': "is_bisimulation as ps'"
+    by (auto simp: ps'_def is_bisimulation_def)
+
   let ?R = "\<lambda>K L. (\<exists>(r,s)\<in>set ps'. K = lang r \<and> L = lang s)"
   show ?thesis
   proof (rule language_coinduct[where R="?R"])
@@ -165,8 +164,8 @@ proof -
       thus ?thesis by (force simp: KL lang_ederiv)
     next
       assume "a \<notin> set as"
-      with atoms' rs
-      have "a \<notin> atoms r" "a \<notin> atoms s" by auto
+      with bisim' rs
+      have "a \<notin> atoms r" "a \<notin> atoms s" by (auto simp: is_bisimulation_def)
       then have "ederiv a r = Zero" "ederiv a s = Zero"
         by (auto intro: deriv_no_occurrence)
       then have "deriv a K = lang Zero" 
@@ -197,57 +196,34 @@ definition closure ::
    \<Rightarrow> (rexp_pairs * rexp_pairs) option" where
 "closure as = while_option test (step as)"
 
-definition pre_bisim :: "nat list \<Rightarrow> rexp_pairs * rexp_pairs \<Rightarrow> bool"
+definition pre_bisim :: "nat list \<Rightarrow> nat rexp \<Rightarrow> nat rexp \<Rightarrow>
+ rexp_pairs * rexp_pairs \<Rightarrow> bool"
 where
-"pre_bisim as = (\<lambda>(ws,ps).
+"pre_bisim as r s = (\<lambda>(ws,ps).
+ ((r, s) \<in> set ws \<union> set ps) \<and>
+ (\<forall>(r,s)\<in> set ws \<union> set ps. atoms r \<union> atoms s \<subseteq> set as) \<and>
  (\<forall>(r,s)\<in> set ps. (final r \<longleftrightarrow> final s) \<and>
    (\<forall>a\<in>set as. (ederiv a r, ederiv a s) \<in> set ps \<union> set ws)))"
 
-lemma closure_sound_bisim:
-assumes "closure as (ws,[]) = Some([],ps)"
-shows "is_bisimulation as ps"
+theorem closure_sound:
+assumes result: "closure as ([(r,s)],[]) = Some([],ps)"
+and atoms: "atoms r \<union> atoms s \<subseteq> set as"
+shows "lang r = lang s"
 proof-
-  { fix s have "pre_bisim as s \<Longrightarrow> test s \<Longrightarrow> pre_bisim as (step as s)"
+  { fix st have "pre_bisim as r s st \<Longrightarrow> test st \<Longrightarrow> pre_bisim as r s (step as st)"
       unfolding pre_bisim_def test_def step_def
-      by (cases s) (auto simp: split_def split: list.splits) }
+      by (cases st) (auto simp: split_def split: list.splits
+        dest!: subsetD[OF atoms_ederiv]) }
   moreover
-  have "pre_bisim as (ws,[])" by (simp add: pre_bisim_def)
-  ultimately have "pre_bisim as ([],ps)"
-    by (rule while_option_rule[OF _ assms[unfolded closure_def]])
-  thus "is_bisimulation as ps"
-    by (simp add: pre_bisim_def is_bisimulation_def test_def)
+  from atoms
+  have "pre_bisim as r s ([(r,s)],[])" by (simp add: pre_bisim_def)
+  ultimately have pre_bisim_ps: "pre_bisim as r s ([],ps)"
+    by (rule while_option_rule[OF _ result[unfolded closure_def]])
+  then have "is_bisimulation as ps" "(r, s) \<in> set ps"
+    by (auto simp: pre_bisim_def is_bisimulation_def test_def)
+  thus "lang r = lang s" by (rule bisim_lang_eq)
 qed
 
-theorem closure_sound_subset:
-assumes "closure as (ws,[]) = Some([],ps)"
-shows "set ws \<subseteq> set ps"
-proof-
-  let ?I = "%s. set ws <= set(fst s @ snd s)"
-  { fix s have "?I s \<Longrightarrow> test s \<Longrightarrow> ?I (step as s)"
-      unfolding test_def step_def by (fastsimp split: list.splits) }
-  moreover
-  have "?I (ws,[])" by simp
-  ultimately have "?I ([],ps)"
-    by (rule while_option_rule[OF _ assms[unfolded closure_def]])
-
-  thus "set ws <= set ps" by simp
-qed
-
-theorem closure_sound_atoms:
-assumes "closure as (ws,[]) = Some([],ps)"
-and "\<forall>(r,s) \<in> set ws. atoms r \<union> atoms s \<subseteq> set as"
-shows "\<forall>(r,s) \<in> set ps. atoms r \<union> atoms s \<subseteq> set as"
-proof-
-  let ?I = "%s. \<forall>(r,s) \<in> set(fst s @ snd s). atoms r \<union> atoms s \<subseteq> set as"
-  { fix s have "?I s \<Longrightarrow> test s \<Longrightarrow> ?I (step as s)"
-      unfolding test_def step_def
-      by (fastsimp split: list.splits dest!: subsetD[OF atoms_ederiv]) }
-  moreover
-  have "?I (ws,[])" using assms(2) by simp
-  ultimately have "?I ([],ps)"
-    by (rule while_option_rule[of ?I, OF _ assms(1)[unfolded closure_def]]) simp
-  thus ?thesis by simp
-qed
 
 subsection {* The overall procedure *}
 
@@ -275,13 +251,8 @@ proof -
   let ?as = "add_atoms r (add_atoms s [])"
   obtain ps where 1: "closure ?as ([(norm r,norm s)],[]) = Some([],ps)"
     using assms by (auto simp: check_eqv_def split:option.splits list.splits)
-  have "lang (norm r) = lang (norm s)"
-  proof (rule bisim_lang_eq[OF _ closure_sound_bisim[OF 1]])
-    show "\<forall>(r, s)\<in>set ps. atoms r \<union> atoms s \<subseteq> set ?as"
-      using closure_sound_atoms[OF 1]
-      by (fastsimp simp: set_add_atoms dest!: subsetD[OF atoms_norm])
-    show "(norm r, norm s) \<in> set ps" using closure_sound_subset[OF 1] by simp
-  qed
+  then have "lang (norm r) = lang (norm s)"
+    by (rule closure_sound) (auto simp: set_add_atoms dest!: subsetD[OF atoms_norm])
   thus "lang r = lang s" by simp
 qed
 
