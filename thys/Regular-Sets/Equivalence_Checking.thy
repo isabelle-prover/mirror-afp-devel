@@ -188,7 +188,7 @@ definition step :: "nat list \<Rightarrow> rexp_pairs * rexp_pairs \<Rightarrow>
 where "step as = (\<lambda>(ws,ps).
     let 
       ps' = hd ws # ps;
-      new = filter (\<lambda>p. p \<notin> set ps') (succs as (hd ws))
+      new = filter (\<lambda>p. p \<notin> set ps' \<union> set ws) (succs as (hd ws))
     in (new @ tl ws, ps'))"
 
 definition closure ::
