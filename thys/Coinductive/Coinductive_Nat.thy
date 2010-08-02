@@ -123,7 +123,7 @@ next
   thus ?case by(simp only: funpow_Suc_tail_rec)
 qed
 
-lemma inat_corec [code]:
+lemma inat_corec [code, nitpick_simp]:
   "inat_corec a f = (case f a of None \<Rightarrow> 0 | Some a \<Rightarrow> iSuc (inat_corec a f))"
 proof(cases "\<exists>n. ((map_comp f) ^^ n) f a = None")
   case True
