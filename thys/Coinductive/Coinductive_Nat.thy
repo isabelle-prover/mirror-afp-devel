@@ -63,7 +63,7 @@ qed
 
 definition inat_cocase :: "'a \<Rightarrow> (inat \<Rightarrow> 'a) \<Rightarrow> inat \<Rightarrow> 'a"
 where
-  "inat_cocase z s n = 
+  [nitpick_simp]: "inat_cocase z s n = 
    (case n of Fin n' \<Rightarrow> (case n' of 0 \<Rightarrow> z | Suc n'' \<Rightarrow> s (Fin n'')) | Infty \<Rightarrow> s Infty)"
 
 lemma inat_cocase_0 [simp]:

@@ -89,7 +89,7 @@ definition ltl :: "'a llist \<Rightarrow> 'a llist"
 where [code del]: "ltl xs = (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> xs')"
 
 definition llast :: "'a llist \<Rightarrow> 'a"
-where "llast xs = (case llength xs of Fin n \<Rightarrow> case n of 0 \<Rightarrow> undefined | Suc n' \<Rightarrow> lnth xs n' | \<infinity> \<Rightarrow> undefined)"
+where [nitpick_simp]: "llast xs = (case llength xs of Fin n \<Rightarrow> case n of 0 \<Rightarrow> undefined | Suc n' \<Rightarrow> lnth xs n' | \<infinity> \<Rightarrow> undefined)"
 
 definition inf_llist :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a llist"
 where [code del]: "inf_llist f = llist_corec f (\<lambda>f. Some (f 0, \<lambda>n. f (Suc n)))"
@@ -340,7 +340,7 @@ by(fastsimp simp add: list_of_def intro: inv_f_f inj_onI)
 lemma llist_of_list_of: "lfinite xs \<Longrightarrow> llist_of (list_of xs) = xs"
 unfolding lfinite_eq_range_llist_of by auto
 
-lemma list_of_LNil [simp, code]: "list_of LNil = []"
+lemma list_of_LNil [simp, code, nitpick_simp]: "list_of LNil = []"
 using list_of_llist_of[of "[]"] by simp
 
 lemma list_of_LCons : "lfinite xs \<Longrightarrow> list_of (LCons x xs) = x # list_of xs"
@@ -354,13 +354,13 @@ next
       llist_of_list_of[OF `lfinite xs'`] by simp
 qed
 
-lemma list_of_LCons_code [code]:
+lemma list_of_LCons_code [code, nitpick_simp]:
   "list_of (LCons x xs) = (if lfinite xs then x # list_of xs else undefined)"
 by(auto simp add: list_of_LCons)(auto simp add: list_of_def)
 
 subsection {* The length of a lazy list: @{term "llength"} *}
 
-lemma [simp, code]:
+lemma [simp, code, nitpick_simp]:
   shows llength_LNil: "llength LNil = 0"
   and llength_LCons: "llength (LCons x xs) = iSuc (llength xs)"
 by(simp_all add: llength_def inat_corec)
@@ -471,7 +471,7 @@ qed
 
 subsection {* Taking and dropping from lazy lists: @{term "ltake"} and @{term "ldrop"} *}
 
-lemma ltake_LNil [simp, code]: "ltake n LNil = LNil"
+lemma ltake_LNil [simp, code, nitpick_simp]: "ltake n LNil = LNil"
 by(simp add: ltake_def llist_corec split: inat_cosplit)
 
 lemma ltake_0 [simp]: "ltake 0 xs = LNil"
@@ -486,7 +486,7 @@ lemma ltake_iSuc:
   (case xs of LNil \<Rightarrow> LNil | LCons x xs' \<Rightarrow> LCons x (ltake n xs'))"
 by(cases xs) simp_all
 
-lemma ltake_LCons [code]:
+lemma ltake_LCons [code, nitpick_simp]:
   "ltake n (LCons x xs) =
   (case n of 0 \<Rightarrow> LNil | iSuc n' \<Rightarrow> LCons x (ltake n' xs))"
 by(cases n rule: inat_coexhaust) simp_all
@@ -983,7 +983,7 @@ by(metis iSuc_Fin iSuc_plus_1 ltake_plus_conv_lappend ldrop.simps(1) ldropn_Suc_
 
 subsection {* Zipping two lazy lists to a lazy list of pairs @{term "lzip" } *}
 
-lemma lzip_simps [simp, code]:
+lemma lzip_simps [simp, code, nitpick_simp]:
   "lzip LNil ys = LNil"
   "lzip xs LNil = LNil"
   "lzip (LCons x xs) (LCons y ys) = LCons (x, y) (lzip xs ys)"
@@ -1584,7 +1584,7 @@ qed
 
 subsection {* Head and tail: @{term "lhd"} and @{term "ltl"} *}
 
-lemma lhd_LCons [simp, code]:
+lemma lhd_LCons [simp, code, nitpick_simp]:
   "lhd (LCons x xs) = x"
 by(simp add: lhd_def)
 
@@ -1596,7 +1596,7 @@ lemma lhd_conv_lnth:
   "xs \<noteq> LNil \<Longrightarrow> lhd xs = lnth xs 0"
 by(auto simp add: lhd_def neq_LNil_conv)
 
-lemma ltl_simps [simp, code]:
+lemma ltl_simps [simp, code, nitpick_simp]:
   shows ltl_LNil: "ltl LNil = LNil"
   and ltl_LCons: "ltl (LCons x xs) = xs"
 by(simp_all add: ltl_def)
@@ -1728,13 +1728,13 @@ subsection {*
 lemma lprefix_refl [intro, simp]: "lprefix xs xs"
 by(auto simp add: lprefix_def intro: exI[where x=LNil])
 
-lemma lprefix_LNIl [simp]: "lprefix xs LNil \<longleftrightarrow> xs = LNil"
+lemma lprefix_LNIl [simp, nitpick_simp]: "lprefix xs LNil \<longleftrightarrow> xs = LNil"
 by(auto simp add: lprefix_def)
 
 lemma LNil_lprefix [simp, intro]: "lprefix LNil xs"
 by(simp add: lprefix_def)
 
-lemma lprefix_LCons_conv: 
+lemma lprefix_LCons_conv [nitpick_simp]:
   "lprefix xs (LCons y ys) \<longleftrightarrow> 
    xs = LNil \<or> (\<exists>xs'. xs = LCons y xs' \<and> lprefix xs' ys)"
 by(cases xs)(auto simp add: lprefix_def)
@@ -1787,7 +1787,7 @@ lemma lprefix_code [code]:
   "lprefix (LCons x xs) (LCons y ys) \<longleftrightarrow> x = y \<and> lprefix xs ys"
 by simp_all
 
-lemma lstrict_prefix_code [code, simp]:
+lemma lstrict_prefix_code [code, simp, nitpick_simp]:
   "lstrict_prefix LNil LNil \<longleftrightarrow> False"
   "lstrict_prefix LNil (LCons y ys) \<longleftrightarrow> True"
   "lstrict_prefix (LCons x xs) LNil \<longleftrightarrow> False"
@@ -2601,7 +2601,7 @@ using assms by induct auto
 
 text {* @{text find}: basic equations *}
 
-lemma find_LNil [simp]: "find p LNil = LNil"
+lemma find_LNil [simp, nitpick_simp]: "find p LNil = LNil"
 by (unfold find_def, blast)
 
 lemma findRel_imp_find [simp]: "(l,l') \<in> findRel p ==> find p l = l'"
@@ -2616,13 +2616,13 @@ by (unfold find_def, blast)
 lemma find_LCons_seek: "~ (p x) ==> find p (LCons x l) = find p l"
 by(cases "LCons x l \<in> Domain (findRel p) ")(fastsimp intro: findRel_imp_find)+
 
-lemma find_LCons [simp]:
+lemma find_LCons [simp, nitpick_simp]:
      "find p (LCons x l) = (if p x then LCons x l else find p l)"
 by (simp add: find_LCons_seek find_LCons_found)
 
 text {* @{text lfilter}: basic equations *}
 
-lemma lfilter_LNil [simp]: "lfilter p LNil = LNil"
+lemma lfilter_LNil [simp, nitpick_simp]: "lfilter p LNil = LNil"
 unfolding lfilter_def by(simp add: llist_corec)
 
 lemma diverge_lfilter_LNil [simp]:
@@ -2640,7 +2640,7 @@ unfolding lfilter_def by(simp add: llist_corec)
 lemma lfilter_LCons_seek: "~ (p x) ==> lfilter p (LCons x l) = lfilter p l"
 unfolding lfilter_def by(simp add: llist_corec)
 
-lemma lfilter_LCons [simp]:
+lemma lfilter_LCons [simp, nitpick_simp]:
   "lfilter p (LCons x l) =
   (if p x then LCons x (lfilter p l) else lfilter p l)"
 by (simp add: lfilter_LCons_found lfilter_LCons_seek)
@@ -3092,10 +3092,10 @@ qed
 
 subsection {* Concatenating all lazy lists in a lazy list: @{term "lconcat"} *}
 
-lemma lconcat_LNil [simp, code]: "lconcat LNil = LNil"
+lemma lconcat_LNil [simp, code, nitpick_simp]: "lconcat LNil = LNil"
 by(simp add: lconcat_def llist_corec)
 
-lemma lconcat_LCons [simp, code]:
+lemma lconcat_LCons [simp, code, nitpick_simp]:
   "lconcat (LCons ys xss) = lappend ys (lconcat xss)"
 proof(cases "ys = LNil")
   case True thus ?thesis by(simp add: lconcat_def)
@@ -3196,10 +3196,10 @@ subsection {* Sublist view of a lazy list: @{term "lsublist"} *}
 lemma lsublist_empty [simp]: "lsublist xs {} = LNil"
 by(auto simp add: lsublist_def split_def lfilter_empty_conv)
 
-lemma lsublist_LNil [simp]: "lsublist LNil A = LNil"
+lemma lsublist_LNil [simp, nitpick_simp]: "lsublist LNil A = LNil"
 by(simp add: lsublist_def)
 
-lemma lsublist_LCons:
+lemma lsublist_LCons [nitpick_simp]:
   "lsublist (LCons x xs) A = 
   (if 0 \<in> A then LCons x (lsublist xs {n. Suc n \<in> A}) else lsublist xs {n. Suc n \<in> A})"
 proof -
@@ -3434,7 +3434,7 @@ subsection {*
   with constructors @{term "llist_of"} and @{term "inf_llist"}
 *}
 
-lemma inf_llist_rec [code]:
+lemma inf_llist_rec [code, nitpick_simp]:
   "inf_llist f = LCons (f 0) (inf_llist (\<lambda>n. f (Suc n)))"
 unfolding inf_llist_def
 by(subst llist_corec) simp

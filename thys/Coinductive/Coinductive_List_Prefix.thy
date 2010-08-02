@@ -66,7 +66,7 @@ definition [code del]:
                       (case ys of LNil \<Rightarrow> None
                          | LCons y ys' \<Rightarrow> if (x = y) then Some (x, xs', ys') else None))"
 
-lemma llist_inf_simps [simp, code]:
+lemma llist_inf_simps [simp, code, nitpick_simp]:
   "inf LNil xs = LNil"
   "inf xs LNil = LNil"
   "inf (LCons x xs) (LCons y ys) = (if x = y then LCons x (inf xs ys) else LNil)"
