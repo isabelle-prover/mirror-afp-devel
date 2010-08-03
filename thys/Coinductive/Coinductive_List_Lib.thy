@@ -3196,10 +3196,10 @@ subsection {* Sublist view of a lazy list: @{term "lsublist"} *}
 lemma lsublist_empty [simp]: "lsublist xs {} = LNil"
 by(auto simp add: lsublist_def split_def lfilter_empty_conv)
 
-lemma lsublist_LNil [simp, nitpick_simp]: "lsublist LNil A = LNil"
+lemma lsublist_LNil [simp]: "lsublist LNil A = LNil"
 by(simp add: lsublist_def)
 
-lemma lsublist_LCons [nitpick_simp]:
+lemma lsublist_LCons:
   "lsublist (LCons x xs) A = 
   (if 0 \<in> A then LCons x (lsublist xs {n. Suc n \<in> A}) else lsublist xs {n. Suc n \<in> A})"
 proof -

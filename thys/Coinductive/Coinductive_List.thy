@@ -5,7 +5,7 @@
 header {* Potentially infinite lists as greatest fixed-point *}
 
 theory Coinductive_List
-imports Nitpick2d(*###*)
+imports Main
 begin
 
 subsection {* List constructors over the datatype universe *}
