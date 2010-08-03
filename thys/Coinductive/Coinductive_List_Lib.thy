@@ -1728,13 +1728,13 @@ subsection {*
 lemma lprefix_refl [intro, simp]: "lprefix xs xs"
 by(auto simp add: lprefix_def intro: exI[where x=LNil])
 
-lemma lprefix_LNIl [simp, nitpick_simp]: "lprefix xs LNil \<longleftrightarrow> xs = LNil"
+lemma lprefix_LNIl [simp]: "lprefix xs LNil \<longleftrightarrow> xs = LNil"
 by(auto simp add: lprefix_def)
 
 lemma LNil_lprefix [simp, intro]: "lprefix LNil xs"
 by(simp add: lprefix_def)
 
-lemma lprefix_LCons_conv [nitpick_simp]:
+lemma lprefix_LCons_conv:
   "lprefix xs (LCons y ys) \<longleftrightarrow> 
    xs = LNil \<or> (\<exists>xs'. xs = LCons y xs' \<and> lprefix xs' ys)"
 by(cases xs)(auto simp add: lprefix_def)
@@ -2601,7 +2601,7 @@ using assms by induct auto
 
 text {* @{text find}: basic equations *}
 
-lemma find_LNil [simp, nitpick_simp]: "find p LNil = LNil"
+lemma find_LNil [simp]: "find p LNil = LNil"
 by (unfold find_def, blast)
 
 lemma findRel_imp_find [simp]: "(l,l') \<in> findRel p ==> find p l = l'"
@@ -2616,13 +2616,13 @@ by (unfold find_def, blast)
 lemma find_LCons_seek: "~ (p x) ==> find p (LCons x l) = find p l"
 by(cases "LCons x l \<in> Domain (findRel p) ")(fastsimp intro: findRel_imp_find)+
 
-lemma find_LCons [simp, nitpick_simp]:
+lemma find_LCons [simp]:
      "find p (LCons x l) = (if p x then LCons x l else find p l)"
 by (simp add: find_LCons_seek find_LCons_found)
 
 text {* @{text lfilter}: basic equations *}
 
-lemma lfilter_LNil [simp, nitpick_simp]: "lfilter p LNil = LNil"
+lemma lfilter_LNil [simp]: "lfilter p LNil = LNil"
 unfolding lfilter_def by(simp add: llist_corec)
 
 lemma diverge_lfilter_LNil [simp]:
@@ -2640,7 +2640,7 @@ unfolding lfilter_def by(simp add: llist_corec)
 lemma lfilter_LCons_seek: "~ (p x) ==> lfilter p (LCons x l) = lfilter p l"
 unfolding lfilter_def by(simp add: llist_corec)
 
-lemma lfilter_LCons [simp, nitpick_simp]:
+lemma lfilter_LCons [simp]:
   "lfilter p (LCons x l) =
   (if p x then LCons x (lfilter p l) else lfilter p l)"
 by (simp add: lfilter_LCons_found lfilter_LCons_seek)
@@ -3092,10 +3092,10 @@ qed
 
 subsection {* Concatenating all lazy lists in a lazy list: @{term "lconcat"} *}
 
-lemma lconcat_LNil [simp, code, nitpick_simp]: "lconcat LNil = LNil"
+lemma lconcat_LNil [simp, code]: "lconcat LNil = LNil"
 by(simp add: lconcat_def llist_corec)
 
-lemma lconcat_LCons [simp, code, nitpick_simp]:
+lemma lconcat_LCons [simp, code]:
   "lconcat (LCons ys xss) = lappend ys (lconcat xss)"
 proof(cases "ys = LNil")
   case True thus ?thesis by(simp add: lconcat_def)
