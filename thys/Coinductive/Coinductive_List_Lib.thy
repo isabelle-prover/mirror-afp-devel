@@ -1787,7 +1787,7 @@ lemma lprefix_code [code]:
   "lprefix (LCons x xs) (LCons y ys) \<longleftrightarrow> x = y \<and> lprefix xs ys"
 by simp_all
 
-lemma lstrict_prefix_code [code, simp, nitpick_simp]:
+lemma lstrict_prefix_code [code, simp]:
   "lstrict_prefix LNil LNil \<longleftrightarrow> False"
   "lstrict_prefix LNil (LCons y ys) \<longleftrightarrow> True"
   "lstrict_prefix (LCons x xs) LNil \<longleftrightarrow> False"
