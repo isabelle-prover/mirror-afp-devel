@@ -62,8 +62,8 @@ proof -
 qed
 
 definition inat_cocase :: "'a \<Rightarrow> (inat \<Rightarrow> 'a) \<Rightarrow> inat \<Rightarrow> 'a"
-where
-  [nitpick_simp]: "inat_cocase z s n = 
+where [nitpick_simp]:
+  "inat_cocase z s n = 
    (case n of Fin n' \<Rightarrow> (case n' of 0 \<Rightarrow> z | Suc n'' \<Rightarrow> s (Fin n'')) | Infty \<Rightarrow> s Infty)"
 
 lemma inat_cocase_0 [simp]:
@@ -343,5 +343,16 @@ by(simp add: iSuc_def split: inat.split)
 lemma iSuc_minus_1 [simp]: "iSuc n - 1 = n"
 by(simp add: one_inat_def iSuc_Fin[symmetric] zero_inat_def[symmetric])
 
+subsection {* Misc. *}
+
+lemma Fin_add_mono [simp]:
+  "Fin x + y < Fin x + z \<longleftrightarrow> y < z"
+by(cases y)(case_tac [!] z, simp_all)
+
+lemma Fin_add1_eq [simp]: "Fin x + y = Fin x + z \<longleftrightarrow> y = z"
+by (metis Fin_add_mono add_commute neq_iff)
+
+lemma Fin_add2_eq [simp]: "y + Fin x = z + Fin x \<longleftrightarrow> y = z"
+by (metis Fin_add1_eq add_commute)
 
 end

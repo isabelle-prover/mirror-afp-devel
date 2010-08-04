@@ -8,7 +8,6 @@ header {* Terminated coinductive lists *}
 theory TLList imports
   "Quotient_Coinductive_List"
   "Quotient_Product"
-  "Quotient_List"
   "Quotient_Sum"
 begin
 
@@ -63,6 +62,12 @@ lemma prod_case_preserve2 [quot_preserve]:
 using Quotient_abs_rep[OF q]
 by(auto intro!: ext)
 
+lemma id_preserve [quot_preserve]:
+  assumes "Quotient R Abs Rep"
+  shows "(Rep ---> Abs) id = id"
+using Quotient_abs_rep[OF assms]
+by(auto intro: ext)
+
 lemma split_fst: "R (fst p) = (\<forall>x y. p = (x, y) \<longrightarrow> R x)"
 by(cases p) simp
 
@@ -73,6 +78,9 @@ subsection {* Type definition *}
 
 fun tlist_eq :: "('a llist \<times> 'b) \<Rightarrow> ('a llist \<times> 'b) \<Rightarrow> bool"
 where "tlist_eq (xs, a) (ys, b) \<longleftrightarrow> xs = ys \<and> (lfinite xs \<longrightarrow> a = b)"
+
+lemma tlist_eq_iff: "tlist_eq xsa ysb \<longleftrightarrow> fst xsa = fst ysb \<and> (lfinite (fst xsa) \<longrightarrow> snd xsa = snd ysb)"
+by(cases xsa, cases ysb) auto
 
 lemma equivp_tlist_eq: "equivp tlist_eq"
 by(rule equivpI)(auto simp add: reflp_def symp_def transp_def)
@@ -85,6 +93,9 @@ lemma prod_case_repsect_tlist_eq [quot_respect]:
   "((op = ===> op = ===> tlist_eq) ===> op = ===> tlist_eq) prod_case prod_case"
 by(simp)
 
+lemma id_respect_tlist_eq [quot_respect]:
+  "(tlist_eq ===> tlist_eq) id id"
+by auto
 
 quotient_type ('a, 'b) tllist = "'a llist \<times> 'b" / tlist_eq
 by(rule equivp_tlist_eq)
@@ -111,34 +122,12 @@ by(simp add: TCONS_def)
 
 code_datatype TNil TCons
 
-lemma tllist_simps [simp]:
-  fixes a :: 'a and b :: 'b
+lemma tllist_simps [simp, induct_simp]:
   shows "TNil b \<noteq> TCons a tr"
   and "TCons a tr \<noteq> TNil b"
   and TNil_inject: "TNil b = TNil b' \<longleftrightarrow> b = b'"
   and TCons_inject: "TCons a tr = TCons a' tr' \<longleftrightarrow> a = a' \<and> tr = tr'"
-proof -
-  { fix a :: 'a and b :: 'b and xsb
-    have "\<not> tlist_eq (TNIL b) (TCONS a xsb)"
-      by(cases xsb)(simp add: TCONS_def TNIL_def) }
-  note neq = this
-  show "TNil b \<noteq> TCons a tr" by(lifting neq)
-  thus "TCons a tr \<noteq> TNil b" by(simp)
-next
-  { fix b b' :: 'b
-    have "tlist_eq (TNIL b) (TNIL b') \<longleftrightarrow> b = b'"
-      by(simp add: TNIL_def) }
-  note eqNil = this
-  show "TNil b = TNil b' \<longleftrightarrow> b = b'" by(lifting eqNil)
-next
-  { fix a a' :: 'a and xsb xsb' :: "'a llist \<times> 'b"
-    have "tlist_eq (TCONS a xsb) (TCONS a' xsb')
-          \<longleftrightarrow> a = a' \<and> tlist_eq xsb xsb'"
-      by(cases xsb, cases xsb')(simp add: TCONS_def) }
-  note eqCons = this
-  show "TCons a tr = TCons a' tr' \<longleftrightarrow> a = a' \<and> tr = tr'"
-    by(lifting eqCons)
-qed
+by(descending, clarsimp simp add: TNIL_def TCONS_def)+
 
 primrec tllist_case_aux :: "('b \<Rightarrow> 'e) \<Rightarrow> ('a \<Rightarrow> ('a llist \<times> 'b) \<Rightarrow> 'e) \<Rightarrow> ('a llist \<times> 'b) \<Rightarrow> 'e"
 where "tllist_case_aux f g (xs, b) = (case xs of LNil \<Rightarrow> f b | LCons x xs' \<Rightarrow> g x (xs', b))"
@@ -153,21 +142,10 @@ is "tllist_case_aux"
 translations
   "case p of XCONST TNil y \<Rightarrow> a | XCONST TCons x l \<Rightarrow> b" \<rightleftharpoons> "CONST tllist_case (\<lambda>y. a) (\<lambda>x l. b) p"
 
-lemma tllist_case_aux_simps:
-  shows tllist_case_aux_LNil: "tllist_case_aux f g (TNIL b) = f b"
-  and tllist_case_aux_LCons: "tllist_case_aux f g (TCONS x xsb) = g x xsb"
-by(cases xsb, simp add: split_beta TNIL_def TCONS_def)+
-
-lemma tllist_case_TNil:
-  "tllist_case f g (TNil b) = f b"
-by(lifting tllist_case_aux_LNil)
-
-lemma tllist_case_TCons:
-  "tllist_case f g (TCons x tr) = g x tr"
-by(lifting tllist_case_aux_LCons)
-
-lemmas tllist_case_simps [simp, code] = 
-  tllist_case_TNil tllist_case_TCons
+lemma tllist_case_simps [simp, code]:
+  shows tllist_case_TNil: "tllist_case f g (TNil b) = f b"
+  and tllist_case_TCons: "tllist_case f g (TCons x tr) = g x tr"
+by(descending, clarsimp simp add: split_beta TNIL_def TCONS_def)+
 
 lemma tllist_case_cert:
   assumes "CASE \<equiv> tllist_case c d"
@@ -298,7 +276,24 @@ lemma tllist_corec [code, nitpick_simp]:
   "tllist_corec a f = (sum_case (prod_case (\<lambda>b a'. TCons b (tllist_corec a' f))) TNil (f a))"
 by(lifting tllist_corec_aux)
 
-subsection {* Lifting constants from @{typ "'a llist"} to @{typ "('a, 'b) tllist"} *}
+subsection {* Library function definitions *}
+
+text {* 
+  We lift the constants from @{typ "'a llist"} to @{typ "('a, 'b) tllist"} using the quotient package.
+  This way, many results are transferred easily.
+*}
+
+definition tllist_of_llist :: "'b \<Rightarrow> 'a llist \<Rightarrow> ('a, 'b) tllist"
+where
+  "tllist_of_llist s tls = 
+   tllist_corec tls (\<lambda>tls. case tls of LNil \<Rightarrow> Inr s 
+                           |  LCons tl tls' \<Rightarrow> Inl (tl, tls'))"
+
+primrec TERMINAL :: "('a llist \<times> 'b) \<Rightarrow> 'b"
+where "TERMINAL (xs, c) = (if lfinite xs then c else undefined)"
+
+quotient_definition "terminal :: ('a, 'b) tllist \<Rightarrow> 'b"
+is "TERMINAL"
 
 primrec tMAP :: "('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> 'a llist \<times> 'c \<Rightarrow> 'b llist \<times> 'd"
 where "tMAP f g (xs, b) = (lmap f xs, g b)"
@@ -306,45 +301,11 @@ where "tMAP f g (xs, b) = (lmap f xs, g b)"
 quotient_definition "tmap :: ('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('a, 'c) tllist \<Rightarrow> ('b, 'd) tllist"
 is "tMAP"
 
-lemma tMAP_respect [quot_respect]:
-  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tMAP tMAP"
-by(auto intro: ext)
-
-lemma tMAP_TNIL: "tMAP f g (TNIL b) = TNIL (g b)"
-by(simp add: TNIL_def)
-
-lemma tmap_TNil [simp, code]: "tmap f g (TNil b) = TNil (g b)"
-by(lifting tMAP_TNIL)
-
-lemma tMAP_TCONS: "tMAP f g (TCONS a xsb) = TCONS (f a) (tMAP f g xsb)"
-by(cases xsb)(simp add: TCONS_def)
-
-lemma tmap_TCons [simp, code]: "tmap f g (TCons a tr) = TCons (f a) (tmap f g tr)"
-by(lifting tMAP_TCONS)
-
 primrec tAPPEND :: "'a llist \<times> 'b \<Rightarrow> ('b \<Rightarrow> 'a llist \<times> 'c) \<Rightarrow> 'a llist \<times> 'c"
 where "tAPPEND (xs, b) f = (lappend xs (fst (f b)), snd (f b))"
 
 quotient_definition "tappend :: ('a, 'b) tllist \<Rightarrow> ('b \<Rightarrow> ('a, 'c) tllist) \<Rightarrow> ('a, 'c) tllist"
 is "tAPPEND"
-
-lemma tappend_respect [quot_respect]:
-  "(tlist_eq ===> (op = ===> tlist_eq) ===> tlist_eq) tAPPEND tAPPEND"
-apply(auto intro: ext simp add: lappend_inf split: split_fst)
-apply(erule_tac x=ba in allE, auto)+
-done
-
-lemma tAPPEND_TNIL: "tAPPEND (TNIL b) f = f b"
-by(simp add: TNIL_def)
-
-lemma tappend_TNil [simp, code]: "tappend (TNil b) f = f b"
-by(lifting tAPPEND_TNIL)
-
-lemma tAPPEND_TCONS: "tAPPEND (TCONS a xsb) f = TCONS a (tAPPEND xsb f)"
-by(cases xsb)(simp add: TCONS_def)
-
-lemma tappend_TCons [simp, code]: "tappend (TCons a tr) f = TCons a (tappend tr f)"
-by(lifting tAPPEND_TCONS)
 
 primrec lAPPENDt :: "'a llist \<Rightarrow> 'a llist \<times> 'b \<Rightarrow> 'a llist \<times> 'b"
 where "lAPPENDt xs (ys, b) = (lappend xs ys, b)"
@@ -352,45 +313,11 @@ where "lAPPENDt xs (ys, b) = (lappend xs ys, b)"
 quotient_definition "lappendt :: 'a llist \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 is "lAPPENDt"
 
-lemma lappendt_respect [quot_respect]:
-  "(op = ===> tlist_eq ===> tlist_eq) lAPPENDt lAPPENDt"
-by(auto intro: ext)
-
-lemma lAPPENDt_LNil: "lAPPENDt LNil xsb = xsb"
-by(cases xsb) simp
-
-lemma lappendt_LNil [simp, code]: "lappendt LNil tr = tr"
-by(lifting lAPPENDt_LNil)
-
-lemma lAPPENDt_LCons: "lAPPENDt (LCons x xs) xsb = TCONS x (lAPPENDt xs xsb)"
-by(cases xsb)(simp add: TCONS_def)
-
-lemma lappendt_LCons [simp, code]: "lappendt (LCons x xs) tr = TCons x (lappendt xs tr)"
-by(lifting lAPPENDt_LCons)
-
 primrec tFILTER :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('b llist \<times> 'a) \<Rightarrow> ('b llist \<times> 'a)"
 where "tFILTER b P (xs, b') = (lfilter P xs, if lfinite xs then b' else b)"
 
 quotient_definition "tfilter :: 'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('b, 'a) tllist \<Rightarrow> ('b, 'a) tllist"
 is "tFILTER"
-
-lemma tfilter_respect [quot_respect]: 
-  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tFILTER tFILTER"
-by(auto intro: ext)
-
-lemma tFILTER_TNIL: "tFILTER b' P (TNIL b) = TNIL b"
-by(simp add: TNIL_def)
-
-lemma tfilter_TNil [code, simp]:
-  "tfilter b' P (TNil b) = TNil b"
-by(lifting tFILTER_TNIL)
-
-lemma tFILTER_TCONS: "tFILTER b P (TCONS a xsb) = (if P a then TCONS a (tFILTER b P xsb) else tFILTER b P xsb)"
-by(cases xsb)(simp add: TCONS_def)
-
-lemma tfilter_TCons [code, simp]:
-  "tfilter b P (TCons a tr) = (if P a then TCons a (tfilter b P tr) else tfilter b P tr)"
-by(lifting tFILTER_TCONS)
 
 primrec tCONCAT :: "'a \<Rightarrow> ('b llist llist \<times> 'a) \<Rightarrow> ('b llist \<times> 'a)"
 where "tCONCAT b (xss, b') = (lconcat xss, if lfinite xss then b' else b)"
@@ -398,20 +325,341 @@ where "tCONCAT b (xss, b') = (lconcat xss, if lfinite xss then b' else b)"
 quotient_definition "tconcat :: 'a \<Rightarrow> ('b llist, 'a) tllist \<Rightarrow> ('b, 'a) tllist"
 is "tCONCAT"
 
+fun TLLIST_ALL2 :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a llist \<times> 'c) \<Rightarrow> ('b llist \<times> 'd) \<Rightarrow> bool"
+where "TLLIST_ALL2 P Q (xs, b) (ys, b') \<longleftrightarrow> llist_all2 P xs ys \<and> (lfinite xs \<longrightarrow> Q b b')"
+
+quotient_definition "tllist_all2 :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a, 'c) tllist \<Rightarrow> ('b, 'd) tllist \<Rightarrow> bool"
+is TLLIST_ALL2
+
+quotient_definition "llist_of_tllist :: ('a, 'b) tllist \<Rightarrow> 'a llist"
+is "fst :: ('a llist \<times> 'b) \<Rightarrow> 'a llist"
+
+primrec TNTH :: "('a llist \<times> 'b) \<Rightarrow> nat \<Rightarrow> 'a"
+where "TNTH (xs, b) = lnth xs"
+
+quotient_definition "tnth :: ('a, 'b) tllist \<Rightarrow> nat \<Rightarrow> 'a"
+is "TNTH"
+
+primrec TLENGTH :: "('a llist \<times> 'b) \<Rightarrow> inat"
+where "TLENGTH (xs, b) = llength xs"
+
+quotient_definition "tlength :: ('a, 'b) tllist \<Rightarrow> inat"
+is "TLENGTH"
+
+primrec TDROPn :: "nat \<Rightarrow> ('a llist \<times> 'b) \<Rightarrow> ('a llist \<times> 'b)"
+where "TDROPn n (xs, b) = (ldropn n xs, b)"
+
+quotient_definition "tdropn :: nat \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
+is "TDROPn"
+
+subsection {* @{term tllist_of_llist } *}
+
+lemma tllist_of_llist_simps [simp, code]:
+  fixes tl
+  shows tllist_of_llist_LNil: "tllist_of_llist s LNil = TNil s"
+  and tllist_of_llist_LCons: "tllist_of_llist s (LCons tl tls)  = TCons tl (tllist_of_llist s tls)"
+by(simp_all add: tllist_of_llist_def tllist_corec)
+
+subsection {* @{term "terminal"} *}
+
+lemma TERMINAL_respect [quot_respect]:
+  "(tlist_eq ===> op =) TERMINAL TERMINAL"
+by(auto)
+
+lemma terminal_TNil [simp, code]: "terminal (TNil b) = b"
+by(descending)(simp add: TNIL_def)
+
+lemma terminal_TCons [simp, code]: "terminal (TCons x xs) = terminal xs"
+by(descending)(auto simp add: TCONS_def)
+
+subsection {* @{term "tmap"} *}
+
+lemma tMAP_respect [quot_respect]:
+  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tMAP tMAP"
+by(auto intro: ext)
+
+lemma tmap_TNil [simp, code]: "tmap f g (TNil b) = TNil (g b)"
+by(descending)(simp add: TNIL_def)
+
+lemma tmap_TCons [simp, code]: "tmap f g (TCons a tr) = TCons (f a) (tmap f g tr)"
+by(descending)(auto simp add: TCONS_def)
+
+lemma tmap_compose [simp]: "tmap (f o f') (g o g') ts = tmap f g (tmap f' g' ts)"
+by(descending) auto
+
+lemma tmap_id_id [id_simps]:
+  "tmap id id = id"
+proof
+  fix ts :: "('a, 'b) tllist"
+  show "tmap id id ts = id ts"
+    by(descending)(auto simp add: lmap_id)
+qed
+
+subsection {* @{term "tappend" } *}
+
+lemma tappend_respect [quot_respect]:
+  "(tlist_eq ===> (op = ===> tlist_eq) ===> tlist_eq) tAPPEND tAPPEND"
+apply(auto intro: ext simp add: lappend_inf split: split_fst)
+apply(erule_tac x=ba in allE, auto)+
+done
+
+lemma tappend_TNil [simp, code]: "tappend (TNil b) f = f b"
+by(descending)(auto simp add: TNIL_def tlist_eq_iff)
+
+lemma tappend_TCons [simp, code]: "tappend (TCons a tr) f = TCons a (tappend tr f)"
+by(descending)(auto simp add: TCONS_def)
+
+subsection {* @{term "lappendt"} *}
+
+lemma lappendt_respect [quot_respect]:
+  "(op = ===> tlist_eq ===> tlist_eq) lAPPENDt lAPPENDt"
+by(auto intro: ext)
+
+lemma lappendt_LNil [simp, code]: "lappendt LNil tr = tr"
+by(descending)(clarsimp simp add: TNIL_def)
+
+lemma lappendt_LCons [simp, code]: "lappendt (LCons x xs) tr = TCons x (lappendt xs tr)"
+by(descending)(auto simp add: TCONS_def)
+
+subsection {* @{term tfilter} *}
+
+lemma tfilter_respect [quot_respect]: 
+  "(op = ===> op = ===> tlist_eq ===> tlist_eq) tFILTER tFILTER"
+by(auto intro: ext)
+
+lemma tfilter_TNil [code, simp]:
+  "tfilter b' P (TNil b) = TNil b"
+by(descending)(simp add: TNIL_def)
+
+lemma tfilter_TCons [code, simp]:
+  "tfilter b P (TCons a tr) = (if P a then TCons a (tfilter b P tr) else tfilter b P tr)"
+by(descending)(auto simp add: TCONS_def)
+
+subsection {* @{term tconcat} *}
+
 lemma tconcat_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) tCONCAT tCONCAT"
 by(auto intro: ext)
 
-lemma tCONCAT_TNIL: "tCONCAT b (TNIL b') = TNIL b'"
-by(simp add: TNIL_def)
-
 lemma tconcat_TNil [code, simp]: "tconcat b (TNil b') = TNil b'"
-by(lifting tCONCAT_TNIL)
-
-lemma tCONCAT_TCONS: "tCONCAT b (TCONS a xsb) = lAPPENDt a (tCONCAT b xsb)"
-by(cases xsb)(simp add: TCONS_def)
+by(descending)(simp add: TNIL_def)
 
 lemma tconcat_TCons [code, simp]: "tconcat b (TCons a tr) = lappendt a (tconcat b tr)"
-by(lifting tCONCAT_TCONS)
+by(descending)(clarsimp simp add: TCONS_def)
+
+subsection {* @{term tllist_all2} *}
+
+lemma tllist_all2_respect_tlist_eq [quot_respect]:
+  "(op = ===> op = ===> tlist_eq ===> tlist_eq ===> op =) TLLIST_ALL2 TLLIST_ALL2"
+by(auto dest: llist_all2_lfiniteD)
+
+lemma tllist_all2_TNil [simp]:
+  "tllist_all2 P Q (TNil b) (TNil b') \<longleftrightarrow> Q b b'"
+by(descending)(simp add: TNIL_def)
+
+lemma tllist_all2_TCons [simp]:
+  "tllist_all2 P Q (TCons x ts) (TCons x' ts') \<longleftrightarrow> P x x' \<and> tllist_all2 P Q ts ts'"
+by(descending)(auto simp add: TCONS_def)
+
+lemma tllist_all2_TNil1: "tllist_all2 P Q (TNil b) ts \<longleftrightarrow> (\<exists>b'. ts = TNil b' \<and> Q b b')"
+by(descending)(auto simp add: TNIL_def llist_all2_LNil1)
+
+lemma tllist_all2_TNil2: "tllist_all2 P Q ts (TNil b') \<longleftrightarrow> (\<exists>b. ts = TNil b \<and> Q b b')"
+by(descending)(auto simp add: TNIL_def llist_all2_LNil2)
+
+lemma tllist_all2_TCons1: 
+  "tllist_all2 P Q (TCons x ts) ts' \<longleftrightarrow> (\<exists>x' ts''. ts' = TCons x' ts'' \<and> P x x' \<and> tllist_all2 P Q ts ts'')"
+by descending(fastsimp simp add: TCONS_def llist_all2_LCons1 dest: llist_all2_lfiniteD)
+
+lemma tllist_all2_TCons2: 
+  "tllist_all2 P Q ts' (TCons x ts) \<longleftrightarrow> (\<exists>x' ts''. ts' = TCons x' ts'' \<and> P x' x \<and> tllist_all2 P Q ts'' ts)"
+by descending(fastsimp simp add: TCONS_def llist_all2_LCons2 dest: llist_all2_lfiniteD)
+
+lemma tllist_all2_coinduct [consumes 1, case_names tllist_all2, case_conclusion tllist_all2 TNil TCons, coinduct pred]:
+  assumes "X xs ys"
+  and "\<And>xs ys. X xs ys \<Longrightarrow> 
+  (\<exists>b b'. xs = TNil b \<and> ys = TNil b' \<and> R b b') \<or>
+  (\<exists>x y xs' ys'. xs = TCons x xs' \<and> ys = TCons y ys' \<and> P x y \<and> (X xs' ys' \<or> tllist_all2 P R xs' ys'))"
+  shows "tllist_all2 P R xs ys"
+using assms
+proof descending
+  fix X xsb ysb R P
+  assume major: "X xsb ysb"
+  and step: "\<And>xsb ysb.
+           X xsb ysb \<Longrightarrow>
+           (\<exists>b b'. tlist_eq xsb (TNIL b) \<and> tlist_eq ysb (TNIL b') \<and> R b b') \<or>
+           (\<exists>x y xsb' ysb'.
+               tlist_eq xsb (TCONS x xsb') \<and>
+               tlist_eq ysb (TCONS y ysb') \<and>
+               P x y \<and> (X xsb' ysb' \<or> TLLIST_ALL2 P R xsb' ysb'))"
+  obtain xs b where xsb [simp]: "xsb = (xs, b)" by(cases xsb)
+  obtain ys b' where ysb [simp]: "ysb = (ys, b')" by(cases ysb)
+  from major have "\<exists>b b'. X (xs, b) (ys, b')" by auto
+  hence "llist_all2 P xs ys"
+  proof(coinduct)
+    case (llist_all2 xs ys)
+    then obtain b b' where "X (xs, b) (ys, b')" by blast
+    from step[OF this] show ?case
+      by(auto simp add: TNIL_def TCONS_def)
+  qed
+  moreover {
+    assume "lfinite xs"
+    moreover from `llist_all2 P xs ys`
+    have "llength xs = llength ys" by(rule llist_all2_llengthD)
+    ultimately have "R b b'" using major unfolding xsb ysb
+    proof(induct arbitrary: ys)
+      case lfinite_LNil thus ?case
+        by(auto dest: step simp add: TNIL_def TCONS_def)
+    next
+      case (lfinite_LConsI xs x)
+      with step[OF `X (LCons x xs, b) (ys, b')`]
+      show ?thesis 
+        by(clarsimp simp add: TNIL_def TCONS_def)(auto simp add: lfinite_conv_llength_Fin)
+    qed
+  }
+  ultimately show "TLLIST_ALL2 P R xsb ysb" by simp
+qed
+
+lemma tllist_all2_cases[consumes 1, case_names TNil TCons, cases pred]:
+  assumes "tllist_all2 P Q xs ys"
+  obtains (TNil) b b' where "xs = TNil b" "ys = TNil b'" "Q b b'"
+  | (TCons) x xs' y ys'
+    where "xs = TCons x xs'" and "ys = TCons y ys'" 
+    and "P x y" and "tllist_all2 P Q xs' ys'"
+using assms
+by(cases xs)(fastsimp simp add: tllist_all2_TCons1 tllist_all2_TNil1)+
+
+lemma tllist_all2_tmap1:
+  "tllist_all2 P Q (tmap f g xs) ys \<longleftrightarrow> tllist_all2 (\<lambda>x. P (f x)) (\<lambda>x. Q (g x)) xs ys"
+by(descending)(auto simp add: llist_all2_lmap1)
+
+lemma tllist_all2_tmap2:
+  "tllist_all2 P Q xs (tmap f g ys) \<longleftrightarrow> tllist_all2 (\<lambda>x y. P x (f y)) (\<lambda>x y. Q x (g y)) xs ys"
+by(descending)(auto simp add: llist_all2_lmap2)
+
+lemma tllist_all2_mono:
+  "\<lbrakk> tllist_all2 P Q xs ys; \<And>x y. P x y \<Longrightarrow> P' x y; \<And>x y. Q x y \<Longrightarrow> Q' x y \<rbrakk>
+  \<Longrightarrow> tllist_all2 P' Q' xs ys"
+by descending(auto elim!: llist_all2_mono)
+
+subsection {* @{term llist_of_tllist} *}
+
+lemma llist_of_tllist_respect [quot_respect]: 
+  "(tlist_eq ===> op =) fst fst"
+by auto
+
+lemma llist_of_tllist_TNil [simp, code]:
+  "llist_of_tllist (TNil b) = LNil"
+by(descending)(simp add: TNIL_def)
+
+lemma llist_of_tllist_TCons [simp, code]:
+  "llist_of_tllist (TCons x xs) = LCons x (llist_of_tllist xs)"
+by(descending)(simp add: TCONS_def)
+
+lemma llist_of_tllist_tmap [simp]:
+  "llist_of_tllist (tmap f g xs) = lmap f (llist_of_tllist xs)"
+by descending(auto)
+
+lemma tllist_of_llist_inverse [simp]:
+  "llist_of_tllist (tllist_of_llist b xs) = xs"
+by(rule llist_fun_equalityI) simp_all
+
+lemma llist_of_tllist_inverse [simp]:
+  "tllist_of_llist (terminal xs) (llist_of_tllist xs) = xs"
+proof -
+  have "(tllist_of_llist (terminal xs) (llist_of_tllist xs), xs) \<in> 
+       {(tllist_of_llist (terminal xs) (llist_of_tllist xs), xs)|xs. True}"
+    by blast
+  thus ?thesis
+  proof(coinduct rule: tllist_equalityI)
+    case (Eqtllist q)
+    then obtain xs where "q = (tllist_of_llist (terminal xs) (llist_of_tllist xs), xs)" by blast
+    thus ?case by(cases xs) auto
+  qed
+qed
+
+lemma llist_of_tllist_tappend:
+  "llist_of_tllist (tappend xs f) = lappend (llist_of_tllist xs) (llist_of_tllist (f (terminal xs)))"
+by(descending)(auto simp add: lappend_inf)
+
+lemma llist_of_tllist_lappendt [simp]:
+  "llist_of_tllist (lappendt xs tr) = lappend xs (llist_of_tllist tr)"
+by descending auto
+
+lemma llist_of_tllist_tfilter [simp]:
+  "llist_of_tllist (tfilter b P tr) = lfilter P (llist_of_tllist tr)"
+by descending auto
+
+lemma llist_of_tllist_tconcat:
+  "llist_of_tllist (tconcat b trs) = lconcat (llist_of_tllist trs)"
+by descending auto
+
+subsection {* @{term "tnth"} *}
+
+lemma TNTH_respect [quot_respect]:
+  "(tlist_eq ===> op =) TNTH TNTH"
+by auto
+
+lemma tnth_TNil:
+  "tnth (TNil b) n = undefined n"
+by(descending)(simp add: TNIL_def lnth_LNil)
+
+lemma tnth_TCons:
+  "tnth (TCons x xs) n = (case n of 0 \<Rightarrow> x | Suc n' \<Rightarrow> tnth xs n')"
+by(descending)(auto simp add: TCONS_def lnth_LCons split: nat.split)
+
+lemma [simp]:
+  shows tnth_0: "tnth (TCons x xs) 0 = x"
+  and tnth_Suc_TCons: "tnth (TCons x xs) (Suc n) = tnth xs n"
+by(simp_all add: tnth_TCons)
+
+lemma lnth_llist_of_tllist [simp]:
+  "lnth (llist_of_tllist xs) = tnth xs"
+by(descending)(auto)
+
+subsection {* @{term "tlength"} *}
+
+lemma TLENGTH_respect [quot_respect]:
+  "(tlist_eq ===> op =) TLENGTH TLENGTH"
+by auto
+
+lemma tlength_TNil [simp, code]: "tlength (TNil b) = 0"
+  and tlength_TCons [simp, code]: "tlength (TCons x xs) = iSuc (tlength xs)"
+ apply(descending, simp add: TNIL_def)
+apply(descending, auto simp add: TCONS_def)
+done
+
+lemma llength_llist_of_tllist [simp]: "llength (llist_of_tllist xs) = tlength xs"
+by descending auto
+
+subsection {* @{term "tdropn"} *}
+
+lemma TDROPn_respect [quot_respect]:
+  "(op = ===> tlist_eq ===> tlist_eq) TDROPn TDROPn"
+by auto
+
+lemma tdropn_0 [simp, code]: "tdropn 0 xs = xs"
+by descending auto
+
+lemma tdropn_TNil [simp, code]: "tdropn n (TNil b) = (TNil b)"
+by descending(auto simp add: TNIL_def)
+
+lemma tdropn_Suc_TCons [simp, code]: "tdropn (Suc n) (TCons x xs) = tdropn n xs"
+by descending(auto simp add: TCONS_def)
+
+lemma tdropn_Suc: "tdropn (Suc n) xs = (case xs of TNil b \<Rightarrow> TNil b | TCons x xs' \<Rightarrow> tdropn n xs')"
+by(cases xs) simp_all -- "FIXME: Ask Cezary/Christian why descending / lifting raises a type error here"
+
+lemma lappendt_ltake_tdropn:
+  "lappendt (ltake (Fin n) (llist_of_tllist xs)) (tdropn n xs) = xs"
+by descending (auto)
+
+lemma llist_of_tllist_tdropn [simp]:
+  "llist_of_tllist (tdropn n xs) = ldropn n (llist_of_tllist xs)"
+by descending auto
+
+lemma tdropn_Suc_conv_tdropn:
+  "Fin n < tlength xs \<Longrightarrow> TCons (tnth xs n) (tdropn (Suc n) xs) = tdropn n xs" 
+by descending(auto simp add: TCONS_def ldropn_Suc_conv_ldropn)
 
 end
