@@ -1,5 +1,4 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: Yoneda.thy,v 1.10 2009-06-20 00:10:18 nipkow Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 *)
 

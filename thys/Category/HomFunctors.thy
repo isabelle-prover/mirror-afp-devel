@@ -1,5 +1,4 @@
 (*  Title:       Category theory using Isar and Locales
-    ID:          $Id: HomFunctors.thy,v 1.13 2008-11-17 16:01:28 fhaftmann Exp $
     Author:      Greg O'Keefe, June, July, August 2003
 
 Define homfunctors, prove that they are functors.
