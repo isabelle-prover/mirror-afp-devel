@@ -32,7 +32,7 @@ setup {*
         #> snd
       end;
   in
-    Theory_Target.init NONE
+    Named_Target.init NONE
     #> add_def ("Tri", Tri)
     #> add_def ("Quad", Quad)
     #> add_def ("Pent", Pent)
