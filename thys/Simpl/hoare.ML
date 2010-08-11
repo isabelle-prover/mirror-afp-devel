@@ -779,7 +779,7 @@ fun dest_Guard (Const (@{const_name Language.com.Guard},_)$f$g$c) = (f,g,c,false
 
 fun add_declaration name decl thy =
   thy
-  |> Theory_Target.init name
+  |> Named_Target.init name
   |> Local_Theory.declaration false decl
   |> Local_Theory.exit
   |> ProofContext.theory_of;
@@ -1134,7 +1134,7 @@ fun print_term thy t =
 
 fun add_abbrev loc mode name spec thy =
   thy
-  |> Theory_Target.init loc
+  |> Named_Target.init loc
   |> (fn lthy => let val t = Syntax.read_term (Local_Theory.target_of lthy) spec;
       in Local_Theory.abbrev mode ((Binding.name name, NoSyn), t) lthy end)
   |> #2
@@ -1317,7 +1317,7 @@ fun procedures_definition locname procs thy =
         fun add_decl_and_def (lname,ctxt) =
             ctxt
             |> ProofContext.theory_of
-            |> Theory_Target.init (SOME lname)
+            |> Named_Target.init (SOME lname)
             |> Local_Theory.declaration false parameter_info_decl
             |> (fn lthy => if has_body name
                            then snd (Local_Theory.define (def lthy) lthy)
