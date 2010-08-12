@@ -1281,7 +1281,7 @@ fun procedures_definition locname procs thy =
       in thy
          |> add_locale sN pE fixes
          |> ProofContext.theory_of
-         |> (fn thy => add_declaration (SOME (Locale.intern thy sN)) parameter_info_decl thy)
+         |> (fn thy => add_declaration (Locale.intern thy sN) parameter_info_decl thy)
       end;
 
 
@@ -1395,8 +1395,8 @@ fun procedures_definition locname procs thy =
               add_locale_cmd cliqN (pE thy) (elems thy) thy)
          |> ProofContext.theory_of
          |> fold add_impl_locale clique
-         |> (fn thy => add_declaration (SOME (Locale.intern thy cliqN)) proc_declaration thy)
-         |> (fn thy => add_declaration (SOME (Locale.intern thy cliqN))
+         |> (fn thy => add_declaration (Locale.intern thy cliqN) proc_declaration thy)
+         |> (fn thy => add_declaration (Locale.intern thy cliqN)
                 recursive_declaration thy)
       end;
 
@@ -1425,7 +1425,7 @@ fun procedures_definition locname procs thy =
              |> add_locale thm_name pE' [elem]
              |> ProofContext.theory_of
              |> (fn thy =>
-                  add_declaration (SOME (Locale.intern thy thm_name)) proc_declaration thy)
+                  add_declaration (Locale.intern thy thm_name) proc_declaration thy)
              |> error_to_warning ("abbreviation: '" ^ thm_name  ^ "' not added")
                   (add_abbrev (SOME (Locale.intern thy (suffix cliqueN (cname name))))                   Syntax.mode_input thm_name spec)
           end;
