@@ -129,37 +129,23 @@ by (simp add: finfun_mem_def finfun_diff_def bool_diff_def)
 lemma finfun_insert_iff [simp]: "(a \<in>\<^isub>f insert\<^isub>f b A) = (a = b | a \<in>\<^isub>f A)"
 by(simp add: finfun_insert_def finfun_mem_def finfun_upd_apply)
 
-text {* A tail-recursive function that never terminates in the code generator *}
-
-definition loop_counting :: "nat \<Rightarrow> (unit \<Rightarrow> 'a) \<Rightarrow> 'a"
-where [simp, code del]: "loop_counting n f = f ()"
-
-lemma loop_counting_code [code]: "loop_counting n = loop_counting (Suc n)"
-by(simp add: expand_fun_eq)
-
-definition loop :: "(unit \<Rightarrow> 'a) \<Rightarrow> 'a"
-where [simp, code del]: "loop f = f ()"
-
-lemma loop_code [code]: "loop = loop_counting 0"
-by(simp add: expand_fun_eq)
-
 lemma mem_finfun_apply_conv: "x \<in> f\<^sub>f \<longleftrightarrow> f\<^sub>f x"
 by(simp add: mem_def)
 
 text {* Bounded quantification.
 
-  Warning: @{text "finfun_Ball"} and @{text "finfun_Ex"} may fail to terminate, they should not be used for quickcheck
+  Warning: @{text "finfun_Ball"} and @{text "finfun_Ex"} may raise an exception, they should not be used for quickcheck
 *}
 
 definition finfun_Ball_except :: "'a list \<Rightarrow> 'a set\<^isub>f \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
 where [code del]: "finfun_Ball_except xs A P = (\<forall>a\<in>A\<^sub>f. a \<in> set xs \<or> P a)"
 
 lemma finfun_Ball_except_const:
-  "finfun_Ball_except xs (\<lambda>\<^isup>f b) P \<longleftrightarrow> \<not> b \<or> set xs = UNIV \<or> loop (\<lambda>u. finfun_Ball_except xs (\<lambda>\<^isup>f b) P)"
+  "finfun_Ball_except xs (\<lambda>\<^isup>f b) P \<longleftrightarrow> \<not> b \<or> set xs = UNIV \<or> FinFun.code_abort (\<lambda>u. finfun_Ball_except xs (\<lambda>\<^isup>f b) P)"
 by(auto simp add: finfun_Ball_except_def mem_finfun_apply_conv)
 
 lemma finfun_Ball_except_const_finfun_UNIV_code [code]:
-  "finfun_Ball_except xs (\<lambda>\<^isup>f b) P \<longleftrightarrow> \<not> b \<or> is_list_UNIV xs \<or> loop (\<lambda>u. finfun_Ball_except xs (\<lambda>\<^isup>f b) P)"
+  "finfun_Ball_except xs (\<lambda>\<^isup>f b) P \<longleftrightarrow> \<not> b \<or> is_list_UNIV xs \<or> FinFun.code_abort (\<lambda>u. finfun_Ball_except xs (\<lambda>\<^isup>f b) P)"
 by(auto simp add: finfun_Ball_except_def is_list_UNIV_iff mem_finfun_apply_conv)
 
 lemma finfun_Ball_except_update: 
@@ -181,11 +167,12 @@ by(auto intro!: ext simp add: finfun_Ball_except_def finfun_Ball_def)
 definition finfun_Bex_except :: "'a list \<Rightarrow> 'a set\<^isub>f \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
 where [code del]: "finfun_Bex_except xs A P = (\<exists>a\<in>A\<^sub>f. a \<notin> set xs \<and> P a)"
 
-lemma finfun_Bex_except_const: "finfun_Bex_except xs (\<lambda>\<^isup>f b) P \<longleftrightarrow> b \<and> set xs \<noteq> UNIV \<and> loop (\<lambda>u. finfun_Bex_except xs (\<lambda>\<^isup>f b) P)"
+lemma finfun_Bex_except_const:
+  "finfun_Bex_except xs (\<lambda>\<^isup>f b) P \<longleftrightarrow> b \<and> set xs \<noteq> UNIV \<and> FinFun.code_abort (\<lambda>u. finfun_Bex_except xs (\<lambda>\<^isup>f b) P)"
 by(auto simp add: finfun_Bex_except_def mem_finfun_apply_conv)
 
 lemma finfun_Bex_except_const_finfun_UNIV_code [code]:
-  "finfun_Bex_except xs (\<lambda>\<^isup>f b) P \<longleftrightarrow> b \<and> \<not> is_list_UNIV xs \<and> loop (\<lambda>u. finfun_Bex_except xs (\<lambda>\<^isup>f b) P)"
+  "finfun_Bex_except xs (\<lambda>\<^isup>f b) P \<longleftrightarrow> b \<and> \<not> is_list_UNIV xs \<and> FinFun.code_abort (\<lambda>u. finfun_Bex_except xs (\<lambda>\<^isup>f b) P)"
 by(auto simp add: finfun_Bex_except_def is_list_UNIV_iff mem_finfun_apply_conv)
 
 lemma finfun_Bex_except_update: 
@@ -246,7 +233,8 @@ lemma iso_finfun_diff_diff [code_inline]:
 by(auto)
 
 text {*
-  Do not declare the following two theorems as @{text "[code_inline]"}, because this causes quickcheck to loop frequently when bounded quantification is used.
+  Do not declare the following two theorems as @{text "[code_inline]"},
+  because this causes quickcheck to fail frequently when bounded quantification is used which raises an exception.
   For code generation, the same problems occur, but then, no randomly generated FinFun is usually around.
 *}
 
