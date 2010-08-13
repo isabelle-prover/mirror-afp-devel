@@ -1,6 +1,4 @@
-(*  ID:         $Id: Arch.thy,v 1.8 2008-12-04 14:49:15 fhaftmann Exp $
-    Author:     Tobias Nipkow
-*)
+(* Author: Tobias Nipkow *)
 
 header {* Archive *}
 
@@ -32,7 +30,7 @@ setup {*
         #> snd
       end;
   in
-    Named_Target.init NONE
+    Named_Target.theory_init
     #> add_def ("Tri", Tri)
     #> add_def ("Quad", Quad)
     #> add_def ("Pent", Pent)
