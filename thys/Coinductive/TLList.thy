@@ -142,7 +142,7 @@ is "tllist_case_aux"
 translations
   "case p of XCONST TNil y \<Rightarrow> a | XCONST TCons x l \<Rightarrow> b" \<rightleftharpoons> "CONST tllist_case (\<lambda>y. a) (\<lambda>x l. b) p"
 
-lemma tllist_case_simps [simp, code]:
+lemma tllist_case_simps [simp, code, nitpick_simp]:
   shows tllist_case_TNil: "tllist_case f g (TNil b) = f b"
   and tllist_case_TCons: "tllist_case f g (TCons x tr) = g x tr"
 by(descending, clarsimp simp add: split_beta TNIL_def TCONS_def)+
@@ -157,7 +157,7 @@ setup {*
 *}
 
 setup {*
-  Nitpick.register_codatatype @{typ "('a, 'b) tllist"} @{const_name llist_case}
+  Nitpick.register_codatatype @{typ "('a, 'b) tllist"} @{const_name tllist_case}
     (map dest_Const [@{term TNil}, @{term TCons}])
 *}
 
@@ -352,24 +352,24 @@ where "TDROPn n (xs, b) = (ldropn n xs, b)"
 quotient_definition "tdropn :: nat \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 is "TDROPn"
 
-subsection {* @{term tllist_of_llist } *}
+subsection {* From a lazy list to a terminated lazy list @{term tllist_of_llist } *}
 
-lemma tllist_of_llist_simps [simp, code]:
+lemma tllist_of_llist_simps [simp, code, nitpick_simp]:
   fixes tl
   shows tllist_of_llist_LNil: "tllist_of_llist s LNil = TNil s"
   and tllist_of_llist_LCons: "tllist_of_llist s (LCons tl tls)  = TCons tl (tllist_of_llist s tls)"
 by(simp_all add: tllist_of_llist_def tllist_corec)
 
-subsection {* @{term "terminal"} *}
+subsection {* The terminal element @{term "terminal"} *}
 
 lemma TERMINAL_respect [quot_respect]:
   "(tlist_eq ===> op =) TERMINAL TERMINAL"
 by(auto)
 
-lemma terminal_TNil [simp, code]: "terminal (TNil b) = b"
+lemma terminal_TNil [simp, code, nitpick_simp]: "terminal (TNil b) = b"
 by(descending)(simp add: TNIL_def)
 
-lemma terminal_TCons [simp, code]: "terminal (TCons x xs) = terminal xs"
+lemma terminal_TCons [simp, code, nitpick_simp]: "terminal (TCons x xs) = terminal xs"
 by(descending)(auto simp add: TCONS_def)
 
 subsection {* @{term "tmap"} *}
@@ -378,10 +378,10 @@ lemma tMAP_respect [quot_respect]:
   "(op = ===> op = ===> tlist_eq ===> tlist_eq) tMAP tMAP"
 by(auto intro: ext)
 
-lemma tmap_TNil [simp, code]: "tmap f g (TNil b) = TNil (g b)"
+lemma tmap_TNil [simp, code, nitpick_simp]: "tmap f g (TNil b) = TNil (g b)"
 by(descending)(simp add: TNIL_def)
 
-lemma tmap_TCons [simp, code]: "tmap f g (TCons a tr) = TCons (f a) (tmap f g tr)"
+lemma tmap_TCons [simp, code, nitpick_simp]: "tmap f g (TCons a tr) = TCons (f a) (tmap f g tr)"
 by(descending)(auto simp add: TCONS_def)
 
 lemma tmap_compose [simp]: "tmap (f o f') (g o g') ts = tmap f g (tmap f' g' ts)"
@@ -395,7 +395,7 @@ proof
     by(descending)(auto simp add: lmap_id)
 qed
 
-subsection {* @{term "tappend" } *}
+subsection {* Appending two terminated lazy lists @{term "tappend" } *}
 
 lemma tappend_respect [quot_respect]:
   "(tlist_eq ===> (op = ===> tlist_eq) ===> tlist_eq) tAPPEND tAPPEND"
@@ -403,25 +403,28 @@ apply(auto intro: ext simp add: lappend_inf split: split_fst)
 apply(erule_tac x=ba in allE, auto)+
 done
 
-lemma tappend_TNil [simp, code]: "tappend (TNil b) f = f b"
+lemma tappend_TNil [simp, code, nitpick_simp]: 
+  "tappend (TNil b) f = f b"
 by(descending)(auto simp add: TNIL_def tlist_eq_iff)
 
-lemma tappend_TCons [simp, code]: "tappend (TCons a tr) f = TCons a (tappend tr f)"
+lemma tappend_TCons [simp, code, nitpick_simp]:
+  "tappend (TCons a tr) f = TCons a (tappend tr f)"
 by(descending)(auto simp add: TCONS_def)
 
-subsection {* @{term "lappendt"} *}
+subsection {* Appending a terminated lazy list to a lazy list @{term "lappendt"} *}
 
 lemma lappendt_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) lAPPENDt lAPPENDt"
 by(auto intro: ext)
 
-lemma lappendt_LNil [simp, code]: "lappendt LNil tr = tr"
+lemma lappendt_LNil [simp, code, nitpick_simp]: "lappendt LNil tr = tr"
 by(descending)(clarsimp simp add: TNIL_def)
 
-lemma lappendt_LCons [simp, code]: "lappendt (LCons x xs) tr = TCons x (lappendt xs tr)"
+lemma lappendt_LCons [simp, code, nitpick_simp]:
+  "lappendt (LCons x xs) tr = TCons x (lappendt xs tr)"
 by(descending)(auto simp add: TCONS_def)
 
-subsection {* @{term tfilter} *}
+subsection {* Filtering terminated lazy lists @{term tfilter} *}
 
 lemma tfilter_respect [quot_respect]: 
   "(op = ===> op = ===> tlist_eq ===> tlist_eq) tFILTER tFILTER"
@@ -435,7 +438,7 @@ lemma tfilter_TCons [code, simp]:
   "tfilter b P (TCons a tr) = (if P a then TCons a (tfilter b P tr) else tfilter b P tr)"
 by(descending)(auto simp add: TCONS_def)
 
-subsection {* @{term tconcat} *}
+subsection {* Concatenating a terminated lazy list of lazy lists @{term tconcat} *}
 
 lemma tconcat_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) tCONCAT tCONCAT"
@@ -542,17 +545,17 @@ lemma tllist_all2_mono:
   \<Longrightarrow> tllist_all2 P' Q' xs ys"
 by descending(auto elim!: llist_all2_mono)
 
-subsection {* @{term llist_of_tllist} *}
+subsection {* From a terminated lazy list to a lazy list @{term llist_of_tllist} *}
 
 lemma llist_of_tllist_respect [quot_respect]: 
   "(tlist_eq ===> op =) fst fst"
 by auto
 
-lemma llist_of_tllist_TNil [simp, code]:
+lemma llist_of_tllist_TNil [simp, code, nitpick_simp]:
   "llist_of_tllist (TNil b) = LNil"
 by(descending)(simp add: TNIL_def)
 
-lemma llist_of_tllist_TCons [simp, code]:
+lemma llist_of_tllist_TCons [simp, code, nitpick_simp]:
   "llist_of_tllist (TCons x xs) = LCons x (llist_of_tllist xs)"
 by(descending)(simp add: TCONS_def)
 
@@ -594,13 +597,13 @@ lemma llist_of_tllist_tconcat:
   "llist_of_tllist (tconcat b trs) = lconcat (llist_of_tllist trs)"
 by descending auto
 
-subsection {* @{term "tnth"} *}
+subsection {* The nth element of a terminated lazy list @{term "tnth"} *}
 
 lemma TNTH_respect [quot_respect]:
   "(tlist_eq ===> op =) TNTH TNTH"
 by auto
 
-lemma tnth_TNil:
+lemma tnth_TNil [nitpick_simp]:
   "tnth (TNil b) n = undefined n"
 by(descending)(simp add: TNIL_def lnth_LNil)
 
@@ -608,7 +611,7 @@ lemma tnth_TCons:
   "tnth (TCons x xs) n = (case n of 0 \<Rightarrow> x | Suc n' \<Rightarrow> tnth xs n')"
 by(descending)(auto simp add: TCONS_def lnth_LCons split: nat.split)
 
-lemma [simp]:
+lemma [simp, nitpick_simp]:
   shows tnth_0: "tnth (TCons x xs) 0 = x"
   and tnth_Suc_TCons: "tnth (TCons x xs) (Suc n) = tnth xs n"
 by(simp_all add: tnth_TCons)
@@ -617,14 +620,15 @@ lemma lnth_llist_of_tllist [simp]:
   "lnth (llist_of_tllist xs) = tnth xs"
 by(descending)(auto)
 
-subsection {* @{term "tlength"} *}
+subsection {* The length of a terminated lazy list @{term "tlength"} *}
 
 lemma TLENGTH_respect [quot_respect]:
   "(tlist_eq ===> op =) TLENGTH TLENGTH"
 by auto
 
-lemma tlength_TNil [simp, code]: "tlength (TNil b) = 0"
-  and tlength_TCons [simp, code]: "tlength (TCons x xs) = iSuc (tlength xs)"
+lemma [simp, code, nitpick_simp]:
+  shows tlength_TNil: "tlength (TNil b) = 0"
+  and tlength_TCons: "tlength (TCons x xs) = iSuc (tlength xs)"
  apply(descending, simp add: TNIL_def)
 apply(descending, auto simp add: TCONS_def)
 done
@@ -638,7 +642,7 @@ lemma TDROPn_respect [quot_respect]:
   "(op = ===> tlist_eq ===> tlist_eq) TDROPn TDROPn"
 by auto
 
-lemma tdropn_0 [simp, code]: "tdropn 0 xs = xs"
+lemma tdropn_0 [simp, code, nitpick_simp]: "tdropn 0 xs = xs"
 by descending auto
 
 lemma tdropn_TNil [simp, code]: "tdropn n (TNil b) = (TNil b)"
@@ -647,7 +651,7 @@ by descending(auto simp add: TNIL_def)
 lemma tdropn_Suc_TCons [simp, code]: "tdropn (Suc n) (TCons x xs) = tdropn n xs"
 by descending(auto simp add: TCONS_def)
 
-lemma tdropn_Suc: "tdropn (Suc n) xs = (case xs of TNil b \<Rightarrow> TNil b | TCons x xs' \<Rightarrow> tdropn n xs')"
+lemma tdropn_Suc [nitpick_simp]: "tdropn (Suc n) xs = (case xs of TNil b \<Rightarrow> TNil b | TCons x xs' \<Rightarrow> tdropn n xs')"
 by(cases xs) simp_all -- "FIXME: Ask Cezary/Christian why descending / lifting raises a type error here"
 
 lemma lappendt_ltake_tdropn:
@@ -661,5 +665,11 @@ by descending auto
 lemma tdropn_Suc_conv_tdropn:
   "Fin n < tlength xs \<Longrightarrow> TCons (tnth xs n) (tdropn (Suc n) xs) = tdropn n xs" 
 by descending(auto simp add: TCONS_def ldropn_Suc_conv_ldropn)
+
+lemma tlength_tdropn [simp]: "tlength (tdropn n xs) = tlength xs - Fin n"
+by descending auto
+
+lemma tnth_tdropn [simp]: "Fin (n + m) < tlength xs \<Longrightarrow> tnth (tdropn n xs) m = tnth xs (m + n)"
+by descending auto
 
 end

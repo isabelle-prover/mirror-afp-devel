@@ -92,6 +92,13 @@ definition llast :: "'a llist \<Rightarrow> 'a"
 where [nitpick_simp]:
   "llast xs = (case llength xs of Fin n \<Rightarrow> case n of 0 \<Rightarrow> undefined | Suc n' \<Rightarrow> lnth xs n' | \<infinity> \<Rightarrow> undefined)"
 
+coinductive ldistinct :: "'a llist \<Rightarrow> bool"
+where 
+  LNil [simp, code]: "ldistinct LNil"
+| LCons: "\<lbrakk> x \<notin> lset xs; ldistinct xs \<rbrakk> \<Longrightarrow> ldistinct (LCons x xs)"
+
+hide_fact (open) LNil LCons
+
 definition inf_llist :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a llist"
 where [code del]: "inf_llist f = llist_corec f (\<lambda>f. Some (f 0, \<lambda>n. f (Suc n)))"
 
@@ -149,6 +156,19 @@ by(simp add: min_def)
 
 lemma inat_le_plus_same: "x \<le> (x :: inat) + y" "x \<le> y + x"
 by(auto simp add: less_eq_inat_def plus_inat_def split: inat.split)
+
+lemma wlog_linorder_le [consumes 0, case_names le symmetry]:
+  assumes le: "\<And>a b :: 'a :: linorder. a \<le> b \<Longrightarrow> P a b"
+  and sym: "P b a \<Longrightarrow> P a b"
+  shows "P a b"
+proof(cases "a \<le> b")
+  case True thus ?thesis by(rule le)
+next
+  case False
+  hence "b \<le> a" by simp
+  hence "P b a" by(rule le)
+  thus ?thesis by(rule sym)
+qed
 
 lemma llist_split_asm:
   "P (llist_case f g xs) =
@@ -427,6 +447,10 @@ lemma length_list_of:
   "lfinite xs \<Longrightarrow> Fin (length (list_of xs)) = llength xs"
 apply(rule sym)
 by(induct rule: lfinite.induct)(auto simp add: iSuc_Fin list_of_LCons zero_inat_def)
+
+lemma length_list_of_conv_the_Fin:
+  "lfinite xs \<Longrightarrow> length (list_of xs) = the_Fin (llength xs)"
+unfolding lfinite_eq_range_llist_of by auto
 
 lemma llength_eq_Fin_lfiniteD: "llength xs = Fin n \<Longrightarrow> lfinite xs"
 proof(induct n arbitrary: xs)
@@ -837,30 +861,16 @@ qed
 lemma ldrop_eq_LNil: "ldrop n xs = LNil \<longleftrightarrow> llength xs \<le> n"
 by(cases n)(simp_all add: ldropn_eq_LNil)
 
+lemma llength_ldropn [simp]: "llength (ldropn n xs) = llength xs - Fin n"
+proof(induct n arbitrary: xs)
+  case 0 thus ?case by(simp add: zero_inat_def[symmetric])
+next
+  case (Suc n) thus ?case by(cases xs)(simp_all add: iSuc_Fin[symmetric])
+qed
+
 lemma Fin_llength_ldropn:
   "Fin n \<le> llength xs \<Longrightarrow> Fin (n - m) \<le> llength (ldropn m xs)"
-proof(induct m arbitrary: xs n)
-  case 0 thus ?case by simp
-next
-  case (Suc m)
-  note IH = `\<And>n xs. Fin n \<le> llength xs \<Longrightarrow> Fin (n - m) \<le> llength (ldropn m xs)`
-  show ?case
-  proof(cases xs)
-    case LNil with `Fin n \<le> llength xs`
-    show ?thesis by(simp add: zero_inat_def)
-  next
-    case (LCons x xs')
-    show ?thesis
-    proof(cases n)
-      case 0
-      thus ?thesis by(simp add: zero_inat_def[symmetric])
-    next
-      case (Suc n')
-      with IH[of n' xs'] `Fin n \<le> llength xs` LCons show ?thesis
-        by(auto simp add: iSuc_Fin[symmetric] ldropn.simps)
-    qed
-  qed
-qed
+by(cases "llength xs") simp_all
 
 lemma ldropn_iterates: "ldropn n (iterates f x) = iterates f ((f ^^ n) x)"
 proof(induct n arbitrary: x)
@@ -957,6 +967,12 @@ next
   hence "lnth (llist_of xs') n = xs' ! n" by(rule Suc)
   ultimately show ?case by simp
 qed
+
+lemma nth_list_of [simp]: 
+  assumes "lfinite xs"
+  shows "nth (list_of xs) = lnth xs"
+using assms
+by induct(auto intro: ext simp add: nth_def lnth_LNil list_of_LCons nth_Cons split: nat.split)
 
 lemma lnth_lappend1:
   "Fin n < llength xs \<Longrightarrow> lnth (lappend xs ys) n = lnth xs n"
@@ -1503,8 +1519,39 @@ by(auto intro: lset_into_lsetp dest: lsetp_into_lset simp: mem_def intro!: ext)
 hide_const (open) lsetp
 hide_fact (open) lsetp.intros lsetp_def lsetp.cases lsetp.induct lset_into_lsetp lset_eq_lsetp
 
+
 lemma lset_lmap [simp]: "lset (lmap f xs) = f ` lset xs"
 by(auto simp add: lset_def intro: rev_image_eqI)
+
+lemma lset_ltake: "lset (ltake n xs) \<subseteq> lset xs"
+proof(rule subsetI)
+  fix x
+  assume "x \<in> lset (ltake n xs)"
+  thus "x \<in> lset xs"
+  proof(induct "ltake n xs" arbitrary: xs n rule: lset_induct)
+    case find thus ?case 
+      by(cases xs)(simp, cases n rule: inat_coexhaust, simp_all)
+  next
+    case step thus ?case
+      by(cases xs)(simp, cases n rule: inat_coexhaust, simp_all)
+  qed
+qed
+
+lemma lset_lappend_lfinite [simp]:
+  "lfinite xs \<Longrightarrow> lset (lappend xs ys) = lset xs \<union> lset ys"
+by(induct rule: lfinite.induct) auto
+
+lemma lset_lappend: "lset (lappend xs ys) \<subseteq> lset xs \<union> lset ys"
+proof(cases "lfinite xs")
+  case True
+  thus ?thesis by(simp add: lset_lappend_lfinite)
+next
+  case False
+  thus ?thesis by(auto simp add: lappend_inf) 
+qed
+
+lemma lset_lappend1: "lset xs \<subseteq> lset (lappend xs ys)"
+by(rule subsetI)(erule lset_induct, simp_all)
 
 lemma lset_lzip: 
   "lset (lzip xs ys) =
@@ -1528,19 +1575,6 @@ next
   case (step x' xs)
   then obtain ys zs where "xs = lappend ys (LCons x zs)" "lfinite ys" by blast
   thus ?case by(fastsimp intro: exI[where x="LCons x' ys"])
-qed
-
-lemma lset_lappend_lfinite [simp]:
-  "lfinite xs \<Longrightarrow> lset (lappend xs ys) = lset xs \<union> lset ys"
-by(induct rule: lfinite.induct) auto
-
-lemma lset_lappend: "lset (lappend xs ys) \<subseteq> lset xs \<union> lset ys"
-proof(cases "lfinite xs")
-  case True
-  thus ?thesis by(simp add: lset_lappend_lfinite)
-next
-  case False
-  thus ?thesis by(auto simp add: lappend_inf) 
 qed
 
 lemma lfinite_imp_finite_lset:
@@ -1886,6 +1920,200 @@ proof induct
   case (lfinite_LConsI xs)
   thus ?case by(cases xs) simp_all
 qed simp
+
+subsection {* Distinct lazy lists @{term "ldistinct"} *}
+
+inductive_simps ldistinct_LCons [code, simp]:
+  "ldistinct (LCons x xs)"
+
+lemma ldistinct_llist_of [simp]:
+  "ldistinct (llist_of xs) \<longleftrightarrow> distinct xs"
+by(induct xs) auto
+
+lemma ldistinct_ltake:
+  assumes "ldistinct xs"
+  shows "ldistinct (ltake n xs)"
+proof -
+  def ys == "ltake n xs"
+  with assms have "\<exists>n xs. ys = ltake n xs \<and> ldistinct xs" by blast
+  thus "ldistinct ys"
+  proof(coinduct ys)
+    case (ldistinct ys)
+    then obtain n xs where [simp]: "ys = ltake n xs"
+      and xs: "ldistinct xs" by blast
+    show ?case
+    proof(cases n rule: inat_coexhaust)
+      case 0 thus ?thesis by simp
+    next
+      case (iSuc n') thus ?thesis
+        using xs lset_ltake[of n' "ltl xs"] by(cases xs) auto
+    qed
+  qed
+qed
+
+lemma ldistinct_ldropn:
+  "ldistinct xs \<Longrightarrow> ldistinct (ldropn n xs)"
+by(induct n arbitrary: xs)(simp, case_tac xs, simp_all)
+
+lemma ldistinct_ldrop:
+  "ldistinct xs \<Longrightarrow> ldistinct (ldrop n xs)"
+by(cases n)(simp_all add: ldistinct_ldropn)
+
+lemma ldistinct_conv_lnth:
+  "ldistinct xs \<longleftrightarrow> (\<forall>i j. Fin i < llength xs \<longrightarrow> Fin j < llength xs \<longrightarrow> i \<noteq> j \<longrightarrow> lnth xs i \<noteq> lnth xs j)"
+  (is "?lhs \<longleftrightarrow> ?rhs")
+proof(intro iffI strip)
+  assume "?rhs"
+  thus "?lhs"
+  proof(coinduct xs rule: ldistinct.coinduct)
+    case (ldistinct xs)
+    show ?case
+    proof(cases xs)
+      case LNil thus ?thesis by simp
+    next
+      case (LCons x xs')
+      have "x \<notin> lset xs'"
+      proof
+        assume "x \<in> lset xs'"
+        then obtain j where "Fin j < llength xs'" "lnth xs' j = x"
+          unfolding lset_def by auto
+        hence "Fin 0 < llength xs" "Fin (Suc j) < llength xs" "lnth xs (Suc j) = x" "lnth xs 0 = x" 
+          by(simp_all add: LCons Suc_ile_eq zero_inat_def[symmetric])
+        thus False by(auto dest: ldistinct[rule_format])
+      qed
+      moreover {
+        fix i j
+        assume "Fin i < llength xs'" "Fin j < llength xs'" "i \<noteq> j"
+        hence "Fin (Suc i) < llength xs" "Fin (Suc j) < llength xs"
+          by(simp_all add: LCons Suc_ile_eq)
+        with `i \<noteq> j` have "lnth xs (Suc i) \<noteq> lnth xs (Suc j)"
+          by(auto dest: ldistinct[rule_format])
+        hence "lnth xs' i \<noteq> lnth xs' j" unfolding LCons by simp }
+      ultimately have ?LCons using LCons by simp
+      thus ?thesis ..
+    qed
+  qed
+next
+  assume "?lhs"
+  fix i j
+  assume "Fin i < llength xs" "Fin j < llength xs" "i \<noteq> j"
+  thus "lnth xs i \<noteq> lnth xs j"
+  proof(induct i j rule: wlog_linorder_le)
+    case symmetry thus ?case by simp
+  next
+    case (le i j)
+    from `?lhs` have "ldistinct (ldropn i xs)" by(rule ldistinct_ldropn)
+    also note ldropn_Suc_conv_ldropn[symmetric]
+    also from le have "i < j" by simp
+    hence "lnth xs j \<in> lset (ldropn (Suc i) xs)" using le unfolding lset_def
+      by(cases "llength xs")(auto intro!: image_eqI[where x="j - Suc i"])
+    ultimately show ?case using `Fin i < llength xs` by auto
+  qed
+qed
+
+lemma ldistinct_lmap [simp]:
+  "ldistinct (lmap f xs) \<longleftrightarrow> ldistinct xs \<and> inj_on f (lset xs)"
+proof(intro iffI conjI)
+  assume dist: "ldistinct (lmap f xs)"
+  thus "ldistinct xs"
+    by(coinduct)(fastsimp elim: ldistinct.cases dest: lmap_eq_LCons del: disjCI)
+  show "inj_on f (lset xs)"
+  proof(rule inj_onI)
+    fix x y
+    assume "x \<in> lset xs" and "y \<in> lset xs" and "f x = f y"
+    then obtain i j
+      where "Fin i < llength xs" "x = lnth xs i" "Fin j < llength xs" "y = lnth xs j"
+      unfolding lset_def by blast
+    with dist `f x = f y` show "x = y"
+      unfolding ldistinct_conv_lnth by auto
+  qed
+next
+  assume "ldistinct xs \<and> inj_on f (lset xs)"
+  moreover def ys == "lmap f xs"
+  ultimately have "\<exists>xs. ys = lmap f xs \<and> ldistinct xs \<and> inj_on f (lset xs)" by blast
+  thus "ldistinct ys"
+    by(coinduct)(force elim: ldistinct.cases del: disjCI)
+qed
+
+lemma ldistinct_lzipI1: 
+  assumes "ldistinct xs"
+  shows "ldistinct (lzip xs ys)"
+proof -
+  def zs == "lzip xs ys"
+  with assms have "\<exists>xs ys. zs = lzip xs ys \<and> ldistinct xs" by blast
+  thus "ldistinct zs"
+  proof(coinduct zs)
+    case (ldistinct zs)
+    then obtain xs ys where zs: "zs = lzip xs ys"
+      and xs: "ldistinct xs" by blast
+    show ?case
+    proof(cases xs)
+      case LNil thus ?thesis using zs xs by auto
+    next
+      case (LCons x xs')
+      thus ?thesis using xs zs
+        by(cases ys)(simp_all add: lset_lzip, auto simp add: lset_def)
+    qed
+  qed
+qed
+  
+lemma ldistinct_lzipI2: 
+  assumes "ldistinct ys"
+  shows "ldistinct (lzip xs ys)"
+proof -
+  def zs == "lzip xs ys"
+  with assms have "\<exists>xs ys. zs = lzip xs ys \<and> ldistinct ys" by blast
+  thus "ldistinct zs"
+  proof(coinduct zs)
+    case (ldistinct zs)
+    then obtain xs ys where zs: "zs = lzip xs ys"
+      and ys: "ldistinct ys" by blast
+    show ?case
+    proof(cases ys)
+      case LNil thus ?thesis using zs ys by auto
+    next
+      case (LCons y ys')
+      thus ?thesis using ys zs
+        by(cases xs)(simp_all add: lset_lzip, auto simp add: lset_def)
+    qed
+  qed
+qed
+
+lemma ldistinct_lappend:
+  "ldistinct (lappend xs ys) \<longleftrightarrow> ldistinct xs \<and> (lfinite xs \<longrightarrow> ldistinct ys \<and> lset xs \<inter> lset ys = {})"
+  (is "?lhs = ?rhs")
+proof(intro iffI conjI strip)
+  assume "?lhs"
+  thus "ldistinct xs"
+  proof coinduct
+    case (ldistinct xs)
+    thus ?case using lset_lappend1[of "ltl xs" ys]
+      by(cases xs) auto
+  qed
+  assume "lfinite xs"
+  thus "ldistinct ys" "lset xs \<inter> lset ys = {}"
+    using `?lhs` by induct simp_all
+next
+  assume "?rhs"
+  moreover def zs == "lappend xs ys"
+  ultimately have "\<exists>xs ys. zs = lappend xs ys \<and> ldistinct xs \<and> (lfinite xs \<longrightarrow> ldistinct ys \<and> lset xs \<inter> lset ys = {})" by blast
+  thus "ldistinct zs"
+  proof(coinduct zs)
+    case (ldistinct zs)
+    then obtain xs ys where zs: "zs = lappend xs ys"
+      and xs: "ldistinct xs"
+      and fin: "lfinite xs \<Longrightarrow> ldistinct ys \<and> lset xs \<inter> lset ys = {}"
+      by blast
+    from xs show ?case
+    proof cases
+      case LNil thus ?thesis using zs fin
+        by(auto elim: ldistinct.cases)
+    next
+      case (LCons xs' x) thus ?thesis
+        using zs fin by(cases "lfinite xs")(auto simp add: lappend_inf)
+    qed
+  qed
+qed
 
 subsection {* 
   The prefix ordering on lazy lists: 
@@ -3279,6 +3507,44 @@ next
   qed
 qed
 
+lemma ldistinct_lfilterD:
+  "\<lbrakk> ldistinct (lfilter P xs); Fin n < llength xs; Fin m < llength xs; P a; lnth xs n = a; lnth xs m = a \<rbrakk> \<Longrightarrow> m = n"
+proof(induct n m rule: wlog_linorder_le)
+  case symmetry thus ?case by simp
+next
+  case (le n m)
+  thus ?case
+  proof(induct n arbitrary: xs m)
+    case 0 thus ?case
+    proof(cases m)
+      case 0 thus ?thesis .
+    next
+      case (Suc m')
+      with 0 show ?thesis
+        by(cases xs)(simp_all add: Suc_ile_eq, auto simp add: lset_def)
+    qed
+  next
+    case (Suc n)
+    from `Suc n \<le> m` obtain m' where m [simp]: "m = Suc m'" by(cases m) simp
+    with `Suc n \<le> m` have "n \<le> m'" by simp
+    moreover from `Fin (Suc n) < llength xs`
+    obtain x xs' where xs [simp]: "xs = LCons x xs'" by(cases xs) simp
+    from `ldistinct (lfilter P xs)` have "ldistinct (lfilter P xs')" by(simp split: split_if_asm)
+    moreover from `Fin (Suc n) < llength xs` `Fin m < llength xs`
+    have "Fin n < llength xs'" "Fin m' < llength xs'" by(simp_all add: Suc_ile_eq)
+    moreover note `P a`
+    moreover have "lnth xs' n = a" "lnth xs' m' = a"
+      using `lnth xs (Suc n) = a` `lnth xs m = a` by simp_all
+    ultimately have "m' = n" by(rule Suc)
+    thus ?case by simp
+  qed
+qed
+
+lemma lprefix_lfilterI:
+  "lprefix xs ys \<Longrightarrow> lprefix (lfilter P xs) (lfilter P ys)"
+unfolding lprefix_def
+by(cases "lfinite xs")(auto simp add: lappend_inf intro: lappend_LNil2)
+
 
 subsection {* Concatenating all lazy lists in a lazy list: @{term "lconcat"} *}
 
@@ -3578,6 +3844,15 @@ next
       using n_eq by simp
     ultimately show ?thesis by blast
   qed
+qed
+
+lemma lprefix_lconcatI: 
+  assumes "lprefix xss yss"
+  shows "lprefix (lconcat xss) (lconcat yss)"
+proof(cases "lfinite xss")
+  case False thus ?thesis using assms by(simp add: not_lfinite_lprefix_conv_eq)
+next
+  case True thus ?thesis using assms by(auto simp add: lprefix_def)
 qed
 
 subsection {* Sublist view of a lazy list: @{term "lsublist"} *}

@@ -355,4 +355,10 @@ by (metis Fin_add_mono add_commute neq_iff)
 lemma Fin_add2_eq [simp]: "y + Fin x = z + Fin x \<longleftrightarrow> y = z"
 by (metis Fin_add1_eq add_commute)
 
+primrec the_Fin :: "inat \<Rightarrow> nat"
+where "the_Fin (Fin n) = n"
+
+lemma Fin_less_Fin_plusI: "x < y \<Longrightarrow> Fin x < Fin y + z"
+by(cases z) simp_all
+
 end
