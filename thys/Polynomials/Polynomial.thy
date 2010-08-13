@@ -770,22 +770,22 @@ qed
 
 (* the list of variables occuring in p *)
 definition poly_vars_list :: "('v,'a)poly \<Rightarrow> 'v list"
-where "poly_vars_list p = remdups (List.maps (map fst o fst) p)"
+where "poly_vars_list p = remdups (concat (map (map fst o fst) p))"
 
 (* check whether a variable occurs in p *)
 definition poly_var :: "('v,'a)poly \<Rightarrow> 'v \<Rightarrow> bool"
-where "poly_var p v = (v : set(List.maps (map fst o fst) p))"
+where "poly_var p v = (v : set(concat (map (map fst o fst) p)))"
 
 lemma poly_vars_list: assumes eq: "\<And> w. w \<in> set (poly_vars_list p) \<Longrightarrow> f w = g w"
   shows "poly_subst f p = poly_subst g p" 
 using eq
 proof (induct p, simp)
   case (Cons mc p)
-  hence rec: "poly_subst f p = poly_subst g p" by(auto simp: poly_vars_list_def maps_def)
+  hence rec: "poly_subst f p = poly_subst g p" by(auto simp: poly_vars_list_def)
   show ?case
   proof (cases mc)
     case (Pair m c)
-    with Cons(2) have "\<And> w. w \<in> set (map fst m) \<Longrightarrow> f w = g w" by(auto simp: poly_vars_list_def maps_def)
+    with Cons(2) have "\<And> w. w \<in> set (map fst m) \<Longrightarrow> f w = g w" by(auto simp: poly_vars_list_def)
     hence "monom_subst f m = monom_subst g m"
     proof (induct m, simp add: monom_subst.simps)
       case (Cons wn m)
@@ -805,7 +805,7 @@ lemma poly_var: assumes pv: "\<not> poly_var p v" and diff: "\<And> w. v \<noteq
 proof (rule poly_vars_list)
   fix w
   assume "w \<in> set (poly_vars_list p)"
-  thus "f w = g w" using pv diff unfolding poly_vars_list_def poly_var_def maps_def by (cases "v = w", auto)
+  thus "f w = g w" using pv diff unfolding poly_vars_list_def poly_var_def by (cases "v = w", auto)
 qed
 
            
