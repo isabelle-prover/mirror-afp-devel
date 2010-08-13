@@ -1281,7 +1281,7 @@ fun procedures_definition locname procs thy =
       in thy
          |> add_locale sN pE fixes
          |> ProofContext.theory_of
-         |> (fn thy => add_declaration (SOME (Locale.intern thy sN)) parameter_info_decl thy)
+         |> (fn thy => add_declaration (Locale.intern thy sN) parameter_info_decl thy)
       end;
 
 
@@ -1314,10 +1314,10 @@ fun procedures_definition locname procs thy =
           in mk_bdy_def read name
           end;
 
-        fun add_decl_and_def (lname,ctxt) =
+        fun add_decl_and_def lname ctxt =
             ctxt
             |> ProofContext.theory_of
-            |> Named_Target.init (SOME lname)
+            |> Named_Target.init lname
             |> Local_Theory.declaration false parameter_info_decl
             |> (fn lthy => if has_body name
                            then snd (Local_Theory.define (def lthy) lthy)
@@ -1326,8 +1326,8 @@ fun procedures_definition locname procs thy =
             |> ProofContext.theory_of;
 
       in thy
-         |> add_locale' (suffix bodyN  name') pE fixes
-         |> add_decl_and_def
+         |> add_locale' (suffix bodyN name') pE fixes
+         |-> add_decl_and_def
       end;
 
    fun mk_def_eq thy read_term name =
@@ -1395,8 +1395,8 @@ fun procedures_definition locname procs thy =
               add_locale_cmd cliqN (pE thy) (elems thy) thy)
          |> ProofContext.theory_of
          |> fold add_impl_locale clique
-         |> (fn thy => add_declaration (SOME (Locale.intern thy cliqN)) proc_declaration thy)
-         |> (fn thy => add_declaration (SOME (Locale.intern thy cliqN))
+         |> (fn thy => add_declaration (Locale.intern thy cliqN) proc_declaration thy)
+         |> (fn thy => add_declaration (Locale.intern thy cliqN)
                 recursive_declaration thy)
       end;
 
@@ -1425,9 +1425,9 @@ fun procedures_definition locname procs thy =
              |> add_locale thm_name pE' [elem]
              |> ProofContext.theory_of
              |> (fn thy =>
-                  add_declaration (SOME (Locale.intern thy thm_name)) proc_declaration thy)
+                  add_declaration (Locale.intern thy thm_name) proc_declaration thy)
              |> error_to_warning ("abbreviation: '" ^ thm_name  ^ "' not added")
-                  (add_abbrev (SOME (Locale.intern thy (suffix cliqueN (cname name))))                   Syntax.mode_input thm_name spec)
+                  (add_abbrev (Locale.intern thy (suffix cliqueN (cname name))) Syntax.mode_input thm_name spec)
           end;
       in thy
          |> Theory.checkpoint
