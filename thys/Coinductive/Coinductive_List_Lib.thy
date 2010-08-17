@@ -1477,7 +1477,7 @@ using assms by(cases xs) auto
 lemma lset_induct [consumes 1, case_names find step, induct set: lset]:
   assumes major: "x \<in> lset xs"
   and find: "\<And>xs. P (LCons x xs)"
-  and step: "\<And>x' xs. \<lbrakk> x \<in> lset xs; P xs \<rbrakk> \<Longrightarrow> P (LCons x' xs)"
+  and step: "\<And>x' xs. \<lbrakk> x \<in> lset xs; x \<noteq> x'; P xs \<rbrakk> \<Longrightarrow> P (LCons x' xs)"
   shows "P xs"
 proof -
   from major obtain n where "Fin n < llength xs" "lnth xs n = x"
@@ -1491,11 +1491,25 @@ proof -
     case (Suc n)
     from `Fin (Suc n) < llength xs` obtain x' xs' 
       where xs: "xs = LCons x' xs'" by(cases xs) auto
-    hence "x \<in> lset xs'" "P xs'"
-      using Suc by(auto simp add: Suc_ile_eq lset_def)
-    thus ?case unfolding xs by(rule step)
+    show ?case
+    proof(cases "x = x'")
+      case True
+      with xs find[of xs'] show ?thesis by simp
+    next
+      case False
+      with xs have "x \<in> lset xs'" "x \<noteq> x'" "P xs'"
+        using Suc by(auto simp add: Suc_ile_eq lset_def)
+      thus ?thesis unfolding xs by(rule step)
+    qed
   qed
 qed
+
+lemma lset_induct' [consumes 1, case_names find step]:
+  assumes major: "x \<in> lset xs"
+  and find: "\<And>xs. P (LCons x xs)"
+  and step: "\<And>x' xs. \<lbrakk> x \<in> lset xs; P xs \<rbrakk> \<Longrightarrow> P (LCons x' xs)"
+  shows "P xs"
+using assms by(rule lset_induct)
 
 text {* Alternative definition of @{term lset} for nitpick *}
 
@@ -1565,17 +1579,18 @@ by(auto simp add: lset_def)
 lemma lset_llist_of [simp]: "lset (llist_of xs) = set xs"
 by(induct xs) simp_all
 
-lemma split_llist:
+lemma split_llist_first:
   assumes "x \<in> lset xs"
-  shows "\<exists>ys zs. xs = lappend ys (LCons x zs) \<and> lfinite ys"
+  shows "\<exists>ys zs. xs = lappend ys (LCons x zs) \<and> lfinite ys \<and> x \<notin> lset ys"
 using assms
-proof induct
+proof(induct)
   case find thus ?case by(auto intro: exI[where x=LNil])
 next
-  case (step x' xs)
-  then obtain ys zs where "xs = lappend ys (LCons x zs)" "lfinite ys" by blast
-  thus ?case by(fastsimp intro: exI[where x="LCons x' ys"])
+  case step thus ?case by(fastsimp intro: exI[where x="LCons a b", standard])
 qed
+
+lemma split_llist: "x \<in> lset xs \<Longrightarrow> \<exists>ys zs. xs = lappend ys (LCons x zs) \<and> lfinite ys"
+by(blast dest: split_llist_first)
 
 lemma lfinite_imp_finite_lset:
   assumes "lfinite xs"

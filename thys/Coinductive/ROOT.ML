@@ -1,9 +1,9 @@
-no_document use_thys
-	["Nat_Infinity",
-	 "List_Prefix",
+no_document use_thys 
+	["Nat_Infinity", 
+	 "List_Prefix", 
 	 "Quotient_Syntax",
-	 "Quotient_List",
 	 "Quotient_Product",
-	 "Quotient_Sum"];
+	 "Quotient_Sum",
+         "Infinite_Set"];
 
 use_thy "Coinductive";
