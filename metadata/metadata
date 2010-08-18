@@ -19,6 +19,24 @@ date = 2004-03-30
 topic = Computer Science/Automata and Formal Languages
 abstract = This theory defines deterministic and nondeterministic automata in a functional representation: the transition function/relation and the finality predicate are just functions. Hence the state space may be infinite. It is shown how to convert regular expressions into such automata. A scanner (generator) is implemented with the help of functional automata: the scanner chops the input up into longest recognized substrings. Finally we also show how to convert a certain subclass of functional automata (essentially the finite deterministic ones) into regular sets.
 
+[Statecharts]
+title = Formalizing Statecharts using Hierarchical Automata
+author = Steffen Helke <mailto:helke@cs.tu-berlin.de>, Florian Kamm&uuml;ller <mailto:flokam@cs.tu-berlin.de>
+topic = Computer Science/Automata and Formal Languages
+date = 2010-08-08
+abstract = We formalize in Isabelle/HOL the abtract syntax and a synchronous
+ step semantics for the specification language Statecharts. The formalization
+ is based on Hierarchical Automata which allow a structural decomposition of
+ Statecharts into Sequential Automata. To support the composition of
+ Statecharts, we introduce calculating operators to construct a Hierarchical
+ Automaton in a stepwise manner. Furthermore, we present a complete semantics
+ of Statecharts including a theory of data spaces, which enables the modelling
+ of racing effects. We also adapt CTL for 
+ Statecharts to build a bridge for future combinations with model
+ checking. However the main motivation of this work is to provide a sound and
+ complete basis for reasoning on Statecharts. As a central meta theorem we
+ prove that the well-formedness of a Statechart is preserved by the semantics.
+
 [Tree-Automata]
 title = Tree Automata
 author = Peter Lammich <mailto:peter.lammich@uni-muenster.de>
