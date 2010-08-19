@@ -65,7 +65,7 @@ fun dest_prop (Const ("prop", _) $ P) = P
 fun prem_of thm = #1 (Logic.dest_implies (dest_prop (prop_of thm)));
 fun conc_of thm = #2 (Logic.dest_implies (dest_prop (prop_of thm)));
 
-fun dest_All (Const ("All",_)$t) = t
+fun dest_All (Const (@{const_name "All"},_)$t) = t
   | dest_All t = raise TERM ("dest_All",[t]);
 
 
@@ -94,7 +94,7 @@ fun spec' cv thm =
                       |> Thm.dest_comb |> #2 |> Thm.dest_comb;
   in
      (case term_of ct1 of 
-       Const ("Trueprop",_) 
+       Const (@{const_name "Trueprop"},_) 
         => let 
              val thy = theory_of_thm thm; 
 	     val (Var (sP,_)$Var (sV,sVT)) = HOLogic.dest_Trueprop (concl_of spec);
@@ -164,9 +164,9 @@ fun split_abs ct =
      Abs x => (x,Thm.dest_abs NONE ct)
    | _ => split_abs (eta_expand ct))
             
-fun decomp ctxt (Const ("op &", _) $ t $ t', ct) =
+fun decomp ctxt (Const (@{const_name "op &"}, _) $ t $ t', ct) =
       ([t,t'],snd (Drule.strip_comb ct), fn [thm,thm'] => genConj SIMPLE_OF [thm,thm'])
-  | decomp ctxt ((allc as Const ("All",aT)) $ f, ct) = 
+  | decomp ctxt ((allc as Const (@{const_name "All"},aT)) $ f, ct) = 
        let 
          val thy = ProofContext.theory_of ctxt;
          val cf = snd (Thm.dest_comb ct);
@@ -189,7 +189,7 @@ fun decomp ctxt (Const ("op &", _) $ t $ t', ct) =
           else ([term_of cb],[cb], fn [thm] => 
                         genAll' OF_RAW Goal.protect (Thm.forall_intr cx' (Goal.conclude thm)))
        end
-  | decomp ctxt ((exc as Const ("Ex",_)) $ f, ct) =
+  | decomp ctxt ((exc as Const (@{const_name "Ex"},_)) $ f, ct) =
        let
          val thy = ProofContext.theory_of ctxt;
          val cf = snd (Thm.dest_comb ct);
@@ -205,7 +205,7 @@ fun decomp ctxt (Const ("op &", _) $ t $ t', ct) =
           else ([term_of cb],[cb], fn [thm] => 
                        genEx' OF_RAW Goal.protect (Thm.forall_intr cx' (Goal.conclude thm)))
        end
-  | decomp ctxt (Const ("op -->",_)$P$Q, ct) =
+  | decomp ctxt (Const (@{const_name "op -->"},_)$P$Q, ct) =
        let 
          val [cP,cQ] = (snd (Drule.strip_comb ct));
        in ([Q],[cQ],fn [thm] =>
@@ -252,7 +252,7 @@ fun decomp ctxt (Const ("op &", _) $ t $ t', ct) =
           else ([term_of cb],[cb], fn [thm] => 
                     gen_all' OF_RAW Goal.protect (Thm.forall_intr cx' (Goal.conclude thm)))
        end
-  | decomp ctxt (Const ("Trueprop",_)$P, ct) = ([P],snd (Drule.strip_comb ct),fn [thm] => thm)
+  | decomp ctxt (Const (@{const_name "Trueprop"},_)$P, ct) = ([P],snd (Drule.strip_comb ct),fn [thm] => thm)
   | decomp ctxt (t, ct) = ([],[], fn [] => 
                          let val thy = ProofContext.theory_of ctxt;
                              val rP = cterm_of thy 

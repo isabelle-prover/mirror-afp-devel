@@ -2255,8 +2255,8 @@ declare fast_bv_to_nat_Cons1 [simp]
 setup {*
 (*comments containing lcp are the removal of fast_bv_of_nat*)
 let
-  fun is_const_bool (Const("True",_)) = true
-    | is_const_bool (Const("False",_)) = true
+  fun is_const_bool (Const(@{const_name "True"},_)) = true
+    | is_const_bool (Const(@{const_name "False"},_)) = true
     | is_const_bool _ = false
   fun is_const_bit (Const("Word.bit.Zero",_)) = true
     | is_const_bit (Const("Word.bit.One",_)) = true

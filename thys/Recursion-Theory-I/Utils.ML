@@ -11,7 +11,7 @@ exception BadArgument
 fun extract_prop_arg (Const ("prop", _) $ t)  = t
   | extract_prop_arg  _ = raise BadArgument
 
-fun extract_trueprop_arg (Const ("Trueprop", _) $ t)  = t
+fun extract_trueprop_arg (Const (@{const_name "Trueprop"}, _) $ t)  = t
   | extract_trueprop_arg  _ = raise BadArgument
 
 fun extract_set_args (Const (@{const_name Set.member}, _) $ t1 $ t2)  = (t1, t2)
