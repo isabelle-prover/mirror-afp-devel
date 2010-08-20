@@ -48,7 +48,7 @@ apply (unfold Kripke_def)
 apply auto
 apply (unfold StepRelSem_def)
 apply auto
-apply (unfold LabelFunSem_def Let_def if_def dom_def)
+apply (unfold LabelFunSem_def Let_def If_def dom_def)
 apply auto
 prefer 2
 apply (rename_tac ST S)
