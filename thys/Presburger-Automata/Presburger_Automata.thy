@@ -3549,7 +3549,7 @@ proof -
     also have "\<bar>int (x mod 2)\<bar> \<le> 1" by simp
     finally have "\<bar>k * int (x mod 2) + eval_dioph ks (map (\<lambda>x. x mod 2) xs)\<bar> \<le>
       \<bar>k\<bar> + \<bar>eval_dioph ks (map (\<lambda>x. x mod 2) xs)\<bar>"
-      by (auto simp add: mult_mono1)
+      by (auto simp add: mult_left_mono)
     with 1 show ?case by simp
   qed (simp_all add: listsum_abs_ge_0)
   finally have ineq: "\<bar>(l - eval_dioph ks (map (\<lambda>x. x mod 2) xs)) div 2\<bar> \<le>
