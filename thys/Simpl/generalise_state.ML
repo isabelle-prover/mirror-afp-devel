@@ -205,7 +205,7 @@ fun decomp ctxt (Const (@{const_name "op &"}, _) $ t $ t', ct) =
           else ([term_of cb],[cb], fn [thm] => 
                        genEx' OF_RAW Goal.protect (Thm.forall_intr cx' (Goal.conclude thm)))
        end
-  | decomp ctxt (Const (@{const_name "op -->"},_)$P$Q, ct) =
+  | decomp ctxt (Const (@{const_name HOL.implies},_)$P$Q, ct) =
        let 
          val [cP,cQ] = (snd (Drule.strip_comb ct));
        in ([Q],[cQ],fn [thm] =>
