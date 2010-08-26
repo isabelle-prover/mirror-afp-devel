@@ -149,9 +149,9 @@ lemma (in Universe) UniverseSubset: "\<lbrakk>subset u v ; Elem v U\<rbrakk> \<L
   apply (rule Utrans, simp+)
   done
 
-constdefs
-  Product :: "ZF \<Rightarrow> ZF"
-  "Product U \<equiv> Sep (Fun U (Sum U)) (%f . (\<forall> u . Elem u U \<longrightarrow> Elem (app f u) u))"
+definition
+  Product :: "ZF \<Rightarrow> ZF" where
+  "Product U = Sep (Fun U (Sum U)) (%f . (\<forall> u . Elem u U \<longrightarrow> Elem (app f u) u))"
 
 lemma SepSubset: "subset (Sep A p) A"
 apply (subst subset_def)

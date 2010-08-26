@@ -1,5 +1,4 @@
 (*  Title:       Inductive definition of Hoare logic for total correctness
-    ID:          $Id: HoareTotal.thy,v 1.5 2007-07-11 10:05:50 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -12,9 +11,9 @@ text{*
 Now that we have termination, we can define
 total validity, @{text"\<Turnstile>\<^sub>t"}, as partial validity and guaranteed termination:*}
 
-constdefs
- hoare_tvalid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50)
-  "\<Turnstile>\<^sub>t {P}c{Q}  \<equiv>  \<Turnstile> {P}c{Q} \<and> (\<forall>s. P s \<longrightarrow> c\<down>s)"
+definition
+ hoare_tvalid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50) where
+  "\<Turnstile>\<^sub>t {P}c{Q} \<longleftrightarrow> \<Turnstile> {P}c{Q} \<and> (\<forall>s. P s \<longrightarrow> c\<down>s)"
 
 text{* Proveability of Hoare triples in the proof system for total
 correctness is written @{text"\<turnstile>\<^sub>t {P}c{Q}"} and defined
@@ -109,9 +108,9 @@ The completeness proof proceeds along the same lines as the one for partial
 correctness. First we have to strengthen our notion of weakest precondition
 to take termination into account: *}
 
-constdefs
- wpt :: "com \<Rightarrow> assn \<Rightarrow> assn" ("wp\<^sub>t")
-  "wp\<^sub>t c Q  \<equiv>  \<lambda>s. wp c Q s \<and> c\<down>s"
+definition
+ wpt :: "com \<Rightarrow> assn \<Rightarrow> assn" ("wp\<^sub>t") where
+  "wp\<^sub>t c Q = (\<lambda>s. wp c Q s \<and> c\<down>s)"
 
 lemmas wp_defs = wp_def wpt_def
 

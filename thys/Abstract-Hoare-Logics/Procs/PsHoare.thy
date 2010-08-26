@@ -1,5 +1,4 @@
 (*  Title:       Inductive definition of Hoare logic
-    ID:          $Id: PsHoare.thy,v 1.3 2007-07-11 10:05:49 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -11,18 +10,21 @@ subsection{* Hoare logic for partial correctness *}
 types 'a assn = "'a \<Rightarrow> state \<Rightarrow> bool"
       'a cntxt = "('a assn \<times> com \<times> 'a assn)set"
 
-constdefs
- valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50)
- "\<Turnstile> {P}c{Q} \<equiv> \<forall>s t z. s -c\<rightarrow> t \<longrightarrow> P z s \<longrightarrow> Q z t"
+definition
+ valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50) where
+ "\<Turnstile> {P}c{Q} \<equiv> (\<forall>s t z. s -c\<rightarrow> t \<longrightarrow> P z s \<longrightarrow> Q z t)"
 
- valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile> _" 50)
- "|\<Turnstile> D \<equiv> \<forall>(P,c,Q) \<in> D. \<Turnstile> {P}c{Q}"
+definition
+ valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile> _" 50) where
+ "|\<Turnstile> D \<equiv> (\<forall>(P,c,Q) \<in> D. \<Turnstile> {P}c{Q})"
 
- nvalid :: "nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>_ {(1_)}/ (_)/ {(1_)}" 50)
- "\<Turnstile>n {P}c{Q} \<equiv> \<forall>s t z. s -c-n\<rightarrow> t \<longrightarrow> P z s \<longrightarrow> Q z t"
+definition
+ nvalid :: "nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>_ {(1_)}/ (_)/ {(1_)}" 50) where
+ "\<Turnstile>n {P}c{Q} \<equiv> (\<forall>s t z. s -c-n\<rightarrow> t \<longrightarrow> P z s \<longrightarrow> Q z t)"
 
- nvalids :: "nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("|\<Turnstile>'__/ _" 50)
- "|\<Turnstile>_n C \<equiv> \<forall>(P,c,Q) \<in> C. \<Turnstile>n {P}c{Q}"
+definition
+ nvalids :: "nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("|\<Turnstile>'__/ _" 50) where
+ "|\<Turnstile>_n C \<equiv> (\<forall>(P,c,Q) \<in> C. \<Turnstile>n {P}c{Q})"
 
 text{* We now need an additional notion of
 validity \mbox{@{text"C |\<Turnstile> D"}} where @{term D} is a set as well. The
@@ -31,12 +33,13 @@ correctness needs to be established by simultaneous induction. Instead
 of sets of Hoare triples we may think of conjunctions. We define both
 @{text"C |\<Turnstile> D"} and its relativized version: *}
 
-constdefs
- cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>/ _" 50)
-  "C |\<Turnstile> D    \<equiv>  |\<Turnstile> C \<longrightarrow> |\<Turnstile> D"
+definition
+ cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>/ _" 50) where
+  "C |\<Turnstile> D \<longleftrightarrow> |\<Turnstile> C \<longrightarrow> |\<Turnstile> D"
 
- cnvalids :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>'__/ _" 50)
-  "C |\<Turnstile>_n D  \<equiv>  |\<Turnstile>_n C \<longrightarrow> |\<Turnstile>_n D"
+definition
+ cnvalids :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>'__/ _" 50) where
+  "C |\<Turnstile>_n D \<longleftrightarrow> |\<Turnstile>_n C \<longrightarrow> |\<Turnstile>_n D"
 
 text{*Our Hoare logic now defines judgements of the form @{text"C \<tturnstile>
 D"} where both @{term C} and @{term D} are (potentially infinite) sets
@@ -115,9 +118,8 @@ apply fast
 apply fastsimp
 done
 
-constdefs MGT    :: "com \<Rightarrow> state assn \<times> com \<times> state assn"
-         "MGT c \<equiv> (\<lambda>z s. z = s, c, \<lambda>z t. z -c\<rightarrow> t)"
-declare MGT_def[simp]
+definition MGT :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
+  [simp]: "MGT c = (\<lambda>z s. z = s, c, \<lambda>z t. z -c\<rightarrow> t)"
 
 lemma strengthen_pre:
  "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C\<turnstile> {P}c{Q}  \<rbrakk> \<Longrightarrow> C\<turnstile> {P'}c{Q}";
@@ -193,7 +195,7 @@ apply (rule MGT_lemma);
 apply(rule allI)
 apply(unfold MGT_def)
 apply(rule hoare.ConjE[OF MGT_CALL])
-apply(simp add:MGT_def)
+apply(simp add:MGT_def expand_fun_eq)
 done
 
 end

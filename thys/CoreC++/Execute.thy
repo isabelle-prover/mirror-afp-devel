@@ -770,29 +770,32 @@ ML {* local open NoProg in val Val (Intg 30) = fst (DSeq.hd testIf) end *}
 
   (* progOverrider examples *)
 
-constdefs
-  -- "Overrider example"
-
-  classBottom :: "cdecl"
-  "classBottom == (''Bottom'', [Repeats ''Left'', Repeats ''Right''],
+definition
+  classBottom :: "cdecl" where
+  "classBottom = (''Bottom'', [Repeats ''Left'', Repeats ''Right''],
                    [(''x'',Integer)],[])" 
 
-  classLeft :: "cdecl"
-  "classLeft == (''Left'', [Repeats ''Top''],[],[(''f'', [Class ''Top'', Integer],Integer, [''V'',''W''],Var this \<bullet> ''x'' {[''Left'',''Top'']} \<guillemotleft>Add\<guillemotright> Val (Intg 5))])"
+definition
+  classLeft :: "cdecl" where
+  "classLeft = (''Left'', [Repeats ''Top''],[],[(''f'', [Class ''Top'', Integer],Integer, [''V'',''W''],Var this \<bullet> ''x'' {[''Left'',''Top'']} \<guillemotleft>Add\<guillemotright> Val (Intg 5))])"
 
-  classRight :: "cdecl"
-  "classRight == (''Right'', [Shares ''Right2''],[],
+definition
+  classRight :: "cdecl" where
+  "classRight = (''Right'', [Shares ''Right2''],[],
     [(''f'', [Class ''Top'', Integer], Integer,[''V'',''W''],Var this \<bullet> ''x'' {[''Right2'',''Top'']} \<guillemotleft>Add\<guillemotright> Val (Intg 7)),(''g'',[],Class ''Left'',[],new ''Left'')])"
 
-  classRight2 :: "cdecl"
-  "classRight2 == (''Right2'', [Repeats ''Top''],[],
+definition
+  classRight2 :: "cdecl" where
+  "classRight2 = (''Right2'', [Repeats ''Top''],[],
     [(''f'', [Class ''Top'', Integer], Integer,[''V'',''W''],Var this \<bullet> ''x'' {[''Right2'',''Top'']} \<guillemotleft>Add\<guillemotright> Val (Intg 9)),(''g'',[],Class ''Top'',[],new ''Top'')])"
 
-  classTop :: "cdecl"
-  "classTop == (''Top'', [], [(''x'',Integer)],[])"
+definition
+  classTop :: "cdecl" where
+  "classTop = (''Top'', [], [(''x'',Integer)],[])"
 
-  progOverrider :: "cdecl list"
-  "progOverrider == [classBottom, classLeft, classRight, classRight2, classTop]"
+definition
+  progOverrider :: "cdecl list" where
+  "progOverrider = [classBottom, classLeft, classRight, classRight2, classTop]"
 
 
 code_module ProgOverrider
@@ -882,31 +885,33 @@ ML {* local open ProgOverrider in val Integer      = DSeq.hd typeBig end *}
 
   (* progDiamond examples *)
 
-constdefs
-  --"Diamond class-name DAG"
-
-  classDiamondBottom :: "cdecl"
-  "classDiamondBottom == (''Bottom'', [Repeats ''Left'', Repeats ''Right''],[(''x'',Integer)],
+definition
+  classDiamondBottom :: "cdecl" where
+  "classDiamondBottom = (''Bottom'', [Repeats ''Left'', Repeats ''Right''],[(''x'',Integer)],
     [(''g'', [],Integer, [],Var this \<bullet> ''x'' {[''Bottom'']} \<guillemotleft>Add\<guillemotright> Val (Intg 5))])" 
 
-  classDiamondLeft :: "cdecl"
-  "classDiamondLeft == (''Left'', [Repeats ''TopRep'',Shares ''TopSh''],[],[])"
+definition
+  classDiamondLeft :: "cdecl" where
+  "classDiamondLeft = (''Left'', [Repeats ''TopRep'',Shares ''TopSh''],[],[])"
 
-  classDiamondRight :: "cdecl"
-  "classDiamondRight == (''Right'', [Repeats ''TopRep'',Shares ''TopSh''],[],
+definition
+  classDiamondRight :: "cdecl" where
+  "classDiamondRight = (''Right'', [Repeats ''TopRep'',Shares ''TopSh''],[],
     [(''f'', [Integer], Boolean,[''i''], Var ''i'' \<guillemotleft>Eq\<guillemotright> Val (Intg 7))])"
 
-  classDiamondTopRep :: "cdecl"
-  "classDiamondTopRep == (''TopRep'', [], [(''x'',Integer)],
+definition
+  classDiamondTopRep :: "cdecl" where
+  "classDiamondTopRep = (''TopRep'', [], [(''x'',Integer)],
     [(''g'', [],Integer, [], Var this \<bullet> ''x'' {[''TopRep'']} \<guillemotleft>Add\<guillemotright> Val (Intg 10))])"
 
-  classDiamondTopSh :: "cdecl"
-  "classDiamondTopSh == (''TopSh'', [], [], 
+definition
+  classDiamondTopSh :: "cdecl" where
+  "classDiamondTopSh = (''TopSh'', [], [], 
     [(''f'', [Integer], Boolean,[''i''], Var ''i'' \<guillemotleft>Eq\<guillemotright> Val (Intg 3))])"
 
-
-  progDiamond :: "cdecl list"
-  "progDiamond == [classDiamondBottom, classDiamondLeft, classDiamondRight, classDiamondTopRep, classDiamondTopSh]"
+definition
+  progDiamond :: "cdecl list" where
+  "progDiamond = [classDiamondBottom, classDiamondLeft, classDiamondRight, classDiamondTopRep, classDiamondTopSh]"
 
 
 code_module ProgDiamond
@@ -959,26 +964,28 @@ ML {* local open ProgDiamond in val Val(Ref(0,[Bottom,Left])) =
 
   (* failing g++ example *)
 
-constdefs
-  -- "failing example"
+definition
+  classD :: "cdecl" where
+  "classD = (''D'', [Shares ''A'', Shares ''B'', Repeats ''C''],[],[])"
 
-  classD :: "cdecl"
-  "classD == (''D'', [Shares ''A'', Shares ''B'', Repeats ''C''],[],[])"
-
-  classC :: "cdecl"
-  "classC == (''C'', [Shares ''A'', Shares ''B''],[],
+definition
+  classC :: "cdecl" where
+  "classC = (''C'', [Shares ''A'', Shares ''B''],[],
               [(''f'',[],Integer,[],Val(Intg 42))])"
 
-  classB :: "cdecl"
-  "classB == (''B'', [],[],
+definition
+  classB :: "cdecl" where
+  "classB = (''B'', [],[],
               [(''f'',[],Integer,[],Val(Intg 17))])"
 
-  classA :: "cdecl"
-  "classA == (''A'', [],[],
+definition
+  classA :: "cdecl" where
+  "classA = (''A'', [],[],
               [(''f'',[],Integer,[],Val(Intg 13))])"
 
-  ProgFailing :: "cdecl list"
-  "ProgFailing == [classA,classB,classC,classD]"
+definition
+  ProgFailing :: "cdecl list" where
+  "ProgFailing = [classA,classB,classC,classD]"
 
 code_module Fail
 contains

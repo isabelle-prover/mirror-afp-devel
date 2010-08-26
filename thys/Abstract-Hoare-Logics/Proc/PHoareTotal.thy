@@ -1,5 +1,4 @@
-(*  Title:      Inductive definition of Hoare logic for total correctness
-    ID:         $Id: PHoareTotal.thy,v 1.6 2008-06-12 06:57:15 lsf37 Exp $
+(*  Title:       Inductive definition of Hoare logic for total correctness
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)
@@ -10,13 +9,14 @@ subsection{* Hoare logic for total correctness *}
 
 text{*Validity is defined as expected:*} 
 
-constdefs
- tvalid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50)
-    "\<Turnstile>\<^sub>t {P}c{Q}  \<equiv>  \<Turnstile> {P}c{Q} \<and> (\<forall>z s. P z s \<longrightarrow> c\<down>s)"
+definition
+ tvalid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50) where
+    "\<Turnstile>\<^sub>t {P}c{Q} \<longleftrightarrow>  \<Turnstile> {P}c{Q} \<and> (\<forall>z s. P z s \<longrightarrow> c\<down>s)"
 
+definition
  ctvalid :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool"
-            ("(_ /\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_))}" 50)
- "C \<Turnstile>\<^sub>t {P}c{Q}  \<equiv>  (\<forall>(P',c',Q') \<in> C. \<Turnstile>\<^sub>t {P'}c'{Q'}) \<longrightarrow> \<Turnstile>\<^sub>t {P}c{Q}"
+            ("(_ /\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_))}" 50) where
+ "C \<Turnstile>\<^sub>t {P}c{Q} \<longleftrightarrow> (\<forall>(P',c',Q') \<in> C. \<Turnstile>\<^sub>t {P'}c'{Q'}) \<longrightarrow> \<Turnstile>\<^sub>t {P}c{Q}"
 
 
 inductive
@@ -137,9 +137,8 @@ apply fast
 done
 
 
-constdefs MGT\<^isub>t    :: "com \<Rightarrow> state assn \<times> com \<times> state assn"
-         "MGT\<^isub>t c \<equiv> (\<lambda>z s. z = s \<and> c\<down>s, c, \<lambda>z t. z -c\<rightarrow> t)"
-declare MGT\<^isub>t_def[simp]
+definition MGT\<^isub>t :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
+  [simp]: "MGT\<^isub>t c = (\<lambda>z s. z = s \<and> c\<down>s, c, \<lambda>z t. z -c\<rightarrow> t)"
 
 lemma MGT_implies_complete:
  "{} \<turnstile>\<^sub>t MGT\<^isub>t c \<Longrightarrow> {} \<Turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> {} \<turnstile>\<^sub>t {P}c{Q::state assn}";
@@ -305,9 +304,9 @@ apply(insert execs_pres_termis[of "[c]" _ "c'#cs'",simplified])
 apply blast
 done
 
-constdefs
- termi_call_steps :: "(state \<times> state)set"
-"termi_call_steps \<equiv> {(t,s). body\<down>s \<and> (\<exists>cs. ([body], s) \<rightarrow>\<^sup>* (CALL # cs, t))}"
+definition
+ termi_call_steps :: "(state \<times> state)set" where
+"termi_call_steps = {(t,s). body\<down>s \<and> (\<exists>cs. ([body], s) \<rightarrow>\<^sup>* (CALL # cs, t))}"
 
 lemma lem:
   "!y. (a,y):r\<^sup>+ \<longrightarrow> P a \<longrightarrow> P y \<Longrightarrow> ((b,a) : {(y,x). P x \<and> (x,y):r}\<^sup>+) = ((b,a) : {(y,x). P x \<and> (x,y):r\<^sup>+})"
@@ -340,8 +339,8 @@ lemma renumber:
 by(blast dest:renumber_aux)
 
 
-constdefs inf :: "com list \<Rightarrow> state \<Rightarrow> bool"
-"inf cs s  \<equiv>  \<exists>f. f 0 = (cs,s) \<and> (\<forall>i. f i \<rightarrow> f(Suc i))"
+definition inf :: "com list \<Rightarrow> state \<Rightarrow> bool" where
+"inf cs s \<longleftrightarrow> (\<exists>f. f 0 = (cs,s) \<and> (\<forall>i. f i \<rightarrow> f(Suc i)))"
 
 lemma [iff]: "\<not> inf [] s"
 apply(unfold inf_def)

@@ -212,8 +212,8 @@ where
 | FV_None : "FVoption None = {}"
 | FV_Some : "FVoption (Some t) = FV t"
 
-constdefs closed :: "sterm \<Rightarrow> bool"
- "closed t == FV t = {}"
+definition closed :: "sterm \<Rightarrow> bool" where
+ "closed t \<longleftrightarrow> FV t = {}"
 
 (* finiteness of FV *)
 lemma finite_FV_FVoption: "finite (FV t) \<and> finite (FVoption s)"
@@ -264,8 +264,8 @@ where
 | sopen_None: "sopen_option k s p None = None"
 | sopen_Some: "sopen_option k s p (Some t) = Some ({k \<rightarrow> [s,p]}t)"
 
-constdefs openz :: "[sterm, sterm, sterm] \<Rightarrow> sterm" ("(_)\<^bsup>[_,_]\<^esup>" [50, 0, 0] 50)
- "t\<^bsup>[s,p]\<^esup> == {0 \<rightarrow> [s,p]}t"
+definition openz :: "[sterm, sterm, sterm] \<Rightarrow> sterm" ("(_)\<^bsup>[_,_]\<^esup>" [50, 0, 0] 50) where
+ "t\<^bsup>[s,p]\<^esup> = {0 \<rightarrow> [s,p]}t"
 
 lemma sopen_eq_Fvar:
   fixes n s p t x
@@ -676,8 +676,8 @@ where
 | sclose_None: "sclose_option k s p None = None"
 | sclose_Some: "sclose_option k s p (Some t) = Some ({k \<leftarrow> [s,p]}t)"
 
-constdefs closez :: "[fVariable, fVariable, sterm] \<Rightarrow> sterm" ("\<sigma>[_,_] _" [0, 0, 300])
- "\<sigma>[s,p] t == {0 \<leftarrow> [s,p]}t"
+definition closez :: "[fVariable, fVariable, sterm] \<Rightarrow> sterm" ("\<sigma>[_,_] _" [0, 0, 300]) where
+ "\<sigma>[s,p] t = {0 \<leftarrow> [s,p]}t"
 
 lemma dom_scloseoption_lem[simp]: "dom (\<lambda>l. sclose_option k s t (f l)) = dom f"
   by (auto, case_tac "x \<in> dom f", auto)
@@ -839,8 +839,8 @@ where
      \<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> lc (the(f l)\<^bsup>[Fvar s, Fvar p]\<^esup>) \<rbrakk>
   \<Longrightarrow> lc (Obj f T)"
 
-constdefs body :: "sterm \<Rightarrow> bool"
- "body t == (\<exists>L. finite L \<and> (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> lc (t\<^bsup>[Fvar s, Fvar p]\<^esup>)))"
+definition body :: "sterm \<Rightarrow> bool" where
+ "body t \<longleftrightarrow> (\<exists>L. finite L \<and> (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> lc (t\<^bsup>[Fvar s, Fvar p]\<^esup>)))"
 
 lemma lc_bvar: "lc (Bvar b) = False" 
   by (rule iffI, erule lc.cases, simp_all)
@@ -2585,8 +2585,8 @@ subsection {*Size of sterms*}
 (* this section defines the size of sterms 
 compared to size, the size of an object is the sum of the size of its fields +1 *)
 
-constdefs fsize0 :: "(Label -~> sterm) \<Rightarrow> (sterm \<Rightarrow> nat) \<Rightarrow> nat"
-  "fsize0 f sts == 
+definition fsize0 :: "(Label -~> sterm) \<Rightarrow> (sterm \<Rightarrow> nat) \<Rightarrow> nat" where
+  "fsize0 f sts =
     foldl (op +) 0 (map sts (fold (\<lambda>x z. z@[THE y. Some y = f x]) [] (dom f)))"
 
 primrec
