@@ -293,9 +293,9 @@ Square(\<acute>R)"} for the procedure call. The internal term is the
 following: 
 *} 
 
-(*<*) ML "Hoare_Syntax.use_call_tr' :=false"  (*>*) 
+(*<*) declare [[hoare_use_call_tr' = false]] (*>*) 
 text {* \small @{term [display] "CALL Square(\<acute>I,\<acute>R)"} *} 
-(*<*) ML "Hoare_Syntax.use_call_tr' :=true" (*>*)
+(*<*) declare [[hoare_use_call_tr' = true]] (*>*)
 
 text {* Note the
         additional decoration (with the procedure name) of the parameter and
@@ -553,13 +553,13 @@ variables are automatically copied back to the procedure caller.
 We can study this effect on the translation of @{term "\<acute>p :== CALL append(\<acute>p,\<acute>q)"}:
 *}
 (*<*)
-ML "Hoare_Syntax.use_call_tr' :=false"
+declare [[hoare_use_call_tr' = false]]
 (*>*)
 text {*
 @{term [display] "\<acute>p :== CALL append(\<acute>p,\<acute>q)"}
 *}
 (*<*)
-ML "Hoare_Syntax.use_call_tr' :=true"
+declare [[hoare_use_call_tr' = true]]
 end
 (*>*)
 

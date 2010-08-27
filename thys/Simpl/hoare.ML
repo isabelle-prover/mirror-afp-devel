@@ -70,9 +70,11 @@ struct
 
 (* Misc *)
 
-val use_generalise = Unsynchronized.ref false;
-val sort_variables = Unsynchronized.ref true;
-val use_cond_inv_modifies = Unsynchronized.ref true;
+val (use_generalise, setup_use_generalise) = Attrib.config_bool "hoare_use_generalise" (K false);
+val (sort_variables, setup_sort_variables) = Attrib.config_bool "hoare_sort_variables" (K true);
+val (use_cond_inv_modifies, setup_use_cond_inv_modifies) =
+  Attrib.config_bool "hoare_use_cond_inv_modifies" (K true);
+
 val trace_hoare = Unsynchronized.ref false;
 
 val call_prfx = "_Call_";
@@ -2897,7 +2899,7 @@ fun HoareTac annotate_inv strip_guards mode state_kind state_space spec_sfx ctxt
          let fun call (t,i) = call_tac (HoareRuleTac tac false)
                                 mode state_kind state_space ctxt asms spec_sfx t i
 
-             fun cond_tac i =  if annotate_inv andalso !use_cond_inv_modifies then
+             fun cond_tac i =  if annotate_inv andalso Config.get ctxt use_cond_inv_modifies then
                                  EVERY[SUBGOAL (cond_annotate_tac ctxt (the Inv) mode) i,
                                        HoareRuleTac tac false (i+4),
                                        HoareRuleTac tac false (i+3),
@@ -3161,7 +3163,7 @@ fun abstract_vars vars s t =
 fun split_state ctxt s T t =
   let
     val vars  = collect_vars s t;
-    val vars' = if !sort_variables then sort_vars ctxt T vars else vars;
+    val vars' = if Config.get ctxt sort_variables then sort_vars ctxt T vars else vars;
   in (abstract_vars vars' s t,rev vars') end;
 
 fun ex_tac vs st = Record.split_simp_tac @{thms simp_thms} (K ~1) 1 st;
@@ -3285,7 +3287,7 @@ fun sort_vars ctxt vars =
 fun split_state ctxt s T t =
   let
     val vars  = collect_vars s t;
-    val vars' = if !sort_variables then sort_vars ctxt vars else vars;
+    val vars' = if Config.get ctxt sort_variables then sort_vars ctxt vars else vars;
   in (abstract_vars vars' s t,rev vars') end;
 
 fun abs_var ctxt t =
@@ -3420,7 +3422,7 @@ fun record_vanish_tac ctxt state_kind state_space i =
                (* hyp_subst_tac may have made some state variables unnecessary. We do not
                   want to split them to avoid naming conflicts and increase performance *)
               trace_tac "record_vanish_tac -- Splitting records --",
-              if !use_generalise orelse (state_kind = Function)
+              if Config.get ctxt use_generalise orelse state_kind = Function
               then generalise state_kind ctxt i
               else state_split_simp_tac rem_useless_vars_simps state_space_no_spec i
               (*THEN_MAYBE
@@ -3719,6 +3721,7 @@ val vcg_step = gen_simp_method hoare_step_tac;
 (* setup theory *)
 
 val setup =
+  setup_use_generalise #> setup_sort_variables #> setup_use_cond_inv_modifies #>
   Attrib.setup @{binding vcg_simp} (Attrib.add_del vcg_simp_add vcg_simp_del)
     "declaration of Simplifier rule for vcg"
  (*#> add_wp_tacs initial_wp_tacs*)
