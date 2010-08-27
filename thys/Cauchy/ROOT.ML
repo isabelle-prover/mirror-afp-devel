@@ -1,2 +1,2 @@
-Unsynchronized.reset show_question_marks;
+show_question_marks := false;
 use_thys ["CauchysMeanTheorem", "CauchySchwarz"];
