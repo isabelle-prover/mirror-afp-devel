@@ -164,7 +164,7 @@ fun split_abs ct =
      Abs x => (x,Thm.dest_abs NONE ct)
    | _ => split_abs (eta_expand ct))
             
-fun decomp ctxt (Const (@{const_name "op &"}, _) $ t $ t', ct) =
+fun decomp ctxt (Const (@{const_name HOL.conj}, _) $ t $ t', ct) =
       ([t,t'],snd (Drule.strip_comb ct), fn [thm,thm'] => genConj SIMPLE_OF [thm,thm'])
   | decomp ctxt ((allc as Const (@{const_name "All"},aT)) $ f, ct) = 
        let 

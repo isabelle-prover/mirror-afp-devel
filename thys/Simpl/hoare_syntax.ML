@@ -681,7 +681,7 @@ infixr 9 &;
 fun (NONE & NONE) = NONE
   | ((SOME x) & NONE) = SOME x
   | (NONE & (SOME x)) = SOME x
-  | ((SOME x) & (SOME y)) = SOME (Syntax.const @{const_syntax "op &"} $ x $ y);
+  | ((SOME x) & (SOME y)) = SOME (Syntax.const @{const_syntax HOL.conj} $ x $ y);
 
 fun mk_imp (l,SOME r) = SOME (HOLogic.mk_imp (l, r))
   | mk_imp (l,NONE) = NONE;
@@ -740,9 +740,9 @@ fun guard ctxt Ts (add as (Const (@{const_name Groups.plus},_) $ l $ r)) =
       in guard ctxt Ts l & guard ctxt Ts r & SOME g end
   | guard ctxt Ts (mul as (Const (@{const_name Groups.times},_) $ l $r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (in_range mul)
-  | guard ctxt Ts (Const (@{const_name "op &"},_) $ l $ r) =
+  | guard ctxt Ts (Const (@{const_name HOL.conj},_) $ l $ r) =
       guard ctxt Ts l & mk_imp (l,guard ctxt Ts r)
-  | guard ctxt Ts (Const (@{const_name "op |"},_) $ l $ r) =
+  | guard ctxt Ts (Const (@{const_name HOL.disj},_) $ l $ r) =
       guard ctxt Ts l & mk_imp (HOLogic.Not $ l,guard ctxt Ts r)
   | guard ctxt Ts (dv as (Const (@{const_name Divides.div_class.div},_) $ l $ r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r) & SOME (in_range dv) (* FIXME: Make more concrete guard...*)
