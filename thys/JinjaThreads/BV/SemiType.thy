@@ -319,8 +319,7 @@ definition sup :: "'c prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty er
             else exec_lub (widen1 P) (super P) T U)
    else if (T = U) then OK T else Err"
 
-constdefs
-  esl :: "'c prog \<Rightarrow> ty esl"
+definition esl :: "'c prog \<Rightarrow> ty esl" where
   "esl P \<equiv> (is_type P, widen P, sup P)"
 
 
