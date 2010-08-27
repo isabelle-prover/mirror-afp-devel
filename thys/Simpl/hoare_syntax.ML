@@ -165,11 +165,6 @@ fun is_global ctxt name =
 
 exception UNDEFINED of string
 
-val component_name_as_string = Unsynchronized.ref false;
-fun mk_component_name s = if !component_name_as_string
-                          then mk_string (String.explode s)
-                          else Syntax.free ((*varname*) s);
-
 (* FIXME: if is_state_var etc. is reimplemented, rethink about when adding the deco to
    the records *)
 
