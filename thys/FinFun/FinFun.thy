@@ -296,7 +296,7 @@ declare finfun_simp [simp del] finfun_iff [iff del] finfun_intro [rule del]
 
 subsection {* Code generator setup *}
 
-definition finfun_update_code :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b" ("_'(\<^sup>f\<^sup>c/ _ := _')" [1000,0,0] 1000)
+definition finfun_update_code :: "'a \<Rightarrow>\<^isub>f 'b \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow>\<^isub>f 'b" ("_'(\<^sup>fc/ _ := _')" [1000,0,0] 1000)
 where [simp, code del]: "finfun_update_code = finfun_update"
 
 code_datatype finfun_const finfun_update_code
@@ -1130,7 +1130,7 @@ text {*
 
 lemma finfun_Diag_const_code [code]:
   "(\<lambda>\<^isup>f b, \<lambda>\<^isup>f c)\<^sup>f = (\<lambda>\<^isup>f (b, c))"
-  "(\<lambda>\<^isup>f b, g(\<^sup>f\<^sup>c a := c))\<^sup>f = (\<lambda>\<^isup>f b, g)\<^sup>f(\<^sup>f\<^sup>c a := (b, c))"
+  "(\<lambda>\<^isup>f b, g(\<^sup>fc a := c))\<^sup>f = (\<lambda>\<^isup>f b, g)\<^sup>f(\<^sup>fc a := (b, c))"
 by(simp_all add: finfun_Diag_const1)
 
 lemma finfun_Diag_update1: "(f(\<^sup>f a := b), g)\<^sup>f = (f, g)\<^sup>f(\<^sup>f a := (b, g\<^sub>f a))"
@@ -1266,7 +1266,7 @@ by(simp add: finfun_curry_def)
 lemma finfun_curry_update [simp]:
   "finfun_curry (f(\<^sup>f (a, b) := c)) = (finfun_curry f)(\<^sup>f a := ((finfun_curry f)\<^sub>f a)(\<^sup>f b := c))"
   and finfun_curry_update_code [code]:
-  "finfun_curry (f(\<^sup>f\<^sup>c (a, b) := c)) = (finfun_curry f)(\<^sup>f a := ((finfun_curry f)\<^sub>f a)(\<^sup>f b := c))"
+  "finfun_curry (f(\<^sup>fc (a, b) := c)) = (finfun_curry f)(\<^sup>f a := ((finfun_curry f)\<^sub>f a)(\<^sup>f b := c))"
 by(simp_all add: finfun_curry_def)
 
 declare finfun_simp [simp] finfun_iff [iff] finfun_intro [intro]
@@ -1308,10 +1308,14 @@ subsection {* Executable equality for FinFuns *}
 lemma eq_finfun_All_ext: "(f = g) \<longleftrightarrow> finfun_All ((\<lambda>(x, y). x = y) \<circ>\<^isub>f (f, g)\<^sup>f)"
 by(simp add: expand_finfun_eq expand_fun_eq finfun_All_All o_def)
 
-instantiation finfun :: ("{card_UNIV,eq}",eq) eq begin
-definition eq_finfun_def: "eq_class.eq f g \<longleftrightarrow> finfun_All ((\<lambda>(x, y). x = y) \<circ>\<^isub>f (f, g)\<^sup>f)"
+instantiation finfun :: ("{card_UNIV,equal}",equal) equal begin
+definition eq_finfun_def: "HOL.equal f g \<longleftrightarrow> finfun_All ((\<lambda>(x, y). x = y) \<circ>\<^isub>f (f, g)\<^sup>f)"
 instance by(intro_classes)(simp add: eq_finfun_All_ext eq_finfun_def)
 end
+
+lemma [code nbe]:
+  "HOL.equal (f :: _ \<Rightarrow>\<^isub>f _) f \<longleftrightarrow> True"
+  by (fact equal_refl)
 
 subsection {* An operator that explicitly removes all redundant updates in the generated representations *}
 
