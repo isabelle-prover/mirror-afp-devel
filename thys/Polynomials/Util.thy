@@ -89,12 +89,13 @@ text {*
 distinct\_eq: a more generic version of distinct which uses an equality function as parameter 
 *}
 
-fun distinct_eq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool"
-where "distinct_eq _ [] = True"
-  |   "distinct_eq eq (x # xs) = ((\<forall> y \<in> set xs. \<not> (eq y x)) \<and> distinct_eq eq xs)"
+primrec distinct_eq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool"
+where "distinct_eq _ [] \<longleftrightarrow> True"
+  |   "distinct_eq eq (x # xs) \<longleftrightarrow> (\<forall>y \<in> set xs. \<not> eq y x) \<and> distinct_eq eq xs"
 
-lemma distinct_eq_append: "distinct_eq eq (xs @ ys) = (distinct_eq eq xs \<and> distinct_eq eq ys \<and> (\<forall> x \<in> set xs. \<forall> y \<in> set ys. \<not> (eq y x)))"
-  by (induct xs, auto)
-
+lemma distinct_eq_append:
+  "distinct_eq eq (xs @ ys) \<longleftrightarrow> distinct_eq eq xs \<and> distinct_eq eq ys
+    \<and> (\<forall>x \<in> set xs. \<forall>y \<in> set ys. \<not> eq y x)"
+  by (induct xs) auto
 
 end
