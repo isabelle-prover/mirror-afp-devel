@@ -691,11 +691,11 @@ fun in_range t = Syntax.free "in_range" $ t;   (* FIXME ?? *)
 
 fun not_zero t =
   Syntax.const @{const_syntax Not} $
-    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.const @{const_syntax Groups.zero});
+    (Syntax.const @{const_syntax HOL.eq} $ t $ Syntax.const @{const_syntax Groups.zero});
 
 fun not_Null t =
   Syntax.const @{const_syntax Not} $
-    (Syntax.const @{const_syntax "op ="} $ t $ Syntax.free "Simpl_Heap.Null");   (* FIXME ?? *)
+    (Syntax.const @{const_syntax HOL.eq} $ t $ Syntax.free "Simpl_Heap.Null");   (* FIXME ?? *)
 
 fun in_length i l =
   Syntax.const @{const_syntax Orderings.less} $ i $
@@ -794,7 +794,7 @@ fun guarded_Assign_tr ctxt (ts as [v, e]) =
         (* By the artificial "=" between left and right-hand side we get a bigger term and thus
            more information for type-inference *)
       in
-        case guard (Syntax.const @{const_syntax "op ="} $
+        case guard (Syntax.const @{const_syntax HOL.eq} $
             antiquoteCur_tr ctxt v $ antiquoteCur_tr ctxt e) of
           NONE => ass
         | SOME g =>
@@ -1456,12 +1456,12 @@ fun assert_tr' ((t as Abs (_, _, p)) :: ts) =
               Long_Name.base_name l = Long_Name.base_name StateFun.lookupN
           | selector t = false;
 
-        fun fix_state (Const (@{const_syntax "op ="},_) $ (Const (@{syntax_const "_free"}, _) $ _)) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ (Const (@{syntax_const "_bound"}, _) $ _)) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ (Const (@{syntax_const "_var"}, _) $ _)) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ Free _) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ Bound _) = true
-          | fix_state (Const (@{const_syntax "op ="},_) $ Var _) = true
+        fun fix_state (Const (@{const_syntax HOL.eq},_) $ (Const (@{syntax_const "_free"}, _) $ _)) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ (Const (@{syntax_const "_bound"}, _) $ _)) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ (Const (@{syntax_const "_var"}, _) $ _)) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ Free _) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ Bound _) = true
+          | fix_state (Const (@{const_syntax HOL.eq},_) $ Var _) = true
           | fix_state _ = false;
       in
         if antiquote_applied_only_to (fn t => selector t orelse fix_state t) p

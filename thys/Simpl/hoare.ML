@@ -3474,7 +3474,7 @@ fun solve_modifies_tac ctxt state_kind state_space i =
           val concl = HOLogic.dest_Trueprop (Logic.strip_assums_concl t);
           val ex_vars = strip_qnt_vars @{const_name Ex} concl;
           val state = Bound (length all_vars + length ex_vars);
-          val (Const (@{const_name "op ="},_)$x_upd$x_upd') = strip_qnt_body @{const_name Ex} concl;
+          val (Const (@{const_name HOL.eq},_)$x_upd$x_upd') = strip_qnt_body @{const_name Ex} concl;
           val (split,sd) = seed x_upd;
         in if sd = state then split else 0 end
         handle _ => 0)    (* FIXME avoid handle _ !!! *)
@@ -3536,7 +3536,7 @@ fun HoareRuleTac ctxt insts st =
     val HOL_basic_ss' = Simplifier.context ctxt HOL_basic_ss
     val annotate_simp_tac = simp_tac (HOL_basic_ss' addsimps (anno_defs@normalize_simps)
                                                    addsimprocs [split_beta_proc]);
-    fun is_com_eq (Const (@{const_name Trueprop},_)$(Const (@{const_name "op ="},T)$_$_)) =
+    fun is_com_eq (Const (@{const_name Trueprop},_)$(Const (@{const_name HOL.eq},T)$_$_)) =
           (case (binder_types T) of
              (Type (@{type_name Language.com},_)::_) => true
            | _ => false)
