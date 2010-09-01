@@ -58,7 +58,7 @@ Handling variable binding is one of the main difficulties in formal proofs. In t
 <p></p>
 
 <!--#set var="name" value="Lam-ml-Normalization" -->
-<!--#set var="binfo" value="../browser_info/current/HOL-Nominal/${name}" -->
+<!--#set var="binfo" value="../browser_info/current/HOL/HOL-Nominal/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
