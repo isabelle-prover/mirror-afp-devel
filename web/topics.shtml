@@ -86,8 +86,10 @@
 <a href="entries/Jinja.shtml">Jinja</a> &nbsp;
 <a href="entries/JinjaThreads.shtml">JinjaThreads</a> &nbsp;
 <a href="entries/Locally-Nameless-Sigma.shtml">Locally-Nameless-Sigma</a> &nbsp;
-<a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
 <a href="entries/Simpl.shtml">Simpl</a> &nbsp;
+
+<strong>Lambda Calculi:</strong>&nbsp;<a href="entries/POPLmark-deBruijn.shtml">POPLmark-deBruijn</a> &nbsp;
+<a href="entries/Lam-ml-Normalization.shtml">Lam-ml-Normalization</a> &nbsp;
 
 <strong>Type Systems:</strong>&nbsp;<a href="entries/MiniML.shtml">MiniML</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
