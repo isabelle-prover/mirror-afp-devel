@@ -1361,8 +1361,7 @@ corollary Times_same_infinite_bij_betw_types:
 assumes INF: "infinite(UNIV::'a set)" 
 shows "\<exists>(f::('a * 'a) => 'a). bij f"
 using assms Times_same_infinite_bij_betw[of "UNIV::'a set"]
-by (auto simp add: bij_bij_betw)
-
+by auto
 
 
 lemma card_of_Times_infinite:
@@ -1411,7 +1410,7 @@ assumes INF: "infinite(UNIV::'a set)" and
         BIJ: "inj(g::'b \<Rightarrow> 'a)"
 shows "(\<exists>(f::('b * 'a) => 'a). bij f) \<and> (\<exists>(h::('a * 'b) => 'a). bij h)"
 using assms Times_infinite_bij_betw[of "UNIV::'a set" "UNIV::'b set" g]  
-by (auto simp add: bij_bij_betw)
+by auto
 
 
 lemma card_of_Sigma_ordLeq_infinite:
@@ -1508,7 +1507,6 @@ proof-
         ordIso_transitive[of _ "|Field r|"] by blast
 qed
 
-
 corollary Plus_infinite_bij_betw:
 assumes INF: "infinite A" and INJ: "inj_on g B \<and> g ` B \<le> A"
 shows "(\<exists>f. bij_betw f (A <+> B) A) \<and> (\<exists>h. bij_betw h (B <+> A) A)"
@@ -1524,7 +1522,7 @@ assumes INF: "infinite(UNIV::'a set)" and
         BIJ: "inj(g::'b \<Rightarrow> 'a)"
 shows "(\<exists>(f::('b + 'a) => 'a). bij f) \<and> (\<exists>(h::('a + 'b) => 'a). bij h)"
 using assms Plus_infinite_bij_betw[of "UNIV::'a set" g "UNIV::'b set"]  
-by (auto simp add: bij_bij_betw)
+by auto
 
 
 lemma card_of_Un_infinite:
@@ -1697,7 +1695,6 @@ proof(auto)
   moreover have "|A| <=o |insert a A|" using card_of_mono1[of A] by auto
   ultimately show "|A| <o |B|" using ordLeq_ordLess_trans by blast
 qed
-
 
 
 subsection {* Cardinals versus lists  *}
@@ -1915,7 +1912,7 @@ corollary List_infinite_bij_betw_types:
 assumes "infinite(UNIV :: 'a set)"
 shows "\<exists>(f::'a list \<Rightarrow> 'a). bij f"
 using assms assms List_infinite_bij_betw[of "UNIV::'a set"]
-by (auto simp add: bij_bij_betw List_UNIV)
+by (auto simp add: List_UNIV)
 
 
 
@@ -2666,6 +2663,5 @@ next
   thus "finite (Field (cardSuc |A| ))" 
   using card_of_ordIso_finite finite_atLeastLessThan by blast
 qed
-
 
 end
