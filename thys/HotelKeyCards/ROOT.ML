@@ -1,4 +1,4 @@
-show_question_marks := false;
+show_question_marks_default := false;
 
 use_thy "Notation";
 no_document use_thy "Basis";
