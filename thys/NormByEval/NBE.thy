@@ -5,7 +5,7 @@
 (*<*)
 theory NBE imports Main begin
 
-ML"Syntax.ambiguity_level := 1000000"
+declare [[syntax_ambiguity_level = 1000000]]
 
 declare Let_def[simp]
 (*>*)
