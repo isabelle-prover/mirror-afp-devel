@@ -152,379 +152,380 @@ datatype hoareMode = Partial | Total
 fun get_rule p t Partial = p
   | get_rule p t Total   = t
 
-val GuardPartial = thm "HoarePartial.Guard";
-val GuardTotal   = thm "HoareTotal.Guard";
+val GuardPartial = @{thm HoarePartial.Guard};
+val GuardTotal = @{thm HoareTotal.Guard};
 val Guard = get_rule GuardPartial GuardTotal;
 
-val GuardStripPartial = thm "HoarePartial.GuardStrip";
-val GuardStripTotal   = thm "HoareTotal.GuardStrip";
+val GuardStripPartial = @{thm HoarePartial.GuardStrip};
+val GuardStripTotal = @{thm HoareTotal.GuardStrip};
 val GuardStrip = get_rule GuardStripPartial GuardStripTotal;
 
 val GuardStripUNIVPartial = UNIV_I RSN (3,GuardStripPartial);
 val GuardStripUNIVTotal   = UNIV_I RSN (3,GuardStripTotal);
 val GuardStripUNIV = get_rule GuardStripUNIVPartial GuardStripUNIVTotal;
 
-val GuardSwapPartial = thm "HoarePartial.GuardSwap";
-val GuardSwapTotal   = thm "HoareTotal.GuardSwap";
+val GuardSwapPartial = @{thm HoarePartial.GuardSwap};
+val GuardSwapTotal = @{thm HoareTotal.GuardSwap};
 val GuardSwap = get_rule GuardSwapPartial GuardSwapTotal;
 
-val GuaranteeAsGuardPartial = thm "HoarePartial.GuaranteeAsGuard";
-val GuaranteeAsGuardTotal   = thm "HoareTotal.GuaranteeAsGuard";
+val GuaranteeAsGuardPartial = @{thm HoarePartial.GuaranteeAsGuard};
+val GuaranteeAsGuardTotal = @{thm HoareTotal.GuaranteeAsGuard};
 val GuaranteeAsGuard = get_rule GuaranteeAsGuardPartial GuaranteeAsGuardTotal;
 
-val GuaranteePartial = thm "HoarePartial.Guarantee";
-val GuaranteeTotal   = thm "HoareTotal.Guarantee";
+val GuaranteePartial = @{thm HoarePartial.Guarantee};
+val GuaranteeTotal = @{thm HoareTotal.Guarantee};
 val Guarantee = get_rule GuaranteePartial GuaranteeTotal;
 
-val GuaranteeStripPartial = thm "HoarePartial.GuaranteeStrip";
-val GuaranteeStripTotal   = thm "HoareTotal.GuaranteeStrip";
+val GuaranteeStripPartial = @{thm HoarePartial.GuaranteeStrip};
+val GuaranteeStripTotal = @{thm HoareTotal.GuaranteeStrip};
 val GuaranteeStrip = get_rule GuaranteeStripPartial GuaranteeStripTotal;
 
-val GuardsNilPartial = thm "HoarePartial.GuardsNil";
-val GuardsNilTotal   = thm "HoareTotal.GuardsNil";
+val GuardsNilPartial = @{thm HoarePartial.GuardsNil};
+val GuardsNilTotal = @{thm HoareTotal.GuardsNil};
 val GuardsNil = get_rule GuardsNilPartial GuardsNilTotal;
 
-val GuardsConsPartial = thm "HoarePartial.GuardsCons";
-val GuardsConsTotal   = thm "HoareTotal.GuardsCons";
+val GuardsConsPartial = @{thm HoarePartial.GuardsCons};
+val GuardsConsTotal = @{thm HoareTotal.GuardsCons};
 val GuardsCons = get_rule GuardsConsPartial GuardsConsTotal;
 
-val GuardsConsGuaranteeStripPartial = thm "HoarePartial.GuardsConsGuaranteeStrip";
-val GuardsConsGuaranteeStripTotal   = thm "HoareTotal.GuardsConsGuaranteeStrip";
+val GuardsConsGuaranteeStripPartial = @{thm HoarePartial.GuardsConsGuaranteeStrip};
+val GuardsConsGuaranteeStripTotal = @{thm HoareTotal.GuardsConsGuaranteeStrip};
 val GuardsConsGuaranteeStrip =
       get_rule GuardsConsGuaranteeStripPartial GuardsConsGuaranteeStripTotal;
 
-val SkipPartial = thm "HoarePartial.Skip";
-val SkipTotal   = thm "HoareTotal.Skip";
+val SkipPartial = @{thm HoarePartial.Skip};
+val SkipTotal = @{thm HoareTotal.Skip};
 val Skip = get_rule SkipPartial SkipTotal;
 
-val BasicPartial = thm "HoarePartial.Basic";
-val BasicTotal   = thm "HoareTotal.Basic";
+val BasicPartial = @{thm HoarePartial.Basic};
+val BasicTotal = @{thm HoareTotal.Basic};
 val Basic = get_rule BasicPartial BasicTotal;
 
-val BasicCondPartial = thm "HoarePartial.BasicCond";
-val BasicCondTotal   = thm "HoareTotal.BasicCond";
+val BasicCondPartial = @{thm HoarePartial.BasicCond};
+val BasicCondTotal = @{thm HoareTotal.BasicCond};
 val BasicCond = get_rule BasicCondPartial BasicCondTotal;
 
-val SpecPartial = thm "HoarePartial.Spec";
-val SpecTotal   = thm "HoareTotal.Spec";
+val SpecPartial = @{thm HoarePartial.Spec};
+val SpecTotal = @{thm HoareTotal.Spec};
 val Spec = get_rule SpecPartial SpecTotal;
 
-val SpecPartialIf = thm "HoarePartial.SpecIf";
-val SpecTotalIf   = thm "HoareTotal.SpecIf";
+val SpecPartialIf = @{thm HoarePartial.SpecIf};
+val SpecTotalIf = @{thm HoareTotal.SpecIf};
 val SpecIf = get_rule SpecPartialIf SpecTotalIf;
 
-val ThrowPartial = thm "HoarePartial.Throw";
-val ThrowTotal   = thm "HoareTotal.Throw";
+val ThrowPartial = @{thm HoarePartial.Throw};
+val ThrowTotal = @{thm HoareTotal.Throw};
 val Throw = get_rule ThrowPartial ThrowTotal;
 
-val RaisePartial = thm "HoarePartial.raise";
-val RaiseTotal   = thm "HoareTotal.raise";
+val RaisePartial = @{thm HoarePartial.raise};
+val RaiseTotal = @{thm HoareTotal.raise};
 val Raise = get_rule RaisePartial RaiseTotal;
 
-val CatchPartial = thm "HoarePartial.Catch";
-val CatchTotal   = thm "HoareTotal.Catch";
+val CatchPartial = @{thm HoarePartial.Catch};
+val CatchTotal = @{thm HoareTotal.Catch};
 val Catch = get_rule CatchPartial CatchTotal;
 
-val CondCatchPartial = thm "HoarePartial.condCatch";
-val CondCatchTotal   = thm "HoareTotal.condCatch";
+val CondCatchPartial = @{thm HoarePartial.condCatch};
+val CondCatchTotal = @{thm HoareTotal.condCatch};
 val CondCatch = get_rule CondCatchPartial CondCatchTotal;
 
-val CatchSwapPartial = thm "HoarePartial.CatchSwap";
-val CatchSwapTotal   = thm "HoareTotal.CatchSwap";
+val CatchSwapPartial = @{thm HoarePartial.CatchSwap};
+val CatchSwapTotal = @{thm HoareTotal.CatchSwap};
 val CatchSwap = get_rule CatchSwapPartial CatchSwapTotal;
 
-val CondCatchSwapPartial = thm "HoarePartial.condCatchSwap";
-val CondCatchSwapTotal   = thm "HoareTotal.condCatchSwap";
+val CondCatchSwapPartial = @{thm HoarePartial.condCatchSwap};
+val CondCatchSwapTotal = @{thm HoareTotal.condCatchSwap};
 val CondCatchSwap = get_rule CondCatchSwapPartial CondCatchSwapTotal;
 
-val SeqPartial = thm "HoarePartial.Seq";
-val SeqTotal   = thm "HoareTotal.Seq";
+val SeqPartial = @{thm HoarePartial.Seq};
+val SeqTotal = @{thm HoareTotal.Seq};
 val Seq = get_rule SeqPartial SeqTotal;
 
-val SeqSwapPartial = thm "HoarePartial.SeqSwap";
-val SeqSwapTotal   = thm "HoareTotal.SeqSwap";
+val SeqSwapPartial = @{thm HoarePartial.SeqSwap};
+val SeqSwapTotal = @{thm HoareTotal.SeqSwap};
 val SeqSwap = get_rule SeqSwapPartial SeqSwapTotal;
 
-val BSeqPartial = thm "HoarePartial.BSeq";
-val BSeqTotal   = thm "HoareTotal.BSeq";
+val BSeqPartial = @{thm HoarePartial.BSeq};
+val BSeqTotal = @{thm HoareTotal.BSeq};
 val BSeq = get_rule BSeqPartial BSeqTotal;
 
-val CondPartial = thm "HoarePartial.Cond";
-val CondTotal   = thm "HoareTotal.Cond";
+val CondPartial = @{thm HoarePartial.Cond};
+val CondTotal = @{thm HoareTotal.Cond};
 val Cond = get_rule CondPartial CondTotal;
 
-val CondInv'Partial = thm "HoarePartial.CondInv'";
-val CondInv'Total   = thm "HoareTotal.CondInv'";
+val CondInv'Partial = @{thm HoarePartial.CondInv'};
+val CondInv'Total = @{thm HoareTotal.CondInv'};
 val CondInv' = get_rule CondInv'Partial CondInv'Total;
 
-val SwitchNilPartial = thm "HoarePartial.switchNil";
-val SwitchNilTotal   = thm "HoareTotal.switchNil";
+val SwitchNilPartial = @{thm HoarePartial.switchNil};
+val SwitchNilTotal = @{thm HoareTotal.switchNil};
 val SwitchNil = get_rule SwitchNilPartial SwitchNilTotal;
 
-val SwitchConsPartial = thm "HoarePartial.switchCons";
-val SwitchConsTotal   = thm "HoareTotal.switchCons";
+val SwitchConsPartial = @{thm HoarePartial.switchCons};
+val SwitchConsTotal = @{thm HoareTotal.switchCons};
 val SwitchCons = get_rule SwitchConsPartial SwitchConsTotal;
 
-val CondSwapPartial = thm "HoarePartial.CondSwap";
-val CondSwapTotal   = thm "HoareTotal.CondSwap";
+val CondSwapPartial = @{thm HoarePartial.CondSwap};
+val CondSwapTotal = @{thm HoareTotal.CondSwap};
 val CondSwap = get_rule CondSwapPartial CondSwapTotal;
 
-val WhilePartial = thm "HoarePartial.While";
-val WhileTotal   = thm "HoareTotal.While";
+val WhilePartial = @{thm HoarePartial.While};
+val WhileTotal = @{thm HoareTotal.While};
 val While = get_rule WhilePartial WhileTotal;
 
-val WhileAnnoGPartial = thm "HoarePartial.WhileAnnoG";
-val WhileAnnoGTotal   = thm "HoareTotal.WhileAnnoG";
+val WhileAnnoGPartial = @{thm HoarePartial.WhileAnnoG};
+val WhileAnnoGTotal = @{thm HoareTotal.WhileAnnoG};
 val WhileAnnoG = get_rule WhileAnnoGPartial WhileAnnoGTotal;
 
-val WhileAnnoFixPartial = thm "HoarePartial.WhileAnnoFix'";
-val WhileAnnoFixTotal   = thm "HoareTotal.WhileAnnoFix'";
+val WhileAnnoFixPartial = @{thm HoarePartial.WhileAnnoFix'};
+val WhileAnnoFixTotal = @{thm HoareTotal.WhileAnnoFix'};
 val WhileAnnoFix = get_rule WhileAnnoFixPartial WhileAnnoFixTotal;
 
-val WhileAnnoGFixPartial = thm "HoarePartial.WhileAnnoGFix";
-val WhileAnnoGFixTotal   = thm "HoareTotal.WhileAnnoGFix";
+val WhileAnnoGFixPartial = @{thm HoarePartial.WhileAnnoGFix};
+val WhileAnnoGFixTotal = @{thm HoareTotal.WhileAnnoGFix};
 val WhileAnnoGFix = get_rule WhileAnnoGFixPartial WhileAnnoGFixTotal;
 
-val BindPartial = thm "HoarePartial.Bind";
-val BindTotal   = thm "HoareTotal.Bind";
+val BindPartial = @{thm HoarePartial.Bind};
+val BindTotal = @{thm HoareTotal.Bind};
 val BindR = get_rule BindPartial BindTotal;
 
-val BlockPartial = thm "HoarePartial.Block";
-val BlockTotal   = thm "HoareTotal.Block";
+val BlockPartial = @{thm HoarePartial.Block};
+val BlockTotal = @{thm HoareTotal.Block};
 val Block = get_rule BlockPartial BlockTotal;
 
-val BlockSwapPartial = thm "HoarePartial.BlockSwap";
-val BlockSwapTotal   = thm "HoareTotal.BlockSwap";
+val BlockSwapPartial = @{thm HoarePartial.BlockSwap};
+val BlockSwapTotal = @{thm HoareTotal.BlockSwap};
 val BlockSwap = get_rule BlockSwapPartial BlockSwapTotal;
 
-val ProcPartial = thm "HoarePartial.ProcSpec";
-val ProcTotal   = thm "HoareTotal.ProcSpec";
+val ProcPartial = @{thm HoarePartial.ProcSpec};
+val ProcTotal = @{thm HoareTotal.ProcSpec};
 val Proc = get_rule ProcPartial ProcTotal;
 
-val ProcNoAbrPartial = thm "HoarePartial.ProcSpecNoAbrupt";
-val ProcNoAbrTotal   = thm "HoareTotal.ProcSpecNoAbrupt";
+val ProcNoAbrPartial = @{thm HoarePartial.ProcSpecNoAbrupt};
+val ProcNoAbrTotal = @{thm HoareTotal.ProcSpecNoAbrupt};
 val ProcNoAbr = get_rule ProcNoAbrPartial ProcNoAbrTotal;
 
-val ProcBodyPartial = thm "HoarePartial.ProcBody";
-val ProcBodyTotal   = thm "HoareTotal.ProcBody";
+val ProcBodyPartial = @{thm HoarePartial.ProcBody};
+val ProcBodyTotal = @{thm HoareTotal.ProcBody};
 val ProcBody = get_rule ProcBodyPartial ProcBodyTotal;
 
-val CallBodyPartial = thm "HoarePartial.CallBody";
-val CallBodyTotal   = thm "HoareTotal.CallBody";
+val CallBodyPartial = @{thm HoarePartial.CallBody};
+val CallBodyTotal = @{thm HoareTotal.CallBody};
 val CallBody = get_rule CallBodyPartial CallBodyTotal;
 
-val FCallPartial = thm "HoarePartial.FCall";
-val FCallTotal   = thm "HoareTotal.FCall";
+val FCallPartial = @{thm HoarePartial.FCall};
+val FCallTotal = @{thm HoareTotal.FCall};
 val FCall = get_rule FCallPartial FCallTotal;
 
-val ProcRecPartial = thm "HoarePartial.ProcRecList";
-val ProcRecTotal   = thm "HoareTotal.ProcRecList";
+val ProcRecPartial = @{thm HoarePartial.ProcRecList};
+val ProcRecTotal = @{thm HoareTotal.ProcRecList};
 val ProcRec = get_rule ProcRecPartial ProcRecTotal;
 
-val ProcRecPartialSpecs = thm "HoarePartial.ProcRecSpecs";
-val ProcRecTotalSpecs   = thm "HoareTotal.ProcRecSpecs";
+val ProcRecPartialSpecs = @{thm HoarePartial.ProcRecSpecs};
+val ProcRecTotalSpecs = @{thm HoareTotal.ProcRecSpecs};
 val ProcRecSpecs = get_rule ProcRecPartialSpecs ProcRecTotalSpecs;
 
-val ProcModifyReturnSameFaultsPartial = thm "HoarePartial.ProcModifyReturnSameFaults";
-val ProcModifyReturnSameFaultsTotal   = thm "HoareTotal.ProcModifyReturnSameFaults";
+val ProcModifyReturnSameFaultsPartial = @{thm HoarePartial.ProcModifyReturnSameFaults};
+val ProcModifyReturnSameFaultsTotal = @{thm HoareTotal.ProcModifyReturnSameFaults};
 val ProcModifyReturnSameFaults =
       get_rule ProcModifyReturnSameFaultsPartial ProcModifyReturnSameFaultsTotal;
 
-val ProcModifyReturnPartial = thm "HoarePartial.ProcModifyReturn";
-val ProcModifyReturnTotal   = thm "HoareTotal.ProcModifyReturn";
+val ProcModifyReturnPartial = @{thm HoarePartial.ProcModifyReturn};
+val ProcModifyReturnTotal = @{thm HoareTotal.ProcModifyReturn};
 val ProcModifyReturn = get_rule ProcModifyReturnPartial ProcModifyReturnTotal;
 
-val ProcModifyReturnNoAbrPartial = thm "HoarePartial.ProcModifyReturnNoAbr";
-val ProcModifyReturnNoAbrTotal   = thm "HoareTotal.ProcModifyReturnNoAbr";
+val ProcModifyReturnNoAbrPartial = @{thm HoarePartial.ProcModifyReturnNoAbr};
+val ProcModifyReturnNoAbrTotal = @{thm HoareTotal.ProcModifyReturnNoAbr};
 val ProcModifyReturnNoAbr = get_rule ProcModifyReturnNoAbrPartial ProcModifyReturnNoAbrTotal;
 
 val ProcModifyReturnNoAbrSameFaultsPartial =
-      thm "HoarePartial.ProcModifyReturnNoAbrSameFaults";
-val ProcModifyReturnNoAbrSameFaultsTotal   =
-      thm "HoareTotal.ProcModifyReturnNoAbrSameFaults";
+      @{thm HoarePartial.ProcModifyReturnNoAbrSameFaults};
+val ProcModifyReturnNoAbrSameFaultsTotal =
+      @{thm HoareTotal.ProcModifyReturnNoAbrSameFaults};
 val ProcModifyReturnNoAbrSameFaults =
       get_rule ProcModifyReturnNoAbrSameFaultsPartial ProcModifyReturnNoAbrSameFaultsTotal;
 
-val TrivPostPartial = thm "HoarePartial.TrivPost";
-val TrivPostTotal   = thm "HoareTotal.TrivPost";
+val TrivPostPartial = @{thm HoarePartial.TrivPost};
+val TrivPostTotal = @{thm HoareTotal.TrivPost};
 val TrivPost = get_rule TrivPostPartial TrivPostTotal;
 
-val TrivPostNoAbrPartial = thm "HoarePartial.TrivPostNoAbr";
-val TrivPostNoAbrTotal   = thm "HoareTotal.TrivPostNoAbr";
+val TrivPostNoAbrPartial = @{thm HoarePartial.TrivPostNoAbr};
+val TrivPostNoAbrTotal = @{thm HoareTotal.TrivPostNoAbr};
 val TrivPostNoAbr = get_rule TrivPostNoAbrPartial TrivPostNoAbrTotal;
 
-val DynProcProcParPartial = thm "HoarePartial.DynProcProcPar";
-val DynProcProcParTotal   = thm "HoareTotal.DynProcProcPar";
+val DynProcProcParPartial = @{thm HoarePartial.DynProcProcPar};
+val DynProcProcParTotal = @{thm HoareTotal.DynProcProcPar};
 val DynProcProcPar = get_rule DynProcProcParPartial DynProcProcParTotal;
 
-val DynProcProcParNoAbrPartial = thm "HoarePartial.DynProcProcParNoAbrupt";
-val DynProcProcParNoAbrTotal   = thm "HoareTotal.DynProcProcParNoAbrupt";
+val DynProcProcParNoAbrPartial = @{thm HoarePartial.DynProcProcParNoAbrupt};
+val DynProcProcParNoAbrTotal = @{thm HoareTotal.DynProcProcParNoAbrupt};
 val DynProcProcParNoAbr = get_rule DynProcProcParNoAbrPartial DynProcProcParNoAbrTotal;
 
-val ProcProcParModifyReturnPartial = thm "HoarePartial.ProcProcParModifyReturn";
-val ProcProcParModifyReturnTotal   = thm "HoareTotal.ProcProcParModifyReturn";
+val ProcProcParModifyReturnPartial = @{thm HoarePartial.ProcProcParModifyReturn};
+val ProcProcParModifyReturnTotal = @{thm HoareTotal.ProcProcParModifyReturn};
 val ProcProcParModifyReturn = get_rule ProcProcParModifyReturnPartial ProcProcParModifyReturnTotal;
 
 val ProcProcParModifyReturnSameFaultsPartial =
-      thm "HoarePartial.ProcProcParModifyReturnSameFaults";
+      @{thm HoarePartial.ProcProcParModifyReturnSameFaults};
 val ProcProcParModifyReturnSameFaultsTotal =
-      thm "HoareTotal.ProcProcParModifyReturnSameFaults";
+      @{thm HoareTotal.ProcProcParModifyReturnSameFaults};
 val ProcProcParModifyReturnSameFaults =
       get_rule ProcProcParModifyReturnSameFaultsPartial
                ProcProcParModifyReturnSameFaultsTotal;
 
-val ProcProcParModifyReturnNoAbrPartial = thm "HoarePartial.ProcProcParModifyReturnNoAbr";
-val ProcProcParModifyReturnNoAbrTotal   = thm "HoareTotal.ProcProcParModifyReturnNoAbr";
+val ProcProcParModifyReturnNoAbrPartial = @{thm HoarePartial.ProcProcParModifyReturnNoAbr};
+val ProcProcParModifyReturnNoAbrTotal = @{thm HoareTotal.ProcProcParModifyReturnNoAbr};
 val ProcProcParModifyReturnNoAbr =
       get_rule ProcProcParModifyReturnNoAbrPartial ProcProcParModifyReturnNoAbrTotal;
 
 val ProcProcParModifyReturnNoAbrSameFaultsPartial =
-      thm "HoarePartial.ProcProcParModifyReturnNoAbrSameFaults";
+      @{thm HoarePartial.ProcProcParModifyReturnNoAbrSameFaults};
 val ProcProcParModifyReturnNoAbrSameFaultsTotal   =
-      thm "HoareTotal.ProcProcParModifyReturnNoAbrSameFaults";
+      @{thm HoareTotal.ProcProcParModifyReturnNoAbrSameFaults};
 val ProcProcParModifyReturnNoAbrSameFaults =
       get_rule ProcProcParModifyReturnNoAbrSameFaultsPartial
                ProcProcParModifyReturnNoAbrSameFaultsTotal;
 
-val DynComPartial = thm "HoarePartial.DynComConseq";
-val DynComTotal   = thm "HoareTotal.DynComConseq";
+val DynComPartial = @{thm HoarePartial.DynComConseq};
+val DynComTotal = @{thm HoareTotal.DynComConseq};
 val DynCom = get_rule DynComPartial DynComTotal;
 
-val AugmentContextPartial = thm "HoarePartial.augment_context'";
-val AugmentContextTotal   = thm "HoareTotal.augment_context'";
+val AugmentContextPartial = @{thm HoarePartial.augment_context'};
+val AugmentContextTotal = @{thm HoareTotal.augment_context'};
 val AugmentContext = get_rule AugmentContextPartial AugmentContextTotal;
 
-val AugmentFaultsUNIVPartial = thm "HoarePartial.augment_FaultsUNIV";
-val AugmentFaultsUNIVTotal = thm "HoareTotal.augment_FaultsUNIV";
+val AugmentFaultsUNIVPartial = @{thm HoarePartial.augment_FaultsUNIV};
+val AugmentFaultsUNIVTotal = @{thm HoareTotal.augment_FaultsUNIV};
 val AugmentFaultsUNIV = get_rule AugmentFaultsUNIVPartial AugmentFaultsUNIVTotal;
 
-val AugmentEmptyFaultsPartial = thm "HoarePartial.augment_emptyFaults";
-val AugmentEmptyFaultsTotal = thm "HoareTotal.augment_emptyFaults";
+val AugmentEmptyFaultsPartial = @{thm HoarePartial.augment_emptyFaults};
+val AugmentEmptyFaultsTotal = @{thm HoareTotal.augment_emptyFaults};
 val AugmentEmptyFaults = get_rule AugmentEmptyFaultsPartial AugmentEmptyFaultsTotal;
 
-val AsmUNPartial = thm "HoarePartial.AsmUN";
-val AsmUNTotal   = thm "HoareTotal.AsmUN";
+val AsmUNPartial = @{thm HoarePartial.AsmUN};
+val AsmUNTotal = @{thm HoareTotal.AsmUN};
 val AsmUN = get_rule AsmUNPartial AsmUNTotal;
 
-val SpecAnnoPartial = thm "HoarePartial.SpecAnno'";
-val SpecAnnoTotal   = thm "HoareTotal.SpecAnno'";
+val SpecAnnoPartial = @{thm HoarePartial.SpecAnno'};
+val SpecAnnoTotal = @{thm HoareTotal.SpecAnno'};
 val SpecAnno = get_rule SpecAnnoPartial SpecAnnoTotal;
 
-val SpecAnnoNoAbruptPartial = thm "HoarePartial.SpecAnnoNoAbrupt";
-val SpecAnnoNoAbruptTotal   = thm "HoareTotal.SpecAnnoNoAbrupt";
+val SpecAnnoNoAbruptPartial = @{thm HoarePartial.SpecAnnoNoAbrupt};
+val SpecAnnoNoAbruptTotal = @{thm HoareTotal.SpecAnnoNoAbrupt};
 val SpecAnnoNoAbrupt = get_rule SpecAnnoNoAbruptPartial SpecAnnoNoAbruptTotal;
 
-val LemAnnoPartial = thm "HoarePartial.LemAnno";
-val LemAnnoTotal   = thm "HoareTotal.LemAnno";
+val LemAnnoPartial = @{thm HoarePartial.LemAnno};
+val LemAnnoTotal = @{thm HoareTotal.LemAnno};
 val LemAnno = get_rule LemAnnoPartial LemAnnoTotal;
 
-val LemAnnoNoAbruptPartial = thm "HoarePartial.LemAnnoNoAbrupt";
-val LemAnnoNoAbruptTotal   = thm "HoareTotal.LemAnnoNoAbrupt";
+val LemAnnoNoAbruptPartial = @{thm HoarePartial.LemAnnoNoAbrupt};
+val LemAnnoNoAbruptTotal = @{thm HoareTotal.LemAnnoNoAbrupt};
 val LemAnnoNoAbrupt = get_rule LemAnnoNoAbruptPartial LemAnnoNoAbruptTotal;
 
-val CombineStripPartial = thm "HoarePartial.CombineStrip''";
-val CombineStripTotal   = thm "HoareTotal.CombineStrip''";
+val CombineStripPartial = @{thm HoarePartial.CombineStrip''};
+val CombineStripTotal = @{thm HoareTotal.CombineStrip''};
 val CombineStrip = get_rule CombineStripPartial CombineStripTotal;
 
-val TerminationPartialStrip = thm "HoareTotalProps.TerminationPartialStrip";
+val TerminationPartialStrip = @{thm HoareTotalProps.TerminationPartialStrip};
 
-val ReannotateWhile = thm "HoarePartial.reannotateWhile";
-val ReannotateWhileNoGuard = thm "HoarePartial.reannotateWhileNoGuard";
+val ReannotateWhile = @{thm HoarePartial.reannotateWhile};
+val ReannotateWhileNoGuard = @{thm HoarePartial.reannotateWhileNoGuard};
 
-val TotalToPartial = thm "HoareTotal.hoaret_to_hoarep'";
-val Strip = thm "HoarePartial.hoarep_strip";
+val TotalToPartial = @{thm HoareTotal.hoaret_to_hoarep'};
+val Strip = @{thm HoarePartial.hoarep_strip};
 
-val Compl_Collect = thm "Hoare.Compl_Collect";
-val CollectInt_iff = thm "Hoare.CollectInt_iff";
-val Collect_False = thm "Hoare.Collect_False";
-val triv_All_eq = thm "Hoare.triv_All_eq";
-val triv_Ex_eq = thm "Hoare.triv_Ex_eq";
-val mex_def = thm "Hoare.mex_def";
-val meq_def = thm "Hoare.meq_def";
-val wf_measure = @{thm "Wellfounded.wf_measure"};
-val wf_same_fst = @{thm "Recdef.wf_same_fst"};
-val wf_inv_image = @{thm "Wellfounded.wf_inv_image"};
-val wf_lex_prod = @{thm "Wellfounded.wf_lex_prod"};
-val wf_measure_lex_prod = thm "Hoare.wf_measure_lex_prod";
-val in_measure_iff = thm "Hoare.in_measure_iff";
-val in_lex_iff = thm "Hoare.in_lex_iff";
-val in_mlex_iff = thm "Hoare.in_mlex_iff";
-val in_inv_image_iff = thm "Hoare.in_inv_image_iff";
-val subset_unI1 = thm "Hoare.subset_unI1";
-val subset_unI2 = thm "Hoare.subset_unI2";
-val Un_empty_left = thm "Un_empty_left";
-val Un_empty_right = thm "Un_empty_right";
-val in_insert_hd = thm "in_insert_hd";
-val singleton_conv2 = thm "Set.singleton_conv2";
+val Compl_Collect = @{thm Hoare.Compl_Collect};
+val CollectInt_iff = @{thm Hoare.CollectInt_iff};
+val Collect_False = @{thm Hoare.Collect_False};
+val triv_All_eq = @{thm Hoare.triv_All_eq};
+val triv_Ex_eq = @{thm Hoare.triv_Ex_eq};
+val mex_def = @{thm Hoare.mex_def};
+val meq_def = @{thm Hoare.meq_def};
+val wf_measure = @{thm Wellfounded.wf_measure};
+val wf_same_fst = @{thm Recdef.wf_same_fst};
+val wf_inv_image = @{thm Wellfounded.wf_inv_image};
+val wf_lex_prod = @{thm Wellfounded.wf_lex_prod};
+val wf_measure_lex_prod = @{thm Hoare.wf_measure_lex_prod};
+val in_measure_iff = @{thm Hoare.in_measure_iff};
+val in_lex_iff = @{thm Hoare.in_lex_iff};
+val in_mlex_iff = @{thm Hoare.in_mlex_iff};
+val in_inv_image_iff = @{thm Hoare.in_inv_image_iff};
+val subset_unI1 = @{thm Hoare.subset_unI1};
+val subset_unI2 = @{thm Hoare.subset_unI2};
+val Un_empty_left = @{thm Un_empty_left};
+val Un_empty_right = @{thm Un_empty_right};
+val in_insert_hd = @{thm in_insert_hd};
+val singleton_conv2 = @{thm Set.singleton_conv2};
 val singleton_conv_sym = singleton_conv2 RS sym;
-val empty_iff = thm "Set.empty_iff";
-val Int_empty_right = thm "Set.Int_empty_right";
-val Int_empty_left = thm "Set.Int_empty_left";
-val Un_iff = thm "Set.Un_iff";
-val Int_iff = thm "Set.Int_iff";
-val empty_subsetI = thm "Set.empty_subsetI";
-val singleton_iff = thm "Set.singleton_iff";
-val Un_upper1 = thm "Set.Un_upper1";
-val Un_upper2 = thm "Set.Un_upper2";
+val empty_iff = @{thm Set.empty_iff};
+val Int_empty_right = @{thm Set.Int_empty_right};
+val Int_empty_left = @{thm Set.Int_empty_left};
+val Un_iff = @{thm Set.Un_iff};
+val Int_iff = @{thm Set.Int_iff};
+val empty_subsetI = @{thm Set.empty_subsetI};
+val singleton_iff = @{thm Set.singleton_iff};
+val Un_upper1 = @{thm Set.Un_upper1};
+val Un_upper2 = @{thm Set.Un_upper2};
 
-val whileAnnoG_def = thm "Language.whileAnnoG_def";
-val whileAnno_def = thm "Language.whileAnno_def";
-val while_def = thm "Language.while_def";
-val specAnno_def = thm "Language.specAnno_def";
-val whileAnnoGFix_def = thm "Language.whileAnnoGFix_def";
-val whileAnnoFix_def = thm "Language.whileAnnoFix_def";
-val lem_def = thm "Language.lem_def";
+val whileAnnoG_def = @{thm Language.whileAnnoG_def};
+val whileAnno_def = @{thm Language.whileAnno_def};
+val while_def = @{thm Language.while_def};
+val specAnno_def = @{thm Language.specAnno_def};
+val whileAnnoGFix_def = @{thm Language.whileAnnoGFix_def};
+val whileAnnoFix_def = @{thm Language.whileAnnoFix_def};
+val lem_def = @{thm Language.lem_def};
 val anno_defs = [whileAnno_def,whileAnnoG_def,specAnno_def,
                  whileAnnoGFix_def,whileAnnoFix_def,lem_def];
-val split_paired_UN = thm "Hoare.split_paired_UN";
-val unit_meta = thm "Hoare.unit_meta";
-val unit_object = thm "Hoare.unit_object";
-val unit_ex = thm "Hoare.unit_ex";
-val unit_UN = thm "Hoare.unit_UN";
-val subset_singleton_insert1 = thm "Hoare.subset_singleton_insert1";
-val subset_singleton_insert2 = thm "Hoare.subset_singleton_insert2";
-val conjE_simp = thm "Hoare.conjE_simp";
-val assoc_simps = thms "Hoare.assoc.simps";
-val conj_assoc = thm "HOL.conj_assoc";
-val snd_guaranteeStripPair = thm "Language.snd_guaranteeStripPair"
-val lookup_Some_in_dom = thm "Hoare.lookup_Some_in_dom";
-val strip_simps = thm "Language.strip_simp"::thm "option_map_Some"::
-                  thms "Language.strip_guards_simps";
-val normalize_simps = [while_def,thm "Language.bseq_def",thm "List.append_Nil",thm "List.append_Cons"]@
-                      thms "List.list.cases"@
-                      thms "Language.flatten_simps"@
-                      thms "Language.sequence.simps"@
-                      thms "Language.normalize_simps"@
-                      thms "Language.guards.simps"@
-                      [@{thm fst_conv}, @{thm snd_conv}]
-val merge_guards_simps = thms "Language.merge_guards_simps"
-val mark_guards_simps  = thms "Language.mark_guards.simps"
-val guards_simps = thms "Language.guards.simps"
-val strip_guards_simps = thms "Language.strip_guards_simps"
-val dest_Guard_simps = thms "Language.dest_Guard_simps"
-val is_Guard_simps = thms "Language.is_Guard_simps"
-val com_cases_simps = thms "Language.com.cases"
-val the_simps = thms "the.simps";
-val strip_idem = thm "strip_idem";
-val dom_strip = thm "dom_strip";
-val Ex_True = thm "Ex_True";
-val Ex_False = thm "Ex_False";
-val upd_globals_def = thm "StateSpace.upd_globals_def";
-val all_imp_to_ex = thm "Hoare.all_imp_to_ex";
-val all_imp_eq_triv = thms "Hoare.all_imp_eq_triv";
-val in_Specs_simp = thm "Hoare.in_Specs_simp";
-val in_set_Un_simp = thm "Hoare.in_set_Un_simp";
-val split_all_conj = thm "split_all_conj";
-val image_Un = thm "image_Un";
-val image_Un_single_simp = thm "image_Un_single_simp";
+val split_paired_UN = @{thm Hoare.split_paired_UN};
+val unit_meta = @{thm Hoare.unit_meta};
+val unit_object = @{thm Hoare.unit_object};
+val unit_ex = @{thm Hoare.unit_ex};
+val unit_UN = @{thm Hoare.unit_UN};
+val subset_singleton_insert1 = @{thm Hoare.subset_singleton_insert1};
+val subset_singleton_insert2 = @{thm Hoare.subset_singleton_insert2};
+val conjE_simp = @{thm Hoare.conjE_simp};
+val assoc_simps = @{thms Hoare.assoc.simps};
+val conj_assoc = @{thm HOL.conj_assoc};
+val snd_guaranteeStripPair = @{thm Language.snd_guaranteeStripPair};
+val lookup_Some_in_dom = @{thm Hoare.lookup_Some_in_dom};
+val strip_simps =
+  @{thm Language.strip_simp} :: @{thm option_map_Some} :: @{thms Language.strip_guards_simps};
+val normalize_simps =
+ [while_def, @{thm Language.bseq_def}, @{thm List.append_Nil}, @{thm List.append_Cons}] @
+  @{thms List.list.cases} @
+  @{thms Language.flatten_simps} @
+  @{thms Language.sequence.simps} @
+  @{thms Language.normalize_simps} @
+  @{thms Language.guards.simps} @
+  [@{thm fst_conv}, @{thm snd_conv}];
+val merge_guards_simps = @{thms Language.merge_guards_simps};
+val mark_guards_simps = @{thms Language.mark_guards.simps};
+val guards_simps = @{thms Language.guards.simps};
+val strip_guards_simps = @{thms Language.strip_guards_simps};
+val dest_Guard_simps = @{thms Language.dest_Guard_simps};
+val is_Guard_simps = @{thms Language.is_Guard_simps};
+val com_cases_simps = @{thms Language.com.cases};
+val the_simps = @{thms the.simps};
+val strip_idem = @{thm strip_idem};
+val dom_strip = @{thm dom_strip};
+val Ex_True = @{thm Ex_True};
+val Ex_False = @{thm Ex_False};
+val upd_globals_def = @{thm StateSpace.upd_globals_def};
+val all_imp_to_ex = @{thm Hoare.all_imp_to_ex};
+val all_imp_eq_triv = @{thms Hoare.all_imp_eq_triv};
+val in_Specs_simp = @{thm Hoare.in_Specs_simp};
+val in_set_Un_simp = @{thm Hoare.in_set_Un_simp};
+val split_all_conj = @{thm split_all_conj};
+val image_Un = @{thm image_Un};
+val image_Un_single_simp = @{thm image_Un_single_simp};
 val K_rec_convs = [];
-val K_fun_convs = [thm "StateFun.K_statefun_apply",thm "StateFun.K_statefun_comp"];
+val K_fun_convs = [@{thm StateFun.K_statefun_apply}, @{thm StateFun.K_statefun_comp}];
 val K_convs = K_rec_convs @ K_fun_convs;
 val K_rec_congs = [];
-val K_fun_congs = [thm "StateFun.K_statefun_cong"];
+val K_fun_congs = [@{thm StateFun.K_statefun_cong}];
 val K_congs = K_rec_congs @ K_fun_congs;
 
-val fun_upd_apply = thm "Fun.fun_upd_apply";
+val fun_upd_apply = @{thm Fun.fun_upd_apply};
 
 (* misc. aux. functions *)
 
