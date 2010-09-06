@@ -748,7 +748,7 @@ prefer 2
  apply (thin_tac "submodule R M3 (g ` carrier M2)")
  apply (thin_tac "ring R") apply (thin_tac "R module M1")
  apply (thin_tac " R module M2") apply (thin_tac "R module M3")
-apply blast ML "reset show_types"
+apply blast ML
 apply (rule allI)
  apply (rule impI)
  apply simp     ????????????
