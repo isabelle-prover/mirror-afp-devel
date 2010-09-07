@@ -237,7 +237,7 @@ definition (in graph)
 
 lemma (in graph) dgr_dmonic_SetMark [simp]:
   "dgr_demonic SetMark_rel = SetMark";
-  by (simp add: expand_fun_eq SetMark_def dgr_demonic_def SetMark_rel_def demonic_sup_inf);
+  by (simp add: ext_iff SetMark_def dgr_demonic_def SetMark_rel_def demonic_sup_inf);
 
 lemma (in graph)  SetMark_dmono [simp]:
   "dmono SetMark";
@@ -341,7 +341,7 @@ theorem (in graph) SetMark_correct1 [simp]:
   apply (simp_all add: SetMark_def SUP_L_P_def
        less_pair_def less_I_def not_grd_dgr hoare_choice SetMarkInv_def SetMarkInvFinal_def neg_fun_pred SetMark_def);
 
-  apply (simp_all add: expand_fun_eq);
+  apply (simp_all add: ext_iff);
   apply safe;
   apply (unfold SetMarkInv_def);
   apply auto;

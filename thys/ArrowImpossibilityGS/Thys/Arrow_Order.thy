@@ -267,7 +267,7 @@ proof -
     hence 1: "(a,b) \<notin> F(?Pi 0)" using u `(a,b) \<notin> Lba` `Lba:Lin` `Lba:Lin` `a\<noteq>b`
       by(simp add:unanimity_def notin_Lin_iff const_Lin_Prof)
     have "?Pi N = (%p. Lab)" using surjh
-      by(auto simp:image_def expand_fun_eq Bex_def Collect_def
+      by(auto simp:image_def ext_iff Bex_def Collect_def
 	atLeastLessThan_def lessThan_def)
     moreover
     have "F(%i. Lab):Lin" using `F:SWF` `Lab:Lin` by(simp add:Prof_def Pi_def)

@@ -33,10 +33,10 @@ qed
 end
 
 lemma le_llist_conv_lprefix [iff]: "op \<le> = lprefix"
-by(simp add: less_eq_llist_def expand_fun_eq)
+by(simp add: less_eq_llist_def ext_iff)
 
 lemma less_llist_conv_lstrict_prefix [iff]: "op < = lstrict_prefix"
-by(simp add: less_llist_def expand_fun_eq)
+by(simp add: less_llist_def ext_iff)
 
 instantiation llist :: (type) bot begin
 

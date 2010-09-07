@@ -176,14 +176,14 @@ begin
   instance proof;
   fix x::"('a \<Rightarrow> 'b)" fix Y
     show  "x \<sqinter> \<Squnion>Y = (SUP y:Y. x \<sqinter> y)";
-    apply (simp_all add: expand_fun_eq inf_fun_eq SUPR_def Sup_fun_def inf_sup_distributivity);
+    apply (simp_all add: ext_iff inf_fun_eq SUPR_def Sup_fun_def inf_sup_distributivity);
     apply auto;
     apply (case_tac "(op \<sqinter> (x xa) ` {y. \<exists>f\<in>Y. y = f xa}) = {y. \<exists>f\<in>Y. y = x xa \<sqinter> f xa}");
     by auto;
   next;
   fix x::"('a \<Rightarrow> 'b)" fix Y
     show  "x \<squnion> \<Sqinter> Y = (INF y:Y. x \<squnion> y)";
-    apply (simp_all add: expand_fun_eq sup_fun_eq INFI_def Inf_fun_def sup_inf_distributivity);
+    apply (simp_all add: ext_iff sup_fun_eq INFI_def Inf_fun_def sup_inf_distributivity);
     apply auto;
     apply (case_tac "(op \<squnion> (x xa) ` {y. \<exists>f\<in>Y. y = f xa}) = {y. \<exists>f\<in>Y. y = x xa \<squnion> f xa}");
     by auto;

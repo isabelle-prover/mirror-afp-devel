@@ -33,7 +33,7 @@ proof(induct rule: red1_reds1.inducts)
 next
   case (Unlock1SynchronizedNull xs V a v)
   have "\<not> IUF (insync\<^bsub>V\<^esub> (a) Val v) \<epsilon> (THROW NullPointer)"
-    by(auto simp add: expand_finfun_eq expand_fun_eq finfun_upd_apply ta_upd_simps split: split_if_asm)
+    by(auto simp add: expand_finfun_eq ext_iff finfun_upd_apply ta_upd_simps split: split_if_asm)
   with `IUF (insync\<^bsub>V\<^esub> (a) Val v) \<epsilon> (THROW NullPointer)` show ?case by contradiction
 next
   case (Unlock1SynchronizedFail xs V a' a v h)
@@ -50,7 +50,7 @@ next
 next
   case (Synchronized1Throw2Null xs V a ad h)
   from `IUF (insync\<^bsub>V\<^esub> (a) Throw ad) \<epsilon> (THROW NullPointer)` have False
-    by(auto simp add: expand_finfun_eq expand_fun_eq finfun_upd_apply ta_upd_simps split: split_if_asm)
+    by(auto simp add: expand_finfun_eq ext_iff finfun_upd_apply ta_upd_simps split: split_if_asm)
   thus ?case ..
 qed(fastsimp intro: red1_reds1.intros simp add: ta_upd_simps)+
 

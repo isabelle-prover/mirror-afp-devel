@@ -548,7 +548,7 @@ done
 
 
 lemma restrict_fun_eq:"\<forall>x\<in>A. f x = g x \<Longrightarrow> (\<lambda>x\<in>A. f x) = (\<lambda>x\<in>A. g x)"
- apply (simp add:expand_fun_eq)
+ apply (simp add:ext_iff)
 done
 
 lemma funcset_mem: "\<lbrakk>f \<in> A \<rightarrow> B; x \<in> A\<rbrakk> \<Longrightarrow> f x \<in> B"

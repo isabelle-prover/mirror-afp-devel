@@ -1331,7 +1331,7 @@ proof -
     using Reds_dom_lcl[OF wwf body] wt l\<^isub>2' set_take_subset body_case
     by (cases T') force+
   hence eql\<^isub>2: "override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns) = l\<^isub>2"
-    by(fastsimp simp add:map_add_def override_on_def expand_fun_eq)
+    by(fastsimp simp add:map_add_def override_on_def ext_iff)
   from wwf select have "is_class P (last Cs')"
     by (auto elim!:SelectMethodDef.cases intro:Subobj_last_isClass 
              simp:LeastMethodDef_def FinalOverriderMethodDef_def 
@@ -1431,7 +1431,7 @@ proof -
     using Reds_dom_lcl[OF wwf body] wt l\<^isub>2' set_take_subset
     by force
   hence eql\<^isub>2: "override_on (l\<^isub>2++l\<^isub>3) l\<^isub>2 ({this} \<union> set pns) = l\<^isub>2"
-    by(fastsimp simp add:map_add_def override_on_def expand_fun_eq)
+    by(fastsimp simp add:map_add_def override_on_def ext_iff)
   from wwf least have "Cs' \<noteq> []"
     by (auto elim!:Subobjs_nonempty simp:LeastMethodDef_def MethodDefs_def)
   with Ds have "last Cs' = last Ds" by(fastsimp intro:appendPath_last)
@@ -2056,7 +2056,7 @@ lemma eval_closed_lcl_unchanged:
 proof -
   from wf eval have "\<And>V. V \<notin> fv e \<Longrightarrow> l' V = l V" by (rule eval_notfree_unchanged)
   with fv have "\<And>V. l' V = l V" by simp
-  thus ?thesis by(simp add:expand_fun_eq)
+  thus ?thesis by(simp add:ext_iff)
 qed
 
 

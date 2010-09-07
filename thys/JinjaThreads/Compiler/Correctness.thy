@@ -192,7 +192,7 @@ proof -
     with red_red0.mbisim_thrNone_eq[OF bisimJ0, of t] s have "thr s0 t = None" by simp
     with bisim01 have "thr s1 t = None" by(auto simp add: red0_Red1'.mbisim_thrNone_eq)
     with bisim1JVM s' have "ts' t = None" by(simp add: Red1_execd.mbisim_thrNone_eq) }
-  ultimately show ?thesis using s s' tsNotEmpty by(auto simp add: mexception_def expand_fun_eq)
+  ultimately show ?thesis using s s' tsNotEmpty by(auto simp add: mexception_def ext_iff)
 qed
 
 end
@@ -253,7 +253,7 @@ proof -
   next
     assume exec: "execd_mthr.mthr.\<tau>rtrancl3p (J2JVM P) cs ttas' cs'"
       and fin: "exec_mthr.mfinal cs'"
-    from final_simulation2[OF bisim, folded J2JVM_def[THEN meta_eq_to_obj_eq, unfolded expand_fun_eq, THEN spec, unfolded o_def], OF exec fin]
+    from final_simulation2[OF bisim, folded J2JVM_def[THEN meta_eq_to_obj_eq, unfolded ext_iff, THEN spec, unfolded o_def], OF exec fin]
     obtain s' ttas where red: "red_mthr.mthr.\<tau>rtrancl3p P s ttas s'"
       and bisim': "bisimJ2JVM s' cs'" and fin': "red_mthr.mfinal s'"
       and tlsim: "bisimulation_base.Tlsim tlsimJ2JVM ttas ttas'" by blast

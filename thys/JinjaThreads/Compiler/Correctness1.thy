@@ -300,7 +300,7 @@ lemma sim_move01_SyncLocks:
   \<Longrightarrow> sim_move01 P t ta0 (insync(a') (Val v)) (insync\<^bsub>V\<^esub> (a) (Val v)) h xs ta (Val v) h xs"
   "\<lbrakk> xs ! V = Addr a'; V < length xs; ta0 = \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a' \<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncUnlock a'\<rbrace>; ta = \<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a' \<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncUnlock a'\<rbrace> \<rbrakk>
   \<Longrightarrow> sim_move01 P t ta0 (insync(a') (Throw a'')) (insync\<^bsub>V\<^esub> (a) (Throw a'')) h xs ta (Throw a'') h xs"
-by(fastsimp simp add: sim_move01_def ta_bisim_def expand_finfun_eq expand_fun_eq finfun_upd_apply ta_upd_simps  intro: red1_reds1.intros[simplified] split: split_if_asm)+
+by(fastsimp simp add: sim_move01_def ta_bisim_def expand_finfun_eq ext_iff finfun_upd_apply ta_upd_simps  intro: red1_reds1.intros[simplified] split: split_if_asm)+
 
 lemma sim_move01_TryFail:
   "\<lbrakk> typeof_addr h a = \<lfloor>Class D\<rfloor>; \<not> P \<turnstile> D \<preceq>\<^sup>* C \<rbrakk>
@@ -764,7 +764,7 @@ next
   have "compP1 P,t \<turnstile>1 \<langle>insync\<^bsub>length Vs\<^esub> (a) Throw ad, (hp s, xs)\<rangle> -\<epsilon>\<lbrace>\<^bsub>l\<^esub> Unlock\<rightarrow>a \<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncUnlock a\<rbrace>\<rightarrow> \<langle>Throw ad, (hp s, xs)\<rangle>"
     by-(rule Synchronized1Throw2, auto)
   hence "sim_move01 (compP1 P) t \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncUnlock a\<rbrace> (insync(a) Throw ad) (insync\<^bsub>length Vs\<^esub> (a) Throw ad) (hp s) xs \<epsilon>\<lbrace>\<^bsub>l\<^esub>Unlock\<rightarrow>a\<rbrace>\<lbrace>\<^bsub>o\<^esub> SyncUnlock a\<rbrace> (Throw ad) (hp s) xs"
-    by(fastsimp simp add: sim_move01_def ta_bisim_def expand_fun_eq expand_finfun_eq finfun_upd_apply ta_upd_simps split: split_if_asm)
+    by(fastsimp simp add: sim_move01_def ta_bisim_def ext_iff expand_finfun_eq finfun_upd_apply ta_upd_simps split: split_if_asm)
   moreover note `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `bisim Vs (insync(a) Throw ad) E2 xs`
   ultimately show ?case by(fastsimp)
 next

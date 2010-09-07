@@ -57,11 +57,11 @@ by(auto simp add: ta_bisim_def elim!: list_all2_mono nta_bisim_mono intro: mono)
 
 lemma nta_bisim_flip [flip_simps]:
   "nta_bisim (\<lambda>t. flip (bisim t)) = flip (nta_bisim bisim)"
-by(auto simp add: expand_fun_eq flip_simps nta_bisim_def new_thread_action_case_def[symmetric] split: new_thread_action.splits)
+by(auto simp add: ext_iff flip_simps nta_bisim_def new_thread_action_case_def[symmetric] split: new_thread_action.splits)
 
 lemma ta_bisim_flip [flip_simps]:
   "ta_bisim (\<lambda>t. flip (bisim t)) = flip (ta_bisim bisim)"
-by(auto simp add: expand_fun_eq flip_simps ta_bisim_def)
+by(auto simp add: ext_iff flip_simps ta_bisim_def)
 
 lemma ta_bisim_observable_ta_of [simp]:
   "ta_bisim bisim (observable_ta_of ta) (observable_ta_of ta') = ta_bisim bisim ta ta'"
@@ -144,7 +144,7 @@ lemma mbisim_thrD2:
 by(frule mbisim_thrNone_eq[where t=t])(cases "thr s1 t",(fastsimp simp add: mbisim_def tbisim_def)+)
 
 lemma mbisim_dom_eq: "s1 \<approx>m s2 \<Longrightarrow> dom (thr s1) = dom (thr s2)"
-apply(clarsimp simp add: dom_def Collect_def expand_fun_eq simp del: not_None_eq)
+apply(clarsimp simp add: dom_def Collect_def ext_iff simp del: not_None_eq)
 apply(erule mbisim_thrNone_eq)
 done
 
@@ -179,7 +179,7 @@ apply(auto simp add: mbisim_def tbisim_def)
    apply(auto dest!: wset_thread_okD)[2]
    apply fastsimp
   apply(erule back_subst[where P=finite])
-  apply(clarsimp simp add: dom_def Collect_def expand_fun_eq simp del: not_None_eq)
+  apply(clarsimp simp add: dom_def Collect_def ext_iff simp del: not_None_eq)
   apply(rename_tac t)
 apply(case_tac [!] "thr s2 t")
 by fastsimp+
@@ -286,7 +286,7 @@ done
 
 lemma mta_bisim_flip [flip_simps]:
   "FWbisimulation_base.mta_bisim (\<lambda>t. flip (bisim t)) = flip (FWbisimulation_base.mta_bisim bisim)"
-by(auto simp add: expand_fun_eq flip_simps FWbisimulation_base.mta_bisim_def)
+by(auto simp add: ext_iff flip_simps FWbisimulation_base.mta_bisim_def)
 
 lemma flip_const [simp]: "flip (\<lambda>a b. c) = (\<lambda>a b. c)"
 by(rule flip_def)
@@ -475,7 +475,7 @@ proof -
   qed
   moreover from red tst s have tt': "t \<noteq> t'" by(cases) auto
   have "(\<lambda>t''. (ts(t \<mapsto> xln)) t'' \<noteq> None \<and> (ts(t \<mapsto> xln)) t'' \<noteq> (ts'(t \<mapsto> xln)) t'') =
-        (\<lambda>t''. ts t'' \<noteq> None \<and> ts t'' \<noteq> ts' t'')" using tst s by(auto simp add: expand_fun_eq)
+        (\<lambda>t''. ts t'' \<noteq> None \<and> ts t'' \<noteq> ts' t'')" using tst s by(auto simp add: ext_iff)
   with \<tau> tst tt' have "m\<tau>move (ls, (ts(t \<mapsto> xln), m), ws) (t', observable_ta_of \<epsilon>) (ls', (ts'(t \<mapsto> xln), m'), ws')"
     by cases(rule m\<tau>move.intros, auto)
   ultimately show ?thesis unfolding s s' by auto
@@ -835,7 +835,7 @@ proof(intro strip)
       let ?ts' = "ts(t := None)"
       from `insert t A = dom ts` `t \<notin> A` have "A = dom ?ts'" by auto
       moreover from `insert t A = dom ts` obtain xln where "ts t = \<lfloor>xln\<rfloor>" by(cases "ts t") auto
-      hence "ts(t \<mapsto> xln) = ts" by(auto simp add: expand_fun_eq)
+      hence "ts(t \<mapsto> xln) = ts" by(auto simp add: ext_iff)
       with `ts \<in> Q` have "ts(t \<mapsto> xln) \<in> Q" by(auto)
       hence "?ts' \<in> Q'" unfolding Q'_def by(auto simp del: split_paired_Ex)
       ultimately have "\<exists>z\<in>Q'. \<forall>y. m\<mu>t m y z \<longrightarrow> y \<notin> Q'" by(rule IH)
@@ -862,7 +862,7 @@ proof(intro strip)
 	  with `\<mu> (X'', m) (X', m)` have "(X'', m) \<notin> Q''" by(auto dest: min'[unfolded `xm'' = (x'', m)`])
 	  hence "\<forall>ln. ts'(t \<mapsto> (X'', ln)) \<notin> Q" by(simp add: Q''_def)
 	  moreover from `ts' t = None` eq True
-	  have "ts''(t := None) = ts'" by(auto simp add: expand_fun_eq)
+	  have "ts''(t := None) = ts'" by(auto simp add: ext_iff)
 	  with `ts'' T = \<lfloor>(X'', LN'')\<rfloor>` True
 	  have ts'': "ts'' = ts'(t \<mapsto> (X'', LN''))" by(auto intro!: ext)
 	  ultimately show ?thesis by blast
@@ -885,7 +885,7 @@ proof(intro strip)
 	  proof(rule contrapos_nn)
 	    assume "ts'' \<in> Q"
 	    from eq[OF False[symmetric]] have "ts'' t = \<lfloor>(x'', ln'')\<rfloor>" by simp
-	    hence ts'': "ts''(t \<mapsto> (x'', ln'')) = ts''" by(auto simp add: expand_fun_eq)
+	    hence ts'': "ts''(t \<mapsto> (x'', ln'')) = ts''" by(auto simp add: ext_iff)
 	    from `ts'' \<in> Q` have "ts''(t \<mapsto> (x'', ln'')) \<in> Q" unfolding ts'' .
 	    thus "ts''(t := None) \<in> Q'" unfolding Q'_def by auto
 	  qed
@@ -1874,7 +1874,7 @@ proof -
     from tst' wst maa ln have "s2 -2-t\<triangleright>(\<lambda>\<^isup>f [], [], [], [], [ReacquireLocks ln])\<rightarrow> ?s2'"
       by-(rule r2.redT.redT_acquire, auto)
     moreover from tst' ln have "\<not> m\<tau>move2 s2 (t, (\<lambda>\<^isup>f [], [], [], [], [ReacquireLocks ln])) ?s2'"
-      by(auto simp add: acquire_all_def expand_fun_eq elim!: r2.m\<tau>move.cases)
+      by(auto simp add: acquire_all_def ext_iff elim!: r2.m\<tau>move.cases)
     moreover have "mbisim s1' ?s2'"
     proof(rule mbisimI)
       from s1' show "locks s1' = locks ?s2'" by auto
@@ -2398,7 +2398,7 @@ proof -
     qed
   next
     case redT_acquire
-    with tst have False by(auto simp add: expand_fun_eq)
+    with tst have False by(auto simp add: ext_iff)
     thus ?thesis ..
   qed
 qed

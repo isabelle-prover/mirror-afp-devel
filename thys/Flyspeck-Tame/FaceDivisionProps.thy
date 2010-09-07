@@ -2648,7 +2648,7 @@ lemma edges_conv_Edges_if_cong:
  "\<lbrakk> vertices (f::face) \<cong> vs; distinct vs; vs \<noteq> [] \<rbrakk> \<Longrightarrow>
  \<E> f = Edges vs \<union> {(last vs,hd vs)}"
 apply(frule congs_distinct)
-apply(clarsimp simp: expand_set_eq is_nextElem_congs_eq)
+apply(clarsimp simp: set_ext_iff is_nextElem_congs_eq)
 using is_nextElem_edges_eq[of "Face vs Final",symmetric]
 apply(simp del:is_nextElem_edges_eq)
 apply(simp add:edges_conv_Edges)

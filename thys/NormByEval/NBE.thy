@@ -396,7 +396,7 @@ apply (induct k v arbitrary: \<sigma> k rule: lift_ML.induct)
 apply (simp_all add: o_assoc lift_o_shift)
 apply(subgoal_tac "V\<^bsub>ML\<^esub> 0 ## ?insrt k \<sigma> = ?insrt (Suc k) (V\<^bsub>ML\<^esub> 0 ## \<sigma>)")
  apply simp
-apply (simp add:expand_fun_eq lift_lift_ML cons_ML_def split:nat.split)
+apply (simp add:ext_iff lift_lift_ML cons_ML_def split:nat.split)
 done
 
 corollary subst_cons_lift:
@@ -942,16 +942,16 @@ apply simp
 apply(subgoal_tac "(\<lambda>n. V(case n of 0 \<Rightarrow> 0 | Suc k \<Rightarrow> Suc (\<sigma> k))) = (V 0 ## (\<lambda>n. V(\<sigma> n)))")
 apply (simp add:subst_ml_subst_ML)
 defer
-apply(simp add:expand_fun_eq split:nat.split)
+apply(simp add:ext_iff split:nat.split)
 apply(simp add:lift_is_subst_ml subst_ml_comp)
 apply(rule arg_cong[where f = kernel])
 apply(subgoal_tac "(nat_case 0 (\<lambda>k. Suc (\<sigma> k)) \<circ> Suc) = Suc o \<sigma>")
-prefer 2 apply(simp add:expand_fun_eq split:nat.split)
+prefer 2 apply(simp add:ext_iff split:nat.split)
 apply(subgoal_tac "(subst_ml (nat_case 0 (\<lambda>k. Suc (\<sigma> k))) \<circ>
                (\<lambda>n. if n = 0 then V\<^isub>U 0 [] else V\<^bsub>ML\<^esub> (n - 1)))
              = (\<lambda>n. if n = 0 then V\<^isub>U 0 [] else V\<^bsub>ML\<^esub> (n - 1))")
 apply simp
-apply(simp add: expand_fun_eq)
+apply(simp add: ext_iff)
 done
 
 lemma if_cong0: "If x y z = If x y z"
@@ -1009,7 +1009,7 @@ proof(induct u arbitrary:v rule:kernel.induct)
           (lift 0 (lift_ml 0 w[V\<^isub>U 0 []/Suc 0])[V\<^isub>U 0 []/0]!))"
       apply(subgoal_tac "(V\<^bsub>ML\<^esub> 0 ## (\<lambda>n. if n = 0 then V\<^isub>U 0 [] else V\<^bsub>ML\<^esub> (n - Suc 0))) = subst_decr_ML (Suc 0) (V\<^isub>U 0 [])")
       apply(simp cong:if_cong)
-      apply(simp add:expand_fun_eq cons_ML_def split:nat.splits)
+      apply(simp add:ext_iff cons_ML_def split:nat.splits)
       done
     also have "\<dots> = \<Lambda> (subst (V 0 ## subst_decr 0 (v!))
           ((lift 0 (lift_ml 0 w))[V\<^isub>U 1 []/Suc 0][V\<^isub>U 0 []/0]!))"
@@ -1071,7 +1071,7 @@ proof(induct u arbitrary:v rule:kernel.induct)
 	  apply(simp add:lift_is_subst_ml subst_ml_comp)
 	  apply(subgoal_tac "pi \<circ> (Suc \<circ> Suc) = (Suc \<circ> Suc)")
 	  apply(simp)
-	  apply(simp add:pi_def expand_fun_eq)
+	  apply(simp add:pi_def ext_iff)
 	  done
 	have "subst_ml pi (lift_ml 0 (lift_ml 0 w)[V\<^isub>U 0 []/0][V\<^isub>U 1 []/0]) =
              lift_ml 0 (lift_ml 0 w)[V\<^isub>U 1 []/0][V\<^isub>U 0 []/0]"
@@ -1211,7 +1211,7 @@ lemma kernel_subst_ML:
    (subst\<^bsub>ML\<^esub> \<sigma> (comp_open t))! = subst (kernel \<circ> \<sigma>) t"
 proof(induct arbitrary: \<sigma> pred:pure)
   case (Lam t)
-  have "lift 0 o V\<^bsub>ML\<^esub> = V\<^bsub>ML\<^esub>" by (simp add:expand_fun_eq)
+  have "lift 0 o V\<^bsub>ML\<^esub> = V\<^bsub>ML\<^esub>" by (simp add:ext_iff)
   hence "(subst\<^bsub>ML\<^esub> \<sigma> (comp_open (\<Lambda> t)))! =
     \<Lambda> (subst\<^bsub>ML\<^esub> (lift 0 \<circ> V\<^bsub>ML\<^esub> 0 ## \<sigma>) (comp_open t)[V\<^isub>U 0 []/0]!)"
     using Lam by(simp add: lift_subst_ML comp_open_def lift_compile)

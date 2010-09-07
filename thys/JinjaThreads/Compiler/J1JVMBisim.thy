@@ -1031,7 +1031,7 @@ lemma bisim1'_refl: "bsok e n \<Longrightarrow> P,e,n,h \<turnstile>' (e,xs) \<l
 apply(induct e and es arbitrary: n xs and n xs)
 apply(auto intro: bisim1'_bisims1'.intros simp add: nat_fun_sum_eq_conv)
 apply(case_tac option)
-apply(auto intro: bisim1'_bisims1'.intros simp add: expand_fun_eq split: split_if_asm)
+apply(auto intro: bisim1'_bisims1'.intros simp add: ext_iff split: split_if_asm)
 done
 
 lemma bisim1_imp_bisim1': "P, e, n, h \<turnstile> exs \<leftrightarrow> s \<Longrightarrow> P, e, n, h \<turnstile>' exs \<leftrightarrow> s"

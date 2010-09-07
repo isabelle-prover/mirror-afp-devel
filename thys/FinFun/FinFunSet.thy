@@ -109,7 +109,7 @@ lemma finfun_subset_refl [simp]: "A \<subseteq>\<^isub>f A"
   by fast
 
 lemma finfun_set_ext: "(!!x. (x \<in>\<^isub>f A) = (x \<in>\<^isub>f B)) \<Longrightarrow> A = B"
-by(simp add: expand_finfun_eq finfun_mem_def expand_fun_eq)
+by(simp add: expand_finfun_eq finfun_mem_def ext_iff)
 
 lemma finfun_subset_antisym [intro!]: "A \<subseteq>\<^isub>f B ==> B \<subseteq>\<^isub>f A ==> A = B"
   by (iprover intro: finfun_set_ext finfun_subsetD)

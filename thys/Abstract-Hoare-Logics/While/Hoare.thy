@@ -153,10 +153,10 @@ apply(rule strengthen_pre)
 prefer 2
 apply blast
 apply(clarify)
-apply(drule expand_fun_eq[THEN iffD1, OF wp_while, THEN spec, THEN iffD1])
+apply(drule ext_iff[THEN iffD1, OF wp_while, THEN spec, THEN iffD1])
 apply simp
 apply(clarify)
-apply(drule expand_fun_eq[THEN iffD1, OF wp_while, THEN spec, THEN iffD1])
+apply(drule ext_iff[THEN iffD1, OF wp_while, THEN spec, THEN iffD1])
 apply(simp split:split_if_asm)
 
 apply(fast intro!: hoare.Local)

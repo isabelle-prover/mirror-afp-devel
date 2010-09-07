@@ -240,14 +240,14 @@ unfolding has_method_def
 by(fastsimp dest: sees_method_compPD intro: sees_method_compP)
 
 lemma is_external_call_compP [simp]: "is_external_call (compP f P) = is_external_call P"
-by(auto simp add: expand_fun_eq is_external_call_def compP_has_method split: ty.splits)
+by(auto simp add: ext_iff is_external_call_def compP_has_method split: ty.splits)
 
 lemma external_WT_compP [simp]:
   "compP f P \<turnstile> T\<bullet>M(vs) :: U \<longleftrightarrow> P \<turnstile> T\<bullet>M(vs) :: U"
 by(auto elim!: external_WT.cases intro: external_WT.intros)
 
 lemma WT_external_compP' [simp]: "external_WT (compP f P) = external_WT P"
-by(auto simp add: expand_fun_eq)
+by(auto simp add: ext_iff)
 
 lemma \<tau>external_compP [simp]:
   "\<tau>external (compP f P) = \<tau>external P"
@@ -368,7 +368,7 @@ by(fastsimp)
 
 lemma is_class_compP [simp]:
   "is_class (compP f P) = is_class P"
-by(simp add: is_class_def expand_fun_eq)
+by(simp add: is_class_def ext_iff)
 
 lemma has_field_compP [simp]:
   "compP f P \<turnstile> C has F:T in D \<longleftrightarrow> P \<turnstile> C has F:T in D"

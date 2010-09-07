@@ -19,7 +19,7 @@ lemma tmap_preserve [quot_preserve]:
   shows "((Abs1 ---> Rep2) ---> (Abs3 ---> Rep4) ---> tmap Rep1 Rep3 ---> tmap Abs2 Abs4) tmap = tmap"
   and "((Abs1 ---> id) ---> (Abs2 ---> id) ---> tmap Rep1 Rep2 ---> id) tmap = tmap"
 using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2] Quotient_abs_rep[OF q3] Quotient_abs_rep[OF q4]
-by(simp_all add: expand_fun_eq tmap_compose[symmetric] o_def del: tmap_compose)
+by(simp_all add: ext_iff tmap_compose[symmetric] o_def del: tmap_compose)
 
 lemma tmap_respect [quot_respect]:
   "((R1 ===> R2) ===> (R3 ===> R4) ===> tllist_all2 R1 R3 ===> tllist_all2 R2 R4) tmap tmap"
@@ -142,7 +142,7 @@ lemma TCons_preserve [quot_preserve]:
   and q2: "Quotient R2 Abs2 Rep2"
   shows "(Rep1 ---> (tmap Rep1 Rep2) ---> (tmap Abs1 Abs2)) TCons = TCons"
 using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2] 
-by(simp add: expand_fun_eq tmap_compose[symmetric] o_def tmap_id_id[unfolded id_def] del: tmap_compose)
+by(simp add: ext_iff tmap_compose[symmetric] o_def tmap_id_id[unfolded id_def] del: tmap_compose)
 
 lemma TCons_respect [quot_respect]:
   "(R ===> tllist_all2 R Q ===> tllist_all2 R Q) TCons TCons"
@@ -152,7 +152,7 @@ lemma TNil_preserve [quot_preserve]:
   assumes "Quotient R2 Abs2 Rep2"
   shows "(Rep2 ---> tmap Abs1 Abs2) TNil = TNil"
 using Quotient_abs_rep[OF assms]
-by(simp add: expand_fun_eq)
+by(simp add: ext_iff)
 
 lemma LNil_respect [quot_respect]:
   "(R2 ===> tllist_all2 R1 R2) TNil TNil"
@@ -237,13 +237,13 @@ lemma tllist_all2_preserve [quot_preserve]:
   and "Quotient R2 Abs2 Rep2"
   shows "((Abs1 ---> Abs1 ---> id) ---> (Abs2 ---> Abs2 ---> id) ---> 
           tmap Rep1 Rep2 ---> tmap Rep1 Rep2 ---> id) tllist_all2 = tllist_all2"
-by(simp add: expand_fun_eq tllist_all2_prs[OF assms])
+by(simp add: ext_iff tllist_all2_prs[OF assms])
 
 lemma tllist_all2_preserve2 [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
   and q2: "Quotient R2 Abs2 Rep2"
   shows "(tllist_all2 ((Rep1 ---> Rep1 ---> id) R1) ((Rep2 ---> Rep2 ---> id) R2)) = (op =)"
-by(simp add: expand_fun_eq fun_map_def_raw Quotient_rel_rep[OF q1] Quotient_rel_rep[OF q2] tllist_all2_eq)
+by(simp add: ext_iff fun_map_def_raw Quotient_rel_rep[OF q1] Quotient_rel_rep[OF q2] tllist_all2_eq)
 
 lemma tllist_corec_preserve [quot_preserve]: 
   assumes q1: "Quotient R1 Abs1 Rep1"

@@ -241,7 +241,7 @@ where "no_wait_locks \<equiv> (\<lambda>\<^isup>f 0)"
 
 lemma neq_no_wait_locks_conv:
   "ln \<noteq> no_wait_locks \<longleftrightarrow> (\<exists>l. ln\<^sub>f l > 0)"
-by(auto simp add: expand_finfun_eq expand_fun_eq)
+by(auto simp add: expand_finfun_eq ext_iff)
 
 lemma neq_no_wait_locksE:
   assumes "ln \<noteq> no_wait_locks" obtains l where "ln\<^sub>f l > 0"

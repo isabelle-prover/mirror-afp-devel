@@ -114,7 +114,7 @@ proof -
     hence "r2.mthr.silent_moves ?s2' (redT_upd ?s2' t \<epsilon> x2' m2)"
       by(rule red2_rtrancl_\<tau>_into_RedT_\<tau>)(auto simp add: `ws2 t = None` intro: `t \<turnstile> (x1, shr s1) \<approx> (x2, m2)`)
     also have "redT_upd ?s2' t \<epsilon> x2' m2 = ?s2''" using `m2' = m2`
-      by(auto simp add: expand_fun_eq redT_updLns_def finfun_Diag_const2 o_def)
+      by(auto simp add: ext_iff redT_updLns_def finfun_Diag_const2 o_def)
     finally have "r2.mthr.silent_moves (ls2, (ts2, m2), ws2) ?s2''" 
       using `r2.mthr.silent_moves (ls2, (ts2, m2), ws2) ?s2'` by-(rule rtranclp_trans)
     moreover {

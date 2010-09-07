@@ -28,11 +28,11 @@ lemma mem_preserve [quot_preserve]:
   assumes "Quotient R Abs Rep"
   shows "(Rep ---> (Abs ---> id) ---> id) (op \<in>) = op \<in>"
 using Quotient_abs_rep[OF assms]
-by(simp add: expand_fun_eq mem_def)
+by(simp add: ext_iff mem_def)
 
 lemma mem_respect [quot_respect]:
   "(R ===> (R ===> op =) ===> op =) (op \<in>) (op \<in>)"
-by(simp add: expand_fun_eq mem_def)
+by(simp add: ext_iff mem_def)
 
 lemma sum_case_preserve [quot_preserve]:
   assumes q1: "Quotient R1 Abs1 Rep1"
@@ -40,7 +40,7 @@ lemma sum_case_preserve [quot_preserve]:
   and q3: "Quotient R3 Abs3 Rep3"
   shows "((Abs1 ---> Rep2) ---> (Abs3 ---> Rep2) ---> sum_map Rep1 Rep3 ---> Abs2) sum_case = sum_case"
 using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2] Quotient_abs_rep[OF q3]
-by(simp add: expand_fun_eq split: sum.split)
+by(simp add: ext_iff split: sum.split)
 
 lemma sum_case_preserve2 [quot_preserve]:
   assumes q: "Quotient R Abs Rep"
@@ -54,7 +54,7 @@ lemma prod_case_preserve [quot_preserve]:
   and q3: "Quotient R3 Abs3 Rep3"
   shows "((Abs1 ---> Abs2 ---> Rep3) ---> prod_fun Rep1 Rep2 ---> Abs3) prod_case = prod_case"
 using Quotient_abs_rep[OF q1] Quotient_abs_rep[OF q2] Quotient_abs_rep[OF q3]
-by(simp add: expand_fun_eq split: prod.split)
+by(simp add: ext_iff split: prod.split)
 
 lemma prod_case_preserve2 [quot_preserve]:
   assumes q: "Quotient R Abs Rep"

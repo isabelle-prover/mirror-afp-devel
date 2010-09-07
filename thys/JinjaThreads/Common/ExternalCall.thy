@@ -135,7 +135,7 @@ datatype extCallRet =
   | RetStaySame
 
 lemma extCallRet_rec [simp]: "extCallRet_rec = extCallRet_case"
-by(auto simp add: expand_fun_eq split: extCallRet.split)
+by(auto simp add: ext_iff split: extCallRet.split)
 
 abbreviation interrupted_flag_loc 
 where "interrupted_flag_loc \<equiv> CField Thread interrupted_flag"
