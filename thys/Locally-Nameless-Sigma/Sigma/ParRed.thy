@@ -1,5 +1,4 @@
 (*  Title:      /ParRed.thy
-    ID:         $Id: ParRed.thy,v 1.2 2009/11/15 14:23:11 hsudhof Exp $
     Author:     Ludovic Henrio and Florian Kammuller
     Copyright   2006
 

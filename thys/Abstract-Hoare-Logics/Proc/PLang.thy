@@ -1,5 +1,4 @@
 (*  Title:       One procedure
-    ID:          $Id: PLang.thy,v 1.5 2007-08-01 15:09:40 makarius Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)

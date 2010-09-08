@@ -1,5 +1,4 @@
 (*  Title:      Inductive definition of termination
-    ID:         $Id: PTermi.thy,v 1.3 2007-07-11 10:05:49 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)

@@ -1,5 +1,4 @@
 (*  Title:       A while language
-    ID:          $Id: Lang.thy,v 1.3 2007-07-11 10:05:50 stefanberghofer Exp $
     Author:      Tobias Nipkow, 2001/2006
     Maintainer:  Tobias Nipkow
 *)

@@ -1,5 +1,4 @@
 (*  Title:      FMap.thy
-    ID:         $Id: FMap.thy,v 1.1 2009/11/12 11:55:49 flokam Exp $
     Author:     Ludovic Henrio and Florian Kammuller
                 2006
 
