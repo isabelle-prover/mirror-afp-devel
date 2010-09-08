@@ -70,7 +70,7 @@ done
 
 theorem "\<turnstile>\<^sub>t {P}c{Q}  \<Longrightarrow>  \<Turnstile>\<^sub>t {P}c{Q}"
 apply(unfold hoare_tvalid_def hoare_valid_def)
-apply(erule thoare.induct);
+apply(erule thoare.induct)
       apply blast
      apply blast
     apply clarsimp
@@ -114,17 +114,17 @@ definition
 
 lemmas wp_defs = wp_def wpt_def
 
-lemma [simp]: "wp\<^sub>t (Do f) Q = (\<lambda>s. (\<forall>t \<in> f s. Q t) \<and> f s \<noteq> {})";
+lemma [simp]: "wp\<^sub>t (Do f) Q = (\<lambda>s. (\<forall>t \<in> f s. Q t) \<and> f s \<noteq> {})"
 by(simp add: wpt_def)
 
-lemma [simp]: "wp\<^sub>t (c\<^isub>1;c\<^isub>2) R = wp\<^sub>t c\<^isub>1 (wp\<^sub>t c\<^isub>2 R)";
+lemma [simp]: "wp\<^sub>t (c\<^isub>1;c\<^isub>2) R = wp\<^sub>t c\<^isub>1 (wp\<^sub>t c\<^isub>2 R)"
 apply(unfold wp_defs)
 apply(rule ext)
 apply blast
 done
 
 lemma [simp]:
- "wp\<^sub>t (IF b THEN c\<^isub>1 ELSE c\<^isub>2) Q = (\<lambda>s. wp\<^sub>t (if b s then c\<^isub>1 else c\<^isub>2) Q s)";
+ "wp\<^sub>t (IF b THEN c\<^isub>1 ELSE c\<^isub>2) Q = (\<lambda>s. wp\<^sub>t (if b s then c\<^isub>1 else c\<^isub>2) Q s)"
 apply(unfold wp_defs)
 apply(rule ext)
 apply auto
@@ -136,11 +136,11 @@ apply(rule ext)
 apply auto
 done
 
-lemma strengthen_pre: "\<lbrakk> \<forall>s. P' s \<longrightarrow> P s; \<turnstile>\<^sub>t {P}c{Q}  \<rbrakk> \<Longrightarrow> \<turnstile>\<^sub>t {P'}c{Q}";
+lemma strengthen_pre: "\<lbrakk> \<forall>s. P' s \<longrightarrow> P s; \<turnstile>\<^sub>t {P}c{Q}  \<rbrakk> \<Longrightarrow> \<turnstile>\<^sub>t {P'}c{Q}"
 by(erule thoare.Conseq, assumption, blast)
 
-lemma weaken_post: "\<lbrakk> \<turnstile>\<^sub>t {P}c{Q}; \<forall>s. Q s \<longrightarrow> Q' s  \<rbrakk> \<Longrightarrow> \<turnstile>\<^sub>t {P}c{Q'}";
-apply(rule thoare.Conseq);
+lemma weaken_post: "\<lbrakk> \<turnstile>\<^sub>t {P}c{Q}; \<forall>s. Q s \<longrightarrow> Q' s  \<rbrakk> \<Longrightarrow> \<turnstile>\<^sub>t {P}c{Q'}"
+apply(rule thoare.Conseq)
 apply(fast, assumption, assumption)
 done
 
