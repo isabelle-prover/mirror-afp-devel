@@ -14,15 +14,17 @@ types
   fields = "vname \<times> cname \<rightharpoonup> val"  -- "field name, defining class, value"
   obj = "cname \<times> fields"    -- "class instance with class name and fields"
 
-constdefs
-  obj_ty  :: "obj \<Rightarrow> ty"
+definition obj_ty  :: "obj \<Rightarrow> ty"
+where
   "obj_ty obj  \<equiv>  Class (fst obj)"
 
-  init_fields :: "((vname \<times> cname) \<times> ty) list \<Rightarrow> fields"
+definition init_fields :: "((vname \<times> cname) \<times> ty) list \<Rightarrow> fields"
+where
   "init_fields  \<equiv>  map_of \<circ> map (\<lambda>(F,T). (F,default_val T))"
   
   -- "a new, blank object with default values in all fields:"
-  blank :: "'m prog \<Rightarrow> cname \<Rightarrow> obj"
+definition blank :: "'m prog \<Rightarrow> cname \<Rightarrow> obj"
+where
   "blank P C  \<equiv>  (C,init_fields (fields P C))" 
 
 lemma [simp]: "obj_ty (C,fs) = Class C"
@@ -36,24 +38,25 @@ abbreviation
   cname_of :: "heap \<Rightarrow> addr \<Rightarrow> cname" where
   "cname_of hp a == fst (the (hp a))"
 
-constdefs
-  new_Addr  :: "heap \<Rightarrow> addr option"
+definition new_Addr  :: "heap \<Rightarrow> addr option"
+where
   "new_Addr h  \<equiv>  if \<exists>a. h a = None then Some(SOME a. h a = None) else None"
 
-  cast_ok :: "'m prog \<Rightarrow> cname \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> bool"
+definition cast_ok :: "'m prog \<Rightarrow> cname \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> bool"
+where
   "cast_ok P C h v  \<equiv>  v = Null \<or> P \<turnstile> cname_of h (the_Addr v) \<preceq>\<^sup>* C"
 
-  hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50)
+definition hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50)
+where
   "h \<unlhd> h'  \<equiv>  \<forall>a C fs. h a = Some(C,fs) \<longrightarrow> (\<exists>fs'. h' a = Some(C,fs'))"
 
-consts
-  typeof_h :: "heap \<Rightarrow> val \<Rightarrow> ty option"  ("typeof\<^bsub>_\<^esub>")
-primrec
+primrec typeof_h :: "heap \<Rightarrow> val \<Rightarrow> ty option"  ("typeof\<^bsub>_\<^esub>")
+where
   "typeof\<^bsub>h\<^esub>  Unit    = Some Void"
-  "typeof\<^bsub>h\<^esub>  Null    = Some NT"
-  "typeof\<^bsub>h\<^esub> (Bool b) = Some Boolean"
-  "typeof\<^bsub>h\<^esub> (Intg i) = Some Integer"
-  "typeof\<^bsub>h\<^esub> (Addr a) = (case h a of None \<Rightarrow> None | Some(C,fs) \<Rightarrow> Some(Class C))"
+| "typeof\<^bsub>h\<^esub>  Null    = Some NT"
+| "typeof\<^bsub>h\<^esub> (Bool b) = Some Boolean"
+| "typeof\<^bsub>h\<^esub> (Intg i) = Some Integer"
+| "typeof\<^bsub>h\<^esub> (Addr a) = (case h a of None \<Rightarrow> None | Some(C,fs) \<Rightarrow> Some(Class C))"
 
 lemma new_Addr_SomeD:
   "new_Addr h = Some a \<Longrightarrow> h a = None"

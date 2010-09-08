@@ -208,8 +208,8 @@ primrec
 "\<B>s (e#es) i = (\<B> e i \<and> \<B>s es i)"
 
 
-constdefs
-  wf_J\<^isub>1_mdecl :: "J\<^isub>1_prog \<Rightarrow> cname \<Rightarrow> expr\<^isub>1 mdecl \<Rightarrow> bool"
+definition wf_J\<^isub>1_mdecl :: "J\<^isub>1_prog \<Rightarrow> cname \<Rightarrow> expr\<^isub>1 mdecl \<Rightarrow> bool"
+where
   "wf_J\<^isub>1_mdecl P C  \<equiv>  \<lambda>(M,Ts,T,body).
     (\<exists>T'. P,Class C#Ts \<turnstile>\<^sub>1 body :: T' \<and> P \<turnstile> T' \<le> T) \<and>
     \<D> body \<lfloor>{..size Ts}\<rfloor> \<and> \<B> body (size Ts + 1)"

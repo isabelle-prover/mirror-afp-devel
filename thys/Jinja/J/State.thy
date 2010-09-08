@@ -12,10 +12,11 @@ types
   locals = "vname \<rightharpoonup> val"      -- "local vars, incl. params and ``this''"
   state  = "heap \<times> locals"
 
-constdefs
-  hp :: "state \<Rightarrow> heap"
+definition hp :: "state \<Rightarrow> heap"
+where
   "hp  \<equiv>  fst"
-  lcl :: "state \<Rightarrow> locals"
+definition lcl :: "state \<Rightarrow> locals"
+where
   "lcl  \<equiv>  snd"
 
 (*<*)

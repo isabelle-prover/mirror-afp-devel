@@ -115,14 +115,15 @@ lemma max_stack1: "1 \<le> max_stack e"
 (*<*)by(induct e) (simp_all add:max_def)(*>*)
 
 
-constdefs
-  compMb\<^isub>2 :: "expr\<^isub>1 \<Rightarrow> jvm_method"
+definition compMb\<^isub>2 :: "expr\<^isub>1 \<Rightarrow> jvm_method"
+where
   "compMb\<^isub>2  \<equiv>  \<lambda>body.
   let ins = compE\<^isub>2 body @ [Return];
       xt = compxE\<^isub>2 body 0 0
   in (max_stack body, max_vars body, ins, xt)"
 
-  compP\<^isub>2 :: "J\<^isub>1_prog \<Rightarrow> jvm_prog"
+definition compP\<^isub>2 :: "J\<^isub>1_prog \<Rightarrow> jvm_prog"
+where
   "compP\<^isub>2  \<equiv>  compP compMb\<^isub>2"
 
 (*<*)

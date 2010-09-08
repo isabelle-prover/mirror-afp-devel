@@ -10,8 +10,8 @@ theory JWellForm
 imports "../Common/WellForm" WWellForm WellType DefAss
 begin
 
-constdefs
-  wf_J_mdecl :: "J_prog \<Rightarrow> cname \<Rightarrow> J_mb mdecl \<Rightarrow> bool"
+definition wf_J_mdecl :: "J_prog \<Rightarrow> cname \<Rightarrow> J_mb mdecl \<Rightarrow> bool"
+where
   "wf_J_mdecl P C  \<equiv>  \<lambda>(M,Ts,T,(pns,body)).
   length Ts = length pns \<and>
   distinct pns \<and>

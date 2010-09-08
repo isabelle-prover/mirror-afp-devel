@@ -57,8 +57,8 @@ and "\<And>Vs. max_varss (compEs\<^isub>1 Vs es) = max_varss es"
 
 text{* Compiling programs: *}
 
-constdefs
-  compP\<^isub>1 :: "J_prog \<Rightarrow> J\<^isub>1_prog"
+definition compP\<^isub>1 :: "J_prog \<Rightarrow> J\<^isub>1_prog"
+where
   "compP\<^isub>1  \<equiv>  compP (\<lambda>(pns,body). compE\<^isub>1 (this#pns) body)"
 
 (*<*)

@@ -13,36 +13,36 @@ imports SemilatAlg
 begin
 
 
-consts
- iter :: "'s binop \<Rightarrow> 's step_type \<Rightarrow>
-          's list \<Rightarrow> nat set \<Rightarrow> 's list \<times> nat set"
- propa :: "'s binop \<Rightarrow> (nat \<times> 's) list \<Rightarrow> 's list \<Rightarrow> nat set \<Rightarrow> 's list * nat set"
 
-primrec
-"propa f []      \<tau>s w = (\<tau>s,w)"
-"propa f (q'#qs) \<tau>s w = (let (q,\<tau>) = q';
+primrec propa :: "'s binop \<Rightarrow> (nat \<times> 's) list \<Rightarrow> 's list \<Rightarrow> nat set \<Rightarrow> 's list * nat set"
+where
+  "propa f []      \<tau>s w = (\<tau>s,w)"
+| "propa f (q'#qs) \<tau>s w = (let (q,\<tau>) = q';
                              u = \<tau> \<squnion>\<^bsub>f\<^esub> \<tau>s!q;
                              w' = (if u = \<tau>s!q then w else insert q w)
                          in propa f qs (\<tau>s[q := u]) w')"
 
-defs iter_def:
-"iter f step \<tau>s w \<equiv>
- while (\<lambda>(\<tau>s,w). w \<noteq> {})
-       (\<lambda>(\<tau>s,w). let p = SOME p. p \<in> w
-                 in propa f (step p (\<tau>s!p)) \<tau>s (w-{p}))
-       (\<tau>s,w)"
+definition iter :: "'s binop \<Rightarrow> 's step_type \<Rightarrow>
+          's list \<Rightarrow> nat set \<Rightarrow> 's list \<times> nat set"
+where
+  "iter f step \<tau>s w \<equiv>
+   while (\<lambda>(\<tau>s,w). w \<noteq> {})
+         (\<lambda>(\<tau>s,w). let p = SOME p. p \<in> w
+                   in propa f (step p (\<tau>s!p)) \<tau>s (w-{p}))
+         (\<tau>s,w)"
 
-constdefs
- unstables :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> nat set"
-"unstables r step \<tau>s \<equiv> {p. p < size \<tau>s \<and> \<not>stable r step \<tau>s p}"
+definition unstables :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> nat set"
+where
+  "unstables r step \<tau>s \<equiv> {p. p < size \<tau>s \<and> \<not>stable r step \<tau>s p}"
 
- kildall :: "'s ord \<Rightarrow> 's binop \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> 's list"
-"kildall r f step \<tau>s \<equiv> fst(iter f step \<tau>s (unstables r step \<tau>s))"
+definition kildall :: "'s ord \<Rightarrow> 's binop \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> 's list"
+where
+  "kildall r f step \<tau>s \<equiv> fst(iter f step \<tau>s (unstables r step \<tau>s))"
 
-consts merges :: "'s binop \<Rightarrow> (nat \<times> 's) list \<Rightarrow> 's list \<Rightarrow> 's list"
-primrec
-"merges f []      \<tau>s = \<tau>s"
-"merges f (p'#ps) \<tau>s = (let (p,\<tau>) = p' in merges f ps (\<tau>s[p := \<tau> \<squnion>\<^bsub>f\<^esub> \<tau>s!p]))"
+primrec merges :: "'s binop \<Rightarrow> (nat \<times> 's) list \<Rightarrow> 's list \<Rightarrow> 's list"
+where
+  "merges f []      \<tau>s = \<tau>s"
+| "merges f (p'#ps) \<tau>s = (let (p,\<tau>) = p' in merges f ps (\<tau>s[p := \<tau> \<squnion>\<^bsub>f\<^esub> \<tau>s!p]))"
 
 
 lemmas [simp] = Let_def Semilat.le_iff_plus_unchanged [OF Semilat.intro, symmetric]

@@ -80,8 +80,8 @@ done
 
 section{* Exception tables *}
 
-constdefs
-  pcs :: "ex_table \<Rightarrow> nat set"
+definition pcs :: "ex_table \<Rightarrow> nat set"
+where
   "pcs xt  \<equiv>  \<Union>(f,t,C,h,d) \<in> set xt. {f ..< t}"
 
 lemma pcs_subset:

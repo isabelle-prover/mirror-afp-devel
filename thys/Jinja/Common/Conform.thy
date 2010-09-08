@@ -10,21 +10,24 @@ theory Conform
 imports Exceptions
 begin
 
-constdefs
-  conf :: "'m prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50)
+definition conf :: "'m prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50)
+where
   "P,h \<turnstile> v :\<le> T  \<equiv>
   \<exists>T'. typeof\<^bsub>h\<^esub> v = Some T' \<and> P \<turnstile> T' \<le> T"
 
-  oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> obj \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>" [51,51,51] 50)
+definition oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> obj \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>" [51,51,51] 50)
+where
   "P,h \<turnstile> obj \<surd>  \<equiv>
   let (C,fs) = obj in \<forall>F D T. P \<turnstile> C has F:T in D \<longrightarrow>
   (\<exists>v. fs(F,D) = Some v \<and> P,h \<turnstile> v :\<le> T)"
 
-  hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile> _ \<surd>" [51,51] 50)
+definition hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile> _ \<surd>" [51,51] 50)
+where
   "P \<turnstile> h \<surd>  \<equiv>
   (\<forall>a obj. h a = Some obj \<longrightarrow> P,h \<turnstile> obj \<surd>) \<and> preallocated h"
 
-  lconf :: "'m prog \<Rightarrow> heap \<Rightarrow> (vname \<rightharpoonup> val) \<Rightarrow> (vname \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50)
+definition lconf :: "'m prog \<Rightarrow> heap \<Rightarrow> (vname \<rightharpoonup> val) \<Rightarrow> (vname \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50)
+where
   "P,h \<turnstile> l (:\<le>) E  \<equiv>
   \<forall>V v. l V = Some v \<longrightarrow> (\<exists>T. E V = Some T \<and> P,h \<turnstile> v :\<le> T)"
 

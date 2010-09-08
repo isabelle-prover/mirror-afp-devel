@@ -13,10 +13,12 @@ types
  mname = string -- "method name"
  vname = string -- "names for local/field variables"
 
-constdefs
-  Object :: cname
+definition Object :: cname
+where
   "Object \<equiv> ''Object''"
-  this :: vname
+
+definition this :: vname
+where
   "this \<equiv> ''this''"
 
 -- "types"
@@ -27,8 +29,8 @@ datatype ty
   | NT            -- "null type"
   | Class cname   -- "class type"
 
-constdefs
-  is_refT :: "ty \<Rightarrow> bool"
+definition is_refT :: "ty \<Rightarrow> bool"
+where
   "is_refT T  \<equiv>  T = NT \<or> (\<exists>C. T = Class C)"
 
 lemma [iff]: "is_refT NT"

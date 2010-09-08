@@ -236,8 +236,8 @@ text {*
 lemmas eff_simps [simp] = eff_def norm_eff_def xcpt_eff_def
 (*declare app'Invoke [simp del]*)
 
-constdefs
-  phi_append :: ty\<^isub>m ("\<phi>\<^sub>a")
+definition phi_append :: ty\<^isub>m ("\<phi>\<^sub>a")
+where
   "\<phi>\<^sub>a \<equiv> map (\<lambda>(x,y). Some (x, map OK y)) [ 
    (                                    [], [Class list_name, Class list_name]),
    (                     [Class list_name], [Class list_name, Class list_name]),
@@ -271,8 +271,8 @@ text {*
 
   @{prop [display] "P n"} 
 *}
-constdefs 
-  intervall :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" ("_ \<in> [_, _')")
+definition intervall :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" ("_ \<in> [_, _')")
+where
   "x \<in> [a, b) \<equiv> a \<le> x \<and> x < b"
 
 lemma pc_0: "x < n \<Longrightarrow> (x \<in> [0, n) \<Longrightarrow> P x) \<Longrightarrow> P x"
@@ -335,8 +335,8 @@ text {* Some abbreviations for readability *}
 abbreviation "Clist == Class list_name"
 abbreviation "Ctest == Class test_name"
 
-constdefs
-  phi_makelist :: ty\<^isub>m ("\<phi>\<^sub>m")
+definition phi_makelist :: ty\<^isub>m ("\<phi>\<^sub>m")
+where
   "\<phi>\<^sub>m \<equiv> map (\<lambda>(x,y). Some (x, y)) [ 
     (                                   [], [OK Ctest, Err     , Err     ]),
     (                              [Clist], [OK Ctest, Err     , Err     ]),
@@ -430,8 +430,8 @@ lemma wf_md'E:
 (*>*)
 
 text {* The whole program is welltyped: *}
-constdefs 
-  Phi :: ty\<^isub>P ("\<Phi>")
+definition Phi :: ty\<^isub>P ("\<Phi>")
+where
   "\<Phi> C mn \<equiv> if C = test_name \<and> mn = makelist_name then \<phi>\<^sub>m else 
              if C = list_name \<and> mn = append_name then \<phi>\<^sub>a else []"
 
@@ -465,9 +465,9 @@ lemma "E,\<Phi> \<turnstile> start_state E test_name makelist_name \<surd>"
 
 section "Example for code generation: inferring method types"
 
-constdefs
-  test_kil :: "jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
+definition test_kil :: "jvm_prog \<Rightarrow> cname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 
              ex_table \<Rightarrow> instr list \<Rightarrow> ty\<^isub>i' err list"
+where
   "test_kil G C pTs rT mxs mxl et instr \<equiv>
    (let first  = Some ([],(OK (Class C))#(map OK pTs)@(replicate mxl Err));
         start  = OK first#(replicate (size instr - 1) (OK None))

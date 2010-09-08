@@ -9,27 +9,32 @@ header {* \isaheader{Lifting the Typing Framework to err, app, and eff} *}
 
 theory Typing_Framework_err imports Typing_Framework SemilatAlg begin
 
-constdefs
-  wt_err_step :: "'s ord \<Rightarrow> 's err step_type \<Rightarrow> 's err list \<Rightarrow> bool"
+definition wt_err_step :: "'s ord \<Rightarrow> 's err step_type \<Rightarrow> 's err list \<Rightarrow> bool"
+where
   "wt_err_step r step \<tau>s \<equiv> wt_step (Err.le r) Err step \<tau>s"
 
-  wt_app_eff :: "'s ord \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> bool"
+definition wt_app_eff :: "'s ord \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> 's step_type \<Rightarrow> 's list \<Rightarrow> bool"
+where
   "wt_app_eff r app step \<tau>s \<equiv>
   \<forall>p < size \<tau>s. app p (\<tau>s!p) \<and> (\<forall>(q,\<tau>) \<in> set (step p (\<tau>s!p)). \<tau> <=_r \<tau>s!q)"
 
-  map_snd :: "('b \<Rightarrow> 'c) \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'c) list"
+definition map_snd :: "('b \<Rightarrow> 'c) \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> ('a \<times> 'c) list"
+where
   "map_snd f \<equiv> map (\<lambda>(x,y). (x, f y))"
 
-  error :: "nat \<Rightarrow> (nat \<times> 'a err) list"
+definition error :: "nat \<Rightarrow> (nat \<times> 'a err) list"
+where
   "error n \<equiv> map (\<lambda>x. (x,Err)) [0..<n]"
 
-  err_step :: "nat \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> 's step_type \<Rightarrow> 's err step_type"
+definition err_step :: "nat \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> 's step_type \<Rightarrow> 's err step_type"
+where
   "err_step n app step p t \<equiv> 
   case t of 
     Err   \<Rightarrow> error n
   | OK \<tau> \<Rightarrow> if app p \<tau> then map_snd OK (step p \<tau>) else error n"
 
-  app_mono :: "'s ord \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> bool"
+definition app_mono :: "'s ord \<Rightarrow> (nat \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> bool"
+where
   "app_mono r app n A \<equiv>
   \<forall>s p t. s \<in> A \<and> p < n \<and> s \<sqsubseteq>\<^sub>r t \<longrightarrow> app p t \<longrightarrow> app p s"
 

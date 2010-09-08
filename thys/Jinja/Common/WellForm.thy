@@ -22,15 +22,17 @@ become more general.
 
 types 'm wf_mdecl_test = "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
 
-constdefs
-  wf_fdecl :: "'m prog \<Rightarrow> fdecl \<Rightarrow> bool"
+definition wf_fdecl :: "'m prog \<Rightarrow> fdecl \<Rightarrow> bool"
+where
   "wf_fdecl P \<equiv> \<lambda>(F,T). is_type P T"
 
-  wf_mdecl :: "'m wf_mdecl_test \<Rightarrow> 'm wf_mdecl_test"
+definition wf_mdecl :: "'m wf_mdecl_test \<Rightarrow> 'm wf_mdecl_test"
+where
   "wf_mdecl wf_md P C \<equiv> \<lambda>(M,Ts,T,mb).
   (\<forall>T\<in>set Ts. is_type P T) \<and> is_type P T \<and> wf_md P C (M,Ts,T,mb)"
 
-  wf_cdecl :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> 'm cdecl \<Rightarrow> bool"
+definition wf_cdecl :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> 'm cdecl \<Rightarrow> bool"
+where
   "wf_cdecl wf_md P  \<equiv>  \<lambda>(C,(D,fs,ms)).
   (\<forall>f\<in>set fs. wf_fdecl P f) \<and>  distinct_fst fs \<and>
   (\<forall>m\<in>set ms. wf_mdecl wf_md P C m) \<and>  distinct_fst ms \<and>
@@ -40,10 +42,12 @@ constdefs
       \<forall>D' Ts' T' m'. P \<turnstile> D sees M:Ts' \<rightarrow> T' = m' in D' \<longrightarrow>
                        P \<turnstile> Ts' [\<le>] Ts \<and> P \<turnstile> T \<le> T'))"
 
-  wf_syscls :: "'m prog \<Rightarrow> bool"
+definition wf_syscls :: "'m prog \<Rightarrow> bool"
+where
   "wf_syscls P  \<equiv>  {Object} \<union> sys_xcpts \<subseteq> set(map fst P)"
 
-  wf_prog :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> bool"
+definition wf_prog :: "'m wf_mdecl_test \<Rightarrow> 'm prog \<Rightarrow> bool"
+where
   "wf_prog wf_md P  \<equiv>  wf_syscls P \<and> (\<forall>c \<in> set P. wf_cdecl wf_md P c) \<and> distinct_fst P"
 
 

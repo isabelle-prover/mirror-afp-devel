@@ -33,14 +33,16 @@ primrec
   "[] \<Squnion>\<^bsub>f\<^esub> y = y"
   "(x#xs) \<Squnion>\<^bsub>f\<^esub> y = xs \<Squnion>\<^bsub>f\<^esub> (x \<squnion>\<^sub>f y)"
 
-constdefs
-  bounded :: "'s step_type \<Rightarrow> nat \<Rightarrow> bool"
+definition bounded :: "'s step_type \<Rightarrow> nat \<Rightarrow> bool"
+where
   "bounded step n \<equiv> \<forall>p<n. \<forall>\<tau>. \<forall>(q,\<tau>') \<in> set (step p \<tau>). q<n"  
 
-  pres_type :: "'s step_type \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> bool"
+definition pres_type :: "'s step_type \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> bool"
+where
   "pres_type step n A \<equiv> \<forall>\<tau>\<in>A. \<forall>p<n. \<forall>(q,\<tau>') \<in> set (step p \<tau>). \<tau>' \<in> A"
 
-  mono :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> bool"
+definition mono :: "'s ord \<Rightarrow> 's step_type \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> bool"
+where
   "mono r step n A \<equiv> 
   \<forall>\<tau> p \<tau>'. \<tau> \<in> A \<and> p<n \<and> \<tau> \<sqsubseteq>\<^sub>r \<tau>' \<longrightarrow> set (step p \<tau>) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step p \<tau>')"
 

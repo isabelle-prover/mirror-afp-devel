@@ -12,14 +12,16 @@ theory Product
 imports Err
 begin
 
-constdefs
-  le :: "'a ord \<Rightarrow> 'b ord \<Rightarrow> ('a \<times> 'b) ord"
+definition le :: "'a ord \<Rightarrow> 'b ord \<Rightarrow> ('a \<times> 'b) ord"
+where
   "le r\<^isub>A r\<^isub>B \<equiv> \<lambda>(a\<^isub>1,b\<^isub>1) (a\<^isub>2,b\<^isub>2). a\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>A\<^esub> a\<^isub>2 \<and> b\<^isub>1 \<sqsubseteq>\<^bsub>r\<^isub>B\<^esub> b\<^isub>2"
 
-  sup :: "'a ebinop \<Rightarrow> 'b ebinop \<Rightarrow> ('a \<times> 'b) ebinop"
+definition sup :: "'a ebinop \<Rightarrow> 'b ebinop \<Rightarrow> ('a \<times> 'b) ebinop"
+where
   "sup f g \<equiv> \<lambda>(a\<^isub>1,b\<^isub>1)(a\<^isub>2,b\<^isub>2). Err.sup Pair (a\<^isub>1 \<squnion>\<^sub>f a\<^isub>2) (b\<^isub>1 \<squnion>\<^sub>g b\<^isub>2)"
 
-  esl :: "'a esl \<Rightarrow> 'b esl \<Rightarrow> ('a \<times> 'b ) esl"
+definition esl :: "'a esl \<Rightarrow> 'b esl \<Rightarrow> ('a \<times> 'b ) esl"
+where
   "esl \<equiv> \<lambda>(A,r\<^isub>A,f\<^isub>A) (B,r\<^isub>B,f\<^isub>B). (A \<times> B, le r\<^isub>A r\<^isub>B, sup f\<^isub>A f\<^isub>B)"
 
 (*<*)

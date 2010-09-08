@@ -263,13 +263,14 @@ qed
 (*>*)
 
 
-constdefs
-  Method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> cname \<Rightarrow> bool"
+definition Method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> cname \<Rightarrow> bool"
             ("_ \<turnstile> _ sees _: _\<rightarrow>_ = _ in _" [51,51,51,51,51,51,51] 50)
+where
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D  \<equiv>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and> Mm M = Some((Ts,T,m),D)"
 
-  has_method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" ("_ \<turnstile> _ has _" [51,0,51] 50)
+definition has_method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" ("_ \<turnstile> _ has _" [51,0,51] 50)
+where
   "P \<turnstile> C has M \<equiv> \<exists>Ts T m D. P \<turnstile> C sees M:Ts\<rightarrow>T = m in D"
 
 lemma sees_method_fun:
@@ -424,9 +425,9 @@ done
 (*>*)
 
 (* FIXME why is Field not displayed correctly? TypeRel qualifier seems to confuse printer*)
-constdefs
-  has_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
+definition has_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
                    ("_ \<turnstile> _ has _:_ in _" [51,51,51,51,51] 50)
+where
   "P \<turnstile> C has F:T in D  \<equiv>
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and> map_of FDTs (F,D) = Some T"
 
@@ -440,9 +441,9 @@ done
 (*>*)
 
 
-constdefs
-  sees_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
+definition sees_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
                   ("_ \<turnstile> _ sees _:_ in _" [51,51,51,51,51] 50)
+where
   "P \<turnstile> C sees F:T in D  \<equiv>
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and>
             map_of (map (\<lambda>((F,D),T). (F,(D,T))) FDTs) F = Some(D,T)"
@@ -494,14 +495,16 @@ lemma sees_field_idemp:
 
 subsection "Functional lookup"
 
-constdefs
-  method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> cname \<times> ty list \<times> ty \<times> 'm"
+definition method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> cname \<times> ty list \<times> ty \<times> 'm"
+where
   "method P C M  \<equiv>  THE (D,Ts,T,m). P \<turnstile> C sees M:Ts \<rightarrow> T = m in D"
 
-  field  :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> cname \<times> ty"
+definition field  :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> cname \<times> ty"
+where
   "field P C F  \<equiv>  THE (D,T). P \<turnstile> C sees F:T in D"
                                                         
-  fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> ty) list" 
+definition fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> ty) list" 
+where
   "fields P C  \<equiv>  THE FDTs. P \<turnstile> C has_fields FDTs"                
 
 lemma fields_def2 [simp]: "P \<turnstile> C has_fields FDTs \<Longrightarrow> fields P C = FDTs"

@@ -28,11 +28,12 @@ translations
   (type) "'c prog" <= (type) "('c cdecl) list"
 (*>*)
 
-constdefs
-  "class" :: "'m prog \<Rightarrow> cname \<rightharpoonup> 'm class"
+definition "class" :: "'m prog \<Rightarrow> cname \<rightharpoonup> 'm class"
+where
   "class  \<equiv>  map_of"
 
-  is_class :: "'m prog \<Rightarrow> cname \<Rightarrow> bool"
+definition is_class :: "'m prog \<Rightarrow> cname \<Rightarrow> bool"
+where
   "is_class P C  \<equiv>  class P C \<noteq> None"
 
 lemma finite_is_class: "finite {C. is_class P C}"
@@ -44,8 +45,8 @@ apply (rule finite_dom_map_of)
 done
 (*>*)
 
-constdefs
-  is_type :: "'m prog \<Rightarrow> ty \<Rightarrow> bool"
+definition is_type :: "'m prog \<Rightarrow> ty \<Rightarrow> bool"
+where
   "is_type P T  \<equiv>
   (case T of Void \<Rightarrow> True | Boolean \<Rightarrow> True | Integer \<Rightarrow> True | NT \<Rightarrow> True
    | Class C \<Rightarrow> is_class P C)"

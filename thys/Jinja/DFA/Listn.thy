@@ -12,11 +12,12 @@ theory Listn
 imports Err
 begin
 
-constdefs
-  list :: "nat \<Rightarrow> 'a set \<Rightarrow> 'a list set"
+definition list :: "nat \<Rightarrow> 'a set \<Rightarrow> 'a list set"
+where
   "list n A \<equiv> {xs. size xs = n \<and> set xs \<subseteq> A}"
 
-  le :: "'a ord \<Rightarrow> ('a list)ord"
+definition le :: "'a ord \<Rightarrow> ('a list)ord"
+where
   "le r \<equiv> list_all2 (\<lambda>x y. x \<sqsubseteq>\<^sub>r y)"
 
 (*<*)
@@ -47,8 +48,8 @@ abbreviation (input)
   "x [\<sqsubset>\<^sub>r] y == x [\<sqsubset>\<^bsub>r\<^esub>] y"
 (*>*)
 
-constdefs
-  map2 :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'c list"
+definition map2 :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'c list"
+where
   "map2 f \<equiv> (\<lambda>xs ys. map (split f) (zip xs ys))"
 
 (*<*)
@@ -71,19 +72,21 @@ abbreviation (input)
 (*>*)
 
 
-consts coalesce :: "'a err list \<Rightarrow> 'a list err"
-primrec
+primrec coalesce :: "'a err list \<Rightarrow> 'a list err"
+where
   "coalesce [] = OK[]"
-  "coalesce (ex#exs) = Err.sup (op #) ex (coalesce exs)"
+| "coalesce (ex#exs) = Err.sup (op #) ex (coalesce exs)"
 
-constdefs
-  sl :: "nat \<Rightarrow> 'a sl \<Rightarrow> 'a list sl"
+definition sl :: "nat \<Rightarrow> 'a sl \<Rightarrow> 'a list sl"
+where
   "sl n \<equiv> \<lambda>(A,r,f). (list n A, le r, map2 f)"
 
-  sup :: "('a \<Rightarrow> 'b \<Rightarrow> 'c err) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'c list err"
+definition sup :: "('a \<Rightarrow> 'b \<Rightarrow> 'c err) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'c list err"
+where
   "sup f \<equiv> \<lambda>xs ys. if size xs = size ys then coalesce(xs [\<squnion>\<^bsub>f\<^esub>] ys) else Err"
 
-  upto_esl :: "nat \<Rightarrow> 'a esl \<Rightarrow> 'a list esl"
+definition upto_esl :: "nat \<Rightarrow> 'a esl \<Rightarrow> 'a list esl"
+where
   "upto_esl m \<equiv> \<lambda>(A,r,f). (Union{list n A |n. n \<le> m}, le r, sup f)"
 
 

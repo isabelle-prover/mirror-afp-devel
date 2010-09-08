@@ -13,9 +13,9 @@ imports BVSpec "../JVM/JVMExec" "../Common/Conform"
 begin
 
 
-constdefs
-  confT :: "'c prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty err \<Rightarrow> bool" 
+definition confT :: "'c prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty err \<Rightarrow> bool" 
            ("_,_ |- _ :<=T _" [51,51,51,51] 50)
+where
   "P,h |- v :<=T E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
 
 notation (xsymbols)
@@ -29,8 +29,8 @@ abbreviation
 notation (xsymbols)
   confTs  ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
 
-constdefs
-  conf_f  :: "jvm_prog \<Rightarrow> heap \<Rightarrow> ty\<^isub>i \<Rightarrow> bytecode \<Rightarrow> frame \<Rightarrow> bool"
+definition conf_f  :: "jvm_prog \<Rightarrow> heap \<Rightarrow> ty\<^isub>i \<Rightarrow> bytecode \<Rightarrow> frame \<Rightarrow> bool"
+where
   "conf_f P h \<equiv> \<lambda>(ST,LT) is (stk,loc,C,M,pc).
   P,h \<turnstile> stk [:\<le>] ST \<and> P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT \<and> pc < size is"
 
@@ -40,12 +40,10 @@ lemma conf_f_def2:
   by (simp add: conf_f_def)
 
 
-consts
- conf_fs :: "[jvm_prog,heap,ty\<^isub>P,mname,nat,ty,frame list] \<Rightarrow> bool"
-primrec
-"conf_fs P h \<Phi> M\<^isub>0 n\<^isub>0 T\<^isub>0 [] = True"
-
-"conf_fs P h \<Phi> M\<^isub>0 n\<^isub>0 T\<^isub>0 (f#frs) =
+primrec conf_fs :: "[jvm_prog,heap,ty\<^isub>P,mname,nat,ty,frame list] \<Rightarrow> bool"
+where
+  "conf_fs P h \<Phi> M\<^isub>0 n\<^isub>0 T\<^isub>0 [] = True"
+| "conf_fs P h \<Phi> M\<^isub>0 n\<^isub>0 T\<^isub>0 (f#frs) =
   (let (stk,loc,C,M,pc) = f in
   (\<exists>ST LT Ts T mxs mxl\<^isub>0 is xt.
     \<Phi> C M ! pc = Some (ST,LT) \<and> 
@@ -56,10 +54,10 @@ primrec
     conf_f P h (ST, LT) is f \<and> conf_fs P h \<Phi> M (size Ts) T frs))"
 
 
-constdefs
- correct_state :: "[jvm_prog,ty\<^isub>P,jvm_state] \<Rightarrow> bool"
+definition correct_state :: "[jvm_prog,ty\<^isub>P,jvm_state] \<Rightarrow> bool"
                   ("_,_ |- _ [ok]"  [61,0,0] 61)
-"correct_state P \<Phi> \<equiv> \<lambda>(xp,h,frs).
+where
+  "correct_state P \<Phi> \<equiv> \<lambda>(xp,h,frs).
   case xp of
      None \<Rightarrow> (case frs of
              [] \<Rightarrow> True

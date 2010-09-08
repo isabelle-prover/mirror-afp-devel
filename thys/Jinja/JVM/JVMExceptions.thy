@@ -8,18 +8,17 @@ header {* \isaheader{Exception handling in the JVM} *}
 
 theory JVMExceptions imports JVMInstructions Exceptions begin
 
-constdefs
-  matches_ex_entry :: "'m prog \<Rightarrow> cname \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool"
- "matches_ex_entry P C pc xcp \<equiv>
+definition matches_ex_entry :: "'m prog \<Rightarrow> cname \<Rightarrow> pc \<Rightarrow> ex_entry \<Rightarrow> bool"
+where
+  "matches_ex_entry P C pc xcp \<equiv>
                  let (s, e, C', h, d) = xcp in
                  s \<le> pc \<and> pc < e \<and> P \<turnstile> C \<preceq>\<^sup>* C'"
 
 
-consts
-  match_ex_table :: "'m prog \<Rightarrow> cname \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> (pc \<times> nat) option"
-primrec
+primrec match_ex_table :: "'m prog \<Rightarrow> cname \<Rightarrow> pc \<Rightarrow> ex_table \<Rightarrow> (pc \<times> nat) option"
+where
   "match_ex_table P C pc []     = None"
-  "match_ex_table P C pc (e#es) = (if matches_ex_entry P C pc e
+| "match_ex_table P C pc (e#es) = (if matches_ex_entry P C pc e
                                    then Some (snd(snd(snd e)))
                                    else match_ex_table P C pc es)"
 
