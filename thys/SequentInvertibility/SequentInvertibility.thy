@@ -1,0 +1,5 @@
+theory SequentInvertibility
+imports MultiSequents SingleSuccedent NominalSequents ModalSequents SRCTransforms
+begin
+
+end
