@@ -448,8 +448,8 @@ sequences of reductions. We define a term $t$ to be diverging, written @{term
 "DIV t"}, if there is some infinite sequence $S$ of reductions beginning at
 $t$. *}
 
-constdefs
-  DIV :: "trm \<Rightarrow> bool"
+definition DIV :: "trm \<Rightarrow> bool"
+where
   "DIV t \<equiv> \<exists> (S::nat \<Rightarrow> trm) .  t = S 0 \<and> (\<forall> n . S n \<mapsto> S (n + 1))"
 
 theorem "SN t \<Longrightarrow> \<not> DIV t"
@@ -497,8 +497,8 @@ lemma SN_preserved[intro]:
   shows "SN t'"
 using a by (cases) (auto)
 
-constdefs
-  "NORMAL" :: "trm \<Rightarrow> bool"
+definition "NORMAL" :: "trm \<Rightarrow> bool"
+where
   "NORMAL t \<equiv> \<not>(\<exists>t'. t \<mapsto> t')"
 
 lemma normal_var: "NORMAL (Var x)"
@@ -603,8 +603,8 @@ text {* We also need a notion of reduction on stacks. This reduction relation
 allows us to define strong normalization not only for terms but also for stacks
 and is needed to prove the properties of the logical relation later on. *}
 
-constdefs
-  stack_reduction :: "stack \<Rightarrow> stack \<Rightarrow> bool" (" _ \<mapsto> _ ")
+definition stack_reduction :: "stack \<Rightarrow> stack \<Rightarrow> bool" (" _ \<mapsto> _ ")
+where
   "k \<mapsto> k' \<equiv> \<forall> (t::trm) . (t \<star> k)  \<mapsto> (t \<star> k')" 
 
 
@@ -708,24 +708,28 @@ text {* After defining the logical relations we need to prove that the relation
 implies strong normalization, is preserved under reduction, and satisfies the
 head expansion property. *}
 
-constdefs
-  NEUT :: "trm \<Rightarrow> bool"
+definition NEUT :: "trm \<Rightarrow> bool"
+where
   "NEUT t \<equiv> (\<exists>a. t = Var a) \<or> (\<exists>t1 t2. t = App t1 t2)" 
 
-constdefs
-  "CR1" :: "ty \<Rightarrow> bool"
+definition "CR1" :: "ty \<Rightarrow> bool"
+where
   "CR1 \<tau> \<equiv> \<forall>t. (t\<in>RED \<tau> \<longrightarrow> SN t)"
 
-  "CR2" :: "ty \<Rightarrow> bool"
+definition "CR2" :: "ty \<Rightarrow> bool"
+where
   "CR2 \<tau> \<equiv> \<forall>t t'. (t\<in>RED \<tau> \<and> t \<mapsto> t') \<longrightarrow> t'\<in>RED \<tau>"
 
-  "CR3_RED" :: "trm \<Rightarrow> ty \<Rightarrow> bool"
+definition "CR3_RED" :: "trm \<Rightarrow> ty \<Rightarrow> bool"
+where
   "CR3_RED t \<tau> \<equiv> \<forall>t'. t \<mapsto> t' \<longrightarrow>  t'\<in>RED \<tau>" 
 
-  "CR3" :: "ty \<Rightarrow> bool"
+definition "CR3" :: "ty \<Rightarrow> bool"
+where
   "CR3 \<tau> \<equiv> \<forall>t. (NEUT t \<and> CR3_RED t \<tau>) \<longrightarrow> t\<in>RED \<tau>"
    
-  "CR4" :: "ty \<Rightarrow> bool"
+definition "CR4" :: "ty \<Rightarrow> bool"
+where
   "CR4 \<tau> \<equiv> \<forall>t. (NEUT t \<and> NORMAL t) \<longrightarrow>t\<in>RED \<tau>"
 
 lemma CR3_implies_CR4[intro]: "CR3 \<tau> \<Longrightarrow> CR4 \<tau>"
