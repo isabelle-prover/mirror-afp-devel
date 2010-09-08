@@ -40,16 +40,16 @@ definition
   "mon_c fg c == \<Union> { mon_s fg s | s . s :# c }"
 
 -- "The monitors of a step label are the monitors of procedures that are called by this step"
-consts mon_e :: "('b, 'c, 'd, 'a, 'e) flowgraph_rec_scheme \<Rightarrow> ('c, 'f) label \<Rightarrow> 'a set"
-primrec
+definition mon_e :: "('b, 'c, 'd, 'a, 'e) flowgraph_rec_scheme \<Rightarrow> ('c, 'f) label \<Rightarrow> 'a set" where
+  "mon_e fg e = (case e of (LCall p) \<Rightarrow> mon fg p | _ \<Rightarrow> {})"
+
+lemma mon_e_simps [simp]:
   "mon_e fg (LBase a) = {}"
   "mon_e fg (LCall p) = mon fg p"
   "mon_e fg (LRet) = {}"
   "mon_e fg (LSpawn p) = {}"
+  by (simp_all add: mon_e_def)
 
-lemma mon_e_def: "mon_e fg e == case e of (LCall p) \<Rightarrow> mon fg p | _ \<Rightarrow> {}"
-  by (rule eq_reflection) (cases e, auto)
-  
 -- "The monitors of a path are the monitors of all procedures that are called on the path"
 definition
   "mon_w fg w == \<Union> { mon_e fg e | e. e \<in> set w}"
@@ -164,10 +164,9 @@ qed
 subsection {* Configurations at control points *}
 
 -- {* A stack is {\em at} @{term U} if its top node is from the set @{term U} *}
-consts atU_s :: "'n set \<Rightarrow> 'n list \<Rightarrow> bool"
-primrec 
+primrec atU_s :: "'n set \<Rightarrow> 'n list \<Rightarrow> bool" where
   "atU_s U [] = False"
-  "atU_s U (u#r) = (u\<in>U)"
+| "atU_s U (u#r) = (u\<in>U)"
 
 lemma atU_s_decomp[simp]: "atU_s U (s@s') = (atU_s U s \<or> (s=[] \<and> atU_s U s'))"
   by (induct s) auto

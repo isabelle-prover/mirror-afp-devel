@@ -1,5 +1,4 @@
 (*    Title:              SATSolver/CNF.thy
-      ID:                 $Id: CNF.thy,v 1.6 2009-02-14 11:04:27 nipkow Exp $
       Author:             Filip Maric
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
@@ -33,13 +32,21 @@ subsubsection{* Membership *}
 text{* Check if the literal is member of a clause, clause is a member 
   of a formula or the literal is a member of a formula *}
 consts member  :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (infixl "el" 55)
+
 defs (overloaded)
 literalElClause_def [simp]: "((literal::Literal) el (clause::Clause)) == literal \<in> set clause"
 defs (overloaded)
 clauseElFormula_def [simp]: "((clause::Clause) el (formula::Formula)) == clause \<in> set formula"
-primrec
-"(literal::Literal) el ([]::Formula) = False"
+
+overloading
+  el_literal \<equiv> "op el :: Literal \<Rightarrow> Formula \<Rightarrow> bool"
+begin
+
+primrec el_literal where
+"(literal::Literal) el ([]::Formula) = False" |
 "((literal::Literal) el ((clause # formula)::Formula)) = ((literal el clause) \<or> (literal el formula))"
+
+end
 
 lemma literalElFormulaCharacterization:
   fixes literal :: Literal and formula :: Formula

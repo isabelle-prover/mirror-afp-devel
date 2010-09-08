@@ -1,5 +1,4 @@
-(*  ID:         $Id: ListSum.thy,v 1.7 2009-07-14 09:00:10 fhaftmann Exp $
-    Author:     Gertrud Bauer, Tobias Nipkow
+(*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
 header "Summation Over Lists"
@@ -8,10 +7,9 @@ theory ListSum
 imports ListAux
 begin
 
-consts ListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> 'a::comm_monoid_add) \<Rightarrow> 'a::comm_monoid_add" 
-primrec 
- "ListSum [] f = 0"
- "ListSum (l#ls) f = f l + ListSum ls f"
+primrec ListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> 'a::comm_monoid_add) \<Rightarrow> 'a::comm_monoid_add"  where
+  "ListSum [] f = 0"
+| "ListSum (l#ls) f = f l + ListSum ls f"
 
 syntax "_ListSum" :: "idt \<Rightarrow> 'b list \<Rightarrow> ('a::comm_monoid_add) \<Rightarrow> 
   ('a::comm_monoid_add)"    ("\<Sum>\<^bsub>_\<in>_\<^esub> _")
@@ -19,18 +17,15 @@ translations "\<Sum>\<^bsub>x\<in>xs\<^esub> f" == "CONST ListSum xs (\<lambda>x
 
 (* implementation on natural numbers *)
 (* 1. nat list sum *)
-consts natListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> nat) \<Rightarrow> nat" 
-primrec 
- "natListSum [] f = 0"
- "natListSum (l#ls) f = f l + natListSum ls f"
+primrec natListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> nat) \<Rightarrow> nat" where
+  "natListSum [] f = 0"
+| "natListSum (l#ls) f = f l + natListSum ls f"
 
 (* implementation on integers *)
 (* 2. int list sum *)
-consts intListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> int) \<Rightarrow> int" 
-primrec 
- "intListSum [] f = 0"
- "intListSum (l#ls) f = f l + intListSum ls f"
-
+primrec intListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> int) \<Rightarrow> int" where
+  "intListSum [] f = 0"
+| "intListSum (l#ls) f = f l + intListSum ls f"
 
 
 lemma [code_unfold, code_inline del]: "((ListSum ls f)::nat) = natListSum ls f"
@@ -38,8 +33,6 @@ lemma [code_unfold, code_inline del]: "((ListSum ls f)::nat) = natListSum ls f"
 
 lemma [code_unfold, code_inline del]: "((ListSum ls f)::int) = intListSum ls f"
  by (induct ls) simp_all
-
-
 
 lemma [simp]: "\<Sum>\<^bsub>v \<in> V\<^esub> 0 = (0::nat)" by (induct V) simp_all
 

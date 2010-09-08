@@ -37,12 +37,6 @@ consts
   extend :: "'a sequent \<Rightarrow> 'a sequent \<Rightarrow> 'a sequent"
   extendRule :: "'a sequent \<Rightarrow> 'a rule \<Rightarrow> 'a rule"
 
-  (* functions to get at components of sequents *)
-  antec :: "'a sequent \<Rightarrow> 'a form multiset"
-  succ :: "'a sequent \<Rightarrow> 'a form multiset"
-  mset :: "'a sequent \<Rightarrow> 'a form multiset"
-  seq_size :: "'a sequent \<Rightarrow> nat"
-
   (* Unique conclusion Property *)
   uniqueConclusion :: "'a rule set \<Rightarrow> bool"
 
@@ -50,10 +44,11 @@ consts
   invertible :: "'a rule \<Rightarrow> 'a rule set \<Rightarrow> bool"
   invertible_set :: "'a rule set \<Rightarrow> bool"
 
-primrec antec_def : "antec (Sequent ant suc) = ant"
-primrec succ_def : "succ (Sequent ant suc) = suc"
-primrec mset_def : "mset (Sequent ant suc) = ant + suc"
-primrec seq_size_def : "seq_size (Sequent ant suc) = size ant + size suc"
+  (* functions to get at components of sequents *)
+primrec antec :: "'a sequent \<Rightarrow> 'a form multiset" where "antec (Sequent ant suc) = ant"
+primrec succ :: "'a sequent \<Rightarrow> 'a form multiset" where "succ (Sequent ant suc) = suc"
+primrec mset :: "'a sequent \<Rightarrow> 'a form multiset" where "mset (Sequent ant suc) = ant + suc"
+primrec seq_size :: "'a sequent \<Rightarrow> nat" where "seq_size (Sequent ant suc) = size ant + size suc"
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
 defs extend_def : "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
@@ -63,10 +58,9 @@ defs extendRule_def : "extendRule forms R \<equiv> (map (extend forms) (fst R), 
    the conclusions being the same means the rules are the same*)
 defs uniqueConclusion_def : "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 =r2)"
 
-consts max_list :: "nat list \<Rightarrow> nat"
-primrec
+primrec max_list :: "nat list \<Rightarrow> nat" where
   "max_list [] = 0"
-  "max_list (n # ns) = max n (max_list ns)"
+| "max_list (n # ns) = max n (max_list ns)"
 
 (* The depth of a formula.  Will be useful in later files. *)
 fun depth :: "'a form \<Rightarrow> nat"
@@ -289,7 +283,7 @@ shows "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
     case (I R Rs)
-    then show "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
+    then show "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)" using mset.simps[where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
 
@@ -300,7 +294,7 @@ shows "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
     case (I R Rs)
-    then show "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
+    then show "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)" using mset.simps[where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
 
@@ -315,10 +309,10 @@ proof-
        proof (cases)
           case (I R Rs)
           obtain G H where "C = (G \<Rightarrow>* H)" by (cases C) (auto)
-          then have "G + H = \<LM>Compound R Rs\<RM>" using mset_def and `mset C \<equiv> \<LM>Compound R Rs\<RM>` by auto
+          then have "G + H = \<LM>Compound R Rs\<RM>" using mset.simps and `mset C \<equiv> \<LM>Compound R Rs\<RM>` by auto
           then have "size (G+H) = 1" by auto 
           then have "size G + size H = 1" by auto
-          then have "seq_size C = 1" using seq_size_def[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
+          then have "seq_size C = 1" using seq_size.simps[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
           moreover have "snd r = C" using `r = (Ps,C)` by simp
           ultimately show "seq_size (snd r) = 1" by simp
        qed
@@ -334,7 +328,7 @@ then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" usi
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
 then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
      using `mset C \<equiv> \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
+     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
      by auto
 qed
 

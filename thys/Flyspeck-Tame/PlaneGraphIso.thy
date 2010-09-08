@@ -340,12 +340,9 @@ apply (clarsimp simp: map_upd_submap simp del:o_apply fun_upd_apply)
 apply simp
 done
 
-consts
-  pr_iso_test0 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
-
-primrec
-"pr_iso_test0 m [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
-"pr_iso_test0 m (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
+primrec pr_iso_test0 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+  "pr_iso_test0 m [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
+| "pr_iso_test0 m (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
    (\<exists>F\<^isub>2 \<in> set Fs\<^isub>2. length F\<^isub>1 = length F\<^isub>2 \<and>
       (\<exists>n. let m' = map_of(zip F\<^isub>1 (rotate n F\<^isub>2)) in
           if m \<subseteq>\<^sub>m m ++ m' \<and> inj_on (m++m') (dom(m++m'))
@@ -496,12 +493,9 @@ text{* Now we bound the number of rotations needed. We have to exclude
 the empty face @{term"[]"} to be able to restrict the search to
 @{prop"n < length xs"} (which would otherwise be vacuous). *}
 
-consts
-  pr_iso_test1 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
-
-primrec
-"pr_iso_test1 m [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
-"pr_iso_test1 m (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
+primrec pr_iso_test1 :: "('a ~=> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+  "pr_iso_test1 m [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
+| "pr_iso_test1 m (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
    (\<exists>F\<^isub>2 \<in> set Fs\<^isub>2. length F\<^isub>1 = length F\<^isub>2 \<and>
       (\<exists>n < length F\<^isub>2. let m' = map_of(zip F\<^isub>1 (rotate n F\<^isub>2)) in
           if  m \<subseteq>\<^sub>m m ++ m' \<and> inj_on (m++m') (dom(m++m'))
@@ -546,13 +540,10 @@ types
   ('a,'b)tester = "('a * 'b)list \<Rightarrow> ('a * 'b)list \<Rightarrow> bool"
   ('a,'b)merger = "('a * 'b)list \<Rightarrow> ('a * 'b)list \<Rightarrow> ('a * 'b)list"
 
-consts
-  pr_iso_test2 :: "('a,'b)tester \<Rightarrow> ('a,'b)merger \<Rightarrow>
-                ('a * 'b)list \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
-
-primrec
-"pr_iso_test2 tst mrg I [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
-"pr_iso_test2 tst mrg I (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
+primrec pr_iso_test2 :: "('a,'b)tester \<Rightarrow> ('a,'b)merger \<Rightarrow>
+                ('a * 'b)list \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+  "pr_iso_test2 tst mrg I [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
+| "pr_iso_test2 tst mrg I (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
    (\<exists>F\<^isub>2 \<in> set Fs\<^isub>2. length F\<^isub>1 = length F\<^isub>2 \<and>
       (\<exists>n < length F\<^isub>2. let I' = zip F\<^isub>1 (rotate n F\<^isub>2) in
           if  tst I' I
@@ -725,13 +716,11 @@ definition test2 :: "('a,'b)tester" where
 lemma test2_conv_test: "test2 I I' = test I I'"
 by (simp add:test_def test2_def list_all_iff split_def)
 
-consts
-  merge2 :: "('a,'b)merger"
-primrec
-"merge2 [] I = I"
-"merge2 (xy#xys) I = (let (x,y) = xy in
-  if list_all (%(x',y'). x \<noteq> x') I then xy # merge2 xys I
-  else merge2 xys I)"
+primrec merge2 :: "('a,'b)merger" where
+  "merge2 [] I = I"
+| "merge2 (xy#xys) I = (let (x,y) = xy in
+    if list_all (%(x',y'). x \<noteq> x') I then xy # merge2 xys I
+    else merge2 xys I)"
 
 lemma merge2_conv_merge: "merge2 I' I = merge I' I"
 apply(induct I')
@@ -740,12 +729,9 @@ apply(force simp add:Let_def list_all_iff merge_def)
 done
 
 
-consts
-  pr_iso_test3 :: "('a * 'b)list \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool"
-
-primrec
-"pr_iso_test3 I [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
-"pr_iso_test3 I (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
+primrec pr_iso_test3 :: "('a * 'b)list \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
+  "pr_iso_test3 I [] Fs\<^isub>2 = (Fs\<^isub>2 = [])"
+| "pr_iso_test3 I (F\<^isub>1#Fs\<^isub>1) Fs\<^isub>2 =
    list_ex (%F\<^isub>2. length F\<^isub>1 = length F\<^isub>2 \<and>
       list_ex (%n. let I' = zip F\<^isub>1 (rotate n F\<^isub>2) in
           if  test2 I' I

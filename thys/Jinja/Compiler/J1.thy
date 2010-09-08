@@ -1,5 +1,4 @@
 (*  Title:      Jinja/Compiler/J1.thy
-    ID:         $Id: J1.thy,v 1.8 2008-10-07 14:07:44 fhaftmann Exp $
     Author:     Tobias Nipkow
     Copyright   2003 Technische Universitaet Muenchen
 *)
@@ -15,29 +14,29 @@ types
 
   state\<^isub>1 = "heap \<times> (val list)"
 
-consts
-  max_vars:: "'a exp \<Rightarrow> nat"
-  max_varss:: "'a exp list \<Rightarrow> nat"
 primrec
-"max_vars(new C) = 0"
-"max_vars(Cast C e) = max_vars e"
-"max_vars(Val v) = 0"
-"max_vars(e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2)"
-"max_vars(Var V) = 0"
-"max_vars(V:=e) = max_vars e"
-"max_vars(e\<bullet>F{D}) = max_vars e"
-"max_vars(FAss e\<^isub>1 F D e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2)"
-"max_vars(e\<bullet>M(es)) = max (max_vars e) (max_varss es)"
-"max_vars({V:T; e}) = max_vars e + 1"
-"max_vars(e\<^isub>1;;e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2)"
-"max_vars(if (e) e\<^isub>1 else e\<^isub>2) =
+  max_vars :: "'a exp \<Rightarrow> nat"
+  and max_varss :: "'a exp list \<Rightarrow> nat"
+where
+  "max_vars(new C) = 0"
+| "max_vars(Cast C e) = max_vars e"
+| "max_vars(Val v) = 0"
+| "max_vars(e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2)"
+| "max_vars(Var V) = 0"
+| "max_vars(V:=e) = max_vars e"
+| "max_vars(e\<bullet>F{D}) = max_vars e"
+| "max_vars(FAss e\<^isub>1 F D e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2)"
+| "max_vars(e\<bullet>M(es)) = max (max_vars e) (max_varss es)"
+| "max_vars({V:T; e}) = max_vars e + 1"
+| "max_vars(e\<^isub>1;;e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2)"
+| "max_vars(if (e) e\<^isub>1 else e\<^isub>2) =
    max (max_vars e) (max (max_vars e\<^isub>1) (max_vars e\<^isub>2))"
-"max_vars(while (b) e) = max (max_vars b) (max_vars e)"
-"max_vars(throw e) = max_vars e"
-"max_vars(try e\<^isub>1 catch(C V) e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2 + 1)"
+| "max_vars(while (b) e) = max (max_vars b) (max_vars e)"
+| "max_vars(throw e) = max_vars e"
+| "max_vars(try e\<^isub>1 catch(C V) e\<^isub>2) = max (max_vars e\<^isub>1) (max_vars e\<^isub>2 + 1)"
 
-"max_varss [] = 0"
-"max_varss (e#es) = max (max_vars e) (max_varss es)"
+| "max_varss [] = 0"
+| "max_varss (e#es) = max (max_vars e) (max_varss es)"
 
 inductive
   eval\<^isub>1 :: "J\<^isub>1_prog \<Rightarrow> expr\<^isub>1 \<Rightarrow> state\<^isub>1 \<Rightarrow> expr\<^isub>1 \<Rightarrow> state\<^isub>1 \<Rightarrow> bool"
@@ -76,7 +75,7 @@ where
 | BinOpThrow\<^isub>1\<^isub>1:
   "P \<turnstile>\<^sub>1 \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>1\<rangle> \<Longrightarrow>
   P \<turnstile>\<^sub>1 \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>1\<rangle>"
-| BinOpThrow\<^isub>2\<^isub>1:
+| BinOpThrow\<^isub>21:
   "\<lbrakk> P \<turnstile>\<^sub>1 \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile>\<^sub>1 \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile>\<^sub>1 \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>2\<rangle>"
 
@@ -111,7 +110,7 @@ where
 | FAssThrow\<^isub>1\<^isub>1:
   "P \<turnstile>\<^sub>1 \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
   P \<turnstile>\<^sub>1 \<langle>e\<^isub>1\<bullet>F{D}:= e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
-| FAssThrow\<^isub>2\<^isub>1:
+| FAssThrow\<^isub>21:
   "\<lbrakk> P \<turnstile>\<^sub>1 \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile>\<^sub>1 \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile>\<^sub>1 \<langle>e\<^isub>1\<bullet>F{D}:= e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle>"
 

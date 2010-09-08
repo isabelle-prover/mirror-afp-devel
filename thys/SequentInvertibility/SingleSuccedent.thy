@@ -48,12 +48,6 @@ consts
   extend :: "'a sequent \<Rightarrow> 'a sequent \<Rightarrow> 'a sequent"
   extendRule :: "'a sequent \<Rightarrow> 'a rule \<Rightarrow> 'a rule"
 
-  (* functions to get at components of sequents *)
-  antec :: "'a sequent \<Rightarrow> 'a form multiset"
-  succ :: "'a sequent \<Rightarrow> 'a form"
-  mset :: "'a sequent \<Rightarrow> 'a form multiset"
-  seq_size :: "'a sequent \<Rightarrow> nat"
-
   (* Unique conclusion Property *)
   uniqueConclusion :: "'a rule set \<Rightarrow> bool"
 
@@ -61,10 +55,11 @@ consts
   invertible :: "'a rule \<Rightarrow> 'a rule set \<Rightarrow> bool"
   invertible_set :: "'a rule set \<Rightarrow> bool"
 
-primrec antec_def : "antec (Sequent ant suc) = ant"
-primrec succ_def : "succ (Sequent ant suc) = suc"
-primrec mset_def : "mset (Sequent ant suc) = ant \<oplus> suc"
-primrec seq_size_def : "seq_size (Sequent ant suc) = size ant + size suc"
+  (* functions to get at components of sequents *)
+primrec antec :: "'a sequent \<Rightarrow> 'a form multiset" where "antec (Sequent ant suc) = ant"
+primrec succ :: "'a sequent \<Rightarrow> 'a form" where "succ (Sequent ant suc) = suc"
+primrec mset :: "'a sequent \<Rightarrow> 'a form multiset" where "mset (Sequent ant suc) = ant \<oplus> suc"
+primrec seq_size :: "'a sequent \<Rightarrow> nat" where "seq_size (Sequent ant suc) = size ant + size suc"
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
 

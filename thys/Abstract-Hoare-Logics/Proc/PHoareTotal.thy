@@ -66,11 +66,11 @@ appears to have been an open problem. The details are found below and
 are explained in a separate paper~\cite{Nipkow-CSL02}. *}
 
 lemma strengthen_pre:
- "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C \<turnstile>\<^sub>t {P}c{Q}  \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P'}c{Q}";
+ "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C \<turnstile>\<^sub>t {P}c{Q}  \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P'}c{Q}"
 by(rule thoare.Conseq, assumption, blast)
 
 lemma weaken_post:
- "\<lbrakk> C \<turnstile>\<^sub>t {P}c{Q}; \<forall>z s. Q z s \<longrightarrow> Q' z s \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P}c{Q'}";
+ "\<lbrakk> C \<turnstile>\<^sub>t {P}c{Q}; \<forall>z s. Q z s \<longrightarrow> Q' z s \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P}c{Q'}"
 by(erule thoare.Conseq, blast)
 
 
@@ -94,7 +94,7 @@ apply fast
 done
 
 theorem "C \<turnstile>\<^sub>t {P}c{Q}  \<Longrightarrow>  C \<Turnstile>\<^sub>t {P}c{Q}"
-apply(erule thoare.induct);
+apply(erule thoare.induct)
        apply(simp only:tvalid_defs)
        apply fast
       apply(simp only:tvalid_defs)
@@ -141,7 +141,7 @@ definition MGT\<^isub>t :: "com \<Rightarrow> state assn \<times> com \<times> s
   [simp]: "MGT\<^isub>t c = (\<lambda>z s. z = s \<and> c\<down>s, c, \<lambda>z t. z -c\<rightarrow> t)"
 
 lemma MGT_implies_complete:
- "{} \<turnstile>\<^sub>t MGT\<^isub>t c \<Longrightarrow> {} \<Turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> {} \<turnstile>\<^sub>t {P}c{Q::state assn}";
+ "{} \<turnstile>\<^sub>t MGT\<^isub>t c \<Longrightarrow> {} \<Turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> {} \<turnstile>\<^sub>t {P}c{Q::state assn}"
 apply(simp add: MGT\<^isub>t_def)
 apply (erule thoare.Conseq)
 apply(simp add: tvalid_defs)
@@ -280,10 +280,9 @@ done
 theorem exec1s_impl_exec: "([c],s) \<rightarrow>\<^sup>* ([],t) \<Longrightarrow> s -c\<rightarrow> t"
 by(blast dest: exec1s_impl_execs)
 
-consts termis :: "com list \<Rightarrow> state \<Rightarrow> bool" (infixl "\<Down>" 60)
-primrec
-"[]\<Down>s = True"
-"c#cs \<Down> s = (c\<down>s \<and> (\<forall>t. s -c\<rightarrow> t \<longrightarrow> cs\<Down>t))"
+primrec termis :: "com list \<Rightarrow> state \<Rightarrow> bool" (infixl "\<Down>" 60) where
+  "[]\<Down>s = True"
+| "c#cs \<Down> s = (c\<down>s \<and> (\<forall>t. s -c\<rightarrow> t \<longrightarrow> cs\<Down>t))"
 
 lemma exec1_pres_termis: "(cs,s) \<rightarrow> (cs',s') \<Longrightarrow> cs\<Down>s \<longrightarrow> cs'\<Down>s'"
 apply(erule exec1.induct)
@@ -645,10 +644,9 @@ apply(fold inf_def)
 apply(simp add: termi_impl_not_inf)
 done
 
-consts cseq :: "(nat \<Rightarrow> state) \<Rightarrow> nat \<Rightarrow> com list"
-primrec
-"cseq S 0 = []"
-"cseq S (Suc i) = (SOME cs. ([body], S i) \<rightarrow>\<^sup>* (CALL # cs, S(i+1))) @ cseq S i"
+primrec cseq :: "(nat \<Rightarrow> state) \<Rightarrow> nat \<Rightarrow> com list" where
+  "cseq S 0 = []"
+| "cseq S (Suc i) = (SOME cs. ([body], S i) \<rightarrow>\<^sup>* (CALL # cs, S(i+1))) @ cseq S i"
 
 lemma wf_termi_call_steps: "wf termi_call_steps"
 apply(unfold termi_call_steps_def)

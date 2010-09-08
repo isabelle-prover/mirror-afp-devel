@@ -1,5 +1,4 @@
 (*  Title:      HOL/MicroJava/JVM/JVMExceptions.thy
-    ID:         $Id: JVMExceptions.thy,v 1.3 2008-06-24 22:23:36 makarius Exp $
     Author:     Gerwin Klein, Martin Strecker
     Copyright   2001 Technische Universitaet Muenchen
 *)
@@ -27,11 +26,10 @@ abbreviation
   "ex_table_of P C M == snd (snd (snd (snd (snd (snd(method P C M))))))"
 
 
-consts
-  find_handler :: "jvm_prog \<Rightarrow> addr \<Rightarrow> heap \<Rightarrow> frame list \<Rightarrow> jvm_state"
-primrec
+primrec find_handler :: "jvm_prog \<Rightarrow> addr \<Rightarrow> heap \<Rightarrow> frame list \<Rightarrow> jvm_state"
+where
   "find_handler P a h [] = (Some a, h, [])"
-  "find_handler P a h (fr#frs) = 
+| "find_handler P a h (fr#frs) = 
        (let (stk,loc,C,M,pc) = fr in
         case match_ex_table P (cname_of h a) pc (ex_table_of P C M) of
           None \<Rightarrow> find_handler P a h frs

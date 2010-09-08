@@ -1,5 +1,4 @@
-(*  ID:         $Id: TrieList.thy,v 1.2 2009-05-13 06:13:17 fhaftmann Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
 *)
 
 header "Trie (List Version)"
@@ -12,23 +11,23 @@ begin
 
 subsection {* Association lists *}
 
-consts
- assoc :: "('key * 'val)list \<Rightarrow> 'key \<Rightarrow> 'val option"
- rem_alist :: "'key \<Rightarrow> ('key * 'val)list \<Rightarrow>  ('key * 'val)list"
- upd_alist :: "'key \<Rightarrow> 'val \<Rightarrow> ('key * 'val)list \<Rightarrow>  ('key * 'val)list"
+primrec assoc :: "('key * 'val)list \<Rightarrow> 'key \<Rightarrow> 'val option" where
+"assoc [] x = None" |
+"assoc (p#ps) x = (let (a,b) = p in if a=x then Some b else assoc ps x)"
 
-primrec
-"assoc [] x = None"
-"assoc (p#ps) x = (let (a,b) = p in if a=x then Some b else assoc ps x)";
-primrec
-"rem_alist k [] = []"
+primrec rem_alist :: "'key \<Rightarrow> ('key * 'val)list \<Rightarrow>  ('key * 'val)list" where
+"rem_alist k [] = []" |
 "rem_alist k (p#ps) = (if fst p = k then ps else p # rem_alist k ps)"
-primrec
-"upd_alist k v [] = [(k,v)]"
+
+primrec upd_alist :: "'key \<Rightarrow> 'val \<Rightarrow> ('key * 'val)list \<Rightarrow>  ('key * 'val)list" where
+"upd_alist k v [] = [(k,v)]" |
 "upd_alist k v (p#ps) = (if fst p = k then (k,v)#ps else p # upd_alist k v ps)"
 
-lemma assoc_conv: "assoc al x = map_of al x"
-by(induct al, auto)
+lemma assoc_conv: "assoc = map_of"
+proof rule+
+  fix xs k
+  show "assoc xs k = map_of xs k" by (induct xs) auto
+qed
 
 lemma map_of_upd_alist: "map_of(upd_alist k v al) = (map_of al)(k \<mapsto> v)"
 apply(induct al)
@@ -60,30 +59,27 @@ subsection {* Trie *}
 
 datatype ('a,'v)trie = Trie  "'v list"  "('a * ('a,'v)trie)list"
 
-consts "values" :: "('a,'v)trie \<Rightarrow> 'v list"
-       alist :: "('a,'v)trie \<Rightarrow> ('a * ('a,'v)trie)list"
-primrec "values(Trie vs al) = vs"
-primrec "alist(Trie vs al) = al"
+primrec "values" :: "('a,'v)trie \<Rightarrow> 'v list" where
+  "values(Trie vs al) = vs"
 
-consts
- lookup_trie :: "('a,'v)trie \<Rightarrow> 'a list \<Rightarrow> 'v list"
- update_trie :: "('a,'v)trie \<Rightarrow> 'a list \<Rightarrow> 'v list \<Rightarrow> ('a,'v)trie"
- insert_trie :: "('a,'v)trie \<Rightarrow> 'a list \<Rightarrow> 'v      \<Rightarrow> ('a,'v)trie"
+primrec alist :: "('a,'v)trie \<Rightarrow> ('a * ('a,'v)trie)list" where
+  "alist(Trie vs al) = al"
 
-primrec
-"lookup_trie t [] = values t"
+primrec lookup_trie :: "('a,'v)trie \<Rightarrow> 'a list \<Rightarrow> 'v list" where
+"lookup_trie t [] = values t" |
 "lookup_trie t (a#as) = (case assoc (alist t) a of
                       None \<Rightarrow> []
                     | Some at \<Rightarrow> lookup_trie at as)"
-primrec
-"update_trie t []     vs = Trie vs (alist t)"
+
+primrec update_trie :: "('a,'v)trie \<Rightarrow> 'a list \<Rightarrow> 'v list \<Rightarrow> ('a,'v)trie" where
+"update_trie t []     vs = Trie vs (alist t)" |
 "update_trie t (a#as) vs =
    (let tt = (case assoc (alist t) a of
                 None \<Rightarrow> Trie [] [] | Some at \<Rightarrow> at)
     in Trie (values t) ((a,update_trie tt as vs) # rem_alist a (alist t)))"
 
-primrec
-"insert_trie t []     v = Trie (v # values t) (alist t)"
+primrec insert_trie :: "('a,'v)trie \<Rightarrow> 'a list \<Rightarrow> 'v      \<Rightarrow> ('a,'v)trie" where
+"insert_trie t []     v = Trie (v # values t) (alist t)" |
 "insert_trie t (a#as) vs =
    (let tt = (case assoc (alist t) a of
                 None \<Rightarrow> Trie [] [] | Some at \<Rightarrow> at)

@@ -390,10 +390,9 @@ definition abstFn :: "CFile => AFile" where
                                 None       => fillByte
                               | Some value => value)"
 
-consts
-  oAbstFn :: "CFile option => AFile option"
-  primrec "oAbstFn None = None"
-          "oAbstFn (Some s) = Some (abstFn s)"
+primrec oAbstFn :: "CFile option => AFile option" where
+  "oAbstFn None = None"
+| "oAbstFn (Some s) = Some (abstFn s)"
 
 (* ---------------------------------------------------------------*)
 subsubsection {* Creating a File *}

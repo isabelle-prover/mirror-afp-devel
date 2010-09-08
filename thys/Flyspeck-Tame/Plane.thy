@@ -18,17 +18,17 @@ definition duplicateEdge :: "graph \<Rightarrow> face \<Rightarrow> vertex \<Rig
  "duplicateEdge g f a b \<equiv> 
   2 \<le> directedLength f a b \<and> 2 \<le> directedLength f b a \<and> b \<in> set (neighbors g a)"
 
-consts containsUnacceptableEdgeSnd :: 
-      "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool"
-primrec "containsUnacceptableEdgeSnd N v [] = False"
+primrec containsUnacceptableEdgeSnd :: 
+      "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool" where
+ "containsUnacceptableEdgeSnd N v [] = False" |
  "containsUnacceptableEdgeSnd N v (w#ws) = 
      (case ws of [] \<Rightarrow> False
          | (w'#ws') \<Rightarrow> if v < w \<and> w < w' \<and> N w w' then True
                       else containsUnacceptableEdgeSnd N w ws)"
 
-consts containsUnacceptableEdge :: "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> bool"
-primrec "containsUnacceptableEdge N [] = False"
- "containsUnacceptableEdge N (v#vs) = 
+primrec containsUnacceptableEdge :: "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> bool" where
+ "containsUnacceptableEdge N [] = False" |
+ "containsUnacceptableEdge N (v#vs) =
      (case vs of [] \<Rightarrow> False
            | (w#ws) \<Rightarrow> if v < w \<and> N v w then True
                       else containsUnacceptableEdgeSnd N v vs)"

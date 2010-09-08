@@ -1,5 +1,4 @@
 (*  Title:      HOL/MicroJava/BV/SemilatAlg.thy
-    ID:         $Id: SemilatAlg.thy,v 1.8 2008-12-30 15:30:13 ballarin Exp $
     Author:     Gerwin Klein
     Copyright   2002 Technische Universitaet Muenchen
 *)
@@ -21,17 +20,16 @@ notation (xsymbols)
 defs lesubstep_type_def:
   "A {\<sqsubseteq>\<^bsub>r\<^esub>} B \<equiv> \<forall>(p,\<tau>) \<in> A. \<exists>\<tau>'. (p,\<tau>') \<in> B \<and> \<tau> \<sqsubseteq>\<^sub>r \<tau>'"
 
-consts
-  pluslussub :: "'a list \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a" 
+primrec pluslussub :: "'a list \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a" 
+where
+  "pluslussub [] f y = y"
+| "pluslussub (x#xs) f y = pluslussub xs f (x \<squnion>\<^sub>f y)"
 (*<*)
 notation
   pluslussub  ("(_ /++'__ _)" [65, 1000, 66] 65)
 (*>*)
 notation (xsymbols)
   pluslussub  ("(_ /\<Squnion>\<^bsub>_\<^esub> _)" [65, 0, 66] 65)
-primrec
-  "[] \<Squnion>\<^bsub>f\<^esub> y = y"
-  "(x#xs) \<Squnion>\<^bsub>f\<^esub> y = xs \<Squnion>\<^bsub>f\<^esub> (x \<squnion>\<^sub>f y)"
 
 definition bounded :: "'s step_type \<Rightarrow> nat \<Rightarrow> bool"
 where

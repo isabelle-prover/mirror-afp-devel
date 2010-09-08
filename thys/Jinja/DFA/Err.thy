@@ -1,5 +1,4 @@
 (*  Title:      HOL/MicroJava/BV/Err.thy
-    ID:         $Id: Err.thy,v 1.14 2009-01-01 22:24:32 makarius Exp $
     Author:     Tobias Nipkow
     Copyright   2000 TUM
 
@@ -55,11 +54,10 @@ abbreviation
   err_semilat :: "'a esl \<Rightarrow> bool" where
   "err_semilat L == semilat(sl L)"
 
-consts
-  strict  :: "('a \<Rightarrow> 'b err) \<Rightarrow> ('a err \<Rightarrow> 'b err)"
-primrec
+primrec strict  :: "('a \<Rightarrow> 'b err) \<Rightarrow> ('a err \<Rightarrow> 'b err)"
+where
   "strict f Err    = Err"
-  "strict f (OK x) = f x"
+| "strict f (OK x) = f x"
 
 lemma err_def':
   "err A \<equiv> insert Err {x. \<exists>y\<in>A. x = OK y}"

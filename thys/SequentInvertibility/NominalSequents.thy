@@ -52,25 +52,18 @@ consts
   extend :: "sequent \<Rightarrow> sequent \<Rightarrow> sequent"
   extendRule :: "sequent \<Rightarrow> rule \<Rightarrow> rule"
 
-  (* functions to get at components of sequents *)
-  antec :: "sequent \<Rightarrow> form multiset"
-  succ :: "sequent \<Rightarrow> form multiset"
-  mset :: "sequent \<Rightarrow> form multiset"
-  set_of_seq :: "sequent \<Rightarrow> form set"
-  set_of_prem :: "sequent list \<Rightarrow> form set"
-  seq_size :: "sequent \<Rightarrow> nat"
-
   (* Unique conclusion Property *)
   uniqueConclusion :: "rule set \<Rightarrow> bool"
 
-primrec antec_def : "antec (Sequent ant suc) = ant"
-primrec succ_def : "succ (Sequent ant suc) = suc"
-primrec mset_def : "mset (Sequent ant suc) = ant + suc"
-primrec seq_size_def : "seq_size (Sequent ant suc) = size ant + size suc"
-primrec set_of_seq_def: "set_of_seq (Sequent ant suc) = set_of (mset (Sequent ant suc))"
-primrec (set_of_prem)
-   "set_of_prem Nil = {}"
-   "set_of_prem (p # ps) = set_of_seq p \<union> set_of_prem ps"
+  (* functions to get at components of sequents *)
+primrec antec :: "sequent \<Rightarrow> form multiset" where "antec (Sequent ant suc) = ant"
+primrec succ :: "sequent \<Rightarrow> form multiset" where "succ (Sequent ant suc) = suc"
+primrec mset :: "sequent \<Rightarrow> form multiset" where "mset (Sequent ant suc) = ant + suc"
+primrec seq_size :: "sequent \<Rightarrow> nat" where "seq_size (Sequent ant suc) = size ant + size suc"
+primrec set_of_seq :: "sequent \<Rightarrow> form set" where "set_of_seq (Sequent ant suc) = set_of (mset (Sequent ant suc))"
+primrec set_of_prem :: "sequent list \<Rightarrow> form set" where
+  "set_of_prem Nil = {}"
+| "set_of_prem (p # ps) = set_of_seq p \<union> set_of_prem ps"
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
 defs extend_def : "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
@@ -80,13 +73,12 @@ defs extendRule_def : "extendRule forms R \<equiv> (map (extend forms) (fst R), 
    the conclusions being the same means the rules are the same*)
 defs uniqueConclusion_def : "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 =r2)"
 
+primrec sequentMinus :: "sequent \<Rightarrow> form \<Rightarrow> sequent" ("_ - _" [100,100]100) where
+  "(\<Gamma> \<Rightarrow>* \<Delta>) - A = (\<Gamma> \<ominus> A \<Rightarrow>* \<Delta> \<ominus> A)"
 
-consts sequentMinus :: "sequent \<Rightarrow> form \<Rightarrow> sequent" ("_ - _" [100,100]100)
-primrec "(\<Gamma> \<Rightarrow>* \<Delta>) - A = (\<Gamma> \<ominus> A \<Rightarrow>* \<Delta> \<ominus> A)"
-
-consts listMinus :: "sequent list \<Rightarrow> form \<Rightarrow> sequent list" (" _ - _ " [100,100]100)
-primrec "[] - A = []"
-        "(P # Ps) - A = (P - A) # (Ps - A)"
+primrec listMinus :: "sequent list \<Rightarrow> form \<Rightarrow> sequent list" (" _ - _ " [100,100]100) where
+  "[] - A = []"
+| "(P # Ps) - A = (P - A) # (Ps - A)"
 
 
 (* The formulation of various rule sets *)
@@ -131,12 +123,9 @@ proof-
 then show ?thesis by auto
 qed
 (*<*)
-consts 
-  subst :: "var \<Rightarrow> var \<Rightarrow> 'a \<Rightarrow> 'a" ("[_;_]_" [100,100,100] 100)
-
-primrec (subst_list)
-   Empt:"[z;y][] = []"
-   NEmpt:"[z;y](x#ys) = (if x=y then (z#([z;y]ys)) else (x#([z;y]ys)))"
+primrec subst :: "var \<Rightarrow> var \<Rightarrow> var list \<Rightarrow> var list" ("[_;_]_" [100,100,100] 100) where
+  Empt:"[z;y][] = []"
+| NEmpt:"[z;y](x#ys) = (if x=y then (z#([z;y]ys)) else (x#([z;y]ys)))"
 
 lemma subst_var_list_eqvt[eqvt]:
   fixes pi::"var prm"
@@ -333,7 +322,7 @@ then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" usi
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
 then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Cpd0 F Fs\<RM>) \<or> C = (\<LM>Cpd0 F Fs\<RM> \<Rightarrow>* \<Empt>)" 
      using `mset C \<equiv> \<LM>Cpd0 F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Cpd0 F Fs"]
+     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Cpd0 F Fs"]
      by auto
 qed
 
@@ -347,7 +336,7 @@ then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" usi
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> provRules" using prems by simp
 then show "\<exists> F x A. (C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)) \<and> x \<sharp> set_of_prem (Ps - A)" 
      using `mset C = \<LM> F \<nabla> [x].A \<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)` and `x \<sharp> set_of_prem (Ps - A)`
-     and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
+     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
      by auto
 qed
 
@@ -361,7 +350,7 @@ then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" usi
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> nprovRules" using prems by simp
 then show "\<exists> F x A. C = (\<Empt> \<Rightarrow>* \<LM> F \<nabla> [x].A \<RM>) \<or> C = (\<LM> F \<nabla> [x].A \<RM> \<Rightarrow>* \<Empt>)" 
      using `mset C = \<LM> F \<nabla> [x].A \<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
+     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="F \<nabla> [x].A"]
      by auto
 qed
 
@@ -561,7 +550,7 @@ txt{* \noindent  We only show the interesting case: where the last inference had
        where "(c = ( \<Empt> \<Rightarrow>* \<LM>F \<nabla> [x].A\<RM>) \<or> 
                  c = ( \<LM>F \<nabla> [x].A\<RM> \<Rightarrow>* \<Empt>)) \<and> x \<sharp> set_of_prem ( ps - A )"
          using provRuleCharacterise(*<*)[where Ps=ps and C=c](*>*) and `r \<in> provRules` by auto
-  then have "mset c = \<LM> F \<nabla> [x].A \<RM> \<and> x \<sharp> set_of_prem (ps - A)" (*<*)using mset_def(*>*) by auto
+  then have "mset c = \<LM> F \<nabla> [x].A \<RM> \<and> x \<sharp> set_of_prem (ps - A)" (*<*)using mset.simps(*>*) by auto
   moreover obtain y where fr:  "y \<sharp> x \<and> 
                                   y \<sharp> A \<and> 
                                   y \<sharp> set_of_seq S \<and> 

@@ -1,6 +1,4 @@
 
-(* $Id: Ramsey.thy,v 1.13 2008-06-12 06:57:26 lsf37 Exp $ *)
-
 header "Ramsey's Theorem"
 
 theory Ramsey
@@ -46,10 +44,9 @@ lemma not_empty_least: "(Y::nat set) ~= {} ==> ? m. m : Y & (! m'. m' : Y --> m 
 subsection "Dependent Choice Variant"
 
   -- "%%cut choice"
-consts choice :: "('a => bool) => ('a => 'a => bool) => nat => 'a"
-primrec
+primrec choice :: "('a => bool) => ('a => 'a => bool) => nat => 'a" where
   "choice P R 0 = (SOME x. P x)"
-  "choice P R (Suc n) = (let x = choice P R n in SOME y. P y & R x y)"
+| "choice P R (Suc n) = (let x = choice P R n in SOME y. P y & R x y)"
   -- "%%tuc"
 
 lemma dc: "

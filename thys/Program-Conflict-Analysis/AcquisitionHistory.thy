@@ -74,14 +74,13 @@ lemma ah_leq_il_left: "\<lbrakk> h1 [*] h2; h1' \<le> h1 \<rbrakk> \<Longrightar
 
 subsection "Acquisition histories of executions"
 text {* Next we define a function that abstracts from executions (lists of enter/use pairs) to acquisition histories *}
-consts \<alpha>ah :: "('m set \<times> 'm set) list \<Rightarrow> 'm \<Rightarrow> 'm set"
-primrec 
+primrec \<alpha>ah :: "('m set \<times> 'm set) list \<Rightarrow> 'm \<Rightarrow> 'm set" where
   "\<alpha>ah [] m = {}"
-  "\<alpha>ah (e#w) m = (if m\<in>fst e then fst e \<union> snd e \<union> mon_pl w else \<alpha>ah w m)"
+| "\<alpha>ah (e#w) m = (if m\<in>fst e then fst e \<union> snd e \<union> mon_pl w else \<alpha>ah w m)"
 
 -- {* @{term \<alpha>ah} generates valid acquisition histories *}
 lemma \<alpha>ah_ah: "\<alpha>ah w \<in> ah"
-  apply (induct rule: \<alpha>ah.induct)
+  apply (induct w)
   apply (unfold ah_def)
   apply simp
   apply (fastsimp split: split_if_asm)

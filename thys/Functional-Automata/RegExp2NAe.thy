@@ -1,5 +1,4 @@
-(*  ID:         $Id: RegExp2NAe.thy,v 1.9 2009-07-27 20:02:15 alexkrauss Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
@@ -57,13 +56,12 @@ definition
                               else {},
     %s. case s of [] => True | left#s => left & f s))"
 
-consts rexp2nae :: "'a rexp => 'a bitsNAe"
-primrec
-"rexp2nae Zero       = ([], %a s. {}, %s. False)"
-"rexp2nae One        = epsilon"
-"rexp2nae(Atom a)    = atom a"
-"rexp2nae(Plus r s)  = or   (rexp2nae r) (rexp2nae s)"
-"rexp2nae(Times r s) = conc (rexp2nae r) (rexp2nae s)"
+primrec rexp2nae :: "'a rexp => 'a bitsNAe" where
+"rexp2nae Zero       = ([], %a s. {}, %s. False)" |
+"rexp2nae One        = epsilon" |
+"rexp2nae(Atom a)    = atom a" |
+"rexp2nae(Plus r s)  = or   (rexp2nae r) (rexp2nae s)" |
+"rexp2nae(Times r s) = conc (rexp2nae r) (rexp2nae s)" |
 "rexp2nae(Star r)    = star (rexp2nae r)"
 
 declare split_paired_all[simp]

@@ -157,22 +157,25 @@ consts
   extendRule2 :: "('a,'b) sequent \<Rightarrow> ('a,'b) sequent \<Rightarrow> ('a,'b) rule \<Rightarrow> ('a,'b) rule"
   extendConc :: "('a,'b) sequent \<Rightarrow> ('a,'b) rule \<Rightarrow> ('a,'b) rule"
 
-  (* functions to get at components of sequents *)
-  antec :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset"
-  succ :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset"
-  mset :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset"
-  seq_size :: "('a,'b) sequent \<Rightarrow> nat"
-
   (* Unique conclusion Property *)
   uniqueConclusion :: "('a,'b) rule set \<Rightarrow> bool"
 
   (* Transform a multiset using a modal operator.  "Boxing" a context, effectively *)
   modaliseMultiset :: "'b \<Rightarrow> ('a,'b) form multiset \<Rightarrow> ('a,'b) form multiset" (infixl "\<cdot>" 200)
 
-primrec antec_def : "antec (Sequent ant suc) = ant"
-primrec succ_def : "succ (Sequent ant suc) = suc"
-primrec mset_def : "mset (Sequent ant suc) = ant + suc"
-primrec seq_size_def : "seq_size (Sequent ant suc) = size ant + size suc"
+  (* functions to get at components of sequents *)
+
+primrec antec :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset" where
+  "antec (Sequent ant suc) = ant"
+
+primrec succ :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset" where
+  "succ (Sequent ant suc) = suc"
+
+primrec mset :: "('a,'b) sequent \<Rightarrow> ('a,'b) form multiset" where
+  "mset (Sequent ant suc) = ant + suc"
+
+primrec seq_size :: "('a,'b) sequent \<Rightarrow> nat" where
+  "seq_size (Sequent ant suc) = size ant + size suc"
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
 defs extend_def : "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
@@ -365,7 +368,7 @@ shows "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
     case (I R Rs)
-    then show "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
+    then show "\<Psi> = \<Empt> \<or> (\<exists> A. \<Psi> = \<LM>A\<RM>)" using mset.simps [where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
 
@@ -376,7 +379,7 @@ shows "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)"
 using assms 
 proof (cases)
     case (I R Rs)
-    then show "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)" using mset_def[where ant=\<Phi> and suc=\<Psi>] 
+    then show "\<Phi> = \<Empt> \<or> (\<exists> A. \<Phi> = \<LM>A\<RM>)" using mset.simps[where ant=\<Phi> and suc=\<Psi>] 
          and union_is_single[where M=\<Phi> and N=\<Psi> and a="Compound R Rs"] by (simp,elim disjE) (auto)
 qed
 
@@ -391,10 +394,10 @@ proof-
        proof (cases)
           case (I R Rs)
           obtain G H where "C = (G \<Rightarrow>* H)" by (cases C) (auto)
-          then have "G + H = \<LM>Compound R Rs\<RM>" using mset_def and `mset C = \<LM>Compound R Rs\<RM>` by auto
+          then have "G + H = \<LM>Compound R Rs\<RM>" using mset.simps and `mset C = \<LM>Compound R Rs\<RM>` by auto
           then have "size (G+H) = 1" by auto 
           then have "size G + size H = 1" by auto
-          then have "seq_size C = 1" using seq_size_def[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
+          then have "seq_size C = 1" using seq_size.simps[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
           moreover have "snd r = C" using `r = (Ps,C)` by simp
           ultimately show "seq_size (snd r) = 1" by simp
        qed
@@ -410,7 +413,7 @@ then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" usi
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using prems by simp
 then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
      using `mset C = \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
+     and mset.simps [where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
      by auto
 qed
 
@@ -425,7 +428,7 @@ from prems obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>
 then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> modRules2" using prems by simp
 then have "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> C = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)" 
      using `mset C = \<LM>Modal F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
-     and mset_def[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Modal F Fs"]
+     and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Modal F Fs"]
      by auto
 thus ?thesis using `Ps \<noteq> []` by auto
 qed
@@ -488,7 +491,7 @@ using assms nonEmpty_image[where \<Gamma>=\<Gamma>] modaliseMultiset_def[where \
 
 lemma mset_extend:
 shows "mset (extend S c) = mset S + mset c"
-using mset_def extend_def apply (cases S) apply (cases c) apply auto
+using mset.simps extend_def apply (cases S) apply (cases c) apply auto
 apply (drule_tac x="multiset1 \<Rightarrow>* multiset2" in meta_spec) 
 apply (drule_tac x="multiset1a \<Rightarrow>* multiset2a" in meta_spec) by (auto simp add:union_ac)
 
@@ -542,8 +545,8 @@ lemma disjoint_Aux:
 assumes "mset c = \<LM>A\<RM>"
 shows "A :# mset (extend S c)"
 proof-
-from assms have "c = (\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<or> c = (\<LM>A\<RM> \<Rightarrow>* \<Empt>)" by (cases c) (auto simp add:mset_def union_is_single)
-then show ?thesis by (auto simp add:extend_def mset_def)
+from assms have "c = (\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<or> c = (\<LM>A\<RM> \<Rightarrow>* \<Empt>)" by (cases c) (auto simp add:mset.simps union_is_single)
+then show ?thesis by (auto simp add:extend_def mset.simps)
 qed
 
 lemma disjoint_Aux2:
@@ -644,7 +647,7 @@ assumes "mset c = \<LM>Modal T Ts\<RM>"
 shows "False"
 proof-
 from assms and single_is_union have "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<or> c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)" apply (cases c)
-     apply (auto simp add:mset_def)
+     apply (auto simp add:mset.simps)
      by (drule_tac x="Modal T Ts" in meta_spec,drule_tac x="multiset1" in meta_spec,
          drule_tac x="multiset2" in meta_spec,simp)+
 moreover
@@ -668,7 +671,7 @@ assumes "mset c = \<LM>Modal T Ts\<RM>"
 shows "False"
 proof-
 from assms and single_is_union have "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<or> c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)" apply (cases c)
-     apply (auto simp add:mset_def)
+     apply (auto simp add:mset.simps)
      by (drule_tac x="Modal T Ts" in meta_spec,drule_tac x="multiset1" in meta_spec,
          drule_tac x="multiset2" in meta_spec,simp)+
 moreover

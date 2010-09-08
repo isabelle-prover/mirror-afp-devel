@@ -92,9 +92,8 @@ datatype sterm =
 | Call sterm Label sterm     (* Call a l b calls method l on object a with param b *)
 | Upd sterm Label sterm      (* Upd a l b updates method l of object a with body b *)
 
-consts applyPropOnOption:: "(sterm \<Rightarrow> bool) \<Rightarrow> sterm option \<Rightarrow> bool"
-primrec
-f1:  "applyPropOnOption P None  = True"
+primrec applyPropOnOption:: "(sterm \<Rightarrow> bool) \<Rightarrow> sterm option \<Rightarrow> bool" where
+f1:  "applyPropOnOption P None  = True" |
 f2:  "applyPropOnOption P (Some t) = P t"
 
 lemma sterm_induct[case_names Bvar Fvar Obj Call Upd empty insert]:

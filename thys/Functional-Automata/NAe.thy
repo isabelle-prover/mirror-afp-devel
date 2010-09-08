@@ -1,5 +1,4 @@
-(*  ID:         $Id: NAe.thy,v 1.7 2009-07-27 20:02:15 alexkrauss Exp $
-    Author:     Tobias Nipkow
+(*  Author:     Tobias Nipkow
     Copyright   1998 TUM
 *)
 
@@ -15,9 +14,8 @@ abbreviation
   eps :: "('a,'s)nae => ('s * 's)set" where
   "eps A == step A None"
 
-consts steps :: "('a,'s)nae => 'a list =>   ('s * 's)set"
-primrec
-"steps A [] = (eps A)^*"
+primrec steps :: "('a,'s)nae => 'a list =>   ('s * 's)set" where
+"steps A [] = (eps A)^*" |
 "steps A (a#w) = (eps A)^* O step A (Some a) O steps A w"
 
 definition

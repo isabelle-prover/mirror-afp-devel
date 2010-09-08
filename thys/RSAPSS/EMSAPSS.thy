@@ -1,5 +1,4 @@
 (*  Title:      RSAPSS/EMSAPSS.thy
-    ID:         $Id: EMSAPSS.thy,v 1.6 2009-08-29 12:36:18 nipkow Exp $
     Author:     Christina Lindenberg, Kai Wirt, Technische Universität Darmstadt
     Copyright:  2005 - Technische Universität Darmstadt 
 *)
@@ -26,7 +25,6 @@ consts  BC:: "bv" (* 0xbc *)
         show_rightmost_bits:: "bv \<Rightarrow> nat \<Rightarrow> bv" (* extract n rightmost bits of a bit string*)
         MGF:: "bv \<Rightarrow> nat \<Rightarrow> bv" (* mask generation function *)
         MGF1:: "bv \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bv" (* help function for MGF *)
-        MGF2:: "bv \<Rightarrow> nat \<Rightarrow> bv" (* help function for MGF1 *)
         maskedDB_zero:: "bv \<Rightarrow> nat \<Rightarrow> bv" (* sets "roundup emBits 8 * 8 - emBits" bits of maskedDB to zero *)
         emsapss_encode:: "bv \<Rightarrow> nat \<Rightarrow> bv" (* outputs the encoded message of length emBits *)
         emsapss_encode_help1:: "bv \<Rightarrow> nat \<Rightarrow> bv"
@@ -85,6 +83,11 @@ defs
   generate_salt:
   "generate_salt DB_zero == show_rightmost_bits DB_zero sLen"
 
+primrec MGF2:: "bv \<Rightarrow> nat \<Rightarrow> bv" (* help function for MGF1 *) where
+  "MGF2 Z 0 = sha1 (Z@(nat_to_bv_length 0 32))"
+| "MGF2 Z (Suc n) = (MGF2 Z n)@(sha1 (Z@(nat_to_bv_length (Suc n) 32)))"
+
+defs
   MGF:
   "MGF Z l == if l = 0 \<or> 2^32*(length (sha1 Z)) < l
               then []
@@ -172,10 +175,6 @@ defs
   "emsapss_decode_help11 H' H == if H' \<noteq> H
                                  then False
                                  else True"
-
-primrec
-  "MGF2 Z 0 = sha1 (Z@(nat_to_bv_length 0 32))"
-  "MGF2 Z (Suc n) = (MGF2 Z n)@(sha1 (Z@(nat_to_bv_length (Suc n) 32)))"
 
 lemma roundup_positiv: "0 < emBits \<Longrightarrow> 0 < (roundup emBits 160)"
   by (simp add: roundup, safe, simp)
