@@ -75,7 +75,7 @@ where
 | BinOpThrow\<^isub>1\<^isub>1:
   "P \<turnstile>\<^sub>1 \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>1\<rangle> \<Longrightarrow>
   P \<turnstile>\<^sub>1 \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2, s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>1\<rangle>"
-| BinOpThrow\<^isub>21:
+| BinOpThrow\<^isub>2\<^isub>1:
   "\<lbrakk> P \<turnstile>\<^sub>1 \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v\<^isub>1,s\<^isub>1\<rangle>; P \<turnstile>\<^sub>1 \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile>\<^sub>1 \<langle>e\<^isub>1 \<guillemotleft>bop\<guillemotright> e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e,s\<^isub>2\<rangle>"
 
@@ -110,7 +110,7 @@ where
 | FAssThrow\<^isub>1\<^isub>1:
   "P \<turnstile>\<^sub>1 \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle> \<Longrightarrow>
   P \<turnstile>\<^sub>1 \<langle>e\<^isub>1\<bullet>F{D}:= e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>1\<rangle>"
-| FAssThrow\<^isub>21:
+| FAssThrow\<^isub>2\<^isub>1:
   "\<lbrakk> P \<turnstile>\<^sub>1 \<langle>e\<^isub>1,s\<^isub>0\<rangle> \<Rightarrow> \<langle>Val v,s\<^isub>1\<rangle>; P \<turnstile>\<^sub>1 \<langle>e\<^isub>2,s\<^isub>1\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle> \<rbrakk>
   \<Longrightarrow> P \<turnstile>\<^sub>1 \<langle>e\<^isub>1\<bullet>F{D}:= e\<^isub>2,s\<^isub>0\<rangle> \<Rightarrow> \<langle>throw e',s\<^isub>2\<rangle>"
 
